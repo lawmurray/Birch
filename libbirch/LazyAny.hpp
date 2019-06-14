@@ -136,7 +136,7 @@ inline libbirch::LazyMemo* libbirch::LazyAny::getContext() {
 }
 
 inline void libbirch::LazyAny::finish() {
-  if (!finished.exchange(true) && sharedCount > 0u) {
+  if (!finished.exchange(true) && sharedCount.load() > 0u) {
     doFinish_();
   }
 }

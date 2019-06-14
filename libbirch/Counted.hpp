@@ -186,19 +186,19 @@ protected:
   /**
    * Shared count.
    */
-  std::atomic<unsigned> sharedCount;
+  Atomic<unsigned> sharedCount;
 
   /**
    * Weak count.
    */
-  std::atomic<unsigned> weakCount;
+  Atomic<unsigned> weakCount;
 
   /**
    * Memo count. This is the number of times that the object occurs as a key
    * in a memo. It is always less than or equal to the weak count, as each
    * memo reference implies a weak reference also.
    */
-  std::atomic<unsigned> memoCount;
+  Atomic<unsigned> memoCount;
 
   /**
    * Size of the object. This is set immediately after construction. A value
@@ -217,11 +217,10 @@ protected:
   unsigned tid;
 
   /**
-   * Is the object read-only? This is -1 for false, thread id for in
-   * progress, max threads for true, and greater than max threads for true
-   * and accessible through a single pointer only.
+   * Is the object read-only? This is 0 for false 1 for true, and 2 true and
+   * accessible through a single pointer only.
    */
-  std::atomic<int> frozen;
+  Atomic<unsigned> frozen;
 };
 #pragma omp end declare target
 }
@@ -234,7 +233,7 @@ inline libbirch::Counted::Counted() :
     memoCount(0u),
     size(0u),
     tid(libbirch::tid),
-    frozen(-1) {
+    frozen(0u) {
   //
 }
 
@@ -244,17 +243,17 @@ inline libbirch::Counted::Counted(const Counted& o) :
     memoCount(0u),
     size(o.size),
     tid(libbirch::tid),
-    frozen(-1) {
+    frozen(0u) {
   //
 }
 
 inline libbirch::Counted::~Counted() {
-  assert(sharedCount == 0u);
+  assert(sharedCount.load() == 0u);
 }
 
 inline void libbirch::Counted::deallocate() {
-  assert(sharedCount == 0u);
-  assert(weakCount == 0u);
+  assert(sharedCount.load() == 0u);
+  assert(weakCount.load() == 0u);
   libbirch::deallocate(this, size, tid);
 }
 
@@ -263,21 +262,28 @@ inline unsigned libbirch::Counted::getSize() const {
 }
 
 inline libbirch::Counted* libbirch::Counted::lock() {
-  unsigned count = sharedCount.load();
-  while (count > 0u
-      && !sharedCount.compare_exchange_weak(count, count + 1u)) {
-    //
-  }
-  return count > 0u ? this : nullptr;
+  ++sharedCount;
+  assert(sharedCount.load() > 1u);  // should not be upgrading from zero refs
+  return this;
+
+  /* older implementation using std::atomic and atomic CAS that cannot be
+   * represented with libbirch::Atomic (based on OpenMP atomics) at present;
+   * newer implementation changes the semantics of weak pointers */
+  //unsigned count = sharedCount.load();
+  //while (count > 0u
+  //    && !sharedCount.compare_exchange_weak(count, count + 1u)) {
+  //  //
+  //}
+  //return count > 0u ? this : nullptr;
 }
 
 inline void libbirch::Counted::incShared() {
-  sharedCount.fetch_add(1u);
+  ++sharedCount;
 }
 
 inline void libbirch::Counted::decShared() {
-  assert(sharedCount > 0u);
-  if (sharedCount.fetch_sub(1u) - 1u == 0u && size > 0u) {
+  assert(sharedCount.load() > 0u);
+  if (--sharedCount == 0u && size > 0u) {
     // ^ size == 0u during construction, never destroy in that case
     destroy_();
     decWeak();  // release weak self-reference
@@ -289,13 +295,13 @@ inline unsigned libbirch::Counted::numShared() const {
 }
 
 inline void libbirch::Counted::incWeak() {
-  weakCount.fetch_add(1u);
+  ++weakCount;
 }
 
 inline void libbirch::Counted::decWeak() {
-  assert(weakCount > 0u);
-  if (weakCount.fetch_sub(1u) - 1u == 0u) {
-    assert(sharedCount == 0u);
+  assert(weakCount.load() > 0u);
+  if (--weakCount == 0u) {
+    assert(sharedCount.load() == 0u);
     // ^ because of weak self-reference, the weak count should not expire
     //   before the shared count
     deallocate();
@@ -310,14 +316,14 @@ inline void libbirch::Counted::incMemo() {
   /* the order of operations here is important, as the weak count should
    * never be less than the memo count */
   incWeak();
-  memoCount.fetch_add(1u);
+  ++memoCount;
 }
 
 inline void libbirch::Counted::decMemo() {
   /* the order of operations here is important, as the weak count should
    * never be less than the memo count */
-  assert(memoCount > 0u);
-  memoCount.fetch_sub(1u);
+  assert(memoCount.load() > 0u);
+  --memoCount;
   decWeak();
 }
 
@@ -330,11 +336,11 @@ inline bool libbirch::Counted::isReachable() const {
 }
 
 inline bool libbirch::Counted::isFrozen() const {
-  return frozen.load() >= 0;
+  return frozen.load() >= 1u;
 }
 
 inline bool libbirch::Counted::isUniquelyReachable() const {
-  return frozen.load() > (int)libbirch::nthreads;
+  return frozen.load() >= 2u;
 }
 
 inline void libbirch::Counted::doFreeze_() {
