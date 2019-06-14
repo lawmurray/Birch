@@ -36,7 +36,7 @@ public:
    * @param value Initial value.
    */
   explicit Atomic(const T& value) {
-    #pragma omp atomic write
+    //#pragma omp atomic write
     this->value = value;
   }
 
@@ -45,7 +45,7 @@ public:
    */
   T load() const {
     T value;
-    #pragma omp atomic read
+    //#pragma omp atomic read
     value = this->value;
 
     return value;
@@ -55,7 +55,7 @@ public:
    * Store the value, atomically.
    */
   void store(const T& value) {
-    #pragma omp atomic write
+    //#pragma omp atomic write
     this->value = value;
   }
 
@@ -68,7 +68,7 @@ public:
    */
   T exchange(const T& value) {
     T old;
-    #pragma omp atomic capture
+    //#pragma omp atomic capture
     {
       old = this->value;
       this->value = value;
@@ -79,7 +79,7 @@ public:
   template<class U>
   T operator+=(const U& value) {
     T result;
-    #pragma omp atomic capture
+    //#pragma omp atomic capture
     result = this->value += value;
 
     return result;
@@ -88,7 +88,7 @@ public:
   template<class U>
   T operator-=(const U& value) {
     T result;
-    #pragma omp atomic capture
+    //#pragma omp atomic capture
     result = this->value -= value;
 
     return result;
@@ -96,7 +96,7 @@ public:
 
   T operator++() {
     T value;
-    #pragma omp atomic capture
+    //#pragma omp atomic capture
     value = ++this->value;
 
     return value;
@@ -104,7 +104,7 @@ public:
 
   T operator++(int) {
     T value;
-    #pragma omp atomic capture
+    //#pragma omp atomic capture
     value = this->value++;
 
     return value;
@@ -112,7 +112,7 @@ public:
 
   T operator--() {
     T value;
-    #pragma omp atomic capture
+    //#pragma omp atomic capture
     value = --this->value;
 
     return value;
@@ -120,7 +120,7 @@ public:
 
   T operator--(int) {
     T value;
-    #pragma omp atomic capture
+    //#pragma omp atomic capture
     value = this->value--;
 
     return value;
