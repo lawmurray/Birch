@@ -38,7 +38,7 @@ static char* heap() {
 }
 
 libbirch::Pool& libbirch::pool(const unsigned i) {
-  static libbirch::Pool* pools = new libbirch::Pool[64*nthreads];
+  /*static */libbirch::Pool* pools = new libbirch::Pool[64*nthreads];
   return pools[i];
 }
 
@@ -54,7 +54,7 @@ size_t libbirch::bufferSize;
  * Create and/or return the root memo
  */
 static libbirch::Memo* root() {
-  static libbirch::SharedPtr<libbirch::Memo> memo = libbirch::Memo::create_();
+  /*static */libbirch::SharedPtr<libbirch::Memo> memo = libbirch::Memo::create_();
   return memo.get();
 }
 
