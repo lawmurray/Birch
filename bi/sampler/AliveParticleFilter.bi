@@ -10,6 +10,9 @@ class AliveParticleFilter < ParticleFilter {
    */
   P:Queue<Integer>;
 
+    auto x0 <- x;
+    auto w0 <- w;
+
   function initialize() {
     super.initialize();
     P.clear();
@@ -27,8 +30,8 @@ class AliveParticleFilter < ParticleFilter {
     cpp {{
     libbirch::Atomic<bi::type::Integer> P(0);
     }}
-    auto x0 <- x;
-    auto w0 <- w;
+    x0 <- x;
+    w0 <- w;
     parallel for auto n in 1..N {
       w[n] <- x[n].step();
       cpp {{
