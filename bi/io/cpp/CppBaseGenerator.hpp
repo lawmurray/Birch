@@ -176,9 +176,13 @@ void bi::CppBaseGenerator::genInit(const T* o) {
     if (!o->brackets->isEmpty()) {
       if (!o->value->isEmpty()) {
         middle(" = ");
-        middle("libbirch::make_array_and_assign<" << type->single << ">(");
-        middle("libbirch::make_frame(" << o->brackets << ')');
-        middle(", " << o->value << ')');
+        if (o->value->type->isConvertible(*type)) {
+          middle(o->value);
+        } else {
+          middle("libbirch::make_array_and_assign<" << type->single << ">(");
+          middle("libbirch::make_frame(" << o->brackets << ')');
+          middle(", " << o->value << ')');
+        }
       } else {
         middle(" = libbirch::make_array<" << type->single << ">(");
         middle("libbirch::make_frame(" << o->brackets << ')');
