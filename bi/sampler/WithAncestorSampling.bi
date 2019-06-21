@@ -17,6 +17,7 @@ class WithAncestorSampling<Base> < Base {
         auto x <- clone<ForwardModel>(this.x[n]);
         auto f <- clone<StackNode<Event>>(forward!);
         x.h.setMode(PROPOSE_IMMEDIATE);
+        x.h.setRecord(false);
         x.h.trace.putForward(f, forwardCount);
         v[n] <- w[n];
         auto s <- x.t + 1;
