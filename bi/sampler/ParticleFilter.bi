@@ -145,9 +145,6 @@ class ParticleFilter < ForwardSampler {
    
     /* effective sample size */
     ess.pushBack(W*W/W2);
-    if !(ess.back() > 0.0) {  // > 0.0 as may be nan
-      error("particle filter degenerated.");
-    }
   
     /* normalizing constant estimate */
     Z.pushBack(V);
@@ -183,10 +180,7 @@ class ParticleFilter < ForwardSampler {
    * Finish.
    */
   function finish() {
-    b <- ancestor(w);
-    if b <= 0 {
-      error("particle filter degenerated.");
-    }
+    b <- max(1, ancestor(w));
   }
   
   /**
