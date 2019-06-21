@@ -60,13 +60,14 @@ class MarkovModel<Parameter,State> < ForwardModel {
    * Start. Simulates the parameter model.
    */
   function start() -> Real {
-    return h.handle(parameter(θ));
+    return super.start() + h.handle(parameter(θ));
   }
 
   /**
    * Step. Simulates the initial state, or the transition to the next state.
    */
   function step() -> Real {
+    auto w <- super.step();
     before:State?;
     here:State?;
     if x.hasBefore() {
@@ -79,7 +80,6 @@ class MarkovModel<Parameter,State> < ForwardModel {
       here <- here';
     }
     
-    auto w <- 0.0;
     if before? {
       w <- w + h.handle(transition(here!, before!, θ));
       x.pushBefore(before!);

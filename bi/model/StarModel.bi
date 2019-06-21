@@ -48,14 +48,14 @@ class StarModel<Parameter,Point> < RandomAccessModel {
    * Start. Simulates through the parameter model.
    */
   function start() -> Real {
-    return h.handle(parameter(θ));
+    return super.start() + h.handle(parameter(θ));
   }
 
   /**
    * Step. Simulates the next point.
    */
   function step() -> Real {
-    return h.handle(point(x.get(t), θ));
+    return super.step() + h.handle(point(x.get(t), θ));
   }
 
   function seek(t:Integer) {

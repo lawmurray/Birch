@@ -4,19 +4,31 @@
  */
 class ForwardModel < Model {   
   /**
+   * Current step.
+   */
+  t:Integer <- 0;
+  
+  /**
    * Start.
    */
-  function start() -> Real;
+  function start() -> Real {
+    return 0.0;
+  }
 
   /**
    * Step.
    */
-  function step() -> Real;
+  function step() -> Real {
+    t <- t + 1;
+    return 0.0;
+  }
   
   /**
    * Rewind to start.
    */
-  function rewind();
+  function rewind() {
+    t <- 0;
+  }
 
   /**
    * Number of steps.

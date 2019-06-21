@@ -39,8 +39,7 @@ class HiddenStarModel<Parameter,Point,Observation> <
    * Step. Simulates the next point and observation.
    */
   function step() -> Real {
-    auto w <- super.step();
-    return w + h.handle(observation(y.get(t), x.get(t), θ));
+    return super.step() + h.handle(observation(y.get(t), x.get(t), θ));
   }
 
   function seek(t:Integer) {
