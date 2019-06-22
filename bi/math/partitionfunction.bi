@@ -1,7 +1,3 @@
-cpp{{
-#include "boost/math/distributions.hpp"
-}}
-
 /**
  * Log partition function of a Bernoulli variate.
  *

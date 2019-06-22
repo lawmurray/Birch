@@ -99,10 +99,10 @@ public:
    */
   Array(Array<T,F> && o) :
       frame(o.frame),
-      buffer(o.buffer.load(std::memory_order_relaxed)),
+      buffer(o.buffer),
       offset(o.offset),
       isView(o.isView) {
-    o.buffer.store(nullptr, std::memory_order_relaxed);
+    o.buffer = nullptr;
   }
 
   /**
@@ -303,14 +303,14 @@ public:
    * Raw pointer to underlying buffer.
    */
   T* buf() {
-    return buffer.load(std::memory_order_relaxed)->buf() + offset;
+    return buffer->buf() + offset;
   }
 
   /**
    * Raw pointer to underlying buffer.
    */
   T* buf() const {
-    return buffer.load(std::memory_order_relaxed)->buf() + offset;
+    return buffer->buf() + offset;
   }
 
   /**
@@ -341,12 +341,11 @@ public:
       if (frame.size() == 0) {
         release();
       } else {
-        auto oldBuffer = buffer.load(std::memory_order_relaxed);
+        auto oldBuffer = buffer;
         auto oldSize = Buffer<T>::size(volume());
         auto newSize = Buffer<T>::size(frame.volume());
-        buffer.store(
-            (Buffer<T>*)libbirch::reallocate(oldBuffer, oldSize, oldBuffer->tid,
-                newSize), std::memory_order_relaxed);
+        buffer = (Buffer<T>*)libbirch::reallocate(oldBuffer, oldSize,
+            oldBuffer->tid, newSize);
       }
       this->frame.resize(frame);
     }
@@ -374,12 +373,11 @@ public:
     } else {
       auto oldVolume = this->frame.volume();
       this->frame.resize(frame);
-      auto oldBuffer = buffer.load(std::memory_order_relaxed);
+      auto oldBuffer = buffer;
       auto oldSize = Buffer<T>::size(oldVolume);
       auto newSize = Buffer<T>::size(frame.volume());
-      buffer.store(
-          (Buffer<T>*)libbirch::reallocate(oldBuffer, oldSize, oldBuffer->tid,
-              newSize), std::memory_order_relaxed);
+      buffer = (Buffer<T>*)libbirch::reallocate(oldBuffer, oldSize,
+          oldBuffer->tid, newSize);
       Iterator<T,F> iter(buf(), frame);
       // ^ don't use begin() as we have obtained the lock already
       std::uninitialized_fill(iter + oldVolume, iter + frame.size(), x);
@@ -569,7 +567,7 @@ private:
     if (size > 0) {
       auto tmp = new (libbirch::allocate(size)) Buffer<T>();
       tmp->incUsage();
-      buffer.store(tmp, std::memory_order_relaxed);
+      buffer = tmp;
     }
   }
 
@@ -584,11 +582,11 @@ private:
         rebase(std::move(o1));
       }
       assert(!isShared());
-      auto ptr = buffer.load(std::memory_order_relaxed);
+      auto ptr = buffer;
       unlock();
       return ptr;
     } else {
-      return buffer.load(std::memory_order_relaxed);
+      return buffer;
     }
   }
 
@@ -612,26 +610,24 @@ private:
     assert(!isView);
     assert(!o.isView);
     std::swap(frame, o.frame);
-    o.buffer.store(
-        buffer.exchange(o.buffer.load(std::memory_order_relaxed),
-            std::memory_order_relaxed), std::memory_order_relaxed);  // can't std::swap atomics
+    std::swap(buffer, o.buffer);
   }
 
   /**
    * Deallocate memory of array.
    */
   void release() {
-    auto tmp = buffer.exchange(nullptr);
     if (!isView) {
-      if (tmp && tmp->decUsage() == 0) {
-        Iterator<T,F> iter(tmp->buf() + offset, frame);
+      if (buffer && buffer->decUsage() == 0) {
+        Iterator<T,F> iter(buffer->buf() + offset, frame);
         // ^ just erased buffer, so can't use begin()
         auto last = iter + size();
         for (; iter != last; ++iter) {
           iter->~T();
         }
         size_t size = Buffer<T>::size(frame.volume());
-        libbirch::deallocate(tmp, size, tmp->tid);
+        libbirch::deallocate(buffer, size, buffer->tid);
+        buffer = nullptr;
       }
     }
   }
@@ -735,9 +731,7 @@ private:
    * Is the buffer shared with one or more other arrays?
    */
   bool isShared() const {
-    auto tmp = buffer.load(std::memory_order_relaxed);
-    auto result = tmp && tmp->numUsage() > 1u;
-    return result;
+    return buffer && buffer->numUsage() > 1u;
   }
 
   /**
@@ -762,7 +756,7 @@ private:
   /**
    * Buffer.
    */
-  std::atomic<Buffer<T>*> buffer;
+  Buffer<T>* buffer;
 
   /**
    * Offset into the buffer. This should be zero when isView is false.
@@ -798,13 +792,13 @@ libbirch::Array<T,F>::Array(const Array<T,F>& o, const bool canShare) :
     allocate();
     copy(o);
   } else {
-    auto tmp = o.buffer.load(std::memory_order_relaxed);
+    auto tmp = o.buffer;
     if (tmp && !o.isView) {
       /* views do not increment the buffer use count, as they are meant to be
        * temporary and should not outlive the buffer itself */
       tmp->incUsage();
     }
-    buffer.store(tmp, std::memory_order_relaxed);
+    buffer = tmp;
     offset = o.offset;
     isView = o.isView;
   }

@@ -19,9 +19,18 @@ template<class T>
 class Optional {
 public:
   /**
+   * Default constructor.
+   */
+  Optional() :
+      value(),
+      hasValue(false) {
+    //
+  }
+
+  /**
    * Constructor for no value.
    */
-  Optional(const Nil& = nil) :
+  Optional(const Nil&) :
       value(),
       hasValue(false) {
     //
@@ -60,6 +69,26 @@ public:
       value = o.get();
     }
   }
+
+  /**
+   * Copy constructor.
+   */
+  Optional(const Optional<T>& o) = default;
+
+  /**
+   * Move constructor.
+   */
+  Optional(Optional<T> && o) = default;
+
+  /**
+   * Copy assignment.
+   */
+  Optional<T>& operator=(const Optional<T>& o) = default;
+
+  /**
+   * Move assignment.
+   */
+  Optional<T>& operator=(Optional<T> && o) = default;
 
   /**
    * Is there a value?
@@ -109,9 +138,14 @@ class Optional<Shared<T>> {
   template<class U> friend class Optional;
 public:
   /**
+   * Default constructor.
+   */
+  Optional() = default;
+
+  /**
    * Constructor for no value.
    */
-  Optional(const Nil& = nil) :
+  Optional(const Nil&) :
       value() {
     //
   }

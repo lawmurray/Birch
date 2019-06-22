@@ -1,7 +1,3 @@
-cpp{{
-#include "boost/math/distributions.hpp"
-}}
-
 /**
  * PMF of a Bernoulli variate.
  *

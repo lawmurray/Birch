@@ -42,7 +42,7 @@ struct StackFrame {
  * Temporary type for pushing functions onto the stack trace.
  */
 struct StackFunction {
-  StackFunction(const char* func, const char* file, const int line);
+  StackFunction(const char* func, const char* file = nullptr, const int line = 0);
   ~StackFunction();
 };
 

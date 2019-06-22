@@ -5,6 +5,7 @@
 
 #include "libbirch/external.hpp"
 #include "libbirch/thread.hpp"
+#include "libbirch/Atomic.hpp"
 #include "libbirch/Pool.hpp"
 
 namespace libbirch {
@@ -17,7 +18,7 @@ extern libbirch::Pool& pool(const unsigned i);
 /**
  * Buffer for heap allocations.
  */
-extern std::atomic<char*> buffer;
+extern libbirch::Atomic<char*> buffer;
 
 /**
  * Start of heap (for debugging purposes).
@@ -33,7 +34,7 @@ extern size_t bufferSize;
 /**
  * Number of bytes of memory currently in use (excluding that in pools).
  */
-extern std::atomic<size_t> memoryUse;
+extern libbirch::Atomic<size_t> memoryUse;
 
 /**
  * For an allocation size, determine the index of the pool to which it
@@ -157,7 +158,7 @@ template<unsigned n>
 void* allocate() {
   static_assert(n > 0, "cannot make zero length allocation");
 
-  memoryUse.fetch_add(n, std::memory_order_relaxed);
+  memoryUse += n;
 #if !ENABLE_MEMORY_POOL
   return std::malloc(n);
 #else
@@ -167,7 +168,7 @@ void* allocate() {
     unsigned m = unbin(i);
     unsigned r = (m < 64u) ? 64u : m;
     // ^ minimum allocation 64 bytes to maintain alignment
-    ptr = buffer.fetch_add(r, std::memory_order_relaxed);
+    ptr = (buffer += r) - r;
     if (m < 64u) {
       /* add extra bytes as a separate allocation to the pool for
        * reuse another time */

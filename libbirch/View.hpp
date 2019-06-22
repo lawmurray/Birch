@@ -95,6 +95,11 @@ struct NonemptyView {
   }
 
   /**
+   * Copy constructor.
+   */
+  NonemptyView(const NonemptyView<Head,Tail>& o) = default;
+
+  /**
    * Generic copy constructor.
    */
   template<class Head1, class Tail1>

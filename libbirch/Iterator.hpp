@@ -30,6 +30,8 @@ public:
     //
   }
 
+  Iterator(const Iterator& o) = default;
+
   T* get() const {
     return ptr + frame.offset(serial);
   }

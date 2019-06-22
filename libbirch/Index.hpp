@@ -32,6 +32,11 @@ struct Index: public Offset<offset_value>, public Length<1> {
   }
 
   /**
+   * Copy constructor.
+   */
+  Index(const Index<offset_value>& o) = default;
+
+  /**
    * Generic copy constructor.
    */
   template<int64_t offset_value1>

@@ -44,6 +44,11 @@ struct Span: public Length<length_value>, public Stride<stride_value> {
   }
 
   /**
+   * Copy constructor.
+   */
+  Span(const Span<length_value,stride_value>& o) = default;
+
+  /**
    * Generic copy constructor.
    */
   template<int64_t length_value1, int64_t stride_value1>

@@ -39,6 +39,11 @@ struct Range: public Offset<offset_value>, public Length<length_value> {
   }
 
   /**
+   * Copy constructor.
+   */
+  Range(const Range<offset_value,length_value>& o) = default;
+
+  /**
    * Generic copy constructor.
    */
   template<int64_t offset_value1, int64_t length_value1>

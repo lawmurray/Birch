@@ -296,6 +296,7 @@
       "libbirch/Allocator.hpp",
       "libbirch/Any.hpp",
       "libbirch/Array.hpp",
+      "libbirch/Atomic.hpp",
       "libbirch/assert.hpp",
       "libbirch/basic.hpp",
       "libbirch/Buffer.hpp",

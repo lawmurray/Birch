@@ -7,6 +7,8 @@
 #include "libbirch/external.hpp"
 #include "libbirch/Counted.hpp"
 #include "libbirch/WeakPtr.hpp"
+#include "libbirch/Atomic.hpp"
+#include "libbirch/ExclusiveLock.hpp"
 
 namespace libbirch {
 /**
@@ -93,12 +95,17 @@ protected:
    * so an atomic raw pointer is used, with manual shared reference count
    * maintenance.
    */
-  std::atomic<LazyAny*> forward;
+  SharedPtr<LazyAny> forward;
 
   /**
    * Have clones of all objects reachable from this object finished?
    */
-  std::atomic<bool> finished;
+  Atomic<bool> finished;
+
+  /**
+   * Lock.
+   */
+  ExclusiveLock mutex;
 };
 }
 
@@ -119,10 +126,7 @@ inline libbirch::LazyAny::LazyAny(const LazyAny& o) :
 }
 
 inline libbirch::LazyAny::~LazyAny() {
-  auto forward1 = this->forward.load(std::memory_order_relaxed);
-  if (forward1) {
-    forward1->decShared();
-  }
+  //
 }
 
 inline libbirch::LazyMemo* libbirch::LazyAny::getContext() {
@@ -130,13 +134,8 @@ inline libbirch::LazyMemo* libbirch::LazyAny::getContext() {
 }
 
 inline void libbirch::LazyAny::finish() {
-  bool expected = false;
-  bool desired = true;
-  if (finished.compare_exchange_strong(expected, desired,
-        std::memory_order_relaxed)) {
-    if (sharedCount > 0) {
-      doFinish_();
-    }
+  if (!finished.exchange(true) && sharedCount.load() > 0u) {
+    doFinish_();
   }
 }
 

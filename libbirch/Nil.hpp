@@ -30,5 +30,5 @@ public:
 /**
  * Nil singleton.
  */
-static Nil nil;
+static constexpr Nil nil;
 }

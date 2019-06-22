@@ -4,6 +4,7 @@
 #pragma once
 
 #include "libbirch/external.hpp"
+#include "libbirch/Atomic.hpp"
 
 namespace libbirch {
 /**
@@ -37,7 +38,7 @@ private:
   /**
    * Lock.
    */
-  std::atomic<bool> lock;
+  Atomic<bool> lock;
 };
 }
 
@@ -52,13 +53,10 @@ inline libbirch::ExclusiveLock::ExclusiveLock(const ExclusiveLock& o) :
 }
 
 inline void libbirch::ExclusiveLock::keep() {
-  /* spin until exclusive lock obtained */
-  bool expected;
-  do {
-    expected = false;
-  } while (!lock.compare_exchange_weak(expected, true));
+  /* spin, setting the lock true until its old value comes back false */
+  while (lock.exchange(true));
 }
 
 inline void libbirch::ExclusiveLock::unkeep() {
-  lock.store(false, std::memory_order_seq_cst);
+  lock.store(false);
 }
