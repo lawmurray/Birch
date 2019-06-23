@@ -17,8 +17,8 @@ final class DelayBeta(future:Real?, futureUpdate:Boolean, α:Real, β:Real) <
     return simulate_beta(α, β);
   }
   
-  function observe(x:Real) -> Real {
-    return observe_beta(x, α, β);
+  function logpdf(x:Real) -> Real {
+    return logpdf_beta(x, α, β);
   }
 
   function update(x:Real) {

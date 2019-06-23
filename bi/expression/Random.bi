@@ -104,19 +104,7 @@ final class Random<Value> < Expression<Value> {
   }
 
   /**
-   * Evaluate the probability mass function (if it exists) at a value.
-   *
-   * - x: The value.
-   *
-   * Return: the probability mass.
-   */
-  function pmf(x:Value) -> Real {
-    assert hasDistribution();
-    return dist!.pmf(x);
-  }
-
-  /**
-   * Evaluate the probability density function (if it exists) at a value.
+   * Evaluate the probability density (or mass) function, if it exists.
    *
    * - x: The value.
    *

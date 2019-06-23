@@ -34,19 +34,13 @@ class Distribution<Value> {
     this.future <- future;
     this.futureUpdate <- futureUpdate;
   }
-
-  /**
-   * Does the distribution have a value?
-   */
-  function hasValue() -> Boolean {
-    return delay? && delay!.hasValue();
-  }
-  
+    
   /**
    * Get the value of the node, realizing it if necessary.
    */
   function value() -> Value {
     graft();
+    delay!.realize();
     auto x <- delay!.value();
     detach();
     return x;
@@ -69,9 +63,9 @@ class Distribution<Value> {
    *
    * Return: The log likelihood.
    */
-  function observe(x:Value) -> Real {
+  function logpdf(x:Value) -> Real {
     graft();
-    return delay!.observe(x);
+    return delay!.logpdf(x);
   }
 
   /**
@@ -96,19 +90,7 @@ class Distribution<Value> {
   }
 
   /**
-   * Evaluate the probability mass function (if it exists) at a value.
-   *
-   * - x: The value.
-   *
-   * Return: the probability mass.
-   */
-  function pmf(x:Value) -> Real {
-    graft();
-    return delay!.pmf(x);
-  }
-
-  /**
-   * Evaluate the probability density function (if it exists) at a value.
+   * Evaluate the probability density (or mass) function, if it exists.
    *
    * - x: The value.
    *
@@ -157,7 +139,6 @@ class Distribution<Value> {
    */
   function detach() {
     assert delay?;
-    delay!.detach();
     delay <- nil;
   }
 

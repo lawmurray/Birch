@@ -24,8 +24,8 @@ final class DelayLinearNormalInverseGammaLogGaussian(future:Real?,
         1.0/μ!.λ, μ!.σ2!.α, μ!.σ2!.β));
   }
   
-  function observe(x:Real) -> Real {
-    return observe_linear_normal_inverse_gamma_gaussian(log(x), a, μ!.μ, c, 
+  function logpdf(x:Real) -> Real {
+    return logpdf_linear_normal_inverse_gamma_gaussian(log(x), a, μ!.μ, c, 
         1.0/μ!.λ, μ!.σ2!.α, μ!.σ2!.β) - log(x);
   }
 

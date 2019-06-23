@@ -17,8 +17,8 @@ final class DelayInverseGammaGaussian(future:Real?, futureUpdate:Boolean,
     return simulate_inverse_gamma_gaussian(μ, σ2!.α, σ2!.β);
   }
   
-  function observe(x:Real) -> Real {
-    return observe_inverse_gamma_gaussian(x, μ, σ2!.α, σ2!.β);
+  function logpdf(x:Real) -> Real {
+    return logpdf_inverse_gamma_gaussian(x, μ, σ2!.α, σ2!.β);
   }
 
   function update(x:Real) {

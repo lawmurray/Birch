@@ -12,8 +12,8 @@ final class DelayBernoulli(future:Boolean?, futureUpdate:Boolean, ρ:Real) <
     return simulate_bernoulli(ρ);
   }
   
-  function observe(x:Boolean) -> Real {
-    return observe_bernoulli(x, ρ);
+  function logpdf(x:Boolean) -> Real {
+    return logpdf_bernoulli(x, ρ);
   }
 
   function update(x:Boolean) {
@@ -24,8 +24,8 @@ final class DelayBernoulli(future:Boolean?, futureUpdate:Boolean, ρ:Real) <
     //
   }
 
-  function pmf(x:Boolean) -> Real {
-    return pmf_bernoulli(x, ρ);
+  function pdf(x:Boolean) -> Real {
+    return pdf_bernoulli(x, ρ);
   }
 
   function write(buffer:Buffer) {

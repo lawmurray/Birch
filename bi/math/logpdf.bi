@@ -6,7 +6,7 @@
  *
  * Returns: the log probability mass.
  */
-function observe_bernoulli(x:Boolean, ρ:Real) -> Real {
+function logpdf_bernoulli(x:Boolean, ρ:Real) -> Real {
   assert 0.0 <= ρ && ρ <= 1.0;
   if (x) {
     return log(ρ);
@@ -23,7 +23,7 @@ function observe_bernoulli(x:Boolean, ρ:Real) -> Real {
  *
  * Returns: the log probability mass.
  */
-function observe_delta(x:Integer, μ:Integer) -> Real {
+function logpdf_delta(x:Integer, μ:Integer) -> Real {
   if (x == μ) {
     return 0.0;
   } else {
@@ -40,7 +40,7 @@ function observe_delta(x:Integer, μ:Integer) -> Real {
  *
  * Returns: the log probability mass.
  */
-function observe_binomial(x:Integer, n:Integer, ρ:Real) -> Real {
+function logpdf_binomial(x:Integer, n:Integer, ρ:Real) -> Real {
   assert 0 <= n;
   assert 0.0 <= ρ && ρ <= 1.0;
 
@@ -66,7 +66,7 @@ function observe_binomial(x:Integer, n:Integer, ρ:Real) -> Real {
  *
  * Returns: the log probability mass.
  */
-function observe_negative_binomial(x:Integer, k:Integer, ρ:Real) -> Real {
+function logpdf_negative_binomial(x:Integer, k:Integer, ρ:Real) -> Real {
   assert 0 < k;
   assert 0.0 <= ρ && ρ <= 1.0;
 
@@ -85,7 +85,7 @@ function observe_negative_binomial(x:Integer, k:Integer, ρ:Real) -> Real {
  *
  * Returns: the log probability mass.
  */
-function observe_poisson(x:Integer, λ:Real) -> Real {
+function logpdf_poisson(x:Integer, λ:Real) -> Real {
   assert 0.0 <= λ;
 
   if (λ > 0.0) {
@@ -112,7 +112,7 @@ function observe_poisson(x:Integer, λ:Real) -> Real {
  *
  * Returns: the log probability mass.
  */
-function observe_uniform_int(x:Integer, l:Integer, u:Integer) -> Real {
+function logpdf_uniform_int(x:Integer, l:Integer, u:Integer) -> Real {
   if (x >= l && x <= u) {
     return -log(u - l + 1);
   } else {
@@ -128,7 +128,7 @@ function observe_uniform_int(x:Integer, l:Integer, u:Integer) -> Real {
  *
  * Returns: the log probability mass.
  */
-function observe_categorical(x:Integer, ρ:Real[_]) -> Real {
+function logpdf_categorical(x:Integer, ρ:Real[_]) -> Real {
   if (1 <= x && x <= length(ρ)) {
     assert ρ[x] >= 0.0;
     return log(ρ[x]);
@@ -146,7 +146,7 @@ function observe_categorical(x:Integer, ρ:Real[_]) -> Real {
  *
  * Returns: the log probability mass.
  */
-function observe_multinomial(x:Integer[_], n:Integer, ρ:Real[_]) -> Real {
+function logpdf_multinomial(x:Integer[_], n:Integer, ρ:Real[_]) -> Real {
   assert length(x) == length(ρ);
 
   m:Integer <- 0;
@@ -172,7 +172,7 @@ function observe_multinomial(x:Integer[_], n:Integer, ρ:Real[_]) -> Real {
  *
  * Returns: the log probability density.
  */
-function observe_dirichlet(x:Real[_], α:Real[_]) -> Real {
+function logpdf_dirichlet(x:Real[_], α:Real[_]) -> Real {
   assert length(x) == length(α);
 
   D:Integer <- length(x);
@@ -194,7 +194,7 @@ function observe_dirichlet(x:Real[_], α:Real[_]) -> Real {
  *
  * Returns: the log probability density.
  */
-function observe_uniform(x:Real, l:Real, u:Real) -> Real {
+function logpdf_uniform(x:Real, l:Real, u:Real) -> Real {
   assert l <= u;
 
   if (x >= l && x <= u) {
@@ -212,7 +212,7 @@ function observe_uniform(x:Real, l:Real, u:Real) -> Real {
  *
  * Returns: the log probability density.
  */
-function observe_exponential(x:Real, λ:Real) -> Real {
+function logpdf_exponential(x:Real, λ:Real) -> Real {
   assert 0.0 < λ;
 
   if (x >= 0.0) {
@@ -231,7 +231,7 @@ function observe_exponential(x:Real, λ:Real) -> Real {
  *
  * Returns: the log probability density.
  */
-function observe_weibull(x:Real, k:Real, λ:Real) -> Real {
+function logpdf_weibull(x:Real, k:Real, λ:Real) -> Real {
   assert 0.0 < λ;
 
   if (x >= 0.0) {
@@ -250,7 +250,7 @@ function observe_weibull(x:Real, k:Real, λ:Real) -> Real {
  *
  * Returns: the log probability density.
  */
-function observe_gaussian(x:Real, μ:Real, σ2:Real) -> Real {
+function logpdf_gaussian(x:Real, μ:Real, σ2:Real) -> Real {
   assert 0.0 <= σ2;
   
   if (σ2 == 0.0) {
@@ -273,9 +273,9 @@ function observe_gaussian(x:Real, μ:Real, σ2:Real) -> Real {
  *
  * Returns: the log probability density.
  */
-function observe_log_gaussian(x:Real, μ:Real, σ2:Real) -> Real {
+function logpdf_log_gaussian(x:Real, μ:Real, σ2:Real) -> Real {
   if (x > 0.0) {
-    return observe_gaussian(log(x), μ, σ2) - log(x);
+    return logpdf_gaussian(log(x), μ, σ2) - log(x);
   } else {
     return -inf;
   }
@@ -289,7 +289,7 @@ function observe_log_gaussian(x:Real, μ:Real, σ2:Real) -> Real {
  *
  * Returns: the log probability density.
  */
-function observe_student_t(x:Real, ν:Real) -> Real {
+function logpdf_student_t(x:Real, ν:Real) -> Real {
   assert 0.0 < ν;
   z:Real <- 0.5*(ν + 1.0);
   return lgamma(z) - lgamma(0.5*ν) - z*log1p(x*x/ν) - 0.5*log(π*ν);
@@ -305,10 +305,10 @@ function observe_student_t(x:Real, ν:Real) -> Real {
  *
  * Returns: the log probability density.
  */
-function observe_student_t(x:Real, ν:Real, μ:Real, σ2:Real) -> Real {
+function logpdf_student_t(x:Real, ν:Real, μ:Real, σ2:Real) -> Real {
   assert 0.0 < ν;
   assert 0.0 < σ2;
-  return observe_student_t((x - μ)/sqrt(σ2), ν) - 0.5*log(σ2);
+  return logpdf_student_t((x - μ)/sqrt(σ2), ν) - 0.5*log(σ2);
 }
 
 /**
@@ -320,7 +320,7 @@ function observe_student_t(x:Real, ν:Real, μ:Real, σ2:Real) -> Real {
  *
  * Returns: the log probability density.
  */
-function observe_beta(x:Real, α:Real, β:Real) -> Real {
+function logpdf_beta(x:Real, α:Real, β:Real) -> Real {
   assert 0.0 < α;
   assert 0.0 < β;
 
@@ -340,7 +340,7 @@ function observe_beta(x:Real, α:Real, β:Real) -> Real {
  *
  * Returns: the log probability density.
  */
-function observe_gamma(x:Real, k:Real, θ:Real) -> Real {
+function logpdf_gamma(x:Real, k:Real, θ:Real) -> Real {
   assert 0.0 < k;
   assert 0.0 < θ;
   
@@ -360,7 +360,7 @@ function observe_gamma(x:Real, k:Real, θ:Real) -> Real {
  *
  * Returns: the log probability density.
  */
-function observe_inverse_gamma(x:Real, α:Real, β:Real) -> Real {
+function logpdf_inverse_gamma(x:Real, α:Real, β:Real) -> Real {
   assert 0.0 < α;
   assert 0.0 < β;
   
@@ -381,7 +381,7 @@ function observe_inverse_gamma(x:Real, α:Real, β:Real) -> Real {
  *
  * Return: the log probability density.
  */
-function observe_compound_gamma(x:Real, k:Real, α:Real, β:Real) -> Real {
+function logpdf_compound_gamma(x:Real, k:Real, α:Real, β:Real) -> Real {
   assert 0.0 < k;
   assert 0.0 < α;
   assert 0.0 < β;
@@ -404,9 +404,9 @@ function observe_compound_gamma(x:Real, k:Real, α:Real, β:Real) -> Real {
  *
  * Returns: the log probability density.
  */
-function observe_normal_inverse_gamma(x:Real, μ:Real, a2:Real, α:Real,
+function logpdf_normal_inverse_gamma(x:Real, μ:Real, a2:Real, α:Real,
     β:Real) -> Real {
-  return observe_student_t(x, 2.0*α, μ, a2*β/α);
+  return logpdf_student_t(x, 2.0*α, μ, a2*β/α);
 }
 
 /**
@@ -418,7 +418,7 @@ function observe_normal_inverse_gamma(x:Real, μ:Real, a2:Real, α:Real,
  *
  * Returns: the log probability mass.
  */
-function observe_beta_bernoulli(x:Boolean, α:Real, β:Real) -> Real {
+function logpdf_beta_bernoulli(x:Boolean, α:Real, β:Real) -> Real {
   assert 0.0 < α;
   assert 0.0 < β;
 
@@ -439,7 +439,7 @@ function observe_beta_bernoulli(x:Boolean, α:Real, β:Real) -> Real {
  *
  * Returns: the log probability mass.
  */
-function observe_beta_binomial(x:Integer, n:Integer, α:Real, β:Real) -> Real {
+function logpdf_beta_binomial(x:Integer, n:Integer, α:Real, β:Real) -> Real {
   assert 0 <= n;
   assert 0.0 < α;
   assert 0.0 < β;
@@ -461,7 +461,7 @@ function observe_beta_binomial(x:Integer, n:Integer, α:Real, β:Real) -> Real {
  *
  * Returns: the log probability mass.
  */
-function observe_beta_negative_binomial(x:Integer, k:Integer, α:Real, β:Real) -> Real {
+function logpdf_beta_negative_binomial(x:Integer, k:Integer, α:Real, β:Real) -> Real {
   assert 0.0 < α;
   assert 0.0 < β;
 
@@ -481,12 +481,12 @@ function observe_beta_negative_binomial(x:Integer, k:Integer, α:Real, β:Real) 
  *
  * Returns: the log probability mass.
  */
-function observe_gamma_poisson(x:Integer, k:Real, θ:Real) -> Real {
+function logpdf_gamma_poisson(x:Integer, k:Real, θ:Real) -> Real {
   assert 0.0 < k;
   assert 0.0 < θ;
   assert k == floor(k);
 
-  return observe_negative_binomial(x, Integer(k), 1.0/(θ + 1.0));
+  return logpdf_negative_binomial(x, Integer(k), 1.0/(θ + 1.0));
 }
 
 /**
@@ -498,7 +498,7 @@ function observe_gamma_poisson(x:Integer, k:Real, θ:Real) -> Real {
  *
  * Return: the log probability density.
  */
-function observe_lomax(x:Real, λ:Real, α:Real) -> Real {
+function logpdf_lomax(x:Real, λ:Real, α:Real) -> Real {
   assert 0.0 < λ;
   assert 0.0 < α;
   if x >= 0.0 {
@@ -516,7 +516,7 @@ function observe_lomax(x:Real, λ:Real, α:Real) -> Real {
  *
  * Returns: the log probability mass.
  */
-function observe_dirichlet_categorical(x:Integer, α:Real[_]) -> Real {
+function logpdf_dirichlet_categorical(x:Integer, α:Real[_]) -> Real {
   if (1 <= x && x <= length(α)) {
     A:Real <- sum(α);
     return lgamma(1.0 + α[x]) - lgamma(α[x]) + lgamma(A) - lgamma(1.0 + A);
@@ -534,7 +534,7 @@ function observe_dirichlet_categorical(x:Integer, α:Real[_]) -> Real {
  *
  * Returns: the log probability mass.
  */
-function observe_dirichlet_multinomial(x:Integer[_], n:Integer, α:Real[_]) -> Real {
+function logpdf_dirichlet_multinomial(x:Integer[_], n:Integer, α:Real[_]) -> Real {
   assert length(x) == length(α);
 
   A:Real <- sum(α);
@@ -562,7 +562,7 @@ function observe_dirichlet_multinomial(x:Integer[_], n:Integer, α:Real[_]) -> R
  * - n: Enumerated items.
  * - N: Total number of items.
  */
-function observe_crp_categorical(k:Integer, α:Real, θ:Real,
+function logpdf_crp_categorical(k:Integer, α:Real, θ:Real,
     n:Integer[_], N:Integer) -> Real {
   K:Integer <- length(n);
   if (k > K + 1) {
@@ -585,9 +585,9 @@ function observe_crp_categorical(k:Integer, α:Real, θ:Real,
  *
  * Returns: the log probability density.
  */
-function observe_inverse_gamma_gaussian(x:Real, μ:Real, α:Real,
+function logpdf_inverse_gamma_gaussian(x:Real, μ:Real, α:Real,
     β:Real) -> Real {
-  return observe_student_t(x, 2.0*α, μ, β/α);
+  return logpdf_student_t(x, 2.0*α, μ, β/α);
 }
 
 /**
@@ -601,9 +601,9 @@ function observe_inverse_gamma_gaussian(x:Real, μ:Real, α:Real,
  *
  * Returns: the log probability density.
  */
-function observe_normal_inverse_gamma_gaussian(x:Real, μ:Real, a2:Real,
+function logpdf_normal_inverse_gamma_gaussian(x:Real, μ:Real, a2:Real,
     α:Real, β:Real) -> Real {
-  return observe_student_t(x, 2.0*α, μ, (β/α)*(1.0 + a2));
+  return logpdf_student_t(x, 2.0*α, μ, (β/α)*(1.0 + a2));
 }
 
 /**
@@ -620,9 +620,9 @@ function observe_normal_inverse_gamma_gaussian(x:Real, μ:Real, a2:Real,
  *
  * Returns: the log probability density.
  */
-function observe_linear_normal_inverse_gamma_gaussian(x:Real, a:Real,
+function logpdf_linear_normal_inverse_gamma_gaussian(x:Real, a:Real,
     μ:Real, c:Real, a2:Real, α:Real, β:Real) -> Real {
-  return observe_student_t(x, 2.0*α, a*μ + c, (β/α)*(1.0 + a*a*a2));
+  return logpdf_student_t(x, 2.0*α, a*μ + c, (β/α)*(1.0 + a*a*a2));
 }
 
 /**
@@ -634,7 +634,7 @@ function observe_linear_normal_inverse_gamma_gaussian(x:Real, a:Real,
  *
  * Returns: the log probability density.
  */
-function observe_multivariate_gaussian(x:Real[_], μ:Real[_], Σ:Real[_,_]) ->
+function logpdf_multivariate_gaussian(x:Real[_], μ:Real[_], Σ:Real[_,_]) ->
     Real {
   D:Integer <- length(μ);
   return -0.5*(dot(x - μ, cholsolve(Σ, x - μ)) + D*log(2.0*π) + lcholdet(Σ));
@@ -649,7 +649,7 @@ function observe_multivariate_gaussian(x:Real[_], μ:Real[_], Σ:Real[_,_]) ->
  *
  * Returns: the log probability density.
  */
-function observe_multivariate_gaussian(x:Real[_], μ:Real[_], σ2:Real) -> Real {
+function logpdf_multivariate_gaussian(x:Real[_], μ:Real[_], σ2:Real) -> Real {
   D:Integer <- length(μ);
   return -0.5*(dot(x - μ)/σ2 + D*log(2.0*π*σ2));
 }
@@ -665,7 +665,7 @@ function observe_multivariate_gaussian(x:Real[_], μ:Real[_], σ2:Real) -> Real 
  *
  * Returns: the log probability density.
  */
-function observe_multivariate_student_t(x:Real[_], ν:Real, μ:Real[_],
+function logpdf_multivariate_student_t(x:Real[_], ν:Real, μ:Real[_],
     Λ:Real[_,_]) -> Real {
   D:Integer <- length(μ);
   z:Real <- 0.5*(ν + D);
@@ -683,7 +683,7 @@ function observe_multivariate_student_t(x:Real[_], ν:Real, μ:Real[_],
  *
  * Returns: the log probability density.
  */
-function observe_multivariate_student_t(x:Real[_], ν:Real, μ:Real[_],
+function logpdf_multivariate_student_t(x:Real[_], ν:Real, μ:Real[_],
     λ:Real) -> Real {
   D:Integer <- length(μ);
   z:Real <- 0.5*(ν + D);
@@ -701,9 +701,9 @@ function observe_multivariate_student_t(x:Real[_], ν:Real, μ:Real[_],
  *
  * Returns: the log probability density.
  */
-function observe_multivariate_normal_inverse_gamma(x:Real[_], μ:Real[_],
+function logpdf_multivariate_normal_inverse_gamma(x:Real[_], μ:Real[_],
     Λ:LLT, α:Real, β:Real) -> Real {
-  return observe_multivariate_student_t(x, 2.0*α, μ, Λ*(α/β));
+  return logpdf_multivariate_student_t(x, 2.0*α, μ, Λ*(α/β));
 }
 
 /**
@@ -717,9 +717,9 @@ function observe_multivariate_normal_inverse_gamma(x:Real[_], μ:Real[_],
  *
  * Returns: the log probability density.
  */
-function observe_multivariate_inverse_gamma_gaussian(x:Real[_], μ:Real[_],
+function logpdf_multivariate_inverse_gamma_gaussian(x:Real[_], μ:Real[_],
     α:Real, β:Real) -> Real {
-  return observe_multivariate_student_t(x, 2.0*α, μ, β/α);
+  return logpdf_multivariate_student_t(x, 2.0*α, μ, β/α);
 }
 
 /**
@@ -734,10 +734,10 @@ function observe_multivariate_inverse_gamma_gaussian(x:Real[_], μ:Real[_],
  *
  * Returns: the log probability density.
  */
-function observe_multivariate_normal_inverse_gamma_gaussian(x:Real[_],
+function logpdf_multivariate_normal_inverse_gamma_gaussian(x:Real[_],
     μ:Real[_], Λ:LLT, α:Real, β:Real) -> Real {
   D:Integer <- length(μ);
-  return observe_multivariate_student_t(x, 2.0*α, μ, (α/β)*inv(identity(D) + inv(Λ)));
+  return logpdf_multivariate_student_t(x, 2.0*α, μ, (α/β)*inv(identity(D) + inv(Λ)));
 }
 
 /**
@@ -754,9 +754,9 @@ function observe_multivariate_normal_inverse_gamma_gaussian(x:Real[_],
  *
  * Returns: the log probability density.
  */
-function observe_multivariate_linear_normal_inverse_gamma_gaussian(x:Real[_],
+function logpdf_multivariate_linear_normal_inverse_gamma_gaussian(x:Real[_],
     A:Real[_,_], μ:Real[_], c:Real[_], Λ:LLT, α:Real, β:Real) -> Real {
-  return observe_multivariate_student_t(x, 2.0*α, A*μ + c,
+  return logpdf_multivariate_student_t(x, 2.0*α, A*μ + c,
       (α/β)*inv(identity(rows(A)) + A*solve(Λ, transpose(A))));
 }
 
@@ -774,9 +774,9 @@ function observe_multivariate_linear_normal_inverse_gamma_gaussian(x:Real[_],
  *
  * Returns: the log probability density.
  */
-function observe_multivariate_dot_normal_inverse_gamma_gaussian(x:Real,
+function logpdf_multivariate_dot_normal_inverse_gamma_gaussian(x:Real,
     a:Real[_], μ:Real[_], c:Real, Λ:LLT, α:Real, β:Real) -> Real {
-  return observe_student_t(x, 2.0*α, dot(a, μ) + c,
+  return logpdf_student_t(x, 2.0*α, dot(a, μ) + c,
       (β/α)*(1.0 + dot(a, solve(Λ, a))));
 }
 
@@ -789,7 +789,7 @@ function observe_multivariate_dot_normal_inverse_gamma_gaussian(x:Real,
  *
  * Returns: the log probability density.
  */
-function observe_multivariate_uniform(x:Real[_], l:Real[_], u:Real[_]) -> Real {
+function logpdf_multivariate_uniform(x:Real[_], l:Real[_], u:Real[_]) -> Real {
   assert length(x) > 0;
   assert length(l) == length(x);
   assert length(u) == length(x);
@@ -797,7 +797,7 @@ function observe_multivariate_uniform(x:Real[_], l:Real[_], u:Real[_]) -> Real {
   D:Integer <- length(l);
   w:Real <- 0.0;
   for (d:Integer in 1..D) {
-    w <- w + observe_uniform(x[d], l[d], u[d]);
+    w <- w + logpdf_uniform(x[d], l[d], u[d]);
   }
   return w;
 }
@@ -811,7 +811,7 @@ function observe_multivariate_uniform(x:Real[_], l:Real[_], u:Real[_]) -> Real {
  *
  * Returns: the log probability mass.
  */
-function observe_multivariate_uniform_int(x:Integer[_], l:Integer[_], u:Integer[_]) -> Real {
+function logpdf_multivariate_uniform_int(x:Integer[_], l:Integer[_], u:Integer[_]) -> Real {
   assert length(x) > 0;
   assert length(l) == length(x);
   assert length(u) == length(x);
@@ -819,7 +819,7 @@ function observe_multivariate_uniform_int(x:Integer[_], l:Integer[_], u:Integer[
   D:Integer <- length(x);
   w:Real <- 0.0;
   for (d:Integer in 1..D) {
-    w <- w + observe_uniform_int(x[d], l[d], u[d]);
+    w <- w + logpdf_uniform_int(x[d], l[d], u[d]);
   }
   return w;
 }
@@ -839,7 +839,7 @@ function observe_multivariate_uniform_int(x:Integer[_], l:Integer[_], u:Integer[
  * the matrix and element in the vector corresponds to a different output
  * in the regression.
  */
-function observe_ridge(W:Real[_,_], σ2:Real[_], N:Real[_,_], Λ:LLT, α:Real,
+function logpdf_ridge(W:Real[_,_], σ2:Real[_], N:Real[_,_], Λ:LLT, α:Real,
     γ:Real[_]) -> Real {
   auto R <- rows(N);
   auto C <- columns(N);
@@ -849,8 +849,8 @@ function observe_ridge(W:Real[_,_], σ2:Real[_], N:Real[_,_], Λ:LLT, α:Real,
   
   w:Real <- 0.0;
   for auto j in 1..C {
-    w <- w + observe_inverse_gamma(σ2[j], α, β[j]);
-    w <- w + observe_multivariate_gaussian(W[1..R,j], M[1..R,j], Σ*σ2[j]);
+    w <- w + logpdf_inverse_gamma(σ2[j], α, β[j]);
+    w <- w + logpdf_multivariate_gaussian(W[1..R,j], M[1..R,j], Σ*σ2[j]);
   }    
   return w;
 }
@@ -867,13 +867,13 @@ function observe_ridge(W:Real[_,_], σ2:Real[_], N:Real[_,_], Λ:LLT, α:Real,
  *
  * Returns: the log probability density.
  */
-function observe_regression(x:Real[_], W:Real[_,_], σ2:Real[_], u:Real[_]) ->
+function logpdf_regression(x:Real[_], W:Real[_,_], σ2:Real[_], u:Real[_]) ->
     Real {
   auto μ <- transpose(W)*u;
   auto D <- length(μ);
   auto w <- 0.0;
   for auto d in 1..D {
-    w <- w + observe_gaussian(x[d], μ[d], σ2[d]);
+    w <- w + logpdf_gaussian(x[d], μ[d], σ2[d]);
   }
   return w;
 }
@@ -891,7 +891,7 @@ function observe_regression(x:Real[_], W:Real[_,_], σ2:Real[_], u:Real[_]) ->
  *
  * Returns: the log probability density.
  */
-function observe_ridge_regression(x:Real[_], N:Real[_,_], Λ:LLT, α:Real,
+function logpdf_ridge_regression(x:Real[_], N:Real[_,_], Λ:LLT, α:Real,
     γ:Real[_], u:Real[_]) -> Real {
   D:Integer <- columns(N);
   M:Real[_,_] <- solve(Λ, N);
@@ -899,7 +899,7 @@ function observe_ridge_regression(x:Real[_], N:Real[_,_], Λ:LLT, α:Real,
   σ2:Real[_] <- (γ - 0.5*diagonal(transpose(N)*M))*(1.0 + dot(u, solve(Λ, u)))/α;  
   w:Real <- 0.0;
   for d:Integer in 1..D {
-    w <- w + observe_student_t(x[d], 2.0*α, μ[d], σ2[d]);
+    w <- w + logpdf_student_t(x[d], 2.0*α, μ[d], σ2[d]);
   }
   return w;
 }

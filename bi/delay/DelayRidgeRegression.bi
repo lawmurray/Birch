@@ -17,8 +17,8 @@ final class DelayRidgeRegression(future:Real[_]?, futureUpdate:Boolean,
     return simulate_ridge_regression(θ!.N, θ!.Λ, θ!.α, θ!.γ, u);
   }
   
-  function observe(x:Real[_]) -> Real {
-    return observe_ridge_regression(x, θ!.N, θ!.Λ, θ!.α, θ!.γ, u);
+  function logpdf(x:Real[_]) -> Real {
+    return logpdf_ridge_regression(x, θ!.N, θ!.Λ, θ!.α, θ!.γ, u);
   }
 
   function update(x:Real[_]) {
@@ -30,7 +30,7 @@ final class DelayRidgeRegression(future:Real[_]?, futureUpdate:Boolean,
   }
 
   function pdf(x:Real[_]) -> Real {
-    return exp(observe(x));
+    return exp(logpdf(x));
   }
 
   function write(buffer:Buffer) {

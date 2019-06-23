@@ -17,8 +17,8 @@ final class DelayUniform(future:Real?, futureUpdate:Boolean, l:Real, u:Real)
     return simulate_uniform(l, u);
   }
   
-  function observe(x:Real) -> Real {
-    return observe_uniform(x, l, u);
+  function logpdf(x:Real) -> Real {
+    return logpdf_uniform(x, l, u);
   }
 
   function update(x:Real) {

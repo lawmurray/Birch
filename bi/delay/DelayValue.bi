@@ -38,7 +38,7 @@ class DelayValue<Value>(future:Value?, futureUpdate:Boolean) < Delay {
    * Get the value of the node, realizing it if necessary.
    */
   function value() -> Value {
-    realize();
+    assert x?;
     return x!;
   }
 
@@ -49,21 +49,6 @@ class DelayValue<Value>(future:Value?, futureUpdate:Boolean) < Delay {
     } else {
       x <- simulate();
     }
-    if futureUpdate {
-      update(x!);
-    } else {
-      downdate(x!);
-    }
-    detach();
-  }
-
-  /**
-   * Realize by assignment.
-   */
-  function realize(value:Value) {
-    assert !future?;
-    prune();
-    x <- value;
     if futureUpdate {
       update(x!);
     } else {
@@ -86,7 +71,7 @@ class DelayValue<Value>(future:Value?, futureUpdate:Boolean) < Delay {
    *
    * Return: The log likelihood.
    */
-  function observe(x:Value) -> Real;
+  function logpdf(x:Value) -> Real;
 
   /**
    * Update the parent node on the $M$-path given the value of this node.
@@ -107,22 +92,11 @@ class DelayValue<Value>(future:Value?, futureUpdate:Boolean) < Delay {
   }
   
   /**
-   * Evaluate the probability mass function (if it exists) at a value.
+   * Evaluate the probability density (or mass) function, if it exists.
    *
    * - x: The value.
    *
-   * Return: the probability mass.
-   */
-  function pmf(x:Value) -> Real {
-    assert false;
-  }
-
-  /**
-   * Evaluate the probability density function (if it exists) at a value.
-   *
-   * - x: The value.
-   *
-   * Return: the probability density.
+   * Return: the probability density (or mass).
    */
   function pdf(x:Value) -> Real {
     assert false;

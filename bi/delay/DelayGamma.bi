@@ -17,8 +17,8 @@ final class DelayGamma(future:Real?, futureUpdate:Boolean, k:Real, θ:Real) <
     return simulate_gamma(k, θ);
   }
   
-  function observe(x:Real) -> Real {
-    return observe_gamma(x, k, θ);
+  function logpdf(x:Real) -> Real {
+    return logpdf_gamma(x, k, θ);
   }
 
   function update(x:Real) {

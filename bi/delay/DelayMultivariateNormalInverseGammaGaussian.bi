@@ -14,8 +14,8 @@ final class DelayMultivariateNormalInverseGammaGaussian(future:Real[_]?,
         solve(μ!.Λ, μ!.ν), μ!.Λ, μ!.σ2!.α, μ!.σ2!.β);
   }
   
-  function observe(x:Real[_]) -> Real {
-    return observe_multivariate_normal_inverse_gamma_gaussian(x,
+  function logpdf(x:Real[_]) -> Real {
+    return logpdf_multivariate_normal_inverse_gamma_gaussian(x,
         solve(μ!.Λ, μ!.ν), μ!.Λ, μ!.σ2!.α, μ!.σ2!.β);
   }
 

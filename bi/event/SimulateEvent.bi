@@ -44,7 +44,7 @@ final class SimulateEvent<Value>(p:Distribution<Value>) <
   function proposeImmediate(trace:Queue<Event>) -> Real {
     auto evt <- coerce<Value>(trace);
     v <- evt.value();
-    auto w <- p.observe(v!);
+    auto w <- p.logpdf(v!);
     if w > -inf {
       p.update(v!);
     } else {

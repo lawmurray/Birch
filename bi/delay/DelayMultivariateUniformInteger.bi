@@ -18,8 +18,8 @@ final class DelayMultivariateUniformInteger(future:Integer[_]?,
     return simulate_multivariate_uniform_int(l, u);
   }
   
-  function observe(x:Integer[_]) -> Real {
-    return observe_multivariate_uniform_int(x, l, u);
+  function logpdf(x:Integer[_]) -> Real {
+    return logpdf_multivariate_uniform_int(x, l, u);
   }
 
   function update(x:Integer[_]) {
@@ -30,8 +30,8 @@ final class DelayMultivariateUniformInteger(future:Integer[_]?,
     //
   }
 
-  function pmf(x:Integer[_]) -> Real {
-    return pmf_multivariate_uniform_int(x, l, u);
+  function pdf(x:Integer[_]) -> Real {
+    return pdf_multivariate_uniform_int(x, l, u);
   }
 
   function write(buffer:Buffer) {

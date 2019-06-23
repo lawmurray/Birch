@@ -13,13 +13,6 @@ class Delay {
   child:Delay?;
   
   /**
-   * Has the node realized a value?
-   */
-  function hasValue() -> Boolean {
-    return false;
-  }
-  
-  /**
    * Realize. If a future value has been given, it is used, otherwise a value
    * is simulated.
    */

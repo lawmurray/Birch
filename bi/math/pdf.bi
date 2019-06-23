@@ -6,7 +6,7 @@
  *
  * Return: the probability mass.
  */
-function pmf_bernoulli(x:Boolean, ρ:Real) -> Real {
+function pdf_bernoulli(x:Boolean, ρ:Real) -> Real {
   assert 0.0 <= ρ && ρ <= 1.0;
   if (x) {
     return ρ;
@@ -23,7 +23,7 @@ function pmf_bernoulli(x:Boolean, ρ:Real) -> Real {
  *
  * Return: the probability mass.
  */
-function pmf_delta(x:Integer, μ:Integer) -> Real {
+function pdf_delta(x:Integer, μ:Integer) -> Real {
   if (x == μ) {
     return 1.0;
   } else {
@@ -40,7 +40,7 @@ function pmf_delta(x:Integer, μ:Integer) -> Real {
  *
  * Return: the probability mass.
  */
-function pmf_binomial(x:Integer, n:Integer, ρ:Real) -> Real {
+function pdf_binomial(x:Integer, n:Integer, ρ:Real) -> Real {
   assert 0 <= n;
   assert 0.0 <= ρ && ρ <= 1.0;
   cpp{{
@@ -57,7 +57,7 @@ function pmf_binomial(x:Integer, n:Integer, ρ:Real) -> Real {
  *
  * Return: the probability mass.
  */
-function pmf_negative_binomial(x:Integer, k:Integer, ρ:Real) -> Real {
+function pdf_negative_binomial(x:Integer, k:Integer, ρ:Real) -> Real {
   assert 0 < k;
   assert 0.0 <= ρ && ρ <= 1.0;
   cpp{{
@@ -73,7 +73,7 @@ function pmf_negative_binomial(x:Integer, k:Integer, ρ:Real) -> Real {
  *
  * Return: the probability mass.
  */
-function pmf_poisson(x:Integer, λ:Real) -> Real {
+function pdf_poisson(x:Integer, λ:Real) -> Real {
   assert 0.0 <= λ;
   cpp{{
   return boost::math::pdf(boost::math::poisson_distribution<>(λ), x);
@@ -89,7 +89,7 @@ function pmf_poisson(x:Integer, λ:Real) -> Real {
  *
  * Return: the probability mass.
  */
-function pmf_uniform_int(x:Integer, l:Integer, u:Integer) -> Real {
+function pdf_uniform_int(x:Integer, l:Integer, u:Integer) -> Real {
   if (x >= l && x <= u) {
     return 1.0/(u - l + 1);
   } else {
@@ -105,7 +105,7 @@ function pmf_uniform_int(x:Integer, l:Integer, u:Integer) -> Real {
  *
  * Return: the probability mass.
  */
-function pmf_categorical(x:Integer, ρ:Real[_]) -> Real {
+function pdf_categorical(x:Integer, ρ:Real[_]) -> Real {
   if (1 <= x && x <= length(ρ)) {
     assert ρ[x] >= 0.0;
     return ρ[x];
@@ -125,7 +125,7 @@ function pmf_categorical(x:Integer, ρ:Real[_]) -> Real {
  * Return: the probability density.
  */
 function pdf_compound_gamma(x:Real, k:Real, α:Real, β:Real) -> Real {
-  return exp(observe_compound_gamma(x, k, α, β));
+  return exp(logpdf_compound_gamma(x, k, α, β));
 }
 
 /**
@@ -137,8 +137,8 @@ function pdf_compound_gamma(x:Real, k:Real, α:Real, β:Real) -> Real {
  *
  * Return: the probability mass.
  */
-function pmf_multinomial(x:Integer[_], n:Integer, ρ:Real[_]) -> Real {
-  return exp(observe_multinomial(x, n, ρ));
+function pdf_multinomial(x:Integer[_], n:Integer, ρ:Real[_]) -> Real {
+  return exp(logpdf_multinomial(x, n, ρ));
 }
 
 /**
@@ -150,7 +150,7 @@ function pmf_multinomial(x:Integer[_], n:Integer, ρ:Real[_]) -> Real {
  * Return: the probability density.
  */
 function pdf_dirichlet(x:Real[_], α:Real[_]) -> Real {
-  return exp(observe_dirichlet(x, α));
+  return exp(logpdf_dirichlet(x, α));
 }
 
 /**
@@ -344,8 +344,8 @@ function pdf_normal_inverse_gamma(x:Real, μ:Real, a2:Real, α:Real,
  *
  * Return: the probability mass.
  */
-function pmf_beta_bernoulli(x:Boolean, α:Real, β:Real) -> Real {
-  return exp(observe_beta_bernoulli(x, α, β));
+function pdf_beta_bernoulli(x:Boolean, α:Real, β:Real) -> Real {
+  return exp(logpdf_beta_bernoulli(x, α, β));
 }
 
 /**
@@ -358,8 +358,8 @@ function pmf_beta_bernoulli(x:Boolean, α:Real, β:Real) -> Real {
  *
  * Return: the probability mass.
  */
-function pmf_beta_binomial(x:Integer, n:Integer, α:Real, β:Real) -> Real {
-  return exp(observe_beta_binomial(x, n, α, β));
+function pdf_beta_binomial(x:Integer, n:Integer, α:Real, β:Real) -> Real {
+  return exp(logpdf_beta_binomial(x, n, α, β));
 }
 
 /**
@@ -372,12 +372,12 @@ function pmf_beta_binomial(x:Integer, n:Integer, α:Real, β:Real) -> Real {
  *
  * Return: the probability mass.
  */
-function pmf_beta_negative_binomial(x:Integer, k:Integer, α:Real, β:Real) -> Real {
+function pdf_beta_negative_binomial(x:Integer, k:Integer, α:Real, β:Real) -> Real {
   assert 0.0 < α;
   assert 0.0 < β;
   assert 0 < x;
 
-  return exp(observe_beta_negative_binomial(x, k, α, β));
+  return exp(logpdf_beta_negative_binomial(x, k, α, β));
 }
 
 /**
@@ -389,12 +389,12 @@ function pmf_beta_negative_binomial(x:Integer, k:Integer, α:Real, β:Real) -> R
  *
  * Return: the probability mass.
  */
-function pmf_gamma_poisson(x:Integer, k:Real, θ:Real) -> Real {
+function pdf_gamma_poisson(x:Integer, k:Real, θ:Real) -> Real {
   assert 0.0 < k;
   assert 0.0 < θ;
   assert k == floor(k);
 
-  return pmf_negative_binomial(x, Integer(k), 1.0/(θ + 1.0));
+  return pdf_negative_binomial(x, Integer(k), 1.0/(θ + 1.0));
 }
 
 /**
@@ -423,8 +423,8 @@ function pdf_lomax(x:Real, λ:Real, α:Real) -> Real {
  *
  * Return: the probability mass.
  */
-function pmf_dirichlet_categorical(x:Integer, α:Real[_]) -> Real {
-  return exp(observe_dirichlet_categorical(x, α));
+function pdf_dirichlet_categorical(x:Integer, α:Real[_]) -> Real {
+  return exp(logpdf_dirichlet_categorical(x, α));
 }
 
 /**
@@ -436,8 +436,8 @@ function pmf_dirichlet_categorical(x:Integer, α:Real[_]) -> Real {
  *
  * Return: the probability mass.
  */
-function pmf_dirichlet_multinomial(x:Integer[_], n:Integer, α:Real[_]) -> Real {
-  return exp(observe_dirichlet_multinomial(x, n, α));
+function pdf_dirichlet_multinomial(x:Integer[_], n:Integer, α:Real[_]) -> Real {
+  return exp(logpdf_dirichlet_multinomial(x, n, α));
 }
 
 /**
@@ -451,7 +451,7 @@ function pmf_dirichlet_multinomial(x:Integer[_], n:Integer, α:Real[_]) -> Real 
  *
  * Return: the probability mass.
  */
-function pmf_restaurant_categorical(k:Integer, α:Real, θ:Real,
+function pdf_restaurant_categorical(k:Integer, α:Real, θ:Real,
     n:Integer[_], N:Integer) -> Real {
   K:Integer <- length(n);
   if (k > K + 1) {
@@ -525,7 +525,7 @@ function pdf_linear_normal_inverse_gamma_gaussian(x:Real, a:Real,
  */
 function pdf_multivariate_gaussian(x:Real[_], μ:Real[_], Σ:Real[_,_]) ->
     Real {
-  return exp(observe_multivariate_gaussian(x, μ, Σ));
+  return exp(logpdf_multivariate_gaussian(x, μ, Σ));
 }
 
 /**
@@ -538,7 +538,7 @@ function pdf_multivariate_gaussian(x:Real[_], μ:Real[_], Σ:Real[_,_]) ->
  * Return: the probability density.
  */
 function pdf_multivariate_gaussian(x:Real[_], μ:Real[_], σ2:Real) -> Real {
-  return exp(observe_multivariate_gaussian(x, μ, σ2));
+  return exp(logpdf_multivariate_gaussian(x, μ, σ2));
 }
 
 /**
@@ -554,7 +554,7 @@ function pdf_multivariate_gaussian(x:Real[_], μ:Real[_], σ2:Real) -> Real {
  */
 function pdf_multivariate_student_t(x:Real[_], ν:Real, μ:Real[_],
     Λ:Real[_,_]) -> Real {
-  return exp(observe_multivariate_student_t(x, ν, μ, Λ));
+  return exp(logpdf_multivariate_student_t(x, ν, μ, Λ));
 }
 
 /**
@@ -570,7 +570,7 @@ function pdf_multivariate_student_t(x:Real[_], ν:Real, μ:Real[_],
  */
 function pdf_multivariate_student_t(x:Real[_], ν:Real, μ:Real[_],
     λ:Real) -> Real {
-  return exp(observe_multivariate_student_t(x, ν, μ, λ));
+  return exp(logpdf_multivariate_student_t(x, ν, μ, λ));
 }
 
 /**
@@ -619,7 +619,7 @@ function pdf_multivariate_inverse_gamma_gaussian(x:Real[_], μ:Real[_],
  */
 function pdf_multivariate_normal_inverse_gamma_gaussian(x:Real[_], μ:Real[_],
     Λ:LLT, α:Real, β:Real) -> Real {
-  return exp(observe_multivariate_normal_inverse_gamma_gaussian(x, μ, Λ, α, β));
+  return exp(logpdf_multivariate_normal_inverse_gamma_gaussian(x, μ, Λ, α, β));
 }
 
 /**
@@ -638,7 +638,7 @@ function pdf_multivariate_normal_inverse_gamma_gaussian(x:Real[_], μ:Real[_],
  */
 function pdf_multivariate_linear_normal_inverse_gamma_gaussian(x:Real[_],
     A:Real[_,_], μ:Real[_], c:Real[_], Λ:LLT, α:Real, β:Real) -> Real {
-  return exp(observe_multivariate_linear_normal_inverse_gamma_gaussian(x, A,
+  return exp(logpdf_multivariate_linear_normal_inverse_gamma_gaussian(x, A,
       μ, c, Λ, α, β));
 }
 
@@ -658,7 +658,7 @@ function pdf_multivariate_linear_normal_inverse_gamma_gaussian(x:Real[_],
  */
 function pdf_multivariate_dot_normal_inverse_gamma_gaussian(x:Real,
     a:Real[_], μ:Real[_], c:Real, Λ:LLT, α:Real, β:Real) -> Real {
-  return exp(observe_multivariate_dot_normal_inverse_gamma_gaussian(x, a, μ,
+  return exp(logpdf_multivariate_dot_normal_inverse_gamma_gaussian(x, a, μ,
       c, Λ, α, β));
 }
 
@@ -693,7 +693,7 @@ function pdf_multivariate_uniform(x:Real[_], l:Real[_], u:Real[_]) -> Real {
  *
  * Return: the probability density.
  */
-function pmf_multivariate_uniform_int(x:Integer[_], l:Integer[_],
+function pdf_multivariate_uniform_int(x:Integer[_], l:Integer[_],
     u:Integer[_]) -> Real {
   assert length(x) > 0;
   assert length(l) == length(x);
@@ -702,7 +702,7 @@ function pmf_multivariate_uniform_int(x:Integer[_], l:Integer[_],
   D:Integer <- length(x);
   w:Real <- 1.0;
   for (d:Integer in 1..D) {
-    w <- w*pmf_uniform_int(x[d], l[d], u[d]);
+    w <- w*pdf_uniform_int(x[d], l[d], u[d]);
   }
   return w;
 }

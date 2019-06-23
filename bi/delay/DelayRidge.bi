@@ -29,11 +29,11 @@ final class DelayRidge(future:(Real[_,_],Real[_])?, futureUpdate:Boolean,
     return simulate_ridge(N, Λ, α, γ);
   }
   
-  function observe(x:(Real[_,_],Real[_])) -> Real {   
+  function logpdf(x:(Real[_,_],Real[_])) -> Real {   
     W:Real[_,_];
     σ2:Real[_];
     (W, σ2) <- x;
-    return observe_ridge(W, σ2, N, Λ, α, γ);
+    return logpdf_ridge(W, σ2, N, Λ, α, γ);
   }
 
   function update(x:(Real[_,_],Real[_])) {
@@ -45,7 +45,7 @@ final class DelayRidge(future:(Real[_,_],Real[_])?, futureUpdate:Boolean,
   }
 
   function pdf(x:(Real[_,_],Real[_])) -> Real {
-    return exp(observe(x));
+    return exp(logpdf(x));
   }
 
   function write(buffer:Buffer) {

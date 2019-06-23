@@ -21,8 +21,8 @@ final class DelayScaledGammaPoisson(future:Integer?, futureUpdate:Boolean,
     }
   }
   
-  function observe(x:Integer) -> Real {
-    return observe_gamma_poisson(x, λ!.k, a*λ!.θ);
+  function logpdf(x:Integer) -> Real {
+    return logpdf_gamma_poisson(x, λ!.k, a*λ!.θ);
   }
 
   function update(x:Integer) {
@@ -33,8 +33,8 @@ final class DelayScaledGammaPoisson(future:Integer?, futureUpdate:Boolean,
     (λ!.k, λ!.θ) <- downdate_scaled_gamma_poisson(x, a, λ!.k, λ!.θ);
   }
 
-  function pmf(x:Integer) -> Real {
-    return pmf_gamma_poisson(x, λ!.k, a*λ!.θ);
+  function pdf(x:Integer) -> Real {
+    return pdf_gamma_poisson(x, λ!.k, a*λ!.θ);
   }
 
   function cdf(x:Integer) -> Real {

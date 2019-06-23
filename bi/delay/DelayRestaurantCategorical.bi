@@ -12,8 +12,8 @@ final class DelayRestaurantCategorical(future:Integer?, futureUpdate:Boolean,
     return simulate_crp_categorical(ρ!.α, ρ!.θ, ρ!.n, ρ!.N);
   }
   
-  function observe(x:Integer) -> Real {
-    return observe_crp_categorical(x, ρ!.α, ρ!.θ, ρ!.n, ρ!.N);
+  function logpdf(x:Integer) -> Real {
+    return logpdf_crp_categorical(x, ρ!.α, ρ!.θ, ρ!.n, ρ!.N);
   }
 
   function update(x:Integer) {
@@ -31,8 +31,8 @@ final class DelayRestaurantCategorical(future:Integer?, futureUpdate:Boolean,
     ρ!.N <- ρ!.N + 1;
   }
 
-  function pmf(x:Integer) -> Real {
-    return pmf_restaurant_categorical(x, ρ!.α, ρ!.θ, ρ!.n, ρ!.N);
+  function pdf(x:Integer) -> Real {
+    return pdf_restaurant_categorical(x, ρ!.α, ρ!.θ, ρ!.n, ρ!.N);
   }
   
   function write(buffer:Buffer) {

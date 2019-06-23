@@ -12,8 +12,8 @@ final class DelayBetaBernoulli(future:Boolean?, futureUpdate:Boolean, ρ:DelayBe
     return simulate_beta_bernoulli(ρ!.α, ρ!.β);
   }
   
-  function observe(x:Boolean) -> Real {
-    return observe_beta_bernoulli(x, ρ!.α, ρ!.β);
+  function logpdf(x:Boolean) -> Real {
+    return logpdf_beta_bernoulli(x, ρ!.α, ρ!.β);
   }
 
   function update(x:Boolean) {
@@ -24,8 +24,8 @@ final class DelayBetaBernoulli(future:Boolean?, futureUpdate:Boolean, ρ:DelayBe
     (ρ!.α, ρ!.β) <- downdate_beta_bernoulli(x, ρ!.α, ρ!.β);
   }
 
-  function pmf(x:Boolean) -> Real {
-    return pmf_beta_bernoulli(x, ρ!.α, ρ!.β);
+  function pdf(x:Boolean) -> Real {
+    return pdf_beta_bernoulli(x, ρ!.α, ρ!.β);
   }
 
   function write(buffer:Buffer) {

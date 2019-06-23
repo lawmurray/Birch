@@ -23,8 +23,8 @@ final class DelayNormalInverseGamma(future:Real?, futureUpdate:Boolean,
     return simulate_normal_inverse_gamma(μ, 1.0/λ, σ2!.α, σ2!.β);
   }
   
-  function observe(x:Real) -> Real {
-    return observe_normal_inverse_gamma(x, μ, 1.0/λ, σ2!.α, σ2!.β);
+  function logpdf(x:Real) -> Real {
+    return logpdf_normal_inverse_gamma(x, μ, 1.0/λ, σ2!.α, σ2!.β);
   }
 
   function update(x:Real) {

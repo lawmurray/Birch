@@ -21,8 +21,8 @@ class DelayMultivariateGaussian(future:Real[_]?, futureUpdate:Boolean,
     return simulate_multivariate_gaussian(μ, Σ);
   }
   
-  function observe(x:Real[_]) -> Real {
-    return observe_multivariate_gaussian(x, μ, Σ);
+  function logpdf(x:Real[_]) -> Real {
+    return logpdf_multivariate_gaussian(x, μ, Σ);
   }
 
   function update(x:Real[_]) {

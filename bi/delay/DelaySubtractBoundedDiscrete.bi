@@ -46,7 +46,7 @@ final class DelaySubtractBoundedDiscrete(future:Integer?, futureUpdate:Boolean,
         /* distribution over possible pairs that produce the given diff */
         z <- vector(0.0, u - l + 1);
         for (n:Integer in l..u) {
-          z[n - l + 1] <- x1!.pmf(n)*x2!.pmf(n - x);
+          z[n - l + 1] <- x1!.pdf(n)*x2!.pdf(n - x);
           Z <- Z + z[n - l + 1];
         }
       }
@@ -62,7 +62,7 @@ final class DelaySubtractBoundedDiscrete(future:Integer?, futureUpdate:Boolean,
     }
   }
   
-  function observe(x:Integer) -> Real {
+  function logpdf(x:Integer) -> Real {
     assert !value?;
     enumerate(x);
     return log(Z);
@@ -76,12 +76,12 @@ final class DelaySubtractBoundedDiscrete(future:Integer?, futureUpdate:Boolean,
     x2!.clamp(n - x);
   }
 
-  function pmf(x:Integer) -> Real {
+  function pdf(x:Integer) -> Real {
     l:Integer <- max(x1!.l, x2!.l + x);
     u:Integer <- min(x1!.u, x2!.u + x);
     P:Real <- 0.0;
     for (n:Integer in l..u) {
-      P <- P + x1!.pmf(n)*x2!.pmf(n - x);
+      P <- P + x1!.pdf(n)*x2!.pdf(n - x);
     }
     return P;
   }
@@ -89,7 +89,7 @@ final class DelaySubtractBoundedDiscrete(future:Integer?, futureUpdate:Boolean,
   function cdf(x:Integer) -> Real {
     P:Real <- 0.0;
     for (n:Integer in l..x) {
-      P <- P + pmf(n);
+      P <- P + pdf(n);
     }
     return P;
   }

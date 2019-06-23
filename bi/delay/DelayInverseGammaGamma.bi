@@ -17,8 +17,8 @@ final class DelayInverseGammaGamma(future:Real?, futureUpdate:Boolean,
     return simulate_compound_gamma(k, θ!.α, θ!.β);
   }
 
-  function observe(x:Real) -> Real {
-    return observe_compound_gamma(x, k, θ!.α, θ!.β);
+  function logpdf(x:Real) -> Real {
+    return logpdf_compound_gamma(x, k, θ!.α, θ!.β);
   }
 
   function update(x:Real) {

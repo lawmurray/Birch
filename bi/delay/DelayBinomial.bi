@@ -21,8 +21,8 @@ final class DelayBinomial(future:Integer?, futureUpdate:Boolean, n:Integer,
     }
   }
   
-  function observe(x:Integer) -> Real {
-    return observe_binomial(x, n, ρ);
+  function logpdf(x:Integer) -> Real {
+    return logpdf_binomial(x, n, ρ);
   }
 
   function update(x:Integer) {
@@ -33,8 +33,8 @@ final class DelayBinomial(future:Integer?, futureUpdate:Boolean, n:Integer,
     //
   }
 
-  function pmf(x:Integer) -> Real {
-    return pmf_binomial(x, n, ρ);
+  function pdf(x:Integer) -> Real {
+    return pdf_binomial(x, n, ρ);
   }
 
   function cdf(x:Integer) -> Real {

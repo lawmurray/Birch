@@ -12,8 +12,8 @@ final class DelayExponential(future:Real?, futureUpdate:Boolean, λ:Real) <
     return simulate_exponential(λ);
   }
 
-  function observe(x:Real) -> Real {
-    return observe_exponential(x, λ);
+  function logpdf(x:Real) -> Real {
+    return logpdf_exponential(x, λ);
   }
 
   function update(x:Real) {
@@ -45,7 +45,7 @@ final class DelayExponential(future:Real?, futureUpdate:Boolean, λ:Real) <
 
 function DelayExponential(future:Real?, futureUpdate:Boolean, λ:Real) ->
     DelayExponential {
-  assert λ > 0;
+  assert λ > 0.0;
   m:DelayExponential(future, futureUpdate, λ);
   return m;
 }

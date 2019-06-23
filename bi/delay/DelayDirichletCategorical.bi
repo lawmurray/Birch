@@ -12,8 +12,8 @@ final class DelayDirichletCategorical(future:Integer?, futureUpdate:Boolean,
     return simulate_dirichlet_categorical(ρ!.α);
   }
   
-  function observe(x:Integer) -> Real {
-    return observe_dirichlet_categorical(x, ρ!.α);
+  function logpdf(x:Integer) -> Real {
+    return logpdf_dirichlet_categorical(x, ρ!.α);
   }
 
   function update(x:Integer) {
@@ -24,8 +24,8 @@ final class DelayDirichletCategorical(future:Integer?, futureUpdate:Boolean,
     ρ!.α <- downdate_dirichlet_categorical(x, ρ!.α);
   }
 
-  function pmf(x:Integer) -> Real {
-    return pmf_dirichlet_categorical(x, ρ!.α);
+  function pdf(x:Integer) -> Real {
+    return pdf_dirichlet_categorical(x, ρ!.α);
   }
 
   function cdf(x:Integer) -> Real {

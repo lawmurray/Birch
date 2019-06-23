@@ -16,17 +16,17 @@ final class DelayDiscreteDelta(future:Integer?, futureUpdate:Boolean,
     }
   }
   
-  function observe(x:Integer) -> Real {
+  function logpdf(x:Integer) -> Real {
     assert !value?;
-    return μ!.observe(x);
+    return μ!.logpdf(x);
   }
   
   function update(x:Integer) {
     μ!.clamp(x);
   }
 
-  function pmf(x:Integer) -> Real {
-    return μ!.pmf(x);
+  function pdf(x:Integer) -> Real {
+    return μ!.pdf(x);
   }
 
   function cdf(x:Integer) -> Real {

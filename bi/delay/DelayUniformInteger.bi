@@ -11,8 +11,8 @@ final class DelayUniformInteger(future:Integer?, futureUpdate:Boolean,
     }
   }
 
-  function observe(x:Integer) -> Real {
-    return observe_uniform_int(x, l, u);
+  function logpdf(x:Integer) -> Real {
+    return logpdf_uniform_int(x, l, u);
   }
 
   function update(x:Integer) {
@@ -23,8 +23,8 @@ final class DelayUniformInteger(future:Integer?, futureUpdate:Boolean,
     //
   }
 
-  function pmf(x:Integer) -> Real {
-    return pmf_uniform_int(x, l, u);
+  function pdf(x:Integer) -> Real {
+    return pdf_uniform_int(x, l, u);
   }
 
   function cdf(x:Integer) -> Real {

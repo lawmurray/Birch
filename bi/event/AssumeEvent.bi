@@ -32,7 +32,7 @@ final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
   function playImmediate() -> Real {
     auto w <- 0.0;
     if v.hasValue() {
-      w <- p.observe(v.value());
+      w <- p.logpdf(v.value());
     } else {
       v <- p.simulate();
     }
@@ -46,7 +46,7 @@ final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
   function playDelay() -> Real {
     auto w <- 0.0;
     if v.hasValue() {
-      w <- p.observe(v.value());
+      w <- p.logpdf(v.value());
       if w > -inf {
         p.update(v.value());
       }
@@ -61,7 +61,7 @@ final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
     auto w <- 0.0;
     auto evt <- coerce<Value>(trace);
     if v.hasValue() {
-      w <- p.observe(evt.value());
+      w <- p.logpdf(evt.value());
     } else {
       v <- evt.value();
     }
@@ -76,7 +76,7 @@ final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
     auto w <- 0.0;
     auto evt <- coerce<Value>(trace);
     if v.hasValue() {
-      w <- p.observe(evt.value());
+      w <- p.logpdf(evt.value());
       if w > -inf {
         p.update(evt.value());
       }
@@ -95,13 +95,13 @@ final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
     auto w <- 0.0;
     auto evt <- coerce<Value>(trace);
     if v.hasValue() {
-      w <- p.observe(v.value());
+      w <- p.logpdf(v.value());
       if w > -inf {
         p.update(v.value());
       }
     } else {
       v <- evt.value();
-      w <- p.observe(v.value());
+      w <- p.logpdf(v.value());
       if w > -inf {
         p.update(v.value());
       } else {
@@ -131,7 +131,7 @@ final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
     auto w <- 0.0;
     auto evt <- coerce<Value>(trace);
     if v.hasValue() {
-      w <- p.observe(evt.value());
+      w <- p.logpdf(evt.value());
     } else {
       v <- evt.value();
     }
@@ -146,7 +146,7 @@ final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
     auto w <- 0.0;
     auto evt <- coerce<Value>(trace);
     if v.hasValue() {
-      w <- p.observe(evt.value());
+      w <- p.logpdf(evt.value());
       if w > -inf {
         p.downdate(evt.value());
       }

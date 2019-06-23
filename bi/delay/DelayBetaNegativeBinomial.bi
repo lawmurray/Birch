@@ -21,8 +21,8 @@ final class DelayBetaNegativeBinomial(future:Integer?, futureUpdate:Boolean,
     }
   }
 
-  function observe(x:Integer) -> Real {
-    return observe_beta_negative_binomial(x, k, ρ!.α, ρ!.β);
+  function logpdf(x:Integer) -> Real {
+    return logpdf_beta_negative_binomial(x, k, ρ!.α, ρ!.β);
   }
 
   function update(x:Integer) {
@@ -33,8 +33,8 @@ final class DelayBetaNegativeBinomial(future:Integer?, futureUpdate:Boolean,
     (ρ!.α, ρ!.β) <- downdate_beta_negative_binomial(x, k, ρ!.α, ρ!.β);
   }
 
-  function pmf(x:Integer) -> Real {
-    return pmf_beta_negative_binomial(x, k, ρ!.α, ρ!.β);
+  function pdf(x:Integer) -> Real {
+    return pdf_beta_negative_binomial(x, k, ρ!.α, ρ!.β);
   }
 }
 

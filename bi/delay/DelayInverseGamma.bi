@@ -17,8 +17,8 @@ final class DelayInverseGamma(future:Real?, futureUpdate:Boolean, α:Real,
     return simulate_inverse_gamma(α, β);
   }
   
-  function observe(x:Real) -> Real {
-    return observe_inverse_gamma(x, α, β);
+  function logpdf(x:Real) -> Real {
+    return logpdf_inverse_gamma(x, α, β);
   }
 
   function update(x:Real) {

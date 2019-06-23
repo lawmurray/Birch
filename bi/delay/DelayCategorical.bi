@@ -12,8 +12,8 @@ final class DelayCategorical(future:Integer?, futureUpdate:Boolean, ρ:Real[_]) 
     return simulate_categorical(ρ);
   }
   
-  function observe(x:Integer) -> Real {
-    return observe_categorical(x, ρ);
+  function logpdf(x:Integer) -> Real {
+    return logpdf_categorical(x, ρ);
   }
 
   function update(x:Integer) {
@@ -24,8 +24,8 @@ final class DelayCategorical(future:Integer?, futureUpdate:Boolean, ρ:Real[_]) 
     //
   }
 
-  function pmf(x:Integer) -> Real {
-    return pmf_categorical(x, ρ);
+  function pdf(x:Integer) -> Real {
+    return pdf_categorical(x, ρ);
   }
 
   function cdf(x:Integer) -> Real {

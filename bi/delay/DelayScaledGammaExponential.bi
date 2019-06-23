@@ -17,8 +17,8 @@ class DelayScaledGammaExponential(future:Real?, futureUpdate:Boolean, a:Real,
     return simulate_lomax(1.0/(a*λ!.θ), λ!.k);
   }
 
-  function observe(x:Real) -> Real {
-    return observe_lomax(x, 1.0/(a*λ!.θ), λ!.k);
+  function logpdf(x:Real) -> Real {
+    return logpdf_lomax(x, 1.0/(a*λ!.θ), λ!.k);
   }
 
   function update(x:Real) {

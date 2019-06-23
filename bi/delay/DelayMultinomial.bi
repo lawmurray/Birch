@@ -17,8 +17,8 @@ final class DelayMultinomial(future:Integer[_]?, futureUpdate:Boolean,
     return simulate_multinomial(n, ρ);
   }
   
-  function observe(x:Integer[_]) -> Real {
-    return observe_multinomial(x, n, ρ);
+  function logpdf(x:Integer[_]) -> Real {
+    return logpdf_multinomial(x, n, ρ);
   }
 
   function update(x:Integer[_]) {
@@ -29,8 +29,8 @@ final class DelayMultinomial(future:Integer[_]?, futureUpdate:Boolean,
     //
   }
 
-  function pmf(x:Integer[_]) -> Real {
-    return pmf_multinomial(x, n, ρ);
+  function pdf(x:Integer[_]) -> Real {
+    return pdf_multinomial(x, n, ρ);
   }
 
   function write(buffer:Buffer) {

@@ -17,8 +17,8 @@ final class DelayMultivariateUniform(future:Real[_]?, futureUpdate:Boolean,
     return simulate_multivariate_uniform(l, u);
   }
   
-  function observe(x:Real[_]) -> Real {
-    return observe_multivariate_uniform(x, l, u);
+  function logpdf(x:Real[_]) -> Real {
+    return logpdf_multivariate_uniform(x, l, u);
   }
 
   function update(x:Real[_]) {

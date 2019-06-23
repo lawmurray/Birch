@@ -17,8 +17,8 @@ class DelayLogGaussian(future:Real?, futureUpdate:Boolean, μ:Real, σ2:Real) <
     return simulate_log_gaussian(μ, 1.0/λ);
   }
   
-  function observe(x:Real) -> Real {
-    return observe_log_gaussian(x, μ, 1.0/λ);
+  function logpdf(x:Real) -> Real {
+    return logpdf_log_gaussian(x, μ, 1.0/λ);
   }
 
   function update(x:Real) {

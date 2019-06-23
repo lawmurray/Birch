@@ -28,17 +28,17 @@ final class DelayLinearDiscrete(future:Integer?, futureUpdate:Boolean,
     }
   }
   
-  function observe(x:Integer) -> Real {
+  function logpdf(x:Integer) -> Real {
     assert !value?;
-    return μ!.observe((x - c)/a);
+    return μ!.logpdf((x - c)/a);
   }
   
   function update(x:Integer) {
     μ!.clamp((x - c)/a);
   }
 
-  function pmf(x:Integer) -> Real {
-    return μ!.pmf((x - c)/a);
+  function pdf(x:Integer) -> Real {
+    return μ!.pdf((x - c)/a);
   }
 
   function cdf(x:Integer) -> Real {

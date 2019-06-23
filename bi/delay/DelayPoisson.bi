@@ -16,8 +16,8 @@ final class DelayPoisson(future:Integer?, futureUpdate:Boolean, λ:Real) <
     }
   }
   
-  function observe(x:Integer) -> Real {
-    return observe_poisson(x, λ);
+  function logpdf(x:Integer) -> Real {
+    return logpdf_poisson(x, λ);
   }
 
   function update(x:Integer) {
@@ -28,8 +28,8 @@ final class DelayPoisson(future:Integer?, futureUpdate:Boolean, λ:Real) <
     //
   }
 
-  function pmf(x:Integer) -> Real {
-    return pmf_poisson(x, λ);
+  function pdf(x:Integer) -> Real {
+    return pdf_poisson(x, λ);
   }
 
   function cdf(x:Integer) -> Real {

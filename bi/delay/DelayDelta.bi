@@ -16,8 +16,8 @@ final class DelayDelta(future:Integer?, futureUpdate:Boolean, μ:Integer) <
     }
   }
   
-  function observe(x:Integer) -> Real {
-    return observe_delta(x, μ);
+  function logpdf(x:Integer) -> Real {
+    return logpdf_delta(x, μ);
   }
 
   function update(x:Integer) {
@@ -28,8 +28,8 @@ final class DelayDelta(future:Integer?, futureUpdate:Boolean, μ:Integer) <
     //
   }
 
-  function pmf(x:Integer) -> Real {
-    return pmf_delta(x, μ);
+  function pdf(x:Integer) -> Real {
+    return pdf_delta(x, μ);
   }
 
   function lower() -> Integer? {

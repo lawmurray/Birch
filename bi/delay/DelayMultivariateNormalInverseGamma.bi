@@ -33,8 +33,8 @@ final class DelayMultivariateNormalInverseGamma(future:Real[_]?,
     return simulate_multivariate_normal_inverse_gamma(solve(Λ, ν), Λ, σ2!.α, σ2!.β);
   }
   
-  function observe(x:Real[_]) -> Real {
-    return observe_multivariate_normal_inverse_gamma(x, solve(Λ, ν), Λ, σ2!.α, σ2!.β);
+  function logpdf(x:Real[_]) -> Real {
+    return logpdf_multivariate_normal_inverse_gamma(x, solve(Λ, ν), Λ, σ2!.α, σ2!.β);
   }
 
   function update(x:Real[_]) {

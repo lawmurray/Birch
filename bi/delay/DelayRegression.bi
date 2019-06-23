@@ -23,8 +23,8 @@ final class DelayRegression(future:Real[_]?, futureUpdate:Boolean,
     return simulate_regression(W, σ2, u);
   }
   
-  function observe(x:Real[_]) -> Real {
-    return observe_regression(x, W, σ2, u);
+  function logpdf(x:Real[_]) -> Real {
+    return logpdf_regression(x, W, σ2, u);
   }
 
   function update(x:Real[_]) {
@@ -36,7 +36,7 @@ final class DelayRegression(future:Real[_]?, futureUpdate:Boolean,
   }
 
   function pdf(x:Real[_]) -> Real {
-    return exp(observe(x));
+    return exp(logpdf(x));
   }
 
   function write(buffer:Buffer) {

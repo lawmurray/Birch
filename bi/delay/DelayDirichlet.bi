@@ -12,8 +12,8 @@ final class DelayDirichlet(future:Real[_]?, futureUpdate:Boolean, α:Real[_])
     return simulate_dirichlet(α);
   }
   
-  function observe(x:Real[_]) -> Real {
-    return observe_dirichlet(x, α);
+  function logpdf(x:Real[_]) -> Real {
+    return logpdf_dirichlet(x, α);
   }
 
   function update(x:Real[_]) {

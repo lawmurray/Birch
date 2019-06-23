@@ -21,8 +21,8 @@ final class DelayStudent(future:Real?, futureUpdate:Boolean, ν:Real, μ:Real, �
     return simulate_student_t(ν, μ, σ2);
   }
   
-  function observe(x:Real) -> Real {
-    return observe_student_t(x, ν, μ, σ2);
+  function logpdf(x:Real) -> Real {
+    return logpdf_student_t(x, ν, μ, σ2);
   }
 
   function update(x:Real) {

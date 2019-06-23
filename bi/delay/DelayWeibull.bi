@@ -17,8 +17,8 @@ final class DelayWeibull(future:Real?, futureUpdate:Boolean, k:Real, λ:Real) <
     return simulate_weibull(k, λ);
   }
   
-  function observe(x:Real) -> Real {
-    return observe_weibull(x, k, λ);
+  function logpdf(x:Real) -> Real {
+    return logpdf_weibull(x, k, λ);
   }
 
   function update(x:Real) {

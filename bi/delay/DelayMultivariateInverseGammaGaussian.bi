@@ -18,8 +18,8 @@ final class DelayMultivariateInverseGammaGaussian(future:Real[_]?,
     return simulate_multivariate_inverse_gamma_gaussian(μ, σ2!.α, σ2!.β);
   }
   
-  function observe(x:Real[_]) -> Real {
-    return observe_multivariate_inverse_gamma_gaussian(x, μ, σ2!.α, σ2!.β);
+  function logpdf(x:Real[_]) -> Real {
+    return logpdf_multivariate_inverse_gamma_gaussian(x, μ, σ2!.α, σ2!.β);
   }
 
   function update(x:Real[_]) {
