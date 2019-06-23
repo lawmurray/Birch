@@ -58,13 +58,16 @@ final class Random<Value> < Expression<Value> {
     }
     return x!;
   }
-
+  
   /**
-   * Get the distribution.
+   * Set the value of the random variate, returning a weight giving the log
+   * pdf (or pmf) of that variate under the assumed distribution.
    */
-  function distribution() -> Distribution<Value> {
-    assert hasDistribution();
-    return dist!;
+  function observe(x:Value) -> Real {
+    assert !this.x?;
+    assert dist?;
+    this.x <- x;
+    return dist!.observe(x);
   }
 
   /**
@@ -104,11 +107,23 @@ final class Random<Value> < Expression<Value> {
   }
 
   /**
+   * Evaluate the log probability density (or mass) function, if it exists.
+   *
+   * - x: The value.
+   *
+   * Return: the log probability density (or mass).
+   */
+  function logpdf(x:Value) -> Real {
+    assert hasDistribution();
+    return dist!.logpdf(x);
+  }
+
+  /**
    * Evaluate the probability density (or mass) function, if it exists.
    *
    * - x: The value.
    *
-   * Return: the probability density.
+   * Return: the probability density (or mass).
    */
   function pdf(x:Value) -> Real {
     assert hasDistribution();

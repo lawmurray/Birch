@@ -36,16 +36,29 @@ class Distribution<Value> {
   }
     
   /**
-   * Get the value of the node, realizing it if necessary.
+   * Realize a value for a random variate associated with the distribution,
+   * updating (or downdating) the delayed sampling graph accordingly.
    */
   function value() -> Value {
     graft();
-    delay!.realize();
     auto x <- delay!.value();
     detach();
     return x;
   }
   
+  /**
+   * Observe a value for a random variate associated with the distribution,
+   * updating (or downdating) the delayed sampling graph accordingly, and
+   * returning a weight giving the log pdf (or pmf) of that variate under the
+   * distribution.
+   */
+  function observe(x:Value) -> Real {
+    graft();
+    auto w <- delay!.observe(x);
+    detach();
+    return w;
+  }
+
   /**
    * Simulate a random variate.
    *
@@ -54,18 +67,6 @@ class Distribution<Value> {
   function simulate() -> Value {
     graft();
     return delay!.simulate();
-  }
-
-  /**
-   * Observe a random variate.
-   *
-   * - x: The observed value.
-   *
-   * Return: The log likelihood.
-   */
-  function logpdf(x:Value) -> Real {
-    graft();
-    return delay!.logpdf(x);
   }
 
   /**
@@ -94,7 +95,19 @@ class Distribution<Value> {
    *
    * - x: The value.
    *
-   * Return: the probability density.
+   * Return: the log probability density (or mass).
+   */
+  function logpdf(x:Value) -> Real {
+    graft();
+    return delay!.logpdf(x);
+  }
+
+  /**
+   * Evaluate the probability density (or mass) function, if it exists.
+   *
+   * - x: The value.
+   *
+   * Return: the probability density (or mass).
    */
   function pdf(x:Value) -> Real {
     graft();

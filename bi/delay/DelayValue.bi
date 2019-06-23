@@ -33,13 +33,51 @@ class DelayValue<Value>(future:Value?, futureUpdate:Boolean) < Delay {
   function hasValue() -> Boolean {
     return x?;
   }
-  
+
   /**
-   * Get the value of the node, realizing it if necessary.
+   * Realize a value for a random variate associated with this node,
+   * updating (or downdating) the delayed sampling graph accordingly.
    */
   function value() -> Value {
-    assert x?;
+    if !x? {
+      prune();
+      if future? {
+        x <- future!;
+      } else {
+        x <- simulate();
+      }
+      if futureUpdate {
+        update(x!);
+      } else {
+        downdate(x!);
+      }
+      detach();
+    }
     return x!;
+  }
+  
+  /**
+   * Observe a value for a random variate associated with this node,
+   * updating (or downdating) the delayed sampling graph accordingly, and
+   * returning a weight giving the log pdf (or pmf) of that variate under the
+   * distribution.
+   */
+  function observe(x:Value) -> Real {
+    assert !this.x?;
+    assert !this.future?;
+
+    prune();
+    this.x <- x;
+    auto w <- logpdf(x);
+    if w > -inf {
+      if futureUpdate {
+        update(x);
+      } else {
+        downdate(x);
+      }
+    }
+    detach();
+    return w;
   }
 
   function realize() {
