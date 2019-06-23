@@ -12,6 +12,16 @@ final class Weibull(k:Expression<Real>, λ:Expression<Real>) < Distribution<Real
    */
   λ:Expression<Real> <- λ;
 
+  function simulateForward() -> Real {
+    assert !delay?;
+    return simulate_weibull(k, λ);
+  }
+
+  function logpdfForward(x:Real) -> Real {
+    assert !delay?;
+    return logpdf_weibull(x, k, λ);
+  }
+
   function graft() {
     if delay? {
       delay!.prune();

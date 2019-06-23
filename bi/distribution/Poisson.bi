@@ -7,6 +7,16 @@ final class Poisson(λ:Expression<Real>) < Distribution<Integer> {
    */
   λ:Expression<Real> <- λ;
 
+  function simulateForward() -> Integer {
+    assert !delay?;
+    return simulate_poisson(λ);
+  }
+
+  function logpdfForward(x:Integer) -> Real {
+    assert !delay?;
+    return logpdf_poisson(x, λ);
+  }
+
   function graft() {
     if delay? {
       delay!.prune();

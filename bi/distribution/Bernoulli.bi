@@ -7,6 +7,16 @@ final class Bernoulli(ρ:Expression<Real>) < Distribution<Boolean> {
    */
   ρ:Expression<Real> <- ρ;
 
+  function simulateForward() -> Boolean {
+    assert !delay?;
+    return simulate_bernoulli(ρ);
+  }
+
+  function logpdfForward(x:Boolean) -> Real {
+    assert !delay?;
+    return logpdf_bernoulli(x, ρ);
+  }
+
   function graft() {
     if delay? {
       delay!.prune();
@@ -19,7 +29,7 @@ final class Bernoulli(ρ:Expression<Real>) < Distribution<Boolean> {
       }
     }
   }
-  
+
   function write(buffer:Buffer) {
     if delay? {
       delay!.write(buffer);

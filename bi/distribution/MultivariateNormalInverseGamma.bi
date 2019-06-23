@@ -43,6 +43,16 @@ final class MultivariateNormalInverseGamma(μ:Expression<Real[_]>,
    */
   σ2:InverseGamma(α, β);
   
+  function simulateForward() -> Real[_] {
+    assert !delay?;
+    return simulate_multivariate_gaussian(μ, A*σ2.value());
+  }
+
+  function logpdfForward(x:Real[_]) -> Real {
+    assert !delay?;
+    return logpdf_multivariate_gaussian(x, μ, A*σ2.value());
+  }
+  
   function graft() {
     if delay? {
       delay!.prune();

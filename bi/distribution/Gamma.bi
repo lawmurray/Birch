@@ -12,6 +12,16 @@ final class Gamma(k:Expression<Real>, θ:Expression<Real>) < Distribution<Real> 
    */
   θ:Expression<Real> <- θ;
 
+  function simulateForward() -> Real {
+    assert !delay?;
+    return simulate_gamma(k, θ);
+  }
+
+  function logpdfForward(x:Real) -> Real {
+    assert !delay?;
+    return logpdf_gamma(x, k, θ);
+  }
+
   function graft() {
     if delay? {
       delay!.prune();

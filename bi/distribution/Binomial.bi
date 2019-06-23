@@ -12,6 +12,16 @@ final class Binomial(n:Expression<Integer>, ρ:Expression<Real>) < Distribution<
    */
   ρ:Expression<Real> <- ρ;
 
+  function simulateForward() -> Integer {
+    assert !delay?;
+    return simulate_binomial(n, ρ);
+  }
+
+  function logpdfForward(x:Integer) -> Real {
+    assert !delay?;
+    return logpdf_binomial(x, n, ρ);
+  }
+
   function graft() {
     graftBoundedDiscrete();
   }

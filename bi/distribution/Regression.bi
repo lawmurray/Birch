@@ -13,6 +13,22 @@ final class Regression(θ:Expression<(Real[_,_],Real[_])>,
    */
   auto x <- x;
 
+  function simulateForward() -> Real[_] {
+    assert !delay?;
+    W:Real[_,_];
+    σ2:Real[_];
+    (W, σ2) <- θ.value();
+    return simulate_regression(W, σ2, x);
+  }
+
+  function logpdfForward(y:Real[_]) -> Real {
+    assert !delay?;
+    W:Real[_,_];
+    σ2:Real[_];
+    (W, σ2) <- θ.value();
+    return logpdf_regression(y, W, σ2, x);
+  }
+
   function graft() {
     if delay? {
       delay!.prune();

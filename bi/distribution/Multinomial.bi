@@ -12,6 +12,16 @@ final class Multinomial(n:Expression<Integer>, ρ:Expression<Real[_]>) < Distrib
    */
   ρ:Expression<Real[_]> <- ρ;
 
+  function simulateForward() -> Integer[_] {
+    assert !delay?;
+    return simulate_multinomial(n, ρ);
+  }
+
+  function logpdfForward(x:Integer[_]) -> Real {
+    assert !delay?;
+    return logpdf_multinomial(x, n, ρ);
+  }
+
   function graft() {
     if delay? {
       delay!.prune();

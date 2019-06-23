@@ -7,6 +7,16 @@ final class Dirichlet(α:Expression<Real[_]>) < Distribution<Real[_]> {
    */
   α:Expression<Real[_]> <- α;
 
+  function simulateForward() -> Real[_] {
+    assert !delay?;
+    return simulate_dirichlet(α);
+  }
+
+  function logpdfForward(x:Real[_]) -> Real {
+    assert !delay?;
+    return logpdf_dirichlet(x, α);
+  }
+
   function graft() {
     if delay? {
       delay!.prune();

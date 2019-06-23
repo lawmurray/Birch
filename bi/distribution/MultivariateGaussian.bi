@@ -13,6 +13,16 @@ final class MultivariateGaussian(μ:Expression<Real[_]>, Σ:Expression<Real[_,_]
    */
   Σ:Expression<Real[_,_]> <- Σ;
   
+  function simulateForward() -> Real[_] {
+    assert !delay?;
+    return simulate_multivariate_gaussian(μ, Σ);
+  }
+
+  function logpdfForward(x:Real[_]) -> Real {
+    assert !delay?;
+    return logpdf_multivariate_gaussian(x, μ, Σ);
+  }
+  
   function graft() {
     if delay? {
       delay!.prune();

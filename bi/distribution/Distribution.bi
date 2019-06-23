@@ -141,6 +141,32 @@ class Distribution<Value> {
     graft();
     return delay!.upper();
   }
+
+  /**
+   * As simulate(), but forcing a forward simulation. This requires that the
+   * distribution has not already grafted a node onto the delayed sampling
+   * graph. To ensure consistency it may, as a side effect, realize one
+   * or more nodes on that graph. This is typically useful where:
+   *
+   *   * only one variate will be simulated from the distribution, or
+   *   * there are no upstream nodes to marginalize.
+   *
+   * In these situations delayed sampling will not provide any benefit, and
+   * this function avoids the overhead of delayed sampling graph updates.
+   */
+  function simulateForward() -> Value {
+    assert !delay?;
+    assert false;
+  }
+
+  /**
+   * As logpdf(), but forcing a forward evaluation. See simulateForward() for
+   * further details.
+   */
+  function logpdfForward(x:Value) -> Real {
+    assert !delay?;
+    assert false;
+  }
   
   /**
    * Graft this onto the delayed sampling $M$-path.

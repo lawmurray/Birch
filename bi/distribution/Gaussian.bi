@@ -12,6 +12,16 @@ final class Gaussian(μ:Expression<Real>, σ2:Expression<Real>) < Distribution<R
    */
   σ2:Expression<Real> <- σ2;
 
+  function simulateForward() -> Real {
+    assert !delay?;
+    return simulate_gaussian(μ, σ2);
+  }
+
+  function logpdfForward(x:Real) -> Real {
+    assert !delay?;
+    return logpdf_gaussian(x, μ, σ2);
+  }
+
   function graft() {
     if delay? {
       delay!.prune();

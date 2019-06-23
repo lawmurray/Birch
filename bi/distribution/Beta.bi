@@ -12,6 +12,16 @@ final class Beta(α:Expression<Real>, β:Expression<Real>) < Distribution<Real> 
    */
   β:Expression<Real> <- β;
 
+  function simulateForward() -> Real {
+    assert !delay?;
+    return simulate_beta(α, β);
+  }
+
+  function logpdfForward(x:Real) -> Real {
+    assert !delay?;
+    return logpdf_beta(x, α, β);
+  }
+
   function graft() {
     if delay? {
       delay!.prune();

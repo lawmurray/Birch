@@ -12,6 +12,16 @@ final class InverseGamma(α:Expression<Real>, β:Expression<Real>) < Distributio
    */
   β:Expression<Real> <- β;
 
+  function simulateForward() -> Real {
+    assert !delay?;
+    return simulate_inverse_gamma(α, β);
+  }
+
+  function logpdfForward(x:Real) -> Real {
+    assert !delay?;
+    return logpdf_inverse_gamma(x, α, β);
+  }
+
   function graft() {
     if delay? {
       delay!.prune();

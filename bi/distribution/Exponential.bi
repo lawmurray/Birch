@@ -7,6 +7,16 @@ final class Exponential(λ:Expression<Real>) < Distribution<Real> {
    */
   λ:Expression<Real> <- λ;
 
+  function simulateForward() -> Real {
+    assert !delay?;
+    return simulate_exponential(λ);
+  }
+
+  function logpdfForward(x:Real) -> Real {
+    assert !delay?;
+    return logpdf_exponential(x, λ);
+  }
+
   function graft() {
     if delay? {
       delay!.prune();

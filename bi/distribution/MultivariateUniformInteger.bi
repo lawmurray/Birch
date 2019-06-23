@@ -12,6 +12,16 @@ final class MultivariateUniformInteger(l:Expression<Integer[_]>, u:Expression<In
    */
   u:Expression<Integer[_]> <- u;
 
+  function simulateForward() -> Integer[_] {
+    assert !delay?;
+    return simulate_multivariate_uniform_int(l, u);
+  }
+
+  function logpdfForward(x:Integer[_]) -> Real {
+    assert !delay?;
+    return logpdf_multivariate_uniform_int(x, l, u);
+  }
+
   function graft() {
     if delay? {
       delay!.prune();

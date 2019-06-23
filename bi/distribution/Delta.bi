@@ -8,6 +8,16 @@ final class Delta(μ:Expression<Integer>) < Distribution<Integer> {
    */
   μ:Expression<Integer> <- μ;
 
+  function simulateForward() -> Integer {
+    assert !delay?;
+    return simulate_delta(μ);
+  }
+
+  function logpdfForward(x:Integer) -> Real {
+    assert !delay?;
+    return logpdf_delta(x, μ);
+  }
+
   function graft() {
     if delay? {
       delay!.prune();

@@ -13,6 +13,16 @@ class NegativeBinomial(k:Expression<Integer>, ρ:Expression<Real>) <
    */
   ρ:Expression<Real> <- ρ;
 
+  function simulateForward() -> Integer {
+    assert !delay?;
+    return simulate_negative_binomial(k, ρ);
+  }
+
+  function logpdfForward(x:Integer) -> Real {
+    assert !delay?;
+    return logpdf_negative_binomial(x, k, ρ);
+  }
+
   function graft() {
     if delay? {
       delay!.prune();

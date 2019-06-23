@@ -7,6 +7,16 @@ final class Categorical(ρ:Expression<Real[_]>) < Distribution<Integer> {
    */
   ρ:Expression<Real[_]> <- ρ;
 
+  function simulateForward() -> Integer {
+    assert !delay?;
+    return simulate_categorical(ρ);
+  }
+
+  function logpdfForward(x:Integer) -> Real {
+    assert !delay?;
+    return logpdf_categorical(x, ρ);
+  }
+
   function graft() {
     if delay? {
       delay!.prune();
