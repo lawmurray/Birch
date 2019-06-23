@@ -58,53 +58,6 @@ final class Random<Value> < Expression<Value> {
     }
     return x!;
   }
-  
-  /**
-   * Set the value of the random variate, returning a weight giving the log
-   * pdf (or pmf) of that variate under the assumed distribution.
-   */
-  function observe(x:Value) -> Real {
-    assert !this.x?;
-    assert dist?;
-    this.x <- x;
-    return dist!.observe(x);
-  }
-
-  /**
-   * Assume a distribution for this random variate. When a value is required,
-   * it will be simuldated from this distribution.
-   */
-  function assume(dist:Distribution<Value>) {
-    assert !hasDistribution();
-    assert !hasValue();
-    this.dist <- dist;
-  }
-
-  /**
-   * Assume a distribution for this random variate. When a value is required,
-   * it will be assigned according to the `future` value given here, and
-   * trigger an update on the delayed sampling graph.
-   *
-   * - dist: The distribution.
-   * - future: The future value.
-   */
-  function assumeUpdate(dist:Distribution<Value>, future:Value) {
-    dist.setFuture(future, true);
-    assume(dist);
-  }
-
-  /**
-   * Assume a distribution for this random variate. When a value is required,
-   * it will be assigned according to the `future` value given here, and
-   * trigger a downdate on the delayed sampling graph.
-   *
-   * - dist: The distribution.
-   * - future: The future value.
-   */
-  function assumeDowndate(dist:Distribution<Value>, future:Value) {
-    dist.setFuture(future, false);
-    assume(dist);
-  }
 
   /**
    * Evaluate the log probability density (or mass) function, if it exists.
@@ -301,58 +254,4 @@ final class Random<Value> < Expression<Value> {
       buffer.setNil();
     }
   }
-}
-
-/**
- * Create random variate with attached distribution.
- */
-function Random(dist:Distribution<Boolean>) -> Random<Boolean> {
-  m:Random<Boolean>;
-  m.assume(dist);
-  return m;
-}
-
-/**
- * Create random variate with attached distribution.
- */
-function Random(dist:Distribution<Integer>) -> Random<Integer> {
-  m:Random<Integer>;
-  m.assume(dist);
-  return m;
-}
-
-/**
- * Create random variate with attached distribution.
- */
-function Random(dist:Distribution<Real>) -> Random<Real> {
-  m:Random<Real>;
-  m.assume(dist);
-  return m;
-}
-
-/**
- * Create random variate with attached distribution.
- */
-function Random(dist:Distribution<Boolean[_]>) -> Random<Boolean[_]> {
-  m:Random<Boolean[_]>;
-  m.assume(dist);
-  return m;
-}
-
-/**
- * Create random variate with attached distribution.
- */
-function Random(dist:Distribution<Integer[_]>) -> Random<Integer[_]> {
-  m:Random<Integer[_]>;
-  m.assume(dist);
-  return m;
-}
-
-/**
- * Create random variate with attached distribution.
- */
-function Random(dist:Distribution<Real[_]>) -> Random<Real[_]> {
-  m:Random<Real[_]>;
-  m.assume(dist);
-  return m;
 }

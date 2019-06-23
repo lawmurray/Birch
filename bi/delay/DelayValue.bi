@@ -55,6 +55,30 @@ class DelayValue<Value>(future:Value?, futureUpdate:Boolean) < Delay {
     }
     return x!;
   }
+
+  /**
+   * Set a value for a random variate associated with this node,
+   * updating the delayed sampling graph accordingly.
+   */
+  function set(x:Value) -> Value {
+    assert !future?;
+    prune();
+    this.x <- x;
+    update(x);
+    detach();
+  }
+
+  /**
+   * Set a value for a random variate associated with this node,
+   * downdating the delayed sampling graph accordingly.
+   */
+  function setWithDowndate(x:Value) -> Value {
+    assert !future?;
+    prune();
+    this.x <- x;
+    downdate(x);
+    detach();
+  }
   
   /**
    * Observe a value for a random variate associated with this node,
@@ -70,11 +94,27 @@ class DelayValue<Value>(future:Value?, futureUpdate:Boolean) < Delay {
     this.x <- x;
     auto w <- logpdf(x);
     if w > -inf {
-      if futureUpdate {
-        update(x);
-      } else {
-        downdate(x);
-      }
+      update(x);
+    }
+    detach();
+    return w;
+  }
+
+  /**
+   * Observe a value for a random variate associated with this node,
+   * updating (or downdating) the delayed sampling graph accordingly, and
+   * returning a weight giving the log pdf (or pmf) of that variate under the
+   * distribution.
+   */
+  function observeWithDowndate(x:Value) -> Real {
+    assert !this.x?;
+    assert !this.future?;
+
+    prune();
+    this.x <- x;
+    auto w <- logpdf(x);
+    if w > -inf {
+      downdate(x);
     }
     detach();
     return w;

@@ -29,38 +29,23 @@ final class ObserveEvent<Value>(v:Value, p:Distribution<Value>) <
   }
 
   function playImmediate() -> Real {
-    auto w <- p.logpdf(v);
-    if w > -inf {
-      p.update(v);
-    }
-    p.detach();
-    return w;
+    return p.observe(v);
   }
   
   function replayImmediate(trace:Queue<Event>) -> Real {
-    auto w <- p.logpdf(v);
-    if w > -inf {
-      p.update(v);
-    }
-    p.detach();
-    return w;
+    return p.observe(v);
   }
 
   function proposeImmediate(trace:Queue<Event>) -> Real {
-    return replayImmediate(trace);
+    return p.observe(v);
   }
 
   function skipImmediate(trace:Queue<Event>) -> Real {
-    return playImmediate();
+    return p.observe(v);
   }
 
   function downdateImmediate(trace:Queue<Event>) -> Real {
-    auto w <- p.logpdf(v);
-    if w > -inf {
-      p.downdate(v);
-    }
-    p.detach();
-    return w;
+    return p.observeWithDowndate(v);
   }
 }
 

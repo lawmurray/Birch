@@ -24,20 +24,8 @@ class Distribution<Value> {
   delay:DelayValue<Value>?;
 
   /**
-   * Set the future value to be produced from the distribution.
-   *
-   * - future: Future value.
-   * - futureUpdate: When realized, should the future value trigger an
-   *   update? (Otherwise a downdate.)
-   */
-  function setFuture(future:Value, futureUpdate:Boolean) {
-    this.future <- future;
-    this.futureUpdate <- futureUpdate;
-  }
-    
-  /**
    * Realize a value for a random variate associated with the distribution,
-   * updating (or downdating) the delayed sampling graph accordingly.
+   * updating the delayed sampling graph accordingly.
    */
   function value() -> Value {
     graft();
@@ -45,16 +33,109 @@ class Distribution<Value> {
     detach();
     return x;
   }
+
+  /**
+   * Assume a distribution for this random variate. When a value is required,
+   * it will be simulated from this distribution and trigger an update on
+   * the delayed sampling graph.
+   */
+  function assume(v:Random<Value>) {
+    assert !v.hasDistribution();
+    assert !v.hasValue();
+    
+    futureUpdate <- true;
+    v.dist <- this;
+  }
+
+  /**
+   * Assume a distribution for this random variate. When a value is required,
+   * it will be assigned according to the `future` value given here, and
+   * trigger an update on the delayed sampling graph.
+   *
+   * - dist: The distribution.
+   * - future: The future value.
+   */
+  function assume(v:Random<Value>, future:Value) {
+    assert !v.hasDistribution();
+    assert !v.hasValue();
+    
+    this.future <- future;
+    futureUpdate <- true;
+    v.dist <- this;
+  }
+
+  /**
+   * Assume a distribution for this random variate. When a value is required,
+   * it will be simulated from this distribution and trigger a downdate on
+   * the delayed sampling graph.
+   */
+  function assumeWithDowndate(v:Random<Value>) {
+    assert !v.hasDistribution();
+    assert !v.hasValue();
+    
+    futureUpdate <- false;
+    v.dist <- this;
+  }
+
+  /**
+   * Assume a distribution for this random variate. When a value is required,
+   * it will be assigned according to the `future` value given here, and
+   * trigger a downdate on the delayed sampling graph.
+   *
+   * - dist: The distribution.
+   * - future: The future value.
+   */
+  function assumeWithDowndate(v:Random<Value>, future:Value) {
+    assert !v.hasDistribution();
+    assert !v.hasValue();
+    
+    this.future <- future;
+    futureUpdate <- false;
+    v.dist <- this;
+  }
+
+  /**
+   * Realize a value for a random variate associated with the distribution,
+   * updating the delayed sampling graph accordingly.
+   */
+  function set(x:Value) -> Value {
+    graft();
+    delay!.set(x);
+    detach();
+    return x;
+  }
+
+  /**
+   * Realize a value for a random variate associated with the distribution,
+   * downdating the delayed sampling graph accordingly.
+   */
+  function setWithDowndate(x:Value) -> Value {
+    graft();
+    delay!.setWithDowndate(x);
+    detach();
+    return x;
+  }
   
   /**
    * Observe a value for a random variate associated with the distribution,
-   * updating (or downdating) the delayed sampling graph accordingly, and
-   * returning a weight giving the log pdf (or pmf) of that variate under the
-   * distribution.
+   * updating the delayed sampling graph accordingly, and returning a weight
+   * giving the log pdf (or pmf) of that variate under the distribution.
    */
   function observe(x:Value) -> Real {
     graft();
     auto w <- delay!.observe(x);
+    detach();
+    return w;
+  }
+
+  /**
+   * Observe a value for a random variate associated with the distribution,
+   * downdating the delayed sampling graph accordingly, and returning a weight
+   * giving the log pdf (or pmf) of that variate under the distribution.
+   */
+  function observeWithDowndate(x:Value) -> Real {
+    graft();
+    auto w <- delay!.observeWithDowndate(x);
     detach();
     return w;
   }
