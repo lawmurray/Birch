@@ -118,6 +118,7 @@ E                                  [Ee][+-]?{D}+
 "super"                             { return SUPER; }
 "global"                            { return GLOBAL; }
 "parallel"                          { return PARALLEL; }
+"dynamic"                           { return DYNAMIC; }
 "final"                             { return FINAL; }
 "nil"                               { return NIL; }
 

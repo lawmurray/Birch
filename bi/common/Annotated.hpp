@@ -10,9 +10,10 @@ namespace bi {
 enum Annotation {
   NONE = 0,
   PARALLEL = 1,
-  AUTO = 2,
-  FINAL = 3,
-  PRIOR_INSTANTIATION = 4
+  DYNAMIC = 2,
+  AUTO = 4,
+  FINAL = 8,
+  PRIOR_INSTANTIATION = 16
 };
 
 /**

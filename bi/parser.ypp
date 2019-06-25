@@ -92,7 +92,7 @@
 
 %token <valString> PROGRAM CLASS TYPE FUNCTION FIBER OPERATOR AUTO
 %token <valString> IF ELSE FOR IN WHILE DO ASSERT RETURN YIELD INSTANTIATED
-%token <valString> CPP HPP THIS SUPER GLOBAL PARALLEL FINAL NIL
+%token <valString> CPP HPP THIS SUPER GLOBAL PARALLEL DYNAMIC FINAL NIL
 %token <valString> DOUBLE_BRACE_OPEN DOUBLE_BRACE_CLOSE NAME
 %token <valString> BOOL_LITERAL INT_LITERAL REAL_LITERAL STRING_LITERAL
 %token <valString> LEFT_OP RIGHT_OP LEFT_TILDE_OP RIGHT_TILDE_OP LEFT_QUERY_OP
@@ -612,8 +612,9 @@ if
     ;
 
 for_annotation
-    :           { $$ = bi::NONE; }
-    | PARALLEL  { $$ = bi::PARALLEL; }
+    : PARALLEL          { $$ = bi::PARALLEL; }
+    | DYNAMIC PARALLEL  { $$ = (bi::Annotation)(bi::DYNAMIC|bi::PARALLEL); }
+    |                   { $$ = bi::NONE; }
     ;
 
 for_index

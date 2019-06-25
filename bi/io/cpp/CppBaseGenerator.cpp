@@ -638,7 +638,13 @@ void bi::CppBaseGenerator::visit(const For* o) {
     line("{");
     in();
     genTraceFunction("<thread start>", o->loc);
-    line("#pragma omp for schedule(static)");
+    start("#pragma omp for schedule(");
+    if (o->has(DYNAMIC)) {
+      middle("guided");
+    } else {
+      middle("static");
+    }
+    finish(')');
   }
 
   /* o->index may be an identifier or a local variable, in the latter case
