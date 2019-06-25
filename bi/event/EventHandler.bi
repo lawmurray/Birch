@@ -1,12 +1,13 @@
-PLAY_IMMEDIATE:Integer8 <- Integer8(1);
-PLAY_DELAY:Integer8 <- Integer8(2);
-REPLAY_IMMEDIATE:Integer8 <- Integer8(3);
-REPLAY_DELAY:Integer8 <- Integer8(4);
-PROPOSE_IMMEDIATE:Integer8 <- Integer8(5);
-SKIP_IMMEDIATE:Integer8 <- Integer8(6);
-SKIP_DELAY:Integer8 <- Integer8(7);
-DOWNDATE_IMMEDIATE:Integer8 <- Integer8(8);
-DOWNDATE_DELAY:Integer8 <- Integer8(9);
+PLAY_IMMEDIATE:Integer8 <- Integer8(0);
+PLAY_DELAY:Integer8 <- Integer8(1);
+SKIP_IMMEDIATE:Integer8 <- Integer8(2);
+SKIP_DELAY:Integer8 <- Integer8(3);
+REPLAY_IMMEDIATE:Integer8 <- Integer8(4);
+REPLAY_DELAY:Integer8 <- Integer8(5);
+DOWNDATE_IMMEDIATE:Integer8 <- Integer8(6);
+DOWNDATE_DELAY:Integer8 <- Integer8(7);
+PROPOSE_IMMEDIATE:Integer8 <- Integer8(8);
+NUM_MODES:Integer8 <- Integer8(9);
 
 /**
  * Event handler.
@@ -34,7 +35,7 @@ final class EventHandler {
    * Set the play/replay mode. Valid modes are:
    */
   function setMode(mode:Integer8) {
-    assert PLAY_IMMEDIATE <= mode && mode <= DOWNDATE_DELAY;
+    assert 0 <= mode && mode <= NUM_MODES;
     this.mode <- mode;
   }
 
@@ -71,20 +72,20 @@ final class EventHandler {
       w <- evt.playImmediate();
     } else if mode == PLAY_DELAY {
       w <- evt.playDelay();
-    } else if mode == REPLAY_IMMEDIATE {
-      w <- evt.replayImmediate(trace);
-    } else if mode == REPLAY_DELAY {
-      w <- evt.replayDelay(trace);
-    } else if mode == PROPOSE_IMMEDIATE {
-      w <- evt.proposeImmediate(trace);
     } else if mode == SKIP_IMMEDIATE {
       w <- evt.skipImmediate(trace);
     } else if mode == SKIP_DELAY {
       w <- evt.skipDelay(trace);
+    } else if mode == REPLAY_IMMEDIATE {
+      w <- evt.replayImmediate(trace);
+    } else if mode == REPLAY_DELAY {
+      w <- evt.replayDelay(trace);
     } else if mode == DOWNDATE_IMMEDIATE {
       w <- evt.downdateImmediate(trace);
     } else if mode == DOWNDATE_DELAY {
       w <- evt.downdateDelay(trace);
+    } else if mode == PROPOSE_IMMEDIATE {
+      w <- evt.proposeImmediate(trace);
     } else {
       assert false;
     }

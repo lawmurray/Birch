@@ -7,7 +7,7 @@
 final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
     ValueEvent<Value> {
   /**
-   * Random variable associated with the event.
+   * Random variate associated with the event.
    */
   v:Random<Value> <- v;
   
@@ -15,6 +15,11 @@ final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
    * Distribution associated with the event.
    */
   p:Distribution<Value> <- p;
+
+  /**
+   * Did the random variate have a value when the event was triggered?
+   */
+  assigned:Boolean <- v.hasValue();
 
   function isAssume() -> Boolean {
     return true;
@@ -31,7 +36,7 @@ final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
 
   function playImmediate() -> Real {
     auto w <- 0.0;
-    if v.hasValue() {
+    if assigned {
       w <- p.observe(v.value());
     } else {
       v <- p.value();
@@ -41,7 +46,7 @@ final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
 
   function playDelay() -> Real {
     auto w <- 0.0;
-    if v.hasValue() {
+    if assigned {
       w <- p.observe(v.value());
     } else {
       p.assume(v);
@@ -50,72 +55,89 @@ final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
   }
   
   function skipImmediate(trace:Queue<Event>) -> Real {
-    coerce<Value>(trace);
+    if !assigned {
+      coerce<Value>(trace);
+    }
     return playImmediate();
   }
 
   function skipDelay(trace:Queue<Event>) -> Real {
-    coerce<Value>(trace);
+    if !assigned {
+      coerce<Value>(trace);
+    }
     return playDelay();
   }
 
   function replayImmediate(trace:Queue<Event>) -> Real {
-    auto evt <- coerce<Value>(trace);
-    auto w <- p.observe(evt.value());
-    if !v.hasValue() && w != -inf {
-      v <- evt.value();
-      w <- 0.0;
+    auto w <- 0.0;
+    if assigned {
+      w <- p.observe(v.value());
+    } else {
+      auto evt <- coerce<Value>(trace);
+      w <- p.observe(evt.value());
+      if w != -inf {
+        v <- evt.value();
+        w <- 0.0;
+      }
     }
     return w;
   }
 
   function replayDelay(trace:Queue<Event>) -> Real {
     auto w <- 0.0;
-    auto evt <- coerce<Value>(trace);
-    if v.hasValue() {
-      //assert evt.hasValue() && v.value() == evt.value();
-      w <- p.observe(evt.value());
+    if assigned {
+      w <- p.observe(v.value());
     } else {
+      auto evt <- coerce<Value>(trace);      
       p.assume(v, evt.value());
     }
     return w;
   }
 
   function downdateImmediate(trace:Queue<Event>) -> Real {
-    auto evt <- coerce<Value>(trace);
-    auto w <- p.observeWithDowndate(evt.value());
-    if !v.hasValue() && w != -inf {
-      v <- evt.value();
-      w <- 0.0;
+    auto w <- 0.0;
+    if assigned {
+      w <- p.observe(v.value());
+    } else {
+      auto evt <- coerce<Value>(trace);
+      w <- p.observeWithDowndate(evt.value());
+      if w != -inf {
+        v <- evt.value();
+        w <- 0.0;
+      }
     }
     return w;
   }
 
   function downdateDelay(trace:Queue<Event>) -> Real {
     auto w <- 0.0;
-    auto evt <- coerce<Value>(trace);
-    if v.hasValue() {
-      //assert evt.hasValue() && v.value() == evt.value();
-      w <- p.observeWithDowndate(evt.value());
+    if assigned {
+      w <- p.observeWithDowndate(v.value());
     } else {
+      auto evt <- coerce<Value>(trace);      
       p.assumeWithDowndate(v, evt.value());
     }
     return w;
   }
 
   function proposeImmediate(trace:Queue<Event>) -> Real {
-    auto evt <- coerce<Value>(trace);
-    auto w <- p.observe(evt.value());
-    if !v.hasValue() && w != -inf {
-      v <- evt.value();
-      w <- 0.0;
+    auto w <- 0.0;
+    if assigned {
+      w <- p.observe(v.value());
+    } else {
+      auto evt <- coerce<Value>(trace);
+      w <- p.observe(evt.value());
+      if w != -inf {
+        v <- evt.value();
+      }
     }
     return w;
   }
 
   function record(trace:Queue<Event>) {
-    ///@todo Only record event when not an observation
-    trace.pushBack(RandomEvent<Value>(v));
+    if !assigned {
+      trace.pushBack(RandomEvent<Value>(v));
+    }
   }
 }
 
