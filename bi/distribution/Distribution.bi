@@ -28,10 +28,14 @@ class Distribution<Value> {
    * updating the delayed sampling graph accordingly.
    */
   function value() -> Value {
-    graft();
-    auto x <- delay!.value();
-    detach();
-    return x;
+    graft(false);
+    if delay? {
+      auto x <- delay!.value();
+      detach();
+      return x;
+    } else {
+      return valueForward();
+    }
   }
 
   /**
@@ -99,9 +103,11 @@ class Distribution<Value> {
    * updating the delayed sampling graph accordingly.
    */
   function set(x:Value) -> Value {
-    graft();
-    delay!.set(x);
-    detach();
+    graft(false);
+    if delay? {
+      delay!.set(x);
+      detach();
+    }
     return x;
   }
 
@@ -110,9 +116,11 @@ class Distribution<Value> {
    * downdating the delayed sampling graph accordingly.
    */
   function setWithDowndate(x:Value) -> Value {
-    graft();
-    delay!.setWithDowndate(x);
-    detach();
+    graft(false);
+    if delay? {
+      delay!.setWithDowndate(x);
+      detach();
+    }
     return x;
   }
   
@@ -122,10 +130,14 @@ class Distribution<Value> {
    * giving the log pdf (or pmf) of that variate under the distribution.
    */
   function observe(x:Value) -> Real {
-    graft();
-    auto w <- delay!.observe(x);
-    detach();
-    return w;
+    graft(false);
+    if delay? {
+      auto w <- delay!.observe(x);
+      detach();
+      return w;
+    } else {
+      return observeForward(x);
+    }
   }
 
   /**
@@ -134,10 +146,14 @@ class Distribution<Value> {
    * giving the log pdf (or pmf) of that variate under the distribution.
    */
   function observeWithDowndate(x:Value) -> Real {
-    graft();
-    auto w <- delay!.observeWithDowndate(x);
-    detach();
-    return w;
+    graft(false);
+    if delay? {
+      auto w <- delay!.observeWithDowndate(x);
+      detach();
+      return w;
+    } else {
+      return observeForward(x);
+    }
   }
 
   /**
@@ -146,7 +162,7 @@ class Distribution<Value> {
    * Return: The simulated value.
    */
   function simulate() -> Value {
-    graft();
+    graft(true);
     return delay!.simulate();
   }
 
@@ -156,7 +172,7 @@ class Distribution<Value> {
    * Return: The value.
    */
   function update(x:Value) {
-    graft();
+    graft(true);
     delay!.update(x);
   }
 
@@ -167,7 +183,7 @@ class Distribution<Value> {
    * - x: The value.
    */
   function downdate(x:Value) {
-    graft();
+    graft(true);
     delay!.downdate(x);
   }
 
@@ -179,7 +195,7 @@ class Distribution<Value> {
    * Return: the log probability density (or mass).
    */
   function logpdf(x:Value) -> Real {
-    graft();
+    graft(true);
     return delay!.logpdf(x);
   }
 
@@ -191,7 +207,7 @@ class Distribution<Value> {
    * Return: the probability density (or mass).
    */
   function pdf(x:Value) -> Real {
-    graft();
+    graft(true);
     return delay!.pdf(x);
   }
 
@@ -203,7 +219,7 @@ class Distribution<Value> {
    * Return: the cumulative probability
    */
   function cdf(x:Value) -> Real {
-    graft();
+    graft(true);
     return delay!.cdf(x);
   }
   
@@ -211,7 +227,7 @@ class Distribution<Value> {
    * Finite lower bound of the support of this node, if any.
    */
   function lower() -> Value? {
-    graft();
+    graft(true);
     return delay!.lower();
   }
   
@@ -219,12 +235,12 @@ class Distribution<Value> {
    * Finite upper bound of the support of this node, if any.
    */
   function upper() -> Value? {
-    graft();
+    graft(true);
     return delay!.upper();
   }
 
   /**
-   * As simulate(), but forcing a forward simulation. This requires that the
+   * As value(), but forcing a forward simulation. This requires that the
    * distribution has not already grafted a node onto the delayed sampling
    * graph. To ensure consistency it may, as a side effect, realize one
    * or more nodes on that graph. This is typically useful where:
@@ -235,27 +251,31 @@ class Distribution<Value> {
    * In these situations delayed sampling will not provide any benefit, and
    * this function avoids the overhead of delayed sampling graph updates.
    */
-  function simulateForward() -> Value {
+  function valueForward() -> Value {
     assert !delay?;
     assert false;
   }
 
   /**
-   * As logpdf(), but forcing a forward evaluation. See simulateForward() for
+   * As observe(), but forcing a forward evaluation. See valueForward() for
    * further details.
    */
-  function logpdfForward(x:Value) -> Real {
+  function observeForward(x:Value) -> Real {
     assert !delay?;
     assert false;
   }
   
   /**
-   * Graft this onto the delayed sampling $M$-path.
+   * Graft this onto the delayed sampling graph.
+   *
+   * - force: If true, a node is always grafted onto the delayed sampling
+   *   graph, even if it has no parent. If false, no node is grafted in this
+   *   case.
    */
-  function graft();
+  function graft(force:Boolean);
   
   /**
-   * Detach this from the delayed sampling $M$-path.
+   * Detach this from the delayed sampling graph.
    */
   function detach() {
     assert delay?;

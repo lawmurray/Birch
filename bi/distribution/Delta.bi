@@ -8,24 +8,24 @@ final class Delta(μ:Expression<Integer>) < Distribution<Integer> {
    */
   μ:Expression<Integer> <- μ;
 
-  function simulateForward() -> Integer {
+  function valueForward() -> Integer {
     assert !delay?;
     return simulate_delta(μ);
   }
 
-  function logpdfForward(x:Integer) -> Real {
+  function observeForward(x:Integer) -> Real {
     assert !delay?;
     return logpdf_delta(x, μ);
   }
 
-  function graft() {
+  function graft(force:Boolean) {
     if delay? {
       delay!.prune();
     } else {
       m:DelayDiscrete?;
       if (m <- μ.graftDiscrete())? {
         delay <- DelayDiscreteDelta(future, futureUpdate, m!);
-      } else {
+      } else if force {
         delay <- DelayDelta(future, futureUpdate, μ);
       }
     }

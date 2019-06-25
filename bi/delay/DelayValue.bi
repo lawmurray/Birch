@@ -61,10 +61,17 @@ class DelayValue<Value>(future:Value?, futureUpdate:Boolean) < Delay {
    * updating the delayed sampling graph accordingly.
    */
   function set(x:Value) -> Value {
-    assert !future?;
+    assert !this.x?;
+    assert !this.future?;
+
     prune();
     this.x <- x;
-    update(x);
+    auto w <- logpdf(x);
+    ///@todo Would be good to skip evaluation of the logpdf, currently needed
+    ///      to ensure an update happens only if valid
+    if w > -inf {
+      update(x);
+    }
     detach();
   }
 
@@ -73,10 +80,17 @@ class DelayValue<Value>(future:Value?, futureUpdate:Boolean) < Delay {
    * downdating the delayed sampling graph accordingly.
    */
   function setWithDowndate(x:Value) -> Value {
-    assert !future?;
+    assert !this.x?;
+    assert !this.future?;
+
     prune();
     this.x <- x;
-    downdate(x);
+    auto w <- logpdf(x);
+    ///@todo Would be good to skip evaluation of the logpdf, currently needed
+    ///      to ensure a downdate happens only if valid
+    if w > -inf {
+      downdate(x);
+    }
     detach();
   }
   

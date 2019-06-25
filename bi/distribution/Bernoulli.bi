@@ -7,24 +7,24 @@ final class Bernoulli(ρ:Expression<Real>) < Distribution<Boolean> {
    */
   ρ:Expression<Real> <- ρ;
 
-  function simulateForward() -> Boolean {
+  function valueForward() -> Boolean {
     assert !delay?;
     return simulate_bernoulli(ρ);
   }
 
-  function logpdfForward(x:Boolean) -> Real {
+  function observeForward(x:Boolean) -> Real {
     assert !delay?;
     return logpdf_bernoulli(x, ρ);
   }
 
-  function graft() {
+  function graft(force:Boolean) {
     if delay? {
       delay!.prune();
     } else {
       m:DelayBeta?;
       if (m <- ρ.graftBeta())? {
         delay <- DelayBetaBernoulli(future, futureUpdate, m!);
-      } else {
+      } else if force {
         delay <- DelayBernoulli(future, futureUpdate, ρ);
       }
     }

@@ -12,20 +12,20 @@ final class MultivariateUniform(l:Expression<Real[_]>, u:Expression<Real[_]>) < 
    */
   u:Expression<Real[_]> <- u;
 
-  function simulateForward() -> Real[_] {
+  function valueForward() -> Real[_] {
     assert !delay?;
     return simulate_multivariate_uniform(l, u);
   }
 
-  function logpdfForward(x:Real[_]) -> Real {
+  function observeForward(x:Real[_]) -> Real {
     assert !delay?;
     return logpdf_multivariate_uniform(x, l, u);
   }
 
-  function graft() {
+  function graft(force:Boolean) {
     if delay? {
       delay!.prune();
-    } else {
+    } else if force {
       delay <- DelayMultivariateUniform(future, futureUpdate, l, u);
     }
   }

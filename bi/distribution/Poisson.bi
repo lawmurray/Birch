@@ -7,17 +7,17 @@ final class Poisson(λ:Expression<Real>) < Distribution<Integer> {
    */
   λ:Expression<Real> <- λ;
 
-  function simulateForward() -> Integer {
+  function valueForward() -> Integer {
     assert !delay?;
     return simulate_poisson(λ);
   }
 
-  function logpdfForward(x:Integer) -> Real {
+  function observeForward(x:Integer) -> Real {
     assert !delay?;
     return logpdf_poisson(x, λ);
   }
 
-  function graft() {
+  function graft(force:Boolean) {
     if delay? {
       delay!.prune();
     } else {
@@ -26,10 +26,9 @@ final class Poisson(λ:Expression<Real>) < Distribution<Integer> {
       
       if (m1 <- λ.graftScaledGamma())? {
         delay <- DelayScaledGammaPoisson(future, futureUpdate, m1!.a, m1!.x);
-      }
-      else if (m2 <- λ.graftGamma())? {
+      } else if (m2 <- λ.graftGamma())? {
         delay <- DelayGammaPoisson(future, futureUpdate, m2!);
-      } else {
+      } else if force {
         delay <- DelayPoisson(future, futureUpdate, λ);
       }
     }

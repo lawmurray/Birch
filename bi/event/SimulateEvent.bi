@@ -3,8 +3,7 @@
  *
  * - p: The distribution.
  */
-final class SimulateEvent<Value>(p:Distribution<Value>) <
-    ValueEvent<Value> {
+final class SimulateEvent<Value>(p:Distribution<Value>) < ValueEvent<Value> {
   /**
    * Value associated with the event (once simulated).
    */
@@ -32,27 +31,6 @@ final class SimulateEvent<Value>(p:Distribution<Value>) <
     v <- p.value();
     return 0.0;
   }
-    
-  function replayImmediate(trace:Queue<Event>) -> Real {
-    auto evt <- coerce<Value>(trace);
-    v <- p.value(evt.value());
-    return 0.0;
-  }
-
-  function proposeImmediate(trace:Queue<Event>) -> Real {
-    auto evt <- coerce<Value>(trace);
-    auto w <- p.observe(evt.value());
-    if w == -inf {
-      /* hack: in this case the proposal is outside of the support of the 
-       * distribution; this can cause later problems in the program (e.g.
-       * invalid parameters to subsequent distributions), so simulate
-       * something valid to replace this with, but the weight remains -inf */
-      v <- p.simulate();
-    } else {
-      v <- evt.value();
-    }
-    return w;
-  }
 
   function skipImmediate(trace:Queue<Event>) -> Real {
     coerce<Value>(trace);  // skip
@@ -60,10 +38,33 @@ final class SimulateEvent<Value>(p:Distribution<Value>) <
     return 0.0;
   }
 
+  function replayImmediate(trace:Queue<Event>) -> Real {
+    auto evt <- coerce<Value>(trace);
+    auto w <- p.observe(evt.value());
+    if w != -inf {
+      v <- evt.value();
+      w <- 0.0;
+    }
+    return w;
+  }
+
   function downdateImmediate(trace:Queue<Event>) -> Real {
     auto evt <- coerce<Value>(trace);
-    v <- p.valueWithDowndate(evt.value());
-    return 0.0;
+    auto w <- p.observeWithDowndate(evt.value());
+    if w != -inf {
+      v <- evt.value();
+      w <- 0.0;
+    }
+    return w;
+  }
+  
+  function proposeImmediate(trace:Queue<Event>) -> Real {
+    auto evt <- coerce<Value>(trace);
+    auto w <- p.observe(evt.value());
+    if w != -inf {
+      v <- evt.value();
+    }
+    return w;
   }
   
   function record(trace:Queue<Event>) {

@@ -17,20 +17,20 @@ final class Student(ν:Expression<Real>, μ:Expression<Real>, σ2:Expression<Rea
    */
   σ2:Expression<Real> <- σ2;
 
-  function simulateForward() -> Real {
+  function valueForward() -> Real {
     assert !delay?;
     return simulate_student_t(ν, μ, σ2);
   }
 
-  function logpdfForward(x:Real) -> Real {
+  function observeForward(x:Real) -> Real {
     assert !delay?;
     return logpdf_student_t(x, ν, μ, σ2);
   }
 
-  function graft() {
+  function graft(force:Boolean) {
     if delay? {
       delay!.prune();
-    } else {
+    } else if force {
       delay <- DelayStudent(future, futureUpdate, ν, μ, σ2);
     }
   }

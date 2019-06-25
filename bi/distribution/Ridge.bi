@@ -29,11 +29,11 @@ final class Ridge(M:Expression<Real[_,_]>, Σ:Expression<Real[_,_]>,
    * Weight and likelihood covariance scales.
    */
   β:Expression<Real[_]> <- β;
-  
-  function graft() {
+    
+  function graft(force:Boolean) {
     if delay? {
       delay!.prune();
-    } else {
+    } else {  // always graft, even when not forced
       delay <- DelayRidge(future, futureUpdate, M, Σ, α, β);
     }
   }

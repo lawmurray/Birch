@@ -12,35 +12,36 @@ final class Binomial(n:Expression<Integer>, ρ:Expression<Real>) < Distribution<
    */
   ρ:Expression<Real> <- ρ;
 
-  function simulateForward() -> Integer {
+  function valueForward() -> Integer {
     assert !delay?;
     return simulate_binomial(n, ρ);
   }
 
-  function logpdfForward(x:Integer) -> Real {
+  function observeForward(x:Integer) -> Real {
     assert !delay?;
     return logpdf_binomial(x, n, ρ);
   }
 
-  function graft() {
-    graftBoundedDiscrete();
-  }
-  
-  function graftDiscrete() -> DelayDiscrete? {
-    return graftBoundedDiscrete();
-  }
-
-  function graftBoundedDiscrete() -> DelayBoundedDiscrete? {
+  function graft(force:Boolean) {
     if delay? {
       delay!.prune();
     } else {
       m:DelayBeta?;
       if (m <- ρ.graftBeta())? {
         delay <- DelayBetaBinomial(future, futureUpdate, n, m!);
-      } else {
+      } else if force {
         delay <- DelayBinomial(future, futureUpdate, n, ρ);
       }
     }
+  }
+  
+  function graftDiscrete() -> DelayDiscrete? {
+    graft(true);
+    return DelayDiscrete?(delay);
+  }
+
+  function graftBoundedDiscrete() -> DelayBoundedDiscrete? {
+    graft(true);
     return DelayBoundedDiscrete?(delay);
   }
 

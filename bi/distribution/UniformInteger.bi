@@ -13,20 +13,20 @@ final class UniformInteger(l:Expression<Integer>, u:Expression<Integer>) <
    */
   u:Expression<Integer> <- u;
 
-  function simulateForward() -> Integer {
+  function valueForward() -> Integer {
     assert !delay?;
     return simulate_uniform_int(l, u);
   }
 
-  function logpdfForward(x:Integer) -> Real {
+  function observeForward(x:Integer) -> Real {
     assert !delay?;
     return logpdf_uniform_int(x, l, u);
   }
 
-  function graft() {
+  function graft(force:Boolean) {
     if delay? {
       delay!.prune();
-    } else {
+    } else if force {
       delay <- DelayUniformInteger(future, futureUpdate, l, u);
     }
   }

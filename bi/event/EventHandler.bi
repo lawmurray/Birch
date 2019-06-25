@@ -52,7 +52,7 @@ final class EventHandler {
    */
   function handle(evt:Event!) -> Real {
     auto w <- 0.0;
-    while evt? {
+    while w > -inf && evt? {
       w <- w + handle(evt!);
     }
     return w;

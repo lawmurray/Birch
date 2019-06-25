@@ -14,17 +14,17 @@ final class MultivariateIndependentGaussian(μ:Expression<Real[_]>,
    */
   σ2:Expression<Real> <- σ2;
   
-  function simulateForward() -> Real[_] {
+  function valueForward() -> Real[_] {
     assert !delay?;
     return simulate_multivariate_gaussian(μ, σ2);
   }
 
-  function logpdfForward(x:Real[_]) -> Real {
+  function observeForward(x:Real[_]) -> Real {
     assert !delay?;
     return logpdf_multivariate_gaussian(x, μ, σ2);
   }
   
-  function graft() {
+  function graft(force:Boolean) {
     if delay? {
       delay!.prune();
     } else {
@@ -49,7 +49,7 @@ final class MultivariateIndependentGaussian(μ:Expression<Real[_]>,
         μ.value();
         if (s2 <- σ2.graftInverseGamma())? {
           delay <- DelayMultivariateInverseGammaGaussian(future, futureUpdate, μ, s2!);
-        } else {
+        } else if force {
           delay <- DelayMultivariateGaussian(future, futureUpdate, μ.value(), diagonal(σ2, length(μ.value())));
         }
       }

@@ -7,17 +7,17 @@ final class Exponential(λ:Expression<Real>) < Distribution<Real> {
    */
   λ:Expression<Real> <- λ;
 
-  function simulateForward() -> Real {
+  function valueForward() -> Real {
     assert !delay?;
     return simulate_exponential(λ);
   }
 
-  function logpdfForward(x:Real) -> Real {
+  function observeForward(x:Real) -> Real {
     assert !delay?;
     return logpdf_exponential(x, λ);
   }
 
-  function graft() {
+  function graft(force:Boolean) {
     if delay? {
       delay!.prune();
     } else {
@@ -28,7 +28,7 @@ final class Exponential(λ:Expression<Real>) < Distribution<Real> {
         delay <- DelayScaledGammaExponential(future, futureUpdate, m1!.a, m1!.x);
       } else if (m2 <- λ.graftGamma())? {
         delay <- DelayGammaExponential(future, futureUpdate, m2!);
-      } else {
+      } else if force {
         delay <- DelayExponential(future, futureUpdate, λ);
       }
     }

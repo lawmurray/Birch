@@ -21,7 +21,7 @@ class WithAncestorSampling<Base> < Base {
         x.h.trace.putForward(f, forwardCount);
         v[n] <- w[n];
         auto s <- x.t + 1;
-        while v[n] != -inf && s <= T {
+        while v[n] > -inf && s <= T {
           v[n] <- v[n] + x.step();
           s <- s + 1;
         }

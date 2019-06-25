@@ -36,16 +36,16 @@ final class ObserveEvent<Value>(v:Value, p:Distribution<Value>) <
     return p.observe(v);
   }
 
-  function proposeImmediate(trace:Queue<Event>) -> Real {
-    return p.observe(v);
-  }
-
   function skipImmediate(trace:Queue<Event>) -> Real {
     return p.observe(v);
   }
 
   function downdateImmediate(trace:Queue<Event>) -> Real {
     return p.observeWithDowndate(v);
+  }
+
+  function proposeImmediate(trace:Queue<Event>) -> Real {
+    return p.observe(v);
   }
 }
 

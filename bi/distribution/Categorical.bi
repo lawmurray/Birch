@@ -7,17 +7,17 @@ final class Categorical(ρ:Expression<Real[_]>) < Distribution<Integer> {
    */
   ρ:Expression<Real[_]> <- ρ;
 
-  function simulateForward() -> Integer {
+  function valueForward() -> Integer {
     assert !delay?;
     return simulate_categorical(ρ);
   }
 
-  function logpdfForward(x:Integer) -> Real {
+  function observeForward(x:Integer) -> Real {
     assert !delay?;
     return logpdf_categorical(x, ρ);
   }
 
-  function graft() {
+  function graft(force:Boolean) {
     if delay? {
       delay!.prune();
     } else {
@@ -27,7 +27,7 @@ final class Categorical(ρ:Expression<Real[_]>) < Distribution<Integer> {
         delay <- DelayDirichletCategorical(future, futureUpdate, m1!);
       } else if (m2 <- ρ.graftRestaurant())? {
         delay <- DelayRestaurantCategorical(future, futureUpdate, m2!);
-      } else {
+      } else if force {
         delay <- DelayCategorical(future, futureUpdate, ρ);
       }
     }

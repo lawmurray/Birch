@@ -48,15 +48,23 @@ final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
     }
     return w;
   }
-    
+  
+  function skipImmediate(trace:Queue<Event>) -> Real {
+    coerce<Value>(trace);
+    return playImmediate();
+  }
+
+  function skipDelay(trace:Queue<Event>) -> Real {
+    coerce<Value>(trace);
+    return playDelay();
+  }
+
   function replayImmediate(trace:Queue<Event>) -> Real {
-    auto w <- 0.0;
     auto evt <- coerce<Value>(trace);
-    if v.hasValue() {
-      //assert evt.hasValue() && v.value() == evt.value();
-      w <- p.observe(evt.value());
-    } else {
-      v <- p.set(evt.value());
+    auto w <- p.observe(evt.value());
+    if !v.hasValue() && w != -inf {
+      v <- evt.value();
+      w <- 0.0;
     }
     return w;
   }
@@ -72,25 +80,13 @@ final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
     }
     return w;
   }
-  
-  function skipImmediate(trace:Queue<Event>) -> Real {
-    coerce<Value>(trace);
-    return playImmediate();
-  }
-
-  function skipDelay(trace:Queue<Event>) -> Real {
-    coerce<Value>(trace);
-    return playDelay();
-  }
 
   function downdateImmediate(trace:Queue<Event>) -> Real {
-    auto w <- 0.0;
     auto evt <- coerce<Value>(trace);
-    if v.hasValue() {
-      //assert evt.hasValue() && v.value() == evt.value();
-      w <- p.observeWithDowndate(evt.value());
-    } else {
-      v <- p.setWithDowndate(evt.value());
+    auto w <- p.observeWithDowndate(evt.value());
+    if !v.hasValue() && w != -inf {
+      v <- evt.value();
+      w <- 0.0;
     }
     return w;
   }
@@ -108,28 +104,17 @@ final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
   }
 
   function proposeImmediate(trace:Queue<Event>) -> Real {
-    auto w <- 0.0;
     auto evt <- coerce<Value>(trace);
-    if v.hasValue() {
-      //assert evt.hasValue() && v.value() == evt.value();
-      w <- p.observe(evt.value());
-    } else {
-      w <- p.observe(evt.value());
-      if w == -inf {
-        /* hack: in this case the proposal is outside of the support of the 
-         * distribution; this can cause later problems in the program (e.g.
-         * invalid parameters to subsequent distributions), so simulate
-         * something valid to replace this with, but the weight remains
-         * -inf */
-        v <- p.simulate();
-      } else {
-        v <- evt.value();
-      }
+    auto w <- p.observe(evt.value());
+    if !v.hasValue() && w != -inf {
+      v <- evt.value();
+      w <- 0.0;
     }
     return w;
   }
 
   function record(trace:Queue<Event>) {
+    ///@todo Only record event when not an observation
     trace.pushBack(RandomEvent<Value>(v));
   }
 }
