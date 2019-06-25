@@ -334,11 +334,11 @@ inline bool libbirch::Counted::isReachable() const {
 }
 
 inline bool libbirch::Counted::isFrozen() const {
-  return frozen.load() >= 1u;
+  return frozen.load() > nthreads;
 }
 
 inline bool libbirch::Counted::isUniquelyReachable() const {
-  return frozen.load() >= 2u;
+  return frozen.load() > nthreads + 1u;
 }
 
 inline void libbirch::Counted::doFreeze_() {

@@ -21,7 +21,11 @@ void libbirch::Counted::freeze() {
       /* freeze; possible that state is some other thread id here, meaning
        * another thread is in the process of freezing too, but this is
        * harmless */
-      doFreeze_();
+      auto ptr = lock();
+      if (ptr) {
+        doFreeze_();
+        decShared();
+      }
       frozen.store(nthreads + ((numShared() <= 1u && numWeak() - numMemo() == 1u) ? 2u : 1u));
     }
   }
