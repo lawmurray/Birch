@@ -38,6 +38,9 @@
 #include "libbirch/EigenFunctions.hpp"
 #include "libbirch/EigenOperators.hpp"
 
+/**
+ * LibBirch.
+ */
 namespace libbirch {
 /**
  * Default array for `D` dimensions.
