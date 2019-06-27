@@ -58,6 +58,14 @@ final class Random<Value> < Expression<Value> {
     }
     return x!;
   }
+  
+  /**
+   * Get the distribution associated with the random variate.
+   */
+  function distribution() -> Distribution<Value> {
+    assert dist?;
+    return dist!;
+  }
 
   /**
    * Evaluate the log probability density (or mass) function, if it exists.
