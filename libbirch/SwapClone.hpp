@@ -7,12 +7,21 @@
 
 namespace libbirch {
 /**
- * Swap the clone flag on construction, swap it back on destruction.
+ * Sets the thread-local clone flag cloneUnderway on construction, swaps it
+ * back to its previous value on destruction. This is the recommended way to
+ * modify this flag, e.g.:
+ *
+ *     void f() {
+ *       SwapClone swapClone(true);
+ *       ...
+ *     }
  */
 class SwapClone {
 public:
   /**
    * Constructor.
+   *
+   * @param clone Value to which to set the flag.
    */
   SwapClone(const bool clone) : prevCloneUnderway(cloneUnderway) {
     cloneUnderway = clone;

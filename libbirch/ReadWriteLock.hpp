@@ -11,12 +11,12 @@ namespace libbirch {
  *
  * @ingroup libbirch
  */
-class Lock {
+class ReadWriteLock {
 public:
   /**
    * Default constructor.
    */
-  Lock();
+  ReadWriteLock();
 
   /**
    * Obtain read use.
@@ -51,24 +51,24 @@ private:
 };
 }
 
-inline libbirch::Lock::Lock() :
+inline libbirch::ReadWriteLock::ReadWriteLock() :
     readers(0),
     writer(false) {
   //
 }
 
-inline void libbirch::Lock::read() {
+inline void libbirch::ReadWriteLock::read() {
   ++readers;
   while (writer.load()) {
     //
   }
 }
 
-inline void libbirch::Lock::unread() {
+inline void libbirch::ReadWriteLock::unread() {
   --readers;
 }
 
-inline void libbirch::Lock::write() {
+inline void libbirch::ReadWriteLock::write() {
   bool writer = false;
   while (!writer) {
     /* obtain the write lock */
@@ -86,6 +86,6 @@ inline void libbirch::Lock::write() {
   }
 }
 
-inline void libbirch::Lock::unwrite() {
+inline void libbirch::ReadWriteLock::unwrite() {
   writer.store(false);
 }

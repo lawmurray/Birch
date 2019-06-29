@@ -10,7 +10,7 @@
 #include "libbirch/Array.hpp"
 
 namespace libbirch {
-/**
+/*
  * Is this a value type?
  */
 template<class T>

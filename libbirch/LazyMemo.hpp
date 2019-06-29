@@ -8,7 +8,7 @@
 #include "libbirch/LazyAny.hpp"
 #include "libbirch/SharedPtr.hpp"
 #include "libbirch/Map.hpp"
-#include "libbirch/Lock.hpp"
+#include "libbirch/ReadWriteLock.hpp"
 
 namespace libbirch {
 /**
@@ -85,7 +85,7 @@ private:
   /**
    * Lock.
    */
-  Lock l;
+  ReadWriteLock l;
 };
 }
 

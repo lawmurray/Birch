@@ -8,7 +8,7 @@
 
 namespace libbirch {
 /**
- * Lock with only exclusive use semantics.
+ * Lock with exclusive use semantics.
  *
  * @ingroup libbirch
  */
