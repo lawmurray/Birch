@@ -49,14 +49,14 @@ size_t libbirch::bufferSize;
 /**
  * Create and/or return the root memo
  */
-static libbirch::Memo* root() {
-  static libbirch::SharedPtr<libbirch::Memo> memo = libbirch::Memo::create_();
-  return memo.get();
+static libbirch::Context* root() {
+  static libbirch::SharedPtr<libbirch::Context> context = libbirch::Context::create_();
+  return context.get();
 }
 
 /* declared in clone.hpp, here to ensure order of initialization for global
  * variables */
-thread_local libbirch::Memo* libbirch::currentContext(root());
+thread_local libbirch::Context* libbirch::currentContext(root());
 thread_local bool libbirch::cloneUnderway = false;
 
 void* libbirch::allocate(const size_t n) {

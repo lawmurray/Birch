@@ -1,5 +1,8 @@
 /**
  * @file
+ *
+ * Provides the standard shared pointer type according to configuration
+ * options.
  */
 #pragma once
 
@@ -9,7 +12,8 @@
 
 namespace libbirch {
 /**
- * Shared pointer type.
+ * Default shared pointer type. If `ENABLE_LAZY_DEEP_CLONE` is defined true
+ * this is LazyPtr<SharedPtr<T>>, otherwise EagerPtr<SharedPtr<T>>.
  */
 #if ENABLE_LAZY_DEEP_CLONE
 template<class T>

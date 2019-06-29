@@ -12,32 +12,32 @@
 
 namespace libbirch {
 /**
- * Memo for lazy deep clones.
+ * Context for lazy deep clones.
  *
  * @ingroup libbirch
  */
-class LazyMemo: public Counted {
+class LazyContext: public Counted {
   friend class List;
 public:
-  using class_type_ = LazyMemo;
+  using class_type_ = LazyContext;
 
 protected:
   /**
    * Constructor for root node.
    */
-  LazyMemo();
+  LazyContext();
 
   /**
    * Constructor for non-root node.
    *
    * @param parent Parent.
    */
-  LazyMemo(LazyMemo* parent);
+  LazyContext(LazyContext* parent);
 
   /**
    * Destructor.
    */
-  virtual ~LazyMemo();
+  virtual ~LazyContext();
 
 public:
   libbirch_create_function_
@@ -45,11 +45,11 @@ public:
   libbirch_destroy_function_
 
   /**
-   * Fork to create a new child memo for cloning.
+   * Fork to create a new child context.
    *
-   * @return The clone memo.
+   * @return The child context.
    */
-  LazyMemo* fork();
+  LazyContext* fork();
 
   /**
    * Map an object that may not yet have been cloned, cloning it if
@@ -78,7 +78,7 @@ protected:
 
 private:
   /**
-   * Map of object clones.
+   * Memo that maps source objects to clones.
    */
   Map m;
 
@@ -89,12 +89,11 @@ private:
 };
 }
 
-inline libbirch::LazyMemo* libbirch::LazyMemo::fork() {
+inline libbirch::LazyContext* libbirch::LazyContext::fork() {
   return create_(this);
 }
 
-inline void libbirch::LazyMemo::doFreeze_() {
-  ///@todo check if this can recursively visit the same memo several times
+inline void libbirch::LazyContext::doFreeze_() {
   l.read();
   m.freeze();
   l.unread();

@@ -2,25 +2,25 @@
  * @file
  */
 #if ENABLE_LAZY_DEEP_CLONE
-#include "libbirch/LazyMemo.hpp"
+#include "libbirch/LazyContext.hpp"
 
 #include "libbirch/SwapClone.hpp"
 #include "libbirch/SwapContext.hpp"
 
-libbirch::LazyMemo::LazyMemo() {
+libbirch::LazyContext::LazyContext() {
   //
 }
 
-libbirch::LazyMemo::LazyMemo(LazyMemo* parent) {
+libbirch::LazyContext::LazyContext(LazyContext* parent) {
   assert(parent);
   m.copy(parent->m);
 }
 
-libbirch::LazyMemo::~LazyMemo() {
+libbirch::LazyContext::~LazyContext() {
   //
 }
 
-libbirch::LazyAny* libbirch::LazyMemo::get(LazyAny* o) {
+libbirch::LazyAny* libbirch::LazyContext::get(LazyAny* o) {
   assert(o->isFrozen());
   LazyAny* prev = nullptr;
   LazyAny* next = o;
@@ -38,7 +38,7 @@ libbirch::LazyAny* libbirch::LazyMemo::get(LazyAny* o) {
   return next;
 }
 
-libbirch::LazyAny* libbirch::LazyMemo::pull(LazyAny* o) {
+libbirch::LazyAny* libbirch::LazyContext::pull(LazyAny* o) {
   assert(o->isFrozen());
   LazyAny* prev = nullptr;
   LazyAny* next = o;
@@ -54,7 +54,7 @@ libbirch::LazyAny* libbirch::LazyMemo::pull(LazyAny* o) {
   return next;
 }
 
-libbirch::LazyAny* libbirch::LazyMemo::finish(LazyAny* o) {
+libbirch::LazyAny* libbirch::LazyContext::finish(LazyAny* o) {
   assert(o->isFrozen());
   LazyAny* prev = nullptr;
   LazyAny* next = o;
@@ -70,7 +70,7 @@ libbirch::LazyAny* libbirch::LazyMemo::finish(LazyAny* o) {
   return next;
 }
 
-libbirch::LazyAny* libbirch::LazyMemo::copy(LazyAny* o) {
+libbirch::LazyAny* libbirch::LazyContext::copy(LazyAny* o) {
   /* for a lazy deep clone there is no risk of infinite recursion, but
    * there may be thread contention if two threads access the same object
    * and both trigger a lazy clone simultaneously; in this case multiple

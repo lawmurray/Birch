@@ -5,7 +5,7 @@
 #if !ENABLE_LAZY_DEEP_CLONE
 
 #include "libbirch/clone.hpp"
-#include "libbirch/EagerMemo.hpp"
+#include "libbirch/EagerContext.hpp"
 #include "libbirch/Nil.hpp"
 #include "libbirch/SwapClone.hpp"
 #include "libbirch/SwapContext.hpp"
@@ -186,10 +186,10 @@ class EagerPtr {
    */
   EagerPtr<P> clone() const {
     if (object) {
-      SharedPtr<EagerMemo> memo = EagerMemo::create_();
+      SharedPtr<EagerContext> context = EagerContext::create_();
       SwapClone swapClone(true);
-      SwapContext swapContext(memo.get());
-      return EagerPtr<P>(static_cast<T*>(memo->copy(object.get())));
+      SwapContext swapContext(context.get());
+      return EagerPtr<P>(static_cast<T*>(context->copy(object.get())));
     } else {
       return EagerPtr<P>();
     }

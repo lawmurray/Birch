@@ -5,14 +5,14 @@
 
 #include "libbirch/SharedPtr.hpp"
 #include "libbirch/InitPtr.hpp"
-#include "libbirch/Memo.hpp"
+#include "libbirch/Context.hpp"
 
 namespace libbirch {
 /**
- * Shared or weak pointer to a Memo, according to context. This is used by
- * LazyPtr for its memo field. It records the context of the
- * pointer: whether it is part of a member variable or not, and keeps a
- * weak or shared pointer to the Memo according to that context.
+ * Context-sensitive shared or weak pointer to another Context. It records
+ * the Context of the owning object; if this is the same as the referent
+ * Context, a weak pointer is kept, otherwise a shared pointer is kept. This
+ * is used to avoid reference cycles between Context objects.
  *
  * @ingroup libbirch
  */
@@ -22,16 +22,16 @@ public:
    * Default constructor.
    */
   ContextPtr() :
-      context(currentContext) {
+      owner(currentContext) {
     //
   }
 
   /**
    * Value constructor.
    */
-  ContextPtr(Memo* memo) :
-      memo(memo == currentContext ? nullptr : memo),
-      context(currentContext) {
+  ContextPtr(Context* context) :
+      context(context == currentContext ? nullptr : context),
+      owner(currentContext) {
     //
   }
 
@@ -39,15 +39,15 @@ public:
    * Copy constructor.
    */
   ContextPtr(const ContextPtr& o) :
-      memo(nullptr),
-      context(currentContext) {
-    if (o.memo) {
-      if (o.memo != context) {
-        memo = o.memo;
+      context(nullptr),
+      owner(currentContext) {
+    if (o.context) {
+      if (o.context != owner) {
+        context = o.context;
       }
     } else {
-      if (o.context != context) {
-        memo = o.context;
+      if (o.owner != owner) {
+        context = o.owner;
       }
     }
   }
@@ -56,15 +56,15 @@ public:
    * Move constructor.
    */
   ContextPtr(ContextPtr&& o) :
-      memo(nullptr),
-      context(currentContext) {
-    if (o.memo) {
-      if (o.memo != context) {
-        memo = std::move(o.memo);
+      context(nullptr),
+      owner(currentContext) {
+    if (o.context) {
+      if (o.context != owner) {
+        context = std::move(o.context);
       }
     } else {
-      if (o.context != context) {
-        memo = std::move(o.context);
+      if (o.owner != owner) {
+        context = std::move(o.owner);
       }
     }
   }
@@ -72,8 +72,8 @@ public:
   /**
    * Value assignment.
    */
-  ContextPtr& operator=(Memo* memo) {
-    this->memo = (memo == context.get()) ? nullptr : memo;
+  ContextPtr& operator=(Context* context) {
+    this->context = (context == owner.get()) ? nullptr : context;
     return *this;
   }
 
@@ -81,17 +81,17 @@ public:
    * Copy assignment.
    */
   ContextPtr& operator=(const ContextPtr& o) {
-    if (o.memo) {
-      if (o.memo != context) {
-        memo = o.memo;
+    if (o.context) {
+      if (o.context != owner) {
+        context = o.context;
       } else {
-        memo = nullptr;
+        context = nullptr;
       }
     } else {
-      if (o.context != context) {
-        memo = o.context;
+      if (o.owner != owner) {
+        context = o.owner;
       } else {
-        memo = nullptr;
+        context = nullptr;
       }
     }
     return *this;
@@ -101,17 +101,17 @@ public:
    * Move assignment.
    */
   ContextPtr& operator=(ContextPtr&& o) {
-    if (o.memo) {
-      if (o.memo != context) {
-        memo = std::move(o.memo);
+    if (o.context) {
+      if (o.context != owner) {
+        context = std::move(o.context);
       } else {
-        memo = nullptr;
+        context = nullptr;
       }
     } else {
-      if (o.context != context) {
-        memo = std::move(o.context);
+      if (o.owner != owner) {
+        context = std::move(o.owner);
       } else {
-        memo = nullptr;
+        context = nullptr;
       }
     }
     return *this;
@@ -120,28 +120,28 @@ public:
   /**
    * Get the raw pointer.
    */
-  Memo* get() const {
-    return memo.get() ? memo.get() : context.get();
+  Context* get() const {
+    return context.get() ? context.get() : owner.get();
   }
 
   /**
-   * Get the context.
+   * Get the owner.
    */
-  Memo* getContext() const {
-    return context.get();
+  Context* getContext() const {
+    return owner.get();
   }
 
   /**
    * Dereference.
    */
-  Memo& operator*() const {
+  Context& operator*() const {
     return *get();
   }
 
   /**
    * Member access.
    */
-  Memo* operator->() const {
+  Context* operator->() const {
     return get();
   }
 
@@ -168,16 +168,18 @@ public:
 
 private:
   /**
-   * The memo, if it is difference to context, otherwise `nullptr`.
+   * The referent, if it is difference to owner, otherwise `nullptr`.
    */
-  SharedPtr<LazyMemo> memo;
+  SharedPtr<Context> context;
 
   /**
-   * The owning context. This is the context in which the pointer itself was
-   * created. For a member variable, it is the same as the context of the
-   * containing object. Because the containing object holds a WeakPtr to the
-   * same object, use of an InitPtr is sufficient here.
+   * The owner. This is the context in which the pointer itself was created.
+   * For a member variable, it is the same as the context of the owning
+   * object. For a global or local variable it is the context of the  thread
+   * at the time it was created. Use of an InitPtr rather than WeakPtr is
+   * sufficient here, as at least a WeakPtr must exist to the owner context
+   * elsewhere.
    */
-  InitPtr<LazyMemo> context;
+  InitPtr<Context> owner;
 };
 }

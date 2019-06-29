@@ -6,7 +6,7 @@
 
 #include "libbirch/clone.hpp"
 #include "libbirch/LazyAny.hpp"
-#include "libbirch/LazyMemo.hpp"
+#include "libbirch/LazyContext.hpp"
 #include "libbirch/Nil.hpp"
 #include "libbirch/ContextPtr.hpp"
 
@@ -55,7 +55,7 @@ public:
   /**
    * Constructor.
    */
-  LazyPtr(T* object, LazyMemo* to) :
+  LazyPtr(T* object, LazyContext* to) :
       object(object),
       to(object ? to : nullptr) {
     //
@@ -64,7 +64,7 @@ public:
   /**
    * Constructor.
    */
-  LazyPtr(const P& object, LazyMemo* to) :
+  LazyPtr(const P& object, LazyContext* to) :
       object(object),
       to(object ? to : nullptr) {
     //
@@ -292,12 +292,12 @@ public:
    * Deep clone.
    */
   LazyPtr<P> clone() const {
-    LazyMemo* memo = nullptr;
+    LazyContext* context = nullptr;
     if (object) {
       freeze();
-      memo = to->fork();
+      context = to->fork();
     }
-    return LazyPtr<P>(object, memo);
+    return LazyPtr<P>(object, context);
   }
 
   /**
@@ -342,7 +342,7 @@ public:
   /**
    * Get the context of the object.
    */
-  LazyMemo* getContext() const {
+  LazyContext* getContext() const {
     return to.get();
   }
 

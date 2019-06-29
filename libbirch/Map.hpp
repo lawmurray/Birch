@@ -7,7 +7,7 @@
 
 namespace libbirch {
 /**
- * Hash table of memory mappings.
+ * Hash table of object mappings.
  *
  * @ingroup libbirch
  */

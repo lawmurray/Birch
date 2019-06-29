@@ -2,17 +2,17 @@
  * @file
  */
 #if !ENABLE_LAZY_DEEP_CLONE
-#include "libbirch/EagerMemo.hpp"
+#include "libbirch/EagerContext.hpp"
 
 #include "libbirch/SwapClone.hpp"
 #include "libbirch/SwapContext.hpp"
 
-libbirch::EagerAny* libbirch::EagerMemo::get(EagerAny* o) {
+libbirch::EagerAny* libbirch::EagerContext::get(EagerAny* o) {
     auto result = m.get(o);
     return result ? result : copy(o);
 }
 
-libbirch::EagerAny* libbirch::EagerMemo::copy(EagerAny* o) {
+libbirch::EagerAny* libbirch::EagerContext::copy(EagerAny* o) {
   /* for an eager deep clone we must be cautious to avoid infinite
    * recursion; memory for the new object is allocated first and put
    * in the map in case of deeper pointers back to the same object; then

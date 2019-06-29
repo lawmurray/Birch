@@ -392,7 +392,7 @@ public:
    * Birch Array types and Eigen Matrix types.
    */
   ///@{
-  /**
+  /*
    * Compatibility check.
    */
   template<class DerivedType>
@@ -429,6 +429,10 @@ public:
             EigenStrideType(volume(), stride(0)) :
             EigenStrideType(stride(0), stride(1))));
   }
+
+  /**
+   * @copydoc toEigen
+   */
   EigenType toEigen() const {
     return EigenType(buf(), length(0),
         (F::count() == 1 ? 1 : length(1)),
@@ -443,6 +447,10 @@ public:
   operator EigenType() {
     return toEigen();
   }
+
+  /**
+   * @copydoc EigenType
+   */
   operator EigenType() const {
     return toEigen();
   }

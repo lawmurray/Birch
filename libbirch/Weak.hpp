@@ -1,5 +1,8 @@
 /**
  * @file
+ *
+ * Provides the standard weak pointer type according to configuration
+ * options.
  */
 #pragma once
 
@@ -9,7 +12,8 @@
 
 namespace libbirch {
 /**
- * Weak pointer type
+ * Default weak pointer type. If `ENABLE_LAZY_DEEP_CLONE` is defined true
+ * this is LazyPtr<WeakPtr<T>>, otherwise EagerPtr<WeakPtr<T>>.
  */
 #if ENABLE_LAZY_DEEP_CLONE
 template<class T>

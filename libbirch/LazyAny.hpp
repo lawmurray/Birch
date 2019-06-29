@@ -49,24 +49,24 @@ public:
   libbirch_destroy_function_
 
   /**
-   * Get the memo responsible for the creation of this object.
+   * Get the context in which this object was created.
    */
-  LazyMemo* getContext();
+  LazyContext* getContext();
 
   /**
-   * If this memo is frozen, return the memo to which it should forward,
-   * otherwise `this`.
+   * If the object is frozen, return the object to which to forward writes.
    */
   LazyAny* getForward();
 
   /**
-   * If this memo is frozen, and the memo to which it should forward has
-   * already been created, return that memoo, otherwise `this`.
+   * If the object is frozen, and the object to which to forward writes has
+   * already been created, return it, otherwise return `this`. This is used
+   * to forward reads, ensuring that the most recent writes are visible.
    */
   LazyAny* pullForward();
 
   /**
-   * Finish any remaining lazy deep clones in the member variables of this
+   * Finish any remaining lazy deep clones in the subgraph reachable from the
    * object.
    */
   void finish();
@@ -86,9 +86,9 @@ protected:
   virtual void doFinish_();
 
   /**
-   * Memo responsible for the creation of this object.
+   * Context in which this object was created.
    */
-  WeakPtr<LazyMemo> context;
+  WeakPtr<LazyContext> context;
 
   /**
    * If frozen, object to which to forward. This must be thread safe, and
@@ -129,7 +129,7 @@ inline libbirch::LazyAny::~LazyAny() {
   //
 }
 
-inline libbirch::LazyMemo* libbirch::LazyAny::getContext() {
+inline libbirch::LazyContext* libbirch::LazyAny::getContext() {
   return context.get();
 }
 

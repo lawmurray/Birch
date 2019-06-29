@@ -24,7 +24,7 @@ public:
    *
    * @param context The context to swap in.
    */
-  SwapContext(Memo* context) : prevContext(currentContext) {
+  SwapContext(Context* context) : prevContext(currentContext) {
     currentContext = context;
   }
 
@@ -48,6 +48,6 @@ private:
   /**
    * Previous context.
    */
-  Memo* prevContext;
+  Context* prevContext;
 };
 }

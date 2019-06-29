@@ -10,14 +10,14 @@
 
 namespace libbirch {
 /**
- * Memo for lazy deep cloning of objects.
+ * Context for lazy deep cloning of objects.
  *
  * @ingroup libbirch
  */
-class EagerMemo: public Counted {
+class EagerContext: public Counted {
   friend class List;
 public:
-  using class_type_ = EagerMemo;
+  using class_type_ = EagerContext;
 
   libbirch_create_function_
   libbirch_emplace_function_
@@ -35,7 +35,7 @@ public:
 
 private:
   /**
-   * Memoization of source objects to clones.
+   * Memo that maps source objects to clones.
    */
   Map m;
 };

@@ -34,7 +34,7 @@ public:
   /**
    * Get the context of the fiber state.
    */
-  Memo* getContext() const;
+  Context* getContext() const;
 
   /**
    * Run to next yield point.
@@ -74,7 +74,7 @@ void libbirch::Fiber<YieldType>::freeze() const {
 }
 
 template<class YieldType>
-libbirch::Memo* libbirch::Fiber<YieldType>::getContext() const {
+libbirch::Context* libbirch::Fiber<YieldType>::getContext() const {
   return state.getContext();
 }
 
