@@ -69,21 +69,19 @@ inline void libbirch::ReadWriteLock::unread() {
 }
 
 inline void libbirch::ReadWriteLock::write() {
-  bool writer = false;
-  while (!writer) {
+  bool w;
+  do {
     /* obtain the write lock */
-    do {
-      writer = this->writer.exchange(true);
-    } while (writer);
+    while (writer.exchange(true));
 
     /* check if there are any readers; if so release the write lock to
      * let those readers proceed and avoid a deadlock situation, repeating
      * from the start, otherwise proceed */
-    writer = (readers.load() == 0);
-    if (!writer) {
-      this->writer.store(false);
+    w = (readers.load() == 0);
+    if (!w) {
+      writer.store(false);
     }
-  }
+  } while (!w);
 }
 
 inline void libbirch::ReadWriteLock::unwrite() {
