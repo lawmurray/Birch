@@ -28,14 +28,12 @@ void* libbirch::Pool::getNext(void* block) {
 }
 
 void libbirch::Pool::setNext(void* block, void* value) {
-  assert(
-      !block || (bufferStart <= block && block < bufferStart + bufferSize));
+  assert(block);
+  assert(bufferStart <= block && block < bufferStart + bufferSize);
   assert(
       !value || (bufferStart <= value && value < bufferStart + bufferSize));
 
-  if (block) {
-    *reinterpret_cast<void**>(block) = value;
-  }
+  *reinterpret_cast<void**>(block) = value;
 }
 
 #endif
