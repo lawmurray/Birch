@@ -30,7 +30,11 @@ void libbirch::Counted::freeze() {
 
     /* store nthreads + 1 for frozen, nthreads + 2 for frozen and uniquely
      * reachable */
-    frozen.store(libbirch::nthreads +
-        ((numShared() <= 1u && numWeak() - numMemo() == 1u) ? 2u : 1u));
+    #if ENABLE_SINGLE_REFERENCE_OPTIMIZATION
+    auto value = (numShared() <= 1u && numWeak() - numMemo() == 1u) ? 2u : 1u;
+    #else
+    auto value = 1u;
+    #endif
+    frozen.store(libbirch::nthreads + value);
   }
 }

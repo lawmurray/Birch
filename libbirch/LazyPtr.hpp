@@ -273,12 +273,16 @@ public:
    * Get the raw pointer for read-only use, without cloning.
    */
   const T* pull() {
+    #if ENABLE_READ_ONLY_OPTIMIZATION
     auto raw = object.get();
     if (raw && raw->isFrozen()) {
       raw = static_cast<T*>(to->pull(raw));
       object = raw;
     }
     return raw;
+    #else
+    return get();
+    #endif
   }
 
   /**
