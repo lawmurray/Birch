@@ -172,6 +172,7 @@ void bi::CppClassGenerator::visit(const Class* o) {
       }
 
       /* freeze function */
+      line("#if ENABLE_LAZY_DEEP_CLONE");
       if (header) {
         start("virtual void ");
       } else {
@@ -190,10 +191,12 @@ void bi::CppClassGenerator::visit(const Class* o) {
           line("libbirch::freeze(" << o->name << ");");
         }
         out();
-        line("}\n");
+        line("}");
       }
+      line("#endif\n");
 
       /* finish function */
+      line("#if ENABLE_LAZY_DEEP_CLONE");
       if (header) {
         start("virtual void ");
       } else {
@@ -212,8 +215,9 @@ void bi::CppClassGenerator::visit(const Class* o) {
           line("libbirch::finish(" << o->name << ");");
         }
         out();
-        line("}\n");
+        line("}");
       }
+      line("#endif\n");
 
       /* member variables and functions */
       *this << o->braces->strip();
