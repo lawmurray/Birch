@@ -29,15 +29,6 @@ public:
   }
 
   /**
-   * Constructor.
-   *
-   * @param o An object; the context to which it belongs will be swapped in.
-   */
-  SwapContext(Any* o) : SwapContext(o->getContext()) {
-    //
-  }
-
-  /**
    * Destructor.
    */
   ~SwapContext() {

@@ -3,12 +3,6 @@
  */
 #pragma once
 
-#include "libbirch/Shared.hpp"
-#include "libbirch/Weak.hpp"
-#include "libbirch/Optional.hpp"
-#include "libbirch/Fiber.hpp"
-#include "libbirch/Array.hpp"
-
 namespace libbirch {
 /*
  * Is this a value type?
@@ -17,7 +11,15 @@ template<class T>
 struct is_value {
   static const bool value = true;
 };
+}
 
+#include "libbirch/Shared.hpp"
+#include "libbirch/Weak.hpp"
+#include "libbirch/Optional.hpp"
+#include "libbirch/Fiber.hpp"
+#include "libbirch/Array.hpp"
+
+namespace libbirch {
 template<class T>
 struct is_value<Shared<T>> {
   static const bool value = false;

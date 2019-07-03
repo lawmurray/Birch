@@ -14,7 +14,7 @@ libbirch::LazyAny* libbirch::LazyAny::getForward() {
     mutex.keep();
     if (!forward) {
       SwapClone swapClone(true);
-      SwapContext swapContext(this);
+      SwapContext swapContext(getContext());
       forward = this->clone_();
     }
     mutex.unkeep();
