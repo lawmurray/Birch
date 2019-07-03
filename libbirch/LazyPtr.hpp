@@ -309,8 +309,11 @@ public:
    */
   void freeze() const {
     if (object) {
-      pull();
-      object->freeze();
+      auto raw = object.get();
+      if (raw->isFrozen()) {
+        raw = static_cast<T*>(to->pull(raw));
+      }
+      raw->freeze();
       to->freeze();
     }
   }
