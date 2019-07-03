@@ -9,28 +9,6 @@
 #include "libbirch/Pool.hpp"
 
 namespace libbirch {
-#if ENABLE_MEMORY_POOL
-/**
- * Get the @i th pool.
- */
-extern libbirch::Pool& pool(const unsigned i);
-
-/**
- * Buffer for heap allocations.
- */
-extern libbirch::Atomic<char*> buffer;
-
-/**
- * Start of heap (for debugging purposes).
- */
-extern char* bufferStart;
-
-/**
- * Size of heap (for debugging purposes).
- */
-extern size_t bufferSize;
-#endif
-
 /**
  * Number of bytes of memory currently in use (excluding that in pools).
  */

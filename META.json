@@ -15,7 +15,6 @@
       "libbirch/memory.cpp",
       "libbirch/stacktrace.cpp",
       "libbirch/thread.cpp",
-      "libbirch/Pool.cpp",
 
       "bi/basic/Boolean.bi",
       "bi/basic/File.bi",

@@ -62,6 +62,27 @@ private:
    */
   ExclusiveLock lock;
 };
+
+/**
+ * Get the @i th pool.
+ */
+extern Pool& pool(const unsigned i);
+
+/**
+ * Buffer for heap allocations.
+ */
+extern Atomic<char*> buffer;
+
+/**
+ * Start of heap (for debugging purposes).
+ */
+extern char* bufferStart;
+
+/**
+ * Size of heap (for debugging purposes).
+ */
+extern size_t bufferSize;
+
 }
 
 inline libbirch::Pool::Pool() :
@@ -71,6 +92,38 @@ inline libbirch::Pool::Pool() :
 
 inline bool libbirch::Pool::empty() const {
   return !top;
+}
+
+inline void* libbirch::Pool::pop() {
+  lock.keep();
+  auto result = top;
+  top = getNext(result);
+  lock.unkeep();
+  return result;
+}
+
+inline void libbirch::Pool::push(void* block) {
+  assert(bufferStart <= block && block < bufferStart + bufferSize);
+  lock.keep();
+  setNext(block, top);
+  top = block;
+  lock.unkeep();
+}
+
+inline void* libbirch::Pool::getNext(void* block) {
+  assert(
+      !block || (bufferStart <= block && block < bufferStart + bufferSize));
+
+  return (block) ? *reinterpret_cast<void**>(block) : nullptr;
+}
+
+inline void libbirch::Pool::setNext(void* block, void* value) {
+  assert(block);
+  assert(bufferStart <= block && block < bufferStart + bufferSize);
+  assert(
+      !value || (bufferStart <= value && value < bufferStart + bufferSize));
+
+  *reinterpret_cast<void**>(block) = value;
 }
 
 #endif
