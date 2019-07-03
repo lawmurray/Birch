@@ -142,11 +142,6 @@ public:
   unsigned numMemo() const;
 
   /**
-   * Freeze this object.
-   */
-  void freeze();
-
-  /**
    * Is the object reachable? An object is reachable if it contains a shared
    * count of one or more, or a weak count greater than the memo count. When
    * the weak count equals the memo count (it cannot be less), the object
@@ -156,18 +151,6 @@ public:
   bool isReachable() const;
 
   /**
-   * Is the object frozen? This returns true if either a freeze is in
-   * progress (i.e. another thread is in the process of freezing the object),
-   * or if the freeze is complete.
-   */
-  bool isFrozen() const;
-
-  /**
-   * Is the object frozen, and reachable through only a single pointer?
-   */
-  bool isUniquelyReachable() const;
-
-  /**
    * Name of the class.
    */
   virtual const char* name_() const {
@@ -175,13 +158,6 @@ public:
   }
 
 protected:
-  /**
-   * Perform the actual freeze of the object. This is overwritten by derived
-   * classes. The non-virtual freeze() handles thread safety so that this
-   * need not.
-   */
-  virtual void doFreeze_();
-
   /**
    * Shared count.
    */
@@ -214,12 +190,6 @@ protected:
    * different thread.
    */
   unsigned tid;
-
-  /**
-   * Is the object read-only? This is 0 for false 1 for true, and 2 true and
-   * accessible through a single pointer only.
-   */
-  Atomic<unsigned> frozen;
 };
 }
 
@@ -230,8 +200,7 @@ inline libbirch::Counted::Counted() :
     weakCount(1u),
     memoCount(0u),
     size(0u),
-    tid(libbirch::tid),
-    frozen(0u) {
+    tid(libbirch::tid) {
   //
 }
 
@@ -240,8 +209,7 @@ inline libbirch::Counted::Counted(const Counted& o) :
     weakCount(1u),
     memoCount(0u),
     size(o.size),
-    tid(libbirch::tid),
-    frozen(0u) {
+    tid(libbirch::tid) {
   //
 }
 
@@ -331,16 +299,4 @@ inline unsigned libbirch::Counted::numMemo() const {
 
 inline bool libbirch::Counted::isReachable() const {
   return numWeak() > numMemo();
-}
-
-inline bool libbirch::Counted::isFrozen() const {
-  return frozen.load() > 0u;
-}
-
-inline bool libbirch::Counted::isUniquelyReachable() const {
-  return frozen.load() > nthreads + 1u;
-}
-
-inline void libbirch::Counted::doFreeze_() {
-  //
 }

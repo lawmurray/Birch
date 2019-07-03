@@ -168,16 +168,7 @@ public:
   }
 
   /**
-   * Constructor for value.
-   */
-  template<class U>
-  Optional(const Weak<U>& value) :
-      value(value) {
-    //
-  }
-
-  /**
-   * Constructor for value.
+   * Generic move constructor for value.
    */
   template<class U>
   Optional(Shared<U>&& value) :
@@ -189,10 +180,24 @@ public:
    * Constructor for value.
    */
   template<class U>
+  Optional(const Weak<U>& value) :
+      value(value) {
+    //
+  }
+
+  /**
+   * Generic move constructor for value.
+   */
+  template<class U>
   Optional(Weak<U>&& value) :
       value(std::move(value)) {
     //
   }
+
+  /**
+   * Copy constructor.
+   */
+  Optional(const Optional<Shared<T>>& o) = default;
 
   /**
    * Generic copy constructor.
@@ -204,6 +209,11 @@ public:
   }
 
   /**
+   * Move constructor.
+   */
+  Optional(Optional<Shared<T>> && o) = default;
+
+  /**
    * Generic move constructor.
    */
   template<class U>
@@ -213,24 +223,32 @@ public:
   }
 
   /**
-   * Copy constructor.
-   */
-  Optional(const Optional<Shared<T>>& o) = default;
-
-  /**
-   * Move constructor.
-   */
-  Optional(Optional<Shared<T>> && o) = default;
-
-  /**
    * Copy assignment.
    */
   Optional<Shared<T>>& operator=(const Optional<Shared<T>>& o) = default;
 
   /**
+   * Generic copy assignment.
+   */
+  template<class U>
+  Optional<Shared<T>>& operator=(const Optional<Shared<U>>& o) {
+    value = o.value;
+    return *this;
+  }
+
+  /**
    * Move assignment.
    */
   Optional<Shared<T>>& operator=(Optional<Shared<T>> && o) = default;
+
+  /**
+   * Generic move assignment.
+   */
+  template<class U>
+  Optional<Shared<T>>& operator=(Optional<Shared<U>>&& o) {
+    value = std::move(o.value);
+    return *this;
+  }
 
   /**
    * Value conversion.

@@ -49,6 +49,18 @@ public:
   libbirch_destroy_function_
 
   /**
+   * Is the object frozen? This returns true if either a freeze is in
+   * progress (i.e. another thread is in the process of freezing the object),
+   * or if the freeze is complete.
+   */
+  bool isFrozen() const;
+
+  /**
+   * Is the object frozen, and reachable through only a single pointer?
+   */
+  bool isSingular() const;
+
+  /**
    * Get the context in which this object was created.
    */
   LazyContext* getContext();
@@ -66,6 +78,11 @@ public:
   LazyAny* pullForward();
 
   /**
+   * Freeze this object.
+   */
+  void freeze();
+
+  /**
    * Finish any remaining lazy deep clones in the subgraph reachable from the
    * object.
    */
@@ -79,6 +96,13 @@ public:
   }
 
 protected:
+  /**
+   * Perform the actual freeze of the object. This is overwritten by derived
+   * classes. The non-virtual freeze() handles thread safety so that this
+   * need not.
+   */
+  virtual void doFreeze_();
+
   /**
    * Perform the actual finish of the object. This is overwritten by derived
    * classes.
@@ -98,6 +122,12 @@ protected:
   SharedPtr<LazyAny> forward;
 
   /**
+   * Is the object read-only? This is 0 for false 1 for true, and 2 true and
+   * accessible through a single pointer only.
+   */
+  Atomic<unsigned> frozen;
+
+  /**
    * Have clones of all objects reachable from this object finished?
    */
   Atomic<bool> finished;
@@ -113,6 +143,7 @@ inline libbirch::LazyAny::LazyAny() :
     Counted(),
     context(currentContext),
     forward(nullptr),
+    frozen(0u),
     finished(false) {
   //
 }
@@ -121,12 +152,25 @@ inline libbirch::LazyAny::LazyAny(const LazyAny& o) :
     Counted(o),
     context(currentContext),
     forward(nullptr),
+    frozen(0u),
     finished(false) {
   //
 }
 
 inline libbirch::LazyAny::~LazyAny() {
   //
+}
+
+inline bool libbirch::LazyAny::isFrozen() const {
+  return frozen.load() > 0u;
+}
+
+inline bool libbirch::LazyAny::isSingular() const {
+  #if ENABLE_SINGLE_REFERENCE_OPTIMIZATION
+  return frozen.load() > nthreads + 1u;
+  #else
+  return false;
+  #endif
 }
 
 inline libbirch::LazyContext* libbirch::LazyAny::getContext() {
@@ -137,6 +181,10 @@ inline void libbirch::LazyAny::finish() {
   if (!finished.exchange(true) && sharedCount.load() > 0u) {
     doFinish_();
   }
+}
+
+inline void libbirch::LazyAny::doFreeze_() {
+  //
 }
 
 inline void libbirch::LazyAny::doFinish_() {

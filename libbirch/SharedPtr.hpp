@@ -37,17 +37,6 @@ public:
   }
 
   /**
-   * Generic shared constructor.
-   */
-  template<class U>
-  SharedPtr(const SharedPtr<U>& o) :
-      ptr(o.ptr) {
-    if (ptr) {
-      ptr->incShared();
-    }
-  }
-
-  /**
    * Generic weak constructor.
    */
   template<class U>
@@ -77,9 +66,29 @@ public:
   }
 
   /**
+   * Generic copy constructor.
+   */
+  template<class U>
+  SharedPtr(const SharedPtr<U>& o) :
+      ptr(o.ptr) {
+    if (ptr) {
+      ptr->incShared();
+    }
+  }
+
+  /**
    * Move constructor.
    */
   SharedPtr(SharedPtr<T> && o) :
+      ptr(o.ptr) {
+    o.ptr = nullptr;
+  }
+
+  /**
+   * Generic move constructor.
+   */
+  template<class U>
+  SharedPtr(SharedPtr<U> && o) :
       ptr(o.ptr) {
     o.ptr = nullptr;
   }
@@ -109,9 +118,43 @@ public:
   }
 
   /**
+   * Generic copy assignment.
+   */
+  template<class U>
+  SharedPtr<T>& operator=(const SharedPtr<U>& o) {
+    if (ptr != o.ptr) {
+      if (o.ptr) {
+        o.ptr->incShared();
+      }
+      auto old = ptr;
+      ptr = o.ptr;
+      if (old) {
+        old->decShared();
+      }
+    }
+    return *this;
+  }
+
+  /**
    * Move assignment.
    */
   SharedPtr<T>& operator=(SharedPtr<T> && o) {
+    if (ptr != o.ptr) {
+      auto old = ptr;
+      ptr = o.ptr;
+      o.ptr = nullptr;
+      if (old) {
+        old->decShared();
+      }
+    }
+    return *this;
+  }
+
+  /**
+   * Generic move assignment.
+   */
+  template<class U>
+  SharedPtr<T>& operator=(SharedPtr<U> && o) {
     if (ptr != o.ptr) {
       auto old = ptr;
       ptr = o.ptr;

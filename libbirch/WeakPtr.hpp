@@ -37,35 +37,12 @@ public:
   }
 
   /**
-   * Copy constructor.
-   */
-  WeakPtr(const WeakPtr<T>& o) :
-      ptr(o.ptr) {
-    if (ptr) {
-      assert(ptr->numWeak() > 0);
-      ptr->incWeak();
-    }
-  }
-
-  /**
    * Generic shared constructor.
    */
   template<class U>
   WeakPtr(const SharedPtr<U>& o) :
       ptr(o.ptr) {
     if (ptr) {
-      ptr->incWeak();
-    }
-  }
-
-  /**
-   * Generic weak constructor.
-   */
-  template<class U>
-  WeakPtr(const WeakPtr<U>& o) :
-      ptr(o.ptr) {
-    if (ptr) {
-      assert(ptr->numWeak() > 0);
       ptr->incWeak();
     }
   }
@@ -83,9 +60,41 @@ public:
   }
 
   /**
+   * Copy constructor.
+   */
+  WeakPtr(const WeakPtr<T>& o) :
+      ptr(o.ptr) {
+    if (ptr) {
+      assert(ptr->numWeak() > 0);
+      ptr->incWeak();
+    }
+  }
+
+  /**
+   * Generic copy constructor.
+   */
+  template<class U>
+  WeakPtr(const WeakPtr<U>& o) :
+      ptr(o.ptr) {
+    if (ptr) {
+      assert(ptr->numWeak() > 0);
+      ptr->incWeak();
+    }
+  }
+
+  /**
    * Move constructor.
    */
   WeakPtr(WeakPtr<T> && o) :
+      ptr(o.ptr) {
+    o.ptr = nullptr;
+  }
+
+  /**
+   * Generic move constructor.
+   */
+  template<class U>
+  WeakPtr(WeakPtr<U> && o) :
       ptr(o.ptr) {
     o.ptr = nullptr;
   }
@@ -115,9 +124,43 @@ public:
   }
 
   /**
+   * Generic copy assignment.
+   */
+  template<class U>
+  WeakPtr<T>& operator=(const WeakPtr<U>& o) {
+    if (ptr != o.ptr) {
+      if (o.ptr) {
+        o.ptr->incWeak();
+      }
+      auto old = ptr;
+      ptr = o.ptr;
+      if (old) {
+        old->decWeak();
+      }
+    }
+    return *this;
+  }
+
+  /**
    * Move assignment.
    */
   WeakPtr<T>& operator=(WeakPtr<T> && o) {
+    if (ptr != o.ptr) {
+      auto old = ptr;
+      ptr = o.ptr;
+      o.ptr = nullptr;
+      if (old) {
+        old->decWeak();
+      }
+    }
+    return *this;
+  }
+
+  /**
+   * Generic move assignment.
+   */
+  template<class U>
+  WeakPtr<T>& operator=(WeakPtr<U> && o) {
     if (ptr != o.ptr) {
       auto old = ptr;
       ptr = o.ptr;

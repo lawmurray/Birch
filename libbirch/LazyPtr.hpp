@@ -83,7 +83,7 @@ public:
         to = currentContext;
       }
     } else if (o.object) {
-      object = o.object->isUniquelyReachable() ? o.get() : o.object;
+      object = o.object->isSingular() ? o.get() : o.object;
       to = o.to;
     }
   }
@@ -95,7 +95,7 @@ public:
       typename Q::value_type>::value>>
   LazyPtr(const LazyPtr<Q>& o) {
     if (o.object) {
-      object = o.object->isUniquelyReachable() ? o.get() : o.object;
+      object = o.object->isSingular() ? o.get() : o.object;
       to = o.to;
     }
   }
@@ -103,33 +103,29 @@ public:
   /**
    * Move constructor.
    */
-  LazyPtr(LazyPtr<P> && o) = default;
+  LazyPtr(LazyPtr<P> && o) {
+    object = std::move(o.object);
+    to = std::move(o.to);
+  }
 
   /**
-   * Copy assignment operator.
+   * Generic move constructor.
+   */
+  template<class Q>
+  LazyPtr(LazyPtr<Q> && o) {
+    object = std::move(o.object);
+    to = std::move(o.to);
+  }
+
+  /**
+   * Copy assignment.
    */
   LazyPtr<P>& operator=(const LazyPtr<P>& o) {
     /* it's possible that object = o.object actually destroys the referent
      * of o, so do the to = o.to first */
     if (o.object) {
       to = o.to;
-      object = o.object->isUniquelyReachable() ? o.get() : o.object;
-    } else {
-      to = nullptr;
-      object = nullptr;
-    }
-    return *this;
-  }
-
-  /**
-   * Move assignment operator.
-   */
-  LazyPtr<P>& operator=(LazyPtr<P> && o) {
-    /* it's possible that object = o.object actually destroys the referent
-     * of o, so do the to = o.to first */
-    if (o.object) {
-      to = o.to;
-      object = std::move(o.object);
+      object = o.object->isSingular() ? o.get() : o.object;
     } else {
       to = nullptr;
       object = nullptr;
@@ -147,7 +143,23 @@ public:
      * of o, so do the to = o.to first */
     if (o.object) {
       to = o.to;
-      object = o.object->isUniquelyReachable() ? o.get() : o.object;
+      object = o.object->isSingular() ? o.get() : o.object;
+    } else {
+      to = nullptr;
+      object = nullptr;
+    }
+    return *this;
+  }
+
+  /**
+   * Move assignment.
+   */
+  LazyPtr<P>& operator=(LazyPtr<P> && o) {
+    /* it's possible that object = o.object actually destroys the referent
+     * of o, so do the to = o.to first */
+    if (o.object) {
+      to = std::move(o.to);
+      object = std::move(o.object);
     } else {
       to = nullptr;
       object = nullptr;
@@ -164,7 +176,7 @@ public:
     /* it's possible that object = o.object actually destroys the referent
      * of o, so do the to = o.to first */
     if (o.object) {
-      to = o.to;
+      to = std::move(o.to);
       object = std::move(o.object);
     } else {
       to = nullptr;
@@ -313,8 +325,8 @@ public:
       if (raw->isFrozen()) {
         raw = static_cast<T*>(to->pull(raw));
       }
-      raw->freeze();
       to->freeze();
+      raw->freeze();
     }
   }
 

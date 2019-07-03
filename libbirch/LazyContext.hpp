@@ -73,8 +73,10 @@ public:
    */
   LazyAny* copy(LazyAny* o);
 
-protected:
-  virtual void doFreeze_();
+  /**
+   * Freeze all values in the memo.
+   */
+  void freeze();
 
 private:
   /**
@@ -86,17 +88,16 @@ private:
    * Lock.
    */
   ReadWriteLock l;
+
+  /**
+   * How many insertions since the last freeze?
+   */
+  unsigned ninserts;
 };
 }
 
 inline libbirch::LazyContext* libbirch::LazyContext::fork() {
   return create_(this);
-}
-
-inline void libbirch::LazyContext::doFreeze_() {
-  l.read();
-  m.freeze();
-  l.unread();
 }
 
 #endif
