@@ -110,15 +110,6 @@ libbirch::Map::value_type libbirch::Map::uninitialized_put(const key_type key,
   return result;
 }
 
-void libbirch::Map::freeze() {
-  for (auto i = 0u; i < nentries; ++i) {
-    auto v = values[i];
-    if (v) {
-      v->freeze();
-    }
-  }
-}
-
 void libbirch::Map::copy(Map& o) {
   assert(empty());
 
@@ -154,6 +145,17 @@ void libbirch::Map::copy(Map& o) {
     resize(nentries2);
   }
 }
+
+#if ENABLE_LAZY_DEEP_CLONE
+void libbirch::Map::freeze() {
+  for (auto i = 0u; i < nentries; ++i) {
+    auto v = values[i];
+    if (v) {
+      v->freeze();
+    }
+  }
+}
+#endif
 
 void libbirch::Map::reserve() {
   if (++noccupied > crowd()) {

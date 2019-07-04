@@ -71,15 +71,17 @@ public:
   value_type uninitialized_put(const key_type key, const value_type value);
 
   /**
-   * Freeze all values in the map.
-   */
-  void freeze();
-
-  /**
    * Copy entries from another map into this one, removing any that are
    * obsolete.
    */
   void copy(Map& o);
+
+  #if ENABLE_LAZY_DEEP_CLONE
+  /**
+   * Freeze all values in the map.
+   */
+  void freeze();
+  #endif
 
 private:
   /**
