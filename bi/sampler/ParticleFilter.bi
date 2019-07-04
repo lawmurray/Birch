@@ -103,7 +103,7 @@ class ParticleFilter < ForwardSampler {
     x1:Vector<ForwardModel>;
     x1.enlarge(N, clone<ForwardModel>(archetype!));
     x <- x1.toArray();
-    dynamic parallel for auto n in 1..N {
+    parallel for auto n in 1..N {
       x[n] <- clone<ForwardModel>(x[n]);
     }
     tic();
@@ -163,7 +163,7 @@ class ParticleFilter < ForwardSampler {
       
       /* copy particles */
       auto x0 <- x;
-      dynamic parallel for auto n in 1..N {
+      parallel for auto n in 1..N {
         if o[a[n]] == 1 {
           x[n] <- x0[a[n]];  // avoid the clone overhead
         } else {
