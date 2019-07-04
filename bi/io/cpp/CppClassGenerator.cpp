@@ -191,12 +191,10 @@ void bi::CppClassGenerator::visit(const Class* o) {
           line("libbirch::freeze(" << o->name << ");");
         }
         out();
-        line("}");
+        line("}\n");
       }
-      line("#endif\n");
 
       /* finish function */
-      line("#if ENABLE_LAZY_DEEP_CLONE");
       if (header) {
         start("virtual void ");
       } else {

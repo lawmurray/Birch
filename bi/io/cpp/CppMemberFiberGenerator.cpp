@@ -111,6 +111,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   }
 
   /* freeze function */
+  line("#if ENABLE_LAZY_DEEP_CLONE");
   if (header) {
     start("virtual void ");
   } else {
@@ -136,6 +137,34 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     out();
     line("}\n");
   }
+
+  /* finish function */
+  if (header) {
+    start("virtual void ");
+  } else {
+    start("void bi::type::" << type->name);
+    genTemplateArgs(type);
+    middle("::" << stateName << "::");
+  }
+  middle("doFinish_()");
+  if (header) {
+    finish(';');
+  } else {
+    finish(" {");
+    in();
+    line("super_type_::doFinish_();");
+    line("libbirch::finish(self);");
+    line("libbirch::finish(value_);");
+    for (auto param : params) {
+      line("libbirch::finish(" << param->name << ");");
+    }
+    for (auto local : locals) {
+      line("libbirch::finish(" << getName(local->name->str(), local->number) << ");");
+    }
+    out();
+    line("}");
+  }
+  line("#endif\n");
 
   /* query function */
   if (header) {
