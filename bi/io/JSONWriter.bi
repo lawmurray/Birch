@@ -57,7 +57,19 @@ class JSONWriter < YAMLWriter {
   }
 
   function scalar(x:Real) {
-    auto value <- String(x);
+    /* the literals NaN, Infinity and -Infinity are not correct JSON, but are
+     * fine for YAML, are correct JavaScript, and are supported by Python's
+     * JSON module (also based on libyaml); so we encode to this */
+    value:String;
+    if x == inf {
+      value <- "Infinity";
+    } else if x == -inf {
+      value <- "-Infinity";
+    } else if isnan(x) {
+      value <- "NaN";
+    } else {
+      value <- String(x);
+    }
     cpp{{
     yaml_scalar_event_initialize(&self->event, NULL, NULL,
         (yaml_char_t*)value.c_str(), value.length(), 1, 1,

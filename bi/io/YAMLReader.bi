@@ -127,6 +127,12 @@ class YAMLReader < Reader {
         buffer->setBoolean(false);
       } else if (std::strcmp(data, "null") == 0) {
         buffer->setNil();
+      } else if (std::strcmp(data, "Infinity")) {
+        buffer->setReal(std::numeric_limits<Real>::infinity());
+      } else if (std::strcmp(data, "-Infinity")) {
+        buffer->setReal(-std::numeric_limits<Real>::infinity());
+      } else if (std::strcmp(data, "NaN")) {
+        buffer->setReal(std::numeric_limits<Real>::quiet_NaN());
       } else {
         buffer->setString(std::string(data, length));
       }

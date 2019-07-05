@@ -202,5 +202,7 @@ function min(x:Real64, y:Real64) -> Real64 {
  * Does this have the value NaN?
  */
 function isnan(x:Real64) -> Boolean {
-  return x != x;
+  cpp{{
+  return std::isnan(x);
+  }}
 }
