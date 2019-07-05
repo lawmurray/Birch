@@ -119,7 +119,11 @@ void* libbirch::reallocate(void* ptr1, const size_t n1, const unsigned tid1, con
   assert(tid < nthreads);
   assert(n2 > 0u);
 
-  memoryUse += n2 > n1 ? n2 - n1 : n1 - n2;
+  if (n2 > n1) {
+    memoryUse += n2 - n1;
+  } else if (n1 > n2) {
+    memoryUse -= n1 - n2;
+  }
 #if !ENABLE_MEMORY_POOL
   return std::realloc(ptr1, n2);
 #else
