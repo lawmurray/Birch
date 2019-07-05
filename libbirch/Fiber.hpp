@@ -32,6 +32,11 @@ public:
   void freeze() const;
 
   /**
+   * Finish the fiber.
+   */
+  void finish() const;
+
+  /**
    * Get the context of the fiber state.
    */
   Context* getContext() const;
@@ -71,6 +76,11 @@ libbirch::Fiber<YieldType> libbirch::Fiber<YieldType>::clone() const {
 template<class YieldType>
 void libbirch::Fiber<YieldType>::freeze() const {
   state.freeze();
+}
+
+template<class YieldType>
+void libbirch::Fiber<YieldType>::finish() const {
+  state.finish();
 }
 
 template<class YieldType>
