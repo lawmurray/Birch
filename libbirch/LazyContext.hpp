@@ -78,6 +78,18 @@ public:
    */
   void freeze();
 
+  /**
+   * Set the exclusive lock on the context. This is used by objects when
+   * forwarding, so that each object does not need its own lock.
+   */
+  void write();
+
+  /**
+   * Unset the exclusive lock on the context. This is used by objects when
+   * forwarding, so that each object does not need its own lock.
+   */
+  void unwrite();
+
 private:
   /**
    * Memo that maps source objects to clones.
@@ -90,14 +102,36 @@ private:
   ReadWriteLock l;
 
   /**
-   * How many insertions since the last freeze?
+   * Is this frozen? Unlike regular objects, a memo can still have new entries
+   * written after it is frozen, but this flags it as unfrozen again.
    */
-  unsigned ninserts;
+  Atomic<bool> frozen;
 };
+}
+
+inline libbirch::LazyContext::LazyContext() : frozen(false) {
+  //
+}
+
+inline libbirch::LazyContext::LazyContext(LazyContext* parent) : frozen(false) {
+  assert(parent);
+  m.copy(parent->m);
+}
+
+inline libbirch::LazyContext::~LazyContext() {
+  //
 }
 
 inline libbirch::LazyContext* libbirch::LazyContext::fork() {
   return create_(this);
+}
+
+inline void libbirch::LazyContext::write() {
+  l.write();
+}
+
+inline void libbirch::LazyContext::unwrite() {
+  l.unwrite();
 }
 
 #endif

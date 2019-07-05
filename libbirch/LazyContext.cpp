@@ -7,19 +7,6 @@
 #include "libbirch/SwapClone.hpp"
 #include "libbirch/SwapContext.hpp"
 
-libbirch::LazyContext::LazyContext() : ninserts(0) {
-  //
-}
-
-libbirch::LazyContext::LazyContext(LazyContext* parent) : ninserts(0) {
-  assert(parent);
-  m.copy(parent->m);
-}
-
-libbirch::LazyContext::~LazyContext() {
-  //
-}
-
 libbirch::LazyAny* libbirch::LazyContext::get(LazyAny* o) {
   assert(o->isFrozen());
   LazyAny* prev = nullptr;
@@ -81,18 +68,17 @@ libbirch::LazyAny* libbirch::LazyContext::copy(LazyAny* o) {
   SwapClone swapClone(true);
   SwapContext swapContext(this);
   auto cloned = o->clone_();
-  if (!o->isSingular()) {
-    ++ninserts;
-    return m.put(o, cloned);
-  } else {
-    return cloned;
+  if (!o->isSingular() || o->isMemo()) {
+    frozen.store(true);
+    cloned->memoize();
+    m.put(o, cloned);
   }
+  return cloned;
 }
 
 void libbirch::LazyContext::freeze() {
-  if (ninserts > 0) {
+  if (!frozen.exchange(true)) {
     l.read();
-    ninserts = 0;
     m.freeze();
     l.unread();
   }

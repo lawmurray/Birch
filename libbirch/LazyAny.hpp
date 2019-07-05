@@ -56,9 +56,19 @@ public:
   bool isFrozen() const;
 
   /**
-   * Is the object frozen, and reachable through only a single pointer?
+   * If frozen, at the time of freezing, was the reference count only one?
    */
   bool isSingular() const;
+
+  /**
+   * Is this on the target side of a memo?
+   */
+  bool isMemo() const;
+
+  /**
+   * Is the object frozen, and reachable through only a single pointer?
+   */
+  bool isFinished() const;
 
   /**
    * Get the context in which this object was created.
@@ -78,15 +88,20 @@ public:
   LazyAny* pullForward();
 
   /**
-   * Freeze this object.
+   * Freeze.
    */
   void freeze();
 
   /**
-   * Finish any remaining lazy deep clones in the subgraph reachable from the
-   * object.
+   * Finish any remaining lazy deep clones in the subgraph reachable from
+   * this.
    */
   void finish();
+
+  /**
+   * Flag this as on the value side of a memo.
+   */
+  void memoize();
 
   /**
    * Name of the class.
@@ -122,20 +137,24 @@ protected:
   SharedPtr<LazyAny> forward;
 
   /**
-   * Is the object read-only? This is 0 for false 1 for true, and 2 true and
-   * accessible through a single pointer only.
+   * Is this frozen (read-only)?
    */
-  Atomic<unsigned> frozen;
+  Atomic<bool> frozen;
 
   /**
-   * Have clones of all objects reachable from this object finished?
+   * If frozen, at the time of freezing, was the reference count only one?
+   */
+  Atomic<bool> single;
+
+  /**
+   * Is this on the target side of a memo?
+   */
+  Atomic<bool> memo;
+
+  /**
+   * Is this finished?
    */
   Atomic<bool> finished;
-
-  /**
-   * Lock.
-   */
-  ExclusiveLock mutex;
 };
 }
 
@@ -143,7 +162,9 @@ inline libbirch::LazyAny::LazyAny() :
     Counted(),
     context(currentContext),
     forward(nullptr),
-    frozen(0u),
+    frozen(false),
+    single(false),
+    memo(false),
     finished(false) {
   //
 }
@@ -152,7 +173,9 @@ inline libbirch::LazyAny::LazyAny(const LazyAny& o) :
     Counted(o),
     context(currentContext),
     forward(nullptr),
-    frozen(0u),
+    frozen(false),
+    single(false),
+    memo(false),
     finished(false) {
   //
 }
@@ -162,25 +185,48 @@ inline libbirch::LazyAny::~LazyAny() {
 }
 
 inline bool libbirch::LazyAny::isFrozen() const {
-  return frozen.load() > 0u;
+  return frozen.load();
 }
 
 inline bool libbirch::LazyAny::isSingular() const {
   #if ENABLE_SINGLE_REFERENCE_OPTIMIZATION
-  return frozen.load() > nthreads + 1u;
+  return single.load();
   #else
   return false;
   #endif
+}
+
+inline bool libbirch::LazyAny::isMemo() const {
+  return memo.load();
+}
+
+inline bool libbirch::LazyAny::isFinished() const {
+  return finished.load();
 }
 
 inline libbirch::LazyContext* libbirch::LazyAny::getContext() {
   return context.get();
 }
 
+inline void libbirch::LazyAny::freeze() {
+  if (!frozen.exchange(true) && numShared() > 0u) {
+    #if ENABLE_SINGLE_REFERENCE_OPTIMIZATION
+    if (numShared() == 1u && numWeak() - numMemo() == 1u) {
+      single.store(true);
+    }
+    #endif
+    doFreeze_();
+  }
+}
+
 inline void libbirch::LazyAny::finish() {
-  if (!finished.exchange(true) && sharedCount.load() > 0u) {
+  if (!finished.exchange(true) && numShared() > 0u) {
     doFinish_();
   }
+}
+
+inline void libbirch::LazyAny::memoize() {
+  memo.store(true);
 }
 
 inline void libbirch::LazyAny::doFreeze_() {
