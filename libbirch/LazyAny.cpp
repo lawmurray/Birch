@@ -8,16 +8,15 @@
 #include "libbirch/SwapContext.hpp"
 
 libbirch::LazyAny* libbirch::LazyAny::getForward() {
+  ///@todo Currently this is only called by LazyContext, which holds its own
+  ///write lock at the time, thus ensuring thread safety; review this
   assert(isFrozen());
-
   if (!forward) {
-    context->write();
     if (!forward) {
       SwapClone swapClone(true);
       SwapContext swapContext(getContext());
       forward = this->clone_();
     }
-    context->unwrite();
   }
   if (forward->isFrozen()) {
     return forward->getForward();

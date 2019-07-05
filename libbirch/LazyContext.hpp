@@ -78,18 +78,6 @@ public:
    */
   void freeze();
 
-  /**
-   * Set the exclusive lock on the context. This is used by objects when
-   * forwarding, so that each object does not need its own lock.
-   */
-  void write();
-
-  /**
-   * Unset the exclusive lock on the context. This is used by objects when
-   * forwarding, so that each object does not need its own lock.
-   */
-  void unwrite();
-
 private:
   /**
    * Memo that maps source objects to clones.
@@ -124,14 +112,6 @@ inline libbirch::LazyContext::~LazyContext() {
 
 inline libbirch::LazyContext* libbirch::LazyContext::fork() {
   return create_(this);
-}
-
-inline void libbirch::LazyContext::write() {
-  l.write();
-}
-
-inline void libbirch::LazyContext::unwrite() {
-  l.unwrite();
 }
 
 #endif
