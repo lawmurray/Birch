@@ -1,7 +1,7 @@
 /**
  * Model for Yap case study.
  */
-class YapDengueModel < MarkovModel<YapDengueParameter,YapDengueState> {
+final class YapDengueModel < MarkovModel<YapDengueParameter,YapDengueState> {
   v:VBDModel;
 
   fiber parameter(θ:YapDengueParameter) -> Event {

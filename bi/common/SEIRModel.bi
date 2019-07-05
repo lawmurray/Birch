@@ -1,7 +1,7 @@
 /**
  *
  */
-class SEIRModel < MarkovModel<SEIRParameter,SEIRState> {
+final class SEIRModel < MarkovModel<SEIRParameter,SEIRState> {
   fiber parameter(θ:SEIRParameter) -> Event {
     θ.ν <- 0.0;
     θ.μ <- 1.0;
@@ -52,8 +52,10 @@ class SEIRModel < MarkovModel<SEIRParameter,SEIRState> {
     }
 
     /* births */
-    x'.Δs <~ Binomial(x.n, θ.ν);
-    x'.s <- x'.s + x'.Δs;
+    if !θ.ν.hasValue() || θ.ν.value() != 0.0 {
+      x'.Δs <~ Binomial(x.n, θ.ν);
+      x'.s <- x'.s + x'.Δs;
+    }
     
     /* update population */
     x'.n <- x'.s + x'.e + x'.i + x'.r;

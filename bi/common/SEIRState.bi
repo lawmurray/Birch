@@ -1,7 +1,7 @@
 /**
  * SEIR process model.
  */
-class SEIRState {
+final class SEIRState {
   Δs:Integer;  // newly susceptible (births)
   Δe:Integer;  // newly exposed
   Δi:Integer;  // newly infected

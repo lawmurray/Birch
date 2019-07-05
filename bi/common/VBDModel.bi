@@ -1,7 +1,7 @@
 /**
  *
  */
-class VBDModel < MarkovModel<VBDParameter,VBDState> {
+final class VBDModel < MarkovModel<VBDParameter,VBDState> {
   h:SEIRModel;
   m:SEIRModel;
 

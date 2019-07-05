@@ -1,7 +1,7 @@
 /**
  * Parameters of an SEIR model.
  */
-class SEIRParameter {
+final class SEIRParameter {
   ν:Random<Real>;   // birth probability
   μ:Random<Real>;   // survival probability
   λ:Random<Real>;   // exposure probability
