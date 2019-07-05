@@ -189,6 +189,7 @@ public:
    * Raw pointer assignment.
    */
   LazyPtr<P>& operator=(T* o) {
+    assert(!o || !o->isSingular());
     to = o ? currentContext : nullptr;
     object = o;
     return *this;
