@@ -43,6 +43,13 @@ public:
   libbirch_emplace_function_
   libbirch_clone_function_
   libbirch_destroy_function_
+
+  /**
+   * Name of the class.
+   */
+  virtual const char* name_() const {
+    return "Any";
+  }
 };
 }
 
