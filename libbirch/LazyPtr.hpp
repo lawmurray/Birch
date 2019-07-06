@@ -320,15 +320,18 @@ public:
   /**
    * Freeze.
    */
-  void freeze() const {
+  void freeze() {
     if (object) {
-      auto raw = object.get();
-      if (raw->isFrozen()) {
-        raw = static_cast<T*>(to->pull(raw));
-      }
+      object->freeze();
       to->freeze();
-      raw->freeze();
     }
+  }
+
+  /**
+   * Freeze.
+   */
+  void freeze() const {
+    return const_cast<LazyPtr<P>*>(this)->freeze();
   }
 
   /**
@@ -338,7 +341,7 @@ public:
     auto raw = object.get();
     if (raw) {
       if (raw->isFrozen()) {
-        raw = static_cast<T*>(to->finish(raw));
+        raw = static_cast<T*>(to->get(raw));
         object = raw;
       }
       raw->finish();

@@ -8,7 +8,8 @@
 #include "libbirch/Counted.hpp"
 #include "libbirch/WeakPtr.hpp"
 #include "libbirch/Atomic.hpp"
-#include "libbirch/ExclusiveLock.hpp"
+#include "libbirch/SwapFreeze.hpp"
+#include "libbirch/SwapFinish.hpp"
 
 namespace libbirch {
 /**
@@ -194,13 +195,28 @@ inline void libbirch::LazyAny::freeze() {
       single.store(true);
     }
     #endif
-    doFreeze_();
+
+    if (!freezeUnderway) {
+      SwapFreeze swapFreeze(true);
+      freezeLock.enter();
+      doFreeze_();
+      freezeLock.exit();
+    } else {
+      doFreeze_();
+    }
   }
 }
 
 inline void libbirch::LazyAny::finish() {
   if (!finished.exchange(true) && numShared() > 0u) {
-    doFinish_();
+    if (!finishUnderway) {
+      SwapFinish swapFinish(true);
+      finishLock.enter();
+      doFinish_();
+      finishLock.exit();
+    } else {
+      doFinish_();
+    }
   }
 }
 

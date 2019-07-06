@@ -7,25 +7,25 @@
 
 namespace libbirch {
 /**
- * Sets the thread-local flag cloneUnderway on construction, swaps it
+ * Sets the thread-local flag freezeUnderway on construction, swaps it
  * back to its previous value on destruction.
  */
-class SwapClone {
+class SwapFreeze {
 public:
   /**
    * Constructor.
    *
    * @param value Value to which to set the flag.
    */
-  SwapClone(const bool value) : previous(cloneUnderway) {
-    cloneUnderway = value;
+  SwapFreeze(const bool value) : previous(freezeUnderway) {
+    freezeUnderway = value;
   }
 
   /**
    * Destructor.
    */
-  ~SwapClone() {
-    cloneUnderway = previous;
+  ~SwapFreeze() {
+    freezeUnderway = previous;
   }
 
 private:

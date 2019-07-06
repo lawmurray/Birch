@@ -7,25 +7,25 @@
 
 namespace libbirch {
 /**
- * Sets the thread-local flag cloneUnderway on construction, swaps it
+ * Sets the thread-local flag finishUnderway on construction, swaps it
  * back to its previous value on destruction.
  */
-class SwapClone {
+class SwapFinish {
 public:
   /**
    * Constructor.
    *
    * @param value Value to which to set the flag.
    */
-  SwapClone(const bool value) : previous(cloneUnderway) {
-    cloneUnderway = value;
+  SwapFinish(const bool value) : previous(finishUnderway) {
+    finishUnderway = value;
   }
 
   /**
    * Destructor.
    */
-  ~SwapClone() {
-    cloneUnderway = previous;
+  ~SwapFinish() {
+    finishUnderway = previous;
   }
 
 private:

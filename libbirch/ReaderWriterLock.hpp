@@ -7,16 +7,16 @@
 
 namespace libbirch {
 /**
- * Lock with shared read and exclusive write semantics.
+ * Lock allowing multiple readers but only one writer.
  *
  * @ingroup libbirch
  */
-class ReadWriteLock {
+class ReaderWriterLock {
 public:
   /**
    * Default constructor.
    */
-  ReadWriteLock();
+  ReaderWriterLock();
 
   /**
    * Obtain read use.
@@ -51,24 +51,24 @@ private:
 };
 }
 
-inline libbirch::ReadWriteLock::ReadWriteLock() :
+inline libbirch::ReaderWriterLock::ReaderWriterLock() :
     readers(0),
     writer(false) {
   //
 }
 
-inline void libbirch::ReadWriteLock::read() {
+inline void libbirch::ReaderWriterLock::read() {
   ++readers;
   while (writer.load()) {
     //
   }
 }
 
-inline void libbirch::ReadWriteLock::unread() {
+inline void libbirch::ReaderWriterLock::unread() {
   --readers;
 }
 
-inline void libbirch::ReadWriteLock::write() {
+inline void libbirch::ReaderWriterLock::write() {
   bool w;
   do {
     /* obtain the write lock */
@@ -84,6 +84,6 @@ inline void libbirch::ReadWriteLock::write() {
   } while (!w);
 }
 
-inline void libbirch::ReadWriteLock::unwrite() {
+inline void libbirch::ReaderWriterLock::unwrite() {
   writer.store(false);
 }

@@ -53,4 +53,18 @@ public:
 };
 }
 
+inline libbirch::EagerAny::EagerAny() :
+    Counted() {
+  //
+}
+
+inline libbirch::EagerAny::EagerAny(const EagerAny& o) :
+    Counted(o) {
+  //
+}
+
+inline libbirch::EagerAny::~EagerAny() {
+  //
+}
+
 #endif

@@ -11,15 +11,15 @@ libbirch::LazyAny* libbirch::LazyContext::get(LazyAny* o) {
   assert(o->isFrozen());
   LazyAny* prev = nullptr;
   LazyAny* next = o;
-  l.write();
+  l.read();
   do {
     prev = next;
     next = m.get(prev, prev);
   } while (next != prev && next->isFrozen());
+  l.unread();
   if (next->isFrozen()) {
     next = copy(next);
   }
-  l.unwrite();
   return next;
 }
 
@@ -36,37 +36,17 @@ libbirch::LazyAny* libbirch::LazyContext::pull(LazyAny* o) {
   return next;
 }
 
-libbirch::LazyAny* libbirch::LazyContext::finish(LazyAny* o) {
-  assert(o->isFrozen());
-  LazyAny* prev = nullptr;
-  LazyAny* next = o;
-  //l.keep();
-  while (next != prev && this != next->getContext()) {
-    prev = next;
-    next = m.get(prev, prev);
-  }
-  if (this != next->getContext()) {
-    next = copy(next);
-  }
-  //l.unkeep();
-  return next;
-}
-
 libbirch::LazyAny* libbirch::LazyContext::copy(LazyAny* o) {
-  /* for a lazy deep clone there is no risk of infinite recursion, but
-   * there may be thread contention if two threads access the same object
-   * and both trigger a lazy clone simultaneously; in this case multiple
-   * new objects may be made but only one thread can be successful in
-   * inserting an object into the map; a shared pointer is used to
-   * destroy any additional objects */
   assert(o->isFrozen());
   SwapClone swapClone(true);
   SwapContext swapContext(this);
   auto cloned = o->clone_();
   if (!o->isSingular() || o->isMemo()) {
-    frozen.store(true);
     cloned->memoize();
+    l.write();
+    frozen.store(false);  // no longer frozen, as will have new entry
     m.put(o, cloned);
+    l.unwrite();
   }
   return cloned;
 }

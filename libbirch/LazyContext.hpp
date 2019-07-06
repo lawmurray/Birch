@@ -8,7 +8,7 @@
 #include "libbirch/LazyAny.hpp"
 #include "libbirch/SharedPtr.hpp"
 #include "libbirch/Map.hpp"
-#include "libbirch/ReadWriteLock.hpp"
+#include "libbirch/ReaderWriterLock.hpp"
 
 namespace libbirch {
 /**
@@ -58,11 +58,6 @@ public:
   LazyAny* get(LazyAny* o);
 
   /**
-   * Finish the cloning of an object.
-   */
-  LazyAny* finish(LazyAny* o);
-
-  /**
    * Map an object that may not yet have been cloned, without cloning it.
    * This is used as an optimization for read-only access.
    */
@@ -87,7 +82,7 @@ private:
   /**
    * Lock.
    */
-  ReadWriteLock l;
+  ReaderWriterLock l;
 
   /**
    * Is this frozen? Unlike regular objects, a memo can still have new entries
