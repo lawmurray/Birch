@@ -76,18 +76,6 @@ public:
   LazyContext* getContext();
 
   /**
-   * If the object is frozen, return the object to which to forward writes.
-   */
-  LazyAny* getForward();
-
-  /**
-   * If the object is frozen, and the object to which to forward writes has
-   * already been created, return it, otherwise return `this`. This is used
-   * to forward reads, ensuring that the most recent writes are visible.
-   */
-  LazyAny* pullForward();
-
-  /**
    * Freeze.
    */
   void freeze();
@@ -130,13 +118,6 @@ protected:
   WeakPtr<LazyContext> context;
 
   /**
-   * If frozen, object to which to forward. This must be thread safe, and
-   * so an atomic raw pointer is used, with manual shared reference count
-   * maintenance.
-   */
-  SharedPtr<LazyAny> forward;
-
-  /**
    * Is this frozen (read-only)?
    */
   Atomic<bool> frozen;
@@ -161,7 +142,6 @@ protected:
 inline libbirch::LazyAny::LazyAny() :
     Counted(),
     context(currentContext),
-    forward(nullptr),
     frozen(false),
     single(false),
     memo(false),
@@ -172,7 +152,6 @@ inline libbirch::LazyAny::LazyAny() :
 inline libbirch::LazyAny::LazyAny(const LazyAny& o) :
     Counted(o),
     context(currentContext),
-    forward(nullptr),
     frozen(false),
     single(false),
     memo(false),

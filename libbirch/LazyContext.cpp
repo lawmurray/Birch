@@ -15,11 +15,9 @@ libbirch::LazyAny* libbirch::LazyContext::get(LazyAny* o) {
   do {
     prev = next;
     next = m.get(prev, prev);
-  } while (next != prev && this != next->getContext());
-  if (this != next->getContext()) {
+  } while (next != prev && next->isFrozen());
+  if (next->isFrozen()) {
     next = copy(next);
-  } else if (next->isFrozen()) {
-    next = next->getForward();
   }
   l.unwrite();
   return next;
@@ -33,10 +31,7 @@ libbirch::LazyAny* libbirch::LazyContext::pull(LazyAny* o) {
   do {
     prev = next;
     next = m.get(prev, prev);
-  } while (next != prev && this != next->getContext());
-  if (this == next->getContext() && next->isFrozen()) {
-    next = next->pullForward();
-  }
+  } while (next != prev && next->isFrozen());
   l.unread();
   return next;
 }
