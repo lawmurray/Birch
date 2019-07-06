@@ -44,7 +44,7 @@ libbirch::LazyAny* libbirch::LazyContext::copy(LazyAny* o) {
   if (!o->isSingular() || o->isMemo()) {
     cloned->memoize();
     l.write();
-    frozen.store(false);  // no longer frozen, as will have new entry
+    frozen = false;  // no longer frozen, as will have new entry
     m.put(o, cloned);
     l.unwrite();
   }
@@ -52,11 +52,12 @@ libbirch::LazyAny* libbirch::LazyContext::copy(LazyAny* o) {
 }
 
 void libbirch::LazyContext::freeze() {
-  if (!frozen.exchange(true)) {
-    l.read();
+  l.read();
+  if (!frozen) {
+    frozen = true;
     m.freeze();
-    l.unread();
   }
+  l.unread();
 }
 
 #endif

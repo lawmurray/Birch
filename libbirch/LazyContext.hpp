@@ -88,7 +88,7 @@ private:
    * Is this frozen? Unlike regular objects, a memo can still have new entries
    * written after it is frozen, but this flags it as unfrozen again.
    */
-  Atomic<bool> frozen;
+  bool frozen;
 };
 }
 

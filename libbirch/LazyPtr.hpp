@@ -73,18 +73,18 @@ public:
   /**
    * Copy constructor.
    */
-  LazyPtr(const LazyPtr<P>& o) {
-    if (cloneUnderway) {
-      if (o.object && o.isCross()) {
-        o.finish();
+  LazyPtr(const LazyPtr<P>& o) :
+      object(nullptr),
+      to(cloneUnderway ? currentContext : o.to) {
+    if (o.object) {
+      if (cloneUnderway) {
+        if (o.isCross()) {
+          o.finish();
+        }
+        object = o.object;
+      } else {
+        object = o.object->isSingular() ? o.get() : o.object;
       }
-      object = o.object;
-      if (object) {
-        to = currentContext;
-      }
-    } else if (o.object) {
-      object = o.object->isSingular() ? o.get() : o.object;
-      to = o.to;
     }
   }
 
@@ -93,28 +93,25 @@ public:
    */
   template<class Q, typename = std::enable_if_t<std::is_base_of<T,
       typename Q::value_type>::value>>
-  LazyPtr(const LazyPtr<Q>& o) {
-    if (o.object) {
-      object = o.object->isSingular() ? o.get() : o.object;
-      to = o.to;
-    }
+  LazyPtr(const LazyPtr<Q>& o) :
+      object((o.object && o.object->isSingular()) ? o.get() : o.object),
+      to(o.object ? o.to : nullptr) {
+    //
   }
 
   /**
    * Move constructor.
    */
-  LazyPtr(LazyPtr<P> && o) {
-    object = std::move(o.object);
-    to = std::move(o.to);
-  }
+  LazyPtr(LazyPtr<P> && o) = default;
 
   /**
    * Generic move constructor.
    */
   template<class Q>
-  LazyPtr(LazyPtr<Q> && o) {
-    object = std::move(o.object);
-    to = std::move(o.to);
+  LazyPtr(LazyPtr<Q> && o) :
+      object(std::move(o.object)),
+      to(std::move(o.to)) {
+    //
   }
 
   /**
@@ -123,13 +120,8 @@ public:
   LazyPtr<P>& operator=(const LazyPtr<P>& o) {
     /* it's possible that object = o.object actually destroys the referent
      * of o, so do the to = o.to first */
-    if (o.object) {
-      to = o.to;
-      object = o.object->isSingular() ? o.get() : o.object;
-    } else {
-      to = nullptr;
-      object = nullptr;
-    }
+    to = o.to;
+    object = (o.object && o.object->isSingular()) ? o.get() : o.object;
     return *this;
   }
 
@@ -141,13 +133,8 @@ public:
   LazyPtr<P>& operator=(const LazyPtr<Q>& o) {
     /* it's possible that object = o.object actually destroys the referent
      * of o, so do the to = o.to first */
-    if (o.object) {
-      to = o.to;
-      object = o.object->isSingular() ? o.get() : o.object;
-    } else {
-      to = nullptr;
-      object = nullptr;
-    }
+    to = o.to;
+    object = (o.object && o.object->isSingular()) ? o.get() : o.object;
     return *this;
   }
 
@@ -157,13 +144,8 @@ public:
   LazyPtr<P>& operator=(LazyPtr<P> && o) {
     /* it's possible that object = o.object actually destroys the referent
      * of o, so do the to = o.to first */
-    if (o.object) {
-      to = std::move(o.to);
-      object = std::move(o.object);
-    } else {
-      to = nullptr;
-      object = nullptr;
-    }
+    to = std::move(o.to);
+    object = std::move(o.object);
     return *this;
   }
 
@@ -175,13 +157,8 @@ public:
   LazyPtr<P>& operator=(LazyPtr<Q> && o) {
     /* it's possible that object = o.object actually destroys the referent
      * of o, so do the to = o.to first */
-    if (o.object) {
-      to = std::move(o.to);
-      object = std::move(o.object);
-    } else {
-      to = nullptr;
-      object = nullptr;
-    }
+    to = std::move(o.to);
+    object = std::move(o.object);
     return *this;
   }
 
