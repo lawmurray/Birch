@@ -228,7 +228,7 @@ inline unsigned libbirch::Counted::getSize() const {
 }
 
 inline libbirch::Counted* libbirch::Counted::lock() {
-  ++sharedCount;
+  sharedCount.increment();
   assert(sharedCount.load() > 1u);  // should not be upgrading from zero refs
   return this;
 
@@ -244,7 +244,7 @@ inline libbirch::Counted* libbirch::Counted::lock() {
 }
 
 inline void libbirch::Counted::incShared() {
-  ++sharedCount;
+  sharedCount.increment();
 }
 
 inline void libbirch::Counted::decShared() {
@@ -261,7 +261,7 @@ inline unsigned libbirch::Counted::numShared() const {
 }
 
 inline void libbirch::Counted::incWeak() {
-  ++weakCount;
+  weakCount.increment();
 }
 
 inline void libbirch::Counted::decWeak() {
@@ -282,14 +282,14 @@ inline void libbirch::Counted::incMemo() {
   /* the order of operations here is important, as the weak count should
    * never be less than the memo count */
   incWeak();
-  ++memoCount;
+  memoCount.increment();
 }
 
 inline void libbirch::Counted::decMemo() {
   /* the order of operations here is important, as the weak count should
    * never be less than the memo count */
   assert(memoCount.load() > 0u);
-  --memoCount;
+  memoCount.decrement();
   decWeak();
 }
 

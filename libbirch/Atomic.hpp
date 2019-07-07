@@ -75,6 +75,24 @@ public:
     return old;
   }
 
+  /**
+   * Increment the value by one, atomically, but without capturing the
+   * current value.
+   */
+  void increment() {
+    #pragma omp atomic update
+    ++value;
+  }
+
+  /**
+   * Decrement the value by one, atomically, but without capturing the
+   * current value.
+   */
+  void decrement() {
+    #pragma omp atomic update
+    --value;
+  }
+
   template<class U>
   T operator+=(const U& value) {
     T result;
