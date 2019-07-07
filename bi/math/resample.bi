@@ -5,7 +5,7 @@ function log_sum_exp(x:Real[_]) -> Real {
   assert length(x) > 0;
   mx:Real <- max(x);
   r:Real <- 0.0;
-  for (n:Integer in 1..length(x)) {
+  for auto n in 1..length(x) {
     r <- r + exp(x[n] - mx);
   }
   return mx + log(r);
@@ -34,8 +34,8 @@ function norm_exp(x:Real[_]) -> Real[_] {
  * Return: the vector of ancestor indices.
  */
 function resample(w:Real[_]) -> Integer[_] {
-  return permute_ancestors(cumulative_offspring_to_ancestors(
-      systematic_cumulative_offspring(cumulative_weights(w))));
+  return cumulative_offspring_to_ancestors_permute(
+      systematic_cumulative_offspring(cumulative_weights(w)));
 }
 
 /**
@@ -46,8 +46,8 @@ function resample(w:Real[_]) -> Integer[_] {
  * Return: the vector of ancestor indices.
  */
 function multinomial_resample(w:Real[_]) -> Integer[_] {
-  return permute_ancestors(offspring_to_ancestors(simulate_multinomial(
-      length(w), norm_exp(w))));
+  return offspring_to_ancestors_permute(simulate_multinomial(
+      length(w), norm_exp(w)));
 }
 
 /**
@@ -64,7 +64,7 @@ function multinomial_conditional_resample(w:Real[_], b:Integer) ->
   auto N <- length(w);
   auto o <- simulate_multinomial(N - 1, norm_exp(w));
   o[b] <- o[b] + 1;
-  auto a <- permute_ancestors(offspring_to_ancestors(o));
+  auto a <- offspring_to_ancestors_permute(o);
   return (a, b);
 }
 
@@ -79,7 +79,7 @@ function cumulative_ancestor(W:Real[_]) -> Integer {
   assert W[N] > 0.0;
   u <- simulate_uniform(0.0, W[N]);
   n <- 1;
-  while (W[n] < u) {
+  while W[n] < u {
     n <- n + 1;
   }
   return n;
@@ -94,7 +94,7 @@ function ancestor(w:Real[_]) -> Integer {
   W:Real[N];
 
   W <- cumulative_weights(w);
-  if (W[N] > 0.0) {
+  if W[N] > 0.0 {
     return cumulative_ancestor(W);
   } else {
     return 0;
@@ -111,7 +111,7 @@ function systematic_cumulative_offspring(W:Real[_]) -> Integer[_] {
   r:Real;
 
   u <- simulate_uniform(0.0, 1.0);
-  for (n:Integer in 1..N) {
+  for auto n in 1..N {
     r <- N*W[n]/W[N];
     O[n] <- min(N, Integer(floor(r + u)));
   }
@@ -136,6 +136,34 @@ function offspring_to_ancestors(o:Integer[_]) -> Integer[_] {
 }
 
 /**
+ * Convert an offspring vector into an ancestry vector, with permutation.
+ */
+function offspring_to_ancestors_permute(o:Integer[_]) -> Integer[_] {
+  auto N <- length(o);
+  auto i <- 1;
+  a:Integer[N];
+  for auto n in 1..N {
+    for auto j in 1..o[n] {
+      a[i] <- n;
+      i <- i + 1;
+    }
+  }
+  assert i == N + 1;
+  
+  /* permute in-place */
+  for auto n in 1..N {
+    auto c <- a[n];
+    if c != n && a[c] != c {
+      a[n] <- a[c];
+      a[c] <- c;
+      n <- n - 1;
+    }
+  }  
+  
+  return a;
+}
+
+/**
  * Convert a cumulative offspring vector into an ancestry vector.
  */
 function cumulative_offspring_to_ancestors(O:Integer[_]) -> Integer[_] {
@@ -143,17 +171,51 @@ function cumulative_offspring_to_ancestors(O:Integer[_]) -> Integer[_] {
   a:Integer[N];
   start:Integer;
   o:Integer;
-  for (n:Integer in 1..N) {
-    if (n == 1) {
+  for auto n in 1..N {
+    if n == 1 {
       start <- 0;
     } else {
       start <- O[n - 1];
     }
     o <- O[n] - start;
-    for (j:Integer in 1..o) {
+    for auto j in 1..o {
       a[start + j] <- n;
     }
   }
+  return a;
+}
+
+/**
+ * Convert a cumulative offspring vector into an ancestry vector, with
+ * permutation.
+ */
+function cumulative_offspring_to_ancestors_permute(O:Integer[_]) -> Integer[_] {
+  N:Integer <- length(O);
+  a:Integer[N];
+  start:Integer;
+  o:Integer;
+  for auto n in 1..N {
+    if n == 1 {
+      start <- 0;
+    } else {
+      start <- O[n - 1];
+    }
+    o <- O[n] - start;
+    for auto j in 1..o {
+      a[start + j] <- n;
+    }
+  }
+
+  /* permute in-place */
+  for auto n in 1..N {
+    auto c <- a[n];
+    if c != n && a[c] != c {
+      a[n] <- a[c];
+      a[c] <- c;
+      n <- n - 1;
+    }
+  }  
+
   return a;
 }
 
@@ -174,9 +236,9 @@ function permute_ancestors(a:Integer[_]) -> Integer[_] {
   c:Integer;
   
   b <- a;
-  for (n:Integer in 1..N) {
+  for auto n in 1..N {
     c <- b[n];
-    if (c != n && b[c] != c) {
+    if c != n && b[c] != c {
       b[n] <- b[c];
       b[c] <- c;
       n <- n - 1;
@@ -192,10 +254,10 @@ function cumulative_weights(w:Real[_]) -> Real[_] {
   N:Integer <- length(w);
   W:Real[N];
   
-  if (N > 0) {
+  if N > 0 {
     mx:Real <- max(w);
     W[1] <- exp(w[1] - mx);
-    for (n:Integer in 2..N) {
+    for auto n in 2..N {
       W[n] <- W[n - 1] + exp(w[n] - mx);
     }
   }
@@ -206,7 +268,7 @@ function cumulative_weights(w:Real[_]) -> Real[_] {
  * Effective sample size (ESS) of the log-weight vector.
  */
 function ess(w:Real[_]) -> Real {
-  if (length(w) == 0) {
+  if length(w) == 0 {
     return 0.0;
   } else {
     W:Real <- 0.0;
@@ -214,7 +276,7 @@ function ess(w:Real[_]) -> Real {
     m:Real <- max(w);
     v:Real;
     
-    for (n:Integer in 1..length(w)) {
+    for auto n in 1..length(w) {
       v <- exp(w[n] - m);
       W <- W + v;
       W2 <- W2 + v*v;
