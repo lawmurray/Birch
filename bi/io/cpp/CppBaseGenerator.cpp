@@ -846,7 +846,9 @@ void bi::CppBaseGenerator::genArg(const Expression* arg, const Type* type) {
   /* Birch and C++ resolve overloads differently, explicit casting avoids
    * situations where Birch considers a call unambiguous, whereas C++ does
    * not */
-  if (!arg->type->equals(*type)) {
+  auto isThis = dynamic_cast<const This*>(arg);
+  auto isSuper = dynamic_cast<const Super*>(arg);
+  if (!arg->type->equals(*type) || isThis || isSuper) {
     middle(type->canonical() << '(' << arg << ')');
   } else {
     middle(arg);
