@@ -28,6 +28,7 @@
 #include "libbirch/Any.hpp"
 #include "libbirch/Optional.hpp"
 #include "libbirch/Nil.hpp"
+#include "libbirch/Init.hpp"
 #include "libbirch/Shared.hpp"
 #include "libbirch/Weak.hpp"
 #include "libbirch/FiberState.hpp"

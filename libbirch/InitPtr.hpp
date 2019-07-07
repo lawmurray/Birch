@@ -102,13 +102,6 @@ public:
     return ptr != nullptr;
   }
 
-  /**
-   * Cast to raw pointer.
-   */
-  operator T*() const {
-    return ptr;
-  }
-
 private:
   /**
    * Raw pointer.

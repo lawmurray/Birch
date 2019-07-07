@@ -315,6 +315,7 @@
       "libbirch/finish.hpp",
       "libbirch/freeze.hpp",
       "libbirch/Index.hpp",
+      "libbirch/Init.hpp",
       "libbirch/InitPtr.hpp",
       "libbirch/Iterator.hpp",
       "libbirch/LazyAny.hpp",

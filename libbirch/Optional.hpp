@@ -6,6 +6,7 @@
 #include "libbirch/Nil.hpp"
 #include "libbirch/Shared.hpp"
 #include "libbirch/Weak.hpp"
+#include "libbirch/Init.hpp"
 
 namespace libbirch {
 /**
@@ -195,6 +196,24 @@ public:
   }
 
   /**
+   * Constructor for value.
+   */
+  template<class U>
+  Optional(const Init<U>& value) :
+      value(value) {
+    //
+  }
+
+  /**
+   * Generic move constructor for value.
+   */
+  template<class U>
+  Optional(Init<U>&& value) :
+      value(std::move(value)) {
+    //
+  }
+
+  /**
    * Copy constructor.
    */
   Optional(const Optional<Shared<T>>& o) = default;
@@ -237,6 +256,15 @@ public:
   }
 
   /**
+   * Generic copy assignment.
+   */
+  template<class P>
+  Optional<Shared<T>>& operator=(const Optional<P>& o) {
+    value = o.value;
+    return *this;
+  }
+
+  /**
    * Move assignment.
    */
   Optional<Shared<T>>& operator=(Optional<Shared<T>> && o) = default;
@@ -247,6 +275,58 @@ public:
   template<class U>
   Optional<Shared<T>>& operator=(Optional<Shared<U>>&& o) {
     value = std::move(o.value);
+    return *this;
+  }
+
+  /**
+   * Generic move assignment.
+   */
+  template<class P>
+  Optional<Shared<T>>& operator=(Optional<P>&& o) {
+    value = std::move(o.value);
+    return *this;
+  }
+
+  /**
+   * Copy assignment.
+   */
+  Optional<Shared<T>>& operator=(const Shared<T>& o) {
+    value = o;
+    return *this;
+  }
+
+  /**
+   * Generic copy assignment.
+   */
+  template<class U>
+  Optional<Shared<T>>& operator=(const Shared<U>& o) {
+    value = o;
+    return *this;
+  }
+
+  /**
+   * Generic copy assignment.
+   */
+  template<class P>
+  Optional<Shared<T>>& operator=(const P& o) {
+    value = o;
+    return *this;
+  }
+
+  /**
+   * Move assignment.
+   */
+  Optional<Shared<T>>& operator=(Shared<T> && o) {
+    value = std::move(o);
+    return *this;
+  }
+
+  /**
+   * Generic move assignment.
+   */
+  template<class U>
+  Optional<Shared<T>>& operator=(Shared<U> && o) {
+    value = std::move(o);
     return *this;
   }
 
