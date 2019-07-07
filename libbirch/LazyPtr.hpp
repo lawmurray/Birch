@@ -299,6 +299,7 @@ public:
    */
   void freeze() {
     if (object) {
+      pull();
       object->freeze();
       to->freeze();
     }
@@ -315,13 +316,9 @@ public:
    * Finish.
    */
   void finish() {
-    auto raw = object.get();
-    if (raw) {
-      if (raw->isFrozen()) {
-        raw = static_cast<T*>(to->get(raw));
-        object = raw;
-      }
-      raw->finish();
+    if (object) {
+      get();
+      object->finish();
     }
   }
 
