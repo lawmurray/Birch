@@ -27,48 +27,45 @@ function norm_exp(x:Real[_]) -> Real[_] {
 }
 
 /**
- * Resample
+ * Resample with systematic resampling.
  *
  * - w: Log weights.
  *
- * Return: a pair the vectors, the first is the vector of ancestor indices,
- * the second the vector of offspring counts.
+ * Return: the vector of ancestor indices.
  */
-function resample(w:Real[_]) -> (Integer[_], Integer[_]) {
-  auto O <- systematic_cumulative_offspring(cumulative_weights(w));
-  auto a <- cumulative_offspring_to_ancestors(O);
-  auto o <- cumulative_offspring_to_offspring(O);
-  return (a, o);
+function resample(w:Real[_]) -> Integer[_] {
+  return permute_ancestors(cumulative_offspring_to_ancestors(
+      systematic_cumulative_offspring(cumulative_weights(w))));
 }
 
 /**
- * Sample an ancestry vector for a log-weight vector using multinomial
- * resampling.
+ * Resample with multinomial resampling.
+ *
+ * - w: Log weights.
+ *
+ * Return: the vector of ancestor indices.
  */
-function multinomial_resample(w:Real[_]) -> (Integer[_], Integer[_]) {
-  auto o <- simulate_multinomial(length(w), norm_exp(w));
-  auto a <- offspring_to_ancestors(o);
-  return (a, o);
+function multinomial_resample(w:Real[_]) -> Integer[_] {
+  return permute_ancestors(offspring_to_ancestors(simulate_multinomial(
+      length(w), norm_exp(w))));
 }
 
 /**
- * Sample a conditional ancestry vector for a log-weight vector using
- * multinomial resampling.
+ * Conditional resample with multinomial resampling.
  *
  * - w: Log-weight vector.
  * - b: Index of the conditioned particle.
  *
- * Returns: a tuple giving the ancestor vector, offspring vector, and new
- * index of the conditioned particle.
+ * Returns: a tuple giving the ancestor vector and new index of the
+ * conditioned particle.
  */
 function multinomial_conditional_resample(w:Real[_], b:Integer) ->
-    (Integer[_], Integer[_], Integer) {
+    (Integer[_], Integer) {
   auto N <- length(w);
   auto o <- simulate_multinomial(N - 1, norm_exp(w));
   o[b] <- o[b] + 1;
-  auto a <- offspring_to_ancestors(o);
-  auto O <- exclusive_scan_sum(o);
-  return (a, o, O[b] + 1);
+  auto a <- permute_ancestors(offspring_to_ancestors(o));
+  return (a, b);
 }
 
 /**

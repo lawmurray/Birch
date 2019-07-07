@@ -35,19 +35,18 @@ class ConditionalParticleFilter < ParticleFilter {
       
       /* resample */
       if h'? {
-        (a, o, b) <- multinomial_conditional_resample(w, b);
+        (a, b) <- multinomial_conditional_resample(w, b);
       } else {
-        (a, o) <- multinomial_resample(w);
+        a <- multinomial_resample(w);
       }
       w <- vector(0.0, N);
 
       /* copy particles */
-      auto x0 <- x;
-      for auto n in 1..N {
-        if o[a[n]] == 1 {
-          x[n] <- x0[a[n]];  // avoid the clone overhead
+      dynamic parallel for auto n in 1..N {
+        if a[n] == n {
+          // avoid clone overhead
         } else {
-          x[n] <- clone<ForwardModel>(x0[a[n]]);
+          x[n] <- clone<ForwardModel>(x[a[n]]);
         }
       }
       
@@ -58,7 +57,6 @@ class ConditionalParticleFilter < ParticleFilter {
       }
     } else {
       a <- iota(1, N);
-      o <- vector(1, N);
     }
   }
 

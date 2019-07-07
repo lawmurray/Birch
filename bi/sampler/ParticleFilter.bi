@@ -16,11 +16,6 @@ class ParticleFilter < ForwardSampler {
    * Ancestor indices.
    */
   a:Integer[_];
-
-  /**
-   * Offspring counts.
-   */
-  o:Integer[_];
   
   /**
    * Index of the chosen sample.
@@ -99,7 +94,6 @@ class ParticleFilter < ForwardSampler {
 
     w <- vector(0.0, N);
     a <- iota(1, N);
-    o <- vector(1, N);
     x1:Vector<ForwardModel>;
     x1.enlarge(N, clone<ForwardModel>(archetype!));
     x <- x1.toArray();
@@ -158,21 +152,29 @@ class ParticleFilter < ForwardSampler {
   function resample() {
     if isTriggered() {
       /* resample */
-      (a, o) <- global.resample(w);
+      auto O <- systematic_cumulative_offspring(cumulative_weights(w));
+      auto a <- cumulative_offspring_to_ancestors(O);
+      
+	  for auto n in 1..N {
+	    auto c <- a[n];
+	    if (c != n && a[c] != c) {
+	      a[n] <- a[c];
+	      a[c] <- c;
+	      n <- n - 1;
+	    }
+	  }
       w <- vector(0.0, N);
       
       /* copy particles */
-      auto x0 <- x;
       dynamic parallel for auto n in 1..N {
-        if o[a[n]] == 1 {
-          x[n] <- x0[a[n]];  // avoid the clone overhead
+        if a[n] == n {
+          // avoid clone overhead
         } else {
-          x[n] <- clone<ForwardModel>(x0[a[n]]);
+          x[n] <- clone<ForwardModel>(x[a[n]]);
         }
       }
     } else {
       a <- iota(1, N);
-      o <- vector(1, N);
     }
   }
 
