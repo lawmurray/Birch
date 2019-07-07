@@ -58,16 +58,16 @@ class Object {
  * compatible types.
  */
 function make(name:String) -> Object? {
-  result:Object?;
   symbol:String <- "make_" + name + "_";
   cpp{{
   using make_t = bi::type::Object*();
   void* addr = dlsym(RTLD_DEFAULT, symbol.c_str());
   if (addr) {
-    result = reinterpret_cast<make_t*>(addr)();
+    return reinterpret_cast<make_t*>(addr)();
+  } else {
+    return libbirch::nil;
   }
   }}
-  return result;
 }
 
 /**

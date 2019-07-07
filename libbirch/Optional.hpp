@@ -288,6 +288,14 @@ public:
   }
 
   /**
+   * Nil assignment.
+   */
+  Optional<Shared<T>>& operator=(const Nil& o) {
+    value = nullptr;
+    return *this;
+  }
+
+  /**
    * Copy assignment.
    */
   Optional<Shared<T>>& operator=(const Shared<T>& o) {
@@ -307,8 +315,17 @@ public:
   /**
    * Generic copy assignment.
    */
-  template<class P>
-  Optional<Shared<T>>& operator=(const P& o) {
+  template<class U>
+  Optional<Shared<T>>& operator=(const Weak<U>& o) {
+    value = o;
+    return *this;
+  }
+
+  /**
+   * Generic copy assignment.
+   */
+  template<class U>
+  Optional<Shared<T>>& operator=(const Init<U>& o) {
     value = o;
     return *this;
   }
@@ -326,6 +343,24 @@ public:
    */
   template<class U>
   Optional<Shared<T>>& operator=(Shared<U> && o) {
+    value = std::move(o);
+    return *this;
+  }
+
+  /**
+   * Generic move assignment.
+   */
+  template<class U>
+  Optional<Shared<T>>& operator=(Weak<U> && o) {
+    value = std::move(o);
+    return *this;
+  }
+
+  /**
+   * Generic move assignment.
+   */
+  template<class U>
+  Optional<Shared<T>>& operator=(Init<U> && o) {
     value = std::move(o);
     return *this;
   }
