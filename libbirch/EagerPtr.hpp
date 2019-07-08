@@ -168,16 +168,30 @@ class EagerPtr {
   }
 
   /**
-   * Get the raw pointer as const.
+   * Get the raw pointer.
    */
   const T* pull() {
     return object.get();
   }
 
   /**
-   * Get the raw pointer as const.
+   * Get the raw pointer.
    */
   const T* pull() const {
+    return object.get();
+  }
+
+  /**
+   * Get the raw pointer.
+   */
+  const T* readOnly() {
+    return object.get();
+  }
+
+  /**
+   * Get the raw pointer.
+   */
+  const T* readOnly() const {
     return object.get();
   }
 
