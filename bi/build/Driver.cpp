@@ -25,7 +25,7 @@ bi::Driver::Driver(int argc, char** argv) :
     arch("native"),
     prefix(""),
     packageName("Untitled"),
-    unity(false),
+    unity(true),
     staticLib(false),
     sharedLib(true),
     openmp(true),
