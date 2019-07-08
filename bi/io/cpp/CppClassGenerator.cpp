@@ -269,8 +269,20 @@ void bi::CppClassGenerator::visit(const MemberFunction* o) {
     finish(" {");
     in();
     genTraceFunction(o->name->str(), o->loc);
-    line("libbirch_swap_context_");
-    line("libbirch_declare_self_");
+
+	  /* declare self and swap in context if necessary */
+    Gatherer<Member> members;
+    Gatherer<Raw> raws;
+    Gatherer<This> selfs;
+    Gatherer<Super> supers;
+    o->accept(&members);
+    o->accept(&raws);
+    o->accept(&selfs);
+    o->accept(&supers);
+    if (members.size() + raws.size() + selfs.size() + supers.size() > 0) {
+      line("libbirch_swap_context_");
+      line("libbirch_declare_self_");
+    }
 
     /* body */
     CppBaseGenerator auxBase(base, level, header);
