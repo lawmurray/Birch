@@ -129,7 +129,7 @@ class ParticleFilter < ForwardSampler {
     W:Real <- 0.0;
     W2:Real <- 0.0;
     
-    for auto n in 1..length(w) {
+    for auto n in 1..N {
       auto v <- exp(w[n] - m);
       W <- W + v;
       W2 <- W2 + v*v;
@@ -152,17 +152,7 @@ class ParticleFilter < ForwardSampler {
   function resample() {
     if isTriggered() {
       /* resample */
-      auto O <- systematic_cumulative_offspring(cumulative_weights(w));
-      auto a <- cumulative_offspring_to_ancestors(O);
-      
-	  for auto n in 1..N {
-	    auto c <- a[n];
-	    if (c != n && a[c] != c) {
-	      a[n] <- a[c];
-	      a[c] <- c;
-	      n <- n - 1;
-	    }
-	  }
+      a <- global.resample(w);
       w <- vector(0.0, N);
       
       /* copy particles */
