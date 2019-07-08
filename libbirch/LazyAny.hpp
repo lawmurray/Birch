@@ -57,6 +57,11 @@ public:
   bool isFrozen() const;
 
   /**
+   * Is the object finished?
+   */
+  bool isFinished() const;
+
+  /**
    * If frozen, at the time of freezing, was the reference count only one?
    */
   bool isSingular() const;
@@ -65,11 +70,6 @@ public:
    * Is this on the target side of a memo?
    */
   bool isMemo() const;
-
-  /**
-   * Is the object frozen, and reachable through only a single pointer?
-   */
-  bool isFinished() const;
 
   /**
    * Get the context in which this object was created.
@@ -124,6 +124,12 @@ protected:
   Atomic<bool> frozen;
 
   /**
+   * Is this finished?
+   */
+  Atomic<bool> finished;
+
+  #if ENABLE_SINGLE_REFERENCE_OPTIMIZATION
+  /**
    * If frozen, at the time of freezing, was the reference count only one?
    */
   Atomic<bool> single;
@@ -132,11 +138,7 @@ protected:
    * Is this on the target side of a memo?
    */
   Atomic<bool> memo;
-
-  /**
-   * Is this finished?
-   */
-  Atomic<bool> finished;
+  #endif
 };
 }
 
@@ -144,9 +146,11 @@ inline libbirch::LazyAny::LazyAny() :
     Counted(),
     context(currentContext),
     frozen(false),
-    single(false),
-    memo(false),
-    finished(false) {
+    finished(false)
+    #if ENABLE_SINGLE_REFERENCE_OPTIMIZATION
+    , single(false), memo(false)
+    #endif
+    {
   //
 }
 
@@ -154,9 +158,11 @@ inline libbirch::LazyAny::LazyAny(const LazyAny& o) :
     Counted(o),
     context(currentContext),
     frozen(false),
-    single(false),
-    memo(false),
-    finished(false) {
+    finished(false)
+    #if ENABLE_SINGLE_REFERENCE_OPTIMIZATION
+    , single(false), memo(false)
+    #endif
+    {
   //
 }
 
@@ -168,6 +174,10 @@ inline bool libbirch::LazyAny::isFrozen() const {
   return frozen.load();
 }
 
+inline bool libbirch::LazyAny::isFinished() const {
+  return finished.load();
+}
+
 inline bool libbirch::LazyAny::isSingular() const {
   #if ENABLE_SINGLE_REFERENCE_OPTIMIZATION
   return single.load();
@@ -177,11 +187,11 @@ inline bool libbirch::LazyAny::isSingular() const {
 }
 
 inline bool libbirch::LazyAny::isMemo() const {
+  #if ENABLE_SINGLE_REFERENCE_OPTIMIZATION
   return memo.load();
-}
-
-inline bool libbirch::LazyAny::isFinished() const {
-  return finished.load();
+  #else
+  return false;
+  #endif
 }
 
 inline libbirch::LazyContext* libbirch::LazyAny::getContext() {
@@ -224,7 +234,9 @@ inline void libbirch::LazyAny::finish() {
 }
 
 inline void libbirch::LazyAny::memoize() {
+  #if ENABLE_SINGLE_REFERENCE_OPTIMIZATION
   memo.store(true);
+  #endif
 }
 
 inline void libbirch::LazyAny::doFreeze_() {
