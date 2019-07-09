@@ -11,7 +11,7 @@ bi::AssumeException::AssumeException(const Assume* o) {
   if (o->loc) {
     buf << o->loc;
   }
-  buf << "error: incompatible types in assume\n";
+  buf << "error: incompatible types for probabilistic operator\n";
   if (o->loc) {
     buf << o->loc;
   }
@@ -29,6 +29,6 @@ bi::AssumeException::AssumeException(const Assume* o) {
   }
   buf << "note: right type is\n";
   buf << o->right->type << '\n';
-  buf << "note: types should be Random<Value> ~ Distribution<Value> for some common Value.\n";
+  buf << "note: types should be Value or Random<Value> on left, Distribution<Value> on right, for some common Value type.\n";
   msg = base.str();
 }
