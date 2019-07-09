@@ -58,6 +58,16 @@ final class Random<Value> < Expression<Value> {
     }
     return x!;
   }
+
+  /**
+   * Observe the value of the random variate.
+   */
+  function observe(x:Value) -> Real {
+    assert !this.x?;
+    assert dist?;
+    this.x <- x;
+    return dist!.observe(x);
+  }
   
   /**
    * Get the distribution associated with the random variate.
