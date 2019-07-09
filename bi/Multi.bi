@@ -74,8 +74,8 @@ class Multi < StateSpaceModel<Global,List<Track>,List<Random<Real[_]>>> {
         if Q > 0.0 {
           q <- q/Q;
           n <~ Categorical(q);  // propose an observation to associate with
-          y.get(n) ~> o.distribution();  // likelihood
-          auto w <- -log(y.size());  // prior correction (uniform prior)
+          auto w <- o.observe(y.get(n));  // likelihood
+          w <- w - log(y.size());  // prior correction (uniform prior)
           w <- w - log(q[n]);  // proposal correction
           y.erase(n);  // remove the observation for future associations
           yield FactorEvent(w);
