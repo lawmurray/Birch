@@ -37,9 +37,7 @@ public:
    * Destructor.
    */
   ~InitPtr() {
-    #ifndef NDEBUG
-    ptr = nullptr;
-    #endif
+    release();
   }
 
   /**
@@ -47,6 +45,20 @@ public:
    */
   T* get() const {
     return ptr;
+  }
+
+  /**
+   * Get the raw pointer as const.
+   */
+  const T* pull() const {
+    return ptr;
+  }
+
+  /**
+   * Release.
+   */
+  void release() {
+    ptr = nullptr;
   }
 
   /**

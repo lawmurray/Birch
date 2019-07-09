@@ -175,7 +175,7 @@ public:
   }
 
   /**
-   * Get the raw pointer as const;
+   * Get the raw pointer as const.
    */
   const T* pull() const {
     assert(!ptr || ptr->numShared() > 0);
