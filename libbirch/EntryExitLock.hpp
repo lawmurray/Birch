@@ -8,8 +8,7 @@
 namespace libbirch {
 /**
  * Lock that permits any number of threads to enter a critical region, but
- * as soon as any thread reaches the end of the region, no more threads are
- * allowed to enter until all threads inside have exited.
+ * only exit when there are no threads in the critical region.
  *
  * @ingroup libbirch
  *
@@ -39,39 +38,23 @@ private:
   /**
    * Number of threads in critical region.
    */
-  Atomic<unsigned> internal;
-
-  /**
-   * Is the entrance gate open?
-   */
-  Atomic<bool> entry;
+  Atomic<unsigned> ninternal;
 };
 }
 
 inline libbirch::EntryExitLock::EntryExitLock() :
-    internal(0),
-    entry(true) {
+    ninternal(0) {
   //
 }
 
 inline void libbirch::EntryExitLock::enter() {
-  while (!entry.load());  // spin until the entry gate is open
-  ++internal;
-  /* it is possible that between the spin lock and incrementing internal, a
-   * whole bunch of other threads enter and exit the critical region together
-   * without this thread registering; that is fine for the use cases here, as
-   * long as this thread hasn't started any work before incrementing
-   * internal */
+  ++ninternal;
 }
 
 inline void libbirch::EntryExitLock::exit() {
-  entry.store(false);
-  if (--internal == 0) {
-    entry.store(true);
+  if (--ninternal == 0) {
+    return;
   } else {
-    while (!entry.load());  // spin until the entry gate is open
+    while (ninternal.load() != 0);  // spin until the entry gate is open
   }
-  /* once the gate is open, it is possible that another thread enters and
-   * closes the gate again before a thread in the previous generation has
-   * exited; again this isn't such a problem, it will exit eventually */
 }
