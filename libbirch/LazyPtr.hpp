@@ -102,7 +102,11 @@ public:
   /**
    * Move constructor.
    */
-  LazyPtr(LazyPtr<P> && o) = default;
+  LazyPtr(LazyPtr<P> && o) :
+      object(std::move(o.object)),
+      to(std::move(o.to)) {
+    //
+  }
 
   /**
    * Generic move constructor.
@@ -118,10 +122,12 @@ public:
    * Copy assignment.
    */
   LazyPtr<P>& operator=(const LazyPtr<P>& o) {
-    /* it's possible that object = o.object actually destroys the referent
-     * of o, so do the to = o.to first */
-    to = o.to;
-    object = (o.object && o.object->isSingular()) ? o.get() : o.object;
+    /* there's a risk of invalidating the reference argument from operations
+     * here, so assign to local variables first, then to member variables */
+    auto to = o.to;
+    auto object = (o.object && o.object->isSingular()) ? o.get() : o.object;
+    this->to = to;
+    this->object = object;
     return *this;
   }
 
@@ -131,10 +137,12 @@ public:
   template<class Q, typename = std::enable_if_t<std::is_base_of<T,
       typename Q::value_type>::value>>
   LazyPtr<P>& operator=(const LazyPtr<Q>& o) {
-    /* it's possible that object = o.object actually destroys the referent
-     * of o, so do the to = o.to first */
-    to = o.to;
-    object = (o.object && o.object->isSingular()) ? o.get() : o.object;
+    /* there's a risk of invalidating the reference argument from operations
+     * here, so assign to local variables first, then to member variables */
+    auto to = o.to;
+    auto object = (o.object && o.object->isSingular()) ? o.get() : o.object;
+    this->to = to;
+    this->object = object;
     return *this;
   }
 
@@ -142,10 +150,12 @@ public:
    * Move assignment.
    */
   LazyPtr<P>& operator=(LazyPtr<P> && o) {
-    /* it's possible that object = o.object actually destroys the referent
-     * of o, so do the to = o.to first */
-    to = std::move(o.to);
-    object = std::move(o.object);
+    /* there's a risk of invalidating the reference argument from operations
+     * here, so assign to local variables first, then to member variables */
+    auto to = std::move(o.to);
+    auto object = (o.object && o.object->isSingular()) ? o.get() : std::move(o.object);
+    this->to = std::move(to);
+    this->object = std::move(object);
     return *this;
   }
 
@@ -155,10 +165,12 @@ public:
   template<class Q, typename = std::enable_if_t<std::is_base_of<T,
       typename Q::value_type>::value>>
   LazyPtr<P>& operator=(LazyPtr<Q> && o) {
-    /* it's possible that object = o.object actually destroys the referent
-     * of o, so do the to = o.to first */
-    to = std::move(o.to);
-    object = std::move(o.object);
+    /* there's a risk of invalidating the reference argument from operations
+     * here, so assign to local variables first, then to member variables */
+    auto to = std::move(o.to);
+    auto object = (o.object && o.object->isSingular()) ? o.get() : std::move(o.object);
+    this->to = std::move(to);
+    this->object = std::move(object);
     return *this;
   }
 

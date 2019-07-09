@@ -168,7 +168,7 @@ public:
 
 private:
   /**
-   * The referent, if it is difference to owner, otherwise `nullptr`.
+   * The referent, if it is different to owner, otherwise `nullptr`.
    */
   SharedPtr<Context> context;
 

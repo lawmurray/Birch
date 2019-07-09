@@ -127,7 +127,7 @@ void libbirch::Map::copy(Map& o) {
   for (auto i = 0u; i < o.nentries; ++i) {
     auto key = o.keys[i];
     if (key && key->isReachable()) {
-      auto& value = o.values[i];
+      auto value = o.values[i];
       value = o.get(value, value);
       // ^ applies the existing map to itself once, taking one step toward
       //   its transitive closure, and eliminating long chains of mappings
