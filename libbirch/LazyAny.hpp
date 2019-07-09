@@ -8,8 +8,6 @@
 #include "libbirch/Counted.hpp"
 #include "libbirch/WeakPtr.hpp"
 #include "libbirch/Atomic.hpp"
-#include "libbirch/SwapFreeze.hpp"
-#include "libbirch/SwapFinish.hpp"
 
 namespace libbirch {
 /**
@@ -199,11 +197,6 @@ inline libbirch::LazyContext* libbirch::LazyAny::getContext() {
 }
 
 inline void libbirch::LazyAny::freeze() {
-  bool top = !freezeUnderway;  // is this the top call of the recursion?
-  if (top) {
-    freezeUnderway = true;
-    freezeLock.enter();
-  }
   if (!frozen.exchange(true) && numShared() > 0u) {
     #if ENABLE_SINGLE_REFERENCE_OPTIMIZATION
     if (numShared() == 1u && numWeak() - numMemo() == 1u) {
@@ -212,24 +205,11 @@ inline void libbirch::LazyAny::freeze() {
     #endif
     doFreeze_();
   }
-  if (top) {
-    freezeLock.exit();
-    freezeUnderway = false;
-  }
 }
 
 inline void libbirch::LazyAny::finish() {
-  bool top = !finishUnderway;  // is this the top call of the recursion?
-  if (top) {
-    finishUnderway = true;
-    finishLock.enter();
-  }
   if (!finished.exchange(true) && numShared() > 0u) {
     doFinish_();
-  }
-  if (top) {
-    finishLock.exit();
-    finishUnderway = false;
   }
 }
 

@@ -304,12 +304,10 @@ public:
    * Deep clone.
    */
   LazyPtr<P> clone() const {
-    LazyContext* context = nullptr;
-    if (object) {
-      freeze();
-      context = to->fork();
-    }
-    return LazyPtr<P>(object, context);
+    assert(object);
+    pull();
+    freeze();
+    return LazyPtr<P>(object, to->fork());
   }
 
   /**
@@ -317,9 +315,17 @@ public:
    */
   void freeze() {
     if (object) {
-      pull();
+      bool top = !freezeUnderway;  // is this the top call of the recursion?
+      if (top) {
+        freezeUnderway = true;
+        freezeLock.enter();
+      }
       object->freeze();
       to->freeze();
+      if (top) {
+        freezeLock.exit();
+        freezeUnderway = false;
+      }
     }
   }
 
@@ -335,8 +341,17 @@ public:
    */
   void finish() {
     if (object) {
+      bool top = !finishUnderway;  // is this the top call of the recursion?
+      if (top) {
+        finishUnderway = true;
+        finishLock.enter();
+      }
       get();
       object->finish();
+      if (top) {
+        finishLock.exit();
+        finishUnderway = false;
+      }
     }
   }
 

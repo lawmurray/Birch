@@ -340,8 +340,6 @@
       "libbirch/Stride.hpp",
       "libbirch/SwapClone.hpp",
       "libbirch/SwapContext.hpp",
-      "libbirch/SwapFinish.hpp",
-      "libbirch/SwapFreeze.hpp",
       "libbirch/thread.hpp",
       "libbirch/value.hpp",
       "libbirch/View.hpp",

@@ -3,6 +3,8 @@
  */
 #pragma once
 
+#include "libbirch/value.hpp"
+
 namespace libbirch {
 /**
  * Recursively finish objects. This is used when an object is lazily cloned,
@@ -11,7 +13,7 @@ namespace libbirch {
  */
 template<class T>
 void finish(const T& o) {
-  //
+  static_assert(is_value<T>::value, "unimplemented finish()");
 }
 }
 
@@ -19,6 +21,7 @@ void finish(const T& o) {
 
 #include "libbirch/Shared.hpp"
 #include "libbirch/Weak.hpp"
+#include "libbirch/Init.hpp"
 #include "libbirch/Optional.hpp"
 #include "libbirch/Fiber.hpp"
 #include "libbirch/Array.hpp"
@@ -31,6 +34,11 @@ void finish(const Shared<T>& o) {
 
 template<class T>
 void finish(const Weak<T>& o) {
+  o.finish();
+}
+
+template<class T>
+void finish(const Init<T>& o) {
   o.finish();
 }
 

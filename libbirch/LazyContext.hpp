@@ -92,13 +92,17 @@ private:
 };
 }
 
-inline libbirch::LazyContext::LazyContext() : frozen(false) {
+inline libbirch::LazyContext::LazyContext() :
+    frozen(false) {
   //
 }
 
-inline libbirch::LazyContext::LazyContext(LazyContext* parent) : frozen(false) {
+inline libbirch::LazyContext::LazyContext(LazyContext* parent) :
+    frozen(false) {
   assert(parent);
+  parent->l.read();
   m.copy(parent->m);
+  parent->l.unread();
 }
 
 inline libbirch::LazyContext::~LazyContext() {
