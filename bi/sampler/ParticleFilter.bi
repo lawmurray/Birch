@@ -125,9 +125,9 @@ class ParticleFilter < ForwardSampler {
    * Compute summary statistics.
    */
   function reduce() {
-    m:Real <- max(w);
-    W:Real <- 0.0;
-    W2:Real <- 0.0;
+    auto m <- max(w);
+    auto W <- 0.0;
+    auto W2 <- 0.0;
     
     for auto n in 1..N {
       auto v <- exp(w[n] - m);
