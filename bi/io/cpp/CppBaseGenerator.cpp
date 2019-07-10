@@ -650,6 +650,7 @@ void bi::CppBaseGenerator::visit(const For* o) {
   /* o->index may be an identifier or a local variable, in the latter case
    * need to ensure that it is only declared once in the first element of the
    * for loop */
+  ++inAssign;
   auto param = dynamic_cast<LocalVariable*>(o->index);
   if (param) {
     Identifier<LocalVariable> ref(param->name, param->loc, param);
@@ -661,6 +662,7 @@ void bi::CppBaseGenerator::visit(const For* o) {
     middle(o->index << " <= " << o->to << "; ");
     finish("++" << o->index << ") {");
   }
+  --inAssign;
   in();
   *this << o->braces->strip();
   out();
