@@ -3,8 +3,8 @@
  */
 function log_sum_exp(x:Real[_]) -> Real {
   assert length(x) > 0;
-  mx:Real <- max(x);
-  r:Real <- 0.0;
+  auto mx <- max(x);
+  auto r <- 0.0;
   for auto n in 1..length(x) {
     r <- r + exp(x[n] - mx);
   }
@@ -16,7 +16,6 @@ function log_sum_exp(x:Real[_]) -> Real {
  */
 function norm_exp(x:Real[_]) -> Real[_] {
   assert length(x) > 0;
-  
   auto mx <- max(x);
   auto r <- 0.0;
   for auto n in 1..length(x) {
@@ -72,13 +71,10 @@ function multinomial_conditional_resample(w:Real[_], b:Integer) ->
  * Sample a single ancestor for a cumulative weight vector.
  */
 function cumulative_ancestor(W:Real[_]) -> Integer {
-  N:Integer <- length(W);
-  u:Real;
-  n:Integer;
-
+  auto N <- length(W);
   assert W[N] > 0.0;
-  u <- simulate_uniform(0.0, W[N]);
-  n <- 1;
+  auto u <- simulate_uniform(0.0, W[N]);
+  auto n <- 1;
   while W[n] < u {
     n <- n + 1;
   }
@@ -90,10 +86,8 @@ function cumulative_ancestor(W:Real[_]) -> Integer {
  * weights is zero, returns zero.
  */
 function ancestor(w:Real[_]) -> Integer {
-  N:Integer <- length(w);
-  W:Real[N];
-
-  W <- cumulative_weights(w);
+  auto N <- length(w);
+  auto W <- cumulative_weights(w);
   if W[N] > 0.0 {
     return cumulative_ancestor(W);
   } else {
@@ -105,14 +99,12 @@ function ancestor(w:Real[_]) -> Integer {
  * Systematic resampling.
  */
 function systematic_cumulative_offspring(W:Real[_]) -> Integer[_] {
-  N:Integer <- length(W);
-  u:Real;
+  auto N <- length(W);
   O:Integer[N];
-  r:Real;
 
-  u <- simulate_uniform(0.0, 1.0);
+  auto u <- simulate_uniform(0.0, 1.0);
   for auto n in 1..N {
-    r <- N*W[n]/W[N];
+    auto r <- N*W[n]/W[N];
     O[n] <- min(N, Integer(floor(r + u)));
   }
   return O;
@@ -151,12 +143,14 @@ function offspring_to_ancestors_permute(o:Integer[_]) -> Integer[_] {
   assert i == N + 1;
   
   /* permute in-place */
-  for auto n in 1..N {
+  auto n <- 1;
+  while n <= N {
     auto c <- a[n];
     if c != n && a[c] != c {
       a[n] <- a[c];
       a[c] <- c;
-      n <- n - 1;
+    } else {
+      n <- n + 1;
     }
   }  
   
@@ -167,17 +161,16 @@ function offspring_to_ancestors_permute(o:Integer[_]) -> Integer[_] {
  * Convert a cumulative offspring vector into an ancestry vector.
  */
 function cumulative_offspring_to_ancestors(O:Integer[_]) -> Integer[_] {
-  N:Integer <- length(O);
+  auto N <- length(O);
   a:Integer[N];
-  start:Integer;
-  o:Integer;
   for auto n in 1..N {
+    start:Integer;
     if n == 1 {
       start <- 0;
     } else {
       start <- O[n - 1];
     }
-    o <- O[n] - start;
+    auto o <- O[n] - start;
     for auto j in 1..o {
       a[start + j] <- n;
     }
@@ -190,29 +183,28 @@ function cumulative_offspring_to_ancestors(O:Integer[_]) -> Integer[_] {
  * permutation.
  */
 function cumulative_offspring_to_ancestors_permute(O:Integer[_]) -> Integer[_] {
-  N:Integer <- length(O);
-  a:Integer[N];
-  start:Integer;
-  o:Integer;
+  a:Integer[O[length(O)]];
+  auto N <- length(a);
   for auto n in 1..N {
-    if n == 1 {
-      start <- 0;
-    } else {
+    auto start <- 0;
+    if n > 1 {
       start <- O[n - 1];
     }
-    o <- O[n] - start;
+    auto o <- O[n] - start;
     for auto j in 1..o {
       a[start + j] <- n;
     }
   }
 
   /* permute in-place */
-  for auto n in 1..N {
+  auto n <- 1;
+  while n <= N {
     auto c <- a[n];
     if c != n && a[c] != c {
       a[n] <- a[c];
       a[c] <- c;
-      n <- n - 1;
+    } else {
+      n <- n + 1;
     }
   }  
 
@@ -231,17 +223,16 @@ function cumulative_offspring_to_offspring(O:Integer[_]) -> Integer[_] {
  * least one of its instances remains in the same place.
  */
 function permute_ancestors(a:Integer[_]) -> Integer[_] {
-  N:Integer <- length(a);
-  b:Integer[N];
-  c:Integer;
-  
-  b <- a;
-  for auto n in 1..N {
-    c <- b[n];
+  auto N <- length(a);
+  auto b <- a;
+  auto n <- 1;
+  while n <= N {
+    auto c <- b[n];
     if c != n && b[c] != c {
       b[n] <- b[c];
       b[c] <- c;
-      n <- n - 1;
+    } else {
+      n <- n + 1;
     }
   }
   return b;
@@ -251,11 +242,11 @@ function permute_ancestors(a:Integer[_]) -> Integer[_] {
  * Compute the cumulative weight vector from the log-weight vector.
  */
 function cumulative_weights(w:Real[_]) -> Real[_] {
-  N:Integer <- length(w);
+  auto N <- length(w);
   W:Real[N];
   
   if N > 0 {
-    mx:Real <- max(w);
+    auto mx <- max(w);
     W[1] <- exp(w[1] - mx);
     for auto n in 2..N {
       W[n] <- W[n - 1] + exp(w[n] - mx);
@@ -271,13 +262,11 @@ function ess(w:Real[_]) -> Real {
   if length(w) == 0 {
     return 0.0;
   } else {
-    W:Real <- 0.0;
-    W2:Real <- 0.0;
-    m:Real <- max(w);
-    v:Real;
-    
+    auto W <- 0.0;
+    auto W2 <- 0.0;
+    auto m <- max(w);    
     for auto n in 1..length(w) {
-      v <- exp(w[n] - m);
+      auto v <- exp(w[n] - m);
       W <- W + v;
       W2 <- W2 + v*v;
     }
