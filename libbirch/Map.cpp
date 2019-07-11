@@ -107,7 +107,7 @@ void libbirch::Map::copy(Map& o) {
     auto key = o.keys[i];
     auto value = o.values[i];
     if (key) {
-      /* apply the map to itself once to remove any long chains */
+      /* apply the map to itself once to shorten long chains */
       value = o.get(value, value);
 
       key->incMemo();
@@ -142,16 +142,21 @@ void libbirch::Map::rehash() {
   auto keys1 = keys;
   auto values1 = values;
 
-  /* first pass, count number of active entries */
-  for (auto i = 0u; i < nentries; ++i) {
-    auto key = keys[i];
+  /* remove obsolete entries from previous table */
+  for (auto i = 0u; i < nentries1; ++i) {
+    auto key = keys1[i];
     if (key && !key->isReachable()) {
+      auto value = values1[i];
+      key->decMemo();
+      value->decShared();
+      keys1[i] = nullptr;
+      values1[i] = nullptr;
       --noccupied;
     }
   }
 
   /* choose an appropriate size */
-  nentries = std::max(2u*nentries, (unsigned)CLONE_MEMO_INITIAL_SIZE);
+  nentries = std::max(2u*nentries1, (unsigned)CLONE_MEMO_INITIAL_SIZE);
   while (noccupied < (nentries >> 2u) && nentries > (unsigned)CLONE_MEMO_INITIAL_SIZE) {
     nentries >>= 1u;
   }
@@ -166,26 +171,14 @@ void libbirch::Map::rehash() {
   /* copy active entries from previous table */
   for (auto i = 0u; i < nentries1; ++i) {
     auto key = keys1[i];
-    if (key && key->isReachable()) {
+    if (key) {
       auto value = values1[i];
-      keys1[i] = nullptr;
-      values1[i] = nullptr;  // not necessary
       auto j = hash(key, nentries);
       while (keys[j]) {
         j = (j + 1u) & (nentries - 1u);
       }
       keys[j] = key;
       values[j] = value;
-    }
-  }
-
-  /* clean up inactive entries in previous table */
-  for (auto i = 0u; i < nentries1; ++i) {
-    auto key = keys1[i];
-    if (key) {
-      auto value = values1[i];
-      key->decMemo();
-      value->decShared();
     }
   }
 
