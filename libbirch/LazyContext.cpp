@@ -11,15 +11,15 @@ libbirch::LazyAny* libbirch::LazyContext::get(LazyAny* o) {
   assert(o->isFrozen());
   LazyAny* prev = nullptr;
   LazyAny* next = o;
-  l.read();
+  l.write();
   do {
     prev = next;
     next = m.get(prev, prev);
   } while (next != prev && next->isFrozen());
-  l.unread();
   if (next->isFrozen()) {
     next = copy(next);
   }
+  l.unwrite();
   return next;
 }
 
@@ -41,12 +41,10 @@ libbirch::LazyAny* libbirch::LazyContext::copy(LazyAny* o) {
   SwapClone swapClone(true);
   SwapContext swapContext(this);
   auto cloned = o->clone_();
-  if (!o->isSingular() || o->isMemo()) {
-    cloned->memoize();
-    l.write();
+  if (!o->isSingular()) {
+    cloned->multiply();
     frozen.store(false);  // no longer frozen, as will have new entry
     m.put(o, cloned);
-    l.unwrite();
   }
   return cloned;
 }

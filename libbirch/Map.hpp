@@ -107,11 +107,9 @@ private:
   void unreserve();
   
   /**
-   * Resize and rehash the table.
-   *
-   * @param nentries The new size.
+   * Rehash the table.
    */
-  void resize(const unsigned nentries);
+  void rehash();
 
   /**
    * The keys.

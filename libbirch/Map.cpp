@@ -59,27 +59,16 @@ libbirch::Map::value_type libbirch::Map::put(const key_type key,
   value->incShared();
 
   reserve();
-
   auto i = hash(key, nentries);
   auto k = keys[i];
-  while (k && k != key) {
+  while (k) {
+    assert(k != key);
     i = (i + 1u) & (nentries - 1u);
     k = keys[i];
   }
-
-  value_type result;
-  if (k == key) {
-    /* key exists, cancel put and return associated value */
-    unreserve();
-    key->decMemo();
-    value->decShared();
-    result = values[i];
-  } else {
-    keys[i] = key;
-    values[i] = value;
-    result = value;
-  }
-  return result;
+  keys[i] = key;
+  values[i] = value;
+  return value;
 }
 
 libbirch::Map::value_type libbirch::Map::uninitialized_put(const key_type key,
@@ -89,25 +78,16 @@ libbirch::Map::value_type libbirch::Map::uninitialized_put(const key_type key,
   assert(value);
 
   reserve();
-
   auto i = hash(key, nentries);
   auto k = keys[i];
-  while (k && k != key) {
+  while (k) {
+    assert(k != key);
     i = (i + 1u) & (nentries - 1u);
     k = keys[i];
   }
-
-  value_type result;
-  if (k == key) {
-    /* key exists, cancel put and return associated value */
-    unreserve();
-    result = values[i];
-  } else {
-    keys[i] = key;
-    values[i] = value;
-    result = value;
-  }
-  return result;
+  keys[i] = key;
+  values[i] = value;
+  return value;
 }
 
 void libbirch::Map::copy(Map& o) {
@@ -118,31 +98,23 @@ void libbirch::Map::copy(Map& o) {
   if (nentries > 0) {
     keys = (key_type*)allocate(nentries * sizeof(key_type));
     values = (value_type*)allocate(nentries * sizeof(value_type));
-    std::memset(keys, 0, nentries * sizeof(key_type));
-    std::memset(values, 0, nentries * sizeof(value_type));
     tentries = libbirch::tid;
   }
+  noccupied = o.noccupied;
 
   /* copy */
-  for (auto i = 0u; i < o.nentries; ++i) {
+  for (auto i = 0u; i < nentries; ++i) {
     auto key = o.keys[i];
-    if (key && key->isReachable()) {
-      auto value = o.values[i];
+    auto value = o.values[i];
+    if (key) {
+      /* apply the map to itself once to remove any long chains */
       value = o.get(value, value);
-      // ^ applies the existing map to itself once, taking one step toward
-      //   its transitive closure, and eliminating long chains of mappings
-      //   that keep obsolete objects in scope
-      put(key, value);
-    }
-  }
 
-  /* shrink if possible */
-  auto nentries2 = nentries;
-  while (noccupied < (nentries2 >> 2u) && nentries2 > (unsigned)CLONE_MEMO_INITIAL_SIZE) {
-    nentries2 >>= 1u;
-  }
-  if (nentries2 != nentries) {
-    resize(nentries2);
+      key->incMemo();
+      value->incShared();
+    }
+    keys[i] = key;
+    values[i] = value;
   }
 }
 
@@ -159,48 +131,67 @@ void libbirch::Map::freeze() {
 
 void libbirch::Map::reserve() {
   if (++noccupied > crowd()) {
-    resize(std::max(2u * nentries, (unsigned)CLONE_MEMO_INITIAL_SIZE));
+    rehash();
   }
 }
 
-void libbirch::Map::resize(const unsigned nentries2) {
+void libbirch::Map::rehash() {
   /* save previous table */
   auto nentries1 = nentries;
+  auto tentries1 = tentries;
   auto keys1 = keys;
   auto values1 = values;
 
-  /* initialize new table */
-  auto keys2 = (key_type*)allocate(nentries2 * sizeof(key_type));
-  auto values2 = (value_type*)allocate(nentries2 * sizeof(value_type));
-  std::memset(keys2, 0, nentries2 * sizeof(key_type));
-  std::memset(values2, 0, nentries2 * sizeof(value_type));
-
-  /* copy contents from previous table */
-  for (auto i = 0u; i < nentries1; ++i) {
-    auto key = keys1[i];
-    if (key) {
-      /* adding a key->isReachable() check to remove obsolete entries while
-       * doing this is causing sporadic thread safety problems that are not
-       * fully understood */
-      auto value = values1[i];
-      auto j = hash(key, nentries2);
-      while (keys2[j]) {
-        j = (j + 1u) & (nentries2 - 1u);
-      }
-      keys2[j] = key;
-      values2[j] = value;
+  /* first pass, count number of active entries */
+  for (auto i = 0u; i < nentries; ++i) {
+    auto key = keys[i];
+    if (key && !key->isReachable()) {
+      --noccupied;
     }
   }
 
-  /* update object */
-  nentries = nentries2;
-  keys = keys2;
-  values = values2;
+  /* choose an appropriate size */
+  nentries = std::max(2u*nentries, (unsigned)CLONE_MEMO_INITIAL_SIZE);
+  while (noccupied < (nentries >> 2u) && nentries > (unsigned)CLONE_MEMO_INITIAL_SIZE) {
+    nentries >>= 1u;
+  }
+
+  /* initialize new table */
+  keys = (key_type*)allocate(nentries * sizeof(key_type));
+  values = (value_type*)allocate(nentries * sizeof(value_type));
+  std::memset(keys, 0, nentries * sizeof(key_type));
+  std::memset(values, 0, nentries * sizeof(value_type));
+  tentries = libbirch::tid;
+
+  /* copy active entries from previous table */
+  for (auto i = 0u; i < nentries1; ++i) {
+    auto key = keys1[i];
+    if (key && key->isReachable()) {
+      auto value = values1[i];
+      keys1[i] = nullptr;
+      values1[i] = nullptr;  // not necessary
+      auto j = hash(key, nentries);
+      while (keys[j]) {
+        j = (j + 1u) & (nentries - 1u);
+      }
+      keys[j] = key;
+      values[j] = value;
+    }
+  }
+
+  /* clean up inactive entries in previous table */
+  for (auto i = 0u; i < nentries1; ++i) {
+    auto key = keys1[i];
+    if (key) {
+      auto value = values1[i];
+      key->decMemo();
+      value->decShared();
+    }
+  }
 
   /* deallocate previous table */
   if (nentries1 > 0) {
-    deallocate(keys1, nentries1 * sizeof(key_type), tentries);
-    deallocate(values1, nentries1 * sizeof(value_type), tentries);
+    deallocate(keys1, nentries1 * sizeof(key_type), tentries1);
+    deallocate(values1, nentries1 * sizeof(value_type), tentries1);
   }
-  tentries = libbirch::tid;
 }
