@@ -48,8 +48,7 @@ libbirch::Map::value_type libbirch::Map::get(const key_type key,
   }
   return value;
 }
-
-libbirch::Map::value_type libbirch::Map::put(const key_type key,
+void libbirch::Map::put(const key_type key,
     const value_type value) {
   /* pre-condition */
   assert(key);
@@ -68,10 +67,9 @@ libbirch::Map::value_type libbirch::Map::put(const key_type key,
   }
   keys[i] = key;
   values[i] = value;
-  return value;
 }
 
-libbirch::Map::value_type libbirch::Map::uninitialized_put(const key_type key,
+void libbirch::Map::uninitialized_put(const key_type key,
     const value_type value) {
   /* pre-condition */
   assert(key);
@@ -87,7 +85,6 @@ libbirch::Map::value_type libbirch::Map::uninitialized_put(const key_type key,
   }
   keys[i] = key;
   values[i] = value;
-  return value;
 }
 
 void libbirch::Map::copy(Map& o) {
@@ -143,6 +140,7 @@ void libbirch::Map::rehash() {
   auto values1 = values;
 
   /* remove obsolete entries from previous table */
+  #if ENABLE_LAZY_DEEP_CLONE
   for (auto i = 0u; i < nentries1; ++i) {
     auto key = keys1[i];
     if (key && !key->isReachable()) {
@@ -154,6 +152,7 @@ void libbirch::Map::rehash() {
       --noccupied;
     }
   }
+  #endif
 
   /* choose an appropriate size */
   nentries = std::max(2u*nentries1, (unsigned)CLONE_MEMO_INITIAL_SIZE);

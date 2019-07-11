@@ -53,10 +53,8 @@ public:
    *
    * @param key Key.
    * @param value Value.
-   *
-   * @return If @p key exists, then its associated value, otherwise @p value.
    */
-  value_type put(const key_type key, const value_type value);
+  void put(const key_type key, const value_type value);
 
   /**
    * Put an uninitialized value. As put(), but it is the caller's
@@ -65,10 +63,8 @@ public:
    *
    * @param key Key.
    * @param value Value.
-   *
-   * @return If @p key exists, then its associated value, otherwise @p value.
    */
-  value_type uninitialized_put(const key_type key, const value_type value);
+  void uninitialized_put(const key_type key, const value_type value);
 
   /**
    * Copy entries from another map into this one, removing any that are

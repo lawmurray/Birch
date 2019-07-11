@@ -45,6 +45,11 @@ public:
   libbirch_destroy_function_
 
   /**
+   * Is there a single reference to this object?
+   */
+  bool isSingular() const;
+
+  /**
    * Name of the class.
    */
   virtual const char* name_() const {
@@ -65,6 +70,10 @@ inline libbirch::EagerAny::EagerAny(const EagerAny& o) :
 
 inline libbirch::EagerAny::~EagerAny() {
   //
+}
+
+inline bool libbirch::EagerAny::isSingular() const {
+  return numShared() <= 1u && numWeak() - numMemo() <= 1u;
 }
 
 #endif
