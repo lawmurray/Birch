@@ -38,17 +38,10 @@ class DelayGaussian(future:Real?, futureUpdate:Boolean, μ:Real, σ2:Real) <
   }
 
   function write(buffer:Buffer) {
-    parent:Delay? <- this.parent;
-    if parent? {
-      /* can only output as a distribution if this is a root node on the
-       * $M$-path */
-      super.write(buffer);
-    } else {
-      prune();
-      buffer.set("class", "Gaussian");
-      buffer.set("μ", μ);
-      buffer.set("σ2", 1.0/λ);
-    }
+    prune();
+    buffer.set("class", "Gaussian");
+    buffer.set("μ", μ);
+    buffer.set("σ2", 1.0/λ);
   }
 }
 
