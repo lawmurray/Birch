@@ -90,28 +90,38 @@ void libbirch::Map::uninitialized_put(const key_type key,
 void libbirch::Map::copy(Map& o) {
   assert(empty());
 
-  /* allocate */
-  nentries = o.nentries;
-  if (nentries > 0) {
+  /* count number of active entries in parent */
+  auto nactive = 0u;
+  for (auto i = 0u; i < o.nentries; ++i) {
+    auto key = o.keys[i];
+    if (key && !key->isReachable()) {
+      ++nactive;
+    }
+  }
+
+  if (nactive > 0u) {
+    /* choose an appropriate size */
+    nentries = std::max(o.nentries, (unsigned)CLONE_MEMO_INITIAL_SIZE);
+    while (nactive < (nentries >> 2u) && nentries > (unsigned)CLONE_MEMO_INITIAL_SIZE) {
+      nentries >>= 1u;
+    }
+
+    /* allocate */
     keys = (key_type*)allocate(nentries * sizeof(key_type));
     values = (value_type*)allocate(nentries * sizeof(value_type));
+    std::memset(keys, 0, nentries * sizeof(key_type));
+    std::memset(values, 0, nentries * sizeof(value_type));
     tentries = libbirch::tid;
-  }
-  noccupied = o.noccupied;
 
-  /* copy */
-  for (auto i = 0u; i < nentries; ++i) {
-    auto key = o.keys[i];
-    auto value = o.values[i];
-    if (key) {
-      /* apply the map to itself once to shorten long chains */
-      value = o.get(value, value);
-
-      key->incMemo();
-      value->incShared();
+    /* copy */
+    for (auto i = 0u; i < o.nentries; ++i) {
+      auto key = o.keys[i];
+      if (key && key->isReachable()) {
+        auto value = o.values[i];
+        value = o.get(value, value);  // apply map once to shorten chains
+        put(key, value);
+      }
     }
-    keys[i] = key;
-    values[i] = value;
   }
 }
 
@@ -133,64 +143,30 @@ void libbirch::Map::reserve() {
 }
 
 void libbirch::Map::rehash() {
-  /* The implementation here tries to ensure some consistency between runs
-   * when the order of entries in the hash table may differ, even with the
-   * same pseudorandom number seed, due to memory address differences.
-   * Unreachable entries are not removed from the previous table until the
-   * end, to ensure that their removal does not make additional entries
-   * unreachable. Furthermore, removing entries in the first pass appears
-   * to cause some rare thread safety issues that are not fully
-   * understood. */
-
   /* save previous table */
   auto nentries1 = nentries;
   auto tentries1 = tentries;
   auto keys1 = keys;
   auto values1 = values;
 
-  /* first pass, count number of active entries */
-  for (auto i = 0u; i < nentries; ++i) {
-    auto key = keys[i];
-    if (key && !key->isReachable()) {
-      --noccupied;
-    }
-  }
-
-  /* choose an appropriate size */
-  nentries = std::max(2u*nentries, (unsigned)CLONE_MEMO_INITIAL_SIZE);
-  while (noccupied < (nentries >> 2u) && nentries > (unsigned)CLONE_MEMO_INITIAL_SIZE) {
-    nentries >>= 1u;
-  }
-
   /* initialize new table */
+  nentries = std::max(2u*nentries1, (unsigned)CLONE_MEMO_INITIAL_SIZE);
   keys = (key_type*)allocate(nentries * sizeof(key_type));
   values = (value_type*)allocate(nentries * sizeof(value_type));
   std::memset(keys, 0, nentries * sizeof(key_type));
   std::memset(values, 0, nentries * sizeof(value_type));
   tentries = libbirch::tid;
 
-  /* copy active entries from previous table */
+  /* copy entries from previous table */
   for (auto i = 0u; i < nentries1; ++i) {
     auto key = keys1[i];
-    if (key && key->isReachable()) {
-      auto value = values1[i];
-      keys1[i] = nullptr;
+    if (key) {
       auto j = hash(key, nentries);
       while (keys[j]) {
         j = (j + 1u) & (nentries - 1u);
       }
       keys[j] = key;
-      values[j] = value;
-    }
-  }
-
-  /* clean up inactive entries in previous table */
-  for (auto i = 0u; i < nentries1; ++i) {
-    auto key = keys1[i];
-    if (key) {
-      auto value = values1[i];
-      key->decMemo();
-      value->decShared();
+      values[j] = values1[i];
     }
   }
 
