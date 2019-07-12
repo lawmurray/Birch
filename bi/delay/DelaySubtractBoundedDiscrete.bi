@@ -93,13 +93,6 @@ final class DelaySubtractBoundedDiscrete(future:Integer?, futureUpdate:Boolean,
     }
     return P;
   }
-
-  function detach() {
-    // override as have two parents
-    parent <- nil;
-    x1!.child <- nil;
-    x2!.child <- nil;
-  }  
 }
 
 function DelaySubtractBoundedDiscrete(future:Integer?, futureUpdate:Boolean,

@@ -51,7 +51,6 @@ class DelayValue<Value>(future:Value?, futureUpdate:Boolean) < Delay {
       } else {
         downdate(x!);
       }
-      detach();
     }
     return x!;
   }
@@ -72,7 +71,6 @@ class DelayValue<Value>(future:Value?, futureUpdate:Boolean) < Delay {
     if w > -inf {
       update(x);
     }
-    detach();
   }
 
   /**
@@ -91,7 +89,6 @@ class DelayValue<Value>(future:Value?, futureUpdate:Boolean) < Delay {
     if w > -inf {
       downdate(x);
     }
-    detach();
   }
   
   /**
@@ -110,7 +107,6 @@ class DelayValue<Value>(future:Value?, futureUpdate:Boolean) < Delay {
     if w > -inf {
       update(x);
     }
-    detach();
     return w;
   }
 
@@ -130,23 +126,25 @@ class DelayValue<Value>(future:Value?, futureUpdate:Boolean) < Delay {
     if w > -inf {
       downdate(x);
     }
-    detach();
     return w;
   }
 
   function realize() {
-    prune();
-    if future? {
-      x <- future!;
+    if x? {
+      // nothing to do
     } else {
-      x <- simulate();
+      prune();
+      if future? {
+        x <- future!;
+      } else {
+        x <- simulate();
+      }
+      if futureUpdate {
+        update(x!);
+      } else {
+        downdate(x!);
+      }
     }
-    if futureUpdate {
-      update(x!);
-    } else {
-      downdate(x!);
-    }
-    detach();
   }
   
   /**
