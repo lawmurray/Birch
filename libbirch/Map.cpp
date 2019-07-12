@@ -94,7 +94,7 @@ void libbirch::Map::copy(Map& o) {
   auto nactive = 0u;
   for (auto i = 0u; i < o.nentries; ++i) {
     auto key = o.keys[i];
-    if (key && !key->isReachable()) {
+    if (key && key->isReachable()) {
       ++nactive;
     }
   }
