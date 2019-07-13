@@ -119,6 +119,7 @@ public:
    */
   unsigned numWeak() const;
 
+  #if ENABLE_LAZY_DEEP_CLONE
   /**
    * Increment the memo count (implies an increment of the weak count also).
    */
@@ -142,6 +143,7 @@ public:
    * so the object is not considered reachable.
    */
   bool isReachable() const;
+  #endif
 
   /**
    * Name of the class.
@@ -161,12 +163,14 @@ protected:
    */
   Atomic<unsigned> weakCount;
 
+  #if ENABLE_LAZY_DEEP_CLONE
   /**
    * Memo count. This is the number of times that the object occurs as a key
    * in a memo. It is always less than or equal to the weak count, as each
    * memo reference implies a weak reference also.
    */
   Atomic<unsigned> memoCount;
+  #endif
 
   /**
    * Size of the object. This is set immediately after construction. A value
@@ -191,7 +195,9 @@ protected:
 inline libbirch::Counted::Counted() :
     sharedCount(0u),
     weakCount(1u),
+    #if ENABLE_LAZY_DEEP_CLONE
     memoCount(0u),
+    #endif
     size(0u),
     tid(libbirch::tid) {
   //
@@ -200,7 +206,9 @@ inline libbirch::Counted::Counted() :
 inline libbirch::Counted::Counted(const Counted& o) :
     sharedCount(0u),
     weakCount(1u),
+    #if ENABLE_LAZY_DEEP_CLONE
     memoCount(0u),
+    #endif
     size(o.size),
     tid(libbirch::tid) {
   //
@@ -255,6 +263,7 @@ inline unsigned libbirch::Counted::numWeak() const {
   return weakCount.load();
 }
 
+#if ENABLE_LAZY_DEEP_CLONE
 inline void libbirch::Counted::incMemo() {
   /* the order of operations here is important, as the weak count should
    * never be less than the memo count */
@@ -277,3 +286,4 @@ inline unsigned libbirch::Counted::numMemo() const {
 inline bool libbirch::Counted::isReachable() const {
   return numWeak() > numMemo();
 }
+#endif

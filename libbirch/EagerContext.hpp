@@ -6,7 +6,7 @@
 
 #include "libbirch/Counted.hpp"
 #include "libbirch/EagerAny.hpp"
-#include "libbirch/Map.hpp"
+#include "libbirch/EagerMemo.hpp"
 
 namespace libbirch {
 /**
@@ -37,7 +37,7 @@ private:
   /**
    * Memo that maps source objects to clones.
    */
-  Map m;
+  EagerMemo m;
 };
 }
 

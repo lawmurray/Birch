@@ -1,9 +1,10 @@
 /**
  * @file
  */
-#include "libbirch/Map.hpp"
+#if ENABLE_LAZY_DEEP_CLONE
+#include "LazyMemo.hpp"
 
-libbirch::Map::Map() :
+libbirch::LazyMemo::LazyMemo() :
     keys(nullptr),
     values(nullptr),
     nentries(0u),
@@ -12,7 +13,7 @@ libbirch::Map::Map() :
   //
 }
 
-libbirch::Map::~Map() {
+libbirch::LazyMemo::~LazyMemo() {
   if (nentries > 0u) {
     key_type key;
     value_type value;
@@ -29,7 +30,7 @@ libbirch::Map::~Map() {
   }
 }
 
-libbirch::Map::value_type libbirch::Map::get(const key_type key,
+libbirch::LazyMemo::value_type libbirch::LazyMemo::get(const key_type key,
     const value_type failed) {
   /* pre-condition */
   assert(key);
@@ -48,7 +49,7 @@ libbirch::Map::value_type libbirch::Map::get(const key_type key,
   }
   return value;
 }
-void libbirch::Map::put(const key_type key,
+void libbirch::LazyMemo::put(const key_type key,
     const value_type value) {
   /* pre-condition */
   assert(key);
@@ -69,25 +70,7 @@ void libbirch::Map::put(const key_type key,
   values[i] = value;
 }
 
-void libbirch::Map::uninitialized_put(const key_type key,
-    const value_type value) {
-  /* pre-condition */
-  assert(key);
-  assert(value);
-
-  reserve();
-  auto i = hash(key, nentries);
-  auto k = keys[i];
-  while (k) {
-    assert(k != key);
-    i = (i + 1u) & (nentries - 1u);
-    k = keys[i];
-  }
-  keys[i] = key;
-  values[i] = value;
-}
-
-void libbirch::Map::copy(Map& o) {
+void libbirch::LazyMemo::copy(LazyMemo& o) {
   assert(empty());
 
   /* count number of active entries in parent */
@@ -125,8 +108,7 @@ void libbirch::Map::copy(Map& o) {
   }
 }
 
-#if ENABLE_LAZY_DEEP_CLONE
-void libbirch::Map::freeze() {
+void libbirch::LazyMemo::freeze() {
   for (auto i = 0u; i < nentries; ++i) {
     auto v = values[i];
     if (v) {
@@ -134,15 +116,14 @@ void libbirch::Map::freeze() {
     }
   }
 }
-#endif
 
-void libbirch::Map::reserve() {
+void libbirch::LazyMemo::reserve() {
   if (++noccupied > crowd()) {
     rehash();
   }
 }
 
-void libbirch::Map::rehash() {
+void libbirch::LazyMemo::rehash() {
   /* save previous table */
   auto nentries1 = nentries;
   auto tentries1 = tentries;
@@ -176,3 +157,5 @@ void libbirch::Map::rehash() {
     deallocate(values1, nentries1 * sizeof(value_type), tentries1);
   }
 }
+
+#endif

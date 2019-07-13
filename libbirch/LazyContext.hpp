@@ -6,8 +6,8 @@
 
 #include "libbirch/Counted.hpp"
 #include "libbirch/LazyAny.hpp"
+#include "libbirch/LazyMemo.hpp"
 #include "libbirch/SharedPtr.hpp"
-#include "libbirch/Map.hpp"
 #include "libbirch/ReaderWriterLock.hpp"
 
 namespace libbirch {
@@ -77,7 +77,7 @@ private:
   /**
    * Memo that maps source objects to clones.
    */
-  Map m;
+  LazyMemo m;
 
   /**
    * Lock.

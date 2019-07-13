@@ -2,6 +2,7 @@
  * @file
  */
 #pragma once
+#if !ENABLE_LAZY_DEEP_CLONE
 
 #include "libbirch/Any.hpp"
 
@@ -11,7 +12,7 @@ namespace libbirch {
  *
  * @ingroup libbirch
  */
-class Map {
+class EagerMemo {
 public:
   /**
    * Key type.
@@ -26,12 +27,12 @@ public:
   /**
    * Constructor.
    */
-  Map();
+  EagerMemo();
 
   /**
    * Destructor.
    */
-  ~Map();
+  ~EagerMemo();
 
   /**
    * Is this empty?
@@ -56,29 +57,6 @@ public:
    */
   void put(const key_type key, const value_type value);
 
-  /**
-   * Put an uninitialized value. As put(), but it is the caller's
-   * responsibility to update reference counts on the key (weak) and value
-   * (shared).
-   *
-   * @param key Key.
-   * @param value Value.
-   */
-  void uninitialized_put(const key_type key, const value_type value);
-
-  /**
-   * Copy entries from another map into this one, removing any that are
-   * obsolete.
-   */
-  void copy(Map& o);
-
-  #if ENABLE_LAZY_DEEP_CLONE
-  /**
-   * Freeze all values in the map.
-   */
-  void freeze();
-  #endif
-
 private:
   /**
    * Compute the hash code for a given key for a table with the given number
@@ -95,12 +73,6 @@ private:
    * Reserve space for a (possible) new entry, resizing if necessary.
    */
   void reserve();
-
-  /**
-   * Release a reservation previously obtained with reserve(), which will
-   * not be needed.
-   */
-  void unreserve();
   
   /**
    * Rehash the table.
@@ -134,22 +106,20 @@ private:
 };
 }
 
-inline bool libbirch::Map::empty() const {
+inline bool libbirch::EagerMemo::empty() const {
   return nentries == 0u;
 }
 
-inline unsigned libbirch::Map::hash(const key_type key, const unsigned nentries) {
+inline unsigned libbirch::EagerMemo::hash(const key_type key, const unsigned nentries) {
   assert(nentries > 0u);
   return static_cast<unsigned>(reinterpret_cast<size_t>(key) >> 6ull)
       & (nentries - 1u);
 }
 
-inline unsigned libbirch::Map::crowd() const {
+inline unsigned libbirch::EagerMemo::crowd() const {
   /* the table is considered crowded if more than three-quarters of its
    * entries are occupied */
   return (nentries >> 1u) + (nentries >> 2u);
 }
 
-inline void libbirch::Map::unreserve() {
-  --noccupied;
-}
+#endif

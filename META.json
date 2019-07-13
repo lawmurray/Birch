@@ -4,15 +4,6 @@
   "description": "The Birch standard library.",
   "manifest": {
     "source": [
-      "libbirch/clone.cpp",
-      "libbirch/EagerContext.cpp",
-      "libbirch/libbirch.cpp",
-      "libbirch/LazyContext.cpp",
-      "libbirch/Map.cpp",
-      "libbirch/memory.cpp",
-      "libbirch/stacktrace.cpp",
-      "libbirch/thread.cpp",
-
       "bi/basic/Boolean.bi",
       "bi/basic/File.bi",
       "bi/basic/Integer.bi",
@@ -284,7 +275,17 @@
       "bi/main.bi",
       "bi/memory.bi",
       "bi/sample.bi",
-      "bi/test.bi"
+      "bi/test.bi",
+
+      "libbirch/clone.cpp",
+      "libbirch/EagerContext.cpp",
+      "libbirch/EagerMemo.cpp",
+      "libbirch/libbirch.cpp",
+      "libbirch/LazyContext.cpp",
+      "libbirch/LazyMemo.cpp",
+      "libbirch/memory.cpp",
+      "libbirch/stacktrace.cpp",
+      "libbirch/thread.cpp"
     ],
     "header": [
       "libbirch/Allocator.hpp",
@@ -302,6 +303,7 @@
       "libbirch/Counted.hpp",
       "libbirch/EagerAny.hpp",
       "libbirch/EagerContext.hpp",
+      "libbirch/EagerMemo.hpp",
       "libbirch/EagerPtr.hpp",
       "libbirch/Eigen.hpp",
       "libbirch/EigenFunctions.hpp",
@@ -320,10 +322,10 @@
       "libbirch/Iterator.hpp",
       "libbirch/LazyAny.hpp",
       "libbirch/LazyContext.hpp",
+      "libbirch/LazyMemo.hpp",
       "libbirch/LazyPtr.hpp",
       "libbirch/libbirch.hpp",
       "libbirch/Length.hpp",
-      "libbirch/Map.hpp",
       "libbirch/memory.hpp",
       "libbirch/mutable.hpp",
       "libbirch/Nil.hpp",
