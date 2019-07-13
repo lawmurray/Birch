@@ -183,7 +183,7 @@ public:
   /**
    * Get the raw pointer as const.
    */
-  const T* pull() const {
+  T* pull() const {
     assert(!ptr || ptr->numWeak() > 0);
     return ptr;
   }

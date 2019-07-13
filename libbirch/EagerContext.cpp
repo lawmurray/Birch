@@ -23,19 +23,16 @@ libbirch::EagerAny* libbirch::EagerContext::copy(EagerAny* o) {
    * reference counts before any recursive clones occur */
   auto alloc = static_cast<EagerAny*>(allocate(o->getSize()));
   auto uninit = alloc;
-  auto singular = o->isSingular();
-  if (!singular) {
-    m.uninitialized_put(o, alloc);
-  }
+  m.uninitialized_put(o, alloc);
   SwapClone swapClone(true);
   SwapContext swapContext(this);
   auto result = o->clone_(uninit);
   assert(result == uninit);  // clone should be in the allocation
-  if (!singular) {
-    /* uninitialized_put(), so responsible for ref counts */
-    o->incMemo();
-    result->incShared();
-  }
+
+  /* uninitialized_put(), so responsible for ref counts */
+  o->incMemo();
+  result->incShared();
+
   return result;
 }
 

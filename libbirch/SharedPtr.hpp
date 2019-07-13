@@ -41,8 +41,11 @@ public:
    */
   template<class U>
   SharedPtr(const WeakPtr<U>& o) :
-      ptr(o.ptr ? static_cast<T*>(o.ptr->lock()) : nullptr) {
-    //
+      ptr(o.ptr ? static_cast<T*>(o.ptr) : nullptr) {
+    if (ptr) {
+      assert(ptr->numShared() > 0);
+      ptr->incShared();
+    }
   }
 
   /**
@@ -50,8 +53,11 @@ public:
    */
   template<class U>
   SharedPtr(const InitPtr<U>& o) :
-      ptr(o.ptr ? static_cast<T*>(o.ptr->lock()) : nullptr) {
-    //
+      ptr(o.ptr ? static_cast<T*>(o.ptr) : nullptr) {
+    if (ptr) {
+      assert(ptr->numShared() > 0);
+      ptr->incShared();
+    }
   }
 
   /**
@@ -177,7 +183,7 @@ public:
   /**
    * Get the raw pointer as const.
    */
-  const T* pull() const {
+  T* pull() const {
     assert(!ptr || ptr->numShared() > 0);
     return ptr;
   }

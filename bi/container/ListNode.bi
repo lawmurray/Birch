@@ -36,9 +36,9 @@ final class ListNode<Type>(x:Type) {
     prev:ListNode<Type>? <- this.prev;
     assert prev?;
 
-    prev!.next <- node;
     node.prev <- prev;
     node.next <- this;
+    prev!.next <- node;
     this.prev <- node;
   }
   
@@ -50,8 +50,8 @@ final class ListNode<Type>(x:Type) {
     assert prev?;
     assert next?;
     
-    prev!.next <- next;
     next!.prev <- prev;
+    prev!.next <- next;
     this.next <- nil;
     this.prev <- nil;
   }

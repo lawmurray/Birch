@@ -90,13 +90,6 @@ public:
   unsigned getSize() const;
 
   /**
-   * If the object has yet to be destroyed, increment the shared count
-   * and return a pointer to this. Otherwise return null. This is used
-   * to atomically convert a WeakPtr into a SharedPtr.
-   */
-  Counted* lock();
-
-  /**
    * Increment the shared count.
    */
   void incShared();
@@ -225,22 +218,6 @@ inline void libbirch::Counted::deallocate() {
 
 inline unsigned libbirch::Counted::getSize() const {
   return size;
-}
-
-inline libbirch::Counted* libbirch::Counted::lock() {
-  sharedCount.increment();
-  assert(sharedCount.load() > 1u);  // should not be upgrading from zero refs
-  return this;
-
-  /* older implementation using std::atomic and atomic CAS that cannot be
-   * represented with libbirch::Atomic (based on OpenMP atomics) at present;
-   * newer implementation changes the semantics of weak pointers */
-  //unsigned count = sharedCount.load();
-  //while (count > 0u
-  //    && !sharedCount.compare_exchange_weak(count, count + 1u)) {
-  //  //
-  //}
-  //return count > 0u ? this : nullptr;
 }
 
 inline void libbirch::Counted::incShared() {

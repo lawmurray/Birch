@@ -54,10 +54,12 @@ class EagerPtr {
    * Copy constructor.
    */
   EagerPtr(const EagerPtr<P>& o) {
-    if (cloneUnderway && o.object) {
-      object = static_cast<T*>(currentContext->get(o.get()));
-    } else {
-      object = o.object;
+    if (o.object) {
+      if (cloneUnderway) {
+        object = static_cast<T*>(currentContext->get(o.get()));
+      } else {
+        object = o.object;
+      }
     }
   }
 
@@ -170,28 +172,28 @@ class EagerPtr {
   /**
    * Get the raw pointer.
    */
-  const T* pull() {
+  T* pull() {
     return object.get();
   }
 
   /**
    * Get the raw pointer.
    */
-  const T* pull() const {
+  T* pull() const {
     return object.get();
   }
 
   /**
    * Get the raw pointer.
    */
-  const T* readOnly() {
+  T* readOnly() {
     return object.get();
   }
 
   /**
    * Get the raw pointer.
    */
-  const T* readOnly() const {
+  T* readOnly() const {
     return object.get();
   }
 

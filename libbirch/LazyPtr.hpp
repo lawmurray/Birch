@@ -274,7 +274,7 @@ public:
   /**
    * Get the raw pointer for read-only use, without cloning.
    */
-  const T* pull() {
+  T* pull() {
     auto raw = object.get();
     if (raw && raw->isFrozen()) {
       raw = static_cast<T*>(to->pull(raw));
@@ -286,7 +286,7 @@ public:
   /**
    * Get the raw pointer for read-only use, without cloning.
    */
-  const T* pull() const {
+  T* pull() const {
     return const_cast<LazyPtr<P>*>(this)->pull();
   }
 
@@ -295,7 +295,7 @@ public:
    * according to whether ENABLE_READ_ONLY_OPTIMIZATION is true or false,
    * respectively.
    */
-  const T* readOnly() {
+  T* readOnly() {
     #if ENABLE_READ_ONLY_OPTIMIZATION
     return pull();
     #else
@@ -308,7 +308,7 @@ public:
    * according to whether ENABLE_READ_ONLY_OPTIMIZATION is true or false,
    * respectively.
    */
-  const T* readOnly() const {
+  T* readOnly() const {
     return const_cast<LazyPtr<P>*>(this)->readOnly();
   }
 

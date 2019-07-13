@@ -50,7 +50,7 @@ public:
   /**
    * Get the raw pointer as const.
    */
-  const T* pull() const {
+  T* pull() const {
     return ptr;
   }
 
