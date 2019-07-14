@@ -223,6 +223,9 @@ inline libbirch::Counted::~Counted() {
 inline void libbirch::Counted::deallocate() {
   assert(sharedCount.load() == 0u);
   assert(weakCount.load() == 0u);
+  #if ENABLE_LAZY_DEEP_CLONE
+  assert(memoCount.load() == 0u);
+  #endif
   libbirch::deallocate(this, size, tid);
 }
 
@@ -256,7 +259,7 @@ inline void libbirch::Counted::decWeak() {
   if (--weakCount == 0u) {
     assert(sharedCount.load() == 0u);
     #if ENABLE_LAZY_DEEP_CLONE
-    decMemo();
+    decMemo();  // release memo self-reference
     #else
     deallocate();
     #endif

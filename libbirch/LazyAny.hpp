@@ -179,19 +179,23 @@ inline libbirch::LazyContext* libbirch::LazyAny::getContext() {
 }
 
 inline void libbirch::LazyAny::freeze() {
-  if (!frozen.exchange(true) && numShared() > 0u) {
+  if (!frozen.exchange(true)) {
     #if ENABLE_SINGLE_REFERENCE_OPTIMIZATION
-    if (numShared() > 1u || numWeak() - numMemo() > 1u) {
+    if (numShared() > 1u || numWeak() > 1u) {
       multiply();
     }
     #endif
-    doFreeze_();
+    if (numShared() > 0u) {
+      doFreeze_();
+    }
   }
 }
 
 inline void libbirch::LazyAny::finish() {
-  if (!finished.exchange(true) && numShared() > 0u) {
-    doFinish_();
+  if (!finished.exchange(true)) {
+    if (numShared() > 0u) {
+      doFinish_();
+    }
   }
 }
 

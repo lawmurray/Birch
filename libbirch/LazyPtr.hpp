@@ -94,7 +94,7 @@ public:
   template<class Q, typename = std::enable_if_t<std::is_base_of<T,
       typename Q::value_type>::value>>
   LazyPtr(const LazyPtr<Q>& o) :
-      object((o.object && o.object->isSingular()) ? o.get() : o.object),
+      object((o.object && o.object->isSingular()) ? o.get() : o.pull()),
       to(o.object ? o.to : nullptr) {
     //
   }
@@ -109,23 +109,14 @@ public:
   }
 
   /**
-   * Generic move constructor.
-   */
-  template<class Q>
-  LazyPtr(LazyPtr<Q> && o) :
-      object(std::move(o.object)),
-      to(std::move(o.to)) {
-    //
-  }
-
-  /**
    * Copy assignment.
    */
   LazyPtr<P>& operator=(const LazyPtr<P>& o) {
-    /* there's a risk of invalidating the reference argument from operations
-     * here, so assign to local variables first, then to member variables */
+    /* there's a risk of invalidating `o` here, so assign to local variables
+     * first, then to member variables */
     auto to = o.to;
     auto object = (o.object && o.object->isSingular()) ? o.get() : o.object;
+    /* ^ `o.get()` preserves the single-reference optimization */
     this->to = to;
     this->object = object;
     return *this;
@@ -137,10 +128,12 @@ public:
   template<class Q, typename = std::enable_if_t<std::is_base_of<T,
       typename Q::value_type>::value>>
   LazyPtr<P>& operator=(const LazyPtr<Q>& o) {
-    /* there's a risk of invalidating the reference argument from operations
-     * here, so assign to local variables first, then to member variables */
+    /* see commentary in above assignment operators */
     auto to = o.to;
-    auto object = (o.object && o.object->isSingular()) ? o.get() : o.object;
+    auto object = (o.object && o.object->isSingular()) ? o.get() : o.pull();
+    /* ^ `o.pull()` because it is valid for `o` to be a weak pointer to a
+     *   destroyed object that will map to an live object; can't increment
+     *   the shared count for a destroyed object */
     this->to = to;
     this->object = object;
     return *this;
@@ -150,23 +143,7 @@ public:
    * Move assignment.
    */
   LazyPtr<P>& operator=(LazyPtr<P> && o) {
-    /* there's a risk of invalidating the reference argument from operations
-     * here, so assign to local variables first, then to member variables */
-    auto to = std::move(o.to);
-    auto object = (o.object && o.object->isSingular()) ? o.get() : std::move(o.object);
-    this->to = std::move(to);
-    this->object = std::move(object);
-    return *this;
-  }
-
-  /**
-   * Generic move assignment.
-   */
-  template<class Q, typename = std::enable_if_t<std::is_base_of<T,
-      typename Q::value_type>::value>>
-  LazyPtr<P>& operator=(LazyPtr<Q> && o) {
-    /* there's a risk of invalidating the reference argument from operations
-     * here, so assign to local variables first, then to member variables */
+    /* see commentary in above assignment operators */
     auto to = std::move(o.to);
     auto object = (o.object && o.object->isSingular()) ? o.get() : std::move(o.object);
     this->to = std::move(to);
