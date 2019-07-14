@@ -76,17 +76,19 @@ private:
   static unsigned hash(const key_type key, const unsigned nentries);
 
   /**
-   * Compute the lower bound on reserved entries to be considered crowded.
+   * Compute the lower bound on the number of occupied entries before the
+   * table is considered too crowded.
    */
   unsigned crowd() const;
 
   /**
-   * Reserve space for a (possible) new entry, resizing if necessary.
+   * Reserve space for a new entry, rehashing the table if it has become
+   * too crowded.
    */
   void reserve();
   
   /**
-   * Rehash the table.
+   * Rehash the table. This will also remove unreachable entries.
    */
   void rehash();
 
@@ -114,6 +116,11 @@ private:
    * Number of occupied entries in the table.
    */
   unsigned noccupied;
+
+  /**
+   * Number of new entries since last rehash.
+   */
+  unsigned nnew;
 };
 }
 

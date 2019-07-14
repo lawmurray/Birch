@@ -100,9 +100,9 @@ inline libbirch::LazyContext::LazyContext() :
 inline libbirch::LazyContext::LazyContext(LazyContext* parent) :
     frozen(parent->frozen) {
   assert(parent);
-  parent->l.read();
+  parent->l.write();
   m.copy(parent->m);
-  parent->l.unread();
+  parent->l.unwrite();
 }
 
 inline libbirch::LazyContext::~LazyContext() {
