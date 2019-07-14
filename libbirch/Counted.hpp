@@ -159,15 +159,17 @@ protected:
   Atomic<unsigned> sharedCount;
 
   /**
-   * Weak count.
+   * Weak count. This is one plus the number of times that the object is held
+   * by a weak pointer. The plus one is a self-reference that is released
+   * when the shared count reaches zero.
    */
   Atomic<unsigned> weakCount;
 
   #if ENABLE_LAZY_DEEP_CLONE
   /**
-   * Memo count. This is the number of times that the object occurs as a key
-   * in a memo. It is always less than or equal to the weak count, as each
-   * memo reference implies a weak reference also.
+   * Memo count. This is one plus the number of times that the object occurs
+   * as a key in a memo. The plus one is a self-reference that is relased
+   * when the weak count reaches zero.
    */
   Atomic<unsigned> memoCount;
   #endif
@@ -196,7 +198,7 @@ inline libbirch::Counted::Counted() :
     sharedCount(0u),
     weakCount(1u),
     #if ENABLE_LAZY_DEEP_CLONE
-    memoCount(0u),
+    memoCount(1u),
     #endif
     size(0u),
     tid(libbirch::tid) {
@@ -207,7 +209,7 @@ inline libbirch::Counted::Counted(const Counted& o) :
     sharedCount(0u),
     weakCount(1u),
     #if ENABLE_LAZY_DEEP_CLONE
-    memoCount(0u),
+    memoCount(1u),
     #endif
     size(o.size),
     tid(libbirch::tid) {
@@ -253,9 +255,11 @@ inline void libbirch::Counted::decWeak() {
   assert(weakCount.load() > 0u);
   if (--weakCount == 0u) {
     assert(sharedCount.load() == 0u);
-    // ^ because of weak self-reference, the weak count should not expire
-    //   before the shared count
+    #if ENABLE_LAZY_DEEP_CLONE
+    decMemo();
+    #else
     deallocate();
+    #endif
   }
 }
 
@@ -265,18 +269,16 @@ inline unsigned libbirch::Counted::numWeak() const {
 
 #if ENABLE_LAZY_DEEP_CLONE
 inline void libbirch::Counted::incMemo() {
-  /* the order of operations here is important, as the weak count should
-   * never be less than the memo count */
-  incWeak();
   memoCount.increment();
 }
 
 inline void libbirch::Counted::decMemo() {
-  /* the order of operations here is important, as the weak count should
-   * never be less than the memo count */
   assert(memoCount.load() > 0u);
-  memoCount.decrement();
-  decWeak();
+  if (--memoCount == 0u) {
+    assert(sharedCount.load() == 0u);
+    assert(weakCount.load() == 0u);
+    deallocate();
+  }
 }
 
 inline unsigned libbirch::Counted::numMemo() const {
@@ -284,6 +286,6 @@ inline unsigned libbirch::Counted::numMemo() const {
 }
 
 inline bool libbirch::Counted::isReachable() const {
-  return numWeak() > numMemo();
+  return numWeak() > 0u;
 }
 #endif
