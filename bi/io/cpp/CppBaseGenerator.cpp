@@ -116,10 +116,40 @@ void bi::CppBaseGenerator::visit(const UnaryCall* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Assign* o) {
-  ++inAssign;
-  middle(o->left);
-  --inAssign;
-  middle(" = " << o->right);
+  /* determine whether this is setting a member variable outside of the
+   * current class */
+  auto member = dynamic_cast<const Member*>(o->left);
+  auto slice = dynamic_cast<const Slice*>(o->left);
+  const This* self = nullptr;
+  const Super* super = nullptr;
+  const Identifier<MemberVariable>* var = nullptr;
+
+  if (slice) {
+    member = dynamic_cast<const Member*>(slice->single);
+  }
+  if (member) {
+    self = dynamic_cast<decltype(self)>(member->left);
+    super = dynamic_cast<decltype(super)>(member->left);
+    var = dynamic_cast<decltype(var)>(member->right);
+  }
+
+  if (var && !self && !super) {
+    /* this assignment is setting a member variable outside of the current
+     * class, use the setter member function of the class to ensure the
+     * context is set correctly */
+    ++inAssign;
+    middle(member->left << "->set_" << var->name << "_(");
+    if (slice) {
+      middle("libbirch::make_view(" << slice->brackets << "), ");
+    }
+    --inAssign;
+    middle(o->right << ')');
+  } else {
+    ++inAssign;
+    middle(o->left);
+    --inAssign;
+    middle(" = " << o->right);
+  }
 }
 
 void bi::CppBaseGenerator::visit(const Slice* o) {

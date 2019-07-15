@@ -217,6 +217,31 @@ void bi::CppClassGenerator::visit(const Class* o) {
       }
       line("#endif\n");
 
+      /* setters for member variables */
+      if (header) {
+        Gatherer<MemberVariable> memberVars;
+        o->accept(&memberVars);
+        for (auto var : memberVars) {
+          line("template<class T_>");
+          line("auto& set_" << var->name << "_(const T_& o_) {");
+          in();
+          line("libbirch_swap_context_");
+          line("return " << var->name << " = " << "o_;");
+          out();
+          line("}\n");
+
+          if (var->type->isArray()) {
+            line("template<class F_, class T_>");
+            line("auto set_" << var->name << "_(const F_& frame_, const T_& o_) {");
+            in();
+            line("libbirch_swap_context_");
+            line("return " << var->name << "(frame_) = " << "o_;");
+            out();
+            line("}\n");
+          }
+        }
+      }
+
       /* member variables and functions */
       *this << o->braces->strip();
     }
