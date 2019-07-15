@@ -57,7 +57,7 @@ public:
    */
   LazyPtr(T* object, LazyContext* to) :
       object(object),
-      to(object ? to : nullptr) {
+      to(to) {
     //
   }
 
@@ -66,7 +66,7 @@ public:
    */
   LazyPtr(const P& object, LazyContext* to) :
       object(object),
-      to(object ? to : nullptr) {
+      to(to) {
     //
   }
 
@@ -81,10 +81,10 @@ public:
         if (o.isCross()) {
           o.finish();
         }
-        object = o.object;
-      } else {
-        object = o.object->isSingle() ? o.get() : o.object;
+      } else if (o.object) {
+        o.object->multiply();
       }
+      object = o.object;
     }
   }
 
@@ -94,31 +94,28 @@ public:
   template<class Q, typename = std::enable_if_t<std::is_base_of<T,
       typename Q::value_type>::value>>
   LazyPtr(const LazyPtr<Q>& o) :
-      object((o.object && o.object->isSingle()) ? o.get() : o.pull()),
-      to(o.object ? o.to : nullptr) {
-    //
+      object(o.pull()),
+      to(o.to) {
+    if (object) {
+      object->multiply();
+    }
   }
 
   /**
    * Move constructor.
    */
-  LazyPtr(LazyPtr<P> && o) :
-      object(std::move(o.object)),
-      to(std::move(o.to)) {
-    //
-  }
+  LazyPtr(LazyPtr<P> && o) = default;
 
   /**
    * Copy assignment.
    */
   LazyPtr<P>& operator=(const LazyPtr<P>& o) {
-    /* there's a risk of invalidating `o` here, so assign to local variables
-     * first, then to member variables */
-    auto to = o.to;
-    auto object = (o.object && o.object->isSingle()) ? o.get() : o.object;
-    /* ^ `o.get()` preserves the single-reference optimization */
-    this->to = to;
-    this->object = object;
+    /* risk of invalidating `o` here, so assign to `to` first */
+    to = o.to;
+    object = o.object;
+    if (object) {
+      object->multiply();
+    }
     return *this;
   }
 
@@ -128,14 +125,16 @@ public:
   template<class Q, typename = std::enable_if_t<std::is_base_of<T,
       typename Q::value_type>::value>>
   LazyPtr<P>& operator=(const LazyPtr<Q>& o) {
-    /* see commentary in above assignment operators */
-    auto to = o.to;
-    auto object = (o.object && o.object->isSingle()) ? o.get() : o.pull();
-    /* ^ `o.pull()` because it is valid for `o` to be a weak pointer to a
-     *   destroyed object that will map to an live object; can't increment
-     *   the shared count for a destroyed object */
-    this->to = to;
-    this->object = object;
+    /* risk of invalidating `o` here, so assign to `to` first */
+    to = o.to;
+    object = o.pull();
+    /* ^ it is valid for `o` to be a weak pointer to a destroyed object that,
+     *   when mapped through the memo, will point to a valid object; thus
+     *   use of pull(), can't increment shared reference count on a destroyed
+     *   object */
+    if (object) {
+      object->multiply();
+    }
     return *this;
   }
 
@@ -143,11 +142,9 @@ public:
    * Move assignment.
    */
   LazyPtr<P>& operator=(LazyPtr<P> && o) {
-    /* see commentary in above assignment operators */
-    auto to = std::move(o.to);
-    auto object = (o.object && o.object->isSingle()) ? o.get() : std::move(o.object);
-    this->to = std::move(to);
-    this->object = std::move(object);
+    /* risk of invalidating `o` here, so assign to `to` first */
+    to = std::move(o.to);
+    object = std::move(o.object);
     return *this;
   }
 
@@ -165,8 +162,8 @@ public:
    * Nil assignment.
    */
   LazyPtr<P>& operator=(const Nil&) {
-    to = nullptr;
     object = nullptr;
+    to = nullptr;
     return *this;
   }
 
@@ -174,8 +171,8 @@ public:
    * Nullptr assignment.
    */
   LazyPtr<P>& operator=(const std::nullptr_t&) {
-    to = nullptr;
     object = nullptr;
+    to = nullptr;
     return *this;
   }
 

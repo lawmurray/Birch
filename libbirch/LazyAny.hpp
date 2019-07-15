@@ -86,6 +86,13 @@ public:
   void finish();
 
   /**
+   * Indicate that the single-reference optimization can no longer be applied
+   * to this object, as the reference count within a single context has been
+   * increased.
+   */
+  void multiply();
+
+  /**
    * Indicate that this object has been added to the right hand side of a
    * memo.
    */
@@ -215,6 +222,12 @@ inline void libbirch::LazyAny::finish() {
       doFinish_();
     }
   }
+}
+
+inline void libbirch::LazyAny::multiply() {
+  #if ENABLE_SINGLE_REFERENCE_OPTIMIZATION
+  single.store(false);
+  #endif
 }
 
 inline void libbirch::LazyAny::memoize() {
