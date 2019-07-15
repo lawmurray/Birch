@@ -1,4 +1,4 @@
-class Multi < StateSpaceModel<Global,List<Track>,List<Random<Real[_]>>> {
+class Multi < StateSpaceModel<Global,Vector<Track>,Vector<Random<Real[_]>>> {
   /**
    * Current time.
    */
@@ -7,9 +7,9 @@ class Multi < StateSpaceModel<Global,List<Track>,List<Random<Real[_]>>> {
   /**
    * All tracks up to current time.
    */
-  z:List<Track>;
+  z:Vector<Track>;
   
-  fiber transition(x':List<Track>, x:List<Track>, θ:Global) -> Event {
+  fiber transition(x':Vector<Track>, x:Vector<Track>, θ:Global) -> Event {
     /* update time */
     t <- t + 1;
 
@@ -40,7 +40,7 @@ class Multi < StateSpaceModel<Global,List<Track>,List<Random<Real[_]>>> {
     }
   }
 
-  fiber observation(y:List<Random<Real[_]>>, x:List<Track>, θ:Global) -> Event {
+  fiber observation(y:Vector<Random<Real[_]>>, x:Vector<Track>, θ:Global) -> Event {
     if !y.empty() {
       association(y, x, θ);
     } else {
@@ -55,7 +55,7 @@ class Multi < StateSpaceModel<Global,List<Track>,List<Random<Real[_]>>> {
     }
   }
 
-  fiber association(y:List<Random<Real[_]>>, x:List<Track>, θ:Global) -> Event {
+  fiber association(y:Vector<Random<Real[_]>>, x:Vector<Track>, θ:Global) -> Event {
     auto track <- x.walk();
     while track? {    
       auto o <- track!.y.back();  // observed random variable

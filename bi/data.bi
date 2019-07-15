@@ -14,7 +14,7 @@ program data(input:String <- "output/simulate.json",
   
   /* read in the simulated observations from the track */
   θ:Global;
-  y:Vector<List<Random<Real[_]>>>;
+  y:Vector<Vector<Random<Real[_]>>>;
 
   auto array <- inputBuffer.walk();
   if array? {
