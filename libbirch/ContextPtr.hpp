@@ -9,10 +9,9 @@
 
 namespace libbirch {
 /**
- * Context-sensitive shared or weak pointer to another Context. It records
- * the Context of the owning object; if this is the same as the referent
- * Context, a weak pointer is kept, otherwise a shared pointer is kept. This
- * is used to avoid reference cycles between Context objects.
+ * Pointer to a Context object. When the reference is the same as the
+ * current context, this acts as a raw pointers, otherwise it acts as a
+ * shared pointer.
  *
  * @ingroup libbirch
  */
@@ -21,59 +20,37 @@ public:
   /**
    * Default constructor.
    */
-  ContextPtr() :
-      owner(currentContext) {
-    //
+  ContextPtr() {
+    setContext(currentContext);
   }
 
   /**
    * Value constructor.
    */
-  ContextPtr(Context* context) :
-      context(context == currentContext ? nullptr : context),
-      owner(currentContext) {
-    //
+  ContextPtr(Context* context) {
+    setContext(context);
   }
 
   /**
    * Copy constructor.
    */
-  ContextPtr(const ContextPtr& o) :
-      context(nullptr),
-      owner(currentContext) {
-    if (o.context) {
-      if (o.context != owner) {
-        context = o.context;
-      }
-    } else {
-      if (o.owner != owner) {
-        context = o.owner;
-      }
-    }
+  ContextPtr(const ContextPtr& o) {
+    setContext(o.get());
   }
 
   /**
-   * Move constructor.
+   * Destructor.
    */
-  ContextPtr(ContextPtr&& o) :
-      context(nullptr),
-      owner(currentContext) {
-    if (o.context) {
-      if (o.context != owner) {
-        context = std::move(o.context);
-      }
-    } else {
-      if (o.owner != owner) {
-        context = std::move(o.owner);
-      }
-    }
+  ~ContextPtr() {
+    release();
   }
 
   /**
    * Value assignment.
    */
   ContextPtr& operator=(Context* context) {
-    this->context = (context == owner.get()) ? nullptr : context;
+    release();
+    setContext(context);
     return *this;
   }
 
@@ -81,39 +58,8 @@ public:
    * Copy assignment.
    */
   ContextPtr& operator=(const ContextPtr& o) {
-    if (o.context) {
-      if (o.context != owner) {
-        context = o.context;
-      } else {
-        context = nullptr;
-      }
-    } else {
-      if (o.owner != owner) {
-        context = o.owner;
-      } else {
-        context = nullptr;
-      }
-    }
-    return *this;
-  }
-
-  /**
-   * Move assignment.
-   */
-  ContextPtr& operator=(ContextPtr&& o) {
-    if (o.context) {
-      if (o.context != owner) {
-        context = std::move(o.context);
-      } else {
-        context = nullptr;
-      }
-    } else {
-      if (o.owner != owner) {
-        context = std::move(o.owner);
-      } else {
-        context = nullptr;
-      }
-    }
+    release();
+    setContext(o.get());
     return *this;
   }
 
@@ -121,14 +67,27 @@ public:
    * Get the raw pointer.
    */
   Context* get() const {
-    return context.get() ? context.get() : owner.get();
+    /* zero out the cross flag to restore the pointer */
+    return reinterpret_cast<Context*>(pack & ~(uintptr_t)1u);
   }
 
   /**
-   * Get the owner.
+   * Release the context.
    */
-  Context* getContext() const {
-    return owner.get();
+  void release() {
+    if (isCross()) {
+      get()->decShared();
+      pack = (uintptr_t)0u;
+    }
+  }
+
+  /**
+   * Is this pointer crossed? A crossed pointer is to a context different to
+   * that of the context in which it was created (e.g. the context of the
+   * object to which it belongs).
+   */
+  bool isCross() const {
+    return pack & (uintptr_t)1u;
   }
 
   /**
@@ -163,23 +122,26 @@ public:
    * Is the pointer not null?
    */
   operator bool() const {
-    return get() != nullptr;
+    return pack != (uintptr_t)0u;
   }
 
 private:
   /**
-   * The referent, if it is different to owner, otherwise `nullptr`.
+   * Set the context.
    */
-  SharedPtr<Context> context;
+  void setContext(Context* context) {
+    pack = reinterpret_cast<uintptr_t>(context);
+    if (context && context != currentContext) {
+      context->incShared();
+      pack |= (uintptr_t)1u;
+    }
+  }
 
   /**
-   * The owner. This is the context in which the pointer itself was created.
-   * For a member variable, it is the same as the context of the owning
-   * object. For a global or local variable it is the context of the  thread
-   * at the time it was created. Use of an InitPtr rather than WeakPtr is
-   * sufficient here, as at least a WeakPtr must exist to the owner context
-   * elsewhere.
+   * The packed raw pointer to context and cross flag. The least significant
+   * bit of the pointer, which would always be zero otherwise (given
+   * memory alignment) is used for the cross flag.
    */
-  InitPtr<Context> owner;
+  uintptr_t pack;
 };
 }

@@ -37,11 +37,6 @@ public:
   void finish() const;
 
   /**
-   * Get the context of the fiber state.
-   */
-  Context* getContext() const;
-
-  /**
    * Run to next yield point.
    *
    * @return Was a value yielded?
@@ -84,17 +79,13 @@ void libbirch::Fiber<YieldType>::finish() const {
 }
 
 template<class YieldType>
-libbirch::Context* libbirch::Fiber<YieldType>::getContext() const {
-  return state.getContext();
-}
-
-template<class YieldType>
 bool libbirch::Fiber<YieldType>::query() const {
   bool result = false;
   if (state.query()) {
     result = state->query();
     if (!result) {
-      const_cast<Fiber<YieldType>*>(this)->state = nullptr;  // fiber has finished, delete the state
+      const_cast<Fiber<YieldType>*>(this)->state = nullptr;
+      // ^ fiber has finished, delete the state
     }
   }
   return result;

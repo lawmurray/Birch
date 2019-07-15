@@ -355,14 +355,7 @@ public:
    * Does this pointer result from a cross copy?
    */
   bool isCross() const {
-    return to.get() != to.getContext();
-  }
-
-  /**
-   * Get the context of the object.
-   */
-  LazyContext* getContext() const {
-    return to.get();
+    return to.isCross();
   }
 
   /**
