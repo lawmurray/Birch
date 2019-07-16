@@ -81,10 +81,13 @@ public:
         if (o.isCross()) {
           o.finish();
         }
-      } else if (o.object) {
-        o.object->multiply();
+        object = o.object;
+      } else {
+        object = o.get();
+        //if (o.object) {
+        //  o.object->multiply();
+        //}
       }
-      object = o.object;
     }
   }
 
@@ -94,11 +97,11 @@ public:
   template<class Q, typename = std::enable_if_t<std::is_base_of<T,
       typename Q::value_type>::value>>
   LazyPtr(const LazyPtr<Q>& o) :
-      object(o.pull()),
+      object(o.get()),
       to(o.to) {
-    if (object) {
-      object->multiply();
-    }
+    //if (object) {
+    //  object->multiply();
+    //}
   }
 
   /**
@@ -112,10 +115,10 @@ public:
   LazyPtr<P>& operator=(const LazyPtr<P>& o) {
     /* risk of invalidating `o` here, so assign to `to` first */
     to = o.to;
-    object = o.object;
-    if (object) {
-      object->multiply();
-    }
+    object = o.get();
+    //if (object) {
+    //  object->multiply();
+    //}
     return *this;
   }
 
@@ -127,14 +130,14 @@ public:
   LazyPtr<P>& operator=(const LazyPtr<Q>& o) {
     /* risk of invalidating `o` here, so assign to `to` first */
     to = o.to;
-    object = o.pull();
+    object = o.get();
     /* ^ it is valid for `o` to be a weak pointer to a destroyed object that,
      *   when mapped through the memo, will point to a valid object; thus
      *   use of pull(), can't increment shared reference count on a destroyed
      *   object */
-    if (object) {
-      object->multiply();
-    }
+    //if (object) {
+    //  object->multiply();
+    //}
     return *this;
   }
 
