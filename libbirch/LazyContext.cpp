@@ -11,12 +11,19 @@ libbirch::LazyAny* libbirch::LazyContext::get(LazyAny* o) {
   assert(o->isFrozen());
   LazyAny* prev = nullptr;
   LazyAny* next = o;
+  bool frozen = true;
   l.write();
   do {
     prev = next;
-    next = m.get(prev, prev);
-  } while (next != prev && next->isFrozen());
-  if (next->isFrozen()) {
+    next = m.get(prev);
+    if (next) {
+      frozen = next->isFrozen();
+    }
+  } while (frozen && next);
+  if (!next) {
+	  next = prev;
+	}
+  if (frozen) {
     next = copy(next);
   }
   l.unwrite();
@@ -27,11 +34,18 @@ libbirch::LazyAny* libbirch::LazyContext::pull(LazyAny* o) {
   assert(o->isFrozen());
   LazyAny* prev = nullptr;
   LazyAny* next = o;
+  bool frozen = true;
   l.read();
   do {
     prev = next;
-    next = m.get(prev, prev);
-  } while (next != prev && next->isFrozen());
+    next = m.get(prev);
+    if (next) {
+      frozen = next->isFrozen();
+    }
+  } while (frozen && next);
+  if (!next) {
+	  next = prev;
+	}
   l.unread();
   return next;
 }
