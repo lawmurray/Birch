@@ -3,8 +3,8 @@
     "class": "MixedGaussianModel"
   },
   "sampler": {
-    "nsamples": 10,
+    "nsamples":20,
     "nparticles": 128,
-    "nsteps": 20
+    "nsteps": 100
   }
 }

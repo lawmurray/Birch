@@ -7,6 +7,7 @@ matrix:
       osx_image: xcode10.1
       addons:
         homebrew:
+          update: true
           packages:
             - flex
             - bison
@@ -31,11 +32,11 @@ matrix:
 before_install:
   # Checkout Birch, which may be cached, and (re)build
   - git clone "https://github.com/lawmurray/Birch.git" || cd .
-  - cd Birch && git stash && git pull && git checkout pgibbs && ./autogen.sh && ./configure INSTALL="install -p" && make -j 2 && sudo make install && cd ..
+  - cd Birch && git stash && git pull && git checkout master && ./autogen.sh && ./configure INSTALL="install -p" && make -j 2 && sudo make install && cd ..
 
   # Checkout Birch.Standard, which may be cached, and (re)build
   - git clone "https://github.com/lawmurray/Birch.Standard.git" || cd .
-  - cd Birch.Standard && git stash && git pull && git checkout pgibbs && birch build --enable-unity && sudo birch install --enable-unity && cd ..
+  - cd Birch.Standard && git stash && git pull && git checkout master && birch build --enable-unity && sudo birch install --enable-unity && cd ..
 install:
   - birch build --enable-unity && sudo birch install --enable-unity
 script:

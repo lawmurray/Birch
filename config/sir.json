@@ -3,8 +3,8 @@
     "class": "SIRModel"
   },
   "sampler": {
-    "class": "AliveParticleFilter",
-    "nsamples": 10,
+    "class": "ParticleFilter",
+    "nsamples": 20,
     "nparticles": 128
   }
 }
