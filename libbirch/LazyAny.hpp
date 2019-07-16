@@ -60,16 +60,6 @@ public:
   bool isFinished() const;
 
   /**
-   * If frozen, at the time of freezing, was the reference count only one?
-   */
-  bool isSingle() const;
-
-  /**
-   * Has this object been added to the right hand side of a memo?
-   */
-  bool isMemo() const;
-
-  /**
    * Get the context in which this object was created.
    */
   LazyContext* getContext();
@@ -84,19 +74,6 @@ public:
    * this.
    */
   void finish();
-
-  /**
-   * Indicate that the single-reference optimization can no longer be applied
-   * to this object, as the reference count within a single context has been
-   * increased.
-   */
-  void multiply();
-
-  /**
-   * Indicate that this object has been added to the right hand side of a
-   * memo.
-   */
-  void memoize();
 
   /**
    * Name of the class.
@@ -133,18 +110,6 @@ protected:
    * Is this finished?
    */
   Atomic<bool> finished;
-
-  #if ENABLE_SINGLE_REFERENCE_OPTIMIZATION
-  /**
-   * If frozen, at the time of freezing, was the reference count only one?
-   */
-  Atomic<bool> single;
-
-  /**
-   * Has this object been added to the right hand side of a memo?
-   */
-  bool memo;
-  #endif
 };
 }
 
@@ -152,11 +117,7 @@ inline libbirch::LazyAny::LazyAny() :
     Counted(),
     context(currentContext),
     frozen(false),
-    finished(false)
-    #if ENABLE_SINGLE_REFERENCE_OPTIMIZATION
-    , single(false), memo(false)
-    #endif
-    {
+    finished(false) {
   //
 }
 
@@ -164,11 +125,7 @@ inline libbirch::LazyAny::LazyAny(const LazyAny& o) :
     Counted(o),
     context(currentContext),
     frozen(false),
-    finished(false)
-    #if ENABLE_SINGLE_REFERENCE_OPTIMIZATION
-    , single(false), memo(false)
-    #endif
-    {
+    finished(false) {
   //
 }
 
@@ -184,33 +141,13 @@ inline bool libbirch::LazyAny::isFinished() const {
   return finished.load();
 }
 
-inline bool libbirch::LazyAny::isSingle() const {
-  #if ENABLE_SINGLE_REFERENCE_OPTIMIZATION
-  return single.load();
-  #else
-  return false;
-  #endif
-}
-
-inline bool libbirch::LazyAny::isMemo() const {
-  #if ENABLE_SINGLE_REFERENCE_OPTIMIZATION
-  return memo;
-  #else
-  return false;
-  #endif
-}
-
 inline libbirch::LazyContext* libbirch::LazyAny::getContext() {
   return context.get();
 }
 
 inline void libbirch::LazyAny::freeze() {
   if (!frozen.exchange(true)) {
-    auto nshared = numShared();
-    #if ENABLE_SINGLE_REFERENCE_OPTIMIZATION
-    single.store(!isMemo() && nshared <= 1u && numWeak() <= 1u);
-    #endif
-    if (nshared > 0u) {
+    if (numShared() > 0u) {
       doFreeze_();
     }
   }
@@ -222,18 +159,6 @@ inline void libbirch::LazyAny::finish() {
       doFinish_();
     }
   }
-}
-
-inline void libbirch::LazyAny::multiply() {
-  #if ENABLE_SINGLE_REFERENCE_OPTIMIZATION
-  single.store(false);
-  #endif
-}
-
-inline void libbirch::LazyAny::memoize() {
-  #if ENABLE_SINGLE_REFERENCE_OPTIMIZATION
-  memo = true;
-  #endif
 }
 
 inline void libbirch::LazyAny::doFreeze_() {

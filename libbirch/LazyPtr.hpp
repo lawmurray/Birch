@@ -84,9 +84,6 @@ public:
         object = o.object;
       } else {
         object = o.get();
-        //if (o.object) {
-        //  o.object->multiply();
-        //}
       }
     }
   }
@@ -99,9 +96,7 @@ public:
   LazyPtr(const LazyPtr<Q>& o) :
       object(o.get()),
       to(o.to) {
-    //if (object) {
-    //  object->multiply();
-    //}
+    //
   }
 
   /**
@@ -116,9 +111,6 @@ public:
     /* risk of invalidating `o` here, so assign to `to` first */
     to = o.to;
     object = o.get();
-    //if (object) {
-    //  object->multiply();
-    //}
     return *this;
   }
 
@@ -135,9 +127,6 @@ public:
      *   when mapped through the memo, will point to a valid object; thus
      *   use of pull(), can't increment shared reference count on a destroyed
      *   object */
-    //if (object) {
-    //  object->multiply();
-    //}
     return *this;
   }
 

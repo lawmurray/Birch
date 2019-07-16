@@ -85,12 +85,30 @@ public:
   }
 
   /**
+   * Increment the value by two, atomically, but without capturing the
+   * current value.
+   */
+  void doubleIncrement() {
+    #pragma omp atomic update
+    value += 2;
+  }
+
+  /**
    * Decrement the value by one, atomically, but without capturing the
    * current value.
    */
   void decrement() {
     #pragma omp atomic update
     --value;
+  }
+
+  /**
+   * Decrement the value by two, atomically, but without capturing the
+   * current value.
+   */
+  void doubleDecrement() {
+    #pragma omp atomic update
+    value -= 2;
   }
 
   template<class U>

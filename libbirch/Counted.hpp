@@ -100,6 +100,16 @@ public:
   void decShared();
 
   /**
+   * Increment the shared count twice, as one operation.
+   */
+  void doubleIncShared();
+
+  /**
+   * Decrement the shared count twice, as one operation.
+   */
+  void doubleDecShared();
+
+  /**
    * Shared count.
    */
   unsigned numShared() const;
@@ -136,13 +146,19 @@ public:
   unsigned numMemo() const;
 
   /**
-   * Is the object reachable? An object is reachable if it contains a shared
+   * Is this object reachable? An object is reachable if it contains a shared
    * count of one or more, or a weak count greater than the memo count. When
    * the weak count equals the memo count (it cannot be less), the object
    * is only reachable via keys in memos, which will never be triggered, and
    * so the object is not considered reachable.
    */
   bool isReachable() const;
+
+  /**
+   * Is there at most a single reference to this object, ignoring the
+   * self-reference?
+   */
+  bool isSingle() const;
   #endif
 
   /**
@@ -246,6 +262,19 @@ inline void libbirch::Counted::decShared() {
   }
 }
 
+inline void libbirch::Counted::doubleIncShared() {
+  sharedCount.doubleIncrement();
+}
+
+inline void libbirch::Counted::doubleDecShared() {
+  assert(sharedCount.load() > 0u);
+  if ((sharedCount -= 2u) == 0u && size > 0u) {
+    // ^ size == 0u during construction, never destroy in that case
+    destroy_();
+    decWeak();  // release weak self-reference
+  }
+}
+
 inline unsigned libbirch::Counted::numShared() const {
   return sharedCount.load();
 }
@@ -290,5 +319,9 @@ inline unsigned libbirch::Counted::numMemo() const {
 
 inline bool libbirch::Counted::isReachable() const {
   return numWeak() > 0u;
+}
+
+inline bool libbirch::Counted::isSingle() const {
+  return numShared() <= 1u && numWeak() <= 1u;
 }
 #endif

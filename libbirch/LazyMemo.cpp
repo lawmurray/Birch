@@ -21,7 +21,7 @@ libbirch::LazyMemo::~LazyMemo() {
       if (key) {
         auto value = values[i];
         key->decMemo();
-        value->decShared();
+        value->doubleDecShared();
       }
     }
     deallocate(keys, nentries * sizeof(key_type), tentries);
@@ -55,7 +55,7 @@ void libbirch::LazyMemo::put(const key_type key,
   assert(value);
 
   key->incMemo();
-  value->incShared();
+  value->doubleIncShared();
 
   reserve();
   auto i = hash(key, nentries);
@@ -94,7 +94,7 @@ void libbirch::LazyMemo::copy(LazyMemo& o) {
         key->incMemo();
       }
       if (value) {
-        value->incShared();
+        value->doubleIncShared();
       }
       keys[i] = key;
       values[i] = value;
@@ -137,8 +137,8 @@ void libbirch::LazyMemo::rehash() {
           next = get(prev, prev);
         } while (next != prev);
         if (next != first) {
-          next->incShared();
-          first->decShared();
+          next->doubleIncShared();
+          first->doubleDecShared();
         }
         values[i] = next;
       }
@@ -151,7 +151,7 @@ void libbirch::LazyMemo::rehash() {
       if (key && !key->isReachable()) {
         auto value = values[i];
         key->decMemo();
-        value->decShared();
+        value->doubleDecShared();
         keys[i] = nullptr;
         values[i] = nullptr;
         --noccupied;
