@@ -15,25 +15,48 @@ function String(x:Boolean) -> String {
 }
 
 /**
- * Convert to string.
+ * Convert double-precision floating point number to string.
  */
 function String(x:Real64) -> String {
-  cpp{{
-  std::stringstream buf;
-  buf << std::setprecision(16) << x;
-  return buf.str();
-  }}
+  if x == 0.0 {
+    return "0.0";
+  } else {
+    cpp{{
+    std::stringstream buf;
+    buf << std::scientific << std::setprecision(15) << x;
+  
+    /* remove trailing zeros */
+    auto str = buf.str();
+    auto i = str.find('.');
+    auto j = str.find('e', i);
+    auto k = str.find_last_not_of('0', j - 1);
+    auto split = std::max(i + 1, k);
+    return str.substr(0, split + 1) + str.substr(j, str.length() - i);
+    }}
+  }
 }
 
 /**
- * Convert to string.
+ * Convert single-precision floating point number to string.
  */
 function String(x:Real32) -> String {
-  cpp{{
-  std::stringstream buf;
-  buf << std::setprecision(8) << x;
-  return buf.str();
-  }}
+  result:String;
+  if x == 0.0 {
+    return "0.0";
+  } else {
+    cpp{{
+    std::stringstream buf;
+    buf << std::scientific << std::setprecision(7) << x;
+  
+    /* remove trailing zeros */
+    auto str = buf.str();
+    auto i = str.find('.');
+    auto j = str.find('e', i);
+    auto k = str.find_last_not_of('0', j - 1);
+    auto split = std::max(i + 1, k);
+    return str.substr(0, split + 1) + str.substr(j, str.length() - i);
+    }}
+  }
 }
 
 /**
