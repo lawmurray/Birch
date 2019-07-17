@@ -2,17 +2,17 @@
  * SEIR process model.
  */
 final class SEIRState {
-  Δs:Integer;  // newly susceptible (births)
-  Δe:Integer;  // newly exposed
-  Δi:Integer;  // newly infected
-  Δr:Integer;  // newly recovered
+  Δs:Integer <- 0;  // newly susceptible (births)
+  Δe:Integer <- 0;  // newly exposed
+  Δi:Integer <- 0;  // newly infected
+  Δr:Integer <- 0;  // newly recovered
 
-  s:Integer;   // susceptible population
-  e:Integer;   // incubating population
-  i:Integer;   // infectious population
-  r:Integer;   // recovered population
+  s:Integer <- 0;   // susceptible population
+  e:Integer <- 0;   // incubating population
+  i:Integer <- 0;   // infectious population
+  r:Integer <- 0;   // recovered population
 
-  n:Integer;   // total population
+  n:Integer <- 0;   // total population
   
   function write(buffer:Buffer) {
     buffer.set("n", n);
