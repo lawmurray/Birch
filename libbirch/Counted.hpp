@@ -153,12 +153,6 @@ public:
    * so the object is not considered reachable.
    */
   bool isReachable() const;
-
-  /**
-   * Is there at most a single reference to this object, ignoring the
-   * self-reference?
-   */
-  bool isSingle() const;
   #endif
 
   /**
@@ -319,9 +313,5 @@ inline unsigned libbirch::Counted::numMemo() const {
 
 inline bool libbirch::Counted::isReachable() const {
   return numWeak() > 0u;
-}
-
-inline bool libbirch::Counted::isSingle() const {
-  return numShared() <= 1u && numWeak() <= 1u;
 }
 #endif

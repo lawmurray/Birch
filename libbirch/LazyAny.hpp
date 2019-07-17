@@ -60,6 +60,11 @@ public:
   bool isFinished() const;
 
   /**
+   * If frozen, at the time of freezing, was the reference count only one?
+   */
+  bool isSingle() const;
+
+  /**
    * Get the context in which this object was created.
    */
   LazyContext* getContext();
@@ -110,6 +115,13 @@ protected:
    * Is this finished?
    */
   Atomic<bool> finished;
+
+  #if ENABLE_SINGLE_REFERENCE_OPTIMIZATION
+  /**
+   * If frozen, at the time of freezing, was the reference count only one?
+   */
+  Atomic<bool> single;
+  #endif
 };
 }
 
@@ -117,7 +129,11 @@ inline libbirch::LazyAny::LazyAny() :
     Counted(),
     context(currentContext),
     frozen(false),
-    finished(false) {
+    finished(false)
+    #if ENABLE_SINGLE_REFERENCE_OPTIMIZATION
+    , single(false)
+    #endif
+    {
   //
 }
 
@@ -125,7 +141,11 @@ inline libbirch::LazyAny::LazyAny(const LazyAny& o) :
     Counted(o),
     context(currentContext),
     frozen(false),
-    finished(false) {
+    finished(false)
+    #if ENABLE_SINGLE_REFERENCE_OPTIMIZATION
+    , single(false)
+    #endif
+    {
   //
 }
 
@@ -141,13 +161,21 @@ inline bool libbirch::LazyAny::isFinished() const {
   return finished.load();
 }
 
+inline bool libbirch::LazyAny::isSingle() const {
+  return single.load();
+}
+
 inline libbirch::LazyContext* libbirch::LazyAny::getContext() {
   return context.get();
 }
 
 inline void libbirch::LazyAny::freeze() {
   if (!frozen.exchange(true)) {
-    if (numShared() > 0u) {
+    auto nshared = numShared();
+    #if ENABLE_SINGLE_REFERENCE_OPTIMIZATION
+    single.store(nshared <= 1u && numWeak() <= 1u);
+    #endif
+    if (nshared > 0u) {
       doFreeze_();
     }
   }
