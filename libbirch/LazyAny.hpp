@@ -162,7 +162,11 @@ inline bool libbirch::LazyAny::isFinished() const {
 }
 
 inline bool libbirch::LazyAny::isSingle() const {
+  #if ENABLE_SINGLE_REFERENCE_OPTIMIZATION
   return single.load();
+  #else
+  return false;
+  #endif
 }
 
 inline libbirch::LazyContext* libbirch::LazyAny::getContext() {

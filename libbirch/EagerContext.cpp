@@ -8,8 +8,8 @@
 #include "libbirch/SwapContext.hpp"
 
 libbirch::EagerAny* libbirch::EagerContext::get(EagerAny* o) {
-    auto result = m.get(o);
-    return result ? result : copy(o);
+  auto result = m.get(o);
+  return result ? result : copy(o);
 }
 
 libbirch::EagerAny* libbirch::EagerContext::copy(EagerAny* o) {
