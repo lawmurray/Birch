@@ -23,7 +23,7 @@ function String(x:Real64) -> String {
   } else {
     cpp{{
     std::stringstream buf;
-    buf << std::scientific << std::setprecision(15) << x;
+    buf << std::scientific << std::setprecision(14) << x;
   
     /* remove trailing zeros */
     auto str = buf.str();
@@ -46,7 +46,7 @@ function String(x:Real32) -> String {
   } else {
     cpp{{
     std::stringstream buf;
-    buf << std::scientific << std::setprecision(7) << x;
+    buf << std::scientific << std::setprecision(6) << x;
   
     /* remove trailing zeros */
     auto str = buf.str();
