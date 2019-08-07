@@ -56,8 +56,10 @@ bi::Expression* bi::Resolver::modify(Sequence* o) {
     }
     if (!common) {
       throw SequenceException(o);
+    } else if (common->isArray()) {
+      o->type = new ArrayType(common->element(), common->depth() + 1, o->loc);
     } else {
-      o->type = new SequenceType(common, o->loc);
+      o->type = new ArrayType(common, 1, o->loc);
     }
   }
   return o;
