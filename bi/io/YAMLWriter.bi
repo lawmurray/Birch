@@ -20,6 +20,7 @@ class YAMLWriter < Writer {
     file <- fopen(path, WRITE);
     cpp{{
     yaml_emitter_initialize(&self->emitter);
+    yaml_emitter_set_unicode(&self->emitter, 1);
     yaml_emitter_set_output_file(&self->emitter, file);
     yaml_stream_start_event_initialize(&self->event, YAML_UTF8_ENCODING);
     yaml_emitter_emit(&self->emitter, &self->event);
