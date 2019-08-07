@@ -30,15 +30,6 @@ final class Delta(μ:Expression<Integer>) < Distribution<Integer> {
       }
     }
   }
-
-  function write(buffer:Buffer) {
-    if delay? {
-      delay!.write(buffer);
-    } else {
-      buffer.set("class", "Delta");
-      buffer.set("μ", μ.value());
-    }
-  }
 }
 
 /**

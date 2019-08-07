@@ -38,16 +38,6 @@ final class InverseGamma(α:Expression<Real>, β:Expression<Real>) < Distributio
     }
     return DelayInverseGamma?(delay);
   }
-
-  function write(buffer:Buffer) {
-    if delay? {
-      delay!.write(buffer);
-    } else {
-      buffer.set("class", "InverseGamma");
-      buffer.set("α", α.value());
-      buffer.set("β", β.value());
-    }
-  }
 }
 
 /**

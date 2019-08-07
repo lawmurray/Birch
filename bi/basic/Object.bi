@@ -81,6 +81,20 @@ operator (x:Object == y:Object) -> Boolean;
 operator (x:Object != y:Object) -> Boolean;
 
 /**
+ * Identity comparison.
+ */
+operator (x:Object? == y:Object?) -> Boolean {
+  return (x? && y? && x! == y!) || (!x? && !y?); 
+}
+
+/**
+ * Identity comparison.
+ */
+operator (x:Object? != y:Object?) -> Boolean {
+  return !(x == y);
+}
+
+/**
  * Identity conversion.
  */
 function Object(o:Object) -> Object {

@@ -46,18 +46,6 @@ final class Ridge(M:Expression<Real[_,_]>, Σ:Expression<Real[_,_]>,
     }
     return DelayRidge?(delay);
   }
-
-  function write(buffer:Buffer) {
-    if delay? {
-      delay!.write(buffer);
-    } else {
-      buffer.set("class", "Ridge");
-      buffer.set("M", M);
-      buffer.set("Σ", Σ);
-      buffer.set("α", α);
-      buffer.set("β", β);
-    }
-  }
 }
 
 /**

@@ -302,8 +302,7 @@ class Distribution<Value> {
     return nil;
   } 
   
-  function graftNormalInverseGamma(σ2:Expression<Real>) ->
-      DelayNormalInverseGamma? {
+  function graftNormalInverseGamma() -> DelayNormalInverseGamma? {
     return nil;
   }
   
@@ -319,8 +318,7 @@ class Distribution<Value> {
     return nil;
   }
 
-  function graftMultivariateNormalInverseGamma(σ2:Expression<Real>) ->
-      DelayMultivariateNormalInverseGamma? {
+  function graftMultivariateNormalInverseGamma() -> DelayMultivariateNormalInverseGamma? {
     return nil;
   }
 
@@ -330,5 +328,10 @@ class Distribution<Value> {
 
   function graftBoundedDiscrete() -> DelayBoundedDiscrete? {
     return nil;
+  }
+
+  function write(buffer:Buffer) {
+    graft(true);
+    delay!.write(buffer);
   }
 }

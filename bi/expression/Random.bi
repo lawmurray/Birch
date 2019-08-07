@@ -192,11 +192,10 @@ final class Random<Value> < Expression<Value> {
     }
   } 
   
-  function graftNormalInverseGamma(σ2:Expression<Real>) ->
-      DelayNormalInverseGamma? {
+  function graftNormalInverseGamma() -> DelayNormalInverseGamma? {
     if !hasValue() {
       assert hasDistribution();
-      return dist!.graftNormalInverseGamma(σ2);
+      return dist!.graftNormalInverseGamma();
     } else {
       return nil;
     }
@@ -229,11 +228,11 @@ final class Random<Value> < Expression<Value> {
     }
   }
 
-  function graftMultivariateNormalInverseGamma(σ2:Expression<Real>) ->
+  function graftMultivariateNormalInverseGamma() ->
       DelayMultivariateNormalInverseGamma? {
     if !hasValue() {
       assert hasDistribution();
-      return dist!.graftMultivariateNormalInverseGamma(σ2);
+      return dist!.graftMultivariateNormalInverseGamma();
     } else {
       return nil;
     }

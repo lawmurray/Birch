@@ -34,11 +34,11 @@ final class Gaussian(μ:Expression<Real>, σ2:Expression<Real>) < Distribution<R
       m6:DelayGaussian?;
       s2:DelayInverseGamma?;
 
-      if (m1 <- μ.graftLinearNormalInverseGamma(σ2))? {
+      if (m1 <- μ.graftLinearNormalInverseGamma())? && m1!.x.σ2 == σ2.getDelay() {
         delay <- DelayLinearNormalInverseGammaGaussian(future, futureUpdate, m1!.a, m1!.x, m1!.c);
-      } else if (m2 <- μ.graftMultivariateDotNormalInverseGamma(σ2))? {
+      } else if (m2 <- μ.graftMultivariateDotNormalInverseGamma())? && m2!.x.σ2 == σ2.getDelay() {
         delay <- DelayMultivariateDotNormalInverseGammaGaussian(future, futureUpdate, m2!.a, m2!.x, m2!.c);
-      } else if (m3 <- μ.graftNormalInverseGamma(σ2))? {
+      } else if (m3 <- μ.graftNormalInverseGamma())? && m3!.σ2 == σ2.getDelay() {
         delay <- DelayNormalInverseGammaGaussian(future, futureUpdate, m3!);
       } else if (m4 <- μ.graftLinearGaussian())? {
         delay <- DelayLinearGaussianGaussian(future, futureUpdate, m4!.a, m4!.x, m4!.c, σ2);
@@ -76,39 +76,19 @@ final class Gaussian(μ:Expression<Real>, σ2:Expression<Real>) < Distribution<R
     return DelayGaussian?(delay);
   }
 
-  function graftNormalInverseGamma(σ2:Expression<Real>) ->
-      DelayNormalInverseGamma? {
+  function graftNormalInverseGamma() -> DelayNormalInverseGamma? {
     if delay? {
       delay!.prune();
-      
-      m:DelayNormalInverseGamma?;
-      s2:DelayInverseGamma?;
-      if (m <- DelayNormalInverseGamma?(delay))? && σ2.hasDelay() &&
-          σ2.getDelay()! == m!.σ2! {
-        return m;
-      } else {
-        return nil;
-      }
     } else {
       s1:TransformScaledInverseGamma?;
       s2:DelayInverseGamma?;
-      if (s1 <- this.σ2.graftScaledInverseGamma(σ2))? {
+      if (s1 <- σ2.graftScaledInverseGamma())? {
         delay <- DelayNormalInverseGamma(future, futureUpdate, μ, s1!.a2, s1!.σ2);
-      } else if this.σ2 == σ2 && (s2 <- this.σ2.graftInverseGamma())? {
+      } else if (s2 <- σ2.graftInverseGamma())? {
         delay <- DelayNormalInverseGamma(future, futureUpdate, μ, 1.0, s2!);
       }
-      return DelayNormalInverseGamma?(delay);
     }
-  }
-
-  function write(buffer:Buffer) {
-    if delay? {
-      delay!.write(buffer);
-    } else {
-      buffer.set("class", "Gaussian");
-      buffer.set("μ", μ.value());
-      buffer.set("σ2", σ2.value());
-    }
+    return DelayNormalInverseGamma?(delay);
   }
 }
 

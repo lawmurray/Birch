@@ -33,18 +33,17 @@ final class Add<Left,Right,Value>(left:Expression<Left>, right:Expression<Right>
     return y;
   }
   
-  function graftLinearNormalInverseGamma(σ2:Expression<Real>) ->
-      TransformLinearNormalInverseGamma? {
+  function graftLinearNormalInverseGamma() -> TransformLinearNormalInverseGamma? {
     y:TransformLinearNormalInverseGamma?;
     z:DelayNormalInverseGamma?;
 
-    if (y <- left.graftLinearNormalInverseGamma(σ2))? {
+    if (y <- left.graftLinearNormalInverseGamma())? {
       y!.add(right.value());
-    } else if (y <- right.graftLinearNormalInverseGamma(σ2))? {
+    } else if (y <- right.graftLinearNormalInverseGamma())? {
       y!.add(left.value());
-    } else if (z <- left.graftNormalInverseGamma(σ2))? {
+    } else if (z <- left.graftNormalInverseGamma())? {
       y <- TransformLinearNormalInverseGamma(1.0, z!, right.value());
-    } else if (z <- right.graftNormalInverseGamma(σ2))? {
+    } else if (z <- right.graftNormalInverseGamma())? {
       y <- TransformLinearNormalInverseGamma(1.0, z!, left.value());
     }
     return y;
@@ -61,13 +60,12 @@ final class Add<Left,Right,Value>(left:Expression<Left>, right:Expression<Right>
     return y;
   }
 
-  function graftMultivariateDotNormalInverseGamma(σ2:Expression<Real>) ->
-      TransformMultivariateDotNormalInverseGamma? {
+  function graftMultivariateDotNormalInverseGamma() -> TransformMultivariateDotNormalInverseGamma? {
     y:TransformMultivariateDotNormalInverseGamma?;
 
-    if (y <- left.graftMultivariateDotNormalInverseGamma(σ2))? {
+    if (y <- left.graftMultivariateDotNormalInverseGamma())? {
       y!.add(right.value());
-    } else if (y <- right.graftMultivariateDotNormalInverseGamma(σ2))? {
+    } else if (y <- right.graftMultivariateDotNormalInverseGamma())? {
       y!.add(left.value());
     }
     return y;
@@ -75,7 +73,7 @@ final class Add<Left,Right,Value>(left:Expression<Left>, right:Expression<Right>
 
   function graftDiscrete() -> DelayDiscrete? {
     y:DelayDiscrete? <- graftBoundedDiscrete();
-    if (!y?) {
+    if !y? {
       x:DelayDiscrete?;
       if (x <- left.graftDiscrete())? {
         y <- DelayLinearDiscrete(nil, true, 1, x!, Integer(right.value()));

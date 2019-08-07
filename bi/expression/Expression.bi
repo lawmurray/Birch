@@ -106,12 +106,9 @@ class Expression<Value> {
   /*
    * Attempt to graft this expression onto the delayed sampling graph.
    *
-   * - σ2: Variance of the normal distribution for which a
-   *       compatible normal-inverse-gamma distribution is sought as prior.
-   *
    * Return: The node if successful, nil if not.
    */
-  function graftScaledInverseGamma(σ2:Expression<Real>) -> 
+  function graftScaledInverseGamma() -> 
       TransformScaledInverseGamma? {
     return nil;
   }
@@ -119,12 +116,9 @@ class Expression<Value> {
   /*
    * Attempt to graft this expression onto the delayed sampling graph.
    *
-   * - σ2: Variance of the normal distribution for which a
-   *       compatible normal-inverse-gamma distribution is sought as prior.
-   *
    * Return: The node if successful, nil if not.
    */
-  function graftNormalInverseGamma(σ2:Expression<Real>) ->
+  function graftNormalInverseGamma() ->
       DelayNormalInverseGamma? {
     return nil;
   }
@@ -132,12 +126,9 @@ class Expression<Value> {
   /*
    * Attempt to graft this expression onto the delayed sampling graph.
    *
-   * - σ2: Variance of the normal distribution for which a
-   *       compatible normal-inverse-gamma distribution is sought as prior.
-   *
    * Return: The node if successful, nil if not.
    */
-  function graftLinearNormalInverseGamma(σ2:Expression<Real>) ->
+  function graftLinearNormalInverseGamma() ->
       TransformLinearNormalInverseGamma? {
     return nil;
   }
@@ -192,12 +183,9 @@ class Expression<Value> {
   /*
    * Attempt to graft this expression onto the delayed sampling graph.
    *
-   * - σ2: Variance of the normal distribution for which a
-   *       compatible normal-inverse-gamma distribution is sought as prior.
-   *
    * Return: The node if successful, nil if not.
    */
-  function graftMultivariateScaledInverseGamma(σ2:Expression<Real>) ->
+  function graftMultivariateScaledInverseGamma() ->
       TransformMultivariateScaledInverseGamma? {
     return nil;
   }
@@ -205,12 +193,9 @@ class Expression<Value> {
   /*
    * Attempt to graft this expression onto the delayed sampling graph.
    *
-   * - σ2: Variance of the normal distribution for which a
-   *       compatible normal-inverse-gamma distribution is sought as prior.
-   *
    * Return: The node if successful, nil if not.
    */
-  function graftMultivariateNormalInverseGamma(σ2:Expression<Real>) ->
+  function graftMultivariateNormalInverseGamma() ->
       DelayMultivariateNormalInverseGamma? {
     return nil;
   }
@@ -218,12 +203,9 @@ class Expression<Value> {
   /*
    * Attempt to graft this expression onto the delayed sampling graph.
    *
-   * - σ2: Variance of the normal distribution for which a
-   *       compatible normal-inverse-gamma distribution is sought as prior.
-   *
    * Return: The node if successful, nil if not.
    */
-  function graftMultivariateLinearNormalInverseGamma(σ2:Expression<Real>) ->
+  function graftMultivariateLinearNormalInverseGamma() ->
       TransformMultivariateLinearNormalInverseGamma? {
     return nil;
   }
@@ -231,12 +213,9 @@ class Expression<Value> {
   /*
    * Attempt to graft this expression onto the delayed sampling graph.
    *
-   * - σ2: Variance of the normal distribution for which a
-   *       compatible normal-inverse-gamma distribution is sought as prior.
-   *
    * Return: The node if successful, nil if not.
    */
-  function graftMultivariateDotNormalInverseGamma(σ2:Expression<Real>) ->
+  function graftMultivariateDotNormalInverseGamma() ->
       TransformMultivariateDotNormalInverseGamma? {
     return nil;
   }

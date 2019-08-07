@@ -35,16 +35,6 @@ class NegativeBinomial(k:Expression<Integer>, ρ:Expression<Real>) <
       }
     }
   }
-
-  function write(buffer:Buffer) {
-    if delay? {
-      delay!.write(buffer);
-    } else {
-      buffer.set("class", "NegativeBinomial");
-      buffer.set("k", k.value());
-      buffer.set("ρ", ρ.value());
-    }
-  }
 }
 
 /**

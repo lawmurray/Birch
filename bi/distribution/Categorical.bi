@@ -32,15 +32,6 @@ final class Categorical(ρ:Expression<Real[_]>) < Distribution<Integer> {
       }
     }
   }
-
-  function write(buffer:Buffer) {
-    if delay? {
-      delay!.write(buffer);
-    } else {
-      buffer.set("class", "Categorical");
-      buffer.set("ρ", ρ.value());
-    }
-  }
 }
 
 /**

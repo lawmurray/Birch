@@ -28,16 +28,6 @@ final class Restaurant(α:Expression<Real>, θ:Expression<Real>) < Distribution<
     }
     return DelayRestaurant?(delay);
   }
-
-  function write(buffer:Buffer) {
-    if delay? {
-      delay!.write(buffer);
-    } else {
-      buffer.set("class", "Restaurant");
-      buffer.set("α", α.value());
-      buffer.set("θ", θ.value());
-    }
-  }
 }
 
 /**

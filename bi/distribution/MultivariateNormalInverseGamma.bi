@@ -61,16 +61,4 @@ final class MultivariateNormalInverseGamma(μ:Expression<Real[_]>,
           A, σ2.graftInverseGamma()!);
     }
   }
-
-  function write(buffer:Buffer) {
-    if delay? {
-      delay!.write(buffer);
-    } else {
-      buffer.set("class", "MultivariateNormalInverseGamma");
-      buffer.set("μ", μ);
-      buffer.set("A", A);
-      buffer.set("α", σ2.α);
-      buffer.set("β", σ2.β);
-    }
-  }
 }

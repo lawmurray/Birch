@@ -44,16 +44,6 @@ final class Binomial(n:Expression<Integer>, ρ:Expression<Real>) < Distribution<
     graft(true);
     return DelayBoundedDiscrete?(delay);
   }
-
-  function write(buffer:Buffer) {
-    if delay? {
-      delay!.write(buffer);
-    } else {
-      buffer.set("class", "Binomial");
-      buffer.set("n", n.value());
-      buffer.set("ρ", ρ.value());
-    }
-  }
 }
 
 /**

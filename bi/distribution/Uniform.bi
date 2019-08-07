@@ -29,16 +29,6 @@ final class Uniform(l:Expression<Real>, u:Expression<Real>) < Distribution<Real>
       delay <- DelayUniform(future, futureUpdate, l, u);
     }
   }
-
-  function write(buffer:Buffer) {
-    if delay? {
-      delay!.write(buffer);
-    } else {
-      buffer.set("class", "Uniform");
-      buffer.set("l", l.value());
-      buffer.set("u", u.value());
-    }
-  }
 }
 
 /**

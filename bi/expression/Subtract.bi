@@ -33,18 +33,18 @@ final class Subtract<Left,Right,Value>(left:Expression<Left>,
     return y;
   }
   
-  function graftLinearNormalInverseGamma(σ2:Expression<Real>) ->
+  function graftLinearNormalInverseGamma() ->
       TransformLinearNormalInverseGamma? {
     y:TransformLinearNormalInverseGamma?;
     z:DelayNormalInverseGamma?;
 
-    if (y <- left.graftLinearNormalInverseGamma(σ2))? {
+    if (y <- left.graftLinearNormalInverseGamma())? {
       y!.subtract(right.value());
-    } else if (y <- right.graftLinearNormalInverseGamma(σ2))? {
+    } else if (y <- right.graftLinearNormalInverseGamma())? {
       y!.negateAndAdd(left.value());
-    } else if (z <- left.graftNormalInverseGamma(σ2))? {
+    } else if (z <- left.graftNormalInverseGamma())? {
       y <- TransformLinearNormalInverseGamma(1.0, z!, -right.value());
-    } else if (z <- right.graftNormalInverseGamma(σ2))? {
+    } else if (z <- right.graftNormalInverseGamma())? {
       y <- TransformLinearNormalInverseGamma(-1.0, z!, left.value());
     }
     return y;
@@ -61,13 +61,13 @@ final class Subtract<Left,Right,Value>(left:Expression<Left>,
     return y;
   }
 
-  function graftMultivariateDotNormalInverseGamma(σ2:Expression<Real>) ->
+  function graftMultivariateDotNormalInverseGamma() ->
       TransformMultivariateDotNormalInverseGamma? {
     y:TransformMultivariateDotNormalInverseGamma?;
 
-    if (y <- left.graftMultivariateDotNormalInverseGamma(σ2))? {
+    if (y <- left.graftMultivariateDotNormalInverseGamma())? {
       y!.subtract(right.value());
-    } else if (y <- right.graftMultivariateDotNormalInverseGamma(σ2))? {
+    } else if (y <- right.graftMultivariateDotNormalInverseGamma())? {
       y!.negateAndAdd(left.value());
     }
     return y;

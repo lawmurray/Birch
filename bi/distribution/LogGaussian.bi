@@ -34,11 +34,11 @@ final class LogGaussian(μ:Expression<Real>, σ2:Expression<Real>) < Distributio
       m6:DelayGaussian?;
       s2:DelayInverseGamma?;
 
-      if (m1 <- μ.graftLinearNormalInverseGamma(σ2))? {
+      if (m1 <- μ.graftLinearNormalInverseGamma())? && m1!.x.σ2 == σ2.getDelay() {
         delay <- DelayLinearNormalInverseGammaLogGaussian(future, futureUpdate, m1!.a, m1!.x, m1!.c);
-      } else if (m2 <- μ.graftMultivariateDotNormalInverseGamma(σ2))? {
+      } else if (m2 <- μ.graftMultivariateDotNormalInverseGamma())? && m2!.x.σ2 == σ2.getDelay() {
         delay <- DelayMultivariateDotNormalInverseGammaLogGaussian(future, futureUpdate, m2!.a, m2!.x, m2!.c);
-      } else if (m3 <- μ.graftNormalInverseGamma(σ2))? {
+      } else if (m3 <- μ.graftNormalInverseGamma())? && m3!.σ2 == σ2.getDelay() {
         delay <- DelayNormalInverseGammaLogGaussian(future, futureUpdate, m3!);
       } else if (m4 <- μ.graftLinearGaussian())? {
         delay <- DelayLinearGaussianLogGaussian(future, futureUpdate, m4!.a, m4!.x, m4!.c, σ2);
@@ -56,16 +56,6 @@ final class LogGaussian(μ:Expression<Real>, σ2:Expression<Real>) < Distributio
           delay <- DelayLogGaussian(future, futureUpdate, μ, σ2);
         }
       }
-    }
-  }
-
-  function write(buffer:Buffer) {
-    if delay? {
-      delay!.write(buffer);
-    } else {
-      buffer.set("class", "LogGaussian");
-      buffer.set("μ", μ.value());
-      buffer.set("σ2", σ2.value());
     }
   }
 }

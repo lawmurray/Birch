@@ -43,16 +43,6 @@ final class UniformInteger(l:Expression<Integer>, u:Expression<Integer>) <
     }
     return DelayBoundedDiscrete?(delay);
   }
-
-  function write(buffer:Buffer) {
-    if delay? {
-      delay!.write(buffer);
-    } else {
-      buffer.set("class", "UniformInteger");
-      buffer.set("l", l.value());
-      buffer.set("u", u.value());
-    }
-  }
 }
 
 /**

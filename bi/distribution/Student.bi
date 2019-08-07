@@ -34,17 +34,6 @@ final class Student(ν:Expression<Real>, μ:Expression<Real>, σ2:Expression<Rea
       delay <- DelayStudent(future, futureUpdate, ν, μ, σ2);
     }
   }
-
-  function write(buffer:Buffer) {
-    if delay? {
-      delay!.write(buffer);
-    } else {
-      buffer.set("class", "Student");
-      buffer.set("ν", ν.value());
-      buffer.set("μ", μ.value());
-      buffer.set("σ2", σ2.value());
-    }
-  }
 }
 
 /**

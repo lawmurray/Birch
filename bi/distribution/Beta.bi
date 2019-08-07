@@ -38,16 +38,6 @@ final class Beta(α:Expression<Real>, β:Expression<Real>) < Distribution<Real> 
     }
     return DelayBeta?(delay);
   }
-
-  function write(buffer:Buffer) {
-    if delay? {
-      delay!.write(buffer);
-    } else {
-      buffer.set("class", "Beta");
-      buffer.set("α", α.value());
-      buffer.set("β", β.value());
-    }
-  }
 }
 
 /**

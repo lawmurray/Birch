@@ -32,18 +32,18 @@ final class Multiply<Left,Right,Value>(left:Expression<Left>, right:Expression<R
     return y;
   }
  
-  function graftLinearNormalInverseGamma(σ2:Expression<Real>) ->
+  function graftLinearNormalInverseGamma() ->
       TransformLinearNormalInverseGamma? {
     y:TransformLinearNormalInverseGamma?;
     z:DelayNormalInverseGamma?;
     
-    if (y <- left.graftLinearNormalInverseGamma(σ2))? {
+    if (y <- left.graftLinearNormalInverseGamma())? {
       y!.multiply(right.value());
-    } else if (y <- right.graftLinearNormalInverseGamma(σ2))? {
+    } else if (y <- right.graftLinearNormalInverseGamma())? {
       y!.multiply(left.value());
-    } else if (z <- left.graftNormalInverseGamma(σ2))? {
+    } else if (z <- left.graftNormalInverseGamma())? {
       y <- TransformLinearNormalInverseGamma(right.value(), z!, 0.0);
-    } else if (z <- right.graftNormalInverseGamma(σ2))? {
+    } else if (z <- right.graftNormalInverseGamma())? {
       y <- TransformLinearNormalInverseGamma(left.value(), z!, 0.0);
     }
     return y;
@@ -60,13 +60,13 @@ final class Multiply<Left,Right,Value>(left:Expression<Left>, right:Expression<R
     return y;
   }
 
-  function graftMultivariateDotNormalInverseGamma(σ2:Expression<Real>) ->
+  function graftMultivariateDotNormalInverseGamma() ->
       TransformMultivariateDotNormalInverseGamma? {
     y:TransformMultivariateDotNormalInverseGamma?;
 
-    if (y <- left.graftMultivariateDotNormalInverseGamma(σ2))? {
+    if (y <- left.graftMultivariateDotNormalInverseGamma())? {
       y!.multiply(right.value());
-    } else if (y <- right.graftMultivariateDotNormalInverseGamma(σ2))? {
+    } else if (y <- right.graftMultivariateDotNormalInverseGamma())? {
       y!.multiply(left.value());
     }
     return y;
@@ -88,25 +88,26 @@ final class Multiply<Left,Right,Value>(left:Expression<Left>, right:Expression<R
     return y;
   }
   
-  function graftScaledInverseGamma(σ2:Expression<Real>) ->
+  function graftScaledInverseGamma() ->
       TransformScaledInverseGamma? {
     y:TransformScaledInverseGamma?;
     z:DelayInverseGamma?;
     
-    if (y <- left.graftScaledInverseGamma(σ2))? {
+    if (y <- left.graftScaledInverseGamma())? {
       y!.multiply(right.value());
-    } else if (y <- right.graftScaledInverseGamma(σ2))? {
+    } else if (y <- right.graftScaledInverseGamma())? {
       y!.multiply(left.value());
-    } else if Object(left) == σ2 && (z <- left.graftInverseGamma())? {
+    } else if (z <- left.graftInverseGamma())? {
       y <- TransformScaledInverseGamma(right.value(), z!);        
-    } else if Object(right) == σ2 && (z <- right.graftInverseGamma())? {
+    } else if (z <- right.graftInverseGamma())? {
       y <- TransformScaledInverseGamma(left.value(), z!);
     }
     return y;
   }
 }
 
-operator (left:Expression<Real>*right:Expression<Real>) -> Multiply<Real,Real,Real> {
+operator (left:Expression<Real>*right:Expression<Real>) ->
+    Multiply<Real,Real,Real> {
   m:Multiply<Real,Real,Real>(left, right);
   return m;
 }

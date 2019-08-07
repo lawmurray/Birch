@@ -44,21 +44,6 @@ final class Regression(θ:Expression<(Real[_,_],Real[_])>,
       }
     }
   }
-
-  function write(buffer:Buffer) {
-    if delay? {
-      delay!.write(buffer);
-    } else {
-      W:Real[_,_];
-      σ2:Real[_];
-      (W, σ2) <- θ.value();
-    
-      buffer.set("class", "Regression");
-      buffer.set("W", W);
-      buffer.set("σ2", W);
-      buffer.set("x", x.value());
-    }
-  }
 }
 
 /**

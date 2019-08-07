@@ -29,15 +29,6 @@ final class Bernoulli(ρ:Expression<Real>) < Distribution<Boolean> {
       }
     }
   }
-
-  function write(buffer:Buffer) {
-    if delay? {
-      delay!.write(buffer);
-    } else {
-      buffer.set("class", "Bernoulli");
-      buffer.set("ρ", ρ.value());
-    }
-  }
 }
 
 /**

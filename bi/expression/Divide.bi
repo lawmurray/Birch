@@ -29,14 +29,13 @@ final class Divide<Left,Right,Value>(left:Expression<Left>,
     return y;
   }
   
-  function graftLinearNormalInverseGamma(σ2:Expression<Real>) ->
-      TransformLinearNormalInverseGamma? {
+  function graftLinearNormalInverseGamma() -> TransformLinearNormalInverseGamma? {
     y:TransformLinearNormalInverseGamma?;
     z:DelayNormalInverseGamma?;
     
-    if (y <- left.graftLinearNormalInverseGamma(σ2))? {
+    if (y <- left.graftLinearNormalInverseGamma())? {
       y!.divide(right.value());
-    } else if (z <- left.graftNormalInverseGamma(σ2))? {
+    } else if (z <- left.graftNormalInverseGamma())? {
       y <- TransformLinearNormalInverseGamma(1.0/right.value(), z!, 0.0);
     }
     return y;
@@ -51,11 +50,10 @@ final class Divide<Left,Right,Value>(left:Expression<Left>,
     return y;
   }
 
-  function graftMultivariateDotNormalInverseGamma(σ2:Expression<Real>) ->
-      TransformMultivariateDotNormalInverseGamma? {
+  function graftMultivariateDotNormalInverseGamma() -> TransformMultivariateDotNormalInverseGamma? {
     y:TransformMultivariateDotNormalInverseGamma?;
 
-    if (y <- left.graftMultivariateDotNormalInverseGamma(σ2))? {
+    if (y <- left.graftMultivariateDotNormalInverseGamma())? {
       y!.divide(right.value());
     }
     return y;
@@ -73,14 +71,13 @@ final class Divide<Left,Right,Value>(left:Expression<Left>,
     return y;
   }
   
-  function graftScaledInverseGamma(σ2:Expression<Real>) ->
-      TransformScaledInverseGamma? {
+  function graftScaledInverseGamma() -> TransformScaledInverseGamma? {
     y:TransformScaledInverseGamma?;
     z:DelayInverseGamma?;
     
-    if (y <- left.graftScaledInverseGamma(σ2))? {
+    if (y <- left.graftScaledInverseGamma())? {
       y!.divide(right.value());
-    } else if Object(left) == σ2 && (z <- left.graftInverseGamma())? {
+    } else if (z <- left.graftInverseGamma())? {
       y <- TransformScaledInverseGamma(1.0/right.value(), z!);        
     }
     return y;

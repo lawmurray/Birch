@@ -60,16 +60,4 @@ final class NormalInverseGamma(μ:Expression<Real>, a2:Expression<Real>,
           σ2.graftInverseGamma()!);
     }
   }
-
-  function write(buffer:Buffer) {
-    if delay? {
-      delay!.write(buffer);
-    } else {
-      buffer.set("class", "NormalInverseGamma");
-      buffer.set("μ", μ);
-      buffer.set("a2", a2);
-      buffer.set("α", σ2.α);
-      buffer.set("β", σ2.β);
-    }
-  }
 }

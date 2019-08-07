@@ -36,19 +36,19 @@ final class MultivariateAdd<Left,Right,Value>(left:Expression<Left>,
     return y;
   }
   
-  function graftMultivariateLinearNormalInverseGamma(σ2:Expression<Real>) ->
+  function graftMultivariateLinearNormalInverseGamma() ->
       TransformMultivariateLinearNormalInverseGamma? {
     y:TransformMultivariateLinearNormalInverseGamma?;
     z:DelayMultivariateNormalInverseGamma?;
 
-    if (y <- left.graftMultivariateLinearNormalInverseGamma(σ2))? {
+    if (y <- left.graftMultivariateLinearNormalInverseGamma())? {
       y!.add(right.value());
-    } else if (y <- right.graftMultivariateLinearNormalInverseGamma(σ2))? {
+    } else if (y <- right.graftMultivariateLinearNormalInverseGamma())? {
       y!.add(left.value());
-    } else if (z <- left.graftMultivariateNormalInverseGamma(σ2))? {
+    } else if (z <- left.graftMultivariateNormalInverseGamma())? {
       y <- TransformMultivariateLinearNormalInverseGamma(identity(z!.size()),
           z!, right.value());
-    } else if (z <- right.graftMultivariateNormalInverseGamma(σ2))? {
+    } else if (z <- right.graftMultivariateNormalInverseGamma())? {
       y <- TransformMultivariateLinearNormalInverseGamma(identity(z!.size()),
           z!, left.value());
     }

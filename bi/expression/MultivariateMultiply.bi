@@ -30,27 +30,27 @@ final class MultivariateMultiply<Left,Right,Value>(left:Expression<Left>,
     return y;
   }
   
-  function graftMultivariateLinearNormalInverseGamma(σ2:Expression<Real>) ->
+  function graftMultivariateLinearNormalInverseGamma() ->
       TransformMultivariateLinearNormalInverseGamma? {
     y:TransformMultivariateLinearNormalInverseGamma?;
     z:DelayMultivariateNormalInverseGamma?;
 
-    if (y <- right.graftMultivariateLinearNormalInverseGamma(σ2))? {
+    if (y <- right.graftMultivariateLinearNormalInverseGamma())? {
       y!.leftMultiply(left.value());
-    } else if (z <- right.graftMultivariateNormalInverseGamma(σ2))? {
+    } else if (z <- right.graftMultivariateNormalInverseGamma())? {
       y <- TransformMultivariateLinearNormalInverseGamma(left.value(), z!);
     }
     return y;
   }
   
-  function graftMultivariateScaledInverseGamma(σ2:Expression<Real>) ->
+  function graftMultivariateScaledInverseGamma() ->
       TransformMultivariateScaledInverseGamma? {
     y:TransformMultivariateScaledInverseGamma?;
     z:DelayInverseGamma?;
     
-    if (y <- right.graftMultivariateScaledInverseGamma(σ2))? {
+    if (y <- right.graftMultivariateScaledInverseGamma())? {
       y!.leftMultiply(left.value());
-    } else if Object(right) == σ2 && (z <- right.graftInverseGamma())? {
+    } else if (z <- right.graftInverseGamma())? {
       y <- TransformMultivariateScaledInverseGamma(left.value(), z!);
     }
     return y;

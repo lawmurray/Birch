@@ -29,16 +29,6 @@ final class Weibull(k:Expression<Real>, λ:Expression<Real>) < Distribution<Real
       delay <- DelayWeibull(future, futureUpdate, k, λ);
     }
   }
-
-  function write(buffer:Buffer) {
-    if delay? {
-      delay!.write(buffer);
-    } else {
-      buffer.set("class", "Weibull");
-      buffer.set("k", k.value());
-      buffer.set("λ", λ.value());
-    }
-  }
 }
 
 /**
