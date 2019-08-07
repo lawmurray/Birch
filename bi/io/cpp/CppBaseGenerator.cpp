@@ -880,7 +880,8 @@ void bi::CppBaseGenerator::genArg(const Expression* arg, const Type* type) {
    * not */
   auto isThis = dynamic_cast<const This*>(arg);
   auto isSuper = dynamic_cast<const Super*>(arg);
-  if (!arg->type->equals(*type) || isThis || isSuper) {
+  auto isSequence = dynamic_cast<const Sequence*>(arg);
+  if (!arg->type->equals(*type) || isThis || isSuper || isSequence) {
     middle(type->canonical() << '(' << arg << ')');
   } else {
     middle(arg);
