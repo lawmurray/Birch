@@ -103,7 +103,6 @@ public:
   virtual Type* modify(MemberType* o);
   virtual Type* modify(ArrayType* o);
   virtual Type* modify(TupleType* o);
-  virtual Type* modify(SequenceType* o);
   virtual Type* modify(BinaryType* o);
   virtual Type* modify(FunctionType* o);
   virtual Type* modify(FiberType* o);

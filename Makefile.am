@@ -174,7 +174,6 @@ COMMON_SOURCES = \
   bi/type/MemberType.cpp \
   bi/type/NilType.cpp \
   bi/type/OptionalType.cpp \
-  bi/type/SequenceType.cpp \
   bi/type/TupleType.cpp \
   bi/type/Type.cpp \
   bi/type/TypeConstIterator.cpp \
@@ -353,7 +352,6 @@ noinst_HEADERS = \
   bi/type/MemberType.hpp \
   bi/type/NilType.hpp \
   bi/type/OptionalType.hpp \
-  bi/type/SequenceType.hpp \
   bi/type/TupleType.hpp \
   bi/type/Type.hpp \
   bi/type/TypeConstIterator.hpp \

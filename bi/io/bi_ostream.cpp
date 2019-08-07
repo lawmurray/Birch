@@ -588,10 +588,6 @@ void bi::bi_ostream::visit(const TupleType* o) {
   middle('(' << o->single << ')');
 }
 
-void bi::bi_ostream::visit(const SequenceType* o) {
-  middle('[' << o->single << ']');
-}
-
 void bi::bi_ostream::visit(const FunctionType* o) {
   middle("@(" << o->params << ')');
   if (!o->returnType->isEmpty()) {

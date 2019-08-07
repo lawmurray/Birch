@@ -103,7 +103,6 @@ public:
   virtual Type* clone(const MemberType* o);
   virtual Type* clone(const ArrayType* o);
   virtual Type* clone(const TupleType* o);
-  virtual Type* clone(const SequenceType* o);
   virtual Type* clone(const BinaryType* o);
   virtual Type* clone(const FunctionType* o);
   virtual Type* clone(const FiberType* o);

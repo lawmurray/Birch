@@ -449,11 +449,6 @@ bi::Type* bi::Modifier::modify(TupleType* o) {
   return o;
 }
 
-bi::Type* bi::Modifier::modify(SequenceType* o) {
-  o->single = o->single->accept(this);
-  return o;
-}
-
 bi::Type* bi::Modifier::modify(BinaryType* o) {
   o->left = o->left->accept(this);
   o->right = o->right->accept(this);

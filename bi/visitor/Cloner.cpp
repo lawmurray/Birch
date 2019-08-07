@@ -363,10 +363,6 @@ bi::Type* bi::Cloner::clone(const TupleType* o) {
   return new TupleType(o->single->accept(this), o->loc);
 }
 
-bi::Type* bi::Cloner::clone(const SequenceType* o) {
-  return new SequenceType(o->single->accept(this), o->loc);
-}
-
 bi::Type* bi::Cloner::clone(const BinaryType* o) {
   return new BinaryType(o->left->accept(this), o->right->accept(this), o->loc);
 }

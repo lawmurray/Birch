@@ -65,7 +65,6 @@ public:
   virtual Type* common(const NilType& o) const;
   virtual Type* common(const OptionalType& o) const;
   virtual Type* common(const WeakType& o) const;
-  virtual Type* common(const SequenceType& o) const;
   virtual Type* common(const TupleType& o) const;
   virtual Type* common(const UnknownType& o) const;
   virtual Type* common(const TypeList& o) const;

@@ -78,7 +78,6 @@ public:
   virtual bool isConvertible(const MemberType& o) const;
   virtual bool isConvertible(const OptionalType& o) const;
   virtual bool isConvertible(const WeakType& o) const;
-  virtual bool isConvertible(const SequenceType& o) const;
   virtual bool isConvertible(const TupleType& o) const;
   virtual bool isConvertible(const TypeList& o) const;
 
@@ -93,7 +92,6 @@ public:
   virtual bool isAssignable(const MemberType& o) const;
   virtual bool isAssignable(const OptionalType& o) const;
   virtual bool isAssignable(const WeakType& o) const;
-  virtual bool isAssignable(const SequenceType& o) const;
   virtual bool isAssignable(const TupleType& o) const;
   virtual bool isAssignable(const TypeList& o) const;
 
@@ -108,7 +106,6 @@ public:
   virtual Type* common(const MemberType& o) const;
   virtual Type* common(const OptionalType& o) const;
   virtual Type* common(const WeakType& o) const;
-  virtual Type* common(const SequenceType& o) const;
   virtual Type* common(const TupleType& o) const;
   virtual Type* common(const TypeList& o) const;
 };

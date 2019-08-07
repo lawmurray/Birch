@@ -141,7 +141,7 @@
 %type <valStatement> class_braces optional_class_braces
 
 %type <valType> basic_type class_type base_type unknown_type member_type
-%type <valType> tuple_type sequence_type postfix_type function_type type
+%type <valType> tuple_type postfix_type function_type type
 %type <valType> type_list parameter_type_list parameter_types
 %type <valType> result optional_result
 %type <valType> generic_argument generic_argument_list generic_arguments optional_generic_arguments
@@ -800,14 +800,9 @@ tuple_type
     : '(' type_list ')'  { $$ = new bi::TupleType($2, make_loc(@$)); }
     ;
 
-sequence_type
-    : '[' type_list ']'  { $$ = new bi::SequenceType($2, make_loc(@$)); }
-    ;
-
 postfix_type
     : member_type
     | tuple_type
-    | sequence_type
     | postfix_type '!'           { $$ = new bi::FiberType($1, make_loc(@$)); }
     | postfix_type '?'           { $$ = new bi::OptionalType($1, make_loc(@$)); }
     | postfix_type '[' size ']'  { $$ = new bi::ArrayType($1, $3, make_loc(@$)); }

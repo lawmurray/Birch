@@ -89,7 +89,6 @@ public:
   virtual void visit(const EmptyType* o);
   virtual void visit(const ArrayType* o);
   virtual void visit(const TupleType* o);
-  virtual void visit(const SequenceType* o);
   virtual void visit(const FunctionType* o);
   virtual void visit(const FiberType* o);
   virtual void visit(const OptionalType* o);

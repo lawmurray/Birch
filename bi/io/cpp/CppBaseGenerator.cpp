@@ -769,11 +769,6 @@ void bi::CppBaseGenerator::visit(const ArrayType* o) {
 void bi::CppBaseGenerator::visit(const TupleType* o) {
   middle("std::tuple<" << o->single << '>');
 }
-
-void bi::CppBaseGenerator::visit(const SequenceType* o) {
-  middle("std::initializer_list<" << o->single << '>');
-}
-
 void bi::CppBaseGenerator::visit(const FunctionType* o) {
   middle("std::function<" << o->returnType << '(' << o->params << ")>");
 }

@@ -178,15 +178,6 @@ bi::Type* bi::OptionalType::common(const WeakType& o) const {
   }
 }
 
-bi::Type* bi::OptionalType::common(const SequenceType& o) const {
-  auto single1 = single->common(o);
-  if (single1) {
-    return new OptionalType(single1);
-  } else {
-    return nullptr;
-  }
-}
-
 bi::Type* bi::OptionalType::common(const TupleType& o) const {
   auto single1 = single->common(o);
   if (single1) {

@@ -387,10 +387,6 @@ void bi::Visitor::visit(const TupleType* o) {
   o->single->accept(this);
 }
 
-void bi::Visitor::visit(const SequenceType* o) {
-  o->single->accept(this);
-}
-
 void bi::Visitor::visit(const BinaryType* o) {
   o->left->accept(this);
   o->right->accept(this);
