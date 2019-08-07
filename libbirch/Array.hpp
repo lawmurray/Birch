@@ -181,13 +181,14 @@ public:
    * conform to that of the sequence, otherwise a resize is permitted.
    */
   Array<T,F>& operator=(const typename sequence_type<T,F::count()>::type& o) {
-    if (!isView && (!frame.conforms(o.frame) || isShared())) {
+    if (!isView && (!frame.conforms(sequence_frame(o)) || isShared())) {
       lock();
       rebase(o);
       unlock();
     } else {
       assign(o);
     }
+    return *this;
   }
 
   /**
