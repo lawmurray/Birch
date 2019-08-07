@@ -49,7 +49,10 @@ final class MultivariateIndependentGaussian(μ:Expression<Real[_]>,
         if (s2 <- σ2.graftInverseGamma())? {
           delay <- DelayMultivariateInverseGammaGaussian(future, futureUpdate, μ, s2!);
         } else if force {
-          delay <- DelayMultivariateGaussian(future, futureUpdate, μ.value(), diagonal(σ2, length(μ.value())));
+          /* try a normal inverse gamma first, then a regular Gaussian */
+          if !graftMultivariateNormalInverseGamma()? {
+            delay <- DelayMultivariateGaussian(future, futureUpdate, μ.value(), diagonal(σ2, length(μ.value())));
+          }
         }
       }
     }

@@ -35,7 +35,10 @@ final class MultivariateGaussian(μ:Expression<Real[_]>, Σ:Expression<Real[_,_]
       } else if (m2 <- μ.graftMultivariateGaussian())? {
         delay <- DelayMultivariateGaussianGaussian(future, futureUpdate, m2!, Σ);
       } else if force {
-        delay <- DelayMultivariateGaussian(future, futureUpdate, μ, Σ);
+        /* try a normal inverse gamma first, then a regular Gaussian */
+        if !graftMultivariateNormalInverseGamma()? {
+          delay <- DelayMultivariateGaussian(future, futureUpdate, μ, Σ);
+        }
       }
     }
   }
