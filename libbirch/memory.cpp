@@ -6,8 +6,9 @@
 #include "libbirch/clone.hpp"
 #include "libbirch/thread.hpp"
 
-/* declared in memory.hpp */
-libbirch::Atomic<size_t> libbirch::memoryUse(0);
+#if !ENABLE_MEMORY_POOL
+#include <sys/resource.h>
+#endif
 
 #if ENABLE_MEMORY_POOL
 /**
@@ -59,10 +60,19 @@ static libbirch::Context* root() {
 thread_local libbirch::Context* libbirch::currentContext(root());
 thread_local bool libbirch::cloneUnderway = false;
 
+long libbirch::memoryUse() {
+  #if ENABLE_MEMORY_POOL
+  return buffer.load() - bufferStart;
+  #else
+  rusage r_usage;
+  getrusage(RUSAGE_SELF, &r_usage);
+  return r_usage.ru_maxrss;
+  #endif
+}
+
 void* libbirch::allocate(const size_t n) {
   assert(n > 0u);
 
-  memoryUse += n;
 #if !ENABLE_MEMORY_POOL
   return std::malloc(n);
 #else
@@ -90,7 +100,6 @@ void libbirch::deallocate(void* ptr, const size_t n, const unsigned tid) {
   assert(n > 0u);
   assert(tid < nthreads);
 
-  memoryUse -= n;
 #if !ENABLE_MEMORY_POOL
   std::free(ptr);
 #else
@@ -104,7 +113,6 @@ void libbirch::deallocate(void* ptr, const unsigned n, const unsigned tid) {
   assert(n > 0u);
   assert(tid < nthreads);
 
-  memoryUse -= n;
 #if !ENABLE_MEMORY_POOL
   std::free(ptr);
 #else
@@ -119,11 +127,6 @@ void* libbirch::reallocate(void* ptr1, const size_t n1, const unsigned tid1, con
   assert(tid < nthreads);
   assert(n2 > 0u);
 
-  if (n2 > n1) {
-    memoryUse += n2 - n1;
-  } else if (n1 > n2) {
-    memoryUse -= n1 - n2;
-  }
 #if !ENABLE_MEMORY_POOL
   return std::realloc(ptr1, n2);
 #else

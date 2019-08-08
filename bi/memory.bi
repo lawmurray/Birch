@@ -1,25 +1,10 @@
 /**
- * Get the amount of memory (in bytes) currently in use.
+ * Get the amount of memory (in bytes) currently in use. If the pooled memory
+ * allocator is enabled, this includes memory currently held in pools but
+ * not in use, and will never decrease in time.
  */
 function memoryUse() -> Integer {
   cpp{{
-  return libbirch::memoryUse.load();
-  }}
-}
-
-/**
- * Get the amount of memory (in bytes) currently pooled. If the pooled memory
- * allocator is enabled, this is always greater than or equal to the amount
- * of memory currently in use, and only ever increases in time. If the pooled
- * memory allocator is disabled, this is always equal to the amount of memory
- * currently in use.
- */
-function memoryPool() -> Integer {
-  cpp{{
-  #if ENABLE_MEMORY_POOL
-  return libbirch::buffer.load() - libbirch::bufferStart;
-  #else
-  return libbirch::memoryUse.load();
-  #endif
+  return libbirch::memoryUse();
   }}
 }

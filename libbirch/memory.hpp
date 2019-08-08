@@ -10,9 +10,9 @@
 
 namespace libbirch {
 /**
- * Number of bytes of memory currently in use (excluding that in pools).
+ * Get the amount of memory currently in use, in bytes.
  */
-extern libbirch::Atomic<size_t> memoryUse;
+long memoryUse();
 
 /**
  * For an allocation size, determine the index of the pool to which it
@@ -136,7 +136,6 @@ template<unsigned n>
 void* allocate() {
   static_assert(n > 0, "cannot make zero length allocation");
 
-  memoryUse += n;
 #if !ENABLE_MEMORY_POOL
   return std::malloc(n);
 #else
