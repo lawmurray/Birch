@@ -136,7 +136,7 @@ template<unsigned n>
 void* allocate() {
   static_assert(n > 0, "cannot make zero length allocation");
 
-  memoryUse += n;
+  memoryUse.add(n);
 #if !ENABLE_MEMORY_POOL
   return std::malloc(n);
 #else

@@ -62,7 +62,7 @@ thread_local bool libbirch::cloneUnderway = false;
 void* libbirch::allocate(const size_t n) {
   assert(n > 0u);
 
-  memoryUse += n;
+  memoryUse.add(n);
 #if !ENABLE_MEMORY_POOL
   return std::malloc(n);
 #else
@@ -90,7 +90,7 @@ void libbirch::deallocate(void* ptr, const size_t n, const unsigned tid) {
   assert(n > 0u);
   assert(tid < nthreads);
 
-  memoryUse -= n;
+  memoryUse.subtract(n);
 #if !ENABLE_MEMORY_POOL
   std::free(ptr);
 #else
@@ -104,7 +104,7 @@ void libbirch::deallocate(void* ptr, const unsigned n, const unsigned tid) {
   assert(n > 0u);
   assert(tid < nthreads);
 
-  memoryUse -= n;
+  memoryUse.subtract(n);
 #if !ENABLE_MEMORY_POOL
   std::free(ptr);
 #else
@@ -120,9 +120,9 @@ void* libbirch::reallocate(void* ptr1, const size_t n1, const unsigned tid1, con
   assert(n2 > 0u);
 
   if (n2 > n1) {
-    memoryUse += n2 - n1;
+    memoryUse.add(n2 - n1);
   } else if (n1 > n2) {
-    memoryUse -= n1 - n2;
+    memoryUse.subtract(n1 - n2);
   }
 #if !ENABLE_MEMORY_POOL
   return std::realloc(ptr1, n2);
