@@ -8,7 +8,7 @@
 #include "libbirch/LazyAny.hpp"
 #include "libbirch/LazyMemo.hpp"
 #include "libbirch/SharedPtr.hpp"
-#include "libbirch/ReaderWriterLock.hpp"
+#include "libbirch/ExclusiveLock.hpp"
 
 namespace libbirch {
 /**
@@ -82,7 +82,7 @@ private:
   /**
    * Lock.
    */
-  ReaderWriterLock l;
+  ExclusiveLock l;
 
   /**
    * Is this frozen? Unlike regular objects, a memo can still have new entries
@@ -100,9 +100,9 @@ inline libbirch::LazyContext::LazyContext() :
 inline libbirch::LazyContext::LazyContext(LazyContext* parent) :
     frozen(parent->frozen) {
   assert(parent);
-  parent->l.write();
+  parent->l.set();
   m.copy(parent->m);
-  parent->l.unwrite();
+  parent->l.unset();
 }
 
 inline libbirch::LazyContext::~LazyContext() {

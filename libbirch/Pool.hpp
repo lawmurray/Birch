@@ -95,19 +95,19 @@ inline bool libbirch::Pool::empty() const {
 }
 
 inline void* libbirch::Pool::pop() {
-  lock.keep();
+  lock.set();
   auto result = top;
   top = getNext(result);
-  lock.unkeep();
+  lock.unset();
   return result;
 }
 
 inline void libbirch::Pool::push(void* block) {
   assert(bufferStart <= block && block < bufferStart + bufferSize);
-  lock.keep();
+  lock.set();
   setNext(block, top);
   top = block;
-  lock.unkeep();
+  lock.unset();
 }
 
 inline void* libbirch::Pool::getNext(void* block) {

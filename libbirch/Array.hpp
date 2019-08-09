@@ -747,14 +747,14 @@ private:
    * Release the lock.
    */
   void lock() {
-    mutex.keep();
+    mutex.set();
   }
 
   /**
    * Release the lock.
    */
   void unlock() {
-    mutex.unkeep();
+    mutex.unset();
   }
 
   /**

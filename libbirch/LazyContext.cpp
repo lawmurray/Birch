@@ -12,7 +12,7 @@ libbirch::LazyAny* libbirch::LazyContext::get(LazyAny* o) {
   LazyAny* prev = nullptr;
   LazyAny* next = o;
   bool frozen = true;
-  l.write();
+  l.set();
   do {
     prev = next;
     next = m.get(prev);
@@ -26,7 +26,7 @@ libbirch::LazyAny* libbirch::LazyContext::get(LazyAny* o) {
   if (frozen) {
     next = copy(next);
   }
-  l.unwrite();
+  l.unset();
   return next;
 }
 
@@ -35,7 +35,7 @@ libbirch::LazyAny* libbirch::LazyContext::pull(LazyAny* o) {
   LazyAny* prev = nullptr;
   LazyAny* next = o;
   bool frozen = true;
-  l.read();
+  l.set();
   do {
     prev = next;
     next = m.get(prev);
@@ -46,7 +46,7 @@ libbirch::LazyAny* libbirch::LazyContext::pull(LazyAny* o) {
   if (!next) {
 	  next = prev;
 	}
-  l.unread();
+  l.unset();
   return next;
 }
 
@@ -64,9 +64,9 @@ libbirch::LazyAny* libbirch::LazyContext::copy(LazyAny* o) {
 
 void libbirch::LazyContext::freeze() {
   if (!frozen.exchange(true)) {
-    l.read();
+    l.set();
     m.freeze();
-    l.unread();
+    l.unset();
   }
 }
 

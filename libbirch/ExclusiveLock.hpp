@@ -27,12 +27,12 @@ public:
   /**
    * Obtain exclusive use.
    */
-  void keep();
+  void set();
 
   /**
    * Release exclusive use.
    */
-  void unkeep();
+  void unset();
 
 private:
   /**
@@ -52,11 +52,11 @@ inline libbirch::ExclusiveLock::ExclusiveLock(const ExclusiveLock& o) :
   //
 }
 
-inline void libbirch::ExclusiveLock::keep() {
+inline void libbirch::ExclusiveLock::set() {
   /* spin, setting the lock true until its old value comes back false */
   while (lock.exchange(true));
 }
 
-inline void libbirch::ExclusiveLock::unkeep() {
+inline void libbirch::ExclusiveLock::unset() {
   lock.store(false);
 }
