@@ -6,7 +6,7 @@
 
 #include "libbirch/external.hpp"
 #include "libbirch/Counted.hpp"
-#include "libbirch/WeakPtr.hpp"
+#include "libbirch/InitPtr.hpp"
 #include "libbirch/Atomic.hpp"
 
 namespace libbirch {
@@ -104,7 +104,7 @@ protected:
   /**
    * Context in which this object was created.
    */
-  WeakPtr<LazyContext> context;
+  InitPtr<LazyContext> context;
 
   /**
    * Is this frozen (read-only)?
