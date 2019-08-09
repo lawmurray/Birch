@@ -56,14 +56,15 @@ libbirch::LazyAny* libbirch::LazyContext::copy(LazyAny* o) {
   SwapContext swapContext(this);
   auto cloned = o->clone_();
   if (!o->isSingle()) {
-    frozen.store(false);  // no longer frozen, as will have new entry
+    frozen = false;  // no longer frozen, as will have new entry
     m.put(o, cloned);
   }
   return cloned;
 }
 
 void libbirch::LazyContext::freeze() {
-  if (!frozen.exchange(true)) {
+  if (!frozen) {
+    frozen = true;
     l.set();
     m.freeze();
     l.unset();
