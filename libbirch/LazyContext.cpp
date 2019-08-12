@@ -24,7 +24,14 @@ libbirch::LazyAny* libbirch::LazyContext::get(LazyAny* o) {
 	  next = prev;
 	}
   if (frozen) {
-    next = copy(next);
+    if (next->numShared() == 1u && next->numWeak() == 1u) {
+      /* this is the last pointer to the object, just thaw it and reuse */
+      SwapContext swapContext(this);
+      next->thaw(this);
+    } else {
+      /* copy it */
+      next = copy(next);
+    }
   }
   l.unset();
   return next;
@@ -56,7 +63,7 @@ libbirch::LazyAny* libbirch::LazyContext::copy(LazyAny* o) {
   SwapContext swapContext(this);
   auto cloned = o->clone_();
   if (!o->isSingle()) {
-    frozen = false;  // no longer frozen, as will have new entry
+    thaw();  // new entry, so no longer considered frozen
     m.put(o, cloned);
   }
   return cloned;
@@ -69,6 +76,10 @@ void libbirch::LazyContext::freeze() {
     m.freeze();
     l.unset();
   }
+}
+
+void libbirch::LazyContext::thaw() {
+  frozen = false;
 }
 
 #endif

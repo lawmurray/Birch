@@ -29,11 +29,8 @@ public:
   /**
    * Constructor.
    */
-  WeakPtr(T* ptr = nullptr) :
-      ptr(ptr) {
-    if (ptr) {
-      ptr->incWeak();
-    }
+  WeakPtr() : ptr(nullptr) {
+    //
   }
 
   /**
@@ -54,7 +51,6 @@ public:
   WeakPtr(const InitPtr<U>& o) :
       ptr(o.ptr) {
     if (ptr) {
-      assert(ptr->numWeak() > 0);
       ptr->incWeak();
     }
   }
@@ -186,6 +182,23 @@ public:
   T* pull() const {
     assert(!ptr || ptr->numWeak() > 0);
     return ptr;
+  }
+
+  /**
+   * Replace.
+   */
+  void replace(T* ptr) {
+    assert(!ptr || ptr->numWeak() > 0);
+    auto old = this->ptr;
+    if (ptr != old) {
+      if (ptr) {
+        ptr->incWeak();
+      }
+      this->ptr = ptr;
+      if (old) {
+        old->decWeak();
+      }
+    }
   }
 
   /**

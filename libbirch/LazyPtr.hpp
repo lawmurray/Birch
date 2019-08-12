@@ -37,53 +37,38 @@ public:
   /**
    * Constructor.
    */
-  LazyPtr(T* object) :
-      object(object),
-      to(object ? currentContext : nullptr) {
-    //
+  explicit LazyPtr(T* object) :
+      object(object) {
+    if (object) {
+      to.replace(currentContext);
+    }
   }
 
   /**
    * Constructor.
    */
   LazyPtr(const P& object) :
-      object(object),
-      to(object ? currentContext : nullptr) {
-    //
-  }
-
-  /**
-   * Constructor.
-   */
-  LazyPtr(T* object, LazyContext* to) :
-      object(object),
-      to(to) {
-    //
-  }
-
-  /**
-   * Constructor.
-   */
-  LazyPtr(const P& object, LazyContext* to) :
-      object(object),
-      to(to) {
-    //
+      object(object) {
+    if (object) {
+      to.replace(currentContext);
+    }
   }
 
   /**
    * Copy constructor.
    */
-  LazyPtr(const LazyPtr<P>& o) :
-      object(nullptr),
-      to(cloneUnderway ? currentContext : o.to) {
+  LazyPtr(const LazyPtr<P>& o) {
     if (o.object) {
       if (cloneUnderway) {
         if (o.isCross()) {
           o.finish();
+          o.freeze();
         }
         object = o.object;
+        to.replace(currentContext);
       } else {
-        object = o.get();
+        object.replace(o.get());
+        to = o.to;
       }
     }
   }
@@ -94,9 +79,8 @@ public:
   template<class Q, typename = std::enable_if_t<std::is_base_of<T,
       typename Q::value_type>::value>>
   LazyPtr(const LazyPtr<Q>& o) :
-      object(o.get()),
       to(o.to) {
-    //
+    object.replace(o.get());
   }
 
   /**
@@ -110,7 +94,7 @@ public:
   LazyPtr<P>& operator=(const LazyPtr<P>& o) {
     /* risk of invalidating `o` here, so assign to `to` first */
     to = o.to;
-    object = o.get();
+    object.replace(o.get());
     return *this;
   }
 
@@ -122,7 +106,7 @@ public:
   LazyPtr<P>& operator=(const LazyPtr<Q>& o) {
     /* risk of invalidating `o` here, so assign to `to` first */
     to = o.to;
-    object = o.get();
+    object.replace(o.get());
     /* ^ it is valid for `o` to be a weak pointer to a destroyed object that,
      *   when mapped through the memo, will point to a valid object; thus
      *   use of pull(), can't increment shared reference count on a destroyed
@@ -141,12 +125,15 @@ public:
   }
 
   /**
-   * Raw pointer assignment.
+   * Value assignment.
    */
-  LazyPtr<P>& operator=(T* o) {
-    assert(!o || !o->isSingle());
-    to = o ? currentContext : nullptr;
+  LazyPtr<P>& operator=(const P& o) {
     object = o;
+    if (o) {
+      to.replace(currentContext);
+    } else {
+      to.release();
+    }
     return *this;
   }
 
@@ -154,8 +141,8 @@ public:
    * Nil assignment.
    */
   LazyPtr<P>& operator=(const Nil&) {
-    object = nullptr;
-    to = nullptr;
+    object.release();
+    to.release();
     return *this;
   }
 
@@ -163,8 +150,8 @@ public:
    * Nullptr assignment.
    */
   LazyPtr<P>& operator=(const std::nullptr_t&) {
-    object = nullptr;
-    to = nullptr;
+    object.release();
+    to.release();
     return *this;
   }
 
@@ -225,7 +212,7 @@ public:
     auto raw = object.get();
     if (raw && raw->isFrozen()) {
       raw = static_cast<T*>(to->get(raw));
-      object = raw;
+      object.replace(raw);
     }
     return raw;
   }
@@ -244,7 +231,7 @@ public:
     auto raw = object.get();
     if (raw && raw->isFrozen()) {
       raw = static_cast<T*>(to->pull(raw));
-      object = raw;
+      object.replace(raw);
     }
     return raw;
   }
@@ -312,6 +299,26 @@ public:
    */
   void freeze() const {
     return const_cast<LazyPtr<P>*>(this)->freeze();
+  }
+
+  /**
+   * Thaw.
+   */
+  void thaw(LazyContext* context) {
+    if (isCross()) {
+      finish();
+      freeze();
+    }
+    if (object) {
+      to.replace(context);
+    }
+  }
+
+  /**
+   * Thaw.
+   */
+  void thaw(LazyContext* context) const {
+    return const_cast<LazyPtr<P>*>(this)->thaw(context);
   }
 
   /**
@@ -394,6 +401,23 @@ public:
   }
 
 protected:
+  /**
+   * Constructor (used by casts).
+   */
+  LazyPtr(T* object, LazyContext* to) {
+    this->object.replace(object);
+    this->to.replace(to);
+  }
+
+  /**
+   * Constructor (used by clone).
+   */
+  LazyPtr(const P& object, LazyContext* to) :
+      object(object),
+      to(to) {
+    //
+  }
+
   /**
    * Object.
    */

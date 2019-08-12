@@ -20,22 +20,23 @@ public:
   /**
    * Default constructor.
    */
-  ContextPtr() {
-    setContext(currentContext);
+  ContextPtr() : pack(0u) {
+    //
   }
 
   /**
    * Value constructor.
    */
-  ContextPtr(Context* context) {
-    setContext(context);
+  explicit ContextPtr(Context* ptr) {
+    assert(!ptr || ptr->numShared() == 1u);
+    pack = ptr ? ((uintptr_t)ptr | (uintptr_t)1u) : 0u;
   }
 
   /**
    * Copy constructor.
    */
   ContextPtr(const ContextPtr& o) {
-    setContext(o.get());
+    set(o.get());
   }
 
   /**
@@ -46,20 +47,10 @@ public:
   }
 
   /**
-   * Value assignment.
-   */
-  ContextPtr& operator=(Context* context) {
-    release();
-    setContext(context);
-    return *this;
-  }
-
-  /**
    * Copy assignment.
    */
   ContextPtr& operator=(const ContextPtr& o) {
-    release();
-    setContext(o.get());
+    replace(o.get());
     return *this;
   }
 
@@ -72,13 +63,27 @@ public:
   }
 
   /**
+   * Replace.
+   */
+  void replace(Context* ptr) {
+    auto old = get();
+    if (ptr != old) {
+      auto oldCross = isCross();
+      set(ptr);
+      if (old && oldCross) {
+        old->decShared();
+      }
+    }
+  }
+
+  /**
    * Release the context.
    */
   void release() {
     if (isCross()) {
       get()->decShared();
-      pack = (uintptr_t)0u;
     }
+    pack = (uintptr_t)0u;
   }
 
   /**
@@ -127,12 +132,13 @@ public:
 
 private:
   /**
-   * Set the context.
+   * Set.
    */
-  void setContext(Context* context) {
-    pack = reinterpret_cast<uintptr_t>(context);
-    if (context && context != currentContext) {
-      context->incShared();
+  void set(Context* ptr) {
+    pack = reinterpret_cast<uintptr_t>(ptr);
+    assert(!isCross());
+    if (ptr && ptr != currentContext) {
+      ptr->incShared();
       pack |= (uintptr_t)1u;
     }
   }

@@ -17,9 +17,14 @@ template<class YieldType>
 class Fiber {
 public:
   /**
+   * Default constructor.
+   */
+  Fiber();
+
+  /**
    * Constructor.
    */
-  Fiber(const Shared<FiberState<YieldType>>& state = nullptr);
+  Fiber(const SharedPtr<FiberState<YieldType>>& state);
 
   /**
    * Clone the fiber.
@@ -30,6 +35,11 @@ public:
    * Freeze the fiber.
    */
   void freeze() const;
+
+  /**
+   * Thaw the fiber.
+   */
+  void thaw(LazyContext* context) const;
 
   /**
    * Finish the fiber.
@@ -57,8 +67,13 @@ public:
 }
 
 template<class YieldType>
+libbirch::Fiber<YieldType>::Fiber() {
+  //
+}
+
+template<class YieldType>
 libbirch::Fiber<YieldType>::Fiber(
-    const Shared<FiberState<YieldType>>& state) :
+    const SharedPtr<FiberState<YieldType>>& state) :
     state(state) {
   //
 }
@@ -76,6 +91,11 @@ void libbirch::Fiber<YieldType>::freeze() const {
 template<class YieldType>
 void libbirch::Fiber<YieldType>::finish() const {
   state.finish();
+}
+
+template<class YieldType>
+void libbirch::Fiber<YieldType>::thaw(LazyContext* context) const {
+  state.thaw(context);
 }
 
 template<class YieldType>

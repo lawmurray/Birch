@@ -27,13 +27,13 @@ public:
   template<class U> using cast_type = SharedPtr<U>;
 
   /**
-   * Constructor.
+   * Constructor. This is intended for use immediately after construction of
+   * the object; the reference count is not incremented, as it should be
+   * initialized accordingly.
    */
-  SharedPtr(T* ptr = nullptr) :
+  explicit SharedPtr(T* ptr = nullptr) :
       ptr(ptr) {
-    if (ptr) {
-      ptr->incShared();
-    }
+    assert(!ptr || ptr->numShared() == 1u);
   }
 
   /**
@@ -66,7 +66,6 @@ public:
   SharedPtr(const SharedPtr<T>& o) :
       ptr(o.ptr) {
     if (ptr) {
-      assert(ptr->numShared() > 0);
       ptr->incShared();
     }
   }
@@ -186,6 +185,23 @@ public:
   T* pull() const {
     assert(!ptr || ptr->numShared() > 0);
     return ptr;
+  }
+
+  /**
+   * Replace.
+   */
+  void replace(T* ptr) {
+    assert(!ptr || ptr->numShared() > 0);
+    auto old = this->ptr;
+    if (ptr != old) {
+      if (ptr) {
+        ptr->incShared();
+      }
+      this->ptr = ptr;
+      if (old) {
+        old->decShared();
+      }
+    }
   }
 
   /**

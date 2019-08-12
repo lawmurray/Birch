@@ -26,6 +26,9 @@ libbirch::LazyMemo::~LazyMemo() {
     }
     deallocate(keys, nentries * sizeof(key_type), tentries);
     deallocate(values, nentries * sizeof(value_type), tentries);
+    keys = nullptr;
+    values = nullptr;
+    nentries = 0;
   }
 }
 
@@ -55,7 +58,7 @@ void libbirch::LazyMemo::put(const key_type key,
   assert(value);
 
   key->incMemo();
-  value->doubleIncShared();
+  value->incShared();  // not double inc, as value is new object with recount 1 already
 
   reserve();
   auto i = hash(key, nentries);

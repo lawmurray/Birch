@@ -73,6 +73,11 @@ public:
    */
   void freeze();
 
+  /**
+   * Thaw the memo.
+   */
+  void thaw();
+
 private:
   /**
    * Memo that maps source objects to clones.

@@ -342,6 +342,7 @@
       "libbirch/Stride.hpp",
       "libbirch/SwapClone.hpp",
       "libbirch/SwapContext.hpp",
+      "libbirch/thaw.hpp",
       "libbirch/thread.hpp",
       "libbirch/value.hpp",
       "libbirch/View.hpp",

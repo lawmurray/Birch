@@ -205,7 +205,7 @@ protected:
 #include "libbirch/thread.hpp"
 
 inline libbirch::Counted::Counted() :
-    sharedCount(0u),
+    sharedCount(1u),
     weakCount(1u),
     #if ENABLE_LAZY_DEEP_CLONE
     memoCount(1u),
@@ -216,7 +216,7 @@ inline libbirch::Counted::Counted() :
 }
 
 inline libbirch::Counted::Counted(const Counted& o) :
-    sharedCount(0u),
+    sharedCount(1u),
     weakCount(1u),
     #if ENABLE_LAZY_DEEP_CLONE
     memoCount(1u),
@@ -244,6 +244,7 @@ inline unsigned libbirch::Counted::getSize() const {
 }
 
 inline void libbirch::Counted::incShared() {
+  assert(sharedCount.load() > 0u);
   sharedCount.increment();
 }
 
@@ -257,6 +258,7 @@ inline void libbirch::Counted::decShared() {
 }
 
 inline void libbirch::Counted::doubleIncShared() {
+  assert(sharedCount.load() > 0u);
   sharedCount.doubleIncrement();
 }
 
@@ -274,6 +276,7 @@ inline unsigned libbirch::Counted::numShared() const {
 }
 
 inline void libbirch::Counted::incWeak() {
+  assert(weakCount.load() > 0u);
   weakCount.increment();
 }
 

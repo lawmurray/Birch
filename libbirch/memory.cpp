@@ -50,7 +50,7 @@ size_t libbirch::bufferSize;
  * Create and/or return the root memo
  */
 static libbirch::Context* root() {
-  static libbirch::SharedPtr<libbirch::Context> context = libbirch::Context::create_();
+  static libbirch::SharedPtr<libbirch::Context> context(libbirch::Context::create_());
   return context.get();
 }
 

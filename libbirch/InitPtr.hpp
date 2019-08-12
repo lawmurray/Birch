@@ -28,7 +28,7 @@ public:
   /**
    * Constructor.
    */
-  InitPtr(T* ptr = nullptr) :
+  explicit InitPtr(T* ptr = nullptr) :
       ptr(ptr) {
     //
   }
@@ -52,6 +52,13 @@ public:
    */
   T* pull() const {
     return ptr;
+  }
+
+  /**
+   * Replace.
+   */
+  void replace(T* ptr) {
+    this->ptr = ptr;
   }
 
   /**

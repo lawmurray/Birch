@@ -15,6 +15,7 @@
 #include "libbirch/clone.hpp"
 #include "libbirch/thread.hpp"
 #include "libbirch/freeze.hpp"
+#include "libbirch/thaw.hpp"
 #include "libbirch/finish.hpp"
 #include "libbirch/value.hpp"
 
@@ -203,20 +204,20 @@ auto make_array_and_assign(const Frame& frame, const Value& value) {
 }
 
 /**
- * Make a pointer to a new object.
+ * Make an object.
  *
  * @ingroup libbirch
  *
- * @tparam PointerType Pointer type.
+ * @tparam Type Object type.
  * @tparam Args Constructor parameter types.
  *
  * @param args Constructor arguments.
  *
- * @return The pointer to the new object.
+ * @return A shared pointer to the new object.
  */
-template<class PointerType, class ... Args>
-PointerType make_pointer(Args ... args) {
-  return PointerType::value_type::create_(args...);
+template<class Type, class ... Args>
+SharedPtr<Type> make_object(Args ... args) {
+  return SharedPtr<Type>(Type::create_(args...));
 }
 
 /**
@@ -229,7 +230,7 @@ PointerType make_pointer(Args ... args) {
  */
 template<class StateType, class ... Args>
 auto make_fiber(Args ... args) {
-  return Fiber<typename StateType::yield_type_>(StateType::create_(args...));
+  return Fiber<typename StateType::yield_type_>(make_object<StateType>(args...));
 }
 
 /**

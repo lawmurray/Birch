@@ -59,15 +59,6 @@ void finish(const Array<T,F>& o) {
 }
 
 template<class T>
-void finish(const std::initializer_list<T>& o) {
-  if (!is_value<T>::value) {
-    for (auto x : o) {
-      finish(x);
-    }
-  }
-}
-
-template<class T>
 void finish(const Optional<T>& o) {
   if (!is_value<T>::value && o.query()) {
     finish(o.get());

@@ -70,13 +70,19 @@ public:
   LazyContext* getContext();
 
   /**
-   * Freeze.
+   * Deep freeze.
    */
   void freeze();
 
   /**
-   * Finish any remaining lazy deep clones in the subgraph reachable from
-   * this.
+   * Shallow thaw to allow reuse by another context.
+   *
+   * @param context The new context of the object.
+   */
+  void thaw(LazyContext* context);
+
+  /**
+   * Deep finish of lazy clone.
    */
   void finish();
 
@@ -90,10 +96,15 @@ public:
 protected:
   /**
    * Perform the actual freeze of the object. This is overwritten by derived
-   * classes. The non-virtual freeze() handles thread safety so that this
-   * need not.
+   * classes.
    */
   virtual void doFreeze_();
+
+  /**
+   * Perform the actual thaw of the object. This is overwritten by derived
+   * classes.
+   */
+  virtual void doThaw_(LazyContext* context);
 
   /**
    * Perform the actual finish of the object. This is overwritten by derived
@@ -186,6 +197,16 @@ inline void libbirch::LazyAny::freeze() {
   }
 }
 
+inline void libbirch::LazyAny::thaw(LazyContext* context) {
+  this->context.replace(context);
+  frozen = false;
+  finished = false;
+  #if ENABLE_SINGLE_REFERENCE_OPTIMIZATION
+  single = false;
+  #endif
+  doThaw_(context);
+}
+
 inline void libbirch::LazyAny::finish() {
   if (!finished) {
     finished = true;
@@ -196,6 +217,10 @@ inline void libbirch::LazyAny::finish() {
 }
 
 inline void libbirch::LazyAny::doFreeze_() {
+  //
+}
+
+inline void libbirch::LazyAny::doThaw_(LazyContext* context) {
   //
 }
 

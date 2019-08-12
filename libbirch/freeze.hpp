@@ -59,15 +59,6 @@ void freeze(const Array<T,F>& o) {
 }
 
 template<class T>
-void freeze(const std::initializer_list<T>& o) {
-  if (!is_value<T>::value) {
-    for (auto x : o) {
-      freeze(x);
-    }
-  }
-}
-
-template<class T>
 void freeze(const Optional<T>& o) {
   if (!is_value<T>::value && o.query()) {
     freeze(o.get());
