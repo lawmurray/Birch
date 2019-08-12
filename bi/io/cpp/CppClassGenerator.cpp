@@ -118,10 +118,8 @@ void bi::CppClassGenerator::visit(const Class* o) {
             start(o->name << '(' << o->value << ')');
           } else if (o->type->isClass()) {
             finish(',');
-            start(o->name << '(');
             ++inPointer;
-            middle(o->type << "::create_(" << o->args << ')');
-            middle(')');
+            start(o->name << "(libbirch::make_object<" << o->type << ">(" << o->args << "))");
           } else if (o->type->isArray() && !o->brackets->isEmpty()) {
             finish(',');
             start(o->name << "(libbirch::make_frame(" << o->brackets << ')');
@@ -194,6 +192,28 @@ void bi::CppClassGenerator::visit(const Class* o) {
         line("}\n");
       }
 
+      /* thaw function */
+      if (header) {
+        start("virtual void ");
+      } else {
+        start("void bi::type::" << o->name);
+        genTemplateArgs(o);
+        middle("::");
+      }
+      middle("doThaw_(libbirch::LazyContext* context)");
+      if (header) {
+        finish(';');
+      } else {
+        finish(" {");
+        in();
+        line("super_type_::doThaw_(context);");
+        for (auto o : memberVariables) {
+          line("libbirch::thaw(" << o->name << ", context);");
+        }
+        out();
+        line("}\n");
+      }
+
       /* finish function */
       if (header) {
         start("virtual void ");
@@ -255,10 +275,11 @@ void bi::CppClassGenerator::visit(const Class* o) {
     /* C linkage function */
     if (!o->isGeneric() && o->params->isEmpty()) {
       if (header) {
-        line("extern \"C\" " << o->name << "* make_" << o->name << "_();");
+        start("extern \"C\" bi::type::" << o->name << "* ");
+        finish("make_" << o->name << "_();");
       } else {
-        line(
-            "bi::type::" << o->name << "* bi::type::make_" << o->name << "_() {");
+        start("bi::type::" << o->name << "* ");
+        finish("bi::type::make_" << o->name << "_() {");
         in();
         line("return bi::type::" << o->name << "::create_();");
         out();

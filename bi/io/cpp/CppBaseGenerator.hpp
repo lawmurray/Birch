@@ -198,8 +198,7 @@ void bi::CppBaseGenerator::genInit(const T* o) {
       middle(" = " << o->value);
     } else if (!o->type->isWeak()) {
       ++inPointer;
-      middle(" = " << o->type << "::create_");
-      middle('(' << o->args << ')');
+      middle(" = libbirch::make_object<" << o->type << ">(" << o->args << ')');
     }
   } else if (!o->value->isEmpty()) {
     middle(" = " << o->value);

@@ -138,6 +138,33 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     line("}\n");
   }
 
+  /* thaw function */
+  if (header) {
+    start("virtual void ");
+  } else {
+    start("void bi::type::" << type->name);
+    genTemplateArgs(type);
+    middle("::" << stateName << "::");
+  }
+  middle("doThaw_(libbirch::LazyContext* context)");
+  if (header) {
+    finish(';');
+  } else {
+    finish(" {");
+    in();
+    line("super_type_::doThaw_(context);");
+    line("libbirch::thaw(self, context);");
+    line("libbirch::thaw(value_, context);");
+    for (auto param : params) {
+      line("libbirch::thaw(" << param->name << ", context);");
+    }
+    for (auto local : locals) {
+      line("libbirch::thaw(" << getName(local->name->str(), local->number) << ", context);");
+    }
+    out();
+    line("}\n");
+  }
+
   /* finish function */
   if (header) {
     start("virtual void ");
