@@ -28,8 +28,7 @@ public:
    * Value constructor.
    */
   explicit ContextPtr(Context* ptr) {
-    assert(!ptr || ptr->numShared() == 1u);
-    pack = ptr ? ((uintptr_t)ptr | (uintptr_t)1u) : 0u;
+    set(ptr);
   }
 
   /**

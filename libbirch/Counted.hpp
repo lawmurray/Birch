@@ -90,6 +90,13 @@ public:
   unsigned getSize() const;
 
   /**
+   * Used by a shared pointer when it is known that the object has not yet
+   * been assigned to any smart pointer. Sets the shared count to one, but
+   * not atomically.
+   */
+  void init();
+
+  /**
    * Increment the shared count.
    */
   void incShared();
@@ -205,7 +212,7 @@ protected:
 #include "libbirch/thread.hpp"
 
 inline libbirch::Counted::Counted() :
-    sharedCount(1u),
+    sharedCount(0u),
     weakCount(1u),
     #if ENABLE_LAZY_DEEP_CLONE
     memoCount(1u),
@@ -216,7 +223,7 @@ inline libbirch::Counted::Counted() :
 }
 
 inline libbirch::Counted::Counted(const Counted& o) :
-    sharedCount(1u),
+    sharedCount(0u),
     weakCount(1u),
     #if ENABLE_LAZY_DEEP_CLONE
     memoCount(1u),
@@ -243,8 +250,13 @@ inline unsigned libbirch::Counted::getSize() const {
   return size;
 }
 
+inline void libbirch::Counted::init() {
+  assert(sharedCount.load() == 0u);
+  sharedCount.init(1u);
+}
+
 inline void libbirch::Counted::incShared() {
-  assert(sharedCount.load() > 0u);
+  //assert(sharedCount.load() > 0u);
   sharedCount.increment();
 }
 
@@ -258,7 +270,7 @@ inline void libbirch::Counted::decShared() {
 }
 
 inline void libbirch::Counted::doubleIncShared() {
-  assert(sharedCount.load() > 0u);
+  //assert(sharedCount.load() > 0u);
   sharedCount.doubleIncrement();
 }
 

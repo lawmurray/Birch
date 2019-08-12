@@ -24,7 +24,7 @@ libbirch::LazyAny* libbirch::LazyContext::get(LazyAny* o) {
 	  next = prev;
 	}
   if (frozen) {
-    if (next->numShared() == 1u && next->numWeak() == 1u) {
+    if (next->numShared() == 1u && next->numWeak() == 1u && next->numMemo() == 1u) {
       /* this is the last pointer to the object, just thaw it and reuse */
       SwapContext swapContext(this);
       next->thaw(this);

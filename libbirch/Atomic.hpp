@@ -35,7 +35,13 @@ public:
    * @param value Initial value.
    */
   explicit Atomic(const T& value) {
-    #pragma omp atomic write
+    init(value);
+  }
+
+  /**
+   * Initialize the value, not atomically.
+   */
+  void init(const T& value) {
     this->value = value;
   }
 

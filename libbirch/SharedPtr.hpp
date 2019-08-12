@@ -33,7 +33,9 @@ public:
    */
   explicit SharedPtr(T* ptr = nullptr) :
       ptr(ptr) {
-    assert(!ptr || ptr->numShared() == 1u);
+    if (ptr) {
+      ptr->init();
+    }
   }
 
   /**
@@ -191,7 +193,7 @@ public:
    * Replace.
    */
   void replace(T* ptr) {
-    assert(!ptr || ptr->numShared() > 0);
+    //assert(!ptr || ptr->numShared() > 0);
     auto old = this->ptr;
     if (ptr != old) {
       if (ptr) {
