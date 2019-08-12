@@ -125,6 +125,18 @@ public:
   }
 
   /**
+   * Generic move assignment.
+   */
+  template<class Q, typename = std::enable_if_t<std::is_base_of<T,
+      typename Q::value_type>::value>>
+  LazyPtr<P>& operator=(LazyPtr<Q> && o) {
+    /* risk of invalidating `o` here, so assign to `to` first */
+    to = std::move(o.to);
+    object = std::move(o.object);
+    return *this;
+  }
+
+  /**
    * Value assignment.
    */
   LazyPtr<P>& operator=(const P& o) {
