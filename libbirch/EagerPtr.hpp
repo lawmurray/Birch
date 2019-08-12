@@ -37,8 +37,7 @@ class EagerPtr {
   /**
    * Constructor.
    */
-  explicit EagerPtr(T* object) :
-      object(object) {
+  explicit EagerPtr(T* object) : object(object) {
     //
   }
 
@@ -256,7 +255,7 @@ class EagerPtr {
    */
   template<class U>
   auto dynamic_pointer_cast() const {
-    return cast_type<U>(dynamic_cast<U*>(get()));
+    return cast_type<U>(dynamic_cast<U*>(get()), 0);
   }
 
   /**
@@ -264,10 +263,17 @@ class EagerPtr {
    */
   template<class U>
   auto static_pointer_cast() const {
-    return cast_type<U>(static_cast<U*>(get()));
+    return cast_type<U>(static_cast<U*>(get()), 0);
   }
 
 protected:
+  /**
+   * Constructor (for cast).
+   */
+  explicit EagerPtr(T* object, int) {
+    this->object.replace(object);
+  }
+
   /**
    * Object.
    */
