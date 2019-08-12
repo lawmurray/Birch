@@ -11,6 +11,7 @@
 program bench_deep_clone_overhead(
     config:String?,
     diagnostic:String?,
+    output:String?,
     seed:Integer?) {
 
   /* config */
