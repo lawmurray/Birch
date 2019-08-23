@@ -64,7 +64,7 @@ private:
 };
 
 /**
- * Get the @i th pool.
+ * Get the <tt>i</tt>th pool.
  */
 extern Pool& pool(const unsigned i);
 
