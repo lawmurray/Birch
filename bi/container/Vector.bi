@@ -180,14 +180,22 @@ final class Vector<Type> {
   function toArray() -> Type[_] {
     return values;
   }
+  
+  /**
+   * Convert from array.
+   */
+  function fromArray(x:Type[_]) {
+    values <- x;
+    nelements <- length(x);
+  }
 
   function read(buffer:Buffer) {
     auto f <- buffer.walk();
-    while (f?) {
-      /* tricky, but works for both basic and final class types */
+    while f? {
+      /* tricky, but works for both basic and class types */
       x:Type;
       auto y <- f!.get(x);
-      if (y?) {
+      if y? {
         x <- Type?(y)!;  // cast needed for y:Object?
         pushBack(x);
       }
@@ -197,7 +205,7 @@ final class Vector<Type> {
   function write(buffer:Buffer) {
     buffer.setArray();
     auto f <- walk();
-    while (f?) {
+    while f? {
       buffer.push().set(f!);
     }
   }
