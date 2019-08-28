@@ -15,6 +15,7 @@ class SQLite3 {
    */
   function open(filename:String) {
     cpp{{
+    assert(!self->db);
     auto res = sqlite3_open(filename.c_str(), &self->db);
     libbirch_error_msg_(res == SQLITE_OK, "sqlite3_open failed");
     }}
@@ -27,6 +28,7 @@ class SQLite3 {
     cpp{{
     auto res = sqlite3_close(self->db);
     libbirch_error_msg_(res == SQLITE_OK, "sqlite3_close failed");
+    self->db = nullptr;
     }}
   }
   
