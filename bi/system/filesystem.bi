@@ -50,9 +50,9 @@ function fopen(path:String) -> File {
 function fopen(path:String, mode:Integer) -> File {
   assert mode == READ || mode == WRITE || mode == APPEND;
   s:String;
-  if (mode == READ) {
+  if mode == READ {
     s <- "r";
-  } else if (mode == WRITE) {
+  } else if mode == WRITE {
     s <- "w";
     cpp{{
     boost::filesystem::path p = path;
@@ -64,9 +64,13 @@ function fopen(path:String, mode:Integer) -> File {
     s <- "a";
   }
   cpp{{
-  FILE* stream = ::fopen(path.c_str(), s.c_str());
-  lockf(fileno(stream), F_LOCK, 0);
-  return stream;
+  auto f = ::fopen(path.c_str(), s.c_str());
+  if (f) {
+    lockf(fileno(f), F_LOCK, 0);
+    return f;
+  } else {
+    bi::error("could not open file " + path + ".");
+  }
   }}
 }
 
