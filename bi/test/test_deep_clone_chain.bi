@@ -25,6 +25,6 @@ program test_deep_clone_chain() {
 }
 
 class DeepCloneNode {
-  a:Boxed<Integer>(0);
-  b:Boxed<Integer>(0);
+  a:Boxed<Integer>;
+  b:Boxed<Integer>;
 }

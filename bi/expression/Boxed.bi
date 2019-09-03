@@ -1,11 +1,11 @@
 /**
  * Boxed value.
  */
-final class Boxed<Value>(x:Value) < Expression<Value> {  
+final class Boxed<Value> < Expression<Value> {  
   /**
    * Value.
    */
-  x:Value <- x;
+  x:Value;
 
   operator <- x:Value {
     this.x <- x;
@@ -21,51 +21,61 @@ final class Boxed<Value>(x:Value) < Expression<Value> {
 }
 
 function Boxed(x:Boolean) -> Boxed<Boolean> {
-  m:Boxed<Boolean>(x);
+  m:Boxed<Boolean>;
+  m.x <- x;
   return m;
 }
 
 function Boxed(x:Integer) -> Boxed<Integer> {
-  m:Boxed<Integer>(x);
+  m:Boxed<Integer>;
+  m.x <- x;
   return m;
 }
 
 function Boxed(x:Real) -> Boxed<Real> {
-  m:Boxed<Real>(x);
+  m:Boxed<Real>;
+  m.x <- x;
   return m;
 }
 
 function Boxed(x:Boolean[_]) -> Boxed<Boolean[_]> {
-  m:Boxed<Boolean[_]>(x);
+  m:Boxed<Boolean[_]>;
+  m.x <- x;
   return m;
 }
 
 function Boxed(x:Integer[_]) -> Boxed<Integer[_]> {
-  m:Boxed<Integer[_]>(x);
+  m:Boxed<Integer[_]>;
+  m.x <- x;
   return m;
 }
 
 function Boxed(x:Real[_]) -> Boxed<Real[_]> {
-  m:Boxed<Real[_]>(x);
+  m:Boxed<Real[_]>;
+  m.x <- x;
   return m;
 }
 
 function Boxed(x:Boolean[_,_]) -> Boxed<Boolean[_,_]> {
-  m:Boxed<Boolean[_,_]>(x);
+  m:Boxed<Boolean[_,_]>;
+  m.x <- x;
   return m;
 }
 
 function Boxed(x:Integer[_,_]) -> Boxed<Integer[_,_]> {
-  m:Boxed<Integer[_,_]>(x);
+  m:Boxed<Integer[_,_]>;
+  m.x <- x;
   return m;
 }
 
 function Boxed(x:Real[_,_]) -> Boxed<Real[_,_]> {
-  m:Boxed<Real[_,_]>(x);
+  m:Boxed<Real[_,_]>;
+  m.x <- x;
   return m;
 }
 
 function Boxed(x:(Real[_,_],Real[_])) -> Boxed<(Real[_,_],Real[_])> {
-  m:Boxed<(Real[_,_],Real[_])>(x);
+  m:Boxed<(Real[_,_],Real[_])>;
+  m.x <- x;
   return m;
 }
