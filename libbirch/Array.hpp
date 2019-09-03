@@ -133,7 +133,12 @@ public:
   Array<T,F>& operator=(const Array<T,F>& o) {
     if (!isView && (!frame.conforms(o.frame) || isShared())) {
       lock();
-      rebase(o);
+      if (o.isView) {
+        Array<T,F> o1(o, false);
+        rebase(std::move(o1));
+      } else {
+        rebase(o);
+      }
       unlock();
     } else {
       assign(o);
@@ -149,7 +154,12 @@ public:
   Array<T,F>& operator=(const Array<U,G>& o) {
     if (!isView && (!frame.conforms(o.frame) || isShared())) {
       lock();
-      rebase(o);
+      if (o.isView) {
+        Array<T,F> o1(o, false);
+        rebase(std::move(o1));
+      } else {
+        rebase(o);
+      }
       unlock();
     } else {
       assign(o);
