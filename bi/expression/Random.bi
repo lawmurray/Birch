@@ -20,7 +20,6 @@ final class Random<Value> < Expression<Value> {
    */
   operator <- x:Value {
     assert !hasDistribution();
-    assert !hasValue();
     this.x <- x;
   }
 
@@ -29,7 +28,6 @@ final class Random<Value> < Expression<Value> {
    */
   operator <- x:Value? {
     assert !hasDistribution();
-    assert !hasValue();
     this.x <- x;
   }
 
