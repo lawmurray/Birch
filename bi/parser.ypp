@@ -204,7 +204,6 @@ parens_expression
 
 sequence_expression
     : '[' expression_list ']'  { $$ = new bi::Sequence($2, make_loc(@$)); }
-    | '[' ']'                  { $$ = new bi::Sequence(empty_expr(@$), make_loc(@$)); }
     ;
 
 cast_expression
