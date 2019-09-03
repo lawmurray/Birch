@@ -4,19 +4,13 @@
  * The driver program.
  */
 #include "bi/build/Driver.hpp"
-#include "bi/exception/DriverException.hpp"
 #include "bi/build/misc.hpp"
 
 int main(int argc, char** argv) {
   using namespace bi;
   try {
     /* first option (should be a program name) */
-    std::string prog;
-    if (argc > 1) {
-      prog = argv[1];
-    } else {
-      throw DriverException("No command given.");
-    }
+    std::string prog = argc > 1 ? argv[1]: "help";
 
     Driver driver(argc - 1, argv + 1);
     if (prog.compare("build") == 0) {
@@ -37,6 +31,8 @@ int main(int argc, char** argv) {
       driver.check();
     } else if (prog.compare("docs") == 0) {
       driver.docs();
+    } else if (prog.compare("help") == 0) {
+      driver.help();
     } else {
       driver.run(prog);
     }

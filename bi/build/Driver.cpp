@@ -682,6 +682,158 @@ void bi::Driver::docs() {
   delete package;
 }
 
+void bi::Driver::help() {
+  std::cout << std::endl;
+  if (largv.size() >= 2) {
+    std::string command = largv.at(1);
+    if (command.compare("init") == 0) {
+      std::cout << "Usage:" << std::endl;
+      std::cout << std::endl;
+      std::cout << "  birch init [options]" << std::endl;
+      std::cout << std::endl;
+      std::cout << "Initialise the working directory for a new project." << std::endl;
+      std::cout << std::endl;
+      std::cout << "  --name: Name of the project (default Untitled)." << std::endl;
+    } else if (command.compare("check") == 0) {
+      std::cout << "Usage:" << std::endl;
+      std::cout << std::endl;
+      std::cout << "  birch check" << std::endl;
+      std::cout << std::endl;
+      std::cout << "Check the file structure of the project for possible issues. This makes no" << std::endl;
+      std::cout << "modifications to the project, but will output warnings for possible issues such" << std::endl;
+      std::cout << "as:" << std::endl;
+      std::cout << std::endl;
+      std::cout << "  * files listed in META.json that do not exist," << std::endl;
+      std::cout << "  * files of recognisable types that exist but are not listed in META.json, and" << std::endl;
+      std::cout << "  * standard meta files that do not exist." << std::endl;
+    } else if (command.compare("build") == 0) {
+      std::cout << "Usage:" << std::endl;
+      std::cout << std::endl;
+      std::cout << "  birch build [options]" << std::endl;
+      std::cout << std::endl;
+      std::cout << "Build the project." << std::endl;
+      std::cout << std::endl;
+      std::cout << "Basic options:" << std::endl;
+      std::cout << std::endl;
+      std::cout << "  --enable-unity / --disable-unity (default enabled):" << std::endl;
+      std::cout << "  Enable/disable unity build. A unity build is typically faster from a clean" << std::endl;
+      std::cout << "  state, but does not support incremental builds (i.e. a change to any file" << std::endl;
+      std::cout << "  will trigger a full rebuild)." << std::endl;
+      std::cout << std::endl;
+      std::cout << "  --enable-debug / --disable-debug (default enabled):" << std::endl;
+      std::cout << "  Enable/disable debug mode. In debug mode, assertion checking is enabled and" << std::endl;
+      std::cout << "  most compiler optimizations are disabled." << std::endl;
+      std::cout << std::endl;
+      std::cout << "  --enable-warnings / --disable-warnings (default enabled):" << std::endl;
+      std::cout << "  Enable/disable compiler warnings." << std::endl;
+      std::cout << std::endl;
+      std::cout << "  --enable-verbose / --disable-verbose (default enabled):" << std::endl;
+      std::cout << "  Show all compiler output." << std::endl;
+      std::cout << std::endl;
+      std::cout << "Documentation for the advanced and optimization options can be found at:" << std::endl;
+      std::cout << std::endl;
+      std::cout << "  https://birch-lang.org/documentation/driver/commands/build/" << std::endl;
+    } else if (command.compare("install") == 0) {
+      std::cout << "Usage:" << std::endl;
+      std::cout << std::endl;
+      std::cout << "  birch install [options]" << std::endl;
+      std::cout << std::endl;
+      std::cout << "Install the project after building. Accepts the same options as birch build," << std::endl;
+      std::cout << "and indeed should be used with the same options as the preceding build." << std::endl;
+      std::cout << std::endl;
+      std::cout << "This installs all header, library and data files needed by the project into" << std::endl;
+      std::cout << "the directory specified by --prefix (or the default if this was not specified)." << std::endl;
+    } else if (command.compare("uninstall") == 0) {
+      std::cout << "Usage:" << std::endl;
+      std::cout << std::endl;
+      std::cout << "  birch uninstall" << std::endl;
+      std::cout << std::endl;
+      std::cout << "Uninstall the project. This uninstalls all header, library and data files from" << std::endl;
+      std::cout << "the directory specified by --prefix (or the system default if this was not" << std::endl;
+      std::cout << "specified)." << std::endl;
+    } else if (command.compare("dist") == 0) {
+      std::cout << "Usage:" << std::endl;
+      std::cout << std::endl;
+      std::cout << "  birch dist" << std::endl;
+      std::cout << std::endl;
+      std::cout << "Build a distributable archive for the project." << std::endl;
+      std::cout << std::endl;
+      std::cout << "More information can be found at:" << std::endl;
+      std::cout << std::endl;
+      std::cout << "  https://birch-lang.org/documentation/driver/commands/dist/" << std::endl;
+    } else if (command.compare("docs") == 0) {
+      std::cout << "Usage:" << std::endl;
+      std::cout << std::endl;
+      std::cout << "  birch docs" << std::endl;
+      std::cout << std::endl;
+      std::cout << "Build the reference documentation for the project. This creates a Markdown file" << std::endl;
+      std::cout << "DOCS.md in the current working directory." << std::endl;
+      std::cout << std::endl;
+      std::cout << "It will be overwritten if it already exists, and may be readily converted to" << std::endl;
+      std::cout << "other formats using a utility such as pandoc." << std::endl;
+      std::cout << std::endl;
+      std::cout << "More information can be found at:" << std::endl;
+      std::cout << std::endl;
+      std::cout << "  https://birch-lang.org/documentation/driver/commands/docs/" << std::endl;
+    } else if (command.compare("tune") == 0) {
+      std::cout << "Usage:" << std::endl;
+      std::cout << std::endl;
+      std::cout << "  birch tune" << std::endl;
+      std::cout << std::endl;
+      std::cout << "Performance tune build options for the package." << std::endl;
+      std::cout << std::endl;
+      std::cout << "More information can be found at:" << std::endl;
+      std::cout << std::endl;
+      std::cout << "  https://birch-lang.org/documentation/driver/commands/tune/" << std::endl;
+    } else if (command.compare("clean") == 0) {
+      std::cout << "Usage:" << std::endl;
+      std::cout << std::endl;
+      std::cout << "  birch clean" << std::endl;
+      std::cout << std::endl;
+      std::cout << "Clean the project directory of all build files." << std::endl;
+    } else if (command.compare("help") == 0) {
+      std::cout << "Usage:" << std::endl;
+      std::cout << std::endl;
+      std::cout << "  birch help [command]" << std::endl;
+      std::cout << std::endl;
+      std::cout << "Print the help message." << std::endl;
+    } else {
+      std::cout << "Command " << largv.at(1) << " is not a valid command."  << std::endl;
+    }
+  } else {
+    std::cout << "Usage:" << std::endl;
+    std::cout << std::endl;
+    std::cout << "  birch <command> [options]" << std::endl;
+    std::cout << std::endl;
+    std::cout << "Available commands:" << std::endl;
+    std::cout << std::endl;
+    std::cout << "  init          Initialise the working directory for a new project." << std::endl;
+    std::cout << "  check         Check the file structure of the project for possible issues." << std::endl;
+    std::cout << "  build         Build the project." << std::endl;
+    std::cout << "  install       Install the project after building." << std::endl;
+    std::cout << "  uninstall     Uninstall the project." << std::endl;
+    std::cout << "  dist          Build a distributable archive for the project." << std::endl;
+    std::cout << "  docs          Build the reference documentation for the project." << std::endl;
+    std::cout << "  tune          Performance tune build options for the package." << std::endl;
+    std::cout << "  clean         Clean the project directory of all build files." << std::endl;
+    std::cout << "  help          Print this help message." << std::endl;
+    std::cout << std::endl;
+    std::cout << "To print more detailed description of a command, including available options," << std::endl;
+    std::cout << "use:" << std::endl;
+    std::cout << std::endl;
+    std::cout << "  birch help <command>" << std::endl;
+    std::cout << std::endl;
+    std::cout << "To call a program defined in the project use:" << std::endl;
+    std::cout << std::endl;
+    std::cout << "  birch <program name> [program options]" << std::endl;
+    std::cout << std::endl;
+    std::cout << "More information can be found at:" << std::endl;
+    std::cout << std::endl;
+    std::cout << "  https://birch-lang.org/" << std::endl;
+  }
+  std::cout << std::endl;
+}
+
 void bi::Driver::meta() {
   /* clear any previous read */
   packageName = "Untitled";

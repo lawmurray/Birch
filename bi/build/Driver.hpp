@@ -72,6 +72,11 @@ public:
    */
   void docs();
 
+  /**
+   * Print the help message.
+   */
+  void help();
+
 private:
   /**
    * Read in the META.json file.
