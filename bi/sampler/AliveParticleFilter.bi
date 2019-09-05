@@ -76,10 +76,9 @@ class AliveParticleFilter < ParticleFilter {
   }
 
   function resample() {
-    /* just compute ancestors and offspring, don't copy */
+    /* just compute ancestors, don't copy or reset weights */
     if isTriggered() {
       a <- global.resample(w);
-      w <- vector(0.0, N);
     } else {
       a <- iota(1, N);
     }
