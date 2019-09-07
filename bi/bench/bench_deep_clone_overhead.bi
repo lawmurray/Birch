@@ -10,6 +10,7 @@
  */
 program bench_deep_clone_overhead(
     config:String?,
+    input:String?,
     diagnostic:String?,
     output:String?,
     seed:Integer?) {
@@ -44,6 +45,14 @@ program bench_deep_clone_overhead(
   }
   if !modelClass? {
     error("no model class specified, this should be given using the --model option, or as model.class in the config file.");
+  }
+  
+  /* input */
+  inputBuffer:MemoryBuffer;
+  if input? {
+    reader:Reader <- Reader(input!);
+    reader.read(inputBuffer);    
+    reader.close();
   }
   
   /* sampler */
@@ -92,6 +101,9 @@ program bench_deep_clone_overhead(
       if m? {
         if config? {
           configBuffer.get("model", m!);
+        }
+        if input? {
+          inputBuffer.get(m!);
         }
         x[n] <- m!;
         x[n].start();
