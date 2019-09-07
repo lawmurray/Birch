@@ -73,8 +73,8 @@ void libbirch::LazyMemo::copy(LazyMemo& o) {
   assert(empty());
 
   /* strategy here is to rehash the parent, which may reduce its size and
-   * remove unreachable entries, then just copy entry-by-entry into the new
-   * this, no need to hash */
+   * remove unreachable entries, then just copy entry-by-entry into
+   * this, with no need to rehash */
   o.rehash();
   if (o.nentries > 0u) {
     /* allocate */
@@ -123,7 +123,7 @@ void libbirch::LazyMemo::rehash() {
   if (nnew > 0u) {  // no need to rehash if no new entries since last time
     nnew = 0u;
 
-    /* first pass, apply the table to itself once; this has the effect of
+    /* first pass, apply the table to itself; this has the effect of
      * replacing a -> b and b -> c with a -> c and b -> c, which may allow
      * b to be collected sooner */
     for (auto i = 0u; i < nentries; ++i) {

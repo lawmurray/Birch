@@ -121,11 +121,13 @@ program bench_deep_clone_overhead(
     }
     elapsed <- toc();
     
-    buffer:MemoryBuffer;
-    buffer.set("memory", memory);
-    buffer.set("elapsed", elapsed);
-    diagnosticWriter!.write(buffer);
-    diagnosticWriter!.flush();
+    if diagnosticWriter? {
+      buffer:MemoryBuffer;
+      buffer.set("memory", memory);
+      buffer.set("elapsed", elapsed);
+      diagnosticWriter!.write(buffer);
+      diagnosticWriter!.flush();
+    }
   }
 
   if diagnosticWriter? {
