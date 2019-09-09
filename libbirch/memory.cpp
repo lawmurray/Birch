@@ -70,15 +70,8 @@ void* libbirch::allocate(const size_t n) {
   auto ptr = pool(64*tid + i).pop();  // attempt to reuse from this pool
   if (!ptr) {           // otherwise allocate new
     size_t m = unbin(i);
-    size_t r = (m < 64u) ? 64u : m;
-    // ^ minimum allocation 64 bytes to maintain alignment
-    ptr = (buffer += r) - r;
-    assert((char*)ptr + r <= bufferStart + bufferSize); // otherwise out of memory
-    if (m < 64u) {
-      /* add extra bytes as a separate allocation to the pool for
-       * reuse another time */
-      pool(64*tid + bin(64u - m)).push((char*)ptr + m);
-    }
+    ptr = (buffer += m) - m;
+    assert((char*)ptr + m <= bufferStart + bufferSize); // otherwise out of memory
   }
   assert(ptr);
   return ptr;

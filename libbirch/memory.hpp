@@ -26,18 +26,16 @@ extern libbirch::Atomic<size_t> memoryUse;
  * thereafter.
  */
 inline int bin(const size_t n) {
-  int result;
+  assert(n > 0ull);
+  int result = 0;
 #ifdef HAVE___BUILTIN_CLZLL
-  result = (n <= 64ull) ? ((unsigned)n - 1u) >> 3u : 65 - __builtin_clzll(n - 1ull);
+  if (n > 64ull) {
+    /* __builtin_clzll undefined for zero argument */
+    result = 64 - __builtin_clzll((n - 1ull) >> 6ull);
+  }
 #else
-  if (n <= 64ull) {
-    result = ((unsigned)n - 1u) >> 3u;
-  } else {
-    unsigned ret = 1u;
-    while (((n - 1ull) >> ret) > 0ull) {
-      ++ret;
-    }
-    result = (int)ret + 1;
+  while (((n - 1ull) >> (6 + result)) > 0) {
+    ++result;
   }
 #endif
   assert(0 <= result && result <= 63);
@@ -52,22 +50,20 @@ inline int bin(const size_t n) {
  *
  * @return Pool index.
  *
- * Pool sizes are multiples of 8 bytes up to 64 bytes, and powers of two
- * thereafter.
+ * Pool sizes are powers of two, with a minimum allocation of 64 bytes to
+ * avoid false sharing.
  */
 inline int bin(const unsigned n) {
-  int result;
+  assert(n > 0);
+  int result = 0;
 #ifdef HAVE___BUILTIN_CLZ
-  result = (n <= 64u) ? (n - 1u) >> 3u : 33 - __builtin_clz(n - 1u);
+  if (n > 64u) {
+    /* __builtin_clz undefined for zero argument */
+    result = 32 - __builtin_clz((n - 1u) >> 6u);
+  }
 #else
-  if (n <= 64u) {
-    result = (n - 1u) >> 3u;
-  } else {
-    unsigned ret = 1u;
-    while (((n - 1u) >> ret) > 0u) {
-      ++ret;
-    }
-    result = (int)ret + 1;
+  while (((n - 1u) >> (6 + result)) > 0) {
+    ++result;
   }
 #endif
   assert(0 <= result && result <= 63);
@@ -82,23 +78,21 @@ inline int bin(const unsigned n) {
  *
  * @return Pool index.
  *
- * Pool sizes are multiples of 8 bytes up to 64 bytes, and powers of two
- * thereafter.
+ * Pool sizes are powers of two, with a minimum allocation of 64 bytes to
+ * avoid false sharing.
  */
 template<unsigned n>
 inline int bin() {
-  int result;
-#ifdef HAVE___BUILTIN_CLZLL
-  result = (n <= 64u) ? (n - 1u) >> 3u : 8*sizeof(unsigned) - __builtin_clz(n - 1u) + 1;
+  assert(n > 0);
+  int result = 0;
+#ifdef HAVE___BUILTIN_CLZ
+  if (n > 64u) {
+    /* __builtin_clz undefined for zero argument */
+    result = 32 - __builtin_clz((n - 1u) >> 6u);
+  }
 #else
-  if (n <= 64u) {
-    result = (n - 1u) >> 3u;
-  } else {
-    unsigned ret = 1u;
-    while (((n - 1u) >> ret) > 0u) {
-      ++ret;
-    }
-    result = (int)ret + 1;
+  while (((n - 1u) >> (6 + result)) > 0) {
+    ++result;
   }
 #endif
   assert(0 <= result && result <= 63);
@@ -109,7 +103,7 @@ inline int bin() {
  * Determine the size for a given bin.
  */
 inline size_t unbin(const int i) {
-  return (i <= 7) ? (i + 1) << 3 : (1ull << (i - 1ull));
+  return 64ull << i;
 }
 
 /**
@@ -144,14 +138,7 @@ void* allocate() {
   auto ptr = pool(64 * tid + i).pop();  // attempt to reuse from this pool
   if (!ptr) {           // otherwise allocate new
     unsigned m = unbin(i);
-    unsigned r = (m < 64u) ? 64u : m;
-    // ^ minimum allocation 64 bytes to maintain alignment
-    ptr = (buffer += r) - r;
-    if (m < 64u) {
-      /* add extra bytes as a separate allocation to the pool for
-       * reuse another time */
-      pool(64 * tid + bin(64u - m)).push((char*)ptr + m);
-    }
+    ptr = (buffer += m) - m;
   }
   assert(ptr);
   return ptr;
