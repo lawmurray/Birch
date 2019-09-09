@@ -20,7 +20,7 @@ public:
   /**
    * Default constructor.
    */
-  ContextPtr() : pack(0u) {
+  ContextPtr() : ptr(0), cross(false) {
     //
   }
 
@@ -57,8 +57,7 @@ public:
    * Get the raw pointer.
    */
   Context* get() const {
-    /* zero out the cross flag to restore the pointer */
-    return reinterpret_cast<Context*>(pack & ~(uintptr_t)1u);
+    return reinterpret_cast<Context*>(ptr);
   }
 
   /**
@@ -82,7 +81,8 @@ public:
     if (isCross()) {
       get()->decShared();
     }
-    pack = (uintptr_t)0u;
+    ptr = 0;
+    cross = false;
   }
 
   /**
@@ -91,7 +91,7 @@ public:
    * object to which it belongs).
    */
   bool isCross() const {
-    return pack & (uintptr_t)1u;
+    return cross;
   }
 
   /**
@@ -126,7 +126,7 @@ public:
    * Is the pointer not null?
    */
   operator bool() const {
-    return pack != (uintptr_t)0u;
+    return ptr != 0;
   }
 
 private:
@@ -134,19 +134,21 @@ private:
    * Set.
    */
   void set(Context* ptr) {
-    pack = reinterpret_cast<uintptr_t>(ptr);
-    assert(!isCross());
-    if (ptr && ptr != currentContext) {
+    this->ptr = reinterpret_cast<intptr_t>(ptr);
+    cross = ptr && ptr != currentContext;
+    if (cross) {
       ptr->incShared();
-      pack |= (uintptr_t)1u;
     }
   }
 
   /**
-   * The packed raw pointer to context and cross flag. The least significant
-   * bit of the pointer, which would always be zero otherwise (given
-   * memory alignment) is used for the cross flag.
+   * Raw pointer.
    */
-  uintptr_t pack;
+  intptr_t ptr:63;
+
+  /**
+   * Is this a cross pointer?
+   */
+  bool cross:1;
 };
 }
