@@ -28,6 +28,14 @@ public:
   using value_type = Any*;
 
   /**
+   * Entry type.
+   */
+  struct entry_type {
+    key_type key;
+    value_type value;
+  };
+
+  /**
    * Constructor.
    */
   LazyMemo();
@@ -96,14 +104,9 @@ private:
   void rehash();
 
   /**
-   * The keys.
+   * Table.
    */
-  key_type* keys;
-
-  /**
-   * The values.
-   */
-  value_type* values;
+  entry_type* entries;
 
   /**
    * Number of entries in the table.
