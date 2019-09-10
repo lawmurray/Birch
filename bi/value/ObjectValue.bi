@@ -2,7 +2,7 @@
  * Object value.
  */
 class ObjectValue < Value {
-  entries:List<Entry>;
+  entries:Vector<Entry>;
 
   function accept(writer:Writer) {
     writer.visit(this);

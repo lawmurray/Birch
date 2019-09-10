@@ -22,6 +22,10 @@ class BooleanVectorValue(value:Boolean[_]) < Value {
   function getBooleanVector() -> Boolean[_]? {
     return value;
   }
+
+  function getBooleanMatrix() -> Boolean[_,_]? {
+    return column(value);
+  }
 }
 
 function BooleanVectorValue(value:Boolean[_]) -> BooleanVectorValue {

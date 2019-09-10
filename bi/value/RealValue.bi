@@ -18,9 +18,17 @@ class RealValue(value:Real) < Value {
   function isScalar() -> Boolean {
     return true;
   }
-  
+
   function getReal() -> Real? {
     return value;
+  }
+  
+  function getRealVector() -> Real[_]? {
+    return vector(value, 1);
+  }
+
+  function getRealMatrix() -> Real[_,_]? {
+    return matrix(value, 1, 1);
   }
 }
 

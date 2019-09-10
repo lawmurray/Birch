@@ -23,8 +23,24 @@ class IntegerValue(value:Integer) < Value {
     return value;
   }
 
+  function getIntegerVector() -> Integer[_]? {
+    return vector(value, 1);
+  }
+
+  function getIntegerMatrix() -> Integer[_,_]? {
+    return matrix(value, 1, 1);
+  }
+
   function getReal() -> Real? {
     return value;
+  }
+
+  function getRealVector() -> Real[_]? {
+    return vector(value, 1);
+  }
+
+  function getRealMatrix() -> Real[_,_]? {
+    return matrix(value, 1, 1);
   }
 }
 

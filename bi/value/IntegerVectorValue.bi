@@ -27,8 +27,16 @@ class IntegerVectorValue(value:Integer[_]) < Value {
     return value;
   }
 
+  function getIntegerMatrix() -> Integer[_,_]? {
+    return column(value);
+  }
+
   function getRealVector() -> Real[_]? {
     return value;
+  }
+
+  function getRealMatrix() -> Real[_,_]? {
+    return column(value);
   }
 }
 
