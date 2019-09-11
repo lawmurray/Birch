@@ -5,7 +5,8 @@
 #include "LazyMemo.hpp"
 
 libbirch::LazyMemo::LazyMemo() :
-    entries(nullptr),
+    keys(nullptr),
+    values(nullptr),
     nentries(0u),
     tentries(0u),
     noccupied(0u),
@@ -16,14 +17,15 @@ libbirch::LazyMemo::LazyMemo() :
 libbirch::LazyMemo::~LazyMemo() {
   if (nentries > 0u) {
     for (unsigned i = 0u; i < nentries; ++i) {
-      auto key = entries[i].key;
+      auto key = keys[i];
       if (key) {
-        auto value = entries[i].value;
+        auto value = values[i];
         key->decMemo();
         value->doubleDecShared();
       }
     }
-    deallocate(entries, nentries * sizeof(entry_type), tentries);
+    deallocate(keys, nentries * sizeof(key_type), tentries);
+    deallocate(values, nentries * sizeof(value_type), tentries);
   }
 }
 
@@ -35,18 +37,19 @@ libbirch::LazyMemo::value_type libbirch::LazyMemo::get(const key_type key,
   auto value = failed;
   if (!empty()) {
     auto i = hash(key, nentries);
-    auto k = entries[i].key;
+    auto k = keys[i];
     while (k && k != key) {
       i = (i + 1u) & (nentries - 1u);
-      k = entries[i].key;
+      k = keys[i];
     }
     if (k == key) {
-      value = entries[i].value;
+      value = values[i];
     }
   }
   return value;
 }
-void libbirch::LazyMemo::put(const key_type key, const value_type value) {
+void libbirch::LazyMemo::put(const key_type key,
+    const value_type value) {
   /* pre-condition */
   assert(key);
   assert(value);
@@ -56,13 +59,14 @@ void libbirch::LazyMemo::put(const key_type key, const value_type value) {
 
   reserve();
   auto i = hash(key, nentries);
-  auto k = entries[i].key;
+  auto k = keys[i];
   while (k) {
     assert(k != key);
     i = (i + 1u) & (nentries - 1u);
-    k = entries[i].key;
+    k = keys[i];
   }
-  entries[i] = {key, value};
+  keys[i] = key;
+  values[i] = value;
 }
 
 void libbirch::LazyMemo::copy(LazyMemo& o) {
@@ -74,7 +78,8 @@ void libbirch::LazyMemo::copy(LazyMemo& o) {
   o.rehash();
   if (o.nentries > 0u) {
     /* allocate */
-    entries = (entry_type*)allocate(o.nentries * sizeof(entry_type));
+    keys = (key_type*)allocate(o.nentries * sizeof(key_type));
+    values = (value_type*)allocate(o.nentries * sizeof(value_type));
     nentries = o.nentries;
     tentries = libbirch::tid;
     noccupied = o.noccupied;
@@ -83,25 +88,25 @@ void libbirch::LazyMemo::copy(LazyMemo& o) {
     /* copy entry-by-entry, incrementing reference counts for non-null
      * entries */
     for (auto i = 0u; i < nentries; ++i) {
-      auto entry = o.entries[i];
-      auto key = entry.key;
-      auto value = entry.value;
+      auto key = o.keys[i];
+      auto value = o.values[i];
       if (key) {
         key->incMemo();
       }
       if (value) {
         value->doubleIncShared();
       }
-      entries[i] = {key, value};
+      keys[i] = key;
+      values[i] = value;
     }
   }
 }
 
 void libbirch::LazyMemo::freeze() {
   for (auto i = 0u; i < nentries; ++i) {
-    auto value = entries[i].value;
-    if (value) {
-      value->freeze();
+    auto v = values[i];
+    if (v) {
+      v->freeze();
     }
   }
 }
@@ -122,9 +127,9 @@ void libbirch::LazyMemo::rehash() {
      * replacing a -> b and b -> c with a -> c and b -> c, which may allow
      * b to be collected sooner */
     for (auto i = 0u; i < nentries; ++i) {
-      auto key = entries[i].key;
+      auto key = keys[i];
       if (key) {
-        auto first = entries[i].value;
+        auto first = values[i];
         auto prev = first;
         auto next = first;
         do {
@@ -135,19 +140,20 @@ void libbirch::LazyMemo::rehash() {
           next->doubleIncShared();
           first->doubleDecShared();
         }
-        entries[i].value = next;
+        values[i] = next;
       }
     }
 
     /* second pass, delete any entries where the key is no longer reachable;
      * from this point, the old buffers are no long valid as a hash table */
     for (auto i = 0u; i < nentries; ++i) {
-      auto key = entries[i].key;
+      auto key = keys[i];
       if (key && !key->isReachable()) {
-        auto value = entries[i].value;
+        auto value = values[i];
         key->decMemo();
         value->doubleDecShared();
-        entries[i] = {nullptr, nullptr};
+        keys[i] = nullptr;
+        values[i] = nullptr;
         --noccupied;
       }
     }
@@ -155,13 +161,15 @@ void libbirch::LazyMemo::rehash() {
     /* save previous table */
     auto nentries1 = nentries;
     auto tentries1 = tentries;
-    auto entries1 = entries;
+    auto keys1 = keys;
+    auto values1 = values;
 
     if (noccupied == 0u) {
       /* new table will be empty */
       nentries = 0u;
       tentries = 0u;
-      entries = nullptr;
+      keys = nullptr;
+      values = nullptr;
     } else {
       /* choose an appropriate size for the new table */
       unsigned minSize = (unsigned)CLONE_MEMO_INITIAL_SIZE;
@@ -171,27 +179,30 @@ void libbirch::LazyMemo::rehash() {
       }
 
       /* allocate the new table */
-      entries = (entry_type*)allocate(nentries * sizeof(entry_type));
-      std::memset(entries, 0, nentries * sizeof(entry_type));
+      keys = (key_type*)allocate(nentries * sizeof(key_type));
+      values = (value_type*)allocate(nentries * sizeof(value_type));
+      std::memset(keys, 0, nentries * sizeof(key_type));
+      std::memset(values, 0, nentries * sizeof(value_type));
       tentries = libbirch::tid;
 
       /* copy entries from previous table */
       for (auto i = 0u; i < nentries1; ++i) {
-        auto key = entries1[i].key;
+        auto key = keys1[i];
         if (key) {
-          auto value = entries1[i].value;
           auto j = hash(key, nentries);
-          while (entries[j].key) {
+          while (keys[j]) {
             j = (j + 1u) & (nentries - 1u);
           }
-          entries[j] = {key, value};
+          keys[j] = key;
+          values[j] = values1[i];
         }
       }
     }
 
     /* deallocate previous table */
     if (nentries1 > 0) {
-      deallocate(entries1, nentries1 * sizeof(entry_type), tentries1);
+      deallocate(keys1, nentries1 * sizeof(key_type), tentries1);
+      deallocate(values1, nentries1 * sizeof(value_type), tentries1);
     }
   }
 }
