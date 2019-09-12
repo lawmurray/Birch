@@ -28,10 +28,17 @@ function String(x:Real64) -> String {
     /* remove trailing zeros */
     auto str = buf.str();
     auto i = str.find('.');
-    auto j = str.find('e', i);
-    auto k = str.find_last_not_of('0', j - 1);
-    auto split = std::max(i + 1, k);
-    return str.substr(0, split + 1) + str.substr(j, str.length() - i);
+    if (i != std::string::npos) {
+      auto j = str.find('e', i);
+      if (j != std::string::npos) {
+        auto k = str.find_last_not_of('0', j - 1);
+        if (k != std::string::npos) {
+          auto split = std::max(i + 1, k);
+          return str.substr(0, split + 1) + str.substr(j, str.length() - i);
+        }
+      }
+    }
+    return str;
     }}
   }
 }
@@ -51,10 +58,17 @@ function String(x:Real32) -> String {
     /* remove trailing zeros */
     auto str = buf.str();
     auto i = str.find('.');
-    auto j = str.find('e', i);
-    auto k = str.find_last_not_of('0', j - 1);
-    auto split = std::max(i + 1, k);
-    return str.substr(0, split + 1) + str.substr(j, str.length() - i);
+    if (i != std::string::npos) {
+      auto j = str.find('e', i);
+      if (j != std::string::npos) {
+        auto k = str.find_last_not_of('0', j - 1);
+        if (k != std::string::npos) {
+          auto split = std::max(i + 1, k);
+          return str.substr(0, split + 1) + str.substr(j, str.length() - i);
+        }
+      }
+    }
+    return str;
     }}
   }
 }
