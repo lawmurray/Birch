@@ -318,7 +318,7 @@ class Distribution<Value> {
     return nil;
   }
 
-  function graftMultivariateNormalInverseGamma() -> DelayMultivariateNormalInverseGamma? {
+  function graftIdenticalNormalInverseGamma() -> DelayIdenticalNormalInverseGamma? {
     return nil;
   }
 

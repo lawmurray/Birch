@@ -1,7 +1,7 @@
 /*
  * Delayed multivariate uniform random variable.
  */
-final class DelayMultivariateUniform(future:Real[_]?, futureUpdate:Boolean,
+final class DelayIndependentUniform(future:Real[_]?, futureUpdate:Boolean,
     l:Real[_], u:Real[_]) < DelayValue<Real[_]>(future, futureUpdate) {
   /**
    * Lower bound.
@@ -35,14 +35,14 @@ final class DelayMultivariateUniform(future:Real[_]?, futureUpdate:Boolean,
 
   function write(buffer:Buffer) {
     prune();
-    buffer.set("class", "MultivariateUniform");
+    buffer.set("class", "IndependentUniform");
     buffer.set("l", l);
     buffer.set("u", u);
   }
 }
 
-function DelayMultivariateUniform(future:Real[_]?, futureUpdate:Boolean,
-    l:Real[_], u:Real[_]) -> DelayMultivariateUniform {
-  m:DelayMultivariateUniform(future, futureUpdate, l, u);
+function DelayIndependentUniform(future:Real[_]?, futureUpdate:Boolean,
+    l:Real[_], u:Real[_]) -> DelayIndependentUniform {
+  m:DelayIndependentUniform(future, futureUpdate, l, u);
   return m;
 }

@@ -584,7 +584,7 @@ function pdf_multivariate_student_t(x:Real[_], ν:Real, μ:Real[_],
  *
  * Return: the probability density.
  */
-function pdf_multivariate_normal_inverse_gamma(x:Real[_], μ:Real[_],
+function pdf_identical_normal_inverse_gamma(x:Real[_], μ:Real[_],
     Λ:LLT, α:Real, β:Real) -> Real {
   return pdf_multivariate_student_t(x, 2.0*α, μ, Λ*(α/β));
 }
@@ -600,7 +600,7 @@ function pdf_multivariate_normal_inverse_gamma(x:Real[_], μ:Real[_],
  *
  * Return: the probability density.
  */
-function pdf_multivariate_inverse_gamma_gaussian(x:Real[_], μ:Real[_],
+function pdf_identical_inverse_gamma_gaussian(x:Real[_], μ:Real[_],
     α:Real, β:Real) -> Real {
   return pdf_multivariate_student_t(x, 2.0*α, μ, β/α);
 }
@@ -617,9 +617,9 @@ function pdf_multivariate_inverse_gamma_gaussian(x:Real[_], μ:Real[_],
  *
  * Return: the probability density.
  */
-function pdf_multivariate_normal_inverse_gamma_gaussian(x:Real[_], μ:Real[_],
+function pdf_identical_normal_inverse_gamma_gaussian(x:Real[_], μ:Real[_],
     Λ:LLT, α:Real, β:Real) -> Real {
-  return exp(logpdf_multivariate_normal_inverse_gamma_gaussian(x, μ, Λ, α, β));
+  return exp(logpdf_identical_normal_inverse_gamma_gaussian(x, μ, Λ, α, β));
 }
 
 /**
@@ -636,9 +636,9 @@ function pdf_multivariate_normal_inverse_gamma_gaussian(x:Real[_], μ:Real[_],
  *
  * Return: the probability density.
  */
-function pdf_multivariate_linear_normal_inverse_gamma_gaussian(x:Real[_],
+function pdf_linear_identical_normal_inverse_gamma_gaussian(x:Real[_],
     A:Real[_,_], μ:Real[_], c:Real[_], Λ:LLT, α:Real, β:Real) -> Real {
-  return exp(logpdf_multivariate_linear_normal_inverse_gamma_gaussian(x, A,
+  return exp(logpdf_linear_identical_normal_inverse_gamma_gaussian(x, A,
       μ, c, Λ, α, β));
 }
 
@@ -656,9 +656,9 @@ function pdf_multivariate_linear_normal_inverse_gamma_gaussian(x:Real[_],
  *
  * Return: the probability density.
  */
-function pdf_multivariate_dot_normal_inverse_gamma_gaussian(x:Real,
+function pdf_dot_identical_normal_inverse_gamma_gaussian(x:Real,
     a:Real[_], μ:Real[_], c:Real, Λ:LLT, α:Real, β:Real) -> Real {
-  return exp(logpdf_multivariate_dot_normal_inverse_gamma_gaussian(x, a, μ,
+  return exp(logpdf_dot_identical_normal_inverse_gamma_gaussian(x, a, μ,
       c, Λ, α, β));
 }
 

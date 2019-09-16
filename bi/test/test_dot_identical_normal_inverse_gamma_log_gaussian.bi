@@ -1,7 +1,7 @@
 /*
  * Test multivariate dot normal-inverse-gamma-log-Gaussian conjugacy.
  */
-program test_multivariate_dot_normal_inverse_gamma_log_gaussian(N:Integer <- 10000) {
+program test_dot_identical_normal_inverse_gamma_log_gaussian(N:Integer <- 10000) {
   X1:Real[N,7];
   X2:Real[N,7];
   

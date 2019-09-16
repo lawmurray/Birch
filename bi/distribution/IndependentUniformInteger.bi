@@ -1,7 +1,8 @@
 /**
- * Multivariate uniform distribution over integers.
+ * Multivariate uniform distribution over integers on an orthogonal lattice.
  */
-final class MultivariateUniformInteger(l:Expression<Integer[_]>, u:Expression<Integer[_]>) < Distribution<Integer[_]> {
+final class IndependentUniformInteger(l:Expression<Integer[_]>,
+    u:Expression<Integer[_]>) < Distribution<Integer[_]> {
   /**
    * Lower bound.
    */
@@ -26,7 +27,7 @@ final class MultivariateUniformInteger(l:Expression<Integer[_]>, u:Expression<In
     if delay? {
       delay!.prune();
     } else if force {
-      delay <- DelayMultivariateUniformInteger(future, futureUpdate, l, u);
+      delay <- DelayIndependentUniformInteger(future, futureUpdate, l, u);
     }
   }
 }
@@ -34,28 +35,28 @@ final class MultivariateUniformInteger(l:Expression<Integer[_]>, u:Expression<In
 /**
  * Create multivariate uniform distribution over integers.
  */
-function Uniform(l:Expression<Integer[_]>, u:Expression<Integer[_]>) -> MultivariateUniformInteger {
-  m:MultivariateUniformInteger(l, u);
+function Uniform(l:Expression<Integer[_]>, u:Expression<Integer[_]>) -> IndependentUniformInteger {
+  m:IndependentUniformInteger(l, u);
   return m;
 }
 
 /**
  * Create multivariate uniform distribution over integers.
  */
-function Uniform(l:Expression<Integer[_]>, u:Integer[_]) -> MultivariateUniformInteger {
+function Uniform(l:Expression<Integer[_]>, u:Integer[_]) -> IndependentUniformInteger {
   return Uniform(l, Boxed(u));
 }
 
 /**
  * Create multivariate uniform distribution over integers.
  */
-function Uniform(l:Integer[_], u:Expression<Integer[_]>) -> MultivariateUniformInteger {
+function Uniform(l:Integer[_], u:Expression<Integer[_]>) -> IndependentUniformInteger {
   return Uniform(Boxed(l), u);
 }
 
 /**
  * Create multivariate uniform distribution over integers.
  */
-function Uniform(l:Integer[_], u:Integer[_]) -> MultivariateUniformInteger {
+function Uniform(l:Integer[_], u:Integer[_]) -> IndependentUniformInteger {
   return Uniform(Boxed(l), Boxed(u));
 }

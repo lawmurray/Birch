@@ -324,7 +324,7 @@ function update_multivariate_gaussian_gaussian(x:Real[_], μ:Real[_],
 
 /**
  * Update the parameters of a multivariate Gaussian distribution with a 
- * multivariate Gaussian likelihood and scaling.
+ * linear transformation and multivariate Gaussian likelihood.
  *
  * - x: The variate.
  * - A: Scale.
@@ -335,7 +335,7 @@ function update_multivariate_gaussian_gaussian(x:Real[_], μ:Real[_],
  *
  * Returns: the posterior hyperparameters `μ'` and `Σ'`.
  */
-function update_multivariate_linear_gaussian_gaussian(x:Real[_], A:Real[_,_],
+function update_linear_multivariate_gaussian_gaussian(x:Real[_], A:Real[_,_],
     μ:Real[_], Σ:Real[_,_], c:Real[_], S:Real[_,_]) -> (Real[_], Real[_,_]) {
   auto K' <- Σ*transpose(A)*cholinv(A*Σ*transpose(A) + S);
   auto μ' <- μ + K'*(x - A*μ - c);
@@ -345,7 +345,7 @@ function update_multivariate_linear_gaussian_gaussian(x:Real[_], A:Real[_,_],
 
 /**
  * Update the parameters of a multivariate Gaussian distribution with a 
- * univariate Gaussian likelihood and scaling.
+ * dot product transformation and Gaussian likelihood.
  *
  * - x: The variate.
  * - a: Scale.
@@ -356,7 +356,7 @@ function update_multivariate_linear_gaussian_gaussian(x:Real[_], A:Real[_,_],
  *
  * Returns: the posterior hyperparameters `μ'` and `Σ'`.
  */
-function update_multivariate_dot_gaussian_gaussian(x:Real, a:Real[_],
+function update_dot_multivariate_gaussian_gaussian(x:Real, a:Real[_],
     μ:Real[_], Σ:Real[_,_], c:Real, s2:Real) -> (Real[_], Real[_,_]) {
   auto K' <- Σ*a/(dot(a, Σ*a) + s2);
   auto μ' <- μ + K'*(x - dot(a, μ) - c);
@@ -365,8 +365,8 @@ function update_multivariate_dot_gaussian_gaussian(x:Real, a:Real[_],
 }
 
 /**
- * Update the parameters of an inverse-gamma distribution that is part
- * of a multivariate normal inverse-gamma joint distribution.
+ * Update the parameters of an inverse-gamma distribution with a linear
+ * scaling and Gaussian likelihood.
  *
  * - x: The variate.
  * - μ: Prior mean.
@@ -376,15 +376,15 @@ function update_multivariate_dot_gaussian_gaussian(x:Real, a:Real[_],
  *
  * Returns: the posterior hyperparameters `α'` and `β'`.
  */
-function update_multivariate_normal_inverse_gamma(x:Real[_], μ:Real[_],
+function update_identical_normal_inverse_gamma(x:Real[_], μ:Real[_],
     Λ:LLT, α:Real, β:Real) -> (Real, Real) {
   D:Integer <- length(x);
   return (α + 0.5*D, β + 0.5*dot(x - μ, Λ*(x - μ)));
 }
 
 /**
- * Update the parameters of an inverse-gamma distribution with a multivariate
- * Gaussian likelihood.
+ * Update the parameters of an inverse-gamma distribution with a Gaussian
+ * likelihood.
  *
  * - x: The variate.
  * - μ: Mean.
@@ -393,7 +393,7 @@ function update_multivariate_normal_inverse_gamma(x:Real[_], μ:Real[_],
  *
  * Returns: the posterior hyperparameters `α'` and `β'`.
  */
-function update_multivariate_inverse_gamma_gaussian(x:Real[_], μ:Real[_],
+function update_identical_inverse_gamma_gaussian(x:Real[_], μ:Real[_],
     α:Real, β:Real) -> (Real, Real) {
   D:Integer <- length(x);
   return (α + 0.5*D, β + 0.5*dot(x - μ));
@@ -412,7 +412,7 @@ function update_multivariate_inverse_gamma_gaussian(x:Real[_], μ:Real[_],
  *
  * Returns: the posterior hyperparameters `μ'`, `Λ'`, `α'` and `β'`.
  */
-function update_multivariate_normal_inverse_gamma_gaussian(x:Real[_],
+function update_identical_normal_inverse_gamma_gaussian(x:Real[_],
     ν:Real[_], Λ:LLT, γ:Real, α:Real, β:Real) -> (Real[_], LLT, Real, Real,
     Real) {
   D:Integer <- length(x);
@@ -440,7 +440,7 @@ function update_multivariate_normal_inverse_gamma_gaussian(x:Real[_],
  *
  * Returns: the posterior hyperparameters `μ'`, `Λ'`, `γ'`, `α'` and `β'`.
  */
-function update_multivariate_linear_normal_inverse_gamma_gaussian(
+function update_linear_identical_normal_inverse_gamma_gaussian(
     x:Real[_], A:Real[_,_], ν:Real[_], c:Real[_], Λ:LLT, γ:Real, α:Real,
     β:Real) -> (Real[_], LLT, Real, Real, Real) {
   D:Integer <- length(x);
@@ -467,7 +467,7 @@ function update_multivariate_linear_normal_inverse_gamma_gaussian(
  *
  * Returns: the posterior hyperparameters `μ'`, `Λ'`, `γ'`, `α'` and `β'`.
  */
-function update_multivariate_dot_normal_inverse_gamma_gaussian(x:Real,
+function update_dot_identical_normal_inverse_gamma_gaussian(x:Real,
     a:Real[_], ν:Real[_], c:Real, Λ:LLT, γ:Real, α:Real, β:Real) -> (Real[_],
     LLT, Real, Real, Real) {
   Λ':LLT <- rank_update(Λ, a, 1.0);

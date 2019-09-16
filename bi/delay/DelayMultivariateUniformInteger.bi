@@ -1,7 +1,7 @@
 /*
  * Delayed multivariate uniform random variable over integers.
  */
-final class DelayMultivariateUniformInteger(future:Integer[_]?,
+final class DelayIndependentUniformInteger(future:Integer[_]?,
     futureUpdate:Boolean, l:Integer[_], u:Integer[_]) <
     DelayValue<Integer[_]>(future, futureUpdate) {
   /**
@@ -36,15 +36,15 @@ final class DelayMultivariateUniformInteger(future:Integer[_]?,
 
   function write(buffer:Buffer) {
     prune();
-    buffer.set("class", "MultivariateUniformInteger");
+    buffer.set("class", "IndependentUniformInteger");
     buffer.set("l", l);
     buffer.set("u", u);
   }
 }
 
-function DelayMultivariateUniformInteger(future:Integer[_]?,
+function DelayIndependentUniformInteger(future:Integer[_]?,
     futureUpdate:Boolean, l:Integer[_], u:Integer[_]) ->
-    DelayMultivariateUniformInteger {
-  m:DelayMultivariateUniformInteger(future, futureUpdate, l, u);
+    DelayIndependentUniformInteger {
+  m:DelayIndependentUniformInteger(future, futureUpdate, l, u);
   return m;
 }

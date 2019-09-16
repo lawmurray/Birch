@@ -195,8 +195,8 @@ class Expression<Value> {
    *
    * Return: The node if successful, nil if not.
    */
-  function graftMultivariateNormalInverseGamma() ->
-      DelayMultivariateNormalInverseGamma? {
+  function graftIdenticalNormalInverseGamma() ->
+      DelayIdenticalNormalInverseGamma? {
     return nil;
   }
 

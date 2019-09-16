@@ -39,16 +39,16 @@ final class MultivariateSubtract<Left,Right,Value>(left:Expression<Left>,
   function graftMultivariateLinearNormalInverseGamma() ->
       TransformMultivariateLinearNormalInverseGamma? {
     y:TransformMultivariateLinearNormalInverseGamma?;
-    z:DelayMultivariateNormalInverseGamma?;
+    z:DelayIdenticalNormalInverseGamma?;
 
     if (y <- left.graftMultivariateLinearNormalInverseGamma())? {
       y!.subtract(right.value());
     } else if (y <- right.graftMultivariateLinearNormalInverseGamma())? {
       y!.negateAndAdd(left.value());
-    } else if (z <- left.graftMultivariateNormalInverseGamma())? {
+    } else if (z <- left.graftIdenticalNormalInverseGamma())? {
       y <- TransformMultivariateLinearNormalInverseGamma(identity(z!.size()),
           z!, -right.value());
-    } else if (z <- right.graftMultivariateNormalInverseGamma())? {
+    } else if (z <- right.graftIdenticalNormalInverseGamma())? {
       y <- TransformMultivariateLinearNormalInverseGamma(
           diagonal(-1, z!.size()), z!, left.value());
     }

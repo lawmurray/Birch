@@ -1,7 +1,7 @@
 /*
  * Test multivariate linear normal-inverse-gamma-Gaussian conjugacy.
  */
-program test_multivariate_linear_normal_inverse_gamma_gaussian(N:Integer <- 10000) {
+program test_linear_identical_normal_inverse_gamma_gaussian(N:Integer <- 10000) {
   X1:Real[N,16];
   X2:Real[N,16];
   

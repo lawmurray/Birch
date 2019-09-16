@@ -33,11 +33,11 @@ final class Dot<Left,Right,Value>(left:Expression<Left>, right:Expression<Right>
   function graftMultivariateDotNormalInverseGamma() ->
       TransformMultivariateDotNormalInverseGamma? {
     y:TransformMultivariateDotNormalInverseGamma?;
-    z:DelayMultivariateNormalInverseGamma?;
+    z:DelayIdenticalNormalInverseGamma?;
 
-    if (z <- right.graftMultivariateNormalInverseGamma())? {
+    if (z <- right.graftIdenticalNormalInverseGamma())? {
       y <- TransformMultivariateDotNormalInverseGamma(left.value(), z!);
-    } else if (z <- left.graftMultivariateNormalInverseGamma())? {
+    } else if (z <- left.graftIdenticalNormalInverseGamma())? {
       y <- TransformMultivariateDotNormalInverseGamma(right.value(), z!);
     }
     return y;

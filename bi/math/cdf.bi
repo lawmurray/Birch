@@ -471,7 +471,7 @@ function cdf_linear_normal_inverse_gamma_gaussian(x:Real, a:Real,
  *
  * Return: the probability density.
  */
-function cdf_multivariate_dot_normal_inverse_gamma_gaussian(x:Real,
+function cdf_dot_identical_normal_inverse_gamma_gaussian(x:Real,
     a:Real[_], μ:Real[_], c:Real, Λ:LLT, α:Real, β:Real) -> Real {
   return cdf_student_t(x, 2.0*α, dot(a, μ) + c,(β/α)*(1.0 + dot(a, solve(Λ, a))));
 }

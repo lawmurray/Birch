@@ -1,7 +1,7 @@
 /*
  * Test a chain of conjugate multivariate Gaussians.
  */
-program test_multivariate_chain_gaussian(N:Integer <- 10000) {
+program test_chain_multivariate_gaussian_gaussian(N:Integer <- 10000) {
   X1:Real[N,15];
   X2:Real[N,15];
   

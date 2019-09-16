@@ -701,7 +701,7 @@ function logpdf_multivariate_student_t(x:Real[_], ν:Real, μ:Real[_],
  *
  * Returns: the log probability density.
  */
-function logpdf_multivariate_normal_inverse_gamma(x:Real[_], μ:Real[_],
+function logpdf_identical_normal_inverse_gamma(x:Real[_], μ:Real[_],
     Λ:LLT, α:Real, β:Real) -> Real {
   return logpdf_multivariate_student_t(x, 2.0*α, μ, Λ*(α/β));
 }
@@ -717,7 +717,7 @@ function logpdf_multivariate_normal_inverse_gamma(x:Real[_], μ:Real[_],
  *
  * Returns: the log probability density.
  */
-function logpdf_multivariate_inverse_gamma_gaussian(x:Real[_], μ:Real[_],
+function logpdf_identical_inverse_gamma_gaussian(x:Real[_], μ:Real[_],
     α:Real, β:Real) -> Real {
   return logpdf_multivariate_student_t(x, 2.0*α, μ, β/α);
 }
@@ -734,7 +734,7 @@ function logpdf_multivariate_inverse_gamma_gaussian(x:Real[_], μ:Real[_],
  *
  * Returns: the log probability density.
  */
-function logpdf_multivariate_normal_inverse_gamma_gaussian(x:Real[_],
+function logpdf_identical_normal_inverse_gamma_gaussian(x:Real[_],
     μ:Real[_], Λ:LLT, α:Real, β:Real) -> Real {
   D:Integer <- length(μ);
   return logpdf_multivariate_student_t(x, 2.0*α, μ, (α/β)*inv(identity(D) + inv(Λ)));
@@ -754,7 +754,7 @@ function logpdf_multivariate_normal_inverse_gamma_gaussian(x:Real[_],
  *
  * Returns: the log probability density.
  */
-function logpdf_multivariate_linear_normal_inverse_gamma_gaussian(x:Real[_],
+function logpdf_linear_identical_normal_inverse_gamma_gaussian(x:Real[_],
     A:Real[_,_], μ:Real[_], c:Real[_], Λ:LLT, α:Real, β:Real) -> Real {
   return logpdf_multivariate_student_t(x, 2.0*α, A*μ + c,
       (α/β)*inv(identity(rows(A)) + A*solve(Λ, transpose(A))));
@@ -774,7 +774,7 @@ function logpdf_multivariate_linear_normal_inverse_gamma_gaussian(x:Real[_],
  *
  * Returns: the log probability density.
  */
-function logpdf_multivariate_dot_normal_inverse_gamma_gaussian(x:Real,
+function logpdf_dot_identical_normal_inverse_gamma_gaussian(x:Real,
     a:Real[_], μ:Real[_], c:Real, Λ:LLT, α:Real, β:Real) -> Real {
   return logpdf_student_t(x, 2.0*α, dot(a, μ) + c,
       (β/α)*(1.0 + dot(a, solve(Λ, a))));
@@ -896,7 +896,7 @@ function logpdf_ridge_regression(x:Real[_], N:Real[_,_], Λ:LLT, α:Real,
   D:Integer <- columns(N);
   M:Real[_,_] <- solve(Λ, N);
   μ:Real[_] <- transpose(M)*u;
-  σ2:Real[_] <- (γ - 0.5*diagonal(transpose(N)*M))*(1.0 + dot(u, solve(Λ, u)))/α;  
+  σ2:Real[_] <- (γ - 0.5*diagonal(transpose(M)*N))*(1.0 + dot(u, solve(Λ, u)))/α;  
   w:Real <- 0.0;
   for d:Integer in 1..D {
     w <- w + logpdf_student_t(x[d], 2.0*α, μ[d], σ2[d]);

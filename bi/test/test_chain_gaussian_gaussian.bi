@@ -1,7 +1,7 @@
 /*
  * Test a chain of conjugate Gaussians.
  */
-program test_chain_gaussian(N:Integer <- 10000) {
+program test_chain_gaussian_gaussian(N:Integer <- 10000) {
   X1:Real[N,5];
   X2:Real[N,5];
   μ:Real <- simulate_uniform(-10.0, 10.0);

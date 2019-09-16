@@ -1,5 +1,6 @@
 /**
- * Multivariate normal-inverse-gamma distribution.
+ * Normal-inverse-gamma distribution independent and identical variance
+ * scaling.
  *
  * This represents the joint distribution:
  *
@@ -10,8 +11,9 @@
  *
  * $$(x, \sigma^2) \sim \mathrm{Normal-Inverse-Gamma(\mu, A, \alpha, \beta),$$
  *
- * and is the conjugate prior of a Gaussian distribution with both
- * unknown mean and unknown variance.
+ * and is a conjugate prior of a Gaussian distribution with both unknown mean
+ * and variance. The variance scaling is independent and identical in the
+ * sense that all components of $x$ share the same $\sigma^2$.
  *
  * In model code, it is not usual to use this final class directly. Instead,
  * establish the conjugate relationship via code such as the following:
@@ -25,7 +27,7 @@
  * be multiplication on the left (as above) or the right, or division on the
  * right.
  */
-final class MultivariateNormalInverseGamma(μ:Expression<Real[_]>,
+final class IdenticalNormalInverseGamma(μ:Expression<Real[_]>,
     A:Expression<Real[_,_]>, α:Expression<Real>, β:Expression<Real>) <
     Distribution<Real[_]> {
   /**
@@ -57,7 +59,7 @@ final class MultivariateNormalInverseGamma(μ:Expression<Real[_]>,
     if delay? {
       delay!.prune();
     } else if force {
-      delay <- DelayMultivariateNormalInverseGamma(future, futureUpdate, μ,
+      delay <- DelayIdenticalNormalInverseGamma(future, futureUpdate, μ,
           A, σ2.graftInverseGamma()!);
     }
   }

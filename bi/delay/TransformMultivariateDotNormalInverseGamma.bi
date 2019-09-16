@@ -3,23 +3,23 @@
  * variate.
  */
 final class TransformMultivariateDotNormalInverseGamma(a:Real[_],
-    x:DelayMultivariateNormalInverseGamma, c:Real) <
+    x:DelayIdenticalNormalInverseGamma, c:Real) <
     TransformMultivariateDot<Real>(a, c) {
   /**
    * Random variate.
    */
-  x:DelayMultivariateNormalInverseGamma <- x;
+  x:DelayIdenticalNormalInverseGamma <- x;
 }
 
 function TransformMultivariateDotNormalInverseGamma(a:Real[_],
-    x:DelayMultivariateNormalInverseGamma, c:Real) ->
+    x:DelayIdenticalNormalInverseGamma, c:Real) ->
     TransformMultivariateDotNormalInverseGamma {
   m:TransformMultivariateDotNormalInverseGamma(a, x, c);
   return m;    
 }
 
 function TransformMultivariateDotNormalInverseGamma(a:Real[_],
-    x:DelayMultivariateNormalInverseGamma) ->
+    x:DelayIdenticalNormalInverseGamma) ->
     TransformMultivariateDotNormalInverseGamma {
   return TransformMultivariateDotNormalInverseGamma(a, x, 0.0);
 }

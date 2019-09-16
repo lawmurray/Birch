@@ -1,7 +1,7 @@
 /*
  * Test multivariate inverse-gamma-Gaussian conjugacy.
  */
-program test_multivariate_inverse_gamma_gaussian(N:Integer <- 10000) {
+program test_identical_inverse_gamma_gaussian(N:Integer <- 10000) {
   X1:Real[N,6];
   X2:Real[N,6];
   μ:Real[5];

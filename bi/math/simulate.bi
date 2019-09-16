@@ -677,7 +677,7 @@ function simulate_multivariate_student_t(ν:Real, μ:Real[_], λ:Real) ->
  * - α: Shape of inverse-gamma on scale.
  * - β: Scale of inverse-gamma on scale.
  */
-function simulate_multivariate_normal_inverse_gamma(μ:Real[_], Λ:LLT,
+function simulate_identical_normal_inverse_gamma(μ:Real[_], Λ:LLT,
     α:Real, β:Real) -> Real[_] {
   return simulate_multivariate_student_t(2.0*α, μ, Λ*(α/β));
 }
@@ -690,7 +690,7 @@ function simulate_multivariate_normal_inverse_gamma(μ:Real[_], Λ:LLT,
  * - α: Shape of the inverse-gamma.
  * - β: Scale of the inverse-gamma.
  */
-function simulate_multivariate_inverse_gamma_gaussian(μ:Real[_], α:Real,
+function simulate_identical_inverse_gamma_gaussian(μ:Real[_], α:Real,
     β:Real) -> Real[_] {
   D:Integer <- length(μ);
   z:Real[D];
@@ -710,7 +710,7 @@ function simulate_multivariate_inverse_gamma_gaussian(μ:Real[_], α:Real,
  * - α: Shape of the inverse-gamma.
  * - β: Scale of the inverse-gamma.
  */
-function simulate_multivariate_normal_inverse_gamma_gaussian(μ:Real[_],
+function simulate_identical_normal_inverse_gamma_gaussian(μ:Real[_],
     Λ:LLT, α:Real, β:Real) -> Real[_] {
   return simulate_multivariate_student_t(2.0*α, μ,
       (α/β)*cholinv(identity(rows(Λ)) + inv(Λ)));
@@ -727,7 +727,7 @@ function simulate_multivariate_normal_inverse_gamma_gaussian(μ:Real[_],
  * - α: Shape of the inverse-gamma.
  * - β: Scale of the inverse-gamma.
  */
-function simulate_multivariate_linear_normal_inverse_gamma_gaussian(
+function simulate_linear_identical_normal_inverse_gamma_gaussian(
     A:Real[_,_], μ:Real[_], c:Real[_], Λ:LLT, α:Real, β:Real) -> Real[_] {
   return simulate_multivariate_student_t(2.0*α, A*μ + c,
       (α/β)*cholinv(identity(rows(A)) + A*solve(Λ, transpose(A))));
@@ -744,7 +744,7 @@ function simulate_multivariate_linear_normal_inverse_gamma_gaussian(
  * - α: Shape of the inverse-gamma.
  * - β: Scale of the inverse-gamma.
  */
-function simulate_multivariate_dot_normal_inverse_gamma_gaussian(
+function simulate_dot_identical_normal_inverse_gamma_gaussian(
     a:Real[_], μ:Real[_], c:Real, Λ:LLT, α:Real, β:Real) -> Real {
   return simulate_student_t(2.0*α, dot(a, μ) + c,
       (β/α)*(1.0 + dot(a, solve(Λ, a))));

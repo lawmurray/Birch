@@ -226,11 +226,11 @@ final class Random<Value> < Expression<Value> {
     }
   }
 
-  function graftMultivariateNormalInverseGamma() ->
-      DelayMultivariateNormalInverseGamma? {
+  function graftIdenticalNormalInverseGamma() ->
+      DelayIdenticalNormalInverseGamma? {
     if !hasValue() {
       assert hasDistribution();
-      return dist!.graftMultivariateNormalInverseGamma();
+      return dist!.graftIdenticalNormalInverseGamma();
     } else {
       return nil;
     }
