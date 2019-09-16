@@ -18,27 +18,27 @@ final class Dot<Left,Right,Value>(left:Expression<Left>, right:Expression<Right>
   }
 
   function graftMultivariateDotGaussian() ->
-      TransformMultivariateDotGaussian? {
-    y:TransformMultivariateDotGaussian?;
+      TransformDotMultivariateGaussian? {
+    y:TransformDotMultivariateGaussian?;
     z:DelayMultivariateGaussian?;
     
     if (z <- right.graftMultivariateGaussian())? {
-      y <- TransformMultivariateDotGaussian(left.value(), z!);
+      y <- TransformDotMultivariateGaussian(left.value(), z!);
     } else if (z <- left.graftMultivariateGaussian())? {
-      y <- TransformMultivariateDotGaussian(right.value(), z!);
+      y <- TransformDotMultivariateGaussian(right.value(), z!);
     }
     return y;
   }
   
   function graftMultivariateDotNormalInverseGamma() ->
-      TransformMultivariateDotNormalInverseGamma? {
-    y:TransformMultivariateDotNormalInverseGamma?;
+      TransformDotIdenticalNormalInverseGamma? {
+    y:TransformDotIdenticalNormalInverseGamma?;
     z:DelayIdenticalNormalInverseGamma?;
 
     if (z <- right.graftIdenticalNormalInverseGamma())? {
-      y <- TransformMultivariateDotNormalInverseGamma(left.value(), z!);
+      y <- TransformDotIdenticalNormalInverseGamma(left.value(), z!);
     } else if (z <- left.graftIdenticalNormalInverseGamma())? {
-      y <- TransformMultivariateDotNormalInverseGamma(right.value(), z!);
+      y <- TransformDotIdenticalNormalInverseGamma(right.value(), z!);
     }
     return y;
   }

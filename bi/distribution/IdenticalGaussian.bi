@@ -29,9 +29,9 @@ final class IdenticalGaussian(μ:Expression<Real[_]>,
       delay!.prune();
     } else {
       s2:DelayInverseGamma?;
-      m1:TransformMultivariateLinearNormalInverseGamma?;
+      m1:TransformLinearIdenticalNormalInverseGamma?;
       m2:DelayIdenticalNormalInverseGamma?;
-      m3:TransformMultivariateLinearGaussian?;
+      m3:TransformLinearMultivariateGaussian?;
       m4:DelayMultivariateGaussian?;
 
       if (m1 <- μ.graftMultivariateLinearNormalInverseGamma())? && m1!.x.σ2 == σ2.getDelay() {
@@ -62,7 +62,7 @@ final class IdenticalGaussian(μ:Expression<Real[_]>,
     if delay? {
       delay!.prune();
     } else {
-      m1:TransformMultivariateLinearGaussian?;
+      m1:TransformLinearMultivariateGaussian?;
       m2:DelayMultivariateGaussian?;
       if (m1 <- μ.graftMultivariateLinearGaussian())? {
         delay <- DelayLinearMultivariateGaussianGaussian(future, futureUpdate, m1!.A, m1!.x,

@@ -1,7 +1,7 @@
 /*
  * Multivariate linear transformation.
  */
-class TransformMultivariateLinear<Value>(A:Value[_,_], c:Value[_]) {
+class TransformLinearMultivariate<Value>(A:Value[_,_], c:Value[_]) {
   /**
    * Scale.
    */

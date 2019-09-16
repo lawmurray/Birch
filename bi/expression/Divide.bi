@@ -41,8 +41,8 @@ final class Divide<Left,Right,Value>(left:Expression<Left>,
     return y;
   }
 
-  function graftMultivariateDotGaussian() -> TransformMultivariateDotGaussian? {
-    y:TransformMultivariateDotGaussian?;
+  function graftMultivariateDotGaussian() -> TransformDotMultivariateGaussian? {
+    y:TransformDotMultivariateGaussian?;
     
     if (y <- left.graftMultivariateDotGaussian())? {
       y!.divide(right.value());
@@ -50,8 +50,8 @@ final class Divide<Left,Right,Value>(left:Expression<Left>,
     return y;
   }
 
-  function graftMultivariateDotNormalInverseGamma() -> TransformMultivariateDotNormalInverseGamma? {
-    y:TransformMultivariateDotNormalInverseGamma?;
+  function graftMultivariateDotNormalInverseGamma() -> TransformDotIdenticalNormalInverseGamma? {
+    y:TransformDotIdenticalNormalInverseGamma?;
 
     if (y <- left.graftMultivariateDotNormalInverseGamma())? {
       y!.divide(right.value());

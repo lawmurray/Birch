@@ -166,7 +166,7 @@ class Expression<Value> {
    * Return: The node if successful, nil if not.
    */
   function graftMultivariateLinearGaussian() ->
-      TransformMultivariateLinearGaussian? {
+      TransformLinearMultivariateGaussian? {
     return nil;
   }
 
@@ -176,7 +176,7 @@ class Expression<Value> {
    * Return: The node if successful, nil if not.
    */
   function graftMultivariateDotGaussian() ->
-      TransformMultivariateDotGaussian? {
+      TransformDotMultivariateGaussian? {
     return nil;
   }
 
@@ -186,7 +186,7 @@ class Expression<Value> {
    * Return: The node if successful, nil if not.
    */
   function graftMultivariateScaledInverseGamma() ->
-      TransformMultivariateScaledInverseGamma? {
+      TransformIdenticalInverseGamma? {
     return nil;
   }
 
@@ -206,7 +206,7 @@ class Expression<Value> {
    * Return: The node if successful, nil if not.
    */
   function graftMultivariateLinearNormalInverseGamma() ->
-      TransformMultivariateLinearNormalInverseGamma? {
+      TransformLinearIdenticalNormalInverseGamma? {
     return nil;
   }
 
@@ -216,7 +216,7 @@ class Expression<Value> {
    * Return: The node if successful, nil if not.
    */
   function graftMultivariateDotNormalInverseGamma() ->
-      TransformMultivariateDotNormalInverseGamma? {
+      TransformDotIdenticalNormalInverseGamma? {
     return nil;
   }
 

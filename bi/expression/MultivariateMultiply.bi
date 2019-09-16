@@ -18,40 +18,40 @@ final class MultivariateMultiply<Left,Right,Value>(left:Expression<Left>,
   }
 
   function graftMultivariateLinearGaussian() ->
-      TransformMultivariateLinearGaussian? {
-    y:TransformMultivariateLinearGaussian?;
+      TransformLinearMultivariateGaussian? {
+    y:TransformLinearMultivariateGaussian?;
     z:DelayMultivariateGaussian?;
     
     if (y <- right.graftMultivariateLinearGaussian())? {
       y!.leftMultiply(left.value());
     } else if (z <- right.graftMultivariateGaussian())? {
-      y <- TransformMultivariateLinearGaussian(left.value(), z!);
+      y <- TransformLinearMultivariateGaussian(left.value(), z!);
     }
     return y;
   }
   
   function graftMultivariateLinearNormalInverseGamma() ->
-      TransformMultivariateLinearNormalInverseGamma? {
-    y:TransformMultivariateLinearNormalInverseGamma?;
+      TransformLinearIdenticalNormalInverseGamma? {
+    y:TransformLinearIdenticalNormalInverseGamma?;
     z:DelayIdenticalNormalInverseGamma?;
 
     if (y <- right.graftMultivariateLinearNormalInverseGamma())? {
       y!.leftMultiply(left.value());
     } else if (z <- right.graftIdenticalNormalInverseGamma())? {
-      y <- TransformMultivariateLinearNormalInverseGamma(left.value(), z!);
+      y <- TransformLinearIdenticalNormalInverseGamma(left.value(), z!);
     }
     return y;
   }
   
   function graftMultivariateScaledInverseGamma() ->
-      TransformMultivariateScaledInverseGamma? {
-    y:TransformMultivariateScaledInverseGamma?;
+      TransformIdenticalInverseGamma? {
+    y:TransformIdenticalInverseGamma?;
     z:DelayInverseGamma?;
     
     if (y <- right.graftMultivariateScaledInverseGamma())? {
       y!.leftMultiply(left.value());
     } else if (z <- right.graftInverseGamma())? {
-      y <- TransformMultivariateScaledInverseGamma(left.value(), z!);
+      y <- TransformIdenticalInverseGamma(left.value(), z!);
     }
     return y;
   }

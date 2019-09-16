@@ -50,8 +50,8 @@ final class Subtract<Left,Right,Value>(left:Expression<Left>,
     return y;
   }
 
-  function graftMultivariateDotGaussian() -> TransformMultivariateDotGaussian? {
-    y:TransformMultivariateDotGaussian?;
+  function graftMultivariateDotGaussian() -> TransformDotMultivariateGaussian? {
+    y:TransformDotMultivariateGaussian?;
     
     if (y <- left.graftMultivariateDotGaussian())? {
       y!.add(right.value());
@@ -62,8 +62,8 @@ final class Subtract<Left,Right,Value>(left:Expression<Left>,
   }
 
   function graftMultivariateDotNormalInverseGamma() ->
-      TransformMultivariateDotNormalInverseGamma? {
-    y:TransformMultivariateDotNormalInverseGamma?;
+      TransformDotIdenticalNormalInverseGamma? {
+    y:TransformDotIdenticalNormalInverseGamma?;
 
     if (y <- left.graftMultivariateDotNormalInverseGamma())? {
       y!.subtract(right.value());

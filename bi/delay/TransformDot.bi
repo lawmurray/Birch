@@ -1,7 +1,7 @@
 /*
  * Multivariate linear transformation.
  */
-class TransformMultivariateDot<Value>(a:Value[_], c:Value) {
+class TransformDot<Value>(a:Value[_], c:Value) {
   /**
    * Scale.
    */

@@ -18,8 +18,8 @@ final class MultivariateSubtract<Left,Right,Value>(left:Expression<Left>,
   }
 
   function graftMultivariateLinearGaussian() ->
-      TransformMultivariateLinearGaussian? {
-    y:TransformMultivariateLinearGaussian?;
+      TransformLinearMultivariateGaussian? {
+    y:TransformLinearMultivariateGaussian?;
     z:DelayMultivariateGaussian?;
 
     if (y <- left.graftMultivariateLinearGaussian())? {
@@ -27,18 +27,18 @@ final class MultivariateSubtract<Left,Right,Value>(left:Expression<Left>,
     } else if (y <- right.graftMultivariateLinearGaussian())? {
       y!.negateAndAdd(left.value());
     } else if (z <- left.graftMultivariateGaussian())? {
-      y <- TransformMultivariateLinearGaussian(identity(z!.size()), z!,
+      y <- TransformLinearMultivariateGaussian(identity(z!.size()), z!,
           -right.value());
     } else if (z <- right.graftMultivariateGaussian())? {
-      y <- TransformMultivariateLinearGaussian(diagonal(-1, z!.size()), z!,
+      y <- TransformLinearMultivariateGaussian(diagonal(-1, z!.size()), z!,
           left.value());
     }
     return y;
   }
   
   function graftMultivariateLinearNormalInverseGamma() ->
-      TransformMultivariateLinearNormalInverseGamma? {
-    y:TransformMultivariateLinearNormalInverseGamma?;
+      TransformLinearIdenticalNormalInverseGamma? {
+    y:TransformLinearIdenticalNormalInverseGamma?;
     z:DelayIdenticalNormalInverseGamma?;
 
     if (y <- left.graftMultivariateLinearNormalInverseGamma())? {
@@ -46,10 +46,10 @@ final class MultivariateSubtract<Left,Right,Value>(left:Expression<Left>,
     } else if (y <- right.graftMultivariateLinearNormalInverseGamma())? {
       y!.negateAndAdd(left.value());
     } else if (z <- left.graftIdenticalNormalInverseGamma())? {
-      y <- TransformMultivariateLinearNormalInverseGamma(identity(z!.size()),
+      y <- TransformLinearIdenticalNormalInverseGamma(identity(z!.size()),
           z!, -right.value());
     } else if (z <- right.graftIdenticalNormalInverseGamma())? {
-      y <- TransformMultivariateLinearNormalInverseGamma(
+      y <- TransformLinearIdenticalNormalInverseGamma(
           diagonal(-1, z!.size()), z!, left.value());
     }
     return y;

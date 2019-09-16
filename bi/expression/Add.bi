@@ -49,8 +49,8 @@ final class Add<Left,Right,Value>(left:Expression<Left>, right:Expression<Right>
     return y;
   }
 
-  function graftMultivariateDotGaussian() -> TransformMultivariateDotGaussian? {
-    y:TransformMultivariateDotGaussian?;
+  function graftMultivariateDotGaussian() -> TransformDotMultivariateGaussian? {
+    y:TransformDotMultivariateGaussian?;
     
     if (y <- left.graftMultivariateDotGaussian())? {
       y!.add(right.value());
@@ -60,8 +60,8 @@ final class Add<Left,Right,Value>(left:Expression<Left>, right:Expression<Right>
     return y;
   }
 
-  function graftMultivariateDotNormalInverseGamma() -> TransformMultivariateDotNormalInverseGamma? {
-    y:TransformMultivariateDotNormalInverseGamma?;
+  function graftMultivariateDotNormalInverseGamma() -> TransformDotIdenticalNormalInverseGamma? {
+    y:TransformDotIdenticalNormalInverseGamma?;
 
     if (y <- left.graftMultivariateDotNormalInverseGamma())? {
       y!.add(right.value());

@@ -27,10 +27,10 @@ final class Gaussian(μ:Expression<Real>, σ2:Expression<Real>) < Distribution<R
       delay!.prune();
     } else {
       m1:TransformLinearNormalInverseGamma?;
-      m2:TransformMultivariateDotNormalInverseGamma?;
+      m2:TransformDotIdenticalNormalInverseGamma?;
       m3:DelayNormalInverseGamma?;
       m4:TransformLinearGaussian?;
-      m5:TransformMultivariateDotGaussian?;
+      m5:TransformDotMultivariateGaussian?;
       m6:DelayGaussian?;
       s2:DelayInverseGamma?;
 

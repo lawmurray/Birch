@@ -49,8 +49,8 @@ final class Multiply<Left,Right,Value>(left:Expression<Left>, right:Expression<R
     return y;
   }
 
-  function graftMultivariateDotGaussian() -> TransformMultivariateDotGaussian? {
-    y:TransformMultivariateDotGaussian?;
+  function graftMultivariateDotGaussian() -> TransformDotMultivariateGaussian? {
+    y:TransformDotMultivariateGaussian?;
     
     if (y <- left.graftMultivariateDotGaussian())? {
       y!.multiply(right.value());
@@ -61,8 +61,8 @@ final class Multiply<Left,Right,Value>(left:Expression<Left>, right:Expression<R
   }
 
   function graftMultivariateDotNormalInverseGamma() ->
-      TransformMultivariateDotNormalInverseGamma? {
-    y:TransformMultivariateDotNormalInverseGamma?;
+      TransformDotIdenticalNormalInverseGamma? {
+    y:TransformDotIdenticalNormalInverseGamma?;
 
     if (y <- left.graftMultivariateDotNormalInverseGamma())? {
       y!.multiply(right.value());
