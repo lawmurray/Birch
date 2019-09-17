@@ -326,10 +326,17 @@ bi::Expression* bi::Resolver::modify(OverloadedIdentifier<Unknown>* o) {
 bi::Expression* bi::Resolver::modify(OverloadedIdentifier<Function>* o) {
   resolve(o, GLOBAL_SCOPE);
   Modifier::modify(o);
+
   if (o->target->size() == 1) {
     auto only = instantiate(o, o->target->front());
     o->target = new Overloaded<Function>(only);
     o->type = new FunctionType(only->params->type, only->returnType);
+  } else {
+    auto target = new Overloaded<Function>();
+    for (auto overload : *o->target) {
+      target->add(instantiate(o, overload));
+    }
+    o->target = target;
   }
   return o;
 }
@@ -341,23 +348,14 @@ bi::Expression* bi::Resolver::modify(OverloadedIdentifier<Fiber>* o) {
     auto only = instantiate(o, o->target->front());
     o->target = new Overloaded<Fiber>(only);
     o->type = new FunctionType(only->params->type, only->returnType);
+  } else {
+    auto target = new Overloaded<Fiber>();
+    for (auto overload : *o->target) {
+      target->add(instantiate(o, overload));
+    }
+    o->target = target;
   }
   return o;
-}
-
-bi::Expression* bi::Resolver::modify(OverloadedIdentifier<MemberFiber>* o) {
-  if (!inMember) {
-    return (new Member(new This(o->loc), o, o->loc))->accept(this);
-  } else {
-    resolve(o, CLASS_SCOPE);
-    Modifier::modify(o);
-    if (o->target->size() == 1) {
-      auto only = o->target->front();
-      o->target = new Overloaded<MemberFiber>(only);
-      o->type = new FunctionType(only->params->type, only->returnType);
-    }
-    return o;
-  }
 }
 
 bi::Expression* bi::Resolver::modify(OverloadedIdentifier<MemberFunction>* o) {
@@ -369,6 +367,21 @@ bi::Expression* bi::Resolver::modify(OverloadedIdentifier<MemberFunction>* o) {
     if (o->target->size() == 1) {
       auto only = o->target->front();
       o->target = new Overloaded<MemberFunction>(only);
+      o->type = new FunctionType(only->params->type, only->returnType);
+    }
+    return o;
+  }
+}
+
+bi::Expression* bi::Resolver::modify(OverloadedIdentifier<MemberFiber>* o) {
+  if (!inMember) {
+    return (new Member(new This(o->loc), o, o->loc))->accept(this);
+  } else {
+    resolve(o, CLASS_SCOPE);
+    Modifier::modify(o);
+    if (o->target->size() == 1) {
+      auto only = o->target->front();
+      o->target = new Overloaded<MemberFiber>(only);
       o->type = new FunctionType(only->params->type, only->returnType);
     }
     return o;

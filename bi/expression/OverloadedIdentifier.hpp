@@ -52,5 +52,10 @@ public:
    * Inherited objects that may be an alternative to target.
    */
   std::list<Overloaded<ObjectType>*> inherited;
+
+  /**
+   * The chosen overload, after calling resolve().
+   */
+  ObjectType* overload;
 };
 }

@@ -5,6 +5,7 @@
 
 #include "bi/io/cpp/CppClassGenerator.hpp"
 #include "bi/io/cpp/CppFiberGenerator.hpp"
+#include "bi/io/bih_ostream.hpp"
 #include "bi/primitive/encode.hpp"
 
 #include "boost/algorithm/string.hpp"
@@ -284,17 +285,25 @@ void bi::CppBaseGenerator::visit(const Identifier<MemberVariable>* o) {
 }
 
 void bi::CppBaseGenerator::visit(const OverloadedIdentifier<Function>* o) {
-  middle("bi::" << o->name);
-  if (!o->typeArgs->isEmpty()) {
-    middle('<' << o->typeArgs << ">::f");
+  auto name = internalise(o->name->str());
+  if (o->overload->isInstantiation()) {
+    std::stringstream base;
+    bih_ostream buf(base);
+    buf << o->overload->typeParams << '(' << o->overload->params->type << ')';
+    name += "_" + encode32(base.str()) + "_";
   }
+  middle("bi::" << name);
 }
 
 void bi::CppBaseGenerator::visit(const OverloadedIdentifier<Fiber>* o) {
-  middle("bi::" << o->name);
-  if (!o->typeArgs->isEmpty()) {
-    middle('<' << o->typeArgs << ">::f");
+  auto name = internalise(o->name->str());
+  if (o->overload->isInstantiation()) {
+    std::stringstream base;
+    bih_ostream buf(base);
+    buf << o->overload->typeParams << '(' << o->overload->params->type << ')';
+    name += "_" + encode32(base.str()) + "_";
   }
+  middle("bi::" << name);
 }
 
 void bi::CppBaseGenerator::visit(
@@ -353,54 +362,22 @@ void bi::CppBaseGenerator::visit(const MemberVariable* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Function* o) {
-  if (!o->braces->isEmpty()) {
-    if (o->isGeneric()) {
-      /* generic functions are generated as a struct with a static member
-       * function, where the type parameters are part of the struct; this means
-       * we don't have to generate even a signature for the unbound function */
-      if (header) {
-        genTemplateParams(o);
-        start("struct " << o->name);
-        if (o->isBound()) {
-          genTemplateArgs(o);
-        }
-        finish(" {");
-        in();
-        if (o->isBound()) {
-          start("static ");
-        } else {
-          line("//");
-        }
-      }
-      if (o->isBound()) {
-        middle(o->returnType << ' ');
-        if (!header) {
-          start("bi::" << o->name);
-          genTemplateArgs(o);
-          middle("::");
-        }
-        middle("f(" << o->params << ')');
-        if (header) {
-          finish(';');
-        }
-      }
-      if (header) {
-        out();
-        finish("};\n");
-      }
-    } else {
-      start(o->returnType << ' ');
-      if (!header) {
-        middle("bi::");
-      }
-      middle(o->name << '(' << o->params << ')');
-      if (header) {
-        finish(';');
-      }
+  if (!o->braces->isEmpty() && o->isBound()) {
+    auto name = internalise(o->name->str());
+    if (o->isInstantiation()) {
+      std::stringstream base;
+      bih_ostream buf(base);
+      buf << o->typeParams << '(' << o->params->type << ')';
+      name += "_" + encode32(base.str()) + "_";
     }
-
-    /* body */
-    if (!header && o->isBound()) {
+    start(o->returnType << ' ');
+    if (!header) {
+      middle("bi::");
+    }
+    middle(name << '(' << o->params << ')');
+    if (header) {
+      finish(';');
+    } else {
       finish(" {");
       in();
       genTraceFunction(o->name->str(), o->loc);
@@ -420,7 +397,6 @@ void bi::CppBaseGenerator::visit(const Fiber* o) {
     CppFiberGenerator auxFiber(base, level, header);
     auxFiber << o;
   }
-
   for (auto instantiation : o->instantiations) {
     *this << instantiation;
   }

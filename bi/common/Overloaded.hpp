@@ -19,6 +19,11 @@ class Overloaded {
 public:
   /**
    * Constructor.
+   */
+  Overloaded();
+
+  /**
+   * Constructor.
    *
    * @param o First overload.
    */

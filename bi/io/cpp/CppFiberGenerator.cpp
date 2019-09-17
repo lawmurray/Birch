@@ -201,68 +201,36 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
       out();
       line("};\n");
     }
-  }
 
-  /* initialisation function */
-  if (o->isGeneric()) {
-    /* generic functions are generated as a struct with a static member
-     * function, where the type parameters are part of the struct; this means
-     * we don't have to generate even a signature for the unbound function */
-    if (header) {
-      genTemplateParams(o);
-      start("struct " << o->name);
-      if (o->isBound()) {
-        genTemplateArgs(o);
-      }
-      finish(" {");
-      in();
-      if (o->isBound()) {
-        start("static ");
-      } else {
-        line("//");
-      }
+    /* initialisation function */
+    auto name = internalise(o->name->str());
+    if (o->isInstantiation()) {
+      std::stringstream base;
+      bih_ostream buf(base);
+      buf << o->typeParams << '(' << o->params->type << ')';
+      name += "_" + encode32(base.str()) + "_";
     }
-    if (o->isBound()) {
-      middle(o->returnType << ' ');
-      if (!header) {
-        start("bi::" << o->name);
-        genTemplateArgs(o);
-        middle("::");
-      }
-      middle("f(" << o->params << ')');
-      if (header) {
-        finish(';');
-      }
-    }
-    if (header) {
-      out();
-      line("};\n");
-    }
-  } else {
     start(o->returnType << ' ');
     if (!header) {
       middle("bi::");
     }
-    middle(o->name << '(' << o->params << ')');
+    middle(name << '(' << o->params << ')');
     if (header) {
       finish(';');
-    }
-  }
-
-  /* body */
-  if (!header && o->isBound()) {
-    finish(" {");
-    in();
-    start("return libbirch::make_fiber<" << stateName << ">(");
-    for (auto iter = params.begin(); iter != params.end(); ++iter) {
-      if (iter != params.begin()) {
-        middle(", ");
+    } else {
+      finish(" {");
+      in();
+      start("return libbirch::make_fiber<" << stateName << ">(");
+      for (auto iter = params.begin(); iter != params.end(); ++iter) {
+        if (iter != params.begin()) {
+          middle(", ");
+        }
+        middle((*iter)->name);
       }
-      middle((*iter)->name);
+      finish(");");
+      out();
+      line("}\n");
     }
-    finish(");");
-    out();
-    line("}\n");
   }
 }
 

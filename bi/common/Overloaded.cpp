@@ -6,6 +6,11 @@
 #include "bi/exception/all.hpp"
 
 template<class ObjectType>
+bi::Overloaded<ObjectType>::Overloaded() {
+  //
+}
+
+template<class ObjectType>
 bi::Overloaded<ObjectType>::Overloaded(ObjectType* o) {
   add(o);
 }
