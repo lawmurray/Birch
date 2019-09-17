@@ -17,28 +17,28 @@ final class Dot<Left,Right,Value>(left:Expression<Left>, right:Expression<Right>
     return dot(left.value(), right.value());
   }
 
-  function graftMultivariateDotGaussian() ->
-      TransformDotMultivariateGaussian? {
-    y:TransformDotMultivariateGaussian?;
+  function graftDotMultivariateGaussian() ->
+      TransformDot<DelayMultivariateGaussian>? {
+    y:TransformDot<DelayMultivariateGaussian>?;
     z:DelayMultivariateGaussian?;
     
     if (z <- right.graftMultivariateGaussian())? {
-      y <- TransformDotMultivariateGaussian(left.value(), z!);
+      y <- TransformDot<DelayMultivariateGaussian>(left.value(), z!);
     } else if (z <- left.graftMultivariateGaussian())? {
-      y <- TransformDotMultivariateGaussian(right.value(), z!);
+      y <- TransformDot<DelayMultivariateGaussian>(right.value(), z!);
     }
     return y;
   }
   
-  function graftMultivariateDotNormalInverseGamma() ->
-      TransformDotIdenticalNormalInverseGamma? {
-    y:TransformDotIdenticalNormalInverseGamma?;
+  function graftDotIdenticalNormalInverseGamma() ->
+      TransformDot<DelayIdenticalNormalInverseGamma>? {
+    y:TransformDot<DelayIdenticalNormalInverseGamma>?;
     z:DelayIdenticalNormalInverseGamma?;
 
     if (z <- right.graftIdenticalNormalInverseGamma())? {
-      y <- TransformDotIdenticalNormalInverseGamma(left.value(), z!);
+      y <- TransformDot<DelayIdenticalNormalInverseGamma>(left.value(), z!);
     } else if (z <- left.graftIdenticalNormalInverseGamma())? {
-      y <- TransformDotIdenticalNormalInverseGamma(right.value(), z!);
+      y <- TransformDot<DelayIdenticalNormalInverseGamma>(right.value(), z!);
     }
     return y;
   }

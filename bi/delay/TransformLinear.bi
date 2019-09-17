@@ -1,37 +1,52 @@
 /*
  * Linear transformation.
  */
-class TransformLinear<Value>(a:Value, c:Value) {
+class TransformLinear<Value>(a:Real, x:Value, c:Real) {
   /**
    * Scale.
    */
-  a:Value <- a;
+  a:Real <- a;
+
+  /**
+   * Delay node.
+   */
+  x:Value <- x;
 
   /**
    * Offset.
    */
-  c:Value <- c;
+  c:Real <- c;
   
-  function multiply(x:Value) {
-    a <- x*a;
-    c <- x*c;
+  function multiply(y:Real) {
+    a <- y*a;
+    c <- y*c;
   }
 
-  function divide(x:Value) {
-    a <- a/x;
-    c <- c/x;
+  function divide(y:Real) {
+    a <- a/y;
+    c <- c/y;
   }
 
-  function add(x:Value) {
-    c <- c + x;
+  function add(y:Real) {
+    c <- c + y;
   }
 
-  function subtract(x:Value) {
-    c <- c - x;
+  function subtract(y:Real) {
+    c <- c - y;
   }
   
-  function negateAndAdd(x:Value) {
+  function negateAndAdd(y:Real) {
     a <- -a;
-    c <- x - c;
+    c <- y - c;
   }
+}
+
+function TransformLinear<Value>(a:Real, x:Value, c:Real) ->
+    TransformLinear<Value> {
+  m:TransformLinear<Value>(a, x, c);
+  return m;
+}
+
+function TransformLinear<Value>(a:Real, x:Value) -> TransformLinear<Value> {
+  return TransformLinear<Value>(a, x, 0.0);
 }

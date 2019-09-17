@@ -21,7 +21,7 @@ final class Exponential(λ:Expression<Real>) < Distribution<Real> {
     if delay? {
       delay!.prune();
     } else {
-      m1:TransformScaledGamma?;
+      m1:TransformLinear<DelayGamma>?;
       m2:DelayGamma?;
 
       if (m1 <- λ.graftScaledGamma())? {

@@ -17,39 +17,39 @@ final class MultivariateSubtract<Left,Right,Value>(left:Expression<Left>,
     return left.value() - right.value();
   }
 
-  function graftMultivariateLinearGaussian() ->
-      TransformLinearMultivariateGaussian? {
-    y:TransformLinearMultivariateGaussian?;
+  function graftLinearMultivariateGaussian() ->
+      TransformLinearMultivariate<DelayMultivariateGaussian>? {
+    y:TransformLinearMultivariate<DelayMultivariateGaussian>?;
     z:DelayMultivariateGaussian?;
 
-    if (y <- left.graftMultivariateLinearGaussian())? {
+    if (y <- left.graftLinearMultivariateGaussian())? {
       y!.subtract(right.value());
-    } else if (y <- right.graftMultivariateLinearGaussian())? {
+    } else if (y <- right.graftLinearMultivariateGaussian())? {
       y!.negateAndAdd(left.value());
     } else if (z <- left.graftMultivariateGaussian())? {
-      y <- TransformLinearMultivariateGaussian(identity(z!.size()), z!,
-          -right.value());
+      y <- TransformLinearMultivariate<DelayMultivariateGaussian>(
+          identity(z!.size()), z!, -right.value());
     } else if (z <- right.graftMultivariateGaussian())? {
-      y <- TransformLinearMultivariateGaussian(diagonal(-1, z!.size()), z!,
-          left.value());
+      y <- TransformLinearMultivariate<DelayMultivariateGaussian>(
+          diagonal(-1, z!.size()), z!, left.value());
     }
     return y;
   }
   
-  function graftMultivariateLinearNormalInverseGamma() ->
-      TransformLinearIdenticalNormalInverseGamma? {
-    y:TransformLinearIdenticalNormalInverseGamma?;
+  function graftLinearIdenticalNormalInverseGamma() ->
+      TransformLinearMultivariate<DelayIdenticalNormalInverseGamma>? {
+    y:TransformLinearMultivariate<DelayIdenticalNormalInverseGamma>?;
     z:DelayIdenticalNormalInverseGamma?;
 
-    if (y <- left.graftMultivariateLinearNormalInverseGamma())? {
+    if (y <- left.graftLinearIdenticalNormalInverseGamma())? {
       y!.subtract(right.value());
-    } else if (y <- right.graftMultivariateLinearNormalInverseGamma())? {
+    } else if (y <- right.graftLinearIdenticalNormalInverseGamma())? {
       y!.negateAndAdd(left.value());
     } else if (z <- left.graftIdenticalNormalInverseGamma())? {
-      y <- TransformLinearIdenticalNormalInverseGamma(identity(z!.size()),
-          z!, -right.value());
+      y <- TransformLinearMultivariate<DelayIdenticalNormalInverseGamma>(
+          identity(z!.size()), z!, -right.value());
     } else if (z <- right.graftIdenticalNormalInverseGamma())? {
-      y <- TransformLinearIdenticalNormalInverseGamma(
+      y <- TransformLinearMultivariate<DelayIdenticalNormalInverseGamma>(
           diagonal(-1, z!.size()), z!, left.value());
     }
     return y;

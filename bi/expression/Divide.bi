@@ -17,68 +17,71 @@ final class Divide<Left,Right,Value>(left:Expression<Left>,
     return left.value()/right.value();
   }
 
-  function graftLinearGaussian() -> TransformLinearGaussian? {
-    y:TransformLinearGaussian?;
+  function graftLinearGaussian() -> TransformLinear<DelayGaussian>? {
+    y:TransformLinear<DelayGaussian>?;
     z:DelayGaussian?;
     
     if (y <- left.graftLinearGaussian())? {
       y!.divide(right.value());
     } else if (z <- left.graftGaussian())? {
-      y <- TransformLinearGaussian(1.0/right.value(), z!, 0.0);
+      y <- TransformLinear<DelayGaussian>(1.0/right.value(), z!);
     }
     return y;
   }
   
-  function graftLinearNormalInverseGamma() -> TransformLinearNormalInverseGamma? {
-    y:TransformLinearNormalInverseGamma?;
+  function graftLinearNormalInverseGamma() ->
+      TransformLinear<DelayNormalInverseGamma>? {
+    y:TransformLinear<DelayNormalInverseGamma>?;
     z:DelayNormalInverseGamma?;
     
     if (y <- left.graftLinearNormalInverseGamma())? {
       y!.divide(right.value());
     } else if (z <- left.graftNormalInverseGamma())? {
-      y <- TransformLinearNormalInverseGamma(1.0/right.value(), z!, 0.0);
+      y <- TransformLinear<DelayNormalInverseGamma>(1.0/right.value(), z!);
     }
     return y;
   }
 
-  function graftMultivariateDotGaussian() -> TransformDotMultivariateGaussian? {
-    y:TransformDotMultivariateGaussian?;
+  function graftDotMultivariateGaussian() ->
+      TransformDot<DelayMultivariateGaussian>? {
+    y:TransformDot<DelayMultivariateGaussian>?;
     
-    if (y <- left.graftMultivariateDotGaussian())? {
+    if (y <- left.graftDotMultivariateGaussian())? {
       y!.divide(right.value());
     }
     return y;
   }
 
-  function graftMultivariateDotNormalInverseGamma() -> TransformDotIdenticalNormalInverseGamma? {
-    y:TransformDotIdenticalNormalInverseGamma?;
+  function graftDotIdenticalNormalInverseGamma() ->
+      TransformDot<DelayIdenticalNormalInverseGamma>? {
+    y:TransformDot<DelayIdenticalNormalInverseGamma>?;
 
-    if (y <- left.graftMultivariateDotNormalInverseGamma())? {
+    if (y <- left.graftDotIdenticalNormalInverseGamma())? {
       y!.divide(right.value());
     }
     return y;
   }
 
-  function graftScaledGamma() -> TransformScaledGamma? {
-    y:TransformScaledGamma?;
+  function graftScaledGamma() -> TransformLinear<DelayGamma>? {
+    y:TransformLinear<DelayGamma>?;
     z:DelayGamma?;
     
     if (y <- left.graftScaledGamma())? {
       y!.divide(right.value());
     } else if (z <- left.graftGamma())? {
-      y <- TransformScaledGamma(1.0/right.value(), z!);
+      y <- TransformLinear<DelayGamma>(1.0/right.value(), z!);
     }
     return y;
   }
   
-  function graftScaledInverseGamma() -> TransformScaledInverseGamma? {
-    y:TransformScaledInverseGamma?;
+  function graftScaledInverseGamma() -> TransformLinear<DelayInverseGamma>? {
+    y:TransformLinear<DelayInverseGamma>?;
     z:DelayInverseGamma?;
     
     if (y <- left.graftScaledInverseGamma())? {
       y!.divide(right.value());
     } else if (z <- left.graftInverseGamma())? {
-      y <- TransformScaledInverseGamma(1.0/right.value(), z!);        
+      y <- TransformLinear<DelayInverseGamma>(1.0/right.value(), z!);        
     }
     return y;
   }

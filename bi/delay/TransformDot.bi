@@ -1,37 +1,52 @@
 /*
- * Multivariate linear transformation.
+ * Linear transformation consisting of a dot product scale plus offset.
  */
-class TransformDot<Value>(a:Value[_], c:Value) {
+final class TransformDot<Value>(a:Real[_], x:Value, c:Real) {
   /**
    * Scale.
    */
-  a:Value[_] <- a;
+  a:Real[_] <- a;
+
+  /**
+   * Delay node.
+   */
+  x:Value <- x;
 
   /**
    * Offset.
    */
-  c:Value <- c;
+  c:Real <- c;
     
-  function add(x:Value) {
-    c <- c + x;
+  function add(y:Real) {
+    c <- c + y;
   }
 
-  function subtract(x:Value) {
-    c <- c - x;
+  function subtract(y:Real) {
+    c <- c - y;
   }
 
-  function multiply(x:Value) {
-    a <- a*x;
-    c <- c*x;
+  function multiply(y:Real) {
+    a <- a*y;
+    c <- c*y;
   }
 
-  function divide(x:Value) {
-    a <- a/x;
-    c <- c/x;
+  function divide(y:Real) {
+    a <- a/y;
+    c <- c/y;
   }
   
-  function negateAndAdd(x:Value) {
+  function negateAndAdd(y:Real) {
     a <- -a;
-    c <- x - c;
+    c <- y - c;
   }
+}
+
+function TransformDot<Value>(a:Real[_], x:Value, c:Real) ->
+    TransformDot<Value> {
+  m:TransformDot<Value>(a, x, c);
+  return m;
+}
+
+function TransformDot<Value>(a:Real[_], x:Value) -> TransformDot<Value> {
+  return TransformDot<Value>(a, x, 0.0);
 }

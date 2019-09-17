@@ -54,7 +54,7 @@ class Expression<Value> {
    *
    * Return: The node if successful, nil if not.
    */
-  function graftLinearGaussian() -> TransformLinearGaussian? {
+  function graftLinearGaussian() -> TransformLinear<DelayGaussian>? {
     return nil;
   }
   
@@ -90,7 +90,7 @@ class Expression<Value> {
    *
    * Return: The node if successful, nil if not.
    */
-  function graftScaledGamma() ->  TransformScaledGamma? {
+  function graftScaledGamma() ->  TransformLinear<DelayGamma>? {
     return nil;
   }
   
@@ -108,8 +108,7 @@ class Expression<Value> {
    *
    * Return: The node if successful, nil if not.
    */
-  function graftScaledInverseGamma() -> 
-      TransformScaledInverseGamma? {
+  function graftScaledInverseGamma() -> TransformLinear<DelayInverseGamma>? {
     return nil;
   }
   
@@ -118,8 +117,7 @@ class Expression<Value> {
    *
    * Return: The node if successful, nil if not.
    */
-  function graftNormalInverseGamma() ->
-      DelayNormalInverseGamma? {
+  function graftNormalInverseGamma() -> DelayNormalInverseGamma? {
     return nil;
   }
 
@@ -129,7 +127,7 @@ class Expression<Value> {
    * Return: The node if successful, nil if not.
    */
   function graftLinearNormalInverseGamma() ->
-      TransformLinearNormalInverseGamma? {
+      TransformLinear<DelayNormalInverseGamma>? {
     return nil;
   }
   
@@ -165,8 +163,8 @@ class Expression<Value> {
    *
    * Return: The node if successful, nil if not.
    */
-  function graftMultivariateLinearGaussian() ->
-      TransformLinearMultivariateGaussian? {
+  function graftLinearMultivariateGaussian() ->
+      TransformLinearMultivariate<DelayMultivariateGaussian>? {
     return nil;
   }
 
@@ -175,8 +173,8 @@ class Expression<Value> {
    *
    * Return: The node if successful, nil if not.
    */
-  function graftMultivariateDotGaussian() ->
-      TransformDotMultivariateGaussian? {
+  function graftDotMultivariateGaussian() ->
+      TransformDot<DelayMultivariateGaussian>? {
     return nil;
   }
 
@@ -185,8 +183,8 @@ class Expression<Value> {
    *
    * Return: The node if successful, nil if not.
    */
-  function graftMultivariateScaledInverseGamma() ->
-      TransformIdenticalInverseGamma? {
+  function graftIdenticalInverseGamma() ->
+      TransformLinearMultivariate<DelayInverseGamma>? {
     return nil;
   }
 
@@ -205,8 +203,8 @@ class Expression<Value> {
    *
    * Return: The node if successful, nil if not.
    */
-  function graftMultivariateLinearNormalInverseGamma() ->
-      TransformLinearIdenticalNormalInverseGamma? {
+  function graftLinearIdenticalNormalInverseGamma() ->
+      TransformLinearMultivariate<DelayIdenticalNormalInverseGamma>? {
     return nil;
   }
 
@@ -215,8 +213,8 @@ class Expression<Value> {
    *
    * Return: The node if successful, nil if not.
    */
-  function graftMultivariateDotNormalInverseGamma() ->
-      TransformDotIdenticalNormalInverseGamma? {
+  function graftDotIdenticalNormalInverseGamma() ->
+      TransformDot<DelayIdenticalNormalInverseGamma>? {
     return nil;
   }
 

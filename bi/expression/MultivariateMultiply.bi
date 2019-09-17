@@ -17,41 +17,43 @@ final class MultivariateMultiply<Left,Right,Value>(left:Expression<Left>,
     return left.value()*right.value();
   }
 
-  function graftMultivariateLinearGaussian() ->
-      TransformLinearMultivariateGaussian? {
-    y:TransformLinearMultivariateGaussian?;
+  function graftLinearMultivariateGaussian() ->
+      TransformLinearMultivariate<DelayMultivariateGaussian>? {
+    y:TransformLinearMultivariate<DelayMultivariateGaussian>?;
     z:DelayMultivariateGaussian?;
     
-    if (y <- right.graftMultivariateLinearGaussian())? {
+    if (y <- right.graftLinearMultivariateGaussian())? {
       y!.leftMultiply(left.value());
     } else if (z <- right.graftMultivariateGaussian())? {
-      y <- TransformLinearMultivariateGaussian(left.value(), z!);
+      y <- TransformLinearMultivariate<DelayMultivariateGaussian>(
+          left.value(), z!);
     }
     return y;
   }
   
-  function graftMultivariateLinearNormalInverseGamma() ->
-      TransformLinearIdenticalNormalInverseGamma? {
-    y:TransformLinearIdenticalNormalInverseGamma?;
+  function graftLinearIdenticalNormalInverseGamma() ->
+      TransformLinearMultivariate<DelayIdenticalNormalInverseGamma>? {
+    y:TransformLinearMultivariate<DelayIdenticalNormalInverseGamma>?;
     z:DelayIdenticalNormalInverseGamma?;
 
-    if (y <- right.graftMultivariateLinearNormalInverseGamma())? {
+    if (y <- right.graftLinearIdenticalNormalInverseGamma())? {
       y!.leftMultiply(left.value());
     } else if (z <- right.graftIdenticalNormalInverseGamma())? {
-      y <- TransformLinearIdenticalNormalInverseGamma(left.value(), z!);
+      y <- TransformLinearMultivariate<DelayIdenticalNormalInverseGamma>(
+          left.value(), z!);
     }
     return y;
   }
   
-  function graftMultivariateScaledInverseGamma() ->
-      TransformIdenticalInverseGamma? {
-    y:TransformIdenticalInverseGamma?;
+  function graftIdenticalInverseGamma() ->
+      TransformLinearMultivariate<DelayInverseGamma>? {
+    y:TransformLinearMultivariate<DelayInverseGamma>?;
     z:DelayInverseGamma?;
     
-    if (y <- right.graftMultivariateScaledInverseGamma())? {
+    if (y <- right.graftIdenticalInverseGamma())? {
       y!.leftMultiply(left.value());
     } else if (z <- right.graftInverseGamma())? {
-      y <- TransformIdenticalInverseGamma(left.value(), z!);
+      y <- TransformLinearMultivariate<DelayInverseGamma>(left.value(), z!);
     }
     return y;
   }
