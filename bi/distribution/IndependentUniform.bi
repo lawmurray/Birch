@@ -1,5 +1,5 @@
 /**
- * Multivariate uniform distribution on an orthogonal hyperrectangle.
+ * Uniform distribution on an orthogonal hyperrectangle.
  */
 final class IndependentUniform(l:Expression<Real[_]>, u:Expression<Real[_]>) < Distribution<Real[_]> {
   /**

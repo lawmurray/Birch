@@ -1,59 +1,29 @@
 /**
- * Transformation.
+ * Unary transformation.
  *
- * - x: Vector.
+ * - x: Operand.
  * - f: Operator.
  */
-function transform(x:Real[_], f:@(Real) -> Real) -> Real[_] {
+function transform<Value>(x:Value[_], f:@(Value) -> Value) -> Value[_] {
   // in C++17 can use std::transform
-  y:Real[length(x)];
-  for i:Integer in 1..length(x) {
+  y:Value[length(x)];
+  for auto i in 1..length(x) {
     y[i] <- f(x[i]);
   }
   return y;
 }
 
 /**
- * Transformation.
+ * Unary transformation.
  *
- * - x: Vector.
+ * - X: Operand.
  * - f: Operator.
  */
-function transform(x:Integer[_], f:@(Integer) -> Integer) -> Integer[_] {
+function transform<Value>(X:Value[_,_], f:@(Value) -> Value) -> Value[_,_] {
   // in C++17 can use std::transform
-  y:Integer[length(x)];
-  for i:Integer in 1..length(x) {
-    y[i] <- f(x[i]);
-  }
-  return y;
-}
-
-/**
- * Transformation.
- *
- * - x: Vector.
- * - f: Operator.
- */
-function transform(x:Boolean[_], f:@(Boolean) -> Boolean) -> Boolean[_] {
-  // in C++17 can use std::transform
-  y:Boolean[length(x)];
-  for i:Integer in 1..length(x) {
-    y[i] <- f(x[i]);
-  }
-  return y;
-}
-
-/**
- * Transformation.
- *
- * - X: Matrix.
- * - f: Operator.
- */
-function transform(X:Real[_,_], f:@(Real) -> Real) -> Real[_,_] {
-  // in C++17 can use std::transform
-  Y:Real[_,_];
-  for i:Integer in 1..rows(X) {
-    for j:Integer in 1..columns(X) {
+  Y:Value[_,_];
+  for auto i in 1..rows(X) {
+    for auto j in 1..columns(X) {
       Y[i,j] <- f(X[i,j]);
     }
   }
@@ -61,34 +31,37 @@ function transform(X:Real[_,_], f:@(Real) -> Real) -> Real[_,_] {
 }
 
 /**
- * Transformation.
+ * Binary transformation.
  *
- * - X: Matrix.
+ * - x: First operand.
+ * - y: Second operand.
  * - f: Operator.
  */
-function transform(X:Integer[_,_], f:@(Integer) -> Integer) -> Integer[_,_] {
-  // in C++17 can use std::transform
-  Y:Integer[_,_];
-  for i:Integer in 1..rows(X) {
-    for j:Integer in 1..columns(X) {
-      Y[i,j] <- f(X[i,j]);
-    }
+function transform<Value>(x:Value[_], y:Value[_],
+    f:@(Value, Value) -> Value) -> Value[_] {
+  assert length(x) == length(y);
+  z:Value[length(x)];
+  for auto i in 1..length(x) {
+    z[i] <- f(x[i], y[i]);
   }
-  return Y;
+  return y;
 }
 
 /**
- * Transformation.
+ * Binary transformation.
  *
- * - X: Matrix.
+ * - X: First operand.
+ * - Y: Second operand.
  * - f: Operator.
  */
-function transform(X:Boolean[_,_], f:@(Boolean) -> Boolean) -> Boolean[_,_] {
-  // in C++17 can use std::transform
-  Y:Boolean[_,_];
-  for i:Integer in 1..rows(X) {
-    for j:Integer in 1..columns(X) {
-      Y[i,j] <- f(X[i,j]);
+function transform<Value>(X:Value[_,_], Y:Value[_,_],
+    f:@(Value, Value) -> Value) -> Value[_,_] {
+  assert rows(X) == rows(Y);
+  assert columns(X) == columns(Y);
+  Z:Value[_,_];
+  for auto i in 1..rows(X) {
+    for auto j in 1..columns(X) {
+      Z[i,j] <- f(X[i,j], Y[i,j]);
     }
   }
   return Y;
@@ -101,7 +74,8 @@ function transform(X:Boolean[_,_], f:@(Boolean) -> Boolean) -> Boolean[_,_] {
  * - init: Initial value.
  * - op: Operator.
  */
-function reduce(x:Real[_], init:Real, op:@(Real, Real) -> Real) -> Real {
+function reduce<Value>(x:Value[_], init:Value,
+    op:@(Value, Value) -> Value) -> Value {
   cpp{{
   auto first = x.begin();
   auto last = first + x.size();
@@ -112,51 +86,15 @@ function reduce(x:Real[_], init:Real, op:@(Real, Real) -> Real) -> Real {
 }
 
 /**
- * Reduction.
+ * Unary transformation and reduction.
  *
- * - x: Vector.
+ * - x: First operand.
  * - init: Initial value.
- * - op: Operator.
+ * - op1: Reduction operator.
+ * - op2: Transformation operator.
  */
-function reduce(x:Integer[_], init:Integer,
-    op:@(Integer, Integer) -> Integer) -> Integer {
-  cpp{{
-  auto first = x.begin();
-  auto last = first + x.size();
-  // return std::reduce(first, last, init, op);
-  // ^ C++17
-  return std::accumulate(first, last, init, op);
-  }}
-}
-
-/**
- * Reduction.
- *
- * - x: Vector.
- * - init: Initial value.
- * - op: Operator.
- */
-function reduce(x:Boolean[_], init:Boolean,
-    op:@(Boolean, Boolean) -> Boolean) -> Boolean {
-  cpp{{
-  auto first = x.begin();
-  auto last = first + x.size();
-  // return std::reduce(first, last, init, op);
-  // ^ C++17
-  return std::accumulate(first, last, init, op);
-  }}
-}
-
-/**
- * Transform and reducte.
- *
- * - x: Vector.
- * - init: Initial value.
- * - op1: Binary operator.
- * - op2: Unary operator.
- */
-function transform_reduce(x:Real[_], init:Real, op1:@(Real, Real) -> Real,
-    op2:@(Real) -> Real) -> Real {
+function transform_reduce<Value>(x:Value[_], init:Value,
+    op1:@(Value, Value) -> Value, op2:@(Value) -> Value) -> Value {
   auto y <- init;
   for auto n in 1..length(x) {
     y <- op1(y, op2(x[n]));
@@ -165,37 +103,22 @@ function transform_reduce(x:Real[_], init:Real, op1:@(Real, Real) -> Real,
 }
 
 /**
- * Transform and reducte.
+ * Binary transformation and reduction.
  *
- * - x: Vector.
+ * - x: First operand.
+ * - y: Second operand.
  * - init: Initial value.
- * - op1: Binary operator.
- * - op2: Unary operator.
+ * - op1: Reduction operator.
+ * - op2: Transformation operator.
  */
-function transform_reduce(x:Integer[_], init:Integer, op1:@(Integer, Integer) -> Integer,
-    op2:@(Integer) -> Integer) -> Integer {
-  auto y <- init;
+function transform_reduce<Value>(x:Value[_], y:Value[_], init:Value,
+    op1:@(Value, Value) -> Value, op2:@(Value, Value) -> Value) -> Value {
+  assert length(x) == length(y);
+  auto z <- init;
   for auto n in 1..length(x) {
-    y <- op1(y, op2(x[n]));
+    z <- op1(z, op2(x[n], y[n]));
   }
-  return y;
-}
-
-/**
- * Transform and reducte.
- *
- * - x: Vector.
- * - init: Initial value.
- * - op1: Binary operator.
- * - op2: Unary operator.
- */
-function transform_reduce(x:Boolean[_], init:Boolean, op1:@(Boolean, Boolean) -> Boolean,
-    op2:@(Boolean) -> Boolean) -> Boolean {
-  auto y <- init;
-  for auto n in 1..length(x) {
-    y <- op1(y, op2(x[n]));
-  }
-  return y;
+  return z;
 }
 
 /**
@@ -204,46 +127,8 @@ function transform_reduce(x:Boolean[_], init:Boolean, op1:@(Boolean, Boolean) ->
  * - x: Vector.
  * - op: Operator.
  */
-function inclusive_scan(x:Real[_], op:@(Real, Real) -> Real) -> Real[_] {
-  y:Real[length(x)];
-  cpp{{
-  auto first = x.begin();
-  auto last = first + x.size();
-  // std::inclusive_scan(first, last, y.begin(), op);
-  // ^ C++17
-  std::partial_sum(first, last, y.begin(), op);
-  }}
-  return y;
-}
-
-/**
- * Inclusive scan.
- *
- * - x: Vector.
- * - op: Operator.
- */
-function inclusive_scan(x:Integer[_], op:@(Integer, Integer) -> Integer) ->
-    Integer[_] {
-  y:Integer[length(x)];
-  cpp{{
-  auto first = x.begin();
-  auto last = first + x.size();
-  // std::inclusive_scan(first, last, y.begin(), op);
-  // ^ C++17
-  std::partial_sum(first, last, y.begin(), op);
-  }}
-  return y;
-}
-
-/**
- * Inclusive scan.
- *
- * - x: Vector.
- * - op: Operator.
- */
-function inclusive_scan(x:Boolean[_], op:@(Boolean, Boolean) -> Boolean) ->
-    Boolean[_] {
-  y:Boolean[length(x)];
+function inclusive_scan<Value>(x:Value[_], op:@(Value, Value) -> Value) -> Value[_] {
+  y:Value[length(x)];
   cpp{{
   auto first = x.begin();
   auto last = first + x.size();
@@ -261,10 +146,10 @@ function inclusive_scan(x:Boolean[_], op:@(Boolean, Boolean) -> Boolean) ->
  * - init: Initial value.
  * - op: Operator.
  */
-function exclusive_scan(x:Real[_], init:Real,
-    op:@(Real, Real) -> Real) -> Real[_] {
+function exclusive_scan<Value>(x:Value[_], init:Value,
+    op:@(Value, Value) -> Value) -> Value[_] {
   assert length(x) > 0;
-  y:Real[length(x)];
+  y:Value[length(x)];
   //cpp{{
   // auto first = x.begin();
   // auto last = first + x.size();
@@ -272,56 +157,8 @@ function exclusive_scan(x:Real[_], init:Real,
   // ^ C++17
   //}}
   y[1] <- init;
-  for (n:Integer in 2..length(x)) {
-    y[n] <- y[n - 1] + x[n - 1];
-  }
-  return y;
-}
-
-/**
- * Exclusive scan.
- *
- * - x: Vector.
- * - init: Initial value.
- * - op: Operator.
- */
-function exclusive_scan(x:Integer[_], init:Integer,
-    op:@(Integer, Integer) -> Integer) -> Integer[_] {
-  assert length(x) > 0;
-  y:Integer[length(x)];
-  //cpp{{
-  // auto first = x.begin();
-  // auto last = first + x.size();
-  // std::exclusive_scan(first, last, y.begin(), init, op);
-  // ^ C++17
-  //}}
-  y[1] <- init;
-  for (n:Integer in 2..length(x)) {
-    y[n] <- y[n - 1] + x[n - 1];
-  }
-  return y;
-}
-
-/**
- * Exclusive scan.
- *
- * - x: Vector.
- * - init: Initial value.
- * - op: Operator.
- */
-function exclusive_scan(x:Boolean[_], init:Boolean,
-    op:@(Boolean, Boolean) -> Boolean) -> Boolean[_] {
-  assert length(x) > 0;
-  y:Boolean[length(x)];
-  //cpp{{
-  // auto first = x.begin();
-  // auto last = first + x.size();
-  // std::exclusive_scan(first, last, y.begin(), init, op);
-  // ^ C++17
-  //}}
-  y[1] <- init;
-  for (n:Integer in 2..length(x)) {
-    y[n] <- y[n - 1] + x[n - 1];
+  for auto i in 2..length(x) {
+    y[i] <- y[i - 1] + x[i - 1];
   }
   return y;
 }
@@ -332,43 +169,9 @@ function exclusive_scan(x:Boolean[_], init:Boolean,
  * - x: Vector.
  * - op: Operator.
  */
-function adjacent_difference(x:Real[_],
-    op:@(Real, Real) -> Real) -> Real[_] {
-  y:Real[length(x)];
-  cpp{{
-  auto first = x.begin();
-  auto last = first + x.size();
-  std::adjacent_difference(first, last, y.begin(), op);
-  }}
-  return y;
-}
-
-/**
- * Adjacent difference.
- *
- * - x: Vector.
- * - op: Operator.
- */
-function adjacent_difference(x:Integer[_],
-    op:@(Integer, Integer) -> Integer) -> Integer[_] {
-  y:Integer[length(x)];
-  cpp{{
-  auto first = x.begin();
-  auto last = first + x.size();
-  std::adjacent_difference(first, last, y.begin(), op);
-  }}
-  return y;
-}
-
-/**
- * Adjacent difference.
- *
- * - x: Vector.
- * - op: Operator.
- */
-function adjacent_difference(x:Boolean[_],
-    op:@(Boolean, Boolean) -> Boolean) -> Boolean[_] {
-  y:Boolean[length(x)];
+function adjacent_difference<Value>(x:Value[_],
+    op:@(Value, Value) -> Value) -> Value[_] {
+  y:Value[length(x)];
   cpp{{
   auto first = x.begin();
   auto last = first + x.size();
@@ -382,38 +185,8 @@ function adjacent_difference(x:Boolean[_],
  *
  * - x: Vector.
  */
-function sort(x:Real[_]) -> Real[_] {
-  y:Real[_] <- x;
-  cpp{{
-  auto first = y.begin();
-  auto last = first + y.size();
-  std::sort(first, last);
-  }}
-  return y;
-}
-
-/**
- * Sort.
- *
- * - x: Vector.
- */
-function sort(x:Integer[_]) -> Integer[_] {
-  y:Integer[_] <- x;
-  cpp{{
-  auto first = y.begin();
-  auto last = first + y.size();
-  std::sort(first, last);
-  }}
-  return y;
-}
-
-/**
- * Sort.
- *
- * - x: Vector.
- */
-function sort(x:Boolean[_]) -> Boolean[_] {
-  y:Boolean[_] <- x;
+function sort<Value>(x:Value[_]) -> Value[_] {
+  y:Value[_] <- x;
   cpp{{
   auto first = y.begin();
   auto last = first + y.size();

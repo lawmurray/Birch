@@ -185,21 +185,21 @@ function length(x:Boolean?[_]) -> Integer {
  * Sum of a vector.
  */
 function sum(x:Real[_]) -> Real {
-  return reduce(x, 0.0, @(x:Real, y:Real) -> Real { return x + y; });
+  return reduce<Real>(x, 0.0, @(x:Real, y:Real) -> Real { return x + y; });
 }
 
 /**
  * Sum of a vector.
  */
 function sum(x:Integer[_]) -> Integer {
-  return reduce(x, 0, @(x:Integer, y:Integer) -> Integer { return x + y; });
+  return reduce<Integer>(x, 0, @(x:Integer, y:Integer) -> Integer { return x + y; });
 }
 
 /**
  * Sum of a vector.
  */
 function sum(x:Boolean[_]) -> Boolean {
-  return reduce(x, false, @(x:Boolean, y:Boolean) -> Boolean {
+  return reduce<Boolean>(x, false, @(x:Boolean, y:Boolean) -> Boolean {
       return x + y; });
 }
 
@@ -208,7 +208,7 @@ function sum(x:Boolean[_]) -> Boolean {
  */
 function max(x:Real[_]) -> Real {
   assert length(x) > 0;
-  return reduce(x, x[1], @(x:Real, y:Real) -> Real {
+  return reduce<Real>(x, x[1], @(x:Real, y:Real) -> Real {
       return max(x, y); });
 }
 
@@ -217,7 +217,7 @@ function max(x:Real[_]) -> Real {
  */
 function max(x:Integer[_]) -> Integer {
   assert length(x) > 0;
-  return reduce(x, x[1], @(x:Integer, y:Integer) -> Integer {
+  return reduce<Integer>(x, x[1], @(x:Integer, y:Integer) -> Integer {
       return max(x, y); });
 }
 
@@ -226,7 +226,7 @@ function max(x:Integer[_]) -> Integer {
  */
 function max(x:Boolean[_]) -> Boolean {
   assert length(x) > 0;
-  return reduce(x, x[1], @(x:Boolean, y:Boolean) -> Boolean {
+  return reduce<Boolean>(x, x[1], @(x:Boolean, y:Boolean) -> Boolean {
       return max(x, y); });
 }
 
@@ -235,7 +235,7 @@ function max(x:Boolean[_]) -> Boolean {
  */
 function min(x:Real[_]) -> Real {
   assert length(x) > 0;
-  return reduce(x, x[1], @(x:Real, y:Real) -> Real {
+  return reduce<Real>(x, x[1], @(x:Real, y:Real) -> Real {
       return min(x, y); });
 }
 
@@ -244,7 +244,7 @@ function min(x:Real[_]) -> Real {
  */
 function min(x:Integer[_]) -> Integer {
   assert length(x) > 0;
-  return reduce(x, x[1], @(x:Integer, y:Integer) -> Integer {
+  return reduce<Integer>(x, x[1], @(x:Integer, y:Integer) -> Integer {
       return min(x, y); });
 }
 
@@ -253,7 +253,7 @@ function min(x:Integer[_]) -> Integer {
  */
 function min(x:Boolean[_]) -> Boolean {
   assert length(x) > 0;
-  return reduce(x, x[1], @(x:Boolean, y:Boolean) -> Boolean {
+  return reduce<Boolean>(x, x[1], @(x:Boolean, y:Boolean) -> Boolean {
       return min(x, y); });
 }
 
@@ -261,14 +261,14 @@ function min(x:Boolean[_]) -> Boolean {
  * Inclusive prefix sum of a vector.
  */
 function inclusive_scan_sum(x:Real[_]) -> Real[_] {
-  return inclusive_scan(x, @(x:Real, y:Real) -> Real { return x + y; });
+  return inclusive_scan<Real>(x, @(x:Real, y:Real) -> Real { return x + y; });
 }
 
 /**
  * Inclusive prefix sum of a vector.
  */
 function inclusive_scan_sum(x:Integer[_]) -> Integer[_] {
-  return inclusive_scan(x, @(x:Integer, y:Integer) -> Integer {
+  return inclusive_scan<Integer>(x, @(x:Integer, y:Integer) -> Integer {
       return x + y; });
 }
 
@@ -276,7 +276,7 @@ function inclusive_scan_sum(x:Integer[_]) -> Integer[_] {
  * Inclusive prefix sum of a vector.
  */
 function inclusive_scan_sum(x:Boolean[_]) -> Boolean[_] {
-  return inclusive_scan(x, @(x:Boolean, y:Boolean) -> Boolean {
+  return inclusive_scan<Boolean>(x, @(x:Boolean, y:Boolean) -> Boolean {
       return x + y; });
 }
 
@@ -284,14 +284,14 @@ function inclusive_scan_sum(x:Boolean[_]) -> Boolean[_] {
  * Exclusive prefix sum of a vector.
  */
 function exclusive_scan_sum(x:Real[_]) -> Real[_] {
-  return exclusive_scan(x, 0.0, @(x:Real, y:Real) -> Real { return x + y; });
+  return exclusive_scan<Real>(x, 0.0, @(x:Real, y:Real) -> Real { return x + y; });
 }
 
 /**
  * Exclusive prefix sum of a vector.
  */
 function exclusive_scan_sum(x:Integer[_]) -> Integer[_] {
-  return exclusive_scan(x, 0, @(x:Integer, y:Integer) -> Integer {
+  return exclusive_scan<Integer>(x, 0, @(x:Integer, y:Integer) -> Integer {
       return x + y; });
 }
 
@@ -299,6 +299,6 @@ function exclusive_scan_sum(x:Integer[_]) -> Integer[_] {
  * Exclusive prefix sum of a vector.
  */
 function exclusive_scan_sum(x:Boolean[_]) -> Boolean[_] {
-  return exclusive_scan(x, false, @(x:Boolean, y:Boolean) -> Boolean {
+  return exclusive_scan<Boolean>(x, false, @(x:Boolean, y:Boolean) -> Boolean {
       return x + y; });
 }

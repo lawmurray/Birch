@@ -6,8 +6,8 @@
  * - op: Operator.
  */
 function reduce(x:Real!, init:Real, op:@(Real, Real) -> Real) -> Real {
-  result:Real <- init;
-  while (x?) {
+  auto result <- init;
+  while x? {
     result <- op(result, x!);
   }
   return result;
@@ -21,8 +21,8 @@ function reduce(x:Real!, init:Real, op:@(Real, Real) -> Real) -> Real {
  * - op: Operator.
  */
 function reduce(x:Integer!, init:Integer, op:@(Integer, Integer) -> Integer) -> Integer {
-  result:Integer <- init;
-  while (x?) {
+  auto result <- init;
+  while x? {
     result <- op(result, x!);
   }
   return result;
@@ -36,8 +36,8 @@ function reduce(x:Integer!, init:Integer, op:@(Integer, Integer) -> Integer) -> 
  * - op: Operator.
  */
 function reduce(x:Boolean!, init:Boolean, op:@(Boolean, Boolean) -> Boolean) -> Boolean {
-  result:Boolean <- init;
-  while (x?) {
+  auto result <- init;
+  while x? {
     result <- op(result, x!);
   }
   return result;
@@ -47,21 +47,21 @@ function reduce(x:Boolean!, init:Boolean, op:@(Boolean, Boolean) -> Boolean) -> 
  * Sum over range.
  */
 function sum(x:Real!) -> Real {
-  return reduce(x, 0.0, @(x:Real, y:Real) -> Real { return x + y; });
+  return reduce<Real>(x, 0.0, @(x:Real, y:Real) -> Real { return x + y; });
 }
 
 /**
  * Sum over range.
  */
 function sum(x:Integer!) -> Integer {
-  return reduce(x, 0, @(x:Integer, y:Integer) -> Integer { return x + y; });
+  return reduce<Integer>(x, 0, @(x:Integer, y:Integer) -> Integer { return x + y; });
 }
 
 /**
  * Sum over range.
  */
 function sum(x:Boolean!) -> Boolean {
-  return reduce(x, false, @(x:Boolean, y:Boolean) -> Boolean { return x + y; });
+  return reduce<Boolean>(x, false, @(x:Boolean, y:Boolean) -> Boolean { return x + y; });
 }
 
 /**
@@ -69,8 +69,8 @@ function sum(x:Boolean!) -> Boolean {
  */
 function max(x:Real!) -> Real {
   x?;
-  init:Real <- x!;
-  return reduce(x, init, @(x:Real, y:Real) -> Real { return max(x, y); });
+  auto init <- x!;
+  return reduce<Real>(x, init, @(x:Real, y:Real) -> Real { return max(x, y); });
 }
 
 /**
@@ -78,8 +78,8 @@ function max(x:Real!) -> Real {
  */
 function max(x:Integer!) -> Integer {
   x?;
-  init:Integer <- x!;
-  return reduce(x, init, @(x:Integer, y:Integer) -> Integer { return max(x, y); });
+  auto init <- x!;
+  return reduce<Integer>(x, init, @(x:Integer, y:Integer) -> Integer { return max(x, y); });
 }
 
 /**
@@ -87,8 +87,8 @@ function max(x:Integer!) -> Integer {
  */
 function max(x:Boolean!) -> Boolean {
   x?;
-  init:Boolean <- x!;
-  return reduce(x, init, @(x:Boolean, y:Boolean) -> Boolean { return max(x, y); });
+  auto init <- x!;
+  return reduce<Boolean>(x, init, @(x:Boolean, y:Boolean) -> Boolean { return max(x, y); });
 }
 
 /**
@@ -96,8 +96,8 @@ function max(x:Boolean!) -> Boolean {
  */
 function min(x:Real!) -> Real {
   x?;
-  init:Real <- x!;
-  return reduce(x, init, @(x:Real, y:Real) -> Real { return min(x, y); });
+  auto init <- x!;
+  return reduce<Real>(x, init, @(x:Real, y:Real) -> Real { return min(x, y); });
 }
 
 /**
@@ -105,8 +105,8 @@ function min(x:Real!) -> Real {
  */
 function min(x:Integer!) -> Integer {
   x?;
-  init:Integer <- x!;
-  return reduce(x, init, @(x:Integer, y:Integer) -> Integer { return min(x, y); });
+  auto init <- x!;
+  return reduce<Integer>(x, init, @(x:Integer, y:Integer) -> Integer { return min(x, y); });
 }
 
 /**
@@ -114,8 +114,8 @@ function min(x:Integer!) -> Integer {
  */
 function min(x:Boolean!) -> Boolean {
   x?;
-  init:Boolean <- x!;
-  return reduce(x, init, @(x:Boolean, y:Boolean) -> Boolean { return min(x, y); });
+  auto init <- x!;
+  return reduce<Boolean>(x, init, @(x:Boolean, y:Boolean) -> Boolean { return min(x, y); });
 }
 
 /**
@@ -127,7 +127,7 @@ function min(x:Boolean!) -> Boolean {
  */
 fiber limit(x:Real!, l:Integer) -> Real {
   assert l >= 0;
-  i:Integer <- 1;
+  auto i <- 1;
   while i <= l && x? {
     yield x!;
     i <- i + 1;
@@ -143,7 +143,7 @@ fiber limit(x:Real!, l:Integer) -> Real {
  */
 fiber limit(x:Integer!, l:Integer) -> Integer {
   assert l >= 0;
-  i:Integer <- 1;
+  auto i <- 1;
   while i <= l && x? {
     yield x!;
     i <- i + 1;
@@ -159,7 +159,7 @@ fiber limit(x:Integer!, l:Integer) -> Integer {
  */
 fiber limit(x:Boolean!, l:Integer) -> Boolean {
   assert l >= 0;
-  i:Integer <- 1;
+  auto i <- 1;
   while i <= l && x? {
     yield x!;
     i <- i + 1;

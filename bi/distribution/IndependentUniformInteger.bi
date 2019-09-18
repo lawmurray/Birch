@@ -1,5 +1,5 @@
 /**
- * Multivariate uniform distribution over integers on an orthogonal lattice.
+ * Uniform distribution over integers on an orthogonal lattice.
  */
 final class IndependentUniformInteger(l:Expression<Integer[_]>,
     u:Expression<Integer[_]>) < Distribution<Integer[_]> {
