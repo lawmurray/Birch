@@ -35,6 +35,54 @@ function lgamma(x:Real32) -> Real32 {
 }
 
 /**
+ * The multivariate gamma function.
+ */
+function gamma(x:Real64, p:Integer) -> Real64 {
+  assert p > 0;
+  auto y <- 0.25*(p*(p - 1))*log(π);
+  for auto i in 1..p {
+    y <- y*gamma(x + 0.5*(1 - i));
+  }
+  return y;
+}
+
+/**
+ * The multivariate gamma function.
+ */
+function gamma(x:Real32, p:Integer) -> Real32 {
+  assert p > 0;
+  auto y <- Real32(0.25)*Real32(p*(p - 1))*log(Real32(π));
+  for auto i in 1..p {
+    y <- y*gamma(x + Real32(0.5)*Real32(1 - i));
+  }
+  return y;
+}
+
+/**
+ * Logarithm of the multivariate gamma function.
+ */
+function lgamma(x:Real64, p:Integer) -> Real64 {
+  assert p > 0;
+  auto y <- 0.25*(p*(p - 1))*log(π);
+  for auto i in 1..p {
+    y <- y + lgamma(x + 0.5*(1 - i));
+  }
+  return y;
+}
+
+/**
+ * Logarithm of the multivariate gamma function.
+ */
+function lgamma(x:Real32, p:Integer) -> Real32 {
+  assert p > 0;
+  auto y <- Real32(0.25)*Real32(p*(p - 1))*log(Real32(π));
+  for auto i in 1..p {
+    y <- y + lgamma(x + Real32(0.5)*Real32(1 - i));
+  }
+  return y;
+}
+
+/**
  * The beta function.
  */
 function beta(x:Real64, y:Real64) -> Real64 {

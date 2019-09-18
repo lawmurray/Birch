@@ -68,6 +68,48 @@ function transform<Value>(X:Value[_,_], Y:Value[_,_],
 }
 
 /**
+ * Ternary transformation.
+ *
+ * - x: First operand.
+ * - y: Second operand.
+ * - z: Third operand.
+ * - f: Operator.
+ */
+function transform<Value>(x:Value[_], y:Value[_], z:Value[_],
+    f:@(Value, Value, Value) -> Value) -> Value[_] {
+  assert length(x) == length(y);
+  assert length(y) == length(z);
+  a:Value[length(x)];
+  for auto i in 1..length(x) {
+    a[i] <- f(x[i], y[i], z[i]);
+  }
+  return a;
+}
+
+/**
+ * Ternary transformation.
+ *
+ * - X: First operand.
+ * - Y: Second operand.
+ * - Z: Third operand.
+ * - f: Operator.
+ */
+function transform<Value>(X:Value[_,_], Y:Value[_,_], Z:Value[_,_],
+    f:@(Value, Value, Value) -> Value) -> Value[_,_] {
+  assert rows(X) == rows(Y);
+  assert rows(Y) == rows(Z);
+  assert columns(X) == columns(Y);
+  assert columns(Y) == columns(Z);
+  A:Value[_,_];
+  for auto i in 1..rows(X) {
+    for auto j in 1..columns(X) {
+      A[i,j] <- f(X[i,j], Y[i,j], Z[i,j]);
+    }
+  }
+  return A;
+}
+
+/**
  * Reduction.
  *
  * - x: Vector.
@@ -119,6 +161,28 @@ function transform_reduce<Value>(x:Value[_], y:Value[_], init:Value,
     z <- op1(z, op2(x[n], y[n]));
   }
   return z;
+}
+
+/**
+ * Ternary transformation and reduction.
+ *
+ * - x: First operand.
+ * - y: Second operand.
+ * - z: Third operand.
+ * - init: Initial value.
+ * - op1: Reduction operator.
+ * - op2: Transformation operator.
+ */
+function transform_reduce<Value>(x:Value[_], y:Value[_], z:Value[_],
+    init:Value, op1:@(Value, Value) -> Value,
+    op2:@(Value, Value, Value) -> Value) -> Value {
+  assert length(x) == length(y);
+  assert length(y) == length(z);
+  auto a <- init;
+  for auto n in 1..length(x) {
+    a <- op1(a, op2(x[n], y[n], z[n]));
+  }
+  return a;
 }
 
 /**

@@ -138,6 +138,11 @@ function diagonal(X:Boolean[_,_]) -> Boolean[_];
 function norm(x:Real[_]) -> Real;
 
 /**
+ * Trace of a matrix.
+ */
+function trace(X:Real[_,_]) -> Real;
+
+/**
  * Determinant of a matrix.
  */
 function det(X:Real[_,_]) -> Real;
@@ -248,11 +253,11 @@ function solve(X:Real[_,_], y:Real[_]) -> Real[_];
 function solve(X:Real[_,_], Y:Real[_,_]) -> Real[_,_];
 
 /**
- * Cholesky decomposition of a matrix, $X = LL^{\top}$.
+ * Cholesky factor of a matrix, $X = LL^{\top}$.
  *
  * Returns: the lower-triangular factor $L$.
  */
-function chol(X:Real[_,_]) -> Real[_,_] {
+function cholesky(X:Real[_,_]) -> Real[_,_] {
   assert rows(X) == columns(X);
   
   L:Real[rows(X),columns(X)];
@@ -260,68 +265,4 @@ function chol(X:Real[_,_]) -> Real[_,_] {
   L.toEigen() = X.toEigen().llt().matrixL();
   }}
   return L;
-}
-
-/**
- * Determinant of a symmetric positive-definite matrix, computed using the
- * Cholesky decomposition.
- */
-function choldet(X:Real[_,_]) -> Real {
-  L:Real[_,_] <- chol(X);
-  n:Integer <- rows(X);
-  d:Real <- 1.0;
-  for (i:Integer in 1..n) {
-    d <- d*L[i,i];
-  }
-  return d*d;
-}
-
-/**
- * Logarithm of the determinant of a symmetric positive-definite matrix,
- * computed using the Cholesky decomposition.
- */
-function lcholdet(X:Real[_,_]) -> Real {
-  L:Real[_,_] <- chol(X);
-  n:Integer <- rows(X);
-  d:Real <- 0.0;
-  for (i:Integer in 1..n) {
-    d <- d + log(L[i,i]);
-  }
-  return 2.0*d;
-}
-
-/**
- * Inverse of a symmetric positive definite matrix via the Cholesky
- * decomposition.
- */
-function cholinv(X:Real[_,_]) -> Real[_,_] {
-  return cholsolve(X, identity(rows(X)));
-}
-
-/**
- * Solve a system of equations with a symmetric positive definite matrix via
- * the Cholesky decomposition.
- */
-function cholsolve(X:Real[_,_], y:Real[_]) -> Real[_] {
-  assert columns(X) == length(y);
-  
-  z:Real[rows(X)];
-  cpp{{
-  z.toEigen().noalias() = X.toEigen().llt().solve(y.toEigen());
-  }}
-  return z;
-}
-
-/**
- * Solve a system of equations with a symmetric positive definite matrix via
- * the Cholesky decomposition.
- */
-function cholsolve(X:Real[_,_], Y:Real[_,_]) -> Real[_,_] {
-  assert columns(X) == rows(Y);
-  
-  Z:Real[rows(Y),columns(Y)];
-  cpp{{
-  Z.toEigen().noalias() = X.toEigen().llt().solve(Y.toEigen());
-  }}
-  return Z;
 }

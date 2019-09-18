@@ -316,7 +316,7 @@ function update_inverse_gamma_gamma(x:Real, k:Real, α:Real, β:Real) ->
  */
 function update_multivariate_gaussian_gaussian(x:Real[_], μ:Real[_],
     Σ:Real[_,_], S:Real[_,_]) -> (Real[_], Real[_,_]) {
-  auto K' <- Σ*cholinv(Σ + S);
+  auto K' <- Σ*inv(llt(Σ + S));
   auto μ' <- μ + K'*(x - μ);
   auto Σ' <- Σ - K'*Σ;
   return (μ', Σ');
@@ -337,7 +337,7 @@ function update_multivariate_gaussian_gaussian(x:Real[_], μ:Real[_],
  */
 function update_linear_multivariate_gaussian_gaussian(x:Real[_], A:Real[_,_],
     μ:Real[_], Σ:Real[_,_], c:Real[_], S:Real[_,_]) -> (Real[_], Real[_,_]) {
-  auto K' <- Σ*transpose(A)*cholinv(A*Σ*transpose(A) + S);
+  auto K' <- Σ*transpose(A)*inv(llt(A*Σ*transpose(A) + S));
   auto μ' <- μ + K'*(x - A*μ - c);
   auto Σ' <- Σ - K'*A*Σ;
   return (μ', Σ');

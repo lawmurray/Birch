@@ -55,6 +55,16 @@ auto dot(const libbirch::Array<Type1,Frame1>& o1,
 }
 
 template<class Type>
+auto trace(const Eigen::MatrixBase<Type>& o) {
+  return o.trace();
+}
+
+template<class Type, class Frame>
+auto trace(const libbirch::Array<Type,Frame>& o) {
+  return trace(o.toEigen());
+}
+
+template<class Type>
 auto det(const Eigen::MatrixBase<Type>& o) {
   return o.determinant();
 }

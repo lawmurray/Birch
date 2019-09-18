@@ -286,6 +286,21 @@ function pdf_beta(x:Real, α:Real, β:Real) -> Real {
 }
 
 /**
+ * PDF of $\chi^2$ variate.
+ *
+ * - x: The variate.
+ * - ν: Degrees of freedom.
+ *
+ * Return: the probability density.
+ */
+function pdf_chi_squared(x:Real, ν:Real) -> Real {
+  assert 0.0 < ν;
+  cpp{{
+  return boost::math::pdf(boost::math::chi_squared_distribution<>(ν), x);
+  }}
+}
+
+/**
  * PDF of a gamma variate.
  *
  * - x: The variate.
@@ -303,6 +318,19 @@ function pdf_gamma(x:Real, k:Real, θ:Real) -> Real {
 }
 
 /**
+ * PDF of a Wishart variate.
+ *
+ * - X: The variate.
+ * - Ψ: Scale.
+ * - ν: Degrees of freedom.
+ *
+ * Returns: the probability density.
+ */
+function pdf_wishart(X:Real[_,_], Ψ:Real[_,_], ν:Real) -> Real {
+  return exp(logpdf_wishart(X, Ψ, ν));
+}
+
+/**
  * PDF of an inverse-gamma variate.
  *
  * - x: The variate.
@@ -317,6 +345,19 @@ function pdf_inverse_gamma(x:Real, α:Real, β:Real) -> Real {
   cpp{{
   return boost::math::pdf(boost::math::inverse_gamma_distribution<>(α, β), x);
   }}
+}
+
+/**
+ * PDF of an inverse Wishart variate.
+ *
+ * - X: The variate.
+ * - Ψ: Scale.
+ * - ν: Degrees of freedom.
+ *
+ * Returns: the probability density.
+ */
+function pdf_inverse_wishart(X:Real[_,_], Ψ:Real[_,_], ν:Real) -> Real {
+  return exp(logpdf_inverse_wishart(X, Ψ, ν));
 }
 
 /**
@@ -539,6 +580,21 @@ function pdf_multivariate_gaussian(x:Real[_], μ:Real[_], Σ:Real[_,_]) ->
  */
 function pdf_multivariate_gaussian(x:Real[_], μ:Real[_], σ2:Real) -> Real {
   return exp(logpdf_multivariate_gaussian(x, μ, σ2));
+}
+
+/**
+ * PDF of a matrix Gaussian distribution.
+ *
+ * - X: The variate.
+ * - M: Mean.
+ * - U: Within-row covariance.
+ * - V: Within-column covariance.
+ *
+ * Returns: the probability density.
+ */
+function pdf_matrix_gaussian(X:Real[_,_], M:Real[_,_], U:Real[_,_],
+    V:Real[_,_]) -> Real {
+  return exp(logpdf_matrix_gaussian(X, M, U, V));
 }
 
 /**

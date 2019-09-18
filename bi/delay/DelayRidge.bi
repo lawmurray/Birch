@@ -7,7 +7,7 @@ final class DelayRidge(future:(Real[_,_],Real[_])?, futureUpdate:Boolean,
   /**
    * Common precision, $\Lambda = \Sigma^{-1}$.
    */
-  Λ:LLT <- llt(cholinv(Σ));
+  Λ:LLT <- llt(inv(llt(Σ)));
 
   /**
    * Precision times mean, $Ν = \Lambda M$.

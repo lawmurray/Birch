@@ -397,6 +397,18 @@ function simulate_beta(α:Real, β:Real) -> Real {
 }
 
 /**
+ * Simulate $\chi^2$ distribution.
+ *
+ * - ν: Degrees of freedom.
+ */
+function simulate_chi_squared(ν:Real) -> Real {
+  assert 0.0 < ν;
+  cpp{{
+  return std::chi_squared_distribution<bi::type::Real>(ν)(rng);
+  }}
+}
+
+/**
  * Simulate a gamma distribution.
  *
  * - k: Shape.
@@ -411,6 +423,36 @@ function simulate_gamma(k:Real, θ:Real) -> Real {
 }
 
 /**
+ * Simulate a Wishart distribution.
+ *
+ * - Ψ: Scale.
+ * - ν: Degrees of freedeom.
+ */
+function simulate_wishart(Ψ:Real[_,_], ν:Real) -> Real[_,_] {
+  assert rows(Ψ) == columns(Ψ);
+  assert ν > rows(Ψ) - 1;
+  auto p <- rows(Ψ);
+  A:Real[p,p];
+  
+  for auto i in 1..p {
+    for auto j in 1..p {
+      if j == i {
+        /* on diagonal */
+        A[i,j] <- simulate_chi_squared(ν - i + 1);
+      } else if j < i {
+        /* in lower triangle */
+        A[i,j] <- simulate_gaussian(0.0, 1.0);
+      } else {
+        /* in upper triangle */
+        A[i,j] <- 0.0;
+      }
+    }
+  }
+  auto L <- cholesky(Ψ)*A;
+  return L*transpose(L);
+}
+
+/**
  * Simulate an inverse-gamma distribution.
  *
  * - α: Shape.
@@ -418,6 +460,16 @@ function simulate_gamma(k:Real, θ:Real) -> Real {
  */
 function simulate_inverse_gamma(α:Real, β:Real) -> Real {
   return 1.0/simulate_gamma(α, 1.0/β);
+}
+
+/**
+ * Simulate an inverse-Wishart distribution.
+ *
+ * - Ψ: Scale.
+ * - ν: Degrees of freedeom.
+ */
+function simulate_inverse_wishart(Ψ:Real[_,_], ν:Real) -> Real[_,_] {
+  return inv(llt(simulate_wishart(inv(llt(Ψ)), ν)));
 }
 
 /**
@@ -608,12 +660,12 @@ function simulate_linear_normal_inverse_gamma_gaussian(a:Real, μ:Real,
  * - Σ: Covariance.
  */
 function simulate_multivariate_gaussian(μ:Real[_], Σ:Real[_,_]) -> Real[_] {
-  D:Integer <- length(μ);
+  auto D <- length(μ);
   z:Real[D];
-  for (d:Integer in 1..D) {
+  for auto d in 1..D {
     z[d] <- simulate_gaussian(0.0, 1.0);
   }
-  return μ + chol(Σ)*z;
+  return μ + cholesky(Σ)*z;
 }
 
 /**
@@ -623,13 +675,33 @@ function simulate_multivariate_gaussian(μ:Real[_], Σ:Real[_,_]) -> Real[_] {
  * - σ2: Variance.
  */
 function simulate_multivariate_gaussian(μ:Real[_], σ2:Real) -> Real[_] {
-  D:Integer <- length(μ);
+  auto D <- length(μ);
+  auto σ <- sqrt(σ2);
   z:Real[D];
-  σ:Real <- sqrt(σ2);
-  for (d:Integer in 1..D) {
+  for auto d in 1..D {
     z[d] <- μ[d] + σ*simulate_gaussian(0.0, 1.0);
   }
   return z;
+}
+
+/**
+ * Simulate a matrix Gaussian distribution.
+ *
+ * - M: Mean.
+ * - U: Within-row covariance.
+ * - V: Within-column covariance.
+ */
+function simulate_matrix_gaussian(M:Real[_,_], U:Real[_,_],
+    V:Real[_,_]) -> Real[_,_] {
+  auto N <- rows(M);
+  auto P <- columns(M);
+  Z:Real[N,P];
+  for auto n in 1..N {
+    for auto p in 1..P {
+      Z[n,p] <- simulate_gaussian(0.0, 1.0);
+    }
+  }
+  return M + cholesky(U)*Z*transpose(cholesky(V));
 }
 
 /**
@@ -647,7 +719,7 @@ function simulate_multivariate_student_t(ν:Real, μ:Real[_], Λ:Real[_,_]) ->
   for (d:Integer in 1..D) {
     z[d] <- simulate_student_t(ν);
   }
-  return μ + solve(transpose(chol(Λ)), z);
+  return μ + solve(transpose(cholesky(Λ)), z);
 }
 
 /**
@@ -713,7 +785,7 @@ function simulate_identical_inverse_gamma_gaussian(μ:Real[_], α:Real,
 function simulate_identical_normal_inverse_gamma_gaussian(μ:Real[_],
     Λ:LLT, α:Real, β:Real) -> Real[_] {
   return simulate_multivariate_student_t(2.0*α, μ,
-      (α/β)*cholinv(identity(rows(Λ)) + inv(Λ)));
+      (α/β)*inv(llt(identity(rows(Λ)) + inv(Λ))));
 }
 
 /**
@@ -730,7 +802,7 @@ function simulate_identical_normal_inverse_gamma_gaussian(μ:Real[_],
 function simulate_linear_identical_normal_inverse_gamma_gaussian(
     A:Real[_,_], μ:Real[_], c:Real[_], Λ:LLT, α:Real, β:Real) -> Real[_] {
   return simulate_multivariate_student_t(2.0*α, A*μ + c,
-      (α/β)*cholinv(identity(rows(A)) + A*solve(Λ, transpose(A))));
+      (α/β)*inv(llt(identity(rows(A)) + A*solve(Λ, transpose(A)))));
 }
 
 /**

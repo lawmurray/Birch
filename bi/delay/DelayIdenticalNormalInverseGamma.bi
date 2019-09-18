@@ -7,7 +7,7 @@ final class DelayIdenticalNormalInverseGamma(future:Real[_]?,
   /**
    * Precision.
    */
-  Λ:LLT <- llt(cholinv(A));
+  Λ:LLT <- llt(inv(llt(A)));
 
   /**
    * Precision times mean.

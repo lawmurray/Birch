@@ -269,6 +269,21 @@ function cdf_beta(x:Real, α:Real, β:Real) -> Real {
 }
 
 /**
+ * CDF of $\chi^2$ variate.
+ *
+ * - x: The variate.
+ * - ν: Degrees of freedom.
+ *
+ * Return: the cumulative probability.
+ */
+function cdf_chi_squared(x:Real, ν:Real) -> Real {
+  assert 0.0 < ν;
+  cpp{{
+  return boost::math::cdf(boost::math::chi_squared_distribution<>(ν), x);
+  }}
+}
+
+/**
  * CDF of a gamma variate.
  *
  * - x: The variate.
