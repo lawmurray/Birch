@@ -1,15 +1,14 @@
 /**
- * Normal-inverse-gamma distribution independent and identical variance
- * scaling.
+ * Multivariate normal-inverse-gamma distribution.
  *
  * This represents the joint distribution:
  *
  * $$\sigma^2 \sim \mathrm{Inverse-Gamma}(\alpha, \beta)$$
- * $$x \mid \sigma^2 \sim \mathrm{N}(\mu, A\sigma^2),$$
+ * $$x \mid \sigma^2 \sim \mathrm{N}(\mu, Σ\sigma^2),$$
  *
  * which may be denoted:
  *
- * $$(x, \sigma^2) \sim \mathrm{Normal-Inverse-Gamma(\mu, A, \alpha, \beta),$$
+ * $$(x, \sigma^2) \sim \mathrm{Normal-Inverse-Gamma(\mu, Σ, \alpha, \beta),$$
  *
  * and is a conjugate prior of a Gaussian distribution with both unknown mean
  * and variance. The variance scaling is independent and identical in the
@@ -19,16 +18,16 @@
  * establish the conjugate relationship via code such as the following:
  *
  *     σ2 ~ InverseGamma(α, β);
- *     x ~ Gaussian(μ, A*σ2);
+ *     x ~ Gaussian(μ, Σ*σ2);
  *     y ~ Gaussian(x, σ2);
  *
  * where the last argument in the distribution of `y` must appear in the
- * last argument of the distribution of `x`. The operation of `A` on `σ2` may
+ * last argument of the distribution of `x`. The operation of `Σ` on `σ2` may
  * be multiplication on the left (as above) or the right, or division on the
  * right.
  */
 final class MultivariateNormalInverseGamma(μ:Expression<Real[_]>,
-    A:Expression<Real[_,_]>, α:Expression<Real>, β:Expression<Real>) <
+    Σ:Expression<Real[_,_]>, α:Expression<Real>, β:Expression<Real>) <
     Distribution<Real[_]> {
   /**
    * Mean.
@@ -36,23 +35,23 @@ final class MultivariateNormalInverseGamma(μ:Expression<Real[_]>,
   μ:Expression<Real[_]> <- μ;
   
   /**
-   * Covariance scale.
+   * Covariance.
    */
-  A:Expression<Real[_,_]> <- A;
+  Σ:Expression<Real[_,_]> <- Σ;
 
   /**
-   * Variance.
+   * Covariance scale.
    */
   σ2:InverseGamma(α, β);
   
   function valueForward() -> Real[_] {
     assert !delay?;
-    return simulate_multivariate_gaussian(μ, A*σ2.value());
+    return simulate_multivariate_gaussian(μ, Σ*σ2.value());
   }
 
   function observeForward(x:Real[_]) -> Real {
     assert !delay?;
-    return logpdf_multivariate_gaussian(x, μ, A*σ2.value());
+    return logpdf_multivariate_gaussian(x, μ, Σ*σ2.value());
   }
   
   function graft(force:Boolean) {
@@ -60,7 +59,7 @@ final class MultivariateNormalInverseGamma(μ:Expression<Real[_]>,
       delay!.prune();
     } else if force {
       delay <- DelayMultivariateNormalInverseGamma(future, futureUpdate, μ,
-          A, σ2.graftInverseGamma()!);
+          Σ, σ2.graftInverseGamma()!);
     }
   }
 }

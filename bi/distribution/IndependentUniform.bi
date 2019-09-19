@@ -14,12 +14,12 @@ final class IndependentUniform(l:Expression<Real[_]>, u:Expression<Real[_]>) < D
 
   function valueForward() -> Real[_] {
     assert !delay?;
-    return simulate_multivariate_uniform(l, u);
+    return simulate_independent_uniform(l, u);
   }
 
   function observeForward(x:Real[_]) -> Real {
     assert !delay?;
-    return logpdf_multivariate_uniform(x, l, u);
+    return logpdf_independent_uniform(x, l, u);
   }
 
   function graft(force:Boolean) {

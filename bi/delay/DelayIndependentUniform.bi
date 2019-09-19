@@ -14,11 +14,11 @@ final class DelayIndependentUniform(future:Real[_]?, futureUpdate:Boolean,
   u:Real[_] <- u;
 
   function simulate() -> Real[_] {
-    return simulate_multivariate_uniform(l, u);
+    return simulate_independent_uniform(l, u);
   }
   
   function logpdf(x:Real[_]) -> Real {
-    return logpdf_multivariate_uniform(x, l, u);
+    return logpdf_independent_uniform(x, l, u);
   }
 
   function update(x:Real[_]) {
@@ -30,7 +30,7 @@ final class DelayIndependentUniform(future:Real[_]?, futureUpdate:Boolean,
   }
 
   function pdf(x:Real[_]) -> Real {
-    return pdf_multivariate_uniform(x, l, u);
+    return pdf_independent_uniform(x, l, u);
   }
 
   function write(buffer:Buffer) {

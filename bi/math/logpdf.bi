@@ -710,6 +710,96 @@ function logpdf_multivariate_gaussian(x:Real[_], μ:Real[_], σ2:Real) -> Real {
 }
 
 /**
+ * Observe a multivariate Gaussian variate with an inverse-gamma distribution
+ * over a diagonal covariance.
+ *
+ * - x: The variate.
+ * - μ: Mean.
+ * - α: Shape of the inverse-gamma.
+ * - β: Scale of the inverse-gamma.
+ *
+ * Returns: the log probability density.
+ */
+function logpdf_inverse_gamma_multivariate_gaussian(x:Real[_], μ:Real[_],
+    α:Real, β:Real) -> Real {
+  return logpdf_multivariate_student_t(x, 2.0*α, μ, β/α);
+}
+
+/**
+ * Observe a multivariate normal inverse-gamma variate.
+ *
+ * - x: The variate.
+ * - ν: Precision times mean.
+ * - Λ: Precision.
+ * - α: Shape of inverse-gamma on scale.
+ * - β: Scale of inverse-gamma on scale.
+ *
+ * Returns: the log probability density.
+ */
+function logpdf_multivariate_normal_inverse_gamma(x:Real[_], ν:Real[_],
+    Λ:LLT, α:Real, β:Real) -> Real {
+  return logpdf_multivariate_student_t(x, 2.0*α, solve(Λ, ν), (β/α)*inv(Λ));
+}
+
+/**
+ * Observe a multivariate Gaussian variate with a multivariate normal
+ * inverse-gamma prior.
+ *
+ * - x: The variate.
+ * - ν: Precision times mean.
+ * - Λ: Precision.
+ * - α: Shape of the inverse-gamma.
+ * - β: Scale of the inverse-gamma.
+ *
+ * Returns: the log probability density.
+ */
+function logpdf_multivariate_normal_inverse_gamma_multivariate_gaussian(x:Real[_],
+    ν:Real[_], Λ:LLT, α:Real, β:Real) -> Real {
+  auto D <- length(ν);
+  return logpdf_multivariate_student_t(x, 2.0*α, solve(Λ, ν), (β/α)*(identity(D) + inv(Λ)));
+}
+
+/**
+ * Observe a multivariate Gaussian variate with a multivariate linear normal
+ * inverse-gamma prior with linear transformation.
+ *
+ * - x: The variate.
+ * - A: Scale.
+ * - ν: Precision times mean.
+ * - c: Offset.
+ * - Λ: Precision.
+ * - α: Shape of the inverse-gamma.
+ * - β: Scale of the inverse-gamma.
+ *
+ * Returns: the log probability density.
+ */
+function logpdf_linear_multivariate_normal_inverse_gamma_multivariate_gaussian(x:Real[_],
+    A:Real[_,_], ν:Real[_], c:Real[_], Λ:LLT, α:Real, β:Real) -> Real {
+  return logpdf_multivariate_student_t(x, 2.0*α, A*solve(Λ, ν) + c,
+      (β/α)*(identity(rows(A)) + A*solve(Λ, transpose(A))));
+}
+
+/**
+ * Observe a multivariate Gaussian variate with a multivariate dot normal
+ * inverse-gamma prior with linear transformation.
+ *
+ * - x: The variate.
+ * - a: Scale.
+ * - ν: Precision times mean.
+ * - c: Offset.
+ * - Λ: Precision.
+ * - α: Shape of the inverse-gamma.
+ * - β: Scale of the inverse-gamma.
+ *
+ * Returns: the log probability density.
+ */
+function logpdf_dot_multivariate_normal_inverse_gamma_gaussian(x:Real,
+    a:Real[_], ν:Real[_], c:Real, Λ:LLT, α:Real, β:Real) -> Real {
+  return logpdf_student_t(x, 2.0*α, dot(a, solve(Λ, ν)) + c,
+      (β/α)*(1.0 + dot(a, solve(Λ, a))));
+}
+
+/**
  * Observe a matrix Gaussian distribution.
  *
  * - X: The variate.
@@ -730,21 +820,74 @@ function logpdf_matrix_gaussian(X:Real[_,_], M:Real[_,_], U:Real[_,_],
 }
 
 /**
+ * Observe a matrix normal-inverse-gamma variate.
+ *
+ * - X: The variate.
+ * - N: Precision times mean matrix.
+ * - Λ: Precision.
+ * - α: Variance shapes.
+ * - γ: Squared sum accumulators.
+ *
+ * Returns: the log probability density.
+ */
+function logpdf_matrix_normal_inverse_gamma(X:Real[_,_], N:Real[_,_], Λ:LLT,
+    α:Real[_], γ:Real[_]) -> Real {
+  auto R <- rows(N);
+  auto C <- columns(N);
+  auto M <- solve(Λ, N);
+  auto β <- γ - 0.5*diagonal(transpose(N)*M);
+  auto w <- 0.0;
+  for auto j in 1..C {
+    w <- w + logpdf_multivariate_student_t(X[1..R,j], 2.0*α[j], M[1..R,j],
+        (β[j]/α[j])*inv(Λ));
+  }
+  return w;
+}
+
+/**
+ * Observe a Gaussian variate with matrix normal inverse-gamma prior.
+ *
+ * - x: The variate.
+ * - a: Scale.
+ * - N: Precision times mean matrix.
+ * - Λ: Precision.
+ * - α: Variance shapes.
+ * - γ: Squared sum accumulators.
+ *
+ * Returns: the log probability density.
+ */
+function logpdf_dot_matrix_normal_inverse_gamma_multivariate_gaussian(
+    x:Real[_], a:Real[_], N:Real[_,_], Λ:LLT, α:Real[_],
+    γ:Real[_]) -> Real {
+  auto D <- length(x);
+  auto M <- solve(Λ, N);
+  auto μ <- transpose(M)*a;
+  auto β <- γ - 0.5*diagonal(transpose(N)*M);
+  auto c <- dot(a, solve(Λ, a));
+  auto w <- 0.0;
+  for auto d in 1..D {
+    w <- w + logpdf_student_t(x[d], 2.0*α[d], μ[d], β[d]*(1.0 + c)/α[d]);
+  }
+  return w;
+}
+
+/**
  * Observe a multivariate Student's $t$-distribution variate with location
  * and scale.
  *
  * - x: The variate.
- * - ν: Degrees of freedom.
- * - μ: Location.
- * - Λ: Precision.
+ * - k: Degrees of freedom.
+ * - m: Mean.
+ * - Σ: Covariance.
  *
  * Returns: the log probability density.
  */
-function logpdf_multivariate_student_t(x:Real[_], ν:Real, μ:Real[_],
-    Λ:Real[_,_]) -> Real {
-  D:Integer <- length(μ);
-  z:Real <- 0.5*(ν + D);
-  return lgamma(z) - lgamma(0.5*ν) - z*log1p(dot(x - μ, Λ*(x - μ))/ν) - 0.5*D*log(π*ν) + 0.5*ldet(llt(Λ));
+function logpdf_multivariate_student_t(x:Real[_], k:Real, μ:Real[_], Σ:Real[_,_])
+    -> Real {
+  auto D <- length(μ);
+  auto z <- 0.5*(k + D);
+  auto C <- llt(Σ);
+  return lgamma(z) - lgamma(0.5*k) - z*log1p(dot(x - μ, solve(C, x - μ))/k) - 0.5*D*(log(π*k) - ldet(C));
 }
 
 /**
@@ -752,107 +895,17 @@ function logpdf_multivariate_student_t(x:Real[_], ν:Real, μ:Real[_],
  * and diagonal scale.
  *
  * - x: The variate.
- * - ν: Degrees of freedom.
- * - μ: Location.
- * - λ: Precision.
- *
- * Returns: the log probability density.
- */
-function logpdf_multivariate_student_t(x:Real[_], ν:Real, μ:Real[_],
-    λ:Real) -> Real {
-  D:Integer <- length(μ);
-  z:Real <- 0.5*(ν + D);
-  return lgamma(z) - lgamma(0.5*ν) - z*log1p(dot(x - μ)*λ/ν) - 0.5*D*log(π*ν) + 0.5*D*log(λ);
-}
-
-/**
- * Observe a multivariate normal inverse-gamma variate.
- *
- * - x: The variate.
+ * - k: Degrees of freedom.
  * - μ: Mean.
- * - Λ: Precision.
- * - α: Shape of inverse-gamma on scale.
- * - β: Scale of inverse-gamma on scale.
+ * - σ2: Variance.
  *
  * Returns: the log probability density.
  */
-function logpdf_identical_normal_inverse_gamma(x:Real[_], μ:Real[_],
-    Λ:LLT, α:Real, β:Real) -> Real {
-  return logpdf_multivariate_student_t(x, 2.0*α, μ, Λ*(α/β));
-}
-
-/**
- * Observe a multivariate Gaussian variate with an inverse-gamma distribution
- * over a diagonal covariance.
- *
- * - x: The variate.
- * - μ: Mean.
- * - α: Shape of the inverse-gamma.
- * - β: Scale of the inverse-gamma.
- *
- * Returns: the log probability density.
- */
-function logpdf_inverse_gamma_multivariate_gaussian(x:Real[_], μ:Real[_],
-    α:Real, β:Real) -> Real {
-  return logpdf_multivariate_student_t(x, 2.0*α, μ, β/α);
-}
-
-/**
- * Observe a multivariate Gaussian variate with a multivariate normal
- * inverse-gamma prior.
- *
- * - x: The variate.
- * - μ: Mean.
- * - Λ: Precision.
- * - α: Shape of the inverse-gamma.
- * - β: Scale of the inverse-gamma.
- *
- * Returns: the log probability density.
- */
-function logpdf_identical_normal_inverse_gamma_gaussian(x:Real[_],
-    μ:Real[_], Λ:LLT, α:Real, β:Real) -> Real {
-  D:Integer <- length(μ);
-  return logpdf_multivariate_student_t(x, 2.0*α, μ, (α/β)*inv(identity(D) + inv(Λ)));
-}
-
-/**
- * Observe a multivariate Gaussian variate with a multivariate linear normal
- * inverse-gamma prior with linear transformation.
- *
- * - x: The variate.
- * - A: Scale.
- * - μ: Mean.
- * - c: Offset.
- * - Λ: Precision.
- * - α: Shape of the inverse-gamma.
- * - β: Scale of the inverse-gamma.
- *
- * Returns: the log probability density.
- */
-function logpdf_linear_identical_normal_inverse_gamma_gaussian(x:Real[_],
-    A:Real[_,_], μ:Real[_], c:Real[_], Λ:LLT, α:Real, β:Real) -> Real {
-  return logpdf_multivariate_student_t(x, 2.0*α, A*μ + c,
-      (α/β)*inv(identity(rows(A)) + A*solve(Λ, transpose(A))));
-}
-
-/**
- * Observe a multivariate Gaussian variate with a multivariate dot normal
- * inverse-gamma prior with linear transformation.
- *
- * - x: The variate.
- * - a: Scale.
- * - μ: Mean.
- * - c: Offset.
- * - Λ: Precision.
- * - α: Shape of the inverse-gamma.
- * - β: Scale of the inverse-gamma.
- *
- * Returns: the log probability density.
- */
-function logpdf_dot_multivariate_normal_inverse_gamma_multivariate_gaussian(x:Real,
-    a:Real[_], μ:Real[_], c:Real, Λ:LLT, α:Real, β:Real) -> Real {
-  return logpdf_student_t(x, 2.0*α, dot(a, μ) + c,
-      (β/α)*(1.0 + dot(a, solve(Λ, a))));
+function logpdf_multivariate_student_t(x:Real[_], k:Real, μ:Real[_],
+    σ2:Real) -> Real {
+  auto D <- length(μ);
+  auto z <- 0.5*(k + D);
+  return lgamma(z) - lgamma(0.5*k) - z*log1p(dot(x - μ)/(σ2*k)) - 0.5*D*(log(π*k) - log(σ2));
 }
 
 /**
@@ -864,7 +917,7 @@ function logpdf_dot_multivariate_normal_inverse_gamma_multivariate_gaussian(x:Re
  *
  * Returns: the log probability density.
  */
-function logpdf_multivariate_uniform(x:Real[_], l:Real[_], u:Real[_]) -> Real {
+function logpdf_independent_uniform(x:Real[_], l:Real[_], u:Real[_]) -> Real {
   assert length(x) > 0;
   assert length(l) == length(x);
   assert length(u) == length(x);
@@ -906,9 +959,9 @@ function logpdf_independent_uniform_int(x:Integer[_], l:Integer[_], u:Integer[_]
  * - σ2: Variance vector.
  * - N: Prior precision times mean for weights, where each column represents
  *      the mean of the weight for a separate output. 
- * - Λ: Common prior precision.
- * - α: Common prior weight and likelihood covariance shape.
- * - β: Prior covariance scale accumulators.
+ * - Λ: Common precision.
+ * - α: Common weight and likelihood covariance shape.
+ * - β: Covariance scale accumulators.
  *
  * Returns: Matrix of weights and vector of variances, where each column in
  * the matrix and element in the vector corresponds to a different output

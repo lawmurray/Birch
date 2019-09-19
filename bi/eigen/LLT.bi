@@ -251,7 +251,7 @@ function solve(S:LLT, Y:Real[_,_]) -> Real[_,_] {
  * Returns: the lower-triangular factor $L$.
  */
 function cholesky(S:LLT) -> Real[_,_] {
-  L:Real[_,_];
+  L:Real[rows(S),columns(S)];
   cpp{{
   L.toEigen() = S->llt.matrixL();
   }}
