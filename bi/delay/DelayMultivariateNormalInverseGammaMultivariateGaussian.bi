@@ -1,13 +1,13 @@
 /*
  * Delayed multivariate normal-inverse-gamma-Gaussian random variate.
  */
-final class DelayIdenticalNormalInverseGammaGaussian(future:Real[_]?,
-    futureUpdate:Boolean, μ:DelayIdenticalNormalInverseGamma) <
+final class DelayMultivariateNormalInverseGammaGaussian(future:Real[_]?,
+    futureUpdate:Boolean, μ:DelayMultivariateNormalInverseGamma) <
     DelayValue<Real[_]>(future, futureUpdate) {
   /**
    * Mean.
    */
-  μ:DelayIdenticalNormalInverseGamma& <- μ;
+  μ:DelayMultivariateNormalInverseGamma& <- μ;
 
   function simulate() -> Real[_] {
     return simulate_identical_normal_inverse_gamma_gaussian(
@@ -39,10 +39,10 @@ final class DelayIdenticalNormalInverseGammaGaussian(future:Real[_]?,
   }
 }
 
-function DelayIdenticalNormalInverseGammaGaussian(future:Real[_]?,
-    futureUpdate:Boolean, μ:DelayIdenticalNormalInverseGamma) ->
-    DelayIdenticalNormalInverseGammaGaussian {
-  m:DelayIdenticalNormalInverseGammaGaussian(future, futureUpdate, μ);
+function DelayMultivariateNormalInverseGammaGaussian(future:Real[_]?,
+    futureUpdate:Boolean, μ:DelayMultivariateNormalInverseGamma) ->
+    DelayMultivariateNormalInverseGammaGaussian {
+  m:DelayMultivariateNormalInverseGammaGaussian(future, futureUpdate, μ);
   μ.setChild(m);
   return m;
 }

@@ -762,7 +762,7 @@ function simulate_identical_normal_inverse_gamma(μ:Real[_], Λ:LLT,
  * - α: Shape of the inverse-gamma.
  * - β: Scale of the inverse-gamma.
  */
-function simulate_identical_inverse_gamma_gaussian(μ:Real[_], α:Real,
+function simulate_inverse_gamma_multivariate_gaussian(μ:Real[_], α:Real,
     β:Real) -> Real[_] {
   D:Integer <- length(μ);
   z:Real[D];
@@ -816,7 +816,7 @@ function simulate_linear_identical_normal_inverse_gamma_gaussian(
  * - α: Shape of the inverse-gamma.
  * - β: Scale of the inverse-gamma.
  */
-function simulate_dot_identical_normal_inverse_gamma_gaussian(
+function simulate_dot_multivariate_normal_inverse_gamma_multivariate_gaussian(
     a:Real[_], μ:Real[_], c:Real, Λ:LLT, α:Real, β:Real) -> Real {
   return simulate_student_t(2.0*α, dot(a, μ) + c,
       (β/α)*(1.0 + dot(a, solve(Λ, a))));
@@ -844,7 +844,7 @@ function simulate_multivariate_uniform(l:Real[_], u:Real[_]) -> Real[_] {
  * - l: Lower bound of hyperrectangle.
  * - u: Upper bound of hyperrectangle.
  */
-function simulate_multivariate_uniform_int(l:Integer[_], u:Integer[_]) -> Integer[_] {
+function simulate_independent_uniform_int(l:Integer[_], u:Integer[_]) -> Integer[_] {
   assert length(l) == length(u);
   D:Integer <- length(l);
   z:Integer[D];

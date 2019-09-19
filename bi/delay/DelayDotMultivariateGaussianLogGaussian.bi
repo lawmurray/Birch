@@ -28,12 +28,12 @@ final class DelayDotMultivariateGaussianLogGaussian(future:Real?,
   s2:Real <- s2;
 
   function update(x:Real) {
-    (m!.μ, m!.Σ) <- update_dot_multivariate_gaussian_gaussian(log(x), a,
+    (m!.μ, m!.Σ) <- update_dot_multivariate_gaussian_multivariate_gaussian(log(x), a,
         m!.μ, m!.Σ, c, s2);
   }
 
   function downdate(x:Real) {
-    (m!.μ, m!.Σ) <- downdate_dot_multivariate_gaussian_gaussian(log(x), a,
+    (m!.μ, m!.Σ) <- downdate_dot_multivariate_gaussian_multivariate_gaussian(log(x), a,
         m!.μ, m!.Σ, c, s2);
   }
 

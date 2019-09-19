@@ -23,14 +23,14 @@ program test_dot_multivariate_gaussian_gaussian(N:Integer <- 10000) {
  
   /* simulate forward */
   for i:Integer in 1..N {
-    m:TestMultivariateDotGaussianGaussian(a, μ_0, Σ_0, c, σ2_1);
+    m:TestDotMultivariateGaussianGaussian(a, μ_0, Σ_0, c, σ2_1);
     m.play();
     X1[i,1..6] <- m.forward();
   }
 
   /* simulate backward */
   for i:Integer in 1..N {
-    m:TestMultivariateDotGaussianGaussian(a, μ_0, Σ_0, c, σ2_1);
+    m:TestDotMultivariateGaussianGaussian(a, μ_0, Σ_0, c, σ2_1);
     m.play();
     X2[i,1..6] <- m.backward();
   }
@@ -41,7 +41,7 @@ program test_dot_multivariate_gaussian_gaussian(N:Integer <- 10000) {
   }
 }
 
-class TestMultivariateDotGaussianGaussian(a:Real[_], μ_0:Real[_],
+class TestDotMultivariateGaussianGaussian(a:Real[_], μ_0:Real[_],
     Σ_0:Real[_,_], c:Real, σ2_1:Real) < Model {
   a:Real[_] <- a;
   μ_0:Real[_] <- μ_0;

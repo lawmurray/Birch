@@ -1,7 +1,7 @@
 /*
  * Test multivariate linear Gaussian-Gaussian conjugacy.
  */
-program test_linear_multivariate_gaussian_gaussian(N:Integer <- 10000) {
+program test_linear_multivariate_gaussian_multivariate_gaussian(N:Integer <- 10000) {
   X1:Real[N,10];
   X2:Real[N,10];
   

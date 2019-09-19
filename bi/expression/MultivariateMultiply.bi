@@ -31,15 +31,15 @@ final class MultivariateMultiply<Left,Right,Value>(left:Expression<Left>,
     return y;
   }
   
-  function graftLinearIdenticalNormalInverseGamma() ->
-      TransformLinearMultivariate<DelayIdenticalNormalInverseGamma>? {
-    y:TransformLinearMultivariate<DelayIdenticalNormalInverseGamma>?;
-    z:DelayIdenticalNormalInverseGamma?;
+  function graftLinearMultivariateNormalInverseGamma() ->
+      TransformLinearMultivariate<DelayMultivariateNormalInverseGamma>? {
+    y:TransformLinearMultivariate<DelayMultivariateNormalInverseGamma>?;
+    z:DelayMultivariateNormalInverseGamma?;
 
-    if (y <- right.graftLinearIdenticalNormalInverseGamma())? {
+    if (y <- right.graftLinearMultivariateNormalInverseGamma())? {
       y!.leftMultiply(left.value());
-    } else if (z <- right.graftIdenticalNormalInverseGamma())? {
-      y <- TransformLinearMultivariate<DelayIdenticalNormalInverseGamma>(
+    } else if (z <- right.graftMultivariateNormalInverseGamma())? {
+      y <- TransformLinearMultivariate<DelayMultivariateNormalInverseGamma>(
           left.value(), z!);
     }
     return y;

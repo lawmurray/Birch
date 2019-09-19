@@ -1,7 +1,7 @@
 /*
- * Test multivariate dot normal-inverse-gamma-Gaussian conjugacy.
+ * Test multivariate dot normal-inverse-gamma-log-Gaussian conjugacy.
  */
-program test_dot_identical_normal_inverse_gamma_gaussian(N:Integer <- 10000) {
+program test_dot_multivariate_normal_inverse_gamma_log_gaussian(N:Integer <- 10000) {
   X1:Real[N,7];
   X2:Real[N,7];
   
@@ -23,14 +23,14 @@ program test_dot_identical_normal_inverse_gamma_gaussian(N:Integer <- 10000) {
  
   /* simulate forward */
   for i:Integer in 1..N {
-    m:TestMultivariateDotNormalInverseGammaGaussian(a, μ, Σ, c, α, β);
+    m:TestDotMultivariateNormalInverseGammaLogGaussian(a, μ, Σ, c, α, β);
     m.play();
     X1[i,1..7] <- m.forward();
   }
 
   /* simulate backward */
   for i:Integer in 1..N {
-    m:TestMultivariateDotNormalInverseGammaGaussian(a, μ, Σ, c, α, β);
+    m:TestDotMultivariateNormalInverseGammaLogGaussian(a, μ, Σ, c, α, β);
     m.play();
     X2[i,1..7] <- m.backward();
   }
@@ -41,7 +41,7 @@ program test_dot_identical_normal_inverse_gamma_gaussian(N:Integer <- 10000) {
   }
 }
 
-class TestMultivariateDotNormalInverseGammaGaussian(a:Real[_],
+class TestDotMultivariateNormalInverseGammaLogGaussian(a:Real[_],
     μ_0:Real[_], Σ:Real[_,_], c:Real, α:Real, β:Real) < Model {
   a:Real[_] <- a;
   μ_0:Real[_] <- μ_0;
@@ -57,7 +57,7 @@ class TestMultivariateDotNormalInverseGammaGaussian(a:Real[_],
   fiber simulate() -> Event {
     σ2 ~ InverseGamma(α, β);
     μ ~ Gaussian(μ_0, Σ*σ2);
-    x ~ Gaussian(dot(a, μ) + c, σ2);
+    x ~ LogGaussian(dot(a, μ) + c, σ2);
   }
   
   function forward() -> Real[_] {

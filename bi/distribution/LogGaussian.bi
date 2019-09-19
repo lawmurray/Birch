@@ -27,7 +27,7 @@ final class LogGaussian(μ:Expression<Real>, σ2:Expression<Real>) < Distributio
       delay!.prune();
     } else {
       m1:TransformLinear<DelayNormalInverseGamma>?;
-      m2:TransformDot<DelayIdenticalNormalInverseGamma>?;
+      m2:TransformDot<DelayMultivariateNormalInverseGamma>?;
       m3:DelayNormalInverseGamma?;
       m4:TransformLinear<DelayGaussian>?;
       m5:TransformDot<DelayMultivariateGaussian>?;
@@ -36,7 +36,7 @@ final class LogGaussian(μ:Expression<Real>, σ2:Expression<Real>) < Distributio
 
       if (m1 <- μ.graftLinearNormalInverseGamma())? && m1!.x.σ2 == σ2.getDelay() {
         delay <- DelayLinearNormalInverseGammaLogGaussian(future, futureUpdate, m1!.a, m1!.x, m1!.c);
-      } else if (m2 <- μ.graftDotIdenticalNormalInverseGamma())? && m2!.x.σ2 == σ2.getDelay() {
+      } else if (m2 <- μ.graftDotMultivariateNormalInverseGamma())? && m2!.x.σ2 == σ2.getDelay() {
         delay <- DelayDotMultivariateNormalInverseGammaLogGaussian(future, futureUpdate, m2!.a, m2!.x, m2!.c);
       } else if (m3 <- μ.graftNormalInverseGamma())? && m3!.σ2 == σ2.getDelay() {
         delay <- DelayNormalInverseGammaLogGaussian(future, futureUpdate, m3!);

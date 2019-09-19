@@ -792,7 +792,7 @@ function logpdf_identical_normal_inverse_gamma(x:Real[_], μ:Real[_],
  *
  * Returns: the log probability density.
  */
-function logpdf_identical_inverse_gamma_gaussian(x:Real[_], μ:Real[_],
+function logpdf_inverse_gamma_multivariate_gaussian(x:Real[_], μ:Real[_],
     α:Real, β:Real) -> Real {
   return logpdf_multivariate_student_t(x, 2.0*α, μ, β/α);
 }
@@ -849,7 +849,7 @@ function logpdf_linear_identical_normal_inverse_gamma_gaussian(x:Real[_],
  *
  * Returns: the log probability density.
  */
-function logpdf_dot_identical_normal_inverse_gamma_gaussian(x:Real,
+function logpdf_dot_multivariate_normal_inverse_gamma_multivariate_gaussian(x:Real,
     a:Real[_], μ:Real[_], c:Real, Λ:LLT, α:Real, β:Real) -> Real {
   return logpdf_student_t(x, 2.0*α, dot(a, μ) + c,
       (β/α)*(1.0 + dot(a, solve(Λ, a))));
@@ -886,7 +886,7 @@ function logpdf_multivariate_uniform(x:Real[_], l:Real[_], u:Real[_]) -> Real {
  *
  * Returns: the log probability mass.
  */
-function logpdf_multivariate_uniform_int(x:Integer[_], l:Integer[_], u:Integer[_]) -> Real {
+function logpdf_independent_uniform_int(x:Integer[_], l:Integer[_], u:Integer[_]) -> Real {
   assert length(x) > 0;
   assert length(l) == length(x);
   assert length(u) == length(x);

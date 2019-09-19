@@ -61,13 +61,13 @@ final class Multiply<Left,Right,Value>(left:Expression<Left>, right:Expression<R
     return y;
   }
 
-  function graftDotIdenticalNormalInverseGamma() ->
-      TransformDot<DelayIdenticalNormalInverseGamma>? {
-    y:TransformDot<DelayIdenticalNormalInverseGamma>?;
+  function graftDotMultivariateNormalInverseGamma() ->
+      TransformDot<DelayMultivariateNormalInverseGamma>? {
+    y:TransformDot<DelayMultivariateNormalInverseGamma>?;
 
-    if (y <- left.graftDotIdenticalNormalInverseGamma())? {
+    if (y <- left.graftDotMultivariateNormalInverseGamma())? {
       y!.multiply(right.value());
-    } else if (y <- right.graftDotIdenticalNormalInverseGamma())? {
+    } else if (y <- right.graftDotMultivariateNormalInverseGamma())? {
       y!.multiply(left.value());
     }
     return y;

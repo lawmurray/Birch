@@ -27,7 +27,7 @@
  * be multiplication on the left (as above) or the right, or division on the
  * right.
  */
-final class IdenticalNormalInverseGamma(μ:Expression<Real[_]>,
+final class MultivariateNormalInverseGamma(μ:Expression<Real[_]>,
     A:Expression<Real[_,_]>, α:Expression<Real>, β:Expression<Real>) <
     Distribution<Real[_]> {
   /**
@@ -59,7 +59,7 @@ final class IdenticalNormalInverseGamma(μ:Expression<Real[_]>,
     if delay? {
       delay!.prune();
     } else if force {
-      delay <- DelayIdenticalNormalInverseGamma(future, futureUpdate, μ,
+      delay <- DelayMultivariateNormalInverseGamma(future, futureUpdate, μ,
           A, σ2.graftInverseGamma()!);
     }
   }

@@ -1,7 +1,7 @@
 /*
  * Test a chain of conjugate multivariate Gaussians.
  */
-program test_chain_multivariate_gaussian_gaussian(N:Integer <- 10000) {
+program test_chain_multivariate_gaussian(N:Integer <- 10000) {
   X1:Real[N,15];
   X2:Real[N,15];
   
@@ -18,14 +18,14 @@ program test_chain_multivariate_gaussian_gaussian(N:Integer <- 10000) {
  
   /* simulate forward */
   for i:Integer in 1..N {
-    m:TestMultivariateChainGaussian(μ, Σ);
+    m:TestChainMultivariateGaussian(μ, Σ);
     m.play();
     X1[i,1..15] <- m.forward();
   }
 
   /* simulate backward */
   for i:Integer in 1..N {
-    m:TestMultivariateChainGaussian(μ, Σ);
+    m:TestChainMultivariateGaussian(μ, Σ);
     m.play();
     X2[i,1..15] <- m.backward();
   }
@@ -36,7 +36,7 @@ program test_chain_multivariate_gaussian_gaussian(N:Integer <- 10000) {
   }
 }
 
-class TestMultivariateChainGaussian(μ:Real[_], Σ:Real[_,_]) < Model {
+class TestChainMultivariateGaussian(μ:Real[_], Σ:Real[_,_]) < Model {
   μ:Real[_] <- μ;
   Σ:Real[_,_] <- Σ;
   x:Random<Real[_]>[5];

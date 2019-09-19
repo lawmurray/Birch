@@ -15,11 +15,11 @@ final class DelayIndependentUniformInteger(future:Integer[_]?,
   u:Integer[_] <- u;
 
   function simulate() -> Integer[_] {
-    return simulate_multivariate_uniform_int(l, u);
+    return simulate_independent_uniform_int(l, u);
   }
   
   function logpdf(x:Integer[_]) -> Real {
-    return logpdf_multivariate_uniform_int(x, l, u);
+    return logpdf_independent_uniform_int(x, l, u);
   }
 
   function update(x:Integer[_]) {
@@ -31,7 +31,7 @@ final class DelayIndependentUniformInteger(future:Integer[_]?,
   }
 
   function pdf(x:Integer[_]) -> Real {
-    return pdf_multivariate_uniform_int(x, l, u);
+    return pdf_independent_uniform_int(x, l, u);
   }
 
   function write(buffer:Buffer) {

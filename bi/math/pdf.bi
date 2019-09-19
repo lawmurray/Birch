@@ -656,7 +656,7 @@ function pdf_identical_normal_inverse_gamma(x:Real[_], μ:Real[_],
  *
  * Return: the probability density.
  */
-function pdf_identical_inverse_gamma_gaussian(x:Real[_], μ:Real[_],
+function pdf_inverse_gamma_multivariate_gaussian(x:Real[_], μ:Real[_],
     α:Real, β:Real) -> Real {
   return pdf_multivariate_student_t(x, 2.0*α, μ, β/α);
 }
@@ -712,9 +712,9 @@ function pdf_linear_identical_normal_inverse_gamma_gaussian(x:Real[_],
  *
  * Return: the probability density.
  */
-function pdf_dot_identical_normal_inverse_gamma_gaussian(x:Real,
+function pdf_dot_multivariate_normal_inverse_gamma_multivariate_gaussian(x:Real,
     a:Real[_], μ:Real[_], c:Real, Λ:LLT, α:Real, β:Real) -> Real {
-  return exp(logpdf_dot_identical_normal_inverse_gamma_gaussian(x, a, μ,
+  return exp(logpdf_dot_multivariate_normal_inverse_gamma_multivariate_gaussian(x, a, μ,
       c, Λ, α, β));
 }
 
@@ -749,7 +749,7 @@ function pdf_multivariate_uniform(x:Real[_], l:Real[_], u:Real[_]) -> Real {
  *
  * Return: the probability density.
  */
-function pdf_multivariate_uniform_int(x:Integer[_], l:Integer[_],
+function pdf_independent_uniform_int(x:Integer[_], l:Integer[_],
     u:Integer[_]) -> Real {
   assert length(x) > 0;
   assert length(l) == length(x);

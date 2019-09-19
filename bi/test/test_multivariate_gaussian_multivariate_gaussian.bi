@@ -1,7 +1,7 @@
 /*
  * Test multivariate Gaussian-Gaussian conjugacy.
  */
-program test_multivariate_gaussian_gaussian(N:Integer <- 10000) {
+program test_multivariate_gaussian_multivariate_gaussian(N:Integer <- 10000) {
   X1:Real[N,10];
   X2:Real[N,10];
   
@@ -21,14 +21,14 @@ program test_multivariate_gaussian_gaussian(N:Integer <- 10000) {
  
   /* simulate forward */
   for i:Integer in 1..N {
-    m:TestMultivariateGaussianGaussian(μ_0, Σ_0, Σ_1);
+    m:TestMultivariateGaussianMultivariateGaussian(μ_0, Σ_0, Σ_1);
     m.play();
     X1[i,1..10] <- m.forward();
   }
 
   /* simulate backward */
   for i:Integer in 1..N {
-    m:TestMultivariateGaussianGaussian(μ_0, Σ_0, Σ_1);
+    m:TestMultivariateGaussianMultivariateGaussian(μ_0, Σ_0, Σ_1);
     m.play();
     X2[i,1..10] <- m.backward();
   }
@@ -39,7 +39,7 @@ program test_multivariate_gaussian_gaussian(N:Integer <- 10000) {
   }
 }
 
-class TestMultivariateGaussianGaussian(μ_0:Real[_], Σ_0:Real[_,_],
+class TestMultivariateGaussianMultivariateGaussian(μ_0:Real[_], Σ_0:Real[_,_],
     Σ_1:Real[_,_]) < Model {
   μ_0:Real[_] <- μ_0;
   Σ_0:Real[_,_] <- Σ_0;

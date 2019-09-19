@@ -1,7 +1,7 @@
 /*
  * Test multivariate linear normal-inverse-gamma-Gaussian conjugacy.
  */
-program test_linear_identical_normal_inverse_gamma_gaussian(N:Integer <- 10000) {
+program test_linear_multivariate_normal_inverse_gamma_multivariate_gaussian(N:Integer <- 10000) {
   X1:Real[N,16];
   X2:Real[N,16];
   
@@ -28,14 +28,14 @@ program test_linear_identical_normal_inverse_gamma_gaussian(N:Integer <- 10000) 
  
   /* simulate forward */
   for i:Integer in 1..N {
-    m:TestMultiariateLinearNormalInverseGammaGaussian(A, μ, Σ, c, α, β);
+    m:TestLinearMultivariateNormalInverseGammaMultivariateGaussian(A, μ, Σ, c, α, β);
     m.play();
     X1[i,1..16] <- m.forward();
   }
 
   /* simulate backward */
   for i:Integer in 1..N {
-    m:TestMultiariateLinearNormalInverseGammaGaussian(A, μ, Σ, c, α, β);
+    m:TestLinearMultivariateNormalInverseGammaMultivariateGaussian(A, μ, Σ, c, α, β);
     m.play();
     X2[i,1..16] <- m.backward();
   }
@@ -46,7 +46,7 @@ program test_linear_identical_normal_inverse_gamma_gaussian(N:Integer <- 10000) 
   }
 }
 
-class TestMultiariateLinearNormalInverseGammaGaussian(A:Real[_,_],
+class TestLinearMultivariateNormalInverseGammaMultivariateGaussian(A:Real[_,_],
     μ_0:Real[_], Σ:Real[_,_], c:Real[_], α:Real, β:Real) < Model {
   A:Real[_,_] <- A;
   μ_0:Real[_] <- μ_0;

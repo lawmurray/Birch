@@ -36,20 +36,20 @@ final class MultivariateSubtract<Left,Right,Value>(left:Expression<Left>,
     return y;
   }
   
-  function graftLinearIdenticalNormalInverseGamma() ->
-      TransformLinearMultivariate<DelayIdenticalNormalInverseGamma>? {
-    y:TransformLinearMultivariate<DelayIdenticalNormalInverseGamma>?;
-    z:DelayIdenticalNormalInverseGamma?;
+  function graftLinearMultivariateNormalInverseGamma() ->
+      TransformLinearMultivariate<DelayMultivariateNormalInverseGamma>? {
+    y:TransformLinearMultivariate<DelayMultivariateNormalInverseGamma>?;
+    z:DelayMultivariateNormalInverseGamma?;
 
-    if (y <- left.graftLinearIdenticalNormalInverseGamma())? {
+    if (y <- left.graftLinearMultivariateNormalInverseGamma())? {
       y!.subtract(right.value());
-    } else if (y <- right.graftLinearIdenticalNormalInverseGamma())? {
+    } else if (y <- right.graftLinearMultivariateNormalInverseGamma())? {
       y!.negateAndAdd(left.value());
-    } else if (z <- left.graftIdenticalNormalInverseGamma())? {
-      y <- TransformLinearMultivariate<DelayIdenticalNormalInverseGamma>(
+    } else if (z <- left.graftMultivariateNormalInverseGamma())? {
+      y <- TransformLinearMultivariate<DelayMultivariateNormalInverseGamma>(
           identity(z!.size()), z!, -right.value());
-    } else if (z <- right.graftIdenticalNormalInverseGamma())? {
-      y <- TransformLinearMultivariate<DelayIdenticalNormalInverseGamma>(
+    } else if (z <- right.graftMultivariateNormalInverseGamma())? {
+      y <- TransformLinearMultivariate<DelayMultivariateNormalInverseGamma>(
           diagonal(-1, z!.size()), z!, left.value());
     }
     return y;

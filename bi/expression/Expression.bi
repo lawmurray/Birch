@@ -164,8 +164,8 @@ class Expression<Value> {
    *
    * Return: The node if successful, nil if not.
    */
-  function graftIdenticalNormalInverseGamma() ->
-      DelayIdenticalNormalInverseGamma? {
+  function graftMultivariateNormalInverseGamma() ->
+      DelayMultivariateNormalInverseGamma? {
     return nil;
   }
 
@@ -174,8 +174,8 @@ class Expression<Value> {
    *
    * Return: The node if successful, nil if not.
    */
-  function graftLinearIdenticalNormalInverseGamma() ->
-      TransformLinearMultivariate<DelayIdenticalNormalInverseGamma>? {
+  function graftLinearMultivariateNormalInverseGamma() ->
+      TransformLinearMultivariate<DelayMultivariateNormalInverseGamma>? {
     return nil;
   }
 
@@ -184,8 +184,8 @@ class Expression<Value> {
    *
    * Return: The node if successful, nil if not.
    */
-  function graftDotIdenticalNormalInverseGamma() ->
-      TransformDot<DelayIdenticalNormalInverseGamma>? {
+  function graftDotMultivariateNormalInverseGamma() ->
+      TransformDot<DelayMultivariateNormalInverseGamma>? {
     return nil;
   }
 

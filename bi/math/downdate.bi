@@ -318,7 +318,7 @@ function downdate_inverse_gamma_gamma(x:Real, k:Real, α':Real, β':Real) ->
  *
  * Returns: the prior hyperparameters `μ` and `Σ`.
  */
-function downdate_multivariate_gaussian_gaussian(x:Real[_], μ':Real[_],
+function downdate_multivariate_gaussian_multivariate_gaussian(x:Real[_], μ':Real[_],
     Σ':Real[_,_], S:Real[_,_]) -> (Real[_], Real[_,_]) {
   auto K <- Σ'*inv(llt(Σ' - S));
   auto μ <- μ' + K*(x - μ');
@@ -339,7 +339,7 @@ function downdate_multivariate_gaussian_gaussian(x:Real[_], μ':Real[_],
  *
  * Returns: the prior hyperparameters `μ` and `Σ`.
  */
-function downdate_linear_multivariate_gaussian_gaussian(x:Real[_],
+function downdate_linear_multivariate_gaussian_multivariate_gaussian(x:Real[_],
     A:Real[_,_], μ':Real[_], Σ':Real[_,_], c:Real[_], S:Real[_,_]) ->
     (Real[_], Real[_,_]) {
   auto K <- Σ'*transpose(A)*inv(llt(A*Σ'*transpose(A) - S));
@@ -361,7 +361,7 @@ function downdate_linear_multivariate_gaussian_gaussian(x:Real[_],
  *
  * Returns: the prior hyperparameters `μ` and `Σ`.
  */
-function downdate_dot_multivariate_gaussian_gaussian(x:Real, a:Real[_],
+function downdate_dot_multivariate_gaussian_multivariate_gaussian(x:Real, a:Real[_],
     μ':Real[_], Σ':Real[_,_], c:Real, s2:Real) -> (Real[_], Real[_,_]) {
   auto K <- Σ'*a/(dot(a, Σ'*a) - s2);
   auto μ <- μ' + K*(x - dot(a, μ') - c);
@@ -398,7 +398,7 @@ function downdate_identical_normal_inverse_gamma(x:Real[_], μ:Real[_],
  *
  * Returns: the prior hyperparameters `α` and `β`.
  */
-function downdate_identical_inverse_gamma_gaussian(x:Real[_], μ:Real[_],
+function downdate_inverse_gamma_multivariate_gaussian(x:Real[_], μ:Real[_],
     α':Real, β':Real) -> (Real, Real) {
   D:Integer <- length(x);
   return (α' - 0.5*D, β' - 0.5*dot(x - μ));
@@ -472,7 +472,7 @@ function downdate_linear_identical_normal_inverse_gamma_gaussian(
  *
  * Returns: the prior hyperparameters `μ`, `Λ`, `γ`, `α` and `β`.
  */
-function downdate_dot_identical_normal_inverse_gamma_gaussian(
+function downdate_dot_multivariate_normal_inverse_gamma_multivariate_gaussian(
     x:Real, a:Real[_], ν':Real[_], c:Real, Λ':LLT, γ':Real, α':Real,
     β':Real) -> (Real[_], LLT, Real, Real, Real) {
   Λ:LLT <- rank_update(Λ', a, -1.0);

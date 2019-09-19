@@ -15,12 +15,12 @@ final class IndependentUniformInteger(l:Expression<Integer[_]>,
 
   function valueForward() -> Integer[_] {
     assert !delay?;
-    return simulate_multivariate_uniform_int(l, u);
+    return simulate_independent_uniform_int(l, u);
   }
 
   function observeForward(x:Integer[_]) -> Real {
     assert !delay?;
-    return logpdf_multivariate_uniform_int(x, l, u);
+    return logpdf_independent_uniform_int(x, l, u);
   }
 
   function graft(force:Boolean) {
