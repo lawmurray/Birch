@@ -326,6 +326,10 @@ class Distribution<Value> {
     return nil;
   }
 
+  function graftMatrixNormalInverseGamma() -> DelayMatrixNormalInverseGamma? {
+    return nil;
+  }
+
   function graftDiscrete() -> DelayDiscrete? {
     return nil;
   }

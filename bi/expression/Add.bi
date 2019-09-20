@@ -49,31 +49,7 @@ final class Add<Left,Right,Value>(left:Expression<Left>, right:Expression<Right>
     }
     return y;
   }
-
-  function graftDotMultivariateGaussian() ->
-      TransformDot<DelayMultivariateGaussian>? {
-    y:TransformDot<DelayMultivariateGaussian>?;
-    
-    if (y <- left.graftDotMultivariateGaussian())? {
-      y!.add(right.value());
-    } else if (y <- right.graftDotMultivariateGaussian())? {
-      y!.add(left.value());
-    }
-    return y;
-  }
-
-  function graftDotMultivariateNormalInverseGamma() ->
-      TransformDot<DelayMultivariateNormalInverseGamma>? {
-    y:TransformDot<DelayMultivariateNormalInverseGamma>?;
-
-    if (y <- left.graftDotMultivariateNormalInverseGamma())? {
-      y!.add(right.value());
-    } else if (y <- right.graftDotMultivariateNormalInverseGamma())? {
-      y!.add(left.value());
-    }
-    return y;
-  }
-
+  
   function graftDiscrete() -> DelayDiscrete? {
     y:DelayDiscrete? <- graftBoundedDiscrete();
     if !y? {

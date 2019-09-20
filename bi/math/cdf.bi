@@ -450,22 +450,3 @@ function cdf_linear_normal_inverse_gamma_gaussian(x:Real, a:Real,
     μ:Real, c:Real, a2:Real, α:Real, β:Real) -> Real {
   return cdf_student_t(x, 2.0*α, a*μ + c, (β/α)*(1.0 + a*a*a2));
 }
-
-/**
- * CDF of a Gaussian variate with a multivariate normal inverse-gamma prior
- * with dot transformation.
- *
- * - x: The variate.
- * - a: Scale.
- * - ν: Precision times mean.
- * - c: Offset.
- * - Λ: Precision.
- * - α: Shape of the inverse-gamma.
- * - β: Scale of the inverse-gamma.
- *
- * Return: the probability density.
- */
-function cdf_dot_multivariate_normal_inverse_gamma_gaussian(x:Real,
-    a:Real[_], ν:Real[_], c:Real, Λ:LLT, α:Real, β:Real) -> Real {
-  return cdf_student_t(x, 2.0*α, dot(a, solve(Λ, ν)) + c,(β/α)*(1.0 + dot(a, solve(Λ, a))));
-}

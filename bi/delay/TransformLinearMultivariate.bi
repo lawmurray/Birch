@@ -33,6 +33,11 @@ class TransformLinearMultivariate<Value>(A:Real[_,_], x:Value, c:Real[_]) {
   function subtract(y:Real[_]) {
     c <- c - y;
   }
+
+  function multiply(y:Real) {
+    A <- A*y;
+    c <- c*y;
+  }
   
   function divide(y:Real) {
     A <- A/y;

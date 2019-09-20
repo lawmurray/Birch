@@ -176,4 +176,14 @@ auto solve(const libbirch::Array<Type1,Frame1>& o1,
   return solve(o1.toEigen(), o2.toEigen());
 }
 
+template<class Type>
+auto sqrt(const Eigen::MatrixBase<Type>& o) {
+  return o.array().sqrt().matrix();
+}
+
+template<class Type, class Frame>
+auto sqrt(const libbirch::Array<Type,Frame>& o) {
+  return sqrt(o.toEigen());
+}
+
 }

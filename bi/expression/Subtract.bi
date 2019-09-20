@@ -50,29 +50,6 @@ final class Subtract<Left,Right,Value>(left:Expression<Left>,
     return y;
   }
 
-  function graftDotMultivariateGaussian() -> TransformDot<DelayMultivariateGaussian>? {
-    y:TransformDot<DelayMultivariateGaussian>?;
-    
-    if (y <- left.graftDotMultivariateGaussian())? {
-      y!.add(right.value());
-    } else if (y <- right.graftDotMultivariateGaussian())? {
-      y!.add(left.value());
-    }
-    return y;
-  }
-
-  function graftDotMultivariateNormalInverseGamma() ->
-      TransformDot<DelayMultivariateNormalInverseGamma>? {
-    y:TransformDot<DelayMultivariateNormalInverseGamma>?;
-
-    if (y <- left.graftDotMultivariateNormalInverseGamma())? {
-      y!.subtract(right.value());
-    } else if (y <- right.graftDotMultivariateNormalInverseGamma())? {
-      y!.negateAndAdd(left.value());
-    }
-    return y;
-  }
-
   function graftDiscrete() -> DelayDiscrete? {
     y:DelayDiscrete? <- graftBoundedDiscrete();
     if (!y?) {

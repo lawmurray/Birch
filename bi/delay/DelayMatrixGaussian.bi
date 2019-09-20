@@ -19,6 +19,14 @@ class DelayMatrixGaussian(future:Real[_,_]?, futureUpdate:Boolean,
    */
   V:Real[_,_] <- V;
 
+  function rows() -> Integer {
+    return global.rows(M);
+  }
+  
+  function columns() -> Integer {
+    return global.columns(M);
+  }
+
   function simulate() -> Real[_,_] {
     return simulate_matrix_gaussian(M, U, V);
   }

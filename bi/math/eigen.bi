@@ -266,3 +266,5 @@ function cholesky(X:Real[_,_]) -> Real[_,_] {
   }}
   return L;
 }
+
+function sqrt(x:Real[_]) -> Real[_];

@@ -18,7 +18,7 @@
  *
  * The relationship is established in code as follows:
  *
- *     α:Real[_];
+ *     α:Real;
  *     β:Real[_];
  *     σ2:Random<Real[_]>;
  *     W:Random<Real[_,_]>;
@@ -34,12 +34,12 @@
  * The advantage of using this approach over $O$ separate regressions is that
  * expensive covariance operations are shared.
  */
-final class IndependentInverseGamma(α:Expression<Real[_]>,
+final class IndependentInverseGamma(α:Expression<Real>,
     β:Expression<Real[_]>) < Distribution<Real[_]> {
   /**
-   * Shapes.
+   * Shape.
    */
-  α:Expression<Real[_]> <- α;
+  α:Expression<Real> <- α;
   
   /**
    * Scales.
@@ -48,16 +48,16 @@ final class IndependentInverseGamma(α:Expression<Real[_]>,
 
   function valueForward() -> Real[_] {
     assert !delay?;
-    return transform<Real>(α, β, @(a:Real, b:Real) -> Real {
-        return simulate_inverse_gamma(a, b); });
+    return transform<Real>(β, @(b:Real) -> Real {
+        return simulate_inverse_gamma(α, b); });
   }
 
   function observeForward(x:Real[_]) -> Real {
     assert !delay?;
-    return transform_reduce<Real>(x, α, β, 0.0, @(a:Real, b:Real) -> Real {
+    return transform_reduce<Real>(x, β, 0.0, @(a:Real, b:Real) -> Real {
         return a + b;
-      }, @(x:Real, a:Real, b:Real) -> Real {
-        return logpdf_inverse_gamma(x, a, b);
+      }, @(x:Real, b:Real) -> Real {
+        return logpdf_inverse_gamma(x, α, b);
       });
   }
 
@@ -82,7 +82,7 @@ final class IndependentInverseGamma(α:Expression<Real[_]>,
 /**
  * Create inverse-gamma distribution with multiple independent components.
  */
-function InverseGamma(α:Expression<Real[_]>, β:Expression<Real[_]>) ->
+function InverseGamma(α:Expression<Real>, β:Expression<Real[_]>) ->
     IndependentInverseGamma {
   m:IndependentInverseGamma(α, β);
   return m;
@@ -91,20 +91,20 @@ function InverseGamma(α:Expression<Real[_]>, β:Expression<Real[_]>) ->
 /**
  * Create inverse-gamma distribution with multiple independent components.
  */
-function InverseGamma(α:Expression<Real[_]>, β:Real[_]) -> IndependentInverseGamma {
+function InverseGamma(α:Expression<Real>, β:Real[_]) -> IndependentInverseGamma {
   return InverseGamma(α, Boxed(β));
 }
 
 /**
  * Create inverse-gamma distribution with multiple independent components.
  */
-function InverseGamma(α:Real[_], β:Expression<Real[_]>) -> IndependentInverseGamma {
+function InverseGamma(α:Real, β:Expression<Real[_]>) -> IndependentInverseGamma {
   return InverseGamma(Boxed(α), β);
 }
 
 /**
  * Create inverse-gamma distribution with multiple independent components.
  */
-function InverseGamma(α:Real[_], β:Real[_]) -> IndependentInverseGamma {
+function InverseGamma(α:Real, β:Real[_]) -> IndependentInverseGamma {
   return InverseGamma(Boxed(α), Boxed(β));
 }

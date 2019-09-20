@@ -18,7 +18,7 @@ final class DelayMatrixNormalInverseGamma(future:Real[_,_]?,
   /**
    * Variance shapes.
    */
-  α:Real[_] <- σ2.α;
+  α:Real <- σ2.α;
 
   /**
    * Variance scale accumulators.
@@ -29,6 +29,14 @@ final class DelayMatrixNormalInverseGamma(future:Real[_,_]?,
    * Variance scales.
    */
   σ2:DelayIndependentInverseGamma& <- σ2;
+
+  function rows() -> Integer {
+    return global.rows(N);
+  }
+  
+  function columns() -> Integer {
+    return global.columns(N);
+  }
 
   function simulate() -> Real[_,_] {
     return simulate_matrix_normal_inverse_gamma(N, Λ, α, gamma_to_beta(γ, N, Λ));

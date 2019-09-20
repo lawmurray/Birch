@@ -349,27 +349,6 @@ function downdate_linear_multivariate_gaussian_multivariate_gaussian(x:Real[_],
 }
 
 /**
- * Downdate the parameters of a multivariate Gaussian distribution with a 
- * dot product transformation and Gaussian likelihood.
- *
- * - x: The variate.
- * - a: Scale.
- * - μ': Posterior mean.
- * - Σ': Posterior covariance.
- * - c: Offset.
- * - s2: Likelihood variance.
- *
- * Returns: the prior hyperparameters `μ` and `Σ`.
- */
-function downdate_dot_multivariate_gaussian_multivariate_gaussian(x:Real, a:Real[_],
-    μ':Real[_], Σ':Real[_,_], c:Real, s2:Real) -> (Real[_], Real[_,_]) {
-  auto K <- Σ'*a/(dot(a, Σ'*a) - s2);
-  auto μ <- μ' + K*(x - dot(a, μ') - c);
-  auto Σ <- Σ' - K*transpose(a)*Σ';
-  return (μ, Σ);
-}
-
-/**
  * Downdate the parameters of an inverse-gamma distribution with a linear
  * scaling and Gaussian likelihood.
  *
@@ -411,22 +390,20 @@ function downdate_inverse_gamma_multivariate_gaussian(x:Real[_], μ:Real[_],
  * - x: The variate.
  * - ν': Posterior precision times mean.
  * - Λ': Posterior precision.
- * - γ': Posterior scale accumulator.
  * - α': Posterior shape of the inverse-gamma.
- * - β': Posterior scale of the inverse-gamma.
+ * - γ': Posterior scale accumulator.
  *
- * Returns: the prior hyperparameters `μ`, `Λ`, `γ`, `α` and `β`.
+ * Returns: the prior hyperparameters `μ`, `Λ`, `α`, and `γ`.
  */
-function downdate_multivariate_normal_inverse_gamma_multivariate_gaussian(x:Real[_],
-    ν':Real[_], Λ':LLT, γ':Real, α':Real, β':Real) -> (Real[_], LLT, Real,
-    Real, Real) {
+function downdate_multivariate_normal_inverse_gamma_multivariate_gaussian(
+    x:Real[_], ν':Real[_], Λ':LLT, α':Real, γ':Real) -> (Real[_], LLT, Real,
+    Real) {
   D:Integer <- length(x);
   Λ:LLT <- rank_update(Λ', identity(rows(Λ')), -1.0);
   ν:Real[_] <- ν' - x;
   α:Real <- α' - 0.5*D;
   γ:Real <- γ' - 0.5*dot(x);
-  β:Real <- γ - 0.5*dot(solve(Λ, ν), ν);
-  return (ν, Λ, γ, α, β);
+  return (ν, Λ, α, γ);
 }
 
 /**
@@ -438,48 +415,20 @@ function downdate_multivariate_normal_inverse_gamma_multivariate_gaussian(x:Real
  * - ν': Posterior precision times mean.
  * - c: Offset.
  * - Λ': Posterior precision.
- * - γ': Posterior scale accumulator.
  * - α': Posterior shape of the inverse-gamma.
- * - β': Posterior scale of the inverse-gamma.
+ * - γ': Posterior scale accumulator.
  *
- * Returns: the prior hyperparameters `μ`, `Λ`, `γ`, `α` and `β`.
+ * Returns: the prior hyperparameters `μ`, `Λ`, `α`, and `γ`.
  */
 function downdate_linear_multivariate_normal_inverse_gamma_multivariate_gaussian(
-    x:Real[_], A:Real[_,_], ν':Real[_], c:Real[_], Λ':LLT, γ':Real, α':Real,
-    β':Real) -> (Real[_], LLT, Real, Real, Real) {
+    x:Real[_], A:Real[_,_], ν':Real[_], c:Real[_], Λ':LLT, α':Real,
+    γ':Real) -> (Real[_], LLT, Real, Real) {
   D:Integer <- length(x);
   Λ:LLT <- rank_update(Λ', transpose(A), -1.0);
   ν:Real[_] <- ν' - transpose(A)*(x - c);
   α:Real <- α' - 0.5*D;
   γ:Real <- γ' - 0.5*dot(x - c);
-  β:Real <- γ - 0.5*dot(solve(Λ, ν), ν);
-  return (ν, Λ, γ, α, β);
-}
-
-/**
- * Downdate the parameters of a normal inverse-gamma distribution with a
- * univariate Gaussian likelihood and scaling.
- *
- * - x: The variate.
- * - a: Scale.
- * - ν': Posterior precision times mean.
- * - c: Offset.
- * - Λ': Posterior precision.
- * - γ': Posterior scale accumulator.
- * - α': Posterior shape of the inverse-gamma.
- * - β': Posterior scale of the inverse-gamma.
- *
- * Returns: the prior hyperparameters `μ`, `Λ`, `γ`, `α` and `β`.
- */
-function downdate_dot_multivariate_normal_inverse_gamma_gaussian(
-    x:Real, a:Real[_], ν':Real[_], c:Real, Λ':LLT, γ':Real, α':Real,
-    β':Real) -> (Real[_], LLT, Real, Real, Real) {
-  Λ:LLT <- rank_update(Λ', a, -1.0);
-  ν:Real[_] <- ν' - a*(x - c);
-  α:Real <- α' - 0.5;
-  γ:Real <- γ' - 0.5*pow(x - c, 2.0);
-  β:Real <- γ - 0.5*dot(solve(Λ, ν), ν);
-  return (ν, Λ, γ, α, β);
+  return (ν, Λ, α, γ);
 }
 
 /**
@@ -488,36 +437,60 @@ function downdate_dot_multivariate_normal_inverse_gamma_gaussian(
  * - X: The variate.
  * - M: Mean.
  * - Σ: Covariance.
- * - α': Posterior variance shapes.
+ * - α': Posterior variance shape.
  * - β': Posterior variance scales.
  *
  * Returns: the prior hyperparameters `α` and `β`.
  */
 function downdate_matrix_normal_inverse_gamma(X:Real[_,_], M:Real[_,_], Σ:LLT,
-    α':Real[_], β':Real[_]) -> (Real[_], Real[_]) {
+    α':Real, β':Real[_]) -> (Real, Real[_]) {
   auto D <- rows(X);
   return (α' - 0.5*D, β' - 0.5*diagonal(transpose(X - M)*solve(Σ, X - M)));
+}
+
+/**
+ * Downdate the parameters of a Gaussian variate with linear  transformation
+ * of matrix-normal-inverse-gamma prior.
+ *
+ * - x: The variate.
+ * - A: Scale.
+ * - N': Posterior precision times mean matrix.
+ * - C: Offset.
+ * - Λ': Posterior precision.
+ * - α': Posterior variance shape.
+ * - γ': Posterior squared sum accumulators.
+ *
+ * Returns: the prioor hyperparameters `N`, `Λ`, `α` and `γ`.
+ */
+function downdate_linear_matrix_normal_inverse_gamma_matrix_gaussian(
+    X:Real[_,_], A:Real[_,_], N':Real[_,_], C:Real[_,_], Λ':LLT, α':Real,
+    γ':Real[_]) -> (Real[_,_], LLT, Real, Real[_]) {
+  Λ:LLT <- rank_update(Λ', transpose(A), -1.0);
+  N:Real[_,_] <- N' - transpose(A)*(X - C);
+  α:Real<- α' - 0.5;
+  γ:Real[_] <- γ' - 0.5*diagonal(transpose(X - C)*(X - C));
+  return (N, Λ, α, γ);
 }
 
 /**
  * Downdate the parameters of a Gaussian variate with dot matrix normal
  * inverse-gamma prior.
  *
- * - x: The variate.
- * - a: Scale.
+ * - X: The variate.
+ * - A: Scale.
  * - N': Posterior precision times mean matrix.
  * - Λ': Posterior precision.
- * - α': Posterior variance shapes.
+ * - α': Posterior variance shape.
  * - γ': Posterior squared sum accumulators.
  *
  * Returns: the prior hyperparameters `N`, `Λ`, `α` and `γ`.
  */
-function downdate_dot_matrix_normal_inverse_gamma_multivariate_gaussian(
-    x:Real[_], a:Real[_], N':Real[_,_], Λ':LLT, α':Real[_], γ':Real[_]) ->
-    (Real[_,_], LLT, Real[_], Real[_]) {
+function downdate_linear_matrix_normal_inverse_gamma_matrix_gaussian(
+    x:Real[_], a:Real[_], N':Real[_,_], Λ':LLT, α':Real, γ':Real[_]) ->
+    (Real[_,_], LLT, Real, Real[_]) {
   Λ:LLT <- rank_update(Λ', a, -1.0);
   N:Real[_,_] <- N' - kronecker(a, transpose(x));
-  α:Real[_] <- α' - 0.5;
+  α:Real <- α' - 0.5;
   γ:Real[_] <- γ' - 0.5*hadamard(x, x);
   return (N, Λ, α, γ);
 }
