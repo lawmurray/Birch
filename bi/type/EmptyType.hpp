@@ -38,9 +38,11 @@ public:
 
   virtual bool dispatchIsConvertible(const Type& o) const;
   virtual bool isConvertible(const EmptyType& o) const;
+  virtual bool isConvertible(const GenericType& o) const;
 
   virtual bool dispatchIsAssignable(const Type& o) const;
   virtual bool isAssignable(const EmptyType& o) const;
+  virtual bool isAssignable(const GenericType& o) const;
 
   virtual Type* dispatchCommon(const Type& o) const;
   virtual Type* common(const EmptyType& o) const;
