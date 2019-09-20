@@ -42,7 +42,7 @@ class TestNormalInverseGammaGaussian(μ_0:Real, a2:Real, α:Real, β:Real) < Mod
   
   fiber simulate() -> Event {
     σ2 ~ InverseGamma(α, β);
-    μ ~ Gaussian(μ_0, a2*σ2);
+    μ ~ Gaussian(μ_0, a2, σ2);
     x ~ Gaussian(μ, σ2);
   }
   

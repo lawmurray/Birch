@@ -56,7 +56,7 @@ class TestDotMultivariateNormalInverseGammaGaussian(a:Real[_],
   
   fiber simulate() -> Event {
     σ2 ~ InverseGamma(α, β);
-    μ ~ Gaussian(μ_0, Σ*σ2);
+    μ ~ Gaussian(μ_0, Σ, σ2);
     x ~ Gaussian(dot(a, μ) + c, σ2);
   }
   

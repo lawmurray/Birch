@@ -17,6 +17,7 @@ program test(N:Integer <- 10000) {
   code <- code + run_test("deep_clone_modify_src");
   code <- code + run_test("dirichlet_categorical", N);
   code <- code + run_test("dirichlet_multinomial", N);
+  code <- code + run_test("dot_matrix_normal_inverse_gamma_multivariate_gaussian", N);
   code <- code + run_test("dot_multivariate_gaussian_gaussian", N);
   code <- code + run_test("dot_multivariate_gaussian_log_gaussian", N);
   code <- code + run_test("dot_multivariate_normal_inverse_gamma_gaussian", N);

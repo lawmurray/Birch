@@ -134,6 +134,8 @@
       "bi/distribution/Regression.bi",
       "bi/distribution/Restaurant.bi",
       "bi/distribution/Ridge.bi",
+      "bi/distribution/ScalarGaussian.bi",
+      "bi/distribution/ScalarMultivariateGaussian.bi",
       "bi/distribution/Student.bi",
       "bi/distribution/Uniform.bi",
       "bi/distribution/UniformInteger.bi",

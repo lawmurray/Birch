@@ -51,7 +51,7 @@ class TestMultivariateNormalInverseGammaMultivariateGaussian(μ_0:Real[_], A:Rea
   
   fiber simulate() -> Event {
     σ2 ~ InverseGamma(α, β);
-    μ ~ Gaussian(μ_0, A*σ2);
+    μ ~ Gaussian(μ_0, A, σ2);
     x ~ Gaussian(μ, σ2);
   }
   

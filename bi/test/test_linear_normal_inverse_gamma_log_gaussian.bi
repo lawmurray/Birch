@@ -47,7 +47,7 @@ class TestLinearNormalInverseGammaLogGaussian(a:Real, μ_0:Real, a2:Real, c:Real
   
   fiber simulate() -> Event {
     σ2 ~ InverseGamma(α, β);
-    μ ~ Gaussian(a*μ_0 + c, a2*σ2);
+    μ ~ Gaussian(a*μ_0 + c, a2, σ2);
     x ~ LogGaussian(μ, σ2);
   }
   
