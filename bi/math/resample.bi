@@ -12,7 +12,15 @@ function log_sum_exp(x:Real[_]) -> Real {
 }
 
 /**
- * Exponentiate a vector and normalize to sum to one.
+ * Take the logarithm of each elements of a vector and return the sum.
+ */
+function log_sum(x:Real[_]) -> Real {
+  return transform_reduce<Real>(x, 0.0, @(x:Real, y:Real) -> Real {
+      return x + y; }, @(x:Real) -> Real { return log(x); });
+}
+
+/**
+ * Take the exponential of each element of a vector and normalize to sum to one.
  */
 function norm_exp(x:Real[_]) -> Real[_] {
   assert length(x) > 0;

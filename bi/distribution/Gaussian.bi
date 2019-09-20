@@ -46,18 +46,10 @@ final class Gaussian(μ:Expression<Real>, σ2:Expression<Real>) < Distribution<R
         delay <- DelayDotMultivariateGaussianMultivariateGaussian(future, futureUpdate, m5!.a, m5!.x, m5!.c, σ2);
       } else if (m6 <- μ.graftGaussian())? {
         delay <- DelayGaussianGaussian(future, futureUpdate, m6!, σ2);
-      } else {      
-        /* trigger a sample of μ, and double check that this doesn't cause
-         * a sample of σ2 before we try creating an inverse-gamma Gaussian */
-        μ.value();
-        if (s2 <- σ2.graftInverseGamma())? {
-          delay <- DelayInverseGammaGaussian(future, futureUpdate, μ, s2!);
-        } else if force {
-          /* try a normal inverse gamma first, then a regular Gaussian */
-          if !graftNormalInverseGamma()? {
-            delay <- DelayGaussian(future, futureUpdate, μ, σ2);
-          }
-        }
+      } else if (s2 <- σ2.graftInverseGamma())? {
+        delay <- DelayNormalInverseGamma(future, futureUpdate, μ, 1.0, s2!);
+      } else if force {
+        delay <- DelayGaussian(future, futureUpdate, μ, σ2);
       }
     }
   }
@@ -83,12 +75,9 @@ final class Gaussian(μ:Expression<Real>, σ2:Expression<Real>) < Distribution<R
     if delay? {
       delay!.prune();
     } else {
-      s1:TransformLinear<DelayInverseGamma>?;
-      s2:DelayInverseGamma?;
-      if (s1 <- σ2.graftScaledInverseGamma())? {
-        delay <- DelayNormalInverseGamma(future, futureUpdate, μ, s1!.a, s1!.x);
-      } else if (s2 <- σ2.graftInverseGamma())? {
-        delay <- DelayNormalInverseGamma(future, futureUpdate, μ, 1.0, s2!);
+      s1:DelayInverseGamma?;
+      if (s1 <- σ2.graftInverseGamma())? {
+        delay <- DelayNormalInverseGamma(future, futureUpdate, μ, 1.0, s1!);
       }
     }
     return DelayNormalInverseGamma?(delay);

@@ -336,23 +336,6 @@ function simulate_gaussian(μ:Real, σ2:Real) -> Real {
 }
 
 /**
- * Simulate a log-Gaussian distribution.
- *
- * - μ: Mean (of logarithm).
- * - σ2: Variance (of logarithm).
- */
-function simulate_log_gaussian(μ:Real, σ2:Real) -> Real {
-  assert 0.0 <= σ2;
-  if (σ2 == 0.0) {
-    return μ;
-  } else {
-    cpp{{
-    return std::lognormal_distribution<bi::type::Real>(μ, std::sqrt(σ2))(rng);
-    }}
-  }
-}
-
-/**
  * Simulate a Student's $t$-distribution.
  *
  * - ν: Degrees of freedom.
@@ -669,17 +652,34 @@ function simulate_multivariate_gaussian(μ:Real[_], Σ:Real[_,_]) -> Real[_] {
 }
 
 /**
- * Simulate a multivariate Gaussian distribution with diagonal covariance.
+ * Simulate a multivariate Gaussian distribution with independent and
+ * identical variance.
  *
  * - μ: Mean.
  * - σ2: Variance.
  */
-function simulate_multivariate_gaussian(μ:Real[_], σ2:Real) -> Real[_] {
+function simulate_identical_gaussian(μ:Real[_], σ2:Real) -> Real[_] {
   auto D <- length(μ);
   auto σ <- sqrt(σ2);
   z:Real[D];
   for auto d in 1..D {
     z[d] <- μ[d] + σ*simulate_gaussian(0.0, 1.0);
+  }
+  return z;
+}
+
+/**
+ * Simulate a multivariate Gaussian distribution with independent
+ * (diagonal) covariance.
+ *
+ * - μ: Mean.
+ * - σ2: Variance.
+ */
+function simulate_independent_gaussian(μ:Real[_], σ2:Real[_]) -> Real[_] {
+  auto D <- length(μ);
+  z:Real[D];
+  for auto d in 1..D {
+    z[d] <- μ[d] + simulate_gaussian(0.0, σ2[d]);
   }
   return z;
 }
@@ -783,6 +783,24 @@ function simulate_matrix_gaussian(M:Real[_,_], U:Real[_,_], V:Real[_,_]) ->
     }
   }
   return M + cholesky(U)*Z*transpose(cholesky(V));
+}
+
+/**
+ * Simulate a matrix Gaussian distribution with independent columns.
+ *
+ * - M: Mean.
+ * - U: Within-row covariance.
+ * - σ2: Within-column variances.
+ */
+function simulate_independent_matrix_gaussian(M:Real[_,_], U:Real[_,_],
+    σ2:Real[_]) -> Real[_,_] {
+  auto N <- rows(M);
+  auto P <- columns(M);
+  X:Real[N,P];
+  for auto p in 1..P {
+    X[1..N,p] <- simulate_multivariate_gaussian(M[1..N,p], U*σ2[p]);
+  }
+  return X;
 }
 
 /**

@@ -98,6 +98,14 @@ function Gaussian(M:Real[_,_], U:Expression<Real[_,_]>, V:Real[_,_]) ->
 /**
  * Create matrix Gaussian distribution.
  */
+function Gaussian(M:Real[_,_], U:Real[_,_], V:Expression<Real[_,_]>) ->
+    MatrixGaussian {
+  return Gaussian(Boxed(M), Boxed(U), V);
+}
+
+/**
+ * Create matrix Gaussian distribution.
+ */
 function Gaussian(M:Real[_,_], U:Real[_,_], V:Real[_,_]) -> MatrixGaussian {
   return Gaussian(Boxed(M), Boxed(U), Boxed(V));
 }

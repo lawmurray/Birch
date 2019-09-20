@@ -194,27 +194,6 @@ function cdf_gaussian(x:Real, μ:Real, σ2:Real) -> Real {
 }
 
 /**
- * CDF of a log-Gaussian variate.
- *
- * - x: The variate.
- * - μ: Mean.
- * - σ2: Variance.
- *
- * Return: the cumulative probability.
- */
-function cdf_log_gaussian(x:Real, μ:Real, σ2:Real) -> Real {
-  assert 0.0 < σ2;
-  
-  if x <= 0.0 {
-    return 0.0;
-  } else {
-    cpp{{
-    return boost::math::cdf(boost::math::lognormal_distribution<>(μ, ::sqrt(σ2)), x);
-    }}
-  }
-}
-
-/**
  * CDF of a Student's $t$ variate.
  *
  * - x: The variate.

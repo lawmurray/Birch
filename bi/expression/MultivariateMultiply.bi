@@ -44,19 +44,6 @@ final class MultivariateMultiply<Left,Right,Value>(left:Expression<Left>,
     }
     return y;
   }
-  
-  function graftIdenticalInverseGamma() ->
-      TransformLinearMultivariate<DelayInverseGamma>? {
-    y:TransformLinearMultivariate<DelayInverseGamma>?;
-    z:DelayInverseGamma?;
-    
-    if (y <- right.graftIdenticalInverseGamma())? {
-      y!.leftMultiply(left.value());
-    } else if (z <- right.graftInverseGamma())? {
-      y <- TransformLinearMultivariate<DelayInverseGamma>(left.value(), z!);
-    }
-    return y;
-  }
 }
 
 operator (left:Expression<Real[_,_]>*right:Expression<Real[_]>) ->

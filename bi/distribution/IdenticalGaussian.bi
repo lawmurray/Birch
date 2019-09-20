@@ -16,12 +16,12 @@ final class IdenticalGaussian(μ:Expression<Real[_]>,
   
   function valueForward() -> Real[_] {
     assert !delay?;
-    return simulate_multivariate_gaussian(μ, σ2);
+    return simulate_identical_gaussian(μ, σ2);
   }
 
   function observeForward(x:Real[_]) -> Real {
     assert !delay?;
-    return logpdf_multivariate_gaussian(x, μ, σ2);
+    return logpdf_identical_gaussian(x, μ, σ2);
   }
   
   function graft(force:Boolean) {
@@ -42,18 +42,10 @@ final class IdenticalGaussian(μ:Expression<Real[_]>,
         delay <- DelayLinearMultivariateGaussianMultivariateGaussian(future, futureUpdate, m3!.A, m3!.x, m3!.c, diagonal(σ2.value(), m3!.size()));
       } else if (m4 <- μ.graftMultivariateGaussian())? {
         delay <- DelayMultivariateGaussianMultivariateGaussian(future, futureUpdate, m4!, diagonal(σ2, m4!.size()));
-      } else {
-        /* trigger a sample of μ, and double check that this doesn't cause
-         * a sample of σ2 before we try creating an inverse-gamma Gaussian */
-        μ.value();
-        if (s2 <- σ2.graftInverseGamma())? {
-          delay <- DelayInverseGammaMultivariateGaussian(future, futureUpdate, μ, s2!);
-        } else if force {
-          /* try a normal inverse gamma first, then a regular Gaussian */
-          if !graftMultivariateNormalInverseGamma()? {
-            delay <- DelayMultivariateGaussian(future, futureUpdate, μ.value(), diagonal(σ2, length(μ.value())));
-          }
-        }
+      } else if (s2 <- σ2.graftInverseGamma())? {
+        delay <- DelayMultivariateNormalInverseGamma(future, futureUpdate, μ, identity(length(μ)), s2!);
+      } else if force {
+        delay <- DelayMultivariateGaussian(future, futureUpdate, μ, diagonal(σ2, length(μ)));
       }
     }
   }
@@ -71,8 +63,7 @@ final class IdenticalGaussian(μ:Expression<Real[_]>,
         delay <- DelayMultivariateGaussianMultivariateGaussian(future, futureUpdate, m2!, diagonal(σ2,
             length(m2!.μ)));
       } else {
-        μ1:Real[_] <- μ.value();
-        delay <- DelayMultivariateGaussian(future, futureUpdate, μ1, diagonal(σ2, length(μ1)));
+        delay <- DelayMultivariateGaussian(future, futureUpdate, μ, diagonal(σ2, length(μ)));
       }
     }
     return DelayMultivariateGaussian?(delay);
@@ -82,16 +73,9 @@ final class IdenticalGaussian(μ:Expression<Real[_]>,
     if delay? {
       delay!.prune();
     } else {
-      s1:TransformLinear<DelayInverseGamma>?;
-      s2:DelayInverseGamma?;
-      if (s1 <- σ2.graftScaledInverseGamma())? {
-        μ1:Real[_] <- μ.value();
-        D:Integer <- length(μ1);
-        delay <- DelayMultivariateNormalInverseGamma(future, futureUpdate, μ1, diagonal(s1!.a, D), s1!.x);
-      } else if (s2 <- σ2.graftInverseGamma())? {
-        μ1:Real[_] <- μ.value();
-        D:Integer <- length(μ1);
-        delay <- DelayMultivariateNormalInverseGamma(future, futureUpdate, μ1, identity(D), s2!);
+      s1:DelayInverseGamma?;
+      if (s1 <- σ2.graftInverseGamma())? {
+        delay <- DelayMultivariateNormalInverseGamma(future, futureUpdate, μ, identity(length(μ)), s1!);
       }
     }
     return DelayMultivariateNormalInverseGamma?(delay);

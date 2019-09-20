@@ -2,8 +2,8 @@
  * Multivariate Gaussian distribution where the covariance is given as a
  * matrix multiplied by a scalar.
  */
-final class ScalarMultivariateGaussian(μ:Expression<Real[_]>, Σ:Expression<Real[_,_]>,
-    σ2:Expression<Real>) < Distribution<Real[_]> {
+final class ScalarMultivariateGaussian(μ:Expression<Real[_]>,
+    Σ:Expression<Real[_,_]>, σ2:Expression<Real>) < Distribution<Real[_]> {
   /**
    * Mean.
    */
@@ -21,19 +21,24 @@ final class ScalarMultivariateGaussian(μ:Expression<Real[_]>, Σ:Expression<Rea
   
   function valueForward() -> Real[_] {
     assert !delay?;
-    return simulate_multivariate_gaussian(μ, Σ*σ2);
+    return simulate_multivariate_gaussian(μ, Σ.value()*σ2.value());
   }
 
   function observeForward(x:Real[_]) -> Real {
     assert !delay?;
-    return logpdf_multivariate_gaussian(x, μ, Σ*σ2);
+    return logpdf_multivariate_gaussian(x, μ, Σ.value()*σ2.value());
   }
   
   function graft(force:Boolean) {
     if delay? {
       delay!.prune();
-    } else if force {
-      delay <- DelayMultivariateGaussian(future, futureUpdate, μ, Σ*σ2);
+    } else {
+      s1:DelayInverseGamma?;
+      if (s1 <- σ2.graftInverseGamma())? {
+        delay <- DelayMultivariateNormalInverseGamma(future, futureUpdate, μ, Σ, s1!);
+      } else if force {
+        delay <- DelayMultivariateGaussian(future, futureUpdate, μ, Σ.value()*σ2.value());
+      }
     }
   }
 
@@ -41,15 +46,29 @@ final class ScalarMultivariateGaussian(μ:Expression<Real[_]>, Σ:Expression<Rea
     if delay? {
       delay!.prune();
     } else {
-      delay <- DelayMultivariateGaussian(future, futureUpdate, μ, Σ*σ2);
+      delay <- DelayMultivariateGaussian(future, futureUpdate, μ, Σ.value()*σ2.value());
     }
     return DelayMultivariateGaussian?(delay);
+  }
+
+  function graftMultivariateNormalInverseGamma() -> DelayMultivariateNormalInverseGamma? {
+    if delay? {
+      delay!.prune();
+    } else {
+      s1:DelayInverseGamma?;
+      if (s1 <- σ2.graftInverseGamma())? {
+        delay <- DelayMultivariateNormalInverseGamma(future, futureUpdate, μ, Σ, s1!);
+      }
+    }
+    return DelayMultivariateNormalInverseGamma?(delay);
   }
 }
 
 /**
  * Create multivariate Gaussian distribution where the covariance is given
- * as a matrix multiplied by a scalar.
+ * as a matrix multiplied by a scalar. This is usually used for establishing
+ * a multivariate normal-inverse-gamma, where the final argument is
+ * inverse-gamma distributed.
  */
 function Gaussian(μ:Expression<Real[_]>, Σ:Expression<Real[_,_]>,
     σ2:Expression<Real>) -> ScalarMultivariateGaussian {
@@ -59,7 +78,9 @@ function Gaussian(μ:Expression<Real[_]>, Σ:Expression<Real[_,_]>,
 
 /**
  * Create multivariate Gaussian distribution where the covariance is given
- * as a matrix multiplied by a scalar.
+ * as a matrix multiplied by a scalar. This is usually used for establishing
+ * a multivariate normal-inverse-gamma, where the final argument is
+ * inverse-gamma distributed.
  */
 function Gaussian(μ:Expression<Real[_]>, Σ:Expression<Real[_,_]>,
     σ2:Real) -> ScalarMultivariateGaussian {
@@ -68,7 +89,9 @@ function Gaussian(μ:Expression<Real[_]>, Σ:Expression<Real[_,_]>,
 
 /**
  * Create multivariate Gaussian distribution where the covariance is given
- * as a matrix multiplied by a scalar.
+ * as a matrix multiplied by a scalar. This is usually used for establishing
+ * a multivariate normal-inverse-gamma, where the final argument is
+ * inverse-gamma distributed.
  */
 function Gaussian(μ:Expression<Real[_]>, Σ:Real[_,_],
     σ2:Expression<Real>) -> ScalarMultivariateGaussian {
@@ -77,7 +100,9 @@ function Gaussian(μ:Expression<Real[_]>, Σ:Real[_,_],
 
 /**
  * Create multivariate Gaussian distribution where the covariance is given
- * as a matrix multiplied by a scalar.
+ * as a matrix multiplied by a scalar. This is usually used for establishing
+ * a multivariate normal-inverse-gamma, where the final argument is
+ * inverse-gamma distributed.
  */
 function Gaussian(μ:Expression<Real[_]>, Σ:Real[_,_], σ2:Real) ->
       ScalarMultivariateGaussian {
@@ -86,7 +111,9 @@ function Gaussian(μ:Expression<Real[_]>, Σ:Real[_,_], σ2:Real) ->
 
 /**
  * Create multivariate Gaussian distribution where the covariance is given
- * as a matrix multiplied by a scalar.
+ * as a matrix multiplied by a scalar. This is usually used for establishing
+ * a multivariate normal-inverse-gamma, where the final argument is
+ * inverse-gamma distributed.
  */
 function Gaussian(μ:Real[_], Σ:Expression<Real[_,_]>,
     σ2:Expression<Real>) -> ScalarMultivariateGaussian {
@@ -95,7 +122,9 @@ function Gaussian(μ:Real[_], Σ:Expression<Real[_,_]>,
 
 /**
  * Create multivariate Gaussian distribution where the covariance is given
- * as a matrix multiplied by a scalar.
+ * as a matrix multiplied by a scalar. This is usually used for establishing
+ * a multivariate normal-inverse-gamma, where the final argument is
+ * inverse-gamma distributed.
  */
 function Gaussian(μ:Real[_], Σ:Expression<Real[_,_]>, σ2:Real) ->
     ScalarMultivariateGaussian {
@@ -104,7 +133,20 @@ function Gaussian(μ:Real[_], Σ:Expression<Real[_,_]>, σ2:Real) ->
 
 /**
  * Create multivariate Gaussian distribution where the covariance is given
- * as a matrix multiplied by a scalar.
+ * as a matrix multiplied by a scalar. This is usually used for establishing
+ * a multivariate normal-inverse-gamma, where the final argument is
+ * inverse-gamma distributed.
+ */
+function Gaussian(μ:Real[_], Σ:Real[_,_], σ2:Expression<Real>) ->
+    ScalarMultivariateGaussian {
+  return Gaussian(Boxed(μ), Boxed(Σ), σ2);
+}
+
+/**
+ * Create multivariate Gaussian distribution where the covariance is given
+ * as a matrix multiplied by a scalar. This is usually used for establishing
+ * a multivariate normal-inverse-gamma, where the final argument is
+ * inverse-gamma distributed.
  */
 function Gaussian(μ:Real[_], Σ:Real[_,_], σ2:Real) -> ScalarMultivariateGaussian {
   return Gaussian(Boxed(μ), Boxed(Σ), Boxed(σ2));

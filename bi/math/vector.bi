@@ -185,14 +185,16 @@ function length(x:Boolean?[_]) -> Integer {
  * Sum of a vector.
  */
 function sum(x:Real[_]) -> Real {
-  return reduce<Real>(x, 0.0, @(x:Real, y:Real) -> Real { return x + y; });
+  return reduce<Real>(x, 0.0, @(x:Real, y:Real) -> Real {
+      return x + y; });
 }
 
 /**
  * Sum of a vector.
  */
 function sum(x:Integer[_]) -> Integer {
-  return reduce<Integer>(x, 0, @(x:Integer, y:Integer) -> Integer { return x + y; });
+  return reduce<Integer>(x, 0, @(x:Integer, y:Integer) -> Integer {
+      return x + y; });
 }
 
 /**
@@ -201,6 +203,30 @@ function sum(x:Integer[_]) -> Integer {
 function sum(x:Boolean[_]) -> Boolean {
   return reduce<Boolean>(x, false, @(x:Boolean, y:Boolean) -> Boolean {
       return x + y; });
+}
+
+/**
+ * Product of a vector.
+ */
+function product(x:Real[_]) -> Real {
+  return reduce<Real>(x, 1.0, @(x:Real, y:Real) -> Real {
+      return x*y; });
+}
+
+/**
+ * Product of a vector.
+ */
+function product(x:Integer[_]) -> Integer {
+  return reduce<Integer>(x, 1, @(x:Integer, y:Integer) -> Integer {
+      return x*y; });
+}
+
+/**
+ * Product of a vector.
+ */
+function product(x:Boolean[_]) -> Boolean {
+  return reduce<Boolean>(x, true, @(x:Boolean, y:Boolean) -> Boolean {
+      return x*y; });
 }
 
 /**

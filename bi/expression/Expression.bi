@@ -39,25 +39,7 @@ class Expression<Value> {
   function getDelay() -> Delay? {
     return nil;
   }
-  
-  /*
-   * Attempt to graft this expression onto the delayed sampling graph.
-   *
-   * Return: The node if successful, nil if not.
-   */
-  function graftGaussian() -> DelayGaussian? {
-    return nil;
-  }
-  
-  /*
-   * Attempt to graft this expression onto the delayed sampling graph.
-   *
-   * Return: The node if successful, nil if not.
-   */
-  function graftLinearGaussian() -> TransformLinear<DelayGaussian>? {
-    return nil;
-  }
-  
+    
   /*
    * Attempt to graft this expression onto the delayed sampling graph.
    *
@@ -135,8 +117,25 @@ class Expression<Value> {
    *
    * Return: The node if successful, nil if not.
    */
-  function graftIdenticalInverseGamma() ->
-      TransformLinearMultivariate<DelayInverseGamma>? {
+  function graftIndependentInverseGamma() -> DelayIndependentInverseGamma? {
+    return nil;
+  }
+
+  /*
+   * Attempt to graft this expression onto the delayed sampling graph.
+   *
+   * Return: The node if successful, nil if not.
+   */
+  function graftGaussian() -> DelayGaussian? {
+    return nil;
+  }
+  
+  /*
+   * Attempt to graft this expression onto the delayed sampling graph.
+   *
+   * Return: The node if successful, nil if not.
+   */
+  function graftLinearGaussian() -> TransformLinear<DelayGaussian>? {
     return nil;
   }
   
@@ -156,6 +155,36 @@ class Expression<Value> {
    */
   function graftLinearNormalInverseGamma() ->
       TransformLinear<DelayNormalInverseGamma>? {
+    return nil;
+  }
+
+
+  /*
+   * Attempt to graft this expression onto the delayed sampling graph.
+   *
+   * Return: The node if successful, nil if not.
+   */
+  function graftMultivariateGaussian() -> DelayMultivariateGaussian? {
+    return nil;
+  }
+
+  /*
+   * Attempt to graft this expression onto the delayed sampling graph.
+   *
+   * Return: The node if successful, nil if not.
+   */
+  function graftLinearMultivariateGaussian() ->
+      TransformLinearMultivariate<DelayMultivariateGaussian>? {
+    return nil;
+  }
+
+  /*
+   * Attempt to graft this expression onto the delayed sampling graph.
+   *
+   * Return: The node if successful, nil if not.
+   */
+  function graftDotMultivariateGaussian() ->
+      TransformDot<DelayMultivariateGaussian>? {
     return nil;
   }
 
@@ -186,35 +215,6 @@ class Expression<Value> {
    */
   function graftDotMultivariateNormalInverseGamma() ->
       TransformDot<DelayMultivariateNormalInverseGamma>? {
-    return nil;
-  }
-
-  /*
-   * Attempt to graft this expression onto the delayed sampling graph.
-   *
-   * Return: The node if successful, nil if not.
-   */
-  function graftMultivariateGaussian() -> DelayMultivariateGaussian? {
-    return nil;
-  }
-
-  /*
-   * Attempt to graft this expression onto the delayed sampling graph.
-   *
-   * Return: The node if successful, nil if not.
-   */
-  function graftLinearMultivariateGaussian() ->
-      TransformLinearMultivariate<DelayMultivariateGaussian>? {
-    return nil;
-  }
-
-  /*
-   * Attempt to graft this expression onto the delayed sampling graph.
-   *
-   * Return: The node if successful, nil if not.
-   */
-  function graftDotMultivariateGaussian() ->
-      TransformDot<DelayMultivariateGaussian>? {
     return nil;
   }
 

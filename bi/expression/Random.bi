@@ -189,6 +189,15 @@ final class Random<Value> < Expression<Value> {
       return nil;
     }
   } 
+
+  function graftIndependentInverseGamma() -> DelayIndependentInverseGamma? {
+    if !hasValue() {
+      assert hasDistribution();
+      return dist!.graftIndependentInverseGamma();
+    } else {
+      return nil;
+    }
+  } 
   
   function graftNormalInverseGamma() -> DelayNormalInverseGamma? {
     if !hasValue() {

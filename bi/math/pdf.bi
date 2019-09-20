@@ -221,22 +221,6 @@ function pdf_gaussian(x:Real, μ:Real, σ2:Real) -> Real {
 }
 
 /**
- * PDF of a log-Gaussian variate.
- *
- * - x: The variate.
- * - μ: Mean.
- * - σ2: Variance.
- *
- * Return: the probability density.
- */
-function pdf_log_gaussian(x:Real, μ:Real, σ2:Real) -> Real {
-  assert 0.0 < σ2;
-  cpp{{
-  return boost::math::pdf(boost::math::lognormal_distribution<>(μ, ::sqrt(σ2)), x);
-  }}
-}
-
-/**
  * PDF of a Student's $t$ variate.
  *
  * - x: The variate.
@@ -570,7 +554,8 @@ function pdf_multivariate_gaussian(x:Real[_], μ:Real[_], Σ:Real[_,_]) ->
 }
 
 /**
- * PDF of a multivariate Gaussian distribution with diagonal covariance.
+ * PDF of a multivariate Gaussian distribution with independent and identical
+ * variance.
  *
  * - x: The variate.
  * - μ: Mean.
@@ -578,8 +563,22 @@ function pdf_multivariate_gaussian(x:Real[_], μ:Real[_], Σ:Real[_,_]) ->
  *
  * Return: the probability density.
  */
-function pdf_multivariate_gaussian(x:Real[_], μ:Real[_], σ2:Real) -> Real {
-  return exp(logpdf_multivariate_gaussian(x, μ, σ2));
+function pdf_identical_gaussian(x:Real[_], μ:Real[_], σ2:Real) -> Real {
+  return exp(logpdf_identical_gaussian(x, μ, σ2));
+}
+
+/**
+ * PDF of a multivariate Gaussian distribution with independent (diagonal)
+ * variance.
+ *
+ * - x: The variate.
+ * - μ: Mean.
+ * - σ2: Variance.
+ *
+ * Return: the probability density.
+ */
+function pdf_independent_gaussian(x:Real[_], μ:Real[_], σ2:Real[_]) -> Real {
+  return exp(logpdf_independent_gaussian(x, μ, σ2));
 }
 
 /**
