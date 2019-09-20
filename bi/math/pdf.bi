@@ -694,13 +694,13 @@ function pdf_matrix_gaussian(X:Real[_,_], M:Real[_,_], U:Real[_,_],
  * - N: Precision times mean matrix.
  * - Λ: Precision.
  * - α: Variance shapes.
- * - γ: Squared sum accumulators.
+ * - β: Variance scales.
  *
  * Returns: the probability density.
  */
 function pdf_matrix_normal_inverse_gamma(X:Real[_,_], N:Real[_,_], Λ:LLT,
-    α:Real[_], γ:Real[_]) -> Real {
-  return exp(logpdf_matrix_normal_inverse_gamma(X, N, Λ, α, γ));
+    α:Real[_], β:Real[_]) -> Real {
+  return exp(logpdf_matrix_normal_inverse_gamma(X, N, Λ, α, β));
 }
 
 /**

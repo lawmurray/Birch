@@ -791,14 +791,13 @@ function simulate_matrix_gaussian(M:Real[_,_], U:Real[_,_], V:Real[_,_]) ->
  * - N: Precision times mean matrix.
  * - Λ: Precision.
  * - α: Variance shapes.
- * - γ: Squared sum accumulators.
+ * - β: Variance scales.
  */
 function simulate_matrix_normal_inverse_gamma(N:Real[_,_], Λ:LLT, α:Real[_],
-    γ:Real[_]) -> Real[_,_] {
+    β:Real[_]) -> Real[_,_] {
   auto R <- rows(N);
   auto C <- columns(N);
   auto M <- solve(Λ, N);
-  auto β <- γ - 0.5*diagonal(transpose(N)*M);
   X:Real[R,C];
   for auto j in 1..C {
     X[1..R,j] <- simulate_multivariate_student_t(2.0*α[j], M[1..R,j],
@@ -814,15 +813,14 @@ function simulate_matrix_normal_inverse_gamma(N:Real[_,_], Λ:LLT, α:Real[_],
  * - N: Precision times mean matrix.
  * - Λ: Precision.
  * - α: Variance shapes.
- * - γ: Squared sum accumulators.
+ * - β: Variance scales.
  */
 function simulate_dot_matrix_normal_inverse_gamma_multivariate_gaussian(
-    a:Real[_], N:Real[_,_], Λ:LLT, α:Real[_], γ:Real[_]) -> Real[_] {
+    a:Real[_], N:Real[_,_], Λ:LLT, α:Real[_], β:Real[_]) -> Real[_] {
   auto D <- columns(N);
   auto M <- solve(Λ, N);
   auto μ <- transpose(M)*a;
   auto c <- dot(a, solve(Λ, a));
-  auto β <- γ - 0.5*diagonal(transpose(N)*M);
   x:Real[D];
   for auto d in 1..D {
     x[d] <- simulate_student_t(2.0*α[d], μ[d], (β[d]/α[d])*(1.0 + c));

@@ -50,15 +50,16 @@ final class MatrixGaussian(M:Expression<Real[_,_]>, U:Expression<Real[_,_]>,
  * Create matrix Gaussian distribution.
  */
 function Gaussian(M:Expression<Real[_,_]>, U:Expression<Real[_,_]>,
-    V:Expression<Real[_,_]>) -> MatrixNormal {
-  return Gaussian(M, U, V);
+    V:Expression<Real[_,_]>) -> MatrixGaussian {
+  m:MatrixGaussian(M, U, V);
+  return m;
 }
 
 /**
  * Create matrix Gaussian distribution.
  */
 function Gaussian(M:Expression<Real[_,_]>, U:Expression<Real[_,_]>,
-    V:Real[_,_]) -> MatrixNormal {
+    V:Real[_,_]) -> MatrixGaussian {
   return Gaussian(M, U, Boxed(V));
 }
 
@@ -66,7 +67,7 @@ function Gaussian(M:Expression<Real[_,_]>, U:Expression<Real[_,_]>,
  * Create matrix Gaussian distribution.
  */
 function Gaussian(M:Expression<Real[_,_]>, U:Real[_,_],
-    V:Expression<Real[_,_]>) -> MatrixNormal {
+    V:Expression<Real[_,_]>) -> MatrixGaussian {
   return Gaussian(M, Boxed(U), V);
 }
 
@@ -74,7 +75,7 @@ function Gaussian(M:Expression<Real[_,_]>, U:Real[_,_],
  * Create matrix Gaussian distribution.
  */
 function Gaussian(M:Expression<Real[_,_]>, U:Real[_,_], V:Real[_,_]) ->
-      MatrixNormal {
+      MatrixGaussian {
   return Gaussian(M, Boxed(U), Boxed(V));
 }
 
@@ -82,7 +83,7 @@ function Gaussian(M:Expression<Real[_,_]>, U:Real[_,_], V:Real[_,_]) ->
  * Create matrix Gaussian distribution.
  */
 function Gaussian(M:Real[_,_], U:Expression<Real[_,_]>,
-    V:Expression<Real[_,_]>) -> MatrixNormal {
+    V:Expression<Real[_,_]>) -> MatrixGaussian {
   return Gaussian(Boxed(M), U, V);
 }
 
@@ -90,13 +91,13 @@ function Gaussian(M:Real[_,_], U:Expression<Real[_,_]>,
  * Create matrix Gaussian distribution.
  */
 function Gaussian(M:Real[_,_], U:Expression<Real[_,_]>, V:Real[_,_]) ->
-    MatrixNormal {
+    MatrixGaussian {
   return Gaussian(Boxed(M), U, Boxed(V));
 }
 
 /**
  * Create matrix Gaussian distribution.
  */
-function Gaussian(M:Real[_,_], U:Real[_,_], V:Real[_,_]) -> MatrixNormal {
+function Gaussian(M:Real[_,_], U:Real[_,_], V:Real[_,_]) -> MatrixGaussian {
   return Gaussian(Boxed(M), Boxed(U), Boxed(V));
 }

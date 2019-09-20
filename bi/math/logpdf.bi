@@ -826,16 +826,15 @@ function logpdf_matrix_gaussian(X:Real[_,_], M:Real[_,_], U:Real[_,_],
  * - N: Precision times mean matrix.
  * - Λ: Precision.
  * - α: Variance shapes.
- * - γ: Squared sum accumulators.
+ * - β: Variance scales.
  *
  * Returns: the log probability density.
  */
 function logpdf_matrix_normal_inverse_gamma(X:Real[_,_], N:Real[_,_], Λ:LLT,
-    α:Real[_], γ:Real[_]) -> Real {
+    α:Real[_], β:Real[_]) -> Real {
   auto R <- rows(N);
   auto C <- columns(N);
   auto M <- solve(Λ, N);
-  auto β <- γ - 0.5*diagonal(transpose(N)*M);
   auto w <- 0.0;
   for auto j in 1..C {
     w <- w + logpdf_multivariate_student_t(X[1..R,j], 2.0*α[j], M[1..R,j],
@@ -852,17 +851,16 @@ function logpdf_matrix_normal_inverse_gamma(X:Real[_,_], N:Real[_,_], Λ:LLT,
  * - N: Precision times mean matrix.
  * - Λ: Precision.
  * - α: Variance shapes.
- * - γ: Squared sum accumulators.
+ * - β: Variance scales.
  *
  * Returns: the log probability density.
  */
 function logpdf_dot_matrix_normal_inverse_gamma_multivariate_gaussian(
     x:Real[_], a:Real[_], N:Real[_,_], Λ:LLT, α:Real[_],
-    γ:Real[_]) -> Real {
+    β:Real[_]) -> Real {
   auto D <- length(x);
   auto M <- solve(Λ, N);
   auto μ <- transpose(M)*a;
-  auto β <- γ - 0.5*diagonal(transpose(N)*M);
   auto c <- dot(a, solve(Λ, a));
   auto w <- 0.0;
   for auto d in 1..D {
