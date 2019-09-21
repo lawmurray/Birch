@@ -10,12 +10,12 @@ class DelayMatrixGaussian(future:Real[_,_]?, futureUpdate:Boolean,
   M:Real[_,_] <- M;
   
   /**
-   * Within-row covariance.
+   * Among-row covariance.
    */
   U:Real[_,_] <- U;
 
   /**
-   * Within-column covariance.
+   * Among-column covariance.
    */
   V:Real[_,_] <- V;
 

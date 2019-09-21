@@ -655,8 +655,8 @@ function pdf_linear_multivariate_normal_inverse_gamma_multivariate_gaussian(x:Re
  *
  * - X: The variate.
  * - M: Mean.
- * - U: Within-row covariance.
- * - V: Within-column covariance.
+ * - U: Among-row covariance.
+ * - V: Among-column covariance.
  *
  * Returns: the probability density.
  */
@@ -740,8 +740,8 @@ function pdf_multivariate_student_t(x:Real[_], k:Real, μ:Real[_],
  * - X: The variate.
  * - k: Degrees of freedom.
  * - M: Mean.
- * - U: Within-row covariance.
- * - V: Within-column covariance.
+ * - U: Among-row covariance.
+ * - V: Among-column covariance.
  *
  * Returns: the probability density.
  */
@@ -757,7 +757,7 @@ function pdf_matrix_student_t(X:Real[_,_], k:Real, M:Real[_,_], U:Real[_,_],
  * - X: The variate.
  * - k: Degrees of freedom.
  * - M: Mean.
- * - U: Within-row covariance.
+ * - U: Among-row covariance.
  * - v: Independent within-column covariance.
  *
  * Returns: the probability density.

@@ -404,7 +404,7 @@ public:
    */
   ///@{
   /*
-   * Compatibility check.
+   * Compatibility checks.
    */
   template<class DerivedType>
   struct is_eigen_compatible {
@@ -413,6 +413,13 @@ public:
             && ((F::count() == 1 && DerivedType::ColsAtCompileTime == 1)
                 || (F::count() == 2
                     && DerivedType::ColsAtCompileTime == Eigen::Dynamic));
+  };
+
+  template<class DerivedType>
+  struct is_diagonal_compatible {
+    static const bool value =
+        std::is_same<T,typename DerivedType::value_type>::value
+            && F::count() == 2 && DerivedType::ColsAtCompileTime == 1;
   };
 
   /**
@@ -502,6 +509,20 @@ public:
   }
 
   /**
+   * Construct from Eigen DiagonalWrapper expression.
+   */
+  template<class DerivedType, typename = std::enable_if_t<
+      is_diagonal_compatible<DerivedType>::value>>
+  Array(const Eigen::DiagonalWrapper<DerivedType>& o) :
+      frame(o.rows(), o.cols()),
+      buffer(nullptr),
+      offset(0),
+      isView(false) {
+    allocate();
+    toEigen() = o;  // buffer uninitialized, but okay as type is primitive
+  }
+
+  /**
    * Assign from Eigen Matrix expression.
    */
   template<class DerivedType, typename = std::enable_if_t<
@@ -516,7 +537,23 @@ public:
     }
     return *this;
   }
-  ///@}
+
+  /**
+   * Assign from Eigen DiagonalWrapper expression.
+   */
+  template<class DerivedType, typename = std::enable_if_t<
+      is_diagonal_compatible<DerivedType>::value>>
+  Array<T,F>& operator=(const Eigen::DiagonalWrapper<DerivedType>& o) {
+    if (!isView && (!frame.conforms(o.rows(), o.cols()) || isShared())) {
+      lock();
+      rebase(o);
+      unlock();
+    } else {
+      toEigen() = o;
+    }
+    return *this;
+  }
+///@}
 
 private:
   /**

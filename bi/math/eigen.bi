@@ -133,6 +133,21 @@ function diagonal(X:Integer[_,_]) -> Integer[_];
 function diagonal(X:Boolean[_,_]) -> Boolean[_];
 
 /**
+ * Diagonal matrix from vector.
+ */
+function diagonal(x:Real[_]) -> Real[_,_];
+
+/**
+ * Diagonal matrix from vector.
+ */
+function diagonal(x:Integer[_]) -> Integer[_,_];
+
+/**
+ * Diagonal matrix from vector.
+ */
+function diagonal(x:Boolean[_]) -> Boolean[_,_];
+
+/**
  * Norm of a vector.
  */
 function norm(x:Real[_]) -> Real;

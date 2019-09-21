@@ -756,8 +756,8 @@ function simulate_linear_multivariate_normal_inverse_gamma_multivariate_gaussian
  * Simulate a matrix Gaussian distribution.
  *
  * - M: Mean.
- * - U: Within-row covariance.
- * - V: Within-column covariance.
+ * - U: Among-row covariance.
+ * - V: Among-column covariance.
  */
 function simulate_matrix_gaussian(M:Real[_,_], U:Real[_,_], V:Real[_,_]) ->
     Real[_,_] {
@@ -776,8 +776,8 @@ function simulate_matrix_gaussian(M:Real[_,_], U:Real[_,_], V:Real[_,_]) ->
  * Simulate a matrix Gaussian distribution with independent columns.
  *
  * - M: Mean.
- * - U: Within-row covariance.
- * - σ2: Within-column variances.
+ * - U: Among-row covariance.
+ * - σ2: Among-column variances.
  */
 function simulate_matrix_gaussian(M:Real[_,_], U:Real[_,_], σ2:Real[_]) ->
     Real[_,_] {
@@ -884,8 +884,8 @@ function simulate_multivariate_student_t(k:Real, μ:Real[_], σ2:Real) ->
  *
  * - k: Degrees of freedom.
  * - M: Mean.
- * - U: Within-row covariance.
- * - V: Within-column covariance.
+ * - U: Among-row covariance.
+ * - V: Among-column covariance.
  */
 function simulate_matrix_student_t(k:Real, M:Real[_,_], U:Real[_,_],
     V:Real[_,_]) -> Real[_,_] {
@@ -905,7 +905,7 @@ function simulate_matrix_student_t(k:Real, M:Real[_,_], U:Real[_,_],
  *
  * - k: Degrees of freedom.
  * - M: Mean.
- * - U: Within-row covariance.
+ * - U: Among-row covariance.
  * - v: Independent within-column covariance.
  */
 function simulate_matrix_student_t(k:Real, M:Real[_,_], U:Real[_,_],

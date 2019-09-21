@@ -12,16 +12,16 @@ program test_linear_matrix_gaussian_matrix_gaussian(N:Integer <- 10000) {
   M:Real[n,p];
   U:Real[n,n];
   V:Real[p,p];
-  C:Real[n,n];
+  C:Real[n,p];
  
   for auto i in 1..n {
     for auto j in 1..n {
       A[i,j] <- simulate_uniform(-2.0, 2.0);
       U[i,j] <- simulate_uniform(-2.0, 2.0);
-      C[i,j] <- simulate_uniform(-10.0, 10.0);
     }
     for auto j in 1..p {
       M[i,j] <- simulate_uniform(-10.0, 10.0);
+      C[i,j] <- simulate_uniform(-10.0, 10.0);
     }
   }
   for auto i in 1..p {

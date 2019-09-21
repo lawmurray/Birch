@@ -9,12 +9,12 @@ final class MatrixGaussian(M:Expression<Real[_,_]>, U:Expression<Real[_,_]>,
   M:Expression<Real[_,_]> <- M;
   
   /**
-   * Within-row covariance.
+   * Among-row covariance.
    */
   U:Expression<Real[_,_]> <- U;
 
   /**
-   * Within-column covariance.
+   * Among-column covariance.
    */
   V:Expression<Real[_,_]> <- V;
   

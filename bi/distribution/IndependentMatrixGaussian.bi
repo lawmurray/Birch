@@ -9,7 +9,7 @@ final class IndependentMatrixGaussian(M:Expression<Real[_,_]>,
   M:Expression<Real[_,_]> <- M;
 
   /**
-   * Within-column variances.
+   * Among-column variances.
    */
   σ2:Expression<Real[_]> <- v;
   
@@ -30,10 +30,10 @@ final class IndependentMatrixGaussian(M:Expression<Real[_,_]>,
       s1:DelayIndependentInverseGamma?;
       if (s1 <- σ2.graftIndependentInverseGamma())? {
         delay <- DelayMatrixNormalInverseGamma(future, futureUpdate, M,
-            identity(columns(M)), s1!);
+            identity(rows(M)), s1!);
       } else if force {
         delay <- DelayMatrixGaussian(future, futureUpdate, M,
-            identity(columns(M)), diagonal(σ2.value()));
+            identity(rows(M)), diagonal(σ2.value()));
       }
     }
   }

@@ -9,12 +9,12 @@ final class BlockMatrixGaussian(M:Expression<Real[_,_]>,
   M:Expression<Real[_,_]> <- M;
   
   /**
-   * Within-row covariance.
+   * Among-row covariance.
    */
   U:Expression<Real[_,_]> <- U;
 
   /**
-   * Within-column variances.
+   * Among-column variances.
    */
   σ2:Expression<Real[_]> <- v;
   

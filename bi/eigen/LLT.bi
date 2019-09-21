@@ -77,18 +77,21 @@ final class LLT(n:Integer) {
 }
 
 operator (X:LLT*y:Real[_]) -> Real[_] {
+  assert columns(X) == length(y);
   cpp{{
   return X->llt.matrixL()*(X->llt.matrixU()*y.toEigen()).eval();
   }}
 }
 
 operator (X:LLT*Y:Real[_,_]) -> Real[_,_] {
+  assert columns(X) == rows(Y);
   cpp{{
   return X->llt.matrixL()*(X->llt.matrixU()*Y.toEigen()).eval();
   }}
 }
 
 operator (X:Real[_,_]*Y:LLT) -> Real[_,_] {
+  assert columns(X) == rows(Y);
   cpp{{
   return X.toEigen()*Y->llt.matrixL()*Y->llt.matrixU();
   }}
@@ -142,6 +145,7 @@ function llt(S:Real[_,_]) -> LLT {
  * matrix $S + axx^\top$.
  */
 function rank_update(S:LLT, x:Real[_], a:Real) -> LLT {
+  assert rows(S) == length(x);
   A:LLT(rows(S));
   cpp{{
   A->llt = S->llt;
@@ -165,6 +169,7 @@ function rank_update(S:LLT, x:Real[_], a:Real) -> LLT {
  * columns of `X
  */
 function rank_update(S:LLT, X:Real[_,_], a:Real) -> LLT {
+  assert rows(S) == rows(X);
   A:LLT(rows(S));
   cpp{{
   A->llt = S->llt;
@@ -231,6 +236,7 @@ function inv(S:LLT) -> Real[_,_] {
  * Solve a system of equations with a symmetric positive definite matrix.
  */
 function solve(S:LLT, y:Real[_]) -> Real[_] {
+  assert columns(S) == length(y);
   cpp{{
   return S->llt.solve(y.toEigen());
   }}
@@ -240,6 +246,7 @@ function solve(S:LLT, y:Real[_]) -> Real[_] {
  * Solve a system of equations with a symmetric positive definite matrix.
  */
 function solve(S:LLT, Y:Real[_,_]) -> Real[_,_] {
+  assert columns(S) == rows(Y);
   cpp{{
   return S->llt.solve(Y.toEigen());
   }}

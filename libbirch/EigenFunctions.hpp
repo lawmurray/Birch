@@ -74,7 +74,18 @@ auto det(const libbirch::Array<Type,Frame>& o) {
   return det(o.toEigen());
 }
 
-template<class Type>
+/**
+ * Convert a vector into a diagonal matrix.
+ */
+template<class Type, std::enable_if_t<Type::ColsAtCompileTime == 1, int> = 0>
+auto diagonal(const Eigen::MatrixBase<Type>& o) {
+  return o.asDiagonal();
+}
+
+/**
+ * Extract the diagonal of a matrix as a vector.
+ */
+template<class Type, std::enable_if_t<Type::ColsAtCompileTime == Eigen::Dynamic, int> = 0>
 auto diagonal(const Eigen::MatrixBase<Type>& o) {
   return o.diagonal();
 }
@@ -102,6 +113,11 @@ auto inv(const Eigen::MatrixBase<Type>& o) {
 template<class Type, class Frame>
 auto inv(const libbirch::Array<Type,Frame>& o) {
   return inv(o.toEigen());
+}
+
+template<class Type>
+auto inv(const Eigen::DiagonalWrapper<Type>& o) {
+  return o.inverse();
 }
 
 template<class Type1, class Type2>

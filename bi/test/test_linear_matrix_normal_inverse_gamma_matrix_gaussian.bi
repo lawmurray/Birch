@@ -11,7 +11,7 @@ program test_linear_matrix_normal_inverse_gamma_matrix_gaussian(N:Integer <- 100
   A:Real[n,n];
   M:Real[n,p];
   Σ:Real[n,n];
-  C:Real[n,n];
+  C:Real[n,p];
   α:Real <- simulate_uniform(2.0, 10.0);
   β:Real[p];
  
@@ -19,10 +19,10 @@ program test_linear_matrix_normal_inverse_gamma_matrix_gaussian(N:Integer <- 100
     for auto j in 1..n {
       A[i,j] <- simulate_uniform(-2.0, 2.0);
       Σ[i,j] <- simulate_uniform(-2.0, 2.0);
-      C[i,j] <- simulate_uniform(-10.0, 10.0);
     }
     for auto j in 1..p {
       M[i,j] <- simulate_uniform(-10.0, 10.0);
+      C[i,j] <- simulate_uniform(-10.0, 10.0);
     }
   }
   for auto i in 1..p {
