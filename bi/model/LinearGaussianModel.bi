@@ -3,8 +3,23 @@
  */
 class LinearGaussianParameter {
   a:Real <- 0.8;
+  b:Real <- 10.0;
   σ2_x:Real <- 1.0;
-  σ2_y:Real <- 0.1;
+  σ2_y:Real <- 0.01;
+
+  function read(buffer:Buffer) {
+    a <-? buffer.get("a", a);
+    b <-? buffer.get("b", b);
+    σ2_x <-? buffer.get("σ2_x", σ2_x);
+    σ2_y <-? buffer.get("σ2_y", σ2_y);
+  }
+  
+  function write(buffer:Buffer) {
+    buffer.set("a", a);
+    buffer.set("b", b);
+    buffer.set("σ2_x", σ2_x);
+    buffer.set("σ2_y", σ2_y);
+  }
 }
 
 /**
@@ -24,6 +39,6 @@ class LinearGaussianModel < StateSpaceModel<LinearGaussianParameter,
 
   fiber observation(y:Random<Real>, x:Random<Real>,
       θ:LinearGaussianParameter) -> Event {
-    y ~ Gaussian(x, θ.σ2_y);
+    y ~ Gaussian(θ.b*x, θ.σ2_y);
   }
 }

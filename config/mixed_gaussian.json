@@ -6,5 +6,8 @@
     "nsamples":20,
     "nparticles": 128,
     "nsteps": 100
-  }
+  },
+  "input": "input/mixed_gaussian.json",
+  "output": "output/mixed_gaussian.json",
+  "diagnostic": "diagnostic/mixed_gaussian.json"
 }

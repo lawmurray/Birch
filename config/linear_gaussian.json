@@ -1,5 +1,11 @@
 {
   "model": {
     "class": "LinearGaussianModel"
-  }
+  },
+  "sampler": {
+	"nsteps": 100
+  },
+  "input": "input/linear_gaussian.json",
+  "output": "output/linear_gaussian.json",
+  "diagnostic": "diagnostic/linear_gaussian.json"
 }

@@ -6,5 +6,8 @@
     "class": "ParticleFilter",
     "nsamples": 20,
     "nparticles": 128
-  }
+  },
+  "input": "input/russian_influenza.json",
+  "output": "output/sir.json",
+  "diagnostic": "diagnostic/sir.json"
 }

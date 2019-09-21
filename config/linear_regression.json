@@ -1,5 +1,8 @@
 {
   "model": {
     "class": "LinearRegressionModel"
-  }
+  },
+  "input": "input/bike_share.json",
+  "output": "output/linear_regression.json",
+  "diagnostic": "diagnostic/linear_regression.json"
 }
