@@ -16,12 +16,12 @@ final class IdenticalGaussian(μ:Expression<Real[_]>,
   
   function valueForward() -> Real[_] {
     assert !delay?;
-    return simulate_identical_gaussian(μ, σ2);
+    return simulate_multivariate_gaussian(μ, σ2);
   }
 
   function observeForward(x:Real[_]) -> Real {
     assert !delay?;
-    return logpdf_identical_gaussian(x, μ, σ2);
+    return logpdf_multivariate_gaussian(x, μ, σ2);
   }
   
   function graft(force:Boolean) {

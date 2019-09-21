@@ -652,34 +652,33 @@ function simulate_multivariate_gaussian(μ:Real[_], Σ:Real[_,_]) -> Real[_] {
 }
 
 /**
- * Simulate a multivariate Gaussian distribution with independent and
- * identical variance.
+ * Simulate a multivariate Gaussian distribution with independent elements.
  *
  * - μ: Mean.
  * - σ2: Variance.
  */
-function simulate_identical_gaussian(μ:Real[_], σ2:Real) -> Real[_] {
+function simulate_multivariate_gaussian(μ:Real[_], σ2:Real[_]) -> Real[_] {
   auto D <- length(μ);
-  auto σ <- sqrt(σ2);
   z:Real[D];
   for auto d in 1..D {
-    z[d] <- μ[d] + σ*simulate_gaussian(0.0, 1.0);
+    z[d] <- μ[d] + simulate_gaussian(0.0, σ2[d]);
   }
   return z;
 }
 
 /**
- * Simulate a multivariate Gaussian distribution with independent
- * (diagonal) covariance.
+ * Simulate a multivariate Gaussian distribution with independent elements of
+ * identical variance.
  *
  * - μ: Mean.
  * - σ2: Variance.
  */
-function simulate_independent_gaussian(μ:Real[_], σ2:Real[_]) -> Real[_] {
+function simulate_multivariate_gaussian(μ:Real[_], σ2:Real) -> Real[_] {
   auto D <- length(μ);
+  auto σ <- sqrt(σ2);
   z:Real[D];
   for auto d in 1..D {
-    z[d] <- μ[d] + simulate_gaussian(0.0, σ2[d]);
+    z[d] <- μ[d] + σ*simulate_gaussian(0.0, 1.0);
   }
   return z;
 }
@@ -780,13 +779,29 @@ function simulate_matrix_gaussian(M:Real[_,_], U:Real[_,_], V:Real[_,_]) ->
  * - U: Within-row covariance.
  * - σ2: Within-column variances.
  */
-function simulate_independent_matrix_gaussian(M:Real[_,_], U:Real[_,_],
-    σ2:Real[_]) -> Real[_,_] {
+function simulate_matrix_gaussian(M:Real[_,_], U:Real[_,_], σ2:Real[_]) ->
+    Real[_,_] {
   auto N <- rows(M);
   auto P <- columns(M);
   X:Real[N,P];
   for auto p in 1..P {
     X[1..N,p] <- simulate_multivariate_gaussian(M[1..N,p], U*σ2[p]);
+  }
+  return X;
+}
+
+/**
+ * Simulate a matrix Gaussian distribution with independent elements.
+ *
+ * - M: Mean.
+ * - σ2: Variances.
+ */
+function simulate_matrix_gaussian(M:Real[_,_], σ2:Real[_]) -> Real[_,_] {
+  auto N <- rows(M);
+  auto P <- columns(M);
+  X:Real[N,P];
+  for auto p in 1..P {
+    X[1..N,p] <- simulate_multivariate_gaussian(M[1..N,p], σ2[p]);
   }
   return X;
 }

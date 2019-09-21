@@ -679,8 +679,8 @@ function logpdf_multivariate_gaussian(x:Real[_], μ:Real[_], Σ:Real[_,_]) ->
 }
 
 /**
- * Observe a multivariate Gaussian distribution with independent and identical
- * variance.
+ * Observe a multivariate Gaussian distribution with independent elements of
+ * identical variance.
  *
  * - x: The variate.
  * - μ: Mean.
@@ -688,28 +688,27 @@ function logpdf_multivariate_gaussian(x:Real[_], μ:Real[_], Σ:Real[_,_]) ->
  *
  * Returns: the log probability density.
  */
-function logpdf_identical_gaussian(x:Real[_], μ:Real[_], σ2:Real) -> Real {
-  auto D <- length(μ);
-  return -0.5*(dot(x - μ)/σ2 + D*log(2.0*π*σ2));
-}
-
-/**
- * Observe a multivariate Gaussian distribution with independent and identical
- * variance.
- *
- * - x: The variate.
- * - μ: Mean.
- * - σ2: Variance.
- *
- * Returns: the log probability density.
- */
-function logpdf_independent_gaussian(x:Real[_], μ:Real[_], σ2:Real[_]) -> Real {
+function logpdf_multivariate_gaussian(x:Real[_], μ:Real[_], σ2:Real[_]) -> Real {
   auto D <- length(μ);
   auto w <- 0.0;
   for auto d in 1..D {
     w <- w + logpdf_gaussian(x[d], μ[d], σ2[d]);
   }
   return w;
+}
+
+/**
+ * Observe a multivariate Gaussian distribution with independent elements.
+ *
+ * - x: The variate.
+ * - μ: Mean.
+ * - σ2: Variance.
+ *
+ * Returns: the log probability density.
+ */
+function logpdf_multivariate_gaussian(x:Real[_], μ:Real[_], σ2:Real) -> Real {
+  auto D <- length(μ);
+  return -0.5*(dot(x - μ)/σ2 + D*log(2.0*π*σ2));
 }
 
 /**
@@ -814,13 +813,30 @@ function logpdf_matrix_gaussian(X:Real[_,_], M:Real[_,_], U:Real[_,_],
  *
  * Returns: the log probability density.
  */
-function logpdf_independent_matrix_gaussian(X:Real[_,_], M:Real[_,_],
-    U:Real[_,_], σ2:Real[_]) -> Real {
+function logpdf_matrix_gaussian(X:Real[_,_], M:Real[_,_], U:Real[_,_],
+    σ2:Real[_]) -> Real {
   auto n <- rows(M);
   auto p <- columns(M);
   auto C <- llt(U);
   return -0.5*(trace(inv(diagonal(σ2))*transpose(X - M)*inv(C)*(X - M)) -
       n*p*log(2.0*π) - n*log_sum(σ2) - p*ldet(C));
+}
+
+/**
+ * Observe a matrix Gaussian distribution with independent elements.
+ *
+ * - X: The variate.
+ * - M: Mean.
+ * - σ2: Within-column variances.
+ *
+ * Returns: the log probability density.
+ */
+function logpdf_matrix_gaussian(X:Real[_,_], M:Real[_,_], σ2:Real[_]) ->
+    Real {
+  auto n <- rows(M);
+  auto p <- columns(M);
+  return -0.5*(trace(inv(diagonal(σ2))*transpose(X - M)*(X - M)) -
+      n*p*log(2.0*π) - n*log_sum(σ2));
 }
 
 /**

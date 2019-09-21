@@ -554,8 +554,7 @@ function pdf_multivariate_gaussian(x:Real[_], μ:Real[_], Σ:Real[_,_]) ->
 }
 
 /**
- * PDF of a multivariate Gaussian distribution with independent and identical
- * variance.
+ * PDF of a multivariate Gaussian distribution with independent elements.
  *
  * - x: The variate.
  * - μ: Mean.
@@ -563,13 +562,13 @@ function pdf_multivariate_gaussian(x:Real[_], μ:Real[_], Σ:Real[_,_]) ->
  *
  * Return: the probability density.
  */
-function pdf_identical_gaussian(x:Real[_], μ:Real[_], σ2:Real) -> Real {
-  return exp(logpdf_identical_gaussian(x, μ, σ2));
+function pdf_multivariate_gaussian(x:Real[_], μ:Real[_], σ2:Real[_]) -> Real {
+  return exp(logpdf_multivariate_gaussian(x, μ, σ2));
 }
 
 /**
- * PDF of a multivariate Gaussian distribution with independent (diagonal)
- * variance.
+ * PDF of a multivariate Gaussian distribution with independent elements of
+ * identical variance.
  *
  * - x: The variate.
  * - μ: Mean.
@@ -577,8 +576,8 @@ function pdf_identical_gaussian(x:Real[_], μ:Real[_], σ2:Real) -> Real {
  *
  * Return: the probability density.
  */
-function pdf_independent_gaussian(x:Real[_], μ:Real[_], σ2:Real[_]) -> Real {
-  return exp(logpdf_independent_gaussian(x, μ, σ2));
+function pdf_multivariate_gaussian(x:Real[_], μ:Real[_], σ2:Real) -> Real {
+  return exp(logpdf_multivariate_gaussian(x, μ, σ2));
 }
 
 /**

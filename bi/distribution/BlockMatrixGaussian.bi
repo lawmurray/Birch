@@ -1,7 +1,7 @@
 /**
  * Matrix Gaussian distribution where each column is independent.
  */
-final class IndependentMatrixGaussian(M:Expression<Real[_,_]>,
+final class BlockMatrixGaussian(M:Expression<Real[_,_]>,
     U:Expression<Real[_,_]>, v:Expression<Real[_]>) < Distribution<Real[_,_]> {
   /**
    * Mean.
@@ -20,12 +20,12 @@ final class IndependentMatrixGaussian(M:Expression<Real[_,_]>,
   
   function valueForward() -> Real[_,_] {
     assert !delay?;
-    return simulate_independent_matrix_gaussian(M, U, σ2);
+    return simulate_matrix_gaussian(M, U, σ2);
   }
 
   function observeForward(X:Real[_,_]) -> Real {
     assert !delay?;
-    return logpdf_independent_matrix_gaussian(X, M, U, σ2);
+    return logpdf_matrix_gaussian(X, M, U, σ2);
   }
   
   function graft(force:Boolean) {
@@ -71,8 +71,8 @@ final class IndependentMatrixGaussian(M:Expression<Real[_,_]>,
  * Create matrix Gaussian distribution where each column is independent.
  */
 function Gaussian(M:Expression<Real[_,_]>, U:Expression<Real[_,_]>,
-    σ2:Expression<Real[_]>) -> IndependentMatrixGaussian {
-  m:IndependentMatrixGaussian(M, U, σ2);
+    σ2:Expression<Real[_]>) -> BlockMatrixGaussian {
+  m:BlockMatrixGaussian(M, U, σ2);
   return m;
 }
 
@@ -80,7 +80,7 @@ function Gaussian(M:Expression<Real[_,_]>, U:Expression<Real[_,_]>,
  * Create matrix Gaussian distribution where each column is independent.
  */
 function Gaussian(M:Expression<Real[_,_]>, U:Expression<Real[_,_]>,
-    σ2:Real[_]) -> IndependentMatrixGaussian {
+    σ2:Real[_]) -> BlockMatrixGaussian {
   return Gaussian(M, U, Boxed(σ2));
 }
 
@@ -88,7 +88,7 @@ function Gaussian(M:Expression<Real[_,_]>, U:Expression<Real[_,_]>,
  * Create matrix Gaussian distribution where each column is independent.
  */
 function Gaussian(M:Expression<Real[_,_]>, U:Real[_,_],
-    σ2:Expression<Real[_]>) -> IndependentMatrixGaussian {
+    σ2:Expression<Real[_]>) -> BlockMatrixGaussian {
   return Gaussian(M, Boxed(U), σ2);
 }
 
@@ -96,7 +96,7 @@ function Gaussian(M:Expression<Real[_,_]>, U:Real[_,_],
  * Create matrix Gaussian distribution where each column is independent.
  */
 function Gaussian(M:Expression<Real[_,_]>, U:Real[_,_], σ2:Real[_]) ->
-      IndependentMatrixGaussian {
+      BlockMatrixGaussian {
   return Gaussian(M, Boxed(U), Boxed(σ2));
 }
 
@@ -104,7 +104,7 @@ function Gaussian(M:Expression<Real[_,_]>, U:Real[_,_], σ2:Real[_]) ->
  * Create matrix Gaussian distribution where each column is independent.
  */
 function Gaussian(M:Real[_,_], U:Expression<Real[_,_]>,
-    σ2:Expression<Real[_]>) -> IndependentMatrixGaussian {
+    σ2:Expression<Real[_]>) -> BlockMatrixGaussian {
   return Gaussian(Boxed(M), U, σ2);
 }
 
@@ -112,7 +112,7 @@ function Gaussian(M:Real[_,_], U:Expression<Real[_,_]>,
  * Create matrix Gaussian distribution where each column is independent.
  */
 function Gaussian(M:Real[_,_], U:Expression<Real[_,_]>, σ2:Real[_]) ->
-    IndependentMatrixGaussian {
+    BlockMatrixGaussian {
   return Gaussian(Boxed(M), U, Boxed(σ2));
 }
 
@@ -120,7 +120,7 @@ function Gaussian(M:Real[_,_], U:Expression<Real[_,_]>, σ2:Real[_]) ->
  * Create matrix Gaussian distribution where each column is independent.
  */
 function Gaussian(M:Real[_,_], U:Real[_,_], σ2:Expression<Real[_]>) ->
-    IndependentMatrixGaussian {
+    BlockMatrixGaussian {
   return Gaussian(Boxed(M), Boxed(U), σ2);
 }
 
@@ -128,6 +128,6 @@ function Gaussian(M:Real[_,_], U:Real[_,_], σ2:Expression<Real[_]>) ->
  * Create matrix Gaussian distribution where each column is independent.
  */
 function Gaussian(M:Real[_,_], U:Real[_,_], σ2:Real[_]) ->
-    IndependentMatrixGaussian {
+    BlockMatrixGaussian {
   return Gaussian(Boxed(M), Boxed(U), Boxed(σ2));
 }
