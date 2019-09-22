@@ -685,6 +685,23 @@ function pdf_matrix_normal_inverse_gamma(X:Real[_,_], N:Real[_,_], Λ:LLT,
  * PDF of a Gaussian variate with matrix normal inverse-gamma prior.
  *
  * - X: The variate.
+ * - N: Precision times mean matrix.
+ * - Λ: Precision.
+ * - α: Variance shape.
+ * - γ: Variance scale accumulators.
+ *
+ * Returns: the probability density.
+ */
+function pdf_matrix_normal_inverse_gamma_matrix_gaussian(
+    X:Real[_,_], N:Real[_,_], Λ:LLT, α:Real, γ:Real[_]) -> Real {
+  return exp(logpdf_matrix_normal_inverse_gamma_matrix_gaussian(X,
+      N, Λ, α, γ));
+}
+
+/**
+ * PDF of a Gaussian variate with matrix normal inverse-gamma prior.
+ *
+ * - X: The variate.
  * - A: Scale.
  * - N: Precision times mean matrix.
  * - C: Offset.

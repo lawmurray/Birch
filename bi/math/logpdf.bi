@@ -862,6 +862,25 @@ function logpdf_matrix_normal_inverse_gamma(X:Real[_,_], N:Real[_,_], Λ:LLT,
  * Observe a Gaussian variate with matrix normal inverse-gamma prior.
  *
  * - X: The variate.
+ * - N: Precision times mean matrix.
+ * - Λ: Precision.
+ * - α: Variance shape.
+ * - γ: Variance scale accumulators.
+ *
+ * Returns: the log probability density.
+ */
+function logpdf_matrix_normal_inverse_gamma_matrix_gaussian(X:Real[_,_],
+    N:Real[_,_], Λ:LLT, α:Real, γ:Real[_]) -> Real {
+  auto M <- solve(Λ, N);
+  auto Σ <- identity(rows(M)) + inv(Λ);
+  auto β <- γ - 0.5*diagonal(transpose(M)*N);
+  return logpdf_matrix_student_t(X, 2.0*α, M, Σ, β/α);
+}
+
+/**
+ * Observe a Gaussian variate with matrix normal inverse-gamma prior.
+ *
+ * - X: The variate.
  * - A: Scale.
  * - N: Precision times mean matrix.
  * - C: Offset.

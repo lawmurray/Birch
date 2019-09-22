@@ -394,11 +394,11 @@ function update_multivariate_normal_inverse_gamma(x:Real[_], ν:Real[_],
 function update_multivariate_normal_inverse_gamma_multivariate_gaussian(
     x:Real[_], ν:Real[_], Λ:LLT, α:Real, γ:Real) -> (Real[_], LLT, Real,
     Real) {
-  D:Integer <- length(x);
-  Λ':LLT <- rank_update(Λ, identity(rows(Λ)), 1.0);
-  ν':Real[_] <- ν + x;
-  α':Real <- α + 0.5*D;
-  γ':Real <- γ + 0.5*dot(x);
+  auto D <- length(x);
+  auto Λ' <- rank_update(Λ, identity(rows(Λ)), 1.0);
+  auto ν' <- ν + x;
+  auto α' <- α + 0.5*D;
+  auto γ' <- γ + 0.5*dot(x);
   return (ν', Λ', α', γ');
 }
 
@@ -419,11 +419,11 @@ function update_multivariate_normal_inverse_gamma_multivariate_gaussian(
 function update_linear_multivariate_normal_inverse_gamma_multivariate_gaussian(
     x:Real[_], A:Real[_,_], ν:Real[_], c:Real[_], Λ:LLT, α:Real, γ:Real) ->
     (Real[_], LLT, Real, Real) {
-  D:Integer <- length(x);
-  Λ':LLT <- rank_update(Λ, transpose(A), 1.0);
-  ν':Real[_] <- ν + transpose(A)*(x - c);
-  α':Real <- α + 0.5*D;
-  γ':Real <- γ + 0.5*dot(x - c);
+  auto D <- length(x);
+  auto Λ' <- rank_update(Λ, transpose(A), 1.0);
+  auto ν' <- ν + transpose(A)*(x - c);
+  auto α' <- α + 0.5*D;
+  auto γ' <- γ + 0.5*dot(x - c);
   return (ν', Λ', α', γ');
 }
 
@@ -449,7 +449,30 @@ function update_matrix_normal_inverse_gamma(X:Real[_,_], N:Real[_,_], Λ:LLT,
 }
 
 /**
- * Update the parameters of a Gaussian variate with linear  transformation
+ * Update the parameters of a Gaussian variate with
+ * matrix-normal-inverse-gamma prior.
+ *
+ * - x: The variate.
+ * - N: Prior precision times mean matrix.
+ * - Λ: Prior precision.
+ * - α: Prior variance shape.
+ * - γ: Prior variance scale accumulators.
+ *
+ * Returns: the posterior hyperparameters `N'`, `Λ'`, `α'` and `γ'`.
+ */
+function update_matrix_normal_inverse_gamma_matrix_gaussian(
+    X:Real[_,_], N:Real[_,_], Λ:LLT, α:Real, γ:Real[_]) ->
+    (Real[_,_], LLT, Real, Real[_]) {
+  auto D <- rows(X);
+  auto Λ' <- rank_update(Λ, identity(rows(N)), 1.0);
+  auto N' <- N + X;
+  auto α' <- α + 0.5*D;
+  auto γ' <- γ + 0.5*diagonal(transpose(X)*X);
+  return (N', Λ', α', γ');
+}
+
+/**
+ * Update the parameters of a Gaussian variate with linear transformation
  * of matrix-normal-inverse-gamma prior.
  *
  * - x: The variate.
@@ -465,10 +488,11 @@ function update_matrix_normal_inverse_gamma(X:Real[_,_], N:Real[_,_], Λ:LLT,
 function update_linear_matrix_normal_inverse_gamma_matrix_gaussian(
     X:Real[_,_], A:Real[_,_], N:Real[_,_], C:Real[_,_], Λ:LLT, α:Real,
     γ:Real[_]) -> (Real[_,_], LLT, Real, Real[_]) {
-  Λ':LLT <- rank_update(Λ, transpose(A), 1.0);
-  N':Real[_,_] <- N + transpose(A)*(X - C);
-  α':Real <- α + 0.5;
-  γ':Real[_] <- γ + 0.5*diagonal(transpose(X - C)*(X - C));
+  auto D <- rows(X);
+  auto Λ' <- rank_update(Λ, transpose(A), 1.0);
+  auto N' <- N + transpose(A)*(X - C);
+  auto α' <- α + 0.5*D;
+  auto γ' <- γ + 0.5*diagonal(transpose(X - C)*(X - C));
   return (N', Λ', α', γ');
 }
 

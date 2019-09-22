@@ -35,8 +35,8 @@ final class IndependentMatrixGaussian(M:Expression<Real[_,_]>,
 
       if (m1 <- M.graftLinearMatrixNormalInverseGamma())? && m1!.X.σ2 == σ2.getDelay() {
         delay <- DelayLinearMatrixNormalInverseGammaMatrixGaussian(future, futureUpdate, m1!.A, m1!.X, m1!.C);
-      //} else if (m2 <- M.graftMatrixNormalInverseGamma())? && m2!.σ2 == σ2.getDelay() {
-      //  delay <- DelayMatrixNormalInverseGammaMatrixGaussian(future, futureUpdate, m2!);
+      } else if (m2 <- M.graftMatrixNormalInverseGamma())? && m2!.σ2 == σ2.getDelay() {
+        delay <- DelayMatrixNormalInverseGammaMatrixGaussian(future, futureUpdate, m2!);
       //} else if (m3 <- M.graftLinearMatrixGaussian())? {
       //  delay <- DelayLinearMatrixGaussianMatrixMatrixGaussian(future, futureUpdate, m3!.A, m3!.X, m3!.C, diagonal(σ2));
       //} else if (m4 <- M.graftMatrixGaussian())? {

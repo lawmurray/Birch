@@ -453,7 +453,30 @@ function downdate_matrix_normal_inverse_gamma(X:Real[_,_], N:Real[_,_], Λ:LLT,
 }
 
 /**
- * Downdate the parameters of a Gaussian variate with linear  transformation
+ * Downdate the parameters of a Gaussian variate with
+ * matrix-normal-inverse-gamma prior.
+ *
+ * - x: The variate.
+ * - N': Posterior precision times mean matrix.
+ * - Λ': Posterior precision.
+ * - α': Posterior variance shape.
+ * - γ': Posterior squared sum accumulators.
+ *
+ * Returns: the prioor hyperparameters `N`, `Λ`, `α` and `γ`.
+ */
+function downdate_matrix_normal_inverse_gamma_matrix_gaussian(
+    X:Real[_,_], N':Real[_,_], Λ':LLT, α':Real, γ':Real[_]) ->
+    (Real[_,_], LLT, Real, Real[_]) {
+  auto D <- rows(X);
+  auto Λ <- rank_update(Λ', identity(rows(N')), -1.0);
+  auto N <- N' - X;
+  auto α <- α' - 0.5*D;
+  auto γ <- γ' - 0.5*diagonal(transpose(X)*X);
+  return (N, Λ, α, γ);
+}
+
+/**
+ * Downdate the parameters of a Gaussian variate with linear transformation
  * of matrix-normal-inverse-gamma prior.
  *
  * - x: The variate.
@@ -469,33 +492,11 @@ function downdate_matrix_normal_inverse_gamma(X:Real[_,_], N:Real[_,_], Λ:LLT,
 function downdate_linear_matrix_normal_inverse_gamma_matrix_gaussian(
     X:Real[_,_], A:Real[_,_], N':Real[_,_], C:Real[_,_], Λ':LLT, α':Real,
     γ':Real[_]) -> (Real[_,_], LLT, Real, Real[_]) {
-  Λ:LLT <- rank_update(Λ', transpose(A), -1.0);
-  N:Real[_,_] <- N' - transpose(A)*(X - C);
-  α:Real<- α' - 0.5;
-  γ:Real[_] <- γ' - 0.5*diagonal(transpose(X - C)*(X - C));
-  return (N, Λ, α, γ);
-}
-
-/**
- * Downdate the parameters of a Gaussian variate with dot matrix normal
- * inverse-gamma prior.
- *
- * - X: The variate.
- * - A: Scale.
- * - N': Posterior precision times mean matrix.
- * - Λ': Posterior precision.
- * - α': Posterior variance shape.
- * - γ': Posterior squared sum accumulators.
- *
- * Returns: the prior hyperparameters `N`, `Λ`, `α` and `γ`.
- */
-function downdate_linear_matrix_normal_inverse_gamma_matrix_gaussian(
-    x:Real[_], a:Real[_], N':Real[_,_], Λ':LLT, α':Real, γ':Real[_]) ->
-    (Real[_,_], LLT, Real, Real[_]) {
-  Λ:LLT <- rank_update(Λ', a, -1.0);
-  N:Real[_,_] <- N' - kronecker(a, transpose(x));
-  α:Real <- α' - 0.5;
-  γ:Real[_] <- γ' - 0.5*hadamard(x, x);
+  auto D <- rows(X);
+  auto Λ <- rank_update(Λ', transpose(A), -1.0);
+  auto N <- N' - transpose(A)*(X - C);
+  auto α <- α' - 0.5*D;
+  auto γ <- γ' - 0.5*diagonal(transpose(X - C)*(X - C));
   return (N, Λ, α, γ);
 }
 
