@@ -245,6 +245,24 @@ final class Random<Value> < Expression<Value> {
     }
   }
 
+  function graftMatrixGaussian() -> DelayMatrixGaussian? {
+    if !hasValue() {
+      assert hasDistribution();
+      return dist!.graftMatrixGaussian();
+    } else {
+      return nil;
+    }
+  }
+
+  function graftMatrixNormalInverseGamma() -> DelayMatrixNormalInverseGamma? {
+    if !hasValue() {
+      assert hasDistribution();
+      return dist!.graftMatrixNormalInverseGamma();
+    } else {
+      return nil;
+    }
+  }
+
   function graftDiscrete() -> DelayDiscrete? {
     if !hasValue() {
       assert hasDistribution();

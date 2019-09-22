@@ -435,17 +435,21 @@ function downdate_linear_multivariate_normal_inverse_gamma_multivariate_gaussian
  * Downdate the parameters of a matrix normal-inverse-gamma variate.
  *
  * - X: The variate.
- * - M: Mean.
- * - Σ: Covariance.
+ * - N: Precision times mean.
+ * - Λ: Precision.
  * - α': Posterior variance shape.
- * - β': Posterior variance scales.
+ * - γ': Posterior variance scale accumulators.
  *
  * Returns: the prior hyperparameters `α` and `β`.
  */
-function downdate_matrix_normal_inverse_gamma(X:Real[_,_], M:Real[_,_], Σ:LLT,
-    α':Real, β':Real[_]) -> (Real, Real[_]) {
+function downdate_matrix_normal_inverse_gamma(X:Real[_,_], N:Real[_,_], Λ:LLT,
+    α':Real, γ':Real[_]) -> (Real, Real[_]) {
   auto D <- rows(X);
-  return (α' - 0.5*D, β' - 0.5*diagonal(transpose(X - M)*solve(Σ, X - M)));
+  auto M <- solve(Λ, N);
+  auto β' <- γ' - 0.5*diagonal(transpose(M)*N);
+  auto α <- α' - 0.5*D;
+  auto β <- β'- 0.5*diagonal(transpose(X - M)*Λ*(X - M));
+  return (α, β);
 }
 
 /**

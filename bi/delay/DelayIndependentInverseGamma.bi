@@ -27,11 +27,11 @@ final class DelayIndependentInverseGamma(future:Real[_]?,
       });
   }
 
-  function update(x:Real) {
+  function update(x:Real[_]) {
     //
   }
 
-  function downdate(x:Real) {
+  function downdate(x:Real[_]) {
     //
   }
 

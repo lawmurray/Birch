@@ -1,7 +1,8 @@
 /*
  * Test matrix linear normal-inverse-gamma-Gaussian conjugacy.
  */
-program test_linear_matrix_normal_inverse_gamma_matrix_gaussian(N:Integer <- 10000) {
+program test_linear_matrix_normal_inverse_gamma_matrix_gaussian(
+    N:Integer <- 10000) {
   auto n <- 5;
   auto p <- 2;
 

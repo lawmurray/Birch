@@ -28,22 +28,22 @@ final class IdenticalGaussian(μ:Expression<Real[_]>,
     if delay? {
       delay!.prune();
     } else {
-      s2:DelayInverseGamma?;
+      s1:DelayInverseGamma?;
       m1:TransformLinearMultivariate<DelayMultivariateNormalInverseGamma>?;
       m2:DelayMultivariateNormalInverseGamma?;
       m3:TransformLinearMultivariate<DelayMultivariateGaussian>?;
       m4:DelayMultivariateGaussian?;
 
       if (m1 <- μ.graftLinearMultivariateNormalInverseGamma())? && m1!.x.σ2 == σ2.getDelay() {
-        delay <- DelayLinearMultivariateNormalInverseGammaGaussian(future, futureUpdate, m1!.A, m1!.x, m1!.c);
+        delay <- DelayLinearMultivariateNormalInverseGammaMultivariateGaussian(future, futureUpdate, m1!.A, m1!.x, m1!.c);
       } else if (m2 <- μ.graftMultivariateNormalInverseGamma())? && m2!.σ2 == σ2.getDelay() {
-        delay <- DelayMultivariateNormalInverseGammaGaussian(future, futureUpdate, m2!);
+        delay <- DelayMultivariateNormalInverseGammaMultivariateGaussian(future, futureUpdate, m2!);
       } else if (m3 <- μ.graftLinearMultivariateGaussian())? {
         delay <- DelayLinearMultivariateGaussianMultivariateGaussian(future, futureUpdate, m3!.A, m3!.x, m3!.c, diagonal(σ2.value(), m3!.size()));
       } else if (m4 <- μ.graftMultivariateGaussian())? {
         delay <- DelayMultivariateGaussianMultivariateGaussian(future, futureUpdate, m4!, diagonal(σ2, m4!.size()));
-      } else if (s2 <- σ2.graftInverseGamma())? {
-        delay <- DelayMultivariateNormalInverseGamma(future, futureUpdate, μ, identity(length(μ)), s2!);
+      } else if (s1 <- σ2.graftInverseGamma())? {
+        delay <- DelayMultivariateNormalInverseGamma(future, futureUpdate, μ, identity(length(μ)), s1!);
       } else if force {
         delay <- DelayMultivariateGaussian(future, futureUpdate, μ, diagonal(σ2, length(μ)));
       }

@@ -2,9 +2,10 @@
  * Delayed linear-normal-inverse-gamma-Gaussian random variate where
  * components have independent and identical variance.
  */
-final class DelayLinearMultivariateNormalInverseGammaGaussian(future:Real[_]?,
-    futureUpdate:Boolean, A:Real[_,_], μ:DelayMultivariateNormalInverseGamma,
-    c:Real[_]) < DelayValue<Real[_]>(future, futureUpdate) {
+final class DelayLinearMultivariateNormalInverseGammaMultivariateGaussian(
+    future:Real[_]?, futureUpdate:Boolean, A:Real[_,_],
+    μ:DelayMultivariateNormalInverseGamma, c:Real[_]) <
+    DelayValue<Real[_]>(future, futureUpdate) {
   /**
    * Scale.
    */
@@ -50,10 +51,10 @@ final class DelayLinearMultivariateNormalInverseGammaGaussian(future:Real[_]?,
   }
 }
 
-function DelayLinearMultivariateNormalInverseGammaGaussian(future:Real[_]?,
+function DelayLinearMultivariateNormalInverseGammaMultivariateGaussian(future:Real[_]?,
     futureUpdate:Boolean, A:Real[_,_], μ:DelayMultivariateNormalInverseGamma,
-    c:Real[_]) -> DelayLinearMultivariateNormalInverseGammaGaussian {
-  m:DelayLinearMultivariateNormalInverseGammaGaussian(future, futureUpdate, A, μ, c);
+    c:Real[_]) -> DelayLinearMultivariateNormalInverseGammaMultivariateGaussian {
+  m:DelayLinearMultivariateNormalInverseGammaMultivariateGaussian(future, futureUpdate, A, μ, c);
   μ.setChild(m);
   return m;
 }

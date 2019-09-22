@@ -38,7 +38,7 @@ final class BlockMatrixGaussian(M:Expression<Real[_,_]>,
             s1!);
       } else if force {
         delay <- DelayMatrixGaussian(future, futureUpdate, M, U,
-            diagonal(σ2.value()));
+            diagonal(σ2));
       }
     }
   }

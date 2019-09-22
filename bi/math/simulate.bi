@@ -761,6 +761,11 @@ function simulate_linear_multivariate_normal_inverse_gamma_multivariate_gaussian
  */
 function simulate_matrix_gaussian(M:Real[_,_], U:Real[_,_], V:Real[_,_]) ->
     Real[_,_] {
+  assert rows(M) == rows(U);
+  assert rows(M) == columns(U);
+  assert columns(M) == rows(V);
+  assert columns(M) == columns(V);
+  
   auto N <- rows(M);
   auto P <- columns(M);
   Z:Real[N,P];
@@ -781,13 +786,19 @@ function simulate_matrix_gaussian(M:Real[_,_], U:Real[_,_], V:Real[_,_]) ->
  */
 function simulate_matrix_gaussian(M:Real[_,_], U:Real[_,_], σ2:Real[_]) ->
     Real[_,_] {
+  assert rows(M) == rows(U);
+  assert rows(M) == columns(U);
+  assert columns(M) == length(σ2);
+  
   auto N <- rows(M);
   auto P <- columns(M);
-  X:Real[N,P];
-  for auto p in 1..P {
-    X[1..N,p] <- simulate_multivariate_gaussian(M[1..N,p], U*σ2[p]);
+  Z:Real[N,P];
+  for auto n in 1..N {
+    for auto p in 1..P {
+      Z[n,p] <- simulate_gaussian(0.0, 1.0);
+    }
   }
-  return X;
+  return M + cholesky(U)*Z*diagonal(sqrt(σ2));
 }
 
 /**
@@ -797,11 +808,15 @@ function simulate_matrix_gaussian(M:Real[_,_], U:Real[_,_], σ2:Real[_]) ->
  * - σ2: Variances.
  */
 function simulate_matrix_gaussian(M:Real[_,_], σ2:Real[_]) -> Real[_,_] {
+  assert columns(M) == length(σ2);
+  
   auto N <- rows(M);
   auto P <- columns(M);
   X:Real[N,P];
-  for auto p in 1..P {
-    X[1..N,p] <- simulate_multivariate_gaussian(M[1..N,p], σ2[p]);
+  for auto n in 1..N {
+    for auto p in 1..P {
+      X[n,p] <- simulate_gaussian(M[n,p], σ2[p]);
+    }
   }
   return X;
 }
@@ -816,6 +831,22 @@ function simulate_matrix_gaussian(M:Real[_,_], σ2:Real[_]) -> Real[_,_] {
  */
 function simulate_matrix_normal_inverse_gamma(N:Real[_,_], Λ:LLT, α:Real,
     γ:Real[_]) -> Real[_,_] {
+  auto M <- solve(Λ, N);
+  auto β <- γ - 0.5*diagonal(transpose(M)*N);
+  auto Σ <- inv(Λ);
+  return simulate_matrix_student_t(2.0*α, M, Σ, β/α);
+}
+
+/**
+ * Simulate a Gaussian distribution with a matrix-normal-inverse-gamma prior.
+ *
+ * - N: Precision times mean matrix.
+ * - Λ: Precision.
+ * - α: Variance shape.
+ * - γ: Variance scale accumulators.
+ */
+function simulate_matrix_normal_inverse_gamma_matrix_gaussian(
+    N:Real[_,_], Λ:LLT, α:Real, γ:Real[_]) -> Real[_,_] {
   auto M <- solve(Λ, N);
   auto β <- γ - 0.5*diagonal(transpose(M)*N);
   auto Σ <- identity(rows(M)) + inv(Λ);
