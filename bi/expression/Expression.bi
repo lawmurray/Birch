@@ -126,6 +126,15 @@ class Expression<Value> {
    *
    * Return: The node if successful, nil if not.
    */
+  function graftInverseWishart() -> DelayInverseWishart? {
+    return nil;
+  }
+
+  /*
+   * Attempt to graft this expression onto the delayed sampling graph.
+   *
+   * Return: The node if successful, nil if not.
+   */
   function graftGaussian() -> DelayGaussian? {
     return nil;
   }
@@ -234,6 +243,26 @@ class Expression<Value> {
    */
   function graftLinearMatrixNormalInverseGamma() ->
       TransformLinearMatrix<DelayMatrixNormalInverseGamma>? {
+    return nil;
+  }
+
+  /*
+   * Attempt to graft this expression onto the delayed sampling graph.
+   *
+   * Return: The node if successful, nil if not.
+   */
+  function graftMatrixNormalInverseWishart() ->
+      DelayMatrixNormalInverseWishart? {
+    return nil;
+  }
+
+  /*
+   * Attempt to graft this expression onto the delayed sampling graph.
+   *
+   * Return: The node if successful, nil if not.
+   */
+  function graftLinearMatrixNormalInverseWishart() ->
+      TransformLinearMatrix<DelayMatrixNormalInverseWishart>? {
     return nil;
   }
 

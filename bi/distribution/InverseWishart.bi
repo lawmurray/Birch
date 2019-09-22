@@ -7,28 +7,27 @@
  * $$\begin{align*}
  * \mathbf{\Sigma} &\sim \mathcal{W}^{-1}(\mathbf{\Psi}, \nu) \\
  * \mathbf{W} &\sim \mathcal{MN}(\mathbf{M}, \mathbf{A}, \boldsymbol{\Sigma}) \\
- * \mathbf{y}_n &\sim \mathcal{N}(\mathbf{W}\mathbf{x}_n, \boldsymbol{\Sigma}),
+ * \mathbf{Y} &\sim \mathcal{N}(\mathbf{W}\mathbf{X}, \boldsymbol{\Sigma}),
  * \end{align*}$$
  *
- * where $\mathbf{x}_n$ is the $n$th input and $\mathbf{y}_n$ the $n$th
- * output.
+ * where $\mathbf{X}$ are inputs and $\mathbf{Y}$ are outputs.
  *
  * The relationship is established in code as follows:
  *
+ *     V:Random<Real[_,_]>;
  *     Ψ:Real[_,_];
- *     ν:Real;
- *     Σ:Random<Real[_,_]>;
+ *     k:Real;
  *     W:Random<Real[_,_]>;
  *     M:Real[_,_];
- *     A:Real[_,_];
- *     y:Random<Real[_]>;
- *     x:Real[_];
+ *     U:Real[_,_];
+ *     Y:Random<Real[_,_]>;
+ *     X:Real[_,_];
  *
- *     Σ ~ InverseWishart(Ψ, ν);
- *     W ~ Gaussian(M, A, Σ);
- *     y ~ Gaussian(W*x, Σ);
+ *     V ~ InverseWishart(Ψ, k);
+ *     W ~ Gaussian(M, U, V);
+ *     Y ~ Gaussian(W*X, V);
  */
-final class InverseWishart(Ψ:Expression<Real[_,_]>, ν:Expression<Real>) <
+final class InverseWishart(Ψ:Expression<Real[_,_]>, k:Expression<Real>) <
     Distribution<Real[_,_]> {
   /**
    * Scale.
@@ -38,23 +37,23 @@ final class InverseWishart(Ψ:Expression<Real[_,_]>, ν:Expression<Real>) <
   /**
    * Degrees of freedom.
    */
-  ν:Expression<Real> <- ν;
+  k:Expression<Real> <- k;
 
   function valueForward() -> Real[_,_] {
     assert !delay?;
-    return simulate_inverse_wishart(Ψ, ν);
+    return simulate_inverse_wishart(Ψ, k);
   }
 
   function observeForward(X:Real[_,_]) -> Real {
     assert !delay?;
-    return logpdf_inverse_wishart(X, Ψ, ν);
+    return logpdf_inverse_wishart(X, Ψ, k);
   }
 
   function graft(force:Boolean) {
     if delay? {
       delay!.prune();
     } else if force {
-      delay <- DelayInverseWishart(future, futureUpdate, Ψ, ν);
+      delay <- DelayInverseWishart(future, futureUpdate, Ψ, k);
     }
   }
 
@@ -62,7 +61,7 @@ final class InverseWishart(Ψ:Expression<Real[_,_]>, ν:Expression<Real>) <
     if delay? {
       delay!.prune();
     } else {
-      delay <- DelayInverseWishart(future, futureUpdate, Ψ, ν);
+      delay <- DelayInverseWishart(future, futureUpdate, Ψ, k);
     }
     return DelayInverseWishart?(delay);
   }
@@ -71,29 +70,29 @@ final class InverseWishart(Ψ:Expression<Real[_,_]>, ν:Expression<Real>) <
 /**
  * Create inverse-Wishart distribution.
  */
-function InverseWishart(Ψ:Expression<Real[_,_]>, ν:Expression<Real>) ->
+function InverseWishart(Ψ:Expression<Real[_,_]>, k:Expression<Real>) ->
     InverseWishart {
-  m:InverseWishart(Ψ, ν);
+  m:InverseWishart(Ψ, k);
   return m;
 }
 
 /**
  * Create inverse-Wishart distribution.
  */
-function InverseWishart(Ψ:Expression<Real[_,_]>, ν:Real) -> InverseWishart {
-  return InverseWishart(Ψ, Boxed(ν));
+function InverseWishart(Ψ:Expression<Real[_,_]>, k:Real) -> InverseWishart {
+  return InverseWishart(Ψ, Boxed(k));
 }
 
 /**
  * Create inverse-Wishart distribution.
  */
-function InverseWishart(Ψ:Real[_,_], ν:Expression<Real>) -> InverseWishart {
-  return InverseWishart(Boxed(Ψ), ν);
+function InverseWishart(Ψ:Real[_,_], k:Expression<Real>) -> InverseWishart {
+  return InverseWishart(Boxed(Ψ), k);
 }
 
 /**
  * Create inverse-Wishart distribution.
  */
-function InverseWishart(Ψ:Real[_,_], ν:Real) -> InverseWishart {
-  return InverseWishart(Boxed(Ψ), Boxed(ν));
+function InverseWishart(Ψ:Real[_,_], k:Real) -> InverseWishart {
+  return InverseWishart(Boxed(Ψ), Boxed(k));
 }

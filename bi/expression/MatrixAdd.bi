@@ -54,6 +54,25 @@ final class MatrixAdd<Left,Right,Value>(left:Expression<Left>,
     }
     return y;
   }
+
+  function graftLinearMatrixNormalInverseWishart() ->
+      TransformLinearMatrix<DelayMatrixNormalInverseWishart>? {
+    y:TransformLinearMatrix<DelayMatrixNormalInverseWishart>?;
+    z:DelayMatrixNormalInverseWishart?;
+
+    if (y <- left.graftLinearMatrixNormalInverseWishart())? {
+      y!.add(right.value());
+    } else if (y <- right.graftLinearMatrixNormalInverseWishart())? {
+      y!.add(left.value());
+    } else if (z <- left.graftMatrixNormalInverseWishart())? {
+      y <- TransformLinearMatrix<DelayMatrixNormalInverseWishart>(
+          identity(z!.rows()), z!, right.value());
+    } else if (z <- right.graftMatrixNormalInverseWishart())? {
+      y <- TransformLinearMatrix<DelayMatrixNormalInverseWishart>(
+          identity(z!.rows()), z!, left.value());
+    }
+    return y;
+  }
 }
 
 operator (left:Expression<Real[_,_]> + right:Expression<Real[_,_]>) ->

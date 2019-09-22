@@ -305,6 +305,10 @@ class Distribution<Value> {
   function graftIndependentInverseGamma() -> DelayIndependentInverseGamma? {
     return nil;
   } 
+
+  function graftInverseWishart() -> DelayInverseWishart? {
+    return nil;
+  } 
   
   function graftNormalInverseGamma() -> DelayNormalInverseGamma? {
     return nil;
@@ -331,6 +335,10 @@ class Distribution<Value> {
   }
 
   function graftMatrixNormalInverseGamma() -> DelayMatrixNormalInverseGamma? {
+    return nil;
+  }
+
+  function graftMatrixNormalInverseWishart() -> DelayMatrixNormalInverseWishart? {
     return nil;
   }
 

@@ -198,6 +198,15 @@ final class Random<Value> < Expression<Value> {
       return nil;
     }
   } 
+
+  function graftInverseWishart() -> DelayInverseWishart? {
+    if !hasValue() {
+      assert hasDistribution();
+      return dist!.graftInverseWishart();
+    } else {
+      return nil;
+    }
+  } 
   
   function graftNormalInverseGamma() -> DelayNormalInverseGamma? {
     if !hasValue() {
@@ -258,6 +267,15 @@ final class Random<Value> < Expression<Value> {
     if !hasValue() {
       assert hasDistribution();
       return dist!.graftMatrixNormalInverseGamma();
+    } else {
+      return nil;
+    }
+  }
+
+  function graftMatrixNormalInverseWishart() -> DelayMatrixNormalInverseWishart? {
+    if !hasValue() {
+      assert hasDistribution();
+      return dist!.graftMatrixNormalInverseWishart();
     } else {
       return nil;
     }

@@ -802,6 +802,27 @@ function simulate_matrix_gaussian(M:Real[_,_], U:Real[_,_], σ2:Real[_]) ->
 }
 
 /**
+ * Simulate a matrix Gaussian distribution with independent rows.
+ *
+ * - M: Mean.
+ * - V: Among-column variances.
+ */
+function simulate_matrix_gaussian(M:Real[_,_], V:Real[_,_]) -> Real[_,_] {
+  assert columns(M) == rows(V);
+  assert columns(M) == columns(V);
+  
+  auto N <- rows(M);
+  auto P <- columns(M);
+  Z:Real[N,P];
+  for auto n in 1..N {
+    for auto p in 1..P {
+      Z[n,p] <- simulate_gaussian(0.0, 1.0);
+    }
+  }
+  return M + Z*transpose(cholesky(V));
+}
+
+/**
  * Simulate a matrix Gaussian distribution with independent elements.
  *
  * - M: Mean.

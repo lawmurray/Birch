@@ -13,23 +13,22 @@
  * \end{align*}$$
  *
  * where subscript $o$ denotes the (hyper)parameters of the $o$th element of
- * the output vector, $\mathbf{x}_n$ is the $n$th input, and $\mathbf{y}_n$
- * is the $n$th output.
+ * the output vector, $\mathbf{X}$ are inputs, and $\mathbf{Y}$ are outputs.
  *
  * The relationship is established in code as follows:
  *
+ *     σ2:Random<Real[_]>;
  *     α:Real;
  *     β:Real[_];
- *     σ2:Random<Real[_]>;
  *     W:Random<Real[_,_]>;
  *     M:Real[_,_];
- *     A:Real[_,_];
- *     y:Random<Real[_]>;
- *     x:Real[_];
+ *     U:Real[_,_];
+ *     Y:Random<Real[_,_]>;
+ *     X:Real[_,_];
  *
  *     σ2 ~ InverseGamma(α, β);
- *     W ~ Gaussian(M, A, σ2);
- *     y ~ Gaussian(W*x, σ2);
+ *     W ~ Gaussian(M, U, σ2);
+ *     Y ~ Gaussian(W*X, σ2);
  *
  * The advantage of using this approach over $O$ separate regressions is that
  * expensive covariance operations are shared.

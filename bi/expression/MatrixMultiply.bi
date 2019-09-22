@@ -44,6 +44,20 @@ final class MatrixMultiply<Left,Right,Value>(left:Expression<Left>,
     }
     return y;
   }
+
+  function graftLinearMatrixNormalInverseWishart() ->
+      TransformLinearMatrix<DelayMatrixNormalInverseWishart>? {
+    y:TransformLinearMatrix<DelayMatrixNormalInverseWishart>?;
+    z:DelayMatrixNormalInverseWishart?;
+
+    if (y <- right.graftLinearMatrixNormalInverseWishart())? {
+      y!.leftMultiply(left.value());
+    } else if (z <- right.graftMatrixNormalInverseWishart())? {
+      y <- TransformLinearMatrix<DelayMatrixNormalInverseWishart>(
+          left.value(), z!);
+    }
+    return y;
+  }
 }
 
 operator (left:Expression<Real[_,_]>*right:Expression<Real[_,_]>) ->

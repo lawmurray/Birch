@@ -823,6 +823,24 @@ function logpdf_matrix_gaussian(X:Real[_,_], M:Real[_,_], U:Real[_,_],
 }
 
 /**
+ * Observe a matrix Gaussian distribution with independent rows.
+ *
+ * - X: The variate.
+ * - M: Mean.
+ * - V: Among-column covariance.
+ *
+ * Returns: the log probability density.
+ */
+function logpdf_matrix_gaussian(X:Real[_,_], M:Real[_,_], V:Real[_,_]) ->
+    Real {
+  auto n <- rows(M);
+  auto p <- columns(M);
+  auto D <- llt(V);
+  return -0.5*(trace(inv(D)*transpose(X - M)*(X - M)) - n*p*log(2.0*π) -
+      n*ldet(D));
+}
+
+/**
  * Observe a matrix Gaussian distribution with independent elements.
  *
  * - X: The variate.
