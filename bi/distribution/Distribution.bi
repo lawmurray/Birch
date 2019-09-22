@@ -285,10 +285,6 @@ class Distribution<Value> {
   function graftGaussian() -> DelayGaussian? {
     return nil;
   }
-
-  function graftRidge() -> DelayRidge? {
-    return nil;
-  }
     
   function graftBeta() -> DelayBeta? {
     return nil;

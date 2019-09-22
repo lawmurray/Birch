@@ -571,25 +571,3 @@ function downdate_linear_matrix_normal_inverse_wishart_matrix_gaussian(
   auto k <- k' - D;
   return (N, Λ, V, k);
 }
-
-/**
- * Downdate parameters for a linear-Gaussian ridge regression.
- *
- * - x: The variate.
- * - N': Posterior precision times mean for weights, where each column
- *       represents the mean of the weight for a separate output. 
- * - Λ': Common posterior precision.
- * - α': Common posterior weight and likelihood covariance shape.
- * - β': Posterior covariance scale accumulators.
- * - u: Input.
- *
- * Returns: the prior hyperparameters `N`, `Λ`, `γ`, and `β`.
- */
-function downdate_ridge_regression(x:Real[_], N':Real[_,_], Λ':LLT, α':Real,
-    γ':Real[_], u:Real[_]) -> (Real[_,_], LLT, Real, Real[_]) {
-  Λ:LLT <- rank_update(Λ', u, -1.0);
-  N:Real[_,_] <- N' - kronecker(u, transpose(x));
-  α:Real <- α' - 0.5;
-  γ:Real[_] <- γ' - 0.5*hadamard(x, x);
-  return (N, Λ, α, γ);
-}

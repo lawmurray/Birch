@@ -567,25 +567,3 @@ function update_linear_matrix_normal_inverse_wishart_matrix_gaussian(
   auto k' <- k + D;
   return (N', Λ', V', k');
 }
-
-/**
- * Update parameters for a linear-Gaussian ridge regression.
- *
- * - x: The variate.
- * - N: Prior precision times mean for weights, where each column represents
- *      the mean of the weight for a separate output. 
- * - Λ: Common prior precision.
- * - α: Common prior weight and likelihood covariance shape.
- * - β: Prior covariance scale accumulators.
- * - u: Input.
- *
- * Returns: the posterior hyperparameters `N'`, `Λ'`, `γ'`, and `β'`.
- */
-function update_ridge_regression(x:Real[_], N:Real[_,_], Λ:LLT, α:Real,
-    γ:Real[_], u:Real[_]) -> (Real[_,_], LLT, Real, Real[_]) {
-  Λ':LLT <- rank_update(Λ, u, 1.0);
-  N':Real[_,_] <- N + kronecker(u, transpose(x));
-  α':Real <- α + 0.5;
-  γ':Real[_] <- γ + 0.5*hadamard(x, x);
-  return (N', Λ', α', γ');
-}

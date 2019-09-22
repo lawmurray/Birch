@@ -153,15 +153,6 @@ final class Random<Value> < Expression<Value> {
       return nil;
     }
   }
-
-  function graftRidge() -> DelayRidge? {
-    if !hasValue() {
-      assert hasDistribution();
-      return dist!.graftRidge();
-    } else {
-      return nil;
-    }
-  }
     
   function graftBeta() -> DelayBeta? {
     if !hasValue() {
