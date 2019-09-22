@@ -117,7 +117,7 @@ function pass(X1:Real[_,_], X2:Real[_,_]) -> Boolean {
   
   /* compute distance and suggested pass threshold */
   δ:Real <- wasserstein(x1, x2);
-  ε:Real <- 2.0/sqrt(R);
+  ε:Real <- 5.0/sqrt(R);
   
   return δ < ε;
 }

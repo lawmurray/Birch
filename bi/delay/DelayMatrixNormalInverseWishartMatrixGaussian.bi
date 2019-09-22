@@ -10,28 +10,28 @@ final class DelayMatrixNormalInverseWishartMatrixGaussian(future:Real[_,_]?,
   M:DelayMatrixNormalInverseWishart& <- M;
 
   function simulate() -> Real[_,_] {
-    //return simulate_matrix_normal_inverse_wishart_matrix_gaussian(
-    //    M!.N, M!.Λ, M!.Ψ, M!.k);
+    return simulate_matrix_normal_inverse_wishart_matrix_gaussian(
+        M!.N, M!.Λ, M!.V!.Ψ, M!.V!.k);
   }
   
   function logpdf(X:Real[_,_]) -> Real {
-    //return logpdf_matrix_normal_inverse_wishart_matrix_gaussian(
-    //    X, M!.N, M!.Λ, M!.Ψ, M!.k);
+    return logpdf_matrix_normal_inverse_wishart_matrix_gaussian(
+        X, M!.N, M!.Λ, M!.V!.Ψ, M!.V!.k);
   }
 
   function update(X:Real[_,_]) {
-    //(M!.N, M!.Λ, M!.Ψ, M!.k) <- update_matrix_normal_inverse_wishart_matrix_gaussian(
-    //    X, M!.N, M!.Λ, M!.Ψ, M!.k);
+    (M!.N, M!.Λ, M!.V!.Ψ, M!.V!.k) <- update_matrix_normal_inverse_wishart_matrix_gaussian(
+        X, M!.N, M!.Λ, M!.V!.Ψ, M!.V!.k);
   }
 
   function downdate(X:Real[_,_]) {
-    //(M!.N, M!.Λ, M!.Ψ, M!.k) <- downdate_matrix_normal_inverse_wishart_matrix_gaussian(
-    //    X, M!.N, M!.Λ, M!.Ψ, M!.k);
+    (M!.N, M!.Λ, M!.V!.Ψ, M!.V!.k) <- downdate_matrix_normal_inverse_wishart_matrix_gaussian(
+        X, M!.N, M!.Λ, M!.V!.Ψ, M!.V!.k);
   }
 
   function pdf(X:Real[_,_]) -> Real {
-    //return pdf_matrix_normal_inverse_wishart_matrix_gaussian(
-    //    X, M!.N, M!.Λ, M!.Ψ, M!.k);
+    return pdf_matrix_normal_inverse_wishart_matrix_gaussian(
+        X, M!.N, M!.Λ, M!.V!.Ψ, M!.V!.k);
   }
 
   function write(buffer:Buffer) {

@@ -918,6 +918,64 @@ function logpdf_linear_matrix_normal_inverse_gamma_matrix_gaussian(
 }
 
 /**
+ * Observe a matrix normal-inverse-Wishart variate.
+ *
+ * - X: The variate.
+ * - N: Precision times mean matrix.
+ * - Λ: Precision.
+ * - V: Prior variance shape.
+ * - k: Prior degrees of freedom.
+ *
+ * Returns: the log probability density.
+ */
+function logpdf_matrix_normal_inverse_wishart(X:Real[_,_], N:Real[_,_],
+    Λ:LLT, V:Real[_,_], k:Real) -> Real {
+  auto M <- solve(Λ, N);
+  auto Σ <- inv(Λ);
+  return logpdf_matrix_student_t(X, k, M, Σ, V);
+}
+
+/**
+ * Observe a Gaussian variate with matrix-normal-inverse-Wishart prior.
+ *
+ * - X: The variate.
+ * - N: Prior precision times mean matrix.
+ * - Λ: Prior precision.
+ * - V: Prior variance shape.
+ * - k: Prior degrees of freedom.
+ *
+ * Returns: the log probability density.
+ */
+function logpdf_matrix_normal_inverse_wishart_matrix_gaussian(X:Real[_,_],
+    N:Real[_,_], Λ:LLT, V:Real[_,_], k:Real) -> Real {
+  auto M <- solve(Λ, N);
+  auto Σ <- identity(rows(N)) + inv(Λ);
+  return logpdf_matrix_student_t(X, k, M, Σ, V);
+}
+
+/**
+ * Observe a Gaussian variate with linear transformation of a
+ * matrix-normal-inverse-Wishart prior.
+ *
+ * - X: The variate.
+ * - A: Scale.
+ * - N: Prior precision times mean matrix.
+ * - C: Offset.
+ * - Λ: Prior precision.
+ * - V: Prior variance shape.
+ * - k: Prior degrees of freedom.
+ *
+ * Returns: the log probability density.
+ */
+function logpdf_linear_matrix_normal_inverse_wishart_matrix_gaussian(
+    X:Real[_,_], A:Real[_,_], N:Real[_,_], C:Real[_,_], Λ:LLT, V:Real[_,_],
+    k:Real) -> Real {
+  auto M <- solve(Λ, N);
+  auto Σ <- identity(rows(A)) + A*solve(Λ, transpose(A));
+  return logpdf_matrix_student_t(X, k, A*M + C, Σ, V);
+}
+
+/**
  * Observe a multivariate Student's $t$-distribution variate with location
  * and scale.
  *

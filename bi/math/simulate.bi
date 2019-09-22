@@ -409,11 +409,11 @@ function simulate_gamma(k:Real, θ:Real) -> Real {
  * Simulate a Wishart distribution.
  *
  * - Ψ: Scale.
- * - ν: Degrees of freedeom.
+ * - k: Degrees of freedeom.
  */
-function simulate_wishart(Ψ:Real[_,_], ν:Real) -> Real[_,_] {
+function simulate_wishart(Ψ:Real[_,_], k:Real) -> Real[_,_] {
   assert rows(Ψ) == columns(Ψ);
-  assert ν > rows(Ψ) - 1;
+  assert k > rows(Ψ) - 1;
   auto p <- rows(Ψ);
   A:Real[p,p];
   
@@ -421,7 +421,7 @@ function simulate_wishart(Ψ:Real[_,_], ν:Real) -> Real[_,_] {
     for auto j in 1..p {
       if j == i {
         /* on diagonal */
-        A[i,j] <- simulate_chi_squared(ν - i + 1);
+        A[i,j] <- sqrt(simulate_chi_squared(k - i + 1));
       } else if j < i {
         /* in lower triangle */
         A[i,j] <- simulate_gaussian(0.0, 1.0);
@@ -449,10 +449,10 @@ function simulate_inverse_gamma(α:Real, β:Real) -> Real {
  * Simulate an inverse-Wishart distribution.
  *
  * - Ψ: Scale.
- * - ν: Degrees of freedeom.
+ * - k: Degrees of freedeom.
  */
-function simulate_inverse_wishart(Ψ:Real[_,_], ν:Real) -> Real[_,_] {
-  return inv(llt(simulate_wishart(inv(llt(Ψ)), ν)));
+function simulate_inverse_wishart(Ψ:Real[_,_], k:Real) -> Real[_,_] {
+  return inv(llt(simulate_wishart(inv(llt(Ψ)), k)));
 }
 
 /**
@@ -892,6 +892,54 @@ function simulate_linear_matrix_normal_inverse_gamma_matrix_gaussian(
   auto β <- γ - 0.5*diagonal(transpose(M)*N);
   auto Σ <- identity(rows(A)) + A*solve(Λ, transpose(A));
   return simulate_matrix_student_t(2.0*α, A*M + C, Σ, β/α);
+}
+
+/**
+ * Simulate a matrix normal-inverse-Wishart distribution.
+ *
+ * - N: Precision times mean matrix.
+ * - Λ: Precision.
+ * - V: Variance shape.
+ * - k: Degrees of freedom.
+ */
+function simulate_matrix_normal_inverse_wishart(N:Real[_,_], Λ:LLT,
+    V:Real[_,_], k:Real) -> Real[_,_] {
+  auto M <- solve(Λ, N);
+  auto Σ <- inv(Λ);
+  return simulate_matrix_student_t(k, M, Σ, V);
+}
+
+/**
+ * Simulate a Gaussian distribution with matrix-normal-inverse-Wishart prior.
+ *
+ * - N: Precision times mean matrix.
+ * - Λ: Precision.
+ * - V: Variance shape.
+ * - k: Degrees of freedom.
+ */
+function simulate_matrix_normal_inverse_wishart_matrix_gaussian(N:Real[_,_],
+    Λ:LLT, V:Real[_,_], k:Real) -> Real[_,_] {
+  auto M <- solve(Λ, N);
+  auto Σ <- identity(rows(N)) + inv(Λ);
+  return simulate_matrix_student_t(k, M, Σ, V);
+}
+
+/**
+ * Simulate a Gaussian distribution with linear transformation of a
+ * matrix-normal-inverse-Wishart prior.
+ *
+ * - A: Scale.
+ * - N: Precision times mean matrix.
+ * - C: Offset.
+ * - Λ: Precision.
+ * - V: Variance shape.
+ * - k: Degrees of freedom.
+ */
+function simulate_linear_matrix_normal_inverse_wishart_matrix_gaussian(
+    A:Real[_,_], N:Real[_,_], C:Real[_,_], Λ:LLT, V:Real[_,_], k:Real) -> Real[_,_] {
+  auto M <- solve(Λ, N);
+  auto Σ <- identity(rows(A)) + A*solve(Λ, transpose(A));
+  return simulate_matrix_student_t(k, A*M + C, Σ, V);
 }
 
 /**

@@ -6,14 +6,14 @@ final class DelayMatrixNormalInverseWishart(future:Real[_,_]?,
     V:DelayInverseWishart) < DelayValue<Real[_,_]>(future,
     futureUpdate) {
   /**
-   * Mean.
+   * Precision.
    */
-  M:Real[_,_] <- M;
-  
+  Λ:LLT <- llt(inv(llt(U)));
+
   /**
-   * Among-row covariance.
+   * Precision times mean.
    */
-  U:Real[_,_] <- U;
+  N:Real[_,_] <- Λ*M;
   
   /**
    * Among-column covariance.
@@ -21,40 +21,40 @@ final class DelayMatrixNormalInverseWishart(future:Real[_,_]?,
   V:DelayInverseWishart& <- V;
 
   function rows() -> Integer {
-    return global.rows(M);
+    return global.rows(N);
   }
   
   function columns() -> Integer {
-    return global.columns(M);
+    return global.columns(N);
   }
 
   function simulate() -> Real[_,_] {
-    //return simulate_matrix_normal_inverse_wishart(N, Λ, α, γ);
+    return simulate_matrix_normal_inverse_wishart(N, Λ, V!.Ψ, V!.k);
   }
   
   function logpdf(X:Real[_,_]) -> Real {   
-    //return logpdf_matrix_normal_inverse_wishart(X, N, Λ, α, γ);
+    return logpdf_matrix_normal_inverse_wishart(X, N, Λ, V!.Ψ, V!.k);
   }
 
   function update(X:Real[_,_]) {
-    //(σ2!.α, σ2!.β) <- update_matrix_normal_inverse_wishart(X, N, Λ, α, γ);
+    (V!.Ψ, V!.k) <- update_matrix_normal_inverse_wishart(X, N, Λ, V!.Ψ, V!.k);
   }
 
   function downdate(X:Real[_,_]) {
-    //(σ2!.α, σ2!.β) <- downdate_matrix_normal_inverse_wishart(X, N, Λ, α, γ);
+    (V!.Ψ, V!.k) <- downdate_matrix_normal_inverse_wishart(X, N, Λ, V!.Ψ, V!.k);
   }
 
   function pdf(X:Real[_,_]) -> Real {
-    //return pdf_matrix_normal_inverse_wishart(X, N, Λ, α, γ);
+    return pdf_matrix_normal_inverse_wishart(X, N, Λ, V!.Ψ, V!.k);
   }
 
   function write(buffer:Buffer) {
     prune();
     buffer.set("class", "MatrixNormalInverseWishart");
-    buffer.set("M", M);
-    buffer.set("U", U);
-    buffer.set("k", V!.k);
+    buffer.set("N", N);
+    buffer.set("Λ", Λ);
     buffer.set("Ψ", V!.Ψ);
+    buffer.set("k", V!.k);
   }
 }
 

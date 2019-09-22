@@ -501,6 +501,78 @@ function downdate_linear_matrix_normal_inverse_gamma_matrix_gaussian(
 }
 
 /**
+ * Downdate the parameters of a matrix normal-inverse-Wishart variate.
+ *
+ * - X: The variate.
+ * - N': Precision times mean.
+ * - Λ: Precision.
+ * - V': Posterior variance shape.
+ * - k': Posterior degrees of freedom.
+ *
+ * Returns: the prior hyperparameters `V` and `k`.
+ */
+function downdate_matrix_normal_inverse_wishart(X:Real[_,_], N:Real[_,_],
+    Λ:LLT, V':Real[_,_], k':Real) -> (Real[_,_], Real) {
+  auto D <- rows(X);
+  auto M <- solve(Λ, N);
+  auto V <- V' - transpose(X - M)*(X - M);
+  auto k <- k' - D;
+  return (V, k);
+}
+
+/**
+ * Downdate the parameters of a Gaussian variate with
+ * matrix-normal-inverse-Wishart prior.
+ *
+ * - x: The variate.
+ * - N': Posterior precision times mean matrix.
+ * - Λ': Posterior precision.
+ * - V': Posterior variance shape.
+ * - k': Posterior degrees of freedom.
+ *
+ * Returns: the prior hyperparameters `N`, `Λ`, `V` and `k`.
+ */
+function downdate_matrix_normal_inverse_wishart_matrix_gaussian(
+    X:Real[_,_], N':Real[_,_], Λ':LLT, V':Real[_,_], k':Real) ->
+    (Real[_,_], LLT, Real[_,_], Real) {
+  auto D <- rows(X);
+  auto Λ <- rank_update(Λ', identity(rows(N')), -1.0);
+  auto N <- N' - X;
+  auto M' <- solve(Λ', N');
+  auto M <- solve(Λ, N);
+  auto V <- V' - transpose(X - M')*(X - M') + transpose(M' - M)*Λ*(M' - M);
+  auto k <- k' - D;
+  return (N, Λ, V, k);
+}
+
+/**
+ * Downdate the parameters of a Gaussian variate with linear transformation
+ * of matrix-normal-inverse-Wishart prior.
+ *
+ * - x: The variate.
+ * - A: Scale.
+ * - N': Posterior precision times mean matrix.
+ * - C: Offset.
+ * - Λ': Posterior precision.
+ * - V': Posterior variance shape.
+ * - k': Posterior degrees of freedom.
+ *
+ * Returns: the prior hyperparameters `N`, `Λ`, `V` and `k`.
+ */
+function downdate_linear_matrix_normal_inverse_wishart_matrix_gaussian(
+    X:Real[_,_], A:Real[_,_], N':Real[_,_], C:Real[_,_], Λ':LLT, V':Real[_,_],
+    k':Real) -> (Real[_,_], LLT, Real[_,_], Real) {
+  auto D <- rows(X);
+  auto Λ <- rank_update(Λ', transpose(A), -1.0);
+  auto N <- N' - transpose(A)*(X - C);
+  auto M' <- solve(Λ', N');
+  auto M <- solve(Λ, N);
+  auto V <- V' - transpose(X - A*M' - C)*(X - A*M' - C) + transpose(M' - M)*Λ*(M' - M);
+  auto k <- k' - D;
+  return (N, Λ, V, k);
+}
+
+/**
  * Downdate parameters for a linear-Gaussian ridge regression.
  *
  * - x: The variate.
