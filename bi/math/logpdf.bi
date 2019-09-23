@@ -923,16 +923,17 @@ function logpdf_linear_matrix_normal_inverse_gamma_matrix_gaussian(
  * - X: The variate.
  * - N: Precision times mean matrix.
  * - Λ: Precision.
- * - V: Prior variance shape.
+ * - Ψ: Prior variance shape.
  * - k: Prior degrees of freedom.
  *
  * Returns: the log probability density.
  */
 function logpdf_matrix_normal_inverse_wishart(X:Real[_,_], N:Real[_,_],
-    Λ:LLT, V:Real[_,_], k:Real) -> Real {
+    Λ:LLT,  Ψ:Real[_,_], k:Real) -> Real {
+  auto p <- columns(N);
   auto M <- solve(Λ, N);
-  auto Σ <- inv(Λ);
-  return logpdf_matrix_student_t(X, k, M, Σ, V);
+  auto Σ <- inv(Λ)/(k - p + 1.0);
+  return logpdf_matrix_student_t(X, k - p + 1.0, M, Σ, Ψ);
 }
 
 /**
@@ -941,16 +942,17 @@ function logpdf_matrix_normal_inverse_wishart(X:Real[_,_], N:Real[_,_],
  * - X: The variate.
  * - N: Prior precision times mean matrix.
  * - Λ: Prior precision.
- * - V: Prior variance shape.
+ * - Ψ: Prior variance shape.
  * - k: Prior degrees of freedom.
  *
  * Returns: the log probability density.
  */
 function logpdf_matrix_normal_inverse_wishart_matrix_gaussian(X:Real[_,_],
-    N:Real[_,_], Λ:LLT, V:Real[_,_], k:Real) -> Real {
+    N:Real[_,_], Λ:LLT, Ψ:Real[_,_], k:Real) -> Real {
+  auto p <- columns(N);
   auto M <- solve(Λ, N);
-  auto Σ <- identity(rows(N)) + inv(Λ);
-  return logpdf_matrix_student_t(X, k, M, Σ, V);
+  auto Σ <- (identity(rows(N)) + inv(Λ))/(k - p + 1.0);
+  return logpdf_matrix_student_t(X, k - p + 1.0, M, Σ, Ψ);
 }
 
 /**
@@ -962,17 +964,18 @@ function logpdf_matrix_normal_inverse_wishart_matrix_gaussian(X:Real[_,_],
  * - N: Prior precision times mean matrix.
  * - C: Offset.
  * - Λ: Prior precision.
- * - V: Prior variance shape.
+ * - Ψ: Prior variance shape.
  * - k: Prior degrees of freedom.
  *
  * Returns: the log probability density.
  */
 function logpdf_linear_matrix_normal_inverse_wishart_matrix_gaussian(
-    X:Real[_,_], A:Real[_,_], N:Real[_,_], C:Real[_,_], Λ:LLT, V:Real[_,_],
+    X:Real[_,_], A:Real[_,_], N:Real[_,_], C:Real[_,_], Λ:LLT, Ψ:Real[_,_],
     k:Real) -> Real {
+  auto p <- columns(N);
   auto M <- solve(Λ, N);
-  auto Σ <- identity(rows(A)) + A*solve(Λ, transpose(A));
-  return logpdf_matrix_student_t(X, k, A*M + C, Σ, V);
+  auto Σ <- (identity(rows(A)) + A*solve(Λ, transpose(A)))/(k - p + 1.0);
+  return logpdf_matrix_student_t(X, k - p + 1.0, A*M + C, Σ, Ψ);
 }
 
 /**

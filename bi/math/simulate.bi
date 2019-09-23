@@ -899,14 +899,15 @@ function simulate_linear_matrix_normal_inverse_gamma_matrix_gaussian(
  *
  * - N: Precision times mean matrix.
  * - Λ: Precision.
- * - V: Variance shape.
+ * - Ψ: Variance shape.
  * - k: Degrees of freedom.
  */
 function simulate_matrix_normal_inverse_wishart(N:Real[_,_], Λ:LLT,
-    V:Real[_,_], k:Real) -> Real[_,_] {
+    Ψ:Real[_,_], k:Real) -> Real[_,_] {
+  auto p <- columns(N);
   auto M <- solve(Λ, N);
-  auto Σ <- inv(Λ);
-  return simulate_matrix_student_t(k, M, Σ, V);
+  auto Σ <- inv(Λ)/(k - p + 1.0);
+  return simulate_matrix_student_t(k - p + 1.0, M, Σ, Ψ);
 }
 
 /**
@@ -914,14 +915,15 @@ function simulate_matrix_normal_inverse_wishart(N:Real[_,_], Λ:LLT,
  *
  * - N: Precision times mean matrix.
  * - Λ: Precision.
- * - V: Variance shape.
+ * - Ψ: Variance shape.
  * - k: Degrees of freedom.
  */
 function simulate_matrix_normal_inverse_wishart_matrix_gaussian(N:Real[_,_],
-    Λ:LLT, V:Real[_,_], k:Real) -> Real[_,_] {
+    Λ:LLT, Ψ:Real[_,_], k:Real) -> Real[_,_] {
+  auto p <- columns(N);
   auto M <- solve(Λ, N);
-  auto Σ <- identity(rows(N)) + inv(Λ);
-  return simulate_matrix_student_t(k, M, Σ, V);
+  auto Σ <- (identity(rows(N)) + inv(Λ))/(k - p + 1.0);
+  return simulate_matrix_student_t(k - p + 1.0, M, Σ, Ψ);
 }
 
 /**
@@ -932,14 +934,15 @@ function simulate_matrix_normal_inverse_wishart_matrix_gaussian(N:Real[_,_],
  * - N: Precision times mean matrix.
  * - C: Offset.
  * - Λ: Precision.
- * - V: Variance shape.
+ * - Ψ: Variance shape.
  * - k: Degrees of freedom.
  */
 function simulate_linear_matrix_normal_inverse_wishart_matrix_gaussian(
-    A:Real[_,_], N:Real[_,_], C:Real[_,_], Λ:LLT, V:Real[_,_], k:Real) -> Real[_,_] {
+    A:Real[_,_], N:Real[_,_], C:Real[_,_], Λ:LLT, Ψ:Real[_,_], k:Real) -> Real[_,_] {
+  auto p <- columns(N);
   auto M <- solve(Λ, N);
-  auto Σ <- identity(rows(A)) + A*solve(Λ, transpose(A));
-  return simulate_matrix_student_t(k, A*M + C, Σ, V);
+  auto Σ <- (identity(rows(A)) + A*solve(Λ, transpose(A)))/(k - p + 1.0);
+  return simulate_matrix_student_t(k - p + 1.0, A*M + C, Σ, Ψ);
 }
 
 /**
@@ -989,12 +992,17 @@ function simulate_multivariate_student_t(k:Real, μ:Real[_], σ2:Real) ->
  */
 function simulate_matrix_student_t(k:Real, M:Real[_,_], U:Real[_,_],
     V:Real[_,_]) -> Real[_,_] {
-  auto R <- rows(M);
-  auto C <- columns(M);
-  Z:Real[R,C];
-  for auto r in 1..R {
-    for auto c in 1..C {
-      Z[r,c] <- simulate_student_t(k);
+  assert rows(M) == rows(U);
+  assert rows(M) == columns(U);
+  assert columns(M) == rows(V);
+  assert columns(M) == columns(V);
+  
+  auto N <- rows(M);
+  auto P <- columns(M);
+  Z:Real[N,P];
+  for auto n in 1..N {
+    for auto p in 1..P {
+      Z[n,p] <- simulate_student_t(k);
     }
   }
   return M + cholesky(U)*Z*transpose(cholesky(V));
@@ -1010,12 +1018,16 @@ function simulate_matrix_student_t(k:Real, M:Real[_,_], U:Real[_,_],
  */
 function simulate_matrix_student_t(k:Real, M:Real[_,_], U:Real[_,_],
     v:Real[_]) -> Real[_,_] {
-  auto R <- rows(M);
-  auto C <- columns(M);
-  Z:Real[R,C];
-  for auto r in 1..R {
-    for auto c in 1..C {
-      Z[r,c] <- simulate_student_t(k);
+  assert rows(M) == rows(U);
+  assert rows(M) == columns(U);
+  assert columns(M) == length(v);
+  
+  auto N <- rows(M);
+  auto P <- columns(M);
+  Z:Real[N,P];
+  for auto n in 1..N {
+    for auto p in 1..P {
+      Z[n,p] <- simulate_student_t(k);
     }
   }
   return M + cholesky(U)*Z*diagonal(sqrt(v));

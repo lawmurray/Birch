@@ -97,7 +97,7 @@ class TestLinearMatrixNormalInverseWishartMatrixGaussian(A:Real[_,_],
     y:Real[size()];
     auto k <- 0;
     for auto i in 1..rows(V) {
-      y[k + 1 .. k + columns(V)] <- V.value()[i,1..columns(X)];
+      y[k + 1 .. k + columns(V)] <- V.value()[i,1..columns(V)];
       k <- k + columns(V);
     }
     for auto i in 1..rows(X) {
