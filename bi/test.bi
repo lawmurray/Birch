@@ -100,23 +100,59 @@ function pass(X1:Real[_,_], X2:Real[_,_]) -> Boolean {
   assert rows(X1) == rows(X2);
   assert columns(X1) == columns(X2);
   
-  R:Integer <- rows(X1);
-  C:Integer <- columns(X1);
+  auto R <- rows(X1);
+  auto C <- columns(X1);
+  auto failed <- 0;
+  auto tests <- 0;
+  auto ε <- 5.0/sqrt(R);
   
-  /* project onto a random unit vector for univariate comparison */
-  u:Real[_] <- simulate_uniform_unit_vector(C);  
-  x1:Real[_] <- X1*u;
-  x2:Real[_] <- X2*u;
+  /* compare marginals using 1-Wasserstein distance */
+  for auto c in 1..C {
+    /* project onto a random unit vector for univariate comparison */
+    auto x1 <- X1[1..R,c];
+    auto x2 <- X2[1..R,c];
   
-  /* normalise onto the interval [0,1] */
-  mn:Real <- min(min(x1), min(x2));
-  mx:Real <- max(max(x1), max(x2));
-  x1 <- (x1 - mn)/(mx - mn);
-  x2 <- (x2 - mn)/(mx - mn);
+    /* normalise onto the interval [0,1] */
+    auto mn <- min(min(x1), min(x2));
+    auto mx <- max(max(x1), max(x2));
+    x1 <- (x1 - mn)/(mx - mn);
+    x2 <- (x2 - mn)/(mx - mn);
   
-  /* compute distance and suggested pass threshold */
-  δ:Real <- wasserstein(x1, x2);
-  ε:Real <- 5.0/sqrt(R);
+    /* compute distance and suggested pass threshold */
+    auto δ <- wasserstein(x1, x2);
+    if δ > ε {
+      failed <- failed + 1;
+      stderr.print("failed on component " + c + ", " + δ + " > " + ε + "\n");
+    }
+    tests <- tests + 1;
+  }
   
-  return δ < ε;
+  /* project onto random unit vectors and compute the univariate
+   * 1-Wasserstein distance, repeating as many times as there are
+   * dimensions */
+  for auto c in 1..C {
+    /* project onto a random unit vector for univariate comparison */
+    auto u <- simulate_uniform_unit_vector(C);  
+    auto x1 <- X1*u;
+    auto x2 <- X2*u;
+  
+    /* normalise onto the interval [0,1] */
+    auto mn <- min(min(x1), min(x2));
+    auto mx <- max(max(x1), max(x2));
+    x1 <- (x1 - mn)/(mx - mn);
+    x2 <- (x2 - mn)/(mx - mn);
+  
+    /* compute distance and suggested pass threshold */
+    auto δ <- wasserstein(x1, x2);    
+    if δ > ε {
+      failed <- failed + 1;
+      stderr.print("failed on random projection, " + δ + " > " + ε + "\n");
+    }
+    tests <- tests + 1;
+  }
+  
+  if failed > 0 {
+    stderr.print("failed " + failed + " of " + tests + " comparisons\n");
+  }
+  return failed == 0;
 }
