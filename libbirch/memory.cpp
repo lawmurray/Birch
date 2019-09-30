@@ -3,11 +3,22 @@
  */
 #include "libbirch/memory.hpp"
 
-#include "libbirch/clone.hpp"
 #include "libbirch/thread.hpp"
 
-/* declared in memory.hpp */
+/**
+ * Create and/or return the root memo
+ */
+static libbirch::Context* root() {
+  static libbirch::SharedPtr<libbirch::Context> context(libbirch::Context::create_());
+  return context.get();
+}
+
 libbirch::Atomic<size_t> libbirch::memoryUse(0);
+#if ENABLE_LAZY_DEEP_CLONE
+libbirch::EntryExitLock libbirch::freezeLock;
+libbirch::EntryExitLock libbirch::finishLock;
+#endif
+thread_local libbirch::Context* libbirch::currentContext(root());
 
 #if ENABLE_MEMORY_POOL
 /**
@@ -45,19 +56,6 @@ libbirch::Atomic<char*> libbirch::buffer(heap());
 char* libbirch::bufferStart;
 size_t libbirch::bufferSize;
 #endif
-
-/**
- * Create and/or return the root memo
- */
-static libbirch::Context* root() {
-  static libbirch::SharedPtr<libbirch::Context> context(libbirch::Context::create_());
-  return context.get();
-}
-
-/* declared in clone.hpp, here to ensure order of initialization for global
- * variables */
-thread_local libbirch::Context* libbirch::currentContext(root());
-thread_local bool libbirch::cloneUnderway = false;
 
 void* libbirch::allocate(const size_t n) {
   assert(n > 0u);

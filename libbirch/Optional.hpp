@@ -59,6 +59,15 @@ public:
   }
 
   /**
+   * Deep copy constructor.
+   */
+  Optional(const Optional<T>& o, int) :
+      value(clone(o.value)),
+      hasValue(o.query()) {
+    //
+  }
+
+  /**
    * Generic copy constructor.
    *
    * @tparam U Value type (convertible to @p T).
@@ -71,24 +80,9 @@ public:
     }
   }
 
-  /**
-   * Copy constructor.
-   */
   Optional(const Optional<T>& o) = default;
-
-  /**
-   * Move constructor.
-   */
   Optional(Optional<T> && o) = default;
-
-  /**
-   * Copy assignment.
-   */
   Optional<T>& operator=(const Optional<T>& o) = default;
-
-  /**
-   * Move assignment.
-   */
   Optional<T>& operator=(Optional<T> && o) = default;
 
   /**
@@ -137,7 +131,7 @@ private:
 template<class T>
 class Optional<Shared<T>> {
   template<class U> friend class Optional;
-public:
+  public:
   /**
    * Default constructor.
    */
@@ -172,7 +166,7 @@ public:
    * Generic move constructor for value.
    */
   template<class U>
-  Optional(Shared<U>&& value) :
+  Optional(Shared<U> && value) :
       value(std::move(value)) {
     //
   }
@@ -190,7 +184,7 @@ public:
    * Generic move constructor for value.
    */
   template<class U>
-  Optional(Weak<U>&& value) :
+  Optional(Weak<U> && value) :
       value(std::move(value)) {
     //
   }
@@ -208,15 +202,18 @@ public:
    * Generic move constructor for value.
    */
   template<class U>
-  Optional(Init<U>&& value) :
+  Optional(Init<U> && value) :
       value(std::move(value)) {
     //
   }
 
   /**
-   * Copy constructor.
+   * Deep copy constructor.
    */
-  Optional(const Optional<Shared<T>>& o) = default;
+  Optional(const Optional<Shared<T>>& o, int) :
+      value(clone(o.value)) {
+    //
+  }
 
   /**
    * Generic copy constructor.
@@ -228,11 +225,6 @@ public:
   }
 
   /**
-   * Move constructor.
-   */
-  Optional(Optional<Shared<T>> && o) = default;
-
-  /**
    * Generic move constructor.
    */
   template<class U>
@@ -240,11 +232,6 @@ public:
       value(std::move(o.value)) {
     //
   }
-
-  /**
-   * Copy assignment.
-   */
-  Optional<Shared<T>>& operator=(const Optional<Shared<T>>& o) = default;
 
   /**
    * Generic copy assignment.
@@ -264,16 +251,16 @@ public:
     return *this;
   }
 
-  /**
-   * Move assignment.
-   */
+  Optional(const Optional<Shared<T>>& o) = default;
+  Optional(Optional<Shared<T>> && o) = default;
+  Optional<Shared<T>>& operator=(const Optional<Shared<T>>& o) = default;
   Optional<Shared<T>>& operator=(Optional<Shared<T>> && o) = default;
 
   /**
    * Generic move assignment.
    */
   template<class U>
-  Optional<Shared<T>>& operator=(Optional<Shared<U>>&& o) {
+  Optional<Shared<T>>& operator=(Optional<Shared<U>> && o) {
     value = std::move(o.value);
     return *this;
   }
@@ -282,7 +269,7 @@ public:
    * Generic move assignment.
    */
   template<class P>
-  Optional<Shared<T>>& operator=(Optional<P>&& o) {
+  Optional<Shared<T>>& operator=(Optional<P> && o) {
     value = std::move(o.value);
     return *this;
   }

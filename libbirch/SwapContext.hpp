@@ -3,7 +3,6 @@
  */
 #pragma once
 
-#include "libbirch/clone.hpp"
 #include "libbirch/Any.hpp"
 
 namespace libbirch {

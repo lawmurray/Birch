@@ -24,9 +24,9 @@ protected:
   EagerAny();
 
   /**
-   * Copy constructor.
+   * Deep copy constructor.
    */
-  EagerAny(const EagerAny& o);
+  EagerAny(const EagerAny& o, int);
 
   /**
    * Destructor.
@@ -36,6 +36,7 @@ protected:
   /**
    * Copy assignment operator.
    */
+  EagerAny(const EagerAny& o) = delete;
   EagerAny& operator=(const EagerAny&) = delete;
 
 public:

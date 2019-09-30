@@ -25,18 +25,16 @@ protected:
   Counted();
 
   /**
-   * Copy constructor.
+   * Deep copy constructor.
    */
-  Counted(const Counted& o);
+  Counted(const Counted& o, int);
 
   /**
    * Destructor.
    */
   virtual ~Counted();
 
-  /**
-   * Assignment operator.
-   */
+  Counted(const Counted& o) = delete;
   Counted& operator=(const Counted&) = delete;
 
 public:
@@ -44,7 +42,7 @@ public:
    * Create an object,
    */
   template<class... Args>
-  static Counted* create_(Args... args) {
+  static Counted* create_(Args&&... args) {
     return emplace_(allocate<sizeof(Counted)>(), args...);
   }
 
@@ -52,8 +50,8 @@ public:
    * Create an object in previously-allocated memory.
    */
   template<class... Args>
-  static Counted* emplace_(void* ptr, Args... args) {
-    auto o = new (ptr) Counted();
+  static Counted* emplace_(void* ptr, Args&&... args) {
+    auto o = new (ptr) Counted(args...);
     o->size = sizeof(Counted);
     return o;
   }
@@ -62,14 +60,14 @@ public:
    * Clone the object.
    */
   virtual Counted* clone_() const {
-    return emplace_(allocate<sizeof(Counted)>(), *this);
+    return emplace_(allocate<sizeof(Counted)>(), *this, 0);
   }
 
   /**
    * Clone the object into previous allocation.
    */
   virtual Counted* clone_(void* ptr) const {
-    return emplace_(ptr, *this);
+    return emplace_(ptr, *this, 0);
   }
 
   /**
@@ -222,7 +220,7 @@ inline libbirch::Counted::Counted() :
   //
 }
 
-inline libbirch::Counted::Counted(const Counted& o) :
+inline libbirch::Counted::Counted(const Counted& o, int) :
     sharedCount(0u),
     weakCount(1u),
     #if ENABLE_LAZY_DEEP_CLONE

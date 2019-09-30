@@ -261,15 +261,13 @@
       "bi/sample.bi",
       "bi/test.bi",
 
-      "libbirch/clone.cpp",
       "libbirch/EagerContext.cpp",
       "libbirch/EagerMemo.cpp",
-      "libbirch/libbirch.cpp",
       "libbirch/LazyContext.cpp",
       "libbirch/LazyMemo.cpp",
+      "libbirch/libbirch.cpp",
       "libbirch/memory.cpp",
-      "libbirch/stacktrace.cpp",
-      "libbirch/thread.cpp"
+      "libbirch/stacktrace.cpp"
     ],
     "header": [
       "libbirch/Allocator.hpp",
@@ -324,7 +322,6 @@
       "libbirch/Span.hpp",
       "libbirch/stacktrace.hpp",
       "libbirch/Stride.hpp",
-      "libbirch/SwapClone.hpp",
       "libbirch/SwapContext.hpp",
       "libbirch/thaw.hpp",
       "libbirch/thread.hpp",

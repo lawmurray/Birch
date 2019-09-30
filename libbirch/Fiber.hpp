@@ -27,6 +27,13 @@ public:
   Fiber(const SharedPtr<FiberState<YieldType>>& state);
 
   /**
+   * Deep copy constructor.
+   */
+  Fiber(const Fiber<YieldType>& o, int);
+
+  Fiber(const Fiber<YieldType>& o) = default;
+
+  /**
    * Clone the fiber.
    */
   Fiber<YieldType> clone() const;
@@ -75,6 +82,12 @@ template<class YieldType>
 libbirch::Fiber<YieldType>::Fiber(
     const SharedPtr<FiberState<YieldType>>& state) :
     state(state) {
+  //
+}
+
+template<class YieldType>
+libbirch::Fiber<YieldType>::Fiber(const Fiber<YieldType>& o, int) :
+    state(libbirch::clone(o.state)) {
   //
 }
 

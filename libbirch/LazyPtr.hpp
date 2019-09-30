@@ -4,7 +4,6 @@
 #pragma once
 #if ENABLE_LAZY_DEEP_CLONE
 
-#include "libbirch/clone.hpp"
 #include "libbirch/LazyAny.hpp"
 #include "libbirch/LazyContext.hpp"
 #include "libbirch/Nil.hpp"
@@ -55,21 +54,16 @@ public:
   }
 
   /**
-   * Copy constructor.
+   * Deep copy constructor.
    */
-  LazyPtr(const LazyPtr<P>& o) {
+  LazyPtr(const LazyPtr<P>& o, int) {
     if (o.object) {
-      if (cloneUnderway) {
-        if (o.isCross()) {
-          o.startFinish();
-          o.startFreeze();
-        }
-        object = o.object;
-        to.replace(currentContext);
-      } else {
-        object.replace(o.get());
-        to = o.to;
+      if (o.isCross()) {
+        o.startFinish();
+        o.startFreeze();
       }
+      object = o.object;
+      to.replace(currentContext);
     }
   }
 
@@ -83,9 +77,7 @@ public:
     object.replace(o.get());
   }
 
-  /**
-   * Move constructor.
-   */
+  LazyPtr(const LazyPtr<P>& o) = default;
   LazyPtr(LazyPtr<P> && o) = default;
 
   /**

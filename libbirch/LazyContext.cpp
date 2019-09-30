@@ -4,7 +4,6 @@
 #if ENABLE_LAZY_DEEP_CLONE
 #include "libbirch/LazyContext.hpp"
 
-#include "libbirch/SwapClone.hpp"
 #include "libbirch/SwapContext.hpp"
 
 libbirch::LazyAny* libbirch::LazyContext::get(LazyAny* o) {
@@ -59,7 +58,6 @@ libbirch::LazyAny* libbirch::LazyContext::pull(LazyAny* o) {
 
 libbirch::LazyAny* libbirch::LazyContext::copy(LazyAny* o) {
   assert(o->isFrozen());
-  SwapClone swapClone(true);
   SwapContext swapContext(this);
   auto cloned = o->clone_();
   if (!o->isSingle()) {

@@ -34,10 +34,10 @@
  */
 #define libbirch_clone_function_ \
   virtual class_type_* clone_() const { \
-    return emplace_(libbirch::allocate<sizeof(class_type_)>(), *this); \
+    return emplace_(libbirch::allocate<sizeof(class_type_)>(), *this, 0); \
   } \
   virtual class_type_* clone_(void* ptr) const { \
-    return emplace_(ptr, *this); \
+    return emplace_(ptr, *this, 0); \
   }
 
 /**

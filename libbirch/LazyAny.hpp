@@ -27,18 +27,16 @@ protected:
   LazyAny();
 
   /**
-   * Copy constructor.
+   * Deep copy constructor.
    */
-  LazyAny(const LazyAny& o);
+  LazyAny(const LazyAny& o, int);
 
   /**
    * Destructor.
    */
   virtual ~LazyAny();
 
-  /**
-   * Copy assignment operator.
-   */
+  LazyAny(const LazyAny&) = delete;
   LazyAny& operator=(const LazyAny&) = delete;
 
 public:
@@ -148,8 +146,8 @@ inline libbirch::LazyAny::LazyAny() :
   //
 }
 
-inline libbirch::LazyAny::LazyAny(const LazyAny& o) :
-    Counted(o),
+inline libbirch::LazyAny::LazyAny(const LazyAny& o, int) :
+    Counted(o, 0),
     context((intptr_t)currentContext),
     frozen(false),
     finished(false)

@@ -33,6 +33,16 @@ protected:
   }
 
   /**
+   * Deep copy constructor.
+   */
+  FiberState(const FiberState<YieldType>& o, int) :
+      label_(o.label_),
+      nlabels_(o.nlabels_),
+      value_(libbirch::clone(o.value_)) {
+    //
+  }
+
+  /**
    * Destructor.
    */
   virtual ~FiberState() {
