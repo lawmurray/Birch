@@ -30,24 +30,8 @@ thread_local extern bool cloneUnderway;
 extern EntryExitLock freezeLock;
 
 /**
- * Is a freeze operation currently underway in the thread?
- *
- * A thread-local variable is used here as a way of making freezeLock
- * recursive.
- */
-thread_local extern bool freezeUnderway;
-
-/**
  * Global finish lock.
  */
 extern EntryExitLock finishLock;
-
-/**
- * Is a finish operation currently underway in the thread?
- *
- * A thread-local variable is used here as a way of making finishLock
- * recursive.
- */
-thread_local extern bool finishUnderway;
 #endif
 }

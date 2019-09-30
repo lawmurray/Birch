@@ -9,7 +9,5 @@
 
 #if ENABLE_LAZY_DEEP_CLONE
 libbirch::EntryExitLock libbirch::freezeLock;
-thread_local bool libbirch::freezeUnderway = false;
 libbirch::EntryExitLock libbirch::finishLock;
-thread_local bool libbirch::finishUnderway = false;
 #endif

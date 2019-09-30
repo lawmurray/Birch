@@ -61,8 +61,8 @@ public:
     if (o.object) {
       if (cloneUnderway) {
         if (o.isCross()) {
-          o.finish();
-          o.freeze();
+          o.startFinish();
+          o.startFreeze();
         }
         object = o.object;
         to.replace(currentContext);
@@ -283,8 +283,28 @@ public:
   LazyPtr<P> clone() const {
     assert(object);
     pull();
-    freeze();
+    startFreeze();
     return LazyPtr<P>(object, to->fork());
+  }
+
+  /**
+   * Start a freeze operation. This is just like freeze(), but manages thread
+   * safety on entry and exit.
+   */
+  void startFreeze() {
+    if (object) {
+      freezeLock.enter();
+      freeze();
+      freezeLock.exit();
+    }
+  }
+
+  /**
+   * Start a freeze operation. This is just like freeze(), but manages thread
+   * safety on entry and exit.
+   */
+  void startFreeze() const {
+    return const_cast<LazyPtr<P>*>(this)->startFreeze();
   }
 
   /**
@@ -292,17 +312,8 @@ public:
    */
   void freeze() {
     if (object) {
-      bool top = !freezeUnderway;  // is this the top call of the recursion?
-      if (top) {
-        freezeUnderway = true;
-        freezeLock.enter();
-      }
       object->freeze();
       to->freeze();
-      if (top) {
-        freezeLock.exit();
-        freezeUnderway = false;
-      }
     }
   }
 
@@ -318,8 +329,8 @@ public:
    */
   void thaw(LazyContext* context) {
     if (isCross()) {
-      finish();
-      freeze();
+      startFinish();
+      startFreeze();
     }
     if (object) {
       to.replace(context);
@@ -334,21 +345,32 @@ public:
   }
 
   /**
+   * Start a finish operation. This is just like finish(), but manages thread
+   * safety on entry and exit.
+   */
+  void startFinish() {
+    if (object) {
+      finishLock.enter();
+      finish();
+      finishLock.exit();
+    }
+  }
+
+  /**
+   * Start a freeze operation. This is just like finish(), but manages thread
+   * safety on entry and exit.
+   */
+  void startFinish() const {
+    return const_cast<LazyPtr<P>*>(this)->startFinish();
+  }
+
+  /**
    * Finish.
    */
   void finish() {
     if (object) {
-      bool top = !finishUnderway;  // is this the top call of the recursion?
-      if (top) {
-        finishUnderway = true;
-        finishLock.enter();
-      }
       get();
       object->finish();
-      if (top) {
-        finishLock.exit();
-        finishUnderway = false;
-      }
     }
   }
 
