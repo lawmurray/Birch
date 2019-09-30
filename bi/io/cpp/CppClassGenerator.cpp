@@ -139,11 +139,38 @@ void bi::CppClassGenerator::visit(const Class* o) {
         line("}\n");
       }
 
-      /* copy constructor, destructor, assignment operator */
+      /* deep copy constructor */
       if (header) {
-        line(o->name << "(const " << o->name << "&) = default;");
+        start("");
+      } else {
+        start("bi::type::" << o->name);
+        genTemplateArgs(o);
+        middle("::");
+      }
+      middle(o->name << "(const " << o->name << "& o_, int)");
+      if (header) {
+        finish(';');
+      } else {
+        finish(" :");
+        in();
+        in();
+        start("super_type_(o_, 0)");
+        for (auto o : memberVariables) {
+          finish(',');
+          start(o->name << "(libbirch::clone(o_." << o->name << "))");
+        }
+        finish(" {");
+        out();
+        line("//");
+        out();
+        line("}\n");
+      }
+
+      /* destructor, copy constructoor, assignment operator */
+      if (header) {
         line("virtual ~" << o->name << "() = default;");
-        line(o->name << "& operator=(const " << o->name << "&) = default;");
+        line(o->name << "(const " << o->name << "&) = delete;");
+        line(o->name << "& operator=(const " << o->name << "&) = delete;");
       }
 
       if (header) {

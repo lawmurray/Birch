@@ -53,10 +53,9 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
     }
 
     /* constructor */
+    start("");
     if (!header) {
-      start("bi::" << stateName << "::");
-    } else {
-      start("");
+      middle("bi::" << stateName << "::");
     }
     middle(stateName << '(' << o->params << ')');
     if (header) {
@@ -77,11 +76,40 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
       line("}\n");
     }
 
-    /* copy constructor, destructor, assignment operator */
+    /* deep copy constructor */
+    start("");
+    if (!header) {
+      start("bi::" << stateName << "::");
+    }
+    middle(stateName << "(const " << stateName << "& o_, int)");
     if (header) {
-      line(stateName << "(const " << stateName << "&) = default;");
+      finish(';');
+    } else {
+      finish(" :");
+      in();
+      in();
+      start("super_type_(o_, 0)");
+      for (auto o : params) {
+        finish(',');
+        start(o->name << "(libbirch::clone(o_." << o->name << "))");
+      }
+      for (auto o : locals) {
+        auto name = getName(o->name->str(), o->number);
+        finish(',');
+        start(name << "(libbirch::clone(o_." << name << "))");
+      }
+      finish(" {");
+      out();
+      line("//");
+      out();
+      line("}\n");
+    }
+
+    /* destructor, copy constructor, assignment operator */
+    if (header) {
       line("virtual ~" << stateName << "() = default;");
-      line(stateName << "& operator=(const " << stateName << "&) = default;");
+      line(stateName << "(const " << stateName << "&) = delete;");
+      line(stateName << "& operator=(const " << stateName << "&) = delete;");
     }
 
     if (header) {
