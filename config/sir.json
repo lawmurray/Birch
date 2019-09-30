@@ -4,7 +4,7 @@
   },
   "sampler": {
     "class": "ParticleFilter",
-    "nsamples": 20,
+    "nsamples": 10,
     "nparticles": 128
   },
   "input": "input/russian_influenza.json",
