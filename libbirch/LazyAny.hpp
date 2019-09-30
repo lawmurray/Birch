@@ -146,15 +146,7 @@ inline libbirch::LazyAny::LazyAny() :
   //
 }
 
-inline libbirch::LazyAny::LazyAny(const LazyAny& o, int) :
-    Counted(o, 0),
-    context((intptr_t)currentContext),
-    frozen(false),
-    finished(false)
-    #if ENABLE_SINGLE_REFERENCE_OPTIMIZATION
-    , single(false)
-    #endif
-    {
+inline libbirch::LazyAny::LazyAny(const LazyAny& o, int) : LazyAny() {
   //
 }
 

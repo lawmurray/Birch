@@ -220,14 +220,7 @@ inline libbirch::Counted::Counted() :
   //
 }
 
-inline libbirch::Counted::Counted(const Counted& o, int) :
-    sharedCount(0u),
-    weakCount(1u),
-    #if ENABLE_LAZY_DEEP_CLONE
-    memoCount(1u),
-    #endif
-    size(o.size),
-    tid(libbirch::tid) {
+inline libbirch::Counted::Counted(const Counted& o, int) : Counted() {
   //
 }
 

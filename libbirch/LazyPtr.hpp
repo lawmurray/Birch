@@ -53,6 +53,14 @@ public:
     }
   }
 
+	/**
+	 * Copy constructor.
+	 */
+  LazyPtr(const LazyPtr<P>& o) :
+      to(o.to) {
+    object.replace(o.get());
+  }
+
   /**
    * Deep copy constructor.
    */
@@ -77,7 +85,9 @@ public:
     object.replace(o.get());
   }
 
-  LazyPtr(const LazyPtr<P>& o) = default;
+  /**
+   * Move constructor.
+   */
   LazyPtr(LazyPtr<P> && o) = default;
 
   /**
