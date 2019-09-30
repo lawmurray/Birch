@@ -105,7 +105,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     in();
     start("super_type_(o_, 0)");
     finish(',');
-    start("self(o_.self, 0)");
+    start("self(libbirch::clone(o_.self))");
     for (auto o : params) {
       finish(',');
       start(o->name << "(libbirch::clone(o_." << o->name << "))");
