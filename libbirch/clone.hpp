@@ -48,11 +48,7 @@ auto clone(const Array<T,F>& o) {
 
 template<class T>
 auto clone(const Optional<T>& o) {
-  if (o.query()) {
-    return Optional<T>(clone(o.get()));
-  } else {
-    return Optional<T>();
-  }
+  return Optional<T>(o, 0);
 }
 
 template<class T>

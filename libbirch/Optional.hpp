@@ -63,7 +63,7 @@ public:
    */
   Optional(const Optional<T>& o, int) :
       value(clone(o.value)),
-      hasValue(o.query()) {
+      hasValue(o.hasValue) {
     //
   }
 
