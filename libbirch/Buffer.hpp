@@ -89,7 +89,7 @@ private:
 
 template<class T>
 libbirch::Buffer<T>::Buffer() :
-    tid(libbirch::tid),
+    tid(omp_get_thread_num()),
     useCount(0) {
   //
 }

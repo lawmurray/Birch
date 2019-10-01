@@ -134,8 +134,9 @@ void* allocate() {
 #if !ENABLE_MEMORY_POOL
   return std::malloc(n);
 #else
+  int tid = omp_get_thread_num();
   int i = bin<n>();     // determine which pool
-  auto ptr = pool(64 * tid + i).pop();  // attempt to reuse from this pool
+  auto ptr = pool(64*tid + i).pop();  // attempt to reuse from this pool
   if (!ptr) {           // otherwise allocate new
     unsigned m = unbin(i);
     ptr = (buffer += m) - m;

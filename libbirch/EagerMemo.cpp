@@ -77,7 +77,7 @@ void libbirch::EagerMemo::rehash() {
   values = (value_type*)allocate(nentries * sizeof(value_type));
   std::memset(keys, 0, nentries * sizeof(key_type));
   std::memset(values, 0, nentries * sizeof(value_type));
-  tentries = libbirch::tid;
+  tentries = omp_get_thread_num();
 
   /* copy entries from previous table */
   for (auto i = 0u; i < nentries1; ++i) {

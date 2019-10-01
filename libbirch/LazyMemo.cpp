@@ -81,7 +81,7 @@ void libbirch::LazyMemo::copy(LazyMemo& o) {
     keys = (key_type*)allocate(o.nentries * sizeof(key_type));
     values = (value_type*)allocate(o.nentries * sizeof(value_type));
     nentries = o.nentries;
-    tentries = libbirch::tid;
+    tentries = omp_get_thread_num();
     noccupied = o.noccupied;
     nnew = o.nnew;
 
@@ -183,7 +183,7 @@ void libbirch::LazyMemo::rehash() {
       values = (value_type*)allocate(nentries * sizeof(value_type));
       std::memset(keys, 0, nentries * sizeof(key_type));
       std::memset(values, 0, nentries * sizeof(value_type));
-      tentries = libbirch::tid;
+      tentries = omp_get_thread_num();
 
       /* copy entries from previous table */
       for (auto i = 0u; i < nentries1; ++i) {

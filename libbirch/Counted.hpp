@@ -216,7 +216,7 @@ inline libbirch::Counted::Counted() :
     memoCount(1u),
     #endif
     size(0u),
-    tid(libbirch::tid) {
+    tid(omp_get_thread_num()) {
   //
 }
 

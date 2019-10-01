@@ -47,7 +47,7 @@ static char* heap() {
 }
 
 libbirch::Pool& libbirch::pool(const unsigned i) {
-  static libbirch::Pool* pools = new libbirch::Pool[64*nthreads];
+  static libbirch::Pool* pools = new libbirch::Pool[64*omp_get_max_threads()];
   return pools[i];
 }
 
@@ -64,6 +64,7 @@ void* libbirch::allocate(const size_t n) {
 #if !ENABLE_MEMORY_POOL
   return std::malloc(n);
 #else
+  int tid = omp_get_thread_num();
   int i = bin(n);       // determine which pool
   auto ptr = pool(64*tid + i).pop();  // attempt to reuse from this pool
   if (!ptr) {           // otherwise allocate new
@@ -79,7 +80,7 @@ void* libbirch::allocate(const size_t n) {
 void libbirch::deallocate(void* ptr, const size_t n, const unsigned tid) {
   assert(ptr);
   assert(n > 0u);
-  assert(tid < nthreads);
+  assert(tid < omp_get_max_threads());
 
   memoryUse.subtract(n);
 #if !ENABLE_MEMORY_POOL
@@ -93,7 +94,7 @@ void libbirch::deallocate(void* ptr, const size_t n, const unsigned tid) {
 void libbirch::deallocate(void* ptr, const unsigned n, const unsigned tid) {
   assert(ptr);
   assert(n > 0u);
-  assert(tid < nthreads);
+  assert(tid < omp_get_max_threads());
 
   memoryUse.subtract(n);
 #if !ENABLE_MEMORY_POOL
@@ -107,7 +108,7 @@ void libbirch::deallocate(void* ptr, const unsigned n, const unsigned tid) {
 void* libbirch::reallocate(void* ptr1, const size_t n1, const unsigned tid1, const size_t n2) {
   assert(ptr1);
   assert(n1 > 0u);
-  assert(tid < nthreads);
+  assert(tid1 < omp_get_max_threads());
   assert(n2 > 0u);
 
   if (n2 > n1) {

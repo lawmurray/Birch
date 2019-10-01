@@ -53,10 +53,10 @@ T* libbirch::Allocator<T>::allocate(const size_t n) {
 
 template<class T>
 T* libbirch::Allocator<T>::reallocate(T* ptr1, const size_t n1, const size_t n2) {
-  return static_cast<T*>(libbirch::reallocate(ptr1, n1 * sizeof(T), libbirch::tid, n2 * sizeof(T)));
+  return static_cast<T*>(libbirch::reallocate(ptr1, n1 * sizeof(T), omp_get_thread_num(), n2 * sizeof(T)));
 }
 
 template<class T>
 void libbirch::Allocator<T>::deallocate(T* ptr, const size_t n) {
-  libbirch::deallocate(ptr, n * sizeof(T), libbirch::tid);
+  libbirch::deallocate(ptr, n * sizeof(T), omp_get_thread_num());
 }
