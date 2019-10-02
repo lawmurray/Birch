@@ -30,15 +30,6 @@
 
 namespace libbirch {
 /**
- * Stack frame.
- */
-struct StackFrame {
-  const char* func;
-  const char* file;
-  int line;
-};
-
-/**
  * Temporary type for pushing functions onto the stack trace.
  */
 struct StackFunction {
