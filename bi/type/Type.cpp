@@ -222,10 +222,6 @@ bool bi::Type::isConvertible(const OptionalType& o) const {
   return false;
 }
 
-bool bi::Type::isConvertible(const WeakType& o) const {
-  return false;
-}
-
 bool bi::Type::isConvertible(const TupleType& o) const {
   return false;
 }
@@ -286,10 +282,6 @@ bool bi::Type::isAssignable(const OptionalType& o) const {
   return false;
 }
 
-bool bi::Type::isAssignable(const WeakType& o) const {
-  return false;
-}
-
 bool bi::Type::isAssignable(const TupleType& o) const {
   return false;
 }
@@ -347,10 +339,6 @@ bi::Type* bi::Type::common(const NilType& o) const {
 }
 
 bi::Type* bi::Type::common(const OptionalType& o) const {
-  return nullptr;
-}
-
-bi::Type* bi::Type::common(const WeakType& o) const {
   return nullptr;
 }
 

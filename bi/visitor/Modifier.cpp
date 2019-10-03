@@ -471,11 +471,6 @@ bi::Type* bi::Modifier::modify(OptionalType* o) {
   return o;
 }
 
-bi::Type* bi::Modifier::modify(WeakType* o) {
-  o->single = o->single->accept(this);
-  return o;
-}
-
 bi::Type* bi::Modifier::modify(NilType* o) {
   return o;
 }

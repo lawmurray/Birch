@@ -76,40 +76,11 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
       line("}\n");
     }
 
-    /* deep copy constructor */
-    start("");
-    if (!header) {
-      start("bi::" << stateName << "::");
-    }
-    middle(stateName << "(const " << stateName << "& o_, int)");
-    if (header) {
-      finish(';');
-    } else {
-      finish(" :");
-      in();
-      in();
-      start("super_type_(o_, 0)");
-      for (auto o : params) {
-        finish(',');
-        start(o->name << "(libbirch::clone(o_." << o->name << "))");
-      }
-      for (auto o : locals) {
-        auto name = getName(o->name->str(), o->number);
-        finish(',');
-        start(name << "(libbirch::clone(o_." << name << "))");
-      }
-      finish(" {");
-      out();
-      line("//");
-      out();
-      line("}\n");
-    }
-
-    /* destructor, copy constructor, assignment operator */
+    /* default destructor, copy constructoor, assignment operator */
     if (header) {
       line("virtual ~" << stateName << "() = default;");
-      line(stateName << "(const " << stateName << "&) = delete;");
-      line(stateName << "& operator=(const " << stateName << "&) = delete;");
+      line(stateName << "(const " << stateName << "& o) = default;");
+      line(stateName << "& operator=(const " << stateName << "&) = default;");
     }
 
     if (header) {
@@ -217,7 +188,6 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
       finish(" {");
       in();
       genTraceFunction(o->name->str(), o->loc);
-      line("libbirch_swap_context_");
       line("libbirch_declare_local_");
       genSwitch();
       *this << o->braces->strip();

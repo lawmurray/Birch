@@ -551,6 +551,9 @@ void bi::bi_ostream::visit(const ClassType* o) {
   if (!o->typeArgs->isEmpty()) {
     middle('<' << o->typeArgs << '>');
   }
+  if (o->weak) {
+    middle('&');
+  }
 }
 
 void bi::bi_ostream::visit(const BasicType* o) {
@@ -601,10 +604,6 @@ void bi::bi_ostream::visit(const FiberType* o) {
 
 void bi::bi_ostream::visit(const OptionalType* o) {
   middle(o->single << '?');
-}
-
-void bi::bi_ostream::visit(const WeakType* o) {
-  middle(o->single << '&');
 }
 
 void bi::bi_ostream::visit(const UnknownType* o) {

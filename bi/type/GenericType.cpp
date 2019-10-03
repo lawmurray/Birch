@@ -162,11 +162,6 @@ bool bi::GenericType::isConvertible(const OptionalType& o) const {
   return target->type->isConvertible(o);
 }
 
-bool bi::GenericType::isConvertible(const WeakType& o) const {
-  assert(target);
-  return target->type->isConvertible(o);
-}
-
 bool bi::GenericType::isConvertible(const TupleType& o) const {
   assert(target);
   return target->type->isConvertible(o);
@@ -226,11 +221,6 @@ bool bi::GenericType::isAssignable(const OptionalType& o) const {
   return target->type->isAssignable(o);
 }
 
-bool bi::GenericType::isAssignable(const WeakType& o) const {
-  assert(target);
-  return target->type->isAssignable(o);
-}
-
 bool bi::GenericType::isAssignable(const TupleType& o) const {
   assert(target);
   return target->type->isAssignable(o);
@@ -286,11 +276,6 @@ bi::Type* bi::GenericType::common(const MemberType& o) const {
 }
 
 bi::Type* bi::GenericType::common(const OptionalType& o) const {
-  assert(target);
-  return target->type->common(o);
-}
-
-bi::Type* bi::GenericType::common(const WeakType& o) const {
   assert(target);
   return target->type->common(o);
 }

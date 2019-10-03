@@ -11,7 +11,7 @@ bi::QueryException::QueryException(const Query* o) {
   if (o->loc) {
     buf << o->loc;
   }
-  buf << "error: postfix '?' can only be used with an optional, fiber, or weak type\n";
+  buf << "error: postfix '?' can only be used with an optional or fiber type\n";
   buf << "note: operand has type '" << o->single->type << "'\n";
   msg = base.str();
 }

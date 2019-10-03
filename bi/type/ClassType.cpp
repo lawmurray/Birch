@@ -7,12 +7,13 @@
 
 bool bi::allowConversions = true;
 
-bi::ClassType::ClassType(Name* name, Type* typeArgs, Location* loc,
-    Class* target) :
+bi::ClassType::ClassType(const bool weak, Name* name, Type* typeArgs,
+    Location* loc, Class* target) :
     Type(loc),
     Named(name),
     TypeArgumented(typeArgs),
-    Reference<Class>(target) {
+    Reference<Class>(target),
+    weak(weak) {
   //
 }
 
@@ -20,7 +21,8 @@ bi::ClassType::ClassType(Class* target, Location* loc) :
     Type(loc),
     Named(target->name),
     TypeArgumented(new EmptyType(loc)),
-    Reference<Class>(target) {
+    Reference<Class>(target),
+    weak(false) {
   //
 }
 
@@ -130,12 +132,6 @@ bool bi::ClassType::isConvertible(const TupleType& o) const {
       target->base->isConvertible(o);
 }
 
-bool bi::ClassType::isConvertible(const WeakType& o) const {
-  assert(target);
-  return isConvertible(*o.single) || (allowConversions &&
-      target->hasConversion(&o)) || target->base->isConvertible(o);
-}
-
 bool bi::ClassType::dispatchIsAssignable(const Type& o) const {
   return o.isAssignable(*this);
 }
@@ -190,12 +186,6 @@ bool bi::ClassType::isAssignable(const TupleType& o) const {
   assert(target);
   return (allowConversions && target->hasConversion(&o)) ||
       target->base->isAssignable(o);
-}
-
-bool bi::ClassType::isAssignable(const WeakType& o) const {
-  assert(target);
-  return isAssignable(*o.single) || (allowConversions &&
-      target->hasConversion(&o)) || target->base->isAssignable(o);
 }
 
 bi::Type* bi::ClassType::dispatchCommon(const Type& o) const {
@@ -277,17 +267,6 @@ bi::Type* bi::ClassType::common(const OptionalType& o) const {
 bi::Type* bi::ClassType::common(const TupleType& o) const {
   assert(target);
   if (isConvertible(o)) {
-    return o.common(o);
-  } else {
-    return nullptr;
-  }
-}
-
-bi::Type* bi::ClassType::common(const WeakType& o) const {
-  auto single1 = common(*o.single);
-  if (single1) {
-    return new WeakType(single1);
-  } else if (isConvertible(o)) {
     return o.common(o);
   } else {
     return nullptr;

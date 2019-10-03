@@ -107,7 +107,6 @@ public:
   virtual Type* modify(FunctionType* o);
   virtual Type* modify(FiberType* o);
   virtual Type* modify(OptionalType* o);
-  virtual Type* modify(WeakType* o);
   virtual Type* modify(NilType* o);
 };
 }

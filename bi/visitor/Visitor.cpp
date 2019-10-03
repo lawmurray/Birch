@@ -405,10 +405,6 @@ void bi::Visitor::visit(const OptionalType* o) {
   o->single->accept(this);
 }
 
-void bi::Visitor::visit(const WeakType* o) {
-  o->single->accept(this);
-}
-
 void bi::Visitor::visit(const NilType* o) {
   //
 }

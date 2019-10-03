@@ -340,7 +340,7 @@ bi::Type* bi::Cloner::clone(const UnknownType* o) {
 }
 
 bi::Type* bi::Cloner::clone(const ClassType* o) {
-  return new ClassType(o->name, o->typeArgs->accept(this), o->loc);
+  return new ClassType(o->weak, o->name, o->typeArgs->accept(this), o->loc);
 }
 
 bi::Type* bi::Cloner::clone(const BasicType* o) {
@@ -378,10 +378,6 @@ bi::Type* bi::Cloner::clone(const FiberType* o) {
 
 bi::Type* bi::Cloner::clone(const OptionalType* o) {
   return new OptionalType(o->single->accept(this), o->loc);
-}
-
-bi::Type* bi::Cloner::clone(const WeakType* o) {
-  return new WeakType(o->single->accept(this), o->loc);
 }
 
 bi::Type* bi::Cloner::clone(const NilType* o) {

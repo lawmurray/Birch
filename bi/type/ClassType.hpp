@@ -32,13 +32,14 @@ public:
   /**
    * Constructor.
    *
+   * @param weak Is this annotated weak?
    * @param name Name.
    * @param typeArgs Generic type arguments.
    * @param loc Location.
    * @param target Target.
    */
-  ClassType(Name* name, Type* typeArgs, Location* loc = nullptr,
-      Class* target = nullptr);
+  ClassType(const bool weak, Name* name, Type* typeArgs,
+      Location* loc = nullptr, Class* target = nullptr);
 
   /**
    * Constructor.
@@ -65,6 +66,11 @@ public:
   virtual Type* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
+  /**
+   * Should this use a weak pointer?
+   */
+  bool weak;
+
   using Type::isConvertible;
   using Type::isAssignable;
   using Type::common;
@@ -79,7 +85,6 @@ public:
   virtual bool isConvertible(const FunctionType& o) const;
   virtual bool isConvertible(const OptionalType& o) const;
   virtual bool isConvertible(const TupleType& o) const;
-  virtual bool isConvertible(const WeakType& o) const;
 
   virtual bool dispatchIsAssignable(const Type& o) const;
   virtual bool isAssignable(const GenericType& o) const;
@@ -91,7 +96,6 @@ public:
   virtual bool isAssignable(const FunctionType& o) const;
   virtual bool isAssignable(const OptionalType& o) const;
   virtual bool isAssignable(const TupleType& o) const;
-  virtual bool isAssignable(const WeakType& o) const;
 
   virtual Type* dispatchCommon(const Type& o) const;
   virtual Type* common(const GenericType& o) const;
@@ -103,6 +107,5 @@ public:
   virtual Type* common(const FunctionType& o) const;
   virtual Type* common(const OptionalType& o) const;
   virtual Type* common(const TupleType& o) const;
-  virtual Type* common(const WeakType& o) const;
 };
 }

@@ -550,6 +550,9 @@ void bi::md_ostream::visit(const ClassType* o) {
   if (!o->typeArgs->isEmpty()) {
     middle("&lt;" << o->typeArgs << "&gt;");
   }
+  if (o->weak) {
+    middle("&amp;");
+  }
 }
 
 void bi::md_ostream::visit(const BasicType* o) {
@@ -588,10 +591,6 @@ void bi::md_ostream::visit(const FiberType* o) {
 
 void bi::md_ostream::visit(const OptionalType* o) {
   middle(o->single << '?');
-}
-
-void bi::md_ostream::visit(const WeakType* o) {
-  middle(o->single << '&');
 }
 
 void bi::md_ostream::genHead(const std::string& name) {

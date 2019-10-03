@@ -19,7 +19,7 @@ public:
   /**
    * Constructor.
    *
-   * @param weak Does this have a weak marker?
+   * @param weak Is this annotated weak?
    * @param name Name.
    * @param typeArgs Generic type arguments.
    * @param loc Location.

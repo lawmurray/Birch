@@ -139,38 +139,11 @@ void bi::CppClassGenerator::visit(const Class* o) {
         line("}\n");
       }
 
-      /* deep copy constructor */
-      if (header) {
-        start("");
-      } else {
-        start("bi::type::" << o->name);
-        genTemplateArgs(o);
-        middle("::");
-      }
-      middle(o->name << "(const " << o->name << "& o_, int)");
-      if (header) {
-        finish(';');
-      } else {
-        finish(" :");
-        in();
-        in();
-        start("super_type_(o_, 0)");
-        for (auto o : memberVariables) {
-          finish(',');
-          start(o->name << "(libbirch::clone(o_." << o->name << "))");
-        }
-        finish(" {");
-        out();
-        line("//");
-        out();
-        line("}\n");
-      }
-
-      /* destructor, copy constructoor, assignment operator */
+      /* default destructor, copy constructoor, assignment operator */
       if (header) {
         line("virtual ~" << o->name << "() = default;");
-        line(o->name << "(const " << o->name << "&) = delete;");
-        line(o->name << "& operator=(const " << o->name << "&) = delete;");
+        line(o->name << "(const " << o->name << "& o) = default;");
+        line(o->name << "& operator=(const " << o->name << "&) = default;");
       }
 
       if (header) {
@@ -272,7 +245,6 @@ void bi::CppClassGenerator::visit(const Class* o) {
           line("template<class T_>");
           line("auto& set_" << var->name << "_(const T_& o_) {");
           in();
-          line("libbirch_swap_context_");
           line("return " << var->name << " = " << "o_;");
           out();
           line("}\n");
@@ -281,7 +253,6 @@ void bi::CppClassGenerator::visit(const Class* o) {
             line("template<class F_, class T_>");
             line("auto set_" << var->name << "_(const F_& frame_, const T_& o_) {");
             in();
-            line("libbirch_swap_context_");
             line("return " << var->name << "(frame_) = " << "o_;");
             out();
             line("}\n");
@@ -353,7 +324,6 @@ void bi::CppClassGenerator::visit(const MemberFunction* o) {
     o->accept(&selfs);
     o->accept(&supers);
     if (members.size() + raws.size() + selfs.size() + supers.size() > 0) {
-      line("libbirch_swap_context_");
       line("libbirch_declare_self_");
     }
 
@@ -393,7 +363,6 @@ void bi::CppClassGenerator::visit(const AssignmentOperator* o) {
       finish(" {");
       in();
       genTraceFunction("<assignment>", o->loc);
-      line("libbirch_swap_context_");
       line("libbirch_declare_self_");
       CppBaseGenerator auxBase(base, level, header);
       auxBase << o->braces->strip();
@@ -420,7 +389,6 @@ void bi::CppClassGenerator::visit(const ConversionOperator* o) {
       finish(" {");
       in();
       genTraceFunction("<conversion>", o->loc);
-      line("libbirch_swap_context_");
       line("libbirch_declare_self_");
       CppBaseGenerator auxBase(base, level, header);
       auxBase << o->braces->strip();

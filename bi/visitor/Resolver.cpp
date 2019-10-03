@@ -719,7 +719,7 @@ bi::Statement* bi::Resolver::modify(Class* o) {
     if (o->base->isEmpty() && o->name->str() != "Object") {
       /* if the class derives from nothing else, then derive from Object,
        * unless this is itself the declaration of the Object class */
-      o->base = new ClassType(new Name("Object"), new EmptyType(), o->loc);
+      o->base = new ClassType(false, new Name("Object"), new EmptyType(), o->loc);
     }
     scopes.pop_back();
     if (!o->isInstantiation()) {
@@ -1018,18 +1018,11 @@ bi::Type* bi::Resolver::lookup(UnknownType* o) {
       throw WeakException(o);
     }
     return type;
-  } else if (category == CLASS) {
-    Type* type = new ClassType(o->name, o->typeArgs, o->loc);
-    if (o->weak) {
-      type = new WeakType(type, o->loc);
-    }
-    return type;
+  } else if (category == CLASS || (category == GENERIC && o->weak)) {
+    /* a generic annotated weak must be for a class type */
+    return new ClassType(o->weak, o->name, o->typeArgs, o->loc);
   } else if (category == GENERIC) {
-    Type* type = new GenericType(o->name, o->loc);
-    if (o->weak) {
-      type = new WeakType(type, o->loc);
-    }
-    return type;
+    return new GenericType(o->name, o->loc);
   } else {
     throw UnresolvedException(o);
   }

@@ -757,19 +757,14 @@ void bi::CppBaseGenerator::visit(const OptionalType* o) {
   middle("libbirch::Optional<" << o->single << '>');
 }
 
-void bi::CppBaseGenerator::visit(const WeakType* o) {
-  middle("libbirch::Weak<");
-  if (o->single->isClass()) {
-    ++inPointer;
-  }
-  middle(o->single);
-  middle('>');
-}
-
 void bi::CppBaseGenerator::visit(const ClassType* o) {
   int inPointer1 = inPointer;
   if (!inPointer1) {
-    middle("libbirch::Shared<");
+    if (o->weak) {
+      middle("libbirch::Weak<");
+    } else {
+      middle("libbirch::Shared<");
+    }
   } else {
     --inPointer;
   }

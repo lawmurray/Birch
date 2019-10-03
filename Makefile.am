@@ -180,7 +180,6 @@ COMMON_SOURCES = \
   bi/type/UnknownType.cpp \
   bi/type/TypeIterator.cpp \
   bi/type/TypeList.cpp \
-  bi/type/WeakType.cpp \
   bi/visitor/Annotator.cpp \
   bi/visitor/Cloner.cpp \
   bi/visitor/Gatherer.cpp \
@@ -358,7 +357,6 @@ noinst_HEADERS = \
   bi/type/UnknownType.hpp \
   bi/type/TypeIterator.hpp \
   bi/type/TypeList.hpp \
-  bi/type/WeakType.hpp \
   bi/visitor/all.hpp \
   bi/visitor/Annotator.hpp \
   bi/visitor/Cloner.hpp \

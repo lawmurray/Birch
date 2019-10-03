@@ -43,7 +43,6 @@ public:
   virtual void visit(const FunctionType* o);
   virtual void visit(const FiberType* o);
   virtual void visit(const OptionalType* o);
-  virtual void visit(const WeakType* o);
 
 private:
   void genHead(const std::string& name);
