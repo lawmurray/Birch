@@ -6,7 +6,6 @@
 
 #include "libbirch/EagerContext.hpp"
 #include "libbirch/Nil.hpp"
-#include "libbirch/SwapContext.hpp"
 
 namespace libbirch {
 template<class T> class Optional;
@@ -45,15 +44,6 @@ class EagerPtr {
   EagerPtr(const P& object) :
       object(object) {
     //
-  }
-
-  /**
-   * Deep copy constructor.
-   */
-  EagerPtr(const EagerPtr<P>& o, int) {
-    if (o.object) {
-      object.replace(static_cast<T*>(currentContext->get(o.get())));
-    }
   }
 
   /**
@@ -197,7 +187,6 @@ class EagerPtr {
   EagerPtr<P> clone() const {
     if (object) {
       SharedPtr<EagerContext> context(EagerContext::create_());
-      SwapContext swapContext(context.get());
       return EagerPtr<P>(static_cast<T*>(context->copy(object.get())));
     } else {
       return EagerPtr<P>();

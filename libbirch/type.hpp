@@ -11,6 +11,14 @@ template<class T>
 struct is_value {
   static const bool value = true;
 };
+
+/*
+ * Is this a pointer type?
+ */
+template<class T>
+struct is_pointer {
+  static const bool value = false;
+};
 }
 
 #include "libbirch/Shared.hpp"
@@ -27,6 +35,11 @@ struct is_value<Shared<T>> {
 
 template<class T>
 struct is_value<Weak<T>> {
+  static const bool value = false;
+};
+
+template<class T>
+struct is_value<Init<T>> {
   static const bool value = false;
 };
 
@@ -64,5 +77,21 @@ template<class Arg, class ... Args>
 struct is_value<std::tuple<Arg,Args...>> {
   static const bool value = is_value<Arg>::value && is_value<std::tuple<Args...>>::value;
 };
+}
 
+namespace libbirch {
+template<class T>
+struct is_pointer<Shared<T>> {
+  static const bool value = true;
+};
+
+template<class T>
+struct is_pointer<Weak<T>> {
+  static const bool value = true;
+};
+
+template<class T>
+struct is_pointer<Init<T>> {
+  static const bool value = true;
+};
 }

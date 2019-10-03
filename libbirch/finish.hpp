@@ -3,7 +3,7 @@
  */
 #pragma once
 
-#include "libbirch/value.hpp"
+#include "libbirch/type.hpp"
 
 namespace libbirch {
 /**

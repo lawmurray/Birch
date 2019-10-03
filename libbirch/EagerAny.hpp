@@ -24,11 +24,6 @@ protected:
   EagerAny();
 
   /**
-   * Deep copy constructor.
-   */
-  EagerAny(const EagerAny& o, int);
-
-  /**
    * Destructor.
    */
   virtual ~EagerAny();

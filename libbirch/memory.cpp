@@ -14,10 +14,6 @@ static libbirch::Context* root() {
 }
 
 libbirch::Atomic<size_t> libbirch::memoryUse(0);
-#if ENABLE_LAZY_DEEP_CLONE
-libbirch::EntryExitLock libbirch::freezeLock;
-libbirch::EntryExitLock libbirch::finishLock;
-#endif
 thread_local libbirch::Context* libbirch::currentContext(root());
 
 #if ENABLE_MEMORY_POOL

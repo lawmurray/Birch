@@ -7,6 +7,7 @@
 #include "libbirch/Shared.hpp"
 #include "libbirch/Weak.hpp"
 #include "libbirch/Init.hpp"
+#include "libbirch/type.hpp"
 
 namespace libbirch {
 /**
@@ -16,8 +17,20 @@ namespace libbirch {
  *
  * @tparam T Type.
  */
-template<class T>
+template<class T, class Enable = void>
 class Optional {
+  //
+};
+
+/**
+ * Optional for non-pointer types.
+ *
+ * @ingroup libbirch
+ *
+ * @tparam T Non-pointer type.
+ */
+template<class T>
+class Optional<T,std::enable_if_t<!is_pointer<T>::value>> {
 public:
   /**
    * Default constructor.
@@ -55,15 +68,6 @@ public:
   Optional(const U& value) :
       value(value),
       hasValue(true) {
-    //
-  }
-
-  /**
-   * Deep copy constructor.
-   */
-  Optional(const Optional<T>& o, int) :
-      value(clone(o.value)),
-      hasValue(o.hasValue) {
     //
   }
 
@@ -121,242 +125,80 @@ private:
 };
 
 /**
- * Optional for shared pointers. Uses the pointer itself, set to nullptr, to
+ * Optional for pointer types. Uses the pointer itself, set to `nullptr`, to
  * denote a missing value, rather than keeping a separate boolean flag.
  *
  * @ingroup libbirch
  *
- * @tparam T Type.
+ * @tparam P Pointer type.
  */
-template<class T>
-class Optional<Shared<T>> {
-  template<class U> friend class Optional;
-  public:
-  /**
-   * Default constructor.
-   */
+template<class P>
+class Optional<P,std::enable_if_t<is_pointer<P>::value>> {
+  template<class Q, class Enable> friend class Optional;
+public:
   Optional() = default;
+  Optional(const Optional<P>& o) = default;
+  Optional(Optional<P>&& o) = default;
+  Optional<P>& operator=(const Optional<P>& o) = default;
+  Optional<P>& operator=(Optional<P>&& o) = default;
 
   /**
-   * Constructor for no value.
+   * Generic conversion constructor.
    */
-  Optional(const Nil&) :
-      value() {
+  template<class Q, typename = std::enable_if_t<is_pointer<Q>::value>>
+  Optional(const Optional<Q>& o) : value(o.value) {
     //
   }
 
   /**
-   * Constructor for value.
+   * Nil constructor.
    */
-  Optional(T* value) :
+  Optional(const Nil&) {
+    //
+  }
+
+  /**
+   * Generic value copy constructor.
+   */
+  template<class Q, typename = std::enable_if_t<is_pointer<Q>::value>>
+  Optional(const Q& value) :
       value(value) {
     //
   }
 
   /**
-   * Constructor for value.
+   * Generic value move constructor.
    */
-  template<class U>
-  Optional(const Shared<U>& value) :
-      value(value) {
-    //
-  }
-
-  /**
-   * Generic move constructor for value.
-   */
-  template<class U>
-  Optional(Shared<U> && value) :
+  template<class Q, typename = std::enable_if_t<is_pointer<Q>::value>>
+  Optional(Q&& value) :
       value(std::move(value)) {
     //
-  }
-
-  /**
-   * Constructor for value.
-   */
-  template<class U>
-  Optional(const Weak<U>& value) :
-      value(value) {
-    //
-  }
-
-  /**
-   * Generic move constructor for value.
-   */
-  template<class U>
-  Optional(Weak<U> && value) :
-      value(std::move(value)) {
-    //
-  }
-
-  /**
-   * Constructor for value.
-   */
-  template<class U>
-  Optional(const Init<U>& value) :
-      value(value) {
-    //
-  }
-
-  /**
-   * Generic move constructor for value.
-   */
-  template<class U>
-  Optional(Init<U> && value) :
-      value(std::move(value)) {
-    //
-  }
-
-  /**
-   * Deep copy constructor.
-   */
-  Optional(const Optional<Shared<T>>& o, int) :
-      value(clone(o.value)) {
-    //
-  }
-
-  /**
-   * Generic copy constructor.
-   */
-  template<class U>
-  Optional(const Optional<Shared<U>>& o) :
-      value(o.value) {
-    //
-  }
-
-  /**
-   * Generic move constructor.
-   */
-  template<class U>
-  Optional(Optional<Shared<U>> && o) :
-      value(std::move(o.value)) {
-    //
-  }
-
-  /**
-   * Generic copy assignment.
-   */
-  template<class U>
-  Optional<Shared<T>>& operator=(const Optional<Shared<U>>& o) {
-    value = o.value;
-    return *this;
-  }
-
-  /**
-   * Generic copy assignment.
-   */
-  template<class P>
-  Optional<Shared<T>>& operator=(const Optional<P>& o) {
-    value = o.value;
-    return *this;
-  }
-
-  Optional(const Optional<Shared<T>>& o) = default;
-  Optional(Optional<Shared<T>> && o) = default;
-  Optional<Shared<T>>& operator=(const Optional<Shared<T>>& o) = default;
-  Optional<Shared<T>>& operator=(Optional<Shared<T>> && o) = default;
-
-  /**
-   * Generic move assignment.
-   */
-  template<class U>
-  Optional<Shared<T>>& operator=(Optional<Shared<U>> && o) {
-    value = std::move(o.value);
-    return *this;
-  }
-
-  /**
-   * Generic move assignment.
-   */
-  template<class P>
-  Optional<Shared<T>>& operator=(Optional<P> && o) {
-    value = std::move(o.value);
-    return *this;
   }
 
   /**
    * Nil assignment.
    */
-  Optional<Shared<T>>& operator=(const Nil& o) {
+  Optional<P>& operator=(const Nil& o) {
     value = nullptr;
     return *this;
   }
 
   /**
-   * Copy assignment.
+   * Generic value copy assignment.
    */
-  Optional<Shared<T>>& operator=(const Shared<T>& o) {
-    value = o;
+  template<class Q, typename = std::enable_if_t<is_pointer<Q>::value>>
+  Optional<P>& operator=(const Q& value) {
+    this->value = value;
     return *this;
   }
 
   /**
-   * Generic copy assignment.
+   * Generic value move assignment.
    */
-  template<class U>
-  Optional<Shared<T>>& operator=(const Shared<U>& o) {
-    value = o;
+  template<class Q, typename = std::enable_if_t<is_pointer<Q>::value>>
+  Optional<P>& operator=(Q&& value) {
+    this->value = std::move(value);
     return *this;
-  }
-
-  /**
-   * Generic copy assignment.
-   */
-  template<class U>
-  Optional<Shared<T>>& operator=(const Weak<U>& o) {
-    value = o;
-    return *this;
-  }
-
-  /**
-   * Generic copy assignment.
-   */
-  template<class U>
-  Optional<Shared<T>>& operator=(const Init<U>& o) {
-    value = o;
-    return *this;
-  }
-
-  /**
-   * Move assignment.
-   */
-  Optional<Shared<T>>& operator=(Shared<T> && o) {
-    value = std::move(o);
-    return *this;
-  }
-
-  /**
-   * Generic move assignment.
-   */
-  template<class U>
-  Optional<Shared<T>>& operator=(Shared<U> && o) {
-    value = std::move(o);
-    return *this;
-  }
-
-  /**
-   * Generic move assignment.
-   */
-  template<class U>
-  Optional<Shared<T>>& operator=(Weak<U> && o) {
-    value = std::move(o);
-    return *this;
-  }
-
-  /**
-   * Generic move assignment.
-   */
-  template<class U>
-  Optional<Shared<T>>& operator=(Init<U> && o) {
-    value = std::move(o);
-    return *this;
-  }
-
-  /**
-   * Value conversion.
-   */
-  operator Weak<T>() {
-    return value;
   }
 
   /**
@@ -369,7 +211,7 @@ class Optional<Shared<T>> {
   /**
    * Get the value.
    */
-  Shared<T>& get() {
+  P& get() {
     libbirch_assert_msg_(query(), "optional has no value");
     return value;
   }
@@ -377,15 +219,15 @@ class Optional<Shared<T>> {
   /**
    * Get the value.
    */
-  const Shared<T>& get() const {
+  const P& get() const {
     libbirch_assert_msg_(query(), "optional has no value");
     return value;
   }
 
 private:
   /**
-   * The value, if any.
+   * The value, `nullptr` value to denote no value.
    */
-  Shared<T> value;
+  P value;
 };
 }

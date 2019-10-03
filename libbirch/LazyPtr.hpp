@@ -10,8 +10,6 @@
 #include "libbirch/ContextPtr.hpp"
 
 namespace libbirch {
-template<class T> class Optional;
-
 /**
  * Wraps another pointer type to apply lazy deep clone semantics.
  *
@@ -38,9 +36,7 @@ public:
    */
   explicit LazyPtr(T* object) :
       object(object) {
-    if (object) {
-      to.replace(currentContext);
-    }
+    //
   }
 
   /**
@@ -48,9 +44,7 @@ public:
    */
   LazyPtr(const P& object) :
       object(object) {
-    if (object) {
-      to.replace(currentContext);
-    }
+    //
   }
 
 	/**
@@ -59,20 +53,6 @@ public:
   LazyPtr(const LazyPtr<P>& o) :
       to(o.to) {
     object.replace(o.get());
-  }
-
-  /**
-   * Deep copy constructor.
-   */
-  LazyPtr(const LazyPtr<P>& o, int) {
-    if (o.object) {
-      if (o.isCross()) {
-        o.startFinish();
-        o.startFreeze();
-      }
-      object = o.object;
-      to.replace(currentContext);
-    }
   }
 
   /**
@@ -94,7 +74,7 @@ public:
    * Copy assignment.
    */
   LazyPtr<P>& operator=(const LazyPtr<P>& o) {
-    /* risk of invalidating `o` here, so assign to `to` first */
+    /* risk of invalidating `o` here, ensure assign to `to` first */
     to = o.to;
     object.replace(o.get());
     return *this;
@@ -106,13 +86,9 @@ public:
   template<class Q, typename = std::enable_if_t<std::is_base_of<T,
       typename Q::value_type>::value>>
   LazyPtr<P>& operator=(const LazyPtr<Q>& o) {
-    /* risk of invalidating `o` here, so assign to `to` first */
+    /* risk of invalidating `o` here, ensure assign to `to` first */
     to = o.to;
     object.replace(o.get());
-    /* ^ it is valid for `o` to be a weak pointer to a destroyed object that,
-     *   when mapped through the memo, will point to a valid object; thus
-     *   use of pull(), can't increment shared reference count on a destroyed
-     *   object */
     return *this;
   }
 
@@ -120,7 +96,7 @@ public:
    * Move assignment.
    */
   LazyPtr<P>& operator=(LazyPtr<P> && o) {
-    /* risk of invalidating `o` here, so assign to `to` first */
+    /* risk of invalidating `o` here, ensure assign to `to` first */
     to = std::move(o.to);
     object = std::move(o.object);
     return *this;
@@ -132,7 +108,7 @@ public:
   template<class Q, typename = std::enable_if_t<std::is_base_of<T,
       typename Q::value_type>::value>>
   LazyPtr<P>& operator=(LazyPtr<Q> && o) {
-    /* risk of invalidating `o` here, so assign to `to` first */
+    /* risk of invalidating `o` here, ensure assign to `to` first */
     to = std::move(o.to);
     object = std::move(o.object);
     return *this;
@@ -143,11 +119,7 @@ public:
    */
   LazyPtr<P>& operator=(const P& o) {
     object = o;
-    if (o) {
-      to.replace(currentContext);
-    } else {
-      to.release();
-    }
+    to.release();
     return *this;
   }
 
@@ -166,32 +138,6 @@ public:
   LazyPtr<P>& operator=(const std::nullptr_t&) {
     object.release();
     to.release();
-    return *this;
-  }
-
-  /**
-   * Optional assignment.
-   */
-  LazyPtr<P>& operator=(const Optional<LazyPtr<P>>& o) {
-    if (o.query()) {
-      *this = o.get();
-    } else {
-      *this = nullptr;
-    }
-    return *this;
-  }
-
-  /**
-   * Generic optional assignment.
-   */
-  template<class Q, typename = std::enable_if_t<std::is_base_of<T,
-      typename Q::value_type>::value>>
-  LazyPtr<P>& operator=(const Optional<LazyPtr<Q>>& o) {
-    if (o.query()) {
-      *this = o.get();
-    } else {
-      *this = nullptr;
-    }
     return *this;
   }
 
@@ -441,28 +387,28 @@ protected:
    * Constructor (used by casts).
    */
   LazyPtr(T* object, LazyContext* to) {
-    this->object.replace(object);
     this->to.replace(to);
+    this->object.replace(object);
   }
 
   /**
    * Constructor (used by clone).
    */
   LazyPtr(const P& object, LazyContext* to) :
-      object(object),
-      to(to) {
+      to(to),
+      object(object) {
     //
   }
-
-  /**
-   * Object.
-   */
-  P object;
 
   /**
    * Context to which to map the object.
    */
   ContextPtr to;
+
+  /**
+   * Object.
+   */
+  P object;
 };
 }
 

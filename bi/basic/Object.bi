@@ -63,7 +63,7 @@ function make(name:String) -> Object? {
   using make_t = bi::type::Object*();
   void* addr = dlsym(RTLD_DEFAULT, symbol.c_str());
   if (addr) {
-    return reinterpret_cast<make_t*>(addr)();
+    return libbirch::Shared<bi::type::Object>(reinterpret_cast<make_t*>(addr)());
   } else {
     return libbirch::nil;
   }

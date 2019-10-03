@@ -267,7 +267,8 @@
       "libbirch/LazyMemo.cpp",
       "libbirch/libbirch.cpp",
       "libbirch/memory.cpp",
-      "libbirch/stacktrace.cpp"
+      "libbirch/stacktrace.cpp",
+      "libbirch/thread.cpp"
     ],
     "header": [
       "libbirch/Allocator.hpp",
@@ -278,7 +279,6 @@
       "libbirch/basic.hpp",
       "libbirch/Buffer.hpp",
       "libbirch/class.hpp",
-      "libbirch/clone.hpp",
       "libbirch/Context.hpp",
       "libbirch/docs.hpp",
       "libbirch/ContextPtr.hpp",
@@ -322,10 +322,9 @@
       "libbirch/Span.hpp",
       "libbirch/stacktrace.hpp",
       "libbirch/Stride.hpp",
-      "libbirch/SwapContext.hpp",
       "libbirch/thaw.hpp",
       "libbirch/thread.hpp",
-      "libbirch/value.hpp",
+      "libbirch/type.hpp",
       "libbirch/View.hpp",
       "libbirch/Weak.hpp",
       "libbirch/WeakPtr.hpp"
