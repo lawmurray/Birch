@@ -20,27 +20,27 @@ final class DelayNormalInverseGamma(future:Real?, futureUpdate:Boolean,
   σ2:DelayInverseGamma& <- σ2;
 
   function simulate() -> Real {
-    return simulate_normal_inverse_gamma(μ, 1.0/λ, σ2!.α, σ2!.β);
+    return simulate_normal_inverse_gamma(μ, 1.0/λ, σ2.α, σ2.β);
   }
   
   function logpdf(x:Real) -> Real {
-    return logpdf_normal_inverse_gamma(x, μ, 1.0/λ, σ2!.α, σ2!.β);
+    return logpdf_normal_inverse_gamma(x, μ, 1.0/λ, σ2.α, σ2.β);
   }
 
   function update(x:Real) {
-    (σ2!.α, σ2!.β) <- update_normal_inverse_gamma(x, μ, λ, σ2!.α, σ2!.β);
+    (σ2.α, σ2.β) <- update_normal_inverse_gamma(x, μ, λ, σ2.α, σ2.β);
   }
 
   function downdate(x:Real) {
-    (σ2!.α, σ2!.β) <- downdate_normal_inverse_gamma(x, μ, λ, σ2!.α, σ2!.β);
+    (σ2.α, σ2.β) <- downdate_normal_inverse_gamma(x, μ, λ, σ2.α, σ2.β);
   }
 
   function pdf(x:Real) -> Real {
-    return pdf_normal_inverse_gamma(x, μ, 1.0/λ, σ2!.α, σ2!.β);
+    return pdf_normal_inverse_gamma(x, μ, 1.0/λ, σ2.α, σ2.β);
   }
 
   function cdf(x:Real) -> Real {
-    return cdf_normal_inverse_gamma(x, μ, 1.0/λ, σ2!.α, σ2!.β);
+    return cdf_normal_inverse_gamma(x, μ, 1.0/λ, σ2.α, σ2.β);
   }
 
   function write(buffer:Buffer) {
@@ -48,8 +48,8 @@ final class DelayNormalInverseGamma(future:Real?, futureUpdate:Boolean,
     buffer.set("class", "NormalInverseGamma");
     buffer.set("μ", μ);
     buffer.set("a2", 1.0/λ);
-    buffer.set("α", σ2!.α);
-    buffer.set("β", σ2!.β);
+    buffer.set("α", σ2.α);
+    buffer.set("β", σ2.β);
   }
 }
 

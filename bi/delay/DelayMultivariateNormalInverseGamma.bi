@@ -42,11 +42,11 @@ final class DelayMultivariateNormalInverseGamma(future:Real[_]?,
   }
 
   function update(x:Real[_]) {
-    (σ2!.α, σ2!.β) <- update_multivariate_normal_inverse_gamma(x, ν, Λ, α, gamma_to_beta(γ, ν, Λ));
+    (σ2.α, σ2.β) <- update_multivariate_normal_inverse_gamma(x, ν, Λ, α, gamma_to_beta(γ, ν, Λ));
   }
 
   function downdate(x:Real[_]) {
-    (σ2!.α, σ2!.β) <- downdate_multivariate_normal_inverse_gamma(x, ν, Λ, α, gamma_to_beta(γ, ν, Λ));
+    (σ2.α, σ2.β) <- downdate_multivariate_normal_inverse_gamma(x, ν, Λ, α, gamma_to_beta(γ, ν, Λ));
   }
   
   function pdf(x:Real[_]) -> Real {

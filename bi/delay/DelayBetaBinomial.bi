@@ -18,28 +18,28 @@ final class DelayBetaBinomial(future:Integer?, futureUpdate:Boolean,
     if value? {
       return value!;
     } else {
-      return simulate_beta_binomial(n, ρ!.α, ρ!.β);
+      return simulate_beta_binomial(n, ρ.α, ρ.β);
     }
   }
   
   function logpdf(x:Integer) -> Real {
-    return logpdf_beta_binomial(x, n, ρ!.α, ρ!.β);
+    return logpdf_beta_binomial(x, n, ρ.α, ρ.β);
   }
 
   function update(x:Integer) {
-    (ρ!.α, ρ!.β) <- update_beta_binomial(x, n, ρ!.α, ρ!.β);
+    (ρ.α, ρ.β) <- update_beta_binomial(x, n, ρ.α, ρ.β);
   }
 
   function downdate(x:Integer) {
-    (ρ!.α, ρ!.β) <- downdate_beta_binomial(x, n, ρ!.α, ρ!.β);
+    (ρ.α, ρ.β) <- downdate_beta_binomial(x, n, ρ.α, ρ.β);
   }
 
   function pdf(x:Integer) -> Real {
-    return pdf_beta_binomial(x, n, ρ!.α, ρ!.β);
+    return pdf_beta_binomial(x, n, ρ.α, ρ.β);
   }
 
   function cdf(x:Integer) -> Real {
-    return cdf_beta_binomial(x, n, ρ!.α, ρ!.β);
+    return cdf_beta_binomial(x, n, ρ.α, ρ.β);
   }
   
   function lower() -> Integer? {

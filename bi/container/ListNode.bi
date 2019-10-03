@@ -3,7 +3,7 @@
  */
 final class ListNode<Type>(x:Type) {
   x:Type <- x;
-  prev:ListNode<Type>&;
+  prev:ListNode<Type>&?;
   next:ListNode<Type>?;
 
   /**

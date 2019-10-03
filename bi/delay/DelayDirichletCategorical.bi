@@ -9,27 +9,27 @@ final class DelayDirichletCategorical(future:Integer?, futureUpdate:Boolean,
   ρ:DelayDirichlet& <- ρ;
 
   function simulate() -> Integer {
-    return simulate_dirichlet_categorical(ρ!.α);
+    return simulate_dirichlet_categorical(ρ.α);
   }
   
   function logpdf(x:Integer) -> Real {
-    return logpdf_dirichlet_categorical(x, ρ!.α);
+    return logpdf_dirichlet_categorical(x, ρ.α);
   }
 
   function update(x:Integer) {
-    ρ!.α <- update_dirichlet_categorical(x, ρ!.α);
+    ρ.α <- update_dirichlet_categorical(x, ρ.α);
   }
 
   function downdate(x:Integer) {
-    ρ!.α <- downdate_dirichlet_categorical(x, ρ!.α);
+    ρ.α <- downdate_dirichlet_categorical(x, ρ.α);
   }
 
   function pdf(x:Integer) -> Real {
-    return pdf_dirichlet_categorical(x, ρ!.α);
+    return pdf_dirichlet_categorical(x, ρ.α);
   }
 
   function cdf(x:Integer) -> Real {
-    return cdf_dirichlet_categorical(x, ρ!.α);
+    return cdf_dirichlet_categorical(x, ρ.α);
   }
 
   function write(buffer:Buffer) {

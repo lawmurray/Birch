@@ -15,11 +15,11 @@ final class DelayMultivariateGaussianMultivariateGaussian(future:Real[_]?,
   S:Real[_,_] <- S;
 
   function update(x:Real[_]) {
-    (m!.μ, m!.Σ) <- update_multivariate_gaussian_multivariate_gaussian(x, m!.μ, m!.Σ, S);
+    (m.μ, m.Σ) <- update_multivariate_gaussian_multivariate_gaussian(x, m.μ, m.Σ, S);
   }
 
   function downdate(x:Real[_]) {
-    (m!.μ, m!.Σ) <- downdate_multivariate_gaussian_multivariate_gaussian(x, m!.μ, m!.Σ, S);
+    (m.μ, m.Σ) <- downdate_multivariate_gaussian_multivariate_gaussian(x, m.μ, m.Σ, S);
   }
 
   function write(buffer:Buffer) {

@@ -37,8 +37,8 @@ final class DelaySubtractBoundedDiscrete(future:Integer?, futureUpdate:Boolean,
 
   function enumerate(x:Integer) {
     if (!this.x? || this.x! != x) {
-      l:Integer <- max(x1!.l, x2!.l + x);
-      u:Integer <- min(x1!.u, x2!.u + x);
+      l:Integer <- max(x1.l, x2.l + x);
+      u:Integer <- min(x1.u, x2.u + x);
 
       x0 <- l;
       Z <- 0.0;
@@ -46,7 +46,7 @@ final class DelaySubtractBoundedDiscrete(future:Integer?, futureUpdate:Boolean,
         /* distribution over possible pairs that produce the given diff */
         z <- vector(0.0, u - l + 1);
         for (n:Integer in l..u) {
-          z[n - l + 1] <- x1!.pdf(n)*x2!.pdf(n - x);
+          z[n - l + 1] <- x1.pdf(n)*x2.pdf(n - x);
           Z <- Z + z[n - l + 1];
         }
       }
@@ -58,7 +58,7 @@ final class DelaySubtractBoundedDiscrete(future:Integer?, futureUpdate:Boolean,
     if value? {
       return value!;
     } else {
-      return simulate_delta(x1!.simulate() - x2!.simulate());
+      return simulate_delta(x1.simulate() - x2.simulate());
     }
   }
   
@@ -72,16 +72,16 @@ final class DelaySubtractBoundedDiscrete(future:Integer?, futureUpdate:Boolean,
     /* choose a pair with the given difference and clamp parents */
     enumerate(x);
     n:Integer <- simulate_categorical(z, Z) + x0 - 1;
-    x1!.clamp(n);
-    x2!.clamp(n - x);
+    x1.clamp(n);
+    x2.clamp(n - x);
   }
 
   function pdf(x:Integer) -> Real {
-    l:Integer <- max(x1!.l, x2!.l + x);
-    u:Integer <- min(x1!.u, x2!.u + x);
+    l:Integer <- max(x1.l, x2.l + x);
+    u:Integer <- min(x1.u, x2.u + x);
     P:Real <- 0.0;
     for (n:Integer in l..u) {
-      P <- P + x1!.pdf(n)*x2!.pdf(n - x);
+      P <- P + x1.pdf(n)*x2.pdf(n - x);
     }
     return P;
   }

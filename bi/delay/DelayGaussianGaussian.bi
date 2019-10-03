@@ -15,11 +15,11 @@ final class DelayGaussianGaussian(future:Real?, futureUpdate:Boolean,
   l:Real <- 1.0/s2;
 
   function update(x:Real) {
-    (m!.μ, m!.λ) <- update_gaussian_gaussian(x, m!.μ, m!.λ, l);
+    (m.μ, m.λ) <- update_gaussian_gaussian(x, m.μ, m.λ, l);
   }
 
   function downdate(x:Real) {
-    (m!.μ, m!.λ) <- downdate_gaussian_gaussian(x, m!.μ, m!.λ, l);
+    (m.μ, m.λ) <- downdate_gaussian_gaussian(x, m.μ, m.λ, l);
   }
 
   function write(buffer:Buffer) {

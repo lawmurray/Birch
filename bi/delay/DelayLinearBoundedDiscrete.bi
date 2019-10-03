@@ -24,25 +24,25 @@ final class DelayLinearBoundedDiscrete(future:Integer?, futureUpdate:Boolean,
     if value? {
       return value!;
     } else {
-      return simulate_delta(a*μ!.simulate() + c);
+      return simulate_delta(a*μ.simulate() + c);
     }
   }
   
   function logpdf(x:Integer) -> Real {
     assert !value?;
-    return μ!.logpdf((x - c)/a);
+    return μ.logpdf((x - c)/a);
   }
 
   function update(x:Integer) {
-    μ!.clamp((x - c)/a);
+    μ.clamp((x - c)/a);
   }
 
   function pdf(x:Integer) -> Real {
-    return μ!.pdf((x - c)/a);
+    return μ.pdf((x - c)/a);
   }
 
   function cdf(x:Integer) -> Real {
-    return μ!.cdf((x - c)/a);
+    return μ.cdf((x - c)/a);
   }
 }
 

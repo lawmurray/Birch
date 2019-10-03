@@ -24,29 +24,29 @@ final class DelayLinearDiscrete(future:Integer?, futureUpdate:Boolean,
     if value? {
       return value!;
     } else {
-      return simulate_delta(a*μ!.simulate() + c);
+      return simulate_delta(a*μ.simulate() + c);
     }
   }
   
   function logpdf(x:Integer) -> Real {
     assert !value?;
-    return μ!.logpdf((x - c)/a);
+    return μ.logpdf((x - c)/a);
   }
   
   function update(x:Integer) {
-    μ!.clamp((x - c)/a);
+    μ.clamp((x - c)/a);
   }
 
   function pdf(x:Integer) -> Real {
-    return μ!.pdf((x - c)/a);
+    return μ.pdf((x - c)/a);
   }
 
   function cdf(x:Integer) -> Real {
-    return μ!.cdf((x - c)/a);
+    return μ.cdf((x - c)/a);
   }
 
   function lower() -> Integer? {
-    l:Integer? <- μ!.lower();
+    l:Integer? <- μ.lower();
     if (l?) {
       l <- a*l! + c;
     }
@@ -54,7 +54,7 @@ final class DelayLinearDiscrete(future:Integer?, futureUpdate:Boolean,
   }
   
   function upper() -> Integer? {
-    u:Integer? <- μ!.upper();
+    u:Integer? <- μ.upper();
     if (u?) {
       u <- a*u! + c;
     }

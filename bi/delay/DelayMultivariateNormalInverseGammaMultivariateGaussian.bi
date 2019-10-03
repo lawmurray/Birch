@@ -11,27 +11,27 @@ final class DelayMultivariateNormalInverseGammaMultivariateGaussian(
 
   function simulate() -> Real[_] {
     return simulate_multivariate_normal_inverse_gamma_multivariate_gaussian(
-        μ!.ν, μ!.Λ, μ!.α, μ!.γ);
+        μ.ν, μ.Λ, μ.α, μ.γ);
   }
   
   function logpdf(x:Real[_]) -> Real {
     return logpdf_multivariate_normal_inverse_gamma_multivariate_gaussian(x,
-        μ!.ν, μ!.Λ, μ!.α, μ!.γ);
+        μ.ν, μ.Λ, μ.α, μ.γ);
   }
 
   function update(x:Real[_]) {
-    (μ!.ν, μ!.Λ, μ!.α, μ!.γ) <- update_multivariate_normal_inverse_gamma_multivariate_gaussian(
-        x, μ!.ν, μ!.Λ, μ!.α, μ!.γ);
+    (μ.ν, μ.Λ, μ.α, μ.γ) <- update_multivariate_normal_inverse_gamma_multivariate_gaussian(
+        x, μ.ν, μ.Λ, μ.α, μ.γ);
   }
 
   function downdate(x:Real[_]) {
-    (μ!.ν, μ!.Λ, μ!.α, μ!.γ) <- downdate_multivariate_normal_inverse_gamma_multivariate_gaussian(
-        x, μ!.ν, μ!.Λ, μ!.α, μ!.γ);
+    (μ.ν, μ.Λ, μ.α, μ.γ) <- downdate_multivariate_normal_inverse_gamma_multivariate_gaussian(
+        x, μ.ν, μ.Λ, μ.α, μ.γ);
   }
 
   function pdf(x:Real[_]) -> Real {
     return pdf_multivariate_normal_inverse_gamma_multivariate_gaussian(x,
-        μ!.ν, μ!.Λ, μ!.α, μ!.γ);
+        μ.ν, μ.Λ, μ.α, μ.γ);
   }
 
   function write(buffer:Buffer) {

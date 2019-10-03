@@ -15,23 +15,23 @@ final class DelayDirichletMultinomial(future:Integer[_]?,
   ρ:DelayDirichlet& <- ρ;
 
   function simulate() -> Integer[_] {
-    return simulate_dirichlet_multinomial(n, ρ!.α);
+    return simulate_dirichlet_multinomial(n, ρ.α);
   }
   
   function logpdf(x:Integer[_]) -> Real {
-    return logpdf_dirichlet_multinomial(x, n, ρ!.α);
+    return logpdf_dirichlet_multinomial(x, n, ρ.α);
   }
 
   function update(x:Integer[_]) {
-    ρ!.α <- update_dirichlet_multinomial(x, n, ρ!.α);
+    ρ.α <- update_dirichlet_multinomial(x, n, ρ.α);
   }
 
   function downdate(x:Integer[_]) {
-    ρ!.α <- downdate_dirichlet_multinomial(x, n, ρ!.α);
+    ρ.α <- downdate_dirichlet_multinomial(x, n, ρ.α);
   }
 
   function pdf(x:Integer[_]) -> Real {
-    return pdf_dirichlet_multinomial(x, n, ρ!.α);
+    return pdf_dirichlet_multinomial(x, n, ρ.α);
   }
 
   function write(buffer:Buffer) {

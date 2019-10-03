@@ -14,27 +14,27 @@ final class DelayInverseGammaGamma(future:Real?, futureUpdate:Boolean,
   θ:DelayInverseGamma& <- θ;
 
   function simulate() -> Real {
-    return simulate_compound_gamma(k, θ!.α, θ!.β);
+    return simulate_compound_gamma(k, θ.α, θ.β);
   }
 
   function logpdf(x:Real) -> Real {
-    return logpdf_compound_gamma(x, k, θ!.α, θ!.β);
+    return logpdf_compound_gamma(x, k, θ.α, θ.β);
   }
 
   function update(x:Real) {
-    (θ!.α, θ!.β) <- update_inverse_gamma_gamma(x, k, θ!.α, θ!.β);
+    (θ.α, θ.β) <- update_inverse_gamma_gamma(x, k, θ.α, θ.β);
   }
 
   function downdate(x:Real) {
-    (θ!.α, θ!.β) <- downdate_inverse_gamma_gamma(x, k, θ!.α, θ!.β);
+    (θ.α, θ.β) <- downdate_inverse_gamma_gamma(x, k, θ.α, θ.β);
   }
 
   function pdf(x:Real) -> Real {
-    return pdf_compound_gamma(x, k, θ!.α, θ!.β);
+    return pdf_compound_gamma(x, k, θ.α, θ.β);
   }
 
   function cdf(x:Real) -> Real {
-    return cdf_compound_gamma(x, k, θ!.α, θ!.β);
+    return cdf_compound_gamma(x, k, θ.α, θ.β);
   }
 
   function lower() -> Real? {

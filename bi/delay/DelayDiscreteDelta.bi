@@ -12,33 +12,33 @@ final class DelayDiscreteDelta(future:Integer?, futureUpdate:Boolean,
     if value? {
       return value!;
     } else {
-      return simulate_delta(μ!.simulate());
+      return simulate_delta(μ.simulate());
     }
   }
   
   function logpdf(x:Integer) -> Real {
     assert !value?;
-    return μ!.logpdf(x);
+    return μ.logpdf(x);
   }
   
   function update(x:Integer) {
-    μ!.clamp(x);
+    μ.clamp(x);
   }
 
   function pdf(x:Integer) -> Real {
-    return μ!.pdf(x);
+    return μ.pdf(x);
   }
 
   function cdf(x:Integer) -> Real {
-    return μ!.cdf(x);
+    return μ.cdf(x);
   }
 
   function lower() -> Integer? {
-    return μ!.lower();
+    return μ.lower();
   }
   
   function upper() -> Integer? {
-    return μ!.upper();
+    return μ.upper();
   }
 }
 

@@ -23,27 +23,27 @@ final class DelayLinearMatrixNormalInverseGammaMatrixGaussian(
 
   function simulate() -> Real[_,_] {
     return simulate_linear_matrix_normal_inverse_gamma_matrix_gaussian(
-        A, M!.N, C, M!.Λ, M!.α, M!.γ);
+        A, M.N, C, M.Λ, M.α, M.γ);
   }
   
   function logpdf(X:Real[_,_]) -> Real {
     return logpdf_linear_matrix_normal_inverse_gamma_matrix_gaussian(
-        X, A, M!.N, C, M!.Λ, M!.α, M!.γ);
+        X, A, M.N, C, M.Λ, M.α, M.γ);
   }
 
   function update(X:Real[_,_]) {
-    (M!.N, M!.Λ, M!.α, M!.γ) <- update_linear_matrix_normal_inverse_gamma_matrix_gaussian(
-        X, A, M!.N, C, M!.Λ, M!.α, M!.γ);
+    (M.N, M.Λ, M.α, M.γ) <- update_linear_matrix_normal_inverse_gamma_matrix_gaussian(
+        X, A, M.N, C, M.Λ, M.α, M.γ);
   }
 
   function downdate(X:Real[_,_]) {
-    (M!.N, M!.Λ, M!.α, M!.γ) <- downdate_linear_matrix_normal_inverse_gamma_matrix_gaussian(
-        X, A, M!.N, C, M!.Λ, M!.α, M!.γ);
+    (M.N, M.Λ, M.α, M.γ) <- downdate_linear_matrix_normal_inverse_gamma_matrix_gaussian(
+        X, A, M.N, C, M.Λ, M.α, M.γ);
   }
 
   function pdf(X:Real[_,_]) -> Real {
     return pdf_linear_matrix_normal_inverse_gamma_matrix_gaussian(
-        X, A, M!.N, C, M!.Λ, M!.α, M!.γ);
+        X, A, M.N, C, M.Λ, M.α, M.γ);
   }
 
   function write(buffer:Buffer) {
