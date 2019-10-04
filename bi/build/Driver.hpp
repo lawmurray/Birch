@@ -239,11 +239,6 @@ private:
   bool lazyDeepClone;
 
   /**
-   * Is the read-only optimization, for lazy deep clone, enabled?
-   */
-  bool readOnlyOptimization;
-
-  /**
    * Is the single-reference optimization, for lazy deep clone, enabled?
    */
   bool singleReferenceOptimization;

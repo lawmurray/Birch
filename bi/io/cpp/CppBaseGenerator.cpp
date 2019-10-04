@@ -223,7 +223,7 @@ void bi::CppBaseGenerator::visit(const Member* o) {
     if (!inAssign && rightVar && rightVar->type->isValue()) {
       /* optimization: just reading a value, so no need to copy-on-write the
        * owning object */
-      middle(".readOnly()");
+      middle(".pull()");
     }
     middle("->");
 
