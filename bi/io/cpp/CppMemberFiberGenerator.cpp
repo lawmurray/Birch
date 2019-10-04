@@ -89,10 +89,10 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     line("}\n");
   }
 
-  /* default destructor, copy constructoor, assignment operator */
+  /* copy constructor, destructor, assignment operator */
   if (header) {
+    line(stateName << "(const " << stateName << "&) = default;");
     line("virtual ~" << stateName << "() = default;");
-    line(stateName << "(const " << stateName << "& o) = default;");
     line(stateName << "& operator=(const " << stateName << "&) = default;");
   }
 
@@ -212,6 +212,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     finish(" {");
     in();
     genTraceFunction(o->name->str(), o->loc);
+    line("libbirch_swap_context_");
     line("libbirch_declare_local_");
     genSwitch();
     *this << o->braces->strip();
@@ -241,6 +242,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   } else {
     finish(" {");
     in();
+    line("libbirch_swap_context_");
     line("libbirch_declare_self_");
     start("return libbirch::make_fiber<" << stateName << ">(");
     middle("self");

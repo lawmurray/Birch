@@ -139,10 +139,10 @@ void bi::CppClassGenerator::visit(const Class* o) {
         line("}\n");
       }
 
-      /* default destructor, copy constructoor, assignment operator */
+      /* copy constructor, destructor, assignment operator */
       if (header) {
+        line(o->name << "(const " << o->name << "&) = default;");
         line("virtual ~" << o->name << "() = default;");
-        line(o->name << "(const " << o->name << "& o) = default;");
         line(o->name << "& operator=(const " << o->name << "&) = default;");
       }
 
@@ -245,6 +245,7 @@ void bi::CppClassGenerator::visit(const Class* o) {
           line("template<class T_>");
           line("auto& set_" << var->name << "_(const T_& o_) {");
           in();
+          line("libbirch_swap_context_");
           line("return " << var->name << " = " << "o_;");
           out();
           line("}\n");
@@ -253,6 +254,7 @@ void bi::CppClassGenerator::visit(const Class* o) {
             line("template<class F_, class T_>");
             line("auto set_" << var->name << "_(const F_& frame_, const T_& o_) {");
             in();
+            line("libbirch_swap_context_");
             line("return " << var->name << "(frame_) = " << "o_;");
             out();
             line("}\n");
@@ -324,6 +326,7 @@ void bi::CppClassGenerator::visit(const MemberFunction* o) {
     o->accept(&selfs);
     o->accept(&supers);
     if (members.size() + raws.size() + selfs.size() + supers.size() > 0) {
+      line("libbirch_swap_context_");
       line("libbirch_declare_self_");
     }
 
@@ -363,6 +366,7 @@ void bi::CppClassGenerator::visit(const AssignmentOperator* o) {
       finish(" {");
       in();
       genTraceFunction("<assignment>", o->loc);
+      line("libbirch_swap_context_");
       line("libbirch_declare_self_");
       CppBaseGenerator auxBase(base, level, header);
       auxBase << o->braces->strip();
@@ -389,6 +393,7 @@ void bi::CppClassGenerator::visit(const ConversionOperator* o) {
       finish(" {");
       in();
       genTraceFunction("<conversion>", o->loc);
+      line("libbirch_swap_context_");
       line("libbirch_declare_self_");
       CppBaseGenerator auxBase(base, level, header);
       auxBase << o->braces->strip();
