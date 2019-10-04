@@ -86,10 +86,10 @@ public:
     }
   }
 
-  Optional(const Optional<T>& o) = default;
-  Optional(Optional<T> && o) = default;
-  Optional<T>& operator=(const Optional<T>& o) = default;
-  Optional<T>& operator=(Optional<T> && o) = default;
+  Optional(const Optional& o) = default;
+  Optional(Optional&& o) = default;
+  Optional& operator=(const Optional& o) = default;
+  Optional& operator=(Optional&& o) = default;
 
   /**
    * Is there a value?
@@ -139,10 +139,10 @@ class Optional<P,std::enable_if_t<is_pointer<P>::value>> {
   template<class Q, class Enable> friend class Optional;
 public:
   Optional() = default;
-  Optional(const Optional<P>& o) = default;
-  Optional(Optional<P>&& o) = default;
-  Optional<P>& operator=(const Optional<P>& o) = default;
-  Optional<P>& operator=(Optional<P>&& o) = default;
+  Optional(const Optional& o) = default;
+  Optional(Optional&& o) = default;
+  Optional& operator=(const Optional& o) = default;
+  Optional& operator=(Optional&& o) = default;
 
   /**
    * Generic conversion constructor.
