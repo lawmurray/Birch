@@ -18,68 +18,59 @@ namespace libbirch {
  * @ingroup libbirch
  */
 class Counted {
-protected:
+public:
   /**
    * Constructor.
    */
-  Counted();
+  Counted() :
+      sharedCount(0u),
+      weakCount(1u)
+      #if ENABLE_LAZY_DEEP_CLONE
+      , memoCount(1u)
+      #endif
+      {
+    // no need to set size or tid, handled by operator new
+  }
 
   /**
    * Copy constructor.
    */
-  Counted(const Counted& o);
+  Counted(const Counted& o) : Counted() {
+    //
+  }
+
+  /**
+   * Assignment operator.
+   */
+  Counted& operator=(const Counted&) {
+    return *this;
+  }
 
   /**
    * Destructor.
    */
-  virtual ~Counted();
-
-  Counted& operator=(const Counted&) = delete;
-
-public:
-  /**
-   * Create an object,
-   */
-  template<class... Args>
-  static Counted* create_(Args... args) {
-    return emplace_(allocate<sizeof(Counted)>(), args...);
+  virtual ~Counted() {
+    assert(sharedCount.load() == 0u);
   }
 
   /**
-   * Create an object in previously-allocated memory.
+   * New operator.
    */
-  template<class... Args>
-  static Counted* emplace_(void* ptr, Args&&... args) {
-    auto o = new (ptr) Counted(args...);
-    o->size = sizeof(Counted);
-    return o;
+  void* operator new(std::size_t size) {
+    auto ptr = (Counted*)allocate(size);
+    ptr->size = (unsigned)size;
+    ptr->tid = (unsigned)omp_get_thread_num();
+    return ptr;
   }
 
   /**
-   * Clone the object.
+   * Delete operator.
    */
-  virtual Counted* clone_() const {
-    return emplace_(allocate<sizeof(Counted)>(), *this);
+  void operator delete(void* ptr) {
+    auto counted = (Counted*)ptr;
+    counted->destroy();
+    counted->deallocate();
   }
-
-  /**
-   * Clone the object into previous allocation.
-   */
-  virtual Counted* clone_(void* ptr) const {
-    return emplace_(ptr, *this);
-  }
-
-  /**
-   * Destroy the object.
-   */
-  virtual void destroy_() {
-    this->~Counted();
-  }
-
-  /**
-   * Deallocate the object.
-   */
-  void deallocate();
 
   /**
    * Get the size, in bytes, of the object.
@@ -160,6 +151,13 @@ public:
   #endif
 
   /**
+   * Clone the object.
+   */
+  virtual Counted* clone_() const {
+    return new Counted(*this);
+  }
+
+  /**
    * Name of the class.
    */
   virtual const char* name_() const {
@@ -167,6 +165,26 @@ public:
   }
 
 protected:
+  /**
+   * Destroy, but do not deallocate, the object.
+   */
+  void destroy() {
+    assert(sharedCount.load() == 0u);
+    this->~Counted();
+  }
+
+  /**
+   * Deallocate the object. It should have previously been destroyed.
+   */
+  void deallocate() {
+    assert(sharedCount.load() == 0u);
+    assert(weakCount.load() == 0u);
+    #if ENABLE_LAZY_DEEP_CLONE
+    assert(memoCount.load() == 0u);
+    #endif
+    libbirch::deallocate(this, size, tid);
+  }
+
   /**
    * Shared count.
    */
@@ -208,34 +226,6 @@ protected:
 
 #include "libbirch/thread.hpp"
 
-inline libbirch::Counted::Counted() :
-    sharedCount(0u),
-    weakCount(1u),
-    #if ENABLE_LAZY_DEEP_CLONE
-    memoCount(1u),
-    #endif
-    size(0u),
-    tid(omp_get_thread_num()) {
-  //
-}
-
-inline libbirch::Counted::Counted(const Counted& o) : Counted() {
-  //
-}
-
-inline libbirch::Counted::~Counted() {
-  assert(sharedCount.load() == 0u);
-}
-
-inline void libbirch::Counted::deallocate() {
-  assert(sharedCount.load() == 0u);
-  assert(weakCount.load() == 0u);
-  #if ENABLE_LAZY_DEEP_CLONE
-  assert(memoCount.load() == 0u);
-  #endif
-  libbirch::deallocate(this, size, tid);
-}
-
 inline unsigned libbirch::Counted::getSize() const {
   return size;
 }
@@ -254,7 +244,7 @@ inline void libbirch::Counted::decShared() {
   assert(sharedCount.load() > 0u);
   if (--sharedCount == 0u && size > 0u) {
     // ^ size == 0u during construction, never destroy in that case
-    destroy_();
+    destroy();
     decWeak();  // release weak self-reference
   }
 }
@@ -268,7 +258,7 @@ inline void libbirch::Counted::doubleDecShared() {
   assert(sharedCount.load() > 0u);
   if ((sharedCount -= 2u) == 0u && size > 0u) {
     // ^ size == 0u during construction, never destroy in that case
-    destroy_();
+    destroy();
     decWeak();  // release weak self-reference
   }
 }

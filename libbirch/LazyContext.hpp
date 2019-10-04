@@ -21,7 +21,6 @@ class LazyContext: public Counted {
 public:
   using class_type_ = LazyContext;
 
-protected:
   /**
    * Constructor for root node.
    */
@@ -38,11 +37,6 @@ protected:
    * Destructor.
    */
   virtual ~LazyContext();
-
-public:
-  libbirch_create_function_
-  libbirch_emplace_function_
-  libbirch_destroy_function_
 
   /**
    * Fork to create a new child context.
@@ -77,6 +71,14 @@ public:
    * Thaw the memo.
    */
   void thaw();
+
+  virtual LazyContext* clone_() const {
+    return new LazyContext(*this);
+  }
+
+  virtual const char* name_() const {
+    return "LazyContext";
+  }
 
 private:
   /**
@@ -115,7 +117,7 @@ inline libbirch::LazyContext::~LazyContext() {
 }
 
 inline libbirch::LazyContext* libbirch::LazyContext::fork() {
-  return create_(this);
+  return new LazyContext(this);
 }
 
 #endif

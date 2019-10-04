@@ -215,7 +215,7 @@ auto make_array_and_assign(const Frame& frame, const Value& value) {
  */
 template<class Type, class ... Args>
 SharedPtr<Type> make_object(Args ... args) {
-  return SharedPtr<Type>(Type::create_(args...));
+  return SharedPtr<Type>(new Type(args...));
 }
 
 /**

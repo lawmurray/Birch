@@ -7,7 +7,7 @@
  * Get the root context.
  */
 static libbirch::Context* root() {
-  static libbirch::SharedPtr<libbirch::Context> context(libbirch::Context::create_());
+  static libbirch::SharedPtr<libbirch::Context> context(new libbirch::Context());
   return context.get();
 }
 

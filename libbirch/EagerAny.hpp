@@ -17,7 +17,6 @@ public:
   using class_type_ = EagerAny;
   using this_type_ = EagerAny;
 
-protected:
   /**
    * Constructor.
    */
@@ -38,15 +37,10 @@ protected:
    */
   EagerAny& operator=(const EagerAny&) = delete;
 
-public:
-  libbirch_create_function_
-  libbirch_emplace_function_
-  libbirch_clone_function_
-  libbirch_destroy_function_
+  virtual EagerAny* clone_() const {
+    return new EagerAny(*this);
+  }
 
-  /**
-   * Name of the class.
-   */
   virtual const char* name_() const {
     return "Any";
   }

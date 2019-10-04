@@ -19,10 +19,6 @@ class EagerContext: public Counted {
 public:
   using class_type_ = EagerContext;
 
-  libbirch_create_function_
-  libbirch_emplace_function_
-  libbirch_destroy_function_
-
   /**
    * Map an object that may not yet have been cloned.
    */
@@ -32,6 +28,14 @@ public:
    * Deep copy.
    */
   EagerAny* copy(EagerAny* o);
+
+  virtual EagerContext* clone_() const {
+    return new LazyContext(*this);
+  }
+
+  virtual const char* name_() const {
+    return "EagerContext";
+  }
 
 private:
   /**

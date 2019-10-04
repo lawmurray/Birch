@@ -20,7 +20,6 @@ public:
   using class_type_ = LazyAny;
   using this_type_ = LazyAny;
 
-protected:
   /**
    * Constructor.
    */
@@ -40,12 +39,6 @@ protected:
    * Copy assignment operator.
    */
   LazyAny& operator=(const LazyAny&) = delete;
-
-public:
-  libbirch_create_function_
-  libbirch_emplace_function_
-  libbirch_clone_function_
-  libbirch_destroy_function_
 
   /**
    * Is the object frozen? This returns true if either a freeze is in
@@ -86,9 +79,10 @@ public:
    */
   void finish();
 
-  /**
-   * Name of the class.
-   */
+  virtual LazyAny* clone_() const {
+    return new LazyAny(*this);
+  }
+
   virtual const char* name_() const {
     return "Any";
   }

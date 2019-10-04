@@ -780,7 +780,7 @@ private:
    */
   template<class U, class ... Args>
   static void emplace(Shared<U>& o, Args ... args) {
-    new (&o) Shared<U>(U::create_(args...));
+    new (&o) Shared<U>(new U(args...));
   }
 
   /**
