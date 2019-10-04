@@ -799,8 +799,8 @@ function logpdf_matrix_gaussian(X:Real[_,_], M:Real[_,_], U:Real[_,_],
   auto p <- columns(M);
   auto C <- llt(U);
   auto D <- llt(V);
-  return -0.5*(trace(inv(D)*transpose(X - M)*inv(C)*(X - M)) -
-      n*p*log(2.0*π) - n*ldet(D) - p*ldet(C));
+  return -0.5*(trace(inv(D)*transpose(X - M)*inv(C)*(X - M)) +
+      n*p*log(2.0*π) + n*ldet(D) + p*ldet(C));
 }
 
 /**
@@ -818,8 +818,8 @@ function logpdf_matrix_gaussian(X:Real[_,_], M:Real[_,_], U:Real[_,_],
   auto n <- rows(M);
   auto p <- columns(M);
   auto C <- llt(U);
-  return -0.5*(trace(inv(diagonal(σ2))*transpose(X - M)*inv(C)*(X - M)) -
-      n*p*log(2.0*π) - n*log_sum(σ2) - p*ldet(C));
+  return -0.5*(trace(inv(diagonal(σ2))*transpose(X - M)*inv(C)*(X - M)) +
+      n*p*log(2.0*π) + n*log_sum(σ2) + p*ldet(C));
 }
 
 /**
@@ -836,7 +836,7 @@ function logpdf_matrix_gaussian(X:Real[_,_], M:Real[_,_], V:Real[_,_]) ->
   auto n <- rows(M);
   auto p <- columns(M);
   auto D <- llt(V);
-  return -0.5*(trace(inv(D)*transpose(X - M)*(X - M)) - n*p*log(2.0*π) -
+  return -0.5*(trace(inv(D)*transpose(X - M)*(X - M)) + n*p*log(2.0*π) +
       n*ldet(D));
 }
 
@@ -853,8 +853,8 @@ function logpdf_matrix_gaussian(X:Real[_,_], M:Real[_,_], σ2:Real[_]) ->
     Real {
   auto n <- rows(M);
   auto p <- columns(M);
-  return -0.5*(trace(inv(diagonal(σ2))*transpose(X - M)*(X - M)) -
-      n*p*log(2.0*π) - n*log_sum(σ2));
+  return -0.5*(trace(inv(diagonal(σ2))*transpose(X - M)*(X - M)) +
+      n*p*log(2.0*π) + n*log_sum(σ2));
 }
 
 /**
