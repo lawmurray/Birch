@@ -83,12 +83,6 @@ void bi::CppClassGenerator::visit(const Class* o) {
     }
 
     if (!o->isAlias() && o->isBound()) {
-      if (header) {
-        out();
-        line("protected:");
-        in();
-      }
-
       /* constructor */
       if (!header) {
         start("bi::type::" << o->name);
@@ -146,18 +140,13 @@ void bi::CppClassGenerator::visit(const Class* o) {
         line(o->name << "& operator=(const " << o->name << "&) = default;");
       }
 
+      /* clone function */
       if (header) {
-        out();
-        line("public:");
+        line("virtual " << o->name << "* clone_() const {");
         in();
-      }
-
-      /* standard functions */
-      if (header) {
-        line("libbirch_create_function_");
-        line("libbirch_emplace_function_");
-        line("libbirch_clone_function_");
-        line("libbirch_destroy_function_");
+        line("return new " << o->name << "(*this);");
+        out();
+        line("}\n");
       }
 
       /* name function */
@@ -281,7 +270,7 @@ void bi::CppClassGenerator::visit(const Class* o) {
         start("bi::type::" << o->name << "* ");
         finish("bi::type::make_" << o->name << "_() {");
         in();
-        line("return bi::type::" << o->name << "::create_();");
+        line("return new bi::type::" << o->name << "();");
         out();
         line("}");
       }

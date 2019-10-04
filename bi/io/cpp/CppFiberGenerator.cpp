@@ -46,12 +46,6 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
       }
     }
 
-    if (header) {
-      out();
-      line("protected:");
-      in();
-    }
-
     /* constructor */
     if (!header) {
       start("bi::" << stateName << "::");
@@ -84,18 +78,13 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
       line(stateName << "& operator=(const " << stateName << "&) = default;");
     }
 
+    /* clone function */
     if (header) {
-      out();
-      line("public:");
+      line("virtual " << stateName << "* clone_() const {");
       in();
-    }
-
-    /* standard functions */
-    if (header) {
-      line("libbirch_create_function_");
-      line("libbirch_emplace_function_");
-      line("libbirch_clone_function_");
-      line("libbirch_destroy_function_");
+      line("return new " << stateName << "(*this);");
+      out();
+      line("}\n");
     }
 
     /* freeze function */
