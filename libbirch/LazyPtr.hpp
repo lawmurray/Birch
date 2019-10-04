@@ -204,28 +204,6 @@ public:
   }
 
   /**
-   * Get the raw pointer for possibly read-only use. Calls get() or pull()
-   * according to whether ENABLE_READ_ONLY_OPTIMIZATION is true or false,
-   * respectively.
-   */
-  T* readOnly() {
-    #if ENABLE_READ_ONLY_OPTIMIZATION
-    return pull();
-    #else
-    return get();
-    #endif
-  }
-
-  /**
-   * Get the raw pointer for possibly read-only use. Calls get() or pull()
-   * according to whether ENABLE_READ_ONLY_OPTIMIZATION is true or false,
-   * respectively.
-   */
-  T* readOnly() const {
-    return const_cast<LazyPtr<P>*>(this)->readOnly();
-  }
-
-  /**
    * Deep clone.
    */
   LazyPtr<P> clone() const {
