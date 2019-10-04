@@ -13,7 +13,6 @@
 #include "libbirch/class.hpp"
 #include "libbirch/basic.hpp"
 #include "libbirch/thread.hpp"
-#include "libbirch/clone.hpp"
 #include "libbirch/freeze.hpp"
 #include "libbirch/thaw.hpp"
 #include "libbirch/finish.hpp"

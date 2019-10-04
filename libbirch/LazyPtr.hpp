@@ -4,11 +4,11 @@
 #pragma once
 #if ENABLE_LAZY_DEEP_CLONE
 
-#include "libbirch/clone.hpp"
 #include "libbirch/LazyAny.hpp"
 #include "libbirch/LazyContext.hpp"
 #include "libbirch/Nil.hpp"
 #include "libbirch/ContextPtr.hpp"
+#include "libbirch/thread.hpp"
 
 namespace libbirch {
 /**
