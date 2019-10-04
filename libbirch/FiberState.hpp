@@ -35,7 +35,9 @@ protected:
   /**
    * Destructor.
    */
-  virtual ~FiberState() = default;
+  virtual ~FiberState() {
+    //
+  }
 
 public:
   /**

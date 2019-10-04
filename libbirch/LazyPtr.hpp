@@ -4,6 +4,7 @@
 #pragma once
 #if ENABLE_LAZY_DEEP_CLONE
 
+#include "libbirch/clone.hpp"
 #include "libbirch/LazyAny.hpp"
 #include "libbirch/LazyContext.hpp"
 #include "libbirch/Nil.hpp"
@@ -36,7 +37,9 @@ public:
    */
   explicit LazyPtr(T* object) :
       object(object) {
-    //
+    if (object) {
+      to.replace(currentContext);
+    }
   }
 
   /**
@@ -44,15 +47,28 @@ public:
    */
   LazyPtr(const P& object) :
       object(object) {
-    //
+    if (object) {
+      to.replace(currentContext);
+    }
   }
 
-	/**
-	 * Copy constructor.
-	 */
-  LazyPtr(const LazyPtr<P>& o) :
-      to(o.to) {
-    object.replace(o.get());
+  /**
+   * Copy constructor.
+   */
+  LazyPtr(const LazyPtr<P>& o) {
+    if (o.object) {
+      if (cloneUnderway) {
+        if (o.isCross()) {
+          o.finish();
+          o.freeze();
+        }
+        object = o.object;
+        to.replace(currentContext);
+      } else {
+        object.replace(o.get());
+        to = o.to;
+      }
+    }
   }
 
   /**
@@ -74,7 +90,7 @@ public:
    * Copy assignment.
    */
   LazyPtr<P>& operator=(const LazyPtr<P>& o) {
-    /* risk of invalidating `o` here, ensure assign to `to` first */
+    /* risk of invalidating `o` here, so assign to `to` first */
     to = o.to;
     object.replace(o.get());
     return *this;
@@ -86,7 +102,7 @@ public:
   template<class Q, typename = std::enable_if_t<std::is_base_of<T,
       typename Q::value_type>::value>>
   LazyPtr<P>& operator=(const LazyPtr<Q>& o) {
-    /* risk of invalidating `o` here, ensure assign to `to` first */
+    /* risk of invalidating `o` here, so assign to `to` first */
     to = o.to;
     object.replace(o.get());
     return *this;
@@ -96,7 +112,7 @@ public:
    * Move assignment.
    */
   LazyPtr<P>& operator=(LazyPtr<P> && o) {
-    /* risk of invalidating `o` here, ensure assign to `to` first */
+    /* risk of invalidating `o` here, so assign to `to` first */
     to = std::move(o.to);
     object = std::move(o.object);
     return *this;
@@ -108,7 +124,7 @@ public:
   template<class Q, typename = std::enable_if_t<std::is_base_of<T,
       typename Q::value_type>::value>>
   LazyPtr<P>& operator=(LazyPtr<Q> && o) {
-    /* risk of invalidating `o` here, ensure assign to `to` first */
+    /* risk of invalidating `o` here, so assign to `to` first */
     to = std::move(o.to);
     object = std::move(o.object);
     return *this;
@@ -119,7 +135,11 @@ public:
    */
   LazyPtr<P>& operator=(const P& o) {
     object = o;
-    to.release();
+    if (o) {
+      to.replace(currentContext);
+    } else {
+      to.release();
+    }
     return *this;
   }
 

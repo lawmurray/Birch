@@ -18,10 +18,6 @@ namespace libbirch {
  * @ingroup libbirch
  */
 class Counted {
-public:
-  using class_type_ = Counted;
-  using this_type_ = Counted;
-
 protected:
   /**
    * Constructor.
@@ -29,17 +25,56 @@ protected:
   Counted();
 
   /**
+   * Copy constructor.
+   */
+  Counted(const Counted& o);
+
+  /**
    * Destructor.
    */
   virtual ~Counted();
 
-  Counted(const Counted& o) = default;
-  Counted& operator=(const Counted&) = default;
+  Counted& operator=(const Counted&) = delete;
 
 public:
-  libbirch_create_function_
-  libbirch_emplace_function_
-  libbirch_destroy_function_
+  /**
+   * Create an object,
+   */
+  template<class... Args>
+  static Counted* create_(Args... args) {
+    return emplace_(allocate<sizeof(Counted)>(), args...);
+  }
+
+  /**
+   * Create an object in previously-allocated memory.
+   */
+  template<class... Args>
+  static Counted* emplace_(void* ptr, Args&&... args) {
+    auto o = new (ptr) Counted(args...);
+    o->size = sizeof(Counted);
+    return o;
+  }
+
+  /**
+   * Clone the object.
+   */
+  virtual Counted* clone_() const {
+    return emplace_(allocate<sizeof(Counted)>(), *this);
+  }
+
+  /**
+   * Clone the object into previous allocation.
+   */
+  virtual Counted* clone_(void* ptr) const {
+    return emplace_(ptr, *this);
+  }
+
+  /**
+   * Destroy the object.
+   */
+  virtual void destroy_() {
+    this->~Counted();
+  }
 
   /**
    * Deallocate the object.
@@ -181,6 +216,10 @@ inline libbirch::Counted::Counted() :
     #endif
     size(0u),
     tid(omp_get_thread_num()) {
+  //
+}
+
+inline libbirch::Counted::Counted(const Counted& o) : Counted() {
   //
 }
 

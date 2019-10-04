@@ -5,16 +5,8 @@
 
 #include "libbirch/thread.hpp"
 
-/**
- * Create and/or return the root memo
- */
-static libbirch::Context* root() {
-  static libbirch::SharedPtr<libbirch::Context> context(libbirch::Context::create_());
-  return context.get();
-}
-
+/* declared in memory.hpp */
 libbirch::Atomic<size_t> libbirch::memoryUse(0);
-thread_local libbirch::Context* libbirch::currentContext(root());
 
 #if ENABLE_MEMORY_POOL
 /**

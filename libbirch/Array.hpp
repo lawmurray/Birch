@@ -723,21 +723,6 @@ private:
   }
 
   /**
-   * Deep copy from another array.
-   */
-  template<class U, class G>
-  void deepCopy(const Array<U,G>& o) {
-    assert(!isShared());
-    libbirch_assert_msg_(o.frame.conforms(frame), "array sizes are different");
-    auto iter = o.begin();
-    auto last = iter + o.size();
-    auto to = begin();
-    while (iter != last) {
-      new (&*(to++)) T(clone(*(iter++)));
-    }
-  }
-
-  /**
    * Assign from another array.
    */
   template<class U, class G>
@@ -855,8 +840,11 @@ libbirch::Array<T,F>::Array(const Array<T,F>& o, const bool canShare) :
     buffer(nullptr),
     offset(0),
     isView(false) {
-  if (!canShare) {
-    /* caller has explicitly requested a copy */
+  if (!canShare || (cloneUnderway && !is_value<T>::value)) {
+    /* either the caller has explicitly requested a copy (canShare), or we
+     * are cloning an array that is not of purely value type, in which case
+     * we must copy for correct bookkeeping under the lazy deep clone
+     * rules */
     allocate();
     copy(o);
   } else {

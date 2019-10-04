@@ -24,6 +24,11 @@ protected:
   EagerAny();
 
   /**
+   * Copy constructor.
+   */
+  EagerAny(const EagerAny& o);
+
+  /**
    * Destructor.
    */
   virtual ~EagerAny();
@@ -31,7 +36,6 @@ protected:
   /**
    * Copy assignment operator.
    */
-  EagerAny(const EagerAny& o) = delete;
   EagerAny& operator=(const EagerAny&) = delete;
 
 public:

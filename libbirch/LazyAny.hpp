@@ -27,12 +27,19 @@ protected:
   LazyAny();
 
   /**
+   * Copy constructor.
+   */
+  LazyAny(const LazyAny& o);
+
+  /**
    * Destructor.
    */
   virtual ~LazyAny();
 
-  LazyAny(const LazyAny&) = default;
-  LazyAny& operator=(const LazyAny&) = default;
+  /**
+   * Copy assignment operator.
+   */
+  LazyAny& operator=(const LazyAny&) = delete;
 
 public:
   libbirch_create_function_
@@ -88,36 +95,22 @@ public:
 
 protected:
   /**
-   * Perform the actual set context of the object. This is overwritten by
-   * derived classes.
-   */
-  virtual void doSetContext_(LazyContext* context) {
-    //
-  }
-
-  /**
    * Perform the actual freeze of the object. This is overwritten by derived
    * classes.
    */
-  virtual void doFreeze_() {
-    //
-  }
+  virtual void doFreeze_();
 
   /**
    * Perform the actual thaw of the object. This is overwritten by derived
    * classes.
    */
-  virtual void doThaw_(LazyContext* context) {
-    //
-  }
+  virtual void doThaw_(LazyContext* context);
 
   /**
    * Perform the actual finish of the object. This is overwritten by derived
    * classes.
    */
-  virtual void doFinish_() {
-    //
-  }
+  virtual void doFinish_();
 
   /**
    * Context in which this object was created.
@@ -145,7 +138,19 @@ protected:
 
 inline libbirch::LazyAny::LazyAny() :
     Counted(),
-    context(0),
+    context((intptr_t)currentContext),
+    frozen(false),
+    finished(false)
+    #if ENABLE_SINGLE_REFERENCE_OPTIMIZATION
+    , single(false)
+    #endif
+    {
+  //
+}
+
+inline libbirch::LazyAny::LazyAny(const LazyAny& o) :
+    Counted(o),
+    context((intptr_t)currentContext),
     frozen(false),
     finished(false)
     #if ENABLE_SINGLE_REFERENCE_OPTIMIZATION
@@ -209,6 +214,18 @@ inline void libbirch::LazyAny::finish() {
       doFinish_();
     }
   }
+}
+
+inline void libbirch::LazyAny::doFreeze_() {
+  //
+}
+
+inline void libbirch::LazyAny::doThaw_(LazyContext* context) {
+  //
+}
+
+inline void libbirch::LazyAny::doFinish_() {
+  //
 }
 
 #endif

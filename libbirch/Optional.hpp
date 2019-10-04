@@ -3,12 +3,6 @@
  */
 #pragma once
 
-#include "libbirch/Nil.hpp"
-#include "libbirch/Shared.hpp"
-#include "libbirch/Weak.hpp"
-#include "libbirch/Init.hpp"
-#include "libbirch/type.hpp"
-
 namespace libbirch {
 /**
  * Optional.
@@ -21,7 +15,15 @@ template<class T, class Enable = void>
 class Optional {
   //
 };
+}
 
+#include "libbirch/Nil.hpp"
+#include "libbirch/Shared.hpp"
+#include "libbirch/Weak.hpp"
+#include "libbirch/Init.hpp"
+#include "libbirch/type.hpp"
+
+namespace libbirch {
 /**
  * Optional for non-pointer types.
  *

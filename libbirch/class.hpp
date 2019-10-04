@@ -33,15 +33,11 @@
  * Defines the standard @c clone_() member function required of objects.
  */
 #define libbirch_clone_function_ \
-  virtual class_type_* clone_(libbirch::Context* context) const { \
-    auto o = emplace_(libbirch::allocate<sizeof(class_type_)>(), *this); \
-    o->thaw(context); \
-    return o; \
+  virtual class_type_* clone_() const { \
+    return emplace_(libbirch::allocate<sizeof(class_type_)>(), *this); \
   } \
-  virtual class_type_* clone_(void* ptr, libbirch::Context* context) const { \
-    auto o = emplace_(ptr, *this); \
-    o->thaw(context); \
-    return o; \
+  virtual class_type_* clone_(void* ptr) const { \
+    return emplace_(ptr, *this); \
   }
 
 /**
@@ -50,9 +46,20 @@
  * Defines the standard @c destroy_() member function required of objects.
  */
 #define libbirch_destroy_function_ \
-  virtual void destroy_() { \
+  virtual void destroy_() override { \
     this->~class_type_(); \
   }
+
+/**
+ * @def libbirch_swap_context_
+ *
+ * When lazy deep clone is in use, swaps into the context of this object.
+ */
+#if ENABLE_LAZY_DEEP_CLONE
+#define libbirch_swap_context_ libbirch::SwapContext swap_(getContext());
+#else
+#define libbirch_swap_context_
+#endif
 
 /**
  * @def libbirch_declare_self_

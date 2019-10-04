@@ -4,6 +4,9 @@
 #if ENABLE_LAZY_DEEP_CLONE
 #include "libbirch/LazyContext.hpp"
 
+#include "libbirch/SwapClone.hpp"
+#include "libbirch/SwapContext.hpp"
+
 libbirch::LazyAny* libbirch::LazyContext::get(LazyAny* o) {
   assert(o->isFrozen());
   LazyAny* prev = nullptr;
@@ -23,6 +26,7 @@ libbirch::LazyAny* libbirch::LazyContext::get(LazyAny* o) {
   if (frozen) {
     if (next->numShared() == 1u && next->numWeak() == 1u && next->numMemo() == 1u) {
       /* this is the last pointer to the object, just thaw it and reuse */
+      SwapContext swapContext(this);
       next->thaw(this);
     } else {
       /* copy it */
@@ -55,7 +59,9 @@ libbirch::LazyAny* libbirch::LazyContext::pull(LazyAny* o) {
 
 libbirch::LazyAny* libbirch::LazyContext::copy(LazyAny* o) {
   assert(o->isFrozen());
-  auto cloned = o->clone_(this);
+  SwapClone swapClone(true);
+  SwapContext swapContext(this);
+  auto cloned = o->clone_();
   if (!o->isSingle()) {
     thaw();  // new entry, so no longer considered frozen
     m.put(o, cloned);

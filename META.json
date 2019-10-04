@@ -322,6 +322,8 @@
       "libbirch/Span.hpp",
       "libbirch/stacktrace.hpp",
       "libbirch/Stride.hpp",
+      "libbirch/SwapClone.hpp",
+      "libbirch/SwapContext.hpp",
       "libbirch/thaw.hpp",
       "libbirch/thread.hpp",
       "libbirch/type.hpp",
