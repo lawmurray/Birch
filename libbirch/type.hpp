@@ -36,7 +36,7 @@ void freeze(const T& o) {
  * label for reuse.
  */
 template<class T>
-void thaw(const T& o, LazyLabel* context) {
+void thaw(const T& o, LazyLabel* label) {
   static_assert(is_value<T>::value, "unimplemented thaw()");
 }
 
@@ -192,40 +192,40 @@ void freeze(const std::tuple<Args...>& o) {
 }
 
 template<class T>
-void thaw(const Shared<T>& o, LazyLabel* context) {
-  o.thaw(context);
+void thaw(const Shared<T>& o, LazyLabel* label) {
+  o.thaw(label);
 }
 
 template<class T>
-void thaw(const Weak<T>& o, LazyLabel* context) {
-  o.thaw(context);
+void thaw(const Weak<T>& o, LazyLabel* label) {
+  o.thaw(label);
 }
 
 template<class T>
-void thaw(const Init<T>& o, LazyLabel* context) {
-  o.thaw(context);
+void thaw(const Init<T>& o, LazyLabel* label) {
+  o.thaw(label);
 }
 
 template<class T>
-void thaw(const Fiber<T>& o, LazyLabel* context) {
-  o.thaw(context);
+void thaw(const Fiber<T>& o, LazyLabel* label) {
+  o.thaw(label);
 }
 
 template<class T, class F>
-void thaw(const Array<T,F>& o, LazyLabel* context) {
+void thaw(const Array<T,F>& o, LazyLabel* label) {
   if (!is_value<T>::value) {
     auto iter = o.begin();
     auto last = iter + o.size();
     for (; iter != last; ++iter) {
-      thaw(*iter, context);
+      thaw(*iter, label);
     }
   }
 }
 
 template<class T>
-void thaw(const Optional<T>& o, LazyLabel* context) {
+void thaw(const Optional<T>& o, LazyLabel* label) {
   if (!is_value<T>::value && o.query()) {
-    thaw(o.get(), context);
+    thaw(o.get(), label);
   }
 }
 
@@ -239,22 +239,22 @@ void thaw(const std::function<T>& o) {
 
 template<int i, class ... Args>
 struct thaw_tuple_impl {
-  void operator()(const std::tuple<Args...>& o, LazyLabel* context) {
-    thaw(std::get<i - 1>(o), context);
-    thaw_tuple_impl<i - 1,Args...>()(o, context);
+  void operator()(const std::tuple<Args...>& o, LazyLabel* label) {
+    thaw(std::get<i - 1>(o), label);
+    thaw_tuple_impl<i - 1,Args...>()(o, label);
   }
 };
 
 template<class ... Args>
 struct thaw_tuple_impl<0,Args...> {
-  void operator()(const std::tuple<Args...>& o, LazyLabel* context) {
+  void operator()(const std::tuple<Args...>& o, LazyLabel* label) {
     //
   }
 };
 
 template<class ... Args>
-void thaw(const std::tuple<Args...>& o, LazyLabel* context) {
-  thaw_tuple_impl<std::tuple_size<std::tuple<Args...>>::value,Args...>()(o, context);
+void thaw(const std::tuple<Args...>& o, LazyLabel* label) {
+  thaw_tuple_impl<std::tuple_size<std::tuple<Args...>>::value,Args...>()(o, label);
 }
 
 template<class T>

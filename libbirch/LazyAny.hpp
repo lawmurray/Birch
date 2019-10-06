@@ -59,7 +59,7 @@ public:
   bool isSingle() const;
 
   /**
-   * Get the context in which this object was created.
+   * Get the label assigned to the object.
    */
   LazyLabel* getLabel();
 
@@ -69,11 +69,11 @@ public:
   void freeze();
 
   /**
-   * Shallow thaw to allow reuse by another context.
+   * Shallow thaw to allow reuse of the object.
    *
-   * @param context The new context of the object.
+   * @param label The new label of the object.
    */
-  void thaw(LazyLabel* context);
+  void thaw(LazyLabel* label);
 
   /**
    * Deep finish of lazy clone.
@@ -99,7 +99,7 @@ protected:
    * Perform the actual thaw of the object. This is overwritten by derived
    * classes.
    */
-  virtual void doThaw_(LazyLabel* context);
+  virtual void doThaw_(LazyLabel* label);
 
   /**
    * Perform the actual finish of the object. This is overwritten by derived
@@ -108,9 +108,9 @@ protected:
   virtual void doFinish_();
 
   /**
-   * Context in which this object was created.
+   * Label of the object.
    */
-  intptr_t context:61;
+  intptr_t label:61;
 
   /**
    * Is this frozen (read-only)?
@@ -133,7 +133,7 @@ protected:
 
 inline libbirch::LazyAny::LazyAny() :
     Counted(),
-    context((intptr_t)currentContext),
+    label((intptr_t)currentContext),
     frozen(false),
     finished(false)
     #if ENABLE_SINGLE_REFERENCE_OPTIMIZATION
@@ -145,7 +145,7 @@ inline libbirch::LazyAny::LazyAny() :
 
 inline libbirch::LazyAny::LazyAny(const LazyAny& o) :
     Counted(o),
-    context((intptr_t)currentContext),
+    label((intptr_t)currentContext),
     frozen(false),
     finished(false)
     #if ENABLE_SINGLE_REFERENCE_OPTIMIZATION
@@ -176,7 +176,7 @@ inline bool libbirch::LazyAny::isSingle() const {
 }
 
 inline libbirch::LazyLabel* libbirch::LazyAny::getLabel() {
-  return (LazyLabel*)context;
+  return (LazyLabel*)label;
 }
 
 inline void libbirch::LazyAny::freeze() {
@@ -192,14 +192,14 @@ inline void libbirch::LazyAny::freeze() {
   }
 }
 
-inline void libbirch::LazyAny::thaw(LazyLabel* context) {
-  this->context = (intptr_t)context;
+inline void libbirch::LazyAny::thaw(LazyLabel* label) {
+  this->label = (intptr_t)label;
   frozen = false;
   finished = false;
   #if ENABLE_SINGLE_REFERENCE_OPTIMIZATION
   single = false;
   #endif
-  doThaw_(context);
+  doThaw_(label);
 }
 
 inline void libbirch::LazyAny::finish() {
@@ -215,7 +215,7 @@ inline void libbirch::LazyAny::doFreeze_() {
   //
 }
 
-inline void libbirch::LazyAny::doThaw_(LazyLabel* context) {
+inline void libbirch::LazyAny::doThaw_(LazyLabel* label) {
   //
 }
 

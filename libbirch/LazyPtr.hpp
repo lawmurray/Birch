@@ -273,21 +273,21 @@ public:
   /**
    * Thaw.
    */
-  void thaw(LazyLabel* context) {
+  void thaw(LazyLabel* label) {
     if (isCross()) {
       startFinish();
       startFreeze();
     }
     if (object) {
-      label.replace(context);
+      this->label.replace(label);
     }
   }
 
   /**
    * Thaw.
    */
-  void thaw(LazyLabel* context) const {
-    return const_cast<LazyPtr<P>*>(this)->thaw(context);
+  void thaw(LazyLabel* label) const {
+    return const_cast<LazyPtr<P>*>(this)->thaw(label);
   }
 
   /**
