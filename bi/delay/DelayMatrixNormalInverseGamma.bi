@@ -62,7 +62,7 @@ final class DelayMatrixNormalInverseGamma(future:Real[_,_]?,
     prune();
     buffer.set("class", "MatrixNormalInverseGamma");
     buffer.set("N", N);
-    buffer.set("Λ", Λ);
+    buffer.set("Λ", matrix(Λ));
     buffer.set("α", α);
     buffer.set("γ", γ);
   }

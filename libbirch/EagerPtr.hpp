@@ -132,7 +132,7 @@ class EagerPtr {
   /**
    * Value assignment.
    */
-  template<class U>
+  template<class U/*, typename = std::enable_if_t<std::is_assignable<T,U>::value>*/>
   EagerPtr<P>& operator=(const U& o) {
     *get() = o;
     return *this;

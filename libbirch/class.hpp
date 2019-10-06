@@ -9,7 +9,7 @@
  * When lazy deep clone is in use, swaps into the context of this object.
  */
 #if ENABLE_LAZY_DEEP_CLONE
-#define libbirch_swap_context_ libbirch::SwapContext swap_(getContext());
+#define libbirch_swap_context_ libbirch::SwapContext swap_(libbirch::Any::getContext());
 #else
 #define libbirch_swap_context_
 #endif

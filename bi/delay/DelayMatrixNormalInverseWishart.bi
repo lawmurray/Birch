@@ -52,7 +52,7 @@ final class DelayMatrixNormalInverseWishart(future:Real[_,_]?,
     prune();
     buffer.set("class", "MatrixNormalInverseWishart");
     buffer.set("N", N);
-    buffer.set("Λ", Λ);
+    buffer.set("Λ", matrix(Λ));
     buffer.set("Ψ", V.Ψ);
     buffer.set("k", V.k);
   }

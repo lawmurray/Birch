@@ -6,6 +6,7 @@
 #pragma once
 
 #include "libbirch/external.hpp"
+#include "libbirch/basic.hpp"
 
 namespace libbirch {
 
@@ -21,4 +22,12 @@ using EigenMatrix = Eigen::Matrix<Type,Eigen::Dynamic,Eigen::Dynamic,Eigen::RowM
 template<class Type>
 using EigenMatrixMap = Eigen::Map<EigenMatrix<Type>,Eigen::DontAlign,EigenMatrixStride>;
 
+}
+
+namespace bi {
+  namespace type {
+
+using LLT = Eigen::LLT<libbirch::EigenMatrix<Real64>>;
+
+  }
 }

@@ -24,76 +24,26 @@
  *     is to maintain the original matrix in a decomposed form for more
  *     efficient computation. 
  */
-final class LLT(n:Integer) {
-  /*
-   * Eigen internals. Eigen::LLT does not support in place matrix
-   * decompositions using Eigen::Map (as of version 3.3.7, which is how Birch
-   * wraps its own array buffers for use by Eigen. instead we use an
-   * Eigen::Matrix type and copy the matrix to decompose into it later.
-   */
-  hpp{{
-  Eigen::LLT<libbirch::EigenMatrix<Real>> llt;
-  }}
-
-  /**
-   * Value conversion.
-   */
-  operator -> Real[_,_] {
-    cpp{{
-    return llt.reconstructedMatrix();
-    }}
-  }
-  
-  /**
-   * Value assignment.
-   */
-  operator <- S:Real[_,_] {
-    compute(S);
-  }
-  
-  /**
-   * Decompose the matrix positive definite matrix `S` into this.
-   */
-  function compute(S:Real[_,_]) {
-    cpp{{
-    llt.compute(S.toEigen());
-    }}
-  }
-
-  /**
-   * Rank one update (or downdate) of a Cholesky decomposition.
-   *
-   * - x: Vector.
-   * - a: Scalar. Positive for an update, negative for a downdate.
-   *
-   * Updates the symmetric positive definite matrix to $S + axx^\top$ with an
-   * efficient update of its decomposition.
-   */
-  function update(x:Real[_], a:Real) {
-    cpp{{
-    llt.rankUpdate(x.toEigen(), a);
-    }}
-  }
-}
+type LLT;
 
 operator (X:LLT*y:Real[_]) -> Real[_] {
   assert columns(X) == length(y);
   cpp{{
-  return X->llt.matrixL()*(X->llt.matrixU()*y.toEigen()).eval();
+  return X.matrixL()*(X.matrixU()*y.toEigen()).eval();
   }}
 }
 
 operator (X:LLT*Y:Real[_,_]) -> Real[_,_] {
   assert columns(X) == rows(Y);
   cpp{{
-  return X->llt.matrixL()*(X->llt.matrixU()*Y.toEigen()).eval();
+  return X.matrixL()*(X.matrixU()*Y.toEigen()).eval();
   }}
 }
 
 operator (X:Real[_,_]*Y:LLT) -> Real[_,_] {
   assert columns(X) == rows(Y);
   cpp{{
-  return X.toEigen()*Y->llt.matrixL()*Y->llt.matrixU();
+  return X.toEigen()*Y.matrixL()*Y.matrixU();
   }}
 }
 
@@ -102,7 +52,7 @@ operator (X:Real[_,_]*Y:LLT) -> Real[_,_] {
  */
 function rows(X:LLT) -> Integer64 {
   cpp{{
-  return X->llt.rows();
+  return X.rows();
   }}
 }
 
@@ -111,7 +61,16 @@ function rows(X:LLT) -> Integer64 {
  */
 function columns(X:LLT) -> Integer64 {
   cpp{{
-  return X->llt.cols();
+  return X.cols();
+  }}
+}
+
+/**
+ * Convert Cholesky decomposition to an ordinary matrix.
+ */
+function matrix(X:LLT) -> Real[_,_] {
+  cpp{{
+  return X.reconstructedMatrix();
   }}
 }
 
@@ -127,9 +86,10 @@ function columns(X:LLT) -> Integer64 {
  * Cholesky factor, while this returns the original matrix, but decomposed.
  */
 function llt(S:Real[_,_]) -> LLT {
-  assert rows(S) == columns(S);
-  A:LLT(rows(S));
-  A.compute(S);
+  A:LLT;
+  cpp{{
+  A.compute(S.toEigen());
+  }}
   return A;
 }
 
@@ -146,12 +106,11 @@ function llt(S:Real[_,_]) -> LLT {
  */
 function rank_update(S:LLT, x:Real[_], a:Real) -> LLT {
   assert rows(S) == length(x);
-  A:LLT(rows(S));
   cpp{{
-  A->llt = S->llt;
-  }}
-  A.update(x, a);
+  auto A = S;
+  A.rankUpdate(x.toEigen(), a);
   return A;
+  }}
 }
 
 /**
@@ -170,14 +129,17 @@ function rank_update(S:LLT, x:Real[_], a:Real) -> LLT {
  */
 function rank_update(S:LLT, X:Real[_,_], a:Real) -> LLT {
   assert rows(S) == rows(X);
-  A:LLT(rows(S));
+  A:LLT;
   cpp{{
-  A->llt = S->llt;
+  A = S;
   }}
   auto R <- rows(X);
   auto C <- columns(X);
   for auto j in 1..C {
-    A.update(X[1..R,j], a);
+    auto x <- X[1..R,j];
+    cpp{{
+    A.rankUpdate(x.toEigen(), a);
+    }}
   }
   return A;
 }
@@ -227,8 +189,8 @@ function ldet(S:LLT) -> Real {
  */
 function inv(S:LLT) -> Real[_,_] {
   cpp{{
-  return S->llt.solve(libbirch::EigenMatrix<bi::type::Real>::Identity(
-      S->llt.rows(), S->llt.cols()));
+  return S.solve(libbirch::EigenMatrix<bi::type::Real>::Identity(S.rows(),
+      S.cols()));
   }}
 }
 
@@ -238,7 +200,7 @@ function inv(S:LLT) -> Real[_,_] {
 function solve(S:LLT, y:Real[_]) -> Real[_] {
   assert columns(S) == length(y);
   cpp{{
-  return S->llt.solve(y.toEigen());
+  return S.solve(y.toEigen());
   }}
 }
 
@@ -248,7 +210,7 @@ function solve(S:LLT, y:Real[_]) -> Real[_] {
 function solve(S:LLT, Y:Real[_,_]) -> Real[_,_] {
   assert columns(S) == rows(Y);
   cpp{{
-  return S->llt.solve(Y.toEigen());
+  return S.solve(Y.toEigen());
   }}
 }
 
@@ -260,7 +222,7 @@ function solve(S:LLT, Y:Real[_,_]) -> Real[_,_] {
 function cholesky(S:LLT) -> Real[_,_] {
   L:Real[rows(S),columns(S)];
   cpp{{
-  L.toEigen() = S->llt.matrixL();
+  L.toEigen() = S.matrixL();
   }}
   return L;
 }
