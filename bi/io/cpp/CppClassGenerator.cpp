@@ -186,15 +186,15 @@ void bi::CppClassGenerator::visit(const Class* o) {
       genTemplateArgs(o);
       middle("::");
     }
-    middle("doThaw_(libbirch::LazyContext* context)");
+    middle("doThaw_(libbirch::LazyLabel* label)");
     if (header) {
       finish(';');
     } else {
       finish(" {");
       in();
-      line("super_type_::doThaw_(context);");
+      line("super_type_::doThaw_(label);");
       for (auto o : memberVariables) {
-        line("libbirch::thaw(" << o->name << ", context);");
+        line("libbirch::thaw(" << o->name << ", label);");
       }
       out();
       line("}\n");

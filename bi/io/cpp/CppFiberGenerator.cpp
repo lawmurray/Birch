@@ -118,19 +118,19 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
     } else {
       start("void bi::" << stateName << "::");
     }
-    middle("doThaw_(libbirch::LazyContext* context)");
+    middle("doThaw_(libbirch::LazyLabel* label)");
     if (header) {
       finish(';');
     } else {
       finish(" {");
       in();
-      line("super_type_::doThaw_(context);");
-      line("libbirch::thaw(value_, context);");
+      line("super_type_::doThaw_(label);");
+      line("libbirch::thaw(value_, label);");
       for (auto param : params) {
-        line("libbirch::thaw(" << param->name << ", context);");
+        line("libbirch::thaw(" << param->name << ", label);");
       }
       for (auto local : locals) {
-        line("libbirch::thaw(" << getName(local->name->str(), local->number) << ", context);");
+        line("libbirch::thaw(" << getName(local->name->str(), local->number) << ", label);");
       }
       out();
       line("}\n");
