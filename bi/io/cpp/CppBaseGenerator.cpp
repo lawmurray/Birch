@@ -253,12 +253,7 @@ void bi::CppBaseGenerator::visit(const Nil* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Parameter* o) {
-  if (o->type->isArray() || o->type->isClass()) {
-    middle("const " << o->type << '&');
-  } else {
-    middle(o->type);
-  }
-  middle(' ' << o->name);
+  middle("const " << o->type << "& " << o->name);
   if (!o->value->isEmpty()) {
     middle(" = " << o->value);
   }

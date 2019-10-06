@@ -246,10 +246,10 @@ void bi::CppClassGenerator::visit(const Class* o) {
           line("}\n");
         }
       }
-
-      /* member variables and functions */
-      *this << o->braces->strip();
     }
+
+    /* member variables and functions */
+    *this << o->braces->strip();
 
     /* end class */
     if (header) {
