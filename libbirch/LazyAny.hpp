@@ -8,6 +8,7 @@
 #include "libbirch/Counted.hpp"
 #include "libbirch/InitPtr.hpp"
 #include "libbirch/Atomic.hpp"
+#include "libbirch/LazyLabel.hpp"
 
 namespace libbirch {
 /**
@@ -60,7 +61,7 @@ public:
   /**
    * Get the context in which this object was created.
    */
-  LazyContext* getContext();
+  LazyLabel* getLabel();
 
   /**
    * Deep freeze.
@@ -72,7 +73,7 @@ public:
    *
    * @param context The new context of the object.
    */
-  void thaw(LazyContext* context);
+  void thaw(LazyLabel* context);
 
   /**
    * Deep finish of lazy clone.
@@ -98,7 +99,7 @@ protected:
    * Perform the actual thaw of the object. This is overwritten by derived
    * classes.
    */
-  virtual void doThaw_(LazyContext* context);
+  virtual void doThaw_(LazyLabel* context);
 
   /**
    * Perform the actual finish of the object. This is overwritten by derived
@@ -174,8 +175,8 @@ inline bool libbirch::LazyAny::isSingle() const {
   #endif
 }
 
-inline libbirch::LazyContext* libbirch::LazyAny::getContext() {
-  return (LazyContext*)context;
+inline libbirch::LazyLabel* libbirch::LazyAny::getLabel() {
+  return (LazyLabel*)context;
 }
 
 inline void libbirch::LazyAny::freeze() {
@@ -191,7 +192,7 @@ inline void libbirch::LazyAny::freeze() {
   }
 }
 
-inline void libbirch::LazyAny::thaw(LazyContext* context) {
+inline void libbirch::LazyAny::thaw(LazyLabel* context) {
   this->context = (intptr_t)context;
   frozen = false;
   finished = false;
@@ -214,7 +215,7 @@ inline void libbirch::LazyAny::doFreeze_() {
   //
 }
 
-inline void libbirch::LazyAny::doThaw_(LazyContext* context) {
+inline void libbirch::LazyAny::doThaw_(LazyLabel* context) {
   //
 }
 

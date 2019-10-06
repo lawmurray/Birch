@@ -12,38 +12,38 @@
 
 namespace libbirch {
 /**
- * Context for lazy deep clones.
+ * Label for bookkeeping lazy deep clones.
  *
  * @ingroup libbirch
  */
-class LazyContext: public Counted {
+class LazyLabel: public Counted {
   friend class List;
 public:
-  using class_type_ = LazyContext;
+  using class_type_ = LazyLabel;
 
   /**
    * Constructor for root node.
    */
-  LazyContext();
+  LazyLabel();
 
   /**
    * Constructor for non-root node.
    *
    * @param parent Parent.
    */
-  LazyContext(LazyContext* parent);
+  LazyLabel(LazyLabel* parent);
 
   /**
    * Destructor.
    */
-  virtual ~LazyContext();
+  virtual ~LazyLabel();
 
   /**
    * Fork to create a new child context.
    *
    * @return The child context.
    */
-  LazyContext* fork();
+  LazyLabel* fork();
 
   /**
    * Map an object that may not yet have been cloned, cloning it if
@@ -72,12 +72,12 @@ public:
    */
   void thaw();
 
-  virtual LazyContext* clone_() const {
-    return new LazyContext(*this);
+  virtual LazyLabel* clone_() const {
+    return new LazyLabel(*this);
   }
 
   virtual const char* name_() const {
-    return "LazyContext";
+    return "LazyLabel";
   }
 
 private:
@@ -99,12 +99,12 @@ private:
 };
 }
 
-inline libbirch::LazyContext::LazyContext() :
+inline libbirch::LazyLabel::LazyLabel() :
     frozen(false) {
   //
 }
 
-inline libbirch::LazyContext::LazyContext(LazyContext* parent) :
+inline libbirch::LazyLabel::LazyLabel(LazyLabel* parent) :
     frozen(parent->frozen) {
   assert(parent);
   parent->l.set();
@@ -112,12 +112,12 @@ inline libbirch::LazyContext::LazyContext(LazyContext* parent) :
   parent->l.unset();
 }
 
-inline libbirch::LazyContext::~LazyContext() {
+inline libbirch::LazyLabel::~LazyLabel() {
   //
 }
 
-inline libbirch::LazyContext* libbirch::LazyContext::fork() {
-  return new LazyContext(this);
+inline libbirch::LazyLabel* libbirch::LazyLabel::fork() {
+  return new LazyLabel(this);
 }
 
 #endif

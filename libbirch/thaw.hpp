@@ -10,7 +10,7 @@ namespace libbirch {
  * Shallow thaw objects.
  */
 template<class T>
-void thaw(const T& o, LazyContext* context) {
+void thaw(const T& o, LazyLabel* context) {
   static_assert(is_value<T>::value, "unimplemented thaw()");
 }
 }
@@ -26,27 +26,27 @@ void thaw(const T& o, LazyContext* context) {
 
 namespace libbirch {
 template<class T>
-void thaw(const Shared<T>& o, LazyContext* context) {
+void thaw(const Shared<T>& o, LazyLabel* context) {
   o.thaw(context);
 }
 
 template<class T>
-void thaw(const Weak<T>& o, LazyContext* context) {
+void thaw(const Weak<T>& o, LazyLabel* context) {
   o.thaw(context);
 }
 
 template<class T>
-void thaw(const Init<T>& o, LazyContext* context) {
+void thaw(const Init<T>& o, LazyLabel* context) {
   o.thaw(context);
 }
 
 template<class T>
-void thaw(const Fiber<T>& o, LazyContext* context) {
+void thaw(const Fiber<T>& o, LazyLabel* context) {
   o.thaw(context);
 }
 
 template<class T, class F>
-void thaw(const Array<T,F>& o, LazyContext* context) {
+void thaw(const Array<T,F>& o, LazyLabel* context) {
   if (!is_value<T>::value) {
     auto iter = o.begin();
     auto last = iter + o.size();
@@ -57,7 +57,7 @@ void thaw(const Array<T,F>& o, LazyContext* context) {
 }
 
 template<class T>
-void thaw(const Optional<T>& o, LazyContext* context) {
+void thaw(const Optional<T>& o, LazyLabel* context) {
   if (!is_value<T>::value && o.query()) {
     thaw(o.get(), context);
   }
@@ -73,7 +73,7 @@ void thaw(const std::function<T>& o) {
 
 template<int i, class ... Args>
 struct thaw_tuple_impl {
-  void operator()(const std::tuple<Args...>& o, LazyContext* context) {
+  void operator()(const std::tuple<Args...>& o, LazyLabel* context) {
     thaw(std::get<i - 1>(o), context);
     thaw_tuple_impl<i - 1,Args...>()(o, context);
   }
@@ -81,13 +81,13 @@ struct thaw_tuple_impl {
 
 template<class ... Args>
 struct thaw_tuple_impl<0,Args...> {
-  void operator()(const std::tuple<Args...>& o, LazyContext* context) {
+  void operator()(const std::tuple<Args...>& o, LazyLabel* context) {
     //
   }
 };
 
 template<class ... Args>
-void thaw(const std::tuple<Args...>& o, LazyContext* context) {
+void thaw(const std::tuple<Args...>& o, LazyLabel* context) {
   thaw_tuple_impl<std::tuple_size<std::tuple<Args...>>::value,Args...>()(o, context);
 }
 

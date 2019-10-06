@@ -23,7 +23,7 @@ public:
    *
    * @param context The context to swap in.
    */
-  SwapContext(Context* context) : prevContext(currentContext) {
+  SwapContext(Label* context) : prevContext(currentContext) {
     currentContext = context;
   }
 
@@ -38,6 +38,6 @@ private:
   /**
    * Previous context.
    */
-  Context* prevContext;
+  Label* prevContext;
 };
 }

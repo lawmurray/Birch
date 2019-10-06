@@ -4,7 +4,7 @@
 #pragma once
 
 #include "libbirch/external.hpp"
-#include "libbirch/Context.hpp"
+#include "libbirch/Label.hpp"
 #include "libbirch/EntryExitLock.hpp"
 
 namespace libbirch {
@@ -12,7 +12,7 @@ namespace libbirch {
  * The current context to which to assign newly created objects in the
  * thread.
  */
-thread_local extern Context* currentContext;
+thread_local extern Label* currentContext;
 
 /**
  * Is a clone operation currently underway in the thread?

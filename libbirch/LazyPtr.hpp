@@ -5,9 +5,9 @@
 #if ENABLE_LAZY_DEEP_CLONE
 
 #include "libbirch/LazyAny.hpp"
-#include "libbirch/LazyContext.hpp"
+#include "libbirch/LazyLabel.hpp"
 #include "libbirch/Nil.hpp"
-#include "libbirch/ContextPtr.hpp"
+#include "libbirch/LabelPtr.hpp"
 #include "libbirch/thread.hpp"
 
 namespace libbirch {
@@ -38,7 +38,7 @@ public:
   explicit LazyPtr(T* object) :
       object(object) {
     if (object) {
-      to.replace(currentContext);
+      label.replace(currentContext);
     }
   }
 
@@ -48,7 +48,7 @@ public:
   LazyPtr(const P& object) :
       object(object) {
     if (object) {
-      to.replace(currentContext);
+      label.replace(currentContext);
     }
   }
 
@@ -63,10 +63,10 @@ public:
           o.freeze();
         }
         object = o.object;
-        to.replace(currentContext);
+        label.replace(currentContext);
       } else {
         object.replace(o.get());
-        to = o.to;
+        label = o.label;
       }
     }
   }
@@ -77,7 +77,7 @@ public:
   template<class Q, typename = std::enable_if_t<std::is_base_of<T,
       typename Q::value_type>::value>>
   LazyPtr(const LazyPtr<Q>& o) :
-      to(o.to) {
+      label(o.label) {
     object.replace(o.get());
   }
 
@@ -91,7 +91,7 @@ public:
    */
   LazyPtr<P>& operator=(const LazyPtr<P>& o) {
     /* risk of invalidating `o` here, so assign to `to` first */
-    to = o.to;
+    label = o.label;
     object.replace(o.get());
     return *this;
   }
@@ -103,7 +103,7 @@ public:
       typename Q::value_type>::value>>
   LazyPtr<P>& operator=(const LazyPtr<Q>& o) {
     /* risk of invalidating `o` here, so assign to `to` first */
-    to = o.to;
+    label = o.label;
     object.replace(o.get());
     return *this;
   }
@@ -113,7 +113,7 @@ public:
    */
   LazyPtr<P>& operator=(LazyPtr<P> && o) {
     /* risk of invalidating `o` here, so assign to `to` first */
-    to = std::move(o.to);
+    label = std::move(o.label);
     object = std::move(o.object);
     return *this;
   }
@@ -125,7 +125,7 @@ public:
       typename Q::value_type>::value>>
   LazyPtr<P>& operator=(LazyPtr<Q> && o) {
     /* risk of invalidating `o` here, so assign to `to` first */
-    to = std::move(o.to);
+    label = std::move(o.label);
     object = std::move(o.object);
     return *this;
   }
@@ -136,9 +136,9 @@ public:
   LazyPtr<P>& operator=(const P& o) {
     object = o;
     if (o) {
-      to.replace(currentContext);
+      label.replace(currentContext);
     } else {
-      to.release();
+      label.release();
     }
     return *this;
   }
@@ -148,7 +148,7 @@ public:
    */
   LazyPtr<P>& operator=(const Nil&) {
     object.release();
-    to.release();
+    label.release();
     return *this;
   }
 
@@ -157,7 +157,7 @@ public:
    */
   LazyPtr<P>& operator=(const std::nullptr_t&) {
     object.release();
-    to.release();
+    label.release();
     return *this;
   }
 
@@ -191,7 +191,7 @@ public:
   T* get() {
     auto raw = object.get();
     if (raw && raw->isFrozen()) {
-      raw = static_cast<T*>(to->get(raw));
+      raw = static_cast<T*>(label->get(raw));
       object.replace(raw);
     }
     return raw;
@@ -210,7 +210,7 @@ public:
   T* pull() {
     auto raw = object.get();
     if (raw && raw->isFrozen()) {
-      raw = static_cast<T*>(to->pull(raw));
+      raw = static_cast<T*>(label->pull(raw));
       object.replace(raw);
     }
     return raw;
@@ -230,7 +230,7 @@ public:
     assert(object);
     pull();
     startFreeze();
-    return LazyPtr<P>(object, to->fork());
+    return LazyPtr<P>(object, label->fork());
   }
 
   /**
@@ -259,7 +259,7 @@ public:
   void freeze() {
     if (object) {
       object->freeze();
-      to->freeze();
+      label->freeze();
     }
   }
 
@@ -273,20 +273,20 @@ public:
   /**
    * Thaw.
    */
-  void thaw(LazyContext* context) {
+  void thaw(LazyLabel* context) {
     if (isCross()) {
       startFinish();
       startFreeze();
     }
     if (object) {
-      to.replace(context);
+      label.replace(context);
     }
   }
 
   /**
    * Thaw.
    */
-  void thaw(LazyContext* context) const {
+  void thaw(LazyLabel* context) const {
     return const_cast<LazyPtr<P>*>(this)->thaw(context);
   }
 
@@ -331,7 +331,7 @@ public:
    * Does this pointer result from a cross copy?
    */
   bool isCross() const {
-    return to.isCross();
+    return label.isCross();
   }
 
   /**
@@ -369,7 +369,7 @@ public:
    */
   template<class U>
   auto dynamic_pointer_cast() const {
-    return cast_type<U>(dynamic_cast<U*>(object.get()), to.get());
+    return cast_type<U>(dynamic_cast<U*>(object.get()), label.get());
   }
 
   /**
@@ -377,31 +377,31 @@ public:
    */
   template<class U>
   auto static_pointer_cast() const {
-    return cast_type<U>(static_cast<U*>(object.get()), to.get());
+    return cast_type<U>(static_cast<U*>(object.get()), label.get());
   }
 
 protected:
   /**
    * Constructor (used by casts).
    */
-  LazyPtr(T* object, LazyContext* to) {
-    this->to.replace(to);
+  LazyPtr(T* object, LazyLabel* label) {
+    this->label.replace(label);
     this->object.replace(object);
   }
 
   /**
    * Constructor (used by clone).
    */
-  LazyPtr(const P& object, LazyContext* to) :
-      to(to),
+  LazyPtr(const P& object, LazyLabel* label) :
+      label(label),
       object(object) {
     //
   }
 
   /**
-   * Context to which to map the object.
+   * Label of the object.
    */
-  ContextPtr to;
+  LabelPtr label;
 
   /**
    * Object.

@@ -4,7 +4,7 @@
 #pragma once
 #if !ENABLE_LAZY_DEEP_CLONE
 
-#include "libbirch/EagerContext.hpp"
+#include "libbirch/EagerLabel.hpp"
 #include "libbirch/Nil.hpp"
 #include "libbirch/SwapClone.hpp"
 #include "libbirch/SwapContext.hpp"
@@ -200,7 +200,7 @@ class EagerPtr {
    */
   EagerPtr<P> clone() const {
     if (object) {
-      SharedPtr<EagerContext> context(EagerContext::create_());
+      SharedPtr<EagerLabel> context(EagerLabel::create_());
       SwapClone swapClone(true);
       SwapContext swapContext(context.get());
       return EagerPtr<P>(static_cast<T*>(context->copy(object.get())));

@@ -5,50 +5,49 @@
 
 #include "libbirch/SharedPtr.hpp"
 #include "libbirch/InitPtr.hpp"
-#include "libbirch/Context.hpp"
+#include "libbirch/Label.hpp"
 
 namespace libbirch {
 /**
- * Pointer to a Context object. When the reference is the same as the
- * current context, this acts as a raw pointers, otherwise it acts as a
- * shared pointer.
+ * Pointer to a Label object. When the referent is the current context, this
+ * acts as a raw pointer, otherwise as as a shared pointer.
  *
  * @ingroup libbirch
  */
-class ContextPtr {
+class LabelPtr {
 public:
   /**
    * Default constructor.
    */
-  ContextPtr() : ptr(0), cross(false) {
+  LabelPtr() : ptr(0), cross(false) {
     //
   }
 
   /**
    * Value constructor.
    */
-  explicit ContextPtr(Context* ptr) {
+  explicit LabelPtr(Label* ptr) {
     set(ptr);
   }
 
   /**
    * Copy constructor.
    */
-  ContextPtr(const ContextPtr& o) {
+  LabelPtr(const LabelPtr& o) {
     set(o.get());
   }
 
   /**
    * Destructor.
    */
-  ~ContextPtr() {
+  ~LabelPtr() {
     release();
   }
 
   /**
    * Copy assignment.
    */
-  ContextPtr& operator=(const ContextPtr& o) {
+  LabelPtr& operator=(const LabelPtr& o) {
     replace(o.get());
     return *this;
   }
@@ -56,14 +55,14 @@ public:
   /**
    * Get the raw pointer.
    */
-  Context* get() const {
-    return reinterpret_cast<Context*>(ptr);
+  Label* get() const {
+    return reinterpret_cast<Label*>(ptr);
   }
 
   /**
    * Replace.
    */
-  void replace(Context* ptr) {
+  void replace(Label* ptr) {
     auto old = get();
     if (ptr != old) {
       auto oldCross = isCross();
@@ -97,28 +96,28 @@ public:
   /**
    * Dereference.
    */
-  Context& operator*() const {
+  Label& operator*() const {
     return *get();
   }
 
   /**
    * Member access.
    */
-  Context* operator->() const {
+  Label* operator->() const {
     return get();
   }
 
   /**
    * Equal comparison.
    */
-  bool operator==(const ContextPtr& o) const {
+  bool operator==(const LabelPtr& o) const {
     return get() == o.get();
   }
 
   /**
    * Not equal comparison.
    */
-  bool operator!=(const ContextPtr& o) const {
+  bool operator!=(const LabelPtr& o) const {
     return get() != o.get();
   }
 
@@ -133,7 +132,7 @@ private:
   /**
    * Set.
    */
-  void set(Context* ptr) {
+  void set(Label* ptr) {
     this->ptr = reinterpret_cast<intptr_t>(ptr);
     cross = ptr && ptr != currentContext;
     if (cross) {

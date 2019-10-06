@@ -10,14 +10,14 @@
 
 namespace libbirch {
 /**
- * Context for lazy deep cloning of objects.
+ * Label for bookkeeping eager deep clones.
  *
  * @ingroup libbirch
  */
-class EagerContext: public Counted {
+class EagerLabel: public Counted {
   friend class List;
 public:
-  using class_type_ = EagerContext;
+  using class_type_ = EagerLabel;
 
   /**
    * Map an object that may not yet have been cloned.
@@ -29,12 +29,12 @@ public:
    */
   EagerAny* copy(EagerAny* o);
 
-  virtual EagerContext* clone_() const {
-    return new LazyContext(*this);
+  virtual EagerLabel* clone_() const {
+    return new LazyLabel(*this);
   }
 
   virtual const char* name_() const {
-    return "EagerContext";
+    return "EagerLabel";
   }
 
 private:

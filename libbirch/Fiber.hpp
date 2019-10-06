@@ -39,7 +39,7 @@ public:
   /**
    * Thaw the fiber.
    */
-  void thaw(LazyContext* context) const;
+  void thaw(LazyLabel* context) const;
 
   /**
    * Finish the fiber.
@@ -94,7 +94,7 @@ void libbirch::Fiber<YieldType>::finish() const {
 }
 
 template<class YieldType>
-void libbirch::Fiber<YieldType>::thaw(LazyContext* context) const {
+void libbirch::Fiber<YieldType>::thaw(LazyLabel* context) const {
   state.thaw(context);
 }
 

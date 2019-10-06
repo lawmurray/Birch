@@ -2,12 +2,12 @@
  * @file
  */
 #if ENABLE_LAZY_DEEP_CLONE
-#include "libbirch/LazyContext.hpp"
+#include "libbirch/LazyLabel.hpp"
 
 #include "libbirch/SwapClone.hpp"
 #include "libbirch/SwapContext.hpp"
 
-libbirch::LazyAny* libbirch::LazyContext::get(LazyAny* o) {
+libbirch::LazyAny* libbirch::LazyLabel::get(LazyAny* o) {
   assert(o->isFrozen());
   LazyAny* prev = nullptr;
   LazyAny* next = o;
@@ -37,7 +37,7 @@ libbirch::LazyAny* libbirch::LazyContext::get(LazyAny* o) {
   return next;
 }
 
-libbirch::LazyAny* libbirch::LazyContext::pull(LazyAny* o) {
+libbirch::LazyAny* libbirch::LazyLabel::pull(LazyAny* o) {
   assert(o->isFrozen());
   LazyAny* prev = nullptr;
   LazyAny* next = o;
@@ -57,7 +57,7 @@ libbirch::LazyAny* libbirch::LazyContext::pull(LazyAny* o) {
   return next;
 }
 
-libbirch::LazyAny* libbirch::LazyContext::copy(LazyAny* o) {
+libbirch::LazyAny* libbirch::LazyLabel::copy(LazyAny* o) {
   assert(o->isFrozen());
   SwapClone swapClone(true);
   SwapContext swapContext(this);
@@ -69,7 +69,7 @@ libbirch::LazyAny* libbirch::LazyContext::copy(LazyAny* o) {
   return cloned;
 }
 
-void libbirch::LazyContext::freeze() {
+void libbirch::LazyLabel::freeze() {
   if (!frozen) {
     frozen = true;
     l.set();
@@ -78,7 +78,7 @@ void libbirch::LazyContext::freeze() {
   }
 }
 
-void libbirch::LazyContext::thaw() {
+void libbirch::LazyLabel::thaw() {
   frozen = false;
 }
 
