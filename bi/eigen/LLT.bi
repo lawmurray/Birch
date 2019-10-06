@@ -147,29 +147,12 @@ function rank_update(S:LLT, X:Real[_,_], a:Real) -> LLT {
 /**
  * Trace of a symmetric positive-definite matrix.
  */
-function trace(S:LLT) -> Real {
-  auto L <- cholesky(S);
-  auto n <- rows(S);
-  auto tr <- 0.0;
-  for auto i in 1..n {
-    auto l <- L[i,i];
-    tr <- tr + l*l;
-  }
-  return tr;
-}
+function trace(S:LLT) -> Real;
 
 /**
  * Determinant of a symmetric positive-definite matrix.
  */
-function det(S:LLT) -> Real {
-  auto L <- cholesky(S);
-  auto n <- rows(S);
-  auto d <- 1.0;
-  for auto i in 1..n {
-    d <- d*L[i,i];
-  }
-  return d*d;
-}
+function det(S:LLT) -> Real;
 
 /**
  * Logarithm of the determinant of a symmetric positive-definite matrix.
@@ -187,42 +170,21 @@ function ldet(S:LLT) -> Real {
 /**
  * Inverse of a symmetric positive definite matrix.
  */
-function inv(S:LLT) -> Real[_,_] {
-  cpp{{
-  return S.solve(libbirch::EigenMatrix<bi::type::Real>::Identity(S.rows(),
-      S.cols()));
-  }}
-}
+function inv(S:LLT) -> Real[_,_];
 
 /**
  * Solve a system of equations with a symmetric positive definite matrix.
  */
-function solve(S:LLT, y:Real[_]) -> Real[_] {
-  assert columns(S) == length(y);
-  cpp{{
-  return S.solve(y.toEigen());
-  }}
-}
+function solve(S:LLT, y:Real[_]) -> Real[_];
 
 /**
  * Solve a system of equations with a symmetric positive definite matrix.
  */
-function solve(S:LLT, Y:Real[_,_]) -> Real[_,_] {
-  assert columns(S) == rows(Y);
-  cpp{{
-  return S.solve(Y.toEigen());
-  }}
-}
+function solve(S:LLT, Y:Real[_,_]) -> Real[_,_];
 
 /**
  * Cholesky factor of a matrix, $X = LL^{\top}$.
  *
  * Returns: the lower-triangular factor $L$.
  */
-function cholesky(S:LLT) -> Real[_,_] {
-  L:Real[rows(S),columns(S)];
-  cpp{{
-  L.toEigen() = S.matrixL();
-  }}
-  return L;
-}
+function cholesky(S:LLT) -> Real[_,_];

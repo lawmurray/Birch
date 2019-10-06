@@ -65,6 +65,16 @@ auto trace(const libbirch::Array<Type,Frame>& o) {
 }
 
 template<class Type>
+auto trace(const Eigen::LLT<Type>& o) {
+  return o.trace();
+}
+
+template<class Type>
+auto trace(const Eigen::DiagonalWrapper<Type>& o) {
+  return o.trace();
+}
+
+template<class Type>
 auto det(const Eigen::MatrixBase<Type>& o) {
   return o.determinant();
 }
@@ -72,6 +82,16 @@ auto det(const Eigen::MatrixBase<Type>& o) {
 template<class Type, class Frame>
 auto det(const libbirch::Array<Type,Frame>& o) {
   return det(o.toEigen());
+}
+
+template<class Type>
+auto det(const Eigen::LLT<Type>& o) {
+  return o.determinant();
+}
+
+template<class Type>
+auto det(const Eigen::DiagonalWrapper<Type>& o) {
+  return o.determinant();
 }
 
 /**
@@ -106,6 +126,21 @@ auto transpose(const libbirch::Array<Type,Frame>& o) {
 }
 
 template<class Type>
+auto transpose(const Eigen::DiagonalWrapper<Type>& o) {
+  return o.transpose();
+}
+
+template<class Type>
+auto transpose(const Eigen::LLT<Type>& o) {
+  return o.transpose();
+}
+
+template<class Type, unsigned Mode>
+auto transpose(const Eigen::TriangularView<Type,Mode>& o) {
+  return o.transpose();
+}
+
+template<class Type>
 auto inv(const Eigen::MatrixBase<Type>& o) {
   return o.inverse();
 }
@@ -116,8 +151,71 @@ auto inv(const libbirch::Array<Type,Frame>& o) {
 }
 
 template<class Type>
+auto inv(const Eigen::LLT<Type>& o) {
+  return o.solve(libbirch::EigenMatrix<typename Type::value_type>::Identity(
+      o.rows(), o.cols())).eval();
+}
+
+template<class Type>
 auto inv(const Eigen::DiagonalWrapper<Type>& o) {
   return o.inverse();
+}
+
+template<class Type, unsigned Mode>
+auto inv(const Eigen::TriangularView<Type,Mode>& o) {
+  return o.inverse();
+}
+
+template<class Type1, class Type2>
+auto solve(const Eigen::MatrixBase<Type1>& o1,
+    const Eigen::MatrixBase<Type2>& o2) {
+  return o1.householderQr().solve(o2).eval();
+}
+
+template<class Type1, class Type2, class Frame2>
+auto solve(const Eigen::MatrixBase<Type1>& o1,
+    const libbirch::Array<Type2,Frame2>& o2) {
+  return solve(o1, o2.toEigen());
+}
+
+template<class Type1, class Frame1, class Type2>
+auto solve(const libbirch::Array<Type1,Frame1>& o1,
+    const Eigen::MatrixBase<Type2>& o2) {
+  return solve(o1.toEigen(), o2);
+}
+
+template<class Type1, class Frame1, class Type2, class Frame2>
+auto solve(const libbirch::Array<Type1,Frame1>& o1,
+    const libbirch::Array<Type2,Frame2>& o2) {
+  return solve(o1.toEigen(), o2.toEigen());
+}
+
+template<class Type1, class Type2>
+auto solve(const Eigen::LLT<Type1>& o1, const Eigen::MatrixBase<Type2>& o2) {
+  return o1.solve(o2).eval();
+}
+
+template<class Type1, class Type2, class Frame2>
+auto solve(const Eigen::LLT<Type1>& o1,
+    const libbirch::Array<Type2,Frame2>& o2) {
+  return solve(o1, o2.toEigen());
+}
+
+template<class Type1, unsigned Mode1, class Type2>
+auto solve(const Eigen::TriangularView<Type1,Mode1>& o1,
+    const Eigen::MatrixBase<Type2>& o2) {
+  return o1.solve(o2).eval();
+}
+
+template<class Type1, unsigned Mode1, class Type2, class Frame2>
+auto solve(const Eigen::TriangularView<Type1,Mode1>& o1,
+    const libbirch::Array<Type2,Frame2>& o2) {
+  return solve(o1, o2.toEigen());
+}
+
+template<class Type>
+auto cholesky(const Eigen::LLT<Type>& o) {
+  return o.matrixL();
 }
 
 template<class Type1, class Type2>
@@ -166,30 +264,6 @@ template<class Type1, class Frame1, class Type2, class Frame2>
 auto hadamard(const libbirch::Array<Type1,Frame1>& o1,
     const libbirch::Array<Type2,Frame2>& o2) {
   return hadamard(o1.toEigen(), o2.toEigen());
-}
-
-template<class Type1, class Type2>
-auto solve(const Eigen::MatrixBase<Type1>& o1,
-    const Eigen::MatrixBase<Type2>& o2) {
-  return o1.householderQr().solve(o2).eval();
-}
-
-template<class Type1, class Type2, class Frame2>
-auto solve(const Eigen::MatrixBase<Type1>& o1,
-    const libbirch::Array<Type2,Frame2>& o2) {
-  return solve(o1, o2.toEigen());
-}
-
-template<class Type1, class Frame1, class Type2>
-auto solve(const libbirch::Array<Type1,Frame1>& o1,
-    const Eigen::MatrixBase<Type2>& o2) {
-  return solve(o1.toEigen(), o2);
-}
-
-template<class Type1, class Frame1, class Type2, class Frame2>
-auto solve(const libbirch::Array<Type1,Frame1>& o1,
-    const libbirch::Array<Type2,Frame2>& o2) {
-  return solve(o1.toEigen(), o2.toEigen());
 }
 
 template<class Type>

@@ -422,6 +422,14 @@ public:
             && F::count() == 2 && DerivedType::ColsAtCompileTime == 1;
   };
 
+  template<class DerivedType>
+  struct is_triangle_compatible {
+    static const bool value =
+        std::is_same<T,typename DerivedType::value_type>::value &&
+            F::count() == 2 &&
+            DerivedType::ColsAtCompileTime == Eigen::Dynamic;
+  };
+
   /**
    * Appropriate Eigen Matrix type for this Birch Array type.
    */
@@ -523,6 +531,20 @@ public:
   }
 
   /**
+   * Construct from Eigen TriangularWrapper expression.
+   */
+  template<class DerivedType, unsigned Mode, typename = std::enable_if_t<
+      is_triangle_compatible<DerivedType>::value>>
+  Array(const Eigen::TriangularView<DerivedType,Mode>& o) :
+      frame(o.rows(), o.cols()),
+      buffer(nullptr),
+      offset(0),
+      isView(false) {
+    allocate();
+    toEigen() = o;  // buffer uninitialized, but okay as type is primitive
+  }
+
+  /**
    * Assign from Eigen Matrix expression.
    */
   template<class DerivedType, typename = std::enable_if_t<
@@ -553,7 +575,23 @@ public:
     }
     return *this;
   }
-///@}
+
+  /**
+   * Assign from Eigen TriangularView expression.
+   */
+  template<class DerivedType, unsigned Mode, typename = std::enable_if_t<
+      is_triangle_compatible<DerivedType>::value>>
+  Array<T,F>& operator=(const Eigen::TriangularView<DerivedType,Mode>& o) {
+    if (!isView && (!frame.conforms(o.rows(), o.cols()) || isShared())) {
+      lock();
+      rebase(o);
+      unlock();
+    } else {
+      toEigen() = o;
+    }
+    return *this;
+  }
+  ///@}
 
 private:
   /**
