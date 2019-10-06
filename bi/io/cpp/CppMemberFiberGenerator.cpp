@@ -209,6 +209,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     finish("}\n");
   }
   if (header) {
+    out();
     line("};\n");
   }
 

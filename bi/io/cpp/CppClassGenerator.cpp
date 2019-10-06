@@ -14,7 +14,7 @@ bi::CppClassGenerator::CppClassGenerator(std::ostream& base, const int level,
 }
 
 void bi::CppClassGenerator::visit(const Class* o) {
-  if (o->isAlias() || !o->braces->isEmpty()) {
+  if (!o->isAlias() && o->isBound() && !o->braces->isEmpty()) {
     type = o;
 
     Gatherer<MemberFunction> memberFunctions;
@@ -26,228 +26,224 @@ void bi::CppClassGenerator::visit(const Class* o) {
 
     /* start boilerplate */
     if (header) {
-      if (!o->isAlias()) {
-        genTemplateParams(o);
-        start("class " << o->name);
-        if (o->isGeneric() && o->isBound()) {
-       	 genTemplateArgs(o);
-        }
-        if (o->has(FINAL)) {
-          middle(" final");
-        }
-        if (o->isBound() && !o->base->isEmpty()) {
-          middle(" : public ");
-          ++inPointer;
-          middle(o->base);
-        }
+      genTemplateParams(o);
+      start("class " << o->name);
+      if (o->isGeneric() && o->isBound()) {
+       genTemplateArgs(o);
+      }
+      if (o->has(FINAL)) {
+        middle(" final");
+      }
+      if (o->isBound() && !o->base->isEmpty()) {
+        middle(" : public ");
+        ++inPointer;
+        middle(o->base);
+      }
+      if (o->base->isEmpty()) {
+        middle(" : public libbirch::Any");
+      }
+      finish(" {");
+      line("public:");
+      in();
+      if (o->isBound()) {
+        start("using class_type_ = " << o->name);
+        genTemplateArgs(o);
+        finish(';');
+        line("using this_type_ = class_type_;");
         if (o->base->isEmpty()) {
-          middle(" : public libbirch::Any");
+          line("using super_type_ = libbirch::Any;");
+        } else {
+          ++inPointer;
+          line("using super_type_ = " << o->base << ';');
         }
-        finish(" {");
-        line("public:");
-        in();
-        if (o->isBound()) {
-          start("using class_type_ = " << o->name);
-          genTemplateArgs(o);
-          finish(';');
-          line("using this_type_ = class_type_;");
-          if (o->base->isEmpty()) {
-            line("using super_type_ = libbirch::Any;");
-          } else {
-            ++inPointer;
-            line("using super_type_ = " << o->base << ';');
-          }
-          line("");
-          line("using super_type_::operator=;");
-          line("");
+        line("");
+        line("using super_type_::operator=;");
+        line("");
 
-          /* using declarations for member functions and fibers in base classes
-           * that are overridden */
-          std::set<std::string> names;
-          for (auto f : memberFunctions) {
-            if (o->scope->override(f)) {
-              names.insert(f->name->str());
-            }
+        /* using declarations for member functions and fibers in base classes
+         * that are overridden */
+        std::set<std::string> names;
+        for (auto f : memberFunctions) {
+          if (o->scope->override(f)) {
+            names.insert(f->name->str());
           }
-          for (auto f : memberFibers) {
-            if (o->scope->override(f)) {
-              names.insert(f->name->str());
-            }
-          }
-          for (auto name : names) {
-            line("using super_type_::" << internalise(name) << ';');
-          }
-          line("");
         }
+        for (auto f : memberFibers) {
+          if (o->scope->override(f)) {
+            names.insert(f->name->str());
+          }
+        }
+        for (auto name : names) {
+          line("using super_type_::" << internalise(name) << ';');
+        }
+        line("");
       }
     }
 
-    if (!o->isAlias() && o->isBound()) {
-      /* constructor */
-      if (!header) {
-        start("bi::type::" << o->name);
-        genTemplateArgs(o);
-        middle("::");
-      } else {
-        start("");
+    /* constructor */
+    if (!header) {
+      start("bi::type::" << o->name);
+      genTemplateArgs(o);
+      middle("::");
+    } else {
+      start("");
+    }
+    middle(o->name);
+    CppBaseGenerator aux(base, level, header);
+    aux << '(' << o->params << ')';
+    if (header) {
+      finish(";\n");
+    } else {
+      finish(" :");
+      in();
+      in();
+      start("super_type_(");
+      if (!o->args->isEmpty()) {
+        middle(o->args);
       }
-      middle(o->name);
-      CppBaseGenerator aux(base, level, header);
-      aux << '(' << o->params << ')';
-      if (header) {
-        finish(";\n");
-      } else {
-        finish(" :");
-        in();
-        in();
-        start("super_type_(");
-        if (!o->args->isEmpty()) {
-          middle(o->args);
-        }
-        middle(')');
-        ++inConstructor;
-        for (auto o : memberVariables) {
-          if (!o->value->isEmpty()) {
-            finish(',');
-            start(o->name << '(' << o->value << ')');
-          } else if (o->type->isClass()) {
-            finish(',');
-            ++inPointer;
-            start(o->name << "(libbirch::make_object<" << o->type << ">(" << o->args << "))");
-          } else if (o->type->isArray() && !o->brackets->isEmpty()) {
-            finish(',');
-            start(o->name << "(libbirch::make_frame(" << o->brackets << ')');
-            if (!o->args->isEmpty()) {
-              middle(", " << o->args);
-            }
-            middle(')');
+      middle(')');
+      ++inConstructor;
+      for (auto o : memberVariables) {
+        if (!o->value->isEmpty()) {
+          finish(',');
+          start(o->name << '(' << o->value << ')');
+        } else if (o->type->isClass()) {
+          finish(',');
+          ++inPointer;
+          start(o->name << "(libbirch::make_object<" << o->type << ">(" << o->args << "))");
+        } else if (o->type->isArray() && !o->brackets->isEmpty()) {
+          finish(',');
+          start(o->name << "(libbirch::make_frame(" << o->brackets << ')');
+          if (!o->args->isEmpty()) {
+            middle(", " << o->args);
           }
+          middle(')');
         }
-        --inConstructor;
-        out();
-        out();
-        finish(" {");
+      }
+      --inConstructor;
+      out();
+      out();
+      finish(" {");
+      in();
+      line("//");
+      out();
+      line("}\n");
+    }
+
+    /* copy constructor, destructor, assignment operator */
+    if (header) {
+      line(o->name << "(const " << o->name << "&) = default;");
+      line("virtual ~" << o->name << "() = default;");
+      line(o->name << "& operator=(const " << o->name << "&) = default;");
+    }
+
+    /* clone function */
+    if (header) {
+      line("virtual " << o->name << "* clone_() const {");
+      in();
+      line("return new " << o->name << "(*this);");
+      out();
+      line("}\n");
+    }
+
+    /* name function */
+    if (header) {
+      line("virtual const char* name_() const {");
+      in();
+      line("return \"" << o->name << "\";");
+      out();
+      line("}\n");
+    }
+
+    /* freeze function */
+    line("#if ENABLE_LAZY_DEEP_CLONE");
+    if (header) {
+      start("virtual void ");
+    } else {
+      start("void bi::type::" << o->name);
+      genTemplateArgs(o);
+      middle("::");
+    }
+    middle("doFreeze_()");
+    if (header) {
+      finish(';');
+    } else {
+      finish(" {");
+      in();
+      line("super_type_::doFreeze_();");
+      for (auto o : memberVariables) {
+        line("libbirch::freeze(" << o->name << ");");
+      }
+      out();
+      line("}\n");
+    }
+
+    /* thaw function */
+    if (header) {
+      start("virtual void ");
+    } else {
+      start("void bi::type::" << o->name);
+      genTemplateArgs(o);
+      middle("::");
+    }
+    middle("doThaw_(libbirch::LazyContext* context)");
+    if (header) {
+      finish(';');
+    } else {
+      finish(" {");
+      in();
+      line("super_type_::doThaw_(context);");
+      for (auto o : memberVariables) {
+        line("libbirch::thaw(" << o->name << ", context);");
+      }
+      out();
+      line("}\n");
+    }
+
+    /* finish function */
+    if (header) {
+      start("virtual void ");
+    } else {
+      start("void bi::type::" << o->name);
+      genTemplateArgs(o);
+      middle("::");
+    }
+    middle("doFinish_()");
+    if (header) {
+      finish(';');
+    } else {
+      finish(" {");
+      in();
+      line("super_type_::doFinish_();");
+      for (auto o : memberVariables) {
+        line("libbirch::finish(" << o->name << ");");
+      }
+      out();
+      line("}");
+    }
+    line("#endif\n");
+
+    /* setters for member variables */
+    if (header) {
+      Gatherer<MemberVariable> memberVars;
+      o->accept(&memberVars);
+      for (auto var : memberVars) {
+        line("template<class T_>");
+        line("auto& set_" << var->name << "_(T_&& o_) {");
         in();
-        line("//");
+        line("libbirch_swap_context_");
+        line("return " << var->name << " = " << "o_;");
         out();
         line("}\n");
-      }
 
-      /* copy constructor, destructor, assignment operator */
-      if (header) {
-        line(o->name << "(const " << o->name << "&) = default;");
-        line("virtual ~" << o->name << "() = default;");
-        line(o->name << "& operator=(const " << o->name << "&) = default;");
-      }
-
-      /* clone function */
-      if (header) {
-        line("virtual " << o->name << "* clone_() const {");
-        in();
-        line("return new " << o->name << "(*this);");
-        out();
-        line("}\n");
-      }
-
-      /* name function */
-      if (header) {
-        line("virtual const char* name_() const {");
-        in();
-        line("return \"" << o->name << "\";");
-        out();
-        line("}\n");
-      }
-
-      /* freeze function */
-      line("#if ENABLE_LAZY_DEEP_CLONE");
-      if (header) {
-        start("virtual void ");
-      } else {
-        start("void bi::type::" << o->name);
-        genTemplateArgs(o);
-        middle("::");
-      }
-      middle("doFreeze_()");
-      if (header) {
-        finish(';');
-      } else {
-        finish(" {");
-        in();
-        line("super_type_::doFreeze_();");
-        for (auto o : memberVariables) {
-          line("libbirch::freeze(" << o->name << ");");
-        }
-        out();
-        line("}\n");
-      }
-
-      /* thaw function */
-      if (header) {
-        start("virtual void ");
-      } else {
-        start("void bi::type::" << o->name);
-        genTemplateArgs(o);
-        middle("::");
-      }
-      middle("doThaw_(libbirch::LazyContext* context)");
-      if (header) {
-        finish(';');
-      } else {
-        finish(" {");
-        in();
-        line("super_type_::doThaw_(context);");
-        for (auto o : memberVariables) {
-          line("libbirch::thaw(" << o->name << ", context);");
-        }
-        out();
-        line("}\n");
-      }
-
-      /* finish function */
-      if (header) {
-        start("virtual void ");
-      } else {
-        start("void bi::type::" << o->name);
-        genTemplateArgs(o);
-        middle("::");
-      }
-      middle("doFinish_()");
-      if (header) {
-        finish(';');
-      } else {
-        finish(" {");
-        in();
-        line("super_type_::doFinish_();");
-        for (auto o : memberVariables) {
-          line("libbirch::finish(" << o->name << ");");
-        }
-        out();
-        line("}");
-      }
-      line("#endif\n");
-
-      /* setters for member variables */
-      if (header) {
-        Gatherer<MemberVariable> memberVars;
-        o->accept(&memberVars);
-        for (auto var : memberVars) {
-          line("template<class T_>");
-          line("auto& set_" << var->name << "_(const T_& o_) {");
+        if (var->type->isArray()) {
+          line("template<class F_, class T_>");
+          line("auto set_" << var->name << "_(const F_& frame_, T_&& o_) {");
           in();
           line("libbirch_swap_context_");
-          line("return " << var->name << " = " << "o_;");
+          line("return " << var->name << "(frame_) = " << "o_;");
           out();
           line("}\n");
-
-          if (var->type->isArray()) {
-            line("template<class F_, class T_>");
-            line("auto set_" << var->name << "_(const F_& frame_, const T_& o_) {");
-            in();
-            line("libbirch_swap_context_");
-            line("return " << var->name << "(frame_) = " << "o_;");
-            out();
-            line("}\n");
-          }
         }
       }
 
@@ -256,7 +252,7 @@ void bi::CppClassGenerator::visit(const Class* o) {
     }
 
     /* end class */
-    if (!o->isAlias() && header) {
+    if (header) {
       out();
       line("};\n");
     }
