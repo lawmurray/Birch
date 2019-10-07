@@ -320,8 +320,6 @@
       "libbirch/Span.hpp",
       "libbirch/stacktrace.hpp",
       "libbirch/Stride.hpp",
-      "libbirch/SwapClone.hpp",
-      "libbirch/SwapContext.hpp",
       "libbirch/thread.hpp",
       "libbirch/type.hpp",
       "libbirch/View.hpp",

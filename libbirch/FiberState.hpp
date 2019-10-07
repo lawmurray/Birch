@@ -24,8 +24,8 @@ public:
    *
    * @param npoints Number of yield points.
    */
-  FiberState(Label* context, const int npoints) :
-      Any(context),
+  FiberState(Label* label, const int npoints) :
+      Any(label),
       point_(0),
       npoints_(npoints) {
     //
@@ -34,9 +34,9 @@ public:
   /**
    * Deep copy constructor.
    */
-  FiberState(Label* context, const FiberState& o) :
-      Any(context, o),
-      value_(context, o.value_),
+  FiberState(Label* label, const FiberState& o) :
+      Any(label, o),
+      value_(label, o.value_),
       point_(o.point_),
       npoints_(o.npoints_) {
     //

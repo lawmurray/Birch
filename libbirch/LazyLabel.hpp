@@ -39,9 +39,9 @@ public:
   virtual ~LazyLabel();
 
   /**
-   * Fork to create a new child context.
+   * Fork to create a new child label.
    *
-   * @return The child context.
+   * @return The child label.
    */
   LazyLabel* fork();
 

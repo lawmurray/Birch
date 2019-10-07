@@ -4,9 +4,6 @@
 #if ENABLE_LAZY_DEEP_CLONE
 #include "libbirch/LazyLabel.hpp"
 
-#include "libbirch/SwapClone.hpp"
-#include "libbirch/SwapContext.hpp"
-
 libbirch::LazyAny* libbirch::LazyLabel::get(LazyAny* o) {
   assert(o->isFrozen());
   LazyAny* prev = nullptr;
@@ -26,7 +23,6 @@ libbirch::LazyAny* libbirch::LazyLabel::get(LazyAny* o) {
   if (frozen) {
     if (next->numShared() == 1u && next->numWeak() == 1u && next->numMemo() == 1u) {
       /* this is the last pointer to the object, just thaw it and reuse */
-      SwapContext swapContext(this);
       next->thaw(this);
     } else {
       /* copy it */

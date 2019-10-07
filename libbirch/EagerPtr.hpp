@@ -6,8 +6,6 @@
 
 #include "libbirch/EagerLabel.hpp"
 #include "libbirch/Nil.hpp"
-#include "libbirch/SwapClone.hpp"
-#include "libbirch/SwapContext.hpp"
 
 namespace libbirch {
 template<class T> class Optional;
@@ -199,10 +197,8 @@ class EagerPtr {
    */
   EagerPtr<P> clone() const {
     if (object) {
-      SharedPtr<EagerLabel> context(EagerLabel::create_());
-      SwapClone swapClone(true);
-      SwapContext swapContext(context.get());
-      return EagerPtr<P>(static_cast<T*>(context->copy(object.get())));
+      SharedPtr<EagerLabel> label(EagerLabel::create_());
+      return EagerPtr<P>(static_cast<T*>(label->copy(object.get())));
     } else {
       return EagerPtr<P>();
     }

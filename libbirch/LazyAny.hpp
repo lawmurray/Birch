@@ -8,9 +8,10 @@
 #include "libbirch/Counted.hpp"
 #include "libbirch/InitPtr.hpp"
 #include "libbirch/Atomic.hpp"
-#include "libbirch/LazyLabel.hpp"
 
 namespace libbirch {
+class LazyLabel;
+
 /**
  * Base for all class types when lazy deep clone is used.
  *
@@ -78,7 +79,7 @@ public:
    */
   void finish();
 
-  virtual LazyAny* clone_(Label* label) const {
+  virtual LazyAny* clone_(LazyLabel* label) const {
     return new LazyAny(label, *this);
   }
 

@@ -4,6 +4,8 @@
 #pragma once
 
 namespace libbirch {
+class LazyLabel;
+
 /*
  * Is this a value type?
  */

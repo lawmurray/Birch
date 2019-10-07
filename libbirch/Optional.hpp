@@ -85,8 +85,8 @@ public:
   /**
    * Deep copy constructor.
    */
-  Optional(Label* context, const Optional<T>& o) :
-      value(context, o.value),
+  Optional(Label* label, const Optional<T>& o) :
+      value(label, o.value),
       hasValue(o.hasValue) {
     //
   }
@@ -162,8 +162,8 @@ public:
   /**
    * Deep copy constructor.
    */
-  Optional(Label* context, const Optional<P>& o) :
-      value(context, o.value) {
+  Optional(Label* label, const Optional<P>& o) :
+      value(label, o.value) {
     //
   }
 

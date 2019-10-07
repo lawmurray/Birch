@@ -11,9 +11,6 @@ static libbirch::Label* root() {
   return context.get();
 }
 
-thread_local libbirch::Label* libbirch::currentContext(root());
-thread_local bool libbirch::cloneUnderway = false;
-
 #if ENABLE_LAZY_DEEP_CLONE
 libbirch::EntryExitLock libbirch::freezeLock;
 libbirch::EntryExitLock libbirch::finishLock;
