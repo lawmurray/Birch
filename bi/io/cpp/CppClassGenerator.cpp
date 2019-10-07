@@ -88,18 +88,21 @@ void bi::CppClassGenerator::visit(const Class* o) {
     } else {
       start("");
     }
-    middle(o->name);
-    CppBaseGenerator aux(base, level, header);
-    aux << '(' << o->params << ')';
+    middle(o->name << "(libbirch::LazyLabel* label_");
+    if (!o->params->isEmpty()) {
+      CppBaseGenerator aux(base, level, header);
+      aux << ", " << o->params;
+    }
+    middle(')');
     if (header) {
       finish(";\n");
     } else {
       finish(" :");
       in();
       in();
-      start("super_type_(");
+      start("super_type_(label_");
       if (!o->args->isEmpty()) {
-        middle(o->args);
+        middle(", " << o->args);
       }
       middle(')');
       ++inConstructor;
@@ -110,7 +113,11 @@ void bi::CppClassGenerator::visit(const Class* o) {
         } else if (o->type->isClass()) {
           finish(',');
           ++inPointer;
-          start(o->name << "(libbirch::make_object<" << o->type << ">(" << o->args << "))");
+          start(o->name << "(libbirch::make_object<" << o->type << ">(label_");
+          if (!o->args->isEmpty()) {
+            middle(", " << o->args);
+          }
+          middle("))");
         } else if (o->type->isArray() && !o->brackets->isEmpty()) {
           finish(',');
           start(o->name << "(libbirch::make_frame(" << o->brackets << ')');
@@ -130,18 +137,49 @@ void bi::CppClassGenerator::visit(const Class* o) {
       line("}\n");
     }
 
+    /* deep copy constructor */
+    if (!header) {
+      start("bi::type::" << o->name);
+      genTemplateArgs(o);
+      middle("::");
+    } else {
+      start("");
+    }
+    middle(o->name << "(libbirch::Label* label_, const " << o->name << "& o_)");
+    if (header) {
+      finish(";\n");
+    } else {
+      finish(" :");
+      in();
+      in();
+      start("super_type_(label_, o_)");
+      for (auto o : memberVariables) {
+        if (!o->type->isValue()) {
+          finish(',');
+          start(o->name << "(label_, o_." << o->name << ')');
+        }
+      }
+      out();
+      out();
+      finish(" {");
+      in();
+      line("//");
+      out();
+      line("}\n");
+    }
+
     /* copy constructor, destructor, assignment operator */
     if (header) {
-      line(o->name << "(const " << o->name << "&) = default;");
       line("virtual ~" << o->name << "() = default;");
-      line(o->name << "& operator=(const " << o->name << "&) = default;");
+      line(o->name << "(const " << o->name << "&) = delete;");
+      line(o->name << "& operator=(const " << o->name << "&) = delete;");
     }
 
     /* clone function */
     if (header) {
-      line("virtual " << o->name << "* clone_() const {");
+      line("virtual " << o->name << "* clone_(libbirch::Label* label_) const {");
       in();
-      line("return new " << o->name << "(*this);");
+      line("return new " << o->name << "(label_, *this);");
       out();
       line("}\n");
     }
@@ -186,15 +224,15 @@ void bi::CppClassGenerator::visit(const Class* o) {
       genTemplateArgs(o);
       middle("::");
     }
-    middle("doThaw_(libbirch::LazyLabel* label)");
+    middle("doThaw_(libbirch::LazyLabel* label_)");
     if (header) {
       finish(';');
     } else {
       finish(" {");
       in();
-      line("super_type_::doThaw_(label);");
+      line("super_type_::doThaw_(label_);");
       for (auto o : memberVariables) {
-        line("libbirch::thaw(" << o->name << ", label);");
+        line("libbirch::thaw(" << o->name << ", label_);");
       }
       out();
       line("}\n");

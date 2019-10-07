@@ -60,9 +60,9 @@ protected:
   std::map<std::string,int> counts;
 
   /**
-   * Current label.
+   * Current yield point.
    */
-  int label;
+  int point;
 
   /**
    * Are we in a for loop?

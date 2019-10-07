@@ -424,7 +424,7 @@ void bi::CppBaseGenerator::visit(const Program* o) {
           middle(" = " << param->value);
         } else if (param->type->isClass()) {
           ++inPointer;
-          middle(" = libbirch::make_object<" << param->type << ">()");
+          middle(" = libbirch::make_object<" << param->type << ">(label_)");
         }
         finish(';');
       }
