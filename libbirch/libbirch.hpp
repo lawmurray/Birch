@@ -167,14 +167,15 @@ auto make_view(const int64_t arg, Args ... args) {
  * @tparam Frame Frame type.
  * @tparam Args Constructor parameter types.
  *
+ * @param label Label.
  * @param frame Frame.
  * @param args Constructor arguments.
  *
  * @return The array.
  */
 template<class Type, class Frame, class ... Args>
-auto make_array(const Frame& frame, Args ... args) {
-  return Array<Type,Frame>(frame, args...);
+auto make_array(Label* label, const Frame& frame, Args ... args) {
+  return Array<Type,Frame>(label, frame, args...);
 }
 
 /**
@@ -193,8 +194,7 @@ auto make_array(const Frame& frame, Args ... args) {
  */
 template<class Type, class Frame, class Value>
 auto make_array_and_assign(const Frame& frame, const Value& value) {
-  Frame zero;
-  auto result = Array<Type,Frame>(zero);
+  Array<Type,Frame> result;
   result.enlarge(frame, value);
   return result;
 }
@@ -207,13 +207,14 @@ auto make_array_and_assign(const Frame& frame, const Value& value) {
  * @tparam Type Object type.
  * @tparam Args Constructor parameter types.
  *
+ * @param label Label.
  * @param args Constructor arguments.
  *
  * @return A shared pointer to the new object.
  */
 template<class Type, class ... Args>
-SharedPtr<Type> make_object(Args ... args) {
-  return SharedPtr<Type>(new Type(args...));
+auto make_object(Label* label, Args ... args) {
+  return Shared<Type>(label, new Type(label, args...));
 }
 
 /**
@@ -222,11 +223,12 @@ SharedPtr<Type> make_object(Args ... args) {
  * @tparam StateType The state type of the fiber.
  * @tparam Args Fiber state constructor parameter types.
  *
+ * @param label Label.
  * @param args Fiber state constructor arguments.
  */
 template<class StateType, class ... Args>
-auto make_fiber(Args ... args) {
-  return Fiber<typename StateType::yield_type_>(make_object<StateType>(args...));
+auto make_fiber(Label* label, Args ... args) {
+  return Fiber<typename StateType::yield_type_>(make_object<StateType>(label, args...));
 }
 
 /**
@@ -234,7 +236,7 @@ auto make_fiber(Args ... args) {
  */
 template<class To, class From>
 auto dynamic_pointer_cast(const Shared<From>& from) {
-  return Optional<Shared<To>>(std::move(from.template dynamic_pointer_cast<To>()));
+  return Optional<Shared<To>>(from.template dynamic_pointer_cast<To>());
 }
 
 /**

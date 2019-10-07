@@ -59,9 +59,7 @@ libbirch::LazyAny* libbirch::LazyLabel::pull(LazyAny* o) {
 
 libbirch::LazyAny* libbirch::LazyLabel::copy(LazyAny* o) {
   assert(o->isFrozen());
-  SwapClone swapClone(true);
-  SwapContext swapContext(this);
-  auto cloned = o->clone_();
+  auto cloned = o->clone_(this);
   if (!o->isSingle()) {
     thaw();  // new entry, so no longer considered frozen
     m.put(o, cloned);

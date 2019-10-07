@@ -24,7 +24,7 @@ public:
   /**
    * Constructor.
    */
-  Fiber(const SharedPtr<FiberState<YieldType>>& state);
+  Fiber(const Shared<FiberState<YieldType>>& state);
 
   /**
    * Clone the fiber.
@@ -58,7 +58,7 @@ public:
    */
   YieldType get() const;
 
-public:
+private:
   /**
    * Fiber state.
    */
@@ -73,7 +73,7 @@ libbirch::Fiber<YieldType>::Fiber() {
 
 template<class YieldType>
 libbirch::Fiber<YieldType>::Fiber(
-    const SharedPtr<FiberState<YieldType>>& state) :
+    const Shared<FiberState<YieldType>>& state) :
     state(state) {
   //
 }

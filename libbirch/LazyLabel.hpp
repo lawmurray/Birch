@@ -72,10 +72,6 @@ public:
    */
   void thaw();
 
-  virtual LazyLabel* clone_() const {
-    return new LazyLabel(*this);
-  }
-
   virtual const char* name_() const {
     return "LazyLabel";
   }

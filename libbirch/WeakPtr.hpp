@@ -24,7 +24,6 @@ class WeakPtr {
   template<class U> friend class InitPtr;
 public:
   using value_type = T;
-  template<class U> using cast_type = WeakPtr<U>;
 
   /**
    * Constructor.
@@ -266,6 +265,26 @@ public:
    */
   operator bool() const {
     return ptr != nullptr;
+  }
+
+  /**
+   * Dynamic cast.
+   */
+  template<class U>
+  auto dynamic_pointer_cast() const {
+    WeakPtr<U> cast;
+    cast.replace(dynamic_cast<U*>(ptr));
+    return cast;
+  }
+
+  /**
+   * Static cast.
+   */
+  template<class U>
+  auto static_pointer_cast() const {
+    WeakPtr<U> cast;
+    cast.replace(static_cast<U*>(ptr));
+    return cast;
   }
 
 private:

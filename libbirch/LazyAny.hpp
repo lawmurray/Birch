@@ -21,25 +21,23 @@ public:
   using class_type_ = LazyAny;
   using this_type_ = LazyAny;
 
+  LazyAny(const LazyAny&) = delete;
+  LazyAny& operator=(const LazyAny&) = delete;
+
   /**
    * Constructor.
    */
-  LazyAny();
+  LazyAny(LazyLabel* label);
 
   /**
-   * Copy constructor.
+   * Deep copy constructor.
    */
-  LazyAny(const LazyAny& o);
+  LazyAny(LazyLabel* label, const LazyAny& o);
 
   /**
    * Destructor.
    */
   virtual ~LazyAny();
-
-  /**
-   * Copy assignment operator.
-   */
-  LazyAny& operator=(const LazyAny&) = delete;
 
   /**
    * Is the object frozen? This returns true if either a freeze is in
@@ -80,8 +78,8 @@ public:
    */
   void finish();
 
-  virtual LazyAny* clone_() const {
-    return new LazyAny(*this);
+  virtual LazyAny* clone_(Label* label) const {
+    return new LazyAny(label, *this);
   }
 
   virtual const char* name_() const {
@@ -131,9 +129,9 @@ protected:
 };
 }
 
-inline libbirch::LazyAny::LazyAny() :
+inline libbirch::LazyAny::LazyAny(LazyLabel* label) :
     Counted(),
-    label((intptr_t)currentContext),
+    label((intptr_t)label),
     frozen(false),
     finished(false)
     #if ENABLE_SINGLE_REFERENCE_OPTIMIZATION
@@ -143,9 +141,9 @@ inline libbirch::LazyAny::LazyAny() :
   //
 }
 
-inline libbirch::LazyAny::LazyAny(const LazyAny& o) :
+inline libbirch::LazyAny::LazyAny(LazyLabel* label, const LazyAny& o) :
     Counted(o),
-    label((intptr_t)currentContext),
+    label((intptr_t)label),
     frozen(false),
     finished(false)
     #if ENABLE_SINGLE_REFERENCE_OPTIMIZATION

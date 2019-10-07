@@ -34,6 +34,11 @@ namespace libbirch {
 template<class T>
 class Optional<T,std::enable_if_t<!is_pointer<T>::value>> {
 public:
+  Optional(const Optional& o) = default;
+  Optional(Optional&& o) = default;
+  Optional& operator=(const Optional& o) = default;
+  Optional& operator=(Optional&& o) = default;
+
   /**
    * Default constructor.
    */
@@ -44,20 +49,11 @@ public:
   }
 
   /**
-   * Constructor for no value.
+   * Nil constructor.
    */
   Optional(const Nil&) :
       value(),
       hasValue(false) {
-    //
-  }
-
-  /**
-   * Constructor for a value.
-   */
-  Optional(const T& value) :
-      value(value),
-      hasValue(true) {
     //
   }
 
@@ -86,10 +82,14 @@ public:
     }
   }
 
-  Optional(const Optional& o) = default;
-  Optional(Optional&& o) = default;
-  Optional& operator=(const Optional& o) = default;
-  Optional& operator=(Optional&& o) = default;
+  /**
+   * Deep copy constructor.
+   */
+  Optional(Label* context, const Optional<T>& o) :
+      value(context, o.value),
+      hasValue(o.hasValue) {
+    //
+  }
 
   /**
    * Is there a value?
@@ -156,6 +156,14 @@ public:
    * Nil constructor.
    */
   Optional(const Nil&) {
+    //
+  }
+
+  /**
+   * Deep copy constructor.
+   */
+  Optional(Label* context, const Optional<P>& o) :
+      value(context, o.value) {
     //
   }
 

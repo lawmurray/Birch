@@ -24,7 +24,6 @@ class EagerPtr {
   template<class U> friend class EagerPtr;
   public:
   using T = typename P::value_type;
-  template<class U> using cast_type = EagerPtr<typename P::template cast_type<U>>;
 
   /**
    * Constructor.

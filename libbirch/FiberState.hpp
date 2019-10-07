@@ -19,16 +19,26 @@ public:
   using class_type_ = FiberState<YieldType>;
   using yield_type_ = YieldType;
 
-protected:
   /**
    * Constructor.
    *
-   * @param label Initial label.
-   * @param nlabels Number of labels.
+   * @param npoints Number of yield points.
    */
-  FiberState(const int label = 0, const int nlabels = 0) :
-      label_(label),
-      nlabels_(nlabels) {
+  FiberState(Label* context, const int npoints) :
+      Any(context),
+      point_(0),
+      npoints_(npoints) {
+    //
+  }
+
+  /**
+   * Deep copy constructor.
+   */
+  FiberState(Label* context, const FiberState& o) :
+      Any(context, o),
+      value_(context, o.value_),
+      point_(o.point_),
+      npoints_(o.npoints_) {
     //
   }
 
@@ -39,7 +49,6 @@ protected:
     //
   }
 
-public:
   /**
    * Run to next yield point.
    */
@@ -54,18 +63,18 @@ public:
 
 protected:
   /**
-   * Current label.
-   */
-  int label_;
-
-  /**
-   * Number of labels.
-   */
-  int nlabels_;
-
-  /**
    * Yield value.
    */
   YieldType value_;
+
+  /**
+   * Current yield point.
+   */
+  int point_;
+
+  /**
+   * Number of yield points.
+   */
+  int npoints_;
 };
 }

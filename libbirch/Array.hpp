@@ -46,13 +46,13 @@ public:
    *
    * @param frame Frame.
    */
-  Array(const F& frame) :
+  Array(Label* label, const F& frame) :
       frame(frame),
       buffer(nullptr),
       offset(0),
       isView(false) {
     allocate();
-    initialize();
+    initialize(label);
   }
 
   /**
@@ -64,14 +64,19 @@ public:
    * @param args Constructor arguments for each element.
    */
   template<class ... Args>
-  Array(const F& frame, Args ... args) :
+  Array(Label* label, const F& frame, Args ... args) :
       frame(frame),
       buffer(nullptr),
       offset(0),
       isView(false) {
     allocate();
-    initialize(args...);
+    initialize(label, args...);
   }
+
+  /**
+   * Deep copy constructor.
+   */
+  Array(Label* label, const Array<T,F>& o);
 
   /**
    * Copy constructor.
@@ -222,21 +227,21 @@ public:
    *
    * @return The new array.
    */
-  template<class View1, typename = std::enable_if_t<View1::rangeCount() != 0>>
+  template<class View1, std::enable_if_t<View1::rangeCount() != 0,int> = 0>
   auto operator()(const View1& view) {
     return Array<T,decltype(frame(view))>(duplicate(),
         offset + frame.serial(view), frame(view));
   }
-  template<class View1, typename = std::enable_if_t<View1::rangeCount() != 0>>
+  template<class View1, std::enable_if_t<View1::rangeCount() != 0,int> = 0>
   auto operator()(const View1& view) const {
     return Array<T,decltype(frame(view))>(buffer, offset + frame.serial(view),
         frame(view));
   }
-  template<class View1, typename = std::enable_if_t<View1::rangeCount() == 0>>
+  template<class View1, std::enable_if_t<View1::rangeCount() == 0,int> = 0>
   auto& operator()(const View1& view) {
     return *(duplicate()->buf() + offset + frame.serial(view));
   }
-  template<class View1, typename = std::enable_if_t<View1::rangeCount() == 0>>
+  template<class View1, std::enable_if_t<View1::rangeCount() == 0,int> = 0>
   const auto& operator()(const View1& view) const {
     return *(buf() + frame.serial(view));
   }
@@ -491,8 +496,8 @@ public:
    * Memory is allocated for the array, and is freed on destruction. After
    * allocation, the contents of the existing array are copied in.
    */
-  template<class DerivedType, typename = std::enable_if_t<
-      is_eigen_compatible<DerivedType>::value>>
+  template<class DerivedType, std::enable_if_t<
+      is_eigen_compatible<DerivedType>::value,int> = 0>
   Array(const Eigen::MatrixBase<DerivedType>& o, const F& frame) :
       frame(frame),
       buffer(nullptr),
@@ -505,8 +510,8 @@ public:
   /**
    * Construct from Eigen Matrix expression.
    */
-  template<class DerivedType, typename = std::enable_if_t<
-      is_eigen_compatible<DerivedType>::value>>
+  template<class DerivedType, std::enable_if_t<
+      is_eigen_compatible<DerivedType>::value,int> = 0>
   Array(const Eigen::MatrixBase<DerivedType>& o) :
       frame(o.rows(), o.cols()),
       buffer(nullptr),
@@ -519,8 +524,8 @@ public:
   /**
    * Construct from Eigen DiagonalWrapper expression.
    */
-  template<class DerivedType, typename = std::enable_if_t<
-      is_diagonal_compatible<DerivedType>::value>>
+  template<class DerivedType, std::enable_if_t<
+      is_diagonal_compatible<DerivedType>::value,int> = 0>
   Array(const Eigen::DiagonalWrapper<DerivedType>& o) :
       frame(o.rows(), o.cols()),
       buffer(nullptr),
@@ -533,8 +538,8 @@ public:
   /**
    * Construct from Eigen TriangularWrapper expression.
    */
-  template<class DerivedType, unsigned Mode, typename = std::enable_if_t<
-      is_triangle_compatible<DerivedType>::value>>
+  template<class DerivedType, unsigned Mode, std::enable_if_t<
+      is_triangle_compatible<DerivedType>::value,int> = 0>
   Array(const Eigen::TriangularView<DerivedType,Mode>& o) :
       frame(o.rows(), o.cols()),
       buffer(nullptr),
@@ -547,8 +552,8 @@ public:
   /**
    * Assign from Eigen Matrix expression.
    */
-  template<class DerivedType, typename = std::enable_if_t<
-      is_eigen_compatible<DerivedType>::value>>
+  template<class DerivedType, std::enable_if_t<
+      is_eigen_compatible<DerivedType>::value,int> = 0>
   Array<T,F>& operator=(const Eigen::MatrixBase<DerivedType>& o) {
     if (!isView && (!frame.conforms(o.rows(), o.cols()) || isShared())) {
       lock();
@@ -563,8 +568,8 @@ public:
   /**
    * Assign from Eigen DiagonalWrapper expression.
    */
-  template<class DerivedType, typename = std::enable_if_t<
-      is_diagonal_compatible<DerivedType>::value>>
+  template<class DerivedType, std::enable_if_t<
+      is_diagonal_compatible<DerivedType>::value,int> = 0>
   Array<T,F>& operator=(const Eigen::DiagonalWrapper<DerivedType>& o) {
     if (!isView && (!frame.conforms(o.rows(), o.cols()) || isShared())) {
       lock();
@@ -579,8 +584,8 @@ public:
   /**
    * Assign from Eigen TriangularView expression.
    */
-  template<class DerivedType, unsigned Mode, typename = std::enable_if_t<
-      is_triangle_compatible<DerivedType>::value>>
+  template<class DerivedType, unsigned Mode, std::enable_if_t<
+      is_triangle_compatible<DerivedType>::value,int> = 0>
   Array<T,F>& operator=(const Eigen::TriangularView<DerivedType,Mode>& o) {
     if (!isView && (!frame.conforms(o.rows(), o.cols()) || isShared())) {
       lock();
@@ -732,11 +737,11 @@ private:
    * @param args Constructor arguments.
    */
   template<class ... Args>
-  void initialize(Args ... args) {
+  void initialize(Label* label, Args ... args) {
     auto iter = begin();
     auto last = iter + size();
     for (; iter != last; ++iter) {
-      emplace(*iter, args...);
+      emplace(*iter, label, args...);
     }
   }
 
@@ -752,10 +757,27 @@ private:
     std::uninitialized_copy(first, last, begin());
   }
 
+  /**
+   * Deep copy from another array.
+   */
+  template<class U, class G>
+  void copy(Label* label, const Array<U,G>& o) {
+    assert(!isShared());
+    libbirch_assert_msg_(o.frame.conforms(frame), "array sizes are different");
+    auto iter1 = o.begin();
+    auto last1 = iter1 + o.size();
+    auto iter2 = begin();
+    for (; iter1 != last1; ++iter1, ++iter2) {
+      new (&*iter2) U(label, *iter1);
+    }
+  }
+
+  /**
+   * Copy from a sequence.
+   */
   void copy(const typename sequence_type<T,F::count()>::type& o) {
     assert(!isShared());
-    libbirch_assert_msg_(frame.conforms(sequence_frame(o)),
-        "array size and sequence size are different");
+    libbirch_assert_msg_(frame.conforms(sequence_frame(o)), "array sizes are different");
     auto iter = begin();
     sequence_copy(iter, o);
   }
@@ -805,8 +827,9 @@ private:
    * @param o Element.
    * @param args Constructor arguments.
    */
-  template<class U, class ... Args>
-  static void emplace(U& o, Args ... args) {
+  template<class U, class ... Args, std::enable_if_t<
+      !is_pointer<U>::value,int> = 0>
+  static void emplace(U& o, Label* label, Args ... args) {
     new (&o) U(args...);
   }
 
@@ -816,9 +839,10 @@ private:
    * @param o Element.
    * @param args Constructor arguments.
    */
-  template<class U, class ... Args>
-  static void emplace(Shared<U>& o, Args ... args) {
-    new (&o) Shared<U>(new U(args...));
+  template<class P, class ... Args, std::enable_if_t<
+      is_pointer<P>::value>,int = 0>
+  static void emplace(P& o, Label* label, Args ... args) {
+    new (&o) P(new typename P::value_type(label, args...));
   }
 
   /**
@@ -873,19 +897,13 @@ private:
 #include "libbirch/type.hpp"
 
 template<class T, class F>
-libbirch::Array<T,F>::Array(const Array<T,F>& o, const bool canShare) :
+libbirch::Array<T,F>::Array(Label* label, const Array<T,F>& o) :
     frame(o.frame),
     buffer(nullptr),
     offset(0),
     isView(false) {
-  if (!canShare || (cloneUnderway && !is_value<T>::value)) {
-    /* either the caller has explicitly requested a copy (canShare), or we
-     * are cloning an array that is not of purely value type, in which case
-     * we must copy for correct bookkeeping under the lazy deep clone
-     * rules */
-    allocate();
-    copy(o);
-  } else {
+  if (is_value<T>::value) {
+    /* just a value type, do a normal copy */
     auto tmp = o.buffer;
     if (tmp && !o.isView) {
       /* views do not increment the buffer use count, as they are meant to be
@@ -895,5 +913,30 @@ libbirch::Array<T,F>::Array(const Array<T,F>& o, const bool canShare) :
     buffer = tmp;
     offset = o.offset;
     isView = o.isView;
+  } else {
+    allocate();
+    copy(label, o);
+  }
+}
+
+template<class T, class F>
+libbirch::Array<T,F>::Array(const Array<T,F>& o, const bool canShare) :
+    frame(o.frame),
+    buffer(nullptr),
+    offset(0),
+    isView(false) {
+  if (canShare) {
+    auto tmp = o.buffer;
+    if (tmp && !o.isView) {
+      /* views do not increment the buffer use count, as they are meant to be
+       * temporary and should not outlive the buffer itself */
+      tmp->incUsage();
+    }
+    buffer = tmp;
+    offset = o.offset;
+    isView = o.isView;
+  } else {
+    allocate();
+    copy(o);
   }
 }

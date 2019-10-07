@@ -3,8 +3,6 @@
  */
 #pragma once
 
-#include "libbirch/SharedPtr.hpp"
-#include "libbirch/InitPtr.hpp"
 #include "libbirch/Label.hpp"
 
 namespace libbirch {
@@ -19,15 +17,15 @@ public:
   /**
    * Default constructor.
    */
-  LabelPtr() : ptr(0), cross(false) {
+  LabelPtr() : label(0), cross(false) {
     //
   }
 
   /**
    * Value constructor.
    */
-  explicit LabelPtr(Label* ptr) {
-    set(ptr);
+  explicit LabelPtr(Label* label) {
+    set(label);
   }
 
   /**
@@ -56,17 +54,17 @@ public:
    * Get the raw pointer.
    */
   Label* get() const {
-    return reinterpret_cast<Label*>(ptr);
+    return reinterpret_cast<Label*>(label);
   }
 
   /**
    * Replace.
    */
-  void replace(Label* ptr) {
+  void replace(Label* label) {
     auto old = get();
-    if (ptr != old) {
+    if (label != old) {
       auto oldCross = isCross();
-      set(ptr);
+      set(label);
       if (old && oldCross) {
         old->decShared();
       }
@@ -80,7 +78,7 @@ public:
     if (isCross()) {
       get()->decShared();
     }
-    ptr = 0;
+    label = 0;
     cross = false;
   }
 
@@ -125,25 +123,25 @@ public:
    * Is the pointer not null?
    */
   operator bool() const {
-    return ptr != 0;
+    return label != 0;
   }
 
 private:
   /**
    * Set.
    */
-  void set(Label* ptr) {
-    this->ptr = reinterpret_cast<intptr_t>(ptr);
-    cross = ptr && ptr != currentContext;
+  void set(Label* label) {
+    this->label = reinterpret_cast<intptr_t>(label);
+    cross = label/* && label != currentContext*/;
     if (cross) {
-      ptr->incShared();
+      label->incShared();
     }
   }
 
   /**
    * Raw pointer.
    */
-  intptr_t ptr:63;
+  intptr_t label:63;
 
   /**
    * Is this a cross pointer?

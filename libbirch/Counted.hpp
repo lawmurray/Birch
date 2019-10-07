@@ -151,13 +151,6 @@ public:
   #endif
 
   /**
-   * Clone the object.
-   */
-  virtual Counted* clone_() const {
-    return new Counted(*this);
-  }
-
-  /**
    * Name of the class.
    */
   virtual const char* name_() const {

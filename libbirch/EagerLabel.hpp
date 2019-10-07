@@ -29,10 +29,6 @@ public:
    */
   EagerAny* copy(EagerAny* o);
 
-  virtual EagerLabel* clone_() const {
-    return new LazyLabel(*this);
-  }
-
   virtual const char* name_() const {
     return "EagerLabel";
   }
