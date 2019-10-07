@@ -246,7 +246,7 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
     } else {
       finish(" {");
       in();
-      start("return libbirch::make_fiber<" << stateName << ">(label_");
+      start("return libbirch::make_fiber<" << stateName << ">(context_");
       for (auto iter = params.begin(); iter != params.end(); ++iter) {
         middle(", " << (*iter)->name);
       }
@@ -299,7 +299,7 @@ void bi::CppFiberGenerator::visit(const LocalVariable* o) {
     /* make sure objects are initialized, not just null pointers */
     auto name = getName(o->name->str(), o->number);
     ++inPointer;
-    middle("local->" << name << " = libbirch::make_object<" << o->type << ">(label_)");
+    middle("local->" << name << " = libbirch::make_object<" << o->type << ">(context_)");
   }
 }
 

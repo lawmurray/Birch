@@ -274,7 +274,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     in();
     line("libbirch_swap_context_");
     line("libbirch_declare_self_");
-    start("return libbirch::make_fiber<" << stateName << ">(label_, self");
+    start("return libbirch::make_fiber<" << stateName << ">(context_, self");
     for (auto param: params) {
       middle(", " << param->name);
     }

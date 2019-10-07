@@ -304,7 +304,7 @@ void bi::CppClassGenerator::visit(const Class* o) {
         start("bi::type::" << o->name << "* ");
         finish("bi::type::make_" << o->name << "_() {");
         in();
-        line("return new bi::type::" << o->name << "();");
+        line("return new bi::type::" << o->name << "(context_);");
         out();
         line("}");
       }
