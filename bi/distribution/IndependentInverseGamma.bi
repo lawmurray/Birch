@@ -7,9 +7,9 @@
  *
  * $$\begin{align*}
  * \sigma^2_o &\sim \Gamma^{-1}(\alpha_o, \beta_o) \\
- * \mathbf{\Sigma} &= \mathrm{diag} \left(\sigma^2_1 \cdots \sigma^2_O \right) \\
+ * \boldsymbol{\Sigma} &= \mathrm{diag} \left(\sigma^2_1 \cdots \sigma^2_O \right) \\
  * \mathbf{W} &\sim \mathcal{MN}(\mathbf{M}, \mathbf{A}, \boldsymbol{\Sigma}) \\
- * \mathbf{y}_n &\sim \mathcal{N}(\mathbf{W}\mathbf{x}_n, \boldsymbol{\Sigma}),
+ * \mathbf{Y} &\sim \mathcal{N}(\mathbf{X}\mathbf{W}, \boldsymbol{\Sigma}),
  * \end{align*}$$
  *
  * where subscript $o$ denotes the (hyper)parameters of the $o$th element of
@@ -28,7 +28,7 @@
  *
  *     σ2 ~ InverseGamma(α, β);
  *     W ~ Gaussian(M, U, σ2);
- *     Y ~ Gaussian(W*X, σ2);
+ *     Y ~ Gaussian(X*W, σ2);
  *
  * The advantage of using this approach over $O$ separate regressions is that
  * expensive covariance operations are shared.

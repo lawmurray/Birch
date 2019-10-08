@@ -5,9 +5,9 @@
  * multivariate linear regression:
  *
  * $$\begin{align*}
- * \mathbf{\Sigma} &\sim \mathcal{W}^{-1}(\mathbf{\Psi}, \nu) \\
+ * \boldsymbol{\Sigma} &\sim \mathcal{W}^{-1}(\boldsymbol{\Psi}, \nu) \\
  * \mathbf{W} &\sim \mathcal{MN}(\mathbf{M}, \mathbf{A}, \boldsymbol{\Sigma}) \\
- * \mathbf{Y} &\sim \mathcal{N}(\mathbf{W}\mathbf{X}, \boldsymbol{\Sigma}),
+ * \mathbf{Y} &\sim \mathcal{N}(\mathbf{X}\mathbf{W}, \boldsymbol{\Sigma}),
  * \end{align*}$$
  *
  * where $\mathbf{X}$ are inputs and $\mathbf{Y}$ are outputs.
@@ -25,7 +25,7 @@
  *
  *     V ~ InverseWishart(Ψ, k);
  *     W ~ Gaussian(M, U, V);
- *     Y ~ Gaussian(W*X, V);
+ *     Y ~ Gaussian(X*W, V);
  */
 final class InverseWishart(Ψ:Expression<Real[_,_]>, k:Expression<Real>) <
     Distribution<Real[_,_]> {
