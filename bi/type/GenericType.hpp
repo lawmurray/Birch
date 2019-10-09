@@ -37,7 +37,6 @@ public:
    */
   virtual ~GenericType();
 
-  virtual bool isValue() const;
   virtual bool isBasic() const;
   virtual bool isClass() const;
   virtual bool isWeak() const;

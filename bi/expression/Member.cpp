@@ -16,6 +16,10 @@ bi::Member::~Member() {
   //
 }
 
+bool bi::Member::isMember() const {
+  return true;
+}
+
 bool bi::Member::isAssignable() const {
   return right->isAssignable();
 }

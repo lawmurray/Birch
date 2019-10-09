@@ -40,6 +40,7 @@ public:
    */
   virtual ~OverloadedIdentifier();
 
+  virtual bool isMember() const;
   virtual bool isOverloaded() const;
 
   virtual FunctionType* resolve(Argumented* o);

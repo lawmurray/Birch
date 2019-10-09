@@ -22,6 +22,12 @@ bi::OverloadedIdentifier<ObjectType>::~OverloadedIdentifier() {
 }
 
 template<class ObjectType>
+bool bi::OverloadedIdentifier<ObjectType>::isMember() const {
+  return std::is_same<ObjectType,MemberFunction>::value ||
+      std::is_same<ObjectType,MemberFiber>::value;
+}
+
+template<class ObjectType>
 bool bi::OverloadedIdentifier<ObjectType>::isOverloaded() const {
   return true;
 }

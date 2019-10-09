@@ -34,11 +34,6 @@ void bi::GenericType::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
 
-bool bi::GenericType::isValue() const {
-  assert(target);
-  return target->type->isValue();
-}
-
 bool bi::GenericType::isBasic() const {
   assert(target);
   return target->type->isBasic();

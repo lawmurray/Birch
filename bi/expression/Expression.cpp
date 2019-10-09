@@ -8,6 +8,7 @@
 #include "bi/type/EmptyType.hpp"
 #include "bi/expression/Range.hpp"
 #include "bi/exception/NotFunctionException.hpp"
+#include "bi/visitor/all.hpp"
 
 bi::Expression::Expression(Type* type, Location* loc) :
     Located(loc),
@@ -25,7 +26,17 @@ bi::Expression::~Expression() {
   //
 }
 
+bool bi::Expression::isValue() const {
+  IsValue visitor;
+  accept(&visitor);
+  return visitor.result;
+}
+
 bool bi::Expression::isEmpty() const {
+  return false;
+}
+
+bool bi::Expression::isMember() const {
   return false;
 }
 

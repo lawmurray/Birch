@@ -18,10 +18,6 @@ bi::TypeList::~TypeList() {
   //
 }
 
-bool bi::TypeList::isValue() const {
-  return head->isValue() && tail->isValue();
-}
-
 bool bi::TypeList::isList() const {
   return true;
 }

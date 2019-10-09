@@ -26,10 +26,6 @@ void bi::EmptyType::accept(Visitor* visitor) const {
   return visitor->visit(this);
 }
 
-bool bi::EmptyType::isValue() const {
-  return true;
-}
-
 bool bi::EmptyType::isEmpty() const {
   return true;
 }

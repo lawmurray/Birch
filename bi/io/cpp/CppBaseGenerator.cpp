@@ -176,7 +176,11 @@ void bi::CppBaseGenerator::visit(const Get* o) {
 }
 
 void bi::CppBaseGenerator::visit(const LambdaFunction* o) {
-  finish("[=](" << o->params << ") {");
+  middle("[=](libbirch::Label* context_");
+  if (!o->params->isEmpty()) {
+    middle(", ");
+  }
+  middle(o->params << ") {");
   in();
   ++inLambda;
   *this << o->braces->strip();
@@ -369,7 +373,11 @@ void bi::CppBaseGenerator::visit(const Function* o) {
     if (!header) {
       middle("bi::");
     }
-    middle(name << '(' << o->params << ')');
+    middle(name << "(libbirch::Label* context_");
+    if (!o->params->isEmpty()) {
+      middle(", " << o->params);
+    }
+    middle(')');
     if (header) {
       finish(';');
     } else {
@@ -412,6 +420,9 @@ void bi::CppBaseGenerator::visit(const Program* o) {
     line("int bi::" << o->name << "(int argc_, char** argv_) {");
     in();
     genTraceFunction(o->name->str(), o->loc);
+
+    /* initial context */
+    line("auto context_ = root_;");
 
     /* handle program options */
     if (o->params->width() > 0) {
@@ -741,7 +752,11 @@ void bi::CppBaseGenerator::visit(const TupleType* o) {
   middle("std::tuple<" << o->single << '>');
 }
 void bi::CppBaseGenerator::visit(const FunctionType* o) {
-  middle("std::function<" << o->returnType << '(' << o->params << ")>");
+  middle("std::function<" << o->returnType << "(libbirch::Label* context_");
+  if (!o->params->isEmpty()) {
+    middle(", " << o->params);
+  }
+  middle(")>");
 }
 
 void bi::CppBaseGenerator::visit(const FiberType* o) {
@@ -808,6 +823,12 @@ void bi::CppBaseGenerator::genTraceLine(const int line) {
 
 void bi::CppBaseGenerator::genArgs(const Call* o) {
   middle('(');
+  if (!o->single->isMember()) {
+    middle("context_");
+    if (!o->args->isEmpty()) {
+      middle(", ");
+    }
+  }
   auto iter1 = o->args->begin();
   auto end1 = o->args->end();
   auto iter2 = o->callType->params->begin();

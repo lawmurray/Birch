@@ -27,7 +27,6 @@ public:
    */
   virtual ~TypeList();
 
-  virtual bool isValue() const;
   virtual bool isList() const;
 
   virtual Type* accept(Cloner* visitor) const;

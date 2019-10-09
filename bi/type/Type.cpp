@@ -22,7 +22,9 @@ bool bi::Type::isEmpty() const {
 }
 
 bool bi::Type::isValue() const {
-  return false;
+  IsValue visitor;
+  accept(&visitor);
+  return visitor.result;
 }
 
 bool bi::Type::isBasic() const {

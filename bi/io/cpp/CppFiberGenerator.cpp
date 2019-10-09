@@ -240,7 +240,11 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
     if (!header) {
       middle("bi::");
     }
-    middle(name << '(' << o->params << ')');
+    middle(name << "(libbirch::Label* context_");
+    if (!o->params->isEmpty()) {
+      middle(", " << o->params);
+    }
+    middle(')');
     if (header) {
       finish(';');
     } else {

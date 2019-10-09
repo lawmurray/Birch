@@ -183,6 +183,7 @@ COMMON_SOURCES = \
   bi/visitor/Annotator.cpp \
   bi/visitor/Cloner.cpp \
   bi/visitor/Gatherer.cpp \
+  bi/visitor/IsValue.cpp \
   bi/visitor/Modifier.cpp \
   bi/visitor/Resolver.cpp \
   bi/visitor/Visitor.cpp \
@@ -361,6 +362,7 @@ noinst_HEADERS = \
   bi/visitor/Annotator.hpp \
   bi/visitor/Cloner.hpp \
   bi/visitor/Gatherer.hpp \
+  bi/visitor/IsValue.hpp \
   bi/visitor/Modifier.hpp \
   bi/visitor/Resolver.hpp \
   bi/visitor/Visitor.hpp \

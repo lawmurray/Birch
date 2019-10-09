@@ -299,10 +299,10 @@ void bi::CppClassGenerator::visit(const Class* o) {
     if (!o->isGeneric() && o->params->isEmpty()) {
       if (header) {
         start("extern \"C\" bi::type::" << o->name << "* ");
-        finish("make_" << o->name << "_();");
+        finish("make_" << o->name << "_(libbirch::Label* context_);");
       } else {
         start("bi::type::" << o->name << "* ");
-        finish("bi::type::make_" << o->name << "_() {");
+        finish("bi::type::make_" << o->name << "_(libbirch::Label* context_) {");
         in();
         line("return new bi::type::" << o->name << "(context_);");
         out();
@@ -339,7 +339,10 @@ void bi::CppClassGenerator::visit(const MemberFunction* o) {
     in();
     genTraceFunction(o->name->str(), o->loc);
 
-	  /* declare self and swap in context if necessary */
+    /* swap context */
+    line("libbirch_swap_context_");
+
+	  /* declare self if necessary */
     Gatherer<Member> members;
     Gatherer<Raw> raws;
     Gatherer<This> selfs;
@@ -349,7 +352,6 @@ void bi::CppClassGenerator::visit(const MemberFunction* o) {
     o->accept(&selfs);
     o->accept(&supers);
     if (members.size() + raws.size() + selfs.size() + supers.size() > 0) {
-      line("libbirch_swap_context_");
       line("libbirch_declare_self_");
     }
 

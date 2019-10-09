@@ -78,14 +78,14 @@ public:
   virtual void accept(Visitor* visitor) const = 0;
 
   /**
+   * Is this a value type? Such a type contains no usage of class types.
+   */
+  bool isValue() const;
+
+  /**
    * Is this an empty type?
    */
   virtual bool isEmpty() const;
-
-  /**
-   * Is this a value type?
-   */
-  virtual bool isValue() const;
 
   /**
    * Is this a basic type?

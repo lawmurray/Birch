@@ -32,7 +32,6 @@ public:
   virtual Type* element();
   virtual const Type* element() const;
 
-  virtual bool isValue() const;
   virtual bool isArray() const;
   virtual void resolveConstructor(Argumented* o);
 

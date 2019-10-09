@@ -29,6 +29,7 @@ public:
    */
   virtual ~Member();
 
+  virtual bool isMember() const;
   virtual bool isAssignable() const;
 
   virtual FunctionType* resolve(Argumented* o);

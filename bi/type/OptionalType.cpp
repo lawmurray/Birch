@@ -27,10 +27,6 @@ void bi::OptionalType::accept(Visitor* visitor) const {
   return visitor->visit(this);
 }
 
-bool bi::OptionalType::isValue() const {
-  return single->isValue();
-}
-
 bool bi::OptionalType::isOptional() const {
   return true;
 }
