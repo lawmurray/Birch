@@ -29,9 +29,9 @@ public:
   virtual void visit(const Parentheses* o);
   virtual void visit(const Sequence* o);
   virtual void visit(const Cast* o);
-  virtual void visit(const Call* o);
-  virtual void visit(const BinaryCall* o);
-  virtual void visit(const UnaryCall* o);
+  virtual void visit(const Call<Unknown>* o);
+  virtual void visit(const Call<BinaryOperator>* o);
+  virtual void visit(const Call<UnaryOperator>* o);
   virtual void visit(const Assign* o);
   virtual void visit(const Slice* o);
   virtual void visit(const Query* o);
@@ -133,10 +133,10 @@ protected:
    * Generate arguments for function calls with appropriate casts where
    * necessary.
    */
-  void genArgs(const Call* o);
-  void genLeftArg(const BinaryCall* o);
-  void genRightArg(const BinaryCall* o);
-  void genSingleArg(const UnaryCall* o);
+  void genArgs(const Call<Unknown>* o);
+  void genLeftArg(const Call<BinaryOperator>* o);
+  void genRightArg(const Call<BinaryOperator>* o);
+  void genSingleArg(const Call<UnaryOperator>* o);
   void genArg(const Expression* arg, const Type* type);
 
   /**

@@ -57,17 +57,17 @@ bi::Expression* bi::Cloner::clone(const Cast* o) {
       o->loc);
 }
 
-bi::Expression* bi::Cloner::clone(const Call* o) {
-  return new Call(o->single->accept(this), o->args->accept(this), o->loc);
+bi::Expression* bi::Cloner::clone(const Call<Unknown>* o) {
+  return new Call<Unknown>(o->single->accept(this), o->args->accept(this), o->loc);
 }
 
-bi::Expression* bi::Cloner::clone(const BinaryCall* o) {
-  return new BinaryCall(o->single->accept(this), o->args->accept(this),
+bi::Expression* bi::Cloner::clone(const Call<BinaryOperator>* o) {
+  return new Call<BinaryOperator>(o->single->accept(this), o->args->accept(this),
       o->loc);
 }
 
-bi::Expression* bi::Cloner::clone(const UnaryCall* o) {
-  return new UnaryCall(o->single->accept(this), o->args->accept(this), o->loc);
+bi::Expression* bi::Cloner::clone(const Call<UnaryOperator>* o) {
+  return new Call<UnaryOperator>(o->single->accept(this), o->args->accept(this), o->loc);
 }
 
 bi::Expression* bi::Cloner::clone(const Assign* o) {

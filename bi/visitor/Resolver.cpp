@@ -77,21 +77,21 @@ bi::Expression* bi::Resolver::modify(Cast* o) {
   return o;
 }
 
-bi::Expression* bi::Resolver::modify(Call* o) {
+bi::Expression* bi::Resolver::modify(Call<Unknown>* o) {
   Modifier::modify(o);
   o->callType = o->single->resolve(o);
   o->type = o->callType->returnType;
   return o;
 }
 
-bi::Expression* bi::Resolver::modify(BinaryCall* o) {
+bi::Expression* bi::Resolver::modify(Call<BinaryOperator>* o) {
   Modifier::modify(o);
   o->callType = o->single->resolve(o);
   o->type = o->callType->returnType;
   return o;
 }
 
-bi::Expression* bi::Resolver::modify(UnaryCall* o) {
+bi::Expression* bi::Resolver::modify(Call<UnaryOperator>* o) {
   Modifier::modify(o);
   o->callType = o->single->resolve(o);
   o->type = o->callType->returnType;
@@ -434,7 +434,7 @@ bi::Statement* bi::Resolver::modify(Assume* o) {
     if (*o->name == "<~") {
       auto identifier = new OverloadedIdentifier<Unknown>(
           new Name("SimulateEvent"), valueType, o->loc);
-      auto call = new Call(identifier, o->right->accept(&cloner));
+      auto call = new Call<Unknown>(identifier, o->right->accept(&cloner));
       auto tmp = new LocalVariable(call, o->loc);
       auto decl = new ExpressionStatement(tmp, o->loc);
       auto yield = new Yield(new Identifier<Unknown>(tmp->name, o->loc),
@@ -442,7 +442,7 @@ bi::Statement* bi::Resolver::modify(Assume* o) {
       auto member = new Member(new Identifier<Unknown>(tmp->name, o->loc),
           new OverloadedIdentifier<Unknown>(new Name("value"), new EmptyType(),
               o->loc), o->loc);
-      auto value = new Call(member, new EmptyExpression(), o->loc);
+      auto value = new Call<Unknown>(member, new EmptyExpression(), o->loc);
       auto assign = new ExpressionStatement(new Assign(o->left,
           new Name("<-"), value, o->loc), o->loc);
       result = new StatementList(decl, new StatementList(yield, assign,
@@ -452,13 +452,13 @@ bi::Statement* bi::Resolver::modify(Assume* o) {
           new Name("ObserveEvent"), valueType, o->loc);
       auto args = new ExpressionList(o->left, o->right->accept(&cloner),
           o->loc);
-      result = new Yield(new Call(identifier, args, o->loc), o->loc);
+      result = new Yield(new Call<Unknown>(identifier, args, o->loc), o->loc);
     } else if (*o->name == "~") {
       auto identifier = new OverloadedIdentifier<Unknown>(
           new Name("AssumeEvent"), valueType, o->loc);
       auto args = new ExpressionList(o->left, o->right->accept(&cloner),
           o->loc);
-      result = new Yield(new Call(identifier, args, o->loc), o->loc);
+      result = new Yield(new Call<Unknown>(identifier, args, o->loc), o->loc);
     } else {
       assert(false);
     }
@@ -795,7 +795,7 @@ bi::Statement* bi::Resolver::modify(ExpressionStatement* o) {
 
   /* when in the body of a fiber and another fiber is called while ignoring
    * its return type, this is syntactic sugar for a loop */
-  auto call = dynamic_cast<Call*>(o->single);
+  auto call = dynamic_cast<Call<Unknown>*>(o->single);
   if (call && call->type->isFiber()) {
     auto name = new Name();
     auto var = new LocalVariable(AUTO, name, new EmptyType(o->loc),

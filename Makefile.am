@@ -91,7 +91,6 @@ COMMON_SOURCES = \
   bi/exception/YieldTypeException.cpp \
   bi/expression/Assign.cpp \
   bi/expression/Binary.cpp \
-  bi/expression/BinaryCall.cpp \
   bi/expression/Cast.cpp \
   bi/expression/Call.cpp \
   bi/expression/EmptyExpression.cpp \
@@ -119,7 +118,6 @@ COMMON_SOURCES = \
   bi/expression/Span.cpp \
   bi/expression/Super.cpp \
   bi/expression/This.cpp \
-  bi/expression/UnaryCall.cpp \
   bi/io/cpp/CppBaseGenerator.cpp \
   bi/io/cpp/CppClassGenerator.cpp \
   bi/io/cpp/CppFiberGenerator.cpp \
@@ -266,7 +264,6 @@ noinst_HEADERS = \
   bi/expression/all.hpp \
   bi/expression/Assign.hpp \
   bi/expression/Binary.hpp \
-  bi/expression/BinaryCall.hpp \
   bi/expression/Cast.hpp \
   bi/expression/Call.hpp \
   bi/expression/EmptyExpression.hpp \
@@ -294,7 +291,6 @@ noinst_HEADERS = \
   bi/expression/Span.hpp \
   bi/expression/Super.hpp \
   bi/expression/This.hpp \
-  bi/expression/UnaryCall.hpp \
   bi/io/cpp/CppBaseGenerator.hpp \
   bi/io/cpp/CppClassGenerator.hpp \
   bi/io/cpp/CppFiberGenerator.hpp \

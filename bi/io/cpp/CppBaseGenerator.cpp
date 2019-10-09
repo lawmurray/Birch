@@ -78,12 +78,12 @@ void bi::CppBaseGenerator::visit(const Cast* o) {
   middle('(' << o->single << ')');
 }
 
-void bi::CppBaseGenerator::visit(const Call* o) {
+void bi::CppBaseGenerator::visit(const Call<Unknown>* o) {
   middle(o->single);
   genArgs(o);
 }
 
-void bi::CppBaseGenerator::visit(const BinaryCall* o) {
+void bi::CppBaseGenerator::visit(const Call<BinaryOperator>* o) {
   auto op = dynamic_cast<OverloadedIdentifier<BinaryOperator>*>(o->single);
   assert(op);
   if (isTranslatable(op->name->str())) {
@@ -101,7 +101,7 @@ void bi::CppBaseGenerator::visit(const BinaryCall* o) {
   }
 }
 
-void bi::CppBaseGenerator::visit(const UnaryCall* o) {
+void bi::CppBaseGenerator::visit(const Call<UnaryOperator>* o) {
   auto op = dynamic_cast<OverloadedIdentifier<UnaryOperator>*>(o->single);
   assert(op);
   if (isTranslatable(op->name->str())) {
@@ -821,7 +821,7 @@ void bi::CppBaseGenerator::genTraceLine(const int line) {
   line("libbirch_line_(" << line << ");");
 }
 
-void bi::CppBaseGenerator::genArgs(const Call* o) {
+void bi::CppBaseGenerator::genArgs(const Call<Unknown>* o) {
   middle('(');
   if (!o->single->isMember()) {
     middle("context_");
@@ -844,15 +844,15 @@ void bi::CppBaseGenerator::genArgs(const Call* o) {
   middle(')');
 }
 
-void bi::CppBaseGenerator::genLeftArg(const BinaryCall* o) {
+void bi::CppBaseGenerator::genLeftArg(const Call<BinaryOperator>* o) {
   genArg(o->args->getLeft(), o->callType->params->getLeft());
 }
 
-void bi::CppBaseGenerator::genRightArg(const BinaryCall* o) {
+void bi::CppBaseGenerator::genRightArg(const Call<BinaryOperator>* o) {
   genArg(o->args->getRight(), o->callType->params->getRight());
 }
 
-void bi::CppBaseGenerator::genSingleArg(const UnaryCall* o) {
+void bi::CppBaseGenerator::genSingleArg(const Call<UnaryOperator>* o) {
   genArg(o->args, o->callType->params);
 }
 

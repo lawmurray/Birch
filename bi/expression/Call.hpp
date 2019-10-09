@@ -6,14 +6,23 @@
 #include "bi/expression/Expression.hpp"
 #include "bi/common/Single.hpp"
 #include "bi/common/Argumented.hpp"
+#include "bi/common/Reference.hpp"
+#include "bi/common/Unknown.hpp"
 
 namespace bi {
 /**
  * Call to a function.
  *
  * @ingroup expression
+ *
+ * @tparam ObjectType The particular type of object referred to by the
+ * identifier.
  */
-class Call: public Expression, public Single<Expression>, public Argumented {
+template<class ObjectType = Unknown>
+class Call: public Expression,
+    public Single<Expression>,
+    public Argumented,
+    public Reference<ObjectType> {
 public:
   /**
    * Constructor.
@@ -25,7 +34,7 @@ public:
   Call(Expression* single, Expression* args, Location* loc = nullptr);
 
   /**
-   * Constructor for call with no arguments..
+   * Constructor for call with no arguments.
    *
    * @param single Expression indicating the function.
    * @param loc Location.

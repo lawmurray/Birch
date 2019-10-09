@@ -5,7 +5,8 @@
 
 #include "bi/visitor/all.hpp"
 
-bi::Call::Call(Expression* single, Expression* args,
+template<class ObjectType>
+bi::Call<ObjectType>::Call(Expression* single, Expression* args,
     Location* loc) :
     Expression(loc),
     Single<Expression>(single),
@@ -13,25 +14,41 @@ bi::Call::Call(Expression* single, Expression* args,
   //
 }
 
-bi::Call::Call(Expression* single, Location* loc) :
+template<class ObjectType>
+bi::Call<ObjectType>::Call(Expression* single, Location* loc) :
     Expression(loc),
     Single<Expression>(single),
     Argumented(new EmptyExpression()) {
   //
 }
 
-bi::Call::~Call() {
+template<class ObjectType>
+bi::Call<ObjectType>::~Call() {
   //
 }
 
-bi::Expression* bi::Call::accept(Cloner* visitor) const {
+template<class ObjectType>
+bi::Expression* bi::Call<ObjectType>::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }
 
-bi::Expression* bi::Call::accept(Modifier* visitor) {
+template<class ObjectType>
+bi::Expression* bi::Call<ObjectType>::accept(Modifier* visitor) {
   return visitor->modify(this);
 }
 
-void bi::Call::accept(Visitor* visitor) const {
+template<class ObjectType>
+void bi::Call<ObjectType>::accept(Visitor* visitor) const {
   return visitor->visit(this);
 }
+
+template class bi::Call<bi::Unknown>;
+//template class bi::Call<bi::Function>;
+//template class bi::Call<bi::MemberFunction>;
+//template class bi::Call<bi::Fiber>;
+//template class bi::Call<bi::MemberFiber>;
+//template class bi::Call<bi::LocalVariable>;
+//template class bi::Call<bi::MemberVariable>;
+//template class bi::Call<bi::GlobalVariable>;
+template class bi::Call<bi::UnaryOperator>;
+template class bi::Call<bi::BinaryOperator>;

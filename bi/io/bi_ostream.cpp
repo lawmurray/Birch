@@ -89,16 +89,16 @@ void bi::bi_ostream::visit(const Cast* o) {
   middle(o->returnType << '?' << '(' << o->single << ')');
 }
 
-void bi::bi_ostream::visit(const Call* o) {
+void bi::bi_ostream::visit(const Call<Unknown>* o) {
   middle(o->single << '(' << o->args << ')');
 }
 
-void bi::bi_ostream::visit(const BinaryCall* o) {
+void bi::bi_ostream::visit(const Call<BinaryOperator>* o) {
   middle(
       o->args->getLeft() << ' ' << o->single << ' ' << o->args->getRight());
 }
 
-void bi::bi_ostream::visit(const UnaryCall* o) {
+void bi::bi_ostream::visit(const Call<UnaryOperator>* o) {
   middle(o->single << o->args);
 }
 

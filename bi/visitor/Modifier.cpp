@@ -71,19 +71,19 @@ bi::Expression* bi::Modifier::modify(Cast* o) {
   return o;
 }
 
-bi::Expression* bi::Modifier::modify(Call* o) {
+bi::Expression* bi::Modifier::modify(Call<Unknown>* o) {
   o->single = o->single->accept(this);
   o->args = o->args->accept(this);
   return o;
 }
 
-bi::Expression* bi::Modifier::modify(BinaryCall* o) {
+bi::Expression* bi::Modifier::modify(Call<BinaryOperator>* o) {
   o->single = o->single->accept(this);
   o->args = o->args->accept(this);
   return o;
 }
 
-bi::Expression* bi::Modifier::modify(UnaryCall* o) {
+bi::Expression* bi::Modifier::modify(Call<UnaryOperator>* o) {
   o->single = o->single->accept(this);
   o->args = o->args->accept(this);
   return o;
