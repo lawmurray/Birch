@@ -43,7 +43,7 @@ public:
   virtual bool isMember() const;
   virtual bool isOverloaded() const;
 
-  virtual FunctionType* resolve(Argumented* o);
+  virtual Expression* resolve(Call<Unknown>* o);
 
   virtual Expression* accept(Cloner* visitor) const;
   virtual Expression* accept(Modifier* visitor);

@@ -101,6 +101,12 @@ bi::Expression* bi::Modifier::modify(Call<MemberFiber>* o) {
   return o;
 }
 
+bi::Expression* bi::Modifier::modify(Call<Parameter>* o) {
+  o->single = o->single->accept(this);
+  o->args = o->args->accept(this);
+  return o;
+}
+
 bi::Expression* bi::Modifier::modify(Call<LocalVariable>* o) {
   o->single = o->single->accept(this);
   o->args = o->args->accept(this);

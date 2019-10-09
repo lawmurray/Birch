@@ -39,6 +39,7 @@ public:
   virtual void visit(const Call<MemberFunction>* o);
   virtual void visit(const Call<Fiber>* o);
   virtual void visit(const Call<MemberFiber>* o);
+  virtual void visit(const Call<Parameter>* o);
   virtual void visit(const Call<LocalVariable>* o);
   virtual void visit(const Call<MemberVariable>* o);
   virtual void visit(const Call<GlobalVariable>* o);

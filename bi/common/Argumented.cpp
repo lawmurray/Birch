@@ -4,8 +4,7 @@
 #include "bi/common/Argumented.hpp"
 
 bi::Argumented::Argumented(Expression* args) :
-    args(args),
-    callType(nullptr) {
+    args(args) {
   //
 }
 

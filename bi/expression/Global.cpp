@@ -15,7 +15,7 @@ bi::Global::~Global() {
   //
 }
 
-bi::FunctionType* bi::Global::resolve(Argumented* o) {
+bi::Expression* bi::Global::resolve(Call<Unknown>* o) {
   return single->resolve(o);
 }
 

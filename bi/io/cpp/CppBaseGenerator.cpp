@@ -81,56 +81,71 @@ void bi::CppBaseGenerator::visit(const Cast* o) {
 void bi::CppBaseGenerator::visit(const Call<Unknown>* o) {
   middle(o->single);
   middle('(');
-  genArgs(o->args, o->callType->params);
+  genArgs(o->args, o->target->params->type);
   middle(')');
 }
 
 void bi::CppBaseGenerator::visit(const Call<Function>* o) {
   middle(o->single);
   middle('(');
-  genArgs(o->args, o->callType->params);
+  genArgs(o->args, o->target->params->type);
   middle(')');
 }
 
 void bi::CppBaseGenerator::visit(const Call<MemberFunction>* o) {
   middle(o->single);
   middle('(');
-  genArgs(o->args, o->callType->params);
+  genArgs(o->args, o->target->params->type);
   middle(')');
 }
 
 void bi::CppBaseGenerator::visit(const Call<Fiber>* o) {
   middle(o->single);
   middle('(');
-  genArgs(o->args, o->callType->params);
+  genArgs(o->args, o->target->params->type);
   middle(')');
 }
 
 void bi::CppBaseGenerator::visit(const Call<MemberFiber>* o) {
   middle(o->single);
   middle('(');
-  genArgs(o->args, o->callType->params);
+  genArgs(o->args, o->target->params->type);
+  middle(')');
+}
+
+void bi::CppBaseGenerator::visit(const Call<Parameter>* o) {
+  middle(o->single);
+  middle('(');
+  auto type = dynamic_cast<const FunctionType*>(o->target->type);
+  assert(type);
+  genArgs(o->args, type->params);
   middle(')');
 }
 
 void bi::CppBaseGenerator::visit(const Call<LocalVariable>* o) {
   middle(o->single);
   middle('(');
-  genArgs(o->args, o->callType->params);
+  auto type = dynamic_cast<const FunctionType*>(o->target->type);
+  assert(type);
+  genArgs(o->args, type->params);
   middle(')');
 }
 
 void bi::CppBaseGenerator::visit(const Call<MemberVariable>* o) {
   middle(o->single);
   middle('(');
-  genArgs(o->args, o->callType->params);
+  auto type = dynamic_cast<const FunctionType*>(o->target->type);
+  assert(type);
+  genArgs(o->args, type->params);
   middle(')');
 }
 
 void bi::CppBaseGenerator::visit(const Call<GlobalVariable>* o) {
   middle(o->single);
   middle('(');
-  genArgs(o->args, o->callType->params);
+  auto type = dynamic_cast<const FunctionType*>(o->target->type);
+  assert(type);
+  genArgs(o->args, type->params);
   middle(')');
 }
 
@@ -889,15 +904,15 @@ void bi::CppBaseGenerator::genArgs(const Expression* args, const Type* types) {
 }
 
 void bi::CppBaseGenerator::genLeftArg(const Call<BinaryOperator>* o) {
-  genArg(o->args->getLeft(), o->callType->params->getLeft());
+  genArg(o->args->getLeft(), o->target->params->getLeft()->type);
 }
 
 void bi::CppBaseGenerator::genRightArg(const Call<BinaryOperator>* o) {
-  genArg(o->args->getRight(), o->callType->params->getRight());
+  genArg(o->args->getRight(), o->target->params->getRight()->type);
 }
 
 void bi::CppBaseGenerator::genSingleArg(const Call<UnaryOperator>* o) {
-  genArg(o->args, o->callType->params);
+  genArg(o->args, o->target->params->type);
 }
 
 void bi::CppBaseGenerator::genArg(const Expression* arg, const Type* type) {

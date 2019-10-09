@@ -33,7 +33,8 @@ bool bi::OverloadedIdentifier<ObjectType>::isOverloaded() const {
 }
 
 template<class ObjectType>
-bi::FunctionType* bi::OverloadedIdentifier<ObjectType>::resolve(Argumented* o) {
+bi::Expression* bi::OverloadedIdentifier<ObjectType>::resolve(
+    Call<Unknown>* o) {
   std::set<ObjectType*> matches;
   this->target->overloads.match(o, matches);
 
@@ -58,7 +59,7 @@ bi::FunctionType* bi::OverloadedIdentifier<ObjectType>::resolve(Argumented* o) {
     throw AmbiguousCallException(o, matches);
   } else if (matches.size() == 1) {
     overload = *matches.begin();
-    return new FunctionType(overload->params->type, overload->returnType);
+    return new Call<ObjectType>(o->single, o->args, o->loc, overload);
   } else {
     /* check inherited */
     auto iter = this->inherited.begin();
@@ -69,7 +70,7 @@ bi::FunctionType* bi::OverloadedIdentifier<ObjectType>::resolve(Argumented* o) {
         throw AmbiguousCallException(o, matches);
       } else if (matches.size() == 1) {
         overload = *matches.begin();
-        return new FunctionType(overload->params->type, overload->returnType);
+        return new Call<ObjectType>(o->single, o->args, o->loc, overload);
       }
       ++iter;
     }

@@ -81,6 +81,10 @@ bi::Expression* bi::Cloner::clone(const Call<LocalVariable>* o) {
   return new Call<LocalVariable>(o->single->accept(this), o->args->accept(this), o->loc);
 }
 
+bi::Expression* bi::Cloner::clone(const Call<Parameter>* o) {
+  return new Call<Parameter>(o->single->accept(this), o->args->accept(this), o->loc);
+}
+
 bi::Expression* bi::Cloner::clone(const Call<MemberVariable>* o) {
   return new Call<MemberVariable>(o->single->accept(this), o->args->accept(this), o->loc);
 }

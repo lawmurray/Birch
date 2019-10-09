@@ -89,6 +89,11 @@ void bi::Visitor::visit(const Call<MemberFiber>* o) {
   o->args->accept(this);
 }
 
+void bi::Visitor::visit(const Call<Parameter>* o) {
+  o->single->accept(this);
+  o->args->accept(this);
+}
+
 void bi::Visitor::visit(const Call<LocalVariable>* o) {
   o->single->accept(this);
   o->args->accept(this);

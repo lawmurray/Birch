@@ -31,11 +31,11 @@ bool bi::Identifier<ObjectType>::isAssignable() const {
 }
 
 template<class ObjectType>
-bi::FunctionType* bi::Identifier<ObjectType>::resolve(Argumented* o) {
+bi::Expression* bi::Identifier<ObjectType>::resolve(Call<Unknown>* o) {
   if (type->isFunction()) {
-    auto result = dynamic_cast<FunctionType*>(type);
-    assert(result);
-    return result;
+    auto type = dynamic_cast<FunctionType*>(this->type);
+    assert(type);
+    return new Call<ObjectType>(o->single, o->args, o->loc, this->target);
   } else {
     throw NotFunctionException(this);
   }

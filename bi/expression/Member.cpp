@@ -24,7 +24,7 @@ bool bi::Member::isAssignable() const {
   return right->isAssignable();
 }
 
-bi::FunctionType* bi::Member::resolve(Argumented* o) {
+bi::Expression* bi::Member::resolve(Call<Unknown>* o) {
   return right->resolve(o);
 }
 

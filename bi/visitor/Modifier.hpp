@@ -38,6 +38,7 @@ public:
   virtual Expression* modify(Call<MemberFunction>* o);
   virtual Expression* modify(Call<Fiber>* o);
   virtual Expression* modify(Call<MemberFiber>* o);
+  virtual Expression* modify(Call<Parameter>* o);
   virtual Expression* modify(Call<LocalVariable>* o);
   virtual Expression* modify(Call<MemberVariable>* o);
   virtual Expression* modify(Call<GlobalVariable>* o);

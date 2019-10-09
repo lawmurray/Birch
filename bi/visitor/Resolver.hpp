@@ -86,8 +86,6 @@ public:
   virtual Expression* modify(Binary* o);
   virtual Expression* modify(Cast* o);
   virtual Expression* modify(Call<Unknown>* o);
-  virtual Expression* modify(Call<BinaryOperator>* o);
-  virtual Expression* modify(Call<UnaryOperator>* o);
   virtual Expression* modify(Assign* o);
   virtual Expression* modify(Slice* o);
   virtual Expression* modify(Query* o);

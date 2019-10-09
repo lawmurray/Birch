@@ -38,6 +38,7 @@ public:
   virtual Expression* clone(const Call<MemberFunction>* o);
   virtual Expression* clone(const Call<Fiber>* o);
   virtual Expression* clone(const Call<MemberFiber>* o);
+  virtual Expression* clone(const Call<Parameter>* o);
   virtual Expression* clone(const Call<LocalVariable>* o);
   virtual Expression* clone(const Call<MemberVariable>* o);
   virtual Expression* clone(const Call<GlobalVariable>* o);

@@ -7,18 +7,21 @@
 
 template<class ObjectType>
 bi::Call<ObjectType>::Call(Expression* single, Expression* args,
-    Location* loc) :
+    Location* loc, ObjectType* target) :
     Expression(loc),
     Single<Expression>(single),
-    Argumented(args) {
+    Argumented(args),
+    Reference<ObjectType>(target) {
   //
 }
 
 template<class ObjectType>
-bi::Call<ObjectType>::Call(Expression* single, Location* loc) :
+bi::Call<ObjectType>::Call(Expression* single, Location* loc,
+    ObjectType* target) :
     Expression(loc),
     Single<Expression>(single),
-    Argumented(new EmptyExpression()) {
+    Argumented(new EmptyExpression()),
+    Reference<ObjectType>(target) {
   //
 }
 
@@ -47,6 +50,7 @@ template class bi::Call<bi::Function>;
 template class bi::Call<bi::MemberFunction>;
 template class bi::Call<bi::Fiber>;
 template class bi::Call<bi::MemberFiber>;
+template class bi::Call<bi::Parameter>;
 template class bi::Call<bi::LocalVariable>;
 template class bi::Call<bi::MemberVariable>;
 template class bi::Call<bi::GlobalVariable>;

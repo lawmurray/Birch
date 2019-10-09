@@ -5,6 +5,7 @@
 
 #include "bi/common/Typed.hpp"
 #include "bi/common/Located.hpp"
+#include "bi/common/Unknown.hpp"
 #include "bi/expression/ExpressionIterator.hpp"
 #include "bi/expression/ExpressionConstIterator.hpp"
 
@@ -12,6 +13,7 @@ namespace bi {
 class Cloner;
 class Modifier;
 class Visitor;
+template<class T> class Call;
 
 /**
  * Expression.
@@ -136,10 +138,10 @@ public:
   /**
    * Resolve a call.
    *
-   * @param args Arguments.
+   * @param o The unresolved call.
    *
-   * @return The type of the function called.
+   * @return A resolved call.
    */
-  virtual FunctionType* resolve(Argumented* o);
+  virtual Expression* resolve(Call<Unknown>* o);
 };
 }

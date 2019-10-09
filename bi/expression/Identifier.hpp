@@ -47,7 +47,7 @@ public:
   virtual bool isMember() const;
   virtual bool isAssignable() const;
 
-  virtual FunctionType* resolve(Argumented* o);
+  virtual Expression* resolve(Call<Unknown>* o);
 
   virtual Expression* accept(Cloner* visitor) const;
   virtual Expression* accept(Modifier* visitor);

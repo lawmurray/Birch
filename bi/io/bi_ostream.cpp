@@ -109,6 +109,10 @@ void bi::bi_ostream::visit(const Call<MemberFiber>* o) {
   middle(o->single << '(' << o->args << ')');
 }
 
+void bi::bi_ostream::visit(const Call<Parameter>* o) {
+  middle(o->single << '(' << o->args << ')');
+}
+
 void bi::bi_ostream::visit(const Call<LocalVariable>* o) {
   middle(o->single << '(' << o->args << ')');
 }

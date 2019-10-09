@@ -79,23 +79,7 @@ bi::Expression* bi::Resolver::modify(Cast* o) {
 
 bi::Expression* bi::Resolver::modify(Call<Unknown>* o) {
   Modifier::modify(o);
-  o->callType = o->single->resolve(o);
-  o->type = o->callType->returnType;
-  return o;
-}
-
-bi::Expression* bi::Resolver::modify(Call<BinaryOperator>* o) {
-  Modifier::modify(o);
-  o->callType = o->single->resolve(o);
-  o->type = o->callType->returnType;
-  return o;
-}
-
-bi::Expression* bi::Resolver::modify(Call<UnaryOperator>* o) {
-  Modifier::modify(o);
-  o->callType = o->single->resolve(o);
-  o->type = o->callType->returnType;
-  return o;
+  return o->single->resolve(o);
 }
 
 bi::Expression* bi::Resolver::modify(Assign* o) {

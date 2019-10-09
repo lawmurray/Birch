@@ -100,6 +100,6 @@ bi::ExpressionConstIterator bi::Expression::end() const {
   return ExpressionConstIterator(nullptr);
 }
 
-bi::FunctionType* bi::Expression::resolve(Argumented* o) {
+bi::Expression* bi::Expression::resolve(Call<Unknown>* o) {
   throw NotFunctionException(this);
 }
