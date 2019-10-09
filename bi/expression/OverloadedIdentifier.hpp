@@ -40,10 +40,10 @@ public:
    */
   virtual ~OverloadedIdentifier();
 
-  virtual bool isMember() const;
   virtual bool isOverloaded() const;
 
-  virtual Expression* resolve(Call<Unknown>* o);
+  virtual Lookup lookup(Expression* args);
+  virtual ObjectType* resolve(Call<ObjectType>* o);
 
   virtual Expression* accept(Cloner* visitor) const;
   virtual Expression* accept(Modifier* visitor);

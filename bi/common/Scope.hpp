@@ -6,19 +6,20 @@
 #include "bi/common/Dictionary.hpp"
 #include "bi/common/OverloadedDictionary.hpp"
 #include "bi/common/Named.hpp"
+#include "bi/common/Lookup.hpp"
 
 namespace bi {
 class Parameter;
-class GlobalVariable;
 class LocalVariable;
 class MemberVariable;
+class GlobalVariable;
 class Function;
-class Fiber;
 class MemberFunction;
+class Fiber;
 class MemberFiber;
-class Program;
 class BinaryOperator;
 class UnaryOperator;
+class Program;
 class Basic;
 class Class;
 class Generic;
@@ -31,25 +32,6 @@ class BasicType;
 class ClassType;
 class GenericType;
 class UnknownType;
-
-/**
- * Categories of objects for identifier lookups.
- */
-enum LookupResult {
-  PARAMETER,
-  GLOBAL_VARIABLE,
-  LOCAL_VARIABLE,
-  MEMBER_VARIABLE,
-  FUNCTION,
-  FIBER,
-  MEMBER_FUNCTION,
-  MEMBER_FIBER,
-  BASIC,
-  CLASS,
-  ALIAS,
-  GENERIC,
-  UNRESOLVED
-};
 
 /**
  * Scope categories.
@@ -75,17 +57,17 @@ public:
   /**
    * Look up the category for an unknown identifier.
    */
-  LookupResult lookup(const Identifier<Unknown>* o) const;
+  Lookup lookup(const Identifier<Unknown>* o) const;
 
   /**
    * Look up the category for an unknown identifier.
    */
-  LookupResult lookup(const OverloadedIdentifier<Unknown>* o) const;
+  Lookup lookup(const OverloadedIdentifier<Unknown>* o) const;
 
   /**
    * Look up the category for an unknown type.
    */
-  LookupResult lookup(const UnknownType* o) const;
+  Lookup lookup(const UnknownType* o) const;
 
   /**
    * Add declaration to scope.
@@ -176,17 +158,17 @@ private:
   /**
    * Defer lookup to inherited scopes.
    */
-  LookupResult lookupInherit(const Identifier<Unknown>* o) const;
+  Lookup lookupInherit(const Identifier<Unknown>* o) const;
 
   /**
    * Defer lookup to inherited scopes.
    */
-  LookupResult lookupInherit(const OverloadedIdentifier<Unknown>* o) const;
+  Lookup lookupInherit(const OverloadedIdentifier<Unknown>* o) const;
 
   /**
    * Defer lookup to inherited scopes.
    */
-  LookupResult lookupInherit(const UnknownType* o) const;
+  Lookup lookupInherit(const UnknownType* o) const;
 
   /**
    * Check for previous declarations of the same name, at global scope.

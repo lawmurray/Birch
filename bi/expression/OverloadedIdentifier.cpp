@@ -22,19 +22,18 @@ bi::OverloadedIdentifier<ObjectType>::~OverloadedIdentifier() {
 }
 
 template<class ObjectType>
-bool bi::OverloadedIdentifier<ObjectType>::isMember() const {
-  return std::is_same<ObjectType,MemberFunction>::value ||
-      std::is_same<ObjectType,MemberFiber>::value;
-}
-
-template<class ObjectType>
 bool bi::OverloadedIdentifier<ObjectType>::isOverloaded() const {
   return true;
 }
 
 template<class ObjectType>
-bi::Expression* bi::OverloadedIdentifier<ObjectType>::resolve(
-    Call<Unknown>* o) {
+bi::Lookup bi::OverloadedIdentifier<ObjectType>::lookup(Expression* args) {
+  return lookup_result<ObjectType>::value;
+}
+
+template<class ObjectType>
+ObjectType* bi::OverloadedIdentifier<ObjectType>::resolve(
+    Call<ObjectType>* o) {
   std::set<ObjectType*> matches;
   this->target->overloads.match(o, matches);
 
@@ -59,7 +58,7 @@ bi::Expression* bi::OverloadedIdentifier<ObjectType>::resolve(
     throw AmbiguousCallException(o, matches);
   } else if (matches.size() == 1) {
     overload = *matches.begin();
-    return new Call<ObjectType>(o->single, o->args, o->loc, overload);
+    return overload;
   } else {
     /* check inherited */
     auto iter = this->inherited.begin();
@@ -70,7 +69,7 @@ bi::Expression* bi::OverloadedIdentifier<ObjectType>::resolve(
         throw AmbiguousCallException(o, matches);
       } else if (matches.size() == 1) {
         overload = *matches.begin();
-        return new Call<ObjectType>(o->single, o->args, o->loc, overload);
+        return overload;
       }
       ++iter;
     }

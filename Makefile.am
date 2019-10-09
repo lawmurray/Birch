@@ -208,6 +208,7 @@ noinst_HEADERS = \
   bi/common/Dictionary.hpp \
   bi/common/Located.hpp \
   bi/common/Location.hpp \
+  bi/common/Lookup.hpp \
   bi/common/Name.hpp \
   bi/common/Named.hpp \
   bi/common/Numbered.hpp \

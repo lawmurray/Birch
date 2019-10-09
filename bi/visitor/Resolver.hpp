@@ -86,6 +86,16 @@ public:
   virtual Expression* modify(Binary* o);
   virtual Expression* modify(Cast* o);
   virtual Expression* modify(Call<Unknown>* o);
+  virtual Expression* modify(Call<Parameter>* o);
+  virtual Expression* modify(Call<LocalVariable>* o);
+  virtual Expression* modify(Call<MemberVariable>* o);
+  virtual Expression* modify(Call<GlobalVariable>* o);
+  virtual Expression* modify(Call<Function>* o);
+  virtual Expression* modify(Call<MemberFunction>* o);
+  virtual Expression* modify(Call<Fiber>* o);
+  virtual Expression* modify(Call<MemberFiber>* o);
+  virtual Expression* modify(Call<UnaryOperator>* o);
+  virtual Expression* modify(Call<BinaryOperator>* o);
   virtual Expression* modify(Assign* o);
   virtual Expression* modify(Slice* o);
   virtual Expression* modify(Query* o);
@@ -160,6 +170,16 @@ private:
   void resolve(ObjectType* o, const ScopeCategory outer);
 
   /**
+   * Resolve a call.
+   *
+   * @tparam ObjectType Object type.
+   *
+   * @param o The call.
+   */
+  template<class ObjectType>
+  void resolve(Call<ObjectType>* o);
+
+  /**
    * Instantiate a generic class or function.
    *
    * @tparam ObjectType Object type.
@@ -195,6 +215,15 @@ private:
    * @return A new, unambiguous, type identifier.
    */
   Type* lookup(UnknownType* o);
+
+  /**
+   * Look up the type of the referent of a function call.
+   *
+   * @param o The call.
+   *
+   * @return A new, unambiguous, call.
+   */
+  Expression* lookup(Call<Unknown>* o);
 
   /**
    * Check that an expression is of boolean type.
@@ -300,6 +329,11 @@ void bi::Resolver::resolve(ObjectType* o, const ScopeCategory outer) {
   if (!o->target) {
     throw UnresolvedException(o);
   }
+}
+
+template<class ObjectType>
+void bi::Resolver::resolve(Call<ObjectType>* o) {
+  o->target = o->single->resolve(o);
 }
 
 template<class IdentifierType, class ObjectType>

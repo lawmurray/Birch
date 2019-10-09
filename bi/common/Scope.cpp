@@ -29,7 +29,7 @@ bi::Scope::Scope(const ScopeCategory category) :
   //
 }
 
-bi::LookupResult bi::Scope::lookup(const Identifier<Unknown>* o) const {
+bi::Lookup bi::Scope::lookup(const Identifier<Unknown>* o) const {
   auto name = o->name->str();
   if (localVariables.contains(name)) {
     return LOCAL_VARIABLE;
@@ -54,7 +54,7 @@ bi::LookupResult bi::Scope::lookup(const Identifier<Unknown>* o) const {
   }
 }
 
-bi::LookupResult bi::Scope::lookup(const OverloadedIdentifier<Unknown>* o) const {
+bi::Lookup bi::Scope::lookup(const OverloadedIdentifier<Unknown>* o) const {
   auto name = o->name->str();
   if (memberFunctions.contains(name)) {
     return MEMBER_FUNCTION;
@@ -71,7 +71,7 @@ bi::LookupResult bi::Scope::lookup(const OverloadedIdentifier<Unknown>* o) const
   }
 }
 
-bi::LookupResult bi::Scope::lookup(const UnknownType* o) const {
+bi::Lookup bi::Scope::lookup(const UnknownType* o) const {
   auto name = o->name->str();
   if (basics.contains(name)) {
     return BASIC;
@@ -86,7 +86,7 @@ bi::LookupResult bi::Scope::lookup(const UnknownType* o) const {
   }
 }
 
-bi::LookupResult bi::Scope::lookupInherit(
+bi::Lookup bi::Scope::lookupInherit(
     const Identifier<Unknown>* o) const {
   auto name = o->name->str();
   if (memberVariables.contains(name)) {
@@ -102,7 +102,7 @@ bi::LookupResult bi::Scope::lookupInherit(
   }
 }
 
-bi::LookupResult bi::Scope::lookupInherit(
+bi::Lookup bi::Scope::lookupInherit(
     const OverloadedIdentifier<Unknown>* o) const {
   auto name = o->name->str();
   if (memberFunctions.contains(name)) {
@@ -116,7 +116,7 @@ bi::LookupResult bi::Scope::lookupInherit(
   }
 }
 
-bi::LookupResult bi::Scope::lookupInherit(const UnknownType* o) const {
+bi::Lookup bi::Scope::lookupInherit(const UnknownType* o) const {
   auto name = o->name->str();
   if (basics.contains(name)) {
     return BASIC;

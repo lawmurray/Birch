@@ -23,6 +23,15 @@ struct CallException: public CompilerException {
   template<class ObjectType>
   CallException(Argumented* o,
       const std::list<ObjectType*>& available = std::list<ObjectType*>());
+
+  /**
+   * Constructor.
+   *
+   * @param o The invalid call.
+   * @param available The available overload.
+   */
+  template<class ObjectType>
+  CallException(Argumented* o, const ObjectType* available);
 };
 }
 
@@ -60,6 +69,37 @@ bi::CallException::CallException(Argumented* o,
     buf << "note: candidate\n";
     buf << stmt;
   }
+
+  msg = base.str();
+}
+
+template<class ObjectType>
+bi::CallException::CallException(Argumented* o, const ObjectType* available) {
+  std::stringstream base;
+  bih_ostream buf(base);
+
+  auto expr = dynamic_cast<Expression*>(o);
+  assert(expr);
+  if (expr->loc) {
+    buf << expr->loc;
+  }
+  buf << "error: invalid call\n";
+  if (expr->loc) {
+    buf << expr->loc;
+  }
+  buf << "note: in\n";
+  buf << expr << "\n";
+  if (expr->loc) {
+    buf << expr->loc;
+  }
+  buf << "note: argument types\n";
+  buf << o->args->type << "\n";
+
+  if (available->loc) {
+    buf << available->loc;
+  }
+  buf << "note: candidate\n";
+  buf << available;
 
   msg = base.str();
 }

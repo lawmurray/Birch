@@ -20,25 +20,28 @@ bi::Identifier<ObjectType>::~Identifier() {
 }
 
 template<class ObjectType>
-bool bi::Identifier<ObjectType>::isMember() const {
-  return std::is_same<ObjectType,MemberVariable>::value;
-}
-
-template<class ObjectType>
 bool bi::Identifier<ObjectType>::isAssignable() const {
   return std::is_same<ObjectType,MemberVariable>::value
   || std::is_same<ObjectType,LocalVariable>::value;
 }
 
 template<class ObjectType>
-bi::Expression* bi::Identifier<ObjectType>::resolve(Call<Unknown>* o) {
+bi::Lookup bi::Identifier<ObjectType>::lookup(Expression* args) {
+  return lookup_result<ObjectType>::value;
+}
+
+template<class ObjectType>
+ObjectType* bi::Identifier<ObjectType>::resolve(Call<ObjectType>* o) {
   if (type->isFunction()) {
-    auto type = dynamic_cast<FunctionType*>(this->type);
-    assert(type);
-    return new Call<ObjectType>(o->single, o->args, o->loc, this->target);
+    auto functionType = dynamic_cast<FunctionType*>(type);
+    assert(functionType);
+    if (!o->args->type->isConvertible(*functionType->params)) {
+      throw CallException(o, this->target);
+    }
   } else {
     throw NotFunctionException(this);
   }
+  return this->target;
 }
 
 template<class ObjectType>

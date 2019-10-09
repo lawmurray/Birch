@@ -36,10 +36,6 @@ bool bi::Expression::isEmpty() const {
   return false;
 }
 
-bool bi::Expression::isMember() const {
-  return false;
-}
-
 bool bi::Expression::isAssignable() const {
   return false;
 }
@@ -100,6 +96,46 @@ bi::ExpressionConstIterator bi::Expression::end() const {
   return ExpressionConstIterator(nullptr);
 }
 
-bi::Expression* bi::Expression::resolve(Call<Unknown>* o) {
+bi::Lookup bi::Expression::lookup(Expression* args) {
   throw NotFunctionException(this);
+}
+
+bi::Parameter* bi::Expression::resolve(Call<Parameter>* o) {
+  assert(false);
+}
+
+bi::LocalVariable* bi::Expression::resolve(Call<LocalVariable>* o) {
+  assert(false);
+}
+
+bi::MemberVariable* bi::Expression::resolve(Call<MemberVariable>* o) {
+  assert(false);
+}
+
+bi::GlobalVariable* bi::Expression::resolve(Call<GlobalVariable>* o) {
+  assert(false);
+}
+
+bi::Function* bi::Expression::resolve(Call<Function>* o) {
+  assert(false);
+}
+
+bi::MemberFunction* bi::Expression::resolve(Call<MemberFunction>* o) {
+  assert(false);
+}
+
+bi::Fiber* bi::Expression::resolve(Call<Fiber>* o) {
+  assert(false);
+}
+
+bi::MemberFiber* bi::Expression::resolve(Call<MemberFiber>* o) {
+  assert(false);
+}
+
+bi::UnaryOperator* bi::Expression::resolve(Call<UnaryOperator>* o) {
+  assert(false);
+}
+
+bi::BinaryOperator* bi::Expression::resolve(Call<BinaryOperator>* o) {
+  assert(false);
 }

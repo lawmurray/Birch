@@ -15,7 +15,19 @@ bi::Global::~Global() {
   //
 }
 
-bi::Expression* bi::Global::resolve(Call<Unknown>* o) {
+bi::Lookup bi::Global::lookup(Expression* args) {
+  return single->lookup(args);
+}
+
+bi::GlobalVariable* bi::Global::resolve(Call<GlobalVariable>* o) {
+  return single->resolve(o);
+}
+
+bi::Function* bi::Global::resolve(Call<Function>* o) {
+  return single->resolve(o);
+}
+
+bi::Fiber* bi::Global::resolve(Call<Fiber>* o) {
   return single->resolve(o);
 }
 

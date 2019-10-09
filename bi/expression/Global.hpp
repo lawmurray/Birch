@@ -28,7 +28,10 @@ public:
    */
   virtual ~Global();
 
-  virtual Expression* resolve(Call<Unknown>* o);
+  virtual Lookup lookup(Expression* args);
+  virtual GlobalVariable* resolve(Call<GlobalVariable>* o);
+  virtual Function* resolve(Call<Function>* o);
+  virtual Fiber* resolve(Call<Fiber>* o);
 
   virtual Expression* accept(Cloner* visitor) const;
   virtual Expression* accept(Modifier* visitor);

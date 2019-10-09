@@ -16,15 +16,23 @@ bi::Member::~Member() {
   //
 }
 
-bool bi::Member::isMember() const {
-  return true;
-}
-
 bool bi::Member::isAssignable() const {
   return right->isAssignable();
 }
 
-bi::Expression* bi::Member::resolve(Call<Unknown>* o) {
+bi::Lookup bi::Member::lookup(Expression* args) {
+  return right->lookup(args);
+}
+
+bi::MemberVariable* bi::Member::resolve(Call<MemberVariable>* o) {
+  return right->resolve(o);
+}
+
+bi::MemberFunction* bi::Member::resolve(Call<MemberFunction>* o) {
+  return right->resolve(o);
+}
+
+bi::MemberFiber* bi::Member::resolve(Call<MemberFiber>* o) {
   return right->resolve(o);
 }
 

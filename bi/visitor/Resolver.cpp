@@ -79,7 +79,77 @@ bi::Expression* bi::Resolver::modify(Cast* o) {
 
 bi::Expression* bi::Resolver::modify(Call<Unknown>* o) {
   Modifier::modify(o);
-  return o->single->resolve(o);
+  return lookup(o)->accept(this);
+}
+
+bi::Expression* bi::Resolver::modify(Call<Parameter>* o) {
+  Modifier::modify(o);
+  resolve(o);
+  o->type = dynamic_cast<FunctionType*>(o->target->type)->returnType;
+  return o;
+}
+
+bi::Expression* bi::Resolver::modify(Call<LocalVariable>* o) {
+  Modifier::modify(o);
+  resolve(o);
+  o->type = dynamic_cast<FunctionType*>(o->target->type)->returnType;
+  return o;
+}
+
+bi::Expression* bi::Resolver::modify(Call<MemberVariable>* o) {
+  Modifier::modify(o);
+  resolve(o);
+  o->type = dynamic_cast<FunctionType*>(o->target->type)->returnType;
+  return o;
+}
+
+bi::Expression* bi::Resolver::modify(Call<GlobalVariable>* o) {
+  Modifier::modify(o);
+  resolve(o);
+  o->type = dynamic_cast<FunctionType*>(o->target->type)->returnType;
+  return o;
+}
+
+bi::Expression* bi::Resolver::modify(Call<Function>* o) {
+  Modifier::modify(o);
+  resolve(o);
+  o->type = dynamic_cast<FunctionType*>(o->target->type)->returnType;
+  return o;
+}
+
+bi::Expression* bi::Resolver::modify(Call<MemberFunction>* o) {
+  Modifier::modify(o);
+  resolve(o);
+  o->type = dynamic_cast<FunctionType*>(o->target->type)->returnType;
+  return o;
+}
+
+bi::Expression* bi::Resolver::modify(Call<Fiber>* o) {
+  Modifier::modify(o);
+  resolve(o);
+  o->type = dynamic_cast<FunctionType*>(o->target->type)->returnType;
+  return o;
+}
+
+bi::Expression* bi::Resolver::modify(Call<MemberFiber>* o) {
+  Modifier::modify(o);
+  resolve(o);
+  o->type = dynamic_cast<FunctionType*>(o->target->type)->returnType;
+  return o;
+}
+
+bi::Expression* bi::Resolver::modify(Call<UnaryOperator>* o) {
+  Modifier::modify(o);
+  resolve(o);
+  o->type = dynamic_cast<FunctionType*>(o->target->type)->returnType;
+  return o;
+}
+
+bi::Expression* bi::Resolver::modify(Call<BinaryOperator>* o) {
+  Modifier::modify(o);
+  resolve(o);
+  o->type = dynamic_cast<FunctionType*>(o->target->type)->returnType;
+  return o;
 }
 
 bi::Expression* bi::Resolver::modify(Assign* o) {
@@ -922,7 +992,7 @@ bi::Type* bi::Resolver::modify(MemberType* o) {
 }
 
 bi::Expression* bi::Resolver::lookup(Identifier<Unknown>* o) {
-  LookupResult category = UNRESOLVED;
+  Lookup category = UNRESOLVED;
   if (!memberScopes.empty()) {
     /* use membership scope */
     category = memberScopes.back()->lookup(o);
@@ -933,22 +1003,21 @@ bi::Expression* bi::Resolver::lookup(Identifier<Unknown>* o) {
       category = (*iter)->lookup(o);
     }
   }
-
   switch (category) {
   case PARAMETER:
     return new Identifier<Parameter>(o->name, o->loc);
-  case GLOBAL_VARIABLE:
-    return new Identifier<GlobalVariable>(o->name, o->loc);
   case LOCAL_VARIABLE:
     return new Identifier<LocalVariable>(o->name, o->loc);
   case MEMBER_VARIABLE:
     return new Identifier<MemberVariable>(o->name, o->loc);
+  case GLOBAL_VARIABLE:
+    return new Identifier<GlobalVariable>(o->name, o->loc);
   case FUNCTION:
     return new OverloadedIdentifier<Function>(o->name, new EmptyType(o->loc), o->loc);
-  case FIBER:
-    return new OverloadedIdentifier<Fiber>(o->name, new EmptyType(o->loc), o->loc);
   case MEMBER_FUNCTION:
     return new OverloadedIdentifier<MemberFunction>(o->name, new EmptyType(o->loc), o->loc);
+  case FIBER:
+    return new OverloadedIdentifier<Fiber>(o->name, new EmptyType(o->loc), o->loc);
   case MEMBER_FIBER:
     return new OverloadedIdentifier<MemberFiber>(o->name, new EmptyType(o->loc), o->loc);
   default:
@@ -957,7 +1026,7 @@ bi::Expression* bi::Resolver::lookup(Identifier<Unknown>* o) {
 }
 
 bi::Expression* bi::Resolver::lookup(OverloadedIdentifier<Unknown>* o) {
-  LookupResult category = UNRESOLVED;
+  Lookup category = UNRESOLVED;
   if (!memberScopes.empty()) {
     /* use membership scope */
     category = memberScopes.back()->lookup(o);
@@ -968,14 +1037,13 @@ bi::Expression* bi::Resolver::lookup(OverloadedIdentifier<Unknown>* o) {
       category = (*iter)->lookup(o);
     }
   }
-
   switch (category) {
   case FUNCTION:
     return new OverloadedIdentifier<Function>(o->name, o->typeArgs, o->loc);
-  case FIBER:
-    return new OverloadedIdentifier<Fiber>(o->name, o->typeArgs, o->loc);
   case MEMBER_FUNCTION:
     return new OverloadedIdentifier<MemberFunction>(o->name, o->typeArgs, o->loc);
+  case FIBER:
+    return new OverloadedIdentifier<Fiber>(o->name, o->typeArgs, o->loc);
   case MEMBER_FIBER:
     return new OverloadedIdentifier<MemberFiber>(o->name, o->typeArgs, o->loc);
   default:
@@ -984,7 +1052,7 @@ bi::Expression* bi::Resolver::lookup(OverloadedIdentifier<Unknown>* o) {
 }
 
 bi::Type* bi::Resolver::lookup(UnknownType* o) {
-  LookupResult category = UNRESOLVED;
+  Lookup category = UNRESOLVED;
   if (!memberScopes.empty()) {
     /* use membership scope */
     category = memberScopes.back()->lookup(o);
@@ -995,7 +1063,6 @@ bi::Type* bi::Resolver::lookup(UnknownType* o) {
       category = (*iter)->lookup(o);
     }
   }
-
   if (category == BASIC) {
     Type* type = new BasicType(o->name, o->loc);
     if (o->weak) {
@@ -1009,6 +1076,36 @@ bi::Type* bi::Resolver::lookup(UnknownType* o) {
     return new GenericType(o->name, o->loc);
   } else {
     throw UnresolvedException(o);
+  }
+}
+
+bi::Expression* bi::Resolver::lookup(Call<Unknown>* o) {
+  auto category = o->single->lookup(o->args);
+  auto single = o->single->accept(&cloner);
+  auto args = o->args->accept(&cloner);
+  switch (category) {
+  case PARAMETER:
+    return new Call<Parameter>(single, args, o->loc);
+  case LOCAL_VARIABLE:
+    return new Call<LocalVariable>(single, args, o->loc);
+  case MEMBER_VARIABLE:
+    return new Call<MemberVariable>(single, args, o->loc);
+  case GLOBAL_VARIABLE:
+    return new Call<GlobalVariable>(single, args, o->loc);
+  case FUNCTION:
+    return new Call<Function>(single, args, o->loc);
+  case MEMBER_FUNCTION:
+    return new Call<MemberFunction>(single, args, o->loc);
+  case FIBER:
+    return new Call<Fiber>(single, args, o->loc);
+  case MEMBER_FIBER:
+    return new Call<MemberFiber>(single, args, o->loc);
+  case UNARY_OPERATOR:
+    return new Call<UnaryOperator>(single, args, o->loc);
+  case BINARY_OPERATOR:
+    return new Call<BinaryOperator>(single, args, o->loc);
+  default:
+    assert(false);
   }
 }
 

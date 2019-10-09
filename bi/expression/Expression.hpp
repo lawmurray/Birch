@@ -6,6 +6,7 @@
 #include "bi/common/Typed.hpp"
 #include "bi/common/Located.hpp"
 #include "bi/common/Unknown.hpp"
+#include "bi/common/Lookup.hpp"
 #include "bi/expression/ExpressionIterator.hpp"
 #include "bi/expression/ExpressionConstIterator.hpp"
 
@@ -79,11 +80,6 @@ public:
   virtual bool isEmpty() const;
 
   /**
-   * Is this a reference to a member function or variable?
-   */
-  virtual bool isMember() const;
-
-  /**
    * Is result of expression assignable?
    */
   virtual bool isAssignable() const;
@@ -136,12 +132,30 @@ public:
   ExpressionConstIterator end() const;
 
   /**
+   * Look up the type of a call.
+   *
+   * @param args Arguments.
+   *
+   * @return The type of the call.
+   */
+  virtual Lookup lookup(Expression* args);
+
+  /**
    * Resolve a call.
    *
    * @param o The unresolved call.
    *
-   * @return A resolved call.
+   * @return The resolved call.
    */
-  virtual Expression* resolve(Call<Unknown>* o);
+  virtual Parameter* resolve(Call<Parameter>* o);
+  virtual LocalVariable* resolve(Call<LocalVariable>* o);
+  virtual MemberVariable* resolve(Call<MemberVariable>* o);
+  virtual GlobalVariable* resolve(Call<GlobalVariable>* o);
+  virtual Function* resolve(Call<Function>* o);
+  virtual MemberFunction* resolve(Call<MemberFunction>* o);
+  virtual Fiber* resolve(Call<Fiber>* o);
+  virtual MemberFiber* resolve(Call<MemberFiber>* o);
+  virtual UnaryOperator* resolve(Call<UnaryOperator>* o);
+  virtual BinaryOperator* resolve(Call<BinaryOperator>* o);
 };
 }
