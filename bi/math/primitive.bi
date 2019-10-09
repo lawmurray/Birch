@@ -21,7 +21,7 @@ function transform<Value>(x:Value[_], f:@(Value) -> Value) -> Value[_] {
  */
 function transform<Value>(X:Value[_,_], f:@(Value) -> Value) -> Value[_,_] {
   // in C++17 can use std::transform
-  Y:Value[_,_];
+  Y:Value[rows(X),columns(X)];
   for auto i in 1..rows(X) {
     for auto j in 1..columns(X) {
       Y[i,j] <- f(X[i,j]);
@@ -58,7 +58,7 @@ function transform<Value>(X:Value[_,_], Y:Value[_,_],
     f:@(Value, Value) -> Value) -> Value[_,_] {
   assert rows(X) == rows(Y);
   assert columns(X) == columns(Y);
-  Z:Value[_,_];
+  Z:Value[rows(X),columns(X)];
   for auto i in 1..rows(X) {
     for auto j in 1..columns(X) {
       Z[i,j] <- f(X[i,j], Y[i,j]);
@@ -100,7 +100,7 @@ function transform<Value>(X:Value[_,_], Y:Value[_,_], Z:Value[_,_],
   assert rows(Y) == rows(Z);
   assert columns(X) == columns(Y);
   assert columns(Y) == columns(Z);
-  A:Value[_,_];
+  A:Value[rows(X),columns(X)];
   for auto i in 1..rows(X) {
     for auto j in 1..columns(X) {
       A[i,j] <- f(X[i,j], Y[i,j], Z[i,j]);
