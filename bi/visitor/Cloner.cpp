@@ -61,6 +61,34 @@ bi::Expression* bi::Cloner::clone(const Call<Unknown>* o) {
   return new Call<Unknown>(o->single->accept(this), o->args->accept(this), o->loc);
 }
 
+bi::Expression* bi::Cloner::clone(const Call<Function>* o) {
+  return new Call<Function>(o->single->accept(this), o->args->accept(this), o->loc);
+}
+
+bi::Expression* bi::Cloner::clone(const Call<MemberFunction>* o) {
+  return new Call<MemberFunction>(o->single->accept(this), o->args->accept(this), o->loc);
+}
+
+bi::Expression* bi::Cloner::clone(const Call<Fiber>* o) {
+  return new Call<Fiber>(o->single->accept(this), o->args->accept(this), o->loc);
+}
+
+bi::Expression* bi::Cloner::clone(const Call<MemberFiber>* o) {
+  return new Call<MemberFiber>(o->single->accept(this), o->args->accept(this), o->loc);
+}
+
+bi::Expression* bi::Cloner::clone(const Call<LocalVariable>* o) {
+  return new Call<LocalVariable>(o->single->accept(this), o->args->accept(this), o->loc);
+}
+
+bi::Expression* bi::Cloner::clone(const Call<MemberVariable>* o) {
+  return new Call<MemberVariable>(o->single->accept(this), o->args->accept(this), o->loc);
+}
+
+bi::Expression* bi::Cloner::clone(const Call<GlobalVariable>* o) {
+  return new Call<GlobalVariable>(o->single->accept(this), o->args->accept(this), o->loc);
+}
+
 bi::Expression* bi::Cloner::clone(const Call<BinaryOperator>* o) {
   return new Call<BinaryOperator>(o->single->accept(this), o->args->accept(this),
       o->loc);

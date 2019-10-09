@@ -69,6 +69,41 @@ void bi::Visitor::visit(const Call<Unknown>* o) {
   o->args->accept(this);
 }
 
+void bi::Visitor::visit(const Call<Function>* o) {
+  o->single->accept(this);
+  o->args->accept(this);
+}
+
+void bi::Visitor::visit(const Call<MemberFunction>* o) {
+  o->single->accept(this);
+  o->args->accept(this);
+}
+
+void bi::Visitor::visit(const Call<Fiber>* o) {
+  o->single->accept(this);
+  o->args->accept(this);
+}
+
+void bi::Visitor::visit(const Call<MemberFiber>* o) {
+  o->single->accept(this);
+  o->args->accept(this);
+}
+
+void bi::Visitor::visit(const Call<LocalVariable>* o) {
+  o->single->accept(this);
+  o->args->accept(this);
+}
+
+void bi::Visitor::visit(const Call<MemberVariable>* o) {
+  o->single->accept(this);
+  o->args->accept(this);
+}
+
+void bi::Visitor::visit(const Call<GlobalVariable>* o) {
+  o->single->accept(this);
+  o->args->accept(this);
+}
+
 void bi::Visitor::visit(const Call<BinaryOperator>* o) {
   o->single->accept(this);
   o->args->accept(this);

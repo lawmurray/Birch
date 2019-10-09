@@ -3,9 +3,9 @@
  */
 #pragma once
 
-#include "bi/expression/Expression.hpp"
-
 namespace bi {
+class Expression;
+
 /**
  * Iterator over constant expression list.
  *

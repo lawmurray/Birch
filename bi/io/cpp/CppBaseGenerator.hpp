@@ -30,6 +30,13 @@ public:
   virtual void visit(const Sequence* o);
   virtual void visit(const Cast* o);
   virtual void visit(const Call<Unknown>* o);
+  virtual void visit(const Call<Function>* o);
+  virtual void visit(const Call<MemberFunction>* o);
+  virtual void visit(const Call<Fiber>* o);
+  virtual void visit(const Call<MemberFiber>* o);
+  virtual void visit(const Call<LocalVariable>* o);
+  virtual void visit(const Call<MemberVariable>* o);
+  virtual void visit(const Call<GlobalVariable>* o);
   virtual void visit(const Call<BinaryOperator>* o);
   virtual void visit(const Call<UnaryOperator>* o);
   virtual void visit(const Assign* o);
@@ -133,7 +140,7 @@ protected:
    * Generate arguments for function calls with appropriate casts where
    * necessary.
    */
-  void genArgs(const Call<Unknown>* o);
+  void genArgs(const Expression* args, const Type* types);
   void genLeftArg(const Call<BinaryOperator>* o);
   void genRightArg(const Call<BinaryOperator>* o);
   void genSingleArg(const Call<UnaryOperator>* o);

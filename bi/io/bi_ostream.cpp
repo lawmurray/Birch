@@ -93,6 +93,34 @@ void bi::bi_ostream::visit(const Call<Unknown>* o) {
   middle(o->single << '(' << o->args << ')');
 }
 
+void bi::bi_ostream::visit(const Call<Function>* o) {
+  middle(o->single << '(' << o->args << ')');
+}
+
+void bi::bi_ostream::visit(const Call<MemberFunction>* o) {
+  middle(o->single << '(' << o->args << ')');
+}
+
+void bi::bi_ostream::visit(const Call<Fiber>* o) {
+  middle(o->single << '(' << o->args << ')');
+}
+
+void bi::bi_ostream::visit(const Call<MemberFiber>* o) {
+  middle(o->single << '(' << o->args << ')');
+}
+
+void bi::bi_ostream::visit(const Call<LocalVariable>* o) {
+  middle(o->single << '(' << o->args << ')');
+}
+
+void bi::bi_ostream::visit(const Call<MemberVariable>* o) {
+  middle(o->single << '(' << o->args << ')');
+}
+
+void bi::bi_ostream::visit(const Call<GlobalVariable>* o) {
+  middle(o->single << '(' << o->args << ')');
+}
+
 void bi::bi_ostream::visit(const Call<BinaryOperator>* o) {
   middle(
       o->args->getLeft() << ' ' << o->single << ' ' << o->args->getRight());

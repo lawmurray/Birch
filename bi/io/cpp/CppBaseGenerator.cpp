@@ -80,7 +80,58 @@ void bi::CppBaseGenerator::visit(const Cast* o) {
 
 void bi::CppBaseGenerator::visit(const Call<Unknown>* o) {
   middle(o->single);
-  genArgs(o);
+  middle('(');
+  genArgs(o->args, o->callType->params);
+  middle(')');
+}
+
+void bi::CppBaseGenerator::visit(const Call<Function>* o) {
+  middle(o->single);
+  middle('(');
+  genArgs(o->args, o->callType->params);
+  middle(')');
+}
+
+void bi::CppBaseGenerator::visit(const Call<MemberFunction>* o) {
+  middle(o->single);
+  middle('(');
+  genArgs(o->args, o->callType->params);
+  middle(')');
+}
+
+void bi::CppBaseGenerator::visit(const Call<Fiber>* o) {
+  middle(o->single);
+  middle('(');
+  genArgs(o->args, o->callType->params);
+  middle(')');
+}
+
+void bi::CppBaseGenerator::visit(const Call<MemberFiber>* o) {
+  middle(o->single);
+  middle('(');
+  genArgs(o->args, o->callType->params);
+  middle(')');
+}
+
+void bi::CppBaseGenerator::visit(const Call<LocalVariable>* o) {
+  middle(o->single);
+  middle('(');
+  genArgs(o->args, o->callType->params);
+  middle(')');
+}
+
+void bi::CppBaseGenerator::visit(const Call<MemberVariable>* o) {
+  middle(o->single);
+  middle('(');
+  genArgs(o->args, o->callType->params);
+  middle(')');
+}
+
+void bi::CppBaseGenerator::visit(const Call<GlobalVariable>* o) {
+  middle(o->single);
+  middle('(');
+  genArgs(o->args, o->callType->params);
+  middle(')');
 }
 
 void bi::CppBaseGenerator::visit(const Call<BinaryOperator>* o) {
@@ -751,6 +802,7 @@ void bi::CppBaseGenerator::visit(const ArrayType* o) {
 void bi::CppBaseGenerator::visit(const TupleType* o) {
   middle("std::tuple<" << o->single << '>');
 }
+
 void bi::CppBaseGenerator::visit(const FunctionType* o) {
   middle("std::function<" << o->returnType << "(libbirch::Label* context_");
   if (!o->params->isEmpty()) {
@@ -821,27 +873,19 @@ void bi::CppBaseGenerator::genTraceLine(const int line) {
   line("libbirch_line_(" << line << ");");
 }
 
-void bi::CppBaseGenerator::genArgs(const Call<Unknown>* o) {
-  middle('(');
-  if (!o->single->isMember()) {
-    middle("context_");
-    if (!o->args->isEmpty()) {
-      middle(", ");
-    }
-  }
-  auto iter1 = o->args->begin();
-  auto end1 = o->args->end();
-  auto iter2 = o->callType->params->begin();
-  auto end2 = o->callType->params->end();
+void bi::CppBaseGenerator::genArgs(const Expression* args, const Type* types) {
+  auto iter1 = args->begin();
+  auto end1 = args->end();
+  auto iter2 = types->begin();
+  auto end2 = types->end();
   while (iter1 != end1 && iter2 != end2) {
-    if (iter1 != o->args->begin()) {
+    if (iter1 != args->begin()) {
       middle(", ");
     }
     genArg(*iter1, *iter2);
     ++iter1;
     ++iter2;
   }
-  middle(')');
 }
 
 void bi::CppBaseGenerator::genLeftArg(const Call<BinaryOperator>* o) {

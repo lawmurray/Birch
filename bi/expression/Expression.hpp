@@ -5,13 +5,13 @@
 
 #include "bi/common/Typed.hpp"
 #include "bi/common/Located.hpp"
+#include "bi/expression/ExpressionIterator.hpp"
+#include "bi/expression/ExpressionConstIterator.hpp"
 
 namespace bi {
 class Cloner;
 class Modifier;
 class Visitor;
-class ExpressionIterator;
-class ExpressionConstIterator;
 
 /**
  * Expression.

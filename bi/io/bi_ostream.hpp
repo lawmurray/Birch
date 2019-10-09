@@ -30,6 +30,13 @@ public:
   virtual void visit(const Sequence* o);
   virtual void visit(const Cast* o);
   virtual void visit(const Call<Unknown>* o);
+  virtual void visit(const Call<Function>* o);
+  virtual void visit(const Call<MemberFunction>* o);
+  virtual void visit(const Call<Fiber>* o);
+  virtual void visit(const Call<MemberFiber>* o);
+  virtual void visit(const Call<LocalVariable>* o);
+  virtual void visit(const Call<MemberVariable>* o);
+  virtual void visit(const Call<GlobalVariable>* o);
   virtual void visit(const Call<BinaryOperator>* o);
   virtual void visit(const Call<UnaryOperator>* o);
   virtual void visit(const Assign* o);

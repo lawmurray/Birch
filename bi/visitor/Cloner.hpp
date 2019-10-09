@@ -34,6 +34,13 @@ public:
   virtual Expression* clone(const Binary* o);
   virtual Expression* clone(const Cast* o);
   virtual Expression* clone(const Call<Unknown>* o);
+  virtual Expression* clone(const Call<Function>* o);
+  virtual Expression* clone(const Call<MemberFunction>* o);
+  virtual Expression* clone(const Call<Fiber>* o);
+  virtual Expression* clone(const Call<MemberFiber>* o);
+  virtual Expression* clone(const Call<LocalVariable>* o);
+  virtual Expression* clone(const Call<MemberVariable>* o);
+  virtual Expression* clone(const Call<GlobalVariable>* o);
   virtual Expression* clone(const Call<BinaryOperator>* o);
   virtual Expression* clone(const Call<UnaryOperator>* o);
   virtual Expression* clone(const Assign* o);

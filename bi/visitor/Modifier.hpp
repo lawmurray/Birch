@@ -34,6 +34,13 @@ public:
   virtual Expression* modify(Binary* o);
   virtual Expression* modify(Cast* o);
   virtual Expression* modify(Call<Unknown>* o);
+  virtual Expression* modify(Call<Function>* o);
+  virtual Expression* modify(Call<MemberFunction>* o);
+  virtual Expression* modify(Call<Fiber>* o);
+  virtual Expression* modify(Call<MemberFiber>* o);
+  virtual Expression* modify(Call<LocalVariable>* o);
+  virtual Expression* modify(Call<MemberVariable>* o);
+  virtual Expression* modify(Call<GlobalVariable>* o);
   virtual Expression* modify(Call<BinaryOperator>* o);
   virtual Expression* modify(Call<UnaryOperator>* o);
   virtual Expression* modify(Assign* o);

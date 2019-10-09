@@ -43,12 +43,12 @@ void bi::Call<ObjectType>::accept(Visitor* visitor) const {
 }
 
 template class bi::Call<bi::Unknown>;
-//template class bi::Call<bi::Function>;
-//template class bi::Call<bi::MemberFunction>;
-//template class bi::Call<bi::Fiber>;
-//template class bi::Call<bi::MemberFiber>;
-//template class bi::Call<bi::LocalVariable>;
-//template class bi::Call<bi::MemberVariable>;
-//template class bi::Call<bi::GlobalVariable>;
+template class bi::Call<bi::Function>;
+template class bi::Call<bi::MemberFunction>;
+template class bi::Call<bi::Fiber>;
+template class bi::Call<bi::MemberFiber>;
+template class bi::Call<bi::LocalVariable>;
+template class bi::Call<bi::MemberVariable>;
+template class bi::Call<bi::GlobalVariable>;
 template class bi::Call<bi::UnaryOperator>;
 template class bi::Call<bi::BinaryOperator>;
