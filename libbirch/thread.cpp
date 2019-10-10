@@ -3,15 +3,15 @@
  */
 #include "libbirch/thread.hpp"
 
-/**
- * Get the root context.
- */
-static libbirch::Label* root() {
-  static libbirch::SharedPtr<libbirch::Label> context(new libbirch::Label());
+#include "libbirch/LazyLabel.hpp"
+
+#if ENABLE_LAZY_DEEP_CLONE
+static libbirch::LazyLabel* root() {
+  static libbirch::SharedPtr<libbirch::LazyLabel> context(new libbirch::Label());
   return context.get();
 }
 
-#if ENABLE_LAZY_DEEP_CLONE
+libbirch::LazyLabel* libbirch::rootContext = root();
 libbirch::EntryExitLock libbirch::freezeLock;
 libbirch::EntryExitLock libbirch::finishLock;
 #endif

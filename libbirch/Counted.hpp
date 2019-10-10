@@ -6,6 +6,7 @@
 #include "libbirch/external.hpp"
 #include "libbirch/memory.hpp"
 #include "libbirch/class.hpp"
+#include "libbirch/Atomic.hpp"
 
 namespace libbirch {
 /**
