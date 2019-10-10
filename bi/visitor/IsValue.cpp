@@ -14,3 +14,17 @@ void bi::IsValue::visit(const ClassType* o) {
 void bi::IsValue::visit(const GenericType* o) {
   o->target->type->accept(this);
 }
+
+void bi::IsValue::visit(const Call<Function>* o) {
+  if (done.find(o->target) != done.end()) {
+    done.insert(o->target);
+    o->target->accept(this);
+  }
+}
+
+void bi::IsValue::visit(const Call<Fiber>* o) {
+  if (done.find(o->target) != done.end()) {
+    done.insert(o->target);
+    o->target->accept(this);
+  }
+}

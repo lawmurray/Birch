@@ -5,6 +5,8 @@
 
 #include "bi/visitor/Visitor.hpp"
 
+#include <unordered_set>
+
 namespace bi {
 /**
  * Determines whether an expression, statement or type contains contains
@@ -20,10 +22,18 @@ public:
 
   virtual void visit(const ClassType* o);
   virtual void visit(const GenericType* o);
+  virtual void visit(const Call<Function>* o);
+  virtual void visit(const Call<Fiber>* o);
 
   /**
    * Result.
    */
   bool result;
+
+private:
+  /**
+   * Memo of functions into which have already recursed.
+   */
+  std::unordered_set<Statement*> done;
 };
 }

@@ -104,24 +104,24 @@ std::string bi::nice(const std::string& name) {
   static std::unordered_map<std::string,std::string> ops;
   static bool init = false;
   if (!init) {
-    ops["<-"] = "assign";
-    ops["<~"] = "left_tilde";
-    ops["~>"] = "right_tilde";
-    ops["~"] = "tilde";
-    ops[".."] = "range";
-    ops["+"] = "add";
-    ops["-"] = "subtract";
-    ops["*"] = "multiply";
-    ops["/"] = "divide";
-    ops["<"] = "lt";
-    ops[">"] = "gt";
-    ops["<="] = "le";
-    ops[">="] = "ge";
-    ops["=="] = "eq";
-    ops["!="] = "ne";
-    ops["!"] = "not";
-    ops["||"] = "or";
-    ops["&&"] = "and";
+    ops["<-"] = "assign_";
+    ops["<~"] = "left_tilde_";
+    ops["~>"] = "right_tilde_";
+    ops["~"] = "tilde_";
+    ops[".."] = "range_";
+    ops["+"] = "add_";
+    ops["-"] = "subtract_";
+    ops["*"] = "multiply_";
+    ops["/"] = "divide_";
+    ops["<"] = "lt_";
+    ops[">"] = "gt_";
+    ops["<="] = "le_";
+    ops[">="] = "ge_";
+    ops["=="] = "eq_";
+    ops["!="] = "ne_";
+    ops["!"] = "not_";
+    ops["||"] = "or_";
+    ops["&&"] = "and_";
 
     init = true;
   }
