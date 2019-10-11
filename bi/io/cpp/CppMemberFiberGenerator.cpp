@@ -38,6 +38,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     start("libbirch::Shared<bi::type::" << type->name);
     genTemplateArgs(type);
     finish("> self;");
+    line("yield_type_ value_;");
     for (auto param : params) {
       line(param->type << ' ' << param->name << ';');
     }
@@ -54,7 +55,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     genTemplateArgs(type);
     middle("::" << stateName << "::");
   }
-  middle(stateName << "(libbirch::Label* label_, const libbirch::Shared<");
+  middle(stateName << "(libbirch::Label* context_, const libbirch::Shared<");
   middle(type->name);
   genTemplateArgs(type);
   middle(">& self");
@@ -68,7 +69,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     finish(" :");
     in();
     in();
-    start("super_type_(label_, " << (yields.size() + 1) << ')');
+    start("super_type_(context_, " << (yields.size() + 1) << ')');
     finish(',');
     start("self(self)");
     for (auto param : params) {
@@ -90,28 +91,34 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   } else {
     start("");
   }
-  middle(stateName << "(libbirch::Label* label_, const " << stateName << "& o_)");
+  middle(stateName << "(libbirch::Label* context_, const " << stateName << "& o_)");
   if (header) {
     finish(";\n");
   } else {
     finish(" :");
     in();
     in();
-    start("super_type_(label_, o_)");
+    start("super_type_(context_, o_)");
     finish(',');
-    start("self(label_, self)");
+    start("self(context_, self)");
+    finish(',');
+    if (o->returnType->unwrap()->isValue()) {
+      start("value_(o_.value_)");
+    } else {
+      start("value_(context_, o_.value_)");
+    }
     for (auto param : params) {
       if (!param->type->isValue()) {
         auto name = param->name;
         finish(',');
-        start(name << "(label_, o_." << name << ')');
+        start(name << "(context_, o_." << name << ')');
       }
     }
     for (auto local : locals) {
       if (!local->type->isValue()) {
         auto name = getName(local->name->str(), local->number);
         finish(',');
-        start(name << "(label_, o_." << name << ')');
+        start(name << "(context_, o_." << name << ')');
       }
     }
     out();
@@ -132,9 +139,9 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
 
   /* clone function */
   if (header) {
-    line("virtual " << stateName << "* clone_(libbirch::Label* label_) const {");
+    line("virtual " << stateName << "* clone_(libbirch::Label* context_) const {");
     in();
-    line("return new " << stateName << "(label_, *this);");
+    line("return new " << stateName << "(context_, *this);");
     out();
     line("}\n");
   }
@@ -246,6 +253,31 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     genSwitch();
     *this << o->braces->strip();
     genEnd();
+    out();
+    finish("}\n");
+  }
+
+  /* get function */
+  if (header) {
+    start("virtual ");
+  } else {
+    middle("typename bi::type::" << type->name);
+    genTemplateArgs(type);
+    middle("::" << stateName << "::");
+  }
+  middle("yield_type_& ");
+  if (!header) {
+    middle("bi::type::" << type->name);
+    genTemplateArgs(type);
+    middle("::" << stateName << "::");
+  }
+  middle("get()");
+  if (header) {
+    finish(';');
+  } else {
+    finish(" {");
+    in();
+    line("return value_;");
     out();
     finish("}\n");
   }

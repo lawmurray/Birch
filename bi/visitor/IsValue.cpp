@@ -11,6 +11,10 @@ void bi::IsValue::visit(const ClassType* o) {
   result = false;
 }
 
+void bi::IsValue::visit(const FiberType* o) {
+  result = false;  // state is an object
+}
+
 void bi::IsValue::visit(const GenericType* o) {
   o->target->type->accept(this);
 }

@@ -419,6 +419,7 @@ void bi::CppBaseGenerator::visit(const GlobalVariable* o) {
   } else {
     finish(" {");
     in();
+    line("auto context_ [[maybe_unused]] = libbirch::rootContext;");
     start("static " << o->type << " result");
     genInit(o);
     finish(';');
@@ -502,7 +503,7 @@ void bi::CppBaseGenerator::visit(const Program* o) {
     genTraceFunction(o->name->str(), o->loc);
 
     /* initial context */
-    line("auto context_ = libbirch::rootContext;");
+    line("auto context_ [[maybe_unused]] = libbirch::rootContext;");
 
     /* handle program options */
     if (o->params->width() > 0) {
@@ -832,11 +833,7 @@ void bi::CppBaseGenerator::visit(const TupleType* o) {
 }
 
 void bi::CppBaseGenerator::visit(const FunctionType* o) {
-  middle("std::function<" << o->returnType << "(libbirch::Label* context_");
-  if (!o->params->isEmpty()) {
-    middle(", " << o->params);
-  }
-  middle(")>");
+  middle("std::function<" << o->returnType << '(' << o->params << ")>");
 }
 
 void bi::CppBaseGenerator::visit(const FiberType* o) {

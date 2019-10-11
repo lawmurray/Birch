@@ -88,7 +88,7 @@ void bi::CppClassGenerator::visit(const Class* o) {
     } else {
       start("");
     }
-    middle(o->name << "(libbirch::LazyLabel* label_");
+    middle(o->name << "(libbirch::LazyLabel* context_");
     if (!o->params->isEmpty()) {
       CppBaseGenerator aux(base, level, header);
       aux << ", " << o->params;
@@ -100,7 +100,7 @@ void bi::CppClassGenerator::visit(const Class* o) {
       finish(" :");
       in();
       in();
-      start("super_type_(label_");
+      start("super_type_(context_");
       if (!o->args->isEmpty()) {
         middle(", " << o->args);
       }
@@ -113,7 +113,7 @@ void bi::CppClassGenerator::visit(const Class* o) {
         } else if (o->type->isClass()) {
           finish(',');
           ++inPointer;
-          start(o->name << "(libbirch::make_object<" << o->type << ">(label_");
+          start(o->name << "(libbirch::make_object<" << o->type << ">(context_");
           if (!o->args->isEmpty()) {
             middle(", " << o->args);
           }
@@ -145,18 +145,18 @@ void bi::CppClassGenerator::visit(const Class* o) {
     } else {
       start("");
     }
-    middle(o->name << "(libbirch::Label* label_, const " << o->name << "& o_)");
+    middle(o->name << "(libbirch::Label* context_, const " << o->name << "& o_)");
     if (header) {
       finish(";\n");
     } else {
       finish(" :");
       in();
       in();
-      start("super_type_(label_, o_)");
+      start("super_type_(context_, o_)");
       for (auto o : memberVariables) {
         if (!o->type->isValue()) {
           finish(',');
-          start(o->name << "(label_, o_." << o->name << ')');
+          start(o->name << "(context_, o_." << o->name << ')');
         }
       }
       out();
@@ -177,9 +177,9 @@ void bi::CppClassGenerator::visit(const Class* o) {
 
     /* clone function */
     if (header) {
-      line("virtual " << o->name << "* clone_(libbirch::Label* label_) const {");
+      line("virtual " << o->name << "* clone_(libbirch::Label* context_) const {");
       in();
-      line("return new " << o->name << "(label_, *this);");
+      line("return new " << o->name << "(context_, *this);");
       out();
       line("}\n");
     }

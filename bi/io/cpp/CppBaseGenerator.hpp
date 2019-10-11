@@ -186,12 +186,18 @@ void bi::CppBaseGenerator::genInit(const T* o) {
           middle(o->value);
         } else {
           middle("libbirch::make_array_and_assign<" << type->single << ">(");
-          middle("context_, libbirch::make_frame(" << o->brackets << ')');
+          if (!o->isValue()) {
+            middle("context_, ");
+          }
+          middle("libbirch::make_frame(" << o->brackets << ')');
           middle(", " << o->value << ')');
         }
       } else {
         middle(" = libbirch::make_array<" << type->single << ">(");
-        middle("context_, libbirch::make_frame(" << o->brackets << ')');
+        if (!o->isValue()) {
+          middle("context_, ");
+        }
+        middle("libbirch::make_frame(" << o->brackets << ')');
         if (!o->args->isEmpty()) {
           middle(", " << o->args);
         }
