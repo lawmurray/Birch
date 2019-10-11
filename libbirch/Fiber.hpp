@@ -19,44 +19,80 @@ public:
   /**
    * Default constructor.
    */
-  Fiber();
+  Fiber(Label* context) {
+    //
+  }
 
   /**
    * Constructor.
    */
-  Fiber(const Shared<FiberState<YieldType>>& state);
+  Fiber(Label* context, const Shared<FiberState<YieldType>>& state) :
+      state(context, state) {
+    //
+  }
+
+  /**
+   * Copy constructor.
+   */
+  Fiber(Label* context, const Fiber<YieldType>& o) :
+      state(context, o.state) {
+    //
+  }
 
   /**
    * Clone the fiber.
    */
-  Fiber<YieldType> clone() const;
+  Fiber<YieldType> clone() const {
+    return Fiber<YieldType>(state.clone());
+  }
 
   /**
    * Freeze the fiber.
    */
-  void freeze() const;
+  void freeze() const {
+    state.freeze();
+  }
 
   /**
    * Thaw the fiber.
    */
-  void thaw(LazyLabel* label) const;
+  void thaw(LazyLabel* label) const {
+    state.thaw(label);
+  }
 
   /**
    * Finish the fiber.
    */
-  void finish() const;
+  void finish() const {
+    state.finish();
+  }
 
   /**
    * Run to next yield point.
    *
    * @return Was a value yielded?
    */
-  bool query() const;
+  bool query() const {
+    bool result = false;
+    if (state.query()) {
+      result = state->query();
+      if (!result) {
+        const_cast<Fiber<YieldType>*>(this)->state = nullptr;
+        // ^ fiber has finished, delete the state
+      }
+    }
+    return result;
+  }
+
 
   /**
    * Get the last yield value.
    */
-  YieldType get() const;
+  YieldType get() const {
+    libbirch_assert_msg_(state.query(), "fiber handle undefined");
+    return state->get();
+  }
+
 
 private:
   /**
@@ -64,55 +100,4 @@ private:
    */
   Shared<FiberState<YieldType>> state;
 };
-}
-
-template<class YieldType>
-libbirch::Fiber<YieldType>::Fiber() {
-  //
-}
-
-template<class YieldType>
-libbirch::Fiber<YieldType>::Fiber(
-    const Shared<FiberState<YieldType>>& state) :
-    state(state) {
-  //
-}
-
-template<class YieldType>
-libbirch::Fiber<YieldType> libbirch::Fiber<YieldType>::clone() const {
-  return Fiber<YieldType>(state.clone());
-}
-
-template<class YieldType>
-void libbirch::Fiber<YieldType>::freeze() const {
-  state.freeze();
-}
-
-template<class YieldType>
-void libbirch::Fiber<YieldType>::finish() const {
-  state.finish();
-}
-
-template<class YieldType>
-void libbirch::Fiber<YieldType>::thaw(LazyLabel* label) const {
-  state.thaw(label);
-}
-
-template<class YieldType>
-bool libbirch::Fiber<YieldType>::query() const {
-  bool result = false;
-  if (state.query()) {
-    result = state->query();
-    if (!result) {
-      const_cast<Fiber<YieldType>*>(this)->state = nullptr;
-      // ^ fiber has finished, delete the state
-    }
-  }
-  return result;
-}
-
-template<class YieldType>
-YieldType libbirch::Fiber<YieldType>::get() const {
-  libbirch_assert_msg_(state.query(), "fiber handle undefined");
-  return state->get();
 }

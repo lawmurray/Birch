@@ -158,7 +158,7 @@ auto make_view(const int64_t arg, Args ... args) {
 }
 
 /**
- * Make an array.
+ * Make an array of value type.
  *
  * @ingroup libbirch
  *
@@ -166,15 +166,36 @@ auto make_view(const int64_t arg, Args ... args) {
  * @tparam Frame Frame type.
  * @tparam Args Constructor parameter types.
  *
- * @param label Label.
  * @param frame Frame.
  * @param args Constructor arguments.
  *
  * @return The array.
  */
-template<class Type, class Frame, class ... Args>
-auto make_array(Label* label, const Frame& frame, Args ... args) {
-  return Array<Type,Frame>(label, frame, args...);
+template<class Type, class Frame, class ... Args,
+    std::enable_if_t<is_value<Type>::value,int> = 0>
+auto make_array(const Frame& frame, Args ... args) {
+  return Array<Type,Frame>(frame, args...);
+}
+
+/**
+ * Make an array of non-value type.
+ *
+ * @ingroup libbirch
+ *
+ * @tparam Type Value type.
+ * @tparam Frame Frame type.
+ * @tparam Args Constructor parameter types.
+ *
+ * @param context Current context.
+ * @param frame Frame.
+ * @param args Constructor arguments.
+ *
+ * @return The array.
+ */
+template<class Type, class Frame, class ... Args,
+    std::enable_if_t<!is_value<Type>::value,int> = 0>
+auto make_array(Label* context, const Frame& frame, Args ... args) {
+  return Array<Type,Frame>(context, frame, args...);
 }
 
 /**
@@ -206,14 +227,14 @@ auto make_array_and_assign(const Frame& frame, const Value& value) {
  * @tparam Type Object type.
  * @tparam Args Constructor parameter types.
  *
- * @param label Label.
+ * @param context Current context.
  * @param args Constructor arguments.
  *
  * @return A shared pointer to the new object.
  */
 template<class Type, class ... Args>
-auto make_object(Label* label, Args ... args) {
-  return Shared<Type>(label, new Type(label, args...));
+auto make_object(Label* context, Args ... args) {
+  return Shared<Type>(context, args...);
 }
 
 /**
@@ -222,12 +243,13 @@ auto make_object(Label* label, Args ... args) {
  * @tparam StateType The state type of the fiber.
  * @tparam Args Fiber state constructor parameter types.
  *
- * @param label Label.
+ * @param context Current context.
  * @param args Fiber state constructor arguments.
  */
 template<class StateType, class ... Args>
-auto make_fiber(Label* label, Args ... args) {
-  return Fiber<typename StateType::yield_type_>(make_object<StateType>(label, args...));
+auto make_fiber(Label* context, Args ... args) {
+  return Fiber<typename StateType::yield_type_>(context,
+      make_object<StateType>(context, args...));
 }
 
 /**

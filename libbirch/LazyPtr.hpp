@@ -50,6 +50,16 @@ public:
   }
 
   /**
+   * Constructor.
+   */
+  template<class... Args>
+  LazyPtr(Label* context, Args... args) :
+      label(context),
+      object(new value_type(context, args...)) {
+    //
+  }
+
+  /**
    * Deep copy constructor.
    */
   LazyPtr(Label* label, const LazyPtr<P>& o) :
@@ -203,13 +213,13 @@ public:
   }
 
   /**
-   * Deep clone.
+   * Start lazy deep clone.
    */
-  LazyPtr<P> clone(Label* label) const {
+  LazyPtr<P> clone() const {
     assert(object);
     pull();
     startFreeze();
-    return LazyPtr<P>(label->fork(), object);
+    return LazyPtr<P>(object->getLabel()->fork(), object);
   }
 
   /**
@@ -316,14 +326,14 @@ public:
   /**
    * Dereference.
    */
-  value_type& operator*() const {
+  auto operator*() const {
     return *get();
   }
 
   /**
    * Member access.
    */
-  value_type* operator->() const {
+  auto operator->() const {
     return get();
   }
 

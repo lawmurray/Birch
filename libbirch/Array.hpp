@@ -42,35 +42,97 @@ public:
   }
 
   /**
-   * Constructor.
+   * Constructor for value type.
    *
    * @param frame Frame.
    */
-  Array(Label* label, const F& frame) :
+  Array(const F& frame) :
       frame(frame),
       buffer(nullptr),
       offset(0),
       isView(false) {
     allocate();
-    initialize(label);
+    initialize();
   }
 
   /**
-   * Constructor.
+   * Constructor for value type.
    *
    * @tparam ...Args Constructor parameter types.
    *
    * @param frame Frame.
    * @param args Constructor arguments for each element.
    */
-  template<class ... Args>
-  Array(Label* label, const F& frame, Args ... args) :
+  template<class... Args>
+  Array(const F& frame, Args ... args) :
       frame(frame),
       buffer(nullptr),
       offset(0),
       isView(false) {
     allocate();
-    initialize(label, args...);
+    initialize(args...);
+  }
+
+  /**
+   * Constructor for value type.
+   *
+   * @param o Sequence.
+   */
+  Array(const typename sequence_type<T,F::count()>::type& o) :
+      frame(sequence_frame(o)),
+      buffer(nullptr),
+      offset(0),
+      isView(false) {
+    allocate();
+    copy(o);
+  }
+
+  /**
+   * Constructor for non-value type.
+   *
+   * @param context Current context.
+   * @param frame Frame.
+   */
+  Array(Label* context, const F& frame) :
+      frame(frame),
+      buffer(nullptr),
+      offset(0),
+      isView(false) {
+    allocate();
+    initialize(context);
+  }
+
+  /**
+   * Constructor for non-value type.
+   *
+   * @tparam ...Args Constructor parameter types.
+   *
+   * @param context Current context.
+   * @param args Constructor arguments for each element.
+   */
+  template<class... Args>
+  Array(Label* context, const F& frame, Args ... args) :
+      frame(frame),
+      buffer(nullptr),
+      offset(0),
+      isView(false) {
+    allocate();
+    initialize(context, args...);
+  }
+
+  /**
+   * Constructor for non-value type.
+   *
+   * @param context Current context.
+   * @param o Sequence.
+   */
+  Array(Label* context, const typename sequence_type<T,F::count()>::type& o) :
+      frame(sequence_frame(o)),
+      buffer(nullptr),
+      offset(0),
+      isView(false) {
+    allocate();
+    copy(context, o);
   }
 
   /**
@@ -81,10 +143,30 @@ public:
   /**
    * Copy constructor.
    *
+   * @param o Source object.
    * @param canShare Is it fine for the new array to share an underlying
    * buffer with o (in a copy on write manner)?
    */
-  Array(const Array<T,F>& o, const bool canShare = true);
+  Array(const Array<T,F>& o, const bool canShare = true) :
+      frame(o.frame),
+      buffer(nullptr),
+      offset(0),
+      isView(false) {
+    if (canShare) {
+      auto tmp = o.buffer;
+      if (tmp && !o.isView) {
+        /* views do not increment the buffer use count, as they are meant to
+         * be temporary and should not outlive the buffer itself */
+        tmp->incUsage();
+      }
+      buffer = tmp;
+      offset = o.offset;
+      isView = o.isView;
+    } else {
+      allocate();
+      copy(o);
+    }
+  }
 
   /**
    * Generic copy constructor.
@@ -108,20 +190,6 @@ public:
       offset(o.offset),
       isView(o.isView) {
     o.buffer = nullptr;
-  }
-
-  /**
-   * Sequence constructor.
-   *
-   * @param o Sequence.
-   */
-  Array(const typename sequence_type<T,F::count()>::type& o) :
-      frame(sequence_frame(o)),
-      buffer(nullptr),
-      offset(0),
-      isView(false) {
-    allocate();
-    copy(o);
   }
 
   /**
@@ -737,11 +805,11 @@ private:
    * @param args Constructor arguments.
    */
   template<class ... Args>
-  void initialize(Label* label, Args ... args) {
+  void initialize(Label* context, Args ... args) {
     auto iter = begin();
     auto last = iter + size();
     for (; iter != last; ++iter) {
-      emplace(*iter, label, args...);
+      emplace(*iter, context, args...);
     }
   }
 
@@ -822,27 +890,15 @@ private:
   }
 
   /**
-   * Construct element of value type in place.
+   * Construct element in place.
    *
+   * @param context Current context.
    * @param o Element.
    * @param args Constructor arguments.
    */
-  template<class U, class ... Args, std::enable_if_t<
-      !is_pointer<U>::value,int> = 0>
-  static void emplace(U& o, Label* label, Args ... args) {
-    new (&o) U(args...);
-  }
-
-  /**
-   * Construct element of shared pointer type in place.
-   *
-   * @param o Element.
-   * @param args Constructor arguments.
-   */
-  template<class P, class ... Args, std::enable_if_t<
-      is_pointer<P>::value>,int = 0>
-  static void emplace(P& o, Label* label, Args ... args) {
-    new (&o) P(new typename P::value_type(label, args...));
+  template<class U, class ... Args>
+  static void emplace(Label* context, U& o, Args ... args) {
+    new (&o) U(context, args...);
   }
 
   /**
@@ -916,27 +972,5 @@ libbirch::Array<T,F>::Array(Label* label, const Array<T,F>& o) :
   } else {
     allocate();
     copy(label, o);
-  }
-}
-
-template<class T, class F>
-libbirch::Array<T,F>::Array(const Array<T,F>& o, const bool canShare) :
-    frame(o.frame),
-    buffer(nullptr),
-    offset(0),
-    isView(false) {
-  if (canShare) {
-    auto tmp = o.buffer;
-    if (tmp && !o.isView) {
-      /* views do not increment the buffer use count, as they are meant to be
-       * temporary and should not outlive the buffer itself */
-      tmp->incUsage();
-    }
-    buffer = tmp;
-    offset = o.offset;
-    isView = o.isView;
-  } else {
-    allocate();
-    copy(o);
   }
 }

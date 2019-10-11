@@ -28,12 +28,12 @@ public:
   /**
    * Constructor.
    */
-  LazyAny(LazyLabel* label);
+  LazyAny(LazyLabel* context);
 
   /**
    * Deep copy constructor.
    */
-  LazyAny(LazyLabel* label, const LazyAny& o);
+  LazyAny(LazyLabel* context, const LazyAny& o);
 
   /**
    * Destructor.
@@ -79,8 +79,8 @@ public:
    */
   void finish();
 
-  virtual LazyAny* clone_(LazyLabel* label) const {
-    return new LazyAny(label, *this);
+  virtual LazyAny* clone_(LazyLabel* context) const {
+    return new LazyAny(context, *this);
   }
 
   virtual const char* name_() const {
