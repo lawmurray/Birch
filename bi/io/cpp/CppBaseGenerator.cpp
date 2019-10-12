@@ -51,9 +51,9 @@ void bi::CppBaseGenerator::visit(const Literal<const char*>* o) {
 void bi::CppBaseGenerator::visit(const Parentheses* o) {
   if (o->single->type->isList()) {
     if (inAssign) {
-      middle("std::tie(" << o->single << ')');
+      middle("libbirch::tie(" << o->single << ')');
     } else {
-      middle("std::make_tuple(" << o->single << ')');
+      middle("libbirch::make_tuple(" << o->single << ')');
     }
   } else {
     middle('(' << o->single << ')');
@@ -829,7 +829,7 @@ void bi::CppBaseGenerator::visit(const ArrayType* o) {
 }
 
 void bi::CppBaseGenerator::visit(const TupleType* o) {
-  middle("std::tuple<" << o->single << '>');
+  middle("libbirch::Tuple<" << o->single << '>');
 }
 
 void bi::CppBaseGenerator::visit(const FunctionType* o) {
