@@ -73,9 +73,3 @@ function Boxed(x:Real[_,_]) -> Boxed<Real[_,_]> {
   m.x <- x;
   return m;
 }
-
-function Boxed(x:(Real[_,_],Real[_])) -> Boxed<(Real[_,_],Real[_])> {
-  m:Boxed<(Real[_,_],Real[_])>;
-  m.x <- x;
-  return m;
-}
