@@ -266,6 +266,19 @@ auto make_tuple(Args ... args) {
 }
 
 /**
+ * Make a tuple.
+ *
+ * @tparam Args Argument types.
+ *
+ * @param context Current context.
+ * @param args Arguments.
+ */
+template<class ... Args>
+auto make_tuple(Label* context, Args ... args) {
+  return Tuple<Args...>(context, args...);
+}
+
+/**
  * Make an assignable tuple of lvalues.
  *
  * @tparam Args Argument types.
@@ -275,6 +288,19 @@ auto make_tuple(Args ... args) {
 template<class ... Args>
 auto tie(Args&... args) {
   return Tuple<Args&...>(args...);
+}
+
+/**
+ * Make an assignable tuple of lvalues.
+ *
+ * @tparam Args Argument types.
+ *
+ * @param context Current context.
+ * @param args Arguments.
+ */
+template<class ... Args>
+auto tie(Label* context, Args&... args) {
+  return Tuple<Args&...>(context, args...);
 }
 
 /**
