@@ -32,10 +32,26 @@ public:
   }
 
   /**
-   * Deep copy constructor.
+   * Deep copy constructor for value yield type.
    */
-  FiberState(Label* label, const FiberState<YieldType>& o) :
+  template<class T = YieldType>
+  FiberState(Label* label, const FiberState<YieldType>& o,
+      typename std::enable_if_t<is_value<T>::value,int> = 0) :
       Any(label, o),
+      value_(o.value_),
+      point_(o.point_),
+      npoints_(o.npoints_) {
+    //
+  }
+
+  /**
+   * Deep copy constructor for non-value yield type.
+   */
+  template<class T = YieldType>
+  FiberState(Label* label, const FiberState<YieldType>& o,
+      typename std::enable_if_t<!is_value<T>::value,int> = 0) :
+      Any(label, o),
+      value_(label, o.value_),
       point_(o.point_),
       npoints_(o.npoints_) {
     //
@@ -56,9 +72,16 @@ public:
   /**
    * Get the last yield value.
    */
-  virtual YieldType& get() = 0;
+  YieldType& get() {
+    return value_;
+  }
 
 protected:
+  /**
+   * Most recent yield value.
+   */
+  YieldType value_;
+
   /**
    * Current yield point.
    */
