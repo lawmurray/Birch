@@ -51,13 +51,18 @@ void bi::CppBaseGenerator::visit(const Literal<const char*>* o) {
 void bi::CppBaseGenerator::visit(const Parentheses* o) {
   if (o->single->type->isList()) {
     if (inAssign) {
-      middle("libbirch::tie(" << o->single << ')');
+      middle("libbirch::tie");
     } else {
-      middle("libbirch::make_tuple(" << o->single << ')');
+      middle("libbirch::make_tuple");
+    }
+    middle('(');
+    if (!o->isValue()) {
+      middle("context_, ");
     }
   } else {
-    middle('(' << o->single << ')');
+    middle('(');
   }
+  middle(o->single << ')');
 }
 
 void bi::CppBaseGenerator::visit(const Sequence* o) {
