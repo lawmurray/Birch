@@ -37,7 +37,6 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
       in();
       line("using class_type_ = " << stateName << ';');
       line("using super_type_ = libbirch::FiberState<" << o->returnType->unwrap() << ">;\n");
-      line("yield_type_ value_;");
       for (auto param : params) {
         line(param->type << ' ' << param->name << ';');
       }
@@ -86,12 +85,6 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
       in();
       in();
       start("super_type_(context_, o_)");
-      finish(',');
-      if (o->returnType->unwrap()->isValue()) {
-        start("value_(o_.value_)");
-      } else {
-        start("value_(context_, o_.value_)");
-      }
       for (auto param : params) {
         if (!param->type->isValue()) {
           auto name = param->name;
@@ -227,27 +220,6 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
       genSwitch();
       *this << o->braces->strip();
       genEnd();
-      out();
-      finish("}\n");
-    }
-
-    /* get function */
-    if (header) {
-      start("virtual ");
-    } else {
-      start("typename bi::" << stateName << "::");
-    }
-    middle("yield_type_& ");
-    if (!header) {
-      middle("bi::" << stateName << "::");
-    }
-    middle("get()");
-    if (header) {
-      finish(';');
-    } else {
-      finish(" {");
-      in();
-      line("return value_;");
       out();
       finish("}\n");
     }
