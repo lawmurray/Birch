@@ -9,6 +9,7 @@
 #include "libbirch/SharedPtr.hpp"
 #include "libbirch/LazyPtr.hpp"
 #include "libbirch/EagerPtr.hpp"
+#include "libbirch/type.hpp"
 
 namespace libbirch {
 /**
@@ -22,4 +23,29 @@ using Shared = LazyPtr<SharedPtr<T>>;
 template<class T>
 using Shared = EagerPtr<SharedPtr<T>>;
 #endif
+
+template<class T>
+struct is_value<Shared<T>> {
+  static const bool value = false;
+};
+
+template<class T>
+struct is_pointer<Shared<T>> {
+  static const bool value = true;
+};
+
+template<class T>
+void freeze(Shared<T>& o) {
+  o.freeze();
+}
+
+template<class T>
+void thaw(Shared<T>& o, LazyLabel* label) {
+  o.thaw(label);
+}
+
+template<class T>
+void finish(Shared<T>& o) {
+  o.finish();
+}
 }

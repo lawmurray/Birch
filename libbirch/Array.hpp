@@ -948,6 +948,45 @@ private:
    */
   ExclusiveLock mutex;
 };
+
+template<class T, class F>
+struct is_value<Array<T,F>> {
+  static const bool value = is_value<T>::value;
+};
+
+template<class T, class F>
+void freeze(Array<T,F>& o) {
+  if (!is_value<T>::value) {
+    auto iter = o.begin();
+    auto last = iter + o.size();
+    for (; iter != last; ++iter) {
+      freeze(*iter);
+    }
+  }
+}
+
+template<class T, class F>
+void thaw(Array<T,F>& o, LazyLabel* label) {
+  if (!is_value<T>::value) {
+    auto iter = o.begin();
+    auto last = iter + o.size();
+    for (; iter != last; ++iter) {
+      thaw(*iter, label);
+    }
+  }
+}
+
+template<class T, class F>
+void finish(Array<T,F>& o) {
+  if (!is_value<T>::value) {
+    auto iter = o.begin();
+    auto last = iter + o.size();
+    for (; iter != last; ++iter) {
+      finish(*iter);
+    }
+  }
+}
+
 }
 
 #include "libbirch/type.hpp"

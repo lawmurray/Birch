@@ -100,4 +100,25 @@ private:
    */
   Shared<FiberState<YieldType>> state;
 };
+
+template<class T>
+struct is_value<Fiber<T>> {
+  static const bool value = false;
+};
+
+template<class T>
+void freeze(Fiber<T>& o) {
+  o.freeze();
+}
+
+template<class T>
+void thaw(Fiber<T>& o, LazyLabel* label) {
+  o.thaw(label);
+}
+
+template<class T>
+void finish(Fiber<T>& o) {
+  o.finish();
+}
+
 }

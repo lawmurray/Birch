@@ -93,4 +93,42 @@ void sequence_assign(Iterator& to, const std::initializer_list<Type>& from) {
   }
 }
 
+template<class T>
+struct is_value<std::initializer_list<T>> {
+  static const bool value = is_value<T>::value;
+};
+
+template<class T, class F>
+void freeze(std::initializer_list<T>& o) {
+  if (!is_value<T>::value) {
+    auto iter = o.begin();
+    auto last = iter + o.size();
+    for (; iter != last; ++iter) {
+      freeze(*iter);
+    }
+  }
+}
+
+template<class T, class F>
+void thaw(std::initializer_list<T>& o, LazyLabel* label) {
+  if (!is_value<T>::value) {
+    auto iter = o.begin();
+    auto last = iter + o.size();
+    for (; iter != last; ++iter) {
+      thaw(*iter, label);
+    }
+  }
+}
+
+template<class T, class F>
+void finish(std::initializer_list<T>& o) {
+  if (!is_value<T>::value) {
+    auto iter = o.begin();
+    auto last = iter + o.size();
+    for (; iter != last; ++iter) {
+      finish(*iter);
+    }
+  }
+}
+
 }

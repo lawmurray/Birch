@@ -109,17 +109,26 @@ class Tuple {
   /**
    * Freeze.
    */
-  void freeze();
+  void freeze() {
+    libbirch::freeze(head);
+    libbirch::freeze(tail);
+  }
 
   /**
    * Thaw.
    */
-  void thaw(Label* label);
+  void thaw(Label* label) {
+    libbirch::thaw(head, label);
+    libbirch::thaw(tail, label);
+  }
 
   /**
    * Finish.
    */
-  void finish();
+  void finish() {
+    libbirch::finish(head);
+    libbirch::finish(tail);
+  }
 
 private:
   /**
@@ -225,17 +234,23 @@ class Tuple<Arg> {
   /**
    * Freeze.
    */
-  void freeze();
+  void freeze() {
+    libbirch::freeze(head);
+  }
 
   /**
    * Thaw.
    */
-  void thaw(Label* label);
+  void thaw(Label* label) {
+    libbirch::thaw(head, label);
+  }
 
   /**
    * Finish.
    */
-  void finish();
+  void finish() {
+    libbirch::finish(head);
+  }
 
 private:
   /**
@@ -243,39 +258,30 @@ private:
    */
   Arg head;
 };
-}
-
-#include "libbirch/type.hpp"
-
-template<class Arg, class ... Args>
-void libbirch::Tuple<Arg,Args...>::freeze() {
-  libbirch::freeze(head);
-  libbirch::freeze(tail);
-}
-
-template<class Arg, class ... Args>
-void libbirch::Tuple<Arg,Args...>::thaw(Label* label) {
-  libbirch::thaw(head, label);
-  libbirch::thaw(tail, label);
-}
-
-template<class Arg, class ... Args>
-void libbirch::Tuple<Arg,Args...>::finish() {
-  libbirch::finish(head);
-  libbirch::finish(tail);
-}
 
 template<class Arg>
-void libbirch::Tuple<Arg>::freeze() {
-  libbirch::freeze(head);
+struct is_value<Tuple<Arg>> {
+  static const bool value = is_value<Arg>::value;
+};
+
+template<class Arg, class ... Args>
+struct is_value<Tuple<Arg,Args...>> {
+  static const bool value = is_value<Arg>::value && is_value<Tuple<Args...>>::value;
+};
+
+template<class... Args>
+void freeze(Tuple<Args...>& o) {
+  o.freeze();
 }
 
-template<class Arg>
-void libbirch::Tuple<Arg>::thaw(Label* label) {
-  libbirch::thaw(head, label);
+template<class... Args>
+void thaw(Tuple<Args...>& o, LazyLabel* label) {
+  o.thaw(label);
 }
 
-template<class Arg>
-void libbirch::Tuple<Arg>::finish() {
-  libbirch::finish(head);
+template<class... Args>
+void finish(Tuple<Args...>& o) {
+  o.finish();
+}
+
 }

@@ -240,4 +240,31 @@ private:
    */
   P value;
 };
+
+template<class T>
+struct is_value<Optional<T>> {
+  static const bool value = is_value<T>::value;
+};
+
+template<class T>
+void freeze(Optional<T>& o) {
+  if (!is_value<T>::value && o.query()) {
+    freeze(o.get());
+  }
+}
+
+template<class T>
+void thaw(Optional<T>& o, LazyLabel* label) {
+  if (!is_value<T>::value && o.query()) {
+    thaw(o.get(), label);
+  }
+}
+
+template<class T>
+void finish(Optional<T>& o) {
+  if (!is_value<T>::value && o.query()) {
+    finish(o.get());
+  }
+}
+
 }
