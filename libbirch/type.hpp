@@ -3,6 +3,22 @@
  */
 #pragma once
 
+/**
+ * @def IS_VALUE
+ *
+ * Macro that can be added to template parameters to enable a function only
+ * if the specific type is a value type.
+ */
+#define IS_VALUE(Type) class T = Type, std::enable_if_t<is_value<T>::value,int> = 0
+
+/**
+ * @def IS_NOT_VALUE
+ *
+ * Macro that can be added to template parameters to enable a function only
+ * if the specific type is not a value type.
+ */
+#define IS_NOT_VALUE(Type) class T = Type, std::enable_if_t<!is_value<T>::value,int> = 0
+
 namespace libbirch {
 /*
  * Is this a value type?

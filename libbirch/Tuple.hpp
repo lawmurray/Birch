@@ -22,7 +22,7 @@ public:
   /**
    * Constructor for value type.
    */
-  template<class T = Arg, std::enable_if_t<is_value<T>::value,int> = 0>
+  template<IS_VALUE(Arg)>
   Tuple(const Arg& arg, Args ... args) :
       head(arg),
       tail(args...) {
@@ -32,7 +32,7 @@ public:
   /**
    * Constructor for value head type.
    */
-  template<class T = Arg, std::enable_if_t<is_value<T>::value,int> = 0>
+  template<IS_VALUE(Arg)>
   Tuple(Label* context, const Arg& arg, Args ... args) :
       head(arg),
       tail(context, args...) {
@@ -42,7 +42,7 @@ public:
   /**
    * Constructor for non-value head type.
    */
-  template<class T = Arg, std::enable_if_t<!is_value<T>::value,int> = 0>
+  template<IS_NOT_VALUE(Arg)>
   Tuple(Label* context, const Arg& arg, Args ... args) :
       head(context, arg),
       tail(context, args...) {
@@ -52,7 +52,7 @@ public:
   /**
    * Copy constructor for value head type.
    */
-  template<class T = Arg, std::enable_if_t<is_value<T>::value,int> = 0>
+  template<IS_VALUE(Arg)>
   Tuple(Label* context, const Tuple& o) :
       head(o.head),
       tail(context, o.tail) {
@@ -62,7 +62,7 @@ public:
   /**
    * Copy constructor for non-value head type.
    */
-  template<class T = Arg, std::enable_if_t<!is_value<T>::value,int> = 0>
+  template<IS_NOT_VALUE(Arg)>
   Tuple(Label* context, const Tuple& o) :
       head(context, o.head),
       tail(context, o.tail) {
@@ -72,7 +72,7 @@ public:
   /**
    * Move constructor for value head type.
    */
-  template<class T = Arg, std::enable_if_t<is_value<T>::value,int> = 0>
+  template<IS_VALUE(Arg)>
   Tuple(Label* context, Tuple&& o) :
       head(std::move(o.head)),
       tail(context, std::move(o.tail)) {
@@ -82,7 +82,7 @@ public:
   /**
    * Move constructor for non-value head type.
    */
-  template<class T = Arg, std::enable_if_t<!is_value<T>::value,int> = 0>
+  template<IS_NOT_VALUE(Arg)>
   Tuple(Label* context, Tuple&& o) :
       head(context, std::move(o.head)),
       tail(context, std::move(o.tail)) {
@@ -92,7 +92,7 @@ public:
   /**
    * Deep copy constructor for value head type.
    */
-  template<class T = Arg, std::enable_if_t<is_value<T>::value,int> = 0>
+  template<IS_VALUE(Arg)>
   Tuple(Label* context, Label* label, const Tuple& o) :
       head(o.head),
       tail(context, label, o.tail) {
@@ -102,7 +102,7 @@ public:
   /**
    * Deep copy constructor for non-value head type.
    */
-  template<class T = Arg, std::enable_if_t<!is_value<T>::value,int> = 0>
+  template<IS_NOT_VALUE(Arg)>
   Tuple(Label* context, Label* label, const Tuple& o) :
       head(context, label, o.head),
       tail(context, label, o.tail) {
@@ -112,8 +112,7 @@ public:
   /**
    * Copy assignment for value type.
    */
-  template<class Arg1, class ... Args1, class T = Tuple,
-      std::enable_if_t<is_value<T>::value,int> = 0>
+  template<class Arg1, class ... Args1, IS_VALUE(Tuple)>
   Tuple& assign(const Tuple<Arg1,Args1...>& o) {
     head = o.head;
     tail = o.tail;
@@ -123,8 +122,7 @@ public:
   /**
    * Copy assignment for value head type.
    */
-  template<class Arg1, class ... Args1, class T = Arg,
-      std::enable_if_t<is_value<T>::value,int> = 0>
+  template<class Arg1, class ... Args1, IS_VALUE(Arg)>
   Tuple& assign(Label* context, const Tuple<Arg1,Args1...>& o) {
     head = o.head;
     tail.assign(context, o.tail);
@@ -134,8 +132,7 @@ public:
   /**
    * Copy assignment for non-value head type.
    */
-  template<class Arg1, class ... Args1, class T = Arg,
-      std::enable_if_t<!is_value<T>::value,int> = 0>
+  template<class Arg1, class ... Args1, IS_NOT_VALUE(Arg)>
   Tuple& assign(Label* context, const Tuple<Arg1,Args1...>& o) {
     head.assign(context, o.head);
     tail.assign(context, o.tail);
@@ -145,8 +142,7 @@ public:
   /**
    * Move assignment for value type.
    */
-  template<class Arg1, class ... Args1, class T = Tuple,
-      std::enable_if_t<is_value<T>::value,int> = 0>
+  template<class Arg1, class ... Args1, IS_VALUE(Tuple)>
   Tuple& assign(Tuple<Arg1,Args1...>&& o) {
     head = std::move(o.head);
     tail = std::move(o.tail);
@@ -156,8 +152,7 @@ public:
   /**
    * Move assignment for value head type.
    */
-  template<class Arg1, class ... Args1, class T = Arg,
-      std::enable_if_t<is_value<T>::value,int> = 0>
+  template<class Arg1, class ... Args1, IS_VALUE(Arg)>
   Tuple& assign(Label* context, Tuple<Arg1,Args1...>&& o) {
     head = std::move(o.head);
     tail.assign(context, std::move(o.tail));
@@ -167,8 +162,7 @@ public:
   /**
    * Move assignment for non-value head type.
    */
-  template<class Arg1, class ... Args1, class T = Arg,
-      std::enable_if_t<!is_value<T>::value,int> = 0>
+  template<class Arg1, class ... Args1, IS_NOT_VALUE(Arg)>
   Tuple& assign(Label* context, Tuple<Arg1,Args1...>&& o) {
     head.assign(context, std::move(o.head));
     tail.assign(context, std::move(o.tail));
@@ -178,8 +172,7 @@ public:
   /**
    * Copy assignment operator for value type.
    */
-  template<class Arg1, class ... Args1, class T = Tuple,
-      std::enable_if_t<is_value<T>::value,int> = 0>
+  template<class Arg1, class ... Args1, IS_VALUE(Tuple)>
   Tuple& operator=(const Tuple<Arg1,Args1...>& o) {
     return assign(o);
   }
@@ -187,40 +180,39 @@ public:
   /**
    * Move assignment operator for value type.
    */
-  template<class Arg1, class ... Args1, class T = Tuple,
-      std::enable_if_t<is_value<T>::value,int> = 0>
+  template<class Arg1, class ... Args1, IS_VALUE(Tuple)>
   Tuple& operator=(Tuple<Arg1,Args1...>&& o) {
     return assign(std::move(o));
   }
 
-  template<class T = Arg, std::enable_if_t<is_value<T>::value,int> = 0>
+  template<IS_VALUE(Arg)>
   void freeze() {
     tail.freeze();
   }
 
-  template<class T = Arg, std::enable_if_t<!is_value<T>::value,int> = 0>
+  template<IS_NOT_VALUE(Arg)>
   void freeze() {
     head.freeze();
     tail.freeze();
   }
 
-  template<class T = Arg, std::enable_if_t<is_value<T>::value,int> = 0>
+  template<IS_VALUE(Arg)>
   void thaw(Label* label) {
     tail.thaw(label);
   }
 
-  template<class T = Arg, std::enable_if_t<!is_value<T>::value,int> = 0>
+  template<IS_NOT_VALUE(Arg)>
   void thaw(Label* label) {
     head.thaw(label);
     tail.thaw(label);
   }
 
-  template<class T = Arg, std::enable_if_t<is_value<T>::value,int> = 0>
+  template<IS_VALUE(Arg)>
   void finish() {
     tail.finish();
   }
 
-  template<class T = Arg, std::enable_if_t<!is_value<T>::value,int> = 0>
+  template<IS_NOT_VALUE(Arg)>
   void finish() {
     head.finish();
     tail.finish();
@@ -251,7 +243,7 @@ public:
   /**
    * Constructor for value type.
    */
-  template<class T = Arg, std::enable_if_t<is_value<T>::value,int> = 0>
+  template<IS_VALUE(Arg)>
   Tuple(const Arg& arg) :
       head(arg) {
     //
@@ -260,7 +252,7 @@ public:
   /**
    * Constructor for value type.
    */
-  template<class T = Arg, std::enable_if_t<is_value<T>::value,int> = 0>
+  template<IS_VALUE(Arg)>
   Tuple(Label* context, const Arg& arg) :
       head(arg) {
     //
@@ -269,7 +261,7 @@ public:
   /**
    * Constructor for non-value type.
    */
-  template<class T = Arg, std::enable_if_t<!is_value<T>::value,int> = 0>
+  template<IS_NOT_VALUE(Arg)>
   Tuple(Label* context, const Arg& arg) :
       head(context, arg) {
     //
@@ -278,7 +270,7 @@ public:
   /**
    * Copy constructor for value type.
    */
-  template<class T = Arg, std::enable_if_t<is_value<T>::value,int> = 0>
+  template<IS_VALUE(Arg)>
   Tuple(const Tuple& o) :
       head(o.head) {
     //
@@ -287,7 +279,7 @@ public:
   /**
    * Copy constructor for value type.
    */
-  template<class T = Arg, std::enable_if_t<is_value<T>::value,int> = 0>
+  template<IS_VALUE(Arg)>
   Tuple(Label* context, const Tuple& o) :
       head(o.head) {
     //
@@ -296,7 +288,7 @@ public:
   /**
    * Copy constructor for non-value type.
    */
-  template<class T = Arg, std::enable_if_t<!is_value<T>::value,int> = 0>
+  template<IS_NOT_VALUE(Arg)>
   Tuple(Label* context, const Tuple& o) :
       head(context, o.head) {
     //
@@ -305,7 +297,7 @@ public:
   /**
    * Move constructor for value type.
    */
-  template<class T = Arg, std::enable_if_t<is_value<T>::value,int> = 0>
+  template<IS_VALUE(Arg)>
   Tuple(Tuple&& o) :
       head(std::move(o.head)) {
     //
@@ -314,7 +306,7 @@ public:
   /**
    * Move constructor for value type.
    */
-  template<class T = Arg, std::enable_if_t<is_value<T>::value,int> = 0>
+  template<IS_VALUE(Arg)>
   Tuple(Label* context, Tuple&& o) :
       head(std::move(o.head)) {
     //
@@ -323,7 +315,7 @@ public:
   /**
    * Move constructor for non-value type.
    */
-  template<class T = Arg, std::enable_if_t<!is_value<T>::value,int> = 0>
+  template<IS_NOT_VALUE(Arg)>
   Tuple(Label* context, Tuple&& o) :
       head(context, std::move(o.head)) {
     //
@@ -332,7 +324,7 @@ public:
   /**
    * Deep copy constructor for value type.
    */
-  template<class T = Arg, std::enable_if_t<is_value<T>::value,int> = 0>
+  template<IS_VALUE(Arg)>
   Tuple(Label* context, Label* label, const Tuple& o) :
       head(o.head) {
     //
@@ -341,7 +333,7 @@ public:
   /**
    * Deep copy constructor for non-value type.
    */
-  template<class T = Arg, std::enable_if_t<!is_value<T>::value,int> = 0>
+  template<IS_NOT_VALUE(Arg)>
   Tuple(Label* context, Label* label, const Tuple& o) :
       head(context, label, o.head) {
     //
@@ -350,8 +342,7 @@ public:
   /**
    * Copy assignment for value type.
    */
-  template<class Arg1, class T = Arg,
-      std::enable_if_t<is_value<T>::value,int> = 0>
+  template<class Arg1, IS_VALUE(Arg)>
   Tuple& assign(const Tuple<Arg1>& o) {
     head = o.head;
     return *this;
@@ -360,8 +351,7 @@ public:
   /**
    * Copy assignment for non-value type.
    */
-  template<class Arg1, class T = Arg,
-      std::enable_if_t<!is_value<T>::value,int> = 0>
+  template<class Arg1, IS_NOT_VALUE(Arg)>
   Tuple& assign(Label* context, const Tuple<Arg1>& o) {
     head.assign(context, o.head);
     return *this;
@@ -370,8 +360,7 @@ public:
   /**
    * Move assignment for value type.
    */
-  template<class Arg1, class T = Arg,
-      std::enable_if_t<is_value<T>::value,int> = 0>
+  template<class Arg1, IS_VALUE(Arg)>
   Tuple& assign(Tuple<Arg1>&& o) {
     head = std::move(o.head);
     return *this;
@@ -380,8 +369,7 @@ public:
   /**
    * Move assignment for non-value type.
    */
-  template<class Arg1, class T = Arg,
-      std::enable_if_t<!is_value<T>::value,int> = 0>
+  template<class Arg1, IS_NOT_VALUE(Arg)>
   Tuple& assign(Label* context, Tuple<Arg1>&& o) {
     head.assign(context, std::move(o.head));
     return *this;
@@ -390,8 +378,7 @@ public:
   /**
    * Copy assignment operator for value type.
    */
-  template<class Arg1, class T = Tuple,
-      std::enable_if_t<is_value<T>::value,int> = 0>
+  template<class Arg1, IS_VALUE(Tuple)>
   Tuple& operator=(const Tuple<Arg1>& o) {
     return assign(o);
   }
@@ -399,38 +386,37 @@ public:
   /**
    * Move assignment operator for value type.
    */
-  template<class Arg1, class T = Tuple,
-      std::enable_if_t<is_value<T>::value,int> = 0>
+  template<class Arg1, IS_VALUE(Tuple)>
   Tuple& operator=(Tuple<Arg1>&& o) {
     return assign(std::move(o));
   }
 
-  template<class T = Arg, std::enable_if_t<is_value<T>::value,int> = 0>
+  template<IS_VALUE(Arg)>
   void freeze() {
     //
   }
 
-  template<class T = Arg, std::enable_if_t<!is_value<T>::value,int> = 0>
+  template<IS_NOT_VALUE(Arg)>
   void freeze() {
     head.freeze();
   }
 
-  template<class T = Arg, std::enable_if_t<is_value<T>::value,int> = 0>
+  template<IS_VALUE(Arg)>
   void thaw(Label* label) {
     //
   }
 
-  template<class T = Arg, std::enable_if_t<!is_value<T>::value,int> = 0>
+  template<IS_NOT_VALUE(Arg)>
   void thaw(Label* label) {
     head.thaw(label);
   }
 
-  template<class T = Arg, std::enable_if_t<is_value<T>::value,int> = 0>
+  template<IS_VALUE(Arg)>
   void finish() {
     //
   }
 
-  template<class T = Arg, std::enable_if_t<!is_value<T>::value,int> = 0>
+  template<IS_NOT_VALUE(Arg)>
   void finish() {
     head.finish();
   }
