@@ -153,7 +153,7 @@ public:
   /**
    * Value assignment.
    */
-  template<class U/*, typename = std::enable_if_t<std::is_assignable<value_type,U>::value>*/>
+  template<class U, typename = std::enable_if_t<is_value<U>::value>>
   LazyPtr<P>& operator=(const U& o) {
     *get() = o;
     return *this;

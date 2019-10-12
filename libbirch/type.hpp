@@ -28,8 +28,8 @@ struct is_pointer {
  * no longer modifiable.
  */
 template<class T>
-void freeze(const T& o) {
-  static_assert(is_value<T>::value, "unimplemented freeze()");
+void freeze(T& o) {
+  //static_assert(is_value<T>::value, "unimplemented freeze()");
 }
 
 /**
@@ -38,8 +38,8 @@ void freeze(const T& o) {
  * label for reuse.
  */
 template<class T>
-void thaw(const T& o, LazyLabel* label) {
-  static_assert(is_value<T>::value, "unimplemented thaw()");
+void thaw(T& o, LazyLabel* label) {
+  //static_assert(is_value<T>::value, "unimplemented thaw()");
 }
 
 /**
@@ -48,8 +48,8 @@ void thaw(const T& o, LazyLabel* label) {
  * no longer modifiable.
  */
 template<class T>
-void finish(const T& o) {
-  static_assert(is_value<T>::value, "unimplemented finish()");
+void finish(T& o) {
+  //static_assert(is_value<T>::value, "unimplemented finish()");
 }
 
 }
@@ -129,27 +129,27 @@ struct is_pointer<Init<T>> {
 };
 
 template<class T>
-void freeze(const Shared<T>& o) {
+void freeze(Shared<T>& o) {
   o.freeze();
 }
 
 template<class T>
-void freeze(const Weak<T>& o) {
+void freeze(Weak<T>& o) {
   o.freeze();
 }
 
 template<class T>
-void freeze(const Init<T>& o) {
+void freeze(Init<T>& o) {
   o.freeze();
 }
 
 template<class T>
-void freeze(const Fiber<T>& o) {
+void freeze(Fiber<T>& o) {
   o.freeze();
 }
 
 template<class T, class F>
-void freeze(const Array<T,F>& o) {
+void freeze(Array<T,F>& o) {
   if (!is_value<T>::value) {
     auto iter = o.begin();
     auto last = iter + o.size();
@@ -160,14 +160,14 @@ void freeze(const Array<T,F>& o) {
 }
 
 template<class T>
-void freeze(const Optional<T>& o) {
+void freeze(Optional<T>& o) {
   if (!is_value<T>::value && o.query()) {
     freeze(o.get());
   }
 }
 
 template<class T>
-void freeze(const std::function<T>& o) {
+void freeze(std::function<T>& o) {
   assert(false);
   /// @todo Need to freeze any objects in the closure here, which may require
   /// a custom implementation of lambda functions in a similar way to fibers,
@@ -175,32 +175,32 @@ void freeze(const std::function<T>& o) {
 }
 
 template<class... Args>
-void freeze(const Tuple<Args...>& o) {
+void freeze(Tuple<Args...>& o) {
   o.freeze();
 }
 
 template<class T>
-void thaw(const Shared<T>& o, LazyLabel* label) {
+void thaw(Shared<T>& o, LazyLabel* label) {
   o.thaw(label);
 }
 
 template<class T>
-void thaw(const Weak<T>& o, LazyLabel* label) {
+void thaw(Weak<T>& o, LazyLabel* label) {
   o.thaw(label);
 }
 
 template<class T>
-void thaw(const Init<T>& o, LazyLabel* label) {
+void thaw(Init<T>& o, LazyLabel* label) {
   o.thaw(label);
 }
 
 template<class T>
-void thaw(const Fiber<T>& o, LazyLabel* label) {
+void thaw(Fiber<T>& o, LazyLabel* label) {
   o.thaw(label);
 }
 
 template<class T, class F>
-void thaw(const Array<T,F>& o, LazyLabel* label) {
+void thaw(Array<T,F>& o, LazyLabel* label) {
   if (!is_value<T>::value) {
     auto iter = o.begin();
     auto last = iter + o.size();
@@ -211,14 +211,14 @@ void thaw(const Array<T,F>& o, LazyLabel* label) {
 }
 
 template<class T>
-void thaw(const Optional<T>& o, LazyLabel* label) {
+void thaw(Optional<T>& o, LazyLabel* label) {
   if (!is_value<T>::value && o.query()) {
     thaw(o.get(), label);
   }
 }
 
 template<class T>
-void thaw(const std::function<T>& o) {
+void thaw(std::function<T>& o) {
   assert(false);
   /// @todo Need to thaw any objects in the closure here, which may require
   /// a custom implementation of lambda functions in a similar way to fibers,
@@ -226,32 +226,32 @@ void thaw(const std::function<T>& o) {
 }
 
 template<class... Args>
-void thaw(const Tuple<Args...>& o, LazyLabel* label) {
+void thaw(Tuple<Args...>& o, LazyLabel* label) {
   o.thaw(label);
 }
 
 template<class T>
-void finish(const Shared<T>& o) {
+void finish(Shared<T>& o) {
   o.finish();
 }
 
 template<class T>
-void finish(const Weak<T>& o) {
+void finish(Weak<T>& o) {
   o.finish();
 }
 
 template<class T>
-void finish(const Init<T>& o) {
+void finish(Init<T>& o) {
   o.finish();
 }
 
 template<class T>
-void finish(const Fiber<T>& o) {
+void finish(Fiber<T>& o) {
   o.finish();
 }
 
 template<class T, class F>
-void finish(const Array<T,F>& o) {
+void finish(Array<T,F>& o) {
   if (!is_value<T>::value) {
     auto iter = o.begin();
     auto last = iter + o.size();
@@ -262,14 +262,14 @@ void finish(const Array<T,F>& o) {
 }
 
 template<class T>
-void finish(const Optional<T>& o) {
+void finish(Optional<T>& o) {
   if (!is_value<T>::value && o.query()) {
     finish(o.get());
   }
 }
 
 template<class T>
-void finish(const std::function<T>& o) {
+void finish(std::function<T>& o) {
   assert(false);
   /// @todo Need to finish any objects in the closure here, which may require
   /// a custom implementation of lambda functions in a similar way to fibers,
@@ -277,7 +277,7 @@ void finish(const std::function<T>& o) {
 }
 
 template<class... Args>
-void finish(const Tuple<Args...>& o) {
+void finish(Tuple<Args...>& o) {
   o.finish();
 }
 }

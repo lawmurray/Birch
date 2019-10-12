@@ -11,6 +11,7 @@ namespace libbirch {
  */
 template<class Arg, class ...Args>
 class Tuple {
+  template<class Arg1, class... Args1> friend class Tuple;
 public:
   /**
    * Constructor.
@@ -48,6 +49,21 @@ public:
     return *this;
   }
 
+  /**
+   * Freeze.
+   */
+  void freeze();
+
+  /**
+   * Thaw.
+   */
+  void thaw(Label* label);
+
+  /**
+   * Finish.
+   */
+  void finish();
+
 private:
   /**
    * First element.
@@ -62,7 +78,15 @@ private:
 
 template<class Arg>
 class Tuple<Arg> {
+  template<class Arg1,class... Args1> friend class Tuple;
 public:
+  /**
+   * Constructor.
+   */
+  Tuple() {
+    //
+  }
+
   /**
    * Constructor.
    */
@@ -71,10 +95,78 @@ public:
     //
   }
 
+  /**
+   * Generic copy assignment.
+   */
+  template<class Arg1>
+  Tuple<Arg>& operator=(const Tuple<Arg1>& o) {
+    head = o.head;
+    return *this;
+  }
+
+  /**
+   * Generic move assignment.
+   */
+  template<class Arg1>
+  Tuple<Arg>& operator=(Tuple<Arg1>&& o) {
+    head = std::move(o.head);
+    return *this;
+  }
+
+  /**
+   * Freeze.
+   */
+  void freeze();
+
+  /**
+   * Thaw.
+   */
+  void thaw(Label* label);
+
+  /**
+   * Finish.
+   */
+  void finish();
+
 private:
   /**
    * First element.
    */
   Arg head;
 };
+}
+
+#include "libbirch/type.hpp"
+
+template<class Arg, class... Args>
+void libbirch::Tuple<Arg,Args...>::freeze() {
+  libbirch::freeze(head);
+  libbirch::freeze(tail);
+}
+
+template<class Arg, class... Args>
+void libbirch::Tuple<Arg,Args...>::thaw(Label* label) {
+  libbirch::thaw(head, label);
+  libbirch::thaw(tail, label);
+}
+
+template<class Arg, class... Args>
+void libbirch::Tuple<Arg,Args...>::finish() {
+  libbirch::finish(head);
+  libbirch::finish(tail);
+}
+
+template<class Arg>
+void libbirch::Tuple<Arg>::freeze() {
+  libbirch::freeze(head);
+}
+
+template<class Arg>
+void libbirch::Tuple<Arg>::thaw(Label* label) {
+  libbirch::thaw(head, label);
+}
+
+template<class Arg>
+void libbirch::Tuple<Arg>::finish() {
+  libbirch::finish(head);
 }
