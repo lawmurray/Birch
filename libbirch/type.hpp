@@ -60,6 +60,7 @@ void finish(const T& o) {
 #include "libbirch/Optional.hpp"
 #include "libbirch/Fiber.hpp"
 #include "libbirch/Array.hpp"
+#include "libbirch/Tuple.hpp"
 
 namespace libbirch {
 template<class T>
@@ -103,13 +104,13 @@ struct is_value<std::function<T>> {
 };
 
 template<class Arg>
-struct is_value<std::tuple<Arg>> {
+struct is_value<Tuple<Arg>> {
   static const bool value = is_value<Arg>::value;
 };
 
 template<class Arg, class ... Args>
-struct is_value<std::tuple<Arg,Args...>> {
-  static const bool value = is_value<Arg>::value && is_value<std::tuple<Args...>>::value;
+struct is_value<Tuple<Arg,Args...>> {
+  static const bool value = is_value<Arg>::value && is_value<Tuple<Args...>>::value;
 };
 
 template<class T>
@@ -173,24 +174,9 @@ void freeze(const std::function<T>& o) {
   /// rather than using std::function
 }
 
-template<int i, class ... Args>
-struct freeze_tuple_impl {
-  void operator()(const std::tuple<Args...>& o) {
-    freeze(std::get<i - 1>(o));
-    freeze_tuple_impl<i - 1,Args...>()(o);
-  }
-};
-
-template<class ... Args>
-struct freeze_tuple_impl<0,Args...> {
-  void operator()(const std::tuple<Args...>& o) {
-    //
-  }
-};
-
-template<class ... Args>
-void freeze(const std::tuple<Args...>& o) {
-  freeze_tuple_impl<std::tuple_size<std::tuple<Args...>>::value,Args...>()(o);
+template<class... Args>
+void freeze(const Tuple<Args...>& o) {
+  o.freeze();
 }
 
 template<class T>
@@ -239,24 +225,9 @@ void thaw(const std::function<T>& o) {
   /// rather than using std::function
 }
 
-template<int i, class ... Args>
-struct thaw_tuple_impl {
-  void operator()(const std::tuple<Args...>& o, LazyLabel* label) {
-    thaw(std::get<i - 1>(o), label);
-    thaw_tuple_impl<i - 1,Args...>()(o, label);
-  }
-};
-
-template<class ... Args>
-struct thaw_tuple_impl<0,Args...> {
-  void operator()(const std::tuple<Args...>& o, LazyLabel* label) {
-    //
-  }
-};
-
-template<class ... Args>
-void thaw(const std::tuple<Args...>& o, LazyLabel* label) {
-  thaw_tuple_impl<std::tuple_size<std::tuple<Args...>>::value,Args...>()(o, label);
+template<class... Args>
+void thaw(const Tuple<Args...>& o, LazyLabel* label) {
+  o.thaw(label);
 }
 
 template<class T>
@@ -305,24 +276,8 @@ void finish(const std::function<T>& o) {
   /// rather than using std::function
 }
 
-template<int i, class ... Args>
-struct finish_tuple_impl {
-  void operator()(const std::tuple<Args...>& o) {
-    finish(std::get<i - 1>(o));
-    finish_tuple_impl<i - 1,Args...>()(o);
-  }
-};
-
-template<class ... Args>
-struct finish_tuple_impl<0,Args...> {
-  void operator()(const std::tuple<Args...>& o) {
-    //
-  }
-};
-
-template<class ... Args>
-void finish(const std::tuple<Args...>& o) {
-  finish_tuple_impl<std::tuple_size<std::tuple<Args...>>::value,Args...>()(o);
+template<class... Args>
+void finish(const Tuple<Args...>& o) {
+  o.finish();
 }
-
 }

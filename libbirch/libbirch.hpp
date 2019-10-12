@@ -22,6 +22,7 @@
 #include "libbirch/View.hpp"
 #include "libbirch/Array.hpp"
 #include "libbirch/Sequence.hpp"
+#include "libbirch/Tuple.hpp"
 #include "libbirch/Any.hpp"
 #include "libbirch/Optional.hpp"
 #include "libbirch/Nil.hpp"
@@ -250,6 +251,30 @@ template<class StateType, class ... Args>
 auto make_fiber(Label* context, Args ... args) {
   return Fiber<typename StateType::yield_type_>(context,
       make_object<StateType>(context, args...));
+}
+
+/**
+ * Make a tuple.
+ *
+ * @tparam Args Argument types.
+ *
+ * @param args Arguments.
+ */
+template<class ... Args>
+auto make_tuple(Args ... args) {
+  return Tuple<Args...>(args...);
+}
+
+/**
+ * Make an assignable tuple of lvalues.
+ *
+ * @tparam Args Argument types.
+ *
+ * @param args Arguments.
+ */
+template<class ... Args>
+auto tie(Args&... args) {
+  return Tuple<Args&...>(args...);
 }
 
 /**
