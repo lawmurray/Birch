@@ -193,28 +193,37 @@ public:
     return assign(std::move(o));
   }
 
-  /**
-   * Freeze.
-   */
+  template<class T = Arg, std::enable_if_t<is_value<T>::value,int> = 0>
   void freeze() {
-    libbirch::freeze(head);
-    libbirch::freeze(tail);
+    tail.freeze();
   }
 
-  /**
-   * Thaw.
-   */
+  template<class T = Arg, std::enable_if_t<!is_value<T>::value,int> = 0>
+  void freeze() {
+    head.freeze();
+    tail.freeze();
+  }
+
+  template<class T = Arg, std::enable_if_t<is_value<T>::value,int> = 0>
   void thaw(Label* label) {
-    libbirch::thaw(head, label);
-    libbirch::thaw(tail, label);
+    tail.thaw(label);
   }
 
-  /**
-   * Finish.
-   */
+  template<class T = Arg, std::enable_if_t<!is_value<T>::value,int> = 0>
+  void thaw(Label* label) {
+    head.thaw(label);
+    tail.thaw(label);
+  }
+
+  template<class T = Arg, std::enable_if_t<is_value<T>::value,int> = 0>
   void finish() {
-    libbirch::finish(head);
-    libbirch::finish(tail);
+    tail.finish();
+  }
+
+  template<class T = Arg, std::enable_if_t<!is_value<T>::value,int> = 0>
+  void finish() {
+    head.finish();
+    tail.finish();
   }
 
 private:
@@ -396,25 +405,34 @@ public:
     return assign(std::move(o));
   }
 
-  /**
-   * Freeze.
-   */
+  template<class T = Arg, std::enable_if_t<is_value<T>::value,int> = 0>
   void freeze() {
-    libbirch::freeze(head);
+    //
   }
 
-  /**
-   * Thaw.
-   */
+  template<class T = Arg, std::enable_if_t<!is_value<T>::value,int> = 0>
+  void freeze() {
+    head.freeze();
+  }
+
+  template<class T = Arg, std::enable_if_t<is_value<T>::value,int> = 0>
   void thaw(Label* label) {
-    libbirch::thaw(head, label);
+    //
   }
 
-  /**
-   * Finish.
-   */
+  template<class T = Arg, std::enable_if_t<!is_value<T>::value,int> = 0>
+  void thaw(Label* label) {
+    head.thaw(label);
+  }
+
+  template<class T = Arg, std::enable_if_t<is_value<T>::value,int> = 0>
   void finish() {
-    libbirch::finish(head);
+    //
+  }
+
+  template<class T = Arg, std::enable_if_t<!is_value<T>::value,int> = 0>
+  void finish() {
+    head.finish();
   }
 
 private:
