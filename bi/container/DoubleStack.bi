@@ -74,7 +74,7 @@ class DoubleStack<Type> {
   function putForward(forward:StackNode<Type>?, forwardCount:Integer) {
     this.forwardCount <- forwardCount;
     cpp{{
-    self->forward = std::move(forward);
+    self->forward.assign(context_, std::move(forward));
     }}
   }
 
@@ -84,7 +84,7 @@ class DoubleStack<Type> {
   function putBackward(backward:StackNode<Type>?, backwardCount:Integer) {
     this.backwardCount <- backwardCount;
     cpp{{
-    self->backward = std::move(backward);
+    self->backward.assign(context_, std::move(backward));
     }}
   }
 
@@ -98,7 +98,7 @@ class DoubleStack<Type> {
     //node.next <- forward;
     if forward? {
       cpp{{
-      node->next = std::move(self->forward.get());
+      node->next.assign(context_, std::move(self->forward.get()));
       }}
     }
     forward <- node;
@@ -115,7 +115,7 @@ class DoubleStack<Type> {
     //node.next <- backward;
     if backward? {
       cpp{{
-      node->next = std::move(self->backward.get());
+      node->next.assign(context_, std::move(self->backward.get()));
       }}
     }
     backward <- node;
@@ -130,7 +130,7 @@ class DoubleStack<Type> {
     forwardCount <- forwardCount - 1;
     cpp{{
     auto x = std::move(self->forward.get()->x);
-    self->forward = std::move(self->forward.get()->next);
+    self->forward.assign(context_, std::move(self->forward.get()->next));
     return x;
     }}
   }
@@ -143,7 +143,7 @@ class DoubleStack<Type> {
     backwardCount <- backwardCount - 1;
     cpp{{
     auto x = std::move(self->backward.get()->x);
-    self->backward = std::move(self->backward.get()->next);
+    self->backward.assign(context_, std::move(self->backward.get()->next));
     return x;
     }}
   }
@@ -154,9 +154,9 @@ class DoubleStack<Type> {
   function oneForward() {
     cpp{{
     auto node = std::move(self->backward.get());
-    self->backward = std::move(node->next);
-    node->next = std::move(self->forward);
-    self->forward = std::move(node);
+    self->backward.assign(context_, std::move(node->next));
+    node->next.assign(context_, std::move(self->forward));
+    self->forward.assign(context_, std::move(node));
     }}
     forwardCount <- forwardCount + 1;
     backwardCount <- backwardCount - 1;
@@ -168,9 +168,9 @@ class DoubleStack<Type> {
   function oneBackward() {
     cpp{{
     auto node = std::move(self->forward.get());
-    self->forward = std::move(node->next);
-    node->next = std::move(self->backward);
-    self->backward = std::move(node);
+    self->forward.assign(context_, std::move(node->next));
+    node->next.assign(context_, std::move(self->backward));
+    self->backward.assign(context_, std::move(node));
     }}
     forwardCount <- forwardCount - 1;
     backwardCount <- backwardCount + 1;

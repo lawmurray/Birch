@@ -163,7 +163,7 @@ public:
    * Value conversion.
    */
   template<class U, typename = std::enable_if_t<std::is_convertible<value_type,U>::value>>
-  operator U() const {
+  explicit operator U() const {
     return static_cast<U>(*get());
   }
 

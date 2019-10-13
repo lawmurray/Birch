@@ -42,6 +42,15 @@ public:
   }
 
   /**
+   * Implicit conversion from value type.
+   */
+  template<class U>
+  Optional(const U& value) :
+      value(value) {
+    //
+  }
+
+  /**
    * Constructor.
    */
   template<class U>
@@ -87,8 +96,7 @@ public:
   /**
    * Copy assignment.
    */
-  template<class U>
-  Optional& assign(Label* context, const Optional<U>& o) {
+  Optional& assign(Label* context, const Optional<T>& o) {
     this->value.assign(context, o.value);
     return *this;
   }
@@ -96,8 +104,7 @@ public:
   /**
    * Move assignment.
    */
-  template<class U>
-  Optional& assign(Label* context, Optional<U>&& o) {
+  Optional& assign(Label* context, Optional<T>&& o) {
     this->value.assign(context, std::move(o.value));
     return *this;
   }
@@ -176,7 +183,7 @@ public:
   }
 
   /**
-   * Constructor.
+   * Implicit conversion from value type.
    */
   template<class U>
   Optional(const U& value) :
@@ -258,6 +265,16 @@ public:
   }
 
   /**
+   * Implicit conversion from value type.
+   */
+  template<class U>
+  Optional(const U& value) :
+      value(value),
+      hasValue(true) {
+    //
+  }
+
+  /**
    * Constructor.
    */
   template<class U>
@@ -308,8 +325,7 @@ public:
   /**
    * Copy assignment.
    */
-  template<class U>
-  Optional& assign(Label* context, const Optional<U>& o) {
+  Optional& assign(Label* context, const Optional<T>& o) {
     this->value.assign(context, o.value);
     this->hasValue = o.hasValue;
     return *this;
@@ -318,8 +334,7 @@ public:
   /**
    * Move assignment.
    */
-  template<class U>
-  Optional& assign(Label* context, Optional<U>&& o) {
+  Optional& assign(Label* context, Optional<T>&& o) {
     this->value.assign(context, std::move(o.value));
     this->hasValue = o.hasValue;
     return *this;
