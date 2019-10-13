@@ -5,10 +5,11 @@
 
 #include "libbirch/external.hpp"
 #include "libbirch/memory.hpp"
+#include "libbirch/type.hpp"
+#include "libbirch/Label.hpp"
 #include "libbirch/Frame.hpp"
 #include "libbirch/Buffer.hpp"
 #include "libbirch/Iterator.hpp"
-#include "libbirch/Shared.hpp"
 #include "libbirch/Sequence.hpp"
 #include "libbirch/Eigen.hpp"
 #include "libbirch/ExclusiveLock.hpp"
@@ -138,7 +139,28 @@ public:
   /**
    * Deep copy constructor.
    */
-  Array(Label* label, const Array<T,F>& o);
+  Array(Label* label, const Array<T,F>& o) :
+    frame(o.frame),
+    buffer(nullptr),
+    offset(0),
+    isView(false) {
+  if (is_value<T>::value) {
+    /* just a value type, do a normal copy */
+    auto tmp = o.buffer;
+    if (tmp && !o.isView) {
+      /* views do not increment the buffer use count, as they are meant to be
+       * temporary and should not outlive the buffer itself */
+      tmp->incUsage();
+    }
+    buffer = tmp;
+    offset = o.offset;
+    isView = o.isView;
+  } else {
+    allocate();
+    copy(label, o);
+  }
+}
+
 
   /**
    * Copy constructor.
@@ -989,27 +1011,3 @@ void finish(Array<T,F>& o) {
 
 }
 
-#include "libbirch/type.hpp"
-
-template<class T, class F>
-libbirch::Array<T,F>::Array(Label* label, const Array<T,F>& o) :
-    frame(o.frame),
-    buffer(nullptr),
-    offset(0),
-    isView(false) {
-  if (is_value<T>::value) {
-    /* just a value type, do a normal copy */
-    auto tmp = o.buffer;
-    if (tmp && !o.isView) {
-      /* views do not increment the buffer use count, as they are meant to be
-       * temporary and should not outlive the buffer itself */
-      tmp->incUsage();
-    }
-    buffer = tmp;
-    offset = o.offset;
-    isView = o.isView;
-  } else {
-    allocate();
-    copy(label, o);
-  }
-}

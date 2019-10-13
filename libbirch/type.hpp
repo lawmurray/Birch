@@ -3,21 +3,59 @@
  */
 #pragma once
 
+#include "libbirch/external.hpp"
+
 /**
  * @def IS_VALUE
  *
- * Macro that can be added to template parameters to enable a function only
- * if the specific type is a value type.
+ * @ingroup libbirch
+ *
+ * Macro that can be added to the template arguments of a class template
+ * specialization to enable it only if a specific type is a value type.
  */
-#define IS_VALUE(Type) class T = Type, std::enable_if_t<is_value<T>::value,int> = 0
+#define IS_VALUE(Type) std::enable_if_t<is_value<Type>::value>
 
 /**
  * @def IS_NOT_VALUE
  *
- * Macro that can be added to template parameters to enable a function only
- * if the specific type is not a value type.
+ * @ingroup libbirch
+ *
+ * Macro that can be added to the template arguments of a class template
+ * specialization to enable it only if a specific type is a non-value type.
  */
-#define IS_NOT_VALUE(Type) class T = Type, std::enable_if_t<!is_value<T>::value,int> = 0
+#define IS_NOT_VALUE(Type) std::enable_if_t<!is_value<Type>::value>
+
+/**
+ * @def IS_POINTER
+ *
+ * @ingroup libbirch
+ *
+ * Macro that can be added to the template arguments of a class template
+ * specialization to enable it only if a specific type is a pointer type.
+ */
+#define IS_POINTER(Type) std::enable_if_t<is_pointer<Type>::value>
+
+/**
+ * @def IS_NOT_POINTER
+ *
+ * @ingroup libbirch
+ *
+ * Macro that can be added to the template arguments of a class template
+ * specialization to enable it only if a specific type is a non-pointer type.
+ */
+#define IS_NOT_POINTER(Type) std::enable_if_t<!is_pointer<Type>::value>
+
+/**
+ * @def IS_NOT_VALUE_NOR_POINTER
+ *
+ * @ingroup libbirch
+ *
+ * Macro that can be added to the template arguments of a class template
+ * specialization to enable it only if a specific type is neither a value
+ * type nor a pointer type.
+ */
+#define IS_NOT_VALUE_NOR_POINTER(Type) std::enable_if_t< \
+  !is_value<Type>::value && !is_pointer<Type>::value>
 
 namespace libbirch {
 /*

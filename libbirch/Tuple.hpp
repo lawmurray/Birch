@@ -3,15 +3,29 @@
  */
 #pragma once
 
+#include "libbirch/external.hpp"
+#include "libbirch/type.hpp"
+
 namespace libbirch {
 /**
  * Tuple.
  *
  * @ingroup libbirch
  */
-template<class Head, class ...Tail>
+template<class Head, class Enable = void, class... Tail>
 class Tuple {
-  template<class Head1, class ... Tail1> friend class Tuple;
+  //
+};
+
+/**
+ * Tuple with a value head type.
+ *
+ * @tparam Head Head type.
+ * @tparam Tail Tail types.
+ */
+template<class Head, class ...Tail>
+class Tuple<Head,IS_VALUE(Head),Tail...> {
+  template<class Head1, class Enable1, class... Tail1> friend class Tuple;
 public:
   Tuple() = default;
   Tuple(const Tuple&) = default;
@@ -20,9 +34,8 @@ public:
   Tuple& operator=(Tuple&&) = delete;
 
   /**
-   * Constructor for value type.
+   * Constructor.
    */
-  template<IS_VALUE(Head)>
   Tuple(const Head& head, Tail ... tail) :
       head(head),
       tail(tail...) {
@@ -30,9 +43,8 @@ public:
   }
 
   /**
-   * Constructor for value head type.
+   * Constructor.
    */
-  template<IS_VALUE(Head)>
   Tuple(Label* context, const Head& head, Tail ... tail) :
       head(head),
       tail(context, tail...) {
@@ -40,19 +52,8 @@ public:
   }
 
   /**
-   * Constructor for non-value head type.
+   * Copy constructor.
    */
-  template<IS_NOT_VALUE(Head)>
-  Tuple(Label* context, const Head& head, Tail ... tail) :
-      head(context, head),
-      tail(context, tail...) {
-    //
-  }
-
-  /**
-   * Copy constructor for value head type.
-   */
-  template<IS_VALUE(Head)>
   Tuple(Label* context, const Tuple& o) :
       head(o.head),
       tail(context, o.tail) {
@@ -60,19 +61,8 @@ public:
   }
 
   /**
-   * Copy constructor for non-value head type.
+   * Move constructor.
    */
-  template<IS_NOT_VALUE(Head)>
-  Tuple(Label* context, const Tuple& o) :
-      head(context, o.head),
-      tail(context, o.tail) {
-    //
-  }
-
-  /**
-   * Move constructor for value head type.
-   */
-  template<IS_VALUE(Head)>
   Tuple(Label* context, Tuple&& o) :
       head(std::move(o.head)),
       tail(context, std::move(o.tail)) {
@@ -80,19 +70,8 @@ public:
   }
 
   /**
-   * Move constructor for non-value head type.
+   * Deep copy constructor.
    */
-  template<IS_NOT_VALUE(Head)>
-  Tuple(Label* context, Tuple&& o) :
-      head(context, std::move(o.head)),
-      tail(context, std::move(o.tail)) {
-    //
-  }
-
-  /**
-   * Deep copy constructor for value head type.
-   */
-  template<IS_VALUE(Head)>
   Tuple(Label* context, Label* label, const Tuple& o) :
       head(o.head),
       tail(context, label, o.tail) {
@@ -100,9 +79,95 @@ public:
   }
 
   /**
-   * Deep copy constructor for non-value head type.
+   * Copy assignment.
    */
-  template<IS_NOT_VALUE(Head)>
+  template<class Head1, class ... Tail1>
+  Tuple& assign(Label* context, const Tuple<Head1,Tail1...>& o) {
+    head = o.head;
+    tail.assign(context, o.tail);
+    return *this;
+  }
+
+  /**
+   * Move assignment.
+   */
+  template<class Head1, class ... Tail1>
+  Tuple& assign(Label* context, Tuple<Head1,Tail1...>&& o) {
+    head = std::move(o.head);
+    tail.assign(context, std::move(o.tail));
+    return *this;
+  }
+
+  void freeze() {
+    tail.freeze();
+  }
+
+  void thaw(Label* label) {
+    tail.thaw(label);
+  }
+
+  void finish() {
+    tail.finish();
+  }
+
+private:
+  /**
+   * First element.
+   */
+  Head head;
+
+  /**
+   * Remaining elements.
+   */
+  Tuple<Tail...> tail;
+};
+
+/**
+ * Tuple with a non-value head type.
+ *
+ * @tparam Head Head type.
+ * @tparam Tail Tail types.
+ */
+template<class Head, class ...Tail>
+class Tuple<Head,IS_NOT_VALUE(Head),Tail...> {
+  template<class Head1, class Enable1, class... Tail1> friend class Tuple;
+public:
+  Tuple() = default;
+  Tuple(const Tuple&) = default;
+  Tuple(Tuple&&) = default;
+  Tuple& operator=(const Tuple&) = delete;
+  Tuple& operator=(Tuple&&) = delete;
+
+  /**
+   * Constructor.
+   */
+  Tuple(Label* context, const Head& head, Tail ... tail) :
+      head(context, head),
+      tail(context, tail...) {
+    //
+  }
+
+  /**
+   * Copy constructor.
+   */
+  Tuple(Label* context, const Tuple& o) :
+      head(context, o.head),
+      tail(context, o.tail) {
+    //
+  }
+
+  /**
+   * Move constructor.
+   */
+  Tuple(Label* context, Tuple&& o) :
+      head(context, std::move(o.head)),
+      tail(context, std::move(o.tail)) {
+    //
+  }
+
+  /**
+   * Deep copy constructor.
+   */
   Tuple(Label* context, Label* label, const Tuple& o) :
       head(context, label, o.head),
       tail(context, label, o.tail) {
@@ -110,29 +175,9 @@ public:
   }
 
   /**
-   * Copy assignment for value type.
+   * Copy assignment.
    */
-  template<class Head1, class ... Tail1, IS_VALUE(Tuple)>
-  Tuple& assign(const Tuple<Head1,Tail1...>& o) {
-    head = o.head;
-    tail = o.tail;
-    return *this;
-  }
-
-  /**
-   * Copy assignment for value head type.
-   */
-  template<class Head1, class ... Tail1, IS_VALUE(Head)>
-  Tuple& assign(Label* context, const Tuple<Head1,Tail1...>& o) {
-    head = o.head;
-    tail.assign(context, o.tail);
-    return *this;
-  }
-
-  /**
-   * Copy assignment for non-value head type.
-   */
-  template<class Head1, class ... Tail1, IS_NOT_VALUE(Head)>
+  template<class Head1, class ... Tail1>
   Tuple& assign(Label* context, const Tuple<Head1,Tail1...>& o) {
     head.assign(context, o.head);
     tail.assign(context, o.tail);
@@ -140,79 +185,25 @@ public:
   }
 
   /**
-   * Move assignment for value type.
+   * Move assignment.
    */
-  template<class Head1, class ... Tail1, IS_VALUE(Tuple)>
-  Tuple& assign(Tuple<Head1,Tail1...>&& o) {
-    head = std::move(o.head);
-    tail = std::move(o.tail);
-    return *this;
-  }
-
-  /**
-   * Move assignment for value head type.
-   */
-  template<class Head1, class ... Tail1, IS_VALUE(Head)>
-  Tuple& assign(Label* context, Tuple<Head1,Tail1...>&& o) {
-    head = std::move(o.head);
-    tail.assign(context, std::move(o.tail));
-    return *this;
-  }
-
-  /**
-   * Move assignment for non-value head type.
-   */
-  template<class Head1, class ... Tail1, IS_NOT_VALUE(Head)>
+  template<class Head1, class ... Tail1>
   Tuple& assign(Label* context, Tuple<Head1,Tail1...>&& o) {
     head.assign(context, std::move(o.head));
     tail.assign(context, std::move(o.tail));
     return *this;
   }
 
-  /**
-   * Copy assignment operator for value type.
-   */
-  template<class Head1, class ... Tail1, IS_VALUE(Tuple)>
-  Tuple& operator=(const Tuple<Head1,Tail1...>& o) {
-    return assign(o);
-  }
-
-  /**
-   * Move assignment operator for value type.
-   */
-  template<class Head1, class ... Tail1, IS_VALUE(Tuple)>
-  Tuple& operator=(Tuple<Head1,Tail1...>&& o) {
-    return assign(std::move(o));
-  }
-
-  template<IS_VALUE(Head)>
-  void freeze() {
-    tail.freeze();
-  }
-
-  template<IS_NOT_VALUE(Head)>
   void freeze() {
     head.freeze();
     tail.freeze();
   }
 
-  template<IS_VALUE(Head)>
-  void thaw(Label* label) {
-    tail.thaw(label);
-  }
-
-  template<IS_NOT_VALUE(Head)>
   void thaw(Label* label) {
     head.thaw(label);
     tail.thaw(label);
   }
 
-  template<IS_VALUE(Head)>
-  void finish() {
-    tail.finish();
-  }
-
-  template<IS_NOT_VALUE(Head)>
   void finish() {
     head.finish();
     tail.finish();
@@ -225,14 +216,111 @@ private:
   Head head;
 
   /**
-   * Remaining headuments.
+   * Remaining elements.
    */
   Tuple<Tail...> tail;
 };
 
+/**
+ * Tuple with a value head type, and no tail.
+ *
+ * @param Head Value type.
+ */
 template<class Head>
-class Tuple<Head> {
-  template<class Head1, class... Tail1> friend class Tuple;
+class Tuple<Head,IS_VALUE(Head)> {
+  template<class Head1, class Enable1, class... Tail1> friend class Tuple;
+public:
+  Tuple() = default;
+  Tuple(const Tuple&) = default;
+  Tuple(Tuple&&) = default;
+  Tuple& operator=(const Tuple&) = default;
+  Tuple& operator=(Tuple&&) = default;
+
+  /**
+   * Constructor.
+   */
+  Tuple(const Head& head) :
+      head(head) {
+    //
+  }
+
+  /**
+   * Constructor.
+   */
+  Tuple(Label* context, const Head& head) :
+      head(head) {
+    //
+  }
+
+  /**
+   * Copy constructor.
+   */
+  Tuple(Label* context, const Tuple& o) :
+      head(o.head) {
+    //
+  }
+
+  /**
+   * Move constructor.
+   */
+  Tuple(Label* context, Tuple&& o) :
+      head(std::move(o.head)) {
+    //
+  }
+
+  /**
+   * Deep copy constructor.
+   */
+  Tuple(Label* context, Label* label, const Tuple& o) :
+      head(o.head) {
+    //
+  }
+
+  /**
+   * Copy assignment.
+   */
+  template<class Head1>
+  Tuple& assign(Label* context, const Tuple<Head1>& o) {
+    head = o.head;
+    return *this;
+  }
+
+  /**
+   * Move assignment.
+   */
+  template<class Head1>
+  Tuple& assign(Label* context, Tuple<Head1>&& o) {
+    head = std::move(o.head);
+    return *this;
+  }
+
+  void freeze() {
+    //
+  }
+
+  void thaw(Label* label) {
+    //
+  }
+
+  void finish() {
+    //
+  }
+
+private:
+  /**
+   * First element.
+   */
+  Head head;
+};
+
+/**
+ * Tuple with a non-value head type, and no tail.
+ *
+ * @param Head Value type.
+ */
+template<class Head>
+class Tuple<Head,IS_NOT_VALUE(Head)> {
+  template<class Head1, class Enable1, class... Tail1> friend class Tuple;
 public:
   Tuple() = default;
   Tuple(const Tuple&) = default;
@@ -241,182 +329,63 @@ public:
   Tuple& operator=(Tuple&&) = delete;
 
   /**
-   * Constructor for value type.
+   * Constructor.
    */
-  template<IS_VALUE(Head)>
-  Tuple(const Head& head) :
-      head(head) {
-    //
-  }
-
-  /**
-   * Constructor for value type.
-   */
-  template<IS_VALUE(Head)>
-  Tuple(Label* context, const Head& head) :
-      head(head) {
-    //
-  }
-
-  /**
-   * Constructor for non-value type.
-   */
-  template<IS_NOT_VALUE(Head)>
   Tuple(Label* context, const Head& head) :
       head(context, head) {
     //
   }
 
   /**
-   * Copy constructor for value type.
+   * Copy constructor.
    */
-  template<IS_VALUE(Head)>
-  Tuple(const Tuple& o) :
-      head(o.head) {
-    //
-  }
-
-  /**
-   * Copy constructor for value type.
-   */
-  template<IS_VALUE(Head)>
-  Tuple(Label* context, const Tuple& o) :
-      head(o.head) {
-    //
-  }
-
-  /**
-   * Copy constructor for non-value type.
-   */
-  template<IS_NOT_VALUE(Head)>
   Tuple(Label* context, const Tuple& o) :
       head(context, o.head) {
     //
   }
 
   /**
-   * Move constructor for value type.
+   * Move constructor.
    */
-  template<IS_VALUE(Head)>
-  Tuple(Tuple&& o) :
-      head(std::move(o.head)) {
-    //
-  }
-
-  /**
-   * Move constructor for value type.
-   */
-  template<IS_VALUE(Head)>
-  Tuple(Label* context, Tuple&& o) :
-      head(std::move(o.head)) {
-    //
-  }
-
-  /**
-   * Move constructor for non-value type.
-   */
-  template<IS_NOT_VALUE(Head)>
   Tuple(Label* context, Tuple&& o) :
       head(context, std::move(o.head)) {
     //
   }
 
   /**
-   * Deep copy constructor for value type.
+   * Deep copy constructor.
    */
-  template<IS_VALUE(Head)>
-  Tuple(Label* context, Label* label, const Tuple& o) :
-      head(o.head) {
-    //
-  }
-
-  /**
-   * Deep copy constructor for non-value type.
-   */
-  template<IS_NOT_VALUE(Head)>
   Tuple(Label* context, Label* label, const Tuple& o) :
       head(context, label, o.head) {
     //
   }
 
   /**
-   * Copy assignment for value type.
+   * Copy assignment.
    */
-  template<class Head1, IS_VALUE(Head)>
-  Tuple& assign(const Tuple<Head1>& o) {
-    head = o.head;
-    return *this;
-  }
-
-  /**
-   * Copy assignment for non-value type.
-   */
-  template<class Head1, IS_NOT_VALUE(Head)>
+  template<class Head1>
   Tuple& assign(Label* context, const Tuple<Head1>& o) {
     head.assign(context, o.head);
     return *this;
   }
 
   /**
-   * Move assignment for value type.
+   * Move assignment.
    */
-  template<class Head1, IS_VALUE(Head)>
-  Tuple& assign(Tuple<Head1>&& o) {
-    head = std::move(o.head);
-    return *this;
-  }
-
-  /**
-   * Move assignment for non-value type.
-   */
-  template<class Head1, IS_NOT_VALUE(Head)>
+  template<class Head1>
   Tuple& assign(Label* context, Tuple<Head1>&& o) {
     head.assign(context, std::move(o.head));
     return *this;
   }
 
-  /**
-   * Copy assignment operator for value type.
-   */
-  template<class Head1, IS_VALUE(Tuple)>
-  Tuple& operator=(const Tuple<Head1>& o) {
-    return assign(o);
-  }
-
-  /**
-   * Move assignment operator for value type.
-   */
-  template<class Head1, IS_VALUE(Tuple)>
-  Tuple& operator=(Tuple<Head1>&& o) {
-    return assign(std::move(o));
-  }
-
-  template<IS_VALUE(Head)>
-  void freeze() {
-    //
-  }
-
-  template<IS_NOT_VALUE(Head)>
   void freeze() {
     head.freeze();
   }
 
-  template<IS_VALUE(Head)>
-  void thaw(Label* label) {
-    //
-  }
-
-  template<IS_NOT_VALUE(Head)>
   void thaw(Label* label) {
     head.thaw(label);
   }
 
-  template<IS_VALUE(Head)>
-  void finish() {
-    //
-  }
-
-  template<IS_NOT_VALUE(Head)>
   void finish() {
     head.finish();
   }

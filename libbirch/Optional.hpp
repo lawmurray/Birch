@@ -3,91 +3,185 @@
  */
 #pragma once
 
+#include "libbirch/type.hpp"
+#include "libbirch/Nil.hpp"
+
 namespace libbirch {
 /**
  * Optional.
  *
  * @ingroup libbirch
- *
- * @tparam T Type.
  */
 template<class T, class Enable = void>
 class Optional {
   //
 };
-}
 
-#include "libbirch/Nil.hpp"
-#include "libbirch/Shared.hpp"
-#include "libbirch/Weak.hpp"
-#include "libbirch/Init.hpp"
-#include "libbirch/type.hpp"
-
-namespace libbirch {
 /**
- * Optional for non-pointer types.
+ * Optional for pointer types. Uses the pointer itself, set to `nullptr`, to
+ * denote a missing value, rather than keeping a separate boolean flag.
+ *
+ * @ingroup libbirch
+ *
+ * @tparam T Pointer type.
+ */
+template<class T>
+class Optional<T,IS_POINTER(T)> {
+  template<class T1, class Enable1> friend class Optional;
+public:
+  Optional(const Optional& o) = default;
+  Optional(Optional&& o) = default;
+  Optional& operator=(const Optional& o) = delete;
+  Optional& operator=(Optional&& o) = delete;
+
+  /**
+   * Constructor.
+   */
+  Optional(const Nil& = nil) {
+    //
+  }
+
+  /**
+   * Constructor.
+   */
+  template<class U>
+  Optional(Label* context, const U& value) :
+      value(context, value) {
+    //
+  }
+
+  /**
+   * Copy constructor.
+   */
+  template<class U>
+  Optional(Label* context, const Optional<U>& o) :
+      value(context, o.value) {
+    //
+  }
+
+  /**
+   * Move constructor.
+   */
+  template<class U>
+  Optional(Label* context, Optional<U>&& o) :
+      value(context, std::move(o.value)) {
+    //
+  }
+
+  /**
+   * Deep copy constructor.
+   */
+  Optional(Label* context, Label* label, const Optional& o) :
+      value(context, label, o.value) {
+    //
+  }
+
+  /**
+   * Nil assignment.
+   */
+  Optional& assign(Label* context, const Nil&) {
+    this->value.assign(context, Optional<T>());
+    return *this;
+  }
+
+  /**
+   * Copy assignment.
+   */
+  template<class U>
+  Optional& assign(Label* context, const Optional<U>& o) {
+    this->value.assign(context, o.value);
+    return *this;
+  }
+
+  /**
+   * Move assignment.
+   */
+  template<class U>
+  Optional& assign(Label* context, Optional<U>&& o) {
+    this->value.assign(context, std::move(o.value));
+    return *this;
+  }
+
+  /**
+   * Is there a value?
+   */
+  bool query() const {
+    return value.query();
+  }
+
+  /**
+   * Get the value.
+   */
+  T& get() {
+    libbirch_assert_msg_(query(), "optional has no value");
+    return value;
+  }
+
+  /**
+   * Get the value.
+   */
+  const T& get() const {
+    libbirch_assert_msg_(query(), "optional has no value");
+    return value;
+  }
+
+  void freeze() {
+    if (value) {
+      value.freeze();
+    }
+  }
+
+  void thaw(Label* label) {
+    if (value) {
+      value.thaw(label);
+    }
+  }
+
+  void finish() {
+    if (value) {
+      value.finish();
+    }
+  }
+
+private:
+  /**
+   * The value. The special value `nullptr` denotes no value.
+   */
+  T value;
+};
+
+/**
+ * Optional for value types.
  *
  * @ingroup libbirch
  *
  * @tparam T Non-pointer type.
  */
 template<class T>
-class Optional<T,std::enable_if_t<!is_pointer<T>::value>> {
+class Optional<T,IS_VALUE(T)> {
+  template<class T1, class Enable1> friend class Optional;
 public:
-  Optional(const Optional& o) = default;
-  Optional(Optional&& o) = default;
-  Optional& operator=(const Optional& o) = default;
-  Optional& operator=(Optional&& o) = default;
+  Optional(const Optional&) = default;
+  Optional(Optional&&) = default;
+  Optional& operator=(const Optional&) = default;
+  Optional& operator=(Optional&&) = default;
 
   /**
-   * Default constructor.
+   * Constructor.
    */
-  Optional() :
+  Optional(const Nil& = nil) :
       value(),
       hasValue(false) {
     //
   }
 
   /**
-   * Nil constructor.
-   */
-  Optional(const Nil&) :
-      value(),
-      hasValue(false) {
-    //
-  }
-
-  /**
-   * Generic value constructor.
-   *
-   * @tparam U Value type (convertible to @p T).
+   * Constructor.
    */
   template<class U>
   Optional(const U& value) :
       value(value),
       hasValue(true) {
-    //
-  }
-
-  /**
-   * Generic copy constructor.
-   *
-   * @tparam U Value type (convertible to @p T).
-   */
-  template<class U>
-  Optional(const Optional<U>& o) :
-      hasValue(o.query()) {
-    if (hasValue) {
-      value = o.get();
-    }
-  }
-
-  /**
-   * Deep copy constructor.
-   */
-  Optional(Label* label, const Optional<T>& o) :
-      value(label, o.value),
-      hasValue(o.hasValue) {
     //
   }
 
@@ -114,6 +208,18 @@ public:
     return value;
   }
 
+  void freeze() {
+    //
+  }
+
+  void thaw(Label* label) {
+    //
+  }
+
+  void finish() {
+    //
+  }
+
 private:
   /**
    * The contained value, if any.
@@ -127,87 +233,95 @@ private:
 };
 
 /**
- * Optional for pointer types. Uses the pointer itself, set to `nullptr`, to
- * denote a missing value, rather than keeping a separate boolean flag.
+ * Optional for non-pointer and non-value types.
  *
  * @ingroup libbirch
  *
- * @tparam P Pointer type.
+ * @tparam T Non-pointer type.
  */
-template<class P>
-class Optional<P,std::enable_if_t<is_pointer<P>::value>> {
-  template<class Q, class Enable> friend class Optional;
+template<class T>
+class Optional<T,IS_NOT_VALUE_NOR_POINTER(T)> {
+  template<class T1, class Enable1> friend class Optional;
 public:
-  Optional() = default;
-  Optional(const Optional& o) = default;
-  Optional(Optional&& o) = default;
-  Optional& operator=(const Optional& o) = default;
-  Optional& operator=(Optional&& o) = default;
+  Optional(const Optional&) = default;
+  Optional(Optional&&) = default;
+  Optional& operator=(const Optional&) = delete;
+  Optional& operator=(Optional&&) = delete;
 
   /**
-   * Generic conversion constructor.
+   * Constructor.
    */
-  template<class Q, typename = std::enable_if_t<is_pointer<Q>::value>>
-  Optional(const Optional<Q>& o) : value(o.value) {
+  Optional(const Nil& = nil) :
+      value(),
+      hasValue(false) {
     //
   }
 
   /**
-   * Nil constructor.
+   * Constructor.
    */
-  Optional(const Nil&) {
+  template<class U>
+  Optional(Label* context, const U& value) :
+      value(context, value),
+      hasValue(true) {
+    //
+  }
+
+  /**
+   * Copy constructor.
+   */
+  template<class U>
+  Optional(Label* context, const Optional<U>& o) :
+      value(context, o.value),
+      hasValue(o.hasValue) {
+    //
+  }
+
+  /**
+   * Move constructor.
+   */
+  template<class U>
+  Optional(Label* context, Optional<U>&& o) :
+      value(context, std::move(o.value)),
+      hasValue(o.hasValue) {
     //
   }
 
   /**
    * Deep copy constructor.
    */
-  Optional(Label* label, const Optional<P>& o) :
-      value(label, o.value) {
-    //
-  }
-
-  /**
-   * Generic value copy constructor.
-   */
-  template<class Q, typename = std::enable_if_t<is_pointer<Q>::value>>
-  Optional(const Q& value) :
-      value(value) {
-    //
-  }
-
-  /**
-   * Generic value move constructor.
-   */
-  template<class Q, typename = std::enable_if_t<is_pointer<Q>::value>>
-  Optional(Q&& value) :
-      value(std::move(value)) {
+  Optional(Label* context, Label* label, const Optional& o) :
+      value(context, label, o.value),
+      hasValue(o.hasValue) {
     //
   }
 
   /**
    * Nil assignment.
    */
-  Optional<P>& operator=(const Nil& o) {
-    value = nullptr;
+  Optional& assign(Label* context, const Nil&) {
+    this->value.assign(context, Optional<T>());
+    this->hasValue = false;
     return *this;
   }
 
   /**
-   * Generic value copy assignment.
+   * Copy assignment.
    */
-  template<class Q, typename = std::enable_if_t<is_pointer<Q>::value>>
-  Optional<P>& operator=(const Q& value) {
-    this->value = value;
+  template<class U>
+  Optional& assign(Label* context, const Optional<U>& o) {
+    this->value.assign(context, o.value);
+    this->hasValue = o.hasValue;
     return *this;
   }
 
   /**
-   * Generic value move assignment.
+   * Move assignment.
    */
-  template<class Q, typename = std::enable_if_t<is_pointer<Q>::value>>
-  Optional<P>& operator=(Q&& value) {
-    this->value = std::move(value);
+  template<class U>
+  Optional& assign(Label* context, Optional<U>&& o) {
+    this->value.assign(context, std::move(o.value));
+    this->hasValue = o.hasValue;
     return *this;
   }
 
@@ -215,30 +329,53 @@ public:
    * Is there a value?
    */
   bool query() const {
-    return value.query();
+    return hasValue;
   }
 
   /**
    * Get the value.
    */
-  P& get() {
-    libbirch_assert_msg_(query(), "optional has no value");
+  T& get() {
+    libbirch_assert_msg_(hasValue, "optional has no value");
     return value;
   }
 
   /**
    * Get the value.
    */
-  const P& get() const {
-    libbirch_assert_msg_(query(), "optional has no value");
+  const T& get() const {
+    libbirch_assert_msg_(hasValue, "optional has no value");
     return value;
+  }
+
+  void freeze() {
+    if (value) {
+      value.freeze();
+    }
+  }
+
+  void thaw(Label* label) {
+    if (value) {
+      value.thaw(label);
+    }
+  }
+
+  void finish() {
+    if (value) {
+      value.finish();
+    }
   }
 
 private:
   /**
-   * The value, `nullptr` value to denote no value.
+   * The contained value, if any.
    */
-  P value;
+  T value;
+
+  /**
+   * Is there a value?
+   */
+  bool hasValue;
 };
 
 template<class T>
@@ -248,23 +385,17 @@ struct is_value<Optional<T>> {
 
 template<class T>
 void freeze(Optional<T>& o) {
-  if (!is_value<T>::value && o.query()) {
-    freeze(o.get());
-  }
+  o.freeze();
 }
 
 template<class T>
 void thaw(Optional<T>& o, LazyLabel* label) {
-  if (!is_value<T>::value && o.query()) {
-    thaw(o.get(), label);
-  }
+  o.thaw(label);
 }
 
 template<class T>
 void finish(Optional<T>& o) {
-  if (!is_value<T>::value && o.query()) {
-    finish(o.get());
-  }
+  o.finish();
 }
 
 }
