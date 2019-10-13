@@ -269,8 +269,13 @@ void bi::CppClassGenerator::visit(const Class* o) {
         line("template<class T_>");
         line("auto& set_" << var->name << "_(T_&& o_) {");
         in();
-        line("libbirch_swap_context_");
-        line("return " << var->name << " = " << "o_;");
+        start("return " << var->name);
+        if (var->type->isValue()) {
+          middle(" = o_");
+        } else {
+          middle(".assign(getLabel(), o_)");
+        }
+        finish(';');
         out();
         line("}\n");
 
