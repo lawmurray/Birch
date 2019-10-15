@@ -31,6 +31,10 @@ class Array {
   template<class U, class G>
   friend class Array;
 public:
+  using value_type = T;
+  using frame_type = F;
+  using this_type = Array<T,F>;
+
   /**
    * Default constructor.
    */
@@ -140,27 +144,26 @@ public:
    * Deep copy constructor.
    */
   Array(Label* label, const Array<T,F>& o) :
-    frame(o.frame),
-    buffer(nullptr),
-    offset(0),
-    isView(false) {
-  if (is_value<T>::value) {
-    /* just a value type, do a normal copy */
-    auto tmp = o.buffer;
-    if (tmp && !o.isView) {
-      /* views do not increment the buffer use count, as they are meant to be
-       * temporary and should not outlive the buffer itself */
-      tmp->incUsage();
+      frame(o.frame),
+      buffer(nullptr),
+      offset(0),
+      isView(false) {
+    if (is_value<T>::value) {
+      /* just a value type, do a normal copy */
+      auto tmp = o.buffer;
+      if (tmp && !o.isView) {
+        /* views do not increment the buffer use count, as they are meant to be
+         * temporary and should not outlive the buffer itself */
+        tmp->incUsage();
+      }
+      buffer = tmp;
+      offset = o.offset;
+      isView = o.isView;
+    } else {
+      allocate();
+      copy(label, o);
     }
-    buffer = tmp;
-    offset = o.offset;
-    isView = o.isView;
-  } else {
-    allocate();
-    copy(label, o);
   }
-}
-
 
   /**
    * Copy constructor.
@@ -498,81 +501,45 @@ public:
    * Birch Array types and Eigen Matrix types.
    */
   ///@{
-  /*
-   * Compatibility checks.
-   */
-  template<class DerivedType>
-  struct is_eigen_compatible {
-    static const bool value =
-        std::is_same<T,typename DerivedType::value_type>::value
-            && ((F::count() == 1 && DerivedType::ColsAtCompileTime == 1)
-                || (F::count() == 2
-                    && DerivedType::ColsAtCompileTime == Eigen::Dynamic));
-  };
-
-  template<class DerivedType>
-  struct is_diagonal_compatible {
-    static const bool value =
-        std::is_same<T,typename DerivedType::value_type>::value
-            && F::count() == 2 && DerivedType::ColsAtCompileTime == 1;
-  };
-
-  template<class DerivedType>
-  struct is_triangle_compatible {
-    static const bool value =
-        std::is_same<T,typename DerivedType::value_type>::value &&
-            F::count() == 2 &&
-            DerivedType::ColsAtCompileTime == Eigen::Dynamic;
-  };
-
-  /**
-   * Appropriate Eigen Matrix type for this Birch Array type.
-   */
-  using EigenType = typename std::conditional<F::count() == 2,
-  EigenMatrixMap<T>,
-  typename std::conditional<F::count() == 1,
-  EigenVectorMap<T>,
-  void>::type>::type;
-
-  using EigenStrideType = typename std::conditional<F::count() == 2,
-  EigenMatrixStride,
-  typename std::conditional<F::count() == 1,
-  EigenVectorStride,
-  void>::type>::type;
-
   /**
    * Explicitly convert to Eigen matrix type.
    */
-  EigenType toEigen() {
-    return EigenType(duplicate()->buf() + offset, length(0),
-        (F::count() == 1 ? 1 : length(1)),
-        (F::count() == 1 ?
-            EigenStrideType(volume(), stride(0)) :
-            EigenStrideType(stride(0), stride(1))));
-  }
+  auto toEigen() {
+    using eigen_type = typename eigen_type<this_type>::type;
+    using stride_type = typename eigen_stride_type<this_type>::type;
 
-  /**
-   * @copydoc toEigen
-   */
-  EigenType toEigen() const {
-    return EigenType(buf(), length(0),
-        (F::count() == 1 ? 1 : length(1)),
-        (F::count() == 1 ?
-            EigenStrideType(volume(), stride(0)) :
-            EigenStrideType(stride(0), stride(1))));
+    auto rows = length(0);
+    auto cols = F::count() == 1 ? 1 : length(1);
+    auto rowStride = F::count() == 1 ? volume() : stride(0);
+    auto colStride = F::count() == 1 ? stride(0) : stride(1);
+    auto stride = stride_type(rowStride, colStride);
+
+    return eigen_type(duplicate()->buf() + offset, rows, cols, stride);
+  }
+  auto toEigen() const {
+    using eigen_type = typename eigen_type<this_type>::type;
+    using stride_type = typename eigen_stride_type<this_type>::type;
+
+    auto rows = length(0);
+    auto cols = F::count() == 1 ? 1 : length(1);
+    auto rowStride = F::count() == 1 ? volume() : stride(0);
+    auto colStride = F::count() == 1 ? stride(0) : stride(1);
+    auto stride = stride_type(rowStride, colStride);
+
+    return eigen_type(buf() + offset, rows, cols, stride);
   }
 
   /**
    * Implicitly convert to Eigen matrix type.
    */
-  operator EigenType() {
+  operator typename eigen_type<this_type>::type() {
     return toEigen();
   }
 
   /**
    * @copydoc EigenType
    */
-  operator EigenType() const {
+  operator typename eigen_type<this_type>::type() const {
     return toEigen();
   }
 
@@ -586,9 +553,9 @@ public:
    * Memory is allocated for the array, and is freed on destruction. After
    * allocation, the contents of the existing array are copied in.
    */
-  template<class DerivedType, std::enable_if_t<
-      is_eigen_compatible<DerivedType>::value,int> = 0>
-  Array(const Eigen::MatrixBase<DerivedType>& o, const F& frame) :
+  template<class EigenType, std::enable_if_t<
+      is_eigen_compatible<this_type,EigenType>::value,int> = 0>
+  Array(const Eigen::MatrixBase<EigenType>& o, const F& frame) :
       frame(frame),
       buffer(nullptr),
       offset(0),
@@ -600,9 +567,9 @@ public:
   /**
    * Construct from Eigen Matrix expression.
    */
-  template<class DerivedType, std::enable_if_t<
-      is_eigen_compatible<DerivedType>::value,int> = 0>
-  Array(const Eigen::MatrixBase<DerivedType>& o) :
+  template<class EigenType, std::enable_if_t<
+      is_eigen_compatible<this_type,EigenType>::value,int> = 0>
+  Array(const Eigen::MatrixBase<EigenType>& o) :
       frame(o.rows(), o.cols()),
       buffer(nullptr),
       offset(0),
@@ -614,9 +581,9 @@ public:
   /**
    * Construct from Eigen DiagonalWrapper expression.
    */
-  template<class DerivedType, std::enable_if_t<
-      is_diagonal_compatible<DerivedType>::value,int> = 0>
-  Array(const Eigen::DiagonalWrapper<DerivedType>& o) :
+  template<class EigenType, std::enable_if_t<
+      is_diagonal_compatible<this_type,EigenType>::value,int> = 0>
+  Array(const Eigen::DiagonalWrapper<EigenType>& o) :
       frame(o.rows(), o.cols()),
       buffer(nullptr),
       offset(0),
@@ -628,9 +595,9 @@ public:
   /**
    * Construct from Eigen TriangularWrapper expression.
    */
-  template<class DerivedType, unsigned Mode, std::enable_if_t<
-      is_triangle_compatible<DerivedType>::value,int> = 0>
-  Array(const Eigen::TriangularView<DerivedType,Mode>& o) :
+  template<class EigenType, unsigned Mode, std::enable_if_t<
+      is_triangle_compatible<this_type,EigenType>::value,int> = 0>
+  Array(const Eigen::TriangularView<EigenType,Mode>& o) :
       frame(o.rows(), o.cols()),
       buffer(nullptr),
       offset(0),
@@ -642,9 +609,9 @@ public:
   /**
    * Assign from Eigen Matrix expression.
    */
-  template<class DerivedType, std::enable_if_t<
-      is_eigen_compatible<DerivedType>::value,int> = 0>
-  Array<T,F>& operator=(const Eigen::MatrixBase<DerivedType>& o) {
+  template<class EigenType, std::enable_if_t<
+      is_eigen_compatible<this_type,EigenType>::value,int> = 0>
+  Array<T,F>& operator=(const Eigen::MatrixBase<EigenType>& o) {
     if (!isView && (!frame.conforms(o.rows(), o.cols()) || isShared())) {
       lock();
       rebase(o);
@@ -658,9 +625,9 @@ public:
   /**
    * Assign from Eigen DiagonalWrapper expression.
    */
-  template<class DerivedType, std::enable_if_t<
-      is_diagonal_compatible<DerivedType>::value,int> = 0>
-  Array<T,F>& operator=(const Eigen::DiagonalWrapper<DerivedType>& o) {
+  template<class EigenType, std::enable_if_t<
+      is_diagonal_compatible<this_type,EigenType>::value,int> = 0>
+  Array<T,F>& operator=(const Eigen::DiagonalWrapper<EigenType>& o) {
     if (!isView && (!frame.conforms(o.rows(), o.cols()) || isShared())) {
       lock();
       rebase(o);
@@ -674,9 +641,9 @@ public:
   /**
    * Assign from Eigen TriangularView expression.
    */
-  template<class DerivedType, unsigned Mode, std::enable_if_t<
-      is_triangle_compatible<DerivedType>::value,int> = 0>
-  Array<T,F>& operator=(const Eigen::TriangularView<DerivedType,Mode>& o) {
+  template<class EigenType, unsigned Mode, std::enable_if_t<
+      is_triangle_compatible<this_type,EigenType>::value,int> = 0>
+  Array<T,F>& operator=(const Eigen::TriangularView<EigenType,Mode>& o) {
     if (!isView && (!frame.conforms(o.rows(), o.cols()) || isShared())) {
       lock();
       rebase(o);
@@ -827,11 +794,11 @@ private:
    * @param args Constructor arguments.
    */
   template<class ... Args>
-  void initialize(Label* context, Args ... args) {
+  void initialize(Args ... args) {
     auto iter = begin();
     auto last = iter + size();
     for (; iter != last; ++iter) {
-      emplace(*iter, context, args...);
+      emplace(*iter, args...);
     }
   }
 
@@ -1010,4 +977,3 @@ void finish(Array<T,F>& o) {
 }
 
 }
-

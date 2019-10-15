@@ -22,12 +22,55 @@ using EigenMatrix = Eigen::Matrix<Type,Eigen::Dynamic,Eigen::Dynamic,Eigen::RowM
 template<class Type>
 using EigenMatrixMap = Eigen::Map<EigenMatrix<Type>,Eigen::DontAlign,EigenMatrixStride>;
 
+/*
+ * Eigen type for an array type.
+ */
+template<class ArrayType>
+struct eigen_type {
+  using type = typename std::conditional<ArrayType::frame_type::count() == 2,
+      EigenMatrixMap<typename ArrayType::value_type>,
+    typename std::conditional<ArrayType::frame_type::count() == 1,
+      EigenVectorMap<typename ArrayType::value_type>,
+    void>::type>::type;
+};
+
+template<class ArrayType>
+struct eigen_stride_type {
+  using type = typename std::conditional<ArrayType::frame_type::count() == 2,
+      EigenMatrixStride,
+    typename std::conditional<ArrayType::frame_type::count() == 1,
+      EigenVectorStride,
+    void>::type>::type;
+};
+
+/*
+ * Eigen and array type compatibility checks.
+ */
+template<class ArrayType, class EigenType>
+struct is_eigen_compatible {
+  static const bool value =
+      std::is_same<typename ArrayType::value_type,typename EigenType::value_type>::value &&
+          ((ArrayType::frame_type::count() == 1 && EigenType::ColsAtCompileTime == 1) ||
+           (ArrayType::frame_type::count() == 2 && EigenType::ColsAtCompileTime == Eigen::Dynamic));
+};
+
+template<class ArrayType, class EigenType>
+struct is_diagonal_compatible {
+  static const bool value =
+      std::is_same<typename ArrayType::value_type,typename EigenType::value_type>::value &&
+          ArrayType::frame_type::count() == 2 && EigenType::ColsAtCompileTime == 1;
+};
+
+template<class ArrayType, class EigenType>
+struct is_triangle_compatible {
+  static const bool value =
+      std::is_same<typename ArrayType::value_type,typename EigenType::value_type>::value &&
+          ArrayType::frame_type::count() == 2 && EigenType::ColsAtCompileTime == Eigen::Dynamic;
+};
 }
 
 namespace bi {
   namespace type {
-
 using LLT = Eigen::LLT<libbirch::EigenMatrix<Real64>>;
-
   }
 }
