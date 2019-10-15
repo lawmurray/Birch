@@ -29,10 +29,10 @@ template<class T>
 class Optional<T,IS_POINTER(T)> {
   template<class T1, class Enable1> friend class Optional;
 public:
-  Optional(const Optional& o) = default;
-  Optional(Optional&& o) = default;
-  Optional& operator=(const Optional& o) = delete;
-  Optional& operator=(Optional&& o) = delete;
+  Optional(const Optional&) = default;
+  Optional(Optional&&) = default;
+  Optional& operator=(const Optional&) = delete;
+  Optional& operator=(Optional&&) = delete;
 
   /**
    * Constructor.

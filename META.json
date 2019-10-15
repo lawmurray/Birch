@@ -299,7 +299,6 @@
       "libbirch/InitPtr.hpp",
       "libbirch/Iterator.hpp",
       "libbirch/Label.hpp",
-      "libbirch/LabelPtr.hpp",
       "libbirch/LazyAny.hpp",
       "libbirch/LazyLabel.hpp",
       "libbirch/LazyMemo.hpp",

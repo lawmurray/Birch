@@ -7,7 +7,6 @@
 #include "libbirch/LazyAny.hpp"
 #include "libbirch/LazyLabel.hpp"
 #include "libbirch/Nil.hpp"
-#include "libbirch/LabelPtr.hpp"
 #include "libbirch/thread.hpp"
 
 namespace libbirch {
@@ -24,28 +23,27 @@ class LazyPtr {
 public:
   using value_type = typename P::value_type;
 
+  LazyPtr& operator=(const LazyPtr&) = delete;
+  LazyPtr& operator=(LazyPtr&&) = delete;
+
   /**
    * Constructor.
    */
-  LazyPtr(const Nil& = nil){
+  LazyPtr(const Nil& = nil) :
+    object(),
+    label(0),
+    cross(false) {
     //
   }
 
   /**
    * Constructor.
    */
-  LazyPtr(Label* label, value_type* object) :
-      label(object ? label : nullptr),
-      object(object) {
-    //
-  }
-
-  /**
-   * Constructor.
-   */
-  LazyPtr(Label* label, const P& object) :
-      label(object ? label : nullptr),
-      object(object) {
+  template<class Q>
+  LazyPtr(Label* context, const Q& object) :
+      object(object),
+      label(reinterpret_cast<intptr_t>(context)),
+      cross(false) {
     //
   }
 
@@ -54,99 +52,128 @@ public:
    */
   template<class... Args>
   LazyPtr(Label* context, Args... args) :
-      label(context),
-      object(new value_type(context, args...)) {
+      object(new value_type(context, args...)),
+      label(reinterpret_cast<intptr_t>(context)),
+      cross(false) {
     //
+  }
+
+  /**
+   * Copy constructor.
+   */
+  template<class Q>
+  LazyPtr(Label* context, const LazyPtr<Q>& o) :
+      object(o.get()),
+      label(0),
+      cross(false) {
+    if (object) {
+      setLabel(o.getLabel(), o.getLabel() != context);
+    }
+  }
+
+  /**
+   * Move constructor.
+   */
+  template<class Q>
+  LazyPtr(Label* context, LazyPtr<Q>&& o) :
+      object(std::move(o.object)),
+      label(0),
+      cross(false) {
+    if (object) {
+      setLabel(o.getLabel(), o.getLabel() != context);
+    }
   }
 
   /**
    * Deep copy constructor.
    */
-  LazyPtr(Label* label, const LazyPtr<P>& o) :
-      label(label),
-      object() {
+  LazyPtr(Label* context, Label* label, const LazyPtr<P>& o) :
+      object(),
+      label(0),
+      cross(false) {
+    assert(context == label);
     if (o.object) {
       if (o.isCross()) {
         o.finish();
         o.freeze();
       }
       object = o.object;
+      setLabel(label, false);
     }
   }
 
   /**
    * Copy constructor.
    */
-  LazyPtr<P>(const LazyPtr<P>& o) :
+  LazyPtr(const LazyPtr<P>& o) :
+      object(o.object),
       label(o.label),
-      object(o.get()) {
-    //
-  }
-
-  /**
-   * Generic copy constructor.
-   */
-  template<class Q, typename = std::enable_if_t<std::is_base_of<value_type,
-      typename Q::value_type>::value>>
-  LazyPtr<P>(const LazyPtr<Q>& o) :
-      label(o.label),
-      object(o.get()) {
+      cross(false) {
     //
   }
 
   /**
    * Move constructor.
    */
-  LazyPtr<P>(LazyPtr<P>&& o) :
-      label(std::move(o.label)),
-      object(std::move(o.get())) {
+  LazyPtr(LazyPtr<P>&& o) :
+      object(std::move(o.object)),
+      label(o.label),
+      cross(false) {
     //
   }
 
   /**
-   * Generic move constructor.
+   * Copy constructor.
    */
-  template<class Q, typename = std::enable_if_t<std::is_base_of<value_type,
-      typename Q::value_type>::value>>
-  LazyPtr<P>(LazyPtr<Q>&& o) :
-      label(std::move(o.label)),
-      object(std::move(o.get())) {
+  template<class Q>
+  LazyPtr(const LazyPtr<Q>& o) :
+      object(o.object),
+      label(o.label),
+      cross(false) {
     //
+  }
+
+  /**
+   * Move constructor.
+   */
+  template<class Q>
+  LazyPtr(LazyPtr<Q>&& o) :
+      object(std::move(o.object)),
+      label(o.label),
+      cross(false) {
+    //
+  }
+
+  /**
+   * Destructor.
+   */
+  ~LazyPtr() {
+    releaseLabel();
   }
 
   /**
    * Copy assignment.
    */
-  LazyPtr<P>& operator=(const LazyPtr<P>& o) {
-    label = o.label;
+  LazyPtr& assign(Label* context, const LazyPtr<P>& o) {
     object = o.get();
+    if (object) {
+      replaceLabel(o.getLabel(), o.getLabel() != context);
+    } else {
+      releaseLabel();
+    }
     return *this;
   }
 
   /**
    * Move assignment.
    */
-  LazyPtr<P>& operator=(LazyPtr<P>&& o) {
-    label = std::move(o.label);
+  LazyPtr& assign(Label* context, LazyPtr<P>&& o) {
     object = std::move(o.get());
-    return *this;
-  }
-
-  /**
-   * Nil assignment.
-   */
-  LazyPtr<P>& operator=(const Nil&) {
-    object.release();
-    label.release();
-    return *this;
-  }
-
-  /**
-   * Nullptr assignment.
-   */
-  LazyPtr<P>& operator=(const std::nullptr_t&) {
-    object.release();
-    label.release();
+    if (object) {
+      replaceLabel(o.getLabel(), o.getLabel() != context);
+    } else {
+      releaseLabel();
+    }
     return *this;
   }
 
@@ -154,7 +181,7 @@ public:
    * Value assignment.
    */
   template<class U, typename = std::enable_if_t<is_value<U>::value>>
-  LazyPtr<P>& operator=(const U& o) {
+  LazyPtr<P>& assign(const U& o) {
     *get() = o;
     return *this;
   }
@@ -180,7 +207,7 @@ public:
   auto& get() {
     auto raw = object.get();
     if (raw && raw->isFrozen()) {
-      raw = static_cast<value_type*>(label->get(raw));
+      raw = static_cast<value_type*>(getLabel()->get(raw));
       object.replace(raw);
     }
     return object;
@@ -199,7 +226,7 @@ public:
   auto& pull() {
     auto raw = object.get();
     if (raw && raw->isFrozen()) {
-      raw = static_cast<value_type*>(label->pull(raw));
+      raw = static_cast<value_type*>(getLabel()->pull(raw));
       object.replace(raw);
     }
     return object;
@@ -215,11 +242,11 @@ public:
   /**
    * Start lazy deep clone.
    */
-  LazyPtr<P> clone() const {
+  LazyPtr<P> clone(Label* context) const {
     assert(object);
     pull();
     startFreeze();
-    return LazyPtr<P>(object->getLabel()->fork(), object);
+    return LazyPtr<P>(context, getLabel()->fork(), object);
   }
 
   /**
@@ -248,7 +275,7 @@ public:
   void freeze() {
     if (object) {
       object->freeze();
-      label->freeze();
+      getLabel()->freeze();
     }
   }
 
@@ -317,13 +344,6 @@ public:
   }
 
   /**
-   * Does this pointer result from a cross copy?
-   */
-  bool isCross() const {
-    return label.isCross();
-  }
-
-  /**
    * Dereference.
    */
   auto operator*() const {
@@ -359,7 +379,7 @@ public:
   template<class U>
   auto dynamic_pointer_cast() const {
     auto cast = object.template dynamic_pointer_cast<U>();
-    return LazyPtr<decltype(cast)>(label.get(), cast);
+    return LazyPtr<decltype(cast)>(getLabel(), getLabel(), cast);
   }
 
   /**
@@ -368,19 +388,84 @@ public:
   template<class U>
   auto static_pointer_cast() const {
     auto cast = object.template static_pointer_cast<U>();
-    return LazyPtr<decltype(cast)>(label.get(), cast);
+    return LazyPtr<decltype(cast)>(getLabel(), getLabel(), cast);
   }
 
 private:
   /**
-   * Label of the object.
+   * Get the label.
    */
-  LabelPtr label;
+  Label* getLabel() const {
+    return reinterpret_cast<Label*>(this->label);
+  }
+
+  /**
+   * Is this pointer crossed? A crossed pointer is to a context different to
+   * that of the context in which it was created (e.g. the context of the
+   * object to which it belongs).
+   */
+  bool isCross() const {
+    return cross;
+  }
+
+  /**
+   * Set the label.
+   */
+  void setLabel(Label* label, bool cross) {
+    assert(this->label == 0);
+    assert(!this->cross);
+    this->label = reinterpret_cast<intptr_t>(label);
+    this->cross = cross;
+    if (label && cross) {
+      label->incShared();
+    }
+  }
+
+  /**
+   * Replace the label.
+   */
+  void replaceLabel(Label* label, bool cross) {
+    auto oldLabel = this->getLabel();
+    auto oldCross = this->isCross();
+    this->label = reinterpret_cast<intptr_t>(label);
+    this->cross = cross;
+    if (label && cross) {
+      label->incShared();
+    }
+    if (oldLabel && oldCross) {
+      oldLabel->decShared();
+    }
+  }
+
+  /**
+   * Release the label.
+   */
+  void releaseLabel() {
+    auto label = getLabel();
+    auto cross = isCross();
+    if (label && cross) {
+      label->decShared();
+    }
+    this->label = 0;
+    this->cross = false;
+  }
 
   /**
    * Object.
    */
   P object;
+
+  /**
+   * Raw pointer.
+   */
+  intptr_t label:63;
+
+  /**
+   * Is this pointer crossed? A crossed pointer is to a context different to
+   * that of the context in which it was created (e.g. the context of the
+   * object to which it belongs).
+   */
+  bool cross:1;
 };
 }
 
