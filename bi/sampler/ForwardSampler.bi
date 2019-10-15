@@ -11,12 +11,7 @@ class ForwardSampler < Sampler {
    * Number of steps.
    */
   T:Integer <- 1;
-  
-  /**
-  * Offset.
-  */
-  offset:Integer <- 0;
-  
+    
   function setArchetype(archetype:Model) {
     this.archetype <-? ForwardModel?(archetype);
     if !this.archetype? {
@@ -28,13 +23,10 @@ class ForwardSampler < Sampler {
   function read(buffer:Buffer) {
     super.read(buffer);
     T <-? buffer.get("nsteps", T);
-    offset <-? buffer.get("offset", offset);
-
   }
 
   function write(buffer:Buffer) {
     super.write(buffer);
     buffer.set("nsteps", T);
-    buffer.set("offset", offset);    
   }
 }
