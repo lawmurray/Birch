@@ -36,6 +36,11 @@ protected:
    */
   std::string getName(const std::string& name, const int number);
 
+  /**
+   * The yield type of the fiber being generated.
+   */
+  const Type* yieldType;
+
   /*
    * Gatherers for important objects.
    */

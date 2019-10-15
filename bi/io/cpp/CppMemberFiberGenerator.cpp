@@ -15,6 +15,8 @@ bi::CppMemberFiberGenerator::CppMemberFiberGenerator(const Class* type,
 }
 
 void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
+  yieldType = o->returnType->unwrap();
+
   /* generate a unique name (within this scope) for the state of the fiber */
   std::stringstream base;
   bih_ostream buf(base);
@@ -30,11 +32,11 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   /* supporting class for state */
   if (header) {
     start("class " << stateName << " final : ");
-    finish("public libbirch::FiberState<" << o->returnType->unwrap() << "> {");
+    finish("public libbirch::FiberState<" << yieldType << "> {");
     line("public:");
     in();
     line("using class_type_ = " << stateName << ';');
-    line("using super_type_ = libbirch::FiberState<" << o->returnType->unwrap() << ">;\n");
+    line("using super_type_ = libbirch::FiberState<" << yieldType << ">;\n");
     start("libbirch::Shared<bi::type::" << type->name);
     genTemplateArgs(type);
     finish("> self;");
@@ -175,7 +177,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     genTemplateArgs(type);
     middle("::" << stateName << "::");
   }
-  middle("doThaw_(libbirch::LazyLabel* label_)");
+  middle("doThaw_(libbirch::Label* label_)");
   if (header) {
     finish(';');
   } else {

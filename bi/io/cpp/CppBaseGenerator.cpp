@@ -15,7 +15,6 @@ bi::CppBaseGenerator::CppBaseGenerator(std::ostream& base, const int level,
     indentable_ostream(base, level),
     header(header),
     inAssign(0),
-    inPointer(0),
     inConstructor(0),
     inLambda(0) {
   //
@@ -75,7 +74,6 @@ void bi::CppBaseGenerator::visit(const Sequence* o) {
 
 void bi::CppBaseGenerator::visit(const Cast* o) {
   if (o->returnType->isClass()) {
-    ++inPointer;
     middle("libbirch::dynamic_pointer_cast<" << o->returnType << '>');
   } else {
     middle("libbirch::check_cast<" << o->returnType << '>');
@@ -526,7 +524,6 @@ void bi::CppBaseGenerator::visit(const Program* o) {
         if (!param->value->isEmpty()) {
           middle(" = " << param->value);
         } else if (param->type->isClass()) {
-          ++inPointer;
           middle(" = libbirch::make_object<" << param->type << ">(context_)");
         }
         finish(';');
@@ -856,23 +853,16 @@ void bi::CppBaseGenerator::visit(const OptionalType* o) {
 }
 
 void bi::CppBaseGenerator::visit(const ClassType* o) {
-  int inPointer1 = inPointer;
-  if (!inPointer1) {
-    if (o->weak) {
-      middle("libbirch::Weak<");
-    } else {
-      middle("libbirch::Shared<");
-    }
+  if (o->weak) {
+    middle("libbirch::Weak<");
   } else {
-    --inPointer;
+    middle("libbirch::Shared<");
   }
   middle("bi::type::" << o->name);
   if (!o->typeArgs->isEmpty()) {
     middle('<' << o->typeArgs << '>');
   }
-  if (!inPointer1) {
-    middle('>');
-  }
+  middle('>');
 }
 
 void bi::CppBaseGenerator::visit(const BasicType* o) {

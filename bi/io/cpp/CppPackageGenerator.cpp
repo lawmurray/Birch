@@ -117,7 +117,6 @@ void bi::CppPackageGenerator::visit(const Package* o) {
     for (auto o : classes) {
       if (o->isAlias()) {
         genTemplateParams(o);
-        ++inPointer;
         line("using " << o->name << " = " << o->base << ';');
       }
     }

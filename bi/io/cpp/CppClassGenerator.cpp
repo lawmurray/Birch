@@ -16,6 +16,8 @@ bi::CppClassGenerator::CppClassGenerator(std::ostream& base, const int level,
 void bi::CppClassGenerator::visit(const Class* o) {
   if (!o->isAlias() && o->isBound() && !o->braces->isEmpty()) {
     type = o;
+    auto super = dynamic_cast<const ClassType*>(o->base->canonical());
+    assert(o->base->isEmpty() || super);
 
     Gatherer<MemberFunction> memberFunctions;
     Gatherer<MemberFiber> memberFibers;
@@ -34,12 +36,12 @@ void bi::CppClassGenerator::visit(const Class* o) {
       if (o->has(FINAL)) {
         middle(" final");
       }
-      if (o->isBound() && !o->base->isEmpty()) {
-        middle(" : public ");
-        ++inPointer;
-        middle(o->base);
-      }
-      if (o->base->isEmpty()) {
+      if (!o->base->isEmpty()) {
+        middle(" : public " << super->name);
+        if (!super->typeArgs->isEmpty()) {
+          middle('<' << super->typeArgs << '>');
+        }
+      } else {
         middle(" : public libbirch::Any");
       }
       finish(" {");
@@ -53,8 +55,12 @@ void bi::CppClassGenerator::visit(const Class* o) {
         if (o->base->isEmpty()) {
           line("using super_type_ = libbirch::Any;");
         } else {
-          ++inPointer;
-          line("using super_type_ = " << o->base << ';');
+
+          line("using super_type_ = " << super->name);
+          if (!super->typeArgs->isEmpty()) {
+            middle('<' << super->typeArgs << '>');
+          }
+          middle(';');
         }
         line("");
         line("using super_type_::operator=;");
@@ -88,7 +94,7 @@ void bi::CppClassGenerator::visit(const Class* o) {
     } else {
       start("");
     }
-    middle(o->name << "(libbirch::LazyLabel* context_");
+    middle(o->name << "(libbirch::Label* context_");
     if (!o->params->isEmpty()) {
       CppBaseGenerator aux(base, level, header);
       aux << ", " << o->params;
@@ -112,7 +118,6 @@ void bi::CppClassGenerator::visit(const Class* o) {
           start(o->name << '(' << o->value << ')');
         } else if (o->type->isClass()) {
           finish(',');
-          ++inPointer;
           start(o->name << "(libbirch::make_object<" << o->type << ">(context_");
           if (!o->args->isEmpty()) {
             middle(", " << o->args);
@@ -224,7 +229,7 @@ void bi::CppClassGenerator::visit(const Class* o) {
       genTemplateArgs(o);
       middle("::");
     }
-    middle("doThaw_(libbirch::LazyLabel* label_)");
+    middle("doThaw_(libbirch::Label* label_)");
     if (header) {
       finish(';');
     } else {
@@ -273,7 +278,7 @@ void bi::CppClassGenerator::visit(const Class* o) {
         if (var->type->isValue()) {
           middle(" = o_");
         } else {
-          middle(".assign(getLabel(), o_)");
+          middle(".assign(this->getLabel(), o_)");
         }
         finish(';');
         out();

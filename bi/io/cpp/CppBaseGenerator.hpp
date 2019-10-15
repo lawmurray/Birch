@@ -158,11 +158,6 @@ protected:
   int inAssign;
 
   /**
-   * Are we inside custom pointer code?
-   */
-  int inPointer;
-
-  /**
    * Are we inside a constructor?
    */
   int inConstructor;
@@ -206,19 +201,18 @@ void bi::CppBaseGenerator::genInit(const T* o) {
     } else if (!o->value->isEmpty()) {
       middle(" = " << o->value);
     }
-  } else if (o->type->isClass() || o->type->isWeak()) {
+  } else if (o->type->isValue()) {
     if (!o->value->isEmpty()) {
       middle(" = " << o->value);
-    } else if (!o->type->isWeak()) {
-      ++inPointer;
-      middle(" = libbirch::make_object<" << o->type << ">(context_");
-      if (!o->args->isEmpty()) {
-        middle(", " << o->args);
-      }
-      middle(')');
     }
-  } else if (!o->value->isEmpty()) {
-    middle(" = " << o->value);
+  } else {
+    middle("(context_");
+    if (!o->value->isEmpty()) {
+      middle(", " << o->value);
+    } else if (!o->args->isEmpty()) {
+      middle(", " << o->args);
+    }
+    middle(')');
   }
 }
 

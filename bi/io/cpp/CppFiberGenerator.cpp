@@ -16,6 +16,8 @@ bi::CppFiberGenerator::CppFiberGenerator(std::ostream& base, const int level,
 }
 
 void bi::CppFiberGenerator::visit(const Fiber* o) {
+  yieldType = o->returnType->unwrap();
+
   /* generate a unique name (within this scope) for the state of the fiber */
   std::stringstream base;
   bih_ostream buf(base);
@@ -32,11 +34,11 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
     /* supporting class for state */
     if (header) {
       start("class " << stateName << " final : ");
-      finish("public libbirch::FiberState<" << o->returnType->unwrap() << "> {");
+      finish("public libbirch::FiberState<" << yieldType << "> {");
       line("public:");
       in();
       line("using class_type_ = " << stateName << ';');
-      line("using super_type_ = libbirch::FiberState<" << o->returnType->unwrap() << ">;\n");
+      line("using super_type_ = libbirch::FiberState<" << yieldType << ">;\n");
       for (auto param : params) {
         line(param->type << ' ' << param->name << ';');
       }
@@ -155,7 +157,7 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
     } else {
       start("void bi::" << stateName << "::");
     }
-    middle("doThaw_(libbirch::LazyLabel* label_)");
+    middle("doThaw_(libbirch::Label* label_)");
     if (header) {
       finish(';');
     } else {
@@ -275,7 +277,12 @@ void bi::CppFiberGenerator::visit(const Return* o) {
 
 void bi::CppFiberGenerator::visit(const Yield* o) {
   genTraceLine(o->loc->firstLine);
-  line("local->value_ = " << o->single << ';');
+  start("local->value_");
+  if (yieldType->isValue()) {
+    finish(" = " << o->single << ';');
+  } else {
+    finish(".assign(context_, " << o->single << ");");
+  }
   line("local->point_ = " << point << ';');
   line("return true;");
   line("POINT" << point << "_: ;");
@@ -294,19 +301,33 @@ void bi::CppFiberGenerator::visit(const Identifier<LocalVariable>* o) {
 }
 
 void bi::CppFiberGenerator::visit(const LocalVariable* o) {
-  if (inFor || !o->value->isEmpty() || !o->args->isEmpty()
-      || !o->brackets->isEmpty()) {
-    /* the variable is declared in the fiber state, so there is no need to
-     * do anything here unless there is some initialization associated with
-     * it */
+  auto name = getName(o->name->str(), o->number);
+  if (inFor) {
     inFor = false;
-    middle("local->" << getName(o->name->str(), o->number));
-    genInit(o);
-  } else if (o->type->isClass()) {
-    /* make sure objects are initialized, not just null pointers */
-    auto name = getName(o->name->str(), o->number);
-    ++inPointer;
-    middle("local->" << name << " = libbirch::make_object<" << o->type << ">(context_)");
+    middle("local->" << name);
+  } else {
+    if (o->type->isValue()) {
+      if (!o->value->isEmpty()) {
+        middle("local->" << name << " = " << o->value);
+      } else if (!o->brackets->isEmpty()) {
+        middle("local->" << name << ".assign(");
+        middle(o->type << "(" << o->brackets << "))");
+      }
+    } else {
+      if (!o->value->isEmpty()) {
+        middle("local->" << name << ".assign(context_, ");
+        middle(o->type << "(context_, " << o->value << "))");
+      } else if (!o->args->isEmpty()) {
+        middle("local->" << name << ".assign(context_, ");
+        middle(o->type << "(context_, " << o->args << "))");
+      } else if (!o->brackets->isEmpty()) {
+        middle("local->" << name << ".assign(context_, ");
+        middle(o->type << "(context_, " << o->brackets << "))");
+      } else if (o->type->isClass()) {
+        middle("local->" << name << ".assign(context_, ");
+        middle(o->type << "(context_))");
+      }
+    }
   }
 }
 
