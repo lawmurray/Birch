@@ -313,7 +313,6 @@
       "libbirch/Pool.hpp",
       "libbirch/Range.hpp",
       "libbirch/ReaderWriterLock.hpp",
-      "libbirch/Sequence.hpp",
       "libbirch/Shared.hpp",
       "libbirch/SharedPtr.hpp",
       "libbirch/Span.hpp",

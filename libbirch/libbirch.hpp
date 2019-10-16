@@ -21,7 +21,6 @@
 #include "libbirch/Frame.hpp"
 #include "libbirch/View.hpp"
 #include "libbirch/Array.hpp"
-#include "libbirch/Sequence.hpp"
 #include "libbirch/Tuple.hpp"
 #include "libbirch/Any.hpp"
 #include "libbirch/Optional.hpp"
