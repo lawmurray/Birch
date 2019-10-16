@@ -108,7 +108,7 @@ auto make_frame(const int64_t arg, Args ... args) {
  * @ingroup libbirch
  */
 template<class Frame>
-auto make_frame(const int64_t head, const Frame& tail) {
+auto make_frame(const int64_t arg, const Frame& tail) {
   auto head = Span<>(arg, tail.volume());
   return NonemptyFrame<decltype(head),decltype(tail)>(head, tail);
 }
