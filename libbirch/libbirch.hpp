@@ -103,6 +103,17 @@ auto make_frame(const int64_t arg, Args ... args) {
 }
 
 /**
+ * Make a frame, recursively.
+ *
+ * @ingroup libbirch
+ */
+template<class Frame>
+auto make_frame(const int64_t head, const Frame& tail) {
+  auto head = Span<>(arg, tail.volume());
+  return NonemptyFrame<decltype(head),decltype(tail)>(head, tail);
+}
+
+/**
  * Make a view, no arguments.
  *
  * @ingroup libbirch
