@@ -13,30 +13,30 @@ namespace libbirch {
  * @ingroup libbirch
  */
 template<class Head, class Enable = void, class... Tail>
-class Tuple {
+class TupleBase {
   //
 };
 
 /**
- * Tuple with a value head type.
+ * TupleBase with a value head type.
  *
  * @tparam Head Head type.
  * @tparam Tail Tail types.
  */
 template<class Head, class ...Tail>
-class Tuple<Head,IS_VALUE(Head),Tail...> {
-  template<class Head1, class Enable1, class... Tail1> friend class Tuple;
+class TupleBase<Head,IS_VALUE(Head),Tail...> {
+  template<class Head1, class Enable1, class... Tail1> friend class TupleBase;
 public:
-  Tuple() = default;
-  Tuple(const Tuple&) = default;
-  Tuple(Tuple&&) = default;
-  Tuple& operator=(const Tuple&) = delete;
-  Tuple& operator=(Tuple&&) = delete;
+  TupleBase() = default;
+  TupleBase(const TupleBase&) = default;
+  TupleBase(TupleBase&&) = default;
+  TupleBase& operator=(const TupleBase&) = delete;
+  TupleBase& operator=(TupleBase&&) = delete;
 
   /**
    * Constructor.
    */
-  Tuple(Head& head, Tail&... tail) :
+  TupleBase(Head head, Tail... tail) :
       head(std::forward(head)),
       tail(std::forward(tail...)) {
     //
@@ -45,7 +45,7 @@ public:
   /**
    * Constructor.
    */
-  Tuple(Label* context, Head& head, Tail& ... tail) :
+  TupleBase(Label* context, Head head, Tail... tail) :
       head(std::forward(head)),
       tail(context, std::forward(tail...)) {
     //
@@ -54,7 +54,7 @@ public:
   /**
    * Copy constructor.
    */
-  Tuple(Label* context, const Tuple& o) :
+  TupleBase(Label* context, const TupleBase& o) :
       head(o.head),
       tail(context, o.tail) {
     //
@@ -63,7 +63,7 @@ public:
   /**
    * Move constructor.
    */
-  Tuple(Label* context, Tuple&& o) :
+  TupleBase(Label* context, TupleBase&& o) :
       head(std::move(o.head)),
       tail(context, std::move(o.tail)) {
     //
@@ -72,7 +72,7 @@ public:
   /**
    * Deep copy constructor.
    */
-  Tuple(Label* context, Label* label, const Tuple& o) :
+  TupleBase(Label* context, Label* label, const TupleBase& o) :
       head(o.head),
       tail(context, label, o.tail) {
     //
@@ -82,7 +82,7 @@ public:
    * Copy assignment.
    */
   template<class Head1, class ... Tail1>
-  Tuple& assign(Label* context, const Tuple<Head1,Tail1...>& o) {
+  TupleBase& assign(Label* context, const TupleBase<Head1,Tail1...>& o) {
     head = o.head;
     tail.assign(context, o.tail);
     return *this;
@@ -92,7 +92,7 @@ public:
    * Move assignment.
    */
   template<class Head1, class ... Tail1>
-  Tuple& assign(Label* context, Tuple<Head1,Tail1...>&& o) {
+  TupleBase& assign(Label* context, TupleBase<Head1,Tail1...>&& o) {
     head = std::move(o.head);
     tail.assign(context, std::move(o.tail));
     return *this;
@@ -119,29 +119,29 @@ private:
   /**
    * Remaining elements.
    */
-  Tuple<Tail...> tail;
+  TupleBase<Tail...> tail;
 };
 
 /**
- * Tuple with a non-value head type.
+ * TupleBase with a non-value head type.
  *
  * @tparam Head Head type.
  * @tparam Tail Tail types.
  */
 template<class Head, class ...Tail>
-class Tuple<Head,IS_NOT_VALUE(Head),Tail...> {
-  template<class Head1, class Enable1, class... Tail1> friend class Tuple;
+class TupleBase<Head,IS_NOT_VALUE(Head),Tail...> {
+  template<class Head1, class Enable1, class... Tail1> friend class TupleBase;
 public:
-  Tuple() = default;
-  Tuple(const Tuple&) = default;
-  Tuple(Tuple&&) = default;
-  Tuple& operator=(const Tuple&) = delete;
-  Tuple& operator=(Tuple&&) = delete;
+  TupleBase() = default;
+  TupleBase(const TupleBase&) = default;
+  TupleBase(TupleBase&&) = default;
+  TupleBase& operator=(const TupleBase&) = delete;
+  TupleBase& operator=(TupleBase&&) = delete;
 
   /**
    * Constructor.
    */
-  Tuple(Label* context, Head& head, Tail&... tail) :
+  TupleBase(Label* context, Head head, Tail... tail) :
       head(context, std::forward(head)),
       tail(context, std::forward(tail...)) {
     //
@@ -150,7 +150,7 @@ public:
   /**
    * Copy constructor.
    */
-  Tuple(Label* context, const Tuple& o) :
+  TupleBase(Label* context, const TupleBase& o) :
       head(context, o.head),
       tail(context, o.tail) {
     //
@@ -159,7 +159,7 @@ public:
   /**
    * Move constructor.
    */
-  Tuple(Label* context, Tuple&& o) :
+  TupleBase(Label* context, TupleBase&& o) :
       head(context, std::move(o.head)),
       tail(context, std::move(o.tail)) {
     //
@@ -168,7 +168,7 @@ public:
   /**
    * Deep copy constructor.
    */
-  Tuple(Label* context, Label* label, const Tuple& o) :
+  TupleBase(Label* context, Label* label, const TupleBase& o) :
       head(context, label, o.head),
       tail(context, label, o.tail) {
     //
@@ -178,7 +178,7 @@ public:
    * Copy assignment.
    */
   template<class Head1, class ... Tail1>
-  Tuple& assign(Label* context, const Tuple<Head1,Tail1...>& o) {
+  TupleBase& assign(Label* context, const TupleBase<Head1,Tail1...>& o) {
     head.assign(context, o.head);
     tail.assign(context, o.tail);
     return *this;
@@ -188,7 +188,7 @@ public:
    * Move assignment.
    */
   template<class Head1, class ... Tail1>
-  Tuple& assign(Label* context, Tuple<Head1,Tail1...>&& o) {
+  TupleBase& assign(Label* context, TupleBase<Head1,Tail1...>&& o) {
     head.assign(context, std::move(o.head));
     tail.assign(context, std::move(o.tail));
     return *this;
@@ -218,28 +218,28 @@ private:
   /**
    * Remaining elements.
    */
-  Tuple<Tail...> tail;
+  TupleBase<Tail...> tail;
 };
 
 /**
- * Tuple with a value head type, and no tail.
+ * TupleBase with a value head type, and no tail.
  *
  * @param Head Value type.
  */
 template<class Head>
-class Tuple<Head,IS_VALUE(Head)> {
-  template<class Head1, class Enable1, class... Tail1> friend class Tuple;
+class TupleBase<Head,IS_VALUE(Head)> {
+  template<class Head1, class Enable1, class... Tail1> friend class TupleBase;
 public:
-  Tuple() = default;
-  Tuple(const Tuple&) = default;
-  Tuple(Tuple&&) = default;
-  Tuple& operator=(const Tuple&) = default;
-  Tuple& operator=(Tuple&&) = default;
+  TupleBase() = default;
+  TupleBase(const TupleBase&) = default;
+  TupleBase(TupleBase&&) = default;
+  TupleBase& operator=(const TupleBase&) = default;
+  TupleBase& operator=(TupleBase&&) = default;
 
   /**
    * Constructor.
    */
-  Tuple(Head& head) :
+  TupleBase(Head head) :
       head(std::forward(head)) {
     //
   }
@@ -247,7 +247,7 @@ public:
   /**
    * Constructor.
    */
-  Tuple(Label* context, Head& head) :
+  TupleBase(Label* context, Head head) :
       head(std::forward(head)) {
     //
   }
@@ -255,7 +255,7 @@ public:
   /**
    * Copy constructor.
    */
-  Tuple(Label* context, const Tuple& o) :
+  TupleBase(Label* context, const TupleBase& o) :
       head(o.head) {
     //
   }
@@ -263,7 +263,7 @@ public:
   /**
    * Move constructor.
    */
-  Tuple(Label* context, Tuple&& o) :
+  TupleBase(Label* context, TupleBase&& o) :
       head(std::move(o.head)) {
     //
   }
@@ -271,7 +271,7 @@ public:
   /**
    * Deep copy constructor.
    */
-  Tuple(Label* context, Label* label, const Tuple& o) :
+  TupleBase(Label* context, Label* label, const TupleBase& o) :
       head(o.head) {
     //
   }
@@ -280,7 +280,7 @@ public:
    * Copy assignment.
    */
   template<class Head1>
-  Tuple& assign(Label* context, const Tuple<Head1>& o) {
+  TupleBase& assign(Label* context, const TupleBase<Head1>& o) {
     head = o.head;
     return *this;
   }
@@ -289,7 +289,7 @@ public:
    * Move assignment.
    */
   template<class Head1>
-  Tuple& assign(Label* context, Tuple<Head1>&& o) {
+  TupleBase& assign(Label* context, TupleBase<Head1>&& o) {
     head = std::move(o.head);
     return *this;
   }
@@ -314,24 +314,24 @@ private:
 };
 
 /**
- * Tuple with a non-value head type, and no tail.
+ * TupleBase with a non-value head type, and no tail.
  *
  * @param Head Value type.
  */
 template<class Head>
-class Tuple<Head,IS_NOT_VALUE(Head)> {
-  template<class Head1, class Enable1, class... Tail1> friend class Tuple;
+class TupleBase<Head,IS_NOT_VALUE(Head)> {
+  template<class Head1, class Enable1, class... Tail1> friend class TupleBase;
 public:
-  Tuple() = default;
-  Tuple(const Tuple&) = default;
-  Tuple(Tuple&&) = default;
-  Tuple& operator=(const Tuple&) = delete;
-  Tuple& operator=(Tuple&&) = delete;
+  TupleBase() = default;
+  TupleBase(const TupleBase&) = default;
+  TupleBase(TupleBase&&) = default;
+  TupleBase& operator=(const TupleBase&) = delete;
+  TupleBase& operator=(TupleBase&&) = delete;
 
   /**
    * Constructor.
    */
-  Tuple(Label* context, Head& head) :
+  TupleBase(Label* context, Head head) :
       head(context, std::forward(head)) {
     //
   }
@@ -339,7 +339,7 @@ public:
   /**
    * Copy constructor.
    */
-  Tuple(Label* context, const Tuple& o) :
+  TupleBase(Label* context, const TupleBase& o) :
       head(context, o.head) {
     //
   }
@@ -347,7 +347,7 @@ public:
   /**
    * Move constructor.
    */
-  Tuple(Label* context, Tuple&& o) :
+  TupleBase(Label* context, TupleBase&& o) :
       head(context, std::move(o.head)) {
     //
   }
@@ -355,7 +355,7 @@ public:
   /**
    * Deep copy constructor.
    */
-  Tuple(Label* context, Label* label, const Tuple& o) :
+  TupleBase(Label* context, Label* label, const TupleBase& o) :
       head(context, label, o.head) {
     //
   }
@@ -364,7 +364,7 @@ public:
    * Copy assignment.
    */
   template<class Head1>
-  Tuple& assign(Label* context, const Tuple<Head1>& o) {
+  TupleBase& assign(Label* context, const TupleBase<Head1>& o) {
     head.assign(context, o.head);
     return *this;
   }
@@ -373,7 +373,7 @@ public:
    * Move assignment.
    */
   template<class Head1>
-  Tuple& assign(Label* context, Tuple<Head1>&& o) {
+  TupleBase& assign(Label* context, TupleBase<Head1>&& o) {
     head.assign(context, std::move(o.head));
     return *this;
   }
@@ -397,6 +397,10 @@ private:
   Head head;
 };
 
+
+template<class Head, class... Tail>
+using Tuple = TupleBase<Head,void,Tail...>;
+
 template<class Head>
 struct is_value<Tuple<Head>> {
   static const bool value = is_value<Head>::value;
@@ -404,22 +408,7 @@ struct is_value<Tuple<Head>> {
 
 template<class Head, class ... Tail>
 struct is_value<Tuple<Head,Tail...>> {
-  static const bool value = is_value<Head>::value && is_value<Tuple<Tail...>>::value;
+  static const bool value = is_value<Head>::value && is_value<TupleBase<Tail...>>::value;
 };
-
-template<class... Tail>
-void freeze(Tuple<Tail...>& o) {
-  o.freeze();
-}
-
-template<class... Tail>
-void thaw(Tuple<Tail...>& o, LazyLabel* label) {
-  o.thaw(label);
-}
-
-template<class... Tail>
-void finish(Tuple<Tail...>& o) {
-  o.finish();
-}
 
 }

@@ -266,51 +266,57 @@ auto make_fiber(Label* context, Args ... args) {
 /**
  * Make a tuple.
  *
- * @tparam Args Argument types.
+ * @tparam Head First element type.
+ * @tparam Tail Remaining element types.
  *
- * @param args Arguments.
+ * @param head First element.
+ * @param tail Remaining elements.
  */
-template<class ... Args>
-auto make_tuple(Args ... args) {
-  return Tuple<Args...>(args...);
+template<class Head, class... Tail>
+auto make_tuple(const Head& head, const Tail&... tail) {
+  return Tuple<Head,Tail...>(head, tail...);
 }
 
 /**
  * Make a tuple.
  *
- * @tparam Args Argument types.
+ * @tparam Head First element type.
+ * @tparam Tail Remaining element types.
  *
- * @param context Current context.
- * @param args Arguments.
+ * @param head First element.
+ * @param tail Remaining elements.
  */
-template<class ... Args>
-auto make_tuple(Label* context, Args ... args) {
-  return Tuple<Args...>(context, args...);
+template<class Head, class... Tail>
+auto make_tuple(Label* context, const Head& head, const Tail&... tail) {
+  return Tuple<Head,Tail...>(context, head, tail...);
 }
 
 /**
- * Make an assignable tuple of lvalues.
+ * Make an assignable tuple.
  *
- * @tparam Args Argument types.
+ * @tparam Head First element type.
+ * @tparam Tail Remaining element types.
  *
- * @param args Arguments.
+ * @param head First element.
+ * @param tail Remaining elements.
  */
-template<class ... Args>
-auto tie(Args&... args) {
-  return Tuple<Args&...>(args...);
+template<class Head, class... Tail>
+auto tie(Head& head, Tail&... tail) {
+  return Tuple<Head&,Tail&...>(head, tail...);
 }
 
 /**
- * Make an assignable tuple of lvalues.
+ * Make an assignable tuple.
  *
- * @tparam Args Argument types.
+ * @tparam Head First element type.
+ * @tparam Tail Remaining element types.
  *
- * @param context Current context.
- * @param args Arguments.
+ * @param head First element.
+ * @param tail Remaining elements.
  */
-template<class ... Args>
-auto tie(Label* context, Args&... args) {
-  return Tuple<Args&...>(context, args...);
+template<class Head, class... Tail>
+auto tie(Label* context, Head& head, Tail&... tail) {
+  return Tuple<Head&,Tail&...>(context, head, tail...);
 }
 
 /**
