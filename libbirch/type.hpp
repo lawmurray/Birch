@@ -13,7 +13,18 @@
  * Macro that can be added to the template arguments of a class template
  * specialization to enable it only if a specific type is a value type.
  */
-#define IS_VALUE(Type) std::enable_if_t<is_value<Type>::value>
+#define IS_VALUE(Type) class CheckType = Type, std::enable_if_t<is_value<CheckType>::value,int> = 0
+
+/**
+ * @def ARE_VALUES
+ *
+ * @ingroup libbirch
+ *
+ * Macro that can be added to the template arguments of a class template
+ * specialization to enable it only if a parameter pack of types are all
+ * value types.
+ */
+#define ARE_VALUES(Types) std::enable_if_t<is_value<Types...>::value,int> = 0
 
 /**
  * @def IS_NOT_VALUE
@@ -23,54 +34,49 @@
  * Macro that can be added to the template arguments of a class template
  * specialization to enable it only if a specific type is a non-value type.
  */
-#define IS_NOT_VALUE(Type) std::enable_if_t<!is_value<Type>::value>
+#define IS_NOT_VALUE(Type) class CheckType = Type, std::enable_if_t<!is_value<CheckType>::value,int> = 0
 
 /**
- * @def IS_POINTER
+ * @def ARE_NOT_VALUES
  *
  * @ingroup libbirch
  *
  * Macro that can be added to the template arguments of a class template
- * specialization to enable it only if a specific type is a pointer type.
+ * specialization to enable it only if a parameter pack of types are all
+ * not value types.
  */
-#define IS_POINTER(Type) std::enable_if_t<is_pointer<Type>::value>
-
-/**
- * @def IS_NOT_POINTER
- *
- * @ingroup libbirch
- *
- * Macro that can be added to the template arguments of a class template
- * specialization to enable it only if a specific type is a non-pointer type.
- */
-#define IS_NOT_POINTER(Type) std::enable_if_t<!is_pointer<Type>::value>
-
-/**
- * @def IS_NOT_VALUE_NOR_POINTER
- *
- * @ingroup libbirch
- *
- * Macro that can be added to the template arguments of a class template
- * specialization to enable it only if a specific type is neither a value
- * type nor a pointer type.
- */
-#define IS_NOT_VALUE_NOR_POINTER(Type) std::enable_if_t< \
-  !is_value<Type>::value && !is_pointer<Type>::value>
+#define ARE_NOT_VALUES(Types) std::enable_if_t<!is_value<Types...>::value,int> = 0
 
 namespace libbirch {
 /*
+ * Are these value types?
+ */
+template<class Arg, class... Args>
+struct is_value {
+  static const bool value = is_value<Arg>::value && is_value<Args...>::value;
+};
+
+/*
  * Is this a value type?
  */
-template<class T>
-struct is_value {
+template<class Arg>
+struct is_value<Arg> {
   static const bool value = true;
+};
+
+/**
+ * Are these pointer types?
+ */
+template<class Arg, class... Args>
+struct is_pointer {
+  static const bool value = is_pointer<Arg>::value && is_pointer<Args...>::value;
 };
 
 /*
  * Is this a pointer type?
  */
-template<class T>
-struct is_pointer {
+template<class Arg>
+struct is_pointer<Arg> {
   static const bool value = false;
 };
 
