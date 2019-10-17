@@ -36,18 +36,18 @@ public:
   /**
    * Constructor.
    */
-  Tuple(const Head& head, Tail ... tail) :
-      head(head),
-      tail(tail...) {
+  Tuple(Head& head, Tail&... tail) :
+      head(std::forward(head)),
+      tail(std::forward(tail...)) {
     //
   }
 
   /**
    * Constructor.
    */
-  Tuple(Label* context, const Head& head, Tail ... tail) :
-      head(head),
-      tail(context, tail...) {
+  Tuple(Label* context, Head& head, Tail& ... tail) :
+      head(std::forward(head)),
+      tail(context, std::forward(tail...)) {
     //
   }
 
@@ -141,9 +141,9 @@ public:
   /**
    * Constructor.
    */
-  Tuple(Label* context, const Head& head, Tail ... tail) :
-      head(context, head),
-      tail(context, tail...) {
+  Tuple(Label* context, Head& head, Tail&... tail) :
+      head(context, std::forward(head)),
+      tail(context, std::forward(tail...)) {
     //
   }
 
@@ -239,16 +239,16 @@ public:
   /**
    * Constructor.
    */
-  Tuple(const Head& head) :
-      head(head) {
+  Tuple(Head& head) :
+      head(std::forward(head)) {
     //
   }
 
   /**
    * Constructor.
    */
-  Tuple(Label* context, const Head& head) :
-      head(head) {
+  Tuple(Label* context, Head& head) :
+      head(std::forward(head)) {
     //
   }
 
@@ -331,8 +331,8 @@ public:
   /**
    * Constructor.
    */
-  Tuple(Label* context, const Head& head) :
-      head(context, head) {
+  Tuple(Label* context, Head& head) :
+      head(context, std::forward(head)) {
     //
   }
 

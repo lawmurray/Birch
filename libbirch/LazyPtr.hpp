@@ -181,7 +181,7 @@ public:
    * Value assignment.
    */
   template<class U, typename = std::enable_if_t<is_value<U>::value>>
-  LazyPtr<P>& assign(const U& o) {
+  LazyPtr<P>& assign(Label* context, const U& o) {
     *get() = o;
     return *this;
   }

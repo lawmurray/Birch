@@ -3,7 +3,7 @@
  */
 function rows(X:Object[_,_]) -> Integer64 {
   cpp{{
-  return X.length(0);
+  return X.rows();
   }}
 }
 
@@ -12,7 +12,7 @@ function rows(X:Object[_,_]) -> Integer64 {
  */
 function rows(X:Real[_,_]) -> Integer64 {
   cpp{{
-  return X.length(0);
+  return X.rows();
   }}
 }
 
@@ -21,7 +21,7 @@ function rows(X:Real[_,_]) -> Integer64 {
  */
 function rows(X:Integer[_,_]) -> Integer64 {
   cpp{{
-  return X.length(0);
+  return X.rows();
   }}
 }
 
@@ -30,7 +30,7 @@ function rows(X:Integer[_,_]) -> Integer64 {
  */
 function rows(X:Boolean[_,_]) -> Integer64 {
   cpp{{
-  return X.length(0);
+  return X.rows();
   }}
 }
 
@@ -39,7 +39,7 @@ function rows(X:Boolean[_,_]) -> Integer64 {
  */
 function columns(X:Object[_,_]) -> Integer64 {
   cpp{{
-  return X.length(1);
+  return X.cols();
   }}
 }
 
@@ -48,7 +48,7 @@ function columns(X:Object[_,_]) -> Integer64 {
  */
 function columns(X:Real[_,_]) -> Integer64 {
   cpp{{
-  return X.length(1);
+  return X.cols();
   }}
 }
 
@@ -57,7 +57,7 @@ function columns(X:Real[_,_]) -> Integer64 {
  */
 function columns(X:Integer[_,_]) -> Integer64 {
   cpp{{
-  return X.length(1);
+  return X.cols();
   }}
 }
 
@@ -66,7 +66,7 @@ function columns(X:Integer[_,_]) -> Integer64 {
  */
 function columns(X:Boolean[_,_]) -> Integer64 {
   cpp{{
-  return X.length(1);
+  return X.cols();
   }}
 }
 

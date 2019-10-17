@@ -53,20 +53,6 @@ struct EmptyFrame {
     return false;
   }
 
-  void resize(const EmptyFrame& o) {
-    //
-  }
-
-  template<class T1>
-  void resize(T1* in) {
-    //
-  }
-
-  void resize(const Eigen::Index cols) {
-    // special case for vector represented as N x 1 matrix in Eigen.
-    assert(cols == 1);
-  }
-
   int64_t offset(const int64_t n) const {
     return 0;
   }
@@ -253,31 +239,6 @@ struct NonemptyFrame {
   }
   bool conforms(const Eigen::Index rows) {
     return head.conforms(rows);
-  }
-
-  /**
-   * Resize this frame to conform to another.
-   */
-  template<class Frame1>
-  void resize(const Frame1& o) {
-    tail.resize(o.tail);
-    head.length = o.head.length;
-    head.stride = tail.volume();
-  }
-  template<class T1>
-  void resize(T1* in) {
-    tail.resize(in + 1);
-    head.length = *in;
-    head.stride = tail.volume();
-  }
-  void resize(const Eigen::Index rows, const Eigen::Index cols) {
-    tail.resize(cols);
-    head.length = rows;
-    head.stride = tail.volume();
-  }
-  void resize(const Eigen::Index rows) {
-    head.length = rows;
-    head.stride = tail.volume();
   }
 
   /**

@@ -93,7 +93,8 @@ void libbirch::deallocate(void* ptr, const unsigned n, const unsigned tid) {
 #endif
 }
 
-void* libbirch::reallocate(void* ptr1, const size_t n1, const unsigned tid1, const size_t n2) {
+void* libbirch::reallocate(void* ptr1, const size_t n1, const unsigned tid1,
+    const size_t n2) {
   assert(ptr1);
   assert(n1 > 0u);
   assert(tid1 < omp_get_max_threads());

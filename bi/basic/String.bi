@@ -343,7 +343,7 @@ function length(x:String) -> Integer {
  */
 function length(x:String[_]) -> Integer {
   cpp{{
-  return x.length(0);
+  return x.rows();
   }}
 }
 

@@ -97,23 +97,6 @@ struct Span: public Length<length_value>, public Stride<stride_value> {
   }
 
   /**
-   * Resize this span to conform to another.
-   */
-  template<class Span1>
-  void resize(const Span1& o) {
-    assert(this->stride == 1);
-
-    this->length = o.length;
-    this->stride = o.length;
-  }
-  void resize(const Eigen::Index length) {
-    assert(this->stride == 1);
-
-    this->length = length;
-    this->stride = length;
-  }
-
-  /**
    * Multiply stride.
    */
   Span<length_value,stride_value>& operator*=(const int64_t n) {

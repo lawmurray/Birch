@@ -17,6 +17,21 @@ namespace libbirch {
 
 template<class T, class F>
 class ArrayBase {
+public:
+  /**
+   * Number of rows. For a one-dimensional array, this is the length.
+   */
+  auto rows() const {
+    return frame.length(0);
+  }
+
+  /**
+   * Number of columns. For a one-dimensional array, this is 1.
+   */
+  auto cols() const {
+    return F::count() == 1 ? 1 : this->frame.length(1);
+  }
+
 protected:
   /**
    * Constructor.
@@ -38,10 +53,8 @@ protected:
       frame(o.frame),
       buffer(o.buffer),
       offset(o.offset),
-      isView(o.isView) {
-    if (buffer) {
-      buffer->incUsage();
-    }
+      isView(true) {
+    //
   }
 
   /**
@@ -60,14 +73,6 @@ protected:
    */
   T* buf() const {
     return buffer->buf() + offset;
-  }
-
-  auto rows() const {
-    return frame.length(0);
-  }
-
-  auto cols() const {
-    return F::count() == 1 ? 1 : this->frame.length(1);
   }
 
   auto rowStride() const {
@@ -206,7 +211,8 @@ public:
    * @param frame Frame.
    * @param values Values.
    */
-  Array(Label* context, const F& frame, const std::initializer_list<T>& values) :
+  template<class U>
+  Array(Label* context, const F& frame, const std::initializer_list<U>& values) :
       ArrayBase<T,F>(frame) {
     this->allocate();
     this->uninitialized_copy(context, values);
@@ -215,7 +221,8 @@ public:
   /**
    * Copy constructor.
    */
-  Array(Label* context, const Array<T,F>& o) :
+  template<class U, class G>
+  Array(Label* context, const Array<U,G>& o) :
       ArrayBase<T,F>(o.frame) {
     this->allocate();
     this->uninitialized_copy(context, o);
@@ -293,6 +300,81 @@ public:
   }
 
   /**
+   * Shrink a one-dimensional array in-place.
+   *
+   * @tparam G Frame type.
+   *
+   * @param frame New frame.
+   */
+  template<class G>
+  void shrink(const G& frame) {
+    static_assert(F::count() == 1, "can only shrink one-dimensional arrays");
+    static_assert(G::count() == 1, "can only shrink one-dimensional arrays");
+    assert(!this->isView);
+    assert(frame.size() < this->size());
+
+    this->lock();
+    if (this->isShared()) {
+      Array<T,F> o1(std::move(*this));
+      this->frame = frame;
+      this->allocate();
+      this->copy(o1);
+    } else {
+      auto oldSize = Buffer<T>::size(this->frame.volume());
+      auto newSize = Buffer<T>::size(frame.volume());
+      this->frame = frame;
+      if (this->frame.size() == 0) {
+        release();
+      } else {
+        auto iter = Iterator<T,F>(this->buf(), this->frame);
+        // ^ don't use begin() as inside a locked region
+        auto last = iter + this->size();
+        for (iter += frame.size(); iter != last; ++iter) {
+          iter->~T();
+        }
+        this->buffer = (Buffer<T>*)libbirch::reallocate(this->buffer,
+            oldSize, this->buffer->tid, newSize);
+      }
+    }
+    this->unlock();
+  }
+
+  /**
+   * Enlarge a one-dimensional array in-place.
+   *
+   * @tparam G Frame type.
+   *
+   * @param frame New frame.
+   * @param x Value to assign to new elements.
+   */
+  template<class G>
+  void enlarge(const G& frame, const T& x) {
+    static_assert(F::count() == 1, "can only enlarge one-dimensional arrays");
+    static_assert(G::count() == 1, "can only enlarge one-dimensional arrays");
+    assert(!this->isView);
+    assert(frame.size() > this->size());
+
+    this->lock();
+    auto n = this->frame.size();
+    if (this->isShared() || !this->buffer) {
+      Array<T,F> o1(std::move(*this));
+      this->frame = frame;
+      this->allocate();
+      this->copy(o1);
+    } else {
+      auto oldSize = Buffer<T>::size(this->frame.volume());
+      auto newSize = Buffer<T>::size(frame.volume());
+      this->frame = frame;
+      this->buffer = (Buffer<T>*)libbirch::reallocate(this->buffer, oldSize,
+          this->buffer->tid, newSize);
+    }
+    Iterator<T,F> iter(this->buf(), this->frame);
+    // ^ don't use begin() as we have obtained the lock already
+    std::uninitialized_fill(iter + n, iter + this->frame.size(), x);
+    this->unlock();
+  }
+
+  /**
    * Iterator pointing to the first element.
    *
    * Iterators are used to access the elements of an array sequentially.
@@ -343,7 +425,39 @@ public:
     return *(this->buf() + this->frame.serial(view));
   }
 
+  void freeze() {
+    auto iter = this->begin();
+    auto last = iter + this->size();
+    for (; iter != last; ++iter) {
+      iter->freeze();
+    }
+  }
+
+  void thaw(Label* label) {
+    auto iter = this->begin();
+    auto last = iter + this->size();
+    for (; iter != last; ++iter) {
+      iter->thaw(label);
+    }
+  }
+
+  void finish() {
+    auto iter = this->begin();
+    auto last = iter + this->size();
+    for (; iter != last; ++iter) {
+      iter->finish();
+    }
+  }
+
 protected:
+  /**
+   * Constructor.
+   */
+  Array(const F& frame, const Buffer<T>* buffer, const int64_t offset,
+      const bool isView) : ArrayBase<T,F>(frame, buffer, offset, isView) {
+    //
+  }
+
   /**
    * Duplicate underlying buffer by copy.
    */
@@ -411,9 +525,10 @@ protected:
   void uninitialized_copy(Label* label, const Array<U,G>& o) {
     assert(!this->isShared());
     libbirch_assert_msg_(o.frame.conforms(this->frame), "array sizes are different");
+    auto n = std::min(this->size(), o.size());
     auto iter1 = o.begin();
-    auto last1 = iter1 + o.size();
-    auto iter2 = this->begin();
+    auto last1 = iter1 + n;
+    auto iter2 = begin();
     for (; iter1 != last1; ++iter1, ++iter2) {
       new (&*iter2) T(label, *iter1);
     }
@@ -426,12 +541,13 @@ protected:
   void copy(const Array<U,G>& o) {
     assert(!this->isShared());
     libbirch_assert_msg_(o.frame.conforms(this->frame), "array sizes are different");
+    auto n = std::min(this->size(), o.size());
     auto begin1 = o.begin();
-    auto end1 = begin1 + o.size();
-    auto begin2 = this->begin();
-    auto end2 = begin2 + this->frame.size();
+    auto end1 = begin1 + n;
+    auto begin2 = begin();
+    auto end2 = begin2 + n;
     if (inside(begin1, end1, begin2)) {
-      std::copy(begin1, end1, end2);
+      std::copy_backward(begin1, end1, end2);
     } else {
       std::copy(begin1, end1, begin2);
     }
@@ -472,6 +588,15 @@ public:
       ArrayBase<T,F>(frame) {
     this->allocate();
     std::uninitialized_copy(values.begin(), values.end(), this->begin());
+  }
+
+  /**
+   * Copy constructor.
+   */
+  template<class U, class G>
+  Array(const Array<U,G>& o) : ArrayBase<T,F>(o.frame) {
+    this->allocate();
+    this->copy(o);
   }
 
   /**
@@ -530,8 +655,7 @@ public:
   /**
    * Copy assignment.
    */
-  template<class U, class G>
-  Array<T,F>& operator=(const Array<U,G>& o) {
+  Array<T,F>& operator=(const Array<T,F>& o) {
     return assign(o);
   }
 
@@ -549,6 +673,75 @@ public:
    */
   const Array<T,F>& as_const() const {
     return *this;
+  }
+
+  /**
+   * Shrink a one-dimensional array in-place.
+   *
+   * @tparam G Frame type.
+   *
+   * @param frame New frame.
+   */
+  template<class G>
+  void shrink(const G& frame) {
+    static_assert(F::count() == 1, "can only shrink one-dimensional arrays");
+    static_assert(G::count() == 1, "can only shrink one-dimensional arrays");
+    assert(!this->isView);
+    assert(frame.size() < this->size());
+
+    this->lock();
+    if (this->isShared()) {
+      Array<T,F> o1(std::move(*this));
+      this->frame = frame;
+      this->allocate();
+      this->copy(o1);
+    } else {
+      auto oldSize = Buffer<T>::size(this->frame.volume());
+      auto newSize = Buffer<T>::size(frame.volume());
+      this->frame = frame;
+      if (this->frame.size() == 0) {
+        release();
+      } else {
+        this->buffer = (Buffer<T>*)libbirch::reallocate(this->buffer,
+            oldSize, this->buffer->tid, newSize);
+      }
+    }
+    this->unlock();
+  }
+
+  /**
+   * Enlarge a one-dimensional array in-place.
+   *
+   * @tparam G Frame type.
+   *
+   * @param frame New frame.
+   * @param x Value to assign to new elements.
+   */
+  template<class G>
+  void enlarge(const G& frame, const T& x) {
+    static_assert(F::count() == 1, "can only enlarge one-dimensional arrays");
+    static_assert(G::count() == 1, "can only enlarge one-dimensional arrays");
+    assert(!this->isView);
+    assert(frame.size() > this->size());
+
+    this->lock();
+    auto n = this->frame.size();
+    if (this->isShared() || !this->buffer) {
+      Array<T,F> o1(std::move(*this));
+      this->frame = frame;
+      this->allocate();
+      this->copy(o1);
+    } else {
+      auto oldSize = Buffer<T>::size(this->frame.volume());
+      auto newSize = Buffer<T>::size(frame.volume());
+      this->frame = frame;
+      this->buffer = (Buffer<T>*)libbirch::reallocate(this->buffer, oldSize,
+          this->buffer->tid, newSize);
+    }
+    Iterator<T,F> iter(this->buf(), this->frame);
+    // ^ don't use begin() as we have obtained the lock already
+    std::fill(iter + n, iter + this->frame.size(), x);
+    this->unlock();
   }
 
   /**
@@ -652,7 +845,27 @@ public:
   }
   ///@}
 
+  void freeze() {
+    //
+  }
+
+  void thaw(Label* label) {
+    //
+  }
+
+  void finish() {
+    //
+  }
+
 protected:
+  /**
+   * Constructor.
+   */
+  Array(const F& frame, const Buffer<T>* buffer, const int64_t offset,
+      const bool isView) : ArrayBase<T,F>(frame, buffer, offset, isView) {
+    //
+  }
+
   /**
    * Duplicate underlying buffer by copy.
    */
@@ -687,14 +900,15 @@ protected:
   void copy(const Array<U,G>& o) {
     assert(!this->isShared());
     libbirch_assert_msg_(o.frame.conforms(this->frame), "array sizes are different");
+    auto n = std::min(this->size(), o.size());
     auto begin1 = o.begin();
-    auto end1 = begin1 + o.size();
+    auto end1 = begin1 + n;
     auto begin2 = begin();
-    auto end2 = begin2 + this->frame.size();
+    auto end2 = begin2 + n;
     if (inside(begin1, end1, begin2)) {
       std::copy_backward(begin1, end1, end2);
     } else {
-      std::uninitialized_copy(begin1, end1, begin2);
+      std::copy(begin1, end1, begin2);
     }
   }
 };
@@ -703,38 +917,5 @@ template<class T, class F>
 struct is_value<Array<T,F>> {
   static const bool value = is_value<T>::value;
 };
-
-template<class T, class F>
-void freeze(Array<T,F>& o) {
-  if (!is_value<T>::value) {
-    auto iter = o.begin();
-    auto last = iter + o.size();
-    for (; iter != last; ++iter) {
-      freeze(*iter);
-    }
-  }
-}
-
-template<class T, class F>
-void thaw(Array<T,F>& o, LazyLabel* label) {
-  if (!is_value<T>::value) {
-    auto iter = o.begin();
-    auto last = iter + o.size();
-    for (; iter != last; ++iter) {
-      thaw(*iter, label);
-    }
-  }
-}
-
-template<class T, class F>
-void finish(Array<T,F>& o) {
-  if (!is_value<T>::value) {
-    auto iter = o.begin();
-    auto last = iter + o.size();
-    for (; iter != last; ++iter) {
-      finish(*iter);
-    }
-  }
-}
 
 }
