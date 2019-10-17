@@ -559,6 +559,47 @@ public:
     this->toEigen() = o;
   }
   ///@}
+  template<IS_VALUE(T)>
+  void freeze() {
+    //
+  }
+
+  template<IS_NOT_VALUE(T)>
+  void freeze() {
+    auto iter = this->begin();
+    auto last = iter + this->size();
+    for (; iter != last; ++iter) {
+      iter->freeze();
+    }
+  }
+
+  template<IS_VALUE(T)>
+  void thaw(Label* label) {
+    //
+  }
+
+  template<IS_NOT_VALUE(T)>
+  void thaw(Label* label) {
+    auto iter = this->begin();
+    auto last = iter + this->size();
+    for (; iter != last; ++iter) {
+      iter->thaw(label);
+    }
+  }
+
+  template<IS_VALUE(T)>
+  void finish() {
+    //
+  }
+
+  template<IS_NOT_VALUE(T)>
+  void finish() {
+    auto iter = this->begin();
+    auto last = iter + this->size();
+    for (; iter != last; ++iter) {
+      iter->finish();
+    }
+  }
 
 private:
   /**
