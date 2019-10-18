@@ -75,10 +75,11 @@ void bi::CppBaseGenerator::visit(const Sequence* o) {
 void bi::CppBaseGenerator::visit(const Cast* o) {
   if (o->returnType->isClass()) {
     middle("libbirch::dynamic_pointer_cast<" << o->returnType << '>');
+    middle("(context_, " << o->single << ')');
   } else {
     middle("libbirch::check_cast<" << o->returnType << '>');
+    middle('(' << o->single << ')');
   }
-  middle('(' << o->single << ')');
 }
 
 void bi::CppBaseGenerator::visit(const Call<Unknown>* o) {
@@ -934,7 +935,11 @@ void bi::CppBaseGenerator::genArg(const Expression* arg, const Type* type) {
   auto isSuper = dynamic_cast<const Super*>(arg);
   auto isSequence = dynamic_cast<const Sequence*>(arg);
   if (!arg->type->equals(*type) || isThis || isSuper || isSequence) {
-    middle(type->canonical() << '(' << arg << ')');
+    middle(type->canonical() << '(');
+    if (!type->isValue()) {
+      middle("context_, ");
+    }
+    middle(arg << ')');
   } else {
     middle(arg);
   }

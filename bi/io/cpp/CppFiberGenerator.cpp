@@ -140,12 +140,18 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
       finish(" {");
       in();
       line("super_type_::doFreeze_();");
-      line("libbirch::freeze(value_);");
-      for (auto param : params) {
-        line("libbirch::freeze(" << param->name << ");");
+      if (!o->returnType->unwrap()->isValue()) {
+        line("value_.freeze();");
       }
-      for (auto local : locals) {
-        line("libbirch::freeze(" << getName(local->name->str(), local->number) << ");");
+      for (auto o : params) {
+        if (!o->type->isValue()) {
+          line(o->name << ".freeze();");
+        }
+      }
+      for (auto o : locals) {
+        if (!o->type->isValue()) {
+          line(getName(o->name->str(), o->number) << ".freeze();");
+        }
       }
       out();
       line("}\n");
@@ -164,12 +170,18 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
       finish(" {");
       in();
       line("super_type_::doThaw_(label_);");
-      line("libbirch::thaw(value_, label_);");
-      for (auto param : params) {
-        line("libbirch::thaw(" << param->name << ", label_);");
+      if (!o->returnType->unwrap()->isValue()) {
+        line("value_.thaw(label_);");
       }
-      for (auto local : locals) {
-        line("libbirch::thaw(" << getName(local->name->str(), local->number) << ", label_);");
+      for (auto o : params) {
+        if (!o->type->isValue()) {
+          line(o->name << ".thaw(label_);");
+        }
+      }
+      for (auto o : locals) {
+        if (!o->type->isValue()) {
+          line(getName(o->name->str(), o->number) << ".thaw(label_);");
+        }
       }
       out();
       line("}\n");
@@ -188,12 +200,18 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
       finish(" {");
       in();
       line("super_type_::doFinish_();");
-      line("libbirch::finish(value_);");
-      for (auto param : params) {
-        line("libbirch::finish(" << param->name << ");");
+      if (!o->returnType->unwrap()->isValue()) {
+        line("value_.finish();");
       }
-      for (auto local : locals) {
-        line("libbirch::finish(" << getName(local->name->str(), local->number) << ");");
+      for (auto o : params) {
+        if (!o->type->isValue()) {
+          line(o->name << ".finish();");
+        }
+      }
+      for (auto o : locals) {
+        if (!o->type->isValue()) {
+          line(getName(o->name->str(), o->number) << ".finish();");
+        }
       }
       out();
       line("}");

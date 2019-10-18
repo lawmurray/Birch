@@ -215,7 +215,9 @@ void bi::CppClassGenerator::visit(const Class* o) {
       in();
       line("super_type_::doFreeze_();");
       for (auto o : memberVariables) {
-        line("libbirch::freeze(" << o->name << ");");
+        if (!o->type->isValue()) {
+          line(o->name << ".freeze();");
+        }
       }
       out();
       line("}\n");
@@ -237,7 +239,9 @@ void bi::CppClassGenerator::visit(const Class* o) {
       in();
       line("super_type_::doThaw_(label_);");
       for (auto o : memberVariables) {
-        line("libbirch::thaw(" << o->name << ", label_);");
+        if (!o->type->isValue()) {
+          line(o->name << ".thaw(label_);");
+        }
       }
       out();
       line("}\n");
@@ -259,7 +263,9 @@ void bi::CppClassGenerator::visit(const Class* o) {
       in();
       line("super_type_::doFinish_();");
       for (auto o : memberVariables) {
-        line("libbirch::finish(" << o->name << ");");
+        if (!o->type->isValue()) {
+          line(o->name << ".finish();");
+        }
       }
       out();
       line("}");
