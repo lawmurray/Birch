@@ -21,6 +21,7 @@ template<class P>
 class LazyPtr {
   template<class U> friend class LazyPtr;
 public:
+  using pointer_type = P;
   using value_type = typename P::value_type;
 
   LazyPtr& operator=(const LazyPtr&) = delete;
@@ -377,18 +378,18 @@ public:
    * Dynamic cast.
    */
   template<class U>
-  auto dynamic_pointer_cast() const {
-    auto cast = object.template dynamic_pointer_cast<U>();
-    return LazyPtr<decltype(cast)>(getLabel(), getLabel(), cast);
+  auto dynamic_pointer_cast(Label* context) const {
+    auto cast = object.template dynamic_pointer_cast<typename U::pointer_type>();
+    return LazyPtr<decltype(cast)>(context, getLabel(), cast);
   }
 
   /**
    * Static cast.
    */
   template<class U>
-  auto static_pointer_cast() const {
-    auto cast = object.template static_pointer_cast<U>();
-    return LazyPtr<decltype(cast)>(getLabel(), getLabel(), cast);
+  auto static_pointer_cast(Label* context) const {
+    auto cast = object.template static_pointer_cast<typename U::pointer_type>();
+    return LazyPtr<decltype(cast)>(context, getLabel(), cast);
   }
 
 private:

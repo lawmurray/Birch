@@ -22,7 +22,7 @@ public:
   /**
    * Constructor.
    */
-  template<IS_VALUE(Head),ARE_VALUES(Tail)>
+  template<IS_VALUE1(Head),IS_VALUE2(Tuple<Tail...>)>
   Tuple(Head head, Tail... tail) :
       head(std::forward(head)),
       tail(std::forward(tail...)) {
@@ -32,7 +32,7 @@ public:
   /**
    * Constructor.
    */
-  template<IS_VALUE(Head),ARE_NOT_VALUES(Tail)>
+  template<IS_VALUE1(Head),IS_NOT_VALUE2(Tuple<Tail...>)>
   Tuple(Label* context, Head head, Tail... tail) :
       head(std::forward(head)),
       tail(context, std::forward(tail...)) {
@@ -42,7 +42,7 @@ public:
   /**
    * Constructor.
    */
-  template<IS_NOT_VALUE(Head),ARE_VALUES(Tail)>
+  template<IS_NOT_VALUE1(Head),IS_VALUE2(Tuple<Tail...>)>
   Tuple(Label* context, Head head, Tail... tail) :
       head(context, std::forward(head)),
       tail(std::forward(tail...)) {
@@ -52,7 +52,7 @@ public:
   /**
    * Constructor.
    */
-  template<IS_NOT_VALUE(Head),ARE_NOT_VALUES(Tail)>
+  template<IS_NOT_VALUE1(Head),IS_NOT_VALUE2(Tuple<Tail...>)>
   Tuple(Label* context, Head head, Tail... tail) :
       head(context, std::forward(head)),
       tail(context, std::forward(tail...)) {
@@ -62,7 +62,7 @@ public:
   /**
    * Copy constructor.
    */
-  template<IS_VALUE(Head),ARE_VALUES(Tail)>
+  template<IS_VALUE1(Head),IS_VALUE2(Tuple<Tail...>)>
   Tuple(const Tuple& o) :
       head(o.head),
       tail(o.tail) {
@@ -72,7 +72,7 @@ public:
   /**
    * Copy constructor.
    */
-  template<IS_VALUE(Head),ARE_NOT_VALUES(Tail)>
+  template<IS_VALUE1(Head),IS_NOT_VALUE2(Tuple<Tail...>)>
   Tuple(Label* context, const Tuple& o) :
       head(o.head),
       tail(context, o.tail) {
@@ -82,7 +82,7 @@ public:
   /**
    * Copy constructor.
    */
-  template<IS_NOT_VALUE(Head),ARE_VALUES(Tail)>
+  template<IS_NOT_VALUE1(Head),IS_VALUE2(Tuple<Tail...>)>
   Tuple(Label* context, const Tuple& o) :
       head(context, o.head),
       tail(o.tail) {
@@ -92,7 +92,7 @@ public:
   /**
    * Copy constructor.
    */
-  template<IS_NOT_VALUE(Head),ARE_NOT_VALUES(Tail)>
+  template<IS_NOT_VALUE1(Head),IS_NOT_VALUE2(Tuple<Tail...>)>
   Tuple(Label* context, const Tuple& o) :
       head(context, o.head),
       tail(context, o.tail) {
@@ -102,7 +102,7 @@ public:
   /**
    * Move constructor.
    */
-  template<IS_VALUE(Head),ARE_VALUES(Tail)>
+  template<IS_VALUE1(Head),IS_VALUE2(Tuple<Tail...>)>
   Tuple(Tuple&& o) :
       head(std::move(o.head)),
       tail(std::move(o.tail)) {
@@ -112,7 +112,7 @@ public:
   /**
    * Move constructor.
    */
-  template<IS_VALUE(Head),ARE_NOT_VALUES(Tail)>
+  template<IS_VALUE1(Head),IS_NOT_VALUE2(Tuple<Tail...>)>
   Tuple(Label* context, Tuple&& o) :
       head(std::move(o.head)),
       tail(context, std::move(o.tail)) {
@@ -122,7 +122,7 @@ public:
   /**
    * Move constructor.
    */
-  template<IS_NOT_VALUE(Head),ARE_VALUES(Tail)>
+  template<IS_NOT_VALUE1(Head),IS_VALUE2(Tuple<Tail...>)>
   Tuple(Label* context, Tuple&& o) :
       head(context, std::move(o.head)),
       tail(std::move(o.tail)) {
@@ -132,7 +132,7 @@ public:
   /**
    * Move constructor.
    */
-  template<IS_NOT_VALUE(Head),ARE_NOT_VALUES(Tail)>
+  template<IS_NOT_VALUE1(Head),IS_NOT_VALUE2(Tuple<Tail...>)>
   Tuple(Label* context, Tuple&& o) :
       head(context, std::move(o.head)),
       tail(context, std::move(o.tail)) {
@@ -142,7 +142,7 @@ public:
   /**
    * Deep copy constructor.
    */
-  template<IS_VALUE(Head),ARE_NOT_VALUES(Tail)>
+  template<IS_VALUE1(Head),IS_NOT_VALUE2(Tuple<Tail...>)>
   Tuple(Label* context, Label* label, const Tuple& o) :
       head(o.head),
       tail(context, label, o.tail) {
@@ -152,7 +152,7 @@ public:
   /**
    * Deep copy constructor.
    */
-  template<IS_NOT_VALUE(Head),ARE_VALUES(Tail)>
+  template<IS_NOT_VALUE1(Head),IS_VALUE2(Tuple<Tail...>)>
   Tuple(Label* context, Label* label, const Tuple& o) :
       head(context, label, o.head),
       tail(o.tail) {
@@ -162,7 +162,7 @@ public:
   /**
    * Deep copy constructor.
    */
-  template<IS_NOT_VALUE(Head),ARE_NOT_VALUES(Tail)>
+  template<IS_NOT_VALUE1(Head),IS_NOT_VALUE2(Tuple<Tail...>)>
   Tuple(Label* context, Label* label, const Tuple& o) :
       head(context, label, o.head),
       tail(context, label, o.tail) {
@@ -172,7 +172,7 @@ public:
   /**
    * Copy assignment.
    */
-  template<IS_VALUE(Head),ARE_VALUES(Tail),class Head1, class ... Tail1>
+  template<IS_VALUE1(Head),IS_VALUE2(Tuple<Tail...>),class Head1, class ... Tail1>
   Tuple& assign(const Tuple<Head1,Tail1...>& o) {
     head = o.head;
     tail = o.tail;
@@ -182,7 +182,7 @@ public:
   /**
    * Copy assignment.
    */
-  template<IS_VALUE(Head),ARE_NOT_VALUES(Tail),class Head1, class ... Tail1>
+  template<IS_VALUE1(Head),IS_NOT_VALUE2(Tuple<Tail...>),class Head1, class ... Tail1>
   Tuple& assign(Label* context, const Tuple<Head1,Tail1...>& o) {
     head = o.head;
     tail.assign(context, o.tail);
@@ -192,7 +192,7 @@ public:
   /**
    * Copy assignment.
    */
-  template<IS_NOT_VALUE(Head),ARE_VALUES(Tail),class Head1, class ... Tail1>
+  template<IS_NOT_VALUE1(Head),IS_VALUE2(Tuple<Tail...>),class Head1, class ... Tail1>
   Tuple& assign(Label* context, const Tuple<Head1,Tail1...>& o) {
     head.assign(context, o.head);
     tail = o.tail;
@@ -202,7 +202,7 @@ public:
   /**
    * Copy assignment.
    */
-  template<IS_NOT_VALUE(Head),ARE_NOT_VALUES(Tail),class Head1, class ... Tail1>
+  template<IS_NOT_VALUE1(Head),IS_NOT_VALUE2(Tuple<Tail...>),class Head1, class ... Tail1>
   Tuple& assign(Label* context, const Tuple<Head1,Tail1...>& o) {
     head.assign(context, o.head);
     tail.assign(context, o.tail);
@@ -212,7 +212,7 @@ public:
   /**
    * Copy assignment operator.
    */
-  template<IS_VALUE(Head),ARE_VALUES(Tail),class Head1, class ... Tail1>
+  template<IS_VALUE1(Head),IS_VALUE2(Tuple<Tail...>),class Head1, class ... Tail1>
   Tuple& operator=(const Tuple<Head1,Tail1...>& o) {
     return assign(o);
   }
@@ -220,7 +220,7 @@ public:
   /**
    * Move assignment.
    */
-  template<IS_VALUE(Head),ARE_VALUES(Tail),class Head1, class ... Tail1>
+  template<IS_VALUE1(Head),IS_VALUE2(Tuple<Tail...>),class Head1, class ... Tail1>
   Tuple& assign(Tuple<Head1,Tail1...>&& o) {
     head = std::move(o.head);
     tail = std::move(o.tail);
@@ -230,7 +230,7 @@ public:
   /**
    * Move assignment.
    */
-  template<IS_VALUE(Head),ARE_NOT_VALUES(Tail),class Head1, class ... Tail1>
+  template<IS_VALUE1(Head),IS_NOT_VALUE2(Tuple<Tail...>),class Head1, class ... Tail1>
   Tuple& assign(Label* context, Tuple<Head1,Tail1...>&& o) {
     head = std::move(o.head);
     tail.assign(context, std::move(o.tail));
@@ -240,7 +240,7 @@ public:
   /**
    * Move assignment.
    */
-  template<IS_NOT_VALUE(Head),ARE_VALUES(Tail),class Head1, class ... Tail1>
+  template<IS_NOT_VALUE1(Head),IS_VALUE2(Tuple<Tail...>),class Head1, class ... Tail1>
   Tuple& assign(Label* context, Tuple<Head1,Tail1...>&& o) {
     head.assign(context, std::move(o.head));
     tail = std::move(o.tail);
@@ -250,7 +250,7 @@ public:
   /**
    * Move assignment.
    */
-  template<IS_NOT_VALUE(Head),ARE_NOT_VALUES(Tail),class Head1, class ... Tail1>
+  template<IS_NOT_VALUE1(Head),IS_NOT_VALUE2(Tuple<Tail...>),class Head1, class ... Tail1>
   Tuple& assign(Label* context, Tuple<Head1,Tail1...>&& o) {
     head.assign(context, std::move(o.head));
     tail.assign(context, std::move(o.tail));
@@ -260,39 +260,39 @@ public:
   /**
    * Move assignment operator.
    */
-  template<IS_VALUE(Head),ARE_VALUES(Tail),class Head1, class ... Tail1>
+  template<IS_VALUE1(Head),IS_VALUE2(Tuple<Tail...>),class Head1, class ... Tail1>
   Tuple& operator=(Tuple<Head1,Tail1...>&& o) {
     return assign(std::move(o));
   }
 
-  template<IS_VALUE(Head)>
+  template<IS_VALUE1(Head)>
   void freeze() {
     tail.freeze();
   }
 
-  template<IS_NOT_VALUE(Head)>
+  template<IS_NOT_VALUE1(Head)>
   void freeze() {
     head.freeze();
     tail.freeze();
   }
 
-  template<IS_VALUE(Head)>
+  template<IS_VALUE1(Head)>
   void thaw(Label* label) {
     tail.thaw(label);
   }
 
-  template<IS_NOT_VALUE(Head)>
+  template<IS_NOT_VALUE1(Head)>
   void thaw(Label* label) {
     head.thaw(label);
     tail.thaw(label);
   }
 
-  template<IS_VALUE(Head)>
+  template<IS_VALUE1(Head)>
   void finish() {
     tail.finish();
   }
 
-  template<IS_NOT_VALUE(Head)>
+  template<IS_NOT_VALUE1(Head)>
   void finish() {
     head.finish();
     tail.finish();

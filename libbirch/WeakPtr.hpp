@@ -272,8 +272,8 @@ public:
    */
   template<class U>
   auto dynamic_pointer_cast() const {
-    WeakPtr<U> cast;
-    cast.replace(dynamic_cast<U*>(ptr));
+    U cast;
+    cast.replace(dynamic_cast<typename U::value_type*>(ptr));
     return cast;
   }
 
@@ -282,8 +282,8 @@ public:
    */
   template<class U>
   auto static_pointer_cast() const {
-    WeakPtr<U> cast;
-    cast.replace(static_cast<U*>(ptr));
+    U cast;
+    cast.replace(static_cast<typename U::value_type*>(ptr));
     return cast;
   }
 

@@ -323,19 +323,19 @@ auto tie(Label* context, Head& head, Tail&... tail) {
  * Cast an object.
  */
 template<class To, class From>
-auto dynamic_pointer_cast(const Shared<From>& from) {
-  return Optional<Shared<To>>(from.template dynamic_pointer_cast<To>());
+auto dynamic_pointer_cast(Label* context, const Shared<From>& from) {
+  return Optional<To>(context, from.template dynamic_pointer_cast<To>(context));
 }
 
 /**
  * Cast an object optional.
  */
 template<class To, class From>
-auto dynamic_pointer_cast(const Optional<Shared<From>>& from) {
+auto dynamic_pointer_cast(Label* context, const Optional<Shared<From>>& from) {
   if (from.query()) {
-    return dynamic_pointer_cast<To>(from.get());
+    return Optional<To>(context, from.get().template dynamic_pointer_cast<To>(context));
   } else {
-    return Optional<Shared<To>>();
+    return Optional<To>();
   }
 }
 

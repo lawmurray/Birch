@@ -27,10 +27,10 @@ public:
   }
 
   /**
-   * Xonstructor.
+   * Constructor.
    */
-  template<IS_VALUE(T), class U>
-  Optional(const U& value) :
+  template<IS_VALUE(T)>
+  Optional(const T& value) :
       value(value),
       hasValue(true) {
     //
@@ -39,9 +39,29 @@ public:
   /**
    * Constructor.
    */
-  template<IS_NOT_VALUE(T), class U>
-  Optional(Label* context, const U& value) :
+  template<IS_NOT_VALUE(T)>
+  Optional(Label* context, const T& value) :
       value(context, value),
+      hasValue(true) {
+    //
+  }
+
+  /**
+   * Constructor.
+   */
+  template<IS_VALUE(T)>
+  Optional(T&& value) :
+      value(std::move(value)),
+      hasValue(true) {
+    //
+  }
+
+  /**
+   * Constructor.
+   */
+  template<IS_NOT_VALUE(T)>
+  Optional(Label* context, T&& value) :
+      value(context, std::move(value)),
       hasValue(true) {
     //
   }
@@ -145,7 +165,18 @@ public:
   /**
    * Nil assignment.
    */
+  template<IS_VALUE(T)>
   Optional& assign(const Nil&) {
+    this->value = T();
+    this->hasValue = false;
+    return *this;
+  }
+
+  /**
+   * Nil assignment.
+   */
+  template<IS_NOT_VALUE(T)>
+  Optional& assign(Label* context, const Nil&) {
     this->value = T();
     this->hasValue = false;
     return *this;
@@ -154,8 +185,8 @@ public:
   /**
    * Copy assignment.
    */
-  template<IS_VALUE(T)>
-  Optional& assign(const Optional<T>& o) {
+  template<IS_VALUE(T), class U>
+  Optional& assign(const Optional<U>& o) {
     this->value = o.value;
     this->hasValue = o.hasValue;
     return *this;
@@ -164,18 +195,38 @@ public:
   /**
    * Copy assignment.
    */
-  template<IS_NOT_VALUE(T)>
-  Optional& assign(Label* context, const Optional<T>& o) {
+  template<IS_NOT_VALUE(T), class U>
+  Optional& assign(Label* context, const Optional<U>& o) {
     this->value.assign(context, o.value);
     this->hasValue = o.hasValue;
     return *this;
   }
 
   /**
+   * Copy assignment.
+   */
+  template<IS_VALUE(T), class U>
+  Optional& assign(const U& value) {
+    this->value = value;
+    this->hasValue = true;
+    return *this;
+  }
+
+  /**
+   * Copy assignment.
+   */
+  template<IS_NOT_VALUE(T), class U>
+  Optional& assign(Label* context, const U& value) {
+    this->value.assign(context, value);
+    this->hasValue = true;
+    return *this;
+  }
+
+  /**
    * Move assignment.
    */
-  template<IS_VALUE(T)>
-  Optional& assign(Optional<T>&& o) {
+  template<IS_VALUE(T), class U>
+  Optional& assign(Optional<U>&& o) {
     this->value = std::move(o.value);
     this->hasValue = o.hasValue;
     return *this;
@@ -184,10 +235,30 @@ public:
   /**
    * Move assignment.
    */
-  template<IS_NOT_VALUE(T)>
-  Optional& assign(Label* context, Optional<T>&& o) {
+  template<IS_NOT_VALUE(T), class U>
+  Optional& assign(Label* context, Optional<U>&& o) {
     this->value.assign(context, std::move(o.value));
     this->hasValue = o.hasValue;
+    return *this;
+  }
+
+  /**
+   * Move assignment.
+   */
+  template<IS_VALUE(T), class U>
+  Optional& assign(U&& value) {
+    this->value = std::move(value);
+    this->hasValue = true;
+    return *this;
+  }
+
+  /**
+   * Move assignment.
+   */
+  template<IS_NOT_VALUE(T), class U>
+  Optional& assign(Label* context, U&& value) {
+    this->value.assign(context, std::move(value));
+    this->hasValue = true;
     return *this;
   }
 
