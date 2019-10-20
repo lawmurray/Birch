@@ -166,6 +166,11 @@ protected:
    * Are we inside the body of a lambda function?
    */
   int inLambda;
+
+  /**
+   * Are we inside a sequence?
+   */
+  int inSequence;
 };
 }
 

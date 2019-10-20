@@ -102,7 +102,7 @@ public:
   /**
    * Number of expresions in an expression list.
    */
-  virtual int width() const;
+  int width() const;
 
   /**
    * Number of range expressions in an expression list.

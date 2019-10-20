@@ -16,7 +16,8 @@ bi::CppBaseGenerator::CppBaseGenerator(std::ostream& base, const int level,
     header(header),
     inAssign(0),
     inConstructor(0),
-    inLambda(0) {
+    inLambda(0),
+    inSequence(0) {
   //
 }
 
@@ -68,7 +69,30 @@ void bi::CppBaseGenerator::visit(const Sequence* o) {
   if (o->single->isEmpty()) {
     middle("libbirch::nil");
   } else {
-    middle("{ " << o->single << " }");
+    if (inSequence == 0) {
+      auto type = dynamic_cast<ArrayType*>(o->type);
+      assert(type);
+      middle("libbirch::make_array<" << type->element() << ">(");
+      if (!o->isValue()) {
+        middle("context_, ");
+      }
+      middle("libbirch::make_frame(");
+      auto seq = o;
+      do {
+        if (seq != o) {
+          middle(", ");
+        }
+        middle(seq->single->width());
+        seq = dynamic_cast<const Sequence*>(*seq->single->begin());
+      } while (seq);
+      middle("), std::initializer_list<" << type->element() << ">({ ");
+    }
+    ++inSequence;
+    middle(o->single);
+    --inSequence;
+    if (inSequence == 0) {
+      middle(" }))");
+    }
   }
 }
 
