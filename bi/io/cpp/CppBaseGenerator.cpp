@@ -259,11 +259,14 @@ void bi::CppBaseGenerator::visit(const Assign* o) {
     if (o->left->type->isValue()) {
       middle(o->left << " = ");
       --inAssign;
+      //genArg(o->right, o->target->single->type);
       middle(o->right);
     } else {
       middle(o->left << ".assign(context_, ");
       --inAssign;
-      middle(o->right << ')');
+      //genArg(o->right, o->target->single->type);
+      middle(o->right);
+      middle(')');
     }
   }
 }

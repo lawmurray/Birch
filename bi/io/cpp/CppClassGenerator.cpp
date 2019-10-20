@@ -288,7 +288,7 @@ void bi::CppClassGenerator::visit(const Class* o) {
         if (var->type->isValue()) {
           middle(" = o_");
         } else {
-          middle(".assign(this->getLabel(), o_)");
+          middle(".assign(this->getLabel(), std::forward<T_>(o_))");
         }
         finish(';');
         out();
@@ -299,7 +299,7 @@ void bi::CppClassGenerator::visit(const Class* o) {
           line("auto set_" << var->name << "_(const F_& frame_, T_&& o_) {");
           in();
           line("libbirch_swap_context_");
-          line("return " << var->name << "(frame_) = " << "o_;");
+          line("return " << var->name << "(frame_) = std::forward<T_>(o_);");
           out();
           line("}\n");
         }
