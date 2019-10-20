@@ -80,7 +80,7 @@ public:
   /**
    * Copy constructor.
    */
-  template<class Q, typename = std::enable_if_t<std::is_convertible<Q,P>::value>>
+  template<class Q, IS_CONVERTIBLE(Q,P)>
   LazyPtr(const LazyPtr<Q>& o) :
       object(o.object),
       label(o.label),
@@ -103,7 +103,7 @@ public:
   /**
    * Copy constructor.
    */
-  template<class Q, typename = std::enable_if_t<std::is_convertible<Q,P>::value>>
+  template<class Q, IS_CONVERTIBLE(Q,P)>
   LazyPtr(Label* context, const LazyPtr<Q>& o) :
       object(o.object),
       label(0),
@@ -127,7 +127,7 @@ public:
   /**
    * Move constructor.
    */
-  template<class Q, typename = std::enable_if_t<std::is_convertible<Q,P>::value>>
+  template<class Q, IS_CONVERTIBLE(Q,P)>
   LazyPtr(LazyPtr<Q>&& o) :
       object(std::move(o.object)),
       label(o.label),
@@ -151,7 +151,7 @@ public:
   /**
    * Move constructor.
    */
-  template<class Q, typename = std::enable_if_t<std::is_convertible<Q,P>::value>>
+  template<class Q, IS_CONVERTIBLE(Q,P)>
   LazyPtr(Label* context, LazyPtr<Q>&& o) :
       object(std::move(o.object)),
       label(0),
@@ -234,7 +234,7 @@ public:
   /**
    * Value conversion.
    */
-  template<class U, typename = std::enable_if_t<std::is_convertible<value_type,U>::value>>
+  template<class U, IS_CONVERTIBLE(value_type,U)>
   operator U() const {
     return static_cast<U>(*get());
   }
@@ -250,7 +250,7 @@ public:
    * Get the raw pointer, with lazy cloning.
    */
   P& get() {
-    value_type* raw = object.get();
+    auto raw = object.get();
     if (raw && raw->isFrozen()) {
       raw = static_cast<value_type*>(getLabel()->get(raw));
       object.replace(raw);
@@ -269,7 +269,7 @@ public:
    * Get the raw pointer for read-only use, without cloning.
    */
   P& pull() {
-    value_type* raw = object.get();
+    auto raw = object.get();
     if (raw && raw->isFrozen()) {
       raw = static_cast<value_type*>(getLabel()->pull(raw));
       object.replace(raw);
@@ -391,15 +391,15 @@ public:
   /**
    * Dereference.
    */
-  auto operator*() const {
-    return *get().get();
+  auto& operator*() const {
+    return *get();
   }
 
   /**
    * Member access.
    */
   auto operator->() const {
-    return get().get();
+    return get();
   }
 
   /**
@@ -437,6 +437,18 @@ public:
   }
 
 private:
+  /**
+   * Constructor.
+   */
+  LazyPtr(Label* context, Label* label, const P& object) :
+      object(object),
+      label(0),
+      cross(false) {
+    if (object) {
+      setLabel(label, label != context);
+    }
+  }
+
   /**
    * Get the label.
    */

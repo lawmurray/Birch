@@ -154,7 +154,7 @@ void* allocate() {
  * @param n Number of bytes.
  * @param tid Id of thread that originally allocated.
  */
-void deallocate(void* ptr, const size_t n, const unsigned tid);
+void deallocate(void* ptr, const size_t n, const int tid);
 
 /**
  * Deallocate memory from the heap, previously allocated with
@@ -167,7 +167,7 @@ void deallocate(void* ptr, const size_t n, const unsigned tid);
  * This implementation, where the size is given by a 32-bit integer,
  * is typically slightly faster than the 64-bit integer version.
  */
-void deallocate(void* ptr, const unsigned n, const unsigned tid);
+void deallocate(void* ptr, const unsigned n, const int tid);
 
 /**
  * Reallocate memory from heap.
@@ -179,6 +179,6 @@ void deallocate(void* ptr, const unsigned n, const unsigned tid);
  *
  * @return Pointer to the newly allocated memory.
  */
-void* reallocate(void* ptr1, const size_t n1, const unsigned tid1,
+void* reallocate(void* ptr1, const size_t n1, const int tid1,
     const size_t n2);
 }

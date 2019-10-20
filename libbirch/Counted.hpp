@@ -214,7 +214,7 @@ protected:
    * allocation to the correct pool after use, even when returned by a
    * different thread.
    */
-  unsigned tid;
+  int tid;
 };
 }
 

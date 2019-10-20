@@ -25,7 +25,7 @@ libbirch::StackFunction::~StackFunction() {
   currentStackTrace().pop_back();
 }
 
-void libbirch::line(const unsigned n) {
+void libbirch::line(const int n) {
   currentStackTrace().back().line = n;
 }
 
@@ -33,12 +33,12 @@ void libbirch::abort() {
   abort("assertion failed");
 }
 
-void libbirch::abort(const std::string& msg, const unsigned skip) {
+void libbirch::abort(const std::string& msg, const int skip) {
   printf("error: %s\n", msg.c_str());
   #ifndef NDEBUG
   printf("stack trace:\n");
   auto stacktrace = currentStackTrace();
-  auto i = 0;
+  int i = 0;
   for (auto iter = stacktrace.rbegin() + skip; (i < 20 + skip) &&
       iter != stacktrace.rend(); ++iter) {
     if (iter->file) {
@@ -48,8 +48,8 @@ void libbirch::abort(const std::string& msg, const unsigned skip) {
     }
     ++i;
   }
-  if (i < stacktrace.size() - skip) {
-    int rem = stacktrace.size() - skip - i;
+  if (i < (int)stacktrace.size() - skip) {
+    int rem = (int)stacktrace.size() - skip - i;
     printf("  + %d more\n", rem);
   }
   assert(false);

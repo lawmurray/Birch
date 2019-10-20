@@ -138,7 +138,7 @@ class EagerPtr {
   /**
    * Value conversion.
    */
-  template<class U, typename = std::enable_if_t<std::is_convertible<T,U>::value>>
+  template<class U, IS_CONVERTIBLE(T,U)>
   operator U() const {
     return static_cast<U>(*get());
   }

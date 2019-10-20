@@ -21,16 +21,7 @@ public:
   /**
    * Constructor.
    */
-  Optional() :
-      value(),
-      hasValue(false) {
-    //
-  }
-
-  /**
-   * Constructor.
-   */
-  Optional(const Nil&) :
+  Optional(const Nil& = nil) :
       value(),
       hasValue(false) {
     //
@@ -58,7 +49,7 @@ public:
   /**
    * Constructor.
    */
-  template<class U, typename = std::enable_if_t<std::is_convertible<U,T>::value>>
+  template<class U, IS_CONVERTIBLE(U,T)>
   Optional(const U& value) :
       value(value),
       hasValue(true) {
@@ -68,7 +59,7 @@ public:
   /**
    * Constructor.
    */
-  template<IS_NOT_VALUE(T), class U, typename = std::enable_if_t<std::is_convertible<U,T>::value>>
+  template<IS_NOT_VALUE(T), class U, IS_CONVERTIBLE(U,T)>
   Optional(Label* context, const U& value) :
       value(context, value),
       hasValue(true) {
@@ -87,7 +78,7 @@ public:
   /**
    * Constructor.
    */
-  template<class U, typename = std::enable_if_t<std::is_convertible<U,T>::value>>
+  template<class U, IS_CONVERTIBLE(U,T)>
   Optional(U&& value) :
       value(std::move(value)),
       hasValue(true) {
@@ -97,7 +88,7 @@ public:
   /**
    * Constructor.
    */
-  template<IS_NOT_VALUE(T), class U, typename = std::enable_if_t<std::is_convertible<U,T>::value>>
+  template<IS_NOT_VALUE(T), class U, IS_CONVERTIBLE(U,T)>
   Optional(Label* context, U&& value) :
       value(context, std::move(value)),
       hasValue(true) {
@@ -116,7 +107,7 @@ public:
   /**
    * Copy constructor.
    */
-  template<class U, typename = std::enable_if_t<std::is_convertible<U,T>::value>>
+  template<class U, IS_CONVERTIBLE(U,T)>
   Optional(const Optional<U>& o) :
       value(o.value),
       hasValue(o.hasValue) {
@@ -126,7 +117,7 @@ public:
   /**
    * Copy constructor.
    */
-  template<IS_NOT_VALUE(T), class U, typename = std::enable_if_t<std::is_convertible<U,T>::value>>
+  template<IS_NOT_VALUE(T), class U, IS_CONVERTIBLE(U,T)>
   Optional(Label* context, const Optional<U>& o) :
       value(context, o.value),
       hasValue(o.hasValue) {
@@ -145,7 +136,7 @@ public:
   /**
    * Move constructor.
    */
-  template<class U, typename = std::enable_if_t<std::is_convertible<U,T>::value>>
+  template<class U, IS_CONVERTIBLE(U,T)>
   Optional(Optional<U>&& o) :
       value(std::move(o.value)),
       hasValue(o.hasValue) {
@@ -155,7 +146,7 @@ public:
   /**
    * Move constructor.
    */
-  template<IS_NOT_VALUE(T), class U, typename = std::enable_if_t<std::is_convertible<U,T>::value>>
+  template<IS_NOT_VALUE(T), class U, IS_CONVERTIBLE(U,T)>
   Optional(Label* context, Optional<U>&& o) :
       value(context, std::move(o.value)),
       hasValue(o.hasValue) {

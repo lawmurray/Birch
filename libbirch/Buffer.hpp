@@ -71,7 +71,7 @@ public:
   /**
    * Id of the thread that allocated the buffer.
    */
-  unsigned tid;
+  int tid;
 
 private:
   /**

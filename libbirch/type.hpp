@@ -10,7 +10,7 @@
  *
  * @ingroup libbirch
  *
- * Macro that can be added to the template arguments of a class template
+ * Macro that can be added to the template arguments of a function template
  * specialization to enable it only if a specific type is a value type, using
  * SFINAE.
  */
@@ -37,7 +37,7 @@
  *
  * @ingroup libbirch
  *
- * Macro that can be added to the template arguments of a class template
+ * Macro that can be added to the template arguments of a function template
  * specialization to enable it only if a specific type is a non-value type,
  * using SFINAE.
  */
@@ -58,6 +58,17 @@
  * As IS_NOT_VALUE1.
  */
 #define IS_NOT_VALUE(Type) IS_NOT_VALUE1(Type)
+
+/**
+ * @def IS_CONVERTIBLE
+ *
+ * @ingroup libbirch
+ *
+ * Macro that can be added to the template arguments of a function template
+ * specialization to enable it only if one type is convertible to another,
+ * using SFINAE.
+ */
+#define IS_CONVERTIBLE(From,To) std::enable_if_t<std::is_convertible<From,To>::value,int> = 0
 
 namespace libbirch {
 /*

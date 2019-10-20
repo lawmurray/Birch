@@ -65,7 +65,7 @@ void* libbirch::allocate(const size_t n) {
 #endif
 }
 
-void libbirch::deallocate(void* ptr, const size_t n, const unsigned tid) {
+void libbirch::deallocate(void* ptr, const size_t n, const int tid) {
   assert(ptr);
   assert(n > 0u);
   assert(tid < omp_get_max_threads());
@@ -79,7 +79,7 @@ void libbirch::deallocate(void* ptr, const size_t n, const unsigned tid) {
 #endif
 }
 
-void libbirch::deallocate(void* ptr, const unsigned n, const unsigned tid) {
+void libbirch::deallocate(void* ptr, const unsigned n, const int tid) {
   assert(ptr);
   assert(n > 0u);
   assert(tid < omp_get_max_threads());
@@ -93,7 +93,7 @@ void libbirch::deallocate(void* ptr, const unsigned n, const unsigned tid) {
 #endif
 }
 
-void* libbirch::reallocate(void* ptr1, const size_t n1, const unsigned tid1,
+void* libbirch::reallocate(void* ptr1, const size_t n1, const int tid1,
     const size_t n2) {
   assert(ptr1);
   assert(n1 > 0u);

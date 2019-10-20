@@ -40,7 +40,7 @@ struct StackFunction {
 /**
  * Update the line number of the top frame of the stack trace.
  */
-void line(const unsigned n);
+void line(const int n);
 
 /**
  * Print stack trace and abort.
@@ -54,5 +54,5 @@ void abort();
  * @param skip Number of frames on the top of the call stack to omit from the
  * stack trace.
  */
-void abort(const std::string& msg, const unsigned skip = 0);
+void abort(const std::string& msg, const int skip = 0);
 }
