@@ -27,10 +27,20 @@ public:
   }
 
   /**
+   * Nil constructor.
+   */
+  template<IS_NOT_VALUE(T)>
+  Optional(Label* context, const Nil& = nil) :
+      value(),
+      hasValue(false) {
+    //
+  }
+
+  /**
    * Constructor.
    */
-  template<IS_VALUE(T)>
-  Optional(const T& value) :
+  template<class U>
+  Optional(const U& value) :
       value(value),
       hasValue(true) {
     //
@@ -49,8 +59,8 @@ public:
   /**
    * Constructor.
    */
-  template<IS_VALUE(T)>
-  Optional(T&& value) :
+  template<class U>
+  Optional(U&& value) :
       value(std::move(value)),
       hasValue(true) {
     //
@@ -67,9 +77,18 @@ public:
   }
 
   /**
+   * Copy constructor for value type. Return conversion for all types.
+   */
+  Optional(const Optional<T>& o) :
+      value(o.value),
+      hasValue(o.hasValue) {
+    //
+  }
+
+  /**
    * Copy constructor.
    */
-  template<IS_VALUE(T), class U>
+  template<class U>
   Optional(const Optional<U>& o) :
       value(o.value),
       hasValue(o.hasValue) {
@@ -89,7 +108,16 @@ public:
   /**
    * Move constructor.
    */
-  template<IS_VALUE(T), class U>
+  Optional(Optional<T>&& o) :
+      value(std::move(o.value)),
+      hasValue(o.hasValue) {
+    //
+  }
+
+  /**
+   * Move constructor.
+   */
+  template<class U>
   Optional(Optional<U>&& o) :
       value(std::move(o.value)),
       hasValue(o.hasValue) {
@@ -126,9 +154,31 @@ public:
   /**
    * Copy assignment operator.
    */
+  Optional& operator=(const Optional<T>& o) {
+    return assign(o);
+  }
+
+  /**
+   * Copy assignment operator.
+   */
   template<IS_VALUE(T), class U>
   Optional& operator=(const Optional<U>& o) {
     return assign(o);
+  }
+
+  /**
+   * Copy assignment operator.
+   */
+  template<IS_VALUE(T), class U>
+  Optional& operator=(const U& value) {
+    return assign(value);
+  }
+
+  /**
+   * Move assignment operator.
+   */
+  Optional& operator=(Optional<T>&& o) {
+    return assign(std::move(o));
   }
 
   /**
@@ -137,6 +187,14 @@ public:
   template<IS_VALUE(T), class U>
   Optional& operator=(Optional<U>&& o) {
     return assign(std::move(o));
+  }
+
+  /**
+   * Move assignment operator.
+   */
+  template<IS_VALUE(T), class U>
+  Optional& operator=(U&& value) {
+    return assign(std::move(value));
   }
 
   /**
@@ -177,7 +235,7 @@ public:
    */
   template<IS_NOT_VALUE(T)>
   Optional& assign(Label* context, const Nil&) {
-    this->value = T();
+    this->value.assign(context, T());
     this->hasValue = false;
     return *this;
   }
@@ -269,7 +327,7 @@ public:
 
   template<IS_NOT_VALUE(T)>
   void freeze() {
-    if (value) {
+    if (hasValue) {
       value.freeze();
     }
   }
@@ -281,7 +339,7 @@ public:
 
   template<IS_NOT_VALUE(T)>
   void thaw(Label* label) {
-    if (value) {
+    if (hasValue) {
       value.thaw(label);
     }
   }
@@ -293,7 +351,7 @@ public:
 
   template<IS_NOT_VALUE(T)>
   void finish() {
-    if (value) {
+    if (hasValue) {
       value.finish();
     }
   }
@@ -312,6 +370,11 @@ private:
 
 template<class T>
 struct is_value<Optional<T>> {
+  static const bool value = is_value<T>::value;
+};
+
+template<class T>
+struct is_value<Optional<T>&> {
   static const bool value = is_value<T>::value;
 };
 }

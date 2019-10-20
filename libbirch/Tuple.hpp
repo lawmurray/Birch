@@ -62,7 +62,6 @@ public:
   /**
    * Copy constructor.
    */
-  template<IS_VALUE1(Head),IS_VALUE2(Tuple<Tail...>)>
   Tuple(const Tuple& o) :
       head(o.head),
       tail(o.tail) {
@@ -100,9 +99,38 @@ public:
   }
 
   /**
+   * Deep copy constructor.
+   */
+  template<IS_VALUE1(Head),IS_NOT_VALUE2(Tuple<Tail...>)>
+  Tuple(Label* context, Label* label, const Tuple& o) :
+      head(o.head),
+      tail(context, label, o.tail) {
+    //
+  }
+
+  /**
+   * Deep copy constructor.
+   */
+  template<IS_NOT_VALUE1(Head),IS_VALUE2(Tuple<Tail...>)>
+  Tuple(Label* context, Label* label, const Tuple& o) :
+      head(context, label, o.head),
+      tail(o.tail) {
+    //
+  }
+
+  /**
+   * Deep copy constructor.
+   */
+  template<IS_NOT_VALUE1(Head),IS_NOT_VALUE2(Tuple<Tail...>)>
+  Tuple(Label* context, Label* label, const Tuple& o) :
+      head(context, label, o.head),
+      tail(context, label, o.tail) {
+    //
+  }
+
+  /**
    * Move constructor.
    */
-  template<IS_VALUE1(Head),IS_VALUE2(Tuple<Tail...>)>
   Tuple(Tuple&& o) :
       head(std::move(o.head)),
       tail(std::move(o.tail)) {
@@ -136,36 +164,6 @@ public:
   Tuple(Label* context, Tuple&& o) :
       head(context, std::move(o.head)),
       tail(context, std::move(o.tail)) {
-    //
-  }
-
-  /**
-   * Deep copy constructor.
-   */
-  template<IS_VALUE1(Head),IS_NOT_VALUE2(Tuple<Tail...>)>
-  Tuple(Label* context, Label* label, const Tuple& o) :
-      head(o.head),
-      tail(context, label, o.tail) {
-    //
-  }
-
-  /**
-   * Deep copy constructor.
-   */
-  template<IS_NOT_VALUE1(Head),IS_VALUE2(Tuple<Tail...>)>
-  Tuple(Label* context, Label* label, const Tuple& o) :
-      head(context, label, o.head),
-      tail(o.tail) {
-    //
-  }
-
-  /**
-   * Deep copy constructor.
-   */
-  template<IS_NOT_VALUE1(Head),IS_NOT_VALUE2(Tuple<Tail...>)>
-  Tuple(Label* context, Label* label, const Tuple& o) :
-      head(context, label, o.head),
-      tail(context, label, o.tail) {
     //
   }
 
@@ -207,6 +205,13 @@ public:
     head.assign(context, o.head);
     tail.assign(context, o.tail);
     return *this;
+  }
+
+  /**
+   * Copy assignment operator.
+   */
+  Tuple& operator=(const Tuple<Head,Tail...>& o) {
+    return assign(o);
   }
 
   /**
@@ -255,6 +260,13 @@ public:
     head.assign(context, std::move(o.head));
     tail.assign(context, std::move(o.tail));
     return *this;
+  }
+
+  /**
+   * Move assignment operator.
+   */
+  Tuple& operator=(Tuple<Head,Tail...>&& o) {
+    return assign(std::move(o));
   }
 
   /**

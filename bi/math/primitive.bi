@@ -120,7 +120,7 @@ function reduce<Value>(x:Value[_], init:Value,
     op:@(Value, Value) -> Value) -> Value {
   cpp{{
   auto first = x.begin();
-  auto last = first + x.size();
+  auto last = first + x.rows();
   // return std::reduce(first, last, init, op);
   // ^ C++17
   return std::accumulate(first, last, init, op);
@@ -195,7 +195,7 @@ function inclusive_scan<Value>(x:Value[_], op:@(Value, Value) -> Value) -> Value
   y:Value[length(x)];
   cpp{{
   auto first = x.begin();
-  auto last = first + x.size();
+  auto last = first + x.rows();
   // std::inclusive_scan(first, last, y.begin(), op);
   // ^ C++17
   std::partial_sum(first, last, y.begin(), op);
@@ -216,7 +216,7 @@ function exclusive_scan<Value>(x:Value[_], init:Value,
   y:Value[length(x)];
   //cpp{{
   // auto first = x.begin();
-  // auto last = first + x.size();
+  // auto last = first + x.rows();
   // std::exclusive_scan(first, last, y.begin(), init, op);
   // ^ C++17
   //}}
@@ -238,7 +238,7 @@ function adjacent_difference<Value>(x:Value[_],
   y:Value[length(x)];
   cpp{{
   auto first = x.begin();
-  auto last = first + x.size();
+  auto last = first + x.rows();
   std::adjacent_difference(first, last, y.begin(), op);
   }}
   return y;
@@ -253,7 +253,7 @@ function sort<Value>(x:Value[_]) -> Value[_] {
   y:Value[_] <- x;
   cpp{{
   auto first = y.begin();
-  auto last = first + y.size();
+  auto last = first + y.rows();
   std::sort(first, last);
   }}
   return y;

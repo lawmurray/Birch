@@ -19,11 +19,11 @@
  *
  * Declare `self` within a member function.
  */
-#define libbirch_declare_self_ libbirch::Init<this_type_> self(context_, this);
+#define libbirch_declare_self_ libbirch::Init<this_type_> self(context_, libbirch::InitPtr<this_type_>(this));
 
 /**
  * @def libbirch_declare_local_
  *
  * Declare `local` within a member fiber.
  */
-#define libbirch_declare_local_ libbirch::Init<class_type_> local(context_, this);
+#define libbirch_declare_local_ libbirch::Init<class_type_> local(context_, libbirch::InitPtr<class_type_>(this));

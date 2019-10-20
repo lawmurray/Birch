@@ -106,8 +106,8 @@ auto make_frame(const int64_t arg, Args ... args) {
  *
  * @ingroup libbirch
  */
-template<class Frame>
-auto make_frame(const int64_t arg, const Frame& tail) {
+template<class ... Args>
+auto make_frame(const int64_t arg, const NonemptyFrame<Args...>& tail) {
   auto head = Span<>(arg, tail.volume());
   return NonemptyFrame<decltype(head),decltype(tail)>(head, tail);
 }
@@ -184,7 +184,7 @@ auto make_view(const int64_t arg, Args ... args) {
  */
 template<class Type, class Frame, class ... Args,
     std::enable_if_t<is_value<Type>::value,int> = 0>
-auto make_array(const Frame& frame, Args ... args) {
+Array<Type,Frame> make_array(const Frame& frame, Args ... args) {
   return Array<Type,Frame>(frame, args...);
 }
 
@@ -205,7 +205,8 @@ auto make_array(const Frame& frame, Args ... args) {
  */
 template<class Type, class Frame, class ... Args,
     std::enable_if_t<!is_value<Type>::value,int> = 0>
-auto make_array(Label* context, const Frame& frame, Args ... args) {
+Array<Type,Frame> make_array(Label* context, const Frame& frame, \
+    Args ... args) {
   return Array<Type,Frame>(context, frame, args...);
 }
 
@@ -224,7 +225,8 @@ auto make_array(Label* context, const Frame& frame, Args ... args) {
  * @return The array.
  */
 template<class Type, class Frame, class Value>
-auto make_array_and_assign(const Frame& frame, const Value& value) {
+Array<Type,Frame> make_array_and_assign(const Frame& frame,
+    const Value& value) {
   Array<Type,Frame> result;
   result.enlarge(frame, value);
   return result;
@@ -241,11 +243,50 @@ auto make_array_and_assign(const Frame& frame, const Value& value) {
  * @param context Current context.
  * @param args Constructor arguments.
  *
- * @return A shared pointer to the new object.
+ * @return A raw pointer to the new object.
  */
 template<class Type, class ... Args>
-auto make_object(Label* context, Args ... args) {
-  return Shared<Type>(context, args...);
+Type* make_object(Label* context, const Args& ... args) {
+  return new Type(context, args...);
+}
+
+/**
+ * Clone an object.
+ *
+ * @ingroup libbirch
+ *
+ * @tparam Type Object type.
+ *
+ * @param context Current context.
+ * @param o The object.
+ *
+ * @return A raw pointer to the new object.
+ *
+ * @note Typically, one uses the clone_() virtual member function of an
+ * object, which calls this function, rather than calling this function
+ * directly, to ensure that Type is the most derived type of the object.
+ */
+template<class Type>
+Type* clone_object(Label* context, const Type* o) {
+  return make_object<Type>(context, context, *o);
+}
+
+/**
+ * Make a pointer, with in-place object construction.
+ *
+ * @ingroup libbirch
+ *
+ * @tparam P Pointer type.
+ * @tparam Args Constructor parameter types.
+ *
+ * @param context Current context.
+ * @param args Constructor arguments.
+ *
+ * @return A pointer of the given type.
+ */
+template<class P, class ... Args>
+P make_pointer(Label* context, const Args& ... args) {
+  return P(context, make_object<typename P::value_type>(context, args...));
 }
 
 /**
@@ -258,9 +299,10 @@ auto make_object(Label* context, Args ... args) {
  * @param args Fiber state constructor arguments.
  */
 template<class StateType, class ... Args>
-auto make_fiber(Label* context, Args ... args) {
+Fiber<typename StateType::yield_type_> make_fiber(Label* context,
+    const Args&... args) {
   return Fiber<typename StateType::yield_type_>(context,
-      make_object<StateType>(context, args...));
+      Shared<StateType>(context, make_object<StateType>(context, args...)));
 }
 
 /**
@@ -273,7 +315,7 @@ auto make_fiber(Label* context, Args ... args) {
  * @param tail Remaining elements.
  */
 template<class Head, class... Tail>
-auto make_tuple(const Head& head, const Tail&... tail) {
+Tuple<Head,Tail...> make_tuple(const Head& head, const Tail&... tail) {
   return Tuple<Head,Tail...>(head, tail...);
 }
 
@@ -287,7 +329,8 @@ auto make_tuple(const Head& head, const Tail&... tail) {
  * @param tail Remaining elements.
  */
 template<class Head, class... Tail>
-auto make_tuple(Label* context, const Head& head, const Tail&... tail) {
+Tuple<Head,Tail...> make_tuple(Label* context, const Head& head,
+    const Tail&... tail) {
   return Tuple<Head,Tail...>(context, head, tail...);
 }
 
@@ -301,7 +344,7 @@ auto make_tuple(Label* context, const Head& head, const Tail&... tail) {
  * @param tail Remaining elements.
  */
 template<class Head, class... Tail>
-auto tie(Head& head, Tail&... tail) {
+Tuple<Head&,Tail&...> tie(Head& head, Tail&... tail) {
   return Tuple<Head&,Tail&...>(head, tail...);
 }
 
@@ -315,7 +358,7 @@ auto tie(Head& head, Tail&... tail) {
  * @param tail Remaining elements.
  */
 template<class Head, class... Tail>
-auto tie(Label* context, Head& head, Tail&... tail) {
+Tuple<Head&,Tail&...> tie(Label* context, Head& head, Tail&... tail) {
   return Tuple<Head&,Tail&...>(context, head, tail...);
 }
 
@@ -323,7 +366,7 @@ auto tie(Label* context, Head& head, Tail&... tail) {
  * Cast an object.
  */
 template<class To, class From>
-auto dynamic_pointer_cast(Label* context, const Shared<From>& from) {
+Optional<To> dynamic_pointer_cast(Label* context, const Shared<From>& from) {
   return Optional<To>(context, from.template dynamic_pointer_cast<To>(context));
 }
 
@@ -331,7 +374,7 @@ auto dynamic_pointer_cast(Label* context, const Shared<From>& from) {
  * Cast an object optional.
  */
 template<class To, class From>
-auto dynamic_pointer_cast(Label* context, const Optional<Shared<From>>& from) {
+Optional<To> dynamic_pointer_cast(Label* context, const Optional<Shared<From>>& from) {
   if (from.query()) {
     return Optional<To>(context, from.get().template dynamic_pointer_cast<To>(context));
   } else {
@@ -345,7 +388,7 @@ auto dynamic_pointer_cast(Label* context, const Optional<Shared<From>>& from) {
  * @return An optional, with a value only if @p from is of type To.
  */
 template<class To, class From>
-auto check_cast(const From& from) {
+Optional<To> check_cast(const From& from) {
   return std::is_same<To,From>::value ? Optional<To>(from) : Optional<To>();
 }
 
@@ -355,7 +398,7 @@ auto check_cast(const From& from) {
  * @return An optional, with a value only if @p from has a value of type To.
  */
 template<class To, class From>
-auto check_cast(const Optional<From>& from) {
+Optional<To> check_cast(const Optional<From>& from) {
   if (from.query()) {
     return check_cast<To>(from.get());
   } else {

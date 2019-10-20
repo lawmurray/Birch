@@ -18,6 +18,6 @@
  */
 function clone<Type>(o:Type) -> Type {
   cpp{{
-  return o.clone();
+  return o.clone(context_);
   }}
 }

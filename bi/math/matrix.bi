@@ -81,7 +81,7 @@ function matrix(x:Real, rows:Integer, columns:Integer) -> Real[_,_] {
   Z:Real[rows,columns];
   cpp{{
   auto first = Z.begin();
-  auto last = first + Z.size();
+  auto last = first + Z.rows()*Z.cols();
   std::fill(first, last, x);
   }}
   return Z;
@@ -98,7 +98,7 @@ function matrix(x:Integer, rows:Integer, columns:Integer) -> Integer[_,_] {
   Z:Integer[rows,columns];
   cpp{{
   auto first = Z.begin();
-  auto last = first + Z.size();
+  auto last = first + Z.rows()*Z.cols();
   std::fill(first, last, x);
   }}
   return Z;
@@ -115,7 +115,7 @@ function matrix(x:Boolean, rows:Integer, columns:Integer) -> Boolean[_,_] {
   Z:Boolean[rows,columns];
   cpp{{
   auto first = Z.begin();
-  auto last = first + Z.size();
+  auto last = first + Z.rows()*Z.cols();
   std::fill(first, last, x);
   }}
   return Z;

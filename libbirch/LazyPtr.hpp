@@ -40,8 +40,17 @@ public:
   /**
    * Constructor.
    */
-  template<class Q>
-  LazyPtr(Label* context, const Q& object) :
+  LazyPtr(Label* context, const Nil& = nil) :
+      object(),
+      label(0),
+      cross(false) {
+    //
+  }
+
+  /**
+   * Constructor.
+   */
+  LazyPtr(Label* context, const P& object) :
       object(object),
       label(reinterpret_cast<intptr_t>(context)),
       cross(false) {
@@ -51,10 +60,30 @@ public:
   /**
    * Constructor.
    */
-  template<class... Args>
-  LazyPtr(Label* context, Args... args) :
-      object(new value_type(context, args...)),
+  LazyPtr(Label* context, const value_type* object) :
+      object(object),
       label(reinterpret_cast<intptr_t>(context)),
+      cross(false) {
+    //
+  }
+
+  /**
+   * Copy constructor.
+   */
+  LazyPtr(const LazyPtr<P>& o) :
+      object(o.object),
+      label(o.label),
+      cross(false) {
+    //
+  }
+
+  /**
+   * Copy constructor.
+   */
+  template<class Q>
+  LazyPtr(const LazyPtr<Q>& o) :
+      object(o.object),
+      label(o.label),
       cross(false) {
     //
   }
@@ -70,6 +99,29 @@ public:
     if (object) {
       setLabel(o.getLabel(), o.getLabel() != context);
     }
+  }
+
+  /**
+   * Move constructor.
+   */
+  LazyPtr(LazyPtr<P>&& o) :
+      object(std::move(o.object)),
+      label(o.label),
+      cross(o.cross) {
+    o.label = 0;
+    o.cross = false;
+  }
+
+  /**
+   * Move constructor.
+   */
+  template<class Q>
+  LazyPtr(LazyPtr<Q>&& o) :
+      object(std::move(o.object)),
+      label(o.label),
+      cross(o.cross) {
+    o.label = 0;
+    o.cross = false;
   }
 
   /**
@@ -101,48 +153,6 @@ public:
       object = o.object;
       setLabel(label, false);
     }
-  }
-
-  /**
-   * Copy constructor.
-   */
-  LazyPtr(const LazyPtr<P>& o) :
-      object(o.object),
-      label(o.label),
-      cross(false) {
-    //
-  }
-
-  /**
-   * Move constructor.
-   */
-  LazyPtr(LazyPtr<P>&& o) :
-      object(std::move(o.object)),
-      label(o.label),
-      cross(false) {
-    //
-  }
-
-  /**
-   * Copy constructor.
-   */
-  template<class Q>
-  LazyPtr(const LazyPtr<Q>& o) :
-      object(o.object),
-      label(o.label),
-      cross(false) {
-    //
-  }
-
-  /**
-   * Move constructor.
-   */
-  template<class Q>
-  LazyPtr(LazyPtr<Q>&& o) :
-      object(std::move(o.object)),
-      label(o.label),
-      cross(false) {
-    //
   }
 
   /**
@@ -205,38 +215,38 @@ public:
   /**
    * Get the raw pointer, with lazy cloning.
    */
-  auto& get() {
-    auto raw = object.get();
+  value_type* get() {
+    value_type* raw = object.get();
     if (raw && raw->isFrozen()) {
       raw = static_cast<value_type*>(getLabel()->get(raw));
       object.replace(raw);
     }
-    return object;
+    return raw;
   }
 
   /**
    * Get the raw pointer, with lazy cloning.
    */
-  auto& get() const {
+  auto get() const {
     return const_cast<LazyPtr<P>*>(this)->get();
   }
 
   /**
    * Get the raw pointer for read-only use, without cloning.
    */
-  auto& pull() {
-    auto raw = object.get();
+  value_type* pull() {
+    value_type* raw = object.get();
     if (raw && raw->isFrozen()) {
       raw = static_cast<value_type*>(getLabel()->pull(raw));
       object.replace(raw);
     }
-    return object;
+    return raw;
   }
 
   /**
    * Get the raw pointer for read-only use, without cloning.
    */
-  auto& pull() const {
+  auto pull() const {
     return const_cast<LazyPtr<P>*>(this)->pull();
   }
 
@@ -347,14 +357,14 @@ public:
   /**
    * Dereference.
    */
-  auto operator*() const {
+  value_type& operator*() const {
     return *get();
   }
 
   /**
    * Member access.
    */
-  auto operator->() const {
+  value_type* operator->() const {
     return get();
   }
 
@@ -380,7 +390,7 @@ public:
   template<class U>
   auto dynamic_pointer_cast(Label* context) const {
     auto cast = object.template dynamic_pointer_cast<typename U::pointer_type>();
-    return LazyPtr<decltype(cast)>(context, getLabel(), cast);
+    return LazyPtr<decltype(cast)>(getLabel(), cast);
   }
 
   /**
@@ -389,7 +399,7 @@ public:
   template<class U>
   auto static_pointer_cast(Label* context) const {
     auto cast = object.template static_pointer_cast<typename U::pointer_type>();
-    return LazyPtr<decltype(cast)>(context, getLabel(), cast);
+    return LazyPtr<decltype(cast)>(getLabel(), cast);
   }
 
 private:

@@ -33,7 +33,7 @@ public:
   /**
    * Deep copy constructor.
    */
-  LazyAny(LazyLabel* context, const LazyAny& o);
+  LazyAny(LazyLabel* context, LazyLabel* label, const LazyAny& o);
 
   /**
    * Destructor.
@@ -79,13 +79,9 @@ public:
    */
   void finish();
 
-  virtual LazyAny* clone_(LazyLabel* context) const {
-    return new LazyAny(context, *this);
-  }
+  virtual LazyAny* clone_(LazyLabel* context) const = 0;
 
-  virtual const char* name_() const {
-    return "Any";
-  }
+  virtual const char* name_() const = 0;
 
 protected:
   /**
@@ -130,9 +126,9 @@ protected:
 };
 }
 
-inline libbirch::LazyAny::LazyAny(LazyLabel* label) :
+inline libbirch::LazyAny::LazyAny(LazyLabel* context) :
     Counted(),
-    label((intptr_t)label),
+    label((intptr_t)context),
     frozen(false),
     finished(false)
     #if ENABLE_SINGLE_REFERENCE_OPTIMIZATION
@@ -142,7 +138,8 @@ inline libbirch::LazyAny::LazyAny(LazyLabel* label) :
   //
 }
 
-inline libbirch::LazyAny::LazyAny(LazyLabel* label, const LazyAny& o) :
+inline libbirch::LazyAny::LazyAny(LazyLabel* context, LazyLabel* label,
+    const LazyAny& o) :
     Counted(o),
     label((intptr_t)label),
     frozen(false),

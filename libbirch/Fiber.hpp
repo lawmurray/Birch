@@ -40,6 +40,14 @@ public:
   }
 
   /**
+   * Deep copy constructor.
+   */
+  Fiber(Label* context, Label* label, const Fiber<YieldType>& o) :
+      state(context, label, o.state) {
+    //
+  }
+
+  /**
    * Clone the fiber.
    */
   Fiber<YieldType> clone() const {
@@ -77,7 +85,7 @@ public:
     if (state.query()) {
       result = state->query();
       if (!result) {
-        const_cast<Fiber<YieldType>*>(this)->state = nullptr;
+        const_cast<Fiber<YieldType>*>(this)->state.release();
         // ^ fiber has finished, delete the state
       }
     }

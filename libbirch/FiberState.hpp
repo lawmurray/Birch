@@ -34,10 +34,9 @@ public:
   /**
    * Deep copy constructor for value yield type.
    */
-  template<class T = YieldType>
-  FiberState(Label* label, const FiberState<YieldType>& o,
-      typename std::enable_if_t<is_value<T>::value,int> = 0) :
-      Any(label, o),
+  template<IS_VALUE(YieldType)>
+  FiberState(Label* context, Label* label, const FiberState<YieldType>& o) :
+      Any(context, label, o),
       value_(o.value_),
       point_(o.point_),
       npoints_(o.npoints_) {
@@ -47,11 +46,10 @@ public:
   /**
    * Deep copy constructor for non-value yield type.
    */
-  template<class T = YieldType>
-  FiberState(Label* label, const FiberState<YieldType>& o,
-      typename std::enable_if_t<!is_value<T>::value,int> = 0) :
-      Any(label, o),
-      value_(label, o.value_),
+  template<IS_NOT_VALUE(YieldType)>
+  FiberState(Label* context, Label* label, const FiberState<YieldType>& o) :
+      Any(context, label, o),
+      value_(context, label, o.value_),
       point_(o.point_),
       npoints_(o.npoints_) {
     //

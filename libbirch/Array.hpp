@@ -114,8 +114,22 @@ public:
   /**
    * Copy constructor.
    */
-  template<IS_VALUE(T), class U, class G>
-  Array(const Array<U,G>& o) : Array<T,F>(o.frame) {
+  Array(const Array<T,F>& o) :
+      frame(o.frame),
+      buffer(o.buffer),
+      offset(o.offset),
+      isView(o.isView) {
+    if (!isView && buffer) {
+      buffer->incUsage();
+    }
+  }
+
+  /**
+   * Copy constructor.
+   */
+  template<class U, class G>
+  Array(const Array<U,G>& o) :
+      Array(o.frame) {
     this->allocate();
     this->uninitialized_copy(o);
   }
@@ -128,6 +142,17 @@ public:
       Array(o.frame) {
     this->allocate();
     this->uninitialized_copy(context, o);
+  }
+
+  /**
+   * Move constructor.
+   */
+  Array(Array<T,F>&& o) :
+      frame(o.frame),
+      buffer(o.buffer),
+      offset(o.offset),
+      isView(o.isView) {
+    o.buffer = nullptr;
   }
 
   /**
@@ -196,9 +221,8 @@ public:
   }
 
   /**
-   * Copy assignment.
+   * Copy assignment operator.
    */
-  template<IS_VALUE(T)>
   Array<T,F>& operator=(const Array<T,F>& o) {
     return assign(o);
   }
@@ -250,9 +274,8 @@ public:
   }
 
   /**
-   * Move assignment.
+   * Move assignment operator.
    */
-  template<IS_VALUE(T)>
   Array<T,F>& operator=(Array<T,F>&& o) {
     return assign(std::move(o));
   }
