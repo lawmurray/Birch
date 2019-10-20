@@ -1,4 +1,4 @@
-/* A Bison parser, made by GNU Bison 3.4.1.  */
+/* A Bison parser, made by GNU Bison 3.4.2.  */
 
 /* Skeleton implementation for Bison GLR parsers in C
 
@@ -39,7 +39,7 @@
 #define YYBISON 1
 
 /* Bison version.  */
-#define YYBISON_VERSION "3.4.1"
+#define YYBISON_VERSION "3.4.2"
 
 /* Skeleton name.  */
 #define YYSKELETON_NAME "glr.c"
@@ -1158,7 +1158,9 @@ yy_symbol_value_print (FILE *yyo, int yytype, YYSTYPE const * const yyvaluep, YY
   YYUSE (yylocationp);
   if (!yyvaluep)
     return;
+  YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN
   YYUSE (yytype);
+  YY_IGNORE_MAYBE_UNINITIALIZED_END
 }
 
 
@@ -1555,1205 +1557,1205 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
   case 2:
 #line 162 "bi/parser.ypp"
     { ((*yyvalp).valName) = new bi::Name((((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valString)); }
-#line 1559 "bi/parser.cpp"
+#line 1561 "bi/parser.cpp"
     break;
 
   case 3:
 #line 171 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = new bi::Literal<bool>((((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valString), new bi::BasicType(new bi::Name("Boolean")), make_loc((*yylocp))); }
-#line 1565 "bi/parser.cpp"
+#line 1567 "bi/parser.cpp"
     break;
 
   case 4:
 #line 175 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = new bi::Literal<int64_t>((((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valString), new bi::BasicType(new bi::Name("Integer")), make_loc((*yylocp))); }
-#line 1571 "bi/parser.cpp"
+#line 1573 "bi/parser.cpp"
     break;
 
   case 5:
 #line 179 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = new bi::Literal<double>((((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valString), new bi::BasicType(new bi::Name("Real")), make_loc((*yylocp))); }
-#line 1577 "bi/parser.cpp"
+#line 1579 "bi/parser.cpp"
     break;
 
   case 6:
 #line 183 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = new bi::Literal<const char*>((((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valString), new bi::BasicType(new bi::Name("String")), make_loc((*yylocp))); }
-#line 1583 "bi/parser.cpp"
+#line 1585 "bi/parser.cpp"
     break;
 
   case 11:
 #line 194 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = new bi::Identifier<bi::Unknown>((((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valName), make_loc((*yylocp))); }
-#line 1589 "bi/parser.cpp"
+#line 1591 "bi/parser.cpp"
     break;
 
   case 12:
 #line 198 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = new bi::OverloadedIdentifier<bi::Unknown>((((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valName), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valType), make_loc((*yylocp))); }
-#line 1595 "bi/parser.cpp"
+#line 1597 "bi/parser.cpp"
     break;
 
   case 13:
 #line 202 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = new bi::Parentheses((((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))); }
-#line 1601 "bi/parser.cpp"
+#line 1603 "bi/parser.cpp"
     break;
 
   case 14:
 #line 206 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = new bi::Sequence((((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))); }
-#line 1607 "bi/parser.cpp"
+#line 1609 "bi/parser.cpp"
     break;
 
   case 15:
 #line 210 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = new bi::Cast(new bi::UnknownType(false, (((yyGLRStackItem const *)yyvsp)[YYFILL (-5)].yystate.yysemantics.yysval.valName), (((yyGLRStackItem const *)yyvsp)[YYFILL (-4)].yystate.yysemantics.yysval.valType), make_loc((*yylocp))), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))); }
-#line 1613 "bi/parser.cpp"
+#line 1615 "bi/parser.cpp"
     break;
 
   case 16:
 #line 214 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = new bi::LambdaFunction((((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valType), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valStatement), make_loc((*yylocp))); }
-#line 1619 "bi/parser.cpp"
+#line 1621 "bi/parser.cpp"
     break;
 
   case 17:
 #line 218 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = new bi::This(make_loc((*yylocp))); }
-#line 1625 "bi/parser.cpp"
+#line 1627 "bi/parser.cpp"
     break;
 
   case 18:
 #line 222 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = new bi::Super(make_loc((*yylocp))); }
-#line 1631 "bi/parser.cpp"
+#line 1633 "bi/parser.cpp"
     break;
 
   case 19:
 #line 226 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = new bi::Nil(make_loc((*yylocp))); }
-#line 1637 "bi/parser.cpp"
+#line 1639 "bi/parser.cpp"
     break;
 
   case 29:
 #line 242 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = new bi::Range((((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))); }
-#line 1643 "bi/parser.cpp"
+#line 1645 "bi/parser.cpp"
     break;
 
   case 30:
 #line 243 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = new bi::Index((((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))); }
-#line 1649 "bi/parser.cpp"
+#line 1651 "bi/parser.cpp"
     break;
 
   case 32:
 #line 248 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = new bi::ExpressionList((((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))); }
-#line 1655 "bi/parser.cpp"
+#line 1657 "bi/parser.cpp"
     break;
 
   case 33:
 #line 252 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression); }
-#line 1661 "bi/parser.cpp"
+#line 1663 "bi/parser.cpp"
     break;
 
   case 35:
 #line 257 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = new bi::Member((((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))); }
-#line 1667 "bi/parser.cpp"
+#line 1669 "bi/parser.cpp"
     break;
 
   case 36:
 #line 258 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = new bi::Global((((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))); }
-#line 1673 "bi/parser.cpp"
+#line 1675 "bi/parser.cpp"
     break;
 
   case 37:
 #line 259 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = new bi::Global((((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))); }
-#line 1679 "bi/parser.cpp"
+#line 1681 "bi/parser.cpp"
     break;
 
   case 38:
 #line 260 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = new bi::Member((((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))); }
-#line 1685 "bi/parser.cpp"
+#line 1687 "bi/parser.cpp"
     break;
 
   case 39:
 #line 261 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = new bi::Slice((((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))); }
-#line 1691 "bi/parser.cpp"
+#line 1693 "bi/parser.cpp"
     break;
 
   case 40:
 #line 262 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = new bi::Call<bi::Unknown>((((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))); }
-#line 1697 "bi/parser.cpp"
+#line 1699 "bi/parser.cpp"
     break;
 
   case 41:
 #line 263 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = new bi::Get((((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))); }
-#line 1703 "bi/parser.cpp"
+#line 1705 "bi/parser.cpp"
     break;
 
   case 43:
 #line 268 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = new bi::Query((((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))); }
-#line 1709 "bi/parser.cpp"
+#line 1711 "bi/parser.cpp"
     break;
 
   case 44:
 #line 272 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = new bi::OverloadedIdentifier<bi::UnaryOperator>(new bi::Name("+"), empty_type((*yylocp)), make_loc((*yylocp))); }
-#line 1715 "bi/parser.cpp"
+#line 1717 "bi/parser.cpp"
     break;
 
   case 45:
 #line 273 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = new bi::OverloadedIdentifier<bi::UnaryOperator>(new bi::Name("-"), empty_type((*yylocp)), make_loc((*yylocp))); }
-#line 1721 "bi/parser.cpp"
+#line 1723 "bi/parser.cpp"
     break;
 
   case 46:
 #line 274 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = new bi::OverloadedIdentifier<bi::UnaryOperator>(new bi::Name("!"), empty_type((*yylocp)), make_loc((*yylocp))); }
-#line 1727 "bi/parser.cpp"
+#line 1729 "bi/parser.cpp"
     break;
 
   case 48:
 #line 279 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = new bi::Call<bi::Unknown>((((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))); }
-#line 1733 "bi/parser.cpp"
+#line 1735 "bi/parser.cpp"
     break;
 
   case 49:
 #line 283 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = new bi::OverloadedIdentifier<bi::BinaryOperator>(new bi::Name("*"), empty_type((*yylocp)), make_loc((*yylocp))); }
-#line 1739 "bi/parser.cpp"
+#line 1741 "bi/parser.cpp"
     break;
 
   case 50:
 #line 284 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = new bi::OverloadedIdentifier<bi::BinaryOperator>(new bi::Name("/"), empty_type((*yylocp)), make_loc((*yylocp))); }
-#line 1745 "bi/parser.cpp"
+#line 1747 "bi/parser.cpp"
     break;
 
   case 52:
 #line 289 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = new bi::Call<bi::Unknown>((((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression), new bi::Binary((((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))), make_loc((*yylocp))); }
-#line 1751 "bi/parser.cpp"
+#line 1753 "bi/parser.cpp"
     break;
 
   case 53:
 #line 293 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = new bi::OverloadedIdentifier<bi::BinaryOperator>(new bi::Name("+"), empty_type((*yylocp)), make_loc((*yylocp))); }
-#line 1757 "bi/parser.cpp"
+#line 1759 "bi/parser.cpp"
     break;
 
   case 54:
 #line 294 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = new bi::OverloadedIdentifier<bi::BinaryOperator>(new bi::Name("-"), empty_type((*yylocp)), make_loc((*yylocp))); }
-#line 1763 "bi/parser.cpp"
+#line 1765 "bi/parser.cpp"
     break;
 
   case 56:
 #line 299 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = new bi::Call<bi::Unknown>((((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression), new bi::Binary((((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))), make_loc((*yylocp))); }
-#line 1769 "bi/parser.cpp"
+#line 1771 "bi/parser.cpp"
     break;
 
   case 57:
 #line 303 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = new bi::OverloadedIdentifier<bi::BinaryOperator>(new bi::Name("<"), empty_type((*yylocp)), make_loc((*yylocp))); }
-#line 1775 "bi/parser.cpp"
+#line 1777 "bi/parser.cpp"
     break;
 
   case 58:
 #line 304 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = new bi::OverloadedIdentifier<bi::BinaryOperator>(new bi::Name(">"), empty_type((*yylocp)), make_loc((*yylocp))); }
-#line 1781 "bi/parser.cpp"
+#line 1783 "bi/parser.cpp"
     break;
 
   case 59:
 #line 305 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = new bi::OverloadedIdentifier<bi::BinaryOperator>(new bi::Name("<="), empty_type((*yylocp)), make_loc((*yylocp))); }
-#line 1787 "bi/parser.cpp"
+#line 1789 "bi/parser.cpp"
     break;
 
   case 60:
 #line 306 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = new bi::OverloadedIdentifier<bi::BinaryOperator>(new bi::Name(">="), empty_type((*yylocp)), make_loc((*yylocp))); }
-#line 1793 "bi/parser.cpp"
+#line 1795 "bi/parser.cpp"
     break;
 
   case 62:
 #line 316 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = new bi::Call<bi::Unknown>((((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression), new bi::Binary((((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))), make_loc((*yylocp))); }
-#line 1799 "bi/parser.cpp"
+#line 1801 "bi/parser.cpp"
     break;
 
   case 63:
 #line 320 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = new bi::OverloadedIdentifier<bi::BinaryOperator>(new bi::Name("=="), empty_type((*yylocp)), make_loc((*yylocp))); }
-#line 1805 "bi/parser.cpp"
+#line 1807 "bi/parser.cpp"
     break;
 
   case 64:
 #line 321 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = new bi::OverloadedIdentifier<bi::BinaryOperator>(new bi::Name("!="), empty_type((*yylocp)), make_loc((*yylocp))); }
-#line 1811 "bi/parser.cpp"
+#line 1813 "bi/parser.cpp"
     break;
 
   case 66:
 #line 326 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = new bi::Call<bi::Unknown>((((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression), new bi::Binary((((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))), make_loc((*yylocp))); }
-#line 1817 "bi/parser.cpp"
+#line 1819 "bi/parser.cpp"
     break;
 
   case 67:
 #line 330 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = new bi::OverloadedIdentifier<bi::BinaryOperator>(new bi::Name("&&"), empty_type((*yylocp)), make_loc((*yylocp))); }
-#line 1823 "bi/parser.cpp"
+#line 1825 "bi/parser.cpp"
     break;
 
   case 69:
 #line 335 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = new bi::Call<bi::Unknown>((((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression), new bi::Binary((((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))), make_loc((*yylocp))); }
-#line 1829 "bi/parser.cpp"
+#line 1831 "bi/parser.cpp"
     break;
 
   case 70:
 #line 339 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = new bi::OverloadedIdentifier<bi::BinaryOperator>(new bi::Name("||"), empty_type((*yylocp)), make_loc((*yylocp))); }
-#line 1835 "bi/parser.cpp"
+#line 1837 "bi/parser.cpp"
     break;
 
   case 72:
 #line 344 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = new bi::Call<bi::Unknown>((((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression), new bi::Binary((((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))), make_loc((*yylocp))); }
-#line 1841 "bi/parser.cpp"
+#line 1843 "bi/parser.cpp"
     break;
 
   case 73:
 #line 348 "bi/parser.ypp"
     { ((*yyvalp).valName) = new bi::Name("<-"); }
-#line 1847 "bi/parser.cpp"
+#line 1849 "bi/parser.cpp"
     break;
 
   case 75:
 #line 353 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = new bi::Assign((((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valName), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))); }
-#line 1853 "bi/parser.cpp"
+#line 1855 "bi/parser.cpp"
     break;
 
   case 78:
 #line 362 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = empty_expr((*yylocp)); }
-#line 1859 "bi/parser.cpp"
+#line 1861 "bi/parser.cpp"
     break;
 
   case 80:
 #line 367 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = new bi::ExpressionList((((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))); }
-#line 1865 "bi/parser.cpp"
+#line 1867 "bi/parser.cpp"
     break;
 
   case 81:
 #line 371 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = new bi::LocalVariable(bi::NONE, (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valName), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valType), empty_expr((*yylocp)), empty_expr((*yylocp)), empty_expr((*yylocp)), make_loc((*yylocp))); }
-#line 1871 "bi/parser.cpp"
+#line 1873 "bi/parser.cpp"
     break;
 
   case 82:
 #line 372 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = new bi::LocalVariable(bi::NONE, (((yyGLRStackItem const *)yyvsp)[YYFILL (-3)].yystate.yysemantics.yysval.valName), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valType), empty_expr((*yylocp)), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valExpression), empty_expr((*yylocp)), make_loc((*yylocp))); }
-#line 1877 "bi/parser.cpp"
+#line 1879 "bi/parser.cpp"
     break;
 
   case 83:
 #line 373 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = new bi::LocalVariable(bi::NONE, (((yyGLRStackItem const *)yyvsp)[YYFILL (-3)].yystate.yysemantics.yysval.valName), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valType), empty_expr((*yylocp)), empty_expr((*yylocp)), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))); }
-#line 1883 "bi/parser.cpp"
+#line 1885 "bi/parser.cpp"
     break;
 
   case 84:
 #line 374 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = new bi::LocalVariable(bi::AUTO, (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valName), empty_type((*yylocp)), empty_expr((*yylocp)), empty_expr((*yylocp)), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))); }
-#line 1889 "bi/parser.cpp"
+#line 1891 "bi/parser.cpp"
     break;
 
   case 85:
 #line 375 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = new bi::LocalVariable(bi::NONE, (((yyGLRStackItem const *)yyvsp)[YYFILL (-3)].yystate.yysemantics.yysval.valName), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valType), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valExpression), empty_expr((*yylocp)), empty_expr((*yylocp)), make_loc((*yylocp))); }
-#line 1895 "bi/parser.cpp"
+#line 1897 "bi/parser.cpp"
     break;
 
   case 86:
 #line 376 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = new bi::LocalVariable(bi::NONE, (((yyGLRStackItem const *)yyvsp)[YYFILL (-4)].yystate.yysemantics.yysval.valName), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valType), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valExpression), empty_expr((*yylocp)), make_loc((*yylocp))); }
-#line 1901 "bi/parser.cpp"
+#line 1903 "bi/parser.cpp"
     break;
 
   case 87:
 #line 377 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = new bi::LocalVariable(bi::NONE, (((yyGLRStackItem const *)yyvsp)[YYFILL (-4)].yystate.yysemantics.yysval.valName), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valType), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression), empty_expr((*yylocp)), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))); }
-#line 1907 "bi/parser.cpp"
+#line 1909 "bi/parser.cpp"
     break;
 
   case 88:
 #line 381 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = new bi::Span((((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))); }
-#line 1913 "bi/parser.cpp"
+#line 1915 "bi/parser.cpp"
     break;
 
   case 90:
 #line 386 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = new bi::ExpressionList((((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))); }
-#line 1919 "bi/parser.cpp"
+#line 1921 "bi/parser.cpp"
     break;
 
   case 91:
 #line 390 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression); }
-#line 1925 "bi/parser.cpp"
+#line 1927 "bi/parser.cpp"
     break;
 
   case 92:
 #line 394 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = empty_expr((*yylocp)); }
-#line 1931 "bi/parser.cpp"
+#line 1933 "bi/parser.cpp"
     break;
 
   case 93:
 #line 395 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression); }
-#line 1937 "bi/parser.cpp"
+#line 1939 "bi/parser.cpp"
     break;
 
   case 95:
 #line 400 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = empty_expr((*yylocp)); }
-#line 1943 "bi/parser.cpp"
+#line 1945 "bi/parser.cpp"
     break;
 
   case 97:
 #line 405 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = new bi::ExpressionList((((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))); }
-#line 1949 "bi/parser.cpp"
+#line 1951 "bi/parser.cpp"
     break;
 
   case 98:
 #line 409 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = new bi::Parameter(bi::NONE, (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valName), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valType), empty_expr((*yylocp)), make_loc((*yylocp))); }
-#line 1955 "bi/parser.cpp"
+#line 1957 "bi/parser.cpp"
     break;
 
   case 99:
 #line 413 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = empty_expr((*yylocp)); }
-#line 1961 "bi/parser.cpp"
+#line 1963 "bi/parser.cpp"
     break;
 
   case 100:
 #line 414 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression); }
-#line 1967 "bi/parser.cpp"
+#line 1969 "bi/parser.cpp"
     break;
 
   case 102:
 #line 419 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = new bi::ExpressionList((((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))); }
-#line 1973 "bi/parser.cpp"
+#line 1975 "bi/parser.cpp"
     break;
 
   case 103:
 #line 423 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = new bi::Parameter(bi::NONE, (((yyGLRStackItem const *)yyvsp)[YYFILL (-3)].yystate.yysemantics.yysval.valName), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valType), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))); }
-#line 1979 "bi/parser.cpp"
+#line 1981 "bi/parser.cpp"
     break;
 
   case 104:
 #line 427 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = empty_expr((*yylocp)); }
-#line 1985 "bi/parser.cpp"
+#line 1987 "bi/parser.cpp"
     break;
 
   case 105:
 #line 428 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression); }
-#line 1991 "bi/parser.cpp"
+#line 1993 "bi/parser.cpp"
     break;
 
   case 107:
 #line 433 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = empty_expr((*yylocp)); }
-#line 1997 "bi/parser.cpp"
+#line 1999 "bi/parser.cpp"
     break;
 
   case 108:
 #line 437 "bi/parser.ypp"
     { ((*yyvalp).valInt) = 1; }
-#line 2003 "bi/parser.cpp"
+#line 2005 "bi/parser.cpp"
     break;
 
   case 109:
 #line 438 "bi/parser.ypp"
     { ((*yyvalp).valInt) = (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valInt) + 1; }
-#line 2009 "bi/parser.cpp"
+#line 2011 "bi/parser.cpp"
     break;
 
   case 110:
 #line 442 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = empty_expr((*yylocp)); }
-#line 2015 "bi/parser.cpp"
+#line 2017 "bi/parser.cpp"
     break;
 
   case 111:
 #line 443 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression); }
-#line 2021 "bi/parser.cpp"
+#line 2023 "bi/parser.cpp"
     break;
 
   case 113:
 #line 448 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = new bi::ExpressionList((((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))); }
-#line 2027 "bi/parser.cpp"
+#line 2029 "bi/parser.cpp"
     break;
 
   case 114:
 #line 452 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = new bi::Generic(bi::NONE, (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valName), empty_type((*yylocp)), make_loc((*yylocp))); }
-#line 2033 "bi/parser.cpp"
+#line 2035 "bi/parser.cpp"
     break;
 
   case 116:
 #line 457 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = empty_expr((*yylocp)); }
-#line 2039 "bi/parser.cpp"
+#line 2041 "bi/parser.cpp"
     break;
 
   case 117:
 #line 461 "bi/parser.ypp"
     { ((*yyvalp).valType) = empty_type((*yylocp)); }
-#line 2045 "bi/parser.cpp"
+#line 2047 "bi/parser.cpp"
     break;
 
   case 118:
 #line 462 "bi/parser.ypp"
     { ((*yyvalp).valType) = (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valType); }
-#line 2051 "bi/parser.cpp"
+#line 2053 "bi/parser.cpp"
     break;
 
   case 120:
 #line 467 "bi/parser.ypp"
     { ((*yyvalp).valType) = new bi::TypeList((((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valType), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valType), make_loc((*yylocp))); }
-#line 2057 "bi/parser.cpp"
+#line 2059 "bi/parser.cpp"
     break;
 
   case 123:
 #line 476 "bi/parser.ypp"
     { ((*yyvalp).valType) = empty_type((*yylocp)); }
-#line 2063 "bi/parser.cpp"
+#line 2065 "bi/parser.cpp"
     break;
 
   case 124:
 #line 485 "bi/parser.ypp"
     { push_raw(); ((*yyvalp).valStatement) = new bi::GlobalVariable(bi::NONE, (((yyGLRStackItem const *)yyvsp)[YYFILL (-3)].yystate.yysemantics.yysval.valName), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valType), empty_expr((*yylocp)), empty_expr((*yylocp)), empty_expr((*yylocp)), make_doc_loc((*yylocp))); }
-#line 2069 "bi/parser.cpp"
+#line 2071 "bi/parser.cpp"
     break;
 
   case 125:
 #line 486 "bi/parser.ypp"
     { push_raw(); ((*yyvalp).valStatement) = new bi::GlobalVariable(bi::NONE, (((yyGLRStackItem const *)yyvsp)[YYFILL (-4)].yystate.yysemantics.yysval.valName), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valType), empty_expr((*yylocp)), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression), empty_expr((*yylocp)), make_doc_loc((*yylocp))); }
-#line 2075 "bi/parser.cpp"
+#line 2077 "bi/parser.cpp"
     break;
 
   case 126:
 #line 487 "bi/parser.ypp"
     { push_raw(); ((*yyvalp).valStatement) = new bi::GlobalVariable(bi::NONE, (((yyGLRStackItem const *)yyvsp)[YYFILL (-4)].yystate.yysemantics.yysval.valName), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valType), empty_expr((*yylocp)), empty_expr((*yylocp)), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression), make_doc_loc((*yylocp))); }
-#line 2081 "bi/parser.cpp"
+#line 2083 "bi/parser.cpp"
     break;
 
   case 127:
 #line 488 "bi/parser.ypp"
     { push_raw(); ((*yyvalp).valStatement) = new bi::GlobalVariable(bi::AUTO, (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valName), empty_type((*yylocp)), empty_expr((*yylocp)), empty_expr((*yylocp)), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))); }
-#line 2087 "bi/parser.cpp"
+#line 2089 "bi/parser.cpp"
     break;
 
   case 128:
 #line 489 "bi/parser.ypp"
     { push_raw(); ((*yyvalp).valStatement) = new bi::GlobalVariable(bi::NONE, (((yyGLRStackItem const *)yyvsp)[YYFILL (-4)].yystate.yysemantics.yysval.valName), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valType), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression), empty_expr((*yylocp)), empty_expr((*yylocp)), make_doc_loc((*yylocp))); }
-#line 2093 "bi/parser.cpp"
+#line 2095 "bi/parser.cpp"
     break;
 
   case 129:
 #line 490 "bi/parser.ypp"
     { push_raw(); ((*yyvalp).valStatement) = new bi::GlobalVariable(bi::NONE, (((yyGLRStackItem const *)yyvsp)[YYFILL (-5)].yystate.yysemantics.yysval.valName), (((yyGLRStackItem const *)yyvsp)[YYFILL (-3)].yystate.yysemantics.yysval.valType), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression), empty_expr((*yylocp)), make_doc_loc((*yylocp))); }
-#line 2099 "bi/parser.cpp"
+#line 2101 "bi/parser.cpp"
     break;
 
   case 130:
 #line 494 "bi/parser.ypp"
     { push_raw(); ((*yyvalp).valStatement) = new bi::ExpressionStatement((((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression), make_doc_loc((*yylocp))); }
-#line 2105 "bi/parser.cpp"
+#line 2107 "bi/parser.cpp"
     break;
 
   case 131:
 #line 498 "bi/parser.ypp"
     { push_raw(); ((*yyvalp).valStatement) = new bi::MemberVariable(bi::NONE, (((yyGLRStackItem const *)yyvsp)[YYFILL (-3)].yystate.yysemantics.yysval.valName), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valType), empty_expr((*yylocp)), empty_expr((*yylocp)), empty_expr((*yylocp)), make_doc_loc((*yylocp))); }
-#line 2111 "bi/parser.cpp"
+#line 2113 "bi/parser.cpp"
     break;
 
   case 132:
 #line 499 "bi/parser.ypp"
     { push_raw(); ((*yyvalp).valStatement) = new bi::MemberVariable(bi::NONE, (((yyGLRStackItem const *)yyvsp)[YYFILL (-4)].yystate.yysemantics.yysval.valName), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valType), empty_expr((*yylocp)), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression), empty_expr((*yylocp)), make_doc_loc((*yylocp))); }
-#line 2117 "bi/parser.cpp"
+#line 2119 "bi/parser.cpp"
     break;
 
   case 133:
 #line 500 "bi/parser.ypp"
     { push_raw(); ((*yyvalp).valStatement) = new bi::MemberVariable(bi::NONE, (((yyGLRStackItem const *)yyvsp)[YYFILL (-4)].yystate.yysemantics.yysval.valName), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valType), empty_expr((*yylocp)), empty_expr((*yylocp)), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression), make_doc_loc((*yylocp))); }
-#line 2123 "bi/parser.cpp"
+#line 2125 "bi/parser.cpp"
     break;
 
   case 134:
 #line 501 "bi/parser.ypp"
     { push_raw(); ((*yyvalp).valStatement) = new bi::MemberVariable(bi::AUTO, (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valName), empty_type((*yylocp)), empty_expr((*yylocp)), empty_expr((*yylocp)), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))); }
-#line 2129 "bi/parser.cpp"
+#line 2131 "bi/parser.cpp"
     break;
 
   case 135:
 #line 502 "bi/parser.ypp"
     { push_raw(); ((*yyvalp).valStatement) = new bi::MemberVariable(bi::NONE, (((yyGLRStackItem const *)yyvsp)[YYFILL (-4)].yystate.yysemantics.yysval.valName), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valType), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression), empty_expr((*yylocp)), empty_expr((*yylocp)), make_doc_loc((*yylocp))); }
-#line 2135 "bi/parser.cpp"
+#line 2137 "bi/parser.cpp"
     break;
 
   case 136:
 #line 503 "bi/parser.ypp"
     { push_raw(); ((*yyvalp).valStatement) = new bi::MemberVariable(bi::NONE, (((yyGLRStackItem const *)yyvsp)[YYFILL (-5)].yystate.yysemantics.yysval.valName), (((yyGLRStackItem const *)yyvsp)[YYFILL (-3)].yystate.yysemantics.yysval.valType), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression), empty_expr((*yylocp)), make_doc_loc((*yylocp))); }
-#line 2141 "bi/parser.cpp"
+#line 2143 "bi/parser.cpp"
     break;
 
   case 137:
 #line 507 "bi/parser.ypp"
     { ((*yyvalp).valAnnotation) = bi::NONE; }
-#line 2147 "bi/parser.cpp"
+#line 2149 "bi/parser.cpp"
     break;
 
   case 138:
 #line 511 "bi/parser.ypp"
     { push_raw(); }
-#line 2153 "bi/parser.cpp"
+#line 2155 "bi/parser.cpp"
     break;
 
   case 139:
 #line 511 "bi/parser.ypp"
     { ((*yyvalp).valStatement) = new bi::Function((((yyGLRStackItem const *)yyvsp)[YYFILL (-7)].yystate.yysemantics.yysval.valAnnotation), (((yyGLRStackItem const *)yyvsp)[YYFILL (-5)].yystate.yysemantics.yysval.valName), (((yyGLRStackItem const *)yyvsp)[YYFILL (-4)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (-3)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valType), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valStatement), make_doc_loc((*yylocp))); }
-#line 2159 "bi/parser.cpp"
+#line 2161 "bi/parser.cpp"
     break;
 
   case 140:
 #line 515 "bi/parser.ypp"
     { push_raw(); }
-#line 2165 "bi/parser.cpp"
+#line 2167 "bi/parser.cpp"
     break;
 
   case 141:
 #line 515 "bi/parser.ypp"
     { ((*yyvalp).valStatement) = new bi::Fiber((((yyGLRStackItem const *)yyvsp)[YYFILL (-7)].yystate.yysemantics.yysval.valAnnotation), (((yyGLRStackItem const *)yyvsp)[YYFILL (-5)].yystate.yysemantics.yysval.valName), (((yyGLRStackItem const *)yyvsp)[YYFILL (-4)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (-3)].yystate.yysemantics.yysval.valExpression), new bi::FiberType((((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valType), make_loc((*yylocp))), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valStatement), make_doc_loc((*yylocp))); }
-#line 2171 "bi/parser.cpp"
+#line 2173 "bi/parser.cpp"
     break;
 
   case 142:
 #line 519 "bi/parser.ypp"
     { push_raw(); }
-#line 2177 "bi/parser.cpp"
+#line 2179 "bi/parser.cpp"
     break;
 
   case 143:
 #line 519 "bi/parser.ypp"
     { ((*yyvalp).valStatement) = new bi::Program((((yyGLRStackItem const *)yyvsp)[YYFILL (-3)].yystate.yysemantics.yysval.valName), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valStatement), make_doc_loc((*yylocp))); }
-#line 2183 "bi/parser.cpp"
+#line 2185 "bi/parser.cpp"
     break;
 
   case 144:
 #line 523 "bi/parser.ypp"
     { push_raw(); }
-#line 2189 "bi/parser.cpp"
+#line 2191 "bi/parser.cpp"
     break;
 
   case 145:
 #line 523 "bi/parser.ypp"
     { ((*yyvalp).valStatement) = new bi::MemberFunction(bi::NONE, (((yyGLRStackItem const *)yyvsp)[YYFILL (-4)].yystate.yysemantics.yysval.valName), (((yyGLRStackItem const *)yyvsp)[YYFILL (-3)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valType), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valStatement), make_doc_loc((*yylocp))); }
-#line 2195 "bi/parser.cpp"
+#line 2197 "bi/parser.cpp"
     break;
 
   case 146:
 #line 527 "bi/parser.ypp"
     { push_raw(); }
-#line 2201 "bi/parser.cpp"
+#line 2203 "bi/parser.cpp"
     break;
 
   case 147:
 #line 527 "bi/parser.ypp"
     { ((*yyvalp).valStatement) = new bi::MemberFiber(bi::NONE, (((yyGLRStackItem const *)yyvsp)[YYFILL (-4)].yystate.yysemantics.yysval.valName), (((yyGLRStackItem const *)yyvsp)[YYFILL (-3)].yystate.yysemantics.yysval.valExpression), new bi::FiberType((((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valType), make_loc((*yylocp))), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valStatement), make_doc_loc((*yylocp))); }
-#line 2207 "bi/parser.cpp"
+#line 2209 "bi/parser.cpp"
     break;
 
   case 148:
 #line 531 "bi/parser.ypp"
     { ((*yyvalp).valName) = new bi::Name('*'); }
-#line 2213 "bi/parser.cpp"
+#line 2215 "bi/parser.cpp"
     break;
 
   case 149:
 #line 532 "bi/parser.ypp"
     { ((*yyvalp).valName) = new bi::Name('/'); }
-#line 2219 "bi/parser.cpp"
+#line 2221 "bi/parser.cpp"
     break;
 
   case 150:
 #line 533 "bi/parser.ypp"
     { ((*yyvalp).valName) = new bi::Name('+'); }
-#line 2225 "bi/parser.cpp"
+#line 2227 "bi/parser.cpp"
     break;
 
   case 151:
 #line 534 "bi/parser.ypp"
     { ((*yyvalp).valName) = new bi::Name('-'); }
-#line 2231 "bi/parser.cpp"
+#line 2233 "bi/parser.cpp"
     break;
 
   case 152:
 #line 535 "bi/parser.ypp"
     { ((*yyvalp).valName) = new bi::Name('<'); }
-#line 2237 "bi/parser.cpp"
+#line 2239 "bi/parser.cpp"
     break;
 
   case 153:
 #line 536 "bi/parser.ypp"
     { ((*yyvalp).valName) = new bi::Name('>'); }
-#line 2243 "bi/parser.cpp"
+#line 2245 "bi/parser.cpp"
     break;
 
   case 154:
 #line 537 "bi/parser.ypp"
     { ((*yyvalp).valName) = new bi::Name("<="); }
-#line 2249 "bi/parser.cpp"
+#line 2251 "bi/parser.cpp"
     break;
 
   case 155:
 #line 538 "bi/parser.ypp"
     { ((*yyvalp).valName) = new bi::Name(">="); }
-#line 2255 "bi/parser.cpp"
+#line 2257 "bi/parser.cpp"
     break;
 
   case 156:
 #line 539 "bi/parser.ypp"
     { ((*yyvalp).valName) = new bi::Name("=="); }
-#line 2261 "bi/parser.cpp"
+#line 2263 "bi/parser.cpp"
     break;
 
   case 157:
 #line 540 "bi/parser.ypp"
     { ((*yyvalp).valName) = new bi::Name("!="); }
-#line 2267 "bi/parser.cpp"
+#line 2269 "bi/parser.cpp"
     break;
 
   case 158:
 #line 541 "bi/parser.ypp"
     { ((*yyvalp).valName) = new bi::Name("&&"); }
-#line 2273 "bi/parser.cpp"
+#line 2275 "bi/parser.cpp"
     break;
 
   case 159:
 #line 542 "bi/parser.ypp"
     { ((*yyvalp).valName) = new bi::Name("||"); }
-#line 2279 "bi/parser.cpp"
+#line 2281 "bi/parser.cpp"
     break;
 
   case 160:
 #line 546 "bi/parser.ypp"
     { ((*yyvalp).valName) = new bi::Name('+'); }
-#line 2285 "bi/parser.cpp"
+#line 2287 "bi/parser.cpp"
     break;
 
   case 161:
 #line 547 "bi/parser.ypp"
     { ((*yyvalp).valName) = new bi::Name('-'); }
-#line 2291 "bi/parser.cpp"
+#line 2293 "bi/parser.cpp"
     break;
 
   case 162:
 #line 548 "bi/parser.ypp"
     { ((*yyvalp).valName) = new bi::Name('!'); }
-#line 2297 "bi/parser.cpp"
+#line 2299 "bi/parser.cpp"
     break;
 
   case 163:
 #line 552 "bi/parser.ypp"
     { push_raw(); }
-#line 2303 "bi/parser.cpp"
+#line 2305 "bi/parser.cpp"
     break;
 
   case 164:
 #line 552 "bi/parser.ypp"
     { ((*yyvalp).valStatement) = new bi::BinaryOperator(bi::NONE, (((yyGLRStackItem const *)yyvsp)[YYFILL (-5)].yystate.yysemantics.yysval.valName), new bi::Binary((((yyGLRStackItem const *)yyvsp)[YYFILL (-6)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (-4)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valType), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valStatement), make_doc_loc((*yylocp))); }
-#line 2309 "bi/parser.cpp"
+#line 2311 "bi/parser.cpp"
     break;
 
   case 165:
 #line 556 "bi/parser.ypp"
     { push_raw(); }
-#line 2315 "bi/parser.cpp"
+#line 2317 "bi/parser.cpp"
     break;
 
   case 166:
 #line 556 "bi/parser.ypp"
     { ((*yyvalp).valStatement) = new bi::UnaryOperator(bi::NONE, (((yyGLRStackItem const *)yyvsp)[YYFILL (-5)].yystate.yysemantics.yysval.valName), (((yyGLRStackItem const *)yyvsp)[YYFILL (-4)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valType), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valStatement), make_doc_loc((*yylocp))); }
-#line 2321 "bi/parser.cpp"
+#line 2323 "bi/parser.cpp"
     break;
 
   case 167:
 #line 560 "bi/parser.ypp"
     { push_raw(); }
-#line 2327 "bi/parser.cpp"
+#line 2329 "bi/parser.cpp"
     break;
 
   case 168:
 #line 560 "bi/parser.ypp"
     { ((*yyvalp).valStatement) = new bi::AssignmentOperator((((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valStatement), make_doc_loc((*yylocp))); }
-#line 2333 "bi/parser.cpp"
+#line 2335 "bi/parser.cpp"
     break;
 
   case 169:
 #line 564 "bi/parser.ypp"
     { push_raw(); }
-#line 2339 "bi/parser.cpp"
+#line 2341 "bi/parser.cpp"
     break;
 
   case 170:
 #line 564 "bi/parser.ypp"
     { ((*yyvalp).valStatement) = new bi::ConversionOperator((((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valType), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valStatement), make_doc_loc((*yylocp))); }
-#line 2345 "bi/parser.cpp"
+#line 2347 "bi/parser.cpp"
     break;
 
   case 171:
 #line 568 "bi/parser.ypp"
     { ((*yyvalp).valAnnotation) = bi::FINAL; }
-#line 2351 "bi/parser.cpp"
+#line 2353 "bi/parser.cpp"
     break;
 
   case 172:
 #line 569 "bi/parser.ypp"
     { ((*yyvalp).valAnnotation) = bi::NONE; }
-#line 2357 "bi/parser.cpp"
+#line 2359 "bi/parser.cpp"
     break;
 
   case 173:
 #line 573 "bi/parser.ypp"
     { push_raw(); }
-#line 2363 "bi/parser.cpp"
+#line 2365 "bi/parser.cpp"
     break;
 
   case 174:
 #line 573 "bi/parser.ypp"
     { ((*yyvalp).valStatement) = new bi::Class((((yyGLRStackItem const *)yyvsp)[YYFILL (-9)].yystate.yysemantics.yysval.valAnnotation), (((yyGLRStackItem const *)yyvsp)[YYFILL (-7)].yystate.yysemantics.yysval.valName), (((yyGLRStackItem const *)yyvsp)[YYFILL (-6)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (-5)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (-3)].yystate.yysemantics.yysval.valType), false, (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valStatement), make_doc_loc((*yylocp))); }
-#line 2369 "bi/parser.cpp"
+#line 2371 "bi/parser.cpp"
     break;
 
   case 175:
 #line 574 "bi/parser.ypp"
     { push_raw(); }
-#line 2375 "bi/parser.cpp"
+#line 2377 "bi/parser.cpp"
     break;
 
   case 176:
 #line 574 "bi/parser.ypp"
     { ((*yyvalp).valStatement) = new bi::Class((((yyGLRStackItem const *)yyvsp)[YYFILL (-6)].yystate.yysemantics.yysval.valAnnotation), (((yyGLRStackItem const *)yyvsp)[YYFILL (-4)].yystate.yysemantics.yysval.valName), (((yyGLRStackItem const *)yyvsp)[YYFILL (-3)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valExpression), empty_type((*yylocp)), false, empty_expr((*yylocp)), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valStatement), make_doc_loc((*yylocp))); }
-#line 2381 "bi/parser.cpp"
+#line 2383 "bi/parser.cpp"
     break;
 
   case 177:
 #line 575 "bi/parser.ypp"
     { push_raw(); }
-#line 2387 "bi/parser.cpp"
+#line 2389 "bi/parser.cpp"
     break;
 
   case 178:
 #line 575 "bi/parser.ypp"
     { ((*yyvalp).valStatement) = new bi::Class((((yyGLRStackItem const *)yyvsp)[YYFILL (-7)].yystate.yysemantics.yysval.valAnnotation), (((yyGLRStackItem const *)yyvsp)[YYFILL (-5)].yystate.yysemantics.yysval.valName), (((yyGLRStackItem const *)yyvsp)[YYFILL (-4)].yystate.yysemantics.yysval.valExpression), empty_expr((*yylocp)), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valType), true, empty_expr((*yylocp)), empty_stmt((*yylocp)), make_doc_loc((*yylocp))); }
-#line 2393 "bi/parser.cpp"
+#line 2395 "bi/parser.cpp"
     break;
 
   case 179:
 #line 579 "bi/parser.ypp"
     { push_raw(); ((*yyvalp).valStatement) = new bi::Basic(bi::NONE, (((yyGLRStackItem const *)yyvsp)[YYFILL (-3)].yystate.yysemantics.yysval.valName), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valType), false, make_doc_loc((*yylocp))); }
-#line 2399 "bi/parser.cpp"
+#line 2401 "bi/parser.cpp"
     break;
 
   case 180:
 #line 580 "bi/parser.ypp"
     { push_raw(); ((*yyvalp).valStatement) = new bi::Basic(bi::NONE, (((yyGLRStackItem const *)yyvsp)[YYFILL (-3)].yystate.yysemantics.yysval.valName), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valType), true, make_doc_loc((*yylocp))); }
-#line 2405 "bi/parser.cpp"
+#line 2407 "bi/parser.cpp"
     break;
 
   case 181:
 #line 581 "bi/parser.ypp"
     { push_raw(); ((*yyvalp).valStatement) = new bi::Basic(bi::NONE, (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valName), empty_type((*yylocp)), false, make_doc_loc((*yylocp))); }
-#line 2411 "bi/parser.cpp"
+#line 2413 "bi/parser.cpp"
     break;
 
   case 182:
 #line 585 "bi/parser.ypp"
     { push_raw(); ((*yyvalp).valStatement) = new bi::Raw(new bi::Name("cpp"), pop_raw(), make_loc((*yylocp))); }
-#line 2417 "bi/parser.cpp"
+#line 2419 "bi/parser.cpp"
     break;
 
   case 183:
 #line 589 "bi/parser.ypp"
     { push_raw(); ((*yyvalp).valStatement) = new bi::Raw(new bi::Name("hpp"), pop_raw(), make_loc((*yylocp))); }
-#line 2423 "bi/parser.cpp"
+#line 2425 "bi/parser.cpp"
     break;
 
   case 184:
 #line 593 "bi/parser.ypp"
     { ((*yyvalp).valName) = new bi::Name("~"); }
-#line 2429 "bi/parser.cpp"
+#line 2431 "bi/parser.cpp"
     break;
 
   case 185:
 #line 594 "bi/parser.ypp"
     { ((*yyvalp).valName) = new bi::Name("<~"); }
-#line 2435 "bi/parser.cpp"
+#line 2437 "bi/parser.cpp"
     break;
 
   case 186:
 #line 595 "bi/parser.ypp"
     { ((*yyvalp).valName) = new bi::Name("~>"); }
-#line 2441 "bi/parser.cpp"
+#line 2443 "bi/parser.cpp"
     break;
 
   case 187:
 #line 596 "bi/parser.ypp"
     { ((*yyvalp).valName) = new bi::Name("<-?"); }
-#line 2447 "bi/parser.cpp"
+#line 2449 "bi/parser.cpp"
     break;
 
   case 188:
 #line 600 "bi/parser.ypp"
     { ((*yyvalp).valStatement) = new bi::Assume((((yyGLRStackItem const *)yyvsp)[YYFILL (-3)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valName), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))); }
-#line 2453 "bi/parser.cpp"
+#line 2455 "bi/parser.cpp"
     break;
 
   case 189:
 #line 604 "bi/parser.ypp"
     { ((*yyvalp).valStatement) = new bi::ExpressionStatement((((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))); }
-#line 2459 "bi/parser.cpp"
+#line 2461 "bi/parser.cpp"
     break;
 
   case 190:
 #line 608 "bi/parser.ypp"
     { ((*yyvalp).valStatement) = new bi::If((((yyGLRStackItem const *)yyvsp)[YYFILL (-3)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valStatement), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valStatement), make_loc((*yylocp))); }
-#line 2465 "bi/parser.cpp"
+#line 2467 "bi/parser.cpp"
     break;
 
   case 191:
 #line 609 "bi/parser.ypp"
     { ((*yyvalp).valStatement) = new bi::If((((yyGLRStackItem const *)yyvsp)[YYFILL (-3)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valStatement), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valStatement), make_loc((*yylocp))); }
-#line 2471 "bi/parser.cpp"
+#line 2473 "bi/parser.cpp"
     break;
 
   case 192:
 #line 610 "bi/parser.ypp"
     { ((*yyvalp).valStatement) = new bi::If((((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valStatement), empty_stmt((*yylocp)), make_loc((*yylocp))); }
-#line 2477 "bi/parser.cpp"
+#line 2479 "bi/parser.cpp"
     break;
 
   case 193:
 #line 614 "bi/parser.ypp"
     { ((*yyvalp).valAnnotation) = bi::PARALLEL; }
-#line 2483 "bi/parser.cpp"
+#line 2485 "bi/parser.cpp"
     break;
 
   case 194:
 #line 615 "bi/parser.ypp"
     { ((*yyvalp).valAnnotation) = (bi::Annotation)(bi::DYNAMIC|bi::PARALLEL); }
-#line 2489 "bi/parser.cpp"
+#line 2491 "bi/parser.cpp"
     break;
 
   case 195:
 #line 616 "bi/parser.ypp"
     { ((*yyvalp).valAnnotation) = bi::NONE; }
-#line 2495 "bi/parser.cpp"
+#line 2497 "bi/parser.cpp"
     break;
 
   case 197:
 #line 621 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = new bi::LocalVariable(bi::NONE, (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valName), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valType), empty_expr((*yylocp)), empty_expr((*yylocp)), empty_expr((*yylocp)), make_loc((*yylocp))); }
-#line 2501 "bi/parser.cpp"
+#line 2503 "bi/parser.cpp"
     break;
 
   case 198:
 #line 622 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = new bi::LocalVariable(bi::NONE, (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valName), new bi::BasicType(new bi::Name("Integer")), empty_expr((*yylocp)), empty_expr((*yylocp)), empty_expr((*yylocp)), make_loc((*yylocp))); }
-#line 2507 "bi/parser.cpp"
+#line 2509 "bi/parser.cpp"
     break;
 
   case 199:
 #line 626 "bi/parser.ypp"
     { ((*yyvalp).valStatement) = new bi::For((((yyGLRStackItem const *)yyvsp)[YYFILL (-9)].yystate.yysemantics.yysval.valAnnotation), (((yyGLRStackItem const *)yyvsp)[YYFILL (-6)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (-4)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valStatement), make_loc((*yylocp))); }
-#line 2513 "bi/parser.cpp"
+#line 2515 "bi/parser.cpp"
     break;
 
   case 200:
 #line 627 "bi/parser.ypp"
     { ((*yyvalp).valStatement) = new bi::For((((yyGLRStackItem const *)yyvsp)[YYFILL (-7)].yystate.yysemantics.yysval.valAnnotation), (((yyGLRStackItem const *)yyvsp)[YYFILL (-5)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (-3)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valStatement), make_loc((*yylocp))); }
-#line 2519 "bi/parser.cpp"
+#line 2521 "bi/parser.cpp"
     break;
 
   case 201:
 #line 631 "bi/parser.ypp"
     { ((*yyvalp).valStatement) = new bi::While((((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valStatement), make_loc((*yylocp))); }
-#line 2525 "bi/parser.cpp"
+#line 2527 "bi/parser.cpp"
     break;
 
   case 202:
 #line 635 "bi/parser.ypp"
     { ((*yyvalp).valStatement) = new bi::DoWhile((((yyGLRStackItem const *)yyvsp)[YYFILL (-3)].yystate.yysemantics.yysval.valStatement), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))); }
-#line 2531 "bi/parser.cpp"
+#line 2533 "bi/parser.cpp"
     break;
 
   case 203:
 #line 639 "bi/parser.ypp"
     { ((*yyvalp).valStatement) = new bi::Assert((((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))); }
-#line 2537 "bi/parser.cpp"
+#line 2539 "bi/parser.cpp"
     break;
 
   case 204:
 #line 643 "bi/parser.ypp"
     { ((*yyvalp).valStatement) = new bi::Return((((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))); }
-#line 2543 "bi/parser.cpp"
+#line 2545 "bi/parser.cpp"
     break;
 
   case 205:
 #line 647 "bi/parser.ypp"
     { ((*yyvalp).valStatement) = new bi::Yield((((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))); }
-#line 2549 "bi/parser.cpp"
+#line 2551 "bi/parser.cpp"
     break;
 
   case 206:
 #line 651 "bi/parser.ypp"
     { ((*yyvalp).valStatement) = new bi::Instantiated<bi::Type>((((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valType), make_loc((*yylocp))); }
-#line 2555 "bi/parser.cpp"
+#line 2557 "bi/parser.cpp"
     break;
 
   case 207:
 #line 652 "bi/parser.ypp"
     { ((*yyvalp).valStatement) = new bi::Instantiated<bi::Expression>((((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))); }
-#line 2561 "bi/parser.cpp"
+#line 2563 "bi/parser.cpp"
     break;
 
   case 208:
 #line 653 "bi/parser.ypp"
     { ((*yyvalp).valStatement) = new bi::Instantiated<bi::Expression>((((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))); }
-#line 2567 "bi/parser.cpp"
+#line 2569 "bi/parser.cpp"
     break;
 
   case 221:
 #line 672 "bi/parser.ypp"
     { ((*yyvalp).valStatement) = new bi::StatementList((((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valStatement), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valStatement), make_loc((*yylocp))); }
-#line 2573 "bi/parser.cpp"
+#line 2575 "bi/parser.cpp"
     break;
 
   case 223:
 #line 677 "bi/parser.ypp"
     { ((*yyvalp).valStatement) = empty_stmt((*yylocp)); }
-#line 2579 "bi/parser.cpp"
+#line 2581 "bi/parser.cpp"
     break;
 
   case 231:
 #line 691 "bi/parser.ypp"
     { ((*yyvalp).valStatement) = new bi::StatementList((((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valStatement), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valStatement), make_loc((*yylocp))); }
-#line 2585 "bi/parser.cpp"
+#line 2587 "bi/parser.cpp"
     break;
 
   case 233:
 #line 696 "bi/parser.ypp"
     { ((*yyvalp).valStatement) = empty_stmt((*yylocp)); }
-#line 2591 "bi/parser.cpp"
+#line 2593 "bi/parser.cpp"
     break;
 
   case 246:
 #line 715 "bi/parser.ypp"
     { ((*yyvalp).valStatement) = new bi::StatementList((((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valStatement), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valStatement), make_loc((*yylocp))); }
-#line 2597 "bi/parser.cpp"
+#line 2599 "bi/parser.cpp"
     break;
 
   case 248:
 #line 720 "bi/parser.ypp"
     { ((*yyvalp).valStatement) = empty_stmt((*yylocp)); }
-#line 2603 "bi/parser.cpp"
+#line 2605 "bi/parser.cpp"
     break;
 
   case 249:
 #line 724 "bi/parser.ypp"
     { compiler->setRoot((((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valStatement)); }
-#line 2609 "bi/parser.cpp"
+#line 2611 "bi/parser.cpp"
     break;
 
   case 250:
 #line 728 "bi/parser.ypp"
     { ((*yyvalp).valType) = (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valType); }
-#line 2615 "bi/parser.cpp"
+#line 2617 "bi/parser.cpp"
     break;
 
   case 252:
 #line 733 "bi/parser.ypp"
     { ((*yyvalp).valType) = empty_type((*yylocp)); }
-#line 2621 "bi/parser.cpp"
+#line 2623 "bi/parser.cpp"
     break;
 
   case 253:
 #line 737 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valExpression); }
-#line 2627 "bi/parser.cpp"
+#line 2629 "bi/parser.cpp"
     break;
 
   case 255:
 #line 742 "bi/parser.ypp"
     { ((*yyvalp).valExpression) = empty_expr((*yylocp)); }
-#line 2633 "bi/parser.cpp"
+#line 2635 "bi/parser.cpp"
     break;
 
   case 256:
 #line 746 "bi/parser.ypp"
     { ((*yyvalp).valStatement) = new bi::Braces((((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valStatement), make_loc((*yylocp))); }
-#line 2639 "bi/parser.cpp"
+#line 2641 "bi/parser.cpp"
     break;
 
   case 258:
 #line 751 "bi/parser.ypp"
     { ((*yyvalp).valStatement) = empty_stmt((*yylocp)); }
-#line 2645 "bi/parser.cpp"
+#line 2647 "bi/parser.cpp"
     break;
 
   case 259:
 #line 755 "bi/parser.ypp"
     { ((*yyvalp).valStatement) = new bi::Braces((((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valStatement), make_loc((*yylocp))); }
-#line 2651 "bi/parser.cpp"
+#line 2653 "bi/parser.cpp"
     break;
 
   case 261:
 #line 760 "bi/parser.ypp"
     { ((*yyvalp).valStatement) = empty_stmt((*yylocp)); }
-#line 2657 "bi/parser.cpp"
+#line 2659 "bi/parser.cpp"
     break;
 
   case 263:
 #line 773 "bi/parser.ypp"
     { ((*yyvalp).valBool) = true; }
-#line 2663 "bi/parser.cpp"
+#line 2665 "bi/parser.cpp"
     break;
 
   case 264:
 #line 774 "bi/parser.ypp"
     { ((*yyvalp).valBool) = false; }
-#line 2669 "bi/parser.cpp"
+#line 2671 "bi/parser.cpp"
     break;
 
   case 265:
 #line 778 "bi/parser.ypp"
     { ((*yyvalp).valType) = new bi::BasicType((((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valName), make_loc((*yylocp))); }
-#line 2675 "bi/parser.cpp"
+#line 2677 "bi/parser.cpp"
     break;
 
   case 266:
 #line 782 "bi/parser.ypp"
     { ((*yyvalp).valType) = new bi::ClassType((((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valBool), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valName), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valType), make_loc((*yylocp))); }
-#line 2681 "bi/parser.cpp"
+#line 2683 "bi/parser.cpp"
     break;
 
   case 267:
 #line 786 "bi/parser.ypp"
     { ((*yyvalp).valType) = new bi::UnknownType((((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valBool), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valName), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valType), make_loc((*yylocp))); }
-#line 2687 "bi/parser.cpp"
+#line 2689 "bi/parser.cpp"
     break;
 
   case 268:
 #line 790 "bi/parser.ypp"
     { ((*yyvalp).valType) = new bi::UnknownType(false, (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valName), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valType), make_loc((*yylocp))); }
-#line 2693 "bi/parser.cpp"
+#line 2695 "bi/parser.cpp"
     break;
 
   case 270:
 #line 795 "bi/parser.ypp"
     { ((*yyvalp).valType) = new bi::MemberType((((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valType), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valType), make_loc((*yylocp))); }
-#line 2699 "bi/parser.cpp"
+#line 2701 "bi/parser.cpp"
     break;
 
   case 271:
 #line 799 "bi/parser.ypp"
     { ((*yyvalp).valType) = new bi::TupleType((((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valType), make_loc((*yylocp))); }
-#line 2705 "bi/parser.cpp"
+#line 2707 "bi/parser.cpp"
     break;
 
   case 274:
 #line 805 "bi/parser.ypp"
     { ((*yyvalp).valType) = new bi::FiberType((((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valType), make_loc((*yylocp))); }
-#line 2711 "bi/parser.cpp"
+#line 2713 "bi/parser.cpp"
     break;
 
   case 275:
 #line 806 "bi/parser.ypp"
     { ((*yyvalp).valType) = new bi::OptionalType((((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valType), make_loc((*yylocp))); }
-#line 2717 "bi/parser.cpp"
+#line 2719 "bi/parser.cpp"
     break;
 
   case 276:
 #line 807 "bi/parser.ypp"
     { ((*yyvalp).valType) = new bi::ArrayType((((yyGLRStackItem const *)yyvsp)[YYFILL (-3)].yystate.yysemantics.yysval.valType), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valInt), make_loc((*yylocp))); }
-#line 2723 "bi/parser.cpp"
+#line 2725 "bi/parser.cpp"
     break;
 
   case 278:
 #line 812 "bi/parser.ypp"
     { ((*yyvalp).valType) = new bi::FunctionType((((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valType), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valType), make_loc((*yylocp))); }
-#line 2729 "bi/parser.cpp"
+#line 2731 "bi/parser.cpp"
     break;
 
   case 281:
 #line 821 "bi/parser.ypp"
     { ((*yyvalp).valType) = new bi::TypeList((((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valType), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valType), make_loc((*yylocp))); }
-#line 2735 "bi/parser.cpp"
+#line 2737 "bi/parser.cpp"
     break;
 
   case 283:
 #line 826 "bi/parser.ypp"
     { ((*yyvalp).valType) = new bi::TypeList((((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valType), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valType), make_loc((*yylocp))); }
-#line 2741 "bi/parser.cpp"
+#line 2743 "bi/parser.cpp"
     break;
 
   case 284:
 #line 830 "bi/parser.ypp"
     { ((*yyvalp).valType) = empty_type((*yylocp)); }
-#line 2747 "bi/parser.cpp"
+#line 2749 "bi/parser.cpp"
     break;
 
   case 285:
 #line 831 "bi/parser.ypp"
     { ((*yyvalp).valType) = (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valType); }
-#line 2753 "bi/parser.cpp"
+#line 2755 "bi/parser.cpp"
     break;
 
 
-#line 2757 "bi/parser.cpp"
+#line 2759 "bi/parser.cpp"
 
       default: break;
     }
@@ -2977,17 +2979,20 @@ yyinitStateSet (yyGLRStateSet* yyset)
 {
   yyset->yysize = 1;
   yyset->yycapacity = 16;
-  yyset->yystates = (yyGLRState**) YYMALLOC (16 * sizeof yyset->yystates[0]);
+  yyset->yystates
+    = (yyGLRState**) YYMALLOC (yyset->yycapacity * sizeof yyset->yystates[0]);
   if (! yyset->yystates)
     return yyfalse;
   yyset->yystates[0] = YY_NULLPTR;
-  yyset->yylookaheadNeeds =
-    (yybool*) YYMALLOC (16 * sizeof yyset->yylookaheadNeeds[0]);
+  yyset->yylookaheadNeeds
+    = (yybool*) YYMALLOC (yyset->yycapacity * sizeof yyset->yylookaheadNeeds[0]);
   if (! yyset->yylookaheadNeeds)
     {
       YYFREE (yyset->yystates);
       return yyfalse;
     }
+  memset (yyset->yylookaheadNeeds,
+          0, yyset->yycapacity * sizeof yyset->yylookaheadNeeds[0]);
   return yytrue;
 }
 

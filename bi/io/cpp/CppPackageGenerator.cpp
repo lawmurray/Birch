@@ -116,8 +116,14 @@ void bi::CppPackageGenerator::visit(const Package* o) {
     /* class type aliases */
     for (auto o : classes) {
       if (o->isAlias()) {
+        auto super = dynamic_cast<const ClassType*>(o->base->canonical());
+        assert(super);
         genTemplateParams(o);
-        line("using " << o->name << " = " << o->base << ';');
+        start("using " << o->name << " = " << super->name);
+        if (!super->typeArgs->isEmpty()) {
+          middle('<' << super->typeArgs << '>');
+        }
+        finish(';');
       }
     }
 

@@ -552,7 +552,7 @@ void bi::CppBaseGenerator::visit(const Program* o) {
         if (!param->value->isEmpty()) {
           middle(" = " << param->value);
         } else if (param->type->isClass()) {
-          middle("(context_, libbirch::make_pointer<" << param->type << ">(context_))");
+          middle(" = libbirch::make_pointer<" << param->type << ">(context_)");
         }
         finish(';');
       }
@@ -706,9 +706,7 @@ void bi::CppBaseGenerator::visit(const ConversionOperator* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Basic* o) {
-  if (header && o->isAlias()) {
-    line("using " << o->name << " = " << o->base << ';');
-  }
+  //
 }
 
 void bi::CppBaseGenerator::visit(const Class* o) {

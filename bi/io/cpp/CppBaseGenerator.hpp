@@ -210,11 +210,11 @@ void bi::CppBaseGenerator::genInit(const T* o) {
     if (!o->value->isEmpty()) {
       middle("(context_, " << o->value << ')');
     } else {
-      middle("(context_, libbirch::make_pointer<" << o->type << ">(context_");
+      middle(" = libbirch::make_pointer<" << o->type << ">(context_");
       if (!o->args->isEmpty()) {
         middle(", " << o->args);
       }
-      middle("))");
+      middle(")");
     }
   } else if (!o->value->isEmpty()) {
     middle('(');
