@@ -22,6 +22,7 @@
 #include "libbirch/View.hpp"
 #include "libbirch/Array.hpp"
 #include "libbirch/Tuple.hpp"
+#include "libbirch/Tie.hpp"
 #include "libbirch/Any.hpp"
 #include "libbirch/Optional.hpp"
 #include "libbirch/Nil.hpp"
@@ -182,9 +183,8 @@ auto make_view(const int64_t arg, Args ... args) {
  *
  * @return The array.
  */
-template<class Type, class Frame, class ... Args,
-    std::enable_if_t<is_value<Type>::value,int> = 0>
-Array<Type,Frame> make_array(const Frame& frame, Args ... args) {
+template<class Type, class Frame, class ... Args>
+Array<Type,Frame> make_array(const Frame& frame, const Args&... args) {
   return Array<Type,Frame>(frame, args...);
 }
 
@@ -203,10 +203,9 @@ Array<Type,Frame> make_array(const Frame& frame, Args ... args) {
  *
  * @return The array.
  */
-template<class Type, class Frame, class ... Args,
-    std::enable_if_t<!is_value<Type>::value,int> = 0>
-Array<Type,Frame> make_array(Label* context, const Frame& frame, \
-    Args ... args) {
+template<class Type, class Frame, class ... Args>
+Array<Type,Frame> make_array(Label* context, const Frame& frame,
+    const Args&... args) {
   return Array<Type,Frame>(context, frame, args...);
 }
 
@@ -344,8 +343,8 @@ Tuple<Head,Tail...> make_tuple(Label* context, const Head& head,
  * @param tail Remaining elements.
  */
 template<class Head, class... Tail>
-Tuple<Head&,Tail&...> tie(Head& head, Tail&... tail) {
-  return Tuple<Head&,Tail&...>(head, tail...);
+Tie<Head&,Tail&...> tie(Head& head, Tail&... tail) {
+  return Tie<Head&,Tail&...>(head, tail...);
 }
 
 /**
@@ -358,8 +357,8 @@ Tuple<Head&,Tail&...> tie(Head& head, Tail&... tail) {
  * @param tail Remaining elements.
  */
 template<class Head, class... Tail>
-Tuple<Head&,Tail&...> tie(Label* context, Head& head, Tail&... tail) {
-  return Tuple<Head&,Tail&...>(context, head, tail...);
+Tie<Head&,Tail&...> tie(Label* context, Head& head, Tail&... tail) {
+  return Tie<Head&,Tail&...>(context, head, tail...);
 }
 
 /**

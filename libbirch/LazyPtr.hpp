@@ -50,7 +50,7 @@ public:
   /**
    * Constructor.
    */
-  LazyPtr(Label* context, const P& object) :
+  LazyPtr(Label* context, value_type* object) :
       object(object),
       label(reinterpret_cast<intptr_t>(context)),
       cross(false) {
@@ -60,7 +60,7 @@ public:
   /**
    * Constructor.
    */
-  LazyPtr(Label* context, const value_type* object) :
+  LazyPtr(Label* context, const P& object) :
       object(object),
       label(reinterpret_cast<intptr_t>(context)),
       cross(false) {
@@ -80,7 +80,7 @@ public:
   /**
    * Copy constructor.
    */
-  template<class Q>
+  template<class Q, typename = std::enable_if_t<std::is_convertible<Q,P>::value>>
   LazyPtr(const LazyPtr<Q>& o) :
       object(o.object),
       label(o.label),
@@ -91,9 +91,21 @@ public:
   /**
    * Copy constructor.
    */
-  template<class Q>
-  LazyPtr(Label* context, const LazyPtr<Q>& o) :
+  LazyPtr(Label* context, const LazyPtr<P>& o) :
       object(o.get()),
+      label(0),
+      cross(false) {
+    if (object) {
+      setLabel(o.getLabel(), o.getLabel() != context);
+    }
+  }
+
+  /**
+   * Copy constructor.
+   */
+  template<class Q, typename = std::enable_if_t<std::is_convertible<Q,P>::value>>
+  LazyPtr(Label* context, const LazyPtr<Q>& o) :
+      object(o.object),
       label(0),
       cross(false) {
     if (object) {
@@ -115,7 +127,7 @@ public:
   /**
    * Move constructor.
    */
-  template<class Q>
+  template<class Q, typename = std::enable_if_t<std::is_convertible<Q,P>::value>>
   LazyPtr(LazyPtr<Q>&& o) :
       object(std::move(o.object)),
       label(o.label),
@@ -127,7 +139,19 @@ public:
   /**
    * Move constructor.
    */
-  template<class Q>
+  LazyPtr(Label* context, LazyPtr<P>&& o) :
+      object(std::move(o.object)),
+      label(0),
+      cross(false) {
+    if (object) {
+      setLabel(o.getLabel(), o.getLabel() != context);
+    }
+  }
+
+  /**
+   * Move constructor.
+   */
+  template<class Q, typename = std::enable_if_t<std::is_convertible<Q,P>::value>>
   LazyPtr(Label* context, LazyPtr<Q>&& o) :
       object(std::move(o.object)),
       label(0),
@@ -165,7 +189,8 @@ public:
   /**
    * Copy assignment.
    */
-  LazyPtr& assign(Label* context, const LazyPtr<P>& o) {
+  template<class Q>
+  LazyPtr& assign(Label* context, const LazyPtr<Q>& o) {
     object = o.get();
     if (object) {
       replaceLabel(o.getLabel(), o.getLabel() != context);
@@ -178,7 +203,8 @@ public:
   /**
    * Move assignment.
    */
-  LazyPtr& assign(Label* context, LazyPtr<P>&& o) {
+  template<class Q>
+  LazyPtr& assign(Label* context, LazyPtr<Q>&& o) {
     object = std::move(o.get());
     if (object) {
       replaceLabel(o.getLabel(), o.getLabel() != context);
@@ -198,10 +224,18 @@ public:
   }
 
   /**
+   * Release the pointer.
+   */
+  void release() {
+    object.release();
+    releaseLabel();
+  }
+
+  /**
    * Value conversion.
    */
   template<class U, typename = std::enable_if_t<std::is_convertible<value_type,U>::value>>
-  explicit operator U() const {
+  operator U() const {
     return static_cast<U>(*get());
   }
 
@@ -215,13 +249,13 @@ public:
   /**
    * Get the raw pointer, with lazy cloning.
    */
-  value_type* get() {
+  P& get() {
     value_type* raw = object.get();
     if (raw && raw->isFrozen()) {
       raw = static_cast<value_type*>(getLabel()->get(raw));
       object.replace(raw);
     }
-    return raw;
+    return object;
   }
 
   /**
@@ -234,13 +268,13 @@ public:
   /**
    * Get the raw pointer for read-only use, without cloning.
    */
-  value_type* pull() {
+  P& pull() {
     value_type* raw = object.get();
     if (raw && raw->isFrozen()) {
       raw = static_cast<value_type*>(getLabel()->pull(raw));
       object.replace(raw);
     }
-    return raw;
+    return object;
   }
 
   /**
@@ -306,7 +340,7 @@ public:
       startFreeze();
     }
     if (object) {
-      this->label.replace(label);
+      this->label = reinterpret_cast<intptr_t>(label);
     }
   }
 
@@ -357,15 +391,15 @@ public:
   /**
    * Dereference.
    */
-  value_type& operator*() const {
-    return *get();
+  auto operator*() const {
+    return *get().get();
   }
 
   /**
    * Member access.
    */
-  value_type* operator->() const {
-    return get();
+  auto operator->() const {
+    return get().get();
   }
 
   /**

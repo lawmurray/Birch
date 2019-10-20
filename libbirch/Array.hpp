@@ -23,6 +23,7 @@ namespace libbirch {
  */
 template<class T, class F>
 class Array {
+  template<class U, class G> friend class Array;
 public:
   using this_type = Array<T,F>;
   using value_type = T;
@@ -33,9 +34,8 @@ public:
   /**
    * Constructor.
    */
-  Array(const F& frame = F(), const Buffer<T>* buffer = nullptr,
-      const int64_t offset = 0,
-      const bool isView = false) :
+  Array(const F& frame = F(), Buffer<T>* buffer = nullptr, int64_t offset = 0,
+      bool isView = false) :
       frame(frame),
       buffer(buffer),
       offset(offset),
@@ -176,8 +176,8 @@ public:
    * Copy assignment. For a view the frames of the two arrays must
    * conform, otherwise a resize is permitted.
    */
-  template<IS_VALUE(T), class U, class G>
-  Array<T,F>& assign(const Array<U,G>& o) {
+  template<IS_VALUE(T)>
+  Array<T,F>& assign(const Array<T,F>& o) {
     if (this->isView) {
       this->copy(o);
     } else {
@@ -200,8 +200,8 @@ public:
    * Copy assignment. For a view the frames of the two arrays must
    * conform, otherwise a resize is permitted.
    */
-  template<IS_NOT_VALUE(T), class U, class G>
-  Array<T,F>& assign(Label* context, const Array<U,G>& o) {
+  template<IS_NOT_VALUE(T)>
+  Array<T,F>& assign(Label* context, const Array<T,F>& o) {
     if (this->isView) {
       this->copy(context, o);
     } else {
@@ -294,6 +294,20 @@ public:
    */
   T* buf() const {
     return buffer->buf() + offset;
+  }
+
+  /**
+   * Number of elements.
+   */
+  auto size() const {
+    return frame.size();
+  }
+
+  /**
+   * Number of elements allocated.
+   */
+  auto volume() const {
+    return frame.volume();
   }
 
   /**
@@ -407,12 +421,12 @@ public:
       Array<T,F> o1(std::move(*this));
       this->frame = frame;
       this->allocate();
-      this->uninitialized_copy(o1);
+      this->uninitialized_move(o1);
     } else {
-      auto oldSize = Buffer<T>::size(this->frame.volume());
+      auto oldSize = Buffer<T>::size(this->volume());
       auto newSize = Buffer<T>::size(frame.volume());
       this->frame = frame;
-      if (this->frame.size() == 0) {
+      if (this->size() == 0) {
         release();
       } else {
         this->buffer = (Buffer<T>*)libbirch::reallocate(this->buffer,
@@ -441,12 +455,12 @@ public:
       Array<T,F> o1(std::move(*this));
       this->frame = frame;
       this->allocate();
-      this->uninitialized_copy(o1);
+      this->uninitialized_move(std::move(o1));
     } else {
-      auto oldSize = Buffer<T>::size(this->frame.volume());
+      auto oldSize = Buffer<T>::size(this->volume());
       auto newSize = Buffer<T>::size(frame.volume());
       this->frame = frame;
-      if (this->frame.size() == 0) {
+      if (this->size() == 0) {
         release();
       } else {
         auto iter = Iterator<T,F>(this->buf(), this->frame);
@@ -478,14 +492,14 @@ public:
     assert(frame.size() > this->size());
 
     this->lock();
-    auto n = this->frame.size();
+    auto n = this->size();
     if (this->isShared() || !this->buffer) {
       Array<T,F> o1(std::move(*this));
       this->frame = frame;
       this->allocate();
-      this->uninitialized_copy(o1);
+      this->uninitialized_move(o1);
     } else {
-      auto oldSize = Buffer<T>::size(this->frame.volume());
+      auto oldSize = Buffer<T>::size(this->volume());
       auto newSize = Buffer<T>::size(frame.volume());
       this->frame = frame;
       this->buffer = (Buffer<T>*)libbirch::reallocate(this->buffer, oldSize,
@@ -493,7 +507,7 @@ public:
     }
     Iterator<T,F> iter(this->buf(), this->frame);
     // ^ don't use begin() as we have obtained the lock already
-    std::fill(iter + n, iter + this->frame.size(), x);
+    std::fill(iter + n, iter + this->size(), x);
     this->unlock();
   }
 
@@ -513,14 +527,14 @@ public:
     assert(frame.size() > this->size());
 
     this->lock();
-    auto n = this->frame.size();
+    auto n = this->size();
     if (this->isShared() || !this->buffer) {
       Array<T,F> o1(std::move(*this));
       this->frame = frame;
       this->allocate();
-      this->uninitialized_copy(o1);
+      this->uninitialized_move(std::move(o1));
     } else {
-      auto oldSize = Buffer<T>::size(this->frame.volume());
+      auto oldSize = Buffer<T>::size(this->volume());
       auto newSize = Buffer<T>::size(frame.volume());
       this->frame = frame;
       this->buffer = (Buffer<T>*)libbirch::reallocate(this->buffer, oldSize,
@@ -528,7 +542,7 @@ public:
     }
     Iterator<T,F> iter(this->buf(), this->frame);
     // ^ don't use begin() as we have obtained the lock already
-    std::uninitialized_fill(iter + n, iter + this->frame.size(), x);
+    std::uninitialized_fill(iter + n, iter + this->size(), x);
     this->unlock();
   }
   ///@}
@@ -638,7 +652,7 @@ private:
    */
   void allocate() {
     assert(!buffer);
-    auto size = Buffer<T>::size(frame.volume());
+    auto size = Buffer<T>::size(volume());
     if (size > 0) {
       buffer = new (libbirch::allocate(size)) Buffer<T>();
       buffer->incUsage();
@@ -655,7 +669,7 @@ private:
       if (this->isShared()) {
         Array<T,F> o1(std::move(*this));
         this->allocate();
-        this->uninitialized_copy(o1);
+        this->uninitialized_move(std::move(o1));
       }
       assert(!this->isShared());
       this->unlock();
@@ -673,7 +687,7 @@ private:
       if (this->isShared()) {
         Array<T,F> o1(std::move(*this));
         this->allocate();
-        this->uninitialized_copy(o1);
+        this->uninitialized_move(std::move(o1));
       }
       assert(!this->isShared());
       this->unlock();
@@ -688,11 +702,11 @@ private:
     if (this->buffer && this->buffer->decUsage() == 0) {
       Iterator<T,F> iter(this->buffer->buf() + this->offset, this->frame);
       // ^ just erased buffer, so can't use begin()
-      auto last = iter + this->frame.size();
+      auto last = iter + this->size();
       for (; iter != last; ++iter) {
         iter->~T();
       }
-      auto size = Buffer<T>::size(this->frame.volume());
+      size_t size = Buffer<T>::size(this->volume());
       libbirch::deallocate(this->buffer, size, this->buffer->tid);
       this->buffer = nullptr;
     }
@@ -706,14 +720,14 @@ private:
   template<IS_NOT_VALUE(T), class ... Args>
   void initialize(Args ... args) {
     auto iter = this->begin();
-    auto last = iter + this->frame.size();
+    auto last = iter + this->size();
     for (; iter != last; ++iter) {
       new (&*iter) T(args...);
     }
   }
 
   /**
-   * Copy from another array.
+   * Assign from another array.
    */
   template<IS_VALUE(T), class U, class G>
   void copy(const Array<U,G>& o) {
@@ -732,7 +746,7 @@ private:
   }
 
   /**
-   * Copy from another array.
+   * Assign from another array.
    */
   template<IS_NOT_VALUE(T), class U, class G>
   void copy(Label* context, const Array<U,G>& o) {
@@ -757,7 +771,7 @@ private:
   /**
    * Copy from another array.
    */
-  template<IS_VALUE(T), class U, class G>
+  template<class U, class G>
   void uninitialized_copy(const Array<U,G>& o) {
     assert(!this->isShared());
     libbirch_assert_msg_(o.frame.conforms(this->frame), "array sizes are different");
@@ -769,13 +783,29 @@ private:
   }
 
   /**
+   * Move from another array.
+   */
+  template<class U, class G>
+  void uninitialized_move(Array<U,G>&& o) {
+    assert(!this->isShared());
+    libbirch_assert_msg_(o.frame.conforms(this->frame), "array sizes are different");
+    auto n = std::min(size(), o.size());
+    auto begin1 = o.begin();
+    auto end1 = begin1 + n;
+    auto begin2 = begin();
+    std::uninitialized_copy(begin1, end1, begin2);
+    //std::uninitialized_move(begin1, end1, begin2);
+    // ^ requires C++17
+  }
+
+  /**
    * Copy from another array.
    */
   template<IS_NOT_VALUE(T), class U, class G>
   void uninitialized_copy(Label* context, const Array<U,G>& o) {
     assert(!this->isShared());
     libbirch_assert_msg_(o.frame.conforms(this->frame), "array sizes are different");
-    auto n = std::min(this->size(), o.size());
+    auto n = std::min(size(), o.size());
     auto begin1 = o.begin();
     auto end1 = begin1 + n;
     auto begin2 = begin();
@@ -791,7 +821,7 @@ private:
   void uninitialized_copy(Label* context, Label* label, const Array<U,G>& o) {
     assert(!this->isShared());
     libbirch_assert_msg_(o.frame.conforms(this->frame), "array sizes are different");
-    auto n = std::min(this->size(), o.size());
+    auto n = std::min(size(), o.size());
     auto begin1 = o.begin();
     auto end1 = begin1 + n;
     auto begin2 = begin();

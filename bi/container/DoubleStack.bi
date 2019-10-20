@@ -98,7 +98,7 @@ class DoubleStack<Type> {
     //node.next <- forward;
     if forward? {
       cpp{{
-      node->next.assign(context_, std::move(self->forward.get()));
+      node->next.assign(context_, std::move(self->forward));
       }}
     }
     forward <- node;
@@ -115,7 +115,7 @@ class DoubleStack<Type> {
     //node.next <- backward;
     if backward? {
       cpp{{
-      node->next.assign(context_, std::move(self->backward.get()));
+      node->next.assign(context_, std::move(self->backward));
       }}
     }
     backward <- node;
