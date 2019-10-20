@@ -201,18 +201,22 @@ void bi::CppBaseGenerator::genInit(const T* o) {
     } else if (!o->value->isEmpty()) {
       middle(" = " << o->value);
     }
-  } else if (o->type->isValue()) {
+  } else if (o->type->isClass()) {
     if (!o->value->isEmpty()) {
-      middle(" = " << o->value);
+      middle("(context_, " << o->value << ')');
+    } else {
+      middle("(context_, libbirch::make_pointer<" << o->type << ">(context_");
+      if (!o->args->isEmpty()) {
+        middle(", " << o->args);
+      }
+      middle("))");
     }
-  } else {
-    middle("(context_");
-    if (!o->value->isEmpty()) {
-      middle(", " << o->value);
-    } else if (!o->args->isEmpty()) {
-      middle(", " << o->args);
+  } else if (!o->value->isEmpty()) {
+    middle('(');
+    if (!o->type->isValue()) {
+      middle("context_, ");
     }
-    middle(')');
+    middle(o->value << ')');
   }
 }
 

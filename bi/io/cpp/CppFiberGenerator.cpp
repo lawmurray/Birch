@@ -79,26 +79,26 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
     } else {
       start("");
     }
-    middle(stateName << "(libbirch::Label* context_, const " << stateName << "& o_)");
+    middle(stateName << "(libbirch::Label* context, libbirch::Label* label, const " << stateName << "& o)");
     if (header) {
       finish(";\n");
     } else {
       finish(" :");
       in();
       in();
-      start("super_type_(context_, o_)");
+      start("super_type_(context, label, o)");
       for (auto param : params) {
         if (!param->type->isValue()) {
           auto name = param->name;
           finish(',');
-          start(name << "(context_, o_." << name << ')');
+          start(name << "(context, label, o." << name << ')');
         }
       }
       for (auto local : locals) {
         if (!local->type->isValue()) {
           auto name = getName(local->name->str(), local->number);
           finish(',');
-          start(name << "(context_, o_." << name << ')');
+          start(name << "(context, label, o." << name << ')');
         }
       }
       out();
@@ -121,7 +121,16 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
     if (header) {
       line("virtual " << stateName << "* clone_(libbirch::Label* context_) const {");
       in();
-      line("return new " << stateName << "(context_, *this);");
+      line("return libbirch::clone_object<" << stateName << ">(context_, this);");
+      out();
+      line("}\n");
+    }
+
+    /* name function */
+    if (header) {
+      line("virtual const char* name_() const {");
+      in();
+      line("return \"" << stateName << "\";");
       out();
       line("}\n");
     }

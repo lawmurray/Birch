@@ -118,14 +118,18 @@ void bi::CppClassGenerator::visit(const Class* o) {
           start(o->name << '(' << o->value << ')');
         } else if (o->type->isClass()) {
           finish(',');
-          start(o->name << "(libbirch::make_object<" << o->type << ">(context_");
+          start(o->name << "(context_, libbirch::make_pointer<" << o->type << ">(context_");
           if (!o->args->isEmpty()) {
             middle(", " << o->args);
           }
           middle("))");
         } else if (o->type->isArray() && !o->brackets->isEmpty()) {
           finish(',');
-          start(o->name << "(libbirch::make_frame(" << o->brackets << ')');
+          start(o->name << '(');
+          if (!o->type->isValue()) {
+            middle("context_, ");
+          }
+          middle("libbirch::make_frame(" << o->brackets << ')');
           if (!o->args->isEmpty()) {
             middle(", " << o->args);
           }
@@ -150,18 +154,18 @@ void bi::CppClassGenerator::visit(const Class* o) {
     } else {
       start("");
     }
-    middle(o->name << "(libbirch::Label* context_, const " << o->name << "& o_)");
+    middle(o->name << "(libbirch::Label* context, libbirch::Label* label, const " << o->name << "& o)");
     if (header) {
       finish(";\n");
     } else {
       finish(" :");
       in();
       in();
-      start("super_type_(context_, o_)");
+      start("super_type_(context, label, o)");
       for (auto o : memberVariables) {
         if (!o->type->isValue()) {
           finish(',');
-          start(o->name << "(context_, o_." << o->name << ')');
+          start(o->name << "(context, label, o." << o->name << ')');
         }
       }
       out();
@@ -184,7 +188,7 @@ void bi::CppClassGenerator::visit(const Class* o) {
     if (header) {
       line("virtual " << o->name << "* clone_(libbirch::Label* context_) const {");
       in();
-      line("return new " << o->name << "(context_, *this);");
+      line("return libbirch::clone_object<" << o->name << ">(context_, this);");
       out();
       line("}\n");
     }
