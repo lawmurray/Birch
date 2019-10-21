@@ -17,6 +17,9 @@ namespace libbirch {
 template<class T, class Enable = void>
 class Optional {
   template<class U, class Enable1> friend class Optional;
+
+  static_assert(!std::is_lvalue_reference<T>::value,
+      "Optional does not support lvalue reference types.");
 public:
   /**
    * Constructor.
@@ -38,16 +41,7 @@ public:
   }
 
   /**
-   * Constructor.
-   */
-  Optional(const T& value) :
-      value(value),
-      hasValue(true) {
-    //
-  }
-
-  /**
-   * Constructor.
+   * Value copy constructor.
    */
   template<class U, IS_CONVERTIBLE(U,T)>
   Optional(const U& value) :
@@ -57,9 +51,9 @@ public:
   }
 
   /**
-   * Constructor.
+   * Value copy constructor.
    */
-  template<IS_NOT_VALUE(T), class U, IS_CONVERTIBLE(U,T)>
+  template<class U, IS_NOT_VALUE(T), IS_CONVERTIBLE(U,T)>
   Optional(Label* context, const U& value) :
       value(context, value),
       hasValue(true) {
@@ -67,7 +61,9 @@ public:
   }
 
   /**
-   * Constructor.
+   * Value move constructor.
+   *
+   * @todo Make generic while avoiding use of universal reference.
    */
   Optional(T&& value) :
       value(std::move(value)),
@@ -76,20 +72,24 @@ public:
   }
 
   /**
-   * Constructor.
+   * Value move constructor.
+   *
+   * @todo Make generic while avoiding use of universal reference.
    */
-  template<class U, IS_CONVERTIBLE(U,T)>
-  Optional(U&& value) :
+  template<IS_VALUE(T)>
+  Optional(T&& value) :
       value(std::move(value)),
       hasValue(true) {
     //
   }
 
   /**
-   * Constructor.
+   * Value move constructor.
+   *
+   * @todo Make generic while avoiding use of universal reference.
    */
-  template<IS_NOT_VALUE(T), class U, IS_CONVERTIBLE(U,T)>
-  Optional(Label* context, U&& value) :
+  template<IS_NOT_VALUE(T)>
+  Optional(Label* context, T&& value) :
       value(context, std::move(value)),
       hasValue(true) {
     //
@@ -322,6 +322,9 @@ private:
 template<class T>
 class Optional<T,std::enable_if_t<is_pointer<T>::value>> {
   template<class U, class Enable1> friend class Optional;
+
+  static_assert(!std::is_lvalue_reference<T>::value,
+      "Optional does not support lvalue reference types.");
 public:
   /**
    * Constructor.
@@ -340,15 +343,7 @@ public:
   }
 
   /**
-   * Constructor.
-   */
-  Optional(const T& value) :
-      value(value) {
-    //
-  }
-
-  /**
-   * Constructor.
+   * Value copy constructor.
    */
   template<class U, IS_CONVERTIBLE(U,T)>
   Optional(const U& value) :
@@ -357,7 +352,7 @@ public:
   }
 
   /**
-   * Constructor.
+   * Value copy constructor.
    */
   template<class U, IS_CONVERTIBLE(U,T)>
   Optional(Label* context, const U& value) :
@@ -366,7 +361,9 @@ public:
   }
 
   /**
-   * Constructor.
+   * Value move constructor.
+   *
+   * @todo Make generic while avoiding use of universal reference.
    */
   Optional(T&& value) :
       value(std::move(value)) {
@@ -374,19 +371,11 @@ public:
   }
 
   /**
-   * Constructor.
+   * Value move constructor.
+   *
+   * @todo Make generic while avoiding use of universal reference.
    */
-  template<class U, IS_CONVERTIBLE(U,T)>
-  Optional(U&& value) :
-      value(std::move(value)) {
-    //
-  }
-
-  /**
-   * Constructor.
-   */
-  template<class U, IS_CONVERTIBLE(U,T)>
-  Optional(Label* context, U&& value) :
+  Optional(Label* context, T&& value) :
       value(context, std::move(value)) {
     //
   }
