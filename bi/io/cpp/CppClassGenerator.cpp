@@ -55,8 +55,7 @@ void bi::CppClassGenerator::visit(const Class* o) {
         if (o->base->isEmpty()) {
           line("using super_type_ = libbirch::Any;");
         } else {
-
-          line("using super_type_ = " << super->name);
+          start("using super_type_ = " << super->name);
           if (!super->typeArgs->isEmpty()) {
             middle('<' << super->typeArgs << '>');
           }
