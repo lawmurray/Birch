@@ -14,9 +14,9 @@ namespace libbirch {
  *
  * @tparam T Type type.
  */
-template<class T>
+template<class T, class Enable = void>
 class Optional {
-  template<class U> friend class Optional;
+  template<class U, class Enable1> friend class Optional;
 public:
   /**
    * Constructor.
@@ -309,6 +309,231 @@ private:
    * Is there a value?
    */
   bool hasValue;
+};
+
+/**
+ * Optional for pointer types. Uses a null pointer, rather than a flag, to
+ * indicate no value.
+ *
+ * @ingroup libbirch
+ *
+ * @tparam T Type type.
+ */
+template<class T>
+class Optional<T,std::enable_if_t<is_pointer<T>::value>> {
+  template<class U, class Enable1> friend class Optional;
+public:
+  /**
+   * Constructor.
+   */
+  Optional(const Nil& = nil) :
+      value() {
+    //
+  }
+
+  /**
+   * Constructor.
+   */
+  Optional(Label* context, const Nil& = nil) :
+      value() {
+    //
+  }
+
+  /**
+   * Constructor.
+   */
+  Optional(const T& value) :
+      value(value) {
+    //
+  }
+
+  /**
+   * Constructor.
+   */
+  template<class U, IS_CONVERTIBLE(U,T)>
+  Optional(const U& value) :
+      value(value) {
+    //
+  }
+
+  /**
+   * Constructor.
+   */
+  template<class U, IS_CONVERTIBLE(U,T)>
+  Optional(Label* context, const U& value) :
+      value(context, value) {
+    //
+  }
+
+  /**
+   * Constructor.
+   */
+  Optional(T&& value) :
+      value(std::move(value)) {
+    //
+  }
+
+  /**
+   * Constructor.
+   */
+  template<class U, IS_CONVERTIBLE(U,T)>
+  Optional(U&& value) :
+      value(std::move(value)) {
+    //
+  }
+
+  /**
+   * Constructor.
+   */
+  template<class U, IS_CONVERTIBLE(U,T)>
+  Optional(Label* context, U&& value) :
+      value(context, std::move(value)) {
+    //
+  }
+
+  /**
+   * Copy constructor.
+   */
+  Optional(const Optional<T>& o) :
+      value(o.value) {
+    //
+  }
+
+  /**
+   * Copy constructor.
+   */
+  template<class U, IS_CONVERTIBLE(U,T)>
+  Optional(const Optional<U>& o) :
+      value(o.value) {
+    //
+  }
+
+  /**
+   * Copy constructor.
+   */
+  template<class U, IS_CONVERTIBLE(U,T)>
+  Optional(Label* context, const Optional<U>& o) :
+      value(context, o.value) {
+    //
+  }
+
+  /**
+   * Move constructor.
+   */
+  Optional(Optional<T>&& o) :
+      value(std::move(o.value)) {
+    //
+  }
+
+  /**
+   * Move constructor.
+   */
+  template<class U, IS_CONVERTIBLE(U,T)>
+  Optional(Optional<U>&& o) :
+      value(std::move(o.value)) {
+    //
+  }
+
+  /**
+   * Move constructor.
+   */
+  template<class U, IS_CONVERTIBLE(U,T)>
+  Optional(Label* context, Optional<U>&& o) :
+      value(context, std::move(o.value)) {
+    //
+  }
+
+  /**
+   * Deep copy constructor.
+   */
+  Optional(Label* context, Label* label, const Optional& o) :
+      value(context, label, o.value) {
+    //
+  }
+
+  /**
+   * Nil assignment operator.
+   */
+  Optional& operator=(const Nil& nil) {
+    return assign(nil);
+  }
+
+  /**
+   * Copy assignment operator.
+   */
+  Optional& operator=(const Optional<T>& o) {
+    return assign(o);
+  }
+
+  /**
+   * Move assignment operator.
+   */
+  Optional& operator=(Optional<T>&& o) {
+    return assign(std::move(o));
+  }
+
+  /**
+   * Is there a value?
+   */
+  bool query() const {
+    return value.query();
+  }
+
+  /**
+   * Get the value.
+   */
+  T& get() {
+    libbirch_assert_msg_(query(), "optional has no value");
+    return value;
+  }
+
+  /**
+   * Get the value.
+   */
+  const T& get() const {
+    libbirch_assert_msg_(query(), "optional has no value");
+    return value;
+  }
+
+  /**
+   * Copy assignment.
+   */
+  Optional& assign(Label* context, const Optional<T>& o) {
+    this->value.assign(context, o.value);
+    return *this;
+  }
+
+  /**
+   * Move assignment.
+   */
+  Optional& assign(Label* context, Optional<T>&& o) {
+    this->value.assign(context, std::move(o.value));
+    return *this;
+  }
+
+  void freeze() {
+    if (query()) {
+      get().freeze();
+    }
+  }
+
+  void thaw(Label* label) {
+    if (query()) {
+      get().thaw(label);
+    }
+  }
+
+  void finish() {
+    if (query()) {
+      get().finish();
+    }
+  }
+
+private:
+  /**
+   * The pointer.
+   */
+  T value;
 };
 
 template<class T>
