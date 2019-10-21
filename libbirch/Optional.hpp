@@ -326,6 +326,9 @@ class Optional<T,std::enable_if_t<is_pointer<T>::value>> {
   static_assert(!std::is_lvalue_reference<T>::value,
       "Optional does not support lvalue reference types.");
 public:
+  Optional& operator=(const Optional&) = delete;
+  Optional& operator=(Optional<T>&&) = delete;
+
   /**
    * Constructor.
    */
@@ -438,27 +441,6 @@ public:
   Optional(Label* context, Label* label, const Optional& o) :
       value(context, label, o.value) {
     //
-  }
-
-  /**
-   * Nil assignment operator.
-   */
-  Optional& operator=(const Nil& nil) {
-    return assign(nil);
-  }
-
-  /**
-   * Copy assignment operator.
-   */
-  Optional& operator=(const Optional<T>& o) {
-    return assign(o);
-  }
-
-  /**
-   * Move assignment operator.
-   */
-  Optional& operator=(Optional<T>&& o) {
-    return assign(std::move(o));
   }
 
   /**

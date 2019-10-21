@@ -55,7 +55,7 @@ class Array {
       buffer(nullptr),
       offset(0),
       isView(false) {
-    this->allocate();
+    allocate();
   }
 
   /**
@@ -70,8 +70,8 @@ class Array {
       buffer(nullptr),
       offset(0),
       isView(false) {
-    this->allocate();
-    this->initialize(context);
+    allocate();
+    initialize(context);
   }
 
   /**
@@ -86,8 +86,8 @@ class Array {
       buffer(nullptr),
       offset(0),
       isView(false) {
-    this->allocate();
-    std::uninitialized_copy(values.begin(), values.end(), this->begin());
+    allocate();
+    std::uninitialized_copy(values.begin(), values.end(), as_const().begin());
   }
 
   /**
@@ -105,8 +105,8 @@ class Array {
       buffer(nullptr),
       offset(0),
       isView(false) {
-    this->allocate();
-    std::uninitialized_copy(values.begin(), values.end(), this->begin());
+    allocate();
+    std::uninitialized_copy(values.begin(), values.end(), as_const().begin());
   }
 
   /**
@@ -124,8 +124,8 @@ class Array {
       buffer(nullptr),
       offset(0),
       isView(false) {
-    this->allocate();
-    this->initialize(context, args...);
+    allocate();
+    initialize(context, args...);
   }
 
   /**
@@ -133,11 +133,19 @@ class Array {
    */
   Array(const Array<T,F>& o) :
       frame(o.frame),
-      buffer(o.buffer),
-      offset(o.offset),
-      isView(o.isView) {
-    if (!isView && buffer) {
-      buffer->incUsage();
+      buffer(nullptr),
+      offset(0),
+      isView(false) {
+    if (o.isView) {
+      allocate();
+      uninitialized_copy(o);
+    } else {
+      /* share the buffer */
+      buffer = o.buffer;
+      offset = o.offset;
+      if (buffer) {
+        buffer->incUsage();
+      }
     }
   }
 
@@ -146,9 +154,12 @@ class Array {
    */
   template<class U, class G>
   Array(const Array<U,G>& o) :
-  frame(o.frame), buffer(nullptr), offset(0), isView(false) {
-    this->allocate();
-    this->uninitialized_copy(o);
+      frame(o.frame),
+      buffer(nullptr),
+      offset(0),
+      isView(false) {
+    allocate();
+    uninitialized_copy(o);
   }
 
   /**
@@ -156,9 +167,12 @@ class Array {
    */
   template<IS_NOT_VALUE(T), class U, class G>
   Array(Label* context, const Array<U,G>& o) :
-  frame(o.frame), buffer(nullptr), offset(0), isView(false) {
-    this->allocate();
-    this->uninitialized_copy(context, o);
+      frame(o.frame),
+      buffer(nullptr),
+      offset(0),
+      isView(false) {
+    allocate();
+    uninitialized_copy(context, o);
   }
 
   /**
@@ -166,10 +180,18 @@ class Array {
    */
   Array(Array<T,F>&& o) :
       frame(o.frame),
-      buffer(o.buffer),
-      offset(o.offset),
-      isView(o.isView) {
-    o.buffer = nullptr;
+      buffer(nullptr),
+      offset(0),
+      isView(false) {
+    if (o.isView) {
+      allocate();
+      uninitialized_copy(o);
+    } else {
+      /* take the buffer */
+      buffer = std::move(o.buffer);
+      offset = o.offset;
+      o.buffer = nullptr;
+    }
   }
 
   /**
@@ -181,8 +203,8 @@ class Array {
       buffer(nullptr),
       offset(0),
       isView(false) {
-    this->allocate();
-    this->uninitialized_copy(context, label, o);
+    allocate();
+    uninitialized_copy(context, label, o);
   }
 
   /**
@@ -190,56 +212,8 @@ class Array {
    */
   ~Array() {
     if (!isView) {
-      this->release();
+      release();
     }
-  }
-
-  /**
-   * Copy assignment. For a view the frames of the two arrays must
-   * conform, otherwise a resize is permitted.
-   */
-  template<IS_VALUE(T)>
-  Array<T,F>& assign(const Array<T,F>& o) {
-    if (this->isView) {
-      this->copy(o);
-    } else {
-      this->lock();
-      this->frame = o.frame;
-      if (o.isView) {
-        this->release();
-        this->allocate();
-        this->copy(o);
-      } else {
-        this->buffer = o.buffer;
-        this->buffer->incUsage();
-      }
-      this->unlock();
-    }
-    return *this;
-  }
-
-  /**
-   * Copy assignment. For a view the frames of the two arrays must
-   * conform, otherwise a resize is permitted.
-   */
-  template<IS_NOT_VALUE(T)>
-  Array<T,F>& assign(Label* context, const Array<T,F>& o) {
-    if (this->isView) {
-      this->copy(context, o);
-    } else {
-      this->lock();
-      this->frame = o.frame;
-      if (o.isView) {
-        this->release();
-        this->allocate();
-        this->copy(context, o);
-      } else {
-        this->buffer = o.buffer;
-        this->buffer->incUsage();
-      }
-      this->unlock();
-    }
-    return *this;
   }
 
   /**
@@ -250,24 +224,79 @@ class Array {
   }
 
   /**
+   * Move assignment operator.
+   */
+  Array<T,F>& operator=(Array<T,F>&& o) {
+    return assign(std::move(o));
+  }
+
+  /**
+   * Copy assignment. For a view the frames of the two arrays must
+   * conform, otherwise a resize is permitted.
+   */
+  template<IS_VALUE(T)>
+  Array<T,F>& assign(const Array<T,F>& o) {
+    if (isView) {
+      copy(o);
+    } else {
+      lock();
+      frame = o.frame;
+      if (o.isView) {
+        release();
+        allocate();
+        copy(o);
+      } else {
+        buffer = o.buffer;
+        buffer->incUsage();
+      }
+      unlock();
+    }
+    return *this;
+  }
+
+  /**
+   * Copy assignment. For a view the frames of the two arrays must
+   * conform, otherwise a resize is permitted.
+   */
+  template<IS_NOT_VALUE(T)>
+  Array<T,F>& assign(Label* context, const Array<T,F>& o) {
+    if (isView) {
+      copy(context, o);
+    } else {
+      lock();
+      frame = o.frame;
+      if (o.isView) {
+        release();
+        allocate();
+        copy(context, o);
+      } else {
+        buffer = o.buffer;
+        buffer->incUsage();
+      }
+      unlock();
+    }
+    return *this;
+  }
+
+  /**
    * Move assignment.
    */
   template<IS_NOT_VALUE(T)>
-  Array<T,F>& assign(Label* context, Array<T,F> && o) {
-    if (this->isView) {
-      this->copy(context, o);
+  Array<T,F>& assign(Label* context, Array<T,F>&& o) {
+    if (isView) {
+      copy(context, o);
     } else {
-      this->lock();
-      this->frame = o.frame;
+      lock();
+      frame = o.frame;
       if (o.isView) {
-        this->release();
-        this->allocate();
-        this->copy(context, o);
+        release();
+        allocate();
+        copy(context, o);
       } else {
-        this->buffer = o.buffer;
+        buffer = o.buffer;
         o.buffer = nullptr;
       }
-      this->unlock();
+      unlock();
     }
     return *this;
   }
@@ -277,29 +306,22 @@ class Array {
    */
   template<IS_VALUE(T)>
   Array<T,F>& assign(Array<T,F> && o) {
-    if (this->isView) {
-      this->copy(o);
+    if (isView) {
+      copy(o);
     } else {
-      this->lock();
-      this->frame = o.frame;
+      lock();
+      frame = o.frame;
       if (o.isView) {
-        this->release();
-        this->allocate();
-        this->copy(o);
+        release();
+        allocate();
+        copy(o);
       } else {
-        this->buffer = o.buffer;
+        buffer = o.buffer;
         o.buffer = nullptr;
       }
-      this->unlock();
+      unlock();
     }
     return *this;
-  }
-
-  /**
-   * Move assignment operator.
-   */
-  Array<T,F>& operator=(Array<T,F>&& o) {
-    return assign(std::move(o));
   }
 
   /**
@@ -343,21 +365,21 @@ class Array {
    * Number of columns. For a one-dimensional array, this is 1.
    */
   auto cols() const {
-    return F::count() == 1 ? 1 : this->frame.length(1);
+    return F::count() == 1 ? 1 : frame.length(1);
   }
 
   /**
    * Stride between rows.
    */
   auto rowStride() const {
-    return F::count() == 1 ? this->frame.volume() : this->frame.stride(0);
+    return F::count() == 1 ? frame.volume() : frame.stride(0);
   }
 
   /**
    * Stride between columns.
    */
   auto colStride() const {
-    return F::count() == 1 ? this->frame.stride(0) : this->frame.stride(1);
+    return F::count() == 1 ? frame.stride(0) : frame.stride(1);
   }
 
   /**
@@ -380,10 +402,10 @@ class Array {
    *     auto last = first + size();
    */
   Iterator<T,F> begin() {
-    return Iterator<T,F>(this->duplicate()->buf() + this->offset, this->frame);
+    return Iterator<T,F>(duplicate()->buf() + offset, frame);
   }
   Iterator<T,F> begin() const {
-    return Iterator<T,F>(this->buf(), this->frame);
+    return Iterator<T,F>(buf(), frame);
   }
   ///@}
 
@@ -402,22 +424,21 @@ class Array {
    */
   template<class View1, std::enable_if_t<View1::rangeCount() != 0,int> = 0>
   auto operator()(const View1& view) {
-    return Array<T,decltype(this->frame(view))>(this->frame(view),
-        this->duplicate(), this->offset + this->frame.serial(view));
+    return Array<T,decltype(frame(view))>(frame(view),
+        duplicate(), offset + frame.serial(view));
   }
   template<class View1, std::enable_if_t<View1::rangeCount() != 0,int> = 0>
   auto operator()(const View1& view) const {
-    return Array<T,decltype(this->frame(view))>(this->frame(view),
-        this->buffer, this->offset + this->frame.serial(view));
+    return Array<T,decltype(frame(view))>(frame(view),
+        buffer, offset + frame.serial(view));
   }
   template<class View1, std::enable_if_t<View1::rangeCount() == 0,int> = 0>
   auto& operator()(const View1& view) {
-    return *(this->duplicate()->buf() + this->offset +
-        this->frame.serial(view));
+    return *(duplicate()->buf() + offset + frame.serial(view));
   }
   template<class View1, std::enable_if_t<View1::rangeCount() == 0,int> = 0>
   const auto& operator()(const View1& view) const {
-    return *(this->buf() + this->frame.serial(view));
+    return *(buf() + frame.serial(view));
   }
   ///@}
 
@@ -431,70 +452,36 @@ class Array {
    *
    * @param frame New frame.
    */
-  template<IS_VALUE(T), class G>
+  template<class G>
   void shrink(const G& frame) {
     static_assert(F::count() == 1, "can only shrink one-dimensional arrays");
     static_assert(G::count() == 1, "can only shrink one-dimensional arrays");
-    assert(!this->isView);
-    assert(frame.size() < this->size());
+    assert(!isView);
+    assert(frame.size() < size());
 
-    this->lock();
-    if (this->isShared()) {
+    lock();
+    if (isShared()) {
       Array<T,F> o1(std::move(*this));
       this->frame = frame;
-      this->allocate();
-      this->uninitialized_copy(o1);
+      allocate();
+      uninitialized_copy(o1);
     } else {
-      auto oldSize = Buffer<T>::size(this->volume());
+      auto oldSize = Buffer<T>::size(volume());
       auto newSize = Buffer<T>::size(frame.volume());
       this->frame = frame;
-      if (this->size() == 0) {
-        release();
-      } else {
-        this->buffer = (Buffer<T>*)libbirch::reallocate(this->buffer,
-            oldSize, this->buffer->tid, newSize);
-      }
-    }
-    this->unlock();
-  }
-
-  /**
-   * Shrink a one-dimensional array in-place.
-   *
-   * @tparam G Frame type.
-   *
-   * @param frame New frame.
-   */
-  template<IS_NOT_VALUE(T), class G>
-  void shrink(const G& frame) {
-    static_assert(F::count() == 1, "can only shrink one-dimensional arrays");
-    static_assert(G::count() == 1, "can only shrink one-dimensional arrays");
-    assert(!this->isView);
-    assert(frame.size() < this->size());
-
-    this->lock();
-    if (this->isShared()) {
-      Array<T,F> o1(std::move(*this));
-      this->frame = frame;
-      this->allocate();
-      this->uninitialized_copy(o1);
-    } else {
-      auto oldSize = Buffer<T>::size(this->volume());
-      auto newSize = Buffer<T>::size(frame.volume());
-      this->frame = frame;
-      if (this->size() == 0) {
+      if (size() == 0) {
         release();
       } else {
         auto iter = as_const().begin();
-        auto last = iter + this->size();
+        auto last = iter + size();
         for (iter += frame.size(); iter != last; ++iter) {
           iter->~T();
         }
-        this->buffer = (Buffer<T>*)libbirch::reallocate(this->buffer,
-            oldSize, this->buffer->tid, newSize);
+        buffer = (Buffer<T>*)libbirch::reallocate(buffer,
+            oldSize, buffer->tid, newSize);
       }
     }
-    this->unlock();
+    unlock();
   }
 
   /**
@@ -505,64 +492,30 @@ class Array {
    * @param frame New frame.
    * @param x Value to assign to new elements.
    */
-  template<IS_VALUE(T), class G>
+  template<class G>
   void enlarge(const G& frame, const T& x) {
     static_assert(F::count() == 1, "can only enlarge one-dimensional arrays");
     static_assert(G::count() == 1, "can only enlarge one-dimensional arrays");
-    assert(!this->isView);
-    assert(frame.size() > this->size());
+    assert(!isView);
+    assert(frame.size() > size());
 
-    this->lock();
-    auto n = this->size();
-    if (this->isShared() || !this->buffer) {
+    lock();
+    auto n = size();
+    if (isShared() || !buffer) {
       Array<T,F> o1(std::move(*this));
       this->frame = frame;
-      this->allocate();
-      this->uninitialized_copy(o1);
+      allocate();
+      uninitialized_copy(o1);
     } else {
-      auto oldSize = Buffer<T>::size(this->volume());
+      auto oldSize = Buffer<T>::size(volume());
       auto newSize = Buffer<T>::size(frame.volume());
       this->frame = frame;
-      this->buffer = (Buffer<T>*)libbirch::reallocate(this->buffer, oldSize,
-          this->buffer->tid, newSize);
+      buffer = (Buffer<T>*)libbirch::reallocate(buffer, oldSize,
+          buffer->tid, newSize);
     }
     auto iter = as_const().begin();
-    std::fill(iter + n, iter + this->size(), x);
-    this->unlock();
-  }
-
-  /**
-   * Enlarge a one-dimensional array in-place.
-   *
-   * @tparam G Frame type.
-   *
-   * @param frame New frame.
-   * @param x Value to assign to new elements.
-   */
-  template<IS_NOT_VALUE(T), class G>
-  void enlarge(const G& frame, const T& x) {
-    static_assert(F::count() == 1, "can only enlarge one-dimensional arrays");
-    static_assert(G::count() == 1, "can only enlarge one-dimensional arrays");
-    assert(!this->isView);
-    assert(frame.size() > this->size());
-
-    this->lock();
-    auto n = this->size();
-    if (this->isShared() || !this->buffer) {
-      Array<T,F> o1(std::move(*this));
-      this->frame = frame;
-      this->allocate();
-      this->uninitialized_copy(o1);
-    } else {
-      auto oldSize = Buffer<T>::size(this->volume());
-      auto newSize = Buffer<T>::size(frame.volume());
-      this->frame = frame;
-      this->buffer = (Buffer<T>*)libbirch::reallocate(this->buffer, oldSize,
-          this->buffer->tid, newSize);
-    }
-    auto iter = as_const().begin();
-    std::uninitialized_fill(iter + n, iter + this->size(), x);
-    this->unlock();
+    std::uninitialized_fill(iter + n, iter + size(), x);
+    unlock();
   }
   ///@}
 
@@ -572,18 +525,18 @@ class Array {
   ///@{
   template<IS_VALUE(T)>
   operator eigen_type() const {
-    return this->toEigen();
+    return toEigen();
   }
 
   template<IS_VALUE(T)>
   auto toEigen() {
-    return eigen_type(this->duplicate()->buf() + this->offset, this->rows(),
-        this->cols(), eigen_stride_type(this->rowStride(), this->colStride()));
+    return eigen_type(duplicate()->buf() + offset, rows(),
+        cols(), eigen_stride_type(rowStride(), colStride()));
   }
   template<IS_VALUE(T)>
   auto toEigen() const {
-    return eigen_type(this->buf() + this->offset, this->rows(), this->cols(),
-        eigen_stride_type(this->rowStride(), this->colStride()));
+    return eigen_type(buf() + offset, rows(), cols(),
+        eigen_stride_type(rowStride(), colStride()));
   }
 
   /**
@@ -595,8 +548,8 @@ class Array {
       buffer(nullptr),
       offset(0),
       isView(false) {
-    this->allocate();
-    this->toEigen() = o;
+    allocate();
+    toEigen() = o;
   }
 
   /**
@@ -608,8 +561,8 @@ class Array {
       buffer(nullptr),
       offset(0),
       isView(false) {
-    this->allocate();
-    this->toEigen() = o;
+    allocate();
+    toEigen() = o;
   }
 
   /**
@@ -621,10 +574,11 @@ class Array {
       buffer(nullptr),
       offset(0),
       isView(false) {
-    this->allocate();
-    this->toEigen() = o;
+    allocate();
+    toEigen() = o;
   }
   ///@}
+
   template<IS_VALUE(T)>
   void freeze() {
     //
@@ -632,8 +586,8 @@ class Array {
 
   template<IS_NOT_VALUE(T)>
   void freeze() {
-    auto iter = this->begin();
-    auto last = iter + this->size();
+    auto iter = begin();
+    auto last = iter + size();
     for (; iter != last; ++iter) {
       iter->freeze();
     }
@@ -646,8 +600,8 @@ class Array {
 
   template<IS_NOT_VALUE(T)>
   void thaw(Label* label) {
-    auto iter = this->begin();
-    auto last = iter + this->size();
+    auto iter = begin();
+    auto last = iter + size();
     for (; iter != last; ++iter) {
       iter->thaw(label);
     }
@@ -660,8 +614,8 @@ class Array {
 
   template<IS_NOT_VALUE(T)>
   void finish() {
-    auto iter = this->begin();
-    auto last = iter + this->size();
+    auto iter = begin();
+    auto last = iter + size();
     for (; iter != last; ++iter) {
       iter->finish();
     }
@@ -701,52 +655,33 @@ private:
   /**
    * Duplicate underlying buffer by copy.
    */
-  template<IS_VALUE(T)>
   Buffer<T>* duplicate() {
-    if (!this->isView) {
-      this->lock();
-      if (this->isShared()) {
+    if (!isView) {
+      lock();
+      if (isShared()) {
         Array<T,F> o1(std::move(*this));
-        this->allocate();
-        this->uninitialized_copy(o1);
+        allocate();
+        uninitialized_copy(o1);
       }
-      assert(!this->isShared());
-      this->unlock();
+      assert(!isShared());
+      unlock();
     }
     return buffer;
-  }
-
-  /**
-   * Duplicate underlying buffer by copy.
-   */
-  template<IS_NOT_VALUE(T)>
-  Buffer<T>* duplicate() {
-    if (!this->isView) {
-      this->lock();
-      if (this->isShared()) {
-        Array<T,F> o1(std::move(*this));
-        this->allocate();
-        this->uninitialized_copy(o1);
-      }
-      assert(!this->isShared());
-      this->unlock();
-    }
-    return this->buffer;
   }
 
   /**
    * Deallocate memory of array.
    */
   void release() {
-    if (this->buffer && this->buffer->decUsage() == 0) {
+    if (buffer && buffer->decUsage() == 0) {
       auto iter = as_const().begin();
-      auto last = iter + this->size();
+      auto last = iter + size();
       for (; iter != last; ++iter) {
         iter->~T();
       }
-      size_t size = Buffer<T>::size(this->volume());
-      libbirch::deallocate(this->buffer, size, this->buffer->tid);
-      this->buffer = nullptr;
+      size_t size = Buffer<T>::size(volume());
+      libbirch::deallocate(buffer, size, buffer->tid);
+      buffer = nullptr;
     }
   }
 
@@ -757,8 +692,8 @@ private:
    */
   template<IS_NOT_VALUE(T), class ... Args>
   void initialize(Label* context, Args ... args) {
-    auto iter = this->begin();
-    auto last = iter + this->size();
+    auto iter = begin();
+    auto last = iter + size();
     for (; iter != last; ++iter) {
       new (&*iter) T(context, new typename T::value_type(context, args...));
     }
@@ -769,9 +704,9 @@ private:
    */
   template<IS_VALUE(T), class U, class G>
   void copy(const Array<U,G>& o) {
-    assert(!this->isShared());
-    libbirch_assert_msg_(o.frame.conforms(this->frame), "array sizes are different");
-    auto n = std::min(this->size(), o.size());
+    assert(!isShared());
+    libbirch_assert_msg_(o.frame.conforms(frame), "array sizes are different");
+    auto n = std::min(size(), o.size());
     auto begin1 = o.begin();
     auto end1 = begin1 + n;
     auto begin2 = begin();
@@ -788,9 +723,9 @@ private:
    */
   template<IS_NOT_VALUE(T), class U, class G>
   void copy(Label* context, const Array<U,G>& o) {
-    assert(!this->isShared());
-    libbirch_assert_msg_(o.frame.conforms(this->frame), "array sizes are different");
-    auto n = std::min(this->size(), o.size());
+    assert(!isShared());
+    libbirch_assert_msg_(o.frame.conforms(frame), "array sizes are different");
+    auto n = std::min(size(), o.size());
     auto begin1 = o.begin();
     auto end1 = begin1 + n;
     auto begin2 = begin();
@@ -811,9 +746,9 @@ private:
    */
   template<class U, class G>
   void uninitialized_copy(const Array<U,G>& o) {
-    assert(!this->isShared());
-    libbirch_assert_msg_(o.frame.conforms(this->frame), "array sizes are different");
-    auto n = std::min(this->size(), o.size());
+    assert(!isShared());
+    libbirch_assert_msg_(o.frame.conforms(frame), "array sizes are different");
+    auto n = std::min(size(), o.size());
     auto begin1 = o.begin();
     auto end1 = begin1 + n;
     auto begin2 = as_const().begin();
@@ -825,8 +760,8 @@ private:
    */
   template<IS_NOT_VALUE(T), class U, class G>
   void uninitialized_copy(Label* context, const Array<U,G>& o) {
-    assert(!this->isShared());
-    libbirch_assert_msg_(o.frame.conforms(this->frame), "array sizes are different");
+    assert(!isShared());
+    libbirch_assert_msg_(o.frame.conforms(frame), "array sizes are different");
     auto n = std::min(size(), o.size());
     auto begin1 = o.begin();
     auto end1 = begin1 + n;
@@ -841,12 +776,12 @@ private:
    */
   template<IS_NOT_VALUE(T), class U, class G>
   void uninitialized_copy(Label* context, Label* label, const Array<U,G>& o) {
-    assert(!this->isShared());
-    libbirch_assert_msg_(o.frame.conforms(this->frame), "array sizes are different");
+    assert(!isShared());
+    libbirch_assert_msg_(o.frame.conforms(frame), "array sizes are different");
     auto n = std::min(size(), o.size());
     auto begin1 = o.begin();
     auto end1 = begin1 + n;
-    auto begin2 = begin();
+    auto begin2 = as_const().begin();
     for (; begin1 != end1; ++begin1, ++begin2) {
       new (&*begin2) T(context, label, *begin1);
     }
