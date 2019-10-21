@@ -87,18 +87,25 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
       in();
       in();
       start("super_type_(context, label, o)");
-      for (auto param : params) {
-        if (!param->type->isValue()) {
-          auto name = param->name;
+      for (auto o : params) {
+        if (!o->type->isValue()) {
           finish(',');
-          start(name << "(context, label, o." << name << ')');
+          if (o->type->isValue()) {
+            start(o->name << "(o." << o->name << ')');
+          } else {
+            start(o->name << "(context, label, o." << o->name << ')');
+          }
         }
       }
-      for (auto local : locals) {
-        if (!local->type->isValue()) {
-          auto name = getName(local->name->str(), local->number);
+      for (auto o : locals) {
+        if (!o->type->isValue()) {
+          auto name = getName(o->name->str(), o->number);
           finish(',');
-          start(name << "(context, label, o." << name << ')');
+          if (o->type->isValue()) {
+            start(name << "(o." << name << ')');
+          } else {
+            start(name << "(context, label, o." << name << ')');
+          }
         }
       }
       out();

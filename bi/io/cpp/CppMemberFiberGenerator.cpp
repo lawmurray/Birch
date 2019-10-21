@@ -102,17 +102,22 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     start("super_type_(context, label, o)");
     finish(',');
     start("self(context, self)");
-    for (auto param : params) {
-      if (!param->type->isValue()) {
-        auto name = param->name;
+    for (auto o : params) {
+      if (!o->type->isValue()) {
         finish(',');
-        start(name << "(context, label, o." << name << ')');
+        if (o->type->isValue()) {
+          start(o->name << "(o." << o->name << ')');
+        } else {
+          start(o->name << "(context, label, o." << o->name << ')');
+        }
       }
     }
-    for (auto local : locals) {
-      if (!local->type->isValue()) {
-        auto name = getName(local->name->str(), local->number);
-        finish(',');
+    for (auto o : locals) {
+      auto name = getName(o->name->str(), o->number);
+      finish(',');
+      if (o->type->isValue()) {
+        start(name << "(o." << name << ')');
+      } else {
         start(name << "(context, label, o." << name << ')');
       }
     }

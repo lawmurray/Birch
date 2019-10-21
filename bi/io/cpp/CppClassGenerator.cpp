@@ -162,8 +162,10 @@ void bi::CppClassGenerator::visit(const Class* o) {
       in();
       start("super_type_(context, label, o)");
       for (auto o : memberVariables) {
-        if (!o->type->isValue()) {
-          finish(',');
+        finish(',');
+        if (o->type->isValue()) {
+          start(o->name << "(o." << o->name << ')');
+        } else {
           start(o->name << "(context, label, o." << o->name << ')');
         }
       }
