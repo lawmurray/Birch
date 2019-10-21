@@ -240,14 +240,17 @@ class Array {
       copy(o);
     } else {
       lock();
+      release();
       frame = o.frame;
       if (o.isView) {
-        release();
         allocate();
         copy(o);
       } else {
         buffer = o.buffer;
-        buffer->incUsage();
+        offset = o.offset;
+        if (buffer) {
+          buffer->incUsage();
+        }
       }
       unlock();
     }
@@ -264,14 +267,17 @@ class Array {
       copy(context, o);
     } else {
       lock();
+      release();
       frame = o.frame;
       if (o.isView) {
-        release();
         allocate();
         copy(context, o);
       } else {
         buffer = o.buffer;
-        buffer->incUsage();
+        offset = o.offset;
+        if (buffer) {
+          buffer->incUsage();
+        }
       }
       unlock();
     }
@@ -287,14 +293,16 @@ class Array {
       copy(context, o);
     } else {
       lock();
+      release();
       frame = o.frame;
       if (o.isView) {
-        release();
         allocate();
         copy(context, o);
       } else {
         buffer = o.buffer;
+        offset = o.offset;
         o.buffer = nullptr;
+        o.offset = 0;
       }
       unlock();
     }
@@ -310,14 +318,16 @@ class Array {
       copy(o);
     } else {
       lock();
+      release();
       frame = o.frame;
       if (o.isView) {
-        release();
         allocate();
         copy(o);
       } else {
         buffer = o.buffer;
+        offset = o.offset;
         o.buffer = nullptr;
+        o.offset = 0;
       }
       unlock();
     }
@@ -462,6 +472,7 @@ class Array {
     lock();
     if (isShared()) {
       Array<T,F> o1(std::move(*this));
+      release();
       this->frame = frame;
       allocate();
       uninitialized_copy(o1);
@@ -503,6 +514,7 @@ class Array {
     auto n = size();
     if (isShared() || !buffer) {
       Array<T,F> o1(std::move(*this));
+      release();
       this->frame = frame;
       allocate();
       uninitialized_copy(o1);
@@ -535,7 +547,7 @@ class Array {
   }
   template<IS_VALUE(T)>
   auto toEigen() const {
-    return eigen_type(buf() + offset, rows(), cols(),
+    return eigen_type(buf(), rows(), cols(),
         eigen_stride_type(rowStride(), colStride()));
   }
 
@@ -648,7 +660,10 @@ private:
     auto size = Buffer<T>::size(volume());
     if (size > 0) {
       buffer = new (libbirch::allocate(size)) Buffer<T>();
-      buffer->incUsage();
+      if (buffer) {
+        buffer->incUsage();
+      }
+      offset = 0;
     }
   }
 
@@ -660,6 +675,7 @@ private:
       lock();
       if (isShared()) {
         Array<T,F> o1(std::move(*this));
+        release();
         allocate();
         uninitialized_copy(o1);
       }
@@ -681,8 +697,9 @@ private:
       }
       size_t size = Buffer<T>::size(volume());
       libbirch::deallocate(buffer, size, buffer->tid);
-      buffer = nullptr;
     }
+    buffer = nullptr;
+    offset = 0;
   }
 
   /**
