@@ -66,7 +66,7 @@ private:
 /**
  * Get the <tt>i</tt>th pool.
  */
-extern Pool& pool(const unsigned i);
+extern Pool& pool(const int i);
 
 /**
  * Buffer for heap allocations.

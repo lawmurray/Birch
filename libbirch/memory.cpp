@@ -34,7 +34,7 @@ static char* heap() {
   return (char*)ptr;
 }
 
-libbirch::Pool& libbirch::pool(const unsigned i) {
+libbirch::Pool& libbirch::pool(const int i) {
   static libbirch::Pool* pools = new libbirch::Pool[64*omp_get_max_threads()];
   return pools[i];
 }

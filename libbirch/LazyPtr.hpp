@@ -254,6 +254,7 @@ public:
     if (raw && raw->isFrozen()) {
       raw = static_cast<value_type*>(getLabel()->get(raw));
       object.replace(raw);
+      assert(object);
     }
     return object;
   }
@@ -273,6 +274,7 @@ public:
     if (raw && raw->isFrozen()) {
       raw = static_cast<value_type*>(getLabel()->pull(raw));
       object.replace(raw);
+      assert(object);
     }
     return object;
   }
