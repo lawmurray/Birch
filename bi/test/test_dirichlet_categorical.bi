@@ -6,7 +6,7 @@ program test_dirichlet_categorical(N:Integer <- 10000) {
   X2:Real[N,6];
   α:Real[5];
   for n:Integer in 1..5 {
-    α[n] <- simulate_uniform(0.0, 10.0);
+    α[n] <- simulate_uniform(1.0, 10.0);
   }
  
   /* simulate forward */

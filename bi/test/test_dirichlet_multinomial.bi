@@ -4,10 +4,10 @@
 program test_dirichlet_multinomial(N:Integer <- 10000) {
   X1:Real[N,10];
   X2:Real[N,10];
-  n:Integer <- simulate_uniform_int(1, 100);
+  n:Integer <- simulate_uniform_int(100, 500);
   α:Real[5];
   for auto i in 1..5 {
-    α[i] <- simulate_uniform(0.0, 10.0);
+    α[i] <- simulate_uniform(1.0, 10.0);
   }
  
   /* simulate forward */

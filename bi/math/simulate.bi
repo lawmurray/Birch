@@ -190,7 +190,7 @@ function simulate_multinomial(n:Integer, ρ:Real[_], Z:Real) -> Integer[_] {
   j:Integer <- D;
   i:Integer <- n;
   u:Real;
-  x:Integer[D];
+  x:Integer[_] <- vector(0, D);
     
   while i > 0 {
     u <- simulate_uniform(0.0, 1.0);
@@ -227,7 +227,7 @@ function simulate_dirichlet(α:Real[_]) -> Real[_] {
   z <- 1.0/z;
   for (i:Integer in 1..D) {
     x[i] <- z*x[i];
-  }
+  }  
   return x;
 }
 
@@ -238,7 +238,7 @@ function simulate_dirichlet(α:Real[_]) -> Real[_] {
  * - D: Number of dimensions.
  */
 function simulate_dirichlet(α:Real, D:Integer) -> Real[_] {
-  assert D >= 0;
+  assert D > 0;
   x:Real[D];
   z:Real <- 0.0;
 
@@ -555,8 +555,7 @@ function simulate_dirichlet_categorical(α:Real[_]) -> Integer {
  * - n: Number of trials.
  * - α: Concentrations.
  */
-function simulate_dirichlet_multinomial(n:Integer, α:Real[_]) ->
-    Integer[_] {
+function simulate_dirichlet_multinomial(n:Integer, α:Real[_]) -> Integer[_] {
   return simulate_multinomial(n, simulate_dirichlet(α));
 }
 

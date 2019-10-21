@@ -115,11 +115,11 @@ function pass(X1:Real[_,_], X2:Real[_,_]) -> Boolean {
     /* normalise onto the interval [0,1] */
     auto mn <- min(min(x1), min(x2));
     auto mx <- max(max(x1), max(x2));
-    x1 <- (x1 - mn)/(mx - mn);
-    x2 <- (x2 - mn)/(mx - mn);
-  
+    auto z1 <- (x1 - mn)/(mx - mn);
+    auto z2 <- (x2 - mn)/(mx - mn);
+    
     /* compute distance and suggested pass threshold */
-    auto δ <- wasserstein(x1, x2);
+    auto δ <- wasserstein(z1, z2);
     if δ > ε {
       failed <- failed + 1;
       stderr.print("failed on component " + c + ", " + δ + " > " + ε + "\n");
@@ -139,11 +139,11 @@ function pass(X1:Real[_,_], X2:Real[_,_]) -> Boolean {
     /* normalise onto the interval [0,1] */
     auto mn <- min(min(x1), min(x2));
     auto mx <- max(max(x1), max(x2));
-    x1 <- (x1 - mn)/(mx - mn);
-    x2 <- (x2 - mn)/(mx - mn);
+    auto z1 <- (x1 - mn)/(mx - mn);
+    auto z2 <- (x2 - mn)/(mx - mn);
   
     /* compute distance and suggested pass threshold */
-    auto δ <- wasserstein(x1, x2);    
+    auto δ <- wasserstein(z1, z2);    
     if δ > ε {
       failed <- failed + 1;
       stderr.print("failed on random projection, " + δ + " > " + ε + "\n");
