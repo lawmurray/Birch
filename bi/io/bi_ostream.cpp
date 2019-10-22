@@ -569,7 +569,7 @@ void bi::bi_ostream::visit(const Yield* o) {
 }
 
 void bi::bi_ostream::visit(const Raw* o) {
-  line(o->name << " {{");
+  line(o->name << "{{");
   start(o->raw);
   finish("}}");
 }
