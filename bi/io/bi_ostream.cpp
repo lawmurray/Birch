@@ -538,9 +538,8 @@ void bi::bi_ostream::visit(const ExpressionStatement* o) {
 void bi::bi_ostream::visit(const If* o) {
   start("if " << o->cond << o->braces);
   if (!o->falseBraces->isEmpty()) {
-    middle(" else" << o->falseBraces);
+    middle(" else " << o->falseBraces);
   }
-  finish("");
 }
 
 void bi::bi_ostream::visit(const For* o) {
