@@ -60,10 +60,10 @@ class Object {
 function make(name:String) -> Object? {
   symbol:String <- "make_" + name + "_";
   cpp{{
-  using make_t = bi::type::Object*();
+  using make_t = bi::type::Object*(libbirch::Label*);
   void* addr = dlsym(RTLD_DEFAULT, symbol.c_str());
   if (addr) {
-    return libbirch::Shared<bi::type::Object>(context_, reinterpret_cast<make_t*>(addr)());
+    return libbirch::Shared<bi::type::Object>(context_, reinterpret_cast<make_t*>(addr)(context_));
   } else {
     return libbirch::nil;
   }
