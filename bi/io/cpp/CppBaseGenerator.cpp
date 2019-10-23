@@ -189,8 +189,7 @@ void bi::CppBaseGenerator::visit(const Call<MemberFiber>* o) {
 void bi::CppBaseGenerator::visit(const Call<BinaryOperator>* o) {
   auto op = dynamic_cast<OverloadedIdentifier<BinaryOperator>*>(o->single);
   assert(op);
-  if (isTranslatable(op->name->str()) &&
-      (o->target->isValue() || o->target->braces->isEmpty())) {
+  if (isTranslatable(op->name->str()) && o->target->isValue()) {
     /* use corresponding C++ operator */
     genLeftArg(o);
     middle(' ' << op->name->str() << ' ');
@@ -211,8 +210,7 @@ void bi::CppBaseGenerator::visit(const Call<BinaryOperator>* o) {
 void bi::CppBaseGenerator::visit(const Call<UnaryOperator>* o) {
   auto op = dynamic_cast<OverloadedIdentifier<UnaryOperator>*>(o->single);
   assert(op);
-  if (isTranslatable(op->name->str()) &&
-      (o->target->isValue() || o->target->braces->isEmpty())) {
+  if (isTranslatable(op->name->str()) && o->target->isValue()) {
     /* use corresponding C++ operator */
     middle(op->name->str());
     genSingleArg(o);
