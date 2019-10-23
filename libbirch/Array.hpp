@@ -237,6 +237,7 @@ class Array {
   template<IS_VALUE(T)>
   Array<T,F>& assign(const Array<T,F>& o) {
     if (isView) {
+      libbirch_assert_msg_(o.frame.conforms(frame), "array sizes are different");
       copy(o);
     } else {
       lock();
@@ -264,6 +265,7 @@ class Array {
   template<IS_NOT_VALUE(T)>
   Array<T,F>& assign(Label* context, const Array<T,F>& o) {
     if (isView) {
+      libbirch_assert_msg_(o.frame.conforms(frame), "array sizes are different");
       copy(context, o);
     } else {
       lock();
@@ -290,6 +292,7 @@ class Array {
   template<IS_NOT_VALUE(T)>
   Array<T,F>& assign(Label* context, Array<T,F>&& o) {
     if (isView) {
+      libbirch_assert_msg_(o.frame.conforms(frame), "array sizes are different");
       copy(context, o);
     } else {
       lock();
@@ -315,6 +318,7 @@ class Array {
   template<IS_VALUE(T)>
   Array<T,F>& assign(Array<T,F> && o) {
     if (isView) {
+      libbirch_assert_msg_(o.frame.conforms(frame), "array sizes are different");
       copy(o);
     } else {
       lock();
@@ -722,7 +726,6 @@ private:
   template<IS_VALUE(T), class U, class G>
   void copy(const Array<U,G>& o) {
     assert(!isShared());
-    libbirch_assert_msg_(o.frame.conforms(frame), "array sizes are different");
     auto n = std::min(size(), o.size());
     auto begin1 = o.begin();
     auto end1 = begin1 + n;
@@ -741,7 +744,6 @@ private:
   template<IS_NOT_VALUE(T), class U, class G>
   void copy(Label* context, const Array<U,G>& o) {
     assert(!isShared());
-    libbirch_assert_msg_(o.frame.conforms(frame), "array sizes are different");
     auto n = std::min(size(), o.size());
     auto begin1 = o.begin();
     auto end1 = begin1 + n;
@@ -764,7 +766,6 @@ private:
   template<class U, class G>
   void uninitialized_copy(const Array<U,G>& o) {
     assert(!isShared());
-    libbirch_assert_msg_(o.frame.conforms(frame), "array sizes are different");
     auto n = std::min(size(), o.size());
     auto begin1 = o.begin();
     auto end1 = begin1 + n;
@@ -778,7 +779,6 @@ private:
   template<IS_NOT_VALUE(T), class U, class G>
   void uninitialized_copy(Label* context, const Array<U,G>& o) {
     assert(!isShared());
-    libbirch_assert_msg_(o.frame.conforms(frame), "array sizes are different");
     auto n = std::min(size(), o.size());
     auto begin1 = o.begin();
     auto end1 = begin1 + n;
@@ -794,7 +794,6 @@ private:
   template<IS_NOT_VALUE(T), class U, class G>
   void uninitialized_copy(Label* context, Label* label, const Array<U,G>& o) {
     assert(!isShared());
-    libbirch_assert_msg_(o.frame.conforms(frame), "array sizes are different");
     auto n = std::min(size(), o.size());
     auto begin1 = o.begin();
     auto end1 = begin1 + n;
