@@ -4,7 +4,7 @@
 #include "bi/visitor/IsValue.hpp"
 
 bi::IsValue::IsValue() : result(true) {
-
+  //
 }
 
 void bi::IsValue::visit(const ClassType* o) {
@@ -29,6 +29,22 @@ void bi::IsValue::visit(const Call<Function>* o) {
 }
 
 void bi::IsValue::visit(const Call<Fiber>* o) {
+  Visitor::visit(o);
+  if (done.find(o->target) != done.end()) {
+    done.insert(o->target);
+    o->target->accept(this);
+  }
+}
+
+void bi::IsValue::visit(const Call<BinaryOperator>* o) {
+  Visitor::visit(o);
+  if (done.find(o->target) != done.end()) {
+    done.insert(o->target);
+    o->target->accept(this);
+  }
+}
+
+void bi::IsValue::visit(const Call<UnaryOperator>* o) {
   Visitor::visit(o);
   if (done.find(o->target) != done.end()) {
     done.insert(o->target);

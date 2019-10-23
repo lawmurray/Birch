@@ -25,6 +25,8 @@ public:
   virtual void visit(const GenericType* o);
   virtual void visit(const Call<Function>* o);
   virtual void visit(const Call<Fiber>* o);
+  virtual void visit(const Call<BinaryOperator>* o);
+  virtual void visit(const Call<UnaryOperator>* o);
 
   /**
    * Result.
