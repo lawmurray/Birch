@@ -294,7 +294,7 @@ void bi::CppBaseGenerator::visit(const Get* o) {
 }
 
 void bi::CppBaseGenerator::visit(const LambdaFunction* o) {
-  middle("[=](" << o->params << ") {");
+  finish("[=](" << o->params << ") {");
   in();
   ++inLambda;
   *this << o->braces->strip();
