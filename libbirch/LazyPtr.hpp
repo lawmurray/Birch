@@ -73,8 +73,10 @@ public:
   LazyPtr(const LazyPtr<P>& o) :
       object(o.object),
       label(o.label),
-      cross(false) {
-    //
+      cross(o.cross) {
+    if (isCross()) {
+      getLabel()->incShared();
+    }
   }
 
   /**
@@ -84,8 +86,10 @@ public:
   LazyPtr(const LazyPtr<Q>& o) :
       object(o.object),
       label(o.label),
-      cross(false) {
-    //
+      cross(o.cross) {
+    if (isCross()) {
+      getLabel()->incShared();
+    }
   }
 
   /**
