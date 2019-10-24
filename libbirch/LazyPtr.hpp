@@ -71,7 +71,7 @@ public:
    * Copy constructor.
    */
   LazyPtr(const LazyPtr<P>& o) :
-      object(o.object),
+      object(o.get()),
       label(o.label),
       cross(o.cross) {
     if (isCross()) {
@@ -84,7 +84,7 @@ public:
    */
   template<class Q, IS_CONVERTIBLE(Q,P)>
   LazyPtr(const LazyPtr<Q>& o) :
-      object(o.object),
+      object(o.get()),
       label(o.label),
       cross(o.cross) {
     if (isCross()) {
@@ -109,7 +109,7 @@ public:
    */
   template<class Q, IS_CONVERTIBLE(Q,P)>
   LazyPtr(Label* context, const LazyPtr<Q>& o) :
-      object(o.object),
+      object(o.get()),
       label(0),
       cross(false) {
     if (object) {
