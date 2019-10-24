@@ -31,9 +31,9 @@ public:
    * Constructor.
    */
   LazyPtr(const Nil& = nil) :
-    object(),
-    label(0),
-    cross(false) {
+      object(),
+      label(0),
+      cross(false) {
     //
   }
 
@@ -429,7 +429,7 @@ public:
    */
   template<class U>
   auto dynamic_pointer_cast(Label* context) const {
-    auto cast = object.template dynamic_pointer_cast<typename U::pointer_type>();
+    auto cast = get().template dynamic_pointer_cast<typename U::pointer_type>();
     return LazyPtr<decltype(cast)>(getLabel(), cast);
   }
 
@@ -438,7 +438,7 @@ public:
    */
   template<class U>
   auto static_pointer_cast(Label* context) const {
-    auto cast = object.template static_pointer_cast<typename U::pointer_type>();
+    auto cast = get().template static_pointer_cast<typename U::pointer_type>();
     return LazyPtr<decltype(cast)>(getLabel(), cast);
   }
 
