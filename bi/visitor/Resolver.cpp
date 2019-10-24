@@ -849,8 +849,9 @@ bi::Statement* bi::Resolver::modify(ExpressionStatement* o) {
 
   /* when in the body of a fiber and another fiber is called while ignoring
    * its return type, this is syntactic sugar for a loop */
-  auto call = dynamic_cast<Call<Unknown>*>(o->single);
-  if (call && call->type->isFiber()) {
+  auto fiberCall = dynamic_cast<Call<Fiber>*>(o->single);
+  auto memberFiberCall = dynamic_cast<Call<MemberFiber>*>(o->single);
+  if (fiberCall || memberFiberCall) {
     auto name = new Name();
     auto var = new LocalVariable(AUTO, name, new EmptyType(o->loc),
         new EmptyExpression(o->loc), new EmptyExpression(o->loc),
