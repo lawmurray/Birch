@@ -17,9 +17,9 @@ template<class YieldType>
 class Fiber {
 public:
   /**
-   * Default constructor.
+   * Constructor.
    */
-  Fiber(Label* context) {
+  Fiber() {
     //
   }
 
@@ -40,11 +40,35 @@ public:
   }
 
   /**
+   * Move constructor.
+   */
+  Fiber(Label* context, Fiber<YieldType>&& o) :
+      state(context, std::move(o.state)) {
+    //
+  }
+
+  /**
    * Deep copy constructor.
    */
   Fiber(Label* context, Label* label, const Fiber<YieldType>& o) :
       state(context, label, o.state) {
     //
+  }
+
+  /**
+   * Copy assignment.
+   */
+  Fiber& assign(Label* context, const Fiber<YieldType>& o) {
+    state.assign(context, o.state);
+    return *this;
+  }
+
+  /**
+   * Move assignment.
+   */
+  Fiber& assign(Label* context, Fiber<YieldType>&& o) {
+    state.assign(context, std::move(o.state));
+    return *this;
   }
 
   /**
