@@ -359,7 +359,7 @@ void bi::CppFiberGenerator::visit(const LocalVariable* o) {
         middle(o->type << "(context_, " << o->brackets << "))");
       } else if (o->type->isClass()) {
         middle("local->" << name << ".assign(context_, ");
-        middle(o->type << "(context_))");
+        middle("libbirch::make_pointer<" << o->type << ">(context_))");
       }
     }
   }

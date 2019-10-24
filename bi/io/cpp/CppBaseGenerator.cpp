@@ -51,13 +51,12 @@ void bi::CppBaseGenerator::visit(const Literal<const char*>* o) {
 void bi::CppBaseGenerator::visit(const Parentheses* o) {
   if (o->single->type->isList()) {
     if (inAssign) {
-      middle("libbirch::tie");
+      middle("libbirch::tie(");
     } else {
-      middle("libbirch::make_tuple");
-    }
-    middle('(');
-    if (!o->isValue()) {
-      middle("context_, ");
+      middle("libbirch::make_tuple(");
+      if (!o->type->isValue()) {
+        middle("context_, ");
+      }
     }
   } else {
     middle('(');
@@ -73,7 +72,7 @@ void bi::CppBaseGenerator::visit(const Sequence* o) {
       auto type = dynamic_cast<ArrayType*>(o->type);
       assert(type);
       middle("libbirch::make_array<" << type->element() << ">(");
-      if (!o->isValue()) {
+      if (!o->type->isValue()) {
         middle("context_, ");
       }
       middle("libbirch::make_frame(");
