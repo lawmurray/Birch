@@ -133,19 +133,11 @@ class Array {
    */
   Array(const Array<T,F>& o) :
       frame(o.frame),
-      buffer(nullptr),
-      offset(0),
-      isView(false) {
-    if (o.isView) {
-      allocate();
-      uninitialized_copy(o);
-    } else {
-      /* share the buffer */
-      buffer = o.buffer;
-      offset = o.offset;
-      if (buffer) {
-        buffer->incUsage();
-      }
+      buffer(o.buffer),
+      offset(o.offset),
+      isView(o.isView) {
+    if (buffer) {
+      buffer->incUsage();
     }
   }
 
@@ -180,18 +172,11 @@ class Array {
    */
   Array(Array<T,F>&& o) :
       frame(o.frame),
-      buffer(nullptr),
-      offset(0),
-      isView(false) {
-    if (o.isView) {
-      allocate();
-      uninitialized_copy(o);
-    } else {
-      /* take the buffer */
-      buffer = std::move(o.buffer);
-      offset = o.offset;
-      o.buffer = nullptr;
-    }
+      buffer(o.buffer),
+      offset(o.offset),
+      isView(o.isView) {
+    o.buffer = nullptr;
+    o.offset = 0;
   }
 
   /**
