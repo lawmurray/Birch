@@ -73,12 +73,18 @@ function make(name:String) -> Object? {
 /**
  * Identity comparison.
  */
-operator (x:Object == y:Object) -> Boolean;
+operator (x:Object == y:Object) -> Boolean {
+  cpp{{
+  return x.get().get() == y.get().get();
+  }}
+}
 
 /**
  * Identity comparison.
  */
-operator (x:Object != y:Object) -> Boolean;
+operator (x:Object != y:Object) -> Boolean {
+  return !(x == y);
+}
 
 /**
  * Identity comparison.
