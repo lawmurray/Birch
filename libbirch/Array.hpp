@@ -698,7 +698,7 @@ private:
    */
   template<IS_NOT_VALUE(T), class ... Args>
   void initialize(Label* context, Args ... args) {
-    auto iter = begin();
+    auto iter = as_const().begin();
     auto last = iter + size();
     for (; iter != last; ++iter) {
       new (&*iter) T(context, new typename T::value_type(context, args...));
@@ -714,7 +714,7 @@ private:
     auto n = std::min(size(), o.size());
     auto begin1 = o.begin();
     auto end1 = begin1 + n;
-    auto begin2 = begin();
+    auto begin2 = as_const().begin();
     auto end2 = begin2 + n;
     if (inside(begin1, end1, begin2)) {
       std::copy_backward(begin1, end1, end2);
@@ -732,7 +732,7 @@ private:
     auto n = std::min(size(), o.size());
     auto begin1 = o.begin();
     auto end1 = begin1 + n;
-    auto begin2 = begin();
+    auto begin2 = as_const().begin();
     auto end2 = begin2 + n;
     if (inside(begin1, end1, begin2)) {
       for (; end1 != begin1; --end1, --end2) {
