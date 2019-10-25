@@ -540,7 +540,7 @@ function downdate_matrix_normal_inverse_wishart_matrix_gaussian(
   auto N <- N' - X;
   auto M' <- solve(Λ', N');
   auto M <- solve(Λ, N);
-  auto V <- V' - transpose(X - M')*(X - M') + transpose(M' - M)*Λ*(M' - M);
+  auto V <- V' - transpose(X - M')*(X - M') - transpose(M' - M)*Λ*(M' - M);
   auto k <- k' - D;
   return (N, Λ, V, k);
 }
@@ -567,7 +567,7 @@ function downdate_linear_matrix_normal_inverse_wishart_matrix_gaussian(
   auto N <- N' - transpose(A)*(X - C);
   auto M' <- solve(Λ', N');
   auto M <- solve(Λ, N);
-  auto V <- V' - transpose(X - A*M' - C)*(X - A*M' - C) + transpose(M' - M)*Λ*(M' - M);
+  auto V <- V' - transpose(X - A*M' - C)*(X - A*M' - C) - transpose(M' - M)*Λ*(M' - M);
   auto k <- k' - D;
   return (N, Λ, V, k);
 }

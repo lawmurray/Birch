@@ -268,30 +268,30 @@ function logpdf_gaussian(x:Real, μ:Real, σ2:Real) -> Real {
  * Observe a Student's $t$ variate.
  *
  * - x: The variate.
- * - ν: Degrees of freedom.
+ * - k: Degrees of freedom.
  *
  * Returns: the log probability density.
  */
-function logpdf_student_t(x:Real, ν:Real) -> Real {
-  assert 0.0 < ν;
-  z:Real <- 0.5*(ν + 1.0);
-  return lgamma(z) - lgamma(0.5*ν) - z*log1p(x*x/ν) - 0.5*log(π*ν);
+function logpdf_student_t(x:Real, k:Real) -> Real {
+  assert 0.0 < k;
+  auto a <- 0.5*(k + 1.0);
+  return lgamma(a) - lgamma(0.5*k) - 0.5*log(π*k) - a*log1p(x*x/k);
 }
 
 /**
  * Observe a Student's $t$ variate with location and scale.
  *
  * - x: The variate.
- * - ν: Degrees of freedom.
+ * - k: Degrees of freedom.
  * - μ: Location.
  * - σ2: Squared scale.
  *
  * Returns: the log probability density.
  */
-function logpdf_student_t(x:Real, ν:Real, μ:Real, σ2:Real) -> Real {
-  assert 0.0 < ν;
+function logpdf_student_t(x:Real, k:Real, μ:Real, σ2:Real) -> Real {
+  assert 0.0 < k;
   assert 0.0 < σ2;
-  return logpdf_student_t((x - μ)/sqrt(σ2), ν) - 0.5*log(σ2);
+  return logpdf_student_t((x - μ)/sqrt(σ2), k) - 0.5*log(σ2);
 }
 
 /**
@@ -912,8 +912,8 @@ function logpdf_linear_matrix_normal_inverse_gamma_matrix_gaussian(
     X:Real[_,_], A:Real[_,_], N:Real[_,_], C:Real[_,_], Λ:LLT, α:Real,
     γ:Real[_]) -> Real {
   auto M <- solve(Λ, N);
-  auto Σ <- identity(rows(A)) + A*solve(Λ, transpose(A));
   auto β <- γ - 0.5*diagonal(transpose(M)*N);
+  auto Σ <- identity(rows(A)) + A*solve(Λ, transpose(A));
   return logpdf_matrix_student_t(X, 2.0*α, A*M + C, Σ, β/α);
 }
 
@@ -991,10 +991,11 @@ function logpdf_linear_matrix_normal_inverse_wishart_matrix_gaussian(
  */
 function logpdf_multivariate_student_t(x:Real[_], k:Real, μ:Real[_], Σ:Real[_,_])
     -> Real {
-  auto D <- length(μ);
-  auto z <- 0.5*(k + D);
+  auto n <- length(μ);
+  auto a <- 0.5*(k + n);
   auto C <- llt(Σ);
-  return lgamma(z) - lgamma(0.5*k) - z*log1p(dot(x - μ, solve(C, x - μ))/k) - 0.5*D*(log(π*k) - ldet(C));
+  return lgamma(a) - lgamma(0.5*k) - 0.5*n*log(k*π) - 0.5*ldet(C) -
+      a*log1p(dot(x - μ, solve(C, x - μ))/k) ;
 }
 
 /**
@@ -1010,9 +1011,10 @@ function logpdf_multivariate_student_t(x:Real[_], k:Real, μ:Real[_], Σ:Real[_,
  */
 function logpdf_multivariate_student_t(x:Real[_], k:Real, μ:Real[_],
     σ2:Real) -> Real {
-  auto D <- length(μ);
-  auto z <- 0.5*(k + D);
-  return lgamma(z) - lgamma(0.5*k) - z*log1p(dot(x - μ)/(σ2*k)) - 0.5*D*(log(π*k) - log(σ2));
+  auto n <- length(μ);
+  auto a <- 0.5*(k + n);
+  return lgamma(a) - lgamma(0.5*k) - 0.5*n*log(k*π) - 0.5*n*log(σ2) -
+      a*log1p(dot(x - μ)/(σ2*k));
 }
 
 /**
@@ -1027,17 +1029,17 @@ function logpdf_multivariate_student_t(x:Real[_], k:Real, μ:Real[_],
  *
  * Returns: the log probability density.
  */
-function logpdf_matrix_student_t(X:Real[_,_], k:Real, M:Real[_,_], U:Real[_,_],
-    V:Real[_,_]) -> Real {
+function logpdf_matrix_student_t(X:Real[_,_], k:Real, M:Real[_,_],
+    U:Real[_,_], V:Real[_,_]) -> Real {
   auto n <- rows(M);
   auto p <- columns(M);
   auto a <- 0.5*(k + n + p - 1.0);
   auto C <- llt(U);
   auto D <- llt(V);
-  auto E <- llt(identity(n) + inv(C)*(X - M)*inv(D)*transpose(X - M));
+  auto E <- llt(identity(n) + inv(C)*(X - M)*inv(D)*transpose(X - M)/k);
   
-  return lgamma(a, p) - lgamma(0.5*(k + p - 1)) -
-      a*ldet(E) - 0.5*(p*log(π) + n*ldet(C) + p*ldet(D));
+  return lgamma(a, p) - lgamma(0.5*(k + p - 1.0), p) - 0.5*n*p*log(k*π) -
+      0.5*n*ldet(C) - 0.5*p*ldet(D) - a*ldet(E);
 }
 
 /**
@@ -1058,10 +1060,10 @@ function logpdf_matrix_student_t(X:Real[_,_], k:Real, M:Real[_,_],
   auto p <- columns(M);
   auto a <- 0.5*(k + n + p - 1.0);
   auto C <- llt(U);
-  auto E <- llt(identity(n) + inv(C)*(X - M)*inv(diagonal(v))*transpose(X - M));
+  auto E <- llt(identity(n) + inv(C)*(X - M)*inv(diagonal(v))*transpose(X - M)/k);
   
-  return lgamma(a, p) - lgamma(0.5*(k + p - 1)) -
-      a*ldet(E) - 0.5*(p*log(π) + n*ldet(C) + p*log_sum(v));
+  return lgamma(a, p) - lgamma(0.5*(k + p - 1.0), p) - 0.5*n*p*log(k*π) -
+      0.5*n*ldet(C) - 0.5*p*log_sum(v) - a*ldet(E);
 }
 
 /**

@@ -11,7 +11,7 @@ class ForwardSampler < Sampler {
    * Number of steps.
    */
   T:Integer <- 1;
-  
+    
   function setArchetype(archetype:Model) {
     this.archetype <-? ForwardModel?(archetype);
     if !this.archetype? {
