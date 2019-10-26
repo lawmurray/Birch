@@ -280,7 +280,14 @@ void bi::md_ostream::visit(const Program* o) {
 }
 
 void bi::md_ostream::visit(const MemberFunction* o) {
-  start("!!! quote \"function");
+  start("!!! quote \"");
+  if (o->has(ABSTRACT)) {
+    middle("abstract ");
+  }
+  if (o->has(FINAL)) {
+    middle("final ");
+  }
+  middle("function");
   middle(' ' << o->name << '(' << o->params << ')');
   if (!o->returnType->isEmpty()) {
     middle(" -> " << o->returnType);
@@ -289,7 +296,14 @@ void bi::md_ostream::visit(const MemberFunction* o) {
 }
 
 void bi::md_ostream::visit(const MemberFiber* o) {
-  start("!!! quote \"fiber");
+  start("!!! quote \"");
+  if (o->has(ABSTRACT)) {
+    middle("abstract ");
+  }
+  if (o->has(FINAL)) {
+    middle("final ");
+  }
+  middle("fiber");
   middle(' ' << o->name << '(' << o->params << ')');
   if (!o->returnType->isEmpty()) {
     middle(" -> " << o->returnType->unwrap());
@@ -351,7 +365,14 @@ void bi::md_ostream::visit(const Class* o) {
   /* anchor for internal links */
   genHead(o->name->str());
   line("<a name=\"" << anchor(o->name->str()) << "\"></a>\n");
-  start("!!! quote \"class " << o->name);
+  start("!!! quote \"");
+  if (o->has(ABSTRACT)) {
+    middle("abstract ");
+  }
+  if (o->has(FINAL)) {
+    middle("final ");
+  }
+  middle("class " << o->name);
   if (o->isGeneric()) {
     middle("&lt;" << o->typeParams << "&gt;");
   }
