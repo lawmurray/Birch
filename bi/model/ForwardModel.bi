@@ -34,14 +34,4 @@ abstract class ForwardModel < Model {
    * Number of steps.
    */
   abstract function size() -> Integer;
-
-  /**
-   * Update the model with parameters proposed using another model
-   *
-   *  - x: Previous model
-   *
-   * Returns: a tuple giving the proposal weight of the previous model given
-   * the new model and of the new model given the previous model.
-   */
-  abstract function propose(x:ForwardModel) -> (Real, Real);
 }

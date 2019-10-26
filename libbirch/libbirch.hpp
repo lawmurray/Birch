@@ -362,6 +362,45 @@ Tie<Head&,Tail&...> tie(Label* context, Head& head, Tail&... tail) {
 }
 
 /**
+ * Make a value.
+ *
+ * @tparam Type Value type.
+ *
+ * @return An optional with a default-constructed value of the given type.
+ */
+template<class Type, IS_VALUE(Type)>
+Optional<Type> make(Label* context) {
+  return Optional<Type>(Type());
+}
+
+/**
+ * Make an object.
+ *
+ * @tparam Type Pointer type.
+ *
+ * @return An optional with a value of the given type if that type is
+ * default-constructible, otherwise no value.
+ */
+template<class Type, IS_POINTER(Type), IS_DEFAULT_CONSTRUCTIBLE(Type)>
+Optional<Type> make(Label* context) {
+  return Optional<Type>(make_pointer<Type>(context));
+}
+
+/**
+ * Make an object.
+ *
+ * @tparam Type Pointer type.
+ *
+ * @return An optional with a value of the given type if that type is
+ * default-constructible, otherwise no value.
+ */
+template<class Type, IS_POINTER(Type), IS_NOT_DEFAULT_CONSTRUCTIBLE(Type)>
+Optional<Type> make(Label* context) {
+  assert(false);
+  return Optional<Type>();
+}
+
+/**
  * Cast an object.
  */
 template<class To, class From>

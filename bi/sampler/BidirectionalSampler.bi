@@ -1,7 +1,7 @@
 /**
  * Sampler for a BidirectionalModel archetype.
  */
-class BidirectionalSampler < Sampler {
+abstract class BidirectionalSampler < Sampler {
   /**
    * The archetype.
    */

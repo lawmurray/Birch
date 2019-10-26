@@ -29,64 +29,64 @@
  * A file may not be valid until the writer is closed, depending on the file
  * format.
  */
-class Writer {
+abstract class Writer {
   /**
    * Open a file.
    *
    * - path : Path of the file.
    */
-  function open(path:String);
+  abstract function open(path:String);
   
   /**
    * Write the entire contents of the file.
    *
    * - buffer: Buffer to write.
    */
-  function write(buffer:MemoryBuffer);
+  abstract function write(buffer:MemoryBuffer);
   
   /**
    * Flush accumulated writes to the file.
    */
-  function flush();
+  abstract function flush();
   
   /**
    * Close the file.
    */
-  function close();
+  abstract function close();
 
   /**
    * Start a mapping.
    */
-  function startMapping();
+  abstract function startMapping();
   
   /**
    * End a mapping.
    */
-  function endMapping();
+  abstract function endMapping();
   
   /**
    * Start a sequence.
    */
-  function startSequence();
+  abstract function startSequence();
   
   /**
    * End a sequence.
    */
-  function endSequence();
+  abstract function endSequence();
 
-  function visit(value:ObjectValue);
-  function visit(value:ArrayValue);
-  function visit(value:NilValue);
-  function visit(value:BooleanValue);
-  function visit(value:IntegerValue);
-  function visit(value:RealValue);
-  function visit(value:StringValue);
-  function visit(value:BooleanVectorValue);
-  function visit(value:IntegerVectorValue);
-  function visit(value:RealVectorValue);
-  function visit(value:BooleanMatrixValue);
-  function visit(value:IntegerMatrixValue);
-  function visit(value:RealMatrixValue);
+  abstract function visit(value:ObjectValue);
+  abstract function visit(value:ArrayValue);
+  abstract function visit(value:NilValue);
+  abstract function visit(value:BooleanValue);
+  abstract function visit(value:IntegerValue);
+  abstract function visit(value:RealValue);
+  abstract function visit(value:StringValue);
+  abstract function visit(value:BooleanVectorValue);
+  abstract function visit(value:IntegerVectorValue);
+  abstract function visit(value:RealVectorValue);
+  abstract function visit(value:BooleanMatrixValue);
+  abstract function visit(value:IntegerMatrixValue);
+  abstract function visit(value:RealMatrixValue);
 }
 
 /**

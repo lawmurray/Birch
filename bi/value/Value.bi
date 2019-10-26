@@ -1,11 +1,11 @@
 /**
  * Abstract value.
  */
-class Value {
+abstract class Value {
   /**
    * Accept a generator.
    */
-  function accept(writer:Writer);
+  abstract function accept(writer:Writer);
 
   /**
    * Is this an object?

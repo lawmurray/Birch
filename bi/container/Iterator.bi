@@ -154,12 +154,12 @@ final class Iterator<Type> < DoubleStack<Type> {
   function read(buffer:Buffer) {
     auto f <- buffer.walk();
     while f? {
-      /* tricky, but works for both basic and final class types */
-      x:Type;
+      /* tricky, but works for both value and class types */
+      auto x <- make<Type>();
       auto y <- f!.get(x);
       if y? {
-        x <- Type?(y)!;  // cast needed for y:Object?
-        pushBack(x);
+        x <- Type?(y);  // cast needed for y:Object?
+        pushBack(x!);
       }
     }
     rewind();

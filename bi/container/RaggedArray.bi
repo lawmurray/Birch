@@ -277,12 +277,12 @@ final class RaggedArray<Type> {
       pushBack();
       auto col <- row!.walk();
       while col? {
-        /* tricky, but works for both basic and final class types */
-        x:Type;
+        /* tricky, but works for both value and class types */
+        auto x <- make<Type>();
         auto y <- col!.get(x);
         if y? {
-          x <- Type?(y)!;  // cast needed for y:Object?
-          pushBack(size(), x);
+          x <- Type?(y);  // cast needed for y:Object?
+          pushBack(size(), x!);
         }
       }
     }

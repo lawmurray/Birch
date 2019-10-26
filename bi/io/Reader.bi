@@ -15,25 +15,25 @@
  *
  *     reader.close();
  */
-class Reader {  
+abstract class Reader {  
   /**
    * Open a file.
    *
    * - path : Path of the file.
    */
-  function open(path:String);
+  abstract function open(path:String);
   
   /**
    * Read the entire contents of the file.
    *
    * - buffer: Buffer into which to read.
    */
-  function read(buffer:MemoryBuffer);
+  abstract function read(buffer:MemoryBuffer);
   
   /**
    * Close the file.
    */
-  function close();
+  abstract function close();
 }
 
 /**

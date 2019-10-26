@@ -6,7 +6,7 @@
  * <object type="image/svg+xml" data="../../figs/Sampler.svg"></object>
  * </center>
  */
-class Sampler {  
+abstract class Sampler {  
   /**
    * Number of samples to draw.
    */
@@ -22,7 +22,7 @@ class Sampler {
    *
    * Yield: weighted samples.
    */
-  fiber sample() -> (Model, Real);
+  abstract fiber sample() -> (Model, Real);
 
   /**
    * Set the archetype. This is an instance of the model of interest with
@@ -31,7 +31,7 @@ class Sampler {
    * inference problem. The sampler will check whether the archetype is of
    * an appropriate type, and may produce an error if this is not the case.
    */
-  function setArchetype(m:Model);
+  abstract function setArchetype(m:Model);
 
   function read(buffer:Buffer) {
     nsamples <-? buffer.get("nsamples", nsamples);

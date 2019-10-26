@@ -1,7 +1,7 @@
 /**
  * Sampler for a ForwardModel archetype.
  */
-class ForwardSampler < Sampler {
+abstract class ForwardSampler < Sampler {
   /**
    * The archetype.
    */

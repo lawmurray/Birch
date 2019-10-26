@@ -27,11 +27,17 @@ public:
 
   /**
    * Constructor.
+   *
+   * @param context Current context.
    */
   LazyAny(LazyLabel* context);
 
   /**
    * Deep copy constructor.
+   *
+   * @param context Current context.
+   * @param label Label associated with clone.
+   * @param o Source object.
    */
   LazyAny(LazyLabel* context, LazyLabel* label, const LazyAny& o);
 
@@ -135,7 +141,7 @@ inline libbirch::LazyAny::LazyAny(LazyLabel* context) :
     , single(false)
     #endif
     {
-  //
+  assert(context);
 }
 
 inline libbirch::LazyAny::LazyAny(LazyLabel* context, LazyLabel* label,

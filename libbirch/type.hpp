@@ -70,6 +70,42 @@
  */
 #define IS_CONVERTIBLE(From,To) std::enable_if_t<std::is_convertible<From,To>::value,int> = 0
 
+/**
+ * @def IS_POINTER
+ *
+ * Macro that can be added to the template arguments of a function template
+ * specialization to enable it only if a specific type is a pointer type,
+ * using SFINAE.
+ */
+#define IS_POINTER(Type) std::enable_if_t<is_pointer<Type>::value,int> = 0
+
+/**
+ * @def IS_NOT_POINTER
+ *
+ * Macro that can be added to the template arguments of a function template
+ * specialization to enable it only if a specific type is not a pointer type,
+ * using SFINAE.
+ */
+#define IS_NOT_POINTER(Type) std::enable_if_t<!is_pointer<Type>::value,int> = 0
+
+/**
+ * @def IS_DEFAULT_CONSTRUCTIBLE
+ *
+ * Macro that can be added to the template arguments of a function template
+ * specialization to enable it only if a specific type is
+ * default-constructible using SFINAE.
+ */
+#define IS_DEFAULT_CONSTRUCTIBLE(Type) std::enable_if_t<std::is_constructible<typename Type::value_type,Label*>::value,int> = 0
+
+/**
+ * @def IS_NOT_DEFAULT_CONSTRUCTIBLE
+ *
+ * Macro that can be added to the template arguments of a function template
+ * specialization to enable it only if a specific type is not
+ * default-constructible using SFINAE.
+ */
+#define IS_NOT_DEFAULT_CONSTRUCTIBLE(Type) std::enable_if_t<!std::is_constructible<typename Type::value_type,Label*>::value,int> = 0
+
 namespace libbirch {
 /*
  * Are these value types?

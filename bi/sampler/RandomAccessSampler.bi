@@ -1,7 +1,7 @@
 /**
  * Sampler for a RandomAccessModel archetype.
  */
-class RandomAccessSampler < Sampler {
+abstract class RandomAccessSampler < Sampler {
   /**
    * The archetype.
    */
