@@ -1,7 +1,7 @@
 /**
  * Bidirectional model.
  */
-class BidirectionalModel < ForwardModel {  
+abstract class BidirectionalModel < ForwardModel {  
   /**
    * Move back one step.
    */

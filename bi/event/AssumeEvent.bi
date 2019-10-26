@@ -5,7 +5,7 @@
  * - p: The distribution.
  */
 final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
-    ValueEvent<Value> {
+    Event {
   /**
    * Random variate associated with the event.
    */
@@ -25,15 +25,6 @@ final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
     return true;
   }
   
-  function hasValue() -> Boolean {
-    return v.hasValue();
-  }
-  
-  function value() -> Value {
-    assert hasValue();
-    return v.value();
-  }
-
   function playImmediate() -> Real {
     auto w <- 0.0;
     if assigned {
@@ -54,89 +45,89 @@ final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
     return w;
   }
   
-  function skipImmediate(trace:Queue<Event>) -> Real {
+  function skipImmediate(trace:Queue<Record>) -> Real {
     if !assigned {
       coerce<Value>(trace);
     }
     return playImmediate();
   }
 
-  function skipDelay(trace:Queue<Event>) -> Real {
+  function skipDelay(trace:Queue<Record>) -> Real {
     if !assigned {
       coerce<Value>(trace);
     }
     return playDelay();
   }
 
-  function replayImmediate(trace:Queue<Event>) -> Real {
+  function replayImmediate(trace:Queue<Record>) -> Real {
     auto w <- 0.0;
     if assigned {
       w <- p.observe(v.value());
     } else {
-      auto evt <- coerce<Value>(trace);
-      w <- p.observe(evt.value());
+      auto r <- coerce<Value>(trace);
+      w <- p.observe(r.value());
       if w != -inf {
-        v <- evt.value();
+        v <- r.value();
         w <- 0.0;
       }
     }
     return w;
   }
 
-  function replayDelay(trace:Queue<Event>) -> Real {
+  function replayDelay(trace:Queue<Record>) -> Real {
     auto w <- 0.0;
     if assigned {
       w <- p.observe(v.value());
     } else {
-      auto evt <- coerce<Value>(trace);      
-      p.assume(v, evt.value());
+      auto r <- coerce<Value>(trace);      
+      p.assume(v, r.value());
     }
     return w;
   }
 
-  function downdateImmediate(trace:Queue<Event>) -> Real {
+  function downdateImmediate(trace:Queue<Record>) -> Real {
     auto w <- 0.0;
     if assigned {
       w <- p.observe(v.value());
     } else {
-      auto evt <- coerce<Value>(trace);
-      w <- p.observeWithDowndate(evt.value());
+      auto r <- coerce<Value>(trace);
+      w <- p.observeWithDowndate(r.value());
       if w != -inf {
-        v <- evt.value();
+        v <- r.value();
         w <- 0.0;
       }
     }
     return w;
   }
 
-  function downdateDelay(trace:Queue<Event>) -> Real {
+  function downdateDelay(trace:Queue<Record>) -> Real {
     auto w <- 0.0;
     if assigned {
       w <- p.observeWithDowndate(v.value());
     } else {
-      auto evt <- coerce<Value>(trace);      
-      p.assumeWithDowndate(v, evt.value());
+      auto r <- coerce<Value>(trace);      
+      p.assumeWithDowndate(v, r.value());
     }
     return w;
   }
 
-  function proposeImmediate(trace:Queue<Event>) -> Real {
+  function proposeImmediate(trace:Queue<Record>) -> Real {
     auto w <- 0.0;
     if assigned {
       w <- p.observe(v.value());
     } else {
-      auto evt <- coerce<Value>(trace);
-      w <- p.observe(evt.value());
+      auto r <- coerce<Value>(trace);
+      w <- p.observe(r.value());
       if w != -inf {
-        v <- evt.value();
+        v <- r.value();
       }
     }
     return w;
   }
 
-  function record(trace:Queue<Event>) {
+  function record(trace:Queue<Record>) {
     if !assigned {
-      trace.pushBack(RandomEvent<Value>(v));
+      trace.pushBack(RandomRecord<Value>(v));
     }
   }
 }

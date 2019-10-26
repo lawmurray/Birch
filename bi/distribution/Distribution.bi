@@ -3,7 +3,7 @@
  *
  * - Value: Value type.
  */
-class Distribution<Value> {
+abstract class Distribution<Value> {
   /**
    * Future value. This is set for situations where delayed sampling
    * is used, but when ultimately realized, a particular value (this one)
@@ -251,19 +251,13 @@ class Distribution<Value> {
    * In these situations delayed sampling will not provide any benefit, and
    * this function avoids the overhead of delayed sampling graph updates.
    */
-  function valueForward() -> Value {
-    assert !delay?;
-    assert false;
-  }
+  abstract function valueForward() -> Value;
 
   /**
    * As observe(), but forcing a forward evaluation. See valueForward() for
    * further details.
    */
-  function observeForward(x:Value) -> Real {
-    assert !delay?;
-    assert false;
-  }
+  abstract function observeForward(x:Value) -> Real;
   
   /**
    * Graft this onto the delayed sampling graph.
@@ -272,7 +266,7 @@ class Distribution<Value> {
    *   graph, even if it has no parent. If false, no node is grafted in this
    *   case.
    */
-  function graft(force:Boolean);
+  abstract function graft(force:Boolean);
   
   /**
    * Detach this from the delayed sampling graph.

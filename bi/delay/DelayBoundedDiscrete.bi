@@ -1,8 +1,8 @@
 /*
  * Bounded discrete random variate.
  */
-class DelayBoundedDiscrete(future:Integer?, futureUpdate:Boolean, l:Integer,
-    u:Integer) < DelayDiscrete(future, futureUpdate) {
+abstract class DelayBoundedDiscrete(future:Integer?, futureUpdate:Boolean,
+    l:Integer, u:Integer) < DelayDiscrete(future, futureUpdate) {
   /**
    * Lower bound
    */
@@ -20,13 +20,4 @@ class DelayBoundedDiscrete(future:Integer?, futureUpdate:Boolean, l:Integer,
   function upper() -> Integer? {
     return u;
   }
-}
-
-/*
- * Constructor.
- */
-function DelayBoundedDiscrete(future:Integer?, futureUpdate:Boolean,
-    l:Integer, u:Integer) -> DelayBoundedDiscrete {
-  m:DelayBoundedDiscrete(future, futureUpdate, l, u);
-  return m;
 }

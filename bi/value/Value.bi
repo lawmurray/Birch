@@ -40,6 +40,8 @@ class Value {
    */
   function setChild(name:String) -> Buffer {
     error("not an object");
+    buf:MemoryBuffer;
+    return buf;
   }
 
   /**
@@ -63,6 +65,8 @@ class Value {
    */
   function push() -> Buffer {
     error("not an array");
+    buf:MemoryBuffer;
+    return buf;
   }
 
   /**

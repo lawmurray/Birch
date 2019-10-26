@@ -101,16 +101,19 @@ class Writer {
  */
 function Writer(path:String) -> Writer {
   auto ext <- extension(path);
+  result:Writer?;
   if ext == ".json" {
     writer:JSONWriter;
     writer.open(path);
-    return writer;
+    result <- writer;
   } else if ext == ".yml" {
     writer:YAMLWriter;
     writer.open(path);
-    return writer;
-  } else {
+    result <- writer;
+  }
+  if !result? {
     error("unrecognized file extension '" + ext + "' in path '" + path +
         "'; supported extensions are '.json' and '.yml'.");
   }
+  return result!;
 }

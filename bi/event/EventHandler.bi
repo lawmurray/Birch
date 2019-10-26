@@ -14,12 +14,9 @@ NUM_MODES:Integer8 <- Integer8(9);
  */
 final class EventHandler {
   /**
-   * Events, if recording or replay is enabled. This is typically not the events
-   * received, but rather a minimal set of ValueEvent objects used to store
-   * values for replay. New events are pushed to the back of the queue, replayed
-   * events are popped from the front of the queue.
+   * Trace.
    */
-  trace:Queue<Event>;
+  trace:Queue<Record>;
     
   /**
    * Mode.

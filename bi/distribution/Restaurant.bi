@@ -12,6 +12,16 @@ final class Restaurant(α:Expression<Real>, θ:Expression<Real>) < Distribution<
    */
   θ:Expression<Real> <- θ;
 
+  function valueForward() -> Real[_] {
+    assert false;
+    return vector(0.0, 0);
+  }
+
+  function observeForward(x:Real[_]) -> Real {
+    assert false;
+    return -inf;
+  }
+
   function graft(force:Boolean) {
     if delay? {
       delay!.prune();

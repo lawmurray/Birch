@@ -65,12 +65,11 @@ function fopen(path:String, mode:Integer) -> File {
   }
   cpp{{
   auto f = ::fopen(path.c_str(), s.c_str());
-  if (f) {
-    lockf(fileno(f), F_LOCK, 0);
-    return f;
-  } else {
+  if (!f) {
     bi::error("could not open file " + path + ".");
   }
+  lockf(fileno(f), F_LOCK, 0);
+  return f;
   }}
 }
 

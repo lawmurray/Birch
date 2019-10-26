@@ -30,6 +30,16 @@ final class DelayRestaurant(future:Real[_]?, futureUpdate:Boolean, α:Real,
    */
   N:Integer <- 0;
 
+  function simulate() -> Real[_] {
+    assert false;
+    return vector(0.0, 0);
+  }
+  
+  function logpdf(x:Real[_]) -> Real {
+    assert false;
+    return 0.0;
+  }
+
   function write(buffer:Buffer) {
     prune();
     buffer.set("class", "Restaurant");

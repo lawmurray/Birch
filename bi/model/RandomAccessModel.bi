@@ -1,7 +1,7 @@
 /**
  * Random access model.
  */
-class RandomAccessModel < BidirectionalModel {
+abstract class RandomAccessModel < BidirectionalModel {
   /**
    * Seek to a specific step.
    */

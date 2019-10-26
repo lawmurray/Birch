@@ -4,8 +4,7 @@
  * - v: The observation.
  * - p: The distribution.
  */
-final class ObserveEvent<Value>(v:Value, p:Distribution<Value>) <
-    ValueEvent<Value> {
+final class ObserveEvent<Value>(v:Value, p:Distribution<Value>) < Event {
   /**
    * Observation associated with the event.
    */
@@ -20,31 +19,23 @@ final class ObserveEvent<Value>(v:Value, p:Distribution<Value>) <
     return true;
   }
   
-  function hasValue() -> Boolean {
-    return true;
-  }
-
-  function value() -> Value {
-    return v;
-  }
-
   function playImmediate() -> Real {
     return p.observe(v);
   }
   
-  function replayImmediate(trace:Queue<Event>) -> Real {
+  function replayImmediate(trace:Queue<Record>) -> Real {
     return p.observe(v);
   }
 
-  function skipImmediate(trace:Queue<Event>) -> Real {
+  function skipImmediate(trace:Queue<Record>) -> Real {
     return p.observe(v);
   }
 
-  function downdateImmediate(trace:Queue<Event>) -> Real {
+  function downdateImmediate(trace:Queue<Record>) -> Real {
     return p.observeWithDowndate(v);
   }
 
-  function proposeImmediate(trace:Queue<Event>) -> Real {
+  function proposeImmediate(trace:Queue<Record>) -> Real {
     return p.observe(v);
   }
 }

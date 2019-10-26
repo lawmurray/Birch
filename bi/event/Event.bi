@@ -1,7 +1,7 @@
 /**
  * Abstract event triggered by the simulation of a model.
  */
-class Event {
+abstract class Event {
   /**
    * Is this a *simulate* event?
    */
@@ -40,9 +40,7 @@ class Event {
   /**
    * Act as appropriate for `PLAY_IMMEDIATE` mode.
    */
-  function playImmediate() -> Real {
-    assert false;
-  }
+  abstract function playImmediate() -> Real;
 
   /**
    * Act as appropriate for `PLAY_DELAY` mode.
@@ -54,49 +52,41 @@ class Event {
   /**
    * Act as appropriate for `SKIP_IMMEDIATE` mode.
    */
-  function skipImmediate(trace:Queue<Event>) -> Real {
-    assert false;
-  }
+  abstract function skipImmediate(trace:Queue<Record>) -> Real;
 
   /**
    * Act as appropriate for `SKIP_DELAY` mode.
    */
-  function skipDelay(trace:Queue<Event>) -> Real {
+  function skipDelay(trace:Queue<Record>) -> Real {
     return skipImmediate(trace);
   }
   
   /**
    * Act as appropriate for `REPLAY_IMMEDIATE` mode.
    */
-  function replayImmediate(trace:Queue<Event>) -> Real {
-    assert false;
-  }
+  abstract function replayImmediate(trace:Queue<Record>) -> Real;
 
   /**
    * Act as appropriate for `REPLAY_DELAY` mode.
    */
-  function replayDelay(trace:Queue<Event>) -> Real {
+  function replayDelay(trace:Queue<Record>) -> Real {
     return replayImmediate(trace);
   }
 
   /**
    * Act as appropriate for `PROPOSE_IMMEDIATE` mode.
    */
-  function proposeImmediate(trace:Queue<Event>) -> Real {
-    assert false;
-  }
+  abstract function proposeImmediate(trace:Queue<Record>) -> Real;
 
   /**
    * Act as appropriate for `DOWNDATE_IMMEDIATE` mode.
    */
-  function downdateImmediate(trace:Queue<Event>) -> Real {
-    assert false;
-  }
+  abstract function downdateImmediate(trace:Queue<Record>) -> Real;
 
   /**
    * Act as appropriate for `DOWNDATE_DELAY` mode.
    */
-  function downdateDelay(trace:Queue<Event>) -> Real {
+  function downdateDelay(trace:Queue<Record>) -> Real {
     return downdateImmediate(trace);
   }
 
@@ -105,7 +95,7 @@ class Event {
    * to do so, including not recording itself, if no information will be
    * required for replay.
    */
-  function record(trace:Queue<Event>) {
+  function record(trace:Queue<Record>) {
     //
   }
 }

@@ -4,69 +4,69 @@
  * When reading and writing objects, defers to the `read()` and `write()`
  * member functions, declared in `Object`.
  */
-class Buffer {
+abstract class Buffer {
   /**
    * Get a child.
    */
-  function getChild(name:String) -> Buffer?;
+  abstract function getChild(name:String) -> Buffer?;
 
   /**
    * Set child.
    */
-  function setChild(name:String) -> Buffer;
+  abstract function setChild(name:String) -> Buffer;
 
   /**
    * Push a new element onto the end of an array.
    */
-  function push() -> Buffer;
+  abstract function push() -> Buffer;
 
   /**
    * Get the size of an array.
    */
-  function size() -> Integer;
+  abstract function size() -> Integer;
 
   /**
    * Iterate through the elements of an array.
    */
-  fiber walk() -> Buffer;
+  abstract fiber walk() -> Buffer;
 
   /**
    * Get this as an object.
    */
-  function getObject() -> Buffer?;
+  abstract function getObject() -> Buffer?;
 
   /**
    * Get this as an array.
    */
-  function getArray() -> Buffer?;
+  abstract function getArray() -> Buffer?;
   
   /**
    * Get this as a Boolean.
    *
    * Return: An optional with a value if this is of a compatible type.
    */
-  function getBoolean() -> Boolean?;
+  abstract function getBoolean() -> Boolean?;
 
   /**
    * Get this as an integer.
    *
    * Return: An optional with a value if this is of a compatible type.
    */
-  function getInteger() -> Integer?;
+  abstract function getInteger() -> Integer?;
 
   /**
    * Get this as a real.
    *
    * Return: An optional with a value if this is of a compatible type.
    */
-  function getReal() -> Real?;
+  abstract function getReal() -> Real?;
 
   /**
    * Get this as a string.
    *
    * Return: An optional with a value if this is of a compatible type.
    */
-  function getString() -> String?;
+  abstract function getString() -> String?;
   
   /**
    * Get this as a vector of Booleans.
@@ -74,7 +74,7 @@ class Buffer {
    * Return: An optional with a value if this is an array with all elements
    * of a compatible type.
    */
-  function getBooleanVector() -> Boolean[_]?;
+  abstract function getBooleanVector() -> Boolean[_]?;
 
   /**
    * Get this as a vector of integers.
@@ -82,7 +82,7 @@ class Buffer {
    * Return: An optional with a value if this is an array with all elements
    * of a compatible type.
    */
-  function getIntegerVector() -> Integer[_]?;
+  abstract function getIntegerVector() -> Integer[_]?;
 
   /**
    * Get this as a vector of reals.
@@ -90,7 +90,7 @@ class Buffer {
    * Return: An optional with a value if this is an array with all elements
    * of a compatible type.
    */
-  function getRealVector() -> Real[_]?;
+  abstract function getRealVector() -> Real[_]?;
 
   /**
    * Get this as a matrix of Booleans.
@@ -98,7 +98,7 @@ class Buffer {
    * Return: An optional with a value if this is an array where all elements
    * are themselves arrays of the same length and compatible type.
    */
-  function getBooleanMatrix() -> Boolean[_,_]?;
+  abstract function getBooleanMatrix() -> Boolean[_,_]?;
 
   /**
    * Get this as a matrix of integers.
@@ -106,7 +106,7 @@ class Buffer {
    * Return: An optional with a value if this is an array where all elements
    * are themselves arrays of the same length and compatible type.
    */
-  function getIntegerMatrix() -> Integer[_,_]?;
+  abstract function getIntegerMatrix() -> Integer[_,_]?;
 
   /**
    * Get this as a matrix of reals.
@@ -114,7 +114,7 @@ class Buffer {
    * Return: An optional with a value if this is an array where all elements
    * are themselves arrays of the same length and compatible type.
    */
-  function getRealMatrix() -> Real[_,_]?;
+  abstract function getRealMatrix() -> Real[_,_]?;
 
   /**
    * Get the size of an array.
@@ -638,101 +638,101 @@ class Buffer {
   /**
    * Set this as an object.
    */
-  function setObject() -> Buffer;
+  abstract function setObject() -> Buffer;
   
   /**
    * Set this as an array.
    */
-  function setArray() -> Buffer;
+  abstract function setArray() -> Buffer;
 
   /**
    * Set this as nil.
    */
-  function setNil();
+  abstract function setNil();
 
   /**
    * Set this as a Boolean.
    *
    * - value: Value.
    */
-  function setBoolean(value:Boolean?);
+  abstract function setBoolean(value:Boolean?);
 
   /**
    * Set this as an integer.
    *
    * - value: Value.
    */
-  function setInteger(value:Integer?);
+  abstract function setInteger(value:Integer?);
 
   /**
    * Set this as a real.
    *
    * - value: Value.
    */
-  function setReal(value:Real?);
+  abstract function setReal(value:Real?);
 
   /**
    * Set this as a string.
    *
    * - value: Value.
    */
-  function setString(value:String?);
+  abstract function setString(value:String?);
 
   /**
    * Set this as a vector of Booleans.
    *
    * - value: Value.
    */
-  function setBooleanVector(value:Boolean[_]?);
+  abstract function setBooleanVector(value:Boolean[_]?);
 
   /**
    * Set this as a vector of integers.
    *
    * - value: Value.
    */
-  function setIntegerVector(value:Integer[_]?);
+  abstract function setIntegerVector(value:Integer[_]?);
 
   /**
    * Set this as a vector of reals.
    *
    * - value: Value.
    */
-  function setRealVector(value:Real[_]?);
+  abstract function setRealVector(value:Real[_]?);
 
   /**
    * Set this as a vector of objects.
    *
    * - value: Value.
    */
-  function setObjectVector(value:Object[_]?);
+  abstract function setObjectVector(value:Object[_]?);
   
   /**
    * Set this as matrix of Booleans.
    *
    * - value: Value.
    */
-  function setBooleanMatrix(value:Boolean[_,_]?);
+  abstract function setBooleanMatrix(value:Boolean[_,_]?);
 
   /**
    * Set this as a matrix of integers.
    *
    * - value: Value.
    */
-  function setIntegerMatrix(value:Integer[_,_]?);
+  abstract function setIntegerMatrix(value:Integer[_,_]?);
 
   /**
    * Set this as a matrix of reals.
    *
    * - value: Value.
    */
-  function setRealMatrix(value:Real[_,_]?);
+  abstract function setRealMatrix(value:Real[_,_]?);
 
   /**
    * Set this as a matrix of objects.
    *
    * - value: Value.
    */
-  function setObjectMatrix(value:Object[_,_]?);
+  abstract function setObjectMatrix(value:Object[_,_]?);
 
   /**
    * Set child as an object.

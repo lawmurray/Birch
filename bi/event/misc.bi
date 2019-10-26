@@ -1,15 +1,16 @@
 /**
- * Coerce a value out of an event trace. This tries to cast the first event
- * in the trace to ValueEvent and return it.
+ * Coerce a value out of a trace. This tries to cast the first record
+ * in the trace to ValueRecord and return it.
  */
-function coerce<Value>(trace:Queue<Event>) -> ValueEvent<Value> {
+function coerce<Value>(trace:Queue<Record>) -> ValueRecord<Value> {
+  r:ValueRecord<Value>?;
   if !trace.empty() {
-    auto r <- ValueEvent<Value>?(trace.popFront());
-    if r? {
-      cpp{{
-      return std::move(r.get());
-      }}
-    }
+    r <- ValueRecord<Value>?(trace.popFront());
   }
-  error("incompatible trace");
+  if !r? {
+    error("incompatible trace");
+  }
+  cpp{{
+  return std::move(r.get());
+  }}
 }

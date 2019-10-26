@@ -3,7 +3,7 @@
  *
  * - Value: Value type.
  */
-class Expression<Value> {  
+abstract class Expression<Value> {  
   /**
    * Value conversion.
    */
@@ -14,9 +14,7 @@ class Expression<Value> {
   /**
    * Value evaluation.
    */
-  function value() -> Value {
-    assert false;
-  }
+  abstract function value() -> Value;
   
   /*
    * Boxed value evaluation.

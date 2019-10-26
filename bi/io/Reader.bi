@@ -48,16 +48,19 @@ class Reader {
  */
 function Reader(path:String) -> Reader {
   auto ext <- extension(path);
+  result:Reader?;
   if ext == ".json" {
     reader:JSONReader;
     reader.open(path);
-    return reader;
+    result <- reader;
   } else if ext == ".yml" {
     reader:YAMLReader;
     reader.open(path);
-    return reader;
-  } else {
+    result <- reader;
+  }
+  if !result? {
     error("unrecognized file extension '" + ext + "' in path '" + path +
         "'; supported extensions are '.json' and '.yml'.");
   }
+  return result!;
 }

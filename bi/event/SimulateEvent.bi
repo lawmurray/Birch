@@ -3,7 +3,7 @@
  *
  * - p: The distribution.
  */
-final class SimulateEvent<Value>(p:Distribution<Value>) < ValueEvent<Value> {
+final class SimulateEvent<Value>(p:Distribution<Value>) < Event {
   /**
    * Value associated with the event (once simulated).
    */
@@ -18,56 +18,47 @@ final class SimulateEvent<Value>(p:Distribution<Value>) < ValueEvent<Value> {
     return true;
   }
 
-  function hasValue() -> Boolean {
-    return v?;
-  }
-
-  function value() -> Value {
-    assert v?;
-    return v!;
-  }
-
   function playImmediate() -> Real {
     v <- p.value();
     return 0.0;
   }
 
-  function skipImmediate(trace:Queue<Event>) -> Real {
+  function skipImmediate(trace:Queue<Record>) -> Real {
     coerce<Value>(trace);  // skip
     v <- p.value();
     return 0.0;
   }
 
-  function replayImmediate(trace:Queue<Event>) -> Real {
-    auto evt <- coerce<Value>(trace);
-    auto w <- p.observe(evt.value());
+  function replayImmediate(trace:Queue<Record>) -> Real {
+    auto r <- coerce<Value>(trace);
+    auto w <- p.observe(r.value());
     if w != -inf {
-      v <- evt.value();
+      v <- r.value();
       w <- 0.0;
     }
     return w;
   }
 
-  function downdateImmediate(trace:Queue<Event>) -> Real {
-    auto evt <- coerce<Value>(trace);
-    auto w <- p.observeWithDowndate(evt.value());
+  function downdateImmediate(trace:Queue<Record>) -> Real {
+    auto r <- coerce<Value>(trace);
+    auto w <- p.observeWithDowndate(r.value());
     if w != -inf {
-      v <- evt.value();
+      v <- r.value();
       w <- 0.0;
     }
     return w;
   }
   
-  function proposeImmediate(trace:Queue<Event>) -> Real {
-    auto evt <- coerce<Value>(trace);
-    auto w <- p.observe(evt.value());
+  function proposeImmediate(trace:Queue<Record>) -> Real {
+    auto r <- coerce<Value>(trace);
+    auto w <- p.observe(r.value());
     if w != -inf {
-      v <- evt.value();
+      v <- r.value();
     }
     return w;
   }
   
-  function record(trace:Queue<Event>) {
+  function record(trace:Queue<Record>) {
     trace.pushBack(FixedEvent<Value>(v!));
   }
 }

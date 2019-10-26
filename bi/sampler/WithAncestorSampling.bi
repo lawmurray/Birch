@@ -15,7 +15,7 @@ class WithAncestorSampling<Base> < Base {
       v:Real[N];
       dynamic parallel for auto n in 1..N {
         auto x <- clone<ForwardModel>(this.x[n]);
-        auto f <- clone<StackNode<Event>>(forward!);
+        auto f <- clone<StackNode<Record>>(forward!);
         x.h.setMode(PROPOSE_IMMEDIATE);
         x.h.setRecord(false);
         x.h.trace.putForward(f, forwardCount);
@@ -29,7 +29,7 @@ class WithAncestorSampling<Base> < Base {
       b <- ancestor(v);
       h <- x[b].h;
       h.setMode(REPLAY_DELAY);
-      auto f <- clone<StackNode<Event>>(forward!);
+      auto f <- clone<StackNode<Record>>(forward!);
       h.trace.putForward(f, forwardCount);
     }
     super.resample();

@@ -6,7 +6,7 @@
  * <object type="image/svg+xml" data="../../figs/Model.svg"></object>
  * </center>
  */
-class Model {
+abstract class Model {
   /**
    * Event handler.
    */
@@ -22,5 +22,7 @@ class Model {
   /**
    * Simulate the model, yielding events.
    */
-  fiber simulate() -> Event;
+  fiber simulate() -> Event {
+    //
+  }
 }

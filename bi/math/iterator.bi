@@ -47,21 +47,21 @@ function reduce(x:Boolean!, init:Boolean, op:@(Boolean, Boolean) -> Boolean) -> 
  * Sum over range.
  */
 function sum(x:Real!) -> Real {
-  return reduce<Real>(x, 0.0, @(x:Real, y:Real) -> Real { return x + y; });
+  return reduce(x, 0.0, @(x:Real, y:Real) -> Real { return x + y; });
 }
 
 /**
  * Sum over range.
  */
 function sum(x:Integer!) -> Integer {
-  return reduce<Integer>(x, 0, @(x:Integer, y:Integer) -> Integer { return x + y; });
+  return reduce(x, 0, @(x:Integer, y:Integer) -> Integer { return x + y; });
 }
 
 /**
  * Sum over range.
  */
 function sum(x:Boolean!) -> Boolean {
-  return reduce<Boolean>(x, false, @(x:Boolean, y:Boolean) -> Boolean { return x + y; });
+  return reduce(x, false, @(x:Boolean, y:Boolean) -> Boolean { return x + y; });
 }
 
 /**
@@ -70,7 +70,7 @@ function sum(x:Boolean!) -> Boolean {
 function max(x:Real!) -> Real {
   x?;
   auto init <- x!;
-  return reduce<Real>(x, init, @(x:Real, y:Real) -> Real { return max(x, y); });
+  return reduce(x, init, @(x:Real, y:Real) -> Real { return max(x, y); });
 }
 
 /**
@@ -79,7 +79,7 @@ function max(x:Real!) -> Real {
 function max(x:Integer!) -> Integer {
   x?;
   auto init <- x!;
-  return reduce<Integer>(x, init, @(x:Integer, y:Integer) -> Integer { return max(x, y); });
+  return reduce(x, init, @(x:Integer, y:Integer) -> Integer { return max(x, y); });
 }
 
 /**
@@ -88,7 +88,7 @@ function max(x:Integer!) -> Integer {
 function max(x:Boolean!) -> Boolean {
   x?;
   auto init <- x!;
-  return reduce<Boolean>(x, init, @(x:Boolean, y:Boolean) -> Boolean { return max(x, y); });
+  return reduce(x, init, @(x:Boolean, y:Boolean) -> Boolean { return max(x, y); });
 }
 
 /**
@@ -97,7 +97,7 @@ function max(x:Boolean!) -> Boolean {
 function min(x:Real!) -> Real {
   x?;
   auto init <- x!;
-  return reduce<Real>(x, init, @(x:Real, y:Real) -> Real { return min(x, y); });
+  return reduce(x, init, @(x:Real, y:Real) -> Real { return min(x, y); });
 }
 
 /**
@@ -106,7 +106,7 @@ function min(x:Real!) -> Real {
 function min(x:Integer!) -> Integer {
   x?;
   auto init <- x!;
-  return reduce<Integer>(x, init, @(x:Integer, y:Integer) -> Integer { return min(x, y); });
+  return reduce(x, init, @(x:Integer, y:Integer) -> Integer { return min(x, y); });
 }
 
 /**
@@ -115,7 +115,7 @@ function min(x:Integer!) -> Integer {
 function min(x:Boolean!) -> Boolean {
   x?;
   auto init <- x!;
-  return reduce<Boolean>(x, init, @(x:Boolean, y:Boolean) -> Boolean { return min(x, y); });
+  return reduce(x, init, @(x:Boolean, y:Boolean) -> Boolean { return min(x, y); });
 }
 
 /**

@@ -17,19 +17,19 @@ final class FactorEvent(w:Real) < Event {
     return w;
   }
     
-  function replayImmediate(trace:Queue<Event>) -> Real {
+  function replayImmediate(trace:Queue<Record>) -> Real {
     return w;
   }
 
-  function proposeImmediate(trace:Queue<Event>) -> Real {
+  function proposeImmediate(trace:Queue<Record>) -> Real {
     return w;
   }
 
-  function skipImmediate(trace:Queue<Event>) -> Real {
+  function skipImmediate(trace:Queue<Record>) -> Real {
     return w;
   }
 
-  function downdateImmediate(trace:Queue<Event>) -> Real {
+  function downdateImmediate(trace:Queue<Record>) -> Real {
     return w;
   }
 }

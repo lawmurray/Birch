@@ -7,7 +7,7 @@
  * - futureUpdate: When realized, should the future value trigger an
  *   update? (Otherwise a downdate.)
  */
-class DelayValue<Value>(future:Value?, futureUpdate:Boolean) < Delay {
+abstract class DelayValue<Value>(future:Value?, futureUpdate:Boolean) < Delay {
   /**
    * Realized value.
    */
@@ -59,7 +59,7 @@ class DelayValue<Value>(future:Value?, futureUpdate:Boolean) < Delay {
    * Set a value for a random variate associated with this node,
    * updating the delayed sampling graph accordingly.
    */
-  function set(x:Value) -> Value {
+  function set(x:Value) {
     assert !this.x?;
     assert !this.future?;
 
@@ -77,7 +77,7 @@ class DelayValue<Value>(future:Value?, futureUpdate:Boolean) < Delay {
    * Set a value for a random variate associated with this node,
    * downdating the delayed sampling graph accordingly.
    */
-  function setWithDowndate(x:Value) -> Value {
+  function setWithDowndate(x:Value) {
     assert !this.x?;
     assert !this.future?;
 
@@ -152,7 +152,7 @@ class DelayValue<Value>(future:Value?, futureUpdate:Boolean) < Delay {
    *
    * Return: the value.
    */
-  function simulate() -> Value;
+  abstract function simulate() -> Value;
 
   /**
    * Observe a random variate.
@@ -161,7 +161,7 @@ class DelayValue<Value>(future:Value?, futureUpdate:Boolean) < Delay {
    *
    * Return: The log likelihood.
    */
-  function logpdf(x:Value) -> Real;
+  abstract function logpdf(x:Value) -> Real;
 
   /**
    * Update the parent node on the $M$-path given the value of this node.
@@ -189,7 +189,7 @@ class DelayValue<Value>(future:Value?, futureUpdate:Boolean) < Delay {
    * Return: the probability density (or mass).
    */
   function pdf(x:Value) -> Real {
-    assert false;
+    return exp(logpdf(x));
   }
 
   /**
@@ -200,7 +200,8 @@ class DelayValue<Value>(future:Value?, futureUpdate:Boolean) < Delay {
    * Return: the cumulative probability
    */
   function cdf(x:Value) -> Real {
-    assert false;
+    error("cdf unsupported here");
+    return 0.0;
   }
   
   /**
