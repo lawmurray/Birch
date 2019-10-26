@@ -265,12 +265,12 @@
 
       "libbirch/EagerLabel.cpp",
       "libbirch/EagerMemo.cpp",
+      "libbirch/global.cpp",
       "libbirch/LazyLabel.cpp",
       "libbirch/LazyMemo.cpp",
       "libbirch/libbirch.cpp",
       "libbirch/memory.cpp",
-      "libbirch/stacktrace.cpp",
-      "libbirch/thread.cpp"
+      "libbirch/stacktrace.cpp"
     ],
     "header": [
       "libbirch/Allocator.hpp",
