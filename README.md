@@ -5,6 +5,18 @@ Birch language wrapper for the [Cairo](https://www.cairographics.org/) 2d graphi
 
 ## Installation
 
+Requires:
+
+  * [Cairo](https://www.cairographics.org/)
+    
+To install Cairo on macOS with HomeBrew:
+
+    brew install cairo
+
+or on Ubuntu:
+
+    apt-get install libcairo2-dev
+
 To build and install, use:
 
     birch build
