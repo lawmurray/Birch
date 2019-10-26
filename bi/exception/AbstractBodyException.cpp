@@ -19,3 +19,18 @@ bi::AbstractBodyException::AbstractBodyException(const MemberFunction* o) {
   buf << o;
   msg = base.str();
 }
+
+bi::AbstractBodyException::AbstractBodyException(const MemberFiber* o) {
+  std::stringstream base;
+  bih_ostream buf(base);
+  if (o->loc) {
+    buf << o->loc;
+  }
+  buf << "error: a member fiber marked abstract cannot have a body\n";
+  if (o->loc) {
+    buf << o->loc;
+  }
+  buf << "note: in\n";
+  buf << o;
+  msg = base.str();
+}

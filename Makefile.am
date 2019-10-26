@@ -67,7 +67,6 @@ COMMON_SOURCES = \
   bi/exception/Exception.cpp \
   bi/exception/FiberTypeException.cpp \
   bi/exception/FileNotFoundException.cpp \
-  bi/exception/FinalBodyException.cpp \
   bi/exception/FinalException.cpp \
   bi/exception/GenericException.cpp \
   bi/exception/GetException.cpp \
@@ -243,7 +242,6 @@ noinst_HEADERS = \
   bi/exception/DriverException.hpp \
   bi/exception/FiberTypeException.hpp \
   bi/exception/FileNotFoundException.hpp \
-  bi/exception/FinalBodyException.hpp \
   bi/exception/FinalException.hpp \
   bi/exception/GenericException.hpp \
   bi/exception/GetException.hpp \

@@ -666,8 +666,6 @@ bi::Statement* bi::Resolver::modify(Program* o) {
 bi::Statement* bi::Resolver::modify(MemberFunction* o) {
   if (o->has(ABSTRACT) && !o->braces->isEmpty()) {
     throw AbstractBodyException(o);
-  } else if (o->has(FINAL) && o->braces->isEmpty()) {
-    throw FinalBodyException(o);
   }
   if (stage == RESOLVER_HEADER) {
     scopes.push_back(o->scope);
@@ -687,6 +685,9 @@ bi::Statement* bi::Resolver::modify(MemberFunction* o) {
 }
 
 bi::Statement* bi::Resolver::modify(MemberFiber* o) {
+  if (o->has(ABSTRACT) && !o->braces->isEmpty()) {
+    throw AbstractBodyException(o);
+  }
   if (stage == RESOLVER_HEADER) {
     scopes.push_back(o->scope);
     o->params = o->params->accept(this);

@@ -5,6 +5,7 @@
 
 #include "bi/exception/CompilerException.hpp"
 #include "bi/statement/MemberFunction.hpp"
+#include "bi/statement/MemberFiber.hpp"
 
 namespace bi {
 /**
@@ -17,5 +18,10 @@ struct AbstractBodyException: public CompilerException {
    * Constructor.
    */
   AbstractBodyException(const MemberFunction* o);
+
+  /**
+   * Constructor.
+   */
+  AbstractBodyException(const MemberFiber* o);
 };
 }

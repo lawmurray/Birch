@@ -250,6 +250,12 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
     } else {
       finish(" {");
       in();
+      for (auto iter = o->typeParams->begin(); iter != o->typeParams->end();
+          ++iter) {
+        auto param = dynamic_cast<const Generic*>(*iter);
+        assert(param);
+        line("using " << param->name << " [[maybe_unused]] = " << param->type << ';');
+      }
       genTraceFunction(o->name->str(), o->loc);
       line("libbirch_swap_context_");
       line("libbirch_declare_local_");

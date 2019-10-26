@@ -504,6 +504,12 @@ void bi::CppBaseGenerator::visit(const Function* o) {
     } else {
       finish(" {");
       in();
+      for (auto iter = o->typeParams->begin(); iter != o->typeParams->end();
+          ++iter) {
+        auto param = dynamic_cast<const Generic*>(*iter);
+        assert(param);
+        line("using " << param->name << " [[maybe_unused]] = " << param->type << ';');
+      }
       genTraceFunction(o->name->str(), o->loc);
       CppBaseGenerator aux(base, level, false);
       *this << o->braces->strip();
