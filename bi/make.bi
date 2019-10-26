@@ -27,7 +27,7 @@ function make(name:String) -> Object? {
  *
  * Return: if `Type` is a class with no initialization parameters, or a value
  * type, constructs an object of that class or a default-initialized value
- * of that type and returns it in an optional, otherwise returns an optiona
+ * of that type and returns it in an optional, otherwise returns an optional
  * with no value.
  */
 function make<Type>() -> Type? {
