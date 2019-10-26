@@ -1,17 +1,17 @@
 /**
  * @file
  */
-#include "bi/exception/FinalException.hpp"
+#include "bi/exception/FinalBodyException.hpp"
 
 #include "bi/io/bih_ostream.hpp"
 
-bi::FinalException::FinalException(const Class* o) {
+bi::FinalBodyException::FinalBodyException(const MemberFunction* o) {
   std::stringstream base;
   bih_ostream buf(base);
   if (o->loc) {
     buf << o->loc;
   }
-  buf << "error: cannot inherit from a class marked final\n";
+  buf << "error: a member function marked final must have a body\n";
   if (o->loc) {
     buf << o->loc;
   }

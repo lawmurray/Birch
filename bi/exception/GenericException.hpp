@@ -46,6 +46,9 @@ bi::GenericException::GenericException(const IdentifierType* o, const ObjectType
     buf << target->loc;
   }
   buf << "note: target is\n";
-  buf << target->name << '<' << target->typeParams << ">\n";
+  buf << target->name;
+  if (!target->typeParams->isEmpty()) {
+    buf << '<' << target->typeParams << ">\n";
+  }
   msg = base.str();
 }

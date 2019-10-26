@@ -52,6 +52,7 @@ COMMON_SOURCES = \
   bi/common/TypeArgumented.cpp \
   bi/common/TypeParameterised.cpp \
   bi/common/Valued.cpp \
+  bi/exception/AbstractBodyException.cpp \
   bi/exception/AmbiguousCallException.cpp \
   bi/exception/AssignmentOperatorException.cpp \
   bi/exception/AssignmentException.cpp \
@@ -66,6 +67,7 @@ COMMON_SOURCES = \
   bi/exception/Exception.cpp \
   bi/exception/FiberTypeException.cpp \
   bi/exception/FileNotFoundException.cpp \
+  bi/exception/FinalBodyException.cpp \
   bi/exception/FinalException.cpp \
   bi/exception/GenericException.cpp \
   bi/exception/GetException.cpp \
@@ -227,6 +229,7 @@ noinst_HEADERS = \
   bi/common/Unknown.hpp \
   bi/common/Valued.hpp \
   bi/exception/all.hpp \
+  bi/exception/AbstractBodyException.cpp \
   bi/exception/AmbiguousCallException.hpp \
   bi/exception/AssignmentException.hpp \
   bi/exception/AssumeException.hpp \
@@ -240,6 +243,7 @@ noinst_HEADERS = \
   bi/exception/DriverException.hpp \
   bi/exception/FiberTypeException.hpp \
   bi/exception/FileNotFoundException.hpp \
+  bi/exception/FinalBodyException.hpp \
   bi/exception/FinalException.hpp \
   bi/exception/GenericException.hpp \
   bi/exception/GetException.hpp \

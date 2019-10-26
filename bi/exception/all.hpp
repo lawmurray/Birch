@@ -3,6 +3,7 @@
  */
 #pragma once
 
+#include "bi/exception/AbstractBodyException.hpp"
 #include "bi/exception/AmbiguousCallException.hpp"
 #include "bi/exception/AssignmentException.hpp"
 #include "bi/exception/AssumeException.hpp"
@@ -16,6 +17,7 @@
 #include "bi/exception/DriverException.hpp"
 #include "bi/exception/FiberTypeException.hpp"
 #include "bi/exception/FileNotFoundException.hpp"
+#include "bi/exception/FinalBodyException.hpp"
 #include "bi/exception/FinalException.hpp"
 #include "bi/exception/GenericException.hpp"
 #include "bi/exception/GetException.hpp"

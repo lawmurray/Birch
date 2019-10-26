@@ -64,7 +64,7 @@ void bi::CppPackageGenerator::visit(const Package* o) {
   allowConversions = true;
   std::list<Class*> sortedClasses;
   for (auto iter = sorted.rbegin(); iter != sorted.rend(); ++iter) {
-    if (!(*iter)->getClass()->has(PRIOR_INSTANTIATION)) {
+    if (!(*iter)->getClass()->has(INSTANTIATED)) {
       sortedClasses.push_back((*iter)->getClass());
     }
   }
@@ -153,14 +153,14 @@ void bi::CppPackageGenerator::visit(const Package* o) {
     }
     for (auto o : headerFunctions) {
       for (auto instantiation : o->instantiations) {
-        if (!instantiation->has(PRIOR_INSTANTIATION)) {
+        if (!instantiation->has(INSTANTIATED)) {
           *this << instantiation;
         }
       }
     }
     for (auto o : headerFibers) {
       for (auto instantiation : o->instantiations) {
-        if (!instantiation->has(PRIOR_INSTANTIATION)) {
+        if (!instantiation->has(INSTANTIATED)) {
           *this << instantiation;
         }
       }
@@ -191,14 +191,14 @@ void bi::CppPackageGenerator::visit(const Package* o) {
     }
     for (auto o : headerFunctions) {
       for (auto instantiation : o->instantiations) {
-        if (!instantiation->has(PRIOR_INSTANTIATION)) {
+        if (!instantiation->has(INSTANTIATED)) {
           *this << instantiation;
         }
       }
     }
     for (auto o : headerFibers) {
       for (auto instantiation : o->instantiations) {
-        if (!instantiation->has(PRIOR_INSTANTIATION)) {
+        if (!instantiation->has(INSTANTIATED)) {
           *this << instantiation;
         }
       }

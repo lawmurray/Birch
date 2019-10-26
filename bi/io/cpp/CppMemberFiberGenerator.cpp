@@ -302,6 +302,11 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   }
   middle(o->name << '(' << o->params << ')');
   if (header) {
+    if (o->has(FINAL)) {
+      middle(" final");
+    } else if (o->has(ABSTRACT)) {
+      middle(" = 0");
+    }
     finish(';');
   } else {
     finish(" {");

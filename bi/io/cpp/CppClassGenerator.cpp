@@ -186,12 +186,14 @@ void bi::CppClassGenerator::visit(const Class* o) {
     }
 
     /* clone function */
-    if (header) {
-      line("virtual " << o->name << "* clone_(libbirch::Label* context_) const {");
-      in();
-      line("return libbirch::clone_object<" << o->name << ">(context_, this);");
-      out();
-      line("}\n");
+    if (!o->has(ABSTRACT)) {
+      if (header) {
+        line("virtual " << o->name << "* clone_(libbirch::Label* context_) const {");
+        in();
+        line("return libbirch::clone_object<" << o->name << ">(context_, this);");
+        out();
+        line("}\n");
+      }
     }
 
     /* name function */
@@ -317,7 +319,7 @@ void bi::CppClassGenerator::visit(const Class* o) {
     }
 
     /* C linkage function */
-    if (!o->isGeneric() && o->params->isEmpty()) {
+    if (!o->has(ABSTRACT) && !o->isGeneric() && o->params->isEmpty()) {
       if (header) {
         start("extern \"C\" bi::type::" << o->name << "* ");
         finish("make_" << o->name << "_(libbirch::Label* context_);");
@@ -341,53 +343,62 @@ void bi::CppClassGenerator::visit(const MemberVariable* o) {
 }
 
 void bi::CppClassGenerator::visit(const MemberFunction* o) {
-  if (header) {
-    start("virtual ");
-  } else {
-    start("");
-  }
-  middle(o->returnType << ' ');
-  if (!header) {
-    middle("bi::type::" << type->name);
-    genTemplateArgs(type);
-    middle("::");
-  }
-  middle(internalise(o->name->str()) << '(' << o->params << ')');
-  if (header) {
-    finish(';');
-  } else {
-    finish(" {");
-    in();
-    genTraceFunction(o->name->str(), o->loc);
-
-    /* swap context */
-    line("libbirch_swap_context_");
-
-	  /* declare self if necessary */
-    Gatherer<Member> members;
-    Gatherer<Raw> raws;
-    Gatherer<This> selfs;
-    Gatherer<Super> supers;
-    o->accept(&members);
-    o->accept(&raws);
-    o->accept(&selfs);
-    o->accept(&supers);
-    if (members.size() + raws.size() + selfs.size() + supers.size() > 0) {
-      line("libbirch_declare_self_");
+  if (header || !o->braces->isEmpty()) {
+    if (header) {
+      start("virtual ");
+    } else {
+      start("");
     }
+    middle(o->returnType << ' ');
+    if (!header) {
+      middle("bi::type::" << type->name);
+      genTemplateArgs(type);
+      middle("::");
+    }
+    middle(internalise(o->name->str()) << '(' << o->params << ')');
+    if (header) {
+      if (o->has(FINAL)) {
+        middle(" final");
+      } else if (o->has(ABSTRACT)) {
+        middle(" = 0");
+      }
+      finish(';');
+    } else {
+      finish(" {");
+      in();
+      genTraceFunction(o->name->str(), o->loc);
 
-    /* body */
-    CppBaseGenerator auxBase(base, level, header);
-    auxBase << o->braces->strip();
+      /* swap context */
+      line("libbirch_swap_context_");
 
-    out();
-    finish("}\n");
+      /* declare self if necessary */
+      Gatherer<Member> members;
+      Gatherer<Raw> raws;
+      Gatherer<This> selfs;
+      Gatherer<Super> supers;
+      o->accept(&members);
+      o->accept(&raws);
+      o->accept(&selfs);
+      o->accept(&supers);
+      if (members.size() + raws.size() + selfs.size() + supers.size() > 0) {
+        line("libbirch_declare_self_");
+      }
+
+      /* body */
+      CppBaseGenerator auxBase(base, level, header);
+      auxBase << o->braces->strip();
+
+      out();
+      finish("}\n");
+    }
   }
 }
 
 void bi::CppClassGenerator::visit(const MemberFiber* o) {
-  CppMemberFiberGenerator auxMemberFiber(type, base, level, header);
-  auxMemberFiber << o;
+  if (header || !o->braces->isEmpty()) {
+    CppMemberFiberGenerator auxMemberFiber(type, base, level, header);
+    auxMemberFiber << o;
+  }
 }
 
 void bi::CppClassGenerator::visit(const AssignmentOperator* o) {

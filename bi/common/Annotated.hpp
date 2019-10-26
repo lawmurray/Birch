@@ -13,7 +13,8 @@ enum Annotation {
   DYNAMIC = 2,
   AUTO = 4,
   FINAL = 8,
-  PRIOR_INSTANTIATION = 16
+  ABSTRACT = 16,
+  INSTANTIATED = 32
 };
 
 /**

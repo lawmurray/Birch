@@ -6,7 +6,7 @@
 bi::Resolver::Resolver(const ResolverStage globalStage) :
     stage(RESOLVER_TYPER),
     globalStage(globalStage),
-    annotator(PRIOR_INSTANTIATION),
+    annotator(INSTANTIATED),
     inFiber(0),
     inMember(0) {
   //
@@ -388,7 +388,9 @@ bi::Expression* bi::Resolver::modify(OverloadedIdentifier<Function>* o) {
   } else {
     auto target = new Overloaded<Function>();
     for (auto overload : *o->target) {
-      target->add(instantiate(o, overload));
+      if (overload->isGeneric() == !o->typeArgs->isEmpty()) {
+        target->add(instantiate(o, overload));
+      }
     }
     o->target = target;
   }
@@ -405,7 +407,9 @@ bi::Expression* bi::Resolver::modify(OverloadedIdentifier<Fiber>* o) {
   } else {
     auto target = new Overloaded<Fiber>();
     for (auto overload : *o->target) {
-      target->add(instantiate(o, overload));
+      if (overload->isGeneric() == !o->typeArgs->isEmpty()) {
+        target->add(instantiate(o, overload));
+      }
     }
     o->target = target;
   }
@@ -660,6 +664,11 @@ bi::Statement* bi::Resolver::modify(Program* o) {
 }
 
 bi::Statement* bi::Resolver::modify(MemberFunction* o) {
+  if (o->has(ABSTRACT) && !o->braces->isEmpty()) {
+    throw AbstractBodyException(o);
+  } else if (o->has(FINAL) && o->braces->isEmpty()) {
+    throw FinalBodyException(o);
+  }
   if (stage == RESOLVER_HEADER) {
     scopes.push_back(o->scope);
     o->params = o->params->accept(this);
