@@ -129,6 +129,7 @@
       "bi/event/Event.bi",
       "bi/event/EventHandler.bi",
       "bi/event/FactorEvent.bi",
+      "bi/event/ValueEvent.bi",
       "bi/event/misc.bi",
       "bi/event/ObserveEvent.bi",
       "bi/event/SimulateEvent.bi",

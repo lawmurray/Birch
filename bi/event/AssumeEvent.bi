@@ -5,7 +5,7 @@
  * - p: The distribution.
  */
 final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
-    Event {
+    ValueEvent<Value> {
   /**
    * Random variate associated with the event.
    */
@@ -20,6 +20,14 @@ final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
    * Did the random variate have a value when the event was triggered?
    */
   assigned:Boolean <- v.hasValue();
+
+  function hasValue() -> Boolean {
+    return true;
+  }
+  
+  function value() -> Value {
+    return v.value();
+  }
 
   function isAssume() -> Boolean {
     return true;

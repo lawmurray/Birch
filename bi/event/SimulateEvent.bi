@@ -3,7 +3,7 @@
  *
  * - p: The distribution.
  */
-final class SimulateEvent<Value>(p:Distribution<Value>) < Event {
+final class SimulateEvent<Value>(p:Distribution<Value>) < ValueEvent<Value> {
   /**
    * Value associated with the event (once simulated).
    */
@@ -13,6 +13,15 @@ final class SimulateEvent<Value>(p:Distribution<Value>) < Event {
    * Distribution associated with the event.
    */
   p:Distribution<Value> <- p;
+
+  function hasValue() -> Boolean {
+    return v?;
+  }
+  
+  function value() -> Value {
+    assert v?;
+    return v!;
+  }
 
   function isSimulate() -> Boolean {
     return true;
@@ -59,7 +68,7 @@ final class SimulateEvent<Value>(p:Distribution<Value>) < Event {
   }
   
   function record(trace:Queue<Record>) {
-    trace.pushBack(FixedEvent<Value>(v!));
+    trace.pushBack(FixedRecord<Value>(v!));
   }
 }
 

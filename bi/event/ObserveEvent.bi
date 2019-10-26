@@ -4,7 +4,8 @@
  * - v: The observation.
  * - p: The distribution.
  */
-final class ObserveEvent<Value>(v:Value, p:Distribution<Value>) < Event {
+final class ObserveEvent<Value>(v:Value, p:Distribution<Value>) <
+    ValueEvent<Value> {
   /**
    * Observation associated with the event.
    */
@@ -14,6 +15,14 @@ final class ObserveEvent<Value>(v:Value, p:Distribution<Value>) < Event {
    * Distribution associated with the event.
    */
   p:Distribution<Value> <- p;
+
+  function hasValue() -> Boolean {
+    return true;
+  }
+  
+  function value() -> Value {
+    return v;
+  }
 
   function isObserve() -> Boolean {
     return true;
