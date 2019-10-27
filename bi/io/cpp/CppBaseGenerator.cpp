@@ -249,7 +249,7 @@ void bi::CppBaseGenerator::visit(const Assign* o) {
     ++inAssign;
     middle(member->left << "->set_" << var->name << "_(");
     if (slice) {
-      middle("libbirch::make_view(" << slice->brackets << "), ");
+      middle("libbirch::make_slice(" << slice->brackets << "), ");
     }
     --inAssign;
     middle(o->right << ')');
@@ -277,7 +277,7 @@ void bi::CppBaseGenerator::visit(const Slice* o) {
      * const context to avoid unnecessary copy */
     middle(".as_const()");
   }
-  middle("(libbirch::make_view(" << o->brackets << "))");
+  middle("(libbirch::make_slice(" << o->brackets << "))");
 }
 
 void bi::CppBaseGenerator::visit(const Query* o) {
