@@ -3,12 +3,12 @@
  */
 #include "libbirch/stacktrace.hpp"
 
-struct stack_frame {
+struct stack_shape {
   const char* func;
   const char* file;
   int line;
 };
-using stack_trace = std::vector<stack_frame,libbirch::Allocator<stack_frame>>;
+using stack_trace = std::vector<stack_shape,libbirch::Allocator<stack_shape>>;
 
 stack_trace& currentStackTrace() {
   static std::vector<stack_trace,libbirch::Allocator<stack_trace>> stacktraces(

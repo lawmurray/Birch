@@ -18,7 +18,7 @@
 #include "libbirch/Span.hpp"
 #include "libbirch/Index.hpp"
 #include "libbirch/Range.hpp"
-#include "libbirch/Frame.hpp"
+#include "libbirch/Shape.hpp"
 #include "libbirch/View.hpp"
 #include "libbirch/Array.hpp"
 #include "libbirch/Tuple.hpp"
@@ -43,7 +43,7 @@ namespace libbirch {
  * Default array for `D` dimensions.
  */
 template<class T, int D>
-using DefaultArray = Array<T,typename DefaultFrame<D>::type>;
+using DefaultArray = Array<T,typename DefaultShape<D>::type>;
 
 /**
  * Default view for `D`-dimensional indexing of a single element.
@@ -71,46 +71,46 @@ inline Range<> make_range(const int64_t start, const int64_t end) {
 }
 
 /**
- * Make a frame, no arguments.
+ * Make a shape, no arguments.
  *
  * @ingroup libbirch
  */
-inline EmptyFrame make_frame() {
-  return EmptyFrame();
+inline EmptyShape make_shape() {
+  return EmptyShape();
 }
 
 /**
- * Make a frame, single argument.
+ * Make a shape, single argument.
  *
  * @ingroup libbirch
  */
-inline Frame<Span<>,EmptyFrame> make_frame(const int64_t arg) {
-  auto tail = EmptyFrame();
+inline Shape<Span<>,EmptyShape> make_shape(const int64_t arg) {
+  auto tail = EmptyShape();
   auto head = Span<>(arg, tail.volume());
-  return Frame<Span<>,EmptyFrame>(head, tail);
+  return Shape<Span<>,EmptyShape>(head, tail);
 }
 
 /**
- * Make a frame, multiple arguments.
+ * Make a shape, multiple arguments.
  *
  * @ingroup libbirch
  */
 template<class ... Args>
-auto make_frame(const int64_t arg, Args ... args) {
-  auto tail = make_frame(args...);
+auto make_shape(const int64_t arg, Args ... args) {
+  auto tail = make_shape(args...);
   auto head = Span<>(arg, tail.volume());
-  return Frame<decltype(head),decltype(tail)>(head, tail);
+  return Shape<decltype(head),decltype(tail)>(head, tail);
 }
 
 /**
- * Make a frame, recursively.
+ * Make a shape, recursively.
  *
  * @ingroup libbirch
  */
 template<class ... Args>
-auto make_frame(const int64_t arg, const Frame<Args...>& tail) {
+auto make_shape(const int64_t arg, const Shape<Args...>& tail) {
   auto head = Span<>(arg, tail.volume());
-  return Frame<decltype(head),decltype(tail)>(head, tail);
+  return Shape<decltype(head),decltype(tail)>(head, tail);
 }
 
 /**
@@ -175,17 +175,17 @@ auto make_view(const int64_t arg, Args ... args) {
  * @ingroup libbirch
  *
  * @tparam T Value type.
- * @tparam F Frame type.
+ * @tparam F Shape type.
  * @tparam Args Constructor parameter types.
  *
- * @param frame Frame.
+ * @param shape Shape.
  * @param args Constructor arguments.
  *
  * @return The array.
  */
 template<class T, class F, class ... Args>
-Array<T,F> make_array(const F& frame, const Args&... args) {
-  return Array<T,F>(frame, args...);
+Array<T,F> make_array(const F& shape, const Args&... args) {
+  return Array<T,F>(shape, args...);
 }
 
 /**
@@ -194,19 +194,19 @@ Array<T,F> make_array(const F& frame, const Args&... args) {
  * @ingroup libbirch
  *
  * @tparam T Value type.
- * @tparam F Frame type.
+ * @tparam F Shape type.
  * @tparam Args Constructor parameter types.
  *
  * @param context Current context.
- * @param frame Frame.
+ * @param shape Shape.
  * @param args Constructor arguments.
  *
  * @return The array.
  */
 template<class T, class F, class ... Args>
-Array<T,F> make_array(Label* context, const F& frame,
+Array<T,F> make_array(Label* context, const F& shape,
     const Args&... args) {
-  return Array<T,F>(context, frame, args...);
+  return Array<T,F>(context, shape, args...);
 }
 
 /**
@@ -215,19 +215,19 @@ Array<T,F> make_array(Label* context, const F& frame,
  * @ingroup libbirch
  *
  * @tparam T Value type.
- * @tparam F Frame type.
+ * @tparam F Shape type.
  * @tparam Value Initial value type.
  *
- * @param frame Frame.
+ * @param shape Shape.
  * @param value Initial value.
  *
  * @return The array.
  */
 template<class T, class F, class Value>
-Array<T,F> make_array_and_assign(const F& frame,
+Array<T,F> make_array_and_assign(const F& shape,
     const Value& value) {
   Array<T,F> result;
-  result.enlarge(frame, value);
+  result.enlarge(shape, value);
   return result;
 }
 

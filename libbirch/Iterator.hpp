@@ -3,7 +3,7 @@
  */
 #pragma once
 
-#include "libbirch/Frame.hpp"
+#include "libbirch/Shape.hpp"
 
 namespace libbirch {
 /**
@@ -12,19 +12,19 @@ namespace libbirch {
  * @ingroup libbirch
  *
  * @tparam T Value type.
- * @tparam F Frame type.
+ * @tparam F Shape type.
  */
-template<class T, class F = EmptyFrame>
+template<class T, class F = EmptyShape>
 class Iterator : public std::iterator<std::bidirectional_iterator_tag,T> {
 public:
   /**
    * Constructor.
    *
    * @param ptr Buffer.
-   * @param frame F.
+   * @param shape F.
    */
-  Iterator(T* ptr, const F& frame, int64_t serial = 0) :
-      frame(frame),
+  Iterator(T* ptr, const F& shape, int64_t serial = 0) :
+      shape(shape),
       ptr(ptr),
       serial(serial) {
     //
@@ -33,7 +33,7 @@ public:
   Iterator(const Iterator& o) = default;
 
   T* get() const {
-    return ptr + frame.offset(serial);
+    return ptr + shape.offset(serial);
   }
 
   T& operator*() {
@@ -126,9 +126,9 @@ public:
 
 protected:
   /**
-   * Frame.
+   * Shape.
    */
-  F frame;
+  F shape;
 
   /**
    * Buffer.
@@ -136,7 +136,7 @@ protected:
   T* ptr;
 
   /**
-   * Serialised offset into the frame.
+   * Serialised offset into the shape.
    */
   int64_t serial;
 };

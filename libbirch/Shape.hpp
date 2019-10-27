@@ -11,14 +11,14 @@
 
 namespace libbirch {
 /**
- * Empty frame.
+ * Empty shape.
  *
  * @ingroup libbirch
  *
- * @see Frame
+ * @see Shape
  */
-struct EmptyFrame {
-  EmptyFrame() = default;
+struct EmptyShape {
+  EmptyShape() = default;
 
   /**
    * Special constructor for Eigen integration where all matrices and vectors
@@ -26,19 +26,19 @@ struct EmptyFrame {
    * is reached, it means the array is a vector, and @p length should be one
    * (and is checked for this).
    */
-  explicit EmptyFrame(const Eigen::Index cols) {
+  explicit EmptyShape(const Eigen::Index cols) {
     assert(cols == 1);
   }
 
-  EmptyFrame operator()(const EmptyView& o) const {
-    return EmptyFrame();
+  EmptyShape operator()(const EmptyView& o) const {
+    return EmptyShape();
   }
 
-  EmptyFrame compact() const {
-    return EmptyFrame();
+  EmptyShape compact() const {
+    return EmptyShape();
   }
 
-  bool conforms(const EmptyFrame& o) const {
+  bool conforms(const EmptyShape& o) const {
     return true;
   }
 
@@ -88,24 +88,24 @@ struct EmptyFrame {
 };
 
 /**
- * Frame.
+ * Shape of an array.
  *
  * @ingroup libbirch
  *
  * @tparam Head Span type.
- * @tparam Tail Frame type.
+ * @tparam Tail Shape type.
  *
- * A frame describes the `D` dimensions of an array. It consists of a
- * @em head span describing the first dimension, and a tail @em tail frame
- * describing the remaining `D - 1` dimensions, recursively. The tail frame
- * is EmptyFrame for the last dimension.
+ * A shape describes the `D` dimensions of an array. It consists of a
+ * @em head span describing the first dimension, and a tail @em tail shape
+ * describing the remaining `D - 1` dimensions, recursively. The tail shape
+ * is EmptyShape for the last dimension.
  */
 template<class Head, class Tail>
-struct Frame {
+struct Shape {
   /**
-   * Default constructor (for zero-size frame).
+   * Default constructor (for zero-size shape).
    */
-  Frame() {
+  Shape() {
     //
   }
 
@@ -113,7 +113,7 @@ struct Frame {
    * Special constructor for Eigen integration where all matrices and vectors
    * are treated as matrices, with row and column counts.
    */
-  explicit Frame(const Eigen::Index rows, const Eigen::Index cols = 1) :
+  explicit Shape(const Eigen::Index rows, const Eigen::Index cols = 1) :
       head(rows, cols),
       tail(cols) {
     //
@@ -123,7 +123,7 @@ struct Frame {
    * Generic constructor.
    */
   template<class Head1, class Tail1>
-  explicit Frame(const Head1 head, const Tail1 tail) :
+  explicit Shape(const Head1 head, const Tail1 tail) :
       head(head),
       tail(tail) {
     //
@@ -132,13 +132,13 @@ struct Frame {
   /**
    * Copy constructor.
    */
-  Frame(const Frame<Head,Tail>& o) = default;
+  Shape(const Shape<Head,Tail>& o) = default;
 
   /**
    * Generic copy constructor.
    */
   template<class Head1, class Tail1>
-  Frame(const Frame<Head1,Tail1>& o) :
+  Shape(const Shape<Head1,Tail1>& o) :
       head(o.head),
       tail(o.tail) {
     //
@@ -157,7 +157,7 @@ struct Frame {
             << (o.head.offset + o.head.length) << " for dimension of length "
             << head.length);
 
-    return Frame<decltype(head(o.head)),decltype(tail(o.tail))>(
+    return Shape<decltype(head(o.head)),decltype(tail(o.tail))>(
         head(o.head), tail(o.tail));
   }
 
@@ -175,20 +175,20 @@ struct Frame {
   }
 
   /**
-   * Compact the frame to produce a new frame of the same size, but with
+   * Compact the shape to produce a new shape of the same size, but with
    * contiguous storage.
    */
-  Frame<Head,Tail> compact() const {
+  Shape<Head,Tail> compact() const {
     auto tail = this->tail.compact();
     auto head = Head(this->head.length, tail.size());
-    return Frame<Head,Tail>(head, tail);
+    return Shape<Head,Tail>(head, tail);
   }
 
   /**
-   * Does this frame conform to another? Two frames conform if their spans
+   * Does this shape conform to another? Two shapes conform if their spans
    * conform.
    */
-  bool conforms(const EmptyFrame& o) const {
+  bool conforms(const EmptyShape& o) const {
     return false;
   }
   template<class G>
@@ -198,7 +198,7 @@ struct Frame {
   bool conforms(const Eigen::Index rows, const Eigen::Index cols) {
     return head.conforms(rows)
         && (tail.conforms(cols)
-            || (std::is_same<Tail,EmptyFrame>::value && cols == 1));
+            || (std::is_same<Tail,EmptyShape>::value && cols == 1));
   }
   bool conforms(const Eigen::Index rows) {
     return head.conforms(rows);
@@ -302,14 +302,14 @@ struct Frame {
 };
 
 /**
- * Default frame for `D` dimensions.
+ * Default shape for `D` dimensions.
  */
 template<int D>
-struct DefaultFrame {
-  typedef Frame<Span<>,typename DefaultFrame<D - 1>::type> type;
+struct DefaultShape {
+  typedef Shape<Span<>,typename DefaultShape<D - 1>::type> type;
 };
 template<>
-struct DefaultFrame<0> {
-  typedef EmptyFrame type;
+struct DefaultShape<0> {
+  typedef EmptyShape type;
 };
 }
