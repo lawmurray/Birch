@@ -59,7 +59,7 @@ struct Span: public Length<length_value>, public Stride<stride_value> {
   }
 
   /**
-   * View operator.
+   * Slice operator.
    */
   template<int64_t offset_value1, int64_t length_value1>
   auto operator()(const Range<offset_value1,length_value1>& arg) const {

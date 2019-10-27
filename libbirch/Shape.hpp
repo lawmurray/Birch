@@ -6,7 +6,7 @@
 #include "libbirch/Span.hpp"
 #include "libbirch/Index.hpp"
 #include "libbirch/Range.hpp"
-#include "libbirch/View.hpp"
+#include "libbirch/Slice.hpp"
 #include "libbirch/Eigen.hpp"
 
 namespace libbirch {
@@ -30,7 +30,7 @@ struct EmptyShape {
     assert(cols == 1);
   }
 
-  EmptyShape operator()(const EmptyView& o) const {
+  EmptyShape operator()(const EmptySlice& o) const {
     return EmptyShape();
   }
 
@@ -145,11 +145,11 @@ struct Shape {
   }
 
   /**
-   * View operator.
+   * Slice operator.
    */
   template<int64_t offset_value1, int64_t length_value1, class Tail1>
   auto operator()(
-      const View<Range<offset_value1,length_value1>,Tail1>& o) const {
+      const Slice<Range<offset_value1,length_value1>,Tail1>& o) const {
     /* pre-conditions */
     libbirch_assert_msg_(
         o.head.offset >= 0 && o.head.offset + o.head.length <= head.length,
@@ -162,10 +162,10 @@ struct Shape {
   }
 
   /**
-   * View operator.
+   * Slice operator.
    */
   template<int64_t offset_value1, class Tail1>
-  auto operator()(const View<Index<offset_value1>,Tail1>& o) const {
+  auto operator()(const Slice<Index<offset_value1>,Tail1>& o) const {
     /* pre-condition */
     libbirch_assert_msg_(o.head.offset >= 0 && o.head.offset < head.length,
         "index is " << (o.head.offset + 1) << " for dimension of length "
@@ -279,7 +279,7 @@ struct Shape {
   }
 
   /**
-   * Serial offset for a view.
+   * Serial offset for a slice.
    */
   template<class V>
   int64_t serial(const V& o) const {

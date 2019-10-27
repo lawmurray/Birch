@@ -392,36 +392,36 @@ class Array {
   ///@}
 
   /**
-   * @name Views
+   * @name Slices
    */
   ///@{
   /**
-   * View operator.
+   * Slice operator.
    *
-   * @tparam V View type.
+   * @tparam V Slice type.
    *
-   * @param o View.
+   * @param slice Slice.
    *
    * @return The new array.
    */
   template<class V, std::enable_if_t<V::rangeCount() != 0,int> = 0>
-  auto operator()(const V& view) {
+  auto operator()(const V& slice) {
     duplicate();
-    return Array<T,decltype(shape(view))>(shape(view),
-        buffer, offset + shape.serial(view));
+    return Array<T,decltype(shape(slice))>(shape(slice),
+        buffer, offset + shape.serial(slice));
   }
   template<class V, std::enable_if_t<V::rangeCount() != 0,int> = 0>
-  auto operator()(const V& view) const {
-    return Array<T,decltype(shape(view))>(shape(view),
-        buffer, offset + shape.serial(view));
+  auto operator()(const V& slice) const {
+    return Array<T,decltype(shape(slice))>(shape(slice),
+        buffer, offset + shape.serial(slice));
   }
   template<class V, std::enable_if_t<V::rangeCount() == 0,int> = 0>
-  auto& operator()(const V& view) {
-    return *(buf() + shape.serial(view));
+  auto& operator()(const V& slice) {
+    return *(buf() + shape.serial(slice));
   }
   template<class V, std::enable_if_t<V::rangeCount() == 0,int> = 0>
-  const auto& operator()(const V& view) const {
-    return *(buf() + shape.serial(view));
+  const auto& operator()(const V& slice) const {
+    return *(buf() + shape.serial(slice));
   }
   ///@}
 

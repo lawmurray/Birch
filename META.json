@@ -317,6 +317,7 @@
       "libbirch/Shape.hpp",
       "libbirch/Shared.hpp",
       "libbirch/SharedPtr.hpp",
+      "libbirch/Slice.hpp",
       "libbirch/Span.hpp",
       "libbirch/stacktrace.hpp",
       "libbirch/Stride.hpp",
@@ -324,7 +325,6 @@
       "libbirch/Tie.hpp",
       "libbirch/Tuple.hpp",
       "libbirch/type.hpp",
-      "libbirch/View.hpp",
       "libbirch/Weak.hpp",
       "libbirch/WeakPtr.hpp"
     ],

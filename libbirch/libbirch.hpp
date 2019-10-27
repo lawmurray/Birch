@@ -19,7 +19,7 @@
 #include "libbirch/Index.hpp"
 #include "libbirch/Range.hpp"
 #include "libbirch/Shape.hpp"
-#include "libbirch/View.hpp"
+#include "libbirch/Slice.hpp"
 #include "libbirch/Array.hpp"
 #include "libbirch/Tuple.hpp"
 #include "libbirch/Tie.hpp"
@@ -46,15 +46,15 @@ template<class T, int D>
 using DefaultArray = Array<T,typename DefaultShape<D>::type>;
 
 /**
- * Default view for `D`-dimensional indexing of a single element.
+ * Default slice for `D`-dimensional indexing of a single element.
  */
 template<int D>
-struct DefaultView {
-  typedef View<Index<>,typename DefaultView<D - 1>::type> type;
+struct DefaultSlice {
+  typedef Slice<Index<>,typename DefaultSlice<D - 1>::type> type;
 };
 template<>
-struct DefaultView<0> {
-  typedef EmptyView type;
+struct DefaultSlice<0> {
+  typedef EmptySlice type;
 };
 
 /**
@@ -114,59 +114,59 @@ auto make_shape(const int64_t arg, const Shape<Args...>& tail) {
 }
 
 /**
- * Make a view, no arguments.
+ * Make a slice, no arguments.
  *
  * @ingroup libbirch
  */
-inline EmptyView make_view() {
-  return EmptyView();
+inline EmptySlice make_slice() {
+  return EmptySlice();
 }
 
 /**
- * Make a view, single argument.
+ * Make a slice, single argument.
  *
  * @ingroup libbirch
  */
 template<int64_t offset_value, int64_t length_value>
-auto make_view(const Range<offset_value,length_value>& arg) {
+auto make_slice(const Range<offset_value,length_value>& arg) {
   auto head = arg;
-  auto tail = make_view();
-  return View<decltype(head),decltype(tail)>(head, tail);
+  auto tail = make_slice();
+  return Slice<decltype(head),decltype(tail)>(head, tail);
 }
 
 /**
- * Make a view, single argument.
+ * Make a slice, single argument.
  *
  * @ingroup libbirch
  */
-inline View<Index<>,EmptyView> make_view(const int64_t arg) {
+inline Slice<Index<>,EmptySlice> make_slice(const int64_t arg) {
   auto head = Index<>(arg);
-  auto tail = EmptyView();
-  return View<Index<>,EmptyView>(head, tail);
+  auto tail = EmptySlice();
+  return Slice<Index<>,EmptySlice>(head, tail);
 }
 
 /**
- * Make a view, multiple arguments.
+ * Make a slice, multiple arguments.
  *
  * @ingroup libbirch
  */
 template<int64_t offset_value, int64_t length_value, class ... Args>
-auto make_view(const Range<offset_value,length_value>& arg, Args ... args) {
+auto make_slice(const Range<offset_value,length_value>& arg, Args ... args) {
   auto head = arg;
-  auto tail = make_view(args...);
-  return View<decltype(head),decltype(tail)>(head, tail);
+  auto tail = make_slice(args...);
+  return Slice<decltype(head),decltype(tail)>(head, tail);
 }
 
 /**
- * Make a view, multiple arguments.
+ * Make a slice, multiple arguments.
  *
  * @ingroup libbirch
  */
 template<class ... Args>
-auto make_view(const int64_t arg, Args ... args) {
+auto make_slice(const int64_t arg, Args ... args) {
   auto head = Index<mutable_value>(arg);
-  auto tail = make_view(args...);
-  return View<decltype(head),decltype(tail)>(head, tail);
+  auto tail = make_slice(args...);
+  return Slice<decltype(head),decltype(tail)>(head, tail);
 }
 
 /**

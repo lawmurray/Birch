@@ -63,7 +63,7 @@ struct Index: public Offset<offset_value>, public Length<1> {
   }
 
   /**
-   * Used to count the number of ranges in a view.
+   * Used to count the number of ranges in a slice.
    */
   static constexpr int rangeCount() {
     return 0;
