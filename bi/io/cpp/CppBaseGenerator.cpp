@@ -75,7 +75,7 @@ void bi::CppBaseGenerator::visit(const Sequence* o) {
       if (!o->type->isValue()) {
         middle("context_, ");
       }
-      middle("libbirch::make_frame(");
+      middle("libbirch::make_shape(");
       auto seq = o;
       do {
         if (seq != o) {

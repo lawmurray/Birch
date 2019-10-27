@@ -351,7 +351,7 @@ void bi::CppFiberGenerator::visit(const LocalVariable* o) {
         middle("local->" << name << " = " << o->value);
       } else if (!o->brackets->isEmpty()) {
         middle("local->" << name << ".assign(");
-        middle(o->type << "(libbirch::make_frame(" << o->brackets << "))");
+        middle(o->type << "(libbirch::make_shape(" << o->brackets << "))");
         middle(')');
       }
     } else {

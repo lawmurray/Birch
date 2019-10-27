@@ -189,7 +189,7 @@ void bi::CppBaseGenerator::genInit(const T* o) {
           if (!o->isValue()) {
             middle("context_, ");
           }
-          middle("libbirch::make_frame(" << o->brackets << ')');
+          middle("libbirch::make_shape(" << o->brackets << ')');
           middle(", " << o->value << ')');
         }
       } else {
@@ -197,7 +197,7 @@ void bi::CppBaseGenerator::genInit(const T* o) {
         if (!o->isValue()) {
           middle("context_, ");
         }
-        middle("libbirch::make_frame(" << o->brackets << ')');
+        middle("libbirch::make_shape(" << o->brackets << ')');
         if (!o->args->isEmpty()) {
           middle(", " << o->args);
         }
