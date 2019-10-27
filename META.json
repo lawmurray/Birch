@@ -29,8 +29,7 @@
       "LICENSE",
       "META.json",
       "README.md",
-      "run.sh",
-      "time.sh"
+      "run.sh"
     ]
   }
 }
