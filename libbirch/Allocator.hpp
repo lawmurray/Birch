@@ -7,8 +7,8 @@
 
 namespace libbirch {
 /**
- * STL-compatible allocator that wraps procedural implementation of pooled
- * allocator.
+ * STL-compatible allocator that wraps procedural implementation of the
+ * pooled allocator.
  *
  * @ingroup libbirch
  *

@@ -3,7 +3,7 @@
  */
 #pragma once
 
-#include "libbirch/Span.hpp"
+#include "libbirch/Dimension.hpp"
 #include "libbirch/Index.hpp"
 #include "libbirch/Range.hpp"
 #include "libbirch/Slice.hpp"
@@ -92,11 +92,11 @@ struct EmptyShape {
  *
  * @ingroup libbirch
  *
- * @tparam Head Span type.
+ * @tparam Head Dimension type.
  * @tparam Tail Shape type.
  *
  * A shape describes the `D` dimensions of an array. It consists of a
- * @em head span describing the first dimension, and a tail @em tail shape
+ * @em head dimension describing the first dimension, and a tail @em tail shape
  * describing the remaining `D - 1` dimensions, recursively. The tail shape
  * is EmptyShape for the last dimension.
  */
@@ -185,7 +185,7 @@ struct Shape {
   }
 
   /**
-   * Does this shape conform to another? Two shapes conform if their spans
+   * Does this shape conform to another? Two shapes conform if their dimensions
    * conform.
    */
   bool conforms(const EmptyShape& o) const {
@@ -306,7 +306,7 @@ struct Shape {
  */
 template<int D>
 struct DefaultShape {
-  typedef Shape<Span<>,typename DefaultShape<D - 1>::type> type;
+  typedef Shape<Dimension<>,typename DefaultShape<D - 1>::type> type;
 };
 template<>
 struct DefaultShape<0> {

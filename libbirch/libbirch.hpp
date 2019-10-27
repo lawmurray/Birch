@@ -15,7 +15,7 @@
 #include "libbirch/type.hpp"
 #include "libbirch/thread.hpp"
 
-#include "libbirch/Span.hpp"
+#include "libbirch/Dimension.hpp"
 #include "libbirch/Index.hpp"
 #include "libbirch/Range.hpp"
 #include "libbirch/Shape.hpp"
@@ -84,10 +84,10 @@ inline EmptyShape make_shape() {
  *
  * @ingroup libbirch
  */
-inline Shape<Span<>,EmptyShape> make_shape(const int64_t arg) {
+inline Shape<Dimension<>,EmptyShape> make_shape(const int64_t arg) {
   auto tail = EmptyShape();
-  auto head = Span<>(arg, tail.volume());
-  return Shape<Span<>,EmptyShape>(head, tail);
+  auto head = Dimension<>(arg, tail.volume());
+  return Shape<Dimension<>,EmptyShape>(head, tail);
 }
 
 /**
@@ -98,7 +98,7 @@ inline Shape<Span<>,EmptyShape> make_shape(const int64_t arg) {
 template<class ... Args>
 auto make_shape(const int64_t arg, Args ... args) {
   auto tail = make_shape(args...);
-  auto head = Span<>(arg, tail.volume());
+  auto head = Dimension<>(arg, tail.volume());
   return Shape<decltype(head),decltype(tail)>(head, tail);
 }
 
@@ -109,7 +109,7 @@ auto make_shape(const int64_t arg, Args ... args) {
  */
 template<class ... Args>
 auto make_shape(const int64_t arg, const Shape<Args...>& tail) {
-  auto head = Span<>(arg, tail.volume());
+  auto head = Dimension<>(arg, tail.volume());
   return Shape<decltype(head),decltype(tail)>(head, tail);
 }
 

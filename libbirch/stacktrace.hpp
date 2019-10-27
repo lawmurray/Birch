@@ -29,7 +29,7 @@
 #endif
 
 namespace libbirch {
-/**
+/*
  * Temporary type for pushing functions onto the stack trace.
  */
 struct StackFunction {

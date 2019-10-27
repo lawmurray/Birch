@@ -8,14 +8,14 @@
 
 namespace libbirch {
 /**
- * Range.
+ * Range, used within a slice to indicate a range of elements of a dimension.
  *
  * @ingroup libbirch
  *
  * A Range describes the active elements along one dimension of an array. It
  * combines an Offset and Length. Each of these may have either a
- * static value (indicated by a template parameter giving that value) or a
- * dynamic value (indicated by a template parameter of mutable_value and
+ * static value (indicated by a template argument giving that value) or a
+ * dynamic value (indicated by a template argument of mutable_value and
  * initial value given in the constructor).
  */
 template<int64_t offset_value = 0, int64_t length_value = mutable_value>
