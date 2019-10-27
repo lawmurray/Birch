@@ -228,8 +228,8 @@ public:
    */
   template<IS_VALUE(T)>
   Optional& assign(const Optional<T>& o) {
-    this->value = o.value;
-    this->hasValue = o.hasValue;
+    value = o.value;
+    hasValue = o.hasValue;
     return *this;
   }
 
@@ -238,8 +238,8 @@ public:
    */
   template<IS_NOT_VALUE(T)>
   Optional& assign(Label* context, const Optional<T>& o) {
-    this->value.assign(context, o.value);
-    this->hasValue = o.hasValue;
+    value.assign(context, o.value);
+    hasValue = o.hasValue;
     return *this;
   }
 
@@ -248,8 +248,8 @@ public:
    */
   template<IS_VALUE(T)>
   Optional& assign(Optional<T>&& o) {
-    this->value = std::move(o.value);
-    this->hasValue = o.hasValue;
+    value = std::move(o.value);
+    hasValue = o.hasValue;
     return *this;
   }
 
@@ -258,8 +258,8 @@ public:
    */
   template<IS_NOT_VALUE(T)>
   Optional& assign(Label* context, Optional<T>&& o) {
-    this->value.assign(context, std::move(o.value));
-    this->hasValue = o.hasValue;
+    value.assign(context, std::move(o.value));
+    hasValue = o.hasValue;
     return *this;
   }
 

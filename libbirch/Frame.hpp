@@ -36,6 +36,10 @@ struct EmptyFrame {
     return EmptyFrame();
   }
 
+  EmptyFrame compact() const {
+    return EmptyFrame();
+  }
+
   bool conforms(const EmptyFrame& o) const {
     return true;
   }
@@ -203,7 +207,9 @@ struct NonemptyFrame {
     /* pre-conditions */
     libbirch_assert_msg_(
         o.head.offset >= 0 && o.head.offset + o.head.length <= head.length,
-        "range is " << (o.head.offset + 1) << ".." << (o.head.offset + o.head.length) << " for dimension of length " << head.length);
+        "range is " << (o.head.offset + 1) << ".."
+            << (o.head.offset + o.head.length) << " for dimension of length "
+            << head.length);
 
     return NonemptyFrame<decltype(head(o.head)),decltype(tail(o.tail))>(
         head(o.head), tail(o.tail));
@@ -216,9 +222,20 @@ struct NonemptyFrame {
   auto operator()(const NonemptyView<Index<offset_value1>,Tail1>& o) const {
     /* pre-condition */
     libbirch_assert_msg_(o.head.offset >= 0 && o.head.offset < head.length,
-        "index is " << (o.head.offset + 1) << " for dimension of length " << head.length);
+        "index is " << (o.head.offset + 1) << " for dimension of length "
+            << head.length);
 
     return tail(o.tail);
+  }
+
+  /**
+   * Compact the frame to produce a new frame of the same size, but with
+   * contiguous storage.
+   */
+  NonemptyFrame<Head,Tail> compact() const {
+    auto tail = this->tail.compact();
+    auto head = Head(this->head.length, tail.size());
+    return NonemptyFrame<Head,Tail>(head, tail);
   }
 
   /**
@@ -355,7 +372,8 @@ struct NonemptyFrame {
   template<class View>
   int64_t serial(const View& o) const {
     libbirch_assert_msg_(o.head.offset >= 0 && o.head.offset < head.length,
-        "index is " << (o.head.offset + 1) << " for dimension of length " << head.length);
+        "index is " << (o.head.offset + 1) << " for dimension of length "
+            << head.length);
     return o.head.offset * head.stride + tail.serial(o.tail);
   }
 

@@ -14,7 +14,6 @@
 #include "libbirch/ExclusiveLock.hpp"
 
 namespace libbirch {
-
 /**
  * Array.
  *
@@ -146,7 +145,7 @@ class Array {
    */
   template<class U, class G>
   Array(const Array<U,G>& o) :
-      frame(o.frame),
+      frame(o.frame.compact()),
       buffer(nullptr),
       offset(0),
       isView(false) {
@@ -159,7 +158,7 @@ class Array {
    */
   template<IS_NOT_VALUE(T), class U, class G>
   Array(Label* context, const Array<U,G>& o) :
-      frame(o.frame),
+      frame(o.frame.compact()),
       buffer(nullptr),
       offset(0),
       isView(false) {
@@ -184,7 +183,7 @@ class Array {
    */
   template<IS_NOT_VALUE(T)>
   Array(Label* context, Label* label, const Array<T,F>& o) :
-      frame(o.frame),
+      frame(o.frame.compact()),
       buffer(nullptr),
       offset(0),
       isView(false) {
@@ -226,17 +225,12 @@ class Array {
       copy(o);
     } else {
       lock();
-      release();
-      frame = o.frame;
       if (o.isView) {
-        allocate();
-        copy(o);
+        Array<T,F> tmp(o.frame, o);
+        swap(tmp);
       } else {
-        buffer = o.buffer;
-        offset = o.offset;
-        if (buffer) {
-          buffer->incUsage();
-        }
+        Array<T,F> tmp(o);
+        swap(tmp);
       }
       unlock();
     }
@@ -254,17 +248,12 @@ class Array {
       copy(context, o);
     } else {
       lock();
-      release();
-      frame = o.frame;
       if (o.isView) {
-        allocate();
-        copy(context, o);
+        Array<T,F> tmp(o.frame, o);
+        swap(tmp);
       } else {
-        buffer = o.buffer;
-        offset = o.offset;
-        if (buffer) {
-          buffer->incUsage();
-        }
+        Array<T,F> tmp(o);
+        swap(tmp);
       }
       unlock();
     }
@@ -281,16 +270,11 @@ class Array {
       copy(context, o);
     } else {
       lock();
-      release();
-      frame = o.frame;
       if (o.isView) {
-        allocate();
-        copy(context, o);
+        Array<T,F> tmp(o.frame, o);
+        swap(tmp);
       } else {
-        buffer = o.buffer;
-        offset = o.offset;
-        o.buffer = nullptr;
-        o.offset = 0;
+        swap(o);
       }
       unlock();
     }
@@ -307,16 +291,11 @@ class Array {
       copy(o);
     } else {
       lock();
-      release();
-      frame = o.frame;
       if (o.isView) {
-        allocate();
-        copy(o);
+        Array<T,F> tmp(o.frame, o);
+        swap(tmp);
       } else {
-        buffer = o.buffer;
-        offset = o.offset;
-        o.buffer = nullptr;
-        o.offset = 0;
+        swap(o);
       }
       unlock();
     }
@@ -335,6 +314,10 @@ class Array {
   /**
    * Raw pointer to underlying buffer.
    */
+  T* buf() {
+    duplicate();
+    return buffer->buf() + offset;
+  }
   T* buf() const {
     return buffer->buf() + offset;
   }
@@ -401,7 +384,7 @@ class Array {
    *     auto last = first + size();
    */
   Iterator<T,F> begin() {
-    return Iterator<T,F>(duplicate()->buf() + offset, frame);
+    return Iterator<T,F>(buf(), frame);
   }
   Iterator<T,F> begin() const {
     return Iterator<T,F>(buf(), frame);
@@ -423,8 +406,9 @@ class Array {
    */
   template<class View1, std::enable_if_t<View1::rangeCount() != 0,int> = 0>
   auto operator()(const View1& view) {
+    duplicate();
     return Array<T,decltype(frame(view))>(frame(view),
-        duplicate(), offset + frame.serial(view));
+        buffer, offset + frame.serial(view));
   }
   template<class View1, std::enable_if_t<View1::rangeCount() != 0,int> = 0>
   auto operator()(const View1& view) const {
@@ -433,7 +417,7 @@ class Array {
   }
   template<class View1, std::enable_if_t<View1::rangeCount() == 0,int> = 0>
   auto& operator()(const View1& view) {
-    return *(duplicate()->buf() + offset + frame.serial(view));
+    return *(buf() + frame.serial(view));
   }
   template<class View1, std::enable_if_t<View1::rangeCount() == 0,int> = 0>
   const auto& operator()(const View1& view) const {
@@ -460,18 +444,14 @@ class Array {
 
     lock();
     if (isShared()) {
-      Array<T,F> o1(std::move(*this));
-      release();
-      this->frame = frame;
-      allocate();
-      uninitialized_copy(o1);
+      Array<T,F> tmp(frame, *this);
+      swap(tmp);
     } else {
-      auto oldSize = Buffer<T>::size(volume());
-      auto newSize = Buffer<T>::size(frame.volume());
-      this->frame = frame;
-      if (size() == 0) {
+      if (frame.volume() == 0) {
         release();
       } else {
+        auto oldSize = Buffer<T>::size(volume());
+        auto newSize = Buffer<T>::size(frame.volume());
         auto iter = as_const().begin();
         auto last = iter + size();
         for (iter += frame.size(); iter != last; ++iter) {
@@ -480,6 +460,7 @@ class Array {
         buffer = (Buffer<T>*)libbirch::reallocate(buffer,
             oldSize, buffer->tid, newSize);
       }
+      this->frame = frame;
     }
     unlock();
   }
@@ -502,17 +483,14 @@ class Array {
     lock();
     auto n = size();
     if (isShared() || !buffer) {
-      Array<T,F> o1(std::move(*this));
-      release();
-      this->frame = frame;
-      allocate();
-      uninitialized_copy(o1);
+      Array<T,F> tmp(frame, *this);
+      swap(tmp);
     } else {
       auto oldSize = Buffer<T>::size(volume());
       auto newSize = Buffer<T>::size(frame.volume());
-      this->frame = frame;
       buffer = (Buffer<T>*)libbirch::reallocate(buffer, oldSize,
           buffer->tid, newSize);
+      this->frame = frame;
     }
     auto iter = as_const().begin();
     std::uninitialized_fill(iter + n, iter + size(), x);
@@ -531,8 +509,8 @@ class Array {
 
   template<IS_VALUE(T)>
   auto toEigen() {
-    return eigen_type(duplicate()->buf() + offset, rows(),
-        cols(), eigen_stride_type(rowStride(), colStride()));
+    return eigen_type(buf(), rows(), cols(),
+        eigen_stride_type(rowStride(), colStride()));
   }
   template<IS_VALUE(T)>
   auto toEigen() const {
@@ -624,6 +602,19 @@ class Array {
 
 private:
   /**
+   * Constructor for forced copy.
+   */
+  template<class U, class G>
+  Array(const F& frame, const Array<U,G>& o) :
+      frame(frame.compact()),
+      buffer(nullptr),
+      offset(0),
+      isView(false) {
+    allocate();
+    uninitialized_copy(o);
+  }
+
+  /**
    * Constructor for views.
    */
   Array(const F& frame, Buffer<T>* buffer, int64_t offset) :
@@ -639,6 +630,15 @@ private:
    */
   bool isShared() const {
     return buffer && buffer->numUsage() > 1u;
+  }
+
+  /**
+   * Swap with another array.
+   */
+  void swap(Array<T,F>& o) {
+    std::swap(buffer, o.buffer);
+    std::swap(frame, o.frame);
+    std::swap(offset, o.offset);
   }
 
   /**
@@ -659,19 +659,15 @@ private:
   /**
    * Duplicate underlying buffer by copy.
    */
-  Buffer<T>* duplicate() {
+  void duplicate() {
     if (!isView) {
       lock();
       if (isShared()) {
-        Array<T,F> o1(std::move(*this));
-        release();
-        allocate();
-        uninitialized_copy(o1);
+        Array<T,F> tmp(frame, *this);
+        swap(tmp);
       }
-      assert(!isShared());
       unlock();
     }
-    return buffer;
   }
 
   /**
