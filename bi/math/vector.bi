@@ -328,3 +328,72 @@ function exclusive_scan_sum(x:Boolean[_]) -> Boolean[_] {
   return exclusive_scan<Boolean>(x, false, @(x:Boolean, y:Boolean) -> Boolean {
       return x + y; });
 }
+
+/**
+ * Convert vector to String.
+ */
+function String(x:Real[_]) -> String {
+  result:String;
+  cpp{{
+  std::stringstream buf;
+  }}
+  for auto i in 1..length(x) {
+    auto value <- String(x[i]);
+    cpp{{
+    if (i > 1) {
+      buf << ' ';
+    }
+    buf << value;
+    }}
+  }
+  cpp{{
+  result = buf.str();
+  }}
+  return result;
+}
+
+/**
+ * Convert vector to String.
+ */
+function String(x:Integer[_]) -> String {
+  result:String;
+  cpp{{
+  std::stringstream buf;
+  }}
+  for auto i in 1..length(x) {
+    auto value <- String(x[i]);
+    cpp{{
+    if (i > 1) {
+      buf << ' ';
+    }
+    buf << value;
+    }}
+  }
+  cpp{{
+  result = buf.str();
+  }}
+  return result;
+}
+
+/**
+ * Convert vector to String.
+ */
+function String(x:Boolean[_]) -> String {
+  result:String;
+  cpp{{
+  std::stringstream buf;
+  }}
+  for auto i in 1..length(x) {
+    auto value <- String(x[i]);
+    cpp{{
+    if (i > 1) {
+      buf << ' ';
+    }
+    buf << value;
+    }}
+  }
+  cpp{{
+  result = buf.str();
+  }}
+  return result;
+}

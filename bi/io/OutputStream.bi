@@ -49,11 +49,7 @@ class OutputStream {
    * Print value.
    */
   function print(value:Boolean) {
-    if (value) {
-      print("true");
-    } else {
-      print("false");
-    }
+    print(String(value));
   }
 
   /**
@@ -73,82 +69,43 @@ class OutputStream {
   /**
    * Print vector.
    */
-  function print(x:Boolean[_]) {
-    for (i:Integer in 1..length(x)) {
-      if (i != 1) {
-        print(" ");
-      }
-      print(x[i]);
-    }
+  function print(value:Boolean[_]) {
+    print(String(value));
   }
 
   /**
    * Print vector.
    */
-  function print(x:Integer[_]) {
-    for (i:Integer in 1..length(x)) {
-      if (i != 1) {
-        print(" ");
-      }
-      print(x[i]);
-    }
+  function print(value:Integer[_]) {
+    print(String(value));
   }
 
   /**
    * Print vector.
    */
-  function print(x:Real[_]) {
-    for (i:Integer in 1..length(x)) {
-      if (i != 1) {
-        print(" ");
-      }
-      print(x[i]);
-    }
+  function print(value:Real[_]) {
+    print(String(value));
   }
 
   /**
    * Print matrix.
    */
-  function print(X:Boolean[_,_]) {
-    for (i:Integer in 1..rows(X)) {
-      for (j:Integer in 1..columns(X)) {
-        if (j != 1) {
-          print(" ");
-        }
-        print(X[i,j]);
-      }
-      print("\n");
-    }
+  function print(value:Boolean[_,_]) {
+    print(String(value));
   }
 
   /**
    * Print matrix.
    */
-  function print(X:Integer[_,_]) {
-    for (i:Integer in 1..rows(X)) {
-      for (j:Integer in 1..columns(X)) {
-        if (j != 1) {
-          print(" ");
-        }
-        print(X[i,j]);
-      }
-      print("\n");
-    }
+  function print(value:Integer[_,_]) {
+    print(String(value));
   }
 
   /**
    * Print matrix.
    */
-  function print(X:Real[_,_]) {
-    for (i:Integer in 1..rows(X)) {
-      for (j:Integer in 1..columns(X)) {
-        if (j != 1) {
-          print(" ");
-        }
-        print(X[i,j]);
-      }
-      print("\n");
-    }
+  function print(value:Real[_,_]) {
+    print(String(value));
   }
 }
 

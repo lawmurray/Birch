@@ -7,7 +7,7 @@ type String;
  * Convert to string.
  */
 function String(x:Boolean) -> String {
-  if (x) {
+  if x {
     return "true";
   } else {
     return "false";
@@ -269,28 +269,56 @@ operator (x:String + y:Boolean) -> String {
 /**
  * String concatenation.
  */
-operator (x:String + y:Real64) -> String {
+operator (x:String + y:Real) -> String {
   return x + String(y);
 }
 
 /**
  * String concatenation.
  */
-operator (x:String + y:Real32) -> String {
+operator (x:String + y:Integer) -> String {
   return x + String(y);
 }
 
 /**
  * String concatenation.
  */
-operator (x:String + y:Integer64) -> String {
+operator (x:String + y:Boolean[_]) -> String {
   return x + String(y);
 }
 
 /**
  * String concatenation.
  */
-operator (x:String + y:Integer32) -> String {
+operator (x:String + y:Real[_]) -> String {
+  return x + String(y);
+}
+
+/**
+ * String concatenation.
+ */
+operator (x:String + y:Integer[_]) -> String {
+  return x + String(y);
+}
+
+/**
+ * String concatenation.
+ */
+operator (x:String + y:Boolean[_,_]) -> String {
+  return x + String(y);
+}
+
+/**
+ * String concatenation.
+ */
+operator (x:String + y:Real[_,_]) -> String {
+  return x + String(y);
+}
+
+/**
+ * String concatenation.
+ */
+operator (x:String + y:Integer[_,_]) -> String {
   return x + String(y);
 }
 
@@ -304,28 +332,56 @@ operator (x:Boolean + y:String) -> String {
 /**
  * String concatenation.
  */
-operator (x:Real64 + y:String) -> String {
+operator (x:Real + y:String) -> String {
   return String(x) + y;
 }
 
 /**
  * String concatenation.
  */
-operator (x:Real32 + y:String) -> String {
+operator (x:Integer + y:String) -> String {
   return String(x) + y;
 }
 
 /**
  * String concatenation.
  */
-operator (x:Integer64 + y:String) -> String {
+operator (x:Boolean[_] + y:String) -> String {
   return String(x) + y;
 }
 
 /**
  * String concatenation.
  */
-operator (x:Integer32 + y:String) -> String {
+operator (x:Real[_] + y:String) -> String {
+  return String(x) + y;
+}
+
+/**
+ * String concatenation.
+ */
+operator (x:Integer[_] + y:String) -> String {
+  return String(x) + y;
+}
+
+/**
+ * String concatenation.
+ */
+operator (x:Boolean[_,_] + y:String) -> String {
+  return String(x) + y;
+}
+
+/**
+ * String concatenation.
+ */
+operator (x:Real[_,_] + y:String) -> String {
+  return String(x) + y;
+}
+
+/**
+ * String concatenation.
+ */
+operator (x:Integer[_,_] + y:String) -> String {
   return String(x) + y;
 }
 

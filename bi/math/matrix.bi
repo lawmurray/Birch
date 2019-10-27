@@ -252,3 +252,93 @@ function column(x:Boolean[_]) -> Boolean[_,_] {
   y[1..rows(y),1] <- x;
   return y;
 }
+
+/**
+ * Convert matrix to String.
+ */
+function String(X:Real[_,_]) -> String {
+  result:String;
+  cpp{{
+  std::stringstream buf;
+  }}
+  for auto i in 1..rows(X) {
+    cpp{{
+    if (i > 1) {
+      buf << '\n';
+    }
+    }}
+    for auto j in 1..columns(X) {
+      auto value <- String(X[i,j]);
+      cpp{{
+      if (j > 1) {
+        buf << ' ';
+      }
+      buf << value;
+      }}
+    }
+  }
+  cpp{{
+  result = buf.str();
+  }}
+  return result;
+}
+
+/**
+ * Convert matrix to String.
+ */
+function String(X:Integer[_,_]) -> String {
+  result:String;
+  cpp{{
+  std::stringstream buf;
+  }}
+  for auto i in 1..rows(X) {
+    cpp{{
+    if (i > 1) {
+      buf << '\n';
+    }
+    }}
+    for auto j in 1..columns(X) {
+      auto value <- String(X[i,j]);
+      cpp{{
+      if (j > 1) {
+        buf << ' ';
+      }
+      buf << value;
+      }}
+    }
+  }
+  cpp{{
+  result = buf.str();
+  }}
+  return result;
+}
+
+/**
+ * Convert matrix to String.
+ */
+function String(X:Boolean[_,_]) -> String {
+  result:String;
+  cpp{{
+  std::stringstream buf;
+  }}
+  for auto i in 1..rows(X) {
+    cpp{{
+    if (i > 1) {
+      buf << '\n';
+    }
+    }}
+    for auto j in 1..columns(X) {
+      auto value <- String(X[i,j]);
+      cpp{{
+      if (j > 1) {
+        buf << ' ';
+      }
+      buf << value;
+      }}
+    }
+  }
+  cpp{{
+  result = buf.str();
+  }}
+  return result;
+}
