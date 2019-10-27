@@ -398,29 +398,29 @@ class Array {
   /**
    * View operator.
    *
-   * @tparam View1 View type.
+   * @tparam V View type.
    *
    * @param o View.
    *
    * @return The new array.
    */
-  template<class View1, std::enable_if_t<View1::rangeCount() != 0,int> = 0>
-  auto operator()(const View1& view) {
+  template<class V, std::enable_if_t<V::rangeCount() != 0,int> = 0>
+  auto operator()(const V& view) {
     duplicate();
     return Array<T,decltype(frame(view))>(frame(view),
         buffer, offset + frame.serial(view));
   }
-  template<class View1, std::enable_if_t<View1::rangeCount() != 0,int> = 0>
-  auto operator()(const View1& view) const {
+  template<class V, std::enable_if_t<V::rangeCount() != 0,int> = 0>
+  auto operator()(const V& view) const {
     return Array<T,decltype(frame(view))>(frame(view),
         buffer, offset + frame.serial(view));
   }
-  template<class View1, std::enable_if_t<View1::rangeCount() == 0,int> = 0>
-  auto& operator()(const View1& view) {
+  template<class V, std::enable_if_t<V::rangeCount() == 0,int> = 0>
+  auto& operator()(const V& view) {
     return *(buf() + frame.serial(view));
   }
-  template<class View1, std::enable_if_t<View1::rangeCount() == 0,int> = 0>
-  const auto& operator()(const View1& view) const {
+  template<class V, std::enable_if_t<V::rangeCount() == 0,int> = 0>
+  const auto& operator()(const V& view) const {
     return *(buf() + frame.serial(view));
   }
   ///@}

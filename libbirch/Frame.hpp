@@ -15,12 +15,10 @@ namespace libbirch {
  *
  * @ingroup libbirch
  *
- * @see NonemptyFrame
+ * @see Frame
  */
 struct EmptyFrame {
-  EmptyFrame() {
-    //
-  }
+  EmptyFrame() = default;
 
   /**
    * Special constructor for Eigen integration where all matrices and vectors
@@ -44,8 +42,8 @@ struct EmptyFrame {
     return true;
   }
 
-  template<class Frame1>
-  bool conforms(const Frame1& o) const {
+  template<class G>
+  bool conforms(const G& o) const {
     return false;
   }
 
@@ -71,16 +69,6 @@ struct EmptyFrame {
     return 0;
   }
 
-  template<class T1>
-  void lengths(T1* out) const {
-    //
-  }
-
-  template<class T1>
-  void strides(T1* out) const {
-    //
-  }
-
   static constexpr int count() {
     return 0;
   }
@@ -93,51 +81,19 @@ struct EmptyFrame {
     return 1;
   }
 
-  static constexpr int64_t block() {
-    return 1;
-  }
-
-  template<class View>
-  int64_t serial(const View& o) const {
+  template<class V>
+  int64_t serial(const V& o) const {
     return 0;
-  }
-
-  bool contiguous() const {
-    return true;
-  }
-
-  bool operator==(const EmptyFrame& o) const {
-    return true;
-  }
-
-  template<class Frame1>
-  bool operator==(const Frame1& o) const {
-    return false;
-  }
-
-  template<class Frame1>
-  bool operator!=(const Frame1& o) const {
-    return !operator==(o);
-  }
-
-  EmptyFrame& operator*=(const int64_t n) {
-    return *this;
-  }
-
-  EmptyFrame operator*(const int64_t n) const {
-    EmptyFrame result(*this);
-    result *= n;
-    return result;
   }
 };
 
 /**
- * Nonempty frame.
+ * Frame.
  *
  * @ingroup libbirch
  *
- * @tparam Tail Frame type.
  * @tparam Head Span type.
+ * @tparam Tail Frame type.
  *
  * A frame describes the `D` dimensions of an array. It consists of a
  * @em head span describing the first dimension, and a tail @em tail frame
@@ -145,21 +101,11 @@ struct EmptyFrame {
  * is EmptyFrame for the last dimension.
  */
 template<class Head, class Tail>
-struct NonemptyFrame {
-  /**
-   * Head type.
-   */
-  typedef Head head_type;
-
-  /**
-   * Tail type.
-   */
-  typedef Tail tail_type;
-
+struct Frame {
   /**
    * Default constructor (for zero-size frame).
    */
-  NonemptyFrame() {
+  Frame() {
     //
   }
 
@@ -167,7 +113,7 @@ struct NonemptyFrame {
    * Special constructor for Eigen integration where all matrices and vectors
    * are treated as matrices, with row and column counts.
    */
-  explicit NonemptyFrame(const Eigen::Index rows, const Eigen::Index cols = 1) :
+  explicit Frame(const Eigen::Index rows, const Eigen::Index cols = 1) :
       head(rows, cols),
       tail(cols) {
     //
@@ -177,7 +123,7 @@ struct NonemptyFrame {
    * Generic constructor.
    */
   template<class Head1, class Tail1>
-  explicit NonemptyFrame(const Head1 head, const Tail1 tail) :
+  explicit Frame(const Head1 head, const Tail1 tail) :
       head(head),
       tail(tail) {
     //
@@ -186,13 +132,13 @@ struct NonemptyFrame {
   /**
    * Copy constructor.
    */
-  NonemptyFrame(const NonemptyFrame<Head,Tail>& o) = default;
+  Frame(const Frame<Head,Tail>& o) = default;
 
   /**
    * Generic copy constructor.
    */
   template<class Head1, class Tail1>
-  NonemptyFrame(const NonemptyFrame<Head1,Tail1>& o) :
+  Frame(const Frame<Head1,Tail1>& o) :
       head(o.head),
       tail(o.tail) {
     //
@@ -203,7 +149,7 @@ struct NonemptyFrame {
    */
   template<int64_t offset_value1, int64_t length_value1, class Tail1>
   auto operator()(
-      const NonemptyView<Range<offset_value1,length_value1>,Tail1>& o) const {
+      const View<Range<offset_value1,length_value1>,Tail1>& o) const {
     /* pre-conditions */
     libbirch_assert_msg_(
         o.head.offset >= 0 && o.head.offset + o.head.length <= head.length,
@@ -211,7 +157,7 @@ struct NonemptyFrame {
             << (o.head.offset + o.head.length) << " for dimension of length "
             << head.length);
 
-    return NonemptyFrame<decltype(head(o.head)),decltype(tail(o.tail))>(
+    return Frame<decltype(head(o.head)),decltype(tail(o.tail))>(
         head(o.head), tail(o.tail));
   }
 
@@ -219,7 +165,7 @@ struct NonemptyFrame {
    * View operator.
    */
   template<int64_t offset_value1, class Tail1>
-  auto operator()(const NonemptyView<Index<offset_value1>,Tail1>& o) const {
+  auto operator()(const View<Index<offset_value1>,Tail1>& o) const {
     /* pre-condition */
     libbirch_assert_msg_(o.head.offset >= 0 && o.head.offset < head.length,
         "index is " << (o.head.offset + 1) << " for dimension of length "
@@ -232,10 +178,10 @@ struct NonemptyFrame {
    * Compact the frame to produce a new frame of the same size, but with
    * contiguous storage.
    */
-  NonemptyFrame<Head,Tail> compact() const {
+  Frame<Head,Tail> compact() const {
     auto tail = this->tail.compact();
     auto head = Head(this->head.length, tail.size());
-    return NonemptyFrame<Head,Tail>(head, tail);
+    return Frame<Head,Tail>(head, tail);
   }
 
   /**
@@ -245,8 +191,8 @@ struct NonemptyFrame {
   bool conforms(const EmptyFrame& o) const {
     return false;
   }
-  template<class Frame1>
-  bool conforms(const Frame1& o) const {
+  template<class G>
+  bool conforms(const G& o) const {
     return head.conforms(o.head) && tail.conforms(o.tail);
   }
   bool conforms(const Eigen::Index rows, const Eigen::Index cols) {
@@ -305,32 +251,6 @@ struct NonemptyFrame {
       return tail.stride(i - 1);
     }
   }
-
-  /**
-   * Get lengths.
-   *
-   * @tparam T1 Integer type.
-   *
-   * @param[out] out Array assumed to have at least count() elements.
-   */
-  template<class T1>
-  void lengths(T1* out) const {
-    *out = head.length;
-    tail.lengths(out + 1);
-  }
-
-  /**
-   * Get strides.
-   *
-   * @tparam T1 Integer type.
-   *
-   * @param[out] out Array assumed to have at least count() elements.
-   */
-  template<class T1>
-  void strides(T1* out) const {
-    *out = head.stride;
-    tail.strides(out + 1);
-  }
   //@}
 
   /**
@@ -359,54 +279,16 @@ struct NonemptyFrame {
   }
 
   /**
-   * Size of contiguous blocks.
-   */
-  int64_t block() const {
-    int64_t block = tail.block();
-    return head.stride == block ? head.length * head.stride : block;
-  }
-
-  /**
    * Serial offset for a view.
    */
-  template<class View>
-  int64_t serial(const View& o) const {
+  template<class V>
+  int64_t serial(const V& o) const {
     libbirch_assert_msg_(o.head.offset >= 0 && o.head.offset < head.length,
         "index is " << (o.head.offset + 1) << " for dimension of length "
             << head.length);
     return o.head.offset * head.stride + tail.serial(o.tail);
   }
-
-  /**
-   * Are all elements stored contiguously in memory?
-   */
-  bool contiguous() const {
-    return volume() == size();
-  }
   //@}
-
-  /**
-   * Equality operator.
-   */
-  template<class Head1, class Tail1>
-  bool operator==(const NonemptyFrame<Head1,Tail1>& o) const {
-    return head == o.head && tail == o.tail;
-  }
-
-  /**
-   * Equality operator.
-   */
-  bool operator==(const EmptyFrame& o) const {
-    return false;
-  }
-
-  /**
-   * Unequality operator.
-   */
-  template<class Frame1>
-  bool operator!=(const Frame1& o) const {
-    return !(*this == o);
-  }
 
   /**
    * Head.
@@ -424,7 +306,7 @@ struct NonemptyFrame {
  */
 template<int D>
 struct DefaultFrame {
-  typedef NonemptyFrame<Span<>,typename DefaultFrame<D - 1>::type> type;
+  typedef Frame<Span<>,typename DefaultFrame<D - 1>::type> type;
 };
 template<>
 struct DefaultFrame<0> {

@@ -50,7 +50,7 @@ using DefaultArray = Array<T,typename DefaultFrame<D>::type>;
  */
 template<int D>
 struct DefaultView {
-  typedef NonemptyView<Index<>,typename DefaultView<D - 1>::type> type;
+  typedef View<Index<>,typename DefaultView<D - 1>::type> type;
 };
 template<>
 struct DefaultView<0> {
@@ -84,10 +84,10 @@ inline EmptyFrame make_frame() {
  *
  * @ingroup libbirch
  */
-inline NonemptyFrame<Span<>,EmptyFrame> make_frame(const int64_t arg) {
+inline Frame<Span<>,EmptyFrame> make_frame(const int64_t arg) {
   auto tail = EmptyFrame();
   auto head = Span<>(arg, tail.volume());
-  return NonemptyFrame<Span<>,EmptyFrame>(head, tail);
+  return Frame<Span<>,EmptyFrame>(head, tail);
 }
 
 /**
@@ -99,7 +99,7 @@ template<class ... Args>
 auto make_frame(const int64_t arg, Args ... args) {
   auto tail = make_frame(args...);
   auto head = Span<>(arg, tail.volume());
-  return NonemptyFrame<decltype(head),decltype(tail)>(head, tail);
+  return Frame<decltype(head),decltype(tail)>(head, tail);
 }
 
 /**
@@ -108,9 +108,9 @@ auto make_frame(const int64_t arg, Args ... args) {
  * @ingroup libbirch
  */
 template<class ... Args>
-auto make_frame(const int64_t arg, const NonemptyFrame<Args...>& tail) {
+auto make_frame(const int64_t arg, const Frame<Args...>& tail) {
   auto head = Span<>(arg, tail.volume());
-  return NonemptyFrame<decltype(head),decltype(tail)>(head, tail);
+  return Frame<decltype(head),decltype(tail)>(head, tail);
 }
 
 /**
@@ -131,7 +131,7 @@ template<int64_t offset_value, int64_t length_value>
 auto make_view(const Range<offset_value,length_value>& arg) {
   auto head = arg;
   auto tail = make_view();
-  return NonemptyView<decltype(head),decltype(tail)>(head, tail);
+  return View<decltype(head),decltype(tail)>(head, tail);
 }
 
 /**
@@ -139,10 +139,10 @@ auto make_view(const Range<offset_value,length_value>& arg) {
  *
  * @ingroup libbirch
  */
-inline NonemptyView<Index<>,EmptyView> make_view(const int64_t arg) {
+inline View<Index<>,EmptyView> make_view(const int64_t arg) {
   auto head = Index<>(arg);
   auto tail = EmptyView();
-  return NonemptyView<Index<>,EmptyView>(head, tail);
+  return View<Index<>,EmptyView>(head, tail);
 }
 
 /**
@@ -154,7 +154,7 @@ template<int64_t offset_value, int64_t length_value, class ... Args>
 auto make_view(const Range<offset_value,length_value>& arg, Args ... args) {
   auto head = arg;
   auto tail = make_view(args...);
-  return NonemptyView<decltype(head),decltype(tail)>(head, tail);
+  return View<decltype(head),decltype(tail)>(head, tail);
 }
 
 /**
@@ -166,7 +166,7 @@ template<class ... Args>
 auto make_view(const int64_t arg, Args ... args) {
   auto head = Index<mutable_value>(arg);
   auto tail = make_view(args...);
-  return NonemptyView<decltype(head),decltype(tail)>(head, tail);
+  return View<decltype(head),decltype(tail)>(head, tail);
 }
 
 /**
@@ -174,8 +174,8 @@ auto make_view(const int64_t arg, Args ... args) {
  *
  * @ingroup libbirch
  *
- * @tparam Type Value type.
- * @tparam Frame Frame type.
+ * @tparam T Value type.
+ * @tparam F Frame type.
  * @tparam Args Constructor parameter types.
  *
  * @param frame Frame.
@@ -183,9 +183,9 @@ auto make_view(const int64_t arg, Args ... args) {
  *
  * @return The array.
  */
-template<class Type, class Frame, class ... Args>
-Array<Type,Frame> make_array(const Frame& frame, const Args&... args) {
-  return Array<Type,Frame>(frame, args...);
+template<class T, class F, class ... Args>
+Array<T,F> make_array(const F& frame, const Args&... args) {
+  return Array<T,F>(frame, args...);
 }
 
 /**
@@ -193,8 +193,8 @@ Array<Type,Frame> make_array(const Frame& frame, const Args&... args) {
  *
  * @ingroup libbirch
  *
- * @tparam Type Value type.
- * @tparam Frame Frame type.
+ * @tparam T Value type.
+ * @tparam F Frame type.
  * @tparam Args Constructor parameter types.
  *
  * @param context Current context.
@@ -203,10 +203,10 @@ Array<Type,Frame> make_array(const Frame& frame, const Args&... args) {
  *
  * @return The array.
  */
-template<class Type, class Frame, class ... Args>
-Array<Type,Frame> make_array(Label* context, const Frame& frame,
+template<class T, class F, class ... Args>
+Array<T,F> make_array(Label* context, const F& frame,
     const Args&... args) {
-  return Array<Type,Frame>(context, frame, args...);
+  return Array<T,F>(context, frame, args...);
 }
 
 /**
@@ -214,8 +214,8 @@ Array<Type,Frame> make_array(Label* context, const Frame& frame,
  *
  * @ingroup libbirch
  *
- * @tparam Type Value type.
- * @tparam Frame Frame type.
+ * @tparam T Value type.
+ * @tparam F Frame type.
  * @tparam Value Initial value type.
  *
  * @param frame Frame.
@@ -223,10 +223,10 @@ Array<Type,Frame> make_array(Label* context, const Frame& frame,
  *
  * @return The array.
  */
-template<class Type, class Frame, class Value>
-Array<Type,Frame> make_array_and_assign(const Frame& frame,
+template<class T, class F, class Value>
+Array<T,F> make_array_and_assign(const F& frame,
     const Value& value) {
-  Array<Type,Frame> result;
+  Array<T,F> result;
   result.enlarge(frame, value);
   return result;
 }
@@ -236,7 +236,7 @@ Array<Type,Frame> make_array_and_assign(const Frame& frame,
  *
  * @ingroup libbirch
  *
- * @tparam Type Object type.
+ * @tparam T Object type.
  * @tparam Args Constructor parameter types.
  *
  * @param context Current context.
@@ -244,9 +244,9 @@ Array<Type,Frame> make_array_and_assign(const Frame& frame,
  *
  * @return A raw pointer to the new object.
  */
-template<class Type, class ... Args>
-Type* make_object(Label* context, const Args& ... args) {
-  return new Type(context, args...);
+template<class T, class ... Args>
+T* make_object(Label* context, const Args& ... args) {
+  return new T(context, args...);
 }
 
 /**
@@ -254,7 +254,7 @@ Type* make_object(Label* context, const Args& ... args) {
  *
  * @ingroup libbirch
  *
- * @tparam Type Object type.
+ * @tparam T Object type.
  *
  * @param context Current context.
  * @param o The object.
@@ -263,11 +263,11 @@ Type* make_object(Label* context, const Args& ... args) {
  *
  * @note Typically, one uses the clone_() virtual member function of an
  * object, which calls this function, rather than calling this function
- * directly, to ensure that Type is the most derived type of the object.
+ * directly, to ensure that T is the most derived type of the object.
  */
-template<class Type>
-Type* clone_object(Label* context, const Type* o) {
-  return make_object<Type>(context, context, *o);
+template<class T>
+T* clone_object(Label* context, const T* o) {
+  return make_object<T>(context, context, *o);
 }
 
 /**
@@ -291,17 +291,17 @@ P make_pointer(Label* context, const Args& ... args) {
 /**
  * Make a fiber.
  *
- * @tparam StateType The state type of the fiber.
+ * @tparam S The state type of the fiber.
  * @tparam Args Fiber state constructor parameter types.
  *
  * @param context Current context.
  * @param args Fiber state constructor arguments.
  */
-template<class StateType, class ... Args>
-Fiber<typename StateType::yield_type_> make_fiber(Label* context,
+template<class S, class ... Args>
+Fiber<typename S::yield_type_> make_fiber(Label* context,
     const Args&... args) {
-  return Fiber<typename StateType::yield_type_>(context,
-      Shared<StateType>(context, make_object<StateType>(context, args...)));
+  return Fiber<typename S::yield_type_>(context, Shared<S>(context,
+      make_object<S>(context, args...)));
 }
 
 /**
@@ -364,40 +364,39 @@ Tie<Head&,Tail&...> tie(Label* context, Head& head, Tail&... tail) {
 /**
  * Make a value.
  *
- * @tparam Type Value type.
+ * @tparam T Value type.
  *
  * @return An optional with a default-constructed value of the given type.
  */
-template<class Type, IS_VALUE(Type)>
-Optional<Type> make(Label* context) {
-  return Optional<Type>(Type());
+template<class T, IS_VALUE(T)>
+Optional<T> make(Label* context) {
+  return Optional<T>(T());
 }
 
 /**
  * Make an object.
  *
- * @tparam Type Pointer type.
+ * @tparam T Pointer type.
  *
  * @return An optional with a value of the given type if that type is
  * default-constructible, otherwise no value.
  */
-template<class Type, IS_POINTER(Type), IS_DEFAULT_CONSTRUCTIBLE(Type)>
-Optional<Type> make(Label* context) {
-  return Optional<Type>(make_pointer<Type>(context));
+template<class T, IS_POINTER(T), IS_DEFAULT_CONSTRUCTIBLE(T)>
+Optional<T> make(Label* context) {
+  return Optional<T>(make_pointer<T>(context));
 }
 
 /**
  * Make an object.
  *
- * @tparam Type Pointer type.
+ * @tparam T Pointer type.
  *
  * @return An optional with a value of the given type if that type is
  * default-constructible, otherwise no value.
  */
-template<class Type, IS_POINTER(Type), IS_NOT_DEFAULT_CONSTRUCTIBLE(Type)>
-Optional<Type> make(Label* context) {
-  assert(false);
-  return Optional<Type>();
+template<class T, IS_POINTER(T), IS_NOT_DEFAULT_CONSTRUCTIBLE(T)>
+Optional<T> make(Label* context) {
+  return Optional<T>();
 }
 
 /**

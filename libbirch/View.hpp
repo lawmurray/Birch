@@ -53,7 +53,7 @@ struct EmptyView {
 };
 
 /**
- * Nonempty view.
+ * View.
  *
  * @ingroup libbirch
  *
@@ -66,7 +66,7 @@ struct EmptyView {
  * view is EmptyView for the last dimension.
  */
 template<class Head, class Tail>
-struct NonemptyView {
+struct View {
   /**
    * Head type.
    */
@@ -80,7 +80,7 @@ struct NonemptyView {
   /**
    * Default constructor.
    */
-  NonemptyView() {
+  View() {
     //
   }
 
@@ -88,7 +88,7 @@ struct NonemptyView {
    * Generic constructor.
    */
   template<class Head1, class Tail1>
-  NonemptyView(const Head1 head, const Tail1 tail) :
+  View(const Head1 head, const Tail1 tail) :
       head(head),
       tail(tail) {
     //
@@ -97,13 +97,13 @@ struct NonemptyView {
   /**
    * Copy constructor.
    */
-  NonemptyView(const NonemptyView<Head,Tail>& o) = default;
+  View(const View<Head,Tail>& o) = default;
 
   /**
    * Generic copy constructor.
    */
   template<class Head1, class Tail1>
-  NonemptyView(const NonemptyView<Head1,Tail1>& o) :
+  View(const View<Head1,Tail1>& o) :
       head(o.head),
       tail(o.tail) {
     //
@@ -174,7 +174,7 @@ struct NonemptyView {
    * Equality operator.
    */
   template<class Head1, class Tail1>
-  bool operator==(const NonemptyView<Head1,Tail1>& o) const {
+  bool operator==(const View<Head1,Tail1>& o) const {
     return head == o.head && tail == o.tail;
   }
 

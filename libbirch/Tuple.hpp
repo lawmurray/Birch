@@ -11,7 +11,7 @@ namespace libbirch {
  * Tuple.
  *
  * @tparam Head First element type.
- * @tparam Tail Remaining element types.
+ * @tparam ...Tail Remaining element types.
  *
  * Tuples do not support lvalue reference types. If all types are lvalue
  * reference types, Tie may be used instead.
