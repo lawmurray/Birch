@@ -3,6 +3,7 @@
     "class": "Multi"
   },
   "sampler": {
-    "nparticles": 4096
+    "nparticles": 8192,
+    "verbose": true
   }
 }
