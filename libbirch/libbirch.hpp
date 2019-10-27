@@ -379,9 +379,9 @@ Optional<T> make(Label* context) {
  * @tparam T Pointer type.
  *
  * @return An optional with a value of the given type if that type is
- * default-constructible, otherwise no value.
+ * a default-constructible class type, otherwise no value.
  */
-template<class T, IS_POINTER(T), IS_DEFAULT_CONSTRUCTIBLE(T)>
+template<class T, IS_DEFAULT_CONSTRUCTIBLE(T)>
 Optional<T> make(Label* context) {
   return Optional<T>(make_pointer<T>(context));
 }
@@ -392,9 +392,9 @@ Optional<T> make(Label* context) {
  * @tparam T Pointer type.
  *
  * @return An optional with a value of the given type if that type is
- * default-constructible, otherwise no value.
+ * a default-constructible class type, otherwise no value.
  */
-template<class T, IS_POINTER(T), IS_NOT_DEFAULT_CONSTRUCTIBLE(T)>
+template<class T, IS_NOT_DEFAULT_CONSTRUCTIBLE(T)>
 Optional<T> make(Label* context) {
   return Optional<T>();
 }

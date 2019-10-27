@@ -320,14 +320,14 @@ private:
  * @tparam T Type type.
  */
 template<class T>
-class Optional<T,std::enable_if_t<is_pointer<T>::value>> {
+class Optional<T,IS_POINTER(T)> {
   template<class U, class Enable1> friend class Optional;
 
   static_assert(!std::is_lvalue_reference<T>::value,
       "Optional does not support lvalue reference types.");
 public:
   Optional& operator=(const Optional&) = delete;
-  Optional& operator=(Optional<T>&&) = delete;
+  Optional& operator=(Optional&&) = delete;
 
   /**
    * Constructor.
