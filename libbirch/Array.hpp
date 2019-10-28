@@ -32,8 +32,6 @@ class Array {
 
   /**
    * Constructor.
-   *
-   * @param shape Shape.
    */
   Array() :
       shape(),
@@ -428,6 +426,7 @@ class Array {
   /**
    * @name Resize
    */
+  ///@{
   /**
    * Shrink a one-dimensional array in-place.
    *
