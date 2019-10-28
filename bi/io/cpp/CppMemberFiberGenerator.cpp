@@ -37,7 +37,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     in();
     line("using class_type_ = " << stateName << ';');
     line("using super_type_ = libbirch::FiberState<" << yieldType << ">;\n");
-    start("libbirch::Shared<bi::type::" << type->name);
+    start("libbirch::LazySharedPtr<bi::type::" << type->name);
     genTemplateArgs(type);
     finish("> self;");
     for (auto param : params) {
@@ -56,7 +56,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     genTemplateArgs(type);
     middle("::" << stateName << "::");
   }
-  middle(stateName << "(libbirch::Label* context_, const libbirch::Shared<");
+  middle(stateName << "(libbirch::Label* context_, const libbirch::LazySharedPtr<");
   middle(type->name);
   genTemplateArgs(type);
   middle(">& self");
