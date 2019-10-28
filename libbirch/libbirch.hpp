@@ -15,6 +15,10 @@
 #include "libbirch/type.hpp"
 #include "libbirch/thread.hpp"
 
+#include "libbirch/SharedPtr.hpp"
+#include "libbirch/WeakPtr.hpp"
+#include "libbirch/InitPtr.hpp"
+#include "libbirch/Lazy.hpp"
 #include "libbirch/Dimension.hpp"
 #include "libbirch/Index.hpp"
 #include "libbirch/Range.hpp"
@@ -26,9 +30,6 @@
 #include "libbirch/Any.hpp"
 #include "libbirch/Optional.hpp"
 #include "libbirch/Nil.hpp"
-#include "libbirch/Init.hpp"
-#include "libbirch/Shared.hpp"
-#include "libbirch/Weak.hpp"
 #include "libbirch/FiberState.hpp"
 #include "libbirch/Fiber.hpp"
 #include "libbirch/Eigen.hpp"
@@ -56,6 +57,24 @@ template<>
 struct DefaultSlice<0> {
   typedef EmptySlice type;
 };
+
+/**
+ * Lazy shared pointer.
+ */
+template<class T>
+using LazySharedPtr = Lazy<SharedPtr<T>>;
+
+/**
+ * Lazy weak pointer.
+ */
+template<class T>
+using LazyWeakPtr = Lazy<WeakPtr<T>>;
+
+/**
+ * Lazy init pointer.
+ */
+template<class T>
+using LazyInitPtr = Lazy<InitPtr<T>>;
 
 /**
  * Make a range.
@@ -291,17 +310,17 @@ P make_pointer(Label* context, const Args& ... args) {
 /**
  * Make a fiber.
  *
- * @tparam S The state type of the fiber.
+ * @tparam T The state type of the fiber.
  * @tparam Args Fiber state constructor parameter types.
  *
  * @param context Current context.
  * @param args Fiber state constructor arguments.
  */
-template<class S, class ... Args>
-Fiber<typename S::yield_type_> make_fiber(Label* context,
+template<class T, class ... Args>
+Fiber<typename T::yield_type_> make_fiber(Label* context,
     const Args&... args) {
-  return Fiber<typename S::yield_type_>(context, Shared<S>(context,
-      make_object<S>(context, args...)));
+  return Fiber<typename T::yield_type_>(context, Lazy<SharedPtr<T>>(context,
+      make_object<T>(context, args...)));
 }
 
 /**
@@ -403,7 +422,7 @@ Optional<T> make(Label* context) {
  * Cast an object.
  */
 template<class To, class From>
-Optional<To> dynamic_pointer_cast(Label* context, const Shared<From>& from) {
+Optional<To> dynamic_pointer_cast(Label* context, const LazySharedPtr<From>& from) {
   return Optional<To>(context, from.template dynamic_pointer_cast<To>(context));
 }
 
@@ -411,7 +430,7 @@ Optional<To> dynamic_pointer_cast(Label* context, const Shared<From>& from) {
  * Cast an object optional.
  */
 template<class To, class From>
-Optional<To> dynamic_pointer_cast(Label* context, const Optional<Shared<From>>& from) {
+Optional<To> dynamic_pointer_cast(Label* context, const Optional<LazySharedPtr<From>>& from) {
   if (from.query()) {
     return Optional<To>(context, from.get().template dynamic_pointer_cast<To>(context));
   } else {

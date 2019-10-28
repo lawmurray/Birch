@@ -26,7 +26,7 @@ public:
   /**
    * Constructor.
    */
-  Fiber(Label* context, const Shared<FiberState<YieldType>>& state) :
+  Fiber(Label* context, const Lazy<SharedPtr<FiberState<YieldType>>>& state) :
       state(context, state) {
     //
   }
@@ -88,7 +88,7 @@ public:
   /**
    * Thaw the fiber.
    */
-  void thaw(LazyLabel* label) const {
+  void thaw(Label* label) const {
     state.thaw(label);
   }
 
@@ -130,7 +130,7 @@ private:
   /**
    * Fiber state.
    */
-  Shared<FiberState<YieldType>> state;
+  Lazy<SharedPtr<FiberState<YieldType>>> state;
 };
 
 template<class T>

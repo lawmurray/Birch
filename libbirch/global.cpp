@@ -9,6 +9,7 @@
 
 /* declared in memory.hpp */
 libbirch::Atomic<size_t> libbirch::memoryUse(0);
+
 #if ENABLE_MEMORY_POOL
 /**
  * Allocate a large buffer for the heap.
@@ -41,13 +42,11 @@ size_t libbirch::bufferSize;
 #endif
 
 /* declared in thread.hpp */
-#if ENABLE_LAZY_DEEP_CLONE
-static libbirch::LazyLabel* root() {
-  static libbirch::SharedPtr<libbirch::LazyLabel> context(new libbirch::Label());
+static libbirch::Label* root() {
+  static libbirch::SharedPtr<libbirch::Label> context(new libbirch::Label());
   return context.get();
 }
 
-libbirch::LazyLabel* libbirch::rootContext = root();
+libbirch::Label* libbirch::rootContext = root();
 libbirch::EntryExitLock libbirch::freezeLock;
 libbirch::EntryExitLock libbirch::finishLock;
-#endif

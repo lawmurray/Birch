@@ -1,13 +1,12 @@
 /**
  * @file
  */
-#if ENABLE_LAZY_DEEP_CLONE
-#include "libbirch/LazyLabel.hpp"
+#include "libbirch/Label.hpp"
 
-libbirch::LazyAny* libbirch::LazyLabel::get(LazyAny* o) {
+libbirch::Any* libbirch::Label::get(Any* o) {
   assert(o->isFrozen());
-  LazyAny* prev = nullptr;
-  LazyAny* next = o;
+  Any* prev = nullptr;
+  Any* next = o;
   bool frozen = true;
   l.set();
   do {
@@ -33,10 +32,10 @@ libbirch::LazyAny* libbirch::LazyLabel::get(LazyAny* o) {
   return next;
 }
 
-libbirch::LazyAny* libbirch::LazyLabel::pull(LazyAny* o) {
+libbirch::Any* libbirch::Label::pull(Any* o) {
   assert(o->isFrozen());
-  LazyAny* prev = nullptr;
-  LazyAny* next = o;
+  Any* prev = nullptr;
+  Any* next = o;
   bool frozen = true;
   l.set();
   do {
@@ -53,7 +52,7 @@ libbirch::LazyAny* libbirch::LazyLabel::pull(LazyAny* o) {
   return next;
 }
 
-libbirch::LazyAny* libbirch::LazyLabel::copy(LazyAny* o) {
+libbirch::Any* libbirch::Label::copy(Any* o) {
   assert(o->isFrozen());
   auto cloned = o->clone_(this);
   if (!o->isSingle()) {
@@ -63,7 +62,7 @@ libbirch::LazyAny* libbirch::LazyLabel::copy(LazyAny* o) {
   return cloned;
 }
 
-void libbirch::LazyLabel::freeze() {
+void libbirch::Label::freeze() {
   if (!frozen) {
     frozen = true;
     l.set();
@@ -72,8 +71,6 @@ void libbirch::LazyLabel::freeze() {
   }
 }
 
-void libbirch::LazyLabel::thaw() {
+void libbirch::Label::thaw() {
   frozen = false;
 }
-
-#endif

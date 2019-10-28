@@ -7,8 +7,8 @@
 
 namespace libbirch {
 /**
- * Stride. The number of elements, including both active and inactive elements,
- * along a dimension.
+ * Stride. The skip between consecutive sub-arrays along a dimension, e.g.
+ * elements in a vector, rows in a matrix.
  *
  * @ingroup libbirch
  */

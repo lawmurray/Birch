@@ -13,7 +13,7 @@ function make(name:String) -> Object? {
   using make_t = bi::type::Object*(libbirch::Label*);
   void* addr = dlsym(RTLD_DEFAULT, symbol.c_str());
   if (addr) {
-    return libbirch::Shared<bi::type::Object>(context_, reinterpret_cast<make_t*>(addr)(context_));
+    return libbirch::LazySharedPtr<bi::type::Object>(context_, reinterpret_cast<make_t*>(addr)(context_));
   } else {
     return libbirch::nil;
   }

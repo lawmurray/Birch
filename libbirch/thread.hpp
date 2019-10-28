@@ -7,13 +7,12 @@
 #include "libbirch/EntryExitLock.hpp"
 
 namespace libbirch {
-class LazyLabel;
+class Label;
 
-#if ENABLE_LAZY_DEEP_CLONE
 /**
  * The root context.
  */
-extern LazyLabel* rootContext;
+extern Label* rootContext;
 
 /**
  * Global freeze lock.
@@ -24,5 +23,5 @@ extern EntryExitLock freezeLock;
  * Global finish lock.
  */
 extern EntryExitLock finishLock;
-#endif
+
 }

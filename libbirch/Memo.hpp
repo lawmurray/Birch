@@ -2,7 +2,6 @@
  * @file
  */
 #pragma once
-#if ENABLE_LAZY_DEEP_CLONE
 
 #include "libbirch/Any.hpp"
 
@@ -142,5 +141,3 @@ inline unsigned libbirch::LazyMemo::crowd() const {
    * entries are occupied */
   return (nentries >> 1u) + (nentries >> 2u);
 }
-
-#endif

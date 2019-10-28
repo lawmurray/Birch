@@ -25,11 +25,8 @@ public:
    */
   Counted() :
       sharedCount(0u),
-      weakCount(1u)
-      #if ENABLE_LAZY_DEEP_CLONE
-      , memoCount(1u)
-      #endif
-      {
+      weakCount(1u),
+      memoCount(1u) {
     // no need to set size or tid, handled by operator new
   }
 
@@ -125,7 +122,6 @@ public:
    */
   unsigned numWeak() const;
 
-  #if ENABLE_LAZY_DEEP_CLONE
   /**
    * Increment the memo count (implies an increment of the weak count also).
    */
@@ -149,7 +145,6 @@ public:
    * so the object is not considered reachable.
    */
   bool isReachable() const;
-  #endif
 
   /**
    * Name of the class.
@@ -173,9 +168,7 @@ protected:
   void deallocate() {
     assert(sharedCount.load() == 0u);
     assert(weakCount.load() == 0u);
-    #if ENABLE_LAZY_DEEP_CLONE
     assert(memoCount.load() == 0u);
-    #endif
     libbirch::deallocate(this, size, tid);
   }
 
@@ -191,14 +184,12 @@ protected:
    */
   Atomic<unsigned> weakCount;
 
-  #if ENABLE_LAZY_DEEP_CLONE
   /**
    * Memo count. This is one plus the number of times that the object occurs
    * as a key in a memo. The plus one is a self-reference that is relased
    * when the weak count reaches zero.
    */
   Atomic<unsigned> memoCount;
-  #endif
 
   /**
    * Size of the object. This is set immediately after construction. A value
@@ -270,11 +261,7 @@ inline void libbirch::Counted::decWeak() {
   assert(weakCount.load() > 0u);
   if (--weakCount == 0u) {
     assert(sharedCount.load() == 0u);
-    #if ENABLE_LAZY_DEEP_CLONE
     decMemo();  // release memo self-reference
-    #else
-    deallocate();
-    #endif
   }
 }
 
@@ -282,7 +269,6 @@ inline unsigned libbirch::Counted::numWeak() const {
   return weakCount.load();
 }
 
-#if ENABLE_LAZY_DEEP_CLONE
 inline void libbirch::Counted::incMemo() {
   memoCount.increment();
 }
@@ -303,4 +289,3 @@ inline unsigned libbirch::Counted::numMemo() const {
 inline bool libbirch::Counted::isReachable() const {
   return numWeak() > 0u;
 }
-#endif

@@ -1,8 +1,7 @@
 /**
  * @file
  */
-#if ENABLE_LAZY_DEEP_CLONE
-#include "LazyMemo.hpp"
+#include "libbirch/Memo.hpp"
 
 libbirch::LazyMemo::LazyMemo() :
     keys(nullptr),
@@ -206,5 +205,3 @@ void libbirch::LazyMemo::rehash() {
     }
   }
 }
-
-#endif
