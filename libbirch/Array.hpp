@@ -133,7 +133,7 @@ class Array {
       buffer(o.buffer),
       offset(o.offset),
       isView(o.isView) {
-    if (buffer) {
+    if (!isView && buffer) {
       buffer->incUsage();
     }
   }
@@ -193,9 +193,7 @@ class Array {
    * Destructor.
    */
   ~Array() {
-    if (!isView) {
-      release();
-    }
+    release();
   }
 
   /**
@@ -673,7 +671,7 @@ private:
    * Deallocate memory of array.
    */
   void release() {
-    if (buffer && buffer->decUsage() == 0) {
+    if (!isView && buffer && buffer->decUsage() == 0) {
       auto iter = as_const().begin();
       auto last = iter + size();
       for (; iter != last; ++iter) {
