@@ -200,7 +200,7 @@ public:
    */
   template<class Q>
   Lazy& assign(Label* context, const Lazy<Q>& o) {
-    if (object) {
+    if (o.query()) {
       replaceLabel(o.getLabel(), o.getLabel() != context);
     } else {
       releaseLabel();
@@ -214,7 +214,7 @@ public:
    */
   template<class Q>
   Lazy& assign(Label* context, Lazy<Q>&& o) {
-    if (object) {
+    if (o.query()) {
       replaceLabel(o.getLabel(), o.getLabel() != context);
     } else {
       releaseLabel();
