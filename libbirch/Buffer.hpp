@@ -66,7 +66,7 @@ public:
    * Compute the number of bytes that should be allocated for a buffer of
    * this type with @p n elements.
    */
-  static int64_t size(const int64_t n);
+  static size_t size(const int64_t n);
 
   /**
    * Id of the thread that allocated the buffer.
@@ -89,7 +89,7 @@ private:
 
 template<class T>
 libbirch::Buffer<T>::Buffer() :
-    tid(omp_get_thread_num()),
+    tid(get_thread_num()),
     useCount(0) {
   //
 }
@@ -121,7 +121,6 @@ const T* libbirch::Buffer<T>::buf() const {
 }
 
 template<class T>
-int64_t libbirch::Buffer<T>::size(const int64_t n) {
-  return n > 0 ? sizeof(T)*n + sizeof(Buffer<T>) - 1u : 0;
-  // ^ -1 because `first` field is actually the first byte of the contents
+size_t libbirch::Buffer<T>::size(const int64_t n) {
+  return n > 0 ? sizeof(T)*n + sizeof(Buffer<T>) : 0;
 }

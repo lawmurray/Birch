@@ -3,6 +3,8 @@
  */
 #include "libbirch/stacktrace.hpp"
 
+#include "libbirch/thread.hpp"
+
 struct stack_shape {
   const char* func;
   const char* file;
@@ -12,8 +14,8 @@ using stack_trace = std::vector<stack_shape,libbirch::Allocator<stack_shape>>;
 
 stack_trace& currentStackTrace() {
   static std::vector<stack_trace,libbirch::Allocator<stack_trace>> stacktraces(
-      omp_get_max_threads());
-  return stacktraces[omp_get_thread_num()];
+      libbirch::get_max_threads());
+  return stacktraces[libbirch::get_thread_num()];
 }
 
 libbirch::StackFunction::StackFunction(const char* func, const char* file,

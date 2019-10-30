@@ -57,7 +57,7 @@ public:
   void* operator new(std::size_t size) {
     auto ptr = (Counted*)allocate(size);
     ptr->size = (unsigned)size;
-    ptr->tid = (unsigned)omp_get_thread_num();
+    ptr->tid = get_thread_num();
     return ptr;
   }
 

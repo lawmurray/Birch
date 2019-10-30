@@ -112,7 +112,7 @@ private:
   /**
    * Id of the thread that allocated keys and values.
    */
-  unsigned tentries;
+  int tentries;
 
   /**
    * Number of occupied entries in the table.
