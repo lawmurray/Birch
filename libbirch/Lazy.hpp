@@ -51,21 +51,25 @@ public:
   /**
    * Constructor.
    */
-  Lazy(Label* context, value_type* object) :
+  Lazy(Label* context, value_type* object, const bool cross = false) :
       object(object),
       label(reinterpret_cast<intptr_t>(context)),
-      cross(false) {
-    //
+      cross(cross) {
+    if (cross) {
+      getLabel()->incShared();
+    }
   }
 
   /**
    * Constructor.
    */
-  Lazy(Label* context, const P& object) :
+  Lazy(Label* context, const P& object, const bool cross = false) :
       object(object),
       label(reinterpret_cast<intptr_t>(context)),
-      cross(false) {
-    //
+      cross(cross) {
+    if (cross) {
+      getLabel()->incShared();
+    }
   }
 
   /**
@@ -75,7 +79,7 @@ public:
       object(o.get()),
       label(o.label),
       cross(o.cross) {
-    if (isCross()) {
+    if (cross) {
       getLabel()->incShared();
     }
   }
@@ -88,7 +92,7 @@ public:
       object(o.get()),
       label(o.label),
       cross(o.cross) {
-    if (isCross()) {
+    if (cross) {
       getLabel()->incShared();
     }
   }
@@ -196,12 +200,12 @@ public:
    */
   template<class Q>
   Lazy& assign(Label* context, const Lazy<Q>& o) {
-    object = o.get();
     if (object) {
       replaceLabel(o.getLabel(), o.getLabel() != context);
     } else {
       releaseLabel();
     }
+    object = o.get();
     return *this;
   }
 
@@ -210,12 +214,12 @@ public:
    */
   template<class Q>
   Lazy& assign(Label* context, Lazy<Q>&& o) {
-    object = std::move(o.get());
     if (object) {
       replaceLabel(o.getLabel(), o.getLabel() != context);
     } else {
       releaseLabel();
     }
+    object = std::move(o.get());
     return *this;
   }
 
@@ -298,7 +302,7 @@ public:
     assert(object);
     pull();
     startFreeze();
-    return Lazy<P>(context, getLabel()->fork(), object);
+    return Lazy<P>(getLabel()->fork(), object, true);
   }
 
   /**
@@ -507,11 +511,11 @@ private:
   void releaseLabel() {
     auto label = getLabel();
     auto cross = isCross();
+    this->label = 0;
+    this->cross = false;
     if (label && cross) {
       label->decShared();
     }
-    this->label = 0;
-    this->cross = false;
   }
 
   /**
