@@ -107,7 +107,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     in();
     start("super_type_(context, label, o)");
     finish(',');
-    start("self(context, o.self)");
+    start("self(context, label, o.self)");
     for (auto o : params) {
       if (!o->type->isValue()) {
         finish(',');
