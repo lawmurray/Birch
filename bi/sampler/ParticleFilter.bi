@@ -91,14 +91,14 @@ class ParticleFilter < ForwardSampler {
     ess.clear();
     memory.clear();
     elapsed.clear();
-
+    
     w <- vector(0.0, N);
     a <- iota(1, N);
     x1:Vector<ForwardModel>;
-    x1.enlarge(N, clone<ForwardModel>(archetype!));
+    x1.enlarge(N, archetype!);
     x <- x1.toArray();
     dynamic parallel for auto n in 1..N {
-      x[n] <- clone<ForwardModel>(x[n]);
+      x[n] <- clone<ForwardModel>(archetype!);
     }
     tic();
   }
