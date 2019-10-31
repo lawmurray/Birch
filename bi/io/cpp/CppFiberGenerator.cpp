@@ -64,7 +64,11 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
       start("super_type_(context_, " << (yields.size() + 1) << ')');
       for (auto param : params) {
         finish(',');
-        start(param->name << '(' << param->name << ')');
+        start(param->name << '(');
+        if (!param->type->isValue()) {
+          middle("context_, ");
+        }
+        middle(param->name << ')');
       }
       finish(" {");
       out();

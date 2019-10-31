@@ -114,7 +114,11 @@ void bi::CppClassGenerator::visit(const Class* o) {
       for (auto o : memberVariables) {
         if (!o->value->isEmpty()) {
           finish(',');
-          start(o->name << '(' << o->value << ')');
+          start(o->name << '(');
+          if (!o->type->isValue()) {
+            middle("context_, ");
+          }
+          middle(o->value << ')');
         } else if (o->type->isClass()) {
           finish(',');
           start(o->name << "(context_, libbirch::make_pointer<" << o->type << ">(context_");

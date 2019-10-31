@@ -75,7 +75,11 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     start("self(context_, self)");
     for (auto param : params) {
       finish(',');
-      start(param->name << '(' << param->name << ')');
+      start(param->name << '(');
+      if (!param->type->isValue()) {
+        middle("context_, ");
+      }
+      middle(param->name << ')');
     }
     finish(" {");
     out();
