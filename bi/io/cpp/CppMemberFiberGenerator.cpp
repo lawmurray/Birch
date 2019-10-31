@@ -72,7 +72,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     in();
     start("super_type_(context_, " << (yields.size() + 1) << ')');
     finish(',');
-    start("self(self)");
+    start("self(context_, self)");
     for (auto param : params) {
       finish(',');
       start(param->name << '(' << param->name << ')');
@@ -83,6 +83,8 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     out();
     line("}\n");
   }
+
+  line("// LCOV_EXCL_START");
 
   /* deep copy constructor */
   if (!header) {
@@ -101,7 +103,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     in();
     start("super_type_(context, label, o)");
     finish(',');
-    start("self(context, self)");
+    start("self(context, o.self)");
     for (auto o : params) {
       if (!o->type->isValue()) {
         finish(',');
@@ -255,6 +257,8 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     line("}");
   }
   line("#endif\n");
+
+  line("// LCOV_EXCL_STOP");
 
   /* query function */
   if (header) {

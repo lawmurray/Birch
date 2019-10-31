@@ -145,6 +145,8 @@ void bi::CppClassGenerator::visit(const Class* o) {
       line("}\n");
     }
 
+    line("// LCOV_EXCL_START");
+
     /* deep copy constructor */
     if (!header) {
       start("bi::type::" << o->name);
@@ -309,6 +311,8 @@ void bi::CppClassGenerator::visit(const Class* o) {
       }
     }
 
+    line("// LCOV_EXCL_STOP");
+
     /* member variables and functions */
     *this << o->braces->strip();
 
@@ -320,6 +324,7 @@ void bi::CppClassGenerator::visit(const Class* o) {
 
     /* C linkage function */
     if (!o->has(ABSTRACT) && !o->isGeneric() && o->params->isEmpty()) {
+      line("// LCOV_EXCL_START");
       if (header) {
         start("extern \"C\" bi::type::" << o->name << "* ");
         finish("make_" << o->name << "_(libbirch::Label* context_);");
@@ -331,6 +336,7 @@ void bi::CppClassGenerator::visit(const Class* o) {
         out();
         line("}");
       }
+      line("// LCOV_EXCL_STOP");
       line("");
     }
   }

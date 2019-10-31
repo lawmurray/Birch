@@ -73,6 +73,8 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
       line("}\n");
     }
 
+    line("// LCOV_EXCL_START");
+
     /* deep copy constructor */
     if (!header) {
       start("bi::" << stateName << "::");
@@ -233,6 +235,8 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
       line("}");
     }
     line("#endif\n");
+
+    line("// LCOV_EXCL_STOP");
 
     /* query function */
     if (header) {
