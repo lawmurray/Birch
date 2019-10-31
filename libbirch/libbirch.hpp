@@ -310,7 +310,7 @@ P make_pointer(Label* context, const Args& ... args) {
 /**
  * Make a fiber.
  *
- * @tparam T The state type of the fiber.
+ * @tparam T Fiber state type.
  * @tparam Args Fiber state constructor parameter types.
  *
  * @param context Current context.

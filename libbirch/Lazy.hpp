@@ -219,7 +219,7 @@ public:
     } else {
       releaseLabel();
     }
-    object = std::move(o.get());
+    object = std::move(o.object);
     return *this;
   }
 
@@ -447,19 +447,6 @@ public:
     return Lazy<decltype(cast)>(getLabel(), cast);
   }
 
-private:
-  /**
-   * Constructor.
-   */
-  Lazy(Label* context, Label* label, const P& object) :
-      object(object),
-      label(0),
-      cross(false) {
-    if (object) {
-      setLabel(label, label != context);
-    }
-  }
-
   /**
    * Get the label.
    */
@@ -474,6 +461,19 @@ private:
    */
   bool isCross() const {
     return cross;
+  }
+
+private:
+  /**
+   * Constructor.
+   */
+  Lazy(Label* context, Label* label, const P& object) :
+      object(object),
+      label(0),
+      cross(false) {
+    if (object) {
+      setLabel(label, label != context);
+    }
   }
 
   /**

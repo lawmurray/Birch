@@ -65,7 +65,7 @@ public:
   /**
    * Get the label assigned to the object.
    */
-  Label* getLabel();
+  Label* getLabel() const;
 
   /**
    * Deep freeze.
@@ -176,7 +176,7 @@ inline bool libbirch::Any::isSingle() const {
   #endif
 }
 
-inline libbirch::Label* libbirch::Any::getLabel() {
+inline libbirch::Label* libbirch::Any::getLabel() const {
   return (Label*)label;
 }
 
