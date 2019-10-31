@@ -53,10 +53,10 @@ public:
    */
   Lazy(Label* context, value_type* object, const bool cross = false) :
       object(object),
-      label(reinterpret_cast<intptr_t>(context)),
-      cross(cross) {
-    if (cross) {
-      getLabel()->incShared();
+      label(0),
+      cross(false) {
+    if (object) {
+      setLabel(context, false);
     }
   }
 
@@ -65,10 +65,10 @@ public:
    */
   Lazy(Label* context, const P& object, const bool cross = false) :
       object(object),
-      label(reinterpret_cast<intptr_t>(context)),
-      cross(cross) {
-    if (cross) {
-      getLabel()->incShared();
+      label(0),
+      cross(false) {
+    if (object) {
+      setLabel(context, false);
     }
   }
 
@@ -79,7 +79,7 @@ public:
       object(o.get()),
       label(o.label),
       cross(o.cross) {
-    if (cross) {
+    if (isCross()) {
       getLabel()->incShared();
     }
   }
@@ -92,7 +92,7 @@ public:
       object(o.get()),
       label(o.label),
       cross(o.cross) {
-    if (cross) {
+    if (isCross()) {
       getLabel()->incShared();
     }
   }
@@ -236,8 +236,8 @@ public:
    * Release the pointer.
    */
   void release() {
-    object.release();
     releaseLabel();
+    object.release();
   }
 
   /**

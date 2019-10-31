@@ -96,7 +96,7 @@ libbirch::Buffer<T>::Buffer() :
 
 template<class T>
 void libbirch::Buffer<T>::incUsage() {
-  ++useCount;
+  useCount.increment();
 }
 
 template<class T>

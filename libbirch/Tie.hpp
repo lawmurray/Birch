@@ -34,7 +34,7 @@ public:
   /**
    * Constructor.
    */
-  Tie(Head head, Tail... tail) :
+  Tie(Head& head, Tail&... tail) :
       head(head),
       tail(tail...) {
     //
@@ -146,49 +146,16 @@ public:
     return *this;
   }
 
-  template<IS_VALUE1(Head)>
-  void freeze() {
-    tail.freeze();
-  }
-
-  template<IS_NOT_VALUE1(Head)>
-  void freeze() {
-    head.freeze();
-    tail.freeze();
-  }
-
-  template<IS_VALUE1(Head)>
-  void thaw(Label* label) {
-    tail.thaw(label);
-  }
-
-  template<IS_NOT_VALUE1(Head)>
-  void thaw(Label* label) {
-    head.thaw(label);
-    tail.thaw(label);
-  }
-
-  template<IS_VALUE1(Head)>
-  void finish() {
-    tail.finish();
-  }
-
-  template<IS_NOT_VALUE1(Head)>
-  void finish() {
-    head.finish();
-    tail.finish();
-  }
-
 private:
   /**
    * First element.
    */
-  Head head;
+  Head& head;
 
   /**
    * Remaining elements.
    */
-  Tie<Tail...> tail;
+  Tie<Tail&...> tail;
 };
 
 /*
@@ -212,18 +179,8 @@ public:
   /**
    * Constructor.
    */
-  template<IS_VALUE(Head)>
-  Tie(Head head) :
+  Tie(Head& head) :
       head(head) {
-    //
-  }
-
-  /**
-   * Constructor.
-   */
-  template<IS_NOT_VALUE(Head)>
-  Tie(Label* context, Head head) :
-      head(context, head) {
     //
   }
 
@@ -279,41 +236,11 @@ public:
     return *this;
   }
 
-  template<IS_VALUE(Head)>
-  void freeze() {
-    //
-  }
-
-  template<IS_NOT_VALUE(Head)>
-  void freeze() {
-    head.freeze();
-  }
-
-  template<IS_VALUE(Head)>
-  void thaw(Label* label) {
-    //
-  }
-
-  template<IS_NOT_VALUE(Head)>
-  void thaw(Label* label) {
-    head.thaw(label);
-  }
-
-  template<IS_VALUE(Head)>
-  void finish() {
-    //
-  }
-
-  template<IS_NOT_VALUE(Head)>
-  void finish() {
-    head.finish();
-  }
-
 private:
   /**
    * First element.
    */
-  Head head;
+  Head& head;
 };
 
 template<class... Args>

@@ -103,7 +103,7 @@ public:
   }
 
   Iterator<T,F>& operator++() {
-    serial += 1;
+    ++serial;
     return *this;
   }
 
@@ -114,7 +114,7 @@ public:
   }
 
   Iterator<T,F>& operator--() {
-    serial -= 1;
+    --serial;
     return *this;
   }
 

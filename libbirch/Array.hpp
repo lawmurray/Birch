@@ -38,7 +38,7 @@ class Array {
       buffer(nullptr),
       offset(0),
       isView(false) {
-    //
+    assert(shape.volume() == 0);
   }
 
   /**
