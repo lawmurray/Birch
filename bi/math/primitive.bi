@@ -118,14 +118,12 @@ function transform<Value>(X:Value[_,_], Y:Value[_,_], Z:Value[_,_],
  */
 function reduce<Value>(x:Value[_], init:Value,
     op:@(Value, Value) -> Value) -> Value {
-  result:Value;
   cpp{{
-  x.pin();
-  // result = return std::reduce(x.begin(), x.end(), init, op);
+  auto first = x.begin();
+  auto last = first + x.rows();
+  // return std::reduce(first, last, init, op);
   // ^ C++17
-  result = std::accumulate(x.begin(), x.end(), init, op);
-  x.unpin();
-  return result;
+  return std::accumulate(first, last, init, op);
   }}
 }
 
@@ -196,11 +194,11 @@ function transform_reduce<Value>(x:Value[_], y:Value[_], z:Value[_],
 function inclusive_scan<Value>(x:Value[_], op:@(Value, Value) -> Value) -> Value[_] {
   y:Value[length(x)];
   cpp{{
-  x.pin();
-  // std::inclusive_scan(x.begin(), x.end(), y.begin(), op);
+  auto first = x.begin();
+  auto last = first + x.rows();
+  // std::inclusive_scan(first, last, y.begin(), op);
   // ^ C++17
-  std::partial_sum(x.begin(), x.end(), y.begin(), op);
-  x.unpin();
+  std::partial_sum(first, last, y.begin(), op);
   }}
   return y;
 }
@@ -217,7 +215,9 @@ function exclusive_scan<Value>(x:Value[_], init:Value,
   assert length(x) > 0;
   y:Value[length(x)];
   //cpp{{
-  // std::exclusive_scan(x.begin(), x.end(), y.begin(), init, op);
+  // auto first = x.begin();
+  // auto last = first + x.rows();
+  // std::exclusive_scan(first, last, y.begin(), init, op);
   // ^ C++17
   //}}
   y[1] <- init;
@@ -237,9 +237,9 @@ function adjacent_difference<Value>(x:Value[_],
     op:@(Value, Value) -> Value) -> Value[_] {
   y:Value[length(x)];
   cpp{{
-  x.pin();
-  std::adjacent_difference(x.begin(), x.end(), y.begin(), op);
-  x.unpin();
+  auto first = x.begin();
+  auto last = first + x.rows();
+  std::adjacent_difference(first, last, y.begin(), op);
   }}
   return y;
 }
@@ -250,11 +250,11 @@ function adjacent_difference<Value>(x:Value[_],
  * - x: Vector.
  */
 function sort<Value>(x:Value[_]) -> Value[_] {
-  auto y <- x;
+  y:Value[_] <- x;
   cpp{{
-  y.pinWrite();
-  std::sort(y.begin(), y.end());
-  y.unpin();
+  auto first = y.begin();
+  auto last = first + y.rows();
+  std::sort(first, last);
   }}
   return y;
 }

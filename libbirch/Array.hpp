@@ -11,7 +11,7 @@
 #include "libbirch/Buffer.hpp"
 #include "libbirch/Iterator.hpp"
 #include "libbirch/Eigen.hpp"
-#include "libbirch/ReaderWriterLock.hpp"
+#include "libbirch/ExclusiveLock.hpp"
 
 namespace libbirch {
 /**
@@ -23,7 +23,7 @@ namespace libbirch {
 template<class T, class F>
 class Array {
   template<class U, class G> friend class Array;
-public:
+  public:
   using this_type = Array<T,F>;
   using value_type = T;
   using shape_type = F;
@@ -84,7 +84,7 @@ public:
       offset(0),
       isView(false) {
     allocate();
-    std::uninitialized_copy(values.begin(), values.end(), begin());
+    std::uninitialized_copy(values.begin(), values.end(), as_const().begin());
   }
 
   /**
@@ -103,7 +103,7 @@ public:
       offset(0),
       isView(false) {
     allocate();
-    std::uninitialized_copy(values.begin(), values.end(), begin());
+    std::uninitialized_copy(values.begin(), values.end(), as_const().begin());
   }
 
   /**
@@ -299,6 +299,26 @@ public:
   }
 
   /**
+   * Return const reference to the array. This can be used to ensure that the
+   * array is being accessed in a const context, to avoid unnecessary copying
+   * of shared buffers.
+   */
+  const Array<T,F>& as_const() const {
+    return *this;
+  }
+
+  /**
+   * Raw pointer to underlying buffer.
+   */
+  T* buf() {
+    duplicate();
+    return buffer->buf() + offset;
+  }
+  T* buf() const {
+    return buffer->buf() + offset;
+  }
+
+  /**
    * Number of elements.
    */
   auto size() const {
@@ -341,70 +361,7 @@ public:
   }
 
   /**
-   * @name Element access, caller not responsible for thread safety
-   */
-  ///@{
-  /**
-   * Slice.
-   *
-   * @tparam V Slice type.
-   *
-   * @param slice Slice.
-   *
-   * @return The resulting view or element.
-   */
-  template<class V, std::enable_if_t<V::rangeCount() != 0,int> = 0>
-  auto get(const V& slice) const {
-    pin();
-    Array<T,decltype(shape(slice))> view(shape(slice), buffer, offset +
-        shape.serial(slice));
-    unpin();
-    return view;
-  }
-
-  template<class U, class G, class V, IS_VALUE(T), std::enable_if_t<V::rangeCount() != 0,int> = 0>
-  void set(const V& slice, const Array<U,G>& value) {
-    pinWrite();
-    Array<T,decltype(shape(slice))> view(shape(slice), buffer, offset +
-        shape.serial(slice));
-    view = value;
-    unpin();
-  }
-
-  template<class U, class G, class V, IS_NOT_VALUE(T), std::enable_if_t<V::rangeCount() != 0,int> = 0>
-  void set(const V& slice, Label* context, const Array<U,G>& value) {
-    pinWrite();
-    Array<T,decltype(shape(slice))> view(shape(slice), buffer, offset +
-        shape.serial(slice));
-    view.assign(context, value);
-    unpin();
-  }
-
-  template<class V, std::enable_if_t<V::rangeCount() == 0,int> = 0>
-  auto get(const V& slice) const {
-    pin();
-    auto element = *(buf() + shape.serial(slice));
-    unpin();
-    return element;
-  }
-
-  template<class V, IS_VALUE(T), std::enable_if_t<V::rangeCount() == 0,int> = 0>
-  void set(const V& slice, const T& value) {
-    pinWrite();
-    *(buf() + shape.serial(slice)) = value;
-    unpin();
-  }
-
-  template<class V, IS_NOT_VALUE(T), std::enable_if_t<V::rangeCount() == 0,int> = 0>
-  void set(const V& slice, Label* context, const T& value) {
-    pinWrite();
-    (buf() + shape.serial(slice))->assign(context, value);
-    unpin();
-  }
-  ///@}
-
-  /**
-   * @name Element access, caller responsible for thread safety
+   * @name Iterators
    */
   ///@{
   /**
@@ -414,34 +371,38 @@ public:
    * Elements are visited in the order in which they are stored in memory;
    * the rightmost dimension is the fastest moving (for a matrix, this is
    * "row major" order).
+   *
+   * There is no `end()` function to retrieve an iterator to
+   * one-past-the-last element. This is because a first/last pair must be
+   * created atomically for thread safety. Instead use something like:
+   *
+   *     auto first = begin();
+   *     auto last = first + size();
    */
   Iterator<T,F> begin() {
-    assert(!isShared());
     return Iterator<T,F>(buf(), shape);
   }
   Iterator<T,F> begin() const {
     return Iterator<T,F>(buf(), shape);
   }
-  Iterator<T,F> end() {
-    assert(!isShared());
-    return begin() + shape.size();
-  }
-  Iterator<T,F> end() const {
-    return begin() + shape.size();
-  }
+  ///@}
 
   /**
-   * Slice.
+   * @name Slices
+   */
+  ///@{
+  /**
+   * Slice operator.
    *
    * @tparam V Slice type.
    *
    * @param slice Slice.
    *
-   * @return The resulting view or element.
+   * @return The new array.
    */
   template<class V, std::enable_if_t<V::rangeCount() != 0,int> = 0>
   auto operator()(const V& slice) {
-    assert(!isShared());
+    duplicate();
     return Array<T,decltype(shape(slice))>(shape(slice),
         buffer, offset + shape.serial(slice));
   }
@@ -451,63 +412,17 @@ public:
         buffer, offset + shape.serial(slice));
   }
   template<class V, std::enable_if_t<V::rangeCount() == 0,int> = 0>
-  value_type& operator()(const V& slice) {
-    assert(!isShared());
+  auto& operator()(const V& slice) {
     return *(buf() + shape.serial(slice));
   }
   template<class V, std::enable_if_t<V::rangeCount() == 0,int> = 0>
-  value_type operator()(const V& slice) const {
+  const auto& operator()(const V& slice) const {
     return *(buf() + shape.serial(slice));
-  }
-
-  /**
-   * Pin the buffer. This prevents substitution of the buffer by
-   * copy-on-write operations until unpinned.
-   */
-  void pin() const {
-    const_cast<Array*>(this)->bufferLock.read();
-  }
-
-  /**
-   * As pin(), but furthermore ensures that the buffer is not shared, and
-   * thus its contents eligible for writing. If shared, a copy is performed.
-   * This is used to perform copy-on-write (if necessary) before writing the
-   * contents of the buffer.
-   */
-  void pinWrite() {
-    bufferLock.write();
-    if (isShared()) {
-      Array<T,F> tmp(shape, *this);
-      swap(tmp);
-    }
-    bufferLock.downgrade();  // downgrade write lock to read lock
-  }
-
-  /**
-   * Unpin the buffer.
-   */
-  void unpin() const {
-    const_cast<Array*>(this)->bufferLock.unread();
-  }
-
-  /**
-   * Lock the buffer. This is used before substitution of the buffer by a
-   * copy-on-write operation.
-   */
-  void lock() {
-    bufferLock.write();
-  }
-
-  /**
-   * Unlock the buffer.
-   */
-  void unlock() {
-    bufferLock.unwrite();
   }
   ///@}
 
   /**
-   * @name Thread-safe resize
+   * @name Resize
    */
   ///@{
   /**
@@ -534,13 +449,13 @@ public:
       } else {
         auto oldSize = Buffer<T>::size(volume());
         auto newSize = Buffer<T>::size(shape.volume());
-        auto iter = begin();
-        auto last = end();
+        auto iter = as_const().begin();
+        auto last = iter + size();
         for (iter += shape.size(); iter != last; ++iter) {
           iter->~T();
         }
-        buffer = (Buffer<T>*)libbirch::reallocate(buffer, oldSize,
-            buffer->tid, newSize);
+        buffer = (Buffer<T>*)libbirch::reallocate(buffer,
+            oldSize, buffer->tid, newSize);
       }
       this->shape = shape;
     }
@@ -574,7 +489,7 @@ public:
           buffer->tid, newSize);
       this->shape = shape;
     }
-    auto iter = begin();
+    auto iter = as_const().begin();
     std::uninitialized_fill(iter + n, iter + size(), x);
     unlock();
   }
@@ -591,14 +506,13 @@ public:
 
   template<IS_VALUE(T)>
   auto toEigen() {
-    return eigen_type(buf(), rows(), cols(), eigen_stride_type(rowStride(),
-        colStride()));
+    return eigen_type(buf(), rows(), cols(),
+        eigen_stride_type(rowStride(), colStride()));
   }
-
   template<IS_VALUE(T)>
   auto toEigen() const {
-    return eigen_type(buf(), rows(), cols(), eigen_stride_type(rowStride(),
-        colStride()));
+    return eigen_type(buf(), rows(), cols(),
+        eigen_stride_type(rowStride(), colStride()));
   }
 
   /**
@@ -648,13 +562,11 @@ public:
 
   template<IS_NOT_VALUE(T)>
   void freeze() {
-    pin();
     auto iter = begin();
-    auto last = end();
+    auto last = iter + size();
     for (; iter != last; ++iter) {
       iter->freeze();
     }
-    unpin();
   }
 
   template<IS_VALUE(T)>
@@ -664,13 +576,11 @@ public:
 
   template<IS_NOT_VALUE(T)>
   void thaw(Label* label) {
-    pin();
     auto iter = begin();
-    auto last = end();
+    auto last = iter + size();
     for (; iter != last; ++iter) {
       iter->thaw(label);
     }
-    unpin();
   }
 
   template<IS_VALUE(T)>
@@ -680,13 +590,11 @@ public:
 
   template<IS_NOT_VALUE(T)>
   void finish() {
-    pin();
     auto iter = begin();
-    auto last = end();
+    auto last = iter + size();
     for (; iter != last; ++iter) {
       iter->finish();
     }
-    unpin();
   }
 
 private:
@@ -712,13 +620,6 @@ private:
       offset(offset),
       isView(true) {
     //
-  }
-
-  /**
-   * Raw pointer to underlying buffer.
-   */
-  T* buf() const {
-    return buffer->buf() + offset;
   }
 
   /**
@@ -753,12 +654,26 @@ private:
   }
 
   /**
+   * Duplicate underlying buffer by copy.
+   */
+  void duplicate() {
+    if (!isView) {
+      lock();
+      if (isShared()) {
+        Array<T,F> tmp(shape, *this);
+        swap(tmp);
+      }
+      unlock();
+    }
+  }
+
+  /**
    * Deallocate memory of array.
    */
   void release() {
     if (!isView && buffer && buffer->decUsage() == 0) {
-      auto iter = begin();
-      auto last = end();
+      auto iter = as_const().begin();
+      auto last = iter + size();
       for (; iter != last; ++iter) {
         iter->~T();
       }
@@ -776,8 +691,8 @@ private:
    */
   template<IS_NOT_VALUE(T), class ... Args>
   void initialize(Label* context, Args ... args) {
-    auto iter = begin();
-    auto last = end();
+    auto iter = as_const().begin();
+    auto last = iter + size();
     for (; iter != last; ++iter) {
       new (&*iter) T(context, new typename T::value_type(context, args...));
     }
@@ -788,20 +703,17 @@ private:
    */
   template<IS_VALUE(T), class U, class G>
   void copy(const Array<U,G>& o) {
-    pinWrite();
-    o.pin();
+    assert(!isShared());
     auto n = std::min(size(), o.size());
     auto begin1 = o.begin();
-    auto end1 = o.end();
-    auto begin2 = begin();
-    auto end2 = end();
+    auto end1 = begin1 + n;
+    auto begin2 = as_const().begin();
+    auto end2 = begin2 + n;
     if (inside(begin1, end1, begin2)) {
       std::copy_backward(begin1, end1, end2);
     } else {
       std::copy(begin1, end1, begin2);
     }
-    o.unpin();
-    unpin();
   }
 
   /**
@@ -809,13 +721,12 @@ private:
    */
   template<IS_NOT_VALUE(T), class U, class G>
   void copy(Label* context, const Array<U,G>& o) {
-    pinWrite();
-    o.pin();
+    assert(!isShared());
     auto n = std::min(size(), o.size());
     auto begin1 = o.begin();
-    auto end1 = o.end();
-    auto begin2 = begin();
-    auto end2 = end();
+    auto end1 = begin1 + n;
+    auto begin2 = as_const().begin();
+    auto end2 = begin2 + n;
     if (inside(begin1, end1, begin2)) {
       for (; end1 != begin1; --end1, --end2) {
         (end2 - 1)->assign(context, *(end1 - 1));
@@ -825,8 +736,6 @@ private:
         begin2->assign(context, *begin1);
       }
     }
-    o.unpin();
-    unpin();
   }
 
   /**
@@ -837,8 +746,8 @@ private:
     assert(!isShared());
     auto n = std::min(size(), o.size());
     auto begin1 = o.begin();
-    auto end1 = o.end();
-    auto begin2 = begin();
+    auto end1 = begin1 + n;
+    auto begin2 = as_const().begin();
     std::uninitialized_copy(begin1, end1, begin2);
   }
 
@@ -850,8 +759,8 @@ private:
     assert(!isShared());
     auto n = std::min(size(), o.size());
     auto begin1 = o.begin();
-    auto end1 = o.end();
-    auto begin2 = begin();
+    auto end1 = begin1 + n;
+    auto begin2 = as_const().begin();
     for (; begin1 != end1; ++begin1, ++begin2) {
       new (&*begin2) T(context, *begin1);
     }
@@ -865,11 +774,25 @@ private:
     assert(!isShared());
     auto n = std::min(size(), o.size());
     auto begin1 = o.begin();
-    auto end1 = o.end();
-    auto begin2 = begin();
+    auto end1 = begin1 + n;
+    auto begin2 = as_const().begin();
     for (; begin1 != end1; ++begin1, ++begin2) {
       new (&*begin2) T(context, label, *begin1);
     }
+  }
+
+  /**
+   * Release the lock.
+   */
+  void lock() {
+    mutex.set();
+  }
+
+  /**
+   * Release the lock.
+   */
+  void unlock() {
+    mutex.unset();
   }
 
   /**
@@ -894,11 +817,9 @@ private:
   bool isView;
 
   /**
-   * Lock used for copy-on-write. Read use is obtained when the current
-   * buffer must be preserved for either read or write operations. Write use
-   * is obtained to substitute the current buffer with another.
+   * Lock used for copy on write.
    */
-  ReaderWriterLock bufferLock;
+  ExclusiveLock mutex;
 };
 
 template<class T, class F>

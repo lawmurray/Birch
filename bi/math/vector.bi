@@ -4,7 +4,9 @@
 function vector(x:Real, length:Integer) -> Real[_] {
   z:Real[length];
   cpp{{
-  std::fill(z.begin(), z.end(), x);
+  auto first = z.begin();
+  auto last = first + z.rows();
+  std::fill(first, last, x);
   }}
   return z;
 }
@@ -15,7 +17,9 @@ function vector(x:Real, length:Integer) -> Real[_] {
 function vector(x:Integer, length:Integer) -> Integer[_] {
   z:Integer[length];
   cpp{{
-  std::fill(z.begin(), z.end(), x);
+  auto first = z.begin();
+  auto last = first + z.rows();
+  std::fill(first, last, x);
   }}
   return z;
 }
@@ -26,7 +30,9 @@ function vector(x:Integer, length:Integer) -> Integer[_] {
 function vector(x:Boolean, length:Integer) -> Boolean[_] {
   z:Boolean[length];
   cpp{{
-  std::fill(z.begin(), z.end(), x);
+  auto first = z.begin();
+  auto last = first + z.rows();
+  std::fill(first, last, x);
   }}
   return z;
 }
@@ -40,7 +46,9 @@ function vector(x:Boolean, length:Integer) -> Boolean[_] {
 function iota(x:Real, length:Integer) -> Real[_] {
   z:Real[length];
   cpp{{
-  std::iota(z.begin(), z.end(), x);
+  auto first = z.begin();
+  auto last = first + z.rows();
+  std::iota(first, last, x);
   }}
   return z;
 }
@@ -54,7 +62,9 @@ function iota(x:Real, length:Integer) -> Real[_] {
 function iota(x:Integer, length:Integer) -> Integer[_] {
   z:Integer[length];
   cpp{{
-  std::iota(z.begin(), z.end(), x);
+  auto first = z.begin();
+  auto last = first + z.rows();
+  std::iota(first, last, x);
   }}
   return z;
 }
@@ -68,7 +78,9 @@ function iota(x:Integer, length:Integer) -> Integer[_] {
 function iota(x:Boolean, length:Integer) -> Boolean[_] {
   z:Boolean[length];
   cpp{{
-  std::iota(z.begin(), z.end(), x);
+  auto first = z.begin();
+  auto last = first + z.rows();
+  std::iota(first, last, x);
   }}
   return z;
 }

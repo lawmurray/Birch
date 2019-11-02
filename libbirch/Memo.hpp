@@ -4,7 +4,6 @@
 #pragma once
 
 #include "libbirch/Any.hpp"
-#include "libbirch/ReaderWriterLock.hpp"
 
 namespace libbirch {
 /**
@@ -15,7 +14,7 @@ namespace libbirch {
  *
  * @ingroup libbirch
  */
-class Memo {
+class LazyMemo {
 public:
   /**
    * Key type.
@@ -30,12 +29,12 @@ public:
   /**
    * Constructor.
    */
-  Memo();
+  LazyMemo();
 
   /**
    * Destructor.
    */
-  ~Memo();
+  ~LazyMemo();
 
   /**
    * Is this empty?
@@ -64,7 +63,7 @@ public:
    * Copy entries from another map into this one, removing any that are
    * obsolete.
    */
-  void copy(Memo& o);
+  void copy(LazyMemo& o);
 
   /**
    * Freeze all values in the map.
@@ -124,26 +123,20 @@ private:
    * Number of new entries since last rehash.
    */
   unsigned nnew;
-
-public:
-  /**
-   * Lock.
-   */
-  ReaderWriterLock l;
 };
 }
 
-inline bool libbirch::Memo::empty() const {
+inline bool libbirch::LazyMemo::empty() const {
   return nentries == 0u;
 }
 
-inline unsigned libbirch::Memo::hash(const key_type key, const unsigned nentries) {
+inline unsigned libbirch::LazyMemo::hash(const key_type key, const unsigned nentries) {
   assert(nentries > 0u);
   return static_cast<unsigned>(reinterpret_cast<size_t>(key) >> 6ull)
       & (nentries - 1u);
 }
 
-inline unsigned libbirch::Memo::crowd() const {
+inline unsigned libbirch::LazyMemo::crowd() const {
   /* the table is considered crowded if more than three-quarters of its
    * entries are occupied */
   return (nentries >> 1u) + (nentries >> 2u);

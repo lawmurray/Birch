@@ -3,7 +3,7 @@
  */
 #include "libbirch/Memo.hpp"
 
-libbirch::Memo::Memo() :
+libbirch::LazyMemo::LazyMemo() :
     keys(nullptr),
     values(nullptr),
     nentries(0u),
@@ -13,7 +13,7 @@ libbirch::Memo::Memo() :
   //
 }
 
-libbirch::Memo::~Memo() {
+libbirch::LazyMemo::~LazyMemo() {
   if (nentries > 0u) {
     for (unsigned i = 0u; i < nentries; ++i) {
       auto key = keys[i];
@@ -28,7 +28,7 @@ libbirch::Memo::~Memo() {
   }
 }
 
-libbirch::Memo::value_type libbirch::Memo::get(const key_type key,
+libbirch::LazyMemo::value_type libbirch::LazyMemo::get(const key_type key,
     const value_type failed) {
   /* pre-condition */
   assert(key);
@@ -47,7 +47,7 @@ libbirch::Memo::value_type libbirch::Memo::get(const key_type key,
   }
   return value;
 }
-void libbirch::Memo::put(const key_type key,
+void libbirch::LazyMemo::put(const key_type key,
     const value_type value) {
   /* pre-condition */
   assert(key);
@@ -68,15 +68,13 @@ void libbirch::Memo::put(const key_type key,
   values[i] = value;
 }
 
-void libbirch::Memo::copy(Memo& o) {
+void libbirch::LazyMemo::copy(LazyMemo& o) {
   assert(empty());
 
   /* strategy here is to rehash the parent, which may reduce its size and
    * remove unreachable entries, then just copy entry-by-entry into
    * this, with no need to rehash */
-  o.l.write();
   o.rehash();
-  o.l.downgrade();
   if (o.nentries > 0u) {
     /* allocate */
     keys = (key_type*)allocate(o.nentries * sizeof(key_type));
@@ -101,10 +99,9 @@ void libbirch::Memo::copy(Memo& o) {
       values[i] = value;
     }
   }
-  o.l.unread();
 }
 
-void libbirch::Memo::freeze() {
+void libbirch::LazyMemo::freeze() {
   for (auto i = 0u; i < nentries; ++i) {
     auto v = values[i];
     if (v) {
@@ -113,7 +110,7 @@ void libbirch::Memo::freeze() {
   }
 }
 
-void libbirch::Memo::reserve() {
+void libbirch::LazyMemo::reserve() {
   ++nnew;
   ++noccupied;
   if (noccupied > crowd()) {
@@ -121,7 +118,7 @@ void libbirch::Memo::reserve() {
   }
 }
 
-void libbirch::Memo::rehash() {
+void libbirch::LazyMemo::rehash() {
   if (nnew > 0u) {  // no need to rehash if no new entries since last time
     nnew = 0u;
 

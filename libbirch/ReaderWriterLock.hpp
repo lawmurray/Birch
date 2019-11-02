@@ -38,18 +38,6 @@ public:
    */
   void unwrite();
 
-  /**
-   * Assuming that the calling thread already has a read lock, upgrades that
-   * lock to a write lock.
-   */
-  void upgrade();
-
-  /**
-   * Assuming that the calling thread already has a write lock, downgrades
-   * that lock to a read lock.
-   */
-  void downgrade();
-
 private:
   /**
    * Number of readers in critical region.
@@ -70,14 +58,14 @@ inline libbirch::ReaderWriterLock::ReaderWriterLock() :
 }
 
 inline void libbirch::ReaderWriterLock::read() {
-  readers.increment();
+  ++readers;
   while (writer.load()) {
     //
   }
 }
 
 inline void libbirch::ReaderWriterLock::unread() {
-  readers.decrement();
+  --readers;
 }
 
 inline void libbirch::ReaderWriterLock::write() {
@@ -97,29 +85,5 @@ inline void libbirch::ReaderWriterLock::write() {
 }
 
 inline void libbirch::ReaderWriterLock::unwrite() {
-  writer.store(false);
-}
-
-inline void libbirch::ReaderWriterLock::upgrade() {
-  bool w;
-  do {
-    /* obtain the write lock */
-    while (writer.exchange(true));
-
-    /* check if there are any readers other than current thread; if so
-     * release the write lock to let those readers proceed and avoid a
-     * deadlock situation, repeating from the start, otherwise proceed */
-    w = (readers.load() == 1);
-    if (!w) {
-      writer.store(false);
-    }
-  } while (!w);
-
-  /* release the current thread's read lock */
-  readers.decrement();
-}
-
-inline void libbirch::ReaderWriterLock::downgrade() {
-  readers.increment();
   writer.store(false);
 }
