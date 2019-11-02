@@ -227,8 +227,7 @@ inline void libbirch::Counted::incShared() {
 
 inline void libbirch::Counted::decShared() {
   assert(sharedCount.load() > 0u);
-  if (--sharedCount == 0u && size > 0u) {
-    // ^ size == 0u during construction, never destroy in that case
+  if (--sharedCount == 0u) {
     destroy();
     decWeak();  // release weak self-reference
   }
@@ -241,8 +240,7 @@ inline void libbirch::Counted::doubleIncShared() {
 
 inline void libbirch::Counted::doubleDecShared() {
   assert(sharedCount.load() > 0u);
-  if ((sharedCount -= 2u) == 0u && size > 0u) {
-    // ^ size == 0u during construction, never destroy in that case
+  if ((sharedCount -= 2u) == 0u) {
     destroy();
     decWeak();  // release weak self-reference
   }
