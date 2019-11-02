@@ -792,9 +792,9 @@ private:
     o.pin();
     auto n = std::min(size(), o.size());
     auto begin1 = o.begin();
-    auto end1 = o.end();
+    auto end1 = begin1 + n;
     auto begin2 = begin();
-    auto end2 = end();
+    auto end2 = begin2 + n;
     if (inside(begin1, end1, begin2)) {
       std::copy_backward(begin1, end1, end2);
     } else {
@@ -813,9 +813,9 @@ private:
     o.pin();
     auto n = std::min(size(), o.size());
     auto begin1 = o.begin();
-    auto end1 = o.end();
+    auto end1 = begin1 + n;
     auto begin2 = begin();
-    auto end2 = end();
+    auto end2 = begin2 + n;
     if (inside(begin1, end1, begin2)) {
       for (; end1 != begin1; --end1, --end2) {
         (end2 - 1)->assign(context, *(end1 - 1));
@@ -837,7 +837,7 @@ private:
     assert(!isShared());
     auto n = std::min(size(), o.size());
     auto begin1 = o.begin();
-    auto end1 = o.end();
+    auto end1 = begin1 + n;
     auto begin2 = begin();
     std::uninitialized_copy(begin1, end1, begin2);
   }
@@ -850,7 +850,7 @@ private:
     assert(!isShared());
     auto n = std::min(size(), o.size());
     auto begin1 = o.begin();
-    auto end1 = o.end();
+    auto end1 = begin1 + n;
     auto begin2 = begin();
     for (; begin1 != end1; ++begin1, ++begin2) {
       new (&*begin2) T(context, *begin1);
@@ -865,7 +865,7 @@ private:
     assert(!isShared());
     auto n = std::min(size(), o.size());
     auto begin1 = o.begin();
-    auto end1 = o.end();
+    auto end1 = begin1 + n;
     auto begin2 = begin();
     for (; begin1 != end1; ++begin1, ++begin2) {
       new (&*begin2) T(context, label, *begin1);
