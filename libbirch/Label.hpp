@@ -6,7 +6,6 @@
 #include "libbirch/Any.hpp"
 #include "libbirch/Counted.hpp"
 #include "libbirch/SharedPtr.hpp"
-#include "libbirch/ExclusiveLock.hpp"
 #include "libbirch/Memo.hpp"
 
 namespace libbirch {
@@ -79,12 +78,7 @@ private:
   /**
    * Memo that maps source objects to clones.
    */
-  LazyMemo m;
-
-  /**
-   * Lock.
-   */
-  ExclusiveLock l;
+  Memo m;
 
   /**
    * Is this frozen? Unlike regular objects, a memo can still have new entries
@@ -102,9 +96,7 @@ inline libbirch::Label::Label() :
 inline libbirch::Label::Label(Label* parent) :
     frozen(parent->frozen) {
   assert(parent);
-  parent->l.set();
   m.copy(parent->m);
-  parent->l.unset();
 }
 
 inline libbirch::Label::~Label() {
