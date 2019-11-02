@@ -68,15 +68,12 @@ void libbirch::Memo::put(const key_type key,
   values[i] = value;
 }
 
-void libbirch::Memo::copy(Memo& o) {
+void libbirch::Memo::copy(const Memo& o) {
   assert(empty());
 
   /* strategy here is to rehash the parent, which may reduce its size and
    * remove unreachable entries, then just copy entry-by-entry into
    * this, with no need to rehash */
-  o.l.write();
-  o.rehash();
-  o.l.downgrade();
   if (o.nentries > 0u) {
     /* allocate */
     keys = (key_type*)allocate(o.nentries * sizeof(key_type));
@@ -101,7 +98,6 @@ void libbirch::Memo::copy(Memo& o) {
       values[i] = value;
     }
   }
-  o.l.unread();
 }
 
 void libbirch::Memo::freeze() {

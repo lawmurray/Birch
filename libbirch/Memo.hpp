@@ -64,7 +64,12 @@ public:
    * Copy entries from another map into this one, removing any that are
    * obsolete.
    */
-  void copy(Memo& o);
+  void copy(const Memo& o);
+
+  /**
+   * Rehash the table. This will also remove unreachable entries.
+   */
+  void rehash();
 
   /**
    * Freeze all values in the map.
@@ -90,11 +95,6 @@ private:
    */
   void reserve();
   
-  /**
-   * Rehash the table. This will also remove unreachable entries.
-   */
-  void rehash();
-
   /**
    * The keys.
    */
@@ -124,12 +124,6 @@ private:
    * Number of new entries since last rehash.
    */
   unsigned nnew;
-
-public:
-  /**
-   * Lock.
-   */
-  ReaderWriterLock l;
 };
 }
 

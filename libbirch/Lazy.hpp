@@ -75,7 +75,7 @@ public:
   /**
    * Copy constructor.
    */
-  Lazy(const Lazy<P>& o) :
+  Lazy(const Lazy& o) :
       object(o.get()),
       label(o.label),
       cross(o.cross) {
@@ -100,7 +100,7 @@ public:
   /**
    * Copy constructor.
    */
-  Lazy(Label* context, const Lazy<P>& o) :
+  Lazy(Label* context, const Lazy& o) :
       object(o.get()),
       label(0),
       cross(false) {
@@ -125,7 +125,7 @@ public:
   /**
    * Move constructor.
    */
-  Lazy(Lazy<P>&& o) :
+  Lazy(Lazy&& o) :
       object(std::move(o.object)),
       label(o.label),
       cross(o.cross) {
@@ -148,7 +148,7 @@ public:
   /**
    * Move constructor.
    */
-  Lazy(Label* context, Lazy<P>&& o) :
+  Lazy(Label* context, Lazy&& o) :
       object(std::move(o.object)),
       label(0),
       cross(false) {
@@ -173,7 +173,7 @@ public:
   /**
    * Deep copy constructor.
    */
-  Lazy(Label* context, Label* label, const Lazy<P>& o) :
+  Lazy(Label* context, Label* label, const Lazy& o) :
       object(),
       label(0),
       cross(false) {
@@ -227,7 +227,7 @@ public:
    * Value assignment.
    */
   template<class U, typename = std::enable_if_t<is_value<U>::value>>
-  Lazy<P>& assign(Label* context, const U& o) {
+  Lazy& assign(Label* context, const U& o) {
     *get() = o;
     return *this;
   }
@@ -259,12 +259,7 @@ public:
    * Get the raw pointer, with lazy cloning.
    */
   P& get() {
-    auto raw = object.get();
-    if (raw && raw->isFrozen()) {
-      raw = static_cast<value_type*>(getLabel()->get(raw));
-      object.replace(raw);
-      assert(object);
-    }
+    getLabel()->get(object);
     return object;
   }
 
@@ -272,19 +267,14 @@ public:
    * Get the raw pointer, with lazy cloning.
    */
   auto get() const {
-    return const_cast<Lazy<P>*>(this)->get();
+    return const_cast<Lazy*>(this)->get();
   }
 
   /**
    * Get the raw pointer for read-only use, without cloning.
    */
   P& pull() {
-    auto raw = object.get();
-    if (raw && raw->isFrozen()) {
-      raw = static_cast<value_type*>(getLabel()->pull(raw));
-      object.replace(raw);
-      assert(object);
-    }
+    getLabel()->pull(object);
     return object;
   }
 
@@ -292,17 +282,17 @@ public:
    * Get the raw pointer for read-only use, without cloning.
    */
   auto pull() const {
-    return const_cast<Lazy<P>*>(this)->pull();
+    return const_cast<Lazy*>(this)->pull();
   }
 
   /**
    * Start lazy deep clone.
    */
-  Lazy<P> clone(Label* context) const {
+  Lazy clone(Label* context) const {
     assert(object);
     pull();
     startFreeze();
-    return Lazy<P>(getLabel()->fork(), object, true);
+    return Lazy(getLabel()->fork(), object, true);
   }
 
   /**
@@ -322,7 +312,7 @@ public:
    * safety on entry and exit.
    */
   void startFreeze() const {
-    return const_cast<Lazy<P>*>(this)->startFreeze();
+    return const_cast<Lazy*>(this)->startFreeze();
   }
 
   /**
@@ -339,7 +329,7 @@ public:
    * Freeze.
    */
   void freeze() const {
-    return const_cast<Lazy<P>*>(this)->freeze();
+    return const_cast<Lazy*>(this)->freeze();
   }
 
   /**
@@ -359,7 +349,7 @@ public:
    * Thaw.
    */
   void thaw(Label* label) const {
-    return const_cast<Lazy<P>*>(this)->thaw(label);
+    return const_cast<Lazy*>(this)->thaw(label);
   }
 
   /**
@@ -379,7 +369,7 @@ public:
    * safety on entry and exit.
    */
   void startFinish() const {
-    return const_cast<Lazy<P>*>(this)->startFinish();
+    return const_cast<Lazy*>(this)->startFinish();
   }
 
   /**
@@ -396,7 +386,7 @@ public:
    * Finish.
    */
   void finish() const {
-    return const_cast<Lazy<P>*>(this)->finish();
+    return const_cast<Lazy*>(this)->finish();
   }
 
   /**

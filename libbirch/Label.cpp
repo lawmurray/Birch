@@ -3,19 +3,28 @@
  */
 #include "libbirch/Label.hpp"
 
+libbirch::Label::Label(Label* parent) :
+    frozen(parent->frozen) {
+  assert(parent);
+  parent->lock.write();
+  parent->memo.rehash();
+  parent->lock.downgrade();
+  memo.copy(parent->memo);
+  parent->lock.unread();
+}
+
 libbirch::Any* libbirch::Label::get(Any* o) {
   assert(o->isFrozen());
   Any* prev = nullptr;
   Any* next = o;
-  bool frozen = true;
-  m.l.write();
-  do {
+  bool frozen = o->isFrozen();
+  while (frozen && next) {
     prev = next;
-    next = m.get(prev);
+    next = memo.get(prev);
     if (next) {
       frozen = next->isFrozen();
     }
-  } while (frozen && next);
+  }
   if (!next) {
 	  next = prev;
 	}
@@ -28,27 +37,23 @@ libbirch::Any* libbirch::Label::get(Any* o) {
       next = copy(next);
     }
   }
-  m.l.unwrite();
   return next;
 }
 
 libbirch::Any* libbirch::Label::pull(Any* o) {
-  assert(o->isFrozen());
   Any* prev = nullptr;
   Any* next = o;
-  bool frozen = true;
-  m.l.read();
-  do {
+  bool frozen = o->isFrozen();
+  while (frozen && next) {
     prev = next;
-    next = m.get(prev);
+    next = memo.get(prev);
     if (next) {
       frozen = next->isFrozen();
     }
-  } while (frozen && next);
+  }
   if (!next) {
 	  next = prev;
 	}
-  m.l.unread();
   return next;
 }
 
@@ -57,7 +62,7 @@ libbirch::Any* libbirch::Label::copy(Any* o) {
   auto cloned = o->clone_(this);
   if (!o->isSingle()) {
     thaw();  // new entry, so no longer considered frozen
-    m.put(o, cloned);
+    memo.put(o, cloned);
   }
   return cloned;
 }
@@ -65,9 +70,9 @@ libbirch::Any* libbirch::Label::copy(Any* o) {
 void libbirch::Label::freeze() {
   if (!frozen) {
     frozen = true;
-    m.l.read();
-    m.freeze();
-    m.l.unread();
+    lock.read();
+    memo.freeze();
+    lock.unread();
   }
 }
 

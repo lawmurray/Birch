@@ -105,15 +105,13 @@ public:
    * Copy assignment.
    */
   WeakPtr<T>& operator=(const WeakPtr<T>& o) {
-    if (ptr != o.ptr) {
-      if (o.ptr) {
-        o.ptr->incWeak();
-      }
-      auto old = ptr;
-      ptr = o.ptr;
-      if (old) {
-        old->decWeak();
-      }
+    if (o.ptr) {
+      o.ptr->incWeak();
+    }
+    auto old = ptr;
+    ptr = o.ptr;
+    if (old) {
+      old->decWeak();
     }
     return *this;
   }
@@ -123,15 +121,13 @@ public:
    */
   template<class U>
   WeakPtr<T>& operator=(const WeakPtr<U>& o) {
-    if (ptr != o.ptr) {
-      if (o.ptr) {
-        o.ptr->incWeak();
-      }
-      auto old = ptr;
-      ptr = o.ptr;
-      if (old) {
-        old->decWeak();
-      }
+    if (o.ptr) {
+      o.ptr->incWeak();
+    }
+    auto old = ptr;
+    ptr = o.ptr;
+    if (old) {
+      old->decWeak();
     }
     return *this;
   }
@@ -140,13 +136,11 @@ public:
    * Move assignment.
    */
   WeakPtr<T>& operator=(WeakPtr<T> && o) {
-    if (ptr != o.ptr) {
-      auto old = ptr;
-      ptr = o.ptr;
-      o.ptr = nullptr;
-      if (old) {
-        old->decWeak();
-      }
+    auto old = ptr;
+    ptr = o.ptr;
+    o.ptr = nullptr;
+    if (old) {
+      old->decWeak();
     }
     return *this;
   }
@@ -156,13 +150,11 @@ public:
    */
   template<class U>
   WeakPtr<T>& operator=(WeakPtr<U> && o) {
-    if (ptr != o.ptr) {
-      auto old = ptr;
-      ptr = o.ptr;
-      o.ptr = nullptr;
-      if (old) {
-        old->decWeak();
-      }
+    auto old = ptr;
+    ptr = o.ptr;
+    o.ptr = nullptr;
+    if (old) {
+      old->decWeak();
     }
     return *this;
   }
@@ -189,14 +181,12 @@ public:
   void replace(T* ptr) {
     assert(!ptr || ptr->numWeak() > 0);
     auto old = this->ptr;
-    if (ptr != old) {
-      if (ptr) {
-        ptr->incWeak();
-      }
-      this->ptr = ptr;
-      if (old) {
-        old->decWeak();
-      }
+    if (ptr) {
+      ptr->incWeak();
+    }
+    this->ptr = ptr;
+    if (old) {
+      old->decWeak();
     }
   }
 

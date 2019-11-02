@@ -110,15 +110,13 @@ public:
    * Copy assignment.
    */
   SharedPtr<T>& operator=(const SharedPtr<T>& o) {
-    if (ptr != o.ptr) {
-      if (o.ptr) {
-        o.ptr->incShared();
-      }
-      auto old = ptr;
-      ptr = o.ptr;
-      if (old) {
-        old->decShared();
-      }
+    if (o.ptr) {
+      o.ptr->incShared();
+    }
+    auto old = ptr;
+    ptr = o.ptr;
+    if (old) {
+      old->decShared();
     }
     return *this;
   }
@@ -128,15 +126,13 @@ public:
    */
   template<class U>
   SharedPtr<T>& operator=(const SharedPtr<U>& o) {
-    if (ptr != o.ptr) {
-      if (o.ptr) {
-        o.ptr->incShared();
-      }
-      auto old = ptr;
-      ptr = o.ptr;
-      if (old) {
-        old->decShared();
-      }
+    if (o.ptr) {
+      o.ptr->incShared();
+    }
+    auto old = ptr;
+    ptr = o.ptr;
+    if (old) {
+      old->decShared();
     }
     return *this;
   }
@@ -145,13 +141,11 @@ public:
    * Move assignment.
    */
   SharedPtr<T>& operator=(SharedPtr<T> && o) {
-    if (ptr != o.ptr) {
-      auto old = ptr;
-      ptr = o.ptr;
-      o.ptr = nullptr;
-      if (old) {
-        old->decShared();
-      }
+    auto old = ptr;
+    ptr = o.ptr;
+    o.ptr = nullptr;
+    if (old) {
+      old->decShared();
     }
     return *this;
   }
@@ -161,13 +155,11 @@ public:
    */
   template<class U>
   SharedPtr<T>& operator=(SharedPtr<U> && o) {
-    if (ptr != o.ptr) {
-      auto old = ptr;
-      ptr = o.ptr;
-      o.ptr = nullptr;
-      if (old) {
-        old->decShared();
-      }
+    auto old = ptr;
+    ptr = o.ptr;
+    o.ptr = nullptr;
+    if (old) {
+      old->decShared();
     }
     return *this;
   }
@@ -194,14 +186,12 @@ public:
   void replace(T* ptr) {
     //assert(!ptr || ptr->numShared() > 0);
     auto old = this->ptr;
-    if (ptr != old) {
-      if (ptr) {
-        ptr->incShared();
-      }
-      this->ptr = ptr;
-      if (old) {
-        old->decShared();
-      }
+    if (ptr) {
+      ptr->incShared();
+    }
+    this->ptr = ptr;
+    if (old) {
+      old->decShared();
     }
   }
 
