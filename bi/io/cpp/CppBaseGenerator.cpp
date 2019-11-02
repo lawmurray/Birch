@@ -253,31 +253,38 @@ void bi::CppBaseGenerator::visit(const Assign* o) {
     }
     --inAssign;
     middle(o->right << ')');
+  } else if (slice) {
+    /* this assignment is to the slice of an array, use the setter function
+     * to ensure thread safety */
+    ++inAssign;
+    middle(slice->single << ".set(");
+    middle("libbirch::make_slice(" << slice->brackets << ')');
+    --inAssign;
+    if (!slice->single->type->isValue()) {
+      middle(", context_");
+    }
+    middle(", ");
+    genArg(o->right, o->left->type);
+    middle(')');
   } else {
     ++inAssign;
     if (o->left->type->isValue()) {
       middle(o->left << " = ");
       --inAssign;
-      //genArg(o->right, o->target->single->type);
-      middle(o->right);
+      genArg(o->right, o->left->type);
+      //middle(o->right);
     } else {
       middle(o->left << ".assign(context_, ");
       --inAssign;
-      //genArg(o->right, o->target->single->type);
-      middle(o->right);
+      genArg(o->right, o->left->type);
+      //middle(o->right);
       middle(')');
     }
   }
 }
 
 void bi::CppBaseGenerator::visit(const Slice* o) {
-  middle(o->single);
-  if (!inAssign && o->single->type->isValue()) {
-    /* optimization: just reading a value, so ensure that access is in a
-     * const context to avoid unnecessary copy */
-    middle(".as_const()");
-  }
-  middle("(libbirch::make_slice(" << o->brackets << "))");
+  middle(o->single << ".get(libbirch::make_slice(" << o->brackets << "))");
 }
 
 void bi::CppBaseGenerator::visit(const Query* o) {
@@ -968,13 +975,14 @@ void bi::CppBaseGenerator::genArg(const Expression* arg, const Type* type) {
   auto isThis = dynamic_cast<const This*>(arg);
   auto isSuper = dynamic_cast<const Super*>(arg);
   auto isSequence = dynamic_cast<const Sequence*>(arg);
-  if (!arg->type->equals(*type) || isThis || isSuper || isSequence) {
+  if ((!arg->type->equals(*type) && arg->type->isConvertible(*type)) || isThis || isSuper || isSequence) {
     middle(type->canonical() << '(');
     if (!type->isValue()) {
       middle("context_, ");
     }
     middle(arg << ')');
   } else {
+    /* either the same type, or using an assignment operator overload */
     middle(arg);
   }
 }
