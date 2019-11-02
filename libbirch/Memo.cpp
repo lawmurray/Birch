@@ -3,7 +3,7 @@
  */
 #include "libbirch/Memo.hpp"
 
-libbirch::LazyMemo::LazyMemo() :
+libbirch::Memo::Memo() :
     keys(nullptr),
     values(nullptr),
     nentries(0u),
@@ -13,7 +13,7 @@ libbirch::LazyMemo::LazyMemo() :
   //
 }
 
-libbirch::LazyMemo::~LazyMemo() {
+libbirch::Memo::~Memo() {
   if (nentries > 0u) {
     for (unsigned i = 0u; i < nentries; ++i) {
       auto key = keys[i];
@@ -28,7 +28,7 @@ libbirch::LazyMemo::~LazyMemo() {
   }
 }
 
-libbirch::LazyMemo::value_type libbirch::LazyMemo::get(const key_type key,
+libbirch::Memo::value_type libbirch::Memo::get(const key_type key,
     const value_type failed) {
   /* pre-condition */
   assert(key);
@@ -47,7 +47,7 @@ libbirch::LazyMemo::value_type libbirch::LazyMemo::get(const key_type key,
   }
   return value;
 }
-void libbirch::LazyMemo::put(const key_type key,
+void libbirch::Memo::put(const key_type key,
     const value_type value) {
   /* pre-condition */
   assert(key);
@@ -68,13 +68,15 @@ void libbirch::LazyMemo::put(const key_type key,
   values[i] = value;
 }
 
-void libbirch::LazyMemo::copy(LazyMemo& o) {
+void libbirch::Memo::copy(Memo& o) {
   assert(empty());
 
   /* strategy here is to rehash the parent, which may reduce its size and
    * remove unreachable entries, then just copy entry-by-entry into
    * this, with no need to rehash */
+  o.l.write();
   o.rehash();
+  o.l.downgrade();
   if (o.nentries > 0u) {
     /* allocate */
     keys = (key_type*)allocate(o.nentries * sizeof(key_type));
@@ -99,9 +101,10 @@ void libbirch::LazyMemo::copy(LazyMemo& o) {
       values[i] = value;
     }
   }
+  o.l.unread();
 }
 
-void libbirch::LazyMemo::freeze() {
+void libbirch::Memo::freeze() {
   for (auto i = 0u; i < nentries; ++i) {
     auto v = values[i];
     if (v) {
@@ -110,7 +113,7 @@ void libbirch::LazyMemo::freeze() {
   }
 }
 
-void libbirch::LazyMemo::reserve() {
+void libbirch::Memo::reserve() {
   ++nnew;
   ++noccupied;
   if (noccupied > crowd()) {
@@ -118,7 +121,7 @@ void libbirch::LazyMemo::reserve() {
   }
 }
 
-void libbirch::LazyMemo::rehash() {
+void libbirch::Memo::rehash() {
   if (nnew > 0u) {  // no need to rehash if no new entries since last time
     nnew = 0u;
 

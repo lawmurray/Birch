@@ -8,7 +8,7 @@ libbirch::Any* libbirch::Label::get(Any* o) {
   Any* prev = nullptr;
   Any* next = o;
   bool frozen = true;
-  l.set();
+  m.l.write();
   do {
     prev = next;
     next = m.get(prev);
@@ -28,7 +28,7 @@ libbirch::Any* libbirch::Label::get(Any* o) {
       next = copy(next);
     }
   }
-  l.unset();
+  m.l.unwrite();
   return next;
 }
 
@@ -37,7 +37,7 @@ libbirch::Any* libbirch::Label::pull(Any* o) {
   Any* prev = nullptr;
   Any* next = o;
   bool frozen = true;
-  l.set();
+  m.l.read();
   do {
     prev = next;
     next = m.get(prev);
@@ -48,7 +48,7 @@ libbirch::Any* libbirch::Label::pull(Any* o) {
   if (!next) {
 	  next = prev;
 	}
-  l.unset();
+  m.l.unread();
   return next;
 }
 
@@ -65,9 +65,9 @@ libbirch::Any* libbirch::Label::copy(Any* o) {
 void libbirch::Label::freeze() {
   if (!frozen) {
     frozen = true;
-    l.set();
+    m.l.read();
     m.freeze();
-    l.unset();
+    m.l.unread();
   }
 }
 
