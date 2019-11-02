@@ -97,7 +97,8 @@ public:
    * @param values Values.
    */
   template<IS_NOT_VALUE(T), class U>
-  Array(Label* context, const F& shape, const std::initializer_list<U>& values) :
+  Array(Label* context, const F& shape,
+      const std::initializer_list<U>& values) :
       shape(shape),
       buffer(nullptr),
       offset(0),
@@ -148,7 +149,9 @@ public:
       offset(0),
       isView(false) {
     allocate();
+    o.pin();
     uninitialized_copy(o);
+    o.unpin();
   }
 
   /**
@@ -161,7 +164,9 @@ public:
       offset(0),
       isView(false) {
     allocate();
+    o.pin();
     uninitialized_copy(context, o);
+    o.unpin();
   }
 
   /**
@@ -186,7 +191,9 @@ public:
       offset(0),
       isView(false) {
     allocate();
+    o.pin();
     uninitialized_copy(context, label, o);
+    o.unpin();
   }
 
   /**
@@ -216,9 +223,12 @@ public:
    */
   template<IS_VALUE(T)>
   Array<T,F>& assign(const Array<T,F>& o) {
+    o.pin();
     if (isView) {
       libbirch_assert_msg_(o.shape.conforms(shape), "array sizes are different");
+      pin();
       copy(o);
+      unpin();
     } else {
       lock();
       if (o.isView) {
@@ -230,6 +240,7 @@ public:
       }
       unlock();
     }
+    o.unpin();
     return *this;
   }
 
@@ -239,9 +250,12 @@ public:
    */
   template<IS_NOT_VALUE(T)>
   Array<T,F>& assign(Label* context, const Array<T,F>& o) {
+    o.pin();
     if (isView) {
       libbirch_assert_msg_(o.shape.conforms(shape), "array sizes are different");
+      pin();
       copy(context, o);
+      unpin();
     } else {
       lock();
       if (o.isView) {
@@ -253,6 +267,7 @@ public:
       }
       unlock();
     }
+    o.unpin();
     return *this;
   }
 
@@ -263,7 +278,9 @@ public:
   Array<T,F>& assign(Label* context, Array<T,F>&& o) {
     if (isView) {
       libbirch_assert_msg_(o.shape.conforms(shape), "array sizes are different");
+      pin();
       copy(context, o);
+      unpin();
     } else {
       lock();
       if (o.isView) {
@@ -284,7 +301,9 @@ public:
   Array<T,F>& assign(Array<T,F> && o) {
     if (isView) {
       libbirch_assert_msg_(o.shape.conforms(shape), "array sizes are different");
+      pin();
       copy(o);
+      unpin();
     } else {
       lock();
       if (o.isView) {
@@ -313,34 +332,6 @@ public:
   }
 
   /**
-   * Number of rows. For a one-dimensional array, this is the length.
-   */
-  auto rows() const {
-    return shape.length(0);
-  }
-
-  /**
-   * Number of columns. For a one-dimensional array, this is 1.
-   */
-  auto cols() const {
-    return F::count() == 1 ? 1 : shape.length(1);
-  }
-
-  /**
-   * Stride between rows.
-   */
-  auto rowStride() const {
-    return F::count() == 1 ? shape.volume() : shape.stride(0);
-  }
-
-  /**
-   * Stride between columns.
-   */
-  auto colStride() const {
-    return F::count() == 1 ? shape.stride(0) : shape.stride(1);
-  }
-
-  /**
    * @name Element access, caller not responsible for thread safety
    */
   ///@{
@@ -362,46 +353,76 @@ public:
     return view;
   }
 
-  template<class U, class G, class V, IS_VALUE(T), std::enable_if_t<V::rangeCount() != 0,int> = 0>
-  void set(const V& slice, const Array<U,G>& value) {
+  template<class U, class G, class V, IS_VALUE(T),
+      std::enable_if_t<V::rangeCount() != 0,int> = 0>
+  auto set(const V& slice, const Array<U,G>& value) {
     pinWrite();
     Array<T,decltype(shape(slice))> view(shape(slice), buffer, offset +
         shape.serial(slice));
-    view = value;
+    view.copy(value);
     unpin();
+    return view;
   }
 
-  template<class U, class G, class V, IS_NOT_VALUE(T), std::enable_if_t<V::rangeCount() != 0,int> = 0>
-  void set(const V& slice, Label* context, const Array<U,G>& value) {
+  template<class U, class G, class V, IS_NOT_VALUE(T),
+      std::enable_if_t<V::rangeCount() != 0,int> = 0>
+  auto set(const V& slice, Label* context, const Array<U,G>& value) {
     pinWrite();
     Array<T,decltype(shape(slice))> view(shape(slice), buffer, offset +
         shape.serial(slice));
-    view.assign(context, value);
+    view.copy(context, value);
     unpin();
+    return view;
   }
 
   template<class V, std::enable_if_t<V::rangeCount() == 0,int> = 0>
-  auto get(const V& slice) const {
+  T get(const V& slice) const {
     pin();
-    auto element = *(buf() + shape.serial(slice));
+    auto view = *(buf() + shape.serial(slice));
     unpin();
-    return element;
+    return view;
   }
 
-  template<class V, IS_VALUE(T), std::enable_if_t<V::rangeCount() == 0,int> = 0>
-  void set(const V& slice, const T& value) {
+  template<class V, IS_VALUE(T),
+      std::enable_if_t<V::rangeCount() == 0,int> = 0>
+  T& set(const V& slice, const T& value) {
     pinWrite();
-    *(buf() + shape.serial(slice)) = value;
+    auto& view = *(buf() + shape.serial(slice));
+    view = value;
     unpin();
+    return view;
   }
 
-  template<class V, IS_NOT_VALUE(T), std::enable_if_t<V::rangeCount() == 0,int> = 0>
-  void set(const V& slice, Label* context, const T& value) {
+  template<class V, IS_NOT_VALUE(T),
+      std::enable_if_t<V::rangeCount() == 0,int> = 0>
+  T& set(const V& slice, Label* context, const T& value) {
     pinWrite();
-    (buf() + shape.serial(slice))->assign(context, value);
+    T& view = *(buf() + shape.serial(slice));
+    view.assign(context, value);
     unpin();
+    return view;
   }
-  ///@}
+
+  template<class V, IS_VALUE(T),
+      std::enable_if_t<V::rangeCount() == 0,int> = 0>
+  T& set(const V& slice, T&& value) {
+    pinWrite();
+    auto& view = *(buf() + shape.serial(slice));
+    view = std::move(value);
+    unpin();
+    return view;
+  }
+
+  template<class V, IS_NOT_VALUE(T),
+      std::enable_if_t<V::rangeCount() == 0,int> = 0>
+  T& set(const V& slice, Label* context, T&& value) {
+    pinWrite();
+    T& view = *(buf() + shape.serial(slice));
+    view.assign(context, std::move(value));
+    unpin();
+    return view;
+  }
+///@}
 
   /**
    * @name Element access, caller responsible for thread safety
@@ -424,10 +445,10 @@ public:
   }
   Iterator<T,F> end() {
     assert(!isShared());
-    return begin() + shape.size();
+    return begin() + size();
   }
   Iterator<T,F> end() const {
-    return begin() + shape.size();
+    return begin() + size();
   }
 
   /**
@@ -475,6 +496,7 @@ public:
    * contents of the buffer.
    */
   void pinWrite() {
+    assert(!isView);
     bufferLock.write();
     if (isShared()) {
       Array<T,F> tmp(shape, *this);
@@ -522,27 +544,32 @@ public:
     static_assert(F::count() == 1, "can only shrink one-dimensional arrays");
     static_assert(G::count() == 1, "can only shrink one-dimensional arrays");
     assert(!isView);
-    assert(shape.size() < size());
+    assert(shape.size() <= size());
 
     lock();
-    if (isShared()) {
-      Array<T,F> tmp(shape, *this);
-      swap(tmp);
-    } else {
-      if (shape.volume() == 0) {
-        release();
+    auto oldSize = size();
+    auto newSize = shape.size();
+    if (newSize < oldSize) {
+      if (isShared()) {
+        Array<T,F> tmp(shape, *this);
+        swap(tmp);
       } else {
-        auto oldSize = Buffer<T>::size(volume());
-        auto newSize = Buffer<T>::size(shape.volume());
-        auto iter = begin();
-        auto last = end();
-        for (iter += shape.size(); iter != last; ++iter) {
-          iter->~T();
+        if (newSize == 0) {
+          release();
+        } else {
+          auto iter = begin();
+          auto last = end();
+          for (iter += shape.size(); iter != last; ++iter) {
+            iter->~T();
+          }
+          // ^ C++17 use std::destroy
+          auto oldBytes = Buffer<T>::size(volume());
+          auto newBytes = Buffer<T>::size(shape.volume());
+          buffer = (Buffer<T>*)libbirch::reallocate(buffer, oldBytes,
+              buffer->tid, newBytes);
         }
-        buffer = (Buffer<T>*)libbirch::reallocate(buffer, oldSize,
-            buffer->tid, newSize);
+        this->shape = shape;
       }
-      this->shape = shape;
     }
     unlock();
   }
@@ -560,22 +587,24 @@ public:
     static_assert(F::count() == 1, "can only enlarge one-dimensional arrays");
     static_assert(G::count() == 1, "can only enlarge one-dimensional arrays");
     assert(!isView);
-    assert(shape.size() > size());
+    assert(shape.size() >= size());
 
     lock();
-    auto n = size();
-    if (isShared() || !buffer) {
-      Array<T,F> tmp(shape, *this);
-      swap(tmp);
-    } else {
-      auto oldSize = Buffer<T>::size(volume());
-      auto newSize = Buffer<T>::size(shape.volume());
-      buffer = (Buffer<T>*)libbirch::reallocate(buffer, oldSize,
-          buffer->tid, newSize);
-      this->shape = shape;
+    auto oldSize = size();
+    auto newSize = shape.size();
+    if (newSize > oldSize) {
+      if (!buffer || isShared()) {
+        Array<T,F> tmp(shape, *this);
+        swap(tmp);
+      } else {
+        auto oldBytes = Buffer<T>::size(volume());
+        auto newBytes = Buffer<T>::size(shape.volume());
+        buffer = (Buffer<T>*)libbirch::reallocate(buffer, oldBytes,
+            buffer->tid, newBytes);
+        this->shape = shape;
+      }
+      std::uninitialized_fill(begin() + oldSize, begin() + newSize, x);
     }
-    auto iter = begin();
-    std::uninitialized_fill(iter + n, iter + size(), x);
     unlock();
   }
   ///@}
@@ -638,6 +667,38 @@ public:
       isView(false) {
     allocate();
     toEigen() = o;
+  }
+
+  /**
+   * Number of rows. For a vectoor, this is the length.
+   */
+  auto rows() const {
+    assert(1 <= F::count() && F::count() <= 2);
+    return shape.length(0);
+  }
+
+  /**
+   * Number of columns. For a vector, this is 1.
+   */
+  auto cols() const {
+    assert(1 <= F::count() && F::count() <= 2);
+    return F::count() == 1 ? 1 : shape.length(1);
+  }
+
+  /**
+   * Stride between rows.
+   */
+  auto rowStride() const {
+    assert(1 <= F::count() && F::count() <= 2);
+    return F::count() == 1 ? shape.volume() : shape.stride(0);
+  }
+
+  /**
+   * Stride between columns.
+   */
+  auto colStride() const {
+    assert(1 <= F::count() && F::count() <= 2);
+    return F::count() == 1 ? shape.stride(0) : shape.stride(1);
   }
   ///@}
 
@@ -732,6 +793,8 @@ private:
    * Swap with another array.
    */
   void swap(Array<T,F>& o) {
+    assert(!isView);
+    assert(!o.isView);
     std::swap(buffer, o.buffer);
     std::swap(shape, o.shape);
     std::swap(offset, o.offset);
@@ -742,12 +805,9 @@ private:
    */
   void allocate() {
     assert(!buffer);
-    auto size = Buffer<T>::size(volume());
-    if (size > 0) {
-      buffer = new (libbirch::allocate(size)) Buffer<T>();
-      if (buffer) {
-        buffer->incUsage();
-      }
+    auto bytes = Buffer<T>::size(volume());
+    if (bytes > 0u) {
+      buffer = new (libbirch::allocate(bytes)) Buffer<T>();
       offset = 0;
     }
   }
@@ -762,8 +822,9 @@ private:
       for (; iter != last; ++iter) {
         iter->~T();
       }
-      size_t size = Buffer<T>::size(volume());
-      libbirch::deallocate(buffer, size, buffer->tid);
+      // ^ C++17 use std::destroy
+      size_t bytes = Buffer<T>::size(volume());
+      libbirch::deallocate(buffer, bytes, buffer->tid);
     }
     buffer = nullptr;
     offset = 0;
@@ -788,8 +849,6 @@ private:
    */
   template<IS_VALUE(T), class U, class G>
   void copy(const Array<U,G>& o) {
-    pinWrite();
-    o.pin();
     auto n = std::min(size(), o.size());
     auto begin1 = o.begin();
     auto end1 = begin1 + n;
@@ -800,8 +859,6 @@ private:
     } else {
       std::copy(begin1, end1, begin2);
     }
-    o.unpin();
-    unpin();
   }
 
   /**
@@ -809,8 +866,6 @@ private:
    */
   template<IS_NOT_VALUE(T), class U, class G>
   void copy(Label* context, const Array<U,G>& o) {
-    pinWrite();
-    o.pin();
     auto n = std::min(size(), o.size());
     auto begin1 = o.begin();
     auto end1 = begin1 + n;
@@ -825,8 +880,6 @@ private:
         begin2->assign(context, *begin1);
       }
     }
-    o.unpin();
-    unpin();
   }
 
   /**

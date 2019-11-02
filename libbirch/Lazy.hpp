@@ -202,10 +202,10 @@ public:
   Lazy& assign(Label* context, const Lazy<Q>& o) {
     if (o.query()) {
       replaceLabel(o.getLabel(), o.getLabel() != context);
+      object = o.get();
     } else {
-      releaseLabel();
+      release();
     }
-    object = o.get();
     return *this;
   }
 
@@ -216,10 +216,10 @@ public:
   Lazy& assign(Label* context, Lazy<Q>&& o) {
     if (o.query()) {
       replaceLabel(o.getLabel(), o.getLabel() != context);
+      object = std::move(o.object);
     } else {
-      releaseLabel();
+      release();
     }
-    object = std::move(o.object);
     return *this;
   }
 

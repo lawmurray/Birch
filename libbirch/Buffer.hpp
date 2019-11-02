@@ -20,20 +20,15 @@ namespace libbirch {
 template<class T>
 class Buffer {
 public:
+  Buffer(const Buffer& o) = delete;
+  Buffer(Buffer&& o) = delete;
+  Buffer& operator=(const Buffer&) = delete;
+  Buffer& operator=(Buffer&&) = delete;
+
   /**
    * Constructor.
    */
   Buffer();
-
-  /**
-   * Copy constructor.
-   */
-  Buffer(const Buffer<T>& o) = delete;
-
-  /**
-   * Assignment operator.
-   */
-  Buffer<T>& operator=(const Buffer<T>&) = delete;
 
   /**
    * Increment the usage count.
@@ -90,7 +85,7 @@ private:
 template<class T>
 libbirch::Buffer<T>::Buffer() :
     tid(get_thread_num()),
-    useCount(0) {
+    useCount(1) {
   //
 }
 
