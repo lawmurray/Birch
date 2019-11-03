@@ -14,7 +14,6 @@ libbirch::Label::Label(Label* parent) :
 }
 
 libbirch::Any* libbirch::Label::get(Any* o) {
-  assert(o->isFrozen());
   Any* prev = nullptr;
   Any* next = o;
   bool frozen = o->isFrozen();
