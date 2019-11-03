@@ -29,10 +29,6 @@ final class DelayBeta(future:Real?, futureUpdate:Boolean, α:Real, β:Real) <
     //
   }
 
-  function pdf(x:Real) -> Real {
-    return pdf_beta(x, α, β);
-  }
-
   function cdf(x:Real) -> Real {
     return cdf_beta(x, α, β);
   }

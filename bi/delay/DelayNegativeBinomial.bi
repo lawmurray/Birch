@@ -33,10 +33,6 @@ final class DelayNegativeBinomial(future:Integer?, futureUpdate:Boolean,
     //
   }
 
-  function pdf(x:Integer) -> Real {
-    return pdf_negative_binomial(x, n, ρ);
-  }
-
   function cdf(x:Integer) -> Real {
     return cdf_negative_binomial(x, n, ρ);
   }

@@ -41,11 +41,6 @@ final class DelayLinearMatrixNormalInverseGammaMatrixGaussian(
         X, A, M.N, C, M.Λ, M.α, M.γ);
   }
 
-  function pdf(X:Real[_,_]) -> Real {
-    return pdf_linear_matrix_normal_inverse_gamma_matrix_gaussian(
-        X, A, M.N, C, M.Λ, M.α, M.γ);
-  }
-
   function write(buffer:Buffer) {
     buffer.set(value());
   }

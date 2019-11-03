@@ -29,10 +29,6 @@ final class DelayWeibull(future:Real?, futureUpdate:Boolean, k:Real, λ:Real) <
     //
   }
 
-  function pdf(x:Real) -> Real {
-    return pdf_weibull(x, k, λ);
-  }
-
   function cdf(x:Real) -> Real {
     return cdf_weibull(x, k, λ);
   }

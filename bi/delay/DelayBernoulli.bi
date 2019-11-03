@@ -24,10 +24,6 @@ final class DelayBernoulli(future:Boolean?, futureUpdate:Boolean, ρ:Real) <
     //
   }
 
-  function pdf(x:Boolean) -> Real {
-    return pdf_bernoulli(x, ρ);
-  }
-
   function write(buffer:Buffer) {
     prune();
     buffer.set("class", "Bernoulli");

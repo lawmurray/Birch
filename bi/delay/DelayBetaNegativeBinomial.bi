@@ -32,10 +32,6 @@ final class DelayBetaNegativeBinomial(future:Integer?, futureUpdate:Boolean,
   function downdate(x:Integer) {
     (ρ.α, ρ.β) <- downdate_beta_negative_binomial(x, k, ρ.α, ρ.β);
   }
-
-  function pdf(x:Integer) -> Real {
-    return pdf_beta_negative_binomial(x, k, ρ.α, ρ.β);
-  }
 }
 
 function DelayBetaNegativeBinomial(future:Integer?, futureUpdate:Boolean, k:Integer, ρ:DelayBeta) -> DelayBetaNegativeBinomial {

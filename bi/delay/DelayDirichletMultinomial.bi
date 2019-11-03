@@ -30,10 +30,6 @@ final class DelayDirichletMultinomial(future:Integer[_]?,
     ρ.α <- downdate_dirichlet_multinomial(x, n, ρ.α);
   }
 
-  function pdf(x:Integer[_]) -> Real {
-    return pdf_dirichlet_multinomial(x, n, ρ.α);
-  }
-
   function write(buffer:Buffer) {
     buffer.set(value());
   }

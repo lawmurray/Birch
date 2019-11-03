@@ -33,10 +33,6 @@ final class DelayStudent(future:Real?, futureUpdate:Boolean, ν:Real, μ:Real, �
     //
   }
 
-  function pdf(x:Real) -> Real {
-    return pdf_student_t(x, ν, μ, σ2);
-  }
-
   function cdf(x:Real) -> Real {
     return cdf_student_t(x, ν, μ, σ2);
   }

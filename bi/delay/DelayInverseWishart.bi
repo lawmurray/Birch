@@ -29,10 +29,6 @@ final class DelayInverseWishart(future:Real[_,_]?, futureUpdate:Boolean,
     //
   }
 
-  function pdf(X:Real[_,_]) -> Real {
-    return pdf_inverse_wishart(X, Ψ, k);
-  }
-
   function write(buffer:Buffer) {
     prune();
     buffer.set("class", "InverseWishart");

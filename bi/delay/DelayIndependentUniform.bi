@@ -29,10 +29,6 @@ final class DelayIndependentUniform(future:Real[_]?, futureUpdate:Boolean,
     //
   }
 
-  function pdf(x:Real[_]) -> Real {
-    return pdf_independent_uniform(x, l, u);
-  }
-
   function write(buffer:Buffer) {
     prune();
     buffer.set("class", "IndependentUniform");

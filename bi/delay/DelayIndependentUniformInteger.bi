@@ -30,10 +30,6 @@ final class DelayIndependentUniformInteger(future:Integer[_]?,
     //
   }
 
-  function pdf(x:Integer[_]) -> Real {
-    return pdf_independent_uniform_int(x, l, u);
-  }
-
   function write(buffer:Buffer) {
     prune();
     buffer.set("class", "IndependentUniformInteger");

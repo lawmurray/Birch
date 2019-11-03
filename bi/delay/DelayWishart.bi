@@ -29,10 +29,6 @@ final class DelayWishart(future:Real[_,_]?, futureUpdate:Boolean,
     //
   }
 
-  function pdf(X:Real[_,_]) -> Real {
-    return pdf_wishart(X, Ψ, k);
-  }
-
   function write(buffer:Buffer) {
     prune();
     buffer.set("class", "Wishart");

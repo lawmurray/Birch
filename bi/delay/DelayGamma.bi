@@ -29,10 +29,6 @@ final class DelayGamma(future:Real?, futureUpdate:Boolean, k:Real, θ:Real) <
     //
   }
 
-  function pdf(x:Real) -> Real {
-    return pdf_gamma(x, k, θ);
-  }
-
   function cdf(x:Real) -> Real {
     return cdf_gamma(x, k, θ);
   }

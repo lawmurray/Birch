@@ -33,10 +33,6 @@ final class DelayScaledGammaPoisson(future:Integer?, futureUpdate:Boolean,
     (λ.k, λ.θ) <- downdate_scaled_gamma_poisson(x, a, λ.k, λ.θ);
   }
 
-  function pdf(x:Integer) -> Real {
-    return pdf_gamma_poisson(x, λ.k, a*λ.θ);
-  }
-
   function cdf(x:Integer) -> Real {
     return cdf_gamma_poisson(x, λ.k, a*λ.θ);
   }

@@ -35,14 +35,6 @@ final class DelayIndependentInverseGamma(future:Real[_]?,
     //
   }
 
-  function pdf(x:Real[_]) -> Real {
-    return transform_reduce<Real>(x, β, 1.0, @(a:Real, b:Real) -> Real {
-        return a*b;
-      }, @(x:Real, b:Real) -> Real {
-        return pdf_inverse_gamma(x, α, b);
-      });
-  }
-
   function lower() -> Real[_]? {
     return vector(0.0, length(β));
   }

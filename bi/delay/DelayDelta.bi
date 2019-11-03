@@ -28,10 +28,6 @@ final class DelayDelta(future:Integer?, futureUpdate:Boolean, μ:Integer) <
     //
   }
 
-  function pdf(x:Integer) -> Real {
-    return pdf_delta(x, μ);
-  }
-
   function lower() -> Integer? {
     return μ;
   }

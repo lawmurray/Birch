@@ -29,10 +29,6 @@ class DelayScaledGammaExponential(future:Real?, futureUpdate:Boolean, a:Real,
     (λ.k, λ.θ) <- downdate_scaled_gamma_exponential(x, a, λ.k, λ.θ);
   }
 
-  function pdf(x:Real) -> Real {
-    return pdf_lomax(x, 1.0/(a*λ.θ), λ.k);
-  }
-
   function cdf(x:Real) -> Real {
     return cdf_lomax(x, 1.0/(a*λ.θ), λ.k);
   }

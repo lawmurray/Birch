@@ -54,10 +54,6 @@ final class DelayMatrixNormalInverseGamma(future:Real[_,_]?,
     (σ2.α, σ2.β) <- downdate_matrix_normal_inverse_gamma(X, N, Λ, α, γ);
   }
 
-  function pdf(X:Real[_,_]) -> Real {
-    return pdf_matrix_normal_inverse_gamma(X, N, Λ, α, γ);
-  }
-
   function write(buffer:Buffer) {
     prune();
     buffer.set("class", "MatrixNormalInverseGamma");

@@ -33,10 +33,6 @@ class DelayMultivariateGaussian(future:Real[_]?, futureUpdate:Boolean,
     //
   }
 
-  function pdf(x:Real[_]) -> Real {
-    return pdf_multivariate_gaussian(x, μ, Σ);
-  }
-
   function write(buffer:Buffer) {
     prune();
     buffer.set("class", "MultivariateGaussian");

@@ -41,11 +41,6 @@ final class DelayLinearMultivariateNormalInverseGammaMultivariateGaussian(
         x, A, μ.ν, c, μ.Λ, μ.α, μ.γ);
   }
 
-  function pdf(x:Real[_]) -> Real {
-    return pdf_linear_multivariate_normal_inverse_gamma_multivariate_gaussian(
-        x, A, μ.ν, c, μ.Λ, μ.α, μ.γ);
-  }
-
   function write(buffer:Buffer) {
     buffer.set(value());
   }

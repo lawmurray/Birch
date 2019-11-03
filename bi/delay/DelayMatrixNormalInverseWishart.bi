@@ -44,10 +44,6 @@ final class DelayMatrixNormalInverseWishart(future:Real[_,_]?,
     (V.Ψ, V.k) <- downdate_matrix_normal_inverse_wishart(X, N, Λ, V.Ψ, V.k);
   }
 
-  function pdf(X:Real[_,_]) -> Real {
-    return pdf_matrix_normal_inverse_wishart(X, N, Λ, V.Ψ, V.k);
-  }
-
   function write(buffer:Buffer) {
     prune();
     buffer.set("class", "MatrixNormalInverseWishart");

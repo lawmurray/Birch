@@ -24,10 +24,6 @@ final class DelayCategorical(future:Integer?, futureUpdate:Boolean, ρ:Real[_]) 
     //
   }
 
-  function pdf(x:Integer) -> Real {
-    return pdf_categorical(x, ρ);
-  }
-
   function cdf(x:Integer) -> Real {
     return cdf_categorical(x, ρ);
   }

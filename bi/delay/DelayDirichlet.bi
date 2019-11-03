@@ -24,10 +24,6 @@ final class DelayDirichlet(future:Real[_]?, futureUpdate:Boolean, α:Real[_])
     //
   }
 
-  function pdf(x:Real[_]) -> Real {
-    return pdf_dirichlet(x, α);
-  }
-
   function write(buffer:Buffer) {
     prune();
     buffer.set("class", "Dirichlet");

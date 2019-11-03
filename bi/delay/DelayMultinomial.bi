@@ -29,10 +29,6 @@ final class DelayMultinomial(future:Integer[_]?, futureUpdate:Boolean,
     //
   }
 
-  function pdf(x:Integer[_]) -> Real {
-    return pdf_multinomial(x, n, ρ);
-  }
-
   function write(buffer:Buffer) {
     prune();
     buffer.set("class", "Multinomial");

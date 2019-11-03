@@ -28,10 +28,6 @@ final class DelayPoisson(future:Integer?, futureUpdate:Boolean, λ:Real) <
     //
   }
 
-  function pdf(x:Integer) -> Real {
-    return pdf_poisson(x, λ);
-  }
-
   function cdf(x:Integer) -> Real {
     return cdf_poisson(x, λ);
   }

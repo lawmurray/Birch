@@ -43,10 +43,6 @@ class DelayMatrixGaussian(future:Real[_,_]?, futureUpdate:Boolean,
     //
   }
 
-  function pdf(X:Real[_,_]) -> Real {
-    return pdf_matrix_gaussian(X, M, U, V);
-  }
-
   function write(buffer:Buffer) {
     prune();
     buffer.set("class", "MatrixGaussian");

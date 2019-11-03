@@ -30,10 +30,6 @@ final class DelayRestaurantCategorical(future:Integer?, futureUpdate:Boolean,
     }
     ρ.N <- ρ.N + 1;
   }
-
-  function pdf(x:Integer) -> Real {
-    return pdf_restaurant_categorical(x, ρ.α, ρ.θ, ρ.n, ρ.N);
-  }
   
   function write(buffer:Buffer) {
     buffer.set(value());

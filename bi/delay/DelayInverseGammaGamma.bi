@@ -29,10 +29,6 @@ final class DelayInverseGammaGamma(future:Real?, futureUpdate:Boolean,
     (θ.α, θ.β) <- downdate_inverse_gamma_gamma(x, k, θ.α, θ.β);
   }
 
-  function pdf(x:Real) -> Real {
-    return pdf_compound_gamma(x, k, θ.α, θ.β);
-  }
-
   function cdf(x:Real) -> Real {
     return cdf_compound_gamma(x, k, θ.α, θ.β);
   }
