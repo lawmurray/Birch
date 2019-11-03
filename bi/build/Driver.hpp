@@ -53,11 +53,6 @@ public:
   void clean();
 
   /**
-   * Performance-tune the package.
-   */
-  void tune();
-
-  /**
    * Create a new package.
    */
   void init();

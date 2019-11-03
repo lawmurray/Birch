@@ -390,49 +390,6 @@ void bi::Driver::clean() {
   fs::remove("missing");
 }
 
-void bi::Driver::tune() {
-  meta();
-
-  verbose = false;  // makes things tidier
-  unity = true;     // makes compile faster
-  debug = false;    // makes run faster
-
-  /* best times */
-  double bestEager, bestLazy, bestLazyCloneMemo;
-
-  /* proposed initial sizes, to test */
-  auto initialSizes = { 4, 8, 16, 32, 64, 128, 256, 512, 1024 };
-
-  /* best eager configuration */
-  Driver driverEager(*this);
-  std::cerr << "setting --disable-lazy-deep-clone" << std::endl;
-  driverEager.lazyDeepClone = false;
-  std::cerr << "choosing --clone-memo-initial-size" << std::endl;
-  bestEager = driverEager.choose(&driverEager.cloneMemoInitialSize,
-      initialSizes);
-
-  /* best lazy configuration */
-  Driver driverLazy(*this);
-  std::cerr << "setting --enable-lazy-deep-clone" << std::endl;
-  driverLazy.lazyDeepClone = true;
-  std::cerr << "choosing --clone-memo-initial-size" << std::endl;
-  bestLazy = driverLazy.choose(&driverLazy.cloneMemoInitialSize,
-      initialSizes);
-
-  /* choose one or the other and report */
-  std::cout << "suggested:";
-  if (bestEager < bestLazy) {
-    std::cout << " --disable-lazy-deep-clone";
-    std::cout << " --clone-memo-initial-size="
-        << driverEager.cloneMemoInitialSize;
-  } else {
-    std::cout << " --enable-lazy-deep-clone";
-    std::cout << " --clone-memo-initial-size="
-        << driverLazy.cloneMemoInitialSize;
-  }
-  std::cout << std::endl;
-}
-
 const char* bi::Driver::explain(const std::string& cmd) {
   #ifdef HAVE_LIBEXPLAIN_SYSTEM_H
   return explain_system(cmd.c_str());
@@ -766,16 +723,6 @@ void bi::Driver::help() {
       std::cout << "More information can be found at:" << std::endl;
       std::cout << std::endl;
       std::cout << "  https://birch-lang.org/documentation/driver/commands/docs/" << std::endl;
-    } else if (command.compare("tune") == 0) {
-      std::cout << "Usage:" << std::endl;
-      std::cout << std::endl;
-      std::cout << "  birch tune" << std::endl;
-      std::cout << std::endl;
-      std::cout << "Performance tune build options for the package." << std::endl;
-      std::cout << std::endl;
-      std::cout << "More information can be found at:" << std::endl;
-      std::cout << std::endl;
-      std::cout << "  https://birch-lang.org/documentation/driver/commands/tune/" << std::endl;
     } else if (command.compare("clean") == 0) {
       std::cout << "Usage:" << std::endl;
       std::cout << std::endl;
@@ -805,7 +752,6 @@ void bi::Driver::help() {
     std::cout << "  uninstall     Uninstall the project." << std::endl;
     std::cout << "  dist          Build a distributable archive for the project." << std::endl;
     std::cout << "  docs          Build the reference documentation for the project." << std::endl;
-    std::cout << "  tune          Performance tune build options for the package." << std::endl;
     std::cout << "  clean         Clean the project directory of all build files." << std::endl;
     std::cout << "  help          Print this help message." << std::endl;
     std::cout << std::endl;
@@ -1139,11 +1085,8 @@ void bi::Driver::configure() {
       cxxflags << " -Wall";
     }
     if (debug) {
-      //@todo Consider a development build with these settings
       cflags << " -O0 -fno-inline -g";
       cxxflags << " -O0 -fno-inline -g";
-      //cflags << " -Og -g";
-      //cxxflags << " -Og -g";
     } else {
       cppflags << " -DNDEBUG";
       cflags << " -O3 -flto -g";
