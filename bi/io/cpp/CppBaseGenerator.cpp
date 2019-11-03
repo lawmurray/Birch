@@ -248,32 +248,20 @@ void bi::CppBaseGenerator::visit(const Assign* o) {
      * context is set correctly */
     ++inAssign;
     middle(member->left << "->set_" << var->name << "_(");
+    --inAssign;
     if (slice) {
       middle("libbirch::make_slice(" << slice->brackets << "), ");
     }
-    --inAssign;
     middle(o->right << ')');
-  } else if (slice) {
-    /* this assignment is to the slice of an array, use the setter function
-     * to ensure thread safety */
-    ++inAssign;
-    middle(slice->single << ".set(");
-    middle("libbirch::make_slice(" << slice->brackets << ')');
-    --inAssign;
-    if (!slice->single->type->isValue()) {
-      middle(", context_");
-    }
-    middle(", ");
-    genArg(o->right, o->left->type);
-    middle(')');
   } else {
-    ++inAssign;
     if (o->left->type->isValue()) {
+      ++inAssign;
       middle(o->left << " = ");
       --inAssign;
       genArg(o->right, o->left->type);
       //middle(o->right);
     } else {
+      ++inAssign;
       middle(o->left << ".assign(context_, ");
       --inAssign;
       genArg(o->right, o->left->type);
@@ -284,7 +272,13 @@ void bi::CppBaseGenerator::visit(const Assign* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Slice* o) {
-  middle(o->single << ".get(libbirch::make_slice(" << o->brackets << "))");
+  middle(o->single << '.');
+  if (inAssign) {
+    middle("get");
+  } else {
+    middle("pull");
+  }
+  middle("(libbirch::make_slice(" << o->brackets << "))");
 }
 
 void bi::CppBaseGenerator::visit(const Query* o) {
@@ -792,7 +786,6 @@ void bi::CppBaseGenerator::visit(const For* o) {
   /* o->index may be an identifier or a local variable, in the latter case
    * need to ensure that it is only declared once in the first element of the
    * for loop */
-  ++inAssign;
   auto param = dynamic_cast<LocalVariable*>(o->index);
   if (param) {
     Identifier<LocalVariable> ref(param->name, param->loc, param);
@@ -804,7 +797,6 @@ void bi::CppBaseGenerator::visit(const For* o) {
     middle(o->index << " <= " << o->to << "; ");
     finish("++" << o->index << ") {");
   }
-  --inAssign;
   in();
   *this << o->braces->strip();
   out();

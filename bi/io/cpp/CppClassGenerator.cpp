@@ -305,10 +305,10 @@ void bi::CppClassGenerator::visit(const Class* o) {
 
         if (var->type->isArray()) {
           line("template<class F_, class T_>");
-          line("auto set_" << var->name << "_(const F_& frame_, T_&& o_) {");
+          line("auto set_" << var->name << "_(const F_& shape_, T_&& o_) {");
           in();
           line("libbirch_swap_context_");
-          line("return " << var->name << "(frame_) = std::forward<T_>(o_);");
+          line("return " << var->name << ".get(shape_) = std::forward<T_>(o_);");
           out();
           line("}\n");
         }
