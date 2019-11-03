@@ -149,9 +149,7 @@ public:
       offset(0),
       isView(false) {
     allocate();
-    o.pin();
     uninitialized_copy(o);
-    o.unpin();
   }
 
   /**
@@ -164,9 +162,7 @@ public:
       offset(0),
       isView(false) {
     allocate();
-    o.pin();
     uninitialized_copy(context, o);
-    o.unpin();
   }
 
   /**
@@ -191,9 +187,7 @@ public:
       offset(0),
       isView(false) {
     allocate();
-    o.pin();
     uninitialized_copy(context, label, o);
-    o.unpin();
   }
 
   /**
@@ -223,12 +217,9 @@ public:
    */
   template<IS_VALUE(T)>
   Array<T,F>& assign(const Array<T,F>& o) {
-    o.pin();
     if (isView) {
       libbirch_assert_msg_(o.shape.conforms(shape), "array sizes are different");
-      pin();
       copy(o);
-      unpin();
     } else {
       lock();
       if (o.isView) {
@@ -240,7 +231,6 @@ public:
       }
       unlock();
     }
-    o.unpin();
     return *this;
   }
 
@@ -250,12 +240,9 @@ public:
    */
   template<IS_NOT_VALUE(T)>
   Array<T,F>& assign(Label* context, const Array<T,F>& o) {
-    o.pin();
     if (isView) {
       libbirch_assert_msg_(o.shape.conforms(shape), "array sizes are different");
-      pin();
       copy(context, o);
-      unpin();
     } else {
       lock();
       if (o.isView) {
@@ -267,7 +254,6 @@ public:
       }
       unlock();
     }
-    o.unpin();
     return *this;
   }
 
@@ -278,9 +264,7 @@ public:
   Array<T,F>& assign(Label* context, Array<T,F>&& o) {
     if (isView) {
       libbirch_assert_msg_(o.shape.conforms(shape), "array sizes are different");
-      pin();
       copy(context, o);
-      unpin();
     } else {
       lock();
       if (o.isView) {
@@ -301,9 +285,7 @@ public:
   Array<T,F>& assign(Array<T,F> && o) {
     if (isView) {
       libbirch_assert_msg_(o.shape.conforms(shape), "array sizes are different");
-      pin();
       copy(o);
-      unpin();
     } else {
       lock();
       if (o.isView) {
@@ -345,84 +327,28 @@ public:
    * @return The resulting view or element.
    */
   template<class V, std::enable_if_t<V::rangeCount() != 0,int> = 0>
-  auto get(const V& slice) const {
-    pin();
-    Array<T,decltype(shape(slice))> view(shape(slice), buffer, offset +
-        shape.serial(slice));
-    unpin();
-    return view;
-  }
-
-  template<class U, class G, class V, IS_VALUE(T),
-      std::enable_if_t<V::rangeCount() != 0,int> = 0>
-  auto set(const V& slice, const Array<U,G>& value) {
+  auto get(const V& slice) {
     pinWrite();
-    Array<T,decltype(shape(slice))> view(shape(slice), buffer, offset +
-        shape.serial(slice));
-    view.copy(value);
     unpin();
-    return view;
-  }
-
-  template<class U, class G, class V, IS_NOT_VALUE(T),
-      std::enable_if_t<V::rangeCount() != 0,int> = 0>
-  auto set(const V& slice, Label* context, const Array<U,G>& value) {
-    pinWrite();
-    Array<T,decltype(shape(slice))> view(shape(slice), buffer, offset +
+    return Array<T,decltype(shape(slice))>(shape(slice), buffer, offset +
         shape.serial(slice));
-    view.copy(context, value);
-    unpin();
-    return view;
   }
-
   template<class V, std::enable_if_t<V::rangeCount() == 0,int> = 0>
-  T get(const V& slice) const {
-    pin();
-    auto view = *(buf() + shape.serial(slice));
-    unpin();
-    return view;
-  }
-
-  template<class V, IS_VALUE(T),
-      std::enable_if_t<V::rangeCount() == 0,int> = 0>
-  T& set(const V& slice, const T& value) {
+  T& get(const V& slice) {
     pinWrite();
-    auto& view = *(buf() + shape.serial(slice));
-    view = value;
     unpin();
-    return view;
+    return *(buf() + shape.serial(slice));
   }
-
-  template<class V, IS_NOT_VALUE(T),
-      std::enable_if_t<V::rangeCount() == 0,int> = 0>
-  T& set(const V& slice, Label* context, const T& value) {
-    pinWrite();
-    T& view = *(buf() + shape.serial(slice));
-    view.assign(context, value);
-    unpin();
-    return view;
+  template<class V, std::enable_if_t<V::rangeCount() != 0,int> = 0>
+  auto pull(const V& slice) const {
+    return Array<T,decltype(shape(slice))>(shape(slice), buffer, offset +
+        shape.serial(slice));
   }
-
-  template<class V, IS_VALUE(T),
-      std::enable_if_t<V::rangeCount() == 0,int> = 0>
-  T& set(const V& slice, T&& value) {
-    pinWrite();
-    auto& view = *(buf() + shape.serial(slice));
-    view = std::move(value);
-    unpin();
-    return view;
+  template<class V, std::enable_if_t<V::rangeCount() == 0,int> = 0>
+  T& pull(const V& slice) const {
+    return *(buf() + shape.serial(slice));
   }
-
-  template<class V, IS_NOT_VALUE(T),
-      std::enable_if_t<V::rangeCount() == 0,int> = 0>
-  T& set(const V& slice, Label* context, T&& value) {
-    pinWrite();
-    T& view = *(buf() + shape.serial(slice));
-    view.assign(context, std::move(value));
-    unpin();
-    return view;
-  }
-///@}
+  ///@}
 
   /**
    * @name Element access, caller responsible for thread safety
@@ -497,12 +423,16 @@ public:
    */
   void pinWrite() {
     assert(!isView);
-    bufferLock.write();
     if (isShared()) {
-      Array<T,F> tmp(shape, *this);
-      swap(tmp);
+      bufferLock.write();
+      if (isShared()) {
+        Array<T,F> tmp(shape, *this);
+        swap(tmp);
+      }
+      bufferLock.downgrade();
+    } else {
+      bufferLock.read();
     }
-    bufferLock.downgrade();  // downgrade write lock to read lock
   }
 
   /**
@@ -557,9 +487,9 @@ public:
         if (newSize == 0) {
           release();
         } else {
-          auto iter = begin();
+          auto iter = begin() + shape.size();
           auto last = end();
-          for (iter += shape.size(); iter != last; ++iter) {
+          for (; iter != last; ++iter) {
             iter->~T();
           }
           // ^ C++17 use std::destroy
@@ -712,10 +642,10 @@ public:
     pin();
     auto iter = begin();
     auto last = end();
+    unpin();
     for (; iter != last; ++iter) {
       iter->freeze();
     }
-    unpin();
   }
 
   template<IS_VALUE(T)>
@@ -728,10 +658,10 @@ public:
     pin();
     auto iter = begin();
     auto last = end();
+    unpin();
     for (; iter != last; ++iter) {
       iter->thaw(label);
     }
-    unpin();
   }
 
   template<IS_VALUE(T)>
@@ -744,10 +674,10 @@ public:
     pin();
     auto iter = begin();
     auto last = end();
+    unpin();
     for (; iter != last; ++iter) {
       iter->finish();
     }
-    unpin();
   }
 
 private:
@@ -847,8 +777,8 @@ private:
   /**
    * Assign from another array.
    */
-  template<IS_VALUE(T), class U, class G>
-  void copy(const Array<U,G>& o) {
+  template<IS_VALUE(T), class U>
+  void copy(const U& o) {
     auto n = std::min(size(), o.size());
     auto begin1 = o.begin();
     auto end1 = begin1 + n;
@@ -864,8 +794,8 @@ private:
   /**
    * Assign from another array.
    */
-  template<IS_NOT_VALUE(T), class U, class G>
-  void copy(Label* context, const Array<U,G>& o) {
+  template<IS_NOT_VALUE(T), class U>
+  void copy(Label* context, const U& o) {
     auto n = std::min(size(), o.size());
     auto begin1 = o.begin();
     auto end1 = begin1 + n;
@@ -885,8 +815,8 @@ private:
   /**
    * Copy from another array.
    */
-  template<class U, class G>
-  void uninitialized_copy(const Array<U,G>& o) {
+  template<class U>
+  void uninitialized_copy(const U& o) {
     assert(!isShared());
     auto n = std::min(size(), o.size());
     auto begin1 = o.begin();
@@ -898,8 +828,8 @@ private:
   /**
    * Copy from another array.
    */
-  template<IS_NOT_VALUE(T), class U, class G>
-  void uninitialized_copy(Label* context, const Array<U,G>& o) {
+  template<IS_NOT_VALUE(T), class U>
+  void uninitialized_copy(Label* context, const U& o) {
     assert(!isShared());
     auto n = std::min(size(), o.size());
     auto begin1 = o.begin();
@@ -913,8 +843,8 @@ private:
   /**
    * Deep copy from another array.
    */
-  template<IS_NOT_VALUE(T), class U, class G>
-  void uninitialized_copy(Label* context, Label* label, const Array<U,G>& o) {
+  template<IS_NOT_VALUE(T), class U>
+  void uninitialized_copy(Label* context, Label* label, const U& o) {
     assert(!isShared());
     auto n = std::min(size(), o.size());
     auto begin1 = o.begin();
