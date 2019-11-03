@@ -216,11 +216,23 @@ abstract class Distribution<Value> {
    *
    * - x: The value.
    *
-   * Return: the cumulative probability
+   * Return: the cumulative probability.
    */
   function cdf(x:Value) -> Real {
     graft(true);
     return delay!.cdf(x);
+  }
+
+  /**
+   * Evaluate the quantile function at a cumulative probability.
+   *
+   * - x: The cumulative probability.
+   *
+   * Return: the quantile.
+   */
+  function quantile(p:Real) -> Value? {
+    graft(true);
+    return delay!.quantile(p);
   }
   
   /**

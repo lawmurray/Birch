@@ -33,6 +33,10 @@ class DelayGaussian(future:Real?, futureUpdate:Boolean, μ:Real, σ2:Real) <
     return cdf_gaussian(x, μ, 1.0/λ);
   }
 
+  function quantile(p:Real) -> Real? {
+    return quantile_gaussian(p, μ, 1.0/λ);
+  }
+
   function write(buffer:Buffer) {
     prune();
     buffer.set("class", "Gaussian");

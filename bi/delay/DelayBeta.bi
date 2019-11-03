@@ -33,6 +33,10 @@ final class DelayBeta(future:Real?, futureUpdate:Boolean, α:Real, β:Real) <
     return cdf_beta(x, α, β);
   }
 
+  function quantile(p:Real) -> Real? {
+    return quantile_beta(p, α, β);
+  }
+
   function lower() -> Real? {
     return 0.0;
   }

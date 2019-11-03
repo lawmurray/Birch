@@ -4,6 +4,14 @@
 program test(N:Integer <- 10000) {
   code:Integer <- 0;
 
+  code <- code + run_test("deep_clone_alias");
+  code <- code + run_test("deep_clone_chain");
+  code <- code + run_test("deep_clone_modify_dst");
+  code <- code + run_test("deep_clone_modify_src");
+  code <- code + run_test("density_beta");
+  code <- code + run_test("density_gamma");
+  code <- code + run_test("density_gaussian");
+  code <- code + run_test("density_poisson");
   code <- code + run_test("add_bounded_discrete_delta", N);
   code <- code + run_test("beta_bernoulli", N);
   code <- code + run_test("beta_binomial", N);
@@ -11,10 +19,6 @@ program test(N:Integer <- 10000) {
   code <- code + run_test("beta_negative_binomial", N);
   code <- code + run_test("chain_gaussian", N);
   code <- code + run_test("chain_multivariate_gaussian", N);
-  code <- code + run_test("deep_clone_alias");
-  code <- code + run_test("deep_clone_chain");
-  code <- code + run_test("deep_clone_modify_dst");
-  code <- code + run_test("deep_clone_modify_src");
   code <- code + run_test("dirichlet_categorical", N);
   code <- code + run_test("dirichlet_multinomial", N);
   code <- code + run_test("gamma_exponential", N);
@@ -41,7 +45,7 @@ program test(N:Integer <- 10000) {
   exit(code);
 }
 
-/**
+/*
  * Run a specific test.
  *
  * - test: Name of the test.
@@ -64,7 +68,7 @@ function run_test(test:String) -> Integer {
   return code;
 }
 
-/**
+/*
  * Run a specific test, where a number of samples is required.
  *
  * - test: Name of the test.
@@ -88,7 +92,55 @@ function run_test(test:String, N:Integer) -> Integer {
   return code;
 }
 
-/**
+/*
+ * Test a continuous distribution.
+ *
+ * - q: The distribution. 
+ * - N: Number of partitions for Riemann (midpoint) estimate.
+ */
+function test_density(q:Distribution<Real>, N:Integer) {
+  auto P <- 0.5/N;
+  auto from <- q.quantile(P)!;
+  auto to <- q.quantile(1.0 - P)!;
+  for auto n in 1..N {
+    auto x <- from + (n - 0.5)*(to - from)/N;
+    auto C <- q.cdf(x);
+    P <- P + q.pdf(x)*(to - from)/N;
+    
+    auto δ <- abs(C - P);
+    auto ε <- 2.0/N;
+    auto failed <- δ > ε;
+    if failed {
+      stderr.print("failed on step " + n + ", " + δ + " > " + ε + "\n");
+      exit(1);
+    }
+  }
+}
+
+/*
+ * Test a discrete distribution.
+ *
+ * - q: The distribution.
+ */
+function test_density(q:Distribution<Integer>) {
+  auto P <- 0.0;
+  auto from <- q.quantile(1.0e-6)!;
+  auto to <- q.quantile(1.0 - 1.0e-6)!;
+  for auto x in from..to {
+    auto C <- q.cdf(x);
+    P <- P + q.pdf(x);
+    
+    auto δ <- abs(C - P);
+    auto ε <- 2.0/(to - from + 1);
+    auto failed <- δ > ε;
+    if failed {
+      stderr.print("failed on step " + x + ", " + δ + " > " + ε + "\n");
+      exit(1);
+    }
+  }
+}
+
+/*
  * Compare two empirical distributions for the purposes of tests.
  *
  * - X1: First empirical distribution.

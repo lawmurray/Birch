@@ -32,6 +32,10 @@ final class DelayPoisson(future:Integer?, futureUpdate:Boolean, λ:Real) <
     return cdf_poisson(x, λ);
   }
 
+  function quantile(p:Real) -> Integer? {
+    return quantile_poisson(p, λ);
+  }
+
   function lower() -> Integer? {
     return 0;
   }

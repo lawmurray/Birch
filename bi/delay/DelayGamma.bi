@@ -33,6 +33,10 @@ final class DelayGamma(future:Real?, futureUpdate:Boolean, k:Real, θ:Real) <
     return cdf_gamma(x, k, θ);
   }
 
+  function quantile(p:Real) -> Real? {
+    return quantile_gamma(p, k, θ);
+  }
+
   function lower() -> Real? {
     return 0.0;
   }

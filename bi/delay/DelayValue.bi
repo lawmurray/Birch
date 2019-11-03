@@ -203,6 +203,18 @@ abstract class DelayValue<Value>(future:Value?, futureUpdate:Boolean) < Delay {
     error("cdf unsupported here");
     return 0.0;
   }
+
+  /**
+   * Evaluate the quantile function at a cumulative probability.
+   *
+   * - x: The cumulative probability.
+   *
+   * Return: the quantile.
+   */
+  function quantile(p:Real) -> Value? {
+    error("quantile unsupported here");
+    return nil;
+  }
   
   /**
    * Finite lower bound of the support of this node, if any.
