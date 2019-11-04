@@ -21,14 +21,6 @@ final class DelayIndependentUniform(future:Real[_]?, futureUpdate:Boolean,
     return logpdf_independent_uniform(x, l, u);
   }
 
-  function update(x:Real[_]) {
-    //
-  }
-
-  function downdate(x:Real[_]) {
-    //
-  }
-
   function write(buffer:Buffer) {
     prune();
     buffer.set("class", "IndependentUniform");

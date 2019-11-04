@@ -22,14 +22,6 @@ final class DelayIndependentUniformInteger(future:Integer[_]?,
     return logpdf_independent_uniform_int(x, l, u);
   }
 
-  function update(x:Integer[_]) {
-    //
-  }
-
-  function downdate(x:Integer[_]) {
-    //
-  }
-
   function write(buffer:Buffer) {
     prune();
     buffer.set("class", "IndependentUniformInteger");

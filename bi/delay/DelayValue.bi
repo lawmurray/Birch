@@ -169,7 +169,7 @@ abstract class DelayValue<Value>(future:Value?, futureUpdate:Boolean) < Delay {
    * - x: The value.
    */
   function update(x:Value) {
-    error("update unsupported here");
+    //
   }
 
   /**
@@ -178,7 +178,7 @@ abstract class DelayValue<Value>(future:Value?, futureUpdate:Boolean) < Delay {
    * - x: The value.
    */
   function downdate(x:Value) {
-    error("downdate unsupported here");
+    //
   }
   
   /**

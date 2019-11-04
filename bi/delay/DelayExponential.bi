@@ -16,14 +16,6 @@ final class DelayExponential(future:Real?, futureUpdate:Boolean, λ:Real) <
     return logpdf_exponential(x, λ);
   }
 
-  function update(x:Real) {
-    //
-  }
-
-  function downdate(x:Real) {
-    //
-  }
-
   function cdf(x:Real) -> Real {
     return cdf_exponential(x, λ);
   }

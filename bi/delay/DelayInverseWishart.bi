@@ -21,14 +21,6 @@ final class DelayInverseWishart(future:Real[_,_]?, futureUpdate:Boolean,
     return logpdf_inverse_wishart(X, Ψ, k);
   }
 
-  function update(X:Real[_,_]) {
-    //
-  }
-
-  function downdate(X:Real[_,_]) {
-    //
-  }
-
   function write(buffer:Buffer) {
     prune();
     buffer.set("class", "InverseWishart");

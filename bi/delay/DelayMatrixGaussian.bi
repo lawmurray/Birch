@@ -35,14 +35,6 @@ class DelayMatrixGaussian(future:Real[_,_]?, futureUpdate:Boolean,
     return logpdf_matrix_gaussian(X, M, U, V);
   }
 
-  function update(X:Real[_,_]) {
-    //
-  }
-
-  function downdate(X:Real[_,_]) {
-    //
-  }
-
   function write(buffer:Buffer) {
     prune();
     buffer.set("class", "MatrixGaussian");

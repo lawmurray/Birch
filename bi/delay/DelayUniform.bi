@@ -21,14 +21,6 @@ final class DelayUniform(future:Real?, futureUpdate:Boolean, l:Real, u:Real)
     return logpdf_uniform(x, l, u);
   }
 
-  function update(x:Real) {
-    //
-  }
-
-  function downdate(x:Real) {
-    //
-  }
-
   function cdf(x:Real) -> Real {
     return cdf_uniform(x, l, u);
   }

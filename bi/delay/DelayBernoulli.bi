@@ -16,14 +16,6 @@ final class DelayBernoulli(future:Boolean?, futureUpdate:Boolean, ρ:Real) <
     return logpdf_bernoulli(x, ρ);
   }
 
-  function update(x:Boolean) {
-    //
-  }
-
-  function downdate(x:Boolean) {
-    //
-  }
-
   function write(buffer:Buffer) {
     prune();
     buffer.set("class", "Bernoulli");

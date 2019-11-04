@@ -16,14 +16,6 @@ final class DelayDirichlet(future:Real[_]?, futureUpdate:Boolean, α:Real[_])
     return logpdf_dirichlet(x, α);
   }
 
-  function update(x:Real[_]) {
-    //
-  }
-
-  function downdate(x:Real[_]) {
-    //
-  }
-
   function write(buffer:Buffer) {
     prune();
     buffer.set("class", "Dirichlet");

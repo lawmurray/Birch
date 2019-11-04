@@ -21,14 +21,6 @@ class DelayGaussian(future:Real?, futureUpdate:Boolean, μ:Real, σ2:Real) <
     return logpdf_gaussian(x, μ, 1.0/λ);
   }
   
-  function update(x:Real) {
-    //
-  }
-
-  function downdate(x:Real) {
-    //
-  }
-
   function cdf(x:Real) -> Real {
     return cdf_gaussian(x, μ, 1.0/λ);
   }

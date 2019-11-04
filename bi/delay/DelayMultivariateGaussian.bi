@@ -25,14 +25,6 @@ class DelayMultivariateGaussian(future:Real[_]?, futureUpdate:Boolean,
     return logpdf_multivariate_gaussian(x, μ, Σ);
   }
 
-  function update(x:Real[_]) {
-    //
-  }
-
-  function downdate(x:Real[_]) {
-    //
-  }
-
   function write(buffer:Buffer) {
     prune();
     buffer.set("class", "MultivariateGaussian");

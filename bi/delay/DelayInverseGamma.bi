@@ -21,14 +21,6 @@ final class DelayInverseGamma(future:Real?, futureUpdate:Boolean, α:Real,
     return logpdf_inverse_gamma(x, α, β);
   }
 
-  function update(x:Real) {
-    //
-  }
-
-  function downdate(x:Real) {
-    //
-  }
-
   function cdf(x:Real) -> Real {
     return cdf_inverse_gamma(x, α, β);
   }

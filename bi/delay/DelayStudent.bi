@@ -25,14 +25,6 @@ final class DelayStudent(future:Real?, futureUpdate:Boolean, ν:Real, μ:Real, �
     return logpdf_student_t(x, ν, μ, σ2);
   }
 
-  function update(x:Real) {
-    //
-  }
-
-  function downdate(x:Real) {
-    //
-  }
-
   function cdf(x:Real) -> Real {
     return cdf_student_t(x, ν, μ, σ2);
   }

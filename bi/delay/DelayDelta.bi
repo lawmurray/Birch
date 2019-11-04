@@ -20,14 +20,6 @@ final class DelayDelta(future:Integer?, futureUpdate:Boolean, μ:Integer) <
     return logpdf_delta(x, μ);
   }
 
-  function update(x:Integer) {
-    //
-  }
-
-  function downdate(x:Integer) {
-    //
-  }
-
   function lower() -> Integer? {
     return μ;
   }
