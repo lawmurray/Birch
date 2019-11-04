@@ -6,12 +6,26 @@
 #include "libbirch/external.hpp"
 
 /**
+ * @def libbirch_error_
+ *
+ * Check a condition and abort on fail.
+ */
+#define libbirch_error_(cond) if (!(cond)) { libbirch::line(__LINE__); libbirch::abort(); }
+
+/**
+ * @def libbirch_error_msg_
+ *
+ * Check a condition and abort with a message on fail.
+ */
+#define libbirch_error_msg_(cond, msg) if (!(cond)) { libbirch::line(__LINE__); std::stringstream buf_; buf_ << msg; libbirch::abort(buf_.str()); }
+
+/**
  * @def libbirch_assert_
  *
  * If debugging is enabled, check an assertion and abort on fail.
  */
 #ifndef NDEBUG
-#define libbirch_assert_(cond) if (!(cond)) libbirch::abort()
+#define libbirch_assert_(cond) libbirch_error_(cond)
 #else
 #define libbirch_assert_(cond)
 #endif
@@ -23,31 +37,7 @@
  * fail.
  */
 #ifndef NDEBUG
-#define libbirch_assert_msg_(cond, msg) \
-  if (!(cond)) { \
-    std::stringstream buf_; \
-    buf_ << msg; \
-    libbirch::abort(buf_.str()); \
-  }
+#define libbirch_assert_msg_(cond, msg) libbirch_error_msg_(cond, msg)
 #else
 #define libbirch_assert_msg_(cond, msg)
 #endif
-
-/**
- * @def libbirch_error_
- *
- * Check a condition and abort on fail.
- */
-#define libbirch_error_(cond) if (!(cond)) libbirch::abort()
-
-/**
- * @def libbirch_error_msg_
- *
- * Check a condition and abort with a message on fail.
- */
-#define libbirch_error_msg_(cond, msg) \
-  if (!(cond)) { \
-    std::stringstream buf_; \
-    buf_ << msg; \
-    libbirch::abort(buf_.str()); \
-  }
