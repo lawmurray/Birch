@@ -10,11 +10,6 @@
  * For objects used with a lazy deep clone, consider using persistent data
  * structures such as List and Queue to maximise sharing and memory
  * efficiency.
- *
- * !!! bug
- *     The lazy deep clone mechanism is still being developed. It has bugs
- *     for some use cases. In particular, once an object is passed as an
- *     argument to `clone<Type>()`, avoid using that object again.
  */
 function clone<Type>(o:Type) -> Type {
   cpp{{
