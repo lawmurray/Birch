@@ -488,6 +488,9 @@ void bi::CppBaseGenerator::visit(const Function* o) {
       buf << o->typeParams << '(' << o->params->type << ')';
       name += "_" + encode32(base.str()) + "_";
     }
+    if (!header) {
+      genTraceLine(o->loc);
+    }
     start(o->returnType << ' ');
     if (!header) {
       middle("bi::");
@@ -511,7 +514,9 @@ void bi::CppBaseGenerator::visit(const Function* o) {
         assert(param);
         line("using " << param->name << " [[maybe_unused]] = " << param->type << ';');
       }
+      line("// LCOV_EXCL_START");
       genTraceFunction(o->name->str(), o->loc);
+      line("// LCOV_EXCL_STOP");
       CppBaseGenerator aux(base, level, false);
       *this << o->braces->strip();
       out();
@@ -545,8 +550,10 @@ void bi::CppBaseGenerator::visit(const Program* o) {
   if (header) {
     line("extern \"C\" int " << o->name << "(int argc, char** argv);");
   } else {
+    genTraceLine(o->loc);
     line("int bi::" << o->name << "(int argc_, char** argv_) {");
     in();
+    line("// LCOV_EXCL_START");
     genTraceFunction(o->name->str(), o->loc);
 
     /* initial context */
@@ -641,6 +648,7 @@ void bi::CppBaseGenerator::visit(const Program* o) {
 
     /* seed random number generator with random entropy */
     line("bi::seed();\n");
+    line("// LCOV_EXCL_STOP");
 
     /* body of program */
     if (!o->braces->isEmpty()) {
@@ -656,6 +664,9 @@ void bi::CppBaseGenerator::visit(const Program* o) {
 
 void bi::CppBaseGenerator::visit(const BinaryOperator* o) {
   if (!o->braces->isEmpty()) {
+    if (!header) {
+      genTraceLine(o->loc);
+    }
     start(o->returnType << ' ');
     if (!header) {
       middle("bi::");
@@ -683,6 +694,9 @@ void bi::CppBaseGenerator::visit(const BinaryOperator* o) {
 
 void bi::CppBaseGenerator::visit(const UnaryOperator* o) {
   if (!o->braces->isEmpty()) {
+    if (!header) {
+      genTraceLine(o->loc);
+    }
     start(o->returnType << ' ');
     if (!header) {
       middle("bi::");
@@ -737,12 +751,12 @@ void bi::CppBaseGenerator::visit(const Assume* o) {
 }
 
 void bi::CppBaseGenerator::visit(const ExpressionStatement* o) {
-  genTraceLine(o->loc->firstLine);
+  genTraceLine(o->loc);
   line(o->single << ';');
 }
 
 void bi::CppBaseGenerator::visit(const If* o) {
-  genTraceLine(o->loc->firstLine);
+  genTraceLine(o->loc);
   start("if (");
   auto cond = o->cond->strip();
   if (cond->type->isClass()) {
@@ -766,7 +780,7 @@ void bi::CppBaseGenerator::visit(const If* o) {
 }
 
 void bi::CppBaseGenerator::visit(const For* o) {
-  genTraceLine(o->loc->firstLine);
+  genTraceLine(o->loc);
 
   /* handle parallel for loop */
   if (o->has(PARALLEL)) {
@@ -809,7 +823,7 @@ void bi::CppBaseGenerator::visit(const For* o) {
 }
 
 void bi::CppBaseGenerator::visit(const While* o) {
-  genTraceLine(o->loc->firstLine);
+  genTraceLine(o->loc);
   start("while (");
   auto cond = o->cond->strip();
   if (cond->type->isClass()) {
@@ -827,21 +841,21 @@ void bi::CppBaseGenerator::visit(const While* o) {
 }
 
 void bi::CppBaseGenerator::visit(const DoWhile* o) {
+  genTraceLine(o->loc);
   line("do {");
   in();
   *this << o->braces->strip();
   out();
-  genTraceLine(o->loc->lastLine);
   line("} while (" << o->cond->strip() << ");");
 }
 
 void bi::CppBaseGenerator::visit(const Assert* o) {
-  genTraceLine(o->loc->firstLine);
-  line("libbirch_assert_(" << o->cond->strip() << ");  // LCOV_EXCL_LINE");
+  genTraceLine(o->loc);
+  line("libbirch_assert_(" << o->cond->strip() << ");");
 }
 
 void bi::CppBaseGenerator::visit(const Return* o) {
-  genTraceLine(o->loc->firstLine);
+  genTraceLine(o->loc);
   line("return " << o->single << ';');
 }
 
@@ -851,6 +865,9 @@ void bi::CppBaseGenerator::visit(const Yield* o) {
 
 void bi::CppBaseGenerator::visit(const Raw* o) {
   if ((header && *o->name == "hpp") || (!header && *o->name == "cpp")) {
+    if (!header) {
+      genTraceLine(o->loc);
+    }
     *this << escape_unicode(o->raw);
     if (!std::isspace(o->raw.back())) {
       *this << ' ';
@@ -926,11 +943,11 @@ void bi::CppBaseGenerator::visit(const TypeList* o) {
 void bi::CppBaseGenerator::genTraceFunction(const std::string& name,
     const Location* loc) {
   start("libbirch_function_(\"" << name << "\", \"");
-  finish(loc->file->path << "\", " << loc->firstLine << ");  // LCOV_EXCL_LINE");
+  finish(loc->file->path << "\", " << loc->firstLine << ");");
 }
 
-void bi::CppBaseGenerator::genTraceLine(const int line) {
-  line("libbirch_line_(" << line << ");  // LCOV_EXCL_LINE");
+void bi::CppBaseGenerator::genTraceLine(const Location* loc) {
+  line("#line " << loc->firstLine << " \"" << loc->file->path << "\"");
 }
 
 void bi::CppBaseGenerator::genArgs(const Expression* args, const Type* types) {

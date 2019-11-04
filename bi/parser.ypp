@@ -101,8 +101,7 @@
 %type <valName> name binary_operator unary_operator assume_operator
 
 %type <valInt> size
-%type <valAnnotation> for_annotation class_annotation function_annotation
-%type <valAnnotation> member_function_annotation
+%type <valAnnotation> for_annotation class_annotation member_function_annotation
 
 %type <valName> assign_operator
 
@@ -450,7 +449,7 @@ generic_list
     ;
 
 generic
-    : name           { $$ = new bi::Generic(bi::NONE, $1, empty_type(@$), make_loc(@$)); }
+    : name  { $$ = new bi::Generic(bi::NONE, $1, empty_type(@$), make_loc(@$)); }
     ;
 
 optional_generics
@@ -504,30 +503,29 @@ member_variable_declaration
     | name ':' postfix_type brackets arguments ';'  { push_raw(); $$ = new bi::MemberVariable(bi::NONE, $1, $3, $4, $5, empty_expr(@$), make_doc_loc(@$)); }
     ;
 
-function_annotation
-    :  { $$ = bi::NONE; }
-    ;
-
 function_declaration
-    : function_annotation FUNCTION name optional_generics parameters optional_result { push_raw(); } optional_braces  { $$ = new bi::Function($1, $3, $4, $5, $6, $8, make_doc_loc(@$)); }
+    : FUNCTION name optional_generics parameters optional_result { push_raw(); } optional_braces  { $$ = new bi::Function(bi::NONE, $2, $3, $4, $5, $7, make_doc_loc(@$)); }
     ;
 
 fiber_declaration
-    : function_annotation FIBER name optional_generics parameters optional_result { push_raw(); } optional_braces  { $$ = new bi::Fiber($1, $3, $4, $5, new bi::FiberType($6, make_loc(@$)), $8, make_doc_loc(@$)); }
+    : FIBER name optional_generics parameters optional_result { push_raw(); } optional_braces  { $$ = new bi::Fiber(bi::NONE, $2, $3, $4, new bi::FiberType($5, make_loc(@$)), $7, make_doc_loc(@$)); }
     ;
 
 member_function_annotation
     : FINAL     { $$ = bi::FINAL; }
     | ABSTRACT  { $$ = bi::ABSTRACT; }
-    |           { $$ = bi::NONE; }
+    //|         { $$ = bi::NONE; }
+    //^ don't put bi::NONE here, messes up line numbers
     ;
 
 member_function_declaration
     : member_function_annotation FUNCTION name parameters optional_result { push_raw(); } optional_braces  { $$ = new bi::MemberFunction($1, $3, $4, $5, $7, make_doc_loc(@$)); }
+    | FUNCTION name parameters optional_result { push_raw(); } optional_braces                             { $$ = new bi::MemberFunction(bi::NONE, $2, $3, $4, $6, make_doc_loc(@$)); }
     ;
 
 member_fiber_declaration
     : member_function_annotation FIBER name parameters optional_result { push_raw(); } optional_braces  { $$ = new bi::MemberFiber($1, $3, $4, new bi::FiberType($5, make_loc(@$)), $7, make_doc_loc(@$)); }
+    | FIBER name parameters optional_result { push_raw(); } optional_braces                             { $$ = new bi::MemberFiber(bi::NONE, $2, $3, new bi::FiberType($4, make_loc(@$)), $6, make_doc_loc(@$)); }
     ;
 
 program_declaration
@@ -579,8 +577,8 @@ class_annotation
 
 class_declaration
     : class_annotation CLASS name optional_generics optional_parameters '<' base_type optional_arguments { push_raw(); } optional_class_braces  { $$ = new bi::Class($1, $3, $4, $5, $7, false, $8, $10, make_doc_loc(@$)); }
-    | class_annotation CLASS name optional_generics optional_parameters { push_raw(); } optional_class_braces                                    { $$ = new bi::Class($1, $3, $4, $5, empty_type(@$), false, empty_expr(@$), $7, make_doc_loc(@$)); }
-    | class_annotation CLASS name optional_generics '=' class_type { push_raw(); } ';'                                                           { $$ = new bi::Class($1, $3, $4, empty_expr(@$), $6, true, empty_expr(@$), empty_stmt(@$), make_doc_loc(@$)); }
+    | class_annotation CLASS name optional_generics optional_parameters { push_raw(); } optional_class_braces                                   { $$ = new bi::Class($1, $3, $4, $5, empty_type(@$), false, empty_expr(@$), $7, make_doc_loc(@$)); }
+    | class_annotation CLASS name optional_generics '=' class_type { push_raw(); } ';'                                                          { $$ = new bi::Class($1, $3, $4, empty_expr(@$), $6, true, empty_expr(@$), empty_stmt(@$), make_doc_loc(@$)); }
     ;
 
 basic_declaration
@@ -621,7 +619,8 @@ if
 for_annotation
     : PARALLEL          { $$ = bi::PARALLEL; }
     | DYNAMIC PARALLEL  { $$ = (bi::Annotation)(bi::DYNAMIC|bi::PARALLEL); }
-    |                   { $$ = bi::NONE; }
+    //|                 { $$ = bi::NONE; }
+    //^ don't put bi::NONE here, messes up line numbers
     ;
 
 for_index
@@ -633,6 +632,8 @@ for_index
 for
     : for_annotation FOR '(' for_index IN expression RANGE_OP expression ')' braces  { $$ = new bi::For($1, $4, $6, $8, $10, make_loc(@$)); }
     | for_annotation FOR for_index IN expression RANGE_OP expression braces          { $$ = new bi::For($1, $3, $5, $7, $8, make_loc(@$)); }
+    | FOR '(' for_index IN expression RANGE_OP expression ')' braces                 { $$ = new bi::For(bi::NONE, $3, $5, $7, $9, make_loc(@$)); }
+    | FOR for_index IN expression RANGE_OP expression braces                         { $$ = new bi::For(bi::NONE, $2, $4, $6, $7, make_loc(@$)); }
     ;
 
 while

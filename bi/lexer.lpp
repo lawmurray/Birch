@@ -30,7 +30,7 @@ void yylocation() {
   if (compiler->file) {
     std::cerr << compiler->file->path;
     std::cerr << ':' << yylloc.first_line;
-    //std::cerr << ':' << yylloc.first_column;
+    std::cerr << ':' << yylloc.first_column;
     std::cerr << ": ";
   }
 }
@@ -80,15 +80,15 @@ E                                  [Ee][+-]?{D}+
 <COMMENT_EOL>"\n"                   { BEGIN(INITIAL); }
 <COMMENT_EOL>.                      { }
 
-"/**"                               { BEGIN(COMMENT_DOC); raw.str(""); }
-<COMMENT_DOC>"*/"                   { BEGIN(INITIAL); }
-<COMMENT_DOC>"\n"                   { raw << yytext; }
-<COMMENT_DOC>.                      { raw << yytext; }
-
 "/*"                                { BEGIN(COMMENT_INLINE); }
 <COMMENT_INLINE>"*/"                { BEGIN(INITIAL); }
 <COMMENT_INLINE>"\n"                { }
 <COMMENT_INLINE>.                   { }
+
+"/**"                               { BEGIN(COMMENT_DOC); raw.str(""); }
+<COMMENT_DOC>"*/"                   { BEGIN(INITIAL); }
+<COMMENT_DOC>"\n"                   { raw << yytext; }
+<COMMENT_DOC>.                      { raw << yytext; }
 
 "{{"                                { BEGIN(DOUBLE_BRACE); raw.str(""); return DOUBLE_BRACE_OPEN; }
 <DOUBLE_BRACE>"}}"                  { BEGIN(INITIAL); return DOUBLE_BRACE_CLOSE; }

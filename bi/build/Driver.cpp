@@ -31,6 +31,7 @@ bi::Driver::Driver(int argc, char** argv) :
     openmp(true),
     warnings(true),
     debug(true),
+    coverage(false),
     verbose(true),
     memoryPool(true),
     lazyDeepClone(true),
@@ -59,6 +60,8 @@ bi::Driver::Driver(int argc, char** argv) :
     DISABLE_WARNINGS_ARG,
     ENABLE_DEBUG_ARG,
     DISABLE_DEBUG_ARG,
+    ENABLE_COVERAGE_ARG,
+    DISABLE_COVERAGE_ARG,
     ENABLE_VERBOSE_ARG,
     DISABLE_VERBOSE_ARG,
     ENABLE_MEMORY_POOL_ARG,
@@ -93,6 +96,8 @@ bi::Driver::Driver(int argc, char** argv) :
       { "disable-warnings", no_argument, 0, DISABLE_WARNINGS_ARG },
       { "enable-debug", no_argument, 0, ENABLE_DEBUG_ARG },
       { "disable-debug", no_argument, 0, DISABLE_DEBUG_ARG },
+      { "enable-coverage", no_argument, 0, ENABLE_COVERAGE_ARG },
+      { "disable-coverage", no_argument, 0, DISABLE_COVERAGE_ARG },
       { "enable-verbose", no_argument, 0, ENABLE_VERBOSE_ARG },
       { "disable-verbose", no_argument, 0, DISABLE_VERBOSE_ARG },
       { "enable-memory-pool", no_argument, 0, ENABLE_MEMORY_POOL_ARG },
@@ -171,6 +176,12 @@ bi::Driver::Driver(int argc, char** argv) :
       break;
     case DISABLE_DEBUG_ARG:
       debug = false;
+      break;
+    case ENABLE_COVERAGE_ARG:
+      coverage = true;
+      break;
+    case DISABLE_COVERAGE_ARG:
+      coverage = false;
       break;
     case ENABLE_VERBOSE_ARG:
       verbose = true;
@@ -672,6 +683,9 @@ void bi::Driver::help() {
       std::cout << "  Enable/disable debug mode. In debug mode, assertion checking is enabled and" << std::endl;
       std::cout << "  most compiler optimizations are disabled." << std::endl;
       std::cout << std::endl;
+      std::cout << "  --enable-coverage / --disable-coverage (default disabled):" << std::endl;
+      std::cout << "  Enable/disable test coverage mode." << std::endl;
+      std::cout << std::endl;
       std::cout << "  --enable-warnings / --disable-warnings (default enabled):" << std::endl;
       std::cout << "  Enable/disable compiler warnings." << std::endl;
       std::cout << std::endl;
@@ -1092,6 +1106,10 @@ void bi::Driver::configure() {
       cflags << " -O3 -flto -g";
       cxxflags << " -O3 -flto -g";
     }
+    if (coverage) {
+      cflags << " --coverage";
+      cxxflags << " --coverage";
+    }
 
     /* defines */
     if (memoryPool) {
@@ -1259,6 +1277,7 @@ std::string bi::Driver::suffix() const {
   buf << sharedLib << ' ';
   buf << openmp << ' ';
   buf << debug << ' ';
+  buf << coverage << ' ';
   buf << memoryPool << ' ';
   buf << lazyDeepClone << ' ';
   buf << singleReferenceOptimization << ' ';

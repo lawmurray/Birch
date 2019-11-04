@@ -371,14 +371,14 @@ static const flex_int16_t yy_accept[231] =
        80,   66,   60,   87,   46,   83,   84,   86,   46,   46,
        46,   46,   46,   46,   46,   46,   46,   46,   46,   46,
        46,   46,   46,   46,   76,   88,   77,   57,   88,   88,
-        4,    3,   12,   11,   12,    8,    7,    8,   16,   15,
-       16,   70,    0,   52,    0,   63,   54,   59,    9,    2,
+        4,    3,    8,    7,    8,   12,   11,   12,   16,   15,
+       16,   70,    0,   52,    0,   63,   54,   59,    5,    2,
         0,   50,    0,    0,   51,   53,   67,   55,   69,   68,
        46,   46,    0,    0,   46,   46,   46,   46,   46,   30,
 
        46,   46,   46,   46,   46,   46,   46,   46,   25,   28,
        46,   46,   46,   46,   46,   46,   46,   46,   46,   46,
-       46,   13,   64,   56,   46,   10,    6,   14,   52,    5,
+       46,   13,   64,   56,   46,    6,   10,   14,   52,    9,
        48,    0,   47,   49,   58,   46,   46,   46,   46,   34,
        46,   46,   46,   46,   46,   27,   46,   46,   35,   46,
        43,   46,   46,   46,   46,   46,   46,   46,   46,   46,
@@ -770,7 +770,7 @@ void yylocation() {
   if (compiler->file) {
     std::cerr << compiler->file->path;
     std::cerr << ':' << yylloc.first_line;
-    //std::cerr << ':' << yylloc.first_column;
+    std::cerr << ':' << yylloc.first_column;
     std::cerr << ": ";
   }
 }
@@ -1106,7 +1106,7 @@ YY_RULE_SETUP
 case 5:
 YY_RULE_SETUP
 #line 83 "bi/lexer.lpp"
-{ BEGIN(COMMENT_DOC); raw.str(""); }
+{ BEGIN(COMMENT_INLINE); }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
@@ -1117,17 +1117,17 @@ case 7:
 /* rule 7 can match eol */
 YY_RULE_SETUP
 #line 85 "bi/lexer.lpp"
-{ raw << yytext; }
+{ }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
 #line 86 "bi/lexer.lpp"
-{ raw << yytext; }
+{ }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
 #line 88 "bi/lexer.lpp"
-{ BEGIN(COMMENT_INLINE); }
+{ BEGIN(COMMENT_DOC); raw.str(""); }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
@@ -1138,12 +1138,12 @@ case 11:
 /* rule 11 can match eol */
 YY_RULE_SETUP
 #line 90 "bi/lexer.lpp"
-{ }
+{ raw << yytext; }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
 #line 91 "bi/lexer.lpp"
-{ }
+{ raw << yytext; }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP

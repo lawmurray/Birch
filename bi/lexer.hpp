@@ -8,6 +8,7 @@
 extern FILE* yyin;
 extern char *yytext;
 extern std::stringstream raw;
+extern int yylineno;
 
 int yylex();
 int yyparse();

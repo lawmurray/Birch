@@ -219,6 +219,11 @@ private:
   bool debug;
 
   /**
+   * Is test coverage mode enabled?
+   */
+  bool coverage;
+
+  /**
    * Is verbose reporting enabled?
    */
   bool verbose;

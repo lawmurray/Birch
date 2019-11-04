@@ -135,7 +135,7 @@ protected:
   /**
    * Generate macro to update line on stack trace.
    */
-  void genTraceLine(const int line);
+  void genTraceLine(const Location* loc);
 
   /*
    * Generate arguments for function calls with appropriate casts where
