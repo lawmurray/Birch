@@ -29,6 +29,10 @@ final class DelayStudent(future:Real?, futureUpdate:Boolean, ν:Real, μ:Real, �
     return cdf_student_t(x, ν, μ, σ2);
   }
 
+  function quantile(p:Real) -> Real? {
+    return quantile_student_t(p, ν, μ, σ2);
+  }
+
   function write(buffer:Buffer) {
     prune();
     buffer.set("class", "Student");

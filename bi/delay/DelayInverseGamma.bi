@@ -25,6 +25,10 @@ final class DelayInverseGamma(future:Real?, futureUpdate:Boolean, α:Real,
     return cdf_inverse_gamma(x, α, β);
   }
 
+  function quantile(p:Real) -> Real? {
+    return quantile_inverse_gamma(p, α, β);
+  }
+
   function lower() -> Real? {
     return 0.0;
   }

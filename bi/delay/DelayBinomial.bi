@@ -29,6 +29,10 @@ final class DelayBinomial(future:Integer?, futureUpdate:Boolean, n:Integer,
     return cdf_binomial(x, n, ρ);
   }
 
+  function quantile(p:Real) -> Integer? {
+    return quantile_binomial(p, n, ρ);
+  }
+
   function lower() -> Integer? {
     return 0;
   }

@@ -20,6 +20,10 @@ final class DelayExponential(future:Real?, futureUpdate:Boolean, λ:Real) <
     return cdf_exponential(x, λ);
   }
 
+  function quantile(p:Real) -> Real? {
+    return quantile_exponential(p, λ);
+  }
+
   function lower() -> Real? {
     return 0.0;
   }

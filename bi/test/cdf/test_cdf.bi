@@ -14,7 +14,7 @@ function test_cdf(q:Distribution<Real>, N:Integer) {
     P <- P + q.pdf(x)*(to - from)/N;
     
     auto δ <- abs(C - P);
-    auto ε <- 2.0/N;
+    auto ε <- 2.0/n;
     auto failed <- δ > ε;
     if failed {
       stderr.print("failed on step " + n + ", " + δ + " > " + ε + "\n");

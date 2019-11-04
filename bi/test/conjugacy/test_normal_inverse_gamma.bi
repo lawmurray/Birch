@@ -6,9 +6,9 @@ program test_normal_inverse_gamma(N:Integer <- 10000) {
   X2:Real[N,2];
   
   μ:Real <- simulate_uniform(-10.0, 10.0);
-  a2:Real <- simulate_uniform(0.0, 2.0);
+  a2:Real <- simulate_uniform(0.1, 2.0);
   α:Real <- simulate_uniform(2.0, 10.0);
-  β:Real <- simulate_uniform(0.0, 10.0);
+  β:Real <- simulate_uniform(0.1, 10.0);
  
   /* simulate forward */
   for i:Integer in 1..N {
