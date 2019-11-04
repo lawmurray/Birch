@@ -4,8 +4,8 @@
 program test_beta_geometric(N:Integer <- 10000) {
   X1:Real[N,2];
   X2:Real[N,2];
-  α:Real <- simulate_uniform(0.0, 100.0);
-  β:Real <- simulate_uniform(0.0, 100.0);
+  α:Real <- simulate_uniform(1.0, 100.0);
+  β:Real <- simulate_uniform(1.0, 100.0);
  
   /* simulate forward */
   for i:Integer in 1..N {
