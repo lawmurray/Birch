@@ -837,7 +837,7 @@ void bi::CppBaseGenerator::visit(const DoWhile* o) {
 
 void bi::CppBaseGenerator::visit(const Assert* o) {
   genTraceLine(o->loc->firstLine);
-  line("libbirch_assert_(" << o->cond->strip() << ");");
+  line("libbirch_assert_(" << o->cond->strip() << ");  // LCOV_EXCL_LINE");
 }
 
 void bi::CppBaseGenerator::visit(const Return* o) {
@@ -926,11 +926,11 @@ void bi::CppBaseGenerator::visit(const TypeList* o) {
 void bi::CppBaseGenerator::genTraceFunction(const std::string& name,
     const Location* loc) {
   start("libbirch_function_(\"" << name << "\", \"");
-  finish(loc->file->path << "\", " << loc->firstLine << ");");
+  finish(loc->file->path << "\", " << loc->firstLine << ");  // LCOV_EXCL_LINE");
 }
 
 void bi::CppBaseGenerator::genTraceLine(const int line) {
-  line("libbirch_line_(" << line << ");");
+  line("libbirch_line_(" << line << ");  // LCOV_EXCL_LINE");
 }
 
 void bi::CppBaseGenerator::genArgs(const Expression* args, const Type* types) {

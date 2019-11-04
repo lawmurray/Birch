@@ -307,7 +307,7 @@ void bi::CppClassGenerator::visit(const Class* o) {
           line("template<class F_, class T_>");
           line("auto set_" << var->name << "_(const F_& shape_, T_&& o_) {");
           in();
-          line("libbirch_swap_context_");
+          line("libbirch_swap_context_  // LCOV_EXCL_LINE");
           line("return " << var->name << ".get(shape_) = std::forward<T_>(o_);");
           out();
           line("}\n");
@@ -379,7 +379,7 @@ void bi::CppClassGenerator::visit(const MemberFunction* o) {
       genTraceFunction(o->name->str(), o->loc);
 
       /* swap context */
-      line("libbirch_swap_context_");
+      line("libbirch_swap_context_  // LCOV_EXCL_LINE");
 
       /* declare self if necessary */
       Gatherer<Member> members;
@@ -391,7 +391,7 @@ void bi::CppClassGenerator::visit(const MemberFunction* o) {
       o->accept(&selfs);
       o->accept(&supers);
       if (members.size() + raws.size() + selfs.size() + supers.size() > 0) {
-        line("libbirch_declare_self_");
+        line("libbirch_declare_self_  // LCOV_EXCL_LINE");
       }
 
       /* body */
@@ -433,8 +433,8 @@ void bi::CppClassGenerator::visit(const AssignmentOperator* o) {
       finish(" {");
       in();
       genTraceFunction("<assignment>", o->loc);
-      line("libbirch_swap_context_");
-      line("libbirch_declare_self_");
+      line("libbirch_swap_context_  // LCOV_EXCL_LINE");
+      line("libbirch_declare_self_  // LCOV_EXCL_LINE");
       CppBaseGenerator auxBase(base, level, header);
       auxBase << o->braces->strip();
       line("return *this;");
@@ -460,8 +460,8 @@ void bi::CppClassGenerator::visit(const ConversionOperator* o) {
       finish(" {");
       in();
       genTraceFunction("<conversion>", o->loc);
-      line("libbirch_swap_context_");
-      line("libbirch_declare_self_");
+      line("libbirch_swap_context_  // LCOV_EXCL_LINE");
+      line("libbirch_declare_self_  // LCOV_EXCL_LINE");
       CppBaseGenerator auxBase(base, level, header);
       auxBase << o->braces->strip();
       out();

@@ -283,8 +283,8 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     finish(" {");
     in();
     genTraceFunction(o->name->str(), o->loc);
-    line("libbirch_swap_context_");
-    line("libbirch_declare_local_");
+    line("libbirch_swap_context_  // LCOV_EXCL_LINE");
+    line("libbirch_declare_local_  // LCOV_EXCL_LINE");
     genSwitch();
     *this << o->braces->strip();
     genEnd();
@@ -319,8 +319,8 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   } else {
     finish(" {");
     in();
-    line("libbirch_swap_context_");
-    line("libbirch_declare_self_");
+    line("libbirch_swap_context_  // LCOV_EXCL_LINE");
+    line("libbirch_declare_self_  // LCOV_EXCL_LINE");
     start("return libbirch::make_fiber<" << stateName << ">(context_, self");
     for (auto param: params) {
       middle(", " << param->name);

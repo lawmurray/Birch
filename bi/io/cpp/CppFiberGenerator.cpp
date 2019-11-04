@@ -265,8 +265,8 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
         line("using " << param->name << " [[maybe_unused]] = " << param->type << ';');
       }
       genTraceFunction(o->name->str(), o->loc);
-      line("libbirch_swap_context_");
-      line("libbirch_declare_local_");
+      line("libbirch_swap_context_  // LCOV_EXCL_LINE");
+      line("libbirch_declare_local_  // LCOV_EXCL_LINE");
       genSwitch();
       *this << o->braces->strip();
       genEnd();
