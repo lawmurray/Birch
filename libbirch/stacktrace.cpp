@@ -5,12 +5,12 @@
 
 #include "libbirch/thread.hpp"
 
-struct stack_shape {
+struct stack_frame {
   const char* func;
   const char* file;
   int line;
 };
-using stack_trace = std::vector<stack_shape,libbirch::Allocator<stack_shape>>;
+using stack_trace = std::vector<stack_frame,libbirch::Allocator<stack_frame>>;
 
 stack_trace& currentStackTrace() {
   static std::vector<stack_trace,libbirch::Allocator<stack_trace>> stacktraces(
