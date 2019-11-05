@@ -49,11 +49,10 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     }
   }
 
-  line("// LCOV_EXCL_START");
-
   /* constructor */
   start("");
   if (!header) {
+    genTraceLine(o->loc);
     middle("bi::type::" << type->name);
     genTemplateArgs(type);
     middle("::" << stateName << "::");
@@ -72,11 +71,14 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     finish(" :");
     in();
     in();
+    genTraceLine(o->loc);
     start("super_type_(context_, " << (yields.size() + 1) << ')');
     finish(',');
+    genTraceLine(o->loc);
     start("self(context_, self)");
     for (auto param : params) {
       finish(',');
+      genTraceLine(param->loc);
       start(param->name << '(');
       if (!param->type->isValue()) {
         middle("context_, ");
@@ -92,6 +94,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
 
   /* deep copy constructor */
   if (!header) {
+    genTraceLine(o->loc);
     middle("bi::type::" << type->name);
     genTemplateArgs(type);
     middle("::" << stateName << "::");
@@ -105,12 +108,15 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     finish(" :");
     in();
     in();
+    genTraceLine(o->loc);
     start("super_type_(context, label, o)");
     finish(',');
+    genTraceLine(o->loc);
     start("self(context, label, o.self)");
     for (auto o : params) {
       if (!o->type->isValue()) {
         finish(',');
+        genTraceLine(o->loc);
         if (o->type->isValue()) {
           start(o->name << "(o." << o->name << ')');
         } else {
@@ -121,6 +127,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     for (auto o : locals) {
       auto name = getName(o->name->str(), o->number);
       finish(',');
+      genTraceLine(o->loc);
       if (o->type->isValue()) {
         start(name << "(o." << name << ')');
       } else {
@@ -162,10 +169,10 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   }
 
   /* freeze function */
-  line("#if ENABLE_LAZY_DEEP_CLONE");
   if (header) {
     start("virtual void ");
   } else {
+    genTraceLine(o->loc);
     start("void bi::type::" << type->name);
     genTemplateArgs(type);
     middle("::" << stateName << "::");
@@ -176,18 +183,23 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   } else {
     finish(" {");
     in();
+    genTraceLine(o->loc);
     line("super_type_::doFreeze_();");
+    genTraceLine(o->loc);
     line("self.freeze();");
     if (!o->returnType->unwrap()->isValue()) {
+      genTraceLine(o->loc);
       line("value_.freeze();");
     }
     for (auto o : params) {
       if (!o->type->isValue()) {
+        genTraceLine(o->loc);
         line(o->name << ".freeze();");
       }
     }
     for (auto o : locals) {
       if (!o->type->isValue()) {
+        genTraceLine(o->loc);
         line(getName(o->name->str(), o->number) << ".freeze();");
       }
     }
@@ -199,6 +211,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   if (header) {
     start("virtual void ");
   } else {
+    genTraceLine(o->loc);
     start("void bi::type::" << type->name);
     genTemplateArgs(type);
     middle("::" << stateName << "::");
@@ -209,18 +222,23 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   } else {
     finish(" {");
     in();
+    genTraceLine(o->loc);
     line("super_type_::doThaw_(label_);");
+    genTraceLine(o->loc);
     line("self.thaw(label_);");
     if (!o->returnType->unwrap()->isValue()) {
+      genTraceLine(o->loc);
       line("value_.thaw(label_);");
     }
     for (auto o : params) {
       if (!o->type->isValue()) {
+        genTraceLine(o->loc);
         line(o->name << ".thaw(label_);");
       }
     }
     for (auto o : locals) {
       if (!o->type->isValue()) {
+        genTraceLine(o->loc);
         line(getName(o->name->str(), o->number) << ".thaw(label_);");
       }
     }
@@ -232,6 +250,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   if (header) {
     start("virtual void ");
   } else {
+    genTraceLine(o->loc);
     start("void bi::type::" << type->name);
     genTemplateArgs(type);
     middle("::" << stateName << "::");
@@ -242,27 +261,29 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   } else {
     finish(" {");
     in();
+    genTraceLine(o->loc);
     line("super_type_::doFinish_();");
+    genTraceLine(o->loc);
     line("self.finish();");
     if (!o->returnType->unwrap()->isValue()) {
+      genTraceLine(o->loc);
       line("value_.finish();");
     }
     for (auto o : params) {
       if (!o->type->isValue()) {
+        genTraceLine(o->loc);
         line(o->name << ".finish();");
       }
     }
     for (auto o : locals) {
       if (!o->type->isValue()) {
+        genTraceLine(o->loc);
         line(getName(o->name->str(), o->number) << ".finish();");
       }
     }
     out();
     line("}");
   }
-  line("#endif\n");
-
-  line("// LCOV_EXCL_STOP");
 
   /* query function */
   if (header) {
@@ -283,14 +304,38 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   } else {
     finish(" {");
     in();
-    line("// LCOV_EXCL_START");
+    genTraceLine(o->loc);
     line("libbirch_swap_context_");
+    genTraceLine(o->loc);
     line("libbirch_declare_local_");
+    genTraceLine(o->loc);
     genTraceFunction(o->name->str(), o->loc);
-    genSwitch();
-    line("// LCOV_EXCL_STOP");
+
+    genTraceLine(o->loc);
+    line("switch (local->point_) {");
+    in();
+    for (int s = 0; s <= yields.size(); ++s) {
+      genTraceLine(o->loc);
+      line("case " << s << ": goto POINT" << s << "_;");
+    }
+    genTraceLine(o->loc);
+    line("default: goto END_;");
+    out();
+    genTraceLine(o->loc);
+    line('}');
+    genTraceLine(o->loc);
+    line("POINT0_:");
+    ++point;
+
     *this << o->braces->strip();
-    genEnd();
+
+    genTraceLine(o->loc);
+    line("END_:");
+    genTraceLine(o->loc);
+    line("local->point_ = " << (yields.size() + 1) << ';');
+    genTraceLine(o->loc);
+    line("return false;");
+
     out();
     finish("}\n");
   }
@@ -300,10 +345,10 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   }
 
   /* initialisation function */
-  line("// LCOV_EXCL_START");
   if (header) {
     start("virtual ");
   } else {
+    genTraceLine(o->loc);
     start("");
   }
   middle(o->returnType << ' ');
@@ -323,8 +368,11 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   } else {
     finish(" {");
     in();
+    genTraceLine(o->loc);
     line("libbirch_swap_context_");
+    genTraceLine(o->loc);
     line("libbirch_declare_self_");
+    genTraceLine(o->loc);
     start("return libbirch::make_fiber<" << stateName << ">(context_, self");
     for (auto param: params) {
       middle(", " << param->name);
@@ -333,7 +381,6 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     out();
     finish("}\n");
   }
-  line("// LCOV_EXCL_STOP");
 }
 
 void bi::CppMemberFiberGenerator::visit(const This* o) {

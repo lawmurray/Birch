@@ -28,9 +28,6 @@ public:
   virtual void visit(const For* o);
 
 protected:
-  void genSwitch();
-  void genEnd();
-
   /**
    * Get the unique name for a local variable.
    */

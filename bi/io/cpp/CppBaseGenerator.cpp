@@ -512,11 +512,11 @@ void bi::CppBaseGenerator::visit(const Function* o) {
           ++iter) {
         auto param = dynamic_cast<const Generic*>(*iter);
         assert(param);
+        genTraceLine(o->loc);
         line("using " << param->name << " [[maybe_unused]] = " << param->type << ';');
       }
-      line("// LCOV_EXCL_START");
+      genTraceLine(o->loc);
       genTraceFunction(o->name->str(), o->loc);
-      line("// LCOV_EXCL_STOP");
       CppBaseGenerator aux(base, level, false);
       *this << o->braces->strip();
       out();
