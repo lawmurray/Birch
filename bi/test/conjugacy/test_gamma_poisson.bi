@@ -2,23 +2,21 @@
  * Test gamma-Poisson conjugacy.
  */
 program test_gamma_poisson(N:Integer <- 10000) {
-  X1:Real[N,2];
-  X2:Real[N,2];
-  k:Real <- simulate_uniform_int(1, 10);
-  θ:Real <- simulate_uniform(0.0, 10.0);
- 
+  m:TestGammaPoisson;
+  m.play();
+
   /* simulate forward */
+  X1:Real[N,2];
   for auto n in 1..N {
-    m:TestGammaPoisson(k, θ);
-    m.play();
-    X1[n,1..2] <- m.forward();
+    auto m' <- clone<TestGammaPoisson>(m);
+    X1[n,1..2] <- m'.forward();
   }
 
   /* simulate backward */
+  X2:Real[N,2];
   for auto n in 1..N {
-    m:TestGammaPoisson(k, θ);
-    m.play();
-    X2[n,1..2] <- m.backward();
+    auto m' <- clone<TestGammaPoisson>(m);
+    X2[n,1..2] <- m'.backward();
   }
   
   /* test result */
@@ -27,13 +25,14 @@ program test_gamma_poisson(N:Integer <- 10000) {
   }
 }
 
-class TestGammaPoisson(k:Real, θ:Real) < Model {
-  k:Real <- k;
-  θ:Real <- θ; 
+class TestGammaPoisson < Model {
   λ:Random<Real>;
   x:Random<Integer>;
   
   fiber simulate() -> Event {
+    auto k <- simulate_uniform_int(1, 10);
+    auto θ <- simulate_uniform(0.0, 10.0);
+
     λ ~ Gamma(k, θ);
     x ~ Poisson(λ);
   }
@@ -52,5 +51,9 @@ class TestGammaPoisson(k:Real, θ:Real) < Model {
     assert !λ.hasValue();
     y[1] <- λ.value();
     return y;
+  }
+  
+  function marginal() -> Distribution<Integer> {
+    return x.distribution();
   }
 }
