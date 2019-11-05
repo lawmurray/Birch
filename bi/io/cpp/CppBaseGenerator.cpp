@@ -553,10 +553,11 @@ void bi::CppBaseGenerator::visit(const Program* o) {
     genTraceLine(o->loc);
     line("int bi::" << o->name << "(int argc_, char** argv_) {");
     in();
-    line("// LCOV_EXCL_START");
+    genTraceLine(o->loc);
     genTraceFunction(o->name->str(), o->loc);
 
     /* initial context */
+    genTraceLine(o->loc);
     line("auto context_ [[maybe_unused]] = libbirch::rootContext;");
 
     /* handle program options */
@@ -565,6 +566,7 @@ void bi::CppBaseGenerator::visit(const Program* o) {
       for (auto iter = o->params->begin(); iter != o->params->end(); ++iter) {
         auto param = dynamic_cast<const Parameter*>(*iter);
         assert(param);
+        genTraceLine(o->loc);
         start(param->type << ' ' << param->name);
         if (!param->value->isEmpty()) {
           middle(" = " << param->value);
@@ -588,6 +590,7 @@ void bi::CppBaseGenerator::visit(const Program* o) {
 
       /* long options */
       line("int c_, option_index_;");
+      genTraceLine(o->loc);
       line("option long_options_[] = {");
       in();
       for (auto param : *o->params) {
@@ -606,14 +609,19 @@ void bi::CppBaseGenerator::visit(const Program* o) {
       line("};");
 
       /* short options */
+      genTraceLine(o->loc);
       line("const char* short_options_ = \"\";");
 
       /* read in options with getopt_long */
+      genTraceLine(o->loc);
       line("::opterr = 0;");  // handle error reporting ourselves
+      genTraceLine(o->loc);
       start("c_ = ::getopt_long_only(argc_, argv_, short_options_, ");
       finish("long_options_, &option_index_);");
+      genTraceLine(o->loc);
       line("while (c_ != -1) {");
       in();
+      genTraceLine(o->loc);
       line("switch (c_) {");
       in();
 
@@ -621,8 +629,10 @@ void bi::CppBaseGenerator::visit(const Program* o) {
         auto name = dynamic_cast<const Parameter*>(param)->name;
         std::string flag = internalise(name->str()) + "FLAG_";
 
+        genTraceLine(o->loc);
         line("case " << flag << ':');
         in();
+        genTraceLine(o->loc);
         if (param->type->unwrap()->isBasic()) {
           auto type = dynamic_cast<Named*>(param->type->unwrap());
           assert(type);
@@ -636,10 +646,12 @@ void bi::CppBaseGenerator::visit(const Program* o) {
       }
       line("default:");
       in();
+      genTraceLine(o->loc);
       line("libbirch::unknown_option(argv_[::optind - 1]);");
       out();
       out();
       line('}');
+      genTraceLine(o->loc);
       start("c_ = ::getopt_long_only(argc_, argv_, short_options_, ");
       finish("long_options_, &option_index_);");
       out();
@@ -647,8 +659,8 @@ void bi::CppBaseGenerator::visit(const Program* o) {
     }
 
     /* seed random number generator with random entropy */
+    genTraceLine(o->loc);
     line("bi::seed();\n");
-    line("// LCOV_EXCL_STOP");
 
     /* body of program */
     if (!o->braces->isEmpty()) {
@@ -656,6 +668,7 @@ void bi::CppBaseGenerator::visit(const Program* o) {
       aux << o->braces->strip();
     }
 
+    genTraceLine(o->loc);
     line("return 0;");
     out();
     line("}\n");

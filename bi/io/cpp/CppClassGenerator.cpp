@@ -192,7 +192,7 @@ void bi::CppClassGenerator::visit(const Class* o) {
 
     /* copy constructor, destructor, assignment operator */
     if (header) {
-      line("virtual ~" << o->name << "() = default;");
+      line("virtual ~" << o->name << "() = default;  // LCOV_EXCL_LINE");
       line(o->name << "(const " << o->name << "&) = delete;");
       line(o->name << "& operator=(const " << o->name << "&) = delete;");
     }
@@ -202,7 +202,7 @@ void bi::CppClassGenerator::visit(const Class* o) {
       if (header) {
         line("virtual " << o->name << "* clone_(libbirch::Label* context_) const {");
         in();
-        line("return libbirch::clone_object<" << o->name << ">(context_, this);");
+        line("return libbirch::clone_object<" << o->name << ">(context_, this);  // LCOV_EXCL_LINE");
         out();
         line("}\n");
       }
@@ -212,7 +212,7 @@ void bi::CppClassGenerator::visit(const Class* o) {
     if (header) {
       line("virtual const char* name_() const {");
       in();
-      line("return \"" << o->name << "\";");
+      line("return \"" << o->name << "\";  // LCOV_EXCL_LINE");
       out();
       line("}\n");
     }
@@ -312,7 +312,7 @@ void bi::CppClassGenerator::visit(const Class* o) {
         } else {
           middle(".assign(this->getLabel(), std::forward<T_>(o_))");
         }
-        finish(';');
+        finish(";  // LCOV_EXCL_LINE");
         out();
         line("}\n");
 
@@ -326,7 +326,7 @@ void bi::CppClassGenerator::visit(const Class* o) {
           } else {
             middle(".assign(this->getLabel(), std::forward<T_>(o_))");
           }
-          finish(';');
+          finish(";  // LCOV_EXCL_LINE");
           out();
           line("}\n");
         }

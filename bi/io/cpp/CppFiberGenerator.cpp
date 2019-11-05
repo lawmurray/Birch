@@ -130,7 +130,7 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
 
     /* copy constructor, destructor, assignment operator */
     if (header) {
-      line("virtual ~" << stateName << "() = default;");
+      line("virtual ~" << stateName << "() = default;  // LCOV_EXCL_LINE");
       line(stateName << "(const " << stateName << "&) = delete;");
       line(stateName << "& operator=(const " << stateName << "&) = delete;");
     }
@@ -139,7 +139,7 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
     if (header) {
       line("virtual " << stateName << "* clone_(libbirch::Label* context_) const {");
       in();
-      line("return libbirch::clone_object<" << stateName << ">(context_, this);");
+      line("return libbirch::clone_object<" << stateName << ">(context_, this);  // LCOV_EXCL_LINE");
       out();
       line("}\n");
     }
@@ -148,13 +148,12 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
     if (header) {
       line("virtual const char* name_() const {");
       in();
-      line("return \"" << stateName << "\";");
+      line("return \"" << stateName << "\";  // LCOV_EXCL_LINE");
       out();
       line("}\n");
     }
 
     /* freeze function */
-    line("#if ENABLE_LAZY_DEEP_CLONE");
     if (header) {
       start("virtual void ");
     } else {
@@ -256,7 +255,6 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
       out();
       line("}");
     }
-    line("#endif\n");
 
     /* query function */
     if (header) {
