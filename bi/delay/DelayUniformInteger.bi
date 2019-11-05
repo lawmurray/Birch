@@ -15,7 +15,7 @@ final class DelayUniformInteger(future:Integer?, futureUpdate:Boolean,
     return logpdf_uniform_int(x, l, u);
   }
 
-  function cdf(x:Integer) -> Real {
+  function cdf(x:Integer) -> Real? {
     return cdf_uniform_int(x, l, u);
   }
 

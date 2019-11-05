@@ -86,7 +86,7 @@ final class DelayAddBoundedDiscrete(future:Integer?, futureUpdate:Boolean,
     return P;
   }
 
-  function cdf(x:Integer) -> Real {
+  function cdf(x:Integer) -> Real? {
     P:Real <- 0.0;
     for (n:Integer in l..x) {
       P <- P + pdf(n);

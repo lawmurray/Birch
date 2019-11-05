@@ -197,11 +197,10 @@ abstract class DelayValue<Value>(future:Value?, futureUpdate:Boolean) < Delay {
    *
    * - x: The value.
    *
-   * Return: the cumulative probability
+   * Return: the cumulative probability, if supported.
    */
-  function cdf(x:Value) -> Real {
-    error("cdf unsupported here");
-    return 0.0;
+  function cdf(x:Value) -> Real? {
+    return nil;
   }
 
   /**
@@ -209,10 +208,9 @@ abstract class DelayValue<Value>(future:Value?, futureUpdate:Boolean) < Delay {
    *
    * - x: The cumulative probability.
    *
-   * Return: the quantile.
+   * Return: the quantile, if supported.
    */
   function quantile(p:Real) -> Value? {
-    error("quantile unsupported here");
     return nil;
   }
   

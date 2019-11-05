@@ -35,7 +35,7 @@ final class DelayNormalInverseGamma(future:Real?, futureUpdate:Boolean,
     (σ2.α, σ2.β) <- downdate_normal_inverse_gamma(x, μ, λ, σ2.α, σ2.β);
   }
 
-  function cdf(x:Real) -> Real {
+  function cdf(x:Real) -> Real? {
     return cdf_normal_inverse_gamma(x, μ, 1.0/λ, σ2.α, σ2.β);
   }
 

@@ -25,7 +25,7 @@ final class DelayNegativeBinomial(future:Integer?, futureUpdate:Boolean,
     return logpdf_negative_binomial(x, n, ρ);
   }
 
-  function cdf(x:Integer) -> Real {
+  function cdf(x:Integer) -> Real? {
     return cdf_negative_binomial(x, n, ρ);
   }
 

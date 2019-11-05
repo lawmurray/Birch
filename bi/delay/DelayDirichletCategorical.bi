@@ -24,7 +24,7 @@ final class DelayDirichletCategorical(future:Integer?, futureUpdate:Boolean,
     ρ.α <- downdate_dirichlet_categorical(x, ρ.α);
   }
 
-  function cdf(x:Integer) -> Real {
+  function cdf(x:Integer) -> Real? {
     return cdf_dirichlet_categorical(x, ρ.α);
   }
 

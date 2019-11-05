@@ -41,7 +41,7 @@ final class DelayLinearBoundedDiscrete(future:Integer?, futureUpdate:Boolean,
     return μ.pdf((x - c)/a);
   }
 
-  function cdf(x:Integer) -> Real {
+  function cdf(x:Integer) -> Real? {
     return μ.cdf((x - c)/a);
   }
 }

@@ -21,7 +21,7 @@ final class DelayBeta(future:Real?, futureUpdate:Boolean, α:Real, β:Real) <
     return logpdf_beta(x, α, β);
   }
 
-  function cdf(x:Real) -> Real {
+  function cdf(x:Real) -> Real? {
     return cdf_beta(x, α, β);
   }
 

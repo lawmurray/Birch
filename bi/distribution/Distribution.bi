@@ -218,7 +218,7 @@ abstract class Distribution<Value> {
    *
    * Return: the cumulative probability.
    */
-  function cdf(x:Value) -> Real {
+  function cdf(x:Value) -> Real? {
     graft(true);
     return delay!.cdf(x);
   }

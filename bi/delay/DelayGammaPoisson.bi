@@ -28,8 +28,12 @@ final class DelayGammaPoisson(future:Integer?, futureUpdate:Boolean,
     (λ.k, λ.θ) <- downdate_gamma_poisson(x, λ.k, λ.θ);
   }
 
-  function cdf(x:Integer) -> Real {
+  function cdf(x:Integer) -> Real? {
     return cdf_gamma_poisson(x, λ.k, λ.θ);
+  }
+
+  function quantile(p:Real) -> Integer? {
+    return quantile_gamma_poisson(p, λ.k, λ.θ);
   }
 
   function lower() -> Integer? {

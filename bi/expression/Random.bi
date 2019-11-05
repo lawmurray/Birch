@@ -103,11 +103,23 @@ final class Random<Value> < Expression<Value> {
    *
    * - x: The value.
    *
-   * Return: the cumulative probability
+   * Return: the cumulative probability, if supported.
    */
-  function cdf(x:Value) -> Real {
+  function cdf(x:Value) -> Real? {
     assert hasDistribution();
     return dist!.cdf(x);
+  }
+
+  /**
+   * Evaluate the quantile function at a cumulative probability.
+   *
+   * - x: The cumulative probability.
+   *
+   * Return: the quantile value, if supported.
+   */
+  function quantile(p:Real) -> Value? {
+    assert hasDistribution();
+    return dist!.quantile(p);
   }
   
   /**

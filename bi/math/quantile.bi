@@ -48,45 +48,6 @@ function quantile_poisson(p:Real, λ:Real) -> Integer {
 }
 
 /**
- * Quantile of a uniform integer distribution.
- *
- * - p: The cumulative probability.
- * - l: Lower bound of interval.
- * - u: Upper bound of interval.
- *
- * Return: the quantile.
- */
-function quantile_uniform_int(p:Real, l:Integer, u:Integer) -> Integer {
-  assert false;
-}
-
-/**
- * Quantile of a categorical distribution.
- *
- * - p: The cumulative probability.
- * - ρ: Category probabilities.
- *
- * Return: the quantile.
- */
-function quantile_categorical(p:Real, ρ:Real[_]) -> Integer {
-  assert false;
-}
-
-/**
- * Quantile of a compound-gamma distribution.
- *
- * - p: The cumulative probability.
- * - k: The shape.
- * - α: The prior shape.
- * - β: The prior scale.
- *
- * Return: the quantile.
- */
-function quantile_compound_gamma(p:Real, k:Real, α:Real, β:Real) -> Real {
-  assert false;
-}
-
-/**
  * Quantile of a uniform distribution.
  *
  * - p: The cumulative probability.
@@ -96,7 +57,8 @@ function quantile_compound_gamma(p:Real, k:Real, α:Real, β:Real) -> Real {
  * Return: the quantile.
  */
 function quantile_uniform(p:Real, l:Real, u:Real) -> Real {
-  assert false;
+  assert l <= u;
+  return l + p*(u - l);
 }
 
 /**
@@ -260,20 +222,6 @@ function quantile_normal_inverse_gamma(p:Real, μ:Real, a2:Real, α:Real,
 }
 
 /**
- * Quantile of a beta-binomial distribution.
- *
- * - p: The cumulative probability.
- * - n: Number of trials.
- * - α: Shape.
- * - β: Shape.
- *
- * Return: the quantile.
- */
-function quantile_beta_binomial(p:Real, n:Integer, α:Real, β:Real) -> Integer {
-  assert false;
-}
-
-/**
  * Quantile of a gamma-Poisson distribution.
  *
  * - p: The cumulative probability.
@@ -304,18 +252,6 @@ function quantile_lomax(p:Real, λ:Real, α:Real) -> Real {
   cpp{{
   return boost::math::quantile(boost::math::pareto_distribution<>(λ, α), p) - λ;
   }}
-}
-
-/**
- * Quantile of a Dirichlet-categorical distribution.
- *
- * - p: The cumulative probability.
- * - α: Concentrations.
- *
- * Return: the quantile.
- */
-function quantile_dirichlet_categorical(p:Real, α:Real[_]) -> Real {
-  assert false;
 }
 
 /**

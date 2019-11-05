@@ -235,7 +235,7 @@ function logpdf_weibull(x:Real, k:Real, λ:Real) -> Real {
   assert 0.0 < λ;
 
   if (x >= 0.0) {
-    return log(k) + (k - 1.0)*log(x) - (k - 2.0)*log(λ) - pow(x/λ, k);
+    return log(k) + (k - 1.0)*log(x) - k*log(λ) - pow(x/λ, k);
   } else {
     return -inf;
   }

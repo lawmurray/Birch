@@ -9,15 +9,18 @@ program test(N:Integer <- 10000) {
   code <- code + run_test("deep_clone_modify_dst");
   code <- code + run_test("deep_clone_modify_src");
   code <- code + run_test("cdf_beta");
+  code <- code + run_test("cdf_beta_binomial");
   code <- code + run_test("cdf_binomial");
   code <- code + run_test("cdf_exponential");
   code <- code + run_test("cdf_gamma");
+  code <- code + run_test("cdf_gamma_poisson");
   code <- code + run_test("cdf_gaussian");
   code <- code + run_test("cdf_geometric");
   code <- code + run_test("cdf_inverse_gamma");
   code <- code + run_test("cdf_negative_binomial");
   code <- code + run_test("cdf_poisson");
   code <- code + run_test("cdf_student_t");
+  code <- code + run_test("cdf_weibull");
   code <- code + run_test("pdf_multivariate_gaussian");
   code <- code + run_test("add_bounded_discrete_delta", N);
   code <- code + run_test("beta_bernoulli", N);

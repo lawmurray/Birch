@@ -39,7 +39,7 @@ final class DelayLinearNormalInverseGammaGaussian(future:Real?,
         x, a, μ.μ, c, μ.λ, μ.σ2.α, μ.σ2.β);
   }
 
-  function cdf(x:Real) -> Real {
+  function cdf(x:Real) -> Real? {
     return cdf_linear_normal_inverse_gamma_gaussian(x, a, μ.μ, c,
         1.0/μ.λ, μ.σ2.α, μ.σ2.β);
   }

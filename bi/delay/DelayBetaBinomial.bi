@@ -34,7 +34,7 @@ final class DelayBetaBinomial(future:Integer?, futureUpdate:Boolean,
     (ρ.α, ρ.β) <- downdate_beta_binomial(x, n, ρ.α, ρ.β);
   }
 
-  function cdf(x:Integer) -> Real {
+  function cdf(x:Integer) -> Real? {
     return cdf_beta_binomial(x, n, ρ.α, ρ.β);
   }
   

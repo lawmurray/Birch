@@ -20,7 +20,7 @@ final class DelayPoisson(future:Integer?, futureUpdate:Boolean, λ:Real) <
     return logpdf_poisson(x, λ);
   }
 
-  function cdf(x:Integer) -> Real {
+  function cdf(x:Integer) -> Real? {
     return cdf_poisson(x, λ);
   }
 
