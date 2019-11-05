@@ -25,6 +25,10 @@ final class DelayUniform(future:Real?, futureUpdate:Boolean, l:Real, u:Real)
     return cdf_uniform(x, l, u);
   }
 
+  function quantile(p:Real) -> Real? {
+    return quantile_uniform(p, l, u);
+  }
+
   function lower() -> Real? {
     return l;
   }

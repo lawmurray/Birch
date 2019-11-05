@@ -4,24 +4,19 @@
 program test_normal_inverse_gamma(N:Integer <- 10000) {
   X1:Real[N,2];
   X2:Real[N,2];
-  
-  μ:Real <- simulate_uniform(-10.0, 10.0);
-  a2:Real <- simulate_uniform(0.1, 2.0);
-  α:Real <- simulate_uniform(2.0, 10.0);
-  β:Real <- simulate_uniform(0.1, 10.0);
- 
+  m:TestNormalInverseGamma;
+  m.play();
+   
   /* simulate forward */
-  for i:Integer in 1..N {
-    m:TestNormalInverseGamma(μ, a2, α, β);
-    m.play();
-    X1[i,1..2] <- m.forward();
+  for auto n in 1..N {
+    auto m' <- clone<TestNormalInverseGamma>(m);
+    X1[n,1..2] <- m'.forward();
   }
 
   /* simulate backward */
-  for i:Integer in 1..N {
-    m:TestNormalInverseGamma(μ, a2, α, β);
-    m.play();
-    X2[i,1..2] <- m.backward();
+  for auto n in 1..N {
+    auto m' <- clone<TestNormalInverseGamma>(m);
+    X2[n,1..2] <- m'.backward();
   }
   
   /* test result */
@@ -30,37 +25,39 @@ program test_normal_inverse_gamma(N:Integer <- 10000) {
   }
 }
 
-class TestNormalInverseGamma(μ_0:Real, a2:Real, α:Real, β:Real) < Model {
-  μ_0:Real <- μ_0;
-  a2:Real <- a2;
-  α:Real <- α;
-  β:Real <- β;
-  
+class TestNormalInverseGamma < Model {  
   σ2:Random<Real>;
-  μ:Random<Real>;
+  x:Random<Real>;
   
   fiber simulate() -> Event {
+    auto μ <- simulate_uniform(-10.0, 10.0);
+    auto a2 <- simulate_uniform(0.1, 2.0);
+    auto α <- simulate_uniform(2.0, 10.0);
+    auto β <- simulate_uniform(0.1, 10.0);
+
     σ2 ~ InverseGamma(α, β);
-    assert !σ2.hasValue();
-    μ ~ Gaussian(μ_0, a2, σ2);
-    assert !σ2.hasValue();
+    x ~ Gaussian(μ, a2, σ2);
   }
   
   function forward() -> Real[_] {
     y:Real[2];
     assert !σ2.hasValue();
     y[1] <- σ2.value();
-    assert !μ.hasValue();
-    y[2] <- μ.value();
+    assert !x.hasValue();
+    y[2] <- x.value();
     return y;
   }
 
   function backward() -> Real[_] {
     y:Real[2];
-    assert !μ.hasValue();
-    y[2] <- μ.value();
+    assert !x.hasValue();
+    y[2] <- x.value();
     assert !σ2.hasValue();
     y[1] <- σ2.value();
     return y;
+  }
+  
+  function marginal() -> Distribution<Real> {
+    return x.distribution();
   }
 }

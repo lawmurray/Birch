@@ -39,6 +39,10 @@ final class DelayNormalInverseGamma(future:Real?, futureUpdate:Boolean,
     return cdf_normal_inverse_gamma(x, μ, 1.0/λ, σ2.α, σ2.β);
   }
 
+  function quantile(p:Real) -> Real? {
+    return quantile_normal_inverse_gamma(p, μ, 1.0/λ, σ2.α, σ2.β);
+  }
+
   function write(buffer:Buffer) {
     prune();
     buffer.set("class", "NormalInverseGamma");
