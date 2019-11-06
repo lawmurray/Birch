@@ -74,7 +74,7 @@ function cdf_poisson(x:Integer, λ:Real) -> Real {
  * Return: the cumulative probability.
  */
 function cdf_uniform_int(x:Integer, l:Integer, u:Integer) -> Real {
-  if (x < l) {
+  if x < l {
     return 0.0;
   } else if (x > u) {
     return 1.0;
@@ -95,7 +95,7 @@ function cdf_uniform_int(x:Integer, l:Integer, u:Integer) -> Real {
 function cdf_uniform(x:Real, l:Real, u:Real) -> Real {
   assert l <= u;
   
-  if x < l {
+  if x <= l {
     return 0.0;
   } else if x > u {
     return 1.0;
@@ -115,7 +115,7 @@ function cdf_uniform(x:Real, l:Real, u:Real) -> Real {
  * Return: the cumulative probability.
  */
 function cdf_inverse_gamma_gamma(x:Real, k:Real, α:Real, β:Real) -> Real {
-  if x < 0.0 {
+  if x <= 0.0 {
     return 0.0;
   } else {
     return ibeta(k, α, x/(β + x));

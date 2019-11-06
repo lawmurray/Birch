@@ -40,8 +40,8 @@ class TestLinearNormalInverseGammaGaussian < Model {
     auto β <- simulate_uniform(0.0, 10.0);
 
     σ2 ~ InverseGamma(α, β);
-    μ ~ Gaussian(a*μ_0 + c, a2, σ2);
-    x ~ Gaussian(μ, σ2);
+    μ ~ Gaussian(μ_0, a2, σ2);
+    x ~ Gaussian(a*μ + c, σ2);
   }
   
   function forward() -> Real[_] {

@@ -214,9 +214,13 @@ function quantile_gamma(p:Real, k:Real, θ:Real) -> Real {
 function quantile_inverse_gamma(p:Real, α:Real, β:Real) -> Real {
   assert 0.0 < α;
   assert 0.0 < β;
-  cpp{{
-  return boost::math::quantile(boost::math::inverse_gamma_distribution<>(α, β), p);
-  }}
+  if p == 0.0 {
+    return 0.0;
+  } else {
+    cpp{{
+    return boost::math::quantile(boost::math::inverse_gamma_distribution<>(α, β), p);
+    }}
+  }
 }
 
 /**
