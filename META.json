@@ -165,7 +165,7 @@
       "bi/math/iterator.bi",
       "bi/math/logpdf.bi",
       "bi/math/matrix.bi",
-      "bi/math/partitionfunction.bi",
+      "bi/math/partition.bi",
       "bi/math/primitive.bi",
       "bi/math/quantile.bi",
       "bi/math/resample.bi",
