@@ -155,7 +155,7 @@ function simulate_multinomial(n:Integer, ρ:Real[_]) -> Integer[_] {
  * - β: Scale.
  *
  */
- function simulate_compound_gamma(k:Real, α:Real, β:Real) -> Real {
+ function simulate_inverse_gamma_gamma(k:Real, α:Real, β:Real) -> Real {
     return simulate_gamma(k, simulate_inverse_gamma(α, β));
  }
 
@@ -585,18 +585,6 @@ function simulate_crp_categorical(α:Real, θ:Real, n:Integer[_],
     }
   }
   return k;
-}
-
-/**
- * Simulate a Gaussian distribution with an inverse-gamma prior over
- * the variance.
- *
- * - μ: Mean.
- * - α: Shape of the inverse-gamma.
- * - β: Scale of the inverse-gamma.
- */
-function simulate_inverse_gamma_gaussian(μ:Real, α:Real, β:Real) -> Real {
-  return simulate_student_t(2.0*α, μ, β/α);
 }
 
 /**

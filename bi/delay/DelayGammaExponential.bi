@@ -28,6 +28,10 @@ final class DelayGammaExponential(future:Real?, futureUpdate:Boolean,
     return cdf_lomax(x, 1.0/λ.θ, λ.k);
   }
 
+  function quantile(p:Real) -> Real? {
+    return quantile_lomax(p, 1.0/λ.θ, λ.k);
+  }
+
   function lower() -> Real? {
     return 0.0;
   }

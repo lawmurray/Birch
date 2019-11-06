@@ -418,7 +418,7 @@ function logpdf_inverse_wishart(X:Real[_,_], Ψ:Real[_,_], ν:Real) -> Real {
  *
  * Return: the log probability density.
  */
-function logpdf_compound_gamma(x:Real, k:Real, α:Real, β:Real) -> Real {
+function logpdf_inverse_gamma_gamma(x:Real, k:Real, α:Real, β:Real) -> Real {
   assert 0.0 < k;
   assert 0.0 < α;
   assert 0.0 < β;
@@ -609,22 +609,6 @@ function logpdf_crp_categorical(k:Integer, α:Real, θ:Real,
   } else {
     return log(n[k] - α) - log(N + θ);
   }
-}
-
-/**
- * Observe a Gaussian variate with an inverse-gamma distribution over
- * the variance.
- *
- * - x: The variate.
- * - μ: Mean.
- * - α: Shape of the inverse-gamma.
- * - β: Scale of the inverse-gamma.
- *
- * Returns: the log probability density.
- */
-function logpdf_inverse_gamma_gaussian(x:Real, μ:Real, α:Real,
-    β:Real) -> Real {
-  return logpdf_student_t(x, 2.0*α, μ, β/α);
 }
 
 /**

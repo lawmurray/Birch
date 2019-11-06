@@ -19,6 +19,10 @@ final class DelayUniformInteger(future:Integer?, futureUpdate:Boolean,
     return cdf_uniform_int(x, l, u);
   }
 
+  function quantile(p:Real) -> Integer? {
+    return quantile_uniform_int(p, l, u);
+  }
+
   function write(buffer:Buffer) {
     prune();
     buffer.set("class", "UniformInteger");

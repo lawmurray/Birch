@@ -225,22 +225,6 @@ function update_normal_inverse_gamma(x:Real, μ:Real, λ:Real, α:Real,
 }
 
 /**
- * Update the parameters of an inverse-gamma distribution with a
- * Gaussian likelihood.
- *
- * - x: The variate.
- * - μ: Mean.
- * - α: Prior shape of the inverse-gamma.
- * - β: Prior scale of the inverse-gamma.
- *
- * Returns: the posterior hyperparameters `α'` and `β'`.
- */
-function update_inverse_gamma_gaussian(x:Real, μ:Real, α:Real, β:Real) ->
-    (Real, Real) {
-  return (α + 0.5, β + 0.5*pow(x - μ, 2.0));
-}
-
-/**
  * Update the parameters of a normal inverse-gamma distribution with a
  * Gaussian likelihood.
  *

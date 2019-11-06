@@ -84,42 +84,6 @@ function cdf_uniform_int(x:Integer, l:Integer, u:Integer) -> Real {
 }
 
 /**
- * CDF of a categorical variate.
- *
- * - x: The variate.
- * - ρ: Category probabilities.
- *
- * Return: the cumulative probability.
- */
-function cdf_categorical(x:Integer, ρ:Real[_]) -> Real {
-  if x < 1 {
-    return 0.0;
-  } else if x > length(ρ) {
-    return 1.0;
-  } else {
-    return sum(ρ[1..x]);
-  }
-}
-
-/**
- * CDF of a compound-gamma variate.
- *
- * - x: The variate.
- * - k: The shape.
- * - α: The prior shape.
- * - β: The prior scale.
- *
- * Return: the cumulative probability.
- */
-function cdf_compound_gamma(x:Real, k:Real, α:Real, β:Real) -> Real {
-  if x < 0.0 {
-    return 0.0;
-  } else {
-    return ibeta(k, α, x/(β + x));
-  }
-}
-
-/**
  * CDF of a uniform variate.
  *
  * - x: The variate.
@@ -137,6 +101,24 @@ function cdf_uniform(x:Real, l:Real, u:Real) -> Real {
     return 1.0;
   } else {
     return (x - l)/(u - l);
+  }
+}
+
+/**
+ * CDF of a compound-gamma variate.
+ *
+ * - x: The variate.
+ * - k: The shape.
+ * - α: The prior shape.
+ * - β: The prior scale.
+ *
+ * Return: the cumulative probability.
+ */
+function cdf_inverse_gamma_gamma(x:Real, k:Real, α:Real, β:Real) -> Real {
+  if x < 0.0 {
+    return 0.0;
+  } else {
+    return ibeta(k, α, x/(β + x));
   }
 }
 
@@ -377,43 +359,6 @@ function cdf_lomax(x:Real, λ:Real, α:Real) -> Real {
     return boost::math::cdf(boost::math::pareto_distribution<>(λ, α), x + λ);
     }}
   }
-}
-
-/**
- * CDF of a Dirichlet-categorical variate.
- *
- * - x: The variate.
- * - α: Concentrations.
- *
- * Return: the cumulative probability.
- */
-function cdf_dirichlet_categorical(x:Integer, α:Real[_]) -> Real {
-  D:Integer <- length(α);
-  P:Real <- 0.0;
-  S:Real <- 0.0;
-  for k:Integer in 1..min(x, D) {
-    P <- P + gamma((1.0 + α[x])/α[x]);
-    S <- S + α[x];
-  }
-  for k:Integer in x+1..D {
-    S <- S + α[x];
-  }
-  return P*gamma(S/(1.0 + S));
-}
-
-/**
- * CDF of a Gaussian variate with an inverse-gamma distribution over
- * the variance.
- *
- * - x: The variate.
- * - μ: Mean.
- * - α: Shape of the inverse-gamma.
- * - β: Scale of the inverse-gamma.
- *
- * Return: the cumulative probability.
- */
-function cdf_inverse_gamma_gaussian(x:Real, μ:Real, α:Real, β:Real) -> Real {
-  return cdf_student_t(x, 2.0*α, μ, β/α);
 }
 
 /**

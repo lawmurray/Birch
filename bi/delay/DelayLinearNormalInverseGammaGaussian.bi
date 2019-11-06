@@ -44,6 +44,11 @@ final class DelayLinearNormalInverseGammaGaussian(future:Real?,
         1.0/μ.λ, μ.σ2.α, μ.σ2.β);
   }
 
+  function quantile(p:Real) -> Real? {
+    return quantile_linear_normal_inverse_gamma_gaussian(p, a, μ.μ, c,
+        1.0/μ.λ, μ.σ2.α, μ.σ2.β);
+  }
+
   function write(buffer:Buffer) {
     buffer.set(value());
   }

@@ -28,8 +28,13 @@ final class DelayNormalInverseGammaGaussian(future:Real?, futureUpdate:Boolean,
         x, μ.μ, μ.λ, μ.σ2.α, μ.σ2.β);
   }
 
-  function cdf(x:Integer) -> Real? {
+  function cdf(x:Real) -> Real? {
     return cdf_normal_inverse_gamma_gaussian(x, μ.μ, 1.0/μ.λ, μ.σ2.α,
+        μ.σ2.β);
+  }
+
+  function quantile(p:Real) -> Real? {
+    return quantile_normal_inverse_gamma_gaussian(p, μ.μ, 1.0/μ.λ, μ.σ2.α,
         μ.σ2.β);
   }
 

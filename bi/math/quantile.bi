@@ -62,6 +62,20 @@ function quantile_uniform(p:Real, l:Real, u:Real) -> Real {
 }
 
 /**
+ * Quantile of a uniform integer distribution.
+ *
+ * - p: The cumulative probability.
+ * - l: Lower bound of interval.
+ * - u: Upper bound of interval.
+ *
+ * Return: the quantile.
+ */
+function quantile_uniform_int(p:Real, l:Integer, u:Integer) -> Integer {
+  assert l <= u;
+  return l + Integer(p*(u - l));
+}
+
+/**
  * Quantile of an exponential distribution.
  *
  * - p: The cumulative probability.
@@ -252,21 +266,6 @@ function quantile_lomax(p:Real, λ:Real, α:Real) -> Real {
   cpp{{
   return boost::math::quantile(boost::math::pareto_distribution<>(λ, α), p) - λ;
   }}
-}
-
-/**
- * Quantile of a Gaussian distribution with an inverse-gamma distribution over
- * the variance.
- *
- * - p: The cumulative probability.
- * - μ: Mean.
- * - α: Shape of the inverse-gamma.
- * - β: Scale of the inverse-gamma.
- *
- * Return: the quantile.
- */
-function quantile_inverse_gamma_gaussian(p:Real, μ:Real, α:Real, β:Real) -> Real {
-  return quantile_student_t(p, 2.0*α, μ, β/α);
 }
 
 /**

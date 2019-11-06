@@ -1,5 +1,5 @@
 /*
- * Delayed Inverse-gamma gamma random variate.
+ * Delayed inverse-gamma-gamma random variate.
  */
 final class DelayInverseGammaGamma(future:Real?, futureUpdate:Boolean,
     k:Real, θ:DelayInverseGamma) < DelayValue<Real>(future, futureUpdate) {
@@ -14,11 +14,11 @@ final class DelayInverseGammaGamma(future:Real?, futureUpdate:Boolean,
   θ:DelayInverseGamma& <- θ;
 
   function simulate() -> Real {
-    return simulate_compound_gamma(k, θ.α, θ.β);
+    return simulate_inverse_gamma_gamma(k, θ.α, θ.β);
   }
 
   function logpdf(x:Real) -> Real {
-    return logpdf_compound_gamma(x, k, θ.α, θ.β);
+    return logpdf_inverse_gamma_gamma(x, k, θ.α, θ.β);
   }
 
   function update(x:Real) {
@@ -30,7 +30,7 @@ final class DelayInverseGammaGamma(future:Real?, futureUpdate:Boolean,
   }
 
   function cdf(x:Real) -> Real? {
-    return cdf_compound_gamma(x, k, θ.α, θ.β);
+    return cdf_inverse_gamma_gamma(x, k, θ.α, θ.β);
   }
 
   function lower() -> Real? {

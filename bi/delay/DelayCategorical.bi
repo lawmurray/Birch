@@ -16,10 +16,6 @@ final class DelayCategorical(future:Integer?, futureUpdate:Boolean, ρ:Real[_]) 
     return logpdf_categorical(x, ρ);
   }
 
-  function cdf(x:Integer) -> Real? {
-    return cdf_categorical(x, ρ);
-  }
-
   function write(buffer:Buffer) {
     prune();
     buffer.set("class", "Categorical");

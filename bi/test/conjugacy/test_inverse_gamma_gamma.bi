@@ -2,24 +2,21 @@
  * Test inverse-gamma-gamma conjugacy.
  */
 program test_inverse_gamma_gamma(N:Integer <- 10000) {
-  X1:Real[N,2];
-  X2:Real[N,2];
-  k:Real <- simulate_uniform(1.0, 10.0);
-  α:Real <- simulate_uniform(2.0, 10.0);
-  β:Real <- simulate_uniform(0.0, 10.0);
+  m:TestInverseGammaGamma;
+  m.play();
  
   /* simulate forward */
-  for i:Integer in 1..N {
-    m:TestInverseGammaGamma(k, α, β);
-    m.play();
-    X1[i,1..2] <- m.forward();
+  X1:Real[N,2];
+  for auto n in 1..N {
+    auto m' <- clone<TestInverseGammaGamma>(m);
+    X1[n,1..2] <- m'.forward();
   }
 
   /* simulate backward */
-  for i:Integer in 1..N {
-    m:TestInverseGammaGamma(k, α, β);
-    m.play();
-    X2[i,1..2] <- m.backward();
+  X2:Real[N,2];
+  for auto n in 1..N {
+    auto m' <- clone<TestInverseGammaGamma>(m);
+    X2[n,1..2] <- m'.backward();
   }
   
   /* test result */
@@ -28,15 +25,15 @@ program test_inverse_gamma_gamma(N:Integer <- 10000) {
   }
 }
 
-class TestInverseGammaGamma(k:Real, α:Real, β:Real) < Model {
-  k:Real <- k;
-  α:Real <- α;
-  β:Real <- β;
-  
+class TestInverseGammaGamma < Model {
   θ:Random<Real>;
   x:Random<Real>;
   
   fiber simulate() -> Event {
+    auto k <- simulate_uniform(1.0, 10.0);
+    auto α <- simulate_uniform(2.0, 10.0);
+    auto β <- simulate_uniform(0.0, 10.0);
+  
     θ ~ InverseGamma(α, β);
     x ~ Gamma(k, θ);
   }
@@ -55,5 +52,9 @@ class TestInverseGammaGamma(k:Real, α:Real, β:Real) < Model {
     assert !θ.hasValue();
     y[1] <- θ.value();
     return y;
+  }
+  
+  function marginal() -> Distribution<Real> {
+    return x.distribution();
   }
 }
