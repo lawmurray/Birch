@@ -5,59 +5,56 @@ program test_matrix_normal_inverse_gamma_matrix_gaussian(N:Integer <- 10000) {
   auto n <- 5;
   auto p <- 2;
 
-  X1:Real[N,p + 2*n*p];
-  X2:Real[N,p + 2*n*p];
-  
-  M:Real[n,p];
-  Σ:Real[n,n];
-  α:Real <- simulate_uniform(2.0, 10.0);
-  β:Real[p];
- 
-  for auto i in 1..n {
-    for auto j in 1..n {
-      Σ[i,j] <- simulate_uniform(-2.0, 2.0);
-    }
-    for auto j in 1..p {
-      M[i,j] <- simulate_uniform(-10.0, 10.0);
-    }
-  }
-  for auto i in 1..p {
-    β[i] <- simulate_uniform(0.0, 10.0);
-  }
-  Σ <- Σ*transpose(Σ);
+  m:TestMatrixNormalInverseGammaMatrixGaussian;
+  m.play();
  
   /* simulate forward */
+  X1:Real[N,p + 2*n*p];
   for auto i in 1..N {
-    m:TestMatrixNormalInverseGammaMatrixGaussian(M, Σ, α, β);
-    m.play();
-    X1[i,1..columns(X1)] <- m.forward();
+    auto m' <- clone<TestMatrixNormalInverseGammaMatrixGaussian>(m);
+    X1[i,1..columns(X1)] <- m'.forward();
   }
 
   /* simulate backward */
+  X2:Real[N,p + 2*n*p];
   for auto i in 1..N {
-    m:TestMatrixNormalInverseGammaMatrixGaussian(M, Σ, α, β);
-    m.play();
-    X2[i,1..columns(X1)] <- m.backward();
+    auto m' <- clone<TestMatrixNormalInverseGammaMatrixGaussian>(m);
+    X2[i,1..columns(X1)] <- m'.backward();
   }
   
   /* test result */
-  if (!pass(X1, X2)) {
+  if !pass(X1, X2) {
     exit(1);
   }
 }
 
-class TestMatrixNormalInverseGammaMatrixGaussian(M:Real[_,_], Σ:Real[_,_],
-    α:Real, β:Real[_]) < Model {
-  auto M <- M;
-  auto Σ <- Σ;
-  auto α <- α;
-  auto β <- β;
-  
+class TestMatrixNormalInverseGammaMatrixGaussian < Model {
   σ2:Random<Real[_]>;
   X:Random<Real[_,_]>;
   Y:Random<Real[_,_]>;
   
   fiber simulate() -> Event {
+    auto n <- 5;
+    auto p <- 2;
+
+    M:Real[n,p];
+    Σ:Real[n,n];
+    α:Real <- simulate_uniform(2.0, 10.0);
+    β:Real[p];
+ 
+    for auto i in 1..n {
+      for auto j in 1..n {
+        Σ[i,j] <- simulate_uniform(-2.0, 2.0);
+      }
+      for auto j in 1..p {
+        M[i,j] <- simulate_uniform(-10.0, 10.0);
+      }
+    }
+    for auto i in 1..p {
+      β[i] <- simulate_uniform(0.0, 10.0);
+    }
+    Σ <- Σ*transpose(Σ);
+
     σ2 ~ InverseGamma(α, β);
     X ~ Gaussian(M, Σ, σ2);
     Y ~ Gaussian(X, σ2);
@@ -81,6 +78,10 @@ class TestMatrixNormalInverseGammaMatrixGaussian(M:Real[_,_], Σ:Real[_,_],
     assert !σ2.hasValue();
     σ2.value();
     return copy();
+  }
+  
+  function marginal() -> Distribution<Real[_,_]> {
+    return Y.distribution();
   }
   
   function copy() -> Real[_] {
