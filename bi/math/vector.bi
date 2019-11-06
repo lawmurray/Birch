@@ -98,6 +98,63 @@ function scalar(x:Boolean[_]) -> Boolean {
 }
 
 /**
+ * Convert vector to vector (identity operation).
+ */
+function vector(x:Real[_]) -> Real[_] {
+  return x;
+}
+
+/**
+ * Convert vector to vector (identity operation).
+ */
+function vector(x:Integer[_]) -> Integer[_] {
+  return x;
+}
+
+/**
+ * Convert vector to vector (identity operation).
+ */
+function vector(x:Boolean[_]) -> Boolean[_] {
+  return x;
+}
+
+/**
+ * Convert vector to matrix (identity operation).
+ */
+function matrix(x:Boolean[_], rows:Integer, cols:Integer) -> Boolean[_,_] {
+  assert rows*cols == length(x);
+  X:Boolean[rows,cols];
+  for auto i in 1..rows {
+    X[i,1..cols] <- x[(i - 1)*cols + 1..i*cols];
+  }
+  return X;
+}
+
+/**
+ * Convert vector to matrix (identity operation).
+ */
+function matrix(x:Real[_], rows:Integer, cols:Integer) -> Real[_,_] {
+  assert rows*cols == length(x);
+  X:Real[rows,cols];
+  for auto i in 1..rows {
+    X[i,1..cols] <- x[(i - 1)*cols + 1..i*cols];
+  }
+  return X;
+}
+
+/**
+ * Convert vector to matrix (identity operation).
+ */
+function matrix(x:Integer[_], rows:Integer, cols:Integer) -> Integer[_,_] {
+  assert rows*cols == length(x);
+  X:Integer[rows,cols];
+  for auto i in 1..rows {
+    X[i,1..cols] <- x[(i - 1)*cols + 1..i*cols];
+  }
+  return X;
+}
+
+/**
  * Length of a vector.
  */
 function length(x:Object[_]) -> Integer {

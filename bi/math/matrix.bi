@@ -194,21 +194,69 @@ function scalar(X:Boolean[_,_]) -> Boolean {
 }
 
 /**
- * Convert vector to matrix with single row.
+ * Convert matrix to a vector, concatenating rows.
  */
-function row(x:Real[_]) -> Real[_,_] {
-  y:Real[1,length(x)];
-  y[1,1..rows(y)] <- x;
-  return y;
+function vector(X:Boolean[_,_]) -> Boolean[_] {
+  auto rows <- global.rows(X);
+  auto cols <- global.columns(X);
+  x:Boolean[rows*cols];
+  for auto i in 1..rows {
+    x[(i - 1)*cols + 1 .. i*cols] <- X[i,1..cols];
+  }
+  return x;
 }
 
 /**
- * Convert vector to matrix with single row.
+ * Convert matrix to a vector, concatenating rows.
  */
-function row(x:Integer[_]) -> Integer[_,_] {
-  y:Integer[1,length(x)];
-  y[1,1..rows(y)] <- x;
-  return y;
+function vector(X:Real[_,_]) -> Real[_] {
+  auto rows <- global.rows(X);
+  auto cols <- global.columns(X);
+  x:Real[rows*cols];
+  for auto i in 1..rows {
+    x[(i - 1)*cols + 1 .. i*cols] <- X[i,1..cols];
+  }
+  return x;
+}
+
+/**
+ * Convert matrix to a vector, concatenating rows.
+ */
+function vector(X:Integer[_,_]) -> Integer[_] {
+  auto rows <- global.rows(X);
+  auto cols <- global.columns(X);
+  x:Integer[rows*cols];
+  for auto i in 1..rows {
+    x[(i - 1)*cols + 1 .. i*cols] <- X[i,1..cols];
+  }
+  return x;
+}
+
+/**
+ * Convert matrix to matrix (identity operation).
+ */
+function matrix(X:Boolean[_,_], rows:Integer, cols:Integer) -> Boolean[_,_] {
+  assert global.rows(X) == rows;
+  assert global.columns(X) == cols;
+  return X;
+}
+
+/**
+ * Convert matrix to matrix (identity operation).
+ */
+function matrix(X:Real[_,_], rows:Integer, cols:Integer) -> Real[_,_] {
+  assert global.rows(X) == rows;
+  assert global.columns(X) == cols;
+  return X;
+}
+
+/**
+ * Convert matrix to matrix (identity operation).
+ */
+function matrix(X:Integer[_,_], rows:Integer, cols:Integer) -> Integer[_,_] {
+  assert global.rows(X) == rows;
+  assert global.columns(X) == cols;
+  return X;
 }
 
 /**

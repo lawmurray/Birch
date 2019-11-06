@@ -262,6 +262,7 @@
       "bi/test/pdf/test_pdf.bi",
       "bi/test/pdf/test_pdf_linear_multivariate_gaussian_multivariate_gaussian.bi",
       "bi/test/pdf/test_pdf_linear_multivariate_normal_inverse_gamma_multivariate_gaussian.bi",
+      "bi/test/pdf/test_pdf_matrix_gaussian.bi",
       "bi/test/pdf/test_pdf_multivariate_gaussian.bi",
       "bi/test/pdf/test_pdf_multivariate_gaussian_multivariate_gaussian.bi",
       "bi/test/pdf/test_pdf_multivariate_inverse_gamma.bi",
