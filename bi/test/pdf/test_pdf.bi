@@ -1,4 +1,38 @@
 /*
+ * Test the pmf of a univariate Boolean distribution.
+ *
+ * - π: The target distribution. 
+ * - N: Number of samples.
+ */
+function test_pdf(π:Distribution<Boolean>, N:Integer) {  
+  /* simulate, counting the occurrence of each value */
+  auto k <- 0;
+  for auto n in 1..N {
+    if π.simulate() {
+      k <- k + 1;
+    }
+  }
+
+  /* compare pdf to count */
+  auto failed <- false;
+  auto ε <- 5.0/sqrt(N);
+  
+  auto δ <- abs(π.pdf(true) - Real(k)/N);
+  if δ > ε {
+    failed <- true;
+    stderr.print("failed on true, " + δ + " > " + ε + "\n");
+  }
+  δ <- abs(π.pdf(false) - Real(N - k)/N);
+  if δ > ε {
+    failed <- true;
+    stderr.print("failed on false, " + δ + " > " + ε + "\n");
+  }
+  if failed {
+    exit(1);
+  }
+}
+
+/*
  * Test the pmf of a univariate discrete distribution.
  *
  * - π: The target distribution. 

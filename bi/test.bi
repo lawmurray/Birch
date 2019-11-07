@@ -28,6 +28,8 @@ program test(N:Integer <- 10000) {
   code <- code + run_test("cdf_uniform");
   code <- code + run_test("cdf_uniform_int");
   code <- code + run_test("cdf_weibull");
+  code <- code + run_test("pdf_bernoulli");
+  code <- code + run_test("pdf_beta_bernoulli");
   code <- code + run_test("pdf_categorical");
   code <- code + run_test("pdf_dirichlet_categorical");
   code <- code + run_test("pdf_linear_matrix_normal_inverse_gamma_matrix_gaussian");
