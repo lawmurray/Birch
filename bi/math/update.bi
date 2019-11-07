@@ -328,23 +328,6 @@ function update_linear_multivariate_gaussian_multivariate_gaussian(x:Real[_], A:
 }
 
 /**
- * Update the parameters of an inverse-gamma distribution with a Gaussian
- * likelihood.
- *
- * - x: The variate.
- * - μ: Mean.
- * - α: Prior shape of the inverse-gamma.
- * - β: Prior scale of the inverse-gamma.
- *
- * Returns: the posterior hyperparameters `α'` and `β'`.
- */
-function update_inverse_gamma_multivariate_gaussian(x:Real[_], μ:Real[_],
-    α:Real, β:Real) -> (Real, Real) {
-  D:Integer <- length(x);
-  return (α + 0.5*D, β + 0.5*dot(x - μ));
-}
-
-/**
  * Update the parameters of an inverse-gamma distribution with a linear
  * scaling and Gaussian likelihood.
  *

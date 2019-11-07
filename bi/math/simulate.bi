@@ -663,25 +663,6 @@ function simulate_multivariate_gaussian(μ:Real[_], σ2:Real) -> Real[_] {
 }
 
 /**
- * Simulate a multivariate Gaussian distribution with an inverse-gamma prior
- * over a diagonal covariance.
- *
- * - μ: Mean.
- * - α: Shape of the inverse-gamma.
- * - β: Scale of the inverse-gamma.
- */
-function simulate_inverse_gamma_multivariate_gaussian(μ:Real[_], α:Real,
-    β:Real) -> Real[_] {
-  D:Integer <- length(μ);
-  z:Real[D];
-  a:Real <- sqrt(β/α);
-  for (d:Integer in 1..D) {
-    z[d] <- μ[d] + a*simulate_student_t(2.0*α);
-  }
-  return z;
-}
-
-/**
  * Simulate a multivariate normal inverse-gamma distribution.
  *
  * - ν: Precision times mean.

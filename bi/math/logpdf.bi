@@ -696,22 +696,6 @@ function logpdf_multivariate_gaussian(x:Real[_], μ:Real[_], σ2:Real) -> Real {
 }
 
 /**
- * Observe a multivariate Gaussian variate with an inverse-gamma distribution
- * over a diagonal covariance.
- *
- * - x: The variate.
- * - μ: Mean.
- * - α: Shape of the inverse-gamma.
- * - β: Scale of the inverse-gamma.
- *
- * Returns: the log probability density.
- */
-function logpdf_inverse_gamma_multivariate_gaussian(x:Real[_], μ:Real[_],
-    α:Real, β:Real) -> Real {
-  return logpdf_multivariate_student_t(x, 2.0*α, μ, β/α);
-}
-
-/**
  * Observe a multivariate normal inverse-gamma variate.
  *
  * - x: The variate.

@@ -350,22 +350,6 @@ function downdate_multivariate_normal_inverse_gamma(x:Real[_], μ:Real[_],
   return (α' - 0.5*D, β' - 0.5*dot(x - μ, Λ*(x - μ)));
 }
 
-/**
- * Downdate the parameters of an inverse-gamma distribution with a Gaussian
- * likelihood.
- *
- * - x: The variate.
- * - μ: Mean.
- * - α': Posterior shape of the inverse-gamma.
- * - β': Posterior scale of the inverse-gamma.
- *
- * Returns: the prior hyperparameters `α` and `β`.
- */
-function downdate_inverse_gamma_multivariate_gaussian(x:Real[_], μ:Real[_],
-    α':Real, β':Real) -> (Real, Real) {
-  D:Integer <- length(x);
-  return (α' - 0.5*D, β' - 0.5*dot(x - μ));
-}
 
 /**
  * Downdate the parameters of a normal inverse-gamma distribution with a

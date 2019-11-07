@@ -1,4 +1,47 @@
 /*
+ * Test the pmf of a univariate discrete distribution.
+ *
+ * - π: The target distribution. 
+ * - N: Number of samples.
+ */
+function test_pdf(π:Distribution<Integer>, N:Integer) {  
+  /* lower bound on interval */
+  auto from <- π.lower();
+  if !from? {
+    from <- π.quantile(1.0e-6);
+    assert from?;
+  }
+
+  /* upper bound on interval */
+  auto to <- π.upper();
+  if !to? {
+    to <- π.quantile(1.0 - 1.0e-6);
+    assert to?;
+  }
+
+  /* simulate, counting the occurrence of each value */
+  auto count <- vector(0, to! - from! + 1);
+  for auto n in 1..N {
+    auto i <- π.simulate() - from! + 1;
+    count[i] <- count[i] + 1;
+  }
+
+  /* compare sum of pdf to counts */
+  auto failed <- false;
+  for auto x in from!..to! {
+    auto δ <- abs(π.pdf(x) - Real(count[x - from! + 1])/N);
+    auto ε <- 5.0/sqrt(N);
+    if δ > ε {
+      failed <- true;
+      stderr.print("failed on value " + x + ", " + δ + " > " + ε + "\n");
+    }
+  }
+  if failed {
+    exit(1);
+  }
+}
+
+/*
  * Test a multivariate pdf.
  *
  * - π: The target distribution. 

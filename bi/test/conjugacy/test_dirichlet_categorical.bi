@@ -1,59 +1,60 @@
 /*
  * Test Dirichlet-categorical conjugacy.
  */
-program test_dirichlet_categorical(N:Integer <- 10000) {
-  X1:Real[N,6];
-  X2:Real[N,6];
-  α:Real[5];
-  for n:Integer in 1..5 {
-    α[n] <- simulate_uniform(1.0, 10.0);
-  }
- 
+program test_dirichlet_categorical(N:Integer <- 10000) { 
+  m:TestDirichletCategorical;
+  m.play();
+
   /* simulate forward */
+  X1:Real[N,6];
   for auto n in 1..N {
-    m:TestDirichletCategorical(α);
-    m.play();
-    X1[n,1..6] <- m.forward();
+    auto m' <- clone<TestDirichletCategorical>(m);
+    X1[n,1..6] <- m'.forward();
   }
 
   /* simulate backward */
+  X2:Real[N,6];
   for auto n in 1..N {
-    m:TestDirichletCategorical(α);
-    m.play();
-    X2[n,1..6] <- m.backward();
+    auto m' <- clone<TestDirichletCategorical>(m);
+    X2[n,1..6] <- m'.backward();
   }
   
   /* test result */
-  if (!pass(X1, X2)) {
+  if !pass(X1, X2) {
     exit(1);
   }
 }
 
-class TestDirichletCategorical(α:Real[_]) < Model {
-  α:Real[_] <- α; 
+class TestDirichletCategorical < Model {
   ρ:Random<Real[_]>;
   x:Random<Integer>;
   
   fiber simulate() -> Event {
+    α:Real[5];
+    for n:Integer in 1..5 {
+      α[n] <- simulate_uniform(1.0, 10.0);
+    }
     ρ ~ Dirichlet(α);
     x ~ Categorical(ρ);
   }
   
   function forward() -> Real[_] {
-    D:Integer <- length(α);
-    y:Real[D + 1];
-    y[1..D] <- ρ.value();
+    y:Real[6];
+    y[1..5] <- ρ.value();
      assert !x.hasValue();
-    y[D + 1] <- x.value();
+    y[6] <- x.value();
     return y;
   }
 
   function backward() -> Real[_] {
-    D:Integer <- length(α);
-    y:Real[D + 1];
-    y[D + 1] <- x.value();
+    y:Real[6];
+    y[6] <- x.value();
      assert !ρ.hasValue();
-    y[1..D] <- ρ.value();
+    y[1..5] <- ρ.value();
     return y;
+  }
+  
+  function marginal() -> Distribution<Integer> {
+    return x.distribution();
   }
 }

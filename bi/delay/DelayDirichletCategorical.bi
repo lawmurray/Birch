@@ -24,6 +24,14 @@ final class DelayDirichletCategorical(future:Integer?, futureUpdate:Boolean,
     ρ.α <- downdate_dirichlet_categorical(x, ρ.α);
   }
 
+  function lower() -> Integer? {
+    return 1;
+  }
+
+  function upper() -> Integer? {
+    return length(ρ.α);
+  }
+
   function write(buffer:Buffer) {
     buffer.set(value());
   }
