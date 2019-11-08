@@ -50,7 +50,14 @@ function test_pdf(π:Distribution<Integer>, N:Integer) {
   auto to <- π.upper();
   if !to? {
     to <- π.quantile(1.0 - 1.0e-6);
-    assert to?;
+    if !to? {
+      /* search for a rough upper bound for the interval */
+      auto u <- 100;
+      while π.pdf(u) > 1.0e-6 {
+        u <- 2*u;
+      }
+      to <- u;
+    }
   }
 
   /* simulate, counting the occurrence of each value */
