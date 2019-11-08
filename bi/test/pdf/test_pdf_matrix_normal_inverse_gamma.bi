@@ -2,7 +2,7 @@
  * Test matrix normal-inverse-gamma pdf evaluations.
  */
 program test_pdf_matrix_normal_inverse_gamma(R:Integer <- 4, C:Integer <- 3,
-    N:Integer <- 20000, B:Integer <- 1000, S:Integer <- 20) {
+    N:Integer <- 20000, B:Integer <- 100, S:Integer <- 20) {
   M:Real[R,C];
   U:Real[R,R];
   α:Real <- simulate_uniform(2.0, 10.0);

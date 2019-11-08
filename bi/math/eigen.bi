@@ -163,6 +163,14 @@ function trace(X:Real[_,_]) -> Real;
 function det(X:Real[_,_]) -> Real;
 
 /**
+ * Logarithm of the determinant of a matrix.
+ */
+function ldet(X:Real[_,_]) -> Real {
+  ///@todo Use Eigen LU module
+  return log(det(X));
+}
+
+/**
  * Inverse of a matrix.
  */
 function inv(X:Real[_,_]) -> Real[_,_];

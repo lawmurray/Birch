@@ -126,12 +126,12 @@ auto transpose(const libbirch::Array<T,F>& o) {
 }
 
 template<class T>
-auto transpose(const Eigen::DiagonalWrapper<T>& o) {
+auto transpose(const Eigen::LLT<T>& o) {
   return o.transpose();
 }
 
 template<class T>
-auto transpose(const Eigen::LLT<T>& o) {
+auto transpose(const Eigen::DiagonalWrapper<T>& o) {
   return o.transpose();
 }
 
@@ -197,6 +197,18 @@ auto solve(const Eigen::LLT<T>& o1, const Eigen::MatrixBase<U>& o2) {
 
 template<class T, class U, class G>
 auto solve(const Eigen::LLT<T>& o1,
+    const libbirch::Array<U,G>& o2) {
+  return solve(o1, o2.toEigen());
+}
+
+template<class T, class U>
+auto solve(const Eigen::DiagonalWrapper<T>& o1,
+    const Eigen::MatrixBase<U>& o2) {
+  return o1.inverse()*o2;
+}
+
+template<class T, class U, class G>
+auto solve(const Eigen::DiagonalWrapper<T>& o1,
     const libbirch::Array<U,G>& o2) {
   return solve(o1, o2.toEigen());
 }
