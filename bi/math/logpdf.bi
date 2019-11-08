@@ -435,9 +435,9 @@ function logpdf_inverse_gamma_gamma(x:Real, k:Real, α:Real, β:Real) -> Real {
  *
  * - x: The variate.
  * - μ: Mean.
- * - a2: Variance.
- * - α: Shape of inverse-gamma on scale.
- * - β: Scale of inverse-gamma on scale.
+ * - a2: Variance scale.
+ * - α: Shape of inverse-gamma on variance.
+ * - β: Scale of inverse-gamma on variance.
  *
  * Returns: the log probability density.
  */
@@ -634,15 +634,15 @@ function logpdf_normal_inverse_gamma_gaussian(x:Real, μ:Real, a2:Real,
  * - x: The variate.
  * - a: Scale.
  * - μ: Mean.
- * - c: Offset.
  * - a2: Variance.
+ * - c: Offset.
  * - α: Shape of the inverse-gamma.
  * - β: Scale of the inverse-gamma.
  *
  * Returns: the log probability density.
  */
 function logpdf_linear_normal_inverse_gamma_gaussian(x:Real, a:Real,
-    μ:Real, c:Real, a2:Real, α:Real, β:Real) -> Real {
+    μ:Real, a2:Real, c:Real, α:Real, β:Real) -> Real {
   return logpdf_student_t(x, 2.0*α, a*μ + c, (β/α)*(1.0 + a*a*a2));
 }
 
@@ -737,15 +737,15 @@ function logpdf_multivariate_normal_inverse_gamma_multivariate_gaussian(x:Real[_
  * - x: The variate.
  * - A: Scale.
  * - ν: Precision times mean.
- * - c: Offset.
  * - Λ: Precision.
+ * - c: Offset.
  * - α: Shape of the inverse-gamma.
  * - γ: Scale accumulator of the inverse-gamma.
  *
  * Returns: the log probability density.
  */
 function logpdf_linear_multivariate_normal_inverse_gamma_multivariate_gaussian(x:Real[_],
-    A:Real[_,_], ν:Real[_], c:Real[_], Λ:LLT, α:Real, γ:Real) -> Real {
+    A:Real[_,_], ν:Real[_], Λ:LLT, c:Real[_], α:Real, γ:Real) -> Real {
   auto β <- γ - 0.5*dot(solve(cholesky(Λ), ν));
   return logpdf_multivariate_student_t(x, 2.0*α, A*solve(Λ, ν) + c,
       (β/α)*(identity(rows(A)) + A*solve(Λ, transpose(A))));
@@ -868,15 +868,15 @@ function logpdf_matrix_normal_inverse_gamma_matrix_gaussian(X:Real[_,_],
  * - X: The variate.
  * - A: Scale.
  * - N: Precision times mean matrix.
- * - C: Offset.
  * - Λ: Precision.
+ * - C: Offset.
  * - α: Variance shape.
  * - γ: Variance scale accumulators.
  *
  * Returns: the log probability density.
  */
 function logpdf_linear_matrix_normal_inverse_gamma_matrix_gaussian(
-    X:Real[_,_], A:Real[_,_], N:Real[_,_], C:Real[_,_], Λ:LLT, α:Real,
+    X:Real[_,_], A:Real[_,_], N:Real[_,_], Λ:LLT, C:Real[_,_], α:Real,
     γ:Real[_]) -> Real {
   auto M <- solve(Λ, N);
   auto β <- γ - 0.5*diagonal(transpose(M)*N);
@@ -929,15 +929,15 @@ function logpdf_matrix_normal_inverse_wishart_matrix_gaussian(X:Real[_,_],
  * - X: The variate.
  * - A: Scale.
  * - N: Prior precision times mean matrix.
- * - C: Offset.
  * - Λ: Prior precision.
+ * - C: Offset.
  * - Ψ: Prior variance shape.
  * - k: Prior degrees of freedom.
  *
  * Returns: the log probability density.
  */
 function logpdf_linear_matrix_normal_inverse_wishart_matrix_gaussian(
-    X:Real[_,_], A:Real[_,_], N:Real[_,_], C:Real[_,_], Λ:LLT, Ψ:Real[_,_],
+    X:Real[_,_], A:Real[_,_], N:Real[_,_], Λ:LLT, C:Real[_,_], Ψ:Real[_,_],
     k:Real) -> Real {
   auto p <- columns(N);
   auto M <- solve(Λ, N);

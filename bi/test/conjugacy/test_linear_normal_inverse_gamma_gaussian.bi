@@ -34,10 +34,10 @@ class TestLinearNormalInverseGammaGaussian < Model {
   fiber simulate() -> Event {
     auto a <- simulate_uniform(-2.0, 2.0);
     auto μ_0 <- simulate_uniform(-10.0, 10.0);
-    auto a2 <- simulate_uniform(0.0, 2.0);
+    auto a2 <- simulate_uniform(0.1, 2.0);
     auto c <- simulate_uniform(-10.0, 10.0);
     auto α <- simulate_uniform(2.0, 10.0);
-    auto β <- simulate_uniform(0.0, 10.0);
+    auto β <- simulate_uniform(0.1, 10.0);
 
     σ2 ~ InverseGamma(α, β);
     μ ~ Gaussian(μ_0, a2, σ2);
@@ -46,6 +46,7 @@ class TestLinearNormalInverseGammaGaussian < Model {
   
   function forward() -> Real[_] {
     y:Real[3];
+    assert !σ2.hasValue();
     y[1] <- σ2.value();
     assert !μ.hasValue();
     y[2] <- μ.value();
@@ -56,6 +57,7 @@ class TestLinearNormalInverseGammaGaussian < Model {
 
   function backward() -> Real[_] {
     y:Real[3];
+    assert !x.hasValue();
     y[3] <- x.value();
     assert !μ.hasValue();
     y[2] <- μ.value();

@@ -293,15 +293,15 @@ function cdf_inverse_gamma(x:Real, α:Real, β:Real) -> Real {
  *
  * - x: The variate.
  * - μ: Mean.
- * - a2: Variance.
+ * - σ2: Variance.
  * - α: Shape of inverse-gamma on scale.
  * - β: Scale of inverse-gamma on scale.
  *
  * Return: the cumulative probability.
  */
-function cdf_normal_inverse_gamma(x:Real, μ:Real, a2:Real, α:Real,
+function cdf_normal_inverse_gamma(x:Real, μ:Real, σ2:Real, α:Real,
     β:Real) -> Real {
-  return cdf_student_t(x, 2.0*α, μ, a2*β/α);
+  return cdf_student_t(x, 2.0*α, μ, σ2*β/α);
 }
 
 /**
@@ -384,14 +384,14 @@ function cdf_normal_inverse_gamma_gaussian(x:Real, μ:Real, a2:Real,
  * - x: The variate.
  * - a: Scale.
  * - μ: Mean.
- * - c: Offset.
  * - a2: Variance.
+ * - c: Offset.
  * - α: Shape of the inverse-gamma.
  * - β: Scale of the inverse-gamma.
  *
  * Return: the cumulative probability.
  */
 function cdf_linear_normal_inverse_gamma_gaussian(x:Real, a:Real,
-    μ:Real, c:Real, a2:Real, α:Real, β:Real) -> Real {
+    μ:Real, a2:Real, c:Real, α:Real, β:Real) -> Real {
   return cdf_student_t(x, 2.0*α, a*μ + c, (β/α)*(1.0 + a*a*a2));
 }

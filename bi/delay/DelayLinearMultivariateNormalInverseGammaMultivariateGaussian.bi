@@ -23,22 +23,22 @@ final class DelayLinearMultivariateNormalInverseGammaMultivariateGaussian(
 
   function simulate() -> Real[_] {
     return simulate_linear_multivariate_normal_inverse_gamma_multivariate_gaussian(
-        A, μ.ν, c, μ.Λ, μ.α, μ.γ);
+        A, μ.ν, μ.Λ, c, μ.α, μ.γ);
   }
   
   function logpdf(x:Real[_]) -> Real {
     return logpdf_linear_multivariate_normal_inverse_gamma_multivariate_gaussian(
-        x, A, μ.ν, c, μ.Λ, μ.α, μ.γ);
+        x, A, μ.ν, μ.Λ, c, μ.α, μ.γ);
   }
 
   function update(x:Real[_]) {
     (μ.ν, μ.Λ, μ.α, μ.γ) <- update_linear_multivariate_normal_inverse_gamma_multivariate_gaussian(
-        x, A, μ.ν, c, μ.Λ, μ.α, μ.γ);
+        x, A, μ.ν, μ.Λ, c, μ.α, μ.γ);
   }
 
   function downdate(x:Real[_]) {
     (μ.ν, μ.Λ, μ.α, μ.γ) <- downdate_linear_multivariate_normal_inverse_gamma_multivariate_gaussian(
-        x, A, μ.ν, c, μ.Λ, μ.α, μ.γ);
+        x, A, μ.ν, μ.Λ, c, μ.α, μ.γ);
   }
 
   function write(buffer:Buffer) {

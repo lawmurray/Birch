@@ -91,63 +91,65 @@ function test_pdf(π:Distribution<Real[_]>, D:Integer, N:Integer, B:Integer,
   
   /* iid samples */
   for auto n in 1..N {
-    X1[n,1..D] <- π.simulate();
+    X1[n,1..D] <- vector(π.simulate());
   }
   
-  /* tune the proposal distribution for a Metropolis sampler */
-  auto σ2 <- vector(1.0, D);
+  /* compute the shape for a Gaussian proposal using the iid samples */
+  auto μ <- vector(0.0, D);
+  auto Σ <- matrix(0.0, D, D);
+  for auto n in 1..N {
+    auto x <- X1[n,1..D];
+    μ <- μ + x;
+    Σ <- Σ + x*transpose(x);
+  }
+  μ <- μ/N;
+  Σ <- Σ/N - μ*transpose(μ);
+  
+  /* scale this proposal to get a reasonable acceptance rate */
   auto done <- false;
   do {
-    auto a <- vector(0.0, D);  // acceptance rate for each component
+    auto a <- 0.0;
     auto x <- π.simulate();
+    auto l <- π.logpdf(x);
 
     for auto n in 1..B {
-      for auto i in 1..D {
-        auto x' <- x;
-        x'[i] <- simulate_gaussian(x'[i], σ2[i]);
-        if log(simulate_uniform(0.0, 1.0)) <= π.logpdf(x') - π.logpdf(x) {
-          x <- x';  // accept
-          a[i] <- a[i] + 1.0/B;
-        }
+      auto x' <- simulate_multivariate_gaussian(x, Σ);
+      auto l' <- π.logpdf(x');
+      if log(simulate_uniform(0.0, 1.0)) <= l' - l {
+        /* accept */
+        x <- x';
+        l <- l';
+        a <- a + 1.0/B;
       }
     }
-
-    //stderr.print("\ntrial acceptance rates\n");
-    //stderr.print("----------------------\n");
-    //stderr.print(a + "\n");
-    
-    done <- true;
-    for auto i in 1..D {
-      if a[i] < 0.2 {
-        done <- false;
-        σ2[i] <- 0.5*σ2[i];
-      } else if a[i] > 0.4 {
-        done <- false;
-        σ2[i] <- 1.5*σ2[i];
-      }
+    //stderr.print("trial acceptance rate: " + a + "\n");
+    if a < 0.2 {
+      Σ <- 0.5*Σ;
+    } else if a > 0.4 {
+      Σ <- 1.5*Σ;
+    } else {
+      done <- true;
     }
   } while !done;
 
   /* apply the Metropolis sampler */
+  auto a <- 0.0;
   auto x <- π.simulate();
-  auto a <- vector(0.0, D);  // acceptance rate for each component
+  auto l <- π.logpdf(x);
   for auto n in 1..N {
     for auto s in 1..S {
-      for auto i in 1..D {
-        auto x' <- x;
-        x'[i] <- simulate_gaussian(x'[i], σ2[i]);
-        if log(simulate_uniform(0.0, 1.0)) <= π.logpdf(x') - π.logpdf(x) {
-          x <- x';  // accept
-          a[i] <- a[i] + 1.0/(N*S);
-        }
+      auto x' <- simulate_multivariate_gaussian(x, Σ);
+      auto l' <- π.logpdf(x');
+      if log(simulate_uniform(0.0, 1.0)) <= l' - l {
+        /* accept */
+        x <- x';
+        l <- l';
+        a <- a + 1.0/(N*S);
       }
     }
     X2[n,1..D] <- vector(x);
   }
-
-  //stderr.print("\nfinal acceptance rates\n");
-  //stderr.print("----------------------\n");
-  //stderr.print(a + "\n");
+  //stderr.print("final acceptance rate: " + a + "\n");
   
   /* test distance between the iid and Metropolis samples */
   if !pass(X1, X2) {
@@ -175,66 +177,62 @@ function test_pdf(π:Distribution<Real[_,_]>, R:Integer, C:Integer, N:Integer,
     X1[n,1..R*C] <- vector(π.simulate());
   }
   
-  /* tune the proposal distribution for a Metropolis sampler */
-  auto σ2 <- matrix(1.0, R, C);
+  /* compute the shape for a Gaussian proposal using the iid samples */
+  auto μ <- vector(0.0, R*C);
+  auto Σ <- matrix(0.0, R*C, R*C);
+  for auto n in 1..N {
+    auto x <- X1[n,1..R*C];
+    μ <- μ + x;
+    Σ <- Σ + x*transpose(x);
+  }
+  μ <- μ/N;
+  Σ <- Σ/N - μ*transpose(μ);
+  
+  /* scale this proposal to get a reasonable acceptance rate */
   auto done <- false;
   do {
-    auto a <- matrix(0.0, R, C);  // acceptance rate for each component
+    auto a <- 0.0;
     auto x <- π.simulate();
+    auto l <- π.logpdf(x);
 
     for auto n in 1..B {
-      for auto i in 1..R {
-        for auto j in 1..C {
-          auto x' <- x;
-          x'[i,j] <- simulate_gaussian(x'[i,j], σ2[i,j]);
-          if log(simulate_uniform(0.0, 1.0)) <= π.logpdf(x') - π.logpdf(x) {
-            x <- x';  // accept
-            a[i,j] <- a[i,j] + 1.0/B;
-          }
-        }
+      auto x' <- matrix(simulate_multivariate_gaussian(vector(x), Σ), R, C);
+      auto l' <- π.logpdf(x');
+      if log(simulate_uniform(0.0, 1.0)) <= l' - l {
+        /* accept */
+        x <- x';
+        l <- l';
+        a <- a + 1.0/B;
       }
     }
-
-    //stderr.print("\ntrial acceptance rates\n");
-    //stderr.print("----------------------\n");
-    //stderr.print(a + "\n");
-    
-    done <- true;
-    for auto i in 1..R {
-      for auto j in 1..C {
-        if a[i,j] < 0.2 {
-          done <- false;
-          σ2[i,j] <- 0.5*σ2[i,j];
-        } else if a[i,j] > 0.4 {
-          done <- false;
-          σ2[i,j] <- 1.5*σ2[i,j];
-        }
-      }
+    //stderr.print("trial acceptance rate: " + a + "\n");
+    if a < 0.2 {
+      Σ <- 0.5*Σ;
+    } else if a > 0.4 {
+      Σ <- 1.5*Σ;
+    } else {
+      done <- true;
     }
   } while !done;
 
   /* apply the Metropolis sampler */
+  auto a <- 0.0;
   auto x <- π.simulate();
-  auto a <- matrix(0.0, R, C);  // acceptance rate for each component
+  auto l <- π.logpdf(x);
   for auto n in 1..N {
     for auto s in 1..S {
-      for auto i in 1..R {
-        for auto j in 1..C {
-          auto x' <- x;
-          x'[i,j] <- simulate_gaussian(x'[i,j], σ2[i,j]);
-          if log(simulate_uniform(0.0, 1.0)) <= π.logpdf(x') - π.logpdf(x) {
-            x <- x';  // accept
-            a[i,j] <- a[i,j] + 1.0/(N*S);
-          }
-        }
+      auto x' <- matrix(simulate_multivariate_gaussian(vector(x), Σ), R, C);
+      auto l' <- π.logpdf(x');
+      if log(simulate_uniform(0.0, 1.0)) <= l' - l {
+        /* accept */
+        x <- x';
+        l <- l';
+        a <- a + 1.0/(N*S);
       }
     }
     X2[n,1..R*C] <- vector(x);
   }
-
-  //stderr.print("\nfinal acceptance rates\n");
-  //stderr.print("----------------------\n");
-  //stderr.print(a + "\n");
+  //stderr.print("final acceptance rate: " + a + "\n");
   
   /* test distance between the iid and Metropolis samples */
   if !pass(X1, X2) {

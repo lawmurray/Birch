@@ -348,7 +348,7 @@ function simulate_student_t(ν:Real) -> Real {
  */
 function simulate_student_t(ν:Real, μ:Real, σ2:Real) -> Real {
   assert 0.0 < ν;
-  if (σ2 == 0.0) {
+  if σ2 == 0.0 {
     return μ;
   } else {
     return μ + sqrt(σ2)*simulate_student_t(ν);
@@ -451,9 +451,9 @@ function simulate_inverse_wishart(Ψ:Real[_,_], k:Real) -> Real[_,_] {
  * Simulate a normal inverse-gamma distribution.
  *
  * - μ: Mean.
- * - a2: Variance.
- * - α: Shape of inverse-gamma on scale.
- * - β: Scale of inverse-gamma on scale.
+ * - a2: Variance scale.
+ * - α: Shape of inverse-gamma on variance.
+ * - β: Scale of inverse-gamma on variance.
  */
 function simulate_normal_inverse_gamma(μ:Real, a2:Real, α:Real,
     β:Real) -> Real {
@@ -605,13 +605,13 @@ function simulate_normal_inverse_gamma_gaussian(μ:Real, a2:Real,
  *
  * - a: Scale.
  * - μ: Mean.
- * - c: Offset.
  * - a2: Variance.
+ * - c: Offset.
  * - α: Shape of the inverse-gamma.
  * - β: Scale of the inverse-gamma.
  */
 function simulate_linear_normal_inverse_gamma_gaussian(a:Real, μ:Real,
-    c:Real, a2:Real, α:Real, β:Real) -> Real {
+    a2:Real, c:Real, α:Real, β:Real) -> Real {
   return simulate_student_t(2.0*α, a*μ + c, (β/α)*(1.0 + a*a*a2));
 }
 
@@ -699,13 +699,13 @@ function simulate_multivariate_normal_inverse_gamma_multivariate_gaussian(
  *
  * - A: Scale.
  * - ν: Precision times mean.
- * - c: Offset.
  * - Λ: Precision.
+ * - c: Offset.
  * - α: Shape of the inverse-gamma.
  * - γ: Scale accumulator of the inverse-gamma.
  */
 function simulate_linear_multivariate_normal_inverse_gamma_multivariate_gaussian(
-    A:Real[_,_], ν:Real[_], c:Real[_], Λ:LLT, α:Real, γ:Real) -> Real[_] {
+    A:Real[_,_], ν:Real[_], Λ:LLT, c:Real[_], α:Real, γ:Real) -> Real[_] {
   auto μ <- solve(Λ, ν);
   auto β <- γ - 0.5*dot(μ, ν);
   return simulate_multivariate_student_t(2.0*α, A*μ + c,
@@ -839,13 +839,13 @@ function simulate_matrix_normal_inverse_gamma_matrix_gaussian(
  *
  * - A: Scale.
  * - N: Precision times mean matrix.
- * - C: Offset.
  * - Λ: Precision.
+ * - C: Offset.
  * - α: Variance shape.
  * - γ: Variance scale accumulators.
  */
 function simulate_linear_matrix_normal_inverse_gamma_matrix_gaussian(
-    A:Real[_,_], N:Real[_,_], C:Real[_,_], Λ:LLT, α:Real, γ:Real[_]) ->
+    A:Real[_,_], N:Real[_,_], Λ:LLT, C:Real[_,_], α:Real, γ:Real[_]) ->
     Real[_,_] {
   auto M <- solve(Λ, N);
   auto β <- γ - 0.5*diagonal(transpose(M)*N);
@@ -891,13 +891,13 @@ function simulate_matrix_normal_inverse_wishart_matrix_gaussian(N:Real[_,_],
  *
  * - A: Scale.
  * - N: Precision times mean matrix.
- * - C: Offset.
  * - Λ: Precision.
+ * - C: Offset.
  * - Ψ: Variance shape.
  * - k: Degrees of freedom.
  */
 function simulate_linear_matrix_normal_inverse_wishart_matrix_gaussian(
-    A:Real[_,_], N:Real[_,_], C:Real[_,_], Λ:LLT, Ψ:Real[_,_], k:Real) -> Real[_,_] {
+    A:Real[_,_], N:Real[_,_], Λ:LLT, C:Real[_,_], Ψ:Real[_,_], k:Real) -> Real[_,_] {
   auto p <- columns(N);
   auto M <- solve(Λ, N);
   auto Σ <- (identity(rows(A)) + A*solve(Λ, transpose(A)))/(k - p + 1.0);

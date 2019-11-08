@@ -1,8 +1,8 @@
 /*
  * Test multivariate Gaussian pdf evaluations.
  */
-program test_pdf_multivariate_gaussian(D:Integer <- 4, N:Integer <- 20000,
-    B:Integer <- 100, S:Integer <- 20) {
+program test_pdf_multivariate_gaussian(D:Integer <- 4, N:Integer <- 10000,
+    B:Integer <- 500, S:Integer <- 20) {
   μ:Real[D];
   Σ:Real[D,D];
 

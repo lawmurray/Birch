@@ -228,9 +228,9 @@ function quantile_inverse_gamma(p:Real, α:Real, β:Real) -> Real {
  *
  * - p: The cumulative probability.
  * - μ: Mean.
- * - a2: Variance.
- * - α: Shape of inverse-gamma on scale.
- * - β: Scale of inverse-gamma on scale.
+ * - a2: Variance scale.
+ * - α: Shape of inverse-gamma on variance.
+ * - β: Scale of inverse-gamma on variance.
  *
  * Return: the quantile.
  */
@@ -295,14 +295,14 @@ function quantile_normal_inverse_gamma_gaussian(p:Real, μ:Real, a2:Real,
  * - p: The cumulative probability.
  * - a: Scale.
  * - μ: Mean.
- * - c: Offset.
  * - a2: Variance.
+ * - c: Offset.
  * - α: Shape of the inverse-gamma.
  * - β: Scale of the inverse-gamma.
  *
  * Return: the quantile.
  */
 function quantile_linear_normal_inverse_gamma_gaussian(p:Real, a:Real,
-    μ:Real, c:Real, a2:Real, α:Real, β:Real) -> Real {
+    μ:Real, a2:Real, c:Real, α:Real, β:Real) -> Real {
   return quantile_student_t(p, 2.0*α, a*μ + c, (β/α)*(1.0 + a*a*a2));
 }
