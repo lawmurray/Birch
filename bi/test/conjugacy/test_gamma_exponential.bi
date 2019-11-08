@@ -30,8 +30,8 @@ class TestGammaExponential < Model {
   x:Random<Real>;
 
   fiber simulate() -> Event {
-    auto k <- simulate_uniform(0.0, 10.0);
-    auto θ <- simulate_uniform(0.0, 10.0);
+    auto k <- simulate_uniform(1.0, 10.0);
+    auto θ <- simulate_uniform(0.0, 2.0);
 
     λ ~ Gamma(k, θ);
     x ~ Exponential(λ);

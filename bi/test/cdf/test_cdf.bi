@@ -12,12 +12,12 @@ function test_cdf(q:Distribution<Real>, N:Integer) {
   if from? {
     /* test the lower bound against the quantile */
     auto test <- q.quantile(0.0);
-    if test? && abs(from! - test!) > 1.0e-6 {
+    if test? && abs(from! - test!) > 1.0/N {
       failed <- true;
       stderr.print("lower bound and quantile comparison failed\n");
     }
   } else {
-    from <- q.quantile(1.0e-6);
+    from <- q.quantile(1.0/N);
     assert from?;
   }
 
@@ -26,16 +26,16 @@ function test_cdf(q:Distribution<Real>, N:Integer) {
   if to? {
     /* test the upper bound against the quantile */
     auto test <- q.quantile(1.0);
-    if test? && abs(to! - test!) > 1.0e-6 {
+    if test? && abs(to! - test!) > 1.0/N {
       failed <- true;
       stderr.print("upper bound and quantile comparison failed\n");
     }
   } else {
-    to <- q.quantile(1.0 - 1.0e-6);
+    to <- q.quantile(1.0 - 1.0/N);
     if !to? {
       /* search for a rough upper bound for the interval */
       auto u <- 1.0;
-      while q.pdf(u) > 1.0e-6 {
+      while q.pdf(u) > 1.0/N {
         u <- 2.0*u;
       }
       to <- u;
