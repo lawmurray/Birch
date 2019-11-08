@@ -35,23 +35,23 @@ final class MultivariateNormalInverseGamma(μ:Expression<Real[_]>,
   μ:Expression<Real[_]> <- μ;
   
   /**
-   * Covariance.
+   * Covariance scale.
    */
   Σ:Expression<Real[_,_]> <- Σ;
 
   /**
-   * Covariance scale.
+   * Covariance.
    */
   σ2:InverseGamma(α, β);
   
   function valueForward() -> Real[_] {
     assert !delay?;
-    return simulate_multivariate_gaussian(μ, Σ*σ2.value());
+    return simulate_multivariate_normal_inverse_gamma(μ, llt(Σ), σ2.α, σ2.β);
   }
 
   function observeForward(x:Real[_]) -> Real {
     assert !delay?;
-    return logpdf_multivariate_gaussian(x, μ, Σ*σ2.value());
+    return logpdf_multivariate_normal_inverse_gamma(x, μ, llt(Σ), σ2.α, σ2.β);
   }
   
   function graft(force:Boolean) {

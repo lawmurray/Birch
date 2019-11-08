@@ -401,15 +401,14 @@ function update_linear_multivariate_normal_inverse_gamma_multivariate_gaussian(
  * - N: Precision times mean.
  * - Λ: Precision.
  * - α: Prior variance shape.
- * - γ: Prior variance scale accumulators.
+ * - β: Prior variance scales.
  *
  * Returns: the posterior hyperparameters `α'` and `β'`.
  */
 function update_matrix_normal_inverse_gamma(X:Real[_,_], N:Real[_,_], Λ:LLT,
-    α:Real, γ:Real[_]) -> (Real, Real[_]) {
+    α:Real, β:Real[_]) -> (Real, Real[_]) {
   auto D <- rows(X);
   auto M <- solve(Λ, N);
-  auto β <- γ - 0.5*diagonal(transpose(M)*N);
   auto α' <- α + 0.5*D;
   auto β' <- β + 0.5*diagonal(transpose(X - M)*Λ*(X - M));
   return (α', β');

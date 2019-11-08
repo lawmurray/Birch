@@ -39,28 +39,32 @@ final class DelayMatrixNormalInverseGamma(future:Real[_,_]?,
   }
 
   function simulate() -> Real[_,_] {
-    return simulate_matrix_normal_inverse_gamma(N, Λ, α, γ);
+    return simulate_matrix_normal_inverse_gamma(N, Λ, α,
+        gamma_to_beta(γ, N, Λ));
   }
   
-  function logpdf(X:Real[_,_]) -> Real {   
-    return logpdf_matrix_normal_inverse_gamma(X, N, Λ, α, γ);
+  function logpdf(X:Real[_,_]) -> Real {
+    return logpdf_matrix_normal_inverse_gamma(X, N, Λ, α,
+        gamma_to_beta(γ, N, Λ));
   }
 
   function update(X:Real[_,_]) {
-    (σ2.α, σ2.β) <- update_matrix_normal_inverse_gamma(X, N, Λ, α, γ);
+    (σ2.α, σ2.β) <- update_matrix_normal_inverse_gamma(X, N, Λ, α,
+        gamma_to_beta(γ, N, Λ));
   }
 
   function downdate(X:Real[_,_]) {
-    (σ2.α, σ2.β) <- downdate_matrix_normal_inverse_gamma(X, N, Λ, α, γ);
+    (σ2.α, σ2.β) <- downdate_matrix_normal_inverse_gamma(X, N, Λ, α,
+        gamma_to_beta(γ, N, Λ));
   }
 
   function write(buffer:Buffer) {
     prune();
     buffer.set("class", "MatrixNormalInverseGamma");
-    buffer.set("N", N);
-    buffer.set("Λ", matrix(Λ));
+    buffer.set("M", solve(Λ, N));
+    buffer.set("Σ", inv(Λ));
     buffer.set("α", α);
-    buffer.set("γ", γ);
+    buffer.set("β", gamma_to_beta(γ, N, Λ));
   }
 }
 
@@ -70,4 +74,14 @@ function DelayMatrixNormalInverseGamma(future:Real[_,_]?,
   m:DelayMatrixNormalInverseGamma(future, futureUpdate, M, Σ, σ2);
   σ2.setChild(m);
   return m;
+}
+
+
+/*
+ * Compute the variance scaleσ from the variance scale accumulatorσ and other
+ * parameters.
+ */
+function gamma_to_beta(γ:Real[_], N:Real[_,_], Λ:LLT) -> Real[_] {
+  auto A <- solve(cholesky(Λ), N);
+  return γ - 0.5*diagonal(transpose(A)*A);
 }

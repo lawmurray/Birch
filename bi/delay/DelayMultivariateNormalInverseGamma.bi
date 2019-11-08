@@ -34,28 +34,32 @@ final class DelayMultivariateNormalInverseGamma(future:Real[_]?,
   }
 
   function simulate() -> Real[_] {
-    return simulate_multivariate_normal_inverse_gamma(ν, Λ, α, gamma_to_beta(γ, ν, Λ));
+    return simulate_multivariate_normal_inverse_gamma(ν, Λ, α,
+        gamma_to_beta(γ, ν, Λ));
   }
   
   function logpdf(x:Real[_]) -> Real {
-    return logpdf_multivariate_normal_inverse_gamma(x, ν, Λ, α, gamma_to_beta(γ, ν, Λ));
+    return logpdf_multivariate_normal_inverse_gamma(x, ν, Λ, α,
+        gamma_to_beta(γ, ν, Λ));
   }
 
   function update(x:Real[_]) {
-    (σ2.α, σ2.β) <- update_multivariate_normal_inverse_gamma(x, ν, Λ, α, gamma_to_beta(γ, ν, Λ));
+    (σ2.α, σ2.β) <- update_multivariate_normal_inverse_gamma(x, ν, Λ, α,
+        gamma_to_beta(γ, ν, Λ));
   }
 
   function downdate(x:Real[_]) {
-    (σ2.α, σ2.β) <- downdate_multivariate_normal_inverse_gamma(x, ν, Λ, α, gamma_to_beta(γ, ν, Λ));
+    (σ2.α, σ2.β) <- downdate_multivariate_normal_inverse_gamma(x, ν, Λ, α,
+        gamma_to_beta(γ, ν, Λ));
   }
 
   function write(buffer:Buffer) {
     prune();
     buffer.set("class", "MultivariateNormalInverseGamma");
-    buffer.set("ν", ν);
-    buffer.set("Λ", matrix(Λ));
+    buffer.set("μ", solve(Λ, ν));
+    buffer.set("Σ", inv(Λ));
     buffer.set("α", α);
-    buffer.set("γ", γ);
+    buffer.set("β", gamma_to_beta(γ, ν, Λ));
   }
 }
 

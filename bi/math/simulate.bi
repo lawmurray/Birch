@@ -808,12 +808,11 @@ function simulate_matrix_gaussian(M:Real[_,_], σ2:Real[_]) -> Real[_,_] {
  * - N: Precision times mean matrix.
  * - Λ: Precision.
  * - α: Variance shape.
- * - γ: Variance scale accumulators.
+ * - β: Variance scales.
  */
 function simulate_matrix_normal_inverse_gamma(N:Real[_,_], Λ:LLT, α:Real,
-    γ:Real[_]) -> Real[_,_] {
+    β:Real[_]) -> Real[_,_] {
   auto M <- solve(Λ, N);
-  auto β <- γ - 0.5*diagonal(transpose(M)*N);
   auto Σ <- inv(Λ);
   return simulate_matrix_student_t(2.0*α, M, Σ, β/α);
 }
