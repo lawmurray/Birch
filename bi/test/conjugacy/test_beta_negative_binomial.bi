@@ -2,40 +2,38 @@
  * Test beta-negative-binomial conjugacy.
  */
 program test_beta_negative_binomial(N:Integer <- 10000) {
-  X1:Real[N,2];
-  X2:Real[N,2];
-  k:Integer <- simulate_uniform_int(1, 100);
-  α:Real <- simulate_uniform(1.0, 100.0);
-  β:Real <- simulate_uniform(1.0, 100.0);
+  m:TestBetaNegativeBinomial;
+  m.play();
  
   /* simulate forward */
+  X1:Real[N,2];
   for auto n in 1..N {
-    m:TestBetaNegativeBinomial(k, α, β);
-    m.play();
-    X1[n,1..2] <- m.forward();
+    auto m' <- clone<TestBetaNegativeBinomial>(m);
+    X1[n,1..2] <- m'.forward();
   }
 
   /* simulate backward */
+  X2:Real[N,2];
   for auto n in 1..N {
-    m:TestBetaNegativeBinomial(k, α, β);
-    m.play();
-    X2[n,1..2] <- m.backward();
+    auto m' <- clone<TestBetaNegativeBinomial>(m);
+    X2[n,1..2] <- m'.backward();
   }
   
   /* test result */
-  if (!pass(X1, X2)) {
+  if !pass(X1, X2) {
     exit(1);
   }
 }
 
-class TestBetaNegativeBinomial(k:Integer, α:Real, β:Real) < Model {
-  k:Integer <- k;
-  α:Real <- α;
-  β:Real <- β;
+class TestBetaNegativeBinomial < Model {
   ρ:Random<Real>;
   x:Random<Integer>;
   
   fiber simulate() -> Event {
+    k:Integer <- simulate_uniform_int(1, 100);
+    α:Real <- simulate_uniform(1.0, 100.0);
+    β:Real <- simulate_uniform(1.0, 100.0);
+  
     ρ ~ Beta(α, β);
     x ~ NegativeBinomial(k, ρ);
   }
@@ -54,5 +52,9 @@ class TestBetaNegativeBinomial(k:Integer, α:Real, β:Real) < Model {
     assert !ρ.hasValue();
     y[1] <- ρ.value();
     return y;
+  }
+  
+  function marginal() -> Distribution<Integer> {
+    return x.distribution();
   }
 }

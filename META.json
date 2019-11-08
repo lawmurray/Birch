@@ -263,6 +263,7 @@
       "bi/test/pdf/test_pdf.bi",
       "bi/test/pdf/test_pdf_bernoulli.bi",
       "bi/test/pdf/test_pdf_beta_bernoulli.bi",
+      "bi/test/pdf/test_pdf_beta_negative_binomial.bi",
       "bi/test/pdf/test_pdf_categorical.bi",
       "bi/test/pdf/test_pdf_dirichlet_categorical.bi",
       "bi/test/pdf/test_pdf_linear_matrix_normal_inverse_gamma_matrix_gaussian.bi",
