@@ -43,8 +43,3 @@ class IntegerValue(value:Integer) < Value {
     return matrix(value, 1, 1);
   }
 }
-
-function IntegerValue(value:Integer) -> IntegerValue {
-  o:IntegerValue(value);
-  return o;
-}

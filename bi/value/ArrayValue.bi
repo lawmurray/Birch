@@ -192,8 +192,3 @@ class ArrayValue < Value {
     return nil;
   }
 }
-
-function ArrayValue() -> ArrayValue {
-  o:ArrayValue;
-  return o;
-}

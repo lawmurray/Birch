@@ -33,6 +33,7 @@ program test(N:Integer <- 10000) {
   code <- code + run_test("pdf_beta_negative_binomial", N);
   code <- code + run_test("pdf_categorical", N);
   code <- code + run_test("pdf_dirichlet_categorical", N);
+  code <- code + run_test("pdf_linear_discrete_delta", N);
   code <- code + run_test("pdf_linear_matrix_normal_inverse_gamma_matrix_gaussian", N);
   code <- code + run_test("pdf_linear_matrix_normal_inverse_wishart_matrix_gaussian", N);
   code <- code + run_test("pdf_linear_multivariate_gaussian_multivariate_gaussian", N);

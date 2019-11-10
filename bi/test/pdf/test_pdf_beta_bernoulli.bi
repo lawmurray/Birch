@@ -1,5 +1,5 @@
 /*
- * Test beta-Bernoulli cdf evaluations.
+ * Test beta-Bernoulli pdf evaluations.
  */
 program test_pdf_beta_bernoulli(N:Integer <- 10000) {
   m:TestBetaBernoulli;

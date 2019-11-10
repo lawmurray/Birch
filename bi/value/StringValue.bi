@@ -23,8 +23,3 @@ class StringValue(value:String) < Value {
     return value;
   }
 }
-
-function StringValue(value:String) -> StringValue {
-  o:StringValue(value);
-  return o;
-}

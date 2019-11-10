@@ -31,8 +31,3 @@ class RealValue(value:Real) < Value {
     return matrix(value, 1, 1);
   }
 }
-
-function RealValue(value:Real) -> RealValue {
-  o:RealValue(value);
-  return o;
-}

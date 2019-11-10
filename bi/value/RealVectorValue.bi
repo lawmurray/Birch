@@ -27,8 +27,3 @@ class RealVectorValue(value:Real[_]) < Value {
     return column(value);
   }
 }
-
-function RealVectorValue(value:Real[_]) -> RealVectorValue {
-  o:RealVectorValue(value);
-  return o;
-}

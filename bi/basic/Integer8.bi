@@ -197,21 +197,3 @@ function min(x:Integer8, y:Integer8) -> Integer8 {
   return std::min(x, y);
   }}
 }
-
-/**
- * Round an integer up to the next power of two. Zero and negative integers
- * return zero.
- */
-function pow2(x:Integer8) -> Integer8 {
-  if (x < Integer8(0)) {
-    return Integer8(0);
-  } else {
-    y:Integer8 <- x/Integer8(2);
-    z:Integer8 <- Integer8(1);
-    while (y > Integer8(0)) {
-      y <- y/Integer8(2);
-      z <- z*Integer8(2);
-    }
-    return z;
-  }
-}

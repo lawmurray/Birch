@@ -266,6 +266,7 @@
       "bi/test/pdf/test_pdf_beta_negative_binomial.bi",
       "bi/test/pdf/test_pdf_categorical.bi",
       "bi/test/pdf/test_pdf_dirichlet_categorical.bi",
+      "bi/test/pdf/test_pdf_linear_discrete_delta.bi",
       "bi/test/pdf/test_pdf_linear_matrix_normal_inverse_gamma_matrix_gaussian.bi",
       "bi/test/pdf/test_pdf_linear_matrix_normal_inverse_wishart_matrix_gaussian.bi",
       "bi/test/pdf/test_pdf_linear_multivariate_gaussian_multivariate_gaussian.bi",

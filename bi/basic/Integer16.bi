@@ -197,21 +197,3 @@ function min(x:Integer16, y:Integer16) -> Integer16 {
   return std::min(x, y);
   }}
 }
-
-/**
- * Round an integer up to the next power of two. Zero and negative integers
- * return zero.
- */
-function pow2(x:Integer16) -> Integer16 {
-  if (x < Integer16(0)) {
-    return Integer16(0);
-  } else {
-    y:Integer16 <- x/Integer16(2);
-    z:Integer16 <- Integer16(1);
-    while (y > Integer16(0)) {
-      y <- y/Integer16(2);
-      z <- z*Integer16(2);
-    }
-    return z;
-  }
-}

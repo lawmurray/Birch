@@ -197,21 +197,3 @@ function min(x:Integer32, y:Integer32) -> Integer32 {
   return std::min(x, y);
   }}
 }
-
-/**
- * Round an integer up to the next power of two. Zero and negative integers
- * return zero.
- */
-function pow2(x:Integer32) -> Integer32 {
-  if (x < Integer16(0)) {
-    return Integer32(0);
-  } else {
-    y:Integer32 <- x/Integer32(2);
-    z:Integer32 <- Integer32(1);
-    while (y > Integer32(0)) {
-      y <- y/Integer32(2);
-      z <- z*Integer32(2);
-    }
-    return z;
-  }
-}

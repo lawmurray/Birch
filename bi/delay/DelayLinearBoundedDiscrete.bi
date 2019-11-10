@@ -30,15 +30,11 @@ final class DelayLinearBoundedDiscrete(future:Integer?, futureUpdate:Boolean,
   
   function logpdf(x:Integer) -> Real {
     assert !value?;
-    return μ.logpdf((x - c)/a);
+    return μ.logpdf((x - c)/a) - log(abs(a));
   }
 
   function update(x:Integer) {
     μ.clamp((x - c)/a);
-  }
-
-  function pdf(x:Integer) -> Real {
-    return μ.pdf((x - c)/a);
   }
 
   function cdf(x:Integer) -> Real? {

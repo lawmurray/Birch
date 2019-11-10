@@ -23,8 +23,3 @@ class BooleanMatrixValue(value:Boolean[_,_]) < Value {
     return value;
   }
 }
-
-function BooleanMatrixValue(value:Boolean[_,_]) -> BooleanMatrixValue {
-  o:BooleanMatrixValue(value);
-  return o;
-}

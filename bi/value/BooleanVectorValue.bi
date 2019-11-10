@@ -27,8 +27,3 @@ class BooleanVectorValue(value:Boolean[_]) < Value {
     return column(value);
   }
 }
-
-function BooleanVectorValue(value:Boolean[_]) -> BooleanVectorValue {
-  o:BooleanVectorValue(value);
-  return o;
-}

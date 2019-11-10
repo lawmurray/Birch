@@ -31,8 +31,3 @@ class BooleanValue(value:Boolean) < Value {
     return matrix(value, 1, 1);
   }
 }
-
-function BooleanValue(value:Boolean) -> BooleanValue {
-  o:BooleanValue(value);
-  return o;
-}

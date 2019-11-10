@@ -10,8 +10,3 @@ class NilValue < Value {
     return true;
   }
 }
-
-function NilValue() -> NilValue {
-  o:NilValue;
-  return o;
-}

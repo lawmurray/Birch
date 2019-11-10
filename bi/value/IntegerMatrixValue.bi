@@ -31,8 +31,3 @@ class IntegerMatrixValue(value:Integer[_,_]) < Value {
     return value;
   }
 }
-
-function IntegerMatrixValue(value:Integer[_,_]) -> IntegerMatrixValue {
-  o:IntegerMatrixValue(value);
-  return o;
-}

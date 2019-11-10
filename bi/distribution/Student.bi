@@ -39,9 +39,16 @@ final class Student(ν:Expression<Real>, μ:Expression<Real>, σ2:Expression<Rea
 /**
  * Create Student's $t$-distribution.
  */
-function Student(ν:Expression<Real>) -> Student {
-  m:Student(ν, Boxed(0.0), Boxed(1.0));
+function Student(ν:Expression<Real>, μ:Expression<Real>, σ2:Expression<Real>) -> Student {
+  m:Student(ν, μ, σ2);
   return m;
+}
+
+/**
+ * Create Student's $t$-distribution.
+ */
+function Student(ν:Expression<Real>) -> Student {
+  return Student(ν, Boxed(0.0), Boxed(1.0));
 }
 
 /**
@@ -54,63 +61,48 @@ function Student(ν:Real) -> Student {
 /**
  * Create Student's $t$-distribution.
  */
-function Student(ν:Expression<Real>, μ:Expression<Real>, σ2:Expression<Real> ) -> Student {
-  m:Student(ν, μ, σ2);
-  return m;
-}
-
-/**
- * Create Student's $t$-distribution.
- */
 function Student(ν:Real, μ:Expression<Real>, σ2:Expression<Real> ) -> Student {
-  m:Student(Boxed(ν), μ, σ2);
-  return m;
+  return Student(Boxed(ν), μ, σ2);
 }
 
 /**
  * Create Student's $t$-distribution.
  */
 function Student(ν:Expression<Real>, μ:Real, σ2:Expression<Real> ) -> Student {
-  m:Student(ν, Boxed(μ), σ2);
-  return m;
+  return Student(ν, Boxed(μ), σ2);
 }
 
 /**
  * Create Student's $t$-distribution.
  */
 function Student(ν:Expression<Real>, μ:Expression<Real>, σ2:Real ) -> Student {
-  m:Student(ν, μ, Boxed(σ2));
-  return m;
+  return Student(ν, μ, Boxed(σ2));
 }
 
 /**
  * Create Student's $t$-distribution.
  */
-function Student(ν:Real, μ:Real, σ2:Expression<Real> ) ->
-Student { m:Student(Boxed(ν), Boxed(μ), σ2);
-  return m;
+function Student(ν:Real, μ:Real, σ2:Expression<Real> ) -> Student {
+  return Student(Boxed(ν), Boxed(μ), σ2);
 }
 
 /**
  * Create Student's $t$-distribution.
  */
 function Student(ν:Real, μ:Expression<Real>, σ2:Real ) -> Student {
-  m:Student(Boxed(ν), μ, Boxed(σ2));
-  return m;
+  return Student(Boxed(ν), μ, Boxed(σ2));
 }
 
 /**
  * Create Student's $t$-distribution.
  */
 function Student(ν:Expression<Real>, μ:Real, σ2:Real ) -> Student {
-  m:Student(ν, Boxed(μ), Boxed(σ2));
-  return m;
+  return Student(ν, Boxed(μ), Boxed(σ2));
 }
 
 /**
  * Create Student's $t$-distribution.
  */
 function Student(ν:Real, μ:Real, σ2:Real ) -> Student {
-  m:Student(Boxed(ν), Boxed(μ), Boxed(σ2));
-  return m;
+  return Student(Boxed(ν), Boxed(μ), Boxed(σ2));
 }
