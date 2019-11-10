@@ -1,25 +1,25 @@
 /*
- * Test matrix normal-inverse-Wishart-Gaussian conjugacy.
+ * Test matrix linear normal-inverse-gamma-Gaussian conjugacy.
  */
-program test_matrix_normal_inverse_wishart_matrix_gaussian(
+program test_negative_linear_matrix_normal_inverse_gamma_matrix_gaussian(
     N:Integer <- 10000) {
   auto n <- 5;
   auto p <- 2;
 
-  m:TestMatrixNormalInverseWishartMatrixGaussian;
+  m:TestNegativeLinearMatrixNormalInverseGammaMatrixGaussian;
   m.play();
    
   /* simulate forward */
-  X1:Real[N,p*p + 2*n*p];
+  X1:Real[N,p + 2*n*p];
   for auto i in 1..N {
-    auto m' <- clone<TestMatrixNormalInverseWishartMatrixGaussian>(m);
+    auto m' <- clone<TestNegativeLinearMatrixNormalInverseGammaMatrixGaussian>(m);
     X1[i,1..columns(X1)] <- m'.forward();
   }
 
   /* simulate backward */
-  X2:Real[N,p*p + 2*n*p];
+  X2:Real[N,p + 2*n*p];
   for auto i in 1..N {
-    auto m' <- clone<TestMatrixNormalInverseWishartMatrixGaussian>(m);
+    auto m' <- clone<TestNegativeLinearMatrixNormalInverseGammaMatrixGaussian>(m);
     X2[i,1..columns(X1)] <- m'.backward();
   }
   
@@ -29,44 +29,45 @@ program test_matrix_normal_inverse_wishart_matrix_gaussian(
   }
 }
 
-class TestMatrixNormalInverseWishartMatrixGaussian < Model {
-  V:Random<Real[_,_]>;
+class TestNegativeLinearMatrixNormalInverseGammaMatrixGaussian < Model {
+  σ2:Random<Real[_]>;
   X:Random<Real[_,_]>;
   Y:Random<Real[_,_]>;
   
   fiber simulate() -> Event {
     auto n <- 5;
     auto p <- 2;
-  
+
+    A:Real[n,n];
     M:Real[n,p];
-    U:Real[n,n];
-    k:Real <- simulate_uniform(p - 1.0, p + 9.0);
-    Ψ:Real[p,p];
+    Σ:Real[n,n];
+    C:Real[n,p];
+    α:Real <- simulate_uniform(2.0, 10.0);
+    β:Real[p];
  
     for auto i in 1..n {
       for auto j in 1..n {
-        U[i,j] <- simulate_uniform(-2.0, 2.0);
+        A[i,j] <- simulate_uniform(-2.0, 2.0);
+        Σ[i,j] <- simulate_uniform(-2.0, 2.0);
       }
       for auto j in 1..p {
         M[i,j] <- simulate_uniform(-10.0, 10.0);
+        C[i,j] <- simulate_uniform(-10.0, 10.0);
       }
     }
     for auto i in 1..p {
-      for auto j in 1..p {
-        Ψ[i,j] <- simulate_uniform(-10.0, 10.0);
-      }
+      β[i] <- simulate_uniform(0.0, 10.0);
     }
-    U <- U*transpose(U);
-    Ψ <- Ψ*transpose(Ψ);
+    Σ <- Σ*transpose(Σ);
 
-    V ~ InverseWishart(Ψ, k);
-    X ~ Gaussian(M, U, V);
-    Y ~ Gaussian(X, V);
+    σ2 ~ InverseGamma(α, β);
+    X ~ Gaussian(M, Σ, σ2);
+    Y ~ Gaussian(A*X + C, σ2);
   }
   
   function forward() -> Real[_] {
-    assert !V.hasValue();
-    V.value();
+    assert !σ2.hasValue();
+    σ2.value();
     assert !X.hasValue();
     X.value();
     assert !Y.hasValue();
@@ -79,8 +80,8 @@ class TestMatrixNormalInverseWishartMatrixGaussian < Model {
     Y.value();
     assert !X.hasValue();
     X.value();
-    assert !V.hasValue();
-    V.value();
+    assert !σ2.hasValue();
+    σ2.value();
     return copy();
   }
   
@@ -90,11 +91,8 @@ class TestMatrixNormalInverseWishartMatrixGaussian < Model {
   
   function copy() -> Real[_] {
     y:Real[size()];
-    auto k <- 0;
-    for auto i in 1..rows(V) {
-      y[k + 1 .. k + columns(V)] <- V.value()[i,1..columns(V)];
-      k <- k + columns(V);
-    }
+    y[1..length(σ2)] <- σ2;
+    auto k <- length(σ2);
     for auto i in 1..rows(X) {
       y[k + 1 .. k + columns(X)] <- X.value()[i,1..columns(X)];
       k <- k + columns(X);
@@ -107,6 +105,6 @@ class TestMatrixNormalInverseWishartMatrixGaussian < Model {
   }
   
   function size() -> Integer {
-    return rows(V)*columns(V) + rows(X)*columns(X) + rows(Y)*columns(Y);
+    return length(σ2) + rows(X)*columns(X) + rows(Y)*columns(Y);
   }
 }

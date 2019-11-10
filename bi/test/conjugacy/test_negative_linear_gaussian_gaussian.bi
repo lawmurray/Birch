@@ -1,21 +1,21 @@
 /*
  * Test linear Gaussian-Gaussian conjugacy.
  */
-program test_linear_gaussian_gaussian(N:Integer <- 10000) { 
-  m:TestLinearGaussianGaussian;
+program test_negative_linear_gaussian_gaussian(N:Integer <- 10000) { 
+  m:TestNegativeLinearGaussianGaussian;
   m.play();
     
   /* simulate forward */
   X1:Real[N,2];
   for i:Integer in 1..N {
-    auto m' <- clone<TestLinearGaussianGaussian>(m);
+    auto m' <- clone<TestNegativeLinearGaussianGaussian>(m);
     X1[i,1..2] <- m'.forward();
   }
 
   /* simulate backward */
   X2:Real[N,2];
   for i:Integer in 1..N {
-    auto m' <- clone<TestLinearGaussianGaussian>(m);
+    auto m' <- clone<TestNegativeLinearGaussianGaussian>(m);
     X2[i,1..2] <- m'.backward();
   }
   
@@ -25,7 +25,7 @@ program test_linear_gaussian_gaussian(N:Integer <- 10000) {
   }
 }
 
-class TestLinearGaussianGaussian < Model {
+class TestNegativeLinearGaussianGaussian < Model {
   μ_1:Random<Real>;
   x:Random<Real>;
   

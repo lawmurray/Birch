@@ -1,21 +1,21 @@
 /*
  * Test linear inverse-gamma-Gaussian conjugacy.
  */
-program test_linear_normal_inverse_gamma_gaussian(N:Integer <- 10000) {  
-  m:TestLinearNormalInverseGammaGaussian;
+program test_negative_linear_normal_inverse_gamma_gaussian(N:Integer <- 10000) {  
+  m:TestNegativeLinearNormalInverseGammaGaussian;
   m.play();
   
   /* simulate forward */
   X1:Real[N,3];
   for auto n in 1..N {
-    auto m' <- clone<TestLinearNormalInverseGammaGaussian>(m);
+    auto m' <- clone<TestNegativeLinearNormalInverseGammaGaussian>(m);
     X1[n,1..3] <- m'.forward();
   }
 
   /* simulate backward */
   X2:Real[N,3];
   for auto n in 1..N {
-    auto m' <- clone<TestLinearNormalInverseGammaGaussian>(m);
+    auto m' <- clone<TestNegativeLinearNormalInverseGammaGaussian>(m);
     X2[n,1..3] <- m'.backward();
   }
   
@@ -25,7 +25,7 @@ program test_linear_normal_inverse_gamma_gaussian(N:Integer <- 10000) {
   }
 }
 
-class TestLinearNormalInverseGammaGaussian < Model {  
+class TestNegativeLinearNormalInverseGammaGaussian < Model {  
   σ2:Random<Real>;
   μ:Random<Real>;
   x:Random<Real>;

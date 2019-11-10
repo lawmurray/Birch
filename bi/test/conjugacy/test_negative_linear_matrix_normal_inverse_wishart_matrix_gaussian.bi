@@ -1,25 +1,25 @@
 /*
- * Test matrix normal-inverse-Wishart-Gaussian conjugacy.
+ * Test matrix linear normal-inverse-Wishart-Gaussian conjugacy.
  */
-program test_matrix_normal_inverse_wishart_matrix_gaussian(
+program test_negative_linear_matrix_normal_inverse_wishart_matrix_gaussian(
     N:Integer <- 10000) {
   auto n <- 5;
   auto p <- 2;
 
-  m:TestMatrixNormalInverseWishartMatrixGaussian;
+  m:TestNegativeLinearMatrixNormalInverseWishartMatrixGaussian;
   m.play();
-   
+
   /* simulate forward */
   X1:Real[N,p*p + 2*n*p];
   for auto i in 1..N {
-    auto m' <- clone<TestMatrixNormalInverseWishartMatrixGaussian>(m);
+    auto m' <- clone<TestNegativeLinearMatrixNormalInverseWishartMatrixGaussian>(m);
     X1[i,1..columns(X1)] <- m'.forward();
   }
 
   /* simulate backward */
   X2:Real[N,p*p + 2*n*p];
   for auto i in 1..N {
-    auto m' <- clone<TestMatrixNormalInverseWishartMatrixGaussian>(m);
+    auto m' <- clone<TestNegativeLinearMatrixNormalInverseWishartMatrixGaussian>(m);
     X2[i,1..columns(X1)] <- m'.backward();
   }
   
@@ -29,7 +29,7 @@ program test_matrix_normal_inverse_wishart_matrix_gaussian(
   }
 }
 
-class TestMatrixNormalInverseWishartMatrixGaussian < Model {
+class TestNegativeLinearMatrixNormalInverseWishartMatrixGaussian < Model {
   V:Random<Real[_,_]>;
   X:Random<Real[_,_]>;
   Y:Random<Real[_,_]>;
@@ -37,18 +37,22 @@ class TestMatrixNormalInverseWishartMatrixGaussian < Model {
   fiber simulate() -> Event {
     auto n <- 5;
     auto p <- 2;
-  
+
+    A:Real[n,n];
     M:Real[n,p];
     U:Real[n,n];
+    C:Real[n,p];
     k:Real <- simulate_uniform(p - 1.0, p + 9.0);
     Ψ:Real[p,p];
  
     for auto i in 1..n {
       for auto j in 1..n {
+        A[i,j] <- simulate_uniform(-2.0, 2.0);
         U[i,j] <- simulate_uniform(-2.0, 2.0);
       }
       for auto j in 1..p {
         M[i,j] <- simulate_uniform(-10.0, 10.0);
+        C[i,j] <- simulate_uniform(-10.0, 10.0);
       }
     }
     for auto i in 1..p {
@@ -61,7 +65,7 @@ class TestMatrixNormalInverseWishartMatrixGaussian < Model {
 
     V ~ InverseWishart(Ψ, k);
     X ~ Gaussian(M, U, V);
-    Y ~ Gaussian(X, V);
+    Y ~ Gaussian(A*X + C, V);
   }
   
   function forward() -> Real[_] {

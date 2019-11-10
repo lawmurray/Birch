@@ -74,8 +74,8 @@ public:
   /**
    * Clone the fiber.
    */
-  Fiber<YieldType> clone() const {
-    return Fiber<YieldType>(state.clone());
+  Fiber<YieldType> clone(Label* context) const {
+    return Fiber<YieldType>(context, state.clone(context));
   }
 
   /**

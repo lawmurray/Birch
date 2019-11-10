@@ -76,16 +76,6 @@ final class DelayAddBoundedDiscrete(future:Integer?, futureUpdate:Boolean,
     x2.clamp(x - n);
   }
 
-  function pdf(x:Integer) -> Real {
-    l:Integer <- max(x1.l, x - x2.u);
-    u:Integer <- min(x1.u, x - x2.l);
-    P:Real <- 0.0;
-    for (n:Integer in l..u) {
-      P <- P + x1.pdf(n)*x2.pdf(x - n);
-    }
-    return P;
-  }
-
   function cdf(x:Integer) -> Real? {
     P:Real <- 0.0;
     for (n:Integer in l..x) {

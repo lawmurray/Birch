@@ -28,6 +28,10 @@ program test(N:Integer <- 10000) {
   code <- code + run_test("cdf_uniform", N);
   code <- code + run_test("cdf_uniform_int", N);
   code <- code + run_test("cdf_weibull", N);
+  code <- code + run_test("fiber_deep_clone_alias");
+  code <- code + run_test("fiber_deep_clone_chain");
+  code <- code + run_test("fiber_deep_clone_modify_dst");
+  code <- code + run_test("fiber_deep_clone_modify_src");
   code <- code + run_test("pdf_bernoulli", N);
   code <- code + run_test("pdf_beta_bernoulli", N);
   code <- code + run_test("pdf_beta_negative_binomial", N);
@@ -72,6 +76,13 @@ program test(N:Integer <- 10000) {
   code <- code + run_test("matrix_normal_inverse_wishart_matrix_gaussian", N);
   code <- code + run_test("multivariate_gaussian_multivariate_gaussian", N);
   code <- code + run_test("multivariate_normal_inverse_gamma_multivariate_gaussian", N);
+  code <- code + run_test("negative_linear_discrete_delta", N);
+  code <- code + run_test("negative_linear_gaussian_gaussian", N);
+  code <- code + run_test("negative_linear_matrix_normal_inverse_gamma_matrix_gaussian", N);
+  code <- code + run_test("negative_linear_matrix_normal_inverse_wishart_matrix_gaussian", N);
+  code <- code + run_test("negative_linear_multivariate_gaussian_multivariate_gaussian", N);
+  code <- code + run_test("negative_linear_multivariate_normal_inverse_gamma_multivariate_gaussian", N);
+  code <- code + run_test("negative_linear_normal_inverse_gamma_gaussian", N);
   code <- code + run_test("normal_inverse_gamma", N);
   code <- code + run_test("normal_inverse_gamma_gaussian", N);
   code <- code + run_test("scaled_gamma_exponential", N);

@@ -22,7 +22,7 @@ program test_beta_geometric(N:Integer <- 10000) {
   }
   
   /* test result */
-  if (!pass(X1, X2)) {
+  if !pass(X1, X2) {
     exit(1);
   }
 }

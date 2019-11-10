@@ -25,10 +25,6 @@ final class DelayDiscreteDelta(future:Integer?, futureUpdate:Boolean,
     μ.clamp(x);
   }
 
-  function pdf(x:Integer) -> Real {
-    return μ.pdf(x);
-  }
-
   function cdf(x:Integer) -> Real? {
     return μ.cdf(x);
   }
