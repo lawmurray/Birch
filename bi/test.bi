@@ -84,6 +84,8 @@ program test(N:Integer <- 10000) {
   code <- code + run_test("cdf_normal_inverse_gamma", N);
   code <- code + run_test("cdf_normal_inverse_gamma_gaussian", N);
   code <- code + run_test("cdf_poisson", N);
+  code <- code + run_test("cdf_scaled_gamma_exponential", N);
+  code <- code + run_test("cdf_scaled_gamma_poisson", N);
   code <- code + run_test("cdf_student_t", N);
   code <- code + run_test("cdf_uniform", N);
   code <- code + run_test("cdf_uniform_int", N);

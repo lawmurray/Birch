@@ -2,24 +2,21 @@
  * Test scaled gamma-Poisson conjugacy.
  */
 program test_scaled_gamma_poisson(N:Integer <- 10000) {
-  X1:Real[N,2];
-  X2:Real[N,2];
-  a:Real <- simulate_uniform(0.0, 100.0);
-  k:Real <- simulate_uniform_int(1, 10);
-  θ:Real <- simulate_uniform(0.0, 10.0);
+  m:TestScaledGammaPoisson;
+  m.play();
  
   /* simulate forward */
+  X1:Real[N,2];
   for auto n in 1..N {
-    m:TestScaledGammaPoisson(a, k, θ);
-    m.play();
-    X1[n,1..2] <- m.forward();
+    auto m' <- clone<TestScaledGammaPoisson>(m);
+    X1[n,1..2] <- m'.forward();
   }
 
   /* simulate backward */
+  X2:Real[N,2];
   for auto n in 1..N {
-    m:TestScaledGammaPoisson(a, k, θ);
-    m.play();
-    X2[n,1..2] <- m.backward();
+    auto m' <- clone<TestScaledGammaPoisson>(m);
+    X2[n,1..2] <- m'.backward();
   }
   
   /* test result */
@@ -28,14 +25,15 @@ program test_scaled_gamma_poisson(N:Integer <- 10000) {
   }
 }
 
-class TestScaledGammaPoisson(a:Real, k:Real, θ:Real) < Model {
-  a:Real <- a;
-  k:Real <- k;
-  θ:Real <- θ;
+class TestScaledGammaPoisson < Model {
   λ:Random<Real>;
   x:Random<Integer>;
   
   fiber simulate() -> Event {
+    a:Real <- simulate_uniform(0.0, 100.0);
+    k:Real <- simulate_uniform_int(1, 10);
+    θ:Real <- simulate_uniform(0.0, 10.0);
+
     λ ~ Gamma(k, θ);
     x ~ Poisson(a*λ);
   }
@@ -54,5 +52,9 @@ class TestScaledGammaPoisson(a:Real, k:Real, θ:Real) < Model {
     assert !λ.hasValue();
     y[1] <- λ.value();
     return y;
+  }
+  
+  function marginal() -> Distribution<Integer> {
+    return x.distribution();
   }
 }

@@ -2,24 +2,21 @@
  * Test scaled gamma-exponential conjugacy.
  */
 program test_scaled_gamma_exponential(N:Integer <- 10000) {
-  X1:Real[N,2];
-  X2:Real[N,2];
-  a:Real <- simulate_uniform(0.0, 100.0);
-  k:Real <- simulate_uniform(1.0, 10.0);
-  θ:Real <- simulate_uniform(0.0, 10.0);
+  m:TestScaledGammaExponential;
+  m.play();
  
   /* simulate forward */
+  X1:Real[N,2];
   for auto n in 1..N {
-    m:TestScaledGammaExponential(a, k, θ);
-    m.play();
-    X1[n,1..2] <- m.forward();
+    auto m' <- clone<TestScaledGammaExponential>(m);
+    X1[n,1..2] <- m'.forward();
   }
 
   /* simulate backward */
+  X2:Real[N,2];
   for auto n in 1..N {
-    m:TestScaledGammaExponential(a, k, θ);
-    m.play();
-    X2[n,1..2] <- m.backward();
+    auto m' <- clone<TestScaledGammaExponential>(m);
+    X2[n,1..2] <- m'.backward();
   }
   
   /* test result */
@@ -28,14 +25,15 @@ program test_scaled_gamma_exponential(N:Integer <- 10000) {
   }
 }
 
-class TestScaledGammaExponential(a:Real, k:Real, θ:Real) < Model {
-  a:Real <- a;
-  k:Real <- k;
-  θ:Real <- θ;
+class TestScaledGammaExponential < Model {
   λ:Random<Real>;
   x:Random<Real>;
   
   fiber simulate() -> Event {
+    a:Real <- simulate_uniform(0.0, 100.0);
+    k:Real <- simulate_uniform(1.0, 10.0);
+    θ:Real <- simulate_uniform(0.0, 10.0);
+
     λ ~ Gamma(k, θ);
     x ~ Exponential(a*λ);
   }
@@ -54,5 +52,9 @@ class TestScaledGammaExponential(a:Real, k:Real, θ:Real) < Model {
     assert !λ.hasValue();
     y[1] <- λ.value();
     return y;
+  }
+  
+  function marginal() -> Distribution<Real> {
+    return x.distribution();
   }
 }
