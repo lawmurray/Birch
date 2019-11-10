@@ -64,7 +64,9 @@ function test_pdf(π:Distribution<Integer>, N:Integer) {
   auto count <- vector(0, to! - from! + 1);
   for auto n in 1..N {
     auto i <- π.simulate() - from! + 1;
-    count[i] <- count[i] + 1;
+    if 1 <= i && i <= length(count) {
+      count[i] <- count[i] + 1;
+    }
   }
 
   /* compare sum of pdf to counts */
