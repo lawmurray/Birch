@@ -177,8 +177,10 @@ function logpdf_dirichlet(x:Real[_], α:Real[_]) -> Real {
 
   D:Integer <- length(x);
   w:Real <- 0.0;
-  for (i:Integer in 1..D) {
-    assert x[i] >= 0.0;
+  for auto i in 1..D {
+    if x[i] < 0.0 {
+      return -inf;
+    }
     w <- w + (α[i] - 1.0)*log(x[i]) - lgamma(α[i]);
   }
   w <- w + lgamma(sum(α)); 

@@ -91,15 +91,6 @@ abstract class Expression<Value> {
   function graftInverseGamma() -> DelayInverseGamma? {
     return nil;
   }
-  
-  /*
-   * Attempt to graft this expression onto the delayed sampling graph.
-   *
-   * Return: The node if successful, nil if not.
-   */
-  function graftScaledInverseGamma() -> TransformLinear<DelayInverseGamma>? {
-    return nil;
-  }
 
   /*
    * Attempt to graft this expression onto the delayed sampling graph.

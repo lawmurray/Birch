@@ -43,6 +43,8 @@ program test(N:Integer <- 10000) {
   code <- code + run_test("negative_linear_multivariate_gaussian_multivariate_gaussian", N);
   code <- code + run_test("negative_linear_multivariate_normal_inverse_gamma_multivariate_gaussian", N);
   code <- code + run_test("negative_linear_normal_inverse_gamma_gaussian", N);
+  code <- code + run_test("negative_scaled_gamma_exponential", N);
+  code <- code + run_test("negative_scaled_gamma_poisson", N);
   code <- code + run_test("normal_inverse_gamma", N);
   code <- code + run_test("normal_inverse_gamma_gaussian", N);
   code <- code + run_test("scaled_gamma_exponential", N);
@@ -79,6 +81,7 @@ program test(N:Integer <- 10000) {
   code <- code + run_test("cdf_geometric", N);
   code <- code + run_test("cdf_inverse_gamma", N);
   code <- code + run_test("cdf_inverse_gamma_gamma", N);
+  code <- code + run_test("cdf_linear_gaussian_gaussian", N);
   code <- code + run_test("cdf_linear_normal_inverse_gamma_gaussian", N);
   code <- code + run_test("cdf_negative_binomial", N);
   code <- code + run_test("cdf_normal_inverse_gamma", N);

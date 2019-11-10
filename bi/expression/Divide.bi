@@ -53,18 +53,6 @@ final class Divide<Left,Right,Value>(left:Expression<Left>,
     }
     return y;
   }
-  
-  function graftScaledInverseGamma() -> TransformLinear<DelayInverseGamma>? {
-    y:TransformLinear<DelayInverseGamma>?;
-    z:DelayInverseGamma?;
-    
-    if (y <- left.graftScaledInverseGamma())? {
-      y!.divide(right.value());
-    } else if (z <- left.graftInverseGamma())? {
-      y <- TransformLinear<DelayInverseGamma>(1.0/right.value(), z!);        
-    }
-    return y;
-  }
 }
 
 operator (left:Expression<Real>/right:Expression<Real>) -> Divide<Real,Real,Real> {

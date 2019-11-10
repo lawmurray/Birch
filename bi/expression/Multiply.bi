@@ -31,22 +31,6 @@ final class Multiply<Left,Right,Value>(left:Expression<Left>, right:Expression<R
     }
     return y;
   }
-  
-  function graftScaledInverseGamma() -> TransformLinear<DelayInverseGamma>? {
-    y:TransformLinear<DelayInverseGamma>?;
-    z:DelayInverseGamma?;
-    
-    if (y <- left.graftScaledInverseGamma())? {
-      y!.multiply(right.value());
-    } else if (y <- right.graftScaledInverseGamma())? {
-      y!.multiply(left.value());
-    } else if (z <- left.graftInverseGamma())? {
-      y <- TransformLinear<DelayInverseGamma>(right.value(), z!);        
-    } else if (z <- right.graftInverseGamma())? {
-      y <- TransformLinear<DelayInverseGamma>(left.value(), z!);
-    }
-    return y;
-  }
 
   function graftLinearGaussian() -> TransformLinear<DelayGaussian>? {
     y:TransformLinear<DelayGaussian>?;
