@@ -55,7 +55,11 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
     } else {
       start("");
     }
-    middle(stateName << "(libbirch::Label* context_, " << o->params << ')');
+    middle(stateName << "(libbirch::Label* context_");
+    if (!o->params->isEmpty()) {
+      middle(", " << o->params);
+    }
+    middle(')');
     if (header) {
       finish(';');
     } else {
@@ -97,26 +101,22 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
       genTraceLine(o->loc);
       start("super_type_(context, label, o)");
       for (auto o : params) {
-        if (!o->type->isValue()) {
-          finish(',');
-          genTraceLine(o->loc);
-          if (o->type->isValue()) {
-            start(o->name << "(o." << o->name << ')');
-          } else {
-            start(o->name << "(context, label, o." << o->name << ')');
-          }
+        finish(',');
+        genTraceLine(o->loc);
+        if (o->type->isValue()) {
+          start(o->name << "(o." << o->name << ')');
+        } else {
+          start(o->name << "(context, label, o." << o->name << ')');
         }
       }
       for (auto o : locals) {
-        if (!o->type->isValue()) {
-          auto name = getName(o->name->str(), o->number);
-          finish(',');
-          genTraceLine(o->loc);
-          if (o->type->isValue()) {
-            start(name << "(o." << name << ')');
-          } else {
-            start(name << "(context, label, o." << name << ')');
-          }
+        auto name = getName(o->name->str(), o->number);
+        finish(',');
+        genTraceLine(o->loc);
+        if (o->type->isValue()) {
+          start(name << "(o." << name << ')');
+        } else {
+          start(name << "(context, label, o." << name << ')');
         }
       }
       out();

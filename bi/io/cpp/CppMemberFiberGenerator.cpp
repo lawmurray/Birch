@@ -114,14 +114,12 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     genTraceLine(o->loc);
     start("self(context, label, o.self)");
     for (auto o : params) {
-      if (!o->type->isValue()) {
-        finish(',');
-        genTraceLine(o->loc);
-        if (o->type->isValue()) {
-          start(o->name << "(o." << o->name << ')');
-        } else {
-          start(o->name << "(context, label, o." << o->name << ')');
-        }
+      finish(',');
+      genTraceLine(o->loc);
+      if (o->type->isValue()) {
+        start(o->name << "(o." << o->name << ')');
+      } else {
+        start(o->name << "(context, label, o." << o->name << ')');
       }
     }
     for (auto o : locals) {
