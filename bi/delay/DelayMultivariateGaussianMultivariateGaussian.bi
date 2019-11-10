@@ -21,10 +21,6 @@ final class DelayMultivariateGaussianMultivariateGaussian(future:Real[_]?,
   function downdate(x:Real[_]) {
     (m.μ, m.Σ) <- downdate_multivariate_gaussian_multivariate_gaussian(x, m.μ, m.Σ, S);
   }
-
-  function write(buffer:Buffer) {
-    buffer.set(value());
-  }
 }
 
 function DelayMultivariateGaussianMultivariateGaussian(future:Real[_]?, futureUpdate:Boolean,

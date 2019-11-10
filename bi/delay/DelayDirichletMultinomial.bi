@@ -29,10 +29,6 @@ final class DelayDirichletMultinomial(future:Integer[_]?,
   function downdate(x:Integer[_]) {
     ρ.α <- downdate_dirichlet_multinomial(x, n, ρ.α);
   }
-
-  function write(buffer:Buffer) {
-    buffer.set(value());
-  }
 }
 
 function DelayDirichletMultinomial(future:Integer[_]?, futureUpdate:Boolean,

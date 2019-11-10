@@ -35,10 +35,6 @@ final class DelayGammaExponential(future:Real?, futureUpdate:Boolean,
   function lower() -> Real? {
     return 0.0;
   }
-
-  function write(buffer:Buffer) {
-    buffer.set(value());
-  }
 }
 
 function DelayGammaExponential(future:Real?, futureUpdate:Boolean,

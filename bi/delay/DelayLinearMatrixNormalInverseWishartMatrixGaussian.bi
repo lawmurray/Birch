@@ -40,10 +40,6 @@ final class DelayLinearMatrixNormalInverseWishartMatrixGaussian(
     (M.N, M.Λ, M.V.Ψ, M.V.k) <- downdate_linear_matrix_normal_inverse_wishart_matrix_gaussian(
         X, A, M.N, M.Λ, C, M.V.Ψ, M.V.k);
   }
-
-  function write(buffer:Buffer) {
-    buffer.set(value());
-  }
 }
 
 function DelayLinearMatrixNormalInverseWishartMatrixGaussian(

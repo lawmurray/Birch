@@ -36,10 +36,6 @@ final class DelayInverseGammaGamma(future:Real?, futureUpdate:Boolean,
   function lower() -> Real? {
     return 0.0;
   }
-
-  function write(buffer:Buffer) {
-    buffer.set(value());
-  }
 }
 
 function DelayInverseGammaGamma(future:Real?, futureUpdate:Boolean, k:Real,

@@ -28,10 +28,6 @@ final class DelayMultivariateNormalInverseGammaMultivariateGaussian(
     (μ.ν, μ.Λ, μ.α, μ.γ) <- downdate_multivariate_normal_inverse_gamma_multivariate_gaussian(
         x, μ.ν, μ.Λ, μ.α, μ.γ);
   }
-
-  function write(buffer:Buffer) {
-    buffer.set(value());
-  }
 }
 
 function DelayMultivariateNormalInverseGammaMultivariateGaussian(future:Real[_]?,

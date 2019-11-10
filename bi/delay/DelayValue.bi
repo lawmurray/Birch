@@ -227,4 +227,8 @@ abstract class DelayValue<Value>(future:Value?, futureUpdate:Boolean) < Delay {
   function upper() -> Value? {
     return nil;
   }
+
+  function write(buffer:Buffer) {
+    buffer.set(value());
+  }
 }

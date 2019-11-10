@@ -30,10 +30,6 @@ final class DelayRestaurantCategorical(future:Integer?, futureUpdate:Boolean,
     }
     ρ.N <- ρ.N + 1;
   }
-  
-  function write(buffer:Buffer) {
-    buffer.set(value());
-  }
 }
 
 

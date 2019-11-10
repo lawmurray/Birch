@@ -23,10 +23,6 @@ final class DelayBetaBernoulli(future:Boolean?, futureUpdate:Boolean, ρ:DelayBe
   function downdate(x:Boolean) {
     (ρ.α, ρ.β) <- downdate_beta_bernoulli(x, ρ.α, ρ.β);
   }
-
-  function write(buffer:Buffer) {
-    buffer.set(value());
-  }
 }
 
 function DelayBetaBernoulli(future:Boolean?, futureUpdate:Boolean, ρ:DelayBeta) ->

@@ -37,10 +37,6 @@ final class DelayNormalInverseGammaGaussian(future:Real?, futureUpdate:Boolean,
     return quantile_normal_inverse_gamma_gaussian(p, μ.μ, 1.0/μ.λ, μ.σ2.α,
         μ.σ2.β);
   }
-
-  function write(buffer:Buffer) {
-    buffer.set(value());
-  }
 }
 
 function DelayNormalInverseGammaGaussian(future:Real?, futureUpdate:Boolean,

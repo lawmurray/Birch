@@ -31,10 +31,6 @@ final class DelayDirichletCategorical(future:Integer?, futureUpdate:Boolean,
   function upper() -> Integer? {
     return length(ρ.α);
   }
-
-  function write(buffer:Buffer) {
-    buffer.set(value());
-  }
 }
 
 function DelayDirichletCategorical(future:Integer?, futureUpdate:Boolean,

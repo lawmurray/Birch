@@ -40,10 +40,6 @@ final class DelayLinearMatrixNormalInverseGammaMatrixGaussian(
     (M.N, M.Λ, M.α, M.γ) <- downdate_linear_matrix_normal_inverse_gamma_matrix_gaussian(
         X, A, M.N, M.Λ, C, M.α, M.γ);
   }
-
-  function write(buffer:Buffer) {
-    buffer.set(value());
-  }
 }
 
 function DelayLinearMatrixNormalInverseGammaMatrixGaussian(
