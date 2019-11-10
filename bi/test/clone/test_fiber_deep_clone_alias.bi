@@ -17,7 +17,7 @@ program test_fiber_deep_clone_alias() {
   f?;
   
   /* check that the alias has redirected */
-  if g! != 1 || h! != 1 {
+  if g! != 2 || h! != 1 {
     exit(1);
   }
 }
