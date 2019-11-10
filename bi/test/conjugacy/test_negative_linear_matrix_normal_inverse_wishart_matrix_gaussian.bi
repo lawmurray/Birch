@@ -65,7 +65,7 @@ class TestNegativeLinearMatrixNormalInverseWishartMatrixGaussian < Model {
 
     V ~ InverseWishart(Ψ, k);
     X ~ Gaussian(M, U, V);
-    Y ~ Gaussian(A*X + C, V);
+    Y ~ Gaussian(A*X - C, V);
   }
   
   function forward() -> Real[_] {

@@ -40,7 +40,7 @@ class TestNegativeLinearNormalInverseGammaGaussian < Model {
 
     σ2 ~ InverseGamma(α, β);
     μ ~ Gaussian(μ_0, a2, σ2);
-    x ~ Gaussian(a*μ + c, σ2);
+    x ~ Gaussian(μ/a - c, σ2);
   }
   
   function forward() -> Real[_] {

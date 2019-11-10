@@ -37,7 +37,7 @@ class TestNegativeLinearGaussianGaussian < Model {
     σ2_1:Real <- simulate_uniform(0.0, 2.0);
 
     μ_1 ~ Gaussian(μ_0, σ2_0);
-    x ~ Gaussian(a*μ_1 + c, σ2_1);
+    x ~ Gaussian(μ_1/a - c, σ2_1);
   }
   
   function forward() -> Real[_] {

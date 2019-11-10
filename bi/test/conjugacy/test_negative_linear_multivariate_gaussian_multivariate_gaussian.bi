@@ -50,7 +50,7 @@ class TestNegativeLinearMultivariateGaussianMultivariateGaussian < Model {
     Σ_1 <- Σ_1*transpose(Σ_1);
 
     μ ~ Gaussian(μ_0, Σ_0);
-    x ~ Gaussian(A*μ + c, Σ_1);
+    x ~ Gaussian(A*μ - c, Σ_1);
   }
   
   function forward() -> Real[_] {

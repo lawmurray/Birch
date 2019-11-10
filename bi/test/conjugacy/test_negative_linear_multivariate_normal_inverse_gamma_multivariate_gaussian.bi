@@ -54,7 +54,7 @@ class TestNegativeLinearMultivariateNormalInverseGammaMultivariateGaussian < Mod
 
     σ2 ~ InverseGamma(α, β);
     μ ~ Gaussian(μ_0, Σ, σ2);
-    x ~ Gaussian(A*μ + c, σ2);
+    x ~ Gaussian(A*μ - c, σ2);
   }
   
   function forward() -> Real[_] {
