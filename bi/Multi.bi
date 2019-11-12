@@ -16,7 +16,7 @@ class Multi < StateSpaceModel<Global,Vector<Track>,Vector<Random<Real[_]>>> {
     /* move current objects */
     auto track <- x.walk();
     while track? {
-      auto ρ <- pdf_poisson(t - track!.t - 1, θ.τ);
+      auto ρ <- exp(logpdf_poisson(t - track!.t - 1, θ.τ));
       auto R <- 1.0 - cdf_poisson(t - track!.t - 1, θ.τ) + ρ;
       s:Boolean;
       s <~ Bernoulli(1.0 - ρ/R);  // does the object survive?
