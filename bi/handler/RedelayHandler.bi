@@ -1,16 +1,17 @@
 /**
  * Event handler that applies the *redelay* action to each event.
+ *
+ * !!! tip
+ *     RedelayHandler is thread-safe, and can be used via the singleton
+ *     `redelay`.
  */
-final class RedelayHandler(trace:Trace) < TraceHandler(trace) {
-  function handle(event:Event, record:Record) -> Real {
+final class RedelayHandler < TraceHandler {
+  function handle(record:Record, event:Event) -> Real {
     return event.redelay(record);
   }
 }
 
 /**
- * Create a RedelayHandler.
+ * Singleton RedelayHandler.
  */
-function RedelayHandler(trace:Trace) -> RedelayHandler {
-  o:RedelayHandler(trace);
-  return o;
-}
+redelay:RedelayHandler;

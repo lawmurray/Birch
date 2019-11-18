@@ -1,16 +1,17 @@
 /**
  * Event handler that applies the *unplay* action to each event.
+ *
+ * !!! tip
+ *     ReplayHandler is thread-safe, and can be used via the singleton
+ *     `replay`.
  */
-final class ReplayHandler(trace:Trace) < TraceHandler(trace) {
-  function handle(event:Event, record:Record) -> Real {
+final class ReplayHandler < TraceHandler {
+  function handle(record:Record, event:Event) -> Real {
     return event.replay(record);
   }
 }
 
 /**
- * Create a ReplayHandler.
+ * Singleton ReplayHandler.
  */
-function ReplayHandler(trace:Trace) -> ReplayHandler {
-  o:ReplayHandler(trace);
-  return o;
-}
+replay:ReplayHandler;

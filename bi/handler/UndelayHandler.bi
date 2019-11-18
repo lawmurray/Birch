@@ -1,18 +1,17 @@
 /**
  * Event handler that applies the *undelay* action to each event.
  *
- * - trace: The trace.
+ * !!! tip
+ *     UndelayHandler is thread-safe, and can be used via the singleton
+ *     `undelay`.
  */
-final class UndelayHandler(trace:Trace) < TraceHandler(trace) {
-  function handle(event:Event, record:Record) -> Real {
+final class UndelayHandler < TraceHandler {
+  function handle(record:Record, event:Event) -> Real {
     return event.undelay(record);
   }
 }
 
 /**
- * Create an UndelayHandler.
+ * Singleton UndelayHandler.
  */
-function UndelayHandler(trace:Trace) -> UndelayHandler {
-  o:UndelayHandler(trace);
-  return o;
-}
+undelay:UndelayHandler;

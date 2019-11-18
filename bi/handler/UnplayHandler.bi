@@ -1,18 +1,17 @@
 /**
  * Event handler that applies the *unplay* action to each event.
  *
- * - trace: The trace.
+ * !!! tip
+ *     UnplayHandler is thread-safe, and can be used via the singleton
+ *     `unplay`.
  */
-final class UnplayHandler(trace:Trace) < TraceHandler(trace) {
-  function handle(event:Event, record:Record) -> Real {
+final class UnplayHandler < TraceHandler {
+  function handle(record:Record, event:Event) -> Real {
     return event.unplay(record);
   }
 }
 
 /**
- * Create an UnplayHandler.
+ * Singleton UnplayHandler.
  */
-function UnplayHandler(trace:Trace) -> UnplayHandler {
-  o:UnplayHandler(trace);
-  return o;
-}
+unplay:UnplayHandler;

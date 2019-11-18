@@ -20,8 +20,7 @@ abstract class ValueEvent<Value> < Event {
     auto r <- ValueRecord<Value>?(record);
     if !r? {
       error("incompatible trace");
-    } else {
-      return r!.value();
     }
+    return r!.value();
   }
 }

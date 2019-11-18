@@ -1,5 +1,8 @@
 /**
  * Event handler that applies the *play* action to each event.
+ *
+ * !!! tip
+ *     PlayHandler is thread-safe, and can be used via the singleton `play`.
  */
 class PlayHandler < Handler {
   function handle(event:Event) -> Real {
@@ -8,9 +11,6 @@ class PlayHandler < Handler {
 }
 
 /**
- * Create a PlayHandler.
+ * Singleton PlayHandler.
  */
-function PlayHandler() -> PlayHandler {
-  o:PlayHandler;
-  return o;
-}
+play:PlayHandler;

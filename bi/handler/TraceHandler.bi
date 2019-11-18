@@ -1,25 +1,55 @@
 /**
- * Abstract event handler that requires a trace.
+ * Abstract event handler that requires an input trace.
  *
- * - trace: The trace.
+ * The Handler class hierarchy is as follows:
+ * <center>
+ * <object type="image/svg+xml" data="../../figs/Handler.svg"></object>
+ * </center>
  */
-abstract class TraceHandler(trace:Trace) < Handler {
+abstract class TraceHandler {
   /**
-   * Trace.
+   * Handle a sequence of events with an input trace.
+   *
+   * - input: Input trace.
+   * - events: Event sequence.
+   *
+   * Returns: Accumulated log-weight.
    */
-  trace:Trace <- trace;
-  
-  final function handle(event:Event) -> Real {
-    return handle(event, trace.popFront());
+  final function handle(input:Trace, events:Event!) -> Real {
+    auto w <- 0.0;
+    while w > -inf && events? {
+      w <- w + handle(input.popFront(), events!);
+    }
+    return w;
+  }
+
+  /**
+   * Handle a sequence of events with an input trace and record them in an
+   * output trace.
+   *
+   * - input: Input trace.
+   * - events: Event sequence.
+   * - output: Output trace.
+   *
+   * Returns: Accumulated log-weight.
+   */
+  final function handle(input:Trace, events:Event!, output:Trace) -> Real {
+    auto w <- 0.0;
+    while w > -inf && events? {
+      auto event <- events!;
+      w <- w + handle(input.popFront(), event);
+      output.pushBack(event.record());
+    }
+    return w;
   }
   
   /**
-   * Handle an event.
+   * Handle an event with an input record.
    *
+   * - record: The record.
    * - event: The event.
-   * - record: The front record of the trace.
    *
-   * Returns: Log-weight adjustment.
+   * Returns: Log-weight.
    */
-  abstract function handle(event:Event, record:Record) -> Real;
+  abstract function handle(record:Record, event:Event) -> Real;
 }

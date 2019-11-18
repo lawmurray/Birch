@@ -1,10 +1,17 @@
 /**
  * Event handler that applies the *propoose* action to each event.
  *
- * - trace: The trace.
+ * !!! tip
+ *     ProposeHandler is thread-safe, and can be used via the singleton
+ *     `propose`.
  */
-final class ProposeHandler(trace:Trace) < TraceHandler(trace) {
-  function handle(event:Event, record:Record) -> Real {
+final class ProposeHandler < TraceHandler {
+  function handle(record:Record, event:Event) -> Real {
     return event.propose(record);
   }
 }
+
+/**
+ * Singleton ProposeHandler.
+ */
+propose:ProposeHandler;
