@@ -1,11 +1,13 @@
 /**
  * Abstract event handler that requires a trace.
+ *
+ * - trace: The trace.
  */
-abstract class TraceHandler < Handler {
+abstract class TraceHandler(trace:Trace) < Handler {
   /**
    * Trace.
    */
-  trace:Queue<Record>;
+  trace:Trace <- trace;
   
   final function handle(event:Event) -> Real {
     return handle(event, trace.popFront());
@@ -15,9 +17,9 @@ abstract class TraceHandler < Handler {
    * Handle an event.
    *
    * - event: The event.
-   * - rec: The front record of the trace.
+   * - record: The front record of the trace.
    *
    * Returns: Log-weight adjustment.
    */
-  abstract function handle(event:Event, rec:Record) -> Real;
+  abstract function handle(event:Event, record:Record) -> Real;
 }

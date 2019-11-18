@@ -16,8 +16,8 @@ abstract class Handler {
    */
   final function handle(events:Event!) -> Real {
     auto w <- 0.0;
-    while w > -inf && event? {
-      w <- w + handle(event!);
+    while w > -inf && events? {
+      w <- w + handle(events!);
     }
     return w;
   }

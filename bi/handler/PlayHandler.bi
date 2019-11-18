@@ -6,3 +6,11 @@ class PlayHandler < Handler {
     return event.play();
   }
 }
+
+/**
+ * Create a PlayHandler.
+ */
+function PlayHandler() -> PlayHandler {
+  o:PlayHandler;
+  return o;
+}

@@ -6,3 +6,11 @@ final class DelayHandler < Handler {
     return event.delay();
   }
 }
+
+/**
+ * Create a DelayHandler.
+ */
+function DelayHandler() -> DelayHandler {
+  o:DelayHandler;
+  return o;
+}

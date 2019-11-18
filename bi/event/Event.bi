@@ -69,4 +69,11 @@ abstract class Event {
    * Returns: The required weight adjustment.
    */
   abstract function propose(record:Record) -> Real;
+  
+  /**
+   * Produce a record for the event.
+   *
+   * Returns: The record.
+   */
+  abstract function record() -> Record;
 }

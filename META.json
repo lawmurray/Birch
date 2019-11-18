@@ -197,6 +197,7 @@
       "bi/record/FactorRecord.bi",
       "bi/record/ImmediateRecord.bi",
       "bi/record/Record.bi",
+      "bi/record/Trace.bi",
       "bi/record/ValueRecord.bi",
       "bi/sampler/AliveParticleFilter.bi",
       "bi/sampler/AuxiliaryParticleFilter.bi",
