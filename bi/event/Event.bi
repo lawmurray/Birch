@@ -1,101 +1,72 @@
 /**
- * Abstract event triggered by the simulation of a model.
+ * Event during the simulation of a model.
+ *
+ * An Event requires that an action be taken. The choice of action is made
+ * by a Handler. The action is performed by calling the appropriate
+ * member function of event, such as `play()`, `delay()`, `replay()`, etc.
  */
 abstract class Event {
   /**
-   * Is this a *simulate* event?
+   * Perform the *play* action.
+   *
+   * Returns: The required weight adjustment.
    */
-  function isSimulate() -> Boolean {
-    return false;
-  }
+  abstract function play() -> Real;
 
   /**
-   * Is this an *observe* event?
+   * Perform the *replay* action. This is typically used when reconstructing
+   * a trace that was originally simulated forward using `play()`.
+   *
+   * - record: Associated record in the trace.
+   *
+   * Returns: The required weight adjustment.
    */
-  function isObserve() -> Boolean {
-    return false;
-  }
+  abstract function replay(record:Record) -> Real;
 
   /**
-   * Is this a *factor* event?
+   * Perform the *unplay* action. This is typically used when undoing the
+   * effects of a trace that was originally simulated forward using `play()`.
+   *
+   * - record: Associated record in the trace.
+   *
+   * Returns: The required weight adjustment.
    */
-  function isFactor() -> Boolean {
-    return false;
-  }
+  abstract function unplay(record:Record) -> Real;
 
   /**
-   * Is this an *assume* event?
+   * Perform the *delay* action.
+   *
+   * Returns: The required weight adjustment.
    */
-  function isAssume() -> Boolean {
-    return false;
-  }
+  abstract function delay() -> Real;
 
   /**
-   * Is this a *value* event?
+   * Perform the *redelay* action. This is typically used when reconstructing
+   * a trace that was originally simulated forward using `delay()`.
+   *
+   * - record: Associated record in the trace.
+   *
+   * Returns: The required weight adjustment.
    */
-  function isValue() -> Boolean {
-    return false;
-  }
+  abstract function redelay(record:Record) -> Real;
 
   /**
-   * Act as appropriate for `PLAY_IMMEDIATE` mode.
+   * Perform the *undelay* action. This is typically used when undoing the
+   * effects of a trace that was originally simulated forward using
+   * `delay()`.
+   *
+   * - record: Associated record in the trace.
+   *
+   * Returns: The required weight adjustment.
    */
-  abstract function playImmediate() -> Real;
+  abstract function undelay(record:Record) -> Real;
 
   /**
-   * Act as appropriate for `PLAY_DELAY` mode.
+   * Perform the *propose* action.
+   *
+   * - record: Associated record in the trace.
+   *
+   * Returns: The required weight adjustment.
    */
-  function playDelay() -> Real {
-    return playImmediate();
-  }
-
-  /**
-   * Act as appropriate for `SKIP_IMMEDIATE` mode.
-   */
-  abstract function skipImmediate(trace:Queue<Record>) -> Real;
-
-  /**
-   * Act as appropriate for `SKIP_DELAY` mode.
-   */
-  function skipDelay(trace:Queue<Record>) -> Real {
-    return skipImmediate(trace);
-  }
-  
-  /**
-   * Act as appropriate for `REPLAY_IMMEDIATE` mode.
-   */
-  abstract function replayImmediate(trace:Queue<Record>) -> Real;
-
-  /**
-   * Act as appropriate for `REPLAY_DELAY` mode.
-   */
-  function replayDelay(trace:Queue<Record>) -> Real {
-    return replayImmediate(trace);
-  }
-
-  /**
-   * Act as appropriate for `PROPOSE_IMMEDIATE` mode.
-   */
-  abstract function proposeImmediate(trace:Queue<Record>) -> Real;
-
-  /**
-   * Act as appropriate for `DOWNDATE_IMMEDIATE` mode.
-   */
-  abstract function downdateImmediate(trace:Queue<Record>) -> Real;
-
-  /**
-   * Act as appropriate for `DOWNDATE_DELAY` mode.
-   */
-  function downdateDelay(trace:Queue<Record>) -> Real {
-    return downdateImmediate(trace);
-  }
-
-  /**
-   * Record the event in the given trace. The event is free to choose how
-   * to do so, including not recording itself, if no information will be
-   * required for replay.
-   */
-  function record(trace:Queue<Record>) {
-    //
-  }
+  abstract function propose(record:Record) -> Real;
 }

@@ -1,16 +1,16 @@
 /**
  * Event triggered by a *simulate*, typically from the `<~` operator.
  *
- * - p: The distribution.
+ * - p: Associated distribution.
  */
 final class SimulateEvent<Value>(p:Distribution<Value>) < ValueEvent<Value> {
   /**
-   * Value associated with the event (once simulated).
+   * Associated value.
    */
   v:Value?;
   
   /**
-   * Distribution associated with the event.
+   * Associated distribution.
    */
   p:Distribution<Value> <- p;
 
@@ -23,52 +23,49 @@ final class SimulateEvent<Value>(p:Distribution<Value>) < ValueEvent<Value> {
     return v!;
   }
 
-  function isSimulate() -> Boolean {
-    return true;
-  }
-
-  function playImmediate() -> Real {
+  function play() -> Real {
     v <- p.value();
     return 0.0;
   }
 
-  function skipImmediate(trace:Queue<Record>) -> Real {
-    coerce<Value>(trace);  // skip
-    v <- p.value();
+  function delay() -> Real {
+    return play();
+  }
+
+  function replay(record:Record) -> Real {
+    auto value <- coerce(record);
+    if p.observe(value) > -inf {
+      v <- value;
+    }
+    return 0.0;
+  }
+  
+  function redelay(record:Record) -> Real {
+    return replay(record);
+  }
+
+  function unplay(record:Record) -> Real {
+    auto value <- coerce(record);
+    if p.observeWithDowndate(value) > -inf {
+      v <- value;
+    }
+    return 0.0;
+  }
+  
+  function undelay(record:Record) -> Real {
+    return unplay();
+  }
+  
+  function propose(record:Record) -> Real {
+    auto value <- coerce(record);
+    if p.observe(value) > -inf {
+      v <- value;
+    }
     return 0.0;
   }
 
-  function replayImmediate(trace:Queue<Record>) -> Real {
-    auto r <- coerce<Value>(trace);
-    auto w <- p.observe(r.value());
-    if w != -inf {
-      v <- r.value();
-      w <- 0.0;
-    }
-    return w;
-  }
-
-  function downdateImmediate(trace:Queue<Record>) -> Real {
-    auto r <- coerce<Value>(trace);
-    auto w <- p.observeWithDowndate(r.value());
-    if w != -inf {
-      v <- r.value();
-      w <- 0.0;
-    }
-    return w;
-  }
-  
-  function proposeImmediate(trace:Queue<Record>) -> Real {
-    auto r <- coerce<Value>(trace);
-    auto w <- p.observe(r.value());
-    if w != -inf {
-      v <- r.value();
-    }
-    return w;
-  }
-  
-  function record(trace:Queue<Record>) {
-    trace.pushBack(FixedRecord<Value>(v!));
+  function record() -> Record {
+    return ImmediateRecord(v);
   }
 }
 

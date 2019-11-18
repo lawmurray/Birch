@@ -1,36 +1,49 @@
 /**
  * Event triggered for a factor.
  *
- * - w: Log-weight.
+ * - w: Associated (log-)weight.
  */
 final class FactorEvent(w:Real) < Event {
   /**
-   * Log-weight associated with the event.
+   * Associated (log-)weight.
    */
   w:Real <- w;
 
-  function isFactor() -> Boolean {
-    return true;
-  }
-
-  function playImmediate() -> Real {
+  function play() -> Real {
     return w;
   }
     
-  function replayImmediate(trace:Queue<Record>) -> Real {
+  function replay(record:Record) -> Real {
+    assert !record.hasValue();
     return w;
   }
 
-  function proposeImmediate(trace:Queue<Record>) -> Real {
+  function unplay(record:Record) -> Real {
+    assert !record.hasValue();
     return w;
   }
 
-  function skipImmediate(trace:Queue<Record>) -> Real {
+  function delay() -> Real {
+    return w;
+  }
+    
+  function redelay(record:Record) -> Real {
+    assert !record.hasValue();
     return w;
   }
 
-  function downdateImmediate(trace:Queue<Record>) -> Real {
+  function undelay(record:Record) -> Real {
+    assert !record.hasValue();
     return w;
+  }
+  
+  function propose(record:Record) -> Real {
+    assert !record.hasValue();
+    return w;
+  }
+  
+  function record() -> Record {
+    return FactorRecord(w);
   }
 }
 

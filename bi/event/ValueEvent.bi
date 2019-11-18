@@ -11,4 +11,17 @@ abstract class ValueEvent<Value> < Event {
    * Get the value.
    */
   abstract function value() -> Value;
+
+  /**
+   * Coerce a value out of a record. This tries to cast the value in the
+   * record to the required type and return it.
+   */
+  function coerce(record:Record) -> Value {
+    r <- ValueRecord<Value>?(record);
+    if !r? {
+      error("incompatible trace");
+    } else {
+      return r.value();
+    }
+  }
 }

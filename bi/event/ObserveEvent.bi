@@ -1,8 +1,8 @@
 /**
  * Event triggered by an *observe*, typically from the `~>` operator.
  *
- * - v: The observation.
- * - p: The distribution.
+ * - v: Associated observation.
+ * - p: Associated distribution.
  */
 final class ObserveEvent<Value>(v:Value, p:Distribution<Value>) <
     ValueEvent<Value> {
@@ -23,29 +23,44 @@ final class ObserveEvent<Value>(v:Value, p:Distribution<Value>) <
   function value() -> Value {
     return v;
   }
-
-  function isObserve() -> Boolean {
-    return true;
-  }
   
-  function playImmediate() -> Real {
+  function play() -> Real {
     return p.observe(v);
   }
   
-  function replayImmediate(trace:Queue<Record>) -> Real {
+  function replay(record:Record) -> Real {
+    assert v.value() == coerce(record);
     return p.observe(v);
   }
 
-  function skipImmediate(trace:Queue<Record>) -> Real {
-    return p.observe(v);
-  }
-
-  function downdateImmediate(trace:Queue<Record>) -> Real {
+  function unplay(record:Record) -> Real {
+    assert v.value() == coerce(record);
     return p.observeWithDowndate(v);
   }
+  
+  function delay() -> Real {
+    return play();
+  }
 
-  function proposeImmediate(trace:Queue<Record>) -> Real {
-    return p.observe(v);
+  function redelay() -> Real {
+    return replay();
+  }
+
+  function undelay() -> Real {
+    return unplay();
+  }
+
+  function propose(record:Record) -> Real {
+    if record.hasValue() {
+      assert v.value() == coerce(record);
+      return p.observe(v);
+    } else {
+      return 0.0;
+    }
+  }
+
+  function record() -> Record {
+    return ImmediateRecord(v);
   }
 }
 
