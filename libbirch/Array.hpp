@@ -408,6 +408,23 @@ public:
   }
 
   /**
+   * Compare.
+   */
+  template<class U, class G>
+  bool operator==(const Array<U,G>& o) const {
+    pin();
+    o.pin();
+    auto result = std::equal(begin(), end(), o.begin());
+    o.unpin();
+    unpin();
+    return result;
+  }
+  template<class U, class G>
+  bool operator!=(const Array<U,G>& o) const {
+    return !(*this == o);
+  }
+
+  /**
    * Pin the buffer. This prevents substitution of the buffer by
    * copy-on-write operations until unpinned.
    */
