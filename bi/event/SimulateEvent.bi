@@ -65,7 +65,7 @@ final class SimulateEvent<Value>(p:Distribution<Value>) < ValueEvent<Value> {
   }
 
   function record() -> Record {
-    return ImmediateRecord(v);
+    return ImmediateRecord<Value>(v);
   }
 }
 

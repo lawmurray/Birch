@@ -60,7 +60,7 @@ final class ObserveEvent<Value>(v:Value, p:Distribution<Value>) <
   }
 
   function record() -> Record {
-    return ImmediateRecord(v);
+    return ImmediateRecord<Value>(v);
   }
 }
 

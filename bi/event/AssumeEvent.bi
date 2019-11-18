@@ -117,9 +117,9 @@ final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
   
   function record() -> Record {
     if v.hasValue() {
-      return ImmediateRecord(v);
+      return ImmediateRecord<Value>(v);
     } else {
-      return DelayRecord(v);
+      return DelayRecord<Value>(v);
     }
   }
 }

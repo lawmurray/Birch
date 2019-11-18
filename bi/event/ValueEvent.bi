@@ -17,11 +17,11 @@ abstract class ValueEvent<Value> < Event {
    * record to the required type and return it.
    */
   function coerce(record:Record) -> Value {
-    r <- ValueRecord<Value>?(record);
+    auto r <- ValueRecord<Value>?(record);
     if !r? {
       error("incompatible trace");
     } else {
-      return r.value();
+      return r!.value();
     }
   }
 }
