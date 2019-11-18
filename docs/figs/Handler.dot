@@ -1,0 +1,27 @@
+digraph {
+  splines=ortho
+  concentrate=true
+  rankdir=BT
+  node [shape=box,fontname=Helvetica,fontsize=10,margin="0.1,0.01"]
+  edge [arrowhead=empty]
+
+  Handler [href="../classes/Handler/",target="_top"]
+  PlayHandler [href="../classes/PlayHandler/",target="_top"]
+  DelayHandler [href="../classes/DelayHandler/",target="_top"]
+
+  TraceHandler [href="../classes/TraceHandler/",target="_top"]
+  ReplayHandler [href="../classes/ReplayHandler/",target="_top"]
+  UnplayHandler [href="../classes/UnplayHandler/",target="_top"]
+  RedelayHandler [href="../classes/RedelayHandler/",target="_top"]
+  UndelayHandler [href="../classes/UndelayHandler/",target="_top"]
+  ProposeHandler [href="../classes/ProposeHandler/",target="_top"]
+
+  PlayHandler -> Handler
+  DelayHandler -> Handler
+
+  ReplayHandler -> TraceHandler
+  UnplayHandler -> TraceHandler
+  RedelayHandler -> TraceHandler
+  UndelayHandler -> TraceHandler
+  ProposeHandler -> TraceHandler
+}
