@@ -393,11 +393,15 @@ void bi::CppBaseGenerator::visit(const Identifier<GlobalVariable>* o) {
   middle("bi::" << o->name << "()");
 }
 
+void bi::CppBaseGenerator::visit(const Identifier<MemberVariable>* o) {
+  middle(o->name);
+}
+
 void bi::CppBaseGenerator::visit(const Identifier<LocalVariable>* o) {
   middle(o->name);
 }
 
-void bi::CppBaseGenerator::visit(const Identifier<MemberVariable>* o) {
+void bi::CppBaseGenerator::visit(const Identifier<ForVariable>* o) {
   middle(o->name);
 }
 
@@ -470,13 +474,18 @@ void bi::CppBaseGenerator::visit(const GlobalVariable* o) {
   }
 }
 
+void bi::CppBaseGenerator::visit(const MemberVariable* o) {
+  assert(false);  // should be in CppClassGenerator
+}
+
 void bi::CppBaseGenerator::visit(const LocalVariable* o) {
   middle(o->type << ' ' << o->name);
   genInit(o);
+  finish(';');
 }
 
-void bi::CppBaseGenerator::visit(const MemberVariable* o) {
-  assert(false);  // should be in CppClassGenerator
+void bi::CppBaseGenerator::visit(const ForVariable* o) {
+  middle(o->type << ' ' << o->name);
 }
 
 void bi::CppBaseGenerator::visit(const Function* o) {

@@ -205,14 +205,6 @@ bi::Expression* bi::Modifier::modify(Nil* o) {
   return o;
 }
 
-bi::Expression* bi::Modifier::modify(LocalVariable* o) {
-  o->type = o->type->accept(this);
-  o->brackets = o->brackets->accept(this);
-  o->args = o->args->accept(this);
-  o->value = o->value->accept(this);
-  return o;
-}
-
 bi::Expression* bi::Modifier::modify(Parameter* o) {
   o->type = o->type->accept(this);
   o->value = o->value->accept(this);
@@ -236,11 +228,15 @@ bi::Expression* bi::Modifier::modify(Identifier<GlobalVariable>* o) {
   return o;
 }
 
+bi::Expression* bi::Modifier::modify(Identifier<MemberVariable>* o) {
+  return o;
+}
+
 bi::Expression* bi::Modifier::modify(Identifier<LocalVariable>* o) {
   return o;
 }
 
-bi::Expression* bi::Modifier::modify(Identifier<MemberVariable>* o) {
+bi::Expression* bi::Modifier::modify(Identifier<ForVariable>* o) {
   return o;
 }
 
@@ -313,6 +309,19 @@ bi::Statement* bi::Modifier::modify(MemberVariable* o) {
   o->brackets = o->brackets->accept(this);
   o->args = o->args->accept(this);
   o->value = o->value->accept(this);
+  return o;
+}
+
+bi::Statement* bi::Modifier::modify(LocalVariable* o) {
+  o->type = o->type->accept(this);
+  o->brackets = o->brackets->accept(this);
+  o->args = o->args->accept(this);
+  o->value = o->value->accept(this);
+  return o;
+}
+
+bi::Statement* bi::Modifier::modify(ForVariable* o) {
+  o->type = o->type->accept(this);
   return o;
 }
 

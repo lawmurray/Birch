@@ -57,8 +57,9 @@ public:
   virtual void visit(const Identifier<Unknown>* o);
   virtual void visit(const Identifier<Parameter>* o);
   virtual void visit(const Identifier<GlobalVariable>* o);
-  virtual void visit(const Identifier<LocalVariable>* o);
   virtual void visit(const Identifier<MemberVariable>* o);
+  virtual void visit(const Identifier<LocalVariable>* o);
+  virtual void visit(const Identifier<ForVariable>* o);
   virtual void visit(const OverloadedIdentifier<Function>* o);
   virtual void visit(const OverloadedIdentifier<Fiber>* o);
   virtual void visit(const OverloadedIdentifier<MemberFunction>* o);
@@ -68,8 +69,9 @@ public:
 
   virtual void visit(const File* o);
   virtual void visit(const GlobalVariable* o);
-  virtual void visit(const LocalVariable* o);
   virtual void visit(const MemberVariable* o);
+  virtual void visit(const LocalVariable* o);
+  virtual void visit(const ForVariable* o);
   virtual void visit(const Function* o);
   virtual void visit(const Fiber* o);
   virtual void visit(const MemberFunction* o);

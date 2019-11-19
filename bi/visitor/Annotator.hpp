@@ -28,8 +28,9 @@ public:
 
   Expression* modify(Identifier<Parameter>* o);
   Expression* modify(Identifier<GlobalVariable>* o);
-  Expression* modify(Identifier<LocalVariable>* o);
   Expression* modify(Identifier<MemberVariable>* o);
+  Expression* modify(Identifier<LocalVariable>* o);
+  Expression* modify(Identifier<ForVariable>* o);
   Expression* modify(OverloadedIdentifier<Unknown>* o);
   Expression* modify(OverloadedIdentifier<Function>* o);
   Expression* modify(OverloadedIdentifier<Fiber>* o);

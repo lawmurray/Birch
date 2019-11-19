@@ -5,9 +5,10 @@
 
 namespace bi {
 class Parameter;
-class LocalVariable;
-class MemberVariable;
 class GlobalVariable;
+class MemberVariable;
+class LocalVariable;
+class ForVariable;
 class Function;
 class MemberFunction;
 class Fiber;
@@ -21,9 +22,10 @@ class Unknown;
  */
 enum Lookup {
   PARAMETER,
-  LOCAL_VARIABLE,
-  MEMBER_VARIABLE,
   GLOBAL_VARIABLE,
+  MEMBER_VARIABLE,
+  LOCAL_VARIABLE,
+  FOR_VARIABLE,
   FUNCTION,
   MEMBER_FUNCTION,
   FIBER,
@@ -49,16 +51,20 @@ struct lookup_result<Parameter> {
   static const Lookup value = PARAMETER;
 };
 template<>
-struct lookup_result<LocalVariable> {
-  static const Lookup value = LOCAL_VARIABLE;
+struct lookup_result<GlobalVariable> {
+  static const Lookup value = GLOBAL_VARIABLE;
 };
 template<>
 struct lookup_result<MemberVariable> {
   static const Lookup value = MEMBER_VARIABLE;
 };
 template<>
-struct lookup_result<GlobalVariable> {
-  static const Lookup value = GLOBAL_VARIABLE;
+struct lookup_result<LocalVariable> {
+  static const Lookup value = LOCAL_VARIABLE;
+};
+template<>
+struct lookup_result<ForVariable> {
+  static const Lookup value = FOR_VARIABLE;
 };
 template<>
 struct lookup_result<Function> {

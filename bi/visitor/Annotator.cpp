@@ -21,12 +21,17 @@ bi::Expression* bi::Annotator::modify(Identifier<GlobalVariable>* o) {
   return o;
 }
 
+bi::Expression* bi::Annotator::modify(Identifier<MemberVariable>* o) {
+  o->target->set(a);
+  return o;
+}
+
 bi::Expression* bi::Annotator::modify(Identifier<LocalVariable>* o) {
   o->target->set(a);
   return o;
 }
 
-bi::Expression* bi::Annotator::modify(Identifier<MemberVariable>* o) {
+bi::Expression* bi::Annotator::modify(Identifier<ForVariable>* o) {
   o->target->set(a);
   return o;
 }

@@ -77,12 +77,12 @@ bi::Expression* bi::Cloner::clone(const Call<MemberFiber>* o) {
   return new Call<MemberFiber>(o->single->accept(this), o->args->accept(this), o->loc);
 }
 
-bi::Expression* bi::Cloner::clone(const Call<LocalVariable>* o) {
-  return new Call<LocalVariable>(o->single->accept(this), o->args->accept(this), o->loc);
-}
-
 bi::Expression* bi::Cloner::clone(const Call<Parameter>* o) {
   return new Call<Parameter>(o->single->accept(this), o->args->accept(this), o->loc);
+}
+
+bi::Expression* bi::Cloner::clone(const Call<LocalVariable>* o) {
+  return new Call<LocalVariable>(o->single->accept(this), o->args->accept(this), o->loc);
 }
 
 bi::Expression* bi::Cloner::clone(const Call<MemberVariable>* o) {
@@ -156,12 +156,6 @@ bi::Expression* bi::Cloner::clone(const Nil* o) {
   return new Nil(o->loc);
 }
 
-bi::Expression* bi::Cloner::clone(const LocalVariable* o) {
-  return new LocalVariable(o->annotation, o->name, o->type->accept(this),
-      o->brackets->accept(this), o->args->accept(this),
-      o->value->accept(this), o->loc);
-}
-
 bi::Expression* bi::Cloner::clone(const Parameter* o) {
   return new Parameter(o->annotation, o->name, o->type->accept(this),
       o->value->accept(this), o->loc);
@@ -183,12 +177,16 @@ bi::Expression* bi::Cloner::clone(const Identifier<GlobalVariable>* o) {
   return new Identifier<GlobalVariable>(o->name, o->loc);
 }
 
+bi::Expression* bi::Cloner::clone(const Identifier<MemberVariable>* o) {
+  return new Identifier<MemberVariable>(o->name, o->loc);
+}
+
 bi::Expression* bi::Cloner::clone(const Identifier<LocalVariable>* o) {
   return new Identifier<LocalVariable>(o->name, o->loc);
 }
 
-bi::Expression* bi::Cloner::clone(const Identifier<MemberVariable>* o) {
-  return new Identifier<MemberVariable>(o->name, o->loc);
+bi::Expression* bi::Cloner::clone(const Identifier<ForVariable>* o) {
+  return new Identifier<ForVariable>(o->name, o->loc);
 }
 
 bi::Expression* bi::Cloner::clone(const OverloadedIdentifier<Unknown>* o) {
@@ -250,6 +248,17 @@ bi::Statement* bi::Cloner::clone(const MemberVariable* o) {
   return new MemberVariable(o->annotation, o->name, o->type->accept(this),
       o->brackets->accept(this), o->args->accept(this),
       o->value->accept(this), o->loc);
+}
+
+bi::Statement* bi::Cloner::clone(const LocalVariable* o) {
+  return new LocalVariable(o->annotation, o->name, o->type->accept(this),
+      o->brackets->accept(this), o->args->accept(this),
+      o->value->accept(this), o->loc);
+}
+
+bi::Statement* bi::Cloner::clone(const ForVariable* o) {
+  return new ForVariable(o->annotation, o->name, o->type->accept(this),
+      o->loc);
 }
 
 bi::Statement* bi::Cloner::clone(const Function* o) {

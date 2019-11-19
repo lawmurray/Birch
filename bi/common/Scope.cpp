@@ -5,11 +5,12 @@
 
 #include "bi/expression/Identifier.hpp"
 #include "bi/expression/OverloadedIdentifier.hpp"
-#include "bi/expression/LocalVariable.hpp"
 #include "bi/expression/Parameter.hpp"
 #include "bi/expression/Generic.hpp"
 #include "bi/statement/GlobalVariable.hpp"
 #include "bi/statement/MemberVariable.hpp"
+#include "bi/statement/LocalVariable.hpp"
+#include "bi/statement/ForVariable.hpp"
 #include "bi/statement/Function.hpp"
 #include "bi/statement/Fiber.hpp"
 #include "bi/statement/Program.hpp"
@@ -141,14 +142,19 @@ void bi::Scope::add(GlobalVariable* param) {
   globalVariables.add(param);
 }
 
+void bi::Scope::add(MemberVariable* param) {
+  checkPreviousMember(param);
+  memberVariables.add(param);
+}
+
 void bi::Scope::add(LocalVariable* param) {
   checkPreviousLocal(param);
   localVariables.add(param);
 }
 
-void bi::Scope::add(MemberVariable* param) {
-  checkPreviousMember(param);
-  memberVariables.add(param);
+void bi::Scope::add(ForVariable* param) {
+  checkPreviousLocal(param);
+  forVariables.add(param);
 }
 
 void bi::Scope::add(Function* param) {
@@ -232,15 +238,19 @@ void bi::Scope::resolve(Identifier<GlobalVariable>* o) {
   globalVariables.resolve(o);
 }
 
-void bi::Scope::resolve(Identifier<LocalVariable>* o) {
-  localVariables.resolve(o);
-}
-
 void bi::Scope::resolve(Identifier<MemberVariable>* o) {
   memberVariables.resolve(o);
   if (!o->target && base) {
     base->resolve(o);
   }
+}
+
+void bi::Scope::resolve(Identifier<LocalVariable>* o) {
+  localVariables.resolve(o);
+}
+
+void bi::Scope::resolve(Identifier<ForVariable>* o) {
+  forVariables.resolve(o);
 }
 
 void bi::Scope::resolve(OverloadedIdentifier<Function>* o) {
@@ -317,10 +327,12 @@ void bi::Scope::checkPreviousGlobal(ParameterType* param) {
 template<class ParameterType>
 void bi::Scope::checkPreviousLocal(ParameterType* param) {
   auto name = param->name->str();
-  if (localVariables.contains(name)) {
-    throw PreviousDeclarationException(param, localVariables.get(name));
-  } else if (parameters.contains(name)) {
+  if (parameters.contains(name)) {
     throw PreviousDeclarationException(param, parameters.get(name));
+  } else if (localVariables.contains(name)) {
+    throw PreviousDeclarationException(param, localVariables.get(name));
+  } else if (forVariables.contains(name)) {
+    throw PreviousDeclarationException(param, forVariables.get(name));
   }
 }
 

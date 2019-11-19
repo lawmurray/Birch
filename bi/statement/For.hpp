@@ -27,7 +27,7 @@ public:
    * @param braces Body of loop.
    * @param loc Location.
    */
-  For(const Annotation annotation, Expression* index, Expression* from,
+  For(const Annotation annotation, Statement* index, Expression* from,
       Expression* to, Statement* braces, Location* loc = nullptr);
 
   /**
@@ -42,7 +42,7 @@ public:
   /**
    * Index.
    */
-  Expression* index;
+  Statement* index;
 
   /**
    * From expression.

@@ -109,14 +109,14 @@ public:
   virtual Expression* modify(Super* o);
   virtual Expression* modify(This* o);
   virtual Expression* modify(Nil* o);
-  virtual Expression* modify(LocalVariable* o);
   virtual Expression* modify(Parameter* o);
   virtual Expression* modify(Generic* o);
   virtual Expression* modify(Identifier<Unknown>* o);
   virtual Expression* modify(Identifier<Parameter>* o);
   virtual Expression* modify(Identifier<GlobalVariable>* o);
-  virtual Expression* modify(Identifier<LocalVariable>* o);
   virtual Expression* modify(Identifier<MemberVariable>* o);
+  virtual Expression* modify(Identifier<LocalVariable>* o);
+  virtual Expression* modify(Identifier<ForVariable>* o);
   virtual Expression* modify(OverloadedIdentifier<Unknown>* o);
   virtual Expression* modify(OverloadedIdentifier<Function>* o);
   virtual Expression* modify(OverloadedIdentifier<Fiber>* o);
@@ -128,6 +128,8 @@ public:
   virtual Statement* modify(Assume* o);
   virtual Statement* modify(GlobalVariable* o);
   virtual Statement* modify(MemberVariable* o);
+  virtual Statement* modify(LocalVariable* o);
+  virtual Statement* modify(ForVariable* o);
   virtual Statement* modify(Function* o);
   virtual Statement* modify(Fiber* o);
   virtual Statement* modify(Program* o);

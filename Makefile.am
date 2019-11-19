@@ -106,7 +106,6 @@ COMMON_SOURCES = \
   bi/expression/Index.cpp \
   bi/expression/LambdaFunction.cpp \
   bi/expression/Literal.cpp \
-  bi/expression/LocalVariable.cpp \
   bi/expression/Member.cpp \
   bi/expression/Nil.cpp \
   bi/expression/OverloadedIdentifier.cpp \
@@ -145,10 +144,12 @@ COMMON_SOURCES = \
   bi/statement/Fiber.cpp \
   bi/statement/File.cpp \
   bi/statement/For.cpp \
+  bi/statement/ForVariable.cpp \
   bi/statement/Function.cpp \
   bi/statement/GlobalVariable.cpp \
   bi/statement/If.cpp \
   bi/statement/Instantiated.cpp \
+  bi/statement/LocalVariable.cpp \
   bi/statement/MemberFiber.cpp \
   bi/statement/MemberFunction.cpp \
   bi/statement/MemberVariable.cpp \
@@ -281,7 +282,6 @@ noinst_HEADERS = \
   bi/expression/Index.hpp \
   bi/expression/LambdaFunction.hpp \
   bi/expression/Literal.hpp \
-  bi/expression/LocalVariable.hpp \
   bi/expression/Member.hpp \
   bi/expression/Nil.hpp \
   bi/expression/OverloadedIdentifier.hpp \
@@ -322,10 +322,12 @@ noinst_HEADERS = \
   bi/statement/Fiber.hpp \
   bi/statement/File.hpp \
   bi/statement/For.hpp \
+  bi/statement/ForVariable.hpp \
   bi/statement/Function.hpp \
   bi/statement/GlobalVariable.hpp \
   bi/statement/If.hpp \
   bi/statement/Instantiated.hpp \
+  bi/statement/LocalVariable.hpp \
   bi/statement/MemberFiber.hpp \
   bi/statement/MemberFunction.hpp \
   bi/statement/MemberVariable.hpp \

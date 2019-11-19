@@ -1,16 +1,17 @@
 /**
  * @file
  */
-#include "bi/expression/LocalVariable.hpp"
+#include "bi/statement/LocalVariable.hpp"
 
 #include "bi/visitor/all.hpp"
 
 bi::LocalVariable::LocalVariable(const Annotation annotation, Name* name,
     Type* type, Expression* brackets, Expression* args, Expression* value,
     Location* loc) :
-    Expression(type, loc),
+    Statement(loc),
     Annotated(annotation),
     Named(name),
+    Typed(type),
     Bracketed(brackets),
     Argumented(args),
     Valued(value) {
@@ -18,9 +19,10 @@ bi::LocalVariable::LocalVariable(const Annotation annotation, Name* name,
 }
 
 bi::LocalVariable::LocalVariable(Expression* value, Location* loc) :
-    Expression(new EmptyType(), loc),
+    Statement(loc),
     Annotated(bi::AUTO),
     Named(new Name()),
+    Typed(new EmptyType()),
     Bracketed(new EmptyExpression()),
     Argumented(new EmptyExpression()),
     Valued(value) {
@@ -36,11 +38,11 @@ bool bi::LocalVariable::needsConstruction() const {
       || (value->isEmpty() && (!type->isArray() || !brackets->isEmpty()));
 }
 
-bi::Expression* bi::LocalVariable::accept(Cloner* visitor) const {
+bi::Statement* bi::LocalVariable::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }
 
-bi::Expression* bi::LocalVariable::accept(Modifier* visitor) {
+bi::Statement* bi::LocalVariable::accept(Modifier* visitor) {
   return visitor->modify(this);
 }
 

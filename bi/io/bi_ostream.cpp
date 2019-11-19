@@ -193,28 +193,6 @@ void bi::bi_ostream::visit(const Nil* o) {
   middle("nil");
 }
 
-void bi::bi_ostream::visit(const LocalVariable* o) {
-  if (o->has(AUTO)) {
-    middle("auto " << o->name);
-  } else {
-    middle(o->name << ':');
-    if (o->type->isArray() && !o->brackets->isEmpty()) {
-      middle(dynamic_cast<const ArrayType*>(o->type)->single);
-    } else {
-      middle(o->type);
-    }
-    if (!o->brackets->isEmpty()) {
-      middle('[' << o->brackets << ']');
-    }
-    if (!o->args->isEmpty()) {
-      middle('(' << o->args << ')');
-    }
-  }
-  if (!o->value->isEmpty()) {
-    middle(" <- " << o->value);
-  }
-}
-
 void bi::bi_ostream::visit(const Parameter* o) {
   middle(o->name << ':' << o->type);
   if (!o->value->isEmpty()) {
@@ -276,6 +254,33 @@ void bi::bi_ostream::visit(const MemberVariable* o) {
   finish(';');
 }
 
+void bi::bi_ostream::visit(const LocalVariable* o) {
+  if (o->has(AUTO)) {
+    middle("auto " << o->name);
+  } else {
+    middle(o->name << ':');
+    if (o->type->isArray() && !o->brackets->isEmpty()) {
+      middle(dynamic_cast<const ArrayType*>(o->type)->single);
+    } else {
+      middle(o->type);
+    }
+    if (!o->brackets->isEmpty()) {
+      middle('[' << o->brackets << ']');
+    }
+    if (!o->args->isEmpty()) {
+      middle('(' << o->args << ')');
+    }
+  }
+  if (!o->value->isEmpty()) {
+    middle(" <- " << o->value);
+  }
+  finish(';');
+}
+
+void bi::bi_ostream::visit(const ForVariable* o) {
+  middle(o->name);
+}
+
 void bi::bi_ostream::visit(const Identifier<Parameter>* o) {
   middle(o->name);
 }
@@ -284,11 +289,15 @@ void bi::bi_ostream::visit(const Identifier<GlobalVariable>* o) {
   middle(o->name);
 }
 
+void bi::bi_ostream::visit(const Identifier<MemberVariable>* o) {
+  middle(o->name);
+}
+
 void bi::bi_ostream::visit(const Identifier<LocalVariable>* o) {
   middle(o->name);
 }
 
-void bi::bi_ostream::visit(const Identifier<MemberVariable>* o) {
+void bi::bi_ostream::visit(const Identifier<ForVariable>* o) {
   middle(o->name);
 }
 

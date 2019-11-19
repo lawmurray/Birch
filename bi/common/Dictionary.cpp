@@ -39,8 +39,9 @@ void bi::Dictionary<ObjectType>::add(ObjectType* o) {
 
 template class bi::Dictionary<bi::Parameter>;
 template class bi::Dictionary<bi::GlobalVariable>;
-template class bi::Dictionary<bi::LocalVariable>;
 template class bi::Dictionary<bi::MemberVariable>;
+template class bi::Dictionary<bi::LocalVariable>;
+template class bi::Dictionary<bi::ForVariable>;
 template class bi::Dictionary<bi::Program>;
 template class bi::Dictionary<bi::Basic>;
 template class bi::Dictionary<bi::Class>;

@@ -5,7 +5,7 @@
 
 #include "bi/visitor/all.hpp"
 
-bi::For::For(const Annotation annotation, Expression* index,
+bi::For::For(const Annotation annotation, Statement* index,
     Expression* from, Expression* to, Statement* braces, Location* loc) :
     Statement(loc),
     Annotated(annotation),

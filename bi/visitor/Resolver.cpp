@@ -295,33 +295,6 @@ bi::Expression* bi::Resolver::modify(Nil* o) {
   return o;
 }
 
-bi::Expression* bi::Resolver::modify(LocalVariable* o) {
-  Modifier::modify(o);
-  if (o->has(AUTO)) {
-    assert(!o->value->isEmpty());
-    if (!o->value->type->isEmpty()) {
-      o->type = o->value->type;
-    } else {
-      throw InitialValueException(o);
-    }
-  }
-  if (o->needsConstruction()) {
-    o->type->resolveConstructor(o);
-  }
-  if (!o->brackets->isEmpty()) {
-    o->type = new ArrayType(o->type, o->brackets->width(), o->brackets->loc);
-  }
-  for (auto iter : *o->brackets) {
-    checkInteger(iter);
-  }
-  if (!o->value->isEmpty() && !(o->value->type->isConvertible(*o->type) ||
-      o->value->type->isConvertible(*o->type->element()))) {
-    throw InitialValueException(o);
-  }
-  scopes.back()->add(o);
-  return o;
-}
-
 bi::Expression* bi::Resolver::modify(Parameter* o) {
   Modifier::modify(o);
   if (!o->value->isEmpty() && !(o->value->type->isConvertible(*o->type) ||
@@ -355,13 +328,6 @@ bi::Expression* bi::Resolver::modify(Identifier<GlobalVariable>* o) {
   return o;
 }
 
-bi::Expression* bi::Resolver::modify(Identifier<LocalVariable>* o) {
-  Modifier::modify(o);
-  resolve(o, LOCAL_SCOPE);
-  o->type = o->target->type;
-  return o;
-}
-
 bi::Expression* bi::Resolver::modify(Identifier<MemberVariable>* o) {
   if (!inMember) {
     return (new Member(new This(o->loc), o, o->loc))->accept(this);
@@ -371,6 +337,20 @@ bi::Expression* bi::Resolver::modify(Identifier<MemberVariable>* o) {
     o->type = o->target->type;
     return o;
   }
+}
+
+bi::Expression* bi::Resolver::modify(Identifier<LocalVariable>* o) {
+  Modifier::modify(o);
+  resolve(o, LOCAL_SCOPE);
+  o->type = o->target->type;
+  return o;
+}
+
+bi::Expression* bi::Resolver::modify(Identifier<ForVariable>* o) {
+  Modifier::modify(o);
+  resolve(o, LOCAL_SCOPE);
+  o->type = o->target->type;
+  return o;
 }
 
 bi::Expression* bi::Resolver::modify(OverloadedIdentifier<Unknown>* o) {
@@ -478,9 +458,8 @@ bi::Statement* bi::Resolver::modify(Assume* o) {
         new Assign(o->left, new Name("<-"),
             new Get(ref->accept(&cloner), o->loc), o->loc), o->loc);
     auto falseBranch = new EmptyStatement(o->loc);
-    auto declare = new ExpressionStatement(tmp, o->loc);
     auto conditional = new If(cond, trueBranch, falseBranch, o->loc);
-    result = new StatementList(declare, conditional, o->loc);
+    result = new StatementList(tmp, conditional, o->loc);
   } else {
     o->right = o->right->accept(this);
     auto valueType = getValueType(o->right->type);
@@ -494,7 +473,6 @@ bi::Statement* bi::Resolver::modify(Assume* o) {
           new Name("SimulateEvent"), valueType, o->loc);
       auto call = new Call<Unknown>(identifier, o->right->accept(&cloner));
       auto tmp = new LocalVariable(call, o->loc);
-      auto decl = new ExpressionStatement(tmp, o->loc);
       auto yield = new Yield(new Identifier<Unknown>(tmp->name, o->loc),
           o->loc);
       auto member = new Member(new Identifier<Unknown>(tmp->name, o->loc),
@@ -503,7 +481,7 @@ bi::Statement* bi::Resolver::modify(Assume* o) {
       auto value = new Call<Unknown>(member, new EmptyExpression(), o->loc);
       auto assign = new ExpressionStatement(new Assign(o->left,
           new Name("<-"), value, o->loc), o->loc);
-      result = new StatementList(decl, new StatementList(yield, assign,
+      result = new StatementList(tmp, new StatementList(yield, assign,
           o->loc), o->loc);
     } else if (*o->name == "~>") {
       auto identifier = new OverloadedIdentifier<Unknown>(
@@ -591,6 +569,39 @@ bi::Statement* bi::Resolver::modify(MemberVariable* o) {
       throw InitialValueException(o);
     }
   }
+  return o;
+}
+
+bi::Statement* bi::Resolver::modify(LocalVariable* o) {
+  Modifier::modify(o);
+  if (o->has(AUTO)) {
+    assert(!o->value->isEmpty());
+    if (!o->value->type->isEmpty()) {
+      o->type = o->value->type;
+    } else {
+      throw InitialValueException(o);
+    }
+  }
+  if (o->needsConstruction()) {
+    o->type->resolveConstructor(o);
+  }
+  if (!o->brackets->isEmpty()) {
+    o->type = new ArrayType(o->type, o->brackets->width(), o->brackets->loc);
+  }
+  for (auto iter : *o->brackets) {
+    checkInteger(iter);
+  }
+  if (!o->value->isEmpty() && !(o->value->type->isConvertible(*o->type) ||
+      o->value->type->isConvertible(*o->type->element()))) {
+    throw InitialValueException(o);
+  }
+  scopes.back()->add(o);
+  return o;
+}
+
+bi::Statement* bi::Resolver::modify(ForVariable* o) {
+  Modifier::modify(o);
+  scopes.back()->add(o);
   return o;
 }
 
@@ -866,14 +877,13 @@ bi::Statement* bi::Resolver::modify(ExpressionStatement* o) {
     auto var = new LocalVariable(AUTO, name, new EmptyType(o->loc),
         new EmptyExpression(o->loc), new EmptyExpression(o->loc),
         o->single->accept(&cloner), o->loc);
-    auto decl = new ExpressionStatement(var, o->loc);
     auto query = new Query(new Identifier<LocalVariable>(name, o->loc),
         o->loc);
     auto get = new Get(new Identifier<LocalVariable>(name, o->loc), o->loc);
     auto yield = new Yield(get, o->loc);
     auto loop = new While(new Parentheses(query, o->loc),
         new Braces(yield, o->loc), o->loc);
-    auto result = new StatementList(decl, loop, o->loc);
+    auto result = new StatementList(var, loop, o->loc);
 
     return result->accept(this);
   }
@@ -896,7 +906,6 @@ bi::Statement* bi::Resolver::modify(For* o) {
   scopes.push_back(o->scope);
   Modifier::modify(o);
   scopes.pop_back();
-  checkInteger(o->index);
   checkInteger(o->from);
   checkInteger(o->to);
   return o;

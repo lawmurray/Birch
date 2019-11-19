@@ -10,9 +10,10 @@
 
 namespace bi {
 class Parameter;
-class LocalVariable;
-class MemberVariable;
 class GlobalVariable;
+class MemberVariable;
+class LocalVariable;
+class ForVariable;
 class Function;
 class MemberFunction;
 class Fiber;
@@ -76,8 +77,9 @@ public:
    */
   void add(Parameter* o);
   void add(GlobalVariable* o);
-  void add(LocalVariable* o);
   void add(MemberVariable* o);
+  void add(LocalVariable* o);
+  void add(ForVariable* o);
   void add(Function* o);
   void add(Fiber* o);
   void add(Program* o);
@@ -98,8 +100,9 @@ public:
    */
   void resolve(Identifier<Parameter>* o);
   void resolve(Identifier<GlobalVariable>* o);
-  void resolve(Identifier<LocalVariable>* o);
   void resolve(Identifier<MemberVariable>* o);
+  void resolve(Identifier<LocalVariable>* o);
+  void resolve(Identifier<ForVariable>* o);
   void resolve(OverloadedIdentifier<Function>* o);
   void resolve(OverloadedIdentifier<Fiber>* o);
   void resolve(Identifier<Program>* o);
@@ -141,8 +144,9 @@ public:
    */
   Dictionary<Parameter> parameters;
   Dictionary<GlobalVariable> globalVariables;
-  Dictionary<LocalVariable> localVariables;
   Dictionary<MemberVariable> memberVariables;
+  Dictionary<LocalVariable> localVariables;
+  Dictionary<ForVariable> forVariables;
   OverloadedDictionary<Function> functions;
   OverloadedDictionary<Fiber> fibers;
   Dictionary<Program> programs;
@@ -177,16 +181,16 @@ private:
   void checkPreviousGlobal(ParameterType* param);
 
   /**
-   * Check for previous declarations of the same name, at local scope.
-   */
-  template<class ParameterType>
-  void checkPreviousLocal(ParameterType* param);
-
-  /**
    * Check for previous declarations of the same name, for a member.
    */
   template<class ParameterType>
   void checkPreviousMember(ParameterType* param);
+
+  /**
+   * Check for previous declarations of the same name, at local scope.
+   */
+  template<class ParameterType>
+  void checkPreviousLocal(ParameterType* param);
 
   /**
    * Check for previous declarations of the same name, for a type.

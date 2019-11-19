@@ -177,13 +177,6 @@ void bi::Visitor::visit(const Member* o) {
   o->right->accept(this);
 }
 
-void bi::Visitor::visit(const LocalVariable* o) {
-  o->type->accept(this);
-  o->brackets->accept(this);
-  o->args->accept(this);
-  o->value->accept(this);
-}
-
 void bi::Visitor::visit(const Parameter* o) {
   o->type->accept(this);
   o->value->accept(this);
@@ -201,11 +194,15 @@ void bi::Visitor::visit(const Identifier<GlobalVariable>* o) {
   //
 }
 
+void bi::Visitor::visit(const Identifier<MemberVariable>* o) {
+  //
+}
+
 void bi::Visitor::visit(const Identifier<LocalVariable>* o) {
   //
 }
 
-void bi::Visitor::visit(const Identifier<MemberVariable>* o) {
+void bi::Visitor::visit(const Identifier<ForVariable>* o) {
   //
 }
 
@@ -267,6 +264,17 @@ void bi::Visitor::visit(const MemberVariable* o) {
   o->brackets->accept(this);
   o->args->accept(this);
   o->value->accept(this);
+}
+
+void bi::Visitor::visit(const LocalVariable* o) {
+  o->type->accept(this);
+  o->brackets->accept(this);
+  o->args->accept(this);
+  o->value->accept(this);
+}
+
+void bi::Visitor::visit(const ForVariable* o) {
+  o->type->accept(this);
 }
 
 void bi::Visitor::visit(const Function* o) {

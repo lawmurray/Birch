@@ -3,10 +3,11 @@
  */
 #pragma once
 
-#include "bi/expression/Expression.hpp"
+#include "bi/statement/Statement.hpp"
 #include "bi/common/Annotated.hpp"
 #include "bi/common/Named.hpp"
 #include "bi/common/Numbered.hpp"
+#include "bi/common/Typed.hpp"
 #include "bi/common/Bracketed.hpp"
 #include "bi/common/Argumented.hpp"
 #include "bi/common/Valued.hpp"
@@ -17,10 +18,11 @@ namespace bi {
  *
  * @ingroup expression
  */
-class LocalVariable: public Expression,
+class LocalVariable: public Statement,
     public Annotated,
     public Named,
     public Numbered,
+    public Typed,
     public Bracketed,
     public Argumented,
     public Valued {
@@ -58,8 +60,8 @@ public:
    */
   virtual bool needsConstruction() const;
 
-  virtual Expression* accept(Cloner* visitor) const;
-  virtual Expression* accept(Modifier* visitor);
+  virtual Statement* accept(Cloner* visitor) const;
+  virtual Statement* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 };
 }
