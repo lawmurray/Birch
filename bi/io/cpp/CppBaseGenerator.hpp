@@ -218,7 +218,7 @@ void bi::CppBaseGenerator::genInit(const T* o) {
     }
   } else if (!o->value->isEmpty()) {
     middle('(');
-    if (!o->type->isValue()) {
+    if (!o->type->isValue() && !o->type->isFunction()) {
       middle("context_, ");
     }
     middle(o->value << ')');
