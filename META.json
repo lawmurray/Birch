@@ -147,6 +147,8 @@
       "bi/expression/MultivariateSubtract.bi",
       "bi/expression/Random.bi",
       "bi/expression/Subtract.bi",
+      "bi/filter/AliveParticleFilter.bi",
+      "bi/filter/ConditionalParticleFilter.bi",
       "bi/filter/ParticleFilter.bi",
       "bi/handler/DelayHandler.bi",
       "bi/handler/Handler.bi",

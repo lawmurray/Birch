@@ -3,9 +3,9 @@
  */
 class ParticleFilter {
   /**
-   * The archetype.
+   * Model.
    */
-  archetype:ForwardModel?;
+  model:ForwardModel;
 
   /**
    * Number of steps.
@@ -23,16 +23,32 @@ class ParticleFilter {
    * threshold.
    */
   trigger:Real <- 0.7;
+  
+  /**
+   * Should delayed sampling be used?
+   */
+  delayed:Boolean <- true;
 
   fiber filter() -> (ForwardModel[_], Real[_], Real, Real) {
-    assert archetype?;
-    
-    auto x <- clone<ForwardModel>(archetype!, nparticles);  // particles
-    auto w <- vector(0.0, nparticles);  // log-weights
-    auto ess <- 1.0*nparticles;  // effective sample size
+    auto x <- clone<ForwardModel>(model, nparticles);  // particles
+    auto w <- vector(0.0, 0);  // log-weights
+    auto ess <- 0.0;  // effective sample size
     auto levidence <- 0.0;  // incremental log-evidence
+    
+    /* event handler */
+    h:Handler <- play;
+    if delayed {
+      h <- global.delay;
+    }
 
-    for t in 0..nsteps {
+    /* initialize and weight */
+    parallel for n in 1..nparticles {
+      w[n] <- h.handle(x[n].simulate());
+    }
+    (ess, levidence) <- resample_reduce(w);
+    yield (x, w, ess, levidence);
+      
+    for t in 1..nsteps {
       /* resample */
       if ess <= trigger*nparticles {
         auto a <- resample_systematic(w);
@@ -43,42 +59,31 @@ class ParticleFilter {
         }
       }
       
-      if t == 0 {
-        /* initialize and weight */
-        parallel for n in 1..nparticles {
-          w[n] <- delay.handle(x[n].simulate());
-        }
-      } else {
-        /* propagate and weight */
-        parallel for n in 1..nparticles {
-          w[n] <- w[n] + delay.handle(x[n].simulate(t));
-        }
+      /* propagate and weight */
+      parallel for n in 1..nparticles {
+        w[n] <- w[n] + h.handle(x[n].simulate(t));
       }
-      
-      /* ESS and incremental evidence */
       (ess, levidence) <- resample_reduce(w);
-
       yield (x, w, ess, levidence);
     }
   }
 
-  function setArchetype(archetype:Model) {
-    this.archetype <-? ForwardModel?(archetype);
-    if !this.archetype? {
-      error("model class must be a subtype of ForwardModel to use ParticleFilter.");
-    }
-    nsteps <- this.archetype!.size();
+  function setModel(model:ForwardModel) {
+    this.model <- model;
+    nsteps <- model.size();
   }
 
   function read(buffer:Buffer) {
     nsteps <-? buffer.get("nsteps", nsteps);
     nparticles <-? buffer.get("nparticles", nparticles);
     trigger <-? buffer.get("trigger", trigger);
+    delayed <-? buffer.get("delayed", delayed);
   }
 
   function write(buffer:Buffer) {
     buffer.set("nsteps", nsteps);
     buffer.set("nparticles", nparticles);
     buffer.set("trigger", trigger);
+    buffer.set("delayed", delayed);
   }
 }
