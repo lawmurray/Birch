@@ -7,6 +7,7 @@ bi::Resolver::Resolver(const ResolverStage globalStage) :
     stage(RESOLVER_TYPER),
     globalStage(globalStage),
     annotator(INSTANTIATED),
+    inLambda(0),
     inFiber(0),
     inMember(0) {
   //
@@ -226,6 +227,7 @@ bi::Expression* bi::Resolver::modify(Get* o) {
 }
 
 bi::Expression* bi::Resolver::modify(LambdaFunction* o) {
+  ++inLambda;
   scopes.push_back(o->scope);
   o->params = o->params->accept(this);
   o->returnType = o->returnType->accept(this);
@@ -234,6 +236,7 @@ bi::Expression* bi::Resolver::modify(LambdaFunction* o) {
   returnTypes.pop_back();
   scopes.pop_back();
   o->type = new FunctionType(o->params->type, o->returnType, o->loc);
+  --inLambda;
   return o;
 }
 
@@ -314,6 +317,9 @@ bi::Expression* bi::Resolver::modify(Parameter* o) {
   if (!o->value->isEmpty() && !(o->value->type->isConvertible(*o->type) ||
       o->value->type->isConvertible(*o->type->element()))) {
     throw InitialValueException(o);
+  }
+  if (inFiber && !inLambda) {
+    o->set(IN_FIBER);
   }
   scopes.back()->add(o);
   return o;
@@ -667,6 +673,9 @@ bi::Statement* bi::Resolver::modify(LocalVariable* o) {
       o->value->type->isConvertible(*o->type->element()))) {
     throw InitialValueException(o);
   }
+  if (inFiber && !inLambda) {
+    o->set(IN_FIBER);
+  }
   scopes.back()->add(o);
   return o;
 }
@@ -710,6 +719,7 @@ bi::Statement* bi::Resolver::modify(Function* o) {
 }
 
 bi::Statement* bi::Resolver::modify(Fiber* o) {
+  ++inFiber;
   if (stage == RESOLVER_HEADER) {
     scopes.push_back(o->scope);
     o->typeParams = o->typeParams->accept(this);
@@ -723,12 +733,12 @@ bi::Statement* bi::Resolver::modify(Fiber* o) {
   } else if (stage == RESOLVER_SOURCE && o->isBound()) {
     scopes.push_back(o->scope);
     yieldTypes.push_back(o->returnType->unwrap());
-    ++inFiber;
     o->braces = o->braces->accept(this);
-    --inFiber;
     yieldTypes.pop_back();
     scopes.pop_back();
   }
+  --inFiber;
+
   for (auto instantiation : o->instantiations) {
     if (instantiation->stage < stage) {
       instantiation->accept(this);
@@ -777,6 +787,7 @@ bi::Statement* bi::Resolver::modify(MemberFiber* o) {
   if (o->has(ABSTRACT) && !o->braces->isEmpty()) {
     throw AbstractBodyException(o);
   }
+  ++inFiber;
   if (stage == RESOLVER_HEADER) {
     scopes.push_back(o->scope);
     o->params = o->params->accept(this);
@@ -787,12 +798,11 @@ bi::Statement* bi::Resolver::modify(MemberFiber* o) {
   } else if (stage == RESOLVER_SOURCE) {
     scopes.push_back(o->scope);
     yieldTypes.push_back(o->returnType->unwrap());
-    ++inFiber;
     o->braces = o->braces->accept(this);
-    --inFiber;
     yieldTypes.pop_back();
     scopes.pop_back();
   }
+  --inFiber;
   return o;
 }
 
@@ -952,7 +962,7 @@ bi::Statement* bi::Resolver::modify(ExpressionStatement* o) {
   auto memberFiberCall = dynamic_cast<Call<MemberFiber>*>(o->single);
   if (fiberCall || memberFiberCall) {
     auto name = new Name();
-    auto var = new FiberVariable(AUTO, name, new EmptyType(o->loc),
+    auto var = new LocalVariable(AUTO, name, new EmptyType(o->loc),
         new EmptyExpression(o->loc), new EmptyExpression(o->loc),
         o->single->accept(&cloner), o->loc);
     auto query = new Query(new Identifier<Unknown>(name, o->loc),

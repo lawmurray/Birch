@@ -23,11 +23,11 @@ public:
   virtual void visit(const Return* o);
   virtual void visit(const Yield* o);
   virtual void visit(const For* o);
-  virtual void visit(const Identifier<FiberParameter>* o);
-  virtual void visit(const Identifier<FiberVariable>* o);
+  virtual void visit(const Identifier<Parameter>* o);
+  virtual void visit(const Identifier<LocalVariable>* o);
   virtual void visit(const Identifier<ForVariable>* o);
-  virtual void visit(const FiberParameter* o);
-  virtual void visit(const FiberVariable* o);
+  virtual void visit(const Parameter* o);
+  virtual void visit(const LocalVariable* o);
   virtual void visit(const ForVariable* o);
 
 protected:

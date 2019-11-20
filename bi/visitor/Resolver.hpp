@@ -299,6 +299,11 @@ private:
   Annotator annotator;
 
   /**
+   * Are we currently in a lambda function?
+   */
+  int inLambda;
+
+  /**
    * Are we currently in a fiber?
    */
   int inFiber;

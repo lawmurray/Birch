@@ -8,12 +8,42 @@ namespace bi {
  * Annotations for declarations.
  */
 enum Annotation {
+  /**
+   * No annotation.
+   */
   NONE = 0,
+
+  /**
+   * `dynamic` annotation on a parallel loop.
+   */
   DYNAMIC = 1,
+
+  /**
+   * `auto` annotation on a variable declaration.
+   */
   AUTO = 2,
+
+  /**
+   * `final` annotation on a class or member function.
+   */
   FINAL = 4,
+
+  /**
+   * `abstract` annotation on a class or member function.
+   */
   ABSTRACT = 8,
-  INSTANTIATED = 16
+
+  /**
+   * `instantiated` annotation on a generic function instantiation in a
+   * header file.
+   */
+  INSTANTIATED = 16,
+
+  /**
+   * Flag to indicate that a parameter or local variable is declared in a
+   * fiber, added by Resolver (not by a language keyword).
+   */
+  IN_FIBER = 32
 };
 
 /**
