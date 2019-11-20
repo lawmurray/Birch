@@ -450,7 +450,7 @@ void bi::CppFiberGenerator::visit(const FiberVariable* o) {
     } else if (!o->brackets->isEmpty()) {
       genTraceLine(o->loc);
       middle("local->" << name << ".assign(context_, ");
-      middle(o->type << "(context_, " << o->brackets << "))");
+      middle(o->type << "(context_, libbirch::make_shape(" << o->brackets << ")))");
     } else if (o->type->isClass()) {
       genTraceLine(o->loc);
       middle("local->" << name << ".assign(context_, ");
