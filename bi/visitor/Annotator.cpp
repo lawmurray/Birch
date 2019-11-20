@@ -16,6 +16,11 @@ bi::Expression* bi::Annotator::modify(Identifier<Parameter>* o) {
   return o;
 }
 
+bi::Expression* bi::Annotator::modify(Identifier<FiberParameter>* o) {
+  o->target->set(a);
+  return o;
+}
+
 bi::Expression* bi::Annotator::modify(Identifier<GlobalVariable>* o) {
   o->target->set(a);
   return o;
@@ -26,7 +31,17 @@ bi::Expression* bi::Annotator::modify(Identifier<MemberVariable>* o) {
   return o;
 }
 
+bi::Expression* bi::Annotator::modify(Identifier<FiberVariable>* o) {
+  o->target->set(a);
+  return o;
+}
+
 bi::Expression* bi::Annotator::modify(Identifier<LocalVariable>* o) {
+  o->target->set(a);
+  return o;
+}
+
+bi::Expression* bi::Annotator::modify(Identifier<ParallelVariable>* o) {
   o->target->set(a);
   return o;
 }

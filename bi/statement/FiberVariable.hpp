@@ -14,11 +14,11 @@
 
 namespace bi {
 /**
- * Local variable.
+ * Local variable in a fiber.
  *
  * @ingroup expression
  */
-class LocalVariable: public Statement,
+class FiberVariable: public Statement,
     public Annotated,
     public Named,
     public Numbered,
@@ -38,7 +38,7 @@ public:
    * @param value Initial value.
    * @param loc Location.
    */
-  LocalVariable(const Annotation annotation, Name* name, Type* type,
+  FiberVariable(const Annotation annotation, Name* name, Type* type,
       Expression* brackets, Expression* args, Expression* value,
       Location* loc = nullptr);
 
@@ -48,12 +48,12 @@ public:
    * @param value Initial value.
    * @param loc Location.
    */
-  LocalVariable(Expression* value, Location* loc = nullptr);
+  FiberVariable(Expression* value, Location* loc = nullptr);
 
   /**
    * Destructor.
    */
-  virtual ~LocalVariable();
+  virtual ~FiberVariable();
 
   /**
    * Does this variable need initialization arguments?

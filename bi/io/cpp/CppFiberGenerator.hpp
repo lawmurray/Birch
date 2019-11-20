@@ -22,14 +22,19 @@ public:
   virtual void visit(const Fiber* o);
   virtual void visit(const Return* o);
   virtual void visit(const Yield* o);
-  virtual void visit(const Identifier<Parameter>* o);
-  virtual void visit(const Identifier<LocalVariable>* o);
-  virtual void visit(const LocalVariable* o);
   virtual void visit(const For* o);
+  virtual void visit(const Identifier<FiberParameter>* o);
+  virtual void visit(const Identifier<FiberVariable>* o);
+  virtual void visit(const Identifier<ForVariable>* o);
+  virtual void visit(const FiberParameter* o);
+  virtual void visit(const FiberVariable* o);
+  virtual void visit(const ForVariable* o);
 
 protected:
   /**
-   * Get the unique name for a local variable.
+   * Get a unique name for a local variable. This incorporates the unique id
+   * number of the variable into its name, so as to separate local variables
+   * of the same name declared in differently-scoped blocks.
    */
   std::string getName(const std::string& name, const int number);
 
@@ -41,8 +46,9 @@ protected:
   /*
    * Gatherers for important objects.
    */
-  Gatherer<Parameter> params;
-  Gatherer<LocalVariable> locals;
+  Gatherer<FiberParameter> params;
+  Gatherer<FiberVariable> locals;
+  Gatherer<ForVariable> fors;
   Gatherer<Yield> yields;
 
   /**
@@ -65,10 +71,5 @@ protected:
    * Current yield point.
    */
   int point;
-
-  /**
-   * Are we in a for loop?
-   */
-  bool inFor;
 };
 }

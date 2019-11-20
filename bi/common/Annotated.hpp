@@ -9,12 +9,11 @@ namespace bi {
  */
 enum Annotation {
   NONE = 0,
-  PARALLEL = 1,
-  DYNAMIC = 2,
-  AUTO = 4,
-  FINAL = 8,
-  ABSTRACT = 16,
-  INSTANTIATED = 32
+  DYNAMIC = 1,
+  AUTO = 2,
+  FINAL = 4,
+  ABSTRACT = 8,
+  INSTANTIATED = 16
 };
 
 /**

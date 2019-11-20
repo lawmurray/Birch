@@ -118,7 +118,25 @@ void bi::CppBaseGenerator::visit(const Call<Parameter>* o) {
   middle(')');
 }
 
+void bi::CppBaseGenerator::visit(const Call<FiberParameter>* o) {
+  middle(o->single);
+  middle('(');
+  auto type = dynamic_cast<const FunctionType*>(o->target->type);
+  assert(type);
+  genArgs(o->args, type->params);
+  middle(')');
+}
+
 void bi::CppBaseGenerator::visit(const Call<LocalVariable>* o) {
+  middle(o->single);
+  middle('(');
+  auto type = dynamic_cast<const FunctionType*>(o->target->type);
+  assert(type);
+  genArgs(o->args, type->params);
+  middle(')');
+}
+
+void bi::CppBaseGenerator::visit(const Call<FiberVariable>* o) {
   middle(o->single);
   middle('(');
   auto type = dynamic_cast<const FunctionType*>(o->target->type);
@@ -330,13 +348,7 @@ void bi::CppBaseGenerator::visit(const Member* o) {
     }
     middle(o->right);
   } else {
-    const Expression* rightVar = dynamic_cast<const Identifier<MemberVariable>*>(o->right);
-    if (!rightVar) {
-      rightVar = dynamic_cast<const Identifier<LocalVariable>*>(o->right);
-      if (!rightVar) {
-        rightVar = dynamic_cast<const Identifier<Parameter>*>(o->right);
-      }
-    }
+    auto rightVar = dynamic_cast<const Identifier<MemberVariable>*>(o->right);
     middle(o->left);
     if (!inAssign && rightVar && rightVar->type->isValue()) {
       /* optimization: just reading a value, so no need to copy-on-write the
@@ -381,12 +393,20 @@ void bi::CppBaseGenerator::visit(const Parameter* o) {
   }
 }
 
+void bi::CppBaseGenerator::visit(const FiberParameter* o) {
+  assert(false);  // should be in CppFiberGenerator
+}
+
 void bi::CppBaseGenerator::visit(const Identifier<Unknown>* o) {
-  assert(false);
+  assert(false);  // should have been resolved in Resolver
 }
 
 void bi::CppBaseGenerator::visit(const Identifier<Parameter>* o) {
   middle(o->name);
+}
+
+void bi::CppBaseGenerator::visit(const Identifier<FiberParameter>* o) {
+  assert(false);  // should be in CppFiberGenerator
 }
 
 void bi::CppBaseGenerator::visit(const Identifier<GlobalVariable>* o) {
@@ -397,11 +417,19 @@ void bi::CppBaseGenerator::visit(const Identifier<MemberVariable>* o) {
   middle(o->name);
 }
 
+void bi::CppBaseGenerator::visit(const Identifier<FiberVariable>* o) {
+  assert(false);  // should be in CppFiberGenerator
+}
+
 void bi::CppBaseGenerator::visit(const Identifier<LocalVariable>* o) {
   middle(o->name);
 }
 
 void bi::CppBaseGenerator::visit(const Identifier<ForVariable>* o) {
+  middle(o->name);
+}
+
+void bi::CppBaseGenerator::visit(const Identifier<ParallelVariable>* o) {
   middle(o->name);
 }
 
@@ -478,6 +506,10 @@ void bi::CppBaseGenerator::visit(const MemberVariable* o) {
   assert(false);  // should be in CppClassGenerator
 }
 
+void bi::CppBaseGenerator::visit(const FiberVariable* o) {
+  assert(false);  // should be in CppFiberGenerator
+}
+
 void bi::CppBaseGenerator::visit(const LocalVariable* o) {
   middle(o->type << ' ' << o->name);
   genInit(o);
@@ -485,7 +517,15 @@ void bi::CppBaseGenerator::visit(const LocalVariable* o) {
 }
 
 void bi::CppBaseGenerator::visit(const ForVariable* o) {
-  middle(o->type << ' ' << o->name);
+  /* no need to include the type here, used only as though an identifier by
+   * visit(const For*) */;
+  middle(o->name);
+}
+
+void bi::CppBaseGenerator::visit(const ParallelVariable* o) {
+  /* no need to include the type here, used only as though an identifier by
+   * visit(const Parallel*) */;
+  middle(o->name);
 }
 
 void bi::CppBaseGenerator::visit(const Function* o) {
@@ -803,45 +843,37 @@ void bi::CppBaseGenerator::visit(const If* o) {
 
 void bi::CppBaseGenerator::visit(const For* o) {
   genTraceLine(o->loc);
-
-  /* handle parallel for loop */
-  if (o->has(PARALLEL)) {
-    line("#pragma omp parallel");
-    line("{");
-    in();
-    genTraceFunction("<thread start>", o->loc);
-    start("#pragma omp for schedule(");
-    if (o->has(DYNAMIC)) {
-      middle("guided");
-    } else {
-      middle("static");
-    }
-    finish(')');
-  }
-
-  /* o->index may be an identifier or a local variable, in the latter case
-   * need to ensure that it is only declared once in the first element of the
-   * for loop */
-  auto param = dynamic_cast<LocalVariable*>(o->index);
-  if (param) {
-    Identifier<LocalVariable> ref(param->name, param->loc, param);
-    start("for (" << param << " = " << o->from << "; ");
-    middle(&ref << " <= " << o->to << "; ");
-    finish("++" << &ref << ") {");
-  } else {
-    start("for (" << o->index << " = " << o->from << "; ");
-    middle(o->index << " <= " << o->to << "; ");
-    finish("++" << o->index << ") {");
-  }
+  start("for (auto " << o->index << " = " << o->from << "; ");
+  middle(o->index << " <= " << o->to << "; ");
+  finish("++" << o->index << ") {");
   in();
   *this << o->braces->strip();
   out();
   line("}");
+}
 
-  if (o->has(PARALLEL)) {
-    out();
-    line("}");
+void bi::CppBaseGenerator::visit(const Parallel* o) {
+  genTraceLine(o->loc);
+  line("#pragma omp parallel");
+  line("{");
+  in();
+  genTraceFunction("<thread start>", o->loc);
+  start("#pragma omp for schedule(");
+  if (o->has(DYNAMIC)) {
+    middle("guided");
+  } else {
+    middle("static");
   }
+  finish(')');
+  start("for (auto " << o->index << " = " << o->from << "; ");
+  middle(o->index << " <= " << o->to << "; ");
+  finish("++" << o->index << ") {");
+  in();
+  *this << o->braces->strip();
+  out();
+  line("}");
+  out();
+  line("}");
 }
 
 void bi::CppBaseGenerator::visit(const While* o) {

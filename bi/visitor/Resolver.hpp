@@ -87,7 +87,9 @@ public:
   virtual Expression* modify(Cast* o);
   virtual Expression* modify(Call<Unknown>* o);
   virtual Expression* modify(Call<Parameter>* o);
+  virtual Expression* modify(Call<FiberParameter>* o);
   virtual Expression* modify(Call<LocalVariable>* o);
+  virtual Expression* modify(Call<FiberVariable>* o);
   virtual Expression* modify(Call<MemberVariable>* o);
   virtual Expression* modify(Call<GlobalVariable>* o);
   virtual Expression* modify(Call<Function>* o);
@@ -110,13 +112,17 @@ public:
   virtual Expression* modify(This* o);
   virtual Expression* modify(Nil* o);
   virtual Expression* modify(Parameter* o);
+  virtual Expression* modify(FiberParameter* o);
   virtual Expression* modify(Generic* o);
   virtual Expression* modify(Identifier<Unknown>* o);
   virtual Expression* modify(Identifier<Parameter>* o);
+  virtual Expression* modify(Identifier<FiberParameter>* o);
   virtual Expression* modify(Identifier<GlobalVariable>* o);
   virtual Expression* modify(Identifier<MemberVariable>* o);
+  virtual Expression* modify(Identifier<FiberVariable>* o);
   virtual Expression* modify(Identifier<LocalVariable>* o);
   virtual Expression* modify(Identifier<ForVariable>* o);
+  virtual Expression* modify(Identifier<ParallelVariable>* o);
   virtual Expression* modify(OverloadedIdentifier<Unknown>* o);
   virtual Expression* modify(OverloadedIdentifier<Function>* o);
   virtual Expression* modify(OverloadedIdentifier<Fiber>* o);
@@ -128,8 +134,10 @@ public:
   virtual Statement* modify(Assume* o);
   virtual Statement* modify(GlobalVariable* o);
   virtual Statement* modify(MemberVariable* o);
+  virtual Statement* modify(FiberVariable* o);
   virtual Statement* modify(LocalVariable* o);
   virtual Statement* modify(ForVariable* o);
+  virtual Statement* modify(ParallelVariable* o);
   virtual Statement* modify(Function* o);
   virtual Statement* modify(Fiber* o);
   virtual Statement* modify(Program* o);
@@ -144,6 +152,7 @@ public:
   virtual Statement* modify(ExpressionStatement* o);
   virtual Statement* modify(If* o);
   virtual Statement* modify(For* o);
+  virtual Statement* modify(Parallel* o);
   virtual Statement* modify(While* o);
   virtual Statement* modify(DoWhile* o);
   virtual Statement* modify(Assert* o);

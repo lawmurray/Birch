@@ -10,10 +10,13 @@
 
 namespace bi {
 class Parameter;
+class FiberParameter;
 class GlobalVariable;
 class MemberVariable;
+class FiberVariable;
 class LocalVariable;
 class ForVariable;
+class ParallelVariable;
 class Function;
 class MemberFunction;
 class Fiber;
@@ -76,10 +79,13 @@ public:
    * @param o Object.
    */
   void add(Parameter* o);
+  void add(FiberParameter* o);
   void add(GlobalVariable* o);
   void add(MemberVariable* o);
+  void add(FiberVariable* o);
   void add(LocalVariable* o);
   void add(ForVariable* o);
+  void add(ParallelVariable* o);
   void add(Function* o);
   void add(Fiber* o);
   void add(Program* o);
@@ -99,10 +105,13 @@ public:
    * @return Declaration.
    */
   void resolve(Identifier<Parameter>* o);
+  void resolve(Identifier<FiberParameter>* o);
   void resolve(Identifier<GlobalVariable>* o);
   void resolve(Identifier<MemberVariable>* o);
+  void resolve(Identifier<FiberVariable>* o);
   void resolve(Identifier<LocalVariable>* o);
   void resolve(Identifier<ForVariable>* o);
+  void resolve(Identifier<ParallelVariable>* o);
   void resolve(OverloadedIdentifier<Function>* o);
   void resolve(OverloadedIdentifier<Fiber>* o);
   void resolve(Identifier<Program>* o);
@@ -143,10 +152,13 @@ public:
    * Dictionaries.
    */
   Dictionary<Parameter> parameters;
+  Dictionary<FiberParameter> fiberParameters;
   Dictionary<GlobalVariable> globalVariables;
   Dictionary<MemberVariable> memberVariables;
+  Dictionary<FiberVariable> fiberVariables;
   Dictionary<LocalVariable> localVariables;
   Dictionary<ForVariable> forVariables;
+  Dictionary<ParallelVariable> parallelVariables;
   OverloadedDictionary<Function> functions;
   OverloadedDictionary<Fiber> fibers;
   Dictionary<Program> programs;

@@ -99,6 +99,7 @@ COMMON_SOURCES = \
   bi/expression/ExpressionConstIterator.cpp \
   bi/expression/ExpressionIterator.cpp \
   bi/expression/ExpressionList.cpp \
+  bi/expression/FiberParameter.cpp \
   bi/expression/Generic.cpp \
   bi/expression/Get.cpp \
   bi/expression/Global.cpp \
@@ -142,6 +143,7 @@ COMMON_SOURCES = \
   bi/statement/EmptyStatement.cpp \
   bi/statement/ExpressionStatement.cpp \
   bi/statement/Fiber.cpp \
+  bi/statement/FiberVariable.cpp \
   bi/statement/File.cpp \
   bi/statement/For.cpp \
   bi/statement/ForVariable.cpp \
@@ -154,6 +156,8 @@ COMMON_SOURCES = \
   bi/statement/MemberFunction.cpp \
   bi/statement/MemberVariable.cpp \
   bi/statement/Package.cpp \
+  bi/statement/Parallel.cpp \
+  bi/statement/ParallelVariable.cpp \
   bi/statement/Program.cpp \
   bi/statement/Raw.cpp \
   bi/statement/Return.cpp \
@@ -275,6 +279,7 @@ noinst_HEADERS = \
   bi/expression/ExpressionConstIterator.hpp \
   bi/expression/ExpressionIterator.hpp \
   bi/expression/ExpressionList.hpp \
+  bi/expression/FiberParameter.hpp \
   bi/expression/Generic.hpp \
   bi/expression/Get.hpp \
   bi/expression/Global.hpp \
@@ -320,6 +325,7 @@ noinst_HEADERS = \
   bi/statement/EmptyStatement.hpp \
   bi/statement/ExpressionStatement.hpp \
   bi/statement/Fiber.hpp \
+  bi/statement/FiberVariable.hpp \
   bi/statement/File.hpp \
   bi/statement/For.hpp \
   bi/statement/ForVariable.hpp \
@@ -332,6 +338,8 @@ noinst_HEADERS = \
   bi/statement/MemberFunction.hpp \
   bi/statement/MemberVariable.hpp \
   bi/statement/Package.hpp \
+  bi/statement/Parallel.hpp \
+  bi/statement/ParallelVariable.hpp \
   bi/statement/Program.hpp \
   bi/statement/Raw.hpp \
   bi/statement/Return.hpp \

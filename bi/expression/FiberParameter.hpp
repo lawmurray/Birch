@@ -11,11 +11,11 @@
 
 namespace bi {
 /**
- * Parameter to a function, member function, operator, program, or class.
+ * Parameter to a fiber or member fiber.
  *
  * @ingroup statement
  */
-class Parameter: public Expression,
+class FiberParameter: public Expression,
     public Annotated,
     public Named,
     public Numbered,
@@ -30,13 +30,13 @@ public:
    * @param value Default value.
    * @param loc Location.
    */
-  Parameter(const Annotation annotation, Name* name, Type* type,
+  FiberParameter(const Annotation annotation, Name* name, Type* type,
       Expression* value, Location* loc = nullptr);
 
   /**
    * Destructor.
    */
-  virtual ~Parameter();
+  virtual ~FiberParameter();
 
   virtual Expression* accept(Cloner* visitor) const;
   virtual Expression* accept(Modifier* visitor);

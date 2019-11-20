@@ -39,7 +39,9 @@ public:
   virtual Expression* clone(const Call<Fiber>* o);
   virtual Expression* clone(const Call<MemberFiber>* o);
   virtual Expression* clone(const Call<Parameter>* o);
+  virtual Expression* clone(const Call<FiberParameter>* o);
   virtual Expression* clone(const Call<LocalVariable>* o);
+  virtual Expression* clone(const Call<FiberVariable>* o);
   virtual Expression* clone(const Call<MemberVariable>* o);
   virtual Expression* clone(const Call<GlobalVariable>* o);
   virtual Expression* clone(const Call<BinaryOperator>* o);
@@ -58,13 +60,17 @@ public:
   virtual Expression* clone(const This* o);
   virtual Expression* clone(const Nil* o);
   virtual Expression* clone(const Parameter* o);
+  virtual Expression* clone(const FiberParameter* o);
   virtual Expression* clone(const Generic* o);
   virtual Expression* clone(const Identifier<Unknown>* o);
   virtual Expression* clone(const Identifier<Parameter>* o);
+  virtual Expression* clone(const Identifier<FiberParameter>* o);
   virtual Expression* clone(const Identifier<GlobalVariable>* o);
   virtual Expression* clone(const Identifier<MemberVariable>* o);
+  virtual Expression* clone(const Identifier<FiberVariable>* o);
   virtual Expression* clone(const Identifier<LocalVariable>* o);
   virtual Expression* clone(const Identifier<ForVariable>* o);
+  virtual Expression* clone(const Identifier<ParallelVariable>* o);
   virtual Expression* clone(const OverloadedIdentifier<Unknown>* o);
   virtual Expression* clone(const OverloadedIdentifier<Function>* o);
   virtual Expression* clone(const OverloadedIdentifier<Fiber>* o);
@@ -79,8 +85,10 @@ public:
   virtual Statement* clone(const Assume* o);
   virtual Statement* clone(const GlobalVariable* o);
   virtual Statement* clone(const MemberVariable* o);
+  virtual Statement* clone(const FiberVariable* o);
   virtual Statement* clone(const LocalVariable* o);
   virtual Statement* clone(const ForVariable* o);
+  virtual Statement* clone(const ParallelVariable* o);
   virtual Statement* clone(const Function* o);
   virtual Statement* clone(const Fiber* o);
   virtual Statement* clone(const Program* o);
@@ -95,6 +103,7 @@ public:
   virtual Statement* clone(const ExpressionStatement* o);
   virtual Statement* clone(const If* o);
   virtual Statement* clone(const For* o);
+  virtual Statement* clone(const Parallel* o);
   virtual Statement* clone(const While* o);
   virtual Statement* clone(const DoWhile* o);
   virtual Statement* clone(const Assert* o);

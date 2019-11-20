@@ -82,8 +82,8 @@
 }
 
 %glr-parser
-%expect-rr 3
-%expect 5
+%expect-rr 4
+%expect 6
 // ^ Type?(...) vs x?
 // ^ for generic function calls, f<Type>(expr) ambiguous with f < x > (expr),
 //   the former is favoured by %dprec directives 
@@ -101,7 +101,7 @@
 %type <valName> name binary_operator unary_operator assume_operator
 
 %type <valInt> size
-%type <valAnnotation> for_annotation class_annotation member_function_annotation
+%type <valAnnotation> parallel_annotation class_annotation member_function_annotation
 
 %type <valName> assign_operator
 
@@ -120,24 +120,29 @@
 %type <valExpression> logical_and_expression logical_or_expression
 %type <valExpression> assign_expression expression_list expression optional_expression
 %type <valExpression> parameter parameter_list parameters optional_parameters
+%type <valExpression> fiber_parameter fiber_parameter_list fiber_parameters
 %type <valExpression> span_expression span_list brackets option option_list options
 %type <valExpression> arguments optional_arguments
 %type <valExpression> value optional_value
 %type <valExpression> generic generic_list generics optional_generics
 
-%type <valStatement> global_variable_declaration local_variable_declaration for_variable
-%type <valStatement> function_declaration fiber_declaration program_declaration
+%type <valStatement> global_variable_declaration local_variable_declaration
+%type <valStatement> fiber_variable_declaration for_variable_declaration
+%type <valStatement> parallel_variable_declaration function_declaration
+%type <valStatement> fiber_declaration program_declaration
 %type <valStatement> member_variable_declaration member_function_declaration
 %type <valStatement> member_fiber_declaration
 %type <valStatement> binary_operator_declaration unary_operator_declaration
 %type <valStatement> conversion_operator_declaration assignment_operator_declaration
 %type <valStatement> class_declaration basic_declaration
-%type <valStatement> cpp hpp expression_statement assume_statement if for
+%type <valStatement> cpp hpp expression_statement assume_statement if for parallel
 %type <valStatement> while do_while assertion return yield instantiated
 %type <valStatement> statement statements optional_statements
+%type <valStatement> fiber_statement fiber_statements optional_fiber_statements
 %type <valStatement> class_statement class_statements optional_class_statements
 %type <valStatement> file_statement file_statements optional_file_statements
 %type <valStatement> braces optional_braces
+%type <valStatement> fiber_braces optional_fiber_braces
 %type <valStatement> class_braces optional_class_braces
 
 %type <valType> basic_type class_type base_type unknown_type member_type
@@ -399,6 +404,20 @@ parameter
     : name ':' type  { $$ = new bi::Parameter(bi::NONE, $1, $3, empty_expr(@$), make_loc(@$)); }
     ;
 
+fiber_parameters
+    : '(' ')'                       { $$ = empty_expr(@$); }
+    | '(' fiber_parameter_list ')'  { $$ = $2; }
+    ;
+
+fiber_parameter_list
+    : fiber_parameter
+    | fiber_parameter ',' fiber_parameter_list  { $$ = new bi::ExpressionList($1, $3, make_loc(@$)); }
+    ;
+
+fiber_parameter
+    : name ':' type  { $$ = new bi::FiberParameter(bi::NONE, $1, $3, empty_expr(@$), make_loc(@$)); }
+    ;
+
 options
     : '(' ')'              { $$ = empty_expr(@$); }
     | '(' option_list ')'  { $$ = $2; }
@@ -490,6 +509,16 @@ local_variable_declaration
     | name ':' postfix_type brackets value ';'      { push_raw(); $$ = new bi::LocalVariable(bi::NONE, $1, $3, $4, empty_expr(@$), $5, make_doc_loc(@$)); }
     ;
 
+fiber_variable_declaration
+    : name ':' type ';'                             { push_raw(); $$ = new bi::FiberVariable(bi::NONE, $1, $3, empty_expr(@$), empty_expr(@$), empty_expr(@$), make_doc_loc(@$)); }
+    | name ':' type arguments ';'                   { push_raw(); $$ = new bi::FiberVariable(bi::NONE, $1, $3, empty_expr(@$), $4, empty_expr(@$), make_doc_loc(@$)); }
+    | name ':' type value ';'                       { push_raw(); $$ = new bi::FiberVariable(bi::NONE, $1, $3, empty_expr(@$), empty_expr(@$), $4, make_doc_loc(@$)); }
+    | AUTO name value ';'                           { push_raw(); $$ = new bi::FiberVariable(bi::AUTO, $2, empty_type(@$), empty_expr(@$), empty_expr(@$), $3, make_doc_loc(@$)); }
+    | name ':' postfix_type brackets ';'            { push_raw(); $$ = new bi::FiberVariable(bi::NONE, $1, $3, $4, empty_expr(@$), empty_expr(@$), make_doc_loc(@$)); }
+    | name ':' postfix_type brackets arguments ';'  { push_raw(); $$ = new bi::FiberVariable(bi::NONE, $1, $3, $4, $5, empty_expr(@$), make_doc_loc(@$)); }
+    | name ':' postfix_type brackets value ';'      { push_raw(); $$ = new bi::FiberVariable(bi::NONE, $1, $3, $4, empty_expr(@$), $5, make_doc_loc(@$)); }
+    ;
+
 member_variable_declaration
     : name ':' type ';'                             { push_raw(); $$ = new bi::MemberVariable(bi::NONE, $1, $3, empty_expr(@$), empty_expr(@$), empty_expr(@$), make_doc_loc(@$)); }
     | name ':' type arguments ';'                   { push_raw(); $$ = new bi::MemberVariable(bi::NONE, $1, $3, empty_expr(@$), $4, empty_expr(@$), make_doc_loc(@$)); }
@@ -504,7 +533,7 @@ function_declaration
     ;
 
 fiber_declaration
-    : FIBER name optional_generics parameters optional_result { push_raw(); } optional_braces  { $$ = new bi::Fiber(bi::NONE, $2, $3, $4, new bi::FiberType($5, make_loc(@$)), $7, make_doc_loc(@$)); }
+    : FIBER name optional_generics fiber_parameters optional_result { push_raw(); } optional_fiber_braces  { $$ = new bi::Fiber(bi::NONE, $2, $3, $4, new bi::FiberType($5, make_loc(@$)), $7, make_doc_loc(@$)); }
     ;
 
 member_function_annotation
@@ -520,8 +549,8 @@ member_function_declaration
     ;
 
 member_fiber_declaration
-    : member_function_annotation FIBER name parameters optional_result { push_raw(); } optional_braces  { $$ = new bi::MemberFiber($1, $3, $4, new bi::FiberType($5, make_loc(@$)), $7, make_doc_loc(@$)); }
-    | FIBER name parameters optional_result { push_raw(); } optional_braces                             { $$ = new bi::MemberFiber(bi::NONE, $2, $3, new bi::FiberType($4, make_loc(@$)), $6, make_doc_loc(@$)); }
+    : member_function_annotation FIBER name fiber_parameters optional_result { push_raw(); } optional_fiber_braces  { $$ = new bi::MemberFiber($1, $3, $4, new bi::FiberType($5, make_loc(@$)), $7, make_doc_loc(@$)); }
+    | FIBER name fiber_parameters optional_result { push_raw(); } optional_fiber_braces                             { $$ = new bi::MemberFiber(bi::NONE, $2, $3, new bi::FiberType($4, make_loc(@$)), $6, make_doc_loc(@$)); }
     ;
 
 program_declaration
@@ -612,20 +641,27 @@ if
     | IF expression braces              { $$ = new bi::If($2, $3, empty_stmt(@$), make_loc(@$)); }
     ;
 
-for_annotation
-    : PARALLEL          { $$ = bi::PARALLEL; }
-    | DYNAMIC PARALLEL  { $$ = (bi::Annotation)(bi::DYNAMIC|bi::PARALLEL); }
-    //|                 { $$ = bi::NONE; }
-    //^ don't put bi::NONE here, messes up line numbers
-    ;
-
-for_variable
+for_variable_declaration
     : name  { $$ = new bi::ForVariable(bi::NONE, $1, new bi::BasicType(new bi::Name("Integer")), make_loc(@$)); }
     ;
 
 for
-    : for_annotation FOR for_variable IN expression RANGE_OP expression braces  { $$ = new bi::For($1, $3, $5, $7, $8, make_loc(@$)); }
-    | FOR for_variable IN expression RANGE_OP expression braces                 { $$ = new bi::For(bi::NONE, $2, $4, $6, $7, make_loc(@$)); }
+    : FOR for_variable_declaration IN expression RANGE_OP expression braces  { $$ = new bi::For(bi::NONE, $2, $4, $6, $7, make_loc(@$)); }
+    ;
+
+parallel_annotation
+    : DYNAMIC  { $$ = bi::DYNAMIC; }
+    //|        { $$ = bi::NONE; }
+    //^ don't put bi::NONE here, messes up line numbers
+    ;
+
+parallel_variable_declaration
+    : name  { $$ = new bi::ParallelVariable(bi::NONE, $1, new bi::BasicType(new bi::Name("Integer")), make_loc(@$)); }
+    ;
+
+parallel
+    : parallel_annotation PARALLEL FOR parallel_variable_declaration IN expression RANGE_OP expression braces  { $$ = new bi::Parallel($1, $4, $6, $8, $9, make_loc(@$)); }
+    | PARALLEL FOR parallel_variable_declaration IN expression RANGE_OP expression braces                      { $$ = new bi::Parallel(bi::NONE, $3, $5, $7, $8, make_loc(@$)); }
     ;
 
 while
@@ -660,6 +696,7 @@ statement
     | assume_statement
     | if
     | for
+    | parallel
     | while
     | do_while
     | assertion
@@ -676,6 +713,31 @@ statements
 optional_statements
     : statements
     |             { $$ = empty_stmt(@$); }
+    ;
+
+fiber_statement
+    : fiber_variable_declaration
+    | expression_statement
+    | assume_statement
+    | if
+    | for
+    | parallel
+    | while
+    | do_while
+    | assertion
+    | return
+    | yield
+    | cpp
+    ;
+
+fiber_statements
+    : fiber_statement
+    | fiber_statement fiber_statements  { $$ = new bi::StatementList($1, $2, make_loc(@$)); }
+    ;
+
+optional_fiber_statements
+    : fiber_statements
+    |                   { $$ = empty_stmt(@$); }
     ;
 
 class_statement
@@ -750,6 +812,15 @@ braces
 optional_braces
     : braces
     | ';'     { $$ = empty_stmt(@$); }
+    ;
+
+fiber_braces
+    : '{' optional_fiber_statements '}'  { $$ = new bi::Braces($2, make_loc(@$)); }
+    ;
+
+optional_fiber_braces
+    : fiber_braces
+    | ';'           { $$ = empty_stmt(@$); }
     ;
 
 class_braces

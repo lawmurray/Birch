@@ -94,7 +94,17 @@ void bi::Visitor::visit(const Call<Parameter>* o) {
   o->args->accept(this);
 }
 
+void bi::Visitor::visit(const Call<FiberParameter>* o) {
+  o->single->accept(this);
+  o->args->accept(this);
+}
+
 void bi::Visitor::visit(const Call<LocalVariable>* o) {
+  o->single->accept(this);
+  o->args->accept(this);
+}
+
+void bi::Visitor::visit(const Call<FiberVariable>* o) {
   o->single->accept(this);
   o->args->accept(this);
 }
@@ -182,11 +192,20 @@ void bi::Visitor::visit(const Parameter* o) {
   o->value->accept(this);
 }
 
+void bi::Visitor::visit(const FiberParameter* o) {
+  o->type->accept(this);
+  o->value->accept(this);
+}
+
 void bi::Visitor::visit(const Identifier<Unknown>* o) {
   //
 }
 
 void bi::Visitor::visit(const Identifier<Parameter>* o) {
+  //
+}
+
+void bi::Visitor::visit(const Identifier<FiberParameter>* o) {
   //
 }
 
@@ -198,11 +217,19 @@ void bi::Visitor::visit(const Identifier<MemberVariable>* o) {
   //
 }
 
+void bi::Visitor::visit(const Identifier<FiberVariable>* o) {
+  //
+}
+
 void bi::Visitor::visit(const Identifier<LocalVariable>* o) {
   //
 }
 
 void bi::Visitor::visit(const Identifier<ForVariable>* o) {
+  //
+}
+
+void bi::Visitor::visit(const Identifier<ParallelVariable>* o) {
   //
 }
 
@@ -266,6 +293,13 @@ void bi::Visitor::visit(const MemberVariable* o) {
   o->value->accept(this);
 }
 
+void bi::Visitor::visit(const FiberVariable* o) {
+  o->type->accept(this);
+  o->brackets->accept(this);
+  o->args->accept(this);
+  o->value->accept(this);
+}
+
 void bi::Visitor::visit(const LocalVariable* o) {
   o->type->accept(this);
   o->brackets->accept(this);
@@ -274,6 +308,10 @@ void bi::Visitor::visit(const LocalVariable* o) {
 }
 
 void bi::Visitor::visit(const ForVariable* o) {
+  o->type->accept(this);
+}
+
+void bi::Visitor::visit(const ParallelVariable* o) {
   o->type->accept(this);
 }
 
@@ -357,6 +395,13 @@ void bi::Visitor::visit(const If* o) {
 }
 
 void bi::Visitor::visit(const For* o) {
+  o->index->accept(this);
+  o->from->accept(this);
+  o->to->accept(this);
+  o->braces->accept(this);
+}
+
+void bi::Visitor::visit(const Parallel* o) {
   o->index->accept(this);
   o->from->accept(this);
   o->to->accept(this);

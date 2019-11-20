@@ -58,48 +58,68 @@ bi::Expression* bi::Cloner::clone(const Cast* o) {
 }
 
 bi::Expression* bi::Cloner::clone(const Call<Unknown>* o) {
-  return new Call<Unknown>(o->single->accept(this), o->args->accept(this), o->loc);
-}
-
-bi::Expression* bi::Cloner::clone(const Call<Function>* o) {
-  return new Call<Function>(o->single->accept(this), o->args->accept(this), o->loc);
-}
-
-bi::Expression* bi::Cloner::clone(const Call<MemberFunction>* o) {
-  return new Call<MemberFunction>(o->single->accept(this), o->args->accept(this), o->loc);
-}
-
-bi::Expression* bi::Cloner::clone(const Call<Fiber>* o) {
-  return new Call<Fiber>(o->single->accept(this), o->args->accept(this), o->loc);
-}
-
-bi::Expression* bi::Cloner::clone(const Call<MemberFiber>* o) {
-  return new Call<MemberFiber>(o->single->accept(this), o->args->accept(this), o->loc);
-}
-
-bi::Expression* bi::Cloner::clone(const Call<Parameter>* o) {
-  return new Call<Parameter>(o->single->accept(this), o->args->accept(this), o->loc);
-}
-
-bi::Expression* bi::Cloner::clone(const Call<LocalVariable>* o) {
-  return new Call<LocalVariable>(o->single->accept(this), o->args->accept(this), o->loc);
-}
-
-bi::Expression* bi::Cloner::clone(const Call<MemberVariable>* o) {
-  return new Call<MemberVariable>(o->single->accept(this), o->args->accept(this), o->loc);
-}
-
-bi::Expression* bi::Cloner::clone(const Call<GlobalVariable>* o) {
-  return new Call<GlobalVariable>(o->single->accept(this), o->args->accept(this), o->loc);
-}
-
-bi::Expression* bi::Cloner::clone(const Call<BinaryOperator>* o) {
-  return new Call<BinaryOperator>(o->single->accept(this), o->args->accept(this),
+  return new Call<Unknown>(o->single->accept(this), o->args->accept(this),
       o->loc);
 }
 
+bi::Expression* bi::Cloner::clone(const Call<Function>* o) {
+  return new Call<Function>(o->single->accept(this), o->args->accept(this),
+      o->loc);
+}
+
+bi::Expression* bi::Cloner::clone(const Call<MemberFunction>* o) {
+  return new Call<MemberFunction>(o->single->accept(this),
+      o->args->accept(this), o->loc);
+}
+
+bi::Expression* bi::Cloner::clone(const Call<Fiber>* o) {
+  return new Call<Fiber>(o->single->accept(this),
+      o->args->accept(this), o->loc);
+}
+
+bi::Expression* bi::Cloner::clone(const Call<MemberFiber>* o) {
+  return new Call<MemberFiber>(o->single->accept(this),
+      o->args->accept(this), o->loc);
+}
+
+bi::Expression* bi::Cloner::clone(const Call<Parameter>* o) {
+  return new Call<Parameter>(o->single->accept(this),
+      o->args->accept(this), o->loc);
+}
+
+bi::Expression* bi::Cloner::clone(const Call<FiberParameter>* o) {
+  return new Call<FiberParameter>(o->single->accept(this),
+      o->args->accept(this), o->loc);
+}
+
+bi::Expression* bi::Cloner::clone(const Call<LocalVariable>* o) {
+  return new Call<LocalVariable>(o->single->accept(this),
+      o->args->accept(this), o->loc);
+}
+
+bi::Expression* bi::Cloner::clone(const Call<FiberVariable>* o) {
+  return new Call<FiberVariable>(o->single->accept(this),
+      o->args->accept(this), o->loc);
+}
+
+bi::Expression* bi::Cloner::clone(const Call<MemberVariable>* o) {
+  return new Call<MemberVariable>(o->single->accept(this),
+      o->args->accept(this), o->loc);
+}
+
+bi::Expression* bi::Cloner::clone(const Call<GlobalVariable>* o) {
+  return new Call<GlobalVariable>(o->single->accept(this),
+      o->args->accept(this), o->loc);
+}
+
+bi::Expression* bi::Cloner::clone(const Call<BinaryOperator>* o) {
+  return new Call<BinaryOperator>(o->single->accept(this),
+      o->args->accept(this), o->loc);
+}
+
 bi::Expression* bi::Cloner::clone(const Call<UnaryOperator>* o) {
-  return new Call<UnaryOperator>(o->single->accept(this), o->args->accept(this), o->loc);
+  return new Call<UnaryOperator>(o->single->accept(this),
+      o->args->accept(this), o->loc);
 }
 
 bi::Expression* bi::Cloner::clone(const Assign* o) {
@@ -108,7 +128,8 @@ bi::Expression* bi::Cloner::clone(const Assign* o) {
 }
 
 bi::Expression* bi::Cloner::clone(const Slice* o) {
-  return new Slice(o->single->accept(this), o->brackets->accept(this), o->loc);
+  return new Slice(o->single->accept(this), o->brackets->accept(this),
+      o->loc);
 }
 
 bi::Expression* bi::Cloner::clone(const Query* o) {
@@ -161,6 +182,11 @@ bi::Expression* bi::Cloner::clone(const Parameter* o) {
       o->value->accept(this), o->loc);
 }
 
+bi::Expression* bi::Cloner::clone(const FiberParameter* o) {
+  return new FiberParameter(o->annotation, o->name, o->type->accept(this),
+      o->value->accept(this), o->loc);
+}
+
 bi::Expression* bi::Cloner::clone(const Generic* o) {
   return new Generic(o->annotation, o->name, o->type->accept(this), o->loc);
 }
@@ -173,6 +199,10 @@ bi::Expression* bi::Cloner::clone(const Identifier<Parameter>* o) {
   return new Identifier<Parameter>(o->name, o->loc);
 }
 
+bi::Expression* bi::Cloner::clone(const Identifier<FiberParameter>* o) {
+  return new Identifier<FiberParameter>(o->name, o->loc);
+}
+
 bi::Expression* bi::Cloner::clone(const Identifier<GlobalVariable>* o) {
   return new Identifier<GlobalVariable>(o->name, o->loc);
 }
@@ -181,8 +211,16 @@ bi::Expression* bi::Cloner::clone(const Identifier<MemberVariable>* o) {
   return new Identifier<MemberVariable>(o->name, o->loc);
 }
 
+bi::Expression* bi::Cloner::clone(const Identifier<FiberVariable>* o) {
+  return new Identifier<FiberVariable>(o->name, o->loc);
+}
+
 bi::Expression* bi::Cloner::clone(const Identifier<LocalVariable>* o) {
   return new Identifier<LocalVariable>(o->name, o->loc);
+}
+
+bi::Expression* bi::Cloner::clone(const Identifier<ParallelVariable>* o) {
+  return new Identifier<ParallelVariable>(o->name, o->loc);
 }
 
 bi::Expression* bi::Cloner::clone(const Identifier<ForVariable>* o) {
@@ -190,35 +228,42 @@ bi::Expression* bi::Cloner::clone(const Identifier<ForVariable>* o) {
 }
 
 bi::Expression* bi::Cloner::clone(const OverloadedIdentifier<Unknown>* o) {
-  return new OverloadedIdentifier<Unknown>(o->name, o->typeArgs->accept(this), o->loc);
+  return new OverloadedIdentifier<Unknown>(o->name,
+      o->typeArgs->accept(this), o->loc);
 }
 
 bi::Expression* bi::Cloner::clone(const OverloadedIdentifier<Function>* o) {
-  return new OverloadedIdentifier<Function>(o->name, o->typeArgs->accept(this), o->loc);
+  return new OverloadedIdentifier<Function>(o->name,
+      o->typeArgs->accept(this), o->loc);
 }
 
 bi::Expression* bi::Cloner::clone(const OverloadedIdentifier<Fiber>* o) {
-  return new OverloadedIdentifier<Fiber>(o->name, o->typeArgs->accept(this), o->loc);
+  return new OverloadedIdentifier<Fiber>(o->name, o->typeArgs->accept(this),
+      o->loc);
 }
 
 bi::Expression* bi::Cloner::clone(
     const OverloadedIdentifier<MemberFunction>* o) {
-  return new OverloadedIdentifier<MemberFunction>(o->name, o->typeArgs->accept(this), o->loc);
+  return new OverloadedIdentifier<MemberFunction>(o->name,
+      o->typeArgs->accept(this), o->loc);
 }
 
 bi::Expression* bi::Cloner::clone(
     const OverloadedIdentifier<MemberFiber>* o) {
-  return new OverloadedIdentifier<MemberFiber>(o->name, o->typeArgs->accept(this), o->loc);
+  return new OverloadedIdentifier<MemberFiber>(o->name,
+      o->typeArgs->accept(this), o->loc);
 }
 
 bi::Expression* bi::Cloner::clone(
     const OverloadedIdentifier<BinaryOperator>* o) {
-  return new OverloadedIdentifier<BinaryOperator>(o->name, o->typeArgs->accept(this), o->loc);
+  return new OverloadedIdentifier<BinaryOperator>(o->name,
+      o->typeArgs->accept(this), o->loc);
 }
 
 bi::Expression* bi::Cloner::clone(
     const OverloadedIdentifier<UnaryOperator>* o) {
-  return new OverloadedIdentifier<UnaryOperator>(o->name, o->typeArgs->accept(this), o->loc);
+  return new OverloadedIdentifier<UnaryOperator>(o->name,
+      o->typeArgs->accept(this), o->loc);
 }
 
 bi::Statement* bi::Cloner::clone(const EmptyStatement* o) {
@@ -235,7 +280,8 @@ bi::Statement* bi::Cloner::clone(const StatementList* o) {
 }
 
 bi::Statement* bi::Cloner::clone(const Assume* o) {
-  return new Assume(o->left->accept(this), o->name, o->right->accept(this), o->loc);
+  return new Assume(o->left->accept(this), o->name, o->right->accept(this),
+      o->loc);
 }
 
 bi::Statement* bi::Cloner::clone(const GlobalVariable* o) {
@@ -250,6 +296,12 @@ bi::Statement* bi::Cloner::clone(const MemberVariable* o) {
       o->value->accept(this), o->loc);
 }
 
+bi::Statement* bi::Cloner::clone(const FiberVariable* o) {
+  return new FiberVariable(o->annotation, o->name, o->type->accept(this),
+      o->brackets->accept(this), o->args->accept(this),
+      o->value->accept(this), o->loc);
+}
+
 bi::Statement* bi::Cloner::clone(const LocalVariable* o) {
   return new LocalVariable(o->annotation, o->name, o->type->accept(this),
       o->brackets->accept(this), o->args->accept(this),
@@ -258,6 +310,11 @@ bi::Statement* bi::Cloner::clone(const LocalVariable* o) {
 
 bi::Statement* bi::Cloner::clone(const ForVariable* o) {
   return new ForVariable(o->annotation, o->name, o->type->accept(this),
+      o->loc);
+}
+
+bi::Statement* bi::Cloner::clone(const ParallelVariable* o) {
+  return new ParallelVariable(o->annotation, o->name, o->type->accept(this),
       o->loc);
 }
 
@@ -319,7 +376,8 @@ bi::Statement* bi::Cloner::clone(const Class* o) {
 }
 
 bi::Statement* bi::Cloner::clone(const Basic* o) {
-  return new Basic(o->annotation, o->name, o->base->accept(this), o->alias, o->loc);
+  return new Basic(o->annotation, o->name, o->base->accept(this), o->alias,
+      o->loc);
 }
 
 bi::Statement* bi::Cloner::clone(const ExpressionStatement* o) {
@@ -332,8 +390,15 @@ bi::Statement* bi::Cloner::clone(const If* o) {
 }
 
 bi::Statement* bi::Cloner::clone(const For* o) {
-  return new For(o->annotation, o->index->accept(this), o->from->accept(this),
-      o->to->accept(this), o->braces->accept(this), o->loc);
+  return new For(o->annotation, o->index->accept(this),
+      o->from->accept(this), o->to->accept(this), o->braces->accept(this),
+      o->loc);
+}
+
+bi::Statement* bi::Cloner::clone(const Parallel* o) {
+  return new Parallel(o->annotation, o->index->accept(this),
+      o->from->accept(this), o->to->accept(this), o->braces->accept(this),
+      o->loc);
 }
 
 bi::Statement* bi::Cloner::clone(const While* o) {
@@ -377,7 +442,8 @@ bi::Type* bi::Cloner::clone(const TypeList* o) {
 }
 
 bi::Type* bi::Cloner::clone(const UnknownType* o) {
-  return new UnknownType(o->weak, o->name, o->typeArgs->accept(this), o->loc);
+  return new UnknownType(o->weak, o->name, o->typeArgs->accept(this),
+      o->loc);
 }
 
 bi::Type* bi::Cloner::clone(const ClassType* o) {
@@ -393,7 +459,8 @@ bi::Type* bi::Cloner::clone(const GenericType* o) {
 }
 
 bi::Type* bi::Cloner::clone(const MemberType* o) {
-  return new MemberType(o->left->accept(this), o->right->accept(this), o->loc);
+  return new MemberType(o->left->accept(this), o->right->accept(this),
+      o->loc);
 }
 
 bi::Type* bi::Cloner::clone(const ArrayType* o) {
@@ -405,7 +472,8 @@ bi::Type* bi::Cloner::clone(const TupleType* o) {
 }
 
 bi::Type* bi::Cloner::clone(const BinaryType* o) {
-  return new BinaryType(o->left->accept(this), o->right->accept(this), o->loc);
+  return new BinaryType(o->left->accept(this), o->right->accept(this),
+      o->loc);
 }
 
 bi::Type* bi::Cloner::clone(const FunctionType* o) {

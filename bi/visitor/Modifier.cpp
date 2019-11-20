@@ -107,7 +107,19 @@ bi::Expression* bi::Modifier::modify(Call<Parameter>* o) {
   return o;
 }
 
+bi::Expression* bi::Modifier::modify(Call<FiberParameter>* o) {
+  o->single = o->single->accept(this);
+  o->args = o->args->accept(this);
+  return o;
+}
+
 bi::Expression* bi::Modifier::modify(Call<LocalVariable>* o) {
+  o->single = o->single->accept(this);
+  o->args = o->args->accept(this);
+  return o;
+}
+
+bi::Expression* bi::Modifier::modify(Call<FiberVariable>* o) {
   o->single = o->single->accept(this);
   o->args = o->args->accept(this);
   return o;
@@ -211,6 +223,12 @@ bi::Expression* bi::Modifier::modify(Parameter* o) {
   return o;
 }
 
+bi::Expression* bi::Modifier::modify(FiberParameter* o) {
+  o->type = o->type->accept(this);
+  o->value = o->value->accept(this);
+  return o;
+}
+
 bi::Expression* bi::Modifier::modify(Generic* o) {
   o->type = o->type->accept(this);
   return o;
@@ -224,6 +242,10 @@ bi::Expression* bi::Modifier::modify(Identifier<Parameter>* o) {
   return o;
 }
 
+bi::Expression* bi::Modifier::modify(Identifier<FiberParameter>* o) {
+  return o;
+}
+
 bi::Expression* bi::Modifier::modify(Identifier<GlobalVariable>* o) {
   return o;
 }
@@ -232,11 +254,19 @@ bi::Expression* bi::Modifier::modify(Identifier<MemberVariable>* o) {
   return o;
 }
 
+bi::Expression* bi::Modifier::modify(Identifier<FiberVariable>* o) {
+  return o;
+}
+
 bi::Expression* bi::Modifier::modify(Identifier<LocalVariable>* o) {
   return o;
 }
 
 bi::Expression* bi::Modifier::modify(Identifier<ForVariable>* o) {
+  return o;
+}
+
+bi::Expression* bi::Modifier::modify(Identifier<ParallelVariable>* o) {
   return o;
 }
 
@@ -312,6 +342,14 @@ bi::Statement* bi::Modifier::modify(MemberVariable* o) {
   return o;
 }
 
+bi::Statement* bi::Modifier::modify(FiberVariable* o) {
+  o->type = o->type->accept(this);
+  o->brackets = o->brackets->accept(this);
+  o->args = o->args->accept(this);
+  o->value = o->value->accept(this);
+  return o;
+}
+
 bi::Statement* bi::Modifier::modify(LocalVariable* o) {
   o->type = o->type->accept(this);
   o->brackets = o->brackets->accept(this);
@@ -321,6 +359,11 @@ bi::Statement* bi::Modifier::modify(LocalVariable* o) {
 }
 
 bi::Statement* bi::Modifier::modify(ForVariable* o) {
+  o->type = o->type->accept(this);
+  return o;
+}
+
+bi::Statement* bi::Modifier::modify(ParallelVariable* o) {
   o->type = o->type->accept(this);
   return o;
 }
@@ -414,6 +457,14 @@ bi::Statement* bi::Modifier::modify(If* o) {
 }
 
 bi::Statement* bi::Modifier::modify(For* o) {
+  o->index = o->index->accept(this);
+  o->from = o->from->accept(this);
+  o->to = o->to->accept(this);
+  o->braces = o->braces->accept(this);
+  return o;
+}
+
+bi::Statement* bi::Modifier::modify(Parallel* o) {
   o->index = o->index->accept(this);
   o->from = o->from->accept(this);
   o->to = o->to->accept(this);

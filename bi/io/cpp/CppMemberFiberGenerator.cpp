@@ -27,6 +27,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   /* gather important objects */
   o->params->accept(&params);
   o->braces->accept(&locals);
+  o->braces->accept(&fors);
   o->braces->accept(&yields);
 
   /* supporting class for state */
@@ -40,12 +41,16 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     start("libbirch::LazySharedPtr<bi::type::" << type->name);
     genTemplateArgs(type);
     finish("> self;");
-    for (auto param : params) {
-      line(param->type << ' ' << param->name << ';');
+    for (auto o : params) {
+      line(o->type << ' ' << o->name << ';');
     }
-    for (auto local : locals) {
-      start(local->type << ' ');
-      finish(getName(local->name->str(), local->number) << ';');
+    for (auto o : locals) {
+      start(o->type << ' ');
+      finish(getName(o->name->str(), o->number) << ';');
+    }
+    for (auto o : fors) {
+      start(o->type << ' ');
+      finish(getName(o->name->str(), o->number) << ';');
     }
   }
 
@@ -131,6 +136,12 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
       } else {
         start(name << "(context, label, o." << name << ')');
       }
+    }
+    for (auto o : fors) {
+      auto name = getName(o->name->str(), o->number);
+      finish(',');
+      genTraceLine(o->loc);
+      start(name << "(o." << name << ')');
     }
     out();
     out();
