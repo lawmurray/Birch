@@ -3,18 +3,18 @@
  */
 program test_beta_binomial(N:Integer <- 10000) {  
   m:TestBetaBinomial;
-  m.play();
+  delay.handle(m.simulate());
  
   /* simulate forward */
   X1:Real[N,2];
-  for auto i in 1..N {
+  for i in 1..N {
     auto m' <- clone<TestBetaBinomial>(m);
     X1[i,1..2] <- m'.forward();
   }
 
   /* simulate backward */
   X2:Real[N,2];
-  for auto i in 1..N {
+  for i in 1..N {
     auto m' <- clone<TestBetaBinomial>(m);
     X2[i,1..2] <- m'.backward();
   }

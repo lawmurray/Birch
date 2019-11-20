@@ -316,7 +316,7 @@ function cdf_normal_inverse_gamma(x:Real, μ:Real, σ2:Real, α:Real,
  */
 function cdf_beta_binomial(x:Integer, n:Integer, α:Real, β:Real) -> Real {
   P:Real <- 0.0;
-  for auto i in 0..min(n, x) {
+  for i in 0..min(n, x) {
     P <- P + exp(logpdf_beta_binomial(i, n, α, β));
   }
   return P;

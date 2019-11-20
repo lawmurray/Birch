@@ -7,7 +7,7 @@
 function test_pdf(π:Distribution<Boolean>, N:Integer) {  
   /* simulate, counting the occurrence of each value */
   auto k <- 0;
-  for auto n in 1..N {
+  for n in 1..N {
     if π.simulate() {
       k <- k + 1;
     }
@@ -62,7 +62,7 @@ function test_pdf(π:Distribution<Integer>, N:Integer) {
 
   /* simulate, counting the occurrence of each value */
   auto count <- vector(0, to! - from! + 1);
-  for auto n in 1..N {
+  for n in 1..N {
     auto i <- π.simulate() - from! + 1;
     if 1 <= i && i <= length(count) {
       count[i] <- count[i] + 1;
@@ -71,7 +71,7 @@ function test_pdf(π:Distribution<Integer>, N:Integer) {
 
   /* compare sum of pdf to counts */
   auto failed <- false;
-  for auto x in from!..to! {
+  for x in from!..to! {
     auto δ <- abs(π.pdf(x) - Real(count[x - from! + 1])/N);
     auto ε <- 5.0/sqrt(N);
     if δ > ε {
@@ -99,14 +99,14 @@ function test_pdf(π:Distribution<Real[_]>, D:Integer, N:Integer, B:Integer,
   X2:Real[N,D];
   
   /* iid samples */
-  for auto n in 1..N {
+  for n in 1..N {
     X1[n,1..D] <- vector(π.simulate());
   }
   
   /* compute the shape for a Gaussian proposal using the iid samples */
   auto μ <- vector(0.0, D);
   auto Σ <- matrix(0.0, D, D);
-  for auto n in 1..N {
+  for n in 1..N {
     auto x <- X1[n,1..D];
     μ <- μ + x;
     Σ <- Σ + x*transpose(x);
@@ -121,7 +121,7 @@ function test_pdf(π:Distribution<Real[_]>, D:Integer, N:Integer, B:Integer,
     auto x <- π.simulate();
     auto l <- π.logpdf(x);
 
-    for auto n in 1..B {
+    for n in 1..B {
       auto x' <- simulate_multivariate_gaussian(x, Σ);
       auto l' <- π.logpdf(x');
       if log(simulate_uniform(0.0, 1.0)) <= l' - l {
@@ -145,8 +145,8 @@ function test_pdf(π:Distribution<Real[_]>, D:Integer, N:Integer, B:Integer,
   auto a <- 0.0;
   auto x <- π.simulate();
   auto l <- π.logpdf(x);
-  for auto n in 1..N {
-    for auto s in 1..S {
+  for n in 1..N {
+    for s in 1..S {
       auto x' <- simulate_multivariate_gaussian(x, Σ);
       auto l' <- π.logpdf(x');
       if log(simulate_uniform(0.0, 1.0)) <= l' - l {
@@ -182,14 +182,14 @@ function test_pdf(π:Distribution<Real[_,_]>, R:Integer, C:Integer, N:Integer,
   X2:Real[N,R*C];
   
   /* iid samples */
-  for auto n in 1..N {
+  for n in 1..N {
     X1[n,1..R*C] <- vector(π.simulate());
   }
   
   /* compute the shape for a Gaussian proposal using the iid samples */
   auto μ <- vector(0.0, R*C);
   auto Σ <- matrix(0.0, R*C, R*C);
-  for auto n in 1..N {
+  for n in 1..N {
     auto x <- X1[n,1..R*C];
     μ <- μ + x;
     Σ <- Σ + x*transpose(x);
@@ -204,7 +204,7 @@ function test_pdf(π:Distribution<Real[_,_]>, R:Integer, C:Integer, N:Integer,
     auto x <- π.simulate();
     auto l <- π.logpdf(x);
 
-    for auto n in 1..B {
+    for n in 1..B {
       auto x' <- matrix(simulate_multivariate_gaussian(vector(x), Σ), R, C);
       auto l' <- π.logpdf(x');
       if log(simulate_uniform(0.0, 1.0)) <= l' - l {
@@ -228,8 +228,8 @@ function test_pdf(π:Distribution<Real[_,_]>, R:Integer, C:Integer, N:Integer,
   auto a <- 0.0;
   auto x <- π.simulate();
   auto l <- π.logpdf(x);
-  for auto n in 1..N {
-    for auto s in 1..S {
+  for n in 1..N {
+    for s in 1..S {
       auto x' <- matrix(simulate_multivariate_gaussian(vector(x), Σ), R, C);
       auto l' <- π.logpdf(x');
       if log(simulate_uniform(0.0, 1.0)) <= l' - l {

@@ -14,7 +14,7 @@ class ParticleGibbs < ConditionalParticleFilter {
       x[b].h.setMode(SKIP_DELAY);
       x[b].start();
       x[b].h.setMode(REPLAY_DELAY);
-      for auto t in 1..T {
+      for t in 1..T {
         x[b].step();
       }
       h' <- x[b].h;
@@ -34,7 +34,7 @@ class ParticleGibbs < ConditionalParticleFilter {
       auto forwardCount <- x[b].h.trace.forwardCount;
       auto forward <- x[b].h.trace.takeForward();
       x[b].h.setMode(PLAY_DELAY);
-      for auto n in 1..N {
+      for n in 1..N {
         this.x[n] <- clone<ForwardModel>(x[b]);
       }
       x[b].h.setMode(REPLAY_DELAY);

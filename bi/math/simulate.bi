@@ -212,12 +212,12 @@ function simulate_dirichlet(α:Real[_]) -> Real[_] {
   x:Real[D];
   z:Real <- 0.0;
 
-  for (i:Integer in 1..D) {
+  for i in 1..D {
     x[i] <- simulate_gamma(α[i], 1.0);
     z <- z + x[i];
   }
   z <- 1.0/z;
-  for (i:Integer in 1..D) {
+  for i in 1..D {
     x[i] <- z*x[i];
   }  
   return x;
@@ -234,12 +234,12 @@ function simulate_dirichlet(α:Real, D:Integer) -> Real[_] {
   x:Real[D];
   z:Real <- 0.0;
 
-  for (i:Integer in 1..D) {
+  for i in 1..D {
     x[i] <- simulate_gamma(α, 1.0);
     z <- z + x[i];
   }
   z <- 1.0/z;
-  for (i:Integer in 1..D) {
+  for i in 1..D {
     x[i] <- z*x[i];
   }
   return x;
@@ -278,7 +278,7 @@ function simulate_uniform_int(l:Integer, u:Integer) -> Integer {
  */
 function simulate_uniform_unit_vector(D:Integer) -> Real[_] {
   u:Real[D];
-  for d:Integer in 1..D {
+  for d in 1..D {
     u[d] <- simulate_gaussian(0.0, 1.0);
   }
   return u/dot(u);
@@ -409,8 +409,8 @@ function simulate_wishart(Ψ:Real[_,_], k:Real) -> Real[_,_] {
   auto p <- rows(Ψ);
   A:Real[p,p];
   
-  for auto i in 1..p {
-    for auto j in 1..p {
+  for i in 1..p {
+    for j in 1..p {
       if j == i {
         /* on diagonal */
         A[i,j] <- sqrt(simulate_chi_squared(k - i + 1));
@@ -624,7 +624,7 @@ function simulate_linear_normal_inverse_gamma_gaussian(a:Real, μ:Real,
 function simulate_multivariate_gaussian(μ:Real[_], Σ:Real[_,_]) -> Real[_] {
   auto D <- length(μ);
   z:Real[D];
-  for auto d in 1..D {
+  for d in 1..D {
     z[d] <- simulate_gaussian(0.0, 1.0);
   }
   return μ + cholesky(Σ)*z;
@@ -639,7 +639,7 @@ function simulate_multivariate_gaussian(μ:Real[_], Σ:Real[_,_]) -> Real[_] {
 function simulate_multivariate_gaussian(μ:Real[_], σ2:Real[_]) -> Real[_] {
   auto D <- length(μ);
   z:Real[D];
-  for auto d in 1..D {
+  for d in 1..D {
     z[d] <- μ[d] + simulate_gaussian(0.0, σ2[d]);
   }
   return z;
@@ -656,7 +656,7 @@ function simulate_multivariate_gaussian(μ:Real[_], σ2:Real) -> Real[_] {
   auto D <- length(μ);
   auto σ <- sqrt(σ2);
   z:Real[D];
-  for auto d in 1..D {
+  for d in 1..D {
     z[d] <- μ[d] + σ*simulate_gaussian(0.0, 1.0);
   }
   return z;
@@ -729,8 +729,8 @@ function simulate_matrix_gaussian(M:Real[_,_], U:Real[_,_], V:Real[_,_]) ->
   auto N <- rows(M);
   auto P <- columns(M);
   Z:Real[N,P];
-  for auto n in 1..N {
-    for auto p in 1..P {
+  for n in 1..N {
+    for p in 1..P {
       Z[n,p] <- simulate_gaussian(0.0, 1.0);
     }
   }
@@ -753,8 +753,8 @@ function simulate_matrix_gaussian(M:Real[_,_], U:Real[_,_], σ2:Real[_]) ->
   auto N <- rows(M);
   auto P <- columns(M);
   Z:Real[N,P];
-  for auto n in 1..N {
-    for auto p in 1..P {
+  for n in 1..N {
+    for p in 1..P {
       Z[n,p] <- simulate_gaussian(0.0, 1.0);
     }
   }
@@ -774,8 +774,8 @@ function simulate_matrix_gaussian(M:Real[_,_], V:Real[_,_]) -> Real[_,_] {
   auto N <- rows(M);
   auto P <- columns(M);
   Z:Real[N,P];
-  for auto n in 1..N {
-    for auto p in 1..P {
+  for n in 1..N {
+    for p in 1..P {
       Z[n,p] <- simulate_gaussian(0.0, 1.0);
     }
   }
@@ -794,8 +794,8 @@ function simulate_matrix_gaussian(M:Real[_,_], σ2:Real[_]) -> Real[_,_] {
   auto N <- rows(M);
   auto P <- columns(M);
   X:Real[N,P];
-  for auto n in 1..N {
-    for auto p in 1..P {
+  for n in 1..N {
+    for p in 1..P {
       X[n,p] <- simulate_gaussian(M[n,p], σ2[p]);
     }
   }
@@ -916,7 +916,7 @@ function simulate_multivariate_student_t(k:Real, μ:Real[_], Σ:Real[_,_]) ->
     Real[_] {
   auto D <- length(μ);
   z:Real[D];
-  for auto d in 1..D {
+  for d in 1..D {
     z[d] <- simulate_student_t(k);
   }
   return μ + cholesky(Σ)*z;
@@ -935,7 +935,7 @@ function simulate_multivariate_student_t(k:Real, μ:Real[_], σ2:Real) ->
   auto D <- length(μ);
   auto σ <- sqrt(σ2);
   z:Real[D];
-  for auto d in 1..D {
+  for d in 1..D {
     z[d] <- μ[d] + σ*simulate_student_t(k);
   }
   return z;
@@ -959,8 +959,8 @@ function simulate_matrix_student_t(k:Real, M:Real[_,_], U:Real[_,_],
   auto N <- rows(M);
   auto P <- columns(M);
   Z:Real[N,P];
-  for auto n in 1..N {
-    for auto p in 1..P {
+  for n in 1..N {
+    for p in 1..P {
       Z[n,p] <- simulate_student_t(k);
     }
   }
@@ -984,8 +984,8 @@ function simulate_matrix_student_t(k:Real, M:Real[_,_], U:Real[_,_],
   auto N <- rows(M);
   auto P <- columns(M);
   Z:Real[N,P];
-  for auto n in 1..N {
-    for auto p in 1..P {
+  for n in 1..N {
+    for p in 1..P {
       Z[n,p] <- simulate_student_t(k);
     }
   }
@@ -1002,7 +1002,7 @@ function simulate_independent_uniform(l:Real[_], u:Real[_]) -> Real[_] {
   assert length(l) == length(u);
   D:Integer <- length(l);
   z:Real[D];
-  for (d:Integer in 1..D) {
+  for d in 1..D {
     z[d] <- simulate_uniform(l[d], u[d]);
   }
   return z;
@@ -1018,7 +1018,7 @@ function simulate_independent_uniform_int(l:Integer[_], u:Integer[_]) -> Integer
   assert length(l) == length(u);
   D:Integer <- length(l);
   z:Integer[D];
-  for d:Integer in 1..D {
+  for d in 1..D {
     z[d] <- simulate_uniform_int(l[d], u[d]);
   }
   return z;

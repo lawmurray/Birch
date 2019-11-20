@@ -163,7 +163,7 @@ function pass(X1:Real[_,_], X2:Real[_,_]) -> Boolean {
   auto ε <- 4.0*columns(X1)/sqrt(R);
   
   /* compare marginals using 1-Wasserstein distance */
-  for auto c in 1..C {
+  for c in 1..C {
     /* project onto a random unit vector for univariate comparison */
     auto x1 <- X1[1..R,c];
     auto x2 <- X2[1..R,c];
@@ -186,7 +186,7 @@ function pass(X1:Real[_,_], X2:Real[_,_]) -> Boolean {
   /* project onto random unit vectors and compute the univariate
    * 1-Wasserstein distance, repeating as many times as there are
    * dimensions */
-  for auto c in 1..C {
+  for c in 1..C {
     /* project onto a random unit vector for univariate comparison */
     auto u <- simulate_uniform_unit_vector(C);  
     auto x1 <- X1*u;

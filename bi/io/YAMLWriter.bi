@@ -94,7 +94,7 @@ class YAMLWriter < Writer {
   function visit(value:BooleanVectorValue) {
     startSequence();
     auto v <- value.value;
-    for auto i in 1..length(v) {
+    for i in 1..length(v) {
       scalar(v[i]);
     }
     endSequence();
@@ -103,7 +103,7 @@ class YAMLWriter < Writer {
   function visit(value:IntegerVectorValue) {
     startSequence();
     auto v <- value.value;
-    for auto i in 1..length(v) {
+    for i in 1..length(v) {
       scalar(v[i]);
     }
     endSequence();
@@ -112,7 +112,7 @@ class YAMLWriter < Writer {
   function visit(value:RealVectorValue) {
     startSequence();
     auto v <- value.value;
-    for auto i in 1..length(v) {
+    for i in 1..length(v) {
       scalar(v[i]);
     }
     endSequence();
@@ -124,10 +124,10 @@ class YAMLWriter < Writer {
     auto n <- columns(value);
     if m > 0 {
       startSequence();
-      for auto i in 1..m {
+      for i in 1..m {
         if n > 0 {
           startSequence();
-          for auto j in 1..n {
+          for j in 1..n {
             scalar(v[i,j]);
           }
           endSequence();
@@ -145,10 +145,10 @@ class YAMLWriter < Writer {
     auto n <- columns(value);
     if m > 0 {
       startSequence();
-      for auto i in 1..m {
+      for i in 1..m {
         if n > 0 {
           startSequence();
-          for auto j in 1..n {
+          for j in 1..n {
             scalar(v[i,j]);
           }
           endSequence();
@@ -166,10 +166,10 @@ class YAMLWriter < Writer {
     auto n <- columns(value);
     if m > 0 {
       startSequence();
-      for auto i in 1..m {
+      for i in 1..m {
         if n > 0 {
           startSequence();
-          for auto j in 1..n {
+          for j in 1..n {
             scalar(v[i,j]);
           }
           endSequence();

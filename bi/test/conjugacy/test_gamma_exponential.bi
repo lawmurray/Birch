@@ -3,18 +3,18 @@
  */
 program test_gamma_exponential(N:Integer <- 10000) {
   m:TestGammaExponential;
-  m.play();
+  delay.handle(m.simulate());
 
   /* simulate forward */
   X1:Real[N,2];
-  for auto n in 1..N {
+  for n in 1..N {
     auto m' <- clone<TestGammaExponential>(m);
     X1[n,1..2] <- m'.forward();
   }
 
   /* simulate backward */
   X2:Real[N,2];
-  for auto n in 1..N {
+  for n in 1..N {
     auto m' <- clone<TestGammaExponential>(m);
     X2[n,1..2] <- m'.backward();
   }

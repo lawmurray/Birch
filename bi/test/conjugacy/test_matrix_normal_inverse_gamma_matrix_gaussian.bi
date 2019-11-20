@@ -6,18 +6,18 @@ program test_matrix_normal_inverse_gamma_matrix_gaussian(N:Integer <- 10000) {
   auto p <- 2;
 
   m:TestMatrixNormalInverseGammaMatrixGaussian;
-  m.play();
+  delay.handle(m.simulate());
  
   /* simulate forward */
   X1:Real[N,p + 2*n*p];
-  for auto i in 1..N {
+  for i in 1..N {
     auto m' <- clone<TestMatrixNormalInverseGammaMatrixGaussian>(m);
     X1[i,1..columns(X1)] <- m'.forward();
   }
 
   /* simulate backward */
   X2:Real[N,p + 2*n*p];
-  for auto i in 1..N {
+  for i in 1..N {
     auto m' <- clone<TestMatrixNormalInverseGammaMatrixGaussian>(m);
     X2[i,1..columns(X1)] <- m'.backward();
   }
@@ -42,15 +42,15 @@ class TestMatrixNormalInverseGammaMatrixGaussian < Model {
     α:Real <- simulate_uniform(2.0, 10.0);
     β:Real[p];
  
-    for auto i in 1..n {
-      for auto j in 1..n {
+    for i in 1..n {
+      for j in 1..n {
         Σ[i,j] <- simulate_uniform(-2.0, 2.0);
       }
-      for auto j in 1..p {
+      for j in 1..p {
         M[i,j] <- simulate_uniform(-10.0, 10.0);
       }
     }
-    for auto i in 1..p {
+    for i in 1..p {
       β[i] <- simulate_uniform(0.0, 10.0);
     }
     Σ <- Σ*transpose(Σ);
@@ -88,11 +88,11 @@ class TestMatrixNormalInverseGammaMatrixGaussian < Model {
     y:Real[size()];
     y[1..length(σ2)] <- σ2;
     auto k <- length(σ2);
-    for auto i in 1..rows(X) {
+    for i in 1..rows(X) {
       y[k + 1 .. k + columns(X)] <- X.value()[i,1..columns(X)];
       k <- k + columns(X);
     }
-    for auto i in 1..rows(Y) {
+    for i in 1..rows(Y) {
       y[k + 1 .. k + columns(Y)] <- Y.value()[i,1..columns(Y)];
       k <- k + columns(Y);
     }    

@@ -8,16 +8,16 @@ program test_beta_geometric(N:Integer <- 10000) {
   β:Real <- simulate_uniform(1.0, 100.0);
  
   /* simulate forward */
-  for i:Integer in 1..N {
+  for i in 1..N {
     m:TestBetaGeometric(α, β);
-    m.play();
+    delay.handle(m.simulate());
     X1[i,1..2] <- m.forward();
   }
 
   /* simulate backward */
-  for i:Integer in 1..N {
+  for i in 1..N {
     m:TestBetaGeometric(α, β);
-    m.play();
+    delay.handle(m.simulate());
     X2[i,1..2] <- m.backward();
   }
   

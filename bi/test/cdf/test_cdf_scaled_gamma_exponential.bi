@@ -3,6 +3,6 @@
  */
 program test_cdf_scaled_gamma_exponential(N:Integer <- 10000) {
   m:TestScaledGammaExponential;
-  m.play();
+  delay.handle(m.simulate());
   test_cdf(m.marginal(), N);
 }

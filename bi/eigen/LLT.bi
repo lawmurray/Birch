@@ -135,7 +135,7 @@ function rank_update(S:LLT, X:Real[_,_], a:Real) -> LLT {
   }}
   auto R <- rows(X);
   auto C <- columns(X);
-  for auto j in 1..C {
+  for j in 1..C {
     auto x <- X[1..R,j];
     cpp{{
     A.rankUpdate(x.toEigen(), a);
@@ -161,7 +161,7 @@ function ldet(S:LLT) -> Real {
   auto L <- cholesky(S);
   auto n <- rows(S);
   auto d <- 0.0;
-  for auto i in 1..n {
+  for i in 1..n {
     d <- d + log(L[i,i]);
   }
   return 2.0*d;

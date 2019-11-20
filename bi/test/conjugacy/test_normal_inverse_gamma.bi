@@ -5,16 +5,16 @@ program test_normal_inverse_gamma(N:Integer <- 10000) {
   X1:Real[N,2];
   X2:Real[N,2];
   m:TestNormalInverseGamma;
-  m.play();
+  delay.handle(m.simulate());
    
   /* simulate forward */
-  for auto n in 1..N {
+  for n in 1..N {
     auto m' <- clone<TestNormalInverseGamma>(m);
     X1[n,1..2] <- m'.forward();
   }
 
   /* simulate backward */
-  for auto n in 1..N {
+  for n in 1..N {
     auto m' <- clone<TestNormalInverseGamma>(m);
     X2[n,1..2] <- m'.backward();
   }

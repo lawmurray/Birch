@@ -7,18 +7,18 @@ program test_matrix_normal_inverse_wishart_matrix_gaussian(
   auto p <- 2;
 
   m:TestMatrixNormalInverseWishartMatrixGaussian;
-  m.play();
+  delay.handle(m.simulate());
    
   /* simulate forward */
   X1:Real[N,p*p + 2*n*p];
-  for auto i in 1..N {
+  for i in 1..N {
     auto m' <- clone<TestMatrixNormalInverseWishartMatrixGaussian>(m);
     X1[i,1..columns(X1)] <- m'.forward();
   }
 
   /* simulate backward */
   X2:Real[N,p*p + 2*n*p];
-  for auto i in 1..N {
+  for i in 1..N {
     auto m' <- clone<TestMatrixNormalInverseWishartMatrixGaussian>(m);
     X2[i,1..columns(X1)] <- m'.backward();
   }
@@ -43,16 +43,16 @@ class TestMatrixNormalInverseWishartMatrixGaussian < Model {
     k:Real <- simulate_uniform(p - 1.0, p + 9.0);
     Ψ:Real[p,p];
  
-    for auto i in 1..n {
-      for auto j in 1..n {
+    for i in 1..n {
+      for j in 1..n {
         U[i,j] <- simulate_uniform(-2.0, 2.0);
       }
-      for auto j in 1..p {
+      for j in 1..p {
         M[i,j] <- simulate_uniform(-10.0, 10.0);
       }
     }
-    for auto i in 1..p {
-      for auto j in 1..p {
+    for i in 1..p {
+      for j in 1..p {
         Ψ[i,j] <- simulate_uniform(-10.0, 10.0);
       }
     }
@@ -91,15 +91,15 @@ class TestMatrixNormalInverseWishartMatrixGaussian < Model {
   function copy() -> Real[_] {
     y:Real[size()];
     auto k <- 0;
-    for auto i in 1..rows(V) {
+    for i in 1..rows(V) {
       y[k + 1 .. k + columns(V)] <- V.value()[i,1..columns(V)];
       k <- k + columns(V);
     }
-    for auto i in 1..rows(X) {
+    for i in 1..rows(X) {
       y[k + 1 .. k + columns(X)] <- X.value()[i,1..columns(X)];
       k <- k + columns(X);
     }
-    for auto i in 1..rows(Y) {
+    for i in 1..rows(Y) {
       y[k + 1 .. k + columns(Y)] <- Y.value()[i,1..columns(Y)];
       k <- k + columns(Y);
     }    

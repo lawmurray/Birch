@@ -115,7 +115,7 @@ final class Vector<Type> {
   function insert(i:Integer, x:Type) {
     assert 1 <= i && i <= nelements + 1;
     enlarge(nelements + 1, x);
-    if (i < nelements) {
+    if i < nelements {
       values[(i + 1)..nelements] <- values[i..(nelements - 1)];
     }
     values[i] <- x;
@@ -140,7 +140,7 @@ final class Vector<Type> {
    * Return: a fiber object that yields each element in forward order.
    */
   fiber walk() -> Type {
-    for (i:Integer in 1..nelements) {
+    for i in 1..nelements {
       yield values[i];
     }
   }

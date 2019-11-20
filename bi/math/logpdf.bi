@@ -151,7 +151,7 @@ function logpdf_multinomial(x:Integer[_], n:Integer, ρ:Real[_]) -> Real {
 
   m:Integer <- 0;
   w:Real <- lgamma(n + 1.0);
-  for (i:Integer in 1..length(x)) {
+  for i in 1..length(x) {
     assert x[i] >= 0;
     assert ρ[i] >= 0.0;
     m <- m + x[i];
@@ -177,7 +177,7 @@ function logpdf_dirichlet(x:Real[_], α:Real[_]) -> Real {
 
   D:Integer <- length(x);
   w:Real <- 0.0;
-  for auto i in 1..D {
+  for i in 1..D {
     if x[i] < 0.0 {
       return -inf;
     }
@@ -579,7 +579,7 @@ function logpdf_dirichlet_multinomial(x:Integer[_], n:Integer, α:Real[_]) -> Re
   A:Real <- sum(α);
   m:Integer <- 0;
   w:Real <- lgamma(n + 1.0) + lgamma(A) - lgamma(n + A);
-  for (i:Integer in 1..length(α)) {
+  for i in 1..length(α) {
     assert x[i] >= 0;
     m <- m + x[i];
     w <- w + lgamma(x[i] + α[i]) - lgamma(x[i] + 1.0) - lgamma(α[i]);
@@ -677,7 +677,7 @@ function logpdf_multivariate_gaussian(x:Real[_], μ:Real[_], Σ:Real[_,_]) ->
 function logpdf_multivariate_gaussian(x:Real[_], μ:Real[_], σ2:Real[_]) -> Real {
   auto D <- length(μ);
   auto w <- 0.0;
-  for auto d in 1..D {
+  for d in 1..D {
     w <- w + logpdf_gaussian(x[d], μ[d], σ2[d]);
   }
   return w;
@@ -1051,7 +1051,7 @@ function logpdf_independent_uniform(x:Real[_], l:Real[_], u:Real[_]) -> Real {
 
   D:Integer <- length(l);
   w:Real <- 0.0;
-  for (d:Integer in 1..D) {
+  for d in 1..D {
     w <- w + logpdf_uniform(x[d], l[d], u[d]);
   }
   return w;
@@ -1073,7 +1073,7 @@ function logpdf_independent_uniform_int(x:Integer[_], l:Integer[_], u:Integer[_]
   
   D:Integer <- length(x);
   w:Real <- 0.0;
-  for (d:Integer in 1..D) {
+  for d in 1..D {
     w <- w + logpdf_uniform_int(x[d], l[d], u[d]);
   }
   return w;

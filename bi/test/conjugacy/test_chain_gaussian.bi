@@ -14,16 +14,16 @@ program test_chain_gaussian(N:Integer <- 10000) {
     ];
  
   /* simulate forward */
-  for i:Integer in 1..N {
+  for i in 1..N {
     m:TestChainGaussian(μ, σ2);
-    m.play();
+    delay.handle(m.simulate());
     X1[i,1..5] <- m.forward();
   }
 
   /* simulate backward */
-  for i:Integer in 1..N {
+  for i in 1..N {
     m:TestChainGaussian(μ, σ2);
-    m.play();
+    delay.handle(m.simulate());
     X2[i,1..5] <- m.backward();
   }
   
@@ -48,7 +48,7 @@ class TestChainGaussian(μ:Real, σ2:Real[_]) < Model {
   
   function forward() -> Real[_] {
     y:Real[5];
-    for i:Integer in 1..5 {
+    for i in 1..5 {
       assert !x[i].hasValue();
       y[i] <- x[i].value();
     }
@@ -57,7 +57,7 @@ class TestChainGaussian(μ:Real, σ2:Real[_]) < Model {
 
   function backward() -> Real[_] {
     y:Real[5];
-    for i:Integer in 0..4 {
+    for i in 0..4 {
       assert !x[5 - i].hasValue();
       y[5 - i] <- x[5 - i].value();
     }

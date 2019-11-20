@@ -8,19 +8,7 @@
  */
 abstract class Model {
   /**
-   * Event handler.
-   */
-  h:EventHandler;
-
-  /**
-   * Play the complete model with an event handler, returning a log-weight.
-   */
-  function play() -> Real {
-    return h.handle(simulate());
-  }
-
-  /**
-   * Simulate the model, yielding events.
+   * Simulate the model.
    */
   fiber simulate() -> Event {
     //

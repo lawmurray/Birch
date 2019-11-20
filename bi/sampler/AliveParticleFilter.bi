@@ -24,7 +24,7 @@ class AliveParticleFilter < ParticleFilter {
     P:Integer[N+1];
     auto x0 <- x;
     auto w0 <- w;
-    parallel for auto n in 1..N+1 {
+    parallel for n in 1..N+1 {
       if n <= N {
         x[n] <- clone<ForwardModel>(x0[a[n]]);
         P[n] <- 1;

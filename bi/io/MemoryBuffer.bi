@@ -189,7 +189,7 @@ class MemoryBuffer < Buffer {
     if value? {
       auto v <- value!;
       setArray();
-      for auto n in 1..length(v) {
+      for n in 1..length(v) {
         push().set(v[n]);
       }
     } else {
@@ -228,9 +228,9 @@ class MemoryBuffer < Buffer {
     if value? {
       auto v <- value!;
       setArray();
-      for auto i in 1..rows(v) {
+      for i in 1..rows(v) {
         auto buffer <- push().setArray();
-        for auto j in 1..columns(v) {
+        for j in 1..columns(v) {
           buffer.push().set(v[i,j]);
         }
       }

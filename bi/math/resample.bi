@@ -1,11 +1,53 @@
 /**
+ * Resample with systematic resampling.
+ *
+ * - w: Log weights.
+ *
+ * Return: the vector of ancestor indices.
+ */
+function resample_systematic(w:Real[_]) -> Integer[_] {
+  return cumulative_offspring_to_ancestors_permute(
+      systematic_cumulative_offspring(cumulative_weights(w)));
+}
+
+/**
+ * Resample with multinomial resampling.
+ *
+ * - w: Log weights.
+ *
+ * Return: the vector of ancestor indices.
+ */
+function resample_multinomial(w:Real[_]) -> Integer[_] {
+  return offspring_to_ancestors_permute(simulate_multinomial(
+      length(w), norm_exp(w)));
+}
+
+/**
+ * Conditional resample with multinomial resampling.
+ *
+ * - w: Log-weight vector.
+ * - b: Index of the conditioned particle.
+ *
+ * Returns: a tuple giving the ancestor vector and new index of the
+ * conditioned particle.
+ */
+function conditional_resample_multinomial(w:Real[_], b:Integer) ->
+    (Integer[_], Integer) {
+  auto N <- length(w);
+  auto o <- simulate_multinomial(N - 1, norm_exp(w));
+  o[b] <- o[b] + 1;
+  auto a <- offspring_to_ancestors_permute(o);
+  return (a, b);
+}
+
+/**
  * Exponentiate and sum a vector, return the logarithm of the sum.
  */
 function log_sum_exp(x:Real[_]) -> Real {
   assert length(x) > 0;
   auto mx <- max(x);
   auto r <- 0.0;
-  for auto n in 1..length(x) {
+  for n in 1..length(x) {
     r <- r + exp(x[n] - mx);
   }
   return mx + log(r);
@@ -26,53 +68,11 @@ function norm_exp(x:Real[_]) -> Real[_] {
   assert length(x) > 0;
   auto mx <- max(x);
   auto r <- 0.0;
-  for auto n in 1..length(x) {
+  for n in 1..length(x) {
     r <- r + exp(x[n] - mx);
   }
   auto W <- mx + log(r);
   return transform<Real>(x, @(w:Real) -> Real { return exp(w - W); });
-}
-
-/**
- * Resample with systematic resampling.
- *
- * - w: Log weights.
- *
- * Return: the vector of ancestor indices.
- */
-function resample(w:Real[_]) -> Integer[_] {
-  return cumulative_offspring_to_ancestors_permute(
-      systematic_cumulative_offspring(cumulative_weights(w)));
-}
-
-/**
- * Resample with multinomial resampling.
- *
- * - w: Log weights.
- *
- * Return: the vector of ancestor indices.
- */
-function multinomial_resample(w:Real[_]) -> Integer[_] {
-  return offspring_to_ancestors_permute(simulate_multinomial(
-      length(w), norm_exp(w)));
-}
-
-/**
- * Conditional resample with multinomial resampling.
- *
- * - w: Log-weight vector.
- * - b: Index of the conditioned particle.
- *
- * Returns: a tuple giving the ancestor vector and new index of the
- * conditioned particle.
- */
-function multinomial_conditional_resample(w:Real[_], b:Integer) ->
-    (Integer[_], Integer) {
-  auto N <- length(w);
-  auto o <- simulate_multinomial(N - 1, norm_exp(w));
-  o[b] <- o[b] + 1;
-  auto a <- offspring_to_ancestors_permute(o);
-  return (a, b);
 }
 
 /**
@@ -111,7 +111,7 @@ function systematic_cumulative_offspring(W:Real[_]) -> Integer[_] {
   O:Integer[N];
 
   auto u <- simulate_uniform(0.0, 1.0);
-  for auto n in 1..N {
+  for n in 1..N {
     auto r <- N*W[n]/W[N];
     O[n] <- min(N, Integer(floor(r + u)));
   }
@@ -125,8 +125,8 @@ function offspring_to_ancestors(o:Integer[_]) -> Integer[_] {
   auto N <- length(o);
   auto i <- 1;
   a:Integer[N];
-  for auto n in 1..N {
-    for auto j in 1..o[n] {
+  for n in 1..N {
+    for j in 1..o[n] {
       a[i] <- n;
       i <- i + 1;
     }
@@ -142,8 +142,8 @@ function offspring_to_ancestors_permute(o:Integer[_]) -> Integer[_] {
   auto N <- length(o);
   auto i <- 1;
   a:Integer[N];
-  for auto n in 1..N {
-    for auto j in 1..o[n] {
+  for n in 1..N {
+    for j in 1..o[n] {
       a[i] <- n;
       i <- i + 1;
     }
@@ -171,7 +171,7 @@ function offspring_to_ancestors_permute(o:Integer[_]) -> Integer[_] {
 function cumulative_offspring_to_ancestors(O:Integer[_]) -> Integer[_] {
   auto N <- length(O);
   a:Integer[N];
-  for auto n in 1..N {
+  for n in 1..N {
     start:Integer;
     if n == 1 {
       start <- 0;
@@ -179,7 +179,7 @@ function cumulative_offspring_to_ancestors(O:Integer[_]) -> Integer[_] {
       start <- O[n - 1];
     }
     auto o <- O[n] - start;
-    for auto j in 1..o {
+    for j in 1..o {
       a[start + j] <- n;
     }
   }
@@ -193,13 +193,13 @@ function cumulative_offspring_to_ancestors(O:Integer[_]) -> Integer[_] {
 function cumulative_offspring_to_ancestors_permute(O:Integer[_]) -> Integer[_] {
   a:Integer[O[length(O)]];
   auto N <- length(a);
-  for auto n in 1..N {
+  for n in 1..N {
     auto start <- 0;
     if n > 1 {
       start <- O[n - 1];
     }
     auto o <- O[n] - start;
-    for auto j in 1..o {
+    for j in 1..o {
       a[start + j] <- n;
     }
   }
@@ -256,7 +256,7 @@ function cumulative_weights(w:Real[_]) -> Real[_] {
   if N > 0 {
     auto mx <- max(w);
     W[1] <- exp(w[1] - mx);
-    for auto n in 2..N {
+    for n in 2..N {
       W[n] <- W[n - 1] + exp(w[n] - mx);
     }
   }
@@ -264,20 +264,25 @@ function cumulative_weights(w:Real[_]) -> Real[_] {
 }
 
 /**
- * Effective sample size (ESS) of the log-weight vector.
+ * Compute the effective sample size (ESS) and logarithm of the average
+ * weight, given a log-weight vector.
+ *
+ * Returns: A pair, the first element of which gives the ESS, the second
+ * element of which gives the logarithm of the average weight.
  */
-function ess(w:Real[_]) -> Real {
+function resample_reduce(w:Real[_]) -> (Real, Real) {
   if length(w) == 0 {
-    return 0.0;
+    return (0.0, 0.0);
   } else {
+    auto N <- length(w);
     auto W <- 0.0;
     auto W2 <- 0.0;
     auto m <- max(w);    
-    for auto n in 1..length(w) {
+    for n in 1..N {
       auto v <- exp(w[n] - m);
       W <- W + v;
       W2 <- W2 + v*v;
     }
-    return W*W/W2;
+    return (W*W/W2, W/N);
   }
 }

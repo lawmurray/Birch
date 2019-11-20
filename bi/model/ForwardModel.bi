@@ -1,37 +1,40 @@
 /**
- * Forward model. To simulate the model, first use `start()`, followed by
- * `step()` any number of times.
+ * Forward model.
  */
 abstract class ForwardModel < Model {   
   /**
-   * Current step.
+   * Simulate one step.
+   *
+   * - t: The step index. The caller guarantees that this is one greater than
+   *      the `t` of the previous call to the same fiber, or 1 if the fiber
+   *      has not been called on this before.
    */
-  t:Integer <- 0;
-  
-  /**
-   * Start.
-   */
-  function start() -> Real {
-    return 0.0;
-  }
-
-  /**
-   * Step.
-   */
-  function step() -> Real {
-    t <- t + 1;
-    return 0.0;
+  fiber simulate(t:Integer) -> Event {
+    //
   }
   
-  /**
-   * Rewind to start.
-   */
-  function rewind() {
-    t <- 0;
-  }
-
   /**
    * Number of steps.
    */
-  abstract function size() -> Integer;
+  function size() -> Integer {
+    return 0;
+  }
+  
+  /**
+   * Read one step.
+   *
+   * - t: The step index.
+   */
+  function read(t:Integer, buffer:Buffer) {
+    //
+  }
+
+  /**
+   * Write one step.
+   *
+   * - t: The step index.
+   */
+  function write(t:Integer, buffer:Buffer) {
+    //
+  }
 }

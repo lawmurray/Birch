@@ -56,14 +56,14 @@ class ParticleFilter < ForwardSampler {
   elapsed:Queue<Real>; 
 
   fiber sample() -> (Model, Real) {
-    for auto n in 1..nsamples {
+    for n in 1..nsamples {
       if verbose && T > 0 {
         stderr.print("steps:");
       }
       initialize();
       start();
       reduce();
-      for auto t in 1..T {
+      for t in 1..T {
         if verbose {
           stderr.print(" " + t);
         }
@@ -97,7 +97,7 @@ class ParticleFilter < ForwardSampler {
     x1:Vector<ForwardModel>;
     x1.enlarge(N, archetype!);
     x <- x1.toArray();
-    dynamic parallel for auto n in 1..N {
+    dynamic parallel for n in 1..N {
       x[n] <- clone<ForwardModel>(archetype!);
     }
     tic();
@@ -107,7 +107,7 @@ class ParticleFilter < ForwardSampler {
    * Start particles.
    */
   function start() {
-    parallel for auto n in 1..N {
+    parallel for n in 1..N {
       w[n] <- w[n] + x[n].start();
     }
   }
@@ -116,7 +116,7 @@ class ParticleFilter < ForwardSampler {
    * Step particles.
    */
   function step() {
-    parallel for auto n in 1..N {
+    parallel for n in 1..N {
       w[n] <- w[n] + x[n].step();
     }
   }
@@ -129,7 +129,7 @@ class ParticleFilter < ForwardSampler {
     auto W <- 0.0;
     auto W2 <- 0.0;
     
-    for auto n in 1..N {
+    for n in 1..N {
       auto v <- exp(w[n] - m);
       W <- W + v;
       W2 <- W2 + v*v;
@@ -156,7 +156,7 @@ class ParticleFilter < ForwardSampler {
       w <- vector(0.0, N);
       
       /* copy particles */
-      dynamic parallel for auto n in 1..N {
+      dynamic parallel for n in 1..N {
         if a[n] == n {
           // avoid clone overhead
         } else {

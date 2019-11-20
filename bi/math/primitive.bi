@@ -7,7 +7,7 @@
 function transform<Value>(x:Value[_], f:@(Value) -> Value) -> Value[_] {
   // in C++17 can use std::transform
   y:Value[length(x)];
-  for auto i in 1..length(x) {
+  for i in 1..length(x) {
     y[i] <- f(x[i]);
   }
   return y;
@@ -22,8 +22,8 @@ function transform<Value>(x:Value[_], f:@(Value) -> Value) -> Value[_] {
 function transform<Value>(X:Value[_,_], f:@(Value) -> Value) -> Value[_,_] {
   // in C++17 can use std::transform
   Y:Value[rows(X),columns(X)];
-  for auto i in 1..rows(X) {
-    for auto j in 1..columns(X) {
+  for i in 1..rows(X) {
+    for j in 1..columns(X) {
       Y[i,j] <- f(X[i,j]);
     }
   }
@@ -41,7 +41,7 @@ function transform<Value>(x:Value[_], y:Value[_],
     f:@(Value, Value) -> Value) -> Value[_] {
   assert length(x) == length(y);
   z:Value[length(x)];
-  for auto i in 1..length(x) {
+  for i in 1..length(x) {
     z[i] <- f(x[i], y[i]);
   }
   return y;
@@ -59,8 +59,8 @@ function transform<Value>(X:Value[_,_], Y:Value[_,_],
   assert rows(X) == rows(Y);
   assert columns(X) == columns(Y);
   Z:Value[rows(X),columns(X)];
-  for auto i in 1..rows(X) {
-    for auto j in 1..columns(X) {
+  for i in 1..rows(X) {
+    for j in 1..columns(X) {
       Z[i,j] <- f(X[i,j], Y[i,j]);
     }
   }
@@ -80,7 +80,7 @@ function transform<Value>(x:Value[_], y:Value[_], z:Value[_],
   assert length(x) == length(y);
   assert length(y) == length(z);
   a:Value[length(x)];
-  for auto i in 1..length(x) {
+  for i in 1..length(x) {
     a[i] <- f(x[i], y[i], z[i]);
   }
   return a;
@@ -101,8 +101,8 @@ function transform<Value>(X:Value[_,_], Y:Value[_,_], Z:Value[_,_],
   assert columns(X) == columns(Y);
   assert columns(Y) == columns(Z);
   A:Value[rows(X),columns(X)];
-  for auto i in 1..rows(X) {
-    for auto j in 1..columns(X) {
+  for i in 1..rows(X) {
+    for j in 1..columns(X) {
       A[i,j] <- f(X[i,j], Y[i,j], Z[i,j]);
     }
   }
@@ -140,7 +140,7 @@ function reduce<Value>(x:Value[_], init:Value,
 function transform_reduce<Value>(x:Value[_], init:Value,
     op1:@(Value, Value) -> Value, op2:@(Value) -> Value) -> Value {
   auto y <- init;
-  for auto n in 1..length(x) {
+  for n in 1..length(x) {
     y <- op1(y, op2(x[n]));
   }
   return y;
@@ -159,7 +159,7 @@ function transform_reduce<Value>(x:Value[_], y:Value[_], init:Value,
     op1:@(Value, Value) -> Value, op2:@(Value, Value) -> Value) -> Value {
   assert length(x) == length(y);
   auto z <- init;
-  for auto n in 1..length(x) {
+  for n in 1..length(x) {
     z <- op1(z, op2(x[n], y[n]));
   }
   return z;
@@ -181,7 +181,7 @@ function transform_reduce<Value>(x:Value[_], y:Value[_], z:Value[_],
   assert length(x) == length(y);
   assert length(y) == length(z);
   auto a <- init;
-  for auto n in 1..length(x) {
+  for n in 1..length(x) {
     a <- op1(a, op2(x[n], y[n], z[n]));
   }
   return a;
@@ -221,7 +221,7 @@ function exclusive_scan<Value>(x:Value[_], init:Value,
   // ^ C++17
   //}}
   y[1] <- init;
-  for auto i in 2..length(x) {
+  for i in 2..length(x) {
     y[i] <- y[i - 1] + x[i - 1];
   }
   return y;

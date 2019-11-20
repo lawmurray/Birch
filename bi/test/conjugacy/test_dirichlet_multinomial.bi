@@ -6,21 +6,21 @@ program test_dirichlet_multinomial(N:Integer <- 10000) {
   X2:Real[N,10];
   n:Integer <- simulate_uniform_int(100, 500);
   α:Real[5];
-  for auto i in 1..5 {
+  for i in 1..5 {
     α[i] <- simulate_uniform(1.0, 10.0);
   }
  
   /* simulate forward */
-  for auto i in 1..N {
+  for i in 1..N {
     m:TestDirichletMultinomial(n, α);
-    m.play();
+    delay.handle(m.simulate());
     X1[i,1..10] <- m.forward();
   }
 
   /* simulate backward */
-  for auto i in 1..N {
+  for i in 1..N {
     m:TestDirichletMultinomial(n, α);
-    m.play();
+    delay.handle(m.simulate());
     X2[i,1..10] <- m.backward();
   }
   

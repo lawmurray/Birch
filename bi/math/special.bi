@@ -40,7 +40,7 @@ function lgamma(x:Real32) -> Real32 {
 function gamma(x:Real64, p:Integer) -> Real64 {
   assert p > 0;
   auto y <- 0.25*(p*(p - 1))*log(π);
-  for auto i in 1..p {
+  for i in 1..p {
     y <- y*gamma(x + 0.5*(1 - i));
   }
   return y;
@@ -52,7 +52,7 @@ function gamma(x:Real64, p:Integer) -> Real64 {
 function gamma(x:Real32, p:Integer) -> Real32 {
   assert p > 0;
   auto y <- Real32(0.25)*Real32(p*(p - 1))*log(Real32(π));
-  for auto i in 1..p {
+  for i in 1..p {
     y <- y*gamma(x + Real32(0.5)*Real32(1 - i));
   }
   return y;
@@ -64,7 +64,7 @@ function gamma(x:Real32, p:Integer) -> Real32 {
 function lgamma(x:Real64, p:Integer) -> Real64 {
   assert p > 0;
   auto y <- 0.25*(p*(p - 1))*log(π);
-  for auto i in 1..p {
+  for i in 1..p {
     y <- y + lgamma(x + 0.5*(1 - i));
   }
   return y;
@@ -76,7 +76,7 @@ function lgamma(x:Real64, p:Integer) -> Real64 {
 function lgamma(x:Real32, p:Integer) -> Real32 {
   assert p > 0;
   auto y <- Real32(0.25)*Real32(p*(p - 1))*log(Real32(π));
-  for auto i in 1..p {
+  for i in 1..p {
     y <- y + lgamma(x + Real32(0.5)*Real32(1 - i));
   }
   return y;

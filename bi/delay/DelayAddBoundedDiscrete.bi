@@ -45,7 +45,7 @@ final class DelayAddBoundedDiscrete(future:Integer?, futureUpdate:Boolean,
       if (l <= u) {
         /* distribution over possible pairs that produce the given sum */
         z <- vector(0.0, u - l + 1);
-        for (n:Integer in l..u) {
+        for n in l..u {
           z[n - l + 1] <- x1.pdf(n)*x2.pdf(x - n);
           Z <- Z + z[n - l + 1];
         }
@@ -78,7 +78,7 @@ final class DelayAddBoundedDiscrete(future:Integer?, futureUpdate:Boolean,
 
   function cdf(x:Integer) -> Real? {
     P:Real <- 0.0;
-    for (n:Integer in l..x) {
+    for n in l..x {
       P <- P + pdf(n);
     }
     return P;

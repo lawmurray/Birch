@@ -124,7 +124,7 @@ function vector(x:Boolean[_]) -> Boolean[_] {
 function matrix(x:Boolean[_], rows:Integer, cols:Integer) -> Boolean[_,_] {
   assert rows*cols == length(x);
   X:Boolean[rows,cols];
-  for auto i in 1..rows {
+  for i in 1..rows {
     X[i,1..cols] <- x[(i - 1)*cols + 1..i*cols];
   }
   return X;
@@ -136,7 +136,7 @@ function matrix(x:Boolean[_], rows:Integer, cols:Integer) -> Boolean[_,_] {
 function matrix(x:Real[_], rows:Integer, cols:Integer) -> Real[_,_] {
   assert rows*cols == length(x);
   X:Real[rows,cols];
-  for auto i in 1..rows {
+  for i in 1..rows {
     X[i,1..cols] <- x[(i - 1)*cols + 1..i*cols];
   }
   return X;
@@ -148,7 +148,7 @@ function matrix(x:Real[_], rows:Integer, cols:Integer) -> Real[_,_] {
 function matrix(x:Integer[_], rows:Integer, cols:Integer) -> Integer[_,_] {
   assert rows*cols == length(x);
   X:Integer[rows,cols];
-  for auto i in 1..rows {
+  for i in 1..rows {
     X[i,1..cols] <- x[(i - 1)*cols + 1..i*cols];
   }
   return X;
@@ -382,7 +382,7 @@ function String(x:Real[_]) -> String {
   cpp{{
   std::stringstream buf;
   }}
-  for auto i in 1..length(x) {
+  for i in 1..length(x) {
     auto value <- String(x[i]);
     cpp{{
     if (i > 1) {
@@ -405,7 +405,7 @@ function String(x:Integer[_]) -> String {
   cpp{{
   std::stringstream buf;
   }}
-  for auto i in 1..length(x) {
+  for i in 1..length(x) {
     auto value <- String(x[i]);
     cpp{{
     if (i > 1) {
@@ -428,7 +428,7 @@ function String(x:Boolean[_]) -> String {
   cpp{{
   std::stringstream buf;
   }}
-  for auto i in 1..length(x) {
+  for i in 1..length(x) {
     auto value <- String(x[i]);
     cpp{{
     if (i > 1) {

@@ -123,7 +123,7 @@ function matrix(x:Boolean, rows:Integer, columns:Integer) -> Boolean[_,_] {
  */
 function diagonal(x:Real, length:Integer) -> Real[_,_] {
   Z:Real[_,_] <- matrix(0.0, length, length);
-  for (i:Integer in 1..length) {
+  for i in 1..length {
     Z[i,i] <- x;
   }
   return Z;
@@ -137,7 +137,7 @@ function diagonal(x:Real, length:Integer) -> Real[_,_] {
  */
 function diagonal(x:Integer, length:Integer) -> Integer[_,_] {
   Z:Integer[_,_] <- matrix(0, length, length);
-  for (i:Integer in 1..length) {
+  for i in 1..length {
     Z[i,i] <- x;
   }
   return Z;
@@ -151,7 +151,7 @@ function diagonal(x:Integer, length:Integer) -> Integer[_,_] {
  */
 function diagonal(x:Boolean, length:Integer) -> Boolean[_,_] {
   Z:Boolean[_,_] <- matrix(false, length, length);
-  for (i:Integer in 1..length) {
+  for i in 1..length {
     Z[i,i] <- x;
   }
   return Z;
@@ -200,7 +200,7 @@ function vector(X:Boolean[_,_]) -> Boolean[_] {
   auto rows <- global.rows(X);
   auto cols <- global.columns(X);
   x:Boolean[rows*cols];
-  for auto i in 1..rows {
+  for i in 1..rows {
     x[(i - 1)*cols + 1 .. i*cols] <- X[i,1..cols];
   }
   return x;
@@ -213,7 +213,7 @@ function vector(X:Real[_,_]) -> Real[_] {
   auto rows <- global.rows(X);
   auto cols <- global.columns(X);
   x:Real[rows*cols];
-  for auto i in 1..rows {
+  for i in 1..rows {
     x[(i - 1)*cols + 1 .. i*cols] <- X[i,1..cols];
   }
   return x;
@@ -226,7 +226,7 @@ function vector(X:Integer[_,_]) -> Integer[_] {
   auto rows <- global.rows(X);
   auto cols <- global.columns(X);
   x:Integer[rows*cols];
-  for auto i in 1..rows {
+  for i in 1..rows {
     x[(i - 1)*cols + 1 .. i*cols] <- X[i,1..cols];
   }
   return x;
@@ -303,13 +303,13 @@ function String(X:Real[_,_]) -> String {
   cpp{{
   std::stringstream buf;
   }}
-  for auto i in 1..rows(X) {
+  for i in 1..rows(X) {
     cpp{{
     if (i > 1) {
       buf << '\n';
     }
     }}
-    for auto j in 1..columns(X) {
+    for j in 1..columns(X) {
       auto value <- String(X[i,j]);
       cpp{{
       if (j > 1) {
@@ -333,13 +333,13 @@ function String(X:Integer[_,_]) -> String {
   cpp{{
   std::stringstream buf;
   }}
-  for auto i in 1..rows(X) {
+  for i in 1..rows(X) {
     cpp{{
     if (i > 1) {
       buf << '\n';
     }
     }}
-    for auto j in 1..columns(X) {
+    for j in 1..columns(X) {
       auto value <- String(X[i,j]);
       cpp{{
       if (j > 1) {
@@ -363,13 +363,13 @@ function String(X:Boolean[_,_]) -> String {
   cpp{{
   std::stringstream buf;
   }}
-  for auto i in 1..rows(X) {
+  for i in 1..rows(X) {
     cpp{{
     if (i > 1) {
       buf << '\n';
     }
     }}
-    for auto j in 1..columns(X) {
+    for j in 1..columns(X) {
       auto value <- String(X[i,j]);
       cpp{{
       if (j > 1) {

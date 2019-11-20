@@ -3,9 +3,13 @@
  */
 abstract class RandomAccessModel < BidirectionalModel {
   /**
-   * Seek to a specific step.
+   * Simulate one step.
+   *
+   * - t: The step index. The caller guarantees that this is a value between
+   *      1 and `size()`, which has not been used in a previous call to
+   *      the same fiber.
    */
-  function seek(t:Integer) {
-    this.t <- t;
+  fiber simulate(t:Integer) -> Event {
+    //
   }
 }

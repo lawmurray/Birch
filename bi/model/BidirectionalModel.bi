@@ -1,11 +1,16 @@
 /**
  * Bidirectional model.
  */
-abstract class BidirectionalModel < ForwardModel {  
+abstract class BidirectionalModel < ForwardModel {
   /**
-   * Move back one step.
+   * Simulate one step.
+   *
+   * - t: The step index. The caller guarantees that this constitutes either
+   *      one greater than or one less than the `t` of the previous call to
+   *      the same fiber, or 1 if the fiber has not been called on this
+   *      before.
    */
-  function previous() {
-    t <- t - 1;
+  fiber simulate(t:Integer) -> Event {
+    //
   }
 }

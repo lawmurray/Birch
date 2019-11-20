@@ -238,14 +238,14 @@ final class List<Type> {
     if (2*i <= count) {
       /* walk forward */
       node <- head;
-      for (j:Integer in 1..i-1) {
+      for j in 1..i-1 {
         assert node?;
         node <- node!.next;
       }
     } else {
       /* walk backward */
       node <- tail;
-      for (j:Integer in 1..count - i) {
+      for j in 1..count - i {
         assert node?;
         node <- node!.prev;
       }

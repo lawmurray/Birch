@@ -45,7 +45,7 @@ function test_cdf(q:Distribution<Real>, N:Integer) {
 
   /* compare sum of pdf to cdf evaluations */
   auto P <- 0.5/N;
-  for auto n in 1..N {
+  for n in 1..N {
     auto x <- from! + (n - 0.5)*(to! - from!)/N;
     auto C <- q.cdf(x)!;
     P <- P + q.pdf(x)*(to! - from!)/N;
@@ -100,7 +100,7 @@ function test_cdf(q:Distribution<Integer>) {
   
   /* compare sum of pdf to cdf evaluations */
   auto P <- 0.0;
-  for auto x in from!..to! {
+  for x in from!..to! {
     auto C <- q.cdf(x)!;
     P <- P + q.pdf(x);
     

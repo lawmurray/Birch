@@ -58,17 +58,20 @@ public:
   /**
    * Constructor.
    *
+   * @tparam ...Args Constructor parameter types.
+   *
    * @param context Current context.
    * @param shape Shape.
+   * @param args Constructor arguments.
    */
-  template<IS_NOT_VALUE(T)>
-  Array(Label* context, const F& shape) :
+  template<IS_NOT_VALUE(T), class... Args>
+  Array(Label* context, const F& shape, Args ... args) :
       shape(shape),
       buffer(nullptr),
       offset(0),
       isView(false) {
     allocate();
-    initialize(context);
+    initialize(context, args...);
   }
 
   /**
@@ -90,8 +93,6 @@ public:
   /**
    * Constructor.
    *
-   * @tparam ...Args Constructor parameter types.
-   *
    * @param context Current context.
    * @param shape Shape.
    * @param values Values.
@@ -110,20 +111,38 @@ public:
   /**
    * Constructor.
    *
-   * @tparam ...Args Constructor parameter types.
-   *
-   * @param context Current context.
    * @param shape Shape.
-   * @param args Constructor arguments.
+   * @param f Lambda function that can be called to construct each element.
    */
-  template<IS_NOT_VALUE(T), class... Args>
-  Array(Label* context, const F& shape, Args ... args) :
+  template<IS_VALUE(T)>
+  Array(const F& shape, const std::function<T(void)>& f) :
       shape(shape),
       buffer(nullptr),
       offset(0),
       isView(false) {
     allocate();
-    initialize(context, args...);
+    for (auto iter = begin(); iter != end(); ++iter) {
+      new (&*iter) T(f());
+    }
+  }
+
+  /**
+   * Constructor.
+   *
+   * @param context Current context.
+   * @param shape Shape.
+   * @param f Lambda function that can be called to construct each element.
+   */
+  template<IS_NOT_VALUE(T)>
+  Array(Label* context, const F& shape, const std::function<T(void)>& f) :
+      shape(shape),
+      buffer(nullptr),
+      offset(0),
+      isView(false) {
+    allocate();
+    for (auto iter = begin(); iter != end(); ++iter) {
+      new (&*iter) T(f());
+    }
   }
 
   /**

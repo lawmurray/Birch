@@ -8,25 +8,25 @@ program test_chain_multivariate_gaussian(N:Integer <- 10000) {
   μ:Real[3];
   Σ:Real[3,3];
 
-  for i:Integer in 1..3 {
+  for i in 1..3 {
     μ[i] <- simulate_uniform(-10.0, 10.0);
-    for j:Integer in 1..3 {
+    for j in 1..3 {
       Σ[i,j] <- simulate_uniform(-2.0, 2.0);
     }
   }
   Σ <- Σ*transpose(Σ);
  
   /* simulate forward */
-  for i:Integer in 1..N {
+  for i in 1..N {
     m:TestChainMultivariateGaussian(μ, Σ);
-    m.play();
+    delay.handle(m.simulate());
     X1[i,1..15] <- m.forward();
   }
 
   /* simulate backward */
-  for i:Integer in 1..N {
+  for i in 1..N {
     m:TestChainMultivariateGaussian(μ, Σ);
-    m.play();
+    delay.handle(m.simulate());
     X2[i,1..15] <- m.backward();
   }
   
@@ -51,7 +51,7 @@ class TestChainMultivariateGaussian(μ:Real[_], Σ:Real[_,_]) < Model {
   
   function forward() -> Real[_] {
     y:Real[15];
-    for i:Integer in 1..5 {
+    for i in 1..5 {
       assert !x[i].hasValue();
       y[(i-1)*3+1..i*3] <- x[i].value();
     }
@@ -60,7 +60,7 @@ class TestChainMultivariateGaussian(μ:Real[_], Σ:Real[_,_]) < Model {
 
   function backward() -> Real[_] {
     y:Real[15];
-    for i:Integer in 0..4 {
+    for i in 0..4 {
       assert !x[5-i].hasValue();
       y[(4-i)*3+1..(5-i)*3] <- x[5-i].value();
     }

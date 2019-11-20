@@ -3,18 +3,18 @@
  */
 program test_dirichlet_categorical(N:Integer <- 10000) { 
   m:TestDirichletCategorical;
-  m.play();
+  delay.handle(m.simulate());
 
   /* simulate forward */
   X1:Real[N,6];
-  for auto n in 1..N {
+  for n in 1..N {
     auto m' <- clone<TestDirichletCategorical>(m);
     X1[n,1..6] <- m'.forward();
   }
 
   /* simulate backward */
   X2:Real[N,6];
-  for auto n in 1..N {
+  for n in 1..N {
     auto m' <- clone<TestDirichletCategorical>(m);
     X2[n,1..6] <- m'.backward();
   }
@@ -31,7 +31,7 @@ class TestDirichletCategorical < Model {
   
   fiber simulate() -> Event {
     α:Real[5];
-    for n:Integer in 1..5 {
+    for n in 1..5 {
       α[n] <- simulate_uniform(1.0, 10.0);
     }
     ρ ~ Dirichlet(α);

@@ -4,18 +4,18 @@
 program test_negative_linear_multivariate_gaussian_multivariate_gaussian(
     N:Integer <- 10000) {
   m:TestNegativeLinearMultivariateGaussianMultivariateGaussian;
-  m.play();
+  delay.handle(m.simulate());
  
   /* simulate forward */
   X1:Real[N,10];
-  for auto n in 1..N {
+  for n in 1..N {
     auto m' <- clone<TestNegativeLinearMultivariateGaussianMultivariateGaussian>(m);
     X1[n,1..10] <- m'.forward();
   }
 
   /* simulate backward */
   X2:Real[N,10];
-  for auto n in 1..N {
+  for n in 1..N {
     auto m' <- clone<TestNegativeLinearMultivariateGaussianMultivariateGaussian>(m);
     X2[n,1..10] <- m'.backward();
   }
@@ -37,10 +37,10 @@ class TestNegativeLinearMultivariateGaussianMultivariateGaussian < Model {
     c:Real[5];
     Σ_1:Real[5,5];
 
-    for i:Integer in 1..5 {
+    for i in 1..5 {
       μ_0[i] <- simulate_uniform(-10.0, 10.0);
       c[i] <- simulate_uniform(-10.0, 10.0);
-      for j:Integer in 1..5 {
+      for j in 1..5 {
         Σ_0[i,j] <- simulate_uniform(-2.0, 2.0);
         Σ_1[i,j] <- simulate_uniform(-2.0, 2.0);
         A[i,j] <- simulate_uniform(-2.0, 2.0);

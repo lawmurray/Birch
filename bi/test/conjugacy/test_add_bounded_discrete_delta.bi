@@ -6,17 +6,17 @@ program test_add_bounded_discrete_delta(N:Integer <- 10000) {
   X2:Real[N,2];
  
   /* simulate forward */
-  for auto n in 1..N {
+  for n in 1..N {
     m:TestAddBoundedDiscreteDelta;
-    m.play();
+    delay.handle(m.simulate());
     X1[n,1..2] <- m.forward();
   }
 
   /* simulate backward */
-  for auto n in 1..N {
+  for n in 1..N {
     m:TestAddBoundedDiscreteDelta;
     m.s <- Integer(X1[n,1] + X1[n,2]);
-    m.play();
+    delay.handle(m.simulate());
     X2[n,1..2] <- m.backward();
   }
   

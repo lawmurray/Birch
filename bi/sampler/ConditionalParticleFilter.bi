@@ -20,7 +20,7 @@ class ConditionalParticleFilter < ParticleFilter {
     }
     
     /* switch on recording for all particles */
-    for auto n in 1..N {
+    for n in 1..N {
       x[n].h.setRecord(true);
     }
   }
@@ -42,7 +42,7 @@ class ConditionalParticleFilter < ParticleFilter {
       w <- vector(0.0, N);
 
       /* copy particles */
-      dynamic parallel for auto n in 1..N {
+      dynamic parallel for n in 1..N {
         if a[n] == n {
           // avoid clone overhead
         } else {

@@ -6,16 +6,16 @@ program test_normal_inverse_gamma_gaussian(N:Integer <- 10000) {
   X2:Real[N,3];
 
   m:TestNormalInverseGammaGaussian;
-  m.play();
+  delay.handle(m.simulate());
    
   /* simulate forward */
-  for auto n in 1..N {
+  for n in 1..N {
     auto m' <- clone<TestNormalInverseGammaGaussian>(m);
     X1[n,1..3] <- m'.forward();
   }
 
   /* simulate backward */
-  for auto n in 1..N {
+  for n in 1..N {
     auto m' <- clone<TestNormalInverseGammaGaussian>(m);
     X2[n,1..3] <- m'.backward();
   }
