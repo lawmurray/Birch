@@ -3,16 +3,6 @@
  */
 class ParticleFilter {
   /**
-   * Model.
-   */
-  model:ForwardModel;
-
-  /**
-   * Number of steps.
-   */
-  nsteps:Integer <- 1;
-
-  /**
    * Number of particles.
    */
   nparticles:Integer <- 1;
@@ -29,7 +19,7 @@ class ParticleFilter {
    */
   delayed:Boolean <- true;
 
-  fiber filter() -> (ForwardModel[_], Real[_], Real, Real) {
+  fiber filter(model:ForwardModel) -> (ForwardModel[_], Real[_], Real, Real) {
     auto x <- clone<ForwardModel>(model, nparticles);  // particles
     auto w <- vector(0.0, 0);  // log-weights
     auto ess <- 0.0;  // effective sample size
@@ -47,8 +37,11 @@ class ParticleFilter {
     }
     (ess, levidence) <- resample_reduce(w);
     yield (x, w, ess, levidence);
-      
-    for t in 1..nsteps {
+    
+    auto t <- 0;
+    while true {
+      t <- t + 1;
+    
       /* resample */
       if ess <= trigger*nparticles {
         auto a <- resample_systematic(w);
@@ -68,20 +61,13 @@ class ParticleFilter {
     }
   }
 
-  function setModel(model:ForwardModel) {
-    this.model <- model;
-    nsteps <- model.size();
-  }
-
   function read(buffer:Buffer) {
-    nsteps <-? buffer.get("nsteps", nsteps);
     nparticles <-? buffer.get("nparticles", nparticles);
     trigger <-? buffer.get("trigger", trigger);
     delayed <-? buffer.get("delayed", delayed);
   }
 
   function write(buffer:Buffer) {
-    buffer.set("nsteps", nsteps);
     buffer.set("nparticles", nparticles);
     buffer.set("trigger", trigger);
     buffer.set("delayed", delayed);

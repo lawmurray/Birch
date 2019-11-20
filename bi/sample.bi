@@ -114,7 +114,6 @@ program sample(
   if !s? {
     error(samplerClass! + " is not a subtype of Sampler.");
   }
-  s!.setArchetype(m!);
   m <- nil;
   if config? {
     configBuffer.get("sampler", s!);
@@ -146,7 +145,7 @@ program sample(
   /* sample */
   m1:Model?;
   w1:Real;
-  auto f <- s!.sample();
+  auto f <- s!.sample(m1!);
   while f? {
     (m1, w1) <- f!;
     if outputWriter? {

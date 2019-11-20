@@ -8,11 +8,6 @@ class ConditionalParticleFilter {
   model:ForwardModel;
 
   /**
-   * Number of steps.
-   */
-  nsteps:Integer <- 1;
-
-  /**
    * Number of particles.
    */
   nparticles:Integer <- 1;
@@ -34,7 +29,8 @@ class ConditionalParticleFilter {
    */
   ancestor:Boolean <- false;
 
-  fiber filter(reference:Trace) -> (ForwardModel[_], Real[_], Trace[_], Real, Real) {
+  fiber filter(model:ForwardModel, reference:Trace?) -> (ForwardModel[_],
+      Real[_], Trace[_], Real, Real) {
     auto x <- clone<ForwardModel>(model, nparticles);  // particles
     auto w <- vector(0.0, 0);  // log-weights
     auto a <- iota(1, nparticles);  // ancestor indices
@@ -53,8 +49,8 @@ class ConditionalParticleFilter {
 
     /* initialize and weight */
     parallel for n in 1..nparticles {
-      if n == b {
-        w[n] <- replay.handle(reference, x[n].simulate(), r[n]);
+      if reference? && n == b {
+        w[n] <- replay.handle(reference!, x[n].simulate(), r[n]);
       } else {
         w[n] <- play.handle(x[n].simulate(), r[n]);
       }
@@ -62,21 +58,18 @@ class ConditionalParticleFilter {
     (ess, levidence) <- resample_reduce(w);
     yield (x, w, r, ess, levidence);
       
-    for t in 1..nsteps {
+    auto t <- 0;
+    while true {
+      t <- t + 1;
+
       /* ancestor sampling */
-      if ancestor {
+      if reference? && ancestor {
         auto w' <- w;
         dynamic parallel for n in 1..nparticles {
           auto x' <- clone<ForwardModel>(x[n]);
-          auto reference' <- clone<Trace>(reference);
-          
-          /* simulate the particle until the end, replaying the reference
-           * particle trace (not assuming that it's a Markov model here) */
-          auto t' <- t;
-          do {
-            w'[n] <- w'[n] + replay.handle(reference', x'.simulate(t'));
-            t' <- t' + 1;
-          } while w'[n] > -inf && t' <= nsteps;
+          auto reference' <- clone<Trace>(reference!);
+          w'[n] <- w'[n] + replay.handle(reference', x'.simulate(t));
+          // ^ assuming Markov model here
         }
         
         /* simulate a new ancestor index */
@@ -85,7 +78,11 @@ class ConditionalParticleFilter {
     
       /* resample */
       if ess <= trigger*nparticles {
-        (a, b) <- conditional_resample_multinomial(w, b);
+        if reference? {
+          (a, b) <- conditional_resample_multinomial(w, b);
+        } else {
+          a <- resample_multinomial(w);
+        }
         dynamic parallel for n in 1..nparticles {
           if a[n] != n {
             x[n] <- clone<ForwardModel>(x[a[n]]);
@@ -96,8 +93,8 @@ class ConditionalParticleFilter {
       
       /* propagate and weight */
       parallel for n in 1..nparticles {
-        if n == b {
-          w[n] <- replay.handle(reference, x[n].simulate(t), r[n]);
+        if reference? && n == b {
+          w[n] <- replay.handle(reference!, x[n].simulate(t), r[n]);
         } else {
           w[n] <- play.handle(x[n].simulate(t), r[n]);
         }
@@ -106,13 +103,7 @@ class ConditionalParticleFilter {
     }
   }
 
-  function setModel(model:ForwardModel) {
-    this.model <- model;
-    nsteps <- model.size();
-  }
-
   function read(buffer:Buffer) {
-    nsteps <-? buffer.get("nsteps", nsteps);
     nparticles <-? buffer.get("nparticles", nparticles);
     trigger <-? buffer.get("trigger", trigger);
     delayed <-? buffer.get("delayed", delayed);
@@ -120,7 +111,6 @@ class ConditionalParticleFilter {
   }
 
   function write(buffer:Buffer) {
-    buffer.set("nsteps", nsteps);
     buffer.set("nparticles", nparticles);
     buffer.set("trigger", trigger);
     buffer.set("delayed", delayed);
