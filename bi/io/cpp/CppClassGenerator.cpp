@@ -369,7 +369,7 @@ void bi::CppClassGenerator::visit(const MemberVariable* o) {
 }
 
 void bi::CppClassGenerator::visit(const MemberFunction* o) {
-  if (header || !o->braces->isEmpty()) {
+  if ((header && o->has(ABSTRACT)) || !o->braces->isEmpty()) {
     if (header) {
       start("virtual ");
     } else {
@@ -426,7 +426,7 @@ void bi::CppClassGenerator::visit(const MemberFunction* o) {
 }
 
 void bi::CppClassGenerator::visit(const MemberFiber* o) {
-  if (header || !o->braces->isEmpty()) {
+  if ((header && o->has(ABSTRACT)) || !o->braces->isEmpty()) {
     CppMemberFiberGenerator auxMemberFiber(type, base, level, header);
     auxMemberFiber << o;
   }
