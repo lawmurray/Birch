@@ -1,7 +1,7 @@
 /**
  * Particle marginal importance sampler.
  */
-class ParticleMarginalImportanceSampler < Sampler {
+class ParticleMarginalImportanceSampler < ForwardSampler {
   /**
    * Particle filter to use for state sampling.
    */
@@ -12,7 +12,7 @@ class ParticleMarginalImportanceSampler < Sampler {
    */
   nsteps:Integer <- 0;
 
-  fiber sample(model:ForwardModel) -> (Model, Real) {
+  fiber sample(model:ForwardModel) -> (ForwardModel, Real) {
     x:ForwardModel[_];
     w:Real[_];
     ess:Real;

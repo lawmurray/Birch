@@ -1,7 +1,7 @@
 /**
  * Marginalized particle Gibbs sampler.
  */
-class MarginalizedParticleGibbsSampler < Sampler {
+class MarginalizedParticleGibbsSampler < ForwardSampler {
   /**
    * Conditional particle filter to use for state sampling.
    */
@@ -12,7 +12,7 @@ class MarginalizedParticleGibbsSampler < Sampler {
    */
   nsteps:Integer <- 0;
 
-  fiber sample(model:ForwardModel) -> (Model, Real) {
+  fiber sample(model:ForwardModel) -> (ForwardModel, Real) {
     x:ForwardModel[_];
     w:Real[_];
     r:Trace[_];
