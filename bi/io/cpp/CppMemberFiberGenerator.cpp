@@ -170,7 +170,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
 
   /* name function */
   if (header) {
-    line("virtual const char* name_() const {");
+    line("virtual const char* getClassName() const {");
     in();
     line("return \"" << stateName << "\";  // LCOV_EXCL_LINE");
     out();

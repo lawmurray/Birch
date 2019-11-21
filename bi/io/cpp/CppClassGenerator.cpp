@@ -210,7 +210,7 @@ void bi::CppClassGenerator::visit(const Class* o) {
 
     /* name function */
     if (header) {
-      line("virtual const char* name_() const {");
+      line("virtual const char* getClassName() const {");
       in();
       line("return \"" << o->name << "\";  // LCOV_EXCL_LINE");
       out();
