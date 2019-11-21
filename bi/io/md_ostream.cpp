@@ -243,13 +243,6 @@ void bi::md_ostream::visit(const Parameter* o) {
   }
 }
 
-void bi::md_ostream::visit(const FiberParameter* o) {
-  middle(o->name << ':' << o->type);
-  if (!o->value->isEmpty()) {
-    *this << " <- " << o->value;
-  }
-}
-
 void bi::md_ostream::visit(const GlobalVariable* o) {
   middle(o->name << ':' << o->type);
 }

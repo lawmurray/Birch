@@ -87,18 +87,8 @@ bi::Expression* bi::Cloner::clone(const Call<Parameter>* o) {
       o->args->accept(this), o->loc);
 }
 
-bi::Expression* bi::Cloner::clone(const Call<FiberParameter>* o) {
-  return new Call<FiberParameter>(o->single->accept(this),
-      o->args->accept(this), o->loc);
-}
-
 bi::Expression* bi::Cloner::clone(const Call<LocalVariable>* o) {
   return new Call<LocalVariable>(o->single->accept(this),
-      o->args->accept(this), o->loc);
-}
-
-bi::Expression* bi::Cloner::clone(const Call<FiberVariable>* o) {
-  return new Call<FiberVariable>(o->single->accept(this),
       o->args->accept(this), o->loc);
 }
 
@@ -182,11 +172,6 @@ bi::Expression* bi::Cloner::clone(const Parameter* o) {
       o->value->accept(this), o->loc);
 }
 
-bi::Expression* bi::Cloner::clone(const FiberParameter* o) {
-  return new FiberParameter(o->annotation, o->name, o->type->accept(this),
-      o->value->accept(this), o->loc);
-}
-
 bi::Expression* bi::Cloner::clone(const Generic* o) {
   return new Generic(o->annotation, o->name, o->type->accept(this), o->loc);
 }
@@ -199,20 +184,12 @@ bi::Expression* bi::Cloner::clone(const Identifier<Parameter>* o) {
   return new Identifier<Parameter>(o->name, o->loc);
 }
 
-bi::Expression* bi::Cloner::clone(const Identifier<FiberParameter>* o) {
-  return new Identifier<FiberParameter>(o->name, o->loc);
-}
-
 bi::Expression* bi::Cloner::clone(const Identifier<GlobalVariable>* o) {
   return new Identifier<GlobalVariable>(o->name, o->loc);
 }
 
 bi::Expression* bi::Cloner::clone(const Identifier<MemberVariable>* o) {
   return new Identifier<MemberVariable>(o->name, o->loc);
-}
-
-bi::Expression* bi::Cloner::clone(const Identifier<FiberVariable>* o) {
-  return new Identifier<FiberVariable>(o->name, o->loc);
 }
 
 bi::Expression* bi::Cloner::clone(const Identifier<LocalVariable>* o) {
@@ -292,12 +269,6 @@ bi::Statement* bi::Cloner::clone(const GlobalVariable* o) {
 
 bi::Statement* bi::Cloner::clone(const MemberVariable* o) {
   return new MemberVariable(o->annotation, o->name, o->type->accept(this),
-      o->brackets->accept(this), o->args->accept(this),
-      o->value->accept(this), o->loc);
-}
-
-bi::Statement* bi::Cloner::clone(const FiberVariable* o) {
-  return new FiberVariable(o->annotation, o->name, o->type->accept(this),
       o->brackets->accept(this), o->args->accept(this),
       o->value->accept(this), o->loc);
 }

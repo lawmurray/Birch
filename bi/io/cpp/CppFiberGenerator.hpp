@@ -46,8 +46,8 @@ protected:
   /*
    * Gatherers for important objects.
    */
-  Gatherer<FiberParameter> params;
-  Gatherer<FiberVariable> locals;
+  Gatherer<Parameter> params;
+  Gatherer<LocalVariable> locals;
   Gatherer<ForVariable> fors;
   Gatherer<Yield> yields;
 

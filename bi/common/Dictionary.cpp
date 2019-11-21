@@ -38,10 +38,8 @@ void bi::Dictionary<ObjectType>::add(ObjectType* o) {
 }
 
 template class bi::Dictionary<bi::Parameter>;
-template class bi::Dictionary<bi::FiberParameter>;
 template class bi::Dictionary<bi::GlobalVariable>;
 template class bi::Dictionary<bi::MemberVariable>;
-template class bi::Dictionary<bi::FiberVariable>;
 template class bi::Dictionary<bi::LocalVariable>;
 template class bi::Dictionary<bi::ForVariable>;
 template class bi::Dictionary<bi::ParallelVariable>;

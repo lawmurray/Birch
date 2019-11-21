@@ -22,8 +22,7 @@ bi::Identifier<ObjectType>::~Identifier() {
 template<class ObjectType>
 bool bi::Identifier<ObjectType>::isAssignable() const {
   return std::is_same<ObjectType,MemberVariable>::value ||
-      std::is_same<ObjectType,LocalVariable>::value ||
-      std::is_same<ObjectType,FiberVariable>::value;
+      std::is_same<ObjectType,LocalVariable>::value;
 }
 
 template<class ObjectType>
@@ -62,10 +61,8 @@ void bi::Identifier<ObjectType>::accept(Visitor* visitor) const {
 
 template class bi::Identifier<bi::Unknown>;
 template class bi::Identifier<bi::Parameter>;
-template class bi::Identifier<bi::FiberParameter>;
 template class bi::Identifier<bi::GlobalVariable>;
 template class bi::Identifier<bi::MemberVariable>;
-template class bi::Identifier<bi::FiberVariable>;
 template class bi::Identifier<bi::LocalVariable>;
 template class bi::Identifier<bi::ForVariable>;
 template class bi::Identifier<bi::ParallelVariable>;

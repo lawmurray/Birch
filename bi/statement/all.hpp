@@ -14,7 +14,6 @@
 #include "bi/statement/DoWhile.hpp"
 #include "bi/statement/EmptyStatement.hpp"
 #include "bi/statement/ExpressionStatement.hpp"
-#include "bi/statement/FiberVariable.hpp"
 #include "bi/statement/For.hpp"
 #include "bi/statement/ForVariable.hpp"
 #include "bi/statement/Fiber.hpp"

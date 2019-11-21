@@ -5,10 +5,8 @@
 
 namespace bi {
 class Parameter;
-class FiberParameter;
 class GlobalVariable;
 class MemberVariable;
-class FiberVariable;
 class LocalVariable;
 class ForVariable;
 class ParallelVariable;
@@ -25,10 +23,8 @@ class Unknown;
  */
 enum Lookup {
   PARAMETER,
-  FIBER_PARAMETER,
   GLOBAL_VARIABLE,
   MEMBER_VARIABLE,
-  FIBER_VARIABLE,
   LOCAL_VARIABLE,
   FOR_VARIABLE,
   PARALLEL_VARIABLE,
@@ -57,20 +53,12 @@ struct lookup_result<Parameter> {
   static const Lookup value = PARAMETER;
 };
 template<>
-struct lookup_result<FiberParameter> {
-  static const Lookup value = FIBER_PARAMETER;
-};
-template<>
 struct lookup_result<GlobalVariable> {
   static const Lookup value = GLOBAL_VARIABLE;
 };
 template<>
 struct lookup_result<MemberVariable> {
   static const Lookup value = MEMBER_VARIABLE;
-};
-template<>
-struct lookup_result<FiberVariable> {
-  static const Lookup value = FIBER_VARIABLE;
 };
 template<>
 struct lookup_result<LocalVariable> {

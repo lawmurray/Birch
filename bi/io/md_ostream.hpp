@@ -21,7 +21,6 @@ public:
   virtual void visit(const Name* o);
 
   virtual void visit(const Parameter* o);
-  virtual void visit(const FiberParameter* o);
   virtual void visit(const GlobalVariable* o);
   virtual void visit(const MemberVariable* o);
   virtual void visit(const Function* o);

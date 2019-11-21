@@ -40,9 +40,7 @@ public:
   virtual void visit(const Call<Fiber>* o);
   virtual void visit(const Call<MemberFiber>* o);
   virtual void visit(const Call<Parameter>* o);
-  virtual void visit(const Call<FiberParameter>* o);
   virtual void visit(const Call<LocalVariable>* o);
-  virtual void visit(const Call<FiberVariable>* o);
   virtual void visit(const Call<MemberVariable>* o);
   virtual void visit(const Call<GlobalVariable>* o);
   virtual void visit(const Call<BinaryOperator>* o);
@@ -61,13 +59,10 @@ public:
   virtual void visit(const This* o);
   virtual void visit(const Nil* o);
   virtual void visit(const Parameter* o);
-  virtual void visit(const FiberParameter* o);
   virtual void visit(const Identifier<Unknown>* o);
   virtual void visit(const Identifier<Parameter>* o);
-  virtual void visit(const Identifier<FiberParameter>* o);
   virtual void visit(const Identifier<GlobalVariable>* o);
   virtual void visit(const Identifier<MemberVariable>* o);
-  virtual void visit(const Identifier<FiberVariable>* o);
   virtual void visit(const Identifier<LocalVariable>* o);
   virtual void visit(const Identifier<ForVariable>* o);
   virtual void visit(const Identifier<ParallelVariable>* o);
@@ -85,7 +80,6 @@ public:
   virtual void visit(const Assume* o);
   virtual void visit(const GlobalVariable* o);
   virtual void visit(const MemberVariable* o);
-  virtual void visit(const FiberVariable* o);
   virtual void visit(const LocalVariable* o);
   virtual void visit(const ForVariable* o);
   virtual void visit(const ParallelVariable* o);

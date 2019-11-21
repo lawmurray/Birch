@@ -20,7 +20,6 @@
 #include "bi/expression/Nil.hpp"
 #include "bi/expression/OverloadedIdentifier.hpp"
 #include "bi/expression/Parameter.hpp"
-#include "bi/expression/FiberParameter.hpp"
 #include "bi/expression/Parentheses.hpp"
 #include "bi/expression/Query.hpp"
 #include "bi/expression/Range.hpp"

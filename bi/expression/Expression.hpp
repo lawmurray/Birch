@@ -148,9 +148,7 @@ public:
    * @return The resolved call.
    */
   virtual Parameter* resolve(Call<Parameter>* o);
-  virtual FiberParameter* resolve(Call<FiberParameter>* o);
   virtual LocalVariable* resolve(Call<LocalVariable>* o);
-  virtual FiberVariable* resolve(Call<FiberVariable>* o);
   virtual MemberVariable* resolve(Call<MemberVariable>* o);
   virtual GlobalVariable* resolve(Call<GlobalVariable>* o);
   virtual Function* resolve(Call<Function>* o);

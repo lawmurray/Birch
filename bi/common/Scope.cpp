@@ -6,11 +6,9 @@
 #include "bi/expression/Identifier.hpp"
 #include "bi/expression/OverloadedIdentifier.hpp"
 #include "bi/expression/Parameter.hpp"
-#include "bi/expression/FiberParameter.hpp"
 #include "bi/expression/Generic.hpp"
 #include "bi/statement/GlobalVariable.hpp"
 #include "bi/statement/MemberVariable.hpp"
-#include "bi/statement/FiberVariable.hpp"
 #include "bi/statement/LocalVariable.hpp"
 #include "bi/statement/ForVariable.hpp"
 #include "bi/statement/ParallelVariable.hpp"
@@ -37,16 +35,12 @@ bi::Lookup bi::Scope::lookup(const Identifier<Unknown>* o) const {
   auto name = o->name->str();
   if (localVariables.contains(name)) {
     return LOCAL_VARIABLE;
-  } else if (fiberVariables.contains(name)) {
-      return FIBER_VARIABLE;
   } else if (forVariables.contains(name)) {
     return FOR_VARIABLE;
   } else if (parallelVariables.contains(name)) {
     return PARALLEL_VARIABLE;
   } else if (parameters.contains(name)) {
     return PARAMETER;
-  } else if (fiberParameters.contains(name)) {
-    return FIBER_PARAMETER;
   } else if (memberVariables.contains(name)) {
     return MEMBER_VARIABLE;
   } else if (memberFunctions.contains(name)) {
@@ -148,11 +142,6 @@ void bi::Scope::add(Parameter* param) {
   parameters.add(param);
 }
 
-void bi::Scope::add(FiberParameter* param) {
-  checkPreviousLocal(param);
-  fiberParameters.add(param);
-}
-
 void bi::Scope::add(GlobalVariable* param) {
   checkPreviousGlobal(param);
   globalVariables.add(param);
@@ -161,11 +150,6 @@ void bi::Scope::add(GlobalVariable* param) {
 void bi::Scope::add(MemberVariable* param) {
   checkPreviousMember(param);
   memberVariables.add(param);
-}
-
-void bi::Scope::add(FiberVariable* param) {
-  checkPreviousLocal(param);
-  fiberVariables.add(param);
 }
 
 void bi::Scope::add(LocalVariable* param) {
@@ -260,10 +244,6 @@ void bi::Scope::resolve(Identifier<Parameter>* o) {
   parameters.resolve(o);
 }
 
-void bi::Scope::resolve(Identifier<FiberParameter>* o) {
-  fiberParameters.resolve(o);
-}
-
 void bi::Scope::resolve(Identifier<GlobalVariable>* o) {
   globalVariables.resolve(o);
 }
@@ -273,10 +253,6 @@ void bi::Scope::resolve(Identifier<MemberVariable>* o) {
   if (!o->target && base) {
     base->resolve(o);
   }
-}
-
-void bi::Scope::resolve(Identifier<FiberVariable>* o) {
-  fiberVariables.resolve(o);
 }
 
 void bi::Scope::resolve(Identifier<LocalVariable>* o) {

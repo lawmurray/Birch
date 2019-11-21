@@ -6,7 +6,6 @@
 #include "bi/exception/CompilerException.hpp"
 #include "bi/expression/Parameter.hpp"
 #include "bi/statement/LocalVariable.hpp"
-#include "bi/statement/FiberVariable.hpp"
 #include "bi/statement/MemberVariable.hpp"
 #include "bi/statement/GlobalVariable.hpp"
 

@@ -104,15 +104,7 @@ bi::Parameter* bi::Expression::resolve(Call<Parameter>* o) {
   assert(false);
 }
 
-bi::FiberParameter* bi::Expression::resolve(Call<FiberParameter>* o) {
-  assert(false);
-}
-
 bi::LocalVariable* bi::Expression::resolve(Call<LocalVariable>* o) {
-  assert(false);
-}
-
-bi::FiberVariable* bi::Expression::resolve(Call<FiberVariable>* o) {
   assert(false);
 }
 

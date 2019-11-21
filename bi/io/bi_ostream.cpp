@@ -113,15 +113,7 @@ void bi::bi_ostream::visit(const Call<Parameter>* o) {
   middle(o->single << '(' << o->args << ')');
 }
 
-void bi::bi_ostream::visit(const Call<FiberParameter>* o) {
-  middle(o->single << '(' << o->args << ')');
-}
-
 void bi::bi_ostream::visit(const Call<LocalVariable>* o) {
-  middle(o->single << '(' << o->args << ')');
-}
-
-void bi::bi_ostream::visit(const Call<FiberVariable>* o) {
   middle(o->single << '(' << o->args << ')');
 }
 
@@ -208,13 +200,6 @@ void bi::bi_ostream::visit(const Parameter* o) {
   }
 }
 
-void bi::bi_ostream::visit(const FiberParameter* o) {
-  middle(o->name << ':' << o->type);
-  if (!o->value->isEmpty()) {
-    middle(" <- " << o->value);
-  }
-}
-
 void bi::bi_ostream::visit(const Generic* o) {
   if (!o->type->isEmpty()) {
     middle(o->type);
@@ -269,29 +254,6 @@ void bi::bi_ostream::visit(const MemberVariable* o) {
   finish(';');
 }
 
-void bi::bi_ostream::visit(const FiberVariable* o) {
-  if (o->has(AUTO)) {
-    middle("auto " << o->name);
-  } else {
-    middle(o->name << ':');
-    if (o->type->isArray() && !o->brackets->isEmpty()) {
-      middle(dynamic_cast<const ArrayType*>(o->type)->single);
-    } else {
-      middle(o->type);
-    }
-    if (!o->brackets->isEmpty()) {
-      middle('[' << o->brackets << ']');
-    }
-    if (!o->args->isEmpty()) {
-      middle('(' << o->args << ')');
-    }
-  }
-  if (!o->value->isEmpty()) {
-    middle(" <- " << o->value);
-  }
-  finish(';');
-}
-
 void bi::bi_ostream::visit(const LocalVariable* o) {
   if (o->has(AUTO)) {
     middle("auto " << o->name);
@@ -327,19 +289,11 @@ void bi::bi_ostream::visit(const Identifier<Parameter>* o) {
   middle(o->name);
 }
 
-void bi::bi_ostream::visit(const Identifier<FiberParameter>* o) {
-  middle(o->name);
-}
-
 void bi::bi_ostream::visit(const Identifier<GlobalVariable>* o) {
   middle(o->name);
 }
 
 void bi::bi_ostream::visit(const Identifier<MemberVariable>* o) {
-  middle(o->name);
-}
-
-void bi::bi_ostream::visit(const Identifier<FiberVariable>* o) {
   middle(o->name);
 }
 

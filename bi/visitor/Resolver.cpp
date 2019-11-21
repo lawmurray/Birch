@@ -90,21 +90,7 @@ bi::Expression* bi::Resolver::modify(Call<Parameter>* o) {
   return o;
 }
 
-bi::Expression* bi::Resolver::modify(Call<FiberParameter>* o) {
-  Modifier::modify(o);
-  resolve(o);
-  o->type = dynamic_cast<FunctionType*>(o->target->type)->returnType;
-  return o;
-}
-
 bi::Expression* bi::Resolver::modify(Call<LocalVariable>* o) {
-  Modifier::modify(o);
-  resolve(o);
-  o->type = dynamic_cast<FunctionType*>(o->target->type)->returnType;
-  return o;
-}
-
-bi::Expression* bi::Resolver::modify(Call<FiberVariable>* o) {
   Modifier::modify(o);
   resolve(o);
   o->type = dynamic_cast<FunctionType*>(o->target->type)->returnType;
@@ -325,16 +311,6 @@ bi::Expression* bi::Resolver::modify(Parameter* o) {
   return o;
 }
 
-bi::Expression* bi::Resolver::modify(FiberParameter* o) {
-  Modifier::modify(o);
-  if (!o->value->isEmpty() && !(o->value->type->isConvertible(*o->type) ||
-      o->value->type->isConvertible(*o->type->element()))) {
-    throw InitialValueException(o);
-  }
-  scopes.back()->add(o);
-  return o;
-}
-
 bi::Expression* bi::Resolver::modify(Generic* o) {
   scopes.back()->add(o);
   return o;
@@ -345,13 +321,6 @@ bi::Expression* bi::Resolver::modify(Identifier<Unknown>* o) {
 }
 
 bi::Expression* bi::Resolver::modify(Identifier<Parameter>* o) {
-  Modifier::modify(o);
-  resolve(o, LOCAL_SCOPE);
-  o->type = o->target->type;
-  return o;
-}
-
-bi::Expression* bi::Resolver::modify(Identifier<FiberParameter>* o) {
   Modifier::modify(o);
   resolve(o, LOCAL_SCOPE);
   o->type = o->target->type;
@@ -374,13 +343,6 @@ bi::Expression* bi::Resolver::modify(Identifier<MemberVariable>* o) {
     o->type = o->target->type;
     return o;
   }
-}
-
-bi::Expression* bi::Resolver::modify(Identifier<FiberVariable>* o) {
-  Modifier::modify(o);
-  resolve(o, LOCAL_SCOPE);
-  o->type = o->target->type;
-  return o;
 }
 
 bi::Expression* bi::Resolver::modify(Identifier<LocalVariable>* o) {
@@ -620,33 +582,6 @@ bi::Statement* bi::Resolver::modify(MemberVariable* o) {
       throw InitialValueException(o);
     }
   }
-  return o;
-}
-
-bi::Statement* bi::Resolver::modify(FiberVariable* o) {
-  Modifier::modify(o);
-  if (o->has(AUTO)) {
-    assert(!o->value->isEmpty());
-    if (!o->value->type->isEmpty()) {
-      o->type = o->value->type;
-    } else {
-      throw InitialValueException(o);
-    }
-  }
-  if (o->needsConstruction()) {
-    o->type->resolveConstructor(o);
-  }
-  if (!o->brackets->isEmpty()) {
-    o->type = new ArrayType(o->type, o->brackets->width(), o->brackets->loc);
-  }
-  for (auto iter : *o->brackets) {
-    checkInteger(iter);
-  }
-  if (!o->value->isEmpty() && !(o->value->type->isConvertible(*o->type) ||
-      o->value->type->isConvertible(*o->type->element()))) {
-    throw InitialValueException(o);
-  }
-  scopes.back()->add(o);
   return o;
 }
 
@@ -1123,14 +1058,10 @@ bi::Expression* bi::Resolver::lookup(Identifier<Unknown>* o) {
   switch (category) {
   case PARAMETER:
     return new Identifier<Parameter>(o->name, o->loc);
-  case FIBER_PARAMETER:
-    return new Identifier<FiberParameter>(o->name, o->loc);
   case GLOBAL_VARIABLE:
     return new Identifier<GlobalVariable>(o->name, o->loc);
   case MEMBER_VARIABLE:
     return new Identifier<MemberVariable>(o->name, o->loc);
-  case FIBER_VARIABLE:
-    return new Identifier<FiberVariable>(o->name, o->loc);
   case LOCAL_VARIABLE:
     return new Identifier<LocalVariable>(o->name, o->loc);
   case FOR_VARIABLE:
@@ -1211,12 +1142,8 @@ bi::Expression* bi::Resolver::lookup(Call<Unknown>* o) {
   switch (category) {
   case PARAMETER:
     return new Call<Parameter>(single, args, o->loc);
-  case FIBER_PARAMETER:
-    return new Call<FiberParameter>(single, args, o->loc);
   case LOCAL_VARIABLE:
     return new Call<LocalVariable>(single, args, o->loc);
-  case FIBER_VARIABLE:
-    return new Call<FiberVariable>(single, args, o->loc);
   case MEMBER_VARIABLE:
     return new Call<MemberVariable>(single, args, o->loc);
   case GLOBAL_VARIABLE:

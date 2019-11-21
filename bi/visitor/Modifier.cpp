@@ -107,19 +107,7 @@ bi::Expression* bi::Modifier::modify(Call<Parameter>* o) {
   return o;
 }
 
-bi::Expression* bi::Modifier::modify(Call<FiberParameter>* o) {
-  o->single = o->single->accept(this);
-  o->args = o->args->accept(this);
-  return o;
-}
-
 bi::Expression* bi::Modifier::modify(Call<LocalVariable>* o) {
-  o->single = o->single->accept(this);
-  o->args = o->args->accept(this);
-  return o;
-}
-
-bi::Expression* bi::Modifier::modify(Call<FiberVariable>* o) {
   o->single = o->single->accept(this);
   o->args = o->args->accept(this);
   return o;
@@ -223,12 +211,6 @@ bi::Expression* bi::Modifier::modify(Parameter* o) {
   return o;
 }
 
-bi::Expression* bi::Modifier::modify(FiberParameter* o) {
-  o->type = o->type->accept(this);
-  o->value = o->value->accept(this);
-  return o;
-}
-
 bi::Expression* bi::Modifier::modify(Generic* o) {
   o->type = o->type->accept(this);
   return o;
@@ -242,19 +224,11 @@ bi::Expression* bi::Modifier::modify(Identifier<Parameter>* o) {
   return o;
 }
 
-bi::Expression* bi::Modifier::modify(Identifier<FiberParameter>* o) {
-  return o;
-}
-
 bi::Expression* bi::Modifier::modify(Identifier<GlobalVariable>* o) {
   return o;
 }
 
 bi::Expression* bi::Modifier::modify(Identifier<MemberVariable>* o) {
-  return o;
-}
-
-bi::Expression* bi::Modifier::modify(Identifier<FiberVariable>* o) {
   return o;
 }
 
@@ -335,14 +309,6 @@ bi::Statement* bi::Modifier::modify(GlobalVariable* o) {
 }
 
 bi::Statement* bi::Modifier::modify(MemberVariable* o) {
-  o->type = o->type->accept(this);
-  o->brackets = o->brackets->accept(this);
-  o->args = o->args->accept(this);
-  o->value = o->value->accept(this);
-  return o;
-}
-
-bi::Statement* bi::Modifier::modify(FiberVariable* o) {
   o->type = o->type->accept(this);
   o->brackets = o->brackets->accept(this);
   o->args = o->args->accept(this);

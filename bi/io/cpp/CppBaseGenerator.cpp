@@ -118,25 +118,7 @@ void bi::CppBaseGenerator::visit(const Call<Parameter>* o) {
   middle(')');
 }
 
-void bi::CppBaseGenerator::visit(const Call<FiberParameter>* o) {
-  middle(o->single);
-  middle('(');
-  auto type = dynamic_cast<const FunctionType*>(o->target->type);
-  assert(type);
-  genArgs(o->args, type->params);
-  middle(')');
-}
-
 void bi::CppBaseGenerator::visit(const Call<LocalVariable>* o) {
-  middle(o->single);
-  middle('(');
-  auto type = dynamic_cast<const FunctionType*>(o->target->type);
-  assert(type);
-  genArgs(o->args, type->params);
-  middle(')');
-}
-
-void bi::CppBaseGenerator::visit(const Call<FiberVariable>* o) {
   middle(o->single);
   middle('(');
   auto type = dynamic_cast<const FunctionType*>(o->target->type);
@@ -393,10 +375,6 @@ void bi::CppBaseGenerator::visit(const Parameter* o) {
   }
 }
 
-void bi::CppBaseGenerator::visit(const FiberParameter* o) {
-  assert(false);  // should be in CppFiberGenerator
-}
-
 void bi::CppBaseGenerator::visit(const Identifier<Unknown>* o) {
   assert(false);  // should have been resolved in Resolver
 }
@@ -405,20 +383,12 @@ void bi::CppBaseGenerator::visit(const Identifier<Parameter>* o) {
   middle(o->name);
 }
 
-void bi::CppBaseGenerator::visit(const Identifier<FiberParameter>* o) {
-  assert(false);  // should be in CppFiberGenerator
-}
-
 void bi::CppBaseGenerator::visit(const Identifier<GlobalVariable>* o) {
   middle("bi::" << o->name << "()");
 }
 
 void bi::CppBaseGenerator::visit(const Identifier<MemberVariable>* o) {
   middle(o->name);
-}
-
-void bi::CppBaseGenerator::visit(const Identifier<FiberVariable>* o) {
-  assert(false);  // should be in CppFiberGenerator
 }
 
 void bi::CppBaseGenerator::visit(const Identifier<LocalVariable>* o) {
@@ -504,10 +474,6 @@ void bi::CppBaseGenerator::visit(const GlobalVariable* o) {
 
 void bi::CppBaseGenerator::visit(const MemberVariable* o) {
   assert(false);  // should be in CppClassGenerator
-}
-
-void bi::CppBaseGenerator::visit(const FiberVariable* o) {
-  assert(false);  // should be in CppFiberGenerator
 }
 
 void bi::CppBaseGenerator::visit(const LocalVariable* o) {

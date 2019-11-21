@@ -94,17 +94,7 @@ void bi::Visitor::visit(const Call<Parameter>* o) {
   o->args->accept(this);
 }
 
-void bi::Visitor::visit(const Call<FiberParameter>* o) {
-  o->single->accept(this);
-  o->args->accept(this);
-}
-
 void bi::Visitor::visit(const Call<LocalVariable>* o) {
-  o->single->accept(this);
-  o->args->accept(this);
-}
-
-void bi::Visitor::visit(const Call<FiberVariable>* o) {
   o->single->accept(this);
   o->args->accept(this);
 }
@@ -192,11 +182,6 @@ void bi::Visitor::visit(const Parameter* o) {
   o->value->accept(this);
 }
 
-void bi::Visitor::visit(const FiberParameter* o) {
-  o->type->accept(this);
-  o->value->accept(this);
-}
-
 void bi::Visitor::visit(const Identifier<Unknown>* o) {
   //
 }
@@ -205,19 +190,11 @@ void bi::Visitor::visit(const Identifier<Parameter>* o) {
   //
 }
 
-void bi::Visitor::visit(const Identifier<FiberParameter>* o) {
-  //
-}
-
 void bi::Visitor::visit(const Identifier<GlobalVariable>* o) {
   //
 }
 
 void bi::Visitor::visit(const Identifier<MemberVariable>* o) {
-  //
-}
-
-void bi::Visitor::visit(const Identifier<FiberVariable>* o) {
   //
 }
 
@@ -287,13 +264,6 @@ void bi::Visitor::visit(const GlobalVariable* o) {
 }
 
 void bi::Visitor::visit(const MemberVariable* o) {
-  o->type->accept(this);
-  o->brackets->accept(this);
-  o->args->accept(this);
-  o->value->accept(this);
-}
-
-void bi::Visitor::visit(const FiberVariable* o) {
   o->type->accept(this);
   o->brackets->accept(this);
   o->args->accept(this);
