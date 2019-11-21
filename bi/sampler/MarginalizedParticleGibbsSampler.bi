@@ -1,7 +1,7 @@
 /**
  * Marginalized particle Gibbs sampler.
  */
-class MarginalizedParticleGibbsSampler < ForwardSampler {
+class MarginalizedParticleGibbsSampler < Sampler {
   /**
    * Conditional particle filter to use for state sampling.
    */
@@ -12,31 +12,22 @@ class MarginalizedParticleGibbsSampler < ForwardSampler {
    */
   nsteps:Integer <- 0;
 
-  fiber sample(model:ForwardModel) -> (ForwardModel, Real) {
-    x:ForwardModel[_];
-    w:Real[_];
-    r:Trace[_];
-    ess:Real;
-    levidence:Real;
-
-    /* first sample, using unconditional particle filter */    
-    auto f <- filter.filter(model, nil);
-    for t in 0..nsteps {
-      f?;
-      (x, w, r, ess, levidence) <- f!;
-    }
-    auto b <- ancestor(w);
-    yield (x[b], 0.0);
-        
-    /* subsequent samples using conditional particle filter */
+  fiber sample(model:Model) -> (Model, Real) {
+    r:Trace?;
     while true {
-      f <- filter.filter(model, r[b]);
+      auto f <- filter.filter(model, r);
       for t in 0..nsteps {
         f?;
-        (x, w, r, ess, levidence) <- f!;
       }
-      b <- ancestor(w);
+      assert !r? || r!.empty();
+      
+      x:Model[_];
+      w:Real[_];
+      W:Real;
+      (x, w, W) <- f!;
+      auto b <- ancestor(w);
       yield (x[b], 0.0);
+      r <- x[b].trace;
     }
   }
 

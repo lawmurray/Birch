@@ -1,7 +1,7 @@
 /**
  * Particle Gibbs sampler.
  */
-class ParticleGibbsSampler < ForwardSampler {
+class ParticleGibbsSampler < Sampler {
   /**
    * Conditional particle filter to use for state sampling.
    */
@@ -12,46 +12,37 @@ class ParticleGibbsSampler < ForwardSampler {
    */
   nsteps:Integer <- 0;
 
-  fiber sample(model:ForwardModel) -> (ForwardModel, Real) {
-    x:ForwardModel[_];
-    w:Real[_];
-    r:Trace[_];
-    ess:Real;
-    levidence:Real;
-
-    /* initialize parameters */
-    auto x' <- clone<ForwardModel>(model);
-    auto w' <- play.handle(x'.simulate());
-
-    /* first state sample */
-    auto f <- filter.filter(x', nil);
-    for t in 0..nsteps {
-      f?;
-      (x, w, r, ess, levidence) <- f!;
-    }
-    auto b <- ancestor(w);
-    yield (x[b], 0.0);
-        
-    /* subsequent samples */
+  fiber sample(model:Model) -> (Model, Real) {
+    r:Trace?;
     while true {
       /* Gibbs update of parameters */
-      auto x' <- clone<ForwardModel>(model);
-      auto r' <- clone<Trace>(r[b]);
-      auto w' <- delay.handle(x'.simulate(), r');
-      for t in 1..nsteps {
-        w' <- w' + redelay.handle(r', x'.simulate(t), r');
+      auto x <- clone<Model>(model);
+      if r? {
+        auto x' <- clone<Model>(model);
+        auto r' <- clone<Trace>(r!);
+        auto w' <- delay.handle(x'.simulate(), r');
+        for t in 1..nsteps {
+          w' <- w' + redelay.handle(r', x'.simulate(t));
+        }
+        replay.handle(r', x.simulate());
+      } else {
+        play.handle(x.simulate());
       }
-      x' <- clone<ForwardModel>(model);
-      w' <- replay.handle(r', x'.simulate(), r');
 
-      /* filter state */
-      f <- filter.filter(x', r');
+      /* filter */
+      auto f <- filter.filter(x, r);
       for t in 0..nsteps {
         f?;
-        (x, w, r, ess, levidence) <- f!;
       }
-      b <- ancestor(w);
-      yield (x[b], 0.0);
+      assert !r? || r!.empty();
+      
+      y:Model[_];
+      w:Real[_];
+      W:Real;
+      (y, w, W) <- f!;
+      auto b <- ancestor(w);
+      yield (y[b], 0.0);
+      r <- y[b].trace;
     }
   }
 

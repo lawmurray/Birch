@@ -14,11 +14,12 @@ class AliveParticleFilter {
    */
   delayed:Boolean <- true;
 
-  fiber filter(model:ForwardModel) -> (ForwardModel[_], Real[_], Real, Real) {
-    auto x <- clone<ForwardModel>(model, nparticles);  // particles
+  fiber filter(model:Model) -> (Model[_], Real[_], Real) {
+    auto x <- clone<Model>(model, nparticles);  // particles
     auto w <- vector(0.0, 0);  // log-weights
+    auto V <- 0.0;  // incrmental log normalizing constant estimate
+    auto W <- 0.0;  // cumulative log normalizing constant estimate
     auto ess <- 0.0;  // effective sample size
-    auto levidence <- 0.0;  // incremental log-evidence
     
     /* event handler */
     h:Handler <- play;
@@ -30,8 +31,9 @@ class AliveParticleFilter {
     parallel for n in 1..nparticles {
       w[n] <- h.handle(x[n].simulate());
     }
-    (ess, levidence) <- resample_reduce(w);
-    yield (x, w, ess, levidence);
+    (ess, V) <- resample_reduce(w);
+    W <- W + V;
+    yield (x, w, W);
    
     auto t <- 0;
     while true {
@@ -41,7 +43,7 @@ class AliveParticleFilter {
       auto a <- resample_systematic(w);
       dynamic parallel for n in 1..nparticles {
         if a[n] != n {
-          x[n] <- clone<ForwardModel>(x[a[n]]);
+          x[n] <- clone<Model>(x[a[n]]);
         }
       }
 
@@ -51,12 +53,12 @@ class AliveParticleFilter {
       auto w0 <- w;
       parallel for n in 1..nparticles + 1 {
         if n <= nparticles {
-          x[n] <- clone<ForwardModel>(x0[a[n]]);
+          x[n] <- clone<Model>(x0[a[n]]);
           w[n] <- h.handle(x[n].simulate(t));
           p[n] <- 1;
           while w[n] == -inf {  // repeat until weight is positive
             a[n] <- ancestor(w0);
-            x[n] <- clone<ForwardModel>(x0[a[n]]);
+            x[n] <- clone<Model>(x0[a[n]]);
             p[n] <- p[n] + 1;
             w[n] <- h.handle(x[n].simulate(t));
           }
@@ -68,15 +70,17 @@ class AliveParticleFilter {
           p[n] <- 0;
           do {
             auto a' <- ancestor(w0);
-            auto x' <- clone<ForwardModel>(x0[a']);
+            auto x' <- clone<Model>(x0[a']);
             p[n] <- p[n] + 1;
             w' <- h.handle(x'.simulate(t));
           } while w' == -inf;  // repeat until weight is positive
         }
       }
-      
-      levidence <- levidence + log(nparticles) - log(sum(p) - 1);
-      yield (x, w, ess, levidence);
+
+      (ess, V) <- resample_reduce(w);
+      V <- V + log(nparticles) - log(sum(p) - 1);
+      W <- W + V;
+      yield (x, w, W);
     }
   }
 

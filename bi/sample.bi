@@ -15,23 +15,13 @@
  *
  * - `--seed`: Random number seed. Alternatively (preferably), provide this as
  *   `seed` in the configuration file. If not provided, random entropy is used.
- *
- * - `--model`: Name of the model class. Alternatively (preferably), provide
- *   this as `model.class` in the configuration file.
- *
- * - `--sampler`: Name of the sampler class. Alternatively (preferably),
- *   provide this as `sampler.class` in the configuration file. If the
- *   sampler is not provided through either of these mechanisms, a default
- *   is chosen according to the model class.
  */
 program sample(
     input:String?,
     output:String?,
     config:String?,
     diagnostic:String?,
-    seed:Integer?,
-    model:String?,
-    sampler:String?) {
+    seed:Integer?) {
 
   /* config */
   configBuffer:MemoryBuffer;
@@ -54,29 +44,22 @@ program sample(
   }
 
   /* model */
-  m:Model?;
-  modelClass:String?;
-  if model? {
-    modelClass <- model!;
-  } else if config? {
-    auto buffer <- configBuffer.getObject("model");
-    if buffer? {
-      modelClass <- buffer!.getString("class");
-    }
+  model:Model?;
+  model <- Model?(configBuffer.get("model", model));
+  if !model? {
+    error("could not create model; the model class should be given as " + 
+        "model.class in the config file, and should derive from Model.");
   }
-  if modelClass? {
-    m <- Model?(make(modelClass!));
-    if !m? {
-      error(modelClass! + " is not a subtype of Model.");
-    }
-    if config? {
-      configBuffer.get("model", m!);
-    }
-  } else {
-    error("no model class specified, this should be given using the --model option, or as model.class in the config file.");
-  }
-  assert m?;
+  auto forwardModel <- Model?(model!);
 
+  /* sampler */
+  sampler:Sampler?;
+  sampler <- Sampler?(configBuffer.get("sampler", sampler));
+  if !sampler? {
+    error("could not create sampler; the sampler class should be given as " + 
+        "sampler.class in the config file, and should derive from Sampler.");
+  }
+  
   /* input */
   auto inputPath <- input;
   if !inputPath? {
@@ -87,81 +70,51 @@ program sample(
     inputBuffer:MemoryBuffer;
     reader.read(inputBuffer);
     reader.close();
-    inputBuffer.get(m!);
+    inputBuffer.get(model!);
   }
-
-  /* sampler */
-  s:Sampler?;
-  samplerClass:String?;
-  if sampler? {
-    samplerClass <- sampler!;
-  } else if config? {
-    auto buffer <- configBuffer.getObject("sampler");
-    if buffer? {
-      samplerClass <- buffer!.getString("class");
-    }
-  }
-  if !samplerClass? {
-    /* determine an appropriate default */
-    auto forwardModel <- ForwardModel?(m!);
-    if forwardModel? {
-      samplerClass <- "ParticleFilter";
-    } else {
-      samplerClass <- "ImportanceSampler";
-    }
-  }
-  s <- Sampler?(make(samplerClass!));
-  if !s? {
-    error(samplerClass! + " is not a subtype of Sampler.");
-  }
-  m <- nil;
-  if config? {
-    configBuffer.get("sampler", s!);
-  }
-  assert s?;
 
   /* output */
+  outputBuffer:Buffer?;
   outputWriter:Writer?;
   outputPath:String? <- output;
   if !outputPath? {
     outputPath <-? configBuffer.getString("output");
   }
   if outputPath? {
+    buffer:MemoryBuffer;
+    outputBuffer <- buffer;
     outputWriter <- Writer(outputPath!);
     outputWriter!.startSequence();
   }
 
   /* diagnostic */
+  diagnosticBuffer:Buffer?;
   diagnosticWriter:Writer?;
   diagnosticPath:String? <- diagnostic;
   if !diagnosticPath? {
     diagnosticPath <-? configBuffer.getString("diagnostic");
   }
   if diagnosticPath? {
+    buffer:MemoryBuffer;
+    diagnosticBuffer <- buffer;
     diagnosticWriter <- Writer(diagnosticPath!);
     diagnosticWriter!.startSequence();
   }
 
   /* sample */
-  m1:Model?;
-  w1:Real;
-  auto f <- s!.sample(m1!);
+  auto f <- sampler!.sample(model!);
   while f? {
-    (m1, w1) <- f!;
     if outputWriter? {
-      buffer:MemoryBuffer;
-      buffer.set(m1!);
-      buffer.set("lweight", w1);
-      outputWriter!.write(buffer);
+      outputWriter!.write(outputBuffer);
       outputWriter!.flush();
     }
     if diagnosticWriter? {
-      buffer:MemoryBuffer;
-      buffer.set(s!);
-      diagnosticWriter!.write(buffer);
+      diagnosticWriter!.write(diagnosticBuffer);
       diagnosticWriter!.flush();
     }
   }
+  
+  /* finalize output */
   if outputWriter? {
     outputWriter!.endSequence();
     outputWriter!.close();

@@ -10,6 +10,8 @@ abstract class Sampler {
   /**
    * Sample the model.
    *
+   * - model: The model.
+   *
    * Yield: weighted samples.
    */
   abstract fiber sample(model:Model) -> (Model, Real);

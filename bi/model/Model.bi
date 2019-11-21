@@ -8,9 +8,21 @@
  */
 class Model {
   /**
-   * Simulate the model.
+   * Simulate.
    */
   fiber simulate() -> Event {
     //
   }
+
+  /**
+   * Simulate.
+   */
+  fiber simulate(t:Integer) -> Event {
+    //
+  }
+  
+  /**
+   * Trace.
+   */
+  trace:Trace;
 }

@@ -5,7 +5,7 @@ class ConditionalParticleFilter {
   /**
    * Model.
    */
-  model:ForwardModel;
+  model:Model;
 
   /**
    * Number of particles.
@@ -29,15 +29,14 @@ class ConditionalParticleFilter {
    */
   ancestor:Boolean <- false;
 
-  fiber filter(model:ForwardModel, reference:Trace?) -> (ForwardModel[_],
-      Real[_], Trace[_], Real, Real) {
-    auto x <- clone<ForwardModel>(model, nparticles);  // particles
+  fiber filter(model:Model, reference:Trace?) -> (Model[_], Real[_], Real) {
+    auto x <- clone<Model>(model, nparticles);  // particles
     auto w <- vector(0.0, 0);  // log-weights
+    auto V <- 0.0;  // incremental log normalizing constant estimate
+    auto W <- 0.0;  // cumulative log normalizing constant estimate
     auto a <- iota(1, nparticles);  // ancestor indices
     auto b <- 1;  // reference particle index
     auto ess <- 0.0;  // effective sample size
-    auto levidence <- 0.0;  // incremental log-evidence
-    r:Trace[nparticles];  // recorded traces
     
     /* event handlers */
     replay:TraceHandler <- global.replay;  // to replay reference particle
@@ -50,13 +49,14 @@ class ConditionalParticleFilter {
     /* initialize and weight */
     parallel for n in 1..nparticles {
       if reference? && n == b {
-        w[n] <- replay.handle(reference!, x[n].simulate(), r[n]);
+        w[n] <- replay.handle(reference!, x[n].simulate(), x[n].trace);
       } else {
-        w[n] <- play.handle(x[n].simulate(), r[n]);
+        w[n] <- play.handle(x[n].simulate(), x[n].trace);
       }
     }
-    (ess, levidence) <- resample_reduce(w);
-    yield (x, w, r, ess, levidence);
+    (ess, V) <- resample_reduce(w);
+    W <- W + V;
+    yield (x, w, W);
       
     auto t <- 0;
     while true {
@@ -66,7 +66,7 @@ class ConditionalParticleFilter {
       if reference? && ancestor {
         auto w' <- w;
         dynamic parallel for n in 1..nparticles {
-          auto x' <- clone<ForwardModel>(x[n]);
+          auto x' <- clone<Model>(x[n]);
           auto reference' <- clone<Trace>(reference!);
           w'[n] <- w'[n] + replay.handle(reference', x'.simulate(t));
           // ^ assuming Markov model here
@@ -85,8 +85,7 @@ class ConditionalParticleFilter {
         }
         dynamic parallel for n in 1..nparticles {
           if a[n] != n {
-            x[n] <- clone<ForwardModel>(x[a[n]]);
-            r[n] <- clone<Trace>(r[a[n]]);
+            x[n] <- clone<Model>(x[a[n]]);
           }
         }
       }
@@ -94,12 +93,14 @@ class ConditionalParticleFilter {
       /* propagate and weight */
       parallel for n in 1..nparticles {
         if reference? && n == b {
-          w[n] <- replay.handle(reference!, x[n].simulate(t), r[n]);
+          w[n] <- replay.handle(reference!, x[n].simulate(t), x[n].trace);
         } else {
-          w[n] <- play.handle(x[n].simulate(t), r[n]);
+          w[n] <- play.handle(x[n].simulate(t), x[n].trace);
         }
       }
-      yield (x, w, r, ess, levidence);
+      (ess, V) <- resample_reduce(w);
+      W <- W + V;
+      yield (x, w, W);
     }
   }
 

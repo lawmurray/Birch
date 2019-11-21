@@ -1,7 +1,7 @@
 /**
  * Particle marginal importance sampler.
  */
-class ParticleMarginalImportanceSampler < ForwardSampler {
+class ParticleMarginalImportanceSampler < Sampler {
   /**
    * Particle filter to use for state sampling.
    */
@@ -12,21 +12,19 @@ class ParticleMarginalImportanceSampler < ForwardSampler {
    */
   nsteps:Integer <- 0;
 
-  fiber sample(model:ForwardModel) -> (ForwardModel, Real) {
-    x:ForwardModel[_];
-    w:Real[_];
-    ess:Real;
-    lweight:Real;
-        
-    /* subsequent samples using conditional particle filter */
+  fiber sample(model:Model) -> (Model, Real) {
     while true {
       auto f <- filter.filter(model);
       for t in 0..nsteps {
         f?;
-        (x, w, ess, lweight) <- f!;
       }
+      
+      x:Model[_];
+      w:Real[_];
+      W:Real;
+      (x, w, W) <- f!;
       auto b <- ancestor(w);
-      yield (x[b], lweight);
+      yield (x[b], W);
     }
   }
 

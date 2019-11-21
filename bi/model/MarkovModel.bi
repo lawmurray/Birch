@@ -15,7 +15,7 @@
  * `initial` and `transition` member fibers to specify the individual
  * components of the joint distribution.
  */
-class MarkovModel<Parameter,State> < ForwardModel {
+class MarkovModel<Parameter,State> < Model {
   /**
    * Parameter.
    */

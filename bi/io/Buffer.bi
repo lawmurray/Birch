@@ -488,9 +488,10 @@ abstract class Buffer {
   function get(name:String, value:Object?) -> Object? {
     auto buffer <- getObject(name);
     if buffer? {
-      buffer!.get(value);
+      return buffer!.get(value);
+    } else {
+      return nil;
     }
-    return value;
   }
 
   /**

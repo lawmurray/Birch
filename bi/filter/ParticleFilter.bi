@@ -19,11 +19,12 @@ class ParticleFilter {
    */
   delayed:Boolean <- true;
 
-  fiber filter(model:ForwardModel) -> (ForwardModel[_], Real[_], Real, Real) {
-    auto x <- clone<ForwardModel>(model, nparticles);  // particles
-    auto w <- vector(0.0, 0);  // log-weights
+  fiber filter(model:Model) -> (Model[_], Real[_], Real) {
+    auto x <- clone<Model>(model, nparticles);  // particles
+    auto w <- vector(0.0, 0);  // log weights
+    auto V <- 0.0;  // incrmental log normalizing constant estimate
+    auto W <- 0.0;  // cumulative log normalizing constant estimate
     auto ess <- 0.0;  // effective sample size
-    auto levidence <- 0.0;  // incremental log-evidence
     
     /* event handler */
     h:Handler <- play;
@@ -35,8 +36,9 @@ class ParticleFilter {
     parallel for n in 1..nparticles {
       w[n] <- h.handle(x[n].simulate());
     }
-    (ess, levidence) <- resample_reduce(w);
-    yield (x, w, ess, levidence);
+    (ess, V) <- resample_reduce(w);
+    W <- W + V;
+    yield (x, w, W);
     
     auto t <- 0;
     while true {
@@ -47,7 +49,7 @@ class ParticleFilter {
         auto a <- resample_systematic(w);
         dynamic parallel for n in 1..nparticles {
           if a[n] != n {
-            x[n] <- clone<ForwardModel>(x[a[n]]);
+            x[n] <- clone<Model>(x[a[n]]);
           }
         }
       }
@@ -56,8 +58,9 @@ class ParticleFilter {
       parallel for n in 1..nparticles {
         w[n] <- w[n] + h.handle(x[n].simulate(t));
       }
-      (ess, levidence) <- resample_reduce(w);
-      yield (x, w, ess, levidence);
+      (ess, V) <- resample_reduce(w);
+      W <- W + V;
+      yield (x, w, W);
     }
   }
 
