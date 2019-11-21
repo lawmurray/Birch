@@ -530,8 +530,12 @@ private:
   Head head;
 };
 
-template<class... Args>
-struct is_value<Tuple<Args...>> {
-  static const bool value = is_value<Args...>::value;
+template<class Head, class ...Tail>
+struct is_value<Tuple<Head,Tail...>> {
+  static const bool value = is_value<Head>::value && is_value<Tuple<Tail...>>::value;
+};
+template<class Head>
+struct is_value<Tuple<Head>> {
+  static const bool value = is_value<Head>::value;
 };
 }

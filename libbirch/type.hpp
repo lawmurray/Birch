@@ -108,39 +108,33 @@
 
 namespace libbirch {
 /*
- * Are these value types?
- */
-template<class Arg, class... Args>
-struct is_value {
-  static const bool value = is_value<Arg>::value && is_value<Args...>::value;
-};
-
-/*
  * Is this a value type?
  */
 template<class Arg>
-struct is_value<Arg> {
+struct is_value {
   static const bool value = true;
 };
 
-/*
- * Are these pointer types?
- */
-template<class Arg, class... Args>
-struct is_pointer {
-  static const bool value = is_pointer<Arg>::value && is_pointer<Args...>::value;
+template<class Arg>
+struct is_value<Arg&> {
+  static const bool value = is_value<Arg>::value;
+};
+
+template<class Arg>
+struct is_value<Arg&&> {
+  static const bool value = is_value<Arg>::value;
+};
+
+template<class T>
+struct is_value<std::function<T>> {
+  static const bool value = false;
 };
 
 /*
  * Is this a pointer type?
  */
 template<class Arg>
-struct is_pointer<Arg> {
-  static const bool value = false;
-};
-
-template<class T>
-struct is_value<std::function<T>> {
+struct is_pointer {
   static const bool value = false;
 };
 

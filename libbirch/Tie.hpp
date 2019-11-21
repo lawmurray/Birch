@@ -243,8 +243,13 @@ private:
   Head& head;
 };
 
-template<class... Args>
-struct is_value<Tie<Args...>> {
-  static const bool value = is_value<Args...>::value;
+template<class Head, class ...Tail>
+struct is_value<Tie<Head,Tail...>> {
+  static const bool value = is_value<Head>::value && is_value<Tie<Tail...>>::value;
 };
+template<class Head>
+struct is_value<Tie<Head>> {
+  static const bool value = is_value<Head>::value;
+};
+
 }
