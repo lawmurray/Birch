@@ -1,7 +1,7 @@
 /**
  * Bidirectional model.
  */
-abstract class BidirectionalModel < ForwardModel {
+class BidirectionalModel < ForwardModel {
   /**
    * Simulate one step.
    *

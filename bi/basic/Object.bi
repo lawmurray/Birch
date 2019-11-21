@@ -1,7 +1,7 @@
 /**
  * Root class of all other classes.
  */
-class Object {
+abstract class Object {
   /**
    * Get the class name of the object.
    */

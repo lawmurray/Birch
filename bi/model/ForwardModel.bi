@@ -1,7 +1,7 @@
 /**
  * Forward model.
  */
-abstract class ForwardModel < Model {   
+class ForwardModel < Model {   
   /**
    * Simulate one step.
    *

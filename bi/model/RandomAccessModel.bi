@@ -1,7 +1,7 @@
 /**
  * Random access model.
  */
-abstract class RandomAccessModel < BidirectionalModel {
+class RandomAccessModel < BidirectionalModel {
   /**
    * Simulate one step.
    *

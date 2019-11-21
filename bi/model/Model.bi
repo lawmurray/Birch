@@ -6,7 +6,7 @@
  * <object type="image/svg+xml" data="../../figs/Model.svg"></object>
  * </center>
  */
-abstract class Model {
+class Model {
   /**
    * Simulate the model.
    */
