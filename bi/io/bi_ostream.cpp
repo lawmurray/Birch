@@ -155,6 +155,7 @@ void bi::bi_ostream::visit(const LambdaFunction* o) {
   if (!o->returnType->isEmpty()) {
     middle(" -> " << o->returnType);
   }
+  middle(o->braces);
 }
 
 void bi::bi_ostream::visit(const Span* o) {
@@ -256,9 +257,9 @@ void bi::bi_ostream::visit(const MemberVariable* o) {
 
 void bi::bi_ostream::visit(const LocalVariable* o) {
   if (o->has(AUTO)) {
-    middle("auto " << o->name);
+    start("auto " << o->name);
   } else {
-    middle(o->name << ':');
+    start(o->name << ':');
     if (o->type->isArray() && !o->brackets->isEmpty()) {
       middle(dynamic_cast<const ArrayType*>(o->type)->single);
     } else {
@@ -571,9 +572,9 @@ void bi::bi_ostream::visit(const ExpressionStatement* o) {
 }
 
 void bi::bi_ostream::visit(const If* o) {
-  start("if " << o->cond << o->braces);
+  line("if " << o->cond << o->braces);
   if (!o->falseBraces->isEmpty()) {
-    middle(" else " << o->falseBraces);
+    line("else" << o->falseBraces);
   }
 }
 
