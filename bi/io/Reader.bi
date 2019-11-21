@@ -7,7 +7,7 @@
  *
  *     auto reader <- Reader(path);
  *
- * A reader of a single buffer can then be performed with:
+ * A read of a single buffer can then be performed with:
  *
  *     reader.read(buffer);
  *

@@ -86,7 +86,7 @@ public:
 
   virtual Any* clone_(Label* context) const = 0;
 
-  virtual const char* name_() const = 0;
+  virtual const char* getClassName() const = 0;
 
 protected:
   /**

@@ -69,7 +69,7 @@ public:
    */
   void thaw();
 
-  virtual const char* name_() const {
+  virtual const char* getClassName() const {
     return "Label";
   }
 

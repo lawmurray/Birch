@@ -149,7 +149,7 @@ public:
   /**
    * Name of the class.
    */
-  virtual const char* name_() const {
+  virtual const char* getClassName() const {
     return "Counted";
   }
 

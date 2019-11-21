@@ -31,10 +31,12 @@ class ParticleMarginalImportanceSampler < ForwardSampler {
   }
 
   function read(buffer:Buffer) {
+    filter <-? ParticleFilter?(buffer.get("filter", filter));
     nsteps <-? buffer.get("nsteps", nsteps);
   }
 
   function write(buffer:Buffer) {
+    buffer.set("filter", filter);
     buffer.set("nsteps", nsteps);
   }
 }

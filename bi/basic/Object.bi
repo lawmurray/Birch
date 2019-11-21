@@ -3,6 +3,11 @@
  */
 class Object {
   /**
+   * Get the class name of the object.
+   */
+  final function getClassName() -> String;
+
+  /**
    * Read.
    */
   function read(buffer:Buffer?) {
@@ -31,15 +36,7 @@ class Object {
    * Write.
    */
   function write(buffer:Buffer) {
-    //
-  }
-  
-  /**
-   * Touch the object. This is a null operation, but forces an update of the
-   * pointer, which can be useful for debugging lazy deep clone issues.
-   */
-  function touch() {
-    //
+    buffer.set("class", getClassName());
   }
 }
 
