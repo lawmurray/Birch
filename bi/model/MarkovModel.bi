@@ -26,6 +26,37 @@ class MarkovModel<Parameter,State> < ForwardModel {
    */
   x:Iterator<State>;
 
+  function size() -> Integer {
+    return x.size();
+  }
+
+  fiber simulate() -> Event {
+    parameter(θ);
+  }
+  
+  fiber simulate(t:Integer) -> Event {
+    before:State?;
+    here:State?;
+    if x.hasBefore() {
+      before <- x.popBefore();
+    }
+    if x.hasHere() {
+      here <- x.popHere();
+    } else {
+      here':State;
+      here <- here';
+    }
+    
+    if before? {
+      transition(here!, before!, θ);
+      x.pushBefore(before!);
+      x.pushBefore(here!);
+    } else {
+      initial(here!, θ);
+      x.pushBefore(here!);
+    }
+  }
+
   /**
    * Parameter model.
    *
@@ -54,56 +85,6 @@ class MarkovModel<Parameter,State> < ForwardModel {
    */
   fiber transition(x:State, u:State, θ:Parameter) -> Event {
     //
-  }
-  
-  /**
-   * Start. Simulates the parameter model.
-   */
-  function start() -> Real {
-    return super.start() + h.handle(parameter(θ));
-  }
-
-  /**
-   * Step. Simulates the initial state, or the transition to the next state.
-   */
-  function step() -> Real {
-    auto w <- super.step();
-    before:State?;
-    here:State?;
-    if x.hasBefore() {
-      before <- x.popBefore();
-    }
-    if x.hasHere() {
-      here <- x.popHere();
-    } else {
-      here':State;
-      here <- here';
-    }
-    
-    if before? {
-      w <- w + h.handle(transition(here!, before!, θ));
-      x.pushBefore(before!);
-      x.pushBefore(here!);
-    } else {
-      w <- w + h.handle(initial(here!, θ));
-      x.pushBefore(here!);
-    }
-    return w;
-  }
-
-  function size() -> Integer {
-    return x.size();
-  }
-  
-  function rewind() {
-    x.rewind();
-  }
-
-  fiber simulate() -> Event {
-    start();
-    while true {
-      step();
-    }
   }
 
   function read(buffer:Buffer) {

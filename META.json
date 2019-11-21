@@ -189,11 +189,9 @@
       "bi/model/BidirectionalModel.bi",
       "bi/model/ForwardModel.bi",
       "bi/model/HiddenMarkovModel.bi",
-      "bi/model/HiddenStarModel.bi",
       "bi/model/MarkovModel.bi",
       "bi/model/Model.bi",
       "bi/model/RandomAccessModel.bi",
-      "bi/model/StarModel.bi",
       "bi/model/StateSpaceModel.bi",
       "bi/record/DelayRecord.bi",
       "bi/record/FactorRecord.bi",
@@ -387,16 +385,12 @@
       "docs/figs/make_figs.sh",
       "docs/figs/HiddenMarkovModel.dot",
       "docs/figs/HiddenMarkovModel.svg",
-      "docs/figs/HiddenStarModel.dot",
-      "docs/figs/HiddenStarModel.svg",
       "docs/figs/MarkovModel.dot",
       "docs/figs/MarkovModel.svg",
       "docs/figs/Model.dot",
       "docs/figs/Model.svg",
       "docs/figs/Sampler.dot",
-      "docs/figs/Sampler.svg",
-      "docs/figs/StarModel.dot",
-      "docs/figs/StarModel.svg"
+      "docs/figs/Sampler.svg"
     ]
   },
   "require": {

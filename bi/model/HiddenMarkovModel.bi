@@ -25,23 +25,16 @@ class HiddenMarkovModel<Parameter,State,Observation> <
    */
   y:Iterator<Observation>;
 
-  /**
-   * Observation model.
-   *
-   * - y: The observations, to be set.
-   * - x: The current state.
-   * - θ: The parameters.
-   */
-  fiber observation(y:Observation, x:State, θ:Parameter) -> Event {
-    //
+  function size() -> Integer {
+    return max(x.size(), y.size());
   }
 
   /**
    * Step. Simulates the initial state, or the transition to the next state,
    * and an observation.
    */
-  function step() -> Real {
-    auto w <- super.step();
+  fiber simulate(t:Integer) -> Event {
+    super.simulate(t);
     before:State?;
     here:Observation?;
     
@@ -52,19 +45,20 @@ class HiddenMarkovModel<Parameter,State,Observation> <
       here':Observation;
       here <- here';
     }
-    w <- w + h.handle(observation(here!, before!, θ));
+    observation(here!, before!, θ);
     x.pushBefore(before!);
     y.pushBefore(here!);
-    return w;
   }
 
-  function size() -> Integer {
-    return max(x.size(), y.size());
-  }
-
-  function rewind() {
-    super.rewind();
-    y.rewind();
+  /**
+   * Observation model.
+   *
+   * - y: The observations, to be set.
+   * - x: The current state.
+   * - θ: The parameters.
+   */
+  fiber observation(y:Observation, x:State, θ:Parameter) -> Event {
+    //
   }
 
   function read(buffer:Buffer) {
