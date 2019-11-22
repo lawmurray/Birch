@@ -462,10 +462,13 @@ void bi::CppBaseGenerator::visit(const GlobalVariable* o) {
   } else {
     finish(" {");
     in();
+    genTraceLine(o->loc);
     line("auto context_ [[maybe_unused]] = libbirch::rootContext;");
+    genTraceLine(o->loc);
     start("static " << o->type << " result");
     genInit(o);
     finish(';');
+    genTraceLine(o->loc);
     line("return result;");
     out();
     line("}\n");
@@ -477,6 +480,7 @@ void bi::CppBaseGenerator::visit(const MemberVariable* o) {
 }
 
 void bi::CppBaseGenerator::visit(const LocalVariable* o) {
+  genTraceLine(o->loc);
   middle(o->type << ' ' << o->name);
   genInit(o);
   finish(';');
@@ -530,7 +534,6 @@ void bi::CppBaseGenerator::visit(const Function* o) {
         genTraceLine(o->loc);
         line("using " << param->name << " [[maybe_unused]] = " << param->type << ';');
       }
-      genTraceLine(o->loc);
       genTraceFunction(o->name->str(), o->loc);
       CppBaseGenerator aux(base, level, false);
       *this << o->braces->strip();
@@ -568,7 +571,6 @@ void bi::CppBaseGenerator::visit(const Program* o) {
     genTraceLine(o->loc);
     line("int bi::" << o->name << "(int argc_, char** argv_) {");
     in();
-    genTraceLine(o->loc);
     genTraceFunction(o->name->str(), o->loc);
 
     /* initial context */
