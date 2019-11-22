@@ -29,12 +29,12 @@ final class ObserveEvent<Value>(v:Value, p:Distribution<Value>) <
   }
   
   function replay(record:Record) -> Real {
-    assert v.value() == coerce(record);
+    assert v == coerce(record);
     return p.observe(v);
   }
 
   function unplay(record:Record) -> Real {
-    assert v.value() == coerce(record);
+    assert v == coerce(record);
     return p.observeWithDowndate(v);
   }
   
@@ -42,17 +42,17 @@ final class ObserveEvent<Value>(v:Value, p:Distribution<Value>) <
     return play();
   }
 
-  function redelay() -> Real {
-    return replay();
+  function redelay(record:Record) -> Real {
+    return replay(record);
   }
 
-  function undelay() -> Real {
-    return unplay();
+  function undelay(record:Record) -> Real {
+    return unplay(record);
   }
 
   function propose(record:Record) -> Real {
     if record.hasValue() {
-      assert v.value() == coerce(record);
+      assert v == coerce(record);
       return p.observe(v);
     } else {
       return 0.0;

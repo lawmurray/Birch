@@ -53,7 +53,7 @@ final class SimulateEvent<Value>(p:Distribution<Value>) < ValueEvent<Value> {
   }
   
   function undelay(record:Record) -> Real {
-    return unplay();
+    return unplay(record);
   }
   
   function propose(record:Record) -> Real {
@@ -65,7 +65,7 @@ final class SimulateEvent<Value>(p:Distribution<Value>) < ValueEvent<Value> {
   }
 
   function record() -> Record {
-    return ImmediateRecord<Value>(v);
+    return ImmediateRecord<Value>(v!);
   }
 }
 
