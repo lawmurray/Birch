@@ -14,7 +14,7 @@ class AliveParticleFilter {
    */
   delayed:Boolean <- true;
 
-  fiber filter(model:Model) -> (Model[_], Real[_], Real) {
+  fiber filter(model:Model) -> (Model[_], Real[_], Real, Real, Integer) {
     auto x <- clone<Model>(model, nparticles);  // particles
     auto w <- vector(0.0, 0);  // log-weights
     auto V <- 0.0;  // incrmental log normalizing constant estimate
@@ -33,7 +33,7 @@ class AliveParticleFilter {
     }
     (ess, V) <- resample_reduce(w);
     W <- W + V;
-    yield (x, w, W);
+    yield (x, w, W, ess, nparticles);
    
     auto t <- 0;
     while true {
@@ -78,9 +78,10 @@ class AliveParticleFilter {
       }
 
       (ess, V) <- resample_reduce(w);
-      V <- V + log(nparticles) - log(sum(p) - 1);
+      auto npropagations <- sum(p);
+      V <- V + log(nparticles) - log(npropagations - 1);
       W <- W + V;
-      yield (x, w, W);
+    yield (x, w, W, ess, npropagations);
     }
   }
 

@@ -1,7 +1,7 @@
 /**
  * Particle Gibbs sampler.
  */
-class ParticleGibbsSampler < Sampler {
+class ParticleGibbsSampler < ParticleSampler {
   /**
    * Conditional particle filter to use for state sampling.
    */
@@ -12,11 +12,17 @@ class ParticleGibbsSampler < Sampler {
    */
   nsteps:Integer <- 0;
 
-  fiber sample(model:Model) -> (Model, Real) {
+  fiber sample(model:Model) -> (Model, Real, Real[_], Real[_], Integer[_]) {
+    x:Model[_];
+    w:Real[_];
+    lnormalizer:Real[nsteps + 1];
+    ess:Real[nsteps + 1];
+    npropagations:Integer[nsteps + 1];
     r:Trace?;
+
     while true {
       /* Gibbs update of parameters */
-      auto x <- clone<Model>(model);
+      auto m <- clone<Model>(model);
       if r? {
         auto x' <- clone<Model>(model);
         auto r' <- clone<Trace>(r!);
@@ -24,25 +30,22 @@ class ParticleGibbsSampler < Sampler {
         for t in 1..nsteps {
           w' <- w' + redelay.handle(r', x'.simulate(t));
         }
-        replay.handle(r', x.simulate());
+        replay.handle(r', m.simulate());
       } else {
-        play.handle(x.simulate());
+        play.handle(m.simulate());
       }
 
       /* filter */
-      auto f <- filter.filter(x, r);
-      for t in 0..nsteps {
+      auto f <- filter.filter(m, r);
+      for t in 1..nsteps + 1 {
         f?;
+        (x, w, lnormalizer[t], ess[t], npropagations[t]) <- f!;
       }
       assert !r? || r!.empty();
       
-      y:Model[_];
-      w:Real[_];
-      W:Real;
-      (y, w, W) <- f!;
       auto b <- ancestor(w);
-      yield (y[b], 0.0);
-      r <- y[b].trace;
+      yield (x[b], 0.0, lnormalizer, ess, npropagations);
+      r <- x[b].trace;
     }
   }
 

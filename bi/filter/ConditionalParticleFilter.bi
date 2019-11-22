@@ -29,7 +29,7 @@ class ConditionalParticleFilter {
    */
   ancestor:Boolean <- false;
 
-  fiber filter(model:Model, reference:Trace?) -> (Model[_], Real[_], Real) {
+  fiber filter(model:Model, reference:Trace?) -> (Model[_], Real[_], Real, Real, Integer) {
     auto x <- clone<Model>(model, nparticles);  // particles
     auto w <- vector(0.0, 0);  // log-weights
     auto V <- 0.0;  // incremental log normalizing constant estimate
@@ -56,7 +56,7 @@ class ConditionalParticleFilter {
     }
     (ess, V) <- resample_reduce(w);
     W <- W + V;
-    yield (x, w, W);
+    yield (x, w, W, ess, nparticles);
       
     auto t <- 0;
     while true {
@@ -100,7 +100,7 @@ class ConditionalParticleFilter {
       }
       (ess, V) <- resample_reduce(w);
       W <- W + V;
-      yield (x, w, W);
+      yield (x, w, W, ess, nparticles);
     }
   }
 

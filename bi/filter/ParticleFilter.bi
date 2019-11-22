@@ -19,7 +19,20 @@ class ParticleFilter {
    */
   delayed:Boolean <- true;
 
-  fiber filter(model:Model) -> (Model[_], Real[_], Real) {
+  /**
+   * Filter forward.
+   *
+   * - model: The model.
+   *
+   * Yields: a tuple giving, in order:
+   *   - particle states,
+   *   - particle log weights,
+   *   - log normalizing constant estimate,
+   *   - effective sample size,
+   *   - total number of propagations used to obtain these, which may include
+   *     rejected particles.
+   */
+  fiber filter(model:Model) -> (Model[_], Real[_], Real, Real, Integer) {
     auto x <- clone<Model>(model, nparticles);  // particles
     auto w <- vector(0.0, 0);  // log weights
     auto V <- 0.0;  // incrmental log normalizing constant estimate
@@ -38,7 +51,7 @@ class ParticleFilter {
     }
     (ess, V) <- resample_reduce(w);
     W <- W + V;
-    yield (x, w, W);
+    yield (x, w, W, ess, nparticles);
     
     auto t <- 0;
     while true {
@@ -60,7 +73,7 @@ class ParticleFilter {
       }
       (ess, V) <- resample_reduce(w);
       W <- W + V;
-      yield (x, w, W);
+      yield (x, w, W, ess, nparticles);
     }
   }
 

@@ -1,5 +1,5 @@
 /**
- * Sample a model.
+ * Filter a model.
  *
  * - `--config`: Name of the configuration file, if any.
  *
@@ -12,7 +12,7 @@
  * - `--seed`: Random number seed. Alternatively, provide this as `seed` in
  *   the configuration file. If not provided, random entropy is used.
  */
-program sample(
+program filter(
     input:String?,
     output:String?,
     config:String?,
@@ -46,12 +46,12 @@ program sample(
         "model.class in the config file, and should derive from Model.");
   }
 
-  /* sampler */
-  sampler:ParticleSampler?;
-  sampler <- ParticleSampler?(configBuffer.get("sampler", sampler));
-  if !sampler? {
-    error("could not create sampler; the sampler class should be given as " + 
-        "sampler.class in the config file, and should derive from Sampler.");
+  /* filter */
+  filter:ParticleFilter?;
+  filter <- ParticleFilter?(configBuffer.get("filter", filter));
+  if !filter? {
+    error("could not create filter; the filter class should be given as " + 
+        "filter.class in the config file, and should derive from ParticleFilter.");
   }
   
   /* input */
@@ -78,23 +78,23 @@ program sample(
     outputWriter!.startSequence();
   }
 
-  /* sample */
-  auto f <- sampler!.sample(model!);
-  while f? {
+  /* filter */
+  auto f <- filter!.filter(model!);
+  while f? {    
     if outputWriter? {
-      sample:Model;
-      lweight:Real;
-      lnormalizer:Real[_];
-      ess:Real[_];
-      npropagations:Integer[_];
-      (sample, lweight, lnormalizer, ess, npropagations) <- f!;
-    
+      sample:Model[_];
+      lweight:Real[_];
+      lnormalizer:Real;
+      ess:Real;
+      propagations:Integer;
+      (sample, lweight, lnormalizer, ess, propagations) <- f!;
+
       buffer:MemoryBuffer;
 	  buffer.set("sample", sample);
 	  buffer.set("lweight", lweight);
 	  buffer.set("lnormalizer", lnormalizer);
 	  buffer.set("ess", ess);
-	  buffer.set("npropagations", npropagations);
+	  buffer.set("npropagations", propagations);
       outputWriter!.write(buffer);
       outputWriter!.flush();
     }
