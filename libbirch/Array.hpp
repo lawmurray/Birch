@@ -115,14 +115,15 @@ public:
    * @param f Lambda function that can be called to construct each element.
    */
   template<IS_VALUE(T)>
-  Array(const F& shape, const std::function<T(void)>& f) :
+  Array(const F& shape, const std::function<T(int64_t)>& f) :
       shape(shape),
       buffer(nullptr),
       offset(0),
       isView(false) {
     allocate();
+    int64_t n = 0;
     for (auto iter = begin(); iter != end(); ++iter) {
-      new (&*iter) T(f());
+      new (&*iter) T(f(++n));
     }
   }
 
@@ -134,14 +135,15 @@ public:
    * @param f Lambda function that can be called to construct each element.
    */
   template<IS_NOT_VALUE(T)>
-  Array(Label* context, const F& shape, const std::function<T(void)>& f) :
+  Array(Label* context, const F& shape, const std::function<T(int64_t)>& f) :
       shape(shape),
       buffer(nullptr),
       offset(0),
       isView(false) {
     allocate();
+    int64_t n = 0;
     for (auto iter = begin(); iter != end(); ++iter) {
-      new (&*iter) T(f());
+      new (&*iter) T(f(++n));
     }
   }
 

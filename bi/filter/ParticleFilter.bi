@@ -3,10 +3,20 @@
  */
 class ParticleFilter {
   /**
+   * Number of steps.
+   */
+  nsteps:Integer <- 0;
+
+  /**
+   * Number of additional forecast steps per step.
+   */
+  nforecasts:Integer <- 0;
+  
+  /**
    * Number of particles.
    */
   nparticles:Integer <- 1;
-    
+
   /**
    * Threshold for resampling. Resampling is performed whenever the
    * effective sample size, as a proportion of `N`, drops below this
@@ -20,7 +30,7 @@ class ParticleFilter {
   delayed:Boolean <- true;
 
   /**
-   * Filter forward.
+   * Filter.
    *
    * - model: The model.
    *
@@ -72,18 +82,52 @@ class ParticleFilter {
         w[n] <- w[n] + h.handle(x[n].simulate(t));
       }
       (ess, V) <- resample_reduce(w);
-      W <- W + V;
+      W <- W + V;      
       yield (x, w, W, ess, nparticles);
     }
   }
 
+  /**
+   * Forecast.
+   *
+   * - x: Initial states.
+   *
+   * Yields: forecast states.
+   */
+  fiber forecast(x:Model[_], w:Real[_]) -> (Model[_], Real[_]) {
+    assert length(x) == nparticles;
+  
+    /* event handler */
+    h:Handler <- play;
+    if delayed {
+      h <- global.delay;
+    }
+
+    /* forecast */
+    auto x' <- x;
+    auto w' <- w;
+    dynamic parallel for n in 1..nparticles {
+      x'[n] <- clone<Model>(x'[n]);
+    }
+    for t in 1..nforecasts {
+      parallel for n in 1..nparticles {
+        w'[n] <- w'[n] + h.handle(x'[n].forecast(t));
+      }
+      yield (x', w');
+    }
+  }
+
   function read(buffer:Buffer) {
+    nsteps <-? buffer.get("nsteps", nsteps);
+    nforecasts <-? buffer.get("nforecasts", nforecasts);
     nparticles <-? buffer.get("nparticles", nparticles);
     trigger <-? buffer.get("trigger", trigger);
     delayed <-? buffer.get("delayed", delayed);
   }
 
   function write(buffer:Buffer) {
+    buffer.set("nsteps", nsteps);
+    buffer.set("nforecasts", nforecasts);
     buffer.set("nparticles", nparticles);
     buffer.set("trigger", trigger);
     buffer.set("delayed", delayed);

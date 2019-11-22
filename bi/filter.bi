@@ -95,6 +95,17 @@ program filter(
 	  buffer.set("lnormalizer", lnormalizer);
 	  buffer.set("ess", ess);
 	  buffer.set("npropagations", propagations);
+
+      /* forecast */
+	  auto forecast <- buffer.setArray("forecast");
+	  auto g <- filter!.forecast(sample, lweight);
+	  while g? {
+	    auto buffer <- forecast.push();
+	    (sample, lweight) <- g!;
+        buffer.set("sample", sample);
+	    buffer.set("lweight", lweight);
+	  }
+
       outputWriter!.write(buffer);
       outputWriter!.flush();
     }

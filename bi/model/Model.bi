@@ -22,6 +22,13 @@ class Model {
   }
   
   /**
+   * Forecast.
+   */
+  fiber forecast(t:Integer) -> Event {
+    error(getClassName() + " does not support forecast.");
+  }
+  
+  /**
    * Trace.
    */
   trace:Trace;

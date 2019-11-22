@@ -3,9 +3,9 @@
  */
 class ConditionalParticleFilter {
   /**
-   * Model.
+   * Number of steps.
    */
-  model:Model;
+  nsteps:Integer <- 0;
 
   /**
    * Number of particles.
@@ -71,7 +71,7 @@ class ConditionalParticleFilter {
           w'[n] <- w'[n] + replay.handle(reference', x'.simulate(t));
           // ^ assuming Markov model here
         }
-        
+
         /* simulate a new ancestor index */
         b <- global.ancestor(w');
       }
@@ -105,6 +105,7 @@ class ConditionalParticleFilter {
   }
 
   function read(buffer:Buffer) {
+    nsteps <-? buffer.get("nsteps", nsteps);
     nparticles <-? buffer.get("nparticles", nparticles);
     trigger <-? buffer.get("trigger", trigger);
     delayed <-? buffer.get("delayed", delayed);
@@ -112,6 +113,7 @@ class ConditionalParticleFilter {
   }
 
   function write(buffer:Buffer) {
+    buffer.set("nsteps", nsteps);
     buffer.set("nparticles", nparticles);
     buffer.set("trigger", trigger);
     buffer.set("delayed", delayed);

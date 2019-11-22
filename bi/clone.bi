@@ -14,7 +14,7 @@ function clone<Type>(o:Type) -> Type {
  * - length: Length of vector.
  */
 function clone<Type>(o:Type, length:Integer) -> Type[_] {
-  auto f <- @() -> Type { return clone<Type>(o); };
+  auto f <- @(n:Integer) -> Type { return clone<Type>(o); };
   cpp{{
   return libbirch::make_array<Type>(context_, libbirch::make_shape(length), f);
   }}
