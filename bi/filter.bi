@@ -49,7 +49,7 @@ program filter(
   /* filter */
   auto filter <- ParticleFilter?(make(configBuffer.getObject("filter")));
   if !filter? {
-    /* revert to a default sampler */
+    /* revert to a default filter */
     f:ParticleFilter;
     f.read(configBuffer.getObject("filter"));
 	filter <- f;

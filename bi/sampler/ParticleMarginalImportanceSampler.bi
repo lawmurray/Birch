@@ -33,7 +33,7 @@ class ParticleMarginalImportanceSampler < ParticleSampler {
 
   function read(buffer:Buffer) {
     super.read(buffer);
-    filter <-? ParticleFilter?(buffer.get("filter", filter));
+    filter <-? ParticleFilter?(make(buffer.getObject("filter")));
   }
 
   function write(buffer:Buffer) {

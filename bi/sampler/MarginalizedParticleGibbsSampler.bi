@@ -36,7 +36,7 @@ class MarginalizedParticleGibbsSampler < ParticleSampler {
 
   function read(buffer:Buffer) {
     super.read(buffer);
-    filter <-? ConditionalParticleFilter?(buffer.get("filter", filter));
+    filter <-? ConditionalParticleFilter?(make(buffer.getObject("filter")));
   }
 
   function write(buffer:Buffer) {
