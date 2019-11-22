@@ -760,7 +760,7 @@ void yyerror(const char *msg) {
 
 void yywarn(const char *msg) {
   yylocation();
-  std::cerr << msg << '\n';
+  std::cerr << "warning: " << msg << '\n';
 }
 
 void yylocation() {

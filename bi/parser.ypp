@@ -620,6 +620,8 @@ for_variable_declaration
 
 for
     : FOR for_variable_declaration IN expression RANGE_OP expression braces  { $$ = new bi::For(bi::NONE, $2, $4, $6, $7, make_loc(@$)); }
+    | FOR AUTO { yywarn("auto for a loop index is deprecated and can be deleted; the type is now assumed to be Integer."); } for_variable_declaration IN expression RANGE_OP expression braces  { $$ = new bi::For(bi::NONE, $4, $6, $8, $9, make_loc(@$)); }
+    | FOR for_variable_declaration ':' type { yywarn("providing a type for a loop index is deprecated and should be deleted; the type is now assumed to be Integer."); } IN expression RANGE_OP expression braces  { $$ = new bi::For(bi::NONE, $2, $7, $9, $10, make_loc(@$)); }
     ;
 
 parallel_annotation
@@ -635,6 +637,8 @@ parallel_variable_declaration
 parallel
     : parallel_annotation PARALLEL FOR parallel_variable_declaration IN expression RANGE_OP expression braces  { $$ = new bi::Parallel($1, $4, $6, $8, $9, make_loc(@$)); }
     | PARALLEL FOR parallel_variable_declaration IN expression RANGE_OP expression braces                      { $$ = new bi::Parallel(bi::NONE, $3, $5, $7, $8, make_loc(@$)); }
+    | PARALLEL FOR AUTO { yywarn("auto for a loop index is deprecated and can be deleted; the type is now assumed to be Integer."); } for_variable_declaration IN expression RANGE_OP expression braces  { $$ = new bi::Parallel(bi::NONE, $5, $7, $9, $10, make_loc(@$)); }
+    | PARALLEL FOR for_variable_declaration ':' type { yywarn("providing a type for a loop index is deprecated and should be deleted; the type is now assumed to be Integer."); } IN expression RANGE_OP expression braces  { $$ = new bi::Parallel(bi::NONE, $3, $8, $10, $11, make_loc(@$)); }
     ;
 
 while
