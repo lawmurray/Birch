@@ -16,7 +16,7 @@ class ParticleGibbsSampler < ParticleSampler {
     npropagations:Integer[nsteps + 1];
     r:Trace?;
 
-    while true {
+    for n in 1..nsamples {
       /* Gibbs update of parameters */
       auto m <- clone<Model>(model);
       if r? {
@@ -46,10 +46,12 @@ class ParticleGibbsSampler < ParticleSampler {
   }
 
   function read(buffer:Buffer) {
+    super.read(buffer);
     filter <-? ConditionalParticleFilter?(buffer.get("filter", filter));
   }
 
   function write(buffer:Buffer) {
+    super.write(buffer);
     buffer.set("filter", filter);
   }
 }

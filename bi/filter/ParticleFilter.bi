@@ -63,10 +63,7 @@ class ParticleFilter {
     W <- W + V;
     yield (x, w, W, ess, nparticles);
     
-    auto t <- 0;
-    while true {
-      t <- t + 1;
-    
+    for t in 1..nsteps {
       /* resample */
       if ess <= trigger*nparticles {
         auto a <- resample_systematic(w);

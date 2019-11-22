@@ -16,14 +16,13 @@ class MarginalizedParticleGibbsSampler < ParticleSampler {
     npropagations:Integer[nsteps + 1];
     r:Trace?;
     
-    while true {
+    for n in 1..nsamples {
       auto f <- filter.filter(model, r);
       for t in 1..nsteps + 1 {
         f?;
         (x, w, lnormalizer[t], ess[t], npropagations[t]) <- f!;
       }
       assert !r? || r!.empty();
-      
       auto b <- ancestor(w);
       yield (x[b], 0.0, lnormalizer, ess, npropagations);
       r <- x[b].trace;
@@ -31,10 +30,12 @@ class MarginalizedParticleGibbsSampler < ParticleSampler {
   }
 
   function read(buffer:Buffer) {
+    super.read(buffer);
     filter <-? ConditionalParticleFilter?(buffer.get("filter", filter));
   }
 
   function write(buffer:Buffer) {
+    super.write(buffer);
     buffer.set("filter", filter);
   }
 }

@@ -15,7 +15,7 @@ class ParticleMarginalImportanceSampler < ParticleSampler {
     ess:Real[nsteps + 1];
     npropagations:Integer[nsteps + 1];
     
-    while true {
+    for n in 1..nsamples {
       auto f <- filter.filter(model);
       for t in 1..nsteps + 1 {
         f?;
@@ -27,10 +27,12 @@ class ParticleMarginalImportanceSampler < ParticleSampler {
   }
 
   function read(buffer:Buffer) {
+    super.read(buffer);
     filter <-? ParticleFilter?(buffer.get("filter", filter));
   }
 
   function write(buffer:Buffer) {
+    super.write(buffer);
     buffer.set("filter", filter);
   }
 }

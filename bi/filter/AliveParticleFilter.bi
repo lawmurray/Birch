@@ -3,17 +3,7 @@
  * alive particle filter maintains $N$ particles with non-zero weight, rather
  * than $N$ particles in total as with the standard particle filter.
  */
-class AliveParticleFilter {
-  /**
-   * Number of particles.
-   */
-  nparticles:Integer <- 1;
-
-  /**
-   * Should delayed sampling be used?
-   */
-  delayed:Boolean <- true;
-
+class AliveParticleFilter < ParticleFilter {
   fiber filter(model:Model) -> (Model[_], Real[_], Real, Real, Integer) {
     auto x <- clone<Model>(model, nparticles);  // particles
     auto w <- vector(0.0, 0);  // log-weights
@@ -35,10 +25,7 @@ class AliveParticleFilter {
     W <- W + V;
     yield (x, w, W, ess, nparticles);
    
-    auto t <- 0;
-    while true {
-      t <- t + 1;
-
+    for t in 1..nsteps {
       /* resample */
       auto a <- resample_systematic(w);
       dynamic parallel for n in 1..nparticles {
@@ -81,17 +68,7 @@ class AliveParticleFilter {
       auto npropagations <- sum(p);
       V <- V + log(nparticles) - log(npropagations - 1);
       W <- W + V;
-    yield (x, w, W, ess, npropagations);
+      yield (x, w, W, ess, npropagations);
     }
-  }
-
-  function read(buffer:Buffer) {
-    nparticles <-? buffer.get("nparticles", nparticles);
-    delayed <-? buffer.get("delayed", delayed);
-  }
-
-  function write(buffer:Buffer) {
-    buffer.set("nparticles", nparticles);
-    buffer.set("delayed", delayed);
   }
 }

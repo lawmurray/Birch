@@ -6,7 +6,12 @@
  * <object type="image/svg+xml" data="../../figs/Sampler.svg"></object>
  * </center>
  */
-abstract class ParticleSampler {  
+abstract class ParticleSampler {
+  /**
+   * Number of samples.
+   */
+  nsamples:Integer <- 1;
+
   /**
    * Sample.
    *
@@ -21,4 +26,12 @@ abstract class ParticleSampler {
    *     - total number of propagations.
    */
   abstract fiber sample(model:Model) -> (Model, Real, Real[_], Real[_], Integer[_]);
+  
+  function read(buffer:Buffer) {
+    nsamples <-? buffer.get("nsamples", nsamples);
+  }
+  
+  function write(buffer:Buffer) {
+    buffer.set("nsamples", nsamples);
+  }
 }

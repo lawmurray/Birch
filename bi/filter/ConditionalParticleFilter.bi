@@ -58,10 +58,7 @@ class ConditionalParticleFilter {
     W <- W + V;
     yield (x, w, W, ess, nparticles);
       
-    auto t <- 0;
-    while true {
-      t <- t + 1;
-
+    for t in 1..nsteps {
       /* ancestor sampling */
       if reference? && ancestor {
         auto w' <- w;
