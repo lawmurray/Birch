@@ -51,7 +51,7 @@ program sample(
   sampler <- ParticleSampler?(configBuffer.get("sampler", sampler));
   if !sampler? {
     error("could not create sampler; the sampler class should be given as " + 
-        "sampler.class in the config file, and should derive from Sampler.");
+        "sampler.class in the config file, and should derive from ParticleSampler.");
   }
   
   /* input */

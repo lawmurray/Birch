@@ -6,7 +6,7 @@
 class AliveParticleFilter < ParticleFilter {
   fiber filter(model:Model) -> (Model[_], Real[_], Real, Real, Integer) {
     auto x <- clone<Model>(model, nparticles);  // particles
-    auto w <- vector(0.0, 0);  // log-weights
+    auto w <- vector(0.0, nparticles);  // log-weights
     auto V <- 0.0;  // incrmental log normalizing constant estimate
     auto W <- 0.0;  // cumulative log normalizing constant estimate
     auto ess <- 0.0;  // effective sample size

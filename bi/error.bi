@@ -10,6 +10,6 @@ function error(msg:String) {
 /**
  * Output a warning message.
  */
-function warning(msg:String) {
+function warn(msg:String) {
   stderr.print("warning: " + msg + "\n");
 }

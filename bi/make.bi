@@ -8,16 +8,21 @@
  * otherwise returns an optional with no value.
  */
 function make(name:String) -> Object? {
+  result:Object?;
   symbol:String <- "make_" + name + "_";
   cpp{{
   using make_t = bi::type::Object*(libbirch::Label*);
   void* addr = dlsym(RTLD_DEFAULT, symbol.c_str());
   if (addr) {
-    return libbirch::LazySharedPtr<bi::type::Object>(context_, reinterpret_cast<make_t*>(addr)(context_));
-  } else {
-    return libbirch::nil;
+    libbirch::LazySharedPtr<bi::type::Object> tmp(context_, reinterpret_cast<make_t*>(addr)(context_));
+    result.assign(context_, tmp);
   }
   }}
+  if !result? {
+    warn("could not make object of type " + name +
+        "; class may not exist or may require constructor arguments.");
+  }
+  return result;
 }
 
 /**
