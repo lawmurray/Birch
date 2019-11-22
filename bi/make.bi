@@ -1,11 +1,30 @@
 /**
- * Make an object.
+ * Make an object, with the type given as an argument.
+ *
+ *   - Type: The type.
+ *
+ * Returns: An optional with a value if successful, or no value if not
+ * successful.
+ *
+ * The make will not succeed if the type is a class with initialization
+ * parameters, or a compound type that includes such a class.
+ */
+function make<Type>() -> Type? {
+  dummy:Object?; // dummy to ensure context_ is passed to function
+  cpp{{
+  return libbirch::make<Type>(context_);
+  }}
+}
+
+/**
+ * Make an object, with the class given as a string.
  *
  *   - name: Name of the class.
  *
- * Return: if `name` names a class with no initialization parameters,
- * constructs an object of that class and returns it in an optional,
- * otherwise returns an optional with no value.
+ * Returns: An optional with a value if successful, or no value if not
+ * successful.
+ *
+ * The make will not succeed if the class has initialization parameters.
  */
 function make(name:String) -> Object? {
   result:Object?;
@@ -20,24 +39,65 @@ function make(name:String) -> Object? {
   }}
   if !result? {
     warn("could not make object of type " + name +
-        "; class may not exist or may require constructor arguments.");
+        "; class may not exist or may require initialization arguments.");
   }
   return result;
 }
 
 /**
- * Make an object.
+ * Make an object, with the class possibly given as a string.
  *
- *   - Type: A value or class type.
+ *   - name: Name of the class.
  *
- * Return: if `Type` is a class with no initialization parameters, or a value
- * type, constructs an object of that class or a default-initialized value
- * of that type and returns it in an optional, otherwise returns an optional
- * with no value.
+ * Returns: An optional with a value if successful, or no value if not
+ * successful or `name` has no value.
  */
-function make<Type>() -> Type? {
-  result:Object?; // dummy to ensure context_ is passed to function
-  cpp{{
-  return libbirch::make<Type>(context_);
-  }}
+function make(name:String?) -> Object? {
+  if name? {
+    return make(name!);
+  } else {
+    return nil;
+  }
+}
+
+/**
+ * Make an object, with the class given in a buffer.
+ *
+ *   - buffer: The buffer.
+ *
+ * Returns: An optional with a value if successful, or no value if not
+ * successful.
+ *
+ * If the buffer contains a key `class`, an object of that class is 
+ * constructed. The buffer is then passed to the `read()` function of the new
+ * object.
+ *
+ * The make will not succeed if the class has initialization parameters.
+ */
+function make(buffer:Buffer) -> Object? {
+  result:Object?;
+  auto className <- buffer.getString("class");
+  if className? {
+    result <- make(className!);
+  }
+  if result? {
+    result!.read(buffer);
+  }
+  return result;
+}
+
+/**
+ * Make an object, with the class possibly given in a buffer.
+ *
+ *   - buffer: The buffer.
+ *
+ * Returns: An optional with a value if successful, or no value if not
+ * successful.
+ */
+function make(buffer:Buffer?) -> Object? {
+  if buffer? {
+    return make(buffer!);
+  } else {
+    return nil;
+  }
 }

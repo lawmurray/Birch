@@ -7,10 +7,16 @@ class AliveParticleFilter < ParticleFilter {
   fiber filter(model:Model) -> (Model[_], Real[_], Real, Real, Integer) {
     auto x <- clone<Model>(model, nparticles);  // particles
     auto w <- vector(0.0, nparticles);  // log-weights
-    auto V <- 0.0;  // incrmental log normalizing constant estimate
-    auto W <- 0.0;  // cumulative log normalizing constant estimate
     auto ess <- 0.0;  // effective sample size
-    
+    auto S <- 0.0;  // logarithm of the sum of weights
+    auto W <- 0.0;  // cumulative log normalizing constant estimate
+
+    /* number of steps */
+    auto nsteps <- model.size();
+    if this.nsteps? {
+      nsteps <- this.nsteps!;
+    }
+
     /* event handler */
     h:Handler <- play;
     if delayed {
@@ -21,8 +27,8 @@ class AliveParticleFilter < ParticleFilter {
     parallel for n in 1..nparticles {
       w[n] <- h.handle(x[n].simulate());
     }
-    (ess, V) <- resample_reduce(w);
-    W <- W + V;
+    (ess, S) <- resample_reduce(w);
+    W <- W + S - log(nparticles);
     yield (x, w, W, ess, nparticles);
    
     for t in 1..nsteps {
@@ -32,6 +38,7 @@ class AliveParticleFilter < ParticleFilter {
         if a[n] != n {
           x[n] <- clone<Model>(x[a[n]]);
         }
+        w[n] <- 0.0;
       }
 
       /* propagate and weight */
@@ -64,10 +71,9 @@ class AliveParticleFilter < ParticleFilter {
         }
       }
 
-      (ess, V) <- resample_reduce(w);
       auto npropagations <- sum(p);
-      V <- V + log(nparticles) - log(npropagations - 1);
-      W <- W + V;
+      (ess, S) <- resample_reduce(w);
+      W <- W + S - log(npropagations - 1);
       yield (x, w, W, ess, npropagations);
     }
   }

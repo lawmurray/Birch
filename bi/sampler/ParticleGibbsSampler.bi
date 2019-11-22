@@ -8,7 +8,12 @@ class ParticleGibbsSampler < ParticleSampler {
   filter:ConditionalParticleFilter;
   
   fiber sample(model:Model) -> (Model, Real, Real[_], Real[_], Integer[_]) {
-    auto nsteps <- filter.nsteps;
+    /* number of steps */
+    auto nsteps <- model.size();
+    if filter.nsteps? {
+      nsteps <- filter.nsteps!;
+    }
+
     x:Model[_];
     w:Real[_];
     lnormalizer:Real[nsteps + 1];

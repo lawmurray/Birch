@@ -350,15 +350,10 @@ abstract class Buffer {
    * Return: The object.
    */
   function get(value:Object?) -> Object? {
-    auto result <- value;
-    auto className <- getString("class");
-    if className? {
-      result <- make(className!);
+    if value? {
+      value!.read(this);
     }
-    if result? {
-      result!.read(this);
-    }
-    return result;
+    return value;
   }
 
   /**

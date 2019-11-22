@@ -3,9 +3,10 @@
  */
 class ConditionalParticleFilter {
   /**
-   * Number of steps.
+   * Number of steps. If this has no value, the model will be required to
+   * suggest an appropriate value.
    */
-  nsteps:Integer <- 0;
+  nsteps:Integer?;
 
   /**
    * Number of particles.
@@ -32,11 +33,17 @@ class ConditionalParticleFilter {
   fiber filter(model:Model, reference:Trace?) -> (Model[_], Real[_], Real, Real, Integer) {
     auto x <- clone<Model>(model, nparticles);  // particles
     auto w <- vector(0.0, nparticles);  // log-weights
-    auto V <- 0.0;  // incremental log normalizing constant estimate
+    auto ess <- 0.0;  // effective sample size
+    auto S <- 0.0;  // logarithm of the sum of weights
     auto W <- 0.0;  // cumulative log normalizing constant estimate
     auto a <- iota(1, nparticles);  // ancestor indices
     auto b <- 1;  // reference particle index
-    auto ess <- 0.0;  // effective sample size
+
+    /* number of steps */
+    auto nsteps <- model.size();
+    if this.nsteps? {
+      nsteps <- this.nsteps!;
+    }
     
     /* event handlers */
     replay:TraceHandler <- global.replay;  // to replay reference particle
@@ -54,8 +61,8 @@ class ConditionalParticleFilter {
         w[n] <- play.handle(x[n].simulate(), x[n].trace);
       }
     }
-    (ess, V) <- resample_reduce(w);
-    W <- W + V;
+    (ess, S) <- resample_reduce(w);
+    W <- W + S - log(nparticles);
     yield (x, w, W, ess, nparticles);
       
     for t in 1..nsteps {
@@ -84,7 +91,11 @@ class ConditionalParticleFilter {
           if a[n] != n {
             x[n] <- clone<Model>(x[a[n]]);
           }
+          w[n] <- 0.0;
         }
+      } else {
+        /* normalize weights to sum to nparticles */
+        w <- w - (S - log(nparticles));
       }
       
       /* propagate and weight */
@@ -95,8 +106,8 @@ class ConditionalParticleFilter {
           w[n] <- play.handle(x[n].simulate(t), x[n].trace);
         }
       }
-      (ess, V) <- resample_reduce(w);
-      W <- W + V;
+      (ess, S) <- resample_reduce(w);
+      W <- W + S - log(nparticles);
       yield (x, w, W, ess, nparticles);
     }
   }

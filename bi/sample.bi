@@ -39,19 +39,19 @@ program sample(
   }
 
   /* model */
-  model:Model?;
-  model <- Model?(configBuffer.get("model", model));
+  auto model <- Model?(make(configBuffer.getObject("model")));
   if !model? {
     error("could not create model; the model class should be given as " + 
         "model.class in the config file, and should derive from Model.");
   }
 
   /* sampler */
-  sampler:ParticleSampler?;
-  sampler <- ParticleSampler?(configBuffer.get("sampler", sampler));
+  auto sampler <- ParticleSampler?(make(configBuffer.getObject("sampler")));
   if !sampler? {
-    error("could not create sampler; the sampler class should be given as " + 
-        "sampler.class in the config file, and should derive from ParticleSampler.");
+    /* revert to a default sampler */
+    s:ParticleMarginalImportanceSampler;
+    s.read(configBuffer.getObject("sampler"));
+	sampler <- s;
   }
   
   /* input */

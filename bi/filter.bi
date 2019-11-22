@@ -47,11 +47,12 @@ program filter(
   }
 
   /* filter */
-  filter:ParticleFilter?;
-  filter <- ParticleFilter?(configBuffer.get("filter", filter));
+  auto filter <- ParticleFilter?(make(configBuffer.getObject("filter")));
   if !filter? {
-    error("could not create filter; the filter class should be given as " + 
-        "filter.class in the config file, and should derive from ParticleFilter.");
+    /* revert to a default sampler */
+    f:ParticleFilter;
+    f.read(configBuffer.getObject("filter"));
+	filter <- f;
   }
   
   /* input */

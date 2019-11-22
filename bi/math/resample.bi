@@ -268,7 +268,7 @@ function cumulative_weights(w:Real[_]) -> Real[_] {
  * weight, given a log-weight vector.
  *
  * Returns: A pair, the first element of which gives the ESS, the second
- * element of which gives the logarithm of the average weight.
+ * element of which gives the logarithm of the sum of weights.
  */
 function resample_reduce(w:Real[_]) -> (Real, Real) {
   if length(w) == 0 {
@@ -277,12 +277,12 @@ function resample_reduce(w:Real[_]) -> (Real, Real) {
     auto N <- length(w);
     auto W <- 0.0;
     auto W2 <- 0.0;
-    auto m <- max(w);    
+    auto mx <- max(w);    
     for n in 1..N {
-      auto v <- exp(w[n] - m);
+      auto v <- exp(w[n] - mx);
       W <- W + v;
       W2 <- W2 + v*v;
     }
-    return (W*W/W2, W/N);
+    return (W*W/W2, log(W) + mx);
   }
 }
