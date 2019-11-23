@@ -462,9 +462,4 @@ Optional<To> check_cast(const Optional<From>& from) {
   }
 }
 
-/**
- * Report unknown program option and abort.
- */
-void unknown_option(const std::string& name);
-
 }
