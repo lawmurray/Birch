@@ -11,13 +11,15 @@
  *
  * - `--seed`: Random number seed. Alternatively, provide this as `seed` in
  *   the configuration file. If not provided, random entropy is used.
+ *
+ * - `--quiet`: Don't display a progress bar.
  */
 program sample(
     input:String?,
     output:String?,
     config:String?,
-    seed:Integer?) {
-
+    seed:Integer?,
+    quiet:Boolean <- false) {
   /* config */
   configBuffer:MemoryBuffer;
   if config? {
@@ -51,7 +53,7 @@ program sample(
     /* revert to a default sampler */
     s:ParticleMarginalImportanceSampler;
     s.read(configBuffer.getObject("sampler"));
-	sampler <- s;
+    sampler <- s;
   }
   
   /* input */
@@ -78,25 +80,37 @@ program sample(
     outputWriter!.startSequence();
   }
 
-  /* sample */
+  /* progress bar */
+  bar:ProgressBar;
+  if !quiet {
+    bar.update(0.0);
+  }
+
+  /* sample */  
   auto f <- sampler!.sample(model!);
+  auto n <- 0;
   while f? {
-    if outputWriter? {
-      sample:Model;
-      lweight:Real;
-      lnormalizer:Real[_];
-      ess:Real[_];
-      npropagations:Integer[_];
-      (sample, lweight, lnormalizer, ess, npropagations) <- f!;
+    sample:Model;
+    lweight:Real;
+    lnormalizer:Real[_];
+    ess:Real[_];
+    npropagations:Integer[_];
+    (sample, lweight, lnormalizer, ess, npropagations) <- f!;
     
+    if outputWriter? {
       buffer:MemoryBuffer;
-	  buffer.set("sample", sample);
-	  buffer.set("lweight", lweight);
-	  buffer.set("lnormalizer", lnormalizer);
-	  buffer.set("ess", ess);
-	  buffer.set("npropagations", npropagations);
+      buffer.set("sample", sample);
+      buffer.set("lweight", lweight);
+      buffer.set("lnormalizer", lnormalizer);
+      buffer.set("ess", ess);
+      buffer.set("npropagations", npropagations);
       outputWriter!.write(buffer);
       outputWriter!.flush();
+    }
+          
+    n <- n + 1;
+    if !quiet {
+      bar.update(Real(n)/sampler!.nsamples);
     }
   }
   

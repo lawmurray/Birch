@@ -1,0 +1,49 @@
+/**
+ * Progress bar for text output.
+ */
+class ProgressBar {
+  /**
+   * The output stream on which to write.
+   */
+  out:OutputStream <- stderr;
+  
+  /**
+   * Current fill level of the bar.
+   */
+  current:Integer <- -1;
+  
+  /**
+   * Maximum fill level of the bar.
+   */
+  maximum:Integer <- 80;
+  
+  /**
+   * Update the progress bar.
+   *
+   * - progress: The current progress, between 0.0 (not started) to 1.0
+   *   (complete).
+   *
+   * The progress bar is only rewritten if its discretized progress has
+   * changed since the last update. This produces nicer results when output
+   * is redirected into a file, where rewrites are appended to the file.
+   */
+  function update(progress:Real) {
+    assert 0.0 <= progress && progress <= 1.0;
+    auto old <- current;
+    current <- Integer(progress*maximum);
+    if current != old {
+      /* redraw */
+      out.print("\r");
+      for i in 1..current {
+        out.print("\u25a0");
+      }
+      for i in (current + 1)..maximum {
+        out.print("\u25a1");
+      }
+    }
+    if current == maximum {
+      out.print("\n");
+    }
+    out.flush();
+  }
+}

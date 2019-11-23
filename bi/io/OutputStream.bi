@@ -34,6 +34,14 @@ class OutputStream {
     fclose(file!);
     file <- nil;
   }
+  
+  /**
+   * Flush.
+   */
+  function flush() {
+    assert file?;
+    fflush(file!);
+  }
 
   /**
    * Print string.

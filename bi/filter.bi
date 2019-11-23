@@ -11,13 +11,15 @@
  *
  * - `--seed`: Random number seed. Alternatively, provide this as `seed` in
  *   the configuration file. If not provided, random entropy is used.
+ *
+ * - `--quiet`: Don't display a progress bar.
  */
 program filter(
     input:String?,
     output:String?,
     config:String?,
-    seed:Integer?) {
-
+    seed:Integer?,
+    quiet:Boolean) {
   /* config */
   configBuffer:MemoryBuffer;
   if config? {
@@ -39,8 +41,7 @@ program filter(
   }
 
   /* model */
-  model:Model?;
-  model <- Model?(configBuffer.get("model", model));
+  auto model <- Model?(make(configBuffer.getObject("model")));
   if !model? {
     error("could not create model; the model class should be given as " + 
         "model.class in the config file, and should derive from Model.");
@@ -52,7 +53,7 @@ program filter(
     /* revert to a default filter */
     f:ParticleFilter;
     f.read(configBuffer.getObject("filter"));
-	filter <- f;
+    filter <- f;
   }
   
   /* input */
@@ -79,42 +80,58 @@ program filter(
     outputWriter!.startSequence();
   }
 
+  /* progress bar */
+  bar:ProgressBar;
+  if !quiet {
+    bar.update(0.0);
+  }
+
   /* filter */
   auto f <- filter!.filter(model!);
+  auto n <- 0;
   while f? {    
+    buffer:MemoryBuffer;
+    sample:Model[_];
+    lweight:Real[_];
+    lnormalizer:Real;
+    ess:Real;
+    propagations:Integer;
+    (sample, lweight, lnormalizer, ess, propagations) <- f!;
+
     if outputWriter? {
-      sample:Model[_];
-      lweight:Real[_];
-      lnormalizer:Real;
-      ess:Real;
-      propagations:Integer;
-      (sample, lweight, lnormalizer, ess, propagations) <- f!;
-
-      buffer:MemoryBuffer;
-	  buffer.set("sample", sample);
-	  buffer.set("lweight", lweight);
-	  buffer.set("lnormalizer", lnormalizer);
-	  buffer.set("ess", ess);
-	  buffer.set("npropagations", propagations);
-
-      /* forecast */
-	  auto forecast <- buffer.setArray("forecast");
-	  auto g <- filter!.forecast(sample, lweight);
-	  while g? {
-	    auto buffer <- forecast.push();
-	    (sample, lweight) <- g!;
+      buffer.set("sample", sample);
+      buffer.set("lweight", lweight);
+      buffer.set("lnormalizer", lnormalizer);
+      buffer.set("ess", ess);
+      buffer.set("npropagations", propagations);
+    }
+    
+    /* forecast */
+    auto forecast <- buffer.setArray("forecast");
+    auto g <- filter!.forecast(sample, lweight);
+    while g? {
+      (sample, lweight) <- g!;
+      if outputWriter? {
+        auto buffer <- forecast.push();
         buffer.set("sample", sample);
-	    buffer.set("lweight", lweight);
-	  }
+        buffer.set("lweight", lweight);
+      }
+    }
 
+    if outputWriter? {
       outputWriter!.write(buffer);
       outputWriter!.flush();
     }
-  }
+    
+    n <- n + 1;
+    if !quiet {
+      bar.update(Real(n)/(filter!.nsteps! + 1));
+    }
   
-  /* finalize output */
-  if outputWriter? {
-    outputWriter!.endSequence();
-    outputWriter!.close();
+    /* finalize output */
+    if outputWriter? {
+      outputWriter!.endSequence();
+      outputWriter!.close();
+    }
   }
 }

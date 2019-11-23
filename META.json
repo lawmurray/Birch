@@ -299,6 +299,7 @@
       "bi/utility/error.bi",
       "bi/utility/make.bi",
       "bi/utility/memory.bi",
+      "bi/utility/ProgressBar.bi",
       "bi/value/ArrayValue.bi",
       "bi/value/BooleanValue.bi",
       "bi/value/BooleanMatrixValue.bi",
@@ -321,7 +322,6 @@
 
       "libbirch/global.cpp",
       "libbirch/Label.cpp",
-      "libbirch/libbirch.cpp",
       "libbirch/Memo.cpp",
       "libbirch/memory.cpp",
       "libbirch/stacktrace.cpp"
