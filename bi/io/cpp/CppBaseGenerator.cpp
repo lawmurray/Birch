@@ -566,7 +566,7 @@ void bi::CppBaseGenerator::visit(const MemberFiber* o) {
 
 void bi::CppBaseGenerator::visit(const Program* o) {
   if (header) {
-    line("extern \"C\" int " << o->name << "(int argc, char** argv);");
+    line("extern \"C\" int " << o->name << "(int, char**);");
   } else {
     genTraceLine(o->loc);
     line("int bi::" << o->name << "(int argc_, char** argv_) {");
@@ -606,6 +606,7 @@ void bi::CppBaseGenerator::visit(const Program* o) {
       line("};");
 
       /* long options */
+      genTraceLine(o->loc);
       line("int c_, option_index_;");
       genTraceLine(o->loc);
       line("option long_options_[] = {");
@@ -617,21 +618,27 @@ void bi::CppBaseGenerator::visit(const Program* o) {
         std::string option = name->str();
         boost::replace_all(option, "_", "-");
 
+        genTraceLine(o->loc);
         start("{\"");
         middle(option << "\", required_argument, 0, " << flag);
         finish(" },");
       }
+      genTraceLine(o->loc);
       line("{0, 0, 0, 0}");
       out();
+      genTraceLine(o->loc);
       line("};");
 
       /* short options */
       genTraceLine(o->loc);
-      line("const char* short_options_ = \"\";");
+      line("const char* short_options_ = \":\";");
+
+      /* handle error reporting ourselves (worth commenting this out if
+       * debugging issues with command-line parsing) */
+      genTraceLine(o->loc);
+      line("::opterr = 0;");
 
       /* read in options with getopt_long */
-      genTraceLine(o->loc);
-      line("::opterr = 0;");  // handle error reporting ourselves
       genTraceLine(o->loc);
       start("c_ = ::getopt_long_only(argc_, argv_, short_options_, ");
       finish("long_options_, &option_index_);");
@@ -646,10 +653,12 @@ void bi::CppBaseGenerator::visit(const Program* o) {
         auto name = dynamic_cast<const Parameter*>(param)->name;
         std::string flag = internalise(name->str()) + "FLAG_";
 
-        genTraceLine(o->loc);
+        genTraceLine(param->loc);
         line("case " << flag << ':');
         in();
-        genTraceLine(o->loc);
+        genTraceLine(param->loc);
+        line("libbirch_error_msg_(::optarg, \"option --\" << long_options_[::optopt].name << \" requires a value.\");");
+        genTraceLine(param->loc);
         if (param->type->unwrap()->isBasic()) {
           auto type = dynamic_cast<Named*>(param->type->unwrap());
           assert(type);
@@ -661,11 +670,28 @@ void bi::CppBaseGenerator::visit(const Program* o) {
         line("break;");
         out();
       }
+
+      genTraceLine(o->loc);
+      line("case '?':");
+      in();
+      genTraceLine(o->loc);
+      line("libbirch_error_msg_(false, \"option \" << argv_[::optind - 1] << \" unrecognized.\");");
+      out();
+
+      genTraceLine(o->loc);
+      line("case ':':");
+      in();
+      genTraceLine(o->loc);
+      line("libbirch_error_msg_(false, \"option --\" << long_options_[::optopt].name << \" requires a value.\");");
+      out();
+
+      genTraceLine(o->loc);
       line("default:");
       in();
       genTraceLine(o->loc);
-      line("libbirch::unknown_option(argv_[::optind - 1]);");
+      line("libbirch_error_msg_(false, std::string(\"unknown error parsing command-line options.\"));");
       out();
+
       out();
       line('}');
       genTraceLine(o->loc);
