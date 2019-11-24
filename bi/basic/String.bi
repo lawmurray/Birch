@@ -18,59 +18,30 @@ function String(x:Boolean) -> String {
  * Convert double-precision floating point number to string.
  */
 function String(x:Real64) -> String {
-  if x == 0.0 {
-    return "0.0";
+  cpp{{
+  std::stringstream buf;
+  if (x == floor(x)) {
+    buf << (int64_t)x << ".0";
   } else {
-    cpp{{
-    std::stringstream buf;
     buf << std::scientific << std::setprecision(14) << x;
-  
-    /* remove trailing zeros */
-    auto str = buf.str();
-    auto i = str.find('.');
-    if (i != std::string::npos) {
-      auto j = str.find('e', i);
-      if (j != std::string::npos) {
-        auto k = str.find_last_not_of('0', j - 1);
-        if (k != std::string::npos) {
-          auto split = std::max(i + 1, k);
-          return str.substr(0, split + 1) + str.substr(j, str.length() - i);
-        }
-      }
-    }
-    return str;
-    }}
   }
+  return buf.str();
+  }}
 }
 
 /**
  * Convert single-precision floating point number to string.
  */
 function String(x:Real32) -> String {
-  result:String;
-  if x == 0.0 {
-    return "0.0";
+  cpp{{
+  std::stringstream buf;
+  if (x == floor(x)) {
+    buf << (int64_t)x << ".0";
   } else {
-    cpp{{
-    std::stringstream buf;
     buf << std::scientific << std::setprecision(6) << x;
-  
-    /* remove trailing zeros */
-    auto str = buf.str();
-    auto i = str.find('.');
-    if (i != std::string::npos) {
-      auto j = str.find('e', i);
-      if (j != std::string::npos) {
-        auto k = str.find_last_not_of('0', j - 1);
-        if (k != std::string::npos) {
-          auto split = std::max(i + 1, k);
-          return str.substr(0, split + 1) + str.substr(j, str.length() - i);
-        }
-      }
-    }
-    return str;
-    }}
   }
+  return buf.str();
+  }}
 }
 
 /**

@@ -383,12 +383,16 @@ function String(x:Real[_]) -> String {
   std::stringstream buf;
   }}
   for i in 1..length(x) {
-    auto value <- String(x[i]);
+    auto value <- x[i];
     cpp{{
     if (i > 1) {
       buf << ' ';
     }
-    buf << value;
+    if (value == floor(value)) {
+      buf << (int64_t)value << ".0";
+    } else {
+      buf << std::scientific << std::setprecision(6) << value;
+    }
     }}
   }
   cpp{{
@@ -406,7 +410,7 @@ function String(x:Integer[_]) -> String {
   std::stringstream buf;
   }}
   for i in 1..length(x) {
-    auto value <- String(x[i]);
+    auto value <- x[i];
     cpp{{
     if (i > 1) {
       buf << ' ';
@@ -429,12 +433,16 @@ function String(x:Boolean[_]) -> String {
   std::stringstream buf;
   }}
   for i in 1..length(x) {
-    auto value <- String(x[i]);
+    auto value <- x[i];
     cpp{{
     if (i > 1) {
       buf << ' ';
     }
-    buf << value;
+    if (value) {
+      buf << "true";
+    } else {
+      buf << "false";
+    }
     }}
   }
   cpp{{

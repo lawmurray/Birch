@@ -310,12 +310,16 @@ function String(X:Real[_,_]) -> String {
     }
     }}
     for j in 1..columns(X) {
-      auto value <- String(X[i,j]);
+      auto value <- X[i,j];
       cpp{{
       if (j > 1) {
         buf << ' ';
       }
-      buf << value;
+      if (value == floor(value)) {
+        buf << (int64_t)value << ".0";
+      } else {
+        buf << std::scientific << std::setprecision(14) << value;
+      }
       }}
     }
   }
@@ -340,7 +344,7 @@ function String(X:Integer[_,_]) -> String {
     }
     }}
     for j in 1..columns(X) {
-      auto value <- String(X[i,j]);
+      auto value <- X[i,j];
       cpp{{
       if (j > 1) {
         buf << ' ';
@@ -370,12 +374,16 @@ function String(X:Boolean[_,_]) -> String {
     }
     }}
     for j in 1..columns(X) {
-      auto value <- String(X[i,j]);
+      auto value <- X[i,j];
       cpp{{
       if (j > 1) {
         buf << ' ';
       }
-      buf << value;
+      if (value) {
+        buf << "true";
+      } else {
+        buf << "false";
+      }
       }}
     }
   }
