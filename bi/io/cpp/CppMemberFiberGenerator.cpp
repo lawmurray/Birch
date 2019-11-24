@@ -57,7 +57,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   /* constructor */
   start("");
   if (!header) {
-    genTraceLine(o->loc);
+    genSourceLine(o->loc);
     middle("bi::type::" << type->name);
     genTemplateArgs(type);
     middle("::" << stateName << "::");
@@ -76,14 +76,14 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     finish(" :");
     in();
     in();
-    genTraceLine(o->loc);
+    genSourceLine(o->loc);
     start("super_type_(context_, " << (yields.size() + 1) << ')');
     finish(',');
-    genTraceLine(o->loc);
+    genSourceLine(o->loc);
     start("self(context_, self)");
     for (auto param : params) {
       finish(',');
-      genTraceLine(param->loc);
+      genSourceLine(param->loc);
       start(param->name << '(');
       if (!param->type->isValue()) {
         middle("context_, ");
@@ -99,7 +99,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
 
   /* deep copy constructor */
   if (!header) {
-    genTraceLine(o->loc);
+    genSourceLine(o->loc);
     middle("bi::type::" << type->name);
     genTemplateArgs(type);
     middle("::" << stateName << "::");
@@ -113,14 +113,14 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     finish(" :");
     in();
     in();
-    genTraceLine(o->loc);
+    genSourceLine(o->loc);
     start("super_type_(context, label, o)");
     finish(',');
-    genTraceLine(o->loc);
+    genSourceLine(o->loc);
     start("self(context, label, o.self)");
     for (auto o : params) {
       finish(',');
-      genTraceLine(o->loc);
+      genSourceLine(o->loc);
       if (o->type->isValue()) {
         start(o->name << "(o." << o->name << ')');
       } else {
@@ -130,7 +130,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     for (auto o : locals) {
       auto name = getName(o->name->str(), o->number);
       finish(',');
-      genTraceLine(o->loc);
+      genSourceLine(o->loc);
       if (o->type->isValue()) {
         start(name << "(o." << name << ')');
       } else {
@@ -140,7 +140,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     for (auto o : fors) {
       auto name = getName(o->name->str(), o->number);
       finish(',');
-      genTraceLine(o->loc);
+      genSourceLine(o->loc);
       start(name << "(o." << name << ')');
     }
     out();
@@ -181,7 +181,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   if (header) {
     start("virtual void ");
   } else {
-    genTraceLine(o->loc);
+    genSourceLine(o->loc);
     start("void bi::type::" << type->name);
     genTemplateArgs(type);
     middle("::" << stateName << "::");
@@ -220,7 +220,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   if (header) {
     start("virtual void ");
   } else {
-    genTraceLine(o->loc);
+    genSourceLine(o->loc);
     start("void bi::type::" << type->name);
     genTemplateArgs(type);
     middle("::" << stateName << "::");
@@ -259,7 +259,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   if (header) {
     start("virtual void ");
   } else {
-    genTraceLine(o->loc);
+    genSourceLine(o->loc);
     start("void bi::type::" << type->name);
     genTemplateArgs(type);
     middle("::" << stateName << "::");
@@ -298,7 +298,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   if (header) {
     start("virtual ");
   } else {
-    genTraceLine(o->loc);
+    genSourceLine(o->loc);
     start("");
   }
   middle("bool ");
@@ -313,13 +313,10 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   } else {
     finish(" {");
     in();
-    genTraceLine(o->loc);
+    genTraceFunction(o->name->str(), o->loc);
     line("libbirch_swap_context_");
     genTraceLine(o->loc);
     line("libbirch_declare_local_");
-    genTraceLine(o->loc);
-    genTraceFunction(o->name->str(), o->loc);
-
     genTraceLine(o->loc);
     line("switch (local->point_) {");
     in();
@@ -357,7 +354,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   if (header) {
     start("virtual ");
   } else {
-    genTraceLine(o->loc);
+    genSourceLine(o->loc);
     start("");
   }
   middle(o->returnType << ' ');

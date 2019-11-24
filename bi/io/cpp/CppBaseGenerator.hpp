@@ -142,6 +142,13 @@ protected:
    */
   void genTraceLine(const Location* loc);
 
+  /**
+   * Generate macro to update line source line only. This does not generate
+   * any executable code, and so is suitable for use in e.g. initializer
+   * lists.
+   */
+  void genSourceLine(const Location* loc);
+
   /*
    * Generate arguments for function calls with appropriate casts where
    * necessary.

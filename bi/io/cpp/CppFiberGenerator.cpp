@@ -54,7 +54,7 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
 
     /* constructor */
     if (!header) {
-      genTraceLine(o->loc);
+      genSourceLine(o->loc);
       start("bi::" << stateName << "::");
     } else {
       start("");
@@ -70,11 +70,11 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
       finish(" :");
       in();
       in();
-      genTraceLine(o->loc);
+      genSourceLine(o->loc);
       start("super_type_(context_, " << (yields.size() + 1) << ')');
       for (auto param : params) {
         finish(',');
-        genTraceLine(param->loc);
+        genSourceLine(param->loc);
         start(param->name << '(');
         if (!param->type->isValue()) {
           middle("context_, ");
@@ -90,7 +90,7 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
 
     /* deep copy constructor */
     if (!header) {
-      genTraceLine(o->loc);
+      genSourceLine(o->loc);
       start("bi::" << stateName << "::");
     } else {
       start("");
@@ -102,11 +102,11 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
       finish(" :");
       in();
       in();
-      genTraceLine(o->loc);
+      genSourceLine(o->loc);
       start("super_type_(context, label, o)");
       for (auto o : params) {
         finish(',');
-        genTraceLine(o->loc);
+        genSourceLine(o->loc);
         if (o->type->isValue()) {
           start(o->name << "(o." << o->name << ')');
         } else {
@@ -116,7 +116,7 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
       for (auto o : locals) {
         auto name = getName(o->name->str(), o->number);
         finish(',');
-        genTraceLine(o->loc);
+        genSourceLine(o->loc);
         if (o->type->isValue()) {
           start(name << "(o." << name << ')');
         } else {
@@ -126,7 +126,7 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
       for (auto o : fors) {
         auto name = getName(o->name->str(), o->number);
         finish(',');
-        genTraceLine(o->loc);
+        genSourceLine(o->loc);
         start(name << "(o." << name << ')');
       }
       out();
@@ -167,7 +167,7 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
     if (header) {
       start("virtual void ");
     } else {
-      genTraceLine(o->loc);
+      genSourceLine(o->loc);
       start("void bi::" << stateName << "::");
     }
     middle("doFreeze_()");
@@ -201,7 +201,7 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
     if (header) {
       start("virtual void ");
     } else {
-      genTraceLine(o->loc);
+      genSourceLine(o->loc);
       start("void bi::" << stateName << "::");
     }
     middle("doThaw_(libbirch::Label* label_)");
@@ -235,7 +235,7 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
     if (header) {
       start("virtual void ");
     } else {
-      genTraceLine(o->loc);
+      genSourceLine(o->loc);
       start("void bi::" << stateName << "::");
     }
     middle("doFinish_()");
@@ -270,7 +270,7 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
     if (header) {
       start("virtual ");
     } else {
-      genTraceLine(o->loc);
+      genSourceLine(o->loc);
       start("");
     }
     middle("bool ");
@@ -283,6 +283,7 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
     } else {
       finish(" {");
       in();
+      genTraceFunction(o->name->str(), o->loc);
       for (auto iter = o->typeParams->begin(); iter != o->typeParams->end();
           ++iter) {
         auto param = dynamic_cast<const Generic*>(*iter);
@@ -294,9 +295,6 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
       line("libbirch_swap_context_");
       genTraceLine(o->loc);
       line("libbirch_declare_local_");
-      genTraceLine(o->loc);
-      genTraceFunction(o->name->str(), o->loc);
-
       genTraceLine(o->loc);
       line("switch (local->point_) {");
       in();
@@ -339,7 +337,7 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
       name += "_" + encode32(base.str()) + "_";
     }
     if (!header) {
-      genTraceLine(o->loc);
+      genSourceLine(o->loc);
     }
     start(o->returnType << ' ');
     if (!header) {
