@@ -329,8 +329,8 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     }
     genTraceLine(o->loc);
     line("default: goto END_;");
-    out();
     genTraceLine(o->loc);
+    out();
     line('}');
     genTraceLine(o->loc);
     line("POINT0_:");

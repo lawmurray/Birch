@@ -306,8 +306,8 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
       }
       genTraceLine(o->loc);
       line("default: goto END_;");
-      out();
       genTraceLine(o->loc);
+      out();
       line('}');
       genTraceLine(o->loc);
       line("POINT0_:");
@@ -403,30 +403,6 @@ void bi::CppFiberGenerator::visit(const For* o) {
   line("}");
 }
 
-void bi::CppFiberGenerator::visit(const Identifier<Parameter>* o) {
-  if (!o->target->has(IN_FIBER)) {
-    CppBaseGenerator::visit(o);
-  } else {
-    middle("local->" << o->name);
-  }
-}
-
-void bi::CppFiberGenerator::visit(const Identifier<LocalVariable>* o) {
-  if (!o->target->has(IN_FIBER)) {
-    CppBaseGenerator::visit(o);
-  } else {
-    middle("local->" << getName(o->name->str(), o->target->number));
-  }
-}
-
-void bi::CppFiberGenerator::visit(const Identifier<ForVariable>* o) {
-  if (!o->target->has(IN_FIBER)) {
-    CppBaseGenerator::visit(o);
-  } else {
-    middle("local->" << getName(o->name->str(), o->target->number));
-  }
-}
-
 void bi::CppFiberGenerator::visit(const Parameter* o) {
   if (!o->has(IN_FIBER)) {
     CppBaseGenerator::visit(o);
@@ -486,6 +462,35 @@ void bi::CppFiberGenerator::visit(const ForVariable* o) {
   } else {
     middle("local->" << getName(o->name->str(), o->number));
   }
+}
+
+void bi::CppFiberGenerator::visit(const Identifier<Parameter>* o) {
+  if (!o->target->has(IN_FIBER)) {
+    CppBaseGenerator::visit(o);
+  } else {
+    middle("local->" << o->name);
+  }
+}
+
+void bi::CppFiberGenerator::visit(const Identifier<LocalVariable>* o) {
+  if (!o->target->has(IN_FIBER)) {
+    CppBaseGenerator::visit(o);
+  } else {
+    middle("local->" << getName(o->name->str(), o->target->number));
+  }
+}
+
+void bi::CppFiberGenerator::visit(const Identifier<ForVariable>* o) {
+  if (!o->target->has(IN_FIBER)) {
+    CppBaseGenerator::visit(o);
+  } else {
+    middle("local->" << getName(o->name->str(), o->target->number));
+  }
+}
+
+void bi::CppFiberGenerator::visit(const LambdaFunction* o) {
+  CppBaseGenerator aux(base, level, false);
+  aux << o;
 }
 
 std::string bi::CppFiberGenerator::getName(const std::string& name,
