@@ -34,7 +34,10 @@ class ProgressBar {
     if current != old {
       /* redraw */
       out.flush();
-      out.print("\033[1A\r");
+      if old >= 0 {
+        /* have drawn before, overwrite */
+        out.print("\033[1A\r");
+      }
       for i in 1..current {
         out.print("\u25a0");
       }
