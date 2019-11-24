@@ -100,7 +100,7 @@ program filter(
     /* write filter distribution to buffer */
     buffer:MemoryBuffer;
     if outputWriter? {
-      //buffer.set("sample", sample);
+      buffer.set("sample", sample);
       buffer.set("lweight", lweight);
       buffer.set("lnormalize", lnormalize);
       buffer.set("ess", ess);
