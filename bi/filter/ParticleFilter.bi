@@ -103,12 +103,6 @@ class ParticleFilter {
    */
   fiber forecast(x:Model[_], w:Real[_]) -> (Model[_], Real[_]) {
     assert length(x) == nparticles;
-  
-    /* event handler */
-    h:Handler <- play;
-    if delayed {
-      h <- global.delay;
-    }
 
     /* forecast */
     auto x' <- x;
@@ -118,7 +112,7 @@ class ParticleFilter {
     }
     for t in 1..nforecasts {
       parallel for n in 1..nparticles {
-        w'[n] <- w'[n] + h.handle(x'[n].forecast(t));
+        w'[n] <- w'[n] + play.handle(x'[n].forecast(t));
       }
       yield (x', w');
     }

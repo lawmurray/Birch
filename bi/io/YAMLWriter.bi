@@ -21,7 +21,7 @@ class YAMLWriter < Writer {
     cpp{{
     yaml_emitter_initialize(&self->emitter);
     yaml_emitter_set_unicode(&self->emitter, 1);
-    yaml_emitter_set_output_file(&self->emitter, file);
+    yaml_emitter_set_output_file(&self->emitter, self->file);
     yaml_stream_start_event_initialize(&self->event, YAML_UTF8_ENCODING);
     yaml_emitter_emit(&self->emitter, &self->event);
     yaml_document_start_event_initialize(&self->event, NULL, NULL, NULL, 1);

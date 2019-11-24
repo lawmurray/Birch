@@ -10,14 +10,14 @@
  *
  * Check a condition and abort on fail.
  */
-#define libbirch_error_(cond) if (!(cond)) { libbirch::line(__LINE__); libbirch::abort(); }
+#define libbirch_error_(cond) if (!(cond)) { libbirch::abort(); }
 
 /**
  * @def libbirch_error_msg_
  *
  * Check a condition and abort with a message on fail.
  */
-#define libbirch_error_msg_(cond, msg) if (!(cond)) { libbirch::line(__LINE__); std::stringstream buf_; buf_ << msg; libbirch::abort(buf_.str()); }
+#define libbirch_error_msg_(cond, msg) if (!(cond)) { std::stringstream buf_; buf_ << msg; libbirch::abort(buf_.str()); }
 
 /**
  * @def libbirch_assert_

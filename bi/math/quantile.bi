@@ -48,20 +48,6 @@ function quantile_poisson(p:Real, λ:Real) -> Integer {
 }
 
 /**
- * Quantile of a uniform distribution.
- *
- * - p: The cumulative probability.
- * - l: Lower bound of interval.
- * - u: Upper bound of interval.
- *
- * Return: the quantile.
- */
-function quantile_uniform(p:Real, l:Real, u:Real) -> Real {
-  assert l <= u;
-  return l + p*(u - l);
-}
-
-/**
  * Quantile of a uniform integer distribution.
  *
  * - p: The cumulative probability.
@@ -73,6 +59,38 @@ function quantile_uniform(p:Real, l:Real, u:Real) -> Real {
 function quantile_uniform_int(p:Real, l:Integer, u:Integer) -> Integer {
   assert l <= u;
   return l + Integer(p*(u - l));
+}
+
+/**
+ * Quantile of a categorical variate.
+ *
+ * - p: The cumulative probability.
+ * - ρ: Category probabilities.
+ *
+ * Return: the quantile.
+ */
+function quantile_categorical(p:Real, ρ:Real[_]) -> Integer {
+  auto i <- 1;
+  auto R <- ρ[1];
+  while R < p {
+    i <- i + 1;
+    R <- R + ρ[i + 1];
+  }
+  return i;
+}
+
+/**
+ * Quantile of a uniform distribution.
+ *
+ * - p: The cumulative probability.
+ * - l: Lower bound of interval.
+ * - u: Upper bound of interval.
+ *
+ * Return: the quantile.
+ */
+function quantile_uniform(p:Real, l:Real, u:Real) -> Real {
+  assert l <= u;
+  return l + p*(u - l);
 }
 
 /**

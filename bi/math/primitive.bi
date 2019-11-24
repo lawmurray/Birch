@@ -245,9 +245,11 @@ function adjacent_difference<Value>(x:Value[_],
 }
 
 /**
- * Sort.
+ * Sort a vector.
  *
  * - x: Vector.
+ *
+ * Returns: A vector giving the elements of `x` in ascending order.
  */
 function sort<Value>(x:Value[_]) -> Value[_] {
   auto y <- x;
@@ -256,5 +258,61 @@ function sort<Value>(x:Value[_]) -> Value[_] {
   std::sort(y.begin(), y.end());
   y.unpin();
   }}
+  return y;
+}
+
+/**
+ * Sort a vector.
+ *
+ * - x: Vector.
+ *
+ * Returns: A vector giving the indices of elements in `x` in ascending
+ * order.
+ */
+function sort_index<Value>(x:Value[_]) -> Integer[_] {
+  auto y <- iota(1, length(x));
+  cpp{{
+  y.pinWrite();
+  std::sort(y.begin(), y.end(), [=](auto i, auto j) {
+      return y(libbirch::make_slice(i - 1)) <= y(libbirch::make_slice(j - 1));
+  });
+  y.unpin();
+  }}
+  return y;
+}
+
+/**
+ * Gather.
+ *
+ * - a: Indices.
+ * - x: Source vector.
+ *
+ * Returns: a vector `y` where `y[n] == x[a[n]]`.
+ */
+function gather<Value>(a:Integer[_], x:Value[_]) -> Value[_] {
+  auto N <- length(a);
+  y:Value[N];
+  for n in 1..N {
+    y[n] <- x[a[n]];
+  }
+  return y;
+}
+
+/**
+ * Scatter.
+ *
+ * - a: Indices.
+ * - x: Source vector.
+ *
+ * Returns: a vector `y` where `y[a[n]] == x[n]`.
+ *
+ * If the same index appears more than once in `a`, the result is undefined.
+ */
+function scatter<Value>(a:Integer[_], x:Value[_]) -> Value[_] {
+  auto N <- length(a);
+  y:Value[N];
+  for n in 1..N {
+    y[a[n]] <- x[n];
+  }
   return y;
 }

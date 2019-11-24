@@ -19,7 +19,7 @@ abstract class Reader {
   /**
    * Open a file.
    *
-   * - path : Path of the file.
+   * - path: Path of the file.
    */
   abstract function open(path:String);
   
@@ -29,6 +29,17 @@ abstract class Reader {
    * - buffer: Buffer into which to read.
    */
   abstract function read(buffer:MemoryBuffer);
+
+  /**
+   * Read the contents of the file sequentially.
+   *
+   * Yields: A buffer for each element of the top level sequence.
+   * 
+   * For a file that consists of a sequence at the top level, yields each
+   * element of that sequence one at a time, to avoid reading the whole file
+   * into memory at once.
+   */
+  abstract fiber walk() -> Buffer;
   
   /**
    * Close the file.

@@ -84,6 +84,22 @@ function cdf_uniform_int(x:Integer, l:Integer, u:Integer) -> Real {
 }
 
 /**
+ * CDF of a categorical variate.
+ *
+ * - x: The variate.
+ * - ρ: Category probabilities.
+ *
+ * Return: the cumulative probability.
+ */
+function cdf_categorical(x:Integer, ρ:Real[_]) -> Real {
+  if (1 <= x && x <= length(ρ)) {
+    return sum(ρ[1..x]);
+  } else {
+    return -inf;
+  }
+}
+
+/**
  * CDF of a uniform variate.
  *
  * - x: The variate.
