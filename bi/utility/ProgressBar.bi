@@ -33,17 +33,16 @@ class ProgressBar {
     current <- Integer(progress*maximum);
     if current != old {
       /* redraw */
-      out.print("\r");
+      out.flush();
+      out.print("\033[1A\r");
       for i in 1..current {
         out.print("\u25a0");
       }
       for i in (current + 1)..maximum {
         out.print("\u25a1");
       }
-    }
-    if current == maximum {
       out.print("\n");
+      out.flush();
     }
-    out.flush();
   }
 }
