@@ -89,19 +89,20 @@ program filter(
   /* filter */
   auto f <- filter!.filter(model!);
   auto n <- 0;
-  while f? {    
-    buffer:MemoryBuffer;
+  while f? {
     sample:Model[_];
     lweight:Real[_];
-    lnormalizer:Real;
+    lnormalize:Real;
     ess:Real;
     propagations:Integer;
-    (sample, lweight, lnormalizer, ess, propagations) <- f!;
+    (sample, lweight, lnormalize, ess, propagations) <- f!;
 
+    /* write filter distribution to buffer */
+    buffer:MemoryBuffer;
     if outputWriter? {
-      buffer.set("sample", sample);
+      //buffer.set("sample", sample);
       buffer.set("lweight", lweight);
-      buffer.set("lnormalizer", lnormalizer);
+      buffer.set("lnormalize", lnormalize);
       buffer.set("ess", ess);
       buffer.set("npropagations", propagations);
     }
@@ -111,6 +112,8 @@ program filter(
     auto g <- filter!.forecast(sample, lweight);
     while g? {
       (sample, lweight) <- g!;
+      
+      /* write forecast to buffer */
       if outputWriter? {
         auto buffer <- forecast.push();
         buffer.set("sample", sample);
@@ -118,6 +121,7 @@ program filter(
       }
     }
 
+    /* write buffer to file */
     if outputWriter? {
       outputWriter!.write(buffer);
       outputWriter!.flush();
@@ -127,11 +131,11 @@ program filter(
     if !quiet {
       bar.update(Real(n)/(filter!.nsteps! + 1));
     }
+  }
   
-    /* finalize output */
-    if outputWriter? {
-      outputWriter!.endSequence();
-      outputWriter!.close();
-    }
+  /* finalize output */
+  if outputWriter? {
+    outputWriter!.endSequence();
+    outputWriter!.close();
   }
 }

@@ -16,7 +16,7 @@ class ParticleMarginalImportanceSampler < ParticleSampler {
 
     x:Model[_];
     w:Real[_];
-    lnormalizer:Real[nsteps + 1];
+    lnormalize:Real[nsteps + 1];
     ess:Real[nsteps + 1];
     npropagations:Integer[nsteps + 1];
     
@@ -24,10 +24,10 @@ class ParticleMarginalImportanceSampler < ParticleSampler {
       auto f <- filter.filter(model);
       for t in 1..nsteps + 1 {
         f?;
-        (x, w, lnormalizer[t], ess[t], npropagations[t]) <- f!;
+        (x, w, lnormalize[t], ess[t], npropagations[t]) <- f!;
       }
       auto b <- ancestor(w);
-      yield (x[b], 0.0, lnormalizer, ess, npropagations);
+      yield (x[b], 0.0, lnormalize, ess, npropagations);
     }
   }
 

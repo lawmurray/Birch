@@ -12,9 +12,8 @@ class AliveParticleFilter < ParticleFilter {
     auto W <- 0.0;  // cumulative log normalizing constant estimate
 
     /* number of steps */
-    auto nsteps <- model.size();
-    if this.nsteps? {
-      nsteps <- this.nsteps!;
+    if !nsteps? {
+      nsteps <- model.size();
     }
 
     /* event handler */
@@ -31,7 +30,7 @@ class AliveParticleFilter < ParticleFilter {
     W <- W + S - log(nparticles);
     yield (x, w, W, ess, nparticles);
    
-    for t in 1..nsteps {
+    for t in 1..nsteps! {
       /* resample */
       auto a <- resample_systematic(w);
       dynamic parallel for n in 1..nparticles {

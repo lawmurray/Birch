@@ -8,6 +8,11 @@
  */
 class Model {
   /**
+   * Trace.
+   */
+  trace:Trace;
+
+  /**
    * Size. This is the number of steps of `simulate(Integer)` to be performed
    * after the initial call to `simulate()`.
    */
@@ -23,21 +28,16 @@ class Model {
   }
 
   /**
-   * Simulate.
+   * Simulate the `t`th step.
    */
   fiber simulate(t:Integer) -> Event {
     //
   }
-  
+
   /**
-   * Forecast.
+   * Forecast the `t`th step.
    */
   fiber forecast(t:Integer) -> Event {
     error(getClassName() + " does not support forecast.");
   }
-  
-  /**
-   * Trace.
-   */
-  trace:Trace;
 }

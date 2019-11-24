@@ -92,16 +92,16 @@ program sample(
   while f? {
     sample:Model;
     lweight:Real;
-    lnormalizer:Real[_];
+    lnormalize:Real[_];
     ess:Real[_];
     npropagations:Integer[_];
-    (sample, lweight, lnormalizer, ess, npropagations) <- f!;
+    (sample, lweight, lnormalize, ess, npropagations) <- f!;
     
     if outputWriter? {
       buffer:MemoryBuffer;
       buffer.set("sample", sample);
       buffer.set("lweight", lweight);
-      buffer.set("lnormalizer", lnormalizer);
+      buffer.set("lnormalize", lnormalize);
       buffer.set("ess", ess);
       buffer.set("npropagations", npropagations);
       outputWriter!.write(buffer);
