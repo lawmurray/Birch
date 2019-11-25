@@ -254,7 +254,9 @@ function adjacent_difference<Value>(x:Value[_],
 function sort<Value>(x:Value[_]) -> Value[_] {
   auto y <- x;
   cpp{{
+  y.pinWrite();
   std::sort(y.begin(), y.end());
+  y.unpin();
   }}
   return y;
 }
@@ -268,15 +270,15 @@ function sort<Value>(x:Value[_]) -> Value[_] {
  * order.
  */
 function sort_index<Value>(x:Value[_]) -> Integer[_] {
-  auto y <- iota(1, length(x));
+  auto a <- iota(1, length(x));
   cpp{{
   x.pin();
-  std::sort(y.begin(), y.end(), [=](auto i, auto j) {
+  std::sort(a.begin(), a.end(), [=](bi::type::Integer i, bi::type::Integer j) {
       return x(libbirch::make_slice(i - 1)) < x(libbirch::make_slice(j - 1));
     });
   x.unpin();
   }}
-  return y;
+  return a;
 }
 
 /**
