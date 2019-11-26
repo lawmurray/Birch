@@ -1,8 +1,11 @@
+/autom4te.cache/
 /build/
 /docs/
-/autom4te.cache/
+/figs/
 /include/
 /lib/
+/output/
+/site/
 /m4/
 /aclocal.m4
 /autogen.sh
@@ -20,8 +23,5 @@
 /Makefile.in
 /missing
 /.autotools
-/site/
 /mkdocs.yml
 /DOCS.md
-/output/
-/diagnostic/

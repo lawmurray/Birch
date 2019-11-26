@@ -438,10 +438,9 @@ void bi::Driver::init() {
   CWD cwd(work_dir);
 
   fs::create_directory("bi");
+  fs::create_directory("config");
   fs::create_directory("input");
   fs::create_directory("output");
-  fs::create_directory("config");
-  fs::create_directory("diagnostic");
   copy_with_prompt(find(share_dirs, "gitignore"), ".gitignore");
   copy_with_prompt(find(share_dirs, "LICENSE"), "LICENSE");
 
@@ -515,7 +514,7 @@ void bi::Driver::check() {
     auto name = path.filename().string();
     auto ext = path.extension().string();
     if (path.string() == "build" || path.string() == "output"
-        || path.string() == "diagnostic" || path.string() == "site") {
+        || path.string() == "site") {
       iter.no_push();
     } else if (interesting.find(ext) != interesting.end()
         && exclude.find(name) == exclude.end()) {
