@@ -2,8 +2,7 @@
   "model": {
     "class": "Multi"
   },
-  "sampler": {
-    "nparticles": 8192,
-    "verbose": true
+  "filter": {
+    "nparticles": 8192
   }
 }

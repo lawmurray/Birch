@@ -2,7 +2,7 @@
   "model": {
     "class": "Multi"
   },
-  "sampler": {
+  "filter": {
     "nsteps": 100
   }
 }

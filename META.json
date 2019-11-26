@@ -23,7 +23,6 @@
     "other": [
       "config/filter.json",
       "config/simulate.json",
-      "config/time.json",
       "input/filter.json",
       "input/simulate.json",
       "LICENSE",

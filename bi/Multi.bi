@@ -21,7 +21,7 @@ class Multi < StateSpaceModel<Global,Vector<Track>,Vector<Random<Real[_]>>> {
       s:Boolean;
       s <~ Bernoulli(1.0 - ρ/R);  // does the object survive?
       if s {
-        track!.step();
+        track!.simulate(t - track!.t + 1);
         x'.pushBack(track!);
       }
     }
@@ -29,12 +29,12 @@ class Multi < StateSpaceModel<Global,Vector<Track>,Vector<Random<Real[_]>>> {
     /* birth new objects */
     N:Integer;
     N <~ Poisson(θ.λ);
-    for auto n in 1..N {
+    for n in 1..N {
       track:Track;
       track.t <- t;
       track.θ <- θ;
-      track.start();  // up to parameters
-      track.step();   // up to initial time
+      track.simulate();   // up to parameters
+      track.simulate(1);  // up to initial time
       x'.pushBack(track);
       z.pushBack(track);
     }
@@ -47,7 +47,7 @@ class Multi < StateSpaceModel<Global,Vector<Track>,Vector<Random<Real[_]>>> {
       /* clutter */
       N:Integer;
       N <~ Poisson(θ.μ);
-      for auto n in 1..(N + 1) {
+      for n in 1..(N + 1) {
         clutter:Random<Real[_]>;
         clutter <~ Uniform(θ.l, θ.u);
         y.pushBack(clutter);
