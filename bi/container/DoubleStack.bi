@@ -127,6 +127,9 @@ class DoubleStack<Type> {
    */
   function popForward() -> Type {
     assert !empty();
+    if forwardCount == 0 {
+      allForward();
+    }
     forwardCount <- forwardCount - 1;
     cpp{{
     auto x = std::move(self->forward.get()->x);
@@ -140,6 +143,9 @@ class DoubleStack<Type> {
    */
   function popBackward() -> Type {
     assert !empty();
+    if backwardCount == 0 {
+      allBackward();
+    }
     backwardCount <- backwardCount - 1;
     cpp{{
     auto x = std::move(self->backward.get()->x);
