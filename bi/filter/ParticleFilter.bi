@@ -97,22 +97,41 @@ class ParticleFilter {
   /**
    * Forecast.
    *
-   * - x: Initial states.
+   * - t: Time step.
+   * - x: Starting states.
+   * - w: Starting log weights.
    *
-   * Yields: forecast states.
+   * Yields: a tuple giving, in order:
+   *   - particle states,
+   *   - particle log weights.
    */
-  fiber forecast(x:Model[_], w:Real[_]) -> (Model[_], Real[_]) {
+  fiber forecast(t:Integer, x:Model[_], w:Real[_]) -> (Model[_],
+      Real[_]) {
     assert length(x) == nparticles;
 
-    /* forecast */
     auto x' <- x;
     auto w' <- w;
-    dynamic parallel for n in 1..nparticles {
-      x'[n] <- clone<Model>(x'[n]);
+
+    /* resample */
+    ess:Real;
+    S:Real;
+    (ess, S) <- resample_reduce(w);
+    if ess <= trigger*nparticles {
+      auto a <- resample_systematic(w);
+      dynamic parallel for n in 1..nparticles {
+        x'[n] <- clone<Model>(x[a[n]]);
+        w'[n] <- 0.0;
+      }
+    } else {
+      dynamic parallel for n in 1..nparticles {
+        x'[n] <- clone<Model>(x[n]);
+      }
     }
-    for t in 1..nforecasts {
+
+    /* forecast */
+    for s in 1..nforecasts {
       parallel for n in 1..nparticles {
-        w'[n] <- w'[n] + play.handle(x'[n].forecast(t));
+        w'[n] <- w'[n] + play.handle(x'[n].forecast(t + s));
       }
       yield (x', w');
     }

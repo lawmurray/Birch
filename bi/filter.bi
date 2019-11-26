@@ -88,7 +88,7 @@ program filter(
 
   /* filter */
   auto f <- filter!.filter(model!);
-  auto n <- 0;
+  auto t <- 0;
   while f? {
     sample:Model[_];
     lweight:Real[_];
@@ -109,7 +109,7 @@ program filter(
     
     /* forecast */
     auto forecast <- buffer.setArray("forecast");
-    auto g <- filter!.forecast(sample, lweight);
+    auto g <- filter!.forecast(t, sample, lweight);
     while g? {
       (sample, lweight) <- g!;
       
@@ -127,9 +127,9 @@ program filter(
       outputWriter!.flush();
     }
     
-    n <- n + 1;
+    t <- t + 1;
     if !quiet {
-      bar.update(Real(n)/(filter!.nsteps! + 1));
+      bar.update(Real(t)/(filter!.nsteps! + 1));
     }
   }
   
