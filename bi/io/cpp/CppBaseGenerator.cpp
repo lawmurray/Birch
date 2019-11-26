@@ -851,7 +851,7 @@ void bi::CppBaseGenerator::visit(const Parallel* o) {
   line("#pragma omp parallel");
   line("{");
   in();
-  genTraceFunction("<thread start>", o->loc);
+  genTraceFunction("<parallel for>", o->loc);
   start("#pragma omp for schedule(");
   if (o->has(DYNAMIC)) {
     middle("guided");

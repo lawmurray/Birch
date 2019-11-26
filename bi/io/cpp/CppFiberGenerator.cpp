@@ -176,20 +176,20 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
     } else {
       finish(" {");
       in();
-      genTraceLine(o->loc);
+      genSourceLine(o->loc);
       line("super_type_::doFreeze_();");
       if (!o->returnType->unwrap()->isValue()) {
         line("value_.freeze();");
       }
       for (auto o : params) {
         if (!o->type->isValue()) {
-          genTraceLine(o->loc);
+          genSourceLine(o->loc);
           line(o->name << ".freeze();");
         }
       }
       for (auto o : locals) {
         if (!o->type->isValue()) {
-          genTraceLine(o->loc);
+          genSourceLine(o->loc);
           line(getName(o->name->str(), o->number) << ".freeze();");
         }
       }
@@ -210,20 +210,20 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
     } else {
       finish(" {");
       in();
-      genTraceLine(o->loc);
+      genSourceLine(o->loc);
       line("super_type_::doThaw_(label_);");
       if (!o->returnType->unwrap()->isValue()) {
         line("value_.thaw(label_);");
       }
       for (auto o : params) {
         if (!o->type->isValue()) {
-          genTraceLine(o->loc);
+          genSourceLine(o->loc);
           line(o->name << ".thaw(label_);");
         }
       }
       for (auto o : locals) {
         if (!o->type->isValue()) {
-          genTraceLine(o->loc);
+          genSourceLine(o->loc);
           line(getName(o->name->str(), o->number) << ".thaw(label_);");
         }
       }
@@ -244,21 +244,21 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
     } else {
       finish(" {");
       in();
-      genTraceLine(o->loc);
+      genSourceLine(o->loc);
       line("super_type_::doFinish_();");
       if (!o->returnType->unwrap()->isValue()) {
-        genTraceLine(o->loc);
+        genSourceLine(o->loc);
         line("value_.finish();");
       }
       for (auto o : params) {
         if (!o->type->isValue()) {
-          genTraceLine(o->loc);
+          genSourceLine(o->loc);
           line(o->name << ".finish();");
         }
       }
       for (auto o : locals) {
         if (!o->type->isValue()) {
-          genTraceLine(o->loc);
+          genSourceLine(o->loc);
           line(getName(o->name->str(), o->number) << ".finish();");
         }
       }
@@ -288,36 +288,35 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
           ++iter) {
         auto param = dynamic_cast<const Generic*>(*iter);
         assert(param);
-        genTraceLine(o->loc);
+        genSourceLine(o->loc);
         line("using " << param->name << " [[maybe_unused]] = " << param->type << ';');
       }
-      genTraceLine(o->loc);
+      genSourceLine(o->loc);
       line("libbirch_swap_context_");
-      genTraceLine(o->loc);
+      genSourceLine(o->loc);
       line("libbirch_declare_local_");
-      genTraceLine(o->loc);
+      genSourceLine(o->loc);
       line("switch (local->point_) {");
       in();
       for (int s = 0; s <= yields.size(); ++s) {
-        genTraceLine(o->loc);
+        genSourceLine(o->loc);
         line("case " << s << ": goto POINT" << s << "_;");
       }
-      genTraceLine(o->loc);
+      genSourceLine(o->loc);
       line("default: goto END_;");
-      genTraceLine(o->loc);
+      genSourceLine(o->loc);
       out();
       line('}');
-      genTraceLine(o->loc);
+      genSourceLine(o->loc);
       line("POINT0_:");
       ++point;
 
       *this << o->braces->strip();
 
-      genTraceLine(o->loc);
       line("END_:");
-      genTraceLine(o->loc);
+      genSourceLine(o->loc);
       line("local->point_ = " << (yields.size() + 1) << ';');
-      genTraceLine(o->loc);
+      genSourceLine(o->loc);
       line("return false;");
 
       out();
@@ -356,7 +355,7 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
     } else {
       finish(" {");
       in();
-      genTraceLine(o->loc);
+      genSourceLine(o->loc);
       start("return libbirch::make_fiber<" << stateName << ">(context_");
       for (auto iter = params.begin(); iter != params.end(); ++iter) {
         middle(", " << (*iter)->name);
@@ -369,7 +368,7 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
 }
 
 void bi::CppFiberGenerator::visit(const Return* o) {
-  genTraceLine(o->loc);
+  genSourceLine(o->loc);
   line("goto END_;");
 }
 
@@ -381,11 +380,11 @@ void bi::CppFiberGenerator::visit(const Yield* o) {
   } else {
     finish(".assign(context_, " << o->single << ");");
   }
-  genTraceLine(o->loc);
+  genSourceLine(o->loc);
   line("local->point_ = " << point << ';');
-  genTraceLine(o->loc);
+  genSourceLine(o->loc);
   line("return true;");
-  genTraceLine(o->loc);
+  genSourceLine(o->loc);
   line("POINT" << point << "_: ;");
   ++point;
 }
