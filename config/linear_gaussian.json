@@ -2,10 +2,12 @@
   "model": {
     "class": "LinearGaussianModel"
   },
+  "filter": {
+    "nsteps": 100
+  },
   "sampler": {
-	"nsteps": 100
+    "nsamples": 10
   },
   "input": "input/linear_gaussian.json",
-  "output": "output/linear_gaussian.json",
-  "diagnostic": "diagnostic/linear_gaussian.json"
+  "output": "output/linear_gaussian.json"
 }

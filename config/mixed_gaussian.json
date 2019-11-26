@@ -2,12 +2,13 @@
   "model": {
     "class": "MixedGaussianModel"
   },
+  "filter": {
+    "nsteps": 100,
+    "nparticles": 128
+  },
   "sampler": {
-    "nsamples": 10,
-    "nparticles": 128,
-    "nsteps": 100
+    "nsamples": 10
   },
   "input": "input/mixed_gaussian.json",
-  "output": "output/mixed_gaussian.json",
-  "diagnostic": "diagnostic/mixed_gaussian.json"
+  "output": "output/mixed_gaussian.json"
 }
