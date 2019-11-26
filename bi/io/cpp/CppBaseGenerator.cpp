@@ -838,8 +838,7 @@ void bi::CppBaseGenerator::visit(const If* o) {
 void bi::CppBaseGenerator::visit(const For* o) {
   genTraceLine(o->loc);
   start("for (auto " << o->index << " = " << o->from << "; ");
-  middle(o->index << " <= " << o->to << "; ");
-  finish("++" << o->index << ") {");
+  finish(o->index << " <= " << o->to << "; ++" << o->index << ") {");
   in();
   *this << o->braces->strip();
   out();
@@ -860,8 +859,7 @@ void bi::CppBaseGenerator::visit(const Parallel* o) {
   }
   finish(')');
   start("for (auto " << o->index << " = " << o->from << "; ");
-  middle(o->index << " <= " << o->to << "; ");
-  finish("++" << o->index << ") {");
+  finish(o->index << " <= " << o->to << "; ++" << o->index << ") {");
   in();
   *this << o->braces->strip();
   out();

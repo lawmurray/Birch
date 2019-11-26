@@ -298,6 +298,11 @@ private:
   int inLambda;
 
   /**
+   * Are we currently in a parallel loop?
+   */
+  int inParallel;
+
+  /**
    * Are we currently in a fiber?
    */
   int inFiber;

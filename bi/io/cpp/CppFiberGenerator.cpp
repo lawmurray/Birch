@@ -43,12 +43,16 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
         line(o->type << ' ' << o->name << ';');
       }
       for (auto o : locals) {
-        start(o->type << ' ');
-        finish(getName(o->name->str(), o->number) << ';');
+        if (o->has(IN_FIBER)) {
+          start(o->type << ' ');
+          finish(getName(o->name->str(), o->number) << ';');
+        }
       }
       for (auto o : fors) {
-        start(o->type << ' ');
-        finish(getName(o->name->str(), o->number) << ';');
+        if (o->has(IN_FIBER)) {
+          start(o->type << ' ');
+          finish(getName(o->name->str(), o->number) << ';');
+        }
       }
     }
 
@@ -114,20 +118,24 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
         }
       }
       for (auto o : locals) {
-        auto name = getName(o->name->str(), o->number);
-        finish(',');
-        genSourceLine(o->loc);
-        if (o->type->isValue()) {
-          start(name << "(o." << name << ')');
-        } else {
-          start(name << "(context, label, o." << name << ')');
+        if (o->has(IN_FIBER)) {
+          auto name = getName(o->name->str(), o->number);
+          finish(',');
+          genSourceLine(o->loc);
+          if (o->type->isValue()) {
+            start(name << "(o." << name << ')');
+          } else {
+            start(name << "(context, label, o." << name << ')');
+          }
         }
       }
       for (auto o : fors) {
-        auto name = getName(o->name->str(), o->number);
-        finish(',');
-        genSourceLine(o->loc);
-        start(name << "(o." << name << ')');
+        if (o->has(IN_FIBER)) {
+          auto name = getName(o->name->str(), o->number);
+          finish(',');
+          genSourceLine(o->loc);
+          start(name << "(o." << name << ')');
+        }
       }
       out();
       out();
@@ -182,13 +190,13 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
         line("value_.freeze();");
       }
       for (auto o : params) {
-        if (!o->type->isValue()) {
+        if (!o->type->isValue() && o->has(IN_FIBER)) {
           genSourceLine(o->loc);
           line(o->name << ".freeze();");
         }
       }
       for (auto o : locals) {
-        if (!o->type->isValue()) {
+        if (!o->type->isValue() && o->has(IN_FIBER)) {
           genSourceLine(o->loc);
           line(getName(o->name->str(), o->number) << ".freeze();");
         }
@@ -216,13 +224,13 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
         line("value_.thaw(label_);");
       }
       for (auto o : params) {
-        if (!o->type->isValue()) {
+        if (!o->type->isValue() && o->has(IN_FIBER)) {
           genSourceLine(o->loc);
           line(o->name << ".thaw(label_);");
         }
       }
       for (auto o : locals) {
-        if (!o->type->isValue()) {
+        if (!o->type->isValue() && o->has(IN_FIBER)) {
           genSourceLine(o->loc);
           line(getName(o->name->str(), o->number) << ".thaw(label_);");
         }
@@ -251,13 +259,13 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
         line("value_.finish();");
       }
       for (auto o : params) {
-        if (!o->type->isValue()) {
+        if (!o->type->isValue() && o->has(IN_FIBER)) {
           genSourceLine(o->loc);
           line(o->name << ".finish();");
         }
       }
       for (auto o : locals) {
-        if (!o->type->isValue()) {
+        if (!o->type->isValue() && o->has(IN_FIBER)) {
           genSourceLine(o->loc);
           line(getName(o->name->str(), o->number) << ".finish();");
         }

@@ -8,6 +8,7 @@ bi::Resolver::Resolver(const ResolverStage globalStage) :
     globalStage(globalStage),
     annotator(INSTANTIATED),
     inLambda(0),
+    inParallel(0),
     inFiber(0),
     inMember(0) {
   //
@@ -304,7 +305,7 @@ bi::Expression* bi::Resolver::modify(Parameter* o) {
       o->value->type->isConvertible(*o->type->element()))) {
     throw InitialValueException(o);
   }
-  if (inFiber && !inLambda) {
+  if (inFiber && !inLambda && !inParallel) {
     o->set(IN_FIBER);
   }
   scopes.back()->add(o);
@@ -608,7 +609,7 @@ bi::Statement* bi::Resolver::modify(LocalVariable* o) {
       o->value->type->isConvertible(*o->type->element()))) {
     throw InitialValueException(o);
   }
-  if (inFiber && !inLambda) {
+  if (inFiber && !inLambda && !inParallel) {
     o->set(IN_FIBER);
   }
   scopes.back()->add(o);
@@ -617,12 +618,18 @@ bi::Statement* bi::Resolver::modify(LocalVariable* o) {
 
 bi::Statement* bi::Resolver::modify(ForVariable* o) {
   Modifier::modify(o);
+  if (inFiber && !inLambda && !inParallel) {
+    o->set(IN_FIBER);
+  }
   scopes.back()->add(o);
   return o;
 }
 
 bi::Statement* bi::Resolver::modify(ParallelVariable* o) {
   Modifier::modify(o);
+  if (inFiber && !inLambda && !inParallel) {
+    o->set(IN_FIBER);
+  }
   scopes.back()->add(o);
   return o;
 }
@@ -935,9 +942,11 @@ bi::Statement* bi::Resolver::modify(For* o) {
 }
 
 bi::Statement* bi::Resolver::modify(Parallel* o) {
+  ++inParallel;
   scopes.push_back(o->scope);
   Modifier::modify(o);
   scopes.pop_back();
+  --inParallel;
   checkInteger(o->from);
   checkInteger(o->to);
   return o;
