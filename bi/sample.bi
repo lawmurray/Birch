@@ -47,14 +47,34 @@ program sample(
         "model.class in the config file, and should derive from Model.");
   }
 
-  /* sampler */
-  auto sampler <- ParticleSampler?(make(configBuffer.getObject("sampler")));
-  if !sampler? {
-    /* revert to a default sampler */
-    s:ParticleMarginalImportanceSampler;
-    s.read(configBuffer.getObject("sampler"));
-    sampler <- s;
+  /* filter */
+  auto buffer <- configBuffer.getObject("filter");
+  if !buffer? {
+    buffer <- configBuffer.setObject("filter");
   }
+  if !buffer!.getString("class")? {
+    buffer!.setString("class", "ParticleFilter");
+  }
+  auto filter <- ParticleFilter?(make(buffer));
+  if !filter? {
+    error("could not create filter; the filter class should be given as " + 
+        "filter.class in the config file, and should derive from ParticleFilter.");
+  }
+
+  /* sampler */
+  buffer <- configBuffer.getObject("sampler");
+  if !buffer? {
+    buffer <- configBuffer.setObject("sampler");
+  }
+  if !buffer!.getString("class")? {
+    buffer!.setString("class", "ParticleMarginalImportanceSampler");
+  }
+  auto sampler <- ParticleSampler?(make(buffer));
+  if !sampler? {
+    error("could not create sampler; the sampler class should be given as " + 
+        "sampler.class in the config file, and should derive from ParticleSampler.");
+  }
+  sampler!.filter <- filter!;
   
   /* input */
   auto inputPath <- input;

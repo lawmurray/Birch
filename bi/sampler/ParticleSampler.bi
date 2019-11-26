@@ -8,6 +8,11 @@
  */
 abstract class ParticleSampler {
   /**
+   * Particle filter to use for state sampling.
+   */
+  filter:ParticleFilter;
+
+  /**
    * Number of samples.
    */
   nsamples:Integer <- 1;

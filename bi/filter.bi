@@ -48,12 +48,17 @@ program filter(
   }
 
   /* filter */
-  auto filter <- ParticleFilter?(make(configBuffer.getObject("filter")));
+  auto buffer <- configBuffer.getObject("filter");
+  if !buffer? {
+    buffer <- configBuffer.setObject("filter");
+  }
+  if !buffer!.getString("class")? {
+    buffer!.setString("class", "ParticleFilter");
+  }
+  auto filter <- ParticleFilter?(make(buffer));
   if !filter? {
-    /* revert to a default filter */
-    f:ParticleFilter;
-    f.read(configBuffer.getObject("filter"));
-    filter <- f;
+    error("could not create filter; the filter class should be given as " + 
+        "filter.class in the config file, and should derive from ParticleFilter.");
   }
   
   /* input */

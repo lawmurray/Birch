@@ -2,11 +2,6 @@
  * Marginalized particle Gibbs sampler.
  */
 class MarginalizedParticleGibbsSampler < ParticleSampler {
-  /**
-   * Conditional particle filter to use for state sampling.
-   */
-  filter:ConditionalParticleFilter;
-
   fiber sample(model:Model) -> (Model, Real, Real[_], Real[_], Integer[_]) {
     /* number of steps */
     auto nsteps <- model.size();
@@ -32,15 +27,5 @@ class MarginalizedParticleGibbsSampler < ParticleSampler {
       yield (x[b], 0.0, lnormalize, ess, npropagations);
       r <- x[b].trace;
     }
-  }
-
-  function read(buffer:Buffer) {
-    super.read(buffer);
-    filter <-? ConditionalParticleFilter?(make(buffer.getObject("filter")));
-  }
-
-  function write(buffer:Buffer) {
-    super.write(buffer);
-    buffer.set("filter", filter);
   }
 }

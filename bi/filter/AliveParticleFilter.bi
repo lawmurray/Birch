@@ -50,7 +50,7 @@ class AliveParticleFilter < ParticleFilter {
           w[n] <- h.handle(x[n].simulate(t));
           p[n] <- 1;
           while w[n] == -inf {  // repeat until weight is positive
-            a[n] <- ancestor(w0);
+            a[n] <- global.ancestor(w0);
             x[n] <- clone<Model>(x0[a[n]]);
             p[n] <- p[n] + 1;
             w[n] <- h.handle(x[n].simulate(t));
@@ -62,7 +62,7 @@ class AliveParticleFilter < ParticleFilter {
           auto w' <- 0.0;
           p[n] <- 0;
           do {
-            auto a' <- ancestor(w0);
+            auto a' <- global.ancestor(w0);
             auto x' <- clone<Model>(x0[a']);
             p[n] <- p[n] + 1;
             w' <- h.handle(x'.simulate(t));
@@ -75,5 +75,13 @@ class AliveParticleFilter < ParticleFilter {
       W <- W + S - log(npropagations - 1);
       yield (x, w, W, ess, npropagations);
     }
+  }
+
+  /**
+   * Conditional filter.
+   */
+  fiber filter(model:Model, reference:Trace?) -> (Model[_], Real[_], Real,
+      Real, Integer) {
+    error("conditional filter not yet supported for AliveParticleFilter");
   }
 }
