@@ -240,6 +240,7 @@ void bi::CppClassGenerator::visit(const Class* o) {
           line(o->name << ".freeze();");
         }
       }
+      genSourceLine(o->loc);
       out();
       line("}\n");
     }
@@ -267,6 +268,7 @@ void bi::CppClassGenerator::visit(const Class* o) {
           line(o->name << ".thaw(label_);");
         }
       }
+      genSourceLine(o->loc);
       out();
       line("}\n");
     }
@@ -294,6 +296,7 @@ void bi::CppClassGenerator::visit(const Class* o) {
           line(o->name << ".finish();");
         }
       }
+      genSourceLine(o->loc);
       out();
       line("}");
     }
@@ -303,9 +306,10 @@ void bi::CppClassGenerator::visit(const Class* o) {
       Gatherer<MemberVariable> memberVars;
       o->accept(&memberVars);
       for (auto var : memberVars) {
-        line("template<class T_>");
-        line("auto& set_" << var->name << "_(T_&& o_) {");
+        genSourceLine(var->loc);
+        line("template<class T_> auto& set_" << var->name << "_(T_&& o_) {");
         in();
+        genSourceLine(var->loc);
         start("return " << var->name);
         if (var->type->isValue()) {
           middle(" = std::forward<T_>(o_)");
@@ -313,13 +317,15 @@ void bi::CppClassGenerator::visit(const Class* o) {
           middle(".assign(this->getLabel(), std::forward<T_>(o_))");
         }
         finish(";  // LCOV_EXCL_LINE");
+        genSourceLine(var->loc);
         out();
         line("}\n");
 
         if (var->type->isArray()) {
-          line("template<class F_, class T_>");
-          line("auto set_" << var->name << "_(const F_& shape_, T_&& o_) {");
+          genSourceLine(var->loc);
+          line("template<class F_, class T_> auto set_" << var->name << "_(const F_& shape_, T_&& o_) {");
           in();
+          genSourceLine(var->loc);
           start("return " << var->name << ".get(shape_)");
           if (var->type->isValue()) {
             middle(" = std::forward<T_>(o_)");
@@ -327,6 +333,7 @@ void bi::CppClassGenerator::visit(const Class* o) {
             middle(".assign(this->getLabel(), std::forward<T_>(o_))");
           }
           finish(";  // LCOV_EXCL_LINE");
+          genSourceLine(var->loc);
           out();
           line("}\n");
         }
@@ -354,6 +361,7 @@ void bi::CppClassGenerator::visit(const Class* o) {
         in();
         genSourceLine(o->loc);
         line("return new bi::type::" << o->name << "(context_);");
+        genSourceLine(o->loc);
         out();
         line("}");
       }
