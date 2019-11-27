@@ -1,15 +1,5 @@
 AUTOMAKE_OPTIONS = subdir-objects
 
-# precompiled header; note $(CXXCOMPILE) has a -include flag for the header,
-# ensure that this won't use the old precompiled header by removing it first
-bi/birch.hpp.gch: bi/birch.hpp
-	rm -f $@
-	mkdir -p bi/$(DEPDIR) && \
-	$(CXXCOMPILE) -M -MF bi/$(DEPDIR)/birch.gch.Plo -MT $@ $< && \
-	$(CXXCOMPILE) -o $@ $<
-
-#include bi/$(DEPDIR)/birch.gch.Plo
-
 # Flex/Bison setup
 AM_YFLAGS = -d -Wno-yacc
 AM_FLAGS =
@@ -388,5 +378,5 @@ dist_pkgdata_DATA = \
   share/META.json \
   share/README.md
 
-BUILT_SOURCES = bi/birch.hpp.gch bi/parser.hpp
+BUILT_SOURCES = bi/parser.hpp
 CLEANFILES = $(BUILT_SOURCES)
