@@ -9,6 +9,9 @@
  * - `--output`: Name of the output file, if any. Alternatively, provide this
  *   as `output` in the configuration file.
  *
+ * - `--model`: Name of the model class, if any. Alternatively, provide this
+ *   as `model.class` in the configuration file.
+ *
  * - `--seed`: Random number seed. Alternatively, provide this as `seed` in
  *   the configuration file. If not provided, random entropy is used.
  *
@@ -18,6 +21,7 @@ program filter(
     input:String?,
     output:String?,
     config:String?,
+    model:String?,
     seed:Integer?,
     quiet:Boolean) {
   /* config */
@@ -41,14 +45,21 @@ program filter(
   }
 
   /* model */
-  auto model <- Model?(make(configBuffer.getObject("model")));
-  if !model? {
+  auto buffer <- configBuffer.getObject("model");
+  if !buffer? {
+    buffer <- configBuffer.setObject("model");
+  }
+  if !buffer!.getString("class")? && model? {
+    buffer!.setString("class", model!);
+  }
+  auto m <- Model?(make(buffer));
+  if !m? {
     error("could not create model; the model class should be given as " + 
         "model.class in the config file, and should derive from Model.");
   }
 
   /* filter */
-  auto buffer <- configBuffer.getObject("filter");
+  buffer <- configBuffer.getObject("filter");
   if !buffer? {
     buffer <- configBuffer.setObject("filter");
   }
@@ -71,7 +82,7 @@ program filter(
     inputBuffer:MemoryBuffer;
     reader.read(inputBuffer);
     reader.close();
-    inputBuffer.get(model!);
+    inputBuffer.get(m!);
   }
 
   /* output */
@@ -92,7 +103,7 @@ program filter(
   }
 
   /* filter */
-  auto f <- filter!.filter(model!);
+  auto f <- filter!.filter(m!);
   auto t <- 0;
   while f? {
     sample:Model[_];
