@@ -1,4 +1,4 @@
-# The Birch Standard Library
+# Birch Standard Library
 
 Provides the basic functionality needed by most Birch programs, such as standard math, linear algebra, probability distributions, and I/O.
 
@@ -21,4 +21,10 @@ To test, use:
 
     birch test
 
-Documentation for the standard library is readily accessible at <http://www.birch-lang.org>.
+
+## Documentation
+
+Documentation for the standard library is readily accessible at <http://www.birch-lang.org/documentation/library>, or you can build it yourself with:
+
+    birch docs
+    mkdocs serve
