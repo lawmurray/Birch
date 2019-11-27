@@ -16,6 +16,14 @@ final class DelayCategorical(future:Integer?, futureUpdate:Boolean, ρ:Real[_]) 
     return logpdf_categorical(x, ρ);
   }
 
+  function cdf(x:Integer) -> Real? {
+    return cdf_categorical(x, ρ);
+  }
+
+  function quantile(p:Real) -> Integer? {
+    return quantile_categorical(p, ρ);
+  }
+
   function lower() -> Integer? {
     return 1;
   }

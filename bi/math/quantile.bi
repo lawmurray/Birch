@@ -72,9 +72,9 @@ function quantile_uniform_int(p:Real, l:Integer, u:Integer) -> Integer {
 function quantile_categorical(p:Real, ρ:Real[_]) -> Integer {
   auto i <- 1;
   auto R <- ρ[1];
-  while R < p {
+  while R < p && i < length(ρ) {
     i <- i + 1;
-    R <- R + ρ[i + 1];
+    R <- R + ρ[i];
   }
   return i;
 }

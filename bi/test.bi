@@ -73,6 +73,7 @@ program test(N:Integer <- 10000) {
   code <- code + run_test("cdf_beta", N);
   code <- code + run_test("cdf_beta_binomial", N);
   code <- code + run_test("cdf_binomial", N);
+  code <- code + run_test("cdf_categorical", N);
   code <- code + run_test("cdf_exponential", N);
   code <- code + run_test("cdf_gamma", N);
   code <- code + run_test("cdf_gamma_exponential", N);

@@ -49,46 +49,6 @@ class DoubleStack<Type> {
   }
 
   /**
-   * Get and remove the whole forward stack.
-   */
-  function takeForward() -> StackNode<Type>? {
-    forwardCount <- 0;
-    cpp{{
-    return std::move(self->forward);
-    }}
-  }
-
-  /**
-   * Get the top element on the backward stack.
-   */
-  function takeBackward() -> StackNode<Type>? {
-    backwardCount <- 0;
-    cpp{{
-    return std::move(self->backward);
-    }}
-  }
-
-  /**
-   * Put the whole forward stack.
-   */
-  function putForward(forward:StackNode<Type>?, forwardCount:Integer) {
-    this.forwardCount <- forwardCount;
-    cpp{{
-    self->forward.assign(context_, std::move(forward));
-    }}
-  }
-
-  /**
-   * Put the whole backward stack.
-   */
-  function putBackward(backward:StackNode<Type>?, backwardCount:Integer) {
-    this.backwardCount <- backwardCount;
-    cpp{{
-    self->backward.assign(context_, std::move(backward));
-    }}
-  }
-
-  /**
    * Push a new element on the forward stack.
    *
    * - x: Value.

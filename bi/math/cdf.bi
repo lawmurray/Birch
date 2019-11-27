@@ -92,7 +92,7 @@ function cdf_uniform_int(x:Integer, l:Integer, u:Integer) -> Real {
  * Return: the cumulative probability.
  */
 function cdf_categorical(x:Integer, ρ:Real[_]) -> Real {
-  if (1 <= x && x <= length(ρ)) {
+  if 1 <= x && x <= length(ρ) {
     return sum(ρ[1..x]);
   } else {
     return -inf;
