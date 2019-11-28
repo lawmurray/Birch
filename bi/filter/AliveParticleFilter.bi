@@ -2,6 +2,11 @@
  * Alive particle filter. When propagating and weighting particles, the
  * alive particle filter maintains $N$ particles with non-zero weight, rather
  * than $N$ particles in total as with the standard particle filter.
+ *
+ * The ParticleFilter class hierarchy is as follows:
+ * <center>
+ * <object type="image/svg+xml" data="../../figs/Filter.svg"></object>
+ * </center>
  */
 class AliveParticleFilter < ParticleFilter {
   fiber filter(model:Model) -> (Model[_], Real[_], Real, Real, Integer) {

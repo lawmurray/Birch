@@ -1,7 +1,7 @@
 /**
  * Particle marginal importance sampler.
  * 
- * The Sampler class hierarchy is as follows:
+ * The ParticleSampler class hierarchy is as follows:
  * <center>
  * <object type="image/svg+xml" data="../../figs/Sampler.svg"></object>
  * </center>

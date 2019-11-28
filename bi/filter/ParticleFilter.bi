@@ -1,5 +1,10 @@
 /**
  * Particle filter.
+ *
+ * The ParticleFilter class hierarchy is as follows:
+ * <center>
+ * <object type="image/svg+xml" data="../../figs/Filter.svg"></object>
+ * </center>
  */
 class ParticleFilter {
   /**

@@ -17,6 +17,11 @@
  * A model inheriting from `HiddenMarkovModel`/`StateSpaceModel` overrides
  * the `parameter`, `initial`, `transition` and `observation` member fibers
  * to specify the individual components of the joint distribution.
+ *
+ * The Model class hierarchy is as follows:
+ * <center>
+ * <object type="image/svg+xml" data="../../figs/Model.svg"></object>
+ * </center>
  */
 class HiddenMarkovModel<Parameter,State,Observation> <
     MarkovModel<Parameter,State> {

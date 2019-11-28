@@ -14,6 +14,11 @@
  * A model inheriting from `MarkovModel` overrides the `parameter`,
  * `initial` and `transition` member fibers to specify the individual
  * components of the joint distribution.
+ *
+ * The Model class hierarchy is as follows:
+ * <center>
+ * <object type="image/svg+xml" data="../../figs/Model.svg"></object>
+ * </center>
  */
 class MarkovModel<Parameter,State> < Model {
   /**
