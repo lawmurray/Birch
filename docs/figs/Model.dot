@@ -6,21 +6,15 @@ digraph {
   edge [arrowhead=empty]
 
   Model [href="../classes/Model/",target="_top"]
-  ForwardModel [href="../classes/ForwardModel/",target="_top"]
-  BidirectionalModel [href="../classes/BidirectionalModel/",target="_top"]
-  RandomAccessModel [href="../classes/RandomAccessModel/",target="_top"]
-  StarModel [href="../classes/StarModel/",target="_top"]
-  HiddenStarModel [href="../classes/HiddenStarModel/",target="_top"]
   MarkovModel [href="../classes/MarkovModel/",target="_top"]
   HiddenMarkovModel [href="../classes/HiddenMarkovModel/",target="_top"]
+  StateSpaceModel [href="../classes/StateSpaceModel/",target="_top"]
 
-  ForwardModel -> Model
-  BidirectionalModel -> ForwardModel
-  RandomAccessModel -> BidirectionalModel
-
-  StarModel -> RandomAccessModel
-  HiddenStarModel -> StarModel
-
-  MarkovModel -> BidirectionalModel
+  MarkovModel -> Model
   HiddenMarkovModel -> MarkovModel
+
+  edge [arrowhead=none,color="black:white:black"]
+  StateSpaceModel -> HiddenMarkovModel [constraint=false]
+
+  {rank=same; StateSpaceModel; HiddenMarkovModel}
 }

@@ -1,5 +1,10 @@
 /**
  * Particle Gibbs sampler.
+ * 
+ * The Sampler class hierarchy is as follows:
+ * <center>
+ * <object type="image/svg+xml" data="../../figs/Sampler.svg"></object>
+ * </center>
  */
 class ParticleGibbsSampler < ParticleSampler {
   fiber sample(model:Model) -> (Model, Real, Real[_], Real[_], Integer[_]) {

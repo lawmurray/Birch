@@ -1,5 +1,10 @@
 /**
  * Particle marginal importance sampler.
+ * 
+ * The Sampler class hierarchy is as follows:
+ * <center>
+ * <object type="image/svg+xml" data="../../figs/Sampler.svg"></object>
+ * </center>
  */
 class ParticleMarginalImportanceSampler < ParticleSampler {  
   fiber sample(model:Model) -> (Model, Real, Real[_], Real[_], Integer[_]) {
