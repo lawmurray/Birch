@@ -133,6 +133,24 @@ function lbeta(x:Real32, y:Real32) -> Real32 {
 }
 
 /**
+ * The digamma function (derivative of `lgamma`).
+ */
+function digamma(x:Real64) -> Real64 {
+  cpp {{
+  return boost::math::digamma(x);
+  }}
+}
+
+/**
+ * The digamma function (derivative of `lgamma`).
+ */
+function digamma(x:Real32) -> Real32 {
+  cpp {{
+  return boost::math::digamma(x);
+  }}
+}
+
+/**
  * The binomial coefficient.
  */
 function choose(x:Real64, y:Real64) -> Real64 {
