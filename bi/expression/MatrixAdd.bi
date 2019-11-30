@@ -17,6 +17,10 @@ final class MatrixAdd<Left,Right,Value>(left:Expression<Left>,
     return left.value() + right.value();
   }
 
+  function pilot() -> Value {
+    return left.pilot() + right.pilot();
+  }
+
   function graftLinearMatrixGaussian() ->
       TransformLinearMatrix<DelayMatrixGaussian>? {
     y:TransformLinearMatrix<DelayMatrixGaussian>?;

@@ -17,6 +17,10 @@ final class Divide<Left,Right,Value>(left:Expression<Left>,
     return left.value()/right.value();
   }
 
+  function pilot() -> Value {
+    return left.pilot()/right.pilot();
+  }
+
   function graftLinearGaussian() -> TransformLinear<DelayGaussian>? {
     y:TransformLinear<DelayGaussian>?;
     z:DelayGaussian?;

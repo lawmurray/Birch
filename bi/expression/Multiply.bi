@@ -16,6 +16,10 @@ final class Multiply<Left,Right,Value>(left:Expression<Left>, right:Expression<R
     return left.value()*right.value();
   }
 
+  function pilot() -> Value {
+    return left.pilot()*right.pilot();
+  }
+
   function graftScaledGamma() -> TransformLinear<DelayGamma>? {
     y:TransformLinear<DelayGamma>?;
     z:DelayGamma?;

@@ -17,6 +17,10 @@ final class Add<Left,Right,Value>(left:Expression<Left>, right:Expression<Right>
     return left.value() + right.value();
   }
 
+  function pilot() -> Value {
+    return left.pilot() + right.pilot();
+  }
+
   function graftLinearGaussian() -> TransformLinear<DelayGaussian>? {
     y:TransformLinear<DelayGaussian>?;
     z:DelayGaussian?;

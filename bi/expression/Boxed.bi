@@ -15,8 +15,8 @@ final class Boxed<Value> < Expression<Value> {
     return x;
   }
 
-  function boxed() -> Boxed<Value> {
-    return this;
+  function pilot() -> Value {
+    return x;
   }
 }
 

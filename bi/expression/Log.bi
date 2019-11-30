@@ -10,6 +10,10 @@ final class Log<Value>(x:Expression<Value>) < Expression<Value> {
   function value() -> Value {
     return log(x.value());
   }
+
+  function pilot() -> Value {
+    return log(x.pilot());
+  }
 }
 
 function log(x:Expression<Real>) -> Log<Real> {

@@ -5,9 +5,14 @@
  */
 final class Random<Value> < Expression<Value> {  
   /**
-   * Value.
+   * Realized value.
    */
   x:Value?;
+
+  /**
+   * Pilot value.
+   */
+  x':Value?;
 
   /**
    * Associated distribution.
@@ -45,7 +50,7 @@ final class Random<Value> < Expression<Value> {
   }
 
   /**
-   * Get the value of the random variate, forcing realization if necessary.
+   * Final realization of the random variate.
    */
   function value() -> Value {
     if !x? {
@@ -54,6 +59,19 @@ final class Random<Value> < Expression<Value> {
       dist <- nil;
     }
     return x!;
+  }
+
+  /**
+   * Pilot realization of the random variate.
+   */
+  function pilot() -> Value {
+    if x? {
+      return x!;
+    } else if !x'? {
+      assert dist?;
+      x' <- dist!.simulate();
+    }
+    return x'!;
   }
 
   /**
@@ -136,15 +154,6 @@ final class Random<Value> < Expression<Value> {
   function upper() -> Value? {
     assert hasDistribution();
     return dist!.upper();
-  }
-
-  function hasDelay() -> Boolean {
-    if !hasValue() {
-      assert hasDistribution();
-      return dist!.delay?;
-    } else {
-      return false;
-    }
   }
 
   function getDelay() -> Delay? {

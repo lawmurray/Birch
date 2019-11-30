@@ -12,22 +12,34 @@ abstract class Expression<Value> {
   }
 
   /**
-   * Value evaluation.
+   * Final evaluation of the expression. Subsequent calls produce the same
+   * result.
    */
   abstract function value() -> Value;
   
-  /*
-   * Boxed value evaluation.
-   */
-  function boxed() -> Boxed<Value> {
-    return Boxed(value());
-  }
-
   /**
-   * Is this expression grafted onto the delayed sampling graph?
+   * Pilot evaluation of the expression. Subsequent calls may produce
+   * different results. 
    */
-  function hasDelay() -> Boolean {
-    return false;
+  abstract function pilot() -> Value;
+  
+  /**
+   * Compute gradients.
+   *
+   * This uses reverse-mode automatic differentiation. If the  expression
+   * tree encodes
+   * $$x_n = f(x_0) = (f_n \circ \cdots \circ f_1)(x_0),$$
+   * and this particular node encodes one of those functions
+   * $x_i = f_i(x_{i-1})$, the argument to the function is
+   * $$\frac{\partial (f_n \circ \cdots \circ f_{i+1})}{\partial x_i}\left(x_i\right),$$
+   * it will compute
+   * $$\frac{\partial (f_n \circ \cdots \circ f_{i})}{\partial x_{i-1}}\left(x_{i-1}\right),$$
+   * and pass the result to its child, which encodes $f_{i-1}$, to continue
+   * the computation. The Random object that encodes $x_0$ keeps the final
+   * result.
+   */
+  function grad(d:Value) {
+  
   }
   
   /**
