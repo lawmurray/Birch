@@ -20,6 +20,11 @@ final class Add<Left,Right,Value>(left:Expression<Left>, right:Expression<Right>
   function pilot() -> Value {
     return left.pilot() + right.pilot();
   }
+  
+  function grad(d:Value) {
+    left.grad(d);
+    right.grad(d);
+  }
 
   function graftLinearGaussian() -> TransformLinear<DelayGaussian>? {
     y:TransformLinear<DelayGaussian>?;

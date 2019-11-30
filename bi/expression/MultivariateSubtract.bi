@@ -20,6 +20,11 @@ final class MultivariateSubtract<Left,Right,Value>(left:Expression<Left>,
   function pilot() -> Value {
     return left.pilot() - right.pilot();
   }
+  
+  function grad(d:Value) {
+    left.grad(d);
+    right.grad(-d);
+  }
 
   function graftLinearMultivariateGaussian() ->
       TransformLinearMultivariate<DelayMultivariateGaussian>? {

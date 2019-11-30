@@ -13,6 +13,12 @@ final class Random<Value> < Expression<Value> {
    * Pilot value.
    */
   x':Value?;
+  
+  /**
+   * Gradient at the pilot value (of a function in which this object
+   * participates).
+   */
+  d:Value?;
 
   /**
    * Associated distribution.
@@ -72,6 +78,14 @@ final class Random<Value> < Expression<Value> {
       x' <- dist!.simulate();
     }
     return x'!;
+  }
+  
+  function grad(d:Value) {
+    if this.d? {
+      this.d! <- this.d! + d;
+    } else {
+      this.d <- d;
+    }
   }
 
   /**

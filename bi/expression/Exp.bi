@@ -14,6 +14,10 @@ final class Exp<Value>(x:Expression<Value>) < Expression<Value> {
   function pilot() -> Value {
     return exp(x.pilot());
   }
+
+  function grad(d:Value) {
+    x.grad(d*exp(x.pilot()));
+  }
 }
 
 function exp(x:Expression<Real>) -> Exp<Real> {

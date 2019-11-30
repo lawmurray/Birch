@@ -24,7 +24,7 @@ abstract class Expression<Value> {
   abstract function pilot() -> Value;
   
   /**
-   * Compute gradients.
+   * Compute gradient.
    *
    * This uses reverse-mode automatic differentiation. If the  expression
    * tree encodes

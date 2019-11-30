@@ -18,6 +18,10 @@ final class Boxed<Value> < Expression<Value> {
   function pilot() -> Value {
     return x;
   }
+
+  function grad(d:Value) {
+    //
+  }
 }
 
 function Boxed(x:Boolean) -> Boxed<Boolean> {

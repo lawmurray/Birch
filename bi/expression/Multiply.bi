@@ -20,6 +20,11 @@ final class Multiply<Left,Right,Value>(left:Expression<Left>, right:Expression<R
     return left.pilot()*right.pilot();
   }
 
+  function grad(d:Value) {
+    left.grad(d*right.pilot());
+    right.grad(d*left.pilot());
+  }
+
   function graftScaledGamma() -> TransformLinear<DelayGamma>? {
     y:TransformLinear<DelayGamma>?;
     z:DelayGamma?;

@@ -20,6 +20,11 @@ final class MatrixMultiply<Left,Right,Value>(left:Expression<Left>,
   function pilot() -> Value {
     return left.pilot()*right.pilot();
   }
+  
+  function grad(d:Value) {
+    left.grad(d*transpose(right.pilot()));
+    right.grad(transpose(left.pilot())*d);
+  }
 
   function graftLinearMatrixGaussian() ->
       TransformLinearMatrix<DelayMatrixGaussian>? {

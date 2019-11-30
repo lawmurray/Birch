@@ -14,6 +14,10 @@ final class Log<Value>(x:Expression<Value>) < Expression<Value> {
   function pilot() -> Value {
     return log(x.pilot());
   }
+
+  function grad(d:Value) {
+    x.grad(d/x.pilot());
+  }
 }
 
 function log(x:Expression<Real>) -> Log<Real> {

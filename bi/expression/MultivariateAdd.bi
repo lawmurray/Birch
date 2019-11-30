@@ -21,6 +21,11 @@ final class MultivariateAdd<Left,Right,Value>(left:Expression<Left>,
     return left.pilot() + right.pilot();
   }
 
+  function grad(d:Value) {
+    left.grad(d);
+    right.grad(d);
+  }
+
   function graftLinearMultivariateGaussian() ->
       TransformLinearMultivariate<DelayMultivariateGaussian>? {
     y:TransformLinearMultivariate<DelayMultivariateGaussian>?;

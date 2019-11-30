@@ -21,6 +21,11 @@ final class Subtract<Left,Right,Value>(left:Expression<Left>,
     return left.pilot() - right.pilot();
   }
 
+  function grad(d:Value) {
+    left.grad(d);
+    right.grad(-d);
+  }
+
   function graftLinearGaussian() -> TransformLinear<DelayGaussian>? {
     y:TransformLinear<DelayGaussian>?;
     z:DelayGaussian?;
