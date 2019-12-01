@@ -803,7 +803,7 @@ function simulate_matrix_gaussian(M:Real[_,_], σ2:Real[_]) -> Real[_,_] {
 }
 
 /**
- * Simulate a matrix Gaussian distribution with independent elements with
+ * Simulate a matrix Gaussian distribution with independent elements of
  * identical variance.
  *
  * - M: Mean.

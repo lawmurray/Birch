@@ -828,6 +828,24 @@ function logpdf_matrix_gaussian(X:Real[_,_], M:Real[_,_], σ2:Real[_]) ->
 }
 
 /**
+ * Observe a matrix Gaussian distribution with independent elements
+ * of identical variance.
+ *
+ * - X: The variate.
+ * - M: Mean.
+ * - σ2: Variance.
+ *
+ * Returns: the log probability density.
+ */
+function logpdf_matrix_gaussian(X:Real[_,_], M:Real[_,_], σ2:Real) ->
+    Real {
+  auto n <- rows(M);
+  auto p <- columns(M);
+  return -0.5*(trace(transpose(X - M)*(X - M)/σ2) +
+      n*p*log(2.0*π*σ2));
+}
+
+/**
  * Observe a matrix normal-inverse-gamma variate.
  *
  * - X: The variate.
