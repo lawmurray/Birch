@@ -88,7 +88,7 @@ final class Random<Value> < Expression<Value> {
       return x!;
     } else if !xprime? {
       assert dist?;
-      xprime <- dist!.simulate();
+      xprime <- simulate_propose(dstar!, dstar!);
     }
     return xprime!;
   }
@@ -382,4 +382,28 @@ final class Random<Value> < Expression<Value> {
       buffer.setNil();
     }
   }
+}
+
+function simulate_propose(x:Real, d:Real) -> Real {
+  return simulate_gaussian(x + d, 1.0);
+}
+
+function simulate_propose(x:Real[_], d:Real[_]) -> Real[_] {
+  return simulate_multivariate_gaussian(x + d, 1.0);
+}
+
+function simulate_propose(x:Real[_,_], d:Real[_,_]) -> Real[_,_] {
+  return simulate_matrix_gaussian(x + d, 1.0);
+}
+
+function simulate_propose(x:Integer, d:Integer) -> Integer {
+  return x;
+}
+
+function simulate_propose(x:Integer[_], d:Integer[_]) -> Integer[_] {
+  return x;
+}
+
+function simulate_propose(x:Boolean, d:Boolean) -> Boolean {
+  return x;
 }

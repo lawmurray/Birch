@@ -803,6 +803,25 @@ function simulate_matrix_gaussian(M:Real[_,_], σ2:Real[_]) -> Real[_,_] {
 }
 
 /**
+ * Simulate a matrix Gaussian distribution with independent elements with
+ * identical variance.
+ *
+ * - M: Mean.
+ * - σ2: Variance.
+ */
+function simulate_matrix_gaussian(M:Real[_,_], σ2:Real) -> Real[_,_] {
+  auto N <- rows(M);
+  auto P <- columns(M);
+  X:Real[N,P];
+  for n in 1..N {
+    for p in 1..P {
+      X[n,p] <- simulate_gaussian(M[n,p], σ2);
+    }
+  }
+  return X;
+}
+
+/**
  * Simulate a matrix normal-inverse-gamma distribution.
  *
  * - N: Precision times mean matrix.
