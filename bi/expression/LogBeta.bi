@@ -1,41 +1,39 @@
-/*
- * Lazy `pow`.
+/**
+ * Lazy `lbeta`.
  */
-final class LogBeta<Left,Right,Value>(x:Expression<Left>,
-    y:Expression<Right>) < Expression<Value> {  
-  /**
-   * Base.
-   */
-  x:Expression<Left> <- x;
-  
-  /**
-   * Exponent.
-   */
-  y:Expression<Right> <- y;
-
-  function value() -> Value {
-    return lbeta(x.value(), y.value());
-  }
-
-  function pilot() -> Value {
-    return lbeta(x.pilot(), y.pilot());
+final class LogBeta<Left,Right,Value>(left:Expression<Left>,
+    right:Expression<Right>) < BinaryExpression<Left,Right,Value>(left, right) {  
+  function doValue(l:Left, r:Right) -> Value {
+    return lbeta(l, r);
   }
   
-  function grad(d:Value) {
-    ///@todo
+  function doGradient(d:Value, l:Left, r:Right) -> (Left, Right) {
+    auto d1 <- digamma(l);
+    auto d2 <- digamma(r);
+    auto d3 <- digamma(l + r);
+    return (d*(d1 + d3), d*(d2 + d3));
   }
 }
 
+/**
+ * Lazy `lbeta`.
+ */
 function lbeta(x:Expression<Real>, y:Expression<Real>) ->
     LogBeta<Real,Real,Real> {
   m:LogBeta<Real,Real,Real>(x, y);
   return m;
 }
 
+/**
+ * Lazy `lbeta`.
+ */
 function lbeta(x:Real, y:Expression<Real>) -> LogBeta<Real,Real,Real> {
   return lbeta(Boxed(x), y);
 }
 
+/**
+ * Lazy `lbeta`.
+ */
 function lbeta(x:Expression<Real>, y:Real) -> LogBeta<Real,Real,Real> {
   return lbeta(x, Boxed(y));
 }

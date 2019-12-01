@@ -3,7 +3,7 @@
  * a recursive data structure, it provides particularly good sharing under
  * Birch's lazy deep clone mechanism.
  *
- * !!! caution
+ * !!! attention
  *     See note under List for possible segfault issues on the destruction
  *     of large stacks.
  */

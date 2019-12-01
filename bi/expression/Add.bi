@@ -1,29 +1,14 @@
-/*
- * Lazy addition.
+/**
+ * Lazy add.
  */
-final class Add<Left,Right,Value>(left:Expression<Left>, right:Expression<Right>) <
-    Expression<Value> {  
-  /**
-   * Left operand.
-   */
-  left:Expression<Left> <- left;
-  
-  /**
-   * Right operand.
-   */
-  right:Expression<Right> <- right;
-
-  function value() -> Value {
-    return left.value() + right.value();
-  }
-
-  function pilot() -> Value {
-    return left.pilot() + right.pilot();
+final class Add<Left,Right,Value>(left:Expression<Left>,
+    right:Expression<Right>) < BinaryExpression<Left,Right,Value>(left, right) {  
+  function doValue(l:Left, r:Right) -> Value {
+    return l + r;
   }
   
-  function grad(d:Value) {
-    left.grad(d);
-    right.grad(d);
+  function doGradient(d:Value, l:Left, r:Right) -> (Left, Right) {
+    return (d, d);
   }
 
   function graftLinearGaussian() -> TransformLinear<DelayGaussian>? {
@@ -91,31 +76,49 @@ final class Add<Left,Right,Value>(left:Expression<Left>, right:Expression<Right>
   }
 }
 
+/**
+ * Lazy add.
+ */
 operator (left:Expression<Real> + right:Expression<Real>) ->
     Add<Real,Real,Real> {
   m:Add<Real,Real,Real>(left, right);
   return m;
 }
 
+/**
+ * Lazy add.
+ */
 operator (left:Real + right:Expression<Real>) -> Add<Real,Real,Real> {
   return Boxed(left) + right;
 }
 
+/**
+ * Lazy add.
+ */
 operator (left:Expression<Real> + right:Real) -> Add<Real,Real,Real> {
   return left + Boxed(right);
 }
 
+/**
+ * Lazy add.
+ */
 operator (left:Expression<Integer> + right:Expression<Integer>) ->
     Add<Integer,Integer,Integer> {
   m:Add<Integer,Integer,Integer>(left, right);
   return m;
 }
 
+/**
+ * Lazy add.
+ */
 operator (left:Integer + right:Expression<Integer>) ->
     Add<Integer,Integer,Integer> {
   return Boxed(left) + right;
 }
 
+/**
+ * Lazy add.
+ */
 operator (left:Expression<Integer> + right:Integer) ->
     Add<Integer,Integer,Integer> {
   return left + Boxed(right);

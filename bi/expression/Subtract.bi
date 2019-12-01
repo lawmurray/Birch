@@ -1,29 +1,14 @@
-/*
- * Lazy subtraction.
+/**
+ * Lazy subtract.
  */
 final class Subtract<Left,Right,Value>(left:Expression<Left>,
-    right:Expression<Right>) < Expression<Value> {  
-  /**
-   * Left operand.
-   */
-  left:Expression<Left> <- left;
+    right:Expression<Right>) < BinaryExpression<Left,Right,Value>(left, right) {  
+  function doValue(l:Left, r:Right) -> Value {
+    return l - r;
+  }
   
-  /**
-   * Right operand.
-   */
-  right:Expression<Right> <- right;
-
-  function value() -> Value {
-    return left.value() - right.value();
-  }
-
-  function pilot() -> Value {
-    return left.pilot() - right.pilot();
-  }
-
-  function grad(d:Value) {
-    left.grad(d);
-    right.grad(-d);
+  function doGradient(d:Value, l:Left, r:Right) -> (Left, Right) {
+    return (d, -d);
   }
 
   function graftLinearGaussian() -> TransformLinear<DelayGaussian>? {
@@ -91,31 +76,49 @@ final class Subtract<Left,Right,Value>(left:Expression<Left>,
   }
 }
 
+/**
+ * Lazy subtract.
+ */
 operator (left:Expression<Real> - right:Expression<Real>) ->
     Subtract<Real,Real,Real> {
   m:Subtract<Real,Real,Real>(left, right);
   return m;
 }
 
+/**
+ * Lazy subtract.
+ */
 operator (left:Real - right:Expression<Real>) -> Subtract<Real,Real,Real> {
   return Boxed(left) - right;
 }
 
+/**
+ * Lazy subtract.
+ */
 operator (left:Expression<Real> - right:Real) -> Subtract<Real,Real,Real> {
   return left - Boxed(right);
 }
 
+/**
+ * Lazy subtract.
+ */
 operator (left:Expression<Integer> - right:Expression<Integer>) ->
     Subtract<Integer,Integer,Integer> {
   m:Subtract<Integer,Integer,Integer>(left, right);
   return m;
 }
 
+/**
+ * Lazy subtract.
+ */
 operator (left:Integer - right:Expression<Integer>) ->
     Subtract<Integer,Integer,Integer> {
   return Boxed(left) - right;
 }
 
+/**
+ * Lazy subtract.
+ */
 operator (left:Expression<Integer> - right:Integer) ->
     Subtract<Integer,Integer,Integer> {
   return left - Boxed(right);

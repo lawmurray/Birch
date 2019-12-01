@@ -1,29 +1,14 @@
-/*
- * Lazy multivariate addition.
+/**
+ * Lazy multivariate add.
  */
 final class MultivariateAdd<Left,Right,Value>(left:Expression<Left>,
-    right:Expression<Right>) < Expression<Value> {  
-  /**
-   * Left operand.
-   */
-  left:Expression<Left> <- left;
-  
-  /**
-   * Right operand.
-   */
-  right:Expression<Right> <- right;
-
-  function value() -> Value {
-    return left.value() + right.value();
+    right:Expression<Right>) < BinaryExpression<Left,Right,Value>(left, right) {  
+  function doValue(l:Left, r:Right) -> Value {
+    return l + r;
   }
 
-  function pilot() -> Value {
-    return left.pilot() + right.pilot();
-  }
-
-  function grad(d:Value) {
-    left.grad(d);
-    right.grad(d);
+  function doGradient(d:Value, l:Left, r:Right) -> (Left, Right) {
+    return (d, d);
   }
 
   function graftLinearMultivariateGaussian() ->
@@ -65,17 +50,26 @@ final class MultivariateAdd<Left,Right,Value>(left:Expression<Left>,
   }
 }
 
+/**
+ * Lazy multivariate add.
+ */
 operator (left:Expression<Real[_]> + right:Expression<Real[_]>) ->
     MultivariateAdd<Real[_],Real[_],Real[_]> {
   m:MultivariateAdd<Real[_],Real[_],Real[_]>(left, right);
   return m;
 }
 
+/**
+ * Lazy multivariate add.
+ */
 operator (left:Real[_] + right:Expression<Real[_]>) ->
     MultivariateAdd<Real[_],Real[_],Real[_]> {
   return Boxed(left) + right;
 }
 
+/**
+ * Lazy multivariate add.
+ */
 operator (left:Expression<Real[_]> + right:Real[_]) ->
     MultivariateAdd<Real[_],Real[_],Real[_]> {
   return left + Boxed(right);

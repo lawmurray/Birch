@@ -1,26 +1,21 @@
-/*
+/**
  * Lazy `log`.
  */
-final class Log<Value>(x:Expression<Value>) < Expression<Value> {  
-  /**
-   * Argument.
-   */
-  x:Expression<Value> <- x;
-
-  function value() -> Value {
-    return log(x.value());
+final class Log<Argument,Value>(x:Expression<Argument>) <
+    UnaryExpression<Argument,Value>(x) {  
+  function doValue(x:Argument) -> Value {
+    return log(x);
   }
 
-  function pilot() -> Value {
-    return log(x.pilot());
-  }
-
-  function grad(d:Value) {
-    x.grad(d/x.pilot());
+  function doGradient(d:Value, x:Argument) -> Argument {
+    return d/x;
   }
 }
 
-function log(x:Expression<Real>) -> Log<Real> {
-  m:Log<Real>(x);
+/**
+ * Lazy `log`.
+ */
+function log(x:Expression<Real>) -> Log<Real,Real> {
+  m:Log<Real,Real>(x);
   return m;
 }

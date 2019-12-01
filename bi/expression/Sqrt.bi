@@ -1,26 +1,21 @@
-/*
+/**
  * Lazy `sqrt`.
  */
-final class Sqrt<Value>(x:Expression<Value>) < Expression<Value> {  
-  /**
-   * Argument.
-   */
-  x:Expression<Value> <- x;
-
-  function value() -> Value {
-    return sqrt(x.value());
+final class Sqrt<Argument,Value>(x:Expression<Argument>) <
+    UnaryExpression<Argument,Value>(x) {  
+  function doValue(x:Argument) -> Value {
+    return sqrt(x);
   }
 
-  function pilot() -> Value {
-    return sqrt(x.pilot());
-  }
-
-  function grad(d:Value) {
-    x.grad(d*0.5/sqrt(x.pilot()));
+  function doGradient(d:Value, x:Argument) -> Argument {
+    return d*0.5/sqrt(x);
   }
 }
 
-function sqrt(x:Expression<Real>) -> Sqrt<Real> {
-  m:Sqrt<Real>(x);
+/**
+ * Lazy `sqrt`.
+ */
+function sqrt(x:Expression<Real>) -> Sqrt<Real,Real> {
+  m:Sqrt<Real,Real>(x);
   return m;
 }

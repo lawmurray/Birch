@@ -4,7 +4,7 @@
  * deep clone mechanism, although not as good as Stack and Queue, as they are
  * singly-linked.
  *
- * !!! caution
+ * !!! attention
  *     Long lists (length in the tens of thousands) can cause a segfault on
  *     destruction due to stack overflow. Possible solutions are:
  *

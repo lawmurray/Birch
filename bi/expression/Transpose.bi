@@ -1,26 +1,21 @@
-/*
+/**
  * Lazy `transpose`.
  */
-final class Transpose<Value>(x:Expression<Value>) < Expression<Value> {  
-  /**
-   * Argument.
-   */
-  x:Expression<Value> <- x;
-
-  function value() -> Value {
-    return transpose(x.value());
+final class Transpose<Argument,Value>(x:Expression<Argument>) <
+    UnaryExpression<Argument,Value>(x) {  
+  function doValue(x:Argument) -> Value {
+    return transpose(x);
   }
 
-  function pilot() -> Value {
-    return transpose(x.pilot());
-  }
-
-  function grad(d:Value) {
-    x.grad(transpose(d));
+  function doGradient(d:Value, x:Argument) -> Argument {
+    return transpose(d);
   }
 }
 
-function transpose(x:Expression<Real[_,_]>) -> Transpose<Real[_,_]> {
-  m:Transpose<Real[_,_]>(x);
+/**
+ * Lazy `transpose`.
+ */
+function transpose(x:Expression<Real[_,_]>) -> Transpose<Real[_,_],Real[_,_]> {
+  m:Transpose<Real[_,_],Real[_,_]>(x);
   return m;
 }

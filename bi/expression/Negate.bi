@@ -1,31 +1,29 @@
-/*
- * Lazy `-` unary operator.
+/**
+ * Lazy negation.
  */
-final class Negate<Value>(x:Expression<Value>) < Expression<Value> {  
-  /**
-   * Argument.
-   */
-  x:Expression<Value> <- x;
-
-  function value() -> Value {
-    return -x.value();
+final class Negate<Argument,Value>(x:Expression<Argument>) <
+    UnaryExpression<Argument,Value>(x) {  
+  function doValue(x:Argument) -> Value {
+    return -x;
   }
 
-  function pilot() -> Value {
-    return -x.value();
-  }
-
-  function grad(d:Value) {
-    x.grad(-d);
+  function doGradient(d:Value, x:Argument) -> Argument {
+    return -d;
   }
 }
 
-operator (-x:Expression<Real>) -> Negate<Real> {
-  m:Negate<Real>(x);
+/**
+ * Lazy negation.
+ */
+operator (-x:Expression<Real>) -> Negate<Real,Real> {
+  m:Negate<Real,Real>(x);
   return m;
 }
 
-operator (-x:Expression<Integer>) -> Negate<Integer> {
-  m:Negate<Integer>(x);
+/**
+ * Lazy negation.
+ */
+operator (-x:Expression<Integer>) -> Negate<Integer,Integer> {
+  m:Negate<Integer,Integer>(x);
   return m;
 }

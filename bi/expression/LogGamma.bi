@@ -1,26 +1,21 @@
-/*
+/**
  * Lazy `lgamma`.
  */
-final class LogGamma<Value>(x:Expression<Value>) < Expression<Value> {  
-  /**
-   * Argument.
-   */
-  x:Expression<Value> <- x;
-
-  function value() -> Value {
-    return lgamma(x.value());
+final class LogGamma<Argument,Value>(x:Expression<Argument>) <
+    UnaryExpression<Argument,Value>(x) {
+  function doValue(x:Argument) -> Value {
+    return lgamma(x);
   }
 
-  function pilot() -> Value {
-    return lgamma(x.pilot());
-  }
-
-  function grad(d:Value) {
-    ///@todo
+  function doGradient(d:Value, x:Argument) -> Argument {
+    return d*digamma(x);
   }
 }
 
-function lgamma(x:Expression<Real>) -> LogGamma<Real> {
-  m:LogGamma<Real>(x);
+/**
+ * Lazy `lgamma`.
+ */
+function lgamma(x:Expression<Real>) -> LogGamma<Real,Real> {
+  m:LogGamma<Real,Real>(x);
   return m;
 }

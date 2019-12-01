@@ -1,5 +1,5 @@
 /**
- * Lazy expression.
+ * Abstract lazy expression.
  *
  * - Value: Value type.
  */
@@ -12,35 +12,78 @@ abstract class Expression<Value> {
   }
 
   /**
-   * Final evaluation of the expression. Subsequent calls produce the same
-   * result.
+   * Realized value.
    */
   abstract function value() -> Value;
   
   /**
-   * Pilot evaluation of the expression. Subsequent calls may produce
-   * different results. 
+   * Pilot value.
    */
   abstract function pilot() -> Value;
+
+  /**
+   * Proposed value. This is called after `pilot()` and perhaps `grad()`
+   * to propose an alternative to the pilot position.
+   */
+  abstract function propose() -> Value;
   
   /**
-   * Compute gradient.
+   * Compute gradient. This is called after `pilot()` to evaluate the
+   * gradient of the function with respect to Random objects at the pilot
+   * position.
    *
    * This uses reverse-mode automatic differentiation. If the  expression
    * tree encodes
    * $$x_n = f(x_0) = (f_n \circ \cdots \circ f_1)(x_0),$$
    * and this particular node encodes one of those functions
    * $x_i = f_i(x_{i-1})$, the argument to the function is
-   * $$\frac{\partial (f_n \circ \cdots \circ f_{i+1})}{\partial x_i}\left(x_i\right),$$
-   * it will compute
-   * $$\frac{\partial (f_n \circ \cdots \circ f_{i})}{\partial x_{i-1}}\left(x_{i-1}\right),$$
-   * and pass the result to its child, which encodes $f_{i-1}$, to continue
+   * $$\frac{\partial (f_n \circ \cdots \circ f_{i+1})}
+   * {\partial x_i}\left(x_i\right),$$
+   * it computes
+   * $$\frac{\partial (f_n \circ \cdots \circ f_{i})}
+   * {\partial x_{i-1}}\left(x_{i-1}\right),$$
+   * and passes the result to its child, which encodes $f_{i-1}$, to continue
    * the computation. The Random object that encodes $x_0$ keeps the final
    * result.
    */
-  function grad(d:Value) {
+  abstract function dpilot(d:Value);
+
+  /**
+   * Compute gradient. This is called after `proposal()` to evaluate the
+   * gradient of the function with respect to Random objects at the propoosal
+   * position.
+   *
+   * See: `dpilot()`.
+   */
+  abstract function dpropose(d:Value);
   
-  }
+  /**
+   * Compute a partial acceptance ratio.
+   *
+   * Returns: The quantity:
+   * $$\log \left(\frac{p(x^\prime) q(x^\star \mid x^\prime)}
+   * {p(x^\star) q(x^\prime \mid x^\star)}\right),$$
+   * where $x^\star$ represents the pilot position and $x^\prime$ the proposal
+   * position of all Random objects in the expression, $p$ the prior
+   * distribution and $q$ the proposal distribution of the same Random
+   * objects. This quantity forms part of the Metropolis--Hastings acceptance
+   * ratio to determine whether to accept or reject the proposal position in
+   * favour of the pilot.
+   */
+  abstract function ratio() -> Real;
+  
+  /**
+   * Accept the proposal. This is called after `propose()`, and sets the
+   * value of all Random objects in the expression to their proposal
+   * positions.
+   */
+  abstract function accept();
+
+  /**
+   * Reject the proposal. This is called after `propose()`, and sets the
+   * value of all Random objects in the expression to their pilot positions.
+   */
+  abstract function reject();
   
   /**
    * If this expression is grafted onto the delayed sampling graph, get the

@@ -1,26 +1,21 @@
-/*
+/**
  * Lazy `exp`.
  */
-final class Exp<Value>(x:Expression<Value>) < Expression<Value> {  
-  /**
-   * Argument.
-   */
-  x:Expression<Value> <- x;
-
-  function value() -> Value {
-    return exp(x.value());
+final class Exp<Argument,Value>(x:Expression<Argument>) <
+    UnaryExpression<Argument,Value>(x) {
+  function doValue(x:Argument) -> Value {
+    return exp(x);
   }
 
-  function pilot() -> Value {
-    return exp(x.pilot());
-  }
-
-  function grad(d:Value) {
-    x.grad(d*exp(x.pilot()));
+  function doGradient(d:Value, x:Argument) -> Argument {
+    return d*exp(x);
   }
 }
 
-function exp(x:Expression<Real>) -> Exp<Real> {
-  m:Exp<Real>(x);
+/**
+ * Lazy `exp`.
+ */
+function exp(x:Expression<Real>) -> Exp<Real,Real> {
+  m:Exp<Real,Real>(x);
   return m;
 }

@@ -1,29 +1,14 @@
-/*
- * Lazy multivariate multiplication.
+/**
+ * Lazy multivariate multiply.
  */
 final class MultivariateMultiply<Left,Right,Value>(left:Expression<Left>,
-    right:Expression<Right>) < Expression<Value> {  
-  /**
-   * Left operand.
-   */
-  left:Expression<Left> <- left;
-  
-  /**
-   * Right operand.
-   */
-  right:Expression<Right> <- right;
-  
-  function value() -> Value {
-    return left.value()*right.value();
+    right:Expression<Right>) < BinaryExpression<Left,Right,Value>(left, right) {  
+  function doValue(l:Left, r:Right) -> Value {
+    return l*r;
   }
 
-  function pilot() -> Value {
-    return left.pilot()*right.pilot();
-  }
-
-  function grad(d:Value) {
-    left.grad(d*transpose(right.pilot()));
-    right.grad(transpose(left.pilot())*d);
+  function doGradient(d:Value, l:Left, r:Right) -> (Left, Right) {
+    return (d*transpose(r), transpose(l)*d);
   }
 
   function graftLinearMultivariateGaussian() ->
@@ -55,17 +40,26 @@ final class MultivariateMultiply<Left,Right,Value>(left:Expression<Left>,
   }
 }
 
+/**
+ * Lazy multivariate multiply.
+ */
 operator (left:Expression<Real[_,_]>*right:Expression<Real[_]>) ->
     MultivariateMultiply<Real[_,_],Real[_],Real[_]> {
   m:MultivariateMultiply<Real[_,_],Real[_],Real[_]>(left, right);
   return m;
 }
 
+/**
+ * Lazy multivariate multiply.
+ */
 operator (left:Real[_,_]*right:Expression<Real[_]>) ->
     MultivariateMultiply<Real[_,_],Real[_],Real[_]> {
   return Boxed(left)*right;
 }
 
+/**
+ * Lazy multivariate multiply.
+ */
 operator (left:Expression<Real[_,_]>*right:Real[_]) ->
     MultivariateMultiply<Real[_,_],Real[_],Real[_]> {
   return left*Boxed(right);

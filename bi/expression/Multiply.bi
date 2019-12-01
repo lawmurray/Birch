@@ -1,28 +1,14 @@
-/*
- * Lazy multiplication.
+/**
+ * Lazy multiply.
  */
-final class Multiply<Left,Right,Value>(left:Expression<Left>, right:Expression<Right>) < Expression<Value> {  
-  /**
-   * Left operand.
-   */
-  left:Expression<Left> <- left;
-  
-  /**
-   * Right operand.
-   */
-  right:Expression<Right> <- right;
-  
-  function value() -> Value {
-    return left.value()*right.value();
+final class Multiply<Left,Right,Value>(left:Expression<Left>,
+    right:Expression<Right>) < BinaryExpression<Left,Right,Value>(left, right) {  
+  function doValue(l:Left, r:Right) -> Value {
+    return l*r;
   }
 
-  function pilot() -> Value {
-    return left.pilot()*right.pilot();
-  }
-
-  function grad(d:Value) {
-    left.grad(d*right.pilot());
-    right.grad(d*left.pilot());
+  function doGradient(d:Value, l:Left, r:Right) -> (Left, Right) {
+    return (d*r, d*l);
   }
 
   function graftScaledGamma() -> TransformLinear<DelayGamma>? {
@@ -75,31 +61,49 @@ final class Multiply<Left,Right,Value>(left:Expression<Left>, right:Expression<R
   }
 }
 
+/**
+ * Lazy multiply.
+ */
 operator (left:Expression<Real>*right:Expression<Real>) ->
     Multiply<Real,Real,Real> {
   m:Multiply<Real,Real,Real>(left, right);
   return m;
 }
 
+/**
+ * Lazy multiply.
+ */
 operator (left:Real*right:Expression<Real>) -> Multiply<Real,Real,Real> {
   return Boxed(left)*right;
 }
 
+/**
+ * Lazy multiply.
+ */
 operator (left:Expression<Real>*right:Real) -> Multiply<Real,Real,Real> {
   return left*Boxed(right);
 }
 
+/**
+ * Lazy multiply.
+ */
 operator (left:Expression<Integer>*right:Expression<Integer>) ->
     Multiply<Integer,Integer,Integer> {
   m:Multiply<Integer,Integer,Integer>(left, right);
   return m;
 }
 
+/**
+ * Lazy multiply.
+ */
 operator (left:Integer*right:Expression<Integer>) ->
     Multiply<Integer,Integer,Integer> {
   return Boxed(left)*right;
 }
 
+/**
+ * Lazy multiply.
+ */
 operator (left:Expression<Integer>*right:Integer) ->
     Multiply<Integer,Integer,Integer> {
   return left*Boxed(right);

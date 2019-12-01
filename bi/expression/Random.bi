@@ -8,17 +8,26 @@ final class Random<Value> < Expression<Value> {
    * Realized value.
    */
   x:Value?;
-
+  
   /**
    * Pilot value.
    */
-  x':Value?;
+  xstar:Value?;
   
   /**
-   * Gradient at the pilot value (of a function in which this object
-   * participates).
+   * Propose value.
    */
-  d:Value?;
+  xprime:Value?;
+  
+  /**
+   * Gradient a function in which this object occurs, at the pilot position.
+   */
+  dstar:Value?;
+
+  /**
+   * Gradient a function in which this object occurs, at the propose position.
+   */
+  dprime:Value?;
 
   /**
    * Associated distribution.
@@ -55,9 +64,6 @@ final class Random<Value> < Expression<Value> {
     return dist?;
   }
 
-  /**
-   * Final realization of the random variate.
-   */
   function value() -> Value {
     if !x? {
       assert dist?;
@@ -67,25 +73,62 @@ final class Random<Value> < Expression<Value> {
     return x!;
   }
 
-  /**
-   * Pilot realization of the random variate.
-   */
   function pilot() -> Value {
     if x? {
       return x!;
-    } else if !x'? {
+    } else if !xstar? {
       assert dist?;
-      x' <- dist!.simulate();
+      xstar <- dist!.simulate();
     }
-    return x'!;
+    return xstar!;
+  }
+
+  function propose() -> Value {
+    if x? {
+      return x!;
+    } else if !xprime? {
+      assert dist?;
+      xprime <- dist!.simulate();
+    }
+    return xprime!;
   }
   
-  function grad(d:Value) {
-    if this.d? {
-      this.d! <- this.d! + d;
+  function dpilot(d:Value) {
+    if this.dstar? {
+      this.dstar! <- this.dstar! + d;
     } else {
-      this.d <- d;
+      this.dstar <- d;
     }
+  }
+
+  function dpropose(d:Value) {
+    if this.dprime? {
+      this.dprime! <- this.dprime! + d;
+    } else {
+      this.dprime <- d;
+    }
+  }
+
+  function ratio() -> Real {
+    return 0.0;
+  }
+  
+  function accept() {
+    x <- xprime;
+    xstar <- nil;
+    xprime <- nil;
+    dstar <- nil;
+    dprime <- nil;
+    dist <- nil;
+  }
+
+  function reject() {
+    x <- xstar;
+    xstar <- nil;
+    xprime <- nil;
+    dstar <- nil;
+    dprime <- nil;
+    dist <- nil;
   }
 
   /**
