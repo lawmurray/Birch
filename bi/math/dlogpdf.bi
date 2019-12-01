@@ -112,7 +112,7 @@ function dlogpdf_poisson(x:Integer, λ:Expression<Real>) -> Expression<Real> {
  *
  * Returns: the log probability density.
  */
-function dlogpdf_uniform(x:Real, l:Expression<Real>, u:Expression<Real>) -> Expression<Real> {
+function dlogpdf_uniform(x:Expression<Real>, l:Expression<Real>, u:Expression<Real>) -> Expression<Real> {
   assert l <= u;
 
   if (x >= l && x <= u) {
@@ -130,7 +130,7 @@ function dlogpdf_uniform(x:Real, l:Expression<Real>, u:Expression<Real>) -> Expr
  *
  * Returns: the log probability density.
  */
-function dlogpdf_exponential(x:Real, λ:Expression<Real>) -> Expression<Real> {
+function dlogpdf_exponential(x:Expression<Real>, λ:Expression<Real>) -> Expression<Real> {
   assert 0.0 < λ;
 
   if (x >= 0.0) {
@@ -149,7 +149,7 @@ function dlogpdf_exponential(x:Real, λ:Expression<Real>) -> Expression<Real> {
  *
  * Returns: the log probability density.
  */
-function dlogpdf_weibull(x:Real, k:Expression<Real>, λ:Expression<Real>) -> Expression<Real> {
+function dlogpdf_weibull(x:Expression<Real>, k:Expression<Real>, λ:Expression<Real>) -> Expression<Real> {
   assert 0.0 < λ;
 
   if (x >= 0.0) {
@@ -168,7 +168,7 @@ function dlogpdf_weibull(x:Real, k:Expression<Real>, λ:Expression<Real>) -> Exp
  *
  * Returns: the log probability density.
  */
-function dlogpdf_gaussian(x:Real, μ:Expression<Real>, σ2:Expression<Real>) -> Expression<Real> {
+function dlogpdf_gaussian(x:Expression<Real>, μ:Expression<Real>, σ2:Expression<Real>) -> Expression<Real> {
   assert 0.0 <= σ2;
   
   if (σ2 == 0.0) {
@@ -190,7 +190,7 @@ function dlogpdf_gaussian(x:Real, μ:Expression<Real>, σ2:Expression<Real>) -> 
  *
  * Returns: the log probability density.
  */
-function dlogpdf_student_t(x:Real, k:Expression<Real>) -> Expression<Real> {
+function dlogpdf_student_t(x:Expression<Real>, k:Expression<Real>) -> Expression<Real> {
   assert 0.0 < k;
   auto a <- 0.5*(k + 1.0);
   return lgamma(a) - lgamma(0.5*k) - 0.5*log(π*k) - a*log1p(x*x/k);
@@ -206,7 +206,7 @@ function dlogpdf_student_t(x:Real, k:Expression<Real>) -> Expression<Real> {
  *
  * Returns: the log probability density.
  */
-function dlogpdf_student_t(x:Real, k:Expression<Real>, μ:Expression<Real>, σ2:Expression<Real>) -> Expression<Real> {
+function dlogpdf_student_t(x:Expression<Real>, k:Expression<Real>, μ:Expression<Real>, σ2:Expression<Real>) -> Expression<Real> {
   assert 0.0 < k;
   assert 0.0 < σ2;
   return dlogpdf_student_t((x - μ)/sqrt(σ2), k) - 0.5*log(σ2);
@@ -221,7 +221,7 @@ function dlogpdf_student_t(x:Real, k:Expression<Real>, μ:Expression<Real>, σ2:
  *
  * Returns: the log probability density.
  */
-function dlogpdf_beta(x:Real, α:Expression<Real>, β:Expression<Real>) -> Expression<Real> {
+function dlogpdf_beta(x:Expression<Real>, α:Expression<Real>, β:Expression<Real>) -> Expression<Real> {
   assert 0.0 < α;
   assert 0.0 < β;
 
@@ -240,7 +240,7 @@ function dlogpdf_beta(x:Real, α:Expression<Real>, β:Expression<Real>) -> Expre
  *
  * Return: the log probability density.
  */
-function dlogpdf_chi_squared(x:Real, ν:Expression<Real>) -> Expression<Real> {
+function dlogpdf_chi_squared(x:Expression<Real>, ν:Expression<Real>) -> Expression<Real> {
   assert 0.0 < ν;
   if x > 0.0 || (x >= 0.0 && ν > 1.0) {
     auto k <- 0.5*ν;
@@ -259,7 +259,7 @@ function dlogpdf_chi_squared(x:Real, ν:Expression<Real>) -> Expression<Real> {
  *
  * Returns: the log probability density.
  */
-function dlogpdf_gamma(x:Real, k:Expression<Real>, θ:Expression<Real>) -> Expression<Real> {
+function dlogpdf_gamma(x:Expression<Real>, k:Expression<Real>, θ:Expression<Real>) -> Expression<Real> {
   assert 0.0 < k;
   assert 0.0 < θ;
   
@@ -297,7 +297,7 @@ function dlogpdf_wishart(X:Expression<Real[_,_]>, Ψ:Expression<Real[_,_]>, ν:E
  *
  * Returns: the log probability density.
  */
-function dlogpdf_inverse_gamma(x:Real, α:Expression<Real>, β:Expression<Real>) -> Expression<Real> {
+function dlogpdf_inverse_gamma(x:Expression<Real>, α:Expression<Real>, β:Expression<Real>) -> Expression<Real> {
   assert 0.0 < α;
   assert 0.0 < β;
   
@@ -336,7 +336,7 @@ function dlogpdf_inverse_wishart(X:Expression<Real[_,_]>, Ψ:Expression<Real[_,_
  *
  * Return: the log probability density.
  */
-function dlogpdf_inverse_gamma_gamma(x:Real, k:Expression<Real>, α:Expression<Real>, β:Expression<Real>) -> Expression<Real> {
+function dlogpdf_inverse_gamma_gamma(x:Expression<Real>, k:Expression<Real>, α:Expression<Real>, β:Expression<Real>) -> Expression<Real> {
   assert 0.0 < k;
   assert 0.0 < α;
   assert 0.0 < β;
@@ -359,7 +359,7 @@ function dlogpdf_inverse_gamma_gamma(x:Real, k:Expression<Real>, α:Expression<R
  *
  * Returns: the log probability density.
  */
-function dlogpdf_normal_inverse_gamma(x:Real, μ:Expression<Real>, a2:Expression<Real>, α:Expression<Real>,
+function dlogpdf_normal_inverse_gamma(x:Expression<Real>, μ:Expression<Real>, a2:Expression<Real>, α:Expression<Real>,
     β:Expression<Real>) -> Expression<Real> {
   return dlogpdf_student_t(x, 2.0*α, μ, a2*β/α);
 }
@@ -434,7 +434,7 @@ function dlogpdf_gamma_poisson(x:Integer, k:Expression<Integer>, θ:Expression<R
  *
  * Return: the log probability density.
  */
-function dlogpdf_lomax(x:Real, λ:Expression<Real>, α:Expression<Real>) -> Expression<Real> {
+function dlogpdf_lomax(x:Expression<Real>, λ:Expression<Real>, α:Expression<Real>) -> Expression<Real> {
   assert 0.0 < λ;
   assert 0.0 < α;
   if x >= 0.0 {
@@ -455,7 +455,7 @@ function dlogpdf_lomax(x:Real, λ:Expression<Real>, α:Expression<Real>) -> Expr
  *
  * Returns: the log probability density.
  */
-function dlogpdf_normal_inverse_gamma_gaussian(x:Real, μ:Expression<Real>, a2:Expression<Real>,
+function dlogpdf_normal_inverse_gamma_gaussian(x:Expression<Real>, μ:Expression<Real>, a2:Expression<Real>,
     α:Expression<Real>, β:Expression<Real>) -> Expression<Real> {
   return dlogpdf_student_t(x, 2.0*α, μ, (β/α)*(1.0 + a2));
 }
@@ -474,7 +474,7 @@ function dlogpdf_normal_inverse_gamma_gaussian(x:Real, μ:Expression<Real>, a2:E
  *
  * Returns: the log probability density.
  */
-function dlogpdf_linear_normal_inverse_gamma_gaussian(x:Real, a:Expression<Real>,
+function dlogpdf_linear_normal_inverse_gamma_gaussian(x:Expression<Real>, a:Expression<Real>,
     μ:Expression<Real>, a2:Expression<Real>, c:Expression<Real>, α:Expression<Real>, β:Expression<Real>) -> Expression<Real> {
   return dlogpdf_student_t(x, 2.0*α, a*μ + c, (β/α)*(1.0 + a*a*a2));
 }
@@ -488,7 +488,7 @@ function dlogpdf_linear_normal_inverse_gamma_gaussian(x:Real, a:Expression<Real>
  *
  * Returns: the log probability density.
  */
-function dlogpdf_multivariate_gaussian(x:Real[_], μ:Expression<Real[_]>, Σ:Expression<Real[_,_]>) ->
+function dlogpdf_multivariate_gaussian(x:Expression<Real[_]>, μ:Expression<Real[_]>, Σ:Expression<Real[_,_]>) ->
     Real {
   auto D <- length(μ);
   auto C <- llt(Σ);
@@ -505,7 +505,7 @@ function dlogpdf_multivariate_gaussian(x:Real[_], μ:Expression<Real[_]>, Σ:Exp
  *
  * Returns: the log probability density.
  */
-function dlogpdf_multivariate_gaussian(x:Real[_], μ:Expression<Real[_]>, σ2:Expression<Real>) -> Expression<Real> {
+function dlogpdf_multivariate_gaussian(x:Expression<Real[_]>, μ:Expression<Real[_]>, σ2:Expression<Real>) -> Expression<Real> {
   auto D <- length(μ);
   return -0.5*(dot(x - μ)/σ2 + D*log(2.0*π*σ2));
 }
@@ -521,7 +521,7 @@ function dlogpdf_multivariate_gaussian(x:Real[_], μ:Expression<Real[_]>, σ2:Ex
  *
  * Returns: the log probability density.
  */
-function dlogpdf_multivariate_normal_inverse_gamma(x:Real[_], ν:Expression<Real[_]>,
+function dlogpdf_multivariate_normal_inverse_gamma(x:Expression<Real[_]>, ν:Expression<Real[_]>,
     Λ:Expression<Real[_,_]>, α:Expression<Real>, β:Expression<Real>) -> Expression<Real> {
   ///@todo return dlogpdf_multivariate_student_t(x, 2.0*α, solve(Λ, ν), (β/α)*inv(Λ));
 }
@@ -538,7 +538,7 @@ function dlogpdf_multivariate_normal_inverse_gamma(x:Real[_], ν:Expression<Real
  *
  * Returns: the log probability density.
  */
-function dlogpdf_multivariate_normal_inverse_gamma_multivariate_gaussian(x:Real[_],
+function dlogpdf_multivariate_normal_inverse_gamma_multivariate_gaussian(x:Expression<Real[_]>,
     ν:Expression<Real[_]>, Λ:Expression<Real[_,_]>, α:Expression<Real>, γ:Expression<Real>) -> Expression<Real> {
   auto D <- length(ν);
   auto β <- γ - 0.5*dot(solve(cholesky(Λ), ν));
@@ -559,7 +559,7 @@ function dlogpdf_multivariate_normal_inverse_gamma_multivariate_gaussian(x:Real[
  *
  * Returns: the log probability density.
  */
-function dlogpdf_linear_multivariate_normal_inverse_gamma_multivariate_gaussian(x:Real[_],
+function dlogpdf_linear_multivariate_normal_inverse_gamma_multivariate_gaussian(x:Expression<Real[_]>,
     A:Expression<Real[_,_]>, ν:Expression<Real[_]>, Λ:Expression<Real[_,_]>, c:Expression<Real[_]>, α:Expression<Real>, γ:Expression<Real>) -> Expression<Real> {
   auto β <- γ - 0.5*dot(solve(cholesky(Λ), ν));
   ///@todo
@@ -780,7 +780,7 @@ function dlogpdf_linear_matrix_normal_inverse_wishart_matrix_gaussian(
  *
  * Returns: the log probability density.
  */
-function dlogpdf_multivariate_student_t(x:Real[_], k:Expression<Real>, μ:Expression<Real[_]>, Σ:Expression<Real[_,_]>)
+function dlogpdf_multivariate_student_t(x:Expression<Real[_]>, k:Expression<Real>, μ:Expression<Real[_]>, Σ:Expression<Real[_,_]>)
     -> Expression<Real> {
   auto n <- length(μ);
   auto a <- 0.5*(k + n);
@@ -800,7 +800,7 @@ function dlogpdf_multivariate_student_t(x:Real[_], k:Expression<Real>, μ:Expres
  *
  * Returns: the log probability density.
  */
-function dlogpdf_multivariate_student_t(x:Real[_], k:Expression<Real>, μ:Expression<Real[_]>,
+function dlogpdf_multivariate_student_t(x:Expression<Real[_]>, k:Expression<Real>, μ:Expression<Real[_]>,
     σ2:Expression<Real>) -> Expression<Real> {
   auto n <- length(μ);
   auto a <- 0.5*(k + n);
