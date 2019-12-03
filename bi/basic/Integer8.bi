@@ -58,6 +58,17 @@ function Integer8(x:Integer8) -> Integer8 {
 /**
  * Convert to Integer8.
  */
+function Integer8(x:Boolean) -> Integer8 {
+  if x {
+    return Integer8(1);
+  } else {
+    return Integer8(0);
+  }
+}
+
+/**
+ * Convert to Integer8.
+ */
 function Integer8(x:String) -> Integer8 {
   cpp{{
   return ::atoi(x.c_str());

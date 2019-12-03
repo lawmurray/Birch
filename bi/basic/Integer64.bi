@@ -58,6 +58,17 @@ function Integer64(x:Integer8) -> Integer64 {
 /**
  * Convert to Integer64.
  */
+function Integer64(x:Boolean) -> Integer64 {
+  if x {
+    return Integer64(1);
+  } else {
+    return Integer64(0);
+  }
+}
+
+/**
+ * Convert to Integer64.
+ */
 function Integer64(x:String) -> Integer64 {
   cpp{{
   return ::atol(x.c_str());

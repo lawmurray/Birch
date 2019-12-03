@@ -48,6 +48,17 @@ function Integer(x:Integer8) -> Integer {
 /**
  * Convert to Integer.
  */
+function Integer(x:Boolean) -> Integer {
+  if x {
+    return Integer(1);
+  } else {
+    return Integer(0);
+  }
+}
+
+/**
+ * Convert to Integer.
+ */
 function Integer(x:String) -> Integer {
   return Integer64(x);
 }

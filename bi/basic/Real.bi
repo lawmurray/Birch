@@ -48,6 +48,13 @@ function Real(x:Integer8) -> Real {
 /**
  * Convert to Real.
  */
+function Real(x:Boolean) -> Real {
+  return Real64(x);
+}
+
+/**
+ * Convert to Real.
+ */
 function Real(x:String) -> Real {
   return Real64(x);
 }

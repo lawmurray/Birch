@@ -58,6 +58,17 @@ function Real64(x:Integer8) -> Real64 {
 /**
  * Convert to Real64.
  */
+function Real64(x:Boolean) -> Real64 {
+  if x {
+    return Real64(1.0);
+  } else {
+    return Real64(0.0);
+  }
+}
+
+/**
+ * Convert to Real64.
+ */
 function Real64(x:String) -> Real64 {
   cpp{{
   return ::strtod(x.c_str(), nullptr);

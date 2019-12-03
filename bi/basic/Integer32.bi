@@ -58,6 +58,17 @@ function Integer32(x:Integer8) -> Integer32 {
 /**
  * Convert to Integer32.
  */
+function Integer32(x:Boolean) -> Integer32 {
+  if x {
+    return Integer32(1);
+  } else {
+    return Integer32(0);
+  }
+}
+
+/**
+ * Convert to Integer32.
+ */
 function Integer32(x:String) -> Integer32 {
   cpp{{
   return ::atoi(x.c_str());

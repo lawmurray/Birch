@@ -58,6 +58,17 @@ function Real32(x:Integer8) -> Real32 {
 /**
  * Convert to Real32.
  */
+function Real32(x:Boolean) -> Real32 {
+  if x {
+    return Real32(1.0);
+  } else {
+    return Real32(0.0);
+  }
+}
+
+/**
+ * Convert to Real32.
+ */
 function Real32(x:String) -> Real32 {
   cpp{{
   return ::strtof(x.c_str(), nullptr);

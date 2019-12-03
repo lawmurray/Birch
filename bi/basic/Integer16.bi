@@ -58,6 +58,17 @@ function Integer16(x:Integer8) -> Integer16 {
 /**
  * Convert to Integer16.
  */
+function Integer16(x:Boolean) -> Integer16 {
+  if x {
+    return Integer16(1);
+  } else {
+    return Integer16(0);
+  }
+}
+
+/**
+ * Convert to Integer16.
+ */
 function Integer16(x:String) -> Integer16 {
   cpp{{
   return ::atoi(x.c_str());
