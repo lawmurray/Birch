@@ -181,8 +181,7 @@ void bi::Scope::add(Fiber* param) {
   checkPreviousGlobal(param);
   if (functions.contains(param->name->str())) {
     throw PreviousDeclarationException(param);
-  }
-  if (fibers.contains(param)) {
+  } else if (fibers.contains(param)) {
     throw PreviousDeclarationException(param, fibers.get(param));
   }
   fibers.add(param);
@@ -195,8 +194,9 @@ void bi::Scope::add(Program* param) {
 
 void bi::Scope::add(MemberFunction* param) {
   checkPreviousMember(param);
-  if (memberFunctions.contains(param)
-      || memberFibers.contains(param->name->str())) {
+  if (memberFunctions.contains(param)) {
+    throw PreviousDeclarationException(param, memberFunctions.get(param));
+  } else if (memberFibers.contains(param->name->str())) {
     throw PreviousDeclarationException(param);
   }
   memberFunctions.add(param);
@@ -204,8 +204,9 @@ void bi::Scope::add(MemberFunction* param) {
 
 void bi::Scope::add(MemberFiber* param) {
   checkPreviousMember(param);
-  if (memberFunctions.contains(param->name->str())
-      || memberFibers.contains(param)) {
+  if (memberFibers.contains(param)) {
+    throw PreviousDeclarationException(param, memberFibers.get(param));
+  } else if (memberFunctions.contains(param->name->str())) {
     throw PreviousDeclarationException(param);
   }
   memberFibers.add(param);

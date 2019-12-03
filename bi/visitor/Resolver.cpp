@@ -856,7 +856,9 @@ bi::Statement* bi::Resolver::modify(Class* o) {
     }
     o->params = o->params->accept(this);
     scopes.pop_back();
-    o->braces = o->braces->accept(this);
+    if (o->isBound()) {
+      o->braces = o->braces->accept(this);
+    }
     classes.pop_back();
     scopes.pop_back();
   } else if (stage == RESOLVER_SOURCE && o->isBound()) {
