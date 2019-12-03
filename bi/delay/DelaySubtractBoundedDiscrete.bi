@@ -35,10 +35,18 @@ final class DelaySubtractBoundedDiscrete(future:Integer?, futureUpdate:Boolean,
    */
   Z:Real;
 
+  /**
+   * Has this node already updated its parents? Nodes of this type have two
+   * parent nodes, and because of this, their update() member function is
+   * called twice. This flag is a hack to ensure that the actual update is
+   * performed only once.
+   */
+  alreadyUpdated:Boolean <- false;
+
   function enumerate(x:Integer) {
-    if (!this.x? || this.x! != x) {
-      l:Integer <- max(x1.l, x2.l + x);
-      u:Integer <- min(x1.u, x2.u + x);
+    if !this.x? || this.x! != x {
+      auto l <- max(x1.l, x2.l + x);
+      auto u <- min(x1.u, x2.u + x);
 
       x0 <- l;
       Z <- 0.0;
@@ -56,28 +64,34 @@ final class DelaySubtractBoundedDiscrete(future:Integer?, futureUpdate:Boolean,
 
   function simulate() -> Integer {
     if value? {
-      return value!;
+      return simulate_delta(value!);
     } else {
       return simulate_delta(x1.simulate() - x2.simulate());
     }
   }
   
   function logpdf(x:Integer) -> Real {
-    assert !value?;
-    enumerate(x);
-    return log(Z);
+    if value? {
+      return logpdf_delta(x, value!);
+    } else {
+      enumerate(x);
+      return log(Z);
+    }
   }
 
   function update(x:Integer) {
-    /* choose a pair with the given difference and clamp parents */
-    enumerate(x);
-    n:Integer <- simulate_categorical(z, Z) + x0 - 1;
-    x1.clamp(n);
-    x2.clamp(n - x);
+    if !alreadyUpdated {
+      /* choose a pair with the given difference and clamp parents */
+      enumerate(x);
+      auto n <- simulate_categorical(z, Z) + x0 - 1;
+      x1.clamp(n);
+      x2.clamp(n - x);
+      alreadyUpdated <- true;
+    }
   }
 
   function cdf(x:Integer) -> Real? {
-    P:Real <- 0.0;
+    auto P <- 0.0;
     for n in l..x {
       P <- P + pdf(n);
     }

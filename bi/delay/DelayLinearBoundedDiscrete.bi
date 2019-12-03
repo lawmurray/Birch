@@ -22,15 +22,18 @@ final class DelayLinearBoundedDiscrete(future:Integer?, futureUpdate:Boolean,
 
   function simulate() -> Integer {
     if value? {
-      return value!;
+      return simulate_delta(value!);
     } else {
       return simulate_delta(a*μ.simulate() + c);
     }
   }
   
   function logpdf(x:Integer) -> Real {
-    assert !value?;
-    return μ.logpdf((x - c)/a) - log(abs(a));
+    if value? {
+      return logpdf_delta(x, value!);
+    } else {
+      return μ.logpdf((x - c)/a) - log(abs(a));
+    }
   }
 
   function update(x:Integer) {

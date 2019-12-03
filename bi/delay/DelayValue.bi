@@ -45,11 +45,6 @@ abstract class DelayValue<Value>(future:Value?, futureUpdate:Boolean) < Delay {
       } else {
         x <- simulate();
       }
-      if futureUpdate {
-        update(x!);
-      } else {
-        downdate(x!);
-      }
     }
     return x!;
   }
@@ -65,31 +60,18 @@ abstract class DelayValue<Value>(future:Value?, futureUpdate:Boolean) < Delay {
       } else {
         x <- simulate();
       }
-      if futureUpdate {
-        update(x!);
-      } else {
-        downdate(x!);
-      }
     }
     return x!;
   }
 
   /**
-   * Set a value for a random variate associated with this node,
-   * updating the delayed sampling graph accordingly.
+   * Set a value for a random variate associated with this node.
    */
   function set(x:Value) {
     assert !this.x?;
     assert !this.future?;
-
     prune();
     this.x <- x;
-    auto w <- logpdf(x);
-    ///@todo Would be good to skip evaluation of the logpdf, currently needed
-    ///      to ensure an update happens only if valid
-    if w > -inf {
-      update(x);
-    }
   }
 
   /**
@@ -99,15 +81,9 @@ abstract class DelayValue<Value>(future:Value?, futureUpdate:Boolean) < Delay {
   function setWithDowndate(x:Value) {
     assert !this.x?;
     assert !this.future?;
-
     prune();
     this.x <- x;
-    auto w <- logpdf(x);
-    ///@todo Would be good to skip evaluation of the logpdf, currently needed
-    ///      to ensure a downdate happens only if valid
-    if w > -inf {
-      downdate(x);
-    }
+    this.futureUpdate <- false;
   }
   
   /**
@@ -122,11 +98,7 @@ abstract class DelayValue<Value>(future:Value?, futureUpdate:Boolean) < Delay {
 
     prune();
     this.x <- x;
-    auto w <- logpdf(x);
-    if w > -inf {
-      update(x);
-    }
-    return w;
+    return logpdf(x);
   }
 
   /**
@@ -141,28 +113,23 @@ abstract class DelayValue<Value>(future:Value?, futureUpdate:Boolean) < Delay {
 
     prune();
     this.x <- x;
-    auto w <- logpdf(x);
-    if w > -inf {
-      downdate(x);
-    }
-    return w;
+    this.futureUpdate <- false;
+    return logpdf(x);
   }
 
   function realize() {
-    if x? {
-      // nothing to do
-    } else {
-      prune();
+    prune();
+    if !x? {
       if future? {
         x <- future!;
       } else {
         x <- simulate();
       }
-      if futureUpdate {
-        update(x!);
-      } else {
-        downdate(x!);
-      }
+    }
+    if futureUpdate {
+      update(x!);
+    } else {
+      downdate(x!);
     }
   }
   

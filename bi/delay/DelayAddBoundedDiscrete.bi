@@ -34,19 +34,27 @@ final class DelayAddBoundedDiscrete(future:Integer?, futureUpdate:Boolean,
    * If clamped, then the sum of `z`.
    */
   Z:Real;
+  
+  /**
+   * Has this node already updated its parents? Nodes of this type have two
+   * parent nodes, and because of this, their update() member function is
+   * called twice. This flag is a hack to ensure that the actual update is
+   * performed only once.
+   */
+  alreadyUpdated:Boolean <- false;
 
   function enumerate(x:Integer) {
-    if (!this.x? || this.x! != x) {
-      l:Integer <- max(x1.l, x - x2.u);
-      u:Integer <- min(x1.u, x - x2.l);
+    if !this.x? || this.x! != x {
+      auto l <- max(x1.l, x - x2.u);
+      auto u <- min(x1.u, x - x2.l);
     
       x0 <- l;
       Z <- 0.0;
-      if (l <= u) {
+      if l <= u {
         /* distribution over possible pairs that produce the given sum */
         z <- vector(0.0, u - l + 1);
         for n in l..u {
-          z[n - l + 1] <- x1.pdf(n)*x2.pdf(x - n);
+          z[n - l + 1] <- exp(x1.logpdf(n) + x2.logpdf(x - n));
           Z <- Z + z[n - l + 1];
         }
       }
@@ -56,28 +64,34 @@ final class DelayAddBoundedDiscrete(future:Integer?, futureUpdate:Boolean,
 
   function simulate() -> Integer {
     if value? {
-      return value!;
+      return simulate_delta(value!);
     } else {
       return simulate_delta(x1.simulate() + x2.simulate());
     }
   }
   
   function logpdf(x:Integer) -> Real {
-    assert !value?;
-    enumerate(x);
-    return log(Z);
+    if value? {
+      return logpdf_delta(x, value!);
+    } else {
+      enumerate(x);
+      return log(Z);
+    }
   }
   
   function update(x:Integer) {
-    /* choose a pair with the given sum and clamp parents */
-    enumerate(x);
-    n:Integer <- simulate_categorical(z, Z) + x0 - 1;
-    x1.clamp(n);
-    x2.clamp(x - n);
+    if !alreadyUpdated {
+      /* choose a pair with the given sum and clamp parents */
+      enumerate(x);
+      auto n <- simulate_categorical(z, Z) + x0 - 1;
+      x1.clamp(n);
+      x2.clamp(x - n);
+      alreadyUpdated <- true;
+    }
   }
 
   function cdf(x:Integer) -> Real? {
-    P:Real <- 0.0;
+    auto P <- 0.0;
     for n in l..x {
       P <- P + pdf(n);
     }

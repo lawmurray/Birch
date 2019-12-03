@@ -24,7 +24,7 @@ function logpdf_bernoulli(x:Boolean, ρ:Real) -> Real {
  * Returns: the log probability mass.
  */
 function logpdf_delta(x:Integer, μ:Integer) -> Real {
-  if (x == μ) {
+  if x == μ {
     return 0.0;
   } else {
     return -inf;

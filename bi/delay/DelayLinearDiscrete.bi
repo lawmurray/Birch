@@ -22,15 +22,18 @@ final class DelayLinearDiscrete(future:Integer?, futureUpdate:Boolean,
 
   function simulate() -> Integer {
     if value? {
-      return value!;
+      return simulate_delta(value!);
     } else {
       return simulate_delta(a*μ.simulate() + c);
     }
   }
   
   function logpdf(x:Integer) -> Real {
-    assert !value?;
-    return μ.logpdf((x - c)/a) - log(abs(a));
+    if value? {
+      return logpdf_delta(x, value!);
+    } else {
+      return μ.logpdf((x - c)/a) - log(abs(a));
+    }
   }
   
   function update(x:Integer) {
@@ -42,16 +45,16 @@ final class DelayLinearDiscrete(future:Integer?, futureUpdate:Boolean,
   }
 
   function lower() -> Integer? {
-    l:Integer? <- μ.lower();
-    if (l?) {
+    auto l <- μ.lower();
+    if l? {
       l <- a*l! + c;
     }
     return l;
   }
   
   function upper() -> Integer? {
-    u:Integer? <- μ.upper();
-    if (u?) {
+    auto u <- μ.upper();
+    if u? {
       u <- a*u! + c;
     }
     return u;

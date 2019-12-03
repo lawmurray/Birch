@@ -10,15 +10,18 @@ final class DelayDiscreteDelta(future:Integer?, futureUpdate:Boolean,
 
   function simulate() -> Integer {
     if value? {
-      return value!;
+      return simulate_delta(value!);
     } else {
       return simulate_delta(μ.simulate());
     }
   }
   
   function logpdf(x:Integer) -> Real {
-    assert !value?;
-    return μ.logpdf(x);
+    if value? {
+      return logpdf_delta(x, value!);
+    } else {
+      return μ.logpdf(x);
+    }
   }
   
   function update(x:Integer) {
