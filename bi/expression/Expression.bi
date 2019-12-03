@@ -20,6 +20,8 @@ abstract class Expression<Value> {
    * Compute gradients of the expression with respect to all Random objects,
    * at the current value.
    *
+   * Returns: Are there one or more Random objects with non-zero gradients?
+   *
    * This uses reverse-mode automatic differentiation. If the expression
    * tree encodes
    * $$x_n = f(x_0) = (f_n \circ \cdots \circ f_1)(x_0),$$
@@ -34,15 +36,15 @@ abstract class Expression<Value> {
    * the computation. The Random object that encodes $x_0$ keeps the final
    * result.
    */
-  abstract function grad(d:Value);
+  abstract function grad(d:Value) -> Boolean;
 
   /**
    * Evaluate gradients of the expression with respect to all Random objects,
    * at the current value. This is a convenience function that simply calls
    * `grad(1.0)` to start a gradient computation.
    */
-  //final function grad() {
-  //  grad(1.0);
+  //final function grad() -> Boolean {
+  //  return grad(1.0);
   //}
 
   /**

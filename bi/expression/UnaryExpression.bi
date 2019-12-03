@@ -23,8 +23,8 @@ abstract class UnaryExpression<Argument,Value>(single:Expression<Argument>) <
     return x!;
   }
   
-  final function grad(d:Value) {
-    single.grad(doGradient(d, single.value()));
+  final function grad(d:Value) -> Boolean {
+    return single.grad(doGradient(d, single.value()));
   } 
 
   final function propose() -> Value {

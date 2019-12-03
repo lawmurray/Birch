@@ -71,7 +71,7 @@ final class Random<Value> < Expression<Value> {
     return x!;
   }
   
-  function grad(d:Value) {
+  function grad(d:Value) -> Boolean {
     if !dfdx? {
       /* first time this has been encountered in the gradient computation,
        * propagate into its prior */
@@ -87,9 +87,14 @@ final class Random<Value> < Expression<Value> {
        * computation; accumulate */
       dfdx <- dfdx! + d;
     }
+    return dfdx?;
   }
   
   function propose() -> Value {
+    ///@todo Need to make sure that a propose can happen only once, or if
+    ///possible only for the one global expression; consider what happens
+    ///when two observed variates rely on the same Random, one moves it, 
+    ///then the other moves it again but ignoring the previous likelihood
     assert x?;
     if !x'? {
       /* include prior for the existing value in the acceptance ratio,

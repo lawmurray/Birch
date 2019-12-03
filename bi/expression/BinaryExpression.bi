@@ -29,15 +29,14 @@ abstract class BinaryExpression<Left,Right,Value>(left:Expression<Left>,
     return x!;
   }
   
-  final function grad(d:Value) {
+  final function grad(d:Value) -> Boolean {
     auto l <- left.value();
     auto r <- right.value();
     dl:Left;
     dr:Right;
     (dl, dr) <- doGradient(d, l, r);
     
-    left.grad(dl);
-    right.grad(dr);
+    return left.grad(dl) || right.grad(dr);
   }
 
   final function propose() -> Value {
