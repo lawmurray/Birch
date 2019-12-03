@@ -23,14 +23,21 @@ abstract class Distribution<Value> {
    */
   delay:DelayValue<Value>?;
 
-  /**
-   * Realize a value for a random variate associated with the distribution,
-   * updating the delayed sampling graph accordingly.
-   */
   function value() -> Value {
     graft(false);
     if delay? {
       auto x <- delay!.value();
+      detach();
+      return x;
+    } else {
+      return valueForward();
+    }
+  }
+  
+  function propose() -> Value {
+    graft(false);
+    if delay? {
+      auto x <- delay!.propose();
       detach();
       return x;
     } else {
@@ -188,13 +195,26 @@ abstract class Distribution<Value> {
   }
 
   /**
-   * Evaluate the probability density (or mass) function, if it exists.
+   * Evaluate the logarithm of the probability density (or mass) function.
    *
    * - x: The value.
    *
    * Return: the log probability density (or mass).
    */
   function logpdf(x:Value) -> Real {
+    graft(true);
+    return delay!.logpdf(x);
+  }
+
+  /**
+   * Lazily evaluate the logarithm of the probability density (or mass)
+   * function, if supported.
+   *
+   * - x: The value.
+   *
+   * Return: the log probability density (or mass).
+   */
+  function logpdf(x:Expression<Value>) -> Expression<Real>? {
     graft(true);
     return delay!.logpdf(x);
   }
@@ -212,7 +232,7 @@ abstract class Distribution<Value> {
   }
 
   /**
-   * Evaluate the cumulative distribution function at a value.
+   * Evaluate the cumulative distribution function at a value, if supported.
    *
    * - x: The value.
    *
@@ -224,7 +244,7 @@ abstract class Distribution<Value> {
   }
 
   /**
-   * Evaluate the quantile function at a cumulative probability.
+   * Evaluate the quantile function at a cumulative probability, if supported.
    *
    * - x: The cumulative probability.
    *
@@ -236,7 +256,7 @@ abstract class Distribution<Value> {
   }
   
   /**
-   * Finite lower bound of the support of this node, if any.
+   * Finite lower bound of the support of this node, if supported.
    */
   function lower() -> Value? {
     graft(true);
@@ -244,7 +264,7 @@ abstract class Distribution<Value> {
   }
   
   /**
-   * Finite upper bound of the support of this node, if any.
+   * Finite upper bound of the support of this node, if supported.
    */
   function upper() -> Value? {
     graft(true);

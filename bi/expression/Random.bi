@@ -5,39 +5,34 @@
  */
 final class Random<Value> < Expression<Value> {  
   /**
-   * Realized value.
-   */
-  x:Value?;
-  
-  /**
-   * Pilot value.
-   */
-  xstar:Value?;
-  
-  /**
-   * Propose value.
-   */
-  xprime:Value?;
-  
-  /**
-   * Gradient a function in which this object occurs, at the pilot position.
-   */
-  dstar:Value?;
-
-  /**
-   * Gradient a function in which this object occurs, at the propose position.
-   */
-  dprime:Value?;
-  
-  /**
-   * Logarithm fo the acceptance ratio contribution for this variate.
-   */
-  r:Real?;
-
-  /**
    * Associated distribution.
    */
   dist:Distribution<Value>?;
+
+  /**
+   * Value.
+   */
+  x:Value?;
+    
+  /**
+   * Gradient at the value.
+   */
+  dfdx:Value?;
+  
+  /**
+   * Alternative value. This is used when proposing a move.
+   */
+  x':Value?;
+  
+  /**
+   * Gradient at the alternative value.
+   */
+  dfdx':Value?;
+  
+  /**
+   * Logarithm of acceptance ratio.
+   */
+  α:Real <- 0.0;
 
   /**
    * Value assignment.
@@ -71,80 +66,75 @@ final class Random<Value> < Expression<Value> {
 
   function value() -> Value {
     if !x? {
-      assert dist?;
       x <- dist!.value();
-      dist <- nil;
     }
     return x!;
   }
-
-  function pilot() -> Value {
-    if x? {
-      return x!;
-    } else if !xstar? {
-      assert dist?;
-      xstar <- dist!.simulate();
+  
+  function grad(d:Value) {
+    if !dfdx? {
+      /* first time this has been encountered in the gradient computation,
+       * propagate into its prior */
+      if dist? {
+        dfdx <- d;
+        auto logpdf <- dist!.logpdf(this);
+        if logpdf? {
+          logpdf!.grad(1.0);
+        }
+      }
+    } else {
+      /* second or subsequent time this has been encountered in the gradient
+       * computation; accumulate */
+      dfdx <- dfdx! + d;
     }
-    return xstar!;
-  }
-
-  function propose() -> Value {
-    if x? {
-      return x!;
-    } else if !xprime? {
-      assert dist?;
-      xprime <- simulate_propose(dstar!, dstar!);
-    }
-    return xprime!;
   }
   
-  function dpilot(d:Value) {
-    if this.dstar? {
-      this.dstar! <- this.dstar! + d;
-    } else {
-      this.dstar <- d;
-    }
-  }
+  function propose() -> Value {
+    assert x?;
+    if !x'? {
+      /* include prior for the existing value in the acceptance ratio,
+       * before replacing it */
+      α <- -dist!.logpdf(x!);
 
-  function dpropose(d:Value) {
-    if this.dprime? {
-      this.dprime! <- this.dprime! + d;
-    } else {
-      this.dprime <- d;
-    }
-  }
+      /* move existing value and gradient to the alternative slot */
+      x' <- x;
+      dfdx' <- dfdx;
+      x <- nil;
+      dfdx <- nil;
 
+      /* propose a new value */
+      x <- dist!.propose();  // simulate to recurse through prior but...
+      x <- simulate_propose(x'!, dfdx'!);  // ...replace with local proposal
+      
+      /* finalize acceptance ratio */
+      α <- α + dist!.logpdf(x!);
+      α <- α + logpdf_propose(x'!, x!, dfdx!);
+      α <- α - logpdf_propose(x!, x'!, dfdx'!);
+    }
+    return x'!;
+  }
+  
   function ratio() -> Real {
-    if r? {
-      /* another occurrence of this object has already included the
-       * contribution to the acceptance ratio */
-      return 0.0;
-    } else {
-      r <- dist!.logpdf(xprime!) - dist!.logpdf(xstar!) +
-          logpdf_propose(xstar!, xprime!, dprime!) -
-          logpdf_propose(xprime!, xstar!, dstar!);
-      return r!;
-    }
+    /* return the already-computed acceptance ratio, but zero it out for next
+     * time, ensuring that this is only counted once, even if it occurs as
+     * multiple places in an expression */
+    auto result <- α;
+    α <- 0.0;
+    return result;
   }
   
   function accept() {
-    x <- xprime;
-    xstar <- nil;
-    xprime <- nil;
-    dstar <- nil;
-    dprime <- nil;
-    r <- nil;
-    dist <- nil;
+    x' <- nil;
+    dfdx' <- nil;
+    assert α == 0.0;
   }
 
   function reject() {
-    x <- xstar;
-    xstar <- nil;
-    xprime <- nil;
-    dstar <- nil;
-    dprime <- nil;
-    r <- nil;
-    dist <- nil;
+    x <- x';
+    dfdx <- dfdx';
+    x' <- nil;
+    dfdx' <- nil;
+    assert α == 0.0;
   }
 
   /**

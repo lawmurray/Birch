@@ -15,31 +15,23 @@ final class Boxed<Value> < Expression<Value> {
     return x;
   }
 
-  function pilot() -> Value {
-    return x;
+  function grad(d:Value) {
+    //
   }
 
   function propose() -> Value {
     return x;
   }
 
-  function dpilot(d:Value) {
-    //
-  }
-
-  function dpropose(d:Value) {
-    //
-  }
-
-  function ratio() -> Real {
+  final function ratio() -> Real {
     return 0.0;
   }
   
-  function accept() {
+  final function accept() {
     //
   }
 
-  function reject() {
+  final function reject() {
     //
   }
 }

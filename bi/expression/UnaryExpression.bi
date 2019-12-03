@@ -4,61 +4,46 @@
  * - Argument: Argument type.
  * - Value: Value type.
  */
-abstract class UnaryExpression<Argument,Value>(x:Expression<Argument>) <
+abstract class UnaryExpression<Argument,Value>(single:Expression<Argument>) <
     Expression<Value> {  
   /**
-   * Argument.
+   * Single argument.
    */
-  x:Expression<Argument> <- x;
+  single:Expression<Argument> <- single;
 
   /**
-   * Memoized result of `pilot()`.
+   * Memoized value.
    */
-  xstar:Value?;
-
-  /**
-   * Memoized result of `propose()`.
-   */
-  xprime:Value?;
+  x:Value?;
 
   final function value() -> Value {
-    return doValue(x.value());
-  }
-
-  final function pilot() -> Value {
-    if !xstar? {
-      xstar <- doValue(x.pilot());
+    if !x? {
+      x <- doValue(single.value());
     }
-    return xstar!;
-  }
-
-  final function propose() -> Value {
-    if !xprime? {
-      xprime <- doValue(x.propose());
-    }
-    return xprime!;
+    return x!;
   }
   
-  final function dpilot(d:Value) {
-    x.dpilot(doGradient(d, x.pilot()));
+  final function grad(d:Value) {
+    single.grad(doGradient(d, single.value()));
   } 
 
-  final function dpropose(d:Value) {
-    x.dpropose(doGradient(d, x.propose()));
+  final function propose() -> Value {
+    x <- doValue(single.propose());
+    return x!;
   }
-
+  
   final function ratio() -> Real {
-    return x.ratio();
+    return single.ratio();
   }
   
   final function accept() {
-    x.accept();
-  }
-  
-  final function reject() {
-    x.reject();
+    single.accept();
   }
 
+  final function reject() {
+    single.reject();
+  }
+  
   /**
    * Evaluate a value.
    *

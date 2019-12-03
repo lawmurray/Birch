@@ -12,27 +12,15 @@ abstract class Expression<Value> {
   }
 
   /**
-   * Realized value.
+   * Compute value.
    */
   abstract function value() -> Value;
-  
-  /**
-   * Pilot value.
-   */
-  abstract function pilot() -> Value;
 
   /**
-   * Proposed value. This is called after `pilot()` and perhaps `grad()`
-   * to propose an alternative to the pilot position.
-   */
-  abstract function propose() -> Value;
-  
-  /**
-   * Compute gradient. This is called after `pilot()` to evaluate the
-   * gradient of the function with respect to Random objects at the pilot
-   * position.
+   * Compute gradients of the expression with respect to all Random objects,
+   * at the current value.
    *
-   * This uses reverse-mode automatic differentiation. If the  expression
+   * This uses reverse-mode automatic differentiation. If the expression
    * tree encodes
    * $$x_n = f(x_0) = (f_n \circ \cdots \circ f_1)(x_0),$$
    * and this particular node encodes one of those functions
@@ -46,19 +34,25 @@ abstract class Expression<Value> {
    * the computation. The Random object that encodes $x_0$ keeps the final
    * result.
    */
-  abstract function dpilot(d:Value);
+  abstract function grad(d:Value);
 
   /**
-   * Compute gradient. This is called after `proposal()` to evaluate the
-   * gradient of the function with respect to Random objects at the propoosal
-   * position.
-   *
-   * See: `dpilot()`.
+   * Evaluate gradients of the expression with respect to all Random objects,
+   * at the current value. This is a convenience function that simply calls
+   * `grad(1.0)` to start a gradient computation.
    */
-  abstract function dpropose(d:Value);
-  
+  //final function grad() {
+  //  grad(1.0);
+  //}
+
   /**
-   * Compute a partial acceptance ratio.
+   * Propose a new value. This moves the existing value and any gradient at
+   * that value to the alternative slot, and computes a new value.
+   */
+  abstract function propose() -> Value;
+
+  /**
+   * Sum contributions to the logarithm of the acceptance ratio.
    *
    * Returns: The quantity:
    * $$\log \left(\frac{p(x^\prime) q(x^\star \mid x^\prime)}
@@ -71,20 +65,17 @@ abstract class Expression<Value> {
    * favour of the pilot.
    */
   abstract function ratio() -> Real;
-  
-  /**
-   * Accept the proposal. This is called after `propose()`, and sets the
-   * value of all Random objects in the expression to their proposal
-   * positions.
-   */
-  abstract function accept();
 
   /**
-   * Reject the proposal. This is called after `propose()`, and sets the
-   * value of all Random objects in the expression to their pilot positions.
+   * Accept the proposal.
+   */
+  abstract function accept();
+  
+  /**
+   * Reject the proposal.
    */
   abstract function reject();
-  
+
   /**
    * If this expression is grafted onto the delayed sampling graph, get the
    * node with which it is associated on that graph.

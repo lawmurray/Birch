@@ -18,53 +18,31 @@ abstract class BinaryExpression<Left,Right,Value>(left:Expression<Left>,
   right:Expression<Right> <- right;
   
   /**
-   * Memoized result of `pilot()`.
+   * Memoized value.
    */
-  xstar:Value?;
-
-  /**
-   * Memoized result of `propose()`.
-   */
-  xprime:Value?;
+  x:Value?;
 
   final function value() -> Value {
-    return doValue(left.value(), right.value());
-  }
-
-  final function pilot() -> Value {
-    if !xstar? {
-      xstar <- doValue(left.pilot(), right.pilot());
+    if !x? {
+      x <- doValue(left.value(), right.value());
     }
-    return xstar!;
+    return x!;
+  }
+  
+  final function grad(d:Value) {
+    auto l <- left.value();
+    auto r <- right.value();
+    dl:Left;
+    dr:Right;
+    (dl, dr) <- doGradient(d, l, r);
+    
+    left.grad(dl);
+    right.grad(dr);
   }
 
   final function propose() -> Value {
-    if !xprime? {
-      xprime <- doValue(left.propose(), right.propose());
-    }
-    return xprime!;
-  }
-  
-  final function dpilot(d:Value) {
-    auto l <- left.pilot();
-    auto r <- right.pilot();
-    dl:Left;
-    dr:Right;
-    (dl, dr) <- doGradient(d, l, r);
-    
-    left.dpilot(dl);
-    right.dpilot(dr);
-  } 
-
-  final function dpropose(d:Value) {
-    auto l <- left.propose();
-    auto r <- right.propose();
-    dl:Left;
-    dr:Right;
-    (dl, dr) <- doGradient(d, l, r);
-    
-    left.dpropose(dl);
-    right.dpropose(dr);
+    x <- doValue(left.propose(), right.propose());
+    return x!;
   }
 
   final function ratio() -> Real {
@@ -75,7 +53,7 @@ abstract class BinaryExpression<Left,Right,Value>(left:Expression<Left>,
     left.accept();
     right.accept();
   }
-  
+
   final function reject() {
     left.reject();
     right.reject();
