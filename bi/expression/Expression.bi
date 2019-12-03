@@ -20,6 +20,10 @@ abstract class Expression<Value> {
    * Compute gradients of the expression with respect to all Random objects,
    * at the current value.
    *
+   * - d: Upstream gradient. For an initial call, this should be the unit for
+   *     the given type, e.g. 1.0, 1, true, a vector of ones, or the identity
+   *     matrix.
+   *
    * Returns: Are there one or more Random objects with non-zero gradients?
    *
    * This uses reverse-mode automatic differentiation. If the expression
@@ -37,15 +41,6 @@ abstract class Expression<Value> {
    * result.
    */
   abstract function grad(d:Value) -> Boolean;
-
-  /**
-   * Evaluate gradients of the expression with respect to all Random objects,
-   * at the current value. This is a convenience function that simply calls
-   * `grad(1.0)` to start a gradient computation.
-   */
-  //final function grad() -> Boolean {
-  //  return grad(1.0);
-  //}
 
   /**
    * Propose a new value. This moves the existing value and any gradient at
