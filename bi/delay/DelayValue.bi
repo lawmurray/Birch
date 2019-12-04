@@ -26,6 +26,12 @@ abstract class DelayValue<Value>(future:Value?, futureUpdate:Boolean) < Delay {
    * a downdate.)
    */
   futureUpdate:Boolean <- futureUpdate;
+  
+  /**
+   * When assigned, should the value trigger a move? Typically an observe
+   * will trigger a move, while a simulation will not.
+   */
+  futureMove:Boolean <- false;
 
   /**
    * Does the node have a value?
@@ -98,6 +104,7 @@ abstract class DelayValue<Value>(future:Value?, futureUpdate:Boolean) < Delay {
 
     prune();
     this.x <- x;
+    this.futureMove <- true;
     return logpdf(x);
   }
 
@@ -114,6 +121,7 @@ abstract class DelayValue<Value>(future:Value?, futureUpdate:Boolean) < Delay {
     prune();
     this.x <- x;
     this.futureUpdate <- false;
+    this.futureMove <- true;
     return logpdf(x);
   }
 
@@ -131,7 +139,9 @@ abstract class DelayValue<Value>(future:Value?, futureUpdate:Boolean) < Delay {
     } else {
       downdate(x!);
     }
-    move(x!);
+    if futureMove {
+      move(x!);
+    }
   }
   
   /**
