@@ -133,7 +133,7 @@ std::string bi::nice(const std::string& name) {
   }
 
   /* translate prime (apostrophe at end of name) */
-  boost::replace_last(str, "'", "_prime_");
+  boost::replace_all(str, "'", "_prime_");
 
   return str;
 }
