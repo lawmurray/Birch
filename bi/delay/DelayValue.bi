@@ -193,7 +193,7 @@ abstract class DelayValue<Value>(future:Value?, futureUpdate:Boolean) < Delay {
          * and it gradient at a proposal position */
         auto l' <- p!.propose();
         if p!.grad(1.0) {
-          /* at least oone gradient; continue by computing the acceptance
+          /* at least one gradient; continue by computing the acceptance
            * ratio for Metropolis--Hastings */
           auto α <- l' - l + p!.ratio();
           if log(simulate_uniform(0.0, 1.0)) <= α {

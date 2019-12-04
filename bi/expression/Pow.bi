@@ -8,8 +8,12 @@ final class Pow<Left,Right,Value>(left:Expression<Left>,
   }
 
   function doGradient(d:Value, l:Left, r:Right) -> (Left, Right) {
-    assert l > 0;
-    return (d*r*pow(l, r - 1), d*pow(l, r)*log(l));
+    auto dl <- d*r*pow(l, r - 1);
+    auto dr <- 0.0;
+    if l > 0.0 {
+      dr <- d*pow(l, r)*log(l);
+    }
+    return (dl, dr);
   }
 }
 

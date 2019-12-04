@@ -39,7 +39,7 @@ final class ScalarGaussian(μ:Expression<Real>, σ2:Expression<Real>,
       } else if (s1 <- τ2.graftInverseGamma())? {
         delay <- DelayNormalInverseGamma(future, futureUpdate, μ, σ2, s1!);
       } else if force {
-        delay <- DelayGaussian(future, futureUpdate, μ, σ2.value()*τ2.value());
+        delay <- DelayGaussian(future, futureUpdate, μ, σ2*τ2);
       }
     }
   }
@@ -48,7 +48,7 @@ final class ScalarGaussian(μ:Expression<Real>, σ2:Expression<Real>,
     if delay? {
       delay!.prune();
     } else {
-      delay <- DelayGaussian(future, futureUpdate, μ, σ2.value()*τ2.value());
+      delay <- DelayGaussian(future, futureUpdate, μ, σ2*τ2);
     }
     return DelayGaussian?(delay);
   }

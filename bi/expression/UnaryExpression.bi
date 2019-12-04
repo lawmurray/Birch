@@ -16,32 +16,61 @@ abstract class UnaryExpression<Argument,Value>(single:Expression<Argument>) <
    */
   x:Value?;
 
+  /**
+   * Assigned value.
+   */
+  assigned:Value?;
+
+  operator <- x:Value {
+    assigned <- x;
+  }
+
   final function value() -> Value {
-    if !x? {
-      x <- doValue(single.value());
+    if assigned? {
+      return assigned!;
+    } else {
+      if !x? {
+        x <- doValue(single.value());
+      }
+      return x!;
     }
-    return x!;
   }
   
   final function grad(d:Value) -> Boolean {
-    return single.grad(doGradient(d, single.value()));
-  } 
+    if assigned? {
+      return false;
+    } else {
+      return single.grad(doGradient(d, single.value()));
+    }
+  }
 
   final function propose() -> Value {
-    x <- doValue(single.propose());
-    return x!;
+    if assigned? {
+      return assigned!;
+    } else {
+      x <- doValue(single.propose());
+      return x!;
+    }
   }
   
   final function ratio() -> Real {
-    return single.ratio();
+    if assigned? {
+      return 0.0;
+    } else {
+      return single.ratio();
+    }
   }
   
   final function accept() {
-    single.accept();
+    if !assigned? {
+      single.accept();
+    }
   }
 
   final function reject() {
-    single.reject();
+    if !assigned? {
+      single.reject();
+    }
   }
   
   /**

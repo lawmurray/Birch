@@ -1,12 +1,12 @@
 /*
  * Delayed Poisson random variate.
  */
-final class DelayPoisson(future:Integer?, futureUpdate:Boolean, λ:Real) <
-    DelayDiscrete(future, futureUpdate) {
+final class DelayPoisson(future:Integer?, futureUpdate:Boolean,
+    λ:Expression<Real>) < DelayDiscrete(future, futureUpdate) {
   /**
    * Rate.
    */
-  λ:Real <- λ;
+  auto λ <- λ;
 
   function simulate() -> Integer {
     if value? {
@@ -17,6 +17,10 @@ final class DelayPoisson(future:Integer?, futureUpdate:Boolean, λ:Real) <
   }
   
   function logpdf(x:Integer) -> Real {
+    return logpdf_poisson(x, λ);
+  }
+
+  function logpdf(x:Expression<Integer>) -> Expression<Real>? {
     return logpdf_poisson(x, λ);
   }
 
@@ -39,8 +43,8 @@ final class DelayPoisson(future:Integer?, futureUpdate:Boolean, λ:Real) <
   }
 }
 
-function DelayPoisson(future:Integer?, futureUpdate:Boolean, λ:Real) ->
-    DelayPoisson {
+function DelayPoisson(future:Integer?, futureUpdate:Boolean,
+    λ:Expression<Real>) -> DelayPoisson {
   m:DelayPoisson(future, futureUpdate, λ);
   return m;
 }

@@ -22,40 +22,64 @@ abstract class BinaryExpression<Left,Right,Value>(left:Expression<Left>,
    */
   x:Value?;
 
+  /**
+   * Assigned value.
+   */
+  assigned:Value?;
+
   final function value() -> Value {
-    if !x? {
-      x <- doValue(left.value(), right.value());
+    if assigned? {
+      return assigned!;
+    } else {
+      if !x? {
+        x <- doValue(left.value(), right.value());
+      }
+      return x!;
     }
-    return x!;
   }
   
   final function grad(d:Value) -> Boolean {
-    auto l <- left.value();
-    auto r <- right.value();
-    dl:Left;
-    dr:Right;
-    (dl, dr) <- doGradient(d, l, r);
-    
-    return left.grad(dl) || right.grad(dr);
+    if assigned? {
+      return false;
+    } else {
+      auto l <- left.value();
+      auto r <- right.value();
+      dl:Left;
+      dr:Right;
+      (dl, dr) <- doGradient(d, l, r);
+      return left.grad(dl) || right.grad(dr);
+    }
   }
 
   final function propose() -> Value {
-    x <- doValue(left.propose(), right.propose());
-    return x!;
+    if assigned? {
+      return assigned!;
+    } else {
+      x <- doValue(left.propose(), right.propose());
+      return x!;
+    }
   }
 
   final function ratio() -> Real {
-    return left.ratio() + right.ratio();
+    if assigned? {
+      return 0.0;
+    } else {
+      return left.ratio() + right.ratio();
+    }
   }
   
   final function accept() {
-    left.accept();
-    right.accept();
+    if !assigned? {
+      left.accept();
+      right.accept();
+    }
   }
 
   final function reject() {
-    left.reject();
-    right.reject();
+    if !assigned? {
+      left.reject();
+      right.reject();
+    }
   }
 
   /**

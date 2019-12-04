@@ -12,6 +12,14 @@ abstract class Expression<Value> {
   }
 
   /**
+   * Value assignment. Once an expression has been assigned a value, it is
+   * treated as though of type Boxed.
+   */
+  operator <- x:Value {
+    assert false;
+  }
+
+  /**
    * Compute value.
    */
   abstract function value() -> Value;

@@ -1,23 +1,27 @@
 /*
  * Delayed Gaussian random variate.
  */
-class DelayGaussian(future:Real?, futureUpdate:Boolean, μ:Real, σ2:Real) <
-    DelayValue<Real>(future, futureUpdate) {
+class DelayGaussian(future:Real?, futureUpdate:Boolean, μ:Expression<Real>,
+    σ2:Expression<Real>) < DelayValue<Real>(future, futureUpdate) {
   /**
    * Mean.
    */
-  μ:Real <- μ;
+  auto μ <- μ;
 
   /**
    * Precision.
    */
-  λ:Real <- 1.0/σ2;
+  auto λ <- 1.0/σ2;
 
   function simulate() -> Real {
     return simulate_gaussian(μ, 1.0/λ);
   }
   
   function logpdf(x:Real) -> Real {
+    return logpdf_gaussian(x, μ, 1.0/λ);
+  }
+
+  function logpdf(x:Expression<Real>) -> Expression<Real>? {
     return logpdf_gaussian(x, μ, 1.0/λ);
   }
   
@@ -37,8 +41,8 @@ class DelayGaussian(future:Real?, futureUpdate:Boolean, μ:Real, σ2:Real) <
   }
 }
 
-function DelayGaussian(future:Real?, futureUpdate:Boolean, μ:Real,
-    σ2:Real) -> DelayGaussian {
+function DelayGaussian(future:Real?, futureUpdate:Boolean,
+    μ:Expression<Real>, σ2:Expression<Real>) -> DelayGaussian {
   m:DelayGaussian(future, futureUpdate, μ, σ2);
   return m;
 }

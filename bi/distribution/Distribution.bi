@@ -24,25 +24,17 @@ abstract class Distribution<Value> {
   delay:DelayValue<Value>?;
 
   function value() -> Value {
-    graft(false);
-    if delay? {
-      auto x <- delay!.value();
-      detach();
-      return x;
-    } else {
-      return valueForward();
-    }
+    graft(true);
+    auto x <- delay!.value();
+    detach();
+    return x;
   }
   
   function propose() -> Value {
-    graft(false);
-    if delay? {
-      auto x <- delay!.propose();
-      detach();
-      return x;
-    } else {
-      return valueForward();
-    }
+    graft(true);
+    auto x <- delay!.propose();
+    detach();
+    return x;
   }
 
   /**
@@ -110,11 +102,9 @@ abstract class Distribution<Value> {
    * updating the delayed sampling graph accordingly.
    */
   function set(x:Value) -> Value {
-    graft(false);
-    if delay? {
-      delay!.set(x);
-      detach();
-    }
+    graft(true);
+    delay!.set(x);
+    detach();
     return x;
   }
 
@@ -123,11 +113,9 @@ abstract class Distribution<Value> {
    * downdating the delayed sampling graph accordingly.
    */
   function setWithDowndate(x:Value) -> Value {
-    graft(false);
-    if delay? {
-      delay!.setWithDowndate(x);
-      detach();
-    }
+    graft(true);
+    delay!.setWithDowndate(x);
+    detach();
     return x;
   }
   
@@ -137,14 +125,10 @@ abstract class Distribution<Value> {
    * giving the log pdf (or pmf) of that variate under the distribution.
    */
   function observe(x:Value) -> Real {
-    graft(false);
-    if delay? {
-      auto w <- delay!.observe(x);
-      detach();
-      return w;
-    } else {
-      return observeForward(x);
-    }
+    graft(true);
+    auto w <- delay!.observe(x);
+    detach();
+    return w;
   }
 
   /**
@@ -153,14 +137,10 @@ abstract class Distribution<Value> {
    * giving the log pdf (or pmf) of that variate under the distribution.
    */
   function observeWithDowndate(x:Value) -> Real {
-    graft(false);
-    if delay? {
-      auto w <- delay!.observeWithDowndate(x);
-      detach();
-      return w;
-    } else {
-      return observeForward(x);
-    }
+    graft(true);
+    auto w <- delay!.observeWithDowndate(x);
+    detach();
+    return w;
   }
 
   /**
@@ -305,6 +285,7 @@ abstract class Distribution<Value> {
    */
   function detach() {
     assert delay?;
+    delay!.realize();
     delay <- nil;
   }
 
