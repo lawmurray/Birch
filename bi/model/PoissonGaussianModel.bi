@@ -21,6 +21,6 @@ class PoissonGaussianModel < StateSpaceModel<PoissonGaussianParameter,
       θ:PoissonGaussianParameter) -> Event {
     z:Random<Real>;
     z ~ Gaussian(θ.b*x, θ.σ2_y);
-    y ~ Poisson(exp(z));
+    y ~ Poisson(exp(0.1*z));
   }
 }
