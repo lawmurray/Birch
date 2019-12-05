@@ -1,0 +1,14 @@
+{
+  "model": {
+    "class": "PoissonGaussianModel"
+  },
+  "filter": {
+    "nsteps": 100,
+    "nparticles": 64
+  },
+  "sampler": {
+    "nsamples": 10
+  },
+  "input": "input/poisson_gaussian.json",
+  "output": "output/poisson_gaussian.json"
+}

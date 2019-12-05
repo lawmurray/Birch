@@ -7,6 +7,7 @@
       "bi/model/LinearGaussianModel.bi",
       "bi/model/LinearRegressionModel.bi",
       "bi/model/MixedGaussianModel.bi",
+      "bi/model/PoissonGaussianModel.bi",
       "bi/model/SIRModel.bi",
       "bi/model/TestModel.bi"
     ],
@@ -18,10 +19,12 @@
       "config/linear_gaussian.json",
       "config/linear_regression.json",
       "config/mixed_gaussian.json",
+      "config/poisson_gaussian.json",
       "config/sir.json",
       "input/bike_share.json",
       "input/linear_gaussian.json",
       "input/mixed_gaussian.json",
+      "input/poisson_gaussian.json",
       "input/russian_influenza.json"
     ]
   }
