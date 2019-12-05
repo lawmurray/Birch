@@ -9,19 +9,31 @@ final class DelayPoisson(future:Integer?, futureUpdate:Boolean,
   auto λ <- λ;
 
   function simulate() -> Integer {
-    if value? {
-      return value!;
-    } else {
-      return simulate_poisson(λ);
-    }
-  }
-  
-  function logpdf(x:Integer) -> Real {
-    return logpdf_poisson(x, λ);
+    return simulate_poisson(λ.value());
   }
 
-  function logpdf(x:Expression<Integer>) -> Expression<Real>? {
-    return logpdf_poisson(x, λ);
+  function simulatePilot() -> Integer {
+    return simulate_poisson(λ.pilot());
+  }
+
+  function simulatePropose() -> Integer {
+    return simulate_poisson(λ.propose());
+  }
+
+  function logpdf(x:Integer) -> Real {
+    return logpdf_poisson(x, λ.value());
+  }
+  
+  function logpdfPilot(x:Integer) -> Real {
+    return logpdf_poisson(x, λ.pilot());
+  }
+
+  function logpdfPropose(x:Integer) -> Real {
+    return logpdf_poisson(x, λ.propose());
+  }
+
+  function lazy(x:Expression<Integer>) -> Expression<Real>? {
+    return lazy_poisson(x, λ);
   }
 
   function cdf(x:Integer) -> Real? {

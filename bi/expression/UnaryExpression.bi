@@ -12,49 +12,77 @@ abstract class UnaryExpression<Argument,Value>(single:Expression<Argument>) <
   single:Expression<Argument> <- single;
 
   /**
-   * Memoized value.
+   * Final value.
    */
   x:Value?;
 
   /**
-   * Assigned value.
+   * Piloted value.
    */
-  assigned:Value?;
+  x':Value?;
+  
+  /**
+   * Proposed value.
+   */
+  x'':Value?;
 
   operator <- x:Value {
-    assigned <- x;
+    assert !x'?;
+    assert !x''?;
+    this.x <- x;
   }
 
   final function value() -> Value {
-    if assigned? {
-      return assigned!;
-    } else {
-      if !x? {
-        x <- doValue(single.value());
-      }
+    if !x? {
+      x <- doValue(single.value());
+      x' <- nil;
+      x'' <- nil;
+    }
+    return x!;
+  }
+  
+  final function pilot() -> Value {
+    if x? {
       return x!;
+    } else {
+      if !x'? {
+        x' <- doValue(single.pilot());
+      }
+      return x'!;
     }
   }
   
-  final function grad(d:Value) -> Boolean {
-    if assigned? {
+  final function propose() -> Value {
+    if x? {
+      return x!;
+    } else {
+      if !x''? {
+        x'' <- doValue(single.propose());
+      }
+      return x''!;
+    }
+  }
+  
+  final function gradPilot(d:Value) -> Boolean {
+    if x? {
       return false;
     } else {
-      return single.grad(doGradient(d, single.value()));
+      assert x'?;
+      return single.gradPilot(doGradient(d, single.pilot()));
     }
   }
 
-  final function propose() -> Value {
-    if assigned? {
-      return assigned!;
+  final function gradPropose(d:Value) -> Boolean {
+    if x? {
+      return false;
     } else {
-      x <- doValue(single.propose());
-      return x!;
+      assert x''?;
+      return single.gradPropose(doGradient(d, single.propose()));
     }
   }
   
   final function ratio() -> Real {
-    if assigned? {
+    if x? {
       return 0.0;
     } else {
       return single.ratio();
@@ -62,14 +90,32 @@ abstract class UnaryExpression<Argument,Value>(single:Expression<Argument>) <
   }
   
   final function accept() {
-    if !assigned? {
+    if x? {
+      // nothing to do
+    } else {
+      x' <- x'';
+      x'' <- nil;
       single.accept();
     }
   }
 
   final function reject() {
-    if !assigned? {
+    if x? {
+      // nothing to do
+    } else {
+      x'' <- nil;
       single.reject();
+    }
+  }
+  
+  final function clamp() {
+    if x? {
+      // nothing to do
+    } else {
+      x <- x';
+      x' <- nil;
+      x'' <- nil;
+      single.clamp();
     }
   }
   

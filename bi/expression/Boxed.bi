@@ -14,13 +14,21 @@ final class Boxed<Value> < Expression<Value> {
   function value() -> Value {
     return x;
   }
-
-  function grad(d:Value) -> Boolean {
-    return false;
+  
+  function pilot() -> Value {
+    return x;
   }
 
   function propose() -> Value {
     return x;
+  }
+
+  function gradPilot(d:Value) -> Boolean {
+    return false;
+  }
+
+  function gradPropose(d:Value) -> Boolean {
+    return false;
   }
 
   final function ratio() -> Real {
@@ -32,6 +40,10 @@ final class Boxed<Value> < Expression<Value> {
   }
 
   final function reject() {
+    //
+  }
+  
+  final function clamp() {
     //
   }
 }

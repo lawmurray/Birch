@@ -2,6 +2,23 @@
  * Abstract lazy expression.
  *
  * - Value: Value type.
+ *
+ * An expression can maintain up to three values at any one time:
+ *
+ * - a *final* value, 
+ * - a *pilot* value,
+ * - a *proposal* value.
+ *
+ * The final value is set by assignment, implicit conversion to the Value
+ * type, explicit conversion to the Value type using `value()`, or final
+ * acceptance of a proposed value using `clamp()`. Once set, the other values
+ * are irrelevant, and the expression behaves as though a Boxed value.
+ *
+ * The pilot value is set using `pilot()` function. It is temporary, and used
+ * when a Markov kernel may be applied to later update the value. The
+ * proposal value is used during the computation of that Markov kernel. After
+ * one or more applications of Markov kernels, the pilot value can be locked
+ * in as the final value with `clamp()`.
  */
 abstract class Expression<Value> {  
   /**
@@ -20,13 +37,23 @@ abstract class Expression<Value> {
   }
 
   /**
-   * Compute value.
+   * Value computation.
    */
   abstract function value() -> Value;
 
   /**
+   * Pilot value computation.
+   */
+  abstract function pilot() -> Value;
+
+  /**
+   * Proposal value computation.
+   */
+  abstract function propose() -> Value;
+
+  /**
    * Compute gradients of the expression with respect to all Random objects,
-   * at the current value.
+   * at the pilot value.
    *
    * - d: Upstream gradient. For an initial call, this should be the unit for
    *     the given type, e.g. 1.0, 1, true, a vector of ones, or the identity
@@ -48,13 +75,15 @@ abstract class Expression<Value> {
    * the computation. The Random object that encodes $x_0$ keeps the final
    * result.
    */
-  abstract function grad(d:Value) -> Boolean;
+  abstract function gradPilot(d:Value) -> Boolean;
 
   /**
-   * Propose a new value. This moves the existing value and any gradient at
-   * that value to the alternative slot, and computes a new value.
+   * Compute gradients of the expression with respect to all Random objects,
+   * at the proposal value.
+   *
+   * See also: `gradPilot()`.
    */
-  abstract function propose() -> Value;
+  abstract function gradPropose(d:Value) -> Boolean;
 
   /**
    * Sum contributions to the logarithm of the acceptance ratio.
@@ -72,14 +101,21 @@ abstract class Expression<Value> {
   abstract function ratio() -> Real;
 
   /**
-   * Accept the proposal.
+   * Accept the proposal value. The pilot value is set to the proposal
+   * value, and the proposal value discarded.
    */
   abstract function accept();
   
   /**
-   * Reject the proposal.
+   * Reject the proposal value. The pilot value is preserved and the proposal
+   * value discarded.
    */
   abstract function reject();
+  
+  /**
+   * Set the final value to the pilot value. The pilot value is discarded.
+   */
+  abstract function clamp();
 
   /**
    * If this expression is grafted onto the delayed sampling graph, get the

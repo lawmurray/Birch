@@ -10,35 +10,47 @@ final class Random<Value> < Expression<Value> {
   dist:Distribution<Value>?;
 
   /**
-   * Value.
+   * Final value.
    */
   x:Value?;
-    
-  /**
-   * Gradient at the value.
-   */
-  dfdx:Value?;
   
   /**
-   * Alternative value. This is used when proposing a move.
+   * Piloted value.
    */
   x':Value?;
   
   /**
-   * Gradient at the alternative value.
+   * Gradient at the piloted value.
    */
   dfdx':Value?;
   
   /**
-   * Logarithm of the prior density (mass) of the value.
+   * Proposed value.
    */
-  p:Real?;
+  x'':Value?;
+  
+  /**
+   * Gradient at the proposed value.
+   */
+  dfdx'':Value?;
+  
+  /**
+   * Lazy log-pdf function.
+   */
+  p:Expression<Real>?;
+    
+  /**
+   * Has the contribution to the acceptance ratio been counted?
+   */
+  ratioIncluded:Boolean <- false;
 
   /**
    * Value assignment.
    */
   operator <- x:Value {
-    assert !hasDistribution();
+    assert !dist?;
+    assert !x'?;
+    assert !x''?;
     this.x <- x;
   }
 
@@ -46,7 +58,9 @@ final class Random<Value> < Expression<Value> {
    * Optional value assignment.
    */
   operator <- x:Value? {
-    assert !hasDistribution();
+    assert !dist?;
+    assert !x'?;
+    assert !x''?;
     this.x <- x;
   }
 
@@ -65,89 +79,137 @@ final class Random<Value> < Expression<Value> {
   }
 
   function value() -> Value {
+    assert !x'?;
+    assert !x''?;
     if !x? {
       x <- dist!.value();
-      p <- dist!.logpdf(x!);
     }
     return x!;
   }
-  
-  function grad(d:Value) -> Boolean {
-    assert x?;
-    if !dfdx? {
-      /* first time this has been encountered in the gradient computation,
-       * propagate into its prior */
-      if dist? {
-        dfdx <- d;
-        auto logpdf <- dist!.logpdf(this);
-        if logpdf? {
-          logpdf!.grad(1.0);
-        }
-      }
+
+  function pilot() -> Value {
+    if x? {
+      return x!;
     } else {
-      /* second or subsequent time this has been encountered in the gradient
-       * computation; accumulate */
-      dfdx <- dfdx! + d;
+      assert dist?;
+      if !x'? {
+        x' <- dist!.pilot();
+      }
+      return x'!;
     }
-    return dfdx?;
+  }
+
+  function propose() -> Value {
+    if x? {
+      return x!;
+    } else {
+      assert dist?;
+      assert x'?;
+      if !x''? {
+        x'' <- dist!.propose();  // simulate to recurse through prior but...
+        x'' <- simulate_propose(x'!, dfdx'!);  // ...replace with local proposal
+      }
+      return x''!;
+    }
   }
   
-  function propose() -> Value {
-    assert x?;
-    if !x'? {    
-      /* copy existing value and gradient to the alternative slot */
-      x' <- x;
-      dfdx' <- dfdx;
-      
-      if dist? {    
-        /* propose a new value */
-        x <- dist!.propose();  // simulate to recurse through prior but...
-        x <- simulate_propose(x'!, dfdx'!);  // ...replace with local proposal
-        
-        dfdx <- nil;
+  function gradPilot(d:Value) -> Boolean {
+    if x? {
+      return false;
+    } else {
+      assert dist?;
+      assert x'?;
+      if !dfdx'? {
+        /* first time this has been encountered in the gradient computation,
+         * propagate into its prior */
+        dfdx' <- d;
+        if !p? {
+          p <- dist!.lazy(this);
+        }
+        p!.pilot();
+        p!.gradPilot(1.0);
+      } else {
+        /* second or subsequent time this has been encountered in the gradient
+         * computation; accumulate */
+        dfdx' <- dfdx'! + d;
       }
+      return dfdx'?;
     }
-    assert x?;
-    assert x'?;    
-    return x!;
+  }
+
+  function gradPropose(d:Value) -> Boolean {
+    if x? {
+      return false;
+    } else {
+      assert dist?;
+      assert x''?;
+      if !dfdx''? {
+        /* first time this has been encountered in the gradient computation,
+         * propagate into its prior */
+        dfdx'' <- d;
+        if !p? {
+          p <- dist!.lazy(this);
+        }
+        p!.propose();
+        p!.gradPropose(1.0);
+      } else {
+        /* second or subsequent time this has been encountered in the gradient
+         * computation; accumulate */
+        dfdx'' <- dfdx''! + d;
+      }
+      return dfdx''?;
+    }
   }
   
   function ratio() -> Real {
-    assert x?;
-    assert x'?;    
-    if p? {
-      /* first time this has been encountered; finalize acceptance ratio */
-      auto α <- dist!.logpdf(x!) - p!;
-      p <- nil;
-      α <- α + logpdf_propose(x'!, x!, dfdx!);
-      α <- α - logpdf_propose(x!, x'!, dfdx'!);
-      α <- α + dist!.logpdf(this)!.ratio();
-      return α;
-    } else {
-      /* second or subsequent time this has been encountered; already
-       * included */
+    if ratioIncluded || !x'? || !x''? {
       return 0.0;
+    } else {
+      ratioIncluded <- true;
+      if !p? {
+        p <- dist!.lazy(this);
+      }
+      return p!.propose() - p!.pilot() + logpdf_propose(x'!, x''!, dfdx''!) -
+          logpdf_propose(x''!, x'!, dfdx'!) + p!.ratio();
     }
   }
   
   function accept() {
-    assert x?;
-    if x'? {
-      x' <- nil;
-      dfdx' <- nil;
-      dist!.logpdf(this)!.accept();
-      dist <- nil;
+    if x? {
+      // nothing to do
+    } else if x''? {
+      x' <- x'';
+      dfdx' <- dfdx'';
+      x'' <- nil;
+      dfdx'' <- nil;
+      ratioIncluded <- false;
+      p!.accept();
     }
   }
 
   function reject() {
-    assert x?;
-    if x'? {
+    if x? {
+      // nothing to do
+    } else if x''? {
+      x'' <- nil;
+      dfdx'' <- nil;
+      ratioIncluded <- false;
+      p!.reject();
+    }
+  }
+
+  function clamp() {
+    if x? {
+      // nothing to do
+    } else {
       x <- x';
-      dfdx <- dfdx';
       x' <- nil;
       dfdx' <- nil;
-      dist!.logpdf(this)!.reject();
+      x'' <- nil;
+      dfdx'' <- nil;
+      ratioIncluded <- false;      
+      p!.clamp();
+      p <- nil;
       dist <- nil;
     }
   }

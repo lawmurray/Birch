@@ -29,12 +29,15 @@ abstract class Distribution<Value> {
     detach();
     return x;
   }
+
+  function pilot() -> Value {
+    graft(true);
+    return delay!.pilot();
+  }
   
   function propose() -> Value {
     graft(true);
-    auto x <- delay!.propose();
-    detach();
-    return x;
+    return delay!.propose();
   }
 
   /**
@@ -194,9 +197,9 @@ abstract class Distribution<Value> {
    *
    * Return: the log probability density (or mass).
    */
-  function logpdf(x:Expression<Value>) -> Expression<Real>? {
+  function lazy(x:Expression<Value>) -> Expression<Real>? {
     graft(true);
-    return delay!.logpdf(x);
+    return delay!.lazy(x);
   }
 
   /**

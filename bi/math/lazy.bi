@@ -6,7 +6,7 @@
  *
  * Returns: the log probability mass.
  */
-function logpdf_bernoulli(x:Boolean, ρ:Expression<Real>) -> Expression<Real> {
+function lazy_bernoulli(x:Boolean, ρ:Expression<Real>) -> Expression<Real> {
   assert 0.0 <= ρ && ρ <= 1.0;
   if (x) {
     return log(ρ);
@@ -23,7 +23,7 @@ function logpdf_bernoulli(x:Boolean, ρ:Expression<Real>) -> Expression<Real> {
  *
  * Returns: the log probability mass.
  */
-function logpdf_delta(x:Integer, μ:Expression<Integer>) -> Expression<Real> {
+function lazy_delta(x:Integer, μ:Expression<Integer>) -> Expression<Real> {
   if (x == μ) {
     return Boxed(0.0);
   } else {
@@ -40,7 +40,7 @@ function logpdf_delta(x:Integer, μ:Expression<Integer>) -> Expression<Real> {
  *
  * Returns: the log probability mass.
  */
-function logpdf_binomial(x:Integer, n:Expression<Integer>, ρ:Expression<Real>) -> Expression<Real> {
+function lazy_binomial(x:Integer, n:Expression<Integer>, ρ:Expression<Real>) -> Expression<Real> {
   assert 0 <= n;
   assert 0.0 <= ρ && ρ <= 1.0;
 
@@ -66,7 +66,7 @@ function logpdf_binomial(x:Integer, n:Expression<Integer>, ρ:Expression<Real>) 
  *
  * Returns: the log probability mass.
  */
-function logpdf_negative_binomial(x:Integer, k:Expression<Integer>, ρ:Expression<Real>) -> Expression<Real> {
+function lazy_negative_binomial(x:Integer, k:Expression<Integer>, ρ:Expression<Real>) -> Expression<Real> {
   assert 0 < k;
   assert 0.0 <= ρ && ρ <= 1.0;
 
@@ -85,7 +85,7 @@ function logpdf_negative_binomial(x:Integer, k:Expression<Integer>, ρ:Expressio
  *
  * Returns: the log probability mass.
  */
-function logpdf_poisson(x:Expression<Integer>, λ:Expression<Real>) -> Expression<Real> {
+function lazy_poisson(x:Expression<Integer>, λ:Expression<Real>) -> Expression<Real> {
   return x*log(λ) - λ - lgamma(x + 1);
 }
 
@@ -98,7 +98,7 @@ function logpdf_poisson(x:Expression<Integer>, λ:Expression<Real>) -> Expressio
  *
  * Returns: the log probability density.
  */
-function logpdf_uniform(x:Expression<Real>, l:Expression<Real>, u:Expression<Real>) -> Expression<Real> {
+function lazy_uniform(x:Expression<Real>, l:Expression<Real>, u:Expression<Real>) -> Expression<Real> {
   assert l <= u;
 
   if (x >= l && x <= u) {
@@ -116,7 +116,7 @@ function logpdf_uniform(x:Expression<Real>, l:Expression<Real>, u:Expression<Rea
  *
  * Returns: the log probability density.
  */
-function logpdf_exponential(x:Expression<Real>, λ:Expression<Real>) -> Expression<Real> {
+function lazy_exponential(x:Expression<Real>, λ:Expression<Real>) -> Expression<Real> {
   assert 0.0 < λ;
 
   if (x >= 0.0) {
@@ -135,7 +135,7 @@ function logpdf_exponential(x:Expression<Real>, λ:Expression<Real>) -> Expressi
  *
  * Returns: the log probability density.
  */
-function logpdf_weibull(x:Expression<Real>, k:Expression<Real>, λ:Expression<Real>) -> Expression<Real> {
+function lazy_weibull(x:Expression<Real>, k:Expression<Real>, λ:Expression<Real>) -> Expression<Real> {
   assert 0.0 < λ;
 
   if (x >= 0.0) {
@@ -154,7 +154,7 @@ function logpdf_weibull(x:Expression<Real>, k:Expression<Real>, λ:Expression<Re
  *
  * Returns: the log probability density.
  */
-function logpdf_gaussian(x:Expression<Real>, μ:Expression<Real>, σ2:Expression<Real>) -> Expression<Real> {
+function lazy_gaussian(x:Expression<Real>, μ:Expression<Real>, σ2:Expression<Real>) -> Expression<Real> {
   return -0.5*(pow(x - μ, 2.0)/σ2 + log(2.0*π*σ2));
 }
 
@@ -166,7 +166,7 @@ function logpdf_gaussian(x:Expression<Real>, μ:Expression<Real>, σ2:Expression
  *
  * Returns: the log probability density.
  */
-function logpdf_student_t(x:Expression<Real>, k:Expression<Real>) -> Expression<Real> {
+function lazy_student_t(x:Expression<Real>, k:Expression<Real>) -> Expression<Real> {
   assert 0.0 < k;
   auto a <- 0.5*(k + 1.0);
   return lgamma(a) - lgamma(0.5*k) - 0.5*log(π*k) - a*log1p(x*x/k);
@@ -182,10 +182,10 @@ function logpdf_student_t(x:Expression<Real>, k:Expression<Real>) -> Expression<
  *
  * Returns: the log probability density.
  */
-function logpdf_student_t(x:Expression<Real>, k:Expression<Real>, μ:Expression<Real>, σ2:Expression<Real>) -> Expression<Real> {
+function lazy_student_t(x:Expression<Real>, k:Expression<Real>, μ:Expression<Real>, σ2:Expression<Real>) -> Expression<Real> {
   assert 0.0 < k;
   assert 0.0 < σ2;
-  return logpdf_student_t((x - μ)/sqrt(σ2), k) - 0.5*log(σ2);
+  return lazy_student_t((x - μ)/sqrt(σ2), k) - 0.5*log(σ2);
 }
 
 /**
@@ -197,7 +197,7 @@ function logpdf_student_t(x:Expression<Real>, k:Expression<Real>, μ:Expression<
  *
  * Returns: the log probability density.
  */
-function logpdf_beta(x:Expression<Real>, α:Expression<Real>, β:Expression<Real>) -> Expression<Real> {
+function lazy_beta(x:Expression<Real>, α:Expression<Real>, β:Expression<Real>) -> Expression<Real> {
   assert 0.0 < α;
   assert 0.0 < β;
 
@@ -216,7 +216,7 @@ function logpdf_beta(x:Expression<Real>, α:Expression<Real>, β:Expression<Real
  *
  * Return: the log probability density.
  */
-function logpdf_chi_squared(x:Expression<Real>, ν:Expression<Real>) -> Expression<Real> {
+function lazy_chi_squared(x:Expression<Real>, ν:Expression<Real>) -> Expression<Real> {
   assert 0.0 < ν;
   if x > 0.0 || (x >= 0.0 && ν > 1.0) {
     auto k <- 0.5*ν;
@@ -235,7 +235,7 @@ function logpdf_chi_squared(x:Expression<Real>, ν:Expression<Real>) -> Expressi
  *
  * Returns: the log probability density.
  */
-function logpdf_gamma(x:Expression<Real>, k:Expression<Real>, θ:Expression<Real>) -> Expression<Real> {
+function lazy_gamma(x:Expression<Real>, k:Expression<Real>, θ:Expression<Real>) -> Expression<Real> {
   assert 0.0 < k;
   assert 0.0 < θ;
   
@@ -255,7 +255,7 @@ function logpdf_gamma(x:Expression<Real>, k:Expression<Real>, θ:Expression<Real
  *
  * Returns: the log probability density.
  */
-function logpdf_wishart(X:Expression<Real[_,_]>, Ψ:Expression<Real[_,_]>, ν:Expression<Real>) -> Expression<Real> {
+function lazy_wishart(X:Expression<Real[_,_]>, Ψ:Expression<Real[_,_]>, ν:Expression<Real>) -> Expression<Real> {
   assert ν > rows(Ψ) - 1;
   auto p <- rows(Ψ);
   auto C <- llt(Ψ);
@@ -273,7 +273,7 @@ function logpdf_wishart(X:Expression<Real[_,_]>, Ψ:Expression<Real[_,_]>, ν:Ex
  *
  * Returns: the log probability density.
  */
-function logpdf_inverse_gamma(x:Expression<Real>, α:Expression<Real>, β:Expression<Real>) -> Expression<Real> {
+function lazy_inverse_gamma(x:Expression<Real>, α:Expression<Real>, β:Expression<Real>) -> Expression<Real> {
   assert 0.0 < α;
   assert 0.0 < β;
   
@@ -293,7 +293,7 @@ function logpdf_inverse_gamma(x:Expression<Real>, α:Expression<Real>, β:Expres
  *
  * Returns: the log probability density.
  */
-function logpdf_inverse_wishart(X:Expression<Real[_,_]>, Ψ:Expression<Real[_,_]>, ν:Expression<Real>) -> Expression<Real> {
+function lazy_inverse_wishart(X:Expression<Real[_,_]>, Ψ:Expression<Real[_,_]>, ν:Expression<Real>) -> Expression<Real> {
   assert ν > rows(Ψ) - 1;
   auto p <- rows(Ψ);
   auto C <- llt(X);
@@ -312,7 +312,7 @@ function logpdf_inverse_wishart(X:Expression<Real[_,_]>, Ψ:Expression<Real[_,_]
  *
  * Return: the log probability density.
  */
-function logpdf_inverse_gamma_gamma(x:Expression<Real>, k:Expression<Real>, α:Expression<Real>, β:Expression<Real>) -> Expression<Real> {
+function lazy_inverse_gamma_gamma(x:Expression<Real>, k:Expression<Real>, α:Expression<Real>, β:Expression<Real>) -> Expression<Real> {
   assert 0.0 < k;
   assert 0.0 < α;
   assert 0.0 < β;
@@ -335,9 +335,9 @@ function logpdf_inverse_gamma_gamma(x:Expression<Real>, k:Expression<Real>, α:E
  *
  * Returns: the log probability density.
  */
-function logpdf_normal_inverse_gamma(x:Expression<Real>, μ:Expression<Real>, a2:Expression<Real>, α:Expression<Real>,
+function lazy_normal_inverse_gamma(x:Expression<Real>, μ:Expression<Real>, a2:Expression<Real>, α:Expression<Real>,
     β:Expression<Real>) -> Expression<Real> {
-  return logpdf_student_t(x, 2.0*α, μ, a2*β/α);
+  return lazy_student_t(x, 2.0*α, μ, a2*β/α);
 }
 
 /**
@@ -350,7 +350,7 @@ function logpdf_normal_inverse_gamma(x:Expression<Real>, μ:Expression<Real>, a2
  *
  * Returns: the log probability mass.
  */
-function logpdf_beta_binomial(x:Integer, n:Expression<Integer>,
+function lazy_beta_binomial(x:Integer, n:Expression<Integer>,
     α:Expression<Real>, β:Expression<Real>) -> Expression<Real> {
   assert 0 <= n;
   assert 0.0 < α;
@@ -373,7 +373,7 @@ function logpdf_beta_binomial(x:Integer, n:Expression<Integer>,
  *
  * Returns: the log probability mass.
  */
-function logpdf_beta_negative_binomial(x:Integer, k:Expression<Integer>, α:Expression<Real>, β:Expression<Real>) -> Expression<Real> {
+function lazy_beta_negative_binomial(x:Integer, k:Expression<Integer>, α:Expression<Real>, β:Expression<Real>) -> Expression<Real> {
   assert 0.0 < α;
   assert 0.0 < β;
 
@@ -393,12 +393,12 @@ function logpdf_beta_negative_binomial(x:Integer, k:Expression<Integer>, α:Expr
  *
  * Returns: the log probability mass.
  */
-function logpdf_gamma_poisson(x:Integer, k:Expression<Integer>, θ:Expression<Real>) -> Expression<Real> {
+function lazy_gamma_poisson(x:Integer, k:Expression<Integer>, θ:Expression<Real>) -> Expression<Real> {
   assert 0.0 < k;
   assert 0.0 < θ;
   assert k == floor(k);
 
-  return logpdf_negative_binomial(x, k, 1.0/(θ + 1.0));
+  return lazy_negative_binomial(x, k, 1.0/(θ + 1.0));
 }
 
 /**
@@ -410,7 +410,7 @@ function logpdf_gamma_poisson(x:Integer, k:Expression<Integer>, θ:Expression<Re
  *
  * Return: the log probability density.
  */
-function logpdf_lomax(x:Expression<Real>, λ:Expression<Real>, α:Expression<Real>) -> Expression<Real> {
+function lazy_lomax(x:Expression<Real>, λ:Expression<Real>, α:Expression<Real>) -> Expression<Real> {
   assert 0.0 < λ;
   assert 0.0 < α;
   if x >= 0.0 {
@@ -431,9 +431,9 @@ function logpdf_lomax(x:Expression<Real>, λ:Expression<Real>, α:Expression<Rea
  *
  * Returns: the log probability density.
  */
-function logpdf_normal_inverse_gamma_gaussian(x:Expression<Real>, μ:Expression<Real>, a2:Expression<Real>,
+function lazy_normal_inverse_gamma_gaussian(x:Expression<Real>, μ:Expression<Real>, a2:Expression<Real>,
     α:Expression<Real>, β:Expression<Real>) -> Expression<Real> {
-  return logpdf_student_t(x, 2.0*α, μ, (β/α)*(1.0 + a2));
+  return lazy_student_t(x, 2.0*α, μ, (β/α)*(1.0 + a2));
 }
 
 /**
@@ -450,9 +450,9 @@ function logpdf_normal_inverse_gamma_gaussian(x:Expression<Real>, μ:Expression<
  *
  * Returns: the log probability density.
  */
-function logpdf_linear_normal_inverse_gamma_gaussian(x:Expression<Real>, a:Expression<Real>,
+function lazy_linear_normal_inverse_gamma_gaussian(x:Expression<Real>, a:Expression<Real>,
     μ:Expression<Real>, a2:Expression<Real>, c:Expression<Real>, α:Expression<Real>, β:Expression<Real>) -> Expression<Real> {
-  return logpdf_student_t(x, 2.0*α, a*μ + c, (β/α)*(1.0 + a*a*a2));
+  return lazy_student_t(x, 2.0*α, a*μ + c, (β/α)*(1.0 + a*a*a2));
 }
 
 /**
@@ -464,7 +464,7 @@ function logpdf_linear_normal_inverse_gamma_gaussian(x:Expression<Real>, a:Expre
  *
  * Returns: the log probability density.
  */
-function logpdf_multivariate_gaussian(x:Expression<Real[_]>, μ:Expression<Real[_]>, Σ:Expression<Real[_,_]>) ->
+function lazy_multivariate_gaussian(x:Expression<Real[_]>, μ:Expression<Real[_]>, Σ:Expression<Real[_,_]>) ->
     Real {
   auto D <- length(μ);
   auto C <- llt(Σ);
@@ -481,7 +481,7 @@ function logpdf_multivariate_gaussian(x:Expression<Real[_]>, μ:Expression<Real[
  *
  * Returns: the log probability density.
  */
-function logpdf_multivariate_gaussian(x:Expression<Real[_]>, μ:Expression<Real[_]>, σ2:Expression<Real>) -> Expression<Real> {
+function lazy_multivariate_gaussian(x:Expression<Real[_]>, μ:Expression<Real[_]>, σ2:Expression<Real>) -> Expression<Real> {
   auto D <- length(μ);
   return -0.5*(dot(x - μ)/σ2 + D*log(2.0*π*σ2));
 }
@@ -497,9 +497,9 @@ function logpdf_multivariate_gaussian(x:Expression<Real[_]>, μ:Expression<Real[
  *
  * Returns: the log probability density.
  */
-function logpdf_multivariate_normal_inverse_gamma(x:Expression<Real[_]>, ν:Expression<Real[_]>,
+function lazy_multivariate_normal_inverse_gamma(x:Expression<Real[_]>, ν:Expression<Real[_]>,
     Λ:Expression<Real[_,_]>, α:Expression<Real>, β:Expression<Real>) -> Expression<Real> {
-  ///@todo return logpdf_multivariate_student_t(x, 2.0*α, solve(Λ, ν), (β/α)*inv(Λ));
+  ///@todo return lazy_multivariate_student_t(x, 2.0*α, solve(Λ, ν), (β/α)*inv(Λ));
 }
 
 /**
@@ -514,11 +514,11 @@ function logpdf_multivariate_normal_inverse_gamma(x:Expression<Real[_]>, ν:Expr
  *
  * Returns: the log probability density.
  */
-function logpdf_multivariate_normal_inverse_gamma_multivariate_gaussian(x:Expression<Real[_]>,
+function lazy_multivariate_normal_inverse_gamma_multivariate_gaussian(x:Expression<Real[_]>,
     ν:Expression<Real[_]>, Λ:Expression<Real[_,_]>, α:Expression<Real>, γ:Expression<Real>) -> Expression<Real> {
   auto D <- length(ν);
   auto β <- γ - 0.5*dot(solve(cholesky(Λ), ν));
-  ///@todo return logpdf_multivariate_student_t(x, 2.0*α, solve(Λ, ν), (β/α)*(identity(D) + inv(Λ)));
+  ///@todo return lazy_multivariate_student_t(x, 2.0*α, solve(Λ, ν), (β/α)*(identity(D) + inv(Λ)));
 }
 
 /**
@@ -535,11 +535,11 @@ function logpdf_multivariate_normal_inverse_gamma_multivariate_gaussian(x:Expres
  *
  * Returns: the log probability density.
  */
-function logpdf_linear_multivariate_normal_inverse_gamma_multivariate_gaussian(x:Expression<Real[_]>,
+function lazy_linear_multivariate_normal_inverse_gamma_multivariate_gaussian(x:Expression<Real[_]>,
     A:Expression<Real[_,_]>, ν:Expression<Real[_]>, Λ:Expression<Real[_,_]>, c:Expression<Real[_]>, α:Expression<Real>, γ:Expression<Real>) -> Expression<Real> {
   auto β <- γ - 0.5*dot(solve(cholesky(Λ), ν));
   ///@todo
-  //return logpdf_multivariate_student_t(x, 2.0*α, A*solve(Λ, ν) + c,
+  //return lazy_multivariate_student_t(x, 2.0*α, A*solve(Λ, ν) + c,
   //    (β/α)*(identity(rows(A)) + A*solve(Λ, transpose(A))));
 }
 
@@ -553,7 +553,7 @@ function logpdf_linear_multivariate_normal_inverse_gamma_multivariate_gaussian(x
  *
  * Returns: the log probability density.
  */
-function logpdf_matrix_gaussian(X:Expression<Real[_,_]>, M:Expression<Real[_,_]>, U:Expression<Real[_,_]>,
+function lazy_matrix_gaussian(X:Expression<Real[_,_]>, M:Expression<Real[_,_]>, U:Expression<Real[_,_]>,
     V:Expression<Real[_,_]>) -> Expression<Real> {
   auto n <- rows(M);
   auto p <- columns(M);
@@ -574,7 +574,7 @@ function logpdf_matrix_gaussian(X:Expression<Real[_,_]>, M:Expression<Real[_,_]>
  *
  * Returns: the log probability density.
  */
-function logpdf_matrix_gaussian(X:Expression<Real[_,_]>, M:Expression<Real[_,_]>, U:Expression<Real[_,_]>,
+function lazy_matrix_gaussian(X:Expression<Real[_,_]>, M:Expression<Real[_,_]>, U:Expression<Real[_,_]>,
     σ2:Expression<Real[_]>) -> Expression<Real> {
   auto n <- rows(M);
   auto p <- columns(M);
@@ -593,7 +593,7 @@ function logpdf_matrix_gaussian(X:Expression<Real[_,_]>, M:Expression<Real[_,_]>
  *
  * Returns: the log probability density.
  */
-function logpdf_matrix_gaussian(X:Expression<Real[_,_]>, M:Expression<Real[_,_]>, V:Expression<Real[_,_]>) ->
+function lazy_matrix_gaussian(X:Expression<Real[_,_]>, M:Expression<Real[_,_]>, V:Expression<Real[_,_]>) ->
     Real {
   auto n <- rows(M);
   auto p <- columns(M);
@@ -611,7 +611,7 @@ function logpdf_matrix_gaussian(X:Expression<Real[_,_]>, M:Expression<Real[_,_]>
  *
  * Returns: the log probability density.
  */
-function logpdf_matrix_gaussian(X:Expression<Real[_,_]>, M:Expression<Real[_,_]>, σ2:Expression<Real[_]>) ->
+function lazy_matrix_gaussian(X:Expression<Real[_,_]>, M:Expression<Real[_,_]>, σ2:Expression<Real[_]>) ->
     Real {
   auto n <- rows(M);
   auto p <- columns(M);
@@ -630,12 +630,12 @@ function logpdf_matrix_gaussian(X:Expression<Real[_,_]>, M:Expression<Real[_,_]>
  *
  * Returns: the log probability density.
  */
-function logpdf_matrix_normal_inverse_gamma(X:Expression<Real[_,_]>, N:Expression<Real[_,_]>, Λ:Expression<Real[_,_]>,
+function lazy_matrix_normal_inverse_gamma(X:Expression<Real[_,_]>, N:Expression<Real[_,_]>, Λ:Expression<Real[_,_]>,
     α:Expression<Real>, β:Expression<Real[_]>) -> Expression<Real> {
   auto M <- solve(Λ, N);
   auto Σ <- inv(Λ);
   ///@todo
-  //return logpdf_matrix_student_t(X, 2.0*α, M, Σ, β/α);
+  //return lazy_matrix_student_t(X, 2.0*α, M, Σ, β/α);
 }
 
 /**
@@ -649,13 +649,13 @@ function logpdf_matrix_normal_inverse_gamma(X:Expression<Real[_,_]>, N:Expressio
  *
  * Returns: the log probability density.
  */
-function logpdf_matrix_normal_inverse_gamma_matrix_gaussian(X:Expression<Real[_,_]>,
+function lazy_matrix_normal_inverse_gamma_matrix_gaussian(X:Expression<Real[_,_]>,
     N:Expression<Real[_,_]>, Λ:Expression<Real[_,_]>, α:Expression<Real>, γ:Expression<Real[_]>) -> Expression<Real> {
   auto M <- solve(Λ, N);
   auto Σ <- identity(rows(M)) + inv(Λ);
   auto β <- γ - 0.5*diagonal(transpose(M)*N);
   ///@todo
-  //return logpdf_matrix_student_t(X, 2.0*α, M, Σ, β/α);
+  //return lazy_matrix_student_t(X, 2.0*α, M, Σ, β/α);
 }
 
 /**
@@ -671,14 +671,14 @@ function logpdf_matrix_normal_inverse_gamma_matrix_gaussian(X:Expression<Real[_,
  *
  * Returns: the log probability density.
  */
-function logpdf_linear_matrix_normal_inverse_gamma_matrix_gaussian(
+function lazy_linear_matrix_normal_inverse_gamma_matrix_gaussian(
     X:Expression<Real[_,_]>, A:Expression<Real[_,_]>, N:Expression<Real[_,_]>, Λ:Expression<Real[_,_]>, C:Expression<Real[_,_]>, α:Expression<Real>,
     γ:Expression<Real[_]>) -> Expression<Real> {
   auto M <- solve(Λ, N);
   auto β <- γ - 0.5*diagonal(transpose(M)*N);
   auto Σ <- identity(rows(A)) + A*solve(Λ, transpose(A));
   ///@todo
-  //return logpdf_matrix_student_t(X, 2.0*α, A*M + C, Σ, β/α);
+  //return lazy_matrix_student_t(X, 2.0*α, A*M + C, Σ, β/α);
 }
 
 /**
@@ -692,13 +692,13 @@ function logpdf_linear_matrix_normal_inverse_gamma_matrix_gaussian(
  *
  * Returns: the log probability density.
  */
-function logpdf_matrix_normal_inverse_wishart(X:Expression<Real[_,_]>, N:Expression<Real[_,_]>,
+function lazy_matrix_normal_inverse_wishart(X:Expression<Real[_,_]>, N:Expression<Real[_,_]>,
     Λ:Expression<Real[_,_]>,  Ψ:Expression<Real[_,_]>, k:Expression<Real>) -> Expression<Real> {
   auto p <- columns(N);
   auto M <- solve(Λ, N);
   auto Σ <- inv(Λ)/(k - p + 1.0);
   ///@todo
-  //return logpdf_matrix_student_t(X, k - p + 1.0, M, Σ, Ψ);
+  //return lazy_matrix_student_t(X, k - p + 1.0, M, Σ, Ψ);
 }
 
 /**
@@ -712,13 +712,13 @@ function logpdf_matrix_normal_inverse_wishart(X:Expression<Real[_,_]>, N:Express
  *
  * Returns: the log probability density.
  */
-function logpdf_matrix_normal_inverse_wishart_matrix_gaussian(X:Expression<Real[_,_]>,
+function lazy_matrix_normal_inverse_wishart_matrix_gaussian(X:Expression<Real[_,_]>,
     N:Expression<Real[_,_]>, Λ:Expression<Real[_,_]>, Ψ:Expression<Real[_,_]>, k:Expression<Real>) -> Expression<Real> {
   auto p <- columns(N);
   auto M <- solve(Λ, N);
   auto Σ <- (identity(rows(N)) + inv(Λ))/(k - p + 1.0);
   ///@todo
-  //return logpdf_matrix_student_t(X, k - p + 1.0, M, Σ, Ψ);
+  //return lazy_matrix_student_t(X, k - p + 1.0, M, Σ, Ψ);
 }
 
 /**
@@ -735,14 +735,14 @@ function logpdf_matrix_normal_inverse_wishart_matrix_gaussian(X:Expression<Real[
  *
  * Returns: the log probability density.
  */
-function logpdf_linear_matrix_normal_inverse_wishart_matrix_gaussian(
+function lazy_linear_matrix_normal_inverse_wishart_matrix_gaussian(
     X:Expression<Real[_,_]>, A:Expression<Real[_,_]>, N:Expression<Real[_,_]>, Λ:Expression<Real[_,_]>, C:Expression<Real[_,_]>, Ψ:Expression<Real[_,_]>,
     k:Expression<Real>) -> Expression<Real> {
   auto p <- columns(N);
   auto M <- solve(Λ, N);
   auto Σ <- (identity(rows(A)) + A*solve(Λ, transpose(A)))/(k - p + 1.0);
   ///@todo
-  //return logpdf_matrix_student_t(X, k - p + 1.0, A*M + C, Σ, Ψ);
+  //return lazy_matrix_student_t(X, k - p + 1.0, A*M + C, Σ, Ψ);
 }
 
 /**
@@ -756,7 +756,7 @@ function logpdf_linear_matrix_normal_inverse_wishart_matrix_gaussian(
  *
  * Returns: the log probability density.
  */
-function logpdf_multivariate_student_t(x:Expression<Real[_]>, k:Expression<Real>, μ:Expression<Real[_]>, Σ:Expression<Real[_,_]>)
+function lazy_multivariate_student_t(x:Expression<Real[_]>, k:Expression<Real>, μ:Expression<Real[_]>, Σ:Expression<Real[_,_]>)
     -> Expression<Real> {
   auto n <- length(μ);
   auto a <- 0.5*(k + n);
@@ -776,7 +776,7 @@ function logpdf_multivariate_student_t(x:Expression<Real[_]>, k:Expression<Real>
  *
  * Returns: the log probability density.
  */
-function logpdf_multivariate_student_t(x:Expression<Real[_]>, k:Expression<Real>, μ:Expression<Real[_]>,
+function lazy_multivariate_student_t(x:Expression<Real[_]>, k:Expression<Real>, μ:Expression<Real[_]>,
     σ2:Expression<Real>) -> Expression<Real> {
   auto n <- length(μ);
   auto a <- 0.5*(k + n);
@@ -796,7 +796,7 @@ function logpdf_multivariate_student_t(x:Expression<Real[_]>, k:Expression<Real>
  *
  * Returns: the log probability density.
  */
-function logpdf_matrix_student_t(X:Expression<Real[_,_]>, k:Expression<Real>, M:Expression<Real[_,_]>,
+function lazy_matrix_student_t(X:Expression<Real[_,_]>, k:Expression<Real>, M:Expression<Real[_,_]>,
     U:Expression<Real[_,_]>, V:Expression<Real[_,_]>) -> Expression<Real> {
   auto n <- rows(M);
   auto p <- columns(M);
@@ -821,7 +821,7 @@ function logpdf_matrix_student_t(X:Expression<Real[_,_]>, k:Expression<Real>, M:
  *
  * Returns: the log probability density.
  */
-function logpdf_matrix_student_t(X:Expression<Real[_,_]>, k:Expression<Real>, M:Expression<Real[_,_]>,
+function lazy_matrix_student_t(X:Expression<Real[_,_]>, k:Expression<Real>, M:Expression<Real[_,_]>,
     U:Expression<Real[_,_]>, v:Expression<Real[_]>) -> Expression<Real> {
   auto n <- rows(M);
   auto p <- columns(M);

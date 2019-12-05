@@ -45,9 +45,10 @@ class TestLogNormalPoisson < Model {
   }
 
   function backward() -> Real[_] {
+    auto z <- clone<Random<Integer>>(x);
+    x.observe(z.value());
+  
     y:Real[2];
-    /* observe required to trigger a move */
-    x.observe(x.distribution().simulate());
     y[2] <- x.value();
     y[1] <- λ.value();
     return y;

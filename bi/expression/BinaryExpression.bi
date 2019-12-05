@@ -18,50 +18,79 @@ abstract class BinaryExpression<Left,Right,Value>(left:Expression<Left>,
   right:Expression<Right> <- right;
   
   /**
-   * Memoized value.
+   * Final value.
    */
   x:Value?;
-
+  
   /**
-   * Assigned value.
+   * Piloted value.
    */
-  assigned:Value?;
+  x':Value?;
+  
+  /**
+   * Proposed value.
+   */
+  x'':Value?;
 
   final function value() -> Value {
-    if assigned? {
-      return assigned!;
-    } else {
-      if !x? {
-        x <- doValue(left.value(), right.value());
-      }
+    if !x? {
+      x <- doValue(left.value(), right.value());
+    }
+    return x!;
+  }
+
+  final function pilot() -> Value {
+    if x? {
       return x!;
+    } else {
+      if !x'? {
+        x' <- doValue(left.pilot(), right.pilot());
+      }
+      return x'!;
     }
   }
   
-  final function grad(d:Value) -> Boolean {
-    if assigned? {
+  final function propose() -> Value {
+    if x? {
+      return x!;
+    } else {
+      if !x''? {
+        x'' <- doValue(left.propose(), right.propose());
+      }
+      return x''!;
+    }
+  }
+  
+  final function gradPilot(d:Value) -> Boolean {
+    if x? {
       return false;
     } else {
-      auto l <- left.value();
-      auto r <- right.value();
+      assert x'?;
+      auto l <- left.pilot();
+      auto r <- right.pilot();
       dl:Left;
       dr:Right;
       (dl, dr) <- doGradient(d, l, r);
-      return left.grad(dl) || right.grad(dr);
+      return left.gradPilot(dl) || right.gradPilot(dr);
     }
   }
 
-  final function propose() -> Value {
-    if assigned? {
-      return assigned!;
+  final function gradPropose(d:Value) -> Boolean {
+    if x? {
+      return false;
     } else {
-      x <- doValue(left.propose(), right.propose());
-      return x!;
+      assert x'?;
+      auto l <- left.propose();
+      auto r <- right.propose();
+      dl:Left;
+      dr:Right;
+      (dl, dr) <- doGradient(d, l, r);
+      return left.gradPropose(dl) || right.gradPropose(dr);
     }
   }
 
   final function ratio() -> Real {
-    if assigned? {
+    if x? {
       return 0.0;
     } else {
       return left.ratio() + right.ratio();
@@ -69,16 +98,35 @@ abstract class BinaryExpression<Left,Right,Value>(left:Expression<Left>,
   }
   
   final function accept() {
-    if !assigned? {
+    if x? {
+      // nothing to do
+    } else {
+      x' <- x'';
+      x'' <- nil;
       left.accept();
       right.accept();
     }
   }
 
   final function reject() {
-    if !assigned? {
+    if x? {
+      // nothing to do
+    } else {
+      x'' <- nil;
       left.reject();
       right.reject();
+    }
+  }
+  
+  final function clamp() {
+    if x? {
+      // nothing to do
+    } else {
+      x <- x';
+      x' <- nil;
+      x'' <- nil;
+      left.clamp();
+      right.clamp();
     }
   }
 

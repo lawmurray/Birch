@@ -9,10 +9,20 @@
  */
 abstract class DelayValue<Value>(future:Value?, futureUpdate:Boolean) < Delay {
   /**
-   * Realized value.
+   * Final value.
    */
   x:Value?;
-
+  
+  /**
+   * Piloted value.
+   */
+  x':Value?;
+  
+  /**
+   * Proposed value.
+   */
+  x'':Value?;
+   
   /**
    * Future value. This is set for situations where delayed sampling
    * is used, but when ultimately realized, a particular value (this one)
@@ -56,18 +66,35 @@ abstract class DelayValue<Value>(future:Value?, futureUpdate:Boolean) < Delay {
   }
 
   /**
-   * Propose a value for a random variate associated with this node.
+   * Pilot value.
+   */
+  function pilot() -> Value {
+    if x? {
+      return x!;
+    } else {
+      assert !future?;
+      if !x'? {
+        prune();
+        x' <- simulatePilot();
+      }
+      return x'!;
+    }
+  }
+
+  /**
+   * Propose value.
    */
   function propose() -> Value {
-    if !x? {
-      prune();
-      if future? {
-        x <- future!;
-      } else {
-        x <- simulate();
+    if x? {
+      return x!;
+    } else {
+      assert !future?;
+      if !x''? {
+        prune();
+        x'' <- simulatePropose();
       }
+      return x''!;
     }
-    return x!;
   }
 
   /**
@@ -104,8 +131,9 @@ abstract class DelayValue<Value>(future:Value?, futureUpdate:Boolean) < Delay {
 
     prune();
     this.x <- x;
+    this.futureUpdate <- true;
     this.futureMove <- true;
-    return logpdf(x);
+    return logpdfPilot(x);
   }
 
   /**
@@ -122,7 +150,7 @@ abstract class DelayValue<Value>(future:Value?, futureUpdate:Boolean) < Delay {
     this.x <- x;
     this.futureUpdate <- false;
     this.futureMove <- true;
-    return logpdf(x);
+    return logpdfPilot(x);
   }
 
   function realize() {
@@ -145,14 +173,32 @@ abstract class DelayValue<Value>(future:Value?, futureUpdate:Boolean) < Delay {
   }
   
   /**
-   * Simulate a random variate.
+   * Simulate a value.
    *
    * Return: the value.
    */
   abstract function simulate() -> Value;
 
   /**
-   * Observe a random variate.
+   * Simulate a pilot value.
+   *
+   * Return: the value.
+   */
+  function simulatePilot() -> Value {
+    return simulate();
+  }
+
+  /**
+   * Simulate a proposal value.
+   *
+   * Return: the value.
+   */
+  function simulatePropose() -> Value {
+    return simulate();
+  }
+
+  /**
+   * Log-pdf of a value.
    *
    * - x: The value.
    *
@@ -161,13 +207,35 @@ abstract class DelayValue<Value>(future:Value?, futureUpdate:Boolean) < Delay {
   abstract function logpdf(x:Value) -> Real;
 
   /**
+   * Log-pdf of a value given piloted position.
+   *
+   * - x: The value.
+   *
+   * Return: The log likelihood.
+   */
+  function logpdfPilot(x:Value) -> Real {
+    return logpdf(x);
+  }
+
+  /**
+   * Log-pdf of a value given proposed position.
+   *
+   * - x: The value.
+   *
+   * Return: The log likelihood.
+   */
+  function logpdfPropose(x:Value) -> Real {
+    return logpdf(x);
+  }
+
+  /**
    * Lazily observe a random variate, if supported.
    *
    * - x: The value.
    *
    * Return: The log likelihood.
    */
-  function logpdf(x:Expression<Value>) -> Expression<Real>? {
+  function lazy(x:Expression<Value>) -> Expression<Real>? {
     return nil;
   }
 
@@ -193,16 +261,16 @@ abstract class DelayValue<Value>(future:Value?, futureUpdate:Boolean) < Delay {
    * Attempt to move random variates upon which this delayed value depends.
    */
   function move(x:Value) {
-    auto p <- logpdf(Boxed(x));
+    auto p <- lazy(Boxed(x));
     if p? {
       /* have a lazy expression on which we can attempt a move; first
        * evaluate the log-likelihood and its gradient at a pilot position */
-      auto l <- p!.value();
-      if p!.grad(1.0) {
+      auto l <- p!.pilot();
+      if p!.gradPilot(1.0) {
         /* at least one gradient; continue by evaluating the log-likelihood
          * and it gradient at a proposal position */
         auto l' <- p!.propose();
-        if p!.grad(1.0) {
+        if p!.gradPropose(1.0) {
           /* at least one gradient; continue by computing the acceptance
            * ratio for Metropolis--Hastings */
           auto α <- l' - l + p!.ratio();
@@ -218,6 +286,7 @@ abstract class DelayValue<Value>(future:Value?, futureUpdate:Boolean) < Delay {
           assert false;
         }
       }
+      p!.clamp();
     }
   }
   
