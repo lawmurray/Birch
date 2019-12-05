@@ -27,7 +27,7 @@ class ParticleMarginalImportanceSampler < ParticleSampler {
         (x, w, lnormalize[t], ess[t], npropagations[t]) <- f!;
       }
       auto b <- ancestor(w);
-      yield (x[b], 0.0, lnormalize, ess, npropagations);
+      yield (x[b], lnormalize[nsteps + 1], lnormalize, ess, npropagations);
     }
   }
 }
