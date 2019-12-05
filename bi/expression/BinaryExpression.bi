@@ -32,6 +32,12 @@ abstract class BinaryExpression<Left,Right,Value>(left:Expression<Left>,
    */
   x'':Value?;
 
+  operator <- x:Value {
+    assert !x'?;
+    assert !x''?;
+    this.x <- x;
+  }
+
   final function value() -> Value {
     if !x? {
       x <- doValue(left.value(), right.value());
