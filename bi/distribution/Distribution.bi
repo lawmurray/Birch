@@ -37,6 +37,11 @@ abstract class Distribution<Value> {
     assert delay?;
     return delay!.propose();
   }
+  
+  function set(x:Value) {
+    assert delay?;
+    delay!.set(x);
+  }
 
   /**
    * Lazy expression for the logarithm of the probability density (or mass)
@@ -109,26 +114,6 @@ abstract class Distribution<Value> {
     this.future <- future;
     futureUpdate <- false;
     v.dist <- this;
-  }
-
-  /**
-   * Realize a value for a random variate associated with the distribution,
-   * updating the delayed sampling graph accordingly.
-   */
-  function set(x:Value) -> Value {
-    graft(true);
-    delay!.set(x);
-    return x;
-  }
-
-  /**
-   * Realize a value for a random variate associated with the distribution,
-   * downdating the delayed sampling graph accordingly.
-   */
-  function setWithDowndate(x:Value) -> Value {
-    graft(true);
-    delay!.setWithDowndate(x);
-    return x;
   }
   
   /**
@@ -283,7 +268,7 @@ abstract class Distribution<Value> {
    * - child: The delayed sampling node that initiated the graft.
    */
   final function graft(child:Delay) {
-    if delay? && delay!.child? && delay!.child! == child {
+    if delay? && delay!.child == child {
       // occurs when a Random appears more than once in an expression, don't
       // prune or graft again
     } else {

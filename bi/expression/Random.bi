@@ -207,9 +207,12 @@ final class Random<Value> < Expression<Value> {
       dfdx' <- nil;
       x'' <- nil;
       dfdx'' <- nil;
-      ratioIncluded <- false;      
+      ratioIncluded <- false;
+      
       p!.clamp();
       p <- nil;
+      
+      dist!.set(x!);
       dist <- nil;
     }
   }

@@ -83,5 +83,6 @@ abstract class DelayMove<Base>(future:Value?, futureUpdate:Boolean) <
     if futureMove {
       move(x!);
     }
+    p <- nil;
   }
 }

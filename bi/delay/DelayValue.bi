@@ -88,27 +88,15 @@ abstract class DelayValue<Value>(future:Value?, futureUpdate:Boolean) < Delay {
       return x''!;
     }
   }
-
+  
   /**
-   * Set a value for a random variate associated with this node.
+   * Set value and detach.
    */
   function set(x:Value) {
     assert !this.x?;
     assert !this.future?;
-    prune();
     this.x <- x;
-  }
-
-  /**
-   * Set a value for a random variate associated with this node,
-   * downdating the delayed sampling graph accordingly.
-   */
-  function setWithDowndate(x:Value) {
-    assert !this.x?;
-    assert !this.future?;
-    prune();
-    this.x <- x;
-    this.futureUpdate <- false;
+    this.child <- nil;
   }
   
   /**
