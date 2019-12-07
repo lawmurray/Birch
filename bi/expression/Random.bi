@@ -215,7 +215,11 @@ final class Random<Value> < Expression<Value> {
   }
 
   function graft(child:Delay) {
-    dist!.graft(child);
+    if x? {
+      // nothing to do
+    } else {
+      dist!.graft(child);
+    }
   }
 
   /**
@@ -472,7 +476,7 @@ final class Random<Value> < Expression<Value> {
 }
 
 function simulate_propose(x:Real, d:Real) -> Real {
-  return simulate_gaussian(x + 0.1*d, 0.2);
+  return simulate_gaussian(x + 0.5*d, 1.0);
 }
 
 function simulate_propose(x:Real[_], d:Real[_]) -> Real[_] {
@@ -496,7 +500,7 @@ function simulate_propose(x:Boolean, d:Boolean) -> Boolean {
 }
 
 function logpdf_propose(x':Real, x:Real, d:Real) -> Real {
-  return logpdf_gaussian(x', x + 0.1*d, 0.2);
+  return logpdf_gaussian(x', x + 0.5*d, 1.0);
 }
 
 function logpdf_propose(x':Real[_], x:Real[_], d:Real[_]) -> Real {
