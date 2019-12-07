@@ -36,12 +36,6 @@ abstract class DelayValue<Value>(future:Value?, futureUpdate:Boolean) < Delay {
    * a downdate.)
    */
   futureUpdate:Boolean <- futureUpdate;
-  
-  /**
-   * When assigned, should the value trigger a move? Typically an observe
-   * will trigger a move, while a simulation will not.
-   */
-  futureMove:Boolean <- false;
 
   /**
    * Does the node have a value?
@@ -74,7 +68,6 @@ abstract class DelayValue<Value>(future:Value?, futureUpdate:Boolean) < Delay {
     } else {
       assert !future?;
       if !x'? {
-        prune();
         x' <- simulatePilot();
       }
       return x'!;
@@ -90,7 +83,6 @@ abstract class DelayValue<Value>(future:Value?, futureUpdate:Boolean) < Delay {
     } else {
       assert !future?;
       if !x''? {
-        prune();
         x'' <- simulatePropose();
       }
       return x''!;
@@ -132,8 +124,7 @@ abstract class DelayValue<Value>(future:Value?, futureUpdate:Boolean) < Delay {
     prune();
     this.x <- x;
     this.futureUpdate <- true;
-    this.futureMove <- true;
-    return logpdfPilot(x);
+    return logpdf(x);
   }
 
   /**
@@ -149,8 +140,7 @@ abstract class DelayValue<Value>(future:Value?, futureUpdate:Boolean) < Delay {
     prune();
     this.x <- x;
     this.futureUpdate <- false;
-    this.futureMove <- true;
-    return logpdfPilot(x);
+    return logpdf(x);
   }
 
   function realize() {
@@ -166,9 +156,6 @@ abstract class DelayValue<Value>(future:Value?, futureUpdate:Boolean) < Delay {
       update(x!);
     } else {
       downdate(x!);
-    }
-    if futureMove {
-      move(x!);
     }
   }
   
@@ -207,28 +194,6 @@ abstract class DelayValue<Value>(future:Value?, futureUpdate:Boolean) < Delay {
   abstract function logpdf(x:Value) -> Real;
 
   /**
-   * Log-pdf of a value given piloted position.
-   *
-   * - x: The value.
-   *
-   * Return: The log likelihood.
-   */
-  function logpdfPilot(x:Value) -> Real {
-    return logpdf(x);
-  }
-
-  /**
-   * Log-pdf of a value given proposed position.
-   *
-   * - x: The value.
-   *
-   * Return: The log likelihood.
-   */
-  function logpdfPropose(x:Value) -> Real {
-    return logpdf(x);
-  }
-
-  /**
    * Lazily observe a random variate, if supported.
    *
    * - x: The value.
@@ -255,39 +220,6 @@ abstract class DelayValue<Value>(future:Value?, futureUpdate:Boolean) < Delay {
    */
   function downdate(x:Value) {
     //
-  }
-  
-  /**
-   * Attempt to move random variates upon which this delayed value depends.
-   */
-  function move(x:Value) {
-    auto p <- lazy(Boxed(x));
-    if p? {
-      /* have a lazy expression on which we can attempt a move; first
-       * evaluate the log-likelihood and its gradient at a pilot position */
-      auto l <- p!.pilot();
-      if p!.gradPilot(1.0) {
-        /* at least one gradient; continue by evaluating the log-likelihood
-         * and it gradient at a proposal position */
-        auto l' <- p!.propose();
-        if p!.gradPropose(1.0) {
-          /* at least one gradient; continue by computing the acceptance
-           * ratio for Metropolis--Hastings */
-          auto α <- l' - l + p!.ratio();
-          if log(simulate_uniform(0.0, 1.0)) <= α {
-            /* accept the move */
-            p!.accept();
-          } else {
-            /* reject the move */
-            p!.reject();
-          }
-        } else {
-          /* should not happen, as there were gradients the first time */
-          assert false;
-        }
-      }
-      p!.clamp();
-    }
   }
   
   /**

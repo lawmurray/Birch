@@ -79,11 +79,11 @@ final class Random<Value> < Expression<Value> {
   }
 
   function value() -> Value {
-    assert !x'?;
-    assert !x''?;
     if !x? {
       x <- dist!.value();
     }
+    assert !x'?;
+    assert !x''?;
     return x!;
   }
 
@@ -99,20 +99,6 @@ final class Random<Value> < Expression<Value> {
     }
   }
 
-  function propose() -> Value {
-    if x? {
-      return x!;
-    } else {
-      assert dist?;
-      assert x'?;
-      if !x''? {
-        x'' <- dist!.propose();  // simulate to recurse through prior but...
-        x'' <- simulate_propose(x'!, dfdx'!);  // ...replace with local proposal
-      }
-      return x''!;
-    }
-  }
-  
   function gradPilot(d:Value) -> Boolean {
     if x? {
       return false;
@@ -137,6 +123,20 @@ final class Random<Value> < Expression<Value> {
     }
   }
 
+  function propose() -> Value {
+    if x? {
+      return x!;
+    } else {
+      assert dist?;
+      assert x'?;
+      if !x''? {
+        x'' <- dist!.propose();  // simulate to recurse through prior but...
+        x'' <- simulate_propose(x'!, dfdx'!);  // ...replace with local proposal
+      }
+      return x''!;
+    }
+  }
+  
   function gradPropose(d:Value) -> Boolean {
     if x? {
       return false;
@@ -212,6 +212,10 @@ final class Random<Value> < Expression<Value> {
       p <- nil;
       dist <- nil;
     }
+  }
+
+  function graft(child:Delay) {
+    dist!.graft(child);
   }
 
   /**

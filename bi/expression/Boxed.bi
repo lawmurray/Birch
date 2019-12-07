@@ -31,19 +31,23 @@ final class Boxed<Value> < Expression<Value> {
     return false;
   }
 
-  final function ratio() -> Real {
+  function ratio() -> Real {
     return 0.0;
   }
   
-  final function accept() {
+  function accept() {
     //
   }
 
-  final function reject() {
+  function reject() {
     //
   }
   
-  final function clamp() {
+  function clamp() {
+    //
+  }
+
+  function graft(child:Delay) {
     //
   }
 }

@@ -25,19 +25,30 @@ abstract class Distribution<Value> {
 
   function value() -> Value {
     graft(true);
-    auto x <- delay!.value();
-    detach();
-    return x;
+    return delay!.value();
   }
 
   function pilot() -> Value {
-    graft(true);
+    assert delay?;
     return delay!.pilot();
   }
   
   function propose() -> Value {
-    graft(true);
+    assert delay?;
     return delay!.propose();
+  }
+
+  /**
+   * Lazy expression for the logarithm of the probability density (or mass)
+   * function, if supported.
+   *
+   * - x: The value.
+   *
+   * Return: the log probability density (or mass).
+   */
+  function lazy(x:Expression<Value>) -> Expression<Real>? {
+    assert delay?;
+    return delay!.lazy(x);
   }
 
   /**
@@ -107,7 +118,6 @@ abstract class Distribution<Value> {
   function set(x:Value) -> Value {
     graft(true);
     delay!.set(x);
-    detach();
     return x;
   }
 
@@ -118,7 +128,6 @@ abstract class Distribution<Value> {
   function setWithDowndate(x:Value) -> Value {
     graft(true);
     delay!.setWithDowndate(x);
-    detach();
     return x;
   }
   
@@ -130,7 +139,6 @@ abstract class Distribution<Value> {
   function observe(x:Value) -> Real {
     graft(true);
     auto w <- delay!.observe(x);
-    detach();
     return w;
   }
 
@@ -142,7 +150,6 @@ abstract class Distribution<Value> {
   function observeWithDowndate(x:Value) -> Real {
     graft(true);
     auto w <- delay!.observeWithDowndate(x);
-    detach();
     return w;
   }
 
@@ -187,19 +194,6 @@ abstract class Distribution<Value> {
   function logpdf(x:Value) -> Real {
     graft(true);
     return delay!.logpdf(x);
-  }
-
-  /**
-   * Lazily evaluate the logarithm of the probability density (or mass)
-   * function, if supported.
-   *
-   * - x: The value.
-   *
-   * Return: the log probability density (or mass).
-   */
-  function lazy(x:Expression<Value>) -> Expression<Real>? {
-    graft(true);
-    return delay!.lazy(x);
   }
 
   /**
@@ -282,14 +276,20 @@ abstract class Distribution<Value> {
    *   case.
    */
   abstract function graft(force:Boolean);
-  
+
   /**
-   * Detach this from the delayed sampling graph.
+   * Graft this onto the delayed sampling graph for a possible move.
+   *
+   * - child: The delayed sampling node that initiated the graft.
    */
-  function detach() {
-    assert delay?;
-    delay!.realize();
-    delay <- nil;
+  final function graft(child:Delay) {
+    if delay? && delay!.child? && delay!.child! == child {
+      // occurs when a Random appears more than once in an expression, don't
+      // prune or graft again
+    } else {
+      graft(true);
+      delay!.setChild(child);
+    }
   }
 
   function graftGaussian() -> DelayGaussian? {

@@ -118,6 +118,13 @@ abstract class Expression<Value> {
   abstract function clamp();
 
   /**
+   * Graft this expression onto the delayed sampling graph.
+   *
+   * - child: The delayed sampling node that initiated the graft.
+   */
+  abstract function graft(child:Delay);
+
+  /**
    * If this expression is grafted onto the delayed sampling graph, get the
    * node with which it is associated on that graph.
    */

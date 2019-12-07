@@ -2,7 +2,7 @@
  * Delayed Poisson random variate.
  */
 final class DelayPoisson(future:Integer?, futureUpdate:Boolean,
-    λ:Expression<Real>) < DelayDiscrete(future, futureUpdate) {
+    λ:Expression<Real>) < DelayMove<DelayDiscrete>(future, futureUpdate) {
   /**
    * Rate.
    */
@@ -22,14 +22,6 @@ final class DelayPoisson(future:Integer?, futureUpdate:Boolean,
 
   function logpdf(x:Integer) -> Real {
     return logpdf_poisson(x, λ.value());
-  }
-  
-  function logpdfPilot(x:Integer) -> Real {
-    return logpdf_poisson(x, λ.pilot());
-  }
-
-  function logpdfPropose(x:Integer) -> Real {
-    return logpdf_poisson(x, λ.propose());
   }
 
   function lazy(x:Expression<Integer>) -> Expression<Real>? {
@@ -51,7 +43,7 @@ final class DelayPoisson(future:Integer?, futureUpdate:Boolean,
   function write(buffer:Buffer) {
     prune();
     buffer.set("class", "Poisson");
-    buffer.set("λ", λ);
+    buffer.set("λ", λ.value());
   }
 }
 

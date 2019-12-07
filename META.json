@@ -66,6 +66,7 @@
       "bi/delay/DelayMatrixNormalInverseWishart.bi",
       "bi/delay/DelayMatrixNormalInverseGammaMatrixGaussian.bi",
       "bi/delay/DelayMatrixNormalInverseWishartMatrixGaussian.bi",
+      "bi/delay/DelayMove.bi",
       "bi/delay/DelayMultinomial.bi",
       "bi/delay/DelayMultivariateGaussian.bi",
       "bi/delay/DelayMultivariateGaussianMultivariateGaussian.bi",
