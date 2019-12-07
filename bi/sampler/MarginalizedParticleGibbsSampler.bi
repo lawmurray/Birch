@@ -22,7 +22,7 @@ class MarginalizedParticleGibbsSampler < ParticleSampler {
     r:Trace?;
     
     for n in 1..nsamples {
-      auto f <- filter.filter(model, r);
+      auto f <- filter.filter(model, r, false);
       for t in 1..nsteps + 1 {
         f?;
         (x, w, lnormalize[t], ess[t], npropagations[t]) <- f!;

@@ -155,6 +155,8 @@
       "bi/handler/ProposeHandler.bi",
       "bi/handler/RedelayHandler.bi",
       "bi/handler/ReplayHandler.bi",
+      "bi/handler/SkipDelayHandler.bi",
+      "bi/handler/SkipPlayHandler.bi",
       "bi/handler/TraceHandler.bi",
       "bi/handler/UndelayHandler.bi",
       "bi/handler/UnplayHandler.bi",

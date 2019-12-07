@@ -85,8 +85,8 @@ class AliveParticleFilter < ParticleFilter {
   /**
    * Conditional filter.
    */
-  fiber filter(model:Model, reference:Trace?) -> (Model[_], Real[_], Real,
-      Real, Integer) {
+  fiber filter(model:Model, reference:Trace?, alreadyInitialized:Boolean) ->
+      (Model[_], Real[_], Real, Real, Integer) {
     error("conditional filter not yet supported for AliveParticleFilter");
   }
 }

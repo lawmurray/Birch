@@ -19,26 +19,31 @@ class ParticleGibbsSampler < ParticleSampler {
     lnormalize:Real[nsteps + 1];
     ess:Real[nsteps + 1];
     npropagations:Integer[nsteps + 1];
-    r:Trace?;
+    r:Trace?;   // reference trace
+    r':Trace?;  // replay trace for parameters
 
     for n in 1..nsamples {
-      /* Gibbs update of parameters */
       auto m <- clone<Model>(model);
-      if r? {
+      if !r? {
+        /* first iteration, marginalize out parameters to obtain a reasonable
+         * initialization */
+        lnormalize[1] <- delay.handle(m.simulate());
+      } else {
+        /* second and subsequent iterations, Gibbs update of parameters */        
         auto x' <- clone<Model>(model);
         auto r' <- clone<Trace>(r!);
         auto w' <- delay.handle(x'.simulate(), r');
         for t in 1..nsteps {
           w' <- w' + redelay.handle(r', x'.simulate(t));
         }
-        replay.handle(r', m.simulate());
-      } else {
-        play.handle(m.simulate());
+        lnormalize[1] <- replay.handle(r', m.simulate());
       }
+      ess[1] <- 1.0;
+      npropagations[1] <- 1;
 
       /* filter */
-      auto f <- filter.filter(m, r);
-      for t in 1..nsteps + 1 {
+      auto f <- filter.filter(m, r, true);
+      for t in 2..nsteps + 1 {
         f?;
         (x, w, lnormalize[t], ess[t], npropagations[t]) <- f!;
       }

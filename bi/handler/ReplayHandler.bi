@@ -1,5 +1,5 @@
 /**
- * Event handler that applies the *unplay* action to each event.
+ * Event handler that applies the *replay* action to each event.
  *
  * !!! tip
  *     ReplayHandler is thread-safe, and can be used via the singleton

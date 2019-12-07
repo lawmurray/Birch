@@ -104,10 +104,11 @@ class ParticleFilter {
     }
   }
 
-  fiber filter(model:Model, reference:Trace?) -> (Model[_], Real[_], Real, Real, Integer) {
+  fiber filter(model:Model, reference:Trace?, alreadyInitialized:Boolean) ->
+      (Model[_], Real[_], Real, Real, Integer) {
     auto x <- clone<Model>(model, nparticles);  // particles
     auto w <- vector(0.0, nparticles);  // log-weights
-    auto ess <- 0.0;  // effective sample size
+    auto ess <- 1.0*nparticles;  // effective sample size
     auto S <- 0.0;  // logarithm of the sum of weights
     auto W <- 0.0;  // cumulative log normalizing constant estimate
     auto a <- iota(1, nparticles);  // ancestor indices
@@ -127,17 +128,19 @@ class ParticleFilter {
     }
 
     /* initialize and weight */
-    parallel for n in 1..nparticles {
-      if reference? && n == b {
-        w[n] <- replay.handle(reference!, x[n].simulate(), x[n].trace);
-      } else {
-        w[n] <- play.handle(x[n].simulate(), x[n].trace);
+    if !alreadyInitialized {
+      parallel for n in 1..nparticles {
+        if reference? && n == b {
+          w[n] <- replay.handle(reference!, x[n].simulate(), x[n].trace);
+        } else {
+          w[n] <- play.handle(x[n].simulate(), x[n].trace);
+        }
       }
+      (ess, S) <- resample_reduce(w);
+      W <- W + S - log(nparticles);
+      yield (x, w, W, ess, nparticles);
     }
-    (ess, S) <- resample_reduce(w);
-    W <- W + S - log(nparticles);
-    yield (x, w, W, ess, nparticles);
-      
+    
     for t in 1..nsteps! {
       /* ancestor sampling */
       if reference? && ancestor {
