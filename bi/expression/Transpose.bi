@@ -2,7 +2,15 @@
  * Lazy `transpose`.
  */
 final class Transpose<Argument,Value>(x:Expression<Argument>) <
-    UnaryExpression<Argument,Value>(x) {  
+    UnaryExpression<Argument,Value>(x) {
+  function rows() -> Integer {
+    return single.columns();
+  }
+  
+  function columns() -> Integer {
+    return single.rows();
+  }
+    
   function doValue(x:Argument) -> Value {
     return transpose(x);
   }

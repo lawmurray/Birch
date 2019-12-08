@@ -3,6 +3,16 @@
  */
 final class MatrixSubtract<Left,Right,Value>(left:Expression<Left>,
     right:Expression<Right>) < BinaryExpression<Left,Right,Value>(left, right) {  
+  function rows() -> Integer {
+    assert left.rows() == right.rows();
+    return left.rows();
+  }
+  
+  function columns() -> Integer {
+    assert left.rows() == right.rows();
+    return left.columns();
+  }
+    
   function doValue(l:Left, r:Right) -> Value {
     return l - r;
   }
@@ -70,16 +80,18 @@ final class MatrixSubtract<Left,Right,Value>(left:Expression<Left>,
 }
 
 /**
- * Lazy matrix subtrac.
+ * Lazy matrix subtract.
  */
 operator (left:Expression<Real[_,_]> - right:Expression<Real[_,_]>) ->
     MatrixSubtract<Real[_,_],Real[_,_],Real[_,_]> {
+  assert left.rows() == right.rows();
+  assert left.columns() == right.columns();
   m:MatrixSubtract<Real[_,_],Real[_,_],Real[_,_]>(left, right);
   return m;
 }
 
 /**
- * Lazy matrix subtrac.
+ * Lazy matrix subtract.
  */
 operator (left:Real[_,_] - right:Expression<Real[_,_]>) ->
     MatrixSubtract<Real[_,_],Real[_,_],Real[_,_]> {
@@ -87,7 +99,7 @@ operator (left:Real[_,_] - right:Expression<Real[_,_]>) ->
 }
 
 /**
- * Lazy matrix subtrac.
+ * Lazy matrix subtract.
  */
 operator (left:Expression<Real[_,_]> - right:Real[_,_]) ->
     MatrixSubtract<Real[_,_],Real[_,_],Real[_,_]> {

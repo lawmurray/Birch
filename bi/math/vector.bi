@@ -227,6 +227,48 @@ function length(x:Boolean?[_]) -> Integer {
 }
 
 /**
+ * Number of rows when interpreted as a matrix.
+ */
+function rows(x:Real[_]) -> Integer {
+  return length(x);
+}
+
+/**
+ * Number of columns when interpreted as a matrix.
+ */
+function columns(x:Real[_]) -> Integer {
+  return 1;
+}
+
+/**
+ * Number of rows when interpreted as a matrix.
+ */
+function rows(x:Integer[_]) -> Integer {
+  return length(x);
+}
+
+/**
+ * Number of columns when interpreted as a matrix.
+ */
+function columns(x:Integer[_]) -> Integer {
+  return 1;
+}
+
+/**
+ * Number of rows when interpreted as a matrix.
+ */
+function rows(x:Boolean[_]) -> Integer {
+  return length(x);
+}
+
+/**
+ * Number of columns when interpreted as a matrix.
+ */
+function columns(x:Boolean[_]) -> Integer {
+  return 1;
+}
+
+/**
  * Sum of a vector.
  */
 function sum(x:Real[_]) -> Real {

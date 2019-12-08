@@ -37,6 +37,20 @@ abstract class Expression<Value> {
   }
 
   /**
+   * Number of rows in result.
+   */
+  function rows() -> Integer {
+    return 1;
+  }
+  
+  /**
+   * Number of columns in result.
+   */
+  function columns() -> Integer {
+    return 1;
+  }    
+
+  /**
    * Value computation.
    */
   abstract function value() -> Value;

@@ -3,6 +3,11 @@
  */
 final class MultivariateSubtract<Left,Right,Value>(left:Expression<Left>,
     right:Expression<Right>) < BinaryExpression<Left,Right,Value>(left, right) {  
+  function rows() -> Integer {
+    assert left.rows() == right.rows();
+    return left.rows();
+  }
+
   function doValue(l:Left, r:Right) -> Value {
     return l - r;
   }
@@ -55,6 +60,7 @@ final class MultivariateSubtract<Left,Right,Value>(left:Expression<Left>,
  */
 operator (left:Expression<Real[_]> - right:Expression<Real[_]>) ->
     MultivariateSubtract<Real[_],Real[_],Real[_]> {
+  assert left.rows() == right.rows();
   m:MultivariateSubtract<Real[_],Real[_],Real[_]>(left, right);
   return m;
 }

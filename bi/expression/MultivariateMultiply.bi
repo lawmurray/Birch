@@ -3,6 +3,10 @@
  */
 final class MultivariateMultiply<Left,Right,Value>(left:Expression<Left>,
     right:Expression<Right>) < BinaryExpression<Left,Right,Value>(left, right) {  
+  function rows() -> Integer {
+    return left.rows();
+  }
+  
   function doValue(l:Left, r:Right) -> Value {
     return l*r;
   }
@@ -45,6 +49,7 @@ final class MultivariateMultiply<Left,Right,Value>(left:Expression<Left>,
  */
 operator (left:Expression<Real[_,_]>*right:Expression<Real[_]>) ->
     MultivariateMultiply<Real[_,_],Real[_],Real[_]> {
+  assert left.columns() == right.rows();
   m:MultivariateMultiply<Real[_,_],Real[_],Real[_]>(left, right);
   return m;
 }
@@ -63,4 +68,56 @@ operator (left:Real[_,_]*right:Expression<Real[_]>) ->
 operator (left:Expression<Real[_,_]>*right:Real[_]) ->
     MultivariateMultiply<Real[_,_],Real[_],Real[_]> {
   return left*Boxed(right);
+}
+
+/**
+ * Lazy multivariate multiply.
+ */
+operator (left:Expression<Real>*right:Expression<Real[_]>) ->
+    MultivariateMultiply<Real[_,_],Real[_],Real[_]> {
+  m:MultivariateMultiply<Real[_,_],Real[_],Real[_]>(diagonal(left,
+      right.rows()), right);
+  return m;
+}
+
+/**
+ * Lazy multivariate multiply.
+ */
+operator (left:Real*right:Expression<Real[_]>) ->
+    MultivariateMultiply<Real[_,_],Real[_],Real[_]> {
+  return diagonal(Boxed(left), right.rows())*right;
+}
+
+/**
+ * Lazy multivariate multiply.
+ */
+operator (left:Expression<Real>*right:Real[_]) ->
+    MultivariateMultiply<Real[_,_],Real[_],Real[_]> {
+  return diagonal(left, rows(right))*Boxed(right);
+}
+
+/**
+ * Lazy multivariate multiply.
+ */
+operator (left:Expression<Real[_]>*right:Expression<Real>) ->
+    MultivariateMultiply<Real[_,_],Real[_],Real[_]> {
+  m:MultivariateMultiply<Real[_,_],Real[_],Real[_]>(diagonal(right,
+      left.rows()), left);
+  return m;
+}
+
+/**
+ * Lazy multivariate multiply.
+ */
+operator (left:Real[_]*right:Expression<Real>) ->
+    MultivariateMultiply<Real[_,_],Real[_],Real[_]> {
+  return diagonal(right, right.rows())*Boxed(left);
+}
+
+/**
+ * Lazy multivariate multiply.
+ */
+operator (left:Expression<Real[_]>*right:Real) ->
+    MultivariateMultiply<Real[_,_],Real[_],Real[_]> {
+  return diagonal(Boxed(right), left.rows())*left;
 }

@@ -208,3 +208,17 @@ function min(x:Integer16, y:Integer16) -> Integer16 {
   return std::min(x, y);
   }}
 }
+
+/**
+ * Number of rows when interpreted as a matrix.
+ */
+function rows(x:Integer16) -> Integer {
+  return 1;
+}
+
+/**
+ * Number of columns when interpreted as a matrix.
+ */
+function columns(x:Integer16) -> Integer {
+  return 1;
+}

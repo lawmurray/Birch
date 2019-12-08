@@ -11,6 +11,14 @@ final class Boxed<Value> < Expression<Value> {
     this.x <- x;
   }
 
+  function rows() -> Integer {
+    return global.rows(x);
+  }
+
+  function columns() -> Integer {
+    return global.columns(x);
+  }
+
   function value() -> Value {
     return x;
   }

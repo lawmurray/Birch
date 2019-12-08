@@ -333,6 +333,28 @@ function downdate_linear_multivariate_gaussian_multivariate_gaussian(x:Real[_],
 }
 
 /**
+ * Downdate the parameters of a multivariate Gaussian distribution with a 
+ * linear transformation involving a dot product, and a multivariate Gaussian
+ * likelihood.
+ *
+ * - x: The variate.
+ * - a: Scale.
+ * - μ': Posterior mean.
+ * - Σ': Posterior covariance.
+ * - c: Offset.
+ * - s2: Likelihood covariance.
+ *
+ * Returns: the prior hyperparameters `μ` and `Σ`.
+ */
+function downdate_linear_multivariate_gaussian_gaussian(x:Real, a:Real[_],
+    μ':Real[_], Σ':Real[_,_], c:Real, s2:Real) -> (Real[_], Real[_,_]) {
+  auto k <- Σ'*a/(dot(a, Σ'*a) + s2);
+  auto μ <- μ' - k*(x - dot(a, μ') - c);
+  auto Σ <- Σ' + k*transpose(a)*Σ';
+  return (μ', Σ');
+}
+
+/**
  * Downdate the parameters of an inverse-gamma distribution with a linear
  * scaling and Gaussian likelihood.
  *

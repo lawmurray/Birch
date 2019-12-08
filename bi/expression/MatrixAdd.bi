@@ -3,6 +3,16 @@
  */
 final class MatrixAdd<Left,Right,Value>(left:Expression<Left>,
     right:Expression<Right>) < BinaryExpression<Left,Right,Value>(left, right) {  
+  function rows() -> Integer {
+    assert left.rows() == right.rows();
+    return left.rows();
+  }
+  
+  function columns() -> Integer {
+    assert left.rows() == right.rows();
+    return left.columns();
+  }
+    
   function doValue(l:Left, r:Right) -> Value {
     return l + r;
   }
@@ -74,6 +84,8 @@ final class MatrixAdd<Left,Right,Value>(left:Expression<Left>,
  */
 operator (left:Expression<Real[_,_]> + right:Expression<Real[_,_]>) ->
     MatrixAdd<Real[_,_],Real[_,_],Real[_,_]> {
+  assert left.rows() == right.rows();
+  assert left.columns() == right.columns();
   m:MatrixAdd<Real[_,_],Real[_,_],Real[_,_]>(left, right);
   return m;
 }

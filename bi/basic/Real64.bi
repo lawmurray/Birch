@@ -217,3 +217,17 @@ function isnan(x:Real64) -> Boolean {
   return std::isnan(x);
   }}
 }
+
+/**
+ * Number of rows when interpreted as a matrix.
+ */
+function rows(x:Real64) -> Integer {
+  return 1;
+}
+
+/**
+ * Number of columns when interpreted as a matrix.
+ */
+function columns(x:Real64) -> Integer {
+  return 1;
+}
