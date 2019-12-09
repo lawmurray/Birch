@@ -235,6 +235,15 @@ abstract class Expression<Value> {
   function graftLinearGaussian() -> TransformLinear<DelayGaussian>? {
     return nil;
   }
+
+  /*
+   * Attempt to graft this expression onto the delayed sampling graph.
+   *
+   * Return: The node if successful, nil if not.
+   */
+  function graftDotGaussian() -> TransformDot<DelayMultivariateGaussian>? {
+    return nil;
+  }
   
   /*
    * Attempt to graft this expression onto the delayed sampling graph.

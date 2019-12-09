@@ -14,6 +14,10 @@ final class DelayIndependentInverseGamma(future:Real[_]?,
    */
   β:Real[_] <- β;
 
+  function rows() -> Integer {
+    return length(β);
+  }
+
   function simulate() -> Real[_] {
     return transform<Real>(β, @(b:Real) -> Real {
         return simulate_inverse_gamma(α, b); });

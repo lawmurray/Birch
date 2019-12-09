@@ -27,10 +27,10 @@ final class MultivariateAdd<Left,Right,Value>(left:Expression<Left>,
       y!.add(left.value());
     } else if (z <- left.graftMultivariateGaussian())? {
       y <- TransformLinearMultivariate<DelayMultivariateGaussian>(
-          identity(z!.size()), z!, right.value());
+          identity(z!.rows()), z!, right.value());
     } else if (z <- right.graftMultivariateGaussian())? {
       y <- TransformLinearMultivariate<DelayMultivariateGaussian>(
-          identity(z!.size()), z!, left.value());
+          identity(z!.rows()), z!, left.value());
     }
     return y;
   }
@@ -46,10 +46,10 @@ final class MultivariateAdd<Left,Right,Value>(left:Expression<Left>,
       y!.add(left.value());
     } else if (z <- left.graftMultivariateNormalInverseGamma())? {
       y <- TransformLinearMultivariate<DelayMultivariateNormalInverseGamma>(
-          identity(z!.size()), z!, right.value());
+          identity(z!.rows()), z!, right.value());
     } else if (z <- right.graftMultivariateNormalInverseGamma())? {
       y <- TransformLinearMultivariate<DelayMultivariateNormalInverseGamma>(
-          identity(z!.size()), z!, left.value());
+          identity(z!.rows()), z!, left.value());
     }
     return y;
   }

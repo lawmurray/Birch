@@ -44,10 +44,10 @@ final class IdenticalGaussian(μ:Expression<Real[_]>,
             future, futureUpdate, m2!);
       } else if (m3 <- μ.graftLinearMultivariateGaussian())? {
         delay <- DelayLinearMultivariateGaussianMultivariateGaussian(future,
-            futureUpdate, m3!.A, m3!.x, m3!.c, diagonal(σ2.value(), m3!.size()));
+            futureUpdate, m3!.A, m3!.x, m3!.c, diagonal(σ2.value(), m3!.rows()));
       } else if (m4 <- μ.graftMultivariateGaussian())? {
         delay <- DelayMultivariateGaussianMultivariateGaussian(future,
-            futureUpdate, m4!, diagonal(σ2, m4!.size()));
+            futureUpdate, m4!, diagonal(σ2, m4!.rows()));
       } else if (s1 <- σ2.graftInverseGamma())? {
         delay <- DelayMultivariateNormalInverseGamma(future, futureUpdate, μ,
             identity(μ.rows()), s1!);

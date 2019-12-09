@@ -17,6 +17,14 @@ class TransformLinearMatrix<Value>(A:Real[_,_], X:Value, C:Real[_,_]) {
    */
   C:Real[_,_] <- C;
     
+  function rows() -> Integer {
+    return global.rows(A);
+  }
+  
+  function columns() -> Integer {
+    return global.columns(C);
+  }
+    
   function leftMultiply(Y:Real[_,_]) {
     A <- Y*A;
     C <- Y*C;

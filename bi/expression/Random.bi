@@ -77,6 +77,16 @@ final class Random<Value> < Expression<Value> {
   function hasDistribution() -> Boolean {
     return dist?;
   }
+  
+  function rows() -> Integer {
+    assert dist?;
+    return dist!.rows();
+  }
+
+  function columns() -> Integer {
+    assert dist?;
+    return dist!.columns();
+  }
 
   function value() -> Value {
     if !x? {

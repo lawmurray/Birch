@@ -36,9 +36,9 @@ final class IndependentRowMatrixGaussian(M:Expression<Real[_,_]>,
       } else if (m2 <- M.graftMatrixNormalInverseWishart())? && m2!.V == V.getDelay() {
         delay <- DelayMatrixNormalInverseWishartMatrixGaussian(future, futureUpdate, m2!);
       } else if (s1 <- V.graftInverseWishart())? {
-        delay <- DelayMatrixNormalInverseWishart(future, futureUpdate, M, identity(rows(M)), s1!);
+        delay <- DelayMatrixNormalInverseWishart(future, futureUpdate, M, identity(M.rows()), s1!);
       } else if force {
-        delay <- DelayMatrixGaussian(future, futureUpdate, M, identity(rows(M)), V);
+        delay <- DelayMatrixGaussian(future, futureUpdate, M, identity(M.rows()), V);
       }
     }
   }
@@ -48,7 +48,7 @@ final class IndependentRowMatrixGaussian(M:Expression<Real[_,_]>,
       delay!.prune();
     } else {
       delay <- DelayMatrixGaussian(future, futureUpdate, M,
-          identity(rows(M)), V);
+          identity(M.rows()), V);
     }
     return DelayMatrixGaussian?(delay);
   }
@@ -60,7 +60,7 @@ final class IndependentRowMatrixGaussian(M:Expression<Real[_,_]>,
       s1:DelayInverseWishart?;
       if (s1 <- V.graftInverseWishart())? {
         delay <- DelayMatrixNormalInverseWishart(future, futureUpdate, M,
-            identity(rows(M)), s1!);
+            identity(M.rows()), s1!);
       }
     }
     return DelayMatrixNormalInverseWishart?(delay);

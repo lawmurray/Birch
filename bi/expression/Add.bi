@@ -26,6 +26,18 @@ final class Add<Left,Right,Value>(left:Expression<Left>,
     }
     return y;
   }
+
+  function graftDotGaussian() -> TransformDot<DelayMultivariateGaussian>? {
+    y:TransformDot<DelayMultivariateGaussian>?;
+    z:DelayGaussian?;
+    
+    if (y <- left.graftDotGaussian())? {
+      y!.add(right.value());
+    } else if (y <- right.graftDotGaussian())? {
+      y!.add(left.value());
+    }
+    return y;
+  }
   
   function graftLinearNormalInverseGamma() ->
       TransformLinear<DelayNormalInverseGamma>? {

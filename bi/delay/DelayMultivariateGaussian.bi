@@ -14,8 +14,8 @@ class DelayMultivariateGaussian(future:Real[_]?, futureUpdate:Boolean,
    */
   Σ:Expression<Real[_,_]> <- Σ;
 
-  function size() -> Integer {
-    return length(μ);
+  function rows() -> Integer {
+    return μ.rows();
   }
 
   function simulate() -> Real[_] {

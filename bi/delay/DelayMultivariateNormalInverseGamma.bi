@@ -29,7 +29,7 @@ final class DelayMultivariateNormalInverseGamma(future:Real[_]?,
    */
   σ2:DelayInverseGamma& <- σ2;
 
-  function size() -> Integer {
+  function rows() -> Integer {
     return length(ν);
   }
 

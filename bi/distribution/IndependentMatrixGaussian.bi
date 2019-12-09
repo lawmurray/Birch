@@ -36,9 +36,9 @@ final class IndependentMatrixGaussian(M:Expression<Real[_,_]>,
       } else if (m2 <- M.graftMatrixNormalInverseGamma())? && m2!.σ2 == σ2.getDelay() {
         delay <- DelayMatrixNormalInverseGammaMatrixGaussian(future, futureUpdate, m2!);
       } else if (s1 <- σ2.graftIndependentInverseGamma())? {
-        delay <- DelayMatrixNormalInverseGamma(future, futureUpdate, M, identity(rows(M)), s1!);
+        delay <- DelayMatrixNormalInverseGamma(future, futureUpdate, M, identity(M.rows()), s1!);
       } else if force {
-        delay <- DelayMatrixGaussian(future, futureUpdate, M, identity(rows(M)), diagonal(σ2));
+        delay <- DelayMatrixGaussian(future, futureUpdate, M, identity(M.rows()), diagonal(σ2));
       }
     }
   }
@@ -48,7 +48,7 @@ final class IndependentMatrixGaussian(M:Expression<Real[_,_]>,
       delay!.prune();
     } else {
       delay <- DelayMatrixGaussian(future, futureUpdate, M,
-          identity(rows(M)), diagonal(σ2.value()));
+          identity(M.rows()), diagonal(σ2.value()));
     }
     return DelayMatrixGaussian?(delay);
   }
@@ -60,7 +60,7 @@ final class IndependentMatrixGaussian(M:Expression<Real[_,_]>,
       s1:DelayIndependentInverseGamma?;
       if (s1 <- σ2.graftIndependentInverseGamma())? {
         delay <- DelayMatrixNormalInverseGamma(future, futureUpdate, M,
-            identity(rows(M)), s1!);
+            identity(M.rows()), s1!);
       }
     }
     return DelayMatrixNormalInverseGamma?(delay);

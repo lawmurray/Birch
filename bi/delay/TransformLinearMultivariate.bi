@@ -17,8 +17,8 @@ class TransformLinearMultivariate<Value>(A:Real[_,_], x:Value, c:Real[_]) {
    */
   c:Real[_] <- c;
   
-  function size() -> Integer {
-    return length(c);
+  function rows() -> Integer {
+    return global.rows(A);
   }
   
   function leftMultiply(Y:Real[_,_]) {

@@ -22,6 +22,15 @@ final class Divide<Left,Right,Value>(left:Expression<Left>,
     }
     return y;
   }
+
+  function graftDotGaussian() -> TransformDot<DelayMultivariateGaussian>? {
+    y:TransformDot<DelayMultivariateGaussian>?;
+    
+    if (y <- left.graftDotGaussian())? {
+      y!.divide(right.value());
+    }
+    return y;
+  }
   
   function graftLinearNormalInverseGamma() ->
       TransformLinear<DelayNormalInverseGamma>? {

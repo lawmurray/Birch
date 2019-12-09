@@ -23,6 +23,16 @@ abstract class Distribution<Value> {
    */
   delay:DelayValue<Value>?;
 
+  function rows() -> Integer {
+    graft(true);
+    return delay!.rows();
+  }
+  
+  function columns() -> Integer {
+    graft(true);
+    return delay!.columns();
+  }
+
   function value() -> Value {
     graft(true);
     return delay!.value();

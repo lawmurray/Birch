@@ -38,6 +38,20 @@ abstract class DelayValue<Value>(future:Value?, futureUpdate:Boolean) < Delay {
   futureUpdate:Boolean <- futureUpdate;
 
   /**
+   * Number of rows, when interpreted as a matrix.
+   */
+  function rows() -> Integer {
+    return 1;
+  }
+
+  /**
+   * Number of columns, when interpreted as a matrix.
+   */
+  function columns() -> Integer {
+    return 1;
+  }
+
+  /**
    * Does the node have a value?
    */
   function hasValue() -> Boolean {

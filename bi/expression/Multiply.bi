@@ -42,6 +42,17 @@ final class Multiply<Left,Right,Value>(left:Expression<Left>,
     }
     return y;
   }
+
+  function graftDotGaussian() -> TransformDot<DelayMultivariateGaussian>? {
+    y:TransformDot<DelayMultivariateGaussian>?;
+    
+    if (y <- left.graftDotGaussian())? {
+      y!.multiply(right.value());
+    } else if (y <- right.graftDotGaussian())? {
+      y!.multiply(left.value());
+    }
+    return y;
+  }
  
   function graftLinearNormalInverseGamma() ->
       TransformLinear<DelayNormalInverseGamma>? {
