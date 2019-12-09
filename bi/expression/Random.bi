@@ -79,13 +79,21 @@ final class Random<Value> < Expression<Value> {
   }
   
   function rows() -> Integer {
-    assert dist?;
-    return dist!.rows();
+    if x? {
+      return global.rows(x!);
+    } else {
+      assert dist?;
+      return dist!.rows();
+    }
   }
 
   function columns() -> Integer {
-    assert dist?;
-    return dist!.columns();
+    if x? {
+      return global.columns(x!);
+    } else {
+      assert dist?;
+      return dist!.columns();
+    }
   }
 
   function value() -> Value {
