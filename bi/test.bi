@@ -29,6 +29,7 @@ program test(N:Integer <- 10000) {
   code <- code + run_test("linear_gaussian_gaussian", N);
   code <- code + run_test("linear_matrix_normal_inverse_gamma_matrix_gaussian", N);
   code <- code + run_test("linear_matrix_normal_inverse_wishart_matrix_gaussian", N);
+  code <- code + run_test("linear_multivariate_gaussian_gaussian", N);
   code <- code + run_test("linear_multivariate_gaussian_multivariate_gaussian", N);
   code <- code + run_test("linear_multivariate_normal_inverse_gamma_multivariate_gaussian", N);
   code <- code + run_test("linear_normal_inverse_gamma_gaussian", N);
