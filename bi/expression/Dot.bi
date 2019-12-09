@@ -2,7 +2,8 @@
  * Lazy `dot`.
  */
 final class Dot<Left,Right,Value>(left:Expression<Left>,
-    right:Expression<Right>) < BinaryExpression<Left,Right,Value>(left, right) {
+    right:Expression<Right>) < BinaryExpression<Left,Right,Value>(left,
+    right) {
   function doValue(l:Left, r:Right) -> Value {
     return dot(l, r);
   }
@@ -16,9 +17,11 @@ final class Dot<Left,Right,Value>(left:Expression<Left>,
     z:DelayMultivariateGaussian?;
     
     if (y <- right.graftLinearMultivariateGaussian())? {
-      return TransformDot<DelayMultivariateGaussian>(y!.A*left.value(), y!.x, dot(y!.c, left.value()));
+      return TransformDot<DelayMultivariateGaussian>(y!.A*left.value(), y!.x,
+          dot(y!.c, left.value()));
     } else if (y <- left.graftLinearMultivariateGaussian())? {
-      return TransformDot<DelayMultivariateGaussian>(y!.A*right.value(), y!.x, dot(y!.c, right.value()));
+      return TransformDot<DelayMultivariateGaussian>(y!.A*right.value(), y!.x,
+          dot(y!.c, right.value()));
     } else if (z <- right.graftMultivariateGaussian())? {
       return TransformDot<DelayMultivariateGaussian>(left.value(), z!, 0.0);
     } else if (z <- left.graftMultivariateGaussian())? {
