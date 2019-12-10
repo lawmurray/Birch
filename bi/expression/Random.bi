@@ -127,9 +127,6 @@ final class Random<Value> < Expression<Value> {
         /* first time this has been encountered in the gradient computation,
          * propagate into its prior */
         dfdx' <- d;
-        if !p? {
-          p <- dist!.lazy(this);
-        }
         p!.pilot();
         p!.gradPilot(1.0);
       } else {
@@ -149,7 +146,9 @@ final class Random<Value> < Expression<Value> {
       assert x'?;
       if !x''? {
         x'' <- dist!.propose();  // simulate to recurse through prior but...
-        x'' <- simulate_propose(x'!, dfdx'!);  // ...replace with local proposal
+        if dfdx'? {
+          x'' <- simulate_propose(x'!, dfdx'!);  // ...replace with local proposal
+        }
       }
       return x''!;
     }
@@ -161,13 +160,10 @@ final class Random<Value> < Expression<Value> {
     } else {
       assert dist?;
       assert x''?;
-      if !dfdx''? {
+      if dfdx'? && !dfdx''? {
         /* first time this has been encountered in the gradient computation,
          * propagate into its prior */
         dfdx'' <- d;
-        if !p? {
-          p <- dist!.lazy(this);
-        }
         p!.propose();
         p!.gradPropose(1.0);
       } else {
@@ -184,11 +180,12 @@ final class Random<Value> < Expression<Value> {
       return 0.0;
     } else {
       ratioIncluded <- true;
-      if !p? {
-        p <- dist!.lazy(this);
+      auto α <- p!.propose() - p!.pilot() + p!.ratio();
+      if dfdx'? && dfdx''? {
+        α <- α + logpdf_propose(x'!, x''!, dfdx''!) -
+            logpdf_propose(x''!, x'!, dfdx'!);
       }
-      return p!.propose() - p!.pilot() + logpdf_propose(x'!, x''!, dfdx''!) -
-          logpdf_propose(x''!, x'!, dfdx'!) + p!.ratio();
+      return α;
     }
   }
   
@@ -236,10 +233,15 @@ final class Random<Value> < Expression<Value> {
   }
 
   function graft(child:Delay) {
+    if dist? {
+      dist!.graft(child);
+    }
     if x? {
       // nothing to do
-    } else {
-      dist!.graft(child);
+    } else if !p? {
+      assert dist?;
+      p <- dist!.lazy(this);
+      p!.graft(child);
     }
   }
 
@@ -497,7 +499,7 @@ final class Random<Value> < Expression<Value> {
 }
 
 function simulate_propose(x:Real, d:Real) -> Real {
-  return simulate_gaussian(x + 0.5*d, 1.0);
+  return simulate_gaussian(x + 0.04*d, 0.08);
 }
 
 function simulate_propose(x:Real[_], d:Real[_]) -> Real[_] {
@@ -521,7 +523,7 @@ function simulate_propose(x:Boolean, d:Boolean) -> Boolean {
 }
 
 function logpdf_propose(x':Real, x:Real, d:Real) -> Real {
-  return logpdf_gaussian(x', x + 0.5*d, 1.0);
+  return logpdf_gaussian(x', x + 0.04*d, 0.08);
 }
 
 function logpdf_propose(x':Real[_], x:Real[_], d:Real[_]) -> Real {

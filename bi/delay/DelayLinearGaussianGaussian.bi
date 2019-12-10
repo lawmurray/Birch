@@ -2,12 +2,13 @@
  * Delayed linear-Gaussian-Gaussian random variate.
  */
 final class DelayLinearGaussianGaussian(future:Real?, futureUpdate:Boolean,
-    a:Real, m:DelayGaussian, c:Real, s2:Real) < DelayGaussian(future,
-    futureUpdate, a*m.μ + c, a*a/m.λ + s2) {
+    a:Expression<Real>, m:DelayGaussian, c:Expression<Real>,
+    s2:Expression<Real>) < DelayGaussian(future, futureUpdate, a*m.μ + c,
+    a*a/m.λ + s2) {
   /**
    * Scale.
    */
-  a:Real <- a;
+  auto a <- a;
     
   /**
    * Mean.
@@ -17,12 +18,12 @@ final class DelayLinearGaussianGaussian(future:Real?, futureUpdate:Boolean,
   /**
    * Offset.
    */
-  c:Real <- c;
+  auto c <- c;
 
   /**
    * Likelihood precision.
    */
-  l:Real <- 1.0/s2;
+  auto l <- 1.0/s2;
 
   function update(x:Real) {
     (m.μ, m.λ) <- update_linear_gaussian_gaussian(x, a, m.μ, m.λ, c, l);
@@ -34,7 +35,8 @@ final class DelayLinearGaussianGaussian(future:Real?, futureUpdate:Boolean,
 }
 
 function DelayLinearGaussianGaussian(future:Real?, futureUpdate:Boolean,
-    a:Real, μ:DelayGaussian, c:Real, σ2:Real) -> DelayLinearGaussianGaussian {
+    a:Expression<Real>, μ:DelayGaussian, c:Expression<Real>,
+    σ2:Expression<Real>) -> DelayLinearGaussianGaussian {
   m:DelayLinearGaussianGaussian(future, futureUpdate, a, μ, c, σ2);
   μ.setChild(m);
   return m;

@@ -2,9 +2,9 @@
  * Delayed multivariate linear-Gaussian-Gaussian random variate.
  */
 final class DelayLinearMultivariateGaussianGaussian(future:Real?,
-    futureUpdate:Boolean, a:Real[_], m:DelayMultivariateGaussian, c:Real,
-    s2:Real) < DelayGaussian(future, futureUpdate, dot(a, m.μ) + c,
-    dot(a, m.Σ*a) + s2) {
+    futureUpdate:Boolean, a:Expression<Real[_]>, m:DelayMultivariateGaussian,
+    c:Expression<Real>, s2:Expression<Real>) < DelayGaussian(future,
+    futureUpdate, dot(a, m.μ) + c, dot(a, m.Σ*a) + s2) {
   /**
    * Scale.
    */
@@ -37,8 +37,9 @@ final class DelayLinearMultivariateGaussianGaussian(future:Real?,
 }
 
 function DelayLinearMultivariateGaussianGaussian(future:Real?,
-    futureUpdate:Boolean, a:Real[_], μ:DelayMultivariateGaussian, c:Real,
-    σ2:Real) -> DelayLinearMultivariateGaussianGaussian {
+    futureUpdate:Boolean, a:Expression<Real[_]>, μ:DelayMultivariateGaussian,
+    c:Expression<Real>, σ2:Expression<Real>) ->
+    DelayLinearMultivariateGaussianGaussian {
   m:DelayLinearMultivariateGaussianGaussian(future, futureUpdate, a, μ, c,
       σ2);
   μ.setChild(m);

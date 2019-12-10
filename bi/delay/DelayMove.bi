@@ -25,33 +25,33 @@ abstract class DelayMove<Base>(future:Value?, futureUpdate:Boolean) <
    * Attempt to move random variates upon which this delayed value depends.
    */
   function move(x:Value) {
-    assert p?;
-
-    /* have a lazy expression on which we can attempt a move; first
-     * evaluate the log-likelihood and its gradient at a pilot position */
-    auto l <- p!.pilot();
-    if p!.gradPilot(1.0) {
-      /* at least one gradient; continue by evaluating the log-likelihood
-       * and it gradient at a proposal position */
-      auto l' <- p!.propose();
-      if p!.gradPropose(1.0) {
-        /* at least one gradient; continue by computing the acceptance
-         * ratio for Metropolis--Hastings */
-        auto α <- l' - l + p!.ratio();
-        if log(simulate_uniform(0.0, 1.0)) <= α {
-          /* accept the move */
-          p!.accept();
+    if p? {
+      /* have a lazy expression on which we can attempt a move; first
+       * evaluate the log-likelihood and its gradient at a pilot position */
+      auto l <- p!.pilot();
+      if p!.gradPilot(1.0) {
+        /* at least one gradient; continue by evaluating the log-likelihood
+         * and it gradient at a proposal position */
+        auto l' <- p!.propose();
+        if p!.gradPropose(1.0) {
+          /* at least one gradient; continue by computing the acceptance
+           * ratio for Metropolis--Hastings */
+          auto α <- l' - l + p!.ratio();
+          if log(simulate_uniform(0.0, 1.0)) <= α {
+            /* accept the move */
+            p!.accept();
+          } else {
+            /* reject the move */
+            p!.reject();
+          }
         } else {
-          /* reject the move */
-          p!.reject();
+          /* should not happen, as there were gradients the first time */
+          assert false;
         }
-      } else {
-        /* should not happen, as there were gradients the first time */
-        assert false;
       }
+      p!.clamp();
+      p <- nil;
     }
-    p!.clamp();
-    p <- nil;
   }
 
   function observe(x:Value) -> Real {

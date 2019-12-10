@@ -30,7 +30,6 @@ final class Add<Left,Right,Value>(left:Expression<Left>,
   function graftDotGaussian() -> TransformDot<DelayMultivariateGaussian>? {
     y:TransformDot<DelayMultivariateGaussian>?;
     z:DelayGaussian?;
-    
     if (y <- left.graftDotGaussian())? {
       y!.add(right);
     } else if (y <- right.graftDotGaussian())? {
