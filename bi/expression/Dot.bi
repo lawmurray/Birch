@@ -17,15 +17,15 @@ final class Dot<Left,Right,Value>(left:Expression<Left>,
     z:DelayMultivariateGaussian?;
     
     if (y <- right.graftLinearMultivariateGaussian())? {
-      return TransformDot<DelayMultivariateGaussian>(y!.A*left.value(), y!.x,
-          dot(y!.c, left.value()));
+      return TransformDot<DelayMultivariateGaussian>(y!.A*left, y!.x,
+          dot(y!.c, left));
     } else if (y <- left.graftLinearMultivariateGaussian())? {
-      return TransformDot<DelayMultivariateGaussian>(y!.A*right.value(), y!.x,
-          dot(y!.c, right.value()));
+      return TransformDot<DelayMultivariateGaussian>(y!.A*right, y!.x,
+          dot(y!.c, right));
     } else if (z <- right.graftMultivariateGaussian())? {
-      return TransformDot<DelayMultivariateGaussian>(left.value(), z!, 0.0);
+      return TransformDot<DelayMultivariateGaussian>(left, z!, Boxed(0.0));
     } else if (z <- left.graftMultivariateGaussian())? {
-      return TransformDot<DelayMultivariateGaussian>(right.value(), z!, 0.0);
+      return TransformDot<DelayMultivariateGaussian>(right, z!, Boxed(0.0));
     }
     return nil;
   }

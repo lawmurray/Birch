@@ -1,36 +1,37 @@
 /*
  * Multivariate linear transformation.
  */
-class TransformLinearMultivariate<Value>(A:Real[_,_], x:Value, c:Real[_]) {
+class TransformLinearMultivariate<Value>(A:Expression<Real[_,_]>, x:Value,
+    c:Expression<Real[_]>) {
   /**
    * Scale.
    */
-  A:Real[_,_] <- A;
+  auto A <- A;
   
   /**
    * Delay node.
    */
-  x:Value <- x;
+  auto x <- x;
 
   /**
    * Offset.
    */
-  c:Real[_] <- c;
+  auto c <- c;
   
   function rows() -> Integer {
     return global.rows(A);
   }
   
-  function leftMultiply(Y:Real[_,_]) {
+  function leftMultiply(Y:Expression<Real[_,_]>) {
     A <- Y*A;
     c <- Y*c;
   }
 
-  function add(y:Real[_]) {
+  function add(y:Expression<Real[_]>) {
     c <- c + y;
   }
 
-  function subtract(y:Real[_]) {
+  function subtract(y:Expression<Real[_]>) {
     c <- c - y;
   }
 
@@ -44,19 +45,20 @@ class TransformLinearMultivariate<Value>(A:Real[_,_], x:Value, c:Real[_]) {
     c <- c/y;
   }
   
-  function negateAndAdd(y:Real[_]) {
+  function negateAndAdd(y:Expression<Real[_]>) {
     A <- -A;
     c <- y - c;
   }
 }
 
-function TransformLinearMultivariate<Value>(A:Real[_,_], x:Value,
-    c:Real[_]) -> TransformLinearMultivariate<Value> {
+function TransformLinearMultivariate<Value>(A:Expression<Real[_,_]>,
+    x:Value, c:Expression<Real[_]>) ->
+    TransformLinearMultivariate<Value> {
   m:TransformLinearMultivariate<Value>(A, x, c);
   return m;
 }
 
-function TransformLinearMultivariate<Value>(A:Real[_,_], x:Value) ->
-    TransformLinearMultivariate<Value> {
-  return TransformLinearMultivariate<Value>(A, x, vector(0.0, rows(A)));
+function TransformLinearMultivariate<Value>(A:Expression<Real[_,_]>,
+    x:Value) -> TransformLinearMultivariate<Value> {
+  return TransformLinearMultivariate<Value>(A, x, Boxed(vector(0.0, rows(A))));
 }

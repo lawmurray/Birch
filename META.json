@@ -145,6 +145,8 @@
       "bi/expression/Cos.bi",
       "bi/expression/Cosh.bi",
       "bi/expression/Diagonal.bi",
+      "bi/expression/DiscreteAdd.bi",
+      "bi/expression/DiscreteSubtract.bi",
       "bi/expression/Divide.bi",
       "bi/expression/Dot.bi",
       "bi/expression/Exp.bi",

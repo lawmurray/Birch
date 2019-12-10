@@ -16,13 +16,13 @@ final class Multiply<Left,Right,Value>(left:Expression<Left>,
     z:DelayGamma?;
     
     if (y <- left.graftScaledGamma())? {
-      y!.multiply(right.value());
+      y!.multiply(right);
     } else if (y <- right.graftScaledGamma())? {
-      y!.multiply(left.value());
+      y!.multiply(left);
     } else if (z <- left.graftGamma())? {
-      y <- TransformLinear<DelayGamma>(right.value(), z!);
+      y <- TransformLinear<DelayGamma>(right, z!);
     } else if (z <- right.graftGamma())? {
-      y <- TransformLinear<DelayGamma>(left.value(), z!);
+      y <- TransformLinear<DelayGamma>(left, z!);
     }
     return y;
   }
@@ -32,13 +32,13 @@ final class Multiply<Left,Right,Value>(left:Expression<Left>,
     z:DelayGaussian?;
     
     if (y <- left.graftLinearGaussian())? {
-      y!.multiply(right.value());
+      y!.multiply(right);
     } else if (y <- right.graftLinearGaussian())? {
-      y!.multiply(left.value());
+      y!.multiply(left);
     } else if (z <- left.graftGaussian())? {
-      y <- TransformLinear<DelayGaussian>(right.value(), z!);
+      y <- TransformLinear<DelayGaussian>(right, z!);
     } else if (z <- right.graftGaussian())? {
-      y <- TransformLinear<DelayGaussian>(left.value(), z!);
+      y <- TransformLinear<DelayGaussian>(left, z!);
     }
     return y;
   }
@@ -47,9 +47,9 @@ final class Multiply<Left,Right,Value>(left:Expression<Left>,
     y:TransformDot<DelayMultivariateGaussian>?;
     
     if (y <- left.graftDotGaussian())? {
-      y!.multiply(right.value());
+      y!.multiply(right);
     } else if (y <- right.graftDotGaussian())? {
-      y!.multiply(left.value());
+      y!.multiply(left);
     }
     return y;
   }
@@ -60,13 +60,13 @@ final class Multiply<Left,Right,Value>(left:Expression<Left>,
     z:DelayNormalInverseGamma?;
     
     if (y <- left.graftLinearNormalInverseGamma())? {
-      y!.multiply(right.value());
+      y!.multiply(right);
     } else if (y <- right.graftLinearNormalInverseGamma())? {
-      y!.multiply(left.value());
+      y!.multiply(left);
     } else if (z <- left.graftNormalInverseGamma())? {
-      y <- TransformLinear<DelayNormalInverseGamma>(right.value(), z!);
+      y <- TransformLinear<DelayNormalInverseGamma>(right, z!);
     } else if (z <- right.graftNormalInverseGamma())? {
-      y <- TransformLinear<DelayNormalInverseGamma>(left.value(), z!);
+      y <- TransformLinear<DelayNormalInverseGamma>(left, z!);
     }
     return y;
   }
@@ -92,30 +92,5 @@ operator (left:Real*right:Expression<Real>) -> Multiply<Real,Real,Real> {
  * Lazy multiply.
  */
 operator (left:Expression<Real>*right:Real) -> Multiply<Real,Real,Real> {
-  return left*Boxed(right);
-}
-
-/**
- * Lazy multiply.
- */
-operator (left:Expression<Integer>*right:Expression<Integer>) ->
-    Multiply<Integer,Integer,Integer> {
-  m:Multiply<Integer,Integer,Integer>(left, right);
-  return m;
-}
-
-/**
- * Lazy multiply.
- */
-operator (left:Integer*right:Expression<Integer>) ->
-    Multiply<Integer,Integer,Integer> {
-  return Boxed(left)*right;
-}
-
-/**
- * Lazy multiply.
- */
-operator (left:Expression<Integer>*right:Integer) ->
-    Multiply<Integer,Integer,Integer> {
   return left*Boxed(right);
 }

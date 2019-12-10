@@ -16,9 +16,9 @@ final class Divide<Left,Right,Value>(left:Expression<Left>,
     z:DelayGaussian?;
     
     if (y <- left.graftLinearGaussian())? {
-      y!.divide(right.value());
+      y!.divide(right);
     } else if (z <- left.graftGaussian())? {
-      y <- TransformLinear<DelayGaussian>(1.0/right.value(), z!);
+      y <- TransformLinear<DelayGaussian>(1.0/right, z!);
     }
     return y;
   }
@@ -27,7 +27,7 @@ final class Divide<Left,Right,Value>(left:Expression<Left>,
     y:TransformDot<DelayMultivariateGaussian>?;
     
     if (y <- left.graftDotGaussian())? {
-      y!.divide(right.value());
+      y!.divide(right);
     }
     return y;
   }
@@ -38,9 +38,9 @@ final class Divide<Left,Right,Value>(left:Expression<Left>,
     z:DelayNormalInverseGamma?;
     
     if (y <- left.graftLinearNormalInverseGamma())? {
-      y!.divide(right.value());
+      y!.divide(right);
     } else if (z <- left.graftNormalInverseGamma())? {
-      y <- TransformLinear<DelayNormalInverseGamma>(1.0/right.value(), z!);
+      y <- TransformLinear<DelayNormalInverseGamma>(1.0/right, z!);
     }
     return y;
   }
@@ -50,9 +50,9 @@ final class Divide<Left,Right,Value>(left:Expression<Left>,
     z:DelayGamma?;
     
     if (y <- left.graftScaledGamma())? {
-      y!.divide(right.value());
+      y!.divide(right);
     } else if (z <- left.graftGamma())? {
-      y <- TransformLinear<DelayGamma>(1.0/right.value(), z!);
+      y <- TransformLinear<DelayGamma>(1.0/right, z!);
     }
     return y;
   }

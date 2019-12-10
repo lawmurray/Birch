@@ -26,10 +26,9 @@ final class MatrixMultiply<Left,Right,Value>(left:Expression<Left>,
     z:DelayMatrixGaussian?;
     
     if (y <- right.graftLinearMatrixGaussian())? {
-      y!.leftMultiply(left.value());
+      y!.leftMultiply(left);
     } else if (z <- right.graftMatrixGaussian())? {
-      y <- TransformLinearMatrix<DelayMatrixGaussian>(
-          left.value(), z!);
+      y <- TransformLinearMatrix<DelayMatrixGaussian>(left, z!);
     }
     return y;
   }
@@ -40,10 +39,9 @@ final class MatrixMultiply<Left,Right,Value>(left:Expression<Left>,
     z:DelayMatrixNormalInverseGamma?;
 
     if (y <- right.graftLinearMatrixNormalInverseGamma())? {
-      y!.leftMultiply(left.value());
+      y!.leftMultiply(left);
     } else if (z <- right.graftMatrixNormalInverseGamma())? {
-      y <- TransformLinearMatrix<DelayMatrixNormalInverseGamma>(
-          left.value(), z!);
+      y <- TransformLinearMatrix<DelayMatrixNormalInverseGamma>(left, z!);
     }
     return y;
   }
@@ -54,10 +52,9 @@ final class MatrixMultiply<Left,Right,Value>(left:Expression<Left>,
     z:DelayMatrixNormalInverseWishart?;
 
     if (y <- right.graftLinearMatrixNormalInverseWishart())? {
-      y!.leftMultiply(left.value());
+      y!.leftMultiply(left);
     } else if (z <- right.graftMatrixNormalInverseWishart())? {
-      y <- TransformLinearMatrix<DelayMatrixNormalInverseWishart>(
-          left.value(), z!);
+      y <- TransformLinearMatrix<DelayMatrixNormalInverseWishart>(left, z!);
     }
     return y;
   }

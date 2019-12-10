@@ -27,15 +27,15 @@ final class MatrixSubtract<Left,Right,Value>(left:Expression<Left>,
     z:DelayMatrixGaussian?;
 
     if (y <- left.graftLinearMatrixGaussian())? {
-      y!.subtract(right.value());
+      y!.subtract(right);
     } else if (y <- right.graftLinearMatrixGaussian())? {
-      y!.negateAndAdd(left.value());
+      y!.negateAndAdd(left);
     } else if (z <- left.graftMatrixGaussian())? {
       y <- TransformLinearMatrix<DelayMatrixGaussian>(
-          identity(z!.rows()), z!, -right.value());
+          Boxed(identity(z!.rows())), z!, -right);
     } else if (z <- right.graftMatrixGaussian())? {
       y <- TransformLinearMatrix<DelayMatrixGaussian>(
-          diagonal(-1.0, z!.rows()), z!, left.value());
+          Boxed(diagonal(-1.0, z!.rows())), z!, left);
     }
     return y;
   }
@@ -46,15 +46,15 @@ final class MatrixSubtract<Left,Right,Value>(left:Expression<Left>,
     z:DelayMatrixNormalInverseGamma?;
 
     if (y <- left.graftLinearMatrixNormalInverseGamma())? {
-      y!.subtract(right.value());
+      y!.subtract(right);
     } else if (y <- right.graftLinearMatrixNormalInverseGamma())? {
-      y!.negateAndAdd(left.value());
+      y!.negateAndAdd(left);
     } else if (z <- left.graftMatrixNormalInverseGamma())? {
       y <- TransformLinearMatrix<DelayMatrixNormalInverseGamma>(
-          identity(z!.rows()), z!, -right.value());
+          Boxed(identity(z!.rows())), z!, -right);
     } else if (z <- right.graftMatrixNormalInverseGamma())? {
       y <- TransformLinearMatrix<DelayMatrixNormalInverseGamma>(
-          diagonal(-1.0, z!.rows()), z!, left.value());
+          Boxed(diagonal(-1.0, z!.rows())), z!, left);
     }
     return y;
   }
@@ -65,15 +65,15 @@ final class MatrixSubtract<Left,Right,Value>(left:Expression<Left>,
     z:DelayMatrixNormalInverseWishart?;
 
     if (y <- left.graftLinearMatrixNormalInverseWishart())? {
-      y!.subtract(right.value());
+      y!.subtract(right);
     } else if (y <- right.graftLinearMatrixNormalInverseWishart())? {
-      y!.negateAndAdd(left.value());
+      y!.negateAndAdd(left);
     } else if (z <- left.graftMatrixNormalInverseWishart())? {
       y <- TransformLinearMatrix<DelayMatrixNormalInverseWishart>(
-          identity(z!.rows()), z!, -right.value());
+          Boxed(identity(z!.rows())), z!, -right);
     } else if (z <- right.graftMatrixNormalInverseWishart())? {
       y <- TransformLinearMatrix<DelayMatrixNormalInverseWishart>(
-          diagonal(-1.0, z!.rows()), z!, left.value());
+          Boxed(diagonal(-1.0, z!.rows())), z!, left);
     }
     return y;
   }

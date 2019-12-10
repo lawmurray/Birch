@@ -21,10 +21,10 @@ final class MultivariateMultiply<Left,Right,Value>(left:Expression<Left>,
     z:DelayMultivariateGaussian?;
     
     if (y <- right.graftLinearMultivariateGaussian())? {
-      y!.leftMultiply(left.value());
+      y!.leftMultiply(left);
     } else if (z <- right.graftMultivariateGaussian())? {
       y <- TransformLinearMultivariate<DelayMultivariateGaussian>(
-          left.value(), z!);
+          left, z!);
     }
     return y;
   }
@@ -35,10 +35,10 @@ final class MultivariateMultiply<Left,Right,Value>(left:Expression<Left>,
     z:DelayMultivariateNormalInverseGamma?;
 
     if (y <- right.graftLinearMultivariateNormalInverseGamma())? {
-      y!.leftMultiply(left.value());
+      y!.leftMultiply(left);
     } else if (z <- right.graftMultivariateNormalInverseGamma())? {
       y <- TransformLinearMultivariate<DelayMultivariateNormalInverseGamma>(
-          left.value(), z!);
+          left, z!);
     }
     return y;
   }

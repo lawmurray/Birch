@@ -27,3 +27,19 @@ operator (-x:Expression<Integer>) -> Negate<Integer,Integer> {
   m:Negate<Integer,Integer>(x);
   return m;
 }
+
+/**
+ * Lazy negation.
+ */
+operator (-x:Expression<Real[_]>) -> Negate<Real[_],Real[_]> {
+  m:Negate<Real[_],Real[_]>(x);
+  return m;
+}
+
+/**
+ * Lazy negation.
+ */
+operator (-x:Expression<Real[_,_]>) -> Negate<Real[_,_],Real[_,_]> {
+  m:Negate<Real[_,_],Real[_,_]>(x);
+  return m;
+}
