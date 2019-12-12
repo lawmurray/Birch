@@ -147,6 +147,7 @@
       "bi/expression/DelayExpression.bi",
       "bi/expression/Diagonal.bi",
       "bi/expression/DiscreteAdd.bi",
+      "bi/expression/DiscreteMultiply.bi",
       "bi/expression/DiscreteSubtract.bi",
       "bi/expression/Divide.bi",
       "bi/expression/Dot.bi",
