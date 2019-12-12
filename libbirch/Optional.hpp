@@ -340,6 +340,14 @@ public:
   /**
    * Constructor.
    */
+  Optional(Label* context, typename T::value_type* ptr, const bool cross = false) :
+      value(context, ptr, cross) {
+    //
+  }
+
+  /**
+   * Constructor.
+   */
   Optional(Label* context, const Nil& = nil) :
       value() {
     //
