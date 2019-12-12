@@ -45,7 +45,11 @@ final class IndependentInverseGamma(α:Expression<Real>,
    */
   β:Expression<Real[_]> <- β;
 
-  function graft() {
+  function rows() -> Integer {
+    return β.rows();
+  }
+
+  function graft(child:Delay?) {
     if delay? {
       delay!.prune();
     } else {
@@ -53,7 +57,7 @@ final class IndependentInverseGamma(α:Expression<Real>,
     }
   }
 
-  function graftIndependentInverseGamma() -> DelayIndependentInverseGamma? {
+  function graftIndependentInverseGamma(child:Delay?) -> DelayIndependentInverseGamma? {
     if delay? {
       delay!.prune();
     } else {

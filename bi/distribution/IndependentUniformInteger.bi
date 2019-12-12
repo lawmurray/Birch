@@ -13,7 +13,11 @@ final class IndependentUniformInteger(l:Expression<Integer[_]>,
    */
   u:Expression<Integer[_]> <- u;
 
-  function graft() {
+  function rows() -> Integer {
+    return l.rows();
+  }
+
+  function graft(child:Delay?) {
     if delay? {
       delay!.prune();
     } else {
@@ -26,6 +30,7 @@ final class IndependentUniformInteger(l:Expression<Integer[_]>,
  * Create multivariate uniform distribution over integers.
  */
 function Uniform(l:Expression<Integer[_]>, u:Expression<Integer[_]>) -> IndependentUniformInteger {
+  assert l.rows() == u.rows();
   m:IndependentUniformInteger(l, u);
   return m;
 }

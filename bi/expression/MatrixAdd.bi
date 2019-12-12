@@ -13,7 +13,7 @@ final class MatrixAdd<Left,Right,Value>(left:Expression<Left>,
     return left.columns();
   }
 
-  function graft(child:Delay) -> Expression<Value> {
+  function graft(child:Delay?) -> Expression<Value> {
     return left.graft(child) + right.graft(child);
   }
 
@@ -26,57 +26,57 @@ final class MatrixAdd<Left,Right,Value>(left:Expression<Left>,
     return (d, d);
   }
 
-  function graftLinearMatrixGaussian() ->
+  function graftLinearMatrixGaussian(child:Delay?) ->
       TransformLinearMatrix<DelayMatrixGaussian>? {
     y:TransformLinearMatrix<DelayMatrixGaussian>?;
     z:DelayMatrixGaussian?;
 
-    if (y <- left.graftLinearMatrixGaussian())? {
+    if (y <- left.graftLinearMatrixGaussian(child))? {
       y!.add(right);
-    } else if (y <- right.graftLinearMatrixGaussian())? {
+    } else if (y <- right.graftLinearMatrixGaussian(child))? {
       y!.add(left);
-    } else if (z <- left.graftMatrixGaussian())? {
+    } else if (z <- left.graftMatrixGaussian(child))? {
       y <- TransformLinearMatrix<DelayMatrixGaussian>(
           Boxed(identity(z!.rows())), z!, right);
-    } else if (z <- right.graftMatrixGaussian())? {
+    } else if (z <- right.graftMatrixGaussian(child))? {
       y <- TransformLinearMatrix<DelayMatrixGaussian>(
           Boxed(identity(z!.rows())), z!, left);
     }
     return y;
   }
   
-  function graftLinearMatrixNormalInverseGamma() ->
+  function graftLinearMatrixNormalInverseGamma(child:Delay?) ->
       TransformLinearMatrix<DelayMatrixNormalInverseGamma>? {
     y:TransformLinearMatrix<DelayMatrixNormalInverseGamma>?;
     z:DelayMatrixNormalInverseGamma?;
 
-    if (y <- left.graftLinearMatrixNormalInverseGamma())? {
+    if (y <- left.graftLinearMatrixNormalInverseGamma(child))? {
       y!.add(right);
-    } else if (y <- right.graftLinearMatrixNormalInverseGamma())? {
+    } else if (y <- right.graftLinearMatrixNormalInverseGamma(child))? {
       y!.add(left);
-    } else if (z <- left.graftMatrixNormalInverseGamma())? {
+    } else if (z <- left.graftMatrixNormalInverseGamma(child))? {
       y <- TransformLinearMatrix<DelayMatrixNormalInverseGamma>(
           Boxed(identity(z!.rows())), z!, right);
-    } else if (z <- right.graftMatrixNormalInverseGamma())? {
+    } else if (z <- right.graftMatrixNormalInverseGamma(child))? {
       y <- TransformLinearMatrix<DelayMatrixNormalInverseGamma>(
           Boxed(identity(z!.rows())), z!, left);
     }
     return y;
   }
 
-  function graftLinearMatrixNormalInverseWishart() ->
+  function graftLinearMatrixNormalInverseWishart(child:Delay?) ->
       TransformLinearMatrix<DelayMatrixNormalInverseWishart>? {
     y:TransformLinearMatrix<DelayMatrixNormalInverseWishart>?;
     z:DelayMatrixNormalInverseWishart?;
 
-    if (y <- left.graftLinearMatrixNormalInverseWishart())? {
+    if (y <- left.graftLinearMatrixNormalInverseWishart(child))? {
       y!.add(right);
-    } else if (y <- right.graftLinearMatrixNormalInverseWishart())? {
+    } else if (y <- right.graftLinearMatrixNormalInverseWishart(child))? {
       y!.add(left);
-    } else if (z <- left.graftMatrixNormalInverseWishart())? {
+    } else if (z <- left.graftMatrixNormalInverseWishart(child))? {
       y <- TransformLinearMatrix<DelayMatrixNormalInverseWishart>(
           Boxed(identity(z!.rows())), z!, right);
-    } else if (z <- right.graftMatrixNormalInverseWishart())? {
+    } else if (z <- right.graftMatrixNormalInverseWishart(child))? {
       y <- TransformLinearMatrix<DelayMatrixNormalInverseWishart>(
           Boxed(identity(z!.rows())), z!, left);
     }

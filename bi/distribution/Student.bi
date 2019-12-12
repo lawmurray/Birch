@@ -17,7 +17,7 @@ final class Student(ν:Expression<Real>, μ:Expression<Real>, σ2:Expression<Rea
    */
   σ2:Expression<Real> <- σ2;
 
-  function graft() {
+  function graft(child:Delay?) {
     if delay? {
       delay!.prune();
     } else {

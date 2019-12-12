@@ -144,6 +144,7 @@
       "bi/expression/CopySign.bi",
       "bi/expression/Cos.bi",
       "bi/expression/Cosh.bi",
+      "bi/expression/DelayExpression.bi",
       "bi/expression/Diagonal.bi",
       "bi/expression/DiscreteAdd.bi",
       "bi/expression/DiscreteSubtract.bi",

@@ -8,12 +8,12 @@ final class Delta(μ:Expression<Integer>) < Distribution<Integer> {
    */
   μ:Expression<Integer> <- μ;
 
-  function graft() {
+  function graft(child:Delay?) {
     if delay? {
       delay!.prune();
     } else {
       m:DelayDiscrete?;
-      if (m <- μ.graftDiscrete())? {
+      if (m <- μ.graftDiscrete(child))? {
         delay <- DelayDiscreteDelta(future, futureUpdate, m!);
       } else {
         delay <- DelayDelta(future, futureUpdate, μ);

@@ -12,37 +12,41 @@ final class MultivariateGaussian(μ:Expression<Real[_]>, Σ:Expression<Real[_,_]
    * Covariance.
    */
   Σ:Expression<Real[_,_]> <- Σ;
-    
-  function graft() {
+
+  function rows() -> Integer {
+    return μ.rows();
+  }
+
+  function graft(child:Delay?) {
     if delay? {
       delay!.prune();
     } else {
       m1:TransformLinearMultivariate<DelayMultivariateGaussian>?;
       m3:DelayMultivariateGaussian?;
-      if (m1 <- μ.graftLinearMultivariateGaussian())? {
+      if (m1 <- μ.graftLinearMultivariateGaussian(child))? {
         delay <- DelayLinearMultivariateGaussianMultivariateGaussian(future,
             futureUpdate, m1!.A, m1!.x, m1!.c, Σ);
-      } else if (m3 <- μ.graftMultivariateGaussian())? {
+      } else if (m3 <- μ.graftMultivariateGaussian(child))? {
         delay <- DelayMultivariateGaussianMultivariateGaussian(future, futureUpdate, m3!, Σ);
       } else {
         /* try a normal inverse gamma first, then a regular Gaussian */
-        if !graftMultivariateNormalInverseGamma()? {
+        if !graftMultivariateNormalInverseGamma(child)? {
           delay <- DelayMultivariateGaussian(future, futureUpdate, μ, Σ);
         }
       }
     }
   }
 
-  function graftMultivariateGaussian() -> DelayMultivariateGaussian? {
+  function graftMultivariateGaussian(child:Delay?) -> DelayMultivariateGaussian? {
     if delay? {
       delay!.prune();
     } else {
       m1:TransformLinearMultivariate<DelayMultivariateGaussian>?;
       m2:DelayMultivariateGaussian?;
-      if (m1 <- μ.graftLinearMultivariateGaussian())? {
+      if (m1 <- μ.graftLinearMultivariateGaussian(child))? {
         delay <- DelayLinearMultivariateGaussianMultivariateGaussian(future,
             futureUpdate, m1!.A, m1!.x, m1!.c, Σ);
-      } else if (m2 <- μ.graftMultivariateGaussian())? {
+      } else if (m2 <- μ.graftMultivariateGaussian(child))? {
         delay <- DelayMultivariateGaussianMultivariateGaussian(future, futureUpdate, m2!, Σ);
       } else {
         delay <- DelayMultivariateGaussian(future, futureUpdate, μ, Σ);

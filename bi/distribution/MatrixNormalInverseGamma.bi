@@ -18,13 +18,21 @@ final class MatrixNormalInverseGamma(M:Expression<Real[_,_]>,
    * Covariance scale.
    */
   σ2:IndependentInverseGamma(α, β);
-    
-  function graft() {
+
+  function rows() -> Integer {
+    return M.rows();
+  }
+
+  function columns() -> Integer {
+    return M.columns();
+  }
+
+  function graft(child:Delay?) {
     if delay? {
       delay!.prune();
     } else {
       delay <- DelayMatrixNormalInverseGamma(future, futureUpdate, M,
-          Σ, σ2.graftIndependentInverseGamma()!);
+          Σ, σ2.graftIndependentInverseGamma(child)!);
     }
   }
 }

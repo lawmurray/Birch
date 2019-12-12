@@ -3,7 +3,7 @@
  */
 final class Atan<Argument,Value>(x:Expression<Argument>) <
     UnaryExpression<Argument,Value>(x) {  
-  function graft(child:Delay) -> Expression<Value> {
+  function graft(child:Delay?) -> Expression<Value> {
     return atan(single.graft(child));
   }
 

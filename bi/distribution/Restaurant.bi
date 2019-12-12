@@ -12,7 +12,7 @@ final class Restaurant(α:Expression<Real>, θ:Expression<Real>) < Distribution<
    */
   θ:Expression<Real> <- θ;
 
-  function graft() {
+  function graft(child:Delay?) {
     if delay? {
       delay!.prune();
     } else {
@@ -20,7 +20,7 @@ final class Restaurant(α:Expression<Real>, θ:Expression<Real>) < Distribution<
     }
   }
 
-  function graftRestaurant() -> DelayRestaurant? {
+  function graftRestaurant(child:Delay?) -> DelayRestaurant? {
     if delay? {
       delay!.prune();
     } else {

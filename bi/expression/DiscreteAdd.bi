@@ -3,7 +3,7 @@
  */
 final class DiscreteAdd<Left,Right,Value>(left:Expression<Left>,
     right:Expression<Right>) < BinaryExpression<Left,Right,Value>(left, right) {  
-  function graft(child:Delay) -> Expression<Value> {
+  function graft(child:Delay?) -> Expression<Value> {
     return left.graft(child) + right.graft(child);
   }
 
@@ -15,23 +15,23 @@ final class DiscreteAdd<Left,Right,Value>(left:Expression<Left>,
     return (d, d);
   }
 
-  function graftDiscrete() -> DelayDiscrete? {
-    y:DelayDiscrete? <- graftBoundedDiscrete();
+  function graftDiscrete(child:Delay?) -> DelayDiscrete? {
+    y:DelayDiscrete? <- graftBoundedDiscrete(child);
     if !y? {
       x:DelayDiscrete?;
-      if (x <- left.graftDiscrete())? {
+      if (x <- left.graftDiscrete(child))? {
         y <- DelayLinearDiscrete(nil, true, 1, x!, right.value());
-      } else if (x <- right.graftDiscrete())? {
+      } else if (x <- right.graftDiscrete(child))? {
         y <- DelayLinearDiscrete(nil, true, 1, x!, left.value());
       }
     }
     return y;
   }
 
-  function graftBoundedDiscrete() -> DelayBoundedDiscrete? {
+  function graftBoundedDiscrete(child:Delay?) -> DelayBoundedDiscrete? {
     y:DelayBoundedDiscrete?;
-    x1:DelayBoundedDiscrete? <- left.graftBoundedDiscrete();
-    x2:DelayBoundedDiscrete? <- right.graftBoundedDiscrete();
+    x1:DelayBoundedDiscrete? <- left.graftBoundedDiscrete(child);
+    x2:DelayBoundedDiscrete? <- right.graftBoundedDiscrete(child);
 
     if x1? && x2? && !(x1!.hasValue()) {    
       // ^ third condition above ensures that x1 is still valid after x2 is

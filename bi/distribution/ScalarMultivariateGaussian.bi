@@ -18,13 +18,17 @@ final class ScalarMultivariateGaussian(μ:Expression<Real[_]>,
    * Covariance scale.
    */
   σ2:Expression<Real> <- σ2;
-    
-  function graft() {
+
+  function rows() -> Integer {
+    return μ.rows();
+  }
+
+  function graft(child:Delay?) {
     if delay? {
       delay!.prune();
     } else {
       s1:DelayInverseGamma?;
-      if (s1 <- σ2.graftInverseGamma())? {
+      if (s1 <- σ2.graftInverseGamma(child))? {
         delay <- DelayMultivariateNormalInverseGamma(future, futureUpdate, μ, Σ, s1!);
       } else {
         delay <- DelayMultivariateGaussian(future, futureUpdate, μ, Σ*σ2);
@@ -32,7 +36,7 @@ final class ScalarMultivariateGaussian(μ:Expression<Real[_]>,
     }
   }
 
-  function graftMultivariateGaussian() -> DelayMultivariateGaussian? {
+  function graftMultivariateGaussian(child:Delay?) -> DelayMultivariateGaussian? {
     if delay? {
       delay!.prune();
     } else {
@@ -41,12 +45,12 @@ final class ScalarMultivariateGaussian(μ:Expression<Real[_]>,
     return DelayMultivariateGaussian?(delay);
   }
 
-  function graftMultivariateNormalInverseGamma() -> DelayMultivariateNormalInverseGamma? {
+  function graftMultivariateNormalInverseGamma(child:Delay?) -> DelayMultivariateNormalInverseGamma? {
     if delay? {
       delay!.prune();
     } else {
       s1:DelayInverseGamma?;
-      if (s1 <- σ2.graftInverseGamma())? {
+      if (s1 <- σ2.graftInverseGamma(child))? {
         delay <- DelayMultivariateNormalInverseGamma(future, futureUpdate, μ, Σ, s1!);
       }
     }

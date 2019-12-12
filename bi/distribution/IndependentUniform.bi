@@ -12,7 +12,11 @@ final class IndependentUniform(l:Expression<Real[_]>, u:Expression<Real[_]>) < D
    */
   u:Expression<Real[_]> <- u;
 
-  function graft() {
+  function rows() -> Integer {
+    return l.rows();
+  }
+
+  function graft(child:Delay?) {
     if delay? {
       delay!.prune();
     } else {
@@ -25,6 +29,7 @@ final class IndependentUniform(l:Expression<Real[_]>, u:Expression<Real[_]>) < D
  * Create multivariate uniform distribution.
  */
 function Uniform(l:Expression<Real[_]>, u:Expression<Real[_]>) -> IndependentUniform {
+  assert l.rows() == u.rows();
   m:IndependentUniform(l, u);
   return m;
 }

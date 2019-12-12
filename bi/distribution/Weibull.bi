@@ -12,7 +12,7 @@ final class Weibull(k:Expression<Real>, λ:Expression<Real>) < Distribution<Real
    */
   λ:Expression<Real> <- λ;
 
-  function graft() {
+  function graft(child:Delay?) {
     if delay? {
       delay!.prune();
     } else {

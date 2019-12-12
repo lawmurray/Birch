@@ -7,7 +7,7 @@ final class MultivariateMultiply<Left,Right,Value>(left:Expression<Left>,
     return left.rows();
   }
   
-  function graft(child:Delay) -> Expression<Value> {
+  function graft(child:Delay?) -> Expression<Value> {
     return left.graft(child)*right.graft(child);
   }
 
@@ -19,28 +19,28 @@ final class MultivariateMultiply<Left,Right,Value>(left:Expression<Left>,
     return (d*transpose(r), transpose(l)*d);
   }
 
-  function graftLinearMultivariateGaussian() ->
+  function graftLinearMultivariateGaussian(child:Delay?) ->
       TransformLinearMultivariate<DelayMultivariateGaussian>? {
     y:TransformLinearMultivariate<DelayMultivariateGaussian>?;
     z:DelayMultivariateGaussian?;
     
-    if (y <- right.graftLinearMultivariateGaussian())? {
+    if (y <- right.graftLinearMultivariateGaussian(child))? {
       y!.leftMultiply(left);
-    } else if (z <- right.graftMultivariateGaussian())? {
+    } else if (z <- right.graftMultivariateGaussian(child))? {
       y <- TransformLinearMultivariate<DelayMultivariateGaussian>(
           left, z!);
     }
     return y;
   }
   
-  function graftLinearMultivariateNormalInverseGamma() ->
+  function graftLinearMultivariateNormalInverseGamma(child:Delay?) ->
       TransformLinearMultivariate<DelayMultivariateNormalInverseGamma>? {
     y:TransformLinearMultivariate<DelayMultivariateNormalInverseGamma>?;
     z:DelayMultivariateNormalInverseGamma?;
 
-    if (y <- right.graftLinearMultivariateNormalInverseGamma())? {
+    if (y <- right.graftLinearMultivariateNormalInverseGamma(child))? {
       y!.leftMultiply(left);
-    } else if (z <- right.graftMultivariateNormalInverseGamma())? {
+    } else if (z <- right.graftMultivariateNormalInverseGamma(child))? {
       y <- TransformLinearMultivariate<DelayMultivariateNormalInverseGamma>(
           left, z!);
     }

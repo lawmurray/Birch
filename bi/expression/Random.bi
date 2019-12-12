@@ -226,14 +226,6 @@ final class Random<Value> < Expression<Value> {
     }
   }
 
-  function graft(child:Delay) -> Expression<Value> {
-    if x? {
-      return Boxed(x!);
-    } else {
-      return dist!.graft(child);
-    }
-  }
-
   /**
    * Observe the value of the random variate.
    */
@@ -325,146 +317,155 @@ final class Random<Value> < Expression<Value> {
     }
   }
 
-  function graftGaussian() -> DelayGaussian? {
+  function graft(child:Delay?) -> Expression<Value> {
+    if x? {
+      return Boxed(x!);
+    } else {
+      dist!.graft(child);
+      return DelayExpression<Value>(dist!.getDelay());
+    }
+  }
+
+  function graftGaussian(child:Delay?) -> DelayGaussian? {
     if !hasValue() {
       assert hasDistribution();
-      return dist!.graftGaussian();
+      return dist!.graftGaussian(child);
     } else {
       return nil;
     }
   }
     
-  function graftBeta() -> DelayBeta? {
+  function graftBeta(child:Delay?) -> DelayBeta? {
     if !hasValue() {
       assert hasDistribution();
-      return dist!.graftBeta();
+      return dist!.graftBeta(child);
     } else {
       return nil;
     }
   }
   
-  function graftGamma() -> DelayGamma? {
+  function graftGamma(child:Delay?) -> DelayGamma? {
     if !hasValue() {
       assert hasDistribution();
-      return dist!.graftGamma();
+      return dist!.graftGamma(child);
     } else {
       return nil;
     }
   }
   
-  function graftInverseGamma() -> DelayInverseGamma? {
+  function graftInverseGamma(child:Delay?) -> DelayInverseGamma? {
     if !hasValue() {
       assert hasDistribution();
-      return dist!.graftInverseGamma();
+      return dist!.graftInverseGamma(child);
     } else {
       return nil;
     }
   } 
 
-  function graftIndependentInverseGamma() -> DelayIndependentInverseGamma? {
+  function graftIndependentInverseGamma(child:Delay?) -> DelayIndependentInverseGamma? {
     if !hasValue() {
       assert hasDistribution();
-      return dist!.graftIndependentInverseGamma();
+      return dist!.graftIndependentInverseGamma(child);
     } else {
       return nil;
     }
   } 
 
-  function graftInverseWishart() -> DelayInverseWishart? {
+  function graftInverseWishart(child:Delay?) -> DelayInverseWishart? {
     if !hasValue() {
       assert hasDistribution();
-      return dist!.graftInverseWishart();
+      return dist!.graftInverseWishart(child);
     } else {
       return nil;
     }
   } 
   
-  function graftNormalInverseGamma() -> DelayNormalInverseGamma? {
+  function graftNormalInverseGamma(child:Delay?) -> DelayNormalInverseGamma? {
     if !hasValue() {
       assert hasDistribution();
-      return dist!.graftNormalInverseGamma();
+      return dist!.graftNormalInverseGamma(child);
     } else {
       return nil;
     }
   }
   
-  function graftDirichlet() -> DelayDirichlet? {
+  function graftDirichlet(child:Delay?) -> DelayDirichlet? {
     if !hasValue() {
       assert hasDistribution();
-      return dist!.graftDirichlet();
+      return dist!.graftDirichlet(child);
     } else {
       return nil;
     }
   }
 
-  function graftRestaurant() -> DelayRestaurant? {
+  function graftRestaurant(child:Delay?) -> DelayRestaurant? {
     if !hasValue() {
       assert hasDistribution();
-      return dist!.graftRestaurant();
+      return dist!.graftRestaurant(child);
     } else {
       return nil;
     }
   }
 
-  function graftMultivariateGaussian() -> DelayMultivariateGaussian? {
+  function graftMultivariateGaussian(child:Delay?) -> DelayMultivariateGaussian? {
     if !hasValue() {
       assert hasDistribution();
-      return dist!.graftMultivariateGaussian();
+      return dist!.graftMultivariateGaussian(child);
     } else {
       return nil;
     }
   }
 
-  function graftMultivariateNormalInverseGamma() ->
+  function graftMultivariateNormalInverseGamma(child:Delay?) ->
       DelayMultivariateNormalInverseGamma? {
     if !hasValue() {
       assert hasDistribution();
-      return dist!.graftMultivariateNormalInverseGamma();
+      return dist!.graftMultivariateNormalInverseGamma(child);
     } else {
       return nil;
     }
   }
 
-  function graftMatrixGaussian() -> DelayMatrixGaussian? {
+  function graftMatrixGaussian(child:Delay?) -> DelayMatrixGaussian? {
     if !hasValue() {
       assert hasDistribution();
-      return dist!.graftMatrixGaussian();
+      return dist!.graftMatrixGaussian(child);
     } else {
       return nil;
     }
   }
 
-  function graftMatrixNormalInverseGamma() -> DelayMatrixNormalInverseGamma? {
+  function graftMatrixNormalInverseGamma(child:Delay?) -> DelayMatrixNormalInverseGamma? {
     if !hasValue() {
       assert hasDistribution();
-      return dist!.graftMatrixNormalInverseGamma();
+      return dist!.graftMatrixNormalInverseGamma(child);
     } else {
       return nil;
     }
   }
 
-  function graftMatrixNormalInverseWishart() -> DelayMatrixNormalInverseWishart? {
+  function graftMatrixNormalInverseWishart(child:Delay?) -> DelayMatrixNormalInverseWishart? {
     if !hasValue() {
       assert hasDistribution();
-      return dist!.graftMatrixNormalInverseWishart();
+      return dist!.graftMatrixNormalInverseWishart(child);
     } else {
       return nil;
     }
   }
 
-  function graftDiscrete() -> DelayDiscrete? {
+  function graftDiscrete(child:Delay?) -> DelayDiscrete? {
     if !hasValue() {
       assert hasDistribution();
-      return dist!.graftDiscrete();
+      return dist!.graftDiscrete(child);
     } else {
       return nil;
     }
   }
 
-  function graftBoundedDiscrete() -> DelayBoundedDiscrete? {
+  function graftBoundedDiscrete(child:Delay?) -> DelayBoundedDiscrete? {
     if !hasValue() {
       assert hasDistribution();
-      return dist!.graftBoundedDiscrete();
+      return dist!.graftBoundedDiscrete(child);
     } else {
       return nil;
     }

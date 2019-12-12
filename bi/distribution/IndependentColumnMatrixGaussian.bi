@@ -17,13 +17,21 @@ final class IndependentColumnMatrixGaussian(M:Expression<Real[_,_]>,
    * Among-column variances.
    */
   σ2:Expression<Real[_]> <- v;
-    
-  function graft() {
+
+  function rows() -> Integer {
+    return M.rows();
+  }
+
+  function columns() -> Integer {
+    return M.columns();
+  }
+
+  function graft(child:Delay?) {
     if delay? {
       delay!.prune();
     } else {
       s1:DelayIndependentInverseGamma?;
-      if (s1 <- σ2.graftIndependentInverseGamma())? {
+      if (s1 <- σ2.graftIndependentInverseGamma(child))? {
         delay <- DelayMatrixNormalInverseGamma(future, futureUpdate, M, U,
             s1!);
       } else {
@@ -33,7 +41,7 @@ final class IndependentColumnMatrixGaussian(M:Expression<Real[_,_]>,
     }
   }
 
-  function graftMatrixGaussian() -> DelayMatrixGaussian? {
+  function graftMatrixGaussian(child:Delay?) -> DelayMatrixGaussian? {
     if delay? {
       delay!.prune();
     } else {
@@ -43,12 +51,12 @@ final class IndependentColumnMatrixGaussian(M:Expression<Real[_,_]>,
     return DelayMatrixGaussian?(delay);
   }
 
-  function graftMatrixNormalInverseGamma() -> DelayMatrixNormalInverseGamma? {
+  function graftMatrixNormalInverseGamma(child:Delay?) -> DelayMatrixNormalInverseGamma? {
     if delay? {
       delay!.prune();
     } else {
       s1:DelayIndependentInverseGamma?;
-      if (s1 <- σ2.graftIndependentInverseGamma())? {
+      if (s1 <- σ2.graftIndependentInverseGamma(child))? {
         delay <- DelayMatrixNormalInverseGamma(future, futureUpdate, M, U,
             s1!);
       }

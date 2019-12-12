@@ -17,13 +17,21 @@ final class MatrixGaussian(M:Expression<Real[_,_]>, U:Expression<Real[_,_]>,
    * Among-column covariance.
    */
   V:Expression<Real[_,_]> <- V;
-    
-  function graft() {
+
+  function rows() -> Integer {
+    return M.rows();
+  }
+
+  function columns() -> Integer {
+    return M.columns();
+  }
+
+  function graft(child:Delay?) {
     if delay? {
       delay!.prune();
     } else {
       s1:DelayInverseWishart?;
-      if (s1 <- V.graftInverseWishart())? {
+      if (s1 <- V.graftInverseWishart(child))? {
         delay <- DelayMatrixNormalInverseWishart(future, futureUpdate, M, U, s1!);
       } else {
         delay <- DelayMatrixGaussian(future, futureUpdate, M, U, V);
@@ -31,7 +39,7 @@ final class MatrixGaussian(M:Expression<Real[_,_]>, U:Expression<Real[_,_]>,
     }
   }
 
-  function graftMatrixGaussian() -> DelayMatrixGaussian? {
+  function graftMatrixGaussian(child:Delay?) -> DelayMatrixGaussian? {
     if delay? {
       delay!.prune();
     } else {
@@ -40,12 +48,12 @@ final class MatrixGaussian(M:Expression<Real[_,_]>, U:Expression<Real[_,_]>,
     return DelayMatrixGaussian?(delay);
   }
 
-  function graftMatrixNormalInverseWishart() -> DelayMatrixNormalInverseWishart? {
+  function graftMatrixNormalInverseWishart(child:Delay?) -> DelayMatrixNormalInverseWishart? {
     if delay? {
       delay!.prune();
     } else {
       s1:DelayInverseWishart?;
-      if (s1 <- V.graftInverseWishart())? {
+      if (s1 <- V.graftInverseWishart(child))? {
         delay <- DelayMatrixNormalInverseWishart(future, futureUpdate, M, U,
             s1!);
       }

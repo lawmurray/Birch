@@ -13,8 +13,12 @@ final class IdenticalGaussian(μ:Expression<Real[_]>,
    * Variance.
    */
   σ2:Expression<Real> <- σ2;
-    
-  function graft() {
+
+  function rows() -> Integer {
+    return μ.rows();
+  }
+
+  function graft(child:Delay?) {
     if delay? {
       delay!.prune();
     } else {
@@ -24,21 +28,21 @@ final class IdenticalGaussian(μ:Expression<Real[_]>,
       m3:TransformLinearMultivariate<DelayMultivariateGaussian>?;
       m4:DelayMultivariateGaussian?;
 
-      if (m1 <- μ.graftLinearMultivariateNormalInverseGamma())? &&
+      if (m1 <- μ.graftLinearMultivariateNormalInverseGamma(child))? &&
            m1!.x.σ2 == σ2.getDelay() {
         delay <- DelayLinearMultivariateNormalInverseGammaMultivariateGaussian(
             future, futureUpdate, m1!.A, m1!.x, m1!.c);
-      } else if (m2 <- μ.graftMultivariateNormalInverseGamma())? &&
+      } else if (m2 <- μ.graftMultivariateNormalInverseGamma(child))? &&
           m2!.σ2 == σ2.getDelay() {
         delay <- DelayMultivariateNormalInverseGammaMultivariateGaussian(
             future, futureUpdate, m2!);
-      } else if (m3 <- μ.graftLinearMultivariateGaussian())? {
+      } else if (m3 <- μ.graftLinearMultivariateGaussian(child))? {
         delay <- DelayLinearMultivariateGaussianMultivariateGaussian(future,
             futureUpdate, m3!.A, m3!.x, m3!.c, diagonal(σ2.value(), m3!.rows()));
-      } else if (m4 <- μ.graftMultivariateGaussian())? {
+      } else if (m4 <- μ.graftMultivariateGaussian(child))? {
         delay <- DelayMultivariateGaussianMultivariateGaussian(future,
             futureUpdate, m4!, diagonal(σ2, m4!.rows()));
-      } else if (s1 <- σ2.graftInverseGamma())? {
+      } else if (s1 <- σ2.graftInverseGamma(child))? {
         delay <- DelayMultivariateNormalInverseGamma(future, futureUpdate, μ,
             identity(μ.rows()), s1!);
       } else {
@@ -48,16 +52,16 @@ final class IdenticalGaussian(μ:Expression<Real[_]>,
     }
   }
 
-  function graftMultivariateGaussian() -> DelayMultivariateGaussian? {
+  function graftMultivariateGaussian(child:Delay?) -> DelayMultivariateGaussian? {
     if delay? {
       delay!.prune();
     } else {
       m1:TransformLinearMultivariate<DelayMultivariateGaussian>?;
       m2:DelayMultivariateGaussian?;
-      if (m1 <- μ.graftLinearMultivariateGaussian())? {
+      if (m1 <- μ.graftLinearMultivariateGaussian(child))? {
         delay <- DelayLinearMultivariateGaussianMultivariateGaussian(future,
             futureUpdate, m1!.A, m1!.x, m1!.c, diagonal(σ2, length(m1!.c)));
-      } else if (m2 <- μ.graftMultivariateGaussian())? {
+      } else if (m2 <- μ.graftMultivariateGaussian(child))? {
         delay <- DelayMultivariateGaussianMultivariateGaussian(future,
             futureUpdate, m2!, diagonal(σ2, m2!.μ.rows()));
       } else {
@@ -68,12 +72,12 @@ final class IdenticalGaussian(μ:Expression<Real[_]>,
     return DelayMultivariateGaussian?(delay);
   }
 
-  function graftMultivariateNormalInverseGamma() -> DelayMultivariateNormalInverseGamma? {
+  function graftMultivariateNormalInverseGamma(child:Delay?) -> DelayMultivariateNormalInverseGamma? {
     if delay? {
       delay!.prune();
     } else {
       s1:DelayInverseGamma?;
-      if (s1 <- σ2.graftInverseGamma())? {
+      if (s1 <- σ2.graftInverseGamma(child))? {
         delay <- DelayMultivariateNormalInverseGamma(future, futureUpdate, μ,
             identity(μ.rows()), s1!);
       }

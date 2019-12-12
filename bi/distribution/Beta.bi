@@ -12,7 +12,7 @@ final class Beta(α:Expression<Real>, β:Expression<Real>) < Distribution<Real> 
    */
   β:Expression<Real> <- β;
 
-  function graft() {
+  function graft(child:Delay?) {
     if delay? {
       delay!.prune();
     } else {
@@ -20,7 +20,7 @@ final class Beta(α:Expression<Real>, β:Expression<Real>) < Distribution<Real> 
     }
   }
 
-  function graftBeta() -> DelayBeta? {
+  function graftBeta(child:Delay?) -> DelayBeta? {
     if delay? {
       delay!.prune();
     } else {

@@ -3,7 +3,7 @@
  */
 final class Add<Left,Right,Value>(left:Expression<Left>,
     right:Expression<Right>) < BinaryExpression<Left,Right,Value>(left, right) {  
-  function graft(child:Delay) -> Expression<Value> {
+  function graft(child:Delay?) -> Expression<Value> {
     return left.graft(child) + right.graft(child);
   }
 
@@ -15,45 +15,45 @@ final class Add<Left,Right,Value>(left:Expression<Left>,
     return (d, d);
   }
 
-  function graftLinearGaussian() -> TransformLinear<DelayGaussian>? {
+  function graftLinearGaussian(child:Delay?) -> TransformLinear<DelayGaussian>? {
     y:TransformLinear<DelayGaussian>?;
     z:DelayGaussian?;
     
-    if (y <- left.graftLinearGaussian())? {
+    if (y <- left.graftLinearGaussian(child))? {
       y!.add(right);
-    } else if (y <- right.graftLinearGaussian())? {
+    } else if (y <- right.graftLinearGaussian(child))? {
       y!.add(left);
-    } else if (z <- left.graftGaussian())? {
+    } else if (z <- left.graftGaussian(child))? {
       y <- TransformLinear<DelayGaussian>(Boxed(1.0), z!, right);
-    } else if (z <- right.graftGaussian())? {
+    } else if (z <- right.graftGaussian(child))? {
       y <- TransformLinear<DelayGaussian>(Boxed(1.0), z!, left);
     }
     return y;
   }
 
-  function graftDotGaussian() -> TransformDot<DelayMultivariateGaussian>? {
+  function graftDotGaussian(child:Delay?) -> TransformDot<DelayMultivariateGaussian>? {
     y:TransformDot<DelayMultivariateGaussian>?;
     z:DelayGaussian?;
-    if (y <- left.graftDotGaussian())? {
+    if (y <- left.graftDotGaussian(child))? {
       y!.add(right);
-    } else if (y <- right.graftDotGaussian())? {
+    } else if (y <- right.graftDotGaussian(child))? {
       y!.add(left);
     }
     return y;
   }
   
-  function graftLinearNormalInverseGamma() ->
+  function graftLinearNormalInverseGamma(child:Delay?) ->
       TransformLinear<DelayNormalInverseGamma>? {
     y:TransformLinear<DelayNormalInverseGamma>?;
     z:DelayNormalInverseGamma?;
 
-    if (y <- left.graftLinearNormalInverseGamma())? {
+    if (y <- left.graftLinearNormalInverseGamma(child))? {
       y!.add(right);
-    } else if (y <- right.graftLinearNormalInverseGamma())? {
+    } else if (y <- right.graftLinearNormalInverseGamma(child))? {
       y!.add(left);
-    } else if (z <- left.graftNormalInverseGamma())? {
+    } else if (z <- left.graftNormalInverseGamma(child))? {
       y <- TransformLinear<DelayNormalInverseGamma>(Boxed(1.0), z!, right);
-    } else if (z <- right.graftNormalInverseGamma())? {
+    } else if (z <- right.graftNormalInverseGamma(child))? {
       y <- TransformLinear<DelayNormalInverseGamma>(Boxed(1.0), z!, left);
     }
     return y;

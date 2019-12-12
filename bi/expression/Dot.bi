@@ -4,7 +4,7 @@
 final class Dot<Left,Right,Value>(left:Expression<Left>,
     right:Expression<Right>) < BinaryExpression<Left,Right,Value>(left,
     right) {
-  function graft(child:Delay) -> Expression<Value> {
+  function graft(child:Delay?) -> Expression<Value> {
     return dot(left.graft(child), right.graft(child));
   }
 
@@ -16,19 +16,19 @@ final class Dot<Left,Right,Value>(left:Expression<Left>,
     return (d*r, d*l);
   }
 
-  function graftDotGaussian() -> TransformDot<DelayMultivariateGaussian>? {
+  function graftDotGaussian(child:Delay?) -> TransformDot<DelayMultivariateGaussian>? {
     y:TransformLinearMultivariate<DelayMultivariateGaussian>?;
     z:DelayMultivariateGaussian?;
     
-    if (y <- right.graftLinearMultivariateGaussian())? {
+    if (y <- right.graftLinearMultivariateGaussian(child))? {
       return TransformDot<DelayMultivariateGaussian>(y!.A*left, y!.x,
           dot(y!.c, left));
-    } else if (y <- left.graftLinearMultivariateGaussian())? {
+    } else if (y <- left.graftLinearMultivariateGaussian(child))? {
       return TransformDot<DelayMultivariateGaussian>(y!.A*right, y!.x,
           dot(y!.c, right));
-    } else if (z <- right.graftMultivariateGaussian())? {
+    } else if (z <- right.graftMultivariateGaussian(child))? {
       return TransformDot<DelayMultivariateGaussian>(left, z!, Boxed(0.0));
-    } else if (z <- left.graftMultivariateGaussian())? {
+    } else if (z <- left.graftMultivariateGaussian(child))? {
       return TransformDot<DelayMultivariateGaussian>(right, z!, Boxed(0.0));
     }
     return nil;

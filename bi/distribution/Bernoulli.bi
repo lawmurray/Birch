@@ -7,12 +7,12 @@ final class Bernoulli(ρ:Expression<Real>) < Distribution<Boolean> {
    */
   ρ:Expression<Real> <- ρ;
 
-  function graft() {
+  function graft(child:Delay?) {
     if delay? {
       delay!.prune();
     } else {
       m:DelayBeta?;
-      if (m <- ρ.graftBeta())? {
+      if (m <- ρ.graftBeta(child))? {
         delay <- DelayBetaBernoulli(future, futureUpdate, m!);
       } else {
         delay <- DelayBernoulli(future, futureUpdate, ρ);

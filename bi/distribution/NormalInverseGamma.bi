@@ -42,12 +42,12 @@ final class NormalInverseGamma(μ:Expression<Real>, a2:Expression<Real>,
    */
   σ2:InverseGamma(α, β);
   
-  function graft() {
+  function graft(child:Delay?) {
     if delay? {
       delay!.prune();
     } else {
       delay <- DelayNormalInverseGamma(future, futureUpdate, μ, a2,
-          σ2.graftInverseGamma()!);
+          σ2.graftInverseGamma(child)!);
     }
   }
 }

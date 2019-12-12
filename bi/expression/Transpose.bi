@@ -11,7 +11,7 @@ final class Transpose<Argument,Value>(x:Expression<Argument>) <
     return single.rows();
   }
 
-  function graft(child:Delay) -> Expression<Value> {
+  function graft(child:Delay?) -> Expression<Value> {
     return transpose(single.graft(child));
   }
 

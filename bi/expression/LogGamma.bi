@@ -3,7 +3,7 @@
  */
 final class LogGamma<Argument,Value>(x:Expression<Argument>) <
     UnaryExpression<Argument,Value>(x) {
-  function graft(child:Delay) -> Expression<Value> {
+  function graft(child:Delay?) -> Expression<Value> {
     return lgamma(single.graft(child));
   }
 
