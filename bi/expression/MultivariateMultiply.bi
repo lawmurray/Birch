@@ -7,6 +7,10 @@ final class MultivariateMultiply<Left,Right,Value>(left:Expression<Left>,
     return left.rows();
   }
   
+  function graft(child:Delay) -> Expression<Value> {
+    return left.graft(child)*right.graft(child);
+  }
+
   function doValue(l:Left, r:Right) -> Value {
     return l*r;
   }

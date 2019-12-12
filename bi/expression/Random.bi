@@ -35,14 +35,9 @@ final class Random<Value> < Expression<Value> {
   dfdx'':Value?;
   
   /**
-   * Lazy log-pdf function.
+   * Contribution to the log acceptance ratio?
    */
-  p:Expression<Real>?;
-    
-  /**
-   * Has the contribution to the acceptance ratio been counted?
-   */
-  ratioIncluded:Boolean <- false;
+  α:Real?;
 
   /**
    * Value assignment.
@@ -127,7 +122,8 @@ final class Random<Value> < Expression<Value> {
         /* first time this has been encountered in the gradient computation,
          * propagate into its prior */
         dfdx' <- d;
-        p!.pilot();
+        auto p <- dist!.lazy(this);
+        α <- -p!.pilot();
         p!.gradPilot(1.0);
       } else {
         /* second or subsequent time this has been encountered in the gradient
@@ -148,6 +144,7 @@ final class Random<Value> < Expression<Value> {
         x'' <- dist!.propose();  // simulate to recurse through prior but...
         if dfdx'? {
           x'' <- simulate_propose(x'!, dfdx'!);  // ...replace with local proposal
+          α <- α! - logpdf_propose(x''!, x'!, dfdx'!);
         }
       }
       return x''!;
@@ -164,7 +161,8 @@ final class Random<Value> < Expression<Value> {
         /* first time this has been encountered in the gradient computation,
          * propagate into its prior */
         dfdx'' <- d;
-        p!.propose();
+        auto p <- dist!.lazy(this);
+        α <- α! + p!.propose();
         p!.gradPropose(1.0);
       } else {
         /* second or subsequent time this has been encountered in the gradient
@@ -176,16 +174,15 @@ final class Random<Value> < Expression<Value> {
   }
   
   function ratio() -> Real {
-    if ratioIncluded || !x'? || !x''? {
-      return 0.0;
-    } else {
-      ratioIncluded <- true;
-      auto α <- p!.propose() - p!.pilot() + p!.ratio();
-      if dfdx'? && dfdx''? {
-        α <- α + logpdf_propose(x'!, x''!, dfdx''!) -
-            logpdf_propose(x''!, x'!, dfdx'!);
+    if α? {
+      if dfdx''? {
+        α <- α! + logpdf_propose(x'!, x''!, dfdx''!);
       }
-      return α;
+      auto result <- α!;
+      α <- nil;
+      return result;
+    } else {
+      return 0.0;
     }
   }
   
@@ -197,8 +194,8 @@ final class Random<Value> < Expression<Value> {
       dfdx' <- dfdx'';
       x'' <- nil;
       dfdx'' <- nil;
-      ratioIncluded <- false;
-      p!.accept();
+      α <- nil;
+      dist!.lazy(this)!.accept();
     }
   }
 
@@ -208,8 +205,8 @@ final class Random<Value> < Expression<Value> {
     } else if x''? {
       x'' <- nil;
       dfdx'' <- nil;
-      ratioIncluded <- false;
-      p!.reject();
+      α <- nil;
+      dist!.lazy(this)!.reject();
     }
   }
 
@@ -222,26 +219,18 @@ final class Random<Value> < Expression<Value> {
       dfdx' <- nil;
       x'' <- nil;
       dfdx'' <- nil;
-      ratioIncluded <- false;
-      
-      p!.clamp();
-      p <- nil;
-      
+      α <- nil;
       dist!.set(x!);
+      dist!.lazy(this)!.clamp();
       dist <- nil;
     }
   }
 
-  function graft(child:Delay) {
-    if dist? {
-      dist!.graft(child);
-    }
+  function graft(child:Delay) -> Expression<Value> {
     if x? {
-      // nothing to do
-    } else if !p? {
-      assert dist?;
-      p <- dist!.lazy(this);
-      p!.graft(child);
+      return Boxed(x!);
+    } else {
+      return dist!.graft(child);
     }
   }
 

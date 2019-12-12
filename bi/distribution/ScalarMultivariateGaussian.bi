@@ -18,25 +18,15 @@ final class ScalarMultivariateGaussian(μ:Expression<Real[_]>,
    * Covariance scale.
    */
   σ2:Expression<Real> <- σ2;
-  
-  function valueForward() -> Real[_] {
-    assert !delay?;
-    return simulate_multivariate_gaussian(μ, Σ.value()*σ2.value());
-  }
-
-  function observeForward(x:Real[_]) -> Real {
-    assert !delay?;
-    return logpdf_multivariate_gaussian(x, μ, Σ.value()*σ2.value());
-  }
-  
-  function graft(force:Boolean) {
+    
+  function graft() {
     if delay? {
       delay!.prune();
     } else {
       s1:DelayInverseGamma?;
       if (s1 <- σ2.graftInverseGamma())? {
         delay <- DelayMultivariateNormalInverseGamma(future, futureUpdate, μ, Σ, s1!);
-      } else if force {
+      } else {
         delay <- DelayMultivariateGaussian(future, futureUpdate, μ, Σ*σ2);
       }
     }

@@ -12,18 +12,8 @@ final class IndependentRowMatrixGaussian(M:Expression<Real[_,_]>,
    * Among-column covariance.
    */
   V:Expression<Real[_,_]> <- V;
-  
-  function valueForward() -> Real[_,_] {
-    assert !delay?;
-    return simulate_matrix_gaussian(M, V);
-  }
-
-  function observeForward(X:Real[_,_]) -> Real {
-    assert !delay?;
-    return logpdf_matrix_gaussian(X, M, V);
-  }
-  
-  function graft(force:Boolean) {
+    
+  function graft() {
     if delay? {
       delay!.prune();
     } else {
@@ -37,7 +27,7 @@ final class IndependentRowMatrixGaussian(M:Expression<Real[_,_]>,
         delay <- DelayMatrixNormalInverseWishartMatrixGaussian(future, futureUpdate, m2!);
       } else if (s1 <- V.graftInverseWishart())? {
         delay <- DelayMatrixNormalInverseWishart(future, futureUpdate, M, identity(M.rows()), s1!);
-      } else if force {
+      } else {
         delay <- DelayMatrixGaussian(future, futureUpdate, M, identity(M.rows()), V);
       }
     }

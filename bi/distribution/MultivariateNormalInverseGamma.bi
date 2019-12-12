@@ -43,21 +43,11 @@ final class MultivariateNormalInverseGamma(μ:Expression<Real[_]>,
    * Covariance.
    */
   σ2:InverseGamma(α, β);
-  
-  function valueForward() -> Real[_] {
-    assert !delay?;
-    return simulate_multivariate_normal_inverse_gamma(μ, llt(Σ), σ2.α, σ2.β);
-  }
-
-  function observeForward(x:Real[_]) -> Real {
-    assert !delay?;
-    return logpdf_multivariate_normal_inverse_gamma(x, μ, llt(Σ), σ2.α, σ2.β);
-  }
-  
-  function graft(force:Boolean) {
+    
+  function graft() {
     if delay? {
       delay!.prune();
-    } else if force {
+    } else {
       delay <- DelayMultivariateNormalInverseGamma(future, futureUpdate, μ,
           Σ, σ2.graftInverseGamma()!);
     }

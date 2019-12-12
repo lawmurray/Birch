@@ -24,17 +24,17 @@ abstract class Distribution<Value> {
   delay:DelayValue<Value>?;
 
   function rows() -> Integer {
-    graft(true);
+    graft();
     return delay!.rows();
   }
   
   function columns() -> Integer {
-    graft(true);
+    graft();
     return delay!.columns();
   }
 
   function value() -> Value {
-    graft(true);
+    graft();
     return delay!.value();
   }
 
@@ -132,7 +132,7 @@ abstract class Distribution<Value> {
    * giving the log pdf (or pmf) of that variate under the distribution.
    */
   function observe(x:Value) -> Real {
-    graft(true);
+    graft();
     auto w <- delay!.observe(x);
     return w;
   }
@@ -143,7 +143,7 @@ abstract class Distribution<Value> {
    * giving the log pdf (or pmf) of that variate under the distribution.
    */
   function observeWithDowndate(x:Value) -> Real {
-    graft(true);
+    graft();
     auto w <- delay!.observeWithDowndate(x);
     return w;
   }
@@ -154,7 +154,7 @@ abstract class Distribution<Value> {
    * Return: The simulated value.
    */
   function simulate() -> Value {
-    graft(true);
+    graft();
     return delay!.simulate();
   }
 
@@ -164,7 +164,7 @@ abstract class Distribution<Value> {
    * Return: The value.
    */
   function update(x:Value) {
-    graft(true);
+    graft();
     delay!.update(x);
   }
 
@@ -175,7 +175,7 @@ abstract class Distribution<Value> {
    * - x: The value.
    */
   function downdate(x:Value) {
-    graft(true);
+    graft();
     delay!.downdate(x);
   }
 
@@ -187,7 +187,7 @@ abstract class Distribution<Value> {
    * Return: the log probability density (or mass).
    */
   function logpdf(x:Value) -> Real {
-    graft(true);
+    graft();
     return delay!.logpdf(x);
   }
 
@@ -199,7 +199,7 @@ abstract class Distribution<Value> {
    * Return: the probability density (or mass).
    */
   function pdf(x:Value) -> Real {
-    graft(true);
+    graft();
     return delay!.pdf(x);
   }
 
@@ -211,7 +211,7 @@ abstract class Distribution<Value> {
    * Return: the cumulative probability.
    */
   function cdf(x:Value) -> Real? {
-    graft(true);
+    graft();
     return delay!.cdf(x);
   }
 
@@ -223,7 +223,7 @@ abstract class Distribution<Value> {
    * Return: the quantile.
    */
   function quantile(p:Real) -> Value? {
-    graft(true);
+    graft();
     return delay!.quantile(p);
   }
   
@@ -231,7 +231,7 @@ abstract class Distribution<Value> {
    * Finite lower bound of the support of this node, if supported.
    */
   function lower() -> Value? {
-    graft(true);
+    graft();
     return delay!.lower();
   }
   
@@ -239,29 +239,9 @@ abstract class Distribution<Value> {
    * Finite upper bound of the support of this node, if supported.
    */
   function upper() -> Value? {
-    graft(true);
+    graft();
     return delay!.upper();
   }
-
-  /**
-   * As value(), but forcing a forward simulation. This requires that the
-   * distribution has not already grafted a node onto the delayed sampling
-   * graph. To ensure consistency it may, as a side effect, realize one
-   * or more nodes on that graph. This is typically useful where:
-   *
-   *   * only one variate will be simulated from the distribution, or
-   *   * there are no upstream nodes to marginalize.
-   *
-   * In these situations delayed sampling will not provide any benefit, and
-   * this function avoids the overhead of delayed sampling graph updates.
-   */
-  abstract function valueForward() -> Value;
-
-  /**
-   * As observe(), but forcing a forward evaluation. See valueForward() for
-   * further details.
-   */
-  abstract function observeForward(x:Value) -> Real;
   
   /**
    * Graft this onto the delayed sampling graph.
@@ -270,19 +250,19 @@ abstract class Distribution<Value> {
    *   graph, even if it has no parent. If false, no node is grafted in this
    *   case.
    */
-  abstract function graft(force:Boolean);
+  abstract function graft();
 
   /**
    * Graft this onto the delayed sampling graph for a possible move.
    *
    * - child: The delayed sampling node that initiated the graft.
    */
-  final function graft(child:Delay) {
+  final function graft(child:Delay) -> Expression<Value> {
     if delay? && delay!.child == child {
       // occurs when a Random appears more than once in an expression, don't
       // prune or graft again
     } else {
-      graft(true);
+      graft();
       delay!.setChild(child);
     }
   }
@@ -352,7 +332,7 @@ abstract class Distribution<Value> {
   }
 
   function write(buffer:Buffer) {
-    graft(true);
+    graft();
     delay!.write(buffer);
   }
 }

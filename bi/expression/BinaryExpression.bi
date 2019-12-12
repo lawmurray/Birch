@@ -136,11 +136,6 @@ abstract class BinaryExpression<Left,Right,Value>(left:Expression<Left>,
     }
   }
 
-  final function graft(child:Delay) {
-    left.graft(child);
-    right.graft(child);
-  }
-
   /**
    * Evaluate a value.
    *

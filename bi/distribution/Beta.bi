@@ -12,20 +12,10 @@ final class Beta(α:Expression<Real>, β:Expression<Real>) < Distribution<Real> 
    */
   β:Expression<Real> <- β;
 
-  function valueForward() -> Real {
-    assert !delay?;
-    return simulate_beta(α, β);
-  }
-
-  function observeForward(x:Real) -> Real {
-    assert !delay?;
-    return logpdf_beta(x, α, β);
-  }
-
-  function graft(force:Boolean) {
+  function graft() {
     if delay? {
       delay!.prune();
-    } else if force {
+    } else {
       delay <- DelayBeta(future, futureUpdate, α, β);
     }
   }

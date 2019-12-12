@@ -13,20 +13,10 @@ final class IndependentUniformInteger(l:Expression<Integer[_]>,
    */
   u:Expression<Integer[_]> <- u;
 
-  function valueForward() -> Integer[_] {
-    assert !delay?;
-    return simulate_independent_uniform_int(l, u);
-  }
-
-  function observeForward(x:Integer[_]) -> Real {
-    assert !delay?;
-    return logpdf_independent_uniform_int(x, l, u);
-  }
-
-  function graft(force:Boolean) {
+  function graft() {
     if delay? {
       delay!.prune();
-    } else if force {
+    } else {
       delay <- DelayIndependentUniformInteger(future, futureUpdate, l, u);
     }
   }

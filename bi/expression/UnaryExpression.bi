@@ -118,10 +118,6 @@ abstract class UnaryExpression<Argument,Value>(single:Expression<Argument>) <
       single.clamp();
     }
   }
-
-  final function graft(child:Delay) {
-    single.graft(child);
-  }
   
   /**
    * Evaluate a value.

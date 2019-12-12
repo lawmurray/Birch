@@ -136,7 +136,7 @@ abstract class Expression<Value> {
    *
    * - child: The delayed sampling node that initiated the graft.
    */
-  abstract function graft(child:Delay);
+  abstract function graft(child:Delay) -> Expression<Value>;
 
   /**
    * If this expression is grafted onto the delayed sampling graph, get the

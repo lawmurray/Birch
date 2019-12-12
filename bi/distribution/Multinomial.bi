@@ -12,24 +12,14 @@ final class Multinomial(n:Expression<Integer>, ρ:Expression<Real[_]>) < Distrib
    */
   ρ:Expression<Real[_]> <- ρ;
 
-  function valueForward() -> Integer[_] {
-    assert !delay?;
-    return simulate_multinomial(n, ρ);
-  }
-
-  function observeForward(x:Integer[_]) -> Real {
-    assert !delay?;
-    return logpdf_multinomial(x, n, ρ);
-  }
-
-  function graft(force:Boolean) {
+  function graft() {
     if delay? {
       delay!.prune();
     } else {
       m:DelayDirichlet?;
       if (m <- ρ.graftDirichlet())? {
         delay <- DelayDirichletMultinomial(future, futureUpdate, n, m!);
-      } else if force {
+      } else {
         delay <- DelayMultinomial(future, futureUpdate, n, ρ);
       }
     }

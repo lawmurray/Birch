@@ -39,20 +39,10 @@ final class InverseWishart(Ψ:Expression<Real[_,_]>, k:Expression<Real>) <
    */
   k:Expression<Real> <- k;
 
-  function valueForward() -> Real[_,_] {
-    assert !delay?;
-    return simulate_inverse_wishart(Ψ, k);
-  }
-
-  function observeForward(X:Real[_,_]) -> Real {
-    assert !delay?;
-    return logpdf_inverse_wishart(X, Ψ, k);
-  }
-
-  function graft(force:Boolean) {
+  function graft() {
     if delay? {
       delay!.prune();
-    } else if force {
+    } else {
       delay <- DelayInverseWishart(future, futureUpdate, Ψ, k);
     }
   }

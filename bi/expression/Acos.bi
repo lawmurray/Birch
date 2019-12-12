@@ -3,6 +3,10 @@
  */
 final class Acos<Argument,Value>(x:Expression<Argument>) <
     UnaryExpression<Argument,Value>(x) {  
+  function graft(child:Delay) -> Expression<Value> {
+    return acos(single.graft(child));
+  }
+    
   function doValue(x:Argument) -> Value {
     return acos(x);
   }

@@ -45,25 +45,10 @@ final class IndependentInverseGamma(α:Expression<Real>,
    */
   β:Expression<Real[_]> <- β;
 
-  function valueForward() -> Real[_] {
-    assert !delay?;
-    return transform<Real>(β, @(b:Real) -> Real {
-        return simulate_inverse_gamma(α, b); });
-  }
-
-  function observeForward(x:Real[_]) -> Real {
-    assert !delay?;
-    return transform_reduce<Real>(x, β, 0.0, @(a:Real, b:Real) -> Real {
-        return a + b;
-      }, @(x:Real, b:Real) -> Real {
-        return logpdf_inverse_gamma(x, α, b);
-      });
-  }
-
-  function graft(force:Boolean) {
+  function graft() {
     if delay? {
       delay!.prune();
-    } else if force {
+    } else {
       delay <- DelayIndependentInverseGamma(future, futureUpdate, α, β);
     }
   }

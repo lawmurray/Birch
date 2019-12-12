@@ -12,20 +12,10 @@ final class IndependentUniform(l:Expression<Real[_]>, u:Expression<Real[_]>) < D
    */
   u:Expression<Real[_]> <- u;
 
-  function valueForward() -> Real[_] {
-    assert !delay?;
-    return simulate_independent_uniform(l, u);
-  }
-
-  function observeForward(x:Real[_]) -> Real {
-    assert !delay?;
-    return logpdf_independent_uniform(x, l, u);
-  }
-
-  function graft(force:Boolean) {
+  function graft() {
     if delay? {
       delay!.prune();
-    } else if force {
+    } else {
       delay <- DelayIndependentUniform(future, futureUpdate, l, u);
     }
   }

@@ -3,6 +3,10 @@
  */
 final class Pow<Left,Right,Value>(left:Expression<Left>,
     right:Expression<Right>) < BinaryExpression<Left,Right,Value>(left, right) {  
+  function graft(child:Delay) -> Expression<Value> {
+    return pow(left.graft(child), right.graft(child));
+  }
+
   function doValue(l:Left, r:Right) -> Value {
     return pow(l, r);
   }

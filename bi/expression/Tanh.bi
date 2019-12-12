@@ -3,6 +3,10 @@
  */
 final class Tanh<Argument,Value>(x:Expression<Argument>) <
     UnaryExpression<Argument,Value>(x) {  
+   function graft(child:Delay) -> Expression<Value> {
+    return tanh(single.graft(child));
+  }
+
   function doValue(x:Argument) -> Value {
     return tanh(x);
   }

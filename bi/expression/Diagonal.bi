@@ -15,6 +15,10 @@ final class Diagonal<Argument,Value>(x:Expression<Argument>, n:Integer) <
   function columns() -> Integer {
     return n;
   }
+
+  function graft(child:Delay) -> Expression<Value> {
+    return diagonal(single.graft(child), n);
+  }
   
   function doValue(x:Argument) -> Value {
     return diagonal(x, n);

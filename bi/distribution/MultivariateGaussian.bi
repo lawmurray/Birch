@@ -12,18 +12,8 @@ final class MultivariateGaussian(μ:Expression<Real[_]>, Σ:Expression<Real[_,_]
    * Covariance.
    */
   Σ:Expression<Real[_,_]> <- Σ;
-  
-  function valueForward() -> Real[_] {
-    assert !delay?;
-    return simulate_multivariate_gaussian(μ, Σ);
-  }
-
-  function observeForward(x:Real[_]) -> Real {
-    assert !delay?;
-    return logpdf_multivariate_gaussian(x, μ, Σ);
-  }
-  
-  function graft(force:Boolean) {
+    
+  function graft() {
     if delay? {
       delay!.prune();
     } else {
@@ -34,7 +24,7 @@ final class MultivariateGaussian(μ:Expression<Real[_]>, Σ:Expression<Real[_,_]
             futureUpdate, m1!.A, m1!.x, m1!.c, Σ);
       } else if (m3 <- μ.graftMultivariateGaussian())? {
         delay <- DelayMultivariateGaussianMultivariateGaussian(future, futureUpdate, m3!, Σ);
-      } else if force {
+      } else {
         /* try a normal inverse gamma first, then a regular Gaussian */
         if !graftMultivariateNormalInverseGamma()? {
           delay <- DelayMultivariateGaussian(future, futureUpdate, μ, Σ);

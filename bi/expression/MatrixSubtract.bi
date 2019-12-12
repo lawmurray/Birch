@@ -12,7 +12,12 @@ final class MatrixSubtract<Left,Right,Value>(left:Expression<Left>,
     assert left.rows() == right.rows();
     return left.columns();
   }
-    
+
+  function graft(child:Delay) -> Expression<Value> {
+    return left.graft(child) - right.graft(child);
+  }
+
+
   function doValue(l:Left, r:Right) -> Value {
     return l - r;
   }

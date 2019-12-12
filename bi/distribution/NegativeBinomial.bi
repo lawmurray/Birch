@@ -13,24 +13,14 @@ class NegativeBinomial(k:Expression<Integer>, ρ:Expression<Real>) <
    */
   ρ:Expression<Real> <- ρ;
 
-  function valueForward() -> Integer {
-    assert !delay?;
-    return simulate_negative_binomial(k, ρ);
-  }
-
-  function observeForward(x:Integer) -> Real {
-    assert !delay?;
-    return logpdf_negative_binomial(x, k, ρ);
-  }
-
-  function graft(force:Boolean) {
+  function graft() {
     if delay? {
       delay!.prune();
     } else {
       ρ1:DelayBeta?;
       if (ρ1 <- ρ.graftBeta())? {
         delay <- DelayBetaNegativeBinomial(future, futureUpdate, k, ρ1!);
-      } else if force {
+      } else {
         delay <- DelayNegativeBinomial(future, futureUpdate, k, ρ);
       }
     }

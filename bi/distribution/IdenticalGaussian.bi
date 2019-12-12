@@ -13,18 +13,8 @@ final class IdenticalGaussian(μ:Expression<Real[_]>,
    * Variance.
    */
   σ2:Expression<Real> <- σ2;
-  
-  function valueForward() -> Real[_] {
-    assert !delay?;
-    return simulate_multivariate_gaussian(μ, σ2);
-  }
-
-  function observeForward(x:Real[_]) -> Real {
-    assert !delay?;
-    return logpdf_multivariate_gaussian(x, μ, σ2);
-  }
-  
-  function graft(force:Boolean) {
+    
+  function graft() {
     if delay? {
       delay!.prune();
     } else {
@@ -51,7 +41,7 @@ final class IdenticalGaussian(μ:Expression<Real[_]>,
       } else if (s1 <- σ2.graftInverseGamma())? {
         delay <- DelayMultivariateNormalInverseGamma(future, futureUpdate, μ,
             identity(μ.rows()), s1!);
-      } else if force {
+      } else {
         delay <- DelayMultivariateGaussian(future, futureUpdate, μ,
             diagonal(σ2, μ.rows()));
       }

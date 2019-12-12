@@ -41,21 +41,11 @@ final class NormalInverseGamma(μ:Expression<Real>, a2:Expression<Real>,
    * Variance.
    */
   σ2:InverseGamma(α, β);
-
-  function valueForward() -> Real {
-    assert !delay?;
-    return simulate_gaussian(μ, a2*σ2.value());
-  }
-
-  function observeForward(x:Real) -> Real {
-    assert !delay?;
-    return logpdf_gaussian(x, μ, a2*σ2.value());
-  }
   
-  function graft(force:Boolean) {
+  function graft() {
     if delay? {
       delay!.prune();
-    } else if force {
+    } else {
       delay <- DelayNormalInverseGamma(future, futureUpdate, μ, a2,
           σ2.graftInverseGamma()!);
     }

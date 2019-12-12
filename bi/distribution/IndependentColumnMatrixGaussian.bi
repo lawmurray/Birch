@@ -17,18 +17,8 @@ final class IndependentColumnMatrixGaussian(M:Expression<Real[_,_]>,
    * Among-column variances.
    */
   σ2:Expression<Real[_]> <- v;
-  
-  function valueForward() -> Real[_,_] {
-    assert !delay?;
-    return simulate_matrix_gaussian(M, U, σ2);
-  }
-
-  function observeForward(X:Real[_,_]) -> Real {
-    assert !delay?;
-    return logpdf_matrix_gaussian(X, M, U, σ2);
-  }
-  
-  function graft(force:Boolean) {
+    
+  function graft() {
     if delay? {
       delay!.prune();
     } else {
@@ -36,7 +26,7 @@ final class IndependentColumnMatrixGaussian(M:Expression<Real[_,_]>,
       if (s1 <- σ2.graftIndependentInverseGamma())? {
         delay <- DelayMatrixNormalInverseGamma(future, futureUpdate, M, U,
             s1!);
-      } else if force {
+      } else {
         delay <- DelayMatrixGaussian(future, futureUpdate, M, U,
             diagonal(σ2));
       }

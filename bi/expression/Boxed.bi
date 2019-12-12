@@ -55,8 +55,8 @@ final class Boxed<Value> < Expression<Value> {
     //
   }
 
-  function graft(child:Delay) {
-    //
+  function graft(child:Delay) -> Expression<Value> {
+    return Boxed(x);
   }
 }
 

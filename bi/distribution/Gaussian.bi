@@ -12,17 +12,7 @@ final class Gaussian(μ:Expression<Real>, σ2:Expression<Real>) < Distribution<R
    */
   σ2:Expression<Real> <- σ2;
 
-  function valueForward() -> Real {
-    assert !delay?;
-    return simulate_gaussian(μ, σ2);
-  }
-
-  function observeForward(x:Real) -> Real {
-    assert !delay?;
-    return logpdf_gaussian(x, μ, σ2);
-  }
-
-  function graft(force:Boolean) {
+  function graft() {
     if delay? {
       delay!.prune();
     } else {
@@ -45,7 +35,7 @@ final class Gaussian(μ:Expression<Real>, σ2:Expression<Real>) < Distribution<R
         delay <- DelayGaussianGaussian(future, futureUpdate, m6!, σ2);
       } else if (s2 <- σ2.graftInverseGamma())? {
         delay <- DelayNormalInverseGamma(future, futureUpdate, μ, 1.0, s2!);
-      } else if force {
+      } else {
         delay <- DelayGaussian(future, futureUpdate, μ, σ2);
       }
     }

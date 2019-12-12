@@ -19,17 +19,7 @@ final class ScalarGaussian(μ:Expression<Real>, σ2:Expression<Real>,
    */
   τ2:Expression<Real> <- τ2;
   
-  function valueForward() -> Real {
-    assert !delay?;
-    return simulate_gaussian(μ, σ2.value()*τ2.value());
-  }
-
-  function observeForward(x:Real) -> Real {
-    assert !delay?;
-    return logpdf_gaussian(x, μ, σ2.value()*τ2.value());
-  }
-
-  function graft(force:Boolean) {
+  function graft() {
     if delay? {
       delay!.prune();
     } else {
@@ -38,7 +28,7 @@ final class ScalarGaussian(μ:Expression<Real>, σ2:Expression<Real>,
         delay <- DelayNormalInverseGamma(future, futureUpdate, μ, τ2, s1!);
       } else if (s1 <- τ2.graftInverseGamma())? {
         delay <- DelayNormalInverseGamma(future, futureUpdate, μ, σ2, s1!);
-      } else if force {
+      } else {
         delay <- DelayGaussian(future, futureUpdate, μ, σ2*τ2);
       }
     }

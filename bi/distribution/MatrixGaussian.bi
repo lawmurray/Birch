@@ -17,25 +17,15 @@ final class MatrixGaussian(M:Expression<Real[_,_]>, U:Expression<Real[_,_]>,
    * Among-column covariance.
    */
   V:Expression<Real[_,_]> <- V;
-  
-  function valueForward() -> Real[_,_] {
-    assert !delay?;
-    return simulate_matrix_gaussian(M, U, V);
-  }
-
-  function observeForward(X:Real[_,_]) -> Real {
-    assert !delay?;
-    return logpdf_matrix_gaussian(X, M, U, V);
-  }
-  
-  function graft(force:Boolean) {
+    
+  function graft() {
     if delay? {
       delay!.prune();
     } else {
       s1:DelayInverseWishart?;
       if (s1 <- V.graftInverseWishart())? {
         delay <- DelayMatrixNormalInverseWishart(future, futureUpdate, M, U, s1!);
-      } else if force {
+      } else {
         delay <- DelayMatrixGaussian(future, futureUpdate, M, U, V);
       }
     }

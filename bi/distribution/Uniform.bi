@@ -12,20 +12,10 @@ final class Uniform(l:Expression<Real>, u:Expression<Real>) < Distribution<Real>
    */
   u:Expression<Real> <- u;
 
-  function valueForward() -> Real {
-    assert !delay?;
-    return simulate_uniform(l, u);
-  }
-
-  function observeForward(x:Real) -> Real {
-    assert !delay?;
-    return logpdf_uniform(x, l, u);
-  }
-
-  function graft(force:Boolean) {
+  function graft() {
     if delay? {
       delay!.prune();
-    } else if force {
+    } else {
       delay <- DelayUniform(future, futureUpdate, l, u);
     }
   }

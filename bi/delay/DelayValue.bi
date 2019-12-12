@@ -122,7 +122,6 @@ abstract class DelayValue<Value>(future:Value?, futureUpdate:Boolean) < Delay {
   function observe(x:Value) -> Real {
     assert !this.x?;
     assert !this.future?;
-
     prune();
     this.x <- x;
     this.futureUpdate <- true;
@@ -138,7 +137,6 @@ abstract class DelayValue<Value>(future:Value?, futureUpdate:Boolean) < Delay {
   function observeWithDowndate(x:Value) -> Real {
     assert !this.x?;
     assert !this.future?;
-
     prune();
     this.x <- x;
     this.futureUpdate <- false;

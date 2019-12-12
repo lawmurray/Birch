@@ -62,7 +62,6 @@ abstract class DelayMove<Base>(future:Value?, futureUpdate:Boolean) <
     futureUpdate <- true;
     futureMove <- true;
     p <- lazy(Boxed(x));
-    p!.graft(this);
     return p!.pilot();
   }
 
@@ -74,7 +73,6 @@ abstract class DelayMove<Base>(future:Value?, futureUpdate:Boolean) <
     futureUpdate <- false;
     futureMove <- true;
     p <- lazy(Boxed(x));
-    p!.graft(this);
     return p!.pilot();
   }
 

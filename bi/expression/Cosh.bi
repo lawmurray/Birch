@@ -3,6 +3,10 @@
  */
 final class Cosh<Argument,Value>(x:Expression<Argument>) <
     UnaryExpression<Argument,Value>(x) {  
+  function graft(child:Delay) -> Expression<Value> {
+    return cosh(single.graft(child));
+  }
+
   function doValue(x:Argument) -> Value {
     return cosh(x);
   }

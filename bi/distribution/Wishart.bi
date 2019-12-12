@@ -13,20 +13,10 @@ final class Wishart(Ψ:Expression<Real[_,_]>, k:Expression<Real>) <
    */
   k:Expression<Real> <- k;
 
-  function valueForward() -> Real[_,_] {
-    assert !delay?;
-    return simulate_wishart(Ψ, k);
-  }
-
-  function observeForward(X:Real[_,_]) -> Real {
-    assert !delay?;
-    return logpdf_wishart(X, Ψ, k);
-  }
-
-  function graft(force:Boolean) {
+  function graft() {
     if delay? {
       delay!.prune();
-    } else if force {
+    } else {
       delay <- DelayWishart(future, futureUpdate, Ψ, k);
     }
   }

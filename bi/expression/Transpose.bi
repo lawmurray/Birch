@@ -10,7 +10,11 @@ final class Transpose<Argument,Value>(x:Expression<Argument>) <
   function columns() -> Integer {
     return single.rows();
   }
-    
+
+  function graft(child:Delay) -> Expression<Value> {
+    return transpose(single.graft(child));
+  }
+
   function doValue(x:Argument) -> Value {
     return transpose(x);
   }

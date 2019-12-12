@@ -12,20 +12,10 @@ final class InverseGamma(α:Expression<Real>, β:Expression<Real>) < Distributio
    */
   β:Expression<Real> <- β;
 
-  function valueForward() -> Real {
-    assert !delay?;
-    return simulate_inverse_gamma(α, β);
-  }
-
-  function observeForward(x:Real) -> Real {
-    assert !delay?;
-    return logpdf_inverse_gamma(x, α, β);
-  }
-
-  function graft(force:Boolean) {
+  function graft() {
     if delay? {
       delay!.prune();
-    } else if force {
+    } else {
       delay <- DelayInverseGamma(future, futureUpdate, α, β);
     }
   }

@@ -12,24 +12,14 @@ final class Gamma(k:Expression<Real>, θ:Expression<Real>) < Distribution<Real> 
    */
   θ:Expression<Real> <- θ;
 
-  function valueForward() -> Real {
-    assert !delay?;
-    return simulate_gamma(k, θ);
-  }
-
-  function observeForward(x:Real) -> Real {
-    assert !delay?;
-    return logpdf_gamma(x, k, θ);
-  }
-
-  function graft(force:Boolean) {
+  function graft() {
     if delay? {
       delay!.prune();
     } else {
       θ1:DelayInverseGamma?;
       if (θ1 <- θ.graftInverseGamma())? {
         delay <- DelayInverseGammaGamma(future, futureUpdate, k, θ1!);
-      } else if force {
+      } else {
         delay <- DelayGamma(future, futureUpdate, k, θ);
       }
     }
