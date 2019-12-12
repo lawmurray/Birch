@@ -38,7 +38,7 @@ bi::InitialValueException::InitialValueException(const ParameterType* o) {
     buf << o->loc;
   }
   buf << "note: in\n";
-  buf << o << "\n";
+  buf << o;
 
   if (o->value->loc) {
     buf << o->value->loc;

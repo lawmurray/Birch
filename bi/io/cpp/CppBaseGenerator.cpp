@@ -349,11 +349,19 @@ void bi::CppBaseGenerator::visit(const Member* o) {
 }
 
 void bi::CppBaseGenerator::visit(const This* o) {
-  middle("self");
+  if (inConstructor) {
+    middle("this");
+  } else {
+    middle("self");
+  }
 }
 
 void bi::CppBaseGenerator::visit(const Super* o) {
-  middle("self");
+  if (inConstructor) {
+    middle("this");
+  } else {
+    middle("self");
+  }
 }
 
 void bi::CppBaseGenerator::visit(const Global* o) {
