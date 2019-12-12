@@ -13,39 +13,12 @@ final class Random<Value> < Expression<Value> {
    * Final value.
    */
   x:Value?;
-  
-  /**
-   * Piloted value.
-   */
-  x':Value?;
-  
-  /**
-   * Gradient at the piloted value.
-   */
-  dfdx':Value?;
-  
-  /**
-   * Proposed value.
-   */
-  x'':Value?;
-  
-  /**
-   * Gradient at the proposed value.
-   */
-  dfdx'':Value?;
-  
-  /**
-   * Contribution to the log acceptance ratio?
-   */
-  α:Real?;
 
   /**
    * Value assignment.
    */
   operator <- x:Value {
     assert !dist?;
-    assert !x'?;
-    assert !x''?;
     this.x <- x;
   }
 
@@ -54,8 +27,6 @@ final class Random<Value> < Expression<Value> {
    */
   operator <- x:Value? {
     assert !dist?;
-    assert !x'?;
-    assert !x''?;
     this.x <- x;
   }
 
@@ -95,135 +66,42 @@ final class Random<Value> < Expression<Value> {
     if !x? {
       x <- dist!.value();
     }
-    assert !x'?;
-    assert !x''?;
     return x!;
   }
 
   function pilot() -> Value {
-    if x? {
-      return x!;
-    } else {
-      assert dist?;
-      if !x'? {
-        x' <- dist!.pilot();
-      }
-      return x'!;
-    }
-  }
-
-  function gradPilot(d:Value) -> Boolean {
-    if x? {
-      return false;
-    } else {
-      assert dist?;
-      assert x'?;
-      if !dfdx'? {
-        /* first time this has been encountered in the gradient computation,
-         * propagate into its prior */
-        dfdx' <- d;
-        auto p <- dist!.lazy(this);
-        α <- -p!.pilot();
-        p!.gradPilot(1.0);
-      } else {
-        /* second or subsequent time this has been encountered in the gradient
-         * computation; accumulate */
-        dfdx' <- dfdx'! + d;
-      }
-      return dfdx'?;
-    }
+    return value();
   }
 
   function propose() -> Value {
-    if x? {
-      return x!;
-    } else {
-      assert dist?;
-      assert x'?;
-      if !x''? {
-        x'' <- dist!.propose();  // simulate to recurse through prior but...
-        if dfdx'? {
-          x'' <- simulate_propose(x'!, dfdx'!);  // ...replace with local proposal
-          α <- α! - logpdf_propose(x''!, x'!, dfdx'!);
-        }
-      }
-      return x''!;
-    }
+    return value();
   }
-  
+
+  function gradPilot(d:Value) -> Boolean {
+    assert x?;
+    return false;
+  }
+
   function gradPropose(d:Value) -> Boolean {
-    if x? {
-      return false;
-    } else {
-      assert dist?;
-      assert x''?;
-      if dfdx'? && !dfdx''? {
-        /* first time this has been encountered in the gradient computation,
-         * propagate into its prior */
-        dfdx'' <- d;
-        auto p <- dist!.lazy(this);
-        α <- α! + p!.propose();
-        p!.gradPropose(1.0);
-      } else {
-        /* second or subsequent time this has been encountered in the gradient
-         * computation; accumulate */
-        dfdx'' <- dfdx''! + d;
-      }
-      return dfdx''?;
-    }
+    assert x?;
+    return false;
   }
   
   function ratio() -> Real {
-    if α? {
-      if dfdx''? {
-        α <- α! + logpdf_propose(x'!, x''!, dfdx''!);
-      }
-      auto result <- α!;
-      α <- nil;
-      return result;
-    } else {
-      return 0.0;
-    }
+    assert x?;
+    return 0.0;
   }
   
   function accept() {
-    if x? {
-      // nothing to do
-    } else if x''? {
-      x' <- x'';
-      dfdx' <- dfdx'';
-      x'' <- nil;
-      dfdx'' <- nil;
-      α <- nil;
-      dist!.lazy(this)!.accept();
-    }
+    assert x?;
   }
 
   function reject() {
-    if x? {
-      // nothing to do
-    } else if x''? {
-      x'' <- nil;
-      dfdx'' <- nil;
-      α <- nil;
-      dist!.lazy(this)!.reject();
-    }
+    assert x?;
   }
 
   function clamp() {
-    if x? {
-      // nothing to do
-    } else {
-      x <- x';
-      x' <- nil;
-      dfdx' <- nil;
-      x'' <- nil;
-      dfdx'' <- nil;
-      α <- nil;
-      dist!.set(x!);
-      dist!.lazy(this)!.clamp();
-      dist <- nil;
-    }
+    assert x?;
   }
 
   /**
@@ -322,7 +200,7 @@ final class Random<Value> < Expression<Value> {
       return Boxed(x!);
     } else {
       dist!.graft(child);
-      return DelayExpression<Value>(dist!.getDelay());
+      return DelayExpression<Value>(dist!.delay!);
     }
   }
 

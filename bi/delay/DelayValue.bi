@@ -12,17 +12,7 @@ abstract class DelayValue<Value>(future:Value?, futureUpdate:Boolean) < Delay {
    * Final value.
    */
   x:Value?;
-  
-  /**
-   * Piloted value.
-   */
-  x':Value?;
-  
-  /**
-   * Proposed value.
-   */
-  x'':Value?;
-   
+     
   /**
    * Future value. This is set for situations where delayed sampling
    * is used, but when ultimately realized, a particular value (this one)
@@ -72,35 +62,37 @@ abstract class DelayValue<Value>(future:Value?, futureUpdate:Boolean) < Delay {
     }
     return x!;
   }
-
-  /**
-   * Pilot value.
-   */
+  
   function pilot() -> Value {
-    if x? {
-      return x!;
-    } else {
-      assert !future?;
-      if !x'? {
-        x' <- simulatePilot();
-      }
-      return x'!;
-    }
+    return value();
   }
 
-  /**
-   * Propose value.
-   */
   function propose() -> Value {
-    if x? {
-      return x!;
-    } else {
-      assert !future?;
-      if !x''? {
-        x'' <- simulatePropose();
-      }
-      return x''!;
-    }
+    return value();
+  }
+
+  function gradPilot(d:Value) -> Boolean {
+    return false;
+  }
+
+  function gradPropose(d:Value) -> Boolean {
+    return false;
+  }
+
+  function ratio() -> Real {
+    return 0.0;
+  }
+  
+  function accept() {
+    //
+  }
+
+  function reject() {
+    //
+  }
+
+  function clamp() {
+    //
   }
   
   /**

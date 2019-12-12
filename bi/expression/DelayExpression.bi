@@ -9,6 +9,10 @@ final class DelayExpression<Value>(delay:DelayValue<Value>) <
    * Delayed sampling node.
    */
   delay:DelayValue<Value>& <- delay;
+  
+  function graft(child:Delay?) -> Expression<Value> {
+    return this;
+  }
 
   function value() -> Value {
     return delay.value();
