@@ -6,7 +6,7 @@ final class DelayPoisson(future:Integer?, futureUpdate:Boolean,
   /**
    * Rate.
    */
-  auto λ <- λ;
+  λ:Expression<Real> <- λ;
 
   function simulate() -> Integer {
     return simulate_poisson(λ.value());
@@ -49,6 +49,6 @@ final class DelayPoisson(future:Integer?, futureUpdate:Boolean,
 
 function DelayPoisson(future:Integer?, futureUpdate:Boolean,
     λ:Expression<Real>) -> DelayPoisson {
-  m:DelayPoisson(future, futureUpdate, λ);
-  return m;
+  o:DelayPoisson(future, futureUpdate, λ.graft());
+  return o;
 }

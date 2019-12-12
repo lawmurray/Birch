@@ -3,8 +3,8 @@
  */
 final class Cos<Argument,Value>(x:Expression<Argument>) <
     UnaryExpression<Argument,Value>(x) {  
-  function graft(child:Delay?) -> Expression<Value> {
-    return cos(single.graft(child));
+  function graft() -> Expression<Value> {
+    return cos(single.graft());
   }
 
   function doValue(x:Argument) -> Value {

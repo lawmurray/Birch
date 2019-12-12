@@ -12,12 +12,12 @@ final class Binomial(n:Expression<Integer>, ρ:Expression<Real>) < Distribution<
    */
   ρ:Expression<Real> <- ρ;
 
-  function graft(child:Delay?) {
+  function graft() {
     if delay? {
       delay!.prune();
     } else {
       m:DelayBeta?;
-      if (m <- ρ.graftBeta(child))? {
+      if (m <- ρ.graftBeta())? {
         delay <- DelayBetaBinomial(future, futureUpdate, n, m!);
       } else {
         delay <- DelayBinomial(future, futureUpdate, n, ρ);
@@ -25,12 +25,12 @@ final class Binomial(n:Expression<Integer>, ρ:Expression<Real>) < Distribution<
     }
   }
   
-  function graftDiscrete(child:Delay?) -> DelayDiscrete? {
-    return graftBoundedDiscrete(child);
+  function graftDiscrete() -> DelayDiscrete? {
+    return graftBoundedDiscrete();
   }
 
-  function graftBoundedDiscrete(child:Delay?) -> DelayBoundedDiscrete? {
-    graft(child);
+  function graftBoundedDiscrete() -> DelayBoundedDiscrete? {
+    graft();
     return DelayBoundedDiscrete?(delay);
   }
 }

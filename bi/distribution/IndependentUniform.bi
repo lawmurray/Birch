@@ -16,7 +16,7 @@ final class IndependentUniform(l:Expression<Real[_]>, u:Expression<Real[_]>) < D
     return l.rows();
   }
 
-  function graft(child:Delay?) {
+  function graft() {
     if delay? {
       delay!.prune();
     } else {

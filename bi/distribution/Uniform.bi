@@ -12,7 +12,7 @@ final class Uniform(l:Expression<Real>, u:Expression<Real>) < Distribution<Real>
    */
   u:Expression<Real> <- u;
 
-  function graft(child:Delay?) {
+  function graft() {
     if delay? {
       delay!.prune();
     } else {

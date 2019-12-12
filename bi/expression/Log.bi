@@ -3,8 +3,8 @@
  */
 final class Log<Argument,Value>(x:Expression<Argument>) <
     UnaryExpression<Argument,Value>(x) {  
-  function graft(child:Delay?) -> Expression<Value> {
-    return log(single.graft(child));
+  function graft() -> Expression<Value> {
+    return log(single.graft());
   }
 
   function doValue(x:Argument) -> Value {

@@ -3,8 +3,8 @@
  */
 final class Exp<Argument,Value>(x:Expression<Argument>) <
     UnaryExpression<Argument,Value>(x) {
-  function graft(child:Delay?) -> Expression<Value> {
-    return exp(single.graft(child));
+  function graft() -> Expression<Value> {
+    return exp(single.graft());
   }
 
   function doValue(x:Argument) -> Value {

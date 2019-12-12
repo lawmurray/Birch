@@ -3,8 +3,8 @@
  */
 final class Divide<Left,Right,Value>(left:Expression<Left>,
     right:Expression<Right>) < BinaryExpression<Left,Right,Value>(left, right) {  
-  function graft(child:Delay?) -> Expression<Value> {
-    return left.graft(child)/right.graft(child);
+  function graft() -> Expression<Value> {
+    return left.graft()/right.graft();
   }
 
   function doValue(l:Left, r:Right) -> Value {
@@ -15,47 +15,47 @@ final class Divide<Left,Right,Value>(left:Expression<Left>,
     return (d/r, -d*l/(r*r));
   }
 
-  function graftLinearGaussian(child:Delay?) -> TransformLinear<DelayGaussian>? {
+  function graftLinearGaussian() -> TransformLinear<DelayGaussian>? {
     y:TransformLinear<DelayGaussian>?;
     z:DelayGaussian?;
     
-    if (y <- left.graftLinearGaussian(child))? {
+    if (y <- left.graftLinearGaussian())? {
       y!.divide(right);
-    } else if (z <- left.graftGaussian(child))? {
+    } else if (z <- left.graftGaussian())? {
       y <- TransformLinear<DelayGaussian>(1.0/right, z!);
     }
     return y;
   }
 
-  function graftDotGaussian(child:Delay?) -> TransformDot<DelayMultivariateGaussian>? {
+  function graftDotGaussian() -> TransformDot<DelayMultivariateGaussian>? {
     y:TransformDot<DelayMultivariateGaussian>?;
     
-    if (y <- left.graftDotGaussian(child))? {
+    if (y <- left.graftDotGaussian())? {
       y!.divide(right);
     }
     return y;
   }
   
-  function graftLinearNormalInverseGamma(child:Delay?) ->
+  function graftLinearNormalInverseGamma() ->
       TransformLinear<DelayNormalInverseGamma>? {
     y:TransformLinear<DelayNormalInverseGamma>?;
     z:DelayNormalInverseGamma?;
     
-    if (y <- left.graftLinearNormalInverseGamma(child))? {
+    if (y <- left.graftLinearNormalInverseGamma())? {
       y!.divide(right);
-    } else if (z <- left.graftNormalInverseGamma(child))? {
+    } else if (z <- left.graftNormalInverseGamma())? {
       y <- TransformLinear<DelayNormalInverseGamma>(1.0/right, z!);
     }
     return y;
   }
 
-  function graftScaledGamma(child:Delay?) -> TransformLinear<DelayGamma>? {
+  function graftScaledGamma() -> TransformLinear<DelayGamma>? {
     y:TransformLinear<DelayGamma>?;
     z:DelayGamma?;
     
-    if (y <- left.graftScaledGamma(child))? {
+    if (y <- left.graftScaledGamma())? {
       y!.divide(right);
-    } else if (z <- left.graftGamma(child))? {
+    } else if (z <- left.graftGamma())? {
       y <- TransformLinear<DelayGamma>(1.0/right, z!);
     }
     return y;

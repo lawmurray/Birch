@@ -10,7 +10,7 @@ final class DelayExpression<Value>(delay:DelayValue<Value>) <
    */
   delay:DelayValue<Value>& <- delay;
   
-  function graft(child:Delay?) -> Expression<Value> {
+  function graft() -> Expression<Value> {
     return this;
   }
 

@@ -26,12 +26,12 @@ final class IndependentColumnMatrixGaussian(M:Expression<Real[_,_]>,
     return M.columns();
   }
 
-  function graft(child:Delay?) {
+  function graft() {
     if delay? {
       delay!.prune();
     } else {
       s1:DelayIndependentInverseGamma?;
-      if (s1 <- σ2.graftIndependentInverseGamma(child))? {
+      if (s1 <- σ2.graftIndependentInverseGamma())? {
         delay <- DelayMatrixNormalInverseGamma(future, futureUpdate, M, U,
             s1!);
       } else {
@@ -41,7 +41,7 @@ final class IndependentColumnMatrixGaussian(M:Expression<Real[_,_]>,
     }
   }
 
-  function graftMatrixGaussian(child:Delay?) -> DelayMatrixGaussian? {
+  function graftMatrixGaussian() -> DelayMatrixGaussian? {
     if delay? {
       delay!.prune();
     } else {
@@ -51,12 +51,12 @@ final class IndependentColumnMatrixGaussian(M:Expression<Real[_,_]>,
     return DelayMatrixGaussian?(delay);
   }
 
-  function graftMatrixNormalInverseGamma(child:Delay?) -> DelayMatrixNormalInverseGamma? {
+  function graftMatrixNormalInverseGamma() -> DelayMatrixNormalInverseGamma? {
     if delay? {
       delay!.prune();
     } else {
       s1:DelayIndependentInverseGamma?;
-      if (s1 <- σ2.graftIndependentInverseGamma(child))? {
+      if (s1 <- σ2.graftIndependentInverseGamma())? {
         delay <- DelayMatrixNormalInverseGamma(future, futureUpdate, M, U,
             s1!);
       }

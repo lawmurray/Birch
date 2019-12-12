@@ -27,12 +27,12 @@ final class MatrixNormalInverseGamma(M:Expression<Real[_,_]>,
     return M.columns();
   }
 
-  function graft(child:Delay?) {
+  function graft() {
     if delay? {
       delay!.prune();
     } else {
       delay <- DelayMatrixNormalInverseGamma(future, futureUpdate, M,
-          Σ, σ2.graftIndependentInverseGamma(child)!);
+          Σ, σ2.graftIndependentInverseGamma()!);
     }
   }
 }

@@ -3,8 +3,8 @@
  */
 final class Negate<Argument,Value>(x:Expression<Argument>) <
     UnaryExpression<Argument,Value>(x) {  
-  function graft(child:Delay?) -> Expression<Value> {
-    return -single.graft(child);
+  function graft() -> Expression<Value> {
+    return -single.graft();
   }
 
   function doValue(x:Argument) -> Value {

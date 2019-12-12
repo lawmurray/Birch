@@ -3,8 +3,8 @@
  */
 final class Asin<Argument,Value>(x:Expression<Argument>) <
     UnaryExpression<Argument,Value>(x) {  
-  function graft(child:Delay?) -> Expression<Value> {
-    return asin(single.graft(child));
+  function graft() -> Expression<Value> {
+    return asin(single.graft());
   }
 
   function doValue(x:Argument) -> Value {

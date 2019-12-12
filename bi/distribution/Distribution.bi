@@ -24,7 +24,7 @@ abstract class Distribution<Value> {
   delay:DelayValue<Value>?;
 
   function value() -> Value {
-    graft(nil);
+    graft();
     return delay!.value();
   }
 
@@ -130,7 +130,7 @@ abstract class Distribution<Value> {
    * giving the log pdf (or pmf) of that variate under the distribution.
    */
   function observe(x:Value) -> Real {
-    graft(nil);
+    graft();
     auto w <- delay!.observe(x);
     return w;
   }
@@ -141,7 +141,7 @@ abstract class Distribution<Value> {
    * giving the log pdf (or pmf) of that variate under the distribution.
    */
   function observeWithDowndate(x:Value) -> Real {
-    graft(nil);
+    graft();
     auto w <- delay!.observeWithDowndate(x);
     return w;
   }
@@ -152,7 +152,7 @@ abstract class Distribution<Value> {
    * Return: The simulated value.
    */
   function simulate() -> Value {
-    graft(nil);
+    graft();
     return delay!.simulate();
   }
 
@@ -162,7 +162,7 @@ abstract class Distribution<Value> {
    * Return: The value.
    */
   function update(x:Value) {
-    graft(nil);
+    graft();
     delay!.update(x);
   }
 
@@ -173,7 +173,7 @@ abstract class Distribution<Value> {
    * - x: The value.
    */
   function downdate(x:Value) {
-    graft(nil);
+    graft();
     delay!.downdate(x);
   }
 
@@ -185,7 +185,7 @@ abstract class Distribution<Value> {
    * Return: the log probability density (or mass).
    */
   function logpdf(x:Value) -> Real {
-    graft(nil);
+    graft();
     return delay!.logpdf(x);
   }
 
@@ -197,7 +197,7 @@ abstract class Distribution<Value> {
    * Return: the probability density (or mass).
    */
   function pdf(x:Value) -> Real {
-    graft(nil);
+    graft();
     return delay!.pdf(x);
   }
 
@@ -209,7 +209,7 @@ abstract class Distribution<Value> {
    * Return: the cumulative probability.
    */
   function cdf(x:Value) -> Real? {
-    graft(nil);
+    graft();
     return delay!.cdf(x);
   }
 
@@ -221,7 +221,7 @@ abstract class Distribution<Value> {
    * Return: the quantile.
    */
   function quantile(p:Real) -> Value? {
-    graft(nil);
+    graft();
     return delay!.quantile(p);
   }
   
@@ -229,7 +229,7 @@ abstract class Distribution<Value> {
    * Finite lower bound of the support of this node, if supported.
    */
   function lower() -> Value? {
-    graft(nil);
+    graft();
     return delay!.lower();
   }
   
@@ -237,7 +237,7 @@ abstract class Distribution<Value> {
    * Finite upper bound of the support of this node, if supported.
    */
   function upper() -> Value? {
-    graft(nil);
+    graft();
     return delay!.upper();
   }
   
@@ -248,74 +248,74 @@ abstract class Distribution<Value> {
    *   graph, even if it has no parent. If false, no node is grafted in this
    *   case.
    */
-  abstract function graft(child:Delay?);
+  abstract function graft();
 
-  function graftGaussian(child:Delay?) -> DelayGaussian? {
+  function graftGaussian() -> DelayGaussian? {
     return nil;
   }
     
-  function graftBeta(child:Delay?) -> DelayBeta? {
+  function graftBeta() -> DelayBeta? {
     return nil;
   }
   
-  function graftGamma(child:Delay?) -> DelayGamma? {
+  function graftGamma() -> DelayGamma? {
     return nil;
   }
   
-  function graftInverseGamma(child:Delay?) -> DelayInverseGamma? {
+  function graftInverseGamma() -> DelayInverseGamma? {
     return nil;
   } 
 
-  function graftIndependentInverseGamma(child:Delay?) -> DelayIndependentInverseGamma? {
+  function graftIndependentInverseGamma() -> DelayIndependentInverseGamma? {
     return nil;
   } 
 
-  function graftInverseWishart(child:Delay?) -> DelayInverseWishart? {
+  function graftInverseWishart() -> DelayInverseWishart? {
     return nil;
   } 
   
-  function graftNormalInverseGamma(child:Delay?) -> DelayNormalInverseGamma? {
+  function graftNormalInverseGamma() -> DelayNormalInverseGamma? {
     return nil;
   }
   
-  function graftDirichlet(child:Delay?) -> DelayDirichlet? {
+  function graftDirichlet() -> DelayDirichlet? {
     return nil;
   }
 
-  function graftRestaurant(child:Delay?) -> DelayRestaurant? {
+  function graftRestaurant() -> DelayRestaurant? {
     return nil;
   }
 
-  function graftMultivariateGaussian(child:Delay?) -> DelayMultivariateGaussian? {
+  function graftMultivariateGaussian() -> DelayMultivariateGaussian? {
     return nil;
   }
 
-  function graftMultivariateNormalInverseGamma(child:Delay?) -> DelayMultivariateNormalInverseGamma? {
+  function graftMultivariateNormalInverseGamma() -> DelayMultivariateNormalInverseGamma? {
     return nil;
   }
 
-  function graftMatrixGaussian(child:Delay?) -> DelayMatrixGaussian? {
+  function graftMatrixGaussian() -> DelayMatrixGaussian? {
     return nil;
   }
 
-  function graftMatrixNormalInverseGamma(child:Delay?) -> DelayMatrixNormalInverseGamma? {
+  function graftMatrixNormalInverseGamma() -> DelayMatrixNormalInverseGamma? {
     return nil;
   }
 
-  function graftMatrixNormalInverseWishart(child:Delay?) -> DelayMatrixNormalInverseWishart? {
+  function graftMatrixNormalInverseWishart() -> DelayMatrixNormalInverseWishart? {
     return nil;
   }
 
-  function graftDiscrete(child:Delay?) -> DelayDiscrete? {
+  function graftDiscrete() -> DelayDiscrete? {
     return nil;
   }
 
-  function graftBoundedDiscrete(child:Delay?) -> DelayBoundedDiscrete? {
+  function graftBoundedDiscrete() -> DelayBoundedDiscrete? {
     return nil;
   }
 
   function write(buffer:Buffer) {
-    graft(nil);
+    graft();
     delay!.write(buffer);
   }
 }

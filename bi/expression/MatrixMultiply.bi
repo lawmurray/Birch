@@ -11,8 +11,8 @@ final class MatrixMultiply<Left,Right,Value>(left:Expression<Left>,
     return right.columns();
   }
     
-  function graft(child:Delay?) -> Expression<Value> {
-    return left.graft(child)*right.graft(child);
+  function graft() -> Expression<Value> {
+    return left.graft()*right.graft();
   }
 
   function doValue(l:Left, r:Right) -> Value {
@@ -23,40 +23,40 @@ final class MatrixMultiply<Left,Right,Value>(left:Expression<Left>,
     return (d*transpose(r), transpose(l)*d);
   }
 
-  function graftLinearMatrixGaussian(child:Delay?) ->
+  function graftLinearMatrixGaussian() ->
       TransformLinearMatrix<DelayMatrixGaussian>? {
     y:TransformLinearMatrix<DelayMatrixGaussian>?;
     z:DelayMatrixGaussian?;
     
-    if (y <- right.graftLinearMatrixGaussian(child))? {
+    if (y <- right.graftLinearMatrixGaussian())? {
       y!.leftMultiply(left);
-    } else if (z <- right.graftMatrixGaussian(child))? {
+    } else if (z <- right.graftMatrixGaussian())? {
       y <- TransformLinearMatrix<DelayMatrixGaussian>(left, z!);
     }
     return y;
   }
   
-  function graftLinearMatrixNormalInverseGamma(child:Delay?) ->
+  function graftLinearMatrixNormalInverseGamma() ->
       TransformLinearMatrix<DelayMatrixNormalInverseGamma>? {
     y:TransformLinearMatrix<DelayMatrixNormalInverseGamma>?;
     z:DelayMatrixNormalInverseGamma?;
 
-    if (y <- right.graftLinearMatrixNormalInverseGamma(child))? {
+    if (y <- right.graftLinearMatrixNormalInverseGamma())? {
       y!.leftMultiply(left);
-    } else if (z <- right.graftMatrixNormalInverseGamma(child))? {
+    } else if (z <- right.graftMatrixNormalInverseGamma())? {
       y <- TransformLinearMatrix<DelayMatrixNormalInverseGamma>(left, z!);
     }
     return y;
   }
 
-  function graftLinearMatrixNormalInverseWishart(child:Delay?) ->
+  function graftLinearMatrixNormalInverseWishart() ->
       TransformLinearMatrix<DelayMatrixNormalInverseWishart>? {
     y:TransformLinearMatrix<DelayMatrixNormalInverseWishart>?;
     z:DelayMatrixNormalInverseWishart?;
 
-    if (y <- right.graftLinearMatrixNormalInverseWishart(child))? {
+    if (y <- right.graftLinearMatrixNormalInverseWishart())? {
       y!.leftMultiply(left);
-    } else if (z <- right.graftMatrixNormalInverseWishart(child))? {
+    } else if (z <- right.graftMatrixNormalInverseWishart())? {
       y <- TransformLinearMatrix<DelayMatrixNormalInverseWishart>(left, z!);
     }
     return y;

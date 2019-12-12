@@ -16,12 +16,12 @@ final class Multinomial(n:Expression<Integer>, ρ:Expression<Real[_]>) < Distrib
     return ρ.rows();
   }
 
-  function graft(child:Delay?) {
+  function graft() {
     if delay? {
       delay!.prune();
     } else {
       m:DelayDirichlet?;
-      if (m <- ρ.graftDirichlet(child))? {
+      if (m <- ρ.graftDirichlet())? {
         delay <- DelayDirichletMultinomial(future, futureUpdate, n, m!);
       } else {
         delay <- DelayMultinomial(future, futureUpdate, n, ρ);

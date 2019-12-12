@@ -7,7 +7,7 @@ final class Dirichlet(α:Expression<Real[_]>) < Distribution<Real[_]> {
    */
   α:Expression<Real[_]> <- α;
 
-  function graft(child:Delay?) {
+  function graft() {
     if delay? {
       delay!.prune();
     } else {
@@ -15,7 +15,7 @@ final class Dirichlet(α:Expression<Real[_]>) < Distribution<Real[_]> {
     }
   }
 
-  function graftDirichlet(child:Delay?) -> DelayDirichlet? {
+  function graftDirichlet() -> DelayDirichlet? {
     if delay? {
       delay!.prune();
     } else {

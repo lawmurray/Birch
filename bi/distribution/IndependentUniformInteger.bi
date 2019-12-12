@@ -17,7 +17,7 @@ final class IndependentUniformInteger(l:Expression<Integer[_]>,
     return l.rows();
   }
 
-  function graft(child:Delay?) {
+  function graft() {
     if delay? {
       delay!.prune();
     } else {

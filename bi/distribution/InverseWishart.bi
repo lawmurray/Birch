@@ -47,7 +47,7 @@ final class InverseWishart(Ψ:Expression<Real[_,_]>, k:Expression<Real>) <
     return Ψ.columns();
   }
 
-  function graft(child:Delay?) {
+  function graft() {
     if delay? {
       delay!.prune();
     } else {
@@ -55,7 +55,7 @@ final class InverseWishart(Ψ:Expression<Real[_,_]>, k:Expression<Real>) <
     }
   }
 
-  function graftInverseWishart(child:Delay?) -> DelayInverseWishart? {
+  function graftInverseWishart() -> DelayInverseWishart? {
     if delay? {
       delay!.prune();
     } else {

@@ -12,12 +12,12 @@ final class Gamma(k:Expression<Real>, θ:Expression<Real>) < Distribution<Real> 
    */
   θ:Expression<Real> <- θ;
 
-  function graft(child:Delay?) {
+  function graft() {
     if delay? {
       delay!.prune();
     } else {
       θ1:DelayInverseGamma?;
-      if (θ1 <- θ.graftInverseGamma(child))? {
+      if (θ1 <- θ.graftInverseGamma())? {
         delay <- DelayInverseGammaGamma(future, futureUpdate, k, θ1!);
       } else {
         delay <- DelayGamma(future, futureUpdate, k, θ);
@@ -25,7 +25,7 @@ final class Gamma(k:Expression<Real>, θ:Expression<Real>) < Distribution<Real> 
     }
   }
 
-  function graftGamma(child:Delay?) -> DelayGamma? {
+  function graftGamma() -> DelayGamma? {
     if delay? {
       delay!.prune();
     } else {

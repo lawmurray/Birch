@@ -12,7 +12,7 @@ final class InverseGamma(α:Expression<Real>, β:Expression<Real>) < Distributio
    */
   β:Expression<Real> <- β;
 
-  function graft(child:Delay?) {
+  function graft() {
     if delay? {
       delay!.prune();
     } else {
@@ -20,7 +20,7 @@ final class InverseGamma(α:Expression<Real>, β:Expression<Real>) < Distributio
     }
   }
 
-  function graftInverseGamma(child:Delay?) -> DelayInverseGamma? {
+  function graftInverseGamma() -> DelayInverseGamma? {
     if delay? {
       delay!.prune();
     } else {

@@ -3,8 +3,8 @@
  */
 final class Sin<Argument,Value>(x:Expression<Argument>) <
     UnaryExpression<Argument,Value>(x) {  
-  function graft(child:Delay?) -> Expression<Value> {
-    return sin(single.graft(child));
+  function graft() -> Expression<Value> {
+    return sin(single.graft());
   }
 
   function doValue(x:Argument) -> Value {

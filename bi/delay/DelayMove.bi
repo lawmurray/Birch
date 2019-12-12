@@ -75,7 +75,7 @@ abstract class DelayMove<Base>(future:Value?, futureUpdate:Boolean) <
       return x''!;
     }
   }
-
+  
   function gradPilot(d:Value) -> Boolean {
     if x? {
       return false;
@@ -85,9 +85,6 @@ abstract class DelayMove<Base>(future:Value?, futureUpdate:Boolean) <
         /* first time this has been encountered in the gradient computation,
          * propagate into its prior */
         dfdx' <- d;
-        if !p? {
-          p <- lazy(DelayExpression<Value>(this));
-        }
         α <- -p!.pilot();
         p!.gradPilot(1.0);
       } else {

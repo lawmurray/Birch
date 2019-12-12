@@ -22,7 +22,7 @@ final class Wishart(Ψ:Expression<Real[_,_]>, k:Expression<Real>) <
   }
 
 
-  function graft(child:Delay?) {
+  function graft() {
     if delay? {
       delay!.prune();
     } else {
@@ -30,7 +30,7 @@ final class Wishart(Ψ:Expression<Real[_,_]>, k:Expression<Real>) <
     }
   }
 
-  function graftWishart(child:Delay?) -> DelayWishart? {
+  function graftWishart() -> DelayWishart? {
     if delay? {
       delay!.prune();
     } else {

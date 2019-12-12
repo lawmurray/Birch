@@ -6,12 +6,12 @@ class DelayGaussian(future:Real?, futureUpdate:Boolean, μ:Expression<Real>,
   /**
    * Mean.
    */
-  auto μ <- μ;
+  μ:Expression<Real> <- μ;
 
   /**
    * Precision.
    */
-  auto λ <- 1.0/σ2;
+  λ:Expression<Real> <- 1.0/σ2;
 
   function simulate() -> Real {
     return simulate_gaussian(μ.value(), 1.0/λ.value());
@@ -51,6 +51,6 @@ class DelayGaussian(future:Real?, futureUpdate:Boolean, μ:Expression<Real>,
 
 function DelayGaussian(future:Real?, futureUpdate:Boolean,
     μ:Expression<Real>, σ2:Expression<Real>) -> DelayGaussian {
-  m:DelayGaussian(future, futureUpdate, μ, σ2);
-  return m;
+  o:DelayGaussian(future, futureUpdate, μ.graft(), σ2.graft());
+  return o;
 }
