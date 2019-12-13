@@ -14,6 +14,10 @@ final class DelayExpression<Value>(delay:DelayValue<Value>) <
     return this;
   }
 
+  function setChild(child:Delay) {
+    delay.setChild(child);
+  }
+
   function value() -> Value {
     return delay.value();
   }

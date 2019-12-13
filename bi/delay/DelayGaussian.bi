@@ -29,7 +29,7 @@ class DelayGaussian(future:Real?, futureUpdate:Boolean, μ:Expression<Real>,
     return logpdf_gaussian(x, μ.value(), 1.0/λ.value());
   }
 
-  function lazy(x:Expression<Real>) -> Expression<Real>? {
+  function lazy(x:Expression<Real>) -> Expression<Real> {
     return lazy_gaussian(x, μ, 1.0/λ);
   }
   

@@ -96,7 +96,7 @@ abstract class DelayValue<Value>(future:Value?, futureUpdate:Boolean) < Delay {
   }
   
   /**
-   * Set value and detach.
+   * Set value.
    */
   function set(x:Value) {
     assert !this.x?;
@@ -184,17 +184,6 @@ abstract class DelayValue<Value>(future:Value?, futureUpdate:Boolean) < Delay {
    * Return: The log likelihood.
    */
   abstract function logpdf(x:Value) -> Real;
-
-  /**
-   * Lazily observe a random variate, if supported.
-   *
-   * - x: The value.
-   *
-   * Return: The log likelihood.
-   */
-  function lazy(x:Expression<Value>) -> Expression<Real>? {
-    return nil;
-  }
 
   /**
    * Update the parent node on the $M$-path given the value of this node.

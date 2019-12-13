@@ -40,8 +40,8 @@ function DelayLinearMultivariateGaussianGaussian(future:Real?,
     futureUpdate:Boolean, a:Expression<Real[_]>, μ:DelayMultivariateGaussian,
     c:Expression<Real>, σ2:Expression<Real>) ->
     DelayLinearMultivariateGaussianGaussian {
-  m:DelayLinearMultivariateGaussianGaussian(future, futureUpdate, a, μ, c,
-      σ2);
+  m:DelayLinearMultivariateGaussianGaussian(future, futureUpdate, a.graft(),
+      μ, c.graft(), σ2.graft());
   μ.setChild(m);
   return m;
 }

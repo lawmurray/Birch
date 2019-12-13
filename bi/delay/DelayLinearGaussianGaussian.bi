@@ -37,7 +37,8 @@ final class DelayLinearGaussianGaussian(future:Real?, futureUpdate:Boolean,
 function DelayLinearGaussianGaussian(future:Real?, futureUpdate:Boolean,
     a:Expression<Real>, μ:DelayGaussian, c:Expression<Real>,
     σ2:Expression<Real>) -> DelayLinearGaussianGaussian {
-  m:DelayLinearGaussianGaussian(future, futureUpdate, a, μ, c, σ2);
+  m:DelayLinearGaussianGaussian(future, futureUpdate, a.graft(), μ,
+      c.graft(), σ2.graft());
   μ.setChild(m);
   return m;
 }

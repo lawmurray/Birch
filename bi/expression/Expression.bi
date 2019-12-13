@@ -138,6 +138,11 @@ abstract class Expression<Value> {
   function getDelay() -> Delay? {
     return nil;
   }
+  
+  /**
+   * Set the child of any delayed sampling nodes in the expression.
+   */
+  abstract function setChild(child:Delay);
 
   /**
    * Graft this expression onto the delayed sampling graph.

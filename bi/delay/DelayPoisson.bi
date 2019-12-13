@@ -24,7 +24,7 @@ final class DelayPoisson(future:Integer?, futureUpdate:Boolean,
     return logpdf_poisson(x, λ.value());
   }
 
-  function lazy(x:Expression<Integer>) -> Expression<Real>? {
+  function lazy(x:Expression<Integer>) -> Expression<Real> {
     return lazy_poisson(x, λ);
   }
 

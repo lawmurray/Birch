@@ -52,19 +52,6 @@ abstract class Distribution<Value> {
   }
 
   /**
-   * Lazy expression for the logarithm of the probability density (or mass)
-   * function, if supported.
-   *
-   * - x: The value.
-   *
-   * Return: the log probability density (or mass).
-   */
-  function lazy(x:Expression<Value>) -> Expression<Real>? {
-    assert delay?;
-    return delay!.lazy(x);
-  }
-
-  /**
    * Assume a distribution for this random variate. When a value is required,
    * it will be simulated from this distribution and trigger an update on
    * the delayed sampling graph.

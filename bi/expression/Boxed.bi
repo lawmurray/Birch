@@ -19,6 +19,10 @@ final class Boxed<Value> < Expression<Value> {
     return global.columns(x);
   }
 
+  function setChild(child:Delay) {
+    //
+  }
+
   function value() -> Value {
     return x;
   }
