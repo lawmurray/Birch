@@ -69,6 +69,7 @@ final class Random<Value> < Expression<Value> {
   function value() -> Value {
     if !x? {
       x <- dist!.value();
+      dist <- nil;
     }
     return x!;
   }
@@ -115,7 +116,9 @@ final class Random<Value> < Expression<Value> {
     assert !this.x?;
     assert dist?;
     this.x <- x;
-    return dist!.observe(x);
+    auto w <- dist!.observe(x);
+    dist <- nil;
+    return w;
   }
   
   /**
@@ -200,11 +203,12 @@ final class Random<Value> < Expression<Value> {
   }
 
   function graft() -> Expression<Value> {
-    if x? {
-      return Boxed(x!);
-    } else {
+    if !hasValue() {
+      assert hasDistribution();
       dist!.graft();
       return DelayExpression<Value>(dist!.delay!);
+    } else {
+      return Boxed(x!);
     }
   }
 
