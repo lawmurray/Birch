@@ -63,7 +63,7 @@ final class IdenticalGaussian(μ:Expression<Real[_]>,
             futureUpdate, m1!.A, m1!.x, m1!.c, diagonal(σ2, length(m1!.c)));
       } else if (m2 <- μ.graftMultivariateGaussian())? {
         delay <- DelayMultivariateGaussianMultivariateGaussian(future,
-            futureUpdate, m2!, diagonal(σ2, m2!.μ.rows()));
+            futureUpdate, m2!, diagonal(σ2, m2!.rows()));
       } else {
         delay <- DelayMultivariateGaussian(future, futureUpdate, μ,
             diagonal(σ2, μ.rows()));
