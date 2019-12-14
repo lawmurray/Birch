@@ -2,20 +2,20 @@
  * Delayed multivariate Gaussian random variate.
  */
 class DelayMultivariateGaussian(future:Real[_]?, futureUpdate:Boolean,
-    μ:Expression<Real[_]>, Σ:Expression<Real[_,_]>) <
+    μ:Real[_], Σ:Real[_,_]) <
     DelayValue<Real[_]>(future, futureUpdate) {
   /**
    * Mean.
    */
-  μ:Expression<Real[_]> <- μ;
+  μ:Real[_] <- μ;
 
   /**
    * Covariance.
    */
-  Σ:Expression<Real[_,_]> <- Σ;
+  Σ:Real[_,_] <- Σ;
 
   function rows() -> Integer {
-    return μ.rows();
+    return length(μ);
   }
 
   function simulate() -> Real[_] {
@@ -29,13 +29,13 @@ class DelayMultivariateGaussian(future:Real[_]?, futureUpdate:Boolean,
   function write(buffer:Buffer) {
     prune();
     buffer.set("class", "MultivariateGaussian");
-    buffer.set("μ", μ.value());
-    buffer.set("Σ", Σ.value());
+    buffer.set("μ", μ);
+    buffer.set("Σ", Σ);
   }
 }
 
 function DelayMultivariateGaussian(future:Real[_]?, futureUpdate:Boolean,
-    μ:Expression<Real[_]>, Σ:Expression<Real[_,_]>) ->
+    μ:Real[_], Σ:Real[_,_]) ->
     DelayMultivariateGaussian {
   m:DelayMultivariateGaussian(future, futureUpdate, μ, Σ);
   return m;
