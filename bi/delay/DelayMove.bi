@@ -89,6 +89,9 @@ abstract class DelayMove<Base>(future:Value?, futureUpdate:Boolean) <
       assert !future?;
       if !x''? {
         x'' <- simulatePropose();
+        if dfdx'? {
+          x'' <- simulate_propose(x'!, dfdx'!);
+        }
       }
       return x''!;
     }
@@ -103,7 +106,7 @@ abstract class DelayMove<Base>(future:Value?, futureUpdate:Boolean) <
         /* first time this has been encountered in the gradient computation,
          * propagate into its prior */
         dfdx' <- d;
-        α <- -p!.pilot();
+        p!.pilot();
         p!.gradPilot(1.0);
       } else {
         /* second or subsequent time this has been encountered in the gradient
@@ -123,7 +126,7 @@ abstract class DelayMove<Base>(future:Value?, futureUpdate:Boolean) <
         /* first time this has been encountered in the gradient computation,
          * propagate into its prior */
         dfdx'' <- d;
-        α <- α! + p!.propose();
+        p!.propose();
         p!.gradPropose(1.0);
       } else {
         /* second or subsequent time this has been encountered in the gradient
@@ -135,13 +138,12 @@ abstract class DelayMove<Base>(future:Value?, futureUpdate:Boolean) <
   }
   
   function ratio() -> Real {
-    if α? {
-      if dfdx''? {
-        α <- α! + logpdf_propose(x'!, x''!, dfdx''!);
+    if !x? && !α? {
+      α <- p!.propose() - p!.pilot();
+      if dfdx'? && dfdx''? {
+        α <- α! + logpdf_propose(x'!, x''!, dfdx''!) - logpdf_propose(x''!, x'!, dfdx'!);
       }
-      auto result <- α!;
-      α <- nil;
-      return result;
+      return α! + p!.ratio();
     } else {
       return 0.0;
     }
@@ -200,8 +202,9 @@ abstract class DelayMove<Base>(future:Value?, futureUpdate:Boolean) <
         if p!.gradPropose(1.0) {
           /* at least one gradient; continue by computing the acceptance
            * ratio for Metropolis--Hastings */
-          auto α <- l' - l + p!.ratio();
-          if log(simulate_uniform(0.0, 1.0)) <= α {
+          assert !dfdx'?;
+          assert !dfdx''?;
+          if log(simulate_uniform(0.0, 1.0)) <= l' - l + p!.ratio() {
             /* accept the move */
             p!.accept();
           } else {
@@ -253,7 +256,7 @@ abstract class DelayMove<Base>(future:Value?, futureUpdate:Boolean) <
 
 
 function simulate_propose(x:Real, d:Real) -> Real {
-  return simulate_gaussian(x + 0.1*d, 0.2);
+  return simulate_gaussian(x + 0.04*d, 0.08);
 }
 
 function simulate_propose(x:Real[_], d:Real[_]) -> Real[_] {
@@ -277,7 +280,7 @@ function simulate_propose(x:Boolean, d:Boolean) -> Boolean {
 }
 
 function logpdf_propose(x':Real, x:Real, d:Real) -> Real {
-  return logpdf_gaussian(x', x + 0.1*d, 0.2);
+  return logpdf_gaussian(x', x + 0.04*d, 0.08);
 }
 
 function logpdf_propose(x':Real[_], x:Real[_], d:Real[_]) -> Real {
