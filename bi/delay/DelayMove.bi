@@ -246,11 +246,23 @@ abstract class DelayMove<Base>(future:Value?, futureUpdate:Boolean) <
   }
 
   function realize() {
-    super.realize();
+    prune();
+    if !x? {
+      if future? {
+        x <- future!;
+      } else {
+        x <- simulate();
+      }
+    }
     if futureMove {
       move(x!);
     }
     p <- nil;
+    if futureUpdate {
+      update(x!);
+    } else {
+      downdate(x!);
+    }
   }
 }
 
