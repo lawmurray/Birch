@@ -26,6 +26,13 @@ public:
   /**
    * Constructor.
    */
+  Fiber(Label* context) {
+    //
+  }
+
+  /**
+   * Constructor.
+   */
   Fiber(Label* context, const Lazy<SharedPtr<FiberState<YieldType>>>& state) :
       state(context, state) {
     //

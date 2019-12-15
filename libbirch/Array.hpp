@@ -808,7 +808,7 @@ private:
     auto iter = begin();
     auto last = end();
     for (; iter != last; ++iter) {
-      new (&*iter) T(context, new typename T::value_type(context, args...));
+      new (&*iter) T(context, args...);
     }
   }
 

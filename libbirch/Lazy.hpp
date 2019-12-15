@@ -41,8 +41,9 @@ public:
   /**
    * Constructor.
    */
-  Lazy(Label* context, const Nil& = nil) :
-      object(),
+  template<class... Args>
+  Lazy(Label* context, Args... args) :
+      object(args...),
       label(0),
       cross(false) {
     //
