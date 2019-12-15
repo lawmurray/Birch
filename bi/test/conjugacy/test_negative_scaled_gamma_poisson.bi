@@ -30,7 +30,7 @@ class TestNegativeScaledGammaPoisson < Model {
   x:Random<Integer>;
   
   fiber simulate() -> Event {
-    a:Real <- simulate_uniform(1.0, 100.0);
+    a:Real <- simulate_uniform(1.0, 10.0);
     k:Real <- simulate_uniform_int(1, 10);
     θ:Real <- simulate_uniform(0.0, 10.0);
 
