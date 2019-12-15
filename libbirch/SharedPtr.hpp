@@ -41,8 +41,8 @@ public:
    * Constructor with in-place construction of the referent.
    */
   template<class... Args>
-  SharedPtr(Args... args) :
-      ptr(new T(args...)) {
+  SharedPtr(Label* context, Args... args) :
+      SharedPtr(new T(context, args...)) {
     //
   }
 

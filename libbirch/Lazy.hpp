@@ -41,12 +41,22 @@ public:
   /**
    * Constructor.
    */
-  template<class... Args>
-  Lazy(Label* context, Args... args) :
-      object(args...),
+  Lazy(Label* context, const Nil&) :
+      object(),
       label(0),
       cross(false) {
     //
+  }
+
+  /**
+   * Constructor.
+   */
+  template<class... Args>
+  Lazy(Label* context, Args... args) :
+      object(context, args...),
+      label(0),
+      cross(false) {
+    setLabel(context, false);
   }
 
   /**

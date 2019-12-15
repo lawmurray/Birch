@@ -8,26 +8,32 @@
  */
 class ParticleMarginalImportanceSampler < ParticleSampler {  
   fiber sample(model:Model) -> (Model, Real, Real[_], Real[_], Integer[_]) {
-    /* number of steps */
-    auto nsteps <- model.size();
-    if filter.nsteps? {
-      nsteps <- filter.nsteps!;
-    }
-
     x:Model[_];
     w:Real[_];
-    lnormalize:Real[nsteps + 1];
-    ess:Real[nsteps + 1];
-    npropagations:Integer[nsteps + 1];
+    lnormalize:Real;
+    ess:Real;
+    npropagations:Integer;
+
+    lnormalizeAll:Vector<Real>;
+    essAll:Vector<Real>;
+    npropagationsAll:Vector<Integer>;
 
     for n in 1..nsamples {
+      lnormalizeAll.clear();
+      essAll.clear();
+      npropagationsAll.clear();
+    
       auto f <- filter.filter(model);
-      for t in 1..nsteps + 1 {
-        f?;
-        (x, w, lnormalize[t], ess[t], npropagations[t]) <- f!;
+      while f? {
+        (x, w, lnormalize, ess, npropagations) <- f!;
+        
+        lnormalizeAll.pushBack(lnormalize);
+        essAll.pushBack(ess);
+        npropagationsAll.pushBack(npropagations);
       }
       auto b <- ancestor(w);
-      yield (x[b], lnormalize[nsteps + 1], lnormalize, ess, npropagations);
+      yield (x[b], lnormalizeAll.back(), lnormalizeAll.toArray(),
+          essAll.toArray(), npropagationsAll.toArray());
     }
   }
 }
