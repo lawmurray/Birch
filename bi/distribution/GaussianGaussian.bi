@@ -25,7 +25,7 @@ final class GaussianGaussian(future:Real?, futureUpdate:Boolean,
 
 function GaussianGaussian(future:Real?, futureUpdate:Boolean,
     μ:Gaussian, σ2:Expression<Real>) -> GaussianGaussian {
-  m:GaussianGaussian(future, futureUpdate, μ, σ2.graft());
+  m:GaussianGaussian(future, futureUpdate, μ, σ2);
   μ.setChild(m);
   return m;
 }

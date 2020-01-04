@@ -50,9 +50,9 @@ class Gaussian(future:Real?, futureUpdate:Boolean, μ:Expression<Real>,
     m6:Gaussian?;
     s2:InverseGamma?;
 
-    if (m1 <- μ.graftLinearNormalInverseGamma())? && m1!.x.σ2 == σ2 {
+    if (m1 <- μ.graftLinearNormalInverseGamma())? && m1!.x.σ2 == σ2.distribution() {
       return LinearNormalInverseGammaGaussian(future, futureUpdate, m1!.a, m1!.x, m1!.c);
-    } else if (m3 <- μ.graftNormalInverseGamma())? && m3!.σ2 == σ2 {
+    } else if (m3 <- μ.graftNormalInverseGamma())? && m3!.σ2 == σ2.distribution() {
       return NormalInverseGammaGaussian(future, futureUpdate, m3!);
     } else if (m4 <- μ.graftLinearGaussian())? {
       return LinearGaussianGaussian(future, futureUpdate, m4!.a, m4!.x, m4!.c, σ2);
@@ -102,7 +102,7 @@ class Gaussian(future:Real?, futureUpdate:Boolean, μ:Expression<Real>,
 
 function Gaussian(future:Real?, futureUpdate:Boolean,
     μ:Expression<Real>, σ2:Expression<Real>) -> Gaussian {
-  o:Gaussian(future, futureUpdate, μ.graft(), σ2.graft());
+  o:Gaussian(future, futureUpdate, μ, σ2);
   return o;
 }
 

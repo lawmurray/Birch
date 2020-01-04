@@ -2,11 +2,7 @@
  * Lazy `scalar`.
  */
 final class MatrixScalar<Argument,Value>(x:Expression<Argument>) <
-    UnaryExpression<Argument,Value>(x) {  
-  function graft() -> Expression<Value> {
-    return scalar(single.graft());
-  }
-  
+    UnaryExpression<Argument,Value>(x) {
   function doValue(x:Argument) -> Value {
     return scalar(x);
   }

@@ -12,11 +12,6 @@ final class MatrixAdd<Left,Right,Value>(left:Expression<Left>,
     assert left.rows() == right.rows();
     return left.columns();
   }
-
-  function graft() -> Expression<Value> {
-    return left.graft() + right.graft();
-  }
-
     
   function doValue(l:Left, r:Right) -> Value {
     return l + r;

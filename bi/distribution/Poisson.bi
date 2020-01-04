@@ -68,7 +68,7 @@ final class Poisson(future:Integer?, futureUpdate:Boolean,
 
 function Poisson(future:Integer?, futureUpdate:Boolean,
     λ:Expression<Real>) -> Poisson {
-  o:Poisson(future, futureUpdate, λ.graft());
+  o:Poisson(future, futureUpdate, λ);
   return o;
 }
 

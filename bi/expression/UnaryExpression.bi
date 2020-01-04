@@ -36,6 +36,11 @@ abstract class UnaryExpression<Argument,Value>(single:Expression<Argument>) <
     single.setChild(child);
   }
 
+  function graft() -> Expression<Value> {
+    single <- single.graft();
+    return this;
+  }
+
   final function value() -> Value {
     if !x? {
       x <- doValue(single.value());

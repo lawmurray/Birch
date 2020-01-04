@@ -65,6 +65,6 @@ class TestMultivariateGaussianMultivariateGaussian < Model {
   }
   
   function marginal() -> Distribution<Real[_]> {
-    return x.distribution();
+    return x.distribution()!.graft();
   }
 }

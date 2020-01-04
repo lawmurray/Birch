@@ -11,10 +11,6 @@ final class Transpose<Argument,Value>(x:Expression<Argument>) <
     return single.rows();
   }
 
-  function graft() -> Expression<Value> {
-    return transpose(single.graft());
-  }
-
   function doValue(x:Argument) -> Value {
     return transpose(x);
   }

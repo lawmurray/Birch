@@ -63,15 +63,20 @@ final class Random<Value> < Expression<Value> {
   }
 
   function setChild(child:Delay) {
-    assert x?;
+    assert hasValue();
   }
 
   function value() -> Value {
     if !x? {
+      p <- p!.graft();
       x <- p!.value();
       p <- nil;
     }
     return x!;
+  }
+
+  function distribution() -> Distribution<Value>? {
+    return p;
   }
 
   function pilot() -> Value {
@@ -113,20 +118,13 @@ final class Random<Value> < Expression<Value> {
    * Observe the value of the random variate.
    */
   function observe(x:Value) -> Real {
-    assert !this.x?;
-    assert p?;
+    assert !hasValue();
+    assert hasDistribution();
     this.x <- x;
+    p <- p!.graft();
     auto w <- p!.observe(x);
     p <- nil;
     return w;
-  }
-  
-  /**
-   * Get the distribution associated with the random variate.
-   */
-  function distribution() -> Distribution<Value> {
-    assert p?;
-    return p!;
   }
 
   /**
@@ -137,7 +135,7 @@ final class Random<Value> < Expression<Value> {
    * Return: the log probability density (or mass).
    */
   function logpdf(x:Value) -> Real {
-    assert hasDistribution();
+    p <- p!.graft();
     return p!.logpdf(x);
   }
 
@@ -149,7 +147,7 @@ final class Random<Value> < Expression<Value> {
    * Return: the probability density (or mass).
    */
   function pdf(x:Value) -> Real {
-    assert hasDistribution();
+    p <- p!.graft();
     return p!.pdf(x);
   }
 
@@ -161,7 +159,7 @@ final class Random<Value> < Expression<Value> {
    * Return: the cumulative probability, if supported.
    */
   function cdf(x:Value) -> Real? {
-    assert hasDistribution();
+    p <- p!.graft();
     return p!.cdf(x);
   }
 
@@ -173,7 +171,7 @@ final class Random<Value> < Expression<Value> {
    * Return: the quantile value, if supported.
    */
   function quantile(P:Real) -> Value? {
-    assert hasDistribution();
+    p <- p!.graft();
     return p!.quantile(P);
   }
   
@@ -181,7 +179,7 @@ final class Random<Value> < Expression<Value> {
    * Finite lower bound of the support of this node, if any.
    */
   function lower() -> Value? {
-    assert hasDistribution();
+    p <- p!.graft();
     return p!.lower();
   }
   
@@ -189,13 +187,12 @@ final class Random<Value> < Expression<Value> {
    * Finite upper bound of the support of this node, if any.
    */
   function upper() -> Value? {
-    assert hasDistribution();
+    p <- p!.graft();
     return p!.upper();
   }
 
   function graft() -> Expression<Value> {
     if !hasValue() {
-      assert hasDistribution();
       p <- p!.graft();
       return DelayExpression<Value>(p!);
     } else {
@@ -205,147 +202,163 @@ final class Random<Value> < Expression<Value> {
 
   function graftGaussian() -> Gaussian? {
     if !hasValue() {
-      assert hasDistribution();
-      return p!.graftGaussian();
-    } else {
-      return nil;
+      auto q <- p!.graftGaussian();
+      if q? {
+        p <- Distribution<Value>?(q);
+      }
     }
+    return Gaussian?(p);
   }
     
   function graftBeta() -> Beta? {
     if !hasValue() {
-      assert hasDistribution();
-      return p!.graftBeta();
-    } else {
-      return nil;
+      auto q <- p!.graftBeta();
+      if q? {
+        p <- Distribution<Value>?(q);
+      }
     }
+    return Beta?(p);
   }
   
   function graftGamma() -> Gamma? {
     if !hasValue() {
-      assert hasDistribution();
-      return p!.graftGamma();
-    } else {
-      return nil;
+      auto q <- p!.graftGamma();
+      if q? {
+        p <- Distribution<Value>?(q);
+      }
     }
+    return Gamma?(p);
   }
   
   function graftInverseGamma() -> InverseGamma? {
     if !hasValue() {
-      assert hasDistribution();
-      return p!.graftInverseGamma();
-    } else {
-      return nil;
+      auto q <- p!.graftInverseGamma();
+      if q? {
+        p <- Distribution<Value>?(q);
+      }
     }
+    return InverseGamma?(p);
   } 
 
   function graftIndependentInverseGamma() -> IndependentInverseGamma? {
     if !hasValue() {
-      assert hasDistribution();
-      return p!.graftIndependentInverseGamma();
-    } else {
-      return nil;
+      auto q <- p!.graftIndependentInverseGamma();
+      if q? {
+        p <- Distribution<Value>?(q);
+      }
     }
+    return IndependentInverseGamma?(p);
   } 
 
   function graftInverseWishart() -> InverseWishart? {
     if !hasValue() {
-      assert hasDistribution();
-      return p!.graftInverseWishart();
-    } else {
-      return nil;
+      auto q <- p!.graftInverseWishart();
+      if q? {
+        p <- Distribution<Value>?(q);
+      }
     }
+    return InverseWishart?(p);
   } 
   
   function graftNormalInverseGamma() -> NormalInverseGamma? {
     if !hasValue() {
-      assert hasDistribution();
-      return p!.graftNormalInverseGamma();
-    } else {
-      return nil;
+      auto q <- p!.graftNormalInverseGamma();
+      if q? {
+        p <- Distribution<Value>?(q);
+      }
     }
+    return NormalInverseGamma?(p);
   }
   
   function graftDirichlet() -> Dirichlet? {
     if !hasValue() {
-      assert hasDistribution();
-      return p!.graftDirichlet();
-    } else {
-      return nil;
+      auto q <- p!.graftDirichlet();
+      if q? {
+        p <- Distribution<Value>?(q);
+      }
     }
+    return Dirichlet?(p);
   }
 
   function graftRestaurant() -> Restaurant? {
     if !hasValue() {
-      assert hasDistribution();
-      return p!.graftRestaurant();
-    } else {
-      return nil;
+      auto q <- p!.graftRestaurant();
+      if q? {
+        p <- Distribution<Value>?(q);
+      }
     }
+    return Restaurant?(p);
   }
 
   function graftMultivariateGaussian() -> MultivariateGaussian? {
     if !hasValue() {
-      assert hasDistribution();
-      return p!.graftMultivariateGaussian();
-    } else {
-      return nil;
+      auto q <- p!.graftMultivariateGaussian();
+      if q? {
+        p <- Distribution<Value>?(q);
+      }
     }
+    return MultivariateGaussian?(p);
   }
 
   function graftMultivariateNormalInverseGamma() ->
       MultivariateNormalInverseGamma? {
     if !hasValue() {
-      assert hasDistribution();
-      return p!.graftMultivariateNormalInverseGamma();
-    } else {
-      return nil;
+      auto q <- p!.graftMultivariateNormalInverseGamma();
+      if q? {
+        p <- Distribution<Value>?(q);
+      }
     }
+    return MultivariateNormalInverseGamma?(p);
   }
 
   function graftMatrixGaussian() -> MatrixGaussian? {
     if !hasValue() {
-      assert hasDistribution();
-      return p!.graftMatrixGaussian();
-    } else {
-      return nil;
+      auto q <- p!.graftMatrixGaussian();
+      if q? {
+        p <- Distribution<Value>?(q);
+      }
     }
+    return MatrixGaussian?(p);
   }
 
   function graftMatrixNormalInverseGamma() -> MatrixNormalInverseGamma? {
     if !hasValue() {
-      assert hasDistribution();
-      return p!.graftMatrixNormalInverseGamma();
-    } else {
-      return nil;
+      auto q <- p!.graftMatrixNormalInverseGamma();
+      if q? {
+        p <- Distribution<Value>?(q);
+      }
     }
+    return MatrixNormalInverseGamma?(p);
   }
 
   function graftMatrixNormalInverseWishart() -> MatrixNormalInverseWishart? {
     if !hasValue() {
-      assert hasDistribution();
-      return p!.graftMatrixNormalInverseWishart();
-    } else {
-      return nil;
+      auto q <- p!.graftMatrixNormalInverseWishart();
+      if q? {
+        p <- Distribution<Value>?(q);
+      }
     }
+    return MatrixNormalInverseWishart?(p);
   }
 
   function graftDiscrete() -> Discrete? {
     if !hasValue() {
-      assert hasDistribution();
-      return p!.graftDiscrete();
-    } else {
-      return nil;
+      auto q <- p!.graftDiscrete();
+      if q? {
+        p <- Distribution<Value>?(q);
+      }
     }
+    return Discrete?(p);
   }
 
   function graftBoundedDiscrete() -> BoundedDiscrete? {
     if !hasValue() {
-      assert hasDistribution();
-      return p!.graftBoundedDiscrete();
-    } else {
-      return nil;
+      auto q <- p!.graftBoundedDiscrete();
+      if q? {
+        p <- Distribution<Value>?(q);
+      }
     }
+    return BoundedDiscrete?(p);
   }
 
   function read(buffer:Buffer) {

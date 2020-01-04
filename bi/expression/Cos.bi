@@ -2,11 +2,7 @@
  * Lazy `cos`.
  */
 final class Cos<Argument,Value>(x:Expression<Argument>) <
-    UnaryExpression<Argument,Value>(x) {  
-  function graft() -> Expression<Value> {
-    return cos(single.graft());
-  }
-
+    UnaryExpression<Argument,Value>(x) {
   function doValue(x:Argument) -> Value {
     return cos(x);
   }

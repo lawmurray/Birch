@@ -57,6 +57,6 @@ class TestNegativeLinearGaussianGaussian < Model {
   }
   
   function marginal() -> Distribution<Real> {
-    return x.distribution();
+    return x.distribution()!.graft();
   }
 }

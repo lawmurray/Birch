@@ -10,10 +10,6 @@ final class MatrixMultiply<Left,Right,Value>(left:Expression<Left>,
   function columns() -> Integer {
     return right.columns();
   }
-    
-  function graft() -> Expression<Value> {
-    return left.graft()*right.graft();
-  }
 
   function doValue(l:Left, r:Right) -> Value {
     return l*r;

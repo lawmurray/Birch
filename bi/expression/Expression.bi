@@ -56,6 +56,14 @@ abstract class Expression<Value> {
   abstract function value() -> Value;
 
   /**
+   * If this is a Random, get the distribution associated with it, if any,
+   * otherwise nil.
+   */
+  function distribution() -> Distribution<Value>? {
+    return nil;
+  }
+
+  /**
    * Pilot value computation.
    */
   abstract function pilot() -> Value;

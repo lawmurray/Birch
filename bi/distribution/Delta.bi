@@ -2,8 +2,8 @@
  * Delta distribution, representing a distribution on a discrete space with
  * all probability mass at one location.
  */
-final class Delta(future:Integer?, futureUpdate:Boolean, μ:Expression<Integer>) <
-    Discrete(future, futureUpdate) {
+final class Delta(future:Integer?, futureUpdate:Boolean,
+    μ:Expression<Integer>) < Discrete(future, futureUpdate) {
   /**
    * Location.
    */

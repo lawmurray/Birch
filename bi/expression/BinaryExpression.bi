@@ -43,6 +43,12 @@ abstract class BinaryExpression<Left,Right,Value>(left:Expression<Left>,
     right.setChild(child);
   }
 
+  function graft() -> Expression<Value> {
+    left <- left.graft();
+    right <- right.graft();
+    return this;
+  }
+
   final function value() -> Value {
     if !x? {
       x <- doValue(left.value(), right.value());

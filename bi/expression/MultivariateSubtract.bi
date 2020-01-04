@@ -8,11 +8,6 @@ final class MultivariateSubtract<Left,Right,Value>(left:Expression<Left>,
     return left.rows();
   }
 
-  function graft() -> Expression<Value> {
-    return left.graft() - right.graft();
-  }
-
-
   function doValue(l:Left, r:Right) -> Value {
     return l - r;
   }

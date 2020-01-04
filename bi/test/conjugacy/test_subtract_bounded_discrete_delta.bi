@@ -16,7 +16,6 @@ program test_subtract_bounded_discrete_delta(N:Integer <- 10000) {
   /* simulate backward */
   for n in 1..N {
     m:TestSubtractBoundedDiscreteDelta;
-    m.s <- Integer(X1[n,1] - X1[n,2]);
     delay.handle(m.simulate());
     X2[n,1..2] <- m.backward();
   }
@@ -49,9 +48,8 @@ class TestSubtractBoundedDiscreteDelta < Model {
 
   function backward() -> Real[_] {
     y:Real[2];
-    assert !x2.hasValue();
+    s.value();
     y[2] <- x2.value();
-    assert !x1.hasValue();
     y[1] <- x1.value();
     return y;
   }

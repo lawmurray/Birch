@@ -36,11 +36,11 @@ final class IdenticalGaussian(future:Real[_]?, futureUpdate:Boolean,
     m4:MultivariateGaussian?;
 
     if (m1 <- μ.graftLinearMultivariateNormalInverseGamma())? &&
-        m1!.x.σ2 == σ2 {
+        m1!.x.σ2 == σ2.distribution() {
       return LinearMultivariateNormalInverseGammaMultivariateGaussian(
           future, futureUpdate, m1!.A, m1!.x, m1!.c);
     } else if (m2 <- μ.graftMultivariateNormalInverseGamma())? &&
-      m2!.σ2 == σ2 {
+      m2!.σ2 == σ2.distribution() {
       return MultivariateNormalInverseGammaMultivariateGaussian(
           future, futureUpdate, m2!);
     } else if (m3 <- μ.graftLinearMultivariateGaussian())? {

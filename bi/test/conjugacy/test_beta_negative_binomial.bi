@@ -55,6 +55,6 @@ class TestBetaNegativeBinomial < Model {
   }
   
   function marginal() -> Distribution<Integer> {
-    return x.distribution();
+    return x.distribution()!.graft();
   }
 }

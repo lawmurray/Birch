@@ -3,10 +3,6 @@
  */
 final class Asin<Argument,Value>(x:Expression<Argument>) <
     UnaryExpression<Argument,Value>(x) {  
-  function graft() -> Expression<Value> {
-    return asin(single.graft());
-  }
-
   function doValue(x:Argument) -> Value {
     return asin(x);
   }

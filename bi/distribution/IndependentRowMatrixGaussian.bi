@@ -36,9 +36,9 @@ final class IndependentRowMatrixGaussian(future:Real[_,_]?,
     m1:TransformLinearMatrix<MatrixNormalInverseWishart>?;
     m2:MatrixNormalInverseWishart?;
 
-    if (m1 <- M.graftLinearMatrixNormalInverseWishart())? && m1!.X.V == V {
+    if (m1 <- M.graftLinearMatrixNormalInverseWishart())? && m1!.X.V == V.distribution() {
       return LinearMatrixNormalInverseWishartMatrixGaussian(future, futureUpdate, m1!.A, m1!.X, m1!.C);
-    } else if (m2 <- M.graftMatrixNormalInverseWishart())? && m2!.V == V {
+    } else if (m2 <- M.graftMatrixNormalInverseWishart())? && m2!.V == V.distribution() {
       return MatrixNormalInverseWishartMatrixGaussian(future, futureUpdate, m2!);
     } else if (s1 <- V.graftInverseWishart())? {
       return MatrixNormalInverseWishart(future, futureUpdate, M, identity(M.rows()), s1!);

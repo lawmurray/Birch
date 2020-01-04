@@ -27,6 +27,14 @@ final class ScalarGaussian(future:Real?, futureUpdate:Boolean,
   function logpdf(x:Real) -> Real {
     return logpdf_gaussian(x, μ, σ2.value()*τ2.value());
   }
+
+  function cdf(x:Real) -> Real? {
+    return cdf_gaussian(x, μ.value(), σ2.value()*τ2.value());
+  }
+
+  function quantile(P:Real) -> Real? {
+    return quantile_gaussian(P, μ.value(), σ2.value()*τ2.value());
+  }
   
   function graft() -> Distribution<Real> {
     prune();

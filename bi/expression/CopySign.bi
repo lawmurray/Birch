@@ -3,10 +3,6 @@
  */
 final class CopySign<Left,Right,Value>(left:Expression<Left>,
     right:Expression<Right>) < BinaryExpression<Left,Right,Value>(left, right) {  
-  function graft() -> Expression<Value> {
-    return copysign(left.graft(), right.graft());
-  }
-
   function doValue(l:Left, r:Right) -> Value {
     return copysign(l, r);
   }

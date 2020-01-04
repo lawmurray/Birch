@@ -2,11 +2,7 @@
  * Lazy `tan`.
  */
 final class Tan<Argument,Value>(x:Expression<Argument>) <
-    UnaryExpression<Argument,Value>(x) {  
-  function graft() -> Expression<Value> {
-    return tan(single.graft());
-  }
-
+    UnaryExpression<Argument,Value>(x) {
   function doValue(x:Argument) -> Value {
     return tan(x);
   }

@@ -36,9 +36,9 @@ final class IndependentMatrixGaussian(future:Real[_,_]?, futureUpdate:Boolean,
     m1:TransformLinearMatrix<MatrixNormalInverseGamma>?;
     m2:MatrixNormalInverseGamma?;
 
-    if (m1 <- M.graftLinearMatrixNormalInverseGamma())? && m1!.X.σ2 == σ2 {
+    if (m1 <- M.graftLinearMatrixNormalInverseGamma())? && m1!.X.σ2 == σ2.distribution() {
       return LinearMatrixNormalInverseGammaMatrixGaussian(future, futureUpdate, m1!.A, m1!.X, m1!.C);
-    } else if (m2 <- M.graftMatrixNormalInverseGamma())? && m2!.σ2 == σ2 {
+    } else if (m2 <- M.graftMatrixNormalInverseGamma())? && m2!.σ2 == σ2.distribution() {
       return MatrixNormalInverseGammaMatrixGaussian(future, futureUpdate, m2!);
     } else if (s1 <- σ2.graftIndependentInverseGamma())? {
       return MatrixNormalInverseGamma(future, futureUpdate, M, identity(M.rows()), s1!);

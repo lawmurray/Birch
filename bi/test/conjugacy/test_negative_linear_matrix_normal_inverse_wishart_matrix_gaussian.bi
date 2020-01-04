@@ -89,7 +89,7 @@ class TestNegativeLinearMatrixNormalInverseWishartMatrixGaussian < Model {
   }
   
   function marginal() -> Distribution<Real[_,_]> {
-    return Y.distribution();
+    return Y.distribution()!;
   }
   
   function copy() -> Real[_] {

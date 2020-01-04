@@ -37,8 +37,7 @@ final class LinearGaussianGaussian(future:Real?, futureUpdate:Boolean,
 function LinearGaussianGaussian(future:Real?, futureUpdate:Boolean,
     a:Expression<Real>, μ:Gaussian, c:Expression<Real>,
     σ2:Expression<Real>) -> LinearGaussianGaussian {
-  m:LinearGaussianGaussian(future, futureUpdate, a.graft(), μ,
-      c.graft(), σ2.graft());
+  m:LinearGaussianGaussian(future, futureUpdate, a, μ, c, σ2);
   μ.setChild(m);
   return m;
 }

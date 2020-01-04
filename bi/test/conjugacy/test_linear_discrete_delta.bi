@@ -61,6 +61,6 @@ class TestLinearDiscreteDelta < Model {
   }
   
   function marginal() -> Distribution<Integer> {
-    return y.distribution();
+    return y.distribution()!;
   }
 }

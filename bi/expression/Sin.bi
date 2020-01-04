@@ -2,11 +2,7 @@
  * Lazy `sin`.
  */
 final class Sin<Argument,Value>(x:Expression<Argument>) <
-    UnaryExpression<Argument,Value>(x) {  
-  function graft() -> Expression<Value> {
-    return sin(single.graft());
-  }
-
+    UnaryExpression<Argument,Value>(x) {
   function doValue(x:Argument) -> Value {
     return sin(x);
   }

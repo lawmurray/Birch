@@ -6,10 +6,6 @@ final class MultivariateMultiply<Left,Right,Value>(left:Expression<Left>,
   function rows() -> Integer {
     return left.rows();
   }
-  
-  function graft() -> Expression<Value> {
-    return left.graft()*right.graft();
-  }
 
   function doValue(l:Left, r:Right) -> Value {
     return l*r;

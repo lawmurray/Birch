@@ -40,8 +40,7 @@ function LinearMultivariateGaussianGaussian(future:Real?,
     futureUpdate:Boolean, a:Expression<Real[_]>, μ:MultivariateGaussian,
     c:Expression<Real>, σ2:Expression<Real>) ->
     LinearMultivariateGaussianGaussian {
-  m:LinearMultivariateGaussianGaussian(future, futureUpdate, a.graft(),
-      μ, c.graft(), σ2.graft());
+  m:LinearMultivariateGaussianGaussian(future, futureUpdate, a, μ, c, σ2);
   μ.setChild(m);
   return m;
 }

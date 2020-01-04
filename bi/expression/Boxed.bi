@@ -60,7 +60,7 @@ final class Boxed<Value> < Expression<Value> {
   }
 
   function graft() -> Expression<Value> {
-    return Boxed(x);
+    return this;
   }
 }
 

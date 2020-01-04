@@ -63,6 +63,6 @@ class TestBetaBernoulli < Model {
   }
   
   function marginal() -> Distribution<Boolean> {
-    return x.distribution();
+    return x.distribution()!.graft();
   }
 }

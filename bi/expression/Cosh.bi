@@ -2,11 +2,7 @@
  * Lazy `cosh`.
  */
 final class Cosh<Argument,Value>(x:Expression<Argument>) <
-    UnaryExpression<Argument,Value>(x) {  
-  function graft() -> Expression<Value> {
-    return cosh(single.graft());
-  }
-
+    UnaryExpression<Argument,Value>(x) {
   function doValue(x:Argument) -> Value {
     return cosh(x);
   }
