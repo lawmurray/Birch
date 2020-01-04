@@ -6,17 +6,17 @@ class TransformLinear<Value>(a:Expression<Real>, x:Value,
   /**
    * Scale.
    */
-  auto a <- a;
+  a:Expression<Real> <- a;
 
   /**
    * Delay node.
    */
-  auto x <- x;
+  x:Value <- x;
 
   /**
    * Offset.
    */
-  auto c <- c;
+  c:Expression<Real> <- c;
   
   function multiply(y:Expression<Real>) {
     a <- y*a;

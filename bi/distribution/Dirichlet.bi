@@ -16,21 +16,14 @@ final class Dirichlet(future:Real[_]?, futureUpdate:Boolean, α:Expression<Real[
     return logpdf_dirichlet(x, α);
   }
 
-  function graft() {
-    if delay? {
-      delay!.prune();
-    } else {
-      delay <- Dirichlet(future, futureUpdate, α);
-    }
+  function graft() -> Distribution<Real[_]> {
+    prune();
+    return this;
   }
 
   function graftDirichlet() -> Dirichlet? {
-    if delay? {
-      delay!.prune();
-    } else {
-      delay <- Dirichlet(future, futureUpdate, α);
-    }
-    return Dirichlet?(delay);
+    prune();
+    return this;
   }
 
   function write(buffer:Buffer) {
@@ -40,8 +33,8 @@ final class Dirichlet(future:Real[_]?, futureUpdate:Boolean, α:Expression<Real[
   }
 }
 
-function Dirichlet(future:Real[_]?, futureUpdate:Boolean, α:Real[_]) ->
-    Dirichlet {
+function Dirichlet(future:Real[_]?, futureUpdate:Boolean,
+    α:Expression<Real[_]>) -> Dirichlet {
   m:Dirichlet(future, futureUpdate, α);
   return m;
 }
@@ -50,7 +43,7 @@ function Dirichlet(future:Real[_]?, futureUpdate:Boolean, α:Real[_]) ->
  * Create Dirichlet distribution.
  */
 function Dirichlet(α:Expression<Real[_]>) -> Dirichlet {
-  m:Dirichlet(α);
+  m:Dirichlet(nil, true, α);
   return m;
 }
 

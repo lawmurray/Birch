@@ -29,16 +29,13 @@ final class Delta(future:Integer?, futureUpdate:Boolean, μ:Expression<Integer>)
     return μ;
   }
 
-  function graft() {
-    if delay? {
-      delay!.prune();
+  function graft() -> Distribution<Integer> {
+    prune();
+    m:Discrete?;
+    if (m <- μ.graftDiscrete())? {
+      return DiscreteDelta(future, futureUpdate, m!);
     } else {
-      m:Discrete?;
-      if (m <- μ.graftDiscrete())? {
-        delay <- DiscreteDelta(future, futureUpdate, m!);
-      } else {
-        delay <- Delta(future, futureUpdate, μ);
-      }
+      return this;
     }
   }
 
@@ -49,8 +46,8 @@ final class Delta(future:Integer?, futureUpdate:Boolean, μ:Expression<Integer>)
   }
 }
 
-function Delta(future:Integer?, futureUpdate:Boolean, μ:Integer) ->
-    Delta {
+function Delta(future:Integer?, futureUpdate:Boolean,
+    μ:Expression<Integer>) -> Delta {
   m:Delta(future, futureUpdate, μ);
   return m;
 }
@@ -61,7 +58,7 @@ function Delta(future:Integer?, futureUpdate:Boolean, μ:Integer) ->
  * - μ: Location.
  */
 function Delta(μ:Expression<Integer>) -> Delta {
-  m:Delta(μ);
+  m:Delta(nil, true, μ);
   return m;
 }
 

@@ -3,7 +3,9 @@
  * cannot be instantiated, but the associated random variable may be
  * marginalized out.
  */
-final class Restaurant(future:Real[_]?, futureUpdate:Boolean, α:Expression<Real>, θ:Expression<Real>) < Distribution<Real[_]>(future, futureUpdate) {
+final class Restaurant(future:Real[_]?, futureUpdate:Boolean,
+    α:Expression<Real>, θ:Expression<Real>) <
+    Distribution<Real[_]>(future, futureUpdate) {
   /**
    * Concentration.
    */
@@ -39,21 +41,14 @@ final class Restaurant(future:Real[_]?, futureUpdate:Boolean, α:Expression<Real
     return 0.0;
   }
 
-  function graft() {
-    if delay? {
-      delay!.prune();
-    } else {
-      delay <- Restaurant(future, futureUpdate, α, θ);
-    }
+  function graft() -> Distribution<Real[_]> {
+    prune();
+    return this;
   }
 
   function graftRestaurant() -> Restaurant? {
-    if delay? {
-      delay!.prune();
-    } else {
-      delay <- Restaurant(future, futureUpdate, α, θ);
-    }
-    return Restaurant?(delay);
+    prune();
+    return this;
   }
 
   function write(buffer:Buffer) {
@@ -65,8 +60,8 @@ final class Restaurant(future:Real[_]?, futureUpdate:Boolean, α:Expression<Real
   }
 }
 
-function Restaurant(future:Real[_]?, futureUpdate:Boolean, α:Real,
-    θ:Real) -> Restaurant {
+function Restaurant(future:Real[_]?, futureUpdate:Boolean,
+    α:Expression<Real>, θ:Expression<Real>) -> Restaurant {
   m:Restaurant(future, futureUpdate, α, θ);
   return m;
 }
@@ -75,7 +70,7 @@ function Restaurant(future:Real[_]?, futureUpdate:Boolean, α:Real,
  * Create Chinese restaurant process.
  */
 function Restaurant(α:Expression<Real>, θ:Expression<Real>) -> Restaurant {
-  x:Restaurant(α, θ);
+  x:Restaurant(nil, true, α, θ);
   return x;
 }
 

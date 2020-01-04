@@ -1,8 +1,8 @@
 /*
  * ed Weibull random variate.
  */
-final class Weibull(future:Real?, futureUpdate:Boolean, k:Expression<Real>, λ:Expression<Real>) <
-    Distribution<Real>(future, futureUpdate) {
+final class Weibull(future:Real?, futureUpdate:Boolean, k:Expression<Real>,
+    λ:Expression<Real>) < Distribution<Real>(future, futureUpdate) {
   /**
    * Shape.
    */
@@ -33,12 +33,9 @@ final class Weibull(future:Real?, futureUpdate:Boolean, k:Expression<Real>, λ:E
     return 0.0;
   }
 
-  function graft() {
-    if delay? {
-      delay!.prune();
-    } else {
-      delay <- Weibull(future, futureUpdate, k, λ);
-    }
+  function graft() -> Distribution<Real> {
+    prune();
+    return this;
   }
 
   function write(buffer:Buffer) {
@@ -49,8 +46,8 @@ final class Weibull(future:Real?, futureUpdate:Boolean, k:Expression<Real>, λ:E
   }
 }
 
-function Weibull(future:Real?, futureUpdate:Boolean, k:Real, λ:Real) ->
-    Weibull {
+function Weibull(future:Real?, futureUpdate:Boolean, k:Expression<Real>,
+    λ:Expression<Real>) -> Weibull {
   m:Weibull(future, futureUpdate, k, λ);
   return m;
 }
@@ -59,7 +56,7 @@ function Weibull(future:Real?, futureUpdate:Boolean, k:Real, λ:Real) ->
  * Create Weibull distribution.
  */
 function Weibull(k:Expression<Real>, λ:Expression<Real>) -> Weibull {
-  m:Weibull(k, λ);
+  m:Weibull(nil, true, k, λ);
   return m;
 }
 

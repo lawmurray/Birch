@@ -37,21 +37,14 @@ final class Beta(future:Real?, futureUpdate:Boolean, α:Expression<Real>,
     return 1.0;
   }
 
-  function graft() {
-    if delay? {
-      delay!.prune();
-    } else {
-      delay <- Beta(future, futureUpdate, α, β);
-    }
+  function graft() -> Distribution<Real> {
+    prune();
+    return this;
   }
 
   function graftBeta() -> Beta? {
-    if delay? {
-      delay!.prune();
-    } else {
-      delay <- Beta(future, futureUpdate, α, β);
-    }
-    return Beta?(delay);
+    prune();
+    return this;
   }
 
   function write(buffer:Buffer) {
@@ -62,7 +55,8 @@ final class Beta(future:Real?, futureUpdate:Boolean, α:Expression<Real>,
   }
 }
 
-function Beta(future:Real?, futureUpdate:Boolean, α:Real, β:Real) -> Beta {
+function Beta(future:Real?, futureUpdate:Boolean, α:Expression<Real>,
+    β:Expression<Real>) -> Beta {
   m:Beta(future, futureUpdate, α, β);
   return m;
 }
@@ -71,7 +65,7 @@ function Beta(future:Real?, futureUpdate:Boolean, α:Real, β:Real) -> Beta {
  * Create beta distribution.
  */
 function Beta(α:Expression<Real>, β:Expression<Real>) -> Beta {
-  m:Beta(α, β);
+  m:Beta(nil, true, α, β);
   return m;
 }
 

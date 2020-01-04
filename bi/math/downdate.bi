@@ -178,17 +178,19 @@ function downdate_dirichlet_multinomial(x:Integer[_], n:Integer,
  * likelihood.
  *
  * - x: The variate.
- * - μ': Prior mean.
- * - λ': Prior precision.
- * - l: Likelihood precision.
+ * - μ': Posterior mean.
+ * - σ2': Posterior variance.
+ * - s2: Likelihood variance.
  *
  * Returns: the prior hyperparameters `μ` and `σ2`.
  */
-function downdate_gaussian_gaussian(x:Real, μ':Real, λ':Real, l:Real) ->
+function downdate_gaussian_gaussian(x:Real, μ':Real, σ2':Real, s2:Real) ->
     (Real, Real) {
-  λ:Real <- λ' - l;
-  μ:Real <- (λ'*μ' - l*x)/λ;
-  return (μ, λ);
+  auto λ' <- 1.0/σ2';
+  auto l <- 1.0/s2;
+  auto λ <- λ' - l;
+  auto μ <- (λ'*μ' - l*x)/λ;
+  return (μ, 1.0/λ);
 }
 
 /**
@@ -198,17 +200,19 @@ function downdate_gaussian_gaussian(x:Real, μ':Real, λ':Real, l:Real) ->
  * - x: The variate.
  * - a: Scale.
  * - μ': Posterior mean.
- * - λ': Posterior variance.
+ * - σ2': Posterior variance.
  * - c: Offset.
- * - l: Likelihood precision.
+ * - s2: Likelihood variance.
  *
  * Returns: the prior hyperparameters `μ` and `λ`.
  */
-function downdate_linear_gaussian_gaussian(x:Real, a:Real, μ':Real, λ':Real,
-    c:Real, l:Real) -> (Real, Real) {
-  λ:Real <- λ' - a*a*l;
-  μ:Real <- (λ'*μ' - a*l*(x - c))/λ;
-  return (μ, λ);
+function downdate_linear_gaussian_gaussian(x:Real, a:Real, μ':Real, σ2':Real,
+    c:Real, s2:Real) -> (Real, Real) {
+  auto λ' <- 1.0/σ2';
+  auto l <- 1.0/s2;
+  auto λ <- λ' - a*a*l;
+  auto μ <- (λ'*μ' - a*l*(x - c))/λ;
+  return (μ, 1.0/λ);
 }
 
 /**

@@ -67,13 +67,14 @@ final class NormalInverseGamma(future:Real?, futureUpdate:Boolean,
     return quantile_normal_inverse_gamma(p, μ, 1.0/λ, σ2.α, σ2.β);
   }
 
-  function graft() {
-    if delay? {
-      delay!.prune();
-    } else {
-      delay <- NormalInverseGamma(future, futureUpdate, μ, a2,
-          σ2.graftInverseGamma()!);
-    }
+  function graft() -> Distribution<Real> {
+    prune();
+    return this;
+  }
+
+  function graftNormalInverseGamma() -> NormalInverseGamma? {
+    prune();
+    return this;
   }
 
   function write(buffer:Buffer) {

@@ -6,17 +6,17 @@ class TransformLinearMultivariate<Value>(A:Expression<Real[_,_]>, x:Value,
   /**
    * Scale.
    */
-  auto A <- A;
+  A:Expression<Real[_,_]> <- A;
   
   /**
    * Delay node.
    */
-  auto x <- x;
+  x:Value <- x;
 
   /**
    * Offset.
    */
-  auto c <- c;
+  c:Expression<Real[_]> <- c;
   
   function rows() -> Integer {
     return global.rows(A);

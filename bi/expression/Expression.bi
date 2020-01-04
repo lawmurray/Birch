@@ -130,14 +130,6 @@ abstract class Expression<Value> {
    * Set the final value to the pilot value. The pilot value is discarded.
    */
   abstract function clamp();
-
-  /**
-   * If this expression is grafted onto the delayed sampling graph, get the
-   * node with which it is associated on that graph.
-   */
-  function getDelay() -> Delay? {
-    return nil;
-  }
   
   /**
    * Set the child of any delayed sampling nodes in the expression.

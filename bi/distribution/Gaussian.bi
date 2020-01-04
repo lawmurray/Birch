@@ -9,104 +9,94 @@ class Gaussian(future:Real?, futureUpdate:Boolean, μ:Expression<Real>,
   μ:Expression<Real> <- μ;
 
   /**
-   * Precision.
+   * Variance.
    */
-  λ:Expression<Real> <- 1.0/σ2;
+  σ2:Expression<Real> <- σ2;
 
   function simulate() -> Real {
-    return simulate_gaussian(μ.value(), 1.0/λ.value());
+    return simulate_gaussian(μ.value(), σ2.value());
   }
 
   function simulatePilot() -> Real {
-    return simulate_gaussian(μ.pilot(), 1.0/λ.pilot());
+    return simulate_gaussian(μ.pilot(), σ2.pilot());
   }
 
   function simulatePropose() -> Real {
-    return simulate_gaussian(μ.propose(), 1.0/λ.propose());
+    return simulate_gaussian(μ.propose(), σ2.propose());
   }
   
   function logpdf(x:Real) -> Real {
-    return logpdf_gaussian(x, μ.value(), 1.0/λ.value());
+    return logpdf_gaussian(x, μ.value(), σ2.value());
   }
 
   function lazy(x:Expression<Real>) -> Expression<Real> {
-    return lazy_gaussian(x, μ, 1.0/λ);
+    return lazy_gaussian(x, μ, σ2);
   }
   
   function cdf(x:Real) -> Real? {
-    return cdf_gaussian(x, μ.value(), 1.0/λ.value());
+    return cdf_gaussian(x, μ.value(), σ2.value());
   }
 
   function quantile(p:Real) -> Real? {
-    return quantile_gaussian(p, μ.value(), 1.0/λ.value());
+    return quantile_gaussian(p, μ.value(), σ2.value());
   }
 
-  function graft() {
-    if delay? {
-      delay!.prune();
-    } else {
-      m1:TransformLinear<NormalInverseGamma>?;
-      m3:NormalInverseGamma?;
-      m4:TransformLinear<Gaussian>?;
-      m5:TransformDot<MultivariateGaussian>?;
-      m6:Gaussian?;
-      s2:InverseGamma?;
+  function graft() -> Distribution<Real> {
+    prune();
+    m1:TransformLinear<NormalInverseGamma>?;
+    m3:NormalInverseGamma?;
+    m4:TransformLinear<Gaussian>?;
+    m5:TransformDot<MultivariateGaussian>?;
+    m6:Gaussian?;
+    s2:InverseGamma?;
 
-      if (m1 <- μ.graftLinearNormalInverseGamma())? && m1!.x.σ2 == σ2.get() {
-        delay <- LinearNormalInverseGammaGaussian(future, futureUpdate, m1!.a, m1!.x, m1!.c);
-      } else if (m3 <- μ.graftNormalInverseGamma())? && m3!.σ2 == σ2.get() {
-        delay <- NormalInverseGammaGaussian(future, futureUpdate, m3!);
-      } else if (m4 <- μ.graftLinearGaussian())? {
-        delay <- LinearGaussianGaussian(future, futureUpdate, m4!.a, m4!.x, m4!.c, σ2);
-      } else if (m5 <- μ.graftDotGaussian())? {
-        delay <- LinearMultivariateGaussianGaussian(future, futureUpdate, m5!.a, m5!.x, m5!.c, σ2);
-      } else if (m6 <- μ.graftGaussian())? {
-        delay <- GaussianGaussian(future, futureUpdate, m6!, σ2);
-      } else if (s2 <- σ2.graftInverseGamma())? {
-        delay <- NormalInverseGamma(future, futureUpdate, μ, 1.0, s2!);
-      } else {
-        delay <- Gaussian(future, futureUpdate, μ, σ2);
-      }
+    if (m1 <- μ.graftLinearNormalInverseGamma())? && m1!.x.σ2 == σ2 {
+      return LinearNormalInverseGammaGaussian(future, futureUpdate, m1!.a, m1!.x, m1!.c);
+    } else if (m3 <- μ.graftNormalInverseGamma())? && m3!.σ2 == σ2 {
+      return NormalInverseGammaGaussian(future, futureUpdate, m3!);
+    } else if (m4 <- μ.graftLinearGaussian())? {
+      return LinearGaussianGaussian(future, futureUpdate, m4!.a, m4!.x, m4!.c, σ2);
+    } else if (m5 <- μ.graftDotGaussian())? {
+      return LinearMultivariateGaussianGaussian(future, futureUpdate, m5!.a, m5!.x, m5!.c, σ2);
+    } else if (m6 <- μ.graftGaussian())? {
+      return GaussianGaussian(future, futureUpdate, m6!, σ2);
+    } else if (s2 <- σ2.graftInverseGamma())? {
+      return NormalInverseGamma(future, futureUpdate, μ, 1.0, s2!);
+    } else {
+      return this;
     }
   }
 
   function graftGaussian() -> Gaussian? {
-    if delay? {
-      delay!.prune();
+    prune();
+    m1:TransformLinear<Gaussian>?;
+    m2:TransformDot<MultivariateGaussian>?;
+    m3:Gaussian?;
+    if (m1 <- μ.graftLinearGaussian())? {
+      return LinearGaussianGaussian(future, futureUpdate, m1!.a, m1!.x, m1!.c, σ2);
+    } else if (m2 <- μ.graftDotGaussian())? {
+      return LinearMultivariateGaussianGaussian(future, futureUpdate, m2!.a, m2!.x, m2!.c, σ2);
+    } else if (m3 <- μ.graftGaussian())? {
+      return GaussianGaussian(future, futureUpdate, m3!, σ2);
     } else {
-      m1:TransformLinear<Gaussian>?;
-      m2:TransformDot<MultivariateGaussian>?;
-      m3:Gaussian?;
-      if (m1 <- μ.graftLinearGaussian())? {
-        delay <- LinearGaussianGaussian(future, futureUpdate, m1!.a, m1!.x, m1!.c, σ2);
-      } else if (m2 <- μ.graftDotGaussian())? {
-        delay <- LinearMultivariateGaussianGaussian(future, futureUpdate, m2!.a, m2!.x, m2!.c, σ2);
-      } else if (m3 <- μ.graftGaussian())? {
-        delay <- GaussianGaussian(future, futureUpdate, m3!, σ2);
-      } else {
-        delay <- Gaussian(future, futureUpdate, μ, σ2);
-      }
+      return this;
     }
-    return Gaussian?(delay);
   }
 
   function graftNormalInverseGamma() -> NormalInverseGamma? {
-    if delay? {
-      delay!.prune();
-    } else {
-      s1:InverseGamma?;
-      if (s1 <- σ2.graftInverseGamma())? {
-        delay <- NormalInverseGamma(future, futureUpdate, μ, 1.0, s1!);
-      }
+    prune();
+    s1:InverseGamma?;
+    if (s1 <- σ2.graftInverseGamma())? {
+      return NormalInverseGamma(future, futureUpdate, μ, 1.0, s1!);
     }
-    return NormalInverseGamma?(delay);
+    return nil;
   }
 
   function write(buffer:Buffer) {
     prune();
     buffer.set("class", "Gaussian");
     buffer.set("μ", μ.value());
-    buffer.set("σ2", 1.0/λ.value());
+    buffer.set("σ2", σ2.value());
   }
 }
 
@@ -120,7 +110,7 @@ function Gaussian(future:Real?, futureUpdate:Boolean,
  * Create Gaussian distribution.
  */
 function Gaussian(μ:Expression<Real>, σ2:Expression<Real>) -> Gaussian {
-  m:Gaussian(μ, σ2);
+  m:Gaussian(nil, true, μ, σ2);
   return m;
 }
 

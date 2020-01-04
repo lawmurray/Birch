@@ -16,16 +16,13 @@ final class Bernoulli(future:Boolean?, futureUpdate:Boolean,
     return logpdf_bernoulli(x, ρ);
   }
 
-  function graft() {
-    if delay? {
-      delay!.prune();
+  function graft() -> Distribution<Boolean> {
+    prune();
+    m:Beta?;
+    if (m <- ρ.graftBeta())? {
+      return BetaBernoulli(future, futureUpdate, m!);
     } else {
-      m:Beta?;
-      if (m <- ρ.graftBeta())? {
-        delay <- BetaBernoulli(future, futureUpdate, m!);
-      } else {
-        delay <- Bernoulli(future, futureUpdate, ρ);
-      }
+      return this;
     }
   }
 

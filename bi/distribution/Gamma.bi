@@ -33,26 +33,19 @@ final class Gamma(future:Real?, futureUpdate:Boolean, k:Expression<Real>, θ:Exp
     return 0.0;
   }
 
-  function graft() {
-    if delay? {
-      delay!.prune();
+  function graft() -> Distribution<Real> {
+    prune();
+    θ1:InverseGamma?;
+    if (θ1 <- θ.graftInverseGamma())? {
+      return InverseGammaGamma(future, futureUpdate, k, θ1!);
     } else {
-      θ1:InverseGamma?;
-      if (θ1 <- θ.graftInverseGamma())? {
-        delay <- InverseGammaGamma(future, futureUpdate, k, θ1!);
-      } else {
-        delay <- Gamma(future, futureUpdate, k, θ);
-      }
+      return this;
     }
   }
 
   function graftGamma() -> Gamma? {
-    if delay? {
-      delay!.prune();
-    } else {
-      delay <- Gamma(future, futureUpdate, k, θ);
-    }
-    return Gamma?(delay);
+    prune();
+    return this;
   }
 
   function write(buffer:Buffer) {
@@ -63,8 +56,8 @@ final class Gamma(future:Real?, futureUpdate:Boolean, k:Expression<Real>, θ:Exp
   }
 }
 
-function Gamma(future:Real?, futureUpdate:Boolean, k:Real, θ:Real) ->
-    Gamma {
+function Gamma(future:Real?, futureUpdate:Boolean, k:Expression<Real>,
+    θ:Expression<Real>) -> Gamma {
   m:Gamma(future, futureUpdate, k, θ);
   return m;
 }
@@ -73,7 +66,7 @@ function Gamma(future:Real?, futureUpdate:Boolean, k:Real, θ:Real) ->
  * Create gamma distribution.
  */
 function Gamma(k:Expression<Real>, θ:Expression<Real>) -> Gamma {
-  m:Gamma(k, θ);
+  m:Gamma(nil, true, k, θ);
   return m;
 }
 

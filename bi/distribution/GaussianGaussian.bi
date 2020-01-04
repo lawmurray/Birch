@@ -3,23 +3,23 @@
  */
 final class GaussianGaussian(future:Real?, futureUpdate:Boolean,
     m:Gaussian, s2:Expression<Real>) < Gaussian(future, futureUpdate, m.μ,
-    1.0/m.λ + s2) {
+    m.σ2 + s2) {
   /**
    * Mean.
    */
   m:Gaussian& <- m;
 
   /**
-   * Likelihood precision.
+   * Variance.
    */
-  l:Expression<Real> <- 1.0/s2;
+  s2:Expression<Real> <- s2;
 
   function update(x:Real) {
-    (m.μ, m.λ) <- update_gaussian_gaussian(x, m.μ, m.λ, l);
+    (m.μ, m.σ2) <- update_gaussian_gaussian(x, m.μ, m.σ2, s2);
   }
 
   function downdate(x:Real) {
-    (m.μ, m.λ) <- downdate_gaussian_gaussian(x, m.μ, m.λ, l);
+    (m.μ, m.σ2) <- downdate_gaussian_gaussian(x, m.μ, m.σ2, s2);
   }
 }
 

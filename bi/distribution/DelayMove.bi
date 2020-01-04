@@ -54,7 +54,7 @@ abstract class DelayMove<Base>(future:Value?, futureUpdate:Boolean) <
         assert this.child! == child;
       }
       if !p? {
-        p <- lazy(Expression<Value>(this));
+        p <- lazy(DelayExpression<Value>(this));
         p!.setChild(child);
       }
     }

@@ -27,12 +27,9 @@ final class IndependentUniformInteger(future:Integer[_]?,
     return logpdf_independent_uniform_int(x, l, u);
   }
 
-  function graft() {
-    if delay? {
-      delay!.prune();
-    } else {
-      delay <- IndependentUniformInteger(future, futureUpdate, l, u);
-    }
+  function graft() -> Distribution<Integer[_]> {
+    prune();
+    return this;
   }
 
   function write(buffer:Buffer) {
@@ -43,8 +40,8 @@ final class IndependentUniformInteger(future:Integer[_]?,
   }
 }
 
-function IndependentUniformInteger(future:Integer[_]?,
-    futureUpdate:Boolean, l:Integer[_], u:Integer[_]) ->
+function IndependentUniformInteger(future:Integer[_]?, futureUpdate:Boolean,
+    l:Expression<Integer[_]>, u:Expression<Integer[_]>) ->
     IndependentUniformInteger {
   m:IndependentUniformInteger(future, futureUpdate, l, u);
   return m;
@@ -55,7 +52,7 @@ function IndependentUniformInteger(future:Integer[_]?,
  */
 function Uniform(l:Expression<Integer[_]>, u:Expression<Integer[_]>) -> IndependentUniformInteger {
   assert l.rows() == u.rows();
-  m:IndependentUniformInteger(l, u);
+  m:IndependentUniformInteger(nil, true, l, u);
   return m;
 }
 

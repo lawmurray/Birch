@@ -23,25 +23,19 @@ final class UniformInteger(future:Integer?, futureUpdate:Boolean,
     return quantile_uniform_int(p, l, u);
   }
 
-  function graft() {
-    if delay? {
-      delay!.prune();
-    } else {
-      delay <- UniformInteger(future, futureUpdate, l, u);
-    }
+  function graft() -> Distribution<Integer> {
+    prune();
+    return this;
   }
 
   function graftDiscrete() -> Discrete? {
-    return graftBoundedDiscrete();
+    prune();
+    return this;
   }
 
   function graftBoundedDiscrete() -> BoundedDiscrete? {
-    if delay? {
-      delay!.prune();
-    } else {
-      delay <- UniformInteger(future, futureUpdate, l, u);
-    }
-    return BoundedDiscrete?(delay);
+    prune();
+    return this;
   }
 
   function write(buffer:Buffer) {
@@ -53,7 +47,7 @@ final class UniformInteger(future:Integer?, futureUpdate:Boolean,
 }
 
 function UniformInteger(future:Integer?, futureUpdate:Boolean,
-    l:Integer, u:Integer) -> UniformInteger {
+    l:Expression<Integer>, u:Expression<Integer>) -> UniformInteger {
   m:UniformInteger(future, futureUpdate, l, u);
   return m;
 }
@@ -62,7 +56,7 @@ function UniformInteger(future:Integer?, futureUpdate:Boolean,
  * Create uniform distribution over integers.
  */
 function Uniform(l:Expression<Integer>, u:Expression<Integer>) -> UniformInteger {
-  m:UniformInteger(l, u);
+  m:UniformInteger(nil, true, l, u);
   return m;
 }
 

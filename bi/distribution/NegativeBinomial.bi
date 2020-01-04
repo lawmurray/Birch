@@ -17,50 +17,47 @@ final class NegativeBinomial(future:Integer?, futureUpdate:Boolean,
     if value? {
       return value!;
     } else {
-      return simulate_negative_binomial(n, ρ);
+      return simulate_negative_binomial(k, ρ);
     }
   }
   
   function logpdf(x:Integer) -> Real {
-    return logpdf_negative_binomial(x, n, ρ);
+    return logpdf_negative_binomial(x, k, ρ);
   }
 
   function cdf(x:Integer) -> Real? {
-    return cdf_negative_binomial(x, n, ρ);
+    return cdf_negative_binomial(x, k, ρ);
   }
 
   function quantile(p:Real) -> Integer? {
-    return quantile_negative_binomial(p, n, ρ);
+    return quantile_negative_binomial(p, k, ρ);
   }
 
   function lower() -> Integer? {
     return 0;
   }
 
-  function graft() {
-    if delay? {
-      delay!.prune();
+  function graft() -> Distribution<Integer> {
+    prune();
+    ρ1:Beta?;
+    if (ρ1 <- ρ.graftBeta())? {
+      return BetaNegativeBinomial(future, futureUpdate, k, ρ1!);
     } else {
-      ρ1:Beta?;
-      if (ρ1 <- ρ.graftBeta())? {
-        delay <- BetaNegativeBinomial(future, futureUpdate, k, ρ1!);
-      } else {
-        delay <- NegativeBinomial(future, futureUpdate, k, ρ);
-      }
+      return this;
     }
   }
 
   function write(buffer:Buffer) {
     prune();
     buffer.set("class", "NegativeBinomial");
-    buffer.set("n", n);
+    buffer.set("k", k);
     buffer.set("ρ", ρ);
   }
 }
 
 function NegativeBinomial(future:Integer?, futureUpdate:Boolean,
-    n:Integer, ρ:Real) -> NegativeBinomial {
-  m:NegativeBinomial(future, futureUpdate, n, ρ);
+    k:Expression<Integer>, ρ:Expression<Real>) -> NegativeBinomial {
+  m:NegativeBinomial(future, futureUpdate, k, ρ);
   return m;
 }
 
@@ -68,7 +65,7 @@ function NegativeBinomial(future:Integer?, futureUpdate:Boolean,
  * Create negative binomial distribution.
  */
 function NegativeBinomial(k:Expression<Integer>, ρ:Expression<Real>) -> NegativeBinomial {
-  m:NegativeBinomial(k, ρ);
+  m:NegativeBinomial(nil, true, k, ρ);
   return m;
 }
 

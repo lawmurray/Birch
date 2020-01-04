@@ -2,8 +2,9 @@
  * Gaussian distribution where the variance is given as a product of two
  * scalars.
  */
-final class ScalarGaussian(μ:Expression<Real>, σ2:Expression<Real>,
-    τ2:Expression<Real>) < Distribution<Real> {
+final class ScalarGaussian(future:Real?, futureUpdate:Boolean,
+    μ:Expression<Real>, σ2:Expression<Real>, τ2:Expression<Real>) <
+    Distribution<Real>(future, futureUpdate) {
   /**
    * Mean.
    */
@@ -19,42 +20,32 @@ final class ScalarGaussian(μ:Expression<Real>, σ2:Expression<Real>,
    */
   τ2:Expression<Real> <- τ2;
   
-  function graft() {
-    if delay? {
-      delay!.prune();
+  function graft() -> Distribution<Real> {
+    prune();
+    s1:InverseGamma?;
+    if (s1 <- σ2.graftInverseGamma())? {
+      return NormalInverseGamma(future, futureUpdate, μ, τ2, s1!);
+    } else if (s1 <- τ2.graftInverseGamma())? {
+      return NormalInverseGamma(future, futureUpdate, μ, σ2, s1!);
     } else {
-      s1:InverseGamma?;
-      if (s1 <- σ2.graftInverseGamma())? {
-        delay <- NormalInverseGamma(future, futureUpdate, μ, τ2, s1!);
-      } else if (s1 <- τ2.graftInverseGamma())? {
-        delay <- NormalInverseGamma(future, futureUpdate, μ, σ2, s1!);
-      } else {
-        delay <- Gaussian(future, futureUpdate, μ, σ2*τ2);
-      }
+      return Gaussian(future, futureUpdate, μ, σ2*τ2);
     }
   }
 
   function graftGaussian() -> Gaussian? {
-    if delay? {
-      delay!.prune();
-    } else {
-      delay <- Gaussian(future, futureUpdate, μ, σ2*τ2);
-    }
-    return Gaussian?(delay);
+    prune();
+    return Gaussian(future, futureUpdate, μ, σ2*τ2);
   }
 
   function graftNormalInverseGamma() -> NormalInverseGamma? {
-    if delay? {
-      delay!.prune();
-    } else {
-      s1:InverseGamma?;
-      if (s1 <- σ2.graftInverseGamma())? {
-        delay <- NormalInverseGamma(future, futureUpdate, μ, τ2, s1!);
-      } else if (s1 <- τ2.graftInverseGamma())? {
-        delay <- NormalInverseGamma(future, futureUpdate, μ, σ2, s1!);
-      }
+    prune();
+    s1:InverseGamma?;
+    if (s1 <- σ2.graftInverseGamma())? {
+      return NormalInverseGamma(future, futureUpdate, μ, τ2, s1!);
+    } else if (s1 <- τ2.graftInverseGamma())? {
+      return NormalInverseGamma(future, futureUpdate, μ, σ2, s1!);
     }
-    return NormalInverseGamma?(delay);
+    return nil;
   }
 }
 
@@ -65,7 +56,7 @@ final class ScalarGaussian(μ:Expression<Real>, σ2:Expression<Real>,
  */
 function Gaussian(μ:Expression<Real>, σ2:Expression<Real>,
     τ2:Expression<Real>) -> ScalarGaussian {
-  m:ScalarGaussian(μ, σ2, τ2);
+  m:ScalarGaussian(nil, true, μ, σ2, τ2);
   return m;
 }
 

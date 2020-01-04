@@ -37,12 +37,9 @@ final class Uniform(future:Real?, futureUpdate:Boolean, l:Expression<Real>, u:Ex
     return u;
   }
 
-  function graft() {
-    if delay? {
-      delay!.prune();
-    } else {
-      delay <- Uniform(future, futureUpdate, l, u);
-    }
+  function graft() -> Distribution<Real> {
+    prune();
+    return this;
   }
 
   function write(buffer:Buffer) {
@@ -53,8 +50,8 @@ final class Uniform(future:Real?, futureUpdate:Boolean, l:Expression<Real>, u:Ex
   }
 }
 
-function Uniform(future:Real?, futureUpdate:Boolean, l:Real, u:Real) ->
-    Uniform {
+function Uniform(future:Real?, futureUpdate:Boolean, l:Expression<Real>,
+    u:Expression<Real>) -> Uniform {
   m:Uniform(future, futureUpdate, l, u);
   return m;
 }
@@ -63,7 +60,7 @@ function Uniform(future:Real?, futureUpdate:Boolean, l:Real, u:Real) ->
  * Create a uniform distribution.
  */
 function Uniform(l:Expression<Real>, u:Expression<Real>) -> Uniform {
-  m:Uniform(l, u);
+  m:Uniform(nil, true, l, u);
   return m;
 }
 

@@ -25,12 +25,9 @@ final class IndependentUniform(future:Real[_]?, futureUpdate:Boolean,
     return logpdf_independent_uniform(x, l, u);
   }
 
-  function graft() {
-    if delay? {
-      delay!.prune();
-    } else {
-      delay <- IndependentUniform(future, futureUpdate, l, u);
-    }
+  function graft() -> Distribution<Real[_]> {
+    prune();
+    return this;
   }
 
   function write(buffer:Buffer) {
@@ -42,7 +39,7 @@ final class IndependentUniform(future:Real[_]?, futureUpdate:Boolean,
 }
 
 function IndependentUniform(future:Real[_]?, futureUpdate:Boolean,
-    l:Real[_], u:Real[_]) -> IndependentUniform {
+    l:Expression<Real[_]>, u:Expression<Real[_]>) -> IndependentUniform {
   m:IndependentUniform(future, futureUpdate, l, u);
   return m;
 }
@@ -52,7 +49,7 @@ function IndependentUniform(future:Real[_]?, futureUpdate:Boolean,
  */
 function Uniform(l:Expression<Real[_]>, u:Expression<Real[_]>) -> IndependentUniform {
   assert l.rows() == u.rows();
-  m:IndependentUniform(l, u);
+  m:IndependentUniform(nil, true, l, u);
   return m;
 }
 

@@ -1,8 +1,9 @@
 /**
  * Matrix Gaussian distribution where each row is independent.
  */
-final class IndependentRowMatrixGaussian(M:Expression<Real[_,_]>,
-    V:Expression<Real[_,_]>) < Distribution<Real[_,_]> {
+final class IndependentRowMatrixGaussian(future:Real[_,_]?,
+    futureUpdate:Boolean, M:Expression<Real[_,_]>, V:Expression<Real[_,_]>) <
+    Distribution<Real[_,_]>(future, futureUpdate) {
   /**
    * Mean.
    */
@@ -21,47 +22,36 @@ final class IndependentRowMatrixGaussian(M:Expression<Real[_,_]>,
     return M.columns();
   }
 
-  function graft() {
-    if delay? {
-      delay!.prune();
-    } else {
-      s1:InverseWishart?;
-      m1:TransformLinearMatrix<MatrixNormalInverseWishart>?;
-      m2:MatrixNormalInverseWishart?;
+  function graft() -> Distribution<Real[_,_]> {
+    prune();
+    s1:InverseWishart?;
+    m1:TransformLinearMatrix<MatrixNormalInverseWishart>?;
+    m2:MatrixNormalInverseWishart?;
 
-      if (m1 <- M.graftLinearMatrixNormalInverseWishart())? && m1!.X.V == V.get() {
-        delay <- LinearMatrixNormalInverseWishartMatrixGaussian(future, futureUpdate, m1!.A, m1!.X, m1!.C);
-      } else if (m2 <- M.graftMatrixNormalInverseWishart())? && m2!.V == V.get() {
-        delay <- MatrixNormalInverseWishartMatrixGaussian(future, futureUpdate, m2!);
-      } else if (s1 <- V.graftInverseWishart())? {
-        delay <- MatrixNormalInverseWishart(future, futureUpdate, M, identity(M.rows()), s1!);
-      } else {
-        delay <- MatrixGaussian(future, futureUpdate, M, identity(M.rows()), V);
-      }
+    if (m1 <- M.graftLinearMatrixNormalInverseWishart())? && m1!.X.V == V {
+      return LinearMatrixNormalInverseWishartMatrixGaussian(future, futureUpdate, m1!.A, m1!.X, m1!.C);
+    } else if (m2 <- M.graftMatrixNormalInverseWishart())? && m2!.V == V {
+      return MatrixNormalInverseWishartMatrixGaussian(future, futureUpdate, m2!);
+    } else if (s1 <- V.graftInverseWishart())? {
+      return MatrixNormalInverseWishart(future, futureUpdate, M, identity(M.rows()), s1!);
+    } else {
+      return MatrixGaussian(future, futureUpdate, M, Boxed(identity(M.rows())), V);
     }
   }
 
   function graftMatrixGaussian() -> MatrixGaussian? {
-    if delay? {
-      delay!.prune();
-    } else {
-      delay <- MatrixGaussian(future, futureUpdate, M,
-          identity(M.rows()), V);
-    }
-    return MatrixGaussian?(delay);
+    prune();
+    return MatrixGaussian(future, futureUpdate, M, Boxed(identity(M.rows())), V);
   }
 
   function graftMatrixNormalInverseWishart() -> MatrixNormalInverseWishart? {
-    if delay? {
-      delay!.prune();
-    } else {
-      s1:InverseWishart?;
-      if (s1 <- V.graftInverseWishart())? {
-        delay <- MatrixNormalInverseWishart(future, futureUpdate, M,
-            identity(M.rows()), s1!);
-      }
+    prune();
+    s1:InverseWishart?;
+    if (s1 <- V.graftInverseWishart())? {
+      return MatrixNormalInverseWishart(future, futureUpdate, M,
+          identity(M.rows()), s1!);
     }
-    return MatrixNormalInverseWishart?(delay);
+    return nil;
   }
 }
 
@@ -70,7 +60,7 @@ final class IndependentRowMatrixGaussian(M:Expression<Real[_,_]>,
  */
 function Gaussian(M:Expression<Real[_,_]>, V:Expression<Real[_,_]>) ->
     IndependentRowMatrixGaussian {
-  m:IndependentRowMatrixGaussian(M, V);
+  m:IndependentRowMatrixGaussian(nil, true, M, V);
   return m;
 }
 

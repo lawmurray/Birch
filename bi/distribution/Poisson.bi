@@ -40,26 +40,23 @@ final class Poisson(future:Integer?, futureUpdate:Boolean,
     return 0;
   }
 
-  function graft() {
-    if delay? {
-      delay!.prune();
-    } else {
-      m1:TransformLinear<Gamma>?;
-      m2:Gamma?;
+  function graft() -> Distribution<Integer> {
+    prune();
+    m1:TransformLinear<Gamma>?;
+    m2:Gamma?;
       
-      if (m1 <- λ.graftScaledGamma())? {
-        delay <- ScaledGammaPoisson(future, futureUpdate, m1!.a, m1!.x);
-      } else if (m2 <- λ.graftGamma())? {
-        delay <- GammaPoisson(future, futureUpdate, m2!);
-      } else {
-        delay <- Poisson(future, futureUpdate, λ);
-      }
+    if (m1 <- λ.graftScaledGamma())? {
+      return ScaledGammaPoisson(future, futureUpdate, m1!.a, m1!.x);
+    } else if (m2 <- λ.graftGamma())? {
+      return GammaPoisson(future, futureUpdate, m2!);
+    } else {
+      return this;
     }
   }
 
   function graftDiscrete() -> Discrete? {
-    graft();
-    return Discrete?(delay);
+    prune();
+    return this;
   }
 
   function write(buffer:Buffer) {
@@ -79,7 +76,7 @@ function Poisson(future:Integer?, futureUpdate:Boolean,
  * Create Poisson distribution.
  */
 function Poisson(λ:Expression<Real>) -> Poisson {
-  m:Poisson(λ);
+  m:Poisson(nil, true, λ);
   return m;
 }
 

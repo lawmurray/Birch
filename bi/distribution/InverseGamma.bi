@@ -1,7 +1,9 @@
 /*
  * ed inverse-gamma random variate.
  */
-final class InverseGamma(future:Real?, futureUpdate:Boolean, α:Expression<Real>, β:Expression<Real>) < Distribution<Real>(future, futureUpdate) {
+final class InverseGamma(future:Real?, futureUpdate:Boolean,
+    α:Expression<Real>, β:Expression<Real>) <
+    Distribution<Real>(future, futureUpdate) {
   /**
    * Shape.
    */
@@ -32,21 +34,14 @@ final class InverseGamma(future:Real?, futureUpdate:Boolean, α:Expression<Real>
     return 0.0;
   }
   
-  function graft() {
-    if delay? {
-      delay!.prune();
-    } else {
-      delay <- InverseGamma(future, futureUpdate, α, β);
-    }
+  function graft() -> Distribution<Real> {
+    prune();
+    return this;
   }
 
   function graftInverseGamma() -> InverseGamma? {
-    if delay? {
-      delay!.prune();
-    } else {
-      delay <- InverseGamma(future, futureUpdate, α, β);
-    }
-    return InverseGamma?(delay);
+    prune();
+    return this;
   }
 
   function write(buffer:Buffer) {
@@ -57,8 +52,8 @@ final class InverseGamma(future:Real?, futureUpdate:Boolean, α:Expression<Real>
   }
 }
 
-function InverseGamma(future:Real?, futureUpdate:Boolean, α:Real,
-    β:Real) -> InverseGamma {
+function InverseGamma(future:Real?, futureUpdate:Boolean, α:Expression<Real>,
+    β:Expression<Real>) -> InverseGamma {
   m:InverseGamma(future, futureUpdate, α, β);
   return m;
 }
@@ -67,7 +62,7 @@ function InverseGamma(future:Real?, futureUpdate:Boolean, α:Real,
  * Create inverse-gamma distribution.
  */
 function InverseGamma(α:Expression<Real>, β:Expression<Real>) -> InverseGamma {
-  m:InverseGamma(α, β);
+  m:InverseGamma(nil, true, α, β);
   return m;
 }
 

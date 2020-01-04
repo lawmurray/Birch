@@ -3,8 +3,7 @@
  */
 class MatrixGaussian(future:Real[_,_]?, futureUpdate:Boolean,
     M:Expression<Real[_,_]>, U:Expression<Real[_,_]>,
-    V:Expression<Real[_,_]>) <
-    Distribution<Real[_,_]>(future, futureUpdate) {
+    V:Expression<Real[_,_]>) < Distribution<Real[_,_]>(future, futureUpdate) {
   /**
    * Mean.
    */
@@ -36,39 +35,28 @@ class MatrixGaussian(future:Real[_,_]?, futureUpdate:Boolean,
     return logpdf_matrix_gaussian(X, M, U, V);
   }
 
-  function graft() {
-    if delay? {
-      delay!.prune();
+  function graft() -> Distribution<Real[_,_]> {
+    prune();
+    s1:InverseWishart?;
+    if (s1 <- V.graftInverseWishart())? {
+      return MatrixNormalInverseWishart(future, futureUpdate, M, U, s1!);
     } else {
-      s1:InverseWishart?;
-      if (s1 <- V.graftInverseWishart())? {
-        delay <- MatrixNormalInverseWishart(future, futureUpdate, M, U, s1!);
-      } else {
-        delay <- MatrixGaussian(future, futureUpdate, M, U, V);
-      }
+      return this;
     }
   }
 
   function graftMatrixGaussian() -> MatrixGaussian? {
-    if delay? {
-      delay!.prune();
-    } else {
-      delay <- MatrixGaussian(future, futureUpdate, M, U, V);
-    }
-    return MatrixGaussian?(delay);
+    prune();
+    return this;
   }
 
   function graftMatrixNormalInverseWishart() -> MatrixNormalInverseWishart? {
-    if delay? {
-      delay!.prune();
-    } else {
-      s1:InverseWishart?;
-      if (s1 <- V.graftInverseWishart())? {
-        delay <- MatrixNormalInverseWishart(future, futureUpdate, M, U,
-            s1!);
-      }
+    prune();
+    s1:InverseWishart?;
+    if (s1 <- V.graftInverseWishart())? {
+      return MatrixNormalInverseWishart(future, futureUpdate, M, U, s1!);
     }
-    return MatrixNormalInverseWishart?(delay);
+    return nil;
   }
 
   function write(buffer:Buffer) {
@@ -81,7 +69,8 @@ class MatrixGaussian(future:Real[_,_]?, futureUpdate:Boolean,
 }
 
 function MatrixGaussian(future:Real[_,_]?, futureUpdate:Boolean,
-    M:Real[_,_], U:Real[_,_], V:Real[_,_]) -> MatrixGaussian {
+    M:Expression<Real[_,_]>, U:Expression<Real[_,_]>,
+    V:Expression<Real[_,_]>) -> MatrixGaussian {
   m:MatrixGaussian(future, futureUpdate, M, U, V);
   return m;
 }
@@ -91,8 +80,7 @@ function MatrixGaussian(future:Real[_,_]?, futureUpdate:Boolean,
  */
 function Gaussian(M:Expression<Real[_,_]>, U:Expression<Real[_,_]>,
     V:Expression<Real[_,_]>) -> MatrixGaussian {
-  m:MatrixGaussian(M, U, V);
-  return m;
+  return MatrixGaussian(nil, true, M, U, V);
 }
 
 /**

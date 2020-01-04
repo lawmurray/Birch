@@ -319,7 +319,10 @@ abstract class Distribution<Value>(future:Value?, futureUpdate:Boolean) < Delay 
   /**
    * Graft this onto the delayed sampling graph.
    */
-  abstract function graft();
+  function graft() -> Distribution<Value> {
+    prune();
+    return this;
+  }
 
   /**
    * Graft this onto the delayed sampling graph.

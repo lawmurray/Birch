@@ -1,10 +1,9 @@
 /*
  * ed matrix normal-inverse-gamma variate.
  */
-final class MatrixNormalInverseGamma(future:Real[_,_]?,
-    futureUpdate:Boolean, M:Real[_,_], Σ:Real[_,_],
-    σ2:IndependentInverseGamma) < Distribution<Real[_,_]>(future,
-    futureUpdate) {
+final class MatrixNormalInverseGamma(future:Real[_,_]?, futureUpdate:Boolean,
+    M:Real[_,_], Σ:Real[_,_], σ2:IndependentInverseGamma) <
+    Distribution<Real[_,_]>(future, futureUpdate) {
   /**
    * Precision.
    */
@@ -58,6 +57,16 @@ final class MatrixNormalInverseGamma(future:Real[_,_]?,
         gamma_to_beta(γ, N, Λ));
   }
 
+  function graft() -> Distribution<Real[_,_]> {
+    prune();
+    return this;
+  }
+
+  function graftMatrixNormalInverseGamma() -> MatrixNormalInverseGamma? {
+    prune();
+    return this;
+  }
+
   function write(buffer:Buffer) {
     prune();
     buffer.set("class", "MatrixNormalInverseGamma");
@@ -68,14 +77,13 @@ final class MatrixNormalInverseGamma(future:Real[_,_]?,
   }
 }
 
-function MatrixNormalInverseGamma(future:Real[_,_]?,
-    futureUpdate:Boolean, M:Real[_,_], Σ:Real[_,_],
-    σ2:IndependentInverseGamma) -> MatrixNormalInverseGamma {
+function MatrixNormalInverseGamma(future:Real[_,_]?, futureUpdate:Boolean,
+    M:Real[_,_], Σ:Real[_,_], σ2:IndependentInverseGamma) ->
+    MatrixNormalInverseGamma {
   m:MatrixNormalInverseGamma(future, futureUpdate, M, Σ, σ2);
   σ2.setChild(m);
   return m;
 }
-
 
 /*
  * Compute the variance scaleσ from the variance scale accumulatorσ and other

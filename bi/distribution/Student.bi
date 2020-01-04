@@ -35,12 +35,9 @@ final class Student(future:Real?, futureUpdate:Boolean,
     return quantile_student_t(p, ν, μ, σ2);
   }
 
-  function graft() {
-    if delay? {
-      delay!.prune();
-    } else {
-      delay <- Student(future, futureUpdate, ν, μ, σ2);
-    }
+  function graft() -> Distribution<Real> {
+    prune();
+    return this;
   }
 
   function write(buffer:Buffer) {
@@ -52,7 +49,8 @@ final class Student(future:Real?, futureUpdate:Boolean,
   }
 }
 
-function Student(future:Real?, futureUpdate:Boolean, ν:Real, μ:Real, σ2:Real) -> Student {
+function Student(future:Real?, futureUpdate:Boolean, ν:Expression<Real>,
+    μ:Expression<Real>, σ2:Expression<Real>) -> Student {
   m:Student(future, futureUpdate, ν, μ, σ2);
   return m;
 }
@@ -60,8 +58,9 @@ function Student(future:Real?, futureUpdate:Boolean, ν:Real, μ:Real, σ2:Real)
 /**
  * Create Student's $t$-distribution.
  */
-function Student(ν:Expression<Real>, μ:Expression<Real>, σ2:Expression<Real>) -> Student {
-  m:Student(ν, μ, σ2);
+function Student(ν:Expression<Real>, μ:Expression<Real>,
+    σ2:Expression<Real>) -> Student {
+  m:Student(nil, true, ν, μ, σ2);
   return m;
 }
 

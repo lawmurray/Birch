@@ -68,21 +68,14 @@ final class IndependentInverseGamma(future:Real[_]?,
     return vector(0.0, length(β));
   }
 
-  function graft() {
-    if delay? {
-      delay!.prune();
-    } else {
-      delay <- IndependentInverseGamma(future, futureUpdate, α, β);
-    }
+  function graft() -> Distribution<Real[_]> {
+    prune();
+    return this;
   }
 
   function graftIndependentInverseGamma() -> IndependentInverseGamma? {
-    if delay? {
-      delay!.prune();
-    } else {
-      delay <- IndependentInverseGamma(future, futureUpdate, α, β);
-    }
-    return IndependentInverseGamma?(delay);
+    prune();
+    return this;
   }
 
   function write(buffer:Buffer) {
@@ -94,7 +87,7 @@ final class IndependentInverseGamma(future:Real[_]?,
 }
 
 function IndependentInverseGamma(future:Real[_]?, futureUpdate:Boolean,
-    α:Real, β:Real[_]) -> IndependentInverseGamma {
+    α:Expression<Real>, β:Expression<Real[_]>) -> IndependentInverseGamma {
   m:IndependentInverseGamma(future, futureUpdate, α, β);
   return m;
 }
@@ -104,7 +97,7 @@ function IndependentInverseGamma(future:Real[_]?, futureUpdate:Boolean,
  */
 function InverseGamma(α:Expression<Real>, β:Expression<Real[_]>) ->
     IndependentInverseGamma {
-  m:IndependentInverseGamma(α, β);
+  m:IndependentInverseGamma(nil, true, α, β);
   return m;
 }
 

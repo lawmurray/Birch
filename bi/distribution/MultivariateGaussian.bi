@@ -26,42 +26,34 @@ class MultivariateGaussian(future:Real[_]?, futureUpdate:Boolean,
     return logpdf_multivariate_gaussian(x, μ, Σ);
   }
 
-  function graft() {
-    if delay? {
-      delay!.prune();
+  function graft() -> Distribution<Real[_]> {
+    prune();
+    m1:TransformLinearMultivariate<MultivariateGaussian>?;
+    m2:MultivariateGaussian?;
+    if (m1 <- μ.graftLinearMultivariateGaussian())? {
+      return LinearMultivariateGaussianMultivariateGaussian(future,
+          futureUpdate, m1!.A, m1!.x, m1!.c, Σ);
+    } else if (m2 <- μ.graftMultivariateGaussian())? {
+      return MultivariateGaussianMultivariateGaussian(future, futureUpdate,
+          m2!, Σ);
     } else {
-      m1:TransformLinearMultivariate<MultivariateGaussian>?;
-      m3:MultivariateGaussian?;
-      if (m1 <- μ.graftLinearMultivariateGaussian())? {
-        delay <- LinearMultivariateGaussianMultivariateGaussian(future,
-            futureUpdate, m1!.A, m1!.x, m1!.c, Σ);
-      } else if (m3 <- μ.graftMultivariateGaussian())? {
-        delay <- MultivariateGaussianMultivariateGaussian(future, futureUpdate, m3!, Σ);
-      } else {
-        /* try a normal inverse gamma first, then a regular Gaussian */
-        if !graftMultivariateNormalInverseGamma()? {
-          delay <- MultivariateGaussian(future, futureUpdate, μ, Σ);
-        }
-      }
+      return this;
     }
   }
 
   function graftMultivariateGaussian() -> MultivariateGaussian? {
-    if delay? {
-      delay!.prune();
+    prune();
+    m1:TransformLinearMultivariate<MultivariateGaussian>?;
+    m2:MultivariateGaussian?;
+    if (m1 <- μ.graftLinearMultivariateGaussian())? {
+      return LinearMultivariateGaussianMultivariateGaussian(future,
+          futureUpdate, m1!.A, m1!.x, m1!.c, Σ);
+    } else if (m2 <- μ.graftMultivariateGaussian())? {
+      return MultivariateGaussianMultivariateGaussian(future, futureUpdate,
+          m2!, Σ);
     } else {
-      m1:TransformLinearMultivariate<MultivariateGaussian>?;
-      m2:MultivariateGaussian?;
-      if (m1 <- μ.graftLinearMultivariateGaussian())? {
-        delay <- LinearMultivariateGaussianMultivariateGaussian(future,
-            futureUpdate, m1!.A, m1!.x, m1!.c, Σ);
-      } else if (m2 <- μ.graftMultivariateGaussian())? {
-        delay <- MultivariateGaussianMultivariateGaussian(future, futureUpdate, m2!, Σ);
-      } else {
-        delay <- MultivariateGaussian(future, futureUpdate, μ, Σ);
-      }
+      return this;
     }
-    return MultivariateGaussian?(delay);
   }
 
   function write(buffer:Buffer) {
@@ -73,7 +65,7 @@ class MultivariateGaussian(future:Real[_]?, futureUpdate:Boolean,
 }
 
 function MultivariateGaussian(future:Real[_]?, futureUpdate:Boolean,
-    μ:Real[_], Σ:Real[_,_]) ->
+    μ:Expression<Real[_]>, Σ:Expression<Real[_,_]>) ->
     MultivariateGaussian {
   m:MultivariateGaussian(future, futureUpdate, μ, Σ);
   return m;
@@ -84,7 +76,7 @@ function MultivariateGaussian(future:Real[_]?, futureUpdate:Boolean,
  */
 function Gaussian(μ:Expression<Real[_]>, Σ:Expression<Real[_,_]>) ->
     MultivariateGaussian {
-  m:MultivariateGaussian(μ, Σ);
+  m:MultivariateGaussian(nil, true, μ, Σ);
   return m;
 }
 

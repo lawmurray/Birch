@@ -40,26 +40,22 @@ final class Binomial(future:Integer?, futureUpdate:Boolean, n:Expression<Integer
     return n;
   }
 
-  function graft() {
-    if delay? {
-      delay!.prune();
+  function graft() -> Distribution<Integer> {
+    prune();
+    m:Beta?;
+    if (m <- ρ.graftBeta())? {
+      return BetaBinomial(future, futureUpdate, n, m!);
     } else {
-      m:Beta?;
-      if (m <- ρ.graftBeta())? {
-        delay <- BetaBinomial(future, futureUpdate, n, m!);
-      } else {
-        delay <- Binomial(future, futureUpdate, n, ρ);
-      }
+      return this;
     }
   }
   
   function graftDiscrete() -> Discrete? {
-    return graftBoundedDiscrete();
+    return Discrete?(graft());
   }
 
   function graftBoundedDiscrete() -> BoundedDiscrete? {
-    graft();
-    return BoundedDiscrete?(delay);
+    return BoundedDiscrete?(graft());
   }
 
   function write(buffer:Buffer) {
@@ -70,8 +66,8 @@ final class Binomial(future:Integer?, futureUpdate:Boolean, n:Expression<Integer
   }
 }
 
-function Binomial(future:Integer?, futureUpdate:Boolean, n:Integer, ρ:Real) ->
-    Binomial {
+function Binomial(future:Integer?, futureUpdate:Boolean,
+    n:Expression<Integer>, ρ:Expression<Real>) -> Binomial {
   m:Binomial(future, futureUpdate, n, ρ);
   return m;
 }
@@ -80,7 +76,7 @@ function Binomial(future:Integer?, futureUpdate:Boolean, n:Integer, ρ:Real) ->
  * Create binomial distribution.
  */
 function Binomial(n:Expression<Integer>, ρ:Expression<Real>) -> Binomial {
-  m:Binomial(n, ρ);
+  m:Binomial(nil, true, n, ρ);
   return m;
 }
 

@@ -78,13 +78,15 @@ final class MultivariateNormalInverseGamma(future:Real[_]?,
         gamma_to_beta(γ, ν, Λ));
   }
 
-  function graft() {
-    if delay? {
-      delay!.prune();
-    } else {
-      delay <- MultivariateNormalInverseGamma(future, futureUpdate, μ,
-          Σ, σ2.graftInverseGamma()!);
-    }
+  function graft() -> Distribution<Real[_]> {
+    prune();
+    return this;
+  }
+
+  function graftMultivariateNormalInverseGamma() ->
+      MultivariateNormalInverseGamma? {
+    prune();
+    return this;
   }
 
   function write(buffer:Buffer) {

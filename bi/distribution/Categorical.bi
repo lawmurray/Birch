@@ -32,19 +32,16 @@ final class Categorical(future:Integer?, futureUpdate:Boolean, ρ:Expression<Rea
     return length(ρ);
   }
 
-  function graft() {
-    if delay? {
-      delay!.prune();
+  function graft() -> Distribution<Integer> {
+    prune();
+    m1:Dirichlet?;
+    m2:Restaurant?;
+    if (m1 <- ρ.graftDirichlet())? {
+      return DirichletCategorical(future, futureUpdate, m1!);
+    } else if (m2 <- ρ.graftRestaurant())? {
+      return RestaurantCategorical(future, futureUpdate, m2!);
     } else {
-      m1:Dirichlet?;
-      m2:Restaurant?;
-      if (m1 <- ρ.graftDirichlet())? {
-        delay <- DirichletCategorical(future, futureUpdate, m1!);
-      } else if (m2 <- ρ.graftRestaurant())? {
-        delay <- RestaurantCategorical(future, futureUpdate, m2!);
-      } else {
-        delay <- Categorical(future, futureUpdate, ρ);
-      }
+      return this;
     }
   }
 
@@ -56,7 +53,7 @@ final class Categorical(future:Integer?, futureUpdate:Boolean, ρ:Expression<Rea
 }
 
 function Categorical(future:Integer?, futureUpdate:Boolean,
-    ρ:Real[_]) -> Categorical {
+    ρ:Expression<Real[_]>) -> Categorical {
   m:Categorical(future, futureUpdate, ρ);
   return m;
 }
@@ -65,7 +62,7 @@ function Categorical(future:Integer?, futureUpdate:Boolean,
  * Create categorical distribution.
  */
 function Categorical(ρ:Expression<Real[_]>) -> Categorical {
-  m:Categorical(ρ);
+  m:Categorical(nil, true, ρ);
   return m;
 }
 

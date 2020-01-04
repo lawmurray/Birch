@@ -28,7 +28,8 @@
  *     Y ~ Gaussian(X*W, V);
  */
 final class InverseWishart(future:Real[_,_]?, futureUpdate:Boolean,
-    Ψ:Expression<Real[_,_]>, k:Expression<Real>) < Distribution<Real[_,_]>(future, futureUpdate) {
+    Ψ:Expression<Real[_,_]>, k:Expression<Real>) <
+    Distribution<Real[_,_]>(future, futureUpdate) {
   /**
    * Scale.
    */
@@ -55,21 +56,14 @@ final class InverseWishart(future:Real[_,_]?, futureUpdate:Boolean,
     return logpdf_inverse_wishart(X, Ψ, k);
   }
 
-  function graft() {
-    if delay? {
-      delay!.prune();
-    } else {
-      delay <- InverseWishart(future, futureUpdate, Ψ, k);
-    }
+  function graft() -> Distribution<Real[_,_]> {
+    prune();
+    return this;
   }
 
   function graftInverseWishart() -> InverseWishart? {
-    if delay? {
-      delay!.prune();
-    } else {
-      delay <- InverseWishart(future, futureUpdate, Ψ, k);
-    }
-    return InverseWishart?(delay);
+    prune();
+    return this;
   }
 
   function write(buffer:Buffer) {
@@ -81,7 +75,7 @@ final class InverseWishart(future:Real[_,_]?, futureUpdate:Boolean,
 }
 
 function InverseWishart(future:Real[_,_]?, futureUpdate:Boolean,
-    Ψ:Real[_,_], k:Real) -> InverseWishart {
+    Ψ:Expression<Real[_,_]>, k:Expression<Real>) -> InverseWishart {
   m:InverseWishart(future, futureUpdate, Ψ, k);
   return m;
 }
@@ -91,7 +85,7 @@ function InverseWishart(future:Real[_,_]?, futureUpdate:Boolean,
  */
 function InverseWishart(Ψ:Expression<Real[_,_]>, k:Expression<Real>) ->
     InverseWishart {
-  m:InverseWishart(Ψ, k);
+  m:InverseWishart(nil, true, Ψ, k);
   return m;
 }
 

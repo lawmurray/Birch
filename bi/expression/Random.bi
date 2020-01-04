@@ -193,20 +193,11 @@ final class Random<Value> < Expression<Value> {
     return dist!.upper();
   }
 
-  function getDelay() -> Delay? {
-    if !hasValue() {
-      assert hasDistribution();
-      return dist!.delay;
-    } else {
-      return nil;
-    }
-  }
-
   function graft() -> Expression<Value> {
     if !hasValue() {
       assert hasDistribution();
-      dist!.graft();
-      return DelayExpression<Value>(dist!.delay!);
+      dist <- dist!.graft();
+      return DelayExpression<Value>(dist!);
     } else {
       return Boxed(x!);
     }

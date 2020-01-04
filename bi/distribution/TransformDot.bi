@@ -6,17 +6,17 @@ class TransformDot<Value>(a:Expression<Real[_]>, x:Value,
   /**
    * Scale.
    */
-  auto a <- a;
+  a:Expression<Real[_]> <- a;
   
   /**
    *  node.
    */
-  auto x <- x;
+  x:Value <- x;
 
   /**
    * Offset.
    */
-  auto c <- c;
+  c:Expression<Real> <- c;
    
   function multiply(y:Expression<Real>) {
     a <- a*y;

@@ -28,20 +28,16 @@ final class Exponential(future:Real?, futureUpdate:Boolean, λ:Expression<Real>)
     return 0.0;
   }
 
-  function graft() {
-    if delay? {
-      delay!.prune();
+  function graft() -> Distribution<Real> {
+    prune();
+    m1:TransformLinear<Gamma>?;
+    m2:Gamma?;
+    if (m1 <- λ.graftScaledGamma())? {
+      return ScaledGammaExponential(future, futureUpdate, m1!.a, m1!.x);
+    } else if (m2 <- λ.graftGamma())? {
+      return GammaExponential(future, futureUpdate, m2!);
     } else {
-      m1:TransformLinear<Gamma>?;
-      m2:Gamma?;
-
-      if (m1 <- λ.graftScaledGamma())? {
-        delay <- ScaledGammaExponential(future, futureUpdate, m1!.a, m1!.x);
-      } else if (m2 <- λ.graftGamma())? {
-        delay <- GammaExponential(future, futureUpdate, m2!);
-      } else {
-        delay <- Exponential(future, futureUpdate, λ);
-      }
+      return this;
     }
   }
 
@@ -52,9 +48,8 @@ final class Exponential(future:Real?, futureUpdate:Boolean, λ:Expression<Real>)
   }
 }
 
-function Exponential(future:Real?, futureUpdate:Boolean, λ:Real) ->
-    Exponential {
-  assert λ > 0.0;
+function Exponential(future:Real?, futureUpdate:Boolean,
+    λ:Expression<Real>) -> Exponential {
   m:Exponential(future, futureUpdate, λ);
   return m;
 }
@@ -63,7 +58,7 @@ function Exponential(future:Real?, futureUpdate:Boolean, λ:Real) ->
  * Create Exponential distribution.
  */
 function Exponential(λ:Expression<Real>) -> Exponential {
-  m:Exponential(λ);
+  m:Exponential(nil, true, λ);
   return m;
 }
 
