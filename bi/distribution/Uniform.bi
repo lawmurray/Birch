@@ -30,11 +30,11 @@ final class Uniform(future:Real?, futureUpdate:Boolean, l:Expression<Real>, u:Ex
   }
 
   function lower() -> Real? {
-    return l;
+    return l.value();
   }
   
   function upper() -> Real? {
-    return u;
+    return u.value();
   }
 
   function graft() -> Distribution<Real> {

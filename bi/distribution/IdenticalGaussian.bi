@@ -19,6 +19,14 @@ final class IdenticalGaussian(future:Real[_]?, futureUpdate:Boolean,
     return μ.rows();
   }
 
+  function simulate() -> Real[_] {
+    return simulate_multivariate_gaussian(μ, σ2);
+  }
+  
+  function logpdf(x:Real[_]) -> Real {
+    return logpdf_multivariate_gaussian(x, μ, σ2);
+  }
+
   function graft() -> Distribution<Real[_]> {
     prune();
     s1:InverseGamma?;

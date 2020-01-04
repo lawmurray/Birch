@@ -27,6 +27,14 @@ final class IndependentColumnMatrixGaussian(future:Real[_,_]?,
     return M.columns();
   }
 
+  function simulate() -> Real[_,_] {
+    return simulate_matrix_gaussian(M, U, σ2);
+  }
+  
+  function logpdf(x:Real[_,_]) -> Real {
+    return logpdf_matrix_gaussian(x, M, U, σ2);
+  }
+
   function graft() -> Distribution<Real[_,_]> {
     prune();
     s1:IndependentInverseGamma?;

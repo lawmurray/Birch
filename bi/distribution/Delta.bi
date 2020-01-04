@@ -22,11 +22,11 @@ final class Delta(future:Integer?, futureUpdate:Boolean, μ:Expression<Integer>)
   }
 
   function lower() -> Integer? {
-    return μ;
+    return μ.value();
   }
   
   function upper() -> Integer? {
-    return μ;
+    return μ.value();
   }
 
   function graft() -> Distribution<Integer> {

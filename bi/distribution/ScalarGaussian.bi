@@ -19,6 +19,14 @@ final class ScalarGaussian(future:Real?, futureUpdate:Boolean,
    * Variance operand.
    */
   τ2:Expression<Real> <- τ2;
+
+  function simulate() -> Real {
+    return simulate_gaussian(μ, σ2.value()*τ2.value());
+  }
+  
+  function logpdf(x:Real) -> Real {
+    return logpdf_gaussian(x, μ, σ2.value()*τ2.value());
+  }
   
   function graft() -> Distribution<Real> {
     prune();

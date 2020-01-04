@@ -1,7 +1,9 @@
 /*
  * ed binomial random variate.
  */
-final class Binomial(future:Integer?, futureUpdate:Boolean, n:Expression<Integer>, ρ:Expression<Real>) < BoundedDiscrete(future, futureUpdate, 0, n) {
+final class Binomial(future:Integer?, futureUpdate:Boolean,
+    n:Expression<Integer>, ρ:Expression<Real>) <
+    BoundedDiscrete(future, futureUpdate, 0, n) {
   /**
    * Number of trials.
    */
@@ -37,7 +39,7 @@ final class Binomial(future:Integer?, futureUpdate:Boolean, n:Expression<Integer
   }
   
   function upper() -> Integer? {
-    return n;
+    return n.value();
   }
 
   function graft() -> Distribution<Integer> {
