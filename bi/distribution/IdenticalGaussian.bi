@@ -22,67 +22,67 @@ final class IdenticalGaussian(μ:Expression<Real[_]>,
     if delay? {
       delay!.prune();
     } else {
-      s1:DelayInverseGamma?;
-      m1:TransformLinearMultivariate<DelayMultivariateNormalInverseGamma>?;
-      m2:DelayMultivariateNormalInverseGamma?;
-      m3:TransformLinearMultivariate<DelayMultivariateGaussian>?;
-      m4:DelayMultivariateGaussian?;
+      s1:InverseGamma?;
+      m1:TransformLinearMultivariate<MultivariateNormalInverseGamma>?;
+      m2:MultivariateNormalInverseGamma?;
+      m3:TransformLinearMultivariate<MultivariateGaussian>?;
+      m4:MultivariateGaussian?;
 
       if (m1 <- μ.graftLinearMultivariateNormalInverseGamma())? &&
-           m1!.x.σ2 == σ2.getDelay() {
-        delay <- DelayLinearMultivariateNormalInverseGammaMultivariateGaussian(
+           m1!.x.σ2 == σ2.get() {
+        delay <- LinearMultivariateNormalInverseGammaMultivariateGaussian(
             future, futureUpdate, m1!.A, m1!.x, m1!.c);
       } else if (m2 <- μ.graftMultivariateNormalInverseGamma())? &&
-          m2!.σ2 == σ2.getDelay() {
-        delay <- DelayMultivariateNormalInverseGammaMultivariateGaussian(
+          m2!.σ2 == σ2.get() {
+        delay <- MultivariateNormalInverseGammaMultivariateGaussian(
             future, futureUpdate, m2!);
       } else if (m3 <- μ.graftLinearMultivariateGaussian())? {
-        delay <- DelayLinearMultivariateGaussianMultivariateGaussian(future,
+        delay <- LinearMultivariateGaussianMultivariateGaussian(future,
             futureUpdate, m3!.A, m3!.x, m3!.c, diagonal(σ2.value(), m3!.rows()));
       } else if (m4 <- μ.graftMultivariateGaussian())? {
-        delay <- DelayMultivariateGaussianMultivariateGaussian(future,
+        delay <- MultivariateGaussianMultivariateGaussian(future,
             futureUpdate, m4!, diagonal(σ2, m4!.rows()));
       } else if (s1 <- σ2.graftInverseGamma())? {
-        delay <- DelayMultivariateNormalInverseGamma(future, futureUpdate, μ,
+        delay <- MultivariateNormalInverseGamma(future, futureUpdate, μ,
             identity(μ.rows()), s1!);
       } else {
-        delay <- DelayMultivariateGaussian(future, futureUpdate, μ,
+        delay <- MultivariateGaussian(future, futureUpdate, μ,
             diagonal(σ2, μ.rows()));
       }
     }
   }
 
-  function graftMultivariateGaussian() -> DelayMultivariateGaussian? {
+  function graftMultivariateGaussian() -> MultivariateGaussian? {
     if delay? {
       delay!.prune();
     } else {
-      m1:TransformLinearMultivariate<DelayMultivariateGaussian>?;
-      m2:DelayMultivariateGaussian?;
+      m1:TransformLinearMultivariate<MultivariateGaussian>?;
+      m2:MultivariateGaussian?;
       if (m1 <- μ.graftLinearMultivariateGaussian())? {
-        delay <- DelayLinearMultivariateGaussianMultivariateGaussian(future,
+        delay <- LinearMultivariateGaussianMultivariateGaussian(future,
             futureUpdate, m1!.A, m1!.x, m1!.c, diagonal(σ2, length(m1!.c)));
       } else if (m2 <- μ.graftMultivariateGaussian())? {
-        delay <- DelayMultivariateGaussianMultivariateGaussian(future,
+        delay <- MultivariateGaussianMultivariateGaussian(future,
             futureUpdate, m2!, diagonal(σ2, m2!.rows()));
       } else {
-        delay <- DelayMultivariateGaussian(future, futureUpdate, μ,
+        delay <- MultivariateGaussian(future, futureUpdate, μ,
             diagonal(σ2, μ.rows()));
       }
     }
-    return DelayMultivariateGaussian?(delay);
+    return MultivariateGaussian?(delay);
   }
 
-  function graftMultivariateNormalInverseGamma() -> DelayMultivariateNormalInverseGamma? {
+  function graftMultivariateNormalInverseGamma() -> MultivariateNormalInverseGamma? {
     if delay? {
       delay!.prune();
     } else {
-      s1:DelayInverseGamma?;
+      s1:InverseGamma?;
       if (s1 <- σ2.graftInverseGamma())? {
-        delay <- DelayMultivariateNormalInverseGamma(future, futureUpdate, μ,
+        delay <- MultivariateNormalInverseGamma(future, futureUpdate, μ,
             identity(μ.rows()), s1!);
       }
     }
-    return DelayMultivariateNormalInverseGamma?(delay);
+    return MultivariateNormalInverseGamma?(delay);
   }
 }
 

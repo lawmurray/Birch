@@ -156,7 +156,7 @@ abstract class Expression<Value> {
    *
    * Return: The node if successful, nil if not.
    */
-  function graftBeta() -> DelayBeta? {
+  function graftBeta() -> Beta? {
     return nil;
   }
 
@@ -165,7 +165,7 @@ abstract class Expression<Value> {
    *
    * Return: The node if successful, nil if not.
    */
-  function graftDirichlet() -> DelayDirichlet? {
+  function graftDirichlet() -> Dirichlet? {
     return nil;
   }
 
@@ -174,7 +174,7 @@ abstract class Expression<Value> {
    *
    * Return: The node if successful, nil if not.
    */
-  function graftRestaurant() -> DelayRestaurant? {
+  function graftRestaurant() -> Restaurant? {
     return nil;
   }
   
@@ -183,7 +183,7 @@ abstract class Expression<Value> {
    *
    * Return: The node if successful, nil if not.
    */
-  function graftGamma() -> DelayGamma? {
+  function graftGamma() -> Gamma? {
     return nil;
   }
 
@@ -192,7 +192,7 @@ abstract class Expression<Value> {
    *
    * Return: The node if successful, nil if not.
    */
-  function graftScaledGamma() ->  TransformLinear<DelayGamma>? {
+  function graftScaledGamma() ->  TransformLinear<Gamma>? {
     return nil;
   }
   
@@ -201,7 +201,7 @@ abstract class Expression<Value> {
    *
    * Return: The node if successful, nil if not.
    */
-  function graftInverseGamma() -> DelayInverseGamma? {
+  function graftInverseGamma() -> InverseGamma? {
     return nil;
   }
 
@@ -210,7 +210,7 @@ abstract class Expression<Value> {
    *
    * Return: The node if successful, nil if not.
    */
-  function graftIndependentInverseGamma() -> DelayIndependentInverseGamma? {
+  function graftIndependentInverseGamma() -> IndependentInverseGamma? {
     return nil;
   }
 
@@ -219,7 +219,7 @@ abstract class Expression<Value> {
    *
    * Return: The node if successful, nil if not.
    */
-  function graftInverseWishart() -> DelayInverseWishart? {
+  function graftInverseWishart() -> InverseWishart? {
     return nil;
   }
 
@@ -228,7 +228,7 @@ abstract class Expression<Value> {
    *
    * Return: The node if successful, nil if not.
    */
-  function graftGaussian() -> DelayGaussian? {
+  function graftGaussian() -> Gaussian? {
     return nil;
   }
   
@@ -237,7 +237,7 @@ abstract class Expression<Value> {
    *
    * Return: The node if successful, nil if not.
    */
-  function graftLinearGaussian() -> TransformLinear<DelayGaussian>? {
+  function graftLinearGaussian() -> TransformLinear<Gaussian>? {
     return nil;
   }
 
@@ -246,7 +246,7 @@ abstract class Expression<Value> {
    *
    * Return: The node if successful, nil if not.
    */
-  function graftDotGaussian() -> TransformDot<DelayMultivariateGaussian>? {
+  function graftDotGaussian() -> TransformDot<MultivariateGaussian>? {
     return nil;
   }
   
@@ -255,7 +255,7 @@ abstract class Expression<Value> {
    *
    * Return: The node if successful, nil if not.
    */
-  function graftNormalInverseGamma() -> DelayNormalInverseGamma? {
+  function graftNormalInverseGamma() -> NormalInverseGamma? {
     return nil;
   }
 
@@ -265,7 +265,7 @@ abstract class Expression<Value> {
    * Return: The node if successful, nil if not.
    */
   function graftLinearNormalInverseGamma() ->
-      TransformLinear<DelayNormalInverseGamma>? {
+      TransformLinear<NormalInverseGamma>? {
     return nil;
   }
 
@@ -275,7 +275,7 @@ abstract class Expression<Value> {
    *
    * Return: The node if successful, nil if not.
    */
-  function graftMultivariateGaussian() -> DelayMultivariateGaussian? {
+  function graftMultivariateGaussian() -> MultivariateGaussian? {
     return nil;
   }
 
@@ -285,7 +285,7 @@ abstract class Expression<Value> {
    * Return: The node if successful, nil if not.
    */
   function graftLinearMultivariateGaussian() ->
-      TransformLinearMultivariate<DelayMultivariateGaussian>? {
+      TransformLinearMultivariate<MultivariateGaussian>? {
     return nil;
   }
 
@@ -295,7 +295,7 @@ abstract class Expression<Value> {
    * Return: The node if successful, nil if not.
    */
   function graftMultivariateNormalInverseGamma() ->
-      DelayMultivariateNormalInverseGamma? {
+      MultivariateNormalInverseGamma? {
     return nil;
   }
 
@@ -305,7 +305,7 @@ abstract class Expression<Value> {
    * Return: The node if successful, nil if not.
    */
   function graftLinearMultivariateNormalInverseGamma() ->
-      TransformLinearMultivariate<DelayMultivariateNormalInverseGamma>? {
+      TransformLinearMultivariate<MultivariateNormalInverseGamma>? {
     return nil;
   }
 
@@ -314,7 +314,7 @@ abstract class Expression<Value> {
    *
    * Return: The node if successful, nil if not.
    */
-  function graftMatrixGaussian() -> DelayMatrixGaussian? {
+  function graftMatrixGaussian() -> MatrixGaussian? {
     return nil;
   }
 
@@ -324,7 +324,7 @@ abstract class Expression<Value> {
    * Return: The node if successful, nil if not.
    */
   function graftLinearMatrixGaussian() ->
-      TransformLinearMatrix<DelayMatrixGaussian>? {
+      TransformLinearMatrix<MatrixGaussian>? {
     return nil;
   }
 
@@ -334,7 +334,7 @@ abstract class Expression<Value> {
    * Return: The node if successful, nil if not.
    */
   function graftMatrixNormalInverseGamma() ->
-      DelayMatrixNormalInverseGamma? {
+      MatrixNormalInverseGamma? {
     return nil;
   }
 
@@ -344,7 +344,7 @@ abstract class Expression<Value> {
    * Return: The node if successful, nil if not.
    */
   function graftLinearMatrixNormalInverseGamma() ->
-      TransformLinearMatrix<DelayMatrixNormalInverseGamma>? {
+      TransformLinearMatrix<MatrixNormalInverseGamma>? {
     return nil;
   }
 
@@ -354,7 +354,7 @@ abstract class Expression<Value> {
    * Return: The node if successful, nil if not.
    */
   function graftMatrixNormalInverseWishart() ->
-      DelayMatrixNormalInverseWishart? {
+      MatrixNormalInverseWishart? {
     return nil;
   }
 
@@ -364,7 +364,7 @@ abstract class Expression<Value> {
    * Return: The node if successful, nil if not.
    */
   function graftLinearMatrixNormalInverseWishart() ->
-      TransformLinearMatrix<DelayMatrixNormalInverseWishart>? {
+      TransformLinearMatrix<MatrixNormalInverseWishart>? {
     return nil;
   }
 
@@ -373,7 +373,7 @@ abstract class Expression<Value> {
    *
    * Return: The node if successful, nil if not.
    */
-  function graftDiscrete() -> DelayDiscrete? {
+  function graftDiscrete() -> Discrete? {
     return nil;
   }
 
@@ -382,7 +382,7 @@ abstract class Expression<Value> {
    *
    * Return: The node if successful, nil if not.
    */
-  function graftBoundedDiscrete() -> DelayBoundedDiscrete? {
+  function graftBoundedDiscrete() -> BoundedDiscrete? {
     return nil;
   }
 }

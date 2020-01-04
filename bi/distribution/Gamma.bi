@@ -1,7 +1,8 @@
-/**
- * Gamma distribution.
+/*
+ * ed gamma random variate.
  */
-final class Gamma(k:Expression<Real>, θ:Expression<Real>) < Distribution<Real> {
+final class Gamma(future:Real?, futureUpdate:Boolean, k:Expression<Real>, θ:Expression<Real>) <
+    Distribution<Real>(future, futureUpdate) {
   /**
    * Shape.
    */
@@ -12,27 +13,60 @@ final class Gamma(k:Expression<Real>, θ:Expression<Real>) < Distribution<Real> 
    */
   θ:Expression<Real> <- θ;
 
+  function simulate() -> Real {
+    return simulate_gamma(k, θ);
+  }
+  
+  function logpdf(x:Real) -> Real {
+    return logpdf_gamma(x, k, θ);
+  }
+
+  function cdf(x:Real) -> Real? {
+    return cdf_gamma(x, k, θ);
+  }
+
+  function quantile(p:Real) -> Real? {
+    return quantile_gamma(p, k, θ);
+  }
+
+  function lower() -> Real? {
+    return 0.0;
+  }
+
   function graft() {
     if delay? {
       delay!.prune();
     } else {
-      θ1:DelayInverseGamma?;
+      θ1:InverseGamma?;
       if (θ1 <- θ.graftInverseGamma())? {
-        delay <- DelayInverseGammaGamma(future, futureUpdate, k, θ1!);
+        delay <- InverseGammaGamma(future, futureUpdate, k, θ1!);
       } else {
-        delay <- DelayGamma(future, futureUpdate, k, θ);
+        delay <- Gamma(future, futureUpdate, k, θ);
       }
     }
   }
 
-  function graftGamma() -> DelayGamma? {
+  function graftGamma() -> Gamma? {
     if delay? {
       delay!.prune();
     } else {
-      delay <- DelayGamma(future, futureUpdate, k, θ);
+      delay <- Gamma(future, futureUpdate, k, θ);
     }
-    return DelayGamma?(delay);
+    return Gamma?(delay);
   }
+
+  function write(buffer:Buffer) {
+    prune();
+    buffer.set("class", "Gamma");
+    buffer.set("k", k);
+    buffer.set("θ", θ);
+  }
+}
+
+function Gamma(future:Real?, futureUpdate:Boolean, k:Real, θ:Real) ->
+    Gamma {
+  m:Gamma(future, futureUpdate, k, θ);
+  return m;
 }
 
 /**

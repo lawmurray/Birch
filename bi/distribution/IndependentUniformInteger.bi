@@ -1,8 +1,10 @@
-/**
- * Uniform distribution over integers on an orthogonal lattice.
+/*
+ * ed multivariate uniform random variable over integers.
  */
-final class IndependentUniformInteger(l:Expression<Integer[_]>,
-    u:Expression<Integer[_]>) < Distribution<Integer[_]> {
+final class IndependentUniformInteger(future:Integer[_]?,
+    futureUpdate:Boolean, l:Expression<Integer[_]>,
+    u:Expression<Integer[_]>) <
+    Distribution<Integer[_]>(future, futureUpdate) {
   /**
    * Lower bound.
    */
@@ -17,13 +19,35 @@ final class IndependentUniformInteger(l:Expression<Integer[_]>,
     return l.rows();
   }
 
+  function simulate() -> Integer[_] {
+    return simulate_independent_uniform_int(l, u);
+  }
+  
+  function logpdf(x:Integer[_]) -> Real {
+    return logpdf_independent_uniform_int(x, l, u);
+  }
+
   function graft() {
     if delay? {
       delay!.prune();
     } else {
-      delay <- DelayIndependentUniformInteger(future, futureUpdate, l, u);
+      delay <- IndependentUniformInteger(future, futureUpdate, l, u);
     }
   }
+
+  function write(buffer:Buffer) {
+    prune();
+    buffer.set("class", "IndependentUniformInteger");
+    buffer.set("l", l);
+    buffer.set("u", u);
+  }
+}
+
+function IndependentUniformInteger(future:Integer[_]?,
+    futureUpdate:Boolean, l:Integer[_], u:Integer[_]) ->
+    IndependentUniformInteger {
+  m:IndependentUniformInteger(future, futureUpdate, l, u);
+  return m;
 }
 
 /**

@@ -1,8 +1,8 @@
-/**
- * Wishart distribution.
+/*
+ * ed Wishart random variate.
  */
-final class Wishart(Ψ:Expression<Real[_,_]>, k:Expression<Real>) <
-    Distribution<Real[_,_]> {
+final class Wishart(future:Real[_,_]?, futureUpdate:Boolean,
+    Ψ:Expression<Real[_,_]>, k:Expression<Real>) < Distribution<Real[_,_]>(future, futureUpdate) {
   /**
    * Scale.
    */
@@ -21,23 +21,43 @@ final class Wishart(Ψ:Expression<Real[_,_]>, k:Expression<Real>) <
     return Ψ.columns();
   }
 
+  function simulate() -> Real[_,_] {
+    return simulate_wishart(Ψ, k);
+  }
+  
+  function logpdf(X:Real[_,_]) -> Real {
+    return logpdf_wishart(X, Ψ, k);
+  }
 
   function graft() {
     if delay? {
       delay!.prune();
     } else {
-      delay <- DelayWishart(future, futureUpdate, Ψ, k);
+      delay <- Wishart(future, futureUpdate, Ψ, k);
     }
   }
 
-  function graftWishart() -> DelayWishart? {
+  function graftWishart() -> Wishart? {
     if delay? {
       delay!.prune();
     } else {
-      delay <- DelayWishart(future, futureUpdate, Ψ, k);
+      delay <- Wishart(future, futureUpdate, Ψ, k);
     }
-    return DelayWishart?(delay);
+    return Wishart?(delay);
   }
+
+  function write(buffer:Buffer) {
+    prune();
+    buffer.set("class", "Wishart");
+    buffer.set("Ψ", Ψ);
+    buffer.set("k", k);
+  }
+}
+
+function Wishart(future:Real[_,_]?, futureUpdate:Boolean, Ψ:Real[_,_],
+    k:Real) -> Wishart {
+  m:Wishart(future, futureUpdate, Ψ, k);
+  return m;
 }
 
 /**

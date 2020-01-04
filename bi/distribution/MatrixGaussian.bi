@@ -1,8 +1,10 @@
-/**
- * Matrix Gaussian distribution.
+/*
+ * ed matrix Gaussian random variate.
  */
-final class MatrixGaussian(M:Expression<Real[_,_]>, U:Expression<Real[_,_]>,
-    V:Expression<Real[_,_]>) < Distribution<Real[_,_]> {
+class MatrixGaussian(future:Real[_,_]?, futureUpdate:Boolean,
+    M:Expression<Real[_,_]>, U:Expression<Real[_,_]>,
+    V:Expression<Real[_,_]>) <
+    Distribution<Real[_,_]>(future, futureUpdate) {
   /**
    * Mean.
    */
@@ -26,40 +28,62 @@ final class MatrixGaussian(M:Expression<Real[_,_]>, U:Expression<Real[_,_]>,
     return M.columns();
   }
 
+  function simulate() -> Real[_,_] {
+    return simulate_matrix_gaussian(M, U, V);
+  }
+  
+  function logpdf(X:Real[_,_]) -> Real {
+    return logpdf_matrix_gaussian(X, M, U, V);
+  }
+
   function graft() {
     if delay? {
       delay!.prune();
     } else {
-      s1:DelayInverseWishart?;
+      s1:InverseWishart?;
       if (s1 <- V.graftInverseWishart())? {
-        delay <- DelayMatrixNormalInverseWishart(future, futureUpdate, M, U, s1!);
+        delay <- MatrixNormalInverseWishart(future, futureUpdate, M, U, s1!);
       } else {
-        delay <- DelayMatrixGaussian(future, futureUpdate, M, U, V);
+        delay <- MatrixGaussian(future, futureUpdate, M, U, V);
       }
     }
   }
 
-  function graftMatrixGaussian() -> DelayMatrixGaussian? {
+  function graftMatrixGaussian() -> MatrixGaussian? {
     if delay? {
       delay!.prune();
     } else {
-      delay <- DelayMatrixGaussian(future, futureUpdate, M, U, V);
+      delay <- MatrixGaussian(future, futureUpdate, M, U, V);
     }
-    return DelayMatrixGaussian?(delay);
+    return MatrixGaussian?(delay);
   }
 
-  function graftMatrixNormalInverseWishart() -> DelayMatrixNormalInverseWishart? {
+  function graftMatrixNormalInverseWishart() -> MatrixNormalInverseWishart? {
     if delay? {
       delay!.prune();
     } else {
-      s1:DelayInverseWishart?;
+      s1:InverseWishart?;
       if (s1 <- V.graftInverseWishart())? {
-        delay <- DelayMatrixNormalInverseWishart(future, futureUpdate, M, U,
+        delay <- MatrixNormalInverseWishart(future, futureUpdate, M, U,
             s1!);
       }
     }
-    return DelayMatrixNormalInverseWishart?(delay);
+    return MatrixNormalInverseWishart?(delay);
   }
+
+  function write(buffer:Buffer) {
+    prune();
+    buffer.set("class", "MatrixGaussian");
+    buffer.set("M", M);
+    buffer.set("U", U);
+    buffer.set("V", V);
+  }
+}
+
+function MatrixGaussian(future:Real[_,_]?, futureUpdate:Boolean,
+    M:Real[_,_], U:Real[_,_], V:Real[_,_]) -> MatrixGaussian {
+  m:MatrixGaussian(future, futureUpdate, M, U, V);
+  return m;
 }
 
 /**

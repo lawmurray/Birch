@@ -1,38 +1,87 @@
-/**
- * Matrix normal-inverse-gamma distribution.
+/*
+ * ed matrix normal-inverse-gamma variate.
  */
-final class MatrixNormalInverseGamma(M:Expression<Real[_,_]>,
-    Σ:Expression<Real[_,_]>, α:Expression<Real>, β:Expression<Real[_]>) <
-    Distribution<Real[_,_]> {
+final class MatrixNormalInverseGamma(future:Real[_,_]?,
+    futureUpdate:Boolean, M:Real[_,_], Σ:Real[_,_],
+    σ2:IndependentInverseGamma) < Distribution<Real[_,_]>(future,
+    futureUpdate) {
   /**
-   * Mean.
+   * Precision.
    */
-  M:Expression<Real[_,_]> <- M;
-  
-  /**
-   * Covariance.
-   */
-  Σ:Expression<Real[_,_]> <- Σ;
+  Λ:LLT <- llt(inv(llt(Σ)));
 
   /**
-   * Covariance scale.
+   * Precision times mean.
    */
-  σ2:IndependentInverseGamma(α, β);
+  N:Real[_,_] <- Λ*M;
+
+  /**
+   * Variance shapes.
+   */
+  α:Real <- σ2.α;
+
+  /**
+   * Variance scale accumulators.
+   */
+  γ:Real[_] <- σ2.β + 0.5*diagonal(transpose(N)*M);
+
+  /**
+   * Variance scales.
+   */
+  σ2:IndependentInverseGamma& <- σ2;
 
   function rows() -> Integer {
-    return M.rows();
+    return global.rows(N);
   }
-
+  
   function columns() -> Integer {
-    return M.columns();
+    return global.columns(N);
   }
 
-  function graft() {
-    if delay? {
-      delay!.prune();
-    } else {
-      delay <- DelayMatrixNormalInverseGamma(future, futureUpdate, M,
-          Σ, σ2.graftIndependentInverseGamma()!);
-    }
+  function simulate() -> Real[_,_] {
+    return simulate_matrix_normal_inverse_gamma(N, Λ, α,
+        gamma_to_beta(γ, N, Λ));
   }
+  
+  function logpdf(X:Real[_,_]) -> Real {
+    return logpdf_matrix_normal_inverse_gamma(X, N, Λ, α,
+        gamma_to_beta(γ, N, Λ));
+  }
+
+  function update(X:Real[_,_]) {
+    (σ2.α, σ2.β) <- update_matrix_normal_inverse_gamma(X, N, Λ, α,
+        gamma_to_beta(γ, N, Λ));
+  }
+
+  function downdate(X:Real[_,_]) {
+    (σ2.α, σ2.β) <- downdate_matrix_normal_inverse_gamma(X, N, Λ, α,
+        gamma_to_beta(γ, N, Λ));
+  }
+
+  function write(buffer:Buffer) {
+    prune();
+    buffer.set("class", "MatrixNormalInverseGamma");
+    buffer.set("M", solve(Λ, N));
+    buffer.set("Σ", inv(Λ));
+    buffer.set("α", α);
+    buffer.set("β", gamma_to_beta(γ, N, Λ));
+  }
+}
+
+function MatrixNormalInverseGamma(future:Real[_,_]?,
+    futureUpdate:Boolean, M:Real[_,_], Σ:Real[_,_],
+    σ2:IndependentInverseGamma) -> MatrixNormalInverseGamma {
+  m:MatrixNormalInverseGamma(future, futureUpdate, M, Σ, σ2);
+  σ2.setChild(m);
+  return m;
+}
+
+
+/*
+ * Compute the variance scaleσ from the variance scale accumulatorσ and other
+ * parameters.
+ */
+function gamma_to_beta(γ:Real[_], N:Real[_,_], Λ:LLT) -> Real[_] {
+  auto A <- solve(cholesky(Λ), N);
+  return γ - 0.5*diagonal(transpose(A)*A);
 }

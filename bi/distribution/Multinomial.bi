@@ -1,7 +1,8 @@
-/**
- * Multinomial distribution.
+/*
+ * ed multinomial random variate.
  */
-final class Multinomial(n:Expression<Integer>, ρ:Expression<Real[_]>) < Distribution<Integer[_]> {
+final class Multinomial(future:Integer[_]?, futureUpdate:Boolean,
+    n:Expression<Integer>, ρ:Expression<Real[_]>) < Distribution<Integer[_]>(future, futureUpdate) {
   /**
    * Number of trials.
    */
@@ -16,18 +17,39 @@ final class Multinomial(n:Expression<Integer>, ρ:Expression<Real[_]>) < Distrib
     return ρ.rows();
   }
 
+  function simulate() -> Integer[_] {
+    return simulate_multinomial(n, ρ);
+  }
+  
+  function logpdf(x:Integer[_]) -> Real {
+    return logpdf_multinomial(x, n, ρ);
+  }
+
   function graft() {
     if delay? {
       delay!.prune();
     } else {
-      m:DelayDirichlet?;
+      m:Dirichlet?;
       if (m <- ρ.graftDirichlet())? {
-        delay <- DelayDirichletMultinomial(future, futureUpdate, n, m!);
+        delay <- DirichletMultinomial(future, futureUpdate, n, m!);
       } else {
-        delay <- DelayMultinomial(future, futureUpdate, n, ρ);
+        delay <- Multinomial(future, futureUpdate, n, ρ);
       }
     }
   }
+
+  function write(buffer:Buffer) {
+    prune();
+    buffer.set("class", "Multinomial");
+    buffer.set("n", n);
+    buffer.set("ρ", ρ);
+  }
+}
+
+function Multinomial(future:Integer[_]?, futureUpdate:Boolean, n:Integer,
+    ρ:Real[_]) -> Multinomial {
+  m:Multinomial(future, futureUpdate, n, ρ);
+  return m;
 }
 
 /**

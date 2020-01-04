@@ -1,7 +1,8 @@
-/**
- * Uniform distribution on an orthogonal hyperrectangle.
+/*
+ * ed multivariate uniform random variable.
  */
-final class IndependentUniform(l:Expression<Real[_]>, u:Expression<Real[_]>) < Distribution<Real[_]> {
+final class IndependentUniform(future:Real[_]?, futureUpdate:Boolean,
+    l:Expression<Real[_]>, u:Expression<Real[_]>) < Distribution<Real[_]>(future, futureUpdate) {
   /**
    * Lower bound.
    */
@@ -16,13 +17,34 @@ final class IndependentUniform(l:Expression<Real[_]>, u:Expression<Real[_]>) < D
     return l.rows();
   }
 
+  function simulate() -> Real[_] {
+    return simulate_independent_uniform(l, u);
+  }
+  
+  function logpdf(x:Real[_]) -> Real {
+    return logpdf_independent_uniform(x, l, u);
+  }
+
   function graft() {
     if delay? {
       delay!.prune();
     } else {
-      delay <- DelayIndependentUniform(future, futureUpdate, l, u);
+      delay <- IndependentUniform(future, futureUpdate, l, u);
     }
   }
+
+  function write(buffer:Buffer) {
+    prune();
+    buffer.set("class", "IndependentUniform");
+    buffer.set("l", l);
+    buffer.set("u", u);
+  }
+}
+
+function IndependentUniform(future:Real[_]?, futureUpdate:Boolean,
+    l:Real[_], u:Real[_]) -> IndependentUniform {
+  m:IndependentUniform(future, futureUpdate, l, u);
+  return m;
 }
 
 /**

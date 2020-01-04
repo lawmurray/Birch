@@ -212,7 +212,7 @@ final class Random<Value> < Expression<Value> {
     }
   }
 
-  function graftGaussian() -> DelayGaussian? {
+  function graftGaussian() -> Gaussian? {
     if !hasValue() {
       assert hasDistribution();
       return dist!.graftGaussian();
@@ -221,7 +221,7 @@ final class Random<Value> < Expression<Value> {
     }
   }
     
-  function graftBeta() -> DelayBeta? {
+  function graftBeta() -> Beta? {
     if !hasValue() {
       assert hasDistribution();
       return dist!.graftBeta();
@@ -230,7 +230,7 @@ final class Random<Value> < Expression<Value> {
     }
   }
   
-  function graftGamma() -> DelayGamma? {
+  function graftGamma() -> Gamma? {
     if !hasValue() {
       assert hasDistribution();
       return dist!.graftGamma();
@@ -239,7 +239,7 @@ final class Random<Value> < Expression<Value> {
     }
   }
   
-  function graftInverseGamma() -> DelayInverseGamma? {
+  function graftInverseGamma() -> InverseGamma? {
     if !hasValue() {
       assert hasDistribution();
       return dist!.graftInverseGamma();
@@ -248,7 +248,7 @@ final class Random<Value> < Expression<Value> {
     }
   } 
 
-  function graftIndependentInverseGamma() -> DelayIndependentInverseGamma? {
+  function graftIndependentInverseGamma() -> IndependentInverseGamma? {
     if !hasValue() {
       assert hasDistribution();
       return dist!.graftIndependentInverseGamma();
@@ -257,7 +257,7 @@ final class Random<Value> < Expression<Value> {
     }
   } 
 
-  function graftInverseWishart() -> DelayInverseWishart? {
+  function graftInverseWishart() -> InverseWishart? {
     if !hasValue() {
       assert hasDistribution();
       return dist!.graftInverseWishart();
@@ -266,7 +266,7 @@ final class Random<Value> < Expression<Value> {
     }
   } 
   
-  function graftNormalInverseGamma() -> DelayNormalInverseGamma? {
+  function graftNormalInverseGamma() -> NormalInverseGamma? {
     if !hasValue() {
       assert hasDistribution();
       return dist!.graftNormalInverseGamma();
@@ -275,7 +275,7 @@ final class Random<Value> < Expression<Value> {
     }
   }
   
-  function graftDirichlet() -> DelayDirichlet? {
+  function graftDirichlet() -> Dirichlet? {
     if !hasValue() {
       assert hasDistribution();
       return dist!.graftDirichlet();
@@ -284,7 +284,7 @@ final class Random<Value> < Expression<Value> {
     }
   }
 
-  function graftRestaurant() -> DelayRestaurant? {
+  function graftRestaurant() -> Restaurant? {
     if !hasValue() {
       assert hasDistribution();
       return dist!.graftRestaurant();
@@ -293,7 +293,7 @@ final class Random<Value> < Expression<Value> {
     }
   }
 
-  function graftMultivariateGaussian() -> DelayMultivariateGaussian? {
+  function graftMultivariateGaussian() -> MultivariateGaussian? {
     if !hasValue() {
       assert hasDistribution();
       return dist!.graftMultivariateGaussian();
@@ -303,7 +303,7 @@ final class Random<Value> < Expression<Value> {
   }
 
   function graftMultivariateNormalInverseGamma() ->
-      DelayMultivariateNormalInverseGamma? {
+      MultivariateNormalInverseGamma? {
     if !hasValue() {
       assert hasDistribution();
       return dist!.graftMultivariateNormalInverseGamma();
@@ -312,7 +312,7 @@ final class Random<Value> < Expression<Value> {
     }
   }
 
-  function graftMatrixGaussian() -> DelayMatrixGaussian? {
+  function graftMatrixGaussian() -> MatrixGaussian? {
     if !hasValue() {
       assert hasDistribution();
       return dist!.graftMatrixGaussian();
@@ -321,7 +321,7 @@ final class Random<Value> < Expression<Value> {
     }
   }
 
-  function graftMatrixNormalInverseGamma() -> DelayMatrixNormalInverseGamma? {
+  function graftMatrixNormalInverseGamma() -> MatrixNormalInverseGamma? {
     if !hasValue() {
       assert hasDistribution();
       return dist!.graftMatrixNormalInverseGamma();
@@ -330,7 +330,7 @@ final class Random<Value> < Expression<Value> {
     }
   }
 
-  function graftMatrixNormalInverseWishart() -> DelayMatrixNormalInverseWishart? {
+  function graftMatrixNormalInverseWishart() -> MatrixNormalInverseWishart? {
     if !hasValue() {
       assert hasDistribution();
       return dist!.graftMatrixNormalInverseWishart();
@@ -339,7 +339,7 @@ final class Random<Value> < Expression<Value> {
     }
   }
 
-  function graftDiscrete() -> DelayDiscrete? {
+  function graftDiscrete() -> Discrete? {
     if !hasValue() {
       assert hasDistribution();
       return dist!.graftDiscrete();
@@ -348,7 +348,7 @@ final class Random<Value> < Expression<Value> {
     }
   }
 
-  function graftBoundedDiscrete() -> DelayBoundedDiscrete? {
+  function graftBoundedDiscrete() -> BoundedDiscrete? {
     if !hasValue() {
       assert hasDistribution();
       return dist!.graftBoundedDiscrete();

@@ -3,12 +3,12 @@
  *
  * - Value: Value type.
  */
-final class DelayExpression<Value>(delay:DelayValue<Value>) <
+final class DelayExpression<Value>(delay:Distribution<Value>) <
     Expression<Value> {  
   /**
    * Delayed sampling node.
    */
-  delay:DelayValue<Value>& <- delay;
+  delay:Distribution<Value>& <- delay;
   
   function graft() -> Expression<Value> {
     return this;
@@ -58,7 +58,7 @@ final class DelayExpression<Value>(delay:DelayValue<Value>) <
 /**
  * Create a DelayExpression.
  */
-function DelayExpression<Value>(delay:DelayValue<Value>) -> DelayExpression<Value> {
+function DelayExpression<Value>(delay:Distribution<Value>) -> DelayExpression<Value> {
   o:DelayExpression<Value>(delay);
   return o;
 }

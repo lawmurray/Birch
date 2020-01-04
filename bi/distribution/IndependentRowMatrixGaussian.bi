@@ -25,43 +25,43 @@ final class IndependentRowMatrixGaussian(M:Expression<Real[_,_]>,
     if delay? {
       delay!.prune();
     } else {
-      s1:DelayInverseWishart?;
-      m1:TransformLinearMatrix<DelayMatrixNormalInverseWishart>?;
-      m2:DelayMatrixNormalInverseWishart?;
+      s1:InverseWishart?;
+      m1:TransformLinearMatrix<MatrixNormalInverseWishart>?;
+      m2:MatrixNormalInverseWishart?;
 
-      if (m1 <- M.graftLinearMatrixNormalInverseWishart())? && m1!.X.V == V.getDelay() {
-        delay <- DelayLinearMatrixNormalInverseWishartMatrixGaussian(future, futureUpdate, m1!.A, m1!.X, m1!.C);
-      } else if (m2 <- M.graftMatrixNormalInverseWishart())? && m2!.V == V.getDelay() {
-        delay <- DelayMatrixNormalInverseWishartMatrixGaussian(future, futureUpdate, m2!);
+      if (m1 <- M.graftLinearMatrixNormalInverseWishart())? && m1!.X.V == V.get() {
+        delay <- LinearMatrixNormalInverseWishartMatrixGaussian(future, futureUpdate, m1!.A, m1!.X, m1!.C);
+      } else if (m2 <- M.graftMatrixNormalInverseWishart())? && m2!.V == V.get() {
+        delay <- MatrixNormalInverseWishartMatrixGaussian(future, futureUpdate, m2!);
       } else if (s1 <- V.graftInverseWishart())? {
-        delay <- DelayMatrixNormalInverseWishart(future, futureUpdate, M, identity(M.rows()), s1!);
+        delay <- MatrixNormalInverseWishart(future, futureUpdate, M, identity(M.rows()), s1!);
       } else {
-        delay <- DelayMatrixGaussian(future, futureUpdate, M, identity(M.rows()), V);
+        delay <- MatrixGaussian(future, futureUpdate, M, identity(M.rows()), V);
       }
     }
   }
 
-  function graftMatrixGaussian() -> DelayMatrixGaussian? {
+  function graftMatrixGaussian() -> MatrixGaussian? {
     if delay? {
       delay!.prune();
     } else {
-      delay <- DelayMatrixGaussian(future, futureUpdate, M,
+      delay <- MatrixGaussian(future, futureUpdate, M,
           identity(M.rows()), V);
     }
-    return DelayMatrixGaussian?(delay);
+    return MatrixGaussian?(delay);
   }
 
-  function graftMatrixNormalInverseWishart() -> DelayMatrixNormalInverseWishart? {
+  function graftMatrixNormalInverseWishart() -> MatrixNormalInverseWishart? {
     if delay? {
       delay!.prune();
     } else {
-      s1:DelayInverseWishart?;
+      s1:InverseWishart?;
       if (s1 <- V.graftInverseWishart())? {
-        delay <- DelayMatrixNormalInverseWishart(future, futureUpdate, M,
+        delay <- MatrixNormalInverseWishart(future, futureUpdate, M,
             identity(M.rows()), s1!);
       }
     }
-    return DelayMatrixNormalInverseWishart?(delay);
+    return MatrixNormalInverseWishart?(delay);
   }
 }
 

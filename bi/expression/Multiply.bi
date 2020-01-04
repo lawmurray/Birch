@@ -15,40 +15,40 @@ final class Multiply<Left,Right,Value>(left:Expression<Left>,
     return (d*r, d*l);
   }
 
-  function graftScaledGamma() -> TransformLinear<DelayGamma>? {
-    y:TransformLinear<DelayGamma>?;
-    z:DelayGamma?;
+  function graftScaledGamma() -> TransformLinear<Gamma>? {
+    y:TransformLinear<Gamma>?;
+    z:Gamma?;
     
     if (y <- left.graftScaledGamma())? {
       y!.multiply(right);
     } else if (y <- right.graftScaledGamma())? {
       y!.multiply(left);
     } else if (z <- left.graftGamma())? {
-      y <- TransformLinear<DelayGamma>(right, z!);
+      y <- TransformLinear<Gamma>(right, z!);
     } else if (z <- right.graftGamma())? {
-      y <- TransformLinear<DelayGamma>(left, z!);
+      y <- TransformLinear<Gamma>(left, z!);
     }
     return y;
   }
 
-  function graftLinearGaussian() -> TransformLinear<DelayGaussian>? {
-    y:TransformLinear<DelayGaussian>?;
-    z:DelayGaussian?;
+  function graftLinearGaussian() -> TransformLinear<Gaussian>? {
+    y:TransformLinear<Gaussian>?;
+    z:Gaussian?;
     
     if (y <- left.graftLinearGaussian())? {
       y!.multiply(right);
     } else if (y <- right.graftLinearGaussian())? {
       y!.multiply(left);
     } else if (z <- left.graftGaussian())? {
-      y <- TransformLinear<DelayGaussian>(right, z!);
+      y <- TransformLinear<Gaussian>(right, z!);
     } else if (z <- right.graftGaussian())? {
-      y <- TransformLinear<DelayGaussian>(left, z!);
+      y <- TransformLinear<Gaussian>(left, z!);
     }
     return y;
   }
 
-  function graftDotGaussian() -> TransformDot<DelayMultivariateGaussian>? {
-    y:TransformDot<DelayMultivariateGaussian>?;
+  function graftDotGaussian() -> TransformDot<MultivariateGaussian>? {
+    y:TransformDot<MultivariateGaussian>?;
     
     if (y <- left.graftDotGaussian())? {
       y!.multiply(right);
@@ -59,18 +59,18 @@ final class Multiply<Left,Right,Value>(left:Expression<Left>,
   }
  
   function graftLinearNormalInverseGamma() ->
-      TransformLinear<DelayNormalInverseGamma>? {
-    y:TransformLinear<DelayNormalInverseGamma>?;
-    z:DelayNormalInverseGamma?;
+      TransformLinear<NormalInverseGamma>? {
+    y:TransformLinear<NormalInverseGamma>?;
+    z:NormalInverseGamma?;
     
     if (y <- left.graftLinearNormalInverseGamma())? {
       y!.multiply(right);
     } else if (y <- right.graftLinearNormalInverseGamma())? {
       y!.multiply(left);
     } else if (z <- left.graftNormalInverseGamma())? {
-      y <- TransformLinear<DelayNormalInverseGamma>(right, z!);
+      y <- TransformLinear<NormalInverseGamma>(right, z!);
     } else if (z <- right.graftNormalInverseGamma())? {
-      y <- TransformLinear<DelayNormalInverseGamma>(left, z!);
+      y <- TransformLinear<NormalInverseGamma>(left, z!);
     }
     return y;
   }

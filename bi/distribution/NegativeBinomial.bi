@@ -1,8 +1,8 @@
-/**
- * Negative binomial distribution.
+/*
+ * ed negative binomial random variate.
  */
-class NegativeBinomial(k:Expression<Integer>, ρ:Expression<Real>) <
-    Distribution<Integer> {
+final class NegativeBinomial(future:Integer?, futureUpdate:Boolean,
+    k:Expression<Integer>, ρ:Expression<Real>) < Discrete(future, futureUpdate) {
   /**
    * Number of successes before the experiment is stopped.
    */
@@ -13,18 +13,55 @@ class NegativeBinomial(k:Expression<Integer>, ρ:Expression<Real>) <
    */
   ρ:Expression<Real> <- ρ;
 
+  function simulate() -> Integer {
+    if value? {
+      return value!;
+    } else {
+      return simulate_negative_binomial(n, ρ);
+    }
+  }
+  
+  function logpdf(x:Integer) -> Real {
+    return logpdf_negative_binomial(x, n, ρ);
+  }
+
+  function cdf(x:Integer) -> Real? {
+    return cdf_negative_binomial(x, n, ρ);
+  }
+
+  function quantile(p:Real) -> Integer? {
+    return quantile_negative_binomial(p, n, ρ);
+  }
+
+  function lower() -> Integer? {
+    return 0;
+  }
+
   function graft() {
     if delay? {
       delay!.prune();
     } else {
-      ρ1:DelayBeta?;
+      ρ1:Beta?;
       if (ρ1 <- ρ.graftBeta())? {
-        delay <- DelayBetaNegativeBinomial(future, futureUpdate, k, ρ1!);
+        delay <- BetaNegativeBinomial(future, futureUpdate, k, ρ1!);
       } else {
-        delay <- DelayNegativeBinomial(future, futureUpdate, k, ρ);
+        delay <- NegativeBinomial(future, futureUpdate, k, ρ);
       }
     }
   }
+
+  function write(buffer:Buffer) {
+    prune();
+    buffer.set("class", "NegativeBinomial");
+    buffer.set("n", n);
+    buffer.set("ρ", ρ);
+  }
+}
+
+function NegativeBinomial(future:Integer?, futureUpdate:Boolean,
+    n:Integer, ρ:Real) -> NegativeBinomial {
+  m:NegativeBinomial(future, futureUpdate, n, ρ);
+  return m;
 }
 
 /**

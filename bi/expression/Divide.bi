@@ -15,20 +15,20 @@ final class Divide<Left,Right,Value>(left:Expression<Left>,
     return (d/r, -d*l/(r*r));
   }
 
-  function graftLinearGaussian() -> TransformLinear<DelayGaussian>? {
-    y:TransformLinear<DelayGaussian>?;
-    z:DelayGaussian?;
+  function graftLinearGaussian() -> TransformLinear<Gaussian>? {
+    y:TransformLinear<Gaussian>?;
+    z:Gaussian?;
     
     if (y <- left.graftLinearGaussian())? {
       y!.divide(right);
     } else if (z <- left.graftGaussian())? {
-      y <- TransformLinear<DelayGaussian>(1.0/right, z!);
+      y <- TransformLinear<Gaussian>(1.0/right, z!);
     }
     return y;
   }
 
-  function graftDotGaussian() -> TransformDot<DelayMultivariateGaussian>? {
-    y:TransformDot<DelayMultivariateGaussian>?;
+  function graftDotGaussian() -> TransformDot<MultivariateGaussian>? {
+    y:TransformDot<MultivariateGaussian>?;
     
     if (y <- left.graftDotGaussian())? {
       y!.divide(right);
@@ -37,26 +37,26 @@ final class Divide<Left,Right,Value>(left:Expression<Left>,
   }
   
   function graftLinearNormalInverseGamma() ->
-      TransformLinear<DelayNormalInverseGamma>? {
-    y:TransformLinear<DelayNormalInverseGamma>?;
-    z:DelayNormalInverseGamma?;
+      TransformLinear<NormalInverseGamma>? {
+    y:TransformLinear<NormalInverseGamma>?;
+    z:NormalInverseGamma?;
     
     if (y <- left.graftLinearNormalInverseGamma())? {
       y!.divide(right);
     } else if (z <- left.graftNormalInverseGamma())? {
-      y <- TransformLinear<DelayNormalInverseGamma>(1.0/right, z!);
+      y <- TransformLinear<NormalInverseGamma>(1.0/right, z!);
     }
     return y;
   }
 
-  function graftScaledGamma() -> TransformLinear<DelayGamma>? {
-    y:TransformLinear<DelayGamma>?;
-    z:DelayGamma?;
+  function graftScaledGamma() -> TransformLinear<Gamma>? {
+    y:TransformLinear<Gamma>?;
+    z:Gamma?;
     
     if (y <- left.graftScaledGamma())? {
       y!.divide(right);
     } else if (z <- left.graftGamma())? {
-      y <- TransformLinear<DelayGamma>(1.0/right, z!);
+      y <- TransformLinear<Gamma>(1.0/right, z!);
     }
     return y;
   }

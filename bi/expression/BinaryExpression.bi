@@ -82,7 +82,9 @@ abstract class BinaryExpression<Left,Right,Value>(left:Expression<Left>,
       dl:Left;
       dr:Right;
       (dl, dr) <- doGradient(d, l, r);
-      return left.gradPilot(dl) || right.gradPilot(dr);
+      auto leftGrad <- left.gradPilot(dl);
+      auto rightGrad <- right.gradPilot(dr);
+      return leftGrad || rightGrad;  // done this way to avoid short circuit
     }
   }
 
@@ -90,13 +92,15 @@ abstract class BinaryExpression<Left,Right,Value>(left:Expression<Left>,
     if x? {
       return false;
     } else {
-      assert x'?;
+      assert x''?;
       auto l <- left.propose();
       auto r <- right.propose();
       dl:Left;
       dr:Right;
       (dl, dr) <- doGradient(d, l, r);
-      return left.gradPropose(dl) || right.gradPropose(dr);
+      auto leftGrad <- left.gradPropose(dl);
+      auto rightGrad <- right.gradPropose(dr);
+      return leftGrad || rightGrad;  // done this way to avoid short circuit
     }
   }
 

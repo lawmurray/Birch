@@ -1,7 +1,9 @@
 /**
  * Student's $t$-distribution.
  */
-final class Student(ν:Expression<Real>, μ:Expression<Real>, σ2:Expression<Real> ) < Distribution<Real> {
+final class Student(future:Real?, futureUpdate:Boolean,
+    ν:Expression<Real>, μ:Expression<Real>, σ2:Expression<Real>) <
+    Distribution<Real>(future, futureUpdate) {
   /**
    * Degrees of freedom.
    */
@@ -13,17 +15,46 @@ final class Student(ν:Expression<Real>, μ:Expression<Real>, σ2:Expression<Rea
   μ:Expression<Real> <- μ;
 
   /**
-   * Square Scale parameter.
+   * Square scale parameter.
    */
   σ2:Expression<Real> <- σ2;
+  
+  function simulate() -> Real {
+    return simulate_student_t(ν, μ, σ2);
+  }
+  
+  function logpdf(x:Real) -> Real {
+    return logpdf_student_t(x, ν, μ, σ2);
+  }
+
+  function cdf(x:Real) -> Real? {
+    return cdf_student_t(x, ν, μ, σ2);
+  }
+
+  function quantile(p:Real) -> Real? {
+    return quantile_student_t(p, ν, μ, σ2);
+  }
 
   function graft() {
     if delay? {
       delay!.prune();
     } else {
-      delay <- DelayStudent(future, futureUpdate, ν, μ, σ2);
+      delay <- Student(future, futureUpdate, ν, μ, σ2);
     }
   }
+
+  function write(buffer:Buffer) {
+    prune();
+    buffer.set("class", "Student");
+    buffer.set("ν", ν);
+    buffer.set("μ", μ);
+    buffer.set("σ2", σ2);
+  }
+}
+
+function Student(future:Real?, futureUpdate:Boolean, ν:Real, μ:Real, σ2:Real) -> Student {
+  m:Student(future, futureUpdate, ν, μ, σ2);
+  return m;
 }
 
 /**

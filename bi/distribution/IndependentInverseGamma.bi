@@ -33,8 +33,10 @@
  * The advantage of using this approach over $O$ separate regressions is that
  * expensive covariance operations are shared.
  */
-final class IndependentInverseGamma(α:Expression<Real>,
-    β:Expression<Real[_]>) < Distribution<Real[_]> {
+final class IndependentInverseGamma(future:Real[_]?,
+    futureUpdate:Boolean, α:Expression<Real>,
+    β:Expression<Real[_]>) < Distribution<Real[_]>(future,
+    futureUpdate) {
   /**
    * Shape.
    */
@@ -49,22 +51,52 @@ final class IndependentInverseGamma(α:Expression<Real>,
     return β.rows();
   }
 
+  function simulate() -> Real[_] {
+    return transform<Real>(β, @(b:Real) -> Real {
+        return simulate_inverse_gamma(α, b); });
+  }
+  
+  function logpdf(x:Real[_]) -> Real {
+    return transform_reduce<Real>(x, β, 0.0, @(a:Real, b:Real) -> Real {
+        return a + b;
+      }, @(x:Real, b:Real) -> Real {
+        return logpdf_inverse_gamma(x, α, b);
+      });
+  }
+
+  function lower() -> Real[_]? {
+    return vector(0.0, length(β));
+  }
+
   function graft() {
     if delay? {
       delay!.prune();
     } else {
-      delay <- DelayIndependentInverseGamma(future, futureUpdate, α, β);
+      delay <- IndependentInverseGamma(future, futureUpdate, α, β);
     }
   }
 
-  function graftIndependentInverseGamma() -> DelayIndependentInverseGamma? {
+  function graftIndependentInverseGamma() -> IndependentInverseGamma? {
     if delay? {
       delay!.prune();
     } else {
-      delay <- DelayIndependentInverseGamma(future, futureUpdate, α, β);
+      delay <- IndependentInverseGamma(future, futureUpdate, α, β);
     }
-    return DelayIndependentInverseGamma?(delay);
+    return IndependentInverseGamma?(delay);
   }
+
+  function write(buffer:Buffer) {
+    prune();
+    buffer.set("class", "IndependentInverseGamma");
+    buffer.set("α", α);
+    buffer.set("β", β);
+  }
+}
+
+function IndependentInverseGamma(future:Real[_]?, futureUpdate:Boolean,
+    α:Real, β:Real[_]) -> IndependentInverseGamma {
+  m:IndependentInverseGamma(future, futureUpdate, α, β);
+  return m;
 }
 
 /**

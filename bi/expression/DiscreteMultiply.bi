@@ -15,28 +15,28 @@ final class DiscreteMultiply<Left,Right,Value>(left:Expression<Left>,
     return (d*r, d*l);
   }
 
-  function graftDiscrete() -> DelayDiscrete? {
-    y:DelayDiscrete? <- graftBoundedDiscrete();
+  function graftDiscrete() -> Discrete? {
+    y:Discrete? <- graftBoundedDiscrete();
     if !y? {
-      x:DelayDiscrete?;
+      x:Discrete?;
       if (x <- left.graftDiscrete())? {
-        y <- DelayLinearDiscrete(nil, true, right.value(), x!, 0);
+        y <- LinearDiscrete(nil, true, right.value(), x!, 0);
       } else if (x <- right.graftDiscrete())? {
-        y <- DelayLinearDiscrete(nil, true, left.value(), x!, 0);
+        y <- LinearDiscrete(nil, true, left.value(), x!, 0);
       }
     }
     return y;
   }
 
-  function graftBoundedDiscrete() -> DelayBoundedDiscrete? {
-    y:DelayBoundedDiscrete?;
-    x1:DelayBoundedDiscrete? <- left.graftBoundedDiscrete();
-    x2:DelayBoundedDiscrete? <- right.graftBoundedDiscrete();
+  function graftBoundedDiscrete() -> BoundedDiscrete? {
+    y:BoundedDiscrete?;
+    x1:BoundedDiscrete? <- left.graftBoundedDiscrete();
+    x2:BoundedDiscrete? <- right.graftBoundedDiscrete();
 
     if x1? && !(x1!.hasValue()) {
-      y <- DelayLinearBoundedDiscrete(nil, true, right.value(), x1!, 0);
+      y <- LinearBoundedDiscrete(nil, true, right.value(), x1!, 0);
     } else if x2? && !(x2!.hasValue()) {
-      y <- DelayLinearBoundedDiscrete(nil, true, left.value(), x2!, 0);
+      y <- LinearBoundedDiscrete(nil, true, left.value(), x2!, 0);
     }
     return y;
   }

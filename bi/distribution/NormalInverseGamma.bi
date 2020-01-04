@@ -25,29 +25,70 @@
  * be multiplication on the left (as above) or the right, or division on the
  * right.
  */
-final class NormalInverseGamma(μ:Expression<Real>, a2:Expression<Real>,
-    α:Expression<Real>, β:Expression<Real>) < Distribution<Real> {
+final class NormalInverseGamma(future:Real?, futureUpdate:Boolean,
+    μ:Real, a2:Real, σ2:InverseGamma) < Distribution<Real>(future,
+    futureUpdate) {
   /**
    * Mean.
    */
-  μ:Expression<Real> <- μ;
+  μ:Real <- μ;
   
   /**
-   * Variance scale.
+   * Precision scale.
    */
-  a2:Expression<Real> <- a2;
-
+  λ:Real <- 1.0/a2;
+  
   /**
    * Variance.
    */
-  σ2:InverseGamma(α, β);
+  σ2:InverseGamma& <- σ2;
+
+  function simulate() -> Real {
+    return simulate_normal_inverse_gamma(μ, 1.0/λ, σ2.α, σ2.β);
+  }
   
+  function logpdf(x:Real) -> Real {
+    return logpdf_normal_inverse_gamma(x, μ, 1.0/λ, σ2.α, σ2.β);
+  }
+
+  function update(x:Real) {
+    (σ2.α, σ2.β) <- update_normal_inverse_gamma(x, μ, λ, σ2.α, σ2.β);
+  }
+
+  function downdate(x:Real) {
+    (σ2.α, σ2.β) <- downdate_normal_inverse_gamma(x, μ, λ, σ2.α, σ2.β);
+  }
+
+  function cdf(x:Real) -> Real? {
+    return cdf_normal_inverse_gamma(x, μ, 1.0/λ, σ2.α, σ2.β);
+  }
+
+  function quantile(p:Real) -> Real? {
+    return quantile_normal_inverse_gamma(p, μ, 1.0/λ, σ2.α, σ2.β);
+  }
+
   function graft() {
     if delay? {
       delay!.prune();
     } else {
-      delay <- DelayNormalInverseGamma(future, futureUpdate, μ, a2,
+      delay <- NormalInverseGamma(future, futureUpdate, μ, a2,
           σ2.graftInverseGamma()!);
     }
   }
+
+  function write(buffer:Buffer) {
+    prune();
+    buffer.set("class", "NormalInverseGamma");
+    buffer.set("μ", μ);
+    buffer.set("a2", 1.0/λ);
+    buffer.set("α", σ2.α);
+    buffer.set("β", σ2.β);
+  }
+}
+
+function NormalInverseGamma(future:Real?, futureUpdate:Boolean, μ:Real,
+    a2:Real, σ2:InverseGamma) -> NormalInverseGamma {
+  m:NormalInverseGamma(future, futureUpdate, μ, a2, σ2);
+  σ2.setChild(m);
+  return m;
 }

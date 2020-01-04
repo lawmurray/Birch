@@ -23,38 +23,38 @@ final class ScalarGaussian(μ:Expression<Real>, σ2:Expression<Real>,
     if delay? {
       delay!.prune();
     } else {
-      s1:DelayInverseGamma?;
+      s1:InverseGamma?;
       if (s1 <- σ2.graftInverseGamma())? {
-        delay <- DelayNormalInverseGamma(future, futureUpdate, μ, τ2, s1!);
+        delay <- NormalInverseGamma(future, futureUpdate, μ, τ2, s1!);
       } else if (s1 <- τ2.graftInverseGamma())? {
-        delay <- DelayNormalInverseGamma(future, futureUpdate, μ, σ2, s1!);
+        delay <- NormalInverseGamma(future, futureUpdate, μ, σ2, s1!);
       } else {
-        delay <- DelayGaussian(future, futureUpdate, μ, σ2*τ2);
+        delay <- Gaussian(future, futureUpdate, μ, σ2*τ2);
       }
     }
   }
 
-  function graftGaussian() -> DelayGaussian? {
+  function graftGaussian() -> Gaussian? {
     if delay? {
       delay!.prune();
     } else {
-      delay <- DelayGaussian(future, futureUpdate, μ, σ2*τ2);
+      delay <- Gaussian(future, futureUpdate, μ, σ2*τ2);
     }
-    return DelayGaussian?(delay);
+    return Gaussian?(delay);
   }
 
-  function graftNormalInverseGamma() -> DelayNormalInverseGamma? {
+  function graftNormalInverseGamma() -> NormalInverseGamma? {
     if delay? {
       delay!.prune();
     } else {
-      s1:DelayInverseGamma?;
+      s1:InverseGamma?;
       if (s1 <- σ2.graftInverseGamma())? {
-        delay <- DelayNormalInverseGamma(future, futureUpdate, μ, τ2, s1!);
+        delay <- NormalInverseGamma(future, futureUpdate, μ, τ2, s1!);
       } else if (s1 <- τ2.graftInverseGamma())? {
-        delay <- DelayNormalInverseGamma(future, futureUpdate, μ, σ2, s1!);
+        delay <- NormalInverseGamma(future, futureUpdate, μ, σ2, s1!);
       }
     }
-    return DelayNormalInverseGamma?(delay);
+    return NormalInverseGamma?(delay);
   }
 }
 

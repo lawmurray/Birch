@@ -2,24 +2,57 @@
  * Delta distribution, representing a distribution on a discrete space with
  * all probability mass at one location.
  */
-final class Delta(μ:Expression<Integer>) < Distribution<Integer> {
+final class Delta(future:Integer?, futureUpdate:Boolean, μ:Expression<Integer>) <
+    Discrete(future, futureUpdate) {
   /**
    * Location.
    */
   μ:Expression<Integer> <- μ;
 
+  function simulate() -> Integer {
+    if value? {
+      return value!;
+    } else {
+      return simulate_delta(μ);
+    }
+  }
+  
+  function logpdf(x:Integer) -> Real {
+    return logpdf_delta(x, μ);
+  }
+
+  function lower() -> Integer? {
+    return μ;
+  }
+  
+  function upper() -> Integer? {
+    return μ;
+  }
+
   function graft() {
     if delay? {
       delay!.prune();
     } else {
-      m:DelayDiscrete?;
+      m:Discrete?;
       if (m <- μ.graftDiscrete())? {
-        delay <- DelayDiscreteDelta(future, futureUpdate, m!);
+        delay <- DiscreteDelta(future, futureUpdate, m!);
       } else {
-        delay <- DelayDelta(future, futureUpdate, μ);
+        delay <- Delta(future, futureUpdate, μ);
       }
     }
   }
+
+  function write(buffer:Buffer) {
+    prune();
+    buffer.set("class", "Delta");
+    buffer.set("μ", μ);
+  }
+}
+
+function Delta(future:Integer?, futureUpdate:Boolean, μ:Integer) ->
+    Delta {
+  m:Delta(future, futureUpdate, μ);
+  return m;
 }
 
 /**

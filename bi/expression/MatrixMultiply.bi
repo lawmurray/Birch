@@ -24,40 +24,40 @@ final class MatrixMultiply<Left,Right,Value>(left:Expression<Left>,
   }
 
   function graftLinearMatrixGaussian() ->
-      TransformLinearMatrix<DelayMatrixGaussian>? {
-    y:TransformLinearMatrix<DelayMatrixGaussian>?;
-    z:DelayMatrixGaussian?;
+      TransformLinearMatrix<MatrixGaussian>? {
+    y:TransformLinearMatrix<MatrixGaussian>?;
+    z:MatrixGaussian?;
     
     if (y <- right.graftLinearMatrixGaussian())? {
       y!.leftMultiply(left);
     } else if (z <- right.graftMatrixGaussian())? {
-      y <- TransformLinearMatrix<DelayMatrixGaussian>(left, z!);
+      y <- TransformLinearMatrix<MatrixGaussian>(left, z!);
     }
     return y;
   }
   
   function graftLinearMatrixNormalInverseGamma() ->
-      TransformLinearMatrix<DelayMatrixNormalInverseGamma>? {
-    y:TransformLinearMatrix<DelayMatrixNormalInverseGamma>?;
-    z:DelayMatrixNormalInverseGamma?;
+      TransformLinearMatrix<MatrixNormalInverseGamma>? {
+    y:TransformLinearMatrix<MatrixNormalInverseGamma>?;
+    z:MatrixNormalInverseGamma?;
 
     if (y <- right.graftLinearMatrixNormalInverseGamma())? {
       y!.leftMultiply(left);
     } else if (z <- right.graftMatrixNormalInverseGamma())? {
-      y <- TransformLinearMatrix<DelayMatrixNormalInverseGamma>(left, z!);
+      y <- TransformLinearMatrix<MatrixNormalInverseGamma>(left, z!);
     }
     return y;
   }
 
   function graftLinearMatrixNormalInverseWishart() ->
-      TransformLinearMatrix<DelayMatrixNormalInverseWishart>? {
-    y:TransformLinearMatrix<DelayMatrixNormalInverseWishart>?;
-    z:DelayMatrixNormalInverseWishart?;
+      TransformLinearMatrix<MatrixNormalInverseWishart>? {
+    y:TransformLinearMatrix<MatrixNormalInverseWishart>?;
+    z:MatrixNormalInverseWishart?;
 
     if (y <- right.graftLinearMatrixNormalInverseWishart())? {
       y!.leftMultiply(left);
     } else if (z <- right.graftMatrixNormalInverseWishart())? {
-      y <- TransformLinearMatrix<DelayMatrixNormalInverseWishart>(left, z!);
+      y <- TransformLinearMatrix<MatrixNormalInverseWishart>(left, z!);
     }
     return y;
   }

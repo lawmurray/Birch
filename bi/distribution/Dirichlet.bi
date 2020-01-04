@@ -1,28 +1,49 @@
-/**
- * Dirichlet distribution.
+/*
+ * ed Dirichlet random variate.
  */
-final class Dirichlet(α:Expression<Real[_]>) < Distribution<Real[_]> {
+final class Dirichlet(future:Real[_]?, futureUpdate:Boolean, α:Expression<Real[_]>)
+    < Distribution<Real[_]>(future, futureUpdate) {
   /**
    * Concentration.
    */
   α:Expression<Real[_]> <- α;
 
+  function simulate() -> Real[_] {
+    return simulate_dirichlet(α);
+  }
+  
+  function logpdf(x:Real[_]) -> Real {
+    return logpdf_dirichlet(x, α);
+  }
+
   function graft() {
     if delay? {
       delay!.prune();
     } else {
-      delay <- DelayDirichlet(future, futureUpdate, α);
+      delay <- Dirichlet(future, futureUpdate, α);
     }
   }
 
-  function graftDirichlet() -> DelayDirichlet? {
+  function graftDirichlet() -> Dirichlet? {
     if delay? {
       delay!.prune();
     } else {
-      delay <- DelayDirichlet(future, futureUpdate, α);
+      delay <- Dirichlet(future, futureUpdate, α);
     }
-    return DelayDirichlet?(delay);
+    return Dirichlet?(delay);
   }
+
+  function write(buffer:Buffer) {
+    prune();
+    buffer.set("class", "Dirichlet");
+    buffer.set("α", α);
+  }
+}
+
+function Dirichlet(future:Real[_]?, futureUpdate:Boolean, α:Real[_]) ->
+    Dirichlet {
+  m:Dirichlet(future, futureUpdate, α);
+  return m;
 }
 
 /**

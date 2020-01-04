@@ -1,7 +1,8 @@
-/**
- * Weibull distribution.
+/*
+ * ed Weibull random variate.
  */
-final class Weibull(k:Expression<Real>, λ:Expression<Real>) < Distribution<Real> {
+final class Weibull(future:Real?, futureUpdate:Boolean, k:Expression<Real>, λ:Expression<Real>) <
+    Distribution<Real>(future, futureUpdate) {
   /**
    * Shape.
    */
@@ -12,13 +13,46 @@ final class Weibull(k:Expression<Real>, λ:Expression<Real>) < Distribution<Real
    */
   λ:Expression<Real> <- λ;
 
+  function simulate() -> Real {
+    return simulate_weibull(k, λ);
+  }
+  
+  function logpdf(x:Real) -> Real {
+    return logpdf_weibull(x, k, λ);
+  }
+
+  function cdf(x:Real) -> Real? {
+    return cdf_weibull(x, k, λ);
+  }
+
+  function quantile(p:Real) -> Real? {
+    return quantile_weibull(p, k, λ);
+  }
+
+  function lower() -> Real? {
+    return 0.0;
+  }
+
   function graft() {
     if delay? {
       delay!.prune();
     } else {
-      delay <- DelayWeibull(future, futureUpdate, k, λ);
+      delay <- Weibull(future, futureUpdate, k, λ);
     }
   }
+
+  function write(buffer:Buffer) {
+    prune();
+    buffer.set("class", "Weibull");
+    buffer.set("k", k);
+    buffer.set("λ", λ);
+  }
+}
+
+function Weibull(future:Real?, futureUpdate:Boolean, k:Real, λ:Real) ->
+    Weibull {
+  m:Weibull(future, futureUpdate, k, λ);
+  return m;
 }
 
 /**

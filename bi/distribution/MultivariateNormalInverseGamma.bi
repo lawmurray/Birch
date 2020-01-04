@@ -14,8 +14,8 @@
  * and variance. The variance scaling is independent and identical in the
  * sense that all components of $x$ share the same $\sigma^2$.
  *
- * In model code, it is not usual to use this final class directly. Instead,
- * establish the conjugate relationship via code such as the following:
+ * In model code, it is not usual to use this class directly. Instead,
+ * establish a conjugate relationship via code such as the following:
  *
  *     σ2 ~ InverseGamma(α, β);
  *     x ~ Gaussian(μ, Σ*σ2);
@@ -26,34 +26,89 @@
  * be multiplication on the left (as above) or the right, or division on the
  * right.
  */
-final class MultivariateNormalInverseGamma(μ:Expression<Real[_]>,
-    Σ:Expression<Real[_,_]>, α:Expression<Real>, β:Expression<Real>) <
-    Distribution<Real[_]> {
+final class MultivariateNormalInverseGamma(future:Real[_]?,
+    futureUpdate:Boolean, μ:Real[_], Σ:Real[_,_], σ2:InverseGamma) <
+    Distribution<Real[_]>(future, futureUpdate) {
   /**
-   * Mean.
+   * Precision.
    */
-  μ:Expression<Real[_]> <- μ;
-  
-  /**
-   * Covariance scale.
-   */
-  Σ:Expression<Real[_,_]> <- Σ;
+  Λ:LLT <- llt(inv(llt(Σ)));
 
   /**
-   * Covariance.
+   * Precision times mean.
    */
-  σ2:InverseGamma(α, β);
+  ν:Real[_] <- Λ*μ;
+
+  /**
+   * Variance shape.
+   */
+  α:Real <- σ2.α;
+
+  /**
+   * Variance scale accumulator.
+   */
+  γ:Real <- σ2.β + 0.5*dot(μ, ν);
+
+  /**
+   * Variance scale.
+   */
+  σ2:InverseGamma& <- σ2;
 
   function rows() -> Integer {
-    return μ.rows();
+    return length(ν);
+  }
+
+  function simulate() -> Real[_] {
+    return simulate_multivariate_normal_inverse_gamma(ν, Λ, α,
+        gamma_to_beta(γ, ν, Λ));
+  }
+  
+  function logpdf(x:Real[_]) -> Real {
+    return logpdf_multivariate_normal_inverse_gamma(x, ν, Λ, α,
+        gamma_to_beta(γ, ν, Λ));
+  }
+
+  function update(x:Real[_]) {
+    (σ2.α, σ2.β) <- update_multivariate_normal_inverse_gamma(x, ν, Λ, α,
+        gamma_to_beta(γ, ν, Λ));
+  }
+
+  function downdate(x:Real[_]) {
+    (σ2.α, σ2.β) <- downdate_multivariate_normal_inverse_gamma(x, ν, Λ, α,
+        gamma_to_beta(γ, ν, Λ));
   }
 
   function graft() {
     if delay? {
       delay!.prune();
     } else {
-      delay <- DelayMultivariateNormalInverseGamma(future, futureUpdate, μ,
+      delay <- MultivariateNormalInverseGamma(future, futureUpdate, μ,
           Σ, σ2.graftInverseGamma()!);
     }
   }
+
+  function write(buffer:Buffer) {
+    prune();
+    buffer.set("class", "MultivariateNormalInverseGamma");
+    buffer.set("μ", solve(Λ, ν));
+    buffer.set("Σ", inv(Λ));
+    buffer.set("α", α);
+    buffer.set("β", gamma_to_beta(γ, ν, Λ));
+  }
+}
+
+function MultivariateNormalInverseGamma(future:Real[_]?,
+    futureUpdate:Boolean, μ:Real[_], Σ:Real[_,_], σ2:InverseGamma) ->
+    MultivariateNormalInverseGamma {
+  m:MultivariateNormalInverseGamma(future, futureUpdate, μ, Σ, σ2);
+  σ2.setChild(m);
+  return m;
+}
+
+/*
+ * Compute the variance scale from the variance scale accumulator and other
+ * parameters.
+ */
+function gamma_to_beta(γ:Real, ν:Real[_], Λ:LLT) -> Real {
+  return γ - 0.5*dot(solve(cholesky(Λ), ν));
 }
