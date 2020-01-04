@@ -25,8 +25,8 @@ final class Uniform(future:Real?, futureUpdate:Boolean, l:Expression<Real>, u:Ex
     return cdf_uniform(x, l, u);
   }
 
-  function quantile(p:Real) -> Real? {
-    return quantile_uniform(p, l, u);
+  function quantile(P:Real) -> Real? {
+    return quantile_uniform(P, l, u);
   }
 
   function lower() -> Real? {

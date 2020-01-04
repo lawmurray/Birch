@@ -30,8 +30,8 @@ final class Binomial(future:Integer?, futureUpdate:Boolean,
     return cdf_binomial(x, n, ρ);
   }
 
-  function quantile(p:Real) -> Integer? {
-    return quantile_binomial(p, n, ρ);
+  function quantile(P:Real) -> Integer? {
+    return quantile_binomial(P, n, ρ);
   }
 
   function lower() -> Integer? {

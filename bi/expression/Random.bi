@@ -7,7 +7,7 @@ final class Random<Value> < Expression<Value> {
   /**
    * Associated distribution.
    */
-  dist:Distribution<Value>?;
+  p:Distribution<Value>?;
 
   /**
    * Final value.
@@ -18,7 +18,7 @@ final class Random<Value> < Expression<Value> {
    * Value assignment.
    */
   operator <- x:Value {
-    assert !dist?;
+    assert !p?;
     this.x <- x;
   }
 
@@ -26,7 +26,7 @@ final class Random<Value> < Expression<Value> {
    * Optional value assignment.
    */
   operator <- x:Value? {
-    assert !dist?;
+    assert !p?;
     this.x <- x;
   }
 
@@ -41,15 +41,15 @@ final class Random<Value> < Expression<Value> {
    * Does this have a distribution?
    */
   function hasDistribution() -> Boolean {
-    return dist?;
+    return p?;
   }
   
   function rows() -> Integer {
     if x? {
       return global.rows(x!);
     } else {
-      assert dist?;
-      return dist!.rows();
+      assert p?;
+      return p!.rows();
     }
   }
 
@@ -57,8 +57,8 @@ final class Random<Value> < Expression<Value> {
     if x? {
       return global.columns(x!);
     } else {
-      assert dist?;
-      return dist!.columns();
+      assert p?;
+      return p!.columns();
     }
   }
 
@@ -68,8 +68,8 @@ final class Random<Value> < Expression<Value> {
 
   function value() -> Value {
     if !x? {
-      x <- dist!.value();
-      dist <- nil;
+      x <- p!.value();
+      p <- nil;
     }
     return x!;
   }
@@ -114,10 +114,10 @@ final class Random<Value> < Expression<Value> {
    */
   function observe(x:Value) -> Real {
     assert !this.x?;
-    assert dist?;
+    assert p?;
     this.x <- x;
-    auto w <- dist!.observe(x);
-    dist <- nil;
+    auto w <- p!.observe(x);
+    p <- nil;
     return w;
   }
   
@@ -125,8 +125,8 @@ final class Random<Value> < Expression<Value> {
    * Get the distribution associated with the random variate.
    */
   function distribution() -> Distribution<Value> {
-    assert dist?;
-    return dist!;
+    assert p?;
+    return p!;
   }
 
   /**
@@ -138,7 +138,7 @@ final class Random<Value> < Expression<Value> {
    */
   function logpdf(x:Value) -> Real {
     assert hasDistribution();
-    return dist!.logpdf(x);
+    return p!.logpdf(x);
   }
 
   /**
@@ -150,7 +150,7 @@ final class Random<Value> < Expression<Value> {
    */
   function pdf(x:Value) -> Real {
     assert hasDistribution();
-    return dist!.pdf(x);
+    return p!.pdf(x);
   }
 
   /**
@@ -162,19 +162,19 @@ final class Random<Value> < Expression<Value> {
    */
   function cdf(x:Value) -> Real? {
     assert hasDistribution();
-    return dist!.cdf(x);
+    return p!.cdf(x);
   }
 
   /**
    * Evaluate the quantile function at a cumulative probability.
    *
-   * - x: The cumulative probability.
+   * - P: The cumulative probability.
    *
    * Return: the quantile value, if supported.
    */
-  function quantile(p:Real) -> Value? {
+  function quantile(P:Real) -> Value? {
     assert hasDistribution();
-    return dist!.quantile(p);
+    return p!.quantile(P);
   }
   
   /**
@@ -182,7 +182,7 @@ final class Random<Value> < Expression<Value> {
    */
   function lower() -> Value? {
     assert hasDistribution();
-    return dist!.lower();
+    return p!.lower();
   }
   
   /**
@@ -190,14 +190,14 @@ final class Random<Value> < Expression<Value> {
    */
   function upper() -> Value? {
     assert hasDistribution();
-    return dist!.upper();
+    return p!.upper();
   }
 
   function graft() -> Expression<Value> {
     if !hasValue() {
       assert hasDistribution();
-      dist <- dist!.graft();
-      return DelayExpression<Value>(dist!);
+      p <- p!.graft();
+      return DelayExpression<Value>(p!);
     } else {
       return Boxed(x!);
     }
@@ -206,7 +206,7 @@ final class Random<Value> < Expression<Value> {
   function graftGaussian() -> Gaussian? {
     if !hasValue() {
       assert hasDistribution();
-      return dist!.graftGaussian();
+      return p!.graftGaussian();
     } else {
       return nil;
     }
@@ -215,7 +215,7 @@ final class Random<Value> < Expression<Value> {
   function graftBeta() -> Beta? {
     if !hasValue() {
       assert hasDistribution();
-      return dist!.graftBeta();
+      return p!.graftBeta();
     } else {
       return nil;
     }
@@ -224,7 +224,7 @@ final class Random<Value> < Expression<Value> {
   function graftGamma() -> Gamma? {
     if !hasValue() {
       assert hasDistribution();
-      return dist!.graftGamma();
+      return p!.graftGamma();
     } else {
       return nil;
     }
@@ -233,7 +233,7 @@ final class Random<Value> < Expression<Value> {
   function graftInverseGamma() -> InverseGamma? {
     if !hasValue() {
       assert hasDistribution();
-      return dist!.graftInverseGamma();
+      return p!.graftInverseGamma();
     } else {
       return nil;
     }
@@ -242,7 +242,7 @@ final class Random<Value> < Expression<Value> {
   function graftIndependentInverseGamma() -> IndependentInverseGamma? {
     if !hasValue() {
       assert hasDistribution();
-      return dist!.graftIndependentInverseGamma();
+      return p!.graftIndependentInverseGamma();
     } else {
       return nil;
     }
@@ -251,7 +251,7 @@ final class Random<Value> < Expression<Value> {
   function graftInverseWishart() -> InverseWishart? {
     if !hasValue() {
       assert hasDistribution();
-      return dist!.graftInverseWishart();
+      return p!.graftInverseWishart();
     } else {
       return nil;
     }
@@ -260,7 +260,7 @@ final class Random<Value> < Expression<Value> {
   function graftNormalInverseGamma() -> NormalInverseGamma? {
     if !hasValue() {
       assert hasDistribution();
-      return dist!.graftNormalInverseGamma();
+      return p!.graftNormalInverseGamma();
     } else {
       return nil;
     }
@@ -269,7 +269,7 @@ final class Random<Value> < Expression<Value> {
   function graftDirichlet() -> Dirichlet? {
     if !hasValue() {
       assert hasDistribution();
-      return dist!.graftDirichlet();
+      return p!.graftDirichlet();
     } else {
       return nil;
     }
@@ -278,7 +278,7 @@ final class Random<Value> < Expression<Value> {
   function graftRestaurant() -> Restaurant? {
     if !hasValue() {
       assert hasDistribution();
-      return dist!.graftRestaurant();
+      return p!.graftRestaurant();
     } else {
       return nil;
     }
@@ -287,7 +287,7 @@ final class Random<Value> < Expression<Value> {
   function graftMultivariateGaussian() -> MultivariateGaussian? {
     if !hasValue() {
       assert hasDistribution();
-      return dist!.graftMultivariateGaussian();
+      return p!.graftMultivariateGaussian();
     } else {
       return nil;
     }
@@ -297,7 +297,7 @@ final class Random<Value> < Expression<Value> {
       MultivariateNormalInverseGamma? {
     if !hasValue() {
       assert hasDistribution();
-      return dist!.graftMultivariateNormalInverseGamma();
+      return p!.graftMultivariateNormalInverseGamma();
     } else {
       return nil;
     }
@@ -306,7 +306,7 @@ final class Random<Value> < Expression<Value> {
   function graftMatrixGaussian() -> MatrixGaussian? {
     if !hasValue() {
       assert hasDistribution();
-      return dist!.graftMatrixGaussian();
+      return p!.graftMatrixGaussian();
     } else {
       return nil;
     }
@@ -315,7 +315,7 @@ final class Random<Value> < Expression<Value> {
   function graftMatrixNormalInverseGamma() -> MatrixNormalInverseGamma? {
     if !hasValue() {
       assert hasDistribution();
-      return dist!.graftMatrixNormalInverseGamma();
+      return p!.graftMatrixNormalInverseGamma();
     } else {
       return nil;
     }
@@ -324,7 +324,7 @@ final class Random<Value> < Expression<Value> {
   function graftMatrixNormalInverseWishart() -> MatrixNormalInverseWishart? {
     if !hasValue() {
       assert hasDistribution();
-      return dist!.graftMatrixNormalInverseWishart();
+      return p!.graftMatrixNormalInverseWishart();
     } else {
       return nil;
     }
@@ -333,7 +333,7 @@ final class Random<Value> < Expression<Value> {
   function graftDiscrete() -> Discrete? {
     if !hasValue() {
       assert hasDistribution();
-      return dist!.graftDiscrete();
+      return p!.graftDiscrete();
     } else {
       return nil;
     }
@@ -342,7 +342,7 @@ final class Random<Value> < Expression<Value> {
   function graftBoundedDiscrete() -> BoundedDiscrete? {
     if !hasValue() {
       assert hasDistribution();
-      return dist!.graftBoundedDiscrete();
+      return p!.graftBoundedDiscrete();
     } else {
       return nil;
     }
@@ -358,7 +358,7 @@ final class Random<Value> < Expression<Value> {
     if hasValue() {
       buffer.set(value());
     } else if hasDistribution() {
-      dist!.write(buffer);
+      p!.write(buffer);
     } else {
       buffer.setNil();
     }

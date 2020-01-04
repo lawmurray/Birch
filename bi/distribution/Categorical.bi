@@ -20,8 +20,8 @@ final class Categorical(future:Integer?, futureUpdate:Boolean, ρ:Expression<Rea
     return cdf_categorical(x, ρ);
   }
 
-  function quantile(p:Real) -> Integer? {
-    return quantile_categorical(p, ρ);
+  function quantile(P:Real) -> Integer? {
+    return quantile_categorical(P, ρ);
   }
 
   function lower() -> Integer? {

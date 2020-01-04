@@ -26,8 +26,8 @@ final class InverseGamma(future:Real?, futureUpdate:Boolean,
     return cdf_inverse_gamma(x, α, β);
   }
 
-  function quantile(p:Real) -> Real? {
-    return quantile_inverse_gamma(p, α, β);
+  function quantile(P:Real) -> Real? {
+    return quantile_inverse_gamma(P, α, β);
   }
 
   function lower() -> Real? {

@@ -37,8 +37,8 @@ class Gaussian(future:Real?, futureUpdate:Boolean, μ:Expression<Real>,
     return cdf_gaussian(x, μ.value(), σ2.value());
   }
 
-  function quantile(p:Real) -> Real? {
-    return quantile_gaussian(p, μ.value(), σ2.value());
+  function quantile(P:Real) -> Real? {
+    return quantile_gaussian(P, μ.value(), σ2.value());
   }
 
   function graft() -> Distribution<Real> {

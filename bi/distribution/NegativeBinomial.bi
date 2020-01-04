@@ -29,8 +29,8 @@ final class NegativeBinomial(future:Integer?, futureUpdate:Boolean,
     return cdf_negative_binomial(x, k, ρ);
   }
 
-  function quantile(p:Real) -> Integer? {
-    return quantile_negative_binomial(p, k, ρ);
+  function quantile(P:Real) -> Integer? {
+    return quantile_negative_binomial(P, k, ρ);
   }
 
   function lower() -> Integer? {

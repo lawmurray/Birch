@@ -1,78 +1,78 @@
 /**
  * Quantile of a binomial distribution.
  *
- * - p: The cumulative probability.
+ * - P: The cumulative probability.
  * - n: Number of trials.
  * - ρ: Probability of a true result.
  *
  * Return: the quantile.
  */
-function quantile_binomial(p:Real, n:Integer, ρ:Real) -> Integer {
+function quantile_binomial(P:Real, n:Integer, ρ:Real) -> Integer {
   assert 0 <= n;
   assert 0.0 <= ρ && ρ <= 1.0;
   cpp{{
-  return boost::math::quantile(boost::math::binomial_distribution<>(n, ρ), p);
+  return boost::math::quantile(boost::math::binomial_distribution<>(n, ρ), P);
   }}
 }
 
 /**
  * Quantile of a negative binomial distribution.
  *
- * - p: The cumulative probability.
+ * - P: The cumulative probability.
  * - k: Number of successes before the experiment is stopped.
  * - ρ: Probability of success.
  *
  * Return: the quantile.
  */
-function quantile_negative_binomial(p:Real, k:Integer, ρ:Real) -> Integer {
+function quantile_negative_binomial(P:Real, k:Integer, ρ:Real) -> Integer {
   assert 0 < k;
   assert 0.0 <= ρ && ρ <= 1.0;
   cpp{{
-  return boost::math::quantile(boost::math::negative_binomial_distribution<>(k, ρ), p);
+  return boost::math::quantile(boost::math::negative_binomial_distribution<>(k, ρ), P);
   }}
 }
 
 /**
  * Quantile of a Poisson distribution.
  *
- * - p: The cumulative probability.
+ * - P: The cumulative probability.
  * - λ: Rate.
  *
  * Return: the quantile.
  */
-function quantile_poisson(p:Real, λ:Real) -> Integer {
+function quantile_poisson(P:Real, λ:Real) -> Integer {
   assert 0.0 <= λ;
   cpp{{
-  return boost::math::quantile(boost::math::poisson_distribution<>(λ), p);
+  return boost::math::quantile(boost::math::poisson_distribution<>(λ), P);
   }}
 }
 
 /**
  * Quantile of a uniform integer distribution.
  *
- * - p: The cumulative probability.
+ * - P: The cumulative probability.
  * - l: Lower bound of interval.
  * - u: Upper bound of interval.
  *
  * Return: the quantile.
  */
-function quantile_uniform_int(p:Real, l:Integer, u:Integer) -> Integer {
+function quantile_uniform_int(P:Real, l:Integer, u:Integer) -> Integer {
   assert l <= u;
-  return l + Integer(p*(u - l));
+  return l + Integer(P*(u - l));
 }
 
 /**
  * Quantile of a categorical variate.
  *
- * - p: The cumulative probability.
+ * - P: The cumulative probability.
  * - ρ: Category probabilities.
  *
  * Return: the quantile.
  */
-function quantile_categorical(p:Real, ρ:Real[_]) -> Integer {
+function quantile_categorical(P:Real, ρ:Real[_]) -> Integer {
   auto i <- 1;
   auto R <- ρ[1];
-  while R < p && i < length(ρ) {
+  while R < P && i < length(ρ) {
     i <- i + 1;
     R <- R + ρ[i];
   }
@@ -82,161 +82,161 @@ function quantile_categorical(p:Real, ρ:Real[_]) -> Integer {
 /**
  * Quantile of a uniform distribution.
  *
- * - p: The cumulative probability.
+ * - P: The cumulative probability.
  * - l: Lower bound of interval.
  * - u: Upper bound of interval.
  *
  * Return: the quantile.
  */
-function quantile_uniform(p:Real, l:Real, u:Real) -> Real {
+function quantile_uniform(P:Real, l:Real, u:Real) -> Real {
   assert l <= u;
-  return l + p*(u - l);
+  return l + P*(u - l);
 }
 
 /**
  * Quantile of an exponential distribution.
  *
- * - p: The cumulative probability.
+ * - P: The cumulative probability.
  * - λ: Rate.
  *
  * Return: the quantile.
  */
-function quantile_exponential(p:Real, λ:Real) -> Real {
+function quantile_exponential(P:Real, λ:Real) -> Real {
   assert 0.0 < λ;
   cpp{{
-  return boost::math::quantile(boost::math::exponential_distribution<>(λ), p);
+  return boost::math::quantile(boost::math::exponential_distribution<>(λ), P);
   }}
 }
 
 /**
  * Quantile of a Weibull distribution.
  *
- * - p: The cumulative probability.
+ * - P: The cumulative probability.
  * - k: Shape.
  * - λ: Scale.
  *
  * Return: the quantile.
  */
-function quantile_weibull(p:Real, k:Real, λ:Real) -> Real {
+function quantile_weibull(P:Real, k:Real, λ:Real) -> Real {
   assert 0.0 < k;
   assert 0.0 < λ;
   cpp{{
-  return boost::math::quantile(boost::math::weibull_distribution<>(k, λ), p);
+  return boost::math::quantile(boost::math::weibull_distribution<>(k, λ), P);
   }}
 }
 
 /**
  * Quantile of a Gaussian distribution.
  *
- * - p: The cumulative probability.
+ * - P: The cumulative probability.
  * - μ: Mean.
  * - σ2: Variance.
  *
  * Return: the quantile.
  */
-function quantile_gaussian(p:Real, μ:Real, σ2:Real) -> Real {
+function quantile_gaussian(P:Real, μ:Real, σ2:Real) -> Real {
   assert 0.0 < σ2;
   cpp{{
-  return boost::math::quantile(boost::math::normal_distribution<>(μ, ::sqrt(σ2)), p);
+  return boost::math::quantile(boost::math::normal_distribution<>(μ, ::sqrt(σ2)), P);
   }}
 }
 
 /**
  * Quantile of a Student's $t$ distribution.
  *
- * - p: The cumulative probability.
+ * - P: The cumulative probability.
  * - ν: Degrees of freedom.
  *
  * Return: the quantile.
  */
-function quantile_student_t(p:Real, ν:Real) -> Real {
+function quantile_student_t(P:Real, ν:Real) -> Real {
   assert 0.0 < ν;
   cpp{{
-  return boost::math::quantile(boost::math::students_t_distribution<>(ν), p);
+  return boost::math::quantile(boost::math::students_t_distribution<>(ν), P);
   }}
 }
 
 /**
  * Quantile of a Student's $t$ distribution with location and scale.
  *
- * - p: The cumulative probability.
+ * - P: The cumulative probability.
  * - ν: Degrees of freedom.
  * - μ: Location.
  * - σ2: Squared scale.
  *
  * Return: the quantile.
  */
-function quantile_student_t(p:Real, ν:Real, μ:Real, σ2:Real) -> Real {
+function quantile_student_t(P:Real, ν:Real, μ:Real, σ2:Real) -> Real {
   assert 0.0 < σ2;
-  return quantile_student_t(p, ν)*sqrt(σ2) + μ;
+  return quantile_student_t(P, ν)*sqrt(σ2) + μ;
 }
 
 /**
  * Quantile of a beta distribution.
  *
- * - p: The cumulative probability.
+ * - P: The cumulative probability.
  * - α: Shape.
  * - β: Shape.
  *
  * Return: the quantile.
  */
-function quantile_beta(p:Real, α:Real, β:Real) -> Real {
+function quantile_beta(P:Real, α:Real, β:Real) -> Real {
   assert 0.0 < α;
   assert 0.0 < β;  
   cpp{{
-  return boost::math::quantile(boost::math::beta_distribution<>(α, β), p);
+  return boost::math::quantile(boost::math::beta_distribution<>(α, β), P);
   }}
 }
 
 /**
  * CDF of $\chi^2$ distribution.
  *
- * - p: The cumulative probability.
+ * - P: The cumulative probability.
  * - ν: Degrees of freedom.
  *
  * Return: the quantile.
  */
-function quantile_chi_squared(p:Real, ν:Real) -> Real {
+function quantile_chi_squared(P:Real, ν:Real) -> Real {
   assert 0.0 < ν;
   cpp{{
-  return boost::math::quantile(boost::math::chi_squared_distribution<>(ν), p);
+  return boost::math::quantile(boost::math::chi_squared_distribution<>(ν), P);
   }}
 }
 
 /**
  * Quantile of a gamma distribution.
  *
- * - p: The cumulative probability.
+ * - P: The cumulative probability.
  * - k: Shape.
  * - θ: Scale.
  *
  * Return: the quantile.
  */
-function quantile_gamma(p:Real, k:Real, θ:Real) -> Real {
+function quantile_gamma(P:Real, k:Real, θ:Real) -> Real {
   assert 0.0 < k;
   assert 0.0 < θ;
   cpp{{
-  return boost::math::quantile(boost::math::gamma_distribution<>(k, θ), p);
+  return boost::math::quantile(boost::math::gamma_distribution<>(k, θ), P);
   }}
 }
 
 /**
  * Quantile of an inverse-gamma distribution.
  *
- * - p: The cumulative probability.
+ * - P: The cumulative probability.
  * - α: Shape.
  * - β: Scale.
  *
  * Return: the quantile.
  */
-function quantile_inverse_gamma(p:Real, α:Real, β:Real) -> Real {
+function quantile_inverse_gamma(P:Real, α:Real, β:Real) -> Real {
   assert 0.0 < α;
   assert 0.0 < β;
-  if p == 0.0 {
+  if P == 0.0 {
     return 0.0;
   } else {
     cpp{{
-    return boost::math::quantile(boost::math::inverse_gamma_distribution<>(α, β), p);
+    return boost::math::quantile(boost::math::inverse_gamma_distribution<>(α, β), P);
     }}
   }
 }
@@ -244,7 +244,7 @@ function quantile_inverse_gamma(p:Real, α:Real, β:Real) -> Real {
 /**
  * Quantile of a normal inverse-gamma distribution.
  *
- * - p: The cumulative probability.
+ * - P: The cumulative probability.
  * - μ: Mean.
  * - a2: Variance scale.
  * - α: Shape of inverse-gamma on variance.
@@ -252,48 +252,48 @@ function quantile_inverse_gamma(p:Real, α:Real, β:Real) -> Real {
  *
  * Return: the quantile.
  */
-function quantile_normal_inverse_gamma(p:Real, μ:Real, a2:Real, α:Real,
+function quantile_normal_inverse_gamma(P:Real, μ:Real, a2:Real, α:Real,
     β:Real) -> Real {
-  return quantile_student_t(p, 2.0*α, μ, a2*β/α);
+  return quantile_student_t(P, 2.0*α, μ, a2*β/α);
 }
 
 /**
  * Quantile of a gamma-Poisson distribution.
  *
- * - p: The cumulative probability.
+ * - P: The cumulative probability.
  * - k: Shape.
  * - θ: Scale.
  *
  * Return: the quantile.
  */
-function quantile_gamma_poisson(p:Real, k:Real, θ:Real) -> Integer {
+function quantile_gamma_poisson(P:Real, k:Real, θ:Real) -> Integer {
   assert 0.0 < k;
   assert 0.0 < θ;
   assert k == floor(k);
-  return quantile_negative_binomial(p, Integer(k), 1.0/(θ + 1.0));
+  return quantile_negative_binomial(P, Integer(k), 1.0/(θ + 1.0));
 }
 
 /**
  * Quantile of a Lomax distribution.
  *
- * - p: The cumulative probability.
+ * - P: The cumulative probability.
  * - λ: Scale.
  * - α: Shape.
  *
  * Return: the quantile.
  */
-function quantile_lomax(p:Real, λ:Real, α:Real) -> Real {
+function quantile_lomax(P:Real, λ:Real, α:Real) -> Real {
   assert 0.0 < λ;
   assert 0.0 < α;
   cpp{{
-  return boost::math::quantile(boost::math::pareto_distribution<>(λ, α), p) - λ;
+  return boost::math::quantile(boost::math::pareto_distribution<>(λ, α), P) - λ;
   }}
 }
 
 /**
  * Quantile of a Gaussian distribution with a normal inverse-gamma prior.
  *
- * - p: The cumulative probability.
+ * - P: The cumulative probability.
  * - μ: Mean.
  * - a2: Variance.
  * - α: Shape of the inverse-gamma.
@@ -301,16 +301,16 @@ function quantile_lomax(p:Real, λ:Real, α:Real) -> Real {
  *
  * Return: the quantile.
  */
-function quantile_normal_inverse_gamma_gaussian(p:Real, μ:Real, a2:Real,
+function quantile_normal_inverse_gamma_gaussian(P:Real, μ:Real, a2:Real,
     α:Real, β:Real) -> Real {
-  return quantile_student_t(p, 2.0*α, μ, (β/α)*(1.0 + a2));
+  return quantile_student_t(P, 2.0*α, μ, (β/α)*(1.0 + a2));
 }
 
 /**
  * Quantile of a Gaussian distribution with a normal inverse-gamma prior with linear
  * transformation.
  *
- * - p: The cumulative probability.
+ * - P: The cumulative probability.
  * - a: Scale.
  * - μ: Mean.
  * - a2: Variance.
@@ -320,7 +320,7 @@ function quantile_normal_inverse_gamma_gaussian(p:Real, μ:Real, a2:Real,
  *
  * Return: the quantile.
  */
-function quantile_linear_normal_inverse_gamma_gaussian(p:Real, a:Real,
+function quantile_linear_normal_inverse_gamma_gaussian(P:Real, a:Real,
     μ:Real, a2:Real, c:Real, α:Real, β:Real) -> Real {
-  return quantile_student_t(p, 2.0*α, a*μ + c, (β/α)*(1.0 + a*a*a2));
+  return quantile_student_t(P, 2.0*α, a*μ + c, (β/α)*(1.0 + a*a*a2));
 }

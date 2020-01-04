@@ -117,7 +117,7 @@ abstract class Distribution<Value>(future:Value?, futureUpdate:Boolean) < Delay 
     assert !v.hasValue();
     
     futureUpdate <- true;
-    v.dist <- this;
+    v.p <- this;
   }
 
   /**
@@ -135,7 +135,7 @@ abstract class Distribution<Value>(future:Value?, futureUpdate:Boolean) < Delay 
     
     this.future <- future;
     futureUpdate <- true;
-    v.dist <- this;
+    v.p <- this;
   }
 
   /**
@@ -150,7 +150,7 @@ abstract class Distribution<Value>(future:Value?, futureUpdate:Boolean) < Delay 
     assert !v.hasValue();
     
     futureUpdate <- false;
-    v.dist <- this;
+    v.p <- this;
   }
 
   /**
@@ -168,7 +168,7 @@ abstract class Distribution<Value>(future:Value?, futureUpdate:Boolean) < Delay 
     
     this.future <- future;
     futureUpdate <- false;
-    v.dist <- this;
+    v.p <- this;
   }
   
   /**
@@ -294,11 +294,11 @@ abstract class Distribution<Value>(future:Value?, futureUpdate:Boolean) < Delay 
   /**
    * Evaluate the quantile function at a cumulative probability.
    *
-   * - x: The cumulative probability.
+   * - P: The cumulative probability.
    *
    * Return: the quantile, if supported.
    */
-  function quantile(p:Real) -> Value? {
+  function quantile(P:Real) -> Value? {
     return nil;
   }
   

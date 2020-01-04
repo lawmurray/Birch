@@ -25,8 +25,8 @@ final class Gamma(future:Real?, futureUpdate:Boolean, k:Expression<Real>, θ:Exp
     return cdf_gamma(x, k, θ);
   }
 
-  function quantile(p:Real) -> Real? {
-    return quantile_gamma(p, k, θ);
+  function quantile(P:Real) -> Real? {
+    return quantile_gamma(P, k, θ);
   }
 
   function lower() -> Real? {

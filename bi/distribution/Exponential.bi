@@ -20,8 +20,8 @@ final class Exponential(future:Real?, futureUpdate:Boolean, λ:Expression<Real>)
     return cdf_exponential(x, λ);
   }
 
-  function quantile(p:Real) -> Real? {
-    return quantile_exponential(p, λ);
+  function quantile(P:Real) -> Real? {
+    return quantile_exponential(P, λ);
   }
 
   function lower() -> Real? {

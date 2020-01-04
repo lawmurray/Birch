@@ -19,8 +19,8 @@ final class UniformInteger(future:Integer?, futureUpdate:Boolean,
     return cdf_uniform_int(x, l, u);
   }
 
-  function quantile(p:Real) -> Integer? {
-    return quantile_uniform_int(p, l, u);
+  function quantile(P:Real) -> Integer? {
+    return quantile_uniform_int(P, l, u);
   }
 
   function graft() -> Distribution<Integer> {

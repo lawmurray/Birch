@@ -63,8 +63,8 @@ final class NormalInverseGamma(future:Real?, futureUpdate:Boolean,
     return cdf_normal_inverse_gamma(x, μ, 1.0/λ, σ2.α, σ2.β);
   }
 
-  function quantile(p:Real) -> Real? {
-    return quantile_normal_inverse_gamma(p, μ, 1.0/λ, σ2.α, σ2.β);
+  function quantile(P:Real) -> Real? {
+    return quantile_normal_inverse_gamma(P, μ, 1.0/λ, σ2.α, σ2.β);
   }
 
   function graft() -> Distribution<Real> {

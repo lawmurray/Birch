@@ -32,8 +32,8 @@ final class Poisson(future:Integer?, futureUpdate:Boolean,
     return cdf_poisson(x, λ);
   }
 
-  function quantile(p:Real) -> Integer? {
-    return quantile_poisson(p, λ);
+  function quantile(P:Real) -> Integer? {
+    return quantile_poisson(P, λ);
   }
 
   function lower() -> Integer? {

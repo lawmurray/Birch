@@ -25,8 +25,8 @@ final class Beta(future:Real?, futureUpdate:Boolean, α:Expression<Real>,
     return cdf_beta(x, α, β);
   }
 
-  function quantile(p:Real) -> Real? {
-    return quantile_beta(p, α, β);
+  function quantile(P:Real) -> Real? {
+    return quantile_beta(P, α, β);
   }
 
   function lower() -> Real? {

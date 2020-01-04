@@ -28,8 +28,8 @@ final class GammaExponential(future:Real?, futureUpdate:Boolean,
     return cdf_lomax(x, 1.0/λ.θ, λ.k);
   }
 
-  function quantile(p:Real) -> Real? {
-    return quantile_lomax(p, 1.0/λ.θ, λ.k);
+  function quantile(P:Real) -> Real? {
+    return quantile_lomax(P, 1.0/λ.θ, λ.k);
   }
 
   function lower() -> Real? {

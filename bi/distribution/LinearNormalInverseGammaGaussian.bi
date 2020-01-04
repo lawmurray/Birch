@@ -44,8 +44,8 @@ final class LinearNormalInverseGammaGaussian(future:Real?,
         μ.σ2.α, μ.σ2.β);
   }
 
-  function quantile(p:Real) -> Real? {
-    return quantile_linear_normal_inverse_gamma_gaussian(p, a, μ.μ, 1.0/μ.λ,
+  function quantile(P:Real) -> Real? {
+    return quantile_linear_normal_inverse_gamma_gaussian(P, a, μ.μ, 1.0/μ.λ,
         c, μ.σ2.α, μ.σ2.β);
   }
 }

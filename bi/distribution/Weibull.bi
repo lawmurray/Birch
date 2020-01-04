@@ -25,8 +25,8 @@ final class Weibull(future:Real?, futureUpdate:Boolean, k:Expression<Real>,
     return cdf_weibull(x, k, λ);
   }
 
-  function quantile(p:Real) -> Real? {
-    return quantile_weibull(p, k, λ);
+  function quantile(P:Real) -> Real? {
+    return quantile_weibull(P, k, λ);
   }
 
   function lower() -> Real? {

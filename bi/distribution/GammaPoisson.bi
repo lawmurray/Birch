@@ -32,8 +32,8 @@ final class GammaPoisson(future:Integer?, futureUpdate:Boolean,
     return cdf_gamma_poisson(x, λ.k, λ.θ);
   }
 
-  function quantile(p:Real) -> Integer? {
-    return quantile_gamma_poisson(p, λ.k, λ.θ);
+  function quantile(P:Real) -> Integer? {
+    return quantile_gamma_poisson(P, λ.k, λ.θ);
   }
 
   function lower() -> Integer? {

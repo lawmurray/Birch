@@ -31,8 +31,8 @@ final class Student(future:Real?, futureUpdate:Boolean,
     return cdf_student_t(x, ν, μ, σ2);
   }
 
-  function quantile(p:Real) -> Real? {
-    return quantile_student_t(p, ν, μ, σ2);
+  function quantile(P:Real) -> Real? {
+    return quantile_student_t(P, ν, μ, σ2);
   }
 
   function graft() -> Distribution<Real> {
