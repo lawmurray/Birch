@@ -153,6 +153,16 @@ public:
     return "Counted";
   }
 
+  /**
+   * Finalizer. This is called when the shared reference count reaches zero,
+   * but before destruction and deallocation of the object. Object
+   * resurrection is supported: if the finalizer results in a nonzero shared
+   * reference count, destruction and deallocation do not proceed.
+   */
+  virtual void finalize() {
+    //
+  }
+
 protected:
   /**
    * Destroy, but do not deallocate, the object.
@@ -228,8 +238,14 @@ inline void libbirch::Counted::incShared() {
 inline void libbirch::Counted::decShared() {
   assert(sharedCount.load() > 0u);
   if (--sharedCount == 0u) {
-    destroy();
-    decWeak();  // release weak self-reference
+    finalize();
+
+    /* object resurrection is supported, it is only necessary to check the
+     * shared count again before proceeding with destruction */
+    if (sharedCount.load() == 0u) {
+      destroy();
+      decWeak();  // release weak self-reference
+    }
   }
 }
 
