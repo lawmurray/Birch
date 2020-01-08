@@ -2,14 +2,14 @@
  * Type-specific interface for delayed sampling $M$-path nodes with move
  * support.
  *
- * - Base: Base type.
+ * - Value: Value type.
  *
  * - future: Future value.
  * - futureUpdate: When realized, should the future value trigger an
  *   update? (Otherwise a downdate.)
  */
-abstract class DelayMove<Base>(future:Value?, futureUpdate:Boolean) <
-    Base(future, futureUpdate) {
+abstract class Moveable<Value>(future:Value?, futureUpdate:Boolean) <
+    Distribution<Value>(future, futureUpdate) {
   /**
    * Piloted value.
    */
@@ -40,12 +40,6 @@ abstract class DelayMove<Base>(future:Value?, futureUpdate:Boolean) <
    */
   p:Expression<Real>?;
 
-  /**
-   * When assigned, should the value trigger a move? Typically an observe
-   * will trigger a move, while a simulation will not.
-   */
-  futureMove:Boolean <- false;
-
   function setChild(child:Delay) {
     if !x? {
       if !this.child? {
@@ -55,15 +49,10 @@ abstract class DelayMove<Base>(future:Value?, futureUpdate:Boolean) <
       }
       if !p? {
         p <- lazy(DelayExpression<Value>(this));
-        p!.setChild(child);
+        p!.setChild(this);
       }
     }
   }
-
-  /**
-   * Lazy expression of logpdf.
-   */
-  abstract function lazy(x:Expression<Value>) -> Expression<Real>;
 
   /**
    * Pilot value.
@@ -74,7 +63,7 @@ abstract class DelayMove<Base>(future:Value?, futureUpdate:Boolean) <
     } else {
       assert !future?;
       if !x'? {
-        x' <- simulatePilot();
+        x' <- simulate();
       }
       return x'!;
     }
@@ -89,9 +78,10 @@ abstract class DelayMove<Base>(future:Value?, futureUpdate:Boolean) <
     } else {
       assert !future?;
       if !x''? {
-        x'' <- simulatePropose();
         if dfdx'? {
           x'' <- simulate_propose(x'!, dfdx'!);
+        } else {
+          x'' <- simulate_propose(x'!, 0.0);
         }
       }
       return x''!;
@@ -225,35 +215,13 @@ abstract class DelayMove<Base>(future:Value?, futureUpdate:Boolean) <
     }
   }
 
-  function observe(x:Value) -> Real {
-    assert !this.x?;
-    assert !this.future?;
-    prune();
-    this.x <- x;
-    futureUpdate <- true;
-    futureMove <- true;
-    p <- lazy(Boxed(x));
-    p!.setChild(this);
-    return p!.pilot();
-  }
-
-  function observeWithDowndate(x:Value) -> Real {
-    assert !this.x?;
-    assert !this.future?;
-    prune();
-    this.x <- x;
-    futureUpdate <- false;
-    futureMove <- true;
-    p <- lazy(Boxed(x));
-    p!.setChild(this);
-    return p!.pilot();
-  }
-
   function realize() {
     prune();
     if !x? {
       if future? {
         x <- future!;
+      } else if x'? {
+        x <- x'!;
       } else {
         x <- simulate();
       }

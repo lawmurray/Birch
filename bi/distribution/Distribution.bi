@@ -28,6 +28,12 @@ abstract class Distribution<Value>(future:Value?, futureUpdate:Boolean) < Delay 
   futureUpdate:Boolean <- futureUpdate;
 
   /**
+   * When assigned, should the value trigger a move? Typically an observe
+   * will trigger a move, while a simulation will not.
+   */
+  futureMove:Boolean <- false;
+
+  /**
    * Number of rows, when interpreted as a matrix.
    */
   function rows() -> Integer {
@@ -117,6 +123,7 @@ abstract class Distribution<Value>(future:Value?, futureUpdate:Boolean) < Delay 
     assert !v.hasValue();
     
     futureUpdate <- true;
+    futureMove <- false;
     v.p <- this;
   }
 
@@ -135,6 +142,7 @@ abstract class Distribution<Value>(future:Value?, futureUpdate:Boolean) < Delay 
     
     this.future <- future;
     futureUpdate <- true;
+    futureMove <- false;
     v.p <- this;
   }
 
@@ -150,6 +158,7 @@ abstract class Distribution<Value>(future:Value?, futureUpdate:Boolean) < Delay 
     assert !v.hasValue();
     
     futureUpdate <- false;
+    futureMove <- false;
     v.p <- this;
   }
 
@@ -168,6 +177,7 @@ abstract class Distribution<Value>(future:Value?, futureUpdate:Boolean) < Delay 
     
     this.future <- future;
     futureUpdate <- false;
+    futureMove <- false;
     v.p <- this;
   }
   
@@ -181,8 +191,10 @@ abstract class Distribution<Value>(future:Value?, futureUpdate:Boolean) < Delay 
     assert !this.x?;
     assert !this.future?;
     prune();
+    plumb();
     this.x <- x;
-    this.futureUpdate <- true;
+    futureUpdate <- true;
+    futureMove <- true;
     return logpdf(x);
   }
 
@@ -196,8 +208,10 @@ abstract class Distribution<Value>(future:Value?, futureUpdate:Boolean) < Delay 
     assert !this.x?;
     assert !this.future?;
     prune();
+    plumb();
     this.x <- x;
-    this.futureUpdate <- false;
+    futureUpdate <- false;
+    futureMove <- true;
     return logpdf(x);
   }
 
@@ -225,29 +239,11 @@ abstract class Distribution<Value>(future:Value?, futureUpdate:Boolean) < Delay 
   abstract function simulate() -> Value;
 
   /**
-   * Simulate a pilot value.
-   *
-   * Return: the value.
-   */
-  function simulatePilot() -> Value {
-    return simulate();
-  }
-
-  /**
-   * Simulate a proposal value.
-   *
-   * Return: the value.
-   */
-  function simulatePropose() -> Value {
-    return simulate();
-  }
-
-  /**
-   * Log-pdf of a value.
+   * Evaluate the log probability density (or mass) function.
    *
    * - x: The value.
    *
-   * Return: The log likelihood.
+   * Return: the log probability density (or mass).
    */
   abstract function logpdf(x:Value) -> Real;
 
@@ -270,7 +266,7 @@ abstract class Distribution<Value>(future:Value?, futureUpdate:Boolean) < Delay 
   }
   
   /**
-   * Evaluate the probability density (or mass) function, if it exists.
+   * Evaluate the probability density (or mass) function.
    *
    * - x: The value.
    *
@@ -314,6 +310,25 @@ abstract class Distribution<Value>(future:Value?, futureUpdate:Boolean) < Delay 
    */
   function upper() -> Value? {
     return nil;
+  }
+
+  /**
+   * Construct a lazy expression for the log probability density (or mass).
+   *
+   * - x: The value.
+   *
+   * Return: the log probability density (or mass), if supported.
+   */
+  function lazy(x:Expression<Value>) -> Expression<Real>? {
+    return nil;
+  }
+
+  /**
+   * Search the log-pdf expression of this distribution and add this
+   * distribution as a child to any other distributions found.
+   */
+  function plumb() {
+    //
   }
 
   /**

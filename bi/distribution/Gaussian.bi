@@ -2,7 +2,7 @@
  * ed Gaussian random variate.
  */
 class Gaussian(future:Real?, futureUpdate:Boolean, μ:Expression<Real>,
-    σ2:Expression<Real>) < DelayMove<Distribution<Real>>(future, futureUpdate) {
+    σ2:Expression<Real>) < Moveable<Real>(future, futureUpdate) {
   /**
    * Mean.
    */
@@ -14,31 +14,23 @@ class Gaussian(future:Real?, futureUpdate:Boolean, μ:Expression<Real>,
   σ2:Expression<Real> <- σ2;
 
   function simulate() -> Real {
-    return simulate_gaussian(μ.value(), σ2.value());
-  }
-
-  function simulatePilot() -> Real {
     return simulate_gaussian(μ.pilot(), σ2.pilot());
-  }
-
-  function simulatePropose() -> Real {
-    return simulate_gaussian(μ.propose(), σ2.propose());
   }
   
   function logpdf(x:Real) -> Real {
-    return logpdf_gaussian(x, μ.value(), σ2.value());
-  }
-
-  function lazy(x:Expression<Real>) -> Expression<Real> {
-    return lazy_gaussian(x, μ, σ2);
+    return logpdf_gaussian(x, μ.pilot(), σ2.pilot());
   }
   
   function cdf(x:Real) -> Real? {
-    return cdf_gaussian(x, μ.value(), σ2.value());
+    return cdf_gaussian(x, μ.pilot(), σ2.pilot());
   }
 
   function quantile(P:Real) -> Real? {
-    return quantile_gaussian(P, μ.value(), σ2.value());
+    return quantile_gaussian(P, μ.pilot(), σ2.pilot());
+  }
+
+  function lazy(x:Expression<Real>) -> Expression<Real>? {
+    return lazy_gaussian(x, μ, σ2);
   }
 
   function graft() -> Distribution<Real> {
