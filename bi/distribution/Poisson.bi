@@ -9,11 +9,11 @@ final class Poisson(future:Integer?, futureUpdate:Boolean,
   λ:Expression<Real> <- λ;
 
   function simulate() -> Integer {
-    return simulate_poisson(λ.pilot());
+    return simulate_poisson(λ);
   }
 
   function logpdf(x:Integer) -> Real {
-    return logpdf_poisson(x, λ.pilot());
+    return logpdf_poisson(x, λ);
   }
 
   function cdf(x:Integer) -> Real? {

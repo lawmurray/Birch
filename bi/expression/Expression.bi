@@ -2,23 +2,6 @@
  * Abstract lazy expression.
  *
  * - Value: Value type.
- *
- * An expression can maintain up to three values at any one time:
- *
- * - a *final* value, 
- * - a *pilot* value,
- * - a *proposal* value.
- *
- * The final value is set by assignment, implicit conversion to the Value
- * type, explicit conversion to the Value type using `value()`, or final
- * acceptance of a proposed value using `clamp()`. Once set, the other values
- * are irrelevant, and the expression behaves as though a Boxed value.
- *
- * The pilot value is set using `pilot()` function. It is temporary, and used
- * when a Markov kernel may be applied to later update the value. The
- * proposal value is used during the computation of that Markov kernel. After
- * one or more applications of Markov kernels, the pilot value can be locked
- * in as the final value with `clamp()`.
  */
 abstract class Expression<Value> {  
   /**
@@ -64,18 +47,7 @@ abstract class Expression<Value> {
   }
 
   /**
-   * Pilot value computation.
-   */
-  abstract function pilot() -> Value;
-
-  /**
-   * Proposal value computation.
-   */
-  abstract function propose() -> Value;
-
-  /**
-   * Compute gradients of the expression with respect to all Random objects,
-   * at the pilot value.
+   * Compute gradients of the expression with respect to all Random objects.
    *
    * - d: Upstream gradient. For an initial call, this should be the unit for
    *     the given type, e.g. 1.0, 1, true, a vector of ones, or the identity
@@ -97,59 +69,12 @@ abstract class Expression<Value> {
    * the computation. The Random object that encodes $x_0$ keeps the final
    * result.
    */
-  abstract function gradPilot(d:Value) -> Boolean;
+  abstract function grad(d:Value) -> Boolean;
 
-  /**
-   * Compute gradients of the expression with respect to all Random objects,
-   * at the proposal value.
-   *
-   * See also: `gradPilot()`.
-   */
-  abstract function gradPropose(d:Value) -> Boolean;
-
-  /**
-   * Sum contributions to the logarithm of the acceptance ratio.
-   *
-   * Returns: The quantity:
-   * $$\log \left(\frac{p(x^\prime) q(x^\star \mid x^\prime)}
-   * {p(x^\star) q(x^\prime \mid x^\star)}\right),$$
-   * where $x^\star$ represents the pilot position and $x^\prime$ the proposal
-   * position of all Random objects in the expression, $p$ the prior
-   * distribution and $q$ the proposal distribution of the same Random
-   * objects. This quantity forms part of the Metropolis--Hastings acceptance
-   * ratio to determine whether to accept or reject the proposal position in
-   * favour of the pilot.
-   */
-  abstract function ratio() -> Real;
-
-  /**
-   * Accept the proposal value. The pilot value is set to the proposal
-   * value, and the proposal value discarded.
-   */
-  abstract function accept();
-  
-  /**
-   * Reject the proposal value. The pilot value is preserved and the proposal
-   * value discarded.
-   */
-  abstract function reject();
-  
-  /**
-   * Set the final value to the pilot value. The pilot value is discarded.
-   */
-  abstract function clamp();
-  
   /**
    * Set the child of any delayed sampling nodes in the expression.
    */
   abstract function setChild(child:Delay);
-
-  /**
-   * Graft this expression onto the delayed sampling graph.
-   *
-   * - child: The delayed sampling node that initiated the graft.
-   */
-  abstract function graft() -> Expression<Value>;
 
   /*
    * Attempt to graft this expression onto the delayed sampling graph.

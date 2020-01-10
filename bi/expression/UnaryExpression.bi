@@ -7,28 +7,16 @@
 abstract class UnaryExpression<Argument,Value>(single:Expression<Argument>) <
     Expression<Value> {  
   /**
-   * Single argument.
-   */
-  single:Expression<Argument> <- single;
-
-  /**
    * Final value.
    */
   x:Value?;
 
   /**
-   * Piloted value.
+   * Single argument.
    */
-  x':Value?;
-  
-  /**
-   * Proposed value.
-   */
-  x'':Value?;
+  single:Expression<Argument> <- single;
 
   operator <- x:Value {
-    assert !x'?;
-    assert !x''?;
     this.x <- x;
   }
 
@@ -36,98 +24,21 @@ abstract class UnaryExpression<Argument,Value>(single:Expression<Argument>) <
     single.setChild(child);
   }
 
-  function graft() -> Expression<Value> {
-    single <- single.graft();
-    return this;
-  }
-
   final function value() -> Value {
     if !x? {
       x <- doValue(single.value());
-      x' <- nil;
-      x'' <- nil;
     }
     return x!;
   }
   
-  final function pilot() -> Value {
-    if x? {
-      return x!;
-    } else {
-      if !x'? {
-        x' <- doValue(single.pilot());
-      }
-      return x'!;
-    }
-  }
-  
-  final function propose() -> Value {
-    if x? {
-      return x!;
-    } else {
-      if !x''? {
-        x'' <- doValue(single.propose());
-      }
-      return x''!;
-    }
-  }
-  
-  final function gradPilot(d:Value) -> Boolean {
+  final function grad(d:Value) -> Boolean {
     if x? {
       return false;
     } else {
-      assert x'?;
-      return single.gradPilot(doGradient(d, single.pilot()));
+      return single.grad(doGradient(d, single));
     }
   }
 
-  final function gradPropose(d:Value) -> Boolean {
-    if x? {
-      return false;
-    } else {
-      assert x''?;
-      return single.gradPropose(doGradient(d, single.propose()));
-    }
-  }
-  
-  final function ratio() -> Real {
-    if x? {
-      return 0.0;
-    } else {
-      return single.ratio();
-    }
-  }
-  
-  final function accept() {
-    if x? {
-      // nothing to do
-    } else {
-      x' <- x'';
-      x'' <- nil;
-      single.accept();
-    }
-  }
-
-  final function reject() {
-    if x? {
-      // nothing to do
-    } else {
-      x'' <- nil;
-      single.reject();
-    }
-  }
-  
-  final function clamp() {
-    if x? {
-      // nothing to do
-    } else {
-      x <- x';
-      x' <- nil;
-      x'' <- nil;
-      single.clamp();
-    }
-  }
-  
   /**
    * Evaluate a value.
    *

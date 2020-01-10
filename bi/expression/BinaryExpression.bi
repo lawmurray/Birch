@@ -8,6 +8,11 @@
 abstract class BinaryExpression<Left,Right,Value>(left:Expression<Left>,
     right:Expression<Right>) < Expression<Value> {  
   /**
+   * Value.
+   */
+  x:Value?;
+
+  /**
    * Left argument.
    */
   left:Expression<Left> <- left;
@@ -16,25 +21,8 @@ abstract class BinaryExpression<Left,Right,Value>(left:Expression<Left>,
    * Right argument.
    */
   right:Expression<Right> <- right;
-  
-  /**
-   * Final value.
-   */
-  x:Value?;
-  
-  /**
-   * Piloted value.
-   */
-  x':Value?;
-  
-  /**
-   * Proposed value.
-   */
-  x'':Value?;
 
   operator <- x:Value {
-    assert !x'?;
-    assert !x''?;
     this.x <- x;
   }
 
@@ -43,112 +31,22 @@ abstract class BinaryExpression<Left,Right,Value>(left:Expression<Left>,
     right.setChild(child);
   }
 
-  function graft() -> Expression<Value> {
-    left <- left.graft();
-    right <- right.graft();
-    return this;
-  }
-
   final function value() -> Value {
     if !x? {
       x <- doValue(left.value(), right.value());
     }
     return x!;
   }
-
-  final function pilot() -> Value {
-    if x? {
-      return x!;
-    } else {
-      if !x'? {
-        x' <- doValue(left.pilot(), right.pilot());
-      }
-      return x'!;
-    }
-  }
   
-  final function propose() -> Value {
-    if x? {
-      return x!;
-    } else {
-      if !x''? {
-        x'' <- doValue(left.propose(), right.propose());
-      }
-      return x''!;
-    }
-  }
-  
-  final function gradPilot(d:Value) -> Boolean {
-    if x? {
-      return false;
-    } else {
-      assert x'?;
-      auto l <- left.pilot();
-      auto r <- right.pilot();
-      dl:Left;
-      dr:Right;
-      (dl, dr) <- doGradient(d, l, r);
-      auto leftGrad <- left.gradPilot(dl);
-      auto rightGrad <- right.gradPilot(dr);
-      return leftGrad || rightGrad;  // done this way to avoid short circuit
-    }
-  }
-
-  final function gradPropose(d:Value) -> Boolean {
-    if x? {
-      return false;
-    } else {
-      assert x''?;
-      auto l <- left.propose();
-      auto r <- right.propose();
-      dl:Left;
-      dr:Right;
-      (dl, dr) <- doGradient(d, l, r);
-      auto leftGrad <- left.gradPropose(dl);
-      auto rightGrad <- right.gradPropose(dr);
-      return leftGrad || rightGrad;  // done this way to avoid short circuit
-    }
-  }
-
-  final function ratio() -> Real {
-    if x? {
-      return 0.0;
-    } else {
-      return left.ratio() + right.ratio();
-    }
-  }
-  
-  final function accept() {
-    if x? {
-      // nothing to do
-    } else {
-      x' <- x'';
-      x'' <- nil;
-      left.accept();
-      right.accept();
-    }
-  }
-
-  final function reject() {
-    if x? {
-      // nothing to do
-    } else {
-      x'' <- nil;
-      left.reject();
-      right.reject();
-    }
-  }
-  
-  final function clamp() {
-    if x? {
-      // nothing to do
-    } else {
-      x <- x';
-      x' <- nil;
-      x'' <- nil;
-      left.clamp();
-      right.clamp();
-    }
+  final function grad(d:Value) -> Boolean {
+    auto l <- left.value();
+    auto r <- right.value();
+    dl:Left;
+    dr:Right;
+    (dl, dr) <- doGradient(d, l, r);
+    auto leftGrad <- left.grad(dl);
+    auto rightGrad <- right.grad(dr);
+    return leftGrad || rightGrad;  // done this way to avoid short circuit
   }
 
   /**

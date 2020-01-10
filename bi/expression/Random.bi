@@ -66,6 +66,10 @@ final class Random<Value> < Expression<Value> {
     assert hasValue();
   }
 
+  function distribution() -> Distribution<Value>? {
+    return p;
+  }
+
   function value() -> Value {
     if !x? {
       p <- p!.graft();
@@ -75,43 +79,9 @@ final class Random<Value> < Expression<Value> {
     return x!;
   }
 
-  function distribution() -> Distribution<Value>? {
-    return p;
-  }
-
-  function pilot() -> Value {
-    return value();
-  }
-
-  function propose() -> Value {
-    return value();
-  }
-
-  function gradPilot(d:Value) -> Boolean {
+  function grad(d:Value) -> Boolean {
     assert x?;
     return false;
-  }
-
-  function gradPropose(d:Value) -> Boolean {
-    assert x?;
-    return false;
-  }
-  
-  function ratio() -> Real {
-    assert x?;
-    return 0.0;
-  }
-  
-  function accept() {
-    assert x?;
-  }
-
-  function reject() {
-    assert x?;
-  }
-
-  function clamp() {
-    assert x?;
   }
 
   /**
@@ -189,15 +159,6 @@ final class Random<Value> < Expression<Value> {
   function upper() -> Value? {
     p <- p!.graft();
     return p!.upper();
-  }
-
-  function graft() -> Expression<Value> {
-    if !hasValue() {
-      p <- p!.graft();
-      return DelayExpression<Value>(p!);
-    } else {
-      return Boxed(x!);
-    }
   }
 
   function graftGaussian() -> Gaussian? {

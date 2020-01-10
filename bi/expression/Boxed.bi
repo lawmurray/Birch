@@ -26,41 +26,9 @@ final class Boxed<Value> < Expression<Value> {
   function value() -> Value {
     return x;
   }
-  
-  function pilot() -> Value {
-    return x;
-  }
 
-  function propose() -> Value {
-    return x;
-  }
-
-  function gradPilot(d:Value) -> Boolean {
+  function grad(d:Value) -> Boolean {
     return false;
-  }
-
-  function gradPropose(d:Value) -> Boolean {
-    return false;
-  }
-
-  function ratio() -> Real {
-    return 0.0;
-  }
-  
-  function accept() {
-    //
-  }
-
-  function reject() {
-    //
-  }
-  
-  function clamp() {
-    //
-  }
-
-  function graft() -> Expression<Value> {
-    return this;
   }
 }
 

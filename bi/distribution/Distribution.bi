@@ -28,12 +28,6 @@ abstract class Distribution<Value>(future:Value?, futureUpdate:Boolean) < Delay 
   futureUpdate:Boolean <- futureUpdate;
 
   /**
-   * When assigned, should the value trigger a move? Typically an observe
-   * will trigger a move, while a simulation will not.
-   */
-  futureMove:Boolean <- false;
-
-  /**
    * Number of rows, when interpreted as a matrix.
    */
   function rows() -> Integer {
@@ -69,19 +63,7 @@ abstract class Distribution<Value>(future:Value?, futureUpdate:Boolean) < Delay 
     return x!;
   }
   
-  function pilot() -> Value {
-    return value();
-  }
-
-  function propose() -> Value {
-    return value();
-  }
-
-  function gradPilot(d:Value) -> Boolean {
-    return false;
-  }
-
-  function gradPropose(d:Value) -> Boolean {
+  function grad(d:Value) -> Boolean {
     return false;
   }
 
@@ -123,7 +105,6 @@ abstract class Distribution<Value>(future:Value?, futureUpdate:Boolean) < Delay 
     assert !v.hasValue();
     
     futureUpdate <- true;
-    futureMove <- false;
     v.p <- this;
   }
 
@@ -142,7 +123,6 @@ abstract class Distribution<Value>(future:Value?, futureUpdate:Boolean) < Delay 
     
     this.future <- future;
     futureUpdate <- true;
-    futureMove <- false;
     v.p <- this;
   }
 
@@ -158,7 +138,6 @@ abstract class Distribution<Value>(future:Value?, futureUpdate:Boolean) < Delay 
     assert !v.hasValue();
     
     futureUpdate <- false;
-    futureMove <- false;
     v.p <- this;
   }
 
@@ -177,7 +156,6 @@ abstract class Distribution<Value>(future:Value?, futureUpdate:Boolean) < Delay 
     
     this.future <- future;
     futureUpdate <- false;
-    futureMove <- false;
     v.p <- this;
   }
   
@@ -194,7 +172,6 @@ abstract class Distribution<Value>(future:Value?, futureUpdate:Boolean) < Delay 
     plumb();
     this.x <- x;
     futureUpdate <- true;
-    futureMove <- true;
     return logpdf(x);
   }
 
@@ -211,7 +188,6 @@ abstract class Distribution<Value>(future:Value?, futureUpdate:Boolean) < Delay 
     plumb();
     this.x <- x;
     futureUpdate <- false;
-    futureMove <- true;
     return logpdf(x);
   }
 

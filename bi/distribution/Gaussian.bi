@@ -14,19 +14,19 @@ class Gaussian(future:Real?, futureUpdate:Boolean, μ:Expression<Real>,
   σ2:Expression<Real> <- σ2;
 
   function simulate() -> Real {
-    return simulate_gaussian(μ.pilot(), σ2.pilot());
+    return simulate_gaussian(μ, σ2);
   }
   
   function logpdf(x:Real) -> Real {
-    return logpdf_gaussian(x, μ.pilot(), σ2.pilot());
+    return logpdf_gaussian(x, μ, σ2);
   }
   
   function cdf(x:Real) -> Real? {
-    return cdf_gaussian(x, μ.pilot(), σ2.pilot());
+    return cdf_gaussian(x, μ, σ2);
   }
 
   function quantile(P:Real) -> Real? {
-    return quantile_gaussian(P, μ.pilot(), σ2.pilot());
+    return quantile_gaussian(P, μ, σ2);
   }
 
   function lazy(x:Expression<Real>) -> Expression<Real>? {
