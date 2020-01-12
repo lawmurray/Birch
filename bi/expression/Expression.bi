@@ -53,8 +53,6 @@ abstract class Expression<Value> {
    *     the given type, e.g. 1.0, 1, true, a vector of ones, or the identity
    *     matrix.
    *
-   * Returns: Are there one or more Random objects with non-zero gradients?
-   *
    * This uses reverse-mode automatic differentiation. If the expression
    * tree encodes
    * $$x_n = f(x_0) = (f_n \circ \cdots \circ f_1)(x_0),$$
@@ -69,7 +67,7 @@ abstract class Expression<Value> {
    * the computation. The Random object that encodes $x_0$ keeps the final
    * result.
    */
-  abstract function grad(d:Value) -> Boolean;
+  abstract function grad(d:Value);
 
   /**
    * Set the child of any delayed sampling nodes in the expression.

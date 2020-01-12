@@ -10,9 +10,14 @@ final class Random<Value> < Expression<Value> {
   p:Distribution<Value>?;
 
   /**
-   * Final value.
+   * Value.
    */
   x:Value?;
+  
+  /**
+   * Gradient.
+   */
+  dfdx:Value?;
 
   /**
    * Value assignment.
@@ -79,9 +84,12 @@ final class Random<Value> < Expression<Value> {
     return x!;
   }
 
-  function grad(d:Value) -> Boolean {
-    assert x?;
-    return false;
+  function grad(d:Value) {
+    if dfdx? {
+      dfdx <- dfdx! + d;
+    } else {
+      dfdx <- d;
+    }
   }
 
   /**

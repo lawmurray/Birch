@@ -51,27 +51,7 @@ abstract class Distribution<Value> < Delay {
     }
     return x!;
   }
-  
-  function grad(d:Value) -> Boolean {
-    return false;
-  }
 
-  function ratio() -> Real {
-    return 0.0;
-  }
-  
-  function accept() {
-    //
-  }
-
-  function reject() {
-    //
-  }
-
-  function clamp() {
-    //
-  }
-  
   /**
    * Set value.
    */

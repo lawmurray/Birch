@@ -31,11 +31,9 @@ abstract class UnaryExpression<Argument,Value>(single:Expression<Argument>) <
     return x!;
   }
   
-  final function grad(d:Value) -> Boolean {
-    if x? {
-      return false;
-    } else {
-      return single.grad(doGradient(d, single));
+  final function grad(d:Value) {
+    if !x? {
+      single.grad(doGradient(d, single));
     }
   }
 

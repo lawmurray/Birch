@@ -1,8 +1,8 @@
 /*
  * ed Gaussian random variate.
  */
-class Gaussian(μ:Expression<Real>,
-    σ2:Expression<Real>) < Moveable<Real> {
+class Gaussian(μ:Expression<Real>, σ2:Expression<Real>) <
+    Distribution<Real> {
   /**
    * Mean.
    */

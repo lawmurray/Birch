@@ -27,8 +27,8 @@ final class Boxed<Value> < Expression<Value> {
     return x;
   }
 
-  function grad(d:Value) -> Boolean {
-    return false;
+  function grad(d:Value) {
+    //
   }
 }
 
