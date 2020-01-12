@@ -1,8 +1,8 @@
 /*
  * ed Weibull random variate.
  */
-final class Weibull(future:Real?, futureUpdate:Boolean, k:Expression<Real>,
-    λ:Expression<Real>) < Distribution<Real>(future, futureUpdate) {
+final class Weibull(k:Expression<Real>,
+    λ:Expression<Real>) < Distribution<Real> {
   /**
    * Shape.
    */
@@ -46,17 +46,11 @@ final class Weibull(future:Real?, futureUpdate:Boolean, k:Expression<Real>,
   }
 }
 
-function Weibull(future:Real?, futureUpdate:Boolean, k:Expression<Real>,
-    λ:Expression<Real>) -> Weibull {
-  m:Weibull(future, futureUpdate, k, λ);
-  return m;
-}
-
 /**
  * Create Weibull distribution.
  */
 function Weibull(k:Expression<Real>, λ:Expression<Real>) -> Weibull {
-  m:Weibull(nil, true, k, λ);
+  m:Weibull(k, λ);
   return m;
 }
 

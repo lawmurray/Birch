@@ -50,22 +50,6 @@ final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
     return w;
   }
 
-  function unplay(record:Record) -> Real {
-    auto w <- 0.0;
-    auto value <- coerce(record);
-    if v.hasValue() {
-      assert v.value() == value;
-      w <- p.observe(value);
-    } else {
-      w <- p.observeWithDowndate(value);
-      if w != -inf {
-        v <- value;
-        w <- 0.0;
-      }
-    }
-    return w;
-  }
-
   function delay() -> Real {
     auto w <- 0.0;
     if v.hasValue() {
@@ -84,18 +68,6 @@ final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
       w <- p.observe(value);
     } else {
       p.assume(v, value);
-    }
-    return w;
-  }
-
-  function undelay(record:Record) -> Real {
-    auto w <- 0.0;
-    auto value <- coerce(record);
-    if v.hasValue() {
-      assert v.value() == value;
-      w <- p.observeWithDowndate(value);
-    } else {
-      p.assumeWithDowndate(v, value);
     }
     return w;
   }

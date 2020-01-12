@@ -2,10 +2,8 @@
  * ed matrix Gaussian variate with linear transformation of
  * matrix-normal-inverse-gamma prior.
  */
-final class LinearMatrixNormalInverseGammaMatrixGaussian(
-    future:Real[_,_]?, futureUpdate:Boolean, A:Real[_,_],
-    M:MatrixNormalInverseGamma, C:Real[_,_]) < Distribution<Real[_,_]>(
-    future, futureUpdate) {
+final class LinearMatrixNormalInverseGammaMatrixGaussian(A:Real[_,_],
+    M:MatrixNormalInverseGamma, C:Real[_,_]) < Distribution<Real[_,_]> {
   /**
    * Scale.
    */
@@ -42,11 +40,9 @@ final class LinearMatrixNormalInverseGammaMatrixGaussian(
   }
 }
 
-function LinearMatrixNormalInverseGammaMatrixGaussian(
-    future:Real[_,_]?, futureUpdate:Boolean, A:Real[_,_],
+function LinearMatrixNormalInverseGammaMatrixGaussian(A:Real[_,_],
     M:MatrixNormalInverseGamma, C:Real[_,_]) ->
     LinearMatrixNormalInverseGammaMatrixGaussian {
-  m:LinearMatrixNormalInverseGammaMatrixGaussian(future, futureUpdate,
-      A, M, C);
+  m:LinearMatrixNormalInverseGammaMatrixGaussian(A, M, C);
   return m;
 }

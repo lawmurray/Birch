@@ -1,10 +1,8 @@
 /*
  * ed matrix normal-inverse-wishart variate.
  */
-final class MatrixNormalInverseWishart(future:Real[_,_]?,
-    futureUpdate:Boolean, M:Real[_,_], U:Real[_,_],
-    V:InverseWishart) < Distribution<Real[_,_]>(future,
-    futureUpdate) {
+final class MatrixNormalInverseWishart(M:Real[_,_], U:Real[_,_],
+    V:InverseWishart) < Distribution<Real[_,_]> {
   /**
    * Precision.
    */
@@ -54,10 +52,9 @@ final class MatrixNormalInverseWishart(future:Real[_,_]?,
   }
 }
 
-function MatrixNormalInverseWishart(future:Real[_,_]?,
-    futureUpdate:Boolean, M:Real[_,_], U:Real[_,_], V:InverseWishart) ->
-    MatrixNormalInverseWishart {
-  m:MatrixNormalInverseWishart(future, futureUpdate, M, U, V);
+function MatrixNormalInverseWishart(M:Real[_,_], U:Real[_,_],
+    V:InverseWishart) -> MatrixNormalInverseWishart {
+  m:MatrixNormalInverseWishart(M, U, V);
   V.setChild(m);
   return m;
 }

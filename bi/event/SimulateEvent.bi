@@ -28,10 +28,6 @@ final class SimulateEvent<Value>(p:Distribution<Value>) < ValueEvent<Value> {
     return 0.0;
   }
 
-  function delay() -> Real {
-    return play();
-  }
-
   function replay(record:Record) -> Real {
     auto value <- coerce(record);
     if p.observe(value) > -inf {
@@ -39,21 +35,13 @@ final class SimulateEvent<Value>(p:Distribution<Value>) < ValueEvent<Value> {
     }
     return 0.0;
   }
+
+  function delay() -> Real {
+    return play();
+  }
   
   function redelay(record:Record) -> Real {
     return replay(record);
-  }
-
-  function unplay(record:Record) -> Real {
-    auto value <- coerce(record);
-    if p.observeWithDowndate(value) > -inf {
-      v <- value;
-    }
-    return 0.0;
-  }
-  
-  function undelay(record:Record) -> Real {
-    return unplay(record);
   }
   
   function propose(record:Record) -> Real {

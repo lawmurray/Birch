@@ -1,8 +1,7 @@
 /**
  * Bernoulli distribution.
  */
-final class Bernoulli(future:Boolean?, futureUpdate:Boolean,
-    ρ:Expression<Real>) < Distribution<Boolean>(future, futureUpdate) {
+final class Bernoulli(ρ:Expression<Real>) < Distribution<Boolean> {
   /**
    * Success probability.
    */
@@ -20,7 +19,7 @@ final class Bernoulli(future:Boolean?, futureUpdate:Boolean,
     prune();
     m:Beta?;
     if (m <- ρ.graftBeta())? {
-      return BetaBernoulli(future, futureUpdate, m!);
+      return BetaBernoulli(m!);
     } else {
       return this;
     }
@@ -36,17 +35,9 @@ final class Bernoulli(future:Boolean?, futureUpdate:Boolean,
 /**
  * Create Bernoulli distribution.
  */
-function Bernoulli(future:Boolean?, futureUpdate:Boolean,
-    ρ:Expression<Real>) -> Bernoulli {
-  m:Bernoulli(future, futureUpdate, ρ);
-  return m;
-}
-
-/**
- * Create Bernoulli distribution.
- */
 function Bernoulli(ρ:Expression<Real>) -> Bernoulli {
-  return Bernoulli(nil, true, ρ);
+  m:Bernoulli(ρ);
+  return m;
 }
 
 /**

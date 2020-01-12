@@ -25,9 +25,8 @@
  * be multiplication on the left (as above) or the right, or division on the
  * right.
  */
-final class NormalInverseGamma(future:Real?, futureUpdate:Boolean,
-    μ:Real, a2:Real, σ2:InverseGamma) < Distribution<Real>(future,
-    futureUpdate) {
+final class NormalInverseGamma(μ:Real, a2:Real, σ2:InverseGamma) <
+    Distribution<Real> {
   /**
    * Mean.
    */
@@ -87,9 +86,9 @@ final class NormalInverseGamma(future:Real?, futureUpdate:Boolean,
   }
 }
 
-function NormalInverseGamma(future:Real?, futureUpdate:Boolean, μ:Real,
+function NormalInverseGamma(μ:Real,
     a2:Real, σ2:InverseGamma) -> NormalInverseGamma {
-  m:NormalInverseGamma(future, futureUpdate, μ, a2, σ2);
+  m:NormalInverseGamma(μ, a2, σ2);
   σ2.setChild(m);
   return m;
 }

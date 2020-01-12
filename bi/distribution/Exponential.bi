@@ -1,8 +1,8 @@
 /*
  * ed exponential random variate.
  */
-final class Exponential(future:Real?, futureUpdate:Boolean, λ:Expression<Real>) <
-    Distribution<Real>(future, futureUpdate) {
+final class Exponential(λ:Expression<Real>) <
+    Distribution<Real> {
   /**
    * Rate.
    */
@@ -33,9 +33,9 @@ final class Exponential(future:Real?, futureUpdate:Boolean, λ:Expression<Real>)
     m1:TransformLinear<Gamma>?;
     m2:Gamma?;
     if (m1 <- λ.graftScaledGamma())? {
-      return ScaledGammaExponential(future, futureUpdate, m1!.a, m1!.x);
+      return ScaledGammaExponential(m1!.a, m1!.x);
     } else if (m2 <- λ.graftGamma())? {
-      return GammaExponential(future, futureUpdate, m2!);
+      return GammaExponential(m2!);
     } else {
       return this;
     }
@@ -48,17 +48,11 @@ final class Exponential(future:Real?, futureUpdate:Boolean, λ:Expression<Real>)
   }
 }
 
-function Exponential(future:Real?, futureUpdate:Boolean,
-    λ:Expression<Real>) -> Exponential {
-  m:Exponential(future, futureUpdate, λ);
-  return m;
-}
-
 /**
  * Create Exponential distribution.
  */
 function Exponential(λ:Expression<Real>) -> Exponential {
-  m:Exponential(nil, true, λ);
+  m:Exponential(λ);
   return m;
 }
 

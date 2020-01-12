@@ -26,9 +26,8 @@
  * be multiplication on the left (as above) or the right, or division on the
  * right.
  */
-final class MultivariateNormalInverseGamma(future:Real[_]?,
-    futureUpdate:Boolean, μ:Real[_], Σ:Real[_,_], σ2:InverseGamma) <
-    Distribution<Real[_]>(future, futureUpdate) {
+final class MultivariateNormalInverseGamma(μ:Real[_], Σ:Real[_,_],
+    σ2:InverseGamma) < Distribution<Real[_]> {
   /**
    * Precision.
    */
@@ -99,10 +98,9 @@ final class MultivariateNormalInverseGamma(future:Real[_]?,
   }
 }
 
-function MultivariateNormalInverseGamma(future:Real[_]?,
-    futureUpdate:Boolean, μ:Real[_], Σ:Real[_,_], σ2:InverseGamma) ->
-    MultivariateNormalInverseGamma {
-  m:MultivariateNormalInverseGamma(future, futureUpdate, μ, Σ, σ2);
+function MultivariateNormalInverseGamma(μ:Real[_], Σ:Real[_,_],
+    σ2:InverseGamma) -> MultivariateNormalInverseGamma {
+  m:MultivariateNormalInverseGamma(μ, Σ, σ2);
   σ2.setChild(m);
   return m;
 }

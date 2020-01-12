@@ -1,8 +1,8 @@
 /*
  * ed negative binomial random variate.
  */
-final class NegativeBinomial(future:Integer?, futureUpdate:Boolean,
-    k:Expression<Integer>, ρ:Expression<Real>) < Discrete(future, futureUpdate) {
+final class NegativeBinomial(k:Expression<Integer>, ρ:Expression<Real>) <
+    Discrete {
   /**
    * Number of successes before the experiment is stopped.
    */
@@ -41,7 +41,7 @@ final class NegativeBinomial(future:Integer?, futureUpdate:Boolean,
     prune();
     ρ1:Beta?;
     if (ρ1 <- ρ.graftBeta())? {
-      return BetaNegativeBinomial(future, futureUpdate, k, ρ1!);
+      return BetaNegativeBinomial(k, ρ1!);
     } else {
       return this;
     }
@@ -55,17 +55,12 @@ final class NegativeBinomial(future:Integer?, futureUpdate:Boolean,
   }
 }
 
-function NegativeBinomial(future:Integer?, futureUpdate:Boolean,
-    k:Expression<Integer>, ρ:Expression<Real>) -> NegativeBinomial {
-  m:NegativeBinomial(future, futureUpdate, k, ρ);
-  return m;
-}
-
 /**
  * Create negative binomial distribution.
  */
-function NegativeBinomial(k:Expression<Integer>, ρ:Expression<Real>) -> NegativeBinomial {
-  m:NegativeBinomial(nil, true, k, ρ);
+function NegativeBinomial(k:Expression<Integer>, ρ:Expression<Real>) ->
+    NegativeBinomial {
+  m:NegativeBinomial(k, ρ);
   return m;
 }
 

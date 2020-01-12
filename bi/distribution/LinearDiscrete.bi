@@ -2,9 +2,7 @@
  * ed delta function on a linear transformation of a discrete random
  * variate.
  */
-final class LinearDiscrete(future:Integer?, futureUpdate:Boolean,
-    a:Integer, μ:Discrete, c:Integer) < Discrete(future,
-    futureUpdate) {
+final class LinearDiscrete(a:Integer, μ:Discrete, c:Integer) < Discrete {
   /**
    * Scale. Should be 1 or -1 to ensure integer-invertible.
    */
@@ -61,10 +59,9 @@ final class LinearDiscrete(future:Integer?, futureUpdate:Boolean,
   }
 }
 
-function LinearDiscrete(future:Integer?, futureUpdate:Boolean, a:Integer,
-    μ:Discrete, c:Integer) -> LinearDiscrete {
+function LinearDiscrete(a:Integer, μ:Discrete, c:Integer) -> LinearDiscrete {
   assert abs(a) == 1;
-  m:LinearDiscrete(future, futureUpdate, a, μ, c);
+  m:LinearDiscrete(a, μ, c);
   μ.setChild(m);
   return m;
 }

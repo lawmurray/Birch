@@ -1,8 +1,8 @@
 /*
  * ed normal-inverse-gamma-Gaussian random variate.
  */
-final class NormalInverseGammaGaussian(future:Real?, futureUpdate:Boolean,
-    μ:NormalInverseGamma) < Distribution<Real>(future, futureUpdate) {
+final class NormalInverseGammaGaussian(μ:NormalInverseGamma) <
+    Distribution<Real> {
   /**
    * Mean.
    */
@@ -39,9 +39,9 @@ final class NormalInverseGammaGaussian(future:Real?, futureUpdate:Boolean,
   }
 }
 
-function NormalInverseGammaGaussian(future:Real?, futureUpdate:Boolean,
-    μ:NormalInverseGamma) -> NormalInverseGammaGaussian {
-  m:NormalInverseGammaGaussian(future, futureUpdate, μ);
+function NormalInverseGammaGaussian(μ:NormalInverseGamma) ->
+    NormalInverseGammaGaussian {
+  m:NormalInverseGammaGaussian(μ);
   μ.setChild(m);
   return m;
 }

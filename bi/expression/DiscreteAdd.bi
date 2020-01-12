@@ -16,9 +16,9 @@ final class DiscreteAdd<Left,Right,Value>(left:Expression<Left>,
     if !y? {
       x:Discrete?;
       if (x <- left.graftDiscrete())? {
-        y <- LinearDiscrete(nil, true, 1, x!, right.value());
+        y <- LinearDiscrete(1, x!, right.value());
       } else if (x <- right.graftDiscrete())? {
-        y <- LinearDiscrete(nil, true, 1, x!, left.value());
+        y <- LinearDiscrete(1, x!, left.value());
       }
     }
     return y;
@@ -33,11 +33,11 @@ final class DiscreteAdd<Left,Right,Value>(left:Expression<Left>,
       // ^ third condition above ensures that x1 is still valid after x2 is
       //   constructed, which will not be the case if left and right share a
       //   common ancestor on the delayed sampling graph
-      y <- AddBoundedDiscrete(nil, true, x1!, x2!);
+      y <- AddBoundedDiscrete(x1!, x2!);
     } else if x1? && !(x1!.hasValue()) {
-      y <- LinearBoundedDiscrete(nil, true, 1, x1!, right.value());
+      y <- LinearBoundedDiscrete(1, x1!, right.value());
     } else if x2? && !(x2!.hasValue()) {
-      y <- LinearBoundedDiscrete(nil, true, 1, x2!, left.value());
+      y <- LinearBoundedDiscrete(1, x2!, left.value());
     }
     return y;
   }

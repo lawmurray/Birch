@@ -1,9 +1,8 @@
 /*
  * ed matrix normal-inverse-gamma variate.
  */
-final class MatrixNormalInverseGamma(future:Real[_,_]?, futureUpdate:Boolean,
-    M:Real[_,_], Σ:Real[_,_], σ2:IndependentInverseGamma) <
-    Distribution<Real[_,_]>(future, futureUpdate) {
+final class MatrixNormalInverseGamma(M:Real[_,_], Σ:Real[_,_],
+    σ2:IndependentInverseGamma) < Distribution<Real[_,_]> {
   /**
    * Precision.
    */
@@ -77,10 +76,9 @@ final class MatrixNormalInverseGamma(future:Real[_,_]?, futureUpdate:Boolean,
   }
 }
 
-function MatrixNormalInverseGamma(future:Real[_,_]?, futureUpdate:Boolean,
-    M:Real[_,_], Σ:Real[_,_], σ2:IndependentInverseGamma) ->
-    MatrixNormalInverseGamma {
-  m:MatrixNormalInverseGamma(future, futureUpdate, M, Σ, σ2);
+function MatrixNormalInverseGamma(M:Real[_,_], Σ:Real[_,_],
+    σ2:IndependentInverseGamma) -> MatrixNormalInverseGamma {
+  m:MatrixNormalInverseGamma(M, Σ, σ2);
   σ2.setChild(m);
   return m;
 }

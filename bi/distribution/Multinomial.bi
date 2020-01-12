@@ -1,9 +1,8 @@
 /*
  * ed multinomial random variate.
  */
-final class Multinomial(future:Integer[_]?, futureUpdate:Boolean,
-    n:Expression<Integer>, ρ:Expression<Real[_]>) <
-    Distribution<Integer[_]>(future, futureUpdate) {
+final class Multinomial(n:Expression<Integer>, ρ:Expression<Real[_]>) <
+    Distribution<Integer[_]> {
   /**
    * Number of trials.
    */
@@ -30,7 +29,7 @@ final class Multinomial(future:Integer[_]?, futureUpdate:Boolean,
     prune();
     m:Dirichlet?;
     if (m <- ρ.graftDirichlet())? {
-      return DirichletMultinomial(future, futureUpdate, n, m!);
+      return DirichletMultinomial(n, m!);
     } else {
       return this;
     }
@@ -44,18 +43,12 @@ final class Multinomial(future:Integer[_]?, futureUpdate:Boolean,
   }
 }
 
-function Multinomial(future:Integer[_]?, futureUpdate:Boolean,
-    n:Expression<Integer>, ρ:Expression<Real[_]>) -> Multinomial {
-  m:Multinomial(future, futureUpdate, n, ρ);
-  return m;
-}
-
 /**
  * Create multinomial distribution.
  */
 function Multinomial(n:Expression<Integer>, ρ:Expression<Real[_]>) ->
     Multinomial {
-  m:Multinomial(nil, true, n, ρ);
+  m:Multinomial(n, ρ);
   return m;
 }
 

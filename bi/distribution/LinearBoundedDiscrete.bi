@@ -2,9 +2,8 @@
  * ed delta function on a linear transformation of a bounded discrete
  * random variate.
  */
-final class LinearBoundedDiscrete(future:Integer?, futureUpdate:Boolean,
-    a:Integer, μ:BoundedDiscrete, c:Integer) < BoundedDiscrete(
-    future, futureUpdate, a*μ.l + c, a*μ.u + c) {
+final class LinearBoundedDiscrete(a:Integer, μ:BoundedDiscrete, c:Integer) <
+    BoundedDiscrete(a*μ.l + c, a*μ.u + c) {
   /**
    * Scale. Should be 1 or -1 to ensure integer-invertible.
    */
@@ -45,11 +44,10 @@ final class LinearBoundedDiscrete(future:Integer?, futureUpdate:Boolean,
   }
 }
 
-function LinearBoundedDiscrete(future:Integer?, futureUpdate:Boolean,
-    a:Integer, μ:BoundedDiscrete, c:Integer) ->
+function LinearBoundedDiscrete(a:Integer, μ:BoundedDiscrete, c:Integer) ->
     LinearBoundedDiscrete {
   assert abs(a) == 1;
-  m:LinearBoundedDiscrete(future, futureUpdate, a, μ, c);
+  m:LinearBoundedDiscrete(a, μ, c);
   μ.setChild(m);
   return m;
 }

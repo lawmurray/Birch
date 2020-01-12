@@ -33,21 +33,12 @@ final class ObserveEvent<Value>(v:Value, p:Distribution<Value>) <
     return p.observe(v);
   }
 
-  function unplay(record:Record) -> Real {
-    assert v == coerce(record);
-    return p.observeWithDowndate(v);
-  }
-  
   function delay() -> Real {
     return play();
   }
 
   function redelay(record:Record) -> Real {
     return replay(record);
-  }
-
-  function undelay(record:Record) -> Real {
-    return unplay(record);
   }
 
   function propose(record:Record) -> Real {

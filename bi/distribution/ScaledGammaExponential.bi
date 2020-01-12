@@ -1,8 +1,8 @@
 /*
  * ed scaled gamma-exponential random variate.
  */
-class ScaledGammaExponential(future:Real?, futureUpdate:Boolean, a:Real,
-    λ:Gamma) < Distribution<Real>(future, futureUpdate) {
+class ScaledGammaExponential(a:Real,
+    λ:Gamma) < Distribution<Real> {
   /**
    * Scale.
    */
@@ -42,10 +42,9 @@ class ScaledGammaExponential(future:Real?, futureUpdate:Boolean, a:Real,
   }
 }
 
-function ScaledGammaExponential(future:Real?, futureUpdate:Boolean,
-    a:Real, λ:Gamma) -> ScaledGammaExponential {
+function ScaledGammaExponential(a:Real, λ:Gamma) -> ScaledGammaExponential {
   assert a > 0;
-  m:ScaledGammaExponential(future, futureUpdate, a, λ);
+  m:ScaledGammaExponential(a, λ);
   λ.setChild(m);
   return m;
 }

@@ -2,30 +2,19 @@
  * Type-specific interface for delayed sampling $M$-path nodes.
  *
  * - Value: Value type.
- *
- * - future: Future value.
- * - futureUpdate: When realized, should the future value trigger an
- *   update? (Otherwise a downdate.)
  */
-abstract class Distribution<Value>(future:Value?, futureUpdate:Boolean) < Delay {
+abstract class Distribution<Value> < Delay {
   /**
-   * Final value.
+   * Value.
    */
-  x:Value? <- nil;
+  x:Value?;
 
   /**
    * Future value. This is set for situations where delayed sampling
    * is used, but when ultimately realized, a particular value (this one)
-   * should be assigned, and updates or downdates applied accordingly. It
-   * is typically used when replaying traces.
+   * should be assigned. It is typically used when replaying traces.
    */
-  future:Value? <- future;
-
-  /**
-   * When assigned, should the future value trigger an update? (Otherwise
-   * a downdate.)
-   */
-  futureUpdate:Boolean <- futureUpdate;
+  future:Value?;
 
   /**
    * Number of rows, when interpreted as a matrix.
@@ -103,8 +92,6 @@ abstract class Distribution<Value>(future:Value?, futureUpdate:Boolean) < Delay 
   function assume(v:Random<Value>) {
     assert !v.hasDistribution();
     assert !v.hasValue();
-    
-    futureUpdate <- true;
     v.p <- this;
   }
 
@@ -120,24 +107,7 @@ abstract class Distribution<Value>(future:Value?, futureUpdate:Boolean) < Delay 
   function assume(v:Random<Value>, future:Value) {
     assert !v.hasDistribution();
     assert !v.hasValue();
-    
     this.future <- future;
-    futureUpdate <- true;
-    v.p <- this;
-  }
-
-  /**
-   * Assume the distribution for a random variate. When a value for the
-   * random variate is required, it will be simulated from this distribution
-   * and trigger an *downdate* on the delayed sampling graph.
-   *
-   * - v: The random variate.
-   */
-  function assumeWithDowndate(v:Random<Value>) {
-    assert !v.hasDistribution();
-    assert !v.hasValue();
-    
-    futureUpdate <- false;
     v.p <- this;
   }
 
@@ -152,10 +122,8 @@ abstract class Distribution<Value>(future:Value?, futureUpdate:Boolean) < Delay 
    */
   function assumeWithDowndate(v:Random<Value>, future:Value) {
     assert !v.hasDistribution();
-    assert !v.hasValue();
-    
+    assert !v.hasValue();    
     this.future <- future;
-    futureUpdate <- false;
     v.p <- this;
   }
   
@@ -169,25 +137,7 @@ abstract class Distribution<Value>(future:Value?, futureUpdate:Boolean) < Delay 
     assert !this.x?;
     assert !this.future?;
     prune();
-    plumb();
     this.x <- x;
-    futureUpdate <- true;
-    return logpdf(x);
-  }
-
-  /**
-   * Observe a value for a random variate associated with this node,
-   * updating (or downdating) the delayed sampling graph accordingly, and
-   * returning a weight giving the log pdf (or pmf) of that variate under the
-   * distribution.
-   */
-  function observeWithDowndate(x:Value) -> Real {
-    assert !this.x?;
-    assert !this.future?;
-    prune();
-    plumb();
-    this.x <- x;
-    futureUpdate <- false;
     return logpdf(x);
   }
 
@@ -200,11 +150,7 @@ abstract class Distribution<Value>(future:Value?, futureUpdate:Boolean) < Delay 
         x <- simulate();
       }
     }
-    if futureUpdate {
-      update(x!);
-    } else {
-      downdate(x!);
-    }
+    update(x!);
   }
   
   /**
@@ -297,14 +243,6 @@ abstract class Distribution<Value>(future:Value?, futureUpdate:Boolean) < Delay 
    */
   function lazy(x:Expression<Value>) -> Expression<Real>? {
     return nil;
-  }
-
-  /**
-   * Search the log-pdf expression of this distribution and add this
-   * distribution as a child to any other distributions found.
-   */
-  function plumb() {
-    //
   }
 
   /**

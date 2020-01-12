@@ -3,13 +3,8 @@
  * support.
  *
  * - Value: Value type.
- *
- * - future: Future value.
- * - futureUpdate: When realized, should the future value trigger an
- *   update? (Otherwise a downdate.)
  */
-abstract class Moveable<Value>(future:Value?, futureUpdate:Boolean) <
-    Distribution<Value>(future, futureUpdate) {
+abstract class Moveable<Value> < Distribution<Value> {
   /**
    * Gradient.
    */
@@ -32,22 +27,6 @@ abstract class Moveable<Value>(future:Value?, futureUpdate:Boolean) <
       dfdx <- d;
     }
     return true;
-  }
-
-  function realize() {
-    prune();
-    if !x? {
-      if future? {
-        x <- future!;
-      } else {
-        x <- simulate();
-      }
-    }
-    if futureUpdate {
-      update(x!);
-    } else {
-      downdate(x!);
-    }
   }
 }
 

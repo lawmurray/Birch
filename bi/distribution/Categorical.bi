@@ -1,8 +1,7 @@
 /*
  * ed Categorical random variate.
  */
-final class Categorical(future:Integer?, futureUpdate:Boolean, ρ:Expression<Real[_]>) <
-    Distribution<Integer>(future, futureUpdate) {
+final class Categorical(ρ:Expression<Real[_]>) < Distribution<Integer> {
   /**
    * Category probabilities.
    */
@@ -37,9 +36,9 @@ final class Categorical(future:Integer?, futureUpdate:Boolean, ρ:Expression<Rea
     m1:Dirichlet?;
     m2:Restaurant?;
     if (m1 <- ρ.graftDirichlet())? {
-      return DirichletCategorical(future, futureUpdate, m1!);
+      return DirichletCategorical(m1!);
     } else if (m2 <- ρ.graftRestaurant())? {
-      return RestaurantCategorical(future, futureUpdate, m2!);
+      return RestaurantCategorical(m2!);
     } else {
       return this;
     }
@@ -52,17 +51,11 @@ final class Categorical(future:Integer?, futureUpdate:Boolean, ρ:Expression<Rea
   }
 }
 
-function Categorical(future:Integer?, futureUpdate:Boolean,
-    ρ:Expression<Real[_]>) -> Categorical {
-  m:Categorical(future, futureUpdate, ρ);
-  return m;
-}
-
 /**
  * Create categorical distribution.
  */
 function Categorical(ρ:Expression<Real[_]>) -> Categorical {
-  m:Categorical(nil, true, ρ);
+  m:Categorical(ρ);
   return m;
 }
 

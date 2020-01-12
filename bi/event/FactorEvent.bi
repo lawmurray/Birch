@@ -18,21 +18,11 @@ final class FactorEvent(w:Real) < Event {
     return w;
   }
 
-  function unplay(record:Record) -> Real {
-    assert !record.hasValue();
-    return w;
-  }
-
   function delay() -> Real {
     return w;
   }
     
   function redelay(record:Record) -> Real {
-    assert !record.hasValue();
-    return w;
-  }
-
-  function undelay(record:Record) -> Real {
     assert !record.hasValue();
     return w;
   }

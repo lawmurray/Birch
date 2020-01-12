@@ -34,7 +34,7 @@ class ParticleGibbsSampler < ParticleSampler {
         auto r' <- clone<Trace>(r!);
         auto w' <- delay.handle(x'.simulate(), r');
         for t in 1..nsteps {
-          w' <- w' + redelay.handle(r', x'.simulate(t));
+          w' <- w' + replay.handle(r', x'.simulate(t));
         }
         lnormalize[1] <- replay.handle(r', m.simulate());
       }

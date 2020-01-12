@@ -1,8 +1,7 @@
 /*
- * ed Beta-bernoulli random variate.
+ * Beta-Bernoulli distribution.
  */
-final class BetaBernoulli(future:Boolean?, futureUpdate:Boolean, ρ:Beta) <
-    Distribution<Boolean>(future, futureUpdate) {
+final class BetaBernoulli(ρ:Beta) < Distribution<Boolean> {
   /**
    * Success probability.
    */
@@ -25,9 +24,8 @@ final class BetaBernoulli(future:Boolean?, futureUpdate:Boolean, ρ:Beta) <
   }
 }
 
-function BetaBernoulli(future:Boolean?, futureUpdate:Boolean, ρ:Beta) ->
-    BetaBernoulli {
-  m:BetaBernoulli(future, futureUpdate, ρ);
+function BetaBernoulli(ρ:Beta) -> BetaBernoulli {
+  m:BetaBernoulli(ρ);
   ρ.setChild(m);
   return m;
 }

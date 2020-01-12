@@ -2,9 +2,8 @@
  * Multivariate Gaussian distribution with independent and identical
  * variance.
  */
-final class IdenticalGaussian(future:Real[_]?, futureUpdate:Boolean,
-    μ:Expression<Real[_]>, σ2:Expression<Real>) <
-    Distribution<Real[_]>(future, futureUpdate) {
+final class IdenticalGaussian(μ:Expression<Real[_]>, σ2:Expression<Real>) <
+    Distribution<Real[_]> {
   /**
    * Mean.
    */
@@ -38,24 +37,21 @@ final class IdenticalGaussian(future:Real[_]?, futureUpdate:Boolean,
     if (m1 <- μ.graftLinearMultivariateNormalInverseGamma())? &&
         m1!.x.σ2 == σ2.distribution() {
       return LinearMultivariateNormalInverseGammaMultivariateGaussian(
-          future, futureUpdate, m1!.A, m1!.x, m1!.c);
+          m1!.A, m1!.x, m1!.c);
     } else if (m2 <- μ.graftMultivariateNormalInverseGamma())? &&
       m2!.σ2 == σ2.distribution() {
       return MultivariateNormalInverseGammaMultivariateGaussian(
-          future, futureUpdate, m2!);
+          m2!);
     } else if (m3 <- μ.graftLinearMultivariateGaussian())? {
-      return LinearMultivariateGaussianMultivariateGaussian(future,
-          futureUpdate, m3!.A, m3!.x, m3!.c, diagonal(σ2.value(),
-          m3!.rows()));
+      return LinearMultivariateGaussianMultivariateGaussian(m3!.A, m3!.x,
+          m3!.c, diagonal(σ2.value(), m3!.rows()));
     } else if (m4 <- μ.graftMultivariateGaussian())? {
-      return MultivariateGaussianMultivariateGaussian(future,
-          futureUpdate, m4!, diagonal(σ2, m4!.rows()));
+      return MultivariateGaussianMultivariateGaussian(m4!,
+          diagonal(σ2, m4!.rows()));
     } else if (s1 <- σ2.graftInverseGamma())? {
-      return MultivariateNormalInverseGamma(future, futureUpdate, μ,
-          identity(μ.rows()), s1!);
+      return MultivariateNormalInverseGamma(μ, identity(μ.rows()), s1!);
     } else {
-      return MultivariateGaussian(future, futureUpdate, μ,
-          diagonal(σ2, μ.rows()));
+      return Gaussian(μ, diagonal(σ2, μ.rows()));
     }
   }
 
@@ -64,23 +60,22 @@ final class IdenticalGaussian(future:Real[_]?, futureUpdate:Boolean,
     m1:TransformLinearMultivariate<MultivariateGaussian>?;
     m2:MultivariateGaussian?;
     if (m1 <- μ.graftLinearMultivariateGaussian())? {
-      return LinearMultivariateGaussianMultivariateGaussian(future,
-          futureUpdate, m1!.A, m1!.x, m1!.c, diagonal(σ2, length(m1!.c)));
+      return LinearMultivariateGaussianMultivariateGaussian(m1!.A, m1!.x,
+          m1!.c, diagonal(σ2, length(m1!.c)));
     } else if (m2 <- μ.graftMultivariateGaussian())? {
-      return MultivariateGaussianMultivariateGaussian(future,
-          futureUpdate, m2!, diagonal(σ2, m2!.rows()));
+      return MultivariateGaussianMultivariateGaussian(m2!,
+          diagonal(σ2, m2!.rows()));
     } else {
-      return MultivariateGaussian(future, futureUpdate, μ,
-          diagonal(σ2, μ.rows()));
+      return Gaussian(μ, diagonal(σ2, μ.rows()));
     }
   }
 
-  function graftMultivariateNormalInverseGamma() -> MultivariateNormalInverseGamma? {
+  function graftMultivariateNormalInverseGamma() ->
+      MultivariateNormalInverseGamma? {
     prune();
     s1:InverseGamma?;
     if (s1 <- σ2.graftInverseGamma())? {
-      return MultivariateNormalInverseGamma(future, futureUpdate, μ,
-          identity(μ.rows()), s1!);
+      return MultivariateNormalInverseGamma(μ, identity(μ.rows()), s1!);
     }
     return nil;
   }
@@ -91,7 +86,7 @@ final class IdenticalGaussian(future:Real[_]?, futureUpdate:Boolean,
  */
 function Gaussian(μ:Expression<Real[_]>, σ2:Expression<Real>) ->
     IdenticalGaussian {
-  m:IdenticalGaussian(nil, true, μ, σ2);
+  m:IdenticalGaussian(μ, σ2);
   return m;
 }
 

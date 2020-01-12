@@ -1,9 +1,7 @@
 /*
- * ed Beta-binomial random variate.
+ * Beta-binomial distribution.
  */
-final class BetaBinomial(future:Integer?, futureUpdate:Boolean,
-    n:Integer, ρ:Beta) < BoundedDiscrete(future, futureUpdate, 0,
-    n) {
+final class BetaBinomial(n:Integer, ρ:Beta) < BoundedDiscrete(0, n) {
   /**
    * Number of trials.
    */
@@ -47,9 +45,8 @@ final class BetaBinomial(future:Integer?, futureUpdate:Boolean,
   }
 }
 
-function BetaBinomial(future:Integer?, futureUpdate:Boolean, n:Integer, ρ:Beta) ->
-    BetaBinomial {
-  m:BetaBinomial(future, futureUpdate, n, ρ);
+function BetaBinomial(n:Integer, ρ:Beta) -> BetaBinomial {
+  m:BetaBinomial(n, ρ);
   ρ.setChild(m);
   return m;
 }

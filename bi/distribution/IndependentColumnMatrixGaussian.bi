@@ -1,9 +1,9 @@
 /**
  * Matrix Gaussian distribution where each column is independent.
  */
-final class IndependentColumnMatrixGaussian(future:Real[_,_]?,
-    futureUpdate:Boolean, M:Expression<Real[_,_]>, U:Expression<Real[_,_]>,
-    v:Expression<Real[_]>) < Distribution<Real[_,_]>(future, futureUpdate) {
+final class IndependentColumnMatrixGaussian(M:Expression<Real[_,_]>,
+    U:Expression<Real[_,_]>, v:Expression<Real[_]>) <
+    Distribution<Real[_,_]> {
   /**
    * Mean.
    */
@@ -39,22 +39,22 @@ final class IndependentColumnMatrixGaussian(future:Real[_,_]?,
     prune();
     s1:IndependentInverseGamma?;
     if (s1 <- σ2.graftIndependentInverseGamma())? {
-      return MatrixNormalInverseGamma(future, futureUpdate, M, U, s1!);
+      return MatrixNormalInverseGamma(M, U, s1!);
     } else {
-      return MatrixGaussian(future, futureUpdate, M, U, Boxed(diagonal(σ2)));
+      return Gaussian(M, U, Boxed(diagonal(σ2)));
     }
   }
 
   function graftMatrixGaussian() -> MatrixGaussian? {
     prune();
-    return MatrixGaussian(future, futureUpdate, M, U, Boxed(diagonal(σ2)));
+    return Gaussian(M, U, Boxed(diagonal(σ2)));
   }
 
   function graftMatrixNormalInverseGamma() -> MatrixNormalInverseGamma? {
     prune();
     s1:IndependentInverseGamma?;
     if (s1 <- σ2.graftIndependentInverseGamma())? {
-      return MatrixNormalInverseGamma(future, futureUpdate, M, U, s1!);
+      return MatrixNormalInverseGamma(M, U, s1!);
     }
     return nil;
   }
@@ -65,7 +65,7 @@ final class IndependentColumnMatrixGaussian(future:Real[_,_]?,
  */
 function Gaussian(M:Expression<Real[_,_]>, U:Expression<Real[_,_]>,
     σ2:Expression<Real[_]>) -> IndependentColumnMatrixGaussian {
-  m:IndependentColumnMatrixGaussian(nil, true, M, U, σ2);
+  m:IndependentColumnMatrixGaussian(M, U, σ2);
   return m;
 }
 

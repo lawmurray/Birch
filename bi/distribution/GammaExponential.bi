@@ -1,8 +1,7 @@
 /*
  * ed gamma-Exponential random variate.
  */
-final class GammaExponential(future:Real?, futureUpdate:Boolean,
-    λ:Gamma) < Distribution<Real>(future, futureUpdate) {
+final class GammaExponential(λ:Gamma) < Distribution<Real> {
   /**
    * Rate.
    */
@@ -37,9 +36,8 @@ final class GammaExponential(future:Real?, futureUpdate:Boolean,
   }
 }
 
-function GammaExponential(future:Real?, futureUpdate:Boolean,
-    λ:Gamma) -> GammaExponential {
-  m:GammaExponential(future, futureUpdate, λ);
+function GammaExponential(λ:Gamma) -> GammaExponential {
+  m:GammaExponential(λ);
   λ.setChild(m);
   return m;
 }

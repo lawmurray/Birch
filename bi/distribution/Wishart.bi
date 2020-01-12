@@ -1,9 +1,8 @@
 /*
  * ed Wishart random variate.
  */
-final class Wishart(future:Real[_,_]?, futureUpdate:Boolean,
-    Ψ:Expression<Real[_,_]>, k:Expression<Real>) <
-    Distribution<Real[_,_]>(future, futureUpdate) {
+final class Wishart(Ψ:Expression<Real[_,_]>, k:Expression<Real>) <
+    Distribution<Real[_,_]> {
   /**
    * Scale.
    */
@@ -48,17 +47,11 @@ final class Wishart(future:Real[_,_]?, futureUpdate:Boolean,
   }
 }
 
-function Wishart(future:Real[_,_]?, futureUpdate:Boolean,
-    Ψ:Expression<Real[_,_]>, k:Expression<Real>) -> Wishart {
-  m:Wishart(future, futureUpdate, Ψ, k);
-  return m;
-}
-
 /**
  * Create Wishart distribution.
  */
 function Wishart(Ψ:Expression<Real[_,_]>, k:Expression<Real>) -> Wishart {
-  m:Wishart(nil, true, Ψ, k);
+  m:Wishart(Ψ, k);
   return m;
 }
 

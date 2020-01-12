@@ -1,8 +1,8 @@
 /*
  * ed gamma random variate.
  */
-final class Gamma(future:Real?, futureUpdate:Boolean, k:Expression<Real>, θ:Expression<Real>) <
-    Distribution<Real>(future, futureUpdate) {
+final class Gamma(k:Expression<Real>, θ:Expression<Real>) <
+    Distribution<Real> {
   /**
    * Shape.
    */
@@ -37,7 +37,7 @@ final class Gamma(future:Real?, futureUpdate:Boolean, k:Expression<Real>, θ:Exp
     prune();
     θ1:InverseGamma?;
     if (θ1 <- θ.graftInverseGamma())? {
-      return InverseGammaGamma(future, futureUpdate, k, θ1!);
+      return InverseGammaGamma(k, θ1!);
     } else {
       return this;
     }
@@ -56,17 +56,11 @@ final class Gamma(future:Real?, futureUpdate:Boolean, k:Expression<Real>, θ:Exp
   }
 }
 
-function Gamma(future:Real?, futureUpdate:Boolean, k:Expression<Real>,
-    θ:Expression<Real>) -> Gamma {
-  m:Gamma(future, futureUpdate, k, θ);
-  return m;
-}
-
 /**
  * Create gamma distribution.
  */
 function Gamma(k:Expression<Real>, θ:Expression<Real>) -> Gamma {
-  m:Gamma(nil, true, k, θ);
+  m:Gamma(k, θ);
   return m;
 }
 

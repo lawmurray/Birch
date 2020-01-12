@@ -2,8 +2,7 @@
  * ed multivariate normal-inverse-gamma-Gaussian random variate.
  */
 final class MultivariateNormalInverseGammaMultivariateGaussian(
-    future:Real[_]?, futureUpdate:Boolean,
-    μ:MultivariateNormalInverseGamma) < Distribution<Real[_]>(future, futureUpdate) {
+    μ:MultivariateNormalInverseGamma) < Distribution<Real[_]> {
   /**
    * Mean.
    */
@@ -30,10 +29,10 @@ final class MultivariateNormalInverseGammaMultivariateGaussian(
   }
 }
 
-function MultivariateNormalInverseGammaMultivariateGaussian(future:Real[_]?,
-    futureUpdate:Boolean, μ:MultivariateNormalInverseGamma) ->
+function MultivariateNormalInverseGammaMultivariateGaussian(
+    μ:MultivariateNormalInverseGamma) ->
     MultivariateNormalInverseGammaMultivariateGaussian {
-  m:MultivariateNormalInverseGammaMultivariateGaussian(future, futureUpdate, μ);
+  m:MultivariateNormalInverseGammaMultivariateGaussian(μ);
   μ.setChild(m);
   return m;
 }

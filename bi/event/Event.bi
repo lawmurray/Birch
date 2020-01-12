@@ -24,16 +24,6 @@ abstract class Event {
   abstract function replay(record:Record) -> Real;
 
   /**
-   * Perform the *unplay* action. This is typically used when undoing the
-   * effects of a trace that was originally simulated forward using `play()`.
-   *
-   * - record: Associated record in the trace.
-   *
-   * Returns: The required weight adjustment.
-   */
-  abstract function unplay(record:Record) -> Real;
-
-  /**
    * Perform the *delay* action.
    *
    * Returns: The required weight adjustment.
@@ -49,17 +39,6 @@ abstract class Event {
    * Returns: The required weight adjustment.
    */
   abstract function redelay(record:Record) -> Real;
-
-  /**
-   * Perform the *undelay* action. This is typically used when undoing the
-   * effects of a trace that was originally simulated forward using
-   * `delay()`.
-   *
-   * - record: Associated record in the trace.
-   *
-   * Returns: The required weight adjustment.
-   */
-  abstract function undelay(record:Record) -> Real;
 
   /**
    * Perform the *propose* action.

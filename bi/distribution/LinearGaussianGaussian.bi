@@ -1,9 +1,8 @@
 /*
  * ed linear-Gaussian-Gaussian random variate.
  */
-final class LinearGaussianGaussian(future:Real?, futureUpdate:Boolean,
-    a:Expression<Real>, m:Gaussian, c:Expression<Real>,
-    s2:Expression<Real>) < Gaussian(future, futureUpdate, a*m.μ + c,
+final class LinearGaussianGaussian(a:Expression<Real>, m:Gaussian,
+    c:Expression<Real>, s2:Expression<Real>) < Gaussian(a*m.μ + c,
     a*a*m.σ2 + s2) {
   /**
    * Scale.
@@ -34,10 +33,9 @@ final class LinearGaussianGaussian(future:Real?, futureUpdate:Boolean,
   }
 }
 
-function LinearGaussianGaussian(future:Real?, futureUpdate:Boolean,
-    a:Expression<Real>, μ:Gaussian, c:Expression<Real>,
-    σ2:Expression<Real>) -> LinearGaussianGaussian {
-  m:LinearGaussianGaussian(future, futureUpdate, a, μ, c, σ2);
+function LinearGaussianGaussian(a:Expression<Real>, μ:Gaussian,
+    c:Expression<Real>, σ2:Expression<Real>) -> LinearGaussianGaussian {
+  m:LinearGaussianGaussian(a, μ, c, σ2);
   μ.setChild(m);
   return m;
 }

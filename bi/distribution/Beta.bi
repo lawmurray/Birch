@@ -1,8 +1,8 @@
 /*
  * ed Beta random variate.
  */
-final class Beta(future:Real?, futureUpdate:Boolean, α:Expression<Real>,
-    β:Expression<Real>) < Distribution<Real>(future, futureUpdate) {
+final class Beta(α:Expression<Real>,
+    β:Expression<Real>) < Distribution<Real> {
   /**
    * First shape.
    */
@@ -55,17 +55,11 @@ final class Beta(future:Real?, futureUpdate:Boolean, α:Expression<Real>,
   }
 }
 
-function Beta(future:Real?, futureUpdate:Boolean, α:Expression<Real>,
-    β:Expression<Real>) -> Beta {
-  m:Beta(future, futureUpdate, α, β);
-  return m;
-}
-
 /**
  * Create beta distribution.
  */
 function Beta(α:Expression<Real>, β:Expression<Real>) -> Beta {
-  m:Beta(nil, true, α, β);
+  m:Beta(α, β);
   return m;
 }
 

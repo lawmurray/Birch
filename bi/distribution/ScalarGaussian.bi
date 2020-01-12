@@ -2,9 +2,8 @@
  * Gaussian distribution where the variance is given as a product of two
  * scalars.
  */
-final class ScalarGaussian(future:Real?, futureUpdate:Boolean,
-    μ:Expression<Real>, σ2:Expression<Real>, τ2:Expression<Real>) <
-    Distribution<Real>(future, futureUpdate) {
+final class ScalarGaussian(μ:Expression<Real>, σ2:Expression<Real>,
+    τ2:Expression<Real>) < Distribution<Real> {
   /**
    * Mean.
    */
@@ -40,26 +39,26 @@ final class ScalarGaussian(future:Real?, futureUpdate:Boolean,
     prune();
     s1:InverseGamma?;
     if (s1 <- σ2.graftInverseGamma())? {
-      return NormalInverseGamma(future, futureUpdate, μ, τ2, s1!);
+      return NormalInverseGamma(μ, τ2, s1!);
     } else if (s1 <- τ2.graftInverseGamma())? {
-      return NormalInverseGamma(future, futureUpdate, μ, σ2, s1!);
+      return NormalInverseGamma(μ, σ2, s1!);
     } else {
-      return Gaussian(future, futureUpdate, μ, σ2*τ2);
+      return Gaussian(μ, σ2*τ2);
     }
   }
 
   function graftGaussian() -> Gaussian? {
     prune();
-    return Gaussian(future, futureUpdate, μ, σ2*τ2);
+    return Gaussian(μ, σ2*τ2);
   }
 
   function graftNormalInverseGamma() -> NormalInverseGamma? {
     prune();
     s1:InverseGamma?;
     if (s1 <- σ2.graftInverseGamma())? {
-      return NormalInverseGamma(future, futureUpdate, μ, τ2, s1!);
+      return NormalInverseGamma(μ, τ2, s1!);
     } else if (s1 <- τ2.graftInverseGamma())? {
-      return NormalInverseGamma(future, futureUpdate, μ, σ2, s1!);
+      return NormalInverseGamma(μ, σ2, s1!);
     }
     return nil;
   }
@@ -72,7 +71,7 @@ final class ScalarGaussian(future:Real?, futureUpdate:Boolean,
  */
 function Gaussian(μ:Expression<Real>, σ2:Expression<Real>,
     τ2:Expression<Real>) -> ScalarGaussian {
-  m:ScalarGaussian(nil, true, μ, σ2, τ2);
+  m:ScalarGaussian(μ, σ2, τ2);
   return m;
 }
 

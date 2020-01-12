@@ -27,9 +27,8 @@
  *     W ~ Gaussian(M, U, V);
  *     Y ~ Gaussian(X*W, V);
  */
-final class InverseWishart(future:Real[_,_]?, futureUpdate:Boolean,
-    Ψ:Expression<Real[_,_]>, k:Expression<Real>) <
-    Distribution<Real[_,_]>(future, futureUpdate) {
+final class InverseWishart(Ψ:Expression<Real[_,_]>, k:Expression<Real>) <
+    Distribution<Real[_,_]> {
   /**
    * Scale.
    */
@@ -74,18 +73,12 @@ final class InverseWishart(future:Real[_,_]?, futureUpdate:Boolean,
   }
 }
 
-function InverseWishart(future:Real[_,_]?, futureUpdate:Boolean,
-    Ψ:Expression<Real[_,_]>, k:Expression<Real>) -> InverseWishart {
-  m:InverseWishart(future, futureUpdate, Ψ, k);
-  return m;
-}
-
 /**
  * Create inverse-Wishart distribution.
  */
 function InverseWishart(Ψ:Expression<Real[_,_]>, k:Expression<Real>) ->
     InverseWishart {
-  m:InverseWishart(nil, true, Ψ, k);
+  m:InverseWishart(Ψ, k);
   return m;
 }
 

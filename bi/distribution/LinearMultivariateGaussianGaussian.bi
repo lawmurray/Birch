@@ -1,10 +1,9 @@
 /*
  * ed multivariate linear-Gaussian-Gaussian random variate.
  */
-final class LinearMultivariateGaussianGaussian(future:Real?,
-    futureUpdate:Boolean, a:Expression<Real[_]>, m:MultivariateGaussian,
-    c:Expression<Real>, s2:Expression<Real>) < Gaussian(future,
-    futureUpdate, dot(a, m.μ) + c, dot(a, m.Σ*a) + s2) {
+final class LinearMultivariateGaussianGaussian(a:Expression<Real[_]>,
+    m:MultivariateGaussian, c:Expression<Real>, s2:Expression<Real>) <
+    Gaussian(dot(a, m.μ) + c, dot(a, m.Σ*a) + s2) {
   /**
    * Scale.
    */
@@ -36,11 +35,10 @@ final class LinearMultivariateGaussianGaussian(future:Real?,
   }
 }
 
-function LinearMultivariateGaussianGaussian(future:Real?,
-    futureUpdate:Boolean, a:Expression<Real[_]>, μ:MultivariateGaussian,
-    c:Expression<Real>, σ2:Expression<Real>) ->
+function LinearMultivariateGaussianGaussian(a:Expression<Real[_]>,
+    μ:MultivariateGaussian, c:Expression<Real>, σ2:Expression<Real>) ->
     LinearMultivariateGaussianGaussian {
-  m:LinearMultivariateGaussianGaussian(future, futureUpdate, a, μ, c, σ2);
+  m:LinearMultivariateGaussianGaussian(a, μ, c, σ2);
   μ.setChild(m);
   return m;
 }

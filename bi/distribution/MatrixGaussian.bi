@@ -1,9 +1,8 @@
 /*
  * ed matrix Gaussian random variate.
  */
-class MatrixGaussian(future:Real[_,_]?, futureUpdate:Boolean,
-    M:Expression<Real[_,_]>, U:Expression<Real[_,_]>,
-    V:Expression<Real[_,_]>) < Distribution<Real[_,_]>(future, futureUpdate) {
+class MatrixGaussian(M:Expression<Real[_,_]>, U:Expression<Real[_,_]>,
+    V:Expression<Real[_,_]>) < Distribution<Real[_,_]> {
   /**
    * Mean.
    */
@@ -39,7 +38,7 @@ class MatrixGaussian(future:Real[_,_]?, futureUpdate:Boolean,
     prune();
     s1:InverseWishart?;
     if (s1 <- V.graftInverseWishart())? {
-      return MatrixNormalInverseWishart(future, futureUpdate, M, U, s1!);
+      return MatrixNormalInverseWishart(M, U, s1!);
     } else {
       return this;
     }
@@ -54,7 +53,7 @@ class MatrixGaussian(future:Real[_,_]?, futureUpdate:Boolean,
     prune();
     s1:InverseWishart?;
     if (s1 <- V.graftInverseWishart())? {
-      return MatrixNormalInverseWishart(future, futureUpdate, M, U, s1!);
+      return MatrixNormalInverseWishart(M, U, s1!);
     }
     return nil;
   }
@@ -68,19 +67,13 @@ class MatrixGaussian(future:Real[_,_]?, futureUpdate:Boolean,
   }
 }
 
-function MatrixGaussian(future:Real[_,_]?, futureUpdate:Boolean,
-    M:Expression<Real[_,_]>, U:Expression<Real[_,_]>,
-    V:Expression<Real[_,_]>) -> MatrixGaussian {
-  m:MatrixGaussian(future, futureUpdate, M, U, V);
-  return m;
-}
-
 /**
  * Create matrix Gaussian distribution.
  */
 function Gaussian(M:Expression<Real[_,_]>, U:Expression<Real[_,_]>,
     V:Expression<Real[_,_]>) -> MatrixGaussian {
-  return MatrixGaussian(nil, true, M, U, V);
+  m:MatrixGaussian(M, U, V);
+  return m;
 }
 
 /**

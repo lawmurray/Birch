@@ -2,9 +2,8 @@
  * ed delta function on a difference of two bounded discrete random
  * variates.
  */
-final class SubtractBoundedDiscrete(future:Integer?, futureUpdate:Boolean,
-    x1:BoundedDiscrete, x2:BoundedDiscrete) < BoundedDiscrete(
-    future, futureUpdate, x1.l - x2.u, x1.u - x2.l) {
+final class SubtractBoundedDiscrete(x1:BoundedDiscrete, x2:BoundedDiscrete) <
+    BoundedDiscrete(x1.l - x2.u, x1.u - x2.l) {
   /**
    * First discrete random variate.
    */
@@ -99,10 +98,9 @@ final class SubtractBoundedDiscrete(future:Integer?, futureUpdate:Boolean,
   }
 }
 
-function SubtractBoundedDiscrete(future:Integer?, futureUpdate:Boolean,
-    x1:BoundedDiscrete, x2:BoundedDiscrete) ->
+function SubtractBoundedDiscrete(x1:BoundedDiscrete, x2:BoundedDiscrete) ->
     SubtractBoundedDiscrete {
-  m:SubtractBoundedDiscrete(future, futureUpdate, x1, x2);
+  m:SubtractBoundedDiscrete(x1, x2);
   x1.setChild(m);
   x2.setChild(m);
   return m;

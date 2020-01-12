@@ -1,8 +1,7 @@
 /*
  * ed gamma-Poisson random variate.
  */
-final class GammaPoisson(future:Integer?, futureUpdate:Boolean,
-    λ:Gamma) < Discrete(future, futureUpdate) {
+final class GammaPoisson(λ:Gamma) < Discrete {
   /**
    * Rate.
    */
@@ -41,9 +40,8 @@ final class GammaPoisson(future:Integer?, futureUpdate:Boolean,
   }
 }
 
-function GammaPoisson(future:Integer?, futureUpdate:Boolean,
-    λ:Gamma) ->  GammaPoisson {
-  m:GammaPoisson(future, futureUpdate, λ);
+function GammaPoisson(λ:Gamma) ->  GammaPoisson {
+  m:GammaPoisson(λ);
   λ.setChild(m);
   return m;
 }

@@ -1,9 +1,8 @@
 /*
  * ed multivariate Gaussian random variate.
  */
-class MultivariateGaussian(future:Real[_]?, futureUpdate:Boolean,
-    μ:Expression<Real[_]>, Σ:Expression<Real[_,_]>) <
-    Distribution<Real[_]>(future, futureUpdate) {
+class MultivariateGaussian(μ:Expression<Real[_]>, Σ:Expression<Real[_,_]>) <
+    Distribution<Real[_]> {
   /**
    * Mean.
    */
@@ -31,11 +30,10 @@ class MultivariateGaussian(future:Real[_]?, futureUpdate:Boolean,
     m1:TransformLinearMultivariate<MultivariateGaussian>?;
     m2:MultivariateGaussian?;
     if (m1 <- μ.graftLinearMultivariateGaussian())? {
-      return LinearMultivariateGaussianMultivariateGaussian(future,
-          futureUpdate, m1!.A, m1!.x, m1!.c, Σ);
+      return LinearMultivariateGaussianMultivariateGaussian(m1!.A, m1!.x,
+          m1!.c, Σ);
     } else if (m2 <- μ.graftMultivariateGaussian())? {
-      return MultivariateGaussianMultivariateGaussian(future, futureUpdate,
-          m2!, Σ);
+      return MultivariateGaussianMultivariateGaussian(m2!, Σ);
     } else {
       return this;
     }
@@ -46,11 +44,10 @@ class MultivariateGaussian(future:Real[_]?, futureUpdate:Boolean,
     m1:TransformLinearMultivariate<MultivariateGaussian>?;
     m2:MultivariateGaussian?;
     if (m1 <- μ.graftLinearMultivariateGaussian())? {
-      return LinearMultivariateGaussianMultivariateGaussian(future,
-          futureUpdate, m1!.A, m1!.x, m1!.c, Σ);
+      return LinearMultivariateGaussianMultivariateGaussian(m1!.A, m1!.x,
+          m1!.c, Σ);
     } else if (m2 <- μ.graftMultivariateGaussian())? {
-      return MultivariateGaussianMultivariateGaussian(future, futureUpdate,
-          m2!, Σ);
+      return MultivariateGaussianMultivariateGaussian(m2!, Σ);
     } else {
       return this;
     }
@@ -64,19 +61,12 @@ class MultivariateGaussian(future:Real[_]?, futureUpdate:Boolean,
   }
 }
 
-function MultivariateGaussian(future:Real[_]?, futureUpdate:Boolean,
-    μ:Expression<Real[_]>, Σ:Expression<Real[_,_]>) ->
-    MultivariateGaussian {
-  m:MultivariateGaussian(future, futureUpdate, μ, Σ);
-  return m;
-}
-
 /**
  * Create multivariate Gaussian distribution.
  */
 function Gaussian(μ:Expression<Real[_]>, Σ:Expression<Real[_,_]>) ->
     MultivariateGaussian {
-  m:MultivariateGaussian(nil, true, μ, Σ);
+  m:MultivariateGaussian(μ, Σ);
   return m;
 }
 

@@ -1,9 +1,8 @@
 /*
  * ed inverse-gamma random variate.
  */
-final class InverseGamma(future:Real?, futureUpdate:Boolean,
-    α:Expression<Real>, β:Expression<Real>) <
-    Distribution<Real>(future, futureUpdate) {
+final class InverseGamma(α:Expression<Real>, β:Expression<Real>) <
+    Distribution<Real> {
   /**
    * Shape.
    */
@@ -52,17 +51,12 @@ final class InverseGamma(future:Real?, futureUpdate:Boolean,
   }
 }
 
-function InverseGamma(future:Real?, futureUpdate:Boolean, α:Expression<Real>,
-    β:Expression<Real>) -> InverseGamma {
-  m:InverseGamma(future, futureUpdate, α, β);
-  return m;
-}
-
 /**
  * Create inverse-gamma distribution.
  */
-function InverseGamma(α:Expression<Real>, β:Expression<Real>) -> InverseGamma {
-  m:InverseGamma(nil, true, α, β);
+function InverseGamma(α:Expression<Real>, β:Expression<Real>) ->
+    InverseGamma {
+  m:InverseGamma(α, β);
   return m;
 }
 

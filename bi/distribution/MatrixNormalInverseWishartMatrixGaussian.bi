@@ -1,9 +1,8 @@
 /*
  * ed matrix Gaussian variate with matrix-normal-inverse-Wishart prior.
  */
-final class MatrixNormalInverseWishartMatrixGaussian(future:Real[_,_]?,
-    futureUpdate:Boolean, M:MatrixNormalInverseWishart) <
-    Distribution<Real[_,_]>(future, futureUpdate) {
+final class MatrixNormalInverseWishartMatrixGaussian(
+    M:MatrixNormalInverseWishart) < Distribution<Real[_,_]> {
   /**
    * Mean.
    */
@@ -31,9 +30,8 @@ final class MatrixNormalInverseWishartMatrixGaussian(future:Real[_,_]?,
 }
 
 function MatrixNormalInverseWishartMatrixGaussian(
-    future:Real[_,_]?, futureUpdate:Boolean,
     M:MatrixNormalInverseWishart) ->
     MatrixNormalInverseWishartMatrixGaussian {
-  m:MatrixNormalInverseWishartMatrixGaussian(future, futureUpdate, M);
+  m:MatrixNormalInverseWishartMatrixGaussian(M);
   return m;
 }

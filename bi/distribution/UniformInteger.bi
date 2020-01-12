@@ -1,8 +1,8 @@
 /*
  * ed uniform integer random variate.
  */
-final class UniformInteger(future:Integer?, futureUpdate:Boolean,
-    l:Expression<Integer>, u:Expression<Integer>) < BoundedDiscrete(future, futureUpdate, l, u) {
+final class UniformInteger(l:Expression<Integer>, u:Expression<Integer>) <
+    BoundedDiscrete(l, u) {
   function simulate() -> Integer {
     if value? {
       return value!;
@@ -46,17 +46,12 @@ final class UniformInteger(future:Integer?, futureUpdate:Boolean,
   }
 }
 
-function UniformInteger(future:Integer?, futureUpdate:Boolean,
-    l:Expression<Integer>, u:Expression<Integer>) -> UniformInteger {
-  m:UniformInteger(future, futureUpdate, l, u);
-  return m;
-}
-
 /**
  * Create uniform distribution over integers.
  */
-function Uniform(l:Expression<Integer>, u:Expression<Integer>) -> UniformInteger {
-  m:UniformInteger(nil, true, l, u);
+function Uniform(l:Expression<Integer>, u:Expression<Integer>) ->
+    UniformInteger {
+  m:UniformInteger(l, u);
   return m;
 }
 

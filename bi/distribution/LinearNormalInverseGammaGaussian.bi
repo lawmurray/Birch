@@ -1,9 +1,8 @@
 /*
  * ed linear-normal-inverse-gamma-Gaussian random variate.
  */
-final class LinearNormalInverseGammaGaussian(future:Real?,
-    futureUpdate:Boolean, a:Real, μ:NormalInverseGamma, c:Real) <
-    Distribution<Real>(future, futureUpdate) {
+final class LinearNormalInverseGammaGaussian(a:Real, μ:NormalInverseGamma,
+    c:Real) < Distribution<Real> {
   /**
    * Scale.
    */
@@ -50,10 +49,9 @@ final class LinearNormalInverseGammaGaussian(future:Real?,
   }
 }
 
-function LinearNormalInverseGammaGaussian(future:Real?,
-    futureUpdate:Boolean, a:Real, μ:NormalInverseGamma, c:Real) ->
-    LinearNormalInverseGammaGaussian {
-  m:LinearNormalInverseGammaGaussian(future, futureUpdate, a, μ, c);
+function LinearNormalInverseGammaGaussian(a:Real, μ:NormalInverseGamma,
+    c:Real) -> LinearNormalInverseGammaGaussian {
+  m:LinearNormalInverseGammaGaussian(a, μ, c);
   μ.setChild(m);
   return m;
 }

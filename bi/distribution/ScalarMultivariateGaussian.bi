@@ -2,9 +2,8 @@
  * Multivariate Gaussian distribution where the covariance is given as a
  * matrix multiplied by a scalar.
  */
-final class ScalarMultivariateGaussian(future:Real[_]?, futureUpdate:Boolean,
-    μ:Expression<Real[_]>, Σ:Expression<Real[_,_]>, σ2:Expression<Real>) <
-    Distribution<Real[_]>(future, futureUpdate) {
+final class ScalarMultivariateGaussian(μ:Expression<Real[_]>,
+    Σ:Expression<Real[_,_]>, σ2:Expression<Real>) < Distribution<Real[_]> {
   /**
    * Mean.
    */
@@ -36,22 +35,22 @@ final class ScalarMultivariateGaussian(future:Real[_]?, futureUpdate:Boolean,
     prune();
     s1:InverseGamma?;
     if (s1 <- σ2.graftInverseGamma())? {
-      return MultivariateNormalInverseGamma(future, futureUpdate, μ, Σ, s1!);
+      return MultivariateNormalInverseGamma(μ, Σ, s1!);
     } else {
-      return MultivariateGaussian(future, futureUpdate, μ, Σ*σ2);
+      return Gaussian(μ, Σ*σ2);
     }
   }
 
   function graftMultivariateGaussian() -> MultivariateGaussian? {
     prune();
-    return MultivariateGaussian(future, futureUpdate, μ, Σ*σ2);
+    return Gaussian(μ, Σ*σ2);
   }
 
   function graftMultivariateNormalInverseGamma() -> MultivariateNormalInverseGamma? {
     prune();
     s1:InverseGamma?;
     if (s1 <- σ2.graftInverseGamma())? {
-      return MultivariateNormalInverseGamma(future, futureUpdate, μ, Σ, s1!);
+      return MultivariateNormalInverseGamma(μ, Σ, s1!);
     }
     return nil;
   }
@@ -65,7 +64,7 @@ final class ScalarMultivariateGaussian(future:Real[_]?, futureUpdate:Boolean,
  */
 function Gaussian(μ:Expression<Real[_]>, Σ:Expression<Real[_,_]>,
     σ2:Expression<Real>) -> ScalarMultivariateGaussian {
-  m:ScalarMultivariateGaussian(nil, true, μ, Σ, σ2);
+  m:ScalarMultivariateGaussian(μ, Σ, σ2);
   return m;
 }
 

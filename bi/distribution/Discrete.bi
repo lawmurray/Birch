@@ -1,8 +1,7 @@
 /*
  * ed discrete random variate.
  */
-abstract class Discrete(future:Integer?, futureUpdate:Boolean) <
-    Distribution<Integer>(future, futureUpdate) {
+abstract class Discrete < Distribution<Integer> {
   /**
    * Clamped value.
    */

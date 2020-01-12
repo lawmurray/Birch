@@ -1,9 +1,8 @@
 /*
  * ed binomial random variate.
  */
-final class Binomial(future:Integer?, futureUpdate:Boolean,
-    n:Expression<Integer>, ρ:Expression<Real>) <
-    BoundedDiscrete(future, futureUpdate, 0, n) {
+final class Binomial(n:Expression<Integer>, ρ:Expression<Real>) <
+    BoundedDiscrete(0, n) {
   /**
    * Number of trials.
    */
@@ -46,7 +45,7 @@ final class Binomial(future:Integer?, futureUpdate:Boolean,
     prune();
     m:Beta?;
     if (m <- ρ.graftBeta())? {
-      return BetaBinomial(future, futureUpdate, n, m!);
+      return BetaBinomial(n, m!);
     } else {
       return this;
     }
@@ -68,17 +67,11 @@ final class Binomial(future:Integer?, futureUpdate:Boolean,
   }
 }
 
-function Binomial(future:Integer?, futureUpdate:Boolean,
-    n:Expression<Integer>, ρ:Expression<Real>) -> Binomial {
-  m:Binomial(future, futureUpdate, n, ρ);
-  return m;
-}
-
 /**
  * Create binomial distribution.
  */
 function Binomial(n:Expression<Integer>, ρ:Expression<Real>) -> Binomial {
-  m:Binomial(nil, true, n, ρ);
+  m:Binomial(n, ρ);
   return m;
 }
 

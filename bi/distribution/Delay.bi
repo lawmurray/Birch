@@ -8,8 +8,7 @@ abstract class Delay {
   child:Delay?;
   
   /**
-   * Realize. If a future value has been given, it is used, otherwise a value
-   * is simulated.
+   * Realize a value for the node.
    */
   abstract function realize();
   

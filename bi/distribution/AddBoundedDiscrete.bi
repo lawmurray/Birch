@@ -1,9 +1,8 @@
 /*
  * ed delta function on a sum of two bounded discrete random variates.
  */
-final class AddBoundedDiscrete(future:Integer?, futureUpdate:Boolean,
-    x1:BoundedDiscrete, x2:BoundedDiscrete) < BoundedDiscrete(
-    future, futureUpdate, x1.l + x2.l, x1.u + x2.u) {
+final class AddBoundedDiscrete(x1:BoundedDiscrete, x2:BoundedDiscrete) <
+    BoundedDiscrete(x1.l + x2.l, x1.u + x2.u) {
   /**
    * First node.
    */
@@ -99,10 +98,9 @@ final class AddBoundedDiscrete(future:Integer?, futureUpdate:Boolean,
   }
 }
 
-function AddBoundedDiscrete(future:Integer?, futureUpdate:Boolean,
-    x1:BoundedDiscrete, x2:BoundedDiscrete) ->
+function AddBoundedDiscrete(x1:BoundedDiscrete, x2:BoundedDiscrete) ->
     AddBoundedDiscrete {
-  m:AddBoundedDiscrete(future, futureUpdate, x1, x2);
+  m:AddBoundedDiscrete(x1, x2);
   x1.setChild(m);
   x2.setChild(m);
   return m;

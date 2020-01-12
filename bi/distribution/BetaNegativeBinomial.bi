@@ -1,8 +1,7 @@
 /*
  * ed Beta-negative-binomial random variate
  */
-final class BetaNegativeBinomial(future:Integer?, futureUpdate:Boolean,
-    k:Integer, ρ:Beta) < Discrete(future, futureUpdate) {
+final class BetaNegativeBinomial(k:Integer, ρ:Beta) < Discrete {
   /**
    * Number of successes before the experiment is stopped.
    */
@@ -38,8 +37,8 @@ final class BetaNegativeBinomial(future:Integer?, futureUpdate:Boolean,
   }
 }
 
-function BetaNegativeBinomial(future:Integer?, futureUpdate:Boolean, k:Integer, ρ:Beta) -> BetaNegativeBinomial {
-  m:BetaNegativeBinomial(future, futureUpdate, k, ρ);
+function BetaNegativeBinomial(k:Integer, ρ:Beta) -> BetaNegativeBinomial {
+  m:BetaNegativeBinomial(k, ρ);
   ρ.setChild(m);
   return m;
 }

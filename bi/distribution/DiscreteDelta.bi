@@ -1,8 +1,7 @@
 /*
  * ed delta function on a discrete random variate.
  */
-final class DiscreteDelta(future:Integer?, futureUpdate:Boolean,
-    μ:Discrete) < Discrete(future, futureUpdate) {
+final class DiscreteDelta(μ:Discrete) < Discrete {
   /**
    * Location.
    */
@@ -41,9 +40,8 @@ final class DiscreteDelta(future:Integer?, futureUpdate:Boolean,
   }
 }
 
-function DiscreteDelta(future:Integer?, futureUpdate:Boolean,
-    μ:Discrete) -> DiscreteDelta {
-  m:DiscreteDelta(future, futureUpdate, μ);
+function DiscreteDelta(μ:Discrete) -> DiscreteDelta {
+  m:DiscreteDelta(μ);
   μ.setChild(m);
   return m;
 }

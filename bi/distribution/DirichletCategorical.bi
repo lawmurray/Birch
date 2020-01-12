@@ -1,8 +1,7 @@
 /*
  * ed Dirichlet-categorical random variate.
  */
-final class DirichletCategorical(future:Integer?, futureUpdate:Boolean,
-    ρ:Dirichlet) < Distribution<Integer>(future, futureUpdate) {
+final class DirichletCategorical(ρ:Dirichlet) < Distribution<Integer> {
   /**
    * Category probabilities.
    */
@@ -33,9 +32,8 @@ final class DirichletCategorical(future:Integer?, futureUpdate:Boolean,
   }
 }
 
-function DirichletCategorical(future:Integer?, futureUpdate:Boolean,
-    ρ:Dirichlet) -> DirichletCategorical {
-  m:DirichletCategorical(future, futureUpdate, ρ);
+function DirichletCategorical(ρ:Dirichlet) -> DirichletCategorical {
+  m:DirichletCategorical(ρ);
   ρ.setChild(m);
   return m;
 }

@@ -1,8 +1,7 @@
 /*
  * ed inverse-gamma-gamma random variate.
  */
-final class InverseGammaGamma(future:Real?, futureUpdate:Boolean,
-    k:Real, θ:InverseGamma) < Distribution<Real>(future, futureUpdate) {
+final class InverseGammaGamma(k:Real, θ:InverseGamma) < Distribution<Real> {
   /**
    * Shape.
    */
@@ -38,9 +37,8 @@ final class InverseGammaGamma(future:Real?, futureUpdate:Boolean,
   }
 }
 
-function InverseGammaGamma(future:Real?, futureUpdate:Boolean, k:Real,
-    θ:InverseGamma) -> InverseGammaGamma {
-  m:InverseGammaGamma(future, futureUpdate, k, θ);
+function InverseGammaGamma(k:Real, θ:InverseGamma) -> InverseGammaGamma {
+  m:InverseGammaGamma(k, θ);
   θ.setChild(m);
   return m;
 }

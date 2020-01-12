@@ -1,9 +1,8 @@
 /*
  * ed matrix Gaussian variate with matrix-normal-inverse-gamma prior.
  */
-final class MatrixNormalInverseGammaMatrixGaussian(future:Real[_,_]?,
-    futureUpdate:Boolean, M:MatrixNormalInverseGamma) <
-    Distribution<Real[_,_]>(future, futureUpdate) {
+final class MatrixNormalInverseGammaMatrixGaussian(
+    M:MatrixNormalInverseGamma) < Distribution<Real[_,_]> {
   /**
    * Mean.
    */
@@ -31,9 +30,7 @@ final class MatrixNormalInverseGammaMatrixGaussian(future:Real[_,_]?,
 }
 
 function MatrixNormalInverseGammaMatrixGaussian(
-    future:Real[_,_]?, futureUpdate:Boolean,
-    M:MatrixNormalInverseGamma) ->
-    MatrixNormalInverseGammaMatrixGaussian {
-  m:MatrixNormalInverseGammaMatrixGaussian(future, futureUpdate, M);
+    M:MatrixNormalInverseGamma) -> MatrixNormalInverseGammaMatrixGaussian {
+  m:MatrixNormalInverseGammaMatrixGaussian(M);
   return m;
 }

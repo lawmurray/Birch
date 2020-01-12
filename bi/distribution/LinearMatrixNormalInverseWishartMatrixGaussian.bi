@@ -2,10 +2,8 @@
  * ed matrix Gaussian variate with linear transformation of
  * matrix-normal-inverse-Wishart prior.
  */
-final class LinearMatrixNormalInverseWishartMatrixGaussian(
-    future:Real[_,_]?, futureUpdate:Boolean, A:Real[_,_],
-    M:MatrixNormalInverseWishart, C:Real[_,_]) < Distribution<Real[_,_]>(
-    future, futureUpdate) {
+final class LinearMatrixNormalInverseWishartMatrixGaussian(A:Real[_,_],
+    M:MatrixNormalInverseWishart, C:Real[_,_]) < Distribution<Real[_,_]> {
   /**
    * Scale.
    */
@@ -42,11 +40,9 @@ final class LinearMatrixNormalInverseWishartMatrixGaussian(
   }
 }
 
-function LinearMatrixNormalInverseWishartMatrixGaussian(
-    future:Real[_,_]?, futureUpdate:Boolean, A:Real[_,_],
+function LinearMatrixNormalInverseWishartMatrixGaussian(A:Real[_,_],
     M:MatrixNormalInverseWishart, C:Real[_,_]) ->
     LinearMatrixNormalInverseWishartMatrixGaussian {
-  m:LinearMatrixNormalInverseWishartMatrixGaussian(future, futureUpdate,
-      A, M, C);
+  m:LinearMatrixNormalInverseWishartMatrixGaussian(A, M, C);
   return m;
 }

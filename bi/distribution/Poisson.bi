@@ -1,8 +1,7 @@
 /*
  * ed Poisson random variate.
  */
-final class Poisson(future:Integer?, futureUpdate:Boolean,
-    λ:Expression<Real>) < Discrete(future, futureUpdate) {
+final class Poisson(λ:Expression<Real>) < Discrete {
   /**
    * Rate.
    */
@@ -38,9 +37,9 @@ final class Poisson(future:Integer?, futureUpdate:Boolean,
     m2:Gamma?;
       
     if (m1 <- λ.graftScaledGamma())? {
-      return ScaledGammaPoisson(future, futureUpdate, m1!.a, m1!.x);
+      return ScaledGammaPoisson(m1!.a, m1!.x);
     } else if (m2 <- λ.graftGamma())? {
-      return GammaPoisson(future, futureUpdate, m2!);
+      return GammaPoisson(m2!);
     } else {
       return this;
     }
@@ -58,18 +57,12 @@ final class Poisson(future:Integer?, futureUpdate:Boolean,
   }
 }
 
-function Poisson(future:Integer?, futureUpdate:Boolean,
-    λ:Expression<Real>) -> Poisson {
-  o:Poisson(future, futureUpdate, λ);
-  return o;
-}
-
 /**
  * Create Poisson distribution.
  */
 function Poisson(λ:Expression<Real>) -> Poisson {
-  m:Poisson(nil, true, λ);
-  return m;
+  o:Poisson(λ);
+  return o;
 }
 
 /**

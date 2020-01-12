@@ -1,8 +1,8 @@
 /*
  * ed multivariate uniform random variable.
  */
-final class IndependentUniform(future:Real[_]?, futureUpdate:Boolean,
-    l:Expression<Real[_]>, u:Expression<Real[_]>) < Distribution<Real[_]>(future, futureUpdate) {
+final class IndependentUniform(l:Expression<Real[_]>,
+    u:Expression<Real[_]>) < Distribution<Real[_]> {
   /**
    * Lower bound.
    */
@@ -38,18 +38,12 @@ final class IndependentUniform(future:Real[_]?, futureUpdate:Boolean,
   }
 }
 
-function IndependentUniform(future:Real[_]?, futureUpdate:Boolean,
-    l:Expression<Real[_]>, u:Expression<Real[_]>) -> IndependentUniform {
-  m:IndependentUniform(future, futureUpdate, l, u);
-  return m;
-}
-
 /**
  * Create multivariate uniform distribution.
  */
-function Uniform(l:Expression<Real[_]>, u:Expression<Real[_]>) -> IndependentUniform {
-  assert l.rows() == u.rows();
-  m:IndependentUniform(nil, true, l, u);
+function Uniform(l:Expression<Real[_]>, u:Expression<Real[_]>) ->
+    IndependentUniform {
+  m:IndependentUniform(l, u);
   return m;
 }
 

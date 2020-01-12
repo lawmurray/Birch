@@ -33,10 +33,8 @@
  * The advantage of using this approach over $O$ separate regressions is that
  * expensive covariance operations are shared.
  */
-final class IndependentInverseGamma(future:Real[_]?,
-    futureUpdate:Boolean, α:Expression<Real>,
-    β:Expression<Real[_]>) < Distribution<Real[_]>(future,
-    futureUpdate) {
+final class IndependentInverseGamma(α:Expression<Real>,
+    β:Expression<Real[_]>) < Distribution<Real[_]> {
   /**
    * Shape.
    */
@@ -86,32 +84,28 @@ final class IndependentInverseGamma(future:Real[_]?,
   }
 }
 
-function IndependentInverseGamma(future:Real[_]?, futureUpdate:Boolean,
-    α:Expression<Real>, β:Expression<Real[_]>) -> IndependentInverseGamma {
-  m:IndependentInverseGamma(future, futureUpdate, α, β);
-  return m;
-}
-
 /**
  * Create inverse-gamma distribution with multiple independent components.
  */
 function InverseGamma(α:Expression<Real>, β:Expression<Real[_]>) ->
     IndependentInverseGamma {
-  m:IndependentInverseGamma(nil, true, α, β);
+  m:IndependentInverseGamma(α, β);
   return m;
 }
 
 /**
  * Create inverse-gamma distribution with multiple independent components.
  */
-function InverseGamma(α:Expression<Real>, β:Real[_]) -> IndependentInverseGamma {
+function InverseGamma(α:Expression<Real>, β:Real[_]) ->
+    IndependentInverseGamma {
   return InverseGamma(α, Boxed(β));
 }
 
 /**
  * Create inverse-gamma distribution with multiple independent components.
  */
-function InverseGamma(α:Real, β:Expression<Real[_]>) -> IndependentInverseGamma {
+function InverseGamma(α:Real, β:Expression<Real[_]>) ->
+    IndependentInverseGamma {
   return InverseGamma(Boxed(α), β);
 }
 

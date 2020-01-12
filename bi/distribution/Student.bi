@@ -1,9 +1,8 @@
 /**
  * Student's $t$-distribution.
  */
-final class Student(future:Real?, futureUpdate:Boolean,
-    ν:Expression<Real>, μ:Expression<Real>, σ2:Expression<Real>) <
-    Distribution<Real>(future, futureUpdate) {
+final class Student(ν:Expression<Real>, μ:Expression<Real>,
+    σ2:Expression<Real>) < Distribution<Real> {
   /**
    * Degrees of freedom.
    */
@@ -49,18 +48,12 @@ final class Student(future:Real?, futureUpdate:Boolean,
   }
 }
 
-function Student(future:Real?, futureUpdate:Boolean, ν:Expression<Real>,
-    μ:Expression<Real>, σ2:Expression<Real>) -> Student {
-  m:Student(future, futureUpdate, ν, μ, σ2);
-  return m;
-}
-
 /**
  * Create Student's $t$-distribution.
  */
 function Student(ν:Expression<Real>, μ:Expression<Real>,
     σ2:Expression<Real>) -> Student {
-  m:Student(nil, true, ν, μ, σ2);
+  m:Student(ν, μ, σ2);
   return m;
 }
 

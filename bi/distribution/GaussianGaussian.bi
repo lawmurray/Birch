@@ -1,9 +1,8 @@
 /*
  * ed Gaussian-Gaussian random variate.
  */
-final class GaussianGaussian(future:Real?, futureUpdate:Boolean,
-    m:Gaussian, s2:Expression<Real>) < Gaussian(future, futureUpdate, m.μ,
-    m.σ2 + s2) {
+final class GaussianGaussian(m:Gaussian, s2:Expression<Real>) <
+    Gaussian(m.μ, m.σ2 + s2) {
   /**
    * Mean.
    */
@@ -23,9 +22,9 @@ final class GaussianGaussian(future:Real?, futureUpdate:Boolean,
   }
 }
 
-function GaussianGaussian(future:Real?, futureUpdate:Boolean,
-    μ:Gaussian, σ2:Expression<Real>) -> GaussianGaussian {
-  m:GaussianGaussian(future, futureUpdate, μ, σ2);
+function GaussianGaussian(μ:Gaussian, σ2:Expression<Real>) ->
+    GaussianGaussian {
+  m:GaussianGaussian(μ, σ2);
   μ.setChild(m);
   return m;
 }

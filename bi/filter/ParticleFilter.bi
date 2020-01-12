@@ -123,7 +123,6 @@ class ParticleFilter {
     replay:TraceHandler <- global.replay;  // to replay reference particle
     play:Handler <- global.play;  // for other particles
     if delayed {
-      replay <- global.redelay;
       play <- global.delay;
     }
 

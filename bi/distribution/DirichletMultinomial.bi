@@ -1,9 +1,8 @@
 /*
  * ed Dirichlet-multinomial random variate.
  */
-final class DirichletMultinomial(future:Integer[_]?,
-    futureUpdate:Boolean, n:Integer, ρ:Dirichlet) <
-    Distribution<Integer[_]>(future, futureUpdate) {
+final class DirichletMultinomial(n:Integer, ρ:Dirichlet) <
+    Distribution<Integer[_]> {
   /**
    * Number of trials.
    */
@@ -31,9 +30,9 @@ final class DirichletMultinomial(future:Integer[_]?,
   }
 }
 
-function DirichletMultinomial(future:Integer[_]?, futureUpdate:Boolean,
-    n:Integer, ρ:Dirichlet) -> DirichletMultinomial {
-  m:DirichletMultinomial(future, futureUpdate, n, ρ);
+function DirichletMultinomial(n:Integer, ρ:Dirichlet) ->
+    DirichletMultinomial {
+  m:DirichletMultinomial(n, ρ);
   ρ.setChild(m);
   return m;
 }

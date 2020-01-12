@@ -1,8 +1,8 @@
 /*
  * ed uniform random variable.
  */
-final class Uniform(future:Real?, futureUpdate:Boolean, l:Expression<Real>, u:Expression<Real>)
-    < Distribution<Real>(future, futureUpdate) {
+final class Uniform(l:Expression<Real>, u:Expression<Real>)
+    < Distribution<Real> {
   /**
    * Lower bound.
    */
@@ -50,17 +50,11 @@ final class Uniform(future:Real?, futureUpdate:Boolean, l:Expression<Real>, u:Ex
   }
 }
 
-function Uniform(future:Real?, futureUpdate:Boolean, l:Expression<Real>,
-    u:Expression<Real>) -> Uniform {
-  m:Uniform(future, futureUpdate, l, u);
-  return m;
-}
-
 /**
  * Create a uniform distribution.
  */
 function Uniform(l:Expression<Real>, u:Expression<Real>) -> Uniform {
-  m:Uniform(nil, true, l, u);
+  m:Uniform(l, u);
   return m;
 }
 

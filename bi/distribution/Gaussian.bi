@@ -1,8 +1,8 @@
 /*
  * ed Gaussian random variate.
  */
-class Gaussian(future:Real?, futureUpdate:Boolean, μ:Expression<Real>,
-    σ2:Expression<Real>) < Moveable<Real>(future, futureUpdate) {
+class Gaussian(μ:Expression<Real>,
+    σ2:Expression<Real>) < Moveable<Real> {
   /**
    * Mean.
    */
@@ -43,17 +43,17 @@ class Gaussian(future:Real?, futureUpdate:Boolean, μ:Expression<Real>,
     s2:InverseGamma?;
 
     if (m1 <- μ.graftLinearNormalInverseGamma())? && m1!.x.σ2 == σ2.distribution() {
-      return LinearNormalInverseGammaGaussian(future, futureUpdate, m1!.a, m1!.x, m1!.c);
+      return LinearNormalInverseGammaGaussian(m1!.a, m1!.x, m1!.c);
     } else if (m3 <- μ.graftNormalInverseGamma())? && m3!.σ2 == σ2.distribution() {
-      return NormalInverseGammaGaussian(future, futureUpdate, m3!);
+      return NormalInverseGammaGaussian(m3!);
     } else if (m4 <- μ.graftLinearGaussian())? {
-      return LinearGaussianGaussian(future, futureUpdate, m4!.a, m4!.x, m4!.c, σ2);
+      return LinearGaussianGaussian(m4!.a, m4!.x, m4!.c, σ2);
     } else if (m5 <- μ.graftDotGaussian())? {
-      return LinearMultivariateGaussianGaussian(future, futureUpdate, m5!.a, m5!.x, m5!.c, σ2);
+      return LinearMultivariateGaussianGaussian(m5!.a, m5!.x, m5!.c, σ2);
     } else if (m6 <- μ.graftGaussian())? {
-      return GaussianGaussian(future, futureUpdate, m6!, σ2);
+      return GaussianGaussian(m6!, σ2);
     } else if (s2 <- σ2.graftInverseGamma())? {
-      return NormalInverseGamma(future, futureUpdate, μ, 1.0, s2!);
+      return NormalInverseGamma(μ, 1.0, s2!);
     } else {
       return this;
     }
@@ -65,11 +65,11 @@ class Gaussian(future:Real?, futureUpdate:Boolean, μ:Expression<Real>,
     m2:TransformDot<MultivariateGaussian>?;
     m3:Gaussian?;
     if (m1 <- μ.graftLinearGaussian())? {
-      return LinearGaussianGaussian(future, futureUpdate, m1!.a, m1!.x, m1!.c, σ2);
+      return LinearGaussianGaussian(m1!.a, m1!.x, m1!.c, σ2);
     } else if (m2 <- μ.graftDotGaussian())? {
-      return LinearMultivariateGaussianGaussian(future, futureUpdate, m2!.a, m2!.x, m2!.c, σ2);
+      return LinearMultivariateGaussianGaussian(m2!.a, m2!.x, m2!.c, σ2);
     } else if (m3 <- μ.graftGaussian())? {
-      return GaussianGaussian(future, futureUpdate, m3!, σ2);
+      return GaussianGaussian(m3!, σ2);
     } else {
       return this;
     }
@@ -79,7 +79,7 @@ class Gaussian(future:Real?, futureUpdate:Boolean, μ:Expression<Real>,
     prune();
     s1:InverseGamma?;
     if (s1 <- σ2.graftInverseGamma())? {
-      return NormalInverseGamma(future, futureUpdate, μ, 1.0, s1!);
+      return NormalInverseGamma(μ, 1.0, s1!);
     }
     return nil;
   }
@@ -92,18 +92,12 @@ class Gaussian(future:Real?, futureUpdate:Boolean, μ:Expression<Real>,
   }
 }
 
-function Gaussian(future:Real?, futureUpdate:Boolean,
-    μ:Expression<Real>, σ2:Expression<Real>) -> Gaussian {
-  o:Gaussian(future, futureUpdate, μ, σ2);
-  return o;
-}
-
 /**
  * Create Gaussian distribution.
  */
 function Gaussian(μ:Expression<Real>, σ2:Expression<Real>) -> Gaussian {
-  m:Gaussian(nil, true, μ, σ2);
-  return m;
+  o:Gaussian(μ, σ2);
+  return o;
 }
 
 /**

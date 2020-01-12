@@ -1,9 +1,8 @@
 /**
  * Matrix Gaussian distribution where each row is independent.
  */
-final class IndependentRowMatrixGaussian(future:Real[_,_]?,
-    futureUpdate:Boolean, M:Expression<Real[_,_]>, V:Expression<Real[_,_]>) <
-    Distribution<Real[_,_]>(future, futureUpdate) {
+final class IndependentRowMatrixGaussian(M:Expression<Real[_,_]>,
+    V:Expression<Real[_,_]>) < Distribution<Real[_,_]> {
   /**
    * Mean.
    */
@@ -37,27 +36,26 @@ final class IndependentRowMatrixGaussian(future:Real[_,_]?,
     m2:MatrixNormalInverseWishart?;
 
     if (m1 <- M.graftLinearMatrixNormalInverseWishart())? && m1!.X.V == V.distribution() {
-      return LinearMatrixNormalInverseWishartMatrixGaussian(future, futureUpdate, m1!.A, m1!.X, m1!.C);
+      return LinearMatrixNormalInverseWishartMatrixGaussian(m1!.A, m1!.X, m1!.C);
     } else if (m2 <- M.graftMatrixNormalInverseWishart())? && m2!.V == V.distribution() {
-      return MatrixNormalInverseWishartMatrixGaussian(future, futureUpdate, m2!);
+      return MatrixNormalInverseWishartMatrixGaussian(m2!);
     } else if (s1 <- V.graftInverseWishart())? {
-      return MatrixNormalInverseWishart(future, futureUpdate, M, identity(M.rows()), s1!);
+      return MatrixNormalInverseWishart(M, identity(M.rows()), s1!);
     } else {
-      return MatrixGaussian(future, futureUpdate, M, Boxed(identity(M.rows())), V);
+      return Gaussian(M, Boxed(identity(M.rows())), V);
     }
   }
 
   function graftMatrixGaussian() -> MatrixGaussian? {
     prune();
-    return MatrixGaussian(future, futureUpdate, M, Boxed(identity(M.rows())), V);
+    return Gaussian(M, Boxed(identity(M.rows())), V);
   }
 
   function graftMatrixNormalInverseWishart() -> MatrixNormalInverseWishart? {
     prune();
     s1:InverseWishart?;
     if (s1 <- V.graftInverseWishart())? {
-      return MatrixNormalInverseWishart(future, futureUpdate, M,
-          identity(M.rows()), s1!);
+      return MatrixNormalInverseWishart(M, identity(M.rows()), s1!);
     }
     return nil;
   }
@@ -68,7 +66,7 @@ final class IndependentRowMatrixGaussian(future:Real[_,_]?,
  */
 function Gaussian(M:Expression<Real[_,_]>, V:Expression<Real[_,_]>) ->
     IndependentRowMatrixGaussian {
-  m:IndependentRowMatrixGaussian(nil, true, M, V);
+  m:IndependentRowMatrixGaussian(M, V);
   return m;
 }
 

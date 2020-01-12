@@ -1,8 +1,7 @@
 /*
  * Bounded discrete random variate.
  */
-abstract class BoundedDiscrete(future:Integer?, futureUpdate:Boolean,
-    l:Integer, u:Integer) < Discrete(future, futureUpdate) {
+abstract class BoundedDiscrete(l:Integer, u:Integer) < Discrete {
   /**
    * Lower bound
    */

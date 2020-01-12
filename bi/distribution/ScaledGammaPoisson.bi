@@ -1,8 +1,7 @@
 /*
  * ed scaled gamma-Poisson random variate.
  */
-final class ScaledGammaPoisson(future:Integer?, futureUpdate:Boolean,
-    a:Real, λ:Gamma) < Discrete(future, futureUpdate) {
+final class ScaledGammaPoisson(a:Real, λ:Gamma) < Discrete {
   /**
    * Scale.
    */
@@ -46,10 +45,9 @@ final class ScaledGammaPoisson(future:Integer?, futureUpdate:Boolean,
   }
 }
 
-function ScaledGammaPoisson(future:Integer?, futureUpdate:Boolean,
-    a:Real, λ:Gamma) -> ScaledGammaPoisson {
+function ScaledGammaPoisson(a:Real, λ:Gamma) -> ScaledGammaPoisson {
   assert a > 0;
-  m:ScaledGammaPoisson(future, futureUpdate, a, λ);
+  m:ScaledGammaPoisson(a, λ);
   λ.setChild(m);
   return m;
 }

@@ -1,8 +1,7 @@
 /*
  * ed Dirichlet random variate.
  */
-final class Dirichlet(future:Real[_]?, futureUpdate:Boolean, α:Expression<Real[_]>)
-    < Distribution<Real[_]>(future, futureUpdate) {
+final class Dirichlet(α:Expression<Real[_]>) < Distribution<Real[_]> {
   /**
    * Concentration.
    */
@@ -33,17 +32,11 @@ final class Dirichlet(future:Real[_]?, futureUpdate:Boolean, α:Expression<Real[
   }
 }
 
-function Dirichlet(future:Real[_]?, futureUpdate:Boolean,
-    α:Expression<Real[_]>) -> Dirichlet {
-  m:Dirichlet(future, futureUpdate, α);
-  return m;
-}
-
 /**
  * Create Dirichlet distribution.
  */
 function Dirichlet(α:Expression<Real[_]>) -> Dirichlet {
-  m:Dirichlet(nil, true, α);
+  m:Dirichlet(α);
   return m;
 }
 

@@ -1,8 +1,7 @@
 /*
  * ed restaurant-categorical random variate.
  */
-final class RestaurantCategorical(future:Integer?, futureUpdate:Boolean,
-    ρ:Restaurant) < Distribution<Integer>(future, futureUpdate) {
+final class RestaurantCategorical(ρ:Restaurant) < Distribution<Integer> {
   /**
    * Category probabilities.
    */
@@ -33,9 +32,8 @@ final class RestaurantCategorical(future:Integer?, futureUpdate:Boolean,
 }
 
 
-function RestaurantCategorical(future:Integer?, futureUpdate:Boolean,
-    ρ:Restaurant) -> RestaurantCategorical {
-  m:RestaurantCategorical(future, futureUpdate, ρ);
+function RestaurantCategorical(ρ:Restaurant) -> RestaurantCategorical {
+  m:RestaurantCategorical(ρ);
   ρ.setChild(m);
   return m;
 }

@@ -3,9 +3,8 @@
  * components have independent and identical variance.
  */
 final class LinearMultivariateNormalInverseGammaMultivariateGaussian(
-    future:Real[_]?, futureUpdate:Boolean, A:Real[_,_],
-    μ:MultivariateNormalInverseGamma, c:Real[_]) <
-    Distribution<Real[_]>(future, futureUpdate) {
+    A:Real[_,_], μ:MultivariateNormalInverseGamma, c:Real[_]) <
+    Distribution<Real[_]> {
   /**
    * Scale.
    */
@@ -42,10 +41,10 @@ final class LinearMultivariateNormalInverseGammaMultivariateGaussian(
   }
 }
 
-function LinearMultivariateNormalInverseGammaMultivariateGaussian(future:Real[_]?,
-    futureUpdate:Boolean, A:Real[_,_], μ:MultivariateNormalInverseGamma,
-    c:Real[_]) -> LinearMultivariateNormalInverseGammaMultivariateGaussian {
-  m:LinearMultivariateNormalInverseGammaMultivariateGaussian(future, futureUpdate, A, μ, c);
+function LinearMultivariateNormalInverseGammaMultivariateGaussian(
+    A:Real[_,_], μ:MultivariateNormalInverseGamma, c:Real[_]) ->
+    LinearMultivariateNormalInverseGammaMultivariateGaussian {
+  m:LinearMultivariateNormalInverseGammaMultivariateGaussian(A, μ, c);
   μ.setChild(m);
   return m;
 }

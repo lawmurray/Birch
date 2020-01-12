@@ -3,9 +3,8 @@
  * cannot be instantiated, but the associated random variable may be
  * marginalized out.
  */
-final class Restaurant(future:Real[_]?, futureUpdate:Boolean,
-    α:Expression<Real>, θ:Expression<Real>) <
-    Distribution<Real[_]>(future, futureUpdate) {
+final class Restaurant(α:Expression<Real>, θ:Expression<Real>) <
+    Distribution<Real[_]> {
   /**
    * Concentration.
    */
@@ -60,18 +59,12 @@ final class Restaurant(future:Real[_]?, futureUpdate:Boolean,
   }
 }
 
-function Restaurant(future:Real[_]?, futureUpdate:Boolean,
-    α:Expression<Real>, θ:Expression<Real>) -> Restaurant {
-  m:Restaurant(future, futureUpdate, α, θ);
-  return m;
-}
-
 /**
  * Create Chinese restaurant process.
  */
 function Restaurant(α:Expression<Real>, θ:Expression<Real>) -> Restaurant {
-  x:Restaurant(nil, true, α, θ);
-  return x;
+  m:Restaurant(α, θ);
+  return m;
 }
 
 /**

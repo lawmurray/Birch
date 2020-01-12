@@ -16,9 +16,9 @@ final class DiscreteMultiply<Left,Right,Value>(left:Expression<Left>,
     if !y? {
       x:Discrete?;
       if (x <- left.graftDiscrete())? {
-        y <- LinearDiscrete(nil, true, right.value(), x!, 0);
+        y <- LinearDiscrete(right.value(), x!, 0);
       } else if (x <- right.graftDiscrete())? {
-        y <- LinearDiscrete(nil, true, left.value(), x!, 0);
+        y <- LinearDiscrete(left.value(), x!, 0);
       }
     }
     return y;
@@ -30,9 +30,9 @@ final class DiscreteMultiply<Left,Right,Value>(left:Expression<Left>,
     x2:BoundedDiscrete? <- right.graftBoundedDiscrete();
 
     if x1? && !(x1!.hasValue()) {
-      y <- LinearBoundedDiscrete(nil, true, right.value(), x1!, 0);
+      y <- LinearBoundedDiscrete(right.value(), x1!, 0);
     } else if x2? && !(x2!.hasValue()) {
-      y <- LinearBoundedDiscrete(nil, true, left.value(), x2!, 0);
+      y <- LinearBoundedDiscrete(left.value(), x2!, 0);
     }
     return y;
   }
