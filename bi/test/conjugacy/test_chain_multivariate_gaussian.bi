@@ -19,14 +19,14 @@ program test_chain_multivariate_gaussian(N:Integer <- 10000) {
   /* simulate forward */
   for i in 1..N {
     m:TestChainMultivariateGaussian(μ, Σ);
-    delay.handle(m.simulate());
+    playDelay.handle(m.simulate());
     X1[i,1..15] <- m.forward();
   }
 
   /* simulate backward */
   for i in 1..N {
     m:TestChainMultivariateGaussian(μ, Σ);
-    delay.handle(m.simulate());
+    playDelay.handle(m.simulate());
     X2[i,1..15] <- m.backward();
   }
   

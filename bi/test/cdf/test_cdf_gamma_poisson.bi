@@ -3,6 +3,6 @@
  */
 program test_cdf_gamma_poisson() {
   m:TestGammaPoisson;
-  delay.handle(m.simulate());
+  playDelay.handle(m.simulate());
   test_cdf(m.marginal());
 }

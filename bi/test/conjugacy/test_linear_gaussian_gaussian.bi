@@ -3,7 +3,7 @@
  */
 program test_linear_gaussian_gaussian(N:Integer <- 10000) { 
   m:TestLinearGaussianGaussian;
-  delay.handle(m.simulate());
+  playDelay.handle(m.simulate());
     
   /* simulate forward */
   X1:Real[N,2];

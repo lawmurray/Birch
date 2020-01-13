@@ -3,7 +3,7 @@
  */
 program test_multivariate_gaussian_multivariate_gaussian(N:Integer <- 10000) {
   m:TestMultivariateGaussianMultivariateGaussian;
-  delay.handle(m.simulate());
+  playDelay.handle(m.simulate());
    
   /* simulate forward */
   X1:Real[N,10];

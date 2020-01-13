@@ -7,21 +7,27 @@ digraph {
 
   Handler [href="../classes/Handler/",target="_top"]
   PlayHandler [href="../classes/PlayHandler/",target="_top"]
-  DelayHandler [href="../classes/DelayHandler/",target="_top"]
+  PlayDelayHandler [href="../classes/PlayDelayHandler/",target="_top"]
+  PlayMoveHandler [href="../classes/PlayMoveHandler/",target="_top"]
+  PlayDelayMoveHandler [href="../classes/PlayDelayMoveHandler/",target="_top"]
 
   TraceHandler [href="../classes/TraceHandler/",target="_top"]
   ReplayHandler [href="../classes/ReplayHandler/",target="_top"]
-  UnplayHandler [href="../classes/UnplayHandler/",target="_top"]
-  RedelayHandler [href="../classes/RedelayHandler/",target="_top"]
-  UndelayHandler [href="../classes/UndelayHandler/",target="_top"]
+  ReplayDelayHandler [href="../classes/ReplayDelayHandler/",target="_top"]
+  ReplayMoveHandler [href="../classes/ReplayMoveHandler/",target="_top"]
+  ReplayDelayMoveHandler [href="../classes/ReplayDelayMoveHandler/",target="_top"]
   ProposeHandler [href="../classes/ProposeHandler/",target="_top"]
 
   PlayHandler -> Handler
-  DelayHandler -> Handler
+  PlayDelayHandler -> Handler
+  PlayMoveHandler -> Handler
+  PlayDelayMoveHandler -> Handler
 
   ReplayHandler -> TraceHandler
-  UnplayHandler -> TraceHandler
-  RedelayHandler -> TraceHandler
-  UndelayHandler -> TraceHandler
+  ReplayDelayHandler -> TraceHandler
+  ReplayMoveHandler -> TraceHandler
+  ReplayDelayMoveHandler -> TraceHandler
   ProposeHandler -> TraceHandler
+
+  TraceHandler -> PlayMoveHandler [style=invis]
 }

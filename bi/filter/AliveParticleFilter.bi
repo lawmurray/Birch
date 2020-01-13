@@ -24,7 +24,7 @@ class AliveParticleFilter < ParticleFilter {
     /* event handler */
     h:Handler <- play;
     if delayed {
-      h <- global.delay;
+      h <- global.playDelay;
     }
 
     /* initialize and weight */

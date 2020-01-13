@@ -10,14 +10,14 @@ program test_beta_geometric(N:Integer <- 10000) {
   /* simulate forward */
   for i in 1..N {
     m:TestBetaGeometric(α, β);
-    delay.handle(m.simulate());
+    playDelay.handle(m.simulate());
     X1[i,1..2] <- m.forward();
   }
 
   /* simulate backward */
   for i in 1..N {
     m:TestBetaGeometric(α, β);
-    delay.handle(m.simulate());
+    playDelay.handle(m.simulate());
     X2[i,1..2] <- m.backward();
   }
   

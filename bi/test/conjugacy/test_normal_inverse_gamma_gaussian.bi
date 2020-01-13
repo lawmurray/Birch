@@ -6,7 +6,7 @@ program test_normal_inverse_gamma_gaussian(N:Integer <- 10000) {
   X2:Real[N,3];
 
   m:TestNormalInverseGammaGaussian;
-  delay.handle(m.simulate());
+  playDelay.handle(m.simulate());
    
   /* simulate forward */
   for n in 1..N {

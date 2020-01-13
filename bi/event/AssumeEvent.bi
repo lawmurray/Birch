@@ -34,6 +34,48 @@ final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
     return w;
   }
 
+  function playDelay() -> Real {
+    auto w <- 0.0;
+    if v.hasValue() {
+      w <- p.observe(v.value());
+    } else {
+      p.assume(v);
+    }
+    return w;
+  }
+
+  function playMove() -> Real {
+    auto w <- 0.0;
+    if v.hasValue() {
+      auto ψ <- p.lazy(v);
+      if ψ? {
+        w <- ψ!.value();
+        ψ!.grad(1.0);
+      } else {
+        w <- p.observe(v.value());
+      }
+    } else {
+      v <- p.value();
+    }
+    return w;
+  }
+
+  function playDelayMove() -> Real {
+    auto w <- 0.0;
+    if v.hasValue() {
+      auto ψ <- p.lazy(v);
+      if ψ? {
+        w <- ψ!.value();
+        ψ!.grad(1.0);
+      } else {
+        w <- p.observe(v.value());
+      }
+    } else {
+      p.assume(v);
+    }
+    return w;
+  }
+
   function replay(record:Record) -> Real {
     auto w <- 0.0;
     auto value <- coerce(record);
@@ -50,17 +92,7 @@ final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
     return w;
   }
 
-  function delay() -> Real {
-    auto w <- 0.0;
-    if v.hasValue() {
-      w <- p.observe(v.value());
-    } else {
-      p.assume(v);
-    }
-    return w;
-  }
-
-  function redelay(record:Record) -> Real {
+  function replayDelay(record:Record) -> Real {
     auto w <- 0.0;
     auto value <- coerce(record);
     if v.hasValue() {
@@ -68,6 +100,59 @@ final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
       w <- p.observe(value);
     } else {
       p.assume(v, value);
+    }
+    return w;
+  }
+
+  function replayMove(record:Record) -> Real {
+    auto w <- 0.0;
+    auto value <- coerce(record);
+    if v.hasValue() {
+      assert v.value() == value;
+      auto ψ <- p.lazy(v);
+      if ψ? {
+        w <- ψ!.value();
+        ψ!.grad(1.0);
+      } else {
+        w <- p.observe(value);
+      }
+    } else {
+      if v.dfdx? {
+        auto u <- simulate_propose(value, v.dfdx!);
+        w <- p.observe(u);
+        if w != -inf {
+          v <- u;
+          w <- 0.0;
+        }
+      } else {
+        w <- p.observe(value);
+        if w != -inf {
+          v <- value;
+          w <- 0.0;
+        }
+      }
+    }
+    return w;
+  }
+
+  function replayDelayMove(record:Record) -> Real {
+    auto w <- 0.0;
+    auto value <- coerce(record);
+    if v.hasValue() {
+      assert v.value() == value;
+      auto ψ <- p.lazy(v);
+      if ψ? {
+        w <- ψ!.value();
+        ψ!.grad(1.0);
+      } else {
+        w <- p.observe(value);
+      }
+    } else {
+      if v.dfdx? {
+        p.assume(v, simulate_propose(value, v.dfdx!));
+      } else {
+        p.assume(v, value);
+      }
     }
     return w;
   }
@@ -103,4 +188,52 @@ function AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) ->
     AssumeEvent<Value> {
   evt:AssumeEvent<Value>(v, p);
   return evt;
+}
+
+function simulate_propose(x:Real, d:Real) -> Real {
+  return simulate_gaussian(x + 0.03*d, 0.06);
+}
+
+function simulate_propose(x:Real[_], d:Real[_]) -> Real[_] {
+  return simulate_multivariate_gaussian(x + d, 1.0);
+}
+
+function simulate_propose(x:Real[_,_], d:Real[_,_]) -> Real[_,_] {
+  return simulate_matrix_gaussian(x + d, 1.0);
+}
+
+function simulate_propose(x:Integer, d:Integer) -> Integer {
+  return x;
+}
+
+function simulate_propose(x:Integer[_], d:Integer[_]) -> Integer[_] {
+  return x;
+}
+
+function simulate_propose(x:Boolean, d:Boolean) -> Boolean {
+  return x;
+}
+
+function logpdf_propose(x':Real, x:Real, d:Real) -> Real {
+  return logpdf_gaussian(x', x + 0.03*d, 0.06);
+}
+
+function logpdf_propose(x':Real[_], x:Real[_], d:Real[_]) -> Real {
+  return logpdf_multivariate_gaussian(x', x + d, 1.0);
+}
+
+function logpdf_propose(x':Real[_,_], x:Real[_,_], d:Real[_,_]) -> Real {
+  return logpdf_matrix_gaussian(x', x + d, 1.0);
+}
+
+function logpdf_propose(x':Integer, x:Integer, d:Integer) -> Real {
+  return 0.0;
+}
+
+function logpdf_propose(x':Integer[_], x:Integer[_], d:Integer[_]) -> Real {
+  return 0.0;
+}
+
+function logpdf_propose(x':Boolean, x:Boolean, d:Boolean) -> Real {
+  return 0.0;
 }

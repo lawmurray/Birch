@@ -3,7 +3,7 @@
  */
 program test_negative_linear_discrete_delta(N:Integer <- 10000) {
   m:TestNegativeLinearDiscreteDelta;
-  delay.handle(m.simulate());
+  playDelay.handle(m.simulate());
      
   /* simulate forward */
   X1:Real[N,2];

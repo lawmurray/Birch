@@ -8,14 +8,14 @@ program test_add_bounded_discrete_delta(N:Integer <- 10000) {
   /* simulate forward */
   for n in 1..N {
     m:TestAddBoundedDiscreteDelta;
-    delay.handle(m.simulate());
+    playDelay.handle(m.simulate());
     X1[n,1..2] <- m.forward();
   }
 
   /* simulate backward */
   for n in 1..N {
     m:TestAddBoundedDiscreteDelta;
-    delay.handle(m.simulate());
+    playDelay.handle(m.simulate());
     X2[n,1..2] <- m.backward();
   }
   

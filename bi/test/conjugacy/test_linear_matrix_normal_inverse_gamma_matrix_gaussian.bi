@@ -7,7 +7,7 @@ program test_linear_matrix_normal_inverse_gamma_matrix_gaussian(
   auto p <- 2;
 
   m:TestLinearMatrixNormalInverseGammaMatrixGaussian;
-  delay.handle(m.simulate());
+  playDelay.handle(m.simulate());
    
   /* simulate forward */
   X1:Real[N,p + 2*n*p];

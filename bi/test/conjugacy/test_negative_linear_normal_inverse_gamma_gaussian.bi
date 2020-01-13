@@ -3,7 +3,7 @@
  */
 program test_negative_linear_normal_inverse_gamma_gaussian(N:Integer <- 10000) {  
   m:TestNegativeLinearNormalInverseGammaGaussian;
-  delay.handle(m.simulate());
+  playDelay.handle(m.simulate());
   
   /* simulate forward */
   X1:Real[N,3];

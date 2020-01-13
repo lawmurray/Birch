@@ -68,7 +68,7 @@ class ParticleFilter {
     /* event handler */
     h:Handler <- play;
     if delayed {
-      h <- global.delay;
+      h <- global.playDelay;
     }
 
     /* initialize and weight */
@@ -123,7 +123,8 @@ class ParticleFilter {
     replay:TraceHandler <- global.replay;  // to replay reference particle
     play:Handler <- global.play;  // for other particles
     if delayed {
-      play <- global.delay;
+      play <- global.playDelay;
+      replay <- global.replayDelay;
     }
 
     /* initialize and weight */

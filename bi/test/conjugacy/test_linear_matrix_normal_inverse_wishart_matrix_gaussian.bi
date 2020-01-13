@@ -7,7 +7,7 @@ program test_linear_matrix_normal_inverse_wishart_matrix_gaussian(
   auto p <- 2;
 
   m:TestLinearMatrixNormalInverseWishartMatrixGaussian;
-  delay.handle(m.simulate());
+  playDelay.handle(m.simulate());
 
   /* simulate forward */
   X1:Real[N,p*p + 2*n*p];

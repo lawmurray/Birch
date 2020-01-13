@@ -12,17 +12,8 @@ final class FactorEvent(w:Real) < Event {
   function play() -> Real {
     return w;
   }
-    
-  function replay(record:Record) -> Real {
-    assert !record.hasValue();
-    return w;
-  }
 
-  function delay() -> Real {
-    return w;
-  }
-    
-  function redelay(record:Record) -> Real {
+  function replay(record:Record) -> Real {
     assert !record.hasValue();
     return w;
   }

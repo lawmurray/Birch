@@ -3,7 +3,7 @@
  */
 program test_inverse_gamma_gamma(N:Integer <- 10000) {
   m:TestInverseGammaGamma;
-  delay.handle(m.simulate());
+  playDelay.handle(m.simulate());
  
   /* simulate forward */
   X1:Real[N,2];

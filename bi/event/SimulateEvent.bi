@@ -35,14 +35,6 @@ final class SimulateEvent<Value>(p:Distribution<Value>) < ValueEvent<Value> {
     }
     return 0.0;
   }
-
-  function delay() -> Real {
-    return play();
-  }
-  
-  function redelay(record:Record) -> Real {
-    return replay(record);
-  }
   
   function propose(record:Record) -> Real {
     auto value <- coerce(record);

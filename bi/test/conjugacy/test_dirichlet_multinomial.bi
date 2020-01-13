@@ -13,14 +13,14 @@ program test_dirichlet_multinomial(N:Integer <- 10000) {
   /* simulate forward */
   for i in 1..N {
     m:TestDirichletMultinomial(n, α);
-    delay.handle(m.simulate());
+    playDelay.handle(m.simulate());
     X1[i,1..10] <- m.forward();
   }
 
   /* simulate backward */
   for i in 1..N {
     m:TestDirichletMultinomial(n, α);
-    delay.handle(m.simulate());
+    playDelay.handle(m.simulate());
     X2[i,1..10] <- m.backward();
   }
   

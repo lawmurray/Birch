@@ -3,7 +3,7 @@
  */
 program test_beta_binomial(N:Integer <- 10000) {  
   m:TestBetaBinomial;
-  delay.handle(m.simulate());
+  playDelay.handle(m.simulate());
  
   /* simulate forward */
   X1:Real[N,2];

@@ -5,7 +5,7 @@ program test_normal_inverse_gamma(N:Integer <- 10000) {
   X1:Real[N,2];
   X2:Real[N,2];
   m:TestNormalInverseGamma;
-  delay.handle(m.simulate());
+  playDelay.handle(m.simulate());
    
   /* simulate forward */
   for n in 1..N {

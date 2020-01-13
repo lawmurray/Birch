@@ -3,7 +3,7 @@
  */
 program test_negative_scaled_gamma_poisson(N:Integer <- 10000) {
   m:TestNegativeScaledGammaPoisson;
-  delay.handle(m.simulate());
+  playDelay.handle(m.simulate());
  
   /* simulate forward */
   X1:Real[N,2];

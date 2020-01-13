@@ -3,7 +3,7 @@
  */
 program test_negative_linear_multivariate_normal_inverse_gamma_multivariate_gaussian(N:Integer <- 10000) {
   m:TestNegativeLinearMultivariateNormalInverseGammaMultivariateGaussian;
-  delay.handle(m.simulate());
+  playDelay.handle(m.simulate());
   
   /* simulate forward */
   X1:Real[N,16];

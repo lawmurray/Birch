@@ -28,17 +28,16 @@ final class ObserveEvent<Value>(v:Value, p:Distribution<Value>) <
     return p.observe(v);
   }
   
+  function playMove() -> Real {
+    auto ψ <- p.lazy(Boxed(v));
+    auto w <- ψ.value();
+    ψ.grad();
+    return w;
+  }
+  
   function replay(record:Record) -> Real {
     assert v == coerce(record);
     return p.observe(v);
-  }
-
-  function delay() -> Real {
-    return play();
-  }
-
-  function redelay(record:Record) -> Real {
-    return replay(record);
   }
 
   function propose(record:Record) -> Real {

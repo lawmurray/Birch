@@ -3,7 +3,7 @@
  */
 program test_negative_scaled_gamma_exponential(N:Integer <- 10000) {
   m:TestNegativeScaledGammaExponential;
-  delay.handle(m.simulate());
+  playDelay.handle(m.simulate());
  
   /* simulate forward */
   X1:Real[N,2];

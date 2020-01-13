@@ -4,7 +4,7 @@
 program test_linear_multivariate_gaussian_multivariate_gaussian(
     N:Integer <- 10000) {
   m:TestLinearMultivariateGaussianMultivariateGaussian;
-  delay.handle(m.simulate());
+  playDelay.handle(m.simulate());
  
   /* simulate forward */
   X1:Real[N,10];
