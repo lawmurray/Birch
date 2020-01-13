@@ -20,6 +20,11 @@ final class Random<Value> < Expression<Value> {
   dfdx:Value?;
 
   /**
+   * Log-weight of prior.
+   */
+  w:Real?;
+
+  /**
    * Value assignment.
    */
   operator <- x:Value {
@@ -85,10 +90,18 @@ final class Random<Value> < Expression<Value> {
   }
 
   function grad(d:Value) {
-    if dfdx? {
-      dfdx <- dfdx! + d;
-    } else {
-      dfdx <- d;
+    assert x?;
+    if p? {
+      if dfdx? {
+        dfdx <- dfdx! + d;
+      } else {
+        dfdx <- d;
+        auto ψ <- p!.lazy(this);
+        if ψ? {
+          w <- ψ!.value();
+          ψ!.grad(1.0);
+        }
+      }
     }
   }
 
