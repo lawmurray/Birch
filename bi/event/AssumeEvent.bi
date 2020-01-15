@@ -237,3 +237,14 @@ function logpdf_propose(x':Integer[_], x:Integer[_], d:Integer[_]) -> Real {
 function logpdf_propose(x':Boolean, x:Boolean, d:Boolean) -> Real {
   return 0.0;
 }
+
+function ratio_propose(trace':Trace, trace:Trace) -> Real {
+  auto α <- 0.0;
+  auto record' <- trace'.walk();
+  auto record <- trace.walk();
+  while record'? && record? {
+    α <- α + record'!.ratio(record!);
+  }
+  assert !record'? && !record?;
+  return α;
+}

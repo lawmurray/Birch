@@ -22,7 +22,7 @@ final class Random<Value> < Expression<Value> {
   /**
    * Log-weight of prior.
    */
-  w:Real?;
+  w:Real <- 0.0;
 
   /**
    * Value assignment.

@@ -16,6 +16,22 @@ final class DelayRecord<Value>(v:Random<Value>) < ValueRecord<Value> {
   function value() -> Value {
     return v.value();
   }
+
+  function ratio(record:Record) -> Real {
+    auto current <- DelayRecord<Value>?(record);
+    if current? {
+      auto v' <- this.v;
+      auto v <- current!.v;
+      auto α <- v'.w - v.w;
+      if v.x? && v.dfdx? && v'.x? && v'.dfdx? {
+        α <- α + logpdf_propose(v.x!, v'.x!, v'.dfdx!);
+        α <- α - logpdf_propose(v'.x!, v.x!, v.dfdx!);
+      }
+      return α;
+    } else {
+      return 0.0;
+    }
+  }
 }
 
 /**
