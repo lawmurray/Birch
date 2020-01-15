@@ -399,7 +399,12 @@ void bi::CppFiberGenerator::visit(const Yield* o) {
 
 void bi::CppFiberGenerator::visit(const For* o) {
   genTraceLine(o->loc);
-  start("for (" << o->index << " = " << o->from << "; ");
+  start("for (");
+  auto forVar = dynamic_cast<const ForVariable*>(o->index);
+  if (forVar && !forVar->has(IN_FIBER)) {
+    middle("auto ");
+  }
+  middle(o->index << " = " << o->from << "; ");
   middle(o->index << " <= " << o->to << "; ");
   finish("++" << o->index << ") {");
   in();
