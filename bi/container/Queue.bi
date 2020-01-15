@@ -63,12 +63,7 @@ final class Queue<Type> < DoubleStack<Type> {
     allForward();
     while forward? {
       yield forward!.x;
-      cpp{{
-      auto node = std::move(self->forward.get());
-      self->forward.assign(context_, std::move(node->next));
-      node->next.assign(context_, std::move(self->backward));
-      self->backward.assign(context_, std::move(node));
-      }}
+      oneBackward();
     }
   }
   
