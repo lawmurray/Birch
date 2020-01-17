@@ -84,7 +84,7 @@ final class Random<Value> < Expression<Value> {
     if !x? {
       p <- p!.graft();
       x <- p!.value();
-      p <- nil;
+      //p <- nil;
     }
     return x!;
   }
@@ -95,9 +95,9 @@ final class Random<Value> < Expression<Value> {
       if dfdx? {
         dfdx <- dfdx! + d;
       } else {
-        dfdx <- d;
         auto ψ <- p!.lazy(this);
         if ψ? {
+          dfdx <- d;
           w <- ψ!.value();
           ψ!.grad(1.0);
         }
@@ -114,7 +114,7 @@ final class Random<Value> < Expression<Value> {
     this.x <- x;
     p <- p!.graft();
     auto w <- p!.observe(x);
-    p <- nil;
+    //p <- nil;
     return w;
   }
 
@@ -184,163 +184,131 @@ final class Random<Value> < Expression<Value> {
 
   function graftGaussian() -> Gaussian? {
     if !hasValue() {
-      auto q <- p!.graftGaussian();
-      if q? {
-        p <- Distribution<Value>?(q);
-      }
+      return p!.graftGaussian();
+    } else {
+      return nil;
     }
-    return Gaussian?(p);
   }
     
   function graftBeta() -> Beta? {
     if !hasValue() {
-      auto q <- p!.graftBeta();
-      if q? {
-        p <- Distribution<Value>?(q);
-      }
+      return p!.graftBeta();
+    } else {
+      return nil;
     }
-    return Beta?(p);
   }
   
   function graftGamma() -> Gamma? {
     if !hasValue() {
-      auto q <- p!.graftGamma();
-      if q? {
-        p <- Distribution<Value>?(q);
-      }
+      return p!.graftGamma();
+    } else {
+      return nil;
     }
-    return Gamma?(p);
   }
   
   function graftInverseGamma() -> InverseGamma? {
     if !hasValue() {
-      auto q <- p!.graftInverseGamma();
-      if q? {
-        p <- Distribution<Value>?(q);
-      }
+      return p!.graftInverseGamma();
+    } else {
+      return nil;
     }
-    return InverseGamma?(p);
   } 
 
   function graftIndependentInverseGamma() -> IndependentInverseGamma? {
     if !hasValue() {
-      auto q <- p!.graftIndependentInverseGamma();
-      if q? {
-        p <- Distribution<Value>?(q);
-      }
+      return p!.graftIndependentInverseGamma();
+    } else {
+      return nil;
     }
-    return IndependentInverseGamma?(p);
   } 
 
   function graftInverseWishart() -> InverseWishart? {
     if !hasValue() {
-      auto q <- p!.graftInverseWishart();
-      if q? {
-        p <- Distribution<Value>?(q);
-      }
+      return p!.graftInverseWishart();
+    } else {
+      return nil;
     }
-    return InverseWishart?(p);
   } 
   
   function graftNormalInverseGamma() -> NormalInverseGamma? {
     if !hasValue() {
-      auto q <- p!.graftNormalInverseGamma();
-      if q? {
-        p <- Distribution<Value>?(q);
-      }
+      return p!.graftNormalInverseGamma();
+    } else {
+      return nil;
     }
-    return NormalInverseGamma?(p);
   }
   
   function graftDirichlet() -> Dirichlet? {
     if !hasValue() {
-      auto q <- p!.graftDirichlet();
-      if q? {
-        p <- Distribution<Value>?(q);
-      }
+      return p!.graftDirichlet();
+    } else {
+      return nil;
     }
-    return Dirichlet?(p);
   }
 
   function graftRestaurant() -> Restaurant? {
     if !hasValue() {
-      auto q <- p!.graftRestaurant();
-      if q? {
-        p <- Distribution<Value>?(q);
-      }
+      return p!.graftRestaurant();
+    } else {
+      return nil;
     }
-    return Restaurant?(p);
   }
 
   function graftMultivariateGaussian() -> MultivariateGaussian? {
     if !hasValue() {
-      auto q <- p!.graftMultivariateGaussian();
-      if q? {
-        p <- Distribution<Value>?(q);
-      }
+      return p!.graftMultivariateGaussian();
+    } else {
+      return nil;
     }
-    return MultivariateGaussian?(p);
   }
 
   function graftMultivariateNormalInverseGamma() ->
       MultivariateNormalInverseGamma? {
     if !hasValue() {
-      auto q <- p!.graftMultivariateNormalInverseGamma();
-      if q? {
-        p <- Distribution<Value>?(q);
-      }
+      return p!.graftMultivariateNormalInverseGamma();
+    } else {
+      return nil;
     }
-    return MultivariateNormalInverseGamma?(p);
   }
 
   function graftMatrixGaussian() -> MatrixGaussian? {
     if !hasValue() {
-      auto q <- p!.graftMatrixGaussian();
-      if q? {
-        p <- Distribution<Value>?(q);
-      }
+      return p!.graftMatrixGaussian();
+    } else {
+      return nil;
     }
-    return MatrixGaussian?(p);
   }
 
   function graftMatrixNormalInverseGamma() -> MatrixNormalInverseGamma? {
     if !hasValue() {
-      auto q <- p!.graftMatrixNormalInverseGamma();
-      if q? {
-        p <- Distribution<Value>?(q);
-      }
+      return p!.graftMatrixNormalInverseGamma();
+    } else {
+      return nil;
     }
-    return MatrixNormalInverseGamma?(p);
   }
 
   function graftMatrixNormalInverseWishart() -> MatrixNormalInverseWishart? {
     if !hasValue() {
-      auto q <- p!.graftMatrixNormalInverseWishart();
-      if q? {
-        p <- Distribution<Value>?(q);
-      }
+      return p!.graftMatrixNormalInverseWishart();
+    } else {
+      return nil;
     }
-    return MatrixNormalInverseWishart?(p);
   }
 
   function graftDiscrete() -> Discrete? {
     if !hasValue() {
-      auto q <- p!.graftDiscrete();
-      if q? {
-        p <- Distribution<Value>?(q);
-      }
+      return p!.graftDiscrete();
+    } else {
+      return nil;
     }
-    return Discrete?(p);
   }
 
   function graftBoundedDiscrete() -> BoundedDiscrete? {
     if !hasValue() {
-      auto q <- p!.graftBoundedDiscrete();
-      if q? {
-        p <- Distribution<Value>?(q);
-      }
+      return p!.graftBoundedDiscrete();
+    } else {
+      return nil;
     }
-    return BoundedDiscrete?(p);
   }
 
   function read(buffer:Buffer) {

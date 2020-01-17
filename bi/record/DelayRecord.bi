@@ -16,6 +16,10 @@ final class DelayRecord<Value>(v:Random<Value>) < ValueRecord<Value> {
   function value() -> Value {
     return v.value();
   }
+  
+  function random() -> Random<Value> {
+    return v;
+  }
 
   function ratio(record:Record) -> Real {
     auto current <- DelayRecord<Value>?(record);

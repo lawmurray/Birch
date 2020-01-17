@@ -39,15 +39,14 @@ abstract class BinaryExpression<Left,Right,Value>(left:Expression<Left>,
   }
   
   final function grad(d:Value) {
-    if !x? {
-      auto l <- left.value();
-      auto r <- right.value();
-      dl:Left;
-      dr:Right;
-      (dl, dr) <- doGradient(d, l, r);
-      left.grad(dl);
-      right.grad(dr);
-    }
+    assert x?;
+    auto l <- left.value();
+    auto r <- right.value();
+    dl:Left;
+    dr:Right;
+    (dl, dr) <- doGradient(d, l, r);
+    left.grad(dl);
+    right.grad(dr);
   }
 
   /**

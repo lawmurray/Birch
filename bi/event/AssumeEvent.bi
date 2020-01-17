@@ -94,42 +94,39 @@ final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
 
   function replayDelay(record:Record) -> Real {
     auto w <- 0.0;
-    auto value <- coerce(record);
     if v.hasValue() {
-      assert v.value() == value;
-      w <- p.observe(value);
+      w <- p.observe(v.value());
     } else {
-      p.assume(v, value);
+      auto random <- coerceRandom(record);
+      if random.hasValue() {
+        p.assume(v, random.value());
+      } else {
+        p.assume(v);
+      }
     }
     return w;
   }
 
   function replayMove(record:Record) -> Real {
     auto w <- 0.0;
-    auto value <- coerce(record);
     if v.hasValue() {
-      assert v.value() == value;
       auto ψ <- p.lazy(v);
       if ψ? {
         w <- ψ!.value();
         ψ!.grad(1.0);
       } else {
-        w <- p.observe(value);
+        w <- p.observe(v.value());
       }
     } else {
-      if v.dfdx? {
-        auto u <- simulate_propose(value, v.dfdx!);
-        w <- p.observe(u);
-        if w != -inf {
-          v <- u;
-          w <- 0.0;
+      auto random <- coerceRandom(record);
+      if random.hasValue() {
+        if random.dfdx? {
+          v <- simulate_propose(random.x!, random.dfdx!);
+        } else {
+          v <- random.x!;
         }
       } else {
-        w <- p.observe(value);
-        if w != -inf {
-          v <- value;
-          w <- 0.0;
-        }
+        p.assume(v);
       }
     }
     return w;
@@ -137,21 +134,24 @@ final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
 
   function replayDelayMove(record:Record) -> Real {
     auto w <- 0.0;
-    auto value <- coerce(record);
     if v.hasValue() {
-      assert v.value() == value;
       auto ψ <- p.lazy(v);
       if ψ? {
         w <- ψ!.value();
         ψ!.grad(1.0);
       } else {
-        w <- p.observe(value);
+        w <- p.observe(v.value());
       }
     } else {
-      if v.dfdx? {
-        p.assume(v, simulate_propose(value, v.dfdx!));
+      auto random <- coerceRandom(record);
+      if random.hasValue() {
+        if random.dfdx? {
+          p.assume(v, simulate_propose(random.x!, random.dfdx!));
+        } else {
+          p.assume(v, random.x!);
+        }
       } else {
-        p.assume(v, value);
+        p.assume(v);
       }
     }
     return w;
@@ -191,15 +191,15 @@ function AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) ->
 }
 
 function simulate_propose(x:Real, d:Real) -> Real {
-  return simulate_gaussian(x + 0.03*d, 0.06);
+  return simulate_gaussian(x + 0.004*d, 2.0*0.004);
 }
 
 function simulate_propose(x:Real[_], d:Real[_]) -> Real[_] {
-  return simulate_multivariate_gaussian(x + d, 1.0);
+  return simulate_multivariate_gaussian(x + 0.004*d, 2.0*0.004);
 }
 
 function simulate_propose(x:Real[_,_], d:Real[_,_]) -> Real[_,_] {
-  return simulate_matrix_gaussian(x + d, 1.0);
+  return simulate_matrix_gaussian(x + 0.004*d, 2.0*0.004);
 }
 
 function simulate_propose(x:Integer, d:Integer) -> Integer {
@@ -215,15 +215,15 @@ function simulate_propose(x:Boolean, d:Boolean) -> Boolean {
 }
 
 function logpdf_propose(x':Real, x:Real, d:Real) -> Real {
-  return logpdf_gaussian(x', x + 0.03*d, 0.06);
+  return logpdf_gaussian(x', x + 0.004*d, 2.0*0.004);
 }
 
 function logpdf_propose(x':Real[_], x:Real[_], d:Real[_]) -> Real {
-  return logpdf_multivariate_gaussian(x', x + d, 1.0);
+  return logpdf_multivariate_gaussian(x', x + 0.004*d, 2.0*0.004);
 }
 
 function logpdf_propose(x':Real[_,_], x:Real[_,_], d:Real[_,_]) -> Real {
-  return logpdf_matrix_gaussian(x', x + d, 1.0);
+  return logpdf_matrix_gaussian(x', x + 0.004*d, 2.0*0.004);
 }
 
 function logpdf_propose(x':Integer, x:Integer, d:Integer) -> Real {

@@ -23,4 +23,16 @@ abstract class ValueEvent<Value> < Event {
     }
     return r!.value();
   }
+
+  /**
+   * Coerce a random out of a record. This tries to cast the value in the
+   * record to the required type and return it.
+   */
+  function coerceRandom(record:Record) -> Random<Value> {
+    auto r <- DelayRecord<Value>?(record);
+    if !r? {
+      error("incompatible trace");
+    }
+    return r!.random();
+  }
 }
