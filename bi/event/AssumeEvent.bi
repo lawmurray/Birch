@@ -37,6 +37,7 @@ final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
   function playDelay() -> Real {
     auto w <- 0.0;
     if v.hasValue() {
+      p <- p.graft();
       w <- p.observe(v.value());
     } else {
       p.assume(v);
@@ -63,6 +64,7 @@ final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
   function playDelayMove() -> Real {
     auto w <- 0.0;
     if v.hasValue() {
+      p <- p.graft();
       auto ψ <- p.lazy(v);
       if ψ? {
         w <- ψ!.value();
@@ -77,17 +79,11 @@ final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
   }
 
   function replay(record:Record) -> Real {
-    auto w <- 0.0;
     auto value <- coerce(record);
-    if v.hasValue() {
-      assert v.value() == value;
-      w <- p.observe(value);
-    } else {
-      w <- p.observe(value);
-      if w != -inf {
-        v <- value;
-        w <- 0.0;
-      }
+    auto w <- p.observe(value);
+    if !v.hasValue() && w > -inf {
+      v <- value;
+      w <- 0.0;
     }
     return w;
   }
@@ -95,6 +91,7 @@ final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
   function replayDelay(record:Record) -> Real {
     auto w <- 0.0;
     if v.hasValue() {
+      p <- p.graft();
       w <- p.observe(v.value());
     } else {
       auto random <- coerceRandom(record);
@@ -119,14 +116,11 @@ final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
       }
     } else {
       auto random <- coerceRandom(record);
-      if random.hasValue() {
-        if random.dfdx? {
-          v <- simulate_propose(random.x!, random.dfdx!);
-        } else {
-          v <- random.x!;
-        }
+      assert random.hasValue();
+      if random.dfdx? {
+        v <- simulate_propose(random.x!, random.dfdx!);
       } else {
-        p.assume(v);
+        v <- random.x!;
       }
     }
     return w;
@@ -135,6 +129,7 @@ final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
   function replayDelayMove(record:Record) -> Real {
     auto w <- 0.0;
     if v.hasValue() {
+      p <- p.graft();
       auto ψ <- p.lazy(v);
       if ψ? {
         w <- ψ!.value();
@@ -156,28 +151,9 @@ final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
     }
     return w;
   }
-
-  function propose(record:Record) -> Real {
-    auto w <- 0.0;
-    auto value <- coerce(record);
-    if v.hasValue() {
-      assert v.value() == value;
-      w <- p.observe(value);
-    } else {
-      w <- p.observe(value);
-      if w != -inf {
-        v <- value;
-      }
-    }
-    return w;
-  }
   
   function record() -> Record {
-    if v.hasValue() {
-      return ImmediateRecord<Value>(v.value());
-    } else {
-      return DelayRecord<Value>(v);
-    }
+    return DelayRecord<Value>(v);
   }
 }
 

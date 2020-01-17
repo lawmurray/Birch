@@ -28,20 +28,34 @@ final class SimulateEvent<Value>(p:Distribution<Value>) < ValueEvent<Value> {
     return 0.0;
   }
 
-  function replay(record:Record) -> Real {
-    auto value <- coerce(record);
-    if p.observe(value) > -inf {
-      v <- value;
-    }
-    return 0.0;
+  function playDelay() -> Real {
+    p <- p.graft();
+    return play();
   }
   
-  function propose(record:Record) -> Real {
+  function playDelayMove() -> Real {
+    p <- p.graft();
+    return play();
+  }
+
+  function replay(record:Record) -> Real {
     auto value <- coerce(record);
-    if p.observe(value) > -inf {
+    auto w <- p.observe(value);
+    if w > -inf {
       v <- value;
+      w <- 0.0;
     }
-    return 0.0;
+    return w;
+  }
+  
+  function replayDelay(record:Record) -> Real {
+    p <- p.graft();
+    return replay(record);
+  }
+
+  function replayDelayMove(record:Record) -> Real {
+    p <- p.graft();
+    return replay(record);
   }
 
   function record() -> Record {

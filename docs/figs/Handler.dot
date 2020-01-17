@@ -16,7 +16,6 @@ digraph {
   ReplayDelayHandler [href="../classes/ReplayDelayHandler/",target="_top"]
   ReplayMoveHandler [href="../classes/ReplayMoveHandler/",target="_top"]
   ReplayDelayMoveHandler [href="../classes/ReplayDelayMoveHandler/",target="_top"]
-  ProposeHandler [href="../classes/ProposeHandler/",target="_top"]
 
   PlayHandler -> Handler
   PlayDelayHandler -> Handler
@@ -27,7 +26,6 @@ digraph {
   ReplayDelayHandler -> TraceHandler
   ReplayMoveHandler -> TraceHandler
   ReplayDelayMoveHandler -> TraceHandler
-  ProposeHandler -> TraceHandler
 
   TraceHandler -> PlayMoveHandler [style=invis]
 }

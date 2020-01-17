@@ -26,11 +26,6 @@ abstract class BinaryExpression<Left,Right,Value>(left:Expression<Left>,
     this.x <- x;
   }
 
-  final function setChild(child:Delay) {
-    left.setChild(child);
-    right.setChild(child);
-  }
-
   final function value() -> Value {
     if !x? {
       x <- doValue(left.value(), right.value());

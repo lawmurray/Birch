@@ -20,10 +20,6 @@ abstract class UnaryExpression<Argument,Value>(single:Expression<Argument>) <
     this.x <- x;
   }
 
-  final function setChild(child:Delay) {
-    single.setChild(child);
-  }
-
   final function value() -> Value {
     if !x? {
       x <- doValue(single.value());

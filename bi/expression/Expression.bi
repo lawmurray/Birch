@@ -69,11 +69,6 @@ abstract class Expression<Value> {
    */
   abstract function grad(d:Value);
 
-  /**
-   * Set the child of any delayed sampling nodes in the expression.
-   */
-  abstract function setChild(child:Delay);
-
   /*
    * Attempt to graft this expression onto the delayed sampling graph.
    *

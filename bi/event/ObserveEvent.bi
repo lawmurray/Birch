@@ -27,26 +27,22 @@ final class ObserveEvent<Value>(v:Value, p:Distribution<Value>) <
   function play() -> Real {
     return p.observe(v);
   }
+
+  function playDelay() -> Real {
+    p <- p.graft();
+    return play();
+  }
   
   function playMove() -> Real {
     auto ψ <- p.lazy(Boxed(v));
     auto w <- ψ.value();
-    ψ.grad();
+    ψ.grad(1.0);
     return w;
   }
   
-  function replay(record:Record) -> Real {
-    assert v == coerce(record);
-    return p.observe(v);
-  }
-
-  function propose(record:Record) -> Real {
-    if record.hasValue() {
-      assert v == coerce(record);
-      return p.observe(v);
-    } else {
-      return 0.0;
-    }
+  function playDelayMove() -> Real {
+    p <- p.graft();
+    return playMove();
   }
 
   function record() -> Record {

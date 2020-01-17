@@ -14,12 +14,6 @@ final class FactorEvent(w:Real) < Event {
   }
 
   function replay(record:Record) -> Real {
-    assert !record.hasValue();
-    return w;
-  }
-  
-  function propose(record:Record) -> Real {
-    assert !record.hasValue();
     return w;
   }
   

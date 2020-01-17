@@ -152,7 +152,6 @@
       "bi/handler/PlayDelayHandler.bi",
       "bi/handler/PlayDelayMoveHandler.bi",
       "bi/handler/PlayMoveHandler.bi",
-      "bi/handler/ProposeHandler.bi",
       "bi/handler/ReplayHandler.bi",
       "bi/handler/ReplayDelayHandler.bi",
       "bi/handler/ReplayDelayMoveHandler.bi",

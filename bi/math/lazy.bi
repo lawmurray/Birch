@@ -7,7 +7,6 @@
  * Returns: the log probability mass.
  */
 function lazy_bernoulli(x:Boolean, ρ:Expression<Real>) -> Expression<Real> {
-  assert 0.0 <= ρ && ρ <= 1.0;
   if (x) {
     return log(ρ);
   } else {
@@ -41,9 +40,6 @@ function lazy_delta(x:Integer, μ:Expression<Integer>) -> Expression<Real> {
  * Returns: the log probability mass.
  */
 function lazy_binomial(x:Integer, n:Expression<Integer>, ρ:Expression<Real>) -> Expression<Real> {
-  assert 0 <= n;
-  assert 0.0 <= ρ && ρ <= 1.0;
-
   if ρ == 0.0 || ρ == 1.0 {
     if x == n*ρ {
       return Boxed(0.0);
@@ -67,9 +63,6 @@ function lazy_binomial(x:Integer, n:Expression<Integer>, ρ:Expression<Real>) ->
  * Returns: the log probability mass.
  */
 function lazy_negative_binomial(x:Integer, k:Expression<Integer>, ρ:Expression<Real>) -> Expression<Real> {
-  assert 0 < k;
-  assert 0.0 <= ρ && ρ <= 1.0;
-
   if (x >= 0) {
     return k*log(ρ) + x*log1p(-ρ) + lchoose(x + k - 1, x);
   } else {
@@ -99,8 +92,6 @@ function lazy_poisson(x:Expression<Integer>, λ:Expression<Real>) -> Expression<
  * Returns: the log probability density.
  */
 function lazy_uniform(x:Expression<Real>, l:Expression<Real>, u:Expression<Real>) -> Expression<Real> {
-  assert l <= u;
-
   if (x >= l && x <= u) {
     return -log(u - l);
   } else {
@@ -117,8 +108,6 @@ function lazy_uniform(x:Expression<Real>, l:Expression<Real>, u:Expression<Real>
  * Returns: the log probability density.
  */
 function lazy_exponential(x:Expression<Real>, λ:Expression<Real>) -> Expression<Real> {
-  assert 0.0 < λ;
-
   if (x >= 0.0) {
     return log(λ) - λ*x;
   } else {
@@ -136,8 +125,6 @@ function lazy_exponential(x:Expression<Real>, λ:Expression<Real>) -> Expression
  * Returns: the log probability density.
  */
 function lazy_weibull(x:Expression<Real>, k:Expression<Real>, λ:Expression<Real>) -> Expression<Real> {
-  assert 0.0 < λ;
-
   if (x >= 0.0) {
     return log(k) + (k - 1.0)*log(x) - k*log(λ) - pow(x/λ, k);
   } else {
@@ -167,7 +154,6 @@ function lazy_gaussian(x:Expression<Real>, μ:Expression<Real>, σ2:Expression<R
  * Returns: the log probability density.
  */
 function lazy_student_t(x:Expression<Real>, k:Expression<Real>) -> Expression<Real> {
-  assert 0.0 < k;
   auto a <- 0.5*(k + 1.0);
   return lgamma(a) - lgamma(0.5*k) - 0.5*log(π*k) - a*log1p(x*x/k);
 }
@@ -183,8 +169,6 @@ function lazy_student_t(x:Expression<Real>, k:Expression<Real>) -> Expression<Re
  * Returns: the log probability density.
  */
 function lazy_student_t(x:Expression<Real>, k:Expression<Real>, μ:Expression<Real>, σ2:Expression<Real>) -> Expression<Real> {
-  assert 0.0 < k;
-  assert 0.0 < σ2;
   return lazy_student_t((x - μ)/sqrt(σ2), k) - 0.5*log(σ2);
 }
 
@@ -198,9 +182,6 @@ function lazy_student_t(x:Expression<Real>, k:Expression<Real>, μ:Expression<Re
  * Returns: the log probability density.
  */
 function lazy_beta(x:Expression<Real>, α:Expression<Real>, β:Expression<Real>) -> Expression<Real> {
-  assert 0.0 < α;
-  assert 0.0 < β;
-
   if (0.0 < x && x < 1.0) {
     return (α - 1.0)*log(x) + (β - 1.0)*log1p(-x) - lbeta(α, β);
   } else {
@@ -217,7 +198,6 @@ function lazy_beta(x:Expression<Real>, α:Expression<Real>, β:Expression<Real>)
  * Return: the log probability density.
  */
 function lazy_chi_squared(x:Expression<Real>, ν:Expression<Real>) -> Expression<Real> {
-  assert 0.0 < ν;
   if x > 0.0 || (x >= 0.0 && ν > 1.0) {
     auto k <- 0.5*ν;
     return (k - 1.0)*log(x) - 0.5*x - lgamma(k) - k*log(2.0);
@@ -236,9 +216,6 @@ function lazy_chi_squared(x:Expression<Real>, ν:Expression<Real>) -> Expression
  * Returns: the log probability density.
  */
 function lazy_gamma(x:Expression<Real>, k:Expression<Real>, θ:Expression<Real>) -> Expression<Real> {
-  assert 0.0 < k;
-  assert 0.0 < θ;
-  
   if (x > 0.0) {
     return (k - 1.0)*log(x) - x/θ - lgamma(k) - k*log(θ);
   } else {
@@ -256,7 +233,6 @@ function lazy_gamma(x:Expression<Real>, k:Expression<Real>, θ:Expression<Real>)
  * Returns: the log probability density.
  */
 function lazy_wishart(X:Expression<Real[_,_]>, Ψ:Expression<Real[_,_]>, ν:Expression<Real>) -> Expression<Real> {
-  assert ν > rows(Ψ) - 1;
   auto p <- rows(Ψ);
   auto C <- llt(Ψ);
 
@@ -274,9 +250,6 @@ function lazy_wishart(X:Expression<Real[_,_]>, Ψ:Expression<Real[_,_]>, ν:Expr
  * Returns: the log probability density.
  */
 function lazy_inverse_gamma(x:Expression<Real>, α:Expression<Real>, β:Expression<Real>) -> Expression<Real> {
-  assert 0.0 < α;
-  assert 0.0 < β;
-  
   if (x > 0.0) {
     return α*log(β) - (α + 1.0)*log(x) - β/x - lgamma(α);
   } else {
@@ -294,7 +267,6 @@ function lazy_inverse_gamma(x:Expression<Real>, α:Expression<Real>, β:Expressi
  * Returns: the log probability density.
  */
 function lazy_inverse_wishart(X:Expression<Real[_,_]>, Ψ:Expression<Real[_,_]>, ν:Expression<Real>) -> Expression<Real> {
-  assert ν > rows(Ψ) - 1;
   auto p <- rows(Ψ);
   auto C <- llt(X);
 
@@ -313,10 +285,6 @@ function lazy_inverse_wishart(X:Expression<Real[_,_]>, Ψ:Expression<Real[_,_]>,
  * Return: the log probability density.
  */
 function lazy_inverse_gamma_gamma(x:Expression<Real>, k:Expression<Real>, α:Expression<Real>, β:Expression<Real>) -> Expression<Real> {
-  assert 0.0 < k;
-  assert 0.0 < α;
-  assert 0.0 < β;
-
   if x > 0.0 {
     return (k - 1)*log(x) + α*log(β) - (α + k)*log(β + x) - lbeta(α, k);
   } else {
@@ -352,10 +320,6 @@ function lazy_normal_inverse_gamma(x:Expression<Real>, μ:Expression<Real>, a2:E
  */
 function lazy_beta_binomial(x:Integer, n:Expression<Integer>,
     α:Expression<Real>, β:Expression<Real>) -> Expression<Real> {
-  assert 0 <= n;
-  assert 0.0 < α;
-  assert 0.0 < β;
-
   if (0 <= x && x <= n) {
     return lbeta(x + α, n - x + β) - lbeta(α, β) + lchoose(n, x);
   } else {
@@ -374,9 +338,6 @@ function lazy_beta_binomial(x:Integer, n:Expression<Integer>,
  * Returns: the log probability mass.
  */
 function lazy_beta_negative_binomial(x:Integer, k:Expression<Integer>, α:Expression<Real>, β:Expression<Real>) -> Expression<Real> {
-  assert 0.0 < α;
-  assert 0.0 < β;
-
   if (x >= 0) {
     return lbeta(α + k, β + x) - lbeta(α, β) + lchoose(x + k - 1, x);
   } else {
@@ -394,10 +355,6 @@ function lazy_beta_negative_binomial(x:Integer, k:Expression<Integer>, α:Expres
  * Returns: the log probability mass.
  */
 function lazy_gamma_poisson(x:Integer, k:Expression<Integer>, θ:Expression<Real>) -> Expression<Real> {
-  assert 0.0 < k;
-  assert 0.0 < θ;
-  assert k == floor(k);
-
   return lazy_negative_binomial(x, k, 1.0/(θ + 1.0));
 }
 
@@ -411,8 +368,6 @@ function lazy_gamma_poisson(x:Integer, k:Expression<Integer>, θ:Expression<Real
  * Return: the log probability density.
  */
 function lazy_lomax(x:Expression<Real>, λ:Expression<Real>, α:Expression<Real>) -> Expression<Real> {
-  assert 0.0 < λ;
-  assert 0.0 < α;
   if x >= 0.0 {
     return log(α) - log(λ) - (α + 1.0)*log1p(x/λ);
   } else {
