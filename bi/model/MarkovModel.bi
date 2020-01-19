@@ -29,7 +29,7 @@ class MarkovModel<Parameter,State> < Model {
   /**
    * States.
    */
-  x:Iterator<State>;
+  x:Tape<State>;
 
   function size() -> Integer {
     return x.size();

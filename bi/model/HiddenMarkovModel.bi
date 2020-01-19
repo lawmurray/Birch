@@ -28,7 +28,7 @@ class HiddenMarkovModel<Parameter,State,Observation> <
   /**
    * Observations.
    */
-  y:Iterator<Observation>;
+  y:Tape<Observation>;
 
   function size() -> Integer {
     return max(x.size(), y.size());

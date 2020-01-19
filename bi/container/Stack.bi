@@ -1,11 +1,11 @@
 /**
  * Last in, first-out (LIFO) stack. Beyond its typical uses, because Stack is
- * a recursive data structure, it provides particularly good sharing under
- * Birch's lazy deep clone mechanism.
+ * a recursive and single-linked data structure, it provides excellent
+ * sharing under Birch's lazy deep copy mechanism.
  *
  * !!! attention
- *     See note under List for possible segfault issues on the destruction
- *     of large stacks.
+ *     See note under List for possible stack overflow issues on the
+ *     destruction of large Stack objects.
  */
 final class Stack<Type> {
   head:StackNode<Type>?;

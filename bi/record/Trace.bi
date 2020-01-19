@@ -1,7 +1,7 @@
 /**
  * Trace of a model execution.
  */
-class Trace = Queue<Record>;
+class Trace = Tape<Record>;
 
 /**
  * Create a Trace.
