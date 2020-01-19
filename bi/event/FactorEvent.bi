@@ -13,7 +13,31 @@ final class FactorEvent(w:Real) < Event {
     return w;
   }
 
+  function playMove() -> Real {
+    return w;
+  }
+
+  function playDelay() -> Real {
+    return w;
+  }
+
+  function playDelayMove() -> Real {
+    return w;
+  }
+
   function replay(record:Record) -> Real {
+    return w;
+  }
+
+  function replayMove(record:Record) -> Real {
+    return w;
+  }
+
+  function replayDelay(record:Record) -> Real {
+    return w;
+  }
+
+  function replayDelayMove(record:Record) -> Real {
     return w;
   }
   

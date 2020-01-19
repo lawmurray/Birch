@@ -16,7 +16,7 @@ abstract class ValueEvent<Value> < Event {
    * Coerce a value out of a record. This tries to cast the value in the
    * record to the required type and return it.
    */
-  function coerce(record:Record) -> Value {
+  final function coerce(record:Record) -> Value {
     auto r <- ValueRecord<Value>?(record);
     if !r? {
       error("incompatible trace");
@@ -28,7 +28,7 @@ abstract class ValueEvent<Value> < Event {
    * Coerce a random out of a record. This tries to cast the value in the
    * record to the required type and return it.
    */
-  function coerceRandom(record:Record) -> Random<Value> {
+  final function coerceRandom(record:Record) -> Random<Value> {
     auto r <- DelayRecord<Value>?(record);
     if !r? {
       error("incompatible trace");

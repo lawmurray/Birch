@@ -28,6 +28,10 @@ final class SimulateEvent<Value>(p:Distribution<Value>) < ValueEvent<Value> {
     return 0.0;
   }
 
+  function playMove() -> Real {
+    return play();
+  }
+
   function playDelay() -> Real {
     p <- p.graft();
     return play();
@@ -35,7 +39,7 @@ final class SimulateEvent<Value>(p:Distribution<Value>) < ValueEvent<Value> {
   
   function playDelayMove() -> Real {
     p <- p.graft();
-    return play();
+    return playMove();
   }
 
   function replay(record:Record) -> Real {
@@ -47,6 +51,10 @@ final class SimulateEvent<Value>(p:Distribution<Value>) < ValueEvent<Value> {
     }
     return w;
   }
+
+  function replayMove(record:Record) -> Real {
+    return replay(record);
+  }
   
   function replayDelay(record:Record) -> Real {
     p <- p.graft();
@@ -55,7 +63,7 @@ final class SimulateEvent<Value>(p:Distribution<Value>) < ValueEvent<Value> {
 
   function replayDelayMove(record:Record) -> Real {
     p <- p.graft();
-    return replay(record);
+    return replayMove(record);
   }
 
   function record() -> Record {

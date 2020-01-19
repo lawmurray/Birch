@@ -27,11 +27,6 @@ final class ObserveEvent<Value>(v:Value, p:Distribution<Value>) <
   function play() -> Real {
     return p.observe(v);
   }
-
-  function playDelay() -> Real {
-    p <- p.graft();
-    return play();
-  }
   
   function playMove() -> Real {
     auto ψ <- p.lazy(Boxed(v));
@@ -39,10 +34,31 @@ final class ObserveEvent<Value>(v:Value, p:Distribution<Value>) <
     ψ.grad(1.0);
     return w;
   }
+
+  function playDelay() -> Real {
+    p <- p.graft();
+    return play();
+  }
   
   function playDelayMove() -> Real {
     p <- p.graft();
     return playMove();
+  }
+
+  function replay(record:Record) -> Real {
+    return play();
+  }
+
+  function replayDelay(record:Record) -> Real {
+    return playDelay();
+  }
+
+  function replayMove(record:Record) -> Real {
+    return playMove();
+  }
+  
+  function replayDelayMove(record:Record) -> Real {
+    return playDelayMove();
   }
 
   function record() -> Record {

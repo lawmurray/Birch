@@ -34,17 +34,6 @@ final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
     return w;
   }
 
-  function playDelay() -> Real {
-    auto w <- 0.0;
-    if v.hasValue() {
-      p <- p.graft();
-      w <- p.observe(v.value());
-    } else {
-      p.assume(v);
-    }
-    return w;
-  }
-
   function playMove() -> Real {
     auto w <- 0.0;
     if v.hasValue() {
@@ -57,6 +46,17 @@ final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
       }
     } else {
       v <- p.value();
+    }
+    return w;
+  }
+
+  function playDelay() -> Real {
+    auto w <- 0.0;
+    if v.hasValue() {
+      p <- p.graft();
+      w <- p.observe(v.value());
+    } else {
+      p.assume(v);
     }
     return w;
   }
@@ -88,22 +88,6 @@ final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
     return w;
   }
 
-  function replayDelay(record:Record) -> Real {
-    auto w <- 0.0;
-    if v.hasValue() {
-      p <- p.graft();
-      w <- p.observe(v.value());
-    } else {
-      auto random <- coerceRandom(record);
-      if random.hasValue() {
-        p.assume(v, random.value());
-      } else {
-        p.assume(v);
-      }
-    }
-    return w;
-  }
-
   function replayMove(record:Record) -> Real {
     auto w <- 0.0;
     if v.hasValue() {
@@ -121,6 +105,22 @@ final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
         v <- simulate_propose(random.x!, random.dfdx!);
       } else {
         v <- random.x!;
+      }
+    }
+    return w;
+  }
+
+  function replayDelay(record:Record) -> Real {
+    auto w <- 0.0;
+    if v.hasValue() {
+      p <- p.graft();
+      w <- p.observe(v.value());
+    } else {
+      auto random <- coerceRandom(record);
+      if random.hasValue() {
+        p.assume(v, random.value());
+      } else {
+        p.assume(v);
       }
     }
     return w;
