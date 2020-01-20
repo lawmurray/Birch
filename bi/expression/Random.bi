@@ -76,6 +76,13 @@ final class Random<Value> < Expression<Value> {
     return p;
   }
 
+  function set(p:Distribution<Value>) {
+    assert !this.p?;
+    assert !this.x?;
+    this.p <- p;
+    this.x <- p.value();
+  }
+
   function value() -> Value {
     if !x? {
       p <- p!.graft();

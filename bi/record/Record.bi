@@ -12,8 +12,9 @@ abstract class Record {
    * proposal) and another record (the current).
    *
    * - record: Another record.
+   * - scale: Scale of the move.
    */
-  function ratio(record:Record) -> Real {
+  function ratio(record:Record, scale:Real) -> Real {
     return 0.0;
   }
 }

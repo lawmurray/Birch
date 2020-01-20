@@ -51,10 +51,11 @@ abstract class Event {
    * forward using `playMove()`.
    *
    * - record: Associated record in the trace.
+   * - scale: Scale of the move.
    *
    * Returns: The required weight adjustment.
    */
-  abstract function replayMove(record:Record) -> Real;
+  abstract function replayMove(record:Record, scale:Real) -> Real;
 
   /**
    * Perform the *replayDelay* action. This is typically used when
@@ -73,10 +74,11 @@ abstract class Event {
    * forward using `playDelayMove()`.
    *
    * - record: Associated record in the trace.
+   * - scale: Scale of the move.
    *
    * Returns: The required weight adjustment.
    */
-  abstract function replayDelayMove(record:Record) -> Real;
+  abstract function replayDelayMove(record:Record, scale:Real) -> Real;
 
   /**
    * Produce a record for the event.

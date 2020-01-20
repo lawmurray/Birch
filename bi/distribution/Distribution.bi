@@ -90,22 +90,6 @@ abstract class Distribution<Value> < Delay {
     this.future <- future;
     v.p <- this;
   }
-
-  /**
-   * Assume this distribution for a random variate. When a value for the
-   * random variate is required, it will be assigned according to the
-   * `future` value given here, and trigger an *update* on the delayed
-   * sampling graph.
-   *
-   * - v: The random variate.
-   * - future: The future value.
-   */
-  function assumeWithDowndate(v:Random<Value>, future:Value) {
-    assert !v.hasDistribution();
-    assert !v.hasValue();    
-    this.future <- future;
-    v.p <- this;
-  }
   
   /**
    * Observe a value for a random variate associated with this node,

@@ -21,20 +21,22 @@ final class DelayRecord<Value>(v:Random<Value>) < ValueRecord<Value> {
     return v;
   }
 
-  function ratio(record:Record) -> Real {
+  function ratio(record:Record, scale:Real) -> Real {
     auto current <- DelayRecord<Value>?(record);
-    if current? {
-      auto v' <- this.v;
-      auto v <- current!.v;
-      auto α <- v'.w - v.w;
-      if v.x? && v.dfdx? && v'.x? && v'.dfdx? {
-        α <- α + logpdf_propose(v.x!, v'.x!, v'.dfdx!);
-        α <- α - logpdf_propose(v'.x!, v.x!, v.dfdx!);
-      }
-      return α;
+    auto v' <- this.v;
+    auto v <- current!.v;
+    auto α <- v'.w - v.w;
+    if v.x? && v.dfdx? && v'.x? && v'.dfdx? {
+      assert α != 0.0;
+      α <- α + logpdf_propose(v.x!, v'.x!, v'.dfdx!, scale);
+      α <- α - logpdf_propose(v'.x!, v.x!, v.dfdx!, scale);
     } else {
-      return 0.0;
+      assert α == 0.0;
+      assert v.hasValue();
+      assert v'.hasValue();
+      assert v.value() == v'.value();
     }
+    return α;
   }
 }
 

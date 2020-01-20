@@ -18,7 +18,8 @@ abstract class TraceHandler {
   final function handle(input:Trace, events:Event!) -> Real {
     auto w <- 0.0;
     while w > -inf && events? {
-      w <- w + handle(input.popFront(), events!);
+      w <- w + handle(input.here(), events!);
+      input.next();
     }
     return w;
   }
@@ -37,7 +38,8 @@ abstract class TraceHandler {
     auto w <- 0.0;
     while w > -inf && events? {
       auto event <- events!;
-      w <- w + handle(input.popFront(), event);
+      w <- w + handle(input.here(), event);
+      input.next();
       output.pushBack(event.record());
     }
     return w;

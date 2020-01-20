@@ -53,11 +53,11 @@ final class ObserveEvent<Value>(v:Value, p:Distribution<Value>) <
     return playDelay();
   }
 
-  function replayMove(record:Record) -> Real {
+  function replayMove(record:Record, scale:Real) -> Real {
     return playMove();
   }
   
-  function replayDelayMove(record:Record) -> Real {
+  function replayDelayMove(record:Record, scale:Real) -> Real {
     return playDelayMove();
   }
 

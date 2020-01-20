@@ -29,7 +29,8 @@ final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
     if v.hasValue() {
       w <- p.observe(v.value());
     } else {
-      v <- p.value();
+      p.value();
+      v.set(p);
     }
     return w;
   }
@@ -45,7 +46,8 @@ final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
         w <- p.observe(v.value());
       }
     } else {
-      v <- p.value();
+      p.value();
+      v.set(p);
     }
     return w;
   }
@@ -82,13 +84,13 @@ final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
     auto value <- coerce(record);
     auto w <- p.observe(value);
     if !v.hasValue() && w > -inf {
-      v <- value;
+      v.set(p);
       w <- 0.0;
     }
     return w;
   }
 
-  function replayMove(record:Record) -> Real {
+  function replayMove(record:Record, scale:Real) -> Real {
     auto w <- 0.0;
     if v.hasValue() {
       auto ψ <- p.lazy(v);
@@ -102,9 +104,11 @@ final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
       auto random <- coerceRandom(record);
       assert random.hasValue();
       if random.dfdx? {
-        v <- simulate_propose(random.x!, random.dfdx!);
+        p.set(simulate_propose(random.x!, random.dfdx!, scale));
+        v.set(p);
       } else {
-        v <- random.x!;
+        p.set(random.x!);
+        v.set(p);
       }
     }
     return w;
@@ -126,7 +130,7 @@ final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
     return w;
   }
 
-  function replayDelayMove(record:Record) -> Real {
+  function replayDelayMove(record:Record, scale:Real) -> Real {
     auto w <- 0.0;
     if v.hasValue() {
       p <- p.graft();
@@ -141,7 +145,7 @@ final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
       auto random <- coerceRandom(record);
       if random.hasValue() {
         if random.dfdx? {
-          p.assume(v, simulate_propose(random.x!, random.dfdx!));
+          p.assume(v, simulate_propose(random.x!, random.dfdx!, scale));
         } else {
           p.assume(v, random.x!);
         }
@@ -166,61 +170,61 @@ function AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) ->
   return evt;
 }
 
-function simulate_propose(x:Real, d:Real) -> Real {
-  return simulate_gaussian(x + 0.004*d, 2.0*0.004);
+function simulate_propose(x:Real, d:Real, τ:Real) -> Real {
+  return simulate_gaussian(x + τ*d, 2.0*τ);
 }
 
-function simulate_propose(x:Real[_], d:Real[_]) -> Real[_] {
-  return simulate_multivariate_gaussian(x + 0.004*d, 2.0*0.004);
+function simulate_propose(x:Real[_], d:Real[_], τ:Real) -> Real[_] {
+  return simulate_multivariate_gaussian(x + τ*d, 2.0*τ);
 }
 
-function simulate_propose(x:Real[_,_], d:Real[_,_]) -> Real[_,_] {
-  return simulate_matrix_gaussian(x + 0.004*d, 2.0*0.004);
+function simulate_propose(x:Real[_,_], d:Real[_,_], τ:Real) -> Real[_,_] {
+  return simulate_matrix_gaussian(x + τ*d, 2.0*τ);
 }
 
-function simulate_propose(x:Integer, d:Integer) -> Integer {
+function simulate_propose(x:Integer, d:Integer, τ:Real) -> Integer {
   return x;
 }
 
-function simulate_propose(x:Integer[_], d:Integer[_]) -> Integer[_] {
+function simulate_propose(x:Integer[_], d:Integer[_], τ:Real) -> Integer[_] {
   return x;
 }
 
-function simulate_propose(x:Boolean, d:Boolean) -> Boolean {
+function simulate_propose(x:Boolean, d:Boolean, τ:Real) -> Boolean {
   return x;
 }
 
-function logpdf_propose(x':Real, x:Real, d:Real) -> Real {
-  return logpdf_gaussian(x', x + 0.004*d, 2.0*0.004);
+function logpdf_propose(x':Real, x:Real, d:Real, τ:Real) -> Real {
+  return logpdf_gaussian(x', x + τ*d, 2.0*τ);
 }
 
-function logpdf_propose(x':Real[_], x:Real[_], d:Real[_]) -> Real {
-  return logpdf_multivariate_gaussian(x', x + 0.004*d, 2.0*0.004);
+function logpdf_propose(x':Real[_], x:Real[_], d:Real[_], τ:Real) -> Real {
+  return logpdf_multivariate_gaussian(x', x + τ*d, 2.0*τ);
 }
 
-function logpdf_propose(x':Real[_,_], x:Real[_,_], d:Real[_,_]) -> Real {
-  return logpdf_matrix_gaussian(x', x + 0.004*d, 2.0*0.004);
+function logpdf_propose(x':Real[_,_], x:Real[_,_], d:Real[_,_], τ:Real) -> Real {
+  return logpdf_matrix_gaussian(x', x + τ*d, 2.0*τ);
 }
 
-function logpdf_propose(x':Integer, x:Integer, d:Integer) -> Real {
+function logpdf_propose(x':Integer, x:Integer, d:Integer, τ:Real) -> Real {
   return 0.0;
 }
 
-function logpdf_propose(x':Integer[_], x:Integer[_], d:Integer[_]) -> Real {
+function logpdf_propose(x':Integer[_], x:Integer[_], d:Integer[_], τ:Real) -> Real {
   return 0.0;
 }
 
-function logpdf_propose(x':Boolean, x:Boolean, d:Boolean) -> Real {
+function logpdf_propose(x':Boolean, x:Boolean, d:Boolean, τ:Real) -> Real {
   return 0.0;
 }
 
-function ratio_propose(trace':Trace, trace:Trace) -> Real {
+function ratio_propose(trace':Trace, trace:Trace, τ:Real) -> Real {
   auto α <- 0.0;
-  auto record' <- trace'.walk();
-  auto record <- trace.walk();
-  while record'? && record? {
-    α <- α + record'!.ratio(record!);
+  auto r' <- trace'.walk();
+  auto r <- trace.walk();
+  while r'? && r? {
+    α <- α + r'!.ratio(r!, τ);
   }
-  assert !record'? && !record?;
+  assert !r'? && !r?;
   return α;
 }

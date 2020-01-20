@@ -29,7 +29,7 @@ final class FactorEvent(w:Real) < Event {
     return w;
   }
 
-  function replayMove(record:Record) -> Real {
+  function replayMove(record:Record, scale:Real) -> Real {
     return w;
   }
 
@@ -37,7 +37,7 @@ final class FactorEvent(w:Real) < Event {
     return w;
   }
 
-  function replayDelayMove(record:Record) -> Real {
+  function replayDelayMove(record:Record, scale:Real) -> Real {
     return w;
   }
   
