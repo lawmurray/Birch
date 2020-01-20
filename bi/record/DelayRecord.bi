@@ -27,14 +27,8 @@ final class DelayRecord<Value>(v:Random<Value>) < ValueRecord<Value> {
     auto v <- current!.v;
     auto α <- v'.w - v.w;
     if v.x? && v.dfdx? && v'.x? && v'.dfdx? {
-      assert α != 0.0;
       α <- α + logpdf_propose(v.x!, v'.x!, v'.dfdx!, scale);
       α <- α - logpdf_propose(v'.x!, v.x!, v.dfdx!, scale);
-    } else {
-      assert α == 0.0;
-      assert v.hasValue();
-      assert v'.hasValue();
-      assert v.value() == v'.value();
     }
     return α;
   }

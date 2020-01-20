@@ -105,11 +105,10 @@ final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
       assert random.hasValue();
       if random.dfdx? {
         p.set(simulate_propose(random.x!, random.dfdx!, scale));
-        v.set(p);
       } else {
         p.set(random.x!);
-        v.set(p);
       }
+      v.set(p);
     }
     return w;
   }
@@ -122,7 +121,9 @@ final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
     } else {
       auto random <- coerceRandom(record);
       if random.hasValue() {
-        p.assume(v, random.value());
+        p <- p.graft();
+        p.set(random.x!);
+        v.set(p);
       } else {
         p.assume(v);
       }
@@ -144,11 +145,13 @@ final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
     } else {
       auto random <- coerceRandom(record);
       if random.hasValue() {
+        p <- p.graft();
         if random.dfdx? {
-          p.assume(v, simulate_propose(random.x!, random.dfdx!, scale));
+          p.set(simulate_propose(random.x!, random.dfdx!, scale));
         } else {
-          p.assume(v, random.x!);
+          p.set(random.x!);
         }
+        v.set(p);
       } else {
         p.assume(v);
       }
