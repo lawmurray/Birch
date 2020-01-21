@@ -10,13 +10,6 @@ abstract class Distribution<Value> < Delay {
   x:Value?;
 
   /**
-   * Future value. This is set for situations where delayed sampling
-   * is used, but when ultimately realized, a particular value (this one)
-   * should be assigned. It is typically used when replaying traces.
-   */
-  future:Value?;
-
-  /**
    * Number of rows, when interpreted as a matrix.
    */
   function rows() -> Integer {
@@ -43,11 +36,7 @@ abstract class Distribution<Value> < Delay {
   function value() -> Value {
     if !x? {
       prune();
-      if future? {
-        x <- future!;
-      } else {
-        x <- simulate();
-      }
+      x <- simulate();
     }
     return x!;
   }
@@ -57,7 +46,6 @@ abstract class Distribution<Value> < Delay {
    */
   function set(x:Value) {
     assert !this.x?;
-    assert !this.future?;
     this.x <- x;
     this.child <- nil;
   }
@@ -74,22 +62,6 @@ abstract class Distribution<Value> < Delay {
     assert !v.hasValue();
     v.p <- this;
   }
-
-  /**
-   * Assume this distribution for a random variate. When a value for the
-   * random variate is required, it will be assigned according to the
-   * `future` value given here, and trigger an *update* on the delayed
-   * sampling graph.
-   *
-   * - v: The random variate.
-   * - future: The future value.
-   */
-  function assume(v:Random<Value>, future:Value) {
-    assert !v.hasDistribution();
-    assert !v.hasValue();
-    this.future <- future;
-    v.p <- this;
-  }
   
   /**
    * Observe a value for a random variate associated with this node,
@@ -99,7 +71,6 @@ abstract class Distribution<Value> < Delay {
    */
   function observe(x:Value) -> Real {
     assert !this.x?;
-    assert !this.future?;
     prune();
     this.x <- x;
     return logpdf(x);
@@ -108,11 +79,7 @@ abstract class Distribution<Value> < Delay {
   function realize() {
     prune();
     if !x? {
-      if future? {
-        x <- future!;
-      } else {
-        x <- simulate();
-      }
+      x <- simulate();
     }
     update(x!);
   }
