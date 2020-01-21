@@ -29,10 +29,7 @@ final class ObserveEvent<Value>(v:Value, p:Distribution<Value>) <
   }
   
   function playMove() -> Real {
-    auto ψ <- p.lazy(Boxed(v));
-    auto w <- ψ.value();
-    ψ.grad(1.0);
-    return w;
+    return p.lazyObserve(v);
   }
 
   function playDelay() -> Real {

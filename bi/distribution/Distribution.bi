@@ -75,6 +75,21 @@ abstract class Distribution<Value> < Delay {
     this.x <- x;
     return logpdf(x);
   }
+  
+  function lazyObserve(x:Value) -> Real {
+    assert !this.x?;
+    prune();
+    this.x <- x;
+    auto ψ <- lazy(Boxed(x));
+    auto w <- 0.0;
+    if ψ? {
+      w <- ψ!.value();
+      ψ!.grad(1.0);
+    } else {
+      w <- logpdf(x);
+    }
+    return w;  
+  }
 
   function realize() {
     prune();
