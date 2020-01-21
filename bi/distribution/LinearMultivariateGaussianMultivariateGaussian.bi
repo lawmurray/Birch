@@ -1,13 +1,14 @@
 /*
  * ed multivariate linear-Gaussian-Gaussian random variate.
  */
-final class LinearMultivariateGaussianMultivariateGaussian(A:Real[_,_],
-    m:MultivariateGaussian, c:Real[_], S:Real[_,_]) <
-    MultivariateGaussian(A*m.μ + c, A*m.Σ*transpose(A) + S) {
+final class LinearMultivariateGaussianMultivariateGaussian(
+    A:Expression<Real[_,_]>, m:MultivariateGaussian, c:Expression<Real[_]>,
+    S:Expression<Real[_,_]>) < MultivariateGaussian(A*m.μ + c,
+    A*m.Σ*transpose(A) + S) {
   /**
    * Scale.
    */
-  A:Real[_,_] <- A;
+  A:Expression<Real[_,_]> <- A;
     
   /**
    * Mean.
@@ -17,12 +18,12 @@ final class LinearMultivariateGaussianMultivariateGaussian(A:Real[_,_],
   /**
    * Offset.
    */
-  c:Real[_] <- c;
+  c:Expression<Real[_]> <- c;
   
   /**
    * Likelihood covariance.
    */
-  S:Real[_,_] <- S;
+  S:Expression<Real[_,_]> <- S;
 
   function update(x:Real[_]) {
     (m.μ, m.Σ) <- update_linear_multivariate_gaussian_multivariate_gaussian(
@@ -33,10 +34,16 @@ final class LinearMultivariateGaussianMultivariateGaussian(A:Real[_,_],
     (m.μ, m.Σ) <- downdate_linear_multivariate_gaussian_multivariate_gaussian(
         x, A, m.μ, m.Σ, c, S);
   }
+
+  function updateLazy(x:Expression<Real[_]>) {
+    (m.μ, m.Σ) <- update_lazy_linear_multivariate_gaussian_multivariate_gaussian(
+        x, A, m.μ, m.Σ, c, S);
+  }
 }
 
-function LinearMultivariateGaussianMultivariateGaussian(A:Real[_,_],
-    μ:MultivariateGaussian, c:Real[_], Σ:Real[_,_]) ->
+function LinearMultivariateGaussianMultivariateGaussian(
+    A:Expression<Real[_,_]>, μ:MultivariateGaussian, c:Expression<Real[_]>,
+    Σ:Expression<Real[_,_]>) ->
     LinearMultivariateGaussianMultivariateGaussian {
   m:LinearMultivariateGaussianMultivariateGaussian(A, μ, c, Σ);
   μ.setChild(m);

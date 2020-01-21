@@ -98,10 +98,11 @@ final class Random<Value> < Expression<Value> {
       if dfdx? {
         dfdx <- dfdx! + d;
       } else {
-        auto ψ <- p!.lazy(this);
+        auto ψ <- p!.logpdfLazy(this);
         if ψ? {
           dfdx <- d;
           w <- ψ!.value();
+          assert abs(w - p!.logpdf(x!)) < 1.0e-6;
           ψ!.grad(1.0);
         }
       }

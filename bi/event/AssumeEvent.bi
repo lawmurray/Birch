@@ -38,7 +38,7 @@ final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
   function playMove() -> Real {
     auto w <- 0.0;
     if v.hasValue() {
-      w <- p.lazyObserve(v.value());
+      w <- p.observeLazy(v);
     } else {
       p.value();
       v.set(p);
@@ -61,7 +61,7 @@ final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
     auto w <- 0.0;
     if v.hasValue() {
       p <- p.graft();
-      w <- p.lazyObserve(v.value());
+      w <- p.observeLazy(v);
     } else {
       p.assume(v);
     }
@@ -81,7 +81,7 @@ final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
   function replayMove(record:Record, scale:Real) -> Real {
     auto w <- 0.0;
     if v.hasValue() {
-      w <- p.lazyObserve(v.value());
+      w <- p.observeLazy(v);
     } else {
       auto random <- coerceRandom(record);
       assert random.hasValue();
@@ -117,7 +117,7 @@ final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
     auto w <- 0.0;
     if v.hasValue() {
       p <- p.graft();
-      w <- p.lazyObserve(v.value());
+      w <- p.observeLazy(v);
     } else {
       auto random <- coerceRandom(record);
       if random.hasValue() {

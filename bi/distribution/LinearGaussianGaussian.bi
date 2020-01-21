@@ -31,6 +31,10 @@ final class LinearGaussianGaussian(a:Expression<Real>, m:Gaussian,
   function downdate(x:Real) {
     (m.μ, m.σ2) <- downdate_linear_gaussian_gaussian(x, a, m.μ, m.σ2, c, s2);
   }
+
+  function updateLazy(x:Expression<Real>) {
+    (m.μ, m.σ2) <- update_lazy_linear_gaussian_gaussian(x, a, m.μ, m.σ2, c, s2);
+  }
 }
 
 function LinearGaussianGaussian(a:Expression<Real>, μ:Gaussian,

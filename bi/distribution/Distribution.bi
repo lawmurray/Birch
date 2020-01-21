@@ -37,6 +37,7 @@ abstract class Distribution<Value> < Delay {
     if !x? {
       prune();
       x <- simulate();
+      update(x!);
     }
     return x!;
   }
@@ -46,8 +47,9 @@ abstract class Distribution<Value> < Delay {
    */
   function set(x:Value) {
     assert !this.x?;
+    prune();
     this.x <- x;
-    this.child <- nil;
+    update(x);
   }
 
   /**
@@ -73,30 +75,37 @@ abstract class Distribution<Value> < Delay {
     assert !this.x?;
     prune();
     this.x <- x;
-    return logpdf(x);
+    auto w <- logpdf(x);
+    update(x);
+    return w;
   }
   
-  function lazyObserve(x:Value) -> Real {
+  /**
+   * Observe a value for a random variate associated with this node,
+   * updating (or downdating) the delayed sampling graph accordingly, and
+   * returning a weight giving the log pdf (or pmf) of that variate under the
+   * distribution. Additionally computes gradients for subsequent moves.
+   */
+  function observeLazy(x:Expression<Value>) -> Real {
     assert !this.x?;
     prune();
     this.x <- x;
-    auto ψ <- lazy(Boxed(x));
+    auto ψ <- logpdfLazy(x);
     auto w <- 0.0;
     if ψ? {
       w <- ψ!.value();
+      assert abs(w - logpdf(x)) < 1.0e-6;
       ψ!.grad(1.0);
+      updateLazy(x);
     } else {
       w <- logpdf(x);
+      update(x);
     }
     return w;  
   }
 
   function realize() {
-    prune();
-    if !x? {
-      x <- simulate();
-    }
-    update(x!);
+    value();
   }
   
   /**
@@ -187,8 +196,17 @@ abstract class Distribution<Value> < Delay {
    *
    * Return: the log probability density (or mass), if supported.
    */
-  function lazy(x:Expression<Value>) -> Expression<Real>? {
+  function logpdfLazy(x:Expression<Value>) -> Expression<Real>? {
     return nil;
+  }
+
+  /**
+   * Update the parent node on the $M$-path given the value of this node.
+   *
+   * - x: The value.
+   */
+  function updateLazy(x:Expression<Value>) {
+    assert false;
   }
 
   /**

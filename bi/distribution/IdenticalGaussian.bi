@@ -44,7 +44,7 @@ final class IdenticalGaussian(μ:Expression<Real[_]>, σ2:Expression<Real>) <
           m2!);
     } else if (m3 <- μ.graftLinearMultivariateGaussian())? {
       return LinearMultivariateGaussianMultivariateGaussian(m3!.A, m3!.x,
-          m3!.c, diagonal(σ2.value(), m3!.rows()));
+          m3!.c, diagonal(σ2, m3!.rows()));
     } else if (m4 <- μ.graftMultivariateGaussian())? {
       return MultivariateGaussianMultivariateGaussian(m4!,
           diagonal(σ2, m4!.rows()));

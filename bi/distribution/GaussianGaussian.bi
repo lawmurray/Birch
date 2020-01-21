@@ -20,6 +20,10 @@ final class GaussianGaussian(m:Gaussian, s2:Expression<Real>) <
   function downdate(x:Real) {
     (m.μ, m.σ2) <- downdate_gaussian_gaussian(x, m.μ, m.σ2, s2);
   }
+
+  function updateLazy(x:Expression<Real>) {
+    (m.μ, m.σ2) <- update_lazy_gaussian_gaussian(x, m.μ, m.σ2, s2);
+  }
 }
 
 function GaussianGaussian(μ:Gaussian, σ2:Expression<Real>) ->

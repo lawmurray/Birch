@@ -20,6 +20,14 @@ class Gaussian(μ:Expression<Real>, σ2:Expression<Real>) <
   function logpdf(x:Real) -> Real {
     return logpdf_gaussian(x, μ, σ2);
   }
+
+  function logpdfLazy(x:Expression<Real>) -> Expression<Real>? {
+    return logpdf_lazy_gaussian(x, μ, σ2);
+  }
+
+  function updateLazy(x:Expression<Real>) {
+    //
+  }
   
   function cdf(x:Real) -> Real? {
     return cdf_gaussian(x, μ, σ2);
@@ -27,10 +35,6 @@ class Gaussian(μ:Expression<Real>, σ2:Expression<Real>) <
 
   function quantile(P:Real) -> Real? {
     return quantile_gaussian(P, μ, σ2);
-  }
-
-  function lazy(x:Expression<Real>) -> Expression<Real>? {
-    return lazy_gaussian(x, μ, σ2);
   }
 
   function graft() -> Distribution<Real> {

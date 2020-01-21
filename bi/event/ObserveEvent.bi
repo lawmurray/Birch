@@ -29,7 +29,7 @@ final class ObserveEvent<Value>(v:Value, p:Distribution<Value>) <
   }
   
   function playMove() -> Real {
-    return p.lazyObserve(v);
+    return p.observeLazy(v);
   }
 
   function playDelay() -> Real {
