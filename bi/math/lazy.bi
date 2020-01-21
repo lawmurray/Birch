@@ -419,11 +419,11 @@ function lazy_linear_normal_inverse_gamma_gaussian(x:Expression<Real>, a:Express
  *
  * Returns: the log probability density.
  */
-function lazy_multivariate_gaussian(x:Expression<Real[_]>, μ:Expression<Real[_]>, Σ:Expression<Real[_,_]>) ->
-    Real {
-  auto D <- length(μ);
+function lazy_multivariate_gaussian(x:Expression<Real[_]>,
+    μ:Expression<Real[_]>, Σ:Expression<Real[_,_]>) -> Expression<Real> {
+  auto D <- μ.rows();
   auto C <- llt(Σ);
-  return -0.5*(dot(x - μ, solve(C, x - μ)) + D*log(2.0*π) + ldet(C));
+  return -0.5*(dot(x - μ, inv(C)*(x - μ)) + D*log(2.0*π) + ldet(C));
 }
 
 /**
@@ -436,8 +436,9 @@ function lazy_multivariate_gaussian(x:Expression<Real[_]>, μ:Expression<Real[_]
  *
  * Returns: the log probability density.
  */
-function lazy_multivariate_gaussian(x:Expression<Real[_]>, μ:Expression<Real[_]>, σ2:Expression<Real>) -> Expression<Real> {
-  auto D <- length(μ);
+function lazy_multivariate_gaussian(x:Expression<Real[_]>,
+    μ:Expression<Real[_]>, σ2:Expression<Real>) -> Expression<Real> {
+  auto D <- μ.rows();
   return -0.5*(dot(x - μ)/σ2 + D*log(2.0*π*σ2));
 }
 

@@ -25,6 +25,10 @@ class MultivariateGaussian(μ:Expression<Real[_]>, Σ:Expression<Real[_,_]>) <
     return logpdf_multivariate_gaussian(x, μ, Σ);
   }
 
+  function lazy(x:Expression<Real[_]>) -> Expression<Real>? {
+    return lazy_multivariate_gaussian(x, μ, Σ);
+  }
+
   function graft() -> Distribution<Real[_]> {
     prune();
     m1:TransformLinearMultivariate<MultivariateGaussian>?;
