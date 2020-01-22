@@ -30,6 +30,10 @@ final class Poisson(λ:Expression<Real>) < Discrete {
   function logpdfLazy(x:Expression<Integer>) -> Expression<Real>? {
     return logpdf_lazy_poisson(x, λ);
   }
+  
+  function updateLazy(x:Expression<Integer>) {
+    //
+  }
 
   function graft() -> Distribution<Integer> {
     prune();
