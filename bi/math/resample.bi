@@ -48,7 +48,7 @@ function log_sum_exp(x:Real[_]) -> Real {
   auto mx <- max(x);
   auto r <- 0.0;
   for n in 1..length(x) {
-    r <- r + exp(x[n] - mx);
+    r <- r + nan_exp(x[n] - mx);
   }
   return mx + log(r);
 }
@@ -62,17 +62,30 @@ function log_sum(x:Real[_]) -> Real {
 }
 
 /**
- * Take the exponential of each element of a vector and normalize to sum to one.
+ * Take the exponential of a value, where `nan` is treated as `-inf`.
+ */
+function nan_exp(x:Real) -> Real {
+  if isnan(x) {
+    return 0.0;
+  } else {
+    return exp(x);
+  }
+}
+
+
+/**
+ * Take the exponential of each element of a vector and normalize to sum to
+ * one.
  */
 function norm_exp(x:Real[_]) -> Real[_] {
   assert length(x) > 0;
   auto mx <- max(x);
   auto r <- 0.0;
   for n in 1..length(x) {
-    r <- r + exp(x[n] - mx);
+    r <- r + nan_exp(x[n] - mx);
   }
   auto W <- mx + log(r);
-  return transform<Real>(x, @(w:Real) -> Real { return exp(w - W); });
+  return transform<Real>(x, @(w:Real) -> Real { return nan_exp(w - W); });
 }
 
 /**
@@ -190,7 +203,8 @@ function cumulative_offspring_to_ancestors(O:Integer[_]) -> Integer[_] {
  * Convert a cumulative offspring vector into an ancestry vector, with
  * permutation.
  */
-function cumulative_offspring_to_ancestors_permute(O:Integer[_]) -> Integer[_] {
+function cumulative_offspring_to_ancestors_permute(O:Integer[_]) ->
+    Integer[_] {
   a:Integer[O[length(O)]];
   auto N <- length(a);
   for n in 1..N {
@@ -223,7 +237,8 @@ function cumulative_offspring_to_ancestors_permute(O:Integer[_]) -> Integer[_] {
  * Convert a cumulative offspring vector into an offspring vector.
  */
 function cumulative_offspring_to_offspring(O:Integer[_]) -> Integer[_] {
-  return adjacent_difference<Integer>(O, @(x:Integer, y:Integer) -> Integer { return x - y; });
+  return adjacent_difference<Integer>(O, @(x:Integer, y:Integer) -> Integer {
+      return x - y; });
 }
 
 /**
@@ -255,9 +270,9 @@ function cumulative_weights(w:Real[_]) -> Real[_] {
   
   if N > 0 {
     auto mx <- max(w);
-    W[1] <- exp(w[1] - mx);
+    W[1] <- nan_exp(w[1] - mx);
     for n in 2..N {
-      W[n] <- W[n - 1] + exp(w[n] - mx);
+      W[n] <- W[n - 1] + nan_exp(w[n] - mx);
     }
   }
   return W;
@@ -279,7 +294,7 @@ function resample_reduce(w:Real[_]) -> (Real, Real) {
     auto W2 <- 0.0;
     auto mx <- max(w);    
     for n in 1..N {
-      auto v <- exp(w[n] - mx);
+      auto v <- nan_exp(w[n] - mx);
       W <- W + v;
       W2 <- W2 + v*v;
     }
