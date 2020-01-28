@@ -5,9 +5,9 @@
 
 #include "bi/visitor/all.hpp"
 
-bi::FiberType::FiberType(Type* single, Location* loc) :
+bi::FiberType::FiberType(Type* yieldType, Location* loc) :
     Type(loc),
-    Single<Type>(single) {
+    YieldTyped(yieldType) {
   //
 }
 
@@ -32,11 +32,11 @@ bool bi::FiberType::isFiber() const {
 }
 
 bi::Type* bi::FiberType::unwrap() {
-  return single;
+  return yieldType;
 }
 
 const bi::Type* bi::FiberType::unwrap() const {
-  return single;
+  return yieldType;
 }
 
 bool bi::FiberType::dispatchIsConvertible(const Type& o) const {
@@ -53,7 +53,7 @@ bool bi::FiberType::isConvertible(const MemberType& o) const {
 }
 
 bool bi::FiberType::isConvertible(const FiberType& o) const {
-  return single->equals(*o.single);
+  return yieldType->equals(*o.yieldType);
   // ^ C++ code generation cannot handle the ->definitely case
 }
 
@@ -79,7 +79,7 @@ bool bi::FiberType::isAssignable(const MemberType& o) const {
 }
 
 bool bi::FiberType::isAssignable(const FiberType& o) const {
-  return single->equals(*o.single);
+  return yieldType->equals(*o.yieldType);
   // ^ C++ code generation cannot handle the ->definitely case
 }
 
@@ -101,18 +101,18 @@ bi::Type* bi::FiberType::common(const MemberType& o) const {
 }
 
 bi::Type* bi::FiberType::common(const FiberType& o) const {
-  auto single1 = single->common(*o.single);
-  if (single1) {
-    return new FiberType(single1);
+  auto yieldType1 = yieldType->common(*o.yieldType);
+  if (yieldType1) {
+    return new FiberType(yieldType1);
   } else {
     return nullptr;
   }
 }
 
 bi::Type* bi::FiberType::common(const OptionalType& o) const {
-  auto single1 = common(*o.single);
-  if (single1) {
-    return new OptionalType(single1);
+  auto yieldType1 = common(*o.single);
+  if (yieldType1) {
+    return new OptionalType(yieldType1);
   } else {
     return nullptr;
   }

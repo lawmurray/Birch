@@ -536,7 +536,7 @@ bi::Type* bi::Modifier::modify(FunctionType* o) {
 }
 
 bi::Type* bi::Modifier::modify(FiberType* o) {
-  o->single = o->single->accept(this);
+  o->yieldType = o->yieldType->accept(this);
   return o;
 }
 

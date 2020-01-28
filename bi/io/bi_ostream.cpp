@@ -675,7 +675,7 @@ void bi::bi_ostream::visit(const FunctionType* o) {
 }
 
 void bi::bi_ostream::visit(const FiberType* o) {
-  middle(o->single << '!');
+  middle(o->yieldType << '!');
 }
 
 void bi::bi_ostream::visit(const OptionalType* o) {

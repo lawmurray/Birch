@@ -451,7 +451,7 @@ bi::Type* bi::Cloner::clone(const FunctionType* o) {
 }
 
 bi::Type* bi::Cloner::clone(const FiberType* o) {
-  return new FiberType(o->single->accept(this), o->loc);
+  return new FiberType(o->yieldType->accept(this), o->loc);
 }
 
 bi::Type* bi::Cloner::clone(const OptionalType* o) {

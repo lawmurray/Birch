@@ -950,7 +950,7 @@ void bi::CppBaseGenerator::visit(const FunctionType* o) {
 }
 
 void bi::CppBaseGenerator::visit(const FiberType* o) {
-  middle("libbirch::Fiber<" << o->single << '>');
+  middle("libbirch::Fiber<" << o->yieldType << '>');
 }
 
 void bi::CppBaseGenerator::visit(const OptionalType* o) {
