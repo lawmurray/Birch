@@ -83,7 +83,7 @@
 
 %glr-parser
 %expect-rr 3
-%expect 5
+%expect 7
 // ^ Type?(...) vs x?
 // ^ for generic function calls, f<Type>(expr) ambiguous with f < x > (expr),
 //   the former is favoured by %dprec directives 
@@ -100,7 +100,7 @@
 
 %type <valName> name binary_operator unary_operator assume_operator
 
-%type <valInt> size
+%type <valInt> shape
 %type <valAnnotation> parallel_annotation class_annotation member_function_annotation
 
 %type <valName> assign_operator
@@ -142,10 +142,10 @@
 %type <valStatement> braces optional_braces
 %type <valStatement> class_braces optional_class_braces
 
-%type <valType> basic_type class_type base_type unknown_type member_type
-%type <valType> tuple_type postfix_type function_type type
+%type <valType> base_type basic_type class_type unknown_type
+%type <valType> primary_type postfix_type function_type type
 %type <valType> type_list parameter_type_list parameter_types
-%type <valType> result optional_result
+%type <valType> return_type optional_return_type yield_type optional_yield_type
 %type <valType> generic_argument generic_argument_list generic_arguments optional_generic_arguments
 
 %type <valBool> weak_modifier
@@ -213,7 +213,7 @@ cast_expression
     ;
 
 function_expression
-    : '@' parameters optional_result optional_braces  { $$ = new bi::LambdaFunction($2, $3, $4, make_loc(@$)); }
+    : '@' parameters optional_return_type optional_braces  { $$ = new bi::LambdaFunction($2, $3, $4, make_loc(@$)); }
     ;
 
 this_expression
@@ -425,9 +425,9 @@ optional_arguments
     |            { $$ = empty_expr(@$); }
     ;
 
-size
-    : '_'           { $$ = 1; }
-    | '_' ',' size  { $$ = $3 + 1; }
+shape
+    : '_'            { $$ = 1; }
+    | '_' ',' shape  { $$ = $3 + 1; }
     ;
 
 generics
@@ -502,11 +502,11 @@ member_variable_declaration
     ;
 
 function_declaration
-    : FUNCTION name optional_generics parameters optional_result { push_raw(); } optional_braces  { $$ = new bi::Function(bi::NONE, $2, $3, $4, $5, $7, make_doc_loc(@$)); }
+    : FUNCTION name optional_generics parameters optional_return_type { push_raw(); } optional_braces  { $$ = new bi::Function(bi::NONE, $2, $3, $4, $5, $7, make_doc_loc(@$)); }
     ;
 
 fiber_declaration
-    : FIBER name optional_generics parameters optional_result { push_raw(); } optional_braces  { $$ = new bi::Fiber(bi::NONE, $2, $3, $4, new bi::FiberType($5, make_loc(@$)), $7, make_doc_loc(@$)); }
+    : FIBER name optional_generics parameters optional_yield_type { push_raw(); } optional_braces  { $$ = new bi::Fiber(bi::NONE, $2, $3, $4, new bi::FiberType($5, make_loc(@$)), $7, make_doc_loc(@$)); }
     ;
 
 member_function_annotation
@@ -517,13 +517,13 @@ member_function_annotation
     ;
 
 member_function_declaration
-    : member_function_annotation FUNCTION name parameters optional_result { push_raw(); } optional_braces  { $$ = new bi::MemberFunction($1, $3, $4, $5, $7, make_doc_loc(@$)); }
-    | FUNCTION name parameters optional_result { push_raw(); } optional_braces                             { $$ = new bi::MemberFunction(bi::NONE, $2, $3, $4, $6, make_doc_loc(@$)); }
+    : member_function_annotation FUNCTION name parameters optional_return_type { push_raw(); } optional_braces  { $$ = new bi::MemberFunction($1, $3, $4, $5, $7, make_doc_loc(@$)); }
+    | FUNCTION name parameters optional_return_type { push_raw(); } optional_braces                             { $$ = new bi::MemberFunction(bi::NONE, $2, $3, $4, $6, make_doc_loc(@$)); }
     ;
 
 member_fiber_declaration
-    : member_function_annotation FIBER name parameters optional_result { push_raw(); } optional_braces  { $$ = new bi::MemberFiber($1, $3, $4, new bi::FiberType($5, make_loc(@$)), $7, make_doc_loc(@$)); }
-    | FIBER name parameters optional_result { push_raw(); } optional_braces                             { $$ = new bi::MemberFiber(bi::NONE, $2, $3, new bi::FiberType($4, make_loc(@$)), $6, make_doc_loc(@$)); }
+    : member_function_annotation FIBER name parameters optional_yield_type { push_raw(); } optional_braces  { $$ = new bi::MemberFiber($1, $3, $4, new bi::FiberType($5, make_loc(@$)), $7, make_doc_loc(@$)); }
+    | FIBER name parameters optional_yield_type { push_raw(); } optional_braces                             { $$ = new bi::MemberFiber(bi::NONE, $2, $3, new bi::FiberType($4, make_loc(@$)), $6, make_doc_loc(@$)); }
     ;
 
 program_declaration
@@ -552,11 +552,11 @@ unary_operator
     ;    
 
 binary_operator_declaration
-    : OPERATOR '(' parameter binary_operator parameter ')' optional_result { push_raw(); } optional_braces  { $$ = new bi::BinaryOperator(bi::NONE, $4, new bi::Binary($3, $5, make_loc(@$)), $7, $9, make_doc_loc(@$)); }
+    : OPERATOR '(' parameter binary_operator parameter ')' optional_return_type { push_raw(); } optional_braces  { $$ = new bi::BinaryOperator(bi::NONE, $4, new bi::Binary($3, $5, make_loc(@$)), $7, $9, make_doc_loc(@$)); }
     ;
     
 unary_operator_declaration
-    : OPERATOR '(' unary_operator parameter ')' optional_result { push_raw(); } optional_braces  { $$ = new bi::UnaryOperator(bi::NONE, $3, $4, $6, $8, make_doc_loc(@$)); }
+    : OPERATOR '(' unary_operator parameter ')' optional_return_type { push_raw(); } optional_braces  { $$ = new bi::UnaryOperator(bi::NONE, $3, $4, $6, $8, make_doc_loc(@$)); }
     ;
 
 assignment_operator_declaration
@@ -564,7 +564,7 @@ assignment_operator_declaration
     ;
 
 conversion_operator_declaration
-    : OPERATOR result { push_raw(); } optional_braces  { $$ = new bi::ConversionOperator($2, $4, make_doc_loc(@$)); }
+    : OPERATOR return_type { push_raw(); } optional_braces  { $$ = new bi::ConversionOperator($2, $4, make_doc_loc(@$)); }
     ;
 
 class_annotation
@@ -739,13 +739,22 @@ file
     : optional_file_statements  { compiler->setRoot($1); }
     ;
 
-result
+return_type 
     : RIGHT_OP type  { $$ = $2; }
     ;
     
-optional_result
-    : result
-    |         { $$ = empty_type(@$); }
+optional_return_type
+    : return_type
+    |              { $$ = empty_type(@$); }
+    ;
+
+yield_type 
+    : RIGHT_OP type  { $$ = $2; }
+    ;
+    
+optional_yield_type
+    : yield_type
+    |             { $$ = empty_type(@$); }
     ;
 
 value
@@ -789,6 +798,10 @@ weak_modifier
     |      { $$ = false; }
     ;
 
+base_type
+    : name optional_generic_arguments  { $$ = new bi::UnknownType(false, $1, $2, make_loc(@$)); }
+    ;
+
 basic_type
     : name  { $$ = new bi::BasicType($1, make_loc(@$)); }
     ;
@@ -801,30 +814,23 @@ unknown_type
     : name optional_generic_arguments weak_modifier  { $$ = new bi::UnknownType($3, $1, $2, make_loc(@$)); }
     ;
 
-base_type
-    : name optional_generic_arguments  { $$ = new bi::UnknownType(false, $1, $2, make_loc(@$)); }
-    ;
-
-member_type
+primary_type
     : unknown_type
-    | member_type '.' unknown_type  { $$ = new bi::MemberType($1, $3, make_loc(@$)); }
-    ;
-
-tuple_type
-    : '(' type_list ')'  { $$ = new bi::TupleType($2, make_loc(@$)); }
+    | class_type '.' unknown_type    { $$ = new bi::MemberType($1, $3, make_loc(@$)); }
+    | '(' type_list ')'              { $$ = new bi::TupleType($2, make_loc(@$)); }
     ;
 
 postfix_type
-    : member_type
-    | tuple_type
-    | postfix_type '!'           { $$ = new bi::FiberType($1, make_loc(@$)); }
-    | postfix_type '?'           { $$ = new bi::OptionalType($1, make_loc(@$)); }
-    | postfix_type '[' size ']'  { $$ = new bi::ArrayType($1, $3, make_loc(@$)); }
+    : primary_type
+    | postfix_type '!'               { $$ = new bi::FiberType($1, make_loc(@$)); }
+    | postfix_type '!' primary_type  { $$ = new bi::FiberType($1, make_loc(@$)); }
+    | postfix_type '?'               { $$ = new bi::OptionalType($1, make_loc(@$)); }
+    | postfix_type '[' shape ']'     { $$ = new bi::ArrayType($1, $3, make_loc(@$)); }
     ;
 
 function_type
     : postfix_type
-    | '@' parameter_types optional_result  { $$ = new bi::FunctionType($2, $3, make_loc(@$)); }
+    | '@' parameter_types optional_return_type  { $$ = new bi::FunctionType($2, $3, make_loc(@$)); }
     ;
 
 type
