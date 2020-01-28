@@ -83,7 +83,7 @@
 
 %glr-parser
 %expect-rr 3
-%expect 7
+%expect 10
 // ^ Type?(...) vs x?
 // ^ for generic function calls, f<Type>(expr) ambiguous with f < x > (expr),
 //   the former is favoured by %dprec directives 
@@ -143,8 +143,7 @@
 %type <valStatement> class_braces optional_class_braces
 
 %type <valType> base_type basic_type class_type unknown_type
-%type <valType> primary_type postfix_type function_type type
-%type <valType> type_list parameter_type_list parameter_types
+%type <valType> primary_type type type_list optional_type_list
 %type <valType> return_type optional_return_type yield_type optional_yield_type
 %type <valType> generic_argument generic_argument_list generic_arguments optional_generic_arguments
 
@@ -474,31 +473,31 @@ optional_generic_arguments
  ***************************************************************************/
 
 global_variable_declaration
-    : name ':' type ';'                             { push_raw(); $$ = new bi::GlobalVariable(bi::NONE, $1, $3, empty_expr(@$), empty_expr(@$), empty_expr(@$), make_doc_loc(@$)); }
-    | name ':' type arguments ';'                   { push_raw(); $$ = new bi::GlobalVariable(bi::NONE, $1, $3, empty_expr(@$), $4, empty_expr(@$), make_doc_loc(@$)); }
-    | name ':' type value ';'                       { push_raw(); $$ = new bi::GlobalVariable(bi::NONE, $1, $3, empty_expr(@$), empty_expr(@$), $4, make_doc_loc(@$)); }
-    | AUTO name value ';'                           { push_raw(); $$ = new bi::GlobalVariable(bi::AUTO, $2, empty_type(@$), empty_expr(@$), empty_expr(@$), $3, make_loc(@$)); }
-    | name ':' postfix_type brackets ';'            { push_raw(); $$ = new bi::GlobalVariable(bi::NONE, $1, $3, $4, empty_expr(@$), empty_expr(@$), make_doc_loc(@$)); }
-    | name ':' postfix_type brackets arguments ';'  { push_raw(); $$ = new bi::GlobalVariable(bi::NONE, $1, $3, $4, $5, empty_expr(@$), make_doc_loc(@$)); }
+    : name ':' type ';'                     { push_raw(); $$ = new bi::GlobalVariable(bi::NONE, $1, $3, empty_expr(@$), empty_expr(@$), empty_expr(@$), make_doc_loc(@$)); }
+    | name ':' type arguments ';'           { push_raw(); $$ = new bi::GlobalVariable(bi::NONE, $1, $3, empty_expr(@$), $4, empty_expr(@$), make_doc_loc(@$)); }
+    | name ':' type value ';'               { push_raw(); $$ = new bi::GlobalVariable(bi::NONE, $1, $3, empty_expr(@$), empty_expr(@$), $4, make_doc_loc(@$)); }
+    | AUTO name value ';'                   { push_raw(); $$ = new bi::GlobalVariable(bi::AUTO, $2, empty_type(@$), empty_expr(@$), empty_expr(@$), $3, make_loc(@$)); }
+    | name ':' type brackets ';'            { push_raw(); $$ = new bi::GlobalVariable(bi::NONE, $1, $3, $4, empty_expr(@$), empty_expr(@$), make_doc_loc(@$)); }
+    | name ':' type brackets arguments ';'  { push_raw(); $$ = new bi::GlobalVariable(bi::NONE, $1, $3, $4, $5, empty_expr(@$), make_doc_loc(@$)); }
     ;
 
 local_variable_declaration
-    : name ':' type ';'                             { push_raw(); $$ = new bi::LocalVariable(bi::NONE, $1, $3, empty_expr(@$), empty_expr(@$), empty_expr(@$), make_doc_loc(@$)); }
-    | name ':' type arguments ';'                   { push_raw(); $$ = new bi::LocalVariable(bi::NONE, $1, $3, empty_expr(@$), $4, empty_expr(@$), make_doc_loc(@$)); }
-    | name ':' type value ';'                       { push_raw(); $$ = new bi::LocalVariable(bi::NONE, $1, $3, empty_expr(@$), empty_expr(@$), $4, make_doc_loc(@$)); }
-    | AUTO name value ';'                           { push_raw(); $$ = new bi::LocalVariable(bi::AUTO, $2, empty_type(@$), empty_expr(@$), empty_expr(@$), $3, make_doc_loc(@$)); }
-    | name ':' postfix_type brackets ';'            { push_raw(); $$ = new bi::LocalVariable(bi::NONE, $1, $3, $4, empty_expr(@$), empty_expr(@$), make_doc_loc(@$)); }
-    | name ':' postfix_type brackets arguments ';'  { push_raw(); $$ = new bi::LocalVariable(bi::NONE, $1, $3, $4, $5, empty_expr(@$), make_doc_loc(@$)); }
-    | name ':' postfix_type brackets value ';'      { push_raw(); $$ = new bi::LocalVariable(bi::NONE, $1, $3, $4, empty_expr(@$), $5, make_doc_loc(@$)); }
+    : name ':' type ';'                     { push_raw(); $$ = new bi::LocalVariable(bi::NONE, $1, $3, empty_expr(@$), empty_expr(@$), empty_expr(@$), make_doc_loc(@$)); }
+    | name ':' type arguments ';'           { push_raw(); $$ = new bi::LocalVariable(bi::NONE, $1, $3, empty_expr(@$), $4, empty_expr(@$), make_doc_loc(@$)); }
+    | name ':' type value ';'               { push_raw(); $$ = new bi::LocalVariable(bi::NONE, $1, $3, empty_expr(@$), empty_expr(@$), $4, make_doc_loc(@$)); }
+    | AUTO name value ';'                   { push_raw(); $$ = new bi::LocalVariable(bi::AUTO, $2, empty_type(@$), empty_expr(@$), empty_expr(@$), $3, make_doc_loc(@$)); }
+    | name ':' type brackets ';'            { push_raw(); $$ = new bi::LocalVariable(bi::NONE, $1, $3, $4, empty_expr(@$), empty_expr(@$), make_doc_loc(@$)); }
+    | name ':' type brackets arguments ';'  { push_raw(); $$ = new bi::LocalVariable(bi::NONE, $1, $3, $4, $5, empty_expr(@$), make_doc_loc(@$)); }
+    | name ':' type brackets value ';'      { push_raw(); $$ = new bi::LocalVariable(bi::NONE, $1, $3, $4, empty_expr(@$), $5, make_doc_loc(@$)); }
     ;
 
 member_variable_declaration
-    : name ':' type ';'                             { push_raw(); $$ = new bi::MemberVariable(bi::NONE, $1, $3, empty_expr(@$), empty_expr(@$), empty_expr(@$), make_doc_loc(@$)); }
-    | name ':' type arguments ';'                   { push_raw(); $$ = new bi::MemberVariable(bi::NONE, $1, $3, empty_expr(@$), $4, empty_expr(@$), make_doc_loc(@$)); }
-    | name ':' type value ';'                       { push_raw(); $$ = new bi::MemberVariable(bi::NONE, $1, $3, empty_expr(@$), empty_expr(@$), $4, make_doc_loc(@$)); }
-    | AUTO name value ';'                           { push_raw(); $$ = new bi::MemberVariable(bi::AUTO, $2, empty_type(@$), empty_expr(@$), empty_expr(@$), $3, make_loc(@$)); }
-    | name ':' postfix_type brackets ';'            { push_raw(); $$ = new bi::MemberVariable(bi::NONE, $1, $3, $4, empty_expr(@$), empty_expr(@$), make_doc_loc(@$)); }
-    | name ':' postfix_type brackets arguments ';'  { push_raw(); $$ = new bi::MemberVariable(bi::NONE, $1, $3, $4, $5, empty_expr(@$), make_doc_loc(@$)); }
+    : name ':' type ';'                     { push_raw(); $$ = new bi::MemberVariable(bi::NONE, $1, $3, empty_expr(@$), empty_expr(@$), empty_expr(@$), make_doc_loc(@$)); }
+    | name ':' type arguments ';'           { push_raw(); $$ = new bi::MemberVariable(bi::NONE, $1, $3, empty_expr(@$), $4, empty_expr(@$), make_doc_loc(@$)); }
+    | name ':' type value ';'               { push_raw(); $$ = new bi::MemberVariable(bi::NONE, $1, $3, empty_expr(@$), empty_expr(@$), $4, make_doc_loc(@$)); }
+    | AUTO name value ';'                   { push_raw(); $$ = new bi::MemberVariable(bi::AUTO, $2, empty_type(@$), empty_expr(@$), empty_expr(@$), $3, make_loc(@$)); }
+    | name ':' type brackets ';'            { push_raw(); $$ = new bi::MemberVariable(bi::NONE, $1, $3, $4, empty_expr(@$), empty_expr(@$), make_doc_loc(@$)); }
+    | name ':' type brackets arguments ';'  { push_raw(); $$ = new bi::MemberVariable(bi::NONE, $1, $3, $4, $5, empty_expr(@$), make_doc_loc(@$)); }
     ;
 
 function_declaration
@@ -816,25 +815,17 @@ unknown_type
 
 primary_type
     : unknown_type
-    | class_type '.' unknown_type    { $$ = new bi::MemberType($1, $3, make_loc(@$)); }
-    | '(' type_list ')'              { $$ = new bi::TupleType($2, make_loc(@$)); }
-    ;
-
-postfix_type
-    : primary_type
-    | postfix_type '!'               { $$ = new bi::FiberType($1, make_loc(@$)); }
-    | postfix_type '!' primary_type  { $$ = new bi::FiberType($1, make_loc(@$)); }
-    | postfix_type '?'               { $$ = new bi::OptionalType($1, make_loc(@$)); }
-    | postfix_type '[' shape ']'     { $$ = new bi::ArrayType($1, $3, make_loc(@$)); }
-    ;
-
-function_type
-    : postfix_type
-    | '@' parameter_types optional_return_type  { $$ = new bi::FunctionType($2, $3, make_loc(@$)); }
+    | '(' type_list ')'  { $$ = new bi::TupleType($2, make_loc(@$)); }
     ;
 
 type
-    : function_type
+    : primary_type
+    | type '?'                                             { $$ = new bi::OptionalType($1, make_loc(@$)); }
+    | type '!'                                             { $$ = new bi::FiberType($1, make_loc(@$)); }
+    | type '!' primary_type                                { $$ = new bi::FiberType($1, make_loc(@$)); }
+    | class_type '.' unknown_type                          { $$ = new bi::MemberType($1, $3, make_loc(@$)); }
+    | type '[' shape ']'                                   { $$ = new bi::ArrayType($1, $3, make_loc(@$)); }
+    | '@' '(' optional_type_list ')' optional_return_type  { $$ = new bi::FunctionType($3, $5, make_loc(@$)); }
     ;
 
 type_list
@@ -842,14 +833,9 @@ type_list
     | type ',' type_list  { $$ = new bi::TypeList($1, $3, make_loc(@$)); }
     ;
 
-parameter_type_list
-    : type
-    | type ',' parameter_type_list  { $$ = new bi::TypeList($1, $3, make_loc(@$)); }
-    ;
-
-parameter_types
-    : '(' ')'                      { $$ = empty_type(@$); }
-    | '(' parameter_type_list ')'  { $$ = $2; }
+optional_type_list
+    : type_list
+    |            { $$ = empty_type(@$); }
     ;
 
 %%
