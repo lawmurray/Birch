@@ -9,7 +9,7 @@
 #include "bi/common/Numbered.hpp"
 #include "bi/common/TypeParameterised.hpp"
 #include "bi/common/Parameterised.hpp"
-#include "bi/common/ReturnTyped.hpp"
+#include "bi/common/YieldTyped.hpp"
 #include "bi/common/Braced.hpp"
 #include "bi/common/Scoped.hpp"
 
@@ -25,7 +25,7 @@ class Fiber: public Statement,
     public Numbered,
     public TypeParameterised<Fiber>,
     public Parameterised,
-    public ReturnTyped,
+    public YieldTyped,
     public Typed,
     public Scoped,
     public Braced {
@@ -37,12 +37,12 @@ public:
    * @param name Name.
    * @param typeParams Generic type parameters.
    * @param params Parameters.
-   * @param returnType Return type.
+   * @param yieldType Yield type.
    * @param braces Body.
    * @param loc Location.
    */
   Fiber(const Annotation annotation, Name* name, Expression* typeParams,
-      Expression* params, Type* returnType, Statement* braces, Location* loc =
+      Expression* params, Type* yieldType, Statement* braces, Location* loc =
           nullptr);
 
   /**

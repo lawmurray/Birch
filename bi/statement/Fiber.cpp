@@ -6,14 +6,14 @@
 #include "bi/visitor/all.hpp"
 
 bi::Fiber::Fiber(const Annotation annotation, Name* name,
-    Expression* typeParams, Expression* params, Type* returnType,
+    Expression* typeParams, Expression* params, Type* yieldType,
     Statement* braces, Location* loc) :
     Statement(loc),
     Annotated(annotation),
     Named(name),
     TypeParameterised(typeParams),
     Parameterised(params),
-    ReturnTyped(returnType),
+    YieldTyped(yieldType),
     Typed(new EmptyType(loc)),
     Scoped(LOCAL_SCOPE),
     Braced(braces) {

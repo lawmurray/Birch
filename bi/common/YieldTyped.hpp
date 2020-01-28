@@ -8,27 +8,27 @@
 
 namespace bi {
 /**
- * Function, fiber or operator with return type.
+ * Fiber with yield type.
  *
  * @ingroup common
  */
-class ReturnTyped {
+class YieldTyped {
 public:
   /**
    * Constructor.
    *
-   * @param returnType Return type.
+   * @param yieldType Yield type.
    */
-  ReturnTyped(Type* returnType);
+  YieldTyped(Type* yieldType);
 
   /**
    * Destructor.
    */
-  virtual ~ReturnTyped() = 0;
+  virtual ~YieldTyped() = 0;
 
   /**
-   * Return type.
+   * Yield type.
    */
-  Type* returnType;
+  Type* yieldType;
 };
 }

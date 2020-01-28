@@ -397,7 +397,7 @@ bi::Expression* bi::Resolver::modify(OverloadedIdentifier<Fiber>* o) {
   if (o->target->size() == 1) {
     auto only = instantiate(o, o->target->front());
     o->target = new Overloaded<Fiber>(only);
-    o->type = new FunctionType(only->params->type, only->returnType);
+    o->type = new FunctionType(only->params->type, only->yieldType);
   } else {
     auto target = new Overloaded<Fiber>();
     for (auto overload : *o->target) {
@@ -434,7 +434,7 @@ bi::Expression* bi::Resolver::modify(OverloadedIdentifier<MemberFiber>* o) {
     if (o->target->size() == 1) {
       auto only = o->target->front();
       o->target = new Overloaded<MemberFiber>(only);
-      o->type = new FunctionType(only->params->type, only->returnType);
+      o->type = new FunctionType(only->params->type, only->yieldType);
     }
     return o;
   }
@@ -666,15 +666,15 @@ bi::Statement* bi::Resolver::modify(Fiber* o) {
     scopes.push_back(o->scope);
     o->typeParams = o->typeParams->accept(this);
     o->params = o->params->accept(this);
-    o->returnType = o->returnType->accept(this);
-    o->type = new FunctionType(o->params->type, o->returnType, o->loc);
+    o->yieldType = o->yieldType->accept(this);
+    o->type = new FunctionType(o->params->type, o->yieldType, o->loc);
     scopes.pop_back();
     if (!o->isInstantiation()) {
       scopes.back()->add(o);
     }
   } else if (stage == RESOLVER_SOURCE && o->isBound()) {
     scopes.push_back(o->scope);
-    yieldTypes.push_back(o->returnType->unwrap());
+    yieldTypes.push_back(o->yieldType->unwrap());
     o->braces = o->braces->accept(this);
     yieldTypes.pop_back();
     scopes.pop_back();
@@ -733,13 +733,13 @@ bi::Statement* bi::Resolver::modify(MemberFiber* o) {
   if (stage == RESOLVER_HEADER) {
     scopes.push_back(o->scope);
     o->params = o->params->accept(this);
-    o->returnType = o->returnType->accept(this);
-    o->type = new FunctionType(o->params->type, o->returnType, o->loc);
+    o->yieldType = o->yieldType->accept(this);
+    o->type = new FunctionType(o->params->type, o->yieldType, o->loc);
     scopes.pop_back();
     scopes.back()->add(o);
   } else if (stage == RESOLVER_SOURCE) {
     scopes.push_back(o->scope);
-    yieldTypes.push_back(o->returnType->unwrap());
+    yieldTypes.push_back(o->yieldType->unwrap());
     o->braces = o->braces->accept(this);
     yieldTypes.pop_back();
     scopes.pop_back();

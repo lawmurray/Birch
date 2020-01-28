@@ -6,16 +6,15 @@
 #include "bi/visitor/all.hpp"
 
 bi::MemberFiber::MemberFiber(const Annotation annotation, Name* name,
-    Expression* params, Type* returnType,
-    Statement* braces, Location* loc) :
-Statement(loc),
-Annotated(annotation),
-Named(name),
-Parameterised(params),
-ReturnTyped(returnType),
-Typed(new EmptyType(loc)),
-Scoped(LOCAL_SCOPE),
-Braced(braces) {
+    Expression* params, Type* yieldType, Statement* braces, Location* loc) :
+    Statement(loc),
+    Annotated(annotation),
+    Named(name),
+    Parameterised(params),
+    YieldTyped(yieldType),
+    Typed(new EmptyType(loc)),
+    Scoped(LOCAL_SCOPE),
+    Braced(braces) {
   //
 }
 

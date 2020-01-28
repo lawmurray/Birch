@@ -15,7 +15,7 @@ bi::CppMemberFiberGenerator::CppMemberFiberGenerator(const Class* type,
 }
 
 void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
-  yieldType = o->returnType->unwrap();
+  yieldType = o->yieldType->unwrap();
 
   /* generate a unique name (within this scope) for the state of the fiber */
   std::stringstream base;
@@ -204,7 +204,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     line("super_type_::doFreeze_();");
     genSourceLine(o->loc);
     line("self.freeze();");
-    if (!o->returnType->unwrap()->isValue()) {
+    if (!o->yieldType->unwrap()->isValue()) {
       genSourceLine(o->loc);
       line("value_.freeze();");
     }
@@ -243,7 +243,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     line("super_type_::doThaw_(label_);");
     genSourceLine(o->loc);
     line("self.thaw(label_);");
-    if (!o->returnType->unwrap()->isValue()) {
+    if (!o->yieldType->unwrap()->isValue()) {
       genSourceLine(o->loc);
       line("value_.thaw(label_);");
     }
@@ -282,7 +282,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     line("super_type_::doFinish_();");
     genSourceLine(o->loc);
     line("self.finish();");
-    if (!o->returnType->unwrap()->isValue()) {
+    if (!o->yieldType->unwrap()->isValue()) {
       genSourceLine(o->loc);
       line("value_.finish();");
     }
@@ -365,7 +365,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     genSourceLine(o->loc);
     start("");
   }
-  middle(o->returnType << ' ');
+  middle(o->yieldType << ' ');
   if (!header) {
     middle("bi::type::" << type->name);
     genTemplateArgs(type);
