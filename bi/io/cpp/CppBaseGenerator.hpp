@@ -149,16 +149,6 @@ protected:
    */
   void genSourceLine(const Location* loc);
 
-  /*
-   * Generate arguments for function calls with appropriate casts where
-   * necessary.
-   */
-  void genArgs(const Expression* args, const Type* types);
-  void genLeftArg(const Call<BinaryOperator>* o);
-  void genRightArg(const Call<BinaryOperator>* o);
-  void genSingleArg(const Call<UnaryOperator>* o);
-  void genArg(const Expression* arg, const Type* type);
-
   /**
    * Output header instead of source?
    */

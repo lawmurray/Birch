@@ -637,11 +637,7 @@ void bi::bi_ostream::visit(const BasicType* o) {
 }
 
 void bi::bi_ostream::visit(const GenericType* o) {
-  if (o->target && !o->target->type->isEmpty()) {
-    middle(o->target->type);
-  } else {
-    middle(o->name);
-  }
+  middle(o->name);
 }
 
 void bi::bi_ostream::visit(const MemberType* o) {

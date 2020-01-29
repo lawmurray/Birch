@@ -106,83 +106,39 @@ void bi::CppBaseGenerator::visit(const Cast* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Call<Unknown>* o) {
-  assert(false);
+  middle(o->single << '(' << o->args << ')');
 }
 
 void bi::CppBaseGenerator::visit(const Call<Parameter>* o) {
-  middle(o->single);
-  middle('(');
-  auto type = dynamic_cast<const FunctionType*>(o->target->type);
-  assert(type);
-  genArgs(o->args, type->params);
-  middle(')');
+  middle(o->single << '(' << o->args << ')');
 }
 
 void bi::CppBaseGenerator::visit(const Call<LocalVariable>* o) {
-  middle(o->single);
-  middle('(');
-  auto type = dynamic_cast<const FunctionType*>(o->target->type);
-  assert(type);
-  genArgs(o->args, type->params);
-  middle(')');
+  middle(o->single << '(' << o->args << ')');
 }
 
 void bi::CppBaseGenerator::visit(const Call<MemberVariable>* o) {
-  middle(o->single);
-  middle('(');
-  auto type = dynamic_cast<const FunctionType*>(o->target->type);
-  assert(type);
-  genArgs(o->args, type->params);
-  middle(')');
+  middle(o->single << '(' << o->args << ')');
 }
 
 void bi::CppBaseGenerator::visit(const Call<GlobalVariable>* o) {
-  middle(o->single);
-  middle('(');
-  auto type = dynamic_cast<const FunctionType*>(o->target->type);
-  assert(type);
-  genArgs(o->args, type->params);
-  middle(')');
+  middle(o->single << '(' << o->args << ')');
 }
 
 void bi::CppBaseGenerator::visit(const Call<Function>* o) {
-  middle(o->single);
-  middle('(');
-  if (!o->target->isValue()) {
-    middle("context_");
-    if (!o->args->isEmpty()) {
-      middle(", ");
-    }
-  }
-  genArgs(o->args, o->target->params->type);
-  middle(')');
+  middle(o->single << '(' << o->args << ')');
 }
 
 void bi::CppBaseGenerator::visit(const Call<MemberFunction>* o) {
-  middle(o->single);
-  middle('(');
-  genArgs(o->args, o->target->params->type);
-  middle(')');
+  middle(o->single << '(' << o->args << ')');
 }
 
 void bi::CppBaseGenerator::visit(const Call<Fiber>* o) {
-  middle(o->single);
-  middle('(');
-  if (!o->target->isValue()) {
-    middle("context_");
-    if (!o->args->isEmpty()) {
-      middle(", ");
-    }
-  }
-  genArgs(o->args, o->target->params->type);
-  middle(')');
+  middle(o->single << '(' << o->args << ')');
 }
 
 void bi::CppBaseGenerator::visit(const Call<MemberFiber>* o) {
-  middle(o->single);
-  middle('(');
-  genArgs(o->args, o->target->params->type);
-  middle(')');
+  middle(o->single << '(' << o->args << ')');
 }
 
 void bi::CppBaseGenerator::visit(const Call<BinaryOperator>* o) {
@@ -190,19 +146,14 @@ void bi::CppBaseGenerator::visit(const Call<BinaryOperator>* o) {
   assert(op);
   if (isTranslatable(op->name->str()) && o->target->isValue()) {
     /* use corresponding C++ operator */
-    genLeftArg(o);
-    middle(' ' << op->name->str() << ' ');
-    genRightArg(o);
+    middle(o->getLeft() << ' ' << op->name->str() << ' ' << o->getRight());
   } else {
     /* use function */
     middle(o->single << '(');
     if (!o->target->isValue()) {
       middle("context_, ");
     }
-    genLeftArg(o);
-    middle(", ");
-    genRightArg(o);
-    middle(')');
+    middle(o->getLeft() << ", " << o->getRight() << ')');
   }
 }
 
@@ -211,16 +162,14 @@ void bi::CppBaseGenerator::visit(const Call<UnaryOperator>* o) {
   assert(op);
   if (isTranslatable(op->name->str()) && o->target->isValue()) {
     /* use corresponding C++ operator */
-    middle(op->name->str());
-    genSingleArg(o);
+    middle(op->name->str() << o->args);
   } else {
     /* use function */
     middle(o->single << '(');
     if (!o->target->isValue()) {
       middle("context_, ");
     }
-    genSingleArg(o);
-    middle(')');
+    middle(o->args << ')');
   }
 }
 
@@ -258,14 +207,12 @@ void bi::CppBaseGenerator::visit(const Assign* o) {
       ++inAssign;
       middle(o->left << " = ");
       --inAssign;
-      genArg(o->right, o->left->type);
-      //middle(o->right);
+      middle(o->right);
     } else {
       ++inAssign;
       middle(o->left << ".assign(context_, ");
       --inAssign;
-      genArg(o->right, o->left->type);
-      //middle(o->right);
+      middle(o->right);
       middle(')');
     }
   }
@@ -975,11 +922,7 @@ void bi::CppBaseGenerator::visit(const BasicType* o) {
 }
 
 void bi::CppBaseGenerator::visit(const GenericType* o) {
-  if (o->target->type->isEmpty()) {
-    middle(o->name);
-  } else {
-    middle(o->target->type);
-  }
+  middle(o->name);
 }
 
 void bi::CppBaseGenerator::visit(const MemberType* o) {
@@ -1009,50 +952,4 @@ void bi::CppBaseGenerator::genTraceLine(const Location* loc) {
 
 void bi::CppBaseGenerator::genSourceLine(const Location* loc) {
   line("#line " << loc->firstLine << " \"" << loc->file->path << "\"");
-}
-
-void bi::CppBaseGenerator::genArgs(const Expression* args, const Type* types) {
-  auto iter1 = args->begin();
-  auto end1 = args->end();
-  auto iter2 = types->begin();
-  auto end2 = types->end();
-  while (iter1 != end1 && iter2 != end2) {
-    if (iter1 != args->begin()) {
-      middle(", ");
-    }
-    genArg(*iter1, *iter2);
-    ++iter1;
-    ++iter2;
-  }
-}
-
-void bi::CppBaseGenerator::genLeftArg(const Call<BinaryOperator>* o) {
-  genArg(o->args->getLeft(), o->target->params->getLeft()->type);
-}
-
-void bi::CppBaseGenerator::genRightArg(const Call<BinaryOperator>* o) {
-  genArg(o->args->getRight(), o->target->params->getRight()->type);
-}
-
-void bi::CppBaseGenerator::genSingleArg(const Call<UnaryOperator>* o) {
-  genArg(o->args, o->target->params->type);
-}
-
-void bi::CppBaseGenerator::genArg(const Expression* arg, const Type* type) {
-  /* Birch and C++ resolve overloads differently, explicit casting avoids
-   * situations where Birch considers a call unambiguous, whereas C++ does
-   * not */
-  auto isThis = dynamic_cast<const This*>(arg);
-  auto isSuper = dynamic_cast<const Super*>(arg);
-  auto isSequence = dynamic_cast<const Sequence*>(arg);
-  if ((!arg->type->equals(*type) && arg->type->isConvertible(*type)) || isThis || isSuper || isSequence) {
-    middle(type->canonical() << '(');
-    if (!type->isValue()) {
-      middle("context_, ");
-    }
-    middle(arg << ')');
-  } else {
-    /* either the same type, or using an assignment operator overload */
-    middle(arg);
-  }
 }
