@@ -297,7 +297,7 @@ bi::Statement* bi::Cloner::clone(const Function* o) {
 
 bi::Statement* bi::Cloner::clone(const Fiber* o) {
   return new Fiber(o->annotation, o->name, o->typeParams->accept(this),
-      o->params->accept(this), o->yieldType->accept(this),
+      o->params->accept(this), o->returnType->accept(this),
       o->braces->accept(this), o->loc);
 }
 
@@ -313,7 +313,7 @@ bi::Statement* bi::Cloner::clone(const MemberFunction* o) {
 
 bi::Statement* bi::Cloner::clone(const MemberFiber* o) {
   return new MemberFiber(o->annotation, o->name, o->params->accept(this),
-      o->yieldType->accept(this), o->braces->accept(this), o->loc);
+      o->returnType->accept(this), o->braces->accept(this), o->loc);
 }
 
 bi::Statement* bi::Cloner::clone(const BinaryOperator* o) {
@@ -451,7 +451,8 @@ bi::Type* bi::Cloner::clone(const FunctionType* o) {
 }
 
 bi::Type* bi::Cloner::clone(const FiberType* o) {
-  return new FiberType(o->yieldType->accept(this), o->loc);
+  return new FiberType(o->yieldType->accept(this),
+      o->returnType->accept(this), o->loc);
 }
 
 bi::Type* bi::Cloner::clone(const OptionalType* o) {

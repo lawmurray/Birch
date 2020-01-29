@@ -54,17 +54,3 @@ bool bi::BinaryType::dispatchIsAssignable(const Type& o) const {
 bool bi::BinaryType::isAssignable(const BinaryType& o) const {
   return left->isAssignable(*o.left) && right->isAssignable(*o.right);
 }
-
-bi::Type* bi::BinaryType::dispatchCommon(const Type& o) const {
-  return o.common(*this);
-}
-
-bi::Type* bi::BinaryType::common(const BinaryType& o) const {
-  auto left1 = left->common(*o.left);
-  auto right1 = right->common(*o.right);
-  if (left1 && right1) {
-    return new BinaryType(left1, right1);
-  } else {
-    return nullptr;
-  }
-}

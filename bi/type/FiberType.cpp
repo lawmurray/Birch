@@ -5,9 +5,10 @@
 
 #include "bi/visitor/all.hpp"
 
-bi::FiberType::FiberType(Type* yieldType, Location* loc) :
+bi::FiberType::FiberType(Type* yieldType, Type* returnType, Location* loc) :
     Type(loc),
-    YieldTyped(yieldType) {
+    YieldTyped(yieldType),
+    ReturnTyped(returnType) {
   //
 }
 
@@ -52,68 +53,73 @@ bool bi::FiberType::isConvertible(const MemberType& o) const {
   return isConvertible(*o.right);
 }
 
+bool bi::FiberType::isConvertible(const ArrayType& o) const {
+  return returnType->isConvertible(o);
+}
+
+bool bi::FiberType::isConvertible(const BasicType& o) const {
+  return returnType->isConvertible(o);
+}
+
+bool bi::FiberType::isConvertible(const ClassType& o) const {
+  return returnType->isConvertible(o);
+}
+
 bool bi::FiberType::isConvertible(const FiberType& o) const {
-  return yieldType->equals(*o.yieldType);
-  // ^ C++ code generation cannot handle the ->definitely case
+  return returnType->isConvertible(o) || (yieldType->equals(*o.yieldType) &&
+      returnType->equals(*o.returnType));
+}
+
+bool bi::FiberType::isConvertible(const FunctionType& o) const {
+  return returnType->isConvertible(o);
 }
 
 bool bi::FiberType::isConvertible(const OptionalType& o) const {
-  return isConvertible(*o.single);
+  return returnType->isConvertible(o) || isConvertible(*o.single);
+}
+
+bool bi::FiberType::isConvertible(const TupleType& o) const {
+  return returnType->isConvertible(o);
 }
 
 bool bi::FiberType::dispatchIsAssignable(const Type& o) const {
   return o.isAssignable(*this);
 }
 
-bool bi::FiberType::isAssignable(const ClassType& o) const {
-  return o.getClass()->hasAssignment(this);
-}
-
 bool bi::FiberType::isAssignable(const GenericType& o) const {
   assert(o.target);
-  return isAssignable(*o.target->type);
+  return returnType->isAssignable(o) || isAssignable(*o.target->type);
 }
 
 bool bi::FiberType::isAssignable(const MemberType& o) const {
-  return isAssignable(*o.right);
+  return returnType->isAssignable(o) || isAssignable(*o.right);
+}
+
+bool bi::FiberType::isAssignable(const ArrayType& o) const {
+  return returnType->isAssignable(o);
+}
+
+bool bi::FiberType::isAssignable(const BasicType& o) const {
+  return returnType->isAssignable(o);
+}
+
+bool bi::FiberType::isAssignable(const ClassType& o) const {
+  return returnType->isAssignable(o) || o.getClass()->hasAssignment(this);
 }
 
 bool bi::FiberType::isAssignable(const FiberType& o) const {
-  return yieldType->equals(*o.yieldType);
-  // ^ C++ code generation cannot handle the ->definitely case
+  return returnType->isAssignable(o) || (yieldType->equals(*o.yieldType) &&
+      returnType->equals(*o.returnType));
+}
+
+bool bi::FiberType::isAssignable(const FunctionType& o) const {
+  return returnType->isAssignable(o);
 }
 
 bool bi::FiberType::isAssignable(const OptionalType& o) const {
-  return isAssignable(*o.single);
+  return returnType->isAssignable(o) || isAssignable(*o.single);
 }
 
-bi::Type* bi::FiberType::dispatchCommon(const Type& o) const {
-  return o.common(*this);
-}
-
-bi::Type* bi::FiberType::common(const GenericType& o) const {
-  assert(o.target);
-  return common(*o.target->type);
-}
-
-bi::Type* bi::FiberType::common(const MemberType& o) const {
-  return common(*o.right);
-}
-
-bi::Type* bi::FiberType::common(const FiberType& o) const {
-  auto yieldType1 = yieldType->common(*o.yieldType);
-  if (yieldType1) {
-    return new FiberType(yieldType1);
-  } else {
-    return nullptr;
-  }
-}
-
-bi::Type* bi::FiberType::common(const OptionalType& o) const {
-  auto yieldType1 = common(*o.single);
-  if (yieldType1) {
-    return new OptionalType(yieldType1);
-  } else {
-    return nullptr;
-  }
+bool bi::FiberType::isAssignable(const TupleType& o) const {
+  return returnType->isAssignable(o);
 }

@@ -49,15 +49,3 @@ bool bi::NilType::isAssignable(const NilType& o) const {
 bool bi::NilType::isAssignable(const OptionalType& o) const {
   return true;
 }
-
-bi::Type* bi::NilType::dispatchCommon(const Type& o) const {
-  return o.common(*this);
-}
-
-bi::Type* bi::NilType::common(const NilType& o) const {
-  return new NilType();
-}
-
-bi::Type* bi::NilType::common(const OptionalType& o) const {
-  return o.common(o);
-}

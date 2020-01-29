@@ -31,7 +31,6 @@ public:
 
   using Type::isConvertible;
   using Type::isAssignable;
-  using Type::common;
 
   virtual bool dispatchIsConvertible(const Type& o) const;
   virtual bool isConvertible(const NilType& o) const;
@@ -40,9 +39,5 @@ public:
   virtual bool dispatchIsAssignable(const Type& o) const;
   virtual bool isAssignable(const NilType& o) const;
   virtual bool isAssignable(const OptionalType& o) const;
-
-  virtual Type* dispatchCommon(const Type& o) const;
-  virtual Type* common(const NilType& o) const;
-  virtual Type* common(const OptionalType& o) const;
 };
 }

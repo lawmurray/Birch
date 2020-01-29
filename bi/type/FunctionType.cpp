@@ -79,35 +79,3 @@ bool bi::FunctionType::isAssignable(const FunctionType& o) const {
 bool bi::FunctionType::isAssignable(const OptionalType& o) const {
   return isAssignable(*o.single);
 }
-
-bi::Type* bi::FunctionType::dispatchCommon(const Type& o) const {
-  return o.common(*this);
-}
-
-bi::Type* bi::FunctionType::common(const GenericType& o) const {
-  assert(o.target);
-  return common(*o.target->type);
-}
-
-bi::Type* bi::FunctionType::common(const MemberType& o) const {
-  return common(*o.right);
-}
-
-bi::Type* bi::FunctionType::common(const FunctionType& o) const {
-  auto params1 = params->common(*o.params);
-  auto returnType1 = returnType->common(*o.returnType);
-  if (params1 && returnType1) {
-    return new FunctionType(params1, returnType1);
-  } else {
-    return nullptr;
-  }
-}
-
-bi::Type* bi::FunctionType::common(const OptionalType& o) const {
-  auto single1 = common(*o.single);
-  if (single1) {
-    return new OptionalType(single1);
-  } else {
-    return nullptr;
-  }
-}

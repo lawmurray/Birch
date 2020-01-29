@@ -267,25 +267,5 @@ public:
   virtual bool isAssignable(const TupleType& o) const;
   virtual bool isAssignable(const UnknownType& o) const;
   virtual bool isAssignable(const TypeList& o) const;
-
-  /*
-   * Double-dispatch common type reductions.
-   */
-  virtual Type* common(const Type& o) const;
-  virtual Type* dispatchCommon(const Type& o) const = 0;
-  virtual Type* common(const ArrayType& o) const;
-  virtual Type* common(const BasicType& o) const;
-  virtual Type* common(const BinaryType& o) const;
-  virtual Type* common(const ClassType& o) const;
-  virtual Type* common(const EmptyType& o) const;
-  virtual Type* common(const FiberType& o) const;
-  virtual Type* common(const FunctionType& o) const;
-  virtual Type* common(const GenericType& o) const;
-  virtual Type* common(const MemberType& o) const;
-  virtual Type* common(const NilType& o) const;
-  virtual Type* common(const OptionalType& o) const;
-  virtual Type* common(const TupleType& o) const;
-  virtual Type* common(const UnknownType& o) const;
-  virtual Type* common(const TypeList& o) const;
 };
 }

@@ -295,7 +295,7 @@ void bi::Visitor::visit(const Function* o) {
 void bi::Visitor::visit(const Fiber* o) {
   o->typeParams->accept(this);
   o->params->accept(this);
-  o->yieldType->accept(this);
+  o->returnType->accept(this);
   o->braces->accept(this);
 }
 
@@ -312,7 +312,7 @@ void bi::Visitor::visit(const MemberFunction* o) {
 
 void bi::Visitor::visit(const MemberFiber* o) {
   o->params->accept(this);
-  o->yieldType->accept(this);
+  o->returnType->accept(this);
   o->braces->accept(this);
 }
 

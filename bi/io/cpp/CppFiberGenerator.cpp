@@ -15,7 +15,8 @@ bi::CppFiberGenerator::CppFiberGenerator(std::ostream& base, const int level,
 }
 
 void bi::CppFiberGenerator::visit(const Fiber* o) {
-  yieldType = o->yieldType->unwrap();
+  fiberType = dynamic_cast<const FiberType*>(o->returnType);
+  assert(fiberType);
 
   /* generate a unique name (within this scope) for the state of the fiber */
   std::stringstream base;
@@ -34,11 +35,11 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
     /* supporting class for state */
     if (header) {
       start("class " << stateName << " final : ");
-      finish("public libbirch::FiberState<" << yieldType << "> {");
+      finish("public libbirch::FiberState<" << fiberType->yieldType << "> {");
       line("public:");
       in();
       line("using class_type_ = " << stateName << ';');
-      line("using super_type_ = libbirch::FiberState<" << yieldType << ">;\n");
+      line("using super_type_ = libbirch::FiberState<" << fiberType->yieldType << ">;\n");
       for (auto o : params) {
         line(o->type << ' ' << o->name << ';');
       }
@@ -186,7 +187,7 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
       in();
       genSourceLine(o->loc);
       line("super_type_::doFreeze_();");
-      if (!o->yieldType->unwrap()->isValue()) {
+      if (!fiberType->yieldType->isValue()) {
         line("value_.freeze();");
       }
       for (auto o : params) {
@@ -220,7 +221,7 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
       in();
       genSourceLine(o->loc);
       line("super_type_::doThaw_(label_);");
-      if (!o->yieldType->unwrap()->isValue()) {
+      if (!fiberType->yieldType->isValue()) {
         line("value_.thaw(label_);");
       }
       for (auto o : params) {
@@ -254,7 +255,7 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
       in();
       genSourceLine(o->loc);
       line("super_type_::doFinish_();");
-      if (!o->yieldType->unwrap()->isValue()) {
+      if (!fiberType->yieldType->isValue()) {
         genSourceLine(o->loc);
         line("value_.finish();");
       }
@@ -346,7 +347,7 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
     if (!header) {
       genSourceLine(o->loc);
     }
-    start(o->yieldType << ' ');
+    start(fiberType << ' ');
     if (!header) {
       middle("bi::");
     }
@@ -383,7 +384,7 @@ void bi::CppFiberGenerator::visit(const Return* o) {
 void bi::CppFiberGenerator::visit(const Yield* o) {
   genTraceLine(o->loc);
   start("local->value_");
-  if (yieldType->isValue()) {
+  if (fiberType->yieldType->isValue()) {
     finish(" = " << o->single << ';');
   } else {
     finish(".assign(context_, " << o->single << ");");

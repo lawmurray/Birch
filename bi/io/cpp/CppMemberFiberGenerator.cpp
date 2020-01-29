@@ -15,7 +15,8 @@ bi::CppMemberFiberGenerator::CppMemberFiberGenerator(const Class* type,
 }
 
 void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
-  yieldType = o->yieldType->unwrap();
+  fiberType = dynamic_cast<const FiberType*>(o->returnType);
+  assert(fiberType);
 
   /* generate a unique name (within this scope) for the state of the fiber */
   std::stringstream base;
@@ -33,11 +34,11 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   /* supporting class for state */
   if (header) {
     start("class " << stateName << " final : ");
-    finish("public libbirch::FiberState<" << yieldType << "> {");
+    finish("public libbirch::FiberState<" << fiberType->yieldType << "> {");
     line("public:");
     in();
     line("using class_type_ = " << stateName << ';');
-    line("using super_type_ = libbirch::FiberState<" << yieldType << ">;\n");
+    line("using super_type_ = libbirch::FiberState<" << fiberType->yieldType << ">;\n");
     start("libbirch::LazySharedPtr<bi::type::" << type->name);
     genTemplateArgs(type);
     finish("> self;");
@@ -204,7 +205,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     line("super_type_::doFreeze_();");
     genSourceLine(o->loc);
     line("self.freeze();");
-    if (!o->yieldType->unwrap()->isValue()) {
+    if (!fiberType->yieldType->isValue()) {
       genSourceLine(o->loc);
       line("value_.freeze();");
     }
@@ -243,7 +244,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     line("super_type_::doThaw_(label_);");
     genSourceLine(o->loc);
     line("self.thaw(label_);");
-    if (!o->yieldType->unwrap()->isValue()) {
+    if (!fiberType->yieldType->isValue()) {
       genSourceLine(o->loc);
       line("value_.thaw(label_);");
     }
@@ -282,7 +283,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     line("super_type_::doFinish_();");
     genSourceLine(o->loc);
     line("self.finish();");
-    if (!o->yieldType->unwrap()->isValue()) {
+    if (!fiberType->yieldType->isValue()) {
       genSourceLine(o->loc);
       line("value_.finish();");
     }
@@ -365,7 +366,7 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
     genSourceLine(o->loc);
     start("");
   }
-  middle(o->yieldType << ' ');
+  middle(fiberType << ' ');
   if (!header) {
     middle("bi::type::" << type->name);
     genTemplateArgs(type);

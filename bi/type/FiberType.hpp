@@ -5,6 +5,7 @@
 
 #include "bi/type/Type.hpp"
 #include "bi/common/YieldTyped.hpp"
+#include "bi/common/ReturnTyped.hpp"
 
 namespace bi {
   /**
@@ -12,15 +13,16 @@ namespace bi {
    *
    * @ingroup type
    */
-  class FiberType: public Type, public YieldTyped {
+  class FiberType: public Type, public YieldTyped, public ReturnTyped {
   public:
     /**
      * Constructor.
      *
      * @param yieldType Yield type.
+     * @param returnType Return type.
      * @param loc Location.
      */
-    FiberType(Type* yieldType, Location* loc = nullptr);
+    FiberType(Type* yieldType, Type* returnType, Location* loc = nullptr);
 
     /**
      * Destructor.
@@ -37,25 +39,27 @@ namespace bi {
 
     using Type::isConvertible;
     using Type::isAssignable;
-    using Type::common;
 
     virtual bool dispatchIsConvertible(const Type& o) const;
     virtual bool isConvertible(const GenericType& o) const;
     virtual bool isConvertible(const MemberType& o) const;
+    virtual bool isConvertible(const ArrayType& o) const;
+    virtual bool isConvertible(const BasicType& o) const;
+    virtual bool isConvertible(const ClassType& o) const;
     virtual bool isConvertible(const FiberType& o) const;
+    virtual bool isConvertible(const FunctionType& o) const;
     virtual bool isConvertible(const OptionalType& o) const;
+    virtual bool isConvertible(const TupleType& o) const;
 
     virtual bool dispatchIsAssignable(const Type& o) const;
-    virtual bool isAssignable(const ClassType& o) const;
     virtual bool isAssignable(const GenericType& o) const;
     virtual bool isAssignable(const MemberType& o) const;
+    virtual bool isAssignable(const ArrayType& o) const;
+    virtual bool isAssignable(const BasicType& o) const;
+    virtual bool isAssignable(const ClassType& o) const;
     virtual bool isAssignable(const FiberType& o) const;
+    virtual bool isAssignable(const FunctionType& o) const;
     virtual bool isAssignable(const OptionalType& o) const;
-
-    virtual Type* dispatchCommon(const Type& o) const;
-    virtual Type* common(const GenericType& o) const;
-    virtual Type* common(const MemberType& o) const;
-    virtual Type* common(const FiberType& o) const;
-    virtual Type* common(const OptionalType& o) const;
+    virtual bool isAssignable(const TupleType& o) const;
   };
 }

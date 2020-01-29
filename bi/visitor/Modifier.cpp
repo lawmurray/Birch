@@ -345,7 +345,7 @@ bi::Statement* bi::Modifier::modify(Function* o) {
 bi::Statement* bi::Modifier::modify(Fiber* o) {
   o->typeParams = o->typeParams->accept(this);
   o->params = o->params->accept(this);
-  o->yieldType = o->yieldType->accept(this);
+  o->returnType = o->returnType->accept(this);
   o->braces = o->braces->accept(this);
   return o;
 }
@@ -365,7 +365,7 @@ bi::Statement* bi::Modifier::modify(MemberFunction* o) {
 
 bi::Statement* bi::Modifier::modify(MemberFiber* o) {
   o->params = o->params->accept(this);
-  o->yieldType = o->yieldType->accept(this);
+  o->returnType = o->returnType->accept(this);
   o->braces = o->braces->accept(this);
   return o;
 }

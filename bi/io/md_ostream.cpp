@@ -269,8 +269,8 @@ void bi::md_ostream::visit(const Fiber* o) {
     middle("&lt;" << o->typeParams << "&gt;");
   }
   middle('(' << o->params << ')');
-  if (!o->yieldType->isEmpty()) {
-    middle(" -> " << o->yieldType->unwrap());
+  if (!o->returnType->isEmpty()) {
+    middle(" -> " << o->returnType);
   }
   finish("\"");
 }
@@ -305,8 +305,8 @@ void bi::md_ostream::visit(const MemberFiber* o) {
   }
   middle("fiber");
   middle(' ' << o->name << '(' << o->params << ')');
-  if (!o->yieldType->isEmpty()) {
-    middle(" -> " << o->yieldType->unwrap());
+  if (!o->returnType->isEmpty()) {
+    middle(" -> " << o->returnType);
   }
   finish("\"");
 }
@@ -607,7 +607,7 @@ void bi::md_ostream::visit(const FunctionType* o) {
 }
 
 void bi::md_ostream::visit(const FiberType* o) {
-  middle(o->yieldType << '!');
+  middle(o->yieldType << '!' << o->returnType);
 }
 
 void bi::md_ostream::visit(const OptionalType* o) {
