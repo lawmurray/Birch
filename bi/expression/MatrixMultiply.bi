@@ -126,7 +126,7 @@ operator (left:Expression<Real[_,_]>*right:Expression<Real>) ->
  */
 operator (left:Real[_,_]*right:Expression<Real>) ->
     MatrixMultiply<Real[_,_],Real[_,_],Real[_,_]> {
-  return diagonal(right, right.rows())*Boxed(left);
+  return diagonal(right, rows(left))*Boxed(left);
 }
 
 /**
