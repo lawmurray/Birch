@@ -179,6 +179,7 @@ COMMON_SOURCES = \
   bi/visitor/IsValue.cpp \
   bi/visitor/Modifier.cpp \
   bi/visitor/Resolver.cpp \
+  bi/visitor/Transformer.cpp \
   bi/visitor/Visitor.cpp \
   bi/lexer.lpp \
   bi/parser.ypp
@@ -362,6 +363,7 @@ noinst_HEADERS = \
   bi/visitor/IsValue.hpp \
   bi/visitor/Modifier.hpp \
   bi/visitor/Resolver.hpp \
+  bi/visitor/Transformer.hpp \
   bi/visitor/Visitor.hpp \
   bi/birch.hpp \
   bi/doxygen.hpp \

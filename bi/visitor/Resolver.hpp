@@ -126,7 +126,6 @@ public:
   virtual Expression* modify(OverloadedIdentifier<BinaryOperator>* o);
   virtual Expression* modify(OverloadedIdentifier<UnaryOperator>* o);
 
-  virtual Statement* modify(Assume* o);
   virtual Statement* modify(GlobalVariable* o);
   virtual Statement* modify(MemberVariable* o);
   virtual Statement* modify(LocalVariable* o);
@@ -143,7 +142,6 @@ public:
   virtual Statement* modify(ConversionOperator* o);
   virtual Statement* modify(Class* o);
   virtual Statement* modify(Basic* o);
-  virtual Statement* modify(ExpressionStatement* o);
   virtual Statement* modify(If* o);
   virtual Statement* modify(For* o);
   virtual Statement* modify(Parallel* o);
