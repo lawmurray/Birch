@@ -4,29 +4,30 @@
 #pragma once
 
 #include "bi/expression/Expression.hpp"
+#include "bi/common/Named.hpp"
 #include "bi/common/Single.hpp"
 
 namespace bi {
 /**
- * Wrapper around an expression to be explicitly interpreted in the global
- * scope.
+ * Call to a unary operator.
  *
  * @ingroup expression
  */
-class Global: public Expression, public Single<Expression> {
+class UnaryCall: public Expression, public Named, public Single<Expression> {
 public:
   /**
    * Constructor.
    *
-   * @param single Expression.
+   * @param name Operator name (symbol).
+   * @param single Operand.
    * @param loc Location.
    */
-  Global(Expression* single, Location* loc = nullptr);
+  UnaryCall(Name* name, Expression* single, Location* loc = nullptr);
 
   /**
    * Destructor.
    */
-  virtual ~Global();
+  virtual ~UnaryCall();
 
   virtual Expression* accept(Cloner* visitor) const;
   virtual Expression* accept(Modifier* visitor);

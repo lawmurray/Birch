@@ -30,16 +30,5 @@ public:
   virtual void accept(Visitor* visitor) const;
 
   virtual bool isEmpty() const;
-
-  using Type::isConvertible;
-  using Type::isAssignable;
-
-  virtual bool dispatchIsConvertible(const Type& o) const;
-  virtual bool isConvertible(const EmptyType& o) const;
-  virtual bool isConvertible(const GenericType& o) const;
-
-  virtual bool dispatchIsAssignable(const Type& o) const;
-  virtual bool isAssignable(const EmptyType& o) const;
-  virtual bool isAssignable(const GenericType& o) const;
 };
 }

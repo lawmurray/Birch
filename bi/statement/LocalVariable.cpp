@@ -19,13 +19,14 @@ bi::LocalVariable::LocalVariable(const Annotation annotation, Name* name,
 }
 
 bi::LocalVariable::LocalVariable(Expression* value, Location* loc) :
-    Statement(loc),
-    Annotated(bi::AUTO),
-    Named(new Name()),
-    Typed(new EmptyType()),
-    Bracketed(new EmptyExpression()),
-    Argumented(new EmptyExpression()),
-    Valued(value) {
+    LocalVariable(bi::AUTO, new Name(), new EmptyType(),
+    new EmptyExpression(), new EmptyExpression(), value, loc) {
+  //
+}
+
+bi::LocalVariable::LocalVariable(Name* name, Type* type, Location* loc) :
+    LocalVariable(bi::AUTO, name, type, new EmptyExpression(),
+    new EmptyExpression(), new EmptyExpression(), loc) {
   //
 }
 

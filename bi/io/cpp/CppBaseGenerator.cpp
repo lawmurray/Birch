@@ -105,72 +105,12 @@ void bi::CppBaseGenerator::visit(const Cast* o) {
   }
 }
 
-void bi::CppBaseGenerator::visit(const Call<Unknown>* o) {
-  middle(o->single << '(' << o->args << ')');
-}
-
-void bi::CppBaseGenerator::visit(const Call<Parameter>* o) {
-  middle(o->single << '(' << o->args << ')');
-}
-
-void bi::CppBaseGenerator::visit(const Call<LocalVariable>* o) {
-  middle(o->single << '(' << o->args << ')');
-}
-
-void bi::CppBaseGenerator::visit(const Call<MemberVariable>* o) {
-  middle(o->single << '(' << o->args << ')');
-}
-
-void bi::CppBaseGenerator::visit(const Call<GlobalVariable>* o) {
-  middle(o->single << '(' << o->args << ')');
-}
-
-void bi::CppBaseGenerator::visit(const Call<Function>* o) {
-  middle(o->single << '(' << o->args << ')');
-}
-
-void bi::CppBaseGenerator::visit(const Call<MemberFunction>* o) {
-  middle(o->single << '(' << o->args << ')');
-}
-
-void bi::CppBaseGenerator::visit(const Call<Fiber>* o) {
-  middle(o->single << '(' << o->args << ')');
-}
-
-void bi::CppBaseGenerator::visit(const Call<MemberFiber>* o) {
-  middle(o->single << '(' << o->args << ')');
-}
-
-void bi::CppBaseGenerator::visit(const Call<BinaryOperator>* o) {
-  auto op = dynamic_cast<OverloadedIdentifier<BinaryOperator>*>(o->single);
-  assert(op);
-  if (isTranslatable(op->name->str()) && o->target->isValue()) {
-    /* use corresponding C++ operator */
-    middle(o->getLeft() << ' ' << op->name->str() << ' ' << o->getRight());
-  } else {
-    /* use function */
-    middle(o->single << '(');
-    if (!o->target->isValue()) {
-      middle("context_, ");
-    }
-    middle(o->getLeft() << ", " << o->getRight() << ')');
+void bi::CppBaseGenerator::visit(const Call* o) {
+  middle(o->single << "(context_");
+  if (!o->args->isEmpty()) {
+    middle(o->args);
   }
-}
-
-void bi::CppBaseGenerator::visit(const Call<UnaryOperator>* o) {
-  auto op = dynamic_cast<OverloadedIdentifier<UnaryOperator>*>(o->single);
-  assert(op);
-  if (isTranslatable(op->name->str()) && o->target->isValue()) {
-    /* use corresponding C++ operator */
-    middle(op->name->str() << o->args);
-  } else {
-    /* use function */
-    middle(o->single << '(');
-    if (!o->target->isValue()) {
-      middle("context_, ");
-    }
-    middle(o->args << ')');
-  }
+  middle(')');
 }
 
 void bi::CppBaseGenerator::visit(const Assign* o) {
@@ -180,7 +120,7 @@ void bi::CppBaseGenerator::visit(const Assign* o) {
   auto slice = dynamic_cast<const Slice*>(o->left);
   const This* self = nullptr;
   const Super* super = nullptr;
-  const Identifier<MemberVariable>* var = nullptr;
+  const NamedExpression* var = nullptr;
 
   if (slice) {
     member = dynamic_cast<const Member*>(slice->single);
@@ -277,7 +217,7 @@ void bi::CppBaseGenerator::visit(const Member* o) {
     }
     middle(o->right);
   } else {
-    auto rightVar = dynamic_cast<const Identifier<MemberVariable>*>(o->right);
+    auto rightVar = dynamic_cast<const NamedExpression*>(o->right);
     middle(o->left);
     if (!inAssign && rightVar && rightVar->type->isValue()) {
       /* optimization: just reading a value, so no need to copy-on-write the
@@ -330,73 +270,16 @@ void bi::CppBaseGenerator::visit(const Parameter* o) {
   }
 }
 
-void bi::CppBaseGenerator::visit(const Identifier<Unknown>* o) {
-  assert(false);  // should have been resolved in Resolver
-}
-
-void bi::CppBaseGenerator::visit(const Identifier<Parameter>* o) {
-  middle(o->name);
-}
-
-void bi::CppBaseGenerator::visit(const Identifier<GlobalVariable>* o) {
-  middle("bi::" << o->name << "()");
-}
-
-void bi::CppBaseGenerator::visit(const Identifier<MemberVariable>* o) {
-  middle(o->name);
-}
-
-void bi::CppBaseGenerator::visit(const Identifier<LocalVariable>* o) {
-  middle(o->name);
-}
-
-void bi::CppBaseGenerator::visit(const Identifier<ForVariable>* o) {
-  middle(o->name);
-}
-
-void bi::CppBaseGenerator::visit(const Identifier<ParallelVariable>* o) {
-  middle(o->name);
-}
-
-void bi::CppBaseGenerator::visit(const OverloadedIdentifier<Function>* o) {
-  auto name = internalise(o->name->str());
-  if (o->overload->isInstantiation()) {
-    std::stringstream base;
-    bih_ostream buf(base);
-    buf << o->overload->typeParams << '(' << o->overload->params->type << ')';
-    name += "_" + encode32(base.str()) + "_";
-  }
-  middle("bi::" << name);
-}
-
-void bi::CppBaseGenerator::visit(const OverloadedIdentifier<Fiber>* o) {
-  auto name = internalise(o->name->str());
-  if (o->overload->isInstantiation()) {
-    std::stringstream base;
-    bih_ostream buf(base);
-    buf << o->overload->typeParams << '(' << o->overload->params->type << ')';
-    name += "_" + encode32(base.str()) + "_";
-  }
-  middle("bi::" << name);
-}
-
-void bi::CppBaseGenerator::visit(
-    const OverloadedIdentifier<MemberFunction>* o) {
-  middle(o->name);
-}
-
-void bi::CppBaseGenerator::visit(const OverloadedIdentifier<MemberFiber>* o) {
-  middle(o->name);
-}
-
-void bi::CppBaseGenerator::visit(
-    const OverloadedIdentifier<BinaryOperator>* o) {
-  middle(o->name);
-}
-
-void bi::CppBaseGenerator::visit(
-    const OverloadedIdentifier<UnaryOperator>* o) {
-  middle(o->name);
+void bi::CppBaseGenerator::visit(const NamedExpression* o) {
+  ///@todo
+  //if (o->category == GLOBAL_SCOPE) {
+  //  middle("bi::" << o->name << "()");
+  //} else {
+    middle(o->name);
+    if (!o->typeArgs->isEmpty()) {
+      middle('<' << o->typeArgs << '>');
+    }
+  //}
 }
 
 void bi::CppBaseGenerator::visit(const File* o) {
@@ -441,27 +324,9 @@ void bi::CppBaseGenerator::visit(const LocalVariable* o) {
   finish(';');
 }
 
-void bi::CppBaseGenerator::visit(const ForVariable* o) {
-  /* no need to include the type here, used only as though an identifier by
-   * visit(const For*) */;
-  middle(o->name);
-}
-
-void bi::CppBaseGenerator::visit(const ParallelVariable* o) {
-  /* no need to include the type here, used only as though an identifier by
-   * visit(const Parallel*) */;
-  middle(o->name);
-}
-
 void bi::CppBaseGenerator::visit(const Function* o) {
-  if (!o->braces->isEmpty() && o->isBound()) {
+  if (!o->braces->isEmpty()) {
     auto name = internalise(o->name->str());
-    if (o->isInstantiation()) {
-      std::stringstream base;
-      bih_ostream buf(base);
-      buf << o->typeParams << '(' << o->params->type << ')';
-      name += "_" + encode32(base.str()) + "_";
-    }
     if (!header) {
       genSourceLine(o->loc);
     }
@@ -496,19 +361,11 @@ void bi::CppBaseGenerator::visit(const Function* o) {
       line("}\n");
     }
   }
-  for (auto instantiation : o->instantiations) {
-    *this << instantiation;
-  }
 }
 
 void bi::CppBaseGenerator::visit(const Fiber* o) {
-  if (header || o->isBound()) {
-    CppFiberGenerator auxFiber(base, level, header);
-    auxFiber << o;
-  }
-  for (auto instantiation : o->instantiations) {
-    *this << instantiation;
-  }
+  CppFiberGenerator auxFiber(base, level, header);
+  auxFiber << o;
 }
 
 void bi::CppBaseGenerator::visit(const MemberFunction* o) {
@@ -687,8 +544,7 @@ void bi::CppBaseGenerator::visit(const BinaryOperator* o) {
     } else {
       middle(o->name << "(libbirch::Label* context_, ");
     }
-    middle(o->params->getLeft() << ", " << o->params->getRight());
-    middle(')');
+    middle(o->left << ", " << o->right << ')');
     if (header) {
       finish(';');
     } else {
@@ -717,7 +573,7 @@ void bi::CppBaseGenerator::visit(const UnaryOperator* o) {
     } else {
       middle(o->name << "(libbirch::Label* context_, ");
     }
-    middle(o->params << ')');
+    middle(o->single << ')');
     if (header) {
       finish(';');
     } else {
@@ -904,33 +760,35 @@ void bi::CppBaseGenerator::visit(const OptionalType* o) {
   middle("libbirch::Optional<" << o->single << '>');
 }
 
-void bi::CppBaseGenerator::visit(const ClassType* o) {
-  if (o->weak) {
-    middle("libbirch::LazyWeakPtr<");
-  } else {
-    middle("libbirch::LazySharedPtr<");
-  }
-  middle("bi::type::" << o->name);
-  if (!o->typeArgs->isEmpty()) {
-    middle('<' << o->typeArgs << '>');
-  }
-  middle('>');
-}
-
-void bi::CppBaseGenerator::visit(const BasicType* o) {
-  middle("bi::type::" << o->name);
-}
-
-void bi::CppBaseGenerator::visit(const GenericType* o) {
-  middle(o->name);
-}
-
 void bi::CppBaseGenerator::visit(const MemberType* o) {
   middle(o->right);
 }
 
-void bi::CppBaseGenerator::visit(const UnknownType* o) {
-  middle(o->name);
+void bi::CppBaseGenerator::visit(const NamedType* o) {
+  if (o->isClass()) {
+    if (o->weak) {
+      middle("libbirch::LazyWeakPtr<");
+    } else {
+      middle("libbirch::LazySharedPtr<");
+    }
+    middle("bi::type::" << o->name);
+    if (!o->typeArgs->isEmpty()) {
+      middle('<' << o->typeArgs << '>');
+    }
+    middle('>');
+  } else if (o->isBasic()) {
+    middle("bi::type::" << o->name);
+    if (!o->typeArgs->isEmpty()) {
+      middle('<' << o->typeArgs << '>');
+    }
+  } else if (o->isGeneric()) {
+    middle(o->name);
+    if (!o->typeArgs->isEmpty()) {
+      middle('<' << o->typeArgs << '>');
+    }
+  } else {
+    assert(false);
+  }
 }
 
 void bi::CppBaseGenerator::visit(const TypeList* o) {

@@ -237,12 +237,3 @@ void bi::poset<T,Compare>::dot() {
   }
   buf << "}\n";
 }
-
-template class bi::poset<bi::Type*,bi::is_convertible>;
-template class bi::poset<bi::Unknown*,bi::is_convertible>;
-template class bi::poset<bi::Function*,bi::is_convertible>;
-template class bi::poset<bi::Fiber*,bi::is_convertible>;
-template class bi::poset<bi::MemberFunction*,bi::is_convertible>;
-template class bi::poset<bi::MemberFiber*,bi::is_convertible>;
-template class bi::poset<bi::BinaryOperator*,bi::is_convertible>;
-template class bi::poset<bi::UnaryOperator*,bi::is_convertible>;

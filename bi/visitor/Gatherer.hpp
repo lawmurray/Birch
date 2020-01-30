@@ -7,7 +7,7 @@
 
 namespace bi {
 /**
- * Gathers formal parameters and arguments for a function call.
+ * Gathers object of a given type from an abstract syntax tree.
  *
  * @ingroup visitor
  */

@@ -14,7 +14,7 @@ bi::CppClassGenerator::CppClassGenerator(std::ostream& base, const int level,
 }
 
 void bi::CppClassGenerator::visit(const Class* o) {
-  if (!o->isAlias() && o->isBound() && !o->braces->isEmpty()) {
+  if (!o->isAlias() && !o->braces->isEmpty()) {
     type = o;
 
     Gatherer<MemberFunction> memberFunctions;
@@ -28,9 +28,6 @@ void bi::CppClassGenerator::visit(const Class* o) {
     if (header) {
       genTemplateParams(o);
       start("class " << o->name);
-      if (o->isGeneric() && o->isBound()) {
-       genTemplateArgs(o);
-      }
       if (o->has(FINAL)) {
         middle(" final");
       }
@@ -42,39 +39,37 @@ void bi::CppClassGenerator::visit(const Class* o) {
       finish(" {");
       line("public:");
       in();
-      if (o->isBound()) {
-        start("using class_type_ = " << o->name);
-        genTemplateArgs(o);
-        finish(';');
-        line("using this_type_ = class_type_;");
-        if (o->base->isEmpty()) {
-          line("using super_type_ = libbirch::Any;");
-        } else {
-          start("using super_type_ = " << o->base);
-          middle(';');
-        }
-        line("");
-        line("using super_type_::operator=;");
-        line("");
-
-        /* using declarations for member functions and fibers in base classes
-         * that are overridden */
-        std::set<std::string> names;
-        for (auto f : memberFunctions) {
-          if (o->scope->override(f)) {
-            names.insert(f->name->str());
-          }
-        }
-        for (auto f : memberFibers) {
-          if (o->scope->override(f)) {
-            names.insert(f->name->str());
-          }
-        }
-        for (auto name : names) {
-          line("using super_type_::" << internalise(name) << ';');
-        }
-        line("");
+      start("using class_type_ = " << o->name);
+      genTemplateArgs(o);
+      finish(';');
+      line("using this_type_ = class_type_;");
+      if (o->base->isEmpty()) {
+        line("using super_type_ = libbirch::Any;");
+      } else {
+        start("using super_type_ = " << o->base);
+        middle(';');
       }
+      line("");
+      line("using super_type_::operator=;");
+      line("");
+
+      /* using declarations for member functions and fibers in base classes
+       * that are overridden */
+//    std::set<std::string> names;
+//    for (auto f : memberFunctions) {
+//      if (o->scope->override(f)) {
+//        names.insert(f->name->str());
+//      }
+//    }
+//    for (auto f : memberFibers) {
+//      if (o->scope->override(f)) {
+//        names.insert(f->name->str());
+//      }
+//    }
+//    for (auto name : names) {
+//      line("using super_type_::" << internalise(name) << ';');
+//    }
+//    line("");
     }
 
     /* constructor */

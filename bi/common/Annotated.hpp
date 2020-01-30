@@ -34,16 +34,10 @@ enum Annotation {
   ABSTRACT = 8,
 
   /**
-   * `instantiated` annotation on a generic function instantiation in a
-   * header file.
-   */
-  INSTANTIATED = 16,
-
-  /**
    * Flag to indicate that a parameter or local variable is declared in a
    * fiber, added by Resolver (not by a language keyword).
    */
-  IN_FIBER = 32
+  IN_FIBER = 16
 };
 
 /**

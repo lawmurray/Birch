@@ -68,36 +68,35 @@ extern int yydebug;
     ASSERT = 271,
     RETURN = 272,
     YIELD = 273,
-    INSTANTIATED = 274,
-    CPP = 275,
-    HPP = 276,
-    THIS = 277,
-    SUPER = 278,
-    GLOBAL = 279,
-    PARALLEL = 280,
-    DYNAMIC = 281,
-    FINAL = 282,
-    ABSTRACT = 283,
-    NIL = 284,
-    DOUBLE_BRACE_OPEN = 285,
-    DOUBLE_BRACE_CLOSE = 286,
-    NAME = 287,
-    BOOL_LITERAL = 288,
-    INT_LITERAL = 289,
-    REAL_LITERAL = 290,
-    STRING_LITERAL = 291,
-    LEFT_OP = 292,
-    RIGHT_OP = 293,
-    LEFT_TILDE_OP = 294,
-    RIGHT_TILDE_OP = 295,
-    LEFT_QUERY_OP = 296,
-    AND_OP = 297,
-    OR_OP = 298,
-    LE_OP = 299,
-    GE_OP = 300,
-    EQ_OP = 301,
-    NE_OP = 302,
-    RANGE_OP = 303
+    CPP = 274,
+    HPP = 275,
+    THIS = 276,
+    SUPER = 277,
+    GLOBAL = 278,
+    PARALLEL = 279,
+    DYNAMIC = 280,
+    FINAL = 281,
+    ABSTRACT = 282,
+    NIL = 283,
+    DOUBLE_BRACE_OPEN = 284,
+    DOUBLE_BRACE_CLOSE = 285,
+    NAME = 286,
+    BOOL_LITERAL = 287,
+    INT_LITERAL = 288,
+    REAL_LITERAL = 289,
+    STRING_LITERAL = 290,
+    LEFT_OP = 291,
+    RIGHT_OP = 292,
+    LEFT_TILDE_OP = 293,
+    RIGHT_TILDE_OP = 294,
+    LEFT_QUERY_OP = 295,
+    AND_OP = 296,
+    OR_OP = 297,
+    LE_OP = 298,
+    GE_OP = 299,
+    EQ_OP = 300,
+    NE_OP = 301,
+    RANGE_OP = 302
   };
 #endif
 
@@ -118,7 +117,7 @@ union YYSTYPE
   bi::Type* valType;
   bi::Statement* valStatement;
 
-#line 122 "bi/parser.hpp"
+#line 121 "bi/parser.hpp"
 
 };
 typedef union YYSTYPE YYSTYPE;

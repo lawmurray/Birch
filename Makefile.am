@@ -23,18 +23,14 @@ COMMON_SOURCES = \
   bi/common/Bracketed.cpp \
   bi/common/Conditioned.cpp \
   bi/common/Couple.cpp \
-  bi/common/Dictionary.cpp \
   bi/common/Located.cpp \
   bi/common/Location.cpp \
   bi/common/Name.cpp \
   bi/common/Named.cpp \
   bi/common/Numbered.cpp \
-  bi/common/Overloaded.cpp \
-  bi/common/OverloadedDictionary.cpp \
   bi/common/Parameterised.cpp \
   bi/common/Parenthesised.cpp \
   bi/common/ReturnTyped.cpp \
-  bi/common/Reference.cpp \
   bi/common/Scope.cpp \
   bi/common/Scoped.cpp \
   bi/common/Single.cpp \
@@ -82,7 +78,7 @@ COMMON_SOURCES = \
   bi/exception/YieldException.cpp \
   bi/exception/YieldTypeException.cpp \
   bi/expression/Assign.cpp \
-  bi/expression/Binary.cpp \
+  bi/expression/BinaryCall.cpp \
   bi/expression/Cast.cpp \
   bi/expression/Call.cpp \
   bi/expression/EmptyExpression.cpp \
@@ -93,13 +89,12 @@ COMMON_SOURCES = \
   bi/expression/Generic.cpp \
   bi/expression/Get.cpp \
   bi/expression/Global.cpp \
-  bi/expression/Identifier.cpp \
   bi/expression/Index.cpp \
   bi/expression/LambdaFunction.cpp \
   bi/expression/Literal.cpp \
   bi/expression/Member.cpp \
+  bi/expression/NamedExpression.cpp \
   bi/expression/Nil.cpp \
-  bi/expression/OverloadedIdentifier.cpp \
   bi/expression/Parameter.cpp \
   bi/expression/Parentheses.cpp \
   bi/expression/Query.cpp \
@@ -109,6 +104,7 @@ COMMON_SOURCES = \
   bi/expression/Span.cpp \
   bi/expression/Super.cpp \
   bi/expression/This.cpp \
+  bi/expression/UnaryCall.cpp \
   bi/io/cpp/CppBaseGenerator.cpp \
   bi/io/cpp/CppClassGenerator.cpp \
   bi/io/cpp/CppFiberGenerator.cpp \
@@ -135,18 +131,15 @@ COMMON_SOURCES = \
   bi/statement/Fiber.cpp \
   bi/statement/File.cpp \
   bi/statement/For.cpp \
-  bi/statement/ForVariable.cpp \
   bi/statement/Function.cpp \
   bi/statement/GlobalVariable.cpp \
   bi/statement/If.cpp \
-  bi/statement/Instantiated.cpp \
   bi/statement/LocalVariable.cpp \
   bi/statement/MemberFiber.cpp \
   bi/statement/MemberFunction.cpp \
   bi/statement/MemberVariable.cpp \
   bi/statement/Package.cpp \
   bi/statement/Parallel.cpp \
-  bi/statement/ParallelVariable.cpp \
   bi/statement/Program.cpp \
   bi/statement/Raw.cpp \
   bi/statement/Return.cpp \
@@ -157,23 +150,17 @@ COMMON_SOURCES = \
   bi/statement/While.cpp \
   bi/statement/Yield.cpp \
   bi/type/ArrayType.cpp \
-  bi/type/BasicType.cpp \
-  bi/type/BinaryType.cpp \
-  bi/type/ClassType.cpp \
   bi/type/EmptyType.cpp \
   bi/type/FiberType.cpp \
   bi/type/FunctionType.cpp \
-  bi/type/GenericType.cpp \
   bi/type/MemberType.cpp \
-  bi/type/NilType.cpp \
+  bi/type/NamedType.cpp \
   bi/type/OptionalType.cpp \
   bi/type/TupleType.cpp \
   bi/type/Type.cpp \
   bi/type/TypeConstIterator.cpp \
-  bi/type/UnknownType.cpp \
   bi/type/TypeIterator.cpp \
   bi/type/TypeList.cpp \
-  bi/visitor/Annotator.cpp \
   bi/visitor/Cloner.cpp \
   bi/visitor/Gatherer.cpp \
   bi/visitor/IsValue.cpp \
@@ -201,18 +188,14 @@ noinst_HEADERS = \
   bi/common/Bracketed.hpp \
   bi/common/Conditioned.hpp \
   bi/common/Couple.hpp \
-  bi/common/Dictionary.hpp \
   bi/common/Located.hpp \
   bi/common/Location.hpp \
   bi/common/Lookup.hpp \
   bi/common/Name.hpp \
   bi/common/Named.hpp \
   bi/common/Numbered.hpp \
-  bi/common/Overloaded.hpp \
-  bi/common/OverloadedDictionary.hpp \
   bi/common/Parameterised.hpp \
   bi/common/Parenthesised.hpp \
-  bi/common/Reference.hpp \
   bi/common/ReturnTyped.hpp \
   bi/common/Scope.hpp \
   bi/common/Scoped.hpp \
@@ -220,7 +203,6 @@ noinst_HEADERS = \
   bi/common/Typed.hpp \
   bi/common/TypeArgumented.hpp \
   bi/common/TypeParameterised.hpp \
-  bi/common/Unknown.hpp \
   bi/common/Valued.hpp \
   bi/common/YieldTyped.hpp \
   bi/exception/all.hpp \
@@ -262,7 +244,7 @@ noinst_HEADERS = \
   bi/exception/YieldTypeException.hpp \
   bi/expression/all.hpp \
   bi/expression/Assign.hpp \
-  bi/expression/Binary.hpp \
+  bi/expression/BinaryCall.hpp \
   bi/expression/Cast.hpp \
   bi/expression/Call.hpp \
   bi/expression/EmptyExpression.hpp \
@@ -273,13 +255,12 @@ noinst_HEADERS = \
   bi/expression/Generic.hpp \
   bi/expression/Get.hpp \
   bi/expression/Global.hpp \
-  bi/expression/Identifier.hpp \
   bi/expression/Index.hpp \
   bi/expression/LambdaFunction.hpp \
   bi/expression/Literal.hpp \
   bi/expression/Member.hpp \
+  bi/expression/NamedExpression.hpp \
   bi/expression/Nil.hpp \
-  bi/expression/OverloadedIdentifier.hpp \
   bi/expression/Parameter.hpp \
   bi/expression/Parentheses.hpp \
   bi/expression/Query.hpp \
@@ -289,6 +270,7 @@ noinst_HEADERS = \
   bi/expression/Span.hpp \
   bi/expression/Super.hpp \
   bi/expression/This.hpp \
+  bi/expression/UnaryCall.hpp \
   bi/io/cpp/CppBaseGenerator.hpp \
   bi/io/cpp/CppClassGenerator.hpp \
   bi/io/cpp/CppFiberGenerator.hpp \
@@ -301,7 +283,6 @@ noinst_HEADERS = \
   bi/io/indentable_ostream.hpp \
   bi/io/md_ostream.hpp \
   bi/primitive/encode.hpp \
-  bi/primitive/is_convertible.hpp \
   bi/primitive/poset.hpp \
   bi/statement/all.hpp \
   bi/statement/AssignmentOperator.hpp \
@@ -317,18 +298,15 @@ noinst_HEADERS = \
   bi/statement/Fiber.hpp \
   bi/statement/File.hpp \
   bi/statement/For.hpp \
-  bi/statement/ForVariable.hpp \
   bi/statement/Function.hpp \
   bi/statement/GlobalVariable.hpp \
   bi/statement/If.hpp \
-  bi/statement/Instantiated.hpp \
   bi/statement/LocalVariable.hpp \
   bi/statement/MemberFiber.hpp \
   bi/statement/MemberFunction.hpp \
   bi/statement/MemberVariable.hpp \
   bi/statement/Package.hpp \
   bi/statement/Parallel.hpp \
-  bi/statement/ParallelVariable.hpp \
   bi/statement/Program.hpp \
   bi/statement/Raw.hpp \
   bi/statement/Return.hpp \
@@ -340,24 +318,18 @@ noinst_HEADERS = \
   bi/statement/Yield.hpp \
   bi/type/all.hpp \
   bi/type/ArrayType.hpp \
-  bi/type/BasicType.hpp \
-  bi/type/BinaryType.hpp \
-  bi/type/ClassType.hpp \
   bi/type/EmptyType.hpp \
   bi/type/FiberType.hpp \
   bi/type/FunctionType.hpp \
-  bi/type/GenericType.hpp \
   bi/type/MemberType.hpp \
-  bi/type/NilType.hpp \
+  bi/type/NamedType.hpp \
   bi/type/OptionalType.hpp \
   bi/type/TupleType.hpp \
   bi/type/Type.hpp \
   bi/type/TypeConstIterator.hpp \
-  bi/type/UnknownType.hpp \
   bi/type/TypeIterator.hpp \
   bi/type/TypeList.hpp \
   bi/visitor/all.hpp \
-  bi/visitor/Annotator.hpp \
   bi/visitor/Cloner.hpp \
   bi/visitor/Gatherer.hpp \
   bi/visitor/IsValue.hpp \

@@ -6,8 +6,6 @@
 #include "bi/common/Scope.hpp"
 
 namespace bi {
-class Scope;
-
 /**
  * Statement with a scope.
  *

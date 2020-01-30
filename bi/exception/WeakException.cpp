@@ -5,7 +5,7 @@
 
 #include "bi/io/bih_ostream.hpp"
 
-bi::WeakException::WeakException(const UnknownType* o) {
+bi::WeakException::WeakException(const NamedType* o) {
   std::stringstream base;
   bih_ostream buf(base);
   if (o->loc) {

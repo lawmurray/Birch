@@ -6,11 +6,10 @@
 #include "bi/visitor/all.hpp"
 
 bi::Assign::Assign(Expression* left, Name* op, Expression* right,
-    Location* loc, AssignmentOperator* target) :
+    Location* loc) :
     Expression(loc),
     Named(op),
-    Couple<Expression>(left, right),
-    Reference<AssignmentOperator>(target) {
+    Couple<Expression>(left, right) {
   //
 }
 

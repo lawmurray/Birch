@@ -7,7 +7,6 @@
 #include "bi/statement/AssignmentOperator.hpp"
 #include "bi/common/Named.hpp"
 #include "bi/common/Couple.hpp"
-#include "bi/common/Reference.hpp"
 
 namespace bi {
 /**
@@ -17,8 +16,7 @@ namespace bi {
  */
 class Assign: public Expression,
     public Named,
-    public Couple<Expression>,
-    public Reference<AssignmentOperator> {
+    public Couple<Expression> {
 public:
   /**
    * Constructor.
@@ -27,10 +25,9 @@ public:
    * @param op Operator.
    * @param right Right operand.
    * @param loc Location.
-   * @param target Target.
    */
   Assign(Expression* left, Name* op, Expression* right, Location* loc =
-      nullptr, AssignmentOperator* target = nullptr);
+      nullptr);
 
   /**
    * Destructor.

@@ -54,69 +54,23 @@ void bi::Visitor::visit(const Sequence* o) {
   o->single->accept(this);
 }
 
-void bi::Visitor::visit(const Binary* o) {
-  o->left->accept(this);
-  o->right->accept(this);
-}
-
 void bi::Visitor::visit(const Cast* o) {
   o->returnType->accept(this);
   o->single->accept(this);
 }
 
-void bi::Visitor::visit(const Call<Unknown>* o) {
+void bi::Visitor::visit(const Call* o) {
   o->single->accept(this);
   o->args->accept(this);
 }
 
-void bi::Visitor::visit(const Call<Function>* o) {
-  o->single->accept(this);
-  o->args->accept(this);
+void bi::Visitor::visit(const BinaryCall* o) {
+  o->left->accept(this);
+  o->right->accept(this);
 }
 
-void bi::Visitor::visit(const Call<MemberFunction>* o) {
+void bi::Visitor::visit(const UnaryCall* o) {
   o->single->accept(this);
-  o->args->accept(this);
-}
-
-void bi::Visitor::visit(const Call<Fiber>* o) {
-  o->single->accept(this);
-  o->args->accept(this);
-}
-
-void bi::Visitor::visit(const Call<MemberFiber>* o) {
-  o->single->accept(this);
-  o->args->accept(this);
-}
-
-void bi::Visitor::visit(const Call<Parameter>* o) {
-  o->single->accept(this);
-  o->args->accept(this);
-}
-
-void bi::Visitor::visit(const Call<LocalVariable>* o) {
-  o->single->accept(this);
-  o->args->accept(this);
-}
-
-void bi::Visitor::visit(const Call<MemberVariable>* o) {
-  o->single->accept(this);
-  o->args->accept(this);
-}
-
-void bi::Visitor::visit(const Call<GlobalVariable>* o) {
-  o->single->accept(this);
-  o->args->accept(this);
-}
-
-void bi::Visitor::visit(const Call<BinaryOperator>* o) {
-  o->single->accept(this);
-  o->args->accept(this);
-}
-
-void bi::Visitor::visit(const Call<UnaryOperator>* o) {
-  o->single->accept(this);
-  o->args->accept(this);
 }
 
 void bi::Visitor::visit(const Assign* o) {
@@ -182,59 +136,7 @@ void bi::Visitor::visit(const Parameter* o) {
   o->value->accept(this);
 }
 
-void bi::Visitor::visit(const Identifier<Unknown>* o) {
-  //
-}
-
-void bi::Visitor::visit(const Identifier<Parameter>* o) {
-  //
-}
-
-void bi::Visitor::visit(const Identifier<GlobalVariable>* o) {
-  //
-}
-
-void bi::Visitor::visit(const Identifier<MemberVariable>* o) {
-  //
-}
-
-void bi::Visitor::visit(const Identifier<LocalVariable>* o) {
-  //
-}
-
-void bi::Visitor::visit(const Identifier<ForVariable>* o) {
-  //
-}
-
-void bi::Visitor::visit(const Identifier<ParallelVariable>* o) {
-  //
-}
-
-void bi::Visitor::visit(const OverloadedIdentifier<Unknown>* o) {
-  o->typeArgs->accept(this);
-}
-
-void bi::Visitor::visit(const OverloadedIdentifier<Function>* o) {
-  o->typeArgs->accept(this);
-}
-
-void bi::Visitor::visit(const OverloadedIdentifier<Fiber>* o) {
-  o->typeArgs->accept(this);
-}
-
-void bi::Visitor::visit(const OverloadedIdentifier<MemberFunction>* o) {
-  o->typeArgs->accept(this);
-}
-
-void bi::Visitor::visit(const OverloadedIdentifier<MemberFiber>* o) {
-  o->typeArgs->accept(this);
-}
-
-void bi::Visitor::visit(const OverloadedIdentifier<BinaryOperator>* o) {
-  o->typeArgs->accept(this);
-}
-
-void bi::Visitor::visit(const OverloadedIdentifier<UnaryOperator>* o) {
+void bi::Visitor::visit(const NamedExpression* o) {
   o->typeArgs->accept(this);
 }
 
@@ -277,14 +179,6 @@ void bi::Visitor::visit(const LocalVariable* o) {
   o->value->accept(this);
 }
 
-void bi::Visitor::visit(const ForVariable* o) {
-  o->type->accept(this);
-}
-
-void bi::Visitor::visit(const ParallelVariable* o) {
-  o->type->accept(this);
-}
-
 void bi::Visitor::visit(const Function* o) {
   o->typeParams->accept(this);
   o->params->accept(this);
@@ -317,13 +211,14 @@ void bi::Visitor::visit(const MemberFiber* o) {
 }
 
 void bi::Visitor::visit(const BinaryOperator* o) {
-  o->params->accept(this);
+  o->left->accept(this);
+  o->right->accept(this);
   o->returnType->accept(this);
   o->braces->accept(this);
 }
 
 void bi::Visitor::visit(const UnaryOperator* o) {
-  o->params->accept(this);
+  o->single->accept(this);
   o->returnType->accept(this);
   o->braces->accept(this);
 }
@@ -347,6 +242,7 @@ void bi::Visitor::visit(const Class* o) {
 }
 
 void bi::Visitor::visit(const Basic* o) {
+  o->typeParams->accept(this);
   o->base->accept(this);
 }
 
@@ -404,14 +300,6 @@ void bi::Visitor::visit(const Raw* o) {
   //
 }
 
-void bi::Visitor::visit(const Instantiated<Type>* o) {
-  o->single->accept(this);
-}
-
-void bi::Visitor::visit(const Instantiated<Expression>* o) {
-  o->single->accept(this);
-}
-
 void bi::Visitor::visit(const EmptyType* o) {
   //
 }
@@ -421,20 +309,8 @@ void bi::Visitor::visit(const TypeList* o) {
   o->tail->accept(this);
 }
 
-void bi::Visitor::visit(const UnknownType* o) {
+void bi::Visitor::visit(const NamedType* o) {
   o->typeArgs->accept(this);
-}
-
-void bi::Visitor::visit(const ClassType* o) {
-  o->typeArgs->accept(this);
-}
-
-void bi::Visitor::visit(const BasicType* o) {
-  //
-}
-
-void bi::Visitor::visit(const GenericType* o) {
-  //
 }
 
 void bi::Visitor::visit(const MemberType* o) {
@@ -450,11 +326,6 @@ void bi::Visitor::visit(const TupleType* o) {
   o->single->accept(this);
 }
 
-void bi::Visitor::visit(const BinaryType* o) {
-  o->left->accept(this);
-  o->right->accept(this);
-}
-
 void bi::Visitor::visit(const FunctionType* o) {
   o->params->accept(this);
   o->returnType->accept(this);
@@ -466,8 +337,4 @@ void bi::Visitor::visit(const FiberType* o) {
 
 void bi::Visitor::visit(const OptionalType* o) {
   o->single->accept(this);
-}
-
-void bi::Visitor::visit(const NilType* o) {
-  //
 }

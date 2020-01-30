@@ -18,7 +18,8 @@ public:
   /**
    * Constructor.
    *
-   * @param returnType Target type (the real return type is an optional of this type).
+   * @param returnType Target type (the real return type is an optional of
+   * this type).
    * @param single Expression to cast.
    * @param loc Location.
    */

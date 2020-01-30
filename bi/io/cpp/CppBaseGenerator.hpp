@@ -29,17 +29,7 @@ public:
   virtual void visit(const Parentheses* o);
   virtual void visit(const Sequence* o);
   virtual void visit(const Cast* o);
-  virtual void visit(const Call<Unknown>* o);
-  virtual void visit(const Call<Function>* o);
-  virtual void visit(const Call<MemberFunction>* o);
-  virtual void visit(const Call<Fiber>* o);
-  virtual void visit(const Call<MemberFiber>* o);
-  virtual void visit(const Call<Parameter>* o);
-  virtual void visit(const Call<LocalVariable>* o);
-  virtual void visit(const Call<MemberVariable>* o);
-  virtual void visit(const Call<GlobalVariable>* o);
-  virtual void visit(const Call<BinaryOperator>* o);
-  virtual void visit(const Call<UnaryOperator>* o);
+  virtual void visit(const Call* o);
   virtual void visit(const Assign* o);
   virtual void visit(const Slice* o);
   virtual void visit(const Query* o);
@@ -54,26 +44,12 @@ public:
   virtual void visit(const Super* o);
   virtual void visit(const Nil* o);
   virtual void visit(const Parameter* o);
-  virtual void visit(const Identifier<Unknown>* o);
-  virtual void visit(const Identifier<Parameter>* o);
-  virtual void visit(const Identifier<GlobalVariable>* o);
-  virtual void visit(const Identifier<MemberVariable>* o);
-  virtual void visit(const Identifier<LocalVariable>* o);
-  virtual void visit(const Identifier<ForVariable>* o);
-  virtual void visit(const Identifier<ParallelVariable>* o);
-  virtual void visit(const OverloadedIdentifier<Function>* o);
-  virtual void visit(const OverloadedIdentifier<Fiber>* o);
-  virtual void visit(const OverloadedIdentifier<MemberFunction>* o);
-  virtual void visit(const OverloadedIdentifier<MemberFiber>* o);
-  virtual void visit(const OverloadedIdentifier<BinaryOperator>* o);
-  virtual void visit(const OverloadedIdentifier<UnaryOperator>* o);
+  virtual void visit(const NamedExpression* o);
 
   virtual void visit(const File* o);
   virtual void visit(const GlobalVariable* o);
   virtual void visit(const MemberVariable* o);
   virtual void visit(const LocalVariable* o);
-  virtual void visit(const ForVariable* o);
-  virtual void visit(const ParallelVariable* o);
   virtual void visit(const Function* o);
   virtual void visit(const Fiber* o);
   virtual void visit(const MemberFunction* o);
@@ -105,11 +81,8 @@ public:
   virtual void visit(const FunctionType* o);
   virtual void visit(const FiberType* o);
   virtual void visit(const OptionalType* o);
-  virtual void visit(const ClassType* o);
-  virtual void visit(const BasicType* o);
-  virtual void visit(const GenericType* o);
   virtual void visit(const MemberType* o);
-  virtual void visit(const UnknownType* o);
+  virtual void visit(const NamedType* o);
   virtual void visit(const TypeList* o);
 
 protected:
@@ -183,17 +156,12 @@ void bi::CppBaseGenerator::genInit(const T* o) {
     assert(type);
     if (!o->brackets->isEmpty()) {
       if (!o->value->isEmpty()) {
-        middle(" = ");
-        if (o->value->type->isConvertible(*type)) {
-          middle(o->value);
-        } else {
-          middle("libbirch::make_array_and_assign<" << type->single << ">(");
-          if (!o->isValue()) {
-            middle("context_, ");
-          }
-          middle("libbirch::make_shape(" << o->brackets << ')');
-          middle(", " << o->value << ')');
+        middle(" = libbirch::make_array_and_assign<" << type->single << ">(");
+        if (!o->isValue()) {
+          middle("context_, ");
         }
+        middle("libbirch::make_shape(" << o->brackets << ')');
+        middle(", " << o->value << ')');
       } else {
         middle(" = libbirch::make_array<" << type->single << ">(");
         if (!o->isValue()) {
@@ -229,16 +197,14 @@ void bi::CppBaseGenerator::genInit(const T* o) {
 
 template<class ObjectType>
 void bi::CppBaseGenerator::genTemplateParams(const ObjectType* o) {
-  if (o->isGeneric()) {
+  if (!o->typeParams->isEmpty()) {
     start("template<");
-    if (!o->isBound()) {
-      for (auto iter = o->typeParams->begin(); iter != o->typeParams->end();
-          ++iter) {
-        if (iter != o->typeParams->begin()) {
-          middle(", ");
-        }
-        middle("class " << *iter);
+    for (auto iter = o->typeParams->begin(); iter != o->typeParams->end();
+        ++iter) {
+      if (iter != o->typeParams->begin()) {
+        middle(", ");
       }
+      middle("class " << *iter);
     }
     finish('>');
   }
@@ -246,7 +212,7 @@ void bi::CppBaseGenerator::genTemplateParams(const ObjectType* o) {
 
 template<class ObjectType>
 void bi::CppBaseGenerator::genTemplateArgs(const ObjectType* o) {
-  if (o->isGeneric()) {
+  if (!o->typeParams->isEmpty()) {
     middle('<' << o->typeParams << '>');
   }
 }

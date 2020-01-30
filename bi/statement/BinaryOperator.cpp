@@ -5,15 +5,14 @@
 
 #include "bi/visitor/all.hpp"
 
-bi::BinaryOperator::BinaryOperator(const Annotation annotation, Name* name,
-    Expression* params, Type* returnType,
+bi::BinaryOperator::BinaryOperator(const Annotation annotation,
+    Expression* left, Name* name, Expression* right, Type* returnType,
     Statement* braces, Location* loc) :
     Statement(loc),
     Annotated(annotation),
     Named(name),
-    Parameterised(params),
+    Couple<Expression>(left, right),
     ReturnTyped(returnType),
-    Typed(new EmptyType(loc)),
     Scoped(LOCAL_SCOPE),
     Braced(braces) {
   //

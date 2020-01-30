@@ -12,27 +12,6 @@ class Cloner;
 class Modifier;
 class Visitor;
 
-class Argumented;
-
-class ArrayType;
-class BasicType;
-class BinaryType;
-class ClassType;
-class FiberType;
-class EmptyType;
-class FunctionType;
-class GenericType;
-class MemberType;
-class NilType;
-class OptionalType;
-class TupleType;
-class TypeConstIterator;
-class UnknownType;
-class TypeList;
-
-class Class;
-class Basic;
-
 /**
  * Type.
  *
@@ -103,11 +82,6 @@ public:
   virtual bool isArray() const;
 
   /**
-   * Is this a sequence type?
-   */
-  virtual bool isSequence() const;
-
-  /**
    * Is this a list type?
    */
   virtual bool isList() const;
@@ -143,16 +117,6 @@ public:
   virtual bool isGeneric() const;
 
   /**
-   * Is this a binary operator type?
-   */
-  virtual bool isBinary() const;
-
-  /**
-   * Are all the generics of this class defined?
-   */
-  virtual bool isBound() const;
-
-  /**
    * Get the left operand of a binary, otherwise undefined.
    */
   virtual Type* getLeft() const;
@@ -161,16 +125,6 @@ public:
    * Get the right operand of a binary type, otherwise undefined.
    */
   virtual Type* getRight() const;
-
-  /**
-   * Get the statement associated with a class type, otherwise undefined.
-   */
-  virtual Class* getClass() const;
-
-  /**
-   * Get the statement associated with a basic type, otherwise undefined.
-   */
-  virtual Basic* getBasic() const;
 
   /**
    * Number of elements in a type list.
@@ -204,13 +158,6 @@ public:
   virtual const Type* element() const;
 
   /**
-   * Resolve a constructor call.
-   *
-   * @param args Argument types.
-   */
-  virtual void resolveConstructor(Argumented* o);
-
-  /**
    * Iterator to first element if this is a list, to one-past-the-last if
    * this is empty, otherwise to this.
    */
@@ -222,50 +169,5 @@ public:
    */
   TypeIterator end();
   TypeConstIterator end() const;
-
-  /**
-   * Is this type equal to another?
-   */
-  virtual bool equals(const Type& o) const;
-
-  /**
-   * Can this type be converted to another?
-   */
-  virtual bool isConvertible(const Type& o) const;
-  virtual bool dispatchIsConvertible(const Type& o) const = 0;
-  virtual bool isConvertible(const ArrayType& o) const;
-  virtual bool isConvertible(const BasicType& o) const;
-  virtual bool isConvertible(const BinaryType& o) const;
-  virtual bool isConvertible(const ClassType& o) const;
-  virtual bool isConvertible(const EmptyType& o) const;
-  virtual bool isConvertible(const FiberType& o) const;
-  virtual bool isConvertible(const FunctionType& o) const;
-  virtual bool isConvertible(const GenericType& o) const;
-  virtual bool isConvertible(const MemberType& o) const;
-  virtual bool isConvertible(const NilType& o) const;
-  virtual bool isConvertible(const OptionalType& o) const;
-  virtual bool isConvertible(const TupleType& o) const;
-  virtual bool isConvertible(const UnknownType& o) const;
-  virtual bool isConvertible(const TypeList& o) const;
-
-  /**
-   * Can this type be assigned to another?
-   */
-  virtual bool isAssignable(const Type& o) const;
-  virtual bool dispatchIsAssignable(const Type& o) const = 0;
-  virtual bool isAssignable(const ArrayType& o) const;
-  virtual bool isAssignable(const BasicType& o) const;
-  virtual bool isAssignable(const BinaryType& o) const;
-  virtual bool isAssignable(const ClassType& o) const;
-  virtual bool isAssignable(const EmptyType& o) const;
-  virtual bool isAssignable(const FiberType& o) const;
-  virtual bool isAssignable(const FunctionType& o) const;
-  virtual bool isAssignable(const GenericType& o) const;
-  virtual bool isAssignable(const MemberType& o) const;
-  virtual bool isAssignable(const NilType& o) const;
-  virtual bool isAssignable(const OptionalType& o) const;
-  virtual bool isAssignable(const TupleType& o) const;
-  virtual bool isAssignable(const UnknownType& o) const;
-  virtual bool isAssignable(const TypeList& o) const;
 };
 }

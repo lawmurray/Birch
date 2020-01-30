@@ -11,7 +11,7 @@ bi::Statement* bi::Transformer::modify(Assume* o) {
   Statement* result = nullptr;
   if (*o->name == "<-?") {
     auto tmp = new LocalVariable(o->right, o->loc);
-    auto ref = new Identifier<Unknown>(tmp->name, o->loc);
+    auto ref = new NamedExpression(tmp->name, o->loc);
     auto cond = new Query(ref->accept(&cloner), o->loc);
     auto trueBranch = new ExpressionStatement(
         new Assign(o->left, new Name("<-"),
@@ -22,32 +22,31 @@ bi::Statement* bi::Transformer::modify(Assume* o) {
   } else {
     o->right = o->right->accept(this);
     if (*o->name == "<~") {
-      auto identifier = new OverloadedIdentifier<Unknown>(
-          new Name("SimulateEvent"), new EmptyType(o->loc), o->loc);
-      auto call = new Call<Unknown>(identifier, o->right->accept(&cloner));
+      auto identifier = new NamedExpression(new Name("SimulateEvent"),
+          new EmptyType(o->loc), o->loc);
+      auto call = new Call(identifier, o->right->accept(&cloner));
       auto tmp = new LocalVariable(call, o->loc);
-      auto yield = new Yield(new Identifier<Unknown>(tmp->name, o->loc),
+      auto yield = new Yield(new NamedExpression(tmp->name, o->loc), o->loc);
+      auto member = new Member(new NamedExpression(tmp->name, o->loc),
+          new NamedExpression(new Name("value"), new EmptyType(), o->loc),
           o->loc);
-      auto member = new Member(new Identifier<Unknown>(tmp->name, o->loc),
-          new OverloadedIdentifier<Unknown>(new Name("value"), new EmptyType(),
-              o->loc), o->loc);
-      auto value = new Call<Unknown>(member, new EmptyExpression(), o->loc);
+      auto value = new Call(member, new EmptyExpression(), o->loc);
       auto assign = new ExpressionStatement(new Assign(o->left,
           new Name("<-"), value, o->loc), o->loc);
       result = new StatementList(tmp, new StatementList(yield, assign,
           o->loc), o->loc);
     } else if (*o->name == "~>") {
-      auto identifier = new OverloadedIdentifier<Unknown>(
-          new Name("ObserveEvent"), new EmptyType(o->loc), o->loc);
+      auto identifier = new NamedExpression(new Name("ObserveEvent"),
+          new EmptyType(o->loc), o->loc);
       auto args = new ExpressionList(o->left, o->right->accept(&cloner),
           o->loc);
-      result = new Yield(new Call<Unknown>(identifier, args, o->loc), o->loc);
+      result = new Yield(new Call(identifier, args, o->loc), o->loc);
     } else if (*o->name == "~") {
-      auto identifier = new OverloadedIdentifier<Unknown>(
-          new Name("AssumeEvent"), new EmptyType(o->loc), o->loc);
+      auto identifier = new NamedExpression(new Name("AssumeEvent"),
+          new EmptyType(o->loc), o->loc);
       auto args = new ExpressionList(o->left, o->right->accept(&cloner),
           o->loc);
-      result = new Yield(new Call<Unknown>(identifier, args, o->loc), o->loc);
+      result = new Yield(new Call(identifier, args, o->loc), o->loc);
     } else {
       assert(false);
     }
@@ -55,6 +54,14 @@ bi::Statement* bi::Transformer::modify(Assume* o) {
   return result->accept(this);
 }
 
+bi::Statement* bi::Transformer::modify(Class* o) {
+  if (o->base->isEmpty() && o->name->str() != "Object") {
+    /* if the class derives from nothing else, then derive from Object,
+     * unless this is itself the declaration of the Object class */
+    o->base = new NamedType(false, new Name("Object"), new EmptyType(), o->loc);
+  }
+  return o;
+}
 
 bi::Statement* bi::Transformer::modify(Fiber* o) {
   return Modifier::modify(o);
@@ -69,15 +76,15 @@ bi::Statement* bi::Transformer::modify(ExpressionStatement* o) {
 
   /* when in the body of a fiber and another fiber is called while ignoring
    * its return type, this is syntactic sugar for a loop */
-  auto fiberCall = dynamic_cast<Call<Fiber>*>(o->single);
-  auto memberFiberCall = dynamic_cast<Call<MemberFiber>*>(o->single);
+  auto fiberCall = dynamic_cast<Call*>(o->single);
+  auto memberFiberCall = dynamic_cast<Call*>(o->single);
   if (fiberCall || memberFiberCall) {
     auto name = new Name();
     auto var = new LocalVariable(AUTO, name, new EmptyType(o->loc),
         new EmptyExpression(o->loc), new EmptyExpression(o->loc), o->single,
         o->loc);
-    auto query = new Query(new Identifier<Unknown>(name, o->loc), o->loc);
-    auto get = new Get(new Identifier<Unknown>(name, o->loc), o->loc);
+    auto query = new Query(new NamedExpression(name, o->loc), o->loc);
+    auto get = new Get(new NamedExpression(name, o->loc), o->loc);
     auto yield = new Yield(get, o->loc);
     auto loop = new While(new Parentheses(query, o->loc),
         new Braces(yield, o->loc), o->loc);

@@ -4,7 +4,7 @@
 #pragma once
 
 #include "bi/exception/CompilerException.hpp"
-#include "bi/type/UnknownType.hpp"
+#include "bi/type/NamedType.hpp"
 
 namespace bi {
 /**
@@ -18,6 +18,6 @@ struct WeakException: public CompilerException {
    *
    * @param o Type expression.
    */
-  WeakException(const UnknownType* type);
+  WeakException(const NamedType* type);
 };
 }

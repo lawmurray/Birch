@@ -8,7 +8,7 @@
 #include "bi/common/Annotated.hpp"
 #include "bi/common/Named.hpp"
 #include "bi/common/Numbered.hpp"
-#include "bi/common/Parameterised.hpp"
+#include "bi/common/Single.hpp"
 #include "bi/common/ReturnTyped.hpp"
 #include "bi/common/Scoped.hpp"
 #include "bi/common/Braced.hpp"
@@ -23,9 +23,8 @@ class UnaryOperator: public Statement,
     public Annotated,
     public Named,
     public Numbered,
-    public Parameterised,
+    public Single<Expression>,
     public ReturnTyped,
-    public Typed,
     public Scoped,
     public Braced {
 public:
@@ -33,13 +32,13 @@ public:
    * Constructor.
    *
    * @param annotation Annotation.
-   * @param name Name.
-   * @param params Parameters.
+   * @param name Operator name (symbol).
+   * @param single Operand.
    * @param returnType Return type.
    * @param braces Body.
    * @param loc Location.
    */
-  UnaryOperator(const Annotation annotation, Name* name, Expression* params,
+  UnaryOperator(const Annotation annotation, Name* name, Expression* single,
       Type* returnType, Statement* braces, Location* loc = nullptr);
 
   /**

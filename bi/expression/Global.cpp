@@ -15,22 +15,6 @@ bi::Global::~Global() {
   //
 }
 
-bi::Lookup bi::Global::lookup(Expression* args) {
-  return single->lookup(args);
-}
-
-bi::GlobalVariable* bi::Global::resolve(Call<GlobalVariable>* o) {
-  return single->resolve(o);
-}
-
-bi::Function* bi::Global::resolve(Call<Function>* o) {
-  return single->resolve(o);
-}
-
-bi::Fiber* bi::Global::resolve(Call<Fiber>* o) {
-  return single->resolve(o);
-}
-
 bi::Expression* bi::Global::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }

@@ -8,15 +8,12 @@ class Parameter;
 class GlobalVariable;
 class MemberVariable;
 class LocalVariable;
-class ForVariable;
-class ParallelVariable;
 class Function;
 class MemberFunction;
 class Fiber;
 class MemberFiber;
 class BinaryOperator;
 class UnaryOperator;
-class Unknown;
 
 /**
  * Categories of objects for identifier lookups.
@@ -26,8 +23,6 @@ enum Lookup {
   GLOBAL_VARIABLE,
   MEMBER_VARIABLE,
   LOCAL_VARIABLE,
-  FOR_VARIABLE,
-  PARALLEL_VARIABLE,
   FUNCTION,
   MEMBER_FUNCTION,
   FIBER,
@@ -63,14 +58,6 @@ struct lookup_result<MemberVariable> {
 template<>
 struct lookup_result<LocalVariable> {
   static const Lookup value = LOCAL_VARIABLE;
-};
-template<>
-struct lookup_result<ParallelVariable> {
-  static const Lookup value = PARALLEL_VARIABLE;
-};
-template<>
-struct lookup_result<ForVariable> {
-  static const Lookup value = FOR_VARIABLE;
 };
 template<>
 struct lookup_result<Function> {

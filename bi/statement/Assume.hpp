@@ -22,7 +22,6 @@ public:
    * @param op Operator.
    * @param right Right operand.
    * @param loc Location.
-   * @param target Target.
    */
   Assume(Expression* left, Name* op, Expression* right, Location* loc = nullptr);
 

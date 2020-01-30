@@ -82,7 +82,7 @@
 }
 
 %glr-parser
-%expect-rr 3
+%expect-rr 0
 %expect 10
 // ^ Type?(...) vs x?
 // ^ for generic function calls, f<Type>(expr) ambiguous with f < x > (expr),
@@ -91,7 +91,7 @@
 //   but closing '>' disambiguates
 
 %token <valString> PROGRAM CLASS TYPE FUNCTION FIBER OPERATOR AUTO
-%token <valString> IF ELSE FOR IN WHILE DO ASSERT RETURN YIELD INSTANTIATED
+%token <valString> IF ELSE FOR IN WHILE DO ASSERT RETURN YIELD
 %token <valString> CPP HPP THIS SUPER GLOBAL PARALLEL DYNAMIC FINAL ABSTRACT
 %token <valString> NIL DOUBLE_BRACE_OPEN DOUBLE_BRACE_CLOSE NAME
 %token <valString> BOOL_LITERAL INT_LITERAL REAL_LITERAL STRING_LITERAL
@@ -99,22 +99,21 @@
 %token <valString> AND_OP OR_OP LE_OP GE_OP EQ_OP NE_OP RANGE_OP
 
 %type <valName> name binary_operator unary_operator assume_operator
+%type <valName> assign_operator prefix_operator
+%type <valName> multiplicative_operator additive_operator relational_operator
+%type <valName> equality_operator logical_and_operator logical_or_operator
 
 %type <valInt> shape
+
 %type <valAnnotation> parallel_annotation class_annotation member_function_annotation
 
-%type <valName> assign_operator
-
-%type <valExpression> prefix_operator
-%type <valExpression> multiplicative_operator additive_operator relational_operator
-%type <valExpression> equality_operator logical_and_operator logical_or_operator
 %type <valExpression> bool_literal int_literal real_literal string_literal
-%type <valExpression> literal identifier overloaded_identifier
+%type <valExpression> literal identifier
 %type <valExpression> this_expression super_expression nil_expression
 %type <valExpression> parens_expression sequence_expression cast_expression
 %type <valExpression> function_expression primary_expression
 %type <valExpression> slice index_expression index_list
-%type <valExpression> postfix_expression postfix_query_expression prefix_expression
+%type <valExpression> postfix_expression query_expression prefix_expression
 %type <valExpression> multiplicative_expression additive_expression
 %type <valExpression> relational_expression equality_expression
 %type <valExpression> logical_and_expression logical_or_expression
@@ -126,8 +125,7 @@
 %type <valExpression> generic generic_list generics optional_generics
 
 %type <valStatement> global_variable_declaration local_variable_declaration
-%type <valStatement> for_variable_declaration
-%type <valStatement> parallel_variable_declaration function_declaration
+%type <valStatement> for_variable_declaration function_declaration
 %type <valStatement> fiber_declaration program_declaration
 %type <valStatement> member_variable_declaration member_function_declaration
 %type <valStatement> member_fiber_declaration
@@ -135,15 +133,14 @@
 %type <valStatement> conversion_operator_declaration assignment_operator_declaration
 %type <valStatement> class_declaration basic_declaration
 %type <valStatement> cpp hpp expression_statement assume_statement if for parallel
-%type <valStatement> while do_while assertion return yield instantiated
+%type <valStatement> while do_while assertion return yield
 %type <valStatement> statement statements optional_statements
 %type <valStatement> class_statement class_statements optional_class_statements
 %type <valStatement> file_statement file_statements optional_file_statements
 %type <valStatement> braces optional_braces
 %type <valStatement> class_braces optional_class_braces
 
-%type <valType> base_type basic_type class_type unknown_type
-%type <valType> primary_type type type_list optional_type_list
+%type <valType> named_type primary_type type type_list optional_type_list
 %type <valType> return_type optional_return_type
 %type <valType> generic_argument generic_argument_list generic_arguments optional_generic_arguments
 
@@ -169,19 +166,19 @@ name
  ***************************************************************************/
 
 bool_literal
-    : BOOL_LITERAL  { $$ = new bi::Literal<bool>($1, new bi::BasicType(new bi::Name("Boolean")), make_loc(@$)); }
+    : BOOL_LITERAL  { $$ = new bi::Literal<bool>($1, new bi::NamedType(new bi::Name("Boolean")), make_loc(@$)); }
     ;
 
 int_literal
-    : INT_LITERAL  { $$ = new bi::Literal<int64_t>($1, new bi::BasicType(new bi::Name("Integer")), make_loc(@$)); }
+    : INT_LITERAL  { $$ = new bi::Literal<int64_t>($1, new bi::NamedType(new bi::Name("Integer")), make_loc(@$)); }
     ;
 
 real_literal
-    : REAL_LITERAL  { $$ = new bi::Literal<double>($1, new bi::BasicType(new bi::Name("Real")), make_loc(@$)); }
+    : REAL_LITERAL  { $$ = new bi::Literal<double>($1, new bi::NamedType(new bi::Name("Real")), make_loc(@$)); }
     ;
 
 string_literal
-    : STRING_LITERAL  { $$ = new bi::Literal<const char*>($1, new bi::BasicType(new bi::Name("String")), make_loc(@$)); }
+    : STRING_LITERAL  { $$ = new bi::Literal<const char*>($1, new bi::NamedType(new bi::Name("String")), make_loc(@$)); }
     ;
 
 literal
@@ -192,11 +189,7 @@ literal
     ;
 
 identifier
-    : name  { $$ = new bi::Identifier<bi::Unknown>($1, make_loc(@$)); }
-    ;
-    
-overloaded_identifier
-    : name generic_arguments  { $$ = new bi::OverloadedIdentifier<bi::Unknown>($1, $2, make_loc(@$)); }
+    : name optional_generic_arguments  { $$ = new bi::NamedExpression($1, $2, make_loc(@$)); }
     ;
 
 parens_expression
@@ -208,7 +201,7 @@ sequence_expression
     ;
 
 cast_expression
-    : name optional_generic_arguments '?' '(' expression ')'  { $$ = new bi::Cast(new bi::UnknownType(false, $1, $2, make_loc(@$)), $5, make_loc(@$)); }
+    : name optional_generic_arguments '?' '(' expression ')'  { $$ = new bi::Cast(new bi::NamedType(false, $1, $2, make_loc(@$)), $5, make_loc(@$)); }
     ;
 
 function_expression
@@ -230,7 +223,6 @@ nil_expression
 primary_expression
     : literal
     | identifier
-    | overloaded_identifier
     | parens_expression
     | sequence_expression
     | cast_expression
@@ -257,54 +249,53 @@ postfix_expression
     : primary_expression
     | super_expression '.' identifier    { $$ = new bi::Member($1, $3, make_loc(@$)); }
     | GLOBAL '.' identifier              { $$ = new bi::Global($3, make_loc(@$)); }
-    | GLOBAL '.' overloaded_identifier   { $$ = new bi::Global($3, make_loc(@$)); }
     | postfix_expression '.' identifier  { $$ = new bi::Member($1, $3, make_loc(@$)); }
     | postfix_expression slice           { $$ = new bi::Slice($1, $2, make_loc(@$)); }
-    | postfix_expression arguments       { $$ = new bi::Call<bi::Unknown>($1, $2, make_loc(@$)); }
+    | postfix_expression arguments       { $$ = new bi::Call($1, $2, make_loc(@$)); }
     | postfix_expression '!'             { $$ = new bi::Get($1, make_loc(@$)); }
     ;
 
-postfix_query_expression
+query_expression
     : postfix_expression
     | postfix_expression '?'  { $$ = new bi::Query($1, make_loc(@$)); }
     ;
 
 prefix_operator
-    : '+'  { $$ = new bi::OverloadedIdentifier<bi::UnaryOperator>(new bi::Name("+"), empty_type(@$), make_loc(@$)); }
-    | '-'  { $$ = new bi::OverloadedIdentifier<bi::UnaryOperator>(new bi::Name("-"), empty_type(@$), make_loc(@$)); }
-    | '!'  { $$ = new bi::OverloadedIdentifier<bi::UnaryOperator>(new bi::Name("!"), empty_type(@$), make_loc(@$)); }
+    : '+'  { $$ = new bi::Name("+"); }
+    | '-'  { $$ = new bi::Name("-"); }
+    | '!'  { $$ = new bi::Name("!"); }
     ;
 
 prefix_expression
-    : postfix_query_expression
-    | prefix_operator prefix_expression  { $$ = new bi::Call<bi::UnaryOperator>($1, $2, make_loc(@$)); }
+    : query_expression
+    | prefix_operator prefix_expression  { $$ = new bi::UnaryCall($1, $2, make_loc(@$)); }
     ;
 
 multiplicative_operator
-    : '*'  { $$ = new bi::OverloadedIdentifier<bi::BinaryOperator>(new bi::Name("*"), empty_type(@$), make_loc(@$)); }
-    | '/'  { $$ = new bi::OverloadedIdentifier<bi::BinaryOperator>(new bi::Name("/"), empty_type(@$), make_loc(@$)); }
+    : '*'  { $$ = new bi::Name("*"); }
+    | '/'  { $$ = new bi::Name("/"); }
     ;
 
 multiplicative_expression
     : prefix_expression
-    | multiplicative_expression multiplicative_operator prefix_expression  { $$ = new bi::Call<bi::BinaryOperator>($2, new bi::Binary($1, $3, make_loc(@$)), make_loc(@$)); }
+    | multiplicative_expression multiplicative_operator prefix_expression  { $$ = new bi::BinaryCall($1, $2, $3, make_loc(@$)); }
     ;
 
 additive_operator
-    : '+'  { $$ = new bi::OverloadedIdentifier<bi::BinaryOperator>(new bi::Name("+"), empty_type(@$), make_loc(@$)); }
-    | '-'  { $$ = new bi::OverloadedIdentifier<bi::BinaryOperator>(new bi::Name("-"), empty_type(@$), make_loc(@$)); }
+    : '+'  { $$ = new bi::Name("+"); }
+    | '-'  { $$ = new bi::Name("-"); }
     ;
 
 additive_expression
     : multiplicative_expression
-    | additive_expression additive_operator multiplicative_expression  { $$ = new bi::Call<bi::BinaryOperator>($2, new bi::Binary($1, $3, make_loc(@$)), make_loc(@$)); }
+    | additive_expression additive_operator multiplicative_expression  { $$ = new bi::BinaryCall($1, $2, $3, make_loc(@$)); }
     ;
 
 relational_operator
-    : '<'    { $$ = new bi::OverloadedIdentifier<bi::BinaryOperator>(new bi::Name("<"), empty_type(@$), make_loc(@$)); }
-    | '>'    { $$ = new bi::OverloadedIdentifier<bi::BinaryOperator>(new bi::Name(">"), empty_type(@$), make_loc(@$)); }
-    | LE_OP  { $$ = new bi::OverloadedIdentifier<bi::BinaryOperator>(new bi::Name("<="), empty_type(@$), make_loc(@$)); }
-    | GE_OP  { $$ = new bi::OverloadedIdentifier<bi::BinaryOperator>(new bi::Name(">="), empty_type(@$), make_loc(@$)); }
+    : '<'    { $$ = new bi::Name("<"); }
+    | '>'    { $$ = new bi::Name(">"); }
+    | LE_OP  { $$ = new bi::Name("<="); }
+    | GE_OP  { $$ = new bi::Name(">="); }
     ;
 
 /* here we resolve the ambiguity between a function call with generic
@@ -314,39 +305,39 @@ relational_operator
  * favoured simply by giving precedence to the first rule */
 relational_expression
     : additive_expression                                            %dprec 3
-    | relational_expression relational_operator additive_expression  %dprec 2  { $$ = new bi::Call<bi::BinaryOperator>($2, new bi::Binary($1, $3, make_loc(@$)), make_loc(@$)); }
+    | relational_expression relational_operator additive_expression  %dprec 2  { $$ = new bi::BinaryCall($1, $2, $3, make_loc(@$)); }
     ;
 
 equality_operator
-    : EQ_OP  { $$ = new bi::OverloadedIdentifier<bi::BinaryOperator>(new bi::Name("=="), empty_type(@$), make_loc(@$)); }
-    | NE_OP  { $$ = new bi::OverloadedIdentifier<bi::BinaryOperator>(new bi::Name("!="), empty_type(@$), make_loc(@$)); }
+    : EQ_OP  { $$ = new bi::Name("=="); }
+    | NE_OP  { $$ = new bi::Name("!="); }
     ;
 
 equality_expression
     : relational_expression
-    | equality_expression equality_operator relational_expression  { $$ = new bi::Call<bi::BinaryOperator>($2, new bi::Binary($1, $3, make_loc(@$)), make_loc(@$)); }
+    | equality_expression equality_operator relational_expression  { $$ = new bi::BinaryCall($1, $2, $3, make_loc(@$)); }
     ;
 
 logical_and_operator
-    : AND_OP  { $$ = new bi::OverloadedIdentifier<bi::BinaryOperator>(new bi::Name("&&"), empty_type(@$), make_loc(@$)); }
+    : AND_OP  { $$ = new bi::Name("&&"); }
     ;
 
 logical_and_expression
     : equality_expression
-    | logical_and_expression logical_and_operator equality_expression  { $$ = new bi::Call<bi::BinaryOperator>($2, new bi::Binary($1, $3, make_loc(@$)), make_loc(@$)); }
+    | logical_and_expression logical_and_operator equality_expression  { $$ = new bi::BinaryCall($1, $2, $3, make_loc(@$)); }
     ;
 
 logical_or_operator
-    : OR_OP  { $$ = new bi::OverloadedIdentifier<bi::BinaryOperator>(new bi::Name("||"), empty_type(@$), make_loc(@$)); }
+    : OR_OP  { $$ = new bi::Name("||"); }
     ;
 
 logical_or_expression
     : logical_and_expression
-    | logical_or_expression logical_or_operator logical_and_expression  { $$ = new bi::Call<bi::BinaryOperator>($2, new bi::Binary($1, $3, make_loc(@$)), make_loc(@$)); }
+    | logical_or_expression logical_or_operator logical_and_expression  { $$ = new bi::BinaryCall($1, $2, $3, make_loc(@$)); }
     ;
 
 assign_operator
-    : LEFT_OP        { $$ = new bi::Name("<-"); }
+    : LEFT_OP    { $$ = new bi::Name("<-"); }
     ;
 
 assign_expression
@@ -530,28 +521,20 @@ program_declaration
     ;
     
 binary_operator
-    : '*'     { $$ = new bi::Name('*'); }
-    | '/'     { $$ = new bi::Name('/'); }
-    | '+'     { $$ = new bi::Name('+'); }
-    | '-'     { $$ = new bi::Name('-'); }
-    | '<'     { $$ = new bi::Name('<'); }  // handle specially
-    | '>'     { $$ = new bi::Name('>'); }
-    | LE_OP   { $$ = new bi::Name("<="); }
-    | GE_OP   { $$ = new bi::Name(">="); }
-    | EQ_OP   { $$ = new bi::Name("=="); }
-    | NE_OP   { $$ = new bi::Name("!="); }
-    | AND_OP  { $$ = new bi::Name("&&"); }
-    | OR_OP   { $$ = new bi::Name("||"); }
+    : multiplicative_operator
+    | additive_operator
+    | relational_operator
+    | equality_operator
+    | logical_and_operator
+    | logical_or_operator
     ;    
 
 unary_operator
-    : '+'     { $$ = new bi::Name('+'); }
-    | '-'     { $$ = new bi::Name('-'); }
-    | '!'     { $$ = new bi::Name('!'); }
+    : prefix_operator
     ;    
 
 binary_operator_declaration
-    : OPERATOR '(' parameter binary_operator parameter ')' optional_return_type { push_raw(); } optional_braces  { $$ = new bi::BinaryOperator(bi::NONE, $4, new bi::Binary($3, $5, make_loc(@$)), $7, $9, make_doc_loc(@$)); }
+    : OPERATOR '(' parameter binary_operator parameter ')' optional_return_type { push_raw(); } optional_braces  { $$ = new bi::BinaryOperator(bi::NONE, $3, $4, $5, $7, $9, make_doc_loc(@$)); }
     ;
     
 unary_operator_declaration
@@ -573,15 +556,15 @@ class_annotation
     ;
 
 class_declaration
-    : class_annotation CLASS name optional_generics optional_parameters '<' base_type optional_arguments { push_raw(); } optional_class_braces  { $$ = new bi::Class($1, $3, $4, $5, $7, false, $8, $10, make_doc_loc(@$)); }
-    | class_annotation CLASS name optional_generics optional_parameters { push_raw(); } optional_class_braces                                   { $$ = new bi::Class($1, $3, $4, $5, empty_type(@$), false, empty_expr(@$), $7, make_doc_loc(@$)); }
-    | class_annotation CLASS name optional_generics '=' class_type { push_raw(); } ';'                                                          { $$ = new bi::Class($1, $3, $4, empty_expr(@$), $6, true, empty_expr(@$), empty_stmt(@$), make_doc_loc(@$)); }
+    : class_annotation CLASS name optional_generics optional_parameters '<' named_type optional_arguments { push_raw(); } optional_class_braces  { $$ = new bi::Class($1, $3, $4, $5, $7, false, $8, $10, make_doc_loc(@$)); }
+    | class_annotation CLASS name optional_generics optional_parameters { push_raw(); } optional_class_braces                                    { $$ = new bi::Class($1, $3, $4, $5, empty_type(@$), false, empty_expr(@$), $7, make_doc_loc(@$)); }
+    | class_annotation CLASS name optional_generics '=' named_type { push_raw(); } ';'                                                           { $$ = new bi::Class($1, $3, $4, empty_expr(@$), $6, true, empty_expr(@$), empty_stmt(@$), make_doc_loc(@$)); }
     ;
 
 basic_declaration
-    : TYPE name '<' basic_type ';'  { push_raw(); $$ = new bi::Basic(bi::NONE, $2, $4, false, make_doc_loc(@$)); }
-    | TYPE name '=' basic_type ';'  { push_raw(); $$ = new bi::Basic(bi::NONE, $2, $4, true, make_doc_loc(@$)); }
-    | TYPE name ';'                 { push_raw(); $$ = new bi::Basic(bi::NONE, $2, empty_type(@$), false, make_doc_loc(@$)); }
+    : TYPE name '<' named_type ';'  { push_raw(); $$ = new bi::Basic(bi::NONE, $2, empty_expr(@$), $4, false, make_doc_loc(@$)); }
+    | TYPE name '=' named_type ';'  { push_raw(); $$ = new bi::Basic(bi::NONE, $2, empty_expr(@$), $4, true, make_doc_loc(@$)); }
+    | TYPE name ';'                 { push_raw(); $$ = new bi::Basic(bi::NONE, $2, empty_expr(@$), empty_type(@$), false, make_doc_loc(@$)); }
     ;
 
 cpp
@@ -614,7 +597,7 @@ if
     ;
 
 for_variable_declaration
-    : name  { $$ = new bi::ForVariable(bi::NONE, $1, new bi::BasicType(new bi::Name("Integer")), make_loc(@$)); }
+    : name                { $$ = new bi::LocalVariable($1, new bi::NamedType(new bi::Name("Integer")), make_loc(@$)); }
     ;
 
 for
@@ -629,13 +612,9 @@ parallel_annotation
     //^ don't put bi::NONE here, messes up line numbers
     ;
 
-parallel_variable_declaration
-    : name  { $$ = new bi::ParallelVariable(bi::NONE, $1, new bi::BasicType(new bi::Name("Integer")), make_loc(@$)); }
-    ;
-
 parallel
-    : parallel_annotation PARALLEL FOR parallel_variable_declaration IN expression RANGE_OP expression braces  { $$ = new bi::Parallel($1, $4, $6, $8, $9, make_loc(@$)); }
-    | PARALLEL FOR parallel_variable_declaration IN expression RANGE_OP expression braces                      { $$ = new bi::Parallel(bi::NONE, $3, $5, $7, $8, make_loc(@$)); }
+    : parallel_annotation PARALLEL FOR for_variable_declaration IN expression RANGE_OP expression braces  { $$ = new bi::Parallel($1, $4, $6, $8, $9, make_loc(@$)); }
+    | PARALLEL FOR for_variable_declaration IN expression RANGE_OP expression braces                      { $$ = new bi::Parallel(bi::NONE, $3, $5, $7, $8, make_loc(@$)); }
     | PARALLEL FOR AUTO { yywarn("auto for a loop index is deprecated and can be deleted; the type is now assumed to be Integer."); } for_variable_declaration IN expression RANGE_OP expression braces  { $$ = new bi::Parallel(bi::NONE, $5, $7, $9, $10, make_loc(@$)); }
     | PARALLEL FOR for_variable_declaration ':' type { yywarn("providing a type for a loop index is deprecated and should be deleted; the type is now assumed to be Integer."); } IN expression RANGE_OP expression braces  { $$ = new bi::Parallel(bi::NONE, $3, $8, $10, $11, make_loc(@$)); }
     ;
@@ -658,12 +637,6 @@ return
 
 yield
     : YIELD expression ';'  { $$ = new bi::Yield($2, make_loc(@$)); }
-    ;
-    
-instantiated
-    : INSTANTIATED CLASS type ';'           { $$ = new bi::Instantiated<bi::Type>($3, make_loc(@$)); }
-    | INSTANTIATED FUNCTION expression ';'  { $$ = new bi::Instantiated<bi::Expression>($3, make_loc(@$)); }
-    | INSTANTIATED FIBER expression ';'     { $$ = new bi::Instantiated<bi::Expression>($3, make_loc(@$)); }
     ;
 
 statement
@@ -721,7 +694,6 @@ file_statement
     | basic_declaration
     | cpp
     | hpp
-    | instantiated
     ;
 
 file_statements
@@ -788,24 +760,12 @@ weak_modifier
     |      { $$ = false; }
     ;
 
-base_type
-    : name optional_generic_arguments  { $$ = new bi::UnknownType(false, $1, $2, make_loc(@$)); }
-    ;
-
-basic_type
-    : name  { $$ = new bi::BasicType($1, make_loc(@$)); }
-    ;
-
-class_type
-    : name optional_generic_arguments weak_modifier  { $$ = new bi::ClassType($3, $1, $2, make_loc(@$)); }
-    ;
-
-unknown_type
-    : name optional_generic_arguments weak_modifier  { $$ = new bi::UnknownType($3, $1, $2, make_loc(@$)); }
+named_type
+    : name optional_generic_arguments weak_modifier  { $$ = new bi::NamedType($3, $1, $2, make_loc(@$)); }
     ;
 
 primary_type
-    : unknown_type
+    : named_type
     | '(' type_list ')'  { $$ = new bi::TupleType($2, make_loc(@$)); }
     ;
 
@@ -814,7 +774,7 @@ type
     | type '?'                                             { $$ = new bi::OptionalType($1, make_loc(@$)); }
     | type '!'                                             { $$ = new bi::FiberType($1, empty_type(@$), make_loc(@$)); }
     | type '!' primary_type                                { $$ = new bi::FiberType($1, $3, make_loc(@$)); }
-    | class_type '.' unknown_type                          { $$ = new bi::MemberType($1, $3, make_loc(@$)); }
+    | named_type '.' named_type                            { $$ = new bi::MemberType($1, $3, make_loc(@$)); }
     | type '[' shape ']'                                   { $$ = new bi::ArrayType($1, $3, make_loc(@$)); }
     | '@' '(' optional_type_list ')' optional_return_type  { $$ = new bi::FunctionType($3, $5, make_loc(@$)); }
     ;

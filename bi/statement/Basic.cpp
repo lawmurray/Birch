@@ -5,11 +5,12 @@
 
 #include "bi/visitor/all.hpp"
 
-bi::Basic::Basic(const Annotation annotation, Name* name, Type* base,
-    const bool alias, Location* loc) :
+bi::Basic::Basic(const Annotation annotation, Name* name,
+    Expression* typeParams, Type* base, const bool alias, Location* loc) :
     Statement(loc),
     Annotated(annotation),
     Named(name),
+    TypeParameterised(typeParams),
     Based(base, alias) {
   //
 }
@@ -28,16 +29,4 @@ bi::Statement* bi::Basic::accept(Modifier* visitor) {
 
 void bi::Basic::accept(Visitor* visitor) const {
   visitor->visit(this);
-}
-
-void bi::Basic::addSuper(const Type* o) {
-  auto base = o->getBasic();
-  supers.insert(base);
-}
-
-bool bi::Basic::hasSuper(const Type* o) const {
-  bool result = supers.find(o->canonical()->getBasic()) != supers.end();
-  result = result || std::any_of(supers.begin(), supers.end(),
-      [&](auto x) { return x->hasSuper(o); });
-  return result;
 }

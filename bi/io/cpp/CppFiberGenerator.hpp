@@ -25,10 +25,7 @@ public:
   virtual void visit(const For* o);
   virtual void visit(const Parameter* o);
   virtual void visit(const LocalVariable* o);
-  virtual void visit(const ForVariable* o);
-  virtual void visit(const Identifier<Parameter>* o);
-  virtual void visit(const Identifier<LocalVariable>* o);
-  virtual void visit(const Identifier<ForVariable>* o);
+  virtual void visit(const NamedExpression* o);
   virtual void visit(const LambdaFunction* o);
 
 protected:
@@ -49,7 +46,6 @@ protected:
    */
   Gatherer<Parameter> params;
   Gatherer<LocalVariable> locals;
-  Gatherer<ForVariable> fors;
   Gatherer<Yield> yields;
 
   /**

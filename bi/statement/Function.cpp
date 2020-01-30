@@ -14,7 +14,6 @@ bi::Function::Function(const Annotation annotation, Name* name,
     TypeParameterised(typeParams),
     Parameterised(params),
     ReturnTyped(returnType),
-    Typed(new EmptyType(loc)),
     Scoped(LOCAL_SCOPE),
     Braced(braces) {
   //

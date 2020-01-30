@@ -7,7 +7,6 @@
 #include "bi/io/cpp/CppClassGenerator.hpp"
 #include "bi/visitor/Gatherer.hpp"
 #include "bi/primitive/poset.hpp"
-#include "bi/primitive/is_convertible.hpp"
 #include "bi/build/misc.hpp"
 
 bi::CppPackageGenerator::CppPackageGenerator(std::ostream& base,
@@ -44,30 +43,8 @@ void bi::CppPackageGenerator::visit(const Package* o) {
 
   /* base classes must be defined before their derived classes, so these are
    * gathered and sorted first */
-  allowConversions = false;  // sort by inheritance, forget conversions
-  poset<Type*,is_convertible> sorted;
-  for (auto o : classes) {
-    if (!o->isAlias()) {
-      sorted.insert(new ClassType(o));
-      for (auto instantiation : o->instantiations) {
-        sorted.insert(new ClassType(instantiation));
-      }
-    }
-  }
-  for (auto o : headerClasses) {
-    for (auto instantiation : o->instantiations) {
-      if (!instantiation->isAlias()) {
-        sorted.insert(new ClassType(instantiation));
-      }
-    }
-  }
-  allowConversions = true;
-  std::list<Class*> sortedClasses;
-  for (auto iter = sorted.rbegin(); iter != sorted.rend(); ++iter) {
-    if (!(*iter)->getClass()->has(INSTANTIATED)) {
-      sortedClasses.push_back((*iter)->getClass());
-    }
-  }
+  ///@todo
+  auto sortedClasses = classes;
 
   if (header) {
     /* a `#define` include guard is preferred to `#pragma once`; the header of
@@ -108,6 +85,7 @@ void bi::CppPackageGenerator::visit(const Package* o) {
     /* basic type aliases */
     for (auto o : basics) {
       if (o->isAlias()) {
+        genTemplateParams(o);
         line("using " << o->name << " = " << o->base << ';');
       }
     }
@@ -116,14 +94,8 @@ void bi::CppPackageGenerator::visit(const Package* o) {
     /* class type aliases */
     for (auto o : classes) {
       if (o->isAlias()) {
-        auto super = dynamic_cast<const ClassType*>(o->base->canonical());
-        assert(super);
         genTemplateParams(o);
-        start("using " << o->name << " = " << super->name);
-        if (!super->typeArgs->isEmpty()) {
-          middle('<' << super->typeArgs << '>');
-        }
-        finish(';');
+        start("using " << o->name << " = " << o->base << ';');
       }
     }
 
@@ -151,20 +123,6 @@ void bi::CppPackageGenerator::visit(const Package* o) {
     for (auto o : fibers) {
       *this << o;
     }
-    for (auto o : headerFunctions) {
-      for (auto instantiation : o->instantiations) {
-        if (!instantiation->has(INSTANTIATED)) {
-          *this << instantiation;
-        }
-      }
-    }
-    for (auto o : headerFibers) {
-      for (auto instantiation : o->instantiations) {
-        if (!instantiation->has(INSTANTIATED)) {
-          *this << instantiation;
-        }
-      }
-    }
 
     /* programs */
     for (auto o : programs) {
@@ -182,26 +140,5 @@ void bi::CppPackageGenerator::visit(const Package* o) {
     line("}\n");
     line("");
     line("#endif");
-  } else {
-    /* instantiations of generics from dependencies */
-    for (auto o : sortedClasses) {
-      if (o->isGeneric() && o->isBound()) {
-        *this << o;
-      }
-    }
-    for (auto o : headerFunctions) {
-      for (auto instantiation : o->instantiations) {
-        if (!instantiation->has(INSTANTIATED)) {
-          *this << instantiation;
-        }
-      }
-    }
-    for (auto o : headerFibers) {
-      for (auto instantiation : o->instantiations) {
-        if (!instantiation->has(INSTANTIATED)) {
-          *this << instantiation;
-        }
-      }
-    }
   }
 }

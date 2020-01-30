@@ -4,33 +4,32 @@
 #pragma once
 
 #include "bi/expression/Expression.hpp"
+#include "bi/common/Named.hpp"
 #include "bi/common/Couple.hpp"
-#include "bi/expression/EmptyExpression.hpp"
 
 namespace bi {
 /**
- * Operands to a binary operator.
+ * Call to a binary operator.
  *
  * @ingroup expression
  */
-class Binary: public Expression, public Couple<Expression> {
+class BinaryCall:
+    public Expression,
+    public Named,
+    public Couple<Expression> {
 public:
   /**
    * Constructor.
    *
-   * @param left Left operand.
-   * @param right Right operand.
    * @param loc Location.
    */
-  Binary(Expression* left, Expression* right, Location* loc = nullptr);
+  BinaryCall(Expression* left, Name* name, Expression* right,
+      Location* loc = nullptr);
 
   /**
    * Destructor.
    */
-  virtual ~Binary();
-
-  virtual Expression* getLeft() const;
-  virtual Expression* getRight() const;
+  virtual ~BinaryCall();
 
   virtual Expression* accept(Cloner* visitor) const;
   virtual Expression* accept(Modifier* visitor);

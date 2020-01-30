@@ -59,81 +59,26 @@ bi::Expression* bi::Modifier::modify(Sequence* o) {
   return o;
 }
 
-bi::Expression* bi::Modifier::modify(Binary* o) {
-  o->left = o->left->accept(this);
-  o->right = o->right->accept(this);
-  return o;
-}
-
 bi::Expression* bi::Modifier::modify(Cast* o) {
   o->returnType = o->returnType->accept(this);
   o->single = o->single->accept(this);
   return o;
 }
 
-bi::Expression* bi::Modifier::modify(Call<Unknown>* o) {
+bi::Expression* bi::Modifier::modify(Call* o) {
   o->single = o->single->accept(this);
   o->args = o->args->accept(this);
   return o;
 }
 
-bi::Expression* bi::Modifier::modify(Call<Function>* o) {
-  o->single = o->single->accept(this);
-  o->args = o->args->accept(this);
+bi::Expression* bi::Modifier::modify(BinaryCall* o) {
+  o->left = o->left->accept(this);
+  o->right = o->right->accept(this);
   return o;
 }
 
-bi::Expression* bi::Modifier::modify(Call<MemberFunction>* o) {
+bi::Expression* bi::Modifier::modify(UnaryCall* o) {
   o->single = o->single->accept(this);
-  o->args = o->args->accept(this);
-  return o;
-}
-
-bi::Expression* bi::Modifier::modify(Call<Fiber>* o) {
-  o->single = o->single->accept(this);
-  o->args = o->args->accept(this);
-  return o;
-}
-
-bi::Expression* bi::Modifier::modify(Call<MemberFiber>* o) {
-  o->single = o->single->accept(this);
-  o->args = o->args->accept(this);
-  return o;
-}
-
-bi::Expression* bi::Modifier::modify(Call<Parameter>* o) {
-  o->single = o->single->accept(this);
-  o->args = o->args->accept(this);
-  return o;
-}
-
-bi::Expression* bi::Modifier::modify(Call<LocalVariable>* o) {
-  o->single = o->single->accept(this);
-  o->args = o->args->accept(this);
-  return o;
-}
-
-bi::Expression* bi::Modifier::modify(Call<MemberVariable>* o) {
-  o->single = o->single->accept(this);
-  o->args = o->args->accept(this);
-  return o;
-}
-
-bi::Expression* bi::Modifier::modify(Call<GlobalVariable>* o) {
-  o->single = o->single->accept(this);
-  o->args = o->args->accept(this);
-  return o;
-}
-
-bi::Expression* bi::Modifier::modify(Call<BinaryOperator>* o) {
-  o->single = o->single->accept(this);
-  o->args = o->args->accept(this);
-  return o;
-}
-
-bi::Expression* bi::Modifier::modify(Call<UnaryOperator>* o) {
-  o->single = o->single->accept(this);
-  o->args = o->args->accept(this);
   return o;
 }
 
@@ -216,65 +161,7 @@ bi::Expression* bi::Modifier::modify(Generic* o) {
   return o;
 }
 
-bi::Expression* bi::Modifier::modify(Identifier<Unknown>* o) {
-  return o;
-}
-
-bi::Expression* bi::Modifier::modify(Identifier<Parameter>* o) {
-  return o;
-}
-
-bi::Expression* bi::Modifier::modify(Identifier<GlobalVariable>* o) {
-  return o;
-}
-
-bi::Expression* bi::Modifier::modify(Identifier<MemberVariable>* o) {
-  return o;
-}
-
-bi::Expression* bi::Modifier::modify(Identifier<LocalVariable>* o) {
-  return o;
-}
-
-bi::Expression* bi::Modifier::modify(Identifier<ForVariable>* o) {
-  return o;
-}
-
-bi::Expression* bi::Modifier::modify(Identifier<ParallelVariable>* o) {
-  return o;
-}
-
-bi::Expression* bi::Modifier::modify(OverloadedIdentifier<Unknown>* o) {
-  o->typeArgs = o->typeArgs->accept(this);
-  return o;
-}
-
-bi::Expression* bi::Modifier::modify(OverloadedIdentifier<Function>* o) {
-  o->typeArgs = o->typeArgs->accept(this);
-  return o;
-}
-
-bi::Expression* bi::Modifier::modify(OverloadedIdentifier<Fiber>* o) {
-  o->typeArgs = o->typeArgs->accept(this);
-  return o;
-}
-
-bi::Expression* bi::Modifier::modify(OverloadedIdentifier<MemberFiber>* o) {
-  o->typeArgs = o->typeArgs->accept(this);
-  return o;
-}
-
-bi::Expression* bi::Modifier::modify(OverloadedIdentifier<MemberFunction>* o) {
-  o->typeArgs = o->typeArgs->accept(this);
-  return o;
-}
-
-bi::Expression* bi::Modifier::modify(OverloadedIdentifier<BinaryOperator>* o) {
-  o->typeArgs = o->typeArgs->accept(this);
-  return o;
-}
-
-bi::Expression* bi::Modifier::modify(OverloadedIdentifier<UnaryOperator>* o) {
+bi::Expression* bi::Modifier::modify(NamedExpression* o) {
   o->typeArgs = o->typeArgs->accept(this);
   return o;
 }
@@ -324,16 +211,6 @@ bi::Statement* bi::Modifier::modify(LocalVariable* o) {
   return o;
 }
 
-bi::Statement* bi::Modifier::modify(ForVariable* o) {
-  o->type = o->type->accept(this);
-  return o;
-}
-
-bi::Statement* bi::Modifier::modify(ParallelVariable* o) {
-  o->type = o->type->accept(this);
-  return o;
-}
-
 bi::Statement* bi::Modifier::modify(Function* o) {
   o->typeParams = o->typeParams->accept(this);
   o->params = o->params->accept(this);
@@ -371,14 +248,15 @@ bi::Statement* bi::Modifier::modify(MemberFiber* o) {
 }
 
 bi::Statement* bi::Modifier::modify(BinaryOperator* o) {
-  o->params = o->params->accept(this);
+  o->left = o->left->accept(this);
+  o->right = o->right->accept(this);
   o->returnType = o->returnType->accept(this);
   o->braces = o->braces->accept(this);
   return o;
 }
 
 bi::Statement* bi::Modifier::modify(UnaryOperator* o) {
-  o->params = o->params->accept(this);
+  o->single = o->single->accept(this);
   o->returnType = o->returnType->accept(this);
   o->braces = o->braces->accept(this);
   return o;
@@ -406,6 +284,7 @@ bi::Statement* bi::Modifier::modify(Class* o) {
 }
 
 bi::Statement* bi::Modifier::modify(Basic* o) {
+  o->typeParams = o->typeParams->accept(this);
   o->base = o->base->accept(this);
   return o;
 }
@@ -469,16 +348,6 @@ bi::Statement* bi::Modifier::modify(Raw* o) {
   return o;
 }
 
-bi::Statement* bi::Modifier::modify(Instantiated<Type>* o) {
-  o->single = o->single->accept(this);
-  return o;
-}
-
-bi::Statement* bi::Modifier::modify(Instantiated<Expression>* o) {
-  o->single = o->single->accept(this);
-  return o;
-}
-
 bi::Type* bi::Modifier::modify(EmptyType* o) {
   return o;
 }
@@ -489,21 +358,8 @@ bi::Type* bi::Modifier::modify(TypeList* o) {
   return o;
 }
 
-bi::Type* bi::Modifier::modify(UnknownType* o) {
+bi::Type* bi::Modifier::modify(NamedType* o) {
   o->typeArgs = o->typeArgs->accept(this);
-  return o;
-}
-
-bi::Type* bi::Modifier::modify(ClassType* o) {
-  o->typeArgs = o->typeArgs->accept(this);
-  return o;
-}
-
-bi::Type* bi::Modifier::modify(BasicType* o) {
-  return o;
-}
-
-bi::Type* bi::Modifier::modify(GenericType* o) {
   return o;
 }
 
@@ -523,12 +379,6 @@ bi::Type* bi::Modifier::modify(TupleType* o) {
   return o;
 }
 
-bi::Type* bi::Modifier::modify(BinaryType* o) {
-  o->left = o->left->accept(this);
-  o->right = o->right->accept(this);
-  return o;
-}
-
 bi::Type* bi::Modifier::modify(FunctionType* o) {
   o->params = o->params->accept(this);
   o->returnType = o->returnType->accept(this);
@@ -542,9 +392,5 @@ bi::Type* bi::Modifier::modify(FiberType* o) {
 
 bi::Type* bi::Modifier::modify(OptionalType* o) {
   o->single = o->single->accept(this);
-  return o;
-}
-
-bi::Type* bi::Modifier::modify(NilType* o) {
   return o;
 }

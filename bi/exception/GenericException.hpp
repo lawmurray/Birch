@@ -4,7 +4,6 @@
 #pragma once
 
 #include "bi/exception/CompilerException.hpp"
-#include "bi/type/ClassType.hpp"
 #include "bi/statement/Class.hpp"
 
 namespace bi {
@@ -17,18 +16,18 @@ struct GenericException: public CompilerException {
   /**
    * Constructor.
    *
-   * @param o Identifier.
+   * @param o NamedExpression.
    * @param target Target.
    */
-  template<class IdentifierType, class ObjectType>
-  GenericException(const IdentifierType* o, const ObjectType* target);
+  template<class NamedExpressionType, class ObjectType>
+  GenericException(const NamedExpressionType* o, const ObjectType* target);
 };
 }
 
 #include "bi/io/bih_ostream.hpp"
 
-template<class IdentifierType, class ObjectType>
-bi::GenericException::GenericException(const IdentifierType* o, const ObjectType* target) {
+template<class NamedExpressionType, class ObjectType>
+bi::GenericException::GenericException(const NamedExpressionType* o, const ObjectType* target) {
   std::stringstream base;
   bih_ostream buf(base);
   if (o->loc) {

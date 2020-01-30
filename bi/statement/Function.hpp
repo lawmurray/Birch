@@ -23,10 +23,9 @@ class Function: public Statement,
     public Annotated,
     public Named,
     public Numbered,
-    public TypeParameterised<Function>,
+    public TypeParameterised,
     public Parameterised,
     public ReturnTyped,
-    public Typed,
     public Scoped,
     public Braced {
 public:

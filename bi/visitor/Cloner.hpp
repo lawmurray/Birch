@@ -31,19 +31,10 @@ public:
   virtual Expression* clone(const Literal<const char*>* o);
   virtual Expression* clone(const Parentheses* o);
   virtual Expression* clone(const Sequence* o);
-  virtual Expression* clone(const Binary* o);
   virtual Expression* clone(const Cast* o);
-  virtual Expression* clone(const Call<Unknown>* o);
-  virtual Expression* clone(const Call<Function>* o);
-  virtual Expression* clone(const Call<MemberFunction>* o);
-  virtual Expression* clone(const Call<Fiber>* o);
-  virtual Expression* clone(const Call<MemberFiber>* o);
-  virtual Expression* clone(const Call<Parameter>* o);
-  virtual Expression* clone(const Call<LocalVariable>* o);
-  virtual Expression* clone(const Call<MemberVariable>* o);
-  virtual Expression* clone(const Call<GlobalVariable>* o);
-  virtual Expression* clone(const Call<BinaryOperator>* o);
-  virtual Expression* clone(const Call<UnaryOperator>* o);
+  virtual Expression* clone(const Call* o);
+  virtual Expression* clone(const BinaryCall* o);
+  virtual Expression* clone(const UnaryCall* o);
   virtual Expression* clone(const Assign* o);
   virtual Expression* clone(const Slice* o);
   virtual Expression* clone(const Query* o);
@@ -59,20 +50,7 @@ public:
   virtual Expression* clone(const Nil* o);
   virtual Expression* clone(const Parameter* o);
   virtual Expression* clone(const Generic* o);
-  virtual Expression* clone(const Identifier<Unknown>* o);
-  virtual Expression* clone(const Identifier<Parameter>* o);
-  virtual Expression* clone(const Identifier<GlobalVariable>* o);
-  virtual Expression* clone(const Identifier<MemberVariable>* o);
-  virtual Expression* clone(const Identifier<LocalVariable>* o);
-  virtual Expression* clone(const Identifier<ForVariable>* o);
-  virtual Expression* clone(const Identifier<ParallelVariable>* o);
-  virtual Expression* clone(const OverloadedIdentifier<Unknown>* o);
-  virtual Expression* clone(const OverloadedIdentifier<Function>* o);
-  virtual Expression* clone(const OverloadedIdentifier<Fiber>* o);
-  virtual Expression* clone(const OverloadedIdentifier<MemberFunction>* o);
-  virtual Expression* clone(const OverloadedIdentifier<MemberFiber>* o);
-  virtual Expression* clone(const OverloadedIdentifier<BinaryOperator>* o);
-  virtual Expression* clone(const OverloadedIdentifier<UnaryOperator>* o);
+  virtual Expression* clone(const NamedExpression* o);
 
   virtual Statement* clone(const EmptyStatement* o);
   virtual Statement* clone(const Braces* o);
@@ -81,8 +59,6 @@ public:
   virtual Statement* clone(const GlobalVariable* o);
   virtual Statement* clone(const MemberVariable* o);
   virtual Statement* clone(const LocalVariable* o);
-  virtual Statement* clone(const ForVariable* o);
-  virtual Statement* clone(const ParallelVariable* o);
   virtual Statement* clone(const Function* o);
   virtual Statement* clone(const Fiber* o);
   virtual Statement* clone(const Program* o);
@@ -104,22 +80,15 @@ public:
   virtual Statement* clone(const Return* o);
   virtual Statement* clone(const Yield* o);
   virtual Statement* clone(const Raw* o);
-  virtual Statement* clone(const Instantiated<Type>* o);
-  virtual Statement* clone(const Instantiated<Expression>* o);
 
   virtual Type* clone(const EmptyType* o);
   virtual Type* clone(const TypeList* o);
-  virtual Type* clone(const UnknownType* o);
-  virtual Type* clone(const ClassType* o);
-  virtual Type* clone(const BasicType* o);
-  virtual Type* clone(const GenericType* o);
+  virtual Type* clone(const NamedType* o);
   virtual Type* clone(const MemberType* o);
   virtual Type* clone(const ArrayType* o);
   virtual Type* clone(const TupleType* o);
-  virtual Type* clone(const BinaryType* o);
   virtual Type* clone(const FunctionType* o);
   virtual Type* clone(const FiberType* o);
   virtual Type* clone(const OptionalType* o);
-  virtual Type* clone(const NilType* o);
 };
 }

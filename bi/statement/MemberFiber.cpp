@@ -12,7 +12,6 @@ bi::MemberFiber::MemberFiber(const Annotation annotation, Name* name,
     Named(name),
     Parameterised(params),
     ReturnTyped(returnType),
-    Typed(new EmptyType(loc)),
     Scoped(LOCAL_SCOPE),
     Braced(braces) {
   if (!returnType->isFiber()) {

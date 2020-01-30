@@ -51,6 +51,16 @@ public:
   LocalVariable(Expression* value, Location* loc = nullptr);
 
   /**
+   * Constructor for loop index variable.
+   *
+   * @param annotation Annotation.
+   * @param name Name.
+   * @param type Type.
+   * @param loc Location.
+   */
+  LocalVariable(Name* name, Type* type, Location* loc = nullptr);
+
+  /**
    * Destructor.
    */
   virtual ~LocalVariable();

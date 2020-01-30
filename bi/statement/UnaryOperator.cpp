@@ -6,14 +6,12 @@
 #include "bi/visitor/all.hpp"
 
 bi::UnaryOperator::UnaryOperator(const Annotation annotation, Name* name,
-    Expression* params, Type* returnType,
-    Statement* braces, Location* loc) :
+    Expression* single, Type* returnType, Statement* braces, Location* loc) :
     Statement(loc),
     Annotated(annotation),
     Named(name),
-    Parameterised(params),
+    Single<Expression>(single),
     ReturnTyped(returnType),
-    Typed(new EmptyType(loc)),
     Scoped(LOCAL_SCOPE),
     Braced(braces) {
   //

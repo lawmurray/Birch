@@ -1,17 +1,14 @@
 /**
+#include <bi/expression/NamedExpression.hpp>
  * @file
  */
 #include "bi/common/Scope.hpp"
 
-#include "bi/expression/Identifier.hpp"
-#include "bi/expression/OverloadedIdentifier.hpp"
 #include "bi/expression/Parameter.hpp"
 #include "bi/expression/Generic.hpp"
 #include "bi/statement/GlobalVariable.hpp"
 #include "bi/statement/MemberVariable.hpp"
 #include "bi/statement/LocalVariable.hpp"
-#include "bi/statement/ForVariable.hpp"
-#include "bi/statement/ParallelVariable.hpp"
 #include "bi/statement/Function.hpp"
 #include "bi/statement/Fiber.hpp"
 #include "bi/statement/Program.hpp"
@@ -25,348 +22,70 @@
 #include "bi/exception/all.hpp"
 #include "bi/visitor/Cloner.hpp"
 
-bi::Scope::Scope(const ScopeCategory category) :
-    base(nullptr),
-    category(category) {
+bi::Scope::Scope(const ScopeCategory category) : category(category) {
   //
 }
 
-bi::Lookup bi::Scope::lookup(const Identifier<Unknown>* o) const {
-  auto name = o->name->str();
-  if (localVariables.contains(name)) {
-    return LOCAL_VARIABLE;
-  } else if (forVariables.contains(name)) {
-    return FOR_VARIABLE;
-  } else if (parallelVariables.contains(name)) {
-    return PARALLEL_VARIABLE;
-  } else if (parameters.contains(name)) {
-    return PARAMETER;
-  } else if (memberVariables.contains(name)) {
-    return MEMBER_VARIABLE;
-  } else if (memberFunctions.contains(name)) {
-    return MEMBER_FUNCTION;
-  } else if (memberFibers.contains(name)) {
-    return MEMBER_FIBER;
-  } else if (globalVariables.contains(name)) {
-    return GLOBAL_VARIABLE;
-  } else if (functions.contains(name)) {
-    return FUNCTION;
-  } else if (fibers.contains(name)) {
-    return FIBER;
-  } else if (base) {
-    return base->lookupInherit(o);
-  } else {
-    return UNRESOLVED;
-  }
+bool bi::Scope::lookup(const NamedExpression* o) const {
+  return names.find(o->name->str()) != names.end();
 }
 
-bi::Lookup bi::Scope::lookup(const OverloadedIdentifier<Unknown>* o) const {
-  auto name = o->name->str();
-  if (memberFunctions.contains(name)) {
-    return MEMBER_FUNCTION;
-  } else if (memberFibers.contains(name)) {
-    return MEMBER_FIBER;
-  } else if (functions.contains(name)) {
-    return FUNCTION;
-  } else if (fibers.contains(name)) {
-    return FIBER;
-  } else if (base) {
-    return base->lookupInherit(o);
-  } else {
-    return UNRESOLVED;
-  }
-}
-
-bi::Lookup bi::Scope::lookup(const UnknownType* o) const {
-  auto name = o->name->str();
-  if (basics.contains(name)) {
-    return BASIC;
-  } else if (classes.contains(name)) {
-    return CLASS;
-  } else if (generics.contains(name)) {
-    return GENERIC;
-  } else if (base) {
-    return base->lookupInherit(o);
-  } else {
-    return UNRESOLVED;
-  }
-}
-
-bi::Lookup bi::Scope::lookupInherit(
-    const Identifier<Unknown>* o) const {
-  auto name = o->name->str();
-  if (memberVariables.contains(name)) {
-    return MEMBER_VARIABLE;
-  } else if (memberFunctions.contains(name)) {
-    return MEMBER_FUNCTION;
-  } else if (memberFibers.contains(name)) {
-    return MEMBER_FIBER;
-  } else if (base) {
-    return base->lookupInherit(o);
-  } else {
-    return UNRESOLVED;
-  }
-}
-
-bi::Lookup bi::Scope::lookupInherit(
-    const OverloadedIdentifier<Unknown>* o) const {
-  auto name = o->name->str();
-  if (memberFunctions.contains(name)) {
-    return MEMBER_FUNCTION;
-  } else if (memberFibers.contains(name)) {
-    return MEMBER_FIBER;
-  } else if (base) {
-    return base->lookupInherit(o);
-  } else {
-    return UNRESOLVED;
-  }
-}
-
-bi::Lookup bi::Scope::lookupInherit(const UnknownType* o) const {
-  auto name = o->name->str();
-  if (basics.contains(name)) {
-    return BASIC;
-  } else if (classes.contains(name)) {
-    return CLASS;
-  } else if (generics.contains(name)) {
-    return GENERIC;
-  } else if (base) {
-    return base->lookupInherit(o);
-  } else {
-    return UNRESOLVED;
-  }
+bool bi::Scope::lookup(const NamedType* o) const {
+  return typeNames.find(o->name->str()) != names.end();
 }
 
 void bi::Scope::add(Parameter* param) {
-  checkPreviousLocal(param);
-  parameters.add(param);
+  names.insert(param->name->str());
 }
 
 void bi::Scope::add(GlobalVariable* param) {
-  checkPreviousGlobal(param);
-  globalVariables.add(param);
+  names.insert(param->name->str());
 }
 
 void bi::Scope::add(MemberVariable* param) {
-  checkPreviousMember(param);
-  memberVariables.add(param);
+  names.insert(param->name->str());
 }
 
 void bi::Scope::add(LocalVariable* param) {
-  checkPreviousLocal(param);
-  localVariables.add(param);
-}
-
-void bi::Scope::add(ForVariable* param) {
-  checkPreviousLocal(param);
-  forVariables.add(param);
-}
-
-void bi::Scope::add(ParallelVariable* param) {
-  checkPreviousLocal(param);
-  parallelVariables.add(param);
+  names.insert(param->name->str());
 }
 
 void bi::Scope::add(Function* param) {
-  checkPreviousGlobal(param);
-  if (functions.contains(param)) {
-    throw PreviousDeclarationException(param, functions.get(param));
-  } else if (fibers.contains(param->name->str())) {
-    throw PreviousDeclarationException(param);
-  }
-  functions.add(param);
+  names.insert(param->name->str());
 }
 
 void bi::Scope::add(Fiber* param) {
-  checkPreviousGlobal(param);
-  if (functions.contains(param->name->str())) {
-    throw PreviousDeclarationException(param);
-  } else if (fibers.contains(param)) {
-    throw PreviousDeclarationException(param, fibers.get(param));
-  }
-  fibers.add(param);
+  names.insert(param->name->str());
 }
 
 void bi::Scope::add(Program* param) {
-  checkPreviousGlobal(param);
-  programs.add(param);
+  names.insert(param->name->str());
 }
 
 void bi::Scope::add(MemberFunction* param) {
-  checkPreviousMember(param);
-  if (memberFunctions.contains(param)) {
-    throw PreviousDeclarationException(param, memberFunctions.get(param));
-  } else if (memberFibers.contains(param->name->str())) {
-    throw PreviousDeclarationException(param);
-  }
-  memberFunctions.add(param);
+  names.insert(param->name->str());
 }
 
 void bi::Scope::add(MemberFiber* param) {
-  checkPreviousMember(param);
-  if (memberFibers.contains(param)) {
-    throw PreviousDeclarationException(param, memberFibers.get(param));
-  } else if (memberFunctions.contains(param->name->str())) {
-    throw PreviousDeclarationException(param);
-  }
-  memberFibers.add(param);
+  names.insert(param->name->str());
 }
 
 void bi::Scope::add(BinaryOperator* param) {
-  if (binaryOperators.contains(param)) {
-    throw PreviousDeclarationException(param);
-  }
-  binaryOperators.add(param);
+  names.insert(param->name->str());
 }
 
 void bi::Scope::add(UnaryOperator* param) {
-  if (unaryOperators.contains(param)) {
-    throw PreviousDeclarationException(param);
-  }
-  unaryOperators.add(param);
+  names.insert(param->name->str());
 }
 
 void bi::Scope::add(Basic* param) {
-  checkPreviousType(param);
-  basics.add(param);
+  typeNames.insert(param->name->str());
 }
 
 void bi::Scope::add(Class* param) {
-  checkPreviousType(param);
-  classes.add(param);
+  typeNames.insert(param->name->str());
 }
 
 void bi::Scope::add(Generic* param) {
-  checkPreviousType(param);
-  generics.add(param);
-}
-
-void bi::Scope::resolve(Identifier<Parameter>* o) {
-  parameters.resolve(o);
-}
-
-void bi::Scope::resolve(Identifier<GlobalVariable>* o) {
-  globalVariables.resolve(o);
-}
-
-void bi::Scope::resolve(Identifier<MemberVariable>* o) {
-  memberVariables.resolve(o);
-  if (!o->target && base) {
-    base->resolve(o);
-  }
-}
-
-void bi::Scope::resolve(Identifier<LocalVariable>* o) {
-  localVariables.resolve(o);
-}
-
-void bi::Scope::resolve(Identifier<ForVariable>* o) {
-  forVariables.resolve(o);
-}
-
-void bi::Scope::resolve(Identifier<ParallelVariable>* o) {
-  parallelVariables.resolve(o);
-}
-
-void bi::Scope::resolve(OverloadedIdentifier<Function>* o) {
-  functions.resolve(o);
-}
-
-void bi::Scope::resolve(OverloadedIdentifier<Fiber>* o) {
-  fibers.resolve(o);
-}
-
-void bi::Scope::resolve(OverloadedIdentifier<MemberFunction>* o) {
-  memberFunctions.resolve(o);
-  if (base) {
-    /* gather alternatives from base classes */
-    base->resolve(o);
-  }
-}
-
-void bi::Scope::resolve(OverloadedIdentifier<MemberFiber>* o) {
-  memberFibers.resolve(o);
-  if (base) {
-    /* gather alternatives from base classes */
-    base->resolve(o);
-  }
-}
-
-void bi::Scope::resolve(OverloadedIdentifier<BinaryOperator>* o) {
-  binaryOperators.resolve(o);
-}
-
-void bi::Scope::resolve(OverloadedIdentifier<UnaryOperator>* o) {
-  unaryOperators.resolve(o);
-}
-
-void bi::Scope::resolve(BasicType* o) {
-  basics.resolve(o);
-}
-
-void bi::Scope::resolve(ClassType* o) {
-  classes.resolve(o);
-}
-
-void bi::Scope::resolve(GenericType* o) {
-  generics.resolve(o);
-  if (!o->target && base) {
-    base->resolve(o);
-  }
-}
-
-void bi::Scope::inherit(Scope* scope) {
-  assert(scope);
-  assert(!base);
-  base = scope;
-}
-
-bool bi::Scope::override(const MemberFunction* o) const {
-  return base && (base->memberFunctions.contains(o->name->str()) || base->override(o));
-}
-
-bool bi::Scope::override(const MemberFiber* o) const {
-  return base && (base->memberFibers.contains(o->name->str()) || base->override(o));
-}
-
-template<class ParameterType>
-void bi::Scope::checkPreviousGlobal(ParameterType* param) {
-  auto name = param->name->str();
-  if (programs.contains(name)) {
-    throw PreviousDeclarationException(param, programs.get(name));
-  } else if (globalVariables.contains(name)) {
-    throw PreviousDeclarationException(param, globalVariables.get(name));
-  }
-}
-
-template<class ParameterType>
-void bi::Scope::checkPreviousLocal(ParameterType* param) {
-  auto name = param->name->str();
-  if (parameters.contains(name)) {
-    throw PreviousDeclarationException(param, parameters.get(name));
-  } else if (localVariables.contains(name)) {
-    throw PreviousDeclarationException(param, localVariables.get(name));
-  } else if (parallelVariables.contains(name)) {
-    throw PreviousDeclarationException(param, parallelVariables.get(name));
-  }
-}
-
-template<class ParameterType>
-void bi::Scope::checkPreviousMember(ParameterType* param) {
-  auto name = param->name->str();
-  if (memberVariables.contains(name)) {
-    throw PreviousDeclarationException(param, memberVariables.get(name));
-  }
-}
-
-template<class ParameterType>
-void bi::Scope::checkPreviousType(ParameterType* param) {
-  auto name = param->name->str();
-  if (basics.contains(name)) {
-    throw PreviousDeclarationException(param, basics.get(name));
-  } else if (classes.contains(name)) {
-    throw PreviousDeclarationException(param, classes.get(name));
-  } else if (generics.contains(name)) {
-    throw PreviousDeclarationException(param, generics.get(name));
-  }
+  typeNames.insert(param->name->str());
 }

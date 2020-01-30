@@ -24,7 +24,6 @@ class MemberFiber: public Statement,
     public Numbered,
     public Parameterised,
     public ReturnTyped,
-    public Typed,
     public Scoped,
     public Braced {
 public:

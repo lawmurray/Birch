@@ -313,8 +313,7 @@ void bi::md_ostream::visit(const MemberFiber* o) {
 
 void bi::md_ostream::visit(const BinaryOperator* o) {
   start("!!! quote \"operator (");
-  middle(o->params->getLeft() << ' ' << o->name << ' ');
-  middle(o->params->getRight() << ')');
+  middle(o->left << ' ' << o->name << ' ' << o->right << ')');
   if (!o->returnType->isEmpty()) {
     middle(" -> " << o->returnType);
   }
@@ -323,7 +322,7 @@ void bi::md_ostream::visit(const BinaryOperator* o) {
 
 void bi::md_ostream::visit(const UnaryOperator* o) {
   start("!!! quote \"operator (");
-  middle(o->name << ' ' << o->params << ')');
+  middle(o->name << ' ' << o->single << ')');
   if (!o->returnType->isEmpty()) {
     middle(" -> " << o->returnType);
   }
@@ -562,25 +561,18 @@ void bi::md_ostream::visit(const TypeList* o) {
   middle(o->head << ", " << o->tail);
 }
 
-void bi::md_ostream::visit(const ClassType* o) {
-  if (!o->target->loc->doc.empty()) {
+void bi::md_ostream::visit(const NamedType* o) {
+  ///@todo
+  //if (o->category == CLASS) {
     middle('[' << o->name << "](../classes/" << o->name->str() << ".md)");
-  } else {
-    middle(o->name);
-  }
+  //} else {
+  //  middle('[' << o->name << "](../types/index.md#" << o->name->str() << ')');
+  //}
   if (!o->typeArgs->isEmpty()) {
     middle("&lt;" << o->typeArgs << "&gt;");
   }
   if (o->weak) {
     middle("&amp;");
-  }
-}
-
-void bi::md_ostream::visit(const BasicType* o) {
-  if (!o->target->loc->doc.empty()) {
-    middle('[' << o->name << "](../types/index.md#" << o->name->str() << ')');
-  } else {
-    middle(o->name);
   }
 }
 

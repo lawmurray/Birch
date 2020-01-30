@@ -20,13 +20,9 @@ public:
 
   IsValue();
 
-  virtual void visit(const ClassType* o);
+  virtual void visit(const NamedType* o);
   virtual void visit(const FiberType* o);
-  virtual void visit(const GenericType* o);
-  virtual void visit(const Call<Function>* o);
-  virtual void visit(const Call<Fiber>* o);
-  virtual void visit(const Call<BinaryOperator>* o);
-  virtual void visit(const Call<UnaryOperator>* o);
+  virtual void visit(const Call* o);
 
   /**
    * Result.

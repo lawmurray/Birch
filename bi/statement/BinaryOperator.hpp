@@ -8,7 +8,7 @@
 #include "bi/common/Annotated.hpp"
 #include "bi/common/Named.hpp"
 #include "bi/common/Numbered.hpp"
-#include "bi/common/Parameterised.hpp"
+#include "bi/common/Couple.hpp"
 #include "bi/common/ReturnTyped.hpp"
 #include "bi/common/Scoped.hpp"
 #include "bi/common/Braced.hpp"
@@ -23,9 +23,8 @@ class BinaryOperator: public Statement,
     public Annotated,
     public Named,
     public Numbered,
-    public Parameterised,
+    public Couple<Expression>,
     public ReturnTyped,
-    public Typed,
     public Scoped,
     public Braced {
 public:
@@ -33,14 +32,16 @@ public:
    * Constructor.
    *
    * @param annotation Annotation.
-   * @param name Name.
-   * @param params Parameters.
+   * @param left Left operand.
+   * @param name Operator name (symbol).
+   * @param right Right operand.
    * @param returnType Return type.
    * @param braces Body.
    * @param loc Location.
    */
-  BinaryOperator(const Annotation annotation, Name* name, Expression* params,
-      Type* returnType, Statement* braces, Location* loc = nullptr);
+  BinaryOperator(const Annotation annotation, Expression* left, Name* name,
+      Expression* right, Type* returnType, Statement* braces,
+      Location* loc = nullptr);
 
   /**
    * Destructor.

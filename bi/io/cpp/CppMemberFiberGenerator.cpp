@@ -28,7 +28,6 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   /* gather important objects */
   o->params->accept(&params);
   o->braces->accept(&locals);
-  o->braces->accept(&fors);
   o->braces->accept(&yields);
 
   /* supporting class for state */
@@ -46,12 +45,6 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
       line(o->type << ' ' << o->name << ';');
     }
     for (auto o : locals) {
-      if (o->has(IN_FIBER)) {
-        start(o->type << ' ');
-        finish(getName(o->name->str(), o->number) << ';');
-      }
-    }
-    for (auto o : fors) {
       if (o->has(IN_FIBER)) {
         start(o->type << ' ');
         finish(getName(o->name->str(), o->number) << ';');
@@ -142,14 +135,6 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
         } else {
           start(name << "(context, label, o." << name << ')');
         }
-      }
-    }
-    for (auto o : fors) {
-      if (o->has(IN_FIBER)) {
-        auto name = getName(o->name->str(), o->number);
-        finish(',');
-        genSourceLine(o->loc);
-        start(name << "(o." << name << ')');
       }
     }
     out();

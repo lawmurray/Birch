@@ -31,11 +31,6 @@ public:
 
   virtual bool isAssignable() const;
 
-  virtual Lookup lookup(Expression* args);
-  virtual MemberVariable* resolve(Call<MemberVariable>* o);
-  virtual MemberFunction* resolve(Call<MemberFunction>* o);
-  virtual MemberFiber* resolve(Call<MemberFiber>* o);
-
   virtual Expression* accept(Cloner* visitor) const;
   virtual Expression* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;

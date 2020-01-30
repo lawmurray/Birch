@@ -42,14 +42,5 @@ public:
    * Right operand.
    */
   Type* tail;
-
-  using Type::isConvertible;
-  using Type::isAssignable;
-
-  virtual bool dispatchIsConvertible(const Type& o) const;
-  virtual bool isConvertible(const TypeList& o) const;
-
-  virtual bool dispatchIsAssignable(const Type& o) const;
-  virtual bool isAssignable(const TypeList& o) const;
 };
 }

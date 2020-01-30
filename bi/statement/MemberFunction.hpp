@@ -11,6 +11,7 @@
 #include "bi/common/ReturnTyped.hpp"
 #include "bi/common/Braced.hpp"
 #include "bi/common/Scoped.hpp"
+#include "bi/common/Typed.hpp"
 
 namespace bi {
 /**
