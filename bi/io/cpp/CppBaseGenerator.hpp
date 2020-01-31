@@ -157,16 +157,10 @@ void bi::CppBaseGenerator::genInit(const T* o) {
     if (!o->brackets->isEmpty()) {
       if (!o->value->isEmpty()) {
         middle(" = libbirch::make_array_and_assign<" << type->single << ">(");
-        if (!o->isValue()) {
-          middle("context_, ");
-        }
         middle("libbirch::make_shape(" << o->brackets << ')');
         middle(", " << o->value << ')');
       } else {
         middle(" = libbirch::make_array<" << type->single << ">(");
-        if (!o->isValue()) {
-          middle("context_, ");
-        }
         middle("libbirch::make_shape(" << o->brackets << ')');
         if (!o->args->isEmpty()) {
           middle(", " << o->args);
@@ -176,22 +170,10 @@ void bi::CppBaseGenerator::genInit(const T* o) {
     } else if (!o->value->isEmpty()) {
       middle(" = " << o->value);
     }
-  } else if (o->type->isClass()) {
-    if (!o->value->isEmpty()) {
-      middle("(context_, " << o->value << ')');
-    } else {
-      middle(" = libbirch::make_pointer<" << o->type << ">(context_");
-      if (!o->args->isEmpty()) {
-        middle(", " << o->args);
-      }
-      middle(")");
-    }
+  } else if (o->type->isClass() && o->value->isEmpty()) {
+    middle(" = libbirch::make_pointer<" << o->type << ">(" << o->args << ')');
   } else if (!o->value->isEmpty()) {
-    middle('(');
-    if (!o->type->isValue() && !o->type->isFunction()) {
-      middle("context_, ");
-    }
-    middle(o->value << ')');
+    middle('(' << o->value << ')');
   }
 }
 

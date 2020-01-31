@@ -54,9 +54,6 @@ void bi::CppBaseGenerator::visit(const Parentheses* o) {
       middle("libbirch::tie(");
     } else {
       middle("libbirch::make_tuple(");
-      if (!o->type->isValue()) {
-        middle("context_, ");
-      }
     }
   } else {
     middle('(');
@@ -72,9 +69,6 @@ void bi::CppBaseGenerator::visit(const Sequence* o) {
       auto type = dynamic_cast<ArrayType*>(o->type);
       assert(type);
       middle("libbirch::make_array<" << type->element() << ">(");
-      if (!o->type->isValue()) {
-        middle("context_, ");
-      }
       middle("libbirch::make_shape(");
       auto seq = o;
       do {
@@ -98,19 +92,14 @@ void bi::CppBaseGenerator::visit(const Sequence* o) {
 void bi::CppBaseGenerator::visit(const Cast* o) {
   if (o->returnType->isClass()) {
     middle("libbirch::dynamic_pointer_cast<" << o->returnType << '>');
-    middle("(context_, " << o->single << ')');
   } else {
     middle("libbirch::check_cast<" << o->returnType << '>');
-    middle('(' << o->single << ')');
   }
+  middle("(" << o->single << ')');
 }
 
 void bi::CppBaseGenerator::visit(const Call* o) {
-  middle(o->single << "(context_");
-  if (!o->args->isEmpty()) {
-    middle(o->args);
-  }
-  middle(')');
+  middle(o->single << '(' << o->args << ')');
 }
 
 void bi::CppBaseGenerator::visit(const Assign* o) {
@@ -143,18 +132,10 @@ void bi::CppBaseGenerator::visit(const Assign* o) {
     }
     middle(o->right << ')');
   } else {
-    if (o->left->type->isValue()) {
-      ++inAssign;
-      middle(o->left << " = ");
-      --inAssign;
-      middle(o->right);
-    } else {
-      ++inAssign;
-      middle(o->left << ".assign(context_, ");
-      --inAssign;
-      middle(o->right);
-      middle(')');
-    }
+    ++inAssign;
+    middle(o->left << " = ");
+    --inAssign;
+    middle(o->right);
   }
 }
 
@@ -301,8 +282,6 @@ void bi::CppBaseGenerator::visit(const GlobalVariable* o) {
     finish(" {");
     in();
     genTraceLine(o->loc);
-    line("auto context_ [[maybe_unused]] = libbirch::rootContext;");
-    genTraceLine(o->loc);
     start("static " << o->type << " result");
     genInit(o);
     finish(';');
@@ -339,26 +318,12 @@ void bi::CppBaseGenerator::visit(const Function* o) {
     if (!header) {
       middle("bi::");
     }
-    middle(name << '(');
-    if (!o->isValue()) {
-      middle("libbirch::Label* context_");
-      if (!o->params->isEmpty()) {
-        middle(", ");
-      }
-    }
-    middle(o->params << ')');
+    middle(name << '(' << o->params << ')');
     if (header) {
       finish(';');
     } else {
       finish(" {");
       in();
-      for (auto iter = o->typeParams->begin(); iter != o->typeParams->end();
-          ++iter) {
-        auto param = dynamic_cast<const Generic*>(*iter);
-        assert(param);
-        genTraceLine(o->loc);
-        line("using " << param->name << " [[maybe_unused]] = " << param->type << ';');
-      }
       genTraceFunction(o->name->str(), o->loc);
       CppBaseGenerator aux(base, level, false);
       *this << o->braces->strip();
@@ -390,10 +355,6 @@ void bi::CppBaseGenerator::visit(const Program* o) {
     in();
     genTraceFunction(o->name->str(), o->loc);
 
-    /* initial context */
-    genSourceLine(o->loc);
-    line("auto context_ [[maybe_unused]] = libbirch::rootContext;");
-
     /* handle program options */
     if (o->params->width() > 0) {
       /* option variables */
@@ -405,7 +366,7 @@ void bi::CppBaseGenerator::visit(const Program* o) {
         if (!param->value->isEmpty()) {
           middle(" = " << param->value);
         } else if (param->type->isClass()) {
-          middle(" = libbirch::make_pointer<" << param->type << ">(context_)");
+          middle(" = libbirch::make_pointer<" << param->type << ">()");
         }
         finish(';');
       }
@@ -544,12 +505,12 @@ void bi::CppBaseGenerator::visit(const BinaryOperator* o) {
     if (!header) {
       middle("bi::");
     }
-    if (isTranslatable(o->name->str()) && o->isValue()) {
-      middle("operator" << o->name->str() << '(');
+    if (isTranslatable(o->name->str())) {
+      middle("operator" << o->name->str());
     } else {
-      middle(o->name << "(libbirch::Label* context_, ");
+      middle(o->name);
     }
-    middle(o->left << ", " << o->right << ')');
+    middle('(' << o->left << ", " << o->right << ')');
     if (header) {
       finish(';');
     } else {
@@ -574,11 +535,11 @@ void bi::CppBaseGenerator::visit(const UnaryOperator* o) {
       middle("bi::");
     }
     if (isTranslatable(o->name->str()) && o->isValue()) {
-      middle("operator" << o->name->str() << '(');
+      middle("operator" << o->name->str());
     } else {
-      middle(o->name << "(libbirch::Label* context_, ");
+      middle(o->name);
     }
-    middle(o->single << ')');
+    middle('(' << o->single << ')');
     if (header) {
       finish(';');
     } else {
