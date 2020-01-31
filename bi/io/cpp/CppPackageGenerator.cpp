@@ -7,6 +7,7 @@
 #include "bi/io/cpp/CppClassGenerator.hpp"
 #include "bi/visitor/Gatherer.hpp"
 #include "bi/primitive/poset.hpp"
+#include "bi/primitive/inherits.hpp"
 #include "bi/build/misc.hpp"
 
 bi::CppPackageGenerator::CppPackageGenerator(std::ostream& base,
@@ -43,8 +44,12 @@ void bi::CppPackageGenerator::visit(const Package* o) {
 
   /* base classes must be defined before their derived classes, so these are
    * gathered and sorted first */
-  ///@todo
-  auto sortedClasses = classes;
+  poset<const Class*,inherits> sortedClasses;
+  for (auto o : classes) {
+    if (!o->isGeneric()) {
+      sortedClasses.insert(o);
+    }
+  }
 
   if (header) {
     /* a `#define` include guard is preferred to `#pragma once`; the header of
@@ -101,10 +106,24 @@ void bi::CppPackageGenerator::visit(const Package* o) {
 
     /* class definitions */
     for (auto o : sortedClasses) {
-      *this << o;
+      assert(!o->isGeneric());
+      if (!o->isAlias()) {
+        *this << o;
+      }
+    }
+    for (auto o : sortedClasses) {
+      assert(!o->isGeneric());
+      if (o->isAlias()) {
+        *this << o;
+      }
     }
     for (auto o : classes) {
-      if (o->isAlias()) {
+      if (o->isGeneric() && !o->isAlias()) {
+        *this << o;
+      }
+    }
+    for (auto o : classes) {
+      if (o->isGeneric() && o->isAlias()) {
         *this << o;
       }
     }

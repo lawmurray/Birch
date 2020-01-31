@@ -9,8 +9,9 @@ namespace bi {
  * relationships.
  */
 struct inherits {
-  static bool operator()(const Class* a, const Class* b) {
-    return o->base->isClass() && *o->base->name == *b->name;
+  bool operator()(const Class* a, const Class* b) {
+    auto base = dynamic_cast<const NamedType*>(a->base);
+    return base && base->isClass() && *base->name == *b->name;
   }
 };
 }
