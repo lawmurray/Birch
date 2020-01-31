@@ -319,7 +319,12 @@ void bi::CppBaseGenerator::visit(const MemberVariable* o) {
 
 void bi::CppBaseGenerator::visit(const LocalVariable* o) {
   genTraceLine(o->loc);
-  middle(o->type << ' ' << o->name);
+  if (o->has(AUTO)) {
+    start("auto");
+  } else {
+    start(o->type);
+  }
+  middle(' ' << o->name);
   genInit(o);
   finish(';');
 }
