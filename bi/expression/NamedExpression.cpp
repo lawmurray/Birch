@@ -9,7 +9,9 @@ bi::NamedExpression::NamedExpression(Name* name, Type* typeArgs,
     Location* loc) :
     Expression(loc),
     Named(name),
-    TypeArgumented(typeArgs) {
+    TypeArgumented(typeArgs),
+    category(UNKNOWN_EXPRESSION),
+    number(0) {
   //
 }
 

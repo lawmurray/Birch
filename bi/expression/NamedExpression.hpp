@@ -6,6 +6,7 @@
 #include "bi/expression/Expression.hpp"
 #include "bi/common/Named.hpp"
 #include "bi/common/TypeArgumented.hpp"
+#include "bi/common/Scope.hpp"
 
 namespace bi {
 /**
@@ -46,5 +47,15 @@ public:
   virtual Expression* accept(Cloner* visitor) const;
   virtual Expression* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
+
+  /**
+   * The category of the identifier.
+   */
+  ExpressionCategory category;
+
+  /**
+   * Once resolved, the unique number of the referent.
+   */
+  int number;
 };
 }

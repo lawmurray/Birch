@@ -190,7 +190,6 @@ noinst_HEADERS = \
   bi/common/Couple.hpp \
   bi/common/Located.hpp \
   bi/common/Location.hpp \
-  bi/common/Lookup.hpp \
   bi/common/Name.hpp \
   bi/common/Named.hpp \
   bi/common/Numbered.hpp \
@@ -283,6 +282,7 @@ noinst_HEADERS = \
   bi/io/indentable_ostream.hpp \
   bi/io/md_ostream.hpp \
   bi/primitive/encode.hpp \
+  bi/primitive/inherits.hpp \
   bi/primitive/poset.hpp \
   bi/statement/all.hpp \
   bi/statement/AssignmentOperator.hpp \

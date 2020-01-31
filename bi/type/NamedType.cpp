@@ -10,7 +10,9 @@ bi::NamedType::NamedType(const bool weak, Name* name, Type* typeArgs,
     Type(loc),
     Named(name),
     TypeArgumented(typeArgs),
-    weak(weak) {
+    weak(weak),
+    category(UNKNOWN_TYPE),
+    number(0) {
   //
 }
 

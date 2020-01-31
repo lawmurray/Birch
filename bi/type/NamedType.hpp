@@ -6,6 +6,7 @@
 #include "bi/type/Type.hpp"
 #include "bi/common/Named.hpp"
 #include "bi/common/TypeArgumented.hpp"
+#include "bi/common/Scope.hpp"
 
 namespace bi {
 /**
@@ -57,5 +58,15 @@ public:
    * Does this have a weak marker?
    */
   bool weak;
+
+  /**
+   * The category of the identifier.
+   */
+  TypeCategory category;
+
+  /**
+   * Once resolved, the unique number of the referent.
+   */
+  int number;
 };
 }

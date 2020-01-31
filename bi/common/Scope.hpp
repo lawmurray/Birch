@@ -5,7 +5,7 @@
 
 #include "bi/common/Named.hpp"
 
-#include <unordered_set>
+#include <unordered_map>
 
 namespace bi {
 class Parameter;
@@ -36,6 +36,33 @@ enum ScopeCategory {
 };
 
 /**
+ * Categories for names in the context of an expression.
+ */
+enum ExpressionCategory {
+  UNKNOWN_EXPRESSION,
+  PARAMETER,
+  LOCAL_VARIABLE,
+  MEMBER_VARIABLE,
+  GLOBAL_VARIABLE,
+  MEMBER_FUNCTION,
+  GLOBAL_FUNCTION,
+  MEMBER_FIBER,
+  GLOBAL_FIBER,
+  UNARY_OPERATOR,
+  BINARY_OPERATOR
+};
+
+/**
+ * Categories for nameas in the context of a type.
+ */
+enum TypeCategory {
+  UNKNOWN_TYPE,
+  BASIC_TYPE,
+  CLASS_TYPE,
+  GENERIC_TYPE
+};
+
+/**
  * Scope.
  *
  * @ingroup common
@@ -50,15 +77,20 @@ public:
   Scope(const ScopeCategory category);
 
   /**
-   * Is there a variable, function, fiber or operator in this scope that
-   * matches the identifier?
+   * Look up a name in the context of an expression.
+   *
+   * If the name is found in the current scope, updates `o->category` and
+   * `o->number` accordingly.
    */
-  bool lookup(const NamedExpression* o) const;
+  void lookup(NamedExpression* o) const;
 
   /**
-   * Is there a type in this scope that matches sthe identifier?
+   * Look up name in the context of a type.
+   *
+   * If the name is found in the current scope, updates `o->category` and
+   * `o->number` accordingly.
    */
-  bool lookup(const NamedType* o) const;
+  void lookup(NamedType* o) const;
 
   /**
    * Add declaration to scope.
@@ -66,16 +98,17 @@ public:
    * @param o Object.
    */
   void add(Parameter* o);
-  void add(GlobalVariable* o);
-  void add(MemberVariable* o);
   void add(LocalVariable* o);
-  void add(Function* o);
-  void add(Fiber* o);
-  void add(Program* o);
+  void add(MemberVariable* o);
+  void add(GlobalVariable* o);
   void add(MemberFunction* o);
+  void add(Function* o);
   void add(MemberFiber* o);
+  void add(Fiber* o);
   void add(BinaryOperator* o);
   void add(UnaryOperator* o);
+  void add(Program* o);
+
   void add(Basic* o);
   void add(Class* o);
   void add(Generic* o);
@@ -86,14 +119,26 @@ public:
   const ScopeCategory category;
 
 private:
-  /**
-   * Names of variables, functions, fibers and operators in this scope.
+  /*
+   * Variables, functions, fibers, operators, etc in this scope.
    */
-  std::unordered_set<std::string> names;
+  std::unordered_multimap<std::string,Parameter*> parameters;
+  std::unordered_multimap<std::string,LocalVariable*> localVariables;
+  std::unordered_multimap<std::string,MemberVariable*> memberVariables;
+  std::unordered_multimap<std::string,GlobalVariable*> globalVariables;
+  std::unordered_multimap<std::string,MemberFunction*> memberFunctions;
+  std::unordered_multimap<std::string,Function*> functions;
+  std::unordered_multimap<std::string,MemberFiber*> memberFibers;
+  std::unordered_multimap<std::string,Fiber*> fibers;
+  std::unordered_multimap<std::string,BinaryOperator*> binaryOperators;
+  std::unordered_multimap<std::string,UnaryOperator*> unaryOperators;
+  std::unordered_multimap<std::string,Program*> programs;
 
-  /**
-   * Names of types in thi scope.
+  /*
+   * Types in this scope.
    */
-  std::unordered_set<std::string> typeNames;
+  std::unordered_multimap<std::string,Basic*> basicTypes;
+  std::unordered_multimap<std::string,Class*> classTypes;
+  std::unordered_multimap<std::string,Generic*> genericTypes;
 };
 }

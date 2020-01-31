@@ -309,23 +309,15 @@ bi::Type* bi::Resolver::modify(NamedType* o) {
 }
 
 void bi::Resolver::lookup(NamedExpression* o) {
-  ///@todo
-//  bool found = false;
-//  for (auto iter = scopes.rbegin(); !o->category && iter != scopes.rend(); ++iter) {
-//    auto scope = *iter;
-//    if (scope->lookup(o)) {
-//      o->category = scope->category;
-//    }
-//  }
+  for (auto iter = scopes.rbegin(); iter != scopes.rend() && !o->category;
+      ++iter) {
+    (*iter)->lookup(o);
+  }
 }
 
 void bi::Resolver::lookup(NamedType* o) {
-  ///@todo
-//  bool found = false;
-//  for (auto iter = scopes.rbegin(); !o->category && iter != scopes.rend(); ++iter) {
-//    auto scope = *iter;
-//    if (scope->lookup(o)) {
-//      o->category = scope->category;
-//    }
-//  }
+  for (auto iter = scopes.rbegin(); iter != scopes.rend() && !o->category;
+      ++iter) {
+    (*iter)->lookup(o);
+  }
 }

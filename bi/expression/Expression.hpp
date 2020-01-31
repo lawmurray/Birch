@@ -5,7 +5,6 @@
 
 #include "bi/common/Typed.hpp"
 #include "bi/common/Located.hpp"
-#include "bi/common/Lookup.hpp"
 #include "bi/expression/ExpressionIterator.hpp"
 #include "bi/expression/ExpressionConstIterator.hpp"
 
