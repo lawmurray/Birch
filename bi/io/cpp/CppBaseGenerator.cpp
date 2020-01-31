@@ -252,15 +252,14 @@ void bi::CppBaseGenerator::visit(const Parameter* o) {
 }
 
 void bi::CppBaseGenerator::visit(const NamedExpression* o) {
-  ///@todo
-  //if (o->category == GLOBAL_SCOPE) {
-  //  middle("bi::" << o->name << "()");
-  //} else {
+  if (o->category == GLOBAL_VARIABLE) {
+    middle("bi::" << o->name << "()");
+  } else {
     middle(o->name);
     if (!o->typeArgs->isEmpty()) {
       middle('<' << o->typeArgs << '>');
     }
-  //}
+  }
 }
 
 void bi::CppBaseGenerator::visit(const File* o) {

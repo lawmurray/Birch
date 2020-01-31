@@ -562,12 +562,13 @@ void bi::md_ostream::visit(const TypeList* o) {
 }
 
 void bi::md_ostream::visit(const NamedType* o) {
-  ///@todo
-  //if (o->category == CLASS) {
+  if (o->category == BASIC_TYPE) {
+    middle('[' << o->name << "](../types/index.md#" << o->name->str() << ')');
+  } else if (o->category == CLASS_TYPE) {
     middle('[' << o->name << "](../classes/" << o->name->str() << ".md)");
-  //} else {
-  //  middle('[' << o->name << "](../types/index.md#" << o->name->str() << ')');
-  //}
+  } else {
+    middle(o->name);
+  }
   if (!o->typeArgs->isEmpty()) {
     middle("&lt;" << o->typeArgs << "&gt;");
   }
