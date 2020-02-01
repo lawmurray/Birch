@@ -84,6 +84,8 @@ void bi::CppClassGenerator::visit(const Class* o) {
     /* constructor */
     if (!header) {
       genSourceLine(o->loc);
+      genTemplateParams(o);
+      genSourceLine(o->loc);
       start("bi::type::" << o->name);
       genTemplateArgs(o);
       middle("::");
@@ -132,6 +134,8 @@ void bi::CppClassGenerator::visit(const Class* o) {
 
     /* deep copy constructor */
     if (!header) {
+      genSourceLine(o->loc);
+      genTemplateParams(o);
       genSourceLine(o->loc);
       start("bi::type::" << o->name);
       genTemplateArgs(o);
@@ -243,6 +247,8 @@ void bi::CppClassGenerator::visit(const Class* o) {
       line("virtual void doThaw(libbirch::Label* label_);");
     } else {
       genSourceLine(o->loc);
+      genTemplateParams(o);
+      genSourceLine(o->loc);
       start("void bi::type::" << o->name);
       genTemplateArgs(o);
       finish("::doThaw(libbirch::Label* label_) {");
@@ -265,6 +271,8 @@ void bi::CppClassGenerator::visit(const Class* o) {
       line("virtual void doFinish_();");
     } else {
       genSourceLine(o->loc);
+      genTemplateParams(o);
+      genSourceLine(o->loc);
       start("void bi::type::" << o->name);
       genTemplateArgs(o);
       finish("::doFinish_() {");
@@ -279,7 +287,7 @@ void bi::CppClassGenerator::visit(const Class* o) {
       }
       genSourceLine(o->loc);
       out();
-      line("}");
+      line("}\n");
     }
 
     /* setters for member variables */
@@ -350,6 +358,8 @@ void bi::CppClassGenerator::visit(const MemberFunction* o) {
     if (header) {
       start("virtual ");
     } else {
+      genSourceLine(o->loc);
+      genTemplateParams(type);
       genSourceLine(o->loc);
       start("");
     }

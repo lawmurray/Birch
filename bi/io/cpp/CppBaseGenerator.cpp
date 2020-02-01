@@ -98,6 +98,22 @@ void bi::CppBaseGenerator::visit(const Call* o) {
   middle(o->single << '(' << o->args << ')');
 }
 
+void bi::CppBaseGenerator::visit(const BinaryCall* o) {
+  if (isTranslatable(o->name->str())) {
+    middle(o->left << ' ' << o->name->str() << ' ' << o->right);
+  } else {
+    middle(o->name << '(' << o->left << ", " << o->right << ')');
+  }
+}
+
+void bi::CppBaseGenerator::visit(const UnaryCall* o) {
+  if (isTranslatable(o->name->str())) {
+    middle(o->name->str() << o->single);
+  } else {
+    middle(o->name << '(' << o->single << ')');
+  }
+}
+
 void bi::CppBaseGenerator::visit(const Assign* o) {
   /* determine whether this is setting a member variable outside of the
    * current class */
@@ -302,6 +318,10 @@ void bi::CppBaseGenerator::visit(const LocalVariable* o) {
 
 void bi::CppBaseGenerator::visit(const Function* o) {
   if (!o->braces->isEmpty()) {
+    if (!header) {
+      genSourceLine(o->loc);
+    }
+    genTemplateParams(o);
     if (!header) {
       genSourceLine(o->loc);
     }
@@ -526,7 +546,7 @@ void bi::CppBaseGenerator::visit(const UnaryOperator* o) {
     if (!header) {
       middle("bi::");
     }
-    if (isTranslatable(o->name->str()) && o->isValue()) {
+    if (isTranslatable(o->name->str())) {
       middle("operator" << o->name->str());
     } else {
       middle(o->name);
@@ -749,5 +769,5 @@ void bi::CppBaseGenerator::genTraceLine(const Location* loc) {
 }
 
 void bi::CppBaseGenerator::genSourceLine(const Location* loc) {
-  line("#line " << loc->firstLine << " \"" << loc->file->path << "\"");
+  //line("#line " << loc->firstLine << " \"" << loc->file->path << "\"");
 }
