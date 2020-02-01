@@ -32,6 +32,7 @@ public:
 
   virtual Package* modify(Package* o);
   virtual Expression* modify(LambdaFunction* o);
+  virtual Expression* modify(Member* o);
   virtual Statement* modify(MemberFunction* o);
   virtual Statement* modify(Function* o);
   virtual Statement* modify(MemberFiber* o);
@@ -53,5 +54,16 @@ protected:
    * List of scopes, innermost at the back.
    */
   std::list<Scope*> scopes;
+
+  /**
+   * Are we on the right hand side of a member dereference (i.e. `b` in
+   * `a.b`)?
+   */
+  int inMember;
+
+  /**
+   * Are we in the body of a class?
+   */
+  int inClass;
 };
 }

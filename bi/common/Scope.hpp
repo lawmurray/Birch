@@ -39,7 +39,8 @@ enum ScopeCategory {
  * Categories for names in the context of an expression.
  */
 enum ExpressionCategory {
-  UNKNOWN_EXPRESSION,
+  UNKNOWN,
+  MEMBER_UNKNOWN,
   PARAMETER,
   LOCAL_VARIABLE,
   MEMBER_VARIABLE,

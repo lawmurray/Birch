@@ -52,13 +52,13 @@ void bi::Compiler::parse() {
 
 void bi::Compiler::resolve() {
   Transformer transformer;
-  package->accept(&transformer);
+  package = package->accept(&transformer);
 
   Scoper scoper;
-  package->accept(&scoper);
+  package = package->accept(&scoper);
 
   Resolver resolver;
-  package->accept(&resolver);
+  package = package->accept(&resolver);
 }
 
 void bi::Compiler::gen() {

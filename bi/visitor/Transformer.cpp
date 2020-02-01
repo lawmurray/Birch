@@ -56,37 +56,28 @@ bi::Statement* bi::Transformer::modify(Class* o) {
      * unless this is itself the declaration of the Object class */
     o->base = new NamedType(false, new Name("Object"), new EmptyType(), o->loc);
   }
-  return o;
-}
-
-bi::Statement* bi::Transformer::modify(Fiber* o) {
-  return Modifier::modify(o);
-}
-
-bi::Statement* bi::Transformer::modify(MemberFiber* o) {
   return Modifier::modify(o);
 }
 
 bi::Statement* bi::Transformer::modify(ExpressionStatement* o) {
-  Modifier::modify(o);
-
   /* when in the body of a fiber and another fiber is called while ignoring
    * its return type, this is syntactic sugar for a loop */
-  auto fiberCall = dynamic_cast<Call*>(o->single);
-  auto memberFiberCall = dynamic_cast<Call*>(o->single);
-  if (fiberCall || memberFiberCall) {
-    auto name = new Name();
-    auto var = new LocalVariable(AUTO, name, new EmptyType(o->loc),
-        new EmptyExpression(o->loc), new EmptyExpression(o->loc), o->single,
-        o->loc);
-    auto query = new Query(new NamedExpression(name, o->loc), o->loc);
-    auto get = new Get(new NamedExpression(name, o->loc), o->loc);
-    auto yield = new Yield(get, o->loc);
-    auto loop = new While(new Parentheses(query, o->loc),
-        new Braces(yield, o->loc), o->loc);
-    auto result = new StatementList(var, loop, o->loc);
-
-    return result->accept(this);
-  }
-  return o;
+//  auto fiberCall = dynamic_cast<Call*>(o->single);
+//  auto memberFiberCall = dynamic_cast<Call*>(o->single);
+//  if (fiberCall || memberFiberCall) {
+//    auto name = new Name();
+//    auto var = new LocalVariable(AUTO, name, new EmptyType(o->loc),
+//        new EmptyExpression(o->loc), new EmptyExpression(o->loc), o->single,
+//        o->loc);
+//    auto query = new Query(new NamedExpression(name, o->loc), o->loc);
+//    auto get = new Get(new NamedExpression(name, o->loc), o->loc);
+//    auto yield = new Yield(get, o->loc);
+//    auto loop = new While(new Parentheses(query, o->loc),
+//        new Braces(yield, o->loc), o->loc);
+//    auto result = new StatementList(var, loop, o->loc);
+//
+//    return result->accept(this);
+//  } else {
+    return Modifier::modify(o);
+//  }
 }

@@ -66,9 +66,7 @@ void bi::CppBaseGenerator::visit(const Sequence* o) {
     middle("libbirch::nil");
   } else {
     if (inSequence == 0) {
-      auto type = dynamic_cast<ArrayType*>(o->type);
-      assert(type);
-      middle("libbirch::make_array<" << type->element() << ">(");
+      middle("libbirch::make_array(");
       middle("libbirch::make_shape(");
       auto seq = o;
       do {
@@ -78,13 +76,13 @@ void bi::CppBaseGenerator::visit(const Sequence* o) {
         middle(seq->single->width());
         seq = dynamic_cast<const Sequence*>(*seq->single->begin());
       } while (seq);
-      middle("), std::initializer_list<" << type->element() << ">({ ");
+      middle("), { ");
     }
     ++inSequence;
     middle(o->single);
     --inSequence;
     if (inSequence == 0) {
-      middle(" }))");
+      middle(" })");
     }
   }
 }
@@ -578,7 +576,7 @@ void bi::CppBaseGenerator::visit(const Generic* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Assume* o) {
-  assert(false);  // should have been replaced by Resolver
+  assert(false);  // should have been replaced by Transformer
 }
 
 void bi::CppBaseGenerator::visit(const ExpressionStatement* o) {

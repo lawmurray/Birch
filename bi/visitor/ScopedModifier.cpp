@@ -3,7 +3,9 @@
  */
 #include "bi/visitor/ScopedModifier.hpp"
 
-bi::ScopedModifier::ScopedModifier() {
+bi::ScopedModifier::ScopedModifier() :
+    inMember(0),
+    inClass(0) {
   //
 }
 
@@ -22,6 +24,14 @@ bi::Expression* bi::ScopedModifier::modify(LambdaFunction* o) {
   scopes.push_back(o->scope);
   Modifier::modify(o);
   scopes.pop_back();
+  return o;
+}
+
+bi::Expression* bi::ScopedModifier::modify(Member* o) {
+  o->left = o->left->accept(this);
+  ++inMember;
+  o->right = o->right->accept(this);
+  --inMember;
   return o;
 }
 
@@ -96,7 +106,9 @@ bi::Statement* bi::ScopedModifier::modify(Class* o) {
   o->params = o->params->accept(this);
   o->args = o->args->accept(this);
   scopes.pop_back();
+  ++inClass;
   o->braces = o->braces->accept(this);
+  --inClass;
   scopes.pop_back();
   return o;
 }
