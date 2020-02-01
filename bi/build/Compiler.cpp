@@ -4,6 +4,7 @@
 #include "Compiler.hpp"
 
 #include "bi/visitor/Transformer.hpp"
+#include "bi/visitor/Scoper.hpp"
 #include "bi/visitor/Resolver.hpp"
 #include "bi/io/cpp/CppPackageGenerator.hpp"
 #include "bi/io/bi_ostream.hpp"
@@ -51,10 +52,13 @@ void bi::Compiler::parse() {
 
 void bi::Compiler::resolve() {
   Transformer transformer;
-  transformer.apply(package);
+  package->accept(&transformer);
+
+  Scoper scoper;
+  package->accept(&scoper);
 
   Resolver resolver;
-  resolver.apply(package);
+  package->accept(&resolver);
 }
 
 void bi::Compiler::gen() {

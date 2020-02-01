@@ -27,11 +27,11 @@ public:
    */
   virtual ~TypeList();
 
-  virtual bool isList() const;
-
   virtual Type* accept(Cloner* visitor) const;
   virtual Type* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
+
+  virtual bool isList() const;
 
   /**
    * Left operand.

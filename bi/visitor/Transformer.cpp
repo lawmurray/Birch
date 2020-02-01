@@ -3,10 +3,6 @@
  */
 #include "bi/visitor/Transformer.hpp"
 
-void bi::Transformer::apply(Package* o) {
-  o->accept(this);
-}
-
 bi::Statement* bi::Transformer::modify(Assume* o) {
   Statement* result = nullptr;
   if (*o->name == "<-?") {

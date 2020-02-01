@@ -30,3 +30,7 @@ void bi::MemberType::accept(Visitor* visitor) const {
 int bi::MemberType::depth() const {
   return right->depth();
 }
+
+bool bi::MemberType::isMember() const {
+  return true;
+}

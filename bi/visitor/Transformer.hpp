@@ -17,11 +17,6 @@ namespace bi {
  */
 class Transformer: public Modifier {
 public:
-  /**
-   * Apply to a package.
-   */
-  void apply(Package* o);
-
   virtual Statement* modify(Assume* o);
   virtual Statement* modify(Class* o);
   virtual Statement* modify(Fiber* o);

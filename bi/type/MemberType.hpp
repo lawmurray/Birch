@@ -28,10 +28,11 @@ public:
    */
   virtual ~MemberType();
 
-  virtual int depth() const;
-
   virtual Type* accept(Cloner* visitor) const;
   virtual Type* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
+
+  virtual int depth() const;
+  virtual bool isMember() const;
 };
 }

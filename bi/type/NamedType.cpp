@@ -41,3 +41,19 @@ bi::Type* bi::NamedType::accept(Modifier* visitor) {
 void bi::NamedType::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
+
+bool bi::NamedType::isBasic() const {
+  return category == BASIC_TYPE;
+}
+
+bool bi::NamedType::isClass() const {
+  return category == CLASS_TYPE;
+}
+
+bool bi::NamedType::isGeneric() const {
+  return category == GENERIC_TYPE;
+}
+
+bool bi::NamedType::isWeak() const {
+  return weak;
+}

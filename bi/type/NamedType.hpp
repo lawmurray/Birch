@@ -54,6 +54,11 @@ public:
   virtual Type* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
+  virtual bool isBasic() const;
+  virtual bool isClass() const;
+  virtual bool isGeneric() const;
+  virtual bool isWeak() const;
+
   /**
    * Does this have a weak marker?
    */

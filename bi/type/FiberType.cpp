@@ -31,11 +31,3 @@ void bi::FiberType::accept(Visitor* visitor) const {
 bool bi::FiberType::isFiber() const {
   return true;
 }
-
-bi::Type* bi::FiberType::unwrap() {
-  return yieldType;
-}
-
-const bi::Type* bi::FiberType::unwrap() const {
-  return yieldType;
-}

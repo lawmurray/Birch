@@ -28,15 +28,14 @@ public:
    */
   virtual ~ArrayType();
 
-  virtual int depth() const;
-  virtual Type* element();
-  virtual const Type* element() const;
-
-  virtual bool isArray() const;
-
   virtual Type* accept(Cloner* visitor) const;
   virtual Type* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
+
+  virtual int depth() const;
+  virtual Type* element();
+  virtual const Type* element() const;
+  virtual bool isArray() const;
 
   /**
    * Number of dimensions.

@@ -18,10 +18,6 @@ bi::TypeList::~TypeList() {
   //
 }
 
-bool bi::TypeList::isList() const {
-  return true;
-}
-
 bi::Type* bi::TypeList::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }
@@ -32,4 +28,8 @@ bi::Type* bi::TypeList::accept(Modifier* visitor) {
 
 void bi::TypeList::accept(Visitor* visitor) const {
   visitor->visit(this);
+}
+
+bool bi::TypeList::isList() const {
+  return true;
 }

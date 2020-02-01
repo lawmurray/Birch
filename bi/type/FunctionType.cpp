@@ -16,10 +16,6 @@ bi::FunctionType::~FunctionType() {
   //
 }
 
-bool bi::FunctionType::isFunction() const {
-  return true;
-}
-
 bi::Type* bi::FunctionType::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }
@@ -30,4 +26,8 @@ bi::Type* bi::FunctionType::accept(Modifier* visitor) {
 
 void bi::FunctionType::accept(Visitor* visitor) const {
   return visitor->visit(this);
+}
+
+bool bi::FunctionType::isFunction() const {
+  return true;
 }

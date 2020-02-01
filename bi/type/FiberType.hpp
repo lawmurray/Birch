@@ -34,7 +34,5 @@ namespace bi {
     virtual void accept(Visitor* visitor) const;
 
     virtual bool isFiber() const;
-    virtual Type* unwrap();
-    virtual const Type* unwrap() const;
   };
 }
