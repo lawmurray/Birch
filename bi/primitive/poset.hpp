@@ -253,7 +253,7 @@ template<class Comparable, class Container>
 void bi::poset<T,Compare>::match(Comparable v, Container& matches) {
   matches.clear();
   ++colour;
-  for (auto iter = rbegin(); iter != rend(); ++iter) {
+  for (auto iter = begin(); iter != end(); ++iter) {
     match(*iter, v, matches);
   }
 }
@@ -359,7 +359,7 @@ void bi::poset<T,Compare>::remove_edge(T u, T v) {
 template<class T, class Compare>
 void bi::poset<T,Compare>::forward(T v) {
   colours[v] = ++colour;
-  for (auto iter = begin(); iter != end(); ++iter) {
+  for (auto iter = rbegin(); iter != rend(); ++iter) {
     forward(*iter, v);
   }
 }
@@ -383,7 +383,7 @@ void bi::poset<T,Compare>::forward(T u, T v) {
 template<class T, class Compare>
 void bi::poset<T,Compare>::backward(T v) {
   colours[v] = ++colour;
-  for (auto iter = rbegin(); iter != rend(); ++iter) {
+  for (auto iter = begin(); iter != end(); ++iter) {
     backward(*iter, v);
   }
 }
@@ -452,7 +452,7 @@ template<class T, class Compare>
 void bi::poset<T,Compare>::sort(T u) {
   if (colours[u] < colour) {
     colours[u] = colour;
-    vertices.push_front(u);
+    vertices.push_back(u);
 
     std::list<T> children1;
     children(u, children1);

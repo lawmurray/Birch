@@ -125,18 +125,18 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
 
   /* copy constructor, destructor, assignment operator */
   if (header) {
-    genSourceLine(o->loc);
     line("virtual ~" << stateName << "() = default;");
-    genSourceLine(o->loc);
     line(stateName << "(const " << stateName << "&) = delete;");
-    genSourceLine(o->loc);
     line(stateName << "& operator=(const " << stateName << "&) = delete;");
   }
 
   /* clone function */
   if (header) {
+    line("virtual " << stateName << "* clone_(libbirch::Label* label) const;");
+  } else {
     genSourceLine(o->loc);
-    line("virtual " << stateName << "* clone_(libbirch::Label* label) const {");
+    start("bi::type::" << stateName << "* bi::type::" << stateName);
+    finish("::clone_(libbirch::Label* label) const {");
     in();
     genSourceLine(o->loc);
     line("return new class_type_(label, *this);");
@@ -147,8 +147,11 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
 
   /* name function */
   if (header) {
+    line("virtual const char* getClassName() const;");
+  } else {
     genSourceLine(o->loc);
-    line("virtual const char* getClassName() const {");
+    start("const char* bi::type::" << stateName);
+    finish("::getClassName() const {");
     in();
     genSourceLine(o->loc);
     line("return \"" << stateName << "\";");
@@ -158,10 +161,10 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
   }
 
   /* freeze function */
-  genSourceLine(o->loc);
   if (header) {
     start("virtual void ");
   } else {
+    genSourceLine(o->loc);
     start("void bi::" << stateName << "::");
   }
   middle("doFreeze_()");
@@ -194,10 +197,10 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
   }
 
   /* thaw function */
-  genSourceLine(o->loc);
   if (header) {
     start("virtual void ");
   } else {
+    genSourceLine(o->loc);
     start("void bi::" << stateName << "::");
   }
   middle("doThaw_(libbirch::Label* label_)");
@@ -230,10 +233,10 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
   }
 
   /* finish function */
-  genSourceLine(o->loc);
   if (header) {
     start("virtual void ");
   } else {
+    genSourceLine(o->loc);
     start("void bi::" << stateName << "::");
   }
   middle("doFinish_()");
@@ -266,10 +269,10 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
   }
 
   /* query function */
-  genSourceLine(o->loc);
   if (header) {
     start("virtual ");
   } else {
+    genSourceLine(o->loc);
     start("");
   }
   middle("bool ");
@@ -326,10 +329,14 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
   }
 
   /* initialisation function */
-  genSourceLine(o->loc);
+  if (!header) {
+    genSourceLine(o->loc);
+  }
   start(fiberType << ' ');
   if (!header) {
     middle("bi::");
+  } else {
+
   }
   middle(o->name << '(' << o->params << ')');
   if (header) {

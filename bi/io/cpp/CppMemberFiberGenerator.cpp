@@ -144,18 +144,18 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
 
   /* copy constructor, destructor, assignment operator */
   if (header) {
-    genSourceLine(o->loc);
     line("virtual ~" << stateName << "() = default;");
-    genSourceLine(o->loc);
     line(stateName << "(const " << stateName << "&) = delete;");
-    genSourceLine(o->loc);
     line(stateName << "& operator=(const " << stateName << "&) = delete;");
   }
 
   /* clone function */
   if (header) {
+    line("virtual " << stateName << "* clone_(libbirch::Label* label) const;");
+  } else {
     genSourceLine(o->loc);
-    line("virtual " << stateName << "* clone_(libbirch::Label* label) const {");
+    start("bi::type::" << stateName << "* bi::type::" << stateName);
+    finish("::clone_(libbirch::Label* label) const {");
     in();
     genSourceLine(o->loc);
     line("return new class_type_(label, *this);");
@@ -166,8 +166,11 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
 
   /* name function */
   if (header) {
+    line("virtual const char* getClassName() const;");
+  } else {
     genSourceLine(o->loc);
-    line("virtual const char* getClassName() const {");
+    start("const char* bi::type::" << stateName);
+    finish("::getClassName() const {");
     in();
     genSourceLine(o->loc);
     line("return \"" << stateName << "\";");
@@ -177,10 +180,10 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   }
 
   /* freeze function */
-  genSourceLine(o->loc);
   if (header) {
     start("virtual void ");
   } else {
+    genSourceLine(o->loc);
     start("void bi::type::" << type->name);
     genTemplateArgs(type);
     middle("::" << stateName << "::");
@@ -217,10 +220,10 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   }
 
   /* thaw function */
-  genSourceLine(o->loc);
   if (header) {
     start("virtual void ");
   } else {
+    genSourceLine(o->loc);
     start("void bi::type::" << type->name);
     genTemplateArgs(type);
     middle("::" << stateName << "::");
@@ -257,10 +260,10 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   }
 
   /* finish function */
-  genSourceLine(o->loc);
   if (header) {
     start("virtual void ");
   } else {
+    genSourceLine(o->loc);
     start("void bi::type::" << type->name);
     genTemplateArgs(type);
     middle("::" << stateName << "::");
@@ -297,10 +300,10 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   }
 
   /* query function */
-  genSourceLine(o->loc);
   if (header) {
     start("virtual ");
   } else {
+    genSourceLine(o->loc);
     start("");
   }
   middle("bool ");
@@ -351,10 +354,10 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   }
 
   /* initialisation function */
-  genSourceLine(o->loc);
   if (header) {
     start("virtual ");
   } else {
+    genSourceLine(o->loc);
     start("");
   }
   middle(fiberType << ' ');

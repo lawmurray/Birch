@@ -162,8 +162,6 @@ void bi::CppPackageGenerator::visit(const Package* o) {
     }
 
     line("}\n");
-    line("");
-    line("#endif");
   } else {
     /* generic class type definitions */
     for (auto o : classes) {
@@ -186,4 +184,7 @@ void bi::CppPackageGenerator::visit(const Package* o) {
       }
     }
   }
+
+  line("");
+  line("#endif");
 }
