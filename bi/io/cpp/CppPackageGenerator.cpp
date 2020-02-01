@@ -87,8 +87,14 @@ void bi::CppPackageGenerator::visit(const Package* o) {
     /* basic type aliases */
     for (auto o : basics) {
       if (o->isAlias()) {
+        auto base = dynamic_cast<const NamedType*>(o->base);
+        assert(base);
         genTemplateParams(o);
-        line("using " << o->name << " = " << o->base << ';');
+        start("using " << o->name << " = " << base->name);
+        if (!base->typeArgs->isEmpty()) {
+          middle('<' << base->typeArgs << '>');
+        }
+        finish(';');
       }
     }
     line("");
@@ -96,8 +102,14 @@ void bi::CppPackageGenerator::visit(const Package* o) {
     /* class type aliases */
     for (auto o : classes) {
       if (o->isAlias()) {
+        auto base = dynamic_cast<const NamedType*>(o->base);
+        assert(base);
         genTemplateParams(o);
-        start("using " << o->name << " = " << o->base << ';');
+        start("using " << o->name << " = " << base->name);
+        if (!base->typeArgs->isEmpty()) {
+          middle('<' << base->typeArgs << '>');
+        }
+        finish(';');
       }
     }
 

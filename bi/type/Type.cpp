@@ -67,16 +67,6 @@ bool bi::Type::isGeneric() const {
   return false;
 }
 
-bi::Type* bi::Type::getLeft() const {
-  assert(false);
-  return nullptr;
-}
-
-bi::Type* bi::Type::getRight() const {
-  assert(false);
-  return nullptr;
-}
-
 int bi::Type::width() const {
   int result = 0;
   for (auto iter = begin(); iter != end(); ++iter) {

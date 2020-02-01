@@ -16,6 +16,7 @@ bi::CppClassGenerator::CppClassGenerator(std::ostream& base, const int level,
 void bi::CppClassGenerator::visit(const Class* o) {
   if (!o->isAlias() && !o->braces->isEmpty()) {
     type = o;
+    auto base = dynamic_cast<const NamedType*>(o->base);
 
     Gatherer<MemberFunction> memberFunctions;
     Gatherer<MemberFiber> memberFibers;
@@ -31,10 +32,14 @@ void bi::CppClassGenerator::visit(const Class* o) {
       if (o->has(FINAL)) {
         middle(" final");
       }
-      if (!o->base->isEmpty()) {
-        middle(" : public " << o->base);
+      middle(" : public ");
+      if (base) {
+        middle(base->name);
+        if (!base->typeArgs->isEmpty()) {
+          middle('<' << base->typeArgs << '>');
+        }
       } else {
-        middle(" : public libbirch::Any");
+        middle("libbirch::Any");
       }
       finish(" {");
       line("public:");
@@ -43,12 +48,16 @@ void bi::CppClassGenerator::visit(const Class* o) {
       genTemplateArgs(o);
       finish(';');
       line("using this_type_ = class_type_;");
-      if (o->base->isEmpty()) {
-        line("using super_type_ = libbirch::Any;");
+      start("using super_type_ = ");
+      if (base) {
+        middle(base->name);
+        if (!base->typeArgs->isEmpty()) {
+          middle('<' << base->typeArgs << '>');
+        }
       } else {
-        start("using super_type_ = " << o->base);
-        middle(';');
+        middle("libbirch::Any");
       }
+      middle(';');
       line("");
       line("using super_type_::operator=;");
       line("");

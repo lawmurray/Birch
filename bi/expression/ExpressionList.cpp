@@ -25,6 +25,10 @@ bool bi::ExpressionList::isAssignable() const {
   return head->isAssignable() && tail->isAssignable();
 }
 
+bool bi::ExpressionList::isList() const {
+  return true;
+}
+
 bi::Expression* bi::ExpressionList::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }

@@ -30,6 +30,8 @@ public:
   virtual void visit(const Sequence* o);
   virtual void visit(const Cast* o);
   virtual void visit(const Call* o);
+  virtual void visit(const BinaryCall* o);
+  virtual void visit(const UnaryCall* o);
   virtual void visit(const Assign* o);
   virtual void visit(const Slice* o);
   virtual void visit(const Query* o);

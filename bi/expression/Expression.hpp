@@ -73,22 +73,17 @@ public:
   virtual bool isAssignable() const;
 
   /**
+   * Is this a list?
+   */
+  virtual bool isList() const;
+
+  /**
    * Strip parentheses, if any.
    */
   virtual Expression* strip();
 
   /**
-   * Get the left operand of a binary, otherwise undefined.
-   */
-  virtual Expression* getLeft() const;
-
-  /**
-   * Get the right operand of a binary, otherwise undefined.
-   */
-  virtual Expression* getRight() const;
-
-  /**
-   * Number of expresions in an expression list.
+   * Number of items in a list.
    */
   int width() const;
 

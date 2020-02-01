@@ -32,18 +32,12 @@ bool bi::Expression::isAssignable() const {
   return false;
 }
 
+bool bi::Expression::isList() const {
+  return false;
+}
+
 bi::Expression* bi::Expression::strip() {
   return this;
-}
-
-bi::Expression* bi::Expression::getLeft() const {
-  assert(false);
-  return nullptr;
-}
-
-bi::Expression* bi::Expression::getRight() const {
-  assert(false);
-  return nullptr;
 }
 
 int bi::Expression::width() const {

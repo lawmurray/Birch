@@ -117,16 +117,6 @@ public:
   virtual bool isGeneric() const;
 
   /**
-   * Get the left operand of a binary, otherwise undefined.
-   */
-  virtual Type* getLeft() const;
-
-  /**
-   * Get the right operand of a binary type, otherwise undefined.
-   */
-  virtual Type* getRight() const;
-
-  /**
    * Number of elements in a type list.
    */
   virtual int width() const;

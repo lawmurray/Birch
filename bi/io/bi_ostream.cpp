@@ -59,9 +59,14 @@ void bi::bi_ostream::visit(const Cast* o) {
 
 void bi::bi_ostream::visit(const Call* o) {
   middle(o->single << '(' << o->args << ')');
-  //middle(o->args->getLeft() << ' ' << o->single << ' ' <<
-  //    o->args->getRight());
-  //middle(o->single << o->args);
+}
+
+void bi::bi_ostream::visit(const BinaryCall* o) {
+  middle(o->left << ' ' << o->name << ' ' << o->right);
+}
+
+void bi::bi_ostream::visit(const UnaryCall* o) {
+  middle(o->name << o->single);
 }
 
 void bi::bi_ostream::visit(const Assign* o) {
