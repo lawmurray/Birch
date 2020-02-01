@@ -18,10 +18,9 @@ public:
    * Constructor.
    *
    * @param str String encoding of @p value.
-   * @param type Type.
    * @param loc Location.
    */
-  Literal(const std::string& str, Type* type, Location* loc = nullptr);
+  Literal(const std::string& str, Location* loc = nullptr);
 
   /**
    * Destructor.

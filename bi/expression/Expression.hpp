@@ -3,7 +3,6 @@
  */
 #pragma once
 
-#include "bi/common/Typed.hpp"
 #include "bi/common/Located.hpp"
 #include "bi/expression/ExpressionIterator.hpp"
 #include "bi/expression/ExpressionConstIterator.hpp"
@@ -18,16 +17,8 @@ class Visitor;
  *
  * @ingroup expression
  */
-class Expression: public Located, public Typed {
+class Expression: public Located {
 public:
-  /**
-   * Constructor.
-   *
-   * @param type Type.
-   * @param loc Location.
-   */
-  Expression(Type* type, Location* loc = nullptr);
-
   /**
    * Constructor.
    *

@@ -31,19 +31,19 @@ void bi::Visitor::visit(const ExpressionList* o) {
 }
 
 void bi::Visitor::visit(const Literal<bool>* o) {
-  o->type->accept(this);
+  //
 }
 
 void bi::Visitor::visit(const Literal<int64_t>* o) {
-  o->type->accept(this);
+  //
 }
 
 void bi::Visitor::visit(const Literal<double>* o) {
-  o->type->accept(this);
+  //
 }
 
 void bi::Visitor::visit(const Literal<const char*>* o) {
-  o->type->accept(this);
+  //
 }
 
 void bi::Visitor::visit(const Parentheses* o) {

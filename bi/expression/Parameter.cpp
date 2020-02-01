@@ -7,9 +7,10 @@
 
 bi::Parameter::Parameter(const Annotation annotation, Name* name, Type* type,
     Expression* value, Location* loc) :
-    Expression(type, loc),
+    Expression(loc),
     Annotated(annotation),
     Named(name),
+    Typed(type),
     Valued(value) {
   //
 }

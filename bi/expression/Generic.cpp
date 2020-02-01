@@ -7,9 +7,10 @@
 
 bi::Generic::Generic(const Annotation annotation, Name* name, Type* type,
     Location* loc) :
-    Expression(type, loc),
+    Expression(loc),
     Annotated(annotation),
-    Named(name) {
+    Named(name),
+    Typed(type) {
   //
 }
 

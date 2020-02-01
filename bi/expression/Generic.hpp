@@ -7,6 +7,7 @@
 #include "bi/common/Annotated.hpp"
 #include "bi/common/Named.hpp"
 #include "bi/common/Numbered.hpp"
+#include "bi/common/Typed.hpp"
 
 namespace bi {
 /**
@@ -17,7 +18,8 @@ namespace bi {
 class Generic: public Expression,
     public Annotated,
     public Named,
-    public Numbered {
+    public Numbered,
+    public Typed {
 public:
   /**
    * Constructor.
@@ -27,8 +29,8 @@ public:
    * @param type Type.
    * @param loc Location.
    */
-  Generic(const Annotation annotation, Name* name, Type* type, Location* loc =
-      nullptr);
+  Generic(const Annotation annotation, Name* name, Type* type,
+      Location* loc = nullptr);
 
   /**
    * Destructor.

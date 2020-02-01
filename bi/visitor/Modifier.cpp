@@ -30,22 +30,18 @@ bi::Expression* bi::Modifier::modify(ExpressionList* o) {
 }
 
 bi::Expression* bi::Modifier::modify(Literal<bool>* o) {
-  o->type = o->type->accept(this);
   return o;
 }
 
 bi::Expression* bi::Modifier::modify(Literal<int64_t>* o) {
-  o->type = o->type->accept(this);
   return o;
 }
 
 bi::Expression* bi::Modifier::modify(Literal<double>* o) {
-  o->type = o->type->accept(this);
   return o;
 }
 
 bi::Expression* bi::Modifier::modify(Literal<const char*>* o) {
-  o->type = o->type->accept(this);
   return o;
 }
 

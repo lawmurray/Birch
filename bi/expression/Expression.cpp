@@ -7,18 +7,10 @@
 #include "bi/expression/ExpressionConstIterator.hpp"
 #include "bi/type/EmptyType.hpp"
 #include "bi/expression/Range.hpp"
-#include "bi/exception/NotFunctionException.hpp"
 #include "bi/visitor/all.hpp"
 
-bi::Expression::Expression(Type* type, Location* loc) :
-    Located(loc),
-    Typed(type) {
-  //
-}
-
 bi::Expression::Expression(Location* loc) :
-    Located(loc),
-    Typed(new EmptyType(loc)) {
+    Located(loc) {
   //
 }
 

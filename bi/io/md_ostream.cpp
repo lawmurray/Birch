@@ -330,7 +330,9 @@ void bi::md_ostream::visit(const UnaryOperator* o) {
 }
 
 void bi::md_ostream::visit(const AssignmentOperator* o) {
-  middle(o->single->type);
+  auto param = dynamic_cast<const Parameter*>(o->single);\
+  assert(param);
+  middle(param->type);
 }
 
 void bi::md_ostream::visit(const ConversionOperator* o) {

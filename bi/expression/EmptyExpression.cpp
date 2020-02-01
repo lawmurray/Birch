@@ -6,7 +6,7 @@
 #include "bi/visitor/all.hpp"
 
 bi::EmptyExpression::EmptyExpression(Location* loc) :
-    Expression(new EmptyType(loc), loc) {
+    Expression(loc) {
   //
 }
 

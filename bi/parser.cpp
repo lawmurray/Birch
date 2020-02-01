@@ -1529,25 +1529,25 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 
   case 3:
 #line 169 "bi/parser.ypp"
-    { ((*yyvalp).valExpression) = new bi::Literal<bool>((((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valString), new bi::NamedType(new bi::Name("Boolean")), make_loc((*yylocp))); }
+    { ((*yyvalp).valExpression) = new bi::Literal<bool>((((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valString), make_loc((*yylocp))); }
 #line 1534 "bi/parser.cpp"
     break;
 
   case 4:
 #line 173 "bi/parser.ypp"
-    { ((*yyvalp).valExpression) = new bi::Literal<int64_t>((((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valString), new bi::NamedType(new bi::Name("Integer")), make_loc((*yylocp))); }
+    { ((*yyvalp).valExpression) = new bi::Literal<int64_t>((((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valString), make_loc((*yylocp))); }
 #line 1540 "bi/parser.cpp"
     break;
 
   case 5:
 #line 177 "bi/parser.ypp"
-    { ((*yyvalp).valExpression) = new bi::Literal<double>((((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valString), new bi::NamedType(new bi::Name("Real")), make_loc((*yylocp))); }
+    { ((*yyvalp).valExpression) = new bi::Literal<double>((((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valString), make_loc((*yylocp))); }
 #line 1546 "bi/parser.cpp"
     break;
 
   case 6:
 #line 181 "bi/parser.ypp"
-    { ((*yyvalp).valExpression) = new bi::Literal<const char*>((((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valString), new bi::NamedType(new bi::Name("String")), make_loc((*yylocp))); }
+    { ((*yyvalp).valExpression) = new bi::Literal<const char*>((((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valString), make_loc((*yylocp))); }
 #line 1552 "bi/parser.cpp"
     break;
 

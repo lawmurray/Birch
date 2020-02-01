@@ -39,44 +39,10 @@ COMMON_SOURCES = \
   bi/common/TypeParameterised.cpp \
   bi/common/Valued.cpp \
   bi/common/YieldTyped.cpp \
-  bi/exception/AbstractBodyException.cpp \
-  bi/exception/AmbiguousCallException.cpp \
-  bi/exception/AssignmentOperatorException.cpp \
-  bi/exception/AssignmentException.cpp \
-  bi/exception/AssumeException.cpp \
-  bi/exception/BaseException.cpp \
-  bi/exception/CallException.cpp \
-  bi/exception/CompilerException.cpp \
-  bi/exception/ConditionException.cpp \
-  bi/exception/ConstructorException.cpp \
-  bi/exception/ConversionOperatorException.cpp \
   bi/exception/DriverException.cpp \
   bi/exception/Exception.cpp \
-  bi/exception/FiberTypeException.cpp \
   bi/exception/FileNotFoundException.cpp \
-  bi/exception/FinalException.cpp \
-  bi/exception/GenericException.cpp \
-  bi/exception/GetException.cpp \
-  bi/exception/IndexException.cpp \
-  bi/exception/InitialValueException.cpp \
-  bi/exception/MemberException.cpp \
-  bi/exception/NotAssignableException.cpp \
-  bi/exception/NotFunctionException.cpp \
-  bi/exception/PreviousDeclarationException.cpp \
-  bi/exception/QueryException.cpp \
-  bi/exception/ReadOnlyException.cpp \
-  bi/exception/ReturnException.cpp \
-  bi/exception/ReturnTypeException.cpp \
-  bi/exception/SequenceException.cpp \
-  bi/exception/SliceException.cpp \
-  bi/exception/SuperException.cpp \
-  bi/exception/SuperBaseException.cpp \
-  bi/exception/ThisException.cpp \
   bi/exception/UnresolvedException.cpp \
-  bi/exception/UnsupportedOptionTypeException.cpp \
-  bi/exception/WeakException.cpp \
-  bi/exception/YieldException.cpp \
-  bi/exception/YieldTypeException.cpp \
   bi/expression/Assign.cpp \
   bi/expression/BinaryCall.cpp \
   bi/expression/Cast.cpp \
@@ -206,42 +172,10 @@ noinst_HEADERS = \
   bi/common/Valued.hpp \
   bi/common/YieldTyped.hpp \
   bi/exception/all.hpp \
-  bi/exception/AbstractBodyException.cpp \
-  bi/exception/AmbiguousCallException.hpp \
-  bi/exception/AssignmentException.hpp \
-  bi/exception/AssumeException.hpp \
-  bi/exception/AssignmentOperatorException.hpp \
-  bi/exception/BaseException.hpp \
-  bi/exception/CallException.hpp \
-  bi/exception/CompilerException.hpp \
-  bi/exception/ConditionException.hpp \
-  bi/exception/ConstructorException.hpp \
-  bi/exception/ConversionOperatorException.hpp \
   bi/exception/DriverException.hpp \
-  bi/exception/FiberTypeException.hpp \
+  bi/exception/Exception.hpp \
   bi/exception/FileNotFoundException.hpp \
-  bi/exception/FinalException.hpp \
-  bi/exception/GenericException.hpp \
-  bi/exception/GetException.hpp \
-  bi/exception/IndexException.hpp \
-  bi/exception/MemberException.hpp \
-  bi/exception/NotAssignableException.hpp \
-  bi/exception/NotFunctionException.hpp \
-  bi/exception/PreviousDeclarationException.hpp \
-  bi/exception/QueryException.hpp \
-  bi/exception/ReadOnlyException.hpp \
-  bi/exception/ReturnException.hpp \
-  bi/exception/ReturnTypeException.hpp \
-  bi/exception/SequenceException.hpp \
-  bi/exception/SliceException.hpp \
-  bi/exception/SuperBaseException.hpp \
-  bi/exception/SuperException.hpp \
-  bi/exception/ThisException.hpp \
   bi/exception/UnresolvedException.hpp \
-  bi/exception/UnsupportedOptionTypeException.hpp \
-  bi/exception/WeakException.hpp \
-  bi/exception/YieldException.hpp \
-  bi/exception/YieldTypeException.hpp \
   bi/expression/all.hpp \
   bi/expression/Assign.hpp \
   bi/expression/BinaryCall.hpp \

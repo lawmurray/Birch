@@ -3,8 +3,6 @@
  */
 #pragma once
 
-#include "bi/expression/Expression.hpp"
-
 namespace bi {
 /**
  * Object containing two other objects, denoted left and right.

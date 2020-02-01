@@ -49,16 +49,7 @@ void bi::CppBaseGenerator::visit(const Literal<const char*>* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Parentheses* o) {
-  if (o->single->type->isList()) {
-    if (inAssign) {
-      middle("libbirch::tie(");
-    } else {
-      middle("libbirch::make_tuple(");
-    }
-  } else {
-    middle('(');
-  }
-  middle(o->single << ')');
+  middle('(' << o->single << ')');
 }
 
 void bi::CppBaseGenerator::visit(const Sequence* o) {
@@ -152,11 +143,7 @@ void bi::CppBaseGenerator::visit(const Query* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Get* o) {
-  middle(o->single);
-  if (!o->single->type->isWeak()) {
-    // ^ for a weak pointer, the ordinary dereference suffices
-    middle(".get()");
-  }
+  middle(o->single << ".get()");
 }
 
 void bi::CppBaseGenerator::visit(const LambdaFunction* o) {
@@ -198,11 +185,12 @@ void bi::CppBaseGenerator::visit(const Member* o) {
   } else {
     auto rightVar = dynamic_cast<const NamedExpression*>(o->right);
     middle(o->left);
-    if (!inAssign && rightVar && rightVar->type->isValue()) {
+    ///@todo Restore read-only optimization
+    //if (!inAssign && rightVar) {
       /* optimization: just reading a value, so no need to copy-on-write the
        * owning object */
-      middle(".pull()");
-    }
+    //  middle(".pull()");
+    //}
     middle("->");
 
     /* explicitly refer to the super class if necessary */
@@ -424,17 +412,18 @@ void bi::CppBaseGenerator::visit(const Program* o) {
       in();
 
       for (auto param : *o->params) {
-        auto name = dynamic_cast<const Parameter*>(param)->name;
+        auto p = dynamic_cast<const Parameter*>(param);
+        auto name = p->name;
         std::string flag = internalise(name->str()) + "FLAG_";
 
-        genSourceLine(param->loc);
+        genSourceLine(p->loc);
         line("case " << flag << ':');
         in();
-        genSourceLine(param->loc);
+        genSourceLine(p->loc);
         line("libbirch_error_msg_(::optarg, \"option --\" << long_options_[::optopt].name << \" requires a value.\");");
-        genSourceLine(param->loc);
-        if (param->type->unwrap()->isBasic()) {
-          auto type = dynamic_cast<Named*>(param->type->unwrap());
+        genSourceLine(p->loc);
+        if (p->type->unwrap()->isBasic()) {
+          auto type = dynamic_cast<Named*>(p->type->unwrap());
           assert(type);
           start(name << " = bi::" << type->name);
           finish("(std::string(::optarg));");
@@ -586,16 +575,7 @@ void bi::CppBaseGenerator::visit(const ExpressionStatement* o) {
 
 void bi::CppBaseGenerator::visit(const If* o) {
   genTraceLine(o->loc);
-  start("if (");
-  auto cond = o->cond->strip();
-  if (cond->type->isClass()) {
-    middle("*(");
-  }
-  middle(cond);
-  if (cond->type->isClass()) {
-    middle(')');
-  }
-  finish(") {");
+  line("if (" << o->cond->strip() << ") {");
   in();
   *this << o->braces->strip();
   out();
@@ -643,16 +623,7 @@ void bi::CppBaseGenerator::visit(const Parallel* o) {
 
 void bi::CppBaseGenerator::visit(const While* o) {
   genTraceLine(o->loc);
-  start("while (");
-  auto cond = o->cond->strip();
-  if (cond->type->isClass()) {
-    middle("*(");
-  }
-  middle(cond);
-  if (cond->type->isClass()) {
-    middle(')');
-  }
-  finish(") {");
+  line("while (" << o->cond->strip() << ") {");
   in();
   *this << o->braces->strip();
   out();
@@ -754,7 +725,12 @@ void bi::CppBaseGenerator::visit(const NamedType* o) {
 }
 
 void bi::CppBaseGenerator::visit(const TypeList* o) {
-  middle(o->head << ", " << o->tail);
+  if (inAssign) {
+    middle("libbirch::tie");
+  } else {
+    middle("libbirch::make_tuple");
+  }
+  middle('(' << o->head << ", " << o->tail << ')');
 }
 
 void bi::CppBaseGenerator::genTraceFunction(const std::string& name,

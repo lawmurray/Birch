@@ -6,6 +6,7 @@
 #include "bi/statement/Statement.hpp"
 #include "bi/common/Named.hpp"
 #include "bi/common/Couple.hpp"
+#include "bi/expression/Expression.hpp"
 
 namespace bi {
 /**

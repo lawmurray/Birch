@@ -7,6 +7,7 @@
 #include "bi/common/Annotated.hpp"
 #include "bi/common/Named.hpp"
 #include "bi/common/Numbered.hpp"
+#include "bi/common/Typed.hpp"
 #include "bi/common/Valued.hpp"
 
 namespace bi {
@@ -19,6 +20,7 @@ class Parameter: public Expression,
     public Annotated,
     public Named,
     public Numbered,
+    public Typed,
     public Valued {
 public:
   /**

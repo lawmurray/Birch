@@ -3,7 +3,7 @@
  */
 #pragma once
 
-#include "bi/exception/CompilerException.hpp"
+#include "bi/exception/Exception.hpp"
 
 namespace bi {
 /**
