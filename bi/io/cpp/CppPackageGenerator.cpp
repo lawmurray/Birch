@@ -44,9 +44,7 @@ void bi::CppPackageGenerator::visit(const Package* o) {
    * gathered and sorted first */
   poset<const Class*,inherits> sortedClasses;
   for (auto o : classes) {
-    if (!o->isGeneric()) {
-      sortedClasses.insert(o);
-    }
+    sortedClasses.insert(o);
   }
 
   if (header) {
@@ -115,15 +113,7 @@ void bi::CppPackageGenerator::visit(const Package* o) {
 
     /* non-generic class type declarations */
     for (auto o : sortedClasses) {
-      assert(!o->isGeneric());
       if (!o->isAlias()) {
-        *this << o;
-      }
-    }
-
-    /* generic class type declarations */
-    for (auto o : classes) {
-      if (o->isGeneric() && !o->isAlias()) {
         *this << o;
       }
     }
