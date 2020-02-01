@@ -217,7 +217,7 @@ void bi::CppClassGenerator::visit(const Class* o) {
 
     /* freeze function */
     if (header) {
-      start("virtual void doFreeze_();");
+      line("virtual void doFreeze_();");
     } else {
       genSourceLine(o->loc);
       genTemplateParams(o);
@@ -240,7 +240,7 @@ void bi::CppClassGenerator::visit(const Class* o) {
 
     /* thaw function */
     if (header) {
-      start("virtual void doThaw(libbirch::Label* label_);");
+      line("virtual void doThaw(libbirch::Label* label_);");
     } else {
       genSourceLine(o->loc);
       start("void bi::type::" << o->name);
@@ -261,10 +261,10 @@ void bi::CppClassGenerator::visit(const Class* o) {
     }
 
     /* finish function */
-    genSourceLine(o->loc);
     if (header) {
-      start("virtual void doFinish_();");
+      line("virtual void doFinish_();");
     } else {
+      genSourceLine(o->loc);
       start("void bi::type::" << o->name);
       genTemplateArgs(o);
       finish("::doFinish_() {");
