@@ -17,12 +17,15 @@ bi::CppPackageGenerator::CppPackageGenerator(std::ostream& base,
 }
 
 void bi::CppPackageGenerator::visit(const Package* o) {
+  /* auxiliary generators */
+  CppRawGenerator auxRaw(base, level, header);
+
   /* gather important objects */
   Gatherer<Basic> basics;
-  Gatherer<Class> classes, headerClasses;
+  Gatherer<Class> classes;
   Gatherer<GlobalVariable> globals;
-  Gatherer<Function> functions, headerFunctions;
-  Gatherer<Fiber> fibers, headerFibers;
+  Gatherer<Function> functions;
+  Gatherer<Fiber> fibers;
   Gatherer<Program> programs;
   Gatherer<BinaryOperator> binaries;
   Gatherer<UnaryOperator> unaries;
@@ -35,11 +38,6 @@ void bi::CppPackageGenerator::visit(const Package* o) {
     file->accept(&programs);
     file->accept(&binaries);
     file->accept(&unaries);
-  }
-  for (auto file : o->headers) {
-    file->accept(&headerClasses);
-    file->accept(&headerFunctions);
-    file->accept(&headerFibers);
   }
 
   /* base classes must be defined before their derived classes, so these are
@@ -71,14 +69,13 @@ void bi::CppPackageGenerator::visit(const Package* o) {
     }
 
     /* raw C++ code for headers */
-    CppRawGenerator auxRaw(base, level, header);
     auxRaw << o;
 
     line("");
     line("namespace bi {");
     line("namespace type {");
 
-    /* forward class declarations */
+    /* forward class type declarations */
     for (auto o : classes) {
       if (!o->isAlias()) {
         genTemplateParams(o);
@@ -104,29 +101,21 @@ void bi::CppPackageGenerator::visit(const Package* o) {
       }
     }
 
-    /* class definitions */
+    /* non-generic class type declarations */
     for (auto o : sortedClasses) {
       assert(!o->isGeneric());
       if (!o->isAlias()) {
         *this << o;
       }
     }
-    for (auto o : sortedClasses) {
-      assert(!o->isGeneric());
-      if (o->isAlias()) {
-        *this << o;
-      }
-    }
+
+    /* generic class type declarations */
     for (auto o : classes) {
       if (o->isGeneric() && !o->isAlias()) {
         *this << o;
       }
     }
-    for (auto o : classes) {
-      if (o->isGeneric() && o->isAlias()) {
-        *this << o;
-      }
-    }
+
     line("");
     line("}\n");
 
@@ -135,11 +124,23 @@ void bi::CppPackageGenerator::visit(const Package* o) {
       *this << o;
     }
 
-    /* functions and fibers */
+    /* functions */
     for (auto o : functions) {
       *this << o;
     }
+
+    /* fibers */
     for (auto o : fibers) {
+      *this << o;
+    }
+
+    /* binary operators */
+    for (auto o : binaries) {
+      *this << o;
+    }
+
+    /* unary operators */
+    for (auto o : unaries) {
       *this << o;
     }
 
@@ -148,16 +149,29 @@ void bi::CppPackageGenerator::visit(const Package* o) {
       *this << o;
     }
 
-    /* operators */
-    for (auto o : binaries) {
-      *this << o;
-    }
-    for (auto o : unaries) {
-      *this << o;
-    }
-
     line("}\n");
     line("");
     line("#endif");
+  } else {
+    /* generic class type definitions */
+    for (auto o : classes) {
+      if (o->isGeneric() && !o->isAlias()) {
+        *this << o;
+      }
+    }
+
+    /* generic function definitions */
+    for (auto o : functions) {
+      if (o->isGeneric()) {
+        *this << o;
+      }
+    }
+
+    /* generic fiber definitions */
+    for (auto o : fibers) {
+      if (o->isGeneric()) {
+        *this << o;
+      }
+    }
   }
 }

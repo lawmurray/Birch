@@ -312,7 +312,6 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
   }
 
   /* initialisation function */
-  auto name = internalise(o->name->str());
   if (!header) {
     genSourceLine(o->loc);
   }
@@ -320,7 +319,7 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
   if (!header) {
     middle("bi::");
   }
-  middle(name << '(' << o->params << ')');
+  middle(o->name << '(' << o->params << ')');
   if (header) {
     finish(';');
   } else {

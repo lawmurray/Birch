@@ -77,28 +77,24 @@ void bi::Compiler::gen() {
   /* single *.hpp header for whole package */
   stream.str("");
   hppPackageOutput << package;
+  cppPackageOutput << package;  // generic class and function definitions
   path = build_dir / "bi" / tarname(package->name);
   path.replace_extension(".hpp");
   write_all_if_different(path, stream.str());
 
-  /* *.cpp source for generic class specialization definitions */
-  stream.str("");
-  cppPackageOutput << package;
   if (unity) {
-    /* for a unity build, all generated source for the package goes into one
-     * file */
+    /* for a unity build, generated source goes into the one *.cpp file for
+     * the whole package */
+    stream.str("");
     for (auto file : package->sources) {
       cppOutput << file;
     }
-  }
-  path = build_dir / "bi" / tarname(package->name);
-  path.replace_extension(".cpp");
-  write_all_if_different(path, stream.str());
-
-  /* if unity mode is enabled, then C++ for each each *.bi file is
-   * generated into the same package *.cpp file, otherwise one *.cpp file for
-   * each *.bi file */
-  if (!unity) {
+    path = build_dir / "bi" / tarname(package->name);
+    path.replace_extension(".cpp");
+    write_all_if_different(path, stream.str());
+  } else {
+    /* for a non-unity build, generated source goes into a separate *.cpp
+     * file for each *.bi file */
     for (auto file : package->sources) {
       stream.str("");
       cppOutput << file;

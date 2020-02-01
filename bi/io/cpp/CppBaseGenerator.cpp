@@ -309,7 +309,6 @@ void bi::CppBaseGenerator::visit(const LocalVariable* o) {
 
 void bi::CppBaseGenerator::visit(const Function* o) {
   if (!o->braces->isEmpty()) {
-    auto name = internalise(o->name->str());
     if (!header) {
       genSourceLine(o->loc);
     }
@@ -317,7 +316,7 @@ void bi::CppBaseGenerator::visit(const Function* o) {
     if (!header) {
       middle("bi::");
     }
-    middle(name << '(' << o->params << ')');
+    middle(o->name << '(' << o->params << ')');
     if (header) {
       finish(';');
     } else {
