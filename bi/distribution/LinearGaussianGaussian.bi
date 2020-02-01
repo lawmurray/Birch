@@ -7,7 +7,7 @@ final class LinearGaussianGaussian(a:Expression<Real>, m:Gaussian,
   /**
    * Scale.
    */
-  auto a <- a;
+  a:Expression<Real> <- a;
     
   /**
    * Mean.
@@ -17,12 +17,12 @@ final class LinearGaussianGaussian(a:Expression<Real>, m:Gaussian,
   /**
    * Offset.
    */
-  auto c <- c;
+  c:Expression<Real> <- c;
 
   /**
    * Likelihood variance.
    */
-  auto s2 <- s2;
+  s2:Expression<Real> <- s2;
 
   function update(x:Real) {
     (m.μ, m.σ2) <- update_linear_gaussian_gaussian(x, a, m.μ, m.σ2, c, s2);

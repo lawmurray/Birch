@@ -251,45 +251,6 @@ Array<T,F> make_array_and_assign(const F& shape,
 }
 
 /**
- * Make an object.
- *
- * @ingroup libbirch
- *
- * @tparam T Object type.
- * @tparam Args Constructor parameter types.
- *
- * @param context Current context.
- * @param args Constructor arguments.
- *
- * @return A raw pointer to the new object.
- */
-template<class T, class ... Args>
-T* make_object(Label* context, const Args& ... args) {
-  return new T(context, args...);
-}
-
-/**
- * Clone an object.
- *
- * @ingroup libbirch
- *
- * @tparam T Object type.
- *
- * @param context Current context.
- * @param o The object.
- *
- * @return A raw pointer to the new object.
- *
- * @note Typically, one uses the clone_() virtual member function of an
- * object, which calls this function, rather than calling this function
- * directly, to ensure that T is the most derived type of the object.
- */
-template<class T>
-T* clone_object(Label* context, const T* o) {
-  return make_object<T>(context, context, *o);
-}
-
-/**
  * Make a pointer, with in-place object construction.
  *
  * @ingroup libbirch
@@ -304,7 +265,7 @@ T* clone_object(Label* context, const T* o) {
  */
 template<class P, class ... Args>
 P make_pointer(Label* context, const Args& ... args) {
-  return P(context, make_object<typename P::value_type>(context, args...));
+  return P(context, new typename P::value_type(context, args...));
 }
 
 /**
@@ -320,7 +281,7 @@ template<class T, class ... Args>
 Fiber<typename T::yield_type_> make_fiber(Label* context,
     const Args&... args) {
   return Fiber<typename T::yield_type_>(context, Lazy<SharedPtr<T>>(context,
-      make_object<T>(context, args...)));
+      new T(context, args...)));
 }
 
 /**

@@ -6,7 +6,7 @@ final class Diagonal<Argument,Value>(x:Expression<Argument>, n:Integer) <
   /**
    * Size.
    */
-  auto n <- n;
+  n:Integer <- n;
   
   function rows() -> Integer {
     return n;

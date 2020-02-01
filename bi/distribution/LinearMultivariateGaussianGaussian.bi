@@ -7,7 +7,7 @@ final class LinearMultivariateGaussianGaussian(a:Expression<Real[_]>,
   /**
    * Scale.
    */
-  auto a <- a;
+  a:Expression<Real[_]> <- a;
     
   /**
    * Mean.
@@ -17,12 +17,12 @@ final class LinearMultivariateGaussianGaussian(a:Expression<Real[_]>,
   /**
    * Offset.
    */
-  auto c <- c;
+  c:Expression<Real> <- c;
   
   /**
    * Likelihood covariance.
    */
-  auto s2 <- s2;
+  s2:Expression<Real> <- s2;
 
   function update(x:Real) {
     (m.μ, m.Σ) <- update_linear_multivariate_gaussian_gaussian(
