@@ -171,10 +171,10 @@ void bi::CppClassGenerator::visit(const Class* o) {
     if (!o->has(ABSTRACT)) {
       if (header) {
         genSourceLine(o->loc);
-        line("virtual " << o->name << "* clone_() const {");
+        line("virtual " << o->name << "* clone_(libbirch::Label* label) const {");
         in();
         genSourceLine(o->loc);
-        line("return libbirch::clone_object<" << o->name << ">(this);");
+        line("return new class_type_(label, *this);");
         genSourceLine(o->loc);
         out();
         line("}\n");

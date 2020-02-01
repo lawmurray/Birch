@@ -155,10 +155,10 @@ void bi::CppMemberFiberGenerator::visit(const MemberFiber* o) {
   /* clone function */
   if (header) {
     genSourceLine(o->loc);
-    line("virtual " << stateName << "* clone_() const {");
+    line("virtual " << stateName << "* clone_(libbirch::Label* label) const {");
     in();
     genSourceLine(o->loc);
-    line("return libbirch::clone_object<" << stateName << ">(this);");
+    line("return new class_type_(label, *this);");
     genSourceLine(o->loc);
     out();
     line("}\n");
