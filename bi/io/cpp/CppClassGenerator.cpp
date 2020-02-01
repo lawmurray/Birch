@@ -232,10 +232,8 @@ void bi::CppClassGenerator::visit(const Class* o) {
       genSourceLine(o->loc);
       line("super_type_::doFreeze_();");
       for (auto o : memberVariables) {
-        if (!o->type->isValue()) {
-          genSourceLine(o->loc);
-          line(o->name << ".freeze();");
-        }
+        genSourceLine(o->loc);
+        line("freeze(" << o->name << ");");
       }
       genSourceLine(o->loc);
       out();
@@ -256,10 +254,8 @@ void bi::CppClassGenerator::visit(const Class* o) {
       genSourceLine(o->loc);
       line("super_type_::doThaw_(label_);");
       for (auto o : memberVariables) {
-        if (!o->type->isValue()) {
-          genSourceLine(o->loc);
-          line(o->name << ".thaw(label_);");
-        }
+        genSourceLine(o->loc);
+        line("thaw(" << o->name << ", label_);");
       }
       genSourceLine(o->loc);
       out();
@@ -280,10 +276,8 @@ void bi::CppClassGenerator::visit(const Class* o) {
       genSourceLine(o->loc);
       line("super_type_::doFinish_();");
       for (auto o : memberVariables) {
-        if (!o->type->isValue()) {
-          genSourceLine(o->loc);
-          line(o->name << ".finish();");
-        }
+        genSourceLine(o->loc);
+        line("finish(" << o->name << ");");
       }
       genSourceLine(o->loc);
       out();

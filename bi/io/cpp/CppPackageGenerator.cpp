@@ -48,17 +48,8 @@ void bi::CppPackageGenerator::visit(const Package* o) {
   }
 
   if (header) {
-    /* a `#define` include guard is preferred to `#pragma once`; the header of
-     * each package is included in sources with the `-include` compile option
-     * rather than `#include` preprocessor directive, including (for
-     * convenience/laziness) when precompiling the header itself; this seems
-     * to cause a double inclusion with `#pragma once` but not with a `#define`
-     * include guard */
-    line("#ifndef BI_" << tarname(o->name) << "_HPP_");
-    line("#define BI_" << tarname(o->name) << "_HPP_");
-    line("");
-    line("#include \"libbirch/libbirch.hpp\"");
-    line("");
+    line("#pragma once\n");
+    line("#include \"libbirch/libbirch.hpp\"\n");
 
     for (auto header : o->headers) {
       fs::path include = header->path;
@@ -174,7 +165,4 @@ void bi::CppPackageGenerator::visit(const Package* o) {
       }
     }
   }
-
-  line("");
-  line("#endif");
 }
