@@ -159,17 +159,23 @@ void bi::CppClassGenerator::visit(const Class* o) {
 
     /* copy constructor, destructor, assignment operator */
     if (header) {
-      line("virtual ~" << o->name << "() = default;  // LCOV_EXCL_LINE");
+      genSourceLine(o->loc);
+      line("virtual ~" << o->name << "() = default;");
+      genSourceLine(o->loc);
       line(o->name << "(const " << o->name << "&) = delete;");
+      genSourceLine(o->loc);
       line(o->name << "& operator=(const " << o->name << "&) = delete;");
     }
 
     /* clone function */
     if (!o->has(ABSTRACT)) {
       if (header) {
+        genSourceLine(o->loc);
         line("virtual " << o->name << "* clone_() const {");
         in();
-        line("return libbirch::clone_object<" << o->name << ">(this);  // LCOV_EXCL_LINE");
+        genSourceLine(o->loc);
+        line("return libbirch::clone_object<" << o->name << ">(this);");
+        genSourceLine(o->loc);
         out();
         line("}\n");
       }
@@ -177,18 +183,21 @@ void bi::CppClassGenerator::visit(const Class* o) {
 
     /* name function */
     if (header) {
+      genSourceLine(o->loc);
       line("virtual const char* getClassName() const {");
       in();
-      line("return \"" << o->name << "\";  // LCOV_EXCL_LINE");
+      genSourceLine(o->loc);
+      line("return \"" << o->name << "\";");
+      genSourceLine(o->loc);
       out();
       line("}\n");
     }
 
     /* freeze function */
+    genSourceLine(o->loc);
     if (header) {
       start("virtual void ");
     } else {
-      genSourceLine(o->loc);
       start("void bi::type::" << o->name);
       genTemplateArgs(o);
       middle("::");
@@ -213,10 +222,10 @@ void bi::CppClassGenerator::visit(const Class* o) {
     }
 
     /* thaw function */
+    genSourceLine(o->loc);
     if (header) {
       start("virtual void ");
     } else {
-      genSourceLine(o->loc);
       start("void bi::type::" << o->name);
       genTemplateArgs(o);
       middle("::");
@@ -241,10 +250,10 @@ void bi::CppClassGenerator::visit(const Class* o) {
     }
 
     /* finish function */
+    genSourceLine(o->loc);
     if (header) {
       start("virtual void ");
     } else {
-      genSourceLine(o->loc);
       start("void bi::type::" << o->name);
       genTemplateArgs(o);
       middle("::");
@@ -277,13 +286,7 @@ void bi::CppClassGenerator::visit(const Class* o) {
         line("template<class T_> auto& set_" << var->name << "_(T_&& o_) {");
         in();
         genSourceLine(var->loc);
-        start("return " << var->name);
-        if (var->type->isValue()) {
-          middle(" = std::forward<T_>(o_)");
-        } else {
-          middle(".assign(this->getLabel(), std::forward<T_>(o_))");
-        }
-        finish(";  // LCOV_EXCL_LINE");
+        line("return " << var->name << " = std::forward<T_>(o_);");
         genSourceLine(var->loc);
         out();
         line("}\n");
@@ -293,13 +296,7 @@ void bi::CppClassGenerator::visit(const Class* o) {
           line("template<class F_, class T_> auto set_" << var->name << "_(const F_& shape_, T_&& o_) {");
           in();
           genSourceLine(var->loc);
-          start("return " << var->name << ".get(shape_)");
-          if (var->type->isValue()) {
-            middle(" = std::forward<T_>(o_)");
-          } else {
-            middle(".assign(this->getLabel(), std::forward<T_>(o_))");
-          }
-          finish(";  // LCOV_EXCL_LINE");
+          line("return " << var->name << ".get(shape_) = std::forward<T_>(o_);");
           genSourceLine(var->loc);
           out();
           line("}\n");
@@ -318,11 +315,11 @@ void bi::CppClassGenerator::visit(const Class* o) {
 
     /* C linkage function */
     if (!o->has(ABSTRACT) && !o->isGeneric() && o->params->isEmpty()) {
+      genSourceLine(o->loc);
       if (header) {
         start("extern \"C\" bi::type::" << o->name << "* ");
         finish("make_" << o->name << "_();");
       } else {
-        genSourceLine(o->loc);
         start("bi::type::" << o->name << "* ");
         finish("bi::type::make_" << o->name << "_() {");
         in();
