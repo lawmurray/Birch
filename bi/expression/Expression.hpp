@@ -57,12 +57,6 @@ public:
   virtual void accept(Visitor* visitor) const = 0;
 
   /**
-   * Is this a value expression? Such an expression contains no usage of
-   * class types.
-   */
-  bool isValue() const;
-
-  /**
    * Is expression empty?
    */
   virtual bool isEmpty() const;

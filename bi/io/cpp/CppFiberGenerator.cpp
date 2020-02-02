@@ -96,23 +96,13 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
     for (auto o : params) {
       finish(',');
       genSourceLine(o->loc);
-      if (o->type->isValue()) {
-        start(o->name << "(o." << o->name << ')');
-      } else {
-        start(o->name << "(label, o." << o->name << ')');
-      }
+      start(o->name << "(libbirch::clone(label, o." << o->name << "))");
     }
     for (auto o : locals) {
-      if (o->has(IN_FIBER)) {
-        auto name = getName(o->name->str(), o->number);
-        finish(',');
-        genSourceLine(o->loc);
-        if (o->type->isValue()) {
-          start(name << "(o." << name << ')');
-        } else {
-          start(name << "(label, o." << name << ')');
-        }
-      }
+      auto name = getName(o->name->str(), o->number);
+      finish(',');
+      genSourceLine(o->loc);
+      start(o->name << "(libbirch::clone(label, o." << o->name << "))");
     }
     out();
     out();

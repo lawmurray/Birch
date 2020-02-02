@@ -155,11 +155,7 @@ void bi::CppClassGenerator::visit(const Class* o) {
       for (auto o : memberVariables) {
         finish(',');
         genSourceLine(o->loc);
-        if (o->type->isValue()) {
-          start(o->name << "(o." << o->name << ')');
-        } else {
-          start(o->name << "(label, o." << o->name << ')');
-        }
+        start(o->name << "(libbirch::clone(label, o." << o->name << "))");
       }
       out();
       out();

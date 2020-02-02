@@ -18,12 +18,6 @@ bi::Expression::~Expression() {
   //
 }
 
-bool bi::Expression::isValue() const {
-  IsValue visitor;
-  accept(&visitor);
-  return visitor.result;
-}
-
 bool bi::Expression::isEmpty() const {
   return false;
 }

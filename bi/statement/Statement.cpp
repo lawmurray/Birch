@@ -19,12 +19,6 @@ bi::Statement* bi::Statement::strip() {
   return this;
 }
 
-bool bi::Statement::isValue() const {
-  IsValue visitor;
-  accept(&visitor);
-  return visitor.result;
-}
-
 bool bi::Statement::isEmpty() const {
   return false;
 }

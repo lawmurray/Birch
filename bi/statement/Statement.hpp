@@ -66,12 +66,6 @@ public:
   virtual bool isEmpty() const;
 
   /**
-   * Is this a value statement? Such a statement contains no usage of class
-   * types.
-   */
-  bool isValue() const;
-
-  /**
    * Iterator to first element if this is a list, to one-past-the-last if
    * this is empty, otherwise to this.
    */
