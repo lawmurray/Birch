@@ -42,10 +42,7 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
       line(o->type << ' ' << o->name << ';');
     }
     for (auto o : locals) {
-      if (o->has(IN_FIBER)) {
-        start(o->type << ' ');
-        finish(getName(o->name->str(), o->number) << ';');
-      }
+      start(o->type << ' ' << getName(o->name->str(), o->number) << ';');
     }
   }
 
@@ -352,10 +349,8 @@ void bi::CppFiberGenerator::visit(const For* o) {
   genTraceLine(o->loc);
   start("for (");
   auto forVar = dynamic_cast<const LocalVariable*>(o->index);
-  if (forVar && !forVar->has(IN_FIBER)) {
-    middle("auto ");
-  }
-  middle(o->index << " = " << o->from << "; ");
+  assert(forVar);
+  middle("auto " << o->index << " = " << o->from << "; ");
   middle(o->index << " <= " << o->to << "; ");
   finish("++" << o->index << ") {");
   in();
@@ -365,39 +360,31 @@ void bi::CppFiberGenerator::visit(const For* o) {
 }
 
 void bi::CppFiberGenerator::visit(const Parameter* o) {
-  if (!o->has(IN_FIBER)) {
-    CppBaseGenerator::visit(o);
-  } else {
-    middle("const " << o->type);
-    if (o->type->isArray() || o->type->isClass()) {
-      middle('&');
-    }
-    middle(' ' << o->name);
-    if (!o->value->isEmpty()) {
-      middle(" = " << o->value);
-    }
+  middle("const " << o->type);
+  if (o->type->isArray() || o->type->isClass()) {
+    middle('&');
+  }
+  middle(' ' << o->name);
+  if (!o->value->isEmpty()) {
+    middle(" = " << o->value);
   }
 }
 
 void bi::CppFiberGenerator::visit(const LocalVariable* o) {
-  if (!o->has(IN_FIBER)) {
-    CppBaseGenerator::visit(o);
+  genTraceLine(o->loc);
+  auto name = getName(o->name->str(), o->number);
+  if (!o->value->isEmpty()) {
+    middle("local->" << name << " = " << o->value);
+  } else if (!o->args->isEmpty()) {
+    middle("local->" << name << " = ");
+    middle(o->type << "(" << o->args << ")");
+  } else if (!o->brackets->isEmpty()) {
+    middle("local->" << name << " = ");
+    middle(o->type << "(libbirch::make_shape(" << o->brackets << "))");
   } else {
-    genTraceLine(o->loc);
-    auto name = getName(o->name->str(), o->number);
-    if (!o->value->isEmpty()) {
-      middle("local->" << name << " = " << o->value);
-    } else if (!o->args->isEmpty()) {
-      middle("local->" << name << " = ");
-      middle(o->type << "(" << o->args << ")");
-    } else if (!o->brackets->isEmpty()) {
-      middle("local->" << name << " = ");
-      middle(o->type << "(libbirch::make_shape(" << o->brackets << "))");
-    } else {
-      middle("local->" << name << " = " << o->type << "()");
-    }
-    finish(';');
+    middle("local->" << name << " = " << o->type << "()");
   }
+  finish(';');
 }
 
 void bi::CppFiberGenerator::visit(const NamedExpression* o) {

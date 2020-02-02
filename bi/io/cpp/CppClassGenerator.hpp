@@ -29,6 +29,6 @@ protected:
   /**
    * The class being generated.
    */
-  const Class* type;
+  const Class* theClass;
 };
 }

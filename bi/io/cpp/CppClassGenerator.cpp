@@ -9,13 +9,13 @@
 bi::CppClassGenerator::CppClassGenerator(std::ostream& base, const int level,
     const bool header) :
     CppBaseGenerator(base, level, header),
-    type(nullptr) {
+    theClass(nullptr) {
   //
 }
 
 void bi::CppClassGenerator::visit(const Class* o) {
   if (!o->isAlias() && !o->braces->isEmpty()) {
-    type = o;
+    theClass = o;
     auto base = dynamic_cast<const NamedType*>(o->base);
 
     Gatherer<MemberFunction> memberFunctions;
@@ -349,14 +349,14 @@ void bi::CppClassGenerator::visit(const MemberFunction* o) {
       start("virtual ");
     } else {
       genSourceLine(o->loc);
-      genTemplateParams(type);
+      genTemplateParams(theClass);
       genSourceLine(o->loc);
       start("");
     }
     middle(o->returnType << ' ');
     if (!header) {
-      middle("bi::type::" << type->name);
-      genTemplateArgs(type);
+      middle("bi::type::" << theClass->name);
+      genTemplateArgs(theClass);
       middle("::");
     }
     middle(internalise(o->name->str()) << '(' << o->params << ')');
@@ -398,7 +398,7 @@ void bi::CppClassGenerator::visit(const MemberFunction* o) {
 
 void bi::CppClassGenerator::visit(const MemberFiber* o) {
   if ((header && o->has(ABSTRACT)) || !o->braces->isEmpty()) {
-    CppMemberFiberGenerator auxMemberFiber(type, base, level, header);
+    CppMemberFiberGenerator auxMemberFiber(theClass, base, level, header);
     auxMemberFiber << o;
   }
 }
@@ -411,12 +411,12 @@ void bi::CppClassGenerator::visit(const AssignmentOperator* o) {
       genSourceLine(o->loc);
       start("bi::type::");
     }
-    middle(type->name);
-    genTemplateArgs(type);
+    middle(theClass->name);
+    genTemplateArgs(theClass);
     middle("& ");
     if (!header) {
-      middle("bi::type::" << type->name);
-      genTemplateArgs(type);
+      middle("bi::type::" << theClass->name);
+      genTemplateArgs(theClass);
       middle("::");
     }
     middle("operator=(" << o->single << ')');
@@ -444,8 +444,8 @@ void bi::CppClassGenerator::visit(const ConversionOperator* o) {
       start("virtual ");
     } else {
       genSourceLine(o->loc);
-      start("bi::type::" << type->name);
-      genTemplateArgs(type);
+      start("bi::type::" << theClass->name);
+      genTemplateArgs(theClass);
       middle("::");
     }
     middle("operator " << o->returnType << "()");

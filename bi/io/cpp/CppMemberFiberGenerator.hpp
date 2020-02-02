@@ -24,8 +24,8 @@ public:
 
 private:
   /**
-   * The class being generated.
+   * The class to which the member fiber belongs.
    */
-  const Class* type;
+  const Class* theClass;
 };
 }

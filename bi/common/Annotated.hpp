@@ -32,12 +32,6 @@ enum Annotation {
    * `abstract` annotation on a class or member function.
    */
   ABSTRACT = 8,
-
-  /**
-   * Flag to indicate that a parameter or local variable is declared in a
-   * fiber, added by Resolver (not by a language keyword).
-   */
-  IN_FIBER = 16
 };
 
 /**
