@@ -94,6 +94,13 @@ public:
   void lookup(NamedType* o) const;
 
   /**
+   * Resolve the inheritance of a class. Looks up the base class of the `o`
+   * in this scope. If found, updates `o->scope->base` to the scope of that
+   * class.
+   */
+  void inherit(Class* o) const;
+
+  /**
    * Add declaration to scope.
    *
    * @param o Object.
@@ -109,17 +116,26 @@ public:
   void add(BinaryOperator* o);
   void add(UnaryOperator* o);
   void add(Program* o);
-
   void add(Basic* o);
   void add(Class* o);
   void add(Generic* o);
-  
+
+  /**
+   * Check if the scope overrides a declaration of the given name in a base
+   * class.
+   */
+  bool overrides(const std::string& name) const;
+
+  /**
+   * Base scope.
+   */
+  Scope* base;
+
   /**
    * Category of this scope.
    */
   const ScopeCategory category;
 
-private:
   /*
    * Variables, functions, fibers, operators, etc in this scope.
    */

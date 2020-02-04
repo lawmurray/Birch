@@ -54,3 +54,8 @@ bi::Type* bi::Resolver::modify(NamedType* o) {
   }
   return o;
 }
+
+bi::Statement* bi::Resolver::modify(Class* o) {
+  scopes.back()->inherit(o);
+  return ScopedModifier::modify(o);
+}

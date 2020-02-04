@@ -57,28 +57,29 @@ void bi::CppClassGenerator::visit(const Class* o) {
       } else {
         middle("libbirch::Any");
       }
-      middle(';');
-      line("");
-      line("using super_type_::operator=;");
-      line("");
+      finish(";\n");
 
       /* using declarations for member functions and fibers in base classes
        * that are overridden */
-//    std::set<std::string> names;
-//    for (auto f : memberFunctions) {
-//      if (o->scope->override(f)) {
-//        names.insert(f->name->str());
-//      }
-//    }
-//    for (auto f : memberFibers) {
-//      if (o->scope->override(f)) {
-//        names.insert(f->name->str());
-//      }
-//    }
-//    for (auto name : names) {
-//      line("using super_type_::" << internalise(name) << ';');
-//    }
-//    line("");
+      std::set<std::string> names;
+      for (auto f : memberFunctions) {
+        auto name = f->name->str();
+        if (o->scope->overrides(name)) {
+          names.insert(name);
+        }
+      }
+      for (auto f : memberFibers) {
+        auto name = f->name->str();
+        if (o->scope->overrides(name)) {
+          names.insert(name);
+        }
+      }
+
+      line("using super_type_::operator=;");
+      for (auto name : names) {
+        line("using super_type_::" << internalise(name) << ';');
+      }
+      line("");
     }
 
     /* constructor */

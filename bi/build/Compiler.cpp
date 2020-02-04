@@ -3,9 +3,7 @@
  */
 #include "Compiler.hpp"
 
-#include "bi/visitor/Transformer.hpp"
-#include "bi/visitor/Scoper.hpp"
-#include "bi/visitor/Resolver.hpp"
+#include "bi/visitor/all.hpp"
 #include "bi/io/cpp/CppPackageGenerator.hpp"
 #include "bi/io/bi_ostream.hpp"
 #include "bi/io/cpp_ostream.hpp"
@@ -56,6 +54,9 @@ void bi::Compiler::resolve() {
 
   Scoper scoper;
   package = package->accept(&scoper);
+
+  Baser baser;
+  package = package->accept(&baser);
 
   Resolver resolver;
   package = package->accept(&resolver);

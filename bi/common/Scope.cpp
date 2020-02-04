@@ -147,3 +147,20 @@ void bi::Scope::add(Class* o) {
 void bi::Scope::add(Generic* o) {
   genericTypes.insert(std::make_pair(o->name->str(), o));
 }
+
+void bi::Scope::inherit(Class* o) const {
+  auto base = dynamic_cast<NamedType*>(o->base);
+  if (base) {
+    auto name = base->name->str();
+    auto iter = classTypes.find(name);
+    if (iter != classTypes.end()) {
+      o->scope->base = iter->second->scope;
+    }
+  }
+}
+
+bool bi::Scope::overrides(const std::string& name) const {
+  return base && (base->memberFunctions.find(name) != base->memberFunctions.end() ||
+      base->memberFibers.find(name) != base->memberFibers.end() ||
+      base->overrides(name));
+}

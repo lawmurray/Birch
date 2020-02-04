@@ -7,26 +7,25 @@
 
 namespace bi {
 /**
- * Resolve identifiers.
+ * Resolve inheritance relationships between classes and link up scopes
+ * accordingly.
  *
  * @ingroup visitor
  */
-class Resolver: public ScopedModifier {
+class Baser: public ScopedModifier {
 public:
   /**
    * Constructor.
    */
-  Resolver();
+  Baser();
 
   /**
    * Destructor.
    */
-  virtual ~Resolver();
+  virtual ~Baser();
 
   using ScopedModifier::modify;
 
-  virtual Expression* modify(NamedExpression* o);
-  virtual Type* modify(NamedType* o);
   virtual Statement* modify(Class* o);
 };
 }
