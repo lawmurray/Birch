@@ -137,29 +137,4 @@ template<class Arg>
 struct is_pointer {
   static const bool value = false;
 };
-
-template<class T>
-void freeze(std::function<T>& o) {
-  assert(false);
-  /// @todo Need to freeze any objects in the closure here, which may require
-  /// a custom implementation of lambda functions in a similar way to fibers,
-  /// rather than using std::function
-}
-
-template<class T>
-void thaw(std::function<T>& o) {
-  assert(false);
-  /// @todo Need to thaw any objects in the closure here, which may require
-  /// a custom implementation of lambda functions in a similar way to fibers,
-  /// rather than using std::function
-}
-
-template<class T>
-void finish(std::function<T>& o) {
-  assert(false);
-  /// @todo Need to finish any objects in the closure here, which may require
-  /// a custom implementation of lambda functions in a similar way to fibers,
-  /// rather than using std::function
-}
-
 }

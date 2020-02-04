@@ -14,6 +14,7 @@
 #include "libbirch/basic.hpp"
 #include "libbirch/type.hpp"
 #include "libbirch/thread.hpp"
+#include "libbirch/operation.hpp"
 
 #include "libbirch/SharedPtr.hpp"
 #include "libbirch/WeakPtr.hpp"

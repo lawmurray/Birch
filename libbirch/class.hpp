@@ -15,11 +15,11 @@
  *
  * Declare `self` within a member function.
  */
-#define libbirch_declare_self_ libbirch::Lazy<libbirch::InitPtr<this_type_>> self(context_, libbirch::InitPtr<this_type_>(this));
+#define libbirch_declare_self_ libbirch::Lazy<libbirch::InitPtr<this_type_>> self(this->context_, libbirch::InitPtr<this_type_>(this));
 
 /**
  * @def libbirch_declare_local_
  *
  * Declare `local` within a member fiber.
  */
-#define libbirch_declare_local_ libbirch::Lazy<libbirch::InitPtr<class_type_>> local(context_, libbirch::InitPtr<class_type_>(this));
+#define libbirch_declare_local_ libbirch::Lazy<libbirch::InitPtr<class_type_>> local(this->context_, libbirch::InitPtr<class_type_>(this));

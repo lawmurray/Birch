@@ -75,6 +75,18 @@ public:
   }
 
 protected:
+  virtual void doFreeze_() {
+    freeze(value_);
+  }
+
+  virtual void doThaw_(Label* label) {
+    thaw(value_, label);
+  }
+
+  virtual void doFinish_() {
+    finish(value_);
+  }
+
   /**
    * Most recent yield value.
    */

@@ -357,6 +357,7 @@
       "libbirch/mutable.hpp",
       "libbirch/Nil.hpp",
       "libbirch/Offset.hpp",
+      "libbirch/operation.hpp",
       "libbirch/Optional.hpp",
       "libbirch/Pool.hpp",
       "libbirch/Range.hpp",
