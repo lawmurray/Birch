@@ -1,8 +1,8 @@
-/*
- * ed Weibull random variate.
+/**
+ * Weibull distribution.
  */
-final class Weibull(k:Expression<Real>,
-    λ:Expression<Real>) < Distribution<Real> {
+final class Weibull(k:Expression<Real>, λ:Expression<Real>) <
+    Distribution<Real> {
   /**
    * Shape.
    */
