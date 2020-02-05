@@ -21,11 +21,6 @@ bi::GlobalVariable::~GlobalVariable() {
   //
 }
 
-bool bi::GlobalVariable::needsConstruction() const {
-  return !args->isEmpty()
-      || (value->isEmpty() && (!type->isArray() || !brackets->isEmpty()));
-}
-
 bi::Statement* bi::GlobalVariable::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }
