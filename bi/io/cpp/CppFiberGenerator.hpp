@@ -20,13 +20,6 @@ public:
   using CppBaseGenerator::visit;
 
   virtual void visit(const Fiber* o);
-  virtual void visit(const Return* o);
-  virtual void visit(const Yield* o);
-  virtual void visit(const For* o);
-  virtual void visit(const Parameter* o);
-  virtual void visit(const LocalVariable* o);
-  virtual void visit(const NamedExpression* o);
-  virtual void visit(const LambdaFunction* o);
 
 protected:
   /**
@@ -35,18 +28,6 @@ protected:
    * of the same name declared in differently-scoped blocks.
    */
   std::string getName(const std::string& name, const int number);
-
-  /**
-   * The handle type of the fiber.
-   */
-  const FiberType* fiberType;
-
-  /*
-   * Gatherers for important objects.
-   */
-  Gatherer<Parameter> params;
-  Gatherer<LocalVariable> locals;
-  Gatherer<Yield> yields;
 
   /**
    * Name mappings. Local variables become member variables of the fiber
@@ -63,10 +44,5 @@ protected:
    * Counts of all local variable names encountered.
    */
   std::map<std::string,int> counts;
-
-  /**
-   * Current yield point.
-   */
-  int point;
 };
 }

@@ -22,6 +22,10 @@ bi::MemberVariable::~MemberVariable() {
   //
 }
 
+bool bi::MemberVariable::isDeclaration() const {
+  return true;
+}
+
 bi::Statement* bi::MemberVariable::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }

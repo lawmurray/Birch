@@ -27,10 +27,9 @@ public:
    */
   virtual ~StatementList();
 
-  /**
-   * Number of objects in the list.
-   */
   virtual int count() const;
+  virtual bool isEmpty() const;
+  virtual bool isDeclaration() const;
 
   virtual Statement* accept(Cloner* visitor) const;
   virtual Statement* accept(Modifier* visitor);

@@ -65,5 +65,10 @@ protected:
    * Are we in the body of a class?
    */
   int inClass;
+
+  /**
+   * Are we in the body of a loop?
+   */
+  int inLoop;
 };
 }

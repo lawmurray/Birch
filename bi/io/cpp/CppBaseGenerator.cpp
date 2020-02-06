@@ -673,7 +673,8 @@ void bi::CppBaseGenerator::visit(const Return* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Yield* o) {
-  assert(false);  // should be in CppFiberGenerator
+  genTraceLine(o->loc);
+  line("yield " << o->single << ';');
 }
 
 void bi::CppBaseGenerator::visit(const Raw* o) {
@@ -709,7 +710,7 @@ void bi::CppBaseGenerator::visit(const FunctionType* o) {
 }
 
 void bi::CppBaseGenerator::visit(const FiberType* o) {
-  middle("libbirch::Fiber<" << o->yieldType << '>');
+  middle("libbirch::Fiber<" << o->yieldType << ',' << o->returnType << '>');
 }
 
 void bi::CppBaseGenerator::visit(const OptionalType* o) {

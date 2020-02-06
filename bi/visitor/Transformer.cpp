@@ -3,6 +3,9 @@
  */
 #include "bi/visitor/Transformer.hpp"
 
+#include "bi/visitor/Gatherer.hpp"
+#include "bi/visitor/Resumer.hpp"
+
 bi::Statement* bi::Transformer::modify(Assume* o) {
   Statement* result = nullptr;
   if (*o->name == "<-?") {
@@ -80,4 +83,27 @@ bi::Statement* bi::Transformer::modify(ExpressionStatement* o) {
 //  } else {
     return Modifier::modify(o);
 //  }
+}
+
+bi::Statement* bi::Transformer::modify(Fiber* o) {
+  auto r = Modifier::modify(o);
+  Gatherer<Yield> yields;
+  r->accept(&yields);
+  for (auto yield : yields) {
+    /* create the resume function for the yield point */
+    Resumer resumer(yield);
+    yield->resume = r->accept(&resumer);
+  }
+  return r;
+}
+
+bi::Statement* bi::Transformer::modify(MemberFiber* o) {
+  auto r = Modifier::modify(o);
+  Gatherer<Yield> yields;
+  r->accept(&yields);
+  for (auto yield : yields) {
+    Resumer resumer(yield);
+    yield->resume = r->accept(&resumer);
+  }
+  return r;
 }

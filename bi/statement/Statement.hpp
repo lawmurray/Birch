@@ -61,9 +61,19 @@ public:
   virtual Statement* strip();
 
   /**
-   * Is statement empty?
+   * Number of elements when iterating.
+   */
+  virtual int count() const;
+
+  /**
+   * Is this an empty statement?
    */
   virtual bool isEmpty() const;
+
+  /**
+   * Is this a declaration?
+   */
+  virtual bool isDeclaration() const;
 
   /**
    * Iterator to first element if this is a list, to one-past-the-last if
@@ -75,10 +85,5 @@ public:
    * Iterator to one-past-the-last.
    */
   StatementIterator end() const;
-
-  /**
-   * Number of elements when iterating.
-   */
-  int count() const;
 };
 }

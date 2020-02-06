@@ -10,6 +10,7 @@
 #include "bi/visitor/Gatherer.hpp"
 #include "bi/visitor/Modifier.hpp"
 #include "bi/visitor/Resolver.hpp"
+#include "bi/visitor/Resumer.hpp"
 #include "bi/visitor/Scoper.hpp"
 #include "bi/visitor/Transformer.hpp"
 #include "bi/visitor/Visitor.hpp"

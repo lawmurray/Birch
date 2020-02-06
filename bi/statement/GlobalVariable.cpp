@@ -21,6 +21,10 @@ bi::GlobalVariable::~GlobalVariable() {
   //
 }
 
+bool bi::GlobalVariable::isDeclaration() const {
+  return true;
+}
+
 bi::Statement* bi::GlobalVariable::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }

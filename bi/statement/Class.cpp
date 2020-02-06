@@ -26,6 +26,10 @@ bi::Class::~Class() {
   //
 }
 
+bool bi::Class::isDeclaration() const {
+  return true;
+}
+
 bi::Statement* bi::Class::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }

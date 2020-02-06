@@ -19,7 +19,15 @@ bi::Statement* bi::Statement::strip() {
   return this;
 }
 
+int bi::Statement::count() const {
+  return 1;
+}
+
 bool bi::Statement::isEmpty() const {
+  return false;
+}
+
+bool bi::Statement::isDeclaration() const {
   return false;
 }
 
@@ -33,14 +41,4 @@ bi::StatementIterator bi::Statement::begin() const {
 
 bi::StatementIterator bi::Statement::end() const {
   return StatementIterator(nullptr);
-}
-
-int bi::Statement::count() const {
-  int count = 0;
-  auto iter = begin();
-  while (iter != end()) {
-    ++count;
-    ++iter;
-  }
-  return count;
 }

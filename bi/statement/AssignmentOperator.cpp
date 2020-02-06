@@ -18,6 +18,10 @@ bi::AssignmentOperator::~AssignmentOperator() {
   //
 }
 
+bool bi::AssignmentOperator::isDeclaration() const {
+  return true;
+}
+
 bi::Statement* bi::AssignmentOperator::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }

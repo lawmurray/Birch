@@ -5,7 +5,8 @@
 
 bi::ScopedModifier::ScopedModifier() :
     inMember(0),
-    inClass(0) {
+    inClass(0),
+    inLoop(0) {
   //
 }
 
@@ -140,14 +141,18 @@ bi::Statement* bi::ScopedModifier::modify(Parallel* o) {
 
 bi::Statement* bi::ScopedModifier::modify(While* o) {
   scopes.push_back(o->scope);
+  ++inLoop;
   Modifier::modify(o);
+  --inLoop;
   scopes.pop_back();
   return o;
 }
 
 bi::Statement* bi::ScopedModifier::modify(DoWhile* o) {
   scopes.push_back(o->scope);
+  ++inLoop;
   o->braces = o->braces->accept(this);
+  --inLoop;
   scopes.pop_back();
   o->cond = o->cond->accept(this);
   return o;

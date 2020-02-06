@@ -19,8 +19,6 @@ public:
   using CppFiberGenerator::visit;
 
   virtual void visit(const MemberFiber* o);
-  virtual void visit(const This* o);
-  virtual void visit(const Super* o);
 
 private:
   /**

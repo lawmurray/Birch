@@ -28,5 +28,6 @@ public:
   virtual Expression* modify(NamedExpression* o);
   virtual Type* modify(NamedType* o);
   virtual Statement* modify(Class* o);
+  virtual Statement* modify(Yield* o);
 };
 }

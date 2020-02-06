@@ -21,6 +21,10 @@ bi::UnaryOperator::~UnaryOperator() {
   //
 }
 
+bool bi::UnaryOperator::isDeclaration() const {
+  return true;
+}
+
 bi::Statement* bi::UnaryOperator::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }

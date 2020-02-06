@@ -30,6 +30,14 @@ int bi::StatementList::count() const {
   }
 }
 
+bool bi::StatementList::isEmpty() const {
+  return head->isEmpty() && tail->isEmpty();
+}
+
+bool bi::StatementList::isDeclaration() const {
+  return head->isDeclaration() && tail->isDeclaration();
+}
+
 bi::Statement* bi::StatementList::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }

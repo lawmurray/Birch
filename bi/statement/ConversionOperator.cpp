@@ -18,6 +18,10 @@ bi::ConversionOperator::~ConversionOperator() {
   //
 }
 
+bool bi::ConversionOperator::isDeclaration() const {
+  return true;
+}
+
 bi::Statement* bi::ConversionOperator::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }

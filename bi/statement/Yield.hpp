@@ -6,6 +6,9 @@
 #include "bi/statement/Statement.hpp"
 #include "bi/expression/Expression.hpp"
 #include "bi/common/Single.hpp"
+#include "bi/statement/LocalVariable.hpp"
+
+#include <list>
 
 namespace bi {
 /**
@@ -31,5 +34,15 @@ public:
   virtual Statement* accept(Cloner* visitor) const;
   virtual Statement* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
+
+  /**
+   * Resume function.
+   */
+  Statement* resume;
+
+  /**
+   * Local variables in scope at this statement.
+   */
+  std::list<LocalVariable*> locals;
 };
 }

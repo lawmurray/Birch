@@ -22,6 +22,10 @@ bi::BinaryOperator::~BinaryOperator() {
   //
 }
 
+bool bi::BinaryOperator::isDeclaration() const {
+  return true;
+}
+
 bi::Statement* bi::BinaryOperator::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }

@@ -34,6 +34,10 @@ bi::LocalVariable::~LocalVariable() {
   //
 }
 
+bool bi::LocalVariable::isDeclaration() const {
+  return true;
+}
+
 bi::Statement* bi::LocalVariable::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }

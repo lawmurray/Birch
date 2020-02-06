@@ -25,6 +25,10 @@ bi::Fiber::~Fiber() {
   //
 }
 
+bool bi::Fiber::isDeclaration() const {
+  return true;
+}
+
 bi::Statement* bi::Fiber::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }

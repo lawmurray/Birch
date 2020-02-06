@@ -23,6 +23,10 @@ bi::Function::~Function() {
   //
 }
 
+bool bi::Function::isDeclaration() const {
+  return true;
+}
+
 bi::Statement* bi::Function::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }

@@ -49,8 +49,16 @@ public:
    */
   virtual ~Fiber();
 
+  virtual bool isDeclaration() const;
+
   virtual Statement* accept(Cloner* visitor) const;
   virtual Statement* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
+
+  /**
+   * Classes associated with the states and resumption functions of each
+   * yield point in the fiber.
+   */
+  std::list<Class*> states;
 };
 }

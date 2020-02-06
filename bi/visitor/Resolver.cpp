@@ -59,3 +59,17 @@ bi::Statement* bi::Resolver::modify(Class* o) {
   scopes.back()->inherit(o);
   return ScopedModifier::modify(o);
 }
+
+bi::Statement* bi::Resolver::modify(Yield* o) {
+  if (o->resume) {
+    o->resume = o->resume->accept(this);
+  }
+  for (auto iter1 = scopes.rbegin(); iter1 != scopes.rend(); ++iter1) {
+    auto& locals = (*iter1)->localVariables;
+    for (auto iter2 = locals.begin(); iter2 != locals.end(); ++iter2) {
+      auto local = iter2->second;
+      o->locals.push_back(local);
+    }
+  }
+  return ScopedModifier::modify(o);
+}

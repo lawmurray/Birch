@@ -19,6 +19,10 @@ bi::Program::~Program() {
   //
 }
 
+bool bi::Program::isDeclaration() const {
+  return true;
+}
+
 bi::Statement* bi::Program::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }
