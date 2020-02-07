@@ -344,6 +344,7 @@
       "libbirch/ExclusiveLock.hpp",
       "libbirch/external.hpp",
       "libbirch/Fiber.hpp",
+      "libbirch/FiberOutput.hpp",
       "libbirch/FiberState.hpp",
       "libbirch/Index.hpp",
       "libbirch/InitPtr.hpp",

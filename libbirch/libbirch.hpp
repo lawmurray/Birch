@@ -31,7 +31,6 @@
 #include "libbirch/Any.hpp"
 #include "libbirch/Optional.hpp"
 #include "libbirch/Nil.hpp"
-#include "libbirch/FiberState.hpp"
 #include "libbirch/Fiber.hpp"
 #include "libbirch/Eigen.hpp"
 #include "libbirch/EigenFunctions.hpp"
@@ -267,22 +266,6 @@ Array<T,F> make_array_and_assign(const F& shape,
 template<class P, class ... Args>
 P make_pointer(Label* context, const Args& ... args) {
   return P(context, new typename P::value_type(context, args...));
-}
-
-/**
- * Make a fiber.
- *
- * @tparam T Fiber state type.
- * @tparam Args Fiber state constructor parameter types.
- *
- * @param context Current context.
- * @param args Fiber state constructor arguments.
- */
-template<class T, class ... Args>
-Fiber<typename T::yield_type_> make_fiber(Label* context,
-    const Args&... args) {
-  return Fiber<typename T::yield_type_>(context, Lazy<SharedPtr<T>>(context,
-      new T(context, args...)));
 }
 
 /**

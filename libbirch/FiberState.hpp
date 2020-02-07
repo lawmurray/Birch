@@ -3,7 +3,8 @@
  */
 #pragma once
 
-#include "libbirch/Any.hpp"
+#include "libbirch/FiberOutput.hpp"
+#include "libbirch/Tuple.hpp"
 
 namespace libbirch {
 /**
@@ -11,47 +12,47 @@ namespace libbirch {
  *
  * @ingroup libbirch
  *
- * @tparam YieldType Yield type.
+ * @tparam Yield Yield type.
+ * @tparam Return Return type.
+ * @tparam State State type. Typically a Tuple type.
+ * @tparam Resume Resume type. Typically a lambda type.
  */
-template<class YieldType>
+template<class Yield, class Return, class State, class Resume>
 class FiberState: public Any {
 public:
-  using class_type_ = FiberState<YieldType>;
-  using yield_type_ = YieldType;
+  using class_type_ = FiberState;
+  using yield_type_ = Yield;
+  using return_type_ = Return;
 
   /**
    * Constructor.
-   *
-   * @param npoints Number of yield points.
    */
-  FiberState(Label* context, const int npoints) :
-      Any(context),
-      point_(0),
-      npoints_(npoints) {
+  FiberState(Label* context, const State& state, const Resume& resume) :
+      FiberOutput(context),
+      state(state),
+      resume(resume) {
     //
   }
 
   /**
    * Deep copy constructor for value yield type.
    */
-  template<IS_VALUE(YieldType)>
-  FiberState(Label* context, Label* label, const FiberState<YieldType>& o) :
-      Any(context, label, o),
-      value_(o.value_),
-      point_(o.point_),
-      npoints_(o.npoints_) {
+  template<IS_VALUE(Yield)>
+  FiberState(Label* context, Label* label, const FiberState& o) :
+      FiberOutput(context, label, o),
+      state(o.state),
+      resume(o.resume) {
     //
   }
 
   /**
    * Deep copy constructor for non-value yield type.
    */
-  template<IS_NOT_VALUE(YieldType)>
-  FiberState(Label* context, Label* label, const FiberState<YieldType>& o) :
-      Any(context, label, o),
-      value_(context, label, o.value_),
-      point_(o.point_),
-      npoints_(o.npoints_) {
+  template<IS_NOT_VALUE(Yield)>
+  FiberState(Label* context, Label* label, const FiberState& o) :
+      FiberOutput(context, label, o),
+      state(o.state),
+      resume(o.resume) {
     //
   }
 
@@ -62,44 +63,30 @@ public:
     //
   }
 
-  /**
-   * Run to next yield point.
-   */
-  virtual bool query() = 0;
-
-  /**
-   * Get the last yield value.
-   */
-  YieldType& get() {
-    return value_;
-  }
-
 protected:
   virtual void doFreeze_() {
-    freeze(value_);
+    freeze(state);
+    freeze(resume);
   }
 
   virtual void doThaw_(Label* label) {
-    thaw(value_, label);
+    thaw(state, label);
+    thaw(resume, label);
   }
 
   virtual void doFinish_() {
-    finish(value_);
+    finish(state);
+    finish(resume);
   }
 
   /**
-   * Most recent yield value.
+   * State.
    */
-  YieldType value_;
+  State state;
 
   /**
-   * Current yield point.
+   * Resume function.
    */
-  int point_;
-
-  /**
-   * Number of yield points.
-   */
-  int npoints_;
+  Resume resume;
 };
 }

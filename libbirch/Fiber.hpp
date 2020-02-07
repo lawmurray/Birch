@@ -3,7 +3,7 @@
  */
 #pragma once
 
-#include "libbirch/FiberState.hpp"
+#include "libbirch/FiberOutput.hpp"
 
 namespace libbirch {
 /**
@@ -12,8 +12,9 @@ namespace libbirch {
  * @ingroup libbirch
  *
  * @tparam YieldType Yield type.
+ * @tparam ReturnType Return type.
  */
-template<class YieldType>
+template<class YieldType, class ReturnType>
 class Fiber {
 public:
   /**
@@ -33,7 +34,8 @@ public:
   /**
    * Constructor.
    */
-  Fiber(Label* context, const Lazy<SharedPtr<FiberState<YieldType>>>& state) :
+  Fiber(Label* context,
+      const Lazy<SharedPtr<FiberOutput<YieldType,ReturnType>>>& state) :
       state(context, state) {
     //
   }
@@ -41,7 +43,7 @@ public:
   /**
    * Copy constructor.
    */
-  Fiber(Label* context, const Fiber<YieldType>& o) :
+  Fiber(Label* context, const Fiber<YieldType,ReturnType>& o) :
       state(context, o.state) {
     //
   }
@@ -49,7 +51,7 @@ public:
   /**
    * Move constructor.
    */
-  Fiber(Label* context, Fiber<YieldType>&& o) :
+  Fiber(Label* context, Fiber<YieldType,ReturnType>&& o) :
       state(context, std::move(o.state)) {
     //
   }
@@ -57,7 +59,7 @@ public:
   /**
    * Deep copy constructor.
    */
-  Fiber(Label* context, Label* label, const Fiber<YieldType>& o) :
+  Fiber(Label* context, Label* label, const Fiber<YieldType,ReturnType>& o) :
       state(context, label, o.state) {
     //
   }
@@ -65,7 +67,7 @@ public:
   /**
    * Copy assignment.
    */
-  Fiber& assign(Label* context, const Fiber<YieldType>& o) {
+  Fiber& assign(Label* context, const Fiber<YieldType,ReturnType>& o) {
     state.assign(context, o.state);
     return *this;
   }
@@ -73,7 +75,7 @@ public:
   /**
    * Move assignment.
    */
-  Fiber& assign(Label* context, Fiber<YieldType>&& o) {
+  Fiber& assign(Label* context, Fiber<YieldType,ReturnType>&& o) {
     state.assign(context, std::move(o.state));
     return *this;
   }
@@ -81,8 +83,8 @@ public:
   /**
    * Clone the fiber.
    */
-  Fiber<YieldType> clone(Label* context) const {
-    return Fiber<YieldType>(context, state.clone(context));
+  Fiber<YieldType,ReturnType> clone(Label* context) const {
+    return Fiber<YieldType,ReturnType>(context, state.clone(context));
   }
 
   /**
@@ -116,7 +118,7 @@ public:
     if (state.query()) {
       result = state->query();
       if (!result) {
-        const_cast<Fiber<YieldType>*>(this)->state.release();
+        const_cast<Fiber<YieldType,ReturnType>*>(this)->state.release();
         // ^ fiber has finished, delete the state
       }
     }
@@ -132,16 +134,15 @@ public:
     return state->get();
   }
 
-
 private:
   /**
    * Fiber state.
    */
-  Lazy<SharedPtr<FiberState<YieldType>>> state;
+  Lazy<SharedPtr<FiberOutput<YieldType,ReturnType>>> state;
 };
 
-template<class T>
-struct is_value<Fiber<T>> {
+template<class T, class U>
+struct is_value<Fiber<T,U>> {
   static const bool value = false;
 };
 }
