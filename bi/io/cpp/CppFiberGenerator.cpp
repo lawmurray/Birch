@@ -14,13 +14,109 @@ bi::CppFiberGenerator::CppFiberGenerator(std::ostream& base, const int level,
 }
 
 void bi::CppFiberGenerator::visit(const Fiber* o) {
-  Gatherer<Yield> yields;
-  o->accept(&yields);
-  for (auto yield : yields) {
-    if (yield->resume) {
-      *this << yield->resume;
+  theFiber = o;
+  auto fiberType = dynamic_cast<const FiberType*>(theFiber->returnType);
+  assert(fiberType);
+
+  /* initial function */
+  if (!o->braces->isEmpty()) {
+    if (!header) {
+      genSourceLine(o->loc);
+    }
+    genTemplateParams(o);
+    if (!header) {
+      genSourceLine(o->loc);
+    }
+    start(o->returnType << ' ');
+    if (!header) {
+      middle("bi::");
+    }
+    middle(o->name << '(' << o->params << ')');
+    if (header) {
+      finish(';');
+    } else {
+      finish(" {");
+      in();
+      *this << o->yield;
+      out();
+      line("}\n");
+    }
+
+    /* resume functions */
+    Gatherer<Yield> yields;
+    o->yield->accept(&yields);
+    o->accept(&yields);
+    for (auto yield : yields) {
+      if (yield->resume) {
+        *this << yield->resume;
+      }
     }
   }
+}
+
+void bi::CppFiberGenerator::visit(const Function* o) {
+  if (!header) {
+    genSourceLine(o->loc);
+  }
+  start("template<");
+  if (!o->typeParams->isEmpty()) {
+    middle(o->typeParams << ", ");
+  }
+  finish("class State>");
+  if (!header) {
+    genSourceLine(o->loc);
+  }
+  start(o->returnType << ' ');
+  if (!header) {
+    middle("bi::");
+  }
+  middle(o->name << '_' << o->number << "_(const State& state) {");
+  if (header) {
+    finish(';');
+  } else {
+    finish(" {");
+    in();
+    genTraceFunction(o->name->str(), o->loc);
+    *this << o->braces->strip();
+    out();
+    line("}\n");
+  }
+}
+
+void bi::CppFiberGenerator::visit(const Yield* o) {
+  auto fiberType = dynamic_cast<const FiberType*>(theFiber->returnType);
+  assert(fiberType);
+  genTraceLine(o->loc);
+  start("auto state_" << o->number << "_ = libbirch::make_tuple(");
+  for (auto iter = o->state.begin(); iter != o->state.end(); ++iter) {
+    if (iter != o->state.begin()) {
+      middle(", ");
+    }
+    middle(*iter);
+  }
+  finish(");");
+
+  start("return libbirch::make_fiber");
+  middle('<' << fiberType->yieldType << ',' << fiberType->returnType << '>');
+  middle('(');
+  if (!o->single->isEmpty()) {
+    middle(o->single << ", ");
+  }
+  middle(theFiber->name << '_' << o->number << "_<");
+  if (!theFiber->typeParams->isEmpty()) {
+    middle(theFiber->typeParams << ", ");
+  }
+  middle("decltype(state_" << o->number << "_)>");
+  finish(", std::move(state_" << o->number << "_));");
+}
+
+void bi::CppFiberGenerator::visit(const Return* o) {
+  auto fiberType = dynamic_cast<const FiberType*>(theFiber->returnType);
+  assert(fiberType);
+  genTraceLine(o->loc);
+  start("return libbirch::make_fiber");
+  middle('<' << fiberType->yieldType << ',' << fiberType->returnType << '>');
+  finish('(' << o->single << ");");
 }
 
 std::string bi::CppFiberGenerator::getName(const std::string& name,

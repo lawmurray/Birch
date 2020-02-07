@@ -23,10 +23,8 @@ class Resumer : public Cloner {
 public:
   /**
    * Constructor.
-   *
-   * @param yield The yield point.
    */
-  Resumer(const Yield* yield);
+  Resumer(const Yield* yield = nullptr);
 
   /**
    * Destructor.
@@ -34,6 +32,7 @@ public:
   virtual ~Resumer();
 
   virtual Statement* clone(const Fiber* o) override;
+  virtual Statement* clone(const MemberFiber* o) override;
   virtual Statement* clone(const Yield* o) override;
   virtual Statement* clone(const If* o) override;
   virtual Statement* clone(const StatementList* o) override;

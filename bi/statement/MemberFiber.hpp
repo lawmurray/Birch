@@ -54,9 +54,8 @@ public:
   virtual void accept(Visitor* visitor) const;
 
   /**
-   * Classes associated with the states and resumption functions of each
-   * yield point in the fiber.
+   * The implicit first yield.
    */
-  std::list<Class*> states;
+  Statement* yield;
 };
 }

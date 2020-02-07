@@ -38,6 +38,7 @@ public:
   virtual Statement* modify(Program* o);
   virtual Statement* modify(Basic* o);
   virtual Statement* modify(Class* o);
+  virtual Statement* modify(Yield* o);
   virtual Expression* modify(Generic* o);
 };
 }

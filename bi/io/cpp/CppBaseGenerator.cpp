@@ -673,8 +673,7 @@ void bi::CppBaseGenerator::visit(const Return* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Yield* o) {
-  genTraceLine(o->loc);
-  line("yield " << o->single << ';');
+  assert(false);  // should be in CppFiberGenerator
 }
 
 void bi::CppBaseGenerator::visit(const Raw* o) {

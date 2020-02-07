@@ -14,17 +14,31 @@ bi::Resumer::~Resumer() {
   //
 }
 
+bi::Statement* bi::Resumer::clone(const Fiber* o) {
+  o->yield->accept(this);
+  auto r = new Function(o->annotation, o->name, o->typeParams->accept(this),
+      o->params->accept(this), o->returnType->accept(this),
+      o->braces->accept(this), o->loc);
+  r->number = yield->number;
+  return r;
+}
+
+bi::Statement* bi::Resumer::clone(const MemberFiber* o) {
+  o->yield->accept(this);
+  auto r = new MemberFunction(o->annotation, o->name,
+      o->params->accept(this), o->returnType->accept(this),
+      o->braces->accept(this), o->loc);
+  r->number = yield->number;
+  return r;
+}
+
 bi::Statement* bi::Resumer::clone(const Yield* o) {
   if (o == yield) {
     foundYield = true;
   }
-  return Cloner::clone(o);
-}
-
-bi::Statement* bi::Resumer::clone(const Fiber* o) {
-  return new Function(o->annotation, o->name, o->typeParams->accept(this),
-      o->params->accept(this), o->returnType->accept(this),
-      o->braces->accept(this), o->loc);
+  auto r = new Yield(o->single->accept(this), o->loc);
+  r->number = o->number;
+  return r;
 }
 
 bi::Statement* bi::Resumer::clone(const If* o) {

@@ -20,6 +20,9 @@ public:
   using CppBaseGenerator::visit;
 
   virtual void visit(const Fiber* o);
+  virtual void visit(const Function* o);
+  virtual void visit(const Yield* o);
+  virtual void visit(const Return* o);
 
 protected:
   /**
@@ -28,6 +31,11 @@ protected:
    * of the same name declared in differently-scoped blocks.
    */
   std::string getName(const std::string& name, const int number);
+
+  /**
+   * The fiber.
+   */
+  const Fiber* theFiber;
 
   /**
    * Name mappings. Local variables become member variables of the fiber

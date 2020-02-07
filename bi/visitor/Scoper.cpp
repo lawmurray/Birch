@@ -43,11 +43,13 @@ bi::Statement* bi::Scoper::modify(Function* o) {
 
 bi::Statement* bi::Scoper::modify(MemberFiber* o) {
   scopes.back()->add(o);
+  o->yield->accept(this);
   return ScopedModifier::modify(o);
 }
 
 bi::Statement* bi::Scoper::modify(Fiber* o) {
   scopes.back()->add(o);
+  o->yield->accept(this);
   return ScopedModifier::modify(o);
 }
 
@@ -73,6 +75,13 @@ bi::Statement* bi::Scoper::modify(Basic* o) {
 
 bi::Statement* bi::Scoper::modify(Class* o) {
   scopes.back()->add(o);
+  return ScopedModifier::modify(o);
+}
+
+bi::Statement* bi::Scoper::modify(Yield* o) {
+  if (o->resume) {
+    o->resume->accept(this);
+  }
   return ScopedModifier::modify(o);
 }
 

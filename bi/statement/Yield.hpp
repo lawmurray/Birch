@@ -4,9 +4,10 @@
 #pragma once
 
 #include "bi/statement/Statement.hpp"
-#include "bi/expression/Expression.hpp"
+#include "bi/common/Numbered.hpp"
 #include "bi/common/Single.hpp"
-#include "bi/statement/LocalVariable.hpp"
+#include "bi/expression/Expression.hpp"
+#include "bi/expression/NamedExpression.hpp"
 
 #include <list>
 
@@ -16,7 +17,7 @@ namespace bi {
  *
  * @ingroup statement
  */
-class Yield: public Statement, public Single<Expression> {
+class Yield: public Statement, public Numbered, public Single<Expression> {
 public:
   /**
    * Constructor.
@@ -41,8 +42,10 @@ public:
   Statement* resume;
 
   /**
-   * Local variables in scope at this statement.
+   * State. This is a list of expressions naming the parameters and local
+   * variables that must be preserved in the state for the fiber to be
+   * resumed from this point.
    */
-  std::list<LocalVariable*> locals;
+  std::list<NamedExpression*> state;
 };
 }

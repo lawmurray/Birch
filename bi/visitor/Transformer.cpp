@@ -86,24 +86,35 @@ bi::Statement* bi::Transformer::modify(ExpressionStatement* o) {
 }
 
 bi::Statement* bi::Transformer::modify(Fiber* o) {
-  auto r = Modifier::modify(o);
+  Modifier::modify(o);
+
+  /* initial yield */
+  o->yield = new Yield(new EmptyExpression(o->loc), o->loc);
+
+  /* resume functions */
   Gatherer<Yield> yields;
-  r->accept(&yields);
+  o->yield->accept(&yields);
+  o->accept(&yields);
   for (auto yield : yields) {
-    /* create the resume function for the yield point */
     Resumer resumer(yield);
-    yield->resume = r->accept(&resumer);
+    yield->resume = o->accept(&resumer);
   }
-  return r;
+  return o;
 }
 
 bi::Statement* bi::Transformer::modify(MemberFiber* o) {
-  auto r = Modifier::modify(o);
+  Modifier::modify(o);
+
+  /* initial yield */
+  o->yield = new Yield(new EmptyExpression(o->loc), o->loc);
+
+  /* resume functions */
   Gatherer<Yield> yields;
-  r->accept(&yields);
+  o->yield->accept(&yields);
+  o->accept(&yields);
   for (auto yield : yields) {
     Resumer resumer(yield);
-    yield->resume = r->accept(&resumer);
+    yield->resume = o->accept(&resumer);
   }
-  return r;
+  return o;
 }

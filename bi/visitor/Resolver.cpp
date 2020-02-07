@@ -36,6 +36,7 @@ bi::Expression* bi::Resolver::modify(NamedExpression* o) {
          * MEMBER_UNKNOWN, and let the C++ handle the rest. */
         o->category = MEMBER_UNKNOWN;
       } else {
+        assert(false);
         throw UnresolvedException(o);
       }
     }
@@ -60,15 +61,34 @@ bi::Statement* bi::Resolver::modify(Class* o) {
   return ScopedModifier::modify(o);
 }
 
+bi::Statement* bi::Resolver::modify(Fiber* o) {
+  o->yield = o->yield->accept(this);
+  return ScopedModifier::modify(o);
+}
+
+bi::Statement* bi::Resolver::modify(MemberFiber* o) {
+  o->yield = o->yield->accept(this);
+  return ScopedModifier::modify(o);
+}
+
 bi::Statement* bi::Resolver::modify(Yield* o) {
   if (o->resume) {
     o->resume = o->resume->accept(this);
   }
+
+  /* construct the yield state, this being the parameters and local variables
+   * that must be preserved for execution to resume */
   for (auto iter1 = scopes.rbegin(); iter1 != scopes.rend(); ++iter1) {
+    auto& params = (*iter1)->parameters;
     auto& locals = (*iter1)->localVariables;
-    for (auto iter2 = locals.begin(); iter2 != locals.end(); ++iter2) {
-      auto local = iter2->second;
-      o->locals.push_back(local);
+
+    for (auto pair : params) {
+      auto param = pair.second;
+      o->state.push_back(new NamedExpression(param->name, param->loc));
+    }
+    for (auto pair : locals) {
+      auto local = pair.second;
+      o->state.push_back(new NamedExpression(local->name, local->loc));
     }
   }
   return ScopedModifier::modify(o);
