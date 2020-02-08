@@ -4,7 +4,7 @@
 #include "bi/io/cpp/CppBaseGenerator.hpp"
 
 #include "bi/io/cpp/CppClassGenerator.hpp"
-#include "bi/io/cpp/CppFiberGenerator.hpp"
+#include "bi/io/cpp/CppResumeGenerator.hpp"
 #include "bi/io/bih_ostream.hpp"
 #include "bi/primitive/encode.hpp"
 
@@ -341,8 +341,42 @@ void bi::CppBaseGenerator::visit(const Function* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Fiber* o) {
-  CppFiberGenerator auxFiber(base, level, header);
-  auxFiber << o;
+  if (!o->braces->isEmpty()) {
+    /* initial function */
+    if (!header) {
+      genSourceLine(o->loc);
+    }
+    genTemplateParams(o);
+    if (!header) {
+      genSourceLine(o->loc);
+    }
+    start(o->returnType << ' ');
+    if (!header) {
+      middle("bi::");
+    }
+    middle(o->name << '(' << o->params << ')');
+    if (header) {
+      finish(';');
+    } else {
+      finish(" {");
+      in();
+      CppResumeGenerator aux(nullptr, base, level, header);
+      aux << o->yield;
+      out();
+      line("}\n");
+    }
+
+    /* resume functions */
+    Gatherer<Yield> yields;
+    o->yield->accept(&yields);
+    o->accept(&yields);
+    for (auto yield : yields) {
+      if (yield->resume) {
+        CppResumeGenerator aux(yield, base, level, header);
+        aux << yield->resume;
+      }
+    }
+  }
 }
 
 void bi::CppBaseGenerator::visit(const MemberFunction* o) {
@@ -673,7 +707,7 @@ void bi::CppBaseGenerator::visit(const Return* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Yield* o) {
-  assert(false);  // should be in CppFiberGenerator
+  assert(false);  // should be in CppResumeGenerator
 }
 
 void bi::CppBaseGenerator::visit(const Raw* o) {

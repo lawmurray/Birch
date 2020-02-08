@@ -8,18 +8,17 @@
 
 namespace bi {
 /**
- * C++ code generator for fibers.
+ * C++ code generator for resume functions of fibers.
  *
  * @ingroup io
  */
-class CppFiberGenerator: public CppBaseGenerator {
+class CppResumeGenerator: public CppBaseGenerator {
 public:
-  CppFiberGenerator(std::ostream& base,
+  CppResumeGenerator(const Yield* yield, std::ostream& base,
       const int level = 0, const bool header = false);
 
   using CppBaseGenerator::visit;
 
-  virtual void visit(const Fiber* o);
   virtual void visit(const Function* o);
   virtual void visit(const Yield* o);
   virtual void visit(const Return* o);
@@ -33,9 +32,9 @@ protected:
   std::string getName(const std::string& name, const int number);
 
   /**
-   * The fiber.
+   * The yield.
    */
-  const Fiber* theFiber;
+  const Yield* yield;
 
   /**
    * Name mappings. Local variables become member variables of the fiber

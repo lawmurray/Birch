@@ -3,7 +3,8 @@
  */
 #include "bi/io/cpp/CppClassGenerator.hpp"
 
-#include "bi/io/cpp/CppMemberFiberGenerator.hpp"
+#include "bi/io/cpp/CppResumeGenerator.hpp"
+#include "bi/visitor/Gatherer.hpp"
 #include "bi/primitive/encode.hpp"
 
 bi::CppClassGenerator::CppClassGenerator(std::ostream& base, const int level,
@@ -399,8 +400,37 @@ void bi::CppClassGenerator::visit(const MemberFunction* o) {
 
 void bi::CppClassGenerator::visit(const MemberFiber* o) {
   if ((header && o->has(ABSTRACT)) || !o->braces->isEmpty()) {
-    CppMemberFiberGenerator auxMemberFiber(theClass, base, level, header);
-    auxMemberFiber << o;
+    if (header) {
+      start("virtual ");
+    } else {
+      genSourceLine(o->loc);
+      genTemplateParams(theClass);
+      genSourceLine(o->loc);
+      start("");
+    }
+    middle(o->returnType << ' ');
+    if (!header) {
+      middle("bi::type::" << theClass->name);
+      genTemplateArgs(theClass);
+      middle("::");
+    }
+    middle(internalise(o->name->str()) << '(' << o->params << ')');
+    if (header) {
+      if (o->has(FINAL)) {
+        middle(" final");
+      } else if (o->has(ABSTRACT)) {
+        middle(" = 0");
+      }
+      finish(';');
+    } else {
+      finish(" {");
+      in();
+      line("libbirch_declare_self_");
+      CppResumeGenerator aux(nullptr, base, level, header);
+      aux << o->yield;
+      out();
+      finish("}\n");
+    }
   }
 }
 

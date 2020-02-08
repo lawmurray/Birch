@@ -34,8 +34,8 @@ public:
   virtual Statement* clone(const Fiber* o) override;
   virtual Statement* clone(const MemberFiber* o) override;
   virtual Statement* clone(const Yield* o) override;
-  virtual Statement* clone(const If* o) override;
   virtual Statement* clone(const StatementList* o) override;
+  virtual Statement* clone(const If* o) override;
   virtual Statement* clone(const While* o) override;
   virtual Statement* clone(const DoWhile* o) override;
 
@@ -49,10 +49,5 @@ private:
    * Has the yield point been encountered yet?
    */
   bool foundYield;
-
-  /**
-   * Are we in a loop?
-   */
-  int inLoop;
 };
 }

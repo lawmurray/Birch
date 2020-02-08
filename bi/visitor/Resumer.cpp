@@ -5,8 +5,7 @@
 
 bi::Resumer::Resumer(const Yield* yield) :
     yield(yield),
-    foundYield(false),
-    inLoop(0) {
+    foundYield(false) {
   //
 }
 
@@ -33,30 +32,13 @@ bi::Statement* bi::Resumer::clone(const MemberFiber* o) {
 }
 
 bi::Statement* bi::Resumer::clone(const Yield* o) {
-  if (o == yield) {
+  if (o == yield && !foundYield) {  // may encounter second time if in loop
     foundYield = true;
-  }
-  auto r = new Yield(o->single->accept(this), o->loc);
-  r->number = o->number;
-  return r;
-}
-
-bi::Statement* bi::Resumer::clone(const If* o) {
-  auto cond = o->cond->accept(this);
-  auto foundBefore = foundYield;
-  auto trueBraces = o->braces->accept(this);
-  auto foundTrue = foundYield;
-  auto falseBraces = o->falseBraces->accept(this);
-  auto foundFalse = foundYield;
-
-  if (inLoop || foundBefore) {
-    return new If(cond, trueBraces, falseBraces, o->loc);
-  } else if (foundTrue) {
-    return trueBraces;
-  } else if (foundFalse) {
-    return falseBraces;
-  } else {
     return new EmptyStatement(o->loc);
+  } else {
+    auto r = new Yield(o->single->accept(this), o->loc);
+    r->number = o->number;
+    return r;
   }
 }
 
@@ -67,8 +49,8 @@ bi::Statement* bi::Resumer::clone(const StatementList* o) {
   auto tail = o->tail->accept(this);
   auto foundTail = foundYield;
 
-  auto keepHead = inLoop || foundBefore || foundHead || head->isDeclaration();
-  auto keepTail = inLoop || foundBefore || foundTail || tail->isDeclaration();
+  auto keepHead = foundBefore || foundHead;
+  auto keepTail = foundBefore || foundTail;
 
   if (keepHead && keepTail) {
     return new StatementList(head, tail, o->loc);
@@ -81,16 +63,61 @@ bi::Statement* bi::Resumer::clone(const StatementList* o) {
   }
 }
 
+bi::Statement* bi::Resumer::clone(const If* o) {
+  auto cond = o->cond->accept(this);
+  auto foundBefore = foundYield;
+  auto trueBraces = o->braces->accept(this);
+  auto foundTrue = foundYield;
+  auto falseBraces = o->falseBraces->accept(this);
+  auto foundFalse = foundYield;
+
+  if (foundBefore) {
+    return new If(cond, trueBraces, falseBraces, o->loc);
+  } else if (foundTrue) {
+    return trueBraces;
+  } else if (foundFalse) {
+    return falseBraces;
+  } else {
+    return new EmptyStatement(o->loc);
+  }
+}
+
 bi::Statement* bi::Resumer::clone(const While* o) {
-  ++inLoop;
-  auto r = Cloner::clone(o);
-  --inLoop;
-  return r;
+  auto cond = o->cond->accept(this);
+  auto foundBefore = foundYield;
+  auto braces = o->braces->accept(this);
+  auto foundAfter = foundYield;
+
+  if (foundBefore) {
+    /* keep everything */
+    return new While(cond, braces, o->loc);
+  } else if (foundAfter) {
+    /* `braces` has unrolled and reduced the first iteration of the loop
+     * only, will need to clone in the entire loop in after it */
+    auto loop = new While(cond, o->braces->accept(this), o->loc);
+    return new StatementList(braces, loop, o->loc);
+  } else {
+    return new EmptyStatement(o->loc);
+  }
 }
 
 bi::Statement* bi::Resumer::clone(const DoWhile* o) {
-  ++inLoop;
-  auto r = Cloner::clone(o);
-  --inLoop;
-  return r;
+  auto foundBefore = foundYield;
+  auto braces = o->braces->accept(this);
+  auto cond = o->cond->accept(this);
+  auto foundAfter = foundYield;
+
+  if (foundBefore) {
+    /* keep everything */
+    return new DoWhile(braces, cond, o->loc);
+  } else if (foundAfter) {
+    /* `braces` has unrolled and reduced the first iteration of the loop
+     * only, will need to clone in the entire loop in after it, now as a
+     * while rather than do-while loop, to ensure that the condition is
+     * checked before the second iteration */
+    auto loop = new While(cond, o->braces->accept(this), o->loc);
+    return new StatementList(braces, loop, o->loc);
+  } else {
+    return new EmptyStatement(o->loc);
+  }
 }
