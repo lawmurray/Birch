@@ -1,9 +1,9 @@
 /**
+#include <bi/io/cpp/CppFiberGenerator.hpp>
  * @file
  */
 #include "bi/io/cpp/CppClassGenerator.hpp"
 
-#include "bi/io/cpp/CppResumeGenerator.hpp"
 #include "bi/visitor/Gatherer.hpp"
 #include "bi/primitive/encode.hpp"
 
@@ -372,26 +372,10 @@ void bi::CppClassGenerator::visit(const MemberFunction* o) {
     } else {
       finish(" {");
       in();
-
-      /* declare self if necessary */
-      Gatherer<Member> members;
-      Gatherer<Raw> raws;
-      Gatherer<This> selfs;
-      Gatherer<Super> supers;
-      o->accept(&members);
-      o->accept(&raws);
-      o->accept(&selfs);
-      o->accept(&supers);
-      if (members.size() + raws.size() + selfs.size() + supers.size() > 0) {
-        genSourceLine(o->loc);
-        line("libbirch_declare_self_");
-      }
-
-      /* body */
       genTraceFunction(o->name->str(), o->loc);
+      line("libbirch_declare_self_");
       CppBaseGenerator auxBase(base, level, header);
       auxBase << o->braces->strip();
-
       out();
       finish("}\n");
     }
@@ -426,8 +410,8 @@ void bi::CppClassGenerator::visit(const MemberFiber* o) {
       finish(" {");
       in();
       line("libbirch_declare_self_");
-      CppResumeGenerator aux(nullptr, base, level, header);
-      aux << o->yield;
+      //CppResumeGenerator aux(nullptr, base, level, header);
+      //aux << o->yield;
       out();
       finish("}\n");
     }
@@ -439,6 +423,8 @@ void bi::CppClassGenerator::visit(const AssignmentOperator* o) {
     if (header) {
       start("virtual ");
     } else {
+      genSourceLine(o->loc);
+      genTemplateParams(theClass);
       genSourceLine(o->loc);
       start("bi::type::");
     }
@@ -474,6 +460,8 @@ void bi::CppClassGenerator::visit(const ConversionOperator* o) {
     if (header) {
       start("virtual ");
     } else {
+      genSourceLine(o->loc);
+      genTemplateParams(theClass);
       genSourceLine(o->loc);
       start("bi::type::" << theClass->name);
       genTemplateArgs(theClass);

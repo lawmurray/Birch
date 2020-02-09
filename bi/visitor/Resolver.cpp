@@ -20,6 +20,9 @@ bi::Expression* bi::Resolver::modify(NamedExpression* o) {
      * something is a variable, function or fiber without type deduction.
      * Instead categorize as MEMBER_UNKNOWN, and let C++ handle the rest */
     o->category = MEMBER_UNKNOWN;
+  } else if (inGlobal) {
+    /* just check the global scope */
+    scopes.front()->lookup(o);
   } else {
     for (auto iter = scopes.rbegin(); iter != scopes.rend() && !o->category;
         ++iter) {

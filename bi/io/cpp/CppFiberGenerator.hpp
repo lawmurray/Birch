@@ -12,13 +12,14 @@ namespace bi {
  *
  * @ingroup io
  */
-class CppResumeGenerator: public CppBaseGenerator {
+class CppFiberGenerator: public CppBaseGenerator {
 public:
-  CppResumeGenerator(const Yield* yield, std::ostream& base,
-      const int level = 0, const bool header = false);
+  CppFiberGenerator(std::ostream& base, const int level = 0,
+      const bool header = false);
 
   using CppBaseGenerator::visit;
 
+  virtual void visit(const Fiber* o);
   virtual void visit(const Function* o);
   virtual void visit(const Yield* o);
   virtual void visit(const Return* o);
@@ -30,11 +31,6 @@ protected:
    * of the same name declared in differently-scoped blocks.
    */
   std::string getName(const std::string& name, const int number);
-
-  /**
-   * The yield.
-   */
-  const Yield* yield;
 
   /**
    * Name mappings. Local variables become member variables of the fiber
@@ -51,5 +47,15 @@ protected:
    * Counts of all local variable names encountered.
    */
   std::map<std::string,int> counts;
+
+  /**
+   * The fiber.
+   */
+  const Fiber* fiber;
+
+  /**
+   * The current yield for which a resume function is being generated.
+   */
+  const Yield* yield;
 };
 }

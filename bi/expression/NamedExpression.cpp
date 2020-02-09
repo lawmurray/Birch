@@ -25,7 +25,18 @@ bi::NamedExpression::~NamedExpression() {
 }
 
 bool bi::NamedExpression::isAssignable() const {
-  return true;
+  return category == MEMBER_VARIABLE || category == LOCAL_VARIABLE;
+}
+
+bool bi::NamedExpression::isGlobal() const {
+  return category == GLOBAL_VARIABLE || category == GLOBAL_FUNCTION ||
+      category == GLOBAL_FIBER || category == BINARY_OPERATOR ||
+      category == UNARY_OPERATOR;
+}
+
+bool bi::NamedExpression::isMember() const {
+  return category == MEMBER_VARIABLE || category == MEMBER_FUNCTION ||
+      category == MEMBER_FIBER || category == MEMBER_UNKNOWN;
 }
 
 bi::Expression* bi::NamedExpression::accept(Cloner* visitor) const {

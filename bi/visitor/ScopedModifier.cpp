@@ -5,6 +5,7 @@
 
 bi::ScopedModifier::ScopedModifier() :
     inMember(0),
+    inGlobal(0),
     inClass(0),
     inLoop(0) {
   //
@@ -33,6 +34,13 @@ bi::Expression* bi::ScopedModifier::modify(Member* o) {
   ++inMember;
   o->right = o->right->accept(this);
   --inMember;
+  return o;
+}
+
+bi::Expression* bi::ScopedModifier::modify(Global* o) {
+  ++inGlobal;
+  o->single = o->single->accept(this);
+  --inGlobal;
   return o;
 }
 

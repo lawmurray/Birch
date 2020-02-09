@@ -4,7 +4,7 @@
 #include "bi/io/cpp/CppBaseGenerator.hpp"
 
 #include "bi/io/cpp/CppClassGenerator.hpp"
-#include "bi/io/cpp/CppResumeGenerator.hpp"
+#include "bi/io/cpp/CppFiberGenerator.hpp"
 #include "bi/io/bih_ostream.hpp"
 #include "bi/primitive/encode.hpp"
 
@@ -17,7 +17,8 @@ bi::CppBaseGenerator::CppBaseGenerator(std::ostream& base, const int level,
     inAssign(0),
     inConstructor(0),
     inLambda(0),
-    inSequence(0) {
+    inSequence(0),
+    inMember(0) {
   //
 }
 
@@ -204,7 +205,6 @@ void bi::CppBaseGenerator::visit(const Member* o) {
     } else if (leftSuper) {
       middle("super_type_::");
     }
-    middle(o->right);
   } else {
     auto rightVar = dynamic_cast<const NamedExpression*>(o->right);
     middle(o->left);
@@ -217,12 +217,13 @@ void bi::CppBaseGenerator::visit(const Member* o) {
     middle("->");
 
     /* explicitly refer to the super class if necessary */
-    auto leftSuper = dynamic_cast<const Super*>(o->left);
     if (leftSuper) {
       middle("super_type_::");
     }
-    middle(o->right);
   }
+  ++inMember;
+  middle(o->right);
+  --inMember;
 }
 
 void bi::CppBaseGenerator::visit(const This* o) {
@@ -242,7 +243,7 @@ void bi::CppBaseGenerator::visit(const Super* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Global* o) {
-  middle("::" << o->single);
+  middle(o->single);
 }
 
 void bi::CppBaseGenerator::visit(const Nil* o) {
@@ -257,13 +258,22 @@ void bi::CppBaseGenerator::visit(const Parameter* o) {
 }
 
 void bi::CppBaseGenerator::visit(const NamedExpression* o) {
-  if (o->category == GLOBAL_VARIABLE) {
-    middle("bi::" << o->name << "()");
+  if (o->isGlobal()) {
+    middle("bi::" << o->name);
+    if (o->category == GLOBAL_VARIABLE) {
+      /* global variables generated as functions */
+      middle("()");
+    }
+  } else if (o->isMember()) {
+    if (!inMember && !inConstructor) {
+      middle("self->");
+    }
+    middle(o->name);
   } else {
     middle(o->name);
-    if (!o->typeArgs->isEmpty()) {
-      middle('<' << o->typeArgs << '>');
-    }
+  }
+  if (!o->typeArgs->isEmpty()) {
+    middle('<' << o->typeArgs << '>');
   }
 }
 
@@ -314,9 +324,6 @@ void bi::CppBaseGenerator::visit(const LocalVariable* o) {
 
 void bi::CppBaseGenerator::visit(const Function* o) {
   if (!o->braces->isEmpty()) {
-    if (!header) {
-      genSourceLine(o->loc);
-    }
     genTemplateParams(o);
     if (!header) {
       genSourceLine(o->loc);
@@ -341,42 +348,8 @@ void bi::CppBaseGenerator::visit(const Function* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Fiber* o) {
-  if (!o->braces->isEmpty()) {
-    /* initial function */
-    if (!header) {
-      genSourceLine(o->loc);
-    }
-    genTemplateParams(o);
-    if (!header) {
-      genSourceLine(o->loc);
-    }
-    start(o->returnType << ' ');
-    if (!header) {
-      middle("bi::");
-    }
-    middle(o->name << '(' << o->params << ')');
-    if (header) {
-      finish(';');
-    } else {
-      finish(" {");
-      in();
-      CppResumeGenerator aux(nullptr, base, level, header);
-      aux << o->yield;
-      out();
-      line("}\n");
-    }
-
-    /* resume functions */
-    Gatherer<Yield> yields;
-    o->yield->accept(&yields);
-    o->accept(&yields);
-    for (auto yield : yields) {
-      if (yield->resume) {
-        CppResumeGenerator aux(yield, base, level, header);
-        aux << yield->resume;
-      }
-    }
-  }
+  CppFiberGenerator aux(base, level, header);
+  aux << o;
 }
 
 void bi::CppBaseGenerator::visit(const MemberFunction* o) {
@@ -614,11 +587,7 @@ void bi::CppBaseGenerator::visit(const Class* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Generic* o) {
-  if (o->type->isEmpty()) {
-    middle(o->name);
-  } else {
-    middle(o->type);
-  }
+  middle(o->name);
 }
 
 void bi::CppBaseGenerator::visit(const Assume* o) {
@@ -646,9 +615,12 @@ void bi::CppBaseGenerator::visit(const If* o) {
 }
 
 void bi::CppBaseGenerator::visit(const For* o) {
+  auto index = dynamic_cast<const LocalVariable*>(o->index);
+  assert(index);
+
   genTraceLine(o->loc);
-  start("for (auto " << o->index << " = " << o->from << "; ");
-  finish(o->index << " <= " << o->to << "; ++" << o->index << ") {");
+  start("for (auto " << index->name << " = " << o->from << "; ");
+  finish(index->name << " <= " << o->to << "; ++" << index->name << ") {");
   in();
   *this << o->braces->strip();
   out();
@@ -707,7 +679,7 @@ void bi::CppBaseGenerator::visit(const Return* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Yield* o) {
-  assert(false);  // should be in CppResumeGenerator
+  assert(false);  // should be in CppFiberGenerator or CppMemberFiberGenerator
 }
 
 void bi::CppBaseGenerator::visit(const Raw* o) {

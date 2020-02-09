@@ -148,6 +148,11 @@ protected:
    * Are we inside a sequence?
    */
   int inSequence;
+
+  /**
+   * Are we on the right side of a member expression?
+   */
+  int inMember;
 };
 }
 
@@ -182,11 +187,14 @@ void bi::CppBaseGenerator::genInit(const T* o) {
 template<class ObjectType>
 void bi::CppBaseGenerator::genTemplateParams(const ObjectType* o) {
   if (!o->typeParams->isEmpty()) {
+    if (!header) {
+      genSourceLine(o->loc);
+    }
     start("template<");
     for (auto iter = o->typeParams->begin(); iter != o->typeParams->end();
         ++iter) {
       if (iter != o->typeParams->begin()) {
-        middle(", ");
+        middle(',');
       }
       middle("class " << *iter);
     }
