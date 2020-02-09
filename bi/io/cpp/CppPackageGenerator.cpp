@@ -143,26 +143,26 @@ void bi::CppPackageGenerator::visit(const Package* o) {
     }
 
     line("}\n");
-  } else {
-    /* generic class type definitions */
-    for (auto o : classes) {
-      if (o->isGeneric() && !o->isAlias()) {
-        *this << o;
-      }
-    }
-
-    /* generic function definitions */
-    for (auto o : functions) {
-      if (o->isGeneric()) {
-        *this << o;
-      }
-    }
-
-    /* generic fiber definitions */
-    for (auto o : fibers) {
-      if (o->isGeneric()) {
-        *this << o;
-      }
-    }
+//  } else {
+//    /* generic class type definitions */
+//    for (auto o : classes) {
+//      if (o->isGeneric() && !o->isAlias()) {
+//        *this << o;
+//      }
+//    }
+//
+//    /* generic function definitions */
+//    for (auto o : functions) {
+//      if (o->isGeneric()) {
+//        *this << o;
+//      }
+//    }
+//
+//    /* generic fiber definitions */
+//    for (auto o : fibers) {
+//      if (o->isGeneric()) {
+//        *this << o;
+//      }
+//    }
   }
 }
