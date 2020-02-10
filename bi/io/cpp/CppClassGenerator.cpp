@@ -1,5 +1,4 @@
 /**
-#include <bi/io/cpp/CppFiberGenerator.hpp>
  * @file
  */
 #include "bi/io/cpp/CppClassGenerator.hpp"
@@ -94,7 +93,11 @@ void bi::CppClassGenerator::visit(const Class* o) {
     } else {
       start("");
     }
-    middle(o->name << '(' << o->params << ')');
+    middle(o->name << "(libbirch::Label* context_");
+    if (!o->params->isEmpty()) {
+      middle(", " << o->params);
+    }
+    middle(')');
     if (header) {
       finish(";\n");
     } else {
@@ -102,27 +105,28 @@ void bi::CppClassGenerator::visit(const Class* o) {
       in();
       in();
       genSourceLine(o->loc);
-      start("super_type_(" << o->args << ')');
+      start("super_type_(context_");
+      if (!o->args->isEmpty()) {
+        middle(", " << o->args);
+      }
+      middle(')');
       ++inConstructor;
       for (auto o : memberVariables) {
+	      finish(',');
+        genSourceLine(o->loc);
         if (!o->value->isEmpty()) {
-          finish(',');
-          genSourceLine(o->loc);
-          start(o->name << '(' << o->value << ')');
-        } else if (o->type->isClass()) {
-          finish(',');
-          genSourceLine(o->loc);
-          start(o->name << "(libbirch::make_pointer<" << o->type << ">(");
-          middle(o->args << "))");
-        } else if (o->type->isArray() && !o->brackets->isEmpty()) {
-          finish(',');
-          genSourceLine(o->loc);
+          start(o->name << "(context_, " << o->value << ')');
+        } else if (!o->brackets->isEmpty()) {
           start(o->name << "(libbirch::make_shape(" << o->brackets << ')');
           if (!o->args->isEmpty()) {
             middle(", " << o->args);
           }
           middle(')');
-        }
+        } else if (!o->args->isEmpty()) {
+          start(o->name << "(context_, " << o->args << ')');
+        } else {
+          start(o->name << "(context_)");
+				}
       }
       --inConstructor;
       out();
@@ -145,7 +149,7 @@ void bi::CppClassGenerator::visit(const Class* o) {
     } else {
       start("");
     }
-    middle(o->name << "(libbirch::Label* label, const " << o->name << "& o)");
+    middle(o->name << "(libbirch::Label* context, libbirch::Label* label, const " << o->name << "& o)");
     if (header) {
       finish(";\n");
     } else {
@@ -153,11 +157,11 @@ void bi::CppClassGenerator::visit(const Class* o) {
       in();
       in();
       genSourceLine(o->loc);
-      start("super_type_(label, o)");
+      start("super_type_(context, label, o)");
       for (auto o : memberVariables) {
         finish(',');
         genSourceLine(o->loc);
-        start(o->name << "(libbirch::clone(label, o." << o->name << "))");
+        start(o->name << "(libbirch::clone(context, label, o." << o->name << "))");
       }
       out();
       out();
@@ -200,12 +204,12 @@ void bi::CppClassGenerator::visit(const Class* o) {
 
     /* name function */
     if (header) {
-      line("virtual const char* getClassName() const;");
+      line("virtual bi::type::String getClassName() const;");
     } else {
       genSourceLine(o->loc);
       genTemplateParams(o);
       genSourceLine(o->loc);
-      start("const char* bi::type::" << o->name);
+      start("bi::type::String bi::type::" << o->name);
       genTemplateArgs(o);
       middle("::");
       finish("getClassName() const {");
