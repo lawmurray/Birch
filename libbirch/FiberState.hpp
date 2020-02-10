@@ -3,34 +3,29 @@
  */
 #pragma once
 
-#include "libbirch/FiberOutput.hpp"
-#include "libbirch/Tuple.hpp"
+#include "libbirch/Any.hpp"
 
 namespace libbirch {
+template<class Yield, class Return> class Fiber;
+
 /**
- * State of a fiber.
+ * Abstract state of a fiber.
  *
  * @ingroup libbirch
  *
  * @tparam Yield Yield type.
  * @tparam Return Return type.
- * @tparam State State type. Typically a Tuple type.
- * @tparam Resume Resume type. Typically a lambda type.
  */
-template<class Yield, class Return, class State, class Resume>
+template<class Yield, class Return>
 class FiberState: public Any {
 public:
-  using class_type_ = FiberState;
-  using yield_type_ = Yield;
-  using return_type_ = Return;
+  using class_type_ = FiberState<Yield,Return>;
 
   /**
    * Constructor.
    */
-  FiberState(Label* context, const State& state, const Resume& resume) :
-      FiberOutput(context),
-      state(state),
-      resume(resume) {
+  FiberState(Label* context) :
+      Any(context) {
     //
   }
 
@@ -39,9 +34,7 @@ public:
    */
   template<IS_VALUE(Yield)>
   FiberState(Label* context, Label* label, const FiberState& o) :
-      FiberOutput(context, label, o),
-      state(o.state),
-      resume(o.resume) {
+      Any(context, label, o) {
     //
   }
 
@@ -50,9 +43,7 @@ public:
    */
   template<IS_NOT_VALUE(Yield)>
   FiberState(Label* context, Label* label, const FiberState& o) :
-      FiberOutput(context, label, o),
-      state(o.state),
-      resume(o.resume) {
+      Any(context, label, o) {
     //
   }
 
@@ -63,30 +54,11 @@ public:
     //
   }
 
-protected:
-  virtual void doFreeze_() {
-    freeze(state);
-    freeze(resume);
-  }
-
-  virtual void doThaw_(Label* label) {
-    thaw(state, label);
-    thaw(resume, label);
-  }
-
-  virtual void doFinish_() {
-    finish(state);
-    finish(resume);
-  }
-
   /**
-   * State.
+   * Run to next yield or return point.
+   *
+   * @return New fiber handle.
    */
-  State state;
-
-  /**
-   * Resume function.
-   */
-  Resume resume;
+  virtual Fiber<Yield,Return> query() = 0;
 };
 }

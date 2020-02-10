@@ -3,7 +3,10 @@
  */
 #pragma once
 
-#include "libbirch/FiberOutput.hpp"
+#include "libbirch/FiberYield.hpp"
+#include "libbirch/FiberReturn.hpp"
+#include "libbirch/FiberState.hpp"
+#include "libbirch/FiberStateImpl.hpp"
 
 namespace libbirch {
 /**
@@ -11,12 +14,16 @@ namespace libbirch {
  *
  * @ingroup libbirch
  *
- * @tparam YieldType Yield type.
- * @tparam ReturnType Return type.
+ * @tparam Yield Yield type.
+ * @tparam Return Return type.
  */
-template<class YieldType, class ReturnType>
-class Fiber {
+template<class Yield, class Return>
+class Fiber : public FiberYield<Yield>, public FiberReturn<Return> {
 public:
+  using yield_type = Yield;
+  using return_type = Return;
+  using state_type = Lazy<SharedPtr<FiberState<Yield,Return>>>;
+
   /**
    * Constructor.
    */
@@ -34,16 +41,36 @@ public:
   /**
    * Constructor.
    */
-  Fiber(Label* context,
-      const Lazy<SharedPtr<FiberOutput<YieldType,ReturnType>>>& state) :
+  Fiber(Label* context, const state_type& state) :
       state(context, state) {
+    //
+  }
+
+  /**
+   * Constructor.
+   */
+  template<class T, std::enable_if_t<std::is_same<T,yield_type>::value && !std::is_void<yield_type>::value,int> = 0>
+  Fiber(Label* context, const T& yieldValue, const state_type& state) :
+      FiberYield<Yield>(context, yieldValue),
+      state(context, state) {
+    //
+  }
+
+  /**
+   * Constructor.
+   */
+  template<class T, std::enable_if_t<std::is_same<T,return_type>::value && !std::is_void<return_type>::value,int> = 0>
+  Fiber(Label* context, const T& returnValue) :
+      FiberReturn<Return>(context, returnValue) {
     //
   }
 
   /**
    * Copy constructor.
    */
-  Fiber(Label* context, const Fiber<YieldType,ReturnType>& o) :
+  Fiber(Label* context, const Fiber& o) :
+      FiberYield<Yield>(context, o),
+      FiberReturn<Return>(context, o),
       state(context, o.state) {
     //
   }
@@ -51,7 +78,9 @@ public:
   /**
    * Move constructor.
    */
-  Fiber(Label* context, Fiber<YieldType,ReturnType>&& o) :
+  Fiber(Label* context, Fiber&& o) :
+      FiberYield<Yield>(context, std::move(o)),
+      FiberReturn<Return>(context, std::move(o)),
       state(context, std::move(o.state)) {
     //
   }
@@ -59,7 +88,9 @@ public:
   /**
    * Deep copy constructor.
    */
-  Fiber(Label* context, Label* label, const Fiber<YieldType,ReturnType>& o) :
+  Fiber(Label* context, Label* label, const Fiber& o) :
+      FiberYield<Yield>(context, label, o),
+      FiberReturn<Return>(context, label, o),
       state(context, label, o.state) {
     //
   }
@@ -67,7 +98,9 @@ public:
   /**
    * Copy assignment.
    */
-  Fiber& assign(Label* context, const Fiber<YieldType,ReturnType>& o) {
+  Fiber& assign(Label* context, const Fiber& o) {
+    FiberYield<Yield>::assign(context, o);
+    FiberReturn<Return>::assign(context, o);
     state.assign(context, o.state);
     return *this;
   }
@@ -75,7 +108,9 @@ public:
   /**
    * Move assignment.
    */
-  Fiber& assign(Label* context, Fiber<YieldType,ReturnType>&& o) {
+  Fiber& assign(Label* context, Fiber&& o) {
+    FiberYield<Yield>::assign(context, std::move(o));
+    FiberReturn<Return>::assign(context, std::move(o));
     state.assign(context, std::move(o.state));
     return *this;
   }
@@ -83,29 +118,35 @@ public:
   /**
    * Clone the fiber.
    */
-  Fiber<YieldType,ReturnType> clone(Label* context) const {
-    return Fiber<YieldType,ReturnType>(context, state.clone(context));
+  Fiber<Yield,Return> clone(Label* context) const {
+    return Fiber(context, *this);
   }
 
   /**
    * Freeze the fiber.
    */
   void freeze() const {
-    state.freeze();
+    FiberYield<Yield>::freeze();
+    FiberReturn<Return>::freeze();
+    freeze(state);
   }
 
   /**
    * Thaw the fiber.
    */
   void thaw(Label* label) const {
-    state.thaw(label);
+    FiberYield<Yield>::thaw(label);
+    FiberReturn<Return>::thaw(label);
+    thaw(state, label);
   }
 
   /**
    * Finish the fiber.
    */
   void finish() const {
-    state.finish();
+    FiberYield<Yield>::finish();
+    FiberReturn<Return>::finish();
+    finish(state);
   }
 
   /**
@@ -113,36 +154,24 @@ public:
    *
    * @return Was a value yielded?
    */
-  bool query() const {
-    bool result = false;
+  bool query() {
     if (state.query()) {
-      result = state->query();
-      if (!result) {
-        const_cast<Fiber<YieldType,ReturnType>*>(this)->state.release();
-        // ^ fiber has finished, delete the state
-      }
+      *this = state.get()->query();
+      return state.query();
+    } else {
+      return false;
     }
-    return result;
-  }
-
-
-  /**
-   * Get the last yield value.
-   */
-  YieldType get() const {
-    libbirch_assert_msg_(state.query(), "fiber handle undefined");
-    return state->get();
   }
 
 private:
   /**
    * Fiber state.
    */
-  Lazy<SharedPtr<FiberOutput<YieldType,ReturnType>>> state;
+  Optional<state_type> state;
 };
 
-template<class T, class U>
-struct is_value<Fiber<T,U>> {
+template<class Yield, class Return>
+struct is_value<Fiber<Yield,Return>> {
   static const bool value = false;
 };
 }

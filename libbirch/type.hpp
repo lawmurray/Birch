@@ -106,6 +106,23 @@
  */
 #define IS_NOT_DEFAULT_CONSTRUCTIBLE(Type) std::enable_if_t<is_pointer<Type>::value && !std::is_constructible<typename Type::value_type,Label*>::value,int> = 0
 
+/**
+ * @def IS_VOID
+ *
+ * Macro that can be added to the template arguments of a class template
+ * specialization to enable it only if a specific type is void, using SFINAE.
+ */
+#define IS_VOID(Type) std::enable_if_t<std::is_void<Type>::value>
+
+/**
+ * @def IS_NOT_VOID
+ *
+ * Macro that can be added to the template arguments of a class template
+ * specialization to enable it only if a specific type is not void, using
+ * SFINAE.
+ */
+#define IS_NOT_VOID(Type) std::enable_if_t<!std::is_void<Type>::value>
+
 namespace libbirch {
 /*
  * Is this a value type?

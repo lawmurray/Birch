@@ -147,13 +147,6 @@ public:
   bool isReachable() const;
 
   /**
-   * Name of the class.
-   */
-  virtual const char* getClassName() const {
-    return "Counted";
-  }
-
-  /**
    * Finalizer. This is called when the shared reference count reaches zero,
    * but before destruction and deallocation of the object. Object
    * resurrection is supported: if the finalizer results in a nonzero shared

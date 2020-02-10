@@ -335,6 +335,22 @@ public:
     tail.finish();
   }
 
+  /**
+   * Get element.
+   */
+  template<int n, std::enable_if_t<n == 0>>
+  auto get() const {
+    return head;
+  }
+
+  /**
+   * Get element.
+   */
+  template<int n, std::enable_if_t<(n > 0)>>
+  auto get() const {
+    return tail.template get<n - 1>();
+  }
+
 private:
   /**
    * First element.
@@ -521,6 +537,14 @@ public:
   template<IS_NOT_VALUE(Head)>
   void finish() {
     head.finish();
+  }
+
+  /**
+   * Get element.
+   */
+  template<int n, std::enable_if_t<n == 0>>
+  auto get() {
+    return head;
   }
 
 private:

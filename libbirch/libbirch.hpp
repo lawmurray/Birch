@@ -269,6 +269,44 @@ P make_pointer(Label* context, const Args& ... args) {
 }
 
 /**
+ * Make a fiber handle, with state only. This is used when a fiber is
+ * initialized.
+ *
+ * @param args... Parameters and local variables that must be preserved in
+ * the state.
+ */
+template<class Yield, class Return, class... Args>
+auto make_fiber(Args... args) {
+  auto state = new FiberStateImpl<Args...>(std::forward<Args...>(args...));
+  return Fiber<Yield,Return>(state);
+}
+
+/**
+ * Make a fiber handle, with yield value and state. This is used when a fiber
+ * is suspended with a yield statement.
+ *
+ * @param value Yield value.
+ * @param args... Parameters and local variables that must be preserved in
+ * the state.
+ */
+template<class Yield, class Return, class... Args>
+auto make_fiber(Yield value, Args... args) {
+  auto state = new FiberStateImpl<Args...>(std::forward<Args...>(args...));
+  return Fiber<Yield,Return>(std::forward<Yield>(value), state);
+}
+
+/**
+ * Make a fiber handle, with return value only. This is used when a fiber
+ * terminates with a return statement.
+ *
+ * @param value Return value.
+ */
+template<class Yield, class Return>
+auto make_fiber(Return value) {
+  return Fiber<Yield,Return>(std::forward<Return>(value));
+}
+
+/**
  * Make a tuple.
  *
  * @tparam Head First element type.

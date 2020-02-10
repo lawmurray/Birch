@@ -69,10 +69,6 @@ public:
    */
   void thaw();
 
-  virtual const char* getClassName() const {
-    return "Label";
-  }
-
 private:
   /**
    * Map an object that may not yet have been cloned, cloning it if
