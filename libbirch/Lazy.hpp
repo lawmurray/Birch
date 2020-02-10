@@ -5,7 +5,7 @@
 
 #include "libbirch/external.hpp"
 #include "libbirch/type.hpp"
-#include "libbirch/Any.hpp"
+#include "libbirch/Counted.hpp"
 #include "libbirch/Label.hpp"
 #include "libbirch/Nil.hpp"
 #include "libbirch/thread.hpp"
@@ -24,9 +24,9 @@ public:
   using pointer_type = P;
   using value_type = typename P::value_type;
   using super_type = Lazy<typename P::super_type>;
-
-  Lazy& operator=(const Lazy&) = delete;
-  Lazy& operator=(Lazy&&) = delete;
+  using shared_type = Lazy<typename P::shared_type>;
+  using weak_type = Lazy<typename P::weak_type>;
+  using init_type = Lazy<typename P::init_type>;
 
   /**
    * Constructor.
@@ -72,7 +72,47 @@ public:
   /**
    * Copy constructor.
    */
-  Lazy(Label* context, const Lazy<P>& o) :
+  Lazy(const shared_type& o) :
+      super_type(o) {
+    //
+  }
+
+  /**
+   * Copy constructor.
+   */
+  Lazy(Label* context, const shared_type& o) :
+      super_type(context, o) {
+    //
+  }
+
+  /**
+   * Copy constructor.
+   */
+  Lazy(const weak_type& o) :
+      super_type(o) {
+    //
+  }
+
+  /**
+   * Copy constructor.
+   */
+  Lazy(Label* context, const weak_type& o) :
+      super_type(context, o) {
+    //
+  }
+
+  /**
+   * Copy constructor.
+   */
+  Lazy(const init_type& o) :
+      super_type(o) {
+    //
+  }
+
+  /**
+   * Copy constructor.
+   */
+  Lazy(Label* context, const init_type& o) :
       super_type(context, o) {
     //
   }
@@ -184,10 +224,14 @@ public:
  * @tparam P Pointer type. Either SharedPtr, WeakPtr or InitPtr.
  */
 template<class P>
-class Lazy<P,IS_ANY_POINTER(P)> {
+class Lazy<P,std::enable_if_t<std::is_same<typename P::value_type,
+    libbirch::Counted>::value>> {
 public:
   using pointer_type = P;
   using value_type = typename P::value_type;
+  using shared_type = Lazy<typename P::shared_type>;
+  using weak_type = Lazy<typename P::weak_type>;
+  using init_type = Lazy<typename P::init_type>;
 
   Lazy& operator=(const Lazy&) = delete;
   Lazy& operator=(Lazy&&) = delete;
@@ -239,7 +283,7 @@ public:
   /**
    * Copy constructor.
    */
-  Lazy(const Lazy& o) :
+  Lazy(const shared_type& o) :
       object(o.get()),
       label(o.label),
       cross(o.cross) {
@@ -251,7 +295,55 @@ public:
   /**
    * Copy constructor.
    */
-  Lazy(Label* context, const Lazy& o) :
+  Lazy(Label* context, const shared_type& o) :
+      object(o.get()),
+      label(0),
+      cross(false) {
+    if (object) {
+      setLabel(o.getLabel(), o.getLabel() != context);
+    }
+  }
+
+  /**
+   * Copy constructor.
+   */
+  Lazy(const weak_type& o) :
+      object(o.get()),
+      label(o.label),
+      cross(o.cross) {
+    if (isCross()) {
+      getLabel()->incShared();
+    }
+  }
+
+  /**
+   * Copy constructor.
+   */
+  Lazy(Label* context, const weak_type& o) :
+      object(o.get()),
+      label(0),
+      cross(false) {
+    if (object) {
+      setLabel(o.getLabel(), o.getLabel() != context);
+    }
+  }
+
+  /**
+   * Copy constructor.
+   */
+  Lazy(const init_type& o) :
+      object(o.get()),
+      label(o.label),
+      cross(o.cross) {
+    if (isCross()) {
+      getLabel()->incShared();
+    }
+  }
+
+  /**
+   * Copy constructor.
+   */
+  Lazy(Label* context, const init_type& o) :
       object(o.get()),
       label(0),
       cross(false) {

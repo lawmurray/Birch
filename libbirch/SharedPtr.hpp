@@ -4,7 +4,7 @@
 #pragma once
 
 #include "libbirch/class.hpp"
-#include "libbirch/Any.hpp"
+#include "libbirch/Counted.hpp"
 
 namespace libbirch {
 template<class T> class SharedPtr;
@@ -22,7 +22,10 @@ template<class T>
 class SharedPtr: public SharedPtr<typename bi::type::super_type<T>::type> {
 public:
   using value_type = T;
-  using super_type = SharedPtr<typename bi::type::super_type<T>::type>;
+  using super_type = SharedPtr<typename bi::type::super_type<value_type>::type>;
+  using shared_type = SharedPtr<value_type>;
+  using weak_type = WeakPtr<value_type>;
+  using init_type = InitPtr<value_type>;
 
   /**
    * Constructor. This is intended for use immediately after construction of
@@ -94,39 +97,42 @@ public:
  * @ingroup libbirch
  */
 template<>
-class SharedPtr<Any> {
+class SharedPtr<Counted> {
   template<class U> friend class SharedPtr;
   template<class U> friend class WeakPtr;
   template<class U> friend class InitPtr;
 public:
-  using value_type = Any;
+  using value_type = Counted;
+  using shared_type = SharedPtr<value_type>;
+  using weak_type = WeakPtr<value_type>;
+  using init_type = InitPtr<value_type>;
 
   /**
    * Constructor. This is intended for use immediately after construction of
    * the object; the reference count is not incremented, as it should be
    * initialized accordingly.
    */
-  explicit SharedPtr(Any* ptr = nullptr);
+  explicit SharedPtr(Counted* ptr = nullptr);
 
   /**
    * Weak constructor.
    */
-  SharedPtr(const WeakPtr<Any>& o);
+  SharedPtr(const WeakPtr<Counted>& o);
 
   /**
    * Init constructor.
    */
-  SharedPtr(const InitPtr<Any>& o);
+  SharedPtr(const InitPtr<Counted>& o);
 
   /**
    * Copy constructor.
    */
-  SharedPtr(const SharedPtr<Any>& o);
+  SharedPtr(const SharedPtr<Counted>& o);
 
   /**
    * Move constructor.
    */
-  SharedPtr(SharedPtr<Any> && o);
+  SharedPtr(SharedPtr<Counted> && o);
 
   /**
    * Destructor.
@@ -136,27 +142,27 @@ public:
   /**
    * Copy assignment.
    */
-  SharedPtr<Any>& operator=(const SharedPtr<Any>& o);
+  SharedPtr<Counted>& operator=(const SharedPtr<Counted>& o);
 
   /**
    * Move assignment.
    */
-  SharedPtr<Any>& operator=(SharedPtr<Any> && o);
+  SharedPtr<Counted>& operator=(SharedPtr<Counted> && o);
 
   /**
    * Get the raw pointer.
    */
-  Any* get() const;
+  Counted* get() const;
 
   /**
    * Get the raw pointer as const.
    */
-  Any* pull() const;
+  Counted* pull() const;
 
   /**
    * Replace.
    */
-  void replace(Any* ptr);
+  void replace(Counted* ptr);
 
   /**
    * Release.
@@ -166,28 +172,28 @@ public:
   /**
    * Dereference.
    */
-  Any& operator*() const;
+  Counted& operator*() const;
 
   /**
    * Member access.
    */
-  Any* operator->() const;
+  Counted* operator->() const;
 
   /**
    * Equal comparison.
    */
-  bool operator==(const SharedPtr<Any>& o) const;
-  bool operator==(const WeakPtr<Any>& o) const;
-  bool operator==(const InitPtr<Any>& o) const;
-  bool operator==(const Any* o) const;
+  bool operator==(const SharedPtr<Counted>& o) const;
+  bool operator==(const WeakPtr<Counted>& o) const;
+  bool operator==(const InitPtr<Counted>& o) const;
+  bool operator==(const Counted* o) const;
 
   /**
    * Not equal comparison.
    */
-  bool operator!=(const SharedPtr<Any>& o) const;
-  bool operator!=(const WeakPtr<Any>& o) const;
-  bool operator!=(const InitPtr<Any>& o) const;
-  bool operator!=(const Any* o) const;
+  bool operator!=(const SharedPtr<Counted>& o) const;
+  bool operator!=(const WeakPtr<Counted>& o) const;
+  bool operator!=(const InitPtr<Counted>& o) const;
+  bool operator!=(const Counted* o) const;
 
   /**
    * Is the pointer not null?
@@ -210,21 +216,21 @@ private:
   /**
    * Raw pointer.
    */
-  Any* ptr;
+  Counted* ptr;
 };
 }
 
 #include "libbirch/WeakPtr.hpp"
 #include "libbirch/InitPtr.hpp"
 
-libbirch::SharedPtr<libbirch::Any>::SharedPtr(Any* ptr) :
+libbirch::SharedPtr<libbirch::Counted>::SharedPtr(Counted* ptr) :
     ptr(ptr) {
   if (ptr) {
     ptr->init();
   }
 }
 
-libbirch::SharedPtr<libbirch::Any>::SharedPtr(const WeakPtr<Any>& o) :
+libbirch::SharedPtr<libbirch::Counted>::SharedPtr(const WeakPtr<Counted>& o) :
     ptr(o.ptr) {
   if (ptr) {
     assert(ptr->numShared() > 0);
@@ -232,7 +238,7 @@ libbirch::SharedPtr<libbirch::Any>::SharedPtr(const WeakPtr<Any>& o) :
   }
 }
 
-libbirch::SharedPtr<libbirch::Any>::SharedPtr(const InitPtr<Any>& o) :
+libbirch::SharedPtr<libbirch::Counted>::SharedPtr(const InitPtr<Counted>& o) :
     ptr(o.ptr) {
   if (ptr) {
     assert(ptr->numShared() > 0);
@@ -240,24 +246,24 @@ libbirch::SharedPtr<libbirch::Any>::SharedPtr(const InitPtr<Any>& o) :
   }
 }
 
-libbirch::SharedPtr<libbirch::Any>::SharedPtr(const SharedPtr<Any>& o) :
+libbirch::SharedPtr<libbirch::Counted>::SharedPtr(const SharedPtr<Counted>& o) :
     ptr(o.ptr) {
   if (ptr) {
     ptr->incShared();
   }
 }
 
-libbirch::SharedPtr<libbirch::Any>::SharedPtr(SharedPtr<Any> && o) :
+libbirch::SharedPtr<libbirch::Counted>::SharedPtr(SharedPtr<Counted> && o) :
     ptr(o.ptr) {
   o.ptr = nullptr;
 }
 
-libbirch::SharedPtr<libbirch::Any>::~SharedPtr() {
+libbirch::SharedPtr<libbirch::Counted>::~SharedPtr() {
   release();
 }
 
-libbirch::SharedPtr<libbirch::Any>& libbirch::SharedPtr<libbirch::Any>::operator=(
-    const SharedPtr<Any>& o) {
+libbirch::SharedPtr<libbirch::Counted>& libbirch::SharedPtr<libbirch::Counted>::operator=(
+    const SharedPtr<Counted>& o) {
   if (o.ptr) {
     o.ptr->incShared();
   }
@@ -269,8 +275,8 @@ libbirch::SharedPtr<libbirch::Any>& libbirch::SharedPtr<libbirch::Any>::operator
   return *this;
 }
 
-libbirch::SharedPtr<libbirch::Any>& libbirch::SharedPtr<libbirch::Any>::operator=(
-    SharedPtr<Any> && o) {
+libbirch::SharedPtr<libbirch::Counted>& libbirch::SharedPtr<libbirch::Counted>::operator=(
+    SharedPtr<Counted> && o) {
   auto old = ptr;
   ptr = o.ptr;
   o.ptr = nullptr;
@@ -280,17 +286,17 @@ libbirch::SharedPtr<libbirch::Any>& libbirch::SharedPtr<libbirch::Any>::operator
   return *this;
 }
 
-libbirch::Any* libbirch::SharedPtr<libbirch::Any>::get() const {
+libbirch::Counted* libbirch::SharedPtr<libbirch::Counted>::get() const {
   assert(!ptr || ptr->numShared() > 0);
   return ptr;
 }
 
-libbirch::Any* libbirch::SharedPtr<libbirch::Any>::pull() const {
+libbirch::Counted* libbirch::SharedPtr<libbirch::Counted>::pull() const {
   assert(!ptr || ptr->numShared() > 0);
   return ptr;
 }
 
-void libbirch::SharedPtr<libbirch::Any>::replace(Any* ptr) {
+void libbirch::SharedPtr<libbirch::Counted>::replace(Counted* ptr) {
   //assert(!ptr || ptr->numShared() > 0);
   auto old = this->ptr;
   if (ptr) {
@@ -302,72 +308,72 @@ void libbirch::SharedPtr<libbirch::Any>::replace(Any* ptr) {
   }
 }
 
-void libbirch::SharedPtr<libbirch::Any>::release() {
+void libbirch::SharedPtr<libbirch::Counted>::release() {
   if (ptr) {
     ptr->decShared();
     ptr = nullptr;
   }
 }
 
-libbirch::Any& libbirch::SharedPtr<libbirch::Any>::operator*() const {
+libbirch::Counted& libbirch::SharedPtr<libbirch::Counted>::operator*() const {
   return *get();
 }
 
-libbirch::Any* libbirch::SharedPtr<libbirch::Any>::operator->() const {
+libbirch::Counted* libbirch::SharedPtr<libbirch::Counted>::operator->() const {
   return get();
 }
 
-bool libbirch::SharedPtr<libbirch::Any>::operator==(
-    const SharedPtr<Any>& o) const {
+bool libbirch::SharedPtr<libbirch::Counted>::operator==(
+    const SharedPtr<Counted>& o) const {
   return ptr == o.ptr;
 }
 
-bool libbirch::SharedPtr<libbirch::Any>::operator==(
-    const WeakPtr<Any>& o) const {
+bool libbirch::SharedPtr<libbirch::Counted>::operator==(
+    const WeakPtr<Counted>& o) const {
   return ptr == o.ptr;
 }
 
-bool libbirch::SharedPtr<libbirch::Any>::operator==(
-    const InitPtr<Any>& o) const {
+bool libbirch::SharedPtr<libbirch::Counted>::operator==(
+    const InitPtr<Counted>& o) const {
   return ptr == o.ptr;
 }
 
-bool libbirch::SharedPtr<libbirch::Any>::operator==(const Any* o) const {
+bool libbirch::SharedPtr<libbirch::Counted>::operator==(const Counted* o) const {
   return ptr == o;
 }
 
-bool libbirch::SharedPtr<libbirch::Any>::operator!=(
-    const SharedPtr<Any>& o) const {
+bool libbirch::SharedPtr<libbirch::Counted>::operator!=(
+    const SharedPtr<Counted>& o) const {
   return ptr != o.ptr;
 }
 
-bool libbirch::SharedPtr<libbirch::Any>::operator!=(
-    const WeakPtr<Any>& o) const {
+bool libbirch::SharedPtr<libbirch::Counted>::operator!=(
+    const WeakPtr<Counted>& o) const {
   return ptr != o.ptr;
 }
 
-bool libbirch::SharedPtr<libbirch::Any>::operator!=(
-    const InitPtr<Any>& o) const {
+bool libbirch::SharedPtr<libbirch::Counted>::operator!=(
+    const InitPtr<Counted>& o) const {
   return ptr != o.ptr;
 }
 
-bool libbirch::SharedPtr<libbirch::Any>::operator!=(const Any* o) const {
+bool libbirch::SharedPtr<libbirch::Counted>::operator!=(const Counted* o) const {
   return ptr != o;
 }
 
-libbirch::SharedPtr<libbirch::Any>::operator bool() const {
+libbirch::SharedPtr<libbirch::Counted>::operator bool() const {
   return ptr != nullptr;
 }
 
 template<class U>
-U libbirch::SharedPtr<libbirch::Any>::dynamic_pointer_cast() const {
+U libbirch::SharedPtr<libbirch::Counted>::dynamic_pointer_cast() const {
   U cast;
   cast.replace(dynamic_cast<typename U::value_type*>(ptr));
   return cast;
 }
 
 template<class U>
-U libbirch::SharedPtr<libbirch::Any>::static_pointer_cast() const {
+U libbirch::SharedPtr<libbirch::Counted>::static_pointer_cast() const {
   U cast;
   cast.replace(static_cast<typename U::value_type*>(ptr));
   return cast;

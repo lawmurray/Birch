@@ -89,15 +89,6 @@
 #define IS_NOT_POINTER(Type) std::enable_if_t<!is_pointer<Type>::value>
 
 /**
- * @def IS_ANY_POINTER
- *
- * Macro that can be added to the template arguments of a class template
- * specialization to enable it only if a specific type is a pointer type to
- * Any, using SFINAE.
- */
-#define IS_ANY_POINTER(Type) std::enable_if_t<std::is_same<typename Type::value_type,libbirch::Any>::value>
-
-/**
  * @def IS_DEFAULT_CONSTRUCTIBLE
  *
  * Macro that can be added to the template arguments of a function template
