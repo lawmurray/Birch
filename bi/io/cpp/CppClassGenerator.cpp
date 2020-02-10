@@ -114,19 +114,18 @@ void bi::CppClassGenerator::visit(const Class* o) {
       for (auto o : memberVariables) {
 	      finish(',');
         genSourceLine(o->loc);
+        start(o->name << "(libbirch::construct<decltype(" << o->name << ")>(context_");
         if (!o->value->isEmpty()) {
-          start(o->name << "(context_, " << o->value << ')');
+          middle(", " << o->value);
         } else if (!o->brackets->isEmpty()) {
-          start(o->name << "(libbirch::make_shape(" << o->brackets << ')');
+          middle(", libbirch::make_shape(" << o->brackets << ')');
           if (!o->args->isEmpty()) {
             middle(", " << o->args);
           }
-          middle(')');
         } else if (!o->args->isEmpty()) {
-          start(o->name << "(context_, " << o->args << ')');
-        } else {
-          start(o->name << "(context_)");
+          middle(", " << o->args);
 				}
+        middle("))");
       }
       --inConstructor;
       out();
@@ -195,7 +194,7 @@ void bi::CppClassGenerator::visit(const Class* o) {
         finish("clone_(libbirch::Label* label) const {");
         in();
         genSourceLine(o->loc);
-        line("return new class_type_(label, *this);");
+        line("return new class_type_(label, label, *this);");
         genSourceLine(o->loc);
         out();
         line("}\n");
@@ -235,7 +234,7 @@ void bi::CppClassGenerator::visit(const Class* o) {
       line("super_type_::doFreeze_();");
       for (auto o : memberVariables) {
         genSourceLine(o->loc);
-        line("freeze(" << o->name << ");");
+        line("libbirch::freeze(" << o->name << ");");
       }
       genSourceLine(o->loc);
       out();
@@ -257,7 +256,7 @@ void bi::CppClassGenerator::visit(const Class* o) {
       line("super_type_::doThaw_(label_);");
       for (auto o : memberVariables) {
         genSourceLine(o->loc);
-        line("thaw(" << o->name << ", label_);");
+        line("libbirch::thaw(" << o->name << ", label_);");
       }
       genSourceLine(o->loc);
       out();
@@ -279,7 +278,7 @@ void bi::CppClassGenerator::visit(const Class* o) {
       line("super_type_::doFinish_();");
       for (auto o : memberVariables) {
         genSourceLine(o->loc);
-        line("finish(" << o->name << ");");
+        line("libbirch::finish(" << o->name << ");");
       }
       genSourceLine(o->loc);
       out();

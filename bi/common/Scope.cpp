@@ -21,7 +21,9 @@
 #include "bi/exception/all.hpp"
 #include "bi/visitor/Cloner.hpp"
 
-bi::Scope::Scope(const ScopeCategory category) : category(category) {
+bi::Scope::Scope(const ScopeCategory category) :
+    base(nullptr),
+    category(category) {
   //
 }
 
@@ -71,6 +73,9 @@ void bi::Scope::lookup(NamedExpression* o) const {
     o->category = UNARY_OPERATOR;
     o->number = unaryOperator->second->number;
   }
+  if (base && !o->category) {
+    base->lookup(o);
+  }
 }
 
 void bi::Scope::lookup(NamedType* o) const {
@@ -90,6 +95,9 @@ void bi::Scope::lookup(NamedType* o) const {
     o->category = GENERIC_TYPE;
     o->number = genericType->second->number;
   }
+  //if (base && !o->category) {
+  //  base->lookup(o);
+  //}
 }
 
 void bi::Scope::add(Parameter* o) {
