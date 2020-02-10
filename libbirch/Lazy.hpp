@@ -12,15 +12,179 @@
 
 namespace libbirch {
 /**
- * Wraps a pointer type to apply lazy deep clone semantics.
+ * Wrapper for a smart pointer type to apply lazy deep clone semantics.
+ *
+ * @ingroup libbirch
+ *
+ * @tparam P Pointer type. Either SharedPtr, WeakPtr or InitPtr.
+ */
+template<class P, class Enable = void>
+class Lazy : public Lazy<typename P::super_type> {
+public:
+  using pointer_type = P;
+  using value_type = typename P::value_type;
+  using super_type = Lazy<typename P::super_type>;
+
+  Lazy& operator=(const Lazy&) = delete;
+  Lazy& operator=(Lazy&&) = delete;
+
+  /**
+   * Constructor.
+   */
+  Lazy(const Nil& = nil) :
+      super_type() {
+    //
+  }
+
+  /**
+   * Constructor.
+   */
+  Lazy(Label* context, const Nil& = nil) :
+      super_type(context) {
+    //
+  }
+
+  /**
+   * Constructor.
+   */
+  Lazy(Label* context, value_type* object, const bool cross = false) :
+      super_type(context, object, cross) {
+    //
+  }
+
+  /**
+   * Constructor.
+   */
+  Lazy(Label* context, const P& object, const bool cross = false) :
+      super_type(context, object, cross) {
+    //
+  }
+
+  /**
+   * Constructor.
+   */
+  template<class... Args>
+  Lazy(Label* context, Args... args) :
+      Lazy(context, P(args...)) {
+    //
+  }
+
+  /**
+   * Copy constructor.
+   */
+  Lazy(Label* context, const Lazy<P>& o) :
+      super_type(context, o) {
+    //
+  }
+
+  /**
+   * Move constructor.
+   */
+  Lazy(Label* context, Lazy<P>&& o) :
+      super_type(context, o) {
+    //
+  }
+
+  /**
+   * Deep copy constructor.
+   */
+  Lazy(Label* context, Label* label, const Lazy<P>& o) :
+      super_type(context, label, o) {
+    //
+  }
+
+  /**
+   * Copy assignment.
+   */
+  Lazy& assign(Label* context, const Lazy<P>& o) {
+    super_type::assign(context, o);
+    return *this;
+  }
+
+  /**
+   * Move assignment.
+   */
+  Lazy& assign(Label* context, Lazy<P>&& o) {
+    super_type::assign(context, o);
+    return *this;
+  }
+
+  /**
+   * Value assignment.
+   */
+  template<class U, typename = std::enable_if_t<is_value<U>::value>>
+  Lazy& assign(Label* context, const U& o) {
+    *get() = o;
+    return *this;
+  }
+
+  /**
+   * Value conversion.
+   */
+  template<class U, IS_CONVERTIBLE(value_type,U)>
+  operator U() const {
+    return static_cast<U>(*get());
+  }
+
+  /**
+   * Get the raw pointer, with lazy cloning.
+   */
+  P get() {
+    return super_type::get().template static_pointer_cast<P>();
+  }
+
+  /**
+   * Get the raw pointer, with lazy cloning.
+   */
+  auto get() const {
+    return const_cast<Lazy*>(this)->get();
+  }
+
+  /**
+   * Get the raw pointer for read-only use, without cloning.
+   */
+  P pull() {
+    return super_type::pull().template static_pointer_cast<P>();
+  }
+
+  /**
+   * Get the raw pointer for read-only use, without cloning.
+   */
+  auto pull() const {
+    return const_cast<Lazy*>(this)->pull();
+  }
+
+  /**
+   * Start lazy deep clone.
+   */
+  Lazy clone(Label* context) const {
+    return super_type::clone(context).template static_pointer_cast<P>();
+  }
+
+  /**
+   * Dereference.
+   */
+  P& operator*() const {
+    return *get();
+  }
+
+  /**
+   * Member access.
+   */
+  P operator->() const {
+    return get();
+  }
+};
+
+/**
+ * Wrapper for a smart pointer type to apply lazy deep clone semantics.
  *
  * @ingroup libbirch
  *
  * @tparam P Pointer type. Either SharedPtr, WeakPtr or InitPtr.
  */
 template<class P>
-class Lazy {
-  template<class U> friend class Lazy;
+class Lazy<P,IS_ANY_POINTER(P)> {
 public:
   using pointer_type = P;
   using value_type = typename P::value_type;
@@ -41,22 +205,11 @@ public:
   /**
    * Constructor.
    */
-  Lazy(Label* context, const Nil&) :
+  Lazy(Label* context, const Nil& = nil) :
       object(),
       label(0),
       cross(false) {
     //
-  }
-
-  /**
-   * Constructor.
-   */
-  template<class... Args>
-  Lazy(Label* context, Args... args) :
-      object(context, args...),
-      label(0),
-      cross(false) {
-    setLabel(context, false);
   }
 
   /**
@@ -98,33 +251,7 @@ public:
   /**
    * Copy constructor.
    */
-  template<class Q, IS_CONVERTIBLE(Q,P)>
-  Lazy(const Lazy<Q>& o) :
-      object(o.get()),
-      label(o.label),
-      cross(o.cross) {
-    if (isCross()) {
-      getLabel()->incShared();
-    }
-  }
-
-  /**
-   * Copy constructor.
-   */
   Lazy(Label* context, const Lazy& o) :
-      object(o.get()),
-      label(0),
-      cross(false) {
-    if (object) {
-      setLabel(o.getLabel(), o.getLabel() != context);
-    }
-  }
-
-  /**
-   * Copy constructor.
-   */
-  template<class Q, IS_CONVERTIBLE(Q,P)>
-  Lazy(Label* context, const Lazy<Q>& o) :
       object(o.get()),
       label(0),
       cross(false) {
@@ -147,32 +274,7 @@ public:
   /**
    * Move constructor.
    */
-  template<class Q, IS_CONVERTIBLE(Q,P)>
-  Lazy(Lazy<Q>&& o) :
-      object(std::move(o.object)),
-      label(o.label),
-      cross(o.cross) {
-    o.label = 0;
-    o.cross = false;
-  }
-
-  /**
-   * Move constructor.
-   */
   Lazy(Label* context, Lazy&& o) :
-      object(std::move(o.object)),
-      label(0),
-      cross(false) {
-    if (object) {
-      setLabel(o.getLabel(), o.getLabel() != context);
-    }
-  }
-
-  /**
-   * Move constructor.
-   */
-  template<class Q, IS_CONVERTIBLE(Q,P)>
-  Lazy(Label* context, Lazy<Q>&& o) :
       object(std::move(o.object)),
       label(0),
       cross(false) {
@@ -209,8 +311,7 @@ public:
   /**
    * Copy assignment.
    */
-  template<class Q>
-  Lazy& assign(Label* context, const Lazy<Q>& o) {
+  Lazy<P>& assign(Label* context, const Lazy<P>& o) {
     if (o.query()) {
       replaceLabel(o.getLabel(), o.getLabel() != context);
       object = o.get();
@@ -223,8 +324,7 @@ public:
   /**
    * Move assignment.
    */
-  template<class Q>
-  Lazy& assign(Label* context, Lazy<Q>&& o) {
+  Lazy<P>& assign(Label* context, Lazy<P>&& o) {
     if (o.query()) {
       replaceLabel(o.getLabel(), o.getLabel() != context);
       object = std::move(o.object);
@@ -235,28 +335,11 @@ public:
   }
 
   /**
-   * Value assignment.
-   */
-  template<class U, typename = std::enable_if_t<is_value<U>::value>>
-  Lazy& assign(Label* context, const U& o) {
-    *get() = o;
-    return *this;
-  }
-
-  /**
    * Release the pointer.
    */
   void release() {
     releaseLabel();
     object.release();
-  }
-
-  /**
-   * Value conversion.
-   */
-  template<class U, IS_CONVERTIBLE(value_type,U)>
-  operator U() const {
-    return static_cast<U>(*get());
   }
 
   /**
@@ -403,14 +486,14 @@ public:
   /**
    * Dereference.
    */
-  auto& operator*() const {
+  P& operator*() const {
     return *get();
   }
 
   /**
    * Member access.
    */
-  auto operator->() const {
+  P operator->() const {
     return get();
   }
 

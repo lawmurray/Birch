@@ -28,7 +28,7 @@ namespace bi {
  */
 template<class T>
 struct super_type {
-  using type = libbirch::Any;
+  using type = libbirch::Counted;
 };
   }
 }
