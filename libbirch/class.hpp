@@ -17,6 +17,8 @@
  */
 #define libbirch_declare_self_ libbirch::Lazy<libbirch::InitPtr<this_type_>> self(this->getLabel(), this);
 
+#include "libbirch/Any.hpp"
+
 namespace bi {
   namespace type {
 /**
@@ -26,7 +28,7 @@ namespace bi {
  */
 template<class T>
 struct super_type {
-  using type = void;
+  using type = libbirch::Any;
 };
   }
 }

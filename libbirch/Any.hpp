@@ -5,7 +5,6 @@
 
 #include "libbirch/external.hpp"
 #include "libbirch/Counted.hpp"
-#include "libbirch/InitPtr.hpp"
 #include "libbirch/Atomic.hpp"
 
 namespace libbirch {
