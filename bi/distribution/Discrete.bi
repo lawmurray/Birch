@@ -12,7 +12,7 @@ abstract class Discrete < Distribution<Integer> {
    *
    * - x: The value.
    */
-  function clamp(x:Value) {
+  function clamp(x:Integer) {
     assert !value? || value! == x;
     value <- x;
   }
