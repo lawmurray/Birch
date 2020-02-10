@@ -11,9 +11,19 @@
 namespace libbirch {
 class Label;
 
+template<class T, class... Args>
+auto construct(Label* context, Args... args) {
+  return T(args...);
+}
+
 template<class T>
-auto clone(Label* label, T& o) {
+auto clone(Label* context, Label* label, T& o) {
   return o;
+}
+
+template<class T, class U>
+auto assign(Label* context, T& left, const U& right) {
+  return left;
 }
 
 template<class T>
