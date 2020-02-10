@@ -12,8 +12,8 @@ namespace libbirch {
 class Label;
 
 template<class T, class... Args>
-auto construct(Label* context, Args... args) {
-  return T(args...);
+T construct(Label* context, Args... args) {
+  //return T(args...);
 }
 
 template<class T>
