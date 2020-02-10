@@ -16,3 +16,17 @@
  * Declare `self` within a member function.
  */
 #define libbirch_declare_self_ libbirch::Lazy<libbirch::InitPtr<this_type_>> self(this->getLabel(), this);
+
+namespace bi {
+  namespace type {
+/**
+ * Super type of another. This is specialized for all classes that are
+ * derived from Any to indicate their super type without having to
+ * instantiate that type.
+ */
+template<class T>
+struct super_type {
+  using type = void;
+};
+  }
+}
