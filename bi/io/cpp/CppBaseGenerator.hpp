@@ -158,30 +158,16 @@ protected:
 
 template<class T>
 void bi::CppBaseGenerator::genInit(const T* o) {
-  if (o->type->isArray()) {
-    ArrayType* type = dynamic_cast<ArrayType*>(o->type->canonical());
-    assert(type);
-    if (!o->brackets->isEmpty()) {
-      if (!o->value->isEmpty()) {
-        middle(" = libbirch::make_array_and_assign<" << type->single << ">(");
-        middle("libbirch::make_shape(" << o->brackets << ')');
-        middle(", " << o->value << ')');
-      } else {
-        middle(" = libbirch::make_array<" << type->single << ">(");
-        middle("libbirch::make_shape(" << o->brackets << ')');
-        if (!o->args->isEmpty()) {
-          middle(", " << o->args);
-        }
-        middle(')');
-      }
-    } else if (!o->value->isEmpty()) {
-      middle(" = " << o->value);
-    }
-  } else if (o->type->isClass() && o->value->isEmpty()) {
-    middle(" = libbirch::make_pointer<" << o->type << ">(" << o->args << ')');
-  } else if (!o->value->isEmpty()) {
-    middle('(' << o->value << ')');
+  middle("(libbirch::construct<" << o->type << ">(nullptr");
+  if (!o->brackets->isEmpty()) {
+    middle(", libbirch::make_shape(" << o->brackets << ')');
   }
+  if (!o->args->isEmpty()) {
+    middle(", " << o->args);
+  } else if (!o->value->isEmpty()) {
+    middle(", " << o->value);
+  }
+  middle("))");
 }
 
 template<class ObjectType>

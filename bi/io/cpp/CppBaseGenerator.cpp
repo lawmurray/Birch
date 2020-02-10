@@ -34,19 +34,19 @@ void bi::CppBaseGenerator::visit(const ExpressionList* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Literal<bool>* o) {
-  middle(o->str);
+  middle("bi::type::Boolean(" << o->str << ')');
 }
 
 void bi::CppBaseGenerator::visit(const Literal<int64_t>* o) {
-  middle("std::int64_t(" << o->str << ')');
+  middle("bi::type::Integer(" << o->str << ')');
 }
 
 void bi::CppBaseGenerator::visit(const Literal<double>* o) {
-  middle(o->str);
+  middle("bi::type::Real(" << o->str << ')');
 }
 
 void bi::CppBaseGenerator::visit(const Literal<const char*>* o) {
-  middle("std::string(" << o->str << ')');
+  middle("bi::type::String(" << o->str << ')');
 }
 
 void bi::CppBaseGenerator::visit(const Parentheses* o) {
@@ -146,7 +146,7 @@ void bi::CppBaseGenerator::visit(const Assign* o) {
     middle(o->right << ')');
   } else {
     ++inAssign;
-    middle("assign(context_, " << o->left);
+    middle("libbirch::assign(nullptr, " << o->left);
     --inAssign;
     middle(", " << o->right << ')');
   }
@@ -296,7 +296,7 @@ void bi::CppBaseGenerator::visit(const GlobalVariable* o) {
     finish(" {");
     in();
     genTraceLine(o->loc);
-    start("static " << o->type << " result");
+    start("static auto result = ");
     genInit(o);
     finish(';');
     genTraceLine(o->loc);
@@ -313,12 +313,11 @@ void bi::CppBaseGenerator::visit(const MemberVariable* o) {
 void bi::CppBaseGenerator::visit(const LocalVariable* o) {
   genTraceLine(o->loc);
   if (o->has(AUTO)) {
-    start("auto");
+    start("auto " << o->name << " = " << o->value);
   } else {
-    start(o->type);
+    start("auto " << o->name << " = ");
+    genInit(o);
   }
-  middle(' ' << o->name);
-  genInit(o);
   finish(';');
 }
 
