@@ -158,7 +158,7 @@ protected:
 
 template<class T>
 void bi::CppBaseGenerator::genInit(const T* o) {
-  middle("(libbirch::construct<" << o->type << ">(nullptr");
+  middle("(libbirch::construct<" << o->type << ">(context_");
   if (!o->brackets->isEmpty()) {
     middle(", libbirch::make_shape(" << o->brackets << ')');
   }

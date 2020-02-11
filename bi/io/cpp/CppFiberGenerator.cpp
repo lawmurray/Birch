@@ -76,7 +76,10 @@ void bi::CppFiberGenerator::visit(const Function* o) {
     finish(" {");
     in();
     genTraceFunction(o->name->str(), o->loc);
+    line("libbirch_global_start_");
+    genSourceLine(o->loc);
     line("using yield_type_ = " << fiberType->yieldType << ';');
+    genSourceLine(o->loc);
     line("using return_type_ = " << fiberType->returnType << ';');
     if (this->yield) {
       auto i = 0;

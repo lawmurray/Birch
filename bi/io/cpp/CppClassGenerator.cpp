@@ -294,7 +294,7 @@ void bi::CppClassGenerator::visit(const Class* o) {
         line("template<class T_> auto& set_" << var->name << "_(T_&& o_) {");
         in();
         genSourceLine(var->loc);
-        line("return " << var->name << " = std::forward<T_>(o_);");
+        line("return libbirch::assign(this->getLabel(), " << var->name << ", o_);");
         genSourceLine(var->loc);
         out();
         line("}\n");
@@ -304,7 +304,7 @@ void bi::CppClassGenerator::visit(const Class* o) {
           line("template<class F_, class T_> auto set_" << var->name << "_(const F_& shape_, T_&& o_) {");
           in();
           genSourceLine(var->loc);
-          line("return " << var->name << ".get(shape_) = std::forward<T_>(o_);");
+          line("return libbirch::assign(this->getLabel(), " << var->name << ".get(shape_), o_);");
           genSourceLine(var->loc);
           out();
           line("}\n");
@@ -376,7 +376,7 @@ void bi::CppClassGenerator::visit(const MemberFunction* o) {
       finish(" {");
       in();
       genTraceFunction(o->name->str(), o->loc);
-      line("libbirch_declare_self_");
+      line("libbirch_member_start_");
       CppBaseGenerator auxBase(base, level, header);
       auxBase << o->braces->strip();
       out();
@@ -412,7 +412,7 @@ void bi::CppClassGenerator::visit(const MemberFiber* o) {
     } else {
       finish(" {");
       in();
-      line("libbirch_declare_self_");
+      line("libbirch_member_start_");
       //CppResumeGenerator aux(nullptr, base, level, header);
       //aux << o->yield;
       out();
@@ -446,7 +446,7 @@ void bi::CppClassGenerator::visit(const AssignmentOperator* o) {
       finish(" {");
       in();
       genSourceLine(o->loc);
-      line("libbirch_declare_self_");
+      line("libbirch_member_start_");
       genTraceFunction("<assignment>", o->loc);
       CppBaseGenerator auxBase(base, level, header);
       auxBase << o->braces->strip();
@@ -477,7 +477,7 @@ void bi::CppClassGenerator::visit(const ConversionOperator* o) {
       finish(" {");
       in();
       genSourceLine(o->loc);
-      line("libbirch_declare_self_ ");
+      line("libbirch_member_start_ ");
       genTraceFunction("<conversion>", o->loc);
       CppBaseGenerator auxBase(base, level, header);
       auxBase << o->braces->strip();
