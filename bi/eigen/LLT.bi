@@ -158,7 +158,8 @@ function det(S:LLT) -> Real;
  * Logarithm of the determinant of a symmetric positive-definite matrix.
  */
 function ldet(S:LLT) -> Real {
-  auto L <- cholesky(S);
+  L:Real[_,_] <- cholesky(S);
+  // ^ auto here causes C++ compile error on Eigen types
   auto n <- rows(S);
   auto d <- 0.0;
   for i in 1..n {
