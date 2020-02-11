@@ -43,7 +43,6 @@ public:
   /**
    * Value copy constructor.
    */
-  template<IS_VALUE(T)>
   Optional(const T& value) :
       value(value),
       hasValue(true) {
@@ -61,9 +60,20 @@ public:
   }
 
   /**
+   * Value conversion constructor. This ensures that any value of type U that
+   * can be implicitly converted to type T can also be convert to type
+   * Optional<T>.
+   */
+  template<class U, IS_CONVERTIBLE(U,T)>
+  Optional(const U& value) :
+      value(value),
+      hasValue(true) {
+    //
+  }
+
+  /**
    * Value move constructor.
    */
-  template<IS_VALUE(T)>
   Optional(T&& value) :
       value(std::move(value)),
       hasValue(true) {
@@ -95,6 +105,18 @@ public:
   template<IS_NOT_VALUE(T)>
   Optional(Label* context, const Optional<T>& o) :
       value(context, o.value),
+      hasValue(o.hasValue) {
+    //
+  }
+
+  /**
+   * Conversion constructor. This ensures that if a value of type U can be
+   * implicitly converted to type T, then Optional<U> can also be converted
+   * to Optional<T>.
+   */
+  template<class U, IS_CONVERTIBLE(U,T)>
+  Optional(const Optional<U>& o) :
+      value(o.value),
       hasValue(o.hasValue) {
     //
   }
@@ -228,36 +250,18 @@ public:
     return *this;
   }
 
-  template<IS_VALUE(T)>
-  void freeze() {
-    //
-  }
-
-  template<IS_NOT_VALUE(T)>
   void freeze() {
     if (hasValue) {
-      value.freeze();
+      libbirch::freeze(value);
     }
   }
 
-  template<IS_VALUE(T)>
-  void thaw(Label* label) {
-    //
-  }
-
-  template<IS_NOT_VALUE(T)>
   void thaw(Label* label) {
     if (hasValue) {
       value.thaw(label);
     }
   }
 
-  template<IS_VALUE(T)>
-  void finish() {
-    //
-  }
-
-  template<IS_NOT_VALUE(T)>
   void finish() {
     if (hasValue) {
       value.finish();
@@ -305,8 +309,8 @@ public:
   /**
    * Constructor.
    */
-  Optional(Label* context, typename T::value_type* ptr, const bool cross = false) :
-      value(context, ptr, cross) {
+  Optional(Label* context, typename T::value_type* ptr,
+      const bool cross = false) : value(context, ptr, cross) {
     //
   }
 
@@ -321,8 +325,7 @@ public:
   /**
    * Value copy constructor.
    */
-  template<class U, IS_CONVERTIBLE(U,T)>
-  Optional(const U& value) :
+  Optional(const T& value) :
       value(value) {
     //
   }
@@ -330,16 +333,24 @@ public:
   /**
    * Value copy constructor.
    */
-  template<class U, IS_CONVERTIBLE(U,T)>
-  Optional(Label* context, const U& value) :
+  Optional(Label* context, const T& value) :
       value(context, value) {
     //
   }
 
   /**
+   * Value conversion constructor. This ensures that any value of type U that
+   * can be implicitly converted to type T can also be convert to type
+   * Optional<T>.
+   */
+  template<class U, IS_CONVERTIBLE(U,T)>
+  Optional(const U& value) :
+      value(value) {
+    //
+  }
+
+  /**
    * Value move constructor.
-   *
-   * @todo Make generic while avoiding use of universal reference.
    */
   Optional(T&& value) :
       value(std::move(value)) {
@@ -367,18 +378,19 @@ public:
   /**
    * Copy constructor.
    */
-  template<class U, IS_CONVERTIBLE(U,T)>
-  Optional(const Optional<U>& o) :
-      value(o.value) {
+  Optional(Label* context, const Optional<T>& o) :
+      value(context, o.value) {
     //
   }
 
   /**
-   * Copy constructor.
+   * Conversion constructor. This ensures that if a value of type U can be
+   * implicitly converted to type T, then Optional<U> can also be converted
+   * to Optional<T>.
    */
   template<class U, IS_CONVERTIBLE(U,T)>
-  Optional(Label* context, const Optional<U>& o) :
-      value(context, o.value) {
+  Optional(const Optional<U>& o) :
+      value(o.value) {
     //
   }
 
@@ -393,17 +405,7 @@ public:
   /**
    * Move constructor.
    */
-  template<class U, IS_CONVERTIBLE(U,T)>
-  Optional(Optional<U>&& o) :
-      value(std::move(o.value)) {
-    //
-  }
-
-  /**
-   * Move constructor.
-   */
-  template<class U, IS_CONVERTIBLE(U,T)>
-  Optional(Label* context, Optional<U>&& o) :
+  Optional(Label* context, Optional<T>&& o) :
       value(context, std::move(o.value)) {
     //
   }
@@ -456,20 +458,20 @@ public:
   }
 
   void freeze() {
-    if (query()) {
-      get().freeze();
+    if (value) {
+      value.freeze();
     }
   }
 
   void thaw(Label* label) {
-    if (query()) {
-      get().thaw(label);
+    if (value) {
+      value.thaw(label);
     }
   }
 
   void finish() {
-    if (query()) {
-      get().finish();
+    if (value) {
+      value.finish();
     }
   }
 
