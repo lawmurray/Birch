@@ -326,13 +326,13 @@ void bi::CppClassGenerator::visit(const Class* o) {
       genSourceLine(o->loc);
       if (header) {
         start("extern \"C\" bi::type::" << o->name << "* ");
-        finish("make_" << o->name << "_();");
+        finish("make_" << o->name << "_(libbirch::Label* context_);");
       } else {
         start("bi::type::" << o->name << "* ");
-        finish("bi::type::make_" << o->name << "_() {");
+        finish("bi::type::make_" << o->name << "_(libbirch::Label* context_) {");
         in();
         genSourceLine(o->loc);
-        line("return new bi::type::" << o->name << "();");
+        line("return new bi::type::" << o->name << "(context_);");
         genSourceLine(o->loc);
         out();
         line("}");
