@@ -120,8 +120,8 @@ class YAMLWriter < Writer {
   
   function visit(value:BooleanMatrixValue) {
     auto v <- value.value;
-    auto m <- rows(value);
-    auto n <- columns(value);
+    auto m <- rows(v);
+    auto n <- columns(v);
     if m > 0 {
       startSequence();
       for i in 1..m {
@@ -141,8 +141,8 @@ class YAMLWriter < Writer {
   
   function visit(value:IntegerMatrixValue) {
     auto v <- value.value;
-    auto m <- rows(value);
-    auto n <- columns(value);
+    auto m <- rows(v);
+    auto n <- columns(v);
     if m > 0 {
       startSequence();
       for i in 1..m {
@@ -162,8 +162,8 @@ class YAMLWriter < Writer {
   
   function visit(value:RealMatrixValue) {
     auto v <- value.value;
-    auto m <- rows(value);
-    auto n <- columns(value);
+    auto m <- rows(v);
+    auto n <- columns(v);
     if m > 0 {
       startSequence();
       for i in 1..m {

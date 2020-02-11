@@ -160,11 +160,11 @@ class YAMLReader < Reader {
   
   function parseScalar(buffer:Buffer) {
     cpp{{
-    char* data = (char*)self->event.data.scalar.value;
-    size_t length = self->event.data.scalar.length;
-    char* endptr;
+    auto data = (char*)self->event.data.scalar.value;
+    auto length = self->event.data.scalar.length;
+    auto endptr = data;
     
-    auto intValue = std::strtol(data, &endptr, 10);
+    auto intValue = std::strtoll(data, &endptr, 10);
     if (endptr == data + length) {
       buffer->setInteger(intValue);
     } else {
