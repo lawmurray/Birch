@@ -30,7 +30,7 @@ final class LinearDiscrete(a:Integer, μ:Discrete, c:Integer) < Discrete {
     if value? {
       return logpdf_delta(x, value!);
     } else {
-      return μ.logpdf((x - c)/a) - log(abs(a));
+      return μ.logpdf((x - c)/a) - log(Real(abs(a)));
     }
   }
   

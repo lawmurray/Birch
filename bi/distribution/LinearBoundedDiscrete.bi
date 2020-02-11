@@ -31,7 +31,7 @@ final class LinearBoundedDiscrete(a:Integer, μ:BoundedDiscrete, c:Integer) <
     if value? {
       return logpdf_delta(x, value!);
     } else {
-      return μ.logpdf((x - c)/a) - log(abs(a));
+      return μ.logpdf((x - c)/a) - log(Real(abs(a)));
     }
   }
 
