@@ -19,7 +19,7 @@ program test_deep_clone_chain() {
   y <- z;
   
   /* is z.b updated despite the missing history? */
-  if (z.b != 3) {
+  if z.b.value() != 3 {
     exit(1);
   }
 }
