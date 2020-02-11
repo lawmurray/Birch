@@ -230,7 +230,7 @@ void bi::CppBaseGenerator::visit(const This* o) {
   if (inConstructor) {
     middle("this");
   } else {
-    middle("self");
+    middle("libbirch::Lazy<libbirch::SharedPtr<this_type_>>(self)");
   }
 }
 
@@ -238,7 +238,7 @@ void bi::CppBaseGenerator::visit(const Super* o) {
   if (inConstructor) {
     middle("this");
   } else {
-    middle("self");
+    middle("libbirch::Lazy<libbirch::SharedPtr<super_type_>>(self)");
   }
 }
 
@@ -251,7 +251,8 @@ void bi::CppBaseGenerator::visit(const Nil* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Parameter* o) {
-  middle("const " << o->type << "& " << o->name);
+  //middle("const " << o->type << "& " << o->name);
+  middle(o->type << ' ' << o->name);
   if (!o->value->isEmpty()) {
     middle(" = " << o->value);
   }
@@ -285,6 +286,7 @@ void bi::CppBaseGenerator::visit(const GlobalVariable* o) {
   /* C++ does not guarantee static initialization order across compilation
    * units. Global variables are therefore used through accessor functions
    * that initialize their values on first use. */
+  genSourceLine(o->loc);
   start(o->type << "& ");
   if (!header) {
     middle("bi::");
@@ -295,11 +297,13 @@ void bi::CppBaseGenerator::visit(const GlobalVariable* o) {
   } else {
     finish(" {");
     in();
-    genTraceLine(o->loc);
+    genSourceLine(o->loc);
+    line("libbirch_global_start_");
+    genSourceLine(o->loc);
     start("static auto result = ");
     genInit(o);
     finish(';');
-    genTraceLine(o->loc);
+    genSourceLine(o->loc);
     line("return result;");
     out();
     line("}\n");
@@ -324,9 +328,7 @@ void bi::CppBaseGenerator::visit(const LocalVariable* o) {
 void bi::CppBaseGenerator::visit(const Function* o) {
   if (!o->braces->isEmpty()) {
     genTemplateParams(o);
-    if (!header) {
-      genSourceLine(o->loc);
-    }
+    genSourceLine(o->loc);
     start(o->returnType << ' ');
     if (!header) {
       middle("bi::");
@@ -361,10 +363,10 @@ void bi::CppBaseGenerator::visit(const MemberFiber* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Program* o) {
+  genSourceLine(o->loc);
   if (header) {
     line("extern \"C\" int " << o->name << "(int, char**);");
   } else {
-    genSourceLine(o->loc);
     line("int bi::" << o->name << "(int argc_, char** argv_) {");
     in();
     genTraceFunction(o->name->str(), o->loc);
@@ -514,9 +516,7 @@ void bi::CppBaseGenerator::visit(const Program* o) {
 
 void bi::CppBaseGenerator::visit(const BinaryOperator* o) {
   if (!o->braces->isEmpty()) {
-    if (!header) {
-      genSourceLine(o->loc);
-    }
+    genSourceLine(o->loc);
     start(o->returnType << ' ');
     if (!header) {
       middle("bi::");
@@ -544,9 +544,7 @@ void bi::CppBaseGenerator::visit(const BinaryOperator* o) {
 
 void bi::CppBaseGenerator::visit(const UnaryOperator* o) {
   if (!o->braces->isEmpty()) {
-    if (!header) {
-      genSourceLine(o->loc);
-    }
+    genSourceLine(o->loc);
     start(o->returnType << ' ');
     if (!header) {
       middle("bi::");
@@ -774,5 +772,5 @@ void bi::CppBaseGenerator::genTraceLine(const Location* loc) {
 }
 
 void bi::CppBaseGenerator::genSourceLine(const Location* loc) {
-  //line("#line " << loc->firstLine << " \"" << loc->file->path << "\"");
+  line("#line " << loc->firstLine << " \"" << loc->file->path << "\"");
 }

@@ -28,6 +28,7 @@ void bi::CppClassGenerator::visit(const Class* o) {
     /* start boilerplate */
     if (header) {
       genTemplateParams(o);
+      genSourceLine(o->loc);
       start("class " << o->name);
       if (o->has(FINAL)) {
         middle(" final");
@@ -44,10 +45,13 @@ void bi::CppClassGenerator::visit(const Class* o) {
       finish(" {");
       line("public:");
       in();
+      genSourceLine(o->loc);
       start("using class_type_ = " << o->name);
       genTemplateArgs(o);
       finish(';');
+      genSourceLine(o->loc);
       line("using this_type_ = class_type_;");
+      genSourceLine(o->loc);
       start("using super_type_ = ");
       if (base) {
         middle(base->name);
@@ -75,8 +79,10 @@ void bi::CppClassGenerator::visit(const Class* o) {
         }
       }
 
+      genSourceLine(o->loc);
       line("using super_type_::operator=;");
       for (auto name : names) {
+        genSourceLine(o->loc);
         line("using super_type_::" << internalise(name) << ';');
       }
       line("");
@@ -84,13 +90,13 @@ void bi::CppClassGenerator::visit(const Class* o) {
 
     /* constructor */
     if (!header) {
-      genSourceLine(o->loc);
       genTemplateParams(o);
       genSourceLine(o->loc);
       start("bi::type::" << o->name);
       genTemplateArgs(o);
       middle("::");
     } else {
+      genSourceLine(o->loc);
       start("");
     }
     middle(o->name << "(libbirch::Label* context_");
@@ -139,13 +145,13 @@ void bi::CppClassGenerator::visit(const Class* o) {
 
     /* deep copy constructor */
     if (!header) {
-      genSourceLine(o->loc);
       genTemplateParams(o);
       genSourceLine(o->loc);
       start("bi::type::" << o->name);
       genTemplateArgs(o);
       middle("::");
     } else {
+      genSourceLine(o->loc);
       start("");
     }
     middle(o->name << "(libbirch::Label* context, libbirch::Label* label, const " << o->name << "& o)");
@@ -173,17 +179,20 @@ void bi::CppClassGenerator::visit(const Class* o) {
 
     /* copy constructor, destructor, assignment operator */
     if (header) {
+      genSourceLine(o->loc);
       line("virtual ~" << o->name << "() = default;");
+      genSourceLine(o->loc);
       line(o->name << "(const " << o->name << "&) = delete;");
+      genSourceLine(o->loc);
       line(o->name << "& operator=(const " << o->name << "&) = delete;");
     }
 
     /* clone function */
     if (!o->has(ABSTRACT)) {
       if (header) {
+        genSourceLine(o->loc);
         line("virtual " << o->name << "* clone_(libbirch::Label* label) const;");
       } else {
-        genSourceLine(o->loc);
         genTemplateParams(o);
         genSourceLine(o->loc);
         start("bi::type::" << o->name);
@@ -203,9 +212,9 @@ void bi::CppClassGenerator::visit(const Class* o) {
 
     /* name function */
     if (header) {
+      genSourceLine(o->loc);
       line("virtual bi::type::String getClassName() const;");
     } else {
-      genSourceLine(o->loc);
       genTemplateParams(o);
       genSourceLine(o->loc);
       start("bi::type::String bi::type::" << o->name);
@@ -222,9 +231,9 @@ void bi::CppClassGenerator::visit(const Class* o) {
 
     /* freeze function */
     if (header) {
+      genSourceLine(o->loc);
       line("virtual void doFreeze_();");
     } else {
-      genSourceLine(o->loc);
       genTemplateParams(o);
       start("void bi::type::" << o->name);
       genTemplateArgs(o);
@@ -243,9 +252,9 @@ void bi::CppClassGenerator::visit(const Class* o) {
 
     /* thaw function */
     if (header) {
+      genSourceLine(o->loc);
       line("virtual void doThaw(libbirch::Label* label_);");
     } else {
-      genSourceLine(o->loc);
       genTemplateParams(o);
       genSourceLine(o->loc);
       start("void bi::type::" << o->name);
@@ -265,9 +274,9 @@ void bi::CppClassGenerator::visit(const Class* o) {
 
     /* finish function */
     if (header) {
+      genSourceLine(o->loc);
       line("virtual void doFinish_();");
     } else {
-      genSourceLine(o->loc);
       genTemplateParams(o);
       genSourceLine(o->loc);
       start("void bi::type::" << o->name);
@@ -351,9 +360,9 @@ void bi::CppClassGenerator::visit(const MemberVariable* o) {
 void bi::CppClassGenerator::visit(const MemberFunction* o) {
   if ((header && o->has(ABSTRACT)) || !o->braces->isEmpty()) {
     if (header) {
+      genSourceLine(o->loc);
       start("virtual ");
     } else {
-      genSourceLine(o->loc);
       genTemplateParams(theClass);
       genSourceLine(o->loc);
       start("");
@@ -388,9 +397,9 @@ void bi::CppClassGenerator::visit(const MemberFunction* o) {
 void bi::CppClassGenerator::visit(const MemberFiber* o) {
   if ((header && o->has(ABSTRACT)) || !o->braces->isEmpty()) {
     if (header) {
+      genSourceLine(o->loc);
       start("virtual ");
     } else {
-      genSourceLine(o->loc);
       genTemplateParams(theClass);
       genSourceLine(o->loc);
       start("");
@@ -424,9 +433,9 @@ void bi::CppClassGenerator::visit(const MemberFiber* o) {
 void bi::CppClassGenerator::visit(const AssignmentOperator* o) {
   if (!o->braces->isEmpty()) {
     if (header) {
+      genSourceLine(o->loc);
       start("virtual ");
     } else {
-      genSourceLine(o->loc);
       genTemplateParams(theClass);
       genSourceLine(o->loc);
       start("bi::type::");
@@ -445,9 +454,8 @@ void bi::CppClassGenerator::visit(const AssignmentOperator* o) {
     } else {
       finish(" {");
       in();
-      genSourceLine(o->loc);
-      line("libbirch_member_start_");
       genTraceFunction("<assignment>", o->loc);
+      line("libbirch_member_start_");
       CppBaseGenerator auxBase(base, level, header);
       auxBase << o->braces->strip();
       genSourceLine(o->loc);
@@ -461,9 +469,9 @@ void bi::CppClassGenerator::visit(const AssignmentOperator* o) {
 void bi::CppClassGenerator::visit(const ConversionOperator* o) {
   if (!o->braces->isEmpty()) {
     if (header) {
+      genSourceLine(o->loc);
       start("virtual ");
     } else {
-      genSourceLine(o->loc);
       genTemplateParams(theClass);
       genSourceLine(o->loc);
       start("bi::type::" << theClass->name);
@@ -476,9 +484,8 @@ void bi::CppClassGenerator::visit(const ConversionOperator* o) {
     } else {
       finish(" {");
       in();
-      genSourceLine(o->loc);
-      line("libbirch_member_start_ ");
       genTraceFunction("<conversion>", o->loc);
+      line("libbirch_member_start_ ");
       CppBaseGenerator auxBase(base, level, header);
       auxBase << o->braces->strip();
       out();

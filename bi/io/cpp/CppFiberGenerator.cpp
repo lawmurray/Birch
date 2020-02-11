@@ -20,9 +20,7 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
 
     /* initial function */
     genTemplateParams(o);
-    if (!header) {
-      genSourceLine(o->loc);
-    }
+    genSourceLine(o->loc);
     start(o->returnType << ' ');
     if (!header) {
       middle("bi::");
@@ -54,17 +52,13 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
 void bi::CppFiberGenerator::visit(const Function* o) {
   auto fiberType = dynamic_cast<const FiberType*>(fiber->returnType);
   assert(fiberType);
-  if (!header) {
-    genSourceLine(o->loc);
-  }
+  genSourceLine(o->loc);
   start("template<");
   for (auto typeParam : *o->typeParams) {
     middle("class " << typeParam << ',');
   }
   finish("class State>");
-  if (!header) {
-    genSourceLine(o->loc);
-  }
+  genSourceLine(o->loc);
   start(o->returnType << ' ');
   if (!header) {
     middle("bi::");
