@@ -24,10 +24,12 @@ class IntegerVectorValue(value:Integer[_]) < Value {
   }
 
   function getRealVector() -> Real[_]? {
+    value:Real[_] <- this.value;
     return value;
   }
 
   function getRealMatrix() -> Real[_,_]? {
+    value:Real[_] <- this.value;
     return column(value);
   }
 }

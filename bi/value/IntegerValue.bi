@@ -28,14 +28,14 @@ class IntegerValue(value:Integer) < Value {
   }
 
   function getReal() -> Real? {
-    return value;
+    return Real(value);
   }
 
   function getRealVector() -> Real[_]? {
-    return vector(value, 1);
+    return vector(Real(value), 1);
   }
 
   function getRealMatrix() -> Real[_,_]? {
-    return matrix(value, 1, 1);
+    return matrix(Real(value), 1, 1);
   }
 }

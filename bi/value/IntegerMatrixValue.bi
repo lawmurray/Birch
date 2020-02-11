@@ -20,6 +20,7 @@ class IntegerMatrixValue(value:Integer[_,_]) < Value {
   }
 
   function getRealMatrix() -> Real[_,_]? {
+    value:Real[_,_] <- this.value;
     return value;
   }
 }

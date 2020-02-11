@@ -7,7 +7,7 @@
  */
 function lpartition_bernoulli(ρ:Real) -> Real {
   assert 0.0 <= ρ && ρ <= 1.0;
-  return -log(1- ρ);
+  return -log1p(-ρ);
 }
 
 /**
@@ -19,7 +19,7 @@ function lpartition_bernoulli(ρ:Real) -> Real {
  */
 function partition_bernoulli(ρ:Real) -> Real {
   assert 0.0 <= ρ && ρ <= 1.0;
-  return 1/(1-ρ);
+  return 1.0/(1.0 - ρ);
 }
 
 
@@ -34,7 +34,7 @@ function partition_bernoulli(ρ:Real) -> Real {
 function lpartition_binomial(n:Integer, ρ:Real) -> Real {
   assert 0 <= n;
   assert 0.0 <= ρ && ρ <= 1.0;
-  return -n*log(1- ρ);
+  return -n*log1p(-ρ);
 }
 
 /**
@@ -62,7 +62,7 @@ function partition_binomial(n:Integer, ρ:Real) -> Real {
 function lpartition_negative_binomial(k:Integer, ρ:Real) -> Real {
   assert 0 < k;
   assert 0.0 <= ρ && ρ <= 1.0;
-  return -k*log(1 - ρ);
+  return -k*log1p(-ρ);
 }
 
 /**
@@ -124,7 +124,7 @@ function lpartition_exponential(λ:Real) -> Real {
  */
 function partition_exponential(λ:Real) -> Real {
   assert 0.0 < λ;
-  return 1/λ;
+  return 1.0/λ;
 }
 
 /**
@@ -165,7 +165,7 @@ function partition_weibull(k:Real, λ:Real) -> Real {
  */
 function lpartition_laplace(b:Real) -> Real {
   assert 0.0 < b;
-  return log(2*b);
+  return log(2.0*b);
 }
 
 /**
@@ -177,7 +177,7 @@ function lpartition_laplace(b:Real) -> Real {
  */
 function partition_laplace(b:Real) -> Real {
   assert 0.0 < b;
-  return 2*b;
+  return 2.0*b;
 }
 
 /**
@@ -188,7 +188,7 @@ function partition_laplace(b:Real) -> Real {
  * Return: the log of the normalization constant.
  */
 function lpartition_chi_squared(ν:Real) -> Real {
-  return lgamma(ν/2) + log(2)*ν/2;
+  return lgamma(0.5*ν) + 0.5*log(2.0)*ν;
 } 
 
 /**

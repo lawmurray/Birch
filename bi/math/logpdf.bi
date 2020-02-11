@@ -90,7 +90,7 @@ function logpdf_poisson(x:Integer, λ:Real) -> Real {
 
   if (λ > 0.0) {
     if (x >= 0) {
-      return x*log(λ) - λ - lgamma(x + 1);
+      return x*log(λ) - λ - lgamma(x + 1.0);
     } else {
       return -inf;
     }
@@ -114,7 +114,7 @@ function logpdf_poisson(x:Integer, λ:Real) -> Real {
  */
 function logpdf_uniform_int(x:Integer, l:Integer, u:Integer) -> Real {
   if (x >= l && x <= u) {
-    return -log(u - l + 1);
+    return -log1p(Real(u - l));
   } else {
     return -inf;
   }

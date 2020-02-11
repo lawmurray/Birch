@@ -51,7 +51,7 @@ function test_cdf(q:Distribution<Real>, N:Integer) {
     P <- P + q.pdf(x)*(to! - from!)/N;
    
     auto δ <- abs(C - P);
-    auto ε <- 10.0/sqrt(N);
+    auto ε <- 10.0/sqrt(Real(N));
     if δ > ε {
       failed <- true;
       stderr.print("failed on step " + n + ", " + δ + " > " + ε + "\n");
@@ -105,7 +105,7 @@ function test_cdf(q:Distribution<Integer>) {
     P <- P + q.pdf(x);
     
     auto δ <- abs(C - P);
-    auto ε <- 10.0/sqrt(x - from! + 1);
+    auto ε <- 10.0/sqrt(x - from! + 1.0);
     if δ > ε {
       failed <- true;
       stderr.print("failed on value " + x + ", " + δ + " > " + ε + "\n");

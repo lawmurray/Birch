@@ -8,7 +8,7 @@
  */
 function logpdf_lazy_poisson(x:Expression<Integer>, λ:Expression<Real>) ->
     Expression<Real> {
-  return x*log(λ) - λ - lgamma(x + 1);
+  return Real(x.value())*log(λ) - λ - lgamma(Real(x.value()) + 1.0);
 }
 
 /**

@@ -15,7 +15,7 @@ function test_pdf(π:Distribution<Boolean>, N:Integer) {
 
   /* compare pdf to count */
   auto failed <- false;
-  auto ε <- 5.0/sqrt(N);
+  auto ε <- 5.0/sqrt(Real(N));
   
   auto δ <- abs(π.pdf(true) - Real(k)/N);
   if δ > ε {
@@ -73,7 +73,7 @@ function test_pdf(π:Distribution<Integer>, N:Integer) {
   auto failed <- false;
   for x in from!..to! {
     auto δ <- abs(π.pdf(x) - Real(count[x - from! + 1])/N);
-    auto ε <- 5.0/sqrt(N);
+    auto ε <- 5.0/sqrt(Real(N));
     if δ > ε {
       failed <- true;
       stderr.print("failed on value " + x + ", " + δ + " > " + ε + "\n");
@@ -111,8 +111,8 @@ function test_pdf(π:Distribution<Real[_]>, D:Integer, N:Integer, B:Integer,
     μ <- μ + x;
     Σ <- Σ + x*transpose(x);
   }
-  μ <- μ/N;
-  Σ <- Σ/N - μ*transpose(μ);
+  μ <- μ/Real(N);
+  Σ <- Σ/Real(N) - μ*transpose(μ);
   
   /* scale this proposal to get a reasonable acceptance rate */
   auto done <- false;
@@ -194,8 +194,8 @@ function test_pdf(π:Distribution<Real[_,_]>, R:Integer, C:Integer, N:Integer,
     μ <- μ + x;
     Σ <- Σ + x*transpose(x);
   }
-  μ <- μ/N;
-  Σ <- Σ/N - μ*transpose(μ);
+  μ <- μ/Real(N);
+  Σ <- Σ/Real(N) - μ*transpose(μ);
   
   /* scale this proposal to get a reasonable acceptance rate */
   auto done <- false;

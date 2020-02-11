@@ -153,6 +153,22 @@ function digamma(x:Real32) -> Real32 {
 /**
  * The binomial coefficient.
  */
+function choose(x:Integer, y:Integer) -> Real64 {
+  assert 0 <= x;
+  assert 0 <= y;
+  assert x >= y;
+  
+  if (y == 0) {
+    return 1.0;
+  } else {
+    // see Boost binomial_coefficient function for this implementation
+    return 1.0/(Real(y)*beta(Real(y), Real(x - y + 1)));
+  }
+}
+
+/**
+ * The binomial coefficient.
+ */
 function choose(x:Real64, y:Real64) -> Real64 {
   assert 0.0 <= x;
   assert 0.0 <= y;
@@ -179,6 +195,22 @@ function choose(x:Real32, y:Real32) -> Real32 {
   } else {
     // see Boost binomial_coefficient function for this implementation
     return Real32(1.0)/(y*beta(y, x - y + Real32(1.0)));
+  }
+}
+
+/**
+ * Logarithm of the binomial coefficient.
+ */
+function lchoose(x:Integer, y:Integer) -> Real64 {
+  assert 0 <= x;
+  assert 0 <= y;
+  assert x >= y;
+  
+  if (y == 0) {
+    return 0.0;
+  } else {
+    // see Boost binomial_coefficient function for this implementation
+    return -log(Real(y)) - lbeta(Real(y), Real(x - y + 1));
   }
 }
 
