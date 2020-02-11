@@ -109,4 +109,16 @@ struct Slice {
    */
   Tail tail;
 };
+
+/**
+ * Default slice for `D`-dimensional indexing of a single element.
+ */
+template<int D>
+struct DefaultSlice {
+  typedef Slice<Index<>,typename DefaultSlice<D - 1>::type> type;
+};
+template<>
+struct DefaultSlice<0> {
+  typedef EmptySlice type;
+};
 }

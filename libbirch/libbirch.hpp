@@ -41,24 +41,6 @@
  */
 namespace libbirch {
 /**
- * Default array for `D` dimensions.
- */
-template<class T, int D>
-using DefaultArray = Array<T,typename DefaultShape<D>::type>;
-
-/**
- * Default slice for `D`-dimensional indexing of a single element.
- */
-template<int D>
-struct DefaultSlice {
-  typedef Slice<Index<>,typename DefaultSlice<D - 1>::type> type;
-};
-template<>
-struct DefaultSlice<0> {
-  typedef EmptySlice type;
-};
-
-/**
  * Lazy shared pointer.
  */
 template<class T>

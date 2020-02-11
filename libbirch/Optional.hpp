@@ -43,8 +43,8 @@ public:
   /**
    * Value copy constructor.
    */
-  template<class U, IS_CONVERTIBLE(U,T)>
-  Optional(const U& value) :
+  template<IS_VALUE(T)>
+  Optional(const T& value) :
       value(value),
       hasValue(true) {
     //
@@ -53,8 +53,8 @@ public:
   /**
    * Value copy constructor.
    */
-  template<class U, IS_NOT_VALUE(T), IS_CONVERTIBLE(U,T)>
-  Optional(Label* context, const U& value) :
+  template<IS_NOT_VALUE(T)>
+  Optional(Label* context, const T& value) :
       value(context, value),
       hasValue(true) {
     //
@@ -62,19 +62,6 @@ public:
 
   /**
    * Value move constructor.
-   *
-   * @todo Make generic while avoiding use of universal reference.
-   */
-  Optional(T&& value) :
-      value(std::move(value)),
-      hasValue(true) {
-    //
-  }
-
-  /**
-   * Value move constructor.
-   *
-   * @todo Make generic while avoiding use of universal reference.
    */
   template<IS_VALUE(T)>
   Optional(T&& value) :
@@ -85,8 +72,6 @@ public:
 
   /**
    * Value move constructor.
-   *
-   * @todo Make generic while avoiding use of universal reference.
    */
   template<IS_NOT_VALUE(T)>
   Optional(Label* context, T&& value) :
@@ -107,18 +92,8 @@ public:
   /**
    * Copy constructor.
    */
-  template<class U, IS_CONVERTIBLE(U,T)>
-  Optional(const Optional<U>& o) :
-      value(o.value),
-      hasValue(o.hasValue) {
-    //
-  }
-
-  /**
-   * Copy constructor.
-   */
-  template<IS_NOT_VALUE(T), class U, IS_CONVERTIBLE(U,T)>
-  Optional(Label* context, const Optional<U>& o) :
+  template<IS_NOT_VALUE(T)>
+  Optional(Label* context, const Optional<T>& o) :
       value(context, o.value),
       hasValue(o.hasValue) {
     //
@@ -136,18 +111,8 @@ public:
   /**
    * Move constructor.
    */
-  template<class U, IS_CONVERTIBLE(U,T)>
-  Optional(Optional<U>&& o) :
-      value(std::move(o.value)),
-      hasValue(o.hasValue) {
-    //
-  }
-
-  /**
-   * Move constructor.
-   */
-  template<IS_NOT_VALUE(T), class U, IS_CONVERTIBLE(U,T)>
-  Optional(Label* context, Optional<U>&& o) :
+  template<IS_NOT_VALUE(T)>
+  Optional(Label* context, Optional<T>&& o) :
       value(context, std::move(o.value)),
       hasValue(o.hasValue) {
     //
@@ -157,7 +122,7 @@ public:
    * Deep copy constructor.
    */
   template<IS_NOT_VALUE(T)>
-  Optional(Label* context, Label* label, const Optional& o) :
+  Optional(Label* context, Label* label, const Optional<T>& o) :
       value(context, label, o.value),
       hasValue(o.hasValue) {
     //

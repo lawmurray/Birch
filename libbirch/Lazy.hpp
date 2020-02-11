@@ -163,7 +163,7 @@ public:
    */
   template<class U, IS_CONVERTIBLE(value_type,U)>
   operator U() const {
-    return static_cast<U>(*get());
+    return get()->operator U();
   }
 
   /**

@@ -927,4 +927,10 @@ struct is_value<Array<T,F>> {
   static const bool value = is_value<T>::value;
 };
 
+/**
+ * Default array for `D` dimensions.
+ */
+template<class T, int D>
+using DefaultArray = Array<T,typename DefaultShape<D>::type>;
+
 }
