@@ -89,6 +89,24 @@
 #define IS_NOT_POINTER(Type) std::enable_if_t<!is_pointer<Type>::value>
 
 /**
+ * @def IS_ARRAY
+ *
+ * Macro that can be added to the template arguments of a class template
+ * specialization to enable it only if a specific type is an array type,
+ * using SFINAE.
+ */
+#define IS_ARRAY(Type) std::enable_if_t<is_array<Type>::value>
+
+/**
+ * @def IS_NOT_ARRAY
+ *
+ * Macro that can be added to the template arguments of a class template
+ * specialization to enable it only if a specific type is not an array type,
+ * using SFINAE.
+ */
+#define IS_NOT_ARRAY(Type) std::enable_if_t<!is_array<Type>::value>
+
+/**
  * @def IS_DEFAULT_CONSTRUCTIBLE
  *
  * Macro that can be added to the template arguments of a function template
@@ -123,9 +141,27 @@
  */
 #define IS_NOT_VOID(Type) std::enable_if_t<!std::is_void<Type>::value>
 
+/**
+ * @def IS_SAME
+ *
+ * Macro that can be added to the template arguments of a function template
+ * specialization to enable it only if a pair of types are the same,
+ * using SFINAE.
+ */
+#define IS_SAME(Type1,Type2) std::enable_if_t<std::is_same<Type1,Type2>::value,int> = 0
+
+/**
+ * @def IS_NOT_SAME
+ *
+ * Macro that can be added to the template arguments of a function template
+ * specialization to enable it only if a pair of types are not the same,
+ * using SFINAE.
+ */
+#define IS_NOT_SAME(Type1,Type2) std::enable_if_t<!std::is_same<Type1,Type2>::value,int> = 0
+
 namespace libbirch {
-/*
- * Is this a value type?
+/**
+ * Is it a value type?
  */
 template<class Arg>
 struct is_value {
@@ -147,11 +183,19 @@ struct is_value<std::function<T>> {
   static const bool value = false;
 };
 
-/*
- * Is this a pointer type?
+/**
+ * Is it a pointer type?
  */
 template<class Arg>
 struct is_pointer {
+  static const bool value = false;
+};
+
+/**
+ * Is it an array type?
+ */
+template<class Arg>
+struct is_array {
   static const bool value = false;
 };
 }
