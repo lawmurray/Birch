@@ -1,7 +1,7 @@
 /**
  * 16-bit signed integer.
  */
-type Integer16 < Integer32;
+type Integer16;
 
 /**
  * Convert to Integer16.

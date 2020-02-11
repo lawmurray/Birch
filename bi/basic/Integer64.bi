@@ -1,7 +1,7 @@
 /**
  * 64-bit signed integer.
  */
-type Integer64 < Real64;
+type Integer64;
 
 /**
  * Convert to Integer64.

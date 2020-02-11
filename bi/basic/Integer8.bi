@@ -1,7 +1,7 @@
 /**
  * 8-bit signed integer.
  */
-type Integer8 < Integer16;
+type Integer8;
 
 /**
  * Convert to Integer8.

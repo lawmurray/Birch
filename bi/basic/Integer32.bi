@@ -1,7 +1,7 @@
 /**
  * 32-bit signed integer.
  */
-type Integer32 < Integer64;
+type Integer32;
 
 /**
  * Convert to Integer32.
