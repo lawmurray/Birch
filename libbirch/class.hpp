@@ -3,21 +3,26 @@
  */
 #pragma once
 
-/**
- * @def libbirch_swap_context_
- *
- * When lazy deep clone is in use, swaps into the context of this object.
- */
-#define libbirch_swap_context_ [[maybe_unused]] auto context_ = libbirch::Any::getLabel();
+#include "libbirch/Counted.hpp"
 
 /**
- * @def libbirch_declare_self_
+ * @def libbirch_member_start_
  *
- * Declare `self` within a member function.
+ * Boilerplate macro to occur first in a member function or fiber. Sets the
+ * `self` and `context_` variables.
  */
-#define libbirch_declare_self_ libbirch::Lazy<libbirch::InitPtr<this_type_>> self(this->getLabel(), this);
+#define libbirch_member_start_ \
+  [[maybe_unused]] libbirch::Label* context_(this->getLabel()); \
+  [[maybe_unused]] libbirch::Lazy<libbirch::InitPtr<this_type_>> self(context_, this);
 
-#include "libbirch/Any.hpp"
+/**
+ * @def libbirch_member_start_
+ *
+ * Boilerplate macro to occur first in a global function, fiber, or operator.
+ * Sets the `context_` variable.
+ */
+#define libbirch_global_start_ \
+  [[maybe_unused]] libbirch::Label* context_ = nullptr;
 
 namespace bi {
   namespace type {

@@ -22,7 +22,7 @@ auto clone(Label* context, Label* label, T& o) {
 }
 
 template<class T, class U>
-auto assign(Label* context, T&& left, U&& right) {
+auto& assign(Label* context, T&& left, U&& right) {
   return left;
 }
 
