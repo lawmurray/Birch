@@ -105,6 +105,15 @@ private:
 };
 }
 
+namespace bi {
+  namespace type {
+template<>
+struct super_type<libbirch::Label> {
+  using type = libbirch::Counted;
+};
+  }
+}
+
 inline libbirch::Label::Label() :
     frozen(false) {
   //

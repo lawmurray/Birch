@@ -31,7 +31,7 @@ public:
   /**
    * Constructor.
    */
-  explicit InitPtr(T* ptr = nullptr) :
+  InitPtr(T* ptr = nullptr) :
       super_type(ptr) {
     //
   }
@@ -85,7 +85,7 @@ public:
   /**
    * Constructor.
    */
-  explicit InitPtr(Counted* ptr = nullptr);
+  InitPtr(Counted* ptr = nullptr);
 
   /**
    * Destructor.

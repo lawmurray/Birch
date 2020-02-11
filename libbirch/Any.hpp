@@ -4,6 +4,7 @@
 #pragma once
 
 #include "libbirch/external.hpp"
+#include "libbirch/class.hpp"
 #include "libbirch/Counted.hpp"
 #include "libbirch/Atomic.hpp"
 
@@ -126,6 +127,15 @@ protected:
   bool single:1;
   #endif
 };
+}
+
+namespace bi {
+  namespace type {
+template<>
+struct super_type<libbirch::Any> {
+  using type = libbirch::Counted;
+};
+  }
 }
 
 inline libbirch::Any::Any(Label* context) :

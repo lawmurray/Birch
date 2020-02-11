@@ -156,7 +156,7 @@ public:
    */
   bool query() {
     if (state.query()) {
-      *this = state.get()->query();
+      assign(state.get()->getLabel(), state.get()->query());
       return state.query();
     } else {
       return false;

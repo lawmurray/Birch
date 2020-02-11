@@ -28,6 +28,14 @@ public:
   using init_type = InitPtr<value_type>;
 
   /**
+   * Constructor.
+   */
+  WeakPtr(T* ptr = nullptr) :
+      super_type(ptr) {
+    //
+  }
+
+  /**
    * Shared constructor.
    */
   WeakPtr(const SharedPtr<T>& o) :
@@ -91,7 +99,7 @@ public:
   /**
    * Constructor.
    */
-  WeakPtr();
+  WeakPtr(Counted* ptr = nullptr);
 
   /**
    * Shared constructor.
@@ -202,9 +210,11 @@ private:
 #include "libbirch/SharedPtr.hpp"
 #include "libbirch/InitPtr.hpp"
 
-libbirch::WeakPtr<libbirch::Counted>::WeakPtr() :
-    ptr(nullptr) {
-  //
+libbirch::WeakPtr<libbirch::Counted>::WeakPtr(Counted* ptr) :
+    ptr(ptr) {
+  if (ptr) {
+    ptr->incWeak();
+  }
 }
 
 libbirch::WeakPtr<libbirch::Counted>::WeakPtr(const SharedPtr<Counted>& o) :

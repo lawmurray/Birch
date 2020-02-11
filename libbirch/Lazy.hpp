@@ -5,7 +5,7 @@
 
 #include "libbirch/external.hpp"
 #include "libbirch/type.hpp"
-#include "libbirch/Counted.hpp"
+#include "libbirch/Any.hpp"
 #include "libbirch/Label.hpp"
 #include "libbirch/Nil.hpp"
 #include "libbirch/thread.hpp"
@@ -57,15 +57,6 @@ public:
    */
   Lazy(Label* context, const P& object, const bool cross = false) :
       super_type(context, object, cross) {
-    //
-  }
-
-  /**
-   * Constructor.
-   */
-  template<class... Args>
-  Lazy(Label* context, Args... args) :
-      Lazy(context, P(args...)) {
     //
   }
 
@@ -198,7 +189,7 @@ public:
    * Start lazy deep clone.
    */
   Lazy clone(Label* context) const {
-    return super_type::clone(context).template static_pointer_cast<P>();
+    return super_type::clone(context).template static_pointer_cast<P>(context);
   }
 
   /**
@@ -225,7 +216,8 @@ public:
  */
 template<class P>
 class Lazy<P,std::enable_if_t<std::is_same<typename P::value_type,
-    libbirch::Counted>::value>> {
+    libbirch::Any>::value>> {
+  template<class Q, class Enable1> friend class Lazy;
 public:
   using pointer_type = P;
   using value_type = typename P::value_type;

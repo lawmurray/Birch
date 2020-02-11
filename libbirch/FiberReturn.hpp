@@ -66,7 +66,7 @@ public:
    * Copy assignment.
    */
   FiberReturn& assign(Label* context, const FiberReturn& o) {
-    returnValue.assign(context, o.returnValue);
+    libbirch::assign(context, returnValue, o.returnValue);
     return *this;
   }
 
@@ -74,7 +74,7 @@ public:
    * Move assignment.
    */
   FiberReturn& assign(Label* context, FiberReturn&& o) {
-    returnValue.assign(context, std::move(o.returnValue));
+    libbirch::assign(context, returnValue, std::move(o.returnValue));
     return *this;
   }
 
@@ -106,6 +106,7 @@ private:
 
 template<class Return>
 class FiberReturn<Return,IS_VOID(Return)> {
+public:
   using return_type = Return;
 
   /**

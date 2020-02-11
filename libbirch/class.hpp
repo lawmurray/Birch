@@ -9,7 +9,7 @@
  * @def libbirch_member_start_
  *
  * Boilerplate macro to occur first in a member function or fiber. Sets the
- * `self` and `context_` variables.
+ * `self_` and `context_` variables.
  */
 #define libbirch_member_start_ \
   [[maybe_unused]] libbirch::Label* context_(this->getLabel()); \
@@ -33,7 +33,7 @@ namespace bi {
  */
 template<class T>
 struct super_type {
-  using type = libbirch::Counted;
+  //
 };
   }
 }

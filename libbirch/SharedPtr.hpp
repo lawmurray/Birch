@@ -28,21 +28,10 @@ public:
   using init_type = InitPtr<value_type>;
 
   /**
-   * Constructor. This is intended for use immediately after construction of
-   * the object; the reference count is not incremented, as it should be
-   * initialized accordingly.
+   * Constructor.
    */
   explicit SharedPtr(T* ptr = nullptr) :
       super_type(ptr) {
-    //
-  }
-
-  /**
-   * Constructor with in-place construction of the referent.
-   */
-  template<class ... Args>
-  SharedPtr(Label* context, Args ... args) :
-      SharedPtr(new T(context, args...)) {
     //
   }
 
@@ -108,11 +97,9 @@ public:
   using init_type = InitPtr<value_type>;
 
   /**
-   * Constructor. This is intended for use immediately after construction of
-   * the object; the reference count is not incremented, as it should be
-   * initialized accordingly.
+   * Constructor.
    */
-  explicit SharedPtr(Counted* ptr = nullptr);
+  SharedPtr(Counted* ptr = nullptr);
 
   /**
    * Weak constructor.

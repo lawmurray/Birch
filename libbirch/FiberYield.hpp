@@ -66,7 +66,7 @@ public:
    * Copy assignment.
    */
   FiberYield& assign(Label* context, const FiberYield& o) {
-    yieldValue.assign(context, o.yieldValue);
+    libbirch::assign(context, yieldValue, o.yieldValue);
     return *this;
   }
 
@@ -74,7 +74,7 @@ public:
    * Move assignment.
    */
   FiberYield& assign(Label* context, FiberYield&& o) {
-    yieldValue.assign(context, std::move(o.yieldValue));
+    libbirch::assign(context, yieldValue, std::move(o.yieldValue));
     return *this;
   }
 
@@ -106,6 +106,7 @@ private:
 
 template<class Yield>
 class FiberYield<Yield,IS_VOID(Yield)> {
+public:
   using yield_type = Yield;
 
   /**

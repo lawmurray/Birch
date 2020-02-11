@@ -62,3 +62,12 @@ public:
   virtual Fiber<Yield,Return> query() = 0;
 };
 }
+
+namespace bi {
+  namespace type {
+template<class Yield, class Return>
+struct super_type<libbirch::FiberState<Yield,Return>> {
+  using type = libbirch::Any;
+};
+  }
+}
