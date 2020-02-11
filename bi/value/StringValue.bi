@@ -7,10 +7,6 @@ class StringValue(value:String) < Value {
    */
   value:String <- value;
 
-  operator -> String {
-    return value;
-  }
-
   function accept(writer:Writer) {
     writer.visit(this);
   }

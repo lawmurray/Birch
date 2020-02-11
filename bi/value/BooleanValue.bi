@@ -7,10 +7,6 @@ class BooleanValue(value:Boolean) < Value {
    */
   value:Boolean <- value;
   
-  operator -> Boolean {
-    return value;
-  }
-
   function accept(writer:Writer) {
     writer.visit(this);
   }

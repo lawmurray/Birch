@@ -7,14 +7,6 @@ class IntegerMatrixValue(value:Integer[_,_]) < Value {
    */
   value:Integer[_,_] <- value;
   
-  operator -> Integer[_,_] {
-    return value;
-  }
-
-  operator -> Real[_,_] {
-    return value;
-  }
-
   function accept(writer:Writer) {
     writer.visit(this);
   }

@@ -6,10 +6,6 @@ class BooleanVectorValue(value:Boolean[_]) < Value {
    * The value.
    */
   value:Boolean[_] <- value;
-  
-  operator -> Boolean[_] {
-    return value;
-  }
 
   function accept(writer:Writer) {
     writer.visit(this);

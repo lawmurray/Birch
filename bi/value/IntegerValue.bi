@@ -6,10 +6,6 @@ class IntegerValue(value:Integer) < Value {
    * The value.
    */
   value:Integer <- value;
-
-  operator -> Integer {
-    return value;
-  }
   
   function accept(writer:Writer) {
     writer.visit(this);

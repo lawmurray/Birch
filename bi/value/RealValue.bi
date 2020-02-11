@@ -7,10 +7,6 @@ class RealValue(value:Real) < Value {
    */
   value:Real <- value;
 
-  operator -> Real {
-    return value;
-  }
-
   function accept(writer:Writer) {
     writer.visit(this);
   }

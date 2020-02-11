@@ -7,10 +7,6 @@ class RealMatrixValue(value:Real[_,_]) < Value {
    */
   value:Real[_,_] <- value;
   
-  operator -> Real[_,_] {
-    return value;
-  }
-
   function accept(writer:Writer) {
     writer.visit(this);
   }

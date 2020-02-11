@@ -6,10 +6,6 @@ class BooleanMatrixValue(value:Boolean[_,_]) < Value {
    * The value.
    */
   value:Boolean[_,_] <- value;
-  
-  operator -> Boolean[_,_] {
-    return value;
-  }
 
   function accept(writer:Writer) {
     writer.visit(this);

@@ -6,10 +6,6 @@ class RealVectorValue(value:Real[_]) < Value {
    * The value.
    */
   value:Real[_] <- value;
-  
-  operator -> Real[_] {
-    return value;
-  }
 
   function accept(writer:Writer) {
     writer.visit(this);
