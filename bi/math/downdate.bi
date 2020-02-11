@@ -153,7 +153,7 @@ function downdate_scaled_inverse_gamma_weibull(x:Real, k:Real, a:Real, α':Real,
  */
 function downdate_dirichlet_categorical(x:Integer, α':Real[_]) -> Real[_] {
   auto α <- α';
-  α[x] <- α[x] - 1;
+  α[x] <- α[x] - 1.0;
   return α;
 }
 
@@ -170,7 +170,13 @@ function downdate_dirichlet_categorical(x:Integer, α':Real[_]) -> Real[_] {
 function downdate_dirichlet_multinomial(x:Integer[_], n:Integer,
     α':Real[_]) -> Real[_] {
   assert sum(x) == n;
-  return α' - x;
+  /* @todo mixed type vector operations no longer supported, do
+   * element-wise for now */
+  auto α <- α';
+  for i in 1..length(α') {
+    α[i] <- α'[i] - x[i];
+  }
+  return α;
 }
 
 /**
@@ -355,7 +361,7 @@ function downdate_linear_multivariate_gaussian_gaussian(x:Real, a:Real[_],
   auto k <- Σ'*a/(dot(a, Σ'*a) + s2);
   auto μ <- μ' - k*(x - dot(a, μ') - c);
   auto Σ <- Σ' + k*transpose(a)*Σ';
-  return (μ', Σ');
+  return (μ, Σ);
 }
 
 /**

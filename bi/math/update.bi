@@ -149,7 +149,7 @@ function update_scaled_inverse_gamma_weibull(x:Real, k:Real, a:Real, α:Real, β
  */
 function update_dirichlet_categorical(x:Integer, α:Real[_]) -> Real[_] {
   auto α' <- α;
-  α'[x] <- α'[x] + 1;
+  α'[x] <- α'[x] + 1.0;
   return α';
 }
 
@@ -166,7 +166,13 @@ function update_dirichlet_categorical(x:Integer, α:Real[_]) -> Real[_] {
 function update_dirichlet_multinomial(x:Integer[_], n:Integer, α:Real[_]) ->
     Real[_] {
   assert sum(x) == n;
-  return α + x;
+  /* @todo mixed type vector operations no longer supported, do
+   * element-wise for now */
+  auto α' <- α;
+  for i in 1..length(α) {
+    α'[i] <- α[i] + x[i];
+  }
+  return α';
 }
 
 /**
