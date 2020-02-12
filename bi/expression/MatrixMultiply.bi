@@ -90,8 +90,8 @@ operator (left:Expression<Real[_,_]>*right:Real[_,_]) ->
  */
 operator (left:Expression<Real>*right:Expression<Real[_,_]>) ->
     MatrixMultiply<Real[_,_],Real[_,_],Real[_,_]> {
-  m:MatrixMultiply<Real[_,_],Real[_,_],Real[_,_]>(diagonal(left,
-      right.rows()), right);
+  m:MatrixMultiply<Real[_,_],Real[_,_],Real[_,_]>(
+      diagonal(left, right.rows()), right);
   return m;
 }
 
@@ -100,7 +100,7 @@ operator (left:Expression<Real>*right:Expression<Real[_,_]>) ->
  */
 operator (left:Real*right:Expression<Real[_,_]>) ->
     MatrixMultiply<Real[_,_],Real[_,_],Real[_,_]> {
-  return diagonal(Boxed(left), right.rows())*right;
+  return Boxed(left)*right;
 }
 
 /**
@@ -108,7 +108,7 @@ operator (left:Real*right:Expression<Real[_,_]>) ->
  */
 operator (left:Expression<Real>*right:Real[_,_]) ->
     MatrixMultiply<Real[_,_],Real[_,_],Real[_,_]> {
-  return diagonal(left, rows(right))*Boxed(right);
+  return left*Boxed(right);
 }
 
 /**
@@ -116,23 +116,23 @@ operator (left:Expression<Real>*right:Real[_,_]) ->
  */
 operator (left:Expression<Real[_,_]>*right:Expression<Real>) ->
     MatrixMultiply<Real[_,_],Real[_,_],Real[_,_]> {
-  m:MatrixMultiply<Real[_,_],Real[_,_],Real[_,_]>(diagonal(right,
-      left.rows()), left);
+  m:MatrixMultiply<Real[_,_],Real[_,_],Real[_,_]>(
+      diagonal(right, left.rows()), left);
   return m;
 }
 
 /**
- * Lazy multivariate multiply.
+ * Lazy matrix multiply.
  */
 operator (left:Real[_,_]*right:Expression<Real>) ->
     MatrixMultiply<Real[_,_],Real[_,_],Real[_,_]> {
-  return diagonal(right, rows(left))*Boxed(left);
+  return Boxed(left)*right;
 }
 
 /**
- * Lazy multivariate multiply.
+ * Lazy matrix multiply.
  */
 operator (left:Expression<Real[_,_]>*right:Real) ->
     MatrixMultiply<Real[_,_],Real[_,_],Real[_,_]> {
-  return diagonal(Boxed(right), left.rows())*left;
+  return left*Boxed(right);
 }

@@ -26,7 +26,7 @@ class TransformLinearMultivariate<Value>(A:Expression<Real[_,_]>, x:Value,
     A <- Y*A;
     c <- Y*c;
   }
-
+  
   function add(y:Expression<Real[_]>) {
     c <- c + y;
   }

@@ -27,3 +27,11 @@ function transpose(x:Expression<Real[_,_]>) -> Transpose<Real[_,_],Real[_,_]> {
   m:Transpose<Real[_,_],Real[_,_]>(x);
   return m;
 }
+
+/**
+ * Lazy `transpose`.
+ */
+function transpose(x:Expression<Real[_]>) -> Transpose<Real[_],Real[_,_]> {
+  m:Transpose<Real[_],Real[_,_]>(x);
+  return m;
+}
