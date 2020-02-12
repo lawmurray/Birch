@@ -122,120 +122,70 @@ class MemoryBuffer < Buffer {
     this.value <- v;
   }
   
-  function setBoolean(value:Boolean?) {
-    if value? {
-      v:BooleanValue(value!);
-      this.value <- v;
-    } else {
-      setNil();
-    }
+  function setBoolean(value:Boolean) {
+    v:BooleanValue(value);
+    this.value <- v;
   }
   
-  function setInteger(value:Integer?) {
-    if value? {
-      v:IntegerValue(value!);
-      this.value <- v;
-    } else {
-      setNil();
-    }
+  function setInteger(value:Integer) {
+    v:IntegerValue(value);
+    this.value <- v;
   }
   
-  function setReal(value:Real?) {
-    if value? {
-      v:RealValue(value!);
-      this.value <- v;
-    } else {
-      setNil();
+  function setReal(value:Real) {
+    v:RealValue(value);
+    this.value <- v;
+  }
+
+  function setString(value:String) {
+    v:StringValue(value);
+    this.value <- v;
+  }
+
+  function setBooleanVector(value:Boolean[_]) {
+    v:BooleanVectorValue(value);
+    this.value <- v;
+  }
+  
+  function setIntegerVector(value:Integer[_]) {
+    v:IntegerVectorValue(value);
+    this.value <- v;
+  }
+  
+  function setRealVector(value:Real[_]) {
+    v:RealVectorValue(value);
+    this.value <- v;
+  }
+  
+  function setObjectVector(value:Object[_]) {
+    setArray();
+    for n in 1..length(value) {
+      push().set(value[n]);
     }
   }
 
-  function setString(value:String?) {
-    if value? {
-      v:StringValue(value!);
-      this.value <- v;
-    } else {
-      setNil();
-    }
+  function setBooleanMatrix(value:Boolean[_,_]) {
+    v:BooleanMatrixValue(value);
+    this.value <- v;
+  }
+  
+  function setIntegerMatrix(value:Integer[_,_]) {
+    v:IntegerMatrixValue(value);
+    this.value <- v;
+  }
+  
+  function setRealMatrix(value:Real[_,_]) {
+    v:RealMatrixValue(value);
+    this.value <- v;
   }
 
-  function setBooleanVector(value:Boolean[_]?) {
-    if value? {
-      v:BooleanVectorValue(value!);
-      this.value <- v;
-    } else {
-      setNil();
-    }
-  }
-  
-  function setIntegerVector(value:Integer[_]?) {
-    if value? {
-      v:IntegerVectorValue(value!);
-      this.value <- v;
-    } else {
-      setNil();
-    }
-  }
-  
-  function setRealVector(value:Real[_]?) {
-    if value? {
-      v:RealVectorValue(value!);
-      this.value <- v;
-    } else {
-      setNil();
-    }
-  }
-  
-  function setObjectVector(value:Object[_]?) {
-    if value? {
-      auto v <- value!;
-      setArray();
-      for n in 1..length(v) {
-        push().set(v[n]);
+  function setObjectMatrix(value:Object[_,_]) {
+    setArray();
+    for i in 1..rows(value) {
+      auto buffer <- push().setArray();
+      for j in 1..columns(value) {
+        buffer.push().set(value[i,j]);
       }
-    } else {
-      setNil();
-    }
-  }
-
-  function setBooleanMatrix(value:Boolean[_,_]?) {
-    if value? {
-      v:BooleanMatrixValue(value!);
-      this.value <- v;
-    } else {
-      setNil();
-    }
-  }
-  
-  function setIntegerMatrix(value:Integer[_,_]?) {
-    if value? {
-      v:IntegerMatrixValue(value!);
-      this.value <- v;
-    } else {
-      setNil();
-    }
-  }
-  
-  function setRealMatrix(value:Real[_,_]?) {
-    if value? {
-      v:RealMatrixValue(value!);
-      this.value <- v;
-    } else {
-      setNil();
-    }
-  }
-
-  function setObjectMatrix(value:Object[_,_]?) {
-    if value? {
-      auto v <- value!;
-      setArray();
-      for i in 1..rows(v) {
-        auto buffer <- push().setArray();
-        for j in 1..columns(v) {
-          buffer.push().set(v[i,j]);
-        }
-      }
-    } else {
-      setNil();
     }
   }
 }

@@ -116,7 +116,8 @@ program filter(
     /* write filter distribution to buffer */
     buffer:MemoryBuffer;
     if outputWriter? {
-      buffer.set("sample", sample);
+      s:Object[_] <- sample;
+      buffer.set("sample", s);
       buffer.set("lweight", lweight);
       buffer.set("lnormalize", lnormalize);
       buffer.set("ess", ess);
@@ -132,7 +133,8 @@ program filter(
       /* write forecast to buffer */
       if outputWriter? {
         auto buffer <- forecast.push();
-        buffer.set("sample", sample);
+        s:Object[_] <- sample;
+        buffer.set("sample", s);
         buffer.set("lweight", lweight);
       }
     }

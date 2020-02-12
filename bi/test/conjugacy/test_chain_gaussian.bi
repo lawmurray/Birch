@@ -5,7 +5,7 @@ program test_chain_gaussian(N:Integer <- 10000) {
   X1:Real[N,5];
   X2:Real[N,5];
   μ:Real <- simulate_uniform(-10.0, 10.0);
-  σ2:Real[_] <- [
+  auto σ2 <- [
       simulate_uniform(0.0, 10.0),
       simulate_uniform(0.0, 10.0),
       simulate_uniform(0.0, 10.0),

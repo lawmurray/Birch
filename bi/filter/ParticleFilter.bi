@@ -241,7 +241,9 @@ class ParticleFilter {
   }
 
   function write(buffer:Buffer) {
-    buffer.set("nsteps", nsteps);
+    if nsteps? {
+      buffer.set("nsteps", nsteps!);
+    }
     buffer.set("nforecasts", nforecasts);
     buffer.set("nparticles", nparticles);
     buffer.set("trigger", trigger);

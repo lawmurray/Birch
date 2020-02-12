@@ -656,84 +656,84 @@ abstract class Buffer {
    *
    * - value: Value.
    */
-  abstract function setBoolean(value:Boolean?);
+  abstract function setBoolean(value:Boolean);
 
   /**
    * Set this as an integer.
    *
    * - value: Value.
    */
-  abstract function setInteger(value:Integer?);
+  abstract function setInteger(value:Integer);
 
   /**
    * Set this as a real.
    *
    * - value: Value.
    */
-  abstract function setReal(value:Real?);
+  abstract function setReal(value:Real);
 
   /**
    * Set this as a string.
    *
    * - value: Value.
    */
-  abstract function setString(value:String?);
+  abstract function setString(value:String);
 
   /**
    * Set this as a vector of Booleans.
    *
    * - value: Value.
    */
-  abstract function setBooleanVector(value:Boolean[_]?);
+  abstract function setBooleanVector(value:Boolean[_]);
 
   /**
    * Set this as a vector of integers.
    *
    * - value: Value.
    */
-  abstract function setIntegerVector(value:Integer[_]?);
+  abstract function setIntegerVector(value:Integer[_]);
 
   /**
    * Set this as a vector of reals.
    *
    * - value: Value.
    */
-  abstract function setRealVector(value:Real[_]?);
+  abstract function setRealVector(value:Real[_]);
 
   /**
    * Set this as a vector of objects.
    *
    * - value: Value.
    */
-  abstract function setObjectVector(value:Object[_]?);
+  abstract function setObjectVector(value:Object[_]);
   
   /**
    * Set this as matrix of Booleans.
    *
    * - value: Value.
    */
-  abstract function setBooleanMatrix(value:Boolean[_,_]?);
+  abstract function setBooleanMatrix(value:Boolean[_,_]);
 
   /**
    * Set this as a matrix of integers.
    *
    * - value: Value.
    */
-  abstract function setIntegerMatrix(value:Integer[_,_]?);
+  abstract function setIntegerMatrix(value:Integer[_,_]);
 
   /**
    * Set this as a matrix of reals.
    *
    * - value: Value.
    */
-  abstract function setRealMatrix(value:Real[_,_]?);
+  abstract function setRealMatrix(value:Real[_,_]);
 
   /**
    * Set this as a matrix of objects.
    *
    * - value: Value.
    */
-  abstract function setObjectMatrix(value:Object[_,_]?);
+  abstract function setObjectMatrix(value:Object[_,_]);
 
   /**
    * Set child as an object.
@@ -768,7 +768,7 @@ abstract class Buffer {
    * - name: Name of the child.
    * - value: Value.
    */
-  function setBoolean(name:String, value:Boolean?) {
+  function setBoolean(name:String, value:Boolean) {
     setChild(name).setBoolean(value);
   }
 
@@ -778,7 +778,7 @@ abstract class Buffer {
    * - name: Name of the child.
    * - value: Value.
    */
-  function setInteger(name:String, value:Integer?) {
+  function setInteger(name:String, value:Integer) {
     setChild(name).setInteger(value);
   }
 
@@ -788,7 +788,7 @@ abstract class Buffer {
    * - name: Name of the child.
    * - value: Value.
    */
-  function setReal(name:String, value:Real?) {
+  function setReal(name:String, value:Real) {
     setChild(name).setReal(value);
   }
 
@@ -798,7 +798,7 @@ abstract class Buffer {
    * - name: Name of the child.
    * - value: Value.
    */
-  function setString(name:String, value:String?) {
+  function setString(name:String, value:String) {
     setChild(name).setString(value);
   }
 
@@ -808,7 +808,7 @@ abstract class Buffer {
    * - name: Name of the child.
    * - value: Value.
    */
-  function setBooleanVector(name:String, value:Boolean[_]?) {
+  function setBooleanVector(name:String, value:Boolean[_]) {
     setChild(name).setBooleanVector(value);
   }
 
@@ -818,7 +818,7 @@ abstract class Buffer {
    * - name: Name of the child.
    * - value: Value.
    */
-  function setIntegerVector(name:String, value:Integer[_]?) {
+  function setIntegerVector(name:String, value:Integer[_]) {
     setChild(name).setIntegerVector(value);
   }
 
@@ -828,7 +828,7 @@ abstract class Buffer {
    * - name: Name of the child.
    * - value: Value.
    */
-  function setRealVector(name:String, value:Real[_]?) {
+  function setRealVector(name:String, value:Real[_]) {
     setChild(name).setRealVector(value);  
   }
 
@@ -838,7 +838,7 @@ abstract class Buffer {
    * - name: Name of the child.
    * - value: Value.
    */
-  function setObjectVector(name:String, value:Object[_]?) {
+  function setObjectVector(name:String, value:Object[_]) {
     setChild(name).setObjectVector(value);  
   }
 
@@ -848,7 +848,7 @@ abstract class Buffer {
    * - name: Name of the child.
    * - value: Value.
    */
-  function setBooleanMatrix(name:String, value:Boolean[_,_]?) {
+  function setBooleanMatrix(name:String, value:Boolean[_,_]) {
     setChild(name).setBooleanMatrix(value);  
   }
 
@@ -858,7 +858,7 @@ abstract class Buffer {
    * - name: Name of the child.
    * - value: Value.
    */
-  function setIntegerMatrix(name:String, value:Integer[_,_]?) {
+  function setIntegerMatrix(name:String, value:Integer[_,_]) {
     setChild(name).setIntegerMatrix(value);  
   }
 
@@ -868,7 +868,7 @@ abstract class Buffer {
    * - name: Name of the child.
    * - value: Value.
    */
-  function setRealMatrix(name:String, value:Real[_,_]?) {
+  function setRealMatrix(name:String, value:Real[_,_]) {
     setChild(name).setRealMatrix(value);  
   }
 
@@ -878,20 +878,8 @@ abstract class Buffer {
    * - name: Name of the child.
    * - value: Value.
    */
-  function setObjectMatrix(name:String, value:Object[_,_]?) {
+  function setObjectMatrix(name:String, value:Object[_,_]) {
     setChild(name).setObjectMatrix(value);  
-  }
-
-  /**
-   * Set this as an object.
-   *
-   * - value: Value.
-   */
-  function set(value:Object?) {
-    setObject();
-    if value? {
-      value!.write(this);
-    }
   }
   
   /**
@@ -899,7 +887,7 @@ abstract class Buffer {
    *
    * - value: Value.
    */
-  function set(value:Boolean?) {
+  function set(value:Boolean) {
     setBoolean(value);
   }
 
@@ -908,7 +896,7 @@ abstract class Buffer {
    *
    * - value: Value.
    */
-  function set(value:Integer?) {
+  function set(value:Integer) {
     setInteger(value);
   }
 
@@ -917,7 +905,7 @@ abstract class Buffer {
    *
    * - value: Value.
    */
-  function set(value:Real?) {
+  function set(value:Real) {
     setReal(value);
   }
 
@@ -926,8 +914,18 @@ abstract class Buffer {
    *
    * - value: Value.
    */
-  function set(value:String?) {
+  function set(value:String) {
     setString(value);
+  }
+  
+  /**
+   * Set this as an object.
+   *
+   * - value: Value.
+   */
+  function set(value:Object) {
+    setObject();
+    value.write(this);
   }
   
   /**
@@ -935,7 +933,7 @@ abstract class Buffer {
    *
    * - value: Value.
    */
-  function set(value:Boolean[_]?) {
+  function set(value:Boolean[_]) {
     setBooleanVector(value);
   }
 
@@ -944,7 +942,7 @@ abstract class Buffer {
    *
    * - value: Value.
    */
-  function set(value:Integer[_]?) {
+  function set(value:Integer[_]) {
     setIntegerVector(value);
   }
 
@@ -953,7 +951,7 @@ abstract class Buffer {
    *
    * - value: Value.
    */
-  function set(value:Real[_]?) {
+  function set(value:Real[_]) {
     setRealVector(value);
   }
 
@@ -962,7 +960,7 @@ abstract class Buffer {
    *
    * - value: Value.
    */
-  function set(value:Object[_]?) {
+  function set(value:Object[_]) {
     setObjectVector(value);
   }
 
@@ -971,7 +969,7 @@ abstract class Buffer {
    *
    * - value: Value.
    */
-  function set(value:Boolean[_,_]?) {
+  function set(value:Boolean[_,_]) {
     setBooleanMatrix(value);
   }
 
@@ -980,7 +978,7 @@ abstract class Buffer {
    *
    * - value: Value.
    */
-  function set(value:Integer[_,_]?) {
+  function set(value:Integer[_,_]) {
     setIntegerMatrix(value);
   }
 
@@ -989,7 +987,7 @@ abstract class Buffer {
    *
    * - value: Value.
    */
-  function set(value:Real[_,_]?) {
+  function set(value:Real[_,_]) {
     setRealMatrix(value);
   }
 
@@ -998,17 +996,8 @@ abstract class Buffer {
    *
    * - value: Value.
    */
-  function set(value:Object[_,_]?) {
+  function set(value:Object[_,_]) {
     setObjectMatrix(value);
-  }
-
-  /**
-   * Write as an object.
-   *
-   * - o: The object.
-   */
-  function set(name:String, value:Object?) {
-    setChild(name).set(value);
   }
 
   /**
@@ -1017,7 +1006,7 @@ abstract class Buffer {
    * - name: Name of the child.
    * - value: Value.
    */
-  function set(name:String, value:Boolean?) {
+  function set(name:String, value:Boolean) {
     setBoolean(name, value);
   }
 
@@ -1027,7 +1016,7 @@ abstract class Buffer {
    * - name: Name of the child.
    * - value: Value.
    */
-  function set(name:String, value:Integer?) {
+  function set(name:String, value:Integer) {
     setInteger(name, value);
   }
 
@@ -1037,7 +1026,7 @@ abstract class Buffer {
    * - name: Name of the child.
    * - value: Value.
    */
-  function set(name:String, value:Real?) {
+  function set(name:String, value:Real) {
     setReal(name, value);
   }
 
@@ -1047,78 +1036,8 @@ abstract class Buffer {
    * - name: Name of the child.
    * - value: Value.
    */
-  function set(name:String, value:String?) {
+  function set(name:String, value:String) {
     setString(name, value);
-  }
-  
-  /**
-   * Set a vector of Booleans.
-   *
-   * - name: Name of the child.
-   * - value: Value.
-   */
-  function set(name:String, value:Boolean[_]?) {
-    setBooleanVector(name, value);
-  }
-
-  /**
-   * Set a vector of integers.
-   *
-   * - name: Name of the child.
-   * - value: Value.
-   */
-  function set(name:String, value:Integer[_]?) {
-    setIntegerVector(name, value);
-  }
-
-  /**
-   * Set a vector of reals.
-   *
-   * - name: Name of the child.
-   * - value: Value.
-   */
-  function set(name:String, value:Real[_]?) {
-    setRealVector(name, value);
-  }
-
-  /**
-   * Set a vector of objects.
-   *
-   * - name: Name of the child.
-   * - value: Value.
-   */
-  function set(name:String, value:Object[_]?) {
-    setObjectVector(name, value);
-  }
-
-  /**
-   * Set a matrix of Booleans.
-   *
-   * - name: Name of the child.
-   * - value: Value.
-   */
-  function set(name:String, value:Boolean[_,_]?) {
-    setBooleanMatrix(name, value);
-  }
-
-  /**
-   * Set a matrix of integers.
-   *
-   * - name: Name of the child.
-   * - value: Value.
-   */
-  function set(name:String, value:Integer[_,_]?) {
-    setIntegerMatrix(name, value);
-  }
-
-  /**
-   * Set a matrix of reals.
-   *
-   * - name: Name of the child.
-   * - value: Value.
-   */
-  function set(name:String, value:Real[_,_]?) {
-    setRealMatrix(name, value);
   }
 
   /**
@@ -1132,12 +1051,82 @@ abstract class Buffer {
   }
   
   /**
+   * Set a vector of Booleans.
+   *
+   * - name: Name of the child.
+   * - value: Value.
+   */
+  function set(name:String, value:Boolean[_]) {
+    setBooleanVector(name, value);
+  }
+
+  /**
+   * Set a vector of integers.
+   *
+   * - name: Name of the child.
+   * - value: Value.
+   */
+  function set(name:String, value:Integer[_]) {
+    setIntegerVector(name, value);
+  }
+
+  /**
+   * Set a vector of reals.
+   *
+   * - name: Name of the child.
+   * - value: Value.
+   */
+  function set(name:String, value:Real[_]) {
+    setRealVector(name, value);
+  }
+
+  /**
+   * Set a vector of objects.
+   *
+   * - name: Name of the child.
+   * - value: Value.
+   */
+  function set(name:String, value:Object[_]) {
+    setObjectVector(name, value);
+  }
+
+  /**
+   * Set a matrix of Booleans.
+   *
+   * - name: Name of the child.
+   * - value: Value.
+   */
+  function set(name:String, value:Boolean[_,_]) {
+    setBooleanMatrix(name, value);
+  }
+
+  /**
+   * Set a matrix of integers.
+   *
+   * - name: Name of the child.
+   * - value: Value.
+   */
+  function set(name:String, value:Integer[_,_]) {
+    setIntegerMatrix(name, value);
+  }
+
+  /**
+   * Set a matrix of reals.
+   *
+   * - name: Name of the child.
+   * - value: Value.
+   */
+  function set(name:String, value:Real[_,_]) {
+    setRealMatrix(name, value);
+  }
+  
+  /**
    * Set a matrix of objects.
    *
    * - name: Name of the child.
    * - value: Value.
    */
-  function set(name:String, value:Object[_,_]?) {
+  function set(name:String, value:Object[_,_]) {
     setObjectMatrix(name, value);
   }
 }
