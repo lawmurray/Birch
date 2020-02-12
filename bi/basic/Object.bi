@@ -55,7 +55,7 @@ abstract class Object {
  */
 operator (x:Object == y:Object) -> Boolean {
   cpp{{
-  return x.get().get() == y.get().get();
+  return x.get() == y.get();
   }}
 }
 

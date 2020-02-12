@@ -387,17 +387,23 @@ Optional<T> make(Label* context) {
  * Cast an object.
  */
 template<class To, class From>
-Optional<To> dynamic_pointer_cast(Label* context, const LazySharedPtr<From>& from) {
-  return Optional<To>(context, from.template dynamic_pointer_cast<To>(context));
+Optional<To> dynamic_pointer_cast(Label* context, const From& from) {
+  auto label = from.getLabel();
+  auto ptr = dynamic_cast<typename To::value_type*>(from.get());
+  if (ptr) {
+    return Optional<To>(To(label, ptr, label != context));
+  } else {
+    return Optional<To>();
+  }
 }
 
 /**
  * Cast an object optional.
  */
 template<class To, class From>
-Optional<To> dynamic_pointer_cast(Label* context, const Optional<LazySharedPtr<From>>& from) {
+Optional<To> dynamic_pointer_cast(Label* context, const Optional<From>& from) {
   if (from.query()) {
-    return Optional<To>(context, from.get().template dynamic_pointer_cast<To>(context));
+    return dynamic_pointer_cast<To>(context, from.get());
   } else {
     return Optional<To>();
   }

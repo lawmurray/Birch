@@ -143,18 +143,6 @@ public:
    */
   operator bool() const;
 
-  /**
-   * Dynamic cast.
-   */
-  template<class U>
-  U dynamic_pointer_cast() const;
-
-  /**
-   * Static cast.
-   */
-  template<class U>
-  U static_pointer_cast() const;
-
 private:
   /**
    * Raw pointer.
@@ -239,18 +227,4 @@ bool libbirch::InitPtr<libbirch::Counted>::operator!=(const Counted* o) const {
 
 libbirch::InitPtr<libbirch::Counted>::operator bool() const {
   return ptr != nullptr;
-}
-
-template<class U>
-U libbirch::InitPtr<libbirch::Counted>::dynamic_pointer_cast() const {
-  U cast;
-  cast.replace(dynamic_cast<typename U::value_type*>(ptr));
-  return cast;
-}
-
-template<class U>
-U libbirch::InitPtr<libbirch::Counted>::static_pointer_cast() const {
-  U cast;
-  cast.replace(static_cast<typename U::value_type*>(ptr));
-  return cast;
 }

@@ -12,7 +12,7 @@ namespace libbirch {
 class Label;
 
 template<class T, class... Args>
-T construct(Label* context, Args... args) {
+T construct(Label* context, Args&&... args) {
   //return T(args...);
 }
 

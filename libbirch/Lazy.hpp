@@ -160,49 +160,51 @@ public:
   /**
    * Get the raw pointer, with lazy cloning.
    */
-  P get() {
-    return super_type::get().template static_pointer_cast<P>();
+  value_type* get() {
+    return static_cast<value_type*>(super_type::get());
   }
 
   /**
    * Get the raw pointer, with lazy cloning.
    */
-  auto get() const {
-    return const_cast<Lazy*>(this)->get();
+  value_type* get() const {
+    return static_cast<value_type*>(super_type::get());
   }
 
   /**
    * Get the raw pointer for read-only use, without cloning.
    */
-  P pull() {
-    return super_type::pull().template static_pointer_cast<P>();
+  value_type* pull() {
+    return static_cast<value_type*>(super_type::pull());
   }
 
   /**
    * Get the raw pointer for read-only use, without cloning.
    */
-  auto pull() const {
-    return const_cast<Lazy*>(this)->pull();
+  value_type* pull() const {
+    return static_cast<value_type*>(super_type::pull());
   }
 
   /**
    * Start lazy deep clone.
    */
   Lazy clone(Label* context) const {
-    return super_type::clone(context).template static_pointer_cast<P>(context);
+    pull();
+    this->startFreeze();
+    return Lazy(this->getLabel()->fork(), get(), true);
   }
 
   /**
    * Dereference.
    */
-  P& operator*() const {
+  value_type& operator*() const {
     return *get();
   }
 
   /**
    * Member access.
    */
-  P operator->() const {
+  value_type* operator->() const {
     return get();
   }
 };
@@ -256,7 +258,7 @@ public:
       label(0),
       cross(false) {
     if (object) {
-      setLabel(context, false);
+      setLabel(context, cross);
     }
   }
 
@@ -268,7 +270,7 @@ public:
       label(0),
       cross(false) {
     if (object) {
-      setLabel(context, false);
+      setLabel(context, cross);
     }
   }
 
@@ -398,7 +400,7 @@ public:
   Lazy<P>& assign(Label* context, const Lazy<P>& o) {
     if (o.query()) {
       replaceLabel(o.getLabel(), o.getLabel() != context);
-      object = o.get();
+      object.replace(o.get());
     } else {
       release();
     }
@@ -436,41 +438,31 @@ public:
   /**
    * Get the raw pointer, with lazy cloning.
    */
-  P& get() {
+  Any* get() {
     getLabel()->get(object);
-    return object;
+    return object.get();
   }
 
   /**
    * Get the raw pointer, with lazy cloning.
    */
-  auto get() const {
+  Any* get() const {
     return const_cast<Lazy*>(this)->get();
   }
 
   /**
    * Get the raw pointer for read-only use, without cloning.
    */
-  P& pull() {
+  Any* pull() {
     getLabel()->pull(object);
-    return object;
+    return object.get();
   }
 
   /**
    * Get the raw pointer for read-only use, without cloning.
    */
-  auto pull() const {
+  Any* pull() const {
     return const_cast<Lazy*>(this)->pull();
-  }
-
-  /**
-   * Start lazy deep clone.
-   */
-  Lazy clone(Label* context) const {
-    assert(object);
-    pull();
-    startFreeze();
-    return Lazy(getLabel()->fork(), object, true);
   }
 
   /**
@@ -568,54 +560,6 @@ public:
   }
 
   /**
-   * Dereference.
-   */
-  P& operator*() const {
-    return *get();
-  }
-
-  /**
-   * Member access.
-   */
-  P operator->() const {
-    return get();
-  }
-
-  /**
-   * Equal comparison.
-   */
-  template<class U>
-  bool operator==(const Lazy<U>& o) const {
-    return get() == o.get();
-  }
-
-  /**
-   * Not equal comparison.
-   */
-  template<class U>
-  bool operator!=(const Lazy<U>& o) const {
-    return get() != o.get();
-  }
-
-  /**
-   * Dynamic cast.
-   */
-  template<class U>
-  auto dynamic_pointer_cast(Label* context) const {
-    auto cast = get().template dynamic_pointer_cast<typename U::pointer_type>();
-    return Lazy<decltype(cast)>(getLabel(), cast);
-  }
-
-  /**
-   * Static cast.
-   */
-  template<class U>
-  auto static_pointer_cast(Label* context) const {
-    auto cast = get().template static_pointer_cast<typename U::pointer_type>();
-    return Lazy<decltype(cast)>(getLabel(), cast);
-  }
-
-  /**
    * Get the label.
    */
   Label* getLabel() const {
@@ -629,6 +573,20 @@ public:
    */
   bool isCross() const {
     return cross;
+  }
+
+  /**
+   * Dereference.
+   */
+  value_type& operator*() const {
+    return *get();
+  }
+
+  /**
+   * Member access.
+   */
+  value_type* operator->() const {
+    return get();
   }
 
 private:

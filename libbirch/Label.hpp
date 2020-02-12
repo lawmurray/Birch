@@ -134,7 +134,7 @@ void libbirch::Label::get(P& o) {
     Any* old = o.get();
     Any* ptr = get(old);
     if (ptr != old) {
-      o.replace(reinterpret_cast<typename P::value_type*>(ptr));
+      o.replace(static_cast<typename P::value_type*>(ptr));
     }
     lock.unwrite();
   }
@@ -153,7 +153,7 @@ void libbirch::Label::pull(P& o) {
        * incorrect reference counts updates; ensure exclusive access with a
        * write lock */
       lock.write();
-      o.replace(reinterpret_cast<typename P::value_type*>(ptr));
+      o.replace(static_cast<typename P::value_type*>(ptr));
       lock.unwrite();
     }
   }
