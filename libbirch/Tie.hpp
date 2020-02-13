@@ -34,6 +34,26 @@ public:
     //
   }
 
+  /**
+   * Copy assignment.
+   */
+  template<class Head1, class Tail1>
+  Tie& operator=(const Tuple<Head1,Tail1>& o) {
+    head = o.head;
+    tail = o.tail;
+    return *this;
+  }
+
+  /**
+   * Move assignment.
+   */
+  template<class Head1, class Tail1>
+  Tie& operator=(Tuple<Head1,Tail1>&& o) {
+    head = std::move(o.head);
+    tail = std::move(o.tail);
+    return *this;
+  }
+
 private:
   /**
    * First element.
@@ -64,6 +84,24 @@ public:
   Tie(Head& head) :
       head(head) {
     //
+  }
+
+  /**
+   * Copy assignment.
+   */
+  template<class Head1>
+  Tie& operator=(const Tuple<Head1>& o) {
+    head = o.head;
+    return *this;
+  }
+
+  /**
+   * Move assignment.
+   */
+  template<class Head1>
+  Tie& operator=(Tuple<Head1>&& o) {
+    head = std::move(o.head);
+    return *this;
   }
 
 private:
