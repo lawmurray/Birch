@@ -145,11 +145,6 @@ protected:
   int inLambda;
 
   /**
-   * Are we inside a sequence?
-   */
-  int inSequence;
-
-  /**
    * Are we on the right side of a member expression?
    */
   int inMember;
