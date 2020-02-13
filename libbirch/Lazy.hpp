@@ -227,9 +227,6 @@ public:
   using weak_type = Lazy<typename P::weak_type>;
   using init_type = Lazy<typename P::init_type>;
 
-  Lazy& operator=(const Lazy&) = delete;
-  Lazy& operator=(Lazy&&) = delete;
-
   /**
    * Constructor.
    */

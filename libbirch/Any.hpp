@@ -53,7 +53,18 @@ public:
    */
   Label* getLabel() const;
 
+  /**
+   * Clone function.
+   */
   virtual Any* clone_() const = 0;
+
+  /**
+   * Accept function.
+   */
+  template<class V>
+  void accept_(V& v) {
+    //
+  }
 
 protected:
   /**

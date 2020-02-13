@@ -3,15 +3,54 @@
  */
 #pragma once
 
-#include "libbirch/Counted.hpp"
+/**
+ * @def LIBBIRCH_CLASS
+ *
+ * Boilerplate macro to declare member functions necessary for lazy deep
+ * copy support. The first argument gives the class, the second its base
+ * class, the remaining the member variables of the class. It is recommended
+ * that all member variables are included, although it is actually  possible
+ * to omit those with a type that does not include a class eligible for lazy
+ * deep copy.
+ */
+#define LIBBIRCH_CLASS(Class, Base, ...) \
+  virtual Class* clone_() const { \
+    return new Class(*this); \
+  } \
+  \
+  template<class V_> \
+  void accept_(V_& v_) { \
+    Base::accept_(v_); \
+    v_.visit(__VA_ARGS__); \
+  }
 
 /**
- * @def libbirch_member_start_
+ * @def LIBBIRCH_ABSTRACT_CLASS
  *
- * Boilerplate macro to occur first in a member function or fiber. Sets the
- * `self`.
+ * As LIBBIRCH_CLASS, but for an abstract class.
  */
-#define libbirch_member_start_ \
+#define LIBBIRCH_ABSTRACT_CLASS(Class, Base, ...) \
+  template<class V_> \
+  void accept_(V_& v_) { \
+    Base::accept_(v_); \
+    v_.visit(__VA_ARGS__); \
+  }
+
+/**
+ * @def LIBBIRCH_CLASS_NAME
+ */
+#define LIBBIRCH_CLASS_NAME(ClassName) \
+  virtual const char* getClassName() const {\
+    return ClassName; \
+  }
+
+/**
+ * @def LIBBIRCH_SELF
+ *
+ * Boilerplate macro to occur first in a member function or fiber. Declares
+ * the local variable `self`, to use in place of the usual `this`.
+ */
+#define LIBBIRCH_SELF \
   [[maybe_unused]] libbirch::Lazy<libbirch::InitPtr<this_type_>> self(this->getLabel(), this);
 
 namespace bi {
