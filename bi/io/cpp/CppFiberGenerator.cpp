@@ -96,7 +96,6 @@ void bi::CppFiberGenerator::visit(const Function* o) {
     finish("State_>::operator()() {");
     in();
     genTraceFunction(o->name->str(), o->loc);
-    line("libbirch_global_start_");
     if (this->yield) {
       auto i = 0;
       for (auto named : this->yield->state) {

@@ -73,7 +73,7 @@ void bi::CppBaseGenerator::visit(const Cast* o) {
   } else {
     middle("libbirch::check_cast<" << o->returnType << '>');
   }
-  middle("(context_, " << o->single << ')');
+  middle('(' << o->single << ')');
 }
 
 void bi::CppBaseGenerator::visit(const Call* o) {
@@ -127,9 +127,9 @@ void bi::CppBaseGenerator::visit(const Assign* o) {
     middle(o->right << ')');
   } else {
     ++inAssign;
-    middle("libbirch::assign(context_, " << o->left);
+    middle(o->left);
     --inAssign;
-    middle(", " << o->right << ')');
+    middle(" = " << o->right);
   }
 }
 
@@ -279,8 +279,6 @@ void bi::CppBaseGenerator::visit(const GlobalVariable* o) {
     finish(" {");
     in();
     genSourceLine(o->loc);
-    line("libbirch_global_start_");
-    genSourceLine(o->loc);
     start("static auto result = ");
     genInit(o);
     finish(';');
@@ -300,7 +298,7 @@ void bi::CppBaseGenerator::visit(const LocalVariable* o) {
   if (o->has(AUTO)) {
     start("auto " << o->name << " = " << o->value);
   } else {
-    start("auto " << o->name << " = ");
+    start(o->type << ' ' << o->name);
     genInit(o);
   }
   finish(';');
@@ -321,7 +319,6 @@ void bi::CppBaseGenerator::visit(const Function* o) {
       finish(" {");
       in();
       genTraceFunction(o->name->str(), o->loc);
-      line("libbirch_global_start_");
       CppBaseGenerator aux(base, level, false);
       *this << o->braces->strip();
       out();
@@ -351,7 +348,6 @@ void bi::CppBaseGenerator::visit(const Program* o) {
     line("int bi::" << o->name << "(int argc_, char** argv_) {");
     in();
     genTraceFunction(o->name->str(), o->loc);
-    line("libbirch_global_start_");
 
     /* handle program options */
     if (o->params->width() > 0) {
@@ -514,7 +510,6 @@ void bi::CppBaseGenerator::visit(const BinaryOperator* o) {
       finish(" {");
       in();
       genTraceFunction(o->name->str(), o->loc);
-      line("libbirch_global_start_");
       CppBaseGenerator aux(base, level, false);
       aux << o->braces->strip();
       out();
@@ -542,7 +537,6 @@ void bi::CppBaseGenerator::visit(const UnaryOperator* o) {
       finish(" {");
       in();
       genTraceFunction(o->name->str(), o->loc);
-      line("libbirch_global_start_");
       CppBaseGenerator aux(base, level, false);
       aux << o->braces->strip();
       out();
