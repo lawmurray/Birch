@@ -25,7 +25,6 @@ void bi::CppClassGenerator::visit(const Class* o) {
     o->accept(&memberFibers);
     o->accept(&memberVariables);
 
-    /* start boilerplate */
     if (header) {
       genTemplateParams(o);
       genSourceLine(o->loc);
@@ -88,6 +87,21 @@ void bi::CppClassGenerator::visit(const Class* o) {
       line("");
     }
 
+    /* boilerplate */
+    if (header) {
+      if (o->has(ABSTRACT)) {
+        start("LIBBIRCH_ABSTRACT_CLASS");
+      } else {
+        start("LIBBIRCH_CLASS");
+      }
+      middle("(this_type_, super_type_");
+      for (auto o : memberVariables) {
+        middle(", " << o->name);
+      }
+      finish(')');
+      line("LIBBIRCH_CLASS_NAME(\"" << o->name << "\")\n");
+    }
+
     /* constructor */
     if (!header) {
       genTemplateParams(o);
@@ -131,74 +145,6 @@ void bi::CppClassGenerator::visit(const Class* o) {
       finish(" {");
       in();
       line("//");
-      out();
-      line("}\n");
-    }
-
-    /* clone function */
-    if (!o->has(ABSTRACT)) {
-      if (header) {
-        genSourceLine(o->loc);
-        line("virtual " << o->name << "* clone_() const;");
-      } else {
-        genTemplateParams(o);
-        genSourceLine(o->loc);
-        start("bi::type::" << o->name);
-        genTemplateArgs(o);
-        middle("* bi::type::" << o->name);
-        genTemplateArgs(o);
-        middle("::");
-        finish("clone_() const {");
-        in();
-        genSourceLine(o->loc);
-        line("return new class_type_(*this);");
-        genSourceLine(o->loc);
-        out();
-        line("}\n");
-      }
-    }
-
-    /* accept function */
-    if (header) {
-      genSourceLine(o->loc);
-      line("template<class Visitor>");
-      genSourceLine(o->loc);
-      line("void accept_(Visitor& visitor_);");
-    } else {
-      genTemplateParams(o);
-      genSourceLine(o->loc);
-      line("template<class Visitor>");
-      genSourceLine(o->loc);
-      start("void bi::type::" << o->name);
-      genTemplateArgs(o);
-      finish("::accept_(Visitor& visitor_) {");
-      in();
-      genSourceLine(o->loc);
-      line("super_type_::accept_(visitor_);");
-      for (auto o : memberVariables) {
-        genSourceLine(o->loc);
-        line("visitor_.visit(" << o->name << ");");
-      }
-      genSourceLine(o->loc);
-      out();
-      line("}\n");
-    }
-
-    /* name function */
-    if (header) {
-      genSourceLine(o->loc);
-      line("virtual bi::type::String getClassName() const;");
-    } else {
-      genTemplateParams(o);
-      genSourceLine(o->loc);
-      start("bi::type::String bi::type::" << o->name);
-      genTemplateArgs(o);
-      middle("::");
-      finish("getClassName() const {");
-      in();
-      genSourceLine(o->loc);
-      line("return \"" << o->name << "\";");
-      genSourceLine(o->loc);
       out();
       line("}\n");
     }
@@ -294,7 +240,7 @@ void bi::CppClassGenerator::visit(const MemberFunction* o) {
       finish(" {");
       in();
       genTraceFunction(o->name->str(), o->loc);
-      line("libbirch_member_start_");
+      line("LIBBIRCH_SELF");
       CppBaseGenerator auxBase(base, level, header);
       auxBase << o->braces->strip();
       out();
@@ -330,7 +276,7 @@ void bi::CppClassGenerator::visit(const MemberFiber* o) {
     } else {
       finish(" {");
       in();
-      line("libbirch_member_start_");
+      line("LIBBIRCH_SELF");
       //CppResumeGenerator aux(nullptr, base, level, header);
       //aux << o->yield;
       out();
@@ -364,7 +310,7 @@ void bi::CppClassGenerator::visit(const AssignmentOperator* o) {
       finish(" {");
       in();
       genTraceFunction("<assignment>", o->loc);
-      line("libbirch_member_start_");
+      line("LIBBIRCH_SELF");
       CppBaseGenerator auxBase(base, level, header);
       auxBase << o->braces->strip();
       genSourceLine(o->loc);
@@ -394,7 +340,7 @@ void bi::CppClassGenerator::visit(const ConversionOperator* o) {
       finish(" {");
       in();
       genTraceFunction("<conversion>", o->loc);
-      line("libbirch_member_start_ ");
+      line("LIBBIRCH_SELF ");
       CppBaseGenerator auxBase(base, level, header);
       auxBase << o->braces->strip();
       out();
