@@ -11,21 +11,6 @@
 namespace libbirch {
 class Label;
 
-template<class T, class... Args>
-T construct(Label* context, Args&&... args) {
-  //return T(args...);
-}
-
-template<class T>
-auto clone(Label* context, Label* label, T& o) {
-  return o;
-}
-
-template<class T, class U>
-T& assign(Label* context, T&& left, U&& right) {
-  return left;
-}
-
 template<class T>
 void freeze(T& o) {
   //

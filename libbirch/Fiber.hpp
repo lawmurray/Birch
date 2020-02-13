@@ -34,15 +34,8 @@ public:
   /**
    * Constructor.
    */
-  Fiber(Label* context) {
-    //
-  }
-
-  /**
-   * Constructor.
-   */
-  Fiber(Label* context, const state_type& state) :
-      state(context, state) {
+  Fiber(const state_type& state) :
+      state(state) {
     //
   }
 
@@ -50,9 +43,9 @@ public:
    * Constructor.
    */
   template<class T, std::enable_if_t<std::is_same<T,yield_type>::value && !std::is_void<yield_type>::value,int> = 0>
-  Fiber(Label* context, const T& yieldValue, const state_type& state) :
-      FiberYield<Yield>(context, yieldValue),
-      state(context, state) {
+  Fiber(const T& yieldValue, const state_type& state) :
+      FiberYield<Yield>(yieldValue),
+      state(state) {
     //
   }
 
@@ -60,93 +53,16 @@ public:
    * Constructor.
    */
   template<class T, std::enable_if_t<std::is_same<T,return_type>::value && !std::is_void<return_type>::value,int> = 0>
-  Fiber(Label* context, const T& returnValue) :
-      FiberReturn<Return>(context, returnValue) {
+  Fiber(const T& returnValue) :
+      FiberReturn<Return>(returnValue) {
     //
-  }
-
-  /**
-   * Copy constructor.
-   */
-  Fiber(Label* context, const Fiber& o) :
-      FiberYield<Yield>(context, o),
-      FiberReturn<Return>(context, o),
-      state(context, o.state) {
-    //
-  }
-
-  /**
-   * Move constructor.
-   */
-  Fiber(Label* context, Fiber&& o) :
-      FiberYield<Yield>(context, std::move(o)),
-      FiberReturn<Return>(context, std::move(o)),
-      state(context, std::move(o.state)) {
-    //
-  }
-
-  /**
-   * Deep copy constructor.
-   */
-  Fiber(Label* context, Label* label, const Fiber& o) :
-      FiberYield<Yield>(context, label, o),
-      FiberReturn<Return>(context, label, o),
-      state(context, label, o.state) {
-    //
-  }
-
-  /**
-   * Copy assignment.
-   */
-  Fiber& assign(Label* context, const Fiber& o) {
-    FiberYield<Yield>::assign(context, o);
-    FiberReturn<Return>::assign(context, o);
-    state.assign(context, o.state);
-    return *this;
-  }
-
-  /**
-   * Move assignment.
-   */
-  Fiber& assign(Label* context, Fiber&& o) {
-    FiberYield<Yield>::assign(context, std::move(o));
-    FiberReturn<Return>::assign(context, std::move(o));
-    state.assign(context, std::move(o.state));
-    return *this;
   }
 
   /**
    * Clone the fiber.
    */
-  Fiber<Yield,Return> clone(Label* context) const {
-    return Fiber(context, *this);
-  }
-
-  /**
-   * Freeze the fiber.
-   */
-  void freeze() const {
-    FiberYield<Yield>::freeze();
-    FiberReturn<Return>::freeze();
-    freeze(state);
-  }
-
-  /**
-   * Thaw the fiber.
-   */
-  void thaw(Label* label) const {
-    FiberYield<Yield>::thaw(label);
-    FiberReturn<Return>::thaw(label);
-    thaw(state, label);
-  }
-
-  /**
-   * Finish the fiber.
-   */
-  void finish() const {
-    FiberYield<Yield>::finish();
-    FiberReturn<Return>::finish();
-    finish(state);
+  Fiber<Yield,Return> clone() const {
+    return Fiber(*this);
   }
 
   /**

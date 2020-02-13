@@ -41,12 +41,5 @@ char* libbirch::bufferStart;
 size_t libbirch::bufferSize;
 #endif
 
-/* declared in thread.hpp */
-static libbirch::Label* root() {
-  static libbirch::SharedPtr<libbirch::Label> context(new libbirch::Label());
-  return context.get();
-}
-
-libbirch::Label* libbirch::rootContext = root();
 libbirch::EntryExitLock libbirch::freezeLock;
 libbirch::EntryExitLock libbirch::finishLock;

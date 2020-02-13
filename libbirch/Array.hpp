@@ -46,7 +46,6 @@ public:
    *
    * @param shape Shape.
    */
-  template<IS_VALUE(T)>
   Array(const F& shape) :
       shape(shape),
       buffer(nullptr),
@@ -60,18 +59,17 @@ public:
    *
    * @tparam ...Args Constructor parameter types.
    *
-   * @param context Current context.
    * @param shape Shape.
    * @param args Constructor arguments.
    */
-  template<IS_NOT_VALUE(T), class... Args>
-  Array(Label* context, const F& shape, Args ... args) :
+  template<class... Args>
+  Array(const F& shape, Args ... args) :
       shape(shape),
       buffer(nullptr),
       offset(0),
       isView(false) {
     allocate();
-    initialize(context, args...);
+    initialize(args...);
   }
 
   /**
@@ -80,7 +78,6 @@ public:
    * @param shape Shape.
    * @param values Values.
    */
-  template<IS_VALUE(T)>
   Array(const F& shape, const std::initializer_list<T>& values) :
       shape(shape),
       buffer(nullptr),
@@ -93,49 +90,10 @@ public:
   /**
    * Constructor.
    *
-   * @param context Current context.
-   * @param shape Shape.
-   * @param values Values.
-   */
-  template<IS_NOT_VALUE(T), class U>
-  Array(Label* context, const F& shape,
-      const std::initializer_list<U>& values) :
-      shape(shape),
-      buffer(nullptr),
-      offset(0),
-      isView(false) {
-    allocate();
-    std::uninitialized_copy(values.begin(), values.end(), begin());
-  }
-
-  /**
-   * Constructor.
-   *
    * @param shape Shape.
    * @param f Lambda function that can be called to construct each element.
    */
-  template<IS_VALUE(T)>
   Array(const F& shape, const std::function<T(int64_t)>& f) :
-      shape(shape),
-      buffer(nullptr),
-      offset(0),
-      isView(false) {
-    allocate();
-    int64_t n = 0;
-    for (auto iter = begin(); iter != end(); ++iter) {
-      new (&*iter) T(f(++n));
-    }
-  }
-
-  /**
-   * Constructor.
-   *
-   * @param context Current context.
-   * @param shape Shape.
-   * @param f Lambda function that can be called to construct each element.
-   */
-  template<IS_NOT_VALUE(T)>
-  Array(Label* context, const F& shape, const std::function<T(int64_t)>& f) :
       shape(shape),
       buffer(nullptr),
       offset(0),
@@ -174,19 +132,6 @@ public:
   }
 
   /**
-   * Copy constructor.
-   */
-  template<IS_NOT_VALUE(T), class U, class G>
-  Array(Label* context, const Array<U,G>& o) :
-      shape(o.shape.compact()),
-      buffer(nullptr),
-      offset(0),
-      isView(false) {
-    allocate();
-    uninitialized_copy(context, o);
-  }
-
-  /**
    * Move constructor.
    */
   Array(Array<T,F>&& o) :
@@ -196,19 +141,6 @@ public:
       isView(o.isView) {
     o.buffer = nullptr;
     o.offset = 0;
-  }
-
-  /**
-   * Deep copy constructor.
-   */
-  template<IS_NOT_VALUE(T)>
-  Array(Label* context, Label* label, const Array<T,F>& o) :
-      shape(o.shape.compact()),
-      buffer(nullptr),
-      offset(0),
-      isView(false) {
-    allocate();
-    uninitialized_copy(context, label, o);
   }
 
   /**
@@ -236,7 +168,6 @@ public:
    * Copy assignment. For a view the shapes of the two arrays must
    * conform, otherwise a resize is permitted.
    */
-  template<IS_VALUE(T)>
   Array<T,F>& assign(const Array<T,F>& o) {
     if (isView) {
       libbirch_assert_msg_(o.shape.conforms(shape), "array sizes are different");
@@ -256,54 +187,9 @@ public:
   }
 
   /**
-   * Copy assignment. For a view the shapes of the two arrays must
-   * conform, otherwise a resize is permitted.
-   */
-  template<IS_NOT_VALUE(T)>
-  Array<T,F>& assign(Label* context, const Array<T,F>& o) {
-    if (isView) {
-      libbirch_assert_msg_(o.shape.conforms(shape), "array sizes are different");
-      copy(context, o);
-    } else {
-      lock();
-      if (o.isView) {
-        Array<T,F> tmp(o.shape, o);
-        swap(tmp);
-      } else {
-        Array<T,F> tmp(o);
-        swap(tmp);
-      }
-      unlock();
-    }
-    return *this;
-  }
-
-  /**
    * Move assignment.
    */
-  template<IS_NOT_VALUE(T)>
-  Array<T,F>& assign(Label* context, Array<T,F>&& o) {
-    if (isView) {
-      libbirch_assert_msg_(o.shape.conforms(shape), "array sizes are different");
-      copy(context, o);
-    } else {
-      lock();
-      if (o.isView) {
-        Array<T,F> tmp(o.shape, o);
-        swap(tmp);
-      } else {
-        swap(o);
-      }
-      unlock();
-    }
-    return *this;
-  }
-
-  /**
-   * Move assignment.
-   */
-  template<IS_VALUE(T)>
-  Array<T,F>& assign(Array<T,F> && o) {
+  Array<T,F>& assign(Array<T,F>&& o) {
     if (isView) {
       libbirch_assert_msg_(o.shape.conforms(shape), "array sizes are different");
       copy(o);
@@ -803,19 +689,19 @@ private:
    *
    * @param args Constructor arguments.
    */
-  template<IS_NOT_VALUE(T), class ... Args>
-  void initialize(Label* context, Args ... args) {
+  template<class ... Args>
+  void initialize(Args ... args) {
     auto iter = begin();
     auto last = end();
     for (; iter != last; ++iter) {
-      new (&*iter) T(context, args...);
+      new (&*iter) T(args...);
     }
   }
 
   /**
    * Assign from another array.
    */
-  template<IS_VALUE(T), class U>
+  template<class U>
   void copy(const U& o) {
     auto n = std::min(size(), o.size());
     auto begin1 = o.begin();
@@ -830,27 +716,6 @@ private:
   }
 
   /**
-   * Assign from another array.
-   */
-  template<IS_NOT_VALUE(T), class U>
-  void copy(Label* context, const U& o) {
-    auto n = std::min(size(), o.size());
-    auto begin1 = o.begin();
-    auto end1 = begin1 + n;
-    auto begin2 = begin();
-    auto end2 = begin2 + n;
-    if (inside(begin1, end1, begin2)) {
-      for (; end1 != begin1; --end1, --end2) {
-        (end2 - 1)->assign(context, *(end1 - 1));
-      }
-    } else {
-      for (; begin1 != end1; ++begin1, ++begin2) {
-        begin2->assign(context, *begin1);
-      }
-    }
-  }
-
-  /**
    * Copy from another array.
    */
   template<class U>
@@ -860,36 +725,8 @@ private:
     auto begin1 = o.begin();
     auto end1 = begin1 + n;
     auto begin2 = begin();
-    std::uninitialized_copy(begin1, end1, begin2);
-  }
-
-  /**
-   * Copy from another array.
-   */
-  template<IS_NOT_VALUE(T), class U>
-  void uninitialized_copy(Label* context, const U& o) {
-    assert(!isShared());
-    auto n = std::min(size(), o.size());
-    auto begin1 = o.begin();
-    auto end1 = begin1 + n;
-    auto begin2 = begin();
     for (; begin1 != end1; ++begin1, ++begin2) {
-      new (&*begin2) T(context, *begin1);
-    }
-  }
-
-  /**
-   * Deep copy from another array.
-   */
-  template<IS_NOT_VALUE(T), class U>
-  void uninitialized_copy(Label* context, Label* label, const U& o) {
-    assert(!isShared());
-    auto n = std::min(size(), o.size());
-    auto begin1 = o.begin();
-    auto end1 = begin1 + n;
-    auto begin2 = begin();
-    for (; begin1 != end1; ++begin1, ++begin2) {
-      new (&*begin2) T(context, label, *begin1);
+      new (&*begin2) T(*begin1);
     }
   }
 

@@ -22,32 +22,6 @@ public:
   using class_type_ = FiberState<Yield,Return>;
 
   /**
-   * Constructor.
-   */
-  FiberState(Label* context) :
-      Any(context) {
-    //
-  }
-
-  /**
-   * Deep copy constructor for value yield type.
-   */
-  template<IS_VALUE(Yield)>
-  FiberState(Label* context, Label* label, const FiberState& o) :
-      Any(context, label, o) {
-    //
-  }
-
-  /**
-   * Deep copy constructor for non-value yield type.
-   */
-  template<IS_NOT_VALUE(Yield)>
-  FiberState(Label* context, Label* label, const FiberState& o) :
-      Any(context, label, o) {
-    //
-  }
-
-  /**
    * Destructor.
    */
   virtual ~FiberState() {

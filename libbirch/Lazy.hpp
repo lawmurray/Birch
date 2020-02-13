@@ -188,7 +188,7 @@ public:
   /**
    * Start lazy deep clone.
    */
-  Lazy clone(Label* context) const {
+  Lazy clone() const {
     pull();
     this->startFreeze();
     return Lazy(this->getLabel()->fork(), get(), true);

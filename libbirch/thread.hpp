@@ -26,11 +26,6 @@ inline int get_thread_num() {
 }
 
 /**
- * The root context.
- */
-extern Label* rootContext;
-
-/**
  * Global freeze lock.
  */
 extern EntryExitLock freezeLock;

@@ -25,32 +25,10 @@ public:
   /**
    * Constructor.
    */
-  FiberStateImpl(Label* context, const Resume& resume, const State& state) :
-      FiberState<Yield,Return>(context),
+  FiberStateImpl(const Resume& resume, const State& state) :
+      FiberState<Yield,Return>(),
       resume(resume),
       state(state) {
-    //
-  }
-
-  /**
-   * Deep copy constructor for value yield type.
-   */
-  template<IS_VALUE(Yield)>
-  FiberStateImpl(Label* context, Label* label, const FiberStateImpl& o) :
-      FiberState<Yield,Return>(context, label, o),
-      resume(o.resume),
-      state(o.state) {
-    //
-  }
-
-  /**
-   * Deep copy constructor for non-value yield type.
-   */
-  template<IS_NOT_VALUE(Yield)>
-  FiberStateImpl(Label* context, Label* label, const FiberStateImpl& o) :
-      FiberState<Yield,Return>(context, label, o),
-      resume(o.resume),
-      state(o.state) {
     //
   }
 
@@ -69,21 +47,6 @@ public:
   }
 
 protected:
-  virtual void doFreeze_() {
-    freeze(resume);
-    freeze(state);
-  }
-
-  virtual void doThaw_(Label* label) {
-    thaw(resume, label);
-    thaw(state, label);
-  }
-
-  virtual void doFinish_() {
-    finish(resume);
-    finish(state);
-  }
-
   /**
    * Resume function.
    */

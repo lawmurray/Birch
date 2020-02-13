@@ -190,27 +190,6 @@ Array<T,F> make_array(const F& shape, const Args&... args) {
 }
 
 /**
- * Make an array of non-value type.
- *
- * @ingroup libbirch
- *
- * @tparam T Value type.
- * @tparam F Shape type.
- * @tparam Args Constructor parameter types.
- *
- * @param context Current context.
- * @param shape Shape.
- * @param args Constructor arguments.
- *
- * @return The array.
- */
-template<class T, class F, class ... Args>
-Array<T,F> make_array(Label* context, const F& shape,
-    const Args&... args) {
-  return Array<T,F>(context, shape, args...);
-}
-
-/**
  * Make an array and assign a value to it.
  *
  * @ingroup libbirch
@@ -225,8 +204,7 @@ Array<T,F> make_array(Label* context, const F& shape,
  * @return The array.
  */
 template<class T, class F, class Value>
-Array<T,F> make_array_and_assign(const F& shape,
-    const Value& value) {
+Array<T,F> make_array_and_assign(const F& shape, const Value& value) {
   Array<T,F> result;
   result.enlarge(shape, value);
   return result;
@@ -240,14 +218,13 @@ Array<T,F> make_array_and_assign(const F& shape,
  * @tparam P Pointer type.
  * @tparam Args Constructor parameter types.
  *
- * @param context Current context.
  * @param args Constructor arguments.
  *
  * @return A pointer of the given type.
  */
 template<class P, class ... Args>
-P make_pointer(Label* context, const Args& ... args) {
-  return P(context, new typename P::value_type(context, args...));
+P make_pointer(const Args& ... args) {
+  return P(new typename P::value_type(args...));
 }
 
 /**
@@ -257,8 +234,8 @@ P make_pointer(Label* context, const Args& ... args) {
  * @param args... Parameters and local variables that must be preserved in
  * the state.
  */
-template<class Yield, class Return, class... Args>
-auto make_fiber(Args... args) {
+template<class Yield, class Return, class ... Args>
+auto make_fiber(Args ... args) {
   auto state = new FiberStateImpl<Args...>(std::forward<Args...>(args...));
   return Fiber<Yield,Return>(state);
 }
@@ -271,10 +248,10 @@ auto make_fiber(Args... args) {
  * @param args... Parameters and local variables that must be preserved in
  * the state.
  */
-template<class Yield, class Return, class... Args>
-auto make_fiber(Yield value, Args... args) {
+template<class Yield, class Return, class ... Args>
+auto make_fiber(Yield value, Args ... args) {
   auto state = new FiberStateImpl<Args...>(std::forward<Args...>(args...));
-  return Fiber<Yield,Return>(std::forward<Yield>(value), state);
+  return Fiber<Yield,Return>(std::forward < Yield > (value), state);
 }
 
 /**
@@ -285,7 +262,7 @@ auto make_fiber(Yield value, Args... args) {
  */
 template<class Yield, class Return>
 auto make_fiber(Return value) {
-  return Fiber<Yield,Return>(std::forward<Return>(value));
+  return Fiber<Yield,Return>(std::forward < Return > (value));
 }
 
 /**
@@ -297,27 +274,12 @@ auto make_fiber(Return value) {
  * @param head First element.
  * @param tail Remaining elements.
  */
-template<class Head, class... Tail>
+template<class Head, class ... Tail>
 Tuple<Head,Tail...> make_tuple(const Head& head, const Tail&... tail) {
   return Tuple<Head,Tail...>(head, tail...);
 }
 
 /**
- * Make a tuple.
- *
- * @tparam Head First element type.
- * @tparam Tail Remaining element types.
- *
- * @param head First element.
- * @param tail Remaining elements.
- */
-template<class Head, class... Tail>
-Tuple<Head,Tail...> make_tuple(Label* context, const Head& head,
-    const Tail&... tail) {
-  return Tuple<Head,Tail...>(context, head, tail...);
-}
-
-/**
  * Make an assignable tuple.
  *
  * @tparam Head First element type.
@@ -326,23 +288,9 @@ Tuple<Head,Tail...> make_tuple(Label* context, const Head& head,
  * @param head First element.
  * @param tail Remaining elements.
  */
-template<class Head, class... Tail>
+template<class Head, class ... Tail>
 Tie<Head&,Tail&...> tie(Head& head, Tail&... tail) {
   return Tie<Head&,Tail&...>(head, tail...);
-}
-
-/**
- * Make an assignable tuple.
- *
- * @tparam Head First element type.
- * @tparam Tail Remaining element types.
- *
- * @param head First element.
- * @param tail Remaining elements.
- */
-template<class Head, class... Tail>
-Tie<Head&,Tail&...> tie(Label* context, Head& head, Tail&... tail) {
-  return Tie<Head&,Tail&...>(context, head, tail...);
 }
 
 /**
@@ -353,7 +301,7 @@ Tie<Head&,Tail&...> tie(Label* context, Head& head, Tail&... tail) {
  * @return An optional with a default-constructed value of the given type.
  */
 template<class T, IS_VALUE(T)>
-Optional<T> make(Label* context) {
+Optional<T> make() {
   return Optional<T>(T());
 }
 
@@ -366,8 +314,8 @@ Optional<T> make(Label* context) {
  * a default-constructible class type, otherwise no value.
  */
 template<class T, IS_DEFAULT_CONSTRUCTIBLE(T)>
-Optional<T> make(Label* context) {
-  return Optional<T>(make_pointer<T>(context));
+Optional<T> make() {
+  return Optional<T>(make_pointer<T>());
 }
 
 /**
@@ -379,7 +327,7 @@ Optional<T> make(Label* context) {
  * a default-constructible class type, otherwise no value.
  */
 template<class T, IS_NOT_DEFAULT_CONSTRUCTIBLE(T)>
-Optional<T> make(Label* context) {
+Optional<T> make() {
   return Optional<T>();
 }
 
@@ -387,11 +335,11 @@ Optional<T> make(Label* context) {
  * Cast an object.
  */
 template<class To, class From>
-Optional<To> dynamic_pointer_cast(Label* context, const From& from) {
+Optional<To> dynamic_pointer_cast(const From& from) {
   auto label = from.getLabel();
   auto ptr = dynamic_cast<typename To::value_type*>(from.get());
   if (ptr) {
-    return Optional<To>(To(label, ptr, label != context));
+    return Optional<To>(To(label, ptr));
   } else {
     return Optional<To>();
   }
@@ -401,12 +349,15 @@ Optional<To> dynamic_pointer_cast(Label* context, const From& from) {
  * Cast an object optional.
  */
 template<class To, class From>
-Optional<To> dynamic_pointer_cast(Label* context, const Optional<From>& from) {
+Optional<To> dynamic_pointer_cast(const Optional<From>& from) {
   if (from.query()) {
-    return dynamic_pointer_cast<To>(context, from.get());
-  } else {
-    return Optional<To>();
+    auto label = from.get().getLabel();
+    auto ptr = dynamic_cast<typename To::value_type*>(from.get().get());
+    if (ptr) {
+      return Optional<To>(To(label, ptr));
+    }
   }
+  return Optional<To>();
 }
 
 /**
