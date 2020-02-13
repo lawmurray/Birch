@@ -54,10 +54,5 @@ public:
   virtual Statement* accept(Cloner* visitor) const;
   virtual Statement* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
-
-  /**
-   * The implicit first yield.
-   */
-  Statement* yield;
 };
 }

@@ -65,12 +65,8 @@ bi::Statement* bi::Transformer::modify(Class* o) {
 bi::Statement* bi::Transformer::modify(Fiber* o) {
   Modifier::modify(o);
 
-  /* initial yield */
-  o->yield = new Yield(new EmptyExpression(o->loc), o->loc);
-
   /* resume functions */
   Gatherer<Yield> yields;
-  o->yield->accept(&yields);
   o->accept(&yields);
   for (auto yield : yields) {
     Resumer resumer(yield);
@@ -82,12 +78,8 @@ bi::Statement* bi::Transformer::modify(Fiber* o) {
 bi::Statement* bi::Transformer::modify(MemberFiber* o) {
   Modifier::modify(o);
 
-  /* initial yield */
-  o->yield = new Yield(new EmptyExpression(o->loc), o->loc);
-
   /* resume functions */
   Gatherer<Yield> yields;
-  o->yield->accept(&yields);
   o->accept(&yields);
   for (auto yield : yields) {
     Resumer resumer(yield);
