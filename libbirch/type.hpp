@@ -14,50 +14,7 @@
  * specialization to enable it only if a specific type is a value type, using
  * SFINAE.
  */
-#define IS_VALUE1(Type) class CheckType1 = Type, std::enable_if_t<is_value<CheckType1>::value,int> = 0
-
-/**
- * @def IS_VALUE2
- *
- * @ingroup libbirch
- *
- * As IS_VALUE1, for use when a second condition is required.
- */
-#define IS_VALUE2(Type) class CheckType2 = Type, std::enable_if_t<is_value<CheckType2>::value,int> = 0
-
-/**
- * @def IS_VALUE
- *
- * As IS_VALUE1.
- */
-#define IS_VALUE(Type) IS_VALUE1(Type)
-
-/**
- * @def IS_NOT_VALUE1
- *
- * @ingroup libbirch
- *
- * Macro that can be added to the template arguments of a function template
- * specialization to enable it only if a specific type is a non-value type,
- * using SFINAE.
- */
-#define IS_NOT_VALUE1(Type) class CheckType1 = Type, std::enable_if_t<!is_value<CheckType1>::value,int> = 0
-
-/**
- * @def IS_NOT_VALUE2
- *
- * @ingroup libbirch
- *
- * As IS_NOT_VALUE1, for use when a second condition is required.
- */
-#define IS_NOT_VALUE2(Type) class CheckType2 = Type, std::enable_if_t<!is_value<CheckType2>::value,int> = 0
-
-/**
- * @def IS_NOT_VALUE
- *
- * As IS_NOT_VALUE1.
- */
-#define IS_NOT_VALUE(Type) IS_NOT_VALUE1(Type)
+#define IS_VALUE(Type) class CheckType1 = Type, std::enable_if_t<is_value<CheckType1>::value,int> = 0
 
 /**
  * @def IS_CONVERTIBLE
@@ -69,42 +26,6 @@
  * using SFINAE.
  */
 #define IS_CONVERTIBLE(From,To) std::enable_if_t<std::is_convertible<From,To>::value,int> = 0
-
-/**
- * @def IS_POINTER
- *
- * Macro that can be added to the template arguments of a class template
- * specialization to enable it only if a specific type is a pointer type,
- * using SFINAE.
- */
-#define IS_POINTER(Type) std::enable_if_t<is_pointer<Type>::value>
-
-/**
- * @def IS_NOT_POINTER
- *
- * Macro that can be added to the template arguments of a class template
- * specialization to enable it only if a specific type is not a pointer type,
- * using SFINAE.
- */
-#define IS_NOT_POINTER(Type) std::enable_if_t<!is_pointer<Type>::value>
-
-/**
- * @def IS_ARRAY
- *
- * Macro that can be added to the template arguments of a class template
- * specialization to enable it only if a specific type is an array type,
- * using SFINAE.
- */
-#define IS_ARRAY(Type) std::enable_if_t<is_array<Type>::value>
-
-/**
- * @def IS_NOT_ARRAY
- *
- * Macro that can be added to the template arguments of a class template
- * specialization to enable it only if a specific type is not an array type,
- * using SFINAE.
- */
-#define IS_NOT_ARRAY(Type) std::enable_if_t<!is_array<Type>::value>
 
 /**
  * @def IS_DEFAULT_CONSTRUCTIBLE

@@ -6,7 +6,7 @@
 #include "libbirch/external.hpp"
 #include "libbirch/class.hpp"
 #include "libbirch/Counted.hpp"
-#include "libbirch/Atomic.hpp"
+#include "libbirch/Cloner.hpp"
 
 namespace libbirch {
 class Label;

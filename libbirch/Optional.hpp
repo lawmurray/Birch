@@ -5,6 +5,7 @@
 
 #include "libbirch/type.hpp"
 #include "libbirch/Nil.hpp"
+#include "libbirch/Lazy.hpp"
 
 namespace libbirch {
 /**
@@ -16,6 +17,18 @@ namespace libbirch {
  */
 template<class T, class Enable = void>
 class Optional {
+  //
+};
+
+/**
+ * Optional for non-array and non-pointer types.
+ *
+ * @ingroup libbirch
+ *
+ * @tparam T Value type.
+ */
+template<class T>
+class Optional<T,std::enable_if_t<!is_array<T>::value && !is_pointer<T>::value>> {
   template<class U, class Enable1> friend class Optional;
 
   static_assert(!std::is_lvalue_reference<T>::value,
@@ -126,7 +139,7 @@ private:
  * @tparam T Array type.
  */
 template<class T>
-class Optional<T,IS_ARRAY(T)> {
+class Optional<T,std::enable_if_t<is_array<T>::value>> {
   template<class U, class Enable1> friend class Optional;
 
   static_assert(!std::is_lvalue_reference<T>::value,
@@ -248,7 +261,7 @@ private:
  * @tparam T Pointer type.
  */
 template<class T>
-class Optional<T,IS_POINTER(T)> {
+class Optional<T,std::enable_if_t<is_pointer<T>::value>> {
   template<class U, class Enable1> friend class Optional;
 
   static_assert(!std::is_lvalue_reference<T>::value,
@@ -258,17 +271,14 @@ public:
    * Constructor.
    */
   Optional(const Nil& = nil) :
-      value() {
+      value(nullptr) {
     //
   }
 
   /**
-   * Value conversion constructor. This ensures that any value of type U that
-   * can be implicitly converted to type T can also be convert to type
-   * Optional<T>.
+   * Value copy constructor.
    */
-  template<class U, IS_CONVERTIBLE(U,T)>
-  Optional(const U& value) :
+  Optional(const T& value) :
       value(value) {
     //
   }
@@ -278,17 +288,6 @@ public:
    */
   Optional(T&& value) :
       value(std::move(value)) {
-    //
-  }
-
-  /**
-   * Conversion constructor. This ensures that if a value of type U can be
-   * implicitly converted to type T, then Optional<U> can also be converted
-   * to Optional<T>.
-   */
-  template<class U, IS_CONVERTIBLE(U,T)>
-  Optional(const Optional<U>& o) :
-      value(o.value) {
     //
   }
 

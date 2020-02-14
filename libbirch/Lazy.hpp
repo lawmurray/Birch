@@ -21,7 +21,6 @@ namespace libbirch {
 template<class P, class Enable = void>
 class Lazy : public Lazy<typename P::super_type> {
 public:
-  using pointer_type = P;
   using value_type = typename P::value_type;
   using super_type = Lazy<typename P::super_type>;
   using shared_type = Lazy<typename P::shared_type>;
@@ -31,120 +30,63 @@ public:
   /**
    * Constructor.
    */
-  Lazy(const Nil& = nil) :
-      super_type() {
+  Lazy(value_type* ptr, Label* label = nullptr) :
+      super_type(ptr, label) {
     //
   }
 
   /**
    * Constructor.
-   */
-  Lazy(Label* context, const Nil& = nil) :
-      super_type(context) {
-    //
-  }
-
-  /**
-   * Constructor.
-   */
-  Lazy(Label* context, value_type* object, const bool cross = false) :
-      super_type(context, object, cross) {
-    //
-  }
-
-  /**
-   * Constructor.
-   */
-  Lazy(Label* context, const P& object, const bool cross = false) :
-      super_type(context, object, cross) {
-    //
-  }
-
-  /**
-   * Copy constructor.
    */
   Lazy(const shared_type& o) :
-      super_type(o) {
-    //
+      super_type(static_cast<const typename super_type::shared_type&>(o)) {
+    // ^ explicit cast avoids the constructor template in the base type
   }
 
   /**
-   * Copy constructor.
-   */
-  Lazy(Label* context, const shared_type& o) :
-      super_type(context, o) {
-    //
-  }
-
-  /**
-   * Copy constructor.
+   * Constructor.
    */
   Lazy(const weak_type& o) :
-      super_type(o) {
-    //
+      super_type(static_cast<const typename super_type::weak_type&>(o)) {
+    // ^ explicit cast avoids the constructor template in the base type
   }
 
   /**
-   * Copy constructor.
-   */
-  Lazy(Label* context, const weak_type& o) :
-      super_type(context, o) {
-    //
-  }
-
-  /**
-   * Copy constructor.
+   * Constructor.
    */
   Lazy(const init_type& o) :
-      super_type(o) {
-    //
+      super_type(static_cast<const typename super_type::init_type&>(o)) {
+    // ^ explicit cast avoids the constructor template in the base type
   }
 
   /**
-   * Copy constructor.
+   * Constructor.
+   *
+   * @tparam Args... Argument types.
+   *
+   * @param args... Arguments.
+   *
+   * Allocates a new object of the type pointed to by this, and initializes
+   * it by calling its constructor with the given arguments.
    */
-  Lazy(Label* context, const init_type& o) :
-      super_type(context, o) {
-    //
+  template<class... Args>
+  Lazy(Args&&... args) : super_type(new value_type(std::forward<Args...>(args)...)) {
+    static_assert(std::is_constructible<value_type,Args...>::value,
+        "invalid call to class constructor");
+    // ^ ideally this condition would be checked with SFINAE, but the
+    //   definition of value_type may not be available at the point that a
+    //   pointer to it is declared, causing a compile error
   }
 
-  /**
-   * Move constructor.
-   */
-  Lazy(Label* context, Lazy<P>&& o) :
-      super_type(context, o) {
-    //
-  }
-
-  /**
-   * Deep copy constructor.
-   */
-  Lazy(Label* context, Label* label, const Lazy<P>& o) :
-      super_type(context, label, o) {
-    //
-  }
-
-  /**
-   * Copy assignment.
-   */
-  Lazy& assign(Label* context, const Lazy<P>& o) {
-    super_type::assign(context, o);
-    return *this;
-  }
-
-  /**
-   * Move assignment.
-   */
-  Lazy& assign(Label* context, Lazy<P>&& o) {
-    super_type::assign(context, o);
-    return *this;
-  }
+  Lazy(Lazy&& o) = default;
+  Lazy& operator=(const Lazy& o) = default;
+  Lazy& operator=(Lazy&& o) = default;
 
   /**
    * Value assignment.
    */
-  template<class U, typename = std::enable_if_t<is_value<U>::value>>
-  Lazy& assign(Label* context, const U& o) {
+  template<class U, std::enable_if_t<is_value<U>::value/* && std::is_assignable<value_type,U>::value*/,int> = 0>
+  Lazy& operator=(const U& o) {
     *get() = o;
     return *this;
   }
@@ -152,7 +94,7 @@ public:
   /**
    * Value conversion.
    */
-  template<class U, IS_CONVERTIBLE(value_type,U)>
+  template<class U, std::enable_if_t<is_value<U>::value && std::is_convertible<value_type,U>::value,int> = 0>
   operator U() const {
     return get()->operator U();
   }
@@ -191,7 +133,7 @@ public:
   Lazy clone() const {
     pull();
     this->startFreeze();
-    return Lazy(this->getLabel()->fork(), get(), true);
+    return Lazy(get(), this->getLabel()->fork());
   }
 
   /**
@@ -221,7 +163,6 @@ class Lazy<P,std::enable_if_t<std::is_same<typename P::value_type,
     libbirch::Any>::value>> {
   template<class Q, class Enable1> friend class Lazy;
 public:
-  using pointer_type = P;
   using value_type = typename P::value_type;
   using shared_type = Lazy<typename P::shared_type>;
   using weak_type = Lazy<typename P::weak_type>;
@@ -230,45 +171,12 @@ public:
   /**
    * Constructor.
    */
-  Lazy(const Nil& = nil) :
-      object(),
+  Lazy(value_type* ptr, Label* label = nullptr) :
+      object(ptr),
       label(0),
-      cross(false) {
-    //
-  }
-
-  /**
-   * Constructor.
-   */
-  Lazy(Label* context, const Nil& = nil) :
-      object(),
-      label(0),
-      cross(false) {
-    //
-  }
-
-  /**
-   * Constructor.
-   */
-  Lazy(Label* context, value_type* object, const bool cross = false) :
-      object(object),
-      label(0),
-      cross(false) {
-    if (object) {
-      setLabel(context, cross);
-    }
-  }
-
-  /**
-   * Constructor.
-   */
-  Lazy(Label* context, const P& object, const bool cross = false) :
-      object(object),
-      label(0),
-      cross(false) {
-    if (object) {
-      setLabel(context, cross);
-    }
+      cross(0) {
+    assert(ptr || !label);  // !ptr implies !label
+    setLabel(label);
   }
 
   /**
@@ -276,23 +184,9 @@ public:
    */
   Lazy(const shared_type& o) :
       object(o.get()),
-      label(o.label),
-      cross(o.cross) {
-    if (isCross()) {
-      getLabel()->incShared();
-    }
-  }
-
-  /**
-   * Copy constructor.
-   */
-  Lazy(Label* context, const shared_type& o) :
-      object(o.get()),
       label(0),
-      cross(false) {
-    if (object) {
-      setLabel(o.getLabel(), o.getLabel() != context);
-    }
+      cross(0) {
+    setLabel(o.getLabel());
   }
 
   /**
@@ -300,23 +194,9 @@ public:
    */
   Lazy(const weak_type& o) :
       object(o.get()),
-      label(o.label),
-      cross(o.cross) {
-    if (isCross()) {
-      getLabel()->incShared();
-    }
-  }
-
-  /**
-   * Copy constructor.
-   */
-  Lazy(Label* context, const weak_type& o) :
-      object(o.get()),
       label(0),
-      cross(false) {
-    if (object) {
-      setLabel(o.getLabel(), o.getLabel() != context);
-    }
+      cross(0) {
+    setLabel(o.getLabel());
   }
 
   /**
@@ -324,23 +204,9 @@ public:
    */
   Lazy(const init_type& o) :
       object(o.get()),
-      label(o.label),
-      cross(o.cross) {
-    if (isCross()) {
-      getLabel()->incShared();
-    }
-  }
-
-  /**
-   * Copy constructor.
-   */
-  Lazy(Label* context, const init_type& o) :
-      object(o.get()),
       label(0),
-      cross(false) {
-    if (object) {
-      setLabel(o.getLabel(), o.getLabel() != context);
-    }
+      cross(0) {
+    setLabel(o.getLabel());
   }
 
   /**
@@ -348,40 +214,9 @@ public:
    */
   Lazy(Lazy&& o) :
       object(std::move(o.object)),
-      label(o.label),
-      cross(o.cross) {
-    o.label = 0;
-    o.cross = false;
-  }
-
-  /**
-   * Move constructor.
-   */
-  Lazy(Label* context, Lazy&& o) :
-      object(std::move(o.object)),
       label(0),
-      cross(false) {
-    if (object) {
-      setLabel(o.getLabel(), o.getLabel() != context);
-    }
-  }
-
-  /**
-   * Deep copy constructor.
-   */
-  Lazy(Label* context, Label* label, const Lazy& o) :
-      object(),
-      label(0),
-      cross(false) {
-    assert(context == label);
-    if (o.object) {
-      if (o.isCross()) {
-        o.finish();
-        o.freeze();
-      }
-      object = o.object;
-      setLabel(label, false);
-    }
+      cross(0) {
+    setLabel(o.getLabel());
   }
 
   /**
@@ -394,9 +229,9 @@ public:
   /**
    * Copy assignment.
    */
-  Lazy<P>& assign(Label* context, const Lazy<P>& o) {
+  Lazy& operator=(const Lazy& o) {
     if (o.query()) {
-      replaceLabel(o.getLabel(), o.getLabel() != context);
+      replaceLabel(o.getLabel());
       object.replace(o.get());
     } else {
       release();
@@ -407,9 +242,9 @@ public:
   /**
    * Move assignment.
    */
-  Lazy<P>& assign(Label* context, Lazy<P>&& o) {
+  Lazy& operator=(Lazy&& o) {
     if (o.query()) {
-      replaceLabel(o.getLabel(), o.getLabel() != context);
+      replaceLabel(o.getLabel());
       object = std::move(o.object);
     } else {
       release();
@@ -588,26 +423,14 @@ public:
 
 private:
   /**
-   * Constructor.
-   */
-  Lazy(Label* context, Label* label, const P& object) :
-      object(object),
-      label(0),
-      cross(false) {
-    if (object) {
-      setLabel(label, label != context);
-    }
-  }
-
-  /**
    * Set the label.
    */
-  void setLabel(Label* label, bool cross) {
+  void setLabel(Label* label) {
     assert(this->label == 0);
     assert(!this->cross);
     this->label = reinterpret_cast<intptr_t>(label);
-    this->cross = cross;
-    if (label && cross) {
+    this->cross = label != nullptr;
+    if (cross) {
       label->incShared();
     }
   }
@@ -615,15 +438,15 @@ private:
   /**
    * Replace the label.
    */
-  void replaceLabel(Label* label, bool cross) {
+  void replaceLabel(Label* label) {
     auto oldLabel = this->getLabel();
     auto oldCross = this->isCross();
     this->label = reinterpret_cast<intptr_t>(label);
-    this->cross = cross;
-    if (label && cross) {
+    this->cross = label != nullptr;
+    if (cross) {
       label->incShared();
     }
-    if (oldLabel && oldCross) {
+    if (oldCross) {
       oldLabel->decShared();
     }
   }
@@ -636,7 +459,7 @@ private:
     auto cross = isCross();
     this->label = 0;
     this->cross = false;
-    if (label && cross) {
+    if (cross) {
       label->decShared();
     }
   }

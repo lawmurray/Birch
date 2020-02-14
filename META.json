@@ -337,6 +337,7 @@
       "libbirch/basic.hpp",
       "libbirch/Buffer.hpp",
       "libbirch/class.hpp",
+      "libbirch/Cloner.hpp",
       "libbirch/docs.hpp",
       "libbirch/Counted.hpp",
       "libbirch/Dimension.hpp",

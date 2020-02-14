@@ -556,12 +556,6 @@ public:
   }
   ///@}
 
-  template<IS_VALUE(T)>
-  void freeze() {
-    //
-  }
-
-  template<IS_NOT_VALUE(T)>
   void freeze() {
     pin();
     auto iter = begin();
@@ -572,12 +566,6 @@ public:
     }
   }
 
-  template<IS_VALUE(T)>
-  void thaw(Label* label) {
-    //
-  }
-
-  template<IS_NOT_VALUE(T)>
   void thaw(Label* label) {
     pin();
     auto iter = begin();
@@ -588,12 +576,6 @@ public:
     }
   }
 
-  template<IS_VALUE(T)>
-  void finish() {
-    //
-  }
-
-  template<IS_NOT_VALUE(T)>
   void finish() {
     pin();
     auto iter = begin();
