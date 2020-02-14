@@ -279,7 +279,7 @@ void bi::CppBaseGenerator::visit(const GlobalVariable* o) {
     finish(" {");
     in();
     genSourceLine(o->loc);
-    start("static auto result = ");
+    start("static " << o->type << " result");
     genInit(o);
     finish(';');
     genSourceLine(o->loc);
@@ -747,5 +747,5 @@ void bi::CppBaseGenerator::genTraceLine(const Location* loc) {
 }
 
 void bi::CppBaseGenerator::genSourceLine(const Location* loc) {
-  line("#line " << loc->firstLine << " \"" << loc->file->path << "\"");
+  line("//#line " << loc->firstLine << " \"" << loc->file->path << "\"");
 }
