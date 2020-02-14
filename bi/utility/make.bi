@@ -10,9 +10,8 @@
  * parameters, or a compound type that includes such a class.
  */
 function make<Type>() -> Type? {
-  dummy:Object?; // dummy to ensure context_ is passed to function
   cpp{{
-  return libbirch::make<Type>(context_);
+  return libbirch::make<Type>();
   }}
 }
 
@@ -30,11 +29,10 @@ function make(name:String) -> Object? {
   result:Object?;
   symbol:String <- "make_" + name + "_";
   cpp{{
-  using make_t = bi::type::Object*(libbirch::Label*);
+  using make_t = bi::type::Object*();
   void* addr = dlsym(RTLD_DEFAULT, symbol.c_str());
   if (addr) {
-    libbirch::LazySharedPtr<bi::type::Object> tmp(context_, reinterpret_cast<make_t*>(addr)(context_));
-    result.assign(context_, tmp);
+    result = libbirch::LazySharedPtr<bi::type::Object>(reinterpret_cast<make_t*>(addr)());
   }
   }}
   if !result? {

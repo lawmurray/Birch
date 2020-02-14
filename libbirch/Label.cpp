@@ -30,7 +30,8 @@ libbirch::Any* libbirch::Label::get(Any* o) {
   if (frozen) {
     if (next->numShared() == 1u && next->numWeak() == 1u && next->numMemo() == 1u) {
       /* this is the last pointer to the object, just thaw it and reuse */
-      next->thaw(this);
+      ///@todo
+      //next->thaw(this);
     } else {
       /* copy it */
       next = copy(next);
@@ -58,12 +59,13 @@ libbirch::Any* libbirch::Label::pull(Any* o) {
 
 libbirch::Any* libbirch::Label::copy(Any* o) {
   assert(o->isFrozen());
-  auto cloned = o->clone_(this);
-  if (!o->isSingle()) {
-    thaw();  // new entry, so no longer considered frozen
-    memo.put(o, cloned);
-  }
-  return cloned;
+  ///@todo
+//  auto cloned = o->clone_(this);
+//  if (!o->isSingle()) {
+//    thaw();  // new entry, so no longer considered frozen
+//    memo.put(o, cloned);
+//  }
+//  return cloned;
 }
 
 void libbirch::Label::freeze() {

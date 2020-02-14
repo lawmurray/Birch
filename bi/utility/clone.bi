@@ -3,7 +3,7 @@
  */
 function clone<Type>(o:Type) -> Type {
   cpp{{
-  return o.clone(context_);
+  return o.clone();
   }}
 }
 
@@ -16,6 +16,6 @@ function clone<Type>(o:Type) -> Type {
 function clone<Type>(o:Type, length:Integer) -> Type[_] {
   auto f <- @(n:Integer) -> Type { return clone<Type>(o); };
   cpp{{
-  return libbirch::make_array<Type>(context_, libbirch::make_shape(length), f);
+  return libbirch::make_array<Type>(libbirch::make_shape(length), f);
   }}
 }

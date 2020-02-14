@@ -7,10 +7,6 @@
 #include "libbirch/Counted.hpp"
 
 namespace libbirch {
-template<class T> class SharedPtr;
-template<class T> class WeakPtr;
-template<class T> class InitPtr;
-
 /**
  * Smart pointer that does not update reference counts, but that does
  * initialize to nullptr.
@@ -24,15 +20,22 @@ class InitPtr: public InitPtr<typename bi::type::super_type<T>::type> {
 public:
   using value_type = T;
   using super_type = InitPtr<typename bi::type::super_type<value_type>::type>;
-  using shared_type = SharedPtr<T>;
-  using weak_type = WeakPtr<T>;
-  using init_type = InitPtr<T>;
+  using this_type = InitPtr<value_type>;
 
   /**
    * Constructor.
    */
-  InitPtr(T* ptr = nullptr) :
+  explicit InitPtr(value_type* ptr = nullptr) :
       super_type(ptr) {
+    //
+  }
+
+  /**
+   * Constructor.
+   */
+  template<class Q, std::enable_if_t<!std::is_pointer<Q>::value && is_base_of<this_type,Q>::value,int> = 0>
+  InitPtr(const Q& o) :
+      super_type(o) {
     //
   }
 
@@ -73,75 +76,93 @@ public:
  */
 template<>
 class InitPtr<Counted> {
-  template<class U> friend class SharedPtr;
-  template<class U> friend class WeakPtr;
-  template<class U> friend class InitPtr;
 public:
   using value_type = Counted;
-  using shared_type = SharedPtr<value_type>;
-  using weak_type = WeakPtr<value_type>;
-  using init_type = InitPtr<value_type>;
+  using this_type = InitPtr<Counted>;
 
   /**
    * Constructor.
    */
-  InitPtr(Counted* ptr = nullptr);
+  explicit InitPtr(value_type* ptr = nullptr) : ptr(ptr) {
+    //
+  }
 
   /**
-   * Destructor.
+   * Constructor.
    */
-  ~InitPtr();
+  template<class Q, std::enable_if_t<!std::is_pointer<Q>::value && is_base_of<this_type,Q>::value,int> = 0>
+  InitPtr(const Q& o) :
+      ptr(o.get()) {
+    //
+  }
+
+  /**
+   * Is the pointer not null?
+   *
+   * This is used instead of an `operator bool()` so as not to conflict with
+   * conversion operators in the referent type.
+   */
+  bool query() const {
+    return ptr != nullptr;
+  }
 
   /**
    * Get the raw pointer.
    */
-  Counted* get() const;
+  Counted* get() const {
+    return ptr;
+  }
 
   /**
    * Get the raw pointer as const.
    */
-  Counted* pull() const;
+  Counted* pull() const {
+    return ptr;
+  }
 
   /**
    * Replace.
    */
-  void replace(Counted* ptr);
+  void replace(Counted* ptr) {
+    this->ptr = ptr;
+  }
 
   /**
    * Release.
    */
-  void release();
+  void release() {
+    ptr = nullptr;
+  }
 
   /**
    * Dereference.
    */
-  Counted& operator*() const;
+  Counted& operator*() const {
+    return *get();
+  }
 
   /**
    * Member access.
    */
-  Counted* operator->() const;
+  Counted* operator->() const {
+    return get();
+  }
 
   /**
    * Equal comparison.
    */
-  bool operator==(const SharedPtr<Counted>& o) const;
-  bool operator==(const WeakPtr<Counted>& o) const;
-  bool operator==(const InitPtr<Counted>& o) const;
-  bool operator==(const Counted* o) const;
+  template<class Q>
+  bool operator==(const Q& o) const {
+    return get() == o.get();
+  }
 
   /**
    * Not equal comparison.
    */
-  bool operator!=(const SharedPtr<Counted>& o) const;
-  bool operator!=(const WeakPtr<Counted>& o) const;
-  bool operator!=(const InitPtr<Counted>& o) const;
-  bool operator!=(const Counted* o) const;
-
-  /**
-   * Is the pointer not null?
-   */
-  operator bool() const;
+  template<class Q>
+  bool operator!=(const Q& o) const {
+    return get() != o.get();
+  }
 
 private:
   /**
@@ -149,82 +170,19 @@ private:
    */
   Counted* ptr;
 };
-}
 
-#include "libbirch/SharedPtr.hpp"
-#include "libbirch/WeakPtr.hpp"
+template<class T>
+struct is_value<InitPtr<T>> {
+  static const bool value = false;
+};
 
-libbirch::InitPtr<libbirch::Counted>::InitPtr(Counted* ptr) :
-    ptr(ptr) {
-  //
-}
+template<class T>
+struct is_pointer<InitPtr<T>> {
+  static const bool value = true;
+};
 
-libbirch::InitPtr<libbirch::Counted>::~InitPtr() {
-  release();
-}
-
-libbirch::Counted* libbirch::InitPtr<libbirch::Counted>::get() const {
-  return ptr;
-}
-
-libbirch::Counted* libbirch::InitPtr<libbirch::Counted>::pull() const {
-  return ptr;
-}
-
-void libbirch::InitPtr<libbirch::Counted>::replace(Counted* ptr) {
-  this->ptr = ptr;
-}
-
-void libbirch::InitPtr<libbirch::Counted>::release() {
-  ptr = nullptr;
-}
-
-libbirch::Counted& libbirch::InitPtr<libbirch::Counted>::operator*() const {
-  return *get();
-}
-
-libbirch::Counted* libbirch::InitPtr<libbirch::Counted>::operator->() const {
-  return get();
-}
-
-bool libbirch::InitPtr<libbirch::Counted>::operator==(
-    const SharedPtr<Counted>& o) const {
-  return ptr == o.ptr;
-}
-
-bool libbirch::InitPtr<libbirch::Counted>::operator==(
-    const WeakPtr<Counted>& o) const {
-  return ptr == o.ptr;
-}
-
-bool libbirch::InitPtr<libbirch::Counted>::operator==(
-    const InitPtr<Counted>& o) const {
-  return ptr == o.ptr;
-}
-
-bool libbirch::InitPtr<libbirch::Counted>::operator==(const Counted* o) const {
-  return ptr == o;
-}
-
-bool libbirch::InitPtr<libbirch::Counted>::operator!=(
-    const SharedPtr<Counted>& o) const {
-  return ptr != o.ptr;
-}
-
-bool libbirch::InitPtr<libbirch::Counted>::operator!=(
-    const WeakPtr<Counted>& o) const {
-  return ptr != o.ptr;
-}
-
-bool libbirch::InitPtr<libbirch::Counted>::operator!=(
-    const InitPtr<Counted>& o) const {
-  return ptr != o.ptr;
-}
-
-bool libbirch::InitPtr<libbirch::Counted>::operator!=(const Counted* o) const {
-  return ptr != o;
-}
-
-libbirch::InitPtr<libbirch::Counted>::operator bool() const {
-  return ptr != nullptr;
+template<class T>
+struct raw_type<InitPtr<T>> {
+  using type = T*;
+};
 }

@@ -7,10 +7,6 @@
 #include "libbirch/Counted.hpp"
 
 namespace libbirch {
-template<class T> class SharedPtr;
-template<class T> class WeakPtr;
-template<class T> class InitPtr;
-
 /**
  * Weak pointer with intrusive implementation.
  *
@@ -22,31 +18,22 @@ template<class T>
 class WeakPtr: public WeakPtr<typename bi::type::super_type<T>::type> {
 public:
   using value_type = T;
+  using this_type = WeakPtr<T>;
   using super_type = WeakPtr<typename bi::type::super_type<value_type>::type>;
-  using shared_type = SharedPtr<value_type>;
-  using weak_type = WeakPtr<value_type>;
-  using init_type = InitPtr<value_type>;
 
   /**
    * Constructor.
    */
-  WeakPtr(T* ptr = nullptr) :
+  explicit WeakPtr(value_type* ptr = nullptr) :
       super_type(ptr) {
     //
   }
 
   /**
-   * Shared constructor.
+   * Constructor.
    */
-  WeakPtr(const SharedPtr<T>& o) :
-      super_type(o) {
-    //
-  }
-
-  /**
-   * Init constructor.
-   */
-  WeakPtr(const InitPtr<T>& o) :
+  template<class Q, std::enable_if_t<!std::is_pointer<Q>::value && is_base_of<this_type,Q>::value,int> = 0>
+  WeakPtr(const Q& o) :
       super_type(o) {
     //
   }
@@ -87,105 +74,163 @@ public:
  */
 template<>
 class WeakPtr<Counted> {
-  template<class U> friend class SharedPtr;
-  template<class U> friend class WeakPtr;
-  template<class U> friend class InitPtr;
 public:
   using value_type = Counted;
-  using shared_type = SharedPtr<value_type>;
-  using weak_type = WeakPtr<value_type>;
-  using init_type = InitPtr<value_type>;
+  using this_type = WeakPtr<Counted>;
 
   /**
    * Constructor.
    */
-  WeakPtr(Counted* ptr = nullptr);
+  explicit WeakPtr(value_type* ptr = nullptr) :
+      ptr(ptr) {
+    if (ptr) {
+      ptr->incWeak();
+    }
+  }
 
   /**
-   * Shared constructor.
+   * Constructor.
    */
-  WeakPtr(const SharedPtr<Counted>& o);
-
-  /**
-   * Init constructor.
-   */
-  WeakPtr(const InitPtr<Counted>& o);
+  template<class Q, std::enable_if_t<!std::is_pointer<Q>::value && is_base_of<this_type,Q>::value,int> = 0>
+  WeakPtr(const Q& o) :
+      ptr(o.get()) {
+    if (ptr) {
+      ptr->incWeak();
+    }
+  }
 
   /**
    * Copy constructor.
    */
-  WeakPtr(const WeakPtr<Counted>& o);
+  WeakPtr(const WeakPtr& o) {
+    if (ptr) {
+      assert(ptr->numWeak() > 0);
+      ptr->incWeak();
+    }
+  }
 
   /**
    * Move constructor.
    */
-  WeakPtr(WeakPtr<Counted> && o);
+  WeakPtr(WeakPtr&& o) {
+    o.ptr = nullptr;
+  }
 
   /**
    * Destructor.
    */
-  ~WeakPtr();
+  ~WeakPtr() {
+    release();
+  }
 
   /**
    * Copy assignment.
    */
-  WeakPtr<Counted>& operator=(const WeakPtr<Counted>& o);
+  WeakPtr& operator=(const WeakPtr& o) {
+    if (o.ptr) {
+      o.ptr->incWeak();
+    }
+    auto old = ptr;
+    ptr = o.ptr;
+    if (old) {
+      old->decWeak();
+    }
+    return *this;
+  }
 
   /**
    * Move assignment.
    */
-  WeakPtr<Counted>& operator=(WeakPtr<Counted> && o);
+  WeakPtr& operator=(WeakPtr&& o) {
+    auto old = ptr;
+    ptr = o.ptr;
+    o.ptr = nullptr;
+    if (old) {
+      old->decWeak();
+    }
+    return *this;
+  }
+
+  /**
+   * Is the pointer not null?
+   *
+   * This is used instead of an `operator bool()` so as not to conflict with
+   * conversion operators in the referent type.
+   */
+  bool query() const {
+    return ptr != nullptr;
+  }
 
   /**
    * Get the raw pointer.
    */
-  Counted* get() const;
+  Counted* get() const {
+    assert(!ptr || ptr->numWeak() > 0);
+    return ptr;
+  }
 
   /**
    * Get the raw pointer as const.
    */
-  Counted* pull() const;
+  Counted* pull() const {
+    assert(!ptr || ptr->numWeak() > 0);
+    return ptr;
+  }
 
   /**
    * Replace.
    */
-  void replace(Counted* ptr);
+  void replace(Counted* ptr) {
+    assert(!ptr || ptr->numWeak() > 0);
+    auto old = this->ptr;
+    if (ptr) {
+      ptr->incWeak();
+    }
+    this->ptr = ptr;
+    if (old) {
+      old->decWeak();
+    }
+  }
 
   /**
    * Release.
    */
-  void release();
+  void release() {
+    if (ptr) {
+      ptr->decWeak();
+      ptr = nullptr;
+    }
+  }
 
   /**
    * Dereference.
    */
-  Counted& operator*() const;
+  Counted& operator*() const {
+    return *get();
+  }
 
   /**
    * Member access.
    */
-  Counted* operator->() const;
+  Counted* operator->() const {
+    return get();
+  }
 
   /**
    * Equal comparison.
    */
-  bool operator==(const SharedPtr<Counted>& o) const;
-  bool operator==(const WeakPtr<Counted>& o) const;
-  bool operator==(const InitPtr<Counted>& o) const;
-  bool operator==(const Counted* o) const;
+  template<class Q>
+  bool operator==(const Q& o) const {
+    return get() == o.get();
+  }
 
   /**
    * Not equal comparison.
    */
-  bool operator!=(const SharedPtr<Counted>& o) const;
-  bool operator!=(const WeakPtr<Counted>& o) const;
-  bool operator!=(const InitPtr<Counted>& o) const;
-  bool operator!=(const Counted* o) const;
-
-  /**
-   * Is the pointer not null?
-   */
-  operator bool() const;
+  template<class Q>
+  bool operator!=(const Q& o) const {
+    return get() != o.get();
+  }
 
 private:
   /**
@@ -193,148 +238,19 @@ private:
    */
   Counted* ptr;
 };
-}
 
-#include "libbirch/SharedPtr.hpp"
-#include "libbirch/InitPtr.hpp"
+template<class T>
+struct is_value<WeakPtr<T>> {
+  static const bool value = false;
+};
 
-libbirch::WeakPtr<libbirch::Counted>::WeakPtr(Counted* ptr) :
-    ptr(ptr) {
-  if (ptr) {
-    ptr->incWeak();
-  }
-}
+template<class T>
+struct is_pointer<WeakPtr<T>> {
+  static const bool value = true;
+};
 
-libbirch::WeakPtr<libbirch::Counted>::WeakPtr(const SharedPtr<Counted>& o) :
-    ptr(o.ptr) {
-  if (ptr) {
-    ptr->incWeak();
-  }
-}
-
-libbirch::WeakPtr<libbirch::Counted>::WeakPtr(const InitPtr<Counted>& o) :
-    ptr(o.ptr) {
-  if (ptr) {
-    ptr->incWeak();
-  }
-}
-
-libbirch::WeakPtr<libbirch::Counted>::WeakPtr(const WeakPtr<Counted>& o) :
-    ptr(o.ptr) {
-  if (ptr) {
-    assert(ptr->numWeak() > 0);
-    ptr->incWeak();
-  }
-}
-
-libbirch::WeakPtr<libbirch::Counted>::WeakPtr(WeakPtr<Counted> && o) :
-    ptr(o.ptr) {
-  o.ptr = nullptr;
-}
-
-libbirch::WeakPtr<libbirch::Counted>::~WeakPtr() {
-  release();
-}
-
-libbirch::WeakPtr<libbirch::Counted>& libbirch::WeakPtr<libbirch::Counted>::operator=(
-    const WeakPtr<Counted>& o) {
-  if (o.ptr) {
-    o.ptr->incWeak();
-  }
-  auto old = ptr;
-  ptr = o.ptr;
-  if (old) {
-    old->decWeak();
-  }
-  return *this;
-}
-
-libbirch::WeakPtr<libbirch::Counted>& libbirch::WeakPtr<libbirch::Counted>::operator=(
-    WeakPtr<Counted> && o) {
-  auto old = ptr;
-  ptr = o.ptr;
-  o.ptr = nullptr;
-  if (old) {
-    old->decWeak();
-  }
-  return *this;
-}
-
-libbirch::Counted* libbirch::WeakPtr<libbirch::Counted>::get() const {
-  assert(!ptr || ptr->numWeak() > 0);
-  return ptr;
-}
-
-libbirch::Counted* libbirch::WeakPtr<libbirch::Counted>::pull() const {
-  assert(!ptr || ptr->numWeak() > 0);
-  return ptr;
-}
-
-void libbirch::WeakPtr<libbirch::Counted>::replace(Counted* ptr) {
-  assert(!ptr || ptr->numWeak() > 0);
-  auto old = this->ptr;
-  if (ptr) {
-    ptr->incWeak();
-  }
-  this->ptr = ptr;
-  if (old) {
-    old->decWeak();
-  }
-}
-
-void libbirch::WeakPtr<libbirch::Counted>::release() {
-  if (ptr) {
-    ptr->decWeak();
-    ptr = nullptr;
-  }
-}
-
-libbirch::Counted& libbirch::WeakPtr<libbirch::Counted>::operator*() const {
-  return *get();
-}
-
-libbirch::Counted* libbirch::WeakPtr<libbirch::Counted>::operator->() const {
-  return get();
-}
-
-bool libbirch::WeakPtr<libbirch::Counted>::operator==(
-    const SharedPtr<Counted>& o) const {
-  return ptr == o.ptr;
-}
-
-bool libbirch::WeakPtr<libbirch::Counted>::operator==(
-    const WeakPtr<Counted>& o) const {
-  return ptr == o.ptr;
-}
-
-bool libbirch::WeakPtr<libbirch::Counted>::operator==(
-    const InitPtr<Counted>& o) const {
-  return ptr == o.ptr;
-}
-
-bool libbirch::WeakPtr<libbirch::Counted>::operator==(const Counted* o) const {
-  return ptr == o;
-}
-
-bool libbirch::WeakPtr<libbirch::Counted>::operator!=(
-    const SharedPtr<Counted>& o) const {
-  return ptr != o.ptr;
-}
-
-bool libbirch::WeakPtr<libbirch::Counted>::operator!=(
-    const WeakPtr<Counted>& o) const {
-  return ptr != o.ptr;
-}
-
-bool libbirch::WeakPtr<libbirch::Counted>::operator!=(
-    const InitPtr<Counted>& o) const {
-  return ptr != o.ptr;
-}
-
-bool libbirch::WeakPtr<libbirch::Counted>::operator!=(const Counted* o) const {
-  return ptr != o;
-}
-
-libbirch::WeakPtr<libbirch::Counted>::operator bool() const {
-  return ptr != nullptr;
+template<class T>
+struct raw_type<WeakPtr<T>> {
+  using type = T*;
+};
 }

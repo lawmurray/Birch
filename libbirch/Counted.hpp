@@ -76,13 +76,6 @@ public:
   unsigned getSize() const;
 
   /**
-   * Used by a shared pointer when it is known that the object has not yet
-   * been assigned to any smart pointer. Sets the shared count to one, but
-   * not atomically.
-   */
-  void init();
-
-  /**
    * Increment the shared count.
    */
   void incShared();
@@ -216,11 +209,6 @@ protected:
 
 inline unsigned libbirch::Counted::getSize() const {
   return size;
-}
-
-inline void libbirch::Counted::init() {
-  assert(sharedCount.load() == 0u);
-  sharedCount.init(1u);
 }
 
 inline void libbirch::Counted::incShared() {

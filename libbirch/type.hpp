@@ -82,41 +82,60 @@
 
 namespace libbirch {
 /**
- * Is it a value type?
+ * Is `T` a value type?
  */
-template<class Arg>
+template<class T>
 struct is_value {
   static const bool value = true;
 };
 
-template<class Arg>
-struct is_value<Arg&> {
-  static const bool value = is_value<Arg>::value;
-};
-
-template<class Arg>
-struct is_value<Arg&&> {
-  static const bool value = is_value<Arg>::value;
+template<class T>
+struct is_value<T&> {
+  static const bool value = is_value<T>::value;
 };
 
 template<class T>
-struct is_value<std::function<T>> {
-  static const bool value = false;
+struct is_value<T&&> {
+  static const bool value = is_value<T>::value;
 };
 
 /**
- * Is it a pointer type?
+ * Is `T` a pointer type?
  */
-template<class Arg>
+template<class T>
 struct is_pointer {
   static const bool value = false;
 };
 
 /**
- * Is it an array type?
+ * Is `T` an array type?
  */
-template<class Arg>
+template<class T>
 struct is_array {
   static const bool value = false;
+};
+
+/**
+ * Raw pointer type corresponding to a smart pointer type `P`.
+ */
+template<class P>
+struct raw_type {
+  using type = void;
+};
+
+template<class T>
+struct raw_type<T*> {
+  using type = T*;
+};
+
+/**
+ * For smart pointer types `T` and `U`, is the raw type of `T` a base of the
+ * raw type of `U`.
+ */
+template<class T, class U>
+struct is_base_of {
+  using Base = typename std::remove_pointer<typename raw_type<T>::type>::type;
+  using Derived = typename std::remove_pointer<typename raw_type<U>::type>::type;
+  static const bool value = !std::is_void<Base>::value && std::is_base_of<Base,Derived>::value;
 };
 }

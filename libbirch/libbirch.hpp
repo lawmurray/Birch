@@ -339,7 +339,7 @@ Optional<To> dynamic_pointer_cast(const From& from) {
   auto label = from.getLabel();
   auto ptr = dynamic_cast<typename To::value_type*>(from.get());
   if (ptr) {
-    return Optional<To>(To(label, ptr));
+    return Optional<To>(To(ptr, label));
   } else {
     return Optional<To>();
   }
@@ -354,7 +354,7 @@ Optional<To> dynamic_pointer_cast(const Optional<From>& from) {
     auto label = from.get().getLabel();
     auto ptr = dynamic_cast<typename To::value_type*>(from.get().get());
     if (ptr) {
-      return Optional<To>(To(label, ptr));
+      return Optional<To>(To(ptr, label));
     }
   }
   return Optional<To>();

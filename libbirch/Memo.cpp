@@ -104,7 +104,8 @@ void libbirch::Memo::freeze() {
   for (auto i = 0u; i < nentries; ++i) {
     auto v = values[i];
     if (v) {
-      v->freeze();
+      ///@todo
+      //v->freeze();
     }
   }
 }

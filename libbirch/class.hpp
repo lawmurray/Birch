@@ -51,7 +51,7 @@
  * the local variable `self`, to use in place of the usual `this`.
  */
 #define LIBBIRCH_SELF \
-  [[maybe_unused]] libbirch::Lazy<libbirch::InitPtr<this_type_>> self(this->getLabel(), this);
+  [[maybe_unused]] libbirch::LazyInitPtr<this_type_> self(this, this->getLabel());
 
 namespace bi {
   namespace type {

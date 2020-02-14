@@ -129,7 +129,7 @@ inline libbirch::Label* libbirch::Label::fork() {
 
 template<class P>
 void libbirch::Label::get(P& o) {
-  if (o && o->isFrozen()) {
+  if (o.query() && o->isFrozen()) {
     lock.write();
     Any* old = o.get();
     Any* ptr = get(old);
@@ -142,7 +142,7 @@ void libbirch::Label::get(P& o) {
 
 template<class P>
 void libbirch::Label::pull(P& o) {
-  if (o && o->isFrozen()) {
+  if (o.query() && o->isFrozen()) {
     lock.read();
     Any* old = o.get();
     Any* ptr = pull(old);

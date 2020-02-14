@@ -56,16 +56,6 @@ public:
   Tuple(Tuple&& o) = default;
 
   /**
-   * Move constructor.
-   */
-  template<class Head1, class... Tail1>
-  Tuple(Tuple<Head1,Tail1...>&& o) :
-      head(std::move(o.head)),
-      tail(std::move(o.tail)) {
-    //
-  }
-
-  /**
    * Accept function.
    */
   template<class Visitor>
@@ -142,15 +132,6 @@ public:
    * Move constructor.
    */
   Tuple(Tuple&& o) = default;
-
-  /**
-   * Move constructor.
-   */
-  template<class Head1>
-  Tuple(Tuple<Head1>&& o) :
-      head(std::move(o.head)) {
-    //
-  }
 
   /**
    * Accept function.

@@ -72,11 +72,9 @@ public:
    */
   bool query() {
     if (state.query()) {
-      assign(state.get()->getLabel(), state.get()->query());
-      return state.query();
-    } else {
-      return false;
+      *this = state.get()->query();
     }
+    return state.query();
   }
 
 private:

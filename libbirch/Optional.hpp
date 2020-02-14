@@ -278,7 +278,8 @@ public:
   /**
    * Value copy constructor.
    */
-  Optional(const T& value) :
+  template<class U, std::enable_if_t<is_base_of<T,U>::value,int> = 0>
+  Optional(const U& value) :
       value(value) {
     //
   }
@@ -286,8 +287,27 @@ public:
   /**
    * Value move constructor.
    */
-  Optional(T&& value) :
+  template<class U, std::enable_if_t<is_base_of<T,U>::value,int> = 0>
+  Optional(U&& value) :
       value(std::move(value)) {
+    //
+  }
+
+  /**
+   * Copy constructor.
+   */
+  template<class U, std::enable_if_t<is_base_of<T,U>::value,int> = 0>
+  Optional(const Optional<U>& o) :
+      value(o.value) {
+    //
+  }
+
+  /**
+   * Move constructor.
+   */
+  template<class U, std::enable_if_t<is_base_of<T,U>::value,int> = 0>
+  Optional(Optional<U>&& o) :
+      value(std::move(o.value)) {
     //
   }
 

@@ -8,6 +8,9 @@
 #include "libbirch/Any.hpp"
 #include "libbirch/Label.hpp"
 #include "libbirch/Nil.hpp"
+#include "libbirch/SharedPtr.hpp"
+#include "libbirch/WeakPtr.hpp"
+#include "libbirch/InitPtr.hpp"
 #include "libbirch/thread.hpp"
 
 namespace libbirch {
@@ -22,45 +25,42 @@ template<class P, class Enable = void>
 class Lazy : public Lazy<typename P::super_type> {
 public:
   using value_type = typename P::value_type;
+  using this_type = Lazy<P>;
   using super_type = Lazy<typename P::super_type>;
-  using shared_type = Lazy<typename P::shared_type>;
-  using weak_type = Lazy<typename P::weak_type>;
-  using init_type = Lazy<typename P::init_type>;
 
   /**
    * Constructor.
    */
-  Lazy(value_type* ptr, Label* label = nullptr) :
-      super_type(ptr, label) {
+  Lazy(const std::nullptr_t& nil) :
+      super_type(nil) {
     //
   }
 
   /**
    * Constructor.
    */
-  Lazy(const shared_type& o) :
-      super_type(static_cast<const typename super_type::shared_type&>(o)) {
-    // ^ explicit cast avoids the constructor template in the base type
+  template<class Q, std::enable_if_t<is_base_of<P,Q>::value,int> = 0>
+  Lazy(const Q& ptr, Label* label = nullptr) :
+      super_type(ptr, label) {
+    //
   }
 
   /**
-   * Constructor.
+   * Constructor with in-place construction of referent.
+   *
+   * Allocates a new object of the type pointed to by this, and initializes
+   * it by calling its default constructor.
    */
-  Lazy(const weak_type& o) :
-      super_type(static_cast<const typename super_type::weak_type&>(o)) {
-    // ^ explicit cast avoids the constructor template in the base type
+  Lazy() : super_type(new value_type()) {
+    static_assert(std::is_default_constructible<value_type>::value,
+        "invalid call to class constructor");
+    // ^ ideally this condition would be checked with SFINAE, but the
+    //   definition of value_type may not be available at the point that a
+    //   pointer to it is declared, causing a compile error
   }
 
   /**
-   * Constructor.
-   */
-  Lazy(const init_type& o) :
-      super_type(static_cast<const typename super_type::init_type&>(o)) {
-    // ^ explicit cast avoids the constructor template in the base type
-  }
-
-  /**
-   * Constructor.
+   * Constructor with in-place construction of referent.
    *
    * @tparam Args... Argument types.
    *
@@ -68,24 +68,25 @@ public:
    *
    * Allocates a new object of the type pointed to by this, and initializes
    * it by calling its constructor with the given arguments.
+   *
+   * SFINAE insures that the Lazy(const Q&) constructor is preferred over
+   * this one when the argument is a pointer of the same or type. Note that
+   * in the Birch language it is not possible for a class to have a
+   * constructor that would accept such an argument anyway.
    */
-  template<class... Args>
-  Lazy(Args&&... args) : super_type(new value_type(std::forward<Args...>(args)...)) {
-    static_assert(std::is_constructible<value_type,Args...>::value,
+  template<class Arg, class... Args, std::enable_if_t<!is_base_of<P,Arg>::value,int> = 0>
+  explicit Lazy(Arg arg, Args... args) : super_type(new value_type(arg, args...)) {
+    static_assert(std::is_constructible<value_type,Arg,Args...>::value,
         "invalid call to class constructor");
     // ^ ideally this condition would be checked with SFINAE, but the
     //   definition of value_type may not be available at the point that a
     //   pointer to it is declared, causing a compile error
   }
 
-  Lazy(Lazy&& o) = default;
-  Lazy& operator=(const Lazy& o) = default;
-  Lazy& operator=(Lazy&& o) = default;
-
   /**
    * Value assignment.
    */
-  template<class U, std::enable_if_t<is_value<U>::value/* && std::is_assignable<value_type,U>::value*/,int> = 0>
+  template<class U, std::enable_if_t<is_value<U>::value && std::is_assignable<value_type,U>::value,int> = 0>
   Lazy& operator=(const U& o) {
     *get() = o;
     return *this;
@@ -159,54 +160,41 @@ public:
  * @tparam P Pointer type. Either SharedPtr, WeakPtr or InitPtr.
  */
 template<class P>
-class Lazy<P,std::enable_if_t<std::is_same<typename P::value_type,
-    libbirch::Any>::value>> {
+class Lazy<P,std::enable_if_t<std::is_same<typename P::value_type,libbirch::Any>::value>> {
   template<class Q, class Enable1> friend class Lazy;
 public:
   using value_type = typename P::value_type;
-  using shared_type = Lazy<typename P::shared_type>;
-  using weak_type = Lazy<typename P::weak_type>;
-  using init_type = Lazy<typename P::init_type>;
+  using this_type = Lazy<Any>;
 
   /**
    * Constructor.
    */
-  Lazy(value_type* ptr, Label* label = nullptr) :
+  Lazy(const std::nullptr_t& nil) :
+      object(nullptr),
+      label(0),
+      cross(0) {
+    //
+  }
+
+  /**
+   * Constructor.
+   */
+  template<class Q, std::enable_if_t<is_base_of<Any*,Q>::value,int> = 0>
+  Lazy(const Q& ptr, Label* label = nullptr) :
       object(ptr),
       label(0),
       cross(0) {
-    assert(ptr || !label);  // !ptr implies !label
     setLabel(label);
   }
 
   /**
    * Copy constructor.
    */
-  Lazy(const shared_type& o) :
-      object(o.get()),
-      label(0),
+  Lazy(const Lazy& o) :
+      object(o.object),
+      label(o.label),
       cross(0) {
-    setLabel(o.getLabel());
-  }
-
-  /**
-   * Copy constructor.
-   */
-  Lazy(const weak_type& o) :
-      object(o.get()),
-      label(0),
-      cross(0) {
-    setLabel(o.getLabel());
-  }
-
-  /**
-   * Copy constructor.
-   */
-  Lazy(const init_type& o) :
-      object(o.get()),
-      label(0),
-      cross(0) {
-    setLabel(o.getLabel());
+    //
   }
 
   /**
@@ -214,9 +202,9 @@ public:
    */
   Lazy(Lazy&& o) :
       object(std::move(o.object)),
-      label(0),
-      cross(0) {
-    setLabel(o.getLabel());
+      label(o.label),
+      cross(o.cross) {
+    //
   }
 
   /**
@@ -262,9 +250,12 @@ public:
 
   /**
    * Is the pointer not null?
+   *
+   * This is used instead of an `operator bool()` so as not to conflict with
+   * conversion operators in the referent type.
    */
   bool query() const {
-    return static_cast<bool>(object);
+    return object.query();
   }
 
   /**
@@ -490,5 +481,10 @@ struct is_value<Lazy<P>> {
 template<class P>
 struct is_pointer<Lazy<P>> {
   static const bool value = true;
+};
+
+template<class P>
+struct raw_type<Lazy<P>> {
+  using type = typename raw_type<P>::type;
 };
 }
