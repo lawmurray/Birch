@@ -355,7 +355,7 @@ function update_linear_multivariate_gaussian_gaussian(x:Real, a:Real[_],
     μ:Real[_], Σ:Real[_,_], c:Real, s2:Real) -> (Real[_], Real[_,_]) {
   auto k' <- Σ*a/(dot(a, Σ*a) + s2);
   auto μ' <- μ + k'*(x - dot(a, μ) - c);
-  auto Σ' <- Σ - k'*transpose(a)*Σ;
+  auto Σ' <- Σ - column(k')*transpose(a)*Σ;
   return (μ', Σ');
 }
 

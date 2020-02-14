@@ -75,9 +75,7 @@ operator (left:Expression<Real[_,_]>*right:Real[_]) ->
  */
 operator (left:Expression<Real>*right:Expression<Real[_]>) ->
     MultivariateMultiply<Real[_,_],Real[_],Real[_]> {
-  m:MultivariateMultiply<Real[_,_],Real[_],Real[_]>(
-      diagonal(left, right.rows()), right);
-  return m;
+  return diagonal(left, right.rows())*right;
 }
 
 /**
@@ -101,9 +99,7 @@ operator (left:Expression<Real>*right:Real[_]) ->
  */
 operator (left:Expression<Real[_]>*right:Expression<Real>) ->
     MultivariateMultiply<Real[_,_],Real[_],Real[_]> {
-  m:MultivariateMultiply<Real[_,_],Real[_],Real[_]>(
-      diagonal(right, left.rows()), left);
-  return m;
+  return diagonal(right, left.rows())*left;
 }
 
 /**
@@ -119,55 +115,5 @@ operator (left:Real[_]*right:Expression<Real>) ->
  */
 operator (left:Expression<Real[_]>*right:Real) ->
     MultivariateMultiply<Real[_,_],Real[_],Real[_]> {
-  return left*Boxed(right);
-}
-
-/**
- * Lazy multivariate multiply.
- */
-operator (left:Expression<Real[_]>*right:Expression<Real[_]>) ->
-    MultivariateMultiply<Real[_],Real[_],Real[_]> {
-  m:MultivariateMultiply<Real[_],Real[_],Real[_]>(left, right);
-  return m;
-}
-
-/**
- * Lazy multivariate multiply.
- */
-operator (left:Real[_]*right:Expression<Real[_]>) ->
-    MultivariateMultiply<Real[_],Real[_],Real[_]> {
-  return Boxed(left)*right;
-}
-
-/**
- * Lazy multivariate multiply.
- */
-operator (left:Expression<Real[_]>*right:Real[_]) ->
-    MultivariateMultiply<Real[_],Real[_],Real[_]> {
-  return left*Boxed(right);
-}
-
-/**
- * Lazy multivariate multiply.
- */
-operator (left:Expression<Real[_]>*right:Expression<Real[_,_]>) ->
-    MultivariateMultiply<Real[_],Real[_,_],Real[_,_]> {
-  m:MultivariateMultiply<Real[_],Real[_,_],Real[_,_]>(left, right);
-  return m;
-}
-
-/**
- * Lazy multivariate multiply.
- */
-operator (left:Real[_]*right:Expression<Real[_,_]>) ->
-    MultivariateMultiply<Real[_],Real[_,_],Real[_,_]> {
-  return Boxed(left)*right;
-}
-
-/**
- * Lazy multivariate multiply.
- */
-operator (left:Expression<Real[_]>*right:Real[_,_]) ->
-    MultivariateMultiply<Real[_],Real[_,_],Real[_,_]> {
   return left*Boxed(right);
 }

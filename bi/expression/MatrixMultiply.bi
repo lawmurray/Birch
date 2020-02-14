@@ -90,9 +90,7 @@ operator (left:Expression<Real[_,_]>*right:Real[_,_]) ->
  */
 operator (left:Expression<Real>*right:Expression<Real[_,_]>) ->
     MatrixMultiply<Real[_,_],Real[_,_],Real[_,_]> {
-  m:MatrixMultiply<Real[_,_],Real[_,_],Real[_,_]>(
-      diagonal(left, right.rows()), right);
-  return m;
+  return diagonal(left, right.rows())*right;
 }
 
 /**
@@ -116,9 +114,7 @@ operator (left:Expression<Real>*right:Real[_,_]) ->
  */
 operator (left:Expression<Real[_,_]>*right:Expression<Real>) ->
     MatrixMultiply<Real[_,_],Real[_,_],Real[_,_]> {
-  m:MatrixMultiply<Real[_,_],Real[_,_],Real[_,_]>(
-      diagonal(right, left.rows()), left);
-  return m;
+  return left*diagonal(right, left.columns());
 }
 
 /**

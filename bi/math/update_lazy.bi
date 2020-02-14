@@ -106,7 +106,7 @@ function update_lazy_linear_multivariate_gaussian_gaussian(
     (Real[_], Real[_,_]) {
   auto k' <- Σ*a/(dot(a, Σ*a) + s2);
   auto μ' <- μ + k'*(x - dot(a, μ) - c);
-  auto Σ' <- Σ - k'*transpose(a)*Σ;
+  auto Σ' <- Σ - column(k')*transpose(a)*Σ;
   return (μ', Σ');
 }
 

@@ -31,9 +31,7 @@ operator (x:Real[_] + y:Real[_]) -> Real[_];
 operator (x:Real[_] - y:Real[_]) -> Real[_];
 operator (X:Real[_,_] + Y:Real[_,_]) -> Real[_,_];
 operator (X:Real[_,_] - Y:Real[_,_]) -> Real[_,_];
-operator (x:Real[_]*y:Real[_]) -> Real[_];
 operator (X:Real[_,_]*y:Real[_]) -> Real[_];
-operator (x:Real[_]*Y:Real[_,_]) -> Real[_,_];
 operator (X:Real[_,_]*Y:Real[_,_]) -> Real[_,_];
 
 operator (x:Integer + y:Integer[_]) -> Integer[_];
@@ -62,9 +60,7 @@ operator (x:Integer[_] + y:Integer[_]) -> Integer[_];
 operator (x:Integer[_] - y:Integer[_]) -> Integer[_];
 operator (X:Integer[_,_] + Y:Integer[_,_]) -> Integer[_,_];
 operator (X:Integer[_,_] - Y:Integer[_,_]) -> Integer[_,_];
-operator (x:Integer[_]*y:Integer[_]) -> Integer[_];
 operator (X:Integer[_,_]*y:Integer[_]) -> Integer[_];
-operator (x:Integer[_]*Y:Integer[_,_]) -> Integer[_,_];
 operator (X:Integer[_,_]*Y:Integer[_,_]) -> Integer[_,_];
 
 /**
