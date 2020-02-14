@@ -149,33 +149,6 @@ void bi::CppClassGenerator::visit(const Class* o) {
       line("}\n");
     }
 
-    /* setters for member variables */
-    if (header) {
-      Gatherer<MemberVariable> memberVars;
-      o->accept(&memberVars);
-      for (auto var : memberVars) {
-        genSourceLine(var->loc);
-        line("template<class T_> auto& set_" << var->name << "_(T_&& o_) {");
-        in();
-        genSourceLine(var->loc);
-        line("return " << var->name << " = o_;");
-        genSourceLine(var->loc);
-        out();
-        line("}\n");
-
-        if (var->type->isArray()) {
-          genSourceLine(var->loc);
-          line("template<class F_, class T_> auto set_" << var->name << "_(const F_& shape_, T_&& o_) {");
-          in();
-          genSourceLine(var->loc);
-          line("return " << var->name << ".get(shape_) = o_;");
-          genSourceLine(var->loc);
-          out();
-          line("}\n");
-        }
-      }
-    }
-
     /* member variables and functions */
     *this << o->braces->strip();
 
