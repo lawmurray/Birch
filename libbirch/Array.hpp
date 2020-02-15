@@ -78,13 +78,35 @@ public:
    * @param shape Shape.
    * @param values Values.
    */
-  Array(const F& shape, const std::initializer_list<T>& values) :
-      shape(shape),
+  template<class G = F, std::enable_if_t<G::count() == 1,int> = 0>
+  Array(const std::initializer_list<T>& values) :
+      shape(values.size()),
       buffer(nullptr),
       offset(0),
       isView(false) {
     allocate();
     std::uninitialized_copy(values.begin(), values.end(), begin());
+  }
+
+  /**
+   * Constructor.
+   *
+   * @param shape Shape.
+   * @param values Values.
+   */
+  template<class G = F, std::enable_if_t<G::count() == 2,int> = 0>
+  Array(const std::initializer_list<std::initializer_list<T>>& values) :
+      shape(values.size(), values.begin()->size()),
+      buffer(nullptr),
+      offset(0),
+      isView(false) {
+    allocate();
+    auto ptr = buf();
+    for (auto row : values) {
+      for (auto value : row) {
+        new (ptr++) T(value);
+      }
+    }
   }
 
   /**
