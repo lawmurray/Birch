@@ -1,7 +1,7 @@
 /**
  * Lazy `transpose`.
  */
-final class Transpose<Argument,Value>(x:Expression<Argument>) <
+final class MatrixTranspose<Argument,Value>(x:Expression<Argument>) <
     UnaryExpression<Argument,Value>(x) {
   function rows() -> Integer {
     return single.columns();
@@ -23,15 +23,8 @@ final class Transpose<Argument,Value>(x:Expression<Argument>) <
 /**
  * Lazy `transpose`.
  */
-function transpose(x:Expression<Real[_,_]>) -> Transpose<Real[_,_],Real[_,_]> {
-  m:Transpose<Real[_,_],Real[_,_]>(x);
-  return m;
-}
-
-/**
- * Lazy `transpose`.
- */
-function transpose(x:Expression<Real[_]>) -> Transpose<Real[_],Real[_,_]> {
-  m:Transpose<Real[_],Real[_,_]>(x);
+function transpose(x:Expression<Real[_,_]>) ->
+    MatrixTranspose<Real[_,_],Real[_,_]> {
+  m:MatrixTranspose<Real[_,_],Real[_,_]>(x);
   return m;
 }
