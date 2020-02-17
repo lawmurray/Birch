@@ -96,7 +96,8 @@ final class Random<Value> < Expression<Value> {
     assert x?;
     if p? {
       if dfdx? {
-        dfdx <- dfdx! + d;
+        y:Value <- dfdx! + d;
+        dfdx <- y;
       } else {
         auto ψ <- p!.logpdfLazy(this);
         if ψ? {

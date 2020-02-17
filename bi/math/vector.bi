@@ -157,114 +157,24 @@ function matrix(x:Integer[_], rows:Integer, cols:Integer) -> Integer[_,_] {
 /**
  * Length of a vector.
  */
-function length(x:Object[_]) -> Integer {
+function length<Value>(x:Value[_]) -> Integer {
   cpp{{
   return x.rows();
   }}
 }
 
 /**
- * Length of a vector.
+ * Number of rows of a vector when interpreted as a matrix (equals the length
+ * of the vector).
  */
-function length(x:Real[_]) -> Integer {
-  cpp{{
-  return x.rows();
-  }}
-}
-
-/**
- * Length of a vector.
- */
-function length(x:Integer[_]) -> Integer {
-  cpp{{
-  return x.rows();
-  }}
-}
-
-/**
- * Length of a vector.
- */
-function length(x:Boolean[_]) -> Integer {
-  cpp{{
-  return x.rows();
-  }}
-}
-
-/**
- * Length of a vector.
- */
-function length(x:Object?[_]) -> Integer {
-  cpp{{
-  return x.rows();
-  }}
-}
-
-/**
- * Length of a vector.
- */
-function length(x:Real?[_]) -> Integer {
-  cpp{{
-  return x.rows();
-  }}
-}
-
-/**
- * Length of a vector.
- */
-function length(x:Integer?[_]) -> Integer {
-  cpp{{
-  return x.rows();
-  }}
-}
-
-/**
- * Length of a vector.
- */
-function length(x:Boolean?[_]) -> Integer {
-  cpp{{
-  return x.rows();
-  }}
-}
-
-/**
- * Number of rows when interpreted as a matrix.
- */
-function rows(x:Real[_]) -> Integer {
+function rows<Value>(x:Value[_]) -> Integer {
   return length(x);
 }
 
 /**
- * Number of columns when interpreted as a matrix.
+ * Number of columns of a vector when interpreted as a matrix (equals one).
  */
-function columns(x:Real[_]) -> Integer {
-  return 1;
-}
-
-/**
- * Number of rows when interpreted as a matrix.
- */
-function rows(x:Integer[_]) -> Integer {
-  return length(x);
-}
-
-/**
- * Number of columns when interpreted as a matrix.
- */
-function columns(x:Integer[_]) -> Integer {
-  return 1;
-}
-
-/**
- * Number of rows when interpreted as a matrix.
- */
-function rows(x:Boolean[_]) -> Integer {
-  return length(x);
-}
-
-/**
- * Number of columns when interpreted as a matrix.
- */
-function columns(x:Boolean[_]) -> Integer {
+function columns<Value>(x:Value[_]) -> Integer {
   return 1;
 }
 

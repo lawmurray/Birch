@@ -28,7 +28,7 @@ final class DirichletCategorical(ρ:Dirichlet) < Distribution<Integer> {
   }
 
   function upper() -> Integer? {
-    return length(ρ.α);
+    return ρ.α.rows();
   }
 }
 

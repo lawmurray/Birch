@@ -63,7 +63,7 @@ final class IndependentInverseGamma(α:Expression<Real>,
   }
 
   function lower() -> Real[_]? {
-    return vector(0.0, length(β));
+    return vector(0.0, β.rows());
   }
 
   function graft() -> Distribution<Real[_]> {

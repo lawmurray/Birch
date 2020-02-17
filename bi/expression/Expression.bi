@@ -304,3 +304,39 @@ abstract class Expression<Value> {
     return nil;
   }
 }
+
+/**
+ * Length of a vector.
+ */
+function length<Value>(x:Expression<Value[_]>) -> Integer {
+  return x.rows();
+}
+
+/**
+ * Number of rows of a vector when interpreted as a matrix (equals the length
+ * of the vector).
+ */
+function rows<Value>(x:Expression<Value[_]>) -> Integer {
+  return length(x);
+}
+
+/**
+ * Number of columns of a vector when interpreted as a matrix (equals one).
+ */
+function columns<Value>(x:Expression<Value[_]>) -> Integer {
+  return 1;
+}
+
+/**
+ * Number of rows of a matrix.
+ */
+function rows<Value>(X:Expression<Value[_,_]>) -> Integer64 {
+  return X.rows();
+}
+
+/**
+ * Number of columns of a matrix.
+ */
+function columns<Value>(X:Expression<Value[_,_]>) -> Integer64 {
+  return X.columns();
+}

@@ -11,6 +11,30 @@
 
 namespace bi {
 /**
+ * Length of a vector.
+ */
+template<class T>
+auto length(const Eigen::MatrixBase<T>& o) {
+  return o.rows();
+}
+
+/**
+ * Number of rows of a matrix.
+ */
+template<class T>
+auto rows(const Eigen::MatrixBase<T>& o) {
+  return o.rows();
+}
+
+/**
+ * Number of columns of a matrix.
+ */
+template<class T>
+auto columns(const Eigen::MatrixBase<T>& o) {
+  return o.columns();
+}
+
+/**
  * Dot product of vector with itself.
  */
 template<class T>

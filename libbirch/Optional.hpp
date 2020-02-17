@@ -44,13 +44,13 @@ public:
   }
 
   /**
-   * Value copy constructor. A template is used to ensure that only a value
+   * Value copy constructor. SFINAE is used to ensure that only a value
    * of type T can be implicitly converted to a value of Optional<T>.
    * Implicit type conversions, especially numerical conversions, otherwise
    * cause troublesome ambiguous functions calls when passing a value
    * argument to an optional parameter.
    */
-  template<class U, IS_SAME(T,U)>
+  template<class U, std::enable_if_t<std::is_same<T,U>::value,int> = 0>
   Optional(const U& value) :
       value(value),
       hasValue(true) {
@@ -58,13 +58,13 @@ public:
   }
 
   /**
-   * Value move constructor. A template is used to ensure that only a value
+   * Value move constructor. SFINAE is used to ensure that only a value
    * of type T can be implicitly converted to a value of Optional<T>.
    * Implicit type conversions, especially numerical conversions, otherwise
    * cause troublesome ambiguous functions calls when passing a value
    * argument to an optional parameter.
    */
-  template<class U, IS_SAME(T,U)>
+  template<class U, std::enable_if_t<std::is_same<T,U>::value,int> = 0>
   Optional(U&& value) :
       value(std::move(value)),
       hasValue(true) {

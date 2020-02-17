@@ -365,9 +365,19 @@ Optional<To> dynamic_pointer_cast(const Optional<From>& from) {
  *
  * @return An optional, with a value only if @p from is of type To.
  */
-template<class To, class From>
+template<class To, class From, std::enable_if_t<std::is_same<To,From>::value,int> = 0>
 Optional<To> check_cast(const From& from) {
-  return std::is_same<To,From>::value ? Optional<To>(from) : Optional<To>();
+  return Optional<To>(from);
+}
+
+/**
+ * Cast anything else.
+ *
+ * @return An optional, with a value only if @p from is of type To.
+ */
+template<class To, class From, std::enable_if_t<!std::is_same<To,From>::value,int> = 0>
+Optional<To> check_cast(const From& from) {
+  return Optional<To>();
 }
 
 /**

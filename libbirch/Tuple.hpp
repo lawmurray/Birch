@@ -36,12 +36,7 @@ public:
   }
 
   /**
-   * Copy constructor.
-   */
-  Tuple(const Tuple& o) = default;
-
-  /**
-   * Copy constructor.
+   * Generic constructor.
    */
   template<class Head1, class... Tail1>
   Tuple(const Tuple<Head1,Tail1...>& o) :
@@ -49,11 +44,6 @@ public:
       tail(o.tail) {
     //
   }
-
-  /**
-   * Move constructor.
-   */
-  Tuple(Tuple&& o) = default;
 
   /**
    * Accept function.
@@ -115,23 +105,13 @@ public:
   }
 
   /**
-   * Copy constructor.
-   */
-  Tuple(const Tuple& o) = default;
-
-  /**
-   * Copy constructor.
+   * Generic constructor.
    */
   template<class Head1>
   Tuple(const Tuple<Head1>& o) :
       head(o.head) {
     //
   }
-
-  /**
-   * Move constructor.
-   */
-  Tuple(Tuple&& o) = default;
 
   /**
    * Accept function.

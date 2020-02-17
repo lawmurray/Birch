@@ -28,7 +28,7 @@ final class Categorical(ρ:Expression<Real[_]>) < Distribution<Integer> {
   }
 
   function upper() -> Integer? {
-    return length(ρ);
+    return ρ.rows();
   }
 
   function graft() -> Distribution<Integer> {

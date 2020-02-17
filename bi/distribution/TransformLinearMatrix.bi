@@ -64,5 +64,5 @@ function TransformLinearMatrix<Value>(A:Expression<Real[_,_]>, X:Value,
 function TransformLinearMatrix<Value>(A:Expression<Real[_,_]>, X:Value) ->
     TransformLinearMatrix<Value> {
   return TransformLinearMatrix<Value>(A, X,
-      Boxed(matrix(0.0, rows(A), X.columns())));
+      Boxed(matrix(0.0, A.rows(), X.columns())));
 }

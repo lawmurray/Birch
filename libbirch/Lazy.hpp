@@ -293,7 +293,7 @@ public:
    * safety on entry and exit.
    */
   void startFreeze() {
-    if (object) {
+    if (object.query()) {
       freezeLock.enter();
       freeze();
       freezeLock.exit();
@@ -312,9 +312,10 @@ public:
    * Freeze.
    */
   void freeze() {
-    if (object) {
-      object->freeze();
-      getLabel()->freeze();
+    if (object.query()) {
+      ///@todo
+      //object->freeze();
+      //getLabel()->freeze();
     }
   }
 
@@ -333,7 +334,7 @@ public:
       startFinish();
       startFreeze();
     }
-    if (object) {
+    if (object.query()) {
       this->label = reinterpret_cast<intptr_t>(label);
     }
   }
@@ -371,7 +372,8 @@ public:
   void finish() {
     if (object) {
       get();
-      object->finish();
+      ///@todo
+      //object->finish();
     }
   }
 

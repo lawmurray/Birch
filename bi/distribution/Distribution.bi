@@ -89,7 +89,7 @@ abstract class Distribution<Value> < Delay {
   function observeLazy(x:Expression<Value>) -> Real {
     assert !this.x?;
     prune();
-    this.x <- x;
+    this.x <- x.value();
     auto ψ <- logpdfLazy(x);
     auto w <- 0.0;
     if ψ? {
