@@ -94,11 +94,12 @@ bi::Statement* bi::Resolver::modify(Yield* o) {
   auto braces = currentFiber->braces->accept(&resumer);
   auto typeParams = currentFiber->typeParams->accept(&cloner);
   auto returnType = currentFiber->returnType->accept(&cloner);
-  auto resume = new Function(NONE, currentFiber->name, typeParams, params,
+  o->resume = new Function(NONE, currentFiber->name, typeParams, params,
       returnType, braces, o->loc);
 
-  o->resume = o->resume->accept(this);
+  /* resolve */
   o->single = o->single->accept(this);
+  o->resume = o->resume->accept(this);
 
   return o;
 }
