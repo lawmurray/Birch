@@ -23,8 +23,8 @@ bi::Statement* bi::Resumer::clone(const Fiber* o) {
 
 bi::Statement* bi::Resumer::clone(const MemberFiber* o) {
   auto r = new MemberFunction(o->annotation, o->name,
-      o->params->accept(this), o->returnType->accept(this),
-      o->braces->accept(this), o->loc);
+      o->typeParams->accept(this), o->params->accept(this),
+      o->returnType->accept(this), o->braces->accept(this), o->loc);
   r->number = yield->number;
   return r;
 }

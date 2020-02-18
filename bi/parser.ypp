@@ -504,13 +504,13 @@ member_function_annotation
     ;
 
 member_function_declaration
-    : member_function_annotation FUNCTION name parameters optional_return_type { push_raw(); } optional_braces  { $$ = new bi::MemberFunction($1, $3, $4, $5, $7, make_doc_loc(@$)); }
-    | FUNCTION name parameters optional_return_type { push_raw(); } optional_braces                             { $$ = new bi::MemberFunction(bi::NONE, $2, $3, $4, $6, make_doc_loc(@$)); }
+    : member_function_annotation FUNCTION name parameters optional_return_type { push_raw(); } optional_braces  { $$ = new bi::MemberFunction($1, $3, empty_expr(@$), $4, $5, $7, make_doc_loc(@$)); }
+    | FUNCTION name parameters optional_return_type { push_raw(); } optional_braces                             { $$ = new bi::MemberFunction(bi::NONE, $2, empty_expr(@$), $3, $4, $6, make_doc_loc(@$)); }
     ;
 
 member_fiber_declaration
-    : member_function_annotation FIBER name parameters optional_return_type { push_raw(); } optional_braces  { $$ = new bi::MemberFiber($1, $3, $4, $5, $7, make_doc_loc(@$)); }
-    | FIBER name parameters optional_return_type { push_raw(); } optional_braces                             { $$ = new bi::MemberFiber(bi::NONE, $2, $3, $4, $6, make_doc_loc(@$)); }
+    : member_function_annotation FIBER name parameters optional_return_type { push_raw(); } optional_braces  { $$ = new bi::MemberFiber($1, $3, empty_expr(@$), $4, $5, $7, make_doc_loc(@$)); }
+    | FIBER name parameters optional_return_type { push_raw(); } optional_braces                             { $$ = new bi::MemberFiber(bi::NONE, $2, empty_expr(@$), $3, $4, $6, make_doc_loc(@$)); }
     ;
 
 program_declaration

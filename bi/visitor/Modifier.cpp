@@ -230,6 +230,7 @@ bi::Statement* bi::Modifier::modify(Program* o) {
 }
 
 bi::Statement* bi::Modifier::modify(MemberFunction* o) {
+  o->typeParams = o->typeParams->accept(this);
   o->params = o->params->accept(this);
   o->returnType = o->returnType->accept(this);
   o->braces = o->braces->accept(this);
@@ -237,6 +238,7 @@ bi::Statement* bi::Modifier::modify(MemberFunction* o) {
 }
 
 bi::Statement* bi::Modifier::modify(MemberFiber* o) {
+  o->typeParams = o->typeParams->accept(this);
   o->params = o->params->accept(this);
   o->returnType = o->returnType->accept(this);
   o->braces = o->braces->accept(this);

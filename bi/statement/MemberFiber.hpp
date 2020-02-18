@@ -3,51 +3,35 @@
  */
 #pragma once
 
-#include "bi/statement/Statement.hpp"
-#include "bi/common/Annotated.hpp"
-#include "bi/common/Named.hpp"
-#include "bi/common/Numbered.hpp"
-#include "bi/common/Parameterised.hpp"
-#include "bi/common/ReturnTyped.hpp"
-#include "bi/common/Braced.hpp"
-#include "bi/common/Scoped.hpp"
-
-#include <list>
+#include "bi/statement/Fiber.hpp"
 
 namespace bi {
 /**
- * Class member Fiber.
+ * Member fiber.
  *
  * @ingroup statement
  */
-class MemberFiber: public Statement,
-    public Annotated,
-    public Named,
-    public Numbered,
-    public Parameterised,
-    public ReturnTyped,
-    public Scoped,
-    public Braced {
+class MemberFiber: public Fiber {
 public:
   /**
    * Constructor.
    *
    * @param annotation Annotation.
    * @param name Name.
+   * @param typeParams Type parameters.
    * @param params Parameters.
    * @param returnType Return type.
    * @param braces Body.
    * @param loc Location.
    */
-  MemberFiber(const Annotation annotation, Name* name, Expression* params,
-      Type* returnType, Statement* braces, Location* loc = nullptr);
+  MemberFiber(const Annotation annotation, Name* name, Expression* typeParams,
+      Expression* params, Type* returnType, Statement* braces,
+      Location* loc = nullptr);
 
   /**
    * Destructor.
    */
   virtual ~MemberFiber();
-
-  virtual bool isDeclaration() const;
 
   virtual Statement* accept(Cloner* visitor) const;
   virtual Statement* accept(Modifier* visitor);

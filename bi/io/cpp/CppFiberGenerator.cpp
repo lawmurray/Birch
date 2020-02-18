@@ -31,7 +31,36 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
     } else {
       finish(" {");
       in();
+      genTraceLine(o->loc);
+      start("return make_fiber_" << o->name << "_0_(");
+      middle("libbirch::make_tuple(");
+      for (auto iter = o->params->begin(); iter != o->params->end(); ++iter) {
+        if (iter != o->params->begin()) {
+          middle(", ");
+        }
+        auto param = dynamic_cast<const Parameter*>(*iter);
+        assert(param);
+        middle(param->name);
+      }
+      finish("));");
+      out();
+      line("}\n");
+    }
 
+    /* start function */
+    genTemplateParams(o);
+    genSourceLine(o->loc);
+    start(o->returnType << ' ');
+    if (!header) {
+      middle("bi::");
+    }
+    middle(o->name << "_0_(" << o->params << ')');
+    if (header) {
+      finish(';');
+    } else {
+      finish(" {");
+      in();
+      *this << o->braces;
       out();
       line("}\n");
     }
@@ -96,13 +125,13 @@ void bi::CppFiberGenerator::visit(const Function* o) {
     finish("State_>::operator()() {");
     in();
     genTraceFunction(o->name->str(), o->loc);
-    if (this->yield) {
-      auto i = 0;
-      for (auto named : this->yield->state) {
-        genSourceLine(o->loc);
-        start("auto " << getName(named->name->str(), named->number));
-        finish(" = state_.template get<" << i++ << ">();");
-      }
+    auto i = 0;
+    for (auto expr : *o->params) {
+      auto param = dynamic_cast<const Parameter*>(expr);
+      assert(param);
+      genSourceLine(o->loc);
+      start("auto " << getName(param->name->str(), param->number));
+      finish(" = state_.template get<" << i++ << ">();");
     }
     *this << o->braces->strip();
     out();
@@ -114,8 +143,11 @@ void bi::CppFiberGenerator::visit(const Yield* o) {
   genTraceLine(o->loc);
   start("return make_fiber_" << fiber->name << '_' << o->number << "_(");
   middle(o->single << ", libbirch::make_tuple(");
-  for (auto iter = o->state.begin(); iter != o->state.end(); ++iter) {
-    if (iter != o->state.begin()) {
+  auto resume = dynamic_cast<const Function*>(o->resume);
+  assert(resume);
+  for (auto iter = resume->params->begin(); iter != resume->params->end();
+      ++iter) {
+    if (iter != resume->params->begin()) {
       middle(", ");
     }
     middle(*iter);

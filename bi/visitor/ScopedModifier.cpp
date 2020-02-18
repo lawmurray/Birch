@@ -6,8 +6,8 @@
 bi::ScopedModifier::ScopedModifier() :
     inMember(0),
     inGlobal(0),
-    inClass(0),
-    inLoop(0) {
+    currentClass(nullptr),
+    currentFiber(nullptr) {
   //
 }
 
@@ -60,14 +60,18 @@ bi::Statement* bi::ScopedModifier::modify(Function* o) {
 
 bi::Statement* bi::ScopedModifier::modify(MemberFiber* o) {
   scopes.push_back(o->scope);
+  currentFiber = o;
   Modifier::modify(o);
+  currentFiber = nullptr;
   scopes.pop_back();
   return o;
 }
 
 bi::Statement* bi::ScopedModifier::modify(Fiber* o) {
   scopes.push_back(o->scope);
+  currentFiber = o;
   Modifier::modify(o);
+  currentFiber = nullptr;
   scopes.pop_back();
   return o;
 }
@@ -115,9 +119,9 @@ bi::Statement* bi::ScopedModifier::modify(Class* o) {
   o->params = o->params->accept(this);
   o->args = o->args->accept(this);
   scopes.pop_back();
-  ++inClass;
+  currentClass = o;
   o->braces = o->braces->accept(this);
-  --inClass;
+  currentClass = nullptr;
   scopes.pop_back();
   return o;
 }
@@ -149,18 +153,14 @@ bi::Statement* bi::ScopedModifier::modify(Parallel* o) {
 
 bi::Statement* bi::ScopedModifier::modify(While* o) {
   scopes.push_back(o->scope);
-  ++inLoop;
   Modifier::modify(o);
-  --inLoop;
   scopes.pop_back();
   return o;
 }
 
 bi::Statement* bi::ScopedModifier::modify(DoWhile* o) {
   scopes.push_back(o->scope);
-  ++inLoop;
   o->braces = o->braces->accept(this);
-  --inLoop;
   scopes.pop_back();
   o->cond = o->cond->accept(this);
   return o;

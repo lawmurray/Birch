@@ -9,8 +9,6 @@
 #include "bi/expression/Expression.hpp"
 #include "bi/expression/NamedExpression.hpp"
 
-#include <list>
-
 namespace bi {
 /**
  * Yield statement.
@@ -40,12 +38,5 @@ public:
    * Resume function.
    */
   Statement* resume;
-
-  /**
-   * State. This is a list of expressions naming the parameters and local
-   * variables that must be preserved in the state for the fiber to be
-   * resumed from this point.
-   */
-  std::list<NamedExpression*> state;
 };
 }

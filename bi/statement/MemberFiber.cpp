@@ -6,25 +6,14 @@
 #include "bi/visitor/all.hpp"
 
 bi::MemberFiber::MemberFiber(const Annotation annotation, Name* name,
-    Expression* params, Type* returnType, Statement* braces, Location* loc) :
-    Statement(loc),
-    Annotated(annotation),
-    Named(name),
-    Parameterised(params),
-    ReturnTyped(returnType),
-    Scoped(LOCAL_SCOPE),
-    Braced(braces) {
-  if (!returnType->isFiber()) {
-    this->returnType = new FiberType(returnType, new EmptyType(loc), loc);
-  }
+    Expression* typeParams, Expression* params, Type* returnType,
+    Statement* braces, Location* loc) :
+    Fiber(annotation, name, typeParams, params, returnType, braces, loc) {
+  //
 }
 
 bi::MemberFiber::~MemberFiber() {
   //
-}
-
-bool bi::MemberFiber::isDeclaration() const {
-  return true;
 }
 
 bi::Statement* bi::MemberFiber::accept(Cloner* visitor) const {

@@ -3,10 +3,11 @@
  */
 #include "bi/visitor/Transformer.hpp"
 
-#include "bi/visitor/Gatherer.hpp"
-#include "bi/visitor/Resumer.hpp"
+#include "bi/visitor/Cloner.hpp"
 
 bi::Statement* bi::Transformer::modify(Assume* o) {
+  Cloner cloner;
+
   Statement* result = nullptr;
   if (*o->name == "<-?") {
     auto tmp = new LocalVariable(o->right, o->loc);
@@ -60,32 +61,6 @@ bi::Statement* bi::Transformer::modify(Class* o) {
     o->base = new NamedType(false, new Name("Object"), new EmptyType(), o->loc);
   }
   return Modifier::modify(o);
-}
-
-bi::Statement* bi::Transformer::modify(Fiber* o) {
-  Modifier::modify(o);
-
-  /* resume functions */
-  Gatherer<Yield> yields;
-  o->accept(&yields);
-  for (auto yield : yields) {
-    Resumer resumer(yield);
-    yield->resume = o->accept(&resumer);
-  }
-  return o;
-}
-
-bi::Statement* bi::Transformer::modify(MemberFiber* o) {
-  Modifier::modify(o);
-
-  /* resume functions */
-  Gatherer<Yield> yields;
-  o->accept(&yields);
-  for (auto yield : yields) {
-    Resumer resumer(yield);
-    yield->resume = o->accept(&resumer);
-  }
-  return o;
 }
 
 bi::Statement* bi::Transformer::modify(ExpressionStatement* o) {

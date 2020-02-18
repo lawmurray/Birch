@@ -4,6 +4,7 @@
 #include "bi/visitor/Resolver.hpp"
 
 #include "bi/exception/all.hpp"
+#include "bi/visitor/all.hpp"
 
 bi::Resolver::Resolver() {
   //
@@ -11,6 +12,16 @@ bi::Resolver::Resolver() {
 
 bi::Resolver::~Resolver() {
   //
+}
+
+bi::Expression* bi::Resolver::modify(Parameter* o) {
+  scopes.back()->add(o);
+  return ScopedModifier::modify(o);
+}
+
+bi::Statement* bi::Resolver::modify(LocalVariable* o) {
+  scopes.back()->add(o);
+  return ScopedModifier::modify(o);
 }
 
 bi::Expression* bi::Resolver::modify(NamedExpression* o) {
@@ -29,7 +40,7 @@ bi::Expression* bi::Resolver::modify(NamedExpression* o) {
       (*iter)->lookup(o);
     }
     if (!o->category) {
-      if (inClass) {
+      if (currentClass) {
         /* While a local or global should be resolved, a member may not be
          * if it belongs to a base class. This is particularly the case when
          * the "curiously recurring template pattern" (CRTP) is used, where
@@ -65,8 +76,29 @@ bi::Statement* bi::Resolver::modify(Class* o) {
 }
 
 bi::Statement* bi::Resolver::modify(Yield* o) {
-  if (o->resume) {
-    o->resume = o->resume->accept(this);
+  /* determine the parameters for the resume function, these being the
+   * original parameters plus any local variables in scope at the yield, all
+   * of which must be restored when resuming execution */
+  Expression* params = nullptr;
+  for (auto iter = scopes.rbegin(); iter != scopes.rend(); ++iter) {
+    auto scope = *iter;
+    params = addParameters((*iter)->parameters, params);
+    params = addParameters((*iter)->localVariables, params);
   }
-  return ScopedModifier::modify(o);
+  if (!params) {
+    params = new EmptyExpression(o->loc);
+  }
+
+  /* construct the resume function */
+  Resumer resumer(o);
+  auto braces = currentFiber->braces->accept(&resumer);
+  auto typeParams = currentFiber->typeParams->accept(&cloner);
+  auto returnType = currentFiber->returnType->accept(&cloner);
+  auto resume = new Function(NONE, currentFiber->name, typeParams, params,
+      returnType, braces, o->loc);
+
+  o->resume = o->resume->accept(this);
+  o->single = o->single->accept(this);
+
+  return o;
 }

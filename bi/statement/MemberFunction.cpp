@@ -6,25 +6,14 @@
 #include "bi/visitor/all.hpp"
 
 bi::MemberFunction::MemberFunction(const Annotation annotation, Name* name,
-    Expression* params, Type* returnType,
+    Expression* typeParams, Expression* params, Type* returnType,
     Statement* braces, Location* loc) :
-    Statement(loc),
-    Annotated(annotation),
-    Named(name),
-    Parameterised(params),
-    ReturnTyped(returnType),
-    Typed(new EmptyType(loc)),
-    Scoped(LOCAL_SCOPE),
-    Braced(braces) {
+    Function(annotation, name, typeParams, params, returnType, braces, loc) {
   //
 }
 
 bi::MemberFunction::~MemberFunction() {
   //
-}
-
-bool bi::MemberFunction::isDeclaration() const {
-  return true;
 }
 
 bi::Statement* bi::MemberFunction::accept(Cloner* visitor) const {

@@ -69,13 +69,13 @@ protected:
   int inGlobal;
 
   /**
-   * Are we in the body of a class?
+   * If in a class, a pointer to that class, otherwise `nullptr`.
    */
-  int inClass;
+  Class* currentClass;
 
   /**
-   * Are we in the body of a loop?
+   * If in a fiber, a pointer to that fiber, otherwise `nullptr`.
    */
-  int inLoop;
+  Fiber* currentFiber;
 };
 }

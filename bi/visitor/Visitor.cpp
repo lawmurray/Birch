@@ -199,12 +199,14 @@ void bi::Visitor::visit(const Program* o) {
 }
 
 void bi::Visitor::visit(const MemberFunction* o) {
+  o->typeParams->accept(this);
   o->params->accept(this);
   o->returnType->accept(this);
   o->braces->accept(this);
 }
 
 void bi::Visitor::visit(const MemberFiber* o) {
+  o->typeParams->accept(this);
   o->params->accept(this);
   o->returnType->accept(this);
   o->braces->accept(this);

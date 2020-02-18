@@ -7,7 +7,7 @@
 
 namespace bi {
 /**
- * Populate scopes.
+ * Populate global and member scopes.
  *
  * @ingroup visitor
  */
@@ -25,8 +25,6 @@ public:
 
   using ScopedModifier::modify;
 
-  virtual Expression* modify(Parameter* o);
-  virtual Statement* modify(LocalVariable* o);
   virtual Statement* modify(MemberVariable* o);
   virtual Statement* modify(GlobalVariable* o);
   virtual Statement* modify(MemberFunction* o);
@@ -38,7 +36,6 @@ public:
   virtual Statement* modify(Program* o);
   virtual Statement* modify(Basic* o);
   virtual Statement* modify(Class* o);
-  virtual Statement* modify(Yield* o);
   virtual Expression* modify(Generic* o);
 };
 }
