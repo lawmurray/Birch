@@ -20,8 +20,16 @@ class ScopedModifier: public Modifier {
 public:
   /**
    * Constructor.
+   *
+   * @param currentPackage If the visitor will not begin by visiting the
+   * package, provide it for scoping purposes.
+   * @param currentClass If the visitor will begin by visiting the members of
+   * a class, but not the class itself, provide it for scoping purposes.
+   * @param currentFiber If the visitor will begin by visiting the body of a
+   * fiber or member fiber, provide it for scoping purposes.
    */
-  ScopedModifier();
+  ScopedModifier(Package* currentPackage = nullptr,
+      Class* currentClass = nullptr, Fiber* currentFiber = nullptr);
 
   /**
    * Destructor.
@@ -57,16 +65,9 @@ protected:
   std::list<Scope*> scopes;
 
   /**
-   * Are we on the right hand side of a member dereference (i.e. `b` in
-   * `a.b`)?
+   * If in a package, a pointer to that package, otherwise `nullptr`.
    */
-  int inMember;
-
-  /**
-   * Are we on the right hand side of a global dereference (i.e. `b` in
-   * `global.b`)?
-   */
-  int inGlobal;
+  Package* currentPackage;
 
   /**
    * If in a class, a pointer to that class, otherwise `nullptr`.
@@ -77,5 +78,17 @@ protected:
    * If in a fiber, a pointer to that fiber, otherwise `nullptr`.
    */
   Fiber* currentFiber;
+
+  /**
+   * Are we on the right hand side of a member dereference (i.e. `b` in
+   * `a.b`)?
+   */
+  int inMember;
+
+  /**
+   * Are we on the right hand side of a global dereference (i.e. `b` in
+   * `global.b`)?
+   */
+  int inGlobal;
 };
 }

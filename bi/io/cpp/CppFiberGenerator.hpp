@@ -33,6 +33,16 @@ protected:
   std::string getName(const std::string& name, const int number);
 
   /**
+   * Generate code for packing fiber state into a tuple to save.
+   */
+  void genPack(const Expression* params);
+
+  /**
+   * Generate code for unpacking the fiber state from a tuple to resume.
+   */
+  void genUnpack(const Expression* params);
+
+  /**
    * Name mappings. Local variables become member variables of the fiber
    * state object, where they cannot be distinguished by scope, and must
    * therefore have unique names. This map assigns unique names by simply
@@ -51,11 +61,6 @@ protected:
   /**
    * The fiber.
    */
-  const Fiber* fiber;
-
-  /**
-   * The current yield for which a resume function is being generated.
-   */
-  const Yield* yield;
+  const Fiber* currentFiber;
 };
 }

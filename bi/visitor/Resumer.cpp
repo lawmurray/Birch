@@ -5,7 +5,7 @@
 
 bi::Resumer::Resumer(const Yield* yield) :
     yield(yield),
-    foundYield(false) {
+    foundYield(yield == nullptr) {
   //
 }
 
@@ -33,10 +33,12 @@ bi::Statement* bi::Resumer::clone(const Yield* o) {
   if (o == yield && !foundYield) {  // may encounter second time if in loop
     foundYield = true;
     return new EmptyStatement(o->loc);
-  } else {
+  } else if (foundYield) {
     auto r = new Yield(o->single->accept(this), o->loc);
     r->number = o->number;
     return r;
+  } else {
+    return new EmptyStatement(o->loc);
   }
 }
 
@@ -91,7 +93,7 @@ bi::Statement* bi::Resumer::clone(const While* o) {
     return new While(cond, braces, o->loc);
   } else if (foundAfter) {
     /* `braces` has unrolled and reduced the first iteration of the loop
-     * only, will need to clone in the entire loop in after it */
+     * only, will need to clone in the entire loop after it */
     auto loop = new While(cond, o->braces->accept(this), o->loc);
     return new StatementList(braces, loop, o->loc);
   } else {

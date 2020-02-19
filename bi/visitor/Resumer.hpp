@@ -14,15 +14,21 @@ namespace bi {
  * To create the resume function, rules are applied to determine potentially
  * reachable blocks of code from the yield point:
  *
- * @li Any statement is reachable if it is in the same scope as the yield
- * statement and follows it.
- * @li A loop statement that contains one or more reachable statements, at
- * any depth, are also reachable.
+ * @li Any statement is reachable if it follows that yield statement in
+ * execution order.
+ * @li If the yield statement is contained in a loop, all statements in the
+ * loop are reachable, as it may iterate again. In this case all statements
+ * following the yield in the body of the loop (i.e. reachable in the current
+ * iteration) are unrolled from the loop, and the whole loop follows them
+ * again.
  */
 class Resumer : public Cloner {
 public:
   /**
    * Constructor.
+   *
+   * @param yield The yield for which to construct a resume function. If
+   * null, constructs the start function.
    */
   Resumer(const Yield* yield = nullptr);
 

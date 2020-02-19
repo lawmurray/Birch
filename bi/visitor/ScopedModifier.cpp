@@ -3,12 +3,22 @@
  */
 #include "bi/visitor/ScopedModifier.hpp"
 
-bi::ScopedModifier::ScopedModifier() :
+bi::ScopedModifier::ScopedModifier(Package* currentPackage,
+    Class* currentClass, Fiber* currentFiber) :
+    currentPackage(currentPackage),
+    currentClass(currentClass),
+    currentFiber(currentFiber),
     inMember(0),
-    inGlobal(0),
-    currentClass(nullptr),
-    currentFiber(nullptr) {
-  //
+    inGlobal(0) {
+  if (currentPackage) {
+    scopes.push_back(currentPackage->scope);
+    if (currentClass) {
+      scopes.push_back(currentClass->scope);
+    }
+    if (currentFiber) {
+      scopes.push_back(currentFiber->scope);
+    }
+  }
 }
 
 bi::ScopedModifier::~ScopedModifier() {
@@ -17,7 +27,9 @@ bi::ScopedModifier::~ScopedModifier() {
 
 bi::Package* bi::ScopedModifier::modify(Package* o) {
   scopes.push_back(o->scope);
+  currentPackage = o;
   Modifier::modify(o);
+  currentPackage = nullptr;
   scopes.pop_back();
   return o;
 }
