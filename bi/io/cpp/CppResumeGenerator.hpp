@@ -32,6 +32,13 @@ protected:
   std::string getName(const std::string& name, const int number);
 
   /**
+   * Generate a unique name for a resume function.
+   *
+   * @param o A (resume) Function or Yield.
+   */
+  void genUniqueName(const Numbered* o);
+
+  /**
    * Generate code for packing fiber state into a tuple to save.
    */
   void genPack(const Expression* params);

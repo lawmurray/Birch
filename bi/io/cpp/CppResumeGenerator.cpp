@@ -14,82 +14,117 @@ bi::CppResumeGenerator::CppResumeGenerator(const Fiber* currentFiber,
 }
 
 void bi::CppResumeGenerator::visit(const Function* o) {
-  if (!o->braces->isEmpty()) {
-    if (header) {
-      /* struct with state and resume member function */
-      genSourceLine(o->loc);
-      start("template<");
-      for (auto typeParam : *o->typeParams) {
-        middle("class " << typeParam << ',');
-      }
-      finish("class State_>");
-      genSourceLine(o->loc);
-      line("struct " << o->name << '_' << o->number << "_ {");
-      in();
-      genSourceLine(o->loc);
-      line("State_ state_;");
-      genSourceLine(o->loc);
-      line(o->returnType << " operator()();");
-      out();
-      line("};\n");
+  auto fiberType = dynamic_cast<const FiberType*>(o->returnType);
+  assert(fiberType);
+  auto generic = o->typeParams->width() + o->params->width() > 0;
 
-      /* factory function */
+  genSourceLine(o->loc);
+  if (generic) {
+    start("template<");
+  }
+  for (auto typeParam : *o->typeParams) {
+    middle("class " << typeParam << ',');
+  }
+  if (!o->params->isEmpty()) {
+    middle("class... Args");
+  }
+  if (generic) {
+    finish('>');
+  }
+
+  if (header) {
+    genSourceLine(o->loc);
+    start("struct ");
+    genUniqueName(o);
+    middle(" final : public libbirch::FiberState<" << fiberType->yieldType << ',');
+    finish(fiberType->returnType << "> {");
+    in();
+
+    if (!o->params->isEmpty()) {
       genSourceLine(o->loc);
-      start("template<");
-      for (auto typeParam : *o->typeParams) {
-        middle("class " << typeParam << ',');
-      }
-      finish("class Yield_, class State_>");
+      line("libbirch::Tuple<Args...> state_;\n");
+
       genSourceLine(o->loc);
-      start(o->returnType << " make_fiber_" << o->name << '_' << o->number << '_');
-      finish("(Yield_&& yield_, State_&& state_) {");
+      start("");
+      genUniqueName(o);
+      finish("(Args... args) : state_(args...) {");
       in();
-      line("return " << o->returnType << "(yield_, " << o->name << '_' << o->number << "_<State_>{state_});");
-      out();
-      finish("}\n");
-    } else {
-      genSourceLine(o->loc);
-      start("template<");
-      for (auto typeParam : *o->typeParams) {
-        middle("class " << typeParam << ',');
-      }
-      finish("class State_>");
-      genSourceLine(o->loc);
-      start(o->returnType << " bi::" << o->name << '_' << o->number << "_<");
-      if (!o->typeParams->isEmpty()) {
-        middle(o->typeParams << ',');
-      }
-      finish("State_>::operator()() {");
-      in();
-      genTraceFunction(o->name->str(), o->loc);
-      genUnpack(o->params);
-      *this << o->braces->strip();
+      line("//");
       out();
       line("}\n");
     }
+
+    genSourceLine(o->loc);
+    line("virtual " << fiberType << " query();");
+    start("LIBBIRCH_CLASS(");
+    genUniqueName(o);
+    middle(", libbirch::FiberState<" << fiberType->yieldType << ',');
+    finish(fiberType->returnType << ">)");
+    if (!o->params->isEmpty()) {
+      line("LIBBIRCH_MEMBERS(state_)");
+    } else {
+      line("LIBBIRCH_MEMBERS()");
+    }
+    out();
+    line("};\n");
+  } else {
+    genSourceLine(o->loc);
+    start(fiberType << " bi::");
+    genUniqueName(o);
+
+
+    if (generic) {
+      start('<');
+    }
+    for (auto typeParam : *o->typeParams) {
+      middle("class " << typeParam << ',');
+    }
+    if (!o->params->isEmpty()) {
+      middle("Args...");
+    }
+    if (generic) {
+      middle('>');
+    }
+    finish("::query() {");
+    in();
+    genTraceFunction(o->name->str(), o->loc);
+    genUnpack(o->params);
+    *this << o->braces->strip();
+    out();
+    line("}");
   }
 }
 
 void bi::CppResumeGenerator::visit(const Yield* o) {
-  genTraceLine(o->loc);
-  start("return make_fiber_" << currentFiber->name << '_' << o->number << "_(");
-  middle(o->single << ", ");
-
-  /* pack variables to be saved into state */
   auto resume = dynamic_cast<const Function*>(o->resume);
   assert(resume);
-  genPack(resume->params);
-  finish(");");
+
+  genTraceLine(o->loc);
+  start("return " << currentFiber->returnType << '(');
+  middle(o->single);
+  if (!resume->params->isEmpty()) {
+    middle(", new ");
+    genUniqueName(o);
+    if (!currentFiber->typeParams->isEmpty()) {
+      middle('<' << currentFiber->typeParams << '>');
+    }
+    middle('(');
+    genPack(resume->params);
+    finish("));");
+  }
 }
 
 void bi::CppResumeGenerator::visit(const Return* o) {
   genTraceLine(o->loc);
-  start("return libbirch::make_fiber<yield_type,return_type>");
-  finish('(' << o->single << ");");
+  line("return;");
+}
+
+void bi::CppResumeGenerator::genUniqueName(const Numbered* o) {
+  middle(currentFiber->name << '_' << currentFiber->number << '_');
+  middle(o->number << '_');
 }
 
 void bi::CppResumeGenerator::genPack(const Expression* params) {
-  middle("libbirch::make_tuple(");
   for (auto iter = params->begin(); iter != params->end(); ++iter) {
     auto param = dynamic_cast<const Parameter*>(*iter);
     assert(param);
@@ -98,7 +133,6 @@ void bi::CppResumeGenerator::genPack(const Expression* params) {
     }
     middle(getName(param->name->str(), param->number));
   }
-  middle(')');
 }
 
 void bi::CppResumeGenerator::genUnpack(const Expression* params) {

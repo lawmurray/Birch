@@ -4,6 +4,7 @@
 #include "bi/io/cpp/CppFiberGenerator.hpp"
 
 #include "bi/io/cpp/CppResumeGenerator.hpp"
+#include "bi/io/bih_ostream.hpp"
 #include "bi/primitive/encode.hpp"
 
 bi::CppFiberGenerator::CppFiberGenerator(std::ostream& base,
@@ -27,8 +28,11 @@ void bi::CppFiberGenerator::visit(const Fiber* o) {
     finish(" {");
     in();
     genTraceLine(o->loc);
-    start("return make_fiber_" << o->name << "_0_(");
-    middle("libbirch::make_tuple(");
+    start("return " << o->returnType << "(new " << o->name << '_');
+    middle(o->number << "_0_(");
+    if (!o->typeParams->isEmpty()) {
+      middle('<' << o->typeParams << '>');
+    }
     for (auto iter = o->params->begin(); iter != o->params->end(); ++iter) {
       if (iter != o->params->begin()) {
         middle(", ");

@@ -89,17 +89,30 @@ void bi::CppClassGenerator::visit(const Class* o) {
 
     /* boilerplate */
     if (header) {
-      if (o->has(ABSTRACT)) {
-        start("LIBBIRCH_ABSTRACT_CLASS");
+    	if (o->has(ABSTRACT)) {
+    	  start("LIBBIRCH_ABSTRACT_CLASS");
+    	} else {
+    	  start("LIBBIRCH_CLASS");
+    	}
+      middle('(' << o->name << ", ");
+      if (base) {
+        middle(base->name);
+        if (!base->typeArgs->isEmpty()) {
+          middle('<' << base->typeArgs << '>');
+        }
       } else {
-        start("LIBBIRCH_CLASS");
-      }
-      middle("(this_type_, super_type_");
-      for (auto o : memberVariables) {
-        middle(", " << o->name);
+        middle("libbirch::Any");
       }
       finish(')');
-      line("LIBBIRCH_CLASS_NAME(\"" << o->name << "\")\n");
+      start("LIBBIRCH_MEMBERS(");
+      for (auto iter = memberVariables.begin(); iter != memberVariables.end();
+          ++iter) {
+        if (iter != memberVariables.begin()) {
+          middle(", ");
+        }
+        middle((*iter)->name);
+      }
+      finish(")\n");
     }
 
     /* constructor */
