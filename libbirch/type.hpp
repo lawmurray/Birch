@@ -99,6 +99,11 @@ struct is_value<T&&> {
   static const bool value = is_value<T>::value;
 };
 
+template<>
+struct is_value<void> {
+  static const bool value = false;
+};
+
 /**
  * Is `T` a pointer type?
  */

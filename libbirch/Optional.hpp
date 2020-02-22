@@ -341,6 +341,40 @@ private:
   T value;
 };
 
+/**
+ * Optional for void type. Such an optional never has a value. This is used
+ * for fiber states with no yield and/or return type.
+ *
+ * @ingroup libbirch
+ *
+ * @tparam T Value type.
+ */
+template<>
+class Optional<void> {
+public:
+  /**
+   * Constructor.
+   */
+  Optional(const Nil& = nil) {
+    //
+  }
+
+  /**
+   * Is there a value?
+   */
+  bool query() const {
+    return false;
+  }
+
+  /**
+   * Get the value.
+   */
+  void get() const {
+    libbirch_assert_msg_(false, "optional has no value");
+  }
+};
+
+
 template<class T>
 struct is_value<Optional<T>> {
   static const bool value = is_value<T>::value;

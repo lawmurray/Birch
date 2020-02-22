@@ -3,10 +3,7 @@
  */
 #pragma once
 
-#include "libbirch/FiberYield.hpp"
-#include "libbirch/FiberReturn.hpp"
 #include "libbirch/FiberState.hpp"
-#include "libbirch/FiberStateImpl.hpp"
 
 namespace libbirch {
 /**
@@ -18,7 +15,7 @@ namespace libbirch {
  * @tparam Return Return type.
  */
 template<class Yield, class Return>
-class Fiber : public FiberYield<Yield>, public FiberReturn<Return> {
+class Fiber {
 public:
   using yield_type = Yield;
   using return_type = Return;
@@ -42,9 +39,10 @@ public:
   /**
    * Constructor.
    */
-  template<class T, std::enable_if_t<std::is_same<T,yield_type>::value && !std::is_void<yield_type>::value,int> = 0>
+  template<class T, std::enable_if_t<std::is_same<T,yield_type>::value &&
+      !std::is_void<yield_type>::value,int> = 0>
   Fiber(const T& yieldValue, const state_type& state) :
-      FiberYield<Yield>(yieldValue),
+      yieldValue(yieldValue),
       state(state) {
     //
   }
@@ -52,9 +50,10 @@ public:
   /**
    * Constructor.
    */
-  template<class T, std::enable_if_t<std::is_same<T,return_type>::value && !std::is_void<return_type>::value,int> = 0>
+  template<class T, std::enable_if_t<std::is_same<T,return_type>::value &&
+      !std::is_void<return_type>::value,int> = 0>
   Fiber(const T& returnValue) :
-      FiberReturn<Return>(returnValue) {
+      returnValue(returnValue) {
     //
   }
 
@@ -74,10 +73,27 @@ public:
     if (state.query()) {
       *this = state.get()->query();
     }
-    return state.query();
+    return yieldValue.query();
+  }
+
+  /**
+   * Get the current yield value.
+   */
+  auto get() {
+    return yieldValue.get();
   }
 
 private:
+  /**
+   * Yield value.
+   */
+  Optional<yield_type> yieldValue;
+
+  /**
+   * Return value.
+   */
+  Optional<return_type> returnValue;
+
   /**
    * Fiber state.
    */

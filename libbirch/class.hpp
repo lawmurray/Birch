@@ -6,42 +6,71 @@
 /**
  * @def LIBBIRCH_CLASS
  *
- * Boilerplate macro to declare member functions necessary for lazy deep
- * copy support. The first argument gives the class, the second its base
- * class, the remaining the member variables of the class. It is recommended
- * that all member variables are included, although it is actually  possible
- * to omit those with a type that does not include a class eligible for lazy
- * deep copy.
+ * Boilerplate macro for classes to support lazy deep copy. The first
+ * argument is the name of the class; this should exclude any generic type
+ * arguments. The second argument is the base class; this should include any
+ * generic type arguments. The macro should be placed in the public section
+ * of the class.
+ *
+ * LIBBIRCH_CLASS must be immediately followed by LIBBIRCH_MEMBERS, otherwise
+ * the replacement code will have invalid syntax. For example:
+ *
+ *     class A : public B {
+ *     public:
+ *       LIBBIRCH_CLASS(A, B)
+ *       LIBBIRCH_MEMBERS(x, y, z)
+ *     private:
+ *       int x, y, z;
+ *     };
+ *
+ * The use of a variadic macro here supports base classes that contain
+ * commas without special treatment, e.g.
+ *
+ *     LIBBIRCH_CLASS(A, B<T,U>)
  */
-#define LIBBIRCH_CLASS(Class, Base, ...) \
-  virtual Class* clone_() const { \
-    return new Class(*this); \
+#define LIBBIRCH_CLASS(Name, ...) \
+  Name* clone_() const { \
+    return new Name(*this); \
   } \
   \
-  template<class V_> \
-  void accept_(V_& v_) { \
-    Base::accept_(v_); \
-    v_.visit(__VA_ARGS__); \
-  }
+  LIBBIRCH_ABSTRACT_CLASS(Name, __VA_ARGS__)
 
 /**
  * @def LIBBIRCH_ABSTRACT_CLASS
  *
- * As LIBBIRCH_CLASS, but for an abstract class.
+ * Use in place of LIBBIRCH_CLASS when the containing class is abstract.
  */
-#define LIBBIRCH_ABSTRACT_CLASS(Class, Base, ...) \
+#define LIBBIRCH_ABSTRACT_CLASS(Name, ...) \
+  virtual const char* getClassName() const { \
+    return #Name; \
+  } \
+  \
   template<class V_> \
   void accept_(V_& v_) { \
-    Base::accept_(v_); \
-    v_.visit(__VA_ARGS__); \
-  }
+    __VA_ARGS__ ::accept_(v_);
 
 /**
- * @def LIBBIRCH_CLASS_NAME
+ * @def LIBBIRCH_MEMBERS
+ *
+ * Boilerplate macro for classes to support lazy deep copy. The arguments
+ * list all member variables of the class (and should not include member
+ * variables of base classes---these should have their own LIBBIRCH_MEMBERS
+ * macro use.
+ *
+ * LIBBIRCH_MEMBERS must be immediately preceded by LIBBIRCH_CLASS or
+ * LIBBIRCH_ABSTRACT_CLASS, otherwise the replacement code will have invalid
+ * syntax. For example:
+ *
+ *     class A : public B {
+ *     public:
+ *       LIBBIRCH_CLASS(A, B)
+ *       LIBBIRCH_MEMBERS(x, y, z)
+ *     private:
+ *       int x, y, z;
+ *     };
  */
-#define LIBBIRCH_CLASS_NAME(ClassName) \
-  virtual const char* getClassName() const {\
-    return ClassName; \
+#define LIBBIRCH_MEMBERS(...) \
+    v_.visit(__VA_ARGS__); \
   }
 
 /**
