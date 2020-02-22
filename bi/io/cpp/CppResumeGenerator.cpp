@@ -101,22 +101,32 @@ void bi::CppResumeGenerator::visit(const Yield* o) {
 
   genTraceLine(o->loc);
   start("return " << currentFiber->returnType << '(');
-  middle(o->single);
+  if (!o->single->isEmpty()) {
+    middle(o->single);
+    if (!resume->params->isEmpty()) {
+      middle(", ");
+    }
+  }
   if (!resume->params->isEmpty()) {
-    middle(", new ");
+    middle("new ");
     genUniqueName(o);
     if (!currentFiber->typeParams->isEmpty()) {
       middle('<' << currentFiber->typeParams << '>');
     }
     middle('(');
     genPack(resume->params);
-    finish("));");
+    middle(')');
   }
+  finish(");");
 }
 
 void bi::CppResumeGenerator::visit(const Return* o) {
   genTraceLine(o->loc);
-  line("return;");
+  start("return " << currentFiber->returnType << '(');
+  if (!o->single->isEmpty()) {
+    middle(o->single);
+  }
+  finish(");");
 }
 
 void bi::CppResumeGenerator::genUniqueName(const Numbered* o) {

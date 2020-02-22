@@ -10,7 +10,8 @@
 
 namespace bi {
 /**
- * Apply code transformations.
+ * Apply code transformations. These are typically for syntactic sugar or
+ * later convenience, and are applied before any attempt to resolve symbols.
  *
  * @ingroup visitor
  */
@@ -19,5 +20,7 @@ public:
   virtual Statement* modify(Assume* o);
   virtual Statement* modify(Class* o);
   virtual Statement* modify(ExpressionStatement* o);
+  virtual Statement* modify(Fiber* o);
+  virtual Statement* modify(MemberFiber* o);
 };
 }

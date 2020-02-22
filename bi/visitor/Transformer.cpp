@@ -85,3 +85,45 @@ bi::Statement* bi::Transformer::modify(ExpressionStatement* o) {
     return Modifier::modify(o);
 //  }
 }
+
+bi::Statement* bi::Transformer::modify(Fiber* o) {
+  /* for fibers that have a void return type, check if the last statement of
+   * the fiber is a return; if not, add one */
+  auto fiberType = dynamic_cast<const FiberType*>(o->returnType);
+  assert(fiberType);
+  if (fiberType->returnType->isEmpty()) {
+    /* iterate to the last statement */
+    auto iter = o->braces->begin();
+    for (auto i = 0; i < o->braces->count() - 1; ++i) {
+      ++iter;
+    }
+
+    /* if that statement is not a return, add one */
+    if (!dynamic_cast<const Return*>(*iter)) {
+      o->braces = new StatementList(o->braces, new Return(
+          new EmptyExpression(o->loc), o->loc), o->loc);
+    }
+  }
+  return Modifier::modify(o);
+}
+
+bi::Statement* bi::Transformer::modify(MemberFiber* o) {
+  /* for fibers that have a void return type, check if the last statement of
+   * the fiber is a return; if not, add one */
+  auto fiberType = dynamic_cast<const FiberType*>(o->returnType);
+  assert(fiberType);
+  if (fiberType->returnType->isEmpty()) {
+    /* iterate to the last statement */
+    auto iter = o->braces->begin();
+    for (auto i = 0; i < o->braces->count() - 1; ++i) {
+      ++iter;
+    }
+
+    /* if that statement is not a return, add one */
+    if (!dynamic_cast<const Return*>(*iter)) {
+      o->braces = new StatementList(o->braces, new Return(
+          new EmptyExpression(o->loc), o->loc), o->loc);
+    }
+  }
+  return Modifier::modify(o);
+}
