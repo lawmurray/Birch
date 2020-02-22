@@ -21,15 +21,29 @@ public:
   using return_type = Return;
   using state_type = Lazy<SharedPtr<FiberState<Yield,Return>>>;
 
+  Fiber(const Fiber&) = default;
+  Fiber(Fiber&&) = default;
+  Fiber& operator=(const Fiber&) = default;
+  Fiber& operator=(Fiber&&) = default;
+
   /**
-   * Constructor.
+   * Constructor. Used:
+   *
+   * @li for an uninitialized fiber handle, and
+   * @li for returns in fibers with a return type of `void`, where no state
+   * or resume function is required, and no value is returned.
    */
   Fiber() {
     //
   }
 
   /**
-   * Constructor.
+   * Constructor. Used:
+   *
+   * @li in the initialization function of all fibers, where a state and
+   * start function are required, but no value is yielded, and
+   * @li for yields in fibers with a yield type of `void`, where a state and
+   * resume function are required, but no value is yielded.
    */
   Fiber(const state_type& state) :
       state(state) {
@@ -37,7 +51,9 @@ public:
   }
 
   /**
-   * Constructor.
+   * Constructor. Used for yields in fibers with a yield type that is not
+   * `void`, where a state and resume function are required, along with a
+   * yield value.
    */
   template<class T, std::enable_if_t<std::is_same<T,yield_type>::value &&
       !std::is_void<yield_type>::value,int> = 0>
@@ -48,7 +64,9 @@ public:
   }
 
   /**
-   * Constructor.
+   * Constructor. Used for returns in fibers with a return type that is not
+   * `void`, where a state and resume function are not required, and a value
+   * is returned.
    */
   template<class T, std::enable_if_t<std::is_same<T,return_type>::value &&
       !std::is_void<return_type>::value,int> = 0>
