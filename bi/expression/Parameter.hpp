@@ -14,7 +14,7 @@ namespace bi {
 /**
  * Parameter to a function, member function, operator, program, or class.
  *
- * @ingroup statement
+ * @ingroup expression
  */
 class Parameter: public Expression,
     public Annotated,

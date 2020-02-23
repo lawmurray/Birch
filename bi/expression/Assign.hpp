@@ -12,7 +12,7 @@ namespace bi {
 /**
  * Expression using `<-`, `<~` or `~>` operator.
  *
- * @ingroup statement
+ * @ingroup expression
  */
 class Assign: public Expression,
     public Named,

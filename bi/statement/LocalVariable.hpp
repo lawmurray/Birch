@@ -16,7 +16,7 @@ namespace bi {
 /**
  * Local variable.
  *
- * @ingroup expression
+ * @ingroup statement
  */
 class LocalVariable: public Statement,
     public Annotated,
