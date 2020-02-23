@@ -671,7 +671,7 @@ void bi::CppBaseGenerator::visit(const Return* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Yield* o) {
-  assert(false);  // should be in CppFiberGenerator or CppMemberFiberGenerator
+  assert(false);  // should be in CppResumeGenerator
 }
 
 void bi::CppBaseGenerator::visit(const Raw* o) {
