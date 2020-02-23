@@ -3,19 +3,20 @@
  */
 #include "bi/io/cpp/CppClassGenerator.hpp"
 
+#include "bi/io/cpp/CppResumeGenerator.hpp"
 #include "bi/visitor/Gatherer.hpp"
 #include "bi/primitive/encode.hpp"
 
 bi::CppClassGenerator::CppClassGenerator(std::ostream& base, const int level,
     const bool header) :
     CppBaseGenerator(base, level, header),
-    theClass(nullptr) {
+    currentClass(nullptr) {
   //
 }
 
 void bi::CppClassGenerator::visit(const Class* o) {
   if (!o->isAlias() && !o->braces->isEmpty()) {
-    theClass = o;
+    currentClass = o;
     auto base = dynamic_cast<const NamedType*>(o->base);
 
     Gatherer<MemberFunction> memberFunctions;
@@ -204,17 +205,17 @@ void bi::CppClassGenerator::visit(const MemberFunction* o) {
       genSourceLine(o->loc);
       start("virtual ");
     } else {
-      genTemplateParams(theClass);
+      genTemplateParams(currentClass);
       genSourceLine(o->loc);
       start("");
     }
     middle(o->returnType << ' ');
     if (!header) {
-      middle("bi::type::" << theClass->name);
-      genTemplateArgs(theClass);
+      middle("bi::type::" << currentClass->name);
+      genTemplateArgs(currentClass);
       middle("::");
     }
-    middle(internalise(o->name->str()) << '(' << o->params << ')');
+    middle(o->name << '(' << o->params << ')');
     if (header) {
       if (o->has(FINAL)) {
         middle(" final");
@@ -237,21 +238,22 @@ void bi::CppClassGenerator::visit(const MemberFunction* o) {
 
 void bi::CppClassGenerator::visit(const MemberFiber* o) {
   if ((header && o->has(ABSTRACT)) || !o->braces->isEmpty()) {
+    /* initialization function */
     if (header) {
       genSourceLine(o->loc);
       start("virtual ");
     } else {
-      genTemplateParams(theClass);
+      genTemplateParams(currentClass);
       genSourceLine(o->loc);
       start("");
     }
     middle(o->returnType << ' ');
     if (!header) {
-      middle("bi::type::" << theClass->name);
-      genTemplateArgs(theClass);
+      middle("bi::type::" << currentClass->name);
+      genTemplateArgs(currentClass);
       middle("::");
     }
-    middle(internalise(o->name->str()) << '(' << o->params << ')');
+    middle(o->name << '(' << o->params << ')');
     if (header) {
       if (o->has(FINAL)) {
         middle(" final");
@@ -262,11 +264,37 @@ void bi::CppClassGenerator::visit(const MemberFiber* o) {
     } else {
       finish(" {");
       in();
+      genTraceFunction(o->name->str(), o->loc);
       line("LIBBIRCH_SELF");
-      //CppResumeGenerator aux(nullptr, base, level, header);
-      //aux << o->yield;
+      genTraceLine(o->loc);
+      start("return " << o->returnType << "(new " << o->name << '_');
+      middle(o->number << "_0_");
+      if (!o->typeParams->isEmpty()) {
+        middle('<' << o->typeParams << '>');
+      }
+      middle("(self");
+      for (auto iter = o->params->begin(); iter != o->params->end(); ++iter) {
+        auto param = dynamic_cast<const Parameter*>(*iter);
+        assert(param);
+        middle(", " << param->name);
+      }
+      finish("));");
       out();
-      finish("}\n");
+      line("}\n");
+    }
+
+    /* start function */
+    CppResumeGenerator auxResume(currentClass, o, base, level, header);
+    auxResume << o->start;
+
+    /* resume functions */
+    Gatherer<Yield> yields;
+    o->accept(&yields);
+    for (auto yield : yields) {
+      if (yield->resume) {
+        CppResumeGenerator auxResume(currentClass, o, base, level, header);
+        auxResume << yield->resume;
+      }
     }
   }
 }
@@ -277,16 +305,16 @@ void bi::CppClassGenerator::visit(const AssignmentOperator* o) {
       genSourceLine(o->loc);
       start("virtual ");
     } else {
-      genTemplateParams(theClass);
+      genTemplateParams(currentClass);
       genSourceLine(o->loc);
       start("bi::type::");
     }
-    middle(theClass->name);
-    genTemplateArgs(theClass);
+    middle(currentClass->name);
+    genTemplateArgs(currentClass);
     middle("& ");
     if (!header) {
-      middle("bi::type::" << theClass->name);
-      genTemplateArgs(theClass);
+      middle("bi::type::" << currentClass->name);
+      genTemplateArgs(currentClass);
       middle("::");
     }
     middle("operator=(" << o->single << ')');
@@ -313,10 +341,10 @@ void bi::CppClassGenerator::visit(const ConversionOperator* o) {
       genSourceLine(o->loc);
       start("virtual ");
     } else {
-      genTemplateParams(theClass);
+      genTemplateParams(currentClass);
       genSourceLine(o->loc);
-      start("bi::type::" << theClass->name);
-      genTemplateArgs(theClass);
+      start("bi::type::" << currentClass->name);
+      genTemplateArgs(currentClass);
       middle("::");
     }
     middle("operator " << o->returnType << "()");

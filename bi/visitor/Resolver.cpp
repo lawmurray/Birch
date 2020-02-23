@@ -141,8 +141,14 @@ bi::Statement* bi::Resolver::modify(Yield* o) {
     auto typeParams = currentFiber->typeParams->accept(&cloner);
     auto returnType = currentFiber->returnType->accept(&cloner);
     auto braces = currentFiber->braces->accept(&resumer);
-    auto resume = new Function(NONE, currentFiber->name, typeParams, params,
-        returnType, braces, o->loc);
+    Function* resume;
+    if (currentClass) {
+      resume = new MemberFunction(NONE, currentFiber->name, typeParams,
+           params, returnType, braces, o->loc);
+    } else {
+      resume = new Function(NONE, currentFiber->name, typeParams, params,
+         returnType, braces, o->loc);
+    }
     resume->number = o->number;
     o->resume = resume;
   } else {
@@ -151,8 +157,14 @@ bi::Statement* bi::Resolver::modify(Yield* o) {
     auto typeParams = new EmptyExpression(o->loc);
     auto returnType = new EmptyType(o->loc);
     auto braces = new EmptyStatement(o->loc);
-    auto resume = new Function(NONE, new Name(), typeParams, params,
-        returnType, braces, o->loc);
+    Function* resume;
+    if (currentClass) {
+      resume = new MemberFunction(NONE, new Name(), typeParams, params,
+          returnType, braces, o->loc);
+    } else {
+      resume = new Function(NONE, new Name(), typeParams, params, returnType,
+          braces, o->loc);
+    }
     resume->number = o->number;
     o->resume = resume;
   }

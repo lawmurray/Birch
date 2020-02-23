@@ -16,6 +16,10 @@ bi::MemberFunction::~MemberFunction() {
   //
 }
 
+bool bi::MemberFunction::isMember() const {
+  return true;
+}
+
 bi::Statement* bi::MemberFunction::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }

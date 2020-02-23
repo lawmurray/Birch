@@ -27,6 +27,10 @@ bool bi::Function::isDeclaration() const {
   return true;
 }
 
+bool bi::Function::isMember() const {
+  return false;
+}
+
 bi::Statement* bi::Function::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }

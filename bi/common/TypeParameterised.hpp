@@ -32,6 +32,11 @@ public:
   bool isGeneric() const;
 
   /**
+   * Create type arguments corresponding to the type parameters.
+   */
+  Type* createArguments() const;
+
+  /**
    * Generic type parameters.
    */
   Expression* typeParams;

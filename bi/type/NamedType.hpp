@@ -46,6 +46,16 @@ public:
   NamedType(Name* name, Location* loc = nullptr);
 
   /**
+   * Constructor.
+   *
+   * @param target Class to reference.
+   * @param loc Location.
+   *
+   * Name and generic type arguments are determined from the target argument.
+   */
+  NamedType(Class* target, Location* loc = nullptr);
+
+  /**
    * Destructor.
    */
   virtual ~NamedType();

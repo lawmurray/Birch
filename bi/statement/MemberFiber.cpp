@@ -16,6 +16,10 @@ bi::MemberFiber::~MemberFiber() {
   //
 }
 
+bool bi::MemberFiber::isMember() const {
+  return true;
+}
+
 bi::Statement* bi::MemberFiber::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }

@@ -50,6 +50,7 @@ public:
   virtual ~Fiber();
 
   virtual bool isDeclaration() const;
+  virtual bool isMember() const;
 
   virtual Statement* accept(Cloner* visitor) const;
   virtual Statement* accept(Modifier* visitor);

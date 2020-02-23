@@ -14,12 +14,13 @@ namespace bi {
  */
 class CppResumeGenerator: public CppBaseGenerator {
 public:
-  CppResumeGenerator(const Fiber* currentFiber, std::ostream& base,
-      const int level = 0, const bool header = false);
+  CppResumeGenerator(const Class* currentClass, const Fiber* currentFiber,
+      std::ostream& base, const int level = 0, const bool header = false);
 
   using CppBaseGenerator::visit;
 
   virtual void visit(const Function* o);
+  virtual void visit(const MemberFunction* o);
   virtual void visit(const Yield* o);
   virtual void visit(const Return* o);
 
@@ -63,6 +64,11 @@ protected:
    * Counts of all local variable names encountered.
    */
   std::map<std::string,int> counts;
+
+  /**
+   * The class.
+   */
+  const Class* currentClass;
 
   /**
    * The fiber.

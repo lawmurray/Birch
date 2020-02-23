@@ -26,6 +26,12 @@ bi::NamedType::NamedType(Name* name, Location* loc) :
   //
 }
 
+bi::NamedType::NamedType(Class* target, Location* loc) :
+    NamedType(false, target->name, target->createArguments(), loc) {
+  //
+}
+
+
 bi::NamedType::~NamedType() {
   //
 }

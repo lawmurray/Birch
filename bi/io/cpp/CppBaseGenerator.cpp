@@ -4,8 +4,7 @@
 #include "bi/io/cpp/CppBaseGenerator.hpp"
 
 #include "bi/io/cpp/CppClassGenerator.hpp"
-#include "bi/io/cpp/CppFiberGenerator.hpp"
-#include "bi/io/bih_ostream.hpp"
+#include "bi/io/cpp/CppResumeGenerator.hpp"
 #include "bi/primitive/encode.hpp"
 
 #include "boost/algorithm/string.hpp"
@@ -298,8 +297,52 @@ void bi::CppBaseGenerator::visit(const Function* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Fiber* o) {
-  CppFiberGenerator aux(base, level, header);
-  aux << o;
+  /* initialization function */
+  genTemplateParams(o);
+  genSourceLine(o->loc);
+  start(o->returnType << ' ');
+  if (!header) {
+    middle("bi::");
+  }
+  middle(o->name << '(' << o->params << ')');
+  if (header) {
+    finish(';');
+  } else {
+    finish(" {");
+    in();
+    genTraceLine(o->loc);
+    start("return " << o->returnType << "(new " << o->name << '_');
+    middle(o->number << "_0_");
+    if (!o->typeParams->isEmpty()) {
+      middle('<' << o->typeParams << '>');
+    }
+    middle('(');
+    for (auto iter = o->params->begin(); iter != o->params->end(); ++iter) {
+      if (iter != o->params->begin()) {
+        middle(", ");
+      }
+      auto param = dynamic_cast<const Parameter*>(*iter);
+      assert(param);
+      middle(param->name);
+    }
+    finish("));");
+    out();
+    line("}\n");
+  }
+
+  /* start function */
+  CppResumeGenerator auxResume(nullptr, o, base, level, header);
+  auxResume << o->start;
+
+  /* resume functions */
+  Gatherer<Yield> yields;
+  o->accept(&yields);
+  for (auto yield : yields) {
+    if (yield->resume) {
+      CppResumeGenerator auxResume(nullptr, o, base, level, header);
+      auxResume << yield->resume;
+    }
+  }
 }
 
 void bi::CppBaseGenerator::visit(const MemberFunction* o) {
@@ -574,6 +617,9 @@ void bi::CppBaseGenerator::visit(const For* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Parallel* o) {
+  auto index = dynamic_cast<const LocalVariable*>(o->index);
+  assert(index);
+
   genTraceLine(o->loc);
   line("#pragma omp parallel");
   line("{");
@@ -586,8 +632,8 @@ void bi::CppBaseGenerator::visit(const Parallel* o) {
     middle("static");
   }
   finish(')');
-  start("for (auto " << o->index << " = " << o->from << "; ");
-  finish(o->index << " <= " << o->to << "; ++" << o->index << ") {");
+  start("for (auto " << index->name << " = " << o->from << "; ");
+  finish(index->name << " <= " << o->to << "; ++" << index->name << ") {");
   in();
   *this << o->braces->strip();
   out();
