@@ -79,7 +79,7 @@ class YAMLReader < Reader {
         self->parseMapping(buffer);
         substantial = true;
       } else {
-        local->done = self->event.type == YAML_SEQUENCE_END_EVENT;
+        done = self->event.type == YAML_SEQUENCE_END_EVENT;
         yaml_event_delete(&self->event);
       }
       }}
