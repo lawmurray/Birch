@@ -5,9 +5,7 @@
 
 bi::ScopedModifier::ScopedModifier(Package* currentPackage,
     Class* currentClass, Fiber* currentFiber) :
-    currentPackage(currentPackage),
-    currentClass(currentClass),
-    currentFiber(currentFiber),
+    ContextualModifier(currentPackage, currentClass, currentFiber),
     inMember(0),
     inGlobal(0) {
   if (currentPackage) {
@@ -27,16 +25,14 @@ bi::ScopedModifier::~ScopedModifier() {
 
 bi::Package* bi::ScopedModifier::modify(Package* o) {
   scopes.push_back(o->scope);
-  currentPackage = o;
-  Modifier::modify(o);
-  currentPackage = nullptr;
+  ContextualModifier::modify(o);
   scopes.pop_back();
   return o;
 }
 
 bi::Expression* bi::ScopedModifier::modify(LambdaFunction* o) {
   scopes.push_back(o->scope);
-  Modifier::modify(o);
+  ContextualModifier::modify(o);
   scopes.pop_back();
   return o;
 }
@@ -58,72 +54,69 @@ bi::Expression* bi::ScopedModifier::modify(Global* o) {
 
 bi::Statement* bi::ScopedModifier::modify(MemberFunction* o) {
   scopes.push_back(o->scope);
-  Modifier::modify(o);
+  ContextualModifier::modify(o);
   scopes.pop_back();
   return o;
 }
 
 bi::Statement* bi::ScopedModifier::modify(Function* o) {
   scopes.push_back(o->scope);
-  Modifier::modify(o);
+  ContextualModifier::modify(o);
   scopes.pop_back();
   return o;
 }
 
 bi::Statement* bi::ScopedModifier::modify(MemberFiber* o) {
   scopes.push_back(o->scope);
-  currentFiber = o;
-  Modifier::modify(o);
-  currentFiber = nullptr;
+  ContextualModifier::modify(o);
   scopes.pop_back();
   return o;
 }
 
 bi::Statement* bi::ScopedModifier::modify(Fiber* o) {
   scopes.push_back(o->scope);
-  currentFiber = o;
-  Modifier::modify(o);
-  currentFiber = nullptr;
+  ContextualModifier::modify(o);
   scopes.pop_back();
   return o;
 }
 
 bi::Statement* bi::ScopedModifier::modify(BinaryOperator* o) {
   scopes.push_back(o->scope);
-  Modifier::modify(o);
+  ContextualModifier::modify(o);
   scopes.pop_back();
   return o;
 }
 
 bi::Statement* bi::ScopedModifier::modify(UnaryOperator* o) {
   scopes.push_back(o->scope);
-  Modifier::modify(o);
+  ContextualModifier::modify(o);
   scopes.pop_back();
   return o;
 }
 
 bi::Statement* bi::ScopedModifier::modify(Program* o) {
   scopes.push_back(o->scope);
-  Modifier::modify(o);
+  ContextualModifier::modify(o);
   scopes.pop_back();
   return o;
 }
 
 bi::Statement* bi::ScopedModifier::modify(AssignmentOperator* o) {
   scopes.push_back(o->scope);
-  Modifier::modify(o);
+  ContextualModifier::modify(o);
   scopes.pop_back();
   return o;
 }
 
 bi::Statement* bi::ScopedModifier::modify(ConversionOperator* o) {
   scopes.push_back(o->scope);
-  Modifier::modify(o);
+  ContextualModifier::modify(o);
   scopes.pop_back();
   return o;
 }
 
 bi::Statement* bi::ScopedModifier::modify(Class* o) {
+  this->currentClass = o;
   scopes.push_back(o->scope);
   o->typeParams = o->typeParams->accept(this);
   o->base = o->base->accept(this);
@@ -131,10 +124,9 @@ bi::Statement* bi::ScopedModifier::modify(Class* o) {
   o->params = o->params->accept(this);
   o->args = o->args->accept(this);
   scopes.pop_back();
-  currentClass = o;
   o->braces = o->braces->accept(this);
-  currentClass = nullptr;
   scopes.pop_back();
+  this->currentClass = nullptr;
   return o;
 }
 
@@ -151,21 +143,21 @@ bi::Statement* bi::ScopedModifier::modify(If* o) {
 
 bi::Statement* bi::ScopedModifier::modify(For* o) {
   scopes.push_back(o->scope);
-  Modifier::modify(o);
+  ContextualModifier::modify(o);
   scopes.pop_back();
   return o;
 }
 
 bi::Statement* bi::ScopedModifier::modify(Parallel* o) {
   scopes.push_back(o->scope);
-  Modifier::modify(o);
+  ContextualModifier::modify(o);
   scopes.pop_back();
   return o;
 }
 
 bi::Statement* bi::ScopedModifier::modify(While* o) {
   scopes.push_back(o->scope);
-  Modifier::modify(o);
+  ContextualModifier::modify(o);
   scopes.pop_back();
   return o;
 }

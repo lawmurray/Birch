@@ -32,6 +32,17 @@ enum Annotation {
    * `abstract` annotation on a class or member function.
    */
   ABSTRACT = 8,
+
+  /**
+   * Is this a resume function, or local variable to be restored in a resume
+   * function?
+   */
+  RESUME = 16,
+
+  /**
+   * Is this a start function?
+   */
+  START = 32,
 };
 
 /**

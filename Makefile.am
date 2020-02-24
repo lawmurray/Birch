@@ -127,6 +127,7 @@ COMMON_SOURCES = \
   bi/type/TypeList.cpp \
   bi/visitor/Baser.cpp \
   bi/visitor/Cloner.cpp \
+  bi/visitor/ContextualModifier.cpp \
   bi/visitor/Gatherer.cpp \
   bi/visitor/Modifier.cpp \
   bi/visitor/Resolver.cpp \
@@ -267,6 +268,7 @@ noinst_HEADERS = \
   bi/visitor/all.hpp \
   bi/visitor/Baser.hpp \
   bi/visitor/Cloner.hpp \
+  bi/visitor/ContextualModifier.hpp \
   bi/visitor/Gatherer.hpp \
   bi/visitor/Modifier.hpp \
   bi/visitor/Resolver.hpp \

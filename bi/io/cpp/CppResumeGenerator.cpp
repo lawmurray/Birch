@@ -11,7 +11,8 @@ bi::CppResumeGenerator::CppResumeGenerator(const Class* currentClass,
     const bool header) :
     CppBaseGenerator(base, level, header),
     currentClass(currentClass),
-    currentFiber(currentFiber) {
+    currentFiber(currentFiber),
+    stateIndex(0) {
   //
 }
 
@@ -19,21 +20,21 @@ void bi::CppResumeGenerator::visit(const Function* o) {
   auto fiberType = dynamic_cast<const FiberType*>(o->returnType);
   assert(fiberType);
   auto generic = o->typeParams->width() + o->params->width() > 0;
+  auto args = requiresState(o);
 
   genSourceLine(o->loc);
-  if (generic) {
+  if (args || generic) {
     start("template<");
   }
   for (auto typeParam : *o->typeParams) {
     middle("class " << typeParam << ',');
   }
-  if (!o->params->isEmpty()) {
-    middle("class... Args");
+  if (args) {
+    middle("class State_");
   }
-  if (generic) {
+  if (args || generic) {
     finish('>');
   }
-
   if (header) {
     genSourceLine(o->loc);
     start("struct ");
@@ -42,14 +43,14 @@ void bi::CppResumeGenerator::visit(const Function* o) {
     finish(fiberType->returnType << "> {");
     in();
 
-    if (!o->params->isEmpty()) {
+    if (args) {
       genSourceLine(o->loc);
-      line("libbirch::Tuple<Args...> state_;\n");
+      line("State_ state_;\n");
 
       genSourceLine(o->loc);
       start("");
       genUniqueName(o);
-      finish("(Args... args) : state_(args...) {");
+      finish("(const State_& state_) : state_(state_) {");
       in();
       line("//");
       out();
@@ -69,26 +70,27 @@ void bi::CppResumeGenerator::visit(const Function* o) {
     }
     out();
     line("};\n");
+    genYieldMacro(o);
   } else {
     genSourceLine(o->loc);
     start(fiberType << " bi::");
     genUniqueName(o);
-    if (generic) {
+    if (args || generic) {
       start('<');
     }
     for (auto typeParam : *o->typeParams) {
       middle("class " << typeParam << ',');
     }
-    if (!o->params->isEmpty()) {
-      middle("Args...");
+    if (args) {
+      middle("State_");
     }
-    if (generic) {
+    if (args || generic) {
       middle('>');
     }
     finish("::query() {");
     in();
     genTraceFunction(o->name->str(), o->loc);
-    genUnpack(o->params);
+    genUnpack(o);
     *this << o->braces->strip();
     out();
     line("}");
@@ -107,7 +109,7 @@ void bi::CppResumeGenerator::visit(const MemberFunction* o) {
   for (auto typeParam : *o->typeParams) {
     middle("class " << typeParam << ',');
   }
-  finish("class... Args>");
+  finish("class State_>");
   if (header) {
     genSourceLine(o->loc);
     start("struct ");
@@ -117,12 +119,12 @@ void bi::CppResumeGenerator::visit(const MemberFunction* o) {
     in();
 
     genSourceLine(o->loc);
-    line("libbirch::Tuple<Args...> state_;\n");
+    line("State_ state_;\n");
 
     genSourceLine(o->loc);
     start("");
     genUniqueName(o);
-    finish("(Args... args) : state_(args...) {");
+    finish("(const State_& state_) : state_(state_) {");
     in();
     line("//");
     out();
@@ -141,6 +143,7 @@ void bi::CppResumeGenerator::visit(const MemberFunction* o) {
     }
     out();
     line("};\n");
+    genYieldMacro(o);
   } else {
     genSourceLine(o->loc);
     start(fiberType << " bi::type::" << currentClass->name);
@@ -151,10 +154,10 @@ void bi::CppResumeGenerator::visit(const MemberFunction* o) {
     for (auto typeParam : *o->typeParams) {
       middle("class " << typeParam << ',');
     }
-    finish("Args...>::query() {");
+    finish("State_>::query() {");
     in();
     genTraceFunction(o->name->str(), o->loc);
-    genUnpack(o->params);
+    genUnpack(o);
     *this << o->braces->strip();
     out();
     line("}");
@@ -162,28 +165,10 @@ void bi::CppResumeGenerator::visit(const MemberFunction* o) {
 }
 
 void bi::CppResumeGenerator::visit(const Yield* o) {
-  auto resume = dynamic_cast<const Function*>(o->resume);
-  assert(resume);
-
   genTraceLine(o->loc);
-  start("return " << currentFiber->returnType << '(');
-  if (!o->single->isEmpty()) {
-    middle(o->single);
-    if (!resume->params->isEmpty()) {
-      middle(", ");
-    }
-  }
-  if (!resume->params->isEmpty()) {
-    middle("new ");
-    genUniqueName(o);
-    if (!currentFiber->typeParams->isEmpty()) {
-      middle('<' << currentFiber->typeParams << '>');
-    }
-    middle('(');
-    genPack(resume->params);
-    middle(')');
-  }
-  finish(");");
+  start("yield_");
+  genUniqueName(o);
+  finish('(' << o->single << ");");
 }
 
 void bi::CppResumeGenerator::visit(const Return* o) {
@@ -195,37 +180,122 @@ void bi::CppResumeGenerator::visit(const Return* o) {
   finish(");");
 }
 
+void bi::CppResumeGenerator::visit(const LocalVariable* o) {
+  if (o->has(RESUME)) {
+    start("auto " << getName(o->name->str(), o->number));
+    finish(" = state_.template get<" << stateIndex++ << ">();");
+  } else {
+    CppBaseGenerator::visit(o);
+  }
+}
+
 void bi::CppResumeGenerator::genUniqueName(const Numbered* o) {
   middle(currentFiber->name << '_' << currentFiber->number << '_');
   middle(o->number << '_');
 }
 
-void bi::CppResumeGenerator::genPack(const Expression* params) {
-  if (currentClass) {
-    middle("self");
+void bi::CppResumeGenerator::genPackType(const Function* o) {
+  bool hasPackType = !currentFiber->typeParams->isEmpty() || requiresState(o);
+  if (hasPackType) {
+    middle('<');
   }
-  for (auto iter = params->begin(); iter != params->end(); ++iter) {
-    auto param = dynamic_cast<const Parameter*>(*iter);
-    assert(param);
-    if (currentClass || iter != params->begin()) {
-      middle(", ");
-    }
-    middle(getName(param->name->str(), param->number));
+  if (!currentFiber->typeParams->isEmpty()) {
+    middle(currentFiber->typeParams);
+  }
+  if (requiresState(o)) {
+    middle("decltype(");
+    genPack(o);
+    middle(')');
+  }
+  if (hasPackType) {
+    middle('>');
   }
 }
 
-void bi::CppResumeGenerator::genUnpack(const Expression* params) {
-  auto i = 0;
-  if (currentClass) {
-    line("auto self = state_.template get<" << i++ << ">();");
+void bi::CppResumeGenerator::genPack(const Function* o) {
+  Gatherer<Parameter> params;
+  o->accept(&params);
+
+  Gatherer<LocalVariable> locals([](auto o) { return o->has(RESUME); });
+  o->accept(&locals);
+
+  bool requiresPack = currentClass || (params.size() + locals.size() > 0);
+  bool first = true;
+
+  if (requiresPack) {
+    middle("libbirch::make_tuple(");
   }
-  for (auto iter = params->begin(); iter != params->end(); ++iter) {
-    auto param = dynamic_cast<const Parameter*>(*iter);
-    assert(param);
+  if (currentClass) {
+    middle("self");
+    first = false;
+  }
+  for (auto param : params) {
+    if (!first) {
+      middle(", ");
+    }
+    middle(getName(param->name->str(), param->number));
+    first = false;
+  }
+  for (auto local : locals) {
+    if (!first) {
+      middle(", ");
+    }
+    middle(getName(local->name->str(), local->number));
+    first = false;
+  }
+  if (requiresPack) {
+    middle(')');
+  }
+}
+
+void bi::CppResumeGenerator::genUnpack(const Function* o) {
+  Gatherer<Parameter> params;
+  o->params->accept(&params);
+
+  if (currentClass) {
+    line("auto self = state_.template get<" << stateIndex++ << ">();");
+  }
+  for (auto param : params) {
     genSourceLine(param->loc);
     start("auto " << getName(param->name->str(), param->number));
-    finish(" = state_.template get<" << i++ << ">();");
+    finish(" = state_.template get<" << stateIndex++ << ">();");
   }
+}
+
+void bi::CppResumeGenerator::genYieldMacro(const Function* o) {
+  start("#define yield_");
+  genUniqueName(o);
+  middle('(');
+  if (!o->has(START)) {
+    middle("...");
+  }
+  middle(") return " << currentFiber->returnType << '(');
+  if (!o->has(START)) {
+    middle("__VA_ARGS__");
+  }
+  if (!o->has(START)) {
+    middle(", ");
+  }
+  middle("new ");
+  //if (currentClass && !currentClass->typeParams->isEmpty()) {
+  //  middle("typename " << currentClass->name << '<' << currentClass->typeParams << ">::");
+  //}
+  genUniqueName(o);
+  genPackType(o);
+  middle('(');
+  genPack(o);
+  middle(')');
+  finish(")\n");
+}
+
+bool bi::CppResumeGenerator::requiresState(const Function* o) {
+  Gatherer<Parameter> params;
+  o->accept(&params);
+
+  Gatherer<LocalVariable> locals([](auto o) { return o->has(RESUME); });
+  o->accept(&locals);
+
+  return currentClass || (params.size() + locals.size() > 0);
 }
 
 std::string bi::CppResumeGenerator::getName(const std::string& name,

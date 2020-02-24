@@ -267,18 +267,7 @@ void bi::CppClassGenerator::visit(const MemberFiber* o) {
       genTraceFunction(o->name->str(), o->loc);
       line("LIBBIRCH_SELF");
       genTraceLine(o->loc);
-      start("return " << o->returnType << "(new " << o->name << '_');
-      middle(o->number << "_0_");
-      if (!o->typeParams->isEmpty()) {
-        middle('<' << o->typeParams << '>');
-      }
-      middle("(self");
-      for (auto iter = o->params->begin(); iter != o->params->end(); ++iter) {
-        auto param = dynamic_cast<const Parameter*>(*iter);
-        assert(param);
-        middle(", " << param->name);
-      }
-      finish("));");
+      line("yield_" << o->name << '_' << o->number << "_0_();");
       out();
       line("}\n");
     }

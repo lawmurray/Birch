@@ -17,7 +17,11 @@ bi::Statement* bi::Resumer::clone(const Fiber* o) {
   auto r = new Function(o->annotation, o->name, o->typeParams->accept(this),
       o->params->accept(this), o->returnType->accept(this),
       o->braces->accept(this), o->loc);
-  r->number = yield->number;
+  r->number = yield ? yield->number : 0;
+  r->set(RESUME);
+  if (!yield) {
+    r->set(START);
+  }
   return r;
 }
 
@@ -25,7 +29,25 @@ bi::Statement* bi::Resumer::clone(const MemberFiber* o) {
   auto r = new MemberFunction(o->annotation, o->name,
       o->typeParams->accept(this), o->params->accept(this),
       o->returnType->accept(this), o->braces->accept(this), o->loc);
-  r->number = yield->number;
+  r->number = yield ? yield->number : 0;
+  r->set(RESUME);
+  if (!yield) {
+    r->set(START);
+  }
+  return r;
+}
+
+bi::Statement* bi::Resumer::clone(const LocalVariable* o) {
+  LocalVariable* r = nullptr;
+  if (foundYield) {
+    r = new LocalVariable(o->annotation, o->name, o->type->accept(this),
+        o->brackets->accept(this), o->args->accept(this),
+        o->value->accept(this), o->loc);
+  } else {
+    r = new LocalVariable(o->name, o->type->accept(this), o->loc);
+    r->set(RESUME);
+  }
+  r->number = o->number;
   return r;
 }
 
@@ -42,22 +64,56 @@ bi::Statement* bi::Resumer::clone(const Yield* o) {
   }
 }
 
+bi::Statement* bi::Resumer::clone(const Return* o) {
+  if (foundYield) {
+    return Cloner::clone(o);
+  } else {
+    return new EmptyStatement(o->loc);
+  }
+}
+
+bi::Statement* bi::Resumer::clone(const ExpressionStatement* o) {
+  if (foundYield) {
+    return Cloner::clone(o);
+  } else {
+    return new EmptyStatement(o->loc);
+  }
+}
+
+bi::Statement* bi::Resumer::clone(const Assert* o) {
+  if (foundYield) {
+    return Cloner::clone(o);
+  } else {
+    return new EmptyStatement(o->loc);
+  }
+}
+
+bi::Statement* bi::Resumer::clone(const Raw* o) {
+  if (foundYield) {
+    return Cloner::clone(o);
+  } else {
+    return new EmptyStatement(o->loc);
+  }
+}
+
 bi::Statement* bi::Resumer::clone(const StatementList* o) {
-  auto foundBefore = foundYield;
   auto head = o->head->accept(this);
-  auto foundHead = foundYield;
   auto tail = o->tail->accept(this);
-  auto foundTail = foundYield;
-
-  auto keepHead = foundBefore || foundHead;
-  auto keepTail = foundBefore || foundTail;
-
-  if (keepHead && keepTail) {
+  if (!head->isEmpty() && !tail->isEmpty()) {
     return new StatementList(head, tail, o->loc);
-  } else if (keepHead) {
+  } else if (!head->isEmpty()) {
     return head;
-  } else if (keepTail) {
+  } else if (!tail->isEmpty()) {
     return tail;
+  } else {
+    return new EmptyStatement(o->loc);
+  }
+}
+
+bi::Statement* bi::Resumer::clone(const Braces* o) {
+  auto single = o->single->accept(this);
+  if (foundYield) {
+    return new Braces(single, o->loc);
   } else {
     return new EmptyStatement(o->loc);
   }
@@ -77,6 +133,25 @@ bi::Statement* bi::Resumer::clone(const If* o) {
     return trueBraces;
   } else if (foundFalse) {
     return falseBraces;
+  } else {
+    return new EmptyStatement(o->loc);
+  }
+}
+
+bi::Statement* bi::Resumer::clone(const For* o) {
+  ///@todo unroll as for While and DoWhile
+  if (foundYield) {
+    return Cloner::clone(o);
+  } else {
+    return new EmptyStatement(o->loc);
+  }
+}
+
+bi::Statement* bi::Resumer::clone(const Parallel* o) {
+  /* it is not possible to yield within a parallel loop, so this may be
+   * treated as one atomic statement */
+  if (foundYield) {
+    return Cloner::clone(o);
   } else {
     return new EmptyStatement(o->loc);
   }

@@ -3,7 +3,7 @@
  */
 #pragma once
 
-#include "bi/visitor/Modifier.hpp"
+#include "bi/visitor/ContextualModifier.hpp"
 #include "bi/expression/all.hpp"
 #include "bi/statement/all.hpp"
 #include "bi/type/all.hpp"
@@ -16,7 +16,7 @@ namespace bi {
  *
  * @ingroup visitor
  */
-class ScopedModifier: public Modifier {
+class ScopedModifier: public ContextualModifier {
 public:
   /**
    * Constructor.
@@ -63,21 +63,6 @@ protected:
    * List of scopes, innermost at the back.
    */
   std::list<Scope*> scopes;
-
-  /**
-   * If in a package, a pointer to that package, otherwise `nullptr`.
-   */
-  Package* currentPackage;
-
-  /**
-   * If in a class, a pointer to that class, otherwise `nullptr`.
-   */
-  Class* currentClass;
-
-  /**
-   * If in a fiber, a pointer to that fiber, otherwise `nullptr`.
-   */
-  Fiber* currentFiber;
 
   /**
    * Are we on the right hand side of a member dereference (i.e. `b` in

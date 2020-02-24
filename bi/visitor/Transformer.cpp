@@ -3,7 +3,7 @@
  */
 #include "bi/visitor/Transformer.hpp"
 
-#include "bi/visitor/Cloner.hpp"
+#include "bi/visitor/all.hpp"
 
 bi::Statement* bi::Transformer::modify(Assume* o) {
   Cloner cloner;
@@ -54,15 +54,6 @@ bi::Statement* bi::Transformer::modify(Assume* o) {
   return result->accept(this);
 }
 
-bi::Statement* bi::Transformer::modify(Class* o) {
-  if (o->base->isEmpty() && o->name->str() != "Object") {
-    /* if the class derives from nothing else, then derive from Object,
-     * unless this is itself the declaration of the Object class */
-    o->base = new NamedType(false, new Name("Object"), new EmptyType(), o->loc);
-  }
-  return Modifier::modify(o);
-}
-
 bi::Statement* bi::Transformer::modify(ExpressionStatement* o) {
   /* when in the body of a fiber and another fiber is called while ignoring
    * its return type, this is syntactic sugar for a loop */
@@ -82,11 +73,22 @@ bi::Statement* bi::Transformer::modify(ExpressionStatement* o) {
 //
 //    return result->accept(this);
 //  } else {
-    return Modifier::modify(o);
+    return ContextualModifier::modify(o);
 //  }
 }
 
+bi::Statement* bi::Transformer::modify(Class* o) {
+  if (o->base->isEmpty() && o->name->str() != "Object") {
+    /* if the class derives from nothing else, then derive from Object,
+     * unless this is itself the declaration of the Object class */
+    o->base = new NamedType(false, new Name("Object"), new EmptyType(), o->loc);
+  }
+  return ContextualModifier::modify(o);
+}
+
 bi::Statement* bi::Transformer::modify(Fiber* o) {
+  ContextualModifier::modify(o);
+
   /* for fibers that have a void return type, check if the last statement of
    * the fiber is a return; if not, add one */
   auto fiberType = dynamic_cast<const FiberType*>(o->returnType);
@@ -104,10 +106,17 @@ bi::Statement* bi::Transformer::modify(Fiber* o) {
           new EmptyExpression(o->loc), o->loc), o->loc);
     }
   }
-  return Modifier::modify(o);
+
+  /* construct the start function */
+  Resumer resumer;
+  o->start = o->accept(&resumer);
+
+  return o;
 }
 
 bi::Statement* bi::Transformer::modify(MemberFiber* o) {
+  ContextualModifier::modify(o);
+
   /* for fibers that have a void return type, check if the last statement of
    * the fiber is a return; if not, add one */
   auto fiberType = dynamic_cast<const FiberType*>(o->returnType);
@@ -125,5 +134,18 @@ bi::Statement* bi::Transformer::modify(MemberFiber* o) {
           new EmptyExpression(o->loc), o->loc), o->loc);
     }
   }
-  return Modifier::modify(o);
+
+  /* construct the start function */
+  Resumer resumer;
+  o->start = o->accept(&resumer);
+
+  return o;
+}
+
+bi::Statement* bi::Transformer::modify(Yield* o) {
+  /* construct resume function */
+  Resumer resumer(o);
+  o->resume = currentFiber->accept(&resumer);
+
+  return ContextualModifier::modify(o);
 }

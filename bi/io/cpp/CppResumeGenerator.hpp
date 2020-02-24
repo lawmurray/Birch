@@ -23,6 +23,7 @@ public:
   virtual void visit(const MemberFunction* o);
   virtual void visit(const Yield* o);
   virtual void visit(const Return* o);
+  virtual void visit(const LocalVariable* o);
 
 protected:
   /**
@@ -40,14 +41,29 @@ protected:
   void genUniqueName(const Numbered* o);
 
   /**
+   * Generate code for type when packing fiber state into a tuple to save.
+   */
+  void genPackType(const Function* o);
+
+  /**
    * Generate code for packing fiber state into a tuple to save.
    */
-  void genPack(const Expression* params);
+  void genPack(const Function* o);
 
   /**
    * Generate code for unpacking the fiber state from a tuple to resume.
    */
-  void genUnpack(const Expression* params);
+  void genUnpack(const Function* o);
+
+  /**
+   * Generate code for the macro used to yield at a particular yield point.
+   */
+  void genYieldMacro(const Function* o);
+
+  /**
+   * Does this resume function require a state?
+   */
+  bool requiresState(const Function* o);
 
   /**
    * Name mappings. Local variables become member variables of the fiber
@@ -74,5 +90,11 @@ protected:
    * The fiber.
    */
   const Fiber* currentFiber;
+
+  /**
+   * Next element from state to retrieve when restoring values of parameters
+   * and local variables.
+   */
+  int stateIndex;
 };
 }

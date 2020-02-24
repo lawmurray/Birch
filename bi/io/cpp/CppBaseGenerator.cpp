@@ -265,11 +265,11 @@ void bi::CppBaseGenerator::visit(const MemberVariable* o) {
 void bi::CppBaseGenerator::visit(const LocalVariable* o) {
   genTraceLine(o->loc);
   if (o->has(AUTO)) {
-    start("auto " << o->name << " = " << o->value);
+    start("auto " << o->name);
   } else {
     start(o->type << ' ' << o->name);
-    genInit(o);
   }
+  genInit(o);
   finish(';');
 }
 
@@ -311,21 +311,7 @@ void bi::CppBaseGenerator::visit(const Fiber* o) {
     finish(" {");
     in();
     genTraceLine(o->loc);
-    start("return " << o->returnType << "(new " << o->name << '_');
-    middle(o->number << "_0_");
-    if (!o->typeParams->isEmpty()) {
-      middle('<' << o->typeParams << '>');
-    }
-    middle('(');
-    for (auto iter = o->params->begin(); iter != o->params->end(); ++iter) {
-      if (iter != o->params->begin()) {
-        middle(", ");
-      }
-      auto param = dynamic_cast<const Parameter*>(*iter);
-      assert(param);
-      middle(param->name);
-    }
-    finish("));");
+    line("yield_" << o->name << '_' << o->number << "_0_();");
     out();
     line("}\n");
   }
@@ -763,5 +749,5 @@ void bi::CppBaseGenerator::genTraceLine(const Location* loc) {
 }
 
 void bi::CppBaseGenerator::genSourceLine(const Location* loc) {
-  line("//#line " << loc->firstLine << " \"" << loc->file->path << "\"");
+  line("#line " << loc->firstLine << " \"" << loc->file->path << "\"");
 }

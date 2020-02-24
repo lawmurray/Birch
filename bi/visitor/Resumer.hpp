@@ -39,9 +39,17 @@ public:
 
   virtual Statement* clone(const Fiber* o) override;
   virtual Statement* clone(const MemberFiber* o) override;
+  virtual Statement* clone(const LocalVariable* o) override;
   virtual Statement* clone(const Yield* o) override;
+  virtual Statement* clone(const Return* o) override;
+  virtual Statement* clone(const ExpressionStatement* o) override;
+  virtual Statement* clone(const Assert* o) override;
+  virtual Statement* clone(const Raw* o) override;
   virtual Statement* clone(const StatementList* o) override;
+  virtual Statement* clone(const Braces* o) override;
   virtual Statement* clone(const If* o) override;
+  virtual Statement* clone(const For* o) override;
+  virtual Statement* clone(const Parallel* o) override;
   virtual Statement* clone(const While* o) override;
   virtual Statement* clone(const DoWhile* o) override;
 

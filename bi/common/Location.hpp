@@ -10,6 +10,9 @@ class File;
  * Location within a file being parsed.
  *
  * @ingroup common
+ *
+ * Location objects may be shared between multiple objects in the abstract
+ * syntax tree, they need not be uniquely assigned.
  */
 struct Location {
   /**

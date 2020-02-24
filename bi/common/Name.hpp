@@ -10,6 +10,11 @@ class Visitor;
 
 /**
  * Name.
+ *
+ * @ingroup common
+ *
+ * Name objects may be shared between multiple objects in the abstract
+ * syntax tree, they need not be uniquely assigned.
  */
 class Name {
 public:
