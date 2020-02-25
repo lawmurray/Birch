@@ -22,6 +22,28 @@ public:
   virtual Statement* modify(Class* o);
   virtual Statement* modify(Fiber* o);
   virtual Statement* modify(MemberFiber* o);
-  virtual Statement* modify(Yield* o);
+
+protected:
+  /**
+   * For start and resume functions with a void return type, check if the
+   * last statement s a return; if not, add one.
+   *
+   * @param o The start or resume function to check and modify.
+   */
+  void insertReturn(Statement* o);
+
+  /**
+   * Construct the start function for a fiber.
+   *
+   * @param o The fiber to modify.
+   */
+  void createStart(Fiber* o);
+
+  /**
+   * Construct the resume functionss for a fiber.
+   *
+   * @param o The fiber to modify.
+   */
+  void createResumes(Fiber* o);
 };
 }

@@ -88,64 +88,49 @@ bi::Statement* bi::Transformer::modify(Class* o) {
 
 bi::Statement* bi::Transformer::modify(Fiber* o) {
   ContextualModifier::modify(o);
-
-  /* for fibers that have a void return type, check if the last statement of
-   * the fiber is a return; if not, add one */
-  auto fiberType = dynamic_cast<const FiberType*>(o->returnType);
-  assert(fiberType);
-  if (fiberType->returnType->isEmpty()) {
-    /* iterate to the last statement */
-    auto iter = o->braces->begin();
-    for (auto i = 0; i < o->braces->count() - 1; ++i) {
-      ++iter;
-    }
-
-    /* if that statement is not a return, add one */
-    if (!dynamic_cast<const Return*>(*iter)) {
-      o->braces = new StatementList(o->braces, new Return(
-          new EmptyExpression(o->loc), o->loc), o->loc);
-    }
-  }
-
-  /* construct the start function */
-  Resumer resumer;
-  o->start = o->accept(&resumer);
-
+  createStart(o);
+  createResumes(o);
   return o;
 }
 
 bi::Statement* bi::Transformer::modify(MemberFiber* o) {
   ContextualModifier::modify(o);
+  createStart(o);
+  createResumes(o);
+  return o;
+}
 
-  /* for fibers that have a void return type, check if the last statement of
-   * the fiber is a return; if not, add one */
-  auto fiberType = dynamic_cast<const FiberType*>(o->returnType);
+void bi::Transformer::insertReturn(Statement* o) {
+  auto function = dynamic_cast<Function*>(o);
+  auto fiberType = dynamic_cast<FiberType*>(function->returnType);
   assert(fiberType);
   if (fiberType->returnType->isEmpty()) {
     /* iterate to the last statement */
-    auto iter = o->braces->begin();
-    for (auto i = 0; i < o->braces->count() - 1; ++i) {
+    auto iter = function->braces->begin();
+    for (auto i = 0; i < function->braces->count() - 1; ++i) {
       ++iter;
     }
 
     /* if that statement is not a return, add one */
     if (!dynamic_cast<const Return*>(*iter)) {
-      o->braces = new StatementList(o->braces, new Return(
-          new EmptyExpression(o->loc), o->loc), o->loc);
+      function->braces = new StatementList(function->braces, new Return(
+          new EmptyExpression(function->loc), function->loc), function->loc);
     }
   }
-
-  /* construct the start function */
-  Resumer resumer;
-  o->start = o->accept(&resumer);
-
-  return o;
 }
 
-bi::Statement* bi::Transformer::modify(Yield* o) {
-  /* construct resume function */
-  Resumer resumer(o);
-  o->resume = currentFiber->accept(&resumer);
+void bi::Transformer::createStart(Fiber* o) {
+  Resumer resumer;
+  o->start = o->accept(&resumer)->accept(this);
+  insertReturn(o->start);
+}
 
-  return ContextualModifier::modify(o);
+void bi::Transformer::createResumes(Fiber* o) {
+  Gatherer<Yield> yields;
+  o->accept(&yields);
+  for (auto yield : yields) {
+    Resumer resumer(yield);
+    yield->resume = o->accept(&resumer)->accept(this);
+    insertReturn(yield->resume);
+  }
 }
