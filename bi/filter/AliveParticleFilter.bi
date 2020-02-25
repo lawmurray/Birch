@@ -32,7 +32,7 @@ class AliveParticleFilter < ParticleFilter {
       w[n] <- h.handle(x[n].simulate());
     }
     (ess, S) <- resample_reduce(w);
-    W <- W + S - log(nparticles);
+    W <- W + S - log(Real(nparticles));
     yield (x, w, W, ess, nparticles);
    
     for t in 1..nsteps! {
@@ -77,7 +77,7 @@ class AliveParticleFilter < ParticleFilter {
 
       auto npropagations <- sum(p);
       (ess, S) <- resample_reduce(w);
-      W <- W + S - log(npropagations - 1);
+      W <- W + S - log(npropagations - 1.0);
       yield (x, w, W, ess, npropagations);
     }
   }

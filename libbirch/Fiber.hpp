@@ -21,11 +21,6 @@ public:
   using return_type = Return;
   using state_type = Lazy<SharedPtr<FiberState<Yield,Return>>>;
 
-  Fiber(const Fiber&) = default;
-  Fiber(Fiber&&) = default;
-  Fiber& operator=(const Fiber&) = default;
-  Fiber& operator=(Fiber&&) = default;
-
   /**
    * Constructor. Used:
    *
@@ -55,9 +50,7 @@ public:
    * `void`, where a state and resume function are required, along with a
    * yield value.
    */
-  template<class T, std::enable_if_t<std::is_same<T,yield_type>::value &&
-      !std::is_void<yield_type>::value,int> = 0>
-  Fiber(const T& yieldValue, const state_type& state) :
+  Fiber(const yield_type& yieldValue, const state_type& state) :
       yieldValue(yieldValue),
       state(state) {
     //
@@ -68,9 +61,7 @@ public:
    * `void`, where a state and resume function are not required, and a value
    * is returned.
    */
-  template<class T, std::enable_if_t<std::is_same<T,return_type>::value &&
-      !std::is_void<return_type>::value,int> = 0>
-  Fiber(const T& returnValue) :
+  Fiber(const return_type& returnValue) :
       returnValue(returnValue) {
     //
   }
@@ -78,7 +69,7 @@ public:
   /**
    * Clone the fiber.
    */
-  Fiber<Yield,Return> clone() const {
+  Fiber<yield_type,return_type> clone() const {
     return Fiber(*this);
   }
 
@@ -91,7 +82,7 @@ public:
     if (state.query()) {
       *this = state.get()->query();
     }
-    return yieldValue.query();
+    return state.query();
   }
 
   /**
@@ -115,6 +106,116 @@ private:
   /**
    * Fiber state.
    */
+  Optional<state_type> state;
+};
+
+template<class Return>
+class Fiber<void,Return> {
+public:
+  using yield_type = void;
+  using return_type = Return;
+  using state_type = Lazy<SharedPtr<FiberState<yield_type,return_type>>>;
+
+  Fiber() {
+    //
+  }
+
+  Fiber(const state_type& state) :
+      state(state) {
+    //
+  }
+
+  Fiber(const return_type& returnValue) :
+      returnValue(returnValue) {
+    //
+  }
+
+  Fiber<yield_type,return_type> clone() const {
+    return Fiber(*this);
+  }
+
+  bool query() {
+    if (state.query()) {
+      *this = state.get()->query();
+    }
+    return state.query();
+  }
+
+private:
+  Optional<return_type> returnValue;
+  Optional<state_type> state;
+};
+
+template<class Yield>
+class Fiber<Yield,void> {
+public:
+  using yield_type = Yield;
+  using return_type = void;
+  using state_type = Lazy<SharedPtr<FiberState<yield_type,return_type>>>;
+
+  Fiber() {
+    //
+  }
+
+  Fiber(const state_type& state) :
+      state(state) {
+    //
+  }
+
+  Fiber(const yield_type& yieldValue, const state_type& state) :
+      yieldValue(yieldValue),
+      state(state) {
+    //
+  }
+
+  Fiber<yield_type,return_type> clone() const {
+    return Fiber(*this);
+  }
+
+  bool query() {
+    if (state.query()) {
+      *this = state.get()->query();
+    }
+    return state.query();
+  }
+
+  auto get() {
+    return yieldValue.get();
+  }
+
+private:
+  Optional<yield_type> yieldValue;
+  Optional<state_type> state;
+};
+
+template<>
+class Fiber<void,void> {
+public:
+  using yield_type = void;
+  using return_type = void;
+  using state_type = Lazy<SharedPtr<FiberState<yield_type,return_type>>>;
+
+  Fiber() {
+    //
+  }
+
+  Fiber(const state_type& state) :
+      state(state) {
+    //
+  }
+
+  Fiber<yield_type,return_type> clone() const {
+    return Fiber(*this);
+  }
+
+  bool query() {
+    if (state.query()) {
+      *this = state.get()->query();
+    }
+    return state.query();
+  }
+
+private:
   Optional<state_type> state;
 };
 

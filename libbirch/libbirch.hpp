@@ -171,7 +171,7 @@ auto make_slice(const int64_t arg, Args ... args) {
 }
 
 /**
- * Make an array of value type.
+ * Make an array.
  *
  * @ingroup libbirch
  *
@@ -185,8 +185,27 @@ auto make_slice(const int64_t arg, Args ... args) {
  * @return The array.
  */
 template<class T, class F, class ... Args>
-Array<T,F> make_array(const F& shape, const Args&... args) {
+Array<T,F> make_array(const F& shape, Args... args) {
   return Array<T,F>(shape, args...);
+}
+
+/**
+ * Make an array.
+ *
+ * @ingroup libbirch
+ *
+ * @tparam T Value type.
+ * @tparam F Shape type.
+ * @tparam L Lambda type.
+ *
+ * @param l Lambda called to construct each element.
+ * @param shape Shape.
+ *
+ * @return The array.
+ */
+template<class T, class F, class L>
+Array<T,F> make_array_from_lambda(const F& shape, const L& l) {
+  return Array<T,F>(l, shape);
 }
 
 /**
@@ -223,7 +242,7 @@ Array<T,F> make_array_and_assign(const F& shape, const Value& value) {
  * @return A pointer of the given type.
  */
 template<class P, class ... Args>
-P make_pointer(const Args& ... args) {
+P make_pointer(Args... args) {
   return P(new typename P::value_type(args...));
 }
 

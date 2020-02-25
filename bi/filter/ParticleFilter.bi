@@ -76,7 +76,7 @@ class ParticleFilter {
       w[n] <- h.handle(x[n].simulate());
     }
     (ess, S) <- resample_reduce(w);
-    W <- W + S - log(nparticles);
+    W <- W + S - log(Real(nparticles));
     yield (x, w, W, ess, nparticles);
     
     for t in 1..nsteps! {
@@ -91,7 +91,7 @@ class ParticleFilter {
         }
       } else {
         /* normalize weights to sum to nparticles */
-        w <- w - (S - log(nparticles));
+        w <- w - (S - log(Real(nparticles)));
       }
       
       /* propagate and weight */
@@ -99,7 +99,7 @@ class ParticleFilter {
         w[n] <- w[n] + h.handle(x[n].simulate(t));
       }
       (ess, S) <- resample_reduce(w);
-      W <- W + S - log(nparticles);
+      W <- W + S - log(Real(nparticles));
       yield (x, w, W, ess, nparticles);
     }
   }
@@ -137,7 +137,7 @@ class ParticleFilter {
         }
       }
       (ess, S) <- resample_reduce(w);
-      W <- W + S - log(nparticles);
+      W <- W + S - log(Real(nparticles));
       yield (x, w, W, ess, nparticles);
     }
     
@@ -171,7 +171,7 @@ class ParticleFilter {
         }
       } else {
         /* normalize weights to sum to nparticles */
-        w <- w - (S - log(nparticles));
+        w <- w - (S - log(Real(nparticles)));
       }
       
       /* propagate and weight */
@@ -183,7 +183,7 @@ class ParticleFilter {
         }
       }
       (ess, S) <- resample_reduce(w);
-      W <- W + S - log(nparticles);
+      W <- W + S - log(Real(nparticles));
       yield (x, w, W, ess, nparticles);
     }
   }

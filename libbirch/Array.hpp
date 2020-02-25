@@ -112,10 +112,11 @@ public:
   /**
    * Constructor.
    *
+   * @param l Lambda called to construct each element.
    * @param shape Shape.
-   * @param f Lambda function that can be called to construct each element.
    */
-  Array(const F& shape, const std::function<T(int64_t)>& f) :
+  template<class L>
+  Array(const L& l, const F& shape) :
       shape(shape),
       buffer(nullptr),
       offset(0),
@@ -123,7 +124,7 @@ public:
     allocate();
     int64_t n = 0;
     for (auto iter = begin(); iter != end(); ++iter) {
-      new (&*iter) T(f(++n));
+      new (&*iter) T(l(++n));
     }
   }
 
