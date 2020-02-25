@@ -214,6 +214,11 @@ private:
   bool warnings;
 
   /**
+   * Are compiler nodes enabled?
+   */
+  bool notes;
+
+  /**
    * Is debugging mode enabled?
    */
   bool debug;

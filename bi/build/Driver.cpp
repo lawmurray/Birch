@@ -30,6 +30,7 @@ bi::Driver::Driver(int argc, char** argv) :
     sharedLib(true),
     openmp(true),
     warnings(true),
+    notes(false),
     debug(true),
     coverage(false),
     verbose(true),
@@ -58,6 +59,8 @@ bi::Driver::Driver(int argc, char** argv) :
     DISABLE_OPENMP_ARG,
     ENABLE_WARNINGS_ARG,
     DISABLE_WARNINGS_ARG,
+    ENABLE_NOTES_ARG,
+    DISABLE_NOTES_ARG,
     ENABLE_DEBUG_ARG,
     DISABLE_DEBUG_ARG,
     ENABLE_COVERAGE_ARG,
@@ -94,6 +97,8 @@ bi::Driver::Driver(int argc, char** argv) :
       { "disable-openmp", no_argument, 0, DISABLE_OPENMP_ARG },
       { "enable-warnings", no_argument, 0, ENABLE_WARNINGS_ARG },
       { "disable-warnings", no_argument, 0, DISABLE_WARNINGS_ARG },
+      { "enable-notes", no_argument, 0, ENABLE_NOTES_ARG },
+      { "disable-notes", no_argument, 0, DISABLE_NOTES_ARG },
       { "enable-debug", no_argument, 0, ENABLE_DEBUG_ARG },
       { "disable-debug", no_argument, 0, DISABLE_DEBUG_ARG },
       { "enable-coverage", no_argument, 0, ENABLE_COVERAGE_ARG },
@@ -170,6 +175,12 @@ bi::Driver::Driver(int argc, char** argv) :
       break;
     case DISABLE_WARNINGS_ARG:
       warnings = false;
+      break;
+    case ENABLE_NOTES_ARG:
+      notes = true;
+      break;
+    case DISABLE_NOTES_ARG:
+      notes = false;
       break;
     case ENABLE_DEBUG_ARG:
       debug = true;
@@ -687,6 +698,9 @@ void bi::Driver::help() {
       std::cout << std::endl;
       std::cout << "  --enable-warnings / --disable-warnings (default enabled):" << std::endl;
       std::cout << "  Enable/disable compiler warnings." << std::endl;
+      std::cout << std::endl;
+      std::cout << "  --enable-notes / --disable-notes (default disabled):" << std::endl;
+      std::cout << "  Enable/disable compiler notes." << std::endl;
       std::cout << std::endl;
       std::cout << "  --enable-verbose / --disable-verbose (default enabled):" << std::endl;
       std::cout << "  Show all compiler output." << std::endl;
@@ -1228,6 +1242,14 @@ void bi::Driver::target(const std::string& cmd) {
 
   /* target */
   buf << ' ' << cmd;
+
+  /* strip warnings/notes? */
+  if (!warnings) {
+    buf << " 2>&1 | grep -v 'warning:'";
+  }
+  if (!notes) {
+    buf << " 2>&1 | grep -v 'note:'";
+  }
 
   /* handle output */
   std::string log = cmd + ".log";
