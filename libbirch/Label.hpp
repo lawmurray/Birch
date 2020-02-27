@@ -4,7 +4,7 @@
 #pragma once
 
 #include "libbirch/Any.hpp"
-#include "libbirch/Counted.hpp"
+#include "libbirch/Any.hpp"
 #include "libbirch/SharedPtr.hpp"
 #include "libbirch/Memo.hpp"
 
@@ -14,7 +14,7 @@ namespace libbirch {
  *
  * @ingroup libbirch
  */
-class Label: public Counted {
+class Label: public Any {
   friend class List;
 public:
   using class_type_ = Label;
@@ -109,7 +109,7 @@ namespace bi {
   namespace type {
 template<>
 struct super_type<libbirch::Label> {
-  using type = libbirch::Counted;
+  using type = libbirch::Any;
 };
   }
 }

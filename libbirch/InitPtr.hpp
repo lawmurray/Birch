@@ -4,7 +4,7 @@
 #pragma once
 
 #include "libbirch/class.hpp"
-#include "libbirch/Counted.hpp"
+#include "libbirch/Any.hpp"
 
 namespace libbirch {
 /**
@@ -13,7 +13,7 @@ namespace libbirch {
  *
  * @ingroup libbirch
  *
- * @tparam T Type, must derive from Counted.
+ * @tparam T Type, must derive from Any.
  */
 template<class T>
 class InitPtr: public InitPtr<typename bi::type::super_type<T>::type> {
@@ -75,10 +75,10 @@ public:
  * @ingroup libbirch
  */
 template<>
-class InitPtr<Counted> {
+class InitPtr<Any> {
 public:
-  using value_type = Counted;
-  using this_type = InitPtr<Counted>;
+  using value_type = Any;
+  using this_type = InitPtr<Any>;
 
   /**
    * Constructor.
@@ -109,21 +109,21 @@ public:
   /**
    * Get the raw pointer.
    */
-  Counted* get() const {
+  Any* get() const {
     return ptr;
   }
 
   /**
    * Get the raw pointer as const.
    */
-  Counted* pull() const {
+  Any* pull() const {
     return ptr;
   }
 
   /**
    * Replace.
    */
-  void replace(Counted* ptr) {
+  void replace(Any* ptr) {
     this->ptr = ptr;
   }
 
@@ -137,14 +137,14 @@ public:
   /**
    * Dereference.
    */
-  Counted& operator*() const {
+  Any& operator*() const {
     return *get();
   }
 
   /**
    * Member access.
    */
-  Counted* operator->() const {
+  Any* operator->() const {
     return get();
   }
 
@@ -168,7 +168,7 @@ private:
   /**
    * Raw pointer.
    */
-  Counted* ptr;
+  Any* ptr;
 };
 
 template<class T>

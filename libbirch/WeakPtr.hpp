@@ -4,7 +4,7 @@
 #pragma once
 
 #include "libbirch/class.hpp"
-#include "libbirch/Counted.hpp"
+#include "libbirch/Any.hpp"
 
 namespace libbirch {
 /**
@@ -12,7 +12,7 @@ namespace libbirch {
  *
  * @ingroup libbirch
  *
- * @tparam T Type, must derive from Counted.
+ * @tparam T Type, must derive from Any.
  */
 template<class T>
 class WeakPtr: public WeakPtr<typename bi::type::super_type<T>::type> {
@@ -73,10 +73,10 @@ public:
  * @ingroup libbirch
  */
 template<>
-class WeakPtr<Counted> {
+class WeakPtr<Any> {
 public:
-  using value_type = Counted;
-  using this_type = WeakPtr<Counted>;
+  using value_type = Any;
+  using this_type = WeakPtr<Any>;
 
   /**
    * Constructor.
@@ -164,7 +164,7 @@ public:
   /**
    * Get the raw pointer.
    */
-  Counted* get() const {
+  Any* get() const {
     assert(!ptr || ptr->numWeak() > 0);
     return ptr;
   }
@@ -172,7 +172,7 @@ public:
   /**
    * Get the raw pointer as const.
    */
-  Counted* pull() const {
+  Any* pull() const {
     assert(!ptr || ptr->numWeak() > 0);
     return ptr;
   }
@@ -180,7 +180,7 @@ public:
   /**
    * Replace.
    */
-  void replace(Counted* ptr) {
+  void replace(Any* ptr) {
     assert(!ptr || ptr->numWeak() > 0);
     auto old = this->ptr;
     if (ptr) {
@@ -205,14 +205,14 @@ public:
   /**
    * Dereference.
    */
-  Counted& operator*() const {
+  Any& operator*() const {
     return *get();
   }
 
   /**
    * Member access.
    */
-  Counted* operator->() const {
+  Any* operator->() const {
     return get();
   }
 
@@ -236,7 +236,7 @@ private:
   /**
    * Raw pointer.
    */
-  Counted* ptr;
+  Any* ptr;
 };
 
 template<class T>
