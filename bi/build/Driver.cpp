@@ -35,8 +35,6 @@ bi::Driver::Driver(int argc, char** argv) :
     coverage(false),
     verbose(true),
     memoryPool(true),
-    lazyDeepClone(true),
-    singleReferenceOptimization(true),
     cloneMemoInitialSize(16),
     newAutogen(false),
     newConfigure(false),
@@ -69,12 +67,6 @@ bi::Driver::Driver(int argc, char** argv) :
     DISABLE_VERBOSE_ARG,
     ENABLE_MEMORY_POOL_ARG,
     DISABLE_MEMORY_POOL_ARG,
-    ENABLE_LAZY_DEEP_CLONE_ARG,
-    DISABLE_LAZY_DEEP_CLONE_ARG,
-    ENABLE_READ_ONLY_OPTIMIZATION_ARG,
-    DISABLE_READ_ONLY_OPTIMIZATION_ARG,
-    ENABLE_SINGLE_REFERENCE_OPTIMIZATION_ARG,
-    DISABLE_SINGLE_REFERENCE_OPTIMIZATION_ARG,
     CLONE_MEMO_INITIAL_SIZE_ARG
   };
 
@@ -107,10 +99,6 @@ bi::Driver::Driver(int argc, char** argv) :
       { "disable-verbose", no_argument, 0, DISABLE_VERBOSE_ARG },
       { "enable-memory-pool", no_argument, 0, ENABLE_MEMORY_POOL_ARG },
       { "disable-memory-pool", no_argument, 0, DISABLE_MEMORY_POOL_ARG },
-      { "enable-lazy-deep-clone", no_argument, 0, ENABLE_LAZY_DEEP_CLONE_ARG },
-      { "disable-lazy-deep-clone", no_argument, 0, DISABLE_LAZY_DEEP_CLONE_ARG },
-      { "enable-single-reference-optimization", no_argument, 0, ENABLE_SINGLE_REFERENCE_OPTIMIZATION_ARG },
-      { "disable-single-reference-optimization", no_argument, 0, DISABLE_SINGLE_REFERENCE_OPTIMIZATION_ARG },
       { "clone-memo-initial-size", required_argument, 0, CLONE_MEMO_INITIAL_SIZE_ARG },
       { 0, 0, 0, 0 }
   };
@@ -205,18 +193,6 @@ bi::Driver::Driver(int argc, char** argv) :
       break;
     case DISABLE_MEMORY_POOL_ARG:
       memoryPool = false;
-      break;
-    case ENABLE_LAZY_DEEP_CLONE_ARG:
-      lazyDeepClone = true;
-      break;
-    case DISABLE_LAZY_DEEP_CLONE_ARG:
-      lazyDeepClone = false;
-      break;
-    case ENABLE_SINGLE_REFERENCE_OPTIMIZATION_ARG:
-      singleReferenceOptimization = true;
-      break;
-    case DISABLE_SINGLE_REFERENCE_OPTIMIZATION_ARG:
-      singleReferenceOptimization = false;
       break;
     case CLONE_MEMO_INITIAL_SIZE_ARG:
       cloneMemoInitialSize = atoi(optarg);
@@ -1130,16 +1106,6 @@ void bi::Driver::configure() {
     } else {
       cppflags << " -DENABLE_MEMORY_POOL=0";
     }
-    if (lazyDeepClone) {
-      cppflags << " -DENABLE_LAZY_DEEP_CLONE=1";
-    } else {
-      cppflags << " -DENABLE_LAZY_DEEP_CLONE=0";
-    }
-    if (singleReferenceOptimization) {
-      cppflags << " -DENABLE_SINGLE_REFERENCE_OPTIMIZATION=1";
-    } else {
-      cppflags << " -DENABLE_SINGLE_REFERENCE_OPTIMIZATION=0";
-    }
     cppflags << " -DCLONE_MEMO_INITIAL_SIZE=" << cloneMemoInitialSize;
 
     /* include path */
@@ -1300,8 +1266,6 @@ std::string bi::Driver::suffix() const {
   buf << debug << ' ';
   buf << coverage << ' ';
   buf << memoryPool << ' ';
-  buf << lazyDeepClone << ' ';
-  buf << singleReferenceOptimization << ' ';
   buf << cloneMemoInitialSize << ' ';
   return encode32(buf.str());
 }

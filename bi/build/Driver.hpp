@@ -239,16 +239,6 @@ private:
   bool memoryPool;
 
   /**
-   * Is lazy deep clone enabled?
-   */
-  bool lazyDeepClone;
-
-  /**
-   * Is the single-reference optimization, for lazy deep clone, enabled?
-   */
-  bool singleReferenceOptimization;
-
-  /**
    * Initial allocation size (number of entries) in maps used for clone
    * memoization.
    */
