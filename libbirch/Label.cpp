@@ -28,7 +28,7 @@ libbirch::Any* libbirch::Label::get(Any* o) {
 	  next = prev;
 	}
   if (frozen) {
-    if (next->numShared() == 1u && next->numWeak() == 1u && next->numMemo() == 1u) {
+    if (next->numShared() == 1u && next->numWeak() == 1u && next->numMemoKey() == 1u) {
       /* this is the last pointer to the object, just thaw it and reuse */
       ///@todo
       //next->thaw(this);

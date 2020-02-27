@@ -54,9 +54,16 @@ public:
   Label* getLabel() const;
 
   /**
-   * Clone function.
+   * Deep freeze.
    */
-  virtual Any* clone_() const = 0;
+  void freeze();
+
+  /**
+   * Shallow thaw to allow reuse of the object.
+   *
+   * @param label The new label of the object.
+   */
+  void thaw(Label* label);
 
   /**
    * Accept function.
@@ -82,12 +89,10 @@ protected:
    */
   bool finished:1;
 
-  #if ENABLE_SINGLE_REFERENCE_OPTIMIZATION
   /**
    * If frozen, at the time of freezing, was the reference count only one?
    */
   bool single:1;
-  #endif
 };
 }
 
@@ -104,11 +109,8 @@ inline libbirch::Any::Any() :
     Counted(),
     label((intptr_t)0),
     frozen(false),
-    finished(false)
-    #if ENABLE_SINGLE_REFERENCE_OPTIMIZATION
-    , single(false)
-    #endif
-    {
+    finished(false),
+    single(false) {
   //
 }
 
@@ -125,13 +127,28 @@ inline bool libbirch::Any::isFinished() const {
 }
 
 inline bool libbirch::Any::isSingle() const {
-  #if ENABLE_SINGLE_REFERENCE_OPTIMIZATION
   return single;
-  #else
-  return false;
-  #endif
 }
 
 inline libbirch::Label* libbirch::Any::getLabel() const {
   return (Label*)label;
+}
+
+inline void libbirch::Any::freeze() {
+  if (!frozen) {
+    frozen = true;
+    auto nshared = numShared();
+    single = nshared <= 1u && numWeak() <= 1u;
+    if (nshared > 0u) {
+      //doFreeze_();
+    }
+  }
+}
+
+inline void libbirch::Any::thaw(Label* label) {
+  this->label = (intptr_t)label;
+  frozen = false;
+  finished = false;
+  single = false;
+  //doThaw_(label);
 }

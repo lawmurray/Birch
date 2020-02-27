@@ -8,10 +8,7 @@
 
 namespace libbirch {
 /**
- * Memo of object mappings. Keeps a memo reference to its keys, and a
- * double shared reference to its values, the latter for the purposes of
- * disabling the single-reference optimization for any objects that are
- * values in a memo. Implemented as a hash table.
+ * Memo of object mappings, implemented as a hash table.
  *
  * @ingroup libbirch
  */

@@ -25,8 +25,9 @@ public:
    */
   Counted() :
       sharedCount(0u),
+      memoValueCount(0u),
       weakCount(1u),
-      memoCount(1u) {
+      memoKeyCount(1u) {
     // no need to set size or tid, handled by operator new
   }
 
@@ -49,6 +50,7 @@ public:
    */
   virtual ~Counted() {
     assert(sharedCount.load() == 0u);
+    assert(memoValueCount.load() == 0u);
   }
 
   /**
@@ -73,71 +75,126 @@ public:
   /**
    * Get the size, in bytes, of the object.
    */
-  unsigned getSize() const;
+  unsigned getSize() const {
+    return size;
+  }
 
   /**
    * Increment the shared count.
    */
-  void incShared();
+  void incShared() {
+    if (++sharedCount == 1) {
+      /* to support object resurrection, when the shared count increases from
+       * zero, increment the memo value count also; this also occurs when an
+       * object is first created */
+      incMemoValue();
+    }
+  }
 
   /**
    * Decrement the shared count.
    */
-  void decShared();
+  void decShared() {
+    assert(sharedCount.load() > 0u);
+    if (--sharedCount == 0u) {
+      decMemoValue();
+    }
+  }
 
   /**
-   * Increment the shared count twice, as one operation.
+   * Increment the memo value count.
    */
-  void doubleIncShared();
+  void incMemoValue() {
+    memoValueCount.increment();
+  }
 
   /**
-   * Decrement the shared count twice, as one operation.
+   * Decrement the memo value count.
    */
-  void doubleDecShared();
+  void decMemoValue() {
+    assert(memoValueCount.load() > 0u);
+    if (--memoValueCount == 0u) {
+      finalize();
+
+      /* to support object resurrection, check the shared count again before
+       * proceeding with destruction */
+      if (sharedCount.load() == 0u) {
+        destroy();
+        decWeak();
+      }
+    }
+  }
+
+  /**
+   * Memo value count.
+   */
+  unsigned numMemoValue() const {
+    return memoValueCount.load();
+  }
 
   /**
    * Shared count.
    */
-  unsigned numShared() const;
+  unsigned numShared() const {
+    return sharedCount.load();
+  }
 
   /**
    * Increment the weak count.
    */
-  void incWeak();
+  void incWeak() {
+    weakCount.increment();
+  }
 
   /**
    * Decrement the weak count.
    */
-  void decWeak();
+  void decWeak() {
+    assert(weakCount.load() > 0u);
+    if (--weakCount == 0u) {
+      decMemoKey();
+    }
+  }
 
   /**
    * Weak count.
    */
-  unsigned numWeak() const;
+  unsigned numWeak() const {
+    return weakCount.load();
+  }
 
   /**
-   * Increment the memo count (implies an increment of the weak count also).
+   * Increment the memo key count.
    */
-  void incMemo();
+  void incMemoKey() {
+    memoKeyCount.increment();
+  }
 
   /**
-   * Decrement the memo count (implies a decrement of the weak count also).
+   * Decrement the memo key count.
    */
-  void decMemo();
+  void decMemoKey() {
+    assert(memoKeyCount.load() > 0u);
+    if (--memoKeyCount == 0u) {
+      deallocate();
+    }
+  }
 
   /**
-   * Memo count.
+   * Memo key count.
    */
-  unsigned numMemo() const;
+  unsigned numMemoKey() const {
+    return memoKeyCount.load();
+  }
 
   /**
-   * Is this object reachable? An object is reachable if it contains a shared
-   * count of one or more, or a weak count greater than the memo count. When
-   * the weak count equals the memo count (it cannot be less), the object
-   * is only reachable via keys in memos, which will never be triggered, and
-   * so the object is not considered reachable.
+   * Is this object reachable? An object is reachable if it contains a weak
+   * count of one or more. In this case, while the object may be contained in
+   * a memo as a key, it will never be queried, and is eligible for removal.
    */
-  bool isReachable() const;
+  bool isReachable() const {
+    return numWeak() > 0u;
+  }
 
   /**
    * Finalizer. This is called when the shared reference count reaches zero,
@@ -155,6 +212,7 @@ protected:
    */
   void destroy() {
     assert(sharedCount.load() == 0u);
+    assert(memoValueCount.load() == 0u);
     this->~Counted();
   }
 
@@ -163,8 +221,9 @@ protected:
    */
   void deallocate() {
     assert(sharedCount.load() == 0u);
+    assert(memoValueCount.load() == 0u);
     assert(weakCount.load() == 0u);
-    assert(memoCount.load() == 0u);
+    assert(memoKeyCount.load() == 0u);
     libbirch::deallocate(this, size, tid);
   }
 
@@ -174,18 +233,25 @@ protected:
   Atomic<unsigned> sharedCount;
 
   /**
+   * Memo value count. This is one plus the number of times that the object
+   * is held as a value in a memo. The plus one is a self-reference that is
+   * released when the shared count reaches zero.
+   */
+  Atomic<unsigned> memoValueCount;
+
+  /**
    * Weak count. This is one plus the number of times that the object is held
    * by a weak pointer. The plus one is a self-reference that is released
-   * when the shared count reaches zero.
+   * when the memo value count reaches zero.
    */
   Atomic<unsigned> weakCount;
 
   /**
-   * Memo count. This is one plus the number of times that the object occurs
-   * as a key in a memo. The plus one is a self-reference that is relased
-   * when the weak count reaches zero.
+   * Memo key count. This is one plus the number of times that the object
+   * is held as a key in a memo. The plus one is a self-reference that is
+   * released when the weak count reaches zero.
    */
-  Atomic<unsigned> memoCount;
+  Atomic<unsigned> memoKeyCount;
 
   /**
    * Size of the object. This is set immediately after construction. A value
@@ -203,84 +269,4 @@ protected:
    */
   int tid;
 };
-}
-
-#include "libbirch/thread.hpp"
-
-inline unsigned libbirch::Counted::getSize() const {
-  return size;
-}
-
-inline void libbirch::Counted::incShared() {
-  //assert(sharedCount.load() > 0u);
-  sharedCount.increment();
-}
-
-inline void libbirch::Counted::decShared() {
-  assert(sharedCount.load() > 0u);
-  if (--sharedCount == 0u) {
-    finalize();
-
-    /* object resurrection is supported, it is only necessary to check the
-     * shared count again before proceeding with destruction */
-    if (sharedCount.load() == 0u) {
-      destroy();
-      decWeak();  // release weak self-reference
-    }
-  }
-}
-
-inline void libbirch::Counted::doubleIncShared() {
-  //assert(sharedCount.load() > 0u);
-  sharedCount.doubleIncrement();
-}
-
-inline void libbirch::Counted::doubleDecShared() {
-  assert(sharedCount.load() > 0u);
-  if ((sharedCount -= 2u) == 0u) {
-    destroy();
-    decWeak();  // release weak self-reference
-  }
-}
-
-inline unsigned libbirch::Counted::numShared() const {
-  return sharedCount.load();
-}
-
-inline void libbirch::Counted::incWeak() {
-  assert(weakCount.load() > 0u);
-  weakCount.increment();
-}
-
-inline void libbirch::Counted::decWeak() {
-  assert(weakCount.load() > 0u);
-  if (--weakCount == 0u) {
-    assert(sharedCount.load() == 0u);
-    decMemo();  // release memo self-reference
-  }
-}
-
-inline unsigned libbirch::Counted::numWeak() const {
-  return weakCount.load();
-}
-
-inline void libbirch::Counted::incMemo() {
-  memoCount.increment();
-}
-
-inline void libbirch::Counted::decMemo() {
-  assert(memoCount.load() > 0u);
-  if (--memoCount == 0u) {
-    assert(sharedCount.load() == 0u);
-    assert(weakCount.load() == 0u);
-    deallocate();
-  }
-}
-
-inline unsigned libbirch::Counted::numMemo() const {
-  return memoCount.load();
-}
-
-inline bool libbirch::Counted::isReachable() const {
-  return numWeak() > 0u;
 }

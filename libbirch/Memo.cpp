@@ -19,8 +19,8 @@ libbirch::Memo::~Memo() {
       auto key = keys[i];
       if (key) {
         auto value = values[i];
-        key->decMemo();
-        value->doubleDecShared();
+        key->decMemoKey();
+        value->decMemoValue();
       }
     }
     deallocate(keys, nentries * sizeof(key_type), tentries);
@@ -53,8 +53,8 @@ void libbirch::Memo::put(const key_type key,
   assert(key);
   assert(value);
 
-  key->incMemo();
-  value->doubleIncShared();
+  key->incMemoKey();
+  value->incMemoValue();
 
   reserve();
   auto i = hash(key, nentries);
@@ -89,10 +89,10 @@ void libbirch::Memo::copy(const Memo& o) {
       auto key = o.keys[i];
       auto value = o.values[i];
       if (key) {
-        key->incMemo();
+        key->incMemoKey();
       }
       if (value) {
-        value->doubleIncShared();
+        value->decMemoValue();
       }
       keys[i] = key;
       values[i] = value;
@@ -136,8 +136,8 @@ void libbirch::Memo::rehash() {
           next = get(prev, prev);
         } while (next != prev);
         if (next != first) {
-          next->doubleIncShared();
-          first->doubleDecShared();
+          next->incMemoValue();
+          first->decMemoValue();
         }
         values[i] = next;
       }
@@ -149,8 +149,8 @@ void libbirch::Memo::rehash() {
       auto key = keys[i];
       if (key && !key->isReachable()) {
         auto value = values[i];
-        key->decMemo();
-        value->doubleDecShared();
+        key->decMemoKey();
+        value->decMemoValue();
         keys[i] = nullptr;
         values[i] = nullptr;
         --noccupied;
