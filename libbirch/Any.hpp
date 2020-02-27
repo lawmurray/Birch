@@ -34,13 +34,12 @@ public:
       memoValueCount(0u),
       weakCount(1u),
       memoKeyCount(1u),
-      label((intptr_t)0),
+      label(0),
       frozen(false),
       finished(false),
       single(false) {
     // no need to set size or tid, handled by operator new
   }
-
 
   /**
    * Destructor.
@@ -84,6 +83,25 @@ public:
   }
 
   /**
+   * Is this object reachable? An object is reachable if it contains a weak
+   * count of one or more. In this case, while the object may be contained in
+   * a memo as a key, it will never be queried, and is eligible for removal.
+   */
+  bool isReachable() const {
+    return numWeak() > 0u;
+  }
+
+  /**
+   * Finalizer. This is called when the memo value count reaches zero,
+   * but before destruction and deallocation of the object. Object
+   * resurrection is supported: if the finalizer results in a nonzero memo
+   * value count, destruction and deallocation do not proceed.
+   */
+  virtual void finalize() {
+    //
+  }
+
+  /**
    * Increment the shared count.
    */
   void incShared() {
@@ -92,6 +110,7 @@ public:
        * zero, increment the memo value count also; this also occurs when an
        * object is first created */
       incMemoValue();
+      holdLabel();
     }
   }
 
@@ -99,7 +118,7 @@ public:
    * Decrement the shared count.
    */
   void decShared() {
-    assert(sharedCount.load() > 0u);
+    assert(numShared() > 0u);
     if (--sharedCount == 0u) {
       decMemoValue();
     }
@@ -116,13 +135,13 @@ public:
    * Decrement the memo value count.
    */
   void decMemoValue() {
-    assert(memoValueCount.load() > 0u);
+    assert(numMemoValue() > 0u);
     if (--memoValueCount == 0u) {
       finalize();
 
-      /* to support object resurrection, check the shared count again before
-       * proceeding with destruction */
-      if (sharedCount.load() == 0u) {
+      /* to support object resurrection, check the memo value count again
+       * before proceeding with destruction */
+      if (numMemoValue() == 0u) {
         destroy();
         decWeak();
       }
@@ -192,25 +211,6 @@ public:
   }
 
   /**
-   * Is this object reachable? An object is reachable if it contains a weak
-   * count of one or more. In this case, while the object may be contained in
-   * a memo as a key, it will never be queried, and is eligible for removal.
-   */
-  bool isReachable() const {
-    return numWeak() > 0u;
-  }
-
-  /**
-   * Finalizer. This is called when the shared reference count reaches zero,
-   * but before destruction and deallocation of the object. Object
-   * resurrection is supported: if the finalizer results in a nonzero shared
-   * reference count, destruction and deallocation do not proceed.
-   */
-  virtual void finalize() {
-    //
-  }
-
-  /**
    * Is the object frozen? This returns true if either a freeze is in
    * progress (i.e. another thread is in the process of freezing the object),
    * or if the freeze is complete.
@@ -241,6 +241,17 @@ public:
   }
 
   /**
+   * Set the label assigned to the object. The shared count must be greater
+   * than zero.
+   */
+  void setLabel(Label* label) {
+    assert(numShared() > 0u);
+    releaseLabel();
+    this->label = (intptr_t)label;
+    holdLabel();
+  }
+
+  /**
    * Deep freeze.
    */
   void freeze() {
@@ -254,14 +265,13 @@ public:
     }
   }
 
-
   /**
    * Shallow thaw to allow reuse of the object.
    *
    * @param label The new label of the object.
    */
   void thaw(Label* label) {
-    this->label = (intptr_t)label;
+    setLabel(label);
     frozen = false;
     finished = false;
     single = false;
@@ -276,7 +286,32 @@ public:
     //
   }
 
-protected:
+private:
+  /**
+   * Increment the shared count of the label (if not null).
+   */
+  void holdLabel() {
+    auto label = getLabel();
+    if (label) {
+      reinterpret_cast<Any*>(label)->incShared();
+      // ^ Label is an incomplete type here, cast as workaround
+    }
+  }
+
+  /**
+   * Decrement the shared count of the label (if not null). This is used
+   * when the shared count for the object reduces to zero, while the memo
+   * value count may still be greater than zero, in order to break any
+   * reference cycles between objects and memos with the same label.
+   */
+  void releaseLabel() {
+    auto label = getLabel();
+    if (label) {
+      reinterpret_cast<Any*>(label)->decShared();
+      // ^ Label is an incomplete type here, cast as workaround
+    }
+  }
+
   /**
    * Destroy, but do not deallocate, the object.
    */
@@ -297,7 +332,6 @@ protected:
     libbirch::deallocate(this, size, tid);
   }
 
-private:
   /**
    * Shared count.
    */
@@ -325,22 +359,6 @@ private:
   Atomic<unsigned> memoKeyCount;
 
   /**
-   * Size of the object. This is set immediately after construction. A value
-   * of zero is also indicative that the object is still being constructed.
-   * Consequently, if the shared count reaches zero while the size is zero,
-   * the object is not destroyed. This can happen when constructors create
-   * shared pointers to `this`.
-   */
-  unsigned size;
-
-  /**
-   * Id of the thread associated with the object. This is used to return the
-   * allocation to the correct pool after use, even when returned by a
-   * different thread.
-   */
-  int tid;
-
-  /**
    * Label of the object.
    */
   intptr_t label:61;
@@ -359,5 +377,21 @@ private:
    * If frozen, at the time of freezing, was the reference count only one?
    */
   bool single:1;
+
+  /**
+   * Size of the object. This is set immediately after construction. A value
+   * of zero is also indicative that the object is still being constructed.
+   * Consequently, if the shared count reaches zero while the size is zero,
+   * the object is not destroyed. This can happen when constructors create
+   * shared pointers to `this`.
+   */
+  unsigned size;
+
+  /**
+   * Id of the thread associated with the object. This is used to return the
+   * allocation to the correct pool after use, even when returned by a
+   * different thread.
+   */
+  int tid;
 };
 }

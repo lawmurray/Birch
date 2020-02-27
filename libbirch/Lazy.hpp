@@ -4,14 +4,11 @@
 #pragma once
 
 #include "libbirch/external.hpp"
+#include "libbirch/thread.hpp"
 #include "libbirch/type.hpp"
 #include "libbirch/Any.hpp"
 #include "libbirch/Label.hpp"
-#include "libbirch/Nil.hpp"
-#include "libbirch/SharedPtr.hpp"
-#include "libbirch/WeakPtr.hpp"
 #include "libbirch/InitPtr.hpp"
-#include "libbirch/thread.hpp"
 
 namespace libbirch {
 /**
@@ -134,7 +131,7 @@ public:
   Lazy clone() const {
     pull();
     this->startFreeze();
-    return Lazy(get(), this->getLabel()->fork());
+    return Lazy(get(), this->label->fork());
   }
 
   /**
@@ -171,8 +168,7 @@ public:
    */
   Lazy(const std::nullptr_t& nil) :
       object(nullptr),
-      label(0),
-      cross(0) {
+      label(nullptr) {
     //
   }
 
@@ -182,9 +178,8 @@ public:
   template<class Q, std::enable_if_t<is_base_of<Any*,Q>::value,int> = 0>
   Lazy(const Q& ptr, Label* label = nullptr) :
       object(ptr),
-      label(0),
-      cross(0) {
-    setLabel(label);
+      label(label) {
+    //
   }
 
   /**
@@ -192,8 +187,7 @@ public:
    */
   Lazy(const Lazy& o) :
       object(o.object),
-      label(o.label),
-      cross(0) {
+      label(o.label) {
     //
   }
 
@@ -202,8 +196,7 @@ public:
    */
   Lazy(Lazy&& o) :
       object(std::move(o.object)),
-      label(o.label),
-      cross(o.cross) {
+      label(o.label) {
     //
   }
 
@@ -211,7 +204,7 @@ public:
    * Destructor.
    */
   ~Lazy() {
-    releaseLabel();
+    //
   }
 
   /**
@@ -219,8 +212,8 @@ public:
    */
   Lazy& operator=(const Lazy& o) {
     if (o.query()) {
-      replaceLabel(o.getLabel());
       object.replace(o.get());
+      label = o.label;
     } else {
       release();
     }
@@ -232,8 +225,8 @@ public:
    */
   Lazy& operator=(Lazy&& o) {
     if (o.query()) {
-      replaceLabel(o.getLabel());
       object = std::move(o.object);
+      label = std::move(o.label);
     } else {
       release();
     }
@@ -244,8 +237,8 @@ public:
    * Release the pointer.
    */
   void release() {
-    releaseLabel();
     object.release();
+    label.release();
   }
 
   /**
@@ -262,7 +255,7 @@ public:
    * Get the raw pointer, with lazy cloning.
    */
   Any* get() {
-    getLabel()->get(object);
+    label->get(object);
     return object.get();
   }
 
@@ -277,7 +270,7 @@ public:
    * Get the raw pointer for read-only use, without cloning.
    */
   Any* pull() {
-    getLabel()->pull(object);
+    label->pull(object);
     return object.get();
   }
 
@@ -286,6 +279,13 @@ public:
    */
   Any* pull() const {
     return const_cast<Lazy*>(this)->pull();
+  }
+
+  /**
+   * Get the label associated with the pointer.
+   */
+  Label* getLabel() const {
+    return label.get();
   }
 
   /**
@@ -315,7 +315,7 @@ public:
     if (object.query()) {
       ///@todo
       //object->freeze();
-      //getLabel()->freeze();
+      //label->freeze();
     }
   }
 
@@ -330,12 +330,8 @@ public:
    * Thaw.
    */
   void thaw(Label* label) {
-    if (isCross()) {
-      startFinish();
-      startFreeze();
-    }
     if (object.query()) {
-      this->label = reinterpret_cast<intptr_t>(label);
+      this->label = label;
     }
   }
 
@@ -385,22 +381,6 @@ public:
   }
 
   /**
-   * Get the label.
-   */
-  Label* getLabel() const {
-    return reinterpret_cast<Label*>(this->label);
-  }
-
-  /**
-   * Is this pointer crossed? A crossed pointer is to a context different to
-   * that of the context in which it was created (e.g. the context of the
-   * object to which it belongs).
-   */
-  bool isCross() const {
-    return cross;
-  }
-
-  /**
    * Dereference.
    */
   value_type& operator*() const {
@@ -416,63 +396,14 @@ public:
 
 private:
   /**
-   * Set the label.
-   */
-  void setLabel(Label* label) {
-    assert(this->label == 0);
-    assert(!this->cross);
-    this->label = reinterpret_cast<intptr_t>(label);
-    this->cross = label != nullptr;
-    if (cross) {
-      label->incShared();
-    }
-  }
-
-  /**
-   * Replace the label.
-   */
-  void replaceLabel(Label* label) {
-    auto oldLabel = this->getLabel();
-    auto oldCross = this->isCross();
-    this->label = reinterpret_cast<intptr_t>(label);
-    this->cross = label != nullptr;
-    if (cross) {
-      label->incShared();
-    }
-    if (oldCross) {
-      oldLabel->decShared();
-    }
-  }
-
-  /**
-   * Release the label.
-   */
-  void releaseLabel() {
-    auto label = getLabel();
-    auto cross = isCross();
-    this->label = 0;
-    this->cross = false;
-    if (cross) {
-      label->decShared();
-    }
-  }
-
-  /**
    * Object.
    */
   P object;
 
   /**
-   * Raw pointer.
+   * Label.
    */
-  intptr_t label:63;
-
-  /**
-   * Is this pointer crossed? A crossed pointer is to a context different to
-   * that of the context in which it was created (e.g. the context of the
-   * object to which it belongs).
-   */
-  bool cross:1;
+  InitPtr<Label> label;
 };
 
 template<class P>
