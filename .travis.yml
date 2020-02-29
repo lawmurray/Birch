@@ -6,6 +6,7 @@ matrix:
     osx_image: xcode10.3
     addons:
       homebrew:
+        update: true
         packages:
         - flex
         - bison
