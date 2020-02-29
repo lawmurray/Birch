@@ -6,6 +6,7 @@
 #include "libbirch/external.hpp"
 #include "libbirch/thread.hpp"
 #include "libbirch/type.hpp"
+#include "libbirch/relabel.hpp"
 #include "libbirch/Any.hpp"
 #include "libbirch/Label.hpp"
 #include "libbirch/InitPtr.hpp"
@@ -98,6 +99,13 @@ public:
   }
 
   /**
+   * Relabel.
+   */
+  void relabel(Label* oldLabel, Label* newLabel) {
+    ///@todo
+  }
+
+  /**
    * Get the raw pointer, with lazy cloning.
    */
   value_type* get() {
@@ -123,15 +131,6 @@ public:
    */
   value_type* pull() const {
     return static_cast<value_type*>(super_type::pull());
-  }
-
-  /**
-   * Start lazy deep clone.
-   */
-  Lazy clone() const {
-    pull();
-    this->startFreeze();
-    return Lazy(get(), this->label->fork());
   }
 
   /**
@@ -289,98 +288,6 @@ public:
   }
 
   /**
-   * Start a freeze operation. This is just like freeze(), but manages thread
-   * safety on entry and exit.
-   */
-  void startFreeze() {
-    if (object.query()) {
-      freezeLock.enter();
-      freeze();
-      freezeLock.exit();
-    }
-  }
-
-  /**
-   * Start a freeze operation. This is just like freeze(), but manages thread
-   * safety on entry and exit.
-   */
-  void startFreeze() const {
-    return const_cast<Lazy*>(this)->startFreeze();
-  }
-
-  /**
-   * Freeze.
-   */
-  void freeze() {
-    if (object.query()) {
-      ///@todo
-      //object->freeze();
-      //label->freeze();
-    }
-  }
-
-  /**
-   * Freeze.
-   */
-  void freeze() const {
-    return const_cast<Lazy*>(this)->freeze();
-  }
-
-  /**
-   * Thaw.
-   */
-  void thaw(Label* label) {
-    if (object.query()) {
-      this->label = label;
-    }
-  }
-
-  /**
-   * Thaw.
-   */
-  void thaw(Label* label) const {
-    return const_cast<Lazy*>(this)->thaw(label);
-  }
-
-  /**
-   * Start a finish operation. This is just like finish(), but manages thread
-   * safety on entry and exit.
-   */
-  void startFinish() {
-    if (object) {
-      finishLock.enter();
-      finish();
-      finishLock.exit();
-    }
-  }
-
-  /**
-   * Start a freeze operation. This is just like finish(), but manages thread
-   * safety on entry and exit.
-   */
-  void startFinish() const {
-    return const_cast<Lazy*>(this)->startFinish();
-  }
-
-  /**
-   * Finish.
-   */
-  void finish() {
-    if (object) {
-      get();
-      ///@todo
-      //object->finish();
-    }
-  }
-
-  /**
-   * Finish.
-   */
-  void finish() const {
-    return const_cast<Lazy*>(this)->finish();
-  }
-
-  /**
    * Dereference.
    */
   value_type& operator*() const {
@@ -420,4 +327,9 @@ template<class P>
 struct raw_type<Lazy<P>> {
   using type = typename raw_type<P>::type;
 };
+
+template<class P>
+void relabel(Label* oldLabel, Label* newLabel, Lazy<P>& o) {
+  o.relabel(oldLabel, newLabel);
+}
 }

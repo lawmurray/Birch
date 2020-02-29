@@ -68,11 +68,6 @@ public:
    */
   void rehash();
 
-  /**
-   * Freeze all values in the map.
-   */
-  void freeze();
-
 private:
   /**
    * Compute the hash code for a given key for a table with the given number

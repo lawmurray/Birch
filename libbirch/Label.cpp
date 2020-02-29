@@ -3,14 +3,18 @@
  */
 #include "libbirch/Label.hpp"
 
-libbirch::Label::Label(Label* parent) :
-    frozen(parent->frozen) {
-  assert(parent);
-  parent->lock.write();
-  parent->memo.rehash();
-  parent->lock.downgrade();
-  memo.copy(parent->memo);
-  parent->lock.unread();
+libbirch::Label::Label(Label* parent) {
+  if (parent) {
+    parent->lock.write();
+    parent->memo.rehash();
+    parent->lock.downgrade();
+    memo.copy(parent->memo);
+    parent->lock.unread();
+    if (parent->isFrozen()) {
+      ///@todo
+      //frozen = true;
+    }
+  }
 }
 
 libbirch::Any* libbirch::Label::get(Any* o) {
@@ -66,17 +70,4 @@ libbirch::Any* libbirch::Label::copy(Any* o) {
 //    memo.put(o, cloned);
 //  }
 //  return cloned;
-}
-
-void libbirch::Label::freeze() {
-  if (!frozen) {
-    frozen = true;
-    lock.read();
-    memo.freeze();
-    lock.unread();
-  }
-}
-
-void libbirch::Label::thaw() {
-  frozen = false;
 }

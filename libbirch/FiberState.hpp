@@ -34,6 +34,9 @@ public:
    * @return New fiber handle.
    */
   virtual Fiber<Yield,Return> query() = 0;
+
+  LIBBIRCH_ABSTRACT_CLASS(FiberState, Any)
+  LIBBIRCH_MEMBERS()
 };
 }
 

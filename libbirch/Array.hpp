@@ -188,6 +188,11 @@ public:
   }
 
   /**
+   * Relabel.
+   */
+  void relabel(Label* oldLabel, Label* newLabel);
+
+  /**
    * Copy assignment. For a view the shapes of the two arrays must
    * conform, otherwise a resize is permitted.
    */
@@ -579,36 +584,6 @@ public:
   }
   ///@}
 
-  void freeze() {
-    pin();
-    auto iter = begin();
-    auto last = end();
-    unpin();
-    for (; iter != last; ++iter) {
-      iter->freeze();
-    }
-  }
-
-  void thaw(Label* label) {
-    pin();
-    auto iter = begin();
-    auto last = end();
-    unpin();
-    for (; iter != last; ++iter) {
-      iter->thaw(label);
-    }
-  }
-
-  void finish() {
-    pin();
-    auto iter = begin();
-    auto last = end();
-    unpin();
-    for (; iter != last; ++iter) {
-      iter->finish();
-    }
-  }
-
 private:
   /**
    * Constructor for forced copy.
@@ -780,4 +755,21 @@ struct is_array<Array<T,F>> {
 template<class T, int D>
 using DefaultArray = Array<T,typename DefaultShape<D>::type>;
 
+template<class T, class F>
+void relabel(Label* oldLabel, Label* newLabel, Array<T,F>& o) {
+  o.relabel(oldLabel, newLabel);
+}
+}
+
+#include "libbirch/relabel.hpp"
+
+template<class T, class F>
+void libbirch::Array<T,F>::relabel(Label* oldLabel, Label* newLabel) {
+  pin();
+  auto iter = begin();
+  auto last = end();
+  unpin();
+  for (; iter != last; ++iter) {
+    libbirch::relabel(oldLabel, newLabel, *iter);
+  }
 }

@@ -3,7 +3,8 @@
  */
 function clone<Type>(o:Type) -> Type {
   cpp{{
-  return o.clone();
+  ///@todo
+  //return o->clone();
   }}
 }
 

@@ -8,13 +8,13 @@
 
 #include "libbirch/external.hpp"
 #include "libbirch/assert.hpp"
+#include "libbirch/thread.hpp"
 #include "libbirch/memory.hpp"
 #include "libbirch/stacktrace.hpp"
-#include "libbirch/class.hpp"
 #include "libbirch/basic.hpp"
+#include "libbirch/class.hpp"
 #include "libbirch/type.hpp"
-#include "libbirch/thread.hpp"
-#include "libbirch/operation.hpp"
+#include "libbirch/relabel.hpp"
 
 #include "libbirch/SharedPtr.hpp"
 #include "libbirch/WeakPtr.hpp"

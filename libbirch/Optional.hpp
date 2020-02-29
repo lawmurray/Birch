@@ -96,6 +96,15 @@ public:
   }
 
   /**
+   * Relabel.
+   */
+  void relabel(Label* oldLabel, Label* newLabel) {
+    if (hasValue) {
+      libbirch::relabel(oldLabel, newLabel, value);
+    }
+  }
+
+  /**
    * Is there a value?
    */
   bool query() const {
@@ -218,6 +227,15 @@ public:
   }
 
   /**
+   * Relabel.
+   */
+  void relabel(Label* oldLabel, Label* newLabel) {
+    if (hasValue) {
+      libbirch::relabel(oldLabel, newLabel, value);
+    }
+  }
+
+  /**
    * Is there a value?
    */
   bool query() const {
@@ -312,6 +330,13 @@ public:
   }
 
   /**
+   * Relabel.
+   */
+  void relabel(Label* oldLabel, Label* newLabel) {
+    libbirch::relabel(oldLabel, newLabel, value);
+  }
+
+  /**
    * Is there a value?
    */
   bool query() const {
@@ -350,4 +375,11 @@ template<class T>
 struct is_value<Optional<T>&> {
   static const bool value = is_value<T>::value;
 };
+
+template<class T>
+void relabel(Label* oldLabel, Label* newLabel, Optional<T>& o) {
+  o.relabel(oldLabel, newLabel);
 }
+
+}
+

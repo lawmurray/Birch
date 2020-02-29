@@ -7,21 +7,19 @@ abstract class Object {
    */
   final function getClassName() -> String;
 
-  /*
-   * Finalizer. This is called when the object becomes unreachable, but
-   * before destruction and deallocation. Object resurrection is supported:
-   * if `finalize()` makes the object reachable again, destruction and
-   * deallocation do not proceed.
+  /**
+   * Finalize. This is called immediately before destruction and deallocation
+   * of an object. Object resurrection is supported: if the function creates
+   * a new reference to this object, destruction and deallocation will not
+   * proceed.
    */
-  function finalize() {
-    //
-  }
+  function finalize();
 
   /**
    * Read.
    */
   function read(buffer:Buffer?) {
-    if (buffer?) {
+    if buffer? {
       read(buffer!);
     }
   }
@@ -37,7 +35,7 @@ abstract class Object {
    * Write.
    */
   function write(buffer:Buffer?) {
-    if (buffer?) {
+    if buffer? {
       write(buffer!);
     }
   }

@@ -28,26 +28,36 @@
  *
  *     LIBBIRCH_CLASS(A, B<T,U>)
  */
-#define LIBBIRCH_CLASS(Name, ...) \
-  Name* clone_() const { \
-    return new Name(*this); \
+#define LIBBIRCH_CLASS(Name, Base...) \
+  virtual Name* clone() const override { \
+    return clone(new libbirch::Label(this->getLabel())); \
   } \
   \
-  LIBBIRCH_ABSTRACT_CLASS(Name, __VA_ARGS__)
+  virtual Name* clone(libbirch::Label* label) const override { \
+    auto o = new Name(*this); \
+    o->relabel(label); \
+    return o; \
+  } \
+  \
+  virtual Name* recycle(libbirch::Label* label) override { \
+    this->relabel(label); \
+    return this; \
+  } \
+  \
+  LIBBIRCH_ABSTRACT_CLASS(Name, Base)
 
 /**
  * @def LIBBIRCH_ABSTRACT_CLASS
  *
  * Use in place of LIBBIRCH_CLASS when the containing class is abstract.
  */
-#define LIBBIRCH_ABSTRACT_CLASS(Name, ...) \
-  virtual const char* getClassName() const { \
+#define LIBBIRCH_ABSTRACT_CLASS(Name, Base...) \
+  virtual const char* getClassName() const override { \
     return #Name; \
   } \
   \
-  template<class V_> \
-  void accept_(V_& v_) { \
-    __VA_ARGS__ ::accept_(v_);
+  void relabel(libbirch::Label* label) { \
+    Base::relabel(label);
 
 /**
  * @def LIBBIRCH_MEMBERS
@@ -69,8 +79,8 @@
  *       int x, y, z;
  *     };
  */
-#define LIBBIRCH_MEMBERS(...) \
-    v_.visit(__VA_ARGS__); \
+#define LIBBIRCH_MEMBERS(members...) \
+    libbirch::relabel(this->getLabel(), label, ## members); \
   }
 
 /**

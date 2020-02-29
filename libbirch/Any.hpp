@@ -6,7 +6,6 @@
 #include "libbirch/external.hpp"
 #include "libbirch/memory.hpp"
 #include "libbirch/class.hpp"
-#include "libbirch/Cloner.hpp"
 #include "libbirch/Atomic.hpp"
 
 namespace libbirch {
@@ -92,7 +91,33 @@ public:
   }
 
   /**
-   * Finalizer. This is called when the memo value count reaches zero,
+   * Get the name of the class as a string.
+   */
+  virtual const char* getClassName() const;
+
+  /**
+   * Clone the object, under a new label.
+   */
+  virtual Any* clone() const;
+
+  /**
+   * Clone the object, under an existing label.
+   */
+  virtual Any* clone(Label* label) const;
+
+  /**
+   * Recycle the object, under an existing label. This can be used as an
+   * optimization in place of clone() when this object would otherwise be
+   * destroyed after the operation. Instead of creating a new object and
+   * destroying this object, this object is repurposed ass the new object.
+   * It is only valid for objects with a memo value count of one, where the
+   * caller can account for that one reference and will remove it after the
+   * call.
+   */
+  virtual Any* recycle(Label* label);
+
+  /**
+   * Finalize. This is called when the memo value count reaches zero,
    * but before destruction and deallocation of the object. Object
    * resurrection is supported: if the finalizer results in a nonzero memo
    * value count, destruction and deallocation do not proceed.
@@ -211,6 +236,13 @@ public:
   }
 
   /**
+   * Get the label assigned to the object.
+   */
+  Label* getLabel() const {
+    return label;
+  }
+
+  /**
    * Is the object frozen? This returns true if either a freeze is in
    * progress (i.e. another thread is in the process of freezing the object),
    * or if the freeze is complete.
@@ -233,70 +265,25 @@ public:
     return single;
   }
 
+protected:
   /**
-   * Get the label assigned to the object.
+   * Relabel the object. This is used internally by either clone() or
+   * recycle(). Derived classes implement the same, but call this function in
+   * the base class.
    */
-  Label* getLabel() const {
-    return (Label*)label;
-  }
+  void relabel(Label* label);
 
+private:
   /**
    * Set the label assigned to the object. The shared count must be greater
    * than zero.
    */
-  void setLabel(Label* label) {
-    assert(numShared() > 0u);
-    releaseLabel();
-    this->label = (intptr_t)label;
-    holdLabel();
-  }
+  void setLabel(Label* label);
 
-  /**
-   * Deep freeze.
-   */
-  void freeze() {
-    if (!frozen) {
-      frozen = true;
-      auto nshared = numShared();
-      single = nshared <= 1u && numWeak() <= 1u;
-      if (nshared > 0u) {
-        //doFreeze_();
-      }
-    }
-  }
-
-  /**
-   * Shallow thaw to allow reuse of the object.
-   *
-   * @param label The new label of the object.
-   */
-  void thaw(Label* label) {
-    setLabel(label);
-    frozen = false;
-    finished = false;
-    single = false;
-    //doThaw_(label);
-  }
-
-  /**
-   * Accept function.
-   */
-  template<class V>
-  void accept_(V& v) {
-    //
-  }
-
-private:
   /**
    * Increment the shared count of the label (if not null).
    */
-  void holdLabel() {
-    auto label = getLabel();
-    if (label) {
-      reinterpret_cast<Any*>(label)->incShared();
-      // ^ Label is an incomplete type here, cast as workaround
-    }
-  }
+  void holdLabel();
 
   /**
    * Decrement the shared count of the label (if not null). This is used
@@ -304,13 +291,7 @@ private:
    * value count may still be greater than zero, in order to break any
    * reference cycles between objects and memos with the same label.
    */
-  void releaseLabel() {
-    auto label = getLabel();
-    if (label) {
-      reinterpret_cast<Any*>(label)->decShared();
-      // ^ Label is an incomplete type here, cast as workaround
-    }
-  }
+  void releaseLabel();
 
   /**
    * Destroy, but do not deallocate, the object.
@@ -361,22 +342,7 @@ private:
   /**
    * Label of the object.
    */
-  intptr_t label:61;
-
-  /**
-   * Is this frozen (read-only)?
-   */
-  bool frozen:1;
-
-  /**
-   * Is this finished?
-   */
-  bool finished:1;
-
-  /**
-   * If frozen, at the time of freezing, was the reference count only one?
-   */
-  bool single:1;
+  Label* label;
 
   /**
    * Size of the object. This is set immediately after construction. A value
@@ -392,6 +358,21 @@ private:
    * allocation to the correct pool after use, even when returned by a
    * different thread.
    */
-  int tid;
+  int tid:29;
+
+  /**
+   * Is this frozen (read-only)?
+   */
+  bool frozen:1;
+
+  /**
+   * Is this finished?
+   */
+  bool finished:1;
+
+  /**
+   * If frozen, at the time of freezing, was the reference count only one?
+   */
+  bool single:1;
 };
 }

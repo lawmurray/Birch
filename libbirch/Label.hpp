@@ -4,8 +4,6 @@
 #pragma once
 
 #include "libbirch/Any.hpp"
-#include "libbirch/Any.hpp"
-#include "libbirch/SharedPtr.hpp"
 #include "libbirch/Memo.hpp"
 
 namespace libbirch {
@@ -20,28 +18,18 @@ public:
   using class_type_ = Label;
 
   /**
-   * Constructor for root node.
-   */
-  Label();
-
-  /**
-   * Constructor for non-root node.
+   * Constructor.
    *
-   * @param parent Parent.
+   * @param parent Parent label, if any.
    */
-  Label(Label* parent);
+  Label(Label* parent = nullptr);
 
   /**
    * Destructor.
    */
-  virtual ~Label();
-
-  /**
-   * Fork to create a new child label.
-   *
-   * @return The child label.
-   */
-  Label* fork();
+  virtual ~Label() {
+    //
+  }
 
   /**
    * Update a pointer for writing.
@@ -49,7 +37,17 @@ public:
    * @param Pointer type (SharedPtr, WeakPtr or InitPtr).
    */
   template<class P>
-  void get(P& o);
+  void get(P& o)  {
+    if (o.query() && o->isFrozen()) {
+      lock.write();
+      Any* old = o.get();
+      Any* ptr = get(old);
+      if (ptr != old) {
+        o.replace(static_cast<typename P::value_type*>(ptr));
+      }
+      lock.unwrite();
+    }
+  }
 
   /**
    * Update a pointer for reading.
@@ -57,17 +55,23 @@ public:
    * @param Pointer type (SharedPtr, WeakPtr or InitPtr).
    */
   template<class P>
-  void pull(P& o);
-
-  /**
-   * Freeze all values in the memo.
-   */
-  void freeze();
-
-  /**
-   * Thaw the memo.
-   */
-  void thaw();
+  void pull(P& o) {
+    if (o.query() && o->isFrozen()) {
+      lock.read();
+      Any* old = o.get();
+      Any* ptr = pull(old);
+      lock.unread();
+      if (ptr != old) {
+        /* it is possible for multiple threads to try to update o
+         * simultaneously, and the interleaving operations to result in
+         * incorrect reference counts updates; ensure exclusive access with a
+         * write lock */
+        lock.write();
+        o.replace(static_cast<typename P::value_type*>(ptr));
+        lock.unwrite();
+      }
+    }
+  }
 
 private:
   /**
@@ -96,12 +100,6 @@ private:
    * Lock.
    */
   ReaderWriterLock lock;
-
-  /**
-   * Is this frozen? Unlike regular objects, a memo can still have new entries
-   * written after it is frozen, but this thaws it again.
-   */
-  bool frozen;
 };
 }
 
@@ -111,50 +109,5 @@ template<>
 struct super_type<libbirch::Label> {
   using type = libbirch::Any;
 };
-  }
-}
-
-inline libbirch::Label::Label() :
-    frozen(false) {
-  //
-}
-
-inline libbirch::Label::~Label() {
-  //
-}
-
-inline libbirch::Label* libbirch::Label::fork() {
-  return new Label(this);
-}
-
-template<class P>
-void libbirch::Label::get(P& o) {
-  if (o.query() && o->isFrozen()) {
-    lock.write();
-    Any* old = o.get();
-    Any* ptr = get(old);
-    if (ptr != old) {
-      o.replace(static_cast<typename P::value_type*>(ptr));
-    }
-    lock.unwrite();
-  }
-}
-
-template<class P>
-void libbirch::Label::pull(P& o) {
-  if (o.query() && o->isFrozen()) {
-    lock.read();
-    Any* old = o.get();
-    Any* ptr = pull(old);
-    lock.unread();
-    if (ptr != old) {
-      /* it is possible for multiple threads to try to update o
-       * simultaneously, and the interleaving operations to result in
-       * incorrect reference counts updates; ensure exclusive access with a
-       * write lock */
-      lock.write();
-      o.replace(static_cast<typename P::value_type*>(ptr));
-      lock.unwrite();
-    }
   }
 }

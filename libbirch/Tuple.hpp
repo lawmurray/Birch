@@ -46,12 +46,9 @@ public:
   }
 
   /**
-   * Accept function.
+   * Relabel function.
    */
-  template<class Visitor>
-  void accept(Visitor& v) {
-    v.visit(head, tail);
-  }
+  void relabel(Label* oldLabel, Label* newLabel);
 
   /**
    * Get element.
@@ -114,12 +111,9 @@ public:
   }
 
   /**
-   * Accept function.
+   * Relabel.
    */
-  template<class Visitor>
-  void accept(Visitor& v) {
-    v.visit(head);
-  }
+  void relabel(Label* oldLabel, Label* newLabel);
 
   /**
    * Get element.
@@ -144,4 +138,22 @@ template<class Head>
 struct is_value<Tuple<Head>> {
   static const bool value = is_value<Head>::value;
 };
+
+template<class ... Args>
+void relabel(Label* oldLabel, Label* newLabel, Tuple<Args...>& o) {
+  o.relabel(oldLabel, newLabel);
+}
+}
+
+#include "libbirch/relabel.hpp"
+
+template<class Head, class... Tail>
+void libbirch::Tuple<Head,Tail...>::relabel(Label* oldLabel, Label* newLabel) {
+  libbirch::relabel(oldLabel, newLabel, head);
+  libbirch::relabel(oldLabel, newLabel, tail);
+}
+
+template<class Head>
+void libbirch::Tuple<Head>::relabel(Label* oldLabel, Label* newLabel) {
+  libbirch::relabel(oldLabel, newLabel, head);
 }

@@ -100,16 +100,6 @@ void libbirch::Memo::copy(const Memo& o) {
   }
 }
 
-void libbirch::Memo::freeze() {
-  for (auto i = 0u; i < nentries; ++i) {
-    auto v = values[i];
-    if (v) {
-      ///@todo
-      //v->freeze();
-    }
-  }
-}
-
 void libbirch::Memo::reserve() {
   ++nnew;
   ++noccupied;
