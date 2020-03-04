@@ -70,9 +70,14 @@ public:
   }
 
   /**
-   * Relabel.
+   * Accept visitor.
    */
-  void relabel(Label* oldLabel, Label* newLabel);
+  template<class Visitor>
+  void accept_(const Visitor& v) {
+    v.visit(yieldValue);
+    v.visit(returnValue);
+    v.visit(state);
+  }
 
   /**
    * Run to next yield point.
@@ -131,7 +136,11 @@ public:
     //
   }
 
-  void relabel(Label* oldLabel, Label* newLabel);
+  template<class Visitor>
+  void accept_(const Visitor& v) {
+    v.visit(returnValue);
+    v.visit(state);
+  }
 
   bool query() {
     if (state.query()) {
@@ -167,7 +176,11 @@ public:
     //
   }
 
-  void relabel(Label* oldLabel, Label* newLabel);
+  template<class Visitor>
+  void accept_(const Visitor& v) {
+    v.visit(yieldValue);
+    v.visit(state);
+  }
 
   bool query() {
     if (state.query()) {
@@ -201,7 +214,10 @@ public:
     //
   }
 
-  void relabel(Label* oldLabel, Label* newLabel);
+  template<class Visitor>
+  void accept_(const Visitor& v) {
+    v.visit(state);
+  }
 
   bool query() {
     if (state.query()) {
@@ -218,38 +234,4 @@ template<class Yield, class Return>
 struct is_value<Fiber<Yield,Return>> {
   static const bool value = false;
 };
-
-template<class Yield, class Return>
-void relabel(Label* oldLabel, Label* newLabel, Fiber<Yield,Return>& o) {
-  o.relabel(oldLabel, newLabel);
-}
-}
-
-#include "libbirch/relabel.hpp"
-
-template<class Yield, class Return>
-void libbirch::Fiber<Yield,Return>::relabel(Label* oldLabel,
-    Label* newLabel) {
-  libbirch::relabel(oldLabel, newLabel, yieldValue);
-  libbirch::relabel(oldLabel, newLabel, returnValue);
-  libbirch::relabel(oldLabel, newLabel, state);
-}
-
-template<class Return>
-void libbirch::Fiber<void,Return>::relabel(Label* oldLabel,
-    Label* newLabel) {
-  libbirch::relabel(oldLabel, newLabel, returnValue);
-  libbirch::relabel(oldLabel, newLabel, state);
-}
-
-template<class Yield>
-void libbirch::Fiber<Yield,void>::relabel(Label* oldLabel,
-    Label* newLabel) {
-  libbirch::relabel(oldLabel, newLabel, yieldValue);
-  libbirch::relabel(oldLabel, newLabel, state);
-}
-
-inline void libbirch::Fiber<void,void>::relabel(Label* oldLabel,
-    Label* newLabel) {
-  libbirch::relabel(oldLabel, newLabel, state);
 }

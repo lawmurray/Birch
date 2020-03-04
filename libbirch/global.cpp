@@ -42,4 +42,3 @@ size_t libbirch::bufferSize;
 #endif
 
 libbirch::EntryExitLock libbirch::freezeLock;
-libbirch::EntryExitLock libbirch::finishLock;

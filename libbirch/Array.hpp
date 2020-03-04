@@ -188,9 +188,18 @@ public:
   }
 
   /**
-   * Relabel.
+   * Accept visitor.
    */
-  void relabel(Label* oldLabel, Label* newLabel);
+  template<class Visitor>
+  void accept_(const Visitor& v) {
+    pin();
+    auto iter = begin();
+    auto last = end();
+    unpin();
+    for (; iter != last; ++iter) {
+      v.visit(*iter);
+    }
+  }
 
   /**
    * Copy assignment. For a view the shapes of the two arrays must
@@ -754,22 +763,4 @@ struct is_array<Array<T,F>> {
  */
 template<class T, int D>
 using DefaultArray = Array<T,typename DefaultShape<D>::type>;
-
-template<class T, class F>
-void relabel(Label* oldLabel, Label* newLabel, Array<T,F>& o) {
-  o.relabel(oldLabel, newLabel);
-}
-}
-
-#include "libbirch/relabel.hpp"
-
-template<class T, class F>
-void libbirch::Array<T,F>::relabel(Label* oldLabel, Label* newLabel) {
-  pin();
-  auto iter = begin();
-  auto last = end();
-  unpin();
-  for (; iter != last; ++iter) {
-    libbirch::relabel(oldLabel, newLabel, *iter);
-  }
 }

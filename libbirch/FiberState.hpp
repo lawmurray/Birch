@@ -19,7 +19,8 @@ template<class Yield, class Return> class Fiber;
 template<class Yield, class Return>
 class FiberState: public Any {
 public:
-  using class_type_ = FiberState<Yield,Return>;
+  LIBBIRCH_ABSTRACT_CLASS(FiberState, Any)
+  LIBBIRCH_MEMBERS()
 
   /**
    * Destructor.
@@ -34,9 +35,6 @@ public:
    * @return New fiber handle.
    */
   virtual Fiber<Yield,Return> query() = 0;
-
-  LIBBIRCH_ABSTRACT_CLASS(FiberState, Any)
-  LIBBIRCH_MEMBERS()
 };
 }
 

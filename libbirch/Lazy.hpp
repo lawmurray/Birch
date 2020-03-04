@@ -6,7 +6,6 @@
 #include "libbirch/external.hpp"
 #include "libbirch/thread.hpp"
 #include "libbirch/type.hpp"
-#include "libbirch/relabel.hpp"
 #include "libbirch/Any.hpp"
 #include "libbirch/Label.hpp"
 #include "libbirch/InitPtr.hpp"
@@ -96,13 +95,6 @@ public:
   template<class U, std::enable_if_t<is_value<U>::value && std::is_convertible<value_type,U>::value,int> = 0>
   operator U() const {
     return get()->operator U();
-  }
-
-  /**
-   * Relabel.
-   */
-  void relabel(Label* oldLabel, Label* newLabel) {
-    ///@todo
   }
 
   /**
@@ -327,9 +319,4 @@ template<class P>
 struct raw_type<Lazy<P>> {
   using type = typename raw_type<P>::type;
 };
-
-template<class P>
-void relabel(Label* oldLabel, Label* newLabel, Lazy<P>& o) {
-  o.relabel(oldLabel, newLabel);
-}
 }

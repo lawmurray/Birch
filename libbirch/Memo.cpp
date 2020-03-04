@@ -30,7 +30,6 @@ libbirch::Memo::~Memo() {
 
 libbirch::Memo::value_type libbirch::Memo::get(const key_type key,
     const value_type failed) {
-  /* pre-condition */
   assert(key);
 
   auto value = failed;
@@ -49,7 +48,6 @@ libbirch::Memo::value_type libbirch::Memo::get(const key_type key,
 }
 void libbirch::Memo::put(const key_type key,
     const value_type value) {
-  /* pre-condition */
   assert(key);
   assert(value);
 
@@ -192,6 +190,16 @@ void libbirch::Memo::rehash() {
     if (nentries1 > 0) {
       deallocate(keys1, nentries1 * sizeof(key_type), tentries1);
       deallocate(values1, nentries1 * sizeof(value_type), tentries1);
+    }
+  }
+}
+
+void libbirch::Memo::freeze() {
+  for (auto i = 0u; i < nentries; ++i) {
+    auto v = values[i];
+    if (v) {
+      //v->freeze();
+      ///@todo
     }
   }
 }

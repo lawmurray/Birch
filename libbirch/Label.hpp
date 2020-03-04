@@ -13,9 +13,9 @@ namespace libbirch {
  * @ingroup libbirch
  */
 class Label: public Any {
-  friend class List;
 public:
-  using class_type_ = Label;
+  LIBBIRCH_CLASS(Label, Any)
+  LIBBIRCH_MEMBERS(memo)
 
   /**
    * Constructor.
@@ -85,11 +85,6 @@ private:
    * This is used as an optimization for read-only access.
    */
   Any* pull(Any* o);
-
-  /**
-   * Shallow copy.
-   */
-  Any* copy(Any* o);
 
   /**
    * Memo that maps source objects to clones.

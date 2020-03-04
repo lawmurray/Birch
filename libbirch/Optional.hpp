@@ -96,11 +96,12 @@ public:
   }
 
   /**
-   * Relabel.
+   * Accept visitor.
    */
-  void relabel(Label* oldLabel, Label* newLabel) {
+  template<class Visitor>
+  void accept_(const Visitor& v) {
     if (hasValue) {
-      libbirch::relabel(oldLabel, newLabel, value);
+      v.visit(value);
     }
   }
 
@@ -227,11 +228,12 @@ public:
   }
 
   /**
-   * Relabel.
+   * Accept visitor.
    */
-  void relabel(Label* oldLabel, Label* newLabel) {
+  template<class Visitor>
+  void accept_(const Visitor& v) {
     if (hasValue) {
-      libbirch::relabel(oldLabel, newLabel, value);
+      v.visit(value);
     }
   }
 
@@ -330,10 +332,13 @@ public:
   }
 
   /**
-   * Relabel.
+   * Accept visitor.
    */
-  void relabel(Label* oldLabel, Label* newLabel) {
-    libbirch::relabel(oldLabel, newLabel, value);
+  template<class Visitor>
+  void accept_(const Visitor& v) {
+    if (value.query()) {
+      v.visit(value);
+    }
   }
 
   /**
@@ -375,11 +380,6 @@ template<class T>
 struct is_value<Optional<T>&> {
   static const bool value = is_value<T>::value;
 };
-
-template<class T>
-void relabel(Label* oldLabel, Label* newLabel, Optional<T>& o) {
-  o.relabel(oldLabel, newLabel);
-}
 
 }
 

@@ -12,10 +12,10 @@ namespace libbirch {
  *
  * @ingroup libbirch
  *
- * This is used for the peculiar case of worksharing freeze() and finish()
- * operations, ensuring that no thread returns from these until the subgraph
- * it is tasked with is definitely frozen or finished, even if some of the
- * work may have been performed by other threads with overlapping tasks.
+ * This is used for the peculiar case of worksharing freeze() , ensuring that
+ * no thread returns from these until the subgraph it is tasked with is
+ * definitely frozen, even if some of the work may have been performed by
+ * other threads with overlapping tasks.
  */
 class EntryExitLock {
 public:

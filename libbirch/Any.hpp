@@ -10,6 +10,8 @@
 
 namespace libbirch {
 class Label;
+class Freezer;
+class Cloner;
 
 /**
  * Base class for reference counted objects.
@@ -35,7 +37,6 @@ public:
       memoKeyCount(1u),
       label(0),
       frozen(false),
-      finished(false),
       single(false) {
     // no need to set size or tid, handled by operator new
   }
@@ -82,39 +83,30 @@ public:
   }
 
   /**
-   * Is this object reachable? An object is reachable if it contains a weak
-   * count of one or more. In this case, while the object may be contained in
-   * a memo as a key, it will never be queried, and is eligible for removal.
+   * Is this object reachable? An object is reachable if there exists a
+   * shared, memo value, or weak pointer to it. This is equivalent to a weak
+   * count or one or more. If only a memo key pointer to it exists, it is
+   * not considered reachable, and it may be cleaned up during memo
+   * maintenance.
    */
   bool isReachable() const {
     return numWeak() > 0u;
   }
 
   /**
+   * Is there a unique pointer to this object? This is conservative. An
+   * object is considered uniquely reachable if it has at most one shared,
+   * memo value or weak pointer.
+   */
+  bool isUnique() const {
+    return numShared() <= 1u && numMemoValue() <= 1u && numWeak() <= 1u;
+    // ^ recall first shared count increments memo value and weak counts
+  }
+
+  /**
    * Get the name of the class as a string.
    */
   virtual const char* getClassName() const;
-
-  /**
-   * Clone the object, under a new label.
-   */
-  virtual Any* clone() const;
-
-  /**
-   * Clone the object, under an existing label.
-   */
-  virtual Any* clone(Label* label) const;
-
-  /**
-   * Recycle the object, under an existing label. This can be used as an
-   * optimization in place of clone() when this object would otherwise be
-   * destroyed after the operation. Instead of creating a new object and
-   * destroying this object, this object is repurposed ass the new object.
-   * It is only valid for objects with a memo value count of one, where the
-   * caller can account for that one reference and will remove it after the
-   * call.
-   */
-  virtual Any* recycle(Label* label);
 
   /**
    * Finalize. This is called when the memo value count reaches zero,
@@ -125,6 +117,21 @@ public:
   virtual void finalize() {
     //
   }
+
+  /**
+   * Copy the object.
+   */
+  virtual Any* copy() const;
+
+  /**
+   * Accept freeze visitor.
+   */
+  virtual void accept_(const Freezer& v);
+
+  /**
+   * Accept clone visitor.
+   */
+  virtual void accept_(const Cloner& v);
 
   /**
    * Increment the shared count.
@@ -252,13 +259,6 @@ public:
   }
 
   /**
-   * Is the object finished?
-   */
-  bool isFinished() const {
-    return finished;
-  }
-
-  /**
    * If frozen, at the time of freezing, was the reference count only one?
    */
   bool isSingle() const {
@@ -267,11 +267,10 @@ public:
 
 protected:
   /**
-   * Relabel the object. This is used internally by either clone() or
-   * recycle(). Derived classes implement the same, but call this function in
-   * the base class.
+   * Accept a visitor across member variables.
    */
-  void relabel(Label* label);
+  template<class Visitor>
+  void accept_(const Visitor& v);
 
 private:
   /**
@@ -358,17 +357,12 @@ private:
    * allocation to the correct pool after use, even when returned by a
    * different thread.
    */
-  int tid:29;
+  int tid:30;
 
   /**
    * Is this frozen (read-only)?
    */
   bool frozen:1;
-
-  /**
-   * Is this finished?
-   */
-  bool finished:1;
 
   /**
    * If frozen, at the time of freezing, was the reference count only one?

@@ -14,7 +14,6 @@
 #include "libbirch/basic.hpp"
 #include "libbirch/class.hpp"
 #include "libbirch/type.hpp"
-#include "libbirch/relabel.hpp"
 
 #include "libbirch/SharedPtr.hpp"
 #include "libbirch/WeakPtr.hpp"
@@ -35,6 +34,8 @@
 #include "libbirch/Eigen.hpp"
 #include "libbirch/EigenFunctions.hpp"
 #include "libbirch/EigenOperators.hpp"
+#include "libbirch/Freezer.hpp"
+#include "libbirch/Cloner.hpp"
 
 /**
  * LibBirch.

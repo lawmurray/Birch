@@ -30,9 +30,4 @@ inline int get_thread_num() {
  */
 extern EntryExitLock freezeLock;
 
-/**
- * Global finish lock.
- */
-extern EntryExitLock finishLock;
-
 }

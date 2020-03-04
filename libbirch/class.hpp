@@ -29,19 +29,16 @@
  *     LIBBIRCH_CLASS(A, B<T,U>)
  */
 #define LIBBIRCH_CLASS(Name, Base...) \
-  virtual Name* clone() const override { \
-    return clone(new libbirch::Label(this->getLabel())); \
+  virtual Name* copy() const override { \
+    return new Name(*this); \
   } \
   \
-  virtual Name* clone(libbirch::Label* label) const override { \
-    auto o = new Name(*this); \
-    o->relabel(label); \
-    return o; \
+  virtual void accept_(const libbirch::Freezer& v) override { \
+    accept_<libbirch::Freezer>(v); \
   } \
   \
-  virtual Name* recycle(libbirch::Label* label) override { \
-    this->relabel(label); \
-    return this; \
+  virtual void accept_(const libbirch::Cloner& v) override { \
+    accept_<libbirch::Cloner>(v); \
   } \
   \
   LIBBIRCH_ABSTRACT_CLASS(Name, Base)
@@ -56,8 +53,9 @@
     return #Name; \
   } \
   \
-  void relabel(libbirch::Label* label) { \
-    Base::relabel(label);
+  template<class Visitor> \
+  void accept_(const Visitor& v) { \
+    Base::template accept_<Visitor>(v);
 
 /**
  * @def LIBBIRCH_MEMBERS
@@ -80,7 +78,7 @@
  *     };
  */
 #define LIBBIRCH_MEMBERS(members...) \
-    libbirch::relabel(this->getLabel(), label, ## members); \
+    v.visit(members); \
   }
 
 /**
@@ -104,4 +102,10 @@ struct super_type {
   //
 };
   }
+}
+
+namespace libbirch {
+class Label;
+class Freezer;
+class Cloner;
 }
