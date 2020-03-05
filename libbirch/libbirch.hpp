@@ -8,7 +8,7 @@
 
 #include "libbirch/external.hpp"
 #include "libbirch/assert.hpp"
-#include "libbirch/thread.hpp"
+#include "libbirch/global.hpp"
 #include "libbirch/memory.hpp"
 #include "libbirch/stacktrace.hpp"
 #include "libbirch/basic.hpp"

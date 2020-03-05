@@ -3,8 +3,8 @@
  */
 #pragma once
 
+#include "global.hpp"
 #include "libbirch/external.hpp"
-#include "libbirch/thread.hpp"
 #include "libbirch/type.hpp"
 #include "libbirch/Any.hpp"
 #include "libbirch/Label.hpp"
@@ -37,7 +37,7 @@ public:
    * Constructor.
    */
   template<class Q, std::enable_if_t<is_base_of<P,Q>::value,int> = 0>
-  Lazy(const Q& ptr, Label* label = nullptr) :
+  Lazy(const Q& ptr, Label* label = rootLabel) :
       super_type(ptr, label) {
     //
   }
@@ -159,7 +159,7 @@ public:
    */
   Lazy(const std::nullptr_t& nil) :
       object(nullptr),
-      label(nullptr) {
+      label(rootLabel) {
     //
   }
 
@@ -167,7 +167,7 @@ public:
    * Constructor.
    */
   template<class Q, std::enable_if_t<is_base_of<Any*,Q>::value,int> = 0>
-  Lazy(const Q& ptr, Label* label = nullptr) :
+  Lazy(const Q& ptr, Label* label = rootLabel) :
       object(ptr),
       label(label) {
     //

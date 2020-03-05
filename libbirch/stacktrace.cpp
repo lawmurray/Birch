@@ -3,7 +3,7 @@
  */
 #include "libbirch/stacktrace.hpp"
 
-#include "libbirch/thread.hpp"
+#include "libbirch/global.hpp"
 
 struct stack_frame {
   const char* func;

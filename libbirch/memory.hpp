@@ -4,16 +4,11 @@
 #pragma once
 
 #include "libbirch/external.hpp"
-#include "libbirch/thread.hpp"
+#include "libbirch/global.hpp"
 #include "libbirch/Atomic.hpp"
 #include "libbirch/Pool.hpp"
 
 namespace libbirch {
-/**
- * Number of bytes of memory currently allocated.
- */
-extern libbirch::Atomic<size_t> memoryUse;
-
 /**
  * For an allocation size, determine the index of the pool to which it
  * belongs.
@@ -130,7 +125,6 @@ template<unsigned n>
 void* allocate() {
   static_assert(n > 0, "cannot make zero length allocation");
 
-  memoryUse.add(n);
 #if !ENABLE_MEMORY_POOL
   return std::malloc(n);
 #else

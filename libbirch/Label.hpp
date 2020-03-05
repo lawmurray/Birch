@@ -18,6 +18,11 @@ public:
   LIBBIRCH_MEMBERS(memo)
 
   /**
+   * Constructor.
+   */
+  Label();
+
+  /**
    * Copy constructor.
    */
   Label(const Label& o);

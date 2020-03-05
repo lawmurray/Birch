@@ -35,7 +35,7 @@ public:
       memoValueCount(0u),
       weakCount(1u),
       memoKeyCount(1u),
-      label(0),
+      label(rootLabel),
       frozen(false),
       single(false) {
     // no need to set size or tid, handled by operator new
