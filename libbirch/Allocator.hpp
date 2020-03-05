@@ -3,7 +3,7 @@
  */
 #pragma once
 
-#include "libbirch/global.hpp"
+#include "libbirch/thread.hpp"
 
 namespace libbirch {
 /**

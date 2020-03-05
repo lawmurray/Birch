@@ -102,7 +102,8 @@ public:
   /**
    * Copy constructor.
    */
-  SharedPtr(const SharedPtr& o) {
+  SharedPtr(const SharedPtr& o) :
+      ptr(o.ptr) {
     if (ptr) {
       assert(ptr->numShared() > 0);
       ptr->incShared();
@@ -112,7 +113,8 @@ public:
   /**
    * Move constructor.
    */
-  SharedPtr(SharedPtr&& o) {
+  SharedPtr(SharedPtr&& o) :
+      ptr(o.ptr) {
     o.ptr = nullptr;
   }
 

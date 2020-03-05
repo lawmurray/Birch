@@ -4,7 +4,7 @@
 #pragma once
 
 #include "libbirch/external.hpp"
-#include "libbirch/global.hpp"
+#include "libbirch/thread.hpp"
 #include "libbirch/Atomic.hpp"
 
 namespace libbirch {

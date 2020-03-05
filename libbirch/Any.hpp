@@ -106,7 +106,7 @@ public:
   /**
    * Get the name of the class as a string.
    */
-  virtual const char* getClassName() const;
+  virtual const char* getClassName() const = 0;
 
   /**
    * Finalize. This is called when the memo value count reaches zero,
@@ -121,17 +121,21 @@ public:
   /**
    * Copy the object.
    */
-  virtual Any* copy_() const;
+  virtual Any* copy_() const = 0;
 
   /**
    * Accept freeze visitor.
    */
-  virtual void accept_(const Freezer& v);
+  virtual void accept_(const Freezer& v) {
+    //
+  }
 
   /**
    * Accept clone visitor.
    */
-  virtual void accept_(const Cloner& v);
+  virtual void accept_(const Cloner& v) {
+    //
+  }
 
   /**
    * Increment the shared count.

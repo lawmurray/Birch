@@ -6,8 +6,12 @@
 #include "libbirch/external.hpp"
 
 namespace libbirch {
-class Label;
 
+/**
+ * Get the maximum number of threads.
+ *
+ * @ingroup libbirch
+ */
 inline int get_max_threads() {
 #ifdef _OPENMP
   return omp_get_max_threads();
@@ -16,6 +20,11 @@ inline int get_max_threads() {
 #endif
 }
 
+/**
+ * Get the current thread's number.
+ *
+ * @ingroup libbirch
+ */
 inline int get_thread_num() {
 #ifdef _OPENMP
   return omp_get_thread_num();
@@ -24,5 +33,4 @@ inline int get_thread_num() {
 #endif
 }
 
-extern Label* rootLabel;
 }

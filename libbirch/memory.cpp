@@ -3,6 +3,9 @@
  */
 #include "libbirch/memory.hpp"
 
+#include "libbirch/Label.hpp"
+#include "libbirch/SharedPtr.hpp"
+
 #if ENABLE_MEMORY_POOL
 /**
  * Allocate a large buffer for the heap.
@@ -108,3 +111,10 @@ void* libbirch::reallocate(void* ptr1, const size_t n1, const int tid1,
   return ptr2;
 #endif
 }
+
+static libbirch::Label* makeRootLabel() {
+  static libbirch::SharedPtr<libbirch::Label> rootLabel(new libbirch::Label());
+  return rootLabel.get();
+}
+
+libbirch::Label* libbirch::rootLabel(makeRootLabel());

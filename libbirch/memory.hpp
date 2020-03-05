@@ -4,11 +4,18 @@
 #pragma once
 
 #include "libbirch/external.hpp"
-#include "libbirch/global.hpp"
+#include "libbirch/thread.hpp"
 #include "libbirch/Atomic.hpp"
 #include "libbirch/Pool.hpp"
 
 namespace libbirch {
+class Label;
+
+/**
+ * The root label, used for lazy deep copy.
+ */
+extern Label* rootLabel;
+
 /**
  * For an allocation size, determine the index of the pool to which it
  * belongs.

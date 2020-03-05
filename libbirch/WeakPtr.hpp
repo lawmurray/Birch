@@ -102,7 +102,8 @@ public:
   /**
    * Copy constructor.
    */
-  WeakPtr(const WeakPtr& o) {
+  WeakPtr(const WeakPtr& o) :
+      ptr(o.ptr) {
     if (ptr) {
       assert(ptr->numWeak() > 0);
       ptr->incWeak();
@@ -112,7 +113,8 @@ public:
   /**
    * Move constructor.
    */
-  WeakPtr(WeakPtr&& o) {
+  WeakPtr(WeakPtr&& o) :
+      ptr(o.ptr) {
     o.ptr = nullptr;
   }
 
