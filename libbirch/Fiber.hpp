@@ -94,7 +94,7 @@ public:
   /**
    * Get the current yield value.
    */
-  auto get() {
+  auto get() const {
     return yieldValue.get();
   }
 
@@ -189,7 +189,7 @@ public:
     return state.query();
   }
 
-  auto get() {
+  auto get() const {
     return yieldValue.get();
   }
 

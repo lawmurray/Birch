@@ -133,7 +133,7 @@ public:
  * reachable objects have been frozen.
  */
 template<class P>
-void freeze(Lazy<P>& o) {
+void freeze(const Lazy<P>& o) {
   freezeLock.enter();
   Freezer().visit(o);
   freezeLock.exit();

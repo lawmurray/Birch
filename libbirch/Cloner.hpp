@@ -140,7 +140,7 @@ private:
  * @param o The pointer.
  */
 template<class P>
-Lazy<P> clone(Lazy<P>& o) {
+Lazy<P> clone(const Lazy<P>& o) {
   freeze(o);
   auto object = static_cast<typename P::value_type*>(o.pull()->copy_());
   auto oldLabel = o.getLabel();
