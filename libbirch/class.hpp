@@ -29,7 +29,7 @@
  *     LIBBIRCH_CLASS(A, B<T,U>)
  */
 #define LIBBIRCH_CLASS(Name, Base...) \
-  virtual Name* copy() const override { \
+  virtual Name* copy_() const override { \
     return new Name(*this); \
   } \
   \

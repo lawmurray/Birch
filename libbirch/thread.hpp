@@ -4,11 +4,8 @@
 #pragma once
 
 #include "libbirch/external.hpp"
-#include "libbirch/EntryExitLock.hpp"
 
 namespace libbirch {
-class Label;
-
 inline int get_max_threads() {
 #ifdef _OPENMP
   return omp_get_max_threads();
@@ -24,10 +21,4 @@ inline int get_thread_num() {
   return 0;
 #endif
 }
-
-/**
- * Global freeze lock.
- */
-extern EntryExitLock freezeLock;
-
 }

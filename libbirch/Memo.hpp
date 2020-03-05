@@ -69,9 +69,17 @@ public:
   void rehash();
 
   /**
-   * Freeze values in the table.
+   * Accept visitor.
    */
-  void freeze();
+  template<class Visitor>
+  void accept_(const Visitor& v) {
+    for (auto i = 0u; i < nentries; ++i) {
+      auto value = values[i];
+      if (value) {
+        v.visit(value);
+      }
+    }
+  }
 
 private:
   /**

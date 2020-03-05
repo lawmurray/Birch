@@ -3,14 +3,13 @@
  */
 #include "libbirch/Label.hpp"
 
-libbirch::Label::Label(Label* parent) {
-  if (parent) {
-    parent->lock.write();
-    parent->memo.rehash();
-    parent->lock.downgrade();
-    memo.copy(parent->memo);
-    parent->lock.unread();
-  }
+libbirch::Label::Label(const Label& o) {
+  auto o1 = const_cast<Label&>(o);
+  o1.lock.write();
+  o1.memo.rehash();
+  o1.lock.downgrade();
+  memo.copy(o1.memo);
+  o1.lock.unread();
 }
 
 libbirch::Any* libbirch::Label::get(Any* o) {

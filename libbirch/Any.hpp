@@ -121,7 +121,7 @@ public:
   /**
    * Copy the object.
    */
-  virtual Any* copy() const;
+  virtual Any* copy_() const;
 
   /**
    * Accept freeze visitor.
@@ -250,19 +250,71 @@ public:
   }
 
   /**
+   * Set the label assigned to the object. The shared count must be greater
+   * than zero.
+   */
+  void setLabel(Label* label) {
+    assert(numShared() > 0u);
+    releaseLabel();
+    this->label = label;
+    holdLabel();
+  }
+
+  /**
+   * Freeze the object.
+   *
+   * @return Was the object already frozen?
+   *
+   * This is an atomic operation. The object can only be successfully frozen
+   * once, by one thread, for which the return value will be false; for any
+   * other attempts, including by other threads, the return value will be
+   * trie.
+   */
+  bool freeze() {
+    bool result;
+    #pragma omp atomic capture
+    {
+      result = frozen;
+      frozen = true;
+    }
+    if (!result) {
+      single = isUnique();
+    }
+    return result;
+  }
+
+  /**
+   * Thaw the object.
+   *
+   * Unlike freeze(), this is not an atomic operation. It is used when
+   * recycling an object with a unit reference count into a new object, which
+   * should only be occurring in one thread anyway.
+   */
+  void thaw() {
+    frozen = false;
+    single = false;
+  }
+
+  /**
    * Is the object frozen? This returns true if either a freeze is in
    * progress (i.e. another thread is in the process of freezing the object),
    * or if the freeze is complete.
    */
   bool isFrozen() const {
-    return frozen;
+    bool result;
+    #pragma omp atomic read
+    result = frozen;
+    return result;
   }
 
   /**
    * If frozen, at the time of freezing, was the reference count only one?
    */
   bool isSingle() const {
-    return single;
+    bool result;
+    #pragma omp atomic read
+    result = single;
+    return result;
   }
 
 protected:
@@ -270,15 +322,11 @@ protected:
    * Accept a visitor across member variables.
    */
   template<class Visitor>
-  void accept_(const Visitor& v);
+  void accept_(const Visitor& v) {
+    //
+  }
 
 private:
-  /**
-   * Set the label assigned to the object. The shared count must be greater
-   * than zero.
-   */
-  void setLabel(Label* label);
-
   /**
    * Increment the shared count of the label (if not null).
    */

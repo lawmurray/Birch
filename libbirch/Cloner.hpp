@@ -22,6 +22,15 @@ namespace libbirch {
 class Cloner {
 public:
   /**
+   * Constructor.
+   */
+  Cloner(Label* oldLabel, Label* newLabel) :
+      oldLabel(oldLabel),
+      newLabel(newLabel) {
+    //
+  }
+
+  /**
    * Visit list of variables.
    *
    * @param arg First variable.
@@ -85,24 +94,59 @@ public:
    */
   template<class P>
   void visit(Lazy<P>& o) const {
-//    if (label.get() == oldLabel) const {
-//      /* objects with the old label are lazily copied; this is within the
-//       * standard pattern, where clones form a tree */
-//      label.replace(newLabel);
-//      pull()->freeze();
-//    } else {
-//      /* objects with any other label are eagerly copied; this is outside the
-//       * standard pattern */
-//      label.replace(newLabel);
-//      get()->clone(oldLabel, newLabel);
-//    }
+    if (o.getLabel() == oldLabel) {
+      /* objects with the old label can be lazily copied */
+      o.setLabel(newLabel);
+    } else {
+      /* objects with any other label must be eagerly copied */
+      auto object = static_cast<typename P::value_type*>(o.pull()->copy_());
+      visit(object);
+      o = Lazy<P>(P(object), newLabel);
+    }
+  }
+
+  /**
+   * Visit a raw pointer.
+   */
+  void visit(Any* o) const {
+    o->setLabel(newLabel);
+    o->accept_(*this);
   }
 
   /**
    * Visit a memo.
    */
   void visit(Memo& o) const {
-
+    o.accept_(*this);
   }
+
+private:
+  /**
+   * Old label, being replaced.
+   */
+  Label* oldLabel;
+
+  /**
+   * New label.
+   */
+  Label* newLabel;
 };
+
+/**
+ * Clone an object via a pointer.
+ *
+ * @ingroup libbirch
+ *
+ * @param o The pointer.
+ */
+template<class P>
+Lazy<P> clone(Lazy<P>& o) {
+  freeze(o);
+  auto object = static_cast<typename P::value_type*>(o.pull()->copy_());
+  auto oldLabel = o.getLabel();
+  auto newLabel = oldLabel->copy_();
+  Cloner(oldLabel, newLabel).visit(object);
+  return Lazy<P>(P(object), newLabel);
+}
+
 }

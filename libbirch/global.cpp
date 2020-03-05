@@ -40,5 +40,3 @@ libbirch::Atomic<char*> libbirch::buffer(heap());
 char* libbirch::bufferStart;
 size_t libbirch::bufferSize;
 #endif
-
-libbirch::EntryExitLock libbirch::freezeLock;

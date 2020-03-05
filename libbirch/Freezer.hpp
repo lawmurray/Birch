@@ -3,6 +3,7 @@
  */
 #pragma once
 
+#include "libbirch/EntryExitLock.hpp"
 #include "libbirch/Tuple.hpp"
 #include "libbirch/Array.hpp"
 #include "libbirch/Optional.hpp"
@@ -12,12 +13,20 @@
 
 namespace libbirch {
 /**
+ * Global freeze lock.
+ *
+ * @ingroup libbirch
+ */
+extern EntryExitLock freezeLock;
+
+/**
  * Visitor for freezing objects.
  *
  * @ingroup libbirch
  *
- * This should not be used directly. It is used internally by the freeze()
- * function to recursively visit reachable objects.
+ * This should not be used directly. Instead, use the freeze() function to
+ * start a freeze operation, which uses this class internally, but is thread
+ * safe.
  */
 class Freezer {
 public:
@@ -85,24 +94,49 @@ public:
    */
   template<class P>
   void visit(Lazy<P>& o) const {
-//    if (label.get() == oldLabel) const {
-//      /* objects with the old label are lazily copied; this is within the
-//       * standard pattern, where clones form a tree */
-//      label.replace(newLabel);
-//      pull()->freeze();
-//    } else {
-//      /* objects with any other label are eagerly copied; this is outside the
-//       * standard pattern */
-//      label.replace(newLabel);
-//      get()->clone(oldLabel, newLabel);
-//    }
+    visit(o.pull());
+    visit(o.getLabel());
+  }
+
+  /**
+   * Visit a raw pointer.
+   */
+  void visit(Any* o) const {
+    if (o->freeze()) {
+      o->accept_(*this);
+    }
   }
 
   /**
    * Visit a memo.
    */
   void visit(Memo& o) const {
-
+    o.accept_(*this);
   }
 };
+
+/**
+ * Freeze all objects reachable from a pointer.
+ *
+ * @ingroup libbirch
+ *
+ * @param o The pointer.
+ *
+ * Recursively freezes all objects reachable from the pointer. This includes
+ * all values in memo associated with the label, as future dereference
+ * operations may produce them.
+ *
+ * Thread safety is achieved with an entry-exit lock. Multiple threads may
+ * be freezing objects. Once one thread starts freezing an object, another
+ * thread that discovers the same object will skip it. It is then necessary
+ * to wait until both threads finish before either has a guarantee that all
+ * reachable objects have been frozen.
+ */
+template<class P>
+void freeze(Lazy<P>& o) {
+  freezeLock.enter();
+  Freezer().visit(o);
+  freezeLock.exit();
+}
+
 }

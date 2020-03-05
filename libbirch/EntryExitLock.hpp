@@ -7,15 +7,15 @@
 
 namespace libbirch {
 /**
- * Lock that permits any number of threads to enter a critical region, but
- * only exit when there are no threads in the critical region.
+ * Entry-exit lock.
  *
  * @ingroup libbirch
  *
- * This is used for the peculiar case of worksharing freeze() , ensuring that
- * no thread returns from these until the subgraph it is tasked with is
- * definitely frozen, even if some of the work may have been performed by
- * other threads with overlapping tasks.
+ * Permits any number of threads to enter a critical region, but has an exit
+ * barrier that will not allow them to exit it until all such threads have
+ * reached the end of the critical region.
+ *
+ * This is used for thread safety in the particular case of freeze().
  */
 class EntryExitLock {
 public:

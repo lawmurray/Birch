@@ -12,17 +12,15 @@ namespace libbirch {
  *
  * @ingroup libbirch
  */
-class Label: public Any {
+class Label final: public Any {
 public:
   LIBBIRCH_CLASS(Label, Any)
   LIBBIRCH_MEMBERS(memo)
 
   /**
-   * Constructor.
-   *
-   * @param parent Parent label, if any.
+   * Copy constructor.
    */
-  Label(Label* parent = nullptr);
+  Label(const Label& o);
 
   /**
    * Destructor.

@@ -3,8 +3,7 @@
  */
 function clone<Type>(o:Type) -> Type {
   cpp{{
-  ///@todo
-  //return o->clone();
+  return libbirch::clone(o);
   }}
 }
 

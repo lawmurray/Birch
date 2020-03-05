@@ -280,6 +280,13 @@ public:
   }
 
   /**
+   * Set the label associated with the pointer.
+   */
+  void setLabel(Label* label) {
+    this->label.replace(label);
+  }
+
+  /**
    * Dereference.
    */
   value_type& operator*() const {
