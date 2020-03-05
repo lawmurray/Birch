@@ -201,7 +201,9 @@ void bi::CppBaseGenerator::visit(const Nil* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Parameter* o) {
-  //middle("const " << o->type << "& " << o->name);
+  if (!o->type->isFiber()) {
+    middle("const ");
+  }
   middle(o->type << ' ' << o->name);
   if (!o->value->isEmpty()) {
     middle(" = " << o->value);
