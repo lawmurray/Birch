@@ -92,7 +92,7 @@ void libbirch::Memo::copy(const Memo& o) {
         key->incMemoKey();
       }
       if (value) {
-        value->decMemoValue();
+        value->incMemoValue();
       }
       keys[i] = key;
       values[i] = value;

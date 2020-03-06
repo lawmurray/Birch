@@ -53,8 +53,8 @@ public:
    * New operator.
    */
   void* operator new(std::size_t size) {
-    auto ptr = (Any*)allocate(size);
-    ptr->size = (unsigned)size;
+    auto ptr = static_cast<Any*>(allocate(size));
+    ptr->size = static_cast<unsigned>(size);
     ptr->tid = get_thread_num();
     return ptr;
   }
@@ -63,7 +63,7 @@ public:
    * Delete operator.
    */
   void operator delete(void* ptr) {
-    auto counted = (Any*)ptr;
+    auto counted = static_cast<Any*>(ptr);
     counted->destroy();
     counted->deallocate();
   }
@@ -153,6 +153,7 @@ public:
   void decShared() {
     assert(numShared() > 0u);
     if (--sharedCount == 0u) {
+      releaseLabel();
       decMemoValue();
     }
   }

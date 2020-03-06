@@ -8,7 +8,7 @@ libbirch::Label::Label() {
 }
 
 libbirch::Label::Label(const Label& o) {
-  auto o1 = const_cast<Label&>(o);
+  auto& o1 = const_cast<Label&>(o);
   o1.lock.write();
   o1.memo.rehash();
   o1.lock.downgrade();

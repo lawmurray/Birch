@@ -104,14 +104,18 @@ public:
    */
   template<class P>
   void visit(Lazy<P>& o) const {
+    Any* ptr;
     if (o.getLabel() != label) {
       /* this is a cross pointer; subsequent clones will be associated with
        * a label---in turn a memo---which does not have a record of copies,
        * so finish them now */
-      o.get()->freeze_(label);
+      ptr = o.get();
     } else {
       /* this is not a cross pointer; can continue to defer copies */
-      o.pull()->freeze_(label);
+      ptr = o.pull();
+    }
+    if (ptr->freeze()) {
+      ptr->freeze_(label);
     }
     o.getLabel()->freeze_(label);
   }
