@@ -9,7 +9,7 @@ program test_deep_clone_modify_src() {
   x.pushBack(2);
   
   /* clone the list */
-  auto y <- clone<List<Integer>>(x);
+  auto y <- clone(x);
   
   /* modify the original */
   x.set(1, 3);

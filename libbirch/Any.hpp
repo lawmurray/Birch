@@ -37,8 +37,15 @@ public:
       memoKeyCount(1u),
       label(rootLabel),
       frozen(false),
-      single(false) {
-    // no need to set size or tid, handled by operator new
+      frozenUnique(false) {
+    // size and tid already set by by operator new
+  }
+
+  /**
+   * Copy constructor.
+   */
+  Any(const Any& o) : Any() {
+    //
   }
 
   /**
@@ -94,9 +101,11 @@ public:
   }
 
   /**
-   * Is there a unique pointer to this object? This is conservative. An
-   * object is considered uniquely reachable if it has at most one shared,
-   * memo value or weak pointer.
+   * Is there definitely only one pointer to this object? This is
+   * conservative; it returns true if there is at most one shared or weak
+   * pointer to the object. Note, in particular, that the presence of a memo
+   * value pointer means that an unknown number of pointers (including zero
+   * pointers) may update to the object in future.
    */
   bool isUnique() const {
     return numShared() <= 1u && numMemoValue() <= 1u && numWeak() <= 1u;
@@ -256,21 +265,19 @@ public:
    * than zero.
    */
   void setLabel(Label* label) {
-    assert(numShared() > 0u);
-    releaseLabel();
+    assert(numShared() == 0u);
     this->label = label;
-    holdLabel();
   }
 
   /**
    * Freeze the object.
    *
-   * @return Was the object already frozen?
+   * @return Was the object *not* already frozen?
    *
    * This is an atomic operation. The object can only be successfully frozen
-   * once, by one thread, for which the return value will be false; for any
+   * once, by one thread, for which the return value will be true; for any
    * other attempts, including by other threads, the return value will be
-   * trie.
+   * false.
    */
   bool freeze() {
     bool result;
@@ -280,9 +287,9 @@ public:
       frozen = true;
     }
     if (!result) {
-      single = isUnique();
+      frozenUnique = isUnique();
     }
-    return result;
+    return !result;
   }
 
   /**
@@ -294,7 +301,7 @@ public:
    */
   void thaw() {
     frozen = false;
-    single = false;
+    frozenUnique = false;
   }
 
   /**
@@ -310,12 +317,13 @@ public:
   }
 
   /**
-   * If frozen, at the time of freezing, was the reference count only one?
+   * Is the object frozen, and at the time of freezing, was there only one
+   * pointer to it?
    */
-  bool isSingle() const {
+  bool isFrozenUnique() const {
     bool result;
     #pragma omp atomic read
-    result = single;
+    result = frozenUnique;
     return result;
   }
 
@@ -415,8 +423,9 @@ private:
   bool frozen:1;
 
   /**
-   * If frozen, at the time of freezing, was the reference count only one?
+   * Is the object frozen, and at the time of freezing, was there only one
+   * pointer to it?
    */
-  bool single:1;
+  bool frozenUnique:1;
 };
 }

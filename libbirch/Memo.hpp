@@ -68,17 +68,11 @@ public:
   void rehash();
 
   /**
-   * Accept visitor.
+   * Freeze all objects in the memo.
+   *
+   * @param v Freeze visitor.
    */
-  template<class Visitor>
-  void accept_(const Visitor& v) {
-    for (auto i = 0u; i < nentries; ++i) {
-      auto value = values[i];
-      if (value) {
-        v.visit(value);
-      }
-    }
-  }
+  void freeze_(const Freezer& v);
 
 private:
   /**

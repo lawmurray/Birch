@@ -183,7 +183,6 @@ public:
    * Replace.
    */
   void replace(Any* ptr) {
-    assert(!ptr || ptr->numWeak() > 0);
     auto old = this->ptr;
     if (ptr) {
       ptr->incWeak();

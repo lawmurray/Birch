@@ -29,6 +29,13 @@ public:
   }
 
   /**
+   * Visit empty list of variables (base case).
+   */
+  void visit() const {
+    //
+  }
+
+  /**
    * Visit list of variables.
    *
    * @param arg First variable.
@@ -38,13 +45,6 @@ public:
   void visit(Arg& arg, Args&... args) const {
     visit(arg);
     visit(args...);
-  }
-
-  /**
-   * Visit empty list of variables (base case).
-   */
-  void visit() const {
-    //
   }
 
   /**
@@ -95,7 +95,6 @@ public:
     o.setLabel(label);
   }
 
-private:
   /**
    * Label associated with the clone.
    */

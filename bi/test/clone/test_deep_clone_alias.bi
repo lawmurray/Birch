@@ -12,7 +12,7 @@ program test_deep_clone_alias() {
   auto z <- x;
   
   /* clone it */
-  auto y <- clone<List<Integer>>(x);
+  auto y <- clone(x);
 
   /* modify the original */
   x.set(1, 3);

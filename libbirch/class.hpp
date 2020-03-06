@@ -35,6 +35,7 @@
   \
   virtual Name* copy_(const libbirch::Copier& v) const override { \
     auto o = new Name(*this); \
+    o->setLabel(v.label); \
     o->accept_(v); \
     return o; \
   } \

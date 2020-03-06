@@ -32,7 +32,7 @@ public:
   }
 
   virtual void freeze_(const Freezer& v) override {
-    //
+    memo.freeze_(v);
   }
 
   virtual Label* copy_(const Copier& v) const override {

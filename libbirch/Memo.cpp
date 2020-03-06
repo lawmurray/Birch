@@ -195,3 +195,13 @@ void libbirch::Memo::rehash() {
     }
   }
 }
+
+void libbirch::Memo::freeze_(const Freezer& v) {
+  /* only need to freeze values here; keys are already frozen anyway */
+  for (auto i = 0u; i < nentries; ++i) {
+    auto value = values[i];
+    if (value && value->freeze()) {
+      value->freeze_(v);
+    }
+  }
+}

@@ -104,23 +104,25 @@ public:
    */
   template<class P>
   void visit(Lazy<P>& o) const {
-    Any* ptr;
-    if (o.getLabel() != label) {
+    Any* object;
+    auto label = o.getLabel();
+    if (label != this->label) {
       /* this is a cross pointer; subsequent clones will be associated with
        * a label---in turn a memo---which does not have a record of copies,
        * so finish them now */
-      ptr = o.get();
+      object = o.get();
     } else {
       /* this is not a cross pointer; can continue to defer copies */
-      ptr = o.pull();
+      object = o.pull();
     }
-    if (ptr->freeze()) {
-      ptr->freeze_(label);
+    if (object->freeze()) {
+      object->freeze_(this->label);
     }
-    o.getLabel()->freeze_(label);
+    if (label->freeze()) {
+      label->freeze_(this->label);
+    }
   }
 
-private:
   /**
    * Label of the pointer on which the freeze was initiated.
    */
@@ -147,7 +149,14 @@ private:
 template<class P>
 void freeze(const Lazy<P>& o) {
   freezeLock.enter();
-  o.pull()->freeze_(o.getLabel());
+  auto object = o.pull();
+  auto label = o.getLabel();
+  if (object->freeze()) {
+    object->freeze_(label);
+  }
+  if (label->freeze()) {
+    label->freeze_(label);
+  }
   freezeLock.exit();
 }
 

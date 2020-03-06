@@ -173,62 +173,10 @@ public:
   }
 
   /**
-   * Copy constructor.
-   */
-  Lazy(const Lazy& o) :
-      object(o.object),
-      label(o.label) {
-    //
-  }
-
-  /**
-   * Move constructor.
-   */
-  Lazy(Lazy&& o) :
-      object(std::move(o.object)),
-      label(o.label) {
-    //
-  }
-
-  /**
    * Destructor.
    */
   ~Lazy() {
     //
-  }
-
-  /**
-   * Copy assignment.
-   */
-  Lazy& operator=(const Lazy& o) {
-    if (o.query()) {
-      object.replace(o.get());
-      label = o.label;
-    } else {
-      release();
-    }
-    return *this;
-  }
-
-  /**
-   * Move assignment.
-   */
-  Lazy& operator=(Lazy&& o) {
-    if (o.query()) {
-      object = std::move(o.object);
-      label = std::move(o.label);
-    } else {
-      release();
-    }
-    return *this;
-  }
-
-  /**
-   * Release the pointer.
-   */
-  void release() {
-    object.release();
-    label.release();
   }
 
   /**
