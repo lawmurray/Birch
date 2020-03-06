@@ -31,6 +31,16 @@ extern EntryExitLock freezeLock;
 class Freezer {
 public:
   /**
+   * Constructor.
+   *
+   * @param label Label of the pointer on which the freeze was initiated.
+   */
+  Freezer(Label* label) :
+      label(label) {
+    //
+  }
+
+  /**
    * Visit list of variables.
    *
    * @param arg First variable.
@@ -94,25 +104,23 @@ public:
    */
   template<class P>
   void visit(Lazy<P>& o) const {
-    visit(o.pull());
-    visit(o.getLabel());
-  }
-
-  /**
-   * Visit a raw pointer.
-   */
-  void visit(Any* o) const {
-    if (o->freeze()) {
-      o->accept_(*this);
+    if (o.getLabel() != label) {
+      /* this is a cross pointer; subsequent clones will be associated with
+       * a label---in turn a memo---which does not have a record of copies,
+       * so finish them now */
+      o.get()->freeze_(label);
+    } else {
+      /* this is not a cross pointer; can continue to defer copies */
+      o.pull()->freeze_(label);
     }
+    o.getLabel()->freeze_(label);
   }
 
+private:
   /**
-   * Visit a memo.
+   * Label of the pointer on which the freeze was initiated.
    */
-  void visit(Memo& o) const {
-    o.accept_(*this);
-  }
+  Label* label;
 };
 
 /**
@@ -135,7 +143,7 @@ public:
 template<class P>
 void freeze(const Lazy<P>& o) {
   freezeLock.enter();
-  Freezer().visit(o);
+  o.pull()->freeze_(o.getLabel());
   freezeLock.exit();
 }
 

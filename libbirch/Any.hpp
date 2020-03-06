@@ -5,22 +5,21 @@
 
 #include "libbirch/external.hpp"
 #include "libbirch/memory.hpp"
-#include "libbirch/class.hpp"
 #include "libbirch/Atomic.hpp"
 
 namespace libbirch {
 class Label;
-class Freezer;
 class Cloner;
+class Freezer;
 
 /**
  * Base class for reference counted objects.
  *
+ * @ingroup libbirch
+ *
  * @attention In order to work correctly, Any must be the *first* base
  * class in any inheritance hierarchy. This is particularly important when
  * multiple inheritance is used.
- *
- * @ingroup libbirch
  */
 class Any {
 public:
@@ -104,11 +103,6 @@ public:
   }
 
   /**
-   * Get the name of the class as a string.
-   */
-  virtual const char* getClassName() const = 0;
-
-  /**
    * Finalize. This is called when the memo value count reaches zero,
    * but before destruction and deallocation of the object. Object
    * resurrection is supported: if the finalizer results in a nonzero memo
@@ -120,22 +114,22 @@ public:
 
   /**
    * Copy the object.
+   *
+   * @param label Label associated with the clone operation.
    */
-  virtual Any* copy_() const = 0;
+  virtual Any* copy_(const Cloner& v) const = 0;
 
   /**
-   * Accept freeze visitor.
+   * Recycle the object.
+   *
+   * @param label Label associated with the clone operation.
    */
-  virtual void accept_(const Freezer& v) {
-    //
-  }
+  virtual Any* recycle_(const Cloner& v) = 0;
 
   /**
-   * Accept clone visitor.
+   * Freeze the object.
    */
-  virtual void accept_(const Cloner& v) {
-    //
-  }
+  virtual void freeze_(const Freezer& v) = 0;
 
   /**
    * Increment the shared count.

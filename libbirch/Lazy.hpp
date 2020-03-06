@@ -3,7 +3,6 @@
  */
 #pragma once
 
-#include "thread.hpp"
 #include "libbirch/external.hpp"
 #include "libbirch/type.hpp"
 #include "libbirch/Any.hpp"

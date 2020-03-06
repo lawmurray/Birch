@@ -8,25 +8,23 @@
 #include "libbirch/Optional.hpp"
 #include "libbirch/Fiber.hpp"
 #include "libbirch/Lazy.hpp"
-#include "libbirch/Memo.hpp"
 
 namespace libbirch {
 /**
- * Visitor for relabelling objects during a clone or recycle.
+ * Visitor for relabelling members of a newly copied or recycled object.
  *
  * @ingroup libbirch
  *
- * This should not be used directly. It is used internally by the clone()
- * and recycle() functions to recursively visit reachable objects.
+ * This should not be used directly. It is used internally by the Any::cpoy_()
+ * and Any::recycle_() member functions.
  */
 class Cloner {
 public:
   /**
    * Constructor.
    */
-  Cloner(Label* oldLabel, Label* newLabel) :
-      oldLabel(oldLabel),
-      newLabel(newLabel) {
+  Cloner(Label* label) :
+      label(label) {
     //
   }
 
@@ -94,43 +92,17 @@ public:
    */
   template<class P>
   void visit(Lazy<P>& o) const {
-    if (o.getLabel() == oldLabel) {
-      /* objects with the old label can be lazily copied */
-      o.setLabel(newLabel);
-    } else {
-      /* objects with any other label must be eagerly copied */
-      auto object = static_cast<typename P::value_type*>(o.pull()->copy_());
-      visit(object);
-      o = Lazy<P>(P(object), newLabel);
-    }
-  }
-
-  /**
-   * Visit a raw pointer.
-   */
-  void visit(Any* o) const {
-    o->setLabel(newLabel);
-    o->accept_(*this);
-  }
-
-  /**
-   * Visit a memo.
-   */
-  void visit(Memo& o) const {
-    o.accept_(*this);
+    o.setLabel(label);
   }
 
 private:
   /**
-   * Old label, being replaced.
+   * Label associated with the clone.
    */
-  Label* oldLabel;
-
-  /**
-   * New label.
-   */
-  Label* newLabel;
+  Label* label;
 };
+
+#include "libbirch/Freezer.hpp"
 
 /**
  * Clone an object via a pointer.
@@ -142,11 +114,9 @@ private:
 template<class P>
 Lazy<P> clone(const Lazy<P>& o) {
   freeze(o);
-  auto object = static_cast<typename P::value_type*>(o.pull()->copy_());
-  auto oldLabel = o.getLabel();
-  auto newLabel = oldLabel->copy_();
-  Cloner(oldLabel, newLabel).visit(object);
-  return Lazy<P>(P(object), newLabel);
+  auto label = new Label(*o.getLabel());
+  auto object = o.pull()->copy_(label);
+  return Lazy<P>(P(object), label);
 }
 
 }

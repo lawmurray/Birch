@@ -3,6 +3,8 @@
  */
 #include "libbirch/Memo.hpp"
 
+#include "libbirch/Any.hpp"
+
 libbirch::Memo::Memo() :
     keys(nullptr),
     values(nullptr),

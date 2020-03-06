@@ -29,16 +29,20 @@
  *     LIBBIRCH_CLASS(A, B<T,U>)
  */
 #define LIBBIRCH_CLASS(Name, Base...) \
-  virtual Name* copy_() const override { \
-    return new Name(*this); \
+  virtual Name* copy_(const libbirch::Cloner& v) const override { \
+    auto o = new Name(*this); \
+    o->accept_(v); \
+    return o; \
   } \
   \
-  virtual void accept_(const libbirch::Freezer& v) override { \
-    accept_<libbirch::Freezer>(v); \
+  virtual Name* recycle_(const libbirch::Cloner& v) override { \
+    this->thaw(); \
+    this->accept_(v); \
+    return this; \
   } \
   \
-  virtual void accept_(const libbirch::Cloner& v) override { \
-    accept_<libbirch::Cloner>(v); \
+  virtual void freeze_(const libbirch::Freezer& v) override { \
+    this->accept_(v); \
   } \
   \
   LIBBIRCH_ABSTRACT_CLASS(Name, Base)
@@ -49,13 +53,13 @@
  * Use in place of LIBBIRCH_CLASS when the containing class is abstract.
  */
 #define LIBBIRCH_ABSTRACT_CLASS(Name, Base...) \
-  virtual const char* getClassName() const override { \
+  virtual const char* getClassName() const { \
     return #Name; \
   } \
   \
   template<class Visitor> \
   void accept_(const Visitor& v) { \
-    Base::template accept_<Visitor>(v);
+    Base::accept_(v);
 
 /**
  * @def LIBBIRCH_MEMBERS
@@ -90,22 +94,5 @@
 #define LIBBIRCH_SELF \
   [[maybe_unused]] libbirch::LazyInitPtr<this_type_> self(this, this->getLabel());
 
-namespace bi {
-  namespace type {
-/**
- * Super type of another. This is specialized for all classes that are
- * derived from Any to indicate their super type without having to
- * instantiate that type.
- */
-template<class T>
-struct super_type {
-  //
-};
-  }
-}
-
-namespace libbirch {
-class Label;
-class Freezer;
-class Cloner;
-}
+#include "libbirch/Freezer.hpp"
+#include "libbirch/Cloner.hpp"

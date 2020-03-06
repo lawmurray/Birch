@@ -144,3 +144,17 @@ struct is_base_of {
   static const bool value = !std::is_void<Base>::value && std::is_base_of<Base,Derived>::value;
 };
 }
+
+namespace bi {
+  namespace type {
+/**
+ * Super type of another. This is specialized for all classes that are
+ * derived from Any to indicate their super type without having to
+ * instantiate that type.
+ */
+template<class T>
+struct super_type {
+  //
+};
+  }
+}

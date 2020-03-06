@@ -14,9 +14,6 @@ namespace libbirch {
  */
 class Label final: public Any {
 public:
-  LIBBIRCH_CLASS(Label, Any)
-  LIBBIRCH_MEMBERS(memo)
-
   /**
    * Constructor.
    */
@@ -31,6 +28,18 @@ public:
    * Destructor.
    */
   virtual ~Label() {
+    //
+  }
+
+  virtual Label* copy_(const Cloner& v) const override {
+    return new Label(*this);
+  }
+
+  virtual Label* recycle_(const Cloner& v) override {
+    return this;
+  }
+
+  virtual void freeze_(const Freezer& v) override {
     //
   }
 
@@ -100,6 +109,8 @@ private:
   ReaderWriterLock lock;
 };
 }
+
+#include "libbirch/type.hpp"
 
 namespace bi {
   namespace type {

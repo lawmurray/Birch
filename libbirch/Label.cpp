@@ -31,19 +31,18 @@ libbirch::Any* libbirch::Label::get(Any* o) {
 	  next = prev;
 	}
   if (frozen) {
+    Any* cloned;
     if (next->isUnique()) {
       /* this is the last pointer to the object, recycle it */
-      ///@todo
-      //next->recycle(this);
+      cloned = next->recycle_(Cloner(this));
     } else {
       /* copy it */
-      auto old = next;
-      ///@todo
-      //next = old->clone(this);
-      if (!old->isSingle()) {
-        memo.put(old, next);
+      cloned = next->copy_(Cloner(this));
+      if (!next->isSingle()) {
+        memo.put(next, cloned);
       }
     }
+    next = cloned;
   }
   return next;
 }

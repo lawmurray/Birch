@@ -38,6 +38,8 @@ public:
 };
 }
 
+#include "libbirch/type.hpp"
+
 namespace bi {
   namespace type {
 template<class Yield, class Return>

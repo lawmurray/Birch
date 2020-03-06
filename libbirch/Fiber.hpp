@@ -3,10 +3,10 @@
  */
 #pragma once
 
-#include "libbirch/FiberState.hpp"
-#include "libbirch/Optional.hpp"
 #include "libbirch/Lazy.hpp"
 #include "libbirch/SharedPtr.hpp"
+#include "libbirch/FiberState.hpp"
+#include "libbirch/Optional.hpp"
 
 namespace libbirch {
 /**

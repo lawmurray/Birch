@@ -34,8 +34,6 @@
 #include "libbirch/Eigen.hpp"
 #include "libbirch/EigenFunctions.hpp"
 #include "libbirch/EigenOperators.hpp"
-#include "libbirch/Freezer.hpp"
-#include "libbirch/Cloner.hpp"
 
 /**
  * LibBirch.

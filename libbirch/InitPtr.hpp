@@ -3,8 +3,8 @@
  */
 #pragma once
 
-#include "libbirch/class.hpp"
 #include "libbirch/Any.hpp"
+#include "libbirch/type.hpp"
 
 namespace libbirch {
 /**
