@@ -16,7 +16,7 @@ program test_deep_clone_modify_src() {
   x.set(2, 4);
   
   /* check that the clone is unchanged */
-  if (y.get(1) != 1 || y.get(2) != 2) {
+  if y.get(1) != 1 || y.get(2) != 2 {
     exit(1);
   }
 }

@@ -273,31 +273,18 @@ public:
    * Freeze the object.
    *
    * @return Was the object *not* already frozen?
-   *
-   * This is an atomic operation. The object can only be successfully frozen
-   * once, by one thread, for which the return value will be true; for any
-   * other attempts, including by other threads, the return value will be
-   * false.
    */
   bool freeze() {
-    bool result;
-    #pragma omp atomic capture
-    {
-      result = frozen;
-      frozen = true;
-    }
-    if (!result) {
+    bool frozenAlready = frozen;
+    frozen = true;
+    if (!frozenAlready) {
       frozenUnique = isUnique();
     }
-    return !result;
+    return !frozenAlready;
   }
 
   /**
    * Thaw the object.
-   *
-   * Unlike freeze(), this is not an atomic operation. It is used when
-   * recycling an object with a unit reference count into a new object, which
-   * should only be occurring in one thread anyway.
    */
   void thaw() {
     frozen = false;
@@ -310,10 +297,7 @@ public:
    * or if the freeze is complete.
    */
   bool isFrozen() const {
-    bool result;
-    #pragma omp atomic read
-    result = frozen;
-    return result;
+    return frozen;
   }
 
   /**
@@ -321,10 +305,7 @@ public:
    * pointer to it?
    */
   bool isFrozenUnique() const {
-    bool result;
-    #pragma omp atomic read
-    result = frozenUnique;
-    return result;
+    return frozenUnique;
   }
 
 protected:

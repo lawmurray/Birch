@@ -19,7 +19,7 @@ program test_deep_clone_alias() {
   x.set(2, 4);
   
   /* check that the alias has redirected */
-  if (z.get(1) != 3 || z.get(2) != 4) {
+  if z.get(1) != 3 || z.get(2) != 4 {
     exit(1);
   }
 }
