@@ -42,7 +42,7 @@
   \
   virtual Name* recycle_(const libbirch::Recycler& v) override { \
     this->thaw(); \
-    this->setLabel(v.label); \
+    this->replaceLabel(v.label); \
     this->accept_(v); \
     return this; \
   } \

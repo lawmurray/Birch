@@ -261,12 +261,26 @@ public:
   }
 
   /**
-   * Set the label assigned to the object. The shared count must be greater
-   * than zero.
+   * Set the label assigned to the object. The shared count must be zero, and
+   * the current label the root label. Typically this is applied to the new
+   * object immediately after a copy operation.
    */
   void setLabel(Label* label) {
+    assert(getLabel() == rootLabel);
     assert(numShared() == 0u);
     this->label = label;
+  }
+
+  /**
+   * Replaced the label assigned to the object. The shared count must be
+   * greater than zero. Typically this is applied to an object immediately
+   * after a recycle operation.
+   */
+  void replaceLabel(Label* label) {
+    assert(numShared() > 0u);
+    releaseLabel();
+    this->label = label;
+    holdLabel();
   }
 
   /**
