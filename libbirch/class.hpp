@@ -29,20 +29,20 @@
  *     LIBBIRCH_CLASS(A, B<T,U>)
  */
 #define LIBBIRCH_CLASS(Name, Base...) \
-  virtual Name* copy_(const libbirch::Cloner& v) const override { \
+  virtual void freeze_(const libbirch::Freezer& v) override { \
+    this->accept_(v); \
+  } \
+  \
+  virtual Name* copy_(const libbirch::Copier& v) const override { \
     auto o = new Name(*this); \
     o->accept_(v); \
     return o; \
   } \
   \
-  virtual Name* recycle_(const libbirch::Cloner& v) override { \
+  virtual Name* recycle_(const libbirch::Recycler& v) override { \
     this->thaw(); \
     this->accept_(v); \
     return this; \
-  } \
-  \
-  virtual void freeze_(const libbirch::Freezer& v) override { \
-    this->accept_(v); \
   } \
   \
   LIBBIRCH_ABSTRACT_CLASS(Name, Base)
@@ -95,4 +95,5 @@
   [[maybe_unused]] libbirch::LazyInitPtr<this_type_> self(this, this->getLabel());
 
 #include "libbirch/Freezer.hpp"
-#include "libbirch/Cloner.hpp"
+#include "libbirch/Copier.hpp"
+#include "libbirch/Recycler.hpp"

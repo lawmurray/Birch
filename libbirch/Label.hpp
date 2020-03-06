@@ -31,16 +31,16 @@ public:
     //
   }
 
-  virtual Label* copy_(const Cloner& v) const override {
+  virtual void freeze_(const Freezer& v) override {
+    //
+  }
+
+  virtual Label* copy_(const Copier& v) const override {
     return new Label(*this);
   }
 
-  virtual Label* recycle_(const Cloner& v) override {
+  virtual Label* recycle_(const Recycler& v) override {
     return this;
-  }
-
-  virtual void freeze_(const Freezer& v) override {
-    //
   }
 
   /**

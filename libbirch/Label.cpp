@@ -34,10 +34,10 @@ libbirch::Any* libbirch::Label::get(Any* o) {
     Any* cloned;
     if (next->isUnique()) {
       /* this is the last pointer to the object, recycle it */
-      cloned = next->recycle_(Cloner(this));
+      cloned = next->recycle_(Recycler(this));
     } else {
       /* copy it */
-      cloned = next->copy_(Cloner(this));
+      cloned = next->copy_(Copier(this));
       if (!next->isSingle()) {
         memo.put(next, cloned);
       }

@@ -9,8 +9,9 @@
 
 namespace libbirch {
 class Label;
-class Cloner;
 class Freezer;
+class Copier;
+using Recycler = Copier;
 
 /**
  * Base class for reference counted objects.
@@ -113,23 +114,25 @@ public:
   }
 
   /**
+   * Freeze the object.
+   *
+   * @param v Freeze visitor.
+   */
+  virtual void freeze_(const Freezer& v) = 0;
+
+  /**
    * Copy the object.
    *
-   * @param label Label associated with the clone operation.
+   * @param v Copy visitor.
    */
-  virtual Any* copy_(const Cloner& v) const = 0;
+  virtual Any* copy_(const Copier& v) const = 0;
 
   /**
    * Recycle the object.
    *
-   * @param label Label associated with the clone operation.
+   * @param v Recycle visitor.
    */
-  virtual Any* recycle_(const Cloner& v) = 0;
-
-  /**
-   * Freeze the object.
-   */
-  virtual void freeze_(const Freezer& v) = 0;
+  virtual Any* recycle_(const Recycler& v) = 0;
 
   /**
    * Increment the shared count.

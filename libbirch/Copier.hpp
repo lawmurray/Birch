@@ -11,19 +11,19 @@
 
 namespace libbirch {
 /**
- * Visitor for relabelling members of a newly copied or recycled object.
+ * Visitor for relabelling members of a newly copied object.
  *
  * @ingroup libbirch
  *
  * This should not be used directly. It is used internally by the Any::cpoy_()
  * and Any::recycle_() member functions.
  */
-class Cloner {
+class Copier {
 public:
   /**
    * Constructor.
    */
-  Cloner(Label* label) :
+  Copier(Label* label) :
       label(label) {
     //
   }
