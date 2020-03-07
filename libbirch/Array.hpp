@@ -683,13 +683,15 @@ private:
    * Deallocate memory of array.
    */
   void release() {
-    if (!isView && buffer && buffer->decUsage() == 0) {
-      auto iter = begin();
-      auto last = end();
-      for (; iter != last; ++iter) {
-        iter->~T();
+    if (!isView && buffer && buffer->decUsage() == 0u) {
+      if (!is_value<T>::value) {
+        ///@todo in C++17 can use std::destroy()
+        auto iter = begin();
+        auto last = end();
+        for (; iter != last; ++iter) {
+          iter->~T();
+        }
       }
-      // ^ C++17 use std::destroy
       size_t bytes = Buffer<T>::size(volume());
       libbirch::deallocate(buffer, bytes, buffer->tid);
     }

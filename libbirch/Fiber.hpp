@@ -92,6 +92,15 @@ public:
   }
 
   /**
+   * Run to next yield point.
+   *
+   * @return Was a value yielded?
+   */
+  bool query() const {
+    return const_cast<Fiber*>(this)->query();
+  }
+
+  /**
    * Get the current yield value.
    */
   auto get() const {
@@ -149,6 +158,10 @@ public:
     return state.query();
   }
 
+  bool query() const {
+    return const_cast<Fiber*>(this)->query();
+  }
+
 private:
   Optional<return_type> returnValue;
   Optional<state_type> state;
@@ -189,6 +202,10 @@ public:
     return state.query();
   }
 
+  bool query() const {
+    return const_cast<Fiber*>(this)->query();
+  }
+
   auto get() const {
     return yieldValue.get();
   }
@@ -224,6 +241,10 @@ public:
       *this = state.get()->query();
     }
     return state.query();
+  }
+
+  bool query() const {
+    return const_cast<Fiber*>(this)->query();
   }
 
 private:
