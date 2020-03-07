@@ -161,6 +161,11 @@ protected:
    * Are we on the right side of a member expression?
    */
   int inMember;
+
+  /**
+   * Are we in a sequence?
+   */
+  int inSequence;
 };
 }
 

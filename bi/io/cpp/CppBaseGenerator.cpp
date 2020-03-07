@@ -17,7 +17,8 @@ bi::CppBaseGenerator::CppBaseGenerator(std::ostream& base, const int level,
     inAssign(0),
     inConstructor(0),
     inLambda(0),
-    inMember(0) {
+    inMember(0),
+    inSequence(0) {
   //
 }
 
@@ -62,6 +63,12 @@ void bi::CppBaseGenerator::visit(const Parentheses* o) {
 void bi::CppBaseGenerator::visit(const Sequence* o) {
   if (o->single->isEmpty()) {
     middle("libbirch::nil");
+  } else if (!inSequence) {
+    middle("libbirch::make_array(");
+    ++inSequence;
+    middle("{ " << o->single << " }");
+    --inSequence;
+    middle(')');
   } else {
     middle("{ " << o->single << " }");
   }
