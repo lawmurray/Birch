@@ -873,10 +873,12 @@ void bi::Driver::setup() {
       throw DriverException(buf.str());
     }
   }
-  copy_if_newer(find(share_dirs, "ax_cxx_compile_stdcxx.m4"),
-      m4_dir / "ax_cxx_compile_stdcxx.m4");
+  copy_if_newer(find(share_dirs, "ax_check_compile_flag.m4"),
+      m4_dir / "ax_check_compile_flag.m4");
   copy_if_newer(find(share_dirs, "ax_check_define.m4"),
       m4_dir / "ax_check_define.m4");
+  copy_if_newer(find(share_dirs, "ax_cxx_compile_stdcxx.m4"),
+      m4_dir / "ax_cxx_compile_stdcxx.m4");
   copy_if_newer(find(share_dirs, "ax_gcc_builtin.m4"),
       m4_dir / "ax_gcc_builtin.m4");
 

@@ -28,8 +28,20 @@ AC_HEADER_STDBOOL
 AC_C_INLINE
 AC_OPENMP
 
-# Checks for things that will fail under Emscripten, but won't prevent
-# compilation
+# Checks for compiler flags
+AX_CHECK_COMPILE_FLAG([-fno-caret-diagnostics], [CXXFLAGS="$CXXFLAGS -fno-caret-diagnostics"])
+AX_CHECK_COMPILE_FLAG([-fno-diagnostics-show-option], [CXXFLAGS="$CXXFLAGS -fno-diagnostics-show-option"])
+AX_CHECK_COMPILE_FLAG([-Wno-overloaded-virtual], [CXXFLAGS="$CXXFLAGS -Wno-overloaded-virtual"])
+AX_CHECK_COMPILE_FLAG([-Wno-inconsistent-missing-override], [CXXFLAGS="$CXXFLAGS -Wno-inconsistent-missing-override"])
+AX_CHECK_COMPILE_FLAG([-Wno-attributes], [CXXFLAGS="$CXXFLAGS -Wno-attributes"])
+AX_CHECK_COMPILE_FLAG([-Wno-int-to-pointer-cast], [CXXFLAGS="$CXXFLAGS  -Wno-int-to-pointer-cast"])
+AX_CHECK_COMPILE_FLAG([-Wno-unused-parameter], [CXXFLAGS="$CXXFLAGS -Wno-unused-parameter"])
+AX_CHECK_COMPILE_FLAG([-Wno-unused-variable], [CXXFLAGS="$CXXFLAGS -Wno-unused-variable"])
+AX_CHECK_COMPILE_FLAG([-Wno-unused-value], [CXXFLAGS="$CXXFLAGS -Wno-unused-value"])
+AX_CHECK_COMPILE_FLAG([-Wno-unused-local-typedefs], [CXXFLAGS="$CXXFLAGS -Wno-unused-local-typedefs"])
+AX_CHECK_COMPILE_FLAG([-Wno-unknown-pragmas], [CXXFLAGS="$CXXFLAGS -Wno-unknown-pragmas"])
+
+# Checks for things that fail under Emscripten, but won't prevent compilation
 if test x$emscripten = xfalse; then  
   AC_SEARCH_LIBS([dlopen], [dl], [], [])
   AC_CHECK_LIB([atomic], [main], [], [], [])
