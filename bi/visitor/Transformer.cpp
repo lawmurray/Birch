@@ -13,9 +13,9 @@ bi::Statement* bi::Transformer::modify(Assume* o) {
     auto tmp = new LocalVariable(o->right, o->loc);
     auto ref = new NamedExpression(tmp->name, o->loc);
     auto cond = new Query(ref->accept(&cloner), o->loc);
-    auto trueBranch = new ExpressionStatement(
+    auto trueBranch = new Braces(new ExpressionStatement(
         new Assign(o->left, new Name("<-"),
-            new Get(ref->accept(&cloner), o->loc), o->loc), o->loc);
+            new Get(ref->accept(&cloner), o->loc), o->loc), o->loc), o->loc);
     auto falseBranch = new EmptyStatement(o->loc);
     auto conditional = new If(cond, trueBranch, falseBranch, o->loc);
     result = new StatementList(tmp, conditional, o->loc);
@@ -67,8 +67,7 @@ bi::Statement* bi::Transformer::modify(ExpressionStatement* o) {
 //    auto query = new Query(new NamedExpression(name, o->loc), o->loc);
 //    auto get = new Get(new NamedExpression(name, o->loc), o->loc);
 //    auto yield = new Yield(get, o->loc);
-//    auto loop = new While(new Parentheses(query, o->loc),
-//        new Braces(yield, o->loc), o->loc);
+//    auto loop = new While(new Parentheses(query, o->loc), yield, o->loc);
 //    auto result = new StatementList(var, loop, o->loc);
 //
 //    return result->accept(this);

@@ -410,16 +410,20 @@ void bi::bi_ostream::visit(const If* o) {
 }
 
 void bi::bi_ostream::visit(const For* o) {
-  start("for " << o->index << " in " << o->from << ".." << o->to);
+  auto index = dynamic_cast<const LocalVariable*>(o->index);
+  assert(index);
+  start("for " << index->name << " in " << o->from << ".." << o->to);
   finish(o->braces);
 }
 
 void bi::bi_ostream::visit(const Parallel* o) {
+  auto index = dynamic_cast<const LocalVariable*>(o->index);
+  assert(index);
   start("");
   if (o->has(DYNAMIC)) {
     middle("dynamic ");
   }
-  middle("parallel for " << o->index << " in " << o->from << ".." << o->to);
+  middle("parallel for " << index->name << " in " << o->from << ".." << o->to);
   finish(o->braces);
 }
 
