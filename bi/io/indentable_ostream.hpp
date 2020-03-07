@@ -33,7 +33,7 @@ public:
    */
   bi::indentable_ostream& operator<<(const char o) {
     base << o;
-    return *this;
+    return *this; // @suppress("Return with parenthesis")
   }
 
   bi::indentable_ostream& operator<<(const bool o) {

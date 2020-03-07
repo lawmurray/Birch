@@ -10,9 +10,10 @@
 #include "boost/algorithm/string.hpp"
 
 bi::CppBaseGenerator::CppBaseGenerator(std::ostream& base, const int level,
-    const bool header) :
+    const bool header, const bool generic) :
     indentable_ostream(base, level),
     header(header),
+    generic(generic),
     inAssign(0),
     inConstructor(0),
     inLambda(0),
@@ -273,7 +274,7 @@ void bi::CppBaseGenerator::visit(const LocalVariable* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Function* o) {
-  if (!o->braces->isEmpty()) {
+  if ((generic || !o->isGeneric()) && !o->braces->isEmpty()) {
     genTemplateParams(o);
     genSourceLine(o->loc);
     start(o->returnType << ' ');
@@ -287,7 +288,6 @@ void bi::CppBaseGenerator::visit(const Function* o) {
       finish(" {");
       in();
       genTraceFunction(o->name->str(), o->loc);
-      CppBaseGenerator aux(base, level, false);
       *this << o->braces->strip();
       out();
       line("}\n");
@@ -296,36 +296,38 @@ void bi::CppBaseGenerator::visit(const Function* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Fiber* o) {
-  /* initialization function */
-  genTemplateParams(o);
-  genSourceLine(o->loc);
-  start(o->returnType << ' ');
-  if (!header) {
-    middle("bi::");
-  }
-  middle(o->name << '(' << o->params << ')');
-  if (header) {
-    finish(';');
-  } else {
-    finish(" {");
-    in();
-    genTraceLine(o->loc);
-    line("yield_" << o->name << '_' << o->number << "_0_();");
-    out();
-    line("}\n");
-  }
+  if (generic || !o->isGeneric()) {
+    /* initialization function */
+    genTemplateParams(o);
+    genSourceLine(o->loc);
+    start(o->returnType << ' ');
+    if (!header) {
+      middle("bi::");
+    }
+    middle(o->name << '(' << o->params << ')');
+    if (header) {
+      finish(';');
+    } else {
+      finish(" {");
+      in();
+      genTraceLine(o->loc);
+      line("yield_" << o->name << '_' << o->number << "_0_();");
+      out();
+      line("}\n");
+    }
 
-  /* start function */
-  CppResumeGenerator auxResume(nullptr, o, base, level, header);
-  auxResume << o->start;
+    /* start function */
+    CppResumeGenerator auxResume(nullptr, o, base, level, header);
+    auxResume << o->start;
 
-  /* resume functions */
-  Gatherer<Yield> yields;
-  o->accept(&yields);
-  for (auto yield : yields) {
-    if (yield->resume) {
-      CppResumeGenerator auxResume(nullptr, o, base, level, header);
-      auxResume << yield->resume;
+    /* resume functions */
+    Gatherer<Yield> yields;
+    o->accept(&yields);
+    for (auto yield : yields) {
+      if (yield->resume) {
+        CppResumeGenerator auxResume(nullptr, o, base, level, header);
+        auxResume << yield->resume;
+      }
     }
   }
 }
@@ -477,10 +479,7 @@ void bi::CppBaseGenerator::visit(const Program* o) {
     line("bi::seed();\n");
 
     /* body of program */
-    if (!o->braces->isEmpty()) {
-      CppBaseGenerator aux(base, level, header);
-      aux << o->braces->strip();
-    }
+    *this << o->braces->strip();
 
     genTraceLine(o->loc);
     line("return 0;");
@@ -508,8 +507,7 @@ void bi::CppBaseGenerator::visit(const BinaryOperator* o) {
       finish(" {");
       in();
       genTraceFunction(o->name->str(), o->loc);
-      CppBaseGenerator aux(base, level, false);
-      aux << o->braces->strip();
+      *this << o->braces->strip();
       out();
       finish("}\n");
     }
@@ -535,8 +533,7 @@ void bi::CppBaseGenerator::visit(const UnaryOperator* o) {
       finish(" {");
       in();
       genTraceFunction(o->name->str(), o->loc);
-      CppBaseGenerator aux(base, level, false);
-      aux << o->braces->strip();
+      *this << o->braces->strip();
       out();
       finish("}\n");
     }
@@ -556,8 +553,10 @@ void bi::CppBaseGenerator::visit(const Basic* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Class* o) {
-  CppClassGenerator auxClass(base, level, header);
-  auxClass << o;
+  if (generic || !o->isGeneric()) {
+    CppClassGenerator auxClass(base, level, header);
+    auxClass << o;
+  }
 }
 
 void bi::CppBaseGenerator::visit(const Generic* o) {

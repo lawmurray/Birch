@@ -19,6 +19,8 @@ bi::CppPackageGenerator::CppPackageGenerator(std::ostream& base,
 void bi::CppPackageGenerator::visit(const Package* o) {
   /* auxiliary generators */
   CppRawGenerator auxRaw(base, level, header);
+  CppBaseGenerator auxDeclaration(base, level, true, true);
+  CppBaseGenerator auxDefinition(base, level, false, true);
 
   /* gather important objects */
   Gatherer<Basic> basics;
@@ -130,10 +132,10 @@ void bi::CppPackageGenerator::visit(const Package* o) {
       }
     }
 
-    /* class type declarations */
+    /* classes */
     for (auto o : sortedClasses) {
       if (!o->isAlias()) {
-        *this << o;
+        auxDeclaration << o;
       }
     }
 
@@ -142,55 +144,55 @@ void bi::CppPackageGenerator::visit(const Package* o) {
 
     /* global variables */
     for (auto o : globals) {
-      *this << o;
+      auxDeclaration << o;
     }
 
     /* functions */
     for (auto o : functions) {
-      *this << o;
+      auxDeclaration << o;
     }
 
     /* fibers */
     for (auto o : fibers) {
-      *this << o;
+      auxDeclaration << o;
     }
 
     /* binary operators */
     for (auto o : binaries) {
-      *this << o;
+      auxDeclaration << o;
     }
 
     /* unary operators */
     for (auto o : unaries) {
-      *this << o;
+      auxDeclaration << o;
     }
 
     /* programs */
     for (auto o : programs) {
-      *this << o;
+      auxDeclaration << o;
     }
 
     line("}\n");
-//  } else {
-//    /* generic class type definitions */
-//    for (auto o : classes) {
-//      if (o->isGeneric() && !o->isAlias()) {
-//        *this << o;
-//      }
-//    }
-//
-//    /* generic function definitions */
-//    for (auto o : functions) {
-//      if (o->isGeneric()) {
-//        *this << o;
-//      }
-//    }
-//
-//    /* generic fiber definitions */
-//    for (auto o : fibers) {
-//      if (o->isGeneric()) {
-//        *this << o;
-//      }
-//    }
+
+    /* generic class type definitions */
+    for (auto o : classes) {
+      if (o->isGeneric() && !o->isAlias()) {
+        auxDefinition << o;
+      }
+    }
+
+    /* generic function definitions */
+    for (auto o : functions) {
+      if (o->isGeneric()) {
+        auxDefinition << o;
+      }
+    }
+
+    /* generic fiber definitions */
+    for (auto o : fibers) {
+      if (o->isGeneric()) {
+        auxDefinition << o;
+      }
+    }
   }
 }

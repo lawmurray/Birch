@@ -14,8 +14,16 @@ namespace bi {
  */
 class CppBaseGenerator: public indentable_ostream {
 public:
+  /**
+   * Constructor.
+   *
+   * @param base Base stream.
+   * @param level Indentation level.
+   * @param header Output header instead of course?
+   * @param generic Include generic classes, functions and fibers?
+   */
   CppBaseGenerator(std::ostream& base, const int level = 0,
-      const bool header = false);
+      const bool header = false, const bool generic = false);
 
   using indentable_ostream::visit;
 
@@ -128,6 +136,11 @@ protected:
    * Output header instead of source?
    */
   bool header;
+
+  /**
+   * Include generic classes, functions and fibers?
+   */
+  bool generic;
 
   /**
    * Are we on the left side of an assignment statement?
