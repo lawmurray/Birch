@@ -46,12 +46,28 @@ public:
    *
    * @param shape Shape.
    */
+  template<class U = T, std::enable_if_t<is_value<U>::value,int> = 0>
   Array(const F& shape) :
       shape(shape),
       buffer(nullptr),
       offset(0),
       isView(false) {
     allocate();
+  }
+
+  /**
+   * Constructor.
+   *
+   * @param shape Shape.
+   */
+  template<class U = T, std::enable_if_t<!is_value<U>::value,int> = 0>
+  Array(const F& shape) :
+      shape(shape),
+      buffer(nullptr),
+      offset(0),
+      isView(false) {
+    allocate();
+    initialize();
   }
 
   /**
