@@ -118,7 +118,7 @@ auto make_shape(const int64_t arg, const Shape<Args...>& tail) {
  *
  * @ingroup libbirch
  */
-inline EmptySlice make_slice() {
+inline auto make_slice() {
   return EmptySlice();
 }
 
@@ -139,7 +139,7 @@ auto make_slice(const Range<offset_value,length_value>& arg) {
  *
  * @ingroup libbirch
  */
-inline Slice<Index<>,EmptySlice> make_slice(const int64_t arg) {
+inline auto make_slice(const int64_t arg) {
   auto head = Index<>(arg);
   auto tail = EmptySlice();
   return Slice<Index<>,EmptySlice>(head, tail);
@@ -184,8 +184,40 @@ auto make_slice(const int64_t arg, Args ... args) {
  * @return The array.
  */
 template<class T, class F, class ... Args>
-Array<T,F> make_array(const F& shape, Args... args) {
+auto make_array(const F& shape, Args... args) {
   return Array<T,F>(shape, args...);
+}
+
+/**
+ * Make an array.
+ *
+ * @ingroup libbirch
+ *
+ * @tparam T Value type.
+ *
+ * @param values Values.
+ *
+ * @return The array.
+ */
+template<class T>
+auto make_array(const std::initializer_list<T>& values) {
+  return Array<T,typename DefaultShape<1>::type>(values);
+}
+
+/**
+ * Make an array.
+ *
+ * @ingroup libbirch
+ *
+ * @tparam T Value type.
+ *
+ * @param values Values.
+ *
+ * @return The array.
+ */
+template<class T>
+auto make_array(const std::initializer_list<std::initializer_list<T>>& values) {
+  return Array<T,typename DefaultShape<2>::type>(values);
 }
 
 /**
@@ -203,7 +235,7 @@ Array<T,F> make_array(const F& shape, Args... args) {
  * @return The array.
  */
 template<class T, class F, class L>
-Array<T,F> make_array_from_lambda(const F& shape, const L& l) {
+auto make_array_from_lambda(const F& shape, const L& l) {
   return Array<T,F>(l, shape);
 }
 
@@ -222,7 +254,7 @@ Array<T,F> make_array_from_lambda(const F& shape, const L& l) {
  * @return The array.
  */
 template<class T, class F, class Value>
-Array<T,F> make_array_and_assign(const F& shape, const Value& value) {
+auto make_array_and_assign(const F& shape, const Value& value) {
   Array<T,F> result;
   result.enlarge(shape, value);
   return result;
@@ -241,7 +273,7 @@ Array<T,F> make_array_and_assign(const F& shape, const Value& value) {
  * @return A pointer of the given type.
  */
 template<class P, class ... Args>
-P make_pointer(Args... args) {
+auto make_pointer(Args... args) {
   return P(new typename P::value_type(args...));
 }
 
@@ -255,7 +287,7 @@ P make_pointer(Args... args) {
  * @param tail Remaining elements.
  */
 template<class Head, class ... Tail>
-Tuple<Head,Tail...> make_tuple(const Head& head, const Tail&... tail) {
+auto make_tuple(const Head& head, const Tail&... tail) {
   return Tuple<Head,Tail...>(head, tail...);
 }
 
@@ -269,7 +301,7 @@ Tuple<Head,Tail...> make_tuple(const Head& head, const Tail&... tail) {
  * @param tail Remaining elements.
  */
 template<class Head, class ... Tail>
-Tie<Head&,Tail&...> tie(Head& head, Tail&... tail) {
+auto tie(Head& head, Tail&... tail) {
   return Tie<Head&,Tail&...>(head, tail...);
 }
 
