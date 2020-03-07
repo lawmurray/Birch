@@ -192,7 +192,7 @@ public:
    */
   template<class Visitor>
   void accept_(const Visitor& v) {
-    pin();
+    pinWrite();
     auto iter = begin();
     auto last = end();
     unpin();
