@@ -56,7 +56,7 @@ class InputStream {
     long long int y;  // ensure fscanf gets exactly the type it expects
     auto res = ::fscanf(self->file.get(), "%lld", &y);
     if (res == 1) {
-      x = y;
+      x = (bi::type::Integer)y;
     } 
     }}
     return x;
