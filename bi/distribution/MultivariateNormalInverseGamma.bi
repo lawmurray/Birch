@@ -26,8 +26,8 @@
  * be multiplication on the left (as above) or the right, or division on the
  * right.
  */
-final class MultivariateNormalInverseGamma(μ:Real[_], Σ:Real[_,_],
-    σ2:InverseGamma) < Distribution<Real[_]> {
+final class MultivariateNormalInverseGamma(μ:Expression<Real[_]>,
+    Σ:Expression<Real[_,_]>, σ2:InverseGamma) < Distribution<Real[_]> {
   /**
    * Precision.
    */
@@ -36,17 +36,17 @@ final class MultivariateNormalInverseGamma(μ:Real[_], Σ:Real[_,_],
   /**
    * Precision times mean.
    */
-  ν:Real[_] <- Λ*μ;
+  ν:Expression<Real[_]> <- Λ*μ;
 
   /**
    * Variance shape.
    */
-  α:Real <- σ2.α;
+  α:Expression<Real> <- σ2.α;
 
   /**
    * Variance scale accumulator.
    */
-  γ:Real <- σ2.β + 0.5*dot(μ, ν);
+  γ:Expression<Real> <- σ2.β + 0.5*dot(μ, ν);
 
   /**
    * Variance scale.
@@ -58,23 +58,19 @@ final class MultivariateNormalInverseGamma(μ:Real[_], Σ:Real[_,_],
   }
 
   function simulate() -> Real[_] {
-    return simulate_multivariate_normal_inverse_gamma(ν, Λ, α,
-        gamma_to_beta(γ, ν, Λ));
+    return simulate_multivariate_normal_inverse_gamma(ν.value(), Λ, α.value(), gamma_to_beta(γ.value(), ν.value(), Λ));
   }
   
   function logpdf(x:Real[_]) -> Real {
-    return logpdf_multivariate_normal_inverse_gamma(x, ν, Λ, α,
-        gamma_to_beta(γ, ν, Λ));
+    return logpdf_multivariate_normal_inverse_gamma(x, ν.value(), Λ, α.value(), gamma_to_beta(γ.value(), ν.value(), Λ));
   }
 
   function update(x:Real[_]) {
-    (σ2.α, σ2.β) <- update_multivariate_normal_inverse_gamma(x, ν, Λ, α,
-        gamma_to_beta(γ, ν, Λ));
+    (σ2.α, σ2.β) <- update_multivariate_normal_inverse_gamma(x, ν.value(), Λ, α.value(), gamma_to_beta(γ.value(), ν.value(), Λ));
   }
 
   function downdate(x:Real[_]) {
-    (σ2.α, σ2.β) <- downdate_multivariate_normal_inverse_gamma(x, ν, Λ, α,
-        gamma_to_beta(γ, ν, Λ));
+    (σ2.α, σ2.β) <- downdate_multivariate_normal_inverse_gamma(x, ν.value(), Λ, α.value(), gamma_to_beta(γ.value(), ν.value(), Λ));
   }
 
   function graft() -> Distribution<Real[_]> {
@@ -91,15 +87,16 @@ final class MultivariateNormalInverseGamma(μ:Real[_], Σ:Real[_,_],
   function write(buffer:Buffer) {
     prune();
     buffer.set("class", "MultivariateNormalInverseGamma");
-    buffer.set("μ", solve(Λ, ν));
+    buffer.set("μ", solve(Λ, ν.value()));
     buffer.set("Σ", inv(Λ));
-    buffer.set("α", α);
-    buffer.set("β", gamma_to_beta(γ, ν, Λ));
+    buffer.set("α", α.value());
+    buffer.set("β", gamma_to_beta(γ.value(), ν.value(), Λ));
   }
 }
 
-function MultivariateNormalInverseGamma(μ:Real[_], Σ:Real[_,_],
-    σ2:InverseGamma) -> MultivariateNormalInverseGamma {
+function MultivariateNormalInverseGamma(μ:Expression<Real[_]>,
+    Σ:Expression<Real[_,_]>, σ2:InverseGamma) ->
+    MultivariateNormalInverseGamma {
   m:MultivariateNormalInverseGamma(μ, Σ, σ2);
   σ2.setChild(m);
   return m;

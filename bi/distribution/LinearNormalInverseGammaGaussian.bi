@@ -1,12 +1,12 @@
 /*
  * ed linear-normal-inverse-gamma-Gaussian random variate.
  */
-final class LinearNormalInverseGammaGaussian(a:Real, μ:NormalInverseGamma,
-    c:Real) < Distribution<Real> {
+final class LinearNormalInverseGammaGaussian(a:Expression<Real>, μ:NormalInverseGamma,
+    c:Expression<Real>) < Distribution<Real> {
   /**
    * Scale.
    */
-  a:Real <- a;
+  a:Expression<Real> <- a;
     
   /**
    * Mean.
@@ -16,41 +16,37 @@ final class LinearNormalInverseGammaGaussian(a:Real, μ:NormalInverseGamma,
   /**
    * Offset.
    */
-  c:Real <- c;
+  c:Expression<Real> <- c;
 
   function simulate() -> Real {
-    return simulate_linear_normal_inverse_gamma_gaussian(a, μ.μ, 1.0/μ.λ, c,
-        μ.σ2.α, μ.σ2.β);
+    return simulate_linear_normal_inverse_gamma_gaussian(a.value(), μ.μ.value(), 1.0/μ.λ.value(), c.value(), μ.σ2.α.value(), μ.σ2.β.value());
   }
   
   function logpdf(x:Real) -> Real {
-    return logpdf_linear_normal_inverse_gamma_gaussian(x, a, μ.μ, 1.0/μ.λ, c,
-        μ.σ2.α, μ.σ2.β);
+    return logpdf_linear_normal_inverse_gamma_gaussian(x, a.value(), μ.μ.value(), 1.0/μ.λ.value(), c.value(), μ.σ2.α.value(), μ.σ2.β.value());
   }
 
   function update(x:Real) {
     (μ.μ, μ.λ, μ.σ2.α, μ.σ2.β) <- update_linear_normal_inverse_gamma_gaussian(
-        x, a, μ.μ, μ.λ, c, μ.σ2.α, μ.σ2.β);
+        x, a.value(), μ.μ.value(), μ.λ.value(), c.value(), μ.σ2.α.value(), μ.σ2.β.value());
   }
 
   function downdate(x:Real) {
     (μ.μ, μ.λ, μ.σ2.α, μ.σ2.β) <- downdate_linear_normal_inverse_gamma_gaussian(
-        x, a, μ.μ, μ.λ, c, μ.σ2.α, μ.σ2.β);
+        x, a.value(), μ.μ.value(), μ.λ.value(), c.value(), μ.σ2.α.value(), μ.σ2.β.value());
   }
 
   function cdf(x:Real) -> Real? {
-    return cdf_linear_normal_inverse_gamma_gaussian(x, a, μ.μ, 1.0/μ.λ, c,
-        μ.σ2.α, μ.σ2.β);
+    return cdf_linear_normal_inverse_gamma_gaussian(x, a.value(), μ.μ.value(), 1.0/μ.λ.value(), c.value(), μ.σ2.α.value(), μ.σ2.β.value());
   }
 
   function quantile(P:Real) -> Real? {
-    return quantile_linear_normal_inverse_gamma_gaussian(P, a, μ.μ, 1.0/μ.λ,
-        c, μ.σ2.α, μ.σ2.β);
+    return quantile_linear_normal_inverse_gamma_gaussian(P, a.value(), μ.μ.value(), 1.0/μ.λ.value(), c.value(), μ.σ2.α.value(), μ.σ2.β.value());
   }
 }
 
-function LinearNormalInverseGammaGaussian(a:Real, μ:NormalInverseGamma,
-    c:Real) -> LinearNormalInverseGammaGaussian {
+function LinearNormalInverseGammaGaussian(a:Expression<Real>,
+    μ:NormalInverseGamma, c:Expression<Real>) -> LinearNormalInverseGammaGaussian {
   m:LinearNormalInverseGammaGaussian(a, μ, c);
   μ.setChild(m);
   return m;

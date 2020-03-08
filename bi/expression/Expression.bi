@@ -5,13 +5,6 @@
  */
 abstract class Expression<Value> {  
   /**
-   * Value conversion.
-   */
-  operator -> Value {
-    return value();
-  }
-
-  /**
    * Value assignment. Once an expression has been assigned a value, it is
    * treated as though of type Boxed.
    */

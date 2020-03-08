@@ -18,11 +18,11 @@ final class IndependentUniform(l:Expression<Real[_]>,
   }
 
   function simulate() -> Real[_] {
-    return simulate_independent_uniform(l, u);
+    return simulate_independent_uniform(l.value(), u.value());
   }
   
   function logpdf(x:Real[_]) -> Real {
-    return logpdf_independent_uniform(x, l, u);
+    return logpdf_independent_uniform(x, l.value(), u.value());
   }
 
   function graft() -> Distribution<Real[_]> {

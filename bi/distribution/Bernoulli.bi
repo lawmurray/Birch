@@ -8,11 +8,11 @@ final class Bernoulli(ρ:Expression<Real>) < Distribution<Boolean> {
   ρ:Expression<Real> <- ρ;
 
   function simulate() -> Boolean {
-    return simulate_bernoulli(ρ);
+    return simulate_bernoulli(ρ.value());
   }
   
   function logpdf(x:Boolean) -> Real {
-    return logpdf_bernoulli(x, ρ);
+    return logpdf_bernoulli(x, ρ.value());
   }
 
   function graft() -> Distribution<Boolean> {

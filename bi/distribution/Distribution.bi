@@ -94,12 +94,11 @@ abstract class Distribution<Value> < Delay {
     auto w <- 0.0;
     if ψ? {
       w <- ψ!.value();
-      assert abs(w - logpdf(x)) < 1.0e-6;
       ψ!.grad(1.0);
       updateLazy(x);
     } else {
-      w <- logpdf(x);
-      update(x);
+      w <- logpdf(x.value());
+      update(x.value());
     }
     return w;  
   }

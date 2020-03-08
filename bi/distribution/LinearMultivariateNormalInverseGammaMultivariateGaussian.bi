@@ -3,12 +3,12 @@
  * components have independent and identical variance.
  */
 final class LinearMultivariateNormalInverseGammaMultivariateGaussian(
-    A:Real[_,_], μ:MultivariateNormalInverseGamma, c:Real[_]) <
-    Distribution<Real[_]> {
+    A:Expression<Real[_,_]>, μ:MultivariateNormalInverseGamma,
+    c:Expression<Real[_]>) < Distribution<Real[_]> {
   /**
    * Scale.
    */
-  A:Real[_,_] <- A;
+  A:Expression<Real[_,_]> <- A;
 
   /**
    * Mean.
@@ -18,31 +18,32 @@ final class LinearMultivariateNormalInverseGammaMultivariateGaussian(
   /**
    * Offset.
    */
-  c:Real[_] <- c;
+  c:Expression<Real[_]> <- c;
 
   function simulate() -> Real[_] {
     return simulate_linear_multivariate_normal_inverse_gamma_multivariate_gaussian(
-        A, μ.ν, μ.Λ, c, μ.α, μ.γ);
+        A.value(), μ.ν.value(), μ.Λ, c.value(), μ.α.value(), μ.γ.value());
   }
   
   function logpdf(x:Real[_]) -> Real {
     return logpdf_linear_multivariate_normal_inverse_gamma_multivariate_gaussian(
-        x, A, μ.ν, μ.Λ, c, μ.α, μ.γ);
+        x, A.value(), μ.ν.value(), μ.Λ, c.value(), μ.α.value(), μ.γ.value());
   }
 
   function update(x:Real[_]) {
     (μ.ν, μ.Λ, μ.α, μ.γ) <- update_linear_multivariate_normal_inverse_gamma_multivariate_gaussian(
-        x, A, μ.ν, μ.Λ, c, μ.α, μ.γ);
+        x, A.value(), μ.ν.value(), μ.Λ, c.value(), μ.α.value(), μ.γ.value());
   }
 
   function downdate(x:Real[_]) {
     (μ.ν, μ.Λ, μ.α, μ.γ) <- downdate_linear_multivariate_normal_inverse_gamma_multivariate_gaussian(
-        x, A, μ.ν, μ.Λ, c, μ.α, μ.γ);
+        x, A.value(), μ.ν.value(), μ.Λ, c.value(), μ.α.value(), μ.γ.value());
   }
 }
 
 function LinearMultivariateNormalInverseGammaMultivariateGaussian(
-    A:Real[_,_], μ:MultivariateNormalInverseGamma, c:Real[_]) ->
+    A:Expression<Real[_,_]>, μ:MultivariateNormalInverseGamma,
+    c:Expression<Real[_]>) ->
     LinearMultivariateNormalInverseGammaMultivariateGaussian {
   m:LinearMultivariateNormalInverseGammaMultivariateGaussian(A, μ, c);
   μ.setChild(m);

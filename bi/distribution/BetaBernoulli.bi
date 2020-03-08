@@ -8,19 +8,19 @@ final class BetaBernoulli(ρ:Beta) < Distribution<Boolean> {
   ρ:Beta& <- ρ;
 
   function simulate() -> Boolean {
-    return simulate_beta_bernoulli(ρ.α, ρ.β);
+    return simulate_beta_bernoulli(ρ.α.value(), ρ.β.value());
   }
   
   function logpdf(x:Boolean) -> Real {
-    return logpdf_beta_bernoulli(x, ρ.α, ρ.β);
+    return logpdf_beta_bernoulli(x, ρ.α.value(), ρ.β.value());
   }
 
   function update(x:Boolean) {
-    (ρ.α, ρ.β) <- update_beta_bernoulli(x, ρ.α, ρ.β);
+    (ρ.α, ρ.β) <- update_beta_bernoulli(x, ρ.α.value(), ρ.β.value());
   }
 
   function downdate(x:Boolean) {
-    (ρ.α, ρ.β) <- downdate_beta_bernoulli(x, ρ.α, ρ.β);
+    (ρ.α, ρ.β) <- downdate_beta_bernoulli(x, ρ.α.value(), ρ.β.value());
   }
 }
 

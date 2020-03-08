@@ -8,19 +8,19 @@ final class DirichletCategorical(ρ:Dirichlet) < Distribution<Integer> {
   ρ:Dirichlet& <- ρ;
 
   function simulate() -> Integer {
-    return simulate_dirichlet_categorical(ρ.α);
+    return simulate_dirichlet_categorical(ρ.α.value());
   }
   
   function logpdf(x:Integer) -> Real {
-    return logpdf_dirichlet_categorical(x, ρ.α);
+    return logpdf_dirichlet_categorical(x, ρ.α.value());
   }
 
   function update(x:Integer) {
-    ρ.α <- update_dirichlet_categorical(x, ρ.α);
+    ρ.α <- update_dirichlet_categorical(x, ρ.α.value());
   }
 
   function downdate(x:Integer) {
-    ρ.α <- downdate_dirichlet_categorical(x, ρ.α);
+    ρ.α <- downdate_dirichlet_categorical(x, ρ.α.value());
   }
 
   function lower() -> Integer? {

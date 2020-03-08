@@ -19,19 +19,19 @@ final class Student(ν:Expression<Real>, μ:Expression<Real>,
   σ2:Expression<Real> <- σ2;
   
   function simulate() -> Real {
-    return simulate_student_t(ν, μ, σ2);
+    return simulate_student_t(ν.value(), μ.value(), σ2.value());
   }
   
   function logpdf(x:Real) -> Real {
-    return logpdf_student_t(x, ν, μ, σ2);
+    return logpdf_student_t(x, ν.value(), μ.value(), σ2.value());
   }
 
   function cdf(x:Real) -> Real? {
-    return cdf_student_t(x, ν, μ, σ2);
+    return cdf_student_t(x, ν.value(), μ.value(), σ2.value());
   }
 
   function quantile(P:Real) -> Real? {
-    return quantile_student_t(P, ν, μ, σ2);
+    return quantile_student_t(P, ν.value(), μ.value(), σ2.value());
   }
 
   function graft() -> Distribution<Real> {

@@ -22,11 +22,11 @@ final class IndependentRowMatrixGaussian(M:Expression<Real[_,_]>,
   }
 
   function simulate() -> Real[_,_] {
-    return simulate_matrix_gaussian(M, V);
+    return simulate_matrix_gaussian(M.value(), V.value());
   }
   
   function logpdf(x:Real[_,_]) -> Real {
-    return logpdf_matrix_gaussian(x, M, V);
+    return logpdf_matrix_gaussian(x, M.value(), V.value());
   }
 
   function graft() -> Distribution<Real[_,_]> {
@@ -40,22 +40,22 @@ final class IndependentRowMatrixGaussian(M:Expression<Real[_,_]>,
     } else if (m2 <- M.graftMatrixNormalInverseWishart())? && m2!.V == V.distribution() {
       return MatrixNormalInverseWishartMatrixGaussian(m2!);
     } else if (s1 <- V.graftInverseWishart())? {
-      return MatrixNormalInverseWishart(M, identity(M.rows()), s1!);
+      return MatrixNormalInverseWishart(M, Identity(M.rows()), s1!);
     } else {
-      return Gaussian(M, Boxed(identity(M.rows())), V);
+      return Gaussian(M, identity(M.rows()), V);
     }
   }
 
   function graftMatrixGaussian() -> MatrixGaussian? {
     prune();
-    return Gaussian(M, Boxed(identity(M.rows())), V);
+    return Gaussian(M, identity(M.rows()), V);
   }
 
   function graftMatrixNormalInverseWishart() -> MatrixNormalInverseWishart? {
     prune();
     s1:InverseWishart?;
     if (s1 <- V.graftInverseWishart())? {
-      return MatrixNormalInverseWishart(M, identity(M.rows()), s1!);
+      return MatrixNormalInverseWishart(M, Identity(M.rows()), s1!);
     }
     return nil;
   }

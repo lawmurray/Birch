@@ -27,12 +27,12 @@ final class LinearMultivariateGaussianMultivariateGaussian(
 
   function update(x:Real[_]) {
     (m.μ, m.Σ) <- update_linear_multivariate_gaussian_multivariate_gaussian(
-        x, A, m.μ, m.Σ, c, S);
+        x, A.value(), m.μ.value(), m.Σ.value(), c.value(), S.value());
   }
 
   function downdate(x:Real[_]) {
     (m.μ, m.Σ) <- downdate_linear_multivariate_gaussian_multivariate_gaussian(
-        x, A, m.μ, m.Σ, c, S);
+        x, A.value(), m.μ.value(), m.Σ.value(), c.value(), S.value());
   }
 
   function updateLazy(x:Expression<Real[_]>) {

@@ -3,7 +3,7 @@
  * variates.
  */
 final class SubtractBoundedDiscrete(x1:BoundedDiscrete, x2:BoundedDiscrete) <
-    BoundedDiscrete(x1.l - x2.u, x1.u - x2.l) {
+    BoundedDiscrete {
   /**
    * First discrete random variate.
    */
@@ -44,12 +44,12 @@ final class SubtractBoundedDiscrete(x1:BoundedDiscrete, x2:BoundedDiscrete) <
 
   function enumerate(x:Integer) {
     if !this.x? || this.x! != x {
-      auto l <- max(x1.l, x2.l + x);
-      auto u <- min(x1.u, x2.u + x);
+      auto l <- max(x1.lower()!, x2.lower()! + x);
+      auto u <- min(x1.upper()!, x2.upper()! + x);
 
       x0 <- l;
       Z <- 0.0;
-      if (l <= u) {
+      if l <= u {
         /* distribution over possible pairs that produce the given diff */
         z <- vector(0.0, u - l + 1);
         for n in l..u {
@@ -91,10 +91,18 @@ final class SubtractBoundedDiscrete(x1:BoundedDiscrete, x2:BoundedDiscrete) <
 
   function cdf(x:Integer) -> Real? {
     auto P <- 0.0;
-    for n in l..x {
+    for n in lower()!..x {
       P <- P + pdf(n);
     }
     return P;
+  }
+  
+  function lower() -> Integer? {
+    return x1.lower()! - x2.upper()!;
+  }
+  
+  function upper() -> Integer? {
+    return x1.upper()! - x2.lower()!;
   }
 }
 

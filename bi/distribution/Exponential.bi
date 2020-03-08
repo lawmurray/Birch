@@ -9,19 +9,19 @@ final class Exponential(λ:Expression<Real>) <
   λ:Expression<Real> <- λ;
 
   function simulate() -> Real {
-    return simulate_exponential(λ);
+    return simulate_exponential(λ.value());
   }
 
   function logpdf(x:Real) -> Real {
-    return logpdf_exponential(x, λ);
+    return logpdf_exponential(x, λ.value());
   }
 
   function cdf(x:Real) -> Real? {
-    return cdf_exponential(x, λ);
+    return cdf_exponential(x, λ.value());
   }
 
   function quantile(P:Real) -> Real? {
-    return quantile_exponential(P, λ);
+    return quantile_exponential(P, λ.value());
   }
 
   function lower() -> Real? {

@@ -25,17 +25,17 @@
  * be multiplication on the left (as above) or the right, or division on the
  * right.
  */
-final class NormalInverseGamma(μ:Real, a2:Real, σ2:InverseGamma) <
-    Distribution<Real> {
+final class NormalInverseGamma(μ:Expression<Real>, a2:Expression<Real>,
+    σ2:InverseGamma) < Distribution<Real> {
   /**
    * Mean.
    */
-  μ:Real <- μ;
+  μ:Expression<Real> <- μ;
   
   /**
    * Precision scale.
    */
-  λ:Real <- 1.0/a2;
+  λ:Expression<Real> <- 1.0/a2;
   
   /**
    * Variance.
@@ -43,27 +43,27 @@ final class NormalInverseGamma(μ:Real, a2:Real, σ2:InverseGamma) <
   σ2:InverseGamma& <- σ2;
 
   function simulate() -> Real {
-    return simulate_normal_inverse_gamma(μ, 1.0/λ, σ2.α, σ2.β);
+    return simulate_normal_inverse_gamma(μ.value(), 1.0/λ.value(), σ2.α.value(), σ2.β.value());
   }
   
   function logpdf(x:Real) -> Real {
-    return logpdf_normal_inverse_gamma(x, μ, 1.0/λ, σ2.α, σ2.β);
+    return logpdf_normal_inverse_gamma(x, μ.value(), 1.0/λ.value(), σ2.α.value(), σ2.β.value());
   }
 
   function update(x:Real) {
-    (σ2.α, σ2.β) <- update_normal_inverse_gamma(x, μ, λ, σ2.α, σ2.β);
+    (σ2.α, σ2.β) <- update_normal_inverse_gamma(x, μ.value(), λ.value(), σ2.α.value(), σ2.β.value());
   }
 
   function downdate(x:Real) {
-    (σ2.α, σ2.β) <- downdate_normal_inverse_gamma(x, μ, λ, σ2.α, σ2.β);
+    (σ2.α, σ2.β) <- downdate_normal_inverse_gamma(x, μ.value(), λ.value(), σ2.α.value(), σ2.β.value());
   }
 
   function cdf(x:Real) -> Real? {
-    return cdf_normal_inverse_gamma(x, μ, 1.0/λ, σ2.α, σ2.β);
+    return cdf_normal_inverse_gamma(x, μ.value(), 1.0/λ.value(), σ2.α.value(), σ2.β.value());
   }
 
   function quantile(P:Real) -> Real? {
-    return quantile_normal_inverse_gamma(P, μ, 1.0/λ, σ2.α, σ2.β);
+    return quantile_normal_inverse_gamma(P, μ.value(), 1.0/λ.value(), σ2.α.value(), σ2.β.value());
   }
 
   function graft() -> Distribution<Real> {
@@ -86,8 +86,8 @@ final class NormalInverseGamma(μ:Real, a2:Real, σ2:InverseGamma) <
   }
 }
 
-function NormalInverseGamma(μ:Real,
-    a2:Real, σ2:InverseGamma) -> NormalInverseGamma {
+function NormalInverseGamma(μ:Expression<Real>, a2:Expression<Real>,
+    σ2:InverseGamma) -> NormalInverseGamma {
   m:NormalInverseGamma(μ, a2, σ2);
   σ2.setChild(m);
   return m;

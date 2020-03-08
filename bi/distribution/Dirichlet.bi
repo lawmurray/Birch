@@ -8,11 +8,11 @@ final class Dirichlet(α:Expression<Real[_]>) < Distribution<Real[_]> {
   α:Expression<Real[_]> <- α;
 
   function simulate() -> Real[_] {
-    return simulate_dirichlet(α);
+    return simulate_dirichlet(α.value());
   }
   
   function logpdf(x:Real[_]) -> Real {
-    return logpdf_dirichlet(x, α);
+    return logpdf_dirichlet(x, α.value());
   }
 
   function graft() -> Distribution<Real[_]> {

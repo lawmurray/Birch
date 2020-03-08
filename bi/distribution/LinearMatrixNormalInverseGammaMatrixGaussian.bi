@@ -2,12 +2,13 @@
  * ed matrix Gaussian variate with linear transformation of
  * matrix-normal-inverse-gamma prior.
  */
-final class LinearMatrixNormalInverseGammaMatrixGaussian(A:Real[_,_],
-    M:MatrixNormalInverseGamma, C:Real[_,_]) < Distribution<Real[_,_]> {
+final class LinearMatrixNormalInverseGammaMatrixGaussian(
+    A:Expression<Real[_,_]>, M:MatrixNormalInverseGamma,
+    C:Expression<Real[_,_]>) < Distribution<Real[_,_]> {
   /**
    * Scale.
    */
-  A:Real[_,_] <- A;
+  A:Expression<Real[_,_]> <- A;
 
   /**
    * Mean.
@@ -17,31 +18,31 @@ final class LinearMatrixNormalInverseGammaMatrixGaussian(A:Real[_,_],
   /**
    * Offset.
    */
-  C:Real[_,_] <- C;
+  C:Expression<Real[_,_]> <- C;
 
   function simulate() -> Real[_,_] {
     return simulate_linear_matrix_normal_inverse_gamma_matrix_gaussian(
-        A, M.N, M.Λ, C, M.α, M.γ);
+        A.value(), M.N.value(), M.Λ, C.value(), M.α.value(), M.γ.value());
   }
   
   function logpdf(X:Real[_,_]) -> Real {
     return logpdf_linear_matrix_normal_inverse_gamma_matrix_gaussian(
-        X, A, M.N, M.Λ, C, M.α, M.γ);
+        X, A.value(), M.N.value(), M.Λ, C.value(), M.α.value(), M.γ.value());
   }
 
   function update(X:Real[_,_]) {
     (M.N, M.Λ, M.α, M.γ) <- update_linear_matrix_normal_inverse_gamma_matrix_gaussian(
-        X, A, M.N, M.Λ, C, M.α, M.γ);
+        X, A.value(), M.N.value(), M.Λ, C.value(), M.α.value(), M.γ.value());
   }
 
   function downdate(X:Real[_,_]) {
     (M.N, M.Λ, M.α, M.γ) <- downdate_linear_matrix_normal_inverse_gamma_matrix_gaussian(
-        X, A, M.N, M.Λ, C, M.α, M.γ);
+        X, A.value(), M.N.value(), M.Λ, C.value(), M.α.value(), M.γ.value());
   }
 }
 
-function LinearMatrixNormalInverseGammaMatrixGaussian(A:Real[_,_],
-    M:MatrixNormalInverseGamma, C:Real[_,_]) ->
+function LinearMatrixNormalInverseGammaMatrixGaussian(A:Expression<Real[_,_]>,
+    M:MatrixNormalInverseGamma, C:Expression<Real[_,_]>) ->
     LinearMatrixNormalInverseGammaMatrixGaussian {
   m:LinearMatrixNormalInverseGammaMatrixGaussian(A, M, C);
   return m;

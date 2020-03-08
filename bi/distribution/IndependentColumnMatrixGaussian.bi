@@ -28,11 +28,11 @@ final class IndependentColumnMatrixGaussian(M:Expression<Real[_,_]>,
   }
 
   function simulate() -> Real[_,_] {
-    return simulate_matrix_gaussian(M, U, σ2);
+    return simulate_matrix_gaussian(M.value(), U.value(), σ2.value());
   }
   
   function logpdf(x:Real[_,_]) -> Real {
-    return logpdf_matrix_gaussian(x, M, U, σ2);
+    return logpdf_matrix_gaussian(x, M.value(), U.value(), σ2.value());
   }
 
   function graft() -> Distribution<Real[_,_]> {
@@ -41,13 +41,13 @@ final class IndependentColumnMatrixGaussian(M:Expression<Real[_,_]>,
     if (s1 <- σ2.graftIndependentInverseGamma())? {
       return MatrixNormalInverseGamma(M, U, s1!);
     } else {
-      return Gaussian(M, U, Boxed(diagonal(σ2)));
+      return Gaussian(M, U, diagonal(σ2));
     }
   }
 
   function graftMatrixGaussian() -> MatrixGaussian? {
     prune();
-    return Gaussian(M, U, Boxed(diagonal(σ2)));
+    return Gaussian(M, U, diagonal(σ2));
   }
 
   function graftMatrixNormalInverseGamma() -> MatrixNormalInverseGamma? {

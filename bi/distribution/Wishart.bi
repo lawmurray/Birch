@@ -22,11 +22,11 @@ final class Wishart(Ψ:Expression<Real[_,_]>, k:Expression<Real>) <
   }
 
   function simulate() -> Real[_,_] {
-    return simulate_wishart(Ψ, k);
+    return simulate_wishart(Ψ.value(), k.value());
   }
   
   function logpdf(X:Real[_,_]) -> Real {
-    return logpdf_wishart(X, Ψ, k);
+    return logpdf_wishart(X, Ψ.value(), k.value());
   }
 
   function graft() -> Distribution<Real[_,_]> {

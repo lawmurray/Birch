@@ -18,11 +18,11 @@ final class Multinomial(n:Expression<Integer>, ρ:Expression<Real[_]>) <
   }
 
   function simulate() -> Integer[_] {
-    return simulate_multinomial(n, ρ);
+    return simulate_multinomial(n.value(), ρ.value());
   }
   
   function logpdf(x:Integer[_]) -> Real {
-    return logpdf_multinomial(x, n, ρ);
+    return logpdf_multinomial(x, n.value(), ρ.value());
   }
 
   function graft() -> Distribution<Integer[_]> {

@@ -18,11 +18,11 @@ class MultivariateGaussian(μ:Expression<Real[_]>, Σ:Expression<Real[_,_]>) <
   }
 
   function simulate() -> Real[_] {
-    return simulate_multivariate_gaussian(μ, Σ);
+    return simulate_multivariate_gaussian(μ.value(), Σ.value());
   }
   
   function logpdf(x:Real[_]) -> Real {
-    return logpdf_multivariate_gaussian(x, μ, Σ);
+    return logpdf_multivariate_gaussian(x, μ.value(), Σ.value());
   }
 
   function logpdfLazy(x:Expression<Real[_]>) -> Expression<Real>? {

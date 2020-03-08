@@ -27,11 +27,11 @@ class MatrixGaussian(M:Expression<Real[_,_]>, U:Expression<Real[_,_]>,
   }
 
   function simulate() -> Real[_,_] {
-    return simulate_matrix_gaussian(M, U, V);
+    return simulate_matrix_gaussian(M.value(), U.value(), V.value());
   }
   
   function logpdf(X:Real[_,_]) -> Real {
-    return logpdf_matrix_gaussian(X, M, U, V);
+    return logpdf_matrix_gaussian(X, M.value(), U.value(), V.value());
   }
 
   function graft() -> Distribution<Real[_,_]> {

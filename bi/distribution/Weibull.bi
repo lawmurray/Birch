@@ -14,19 +14,19 @@ final class Weibull(k:Expression<Real>, λ:Expression<Real>) <
   λ:Expression<Real> <- λ;
 
   function simulate() -> Real {
-    return simulate_weibull(k, λ);
+    return simulate_weibull(k.value(), λ.value());
   }
   
   function logpdf(x:Real) -> Real {
-    return logpdf_weibull(x, k, λ);
+    return logpdf_weibull(x, k.value(), λ.value());
   }
 
   function cdf(x:Real) -> Real? {
-    return cdf_weibull(x, k, λ);
+    return cdf_weibull(x, k.value(), λ.value());
   }
 
   function quantile(P:Real) -> Real? {
-    return quantile_weibull(P, k, λ);
+    return quantile_weibull(P, k.value(), λ.value());
   }
 
   function lower() -> Real? {

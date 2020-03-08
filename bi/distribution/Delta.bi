@@ -12,12 +12,12 @@ final class Delta(μ:Expression<Integer>) < Discrete {
     if value? {
       return value!;
     } else {
-      return simulate_delta(μ);
+      return simulate_delta(μ.value());
     }
   }
   
   function logpdf(x:Integer) -> Real {
-    return logpdf_delta(x, μ);
+    return logpdf_delta(x, μ.value());
   }
 
   function lower() -> Integer? {

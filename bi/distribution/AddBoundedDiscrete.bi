@@ -2,7 +2,7 @@
  * ed delta function on a sum of two bounded discrete random variates.
  */
 final class AddBoundedDiscrete(x1:BoundedDiscrete, x2:BoundedDiscrete) <
-    BoundedDiscrete(x1.l + x2.l, x1.u + x2.u) {
+    BoundedDiscrete {
   /**
    * First node.
    */
@@ -44,8 +44,8 @@ final class AddBoundedDiscrete(x1:BoundedDiscrete, x2:BoundedDiscrete) <
 
   function enumerate(x:Integer) {
     if !this.x? || this.x! != x {
-      auto l <- max(x1.l, x - x2.u);
-      auto u <- min(x1.u, x - x2.l);
+      auto l <- max(x1.lower()!, x - x2.upper()!);
+      auto u <- min(x1.upper()!, x - x2.lower()!);
     
       x0 <- l;
       Z <- 0.0;
@@ -91,10 +91,18 @@ final class AddBoundedDiscrete(x1:BoundedDiscrete, x2:BoundedDiscrete) <
 
   function cdf(x:Integer) -> Real? {
     auto P <- 0.0;
-    for n in l..x {
+    for n in lower()!..x {
       P <- P + pdf(n);
     }
     return P;
+  }
+  
+  function lower() -> Integer? {
+    return x1.lower()! + x2.lower()!;
+  }
+  
+  function upper() -> Integer? {
+    return x1.upper()! + x2.upper()!;
   }
 }
 

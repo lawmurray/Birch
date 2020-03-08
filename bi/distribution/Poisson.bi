@@ -8,19 +8,19 @@ final class Poisson(λ:Expression<Real>) < Discrete {
   λ:Expression<Real> <- λ;
 
   function simulate() -> Integer {
-    return simulate_poisson(λ);
+    return simulate_poisson(λ.value());
   }
 
   function logpdf(x:Integer) -> Real {
-    return logpdf_poisson(x, λ);
+    return logpdf_poisson(x, λ.value());
   }
 
   function cdf(x:Integer) -> Real? {
-    return cdf_poisson(x, λ);
+    return cdf_poisson(x, λ.value());
   }
 
   function quantile(P:Real) -> Integer? {
-    return quantile_poisson(P, λ);
+    return quantile_poisson(P, λ.value());
   }
 
   function lower() -> Integer? {

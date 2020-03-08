@@ -14,11 +14,11 @@ final class GaussianGaussian(m:Gaussian, s2:Expression<Real>) <
   s2:Expression<Real> <- s2;
 
   function update(x:Real) {
-    (m.μ, m.σ2) <- update_gaussian_gaussian(x, m.μ, m.σ2, s2);
+    (m.μ, m.σ2) <- update_gaussian_gaussian(x, m.μ.value(), m.σ2.value(), s2.value());
   }
 
   function downdate(x:Real) {
-    (m.μ, m.σ2) <- downdate_gaussian_gaussian(x, m.μ, m.σ2, s2);
+    (m.μ, m.σ2) <- downdate_gaussian_gaussian(x, m.μ.value(), m.σ2.value(), s2.value());
   }
 
   function updateLazy(x:Expression<Real>) {

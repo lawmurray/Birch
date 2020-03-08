@@ -24,11 +24,11 @@ final class ScalarMultivariateGaussian(μ:Expression<Real[_]>,
   }
 
   function simulate() -> Real[_] {
-    return simulate_multivariate_gaussian(μ, σ2);
+    return simulate_multivariate_gaussian(μ.value(), σ2.value());
   }
   
   function logpdf(x:Real[_]) -> Real {
-    return logpdf_multivariate_gaussian(x, μ, σ2);
+    return logpdf_multivariate_gaussian(x, μ.value(), σ2.value());
   }
 
   function graft() -> Distribution<Real[_]> {

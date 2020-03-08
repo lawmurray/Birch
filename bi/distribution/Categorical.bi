@@ -8,19 +8,19 @@ final class Categorical(ρ:Expression<Real[_]>) < Distribution<Integer> {
   ρ:Expression<Real[_]> <- ρ;
 
   function simulate() -> Integer {
-    return simulate_categorical(ρ);
+    return simulate_categorical(ρ.value());
   }
   
   function logpdf(x:Integer) -> Real {
-    return logpdf_categorical(x, ρ);
+    return logpdf_categorical(x, ρ.value());
   }
 
   function cdf(x:Integer) -> Real? {
-    return cdf_categorical(x, ρ);
+    return cdf_categorical(x, ρ.value());
   }
 
   function quantile(P:Real) -> Integer? {
-    return quantile_categorical(P, ρ);
+    return quantile_categorical(P, ρ.value());
   }
 
   function lower() -> Integer? {

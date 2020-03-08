@@ -1,11 +1,11 @@
 /*
  * ed scaled gamma-Poisson random variate.
  */
-final class ScaledGammaPoisson(a:Real, λ:Gamma) < Discrete {
+final class ScaledGammaPoisson(a:Expression<Real>, λ:Gamma) < Discrete {
   /**
    * Scale.
    */
-  a:Real <- a;
+  a:Expression<Real> <- a;
 
   /**
    * Rate.
@@ -16,28 +16,28 @@ final class ScaledGammaPoisson(a:Real, λ:Gamma) < Discrete {
     if value? {
       return value!;
     } else {
-      return simulate_gamma_poisson(λ.k, a*λ.θ);
+      return simulate_gamma_poisson(λ.k.value(), a.value()*λ.θ.value());
     }
   }
   
   function logpdf(x:Integer) -> Real {
-    return logpdf_gamma_poisson(x, λ.k, a*λ.θ);
+    return logpdf_gamma_poisson(x, λ.k.value(), a.value()*λ.θ.value());
   }
 
   function update(x:Integer) {
-    (λ.k, λ.θ) <- update_scaled_gamma_poisson(x, a, λ.k, λ.θ);
+    (λ.k, λ.θ) <- update_scaled_gamma_poisson(x, a.value(), λ.k.value(), λ.θ.value());
   }
 
   function downdate(x:Integer) {
-    (λ.k, λ.θ) <- downdate_scaled_gamma_poisson(x, a, λ.k, λ.θ);
+    (λ.k, λ.θ) <- downdate_scaled_gamma_poisson(x, a.value(), λ.k.value(), λ.θ.value());
   }
 
   function cdf(x:Integer) -> Real? {
-    return cdf_gamma_poisson(x, λ.k, a*λ.θ);
+    return cdf_gamma_poisson(x, λ.k.value(), a.value()*λ.θ.value());
   }
 
   function quantile(P:Real) -> Integer? {
-    return quantile_gamma_poisson(P, λ.k, a*λ.θ);
+    return quantile_gamma_poisson(P, λ.k.value(), a.value()*λ.θ.value());
   }
 
   function lower() -> Integer? {
@@ -45,8 +45,7 @@ final class ScaledGammaPoisson(a:Real, λ:Gamma) < Discrete {
   }
 }
 
-function ScaledGammaPoisson(a:Real, λ:Gamma) -> ScaledGammaPoisson {
-  assert a > 0;
+function ScaledGammaPoisson(a:Expression<Real>, λ:Gamma) -> ScaledGammaPoisson {
   m:ScaledGammaPoisson(a, λ);
   λ.setChild(m);
   return m;

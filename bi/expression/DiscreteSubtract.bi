@@ -16,9 +16,9 @@ final class DiscreteSubtract<Left,Right,Value>(left:Expression<Left>,
     if (!y?) {
       x:Discrete?;
       if (x <- left.graftDiscrete())? {
-        y <- LinearDiscrete(1, x!, -right.value());
+        y <- LinearDiscrete(Boxed(1), x!, -right);
       } else if (x <- right.graftDiscrete())? {
-        y <- LinearDiscrete(-1, x!, left.value());
+        y <- LinearDiscrete(Boxed(-1), x!, left);
       }
     }
     return y;
@@ -35,9 +35,9 @@ final class DiscreteSubtract<Left,Right,Value>(left:Expression<Left>,
       //   common ancestor on the delayed sampling graph
       y <- SubtractBoundedDiscrete(x1!, x2!);
     } else if x1? && !(x1!.hasValue()) {
-      y <- LinearBoundedDiscrete(1, x1!, -right.value());
+      y <- LinearBoundedDiscrete(Boxed(1), x1!, -right);
     } else if x2? && !(x2!.hasValue()) {
-      y <- LinearBoundedDiscrete(-1, x2!, left.value());
+      y <- LinearBoundedDiscrete(Boxed(-1), x2!, left);
     }
     return y;
   }

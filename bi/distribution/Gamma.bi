@@ -14,19 +14,19 @@ final class Gamma(k:Expression<Real>, θ:Expression<Real>) <
   θ:Expression<Real> <- θ;
 
   function simulate() -> Real {
-    return simulate_gamma(k, θ);
+    return simulate_gamma(k.value(), θ.value());
   }
   
   function logpdf(x:Real) -> Real {
-    return logpdf_gamma(x, k, θ);
+    return logpdf_gamma(x, k.value(), θ.value());
   }
 
   function cdf(x:Real) -> Real? {
-    return cdf_gamma(x, k, θ);
+    return cdf_gamma(x, k.value(), θ.value());
   }
 
   function quantile(P:Real) -> Real? {
-    return quantile_gamma(P, k, θ);
+    return quantile_gamma(P, k.value(), θ.value());
   }
 
   function lower() -> Real? {

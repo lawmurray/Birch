@@ -1,12 +1,12 @@
 /*
  * ed Dirichlet-multinomial random variate.
  */
-final class DirichletMultinomial(n:Integer, ρ:Dirichlet) <
+final class DirichletMultinomial(n:Expression<Integer>, ρ:Dirichlet) <
     Distribution<Integer[_]> {
   /**
    * Number of trials.
    */
-  n:Integer <- n;
+  n:Expression<Integer> <- n;
    
   /**
    * Category probabilities.
@@ -14,23 +14,23 @@ final class DirichletMultinomial(n:Integer, ρ:Dirichlet) <
   ρ:Dirichlet& <- ρ;
 
   function simulate() -> Integer[_] {
-    return simulate_dirichlet_multinomial(n, ρ.α);
+    return simulate_dirichlet_multinomial(n.value(), ρ.α.value());
   }
   
   function logpdf(x:Integer[_]) -> Real {
-    return logpdf_dirichlet_multinomial(x, n, ρ.α);
+    return logpdf_dirichlet_multinomial(x, n.value(), ρ.α.value());
   }
 
   function update(x:Integer[_]) {
-    ρ.α <- update_dirichlet_multinomial(x, n, ρ.α);
+    ρ.α <- update_dirichlet_multinomial(x, n.value(), ρ.α.value());
   }
 
   function downdate(x:Integer[_]) {
-    ρ.α <- downdate_dirichlet_multinomial(x, n, ρ.α);
+    ρ.α <- downdate_dirichlet_multinomial(x, n.value(), ρ.α.value());
   }
 }
 
-function DirichletMultinomial(n:Integer, ρ:Dirichlet) ->
+function DirichletMultinomial(n:Expression<Integer>, ρ:Dirichlet) ->
     DirichletMultinomial {
   m:DirichletMultinomial(n, ρ);
   ρ.setChild(m);

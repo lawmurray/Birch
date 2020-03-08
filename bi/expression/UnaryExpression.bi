@@ -29,7 +29,7 @@ abstract class UnaryExpression<Argument,Value>(single:Expression<Argument>) <
   
   final function grad(d:Value) {
     assert x?;
-    single.grad(doGradient(d, single));
+    single.grad(doGradient(d, single.value()));
   }
 
   /**

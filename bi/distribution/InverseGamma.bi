@@ -14,19 +14,19 @@ final class InverseGamma(α:Expression<Real>, β:Expression<Real>) <
   β:Expression<Real> <- β;
 
   function simulate() -> Real {
-    return simulate_inverse_gamma(α, β);
+    return simulate_inverse_gamma(α.value(), β.value());
   }
   
   function logpdf(x:Real) -> Real {
-    return logpdf_inverse_gamma(x, α, β);
+    return logpdf_inverse_gamma(x, α.value(), β.value());
   }
 
   function cdf(x:Real) -> Real? {
-    return cdf_inverse_gamma(x, α, β);
+    return cdf_inverse_gamma(x, α.value(), β.value());
   }
 
   function quantile(P:Real) -> Real? {
-    return quantile_inverse_gamma(P, α, β);
+    return quantile_inverse_gamma(P, α.value(), β.value());
   }
 
   function lower() -> Real? {

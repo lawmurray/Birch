@@ -17,20 +17,20 @@ final class NegativeBinomial(k:Expression<Integer>, ρ:Expression<Real>) <
     if value? {
       return value!;
     } else {
-      return simulate_negative_binomial(k, ρ);
+      return simulate_negative_binomial(k.value(), ρ.value());
     }
   }
   
   function logpdf(x:Integer) -> Real {
-    return logpdf_negative_binomial(x, k, ρ);
+    return logpdf_negative_binomial(x, k.value(), ρ.value());
   }
 
   function cdf(x:Integer) -> Real? {
-    return cdf_negative_binomial(x, k, ρ);
+    return cdf_negative_binomial(x, k.value(), ρ.value());
   }
 
   function quantile(P:Real) -> Integer? {
-    return quantile_negative_binomial(P, k, ρ);
+    return quantile_negative_binomial(P, k.value(), ρ.value());
   }
 
   function lower() -> Integer? {

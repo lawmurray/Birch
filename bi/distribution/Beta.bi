@@ -14,19 +14,19 @@ final class Beta(α:Expression<Real>,
   β:Expression<Real> <- β;
 
   function simulate() -> Real {
-    return simulate_beta(α, β);
+    return simulate_beta(α.value(), β.value());
   }
   
   function logpdf(x:Real) -> Real {
-    return logpdf_beta(x, α, β);
+    return logpdf_beta(x, α.value(), β.value());
   }
 
   function cdf(x:Real) -> Real? {
-    return cdf_beta(x, α, β);
+    return cdf_beta(x, α.value(), β.value());
   }
 
   function quantile(P:Real) -> Real? {
-    return quantile_beta(P, α, β);
+    return quantile_beta(P, α.value(), β.value());
   }
 
   function lower() -> Real? {

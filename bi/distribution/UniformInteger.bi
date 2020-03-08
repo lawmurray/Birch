@@ -2,25 +2,35 @@
  * ed uniform integer random variate.
  */
 final class UniformInteger(l:Expression<Integer>, u:Expression<Integer>) <
-    BoundedDiscrete(l, u) {
+    BoundedDiscrete {
+  /**
+   * Lower bound.
+   */
+  l:Expression<Integer> <- l;
+
+  /**
+   * Upper bound.
+   */
+  u:Expression<Integer> <- u;
+    
   function simulate() -> Integer {
     if value? {
       return value!;
     } else {
-      return simulate_uniform_int(l, u);
+      return simulate_uniform_int(l.value(), u.value());
     }
   }
 
   function logpdf(x:Integer) -> Real {
-    return logpdf_uniform_int(x, l, u);
+    return logpdf_uniform_int(x, l.value(), u.value());
   }
 
   function cdf(x:Integer) -> Real? {
-    return cdf_uniform_int(x, l, u);
+    return cdf_uniform_int(x, l.value(), u.value());
   }
 
   function quantile(P:Real) -> Integer? {
-    return quantile_uniform_int(P, l, u);
+    return quantile_uniform_int(P, l.value(), u.value());
   }
 
   function graft() -> Distribution<Integer> {
@@ -36,6 +46,14 @@ final class UniformInteger(l:Expression<Integer>, u:Expression<Integer>) <
   function graftBoundedDiscrete() -> BoundedDiscrete? {
     prune();
     return this;
+  }
+  
+  function lower() -> Integer? {
+    return l.value();
+  }
+  
+  function upper() -> Integer? {
+    return u.value();
   }
 
   function write(buffer:Buffer) {

@@ -19,11 +19,11 @@ final class IdenticalGaussian(μ:Expression<Real[_]>, σ2:Expression<Real>) <
   }
 
   function simulate() -> Real[_] {
-    return simulate_multivariate_gaussian(μ, σ2);
+    return simulate_multivariate_gaussian(μ.value(), σ2.value());
   }
   
   function logpdf(x:Real[_]) -> Real {
-    return logpdf_multivariate_gaussian(x, μ, σ2);
+    return logpdf_multivariate_gaussian(x, μ.value(), σ2.value());
   }
 
   function graft() -> Distribution<Real[_]> {
@@ -49,7 +49,7 @@ final class IdenticalGaussian(μ:Expression<Real[_]>, σ2:Expression<Real>) <
       return MultivariateGaussianMultivariateGaussian(m4!,
           diagonal(σ2, m4!.rows()));
     } else if (s1 <- σ2.graftInverseGamma())? {
-      return MultivariateNormalInverseGamma(μ, identity(μ.rows()), s1!);
+      return MultivariateNormalInverseGamma(μ, Identity(μ.rows()), s1!);
     } else {
       return Gaussian(μ, diagonal(σ2, μ.rows()));
     }
@@ -75,7 +75,7 @@ final class IdenticalGaussian(μ:Expression<Real[_]>, σ2:Expression<Real>) <
     prune();
     s1:InverseGamma?;
     if (s1 <- σ2.graftInverseGamma())? {
-      return MultivariateNormalInverseGamma(μ, identity(μ.rows()), s1!);
+      return MultivariateNormalInverseGamma(μ, Identity(μ.rows()), s1!);
     }
     return nil;
   }

@@ -2,7 +2,7 @@
  * ed binomial random variate.
  */
 final class Binomial(n:Expression<Integer>, ρ:Expression<Real>) <
-    BoundedDiscrete(0, n) {
+    BoundedDiscrete {
   /**
    * Number of trials.
    */
@@ -17,20 +17,20 @@ final class Binomial(n:Expression<Integer>, ρ:Expression<Real>) <
     if value? {
       return value!;
     } else {
-      return simulate_binomial(n, ρ);
+      return simulate_binomial(n.value(), ρ.value());
     }
   }
   
   function logpdf(x:Integer) -> Real {
-    return logpdf_binomial(x, n, ρ);
+    return logpdf_binomial(x, n.value(), ρ.value());
   }
 
   function cdf(x:Integer) -> Real? {
-    return cdf_binomial(x, n, ρ);
+    return cdf_binomial(x, n.value(), ρ.value());
   }
 
   function quantile(P:Real) -> Integer? {
-    return quantile_binomial(P, n, ρ);
+    return quantile_binomial(P, n.value(), ρ.value());
   }
 
   function lower() -> Integer? {

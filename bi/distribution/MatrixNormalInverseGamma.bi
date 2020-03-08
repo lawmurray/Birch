@@ -1,8 +1,9 @@
 /*
  * ed matrix normal-inverse-gamma variate.
  */
-final class MatrixNormalInverseGamma(M:Real[_,_], Σ:Real[_,_],
-    σ2:IndependentInverseGamma) < Distribution<Real[_,_]> {
+final class MatrixNormalInverseGamma(M:Expression<Real[_,_]>,
+    Σ:Expression<Real[_,_]>, σ2:IndependentInverseGamma) <
+    Distribution<Real[_,_]> {
   /**
    * Precision.
    */
@@ -11,17 +12,17 @@ final class MatrixNormalInverseGamma(M:Real[_,_], Σ:Real[_,_],
   /**
    * Precision times mean.
    */
-  N:Real[_,_] <- Λ*M;
+  N:Expression<Real[_,_]> <- Λ*M;
 
   /**
    * Variance shapes.
    */
-  α:Real <- σ2.α;
+  α:Expression<Real> <- σ2.α;
 
   /**
    * Variance scale accumulators.
    */
-  γ:Real[_] <- σ2.β + 0.5*diagonal(transpose(N)*M);
+  γ:Expression<Real[_]> <- σ2.β + 0.5*diagonal(transpose(N)*M);
 
   /**
    * Variance scales.
@@ -37,23 +38,19 @@ final class MatrixNormalInverseGamma(M:Real[_,_], Σ:Real[_,_],
   }
 
   function simulate() -> Real[_,_] {
-    return simulate_matrix_normal_inverse_gamma(N, Λ, α,
-        gamma_to_beta(γ, N, Λ));
+    return simulate_matrix_normal_inverse_gamma(N.value(), Λ, α.value(), gamma_to_beta(γ.value(), N.value(), Λ));
   }
   
   function logpdf(X:Real[_,_]) -> Real {
-    return logpdf_matrix_normal_inverse_gamma(X, N, Λ, α,
-        gamma_to_beta(γ, N, Λ));
+    return logpdf_matrix_normal_inverse_gamma(X, N.value(), Λ, α.value(), gamma_to_beta(γ.value(), N.value(), Λ));
   }
 
   function update(X:Real[_,_]) {
-    (σ2.α, σ2.β) <- update_matrix_normal_inverse_gamma(X, N, Λ, α,
-        gamma_to_beta(γ, N, Λ));
+    (σ2.α, σ2.β) <- update_matrix_normal_inverse_gamma(X, N.value(), Λ, α.value(), gamma_to_beta(γ.value(), N.value(), Λ));
   }
 
   function downdate(X:Real[_,_]) {
-    (σ2.α, σ2.β) <- downdate_matrix_normal_inverse_gamma(X, N, Λ, α,
-        gamma_to_beta(γ, N, Λ));
+    (σ2.α, σ2.β) <- downdate_matrix_normal_inverse_gamma(X, N.value(), Λ, α.value(), gamma_to_beta(γ.value(), N.value(), Λ));
   }
 
   function graft() -> Distribution<Real[_,_]> {
@@ -72,12 +69,13 @@ final class MatrixNormalInverseGamma(M:Real[_,_], Σ:Real[_,_],
     buffer.set("M", solve(Λ, N));
     buffer.set("Σ", inv(Λ));
     buffer.set("α", α);
-    buffer.set("β", gamma_to_beta(γ, N, Λ));
+    buffer.set("β", gamma_to_beta(γ.value(), N.value(), Λ));
   }
 }
 
-function MatrixNormalInverseGamma(M:Real[_,_], Σ:Real[_,_],
-    σ2:IndependentInverseGamma) -> MatrixNormalInverseGamma {
+function MatrixNormalInverseGamma(M:Expression<Real[_,_]>,
+    Σ:Expression<Real[_,_]>, σ2:IndependentInverseGamma) ->
+    MatrixNormalInverseGamma {
   m:MatrixNormalInverseGamma(M, Σ, σ2);
   σ2.setChild(m);
   return m;

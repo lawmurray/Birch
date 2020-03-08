@@ -14,11 +14,11 @@ class Gaussian(μ:Expression<Real>, σ2:Expression<Real>) <
   σ2:Expression<Real> <- σ2;
 
   function simulate() -> Real {
-    return simulate_gaussian(μ, σ2);
+    return simulate_gaussian(μ.value(), σ2.value());
   }
   
   function logpdf(x:Real) -> Real {
-    return logpdf_gaussian(x, μ, σ2);
+    return logpdf_gaussian(x, μ.value(), σ2.value());
   }
 
   function logpdfLazy(x:Expression<Real>) -> Expression<Real>? {
@@ -30,11 +30,11 @@ class Gaussian(μ:Expression<Real>, σ2:Expression<Real>) <
   }
   
   function cdf(x:Real) -> Real? {
-    return cdf_gaussian(x, μ, σ2);
+    return cdf_gaussian(x, μ.value(), σ2.value());
   }
 
   function quantile(P:Real) -> Real? {
-    return quantile_gaussian(P, μ, σ2);
+    return quantile_gaussian(P, μ.value(), σ2.value());
   }
 
   function graft() -> Distribution<Real> {
@@ -57,7 +57,7 @@ class Gaussian(μ:Expression<Real>, σ2:Expression<Real>) <
     } else if (m6 <- μ.graftGaussian())? {
       return GaussianGaussian(m6!, σ2);
     } else if (s2 <- σ2.graftInverseGamma())? {
-      return NormalInverseGamma(μ, 1.0, s2!);
+      return NormalInverseGamma(μ, Boxed(1.0), s2!);
     } else {
       return this;
     }
@@ -83,7 +83,7 @@ class Gaussian(μ:Expression<Real>, σ2:Expression<Real>) <
     prune();
     s1:InverseGamma?;
     if (s1 <- σ2.graftInverseGamma())? {
-      return NormalInverseGamma(μ, 1.0, s1!);
+      return NormalInverseGamma(μ, Boxed(1.0), s1!);
     }
     return nil;
   }

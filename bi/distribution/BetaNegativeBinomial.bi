@@ -1,11 +1,11 @@
 /*
  * ed Beta-negative-binomial random variate
  */
-final class BetaNegativeBinomial(k:Integer, ρ:Beta) < Discrete {
+final class BetaNegativeBinomial(k:Expression<Integer>, ρ:Beta) < Discrete {
   /**
    * Number of successes before the experiment is stopped.
    */
-  k:Integer <- k;
+  k:Expression<Integer> <- k;
 
   /**
    * Success probability.
@@ -16,20 +16,20 @@ final class BetaNegativeBinomial(k:Integer, ρ:Beta) < Discrete {
     if value? {
       return value!;
     } else {
-      return simulate_beta_negative_binomial(k, ρ.α, ρ.β);
+      return simulate_beta_negative_binomial(k.value(), ρ.α.value(), ρ.β.value());
     }
   }
 
   function logpdf(x:Integer) -> Real {
-    return logpdf_beta_negative_binomial(x, k, ρ.α, ρ.β);
+    return logpdf_beta_negative_binomial(x, k.value(), ρ.α.value(), ρ.β.value());
   }
 
   function update(x:Integer) {
-    (ρ.α, ρ.β) <- update_beta_negative_binomial(x, k, ρ.α, ρ.β);
+    (ρ.α, ρ.β) <- update_beta_negative_binomial(x, k.value(), ρ.α.value(), ρ.β.value());
   }
 
   function downdate(x:Integer) {
-    (ρ.α, ρ.β) <- downdate_beta_negative_binomial(x, k, ρ.α, ρ.β);
+    (ρ.α, ρ.β) <- downdate_beta_negative_binomial(x, k.value(), ρ.α.value(), ρ.β.value());
   }
   
   function lower() -> Integer? {
@@ -37,7 +37,7 @@ final class BetaNegativeBinomial(k:Integer, ρ:Beta) < Discrete {
   }
 }
 
-function BetaNegativeBinomial(k:Integer, ρ:Beta) -> BetaNegativeBinomial {
+function BetaNegativeBinomial(k:Expression<Integer>, ρ:Beta) -> BetaNegativeBinomial {
   m:BetaNegativeBinomial(k, ρ);
   ρ.setChild(m);
   return m;

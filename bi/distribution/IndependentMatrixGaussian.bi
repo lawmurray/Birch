@@ -22,11 +22,11 @@ final class IndependentMatrixGaussian(M:Expression<Real[_,_]>,
   }
 
   function simulate() -> Real[_,_] {
-    return simulate_matrix_gaussian(M, σ2);
+    return simulate_matrix_gaussian(M.value(), σ2.value());
   }
   
   function logpdf(x:Real[_,_]) -> Real {
-    return logpdf_matrix_gaussian(x, M, σ2);
+    return logpdf_matrix_gaussian(x, M.value(), σ2.value());
   }
 
   function graft() -> Distribution<Real[_,_]> {
@@ -40,23 +40,22 @@ final class IndependentMatrixGaussian(M:Expression<Real[_,_]>,
     } else if (m2 <- M.graftMatrixNormalInverseGamma())? && m2!.σ2 == σ2.distribution() {
       return MatrixNormalInverseGammaMatrixGaussian(m2!);
     } else if (s1 <- σ2.graftIndependentInverseGamma())? {
-      return MatrixNormalInverseGamma(M, identity(M.rows()), s1!);
+      return MatrixNormalInverseGamma(M, Identity(M.rows()), s1!);
     } else {
-      return Gaussian(M, Boxed(identity(M.rows())), Boxed(diagonal(σ2)));
+      return Gaussian(M, identity(M.rows()), diagonal(σ2));
     }
   }
 
   function graftMatrixGaussian() -> MatrixGaussian? {
     prune();
-    return Gaussian(M, Boxed(identity(M.rows())),
-        Boxed(diagonal(σ2.value())));
+    return Gaussian(M, identity(M.rows()), diagonal(σ2));
   }
 
   function graftMatrixNormalInverseGamma() -> MatrixNormalInverseGamma? {
     prune();
     s1:IndependentInverseGamma?;
     if (s1 <- σ2.graftIndependentInverseGamma())? {
-      return MatrixNormalInverseGamma(M, identity(M.rows()), s1!);
+      return MatrixNormalInverseGamma(M, Identity(M.rows()), s1!);
     }
     return nil;
   }

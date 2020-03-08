@@ -91,7 +91,7 @@ class TestLinearMatrixNormalInverseGammaMatrixGaussian < Model {
   
   function copy() -> Real[_] {
     y:Real[size()];
-    y[1..length(σ2)] <- σ2;
+    y[1..length(σ2)] <- σ2.value();
     auto k <- length(σ2);
     for i in 1..rows(X) {
       y[k + 1 .. k + columns(X)] <- X.value()[i,1..columns(X)];

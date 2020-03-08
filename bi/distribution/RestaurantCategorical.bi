@@ -8,11 +8,11 @@ final class RestaurantCategorical(ρ:Restaurant) < Distribution<Integer> {
   ρ:Restaurant& <- ρ;
 
   function simulate() -> Integer {
-    return simulate_crp_categorical(ρ.α, ρ.θ, ρ.n, ρ.N);
+    return simulate_crp_categorical(ρ.α.value(), ρ.θ.value(), ρ.n, ρ.N);
   }
   
   function logpdf(x:Integer) -> Real {
-    return logpdf_crp_categorical(x, ρ.α, ρ.θ, ρ.n, ρ.N);
+    return logpdf_crp_categorical(x, ρ.α.value(), ρ.θ.value(), ρ.n, ρ.N);
   }
 
   function update(x:Integer) {

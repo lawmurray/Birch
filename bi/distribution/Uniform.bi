@@ -14,19 +14,19 @@ final class Uniform(l:Expression<Real>, u:Expression<Real>)
   u:Expression<Real> <- u;
 
   function simulate() -> Real {
-    return simulate_uniform(l, u);
+    return simulate_uniform(l.value(), u.value());
   }
   
   function logpdf(x:Real) -> Real {
-    return logpdf_uniform(x, l, u);
+    return logpdf_uniform(x, l.value(), u.value());
   }
 
   function cdf(x:Real) -> Real? {
-    return cdf_uniform(x, l, u);
+    return cdf_uniform(x, l.value(), u.value());
   }
 
   function quantile(P:Real) -> Real? {
-    return quantile_uniform(P, l, u);
+    return quantile_uniform(P, l.value(), u.value());
   }
 
   function lower() -> Real? {
