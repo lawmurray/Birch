@@ -107,6 +107,13 @@ public:
     return yieldValue.get();
   }
 
+  /**
+   * Get the current return value.
+   */
+  auto spin() const {
+    return returnValue.get();
+  }
+
 private:
   /**
    * Yield value.
@@ -160,6 +167,10 @@ public:
 
   bool query() const {
     return const_cast<Fiber*>(this)->query();
+  }
+
+  auto spin() const {
+    return returnValue.get();
   }
 
 private:
