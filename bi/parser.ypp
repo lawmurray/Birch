@@ -96,7 +96,7 @@
 %token <valString> NIL DOUBLE_BRACE_OPEN DOUBLE_BRACE_CLOSE NAME
 %token <valString> BOOL_LITERAL INT_LITERAL REAL_LITERAL STRING_LITERAL
 %token <valString> LEFT_OP RIGHT_OP LEFT_TILDE_OP RIGHT_TILDE_OP LEFT_QUERY_OP
-%token <valString> AND_OP OR_OP LE_OP GE_OP EQ_OP NE_OP RANGE_OP
+%token <valString> AND_OP OR_OP LE_OP GE_OP EQ_OP NE_OP RANGE_OP SPIN_OP
 
 %type <valName> name binary_operator unary_operator assume_operator
 %type <valName> assign_operator prefix_operator
@@ -253,6 +253,7 @@ postfix_expression
     | postfix_expression slice           { $$ = new bi::Slice($1, $2, make_loc(@$)); }
     | postfix_expression arguments       { $$ = new bi::Call($1, $2, make_loc(@$)); }
     | postfix_expression '!'             { $$ = new bi::Get($1, make_loc(@$)); }
+    | postfix_expression SPIN_OP         { $$ = new bi::Spin($1, make_loc(@$)); }
     ;
 
 query_expression

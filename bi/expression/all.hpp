@@ -25,6 +25,7 @@
 #include "bi/expression/Sequence.hpp"
 #include "bi/expression/Slice.hpp"
 #include "bi/expression/Span.hpp"
+#include "bi/expression/Spin.hpp"
 #include "bi/expression/Super.hpp"
 #include "bi/expression/This.hpp"
 #include "bi/expression/UnaryCall.hpp"

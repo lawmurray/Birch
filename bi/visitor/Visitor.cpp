@@ -91,6 +91,10 @@ void bi::Visitor::visit(const Get* o) {
   o->single->accept(this);
 }
 
+void bi::Visitor::visit(const Spin* o) {
+  o->single->accept(this);
+}
+
 void bi::Visitor::visit(const LambdaFunction* o) {
   o->params->accept(this);
   o->returnType->accept(this);

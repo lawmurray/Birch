@@ -100,6 +100,11 @@ bi::Expression* bi::Modifier::modify(Get* o) {
   return o;
 }
 
+bi::Expression* bi::Modifier::modify(Spin* o) {
+  o->single = o->single->accept(this);
+  return o;
+}
+
 bi::Expression* bi::Modifier::modify(LambdaFunction* o) {
   o->params = o->params->accept(this);
   o->returnType = o->returnType->accept(this);

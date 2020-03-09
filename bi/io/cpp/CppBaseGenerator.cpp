@@ -128,6 +128,10 @@ void bi::CppBaseGenerator::visit(const Get* o) {
   middle(o->single << ".get()");
 }
 
+void bi::CppBaseGenerator::visit(const Spin* o) {
+  middle(o->single << ".spin()");
+}
+
 void bi::CppBaseGenerator::visit(const LambdaFunction* o) {
   finish("[=](" << o->params << ") {");
   in();

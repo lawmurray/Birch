@@ -68,6 +68,7 @@ COMMON_SOURCES = \
   bi/expression/Sequence.cpp \
   bi/expression/Slice.cpp \
   bi/expression/Span.cpp \
+  bi/expression/Spin.cpp \
   bi/expression/Super.cpp \
   bi/expression/This.cpp \
   bi/expression/UnaryCall.cpp \
@@ -203,6 +204,7 @@ noinst_HEADERS = \
   bi/expression/Sequence.hpp \
   bi/expression/Slice.hpp \
   bi/expression/Span.hpp \
+  bi/expression/Spin.hpp \
   bi/expression/Super.hpp \
   bi/expression/This.hpp \
   bi/expression/UnaryCall.hpp \

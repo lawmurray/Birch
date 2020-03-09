@@ -85,6 +85,10 @@ void bi::bi_ostream::visit(const Get* o) {
   middle(o->single << '!');
 }
 
+void bi::bi_ostream::visit(const Spin* o) {
+  middle(o->single << "!!");
+}
+
 void bi::bi_ostream::visit(const LambdaFunction* o) {
   middle("@(" << o->params << ')');
   if (!o->returnType->isEmpty()) {

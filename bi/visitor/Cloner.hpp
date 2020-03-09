@@ -39,6 +39,7 @@ public:
   virtual Expression* clone(const Slice* o);
   virtual Expression* clone(const Query* o);
   virtual Expression* clone(const Get* o);
+  virtual Expression* clone(const Spin* o);
   virtual Expression* clone(const LambdaFunction* o);
   virtual Expression* clone(const Span* o);
   virtual Expression* clone(const Index* o);
