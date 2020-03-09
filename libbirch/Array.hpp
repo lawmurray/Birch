@@ -160,7 +160,7 @@ public:
   /**
    * Copy constructor.
    */
-  template<class U, class G>
+  template<class U, class G, std::enable_if_t<std::is_convertible<U,T>::value,int> = 0>
   Array(const Array<U,G>& o) :
       shape(o.shape.compact()),
       buffer(nullptr),

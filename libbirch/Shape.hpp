@@ -7,7 +7,6 @@
 #include "libbirch/Index.hpp"
 #include "libbirch/Range.hpp"
 #include "libbirch/Slice.hpp"
-#include "libbirch/Eigen.hpp"
 
 namespace libbirch {
 /**
@@ -21,12 +20,12 @@ struct EmptyShape {
   EmptyShape() = default;
 
   /**
-   * Special constructor for Eigen integration where all matrices and vectors
-   * are treated as matrices, with row and column counts. If this constructor,
-   * is reached, it means the array is a vector, and @p length should be one
-   * (and is checked for this).
+   * Special constructor where all matrices and vectors are treated as
+   * matrices, with row and column counts. If this constructor is reached,
+   * it means the array is a vector, and @p length should be one (and is
+   * checked for this).
    */
-  explicit EmptyShape(const Eigen::Index cols) {
+  explicit EmptyShape(const int64_t cols) {
     assert(cols == 1);
   }
 
@@ -47,11 +46,11 @@ struct EmptyShape {
     return false;
   }
 
-  bool conforms(const Eigen::Index rows, const Eigen::Index cols) {
+  bool conforms(const int64_t rows, const int64_t cols) {
     return false;
   }
 
-  bool conforms(const Eigen::Index rows) {
+  bool conforms(const int64_t rows) {
     return false;
   }
 
@@ -109,23 +108,22 @@ struct Shape {
     //
   }
 
-  /*
-   * Special constructor for Eigen integration where all matrices and vectors
-   * are treated as matrices, with row and column counts.
+  /**
+   * Constructor.
    */
-  explicit Shape(const Eigen::Index rows, const Eigen::Index cols = 1) :
-      head(rows, cols),
-      tail(cols) {
+  Shape(const Head& head, const Tail& tail) :
+      head(head),
+      tail(tail) {
     //
   }
 
   /**
-   * Generic constructor.
+   * Special constructor where all matrices and vectors are treated as
+   * matrices, with row and column counts.
    */
-  template<class Head1, class Tail1>
-  explicit Shape(const Head1 head, const Tail1 tail) :
-      head(head),
-      tail(tail) {
+  Shape(const int64_t rows, const int64_t cols = 1) :
+      head(rows, cols),
+      tail(cols) {
     //
   }
 
@@ -133,16 +131,6 @@ struct Shape {
    * Copy constructor.
    */
   Shape(const Shape<Head,Tail>& o) = default;
-
-  /**
-   * Generic copy constructor.
-   */
-  template<class Head1, class Tail1>
-  Shape(const Shape<Head1,Tail1>& o) :
-      head(o.head),
-      tail(o.tail) {
-    //
-  }
 
   /**
    * Slice operator.
@@ -195,12 +183,12 @@ struct Shape {
   bool conforms(const G& o) const {
     return head.conforms(o.head) && tail.conforms(o.tail);
   }
-  bool conforms(const Eigen::Index rows, const Eigen::Index cols) {
+  bool conforms(const int64_t rows, const int64_t cols) {
     return head.conforms(rows)
         && (tail.conforms(cols)
             || (std::is_same<Tail,EmptyShape>::value && cols == 1));
   }
-  bool conforms(const Eigen::Index rows) {
+  bool conforms(const int64_t rows) {
     return head.conforms(rows);
   }
 
