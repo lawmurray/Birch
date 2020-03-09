@@ -31,12 +31,12 @@ final class MultivariateNormalInverseGamma(μ:Expression<Real[_]>,
   /**
    * Precision.
    */
-  Λ:LLT <- llt(inv(llt(Σ)));
+  Λ:Expression<LLT> <- llt(inv(llt(Σ)));
 
   /**
    * Precision times mean.
    */
-  ν:Expression<Real[_]> <- Λ*μ;
+  ν:Expression<Real[_]> <- matrix(Λ)*μ;
 
   /**
    * Variance shape.
@@ -58,19 +58,23 @@ final class MultivariateNormalInverseGamma(μ:Expression<Real[_]>,
   }
 
   function simulate() -> Real[_] {
-    return simulate_multivariate_normal_inverse_gamma(ν.value(), Λ, α.value(), gamma_to_beta(γ.value(), ν.value(), Λ));
+    return simulate_multivariate_normal_inverse_gamma(ν.value(), Λ.value(),
+        α.value(), gamma_to_beta(γ.value(), ν.value(), Λ.value()));
   }
   
   function logpdf(x:Real[_]) -> Real {
-    return logpdf_multivariate_normal_inverse_gamma(x, ν.value(), Λ, α.value(), gamma_to_beta(γ.value(), ν.value(), Λ));
+    return logpdf_multivariate_normal_inverse_gamma(x, ν.value(), Λ.value(),
+        α.value(), gamma_to_beta(γ.value(), ν.value(), Λ.value()));
   }
 
   function update(x:Real[_]) {
-    (σ2.α, σ2.β) <- update_multivariate_normal_inverse_gamma(x, ν.value(), Λ, α.value(), gamma_to_beta(γ.value(), ν.value(), Λ));
+    (σ2.α, σ2.β) <- update_multivariate_normal_inverse_gamma(x, ν.value(),
+        Λ.value(), α.value(), gamma_to_beta(γ.value(), ν.value(), Λ.value()));
   }
 
   function downdate(x:Real[_]) {
-    (σ2.α, σ2.β) <- downdate_multivariate_normal_inverse_gamma(x, ν.value(), Λ, α.value(), gamma_to_beta(γ.value(), ν.value(), Λ));
+    (σ2.α, σ2.β) <- downdate_multivariate_normal_inverse_gamma(x, ν.value(),
+        Λ.value(), α.value(), gamma_to_beta(γ.value(), ν.value(), Λ.value()));
   }
 
   function graft() -> Distribution<Real[_]> {
@@ -87,10 +91,10 @@ final class MultivariateNormalInverseGamma(μ:Expression<Real[_]>,
   function write(buffer:Buffer) {
     prune();
     buffer.set("class", "MultivariateNormalInverseGamma");
-    buffer.set("μ", solve(Λ, ν.value()));
-    buffer.set("Σ", inv(Λ));
+    buffer.set("μ", solve(Λ.value(), ν.value()));
+    buffer.set("Σ", inv(Λ.value()));
     buffer.set("α", α.value());
-    buffer.set("β", gamma_to_beta(γ.value(), ν.value(), Λ));
+    buffer.set("β", gamma_to_beta(γ.value(), ν.value(), Λ.value()));
   }
 }
 

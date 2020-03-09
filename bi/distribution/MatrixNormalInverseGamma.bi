@@ -7,12 +7,12 @@ final class MatrixNormalInverseGamma(M:Expression<Real[_,_]>,
   /**
    * Precision.
    */
-  Λ:LLT <- llt(inv(llt(Σ)));
+  Λ:Expression<LLT> <- llt(inv(llt(Σ)));
 
   /**
    * Precision times mean.
    */
-  N:Expression<Real[_,_]> <- Λ*M;
+  N:Expression<Real[_,_]> <- matrix(Λ)*M;
 
   /**
    * Variance shapes.
@@ -38,19 +38,23 @@ final class MatrixNormalInverseGamma(M:Expression<Real[_,_]>,
   }
 
   function simulate() -> Real[_,_] {
-    return simulate_matrix_normal_inverse_gamma(N.value(), Λ, α.value(), gamma_to_beta(γ.value(), N.value(), Λ));
+    return simulate_matrix_normal_inverse_gamma(N.value(), Λ.value(),
+        α.value(), gamma_to_beta(γ.value(), N.value(), Λ.value()));
   }
   
   function logpdf(X:Real[_,_]) -> Real {
-    return logpdf_matrix_normal_inverse_gamma(X, N.value(), Λ, α.value(), gamma_to_beta(γ.value(), N.value(), Λ));
+    return logpdf_matrix_normal_inverse_gamma(X, N.value(), Λ.value(),
+        α.value(), gamma_to_beta(γ.value(), N.value(), Λ.value()));
   }
 
   function update(X:Real[_,_]) {
-    (σ2.α, σ2.β) <- update_matrix_normal_inverse_gamma(X, N.value(), Λ, α.value(), gamma_to_beta(γ.value(), N.value(), Λ));
+    (σ2.α, σ2.β) <- update_matrix_normal_inverse_gamma(X, N.value(),
+        Λ.value(), α.value(), gamma_to_beta(γ.value(), N.value(), Λ.value()));
   }
 
   function downdate(X:Real[_,_]) {
-    (σ2.α, σ2.β) <- downdate_matrix_normal_inverse_gamma(X, N.value(), Λ, α.value(), gamma_to_beta(γ.value(), N.value(), Λ));
+    (σ2.α, σ2.β) <- downdate_matrix_normal_inverse_gamma(X, N.value(),
+        Λ.value(), α.value(), gamma_to_beta(γ.value(), N.value(), Λ.value()));
   }
 
   function graft() -> Distribution<Real[_,_]> {
@@ -66,10 +70,10 @@ final class MatrixNormalInverseGamma(M:Expression<Real[_,_]>,
   function write(buffer:Buffer) {
     prune();
     buffer.set("class", "MatrixNormalInverseGamma");
-    buffer.set("M", solve(Λ, N));
+    buffer.set("M", solve(Λ.value(), N.value()));
     buffer.set("Σ", inv(Λ));
     buffer.set("α", α);
-    buffer.set("β", gamma_to_beta(γ.value(), N.value(), Λ));
+    buffer.set("β", gamma_to_beta(γ.value(), N.value(), Λ.value()));
   }
 }
 

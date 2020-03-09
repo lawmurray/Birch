@@ -22,22 +22,22 @@ final class LinearMatrixNormalInverseGammaMatrixGaussian(
 
   function simulate() -> Real[_,_] {
     return simulate_linear_matrix_normal_inverse_gamma_matrix_gaussian(
-        A.value(), M.N.value(), M.Λ, C.value(), M.α.value(), M.γ.value());
+        A.value(), M.N.value(), M.Λ.value(), C.value(), M.α.value(), M.γ.value());
   }
   
   function logpdf(X:Real[_,_]) -> Real {
     return logpdf_linear_matrix_normal_inverse_gamma_matrix_gaussian(
-        X, A.value(), M.N.value(), M.Λ, C.value(), M.α.value(), M.γ.value());
+        X, A.value(), M.N.value(), M.Λ.value(), C.value(), M.α.value(), M.γ.value());
   }
 
   function update(X:Real[_,_]) {
     (M.N, M.Λ, M.α, M.γ) <- update_linear_matrix_normal_inverse_gamma_matrix_gaussian(
-        X, A.value(), M.N.value(), M.Λ, C.value(), M.α.value(), M.γ.value());
+        X, A.value(), M.N.value(), M.Λ.value(), C.value(), M.α.value(), M.γ.value());
   }
 
   function downdate(X:Real[_,_]) {
     (M.N, M.Λ, M.α, M.γ) <- downdate_linear_matrix_normal_inverse_gamma_matrix_gaussian(
-        X, A.value(), M.N.value(), M.Λ, C.value(), M.α.value(), M.γ.value());
+        X, A.value(), M.N.value(), M.Λ.value(), C.value(), M.α.value(), M.γ.value());
   }
 }
 

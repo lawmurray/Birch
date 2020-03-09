@@ -22,22 +22,22 @@ final class LinearMatrixNormalInverseWishartMatrixGaussian(
 
   function simulate() -> Real[_,_] {
     return simulate_linear_matrix_normal_inverse_wishart_matrix_gaussian(
-        A.value(), M.N.value(), M.Λ, C.value(), M.V.Ψ.value(), M.V.k.value());
+        A.value(), M.N.value(), M.Λ.value(), C.value(), M.V.Ψ.value(), M.V.k.value());
   }
   
   function logpdf(X:Real[_,_]) -> Real {
     return logpdf_linear_matrix_normal_inverse_wishart_matrix_gaussian(
-        X, A.value(), M.N.value(), M.Λ, C.value(), M.V.Ψ.value(), M.V.k.value());
+        X, A.value(), M.N.value(), M.Λ.value(), C.value(), M.V.Ψ.value(), M.V.k.value());
   }
 
   function update(X:Real[_,_]) {
     (M.N, M.Λ, M.V.Ψ, M.V.k) <- update_linear_matrix_normal_inverse_wishart_matrix_gaussian(
-        X, A.value(), M.N.value(), M.Λ, C.value(), M.V.Ψ.value(), M.V.k.value());
+        X, A.value(), M.N.value(), M.Λ.value(), C.value(), M.V.Ψ.value(), M.V.k.value());
   }
 
   function downdate(X:Real[_,_]) {
     (M.N, M.Λ, M.V.Ψ, M.V.k) <- downdate_linear_matrix_normal_inverse_wishart_matrix_gaussian(
-        X, A.value(), M.N.value(), M.Λ, C.value(), M.V.Ψ.value(), M.V.k.value());
+        X, A.value(), M.N.value(), M.Λ.value(), C.value(), M.V.Ψ.value(), M.V.k.value());
   }
 }
 

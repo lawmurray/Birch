@@ -56,7 +56,7 @@ function update_lazy_linear_gaussian_gaussian(x:Expression<Real>,
  */
 function update_lazy_multivariate_gaussian_multivariate_gaussian(
     x:Expression<Real[_]>, μ:Expression<Real[_]>, Σ:Expression<Real[_,_]>,
-    S:Expression<Real[_,_]>) -> (Real[_], Real[_,_]) {
+    S:Expression<Real[_,_]>) -> (Expression<Real[_]>, Expression<Real[_,_]>) {
   auto K' <- Σ*inv(llt(Σ + S));
   auto μ' <- μ + K'*(x - μ);
   auto Σ' <- Σ - K'*Σ;
@@ -79,7 +79,7 @@ function update_lazy_multivariate_gaussian_multivariate_gaussian(
 function update_lazy_linear_multivariate_gaussian_multivariate_gaussian(
     x:Expression<Real[_]>, A:Expression<Real[_,_]>, μ:Expression<Real[_]>,
     Σ:Expression<Real[_,_]>, c:Expression<Real[_]>,
-    S:Expression<Real[_,_]>) -> (Real[_], Real[_,_]) {
+    S:Expression<Real[_,_]>) -> (Expression<Real[_]>, Expression<Real[_,_]>) {
   auto K' <- Σ*transpose(A)*inv(llt(A*Σ*transpose(A) + S));
   auto μ' <- μ + K'*(x - A*μ - c);
   auto Σ' <- Σ - K'*A*Σ;
@@ -103,7 +103,7 @@ function update_lazy_linear_multivariate_gaussian_multivariate_gaussian(
 function update_lazy_linear_multivariate_gaussian_gaussian(
     x:Expression<Real>, a:Expression<Real[_]>, μ:Expression<Real[_]>,
     Σ:Expression<Real[_,_]>, c:Expression<Real>, s2:Expression<Real>) ->
-    (Real[_], Real[_,_]) {
+    (Expression<Real[_]>, Expression<Real[_,_]>) {
   auto k' <- Σ*a/(dot(a, Σ*a) + s2);
   auto μ' <- μ + k'*(x - dot(a, μ) - c);
   auto Σ' <- Σ - column(k')*transpose(a)*Σ;
