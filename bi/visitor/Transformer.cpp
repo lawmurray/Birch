@@ -54,28 +54,6 @@ bi::Statement* bi::Transformer::modify(Assume* o) {
   return result->accept(this);
 }
 
-bi::Statement* bi::Transformer::modify(ExpressionStatement* o) {
-  /* when in the body of a fiber and another fiber is called while ignoring
-   * its return type, this is syntactic sugar for a loop */
-//  auto fiberCall = dynamic_cast<Call*>(o->single);
-//  auto memberFiberCall = dynamic_cast<Call*>(o->single);
-//  if (fiberCall || memberFiberCall) {
-//    auto name = new Name();
-//    auto var = new LocalVariable(AUTO, name, new EmptyType(o->loc),
-//        new EmptyExpression(o->loc), new EmptyExpression(o->loc), o->single,
-//        o->loc);
-//    auto query = new Query(new NamedExpression(name, o->loc), o->loc);
-//    auto get = new Get(new NamedExpression(name, o->loc), o->loc);
-//    auto yield = new Yield(get, o->loc);
-//    auto loop = new While(new Parentheses(query, o->loc), yield, o->loc);
-//    auto result = new StatementList(var, loop, o->loc);
-//
-//    return result->accept(this);
-//  } else {
-    return ContextualModifier::modify(o);
-//  }
-}
-
 bi::Statement* bi::Transformer::modify(Class* o) {
   if (o->base->isEmpty() && o->name->str() != "Object") {
     /* if the class derives from nothing else, then derive from Object,

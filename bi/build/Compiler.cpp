@@ -49,6 +49,11 @@ void bi::Compiler::parse() {
 }
 
 void bi::Compiler::resolve() {
+  /* Spinner must come before Transformer, as it creates additional yields
+   * that Transformer will need to expand out */
+  Spinner spinner;
+  package = package->accept(&spinner);
+
   Transformer transformer;
   package = package->accept(&transformer);
 

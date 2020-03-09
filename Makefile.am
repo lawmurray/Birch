@@ -135,6 +135,7 @@ COMMON_SOURCES = \
   bi/visitor/Resumer.cpp \
   bi/visitor/ScopedModifier.cpp \
   bi/visitor/Scoper.cpp \
+  bi/visitor/Spinner.cpp \
   bi/visitor/Transformer.cpp \
   bi/visitor/Visitor.cpp \
   bi/lexer.lpp \
@@ -277,6 +278,7 @@ noinst_HEADERS = \
   bi/visitor/Resumer.hpp \
   bi/visitor/ScopedModifier.hpp \
   bi/visitor/Scoper.hpp \
+  bi/visitor/Spinner.hpp \
   bi/visitor/Transformer.hpp \
   bi/visitor/Visitor.hpp \
   bi/birch.hpp \

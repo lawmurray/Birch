@@ -14,5 +14,6 @@
 #include "bi/visitor/Resumer.hpp"
 #include "bi/visitor/ScopedModifier.hpp"
 #include "bi/visitor/Scoper.hpp"
+#include "bi/visitor/Spinner.hpp"
 #include "bi/visitor/Transformer.hpp"
 #include "bi/visitor/Visitor.hpp"
