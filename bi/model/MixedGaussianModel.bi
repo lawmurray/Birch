@@ -10,12 +10,12 @@ class MixedGaussianParameter {
   /**
    * Nonlinear-linear state transition matrix.
    */
-  B:Real[_,_] <- [[1.0, 0.0, 0.0]];
+  b:Real[_] <- [1.0, 0.0, 0.0];
   
   /**
    * Linear observation matrix.
    */
-  C:Real[_,_] <- [[1.0, -1.0, 1.0]];
+  c:Real[_] <- [1.0, -1.0, 1.0];
     
   /**
    * Linear state noise covariance.
@@ -25,36 +25,36 @@ class MixedGaussianParameter {
   /**
    * Nonlinear state noise covariance.
    */
-  Σ_x_n:Real[_,_] <- [[0.01]];
+  σ2_x_n:Real <- 0.01;
   
   /**
    * Linear observation noise covariance.
    */
-  Σ_y_l:Real[_,_] <- [[0.1]];
+  σ2_y_l:Real <- 0.1;
   
   /**
    * Nonlinear observation noise covariance.
    */
-  Σ_y_n:Real[_,_] <- [[0.1]];
+  σ2_y_n:Real <- 0.1;
 
   function read(buffer:Buffer) {
     A <-? buffer.get("A", A);
-    B <-? buffer.get("B", B);
-    C <-? buffer.get("C", C);
+    b <-? buffer.get("b", b);
+    c <-? buffer.get("c", c);
     Σ_x_l <-? buffer.get("Σ_x_l", Σ_x_l);
-    Σ_x_n <-? buffer.get("Σ_x_n", Σ_x_n);
-    Σ_y_l <-? buffer.get("Σ_y_l", Σ_y_l);
-    Σ_y_n <-? buffer.get("Σ_y_n", Σ_y_n);
+    σ2_x_n <-? buffer.get("σ2_x_n", σ2_x_n);
+    σ2_y_l <-? buffer.get("σ2_y_l", σ2_y_l);
+    σ2_y_n <-? buffer.get("σ2_y_n", σ2_y_n);
   }
 
   function write(buffer:Buffer) {
     buffer.set("A", A);
-    buffer.set("B", B);
-    buffer.set("C", C);
+    buffer.set("b", b);
+    buffer.set("c", c);
     buffer.set("Σ_x_l", Σ_x_l);
-    buffer.set("Σ_x_n", Σ_x_n);
-    buffer.set("Σ_y_l", Σ_y_l);
-    buffer.set("Σ_y_n", Σ_y_n);
+    buffer.set("σ2_x_n", σ2_x_n);
+    buffer.set("σ2_y_l", σ2_y_l);
+    buffer.set("σ2_y_n", σ2_y_n);
   }
 }
 
@@ -65,7 +65,7 @@ class MixedGaussianState {
   /**
    * Nonlinear state.
    */
-  n:Random<Real[_]>;
+  n:Random<Real>;
   
   /**
    * Linear state.
@@ -90,12 +90,12 @@ class MixedGaussianObservation {
   /**
    * Nonlinear observation.
    */
-  n:Random<Real[_]>;
+  n:Random<Real>;
   
   /**
    * Linear observation.
    */
-  l:Random<Real[_]>;
+  l:Random<Real>;
 
   function read(buffer:Buffer) {
     buffer.get("l", l);
@@ -118,20 +118,19 @@ class MixedGaussianObservation {
 class MixedGaussianModel < StateSpaceModel<MixedGaussianParameter,
     MixedGaussianState,MixedGaussianObservation> {
   fiber initial(x:MixedGaussianState, θ:MixedGaussianParameter) -> Event {
-    x.n ~ Gaussian(vector(0.0, 1), identity(1));
+    x.n ~ Gaussian(0.0, 1.0);
     x.l ~ Gaussian(vector(0.0, 3), identity(3));
   }
 
   fiber transition(x':MixedGaussianState, x:MixedGaussianState,
       θ:MixedGaussianParameter) -> Event {
-    x'.n ~ Gaussian([atan(scalar(x.n))] + θ.B*x.l, θ.Σ_x_n);
+    x'.n ~ Gaussian(atan(x.n) + dot(θ.b, x.l), θ.σ2_x_n);
     x'.l ~ Gaussian(θ.A*x.l, θ.Σ_x_l);
   }
     
   fiber observation(y:MixedGaussianObservation, x:MixedGaussianState,
       θ:MixedGaussianParameter) -> Event {
-    y.n ~ Gaussian(vector(0.1*copysign(pow(scalar(x.n), 2.0), scalar(x.n)),
-        1), θ.Σ_y_n);
-    y.l ~ Gaussian(θ.C*x.l, θ.Σ_y_l);
+    y.n ~ Gaussian(0.1*copysign(pow(x.n, 2.0), x.n), θ.σ2_y_n);
+    y.l ~ Gaussian(dot(θ.c, x.l), θ.σ2_y_l);
   }    
 }

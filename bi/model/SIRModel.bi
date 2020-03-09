@@ -135,7 +135,7 @@ class SIRModel < MarkovModel<SIRParameter,SIRState> {
   }
 
   fiber transition(x':SIRState, x:SIRState, θ:SIRParameter) -> Event {
-    x'.τ ~ Binomial(x.s, 1.0 - exp(-θ.λ*x.i/(x.s + x.i + x.r)));
+    x'.τ ~ Binomial(x.s, 1.0 - exp(-θ.λ*x.i.value()/(x.s + x.i + x.r).value()));
     x'.Δi ~ Binomial(x'.τ, θ.δ);
     x'.Δr ~ Binomial(x.i, θ.γ);
 
