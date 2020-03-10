@@ -50,7 +50,7 @@ class HiddenMarkovModel<Parameter,State,Observation> <
       here':Observation;
       here <- here';
     }
-    observation(here!, before!, θ);
+    observation(here!, before!, θ)!!;
     x.pushBefore(before!);
     y.pushBefore(here!);
   }

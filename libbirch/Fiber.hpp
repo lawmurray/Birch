@@ -221,6 +221,10 @@ public:
     return yieldValue.get();
   }
 
+  void spin() const {
+    //
+  }
+
 private:
   Optional<yield_type> yieldValue;
   Optional<state_type> state;
@@ -256,6 +260,10 @@ public:
 
   bool query() const {
     return const_cast<Fiber*>(this)->query();
+  }
+
+  void spin() const {
+    //
   }
 
 private:
