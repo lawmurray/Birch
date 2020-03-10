@@ -5,6 +5,7 @@
 
 #include "bi/exception/all.hpp"
 #include "bi/visitor/all.hpp"
+#include "bi/build/misc.hpp"
 
 bi::Resolver::Resolver(Package* currentPackage, Class* currentClass,
     Fiber* currentFiber) :
@@ -14,6 +15,22 @@ bi::Resolver::Resolver(Package* currentPackage, Class* currentClass,
 
 bi::Resolver::~Resolver() {
   //
+}
+
+bi::Statement* bi::Resolver::modify(ExpressionStatement* o) {
+  ScopedModifier::modify(o);
+
+  /* warn about use of old implicit spin */
+  auto call = dynamic_cast<Call*>(o->single);
+  if (call) {
+    auto named = dynamic_cast<NamedExpression*>(call->single);
+    if (named && (named->category == GLOBAL_FIBER ||
+        named->category == MEMBER_FIBER)) {
+      warn("implicit running of fibers is no longer supported, use postfix !! operator instead, i.e. f(a, b, c)!!.", o->loc);
+    }
+  }
+
+  return o;
 }
 
 bi::Expression* bi::Resolver::modify(Parameter* o) {

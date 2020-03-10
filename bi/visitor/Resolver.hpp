@@ -33,6 +33,7 @@ public:
 
   using ScopedModifier::modify;
 
+  virtual Statement* modify(ExpressionStatement* o);
   virtual Expression* modify(Parameter* o);
   virtual Statement* modify(LocalVariable* o);
   virtual Expression* modify(NamedExpression* o);

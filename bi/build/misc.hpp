@@ -9,10 +9,17 @@
 #define STRINGIFY(arg) STRINGIFY_IMPL(arg)
 
 namespace bi {
+class Location;
+
 /**
  * Output a warning message.
  */
 void warn(const std::string& msg);
+
+/**
+ * Output a warning message with location.
+ */
+void warn(const std::string& msg, Location* loc);
 
 /**
  * Find a path in a list of possible locations.

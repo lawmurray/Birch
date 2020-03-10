@@ -3,10 +3,23 @@
  */
 #include "bi/build/misc.hpp"
 
+#include "bi/common/Location.hpp"
+#include "bi/statement/File.hpp"
+
 #include "boost/filesystem/fstream.hpp"
 #include "boost/algorithm/string.hpp"
 
 void bi::warn(const std::string& msg) {
+  std::cerr << "warning: " << msg << std::endl;
+}
+
+void bi::warn(const std::string& msg, Location* loc) {
+  if (loc->file) {
+    std::cerr << loc->file->path;
+    std::cerr << ':' << loc->firstLine;
+    std::cerr << ':' << loc->firstCol;
+    std::cerr << ": ";
+  }
   std::cerr << "warning: " << msg << std::endl;
 }
 
