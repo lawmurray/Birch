@@ -634,7 +634,8 @@ yield
     ;
 
 statement
-    : local_variable_declaration
+    : braces
+    | local_variable_declaration
     | expression_statement
     | assume_statement
     | if
