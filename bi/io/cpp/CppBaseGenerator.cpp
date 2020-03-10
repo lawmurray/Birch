@@ -133,10 +133,13 @@ void bi::CppBaseGenerator::visit(const Spin* o) {
 }
 
 void bi::CppBaseGenerator::visit(const LambdaFunction* o) {
-  finish("[=](" << o->params << ") ");
+  finish("[=](" << o->params << ") {");
+  in();
   ++inLambda;
-  *this << o->braces;
+  *this << o->braces->strip();
   --inLambda;
+  out();
+  start("}");
 }
 
 void bi::CppBaseGenerator::visit(const Span* o) {
@@ -572,11 +575,11 @@ void bi::CppBaseGenerator::visit(const Generic* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Braces* o) {
-  finish(" {");
+  line('{');
   in();
-  middle(o->single);
+  *this << o->single;
   out();
-  start('}');
+  line('}');
 }
 
 void bi::CppBaseGenerator::visit(const Assume* o) {
@@ -590,11 +593,17 @@ void bi::CppBaseGenerator::visit(const ExpressionStatement* o) {
 
 void bi::CppBaseGenerator::visit(const If* o) {
   genTraceLine(o->loc);
-  start("if (" << o->cond->strip() << ") " << o->braces);
+  line("if (" << o->cond->strip() << ") {");
+  in();
+  *this << o->braces->strip();
+  out();
   if (!o->falseBraces->isEmpty()) {
-    middle("else " << o->falseBraces);
+    line("} else {");
+    in();
+    *this << o->falseBraces->strip();
+    out();
   }
-  finish("");
+  line("}");
 }
 
 void bi::CppBaseGenerator::visit(const For* o) {
@@ -603,8 +612,11 @@ void bi::CppBaseGenerator::visit(const For* o) {
 
   genTraceLine(o->loc);
   start("for (auto " << index->name << " = " << o->from << "; ");
-  finish(index->name << " <= " << o->to << "; ++" << index->name << ") ");
-  *this << o->braces;
+  finish(index->name << " <= " << o->to << "; ++" << index->name << ") {");
+  in();
+  *this << o->braces->strip();
+  out();
+  line("}");
 }
 
 void bi::CppBaseGenerator::visit(const Parallel* o) {
@@ -624,20 +636,31 @@ void bi::CppBaseGenerator::visit(const Parallel* o) {
   }
   finish(')');
   start("for (auto " << index->name << " = " << o->from << "; ");
-  finish(index->name << " <= " << o->to << "; ++" << index->name << ") ");
-  *this << o->braces;
+  finish(index->name << " <= " << o->to << "; ++" << index->name << ") {");
+  in();
+  *this << o->braces->strip();
+  out();
+  line("}");
   out();
   line("}");
 }
 
 void bi::CppBaseGenerator::visit(const While* o) {
   genTraceLine(o->loc);
-  line("while (" << o->cond->strip() << ") " << o->braces);
+  line("while (" << o->cond->strip() << ") {");
+  in();
+  *this << o->braces->strip();
+  out();
+  line("}");
 }
 
 void bi::CppBaseGenerator::visit(const DoWhile* o) {
   genTraceLine(o->loc);
-  line("do " << o->braces << " while (" << o->cond->strip() << ");");
+  line("do {");
+  in();
+  *this << o->braces->strip();
+  out();
+  line("} while (" << o->cond->strip() << ");");
 }
 
 void bi::CppBaseGenerator::visit(const Assert* o) {
