@@ -139,9 +139,34 @@ bi::Statement* bi::Resumer::clone(const If* o) {
 }
 
 bi::Statement* bi::Resumer::clone(const For* o) {
-  ///@todo unroll as for While and DoWhile
-  if (foundYield) {
-    return Cloner::clone(o);
+  auto index = dynamic_cast<LocalVariable*>(o->index->accept(this));
+  assert(index);
+  auto from = o->from->accept(this);
+  auto to = o->to->accept(this);
+  auto foundBefore = foundYield;
+  auto braces = o->braces->accept(this);
+  auto foundAfter = foundYield;
+
+  if (foundBefore) {
+    /* keep everything */
+    return new For(o->annotation, index, from, to, braces, o->loc);
+  } else if (foundAfter) {
+    /* `braces` has unrolled and reduced the first iteration of the loop
+     * only, will need to clone in the entire loop after it, as a while
+     * loop */
+    auto counter = new NamedExpression(index->name, index->loc);
+    auto inc = new ExpressionStatement(new Assign(counter->accept(this),
+        new Name("<-"), new BinaryCall(counter->accept(this), new Name("+"),
+        new Literal<int64_t>("1"), o->loc), o->loc), o->loc);
+    auto cond = new BinaryCall(counter->accept(this), new Name("<="), to, o->loc);
+    auto body = new StatementList(o->braces->accept(this)->strip(),
+        inc->accept(this), o->loc);
+    auto loop = new While(cond, body, o->loc);
+
+    Statement* result = new StatementList(index, inc->accept(this), o->loc);
+    result = new StatementList(result, braces, o->loc);
+    result = new StatementList(result, loop, o->loc);
+    return result;
   } else {
     return new EmptyStatement(o->loc);
   }
