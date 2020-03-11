@@ -74,9 +74,7 @@ public:
    */
   template<class Visitor>
   void accept_(const Visitor& v) {
-    v.visit(yieldValue);
-    v.visit(returnValue);
-    v.visit(state);
+    v.visit(yieldValue, returnValue, state);
   }
 
   /**
@@ -154,8 +152,7 @@ public:
 
   template<class Visitor>
   void accept_(const Visitor& v) {
-    v.visit(returnValue);
-    v.visit(state);
+    v.visit(returnValue, state);
   }
 
   bool query() {
@@ -202,8 +199,7 @@ public:
 
   template<class Visitor>
   void accept_(const Visitor& v) {
-    v.visit(yieldValue);
-    v.visit(state);
+    v.visit(yieldValue, state);
   }
 
   bool query() {

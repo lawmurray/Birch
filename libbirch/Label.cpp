@@ -38,9 +38,9 @@ libbirch::Any* libbirch::Label::get(Any* o) {
     } else {
       /* copy it */
       cloned = next->copy_(Copier(this));
-      if (!next->isFrozenUnique()) {
+      //if (!next->isFrozenUnique()) {
         memo.put(next, cloned);
-      }
+      //}
     }
     next = cloned;
   }
