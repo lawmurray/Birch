@@ -39,7 +39,7 @@ class HiddenMarkovModel<Parameter,State,Observation> <
    * and an observation.
    */
   fiber simulate(t:Integer) -> Event {
-    super.simulate(t);
+    super.simulate(t)!!;
     before:State?;
     here:Observation?;
     
