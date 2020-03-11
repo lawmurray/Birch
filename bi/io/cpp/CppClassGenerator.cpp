@@ -227,6 +227,7 @@ void bi::CppClassGenerator::visit(const MemberFunction* o) {
       finish(" {");
       in();
       genTraceFunction(o->name->str(), o->loc);
+      genSourceLine(o->loc);
       line("LIBBIRCH_SELF");
       CppBaseGenerator auxBase(base, level, header);
       auxBase << o->braces->strip();
@@ -265,6 +266,7 @@ void bi::CppClassGenerator::visit(const MemberFiber* o) {
       finish(" {");
       in();
       genTraceFunction(o->name->str(), o->loc);
+      genSourceLine(o->loc);
       line("LIBBIRCH_SELF");
       genTraceLine(o->loc);
       line("yield_" << o->name << '_' << o->number << "_0_();");
@@ -313,6 +315,7 @@ void bi::CppClassGenerator::visit(const AssignmentOperator* o) {
       finish(" {");
       in();
       genTraceFunction("<assignment>", o->loc);
+      genSourceLine(o->loc);
       line("LIBBIRCH_SELF");
       CppBaseGenerator auxBase(base, level, header);
       auxBase << o->braces->strip();
@@ -343,6 +346,7 @@ void bi::CppClassGenerator::visit(const ConversionOperator* o) {
       finish(" {");
       in();
       genTraceFunction("<conversion>", o->loc);
+      genSourceLine(o->loc);
       line("LIBBIRCH_SELF ");
       CppBaseGenerator auxBase(base, level, header);
       auxBase << o->braces->strip();
