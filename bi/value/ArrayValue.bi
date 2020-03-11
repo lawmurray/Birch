@@ -21,7 +21,7 @@ class ArrayValue < Value {
   }
 
   fiber walk() -> Buffer {
-    buffers.walk();
+    buffers.walk()!!;
   }
 
   function push() -> Buffer {

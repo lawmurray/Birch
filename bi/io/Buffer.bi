@@ -134,7 +134,7 @@ abstract class Buffer {
   fiber walk(name:String) -> Buffer {
     auto array <- getArray(name);
     if array? {
-      array!.walk();
+      array!.walk()!!;
     }
   }
 

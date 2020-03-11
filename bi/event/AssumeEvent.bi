@@ -63,7 +63,7 @@ final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
       p <- p.graft();
       w <- p.observeLazy(v);
     } else {
-      p.assume(v);
+      v.assume(p);
     }
     return w;
   }
@@ -107,7 +107,7 @@ final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
         p.set(random.x!);
         v.set(p);
       } else {
-        p.assume(v);
+        v.assume(p);
       }
     }
     return w;
@@ -129,7 +129,7 @@ final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
         }
         v.set(p);
       } else {
-        p.assume(v);
+        v.assume(p);
       }
     }
     return w;

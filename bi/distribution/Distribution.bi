@@ -51,19 +51,6 @@ abstract class Distribution<Value> < Delay {
     this.x <- x;
     update(x);
   }
-
-  /**
-   * Assume the distribution for a random variate. When a value for the
-   * random variate is required, it will be simulated from this distribution
-   * and trigger an *update* on the delayed sampling graph.
-   *
-   * - v: The random variate.
-   */
-  function assume(v:Random<Value>) {
-    assert !v.hasDistribution();
-    assert !v.hasValue();
-    v.p <- this;
-  }
   
   /**
    * Observe a value for a random variate associated with this node,

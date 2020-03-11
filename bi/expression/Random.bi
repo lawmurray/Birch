@@ -76,10 +76,21 @@ final class Random<Value> < Expression<Value> {
     return p;
   }
 
-  function set(p:Distribution<Value>) {
+  /**
+   * Assume the distribution for the random variate. When a value for the
+   * random variate is required, it will be simulated from this distribution
+   * and trigger an *update* on the delayed sampling graph.
+   *
+   * - v: The random variate.
+   */
+  function assume(p:Distribution<Value>) {
     assert !this.p?;
     assert !this.x?;
     this.p <- p;
+  }
+
+  function set(p:Distribution<Value>) {
+    assume(p);
     this.x <- p.value();
   }
 
