@@ -24,6 +24,11 @@ public:
   using this_type = Lazy<P>;
   using super_type = Lazy<typename P::super_type>;
 
+  Lazy(const Lazy&) = default;
+  Lazy(Lazy&&) = default;
+  Lazy& operator=(const Lazy&) = default;
+  Lazy& operator=(Lazy&&) = default;
+
   /**
    * Constructor.
    */
@@ -171,6 +176,37 @@ public:
       label(label) {
     //
   }
+
+  /**
+   * Copy constructor.
+   */
+  Lazy(const Lazy& o) :
+      object(o.get()),
+      label(o.label) {
+    // ^ must get() on copy to maintain validity of single reference
+    //   optimization in Label, using isFrozenUnique()
+  }
+
+  /**
+   * Move constructor.
+   */
+  Lazy(Lazy&& o) = default;
+
+  /**
+   * Copy assignment.
+   */
+  Lazy& operator=(const Lazy& o) {
+    object.replace(o.object.get());
+    label = o.label;
+    // ^ must get() on copy to maintain validity of single reference
+    //   optimization in Label, using isFrozenUnique()
+    return *this;
+  }
+
+  /**
+   * Move assignment.
+   */
+  Lazy& operator=(Lazy&& o) = default;
 
   /**
    * Destructor.

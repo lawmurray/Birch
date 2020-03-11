@@ -52,7 +52,7 @@ final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
       p <- p.graft();
       w <- p.observe(v.value());
     } else {
-      p.assume(v);
+      v.assume(p);
     }
     return w;
   }

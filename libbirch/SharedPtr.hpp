@@ -105,7 +105,7 @@ public:
   SharedPtr(const SharedPtr& o) :
       ptr(o.ptr) {
     if (ptr) {
-      assert(ptr->numShared() > 0);
+      assert(ptr->numShared() > 0u);
       ptr->incShared();
     }
   }

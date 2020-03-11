@@ -38,7 +38,7 @@ public:
       label(rootLabel),
       frozen(false),
       frozenUnique(false) {
-    // size and tid already set by by operator new
+    // size and tid already set by operator new
   }
 
   /**
@@ -144,10 +144,17 @@ public:
   virtual Any* recycle_(const Recycler& v) = 0;
 
   /**
+   * Shared count.
+   */
+  unsigned numShared() const {
+    return sharedCount.load();
+  }
+
+  /**
    * Increment the shared count.
    */
   void incShared() {
-    if (++sharedCount == 1) {
+    if (++sharedCount == 1u) {
       /* to support object resurrection, when the shared count increases from
        * zero, increment the memo value count also; this also occurs when an
        * object is first created */
@@ -168,6 +175,13 @@ public:
   }
 
   /**
+   * Memo value count.
+   */
+  unsigned numMemoValue() const {
+    return memoValueCount.load();
+  }
+
+  /**
    * Increment the memo value count.
    */
   void incMemoValue() {
@@ -180,6 +194,7 @@ public:
   void decMemoValue() {
     assert(numMemoValue() > 0u);
     if (--memoValueCount == 0u) {
+      assert(numShared() == 0u);
       finalize();
 
       /* to support object resurrection, check the memo value count again
@@ -192,17 +207,10 @@ public:
   }
 
   /**
-   * Memo value count.
+   * Weak count.
    */
-  unsigned numMemoValue() const {
-    return memoValueCount.load();
-  }
-
-  /**
-   * Shared count.
-   */
-  unsigned numShared() const {
-    return sharedCount.load();
+  unsigned numWeak() const {
+    return weakCount.load();
   }
 
   /**
@@ -218,15 +226,17 @@ public:
   void decWeak() {
     assert(weakCount.load() > 0u);
     if (--weakCount == 0u) {
+      assert(numShared() == 0u);
+      assert(numMemoValue() == 0u);
       decMemoKey();
     }
   }
 
   /**
-   * Weak count.
+   * Memo key count.
    */
-  unsigned numWeak() const {
-    return weakCount.load();
+  unsigned numMemoKey() const {
+    return memoKeyCount.load();
   }
 
   /**
@@ -242,15 +252,11 @@ public:
   void decMemoKey() {
     assert(memoKeyCount.load() > 0u);
     if (--memoKeyCount == 0u) {
+      assert(numShared() == 0u);
+      assert(numMemoValue() == 0u);
+      assert(numWeak() == 0u);
       deallocate();
     }
-  }
-
-  /**
-   * Memo key count.
-   */
-  unsigned numMemoKey() const {
-    return memoKeyCount.load();
   }
 
   /**
