@@ -63,11 +63,7 @@ void bi::CppResumeGenerator::visit(const Function* o) {
     genUniqueName(o);
     middle(", libbirch::FiberState<" << fiberType->yieldType << ',');
     finish(fiberType->returnType << ">)");
-    if (!o->params->isEmpty()) {
-      line("LIBBIRCH_MEMBERS(state_)");
-    } else {
-      line("LIBBIRCH_MEMBERS()");
-    }
+    line("LIBBIRCH_MEMBERS(state_)");
     out();
     line("};\n");
     genYieldMacro(o);
@@ -136,11 +132,7 @@ void bi::CppResumeGenerator::visit(const MemberFunction* o) {
     genUniqueName(o);
     middle(", libbirch::FiberState<" << fiberType->yieldType << ',');
     finish(fiberType->returnType << ">)");
-    if (!o->params->isEmpty()) {
-      line("LIBBIRCH_MEMBERS(state_)");
-    } else {
-      line("LIBBIRCH_MEMBERS()");
-    }
+    line("LIBBIRCH_MEMBERS(state_)");
     out();
     line("};\n");
     genYieldMacro(o);

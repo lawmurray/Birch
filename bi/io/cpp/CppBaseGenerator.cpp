@@ -162,25 +162,29 @@ void bi::CppBaseGenerator::visit(const Member* o) {
   auto leftThis = dynamic_cast<const This*>(o->left);
   auto leftSuper = dynamic_cast<const Super*>(o->left);
   if (inConstructor && (leftThis || leftSuper)) {
+    /* don't have access to the `self` variable here, but because we're
+     * constructing, so the object cannot possibly be frozen, `this`
+     * suffices */
     if (leftThis) {
       middle("this->");
     } else if (leftSuper) {
-      middle("super_type_::");
+      middle("this->super_type_::");
     }
   } else {
-    auto rightVar = dynamic_cast<const NamedExpression*>(o->right);
-    middle(o->left);
-    ///@todo Restore read-only optimization
-    //if (!inAssign && rightVar) {
-      /* optimization: just reading a value, so no need to copy-on-write the
-       * owning object */
-    //  middle(".pull()");
-    //}
-    middle("->");
-
-    /* explicitly refer to the super class if necessary */
-    if (leftSuper) {
-      middle("super_type_::");
+    if (leftThis) {
+      middle("self->");
+    } else if (leftSuper) {
+      middle("self->super_type_::");
+    } else {
+      middle(o->left);
+      ///@todo Restore read-only optimization
+      //auto rightVar = dynamic_cast<const NamedExpression*>(o->right);
+      //if (!inAssign && rightVar) {
+        /* optimization: just reading a value, so no need to copy-on-write the
+         * owning object */
+      //  middle(".pull()");
+      //}
+      middle("->");
     }
   }
   ++inMember;
@@ -192,16 +196,12 @@ void bi::CppBaseGenerator::visit(const This* o) {
   if (inConstructor) {
     middle("this");
   } else {
-    middle("libbirch::Lazy<libbirch::SharedPtr<this_type_>>(self)");
+    middle("self");
   }
 }
 
 void bi::CppBaseGenerator::visit(const Super* o) {
-  if (inConstructor) {
-    middle("this");
-  } else {
-    middle("libbirch::Lazy<libbirch::SharedPtr<super_type_>>(self)");
-  }
+  assert(false);  // valid use cases handled by visit(const Member*)
 }
 
 void bi::CppBaseGenerator::visit(const Global* o) {
@@ -766,5 +766,5 @@ void bi::CppBaseGenerator::genTraceLine(const Location* loc) {
 }
 
 void bi::CppBaseGenerator::genSourceLine(const Location* loc) {
-  line("#line " << loc->firstLine << " \"" << loc->file->path << "\"");
+  line("//#line " << loc->firstLine << " \"" << loc->file->path << "\"");
 }
