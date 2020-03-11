@@ -1,8 +1,8 @@
-/* A Bison parser, made by GNU Bison 3.4.2.  */
+/* A Bison parser, made by GNU Bison 3.0.4.  */
 
 /* Skeleton implementation for Bison GLR parsers in C
 
-   Copyright (C) 2002-2015, 2018-2019 Free Software Foundation, Inc.
+   Copyright (C) 2002-2015 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -32,14 +32,11 @@
 
 /* C GLR parser skeleton written by Paul Hilfinger.  */
 
-/* Undocumented macros, especially those whose name start with YY_,
-   are private implementation details.  Do not rely on them.  */
-
 /* Identify Bison output.  */
 #define YYBISON 1
 
 /* Bison version.  */
-#define YYBISON_VERSION "3.4.2"
+#define YYBISON_VERSION "3.0.4"
 
 /* Skeleton name.  */
 #define YYSKELETON_NAME "glr.c"
@@ -52,17 +49,15 @@
 
 
 
+/* First part of user declarations.  */
 
+#line 55 "bi/parser.cpp" /* glr.c:240  */
 
 # ifndef YY_NULLPTR
-#  if defined __cplusplus
-#   if 201103L <= __cplusplus
-#    define YY_NULLPTR nullptr
-#   else
-#    define YY_NULLPTR 0
-#   endif
+#  if defined __cplusplus && 201103L <= __cplusplus
+#   define YY_NULLPTR nullptr
 #  else
-#   define YY_NULLPTR ((void*)0)
+#   define YY_NULLPTR 0
 #  endif
 # endif
 
@@ -87,9 +82,11 @@ static YYLTYPE yyloc_default
 # endif
 ;
 
+/* Copy the second part of user declarations.  */
 
+#line 88 "bi/parser.cpp" /* glr.c:263  */
 /* Unqualified %code blocks.  */
-#line 6 "bi/parser.ypp"
+#line 6 "bi/parser.ypp" /* glr.c:264  */
 
   #include "bi/expression/all.hpp"
   #include "bi/statement/all.hpp"
@@ -154,7 +151,7 @@ static YYLTYPE yyloc_default
     return new bi::EmptyType(make_loc(loc));
   }
 
-#line 158 "bi/parser.cpp"
+#line 155 "bi/parser.cpp" /* glr.c:264  */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -185,26 +182,19 @@ static YYLTYPE yyloc_default
 #define YYSIZEMAX ((size_t) -1)
 
 #ifdef __cplusplus
-  typedef bool yybool;
-# define yytrue true
-# define yyfalse false
+   typedef bool yybool;
 #else
-  /* When we move to stdbool, get rid of the various casts to yybool.  */
-  typedef unsigned char yybool;
-# define yytrue 1
-# define yyfalse 0
+   typedef unsigned char yybool;
 #endif
+#define yytrue 1
+#define yyfalse 0
 
 #ifndef YYSETJMP
 # include <setjmp.h>
 # define YYJMP_BUF jmp_buf
 # define YYSETJMP(Env) setjmp (Env)
-/* Pacify Clang and ICC.  */
-# define YYLONGJMP(Env, Val)                    \
- do {                                           \
-   longjmp (Env, Val);                          \
-   YYASSERT (0);                                \
- } while (yyfalse)
+/* Pacify clang.  */
+# define YYLONGJMP(Env, Val) (longjmp (Env, Val), YYASSERT (0))
 #endif
 
 #ifndef YY_ATTRIBUTE
@@ -225,22 +215,12 @@ static YYLTYPE yyloc_default
 # define YY_ATTRIBUTE_UNUSED YY_ATTRIBUTE ((__unused__))
 #endif
 
-/* The _Noreturn keyword of C11.  */
-#ifndef _Noreturn
-# if (defined __cplusplus \
-      && ((201103 <= __cplusplus && !(__GNUC__ == 4 && __GNUC_MINOR__ == 7)) \
-          || (defined _MSC_VER && 1900 <= _MSC_VER)))
-#  define _Noreturn [[noreturn]]
-# elif ((!defined __cplusplus || defined __clang__) \
-        && (201112 <= (defined __STDC_VERSION__ ? __STDC_VERSION__ : 0)  \
-            || 4 < __GNUC__ + (7 <= __GNUC_MINOR__)))
-   /* _Noreturn works as-is.  */
-# elif 2 < __GNUC__ + (8 <= __GNUC_MINOR__) || 0x5110 <= __SUNPRO_C
-#  define _Noreturn __attribute__ ((__noreturn__))
-# elif 1200 <= (defined _MSC_VER ? _MSC_VER : 0)
+#if !defined _Noreturn \
+     && (!defined __STDC_VERSION__ || __STDC_VERSION__ < 201112)
+# if defined _MSC_VER && 1200 <= _MSC_VER
 #  define _Noreturn __declspec (noreturn)
 # else
-#  define _Noreturn
+#  define _Noreturn YY_ATTRIBUTE ((__noreturn__))
 # endif
 #endif
 
@@ -251,7 +231,7 @@ static YYLTYPE yyloc_default
 # define YYUSE(E) /* empty */
 #endif
 
-#if defined __GNUC__ && ! defined __ICC && 407 <= __GNUC__ * 100 + __GNUC_MINOR__
+#if defined __GNUC__ && 407 <= __GNUC__ * 100 + __GNUC_MINOR__
 /* Suppress an incorrect diagnostic about yylval being uninitialized.  */
 # define YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN \
     _Pragma ("GCC diagnostic push") \
@@ -286,7 +266,7 @@ static YYLTYPE yyloc_default
 #define YYNNTS  133
 /* YYNRULES -- Number of rules.  */
 #define YYNRULES  265
-/* YYNSTATES -- Number of states.  */
+/* YYNRULES -- Number of states.  */
 #define YYNSTATES  454
 /* YYMAXRHS -- Maximum number of symbols on right-hand side of rule.  */
 #define YYMAXRHS 10
@@ -294,19 +274,14 @@ static YYLTYPE yyloc_default
    accessed by $0, $-1, etc., in any rule.  */
 #define YYMAXLEFT 0
 
-/* YYMAXUTOK -- Last valid token number (for yychar).  */
-#define YYMAXUTOK   303
-/* YYUNDEFTOK -- Symbol number (for yytoken) that denotes an unknown
-   token.  */
+/* YYTRANSLATE(X) -- Bison symbol number corresponding to X.  */
 #define YYUNDEFTOK  2
+#define YYMAXUTOK   303
 
-/* YYTRANSLATE(TOKEN-NUM) -- Symbol number corresponding to TOKEN-NUM
-   as returned by yylex, with out-of-bounds checking.  */
 #define YYTRANSLATE(YYX)                                                \
-  ((unsigned) (YYX) <= YYMAXUTOK ? yytranslate[YYX] : YYUNDEFTOK)
+  ((unsigned int) (YYX) <= YYMAXUTOK ? yytranslate[YYX] : YYUNDEFTOK)
 
-/* YYTRANSLATE[TOKEN-NUM] -- Symbol number corresponding to TOKEN-NUM
-   as returned by yylex.  */
+/* YYTRANSLATE[YYLEX] -- Bison symbol number corresponding to YYLEX.  */
 static const unsigned char yytranslate[] =
 {
        0,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -344,7 +319,7 @@ static const unsigned char yytranslate[] =
 
 #if YYDEBUG
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
-static const unsigned short yyrline[] =
+static const unsigned short int yyrline[] =
 {
        0,   160,   160,   169,   173,   177,   181,   185,   186,   187,
      188,   192,   196,   200,   204,   208,   212,   216,   220,   224,
@@ -436,7 +411,7 @@ static const char *const yytname[] =
 
   /* YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
      STATE-NUM.  */
-static const short yypact[] =
+static const short int yypact[] =
 {
      142,     6,     6,     6,     6,    -2,    32,    32,  -326,  -326,
     -326,    -1,  -326,  -326,  -326,  -326,  -326,  -326,    66,  -326,
@@ -489,7 +464,7 @@ static const short yypact[] =
   /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
      Performed when YYTABLE does not specify something else to do.  Zero
      means the default is an error.  */
-static const unsigned short yydefact[] =
+static const unsigned short int yydefact[] =
 {
      164,     0,     0,     0,     0,     0,     0,     0,   162,   163,
        2,     0,   222,   223,   224,   225,   226,   227,     0,   228,
@@ -540,7 +515,7 @@ static const unsigned short yydefact[] =
 };
 
   /* YYPGOTO[NTERM-NUM].  */
-static const short yypgoto[] =
+static const short int yypgoto[] =
 {
     -326,     0,  -326,  -326,  -326,  -326,  -326,   -76,  -326,  -326,
     -326,  -326,  -326,  -326,  -326,  -326,  -326,    24,  -326,  -326,
@@ -559,7 +534,7 @@ static const short yypgoto[] =
 };
 
   /* YYDEFGOTO[NTERM-NUM].  */
-static const short yydefgoto[] =
+static const short int yydefgoto[] =
 {
       -1,   159,   160,   161,   162,   163,   164,   165,   166,   167,
      168,   169,   170,   171,   172,   173,   315,   316,   257,   174,
@@ -580,7 +555,7 @@ static const short yydefgoto[] =
   /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
      positive, shift that token.  If negative, reduce the rule whose
      number is the opposite.  If YYTABLE_NINF, syntax error.  */
-static const short yytable[] =
+static const short int yytable[] =
 {
       11,    27,    28,    29,    30,    76,    53,   132,   103,    61,
      197,   278,   218,    68,   259,    69,   247,   248,   370,   380,
@@ -639,7 +614,7 @@ static const short yytable[] =
        0,     0,     0,    10
 };
 
-static const short yycheck[] =
+static const short int yycheck[] =
 {
        0,     1,     2,     3,     4,    47,    31,    76,    58,    35,
      111,   203,   119,    41,   176,    43,   156,   157,   332,   344,
@@ -977,7 +952,7 @@ static const unsigned char yyconflp[] =
 
 /* YYCONFL[I] -- lists of conflicting rule numbers, each terminated by
    0, pointed into by YYCONFLP.  */
-static const short yyconfl[] =
+static const short int yyconfl[] =
 {
        0,   114,     0,   107,     0,   257,     0,   114,     0,   114,
        0,   237,     0,   237,     0,   237,     0,    11,     0,   114,
@@ -1050,10 +1025,10 @@ typedef enum { yyok, yyaccept, yyabort, yyerr } YYRESULTTAG;
 /* Print *YYLOCP on YYO.  Private, do not rely on its existence. */
 
 YY_ATTRIBUTE_UNUSED
-static int
+static unsigned
 yy_location_print_ (FILE *yyo, YYLTYPE const * const yylocp)
 {
-  int res = 0;
+  unsigned res = 0;
   int end_col = 0 != yylocp->last_column ? yylocp->last_column - 1 : 0;
   if (0 <= yylocp->first_line)
     {
@@ -1091,38 +1066,36 @@ yy_location_print_ (FILE *yyo, YYLTYPE const * const yylocp)
   } while (0)
 
 
-/*-----------------------------------.
-| Print this symbol's value on YYO.  |
-`-----------------------------------*/
+/*----------------------------------------.
+| Print this symbol's value on YYOUTPUT.  |
+`----------------------------------------*/
 
 static void
-yy_symbol_value_print (FILE *yyo, int yytype, YYSTYPE const * const yyvaluep, YYLTYPE const * const yylocationp)
+yy_symbol_value_print (FILE *yyoutput, int yytype, YYSTYPE const * const yyvaluep, YYLTYPE const * const yylocationp)
 {
-  FILE *yyoutput = yyo;
-  YYUSE (yyoutput);
+  FILE *yyo = yyoutput;
+  YYUSE (yyo);
   YYUSE (yylocationp);
   if (!yyvaluep)
     return;
-  YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN
   YYUSE (yytype);
-  YY_IGNORE_MAYBE_UNINITIALIZED_END
 }
 
 
-/*---------------------------.
-| Print this symbol on YYO.  |
-`---------------------------*/
+/*--------------------------------.
+| Print this symbol on YYOUTPUT.  |
+`--------------------------------*/
 
 static void
-yy_symbol_print (FILE *yyo, int yytype, YYSTYPE const * const yyvaluep, YYLTYPE const * const yylocationp)
+yy_symbol_print (FILE *yyoutput, int yytype, YYSTYPE const * const yyvaluep, YYLTYPE const * const yylocationp)
 {
-  YYFPRINTF (yyo, "%s %s (",
+  YYFPRINTF (yyoutput, "%s %s (",
              yytype < YYNTOKENS ? "token" : "nterm", yytname[yytype]);
 
-  YY_LOCATION_PRINT (yyo, *yylocationp);
-  YYFPRINTF (yyo, ": ");
-  yy_symbol_value_print (yyo, yytype, yyvaluep, yylocationp);
-  YYFPRINTF (yyo, ")");
+  YY_LOCATION_PRINT (yyoutput, *yylocationp);
+  YYFPRINTF (yyoutput, ": ");
+  yy_symbol_value_print (yyoutput, yytype, yyvaluep, yylocationp);
+  YYFPRINTF (yyoutput, ")");
 }
 
 # define YY_SYMBOL_PRINT(Title, Type, Value, Location)                  \
@@ -1242,10 +1215,7 @@ yytnamerr (char *yyres, const char *yystr)
           case '\\':
             if (*++yyp != '\\')
               goto do_not_strip_quotes;
-            else
-              goto append;
-
-          append:
+            /* Fall through.  */
           default:
             if (yyres)
               yyres[yyn] = *yyp;
@@ -1263,7 +1233,7 @@ yytnamerr (char *yyres, const char *yystr)
   if (! yyres)
     return strlen (yystr);
 
-  return (size_t) (yystpcpy (yyres, yystr) - yyres);
+  return yystpcpy (yyres, yystr) - yyres;
 }
 # endif
 
@@ -1279,7 +1249,7 @@ typedef int yyRuleNum;
 typedef int yySymbol;
 
 /** Item references, as in LALR(1) machine */
-typedef short yyItemNum;
+typedef short int yyItemNum;
 
 typedef struct yyGLRState yyGLRState;
 typedef struct yyGLRStateSet yyGLRStateSet;
@@ -1301,7 +1271,7 @@ struct yyGLRState {
   size_t yyposn;
   union {
     /** First in a chain of alternative reductions producing the
-     *  nonterminal corresponding to this state, threaded through
+     *  non-terminal corresponding to this state, threaded through
      *  yynext.  */
     yySemanticOption* yyfirstVal;
     /** Semantic value for this state.  */
@@ -1362,7 +1332,7 @@ struct yyGLRStack {
 static void yyexpandGLRStack (yyGLRStack* yystackp);
 #endif
 
-_Noreturn static void
+static _Noreturn void
 yyFail (yyGLRStack* yystackp, const char* yymsg)
 {
   if (yymsg != YY_NULLPTR)
@@ -1370,7 +1340,7 @@ yyFail (yyGLRStack* yystackp, const char* yymsg)
   YYLONGJMP (yystackp->yyexception_buffer, 1);
 }
 
-_Noreturn static void
+static _Noreturn void
 yyMemoryExhausted (yyGLRStack* yystackp)
 {
   YYLONGJMP (yystackp->yyexception_buffer, 2);
@@ -1414,30 +1384,6 @@ yyfillin (yyGLRStackItem *yyvsp, int yylow0, int yylow1)
     }
 }
 
-
-/** If yychar is empty, fetch the next token.  */
-static inline yySymbol
-yygetToken (int *yycharp)
-{
-  yySymbol yytoken;
-  if (*yycharp == YYEMPTY)
-    {
-      YYDPRINTF ((stderr, "Reading a token: "));
-      *yycharp = yylex ();
-    }
-  if (*yycharp <= YYEOF)
-    {
-      *yycharp = yytoken = YYEOF;
-      YYDPRINTF ((stderr, "Now at end of input.\n"));
-    }
-  else
-    {
-      yytoken = YYTRANSLATE (*yycharp);
-      YY_SYMBOL_PRINT ("Next token is", yytoken, &yylval, &yylloc);
-    }
-  return yytoken;
-}
-
 /* Do nothing if YYNORMAL or if *YYLOW <= YYLOW1.  Otherwise, fill in
  * YYVSP[YYLOW1 .. *YYLOW-1] as in yyfillin and set *YYLOW = YYLOW1.
  * For convenience, always return YYLOW1.  */
@@ -1460,11 +1406,11 @@ yyfill (yyGLRStackItem *yyvsp, int *yylow, int yylow1, yybool yynormal)
  *  (@$).  Returns yyok for normal return, yyaccept for YYACCEPT,
  *  yyerr for YYERROR, yyabort for YYABORT.  */
 static YYRESULTTAG
-yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
+yyuserAction (yyRuleNum yyn, size_t yyrhslen, yyGLRStackItem* yyvsp,
               yyGLRStack* yystackp,
               YYSTYPE* yyvalp, YYLTYPE *yylocp)
 {
-  yybool yynormal YY_ATTRIBUTE_UNUSED = (yybool) (yystackp->yysplitPoint == YY_NULLPTR);
+  yybool yynormal YY_ATTRIBUTE_UNUSED = (yystackp->yysplitPoint == YY_NULLPTR);
   int yylow;
   YYUSE (yyvalp);
   YYUSE (yylocp);
@@ -1482,7 +1428,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 # undef yyclearin
 # define yyclearin (yychar = YYEMPTY)
 # undef YYFILL
-# define YYFILL(N) yyfill (yyvsp, &yylow, (N), yynormal)
+# define YYFILL(N) yyfill (yyvsp, &yylow, N, yynormal)
 # undef YYBACKUP
 # define YYBACKUP(Token, Value)                                              \
   return yyerror (YY_("syntax error: cannot back up")),     \
@@ -1493,1077 +1439,1075 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
     *yyvalp = yyval_default;
   else
     *yyvalp = yyvsp[YYFILL (1-yyrhslen)].yystate.yysemantics.yysval;
-  /* Default location. */
   YYLLOC_DEFAULT ((*yylocp), (yyvsp - yyrhslen), yyrhslen);
   yystackp->yyerror_range[1].yystate.yyloc = *yylocp;
 
   switch (yyn)
     {
-  case 2:
-#line 160 "bi/parser.ypp"
+        case 2:
+#line 160 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valName) = new bi::Name((((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valString)); }
-#line 1506 "bi/parser.cpp"
+#line 1451 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 3:
-#line 169 "bi/parser.ypp"
+#line 169 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valExpression) = new bi::Literal<bool>((((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valString), make_loc((*yylocp))); }
-#line 1512 "bi/parser.cpp"
+#line 1457 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 4:
-#line 173 "bi/parser.ypp"
+#line 173 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valExpression) = new bi::Literal<int64_t>((((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valString), make_loc((*yylocp))); }
-#line 1518 "bi/parser.cpp"
+#line 1463 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 5:
-#line 177 "bi/parser.ypp"
+#line 177 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valExpression) = new bi::Literal<double>((((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valString), make_loc((*yylocp))); }
-#line 1524 "bi/parser.cpp"
+#line 1469 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 6:
-#line 181 "bi/parser.ypp"
+#line 181 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valExpression) = new bi::Literal<const char*>((((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valString), make_loc((*yylocp))); }
-#line 1530 "bi/parser.cpp"
+#line 1475 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 11:
-#line 192 "bi/parser.ypp"
+#line 192 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valExpression) = new bi::NamedExpression((((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valName), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valType), make_loc((*yylocp))); }
-#line 1536 "bi/parser.cpp"
+#line 1481 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 12:
-#line 196 "bi/parser.ypp"
+#line 196 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valExpression) = new bi::Parentheses((((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))); }
-#line 1542 "bi/parser.cpp"
+#line 1487 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 13:
-#line 200 "bi/parser.ypp"
+#line 200 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valExpression) = new bi::Sequence((((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))); }
-#line 1548 "bi/parser.cpp"
+#line 1493 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 14:
-#line 204 "bi/parser.ypp"
+#line 204 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valExpression) = new bi::Cast(new bi::NamedType(false, (((yyGLRStackItem const *)yyvsp)[YYFILL (-5)].yystate.yysemantics.yysval.valName), (((yyGLRStackItem const *)yyvsp)[YYFILL (-4)].yystate.yysemantics.yysval.valType), make_loc((*yylocp))), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))); }
-#line 1554 "bi/parser.cpp"
+#line 1499 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 15:
-#line 208 "bi/parser.ypp"
+#line 208 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valExpression) = new bi::LambdaFunction((((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valType), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valStatement), make_loc((*yylocp))); }
-#line 1560 "bi/parser.cpp"
+#line 1505 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 16:
-#line 212 "bi/parser.ypp"
+#line 212 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valExpression) = new bi::This(make_loc((*yylocp))); }
-#line 1566 "bi/parser.cpp"
+#line 1511 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 17:
-#line 216 "bi/parser.ypp"
+#line 216 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valExpression) = new bi::Super(make_loc((*yylocp))); }
-#line 1572 "bi/parser.cpp"
+#line 1517 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 18:
-#line 220 "bi/parser.ypp"
+#line 220 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valExpression) = new bi::Nil(make_loc((*yylocp))); }
-#line 1578 "bi/parser.cpp"
+#line 1523 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 27:
-#line 235 "bi/parser.ypp"
+#line 235 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valExpression) = new bi::Range((((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))); }
-#line 1584 "bi/parser.cpp"
+#line 1529 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 28:
-#line 236 "bi/parser.ypp"
+#line 236 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valExpression) = new bi::Index((((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))); }
-#line 1590 "bi/parser.cpp"
+#line 1535 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 30:
-#line 241 "bi/parser.ypp"
+#line 241 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valExpression) = new bi::ExpressionList((((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))); }
-#line 1596 "bi/parser.cpp"
+#line 1541 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 31:
-#line 245 "bi/parser.ypp"
+#line 245 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valExpression) = (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression); }
-#line 1602 "bi/parser.cpp"
+#line 1547 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 33:
-#line 250 "bi/parser.ypp"
+#line 250 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valExpression) = new bi::Member((((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))); }
-#line 1608 "bi/parser.cpp"
+#line 1553 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 34:
-#line 251 "bi/parser.ypp"
+#line 251 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valExpression) = new bi::Global((((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))); }
-#line 1614 "bi/parser.cpp"
+#line 1559 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 35:
-#line 252 "bi/parser.ypp"
+#line 252 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valExpression) = new bi::Member((((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))); }
-#line 1620 "bi/parser.cpp"
+#line 1565 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 36:
-#line 253 "bi/parser.ypp"
+#line 253 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valExpression) = new bi::Slice((((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))); }
-#line 1626 "bi/parser.cpp"
+#line 1571 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 37:
-#line 254 "bi/parser.ypp"
+#line 254 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valExpression) = new bi::Call((((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))); }
-#line 1632 "bi/parser.cpp"
+#line 1577 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 38:
-#line 255 "bi/parser.ypp"
+#line 255 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valExpression) = new bi::Get((((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))); }
-#line 1638 "bi/parser.cpp"
+#line 1583 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 39:
-#line 256 "bi/parser.ypp"
+#line 256 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valExpression) = new bi::Spin((((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))); }
-#line 1644 "bi/parser.cpp"
+#line 1589 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 41:
-#line 261 "bi/parser.ypp"
+#line 261 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valExpression) = new bi::Query((((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))); }
-#line 1650 "bi/parser.cpp"
+#line 1595 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 42:
-#line 265 "bi/parser.ypp"
+#line 265 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valName) = new bi::Name("+"); }
-#line 1656 "bi/parser.cpp"
+#line 1601 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 43:
-#line 266 "bi/parser.ypp"
+#line 266 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valName) = new bi::Name("-"); }
-#line 1662 "bi/parser.cpp"
+#line 1607 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 44:
-#line 267 "bi/parser.ypp"
+#line 267 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valName) = new bi::Name("!"); }
-#line 1668 "bi/parser.cpp"
+#line 1613 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 46:
-#line 272 "bi/parser.ypp"
+#line 272 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valExpression) = new bi::UnaryCall((((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valName), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))); }
-#line 1674 "bi/parser.cpp"
+#line 1619 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 47:
-#line 276 "bi/parser.ypp"
+#line 276 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valName) = new bi::Name("*"); }
-#line 1680 "bi/parser.cpp"
+#line 1625 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 48:
-#line 277 "bi/parser.ypp"
+#line 277 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valName) = new bi::Name("/"); }
-#line 1686 "bi/parser.cpp"
+#line 1631 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 50:
-#line 282 "bi/parser.ypp"
+#line 282 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valExpression) = new bi::BinaryCall((((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valName), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))); }
-#line 1692 "bi/parser.cpp"
+#line 1637 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 51:
-#line 286 "bi/parser.ypp"
+#line 286 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valName) = new bi::Name("+"); }
-#line 1698 "bi/parser.cpp"
+#line 1643 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 52:
-#line 287 "bi/parser.ypp"
+#line 287 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valName) = new bi::Name("-"); }
-#line 1704 "bi/parser.cpp"
+#line 1649 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 54:
-#line 292 "bi/parser.ypp"
+#line 292 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valExpression) = new bi::BinaryCall((((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valName), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))); }
-#line 1710 "bi/parser.cpp"
+#line 1655 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 55:
-#line 296 "bi/parser.ypp"
+#line 296 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valName) = new bi::Name("<"); }
-#line 1716 "bi/parser.cpp"
+#line 1661 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 56:
-#line 297 "bi/parser.ypp"
+#line 297 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valName) = new bi::Name(">"); }
-#line 1722 "bi/parser.cpp"
+#line 1667 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 57:
-#line 298 "bi/parser.ypp"
+#line 298 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valName) = new bi::Name("<="); }
-#line 1728 "bi/parser.cpp"
+#line 1673 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 58:
-#line 299 "bi/parser.ypp"
+#line 299 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valName) = new bi::Name(">="); }
-#line 1734 "bi/parser.cpp"
+#line 1679 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 60:
-#line 309 "bi/parser.ypp"
+#line 309 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valExpression) = new bi::BinaryCall((((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valName), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))); }
-#line 1740 "bi/parser.cpp"
+#line 1685 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 61:
-#line 313 "bi/parser.ypp"
+#line 313 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valName) = new bi::Name("=="); }
-#line 1746 "bi/parser.cpp"
+#line 1691 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 62:
-#line 314 "bi/parser.ypp"
+#line 314 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valName) = new bi::Name("!="); }
-#line 1752 "bi/parser.cpp"
+#line 1697 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 64:
-#line 319 "bi/parser.ypp"
+#line 319 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valExpression) = new bi::BinaryCall((((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valName), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))); }
-#line 1758 "bi/parser.cpp"
+#line 1703 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 65:
-#line 323 "bi/parser.ypp"
+#line 323 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valName) = new bi::Name("&&"); }
-#line 1764 "bi/parser.cpp"
+#line 1709 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 67:
-#line 328 "bi/parser.ypp"
+#line 328 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valExpression) = new bi::BinaryCall((((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valName), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))); }
-#line 1770 "bi/parser.cpp"
+#line 1715 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 68:
-#line 332 "bi/parser.ypp"
+#line 332 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valName) = new bi::Name("||"); }
-#line 1776 "bi/parser.cpp"
+#line 1721 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 70:
-#line 337 "bi/parser.ypp"
+#line 337 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valExpression) = new bi::BinaryCall((((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valName), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))); }
-#line 1782 "bi/parser.cpp"
+#line 1727 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 71:
-#line 341 "bi/parser.ypp"
+#line 341 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valName) = new bi::Name("<-"); }
-#line 1788 "bi/parser.cpp"
+#line 1733 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 73:
-#line 346 "bi/parser.ypp"
+#line 346 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valExpression) = new bi::Assign((((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valName), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))); }
-#line 1794 "bi/parser.cpp"
+#line 1739 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 76:
-#line 355 "bi/parser.ypp"
+#line 355 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valExpression) = empty_expr((*yylocp)); }
-#line 1800 "bi/parser.cpp"
+#line 1745 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 78:
-#line 360 "bi/parser.ypp"
+#line 360 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valExpression) = new bi::ExpressionList((((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))); }
-#line 1806 "bi/parser.cpp"
+#line 1751 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 79:
-#line 364 "bi/parser.ypp"
+#line 364 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valExpression) = new bi::Span((((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))); }
-#line 1812 "bi/parser.cpp"
+#line 1757 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 81:
-#line 369 "bi/parser.ypp"
+#line 369 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valExpression) = new bi::ExpressionList((((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))); }
-#line 1818 "bi/parser.cpp"
+#line 1763 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 82:
-#line 373 "bi/parser.ypp"
+#line 373 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valExpression) = (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression); }
-#line 1824 "bi/parser.cpp"
+#line 1769 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 83:
-#line 377 "bi/parser.ypp"
+#line 377 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valExpression) = empty_expr((*yylocp)); }
-#line 1830 "bi/parser.cpp"
+#line 1775 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 84:
-#line 378 "bi/parser.ypp"
+#line 378 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valExpression) = (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression); }
-#line 1836 "bi/parser.cpp"
+#line 1781 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 86:
-#line 383 "bi/parser.ypp"
+#line 383 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valExpression) = empty_expr((*yylocp)); }
-#line 1842 "bi/parser.cpp"
+#line 1787 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 88:
-#line 388 "bi/parser.ypp"
+#line 388 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valExpression) = new bi::ExpressionList((((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))); }
-#line 1848 "bi/parser.cpp"
+#line 1793 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 89:
-#line 392 "bi/parser.ypp"
+#line 392 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valExpression) = new bi::Parameter(bi::NONE, (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valName), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valType), empty_expr((*yylocp)), make_loc((*yylocp))); }
-#line 1854 "bi/parser.cpp"
+#line 1799 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 90:
-#line 396 "bi/parser.ypp"
+#line 396 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valExpression) = empty_expr((*yylocp)); }
-#line 1860 "bi/parser.cpp"
+#line 1805 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 91:
-#line 397 "bi/parser.ypp"
+#line 397 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valExpression) = (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression); }
-#line 1866 "bi/parser.cpp"
+#line 1811 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 93:
-#line 402 "bi/parser.ypp"
+#line 402 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valExpression) = new bi::ExpressionList((((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))); }
-#line 1872 "bi/parser.cpp"
+#line 1817 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 94:
-#line 406 "bi/parser.ypp"
+#line 406 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valExpression) = new bi::Parameter(bi::NONE, (((yyGLRStackItem const *)yyvsp)[YYFILL (-3)].yystate.yysemantics.yysval.valName), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valType), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))); }
-#line 1878 "bi/parser.cpp"
+#line 1823 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 95:
-#line 410 "bi/parser.ypp"
+#line 410 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valExpression) = empty_expr((*yylocp)); }
-#line 1884 "bi/parser.cpp"
+#line 1829 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 96:
-#line 411 "bi/parser.ypp"
+#line 411 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valExpression) = (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression); }
-#line 1890 "bi/parser.cpp"
+#line 1835 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 98:
-#line 416 "bi/parser.ypp"
+#line 416 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valExpression) = empty_expr((*yylocp)); }
-#line 1896 "bi/parser.cpp"
+#line 1841 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 99:
-#line 420 "bi/parser.ypp"
+#line 420 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valInt) = 1; }
-#line 1902 "bi/parser.cpp"
+#line 1847 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 100:
-#line 421 "bi/parser.ypp"
+#line 421 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valInt) = (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valInt) + 1; }
-#line 1908 "bi/parser.cpp"
+#line 1853 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 101:
-#line 425 "bi/parser.ypp"
+#line 425 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valExpression) = empty_expr((*yylocp)); }
-#line 1914 "bi/parser.cpp"
+#line 1859 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 102:
-#line 426 "bi/parser.ypp"
+#line 426 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valExpression) = (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression); }
-#line 1920 "bi/parser.cpp"
+#line 1865 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 104:
-#line 431 "bi/parser.ypp"
+#line 431 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valExpression) = new bi::ExpressionList((((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))); }
-#line 1926 "bi/parser.cpp"
+#line 1871 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 105:
-#line 435 "bi/parser.ypp"
+#line 435 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valExpression) = new bi::Generic(bi::NONE, (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valName), empty_type((*yylocp)), make_loc((*yylocp))); }
-#line 1932 "bi/parser.cpp"
+#line 1877 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 107:
-#line 440 "bi/parser.ypp"
+#line 440 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valExpression) = empty_expr((*yylocp)); }
-#line 1938 "bi/parser.cpp"
+#line 1883 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 108:
-#line 444 "bi/parser.ypp"
+#line 444 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valType) = empty_type((*yylocp)); }
-#line 1944 "bi/parser.cpp"
+#line 1889 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 109:
-#line 445 "bi/parser.ypp"
+#line 445 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valType) = (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valType); }
-#line 1950 "bi/parser.cpp"
+#line 1895 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 111:
-#line 450 "bi/parser.ypp"
+#line 450 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valType) = new bi::TypeList((((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valType), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valType), make_loc((*yylocp))); }
-#line 1956 "bi/parser.cpp"
+#line 1901 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 114:
-#line 459 "bi/parser.ypp"
+#line 459 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valType) = empty_type((*yylocp)); }
-#line 1962 "bi/parser.cpp"
+#line 1907 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 115:
-#line 468 "bi/parser.ypp"
+#line 468 "bi/parser.ypp" /* glr.c:816  */
     { push_raw(); ((*yyvalp).valStatement) = new bi::GlobalVariable(bi::NONE, (((yyGLRStackItem const *)yyvsp)[YYFILL (-3)].yystate.yysemantics.yysval.valName), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valType), empty_expr((*yylocp)), empty_expr((*yylocp)), empty_expr((*yylocp)), make_doc_loc((*yylocp))); }
-#line 1968 "bi/parser.cpp"
+#line 1913 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 116:
-#line 469 "bi/parser.ypp"
+#line 469 "bi/parser.ypp" /* glr.c:816  */
     { push_raw(); ((*yyvalp).valStatement) = new bi::GlobalVariable(bi::NONE, (((yyGLRStackItem const *)yyvsp)[YYFILL (-4)].yystate.yysemantics.yysval.valName), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valType), empty_expr((*yylocp)), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression), empty_expr((*yylocp)), make_doc_loc((*yylocp))); }
-#line 1974 "bi/parser.cpp"
+#line 1919 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 117:
-#line 470 "bi/parser.ypp"
+#line 470 "bi/parser.ypp" /* glr.c:816  */
     { push_raw(); ((*yyvalp).valStatement) = new bi::GlobalVariable(bi::NONE, (((yyGLRStackItem const *)yyvsp)[YYFILL (-4)].yystate.yysemantics.yysval.valName), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valType), empty_expr((*yylocp)), empty_expr((*yylocp)), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression), make_doc_loc((*yylocp))); }
-#line 1980 "bi/parser.cpp"
+#line 1925 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 118:
-#line 471 "bi/parser.ypp"
+#line 471 "bi/parser.ypp" /* glr.c:816  */
     { push_raw(); ((*yyvalp).valStatement) = new bi::GlobalVariable(bi::NONE, (((yyGLRStackItem const *)yyvsp)[YYFILL (-4)].yystate.yysemantics.yysval.valName), new bi::ArrayType((((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valType), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression)->width(), make_loc((*yylocp))), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression), empty_expr((*yylocp)), empty_expr((*yylocp)), make_doc_loc((*yylocp))); }
-#line 1986 "bi/parser.cpp"
+#line 1931 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 119:
-#line 472 "bi/parser.ypp"
+#line 472 "bi/parser.ypp" /* glr.c:816  */
     { push_raw(); ((*yyvalp).valStatement) = new bi::GlobalVariable(bi::NONE, (((yyGLRStackItem const *)yyvsp)[YYFILL (-5)].yystate.yysemantics.yysval.valName), new bi::ArrayType((((yyGLRStackItem const *)yyvsp)[YYFILL (-3)].yystate.yysemantics.yysval.valType), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valExpression)->width(), make_loc((*yylocp))), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression), empty_expr((*yylocp)), make_doc_loc((*yylocp))); }
-#line 1992 "bi/parser.cpp"
+#line 1937 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 120:
-#line 476 "bi/parser.ypp"
+#line 476 "bi/parser.ypp" /* glr.c:816  */
     { push_raw(); ((*yyvalp).valStatement) = new bi::MemberVariable(bi::NONE, (((yyGLRStackItem const *)yyvsp)[YYFILL (-3)].yystate.yysemantics.yysval.valName), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valType), empty_expr((*yylocp)), empty_expr((*yylocp)), empty_expr((*yylocp)), make_doc_loc((*yylocp))); }
-#line 1998 "bi/parser.cpp"
+#line 1943 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 121:
-#line 477 "bi/parser.ypp"
+#line 477 "bi/parser.ypp" /* glr.c:816  */
     { push_raw(); ((*yyvalp).valStatement) = new bi::MemberVariable(bi::NONE, (((yyGLRStackItem const *)yyvsp)[YYFILL (-4)].yystate.yysemantics.yysval.valName), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valType), empty_expr((*yylocp)), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression), empty_expr((*yylocp)), make_doc_loc((*yylocp))); }
-#line 2004 "bi/parser.cpp"
+#line 1949 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 122:
-#line 478 "bi/parser.ypp"
+#line 478 "bi/parser.ypp" /* glr.c:816  */
     { push_raw(); ((*yyvalp).valStatement) = new bi::MemberVariable(bi::NONE, (((yyGLRStackItem const *)yyvsp)[YYFILL (-4)].yystate.yysemantics.yysval.valName), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valType), empty_expr((*yylocp)), empty_expr((*yylocp)), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression), make_doc_loc((*yylocp))); }
-#line 2010 "bi/parser.cpp"
+#line 1955 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 123:
-#line 479 "bi/parser.ypp"
+#line 479 "bi/parser.ypp" /* glr.c:816  */
     { push_raw(); ((*yyvalp).valStatement) = new bi::MemberVariable(bi::NONE, (((yyGLRStackItem const *)yyvsp)[YYFILL (-4)].yystate.yysemantics.yysval.valName), new bi::ArrayType((((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valType), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression)->width(), make_loc((*yylocp))), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression), empty_expr((*yylocp)), empty_expr((*yylocp)), make_doc_loc((*yylocp))); }
-#line 2016 "bi/parser.cpp"
+#line 1961 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 124:
-#line 480 "bi/parser.ypp"
+#line 480 "bi/parser.ypp" /* glr.c:816  */
     { push_raw(); ((*yyvalp).valStatement) = new bi::MemberVariable(bi::NONE, (((yyGLRStackItem const *)yyvsp)[YYFILL (-5)].yystate.yysemantics.yysval.valName), new bi::ArrayType((((yyGLRStackItem const *)yyvsp)[YYFILL (-3)].yystate.yysemantics.yysval.valType), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valExpression)->width(), make_loc((*yylocp))), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression), empty_expr((*yylocp)), make_doc_loc((*yylocp))); }
-#line 2022 "bi/parser.cpp"
+#line 1967 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 125:
-#line 484 "bi/parser.ypp"
+#line 484 "bi/parser.ypp" /* glr.c:816  */
     { push_raw(); ((*yyvalp).valStatement) = new bi::LocalVariable(bi::AUTO, (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valName), empty_type((*yylocp)), empty_expr((*yylocp)), empty_expr((*yylocp)), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression), make_doc_loc((*yylocp))); }
-#line 2028 "bi/parser.cpp"
+#line 1973 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 126:
-#line 485 "bi/parser.ypp"
+#line 485 "bi/parser.ypp" /* glr.c:816  */
     { push_raw(); ((*yyvalp).valStatement) = new bi::LocalVariable(bi::NONE, (((yyGLRStackItem const *)yyvsp)[YYFILL (-3)].yystate.yysemantics.yysval.valName), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valType), empty_expr((*yylocp)), empty_expr((*yylocp)), empty_expr((*yylocp)), make_doc_loc((*yylocp))); }
-#line 2034 "bi/parser.cpp"
+#line 1979 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 127:
-#line 486 "bi/parser.ypp"
+#line 486 "bi/parser.ypp" /* glr.c:816  */
     { push_raw(); ((*yyvalp).valStatement) = new bi::LocalVariable(bi::NONE, (((yyGLRStackItem const *)yyvsp)[YYFILL (-4)].yystate.yysemantics.yysval.valName), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valType), empty_expr((*yylocp)), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression), empty_expr((*yylocp)), make_doc_loc((*yylocp))); }
-#line 2040 "bi/parser.cpp"
+#line 1985 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 128:
-#line 487 "bi/parser.ypp"
+#line 487 "bi/parser.ypp" /* glr.c:816  */
     { push_raw(); ((*yyvalp).valStatement) = new bi::LocalVariable(bi::NONE, (((yyGLRStackItem const *)yyvsp)[YYFILL (-4)].yystate.yysemantics.yysval.valName), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valType), empty_expr((*yylocp)), empty_expr((*yylocp)), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression), make_doc_loc((*yylocp))); }
-#line 2046 "bi/parser.cpp"
+#line 1991 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 129:
-#line 488 "bi/parser.ypp"
+#line 488 "bi/parser.ypp" /* glr.c:816  */
     { push_raw(); ((*yyvalp).valStatement) = new bi::LocalVariable(bi::NONE, (((yyGLRStackItem const *)yyvsp)[YYFILL (-4)].yystate.yysemantics.yysval.valName), new bi::ArrayType((((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valType), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression)->width(), make_loc((*yylocp))), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression), empty_expr((*yylocp)), empty_expr((*yylocp)), make_doc_loc((*yylocp))); }
-#line 2052 "bi/parser.cpp"
+#line 1997 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 130:
-#line 489 "bi/parser.ypp"
+#line 489 "bi/parser.ypp" /* glr.c:816  */
     { push_raw(); ((*yyvalp).valStatement) = new bi::LocalVariable(bi::NONE, (((yyGLRStackItem const *)yyvsp)[YYFILL (-5)].yystate.yysemantics.yysval.valName), new bi::ArrayType((((yyGLRStackItem const *)yyvsp)[YYFILL (-3)].yystate.yysemantics.yysval.valType), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valExpression)->width(), make_loc((*yylocp))), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression), empty_expr((*yylocp)), make_doc_loc((*yylocp))); }
-#line 2058 "bi/parser.cpp"
+#line 2003 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 131:
-#line 493 "bi/parser.ypp"
+#line 493 "bi/parser.ypp" /* glr.c:816  */
     { push_raw(); }
-#line 2064 "bi/parser.cpp"
+#line 2009 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 132:
-#line 493 "bi/parser.ypp"
+#line 493 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valStatement) = new bi::Function(bi::NONE, (((yyGLRStackItem const *)yyvsp)[YYFILL (-5)].yystate.yysemantics.yysval.valName), (((yyGLRStackItem const *)yyvsp)[YYFILL (-4)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (-3)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valType), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valStatement), make_doc_loc((*yylocp))); }
-#line 2070 "bi/parser.cpp"
+#line 2015 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 133:
-#line 497 "bi/parser.ypp"
+#line 497 "bi/parser.ypp" /* glr.c:816  */
     { push_raw(); }
-#line 2076 "bi/parser.cpp"
+#line 2021 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 134:
-#line 497 "bi/parser.ypp"
+#line 497 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valStatement) = new bi::Fiber(bi::NONE, (((yyGLRStackItem const *)yyvsp)[YYFILL (-5)].yystate.yysemantics.yysval.valName), (((yyGLRStackItem const *)yyvsp)[YYFILL (-4)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (-3)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valType), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valStatement), make_doc_loc((*yylocp))); }
-#line 2082 "bi/parser.cpp"
+#line 2027 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 135:
-#line 501 "bi/parser.ypp"
+#line 501 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valAnnotation) = bi::FINAL; }
-#line 2088 "bi/parser.cpp"
+#line 2033 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 136:
-#line 502 "bi/parser.ypp"
+#line 502 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valAnnotation) = bi::ABSTRACT; }
-#line 2094 "bi/parser.cpp"
+#line 2039 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 137:
-#line 508 "bi/parser.ypp"
+#line 508 "bi/parser.ypp" /* glr.c:816  */
     { push_raw(); }
-#line 2100 "bi/parser.cpp"
+#line 2045 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 138:
-#line 508 "bi/parser.ypp"
+#line 508 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valStatement) = new bi::MemberFunction((((yyGLRStackItem const *)yyvsp)[YYFILL (-6)].yystate.yysemantics.yysval.valAnnotation), (((yyGLRStackItem const *)yyvsp)[YYFILL (-4)].yystate.yysemantics.yysval.valName), empty_expr((*yylocp)), (((yyGLRStackItem const *)yyvsp)[YYFILL (-3)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valType), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valStatement), make_doc_loc((*yylocp))); }
-#line 2106 "bi/parser.cpp"
+#line 2051 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 139:
-#line 509 "bi/parser.ypp"
+#line 509 "bi/parser.ypp" /* glr.c:816  */
     { push_raw(); }
-#line 2112 "bi/parser.cpp"
+#line 2057 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 140:
-#line 509 "bi/parser.ypp"
+#line 509 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valStatement) = new bi::MemberFunction(bi::NONE, (((yyGLRStackItem const *)yyvsp)[YYFILL (-4)].yystate.yysemantics.yysval.valName), empty_expr((*yylocp)), (((yyGLRStackItem const *)yyvsp)[YYFILL (-3)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valType), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valStatement), make_doc_loc((*yylocp))); }
-#line 2118 "bi/parser.cpp"
+#line 2063 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 141:
-#line 513 "bi/parser.ypp"
+#line 513 "bi/parser.ypp" /* glr.c:816  */
     { push_raw(); }
-#line 2124 "bi/parser.cpp"
+#line 2069 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 142:
-#line 513 "bi/parser.ypp"
+#line 513 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valStatement) = new bi::MemberFiber((((yyGLRStackItem const *)yyvsp)[YYFILL (-6)].yystate.yysemantics.yysval.valAnnotation), (((yyGLRStackItem const *)yyvsp)[YYFILL (-4)].yystate.yysemantics.yysval.valName), empty_expr((*yylocp)), (((yyGLRStackItem const *)yyvsp)[YYFILL (-3)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valType), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valStatement), make_doc_loc((*yylocp))); }
-#line 2130 "bi/parser.cpp"
+#line 2075 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 143:
-#line 514 "bi/parser.ypp"
+#line 514 "bi/parser.ypp" /* glr.c:816  */
     { push_raw(); }
-#line 2136 "bi/parser.cpp"
+#line 2081 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 144:
-#line 514 "bi/parser.ypp"
+#line 514 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valStatement) = new bi::MemberFiber(bi::NONE, (((yyGLRStackItem const *)yyvsp)[YYFILL (-4)].yystate.yysemantics.yysval.valName), empty_expr((*yylocp)), (((yyGLRStackItem const *)yyvsp)[YYFILL (-3)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valType), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valStatement), make_doc_loc((*yylocp))); }
-#line 2142 "bi/parser.cpp"
+#line 2087 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 145:
-#line 518 "bi/parser.ypp"
+#line 518 "bi/parser.ypp" /* glr.c:816  */
     { push_raw(); }
-#line 2148 "bi/parser.cpp"
+#line 2093 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 146:
-#line 518 "bi/parser.ypp"
+#line 518 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valStatement) = new bi::Program((((yyGLRStackItem const *)yyvsp)[YYFILL (-3)].yystate.yysemantics.yysval.valName), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valStatement), make_doc_loc((*yylocp))); }
-#line 2154 "bi/parser.cpp"
+#line 2099 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 154:
-#line 535 "bi/parser.ypp"
+#line 535 "bi/parser.ypp" /* glr.c:816  */
     { push_raw(); }
-#line 2160 "bi/parser.cpp"
+#line 2105 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 155:
-#line 535 "bi/parser.ypp"
+#line 535 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valStatement) = new bi::BinaryOperator(bi::NONE, (((yyGLRStackItem const *)yyvsp)[YYFILL (-6)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (-5)].yystate.yysemantics.yysval.valName), (((yyGLRStackItem const *)yyvsp)[YYFILL (-4)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valType), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valStatement), make_doc_loc((*yylocp))); }
-#line 2166 "bi/parser.cpp"
+#line 2111 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 156:
-#line 539 "bi/parser.ypp"
+#line 539 "bi/parser.ypp" /* glr.c:816  */
     { push_raw(); }
-#line 2172 "bi/parser.cpp"
+#line 2117 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 157:
-#line 539 "bi/parser.ypp"
+#line 539 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valStatement) = new bi::UnaryOperator(bi::NONE, (((yyGLRStackItem const *)yyvsp)[YYFILL (-5)].yystate.yysemantics.yysval.valName), (((yyGLRStackItem const *)yyvsp)[YYFILL (-4)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valType), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valStatement), make_doc_loc((*yylocp))); }
-#line 2178 "bi/parser.cpp"
+#line 2123 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 158:
-#line 543 "bi/parser.ypp"
+#line 543 "bi/parser.ypp" /* glr.c:816  */
     { push_raw(); }
-#line 2184 "bi/parser.cpp"
+#line 2129 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 159:
-#line 543 "bi/parser.ypp"
+#line 543 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valStatement) = new bi::AssignmentOperator((((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valStatement), make_doc_loc((*yylocp))); }
-#line 2190 "bi/parser.cpp"
+#line 2135 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 160:
-#line 547 "bi/parser.ypp"
+#line 547 "bi/parser.ypp" /* glr.c:816  */
     { push_raw(); }
-#line 2196 "bi/parser.cpp"
+#line 2141 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 161:
-#line 547 "bi/parser.ypp"
+#line 547 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valStatement) = new bi::ConversionOperator((((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valType), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valStatement), make_doc_loc((*yylocp))); }
-#line 2202 "bi/parser.cpp"
+#line 2147 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 162:
-#line 551 "bi/parser.ypp"
+#line 551 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valAnnotation) = bi::FINAL; }
-#line 2208 "bi/parser.cpp"
+#line 2153 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 163:
-#line 552 "bi/parser.ypp"
+#line 552 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valAnnotation) = bi::ABSTRACT; }
-#line 2214 "bi/parser.cpp"
+#line 2159 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 164:
-#line 553 "bi/parser.ypp"
+#line 553 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valAnnotation) = bi::NONE; }
-#line 2220 "bi/parser.cpp"
+#line 2165 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 165:
-#line 557 "bi/parser.ypp"
+#line 557 "bi/parser.ypp" /* glr.c:816  */
     { push_raw(); }
-#line 2226 "bi/parser.cpp"
+#line 2171 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 166:
-#line 557 "bi/parser.ypp"
+#line 557 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valStatement) = new bi::Class((((yyGLRStackItem const *)yyvsp)[YYFILL (-9)].yystate.yysemantics.yysval.valAnnotation), (((yyGLRStackItem const *)yyvsp)[YYFILL (-7)].yystate.yysemantics.yysval.valName), (((yyGLRStackItem const *)yyvsp)[YYFILL (-6)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (-5)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (-3)].yystate.yysemantics.yysval.valType), false, (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valStatement), make_doc_loc((*yylocp))); }
-#line 2232 "bi/parser.cpp"
+#line 2177 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 167:
-#line 558 "bi/parser.ypp"
+#line 558 "bi/parser.ypp" /* glr.c:816  */
     { push_raw(); }
-#line 2238 "bi/parser.cpp"
+#line 2183 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 168:
-#line 558 "bi/parser.ypp"
+#line 558 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valStatement) = new bi::Class((((yyGLRStackItem const *)yyvsp)[YYFILL (-6)].yystate.yysemantics.yysval.valAnnotation), (((yyGLRStackItem const *)yyvsp)[YYFILL (-4)].yystate.yysemantics.yysval.valName), (((yyGLRStackItem const *)yyvsp)[YYFILL (-3)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valExpression), empty_type((*yylocp)), false, empty_expr((*yylocp)), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valStatement), make_doc_loc((*yylocp))); }
-#line 2244 "bi/parser.cpp"
+#line 2189 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 169:
-#line 559 "bi/parser.ypp"
+#line 559 "bi/parser.ypp" /* glr.c:816  */
     { push_raw(); }
-#line 2250 "bi/parser.cpp"
+#line 2195 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 170:
-#line 559 "bi/parser.ypp"
+#line 559 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valStatement) = new bi::Class((((yyGLRStackItem const *)yyvsp)[YYFILL (-7)].yystate.yysemantics.yysval.valAnnotation), (((yyGLRStackItem const *)yyvsp)[YYFILL (-5)].yystate.yysemantics.yysval.valName), (((yyGLRStackItem const *)yyvsp)[YYFILL (-4)].yystate.yysemantics.yysval.valExpression), empty_expr((*yylocp)), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valType), true, empty_expr((*yylocp)), empty_stmt((*yylocp)), make_doc_loc((*yylocp))); }
-#line 2256 "bi/parser.cpp"
+#line 2201 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 171:
-#line 563 "bi/parser.ypp"
+#line 563 "bi/parser.ypp" /* glr.c:816  */
     { push_raw(); ((*yyvalp).valStatement) = new bi::Basic(bi::NONE, (((yyGLRStackItem const *)yyvsp)[YYFILL (-3)].yystate.yysemantics.yysval.valName), empty_expr((*yylocp)), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valType), false, make_doc_loc((*yylocp))); }
-#line 2262 "bi/parser.cpp"
+#line 2207 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 172:
-#line 564 "bi/parser.ypp"
+#line 564 "bi/parser.ypp" /* glr.c:816  */
     { push_raw(); ((*yyvalp).valStatement) = new bi::Basic(bi::NONE, (((yyGLRStackItem const *)yyvsp)[YYFILL (-3)].yystate.yysemantics.yysval.valName), empty_expr((*yylocp)), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valType), true, make_doc_loc((*yylocp))); }
-#line 2268 "bi/parser.cpp"
+#line 2213 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 173:
-#line 565 "bi/parser.ypp"
+#line 565 "bi/parser.ypp" /* glr.c:816  */
     { push_raw(); ((*yyvalp).valStatement) = new bi::Basic(bi::NONE, (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valName), empty_expr((*yylocp)), empty_type((*yylocp)), false, make_doc_loc((*yylocp))); }
-#line 2274 "bi/parser.cpp"
+#line 2219 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 174:
-#line 569 "bi/parser.ypp"
+#line 569 "bi/parser.ypp" /* glr.c:816  */
     { push_raw(); ((*yyvalp).valStatement) = new bi::Raw(new bi::Name("cpp"), pop_raw(), make_loc((*yylocp))); }
-#line 2280 "bi/parser.cpp"
+#line 2225 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 175:
-#line 573 "bi/parser.ypp"
+#line 573 "bi/parser.ypp" /* glr.c:816  */
     { push_raw(); ((*yyvalp).valStatement) = new bi::Raw(new bi::Name("hpp"), pop_raw(), make_loc((*yylocp))); }
-#line 2286 "bi/parser.cpp"
+#line 2231 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 176:
-#line 577 "bi/parser.ypp"
+#line 577 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valName) = new bi::Name("~"); }
-#line 2292 "bi/parser.cpp"
+#line 2237 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 177:
-#line 578 "bi/parser.ypp"
+#line 578 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valName) = new bi::Name("<~"); }
-#line 2298 "bi/parser.cpp"
+#line 2243 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 178:
-#line 579 "bi/parser.ypp"
+#line 579 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valName) = new bi::Name("~>"); }
-#line 2304 "bi/parser.cpp"
+#line 2249 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 179:
-#line 580 "bi/parser.ypp"
+#line 580 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valName) = new bi::Name("<-?"); }
-#line 2310 "bi/parser.cpp"
+#line 2255 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 180:
-#line 584 "bi/parser.ypp"
+#line 584 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valStatement) = new bi::Assume((((yyGLRStackItem const *)yyvsp)[YYFILL (-3)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valName), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))); }
-#line 2316 "bi/parser.cpp"
+#line 2261 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 181:
-#line 588 "bi/parser.ypp"
+#line 588 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valStatement) = new bi::ExpressionStatement((((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))); }
-#line 2322 "bi/parser.cpp"
+#line 2267 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 182:
-#line 592 "bi/parser.ypp"
+#line 592 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valStatement) = new bi::If((((yyGLRStackItem const *)yyvsp)[YYFILL (-3)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valStatement), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valStatement), make_loc((*yylocp))); }
-#line 2328 "bi/parser.cpp"
+#line 2273 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 183:
-#line 593 "bi/parser.ypp"
+#line 593 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valStatement) = new bi::If((((yyGLRStackItem const *)yyvsp)[YYFILL (-3)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valStatement), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valStatement), make_loc((*yylocp))); }
-#line 2334 "bi/parser.cpp"
+#line 2279 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 184:
-#line 594 "bi/parser.ypp"
+#line 594 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valStatement) = new bi::If((((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valStatement), empty_stmt((*yylocp)), make_loc((*yylocp))); }
-#line 2340 "bi/parser.cpp"
+#line 2285 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 185:
-#line 598 "bi/parser.ypp"
+#line 598 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valStatement) = new bi::LocalVariable((((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valName), new bi::NamedType(new bi::Name("Integer")), make_loc((*yylocp))); }
-#line 2346 "bi/parser.cpp"
+#line 2291 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 186:
-#line 602 "bi/parser.ypp"
+#line 602 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valStatement) = new bi::For(bi::NONE, (((yyGLRStackItem const *)yyvsp)[YYFILL (-5)].yystate.yysemantics.yysval.valStatement), (((yyGLRStackItem const *)yyvsp)[YYFILL (-3)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valStatement), make_loc((*yylocp))); }
-#line 2352 "bi/parser.cpp"
+#line 2297 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 187:
-#line 606 "bi/parser.ypp"
+#line 606 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valAnnotation) = bi::DYNAMIC; }
-#line 2358 "bi/parser.cpp"
+#line 2303 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 188:
-#line 612 "bi/parser.ypp"
+#line 612 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valStatement) = new bi::Parallel((((yyGLRStackItem const *)yyvsp)[YYFILL (-8)].yystate.yysemantics.yysval.valAnnotation), (((yyGLRStackItem const *)yyvsp)[YYFILL (-5)].yystate.yysemantics.yysval.valStatement), (((yyGLRStackItem const *)yyvsp)[YYFILL (-3)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valStatement), make_loc((*yylocp))); }
-#line 2364 "bi/parser.cpp"
+#line 2309 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 189:
-#line 613 "bi/parser.ypp"
+#line 613 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valStatement) = new bi::Parallel(bi::NONE, (((yyGLRStackItem const *)yyvsp)[YYFILL (-5)].yystate.yysemantics.yysval.valStatement), (((yyGLRStackItem const *)yyvsp)[YYFILL (-3)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valStatement), make_loc((*yylocp))); }
-#line 2370 "bi/parser.cpp"
+#line 2315 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 190:
-#line 617 "bi/parser.ypp"
+#line 617 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valStatement) = new bi::While((((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valStatement), make_loc((*yylocp))); }
-#line 2376 "bi/parser.cpp"
+#line 2321 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 191:
-#line 621 "bi/parser.ypp"
+#line 621 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valStatement) = new bi::DoWhile((((yyGLRStackItem const *)yyvsp)[YYFILL (-3)].yystate.yysemantics.yysval.valStatement), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))); }
-#line 2382 "bi/parser.cpp"
+#line 2327 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 192:
-#line 625 "bi/parser.ypp"
+#line 625 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valStatement) = new bi::Assert((((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))); }
-#line 2388 "bi/parser.cpp"
+#line 2333 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 193:
-#line 629 "bi/parser.ypp"
+#line 629 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valStatement) = new bi::Return((((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))); }
-#line 2394 "bi/parser.cpp"
+#line 2339 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 194:
-#line 633 "bi/parser.ypp"
+#line 633 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valStatement) = new bi::Yield((((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valExpression), make_loc((*yylocp))); }
-#line 2400 "bi/parser.cpp"
+#line 2345 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 209:
-#line 654 "bi/parser.ypp"
+#line 654 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valStatement) = new bi::StatementList((((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valStatement), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valStatement), make_loc((*yylocp))); }
-#line 2406 "bi/parser.cpp"
+#line 2351 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 211:
-#line 659 "bi/parser.ypp"
+#line 659 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valStatement) = empty_stmt((*yylocp)); }
-#line 2412 "bi/parser.cpp"
+#line 2357 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 219:
-#line 673 "bi/parser.ypp"
+#line 673 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valStatement) = new bi::StatementList((((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valStatement), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valStatement), make_loc((*yylocp))); }
-#line 2418 "bi/parser.cpp"
+#line 2363 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 221:
-#line 678 "bi/parser.ypp"
+#line 678 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valStatement) = empty_stmt((*yylocp)); }
-#line 2424 "bi/parser.cpp"
+#line 2369 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 233:
-#line 696 "bi/parser.ypp"
+#line 696 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valStatement) = new bi::StatementList((((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valStatement), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valStatement), make_loc((*yylocp))); }
-#line 2430 "bi/parser.cpp"
+#line 2375 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 235:
-#line 701 "bi/parser.ypp"
+#line 701 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valStatement) = empty_stmt((*yylocp)); }
-#line 2436 "bi/parser.cpp"
+#line 2381 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 236:
-#line 705 "bi/parser.ypp"
+#line 705 "bi/parser.ypp" /* glr.c:816  */
     { compiler->setRoot((((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valStatement)); }
-#line 2442 "bi/parser.cpp"
+#line 2387 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 237:
-#line 709 "bi/parser.ypp"
+#line 709 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valType) = (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valType); }
-#line 2448 "bi/parser.cpp"
+#line 2393 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 239:
-#line 714 "bi/parser.ypp"
+#line 714 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valType) = empty_type((*yylocp)); }
-#line 2454 "bi/parser.cpp"
+#line 2399 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 240:
-#line 718 "bi/parser.ypp"
+#line 718 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valExpression) = (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valExpression); }
-#line 2460 "bi/parser.cpp"
+#line 2405 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 242:
-#line 723 "bi/parser.ypp"
+#line 723 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valExpression) = empty_expr((*yylocp)); }
-#line 2466 "bi/parser.cpp"
+#line 2411 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 243:
-#line 727 "bi/parser.ypp"
+#line 727 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valStatement) = new bi::Braces((((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valStatement), make_loc((*yylocp))); }
-#line 2472 "bi/parser.cpp"
+#line 2417 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 245:
-#line 732 "bi/parser.ypp"
+#line 732 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valStatement) = empty_stmt((*yylocp)); }
-#line 2478 "bi/parser.cpp"
+#line 2423 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 246:
-#line 736 "bi/parser.ypp"
+#line 736 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valStatement) = new bi::Braces((((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valStatement), make_loc((*yylocp))); }
-#line 2484 "bi/parser.cpp"
+#line 2429 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 248:
-#line 741 "bi/parser.ypp"
+#line 741 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valStatement) = empty_stmt((*yylocp)); }
-#line 2490 "bi/parser.cpp"
+#line 2435 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 250:
-#line 754 "bi/parser.ypp"
+#line 754 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valBool) = true; }
-#line 2496 "bi/parser.cpp"
+#line 2441 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 251:
-#line 755 "bi/parser.ypp"
+#line 755 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valBool) = false; }
-#line 2502 "bi/parser.cpp"
+#line 2447 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 252:
-#line 759 "bi/parser.ypp"
+#line 759 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valType) = new bi::NamedType((((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valBool), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valName), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valType), make_loc((*yylocp))); }
-#line 2508 "bi/parser.cpp"
+#line 2453 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 254:
-#line 764 "bi/parser.ypp"
+#line 764 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valType) = new bi::TupleType((((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valType), make_loc((*yylocp))); }
-#line 2514 "bi/parser.cpp"
+#line 2459 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 256:
-#line 769 "bi/parser.ypp"
+#line 769 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valType) = new bi::OptionalType((((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valType), make_loc((*yylocp))); }
-#line 2520 "bi/parser.cpp"
+#line 2465 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 257:
-#line 770 "bi/parser.ypp"
+#line 770 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valType) = new bi::FiberType((((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valType), empty_type((*yylocp)), make_loc((*yylocp))); }
-#line 2526 "bi/parser.cpp"
+#line 2471 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 258:
-#line 771 "bi/parser.ypp"
+#line 771 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valType) = new bi::FiberType((((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valType), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valType), make_loc((*yylocp))); }
-#line 2532 "bi/parser.cpp"
+#line 2477 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 259:
-#line 772 "bi/parser.ypp"
+#line 772 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valType) = new bi::MemberType((((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valType), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valType), make_loc((*yylocp))); }
-#line 2538 "bi/parser.cpp"
+#line 2483 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 260:
-#line 773 "bi/parser.ypp"
+#line 773 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valType) = new bi::ArrayType((((yyGLRStackItem const *)yyvsp)[YYFILL (-3)].yystate.yysemantics.yysval.valType), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval.valInt), make_loc((*yylocp))); }
-#line 2544 "bi/parser.cpp"
+#line 2489 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 261:
-#line 774 "bi/parser.ypp"
+#line 774 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valType) = new bi::FunctionType((((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valType), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valType), make_loc((*yylocp))); }
-#line 2550 "bi/parser.cpp"
+#line 2495 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 263:
-#line 779 "bi/parser.ypp"
+#line 779 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valType) = new bi::TypeList((((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval.valType), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval.valType), make_loc((*yylocp))); }
-#line 2556 "bi/parser.cpp"
+#line 2501 "bi/parser.cpp" /* glr.c:816  */
     break;
 
   case 265:
-#line 784 "bi/parser.ypp"
+#line 784 "bi/parser.ypp" /* glr.c:816  */
     { ((*yyvalp).valType) = empty_type((*yylocp)); }
-#line 2562 "bi/parser.cpp"
+#line 2507 "bi/parser.cpp" /* glr.c:816  */
     break;
 
 
-#line 2566 "bi/parser.cpp"
-
+#line 2511 "bi/parser.cpp" /* glr.c:816  */
       default: break;
     }
 
@@ -2665,7 +2609,7 @@ yylhsNonterm (yyRuleNum yyrule)
 static inline yybool
 yyisDefaultedState (yyStateNum yystate)
 {
-  return (yybool) yypact_value_is_default (yypact[yystate]);
+  return yypact_value_is_default (yypact[yystate]);
 }
 
 /** The default reduction for YYSTATE, assuming it has one.  */
@@ -2678,7 +2622,7 @@ yydefaultAction (yyStateNum yystate)
 #define yytable_value_is_error(Yytable_value) \
   0
 
-/** The action to take in YYSTATE on seeing YYTOKEN.
+/** Set *YYACTION to the action to take in YYSTATE on seeing YYTOKEN.
  *  Result R means
  *    R < 0:  Reduce on rule -R.
  *    R = 0:  Error.
@@ -2686,25 +2630,26 @@ yydefaultAction (yyStateNum yystate)
  *  Set *YYCONFLICTS to a pointer into yyconfl to a 0-terminated list
  *  of conflicting reductions.
  */
-static inline int
-yygetLRActions (yyStateNum yystate, yySymbol yytoken, const short** yyconflicts)
+static inline void
+yygetLRActions (yyStateNum yystate, int yytoken,
+                int* yyaction, const short int** yyconflicts)
 {
   int yyindex = yypact[yystate] + yytoken;
-  if (yyisDefaultedState (yystate)
+  if (yypact_value_is_default (yypact[yystate])
       || yyindex < 0 || YYLAST < yyindex || yycheck[yyindex] != yytoken)
     {
+      *yyaction = -yydefact[yystate];
       *yyconflicts = yyconfl;
-      return -yydefact[yystate];
     }
   else if (! yytable_value_is_error (yytable[yyindex]))
     {
+      *yyaction = yytable[yyindex];
       *yyconflicts = yyconfl + yyconflp[yyindex];
-      return yytable[yyindex];
     }
   else
     {
+      *yyaction = 0;
       *yyconflicts = yyconfl + yyconflp[yyindex];
-      return 0;
     }
 }
 
@@ -2725,13 +2670,13 @@ yyLRgotoState (yyStateNum yystate, yySymbol yysym)
 static inline yybool
 yyisShiftAction (int yyaction)
 {
-  return (yybool) (0 < yyaction);
+  return 0 < yyaction;
 }
 
 static inline yybool
 yyisErrorAction (int yyaction)
 {
-  return (yybool) (yyaction == 0);
+  return yyaction == 0;
 }
 
                                 /* GLRStates */
@@ -2786,20 +2731,17 @@ yyinitStateSet (yyGLRStateSet* yyset)
 {
   yyset->yysize = 1;
   yyset->yycapacity = 16;
-  yyset->yystates
-    = (yyGLRState**) YYMALLOC (yyset->yycapacity * sizeof yyset->yystates[0]);
+  yyset->yystates = (yyGLRState**) YYMALLOC (16 * sizeof yyset->yystates[0]);
   if (! yyset->yystates)
     return yyfalse;
   yyset->yystates[0] = YY_NULLPTR;
-  yyset->yylookaheadNeeds
-    = (yybool*) YYMALLOC (yyset->yycapacity * sizeof yyset->yylookaheadNeeds[0]);
+  yyset->yylookaheadNeeds =
+    (yybool*) YYMALLOC (16 * sizeof yyset->yylookaheadNeeds[0]);
   if (! yyset->yylookaheadNeeds)
     {
       YYFREE (yyset->yystates);
       return yyfalse;
     }
-  memset (yyset->yylookaheadNeeds,
-          0, yyset->yycapacity * sizeof yyset->yylookaheadNeeds[0]);
   return yytrue;
 }
 
@@ -2844,7 +2786,7 @@ yyexpandGLRStack (yyGLRStack* yystackp)
   yyGLRStackItem* yyp0, *yyp1;
   size_t yynewSize;
   size_t yyn;
-  size_t yysize = (size_t) (yystackp->yynextFree - yystackp->yyitems);
+  size_t yysize = yystackp->yynextFree - yystackp->yyitems;
   if (YYMAXDEPTH - YYHEADROOM < yysize)
     yyMemoryExhausted (yystackp);
   yynewSize = 2*yysize;
@@ -2963,7 +2905,7 @@ yyremoveDeletes (yyGLRStack* yystackp)
           if (yyj != yyi)
             {
               YYDPRINTF ((stderr, "Rename stack %lu -> %lu.\n",
-                          (unsigned long) yyi, (unsigned long) yyj));
+                          (unsigned long int) yyi, (unsigned long int) yyj));
             }
           yyj += 1;
         }
@@ -3017,25 +2959,25 @@ yyglrShiftDefer (yyGLRStack* yystackp, size_t yyk, yyStateNum yylrState,
 # define YY_REDUCE_PRINT(Args)
 #else
 # define YY_REDUCE_PRINT(Args)          \
-  do {                                  \
-    if (yydebug)                        \
-      yy_reduce_print Args;             \
-  } while (0)
+do {                                    \
+  if (yydebug)                          \
+    yy_reduce_print Args;               \
+} while (0)
 
 /*----------------------------------------------------------------------.
 | Report that stack #YYK of *YYSTACKP is going to be reduced by YYRULE. |
 `----------------------------------------------------------------------*/
 
 static inline void
-yy_reduce_print (yybool yynormal, yyGLRStackItem* yyvsp, size_t yyk,
+yy_reduce_print (int yynormal, yyGLRStackItem* yyvsp, size_t yyk,
                  yyRuleNum yyrule)
 {
   int yynrhs = yyrhsLength (yyrule);
   int yylow = 1;
   int yyi;
   YYFPRINTF (stderr, "Reducing stack %lu by rule %d (line %lu):\n",
-             (unsigned long) yyk, yyrule - 1,
-             (unsigned long) yyrline[yyrule]);
+             (unsigned long int) yyk, yyrule - 1,
+             (unsigned long int) yyrline[yyrule]);
   if (! yynormal)
     yyfillin (yyvsp, 1, -yynrhs);
   /* The symbols being reduced.  */
@@ -3044,8 +2986,8 @@ yy_reduce_print (yybool yynormal, yyGLRStackItem* yyvsp, size_t yyk,
       YYFPRINTF (stderr, "   $%d = ", yyi + 1);
       yy_symbol_print (stderr,
                        yystos[yyvsp[yyi - yynrhs + 1].yystate.yylrState],
-                       &yyvsp[yyi - yynrhs + 1].yystate.yysemantics.yysval,
-                       &(((yyGLRStackItem const *)yyvsp)[YYFILL ((yyi + 1) - (yynrhs))].yystate.yyloc)                       );
+                       &yyvsp[yyi - yynrhs + 1].yystate.yysemantics.yysval
+                       , &(((yyGLRStackItem const *)yyvsp)[YYFILL ((yyi + 1) - (yynrhs))].yystate.yyloc)                       );
       if (!yyvsp[yyi - yynrhs + 1].yystate.yyresolved)
         YYFPRINTF (stderr, " (unresolved)");
       YYFPRINTF (stderr, "\n");
@@ -3071,9 +3013,9 @@ yydoAction (yyGLRStack* yystackp, size_t yyk, yyRuleNum yyrule,
       yyGLRStackItem* yyrhs = (yyGLRStackItem*) yystackp->yytops.yystates[yyk];
       YYASSERT (yyk == 0);
       yystackp->yynextFree -= yynrhs;
-      yystackp->yyspaceLeft += (size_t) yynrhs;
+      yystackp->yyspaceLeft += yynrhs;
       yystackp->yytops.yystates[0] = & yystackp->yynextFree[-1].yystate;
-      YY_REDUCE_PRINT ((yytrue, yyrhs, yyk, yyrule));
+      YY_REDUCE_PRINT ((1, yyrhs, yyk, yyrule));
       return yyuserAction (yyrule, yynrhs, yyrhs, yystackp,
                            yyvalp, yylocp);
     }
@@ -3094,7 +3036,7 @@ yydoAction (yyGLRStack* yystackp, size_t yyk, yyRuleNum yyrule,
         }
       yyupdateSplit (yystackp, yys);
       yystackp->yytops.yystates[yyk] = yys;
-      YY_REDUCE_PRINT ((yyfalse, yyrhsVals + YYMAXRHS + YYMAXLEFT - 1, yyk, yyrule));
+      YY_REDUCE_PRINT ((0, yyrhsVals + YYMAXRHS + YYMAXLEFT - 1, yyk, yyrule));
       return yyuserAction (yyrule, yynrhs, yyrhsVals + YYMAXRHS + YYMAXLEFT - 1,
                            yystackp, yyvalp, yylocp);
     }
@@ -3126,7 +3068,7 @@ yyglrReduce (yyGLRStack* yystackp, size_t yyk, yyRuleNum yyrule,
       if (yyflag == yyerr && yystackp->yysplitPoint != YY_NULLPTR)
         {
           YYDPRINTF ((stderr, "Parse on stack %lu rejected by rule #%d.\n",
-                     (unsigned long) yyk, yyrule - 1));
+                     (unsigned long int) yyk, yyrule - 1));
         }
       if (yyflag != yyok)
         return yyflag;
@@ -3154,7 +3096,7 @@ yyglrReduce (yyGLRStack* yystackp, size_t yyk, yyRuleNum yyrule,
       YYDPRINTF ((stderr,
                   "Reduced stack %lu by rule #%d; action deferred.  "
                   "Now in state %d.\n",
-                  (unsigned long) yyk, yyrule - 1, yynewLRState));
+                  (unsigned long int) yyk, yyrule - 1, yynewLRState));
       for (yyi = 0; yyi < yystackp->yytops.yysize; yyi += 1)
         if (yyi != yyk && yystackp->yytops.yystates[yyi] != YY_NULLPTR)
           {
@@ -3167,8 +3109,8 @@ yyglrReduce (yyGLRStack* yystackp, size_t yyk, yyRuleNum yyrule,
                     yyaddDeferredAction (yystackp, yyk, yyp, yys0, yyrule);
                     yymarkStackDeleted (yystackp, yyk);
                     YYDPRINTF ((stderr, "Merging stack %lu into stack %lu.\n",
-                                (unsigned long) yyk,
-                                (unsigned long) yyi));
+                                (unsigned long int) yyk,
+                                (unsigned long int) yyi));
                     return yyok;
                   }
                 yyp = yyp->yypred;
@@ -3190,8 +3132,10 @@ yysplitStack (yyGLRStack* yystackp, size_t yyk)
     }
   if (yystackp->yytops.yysize >= yystackp->yytops.yycapacity)
     {
-      yyGLRState** yynewStates = YY_NULLPTR;
+      yyGLRState** yynewStates;
       yybool* yynewLookaheadNeeds;
+
+      yynewStates = YY_NULLPTR;
 
       if (yystackp->yytops.yycapacity
           > (YYSIZEMAX / (2 * sizeof yynewStates[0])))
@@ -3412,8 +3356,8 @@ yyreportTree (yySemanticOption* yyx, int yyindent)
   else
     YYFPRINTF (stderr, "%*s%s -> <Rule %d, tokens %lu .. %lu>\n",
                yyindent, "", yytokenName (yylhsNonterm (yyx->yyrule)),
-               yyx->yyrule - 1, (unsigned long) (yys->yyposn + 1),
-               (unsigned long) yyx->yystate->yyposn);
+               yyx->yyrule - 1, (unsigned long int) (yys->yyposn + 1),
+               (unsigned long int) yyx->yystate->yyposn);
   for (yyi = 1; yyi <= yynrhs; yyi += 1)
     {
       if (yystates[yyi]->yyresolved)
@@ -3424,8 +3368,8 @@ yyreportTree (yySemanticOption* yyx, int yyindent)
           else
             YYFPRINTF (stderr, "%*s%s <tokens %lu .. %lu>\n", yyindent+2, "",
                        yytokenName (yystos[yystates[yyi]->yylrState]),
-                       (unsigned long) (yystates[yyi-1]->yyposn + 1),
-                       (unsigned long) yystates[yyi]->yyposn);
+                       (unsigned long int) (yystates[yyi-1]->yyposn + 1),
+                       (unsigned long int) yystates[yyi]->yyposn);
         }
       else
         yyreportTree (yystates[yyi]->yysemantics.yyfirstVal, yyindent+2);
@@ -3457,7 +3401,7 @@ yyreportAmbiguity (yySemanticOption* yyx0,
  *  ending at YYS1.  Has no effect on previously resolved states.
  *  The first semantic option of a state is always chosen.  */
 static void
-yyresolveLocations (yyGLRState *yys1, int yyn1,
+yyresolveLocations (yyGLRState* yys1, int yyn1,
                     yyGLRStack *yystackp)
 {
   if (0 < yyn1)
@@ -3468,9 +3412,9 @@ yyresolveLocations (yyGLRState *yys1, int yyn1,
           yyGLRStackItem yyrhsloc[1 + YYMAXRHS];
           int yynrhs;
           yySemanticOption *yyoption = yys1->yysemantics.yyfirstVal;
-          YYASSERT (yyoption);
+          YYASSERT (yyoption != YY_NULLPTR);
           yynrhs = yyrhsLength (yyoption->yyrule);
-          if (0 < yynrhs)
+          if (yynrhs > 0)
             {
               yyGLRState *yys;
               int yyn;
@@ -3493,7 +3437,18 @@ yyresolveLocations (yyGLRState *yys1, int yyn1,
               yyGLRState *yyprevious = yyoption->yystate;
               yyrhsloc[0].yystate.yyloc = yyprevious->yyloc;
             }
-          YYLLOC_DEFAULT ((yys1->yyloc), yyrhsloc, yynrhs);
+          {
+            int yychar_current = yychar;
+            YYSTYPE yylval_current = yylval;
+            YYLTYPE yylloc_current = yylloc;
+            yychar = yyoption->yyrawchar;
+            yylval = yyoption->yyval;
+            yylloc = yyoption->yyloc;
+            YYLLOC_DEFAULT ((yys1->yyloc), yyrhsloc, yynrhs);
+            yychar = yychar_current;
+            yylval = yylval_current;
+            yylloc = yylloc_current;
+          }
         }
     }
 }
@@ -3620,9 +3575,9 @@ yycompressStack (yyGLRStack* yystackp)
        yyr = yyp, yyp = yyq, yyq = yyp->yypred)
     yyp->yypred = yyr;
 
-  yystackp->yyspaceLeft += (size_t) (yystackp->yynextFree - yystackp->yyitems);
+  yystackp->yyspaceLeft += yystackp->yynextFree - yystackp->yyitems;
   yystackp->yynextFree = ((yyGLRStackItem*) yystackp->yysplitPoint) + 1;
-  yystackp->yyspaceLeft -= (size_t) (yystackp->yynextFree - yystackp->yyitems);
+  yystackp->yyspaceLeft -= yystackp->yynextFree - yystackp->yyitems;
   yystackp->yysplitPoint = YY_NULLPTR;
   yystackp->yylastDeleted = YY_NULLPTR;
 
@@ -3645,7 +3600,7 @@ yyprocessOneStack (yyGLRStack* yystackp, size_t yyk,
     {
       yyStateNum yystate = yystackp->yytops.yystates[yyk]->yylrState;
       YYDPRINTF ((stderr, "Stack %lu Entering state %d\n",
-                  (unsigned long) yyk, yystate));
+                  (unsigned long int) yyk, yystate));
 
       YYASSERT (yystate != YYFINAL);
 
@@ -3656,7 +3611,7 @@ yyprocessOneStack (yyGLRStack* yystackp, size_t yyk,
           if (yyrule == 0)
             {
               YYDPRINTF ((stderr, "Stack %lu dies.\n",
-                          (unsigned long) yyk));
+                          (unsigned long int) yyk));
               yymarkStackDeleted (yystackp, yyk);
               return yyok;
             }
@@ -3666,7 +3621,7 @@ yyprocessOneStack (yyGLRStack* yystackp, size_t yyk,
               YYDPRINTF ((stderr,
                           "Stack %lu dies "
                           "(predicate failure or explicit user error).\n",
-                          (unsigned long) yyk));
+                          (unsigned long int) yyk));
               yymarkStackDeleted (yystackp, yyk);
               return yyok;
             }
@@ -3677,19 +3632,35 @@ yyprocessOneStack (yyGLRStack* yystackp, size_t yyk,
         {
           yySymbol yytoken;
           int yyaction;
-          const short* yyconflicts;
+          const short int* yyconflicts;
 
           yystackp->yytops.yylookaheadNeeds[yyk] = yytrue;
-          yytoken = yygetToken (&yychar);
-          yyaction = yygetLRActions (yystate, yytoken, &yyconflicts);
+          if (yychar == YYEMPTY)
+            {
+              YYDPRINTF ((stderr, "Reading a token: "));
+              yychar = yylex ();
+            }
+
+          if (yychar <= YYEOF)
+            {
+              yychar = yytoken = YYEOF;
+              YYDPRINTF ((stderr, "Now at end of input.\n"));
+            }
+          else
+            {
+              yytoken = YYTRANSLATE (yychar);
+              YY_SYMBOL_PRINT ("Next token is", yytoken, &yylval, &yylloc);
+            }
+
+          yygetLRActions (yystate, yytoken, &yyaction, &yyconflicts);
 
           while (*yyconflicts != 0)
             {
               YYRESULTTAG yyflag;
               size_t yynewStack = yysplitStack (yystackp, yyk);
               YYDPRINTF ((stderr, "Splitting off stack %lu from %lu.\n",
-                          (unsigned long) yynewStack,
-                          (unsigned long) yyk));
+                          (unsigned long int) yynewStack,
+                          (unsigned long int) yyk));
               yyflag = yyglrReduce (yystackp, yynewStack,
                                     *yyconflicts,
                                     yyimmediate[*yyconflicts]);
@@ -3699,7 +3670,7 @@ yyprocessOneStack (yyGLRStack* yystackp, size_t yyk,
               else if (yyflag == yyerr)
                 {
                   YYDPRINTF ((stderr, "Stack %lu dies.\n",
-                              (unsigned long) yynewStack));
+                              (unsigned long int) yynewStack));
                   yymarkStackDeleted (yystackp, yynewStack);
                 }
               else
@@ -3712,7 +3683,7 @@ yyprocessOneStack (yyGLRStack* yystackp, size_t yyk,
           else if (yyisErrorAction (yyaction))
             {
               YYDPRINTF ((stderr, "Stack %lu dies.\n",
-                          (unsigned long) yyk));
+                          (unsigned long int) yyk));
               yymarkStackDeleted (yystackp, yyk);
               break;
             }
@@ -3725,7 +3696,7 @@ yyprocessOneStack (yyGLRStack* yystackp, size_t yyk,
                   YYDPRINTF ((stderr,
                               "Stack %lu dies "
                               "(predicate failure or explicit user error).\n",
-                              (unsigned long) yyk));
+                              (unsigned long int) yyk));
                   yymarkStackDeleted (yystackp, yyk);
                   break;
                 }
@@ -3810,8 +3781,7 @@ yyreportSyntaxError (yyGLRStack* yystackp)
                 yyarg[yycount++] = yytokenName (yyx);
                 {
                   size_t yysz = yysize + yytnamerr (YY_NULLPTR, yytokenName (yyx));
-                  if (yysz < yysize)
-                    yysize_overflow = yytrue;
+                  yysize_overflow |= yysz < yysize;
                   yysize = yysz;
                 }
               }
@@ -3824,7 +3794,6 @@ yyreportSyntaxError (yyGLRStack* yystackp)
       case N:                           \
         yyformat = S;                   \
       break
-    default: /* Avoid compiler warnings. */
       YYCASE_(0, YY_("syntax error"));
       YYCASE_(1, YY_("syntax error, unexpected %s"));
       YYCASE_(2, YY_("syntax error, unexpected %s, expecting %s"));
@@ -3836,8 +3805,7 @@ yyreportSyntaxError (yyGLRStack* yystackp)
 
   {
     size_t yysz = yysize + strlen (yyformat);
-    if (yysz < yysize)
-      yysize_overflow = yytrue;
+    yysize_overflow |= yysz < yysize;
     yysize = yysz;
   }
 
@@ -3880,13 +3848,15 @@ yyreportSyntaxError (yyGLRStack* yystackp)
 static void
 yyrecoverSyntaxError (yyGLRStack* yystackp)
 {
+  size_t yyk;
+  int yyj;
+
   if (yystackp->yyerrState == 3)
     /* We just shifted the error token and (perhaps) took some
        reductions.  Skip tokens until we can proceed.  */
     while (yytrue)
       {
         yySymbol yytoken;
-        int yyj;
         if (yychar == YYEOF)
           yyFail (yystackp, YY_NULLPTR);
         if (yychar != YYEMPTY)
@@ -3901,9 +3871,19 @@ yyrecoverSyntaxError (yyGLRStack* yystackp)
             yytoken = YYTRANSLATE (yychar);
             yydestruct ("Error: discarding",
                         yytoken, &yylval, &yylloc);
-            yychar = YYEMPTY;
           }
-        yytoken = yygetToken (&yychar);
+        YYDPRINTF ((stderr, "Reading a token: "));
+        yychar = yylex ();
+        if (yychar <= YYEOF)
+          {
+            yychar = yytoken = YYEOF;
+            YYDPRINTF ((stderr, "Now at end of input.\n"));
+          }
+        else
+          {
+            yytoken = YYTRANSLATE (yychar);
+            YY_SYMBOL_PRINT ("Next token is", yytoken, &yylval, &yylloc);
+          }
         yyj = yypact[yystackp->yytops.yystates[0]->yylrState];
         if (yypact_value_is_default (yyj))
           return;
@@ -3918,25 +3898,22 @@ yyrecoverSyntaxError (yyGLRStack* yystackp)
       }
 
   /* Reduce to one stack.  */
-  {
-    size_t yyk;
-    for (yyk = 0; yyk < yystackp->yytops.yysize; yyk += 1)
-      if (yystackp->yytops.yystates[yyk] != YY_NULLPTR)
-        break;
-    if (yyk >= yystackp->yytops.yysize)
-      yyFail (yystackp, YY_NULLPTR);
-    for (yyk += 1; yyk < yystackp->yytops.yysize; yyk += 1)
-      yymarkStackDeleted (yystackp, yyk);
-    yyremoveDeletes (yystackp);
-    yycompressStack (yystackp);
-  }
+  for (yyk = 0; yyk < yystackp->yytops.yysize; yyk += 1)
+    if (yystackp->yytops.yystates[yyk] != YY_NULLPTR)
+      break;
+  if (yyk >= yystackp->yytops.yysize)
+    yyFail (yystackp, YY_NULLPTR);
+  for (yyk += 1; yyk < yystackp->yytops.yysize; yyk += 1)
+    yymarkStackDeleted (yystackp, yyk);
+  yyremoveDeletes (yystackp);
+  yycompressStack (yystackp);
 
   /* Now pop stack until we find a state that shifts the error token.  */
   yystackp->yyerrState = 3;
   while (yystackp->yytops.yystates[0] != YY_NULLPTR)
     {
       yyGLRState *yys = yystackp->yytops.yystates[0];
-      int yyj = yypact[yys->yylrState];
+      yyj = yypact[yys->yylrState];
       if (! yypact_value_is_default (yyj))
         {
           yyj += YYTERROR;
@@ -4021,16 +3998,20 @@ yyparse (void)
       /* Standard mode */
       while (yytrue)
         {
+          yyRuleNum yyrule;
+          int yyaction;
+          const short int* yyconflicts;
+
           yyStateNum yystate = yystack.yytops.yystates[0]->yylrState;
           YYDPRINTF ((stderr, "Entering state %d\n", yystate));
           if (yystate == YYFINAL)
             goto yyacceptlab;
           if (yyisDefaultedState (yystate))
             {
-              yyRuleNum yyrule = yydefaultAction (yystate);
+              yyrule = yydefaultAction (yystate);
               if (yyrule == 0)
                 {
-                  yystack.yyerror_range[1].yystate.yyloc = yylloc;
+               yystack.yyerror_range[1].yystate.yyloc = yylloc;
                   yyreportSyntaxError (&yystack);
                   goto yyuser_error;
                 }
@@ -4038,9 +4019,25 @@ yyparse (void)
             }
           else
             {
-              yySymbol yytoken = yygetToken (&yychar);
-              const short* yyconflicts;
-              int yyaction = yygetLRActions (yystate, yytoken, &yyconflicts);
+              yySymbol yytoken;
+              if (yychar == YYEMPTY)
+                {
+                  YYDPRINTF ((stderr, "Reading a token: "));
+                  yychar = yylex ();
+                }
+
+              if (yychar <= YYEOF)
+                {
+                  yychar = yytoken = YYEOF;
+                  YYDPRINTF ((stderr, "Now at end of input.\n"));
+                }
+              else
+                {
+                  yytoken = YYTRANSLATE (yychar);
+                  YY_SYMBOL_PRINT ("Next token is", yytoken, &yylval, &yylloc);
+                }
+
+              yygetLRActions (yystate, yytoken, &yyaction, &yyconflicts);
               if (*yyconflicts != 0)
                 break;
               if (yyisShiftAction (yyaction))
@@ -4054,7 +4051,8 @@ yyparse (void)
                 }
               else if (yyisErrorAction (yyaction))
                 {
-                  yystack.yyerror_range[1].yystate.yyloc = yylloc;                  yyreportSyntaxError (&yystack);
+               yystack.yyerror_range[1].yystate.yyloc = yylloc;
+                  yyreportSyntaxError (&yystack);
                   goto yyuser_error;
                 }
               else
@@ -4068,7 +4066,7 @@ yyparse (void)
           size_t yys;
 
           for (yys = 0; yys < yystack.yytops.yysize; yys += 1)
-            yystackp->yytops.yylookaheadNeeds[yys] = (yybool) (yychar != YYEMPTY);
+            yystackp->yytops.yylookaheadNeeds[yys] = yychar != YYEMPTY;
 
           /* yyprocessOneStack returns one of three things:
 
@@ -4099,7 +4097,7 @@ yyparse (void)
                 yyFail (&yystack, YY_("syntax error"));
               YYCHK1 (yyresolveStack (&yystack));
               YYDPRINTF ((stderr, "Returning to deterministic operation.\n"));
-              yystack.yyerror_range[1].yystate.yyloc = yylloc;
+           yystack.yyerror_range[1].yystate.yyloc = yylloc;
               yyreportSyntaxError (&yystack);
               goto yyuser_error;
             }
@@ -4114,17 +4112,18 @@ yyparse (void)
           yyposn += 1;
           for (yys = 0; yys < yystack.yytops.yysize; yys += 1)
             {
+              int yyaction;
+              const short int* yyconflicts;
               yyStateNum yystate = yystack.yytops.yystates[yys]->yylrState;
-              const short* yyconflicts;
-              int yyaction = yygetLRActions (yystate, yytoken_to_shift,
+              yygetLRActions (yystate, yytoken_to_shift, &yyaction,
                               &yyconflicts);
               /* Note that yyconflicts were handled by yyprocessOneStack.  */
-              YYDPRINTF ((stderr, "On stack %lu, ", (unsigned long) yys));
+              YYDPRINTF ((stderr, "On stack %lu, ", (unsigned long int) yys));
               YY_SYMBOL_PRINT ("shifting", yytoken_to_shift, &yylval, &yylloc);
               yyglrShift (&yystack, yys, yyaction, yyposn,
                           &yylval, &yylloc);
               YYDPRINTF ((stderr, "Stack %lu now in state #%d\n",
-                          (unsigned long) yys,
+                          (unsigned long int) yys,
                           yystack.yytops.yystates[yys]->yylrState));
             }
 
@@ -4180,8 +4179,8 @@ yyparse (void)
                 while (yystates[yyk])
                   {
                     yyGLRState *yys = yystates[yyk];
-                    yystack.yyerror_range[1].yystate.yyloc = yys->yyloc;
-                    if (yys->yypred != YY_NULLPTR)
+                 yystack.yyerror_range[1].yystate.yyloc = yys->yyloc;
+                  if (yys->yypred != YY_NULLPTR)
                       yydestroyGLRState ("Cleanup: popping", yys);
                     yystates[yyk] = yys->yypred;
                     yystack.yynextFree -= 1;
@@ -4207,7 +4206,7 @@ yy_yypstack (yyGLRState* yys)
       YYFPRINTF (stderr, " -> ");
     }
   YYFPRINTF (stderr, "%d@%lu", yys->yylrState,
-             (unsigned long) yys->yyposn);
+             (unsigned long int) yys->yyposn);
 }
 
 static void
@@ -4238,18 +4237,18 @@ yypdumpstack (yyGLRStack* yystackp)
   for (yyp = yystackp->yyitems; yyp < yystackp->yynextFree; yyp += 1)
     {
       YYFPRINTF (stderr, "%3lu. ",
-                 (unsigned long) (yyp - yystackp->yyitems));
+                 (unsigned long int) (yyp - yystackp->yyitems));
       if (*(yybool *) yyp)
         {
           YYASSERT (yyp->yystate.yyisState);
           YYASSERT (yyp->yyoption.yyisState);
           YYFPRINTF (stderr, "Res: %d, LR State: %d, posn: %lu, pred: %ld",
                      yyp->yystate.yyresolved, yyp->yystate.yylrState,
-                     (unsigned long) yyp->yystate.yyposn,
-                     (long) YYINDEX (yyp->yystate.yypred));
+                     (unsigned long int) yyp->yystate.yyposn,
+                     (long int) YYINDEX (yyp->yystate.yypred));
           if (! yyp->yystate.yyresolved)
             YYFPRINTF (stderr, ", firstVal: %ld",
-                       (long) YYINDEX (yyp->yystate
+                       (long int) YYINDEX (yyp->yystate
                                              .yysemantics.yyfirstVal));
         }
       else
@@ -4258,15 +4257,15 @@ yypdumpstack (yyGLRStack* yystackp)
           YYASSERT (!yyp->yyoption.yyisState);
           YYFPRINTF (stderr, "Option. rule: %d, state: %ld, next: %ld",
                      yyp->yyoption.yyrule - 1,
-                     (long) YYINDEX (yyp->yyoption.yystate),
-                     (long) YYINDEX (yyp->yyoption.yynext));
+                     (long int) YYINDEX (yyp->yyoption.yystate),
+                     (long int) YYINDEX (yyp->yyoption.yynext));
         }
       YYFPRINTF (stderr, "\n");
     }
   YYFPRINTF (stderr, "Tops:");
   for (yyi = 0; yyi < yystackp->yytops.yysize; yyi += 1)
-    YYFPRINTF (stderr, "%lu: %ld; ", (unsigned long) yyi,
-               (long) YYINDEX (yystackp->yytops.yystates[yyi]));
+    YYFPRINTF (stderr, "%lu: %ld; ", (unsigned long int) yyi,
+               (long int) YYINDEX (yystackp->yytops.yystates[yyi]));
   YYFPRINTF (stderr, "\n");
 }
 #endif
@@ -4278,5 +4277,5 @@ yypdumpstack (yyGLRStack* yystackp)
 
 
 
-#line 787 "bi/parser.ypp"
+#line 787 "bi/parser.ypp" /* glr.c:2584  */
 

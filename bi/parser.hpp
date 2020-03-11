@@ -1,8 +1,8 @@
-/* A Bison parser, made by GNU Bison 3.4.2.  */
+/* A Bison parser, made by GNU Bison 3.0.4.  */
 
 /* Skeleton interface for Bison GLR parsers in C
 
-   Copyright (C) 2002-2015, 2018-2019 Free Software Foundation, Inc.
+   Copyright (C) 2002-2015 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -40,12 +40,12 @@
 extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
-#line 1 "bi/parser.ypp"
+#line 1 "bi/parser.ypp" /* glr.c:197  */
 
   #include "bi/lexer.hpp"
   #include "bi/build/Compiler.hpp"
 
-#line 49 "bi/parser.hpp"
+#line 49 "bi/parser.hpp" /* glr.c:197  */
 
 /* Token type.  */
 #ifndef YYTOKENTYPE
@@ -103,9 +103,10 @@ extern int yydebug;
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
+
 union YYSTYPE
 {
-#line 71 "bi/parser.ypp"
+#line 71 "bi/parser.ypp" /* glr.c:197  */
 
   bool valBool;
   int32_t valInt;
@@ -118,9 +119,9 @@ union YYSTYPE
   bi::Type* valType;
   bi::Statement* valStatement;
 
-#line 122 "bi/parser.hpp"
-
+#line 123 "bi/parser.hpp" /* glr.c:197  */
 };
+
 typedef union YYSTYPE YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
