@@ -72,15 +72,16 @@ public:
       lock.read();
       Any* old = o.get();
       Any* ptr = pull(old);
-      lock.unread();
       if (ptr != old) {
         /* it is possible for multiple threads to try to update o
          * simultaneously, and the interleaving operations to result in
          * incorrect reference counts updates; ensure exclusive access with a
          * write lock */
-        lock.write();
+        lock.upgrade();
         o.replace(static_cast<typename P::value_type*>(ptr));
         lock.unwrite();
+      } else {
+        lock.unread();
       }
     }
   }
