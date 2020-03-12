@@ -128,7 +128,11 @@ void bi::CppResumeGenerator::visit(const MemberFunction* o) {
 
     genSourceLine(o->loc);
     line("virtual " << fiberType << " query();");
-    start("LIBBIRCH_CLASS(");
+    if (currentClass) {
+      start("LIBBIRCH_MEMBER_FIBER(");
+    } else {
+      start("LIBBIRCH_FIBER(");
+    }
     genUniqueName(o);
     middle(", libbirch::FiberState<" << fiberType->yieldType << ',');
     finish(fiberType->returnType << ">)");
@@ -218,7 +222,7 @@ void bi::CppResumeGenerator::genPack(const Function* o) {
     middle("libbirch::make_tuple(");
   }
   if (currentClass) {
-    middle("self");
+    middle("selfShared()");
     first = false;
   }
   for (auto param : params) {
@@ -245,7 +249,7 @@ void bi::CppResumeGenerator::genUnpack(const Function* o) {
   o->params->accept(&params);
 
   if (currentClass) {
-    line("auto self = state_.template get<" << stateIndex++ << ">();");
+    ++stateIndex;  // first is self
   }
   for (auto param : params) {
     genSourceLine(param->loc);

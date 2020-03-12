@@ -172,9 +172,9 @@ void bi::CppBaseGenerator::visit(const Member* o) {
     }
   } else {
     if (leftThis) {
-      middle("self->");
+      middle("self()->");
     } else if (leftSuper) {
-      middle("self->super_type_::");
+      middle("self()->super_type_::");
     } else {
       middle(o->left);
       ///@todo Restore read-only optimization
@@ -196,12 +196,12 @@ void bi::CppBaseGenerator::visit(const This* o) {
   if (inConstructor) {
     middle("this");
   } else {
-    middle("self");
+    middle("selfShared()");
   }
 }
 
 void bi::CppBaseGenerator::visit(const Super* o) {
-  assert(false);  // valid use cases handled by visit(const Member*)
+  assert(false);  // should be handled by visit(Member*)
 }
 
 void bi::CppBaseGenerator::visit(const Global* o) {
@@ -228,7 +228,7 @@ void bi::CppBaseGenerator::visit(const NamedExpression* o) {
     }
   } else if (o->isMember()) {
     if (!inMember && !inConstructor) {
-      middle("self->");
+      middle("self()->");
     }
     middle(o->name);
   } else {
