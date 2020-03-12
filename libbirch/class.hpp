@@ -59,6 +59,77 @@
     return #Name; \
   } \
   \
+  auto self() { \
+    return this->getLabel()->forward(this); \
+  } \
+  \
+  auto selfShared() { \
+    return libbirch::Lazy<libbirch::SharedPtr<Name>>(this, this->getLabel()); \
+  } \
+  \
+  template<class Visitor> \
+  void accept_(const Visitor& v) { \
+    Base::accept_(v);
+
+#define LIBBIRCH_FIBER(Name, Base...) \
+  virtual void freeze_(const libbirch::Freezer& v) override { \
+    this->accept_(v); \
+  } \
+  \
+  virtual Name* copy_(const libbirch::Copier& v) const override { \
+    auto o = new Name(*this); \
+    o->setLabel(v.label); \
+    o->accept_(v); \
+    return o; \
+  } \
+  \
+  virtual Name* recycle_(const libbirch::Recycler& v) override { \
+    this->thaw(); \
+    this->replaceLabel(v.label); \
+    this->accept_(v); \
+    return this; \
+  } \
+  \
+  virtual const char* getClassName() const { \
+    return #Name; \
+  } \
+  \
+  template<class Visitor> \
+  void accept_(const Visitor& v) { \
+    Base::accept_(v);
+
+
+#define LIBBIRCH_MEMBER_FIBER(Name, Base...) \
+  virtual void freeze_(const libbirch::Freezer& v) override { \
+    this->accept_(v); \
+  } \
+  \
+  virtual Name* copy_(const libbirch::Copier& v) const override { \
+    auto o = new Name(*this); \
+    o->setLabel(v.label); \
+    o->accept_(v); \
+    return o; \
+  } \
+  \
+  virtual Name* recycle_(const libbirch::Recycler& v) override { \
+    this->thaw(); \
+    this->replaceLabel(v.label); \
+    this->accept_(v); \
+    return this; \
+  } \
+  \
+  virtual const char* getClassName() const { \
+    return #Name; \
+  } \
+  \
+  auto self() { \
+    return state_.template get<0>().get(); \
+  } \
+  \
+  auto selfShared() { \
+    return state_.template get<0>(); \
+  } \
+  \
   template<class Visitor> \
   void accept_(const Visitor& v) { \
     Base::accept_(v);
@@ -86,15 +157,6 @@
 #define LIBBIRCH_MEMBERS(members...) \
     v.visit(members); \
   }
-
-/**
- * @def LIBBIRCH_SELF
- *
- * Boilerplate macro to occur first in a member function or fiber. Declares
- * the local variable `self`, to use in place of the usual `this`.
- */
-#define LIBBIRCH_SELF \
-  [[maybe_unused]] libbirch::LazyInitPtr<this_type_> self(this, this->getLabel());
 
 #include "libbirch/Freezer.hpp"
 #include "libbirch/Copier.hpp"

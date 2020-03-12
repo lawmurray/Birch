@@ -15,20 +15,20 @@ namespace libbirch {
  *
  * @ingroup libbirch
  *
- * @tparam P Pointer type. Either SharedPtr, WeakPtr or InitPtr.
+ * @tparam P Pointer type, e.g. a SharedPtr, WeakPtr, InitPtr.
  */
-template<class P, class Enable = void>
-class Lazy : public Lazy<typename P::super_type> {
+template<class P>
+class Lazy {
+  template<class Q> friend class Lazy;
 public:
   using value_type = typename P::value_type;
-  using this_type = Lazy<P>;
-  using super_type = Lazy<typename P::super_type>;
 
   /**
    * Constructor.
    */
   Lazy(const std::nullptr_t& nil) :
-      super_type(nil) {
+      object(nullptr),
+      label(rootLabel) {
     //
   }
 
@@ -37,7 +37,25 @@ public:
    */
   template<class Q, std::enable_if_t<is_base_of<P,Q>::value,int> = 0>
   Lazy(const Q& ptr, Label* label = rootLabel) :
-      super_type(ptr, label) {
+      object(ptr),
+      label(label) {
+    //
+  }
+
+  /**
+   * Generic copy constructor.
+   */
+  template<class Q, std::enable_if_t<is_base_of<P,Q>::value,int> = 0>
+  Lazy(const Lazy<Q>& o) :
+      object(o.object),
+      label(o.label) {
+    //
+  }
+
+  /**
+   * Destructor.
+   */
+  ~Lazy() {
     //
   }
 
@@ -47,7 +65,9 @@ public:
    * Allocates a new object of the type pointed to by this, and initializes
    * it by calling its default constructor.
    */
-  Lazy() : super_type(new value_type()) {
+  Lazy() :
+      object(new value_type()),
+      label(rootLabel) {
     static_assert(std::is_default_constructible<value_type>::value,
         "invalid call to class constructor");
     // ^ ideally this condition would be checked with SFINAE, but the
@@ -71,7 +91,9 @@ public:
    * constructor that would accept such an argument anyway.
    */
   template<class Arg, class... Args, std::enable_if_t<!is_base_of<P,Arg>::value,int> = 0>
-  explicit Lazy(Arg arg, Args... args) : super_type(new value_type(arg, args...)) {
+  explicit Lazy(Arg arg, Args... args) :
+      object(new value_type(arg, args...)),
+      label(rootLabel) {
     static_assert(std::is_constructible<value_type,Arg,Args...>::value,
         "invalid call to class constructor");
     // ^ ideally this condition would be checked with SFINAE, but the
@@ -82,46 +104,47 @@ public:
   /**
    * Value assignment.
    */
-  template<class U, std::enable_if_t<is_value<U>::value && std::is_assignable<value_type,U>::value,int> = 0>
-  Lazy& operator=(const U& o) {
+  template<class U, std::enable_if_t<is_value<U>::value,int> = 0>
+  Lazy<P>& operator=(const U& o) {
     *get() = o;
     return *this;
   }
 
   /**
-   * Value conversion.
+   * Is the pointer not null?
    */
-  template<class U, std::enable_if_t<is_value<U>::value && std::is_convertible<value_type,U>::value,int> = 0>
-  operator U() const {
-    return get()->operator U();
+  bool query() const {
+    return object.query();
   }
 
   /**
    * Get the raw pointer, with lazy cloning.
    */
   value_type* get() {
-    return static_cast<value_type*>(super_type::get());
+    label->get(object);
+    return object.get();
   }
 
   /**
    * Get the raw pointer, with lazy cloning.
    */
   value_type* get() const {
-    return static_cast<value_type*>(super_type::get());
+    return const_cast<Lazy*>(this)->get();
   }
 
   /**
    * Get the raw pointer for read-only use, without cloning.
    */
   value_type* pull() {
-    return static_cast<value_type*>(super_type::pull());
+    label->pull(object);
+    return object.get();
   }
 
   /**
    * Get the raw pointer for read-only use, without cloning.
    */
   value_type* pull() const {
-    return static_cast<value_type*>(super_type::pull());
+    return const_cast<Lazy*>(this)->pull();
   }
 
   /**
@@ -136,87 +159,6 @@ public:
    */
   value_type* operator->() const {
     return get();
-  }
-};
-
-/**
- * Wrapper for a smart pointer type to apply lazy deep clone semantics.
- *
- * @ingroup libbirch
- *
- * @tparam P Pointer type. Either SharedPtr, WeakPtr or InitPtr.
- */
-template<class P>
-class Lazy<P,std::enable_if_t<std::is_same<typename P::value_type,libbirch::Any>::value>> {
-  template<class Q, class Enable1> friend class Lazy;
-public:
-  using value_type = typename P::value_type;
-  using this_type = Lazy<Any>;
-
-  /**
-   * Constructor.
-   */
-  Lazy(const std::nullptr_t& nil) :
-      object(nullptr),
-      label(rootLabel) {
-    //
-  }
-
-  /**
-   * Constructor.
-   */
-  template<class Q, std::enable_if_t<is_base_of<Any*,Q>::value,int> = 0>
-  Lazy(const Q& ptr, Label* label = rootLabel) :
-      object(ptr),
-      label(label) {
-    //
-  }
-
-  /**
-   * Destructor.
-   */
-  ~Lazy() {
-    //
-  }
-
-  /**
-   * Is the pointer not null?
-   *
-   * This is used instead of an `operator bool()` so as not to conflict with
-   * conversion operators in the referent type.
-   */
-  bool query() const {
-    return object.query();
-  }
-
-  /**
-   * Get the raw pointer, with lazy cloning.
-   */
-  Any* get() {
-    label->get(object);
-    return object.get();
-  }
-
-  /**
-   * Get the raw pointer, with lazy cloning.
-   */
-  Any* get() const {
-    return const_cast<Lazy*>(this)->get();
-  }
-
-  /**
-   * Get the raw pointer for read-only use, without cloning.
-   */
-  Any* pull() {
-    label->pull(object);
-    return object.get();
-  }
-
-  /**
-   * Get the raw pointer for read-only use, without cloning.
-   */
-  Any* pull() const {
-    return const_cast<Lazy*>(this)->pull();
   }
 
   /**
@@ -231,20 +173,6 @@ public:
    */
   void setLabel(Label* label) {
     this->label.replace(label);
-  }
-
-  /**
-   * Dereference.
-   */
-  value_type& operator*() const {
-    return *get();
-  }
-
-  /**
-   * Member access.
-   */
-  value_type* operator->() const {
-    return get();
   }
 
 private:

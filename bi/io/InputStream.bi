@@ -42,7 +42,7 @@ class InputStream {
   function eof() -> Boolean {
     assert file?;
     cpp{{
-    return ::feof(self->file.get());
+    return ::feof(self()->file.get());
     }}
   }
 
@@ -54,7 +54,7 @@ class InputStream {
     x:Integer?;
     cpp{{
     long long int y;  // ensure fscanf gets exactly the type it expects
-    auto res = ::fscanf(self->file.get(), "%lld", &y);
+    auto res = ::fscanf(self()->file.get(), "%lld", &y);
     if (res == 1) {
       x = (bi::type::Integer)y;
     } 
@@ -70,7 +70,7 @@ class InputStream {
     x:Real?;
     cpp{{
     double y;  // ensure fscanf gets exactly the type it expects
-    auto res = ::fscanf(self->file.get(), "%lf", &y);
+    auto res = ::fscanf(self()->file.get(), "%lf", &y);
     if (res == 1) {
       x = y;
     } 

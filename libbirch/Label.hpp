@@ -46,7 +46,7 @@ public:
   /**
    * Update a pointer for writing.
    *
-   * @param Pointer type (SharedPtr, WeakPtr or InitPtr).
+   * @param Smart pointer (SharedPtr, WeakPtr or InitPtr).
    */
   template<class P>
   void get(P& o)  {
@@ -64,7 +64,7 @@ public:
   /**
    * Update a pointer for reading.
    *
-   * @param Pointer type (SharedPtr, WeakPtr or InitPtr).
+   * @param Smart pointer (SharedPtr, WeakPtr or InitPtr).
    */
   template<class P>
   void pull(P& o) {
@@ -75,7 +75,7 @@ public:
       if (ptr != old) {
         /* it is possible for multiple threads to try to update o
          * simultaneously, and the interleaving operations to result in
-         * incorrect reference counts updates; ensure exclusive access with a
+         * incorrect reference count updates; ensure exclusive access with a
          * write lock */
         lock.upgrade();
         o.replace(static_cast<typename P::value_type*>(ptr));
@@ -84,6 +84,26 @@ public:
         lock.unread();
       }
     }
+  }
+
+  /**
+   * Forward an object.
+   *
+   * @param Raw pointer.
+   *
+   * This is used by objects which have access to their own label, and is
+   * frozen can forward themselves onto a descendant.
+   */
+  template<class T>
+  T* forward(T* ptr) {
+    assert(ptr);
+    T* result = ptr;
+    if (ptr->isFrozen()) {
+      lock.write();
+      result = static_cast<T*>(get(static_cast<Any*>(ptr)));
+      lock.unwrite();
+    }
+    return result;
   }
 
 private:

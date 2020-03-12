@@ -60,15 +60,15 @@ operator (x:Object == y:Object) -> Boolean {
 /**
  * Identity comparison.
  */
-operator (x:Object != y:Object) -> Boolean {
-  return !(x == y);
+operator (x:Object? == y:Object?) -> Boolean {
+  return (x? && y? && x! == y!) || (!x? && !y?); 
 }
 
 /**
  * Identity comparison.
  */
-operator (x:Object? == y:Object?) -> Boolean {
-  return (x? && y? && x! == y!) || (!x? && !y?); 
+operator (x:Object != y:Object) -> Boolean {
+  return !(x == y);
 }
 
 /**
