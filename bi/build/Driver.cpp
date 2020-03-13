@@ -30,7 +30,7 @@ bi::Driver::Driver(int argc, char** argv) :
     sharedLib(true),
     openmp(true),
     warnings(true),
-    notes(false),
+    notes(true),
     debug(true),
     coverage(false),
     verbose(true),
@@ -1212,12 +1212,14 @@ void bi::Driver::target(const std::string& cmd) {
   buf << ' ' << cmd;
 
   /* strip warnings/notes? */
+  buf << " 2>&1";
   if (!warnings) {
-    buf << " 2>&1 | grep -v 'warning:'";
+    buf << " | grep --line-buffered -v 'warning:'";
   }
   if (!notes) {
-    buf << " 2>&1 | grep -v 'note:'";
+    buf << " | grep --line-buffered -v 'note:'";
   }
+  buf << " | sed -lE 's/[a-zA-Z]+:://g' 1>&2";  // strip namespaces
 
   /* handle output */
   std::string log = cmd + ".log";
