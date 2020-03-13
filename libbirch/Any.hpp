@@ -42,6 +42,20 @@ public:
   }
 
   /**
+   * Special constructor for the root label.
+   */
+  Any(int) :
+      sharedCount(0u),
+      memoValueCount(0u),
+      weakCount(1u),
+      memoKeyCount(1u),
+      label(nullptr),
+      frozen(false),
+      frozenUnique(false) {
+    // size and tid already set by operator new
+  }
+
+  /**
    * Copy constructor.
    */
   Any(const Any& o) : Any() {

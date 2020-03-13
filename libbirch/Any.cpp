@@ -7,14 +7,14 @@
 
 void libbirch::Any::holdLabel() {
   auto label = getLabel();
-  if (label) {
+  if (label && label != rootLabel) {
     label->incShared();
   }
 }
 
 void libbirch::Any::releaseLabel() {
   auto label = getLabel();
-  if (label) {
+  if (label && label != rootLabel) {
     label->decShared();
   }
 }
