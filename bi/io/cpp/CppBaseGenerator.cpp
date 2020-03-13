@@ -724,15 +724,15 @@ void bi::CppBaseGenerator::visit(const MemberType* o) {
 void bi::CppBaseGenerator::visit(const NamedType* o) {
   if (o->isClass()) {
     if (o->weak) {
-      middle("libbirch::LazyWeakPtr<");
+      middle("libbirch::Lazy<libbirch::WeakPtr<");
     } else {
-      middle("libbirch::LazySharedPtr<");
+      middle("libbirch::Lazy<libbirch::SharedPtr<");
     }
     middle("bi::type::" << o->name);
     if (!o->typeArgs->isEmpty()) {
       middle('<' << o->typeArgs << '>');
     }
-    middle('>');
+    middle(">>");
   } else if (o->isBasic()) {
     middle("bi::type::" << o->name);
     if (!o->typeArgs->isEmpty()) {
@@ -766,5 +766,5 @@ void bi::CppBaseGenerator::genTraceLine(const Location* loc) {
 }
 
 void bi::CppBaseGenerator::genSourceLine(const Location* loc) {
-  line("//#line " << loc->firstLine << " \"" << loc->file->path << "\"");
+  line("#line " << loc->firstLine << " \"" << loc->file->path << "\"");
 }
