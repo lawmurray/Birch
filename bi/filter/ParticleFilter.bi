@@ -54,7 +54,7 @@ class ParticleFilter {
    *     rejected particles.
    */
   fiber filter(model:Model) -> (Model[_], Real[_], Real, Real, Integer) {
-    auto x <- clone<Model>(model, nparticles);  // particles
+    auto x <- clone(model, nparticles);  // particles
     auto w <- vector(0.0, nparticles);  // log weights
     auto ess <- 0.0;  // effective sample size
     auto S <- 0.0;  // logarithm of the sum of weights
@@ -85,7 +85,7 @@ class ParticleFilter {
         auto a <- resample_systematic(w);
         dynamic parallel for n in 1..nparticles {
           if a[n] != n {
-            x[n] <- clone<Model>(x[a[n]]);
+            x[n] <- clone(x[a[n]]);
           }
           w[n] <- 0.0;
         }
@@ -106,7 +106,7 @@ class ParticleFilter {
 
   fiber filter(model:Model, reference:Trace?, alreadyInitialized:Boolean) ->
       (Model[_], Real[_], Real, Real, Integer) {
-    auto x <- clone<Model>(model, nparticles);  // particles
+    auto x <- clone(model, nparticles);  // particles
     auto w <- vector(0.0, nparticles);  // log-weights
     auto ess <- 1.0*nparticles;  // effective sample size
     auto S <- 0.0;  // logarithm of the sum of weights
@@ -146,8 +146,8 @@ class ParticleFilter {
       if reference? && ancestor {
         auto w' <- w;
         dynamic parallel for n in 1..nparticles {
-          auto x' <- clone<Model>(x[n]);
-          auto reference' <- clone<Trace>(reference!);
+          auto x' <- clone(x[n]);
+          auto reference' <- clone(reference!);
           w'[n] <- w'[n] + replay.handle(reference', x'.simulate(t));
           // ^ assuming Markov model here
         }
@@ -165,7 +165,7 @@ class ParticleFilter {
         }
         dynamic parallel for n in 1..nparticles {
           if a[n] != n {
-            x[n] <- clone<Model>(x[a[n]]);
+            x[n] <- clone(x[a[n]]);
           }
           w[n] <- 0.0;
         }
@@ -213,12 +213,12 @@ class ParticleFilter {
     if ess <= trigger*nparticles {
       auto a <- resample_systematic(w);
       dynamic parallel for n in 1..nparticles {
-        x'[n] <- clone<Model>(x[a[n]]);
+        x'[n] <- clone(x[a[n]]);
         w'[n] <- 0.0;
       }
     } else {
       dynamic parallel for n in 1..nparticles {
-        x'[n] <- clone<Model>(x[n]);
+        x'[n] <- clone(x[n]);
       }
     }
 

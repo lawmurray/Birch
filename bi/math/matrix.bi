@@ -1,7 +1,16 @@
 /**
+ * Length of a matrix; equals `rows()`.
+ */
+function length<Value>(X:Value[_,_]) -> Integer {
+  cpp{{
+  return X.rows();
+  }}
+}
+
+/**
  * Number of rows of a matrix.
  */
-function rows<Value>(X:Value[_,_]) -> Integer64 {
+function rows<Value>(X:Value[_,_]) -> Integer {
   cpp{{
   return X.rows();
   }}
@@ -10,7 +19,7 @@ function rows<Value>(X:Value[_,_]) -> Integer64 {
 /**
  * Number of columns of a matrix.
  */
-function columns<Value>(X:Value[_,_]) -> Integer64 {
+function columns<Value>(X:Value[_,_]) -> Integer {
   cpp{{
   return X.cols();
   }}

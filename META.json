@@ -188,6 +188,7 @@
       "bi/math/primitive.bi",
       "bi/math/quantile.bi",
       "bi/math/resample.bi",
+      "bi/math/scalar.bi",
       "bi/math/simulate.bi",
       "bi/math/special.bi",
       "bi/math/standard.bi",

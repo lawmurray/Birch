@@ -164,15 +164,16 @@ function length<Value>(x:Value[_]) -> Integer {
 }
 
 /**
- * Number of rows of a vector when interpreted as a matrix (equals the length
- * of the vector).
+ * Number of rows of a vector; equals `length()`.
  */
 function rows<Value>(x:Value[_]) -> Integer {
-  return length(x);
+  cpp{{
+  return x.rows();
+  }}
 }
 
 /**
- * Number of columns of a vector when interpreted as a matrix (equals one).
+ * Number of columns of a vector; equals 1.
  */
 function columns<Value>(x:Value[_]) -> Integer {
   return 1;

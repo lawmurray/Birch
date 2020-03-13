@@ -59,17 +59,3 @@ function max(x:Boolean, y:Boolean) -> Boolean {
 function min(x:Boolean, y:Boolean) -> Boolean {
   return x && y;
 }
-
-/**
- * Number of rows when interpreted as a matrix.
- */
-function rows(x:Boolean) -> Integer {
-  return 1;
-}
-
-/**
- * Number of columns when interpreted as a matrix.
- */
-function columns(x:Boolean) -> Integer {
-  return 1;
-}

@@ -143,9 +143,54 @@ final class AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) <
 /**
  * Create an AssumeEvent.
  */
-function AssumeEvent<Value>(v:Random<Value>, p:Distribution<Value>) ->
-    AssumeEvent<Value> {
-  evt:AssumeEvent<Value>(v, p);
+function AssumeEvent(v:Random<Real>, p:Distribution<Real>) ->
+    AssumeEvent<Real> {
+  evt:AssumeEvent<Real>(v, p);
+  return evt;
+}
+
+/**
+ * Create an AssumeEvent.
+ */
+function AssumeEvent(v:Random<Real[_]>, p:Distribution<Real[_]>) ->
+    AssumeEvent<Real[_]> {
+  evt:AssumeEvent<Real[_]>(v, p);
+  return evt;
+}
+
+/**
+ * Create an AssumeEvent.
+ */
+function AssumeEvent(v:Random<Real[_,_]>, p:Distribution<Real[_,_]>) ->
+    AssumeEvent<Real[_,_]> {
+  evt:AssumeEvent<Real[_,_]>(v, p);
+  return evt;
+}
+
+/**
+ * Create an AssumeEvent.
+ */
+function AssumeEvent(v:Random<Integer>, p:Distribution<Integer>) ->
+    AssumeEvent<Integer> {
+  evt:AssumeEvent<Integer>(v, p);
+  return evt;
+}
+
+/**
+ * Create an AssumeEvent.
+ */
+function AssumeEvent(v:Random<Integer[_]>, p:Distribution<Integer[_]>) ->
+    AssumeEvent<Integer[_]> {
+  evt:AssumeEvent<Integer[_]>(v, p);
+  return evt;
+}
+
+/**
+ * Create an AssumeEvent.
+ */
+function AssumeEvent(v:Random<Boolean>, p:Distribution<Boolean>) ->
+    AssumeEvent<Boolean> {
+  evt:AssumeEvent<Boolean>(v, p);
   return evt;
 }
 

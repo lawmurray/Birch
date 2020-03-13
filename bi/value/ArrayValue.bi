@@ -69,7 +69,7 @@ class ArrayValue < Value {
     while f? {
       auto value <- f!.getReal();
       if !value? {
-        value <- f!.getInteger();
+        value <- Real?(f!.getInteger());
       }
       if value? {      
         result[i] <- value!;

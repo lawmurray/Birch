@@ -13,6 +13,13 @@ abstract class Expression<Value> {
   }
 
   /**
+   * Length of result. This is equal to `rows()`.
+   */
+  final function length() -> Integer {
+    return rows();
+  }
+
+  /**
    * Number of rows in result.
    */
   function rows() -> Integer {
@@ -301,35 +308,83 @@ abstract class Expression<Value> {
 /**
  * Length of a vector.
  */
-function length<Value>(x:Expression<Value[_]>) -> Integer {
+function length(x:Expression<Real[_]>) -> Integer {
+  return x.length();
+}
+
+/**
+ * Number of rows of a vector; equals `length()`.
+ */
+function rows(x:Expression<Real[_]>) -> Integer {
   return x.rows();
 }
 
 /**
- * Number of rows of a vector when interpreted as a matrix (equals the length
- * of the vector).
+ * Number of columns of a vector; equals 1.
  */
-function rows<Value>(x:Expression<Value[_]>) -> Integer {
-  return length(x);
+function columns(x:Expression<Real[_]>) -> Integer {
+  return x.columns();
 }
 
 /**
- * Number of columns of a vector when interpreted as a matrix (equals one).
+ * Length of a matrix; equals `rows()`.
  */
-function columns<Value>(x:Expression<Value[_]>) -> Integer {
-  return 1;
+function length(x:Expression<Real[_,_]>) -> Integer {
+  return x.length();
 }
 
 /**
  * Number of rows of a matrix.
  */
-function rows<Value>(X:Expression<Value[_,_]>) -> Integer64 {
-  return X.rows();
+function rows(x:Expression<Real[_,_]>) -> Integer {
+  return x.rows();
 }
 
 /**
  * Number of columns of a matrix.
  */
-function columns<Value>(X:Expression<Value[_,_]>) -> Integer64 {
-  return X.columns();
+function columns(x:Expression<Real[_,_]>) -> Integer {
+  return x.columns();
+}
+
+/**
+ * Length of a vector.
+ */
+function length(x:Expression<Integer[_]>) -> Integer {
+  return x.length();
+}
+
+/**
+ * Number of rows of a vector; equals `length()`.
+ */
+function rows(x:Expression<Integer[_]>) -> Integer {
+  return x.rows();
+}
+
+/**
+ * Number of columns of a vector; equals 1.
+ */
+function columns(x:Expression<Integer[_]>) -> Integer {
+  return x.columns();
+}
+
+/**
+ * Length of a matrix; equals `rows()`.
+ */
+function length(x:Expression<Integer[_,_]>) -> Integer {
+  return x.length();
+}
+
+/**
+ * Number of rows of a matrix.
+ */
+function rows(x:Expression<Integer[_,_]>) -> Integer {
+  return x.rows();
+}
+
+/**
+ * Number of columns of a matrix.
+ */
+function columns(x:Expression<Integer[_,_]>) -> Integer {
+  return x.columns();
 }

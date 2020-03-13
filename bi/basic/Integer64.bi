@@ -208,17 +208,3 @@ function min(x:Integer64, y:Integer64) -> Integer64 {
   return std::min(x, y);
   }}
 }
-
-/**
- * Number of rows when interpreted as a matrix.
- */
-function rows(x:Integer64) -> Integer {
-  return 1;
-}
-
-/**
- * Number of columns when interpreted as a matrix.
- */
-function columns(x:Integer64) -> Integer {
-  return 1;
-}

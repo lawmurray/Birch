@@ -74,8 +74,47 @@ final class SimulateEvent<Value>(p:Distribution<Value>) < ValueEvent<Value> {
 /**
  * Create a SimulateEvent.
  */
-function SimulateEvent<Value>(p:Distribution<Value>) ->
-    SimulateEvent<Value> {
-  evt:SimulateEvent<Value>(p);
+function SimulateEvent(p:Distribution<Real>) -> SimulateEvent<Real> {
+  evt:SimulateEvent<Real>(p);
+  return evt;
+}
+
+/**
+ * Create a SimulateEvent.
+ */
+function SimulateEvent(p:Distribution<Real[_]>) -> SimulateEvent<Real[_]> {
+  evt:SimulateEvent<Real[_]>(p);
+  return evt;
+}
+
+/**
+ * Create a SimulateEvent.
+ */
+function SimulateEvent(p:Distribution<Real[_,_]>) -> SimulateEvent<Real[_,_]> {
+  evt:SimulateEvent<Real[_,_]>(p);
+  return evt;
+}
+
+/**
+ * Create a SimulateEvent.
+ */
+function SimulateEvent(p:Distribution<Integer>) -> SimulateEvent<Integer> {
+  evt:SimulateEvent<Integer>(p);
+  return evt;
+}
+
+/**
+ * Create a SimulateEvent.
+ */
+function SimulateEvent(p:Distribution<Integer[_]>) -> SimulateEvent<Integer[_]> {
+  evt:SimulateEvent<Integer[_]>(p);
+  return evt;
+}
+
+/**
+ * Create a SimulateEvent.
+ */
+function SimulateEvent(p:Distribution<Boolean>) -> SimulateEvent<Boolean> {
+  evt:SimulateEvent<Boolean>(p);
   return evt;
 }

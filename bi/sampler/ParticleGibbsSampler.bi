@@ -23,15 +23,15 @@ class ParticleGibbsSampler < ParticleSampler {
     r':Trace?;  // replay trace for parameters
 
     for n in 1..nsamples {
-      auto m <- clone<Model>(model);
+      auto m <- clone(model);
       if !r? {
         /* first iteration, marginalize out parameters to obtain a reasonable
          * initialization */
         lnormalize[1] <- playDelay.handle(m.simulate());
       } else {
         /* second and subsequent iterations, Gibbs update of parameters */        
-        auto x' <- clone<Model>(model);
-        auto r' <- clone<Trace>(r!);
+        auto x' <- clone(model);
+        auto r' <- clone(r!);
         auto w' <- playDelay.handle(x'.simulate(), r');
         for t in 1..nsteps {
           w' <- w' + replay.handle(r', x'.simulate(t));
