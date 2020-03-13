@@ -130,14 +130,3 @@ private:
   ReaderWriterLock lock;
 };
 }
-
-#include "libbirch/type.hpp"
-
-namespace bi {
-  namespace type {
-template<>
-struct super_type<libbirch::Label> {
-  using type = libbirch::Any;
-};
-  }
-}

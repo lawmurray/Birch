@@ -122,7 +122,8 @@ public:
   /**
    * Generic value copy constructor.
    */
-  template<class Q, std::enable_if_t<is_base_of<P,Q>::value,int> = 0>
+  template<class Q, std::enable_if_t<std::is_base_of<typename P::value_type,
+      typename Q::value_type>::value,int> = 0>
   Optional(const Lazy<Q>& value) :
       value(value) {
     //
@@ -131,7 +132,8 @@ public:
   /**
    * Generic value move constructor.
    */
-  template<class Q, std::enable_if_t<is_base_of<P,Q>::value,int> = 0>
+  template<class Q, std::enable_if_t<std::is_base_of<typename P::value_type,
+      typename Q::value_type>::value,int> = 0>
   Optional(Lazy<Q>&& value) :
       value(std::move(value)) {
     //
@@ -140,7 +142,8 @@ public:
   /**
    * Generic copy constructor.
    */
-  template<class Q, std::enable_if_t<is_base_of<P,Q>::value,int> = 0>
+  template<class Q, std::enable_if_t<std::is_base_of<typename P::value_type,
+      typename Q::value_type>::value,int> = 0>
   Optional(const Optional<Lazy<Q>>& o) :
       value(o.value) {
     //
@@ -149,7 +152,8 @@ public:
   /**
    * Generic move constructor.
    */
-  template<class Q, std::enable_if_t<is_base_of<P,Q>::value,int> = 0>
+  template<class Q, std::enable_if_t<std::is_base_of<typename P::value_type,
+      typename Q::value_type>::value,int> = 0>
   Optional(Optional<Lazy<Q>>&& o) :
       value(std::move(o.value)) {
     //

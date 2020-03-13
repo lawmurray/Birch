@@ -124,37 +124,12 @@ struct is_array {
  * Raw pointer type corresponding to a smart pointer type `P`.
  */
 template<class P>
-struct raw_type {
+struct raw {
   using type = void;
 };
 
 template<class T>
-struct raw_type<T*> {
+struct raw<T*> {
   using type = T*;
 };
-
-/**
- * For smart pointer types `T` and `U`, is the raw type of `T` a base of the
- * raw type of `U`.
- */
-template<class T, class U>
-struct is_base_of {
-  using Base = typename std::remove_pointer<typename raw_type<T>::type>::type;
-  using Derived = typename std::remove_pointer<typename raw_type<U>::type>::type;
-  static const bool value = !std::is_void<Base>::value && std::is_base_of<Base,Derived>::value;
-};
-}
-
-namespace bi {
-  namespace type {
-/**
- * Super type of another. This is specialized for all classes that are
- * derived from Any to indicate their super type without having to
- * instantiate that type.
- */
-template<class T>
-struct super_type {
-  //
-};
-  }
 }

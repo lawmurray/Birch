@@ -16,86 +16,27 @@ namespace libbirch {
  * @tparam T Type, must derive from Any.
  */
 template<class T>
-class InitPtr: public InitPtr<typename bi::type::super_type<T>::type> {
+class InitPtr {
 public:
   using value_type = T;
-  using super_type = InitPtr<typename bi::type::super_type<value_type>::type>;
-  using this_type = InitPtr<value_type>;
 
   /**
    * Constructor.
    */
   explicit InitPtr(value_type* ptr = nullptr) :
-      super_type(ptr) {
+      ptr(ptr) {
     //
   }
 
   /**
    * Constructor.
    */
-  template<class Q, std::enable_if_t<!std::is_pointer<Q>::value && is_base_of<this_type,Q>::value,int> = 0>
-  InitPtr(const Q& o) :
-      super_type(o) {
-    //
-  }
-
-  /**
-   * Get the raw pointer.
-   */
-  T* get() const {
-    return static_cast<T*>(super_type::get());
-  }
-
-  /**
-   * Get the raw pointer as const.
-   */
-  T* pull() const {
-    return static_cast<T*>(super_type::pull());
-  }
-
-  /**
-   * Dereference.
-   */
-  T& operator*() const {
-    return *get();
-  }
-
-  /**
-   * Member access.
-   */
-  T* operator->() const {
-    return get();
-  }
-};
-
-/**
- * Smart pointer that does not update reference counts, but that does
- * initialize to nullptr.
- *
- * @ingroup libbirch
- */
-template<>
-class InitPtr<Any> {
-public:
-  using value_type = Any;
-  using this_type = InitPtr<Any>;
-
-  /**
-   * Constructor.
-   */
-  explicit InitPtr(value_type* ptr = nullptr) : ptr(ptr) {
-    //
-  }
-
-  /**
-   * Constructor.
-   */
-  template<class Q, std::enable_if_t<!std::is_pointer<Q>::value && is_base_of<this_type,Q>::value,int> = 0>
+  template<class Q, class U = typename Q::value_type,
+      std::enable_if_t<std::is_base_of<T,U>::value,int> = 0>
   InitPtr(const Q& o) :
       ptr(o.get()) {
     //
   }
-
   /**
    * Is the pointer not null?
    *
@@ -109,21 +50,21 @@ public:
   /**
    * Get the raw pointer.
    */
-  Any* get() const {
+  T* get() const {
     return ptr;
   }
 
   /**
    * Get the raw pointer as const.
    */
-  Any* pull() const {
+  T* pull() const {
     return ptr;
   }
 
   /**
    * Replace.
    */
-  void replace(Any* ptr) {
+  void replace(T* ptr) {
     this->ptr = ptr;
   }
 
@@ -137,14 +78,14 @@ public:
   /**
    * Dereference.
    */
-  Any& operator*() const {
+  T& operator*() const {
     return *get();
   }
 
   /**
    * Member access.
    */
-  Any* operator->() const {
+  T* operator->() const {
     return get();
   }
 
@@ -168,7 +109,7 @@ private:
   /**
    * Raw pointer.
    */
-  Any* ptr;
+  T* ptr;
 };
 
 template<class T>
@@ -182,7 +123,7 @@ struct is_pointer<InitPtr<T>> {
 };
 
 template<class T>
-struct raw_type<InitPtr<T>> {
+struct raw<InitPtr<T>> {
   using type = T*;
 };
 }

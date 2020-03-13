@@ -15,68 +15,9 @@ namespace libbirch {
  * @tparam T Type, must derive from Any.
  */
 template<class T>
-class WeakPtr: public WeakPtr<typename bi::type::super_type<T>::type> {
+class WeakPtr {
 public:
   using value_type = T;
-  using this_type = WeakPtr<T>;
-  using super_type = WeakPtr<typename bi::type::super_type<value_type>::type>;
-
-  /**
-   * Constructor.
-   */
-  explicit WeakPtr(value_type* ptr = nullptr) :
-      super_type(ptr) {
-    //
-  }
-
-  /**
-   * Constructor.
-   */
-  template<class Q, std::enable_if_t<!std::is_pointer<Q>::value && is_base_of<this_type,Q>::value,int> = 0>
-  WeakPtr(const Q& o) :
-      super_type(o) {
-    //
-  }
-
-  /**
-   * Get the raw pointer.
-   */
-  T* get() const {
-    return static_cast<T*>(super_type::get());
-  }
-
-  /**
-   * Get the raw pointer as const.
-   */
-  T* pull() const {
-    return static_cast<T*>(super_type::pull());
-  }
-
-  /**
-   * Dereference.
-   */
-  T& operator*() const {
-    return *get();
-  }
-
-  /**
-   * Member access.
-   */
-  T* operator->() const {
-    return get();
-  }
-};
-
-/**
- * Weak pointer with intrusive implementation.
- *
- * @ingroup libbirch
- */
-template<>
-class WeakPtr<Any> {
-public:
-  using value_type = Any;
-  using this_type = WeakPtr<Any>;
 
   /**
    * Constructor.
@@ -91,7 +32,8 @@ public:
   /**
    * Constructor.
    */
-  template<class Q, std::enable_if_t<!std::is_pointer<Q>::value && is_base_of<this_type,Q>::value,int> = 0>
+  template<class Q, class U = typename Q::value_type,
+      std::enable_if_t<std::is_base_of<T,U>::value,int> = 0>
   WeakPtr(const Q& o) :
       ptr(o.get()) {
     if (ptr) {
@@ -166,7 +108,7 @@ public:
   /**
    * Get the raw pointer.
    */
-  Any* get() const {
+  T* get() const {
     assert(!ptr || ptr->numWeak() > 0);
     return ptr;
   }
@@ -174,7 +116,7 @@ public:
   /**
    * Get the raw pointer as const.
    */
-  Any* pull() const {
+  T* pull() const {
     assert(!ptr || ptr->numWeak() > 0);
     return ptr;
   }
@@ -182,7 +124,7 @@ public:
   /**
    * Replace.
    */
-  void replace(Any* ptr) {
+  void replace(T* ptr) {
     auto old = this->ptr;
     if (ptr) {
       ptr->incWeak();
@@ -206,38 +148,22 @@ public:
   /**
    * Dereference.
    */
-  Any& operator*() const {
+  T& operator*() const {
     return *get();
   }
 
   /**
    * Member access.
    */
-  Any* operator->() const {
+  T* operator->() const {
     return get();
-  }
-
-  /**
-   * Equal comparison.
-   */
-  template<class Q>
-  bool operator==(const Q& o) const {
-    return get() == o.get();
-  }
-
-  /**
-   * Not equal comparison.
-   */
-  template<class Q>
-  bool operator!=(const Q& o) const {
-    return get() != o.get();
   }
 
 private:
   /**
    * Raw pointer.
    */
-  Any* ptr;
+  T* ptr;
 };
 
 template<class T>
@@ -251,7 +177,7 @@ struct is_pointer<WeakPtr<T>> {
 };
 
 template<class T>
-struct raw_type<WeakPtr<T>> {
+struct raw<WeakPtr<T>> {
   using type = T*;
 };
 }

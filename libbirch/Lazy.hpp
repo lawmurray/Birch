@@ -35,7 +35,18 @@ public:
   /**
    * Constructor.
    */
-  template<class Q, std::enable_if_t<is_base_of<P,Q>::value,int> = 0>
+  template<class U>
+  Lazy(U* ptr, Label* label = rootLabel) :
+      object(ptr),
+      label(label) {
+    //
+  }
+
+  /**
+   * Constructor.
+   */
+  template<class Q, std::enable_if_t<std::is_base_of<value_type,
+      typename Q::value_type>::value,int> = 0>
   Lazy(const Q& ptr, Label* label = rootLabel) :
       object(ptr),
       label(label) {
@@ -45,7 +56,8 @@ public:
   /**
    * Generic copy constructor.
    */
-  template<class Q, std::enable_if_t<is_base_of<P,Q>::value,int> = 0>
+  template<class Q, std::enable_if_t<std::is_base_of<value_type,
+      typename Q::value_type>::value,int> = 0>
   Lazy(const Lazy<Q>& o) :
       object(o.object),
       label(o.label) {
@@ -60,7 +72,8 @@ public:
   }
 
   /**
-   * Constructor with in-place construction of referent.
+   * Constructor with in-place construction of referent, using default
+   * constructor.
    *
    * Allocates a new object of the type pointed to by this, and initializes
    * it by calling its default constructor.
@@ -76,29 +89,47 @@ public:
   }
 
   /**
-   * Constructor with in-place construction of referent.
+   * Constructor with in-place construction of referent, with single
+   * argument.
    *
+   * @tparam Arg Argument type.
+   *
+   * @param arg Argument.
+   *
+   * Allocates a new object of the type pointed to by this, and initializes
+   * it by calling the constructor with the given argument.
+   *
+   * SFINAE ensures that the Lazy(const Q&) constructor is preferred over
+   * this one when the argument is a pointer of the same or derived type.
+   */
+  template<class Arg, std::enable_if_t<!std::is_base_of<value_type,
+      typename raw<Arg>::type>::value,int> = 0>
+  explicit Lazy(Arg arg) :
+      object(new value_type(arg)),
+      label(rootLabel) {
+    //
+  }
+
+  /**
+   * Constructor with in-place construction of referent, with two or more
+   * arguments.
+   *
+   * @tparam Arg1 First argument type.
+   * @tparam Arg2 Second argument type.
    * @tparam Args... Argument types.
    *
+   * @param arg1 First argument.
+   * @param arg2 Second argument.
    * @param args... Arguments.
    *
    * Allocates a new object of the type pointed to by this, and initializes
    * it by calling its constructor with the given arguments.
-   *
-   * SFINAE insures that the Lazy(const Q&) constructor is preferred over
-   * this one when the argument is a pointer of the same or type. Note that
-   * in the Birch language it is not possible for a class to have a
-   * constructor that would accept such an argument anyway.
    */
-  template<class Arg, class... Args, std::enable_if_t<!is_base_of<P,Arg>::value,int> = 0>
-  explicit Lazy(Arg arg, Args... args) :
-      object(new value_type(arg, args...)),
+  template<class Arg1, class Arg2, class... Args>
+  explicit Lazy(Arg1 arg1, Arg2 arg2, Args... args) :
+      object(new value_type(arg1, arg2, args...)),
       label(rootLabel) {
-    static_assert(std::is_constructible<value_type,Arg,Args...>::value,
-        "invalid call to class constructor");
-    // ^ ideally this condition would be checked with SFINAE, but the
-    //   definition of value_type may not be available at the point that a
-    //   pointer to it is declared, causing a compile error
+    //
   }
 
   /**
@@ -198,7 +229,7 @@ struct is_pointer<Lazy<P>> {
 };
 
 template<class P>
-struct raw_type<Lazy<P>> {
-  using type = typename raw_type<P>::type;
+struct raw<Lazy<P>> {
+  using type = typename raw<P>::type;
 };
 }
