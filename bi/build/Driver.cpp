@@ -1253,7 +1253,7 @@ void bi::Driver::ldconfig() {
   #ifndef __APPLE__
   auto euid = geteuid();
   if (euid == 0) {
-    std::system("ldconfig");
+    [[maybe_unused]] int result = std::system("ldconfig");
   }
   #endif
 }
