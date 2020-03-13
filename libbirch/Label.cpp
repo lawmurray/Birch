@@ -3,7 +3,7 @@
  */
 #include "libbirch/Label.hpp"
 
-libbirch::Label::Label() {
+libbirch::Label::Label() : Any(0) {
   //
 }
 
@@ -32,7 +32,7 @@ libbirch::Any* libbirch::Label::get(Any* o) {
 	}
   if (frozen) {
     Any* cloned;
-    if (next->isUnique()) {
+    if (false && next->isUnique()) {
       /* this is the last pointer to the object, recycle it */
       cloned = next->recycle_(Recycler(this));
     } else {
