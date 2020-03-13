@@ -40,24 +40,6 @@
  */
 namespace libbirch {
 /**
- * Lazy shared pointer.
- */
-template<class T>
-using LazySharedPtr = Lazy<SharedPtr<T>>;
-
-/**
- * Lazy weak pointer.
- */
-template<class T>
-using LazyWeakPtr = Lazy<WeakPtr<T>>;
-
-/**
- * Lazy init pointer.
- */
-template<class T>
-using LazyInitPtr = Lazy<InitPtr<T>>;
-
-/**
  * Make a range.
  *
  * @ingroup libbirch

@@ -32,7 +32,7 @@ function make(name:String) -> Object? {
   using make_t = bi::type::Object*();
   void* addr = dlsym(RTLD_DEFAULT, symbol.c_str());
   if (addr) {
-    result = libbirch::LazySharedPtr<bi::type::Object>(reinterpret_cast<make_t*>(addr)());
+    result = libbirch::Lazy<libbirch::SharedPtr<bi::type::Object>>(reinterpret_cast<make_t*>(addr)());
   }
   }}
   if !result? {

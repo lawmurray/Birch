@@ -618,23 +618,6 @@ abstract class Buffer {
   function get(name:String, value:Real[_,_]?) -> Real[_,_]? {
     return getRealMatrix(name);
   }
-
-  /**
-   * Get an object.
-   *
-   * - name: Name of the child.
-   * - value: The object.
-   *
-   * Return: The object.
-   */
-  function get(name:String, value:Object) -> Object? {
-    auto buffer <- getChild(name);
-    if buffer? {
-      return buffer!.get(value);
-    } else {
-      return nil;
-    }
-  }
   
   /**
    * Set this as an object.
