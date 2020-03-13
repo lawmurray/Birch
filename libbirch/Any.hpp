@@ -298,6 +298,7 @@ public:
    */
   void replaceLabel(Label* label) {
     assert(numShared() > 0u);
+    auto old = this->label;
     releaseLabel();
     this->label = label;
     holdLabel();
