@@ -104,34 +104,6 @@ void bi::CppPackageGenerator::visit(const Package* o) {
       }
     }
 
-    /* forward super type declarations */
-    for (auto o : classes) {
-      if (!o->isAlias()) {
-        auto base = dynamic_cast<const NamedType*>(o->base);
-        if (!o->typeParams->isEmpty()) {
-          genTemplateParams(o);
-        } else {
-          line("template<>");
-        }
-        start("struct super_type<" << o->name);
-        genTemplateArgs(o);
-        finish("> {");
-        in();
-        start("using type = ");
-        if (base) {
-          middle(base->name);
-          if (!base->typeArgs->isEmpty()) {
-            middle('<' << base->typeArgs << '>');
-          }
-        } else {
-          middle("libbirch::Any");
-        }
-        finish(';');
-        out();
-        line("};");
-      }
-    }
-
     /* classes */
     for (auto o : sortedClasses) {
       if (!o->isAlias()) {
