@@ -789,4 +789,41 @@ struct is_array<Array<T,F>> {
  */
 template<class T, int D>
 using DefaultArray = Array<T,typename DefaultShape<D>::type>;
+
+/**
+ * Convert an Eigen matrix to a LibBirch array.
+ *
+ * This is used as a wrapper around expressions to ensure that the `auto`
+ * keyword deduces the LibBirch type, and not the Eigen type, for which use
+ * of `auto` can be problematic.
+ *
+ * @see https://eigen.tuxfamily.org/dox/TopicPitfalls.html#title3
+ */
+template<class EigenType, std::enable_if_t<EigenType::ColsAtCompileTime == 1,int> = 0>
+auto canonical(const Eigen::MatrixBase<EigenType>& o) {
+  using T = typename EigenType::value_type;
+  using F = typename DefaultShape<1>::type;
+  return Array<T,F>(o);
+}
+
+template<class EigenType, std::enable_if_t<EigenType::ColsAtCompileTime == 2,int> = 0>
+auto canonical(const Eigen::MatrixBase<EigenType>& o) {
+  using T = typename EigenType::value_type;
+  using F = typename DefaultShape<2>::type;
+  return Array<T,F>(o);
+}
+
+template<class EigenType, std::enable_if_t<EigenType::ColsAtCompileTime == 2,int> = 0>
+auto canonical(const Eigen::DiagonalWrapper<EigenType>& o) {
+  using T = typename EigenType::value_type;
+  using F = typename DefaultShape<2>::type;
+  return Array<T,F>(o);
+}
+
+template<class EigenType, unsigned Mode, std::enable_if_t<EigenType::ColsAtCompileTime == 2,int> = 0>
+auto canonical(const Eigen::TriangularView<EigenType,Mode>& o) {
+  using T = typename EigenType::value_type;
+  using F = typename DefaultShape<2>::type;
+  return Array<T,F>(o);
+}
 }

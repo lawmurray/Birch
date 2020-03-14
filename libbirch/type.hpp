@@ -132,4 +132,20 @@ template<class T>
 struct raw<T*> {
   using type = T*;
 };
+
+/**
+ * Convert an object to its canonical LibBirch type. This is an identity
+ * operation in most cases. For Eigen types, a overload converts objects to
+ * their corresponding LibBirch type.
+ *
+ * This is used as a wrapper around expressions to ensure that the `auto`
+ * keyword deduces the LibBirch type, and not the Eigen type, for which use
+ * of `auto` can be problematic.
+ *
+ * @see https://eigen.tuxfamily.org/dox/TopicPitfalls.html#title3
+ */
+template<class T>
+auto canonical(T&& o) {
+  return std::forward<T>(o);
+}
 }
