@@ -229,14 +229,14 @@ void bi::CppResumeGenerator::genPack(const Function* o) {
     if (!first) {
       middle(", ");
     }
-    middle(getName(param->name->str(), param->number));
+    middle("libbirch::canonical(" << getName(param->name->str(), param->number) << ')');
     first = false;
   }
   for (auto local : locals) {
     if (!first) {
       middle(", ");
     }
-    middle(getName(local->name->str(), local->number));
+    middle("libbirch::canonical(" << getName(local->name->str(), local->number) << ')');
     first = false;
   }
   if (requiresPack) {
@@ -273,9 +273,6 @@ void bi::CppResumeGenerator::genYieldMacro(const Function* o) {
     middle(", ");
   }
   middle("new ");
-  //if (currentClass && !currentClass->typeParams->isEmpty()) {
-  //  middle("typename " << currentClass->name << '<' << currentClass->typeParams << ">::");
-  //}
   genUniqueName(o);
   genPackType(o);
   middle('(');
