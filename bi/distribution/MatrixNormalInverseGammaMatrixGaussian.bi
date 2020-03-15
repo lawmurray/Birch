@@ -1,5 +1,5 @@
 /*
- * ed matrix Gaussian variate with matrix-normal-inverse-gamma prior.
+ * Grafted matrix normal-inverse-gamma-Gaussian distribution.
  */
 final class MatrixNormalInverseGammaMatrixGaussian(
     M:MatrixNormalInverseGamma) < Distribution<Real[_,_]> {
@@ -7,6 +7,14 @@ final class MatrixNormalInverseGammaMatrixGaussian(
    * Mean.
    */
   M:MatrixNormalInverseGamma& <- M;
+
+  function rows() -> Integer {
+    return M.rows();
+  }
+  
+  function columns() -> Integer {
+    return M.columns();
+  }
 
   function simulate() -> Real[_,_] {
     return simulate_matrix_normal_inverse_gamma_matrix_gaussian(

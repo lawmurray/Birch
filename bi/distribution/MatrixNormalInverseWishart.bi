@@ -1,5 +1,5 @@
 /*
- * ed matrix normal-inverse-wishart variate.
+ * Grafted matrix normal-inverse-Wishart distribution.
  */
 final class MatrixNormalInverseWishart(M:Expression<Real[_,_]>,
     U:Expression<Real[_,_]>, V:InverseWishart) < Distribution<Real[_,_]> {
@@ -19,15 +19,16 @@ final class MatrixNormalInverseWishart(M:Expression<Real[_,_]>,
   V:InverseWishart& <- V;
 
   function rows() -> Integer {
-    return global.rows(N);
+    return N.rows();
   }
   
   function columns() -> Integer {
-    return global.columns(N);
+    return N.columns();
   }
 
   function simulate() -> Real[_,_] {
-    return simulate_matrix_normal_inverse_wishart(N.value(), Λ.value(), V.Ψ.value(), V.k.value());
+    return simulate_matrix_normal_inverse_wishart(N.value(), Λ.value(),
+        V.Ψ.value(), V.k.value());
   }
   
   function logpdf(X:Real[_,_]) -> Real {   

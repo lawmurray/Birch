@@ -19,11 +19,11 @@ class TransformLinearMatrix<Value>(A:Expression<Real[_,_]>, X:Value,
   C:Expression<Real[_,_]> <- C;
     
   function rows() -> Integer {
-    return global.rows(A);
+    return C.rows();
   }
   
   function columns() -> Integer {
-    return global.columns(C);
+    return C.columns();
   }
     
   function leftMultiply(Y:Expression<Real[_,_]>) {

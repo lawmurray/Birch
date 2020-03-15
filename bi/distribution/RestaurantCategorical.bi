@@ -1,5 +1,5 @@
 /*
- * ed restaurant-categorical random variate.
+ * Grafted restaurant-categorical distribution.
  */
 final class RestaurantCategorical(ρ:Restaurant) < Distribution<Integer> {
   /**
@@ -30,7 +30,6 @@ final class RestaurantCategorical(ρ:Restaurant) < Distribution<Integer> {
     ρ.N <- ρ.N + 1;
   }
 }
-
 
 function RestaurantCategorical(ρ:Restaurant) -> RestaurantCategorical {
   m:RestaurantCategorical(ρ);

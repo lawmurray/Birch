@@ -1,4 +1,4 @@
-/**
+/*
  * Multivariate inverse-gamma distribution with independent components.
  *
  * This is typically used to establish a conjugate prior for a Bayesian

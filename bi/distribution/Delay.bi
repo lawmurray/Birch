@@ -1,5 +1,6 @@
-/*
- * Interface for delayed sampling $M$-path nodes.
+/**
+ * Interface for distributions that may appear as nodes on the delayed
+ * sampling $M$-path.
  */
 abstract class Delay {
   /**

@@ -1,7 +1,8 @@
 /*
- * ed scaled gamma-exponential random variate.
+ * Grafted scaled gamma-exponential distribution.
  */
-class ScaledGammaExponential(a:Expression<Real>, λ:Gamma) < Distribution<Real> {
+class ScaledGammaExponential(a:Expression<Real>, λ:Gamma) <
+    Distribution<Real> {
   /**
    * Scale.
    */
@@ -21,11 +22,13 @@ class ScaledGammaExponential(a:Expression<Real>, λ:Gamma) < Distribution<Real> 
   }
 
   function update(x:Real) {
-    (λ.k, λ.θ) <- update_scaled_gamma_exponential(x, a.value(), λ.k.value(), λ.θ.value());
+    (λ.k, λ.θ) <- update_scaled_gamma_exponential(x, a.value(),
+        λ.k.value(), λ.θ.value());
   }
   
   function downdate(x:Real) {
-    (λ.k, λ.θ) <- downdate_scaled_gamma_exponential(x, a.value(), λ.k.value(), λ.θ.value());
+    (λ.k, λ.θ) <- downdate_scaled_gamma_exponential(x, a.value(),
+        λ.k.value(), λ.θ.value());
   }
 
   function cdf(x:Real) -> Real? {
@@ -41,7 +44,8 @@ class ScaledGammaExponential(a:Expression<Real>, λ:Gamma) < Distribution<Real> 
   }
 }
 
-function ScaledGammaExponential(a:Expression<Real>, λ:Gamma) -> ScaledGammaExponential {
+function ScaledGammaExponential(a:Expression<Real>, λ:Gamma) ->
+    ScaledGammaExponential {
   m:ScaledGammaExponential(a, λ);
   λ.setChild(m);
   return m;

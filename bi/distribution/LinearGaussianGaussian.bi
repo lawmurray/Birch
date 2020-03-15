@@ -1,8 +1,8 @@
 /*
- * ed linear-Gaussian-Gaussian random variate.
+ * Grafted linear-Gaussian-Gaussian distribution.
  */
 final class LinearGaussianGaussian(a:Expression<Real>, m:Gaussian,
-    c:Expression<Real>, s2:Expression<Real>) < Gaussian(a*m.μ + c,
+    c:Expression<Real>, s2:Expression<Real>) < GraftedGaussian(a*m.μ + c,
     a*a*m.σ2 + s2) {
   /**
    * Scale.

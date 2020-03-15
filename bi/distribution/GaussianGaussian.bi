@@ -1,8 +1,8 @@
 /*
- * ed Gaussian-Gaussian random variate.
+ * Grafted Gaussian-Gaussian distribution.
  */
 final class GaussianGaussian(m:Gaussian, s2:Expression<Real>) <
-    Gaussian(m.μ, m.σ2 + s2) {
+    GraftedGaussian(m.μ, m.σ2 + s2) {
   /**
    * Mean.
    */
@@ -26,8 +26,7 @@ final class GaussianGaussian(m:Gaussian, s2:Expression<Real>) <
   }
 }
 
-function GaussianGaussian(μ:Gaussian, σ2:Expression<Real>) ->
-    GaussianGaussian {
+function GaussianGaussian(μ:Gaussian, σ2:Expression<Real>) -> GaussianGaussian {
   m:GaussianGaussian(μ, σ2);
   μ.setChild(m);
   return m;

@@ -1,5 +1,5 @@
 /*
- * ed Beta-negative-binomial random variate
+ * Beta-negative-binomial distribution.
  */
 final class BetaNegativeBinomial(k:Expression<Integer>, ρ:Beta) < Discrete {
   /**
@@ -37,7 +37,8 @@ final class BetaNegativeBinomial(k:Expression<Integer>, ρ:Beta) < Discrete {
   }
 }
 
-function BetaNegativeBinomial(k:Expression<Integer>, ρ:Beta) -> BetaNegativeBinomial {
+function BetaNegativeBinomial(k:Expression<Integer>, ρ:Beta) ->
+    BetaNegativeBinomial {
   m:BetaNegativeBinomial(k, ρ);
   ρ.setChild(m);
   return m;

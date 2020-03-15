@@ -1,5 +1,5 @@
 /*
- * ed normal-inverse-gamma-Gaussian random variate.
+ * Grafted normal-inverse-gamma-Gaussian distribution.
  */
 final class NormalInverseGammaGaussian(μ:NormalInverseGamma) <
     Distribution<Real> {
@@ -9,11 +9,13 @@ final class NormalInverseGammaGaussian(μ:NormalInverseGamma) <
   μ:NormalInverseGamma& <- μ;
 
   function simulate() -> Real {
-    return simulate_normal_inverse_gamma_gaussian(μ.μ.value(), 1.0/μ.λ.value(), μ.σ2.α.value(), μ.σ2.β.value());
+    return simulate_normal_inverse_gamma_gaussian(μ.μ.value(),
+        1.0/μ.λ.value(), μ.σ2.α.value(), μ.σ2.β.value());
   }
   
   function logpdf(x:Real) -> Real {
-    return logpdf_normal_inverse_gamma_gaussian(x, μ.μ.value(), 1.0/μ.λ.value(), μ.σ2.α.value(), μ.σ2.β.value());
+    return logpdf_normal_inverse_gamma_gaussian(x, μ.μ.value(),
+        1.0/μ.λ.value(), μ.σ2.α.value(), μ.σ2.β.value());
   }
 
   function update(x:Real) {
@@ -27,11 +29,13 @@ final class NormalInverseGammaGaussian(μ:NormalInverseGamma) <
   }
 
   function cdf(x:Real) -> Real? {
-    return cdf_normal_inverse_gamma_gaussian(x, μ.μ.value(), 1.0/μ.λ.value(), μ.σ2.α.value(), μ.σ2.β.value());
+    return cdf_normal_inverse_gamma_gaussian(x, μ.μ.value(),
+        1.0/μ.λ.value(), μ.σ2.α.value(), μ.σ2.β.value());
   }
 
   function quantile(P:Real) -> Real? {
-    return quantile_normal_inverse_gamma_gaussian(P, μ.μ.value(), 1.0/μ.λ.value(), μ.σ2.α.value(), μ.σ2.β.value());
+    return quantile_normal_inverse_gamma_gaussian(P, μ.μ.value(),
+        1.0/μ.λ.value(), μ.σ2.α.value(), μ.σ2.β.value());
   }
 }
 

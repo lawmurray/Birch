@@ -43,13 +43,13 @@ final class ScalarGaussian(μ:Expression<Real>, σ2:Expression<Real>,
     } else if (s1 <- τ2.graftInverseGamma())? {
       return NormalInverseGamma(μ, σ2, s1!);
     } else {
-      return Gaussian(μ, σ2*τ2);
+      return GraftedGaussian(μ, σ2*τ2);
     }
   }
 
   function graftGaussian() -> Gaussian? {
     prune();
-    return Gaussian(μ, σ2*τ2);
+    return GraftedGaussian(μ, σ2*τ2);
   }
 
   function graftNormalInverseGamma() -> NormalInverseGamma? {

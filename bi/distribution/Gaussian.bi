@@ -1,8 +1,7 @@
-/*
- * ed Gaussian random variate.
+/**
+ * Gaussian distribution.
  */
-class Gaussian(μ:Expression<Real>, σ2:Expression<Real>) <
-    Distribution<Real> {
+class Gaussian(μ:Expression<Real>, σ2:Expression<Real>) < Distribution<Real> {
   /**
    * Mean.
    */
@@ -59,7 +58,7 @@ class Gaussian(μ:Expression<Real>, σ2:Expression<Real>) <
     } else if (s2 <- σ2.graftInverseGamma())? {
       return NormalInverseGamma(μ, Boxed(1.0), s2!);
     } else {
-      return this;
+      return GraftedGaussian(μ, σ2);
     }
   }
 
@@ -75,7 +74,7 @@ class Gaussian(μ:Expression<Real>, σ2:Expression<Real>) <
     } else if (m3 <- μ.graftGaussian())? {
       return GaussianGaussian(m3!, σ2);
     } else {
-      return this;
+      return GraftedGaussian(μ, σ2);
     }
   }
 

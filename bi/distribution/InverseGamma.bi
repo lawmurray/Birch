@@ -1,5 +1,5 @@
-/*
- * ed inverse-gamma random variate.
+/**
+ * Inverse-gamma distribution.
  */
 final class InverseGamma(α:Expression<Real>, β:Expression<Real>) <
     Distribution<Real> {

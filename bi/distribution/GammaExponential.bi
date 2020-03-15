@@ -1,5 +1,5 @@
 /*
- * ed gamma-Exponential random variate.
+ * Grafted gamma-exponential distribution.
  */
 final class GammaExponential(λ:Gamma) < Distribution<Real> {
   /**

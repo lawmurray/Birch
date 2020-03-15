@@ -1,5 +1,6 @@
 /*
- * ed multivariate uniform random variable over integers.
+ * Multivariate uniform distribution over integers where each element is
+ * independent.
  */
 final class IndependentUniformInteger(l:Expression<Integer[_]>,
     u:Expression<Integer[_]>) < Distribution<Integer[_]> {
@@ -39,7 +40,8 @@ final class IndependentUniformInteger(l:Expression<Integer[_]>,
 }
 
 /**
- * Create multivariate uniform distribution over integers.
+ * Create multivariate uniform distribution over integers where each element
+ * is independent.
  */
 function Uniform(l:Expression<Integer[_]>, u:Expression<Integer[_]>) ->
     IndependentUniformInteger {
@@ -48,7 +50,8 @@ function Uniform(l:Expression<Integer[_]>, u:Expression<Integer[_]>) ->
 }
 
 /**
- * Create multivariate uniform distribution over integers.
+ * Create multivariate uniform distribution over integers where each element
+ * is independent.
  */
 function Uniform(l:Expression<Integer[_]>, u:Integer[_]) ->
     IndependentUniformInteger {
@@ -56,7 +59,8 @@ function Uniform(l:Expression<Integer[_]>, u:Integer[_]) ->
 }
 
 /**
- * Create multivariate uniform distribution over integers.
+ * Create multivariate uniform distribution over integers where each element
+ * is independent.
  */
 function Uniform(l:Integer[_], u:Expression<Integer[_]>) ->
     IndependentUniformInteger {
@@ -64,7 +68,8 @@ function Uniform(l:Integer[_], u:Expression<Integer[_]>) ->
 }
 
 /**
- * Create multivariate uniform distribution over integers.
+ * Create multivariate uniform distribution over integers where each element
+ * is independent.
  */
 function Uniform(l:Integer[_], u:Integer[_]) -> IndependentUniformInteger {
   return Uniform(Boxed(l), Boxed(u));

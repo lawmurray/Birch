@@ -1,8 +1,7 @@
-/*
- * ed gamma random variate.
+/**
+ * Gamma distribution.
  */
-final class Gamma(k:Expression<Real>, θ:Expression<Real>) <
-    Distribution<Real> {
+class Gamma(k:Expression<Real>, θ:Expression<Real>) < Distribution<Real> {
   /**
    * Shape.
    */
@@ -39,13 +38,13 @@ final class Gamma(k:Expression<Real>, θ:Expression<Real>) <
     if (θ1 <- θ.graftInverseGamma())? {
       return InverseGammaGamma(k, θ1!);
     } else {
-      return this;
+      return GraftedGamma(k, θ);
     }
   }
 
   function graftGamma() -> Gamma? {
     prune();
-    return this;
+    return GraftedGamma(k, θ);
   }
 
   function write(buffer:Buffer) {

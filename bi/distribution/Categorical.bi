@@ -1,7 +1,7 @@
-/*
- * ed Categorical random variate.
+/**
+ * Categorical distribution.
  */
-final class Categorical(ρ:Expression<Real[_]>) < Distribution<Integer> {
+class Categorical(ρ:Expression<Real[_]>) < Distribution<Integer> {
   /**
    * Category probabilities.
    */
@@ -40,7 +40,7 @@ final class Categorical(ρ:Expression<Real[_]>) < Distribution<Integer> {
     } else if (m2 <- ρ.graftRestaurant())? {
       return RestaurantCategorical(m2!);
     } else {
-      return this;
+      return GraftedCategorical(ρ);
     }
   }
 

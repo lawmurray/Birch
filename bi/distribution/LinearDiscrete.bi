@@ -1,5 +1,5 @@
 /*
- * ed delta function on a linear transformation of a discrete random
+ * Grafted delta function on a linear transformation of a discrete random
  * variate.
  */
 final class LinearDiscrete(a:Expression<Integer>, μ:Discrete,

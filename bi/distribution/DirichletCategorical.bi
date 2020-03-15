@@ -1,5 +1,5 @@
 /*
- * ed Dirichlet-categorical random variate.
+ * Dirichlet-categorical distribution.
  */
 final class DirichletCategorical(ρ:Dirichlet) < Distribution<Integer> {
   /**

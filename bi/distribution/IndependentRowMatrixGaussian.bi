@@ -1,4 +1,4 @@
-/**
+/*
  * Matrix Gaussian distribution where each row is independent.
  */
 final class IndependentRowMatrixGaussian(M:Expression<Real[_,_]>,
@@ -42,13 +42,13 @@ final class IndependentRowMatrixGaussian(M:Expression<Real[_,_]>,
     } else if (s1 <- V.graftInverseWishart())? {
       return MatrixNormalInverseWishart(M, Identity(M.rows()), s1!);
     } else {
-      return Gaussian(M, identity(M.rows()), V);
+      return GraftedMatrixGaussian(M, Identity(M.rows()), V);
     }
   }
 
   function graftMatrixGaussian() -> MatrixGaussian? {
     prune();
-    return Gaussian(M, identity(M.rows()), V);
+    return GraftedMatrixGaussian(M, Identity(M.rows()), V);
   }
 
   function graftMatrixNormalInverseWishart() -> MatrixNormalInverseWishart? {

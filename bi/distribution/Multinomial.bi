@@ -1,7 +1,7 @@
-/*
- * ed multinomial random variate.
+/**
+ * Multinomial distribution.
  */
-final class Multinomial(n:Expression<Integer>, ρ:Expression<Real[_]>) <
+class Multinomial(n:Expression<Integer>, ρ:Expression<Real[_]>) <
     Distribution<Integer[_]> {
   /**
    * Number of trials.
@@ -31,7 +31,7 @@ final class Multinomial(n:Expression<Integer>, ρ:Expression<Real[_]>) <
     if (m <- ρ.graftDirichlet())? {
       return DirichletMultinomial(n, m!);
     } else {
-      return this;
+      return GraftedMultinomial(n, ρ);
     }
   }
 

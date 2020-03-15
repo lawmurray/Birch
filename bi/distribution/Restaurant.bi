@@ -1,7 +1,9 @@
-/*
- * ed Chinese restaurant process (CRP) random variate. Such a variate
- * cannot be instantiated, but the associated random variable may be
- * marginalized out.
+/**
+ * Chinese restaurant process (CRP).
+ *
+ * A Random assigned this distribution cannot be instantiated or its
+ * likelihood evaluated. The distribution exists only for use as a prior on
+ * a Categorical distribution.
  */
 final class Restaurant(α:Expression<Real>, θ:Expression<Real>) <
     Distribution<Real[_]> {

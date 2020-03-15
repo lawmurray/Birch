@@ -1,5 +1,5 @@
 /*
- * ed delta function on a discrete random variate.
+ * Delta distribution on a discrete distribution.
  */
 final class DiscreteDelta(μ:Discrete) < Discrete {
   /**

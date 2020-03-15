@@ -1,5 +1,5 @@
 /*
- * ed gamma-Poisson random variate.
+ * Grafted gamma-Poisson distribution.
  */
 final class GammaPoisson(λ:Gamma) < Discrete {
   /**
@@ -40,7 +40,7 @@ final class GammaPoisson(λ:Gamma) < Discrete {
   }
 }
 
-function GammaPoisson(λ:Gamma) ->  GammaPoisson {
+function GammaPoisson(λ:Gamma) -> GammaPoisson {
   m:GammaPoisson(λ);
   λ.setChild(m);
   return m;

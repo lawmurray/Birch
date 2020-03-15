@@ -1,5 +1,9 @@
-/*
- * ed multivariate Gaussian random variate.
+/**
+ * Multivariate Gaussian distribution.
+ *
+ * !!! note
+ *     See Gaussian for associated factory functions for the creation of
+ *     MultivariateGaussian objects.
  */
 class MultivariateGaussian(μ:Expression<Real[_]>, Σ:Expression<Real[_,_]>) <
     Distribution<Real[_]> {
@@ -43,7 +47,7 @@ class MultivariateGaussian(μ:Expression<Real[_]>, Σ:Expression<Real[_,_]>) <
     } else if (m2 <- μ.graftMultivariateGaussian())? {
       return MultivariateGaussianMultivariateGaussian(m2!, Σ);
     } else {
-      return this;
+      return GraftedMultivariateGaussian(μ, Σ);
     }
   }
 
@@ -57,7 +61,7 @@ class MultivariateGaussian(μ:Expression<Real[_]>, Σ:Expression<Real[_,_]>) <
     } else if (m2 <- μ.graftMultivariateGaussian())? {
       return MultivariateGaussianMultivariateGaussian(m2!, Σ);
     } else {
-      return this;
+      return GraftedMultivariateGaussian(μ, Σ);
     }
   }
 

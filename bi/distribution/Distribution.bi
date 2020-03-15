@@ -1,5 +1,5 @@
-/*
- * Type-specific interface for delayed sampling $M$-path nodes.
+/**
+ * Distribution with delayed-sampling support.
  *
  * - Value: Value type.
  */

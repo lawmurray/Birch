@@ -1,8 +1,8 @@
 /*
- * ed uniform random variable.
+ * Grafted uniform random variable.
  */
-final class Uniform(l:Expression<Real>, u:Expression<Real>)
-    < Distribution<Real> {
+final class Uniform(l:Expression<Real>, u:Expression<Real>) <
+    Distribution<Real> {
   /**
    * Lower bound.
    */

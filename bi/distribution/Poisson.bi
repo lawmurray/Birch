@@ -1,7 +1,7 @@
-/*
- * ed Poisson random variate.
+/**
+ * Poisson distribution.
  */
-final class Poisson(λ:Expression<Real>) < Discrete {
+class Poisson(λ:Expression<Real>) < Discrete {
   /**
    * Rate.
    */
@@ -45,13 +45,13 @@ final class Poisson(λ:Expression<Real>) < Discrete {
     } else if (m2 <- λ.graftGamma())? {
       return GammaPoisson(m2!);
     } else {
-      return this;
+      return GraftedPoisson(λ);
     }
   }
 
   function graftDiscrete() -> Discrete? {
     prune();
-    return this;
+    return GraftedPoisson(λ);
   }
 
   function write(buffer:Buffer) {

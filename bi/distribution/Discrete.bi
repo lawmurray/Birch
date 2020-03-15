@@ -1,5 +1,5 @@
-/*
- * ed discrete random variate.
+/**
+ * Discrete distribution.
  */
 abstract class Discrete < Distribution<Integer> {
   /**

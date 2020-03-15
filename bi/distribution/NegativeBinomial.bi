@@ -1,7 +1,7 @@
-/*
- * ed negative binomial random variate.
+/**
+ * Negative binomial distribution.
  */
-final class NegativeBinomial(k:Expression<Integer>, ρ:Expression<Real>) <
+class NegativeBinomial(k:Expression<Integer>, ρ:Expression<Real>) <
     Discrete {
   /**
    * Number of successes before the experiment is stopped.
@@ -43,7 +43,7 @@ final class NegativeBinomial(k:Expression<Integer>, ρ:Expression<Real>) <
     if (ρ1 <- ρ.graftBeta())? {
       return BetaNegativeBinomial(k, ρ1!);
     } else {
-      return this;
+      return GraftedNegativeBinomial(k, ρ);
     }
   }
 

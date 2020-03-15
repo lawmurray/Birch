@@ -1,5 +1,5 @@
 /*
- * ed matrix Gaussian variate with matrix-normal-inverse-Wishart prior.
+ * Grafted matrix normal-inverse-Wishart-Gaussian distribution.
  */
 final class MatrixNormalInverseWishartMatrixGaussian(
     M:MatrixNormalInverseWishart) < Distribution<Real[_,_]> {
@@ -7,6 +7,14 @@ final class MatrixNormalInverseWishartMatrixGaussian(
    * Mean.
    */
   M:MatrixNormalInverseWishart& <- M;
+
+  function rows() -> Integer {
+    return M.rows();
+  }
+  
+  function columns() -> Integer {
+    return M.columns();
+  }
 
   function simulate() -> Real[_,_] {
     return simulate_matrix_normal_inverse_wishart_matrix_gaussian(

@@ -1,9 +1,9 @@
 /*
- * ed multivariate linear-Gaussian-Gaussian random variate.
+ * Multivariate linear-Gaussian-Gaussian distribution.
  */
 final class LinearMultivariateGaussianMultivariateGaussian(
     A:Expression<Real[_,_]>, m:MultivariateGaussian, c:Expression<Real[_]>,
-    S:Expression<Real[_,_]>) < MultivariateGaussian(A*m.μ + c,
+    S:Expression<Real[_,_]>) < GraftedMultivariateGaussian(A*m.μ + c,
     A*m.Σ*transpose(A) + S) {
   /**
    * Scale.

@@ -1,5 +1,5 @@
 /*
- * Bounded discrete random variate.
+ * Bounded discrete distribution.
  */
 abstract class BoundedDiscrete < Discrete {
   abstract function lower() -> Integer?;

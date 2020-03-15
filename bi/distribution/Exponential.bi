@@ -1,8 +1,7 @@
-/*
- * ed exponential random variate.
+/**
+ * Exponential distribution.
  */
-final class Exponential(λ:Expression<Real>) <
-    Distribution<Real> {
+class Exponential(λ:Expression<Real>) < Distribution<Real> {
   /**
    * Rate.
    */
@@ -37,7 +36,7 @@ final class Exponential(λ:Expression<Real>) <
     } else if (m2 <- λ.graftGamma())? {
       return GammaExponential(m2!);
     } else {
-      return this;
+      return GraftedExponential(λ);
     }
   }
 

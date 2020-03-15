@@ -1,5 +1,5 @@
 /*
- * ed matrix normal-inverse-gamma variate.
+ * Grafted matrix normal-inverse-gamma distribution.
  */
 final class MatrixNormalInverseGamma(M:Expression<Real[_,_]>,
     Σ:Expression<Real[_,_]>, σ2:IndependentInverseGamma) <
@@ -30,11 +30,11 @@ final class MatrixNormalInverseGamma(M:Expression<Real[_,_]>,
   σ2:IndependentInverseGamma& <- σ2;
 
   function rows() -> Integer {
-    return global.rows(N);
+    return N.rows();
   }
   
   function columns() -> Integer {
-    return global.columns(N);
+    return N.columns();
   }
 
   function simulate() -> Real[_,_] {
@@ -49,12 +49,14 @@ final class MatrixNormalInverseGamma(M:Expression<Real[_,_]>,
 
   function update(X:Real[_,_]) {
     (σ2.α, σ2.β) <- update_matrix_normal_inverse_gamma(X, N.value(),
-        Λ.value(), α.value(), gamma_to_beta(γ.value(), N.value(), Λ.value()));
+        Λ.value(), α.value(), gamma_to_beta(γ.value(), N.value(),
+        Λ.value()));
   }
 
   function downdate(X:Real[_,_]) {
     (σ2.α, σ2.β) <- downdate_matrix_normal_inverse_gamma(X, N.value(),
-        Λ.value(), α.value(), gamma_to_beta(γ.value(), N.value(), Λ.value()));
+        Λ.value(), α.value(), gamma_to_beta(γ.value(), N.value(),
+        Λ.value()));
   }
 
   function graft() -> Distribution<Real[_,_]> {

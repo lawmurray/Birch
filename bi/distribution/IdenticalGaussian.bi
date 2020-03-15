@@ -1,4 +1,4 @@
-/**
+/*
  * Multivariate Gaussian distribution with independent and identical
  * variance.
  */
@@ -51,7 +51,7 @@ final class IdenticalGaussian(μ:Expression<Real[_]>, σ2:Expression<Real>) <
     } else if (s1 <- σ2.graftInverseGamma())? {
       return MultivariateNormalInverseGamma(μ, Identity(μ.rows()), s1!);
     } else {
-      return Gaussian(μ, diagonal(σ2, μ.rows()));
+      return GraftedMultivariateGaussian(μ, diagonal(σ2, μ.rows()));
     }
   }
 
@@ -66,7 +66,7 @@ final class IdenticalGaussian(μ:Expression<Real[_]>, σ2:Expression<Real>) <
       return MultivariateGaussianMultivariateGaussian(m2!,
           diagonal(σ2, m2!.rows()));
     } else {
-      return Gaussian(μ, diagonal(σ2, μ.rows()));
+      return GraftedMultivariateGaussian(μ, diagonal(σ2, μ.rows()));
     }
   }
 
@@ -82,7 +82,8 @@ final class IdenticalGaussian(μ:Expression<Real[_]>, σ2:Expression<Real>) <
 }
 
 /**
- * Create multivariate Gaussian distribution.
+ * Create multivariate Gaussian distribution with independent and identical
+ * variance.
  */
 function Gaussian(μ:Expression<Real[_]>, σ2:Expression<Real>) ->
     IdenticalGaussian {
@@ -91,21 +92,24 @@ function Gaussian(μ:Expression<Real[_]>, σ2:Expression<Real>) ->
 }
 
 /**
- * Create multivariate Gaussian distribution.
+ * Create multivariate Gaussian distribution with independent and identical
+ * variance.
  */
 function Gaussian(μ:Expression<Real[_]>, σ2:Real) -> IdenticalGaussian {
   return Gaussian(μ, Boxed(σ2));
 }
 
 /**
- * Create multivariate Gaussian distribution.
+ * Create multivariate Gaussian distribution with independent and identical
+ * variance.
  */
 function Gaussian(μ:Real[_], σ2:Expression<Real>) -> IdenticalGaussian {
   return Gaussian(Boxed(μ), σ2);
 }
 
 /**
- * Create multivariate Gaussian distribution.
+ * Create multivariate Gaussian distribution with independent and identical
+ * variance.
  */
 function Gaussian(μ:Real[_], σ2:Real) -> IdenticalGaussian {
   return Gaussian(Boxed(μ), Boxed(σ2));

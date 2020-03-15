@@ -1,5 +1,5 @@
-/*
- * ed Wishart random variate.
+/**
+ * Wishart distribution.
  */
 final class Wishart(Ψ:Expression<Real[_,_]>, k:Expression<Real>) <
     Distribution<Real[_,_]> {

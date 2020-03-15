@@ -54,7 +54,7 @@ final class MultivariateNormalInverseGamma(μ:Expression<Real[_]>,
   σ2:InverseGamma& <- σ2;
 
   function rows() -> Integer {
-    return length(ν);
+    return ν.rows();
   }
 
   function simulate() -> Real[_] {

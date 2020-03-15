@@ -1,8 +1,7 @@
-/*
- * ed binomial random variate.
+/**
+ * Binomial distribution.
  */
-final class Binomial(n:Expression<Integer>, ρ:Expression<Real>) <
-    BoundedDiscrete {
+class Binomial(n:Expression<Integer>, ρ:Expression<Real>) < BoundedDiscrete {
   /**
    * Number of trials.
    */
@@ -47,7 +46,7 @@ final class Binomial(n:Expression<Integer>, ρ:Expression<Real>) <
     if (m <- ρ.graftBeta())? {
       return BetaBinomial(n, m!);
     } else {
-      return this;
+      return GraftedBinomial(n, ρ);
     }
   }
   

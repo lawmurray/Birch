@@ -37,13 +37,13 @@ final class ScalarMultivariateGaussian(μ:Expression<Real[_]>,
     if (s1 <- σ2.graftInverseGamma())? {
       return MultivariateNormalInverseGamma(μ, Σ, s1!);
     } else {
-      return Gaussian(μ, Σ*σ2);
+      return GraftedMultivariateGaussian(μ, Σ*σ2);
     }
   }
 
   function graftMultivariateGaussian() -> MultivariateGaussian? {
     prune();
-    return Gaussian(μ, Σ*σ2);
+    return GraftedMultivariateGaussian(μ, Σ*σ2);
   }
 
   function graftMultivariateNormalInverseGamma() -> MultivariateNormalInverseGamma? {

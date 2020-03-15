@@ -1,5 +1,5 @@
 /*
- * ed multivariate normal-inverse-gamma-Gaussian random variate.
+ * Grafted multivariate normal-inverse-gamma-Gaussian distribution.
  */
 final class MultivariateNormalInverseGammaMultivariateGaussian(
     μ:MultivariateNormalInverseGamma) < Distribution<Real[_]> {
@@ -7,6 +7,10 @@ final class MultivariateNormalInverseGammaMultivariateGaussian(
    * Mean.
    */
   μ:MultivariateNormalInverseGamma& <- μ;
+
+  function rows() -> Integer {
+    return μ.rows();
+  }
 
   function simulate() -> Real[_] {
     return simulate_multivariate_normal_inverse_gamma_multivariate_gaussian(

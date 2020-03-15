@@ -2,7 +2,7 @@
  * Delta distribution, representing a distribution on a discrete space with
  * all probability mass at one location.
  */
-final class Delta(μ:Expression<Integer>) < Discrete {
+class Delta(μ:Expression<Integer>) < Discrete {
   /**
    * Location.
    */
@@ -34,7 +34,7 @@ final class Delta(μ:Expression<Integer>) < Discrete {
     if (m <- μ.graftDiscrete())? {
       return DiscreteDelta(m!);
     } else {
-      return this;
+      return GraftedDelta(μ);
     }
   }
 

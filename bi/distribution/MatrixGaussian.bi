@@ -1,5 +1,5 @@
 /*
- * ed matrix Gaussian random variate.
+ * Matrix Gaussian distribution.
  */
 class MatrixGaussian(M:Expression<Real[_,_]>, U:Expression<Real[_,_]>,
     V:Expression<Real[_,_]>) < Distribution<Real[_,_]> {
@@ -40,13 +40,13 @@ class MatrixGaussian(M:Expression<Real[_,_]>, U:Expression<Real[_,_]>,
     if (s1 <- V.graftInverseWishart())? {
       return MatrixNormalInverseWishart(M, U, s1!);
     } else {
-      return this;
+      return GraftedMatrixGaussian(M, U, V);
     }
   }
 
   function graftMatrixGaussian() -> MatrixGaussian? {
     prune();
-    return this;
+    return GraftedMatrixGaussian(M, U, V);
   }
 
   function graftMatrixNormalInverseWishart() -> MatrixNormalInverseWishart? {

@@ -1,5 +1,5 @@
 /*
- * ed scaled gamma-Poisson random variate.
+ * Grafted scaled gamma-Poisson distribution.
  */
 final class ScaledGammaPoisson(a:Expression<Real>, λ:Gamma) < Discrete {
   /**
@@ -25,11 +25,13 @@ final class ScaledGammaPoisson(a:Expression<Real>, λ:Gamma) < Discrete {
   }
 
   function update(x:Integer) {
-    (λ.k, λ.θ) <- update_scaled_gamma_poisson(x, a.value(), λ.k.value(), λ.θ.value());
+    (λ.k, λ.θ) <- update_scaled_gamma_poisson(x, a.value(), λ.k.value(),
+        λ.θ.value());
   }
 
   function downdate(x:Integer) {
-    (λ.k, λ.θ) <- downdate_scaled_gamma_poisson(x, a.value(), λ.k.value(), λ.θ.value());
+    (λ.k, λ.θ) <- downdate_scaled_gamma_poisson(x, a.value(), λ.k.value(),
+        λ.θ.value());
   }
 
   function cdf(x:Integer) -> Real? {
@@ -45,7 +47,8 @@ final class ScaledGammaPoisson(a:Expression<Real>, λ:Gamma) < Discrete {
   }
 }
 
-function ScaledGammaPoisson(a:Expression<Real>, λ:Gamma) -> ScaledGammaPoisson {
+function ScaledGammaPoisson(a:Expression<Real>, λ:Gamma) ->
+    ScaledGammaPoisson {
   m:ScaledGammaPoisson(a, λ);
   λ.setChild(m);
   return m;

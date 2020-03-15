@@ -1,4 +1,4 @@
-/**
+/*
  * Matrix Gaussian distribution where each element is independent.
  */
 final class IndependentMatrixGaussian(M:Expression<Real[_,_]>,
@@ -42,13 +42,13 @@ final class IndependentMatrixGaussian(M:Expression<Real[_,_]>,
     } else if (s1 <- σ2.graftIndependentInverseGamma())? {
       return MatrixNormalInverseGamma(M, Identity(M.rows()), s1!);
     } else {
-      return Gaussian(M, identity(M.rows()), diagonal(σ2));
+      return GraftedMatrixGaussian(M, Identity(M.rows()), diagonal(σ2));
     }
   }
 
   function graftMatrixGaussian() -> MatrixGaussian? {
     prune();
-    return Gaussian(M, identity(M.rows()), diagonal(σ2));
+    return GraftedMatrixGaussian(M, Identity(M.rows()), diagonal(σ2));
   }
 
   function graftMatrixNormalInverseGamma() -> MatrixNormalInverseGamma? {

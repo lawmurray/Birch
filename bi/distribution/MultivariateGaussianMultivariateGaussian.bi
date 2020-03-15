@@ -1,8 +1,8 @@
 /*
- * ed multivariate Gaussian-Gaussian random variate.
+ * Grafted multivariate Gaussian-Gaussian distribution.
  */
 final class MultivariateGaussianMultivariateGaussian(m:MultivariateGaussian,
-    S:Expression<Real[_,_]>) < MultivariateGaussian(m.μ, m.Σ + S) {
+    S:Expression<Real[_,_]>) < GraftedMultivariateGaussian(m.μ, m.Σ + S) {
   /**
    * Mean.
    */

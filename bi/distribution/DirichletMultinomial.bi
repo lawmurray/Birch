@@ -1,5 +1,5 @@
 /*
- * ed Dirichlet-multinomial random variate.
+ * Dirichlet-multinomial distribution.
  */
 final class DirichletMultinomial(n:Expression<Integer>, ρ:Dirichlet) <
     Distribution<Integer[_]> {

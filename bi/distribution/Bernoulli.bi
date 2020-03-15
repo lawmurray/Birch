@@ -1,7 +1,7 @@
 /**
  * Bernoulli distribution.
  */
-final class Bernoulli(ρ:Expression<Real>) < Distribution<Boolean> {
+class Bernoulli(ρ:Expression<Real>) < Distribution<Boolean> {
   /**
    * Success probability.
    */
@@ -21,7 +21,7 @@ final class Bernoulli(ρ:Expression<Real>) < Distribution<Boolean> {
     if (m <- ρ.graftBeta())? {
       return BetaBernoulli(m!);
     } else {
-      return this;
+      return GraftedBernoulli(ρ);
     }
   }
 

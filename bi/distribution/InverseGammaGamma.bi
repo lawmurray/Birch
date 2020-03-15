@@ -1,7 +1,8 @@
 /*
- * ed inverse-gamma-gamma random variate.
+ * Grafted inverse-gamma-gamma distribution.
  */
-final class InverseGammaGamma(k:Expression<Real>, θ:InverseGamma) < Distribution<Real> {
+final class InverseGammaGamma(k:Expression<Real>, θ:InverseGamma) <
+    Distribution<Real> {
   /**
    * Shape.
    */
@@ -37,7 +38,8 @@ final class InverseGammaGamma(k:Expression<Real>, θ:InverseGamma) < Distributio
   }
 }
 
-function InverseGammaGamma(k:Expression<Real>, θ:InverseGamma) -> InverseGammaGamma {
+function InverseGammaGamma(k:Expression<Real>, θ:InverseGamma) ->
+    InverseGammaGamma {
   m:InverseGammaGamma(k, θ);
   θ.setChild(m);
   return m;

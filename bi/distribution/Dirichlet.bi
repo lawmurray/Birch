@@ -1,5 +1,5 @@
-/*
- * ed Dirichlet random variate.
+/**
+ * Dirichlet distribution.
  */
 final class Dirichlet(α:Expression<Real[_]>) < Distribution<Real[_]> {
   /**
