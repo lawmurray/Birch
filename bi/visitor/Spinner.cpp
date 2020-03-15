@@ -4,6 +4,7 @@
 #include "bi/visitor/Spinner.hpp"
 
 #include "bi/visitor/all.hpp"
+#include "bi/exception/all.hpp"
 
 bi::Statement* bi::Spinner::modify(ExpressionStatement* o) {
   ContextualModifier::modify(o);
@@ -127,6 +128,9 @@ bi::Statement* bi::Spinner::extract(Expression* o, Statement* loops) {
 
   /* construct loop for each spin */
   for (auto spin : spins) {
+    if (!currentFiber) {
+      throw SpinException(spin);
+    }
     auto call = dynamic_cast<Call*>(spin->single);
     if (call) {
       /* temporary variable to hold fiber handle */

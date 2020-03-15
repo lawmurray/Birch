@@ -42,7 +42,9 @@ COMMON_SOURCES = \
   bi/exception/DriverException.cpp \
   bi/exception/Exception.cpp \
   bi/exception/FileNotFoundException.cpp \
+  bi/exception/SpinException.cpp \
   bi/exception/UnresolvedException.cpp \
+  bi/exception/YieldException.cpp \
   bi/expression/Assign.cpp \
   bi/expression/BinaryCall.cpp \
   bi/expression/Cast.cpp \
@@ -178,7 +180,9 @@ noinst_HEADERS = \
   bi/exception/DriverException.hpp \
   bi/exception/Exception.hpp \
   bi/exception/FileNotFoundException.hpp \
+  bi/exception/SpinException.hpp \
   bi/exception/UnresolvedException.hpp \
+  bi/exception/YieldException.hpp \
   bi/expression/all.hpp \
   bi/expression/Assign.hpp \
   bi/expression/BinaryCall.hpp \
