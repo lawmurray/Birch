@@ -1,5 +1,8 @@
 /*
- * Multivariate linear transformation.
+ * Linear transformation of a multivariate random variate, as represented by
+ * its associated distribution.
+ *
+ * - Value: Distribution type.
  */
 class TransformLinearMultivariate<Value>(A:Expression<Real[_,_]>, x:Value,
     c:Expression<Real[_]>) {
@@ -48,6 +51,18 @@ class TransformLinearMultivariate<Value>(A:Expression<Real[_,_]>, x:Value,
   function negateAndAdd(y:Expression<Real[_]>) {
     A <- -A;
     c <- y - c;
+  }
+
+  /**
+   * Is the transformation valid? This evaluates the scale and offset. It 
+   * then returns true if the Distribution object remains uninstantiated, and
+   * false otherwise (which would mean that either or both of the scale and
+   * offset depend it).
+   */
+  function isValid() -> Boolean {
+    A.value();
+    c.value();
+    return !x.hasValue();
   }
 }
 

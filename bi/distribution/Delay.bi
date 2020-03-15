@@ -16,7 +16,7 @@ abstract class Delay {
   /**
    * Set the $M$-path child of this node.
    */
-  function setChild(child:Delay) {
+  final function setChild(child:Delay) {
     assert !this.child?;
     this.child <- child;
   }
@@ -24,7 +24,7 @@ abstract class Delay {
   /**
    * Prune the $M$-path from below this node.
    */
-  function prune() {
+  final function prune() {
     if child? {
       child!.realize();
       child <- nil;

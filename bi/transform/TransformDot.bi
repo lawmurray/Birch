@@ -1,5 +1,8 @@
 /*
- * Multivariate linear transformation involving a dot product.
+ * Linear transformation of a multivariate random variate, as represented by
+ * its associated distribution, which involves a dot product.
+ *
+ * - Value: Distribution type.
  */
 class TransformDot<Value>(a:Expression<Real[_]>, x:Value,
     c:Expression<Real>) {
@@ -9,7 +12,7 @@ class TransformDot<Value>(a:Expression<Real[_]>, x:Value,
   a:Expression<Real[_]> <- a;
   
   /**
-   *  node.
+   * Distribution.
    */
   x:Value <- x;
 
@@ -39,6 +42,18 @@ class TransformDot<Value>(a:Expression<Real[_]>, x:Value,
   function negateAndAdd(y:Expression<Real>) {
     a <- -a;
     c <- y - c;
+  }
+  
+  /**
+   * Is the transformation valid? This evaluates the scale and offset. It 
+   * then returns true if the Distribution object remains uninstantiated, and
+   * false otherwise (which would mean that either or both of the scale and
+   * offset depend it).
+   */
+  function isValid() -> Boolean {
+    a.value();
+    c.value();
+    return !x.hasValue();
   }
 }
 

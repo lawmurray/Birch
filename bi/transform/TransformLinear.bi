@@ -1,5 +1,8 @@
 /*
- * Linear transformation.
+ * Linear transformation of a random variate, as represented by its
+ * associated distribution.
+ *
+ * - Value: Distribution type.
  */
 class TransformLinear<Value>(a:Expression<Real>, x:Value,
     c:Expression<Real>) {
@@ -9,7 +12,7 @@ class TransformLinear<Value>(a:Expression<Real>, x:Value,
   a:Expression<Real> <- a;
 
   /**
-   * Delay node.
+   * Distribution.
    */
   x:Value <- x;
 
@@ -39,6 +42,18 @@ class TransformLinear<Value>(a:Expression<Real>, x:Value,
   function negateAndAdd(y:Expression<Real>) {
     a <- -a;
     c <- y - c;
+  }
+
+  /**
+   * Is the transformation valid? This evaluates the scale and offset. It 
+   * then returns true if the Distribution object remains uninstantiated, and
+   * false otherwise (which would mean that either or both of the scale and
+   * offset depend it).
+   */
+  function isValid() -> Boolean {
+    a.value();
+    c.value();
+    return !x.hasValue();
   }
 }
 
