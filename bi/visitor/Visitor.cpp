@@ -339,6 +339,7 @@ void bi::Visitor::visit(const FunctionType* o) {
 
 void bi::Visitor::visit(const FiberType* o) {
   o->yieldType->accept(this);
+  o->returnType->accept(this);
 }
 
 void bi::Visitor::visit(const OptionalType* o) {
