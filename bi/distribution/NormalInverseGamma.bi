@@ -66,14 +66,26 @@ final class NormalInverseGamma(μ:Expression<Real>, a2:Expression<Real>,
     return quantile_normal_inverse_gamma(P, μ.value(), 1.0/λ.value(), σ2.α.value(), σ2.β.value());
   }
 
-  function graft() -> Distribution<Real> {
+  function graftNormalInverseGamma(compare:Distribution<Real>) ->
+      NormalInverseGamma? {
     prune();
-    return this;
+    graftFinalize();
+    if σ2 == compare {
+      return this;
+    } else {
+      return nil;
+    }
   }
 
-  function graftNormalInverseGamma() -> NormalInverseGamma? {
-    prune();
-    return this;
+  function graftFinalize() -> Boolean {
+    μ.value();
+    λ.value();
+    if !σ2.hasValue() {
+      σ2.setChild(this);
+      return true;
+    } else {
+      return false;
+    }
   }
 
   function write(buffer:Buffer) {
@@ -89,6 +101,5 @@ final class NormalInverseGamma(μ:Expression<Real>, a2:Expression<Real>,
 function NormalInverseGamma(μ:Expression<Real>, a2:Expression<Real>,
     σ2:InverseGamma) -> NormalInverseGamma {
   m:NormalInverseGamma(μ, a2, σ2);
-  σ2.setChild(m);
   return m;
 }

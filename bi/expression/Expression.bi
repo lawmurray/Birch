@@ -173,7 +173,7 @@ abstract class Expression<Value> {
    *
    * Return: The node if successful, nil if not.
    */
-  function graftNormalInverseGamma() -> NormalInverseGamma? {
+  function graftNormalInverseGamma(compare:Distribution<Real>) -> NormalInverseGamma? {
     return nil;
   }
 
@@ -182,7 +182,7 @@ abstract class Expression<Value> {
    *
    * Return: The node if successful, nil if not.
    */
-  function graftLinearNormalInverseGamma() ->
+  function graftLinearNormalInverseGamma(compare:Distribution<Real>) ->
       TransformLinear<NormalInverseGamma>? {
     return nil;
   }
@@ -212,7 +212,7 @@ abstract class Expression<Value> {
    *
    * Return: The node if successful, nil if not.
    */
-  function graftMultivariateNormalInverseGamma() ->
+  function graftMultivariateNormalInverseGamma(compare:Distribution<Real>) ->
       MultivariateNormalInverseGamma? {
     return nil;
   }
@@ -222,7 +222,7 @@ abstract class Expression<Value> {
    *
    * Return: The node if successful, nil if not.
    */
-  function graftLinearMultivariateNormalInverseGamma() ->
+  function graftLinearMultivariateNormalInverseGamma(compare:Distribution<Real>) ->
       TransformLinearMultivariate<MultivariateNormalInverseGamma>? {
     return nil;
   }
@@ -249,9 +249,11 @@ abstract class Expression<Value> {
   /*
    * Attempt to graft this expression onto the delayed sampling graph.
    *
+   * - σ2: The inverse gamma distribution that must match to be successful.
+   *
    * Return: The node if successful, nil if not.
    */
-  function graftMatrixNormalInverseGamma() ->
+  function graftMatrixNormalInverseGamma(compare:Distribution<Real[_]>) ->
       MatrixNormalInverseGamma? {
     return nil;
   }
@@ -259,9 +261,11 @@ abstract class Expression<Value> {
   /*
    * Attempt to graft this expression onto the delayed sampling graph.
    *
+   * - σ2: The inverse gamma distribution that must match to be successful.
+   *
    * Return: The node if successful, nil if not.
    */
-  function graftLinearMatrixNormalInverseGamma() ->
+  function graftLinearMatrixNormalInverseGamma(compare:Distribution<Real[_]>) ->
       TransformLinearMatrix<MatrixNormalInverseGamma>? {
     return nil;
   }
@@ -271,7 +275,7 @@ abstract class Expression<Value> {
    *
    * Return: The node if successful, nil if not.
    */
-  function graftMatrixNormalInverseWishart() ->
+  function graftMatrixNormalInverseWishart(compare:Distribution<Real[_,_]>) ->
       MatrixNormalInverseWishart? {
     return nil;
   }
@@ -281,7 +285,7 @@ abstract class Expression<Value> {
    *
    * Return: The node if successful, nil if not.
    */
-  function graftLinearMatrixNormalInverseWishart() ->
+  function graftLinearMatrixNormalInverseWishart(compare:Distribution<Real[_,_]>) ->
       TransformLinearMatrix<MatrixNormalInverseWishart>? {
     return nil;
   }

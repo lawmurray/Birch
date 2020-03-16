@@ -52,18 +52,6 @@ class TransformLinearMultivariate<Value>(A:Expression<Real[_,_]>, x:Value,
     A <- -A;
     c <- y - c;
   }
-
-  /**
-   * Is the transformation valid? This evaluates the scale and offset. It 
-   * then returns true if the Distribution object remains uninstantiated, and
-   * false otherwise (which would mean that either or both of the scale and
-   * offset depend it).
-   */
-  function isValid() -> Boolean {
-    A.value();
-    c.value();
-    return !x.hasValue();
-  }
 }
 
 function TransformLinearMultivariate<Value>(A:Expression<Real[_,_]>,

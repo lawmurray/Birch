@@ -58,11 +58,21 @@ final class LinearDiscrete(a:Expression<Integer>, μ:Discrete,
     }
     return u;
   }
+
+  function graftFinalize() -> Boolean {
+    a.value();
+    c.value();
+    if !μ.hasValue() {
+      μ.setChild(this);
+      return true;
+    } else {
+      return false;
+    }
+  }
 }
 
 function LinearDiscrete(a:Expression<Integer>, μ:Discrete,
     c:Expression<Integer>) -> LinearDiscrete {
   m:LinearDiscrete(a, μ, c);
-  μ.setChild(m);
   return m;
 }

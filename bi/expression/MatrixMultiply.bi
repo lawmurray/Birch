@@ -32,27 +32,27 @@ final class MatrixMultiply<Left,Right,Value>(left:Expression<Left>,
     return y;
   }
   
-  function graftLinearMatrixNormalInverseGamma() ->
+  function graftLinearMatrixNormalInverseGamma(compare:Distribution<Real[_]>) ->
       TransformLinearMatrix<MatrixNormalInverseGamma>? {
     y:TransformLinearMatrix<MatrixNormalInverseGamma>?;
     z:MatrixNormalInverseGamma?;
 
-    if (y <- right.graftLinearMatrixNormalInverseGamma())? {
+    if (y <- right.graftLinearMatrixNormalInverseGamma(compare))? {
       y!.leftMultiply(left);
-    } else if (z <- right.graftMatrixNormalInverseGamma())? {
+    } else if (z <- right.graftMatrixNormalInverseGamma(compare))? {
       y <- TransformLinearMatrix<MatrixNormalInverseGamma>(left, z!);
     }
     return y;
   }
 
-  function graftLinearMatrixNormalInverseWishart() ->
+  function graftLinearMatrixNormalInverseWishart(compare:Distribution<Real[_,_]>) ->
       TransformLinearMatrix<MatrixNormalInverseWishart>? {
     y:TransformLinearMatrix<MatrixNormalInverseWishart>?;
     z:MatrixNormalInverseWishart?;
 
-    if (y <- right.graftLinearMatrixNormalInverseWishart())? {
+    if (y <- right.graftLinearMatrixNormalInverseWishart(compare))? {
       y!.leftMultiply(left);
-    } else if (z <- right.graftMatrixNormalInverseWishart())? {
+    } else if (z <- right.graftMatrixNormalInverseWishart(compare))? {
       y <- TransformLinearMatrix<MatrixNormalInverseWishart>(left, z!);
     }
     return y;

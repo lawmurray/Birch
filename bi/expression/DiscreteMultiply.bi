@@ -12,29 +12,41 @@ final class DiscreteMultiply<Left,Right,Value>(left:Expression<Left>,
   }
 
   function graftDiscrete() -> Discrete? {
-    y:Discrete? <- graftBoundedDiscrete();
-    if !y? {
+    r:Discrete? <- graftBoundedDiscrete();
+    if !r? {
+      /* match a template */
       x:Discrete?;
       if (x <- left.graftDiscrete())? {
-        y <- LinearDiscrete(right, x!, Boxed(0));
+        r <- LinearDiscrete(right, x!, Boxed(0));
       } else if (x <- right.graftDiscrete())? {
-        y <- LinearDiscrete(left, x!, Boxed(0));
+        r <- LinearDiscrete(left, x!, Boxed(0));
+      }
+
+      /* finalize, and if not valid, return nil */
+      if !r? || !r!.graftFinalize() {
+        r <- nil;
       }
     }
-    return y;
+    return r;
   }
 
   function graftBoundedDiscrete() -> BoundedDiscrete? {
-    y:BoundedDiscrete?;
     x1:BoundedDiscrete? <- left.graftBoundedDiscrete();
     x2:BoundedDiscrete? <- right.graftBoundedDiscrete();
+    r:BoundedDiscrete?;
 
-    if x1? && !(x1!.hasValue()) {
-      y <- LinearBoundedDiscrete(right, x1!, Boxed(0));
-    } else if x2? && !(x2!.hasValue()) {
-      y <- LinearBoundedDiscrete(left, x2!, Boxed(0));
+    /* match a template */       
+    if x1? {
+      r <- LinearBoundedDiscrete(right, x1!, Boxed(0));
+    } else if x2? {
+      r <- LinearBoundedDiscrete(left, x2!, Boxed(0));
     }
-    return y;
+    
+    /* finalize, and if not valid, return nil */
+    if !r? || !r!.graftFinalize() {
+      r <- nil;
+    }
+    return r;
   }
 }
 

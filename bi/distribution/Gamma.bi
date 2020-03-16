@@ -35,16 +35,31 @@ class Gamma(k:Expression<Real>, θ:Expression<Real>) < Distribution<Real> {
   function graft() -> Distribution<Real> {
     prune();
     θ1:InverseGamma?;
+    r:Distribution<Real>?;
+    
+    /* match a template */
     if (θ1 <- θ.graftInverseGamma())? {
-      return InverseGammaGamma(k, θ1!);
-    } else {
-      return GraftedGamma(k, θ);
+      r <- InverseGammaGamma(k, θ1!);
     }
+
+    /* finalize, and if not valid, use default template */
+    if !r? || !r!.graftFinalize() {
+      r <- GraftedGamma(k, θ);
+      r!.graftFinalize();
+    }
+    return r!;
   }
 
   function graftGamma() -> Gamma? {
     prune();
-    return GraftedGamma(k, θ);
+    auto r <- GraftedGamma(k, θ);
+    r.graftFinalize();
+    return r;
+  }
+
+  function graftFinalize() -> Boolean {
+    assert false;  // should have been replaced during graft
+    return false;
   }
 
   function write(buffer:Buffer) {

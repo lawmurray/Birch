@@ -37,25 +37,51 @@ class MatrixGaussian(M:Expression<Real[_,_]>, U:Expression<Real[_,_]>,
   function graft() -> Distribution<Real[_,_]> {
     prune();
     s1:InverseWishart?;
+    r:Distribution<Real[_,_]>?;
+    
+    /* match a template */
     if (s1 <- V.graftInverseWishart())? {
-      return MatrixNormalInverseWishart(M, U, s1!);
-    } else {
-      return GraftedMatrixGaussian(M, U, V);
+      r <- MatrixNormalInverseWishart(M, U, s1!);
     }
+    
+    /* finalize, and if not valid, use default template */
+    if !r? || !r!.graftFinalize() {
+      r <- GraftedMatrixGaussian(M, U, V);
+      r!.graftFinalize();
+    }
+    return r!;
   }
 
   function graftMatrixGaussian() -> MatrixGaussian? {
     prune();
-    return GraftedMatrixGaussian(M, U, V);
+    auto r <- GraftedMatrixGaussian(M, U, V);
+    r!.graftFinalize();
+    return r;
   }
 
-  function graftMatrixNormalInverseWishart() -> MatrixNormalInverseWishart? {
+  function graftMatrixNormalInverseWishart(compare:Distribution<Real[_,_]>) ->
+      MatrixNormalInverseWishart? {
     prune();
     s1:InverseWishart?;
-    if (s1 <- V.graftInverseWishart())? {
-      return MatrixNormalInverseWishart(M, U, s1!);
+    r:MatrixNormalInverseWishart?;
+    
+    /* match a template */
+    if (s1 <- V.graftInverseWishart())? && s1! == compare {
+      r <- MatrixNormalInverseWishart(M, U, s1!);
     }
-    return nil;
+
+    /* finalize, and if not valid, return nil */
+    if !r? || !r!.graftFinalize() {
+      r <- nil;
+    }
+    return r;
+  }
+
+  function graftFinalize() -> Boolean {
+    M.value();
+    U.value();
+    V.value();
+    return true;
   }
 
   function write(buffer:Buffer) {

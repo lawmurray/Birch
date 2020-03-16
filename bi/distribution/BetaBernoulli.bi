@@ -22,10 +22,18 @@ final class BetaBernoulli(ρ:Beta) < Distribution<Boolean> {
   function downdate(x:Boolean) {
     (ρ.α, ρ.β) <- downdate_beta_bernoulli(x, ρ.α.value(), ρ.β.value());
   }
+
+  function graftFinalize() -> Boolean {
+    if !ρ.hasValue() {
+      ρ.setChild(this);
+      return true;
+    } else {
+      return false;
+    }
+  }
 }
 
 function BetaBernoulli(ρ:Beta) -> BetaBernoulli {
   m:BetaBernoulli(ρ);
-  ρ.setChild(m);
   return m;
 }

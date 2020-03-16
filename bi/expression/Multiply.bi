@@ -54,18 +54,18 @@ final class Multiply<Left,Right,Value>(left:Expression<Left>,
     return y;
   }
  
-  function graftLinearNormalInverseGamma() ->
+  function graftLinearNormalInverseGamma(compare:Distribution<Real>) ->
       TransformLinear<NormalInverseGamma>? {
     y:TransformLinear<NormalInverseGamma>?;
     z:NormalInverseGamma?;
     
-    if (y <- left.graftLinearNormalInverseGamma())? {
+    if (y <- left.graftLinearNormalInverseGamma(compare))? {
       y!.multiply(right);
-    } else if (y <- right.graftLinearNormalInverseGamma())? {
+    } else if (y <- right.graftLinearNormalInverseGamma(compare))? {
       y!.multiply(left);
-    } else if (z <- left.graftNormalInverseGamma())? {
+    } else if (z <- left.graftNormalInverseGamma(compare))? {
       y <- TransformLinear<NormalInverseGamma>(right, z!);
-    } else if (z <- right.graftNormalInverseGamma())? {
+    } else if (z <- right.graftNormalInverseGamma(compare))? {
       y <- TransformLinear<NormalInverseGamma>(left, z!);
     }
     return y;

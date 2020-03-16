@@ -252,9 +252,9 @@ final class Random<Value> < Expression<Value> {
     return nil;
   } 
   
-  function graftNormalInverseGamma() -> NormalInverseGamma? {
+  function graftNormalInverseGamma(compare:Distribution<Real>) -> NormalInverseGamma? {
     if !hasValue() {
-      auto q <- p!.graftNormalInverseGamma();
+      auto q <- p!.graftNormalInverseGamma(compare);
       p <-? Distribution<Value>?(q);
       return q;
     }
@@ -288,10 +288,10 @@ final class Random<Value> < Expression<Value> {
     return nil;
   }
 
-  function graftMultivariateNormalInverseGamma() ->
+  function graftMultivariateNormalInverseGamma(compare:Distribution<Real>) ->
       MultivariateNormalInverseGamma? {
     if !hasValue() {
-      auto q <- p!.graftMultivariateNormalInverseGamma();
+      auto q <- p!.graftMultivariateNormalInverseGamma(compare);
       p <-? Distribution<Value>?(q);
       return q;
     }
@@ -307,18 +307,20 @@ final class Random<Value> < Expression<Value> {
     return nil;
   }
 
-  function graftMatrixNormalInverseGamma() -> MatrixNormalInverseGamma? {
+  function graftMatrixNormalInverseGamma(compare:Distribution<Real[_]>) ->
+      MatrixNormalInverseGamma? {
     if !hasValue() {
-      auto q <- p!.graftMatrixNormalInverseGamma();
+      auto q <- p!.graftMatrixNormalInverseGamma(compare);
       p <-? Distribution<Value>?(q);
       return q;
     }
     return nil;
   }
 
-  function graftMatrixNormalInverseWishart() -> MatrixNormalInverseWishart? {
+  function graftMatrixNormalInverseWishart(compare:Distribution<Real[_,_]>) ->
+      MatrixNormalInverseWishart? {
     if !hasValue() {
-      auto q <- p!.graftMatrixNormalInverseWishart();
+      auto q <- p!.graftMatrixNormalInverseWishart(compare);
       p <-? Distribution<Value>?(q);
       return q;
     }

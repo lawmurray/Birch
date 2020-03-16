@@ -32,21 +32,6 @@ final class UniformInteger(l:Expression<Integer>, u:Expression<Integer>) <
   function quantile(P:Real) -> Integer? {
     return quantile_uniform_int(P, l.value(), u.value());
   }
-
-  function graft() -> Distribution<Integer> {
-    prune();
-    return this;
-  }
-
-  function graftDiscrete() -> Discrete? {
-    prune();
-    return this;
-  }
-
-  function graftBoundedDiscrete() -> BoundedDiscrete? {
-    prune();
-    return this;
-  }
   
   function lower() -> Integer? {
     return l.value();
@@ -54,6 +39,12 @@ final class UniformInteger(l:Expression<Integer>, u:Expression<Integer>) <
   
   function upper() -> Integer? {
     return u.value();
+  }
+
+  function graftFinalize() -> Boolean {
+    l.value();
+    u.value();
+    return true;
   }
 
   function write(buffer:Buffer) {

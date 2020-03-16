@@ -36,11 +36,20 @@ final class InverseGammaGamma(k:Expression<Real>, θ:InverseGamma) <
   function lower() -> Real? {
     return 0.0;
   }
+
+  function graftFinalize() -> Boolean {
+    k.value();
+    if !θ.hasValue() {
+      θ.setChild(this);
+      return true;
+    } else {
+      return false;
+    }
+  }
 }
 
 function InverseGammaGamma(k:Expression<Real>, θ:InverseGamma) ->
     InverseGammaGamma {
   m:InverseGammaGamma(k, θ);
-  θ.setChild(m);
   return m;
 }

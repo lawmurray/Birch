@@ -35,11 +35,22 @@ final class LinearGaussianGaussian(a:Expression<Real>, m:Gaussian,
   function updateLazy(x:Expression<Real>) {
     (m.μ, m.σ2) <- update_lazy_linear_gaussian_gaussian(x, a, m.μ, m.σ2, c, s2);
   }
+
+  function graftFinalize() -> Boolean {
+    a.value();
+    c.value();
+    s2.value();
+    if !m.hasValue() {
+      m.setChild(this);
+      return true;
+    } else {
+      return false;
+    }
+  }
 }
 
 function LinearGaussianGaussian(a:Expression<Real>, μ:Gaussian,
     c:Expression<Real>, σ2:Expression<Real>) -> LinearGaussianGaussian {
   m:LinearGaussianGaussian(a, μ, c, σ2);
-  μ.setChild(m);
   return m;
 }

@@ -197,9 +197,14 @@ abstract class Distribution<Value> < Delay {
 
   /**
    * Graft this onto the delayed sampling graph.
+   *
+   * Returns: The object to attach to the delayed sampling graph. This may
+   * be this object, or a substitute based on variable elimination rules.
+   * Call `attach()` on the object to finalize the graft.
    */
   function graft() -> Distribution<Value> {
     prune();
+    graftFinalize();
     return this;
   }
 
@@ -248,7 +253,7 @@ abstract class Distribution<Value> < Delay {
   /**
    * Graft this onto the delayed sampling graph.
    */
-  function graftNormalInverseGamma() -> NormalInverseGamma? {
+  function graftNormalInverseGamma(compare:Distribution<Real>) -> NormalInverseGamma? {
     return nil;
   }
   
@@ -276,7 +281,8 @@ abstract class Distribution<Value> < Delay {
   /**
    * Graft this onto the delayed sampling graph.
    */
-  function graftMultivariateNormalInverseGamma() -> MultivariateNormalInverseGamma? {
+  function graftMultivariateNormalInverseGamma(compare:Distribution<Real>) ->
+      MultivariateNormalInverseGamma? {
     return nil;
   }
 
@@ -290,14 +296,16 @@ abstract class Distribution<Value> < Delay {
   /**
    * Graft this onto the delayed sampling graph.
    */
-  function graftMatrixNormalInverseGamma() -> MatrixNormalInverseGamma? {
+  function graftMatrixNormalInverseGamma(compare:Distribution<Real[_]>) ->
+      MatrixNormalInverseGamma? {
     return nil;
   }
 
   /**
    * Graft this onto the delayed sampling graph.
    */
-  function graftMatrixNormalInverseWishart() -> MatrixNormalInverseWishart? {
+  function graftMatrixNormalInverseWishart(compare:Distribution<Real[_,_]>) ->
+      MatrixNormalInverseWishart? {
     return nil;
   }
 
@@ -313,6 +321,28 @@ abstract class Distribution<Value> < Delay {
    */
   function graftBoundedDiscrete() -> BoundedDiscrete? {
     return nil;
+  }
+  
+  /**
+   * Finalize a graft onto the delayed sampling $M$-path. Use this on an
+   * object returned by `graft*()` member functions as a final check.
+   *
+   * - Returns: True if the graft was successfully finalized, false
+   *   otherwise.
+   *
+   * False is returned in a situation where an object is proposed due to a
+   * matching template for variable elimination, but further checks determine
+   * that the object is invalid. For example:
+   *
+   *     x ~ Gaussian(μ, σ2);
+   *     y ~ Gaussian(x, x*x);
+   *
+   * This initially matches for a Gaussian-Gaussian conjugacy, but this
+   * further check evaluates the variance of `y`, determining that this then
+   * realizes `x`, and thus the conjugacy is no longer valid.
+   */
+  function graftFinalize() -> Boolean {
+    return true;
   }
 
   function write(buffer:Buffer) {

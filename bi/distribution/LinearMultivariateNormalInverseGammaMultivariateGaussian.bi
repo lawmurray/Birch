@@ -39,6 +39,17 @@ final class LinearMultivariateNormalInverseGammaMultivariateGaussian(
     (μ.ν, μ.Λ, μ.α, μ.γ) <- downdate_linear_multivariate_normal_inverse_gamma_multivariate_gaussian(
         x, A.value(), μ.ν.value(), μ.Λ.value(), c.value(), μ.α.value(), μ.γ.value());
   }
+
+  function graftFinalize() -> Boolean {
+    A.value();
+    c.value();
+    if !μ.hasValue() {
+      μ.setChild(this);
+      return true;
+    } else {
+      return false;
+    }
+  }
 }
 
 function LinearMultivariateNormalInverseGammaMultivariateGaussian(
@@ -46,6 +57,5 @@ function LinearMultivariateNormalInverseGammaMultivariateGaussian(
     c:Expression<Real[_]>) ->
     LinearMultivariateNormalInverseGammaMultivariateGaussian {
   m:LinearMultivariateNormalInverseGammaMultivariateGaussian(A, μ, c);
-  μ.setChild(m);
   return m;
 }

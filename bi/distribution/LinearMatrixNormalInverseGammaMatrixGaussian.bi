@@ -39,6 +39,17 @@ final class LinearMatrixNormalInverseGammaMatrixGaussian(
     (M.N, M.Λ, M.α, M.γ) <- downdate_linear_matrix_normal_inverse_gamma_matrix_gaussian(
         X, A.value(), M.N.value(), M.Λ.value(), C.value(), M.α.value(), M.γ.value());
   }
+
+  function graftFinalize() -> Boolean {
+    A.value();
+    C.value();
+    if !M.hasValue() {
+      M.setChild(this);
+      return true;
+    } else {
+      return false;
+    }
+  }
 }
 
 function LinearMatrixNormalInverseGammaMatrixGaussian(A:Expression<Real[_,_]>,

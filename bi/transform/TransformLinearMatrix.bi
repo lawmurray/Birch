@@ -56,18 +56,6 @@ class TransformLinearMatrix<Value>(A:Expression<Real[_,_]>, X:Value,
     A <- -A;
     C <- Y - C;
   }
-
-  /**
-   * Is the transformation valid? This evaluates the scale and offset. It 
-   * then returns true if the Distribution object remains uninstantiated, and
-   * false otherwise (which would mean that either or both of the scale and
-   * offset depend it).
-   */
-  function isValid() -> Boolean {
-    A.value();
-    C.value();
-    return !X.hasValue();
-  }
 }
 
 function TransformLinearMatrix<Value>(A:Expression<Real[_,_]>, X:Value,

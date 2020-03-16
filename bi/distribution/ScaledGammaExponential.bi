@@ -42,11 +42,20 @@ class ScaledGammaExponential(a:Expression<Real>, λ:Gamma) <
   function lower() -> Real? {
     return 0.0;
   }
+
+  function graftFinalize() -> Boolean {
+    a.value();
+    if !λ.hasValue() {
+      λ.setChild(this);
+      return true;
+    } else {
+      return false;
+    }
+  }
 }
 
 function ScaledGammaExponential(a:Expression<Real>, λ:Gamma) ->
     ScaledGammaExponential {
   m:ScaledGammaExponential(a, λ);
-  λ.setChild(m);
   return m;
 }

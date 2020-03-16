@@ -35,13 +35,26 @@ class Categorical(ρ:Expression<Real[_]>) < Distribution<Integer> {
     prune();
     m1:Dirichlet?;
     m2:Restaurant?;
+    r:Distribution<Integer>?;
+    
+    /* match a template */
     if (m1 <- ρ.graftDirichlet())? {
-      return DirichletCategorical(m1!);
+      r <- DirichletCategorical(m1!);
     } else if (m2 <- ρ.graftRestaurant())? {
-      return RestaurantCategorical(m2!);
-    } else {
-      return GraftedCategorical(ρ);
+      r <- RestaurantCategorical(m2!);
     }
+    
+    /* finalize, and if not valid, use default template */
+    if !r? || !r!.graftFinalize() {
+      r <- GraftedCategorical(ρ);
+      r!.graftFinalize();
+    }
+    return r!;
+  }
+
+  function graftFinalize() -> Boolean {
+    assert false;  // should have been replaced during graft
+    return false;
   }
 
   function write(buffer:Buffer) {

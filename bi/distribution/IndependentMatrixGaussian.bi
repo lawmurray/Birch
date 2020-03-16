@@ -34,30 +34,54 @@ final class IndependentMatrixGaussian(M:Expression<Real[_,_]>,
     s1:IndependentInverseGamma?;
     m1:TransformLinearMatrix<MatrixNormalInverseGamma>?;
     m2:MatrixNormalInverseGamma?;
+    r:Distribution<Real[_,_]>?;
 
-    if (m1 <- M.graftLinearMatrixNormalInverseGamma())? && m1!.X.σ2 == σ2.distribution() {
-      return LinearMatrixNormalInverseGammaMatrixGaussian(m1!.A, m1!.X, m1!.C);
-    } else if (m2 <- M.graftMatrixNormalInverseGamma())? && m2!.σ2 == σ2.distribution() {
-      return MatrixNormalInverseGammaMatrixGaussian(m2!);
+    /* match a template */
+    auto compare <- σ2.distribution();
+    if compare? && (m1 <- M.graftLinearMatrixNormalInverseGamma(compare!))? {
+      r <- LinearMatrixNormalInverseGammaMatrixGaussian(m1!.A, m1!.X, m1!.C);
+    } else if compare? && (m2 <- M.graftMatrixNormalInverseGamma(compare!))? {
+      r <- MatrixNormalInverseGammaMatrixGaussian(m2!);
     } else if (s1 <- σ2.graftIndependentInverseGamma())? {
-      return MatrixNormalInverseGamma(M, Identity(M.rows()), s1!);
-    } else {
-      return GraftedMatrixGaussian(M, Identity(M.rows()), diagonal(σ2));
+      r <- MatrixNormalInverseGamma(M, Identity(M.rows()), s1!);
     }
+    
+    /* finalize, and if not valid, use default template */
+    if !r? || !r!.graftFinalize() {
+      r <- GraftedMatrixGaussian(M, Identity(M.rows()), diagonal(σ2));
+      r!.graftFinalize();
+    }
+    return r!;
   }
 
   function graftMatrixGaussian() -> MatrixGaussian? {
     prune();
-    return GraftedMatrixGaussian(M, Identity(M.rows()), diagonal(σ2));
+    auto r <- GraftedMatrixGaussian(M, Identity(M.rows()), diagonal(σ2));
+    r.graftFinalize();
+    return r;
   }
 
-  function graftMatrixNormalInverseGamma() -> MatrixNormalInverseGamma? {
+  function graftMatrixNormalInverseGamma(compare:Distribution<Real[_]>) ->
+      MatrixNormalInverseGamma? {
     prune();
     s1:IndependentInverseGamma?;
-    if (s1 <- σ2.graftIndependentInverseGamma())? {
-      return MatrixNormalInverseGamma(M, Identity(M.rows()), s1!);
+    r:MatrixNormalInverseGamma?;
+    
+    /* match a template */
+    if (s1 <- σ2.graftIndependentInverseGamma())? && s1! == compare {
+      r <- MatrixNormalInverseGamma(M, Identity(M.rows()), s1!);
     }
-    return nil;
+
+    /* finalize, and if not valid, return nil */
+    if !r? || !r!.graftFinalize() {
+      r <- nil;
+    }
+    return r;
+  }
+
+  function graftFinalize() -> Boolean {
+    assert false;  // should have been replaced during graft
+    return false;
   }
 }
 

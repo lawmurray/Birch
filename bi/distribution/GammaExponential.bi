@@ -34,10 +34,18 @@ final class GammaExponential(λ:Gamma) < Distribution<Real> {
   function lower() -> Real? {
     return 0.0;
   }
+
+  function graftFinalize() -> Boolean {
+    if !λ.hasValue() {
+      return true;
+    } else {
+      λ.setChild(this);
+      return false;
+    }
+  }
 }
 
 function GammaExponential(λ:Gamma) -> GammaExponential {
   m:GammaExponential(λ);
-  λ.setChild(m);
   return m;
 }

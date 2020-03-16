@@ -43,18 +43,6 @@ class TransformDot<Value>(a:Expression<Real[_]>, x:Value,
     a <- -a;
     c <- y - c;
   }
-  
-  /**
-   * Is the transformation valid? This evaluates the scale and offset. It 
-   * then returns true if the Distribution object remains uninstantiated, and
-   * false otherwise (which would mean that either or both of the scale and
-   * offset depend it).
-   */
-  function isValid() -> Boolean {
-    a.value();
-    c.value();
-    return !x.hasValue();
-  }
 }
 
 function TransformDot<Value>(a:Expression<Real[_]>, x:Value,

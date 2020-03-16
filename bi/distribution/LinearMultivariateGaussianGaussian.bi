@@ -38,12 +38,23 @@ final class LinearMultivariateGaussianGaussian(a:Expression<Real[_]>,
     (m.μ, m.Σ) <- update_lazy_linear_multivariate_gaussian_gaussian(
         x, a, m.μ, m.Σ, c, s2);
   }
+
+  function graftFinalize() -> Boolean {
+    a.value();
+    c.value();
+    s2.value();
+    if !m.hasValue() {
+      m.setChild(this);
+      return true;
+    } else {
+      return false;
+    }
+  }
 }
 
 function LinearMultivariateGaussianGaussian(a:Expression<Real[_]>,
     μ:MultivariateGaussian, c:Expression<Real>, σ2:Expression<Real>) ->
     LinearMultivariateGaussianGaussian {
   m:LinearMultivariateGaussianGaussian(a, μ, c, σ2);
-  μ.setChild(m);
   return m;
 }

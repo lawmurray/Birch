@@ -16,4 +16,10 @@ abstract class Discrete < Distribution<Integer> {
     assert !value? || value! == x;
     value <- x;
   }
+
+  function graftDiscrete() -> Discrete? {
+    prune();
+    graftFinalize();
+    return this;
+  }
 }

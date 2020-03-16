@@ -20,11 +20,20 @@ final class MultivariateGaussianMultivariateGaussian(m:MultivariateGaussian,
   function downdate(x:Real[_]) {
     (m.μ, m.Σ) <- downdate_multivariate_gaussian_multivariate_gaussian(x, m.μ.value(), m.Σ.value(), S.value());
   }
+
+  function graftFinalize() -> Boolean {
+    S.value();
+    if !m.hasValue() {
+      m.setChild(this);
+      return true;
+    } else {
+      return false;
+    }
+  }
 }
 
 function MultivariateGaussianMultivariateGaussian(μ:MultivariateGaussian,
     Σ:Expression<Real[_,_]>) -> MultivariateGaussianMultivariateGaussian {
   m:MultivariateGaussianMultivariateGaussian(μ, Σ);
-  μ.setChild(m);
   return m;
 }

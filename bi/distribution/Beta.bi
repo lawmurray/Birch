@@ -37,14 +37,16 @@ final class Beta(α:Expression<Real>, β:Expression<Real>) <
     return 1.0;
   }
 
-  function graft() -> Distribution<Real> {
+  function graftBeta() -> Beta? {
     prune();
+    graftFinalize();
     return this;
   }
 
-  function graftBeta() -> Beta? {
-    prune();
-    return this;
+  function graftFinalize() -> Boolean {
+    α.value();
+    β.value();
+    return true;
   }
 
   function write(buffer:Buffer) {

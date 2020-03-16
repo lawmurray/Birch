@@ -25,9 +25,10 @@ final class IndependentUniform(l:Expression<Real[_]>,
     return logpdf_independent_uniform(x, l.value(), u.value());
   }
 
-  function graft() -> Distribution<Real[_]> {
-    prune();
-    return this;
+  function graftFinalize() -> Boolean {
+    l.value();
+    u.value();
+    return true;
   }
 
   function write(buffer:Buffer) {

@@ -32,14 +32,14 @@ final class Divide<Left,Right,Value>(left:Expression<Left>,
     return y;
   }
   
-  function graftLinearNormalInverseGamma() ->
+  function graftLinearNormalInverseGamma(compare:Distribution<Real>) ->
       TransformLinear<NormalInverseGamma>? {
     y:TransformLinear<NormalInverseGamma>?;
     z:NormalInverseGamma?;
     
-    if (y <- left.graftLinearNormalInverseGamma())? {
+    if (y <- left.graftLinearNormalInverseGamma(compare))? {
       y!.divide(right);
-    } else if (z <- left.graftNormalInverseGamma())? {
+    } else if (z <- left.graftNormalInverseGamma(compare))? {
       y <- TransformLinear<NormalInverseGamma>(1.0/right, z!);
     }
     return y;

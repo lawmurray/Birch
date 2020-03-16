@@ -33,51 +33,71 @@ final class IdenticalGaussian(μ:Expression<Real[_]>, σ2:Expression<Real>) <
     m2:MultivariateNormalInverseGamma?;
     m3:TransformLinearMultivariate<MultivariateGaussian>?;
     m4:MultivariateGaussian?;
+    r:Distribution<Real[_]>?;
 
-    if (m1 <- μ.graftLinearMultivariateNormalInverseGamma())? &&
-        m1!.x.σ2 == σ2.distribution() {
-      return LinearMultivariateNormalInverseGammaMultivariateGaussian(
-          m1!.A, m1!.x, m1!.c);
-    } else if (m2 <- μ.graftMultivariateNormalInverseGamma())? &&
-      m2!.σ2 == σ2.distribution() {
-      return MultivariateNormalInverseGammaMultivariateGaussian(
-          m2!);
+    /* match a template */
+    auto compare <- σ2.distribution();
+    if compare? && (m1 <- μ.graftLinearMultivariateNormalInverseGamma(compare!))? {
+      r <- LinearMultivariateNormalInverseGammaMultivariateGaussian(m1!.A, m1!.x, m1!.c);
+    } else if compare? && (m2 <- μ.graftMultivariateNormalInverseGamma(compare!))? {
+      r <- MultivariateNormalInverseGammaMultivariateGaussian(m2!);
     } else if (m3 <- μ.graftLinearMultivariateGaussian())? {
-      return LinearMultivariateGaussianMultivariateGaussian(m3!.A, m3!.x,
-          m3!.c, diagonal(σ2, m3!.rows()));
+      r <- LinearMultivariateGaussianMultivariateGaussian(m3!.A, m3!.x, m3!.c, diagonal(σ2, m3!.rows()));
     } else if (m4 <- μ.graftMultivariateGaussian())? {
-      return MultivariateGaussianMultivariateGaussian(m4!,
-          diagonal(σ2, m4!.rows()));
+      r <- MultivariateGaussianMultivariateGaussian(m4!, diagonal(σ2, m4!.rows()));
     } else if (s1 <- σ2.graftInverseGamma())? {
-      return MultivariateNormalInverseGamma(μ, Identity(μ.rows()), s1!);
-    } else {
-      return GraftedMultivariateGaussian(μ, diagonal(σ2, μ.rows()));
+      r <- MultivariateNormalInverseGamma(μ, Identity(μ.rows()), s1!);
     }
+    
+    /* finalize, and if not valid, use default template */
+    if !r? || !r!.graftFinalize() {
+      r <- GraftedMultivariateGaussian(μ, diagonal(σ2, μ.rows()));
+      r!.graftFinalize();
+    }
+    return r!;
   }
 
   function graftMultivariateGaussian() -> MultivariateGaussian? {
     prune();
     m1:TransformLinearMultivariate<MultivariateGaussian>?;
     m2:MultivariateGaussian?;
+    r:MultivariateGaussian?;
+    
+    /* match a template */
     if (m1 <- μ.graftLinearMultivariateGaussian())? {
-      return LinearMultivariateGaussianMultivariateGaussian(m1!.A, m1!.x,
-          m1!.c, diagonal(σ2, m1!.c.rows()));
+      r <- LinearMultivariateGaussianMultivariateGaussian(m1!.A, m1!.x, m1!.c, diagonal(σ2, m1!.c.rows()));
     } else if (m2 <- μ.graftMultivariateGaussian())? {
-      return MultivariateGaussianMultivariateGaussian(m2!,
-          diagonal(σ2, m2!.rows()));
-    } else {
-      return GraftedMultivariateGaussian(μ, diagonal(σ2, μ.rows()));
+      r <- MultivariateGaussianMultivariateGaussian(m2!, diagonal(σ2, m2!.rows()));
     }
+    
+    /* finalize, and if not valid, use default template */
+    if !r? || !r!.graftFinalize() {    
+      r <- GraftedMultivariateGaussian(μ, diagonal(σ2, μ.rows()));
+      r!.graftFinalize();
+    }
+    return r;
   }
 
-  function graftMultivariateNormalInverseGamma() ->
+  function graftMultivariateNormalInverseGamma(compare:Distribution<Real>) ->
       MultivariateNormalInverseGamma? {
     prune();
     s1:InverseGamma?;
-    if (s1 <- σ2.graftInverseGamma())? {
-      return MultivariateNormalInverseGamma(μ, Identity(μ.rows()), s1!);
+    r:MultivariateNormalInverseGamma?;
+    
+    if (s1 <- σ2.graftInverseGamma())? && s1! == compare {
+      r <- MultivariateNormalInverseGamma(μ, Identity(μ.rows()), s1!);
     }
-    return nil;
+
+    /* finalize, and if not valid, return nil */
+    if !r? || !r!.graftFinalize() {
+      r <- nil;
+    }
+    return r;
+  }
+
+  function graftFinalize() -> Boolean {
+    assert false;  // should have been replaced during graft
+    return false;
   }
 }
 

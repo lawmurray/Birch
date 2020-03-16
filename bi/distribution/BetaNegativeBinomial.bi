@@ -35,11 +35,20 @@ final class BetaNegativeBinomial(k:Expression<Integer>, ρ:Beta) < Discrete {
   function lower() -> Integer? {
     return 0;
   }
+
+  function graftFinalize() -> Boolean {
+    k.value();
+    if !ρ.hasValue() {
+      ρ.setChild(this);
+      return true;
+    } else {
+      return false;
+    }
+  }
 }
 
 function BetaNegativeBinomial(k:Expression<Integer>, ρ:Beta) ->
     BetaNegativeBinomial {
   m:BetaNegativeBinomial(k, ρ);
-  ρ.setChild(m);
   return m;
 }

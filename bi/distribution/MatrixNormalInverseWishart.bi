@@ -43,6 +43,28 @@ final class MatrixNormalInverseWishart(M:Expression<Real[_,_]>,
     (V.Ψ, V.k) <- downdate_matrix_normal_inverse_wishart(X, N.value(), Λ.value(), V.Ψ.value(), V.k.value());
   }
 
+  function graftMatrixNormalInverseWishart(compare:Distribution<Real[_,_]>) ->
+      MatrixNormalInverseWishart? {
+    prune();
+    graftFinalize();
+    if V == compare {
+      return this;
+    } else {
+      return nil;
+    }
+  }
+
+  function graftFinalize() -> Boolean {
+    Λ.value();
+    N.value();
+    if !V.hasValue() {
+      V.setChild(this);
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   function write(buffer:Buffer) {
     prune();
     buffer.set("class", "MatrixNormalInverseWishart");
@@ -56,6 +78,5 @@ final class MatrixNormalInverseWishart(M:Expression<Real[_,_]>,
 function MatrixNormalInverseWishart(M:Expression<Real[_,_]>,
     U:Expression<Real[_,_]>, V:InverseWishart) -> MatrixNormalInverseWishart {
   m:MatrixNormalInverseWishart(M, U, V);
-  V.setChild(m);
   return m;
 }

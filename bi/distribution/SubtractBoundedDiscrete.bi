@@ -104,12 +104,20 @@ final class SubtractBoundedDiscrete(x1:BoundedDiscrete, x2:BoundedDiscrete) <
   function upper() -> Integer? {
     return x1.upper()! - x2.lower()!;
   }
+
+  function graftFinalize() -> Boolean {
+    if !x1.hasValue() && !x2.hasValue() {
+      x1.setChild(this);
+      x2.setChild(this);
+      return true;
+    } else {
+      return false;
+    }
+  }
 }
 
 function SubtractBoundedDiscrete(x1:BoundedDiscrete, x2:BoundedDiscrete) ->
     SubtractBoundedDiscrete {
   m:SubtractBoundedDiscrete(x1, x2);
-  x1.setChild(m);
-  x2.setChild(m);
   return m;
 }

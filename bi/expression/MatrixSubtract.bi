@@ -38,40 +38,36 @@ final class MatrixSubtract<Left,Right,Value>(left:Expression<Left>,
     return y;
   }
   
-  function graftLinearMatrixNormalInverseGamma() ->
+  function graftLinearMatrixNormalInverseGamma(compare:Distribution<Real[_]>) ->
       TransformLinearMatrix<MatrixNormalInverseGamma>? {
     y:TransformLinearMatrix<MatrixNormalInverseGamma>?;
     z:MatrixNormalInverseGamma?;
 
-    if (y <- left.graftLinearMatrixNormalInverseGamma())? {
+    if (y <- left.graftLinearMatrixNormalInverseGamma(compare))? {
       y!.subtract(right);
-    } else if (y <- right.graftLinearMatrixNormalInverseGamma())? {
+    } else if (y <- right.graftLinearMatrixNormalInverseGamma(compare))? {
       y!.negateAndAdd(left);
-    } else if (z <- left.graftMatrixNormalInverseGamma())? {
-      y <- TransformLinearMatrix<MatrixNormalInverseGamma>(
-          Identity(z!.rows()), z!, -right);
-    } else if (z <- right.graftMatrixNormalInverseGamma())? {
-      y <- TransformLinearMatrix<MatrixNormalInverseGamma>(
-          -Identity(z!.rows()), z!, left);
+    } else if (z <- left.graftMatrixNormalInverseGamma(compare))? {
+      y <- TransformLinearMatrix<MatrixNormalInverseGamma>(Identity(z!.rows()), z!, -right);
+    } else if (z <- right.graftMatrixNormalInverseGamma(compare))? {
+      y <- TransformLinearMatrix<MatrixNormalInverseGamma>(-Identity(z!.rows()), z!, left);
     }
     return y;
   }
 
-  function graftLinearMatrixNormalInverseWishart() ->
+  function graftLinearMatrixNormalInverseWishart(compare:Distribution<Real[_,_]>) ->
       TransformLinearMatrix<MatrixNormalInverseWishart>? {
     y:TransformLinearMatrix<MatrixNormalInverseWishart>?;
     z:MatrixNormalInverseWishart?;
 
-    if (y <- left.graftLinearMatrixNormalInverseWishart())? {
+    if (y <- left.graftLinearMatrixNormalInverseWishart(compare))? {
       y!.subtract(right);
-    } else if (y <- right.graftLinearMatrixNormalInverseWishart())? {
+    } else if (y <- right.graftLinearMatrixNormalInverseWishart(compare))? {
       y!.negateAndAdd(left);
-    } else if (z <- left.graftMatrixNormalInverseWishart())? {
-      y <- TransformLinearMatrix<MatrixNormalInverseWishart>(
-          Identity(z!.rows()), z!, -right);
-    } else if (z <- right.graftMatrixNormalInverseWishart())? {
-      y <- TransformLinearMatrix<MatrixNormalInverseWishart>(
-          -Identity(z!.rows()), z!, left);
+    } else if (z <- left.graftMatrixNormalInverseWishart(compare))? {
+      y <- TransformLinearMatrix<MatrixNormalInverseWishart>(Identity(z!.rows()), z!, -right);
+    } else if (z <- right.graftMatrixNormalInverseWishart(compare))? {
+      y <- TransformLinearMatrix<MatrixNormalInverseWishart>(-Identity(z!.rows()), z!, left);
     }
     return y;
   }

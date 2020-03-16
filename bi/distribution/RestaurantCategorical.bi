@@ -29,10 +29,18 @@ final class RestaurantCategorical(ρ:Restaurant) < Distribution<Integer> {
     }
     ρ.N <- ρ.N + 1;
   }
+
+  function graftFinalize() -> Boolean {
+    if !ρ.hasValue() {
+      ρ.setChild(this);
+      return true;
+    } else {
+      return false;
+    }
+  }
 }
 
 function RestaurantCategorical(ρ:Restaurant) -> RestaurantCategorical {
   m:RestaurantCategorical(ρ);
-  ρ.setChild(m);
   return m;
 }

@@ -77,15 +77,28 @@ final class MultivariateNormalInverseGamma(μ:Expression<Real[_]>,
         Λ.value(), α.value(), gamma_to_beta(γ.value(), ν.value(), Λ.value()));
   }
 
-  function graft() -> Distribution<Real[_]> {
-    prune();
-    return this;
-  }
-
-  function graftMultivariateNormalInverseGamma() ->
+  function graftMultivariateNormalInverseGamma(compare:Distribution<Real>) ->
       MultivariateNormalInverseGamma? {
     prune();
-    return this;
+    graftFinalize();
+    if σ2 == compare {
+      return this;
+    } else {
+      return nil;
+    }
+  }
+
+  function graftFinalize() -> Boolean {
+    Λ.value();
+    ν.value();
+    α.value();
+    γ.value();
+    if !σ2.hasValue() {
+      σ2.setChild(this);
+      return true;
+    } else {
+      return false;
+    }
   }
 
   function write(buffer:Buffer) {
@@ -102,7 +115,6 @@ function MultivariateNormalInverseGamma(μ:Expression<Real[_]>,
     Σ:Expression<Real[_,_]>, σ2:InverseGamma) ->
     MultivariateNormalInverseGamma {
   m:MultivariateNormalInverseGamma(μ, Σ, σ2);
-  σ2.setChild(m);
   return m;
 }
 

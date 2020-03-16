@@ -29,14 +29,14 @@ final class MultivariateMultiply<Left,Right,Value>(left:Expression<Left>,
     return y;
   }
   
-  function graftLinearMultivariateNormalInverseGamma() ->
+  function graftLinearMultivariateNormalInverseGamma(compare:Distribution<Real>) ->
       TransformLinearMultivariate<MultivariateNormalInverseGamma>? {
     y:TransformLinearMultivariate<MultivariateNormalInverseGamma>?;
     z:MultivariateNormalInverseGamma?;
 
-    if (y <- right.graftLinearMultivariateNormalInverseGamma())? {
+    if (y <- right.graftLinearMultivariateNormalInverseGamma(compare))? {
       y!.leftMultiply(left);
-    } else if (z <- right.graftMultivariateNormalInverseGamma())? {
+    } else if (z <- right.graftMultivariateNormalInverseGamma(compare))? {
       y <- TransformLinearMultivariate<MultivariateNormalInverseGamma>(
           left, z!);
     }

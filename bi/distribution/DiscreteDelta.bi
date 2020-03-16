@@ -38,10 +38,18 @@ final class DiscreteDelta(μ:Discrete) < Discrete {
   function upper() -> Integer? {
     return μ.upper();
   }
+
+  function graftFinalize() -> Boolean {
+    if !μ.hasValue() {
+      μ.setChild(this);
+      return true;
+    } else {
+      return false;
+    }
+  }
 }
 
 function DiscreteDelta(μ:Discrete) -> DiscreteDelta {
   m:DiscreteDelta(μ);
-  μ.setChild(m);
   return m;
 }

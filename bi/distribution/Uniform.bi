@@ -37,9 +37,10 @@ final class Uniform(l:Expression<Real>, u:Expression<Real>) <
     return u.value();
   }
 
-  function graft() -> Distribution<Real> {
-    prune();
-    return this;
+  function graftFinalize() -> Boolean {
+    l.value();
+    u.value();
+    return true;
   }
 
   function write(buffer:Buffer) {

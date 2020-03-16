@@ -38,25 +38,49 @@ final class IndependentColumnMatrixGaussian(M:Expression<Real[_,_]>,
   function graft() -> Distribution<Real[_,_]> {
     prune();
     s1:IndependentInverseGamma?;
+    r:Distribution<Real[_,_]>?;
+    
+    /* match a template */
     if (s1 <- σ2.graftIndependentInverseGamma())? {
-      return MatrixNormalInverseGamma(M, U, s1!);
-    } else {
-      return GraftedMatrixGaussian(M, U, diagonal(σ2));
+      r <- MatrixNormalInverseGamma(M, U, s1!);
     }
+
+    /* finalize, and if not valid, use default template */
+    if !r? || !r!.graftFinalize() {
+      r <- GraftedMatrixGaussian(M, U, diagonal(σ2));
+      r!.graftFinalize();
+    }
+    return r!;
   }
 
   function graftMatrixGaussian() -> MatrixGaussian? {
     prune();
-    return GraftedMatrixGaussian(M, U, diagonal(σ2));
+    auto r <- GraftedMatrixGaussian(M, U, diagonal(σ2));
+    r.graftFinalize();
+    return r;
   }
 
-  function graftMatrixNormalInverseGamma() -> MatrixNormalInverseGamma? {
+  function graftMatrixNormalInverseGamma(compare:Distribution<Real[_]>) ->
+      MatrixNormalInverseGamma? {
     prune();
     s1:IndependentInverseGamma?;
-    if (s1 <- σ2.graftIndependentInverseGamma())? {
-      return MatrixNormalInverseGamma(M, U, s1!);
+    r:MatrixNormalInverseGamma?;
+    
+    /* match a template */
+    if (s1 <- σ2.graftIndependentInverseGamma())? && s1! == compare {
+      r <- MatrixNormalInverseGamma(M, U, s1!);
     }
-    return nil;
+
+    /* finalize, and if not valid, return nil */
+    if !r? || !r!.graftFinalize() {
+      r <- nil;
+    }
+    return r;
+  }
+
+  function graftFinalize() -> Boolean {
+    assert false;  // should have been replaced during graft
+    return false;
   }
 }
 

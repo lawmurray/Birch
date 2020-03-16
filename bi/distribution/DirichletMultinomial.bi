@@ -28,11 +28,19 @@ final class DirichletMultinomial(n:Expression<Integer>, ρ:Dirichlet) <
   function downdate(x:Integer[_]) {
     ρ.α <- downdate_dirichlet_multinomial(x, n.value(), ρ.α.value());
   }
+
+  function graftFinalize() -> Boolean {
+    if !ρ.hasValue() {
+      ρ.setChild(this);
+      return true;
+    } else {
+      return false;
+    }
+  }
 }
 
 function DirichletMultinomial(n:Expression<Integer>, ρ:Dirichlet) ->
     DirichletMultinomial {
   m:DirichletMultinomial(n, ρ);
-  ρ.setChild(m);
   return m;
 }

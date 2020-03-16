@@ -12,34 +12,43 @@ final class DiscreteAdd<Left,Right,Value>(left:Expression<Left>,
   }
 
   function graftDiscrete() -> Discrete? {
-    y:Discrete? <- graftBoundedDiscrete();
-    if !y? {
+    r:Discrete? <- graftBoundedDiscrete();
+    if !r? {
+      /* match a template */
       x:Discrete?;
       if (x <- left.graftDiscrete())? {
-        y <- LinearDiscrete(Boxed(1), x!, right);
+        r <- LinearDiscrete(Boxed(1), x!, right);
       } else if (x <- right.graftDiscrete())? {
-        y <- LinearDiscrete(Boxed(1), x!, left);
+        r <- LinearDiscrete(Boxed(1), x!, left);
+      }
+
+      /* finalize, and if not valid, return nil */
+      if !r? || !r!.graftFinalize() {
+        r <- nil;
       }
     }
-    return y;
+    return r;
   }
 
   function graftBoundedDiscrete() -> BoundedDiscrete? {
-    y:BoundedDiscrete?;
     x1:BoundedDiscrete? <- left.graftBoundedDiscrete();
     x2:BoundedDiscrete? <- right.graftBoundedDiscrete();
+    r:BoundedDiscrete?;
 
-    if x1? && x2? && !(x1!.hasValue()) {
-      // ^ third condition above ensures that x1 is still valid after x2 is
-      //   constructed, which will not be the case if left and right share a
-      //   common ancestor on the delayed sampling graph
-      y <- AddBoundedDiscrete(x1!, x2!);
-    } else if x1? && !(x1!.hasValue()) {
-      y <- LinearBoundedDiscrete(Boxed(1), x1!, right);
-    } else if x2? && !(x2!.hasValue()) {
-      y <- LinearBoundedDiscrete(Boxed(1), x2!, left);
+    /* match a template */
+    if x1? && x2? {
+      r <- AddBoundedDiscrete(x1!, x2!);
+    } else if x1? {
+      r <- LinearBoundedDiscrete(Boxed(1), x1!, right);
+    } else if x2? {
+      r <- LinearBoundedDiscrete(Boxed(1), x2!, left);
     }
-    return y;
+    
+    /* finalize, and if not valid, return nil */
+    if !r? || !r!.graftFinalize() {
+      r <- nil;
+    }
+    return r;
   }
 }
 

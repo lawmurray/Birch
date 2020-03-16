@@ -17,7 +17,7 @@ abstract class Delay {
    * Set the $M$-path child of this node.
    */
   final function setChild(child:Delay) {
-    assert !this.child?;
+    assert !this.child? || this.child! == child;
     this.child <- child;
   }
 

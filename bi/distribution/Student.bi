@@ -34,9 +34,11 @@ final class Student(ν:Expression<Real>, μ:Expression<Real>,
     return quantile_student_t(P, ν.value(), μ.value(), σ2.value());
   }
 
-  function graft() -> Distribution<Real> {
-    prune();
-    return this;
+  function graftFinalize() -> Boolean {
+    ν.value();
+    μ.value();
+    σ2.value();
+    return true;
   }
 
   function write(buffer:Buffer) {

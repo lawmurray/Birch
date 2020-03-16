@@ -39,19 +39,33 @@ class Poisson(λ:Expression<Real>) < Discrete {
     prune();
     m1:TransformLinear<Gamma>?;
     m2:Gamma?;
-      
+    r:Distribution<Integer>?;
+
+    /* match a template */      
     if (m1 <- λ.graftScaledGamma())? {
-      return ScaledGammaPoisson(m1!.a, m1!.x);
+      r <- ScaledGammaPoisson(m1!.a, m1!.x);
     } else if (m2 <- λ.graftGamma())? {
-      return GammaPoisson(m2!);
-    } else {
-      return GraftedPoisson(λ);
+      r <- GammaPoisson(m2!);
     }
+    
+    /* finalize, and if not valid, use default template */
+    if !r? || !r!.graftFinalize() {
+      r <- GraftedPoisson(λ);
+      r!.graftFinalize();
+    }
+    return r!;
   }
 
   function graftDiscrete() -> Discrete? {
     prune();
-    return GraftedPoisson(λ);
+    auto r <- GraftedPoisson(λ);
+    r!.graftFinalize();
+    return r;
+  }
+
+  function graftFinalize() -> Boolean {
+    assert false;  // should have been replaced during graft
+    return false;
   }
 
   function write(buffer:Buffer) {

@@ -33,9 +33,10 @@ final class Weibull(k:Expression<Real>, λ:Expression<Real>) <
     return 0.0;
   }
 
-  function graft() -> Distribution<Real> {
-    prune();
-    return this;
+  function graftFinalize() -> Boolean {
+    k.value();
+    λ.value();
+    return true;
   }
 
   function write(buffer:Buffer) {

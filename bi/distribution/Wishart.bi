@@ -29,14 +29,16 @@ final class Wishart(Ψ:Expression<Real[_,_]>, k:Expression<Real>) <
     return logpdf_wishart(X, Ψ.value(), k.value());
   }
 
-  function graft() -> Distribution<Real[_,_]> {
+  function graftWishart() -> Wishart? {
     prune();
+    graftFinalize();
     return this;
   }
 
-  function graftWishart() -> Wishart? {
-    prune();
-    return this;
+  function graftFinalize() -> Boolean {
+    Ψ.value();
+    k.value();
+    return true;
   }
 
   function write(buffer:Buffer) {

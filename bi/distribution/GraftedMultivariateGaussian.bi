@@ -5,12 +5,20 @@ class GraftedMultivariateGaussian(μ:Expression<Real[_]>,
     Σ:Expression<Real[_,_]>) < MultivariateGaussian(μ, Σ) {
   function graft() -> Distribution<Real[_]> {
     prune();
+    graftFinalize();
     return this;
   }
 
   function graftMultivariateGaussian() -> MultivariateGaussian? {
     prune();
+    graftFinalize();
     return this;
+  }
+
+  function graftFinalize() -> Boolean {
+    μ.value();
+    Σ.value();
+    return true;
   }
 }
 

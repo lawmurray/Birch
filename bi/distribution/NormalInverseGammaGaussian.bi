@@ -37,11 +37,19 @@ final class NormalInverseGammaGaussian(μ:NormalInverseGamma) <
     return quantile_normal_inverse_gamma_gaussian(P, μ.μ.value(),
         1.0/μ.λ.value(), μ.σ2.α.value(), μ.σ2.β.value());
   }
+
+  function graftFinalize() -> Boolean {
+    if !μ.hasValue() {
+      μ.setChild(this);
+      return true;
+    } else {
+      return false;
+    }
+  }
 }
 
 function NormalInverseGammaGaussian(μ:NormalInverseGamma) ->
     NormalInverseGammaGaussian {
   m:NormalInverseGammaGaussian(μ);
-  μ.setChild(m);
   return m;
 }

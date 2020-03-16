@@ -39,6 +39,17 @@ final class LinearMatrixNormalInverseWishartMatrixGaussian(
     (M.N, M.Λ, M.V.Ψ, M.V.k) <- downdate_linear_matrix_normal_inverse_wishart_matrix_gaussian(
         X, A.value(), M.N.value(), M.Λ.value(), C.value(), M.V.Ψ.value(), M.V.k.value());
   }
+
+  function graftFinalize() -> Boolean {
+    A.value();
+    C.value();
+    if !M.hasValue() {
+      M.setChild(this);
+      return true;
+    } else {
+      return false;
+    }
+  }
 }
 
 function LinearMatrixNormalInverseWishartMatrixGaussian(

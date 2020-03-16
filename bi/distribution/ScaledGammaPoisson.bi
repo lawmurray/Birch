@@ -45,11 +45,20 @@ final class ScaledGammaPoisson(a:Expression<Real>, λ:Gamma) < Discrete {
   function lower() -> Integer? {
     return 0;
   }
+
+  function graftFinalize() -> Boolean {
+    a.value();
+    if !λ.hasValue() {
+      λ.setChild(this);
+      return true;
+    } else {
+      return false;
+    }
+  }
 }
 
 function ScaledGammaPoisson(a:Expression<Real>, λ:Gamma) ->
     ScaledGammaPoisson {
   m:ScaledGammaPoisson(a, λ);
-  λ.setChild(m);
   return m;
 }

@@ -60,11 +60,21 @@ final class LinearBoundedDiscrete(a:Expression<Integer>, μ:BoundedDiscrete,
       return a*μ.lower()! + c.value();
     }
   }
+
+  function graftFinalize() -> Boolean {
+    a.value();
+    c.value();
+    if !μ.hasValue() {
+      μ.setChild(this);
+      return true;
+    } else {
+      return false;
+    }
+  }
 }
 
 function LinearBoundedDiscrete(a:Expression<Integer>, μ:BoundedDiscrete,
     c:Expression<Integer>) -> LinearBoundedDiscrete {
   m:LinearBoundedDiscrete(a, μ, c);
-  μ.setChild(m);
   return m;
 }

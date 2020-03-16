@@ -35,6 +35,15 @@ final class MatrixNormalInverseGammaMatrixGaussian(
     (M.N, M.Λ, M.α, M.γ) <- downdate_matrix_normal_inverse_gamma_matrix_gaussian(
         X, M.N.value(), M.Λ.value(), M.α.value(), M.γ.value());
   }
+
+  function graftFinalize() -> Boolean {
+    if !M.hasValue() {
+      M.setChild(this);
+      return true;
+    } else {
+      return false;
+    }
+  }
 }
 
 function MatrixNormalInverseGammaMatrixGaussian(

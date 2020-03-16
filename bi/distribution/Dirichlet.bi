@@ -15,14 +15,15 @@ final class Dirichlet(α:Expression<Real[_]>) < Distribution<Real[_]> {
     return logpdf_dirichlet(x, α.value());
   }
 
-  function graft() -> Distribution<Real[_]> {
+  function graftDirichlet() -> Dirichlet? {
     prune();
+    graftFinalize();
     return this;
   }
 
-  function graftDirichlet() -> Dirichlet? {
-    prune();
-    return this;
+  function graftFinalize() -> Boolean {
+    α.value();
+    return true;
   }
 
   function write(buffer:Buffer) {

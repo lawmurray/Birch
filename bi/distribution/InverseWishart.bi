@@ -55,14 +55,16 @@ final class InverseWishart(Ψ:Expression<Real[_,_]>, k:Expression<Real>) <
     return logpdf_inverse_wishart(X, Ψ.value(), k.value());
   }
 
-  function graft() -> Distribution<Real[_,_]> {
+  function graftInverseWishart() -> InverseWishart? {
     prune();
+    graftFinalize();
     return this;
   }
 
-  function graftInverseWishart() -> InverseWishart? {
-    prune();
-    return this;
+  function graftFinalize() -> Boolean {
+    Ψ.value();
+    k.value();
+    return true;
   }
 
   function write(buffer:Buffer) {

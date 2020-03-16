@@ -31,12 +31,20 @@ final class MultivariateNormalInverseGammaMultivariateGaussian(
     (μ.ν, μ.Λ, μ.α, μ.γ) <- downdate_multivariate_normal_inverse_gamma_multivariate_gaussian(
         x, μ.ν.value(), μ.Λ.value(), μ.α.value(), μ.γ.value());
   }
+
+  function graftFinalize() -> Boolean {
+    if !μ.hasValue() {
+      μ.setChild(this);
+      return true;
+    } else {
+      return false;
+    }
+  }
 }
 
 function MultivariateNormalInverseGammaMultivariateGaussian(
     μ:MultivariateNormalInverseGamma) ->
     MultivariateNormalInverseGammaMultivariateGaussian {
   m:MultivariateNormalInverseGammaMultivariateGaussian(μ);
-  μ.setChild(m);
   return m;
 }

@@ -38,18 +38,18 @@ final class Add<Left,Right,Value>(left:Expression<Left>,
     return y;
   }
   
-  function graftLinearNormalInverseGamma() ->
+  function graftLinearNormalInverseGamma(compare:Distribution<Real>) ->
       TransformLinear<NormalInverseGamma>? {
     y:TransformLinear<NormalInverseGamma>?;
     z:NormalInverseGamma?;
 
-    if (y <- left.graftLinearNormalInverseGamma())? {
+    if (y <- left.graftLinearNormalInverseGamma(compare))? {
       y!.add(right);
-    } else if (y <- right.graftLinearNormalInverseGamma())? {
+    } else if (y <- right.graftLinearNormalInverseGamma(compare))? {
       y!.add(left);
-    } else if (z <- left.graftNormalInverseGamma())? {
+    } else if (z <- left.graftNormalInverseGamma(compare))? {
       y <- TransformLinear<NormalInverseGamma>(Boxed(1.0), z!, right);
-    } else if (z <- right.graftNormalInverseGamma())? {
+    } else if (z <- right.graftNormalInverseGamma(compare))? {
       y <- TransformLinear<NormalInverseGamma>(Boxed(1.0), z!, left);
     }
     return y;

@@ -42,14 +42,16 @@ final class Restaurant(α:Expression<Real>, θ:Expression<Real>) <
     return 0.0;
   }
 
-  function graft() -> Distribution<Real[_]> {
+  function graftRestaurant() -> Restaurant? {
     prune();
+    graftFinalize();
     return this;
   }
 
-  function graftRestaurant() -> Restaurant? {
-    prune();
-    return this;
+  function graftFinalize() -> Boolean {
+    α.value();
+    θ.value();
+    return true;
   }
 
   function write(buffer:Buffer) {
