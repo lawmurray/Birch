@@ -8,7 +8,7 @@ class Surface {
   
   function destroy() {
     cpp{{
-    cairo_surface_destroy(self->surface);
+    cairo_surface_destroy(self()->surface);
     }}
   }
 }
