@@ -159,22 +159,6 @@ public:
     return get();
   }
 
-  /**
-   * Equal comparison.
-   */
-  template<class Q>
-  bool operator==(const Q& o) const {
-    return get() == o.get();
-  }
-
-  /**
-   * Not equal comparison.
-   */
-  template<class Q>
-  bool operator!=(const Q& o) const {
-    return get() != o.get();
-  }
-
 private:
   /**
    * Raw pointer.
