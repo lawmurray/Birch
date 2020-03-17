@@ -52,12 +52,20 @@ void bi::CppBaseGenerator::visit(const Literal<const char*>* o) {
 void bi::CppBaseGenerator::visit(const Parentheses* o) {
   if (o->single->isList()) {
     if (inAssign) {
-      middle("libbirch::tie");
+      middle("libbirch::tie(" << o->single << ')');
     } else {
-      middle("libbirch::make_tuple");
+      middle("libbirch::make_tuple(");
+      for (auto iter = o->single->begin(); iter != o->single->end(); ++iter) {
+        if (iter != o->single->begin()) {
+          middle(", ");
+        }
+        middle("libbirch::canonical(" << *iter << ')');
+      }
+      middle(')');
     }
+  } else {
+    middle('(' << o->single << ')');
   }
-  middle('(' << o->single << ')');
 }
 
 void bi::CppBaseGenerator::visit(const Sequence* o) {
