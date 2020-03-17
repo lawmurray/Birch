@@ -26,11 +26,9 @@ final class MultivariateAdd<Left,Right,Value>(left:Expression<Left>,
     } else if (y <- right.graftLinearMultivariateGaussian())? {
       y!.add(left);
     } else if (z <- left.graftMultivariateGaussian())? {
-      y <- TransformLinearMultivariate<MultivariateGaussian>(
-          Identity(z!.rows()), z!, right);
+      y <- TransformLinearMultivariate<MultivariateGaussian>(Identity(z!.rows()), z!, right);
     } else if (z <- right.graftMultivariateGaussian())? {
-      y <- TransformLinearMultivariate<MultivariateGaussian>(
-          Identity(z!.rows()), z!, left);
+      y <- TransformLinearMultivariate<MultivariateGaussian>(Identity(z!.rows()), z!, left);
     }
     return y;
   }
@@ -45,11 +43,9 @@ final class MultivariateAdd<Left,Right,Value>(left:Expression<Left>,
     } else if (y <- right.graftLinearMultivariateNormalInverseGamma(compare))? {
       y!.add(left);
     } else if (z <- left.graftMultivariateNormalInverseGamma(compare))? {
-      y <- TransformLinearMultivariate<MultivariateNormalInverseGamma>(
-          Identity(z!.rows()), z!, right);
+      y <- TransformLinearMultivariate<MultivariateNormalInverseGamma>(Identity(z!.rows()), z!, right);
     } else if (z <- right.graftMultivariateNormalInverseGamma(compare))? {
-      y <- TransformLinearMultivariate<MultivariateNormalInverseGamma>(
-          Identity(z!.rows()), z!, left);
+      y <- TransformLinearMultivariate<MultivariateNormalInverseGamma>(Identity(z!.rows()), z!, left);
     }
     return y;
   }

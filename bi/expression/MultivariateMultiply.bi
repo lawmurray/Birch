@@ -23,8 +23,7 @@ final class MultivariateMultiply<Left,Right,Value>(left:Expression<Left>,
     if (y <- right.graftLinearMultivariateGaussian())? {
       y!.leftMultiply(left);
     } else if (z <- right.graftMultivariateGaussian())? {
-      y <- TransformLinearMultivariate<MultivariateGaussian>(
-          left, z!);
+      y <- TransformLinearMultivariate<MultivariateGaussian>(left, z!);
     }
     return y;
   }
@@ -37,8 +36,7 @@ final class MultivariateMultiply<Left,Right,Value>(left:Expression<Left>,
     if (y <- right.graftLinearMultivariateNormalInverseGamma(compare))? {
       y!.leftMultiply(left);
     } else if (z <- right.graftMultivariateNormalInverseGamma(compare))? {
-      y <- TransformLinearMultivariate<MultivariateNormalInverseGamma>(
-          left, z!);
+      y <- TransformLinearMultivariate<MultivariateNormalInverseGamma>(left, z!);
     }
     return y;
   }
