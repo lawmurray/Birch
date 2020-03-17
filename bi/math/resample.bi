@@ -37,6 +37,7 @@ function conditional_resample_multinomial(w:Real[_], b:Integer) ->
   auto o <- simulate_multinomial(N - 1, norm_exp(w));
   o[b] <- o[b] + 1;
   auto a <- offspring_to_ancestors_permute(o);
+  assert a[b] == b;
   return (a, b);
 }
 
