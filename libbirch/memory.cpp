@@ -113,8 +113,8 @@ void* libbirch::reallocate(void* ptr1, const size_t n1, const int tid1,
 }
 
 static libbirch::Label* makeRootLabel() {
-  static libbirch::SharedPtr<libbirch::Label> rootLabel(new libbirch::Label());
-  return rootLabel.get();
+  static libbirch::Label* rootLabel = new libbirch::Label();
+  return rootLabel;
 }
 
 libbirch::Label* libbirch::rootLabel(makeRootLabel());

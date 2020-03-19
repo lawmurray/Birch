@@ -685,13 +685,11 @@ private:
    */
   void release() {
     if (!isView && buffer && buffer->decUsage() == 0u) {
-      if (!is_value<T>::value) {
-        ///@todo in C++17 can use std::destroy()
-        auto iter = begin();
-        auto last = end();
-        for (; iter != last; ++iter) {
-          iter->~T();
-        }
+      ///@todo in C++17 can use std::destroy()
+      auto iter = begin();
+      auto last = end();
+      for (; iter != last; ++iter) {
+        iter->~T();
       }
       size_t bytes = Buffer<T>::size(volume());
       libbirch::deallocate(buffer, bytes, buffer->tid);
@@ -801,14 +799,14 @@ using DefaultArray = Array<T,typename DefaultShape<D>::type>;
  * @see https://eigen.tuxfamily.org/dox/TopicPitfalls.html#title3
  */
 template<class EigenType, std::enable_if_t<EigenType::ColsAtCompileTime == 1,int> = 0>
-auto canonical(Eigen::MatrixBase<EigenType>&& o) {
+auto canonical(Eigen::EigenBase<EigenType>&& o) {
   using T = typename EigenType::value_type;
   using F = typename DefaultShape<1>::type;
   return Array<T,F>(o);
 }
 
 template<class EigenType, std::enable_if_t<EigenType::ColsAtCompileTime == 2,int> = 0>
-auto canonical(Eigen::MatrixBase<EigenType>&& o) {
+auto canonical(Eigen::EigenBase<EigenType>&& o) {
   using T = typename EigenType::value_type;
   using F = typename DefaultShape<2>::type;
   return Array<T,F>(o);

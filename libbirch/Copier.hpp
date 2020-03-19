@@ -114,8 +114,11 @@ template<class P>
 Lazy<P> clone(const Lazy<P>& o) {
   freeze(o);
   auto label = new Label(*o.getLabel());
-  auto object = o.pull()->copy_(label);
-  return Lazy<P>(P(object), label);
+  auto object = label->forward(o.pull());
+  auto r = Lazy<P>(P(object), label);
+  assert(r->numShared() == 1);
+  assert(label->numShared() == 1);
+  return r;
 }
 
 }

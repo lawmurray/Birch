@@ -38,7 +38,7 @@ public:
       label(rootLabel),
       frozen(false),
       frozenUnique(false) {
-    // size and tid already set by operator new
+    // size and tid set by operator new
   }
 
   /**
@@ -52,7 +52,7 @@ public:
       label(nullptr),
       frozen(false),
       frozenUnique(false) {
-    // size and tid already set by operator new
+    // size and tid set by operator new
   }
 
   /**
@@ -84,9 +84,9 @@ public:
    * Delete operator.
    */
   void operator delete(void* ptr) {
-    auto counted = static_cast<Any*>(ptr);
-    counted->destroy();
-    counted->deallocate();
+    auto o = static_cast<Any*>(ptr);
+    o->destroy();
+    o->deallocate();
   }
 
   /**
@@ -106,7 +106,7 @@ public:
   /**
    * Is this object reachable? An object is reachable if there exists a
    * shared, memo value, or weak pointer to it. This is equivalent to a weak
-   * count or one or more. If only a memo key pointer to it exists, it is
+   * count of one or more. If only a memo key pointer to it exists, it is
    * not considered reachable, and it may be cleaned up during memo
    * maintenance.
    */
