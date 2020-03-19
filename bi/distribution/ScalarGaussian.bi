@@ -36,50 +36,62 @@ final class ScalarGaussian(μ:Expression<Real>, σ2:Expression<Real>,
   }
   
   function graft() -> Distribution<Real> {
-    prune();
-    s1:InverseGamma?;
-    r:Distribution<Real>?;
+    if !hasValue() {
+      prune();
+      s1:InverseGamma?;
+      r:Distribution<Real>?;
     
-    /* match a template */
-    if (s1 <- σ2.graftInverseGamma())? {
-      r <- NormalInverseGamma(μ, τ2, s1!);
-    } else if (s1 <- τ2.graftInverseGamma())? {
-      r <- NormalInverseGamma(μ, σ2, s1!);
-    }
+      /* match a template */
+      if (s1 <- σ2.graftInverseGamma())? {
+        r <- NormalInverseGamma(μ, τ2, s1!);
+      } else if (s1 <- τ2.graftInverseGamma())? {
+        r <- NormalInverseGamma(μ, σ2, s1!);
+      }
     
-    /* finalize, and if not valid, use default template */
-    if !r? || !r!.graftFinalize() {
-      r <- GraftedGaussian(μ, σ2*τ2);
-      r!.graftFinalize();
+      /* finalize, and if not valid, use default template */
+      if !r? || !r!.graftFinalize() {
+        r <- GraftedGaussian(μ, σ2*τ2);
+        r!.graftFinalize();
+      }
+      return r!;
+    } else {
+      return this;
     }
-    return r!;
   }
 
   function graftGaussian() -> Gaussian? {
-    prune();
-    auto r <- GraftedGaussian(μ, σ2*τ2);
-    r!.graftFinalize();
-    return r;
+    if !hasValue() {
+      prune();
+      auto r <- GraftedGaussian(μ, σ2*τ2);
+      r!.graftFinalize();
+      return r;
+    } else {
+      return nil;
+    }
   }
 
   function graftNormalInverseGamma(compare:Distribution<Real>) ->
       NormalInverseGamma? {
-    prune();
-    s1:InverseGamma?;
-    r:NormalInverseGamma?;
+    if !hasValue() {
+      prune();
+      s1:InverseGamma?;
+      r:NormalInverseGamma?;
     
-    /* match a template */
-    if (s1 <- σ2.graftInverseGamma())? && s1! == compare {
-      r <- NormalInverseGamma(μ, τ2, s1!);
-    } else if (s1 <- τ2.graftInverseGamma())? && s1! == compare {
-      r <- NormalInverseGamma(μ, σ2, s1!);
-    }
+      /* match a template */
+      if (s1 <- σ2.graftInverseGamma())? && s1! == compare {
+        r <- NormalInverseGamma(μ, τ2, s1!);
+      } else if (s1 <- τ2.graftInverseGamma())? && s1! == compare {
+        r <- NormalInverseGamma(μ, σ2, s1!);
+      }
 
-    /* finalize, and if not valid, return nil */
-    if !r? || !r!.graftFinalize() {
-      r <- nil;
+      /* finalize, and if not valid, return nil */
+      if !r? || !r!.graftFinalize() {
+        r <- nil;
+      }
+      return r;
+    } else {
+      return nil;
     }
-    return r;
   }
 
   function graftFinalize() -> Boolean {

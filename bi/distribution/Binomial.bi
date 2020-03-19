@@ -41,29 +41,45 @@ class Binomial(n:Expression<Integer>, ρ:Expression<Real>) < BoundedDiscrete {
   }
 
   function graft() -> Distribution<Integer> {
-    prune();
-    m:Beta?;
-    r:Distribution<Integer>?;
+    if !hasValue() {
+      prune();
+      m:Beta?;
+      r:Distribution<Integer>?;
     
-    /* match a template */
-    if (m <- ρ.graftBeta())? {
-      r <- BetaBinomial(n, m!);
-    }
+      /* match a template */
+      if (m <- ρ.graftBeta())? {
+        r <- BetaBinomial(n, m!);
+      }
     
-    /* finalize, and if not valid, use default template */
-    if !r? || !r!.graftFinalize() {
-      r <- GraftedBinomial(n, ρ);
-      r!.graftFinalize();
+      /* finalize, and if not valid, use default template */
+      if !r? || !r!.graftFinalize() {
+        r <- GraftedBinomial(n, ρ);
+        r!.graftFinalize();
+      }
+      return r!;
+    } else {
+      return this;
     }
-    return r!;
   }
   
   function graftDiscrete() -> Discrete? {
-    return Discrete?(graft());
+    if !hasValue() {
+      prune();
+      graftFinalize();
+      return this;
+    } else {
+      return nil;
+    }
   }
 
   function graftBoundedDiscrete() -> BoundedDiscrete? {
-    return BoundedDiscrete?(graft());
+    if !hasValue() {
+      prune();
+      graftFinalize();
+      return this;
+    } else {
+      return nil;
+    }
   }
 
   function graftFinalize() -> Boolean {

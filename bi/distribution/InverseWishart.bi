@@ -56,9 +56,13 @@ final class InverseWishart(Ψ:Expression<Real[_,_]>, k:Expression<Real>) <
   }
 
   function graftInverseWishart() -> InverseWishart? {
-    prune();
-    graftFinalize();
-    return this;
+    if !hasValue() {
+      prune();
+      graftFinalize();
+      return this;
+    } else {
+      return nil;
+    }
   }
 
   function graftFinalize() -> Boolean {

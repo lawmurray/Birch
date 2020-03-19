@@ -6,8 +6,12 @@ abstract class BoundedDiscrete < Discrete {
   abstract function upper() -> Integer?;
 
   function graftBoundedDiscrete() -> BoundedDiscrete? {
-    prune();
-    graftFinalize();
-    return this;
+    if !hasValue() {
+      prune();
+      graftFinalize();
+      return this;
+    } else {
+      return nil;
+    }
   }
 }

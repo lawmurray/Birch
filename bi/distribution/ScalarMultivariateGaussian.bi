@@ -32,46 +32,58 @@ final class ScalarMultivariateGaussian(μ:Expression<Real[_]>,
   }
 
   function graft() -> Distribution<Real[_]> {
-    prune();
-    s1:InverseGamma?;
-    r:Distribution<Real[_]>?;
+    if !hasValue() {
+      prune();
+      s1:InverseGamma?;
+      r:Distribution<Real[_]>?;
     
-    /* match a template */
-    if (s1 <- σ2.graftInverseGamma())? {
-      r <- MultivariateNormalInverseGamma(μ, Σ, s1!);
-    }
+      /* match a template */
+      if (s1 <- σ2.graftInverseGamma())? {
+        r <- MultivariateNormalInverseGamma(μ, Σ, s1!);
+      }
 
-    /* finalize, and if not valid, use default template */
-    if !r? || !r!.graftFinalize() {
-      r <- GraftedMultivariateGaussian(μ, Σ*σ2);
-      r!.graftFinalize();
+      /* finalize, and if not valid, use default template */
+      if !r? || !r!.graftFinalize() {
+        r <- GraftedMultivariateGaussian(μ, Σ*σ2);
+        r!.graftFinalize();
+      }
+      return r!;
+    } else {
+      return this;
     }
-    return r!;
   }
 
   function graftMultivariateGaussian() -> MultivariateGaussian? {
-    prune();
-    auto r <- GraftedMultivariateGaussian(μ, Σ*σ2);
-    r!.graftFinalize();
-    return r;
+    if !hasValue() {
+      prune();
+      auto r <- GraftedMultivariateGaussian(μ, Σ*σ2);
+      r!.graftFinalize();
+      return r;
+    } else {
+      return nil;
+    }
   }
 
   function graftMultivariateNormalInverseGamma(compare:Distribution<Real>) ->
       MultivariateNormalInverseGamma? {
-    prune();
-    s1:InverseGamma?;
-    r:MultivariateNormalInverseGamma?;
+    if !hasValue() {
+      prune();
+      s1:InverseGamma?;
+      r:MultivariateNormalInverseGamma?;
 
-    /* match a template */    
-    if (s1 <- σ2.graftInverseGamma())? && s1! == compare {
-      r <- MultivariateNormalInverseGamma(μ, Σ, s1!);
-    }
+      /* match a template */    
+      if (s1 <- σ2.graftInverseGamma())? && s1! == compare {
+        r <- MultivariateNormalInverseGamma(μ, Σ, s1!);
+      }
 
-    /* finalize, and if not valid, return nil */
-    if !r? || !r!.graftFinalize() {
-      r <- nil;
+      /* finalize, and if not valid, return nil */
+      if !r? || !r!.graftFinalize() {
+        r <- nil;
+      }
+      return r;
+    } else {
+      return nil;
     }
-    return r;
   }
 
   function graftFinalize() -> Boolean {

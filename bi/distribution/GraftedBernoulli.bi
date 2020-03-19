@@ -3,8 +3,10 @@
  */
 final class GraftedBernoulli(ρ:Expression<Real>) < Bernoulli(ρ) {
   function graft() -> Distribution<Boolean> {
-    prune();
-    graftFinalize();
+    if !hasValue() {
+      prune();
+      graftFinalize();
+    }
     return this;
   }
 

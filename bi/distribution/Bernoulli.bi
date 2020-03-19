@@ -16,21 +16,25 @@ class Bernoulli(ρ:Expression<Real>) < Distribution<Boolean> {
   }
 
   function graft() -> Distribution<Boolean> {
-    prune();
-    m:Beta?;
-    r:Distribution<Boolean>?;
+    if !hasValue() {
+      prune();
+      m:Beta?;
+      r:Distribution<Boolean>?;
     
-    /* match a template */
-    if (m <- ρ.graftBeta())? {
-      r <- BetaBernoulli(m!);
-    }
+      /* match a template */
+      if (m <- ρ.graftBeta())? {
+        r <- BetaBernoulli(m!);
+      }
     
-    /* finalize, and if not valid, use default template */
-    if !r? || !r!.graftFinalize() {
-      r <- GraftedBernoulli(ρ);
-      r!.graftFinalize();
+      /* finalize, and if not valid, use default template */
+      if !r? || !r!.graftFinalize() {
+        r <- GraftedBernoulli(ρ);
+        r!.graftFinalize();
+      }
+      return r!;
+    } else {
+      return this;
     }
-    return r!;
   }
   
   function graftFinalize() -> Boolean {

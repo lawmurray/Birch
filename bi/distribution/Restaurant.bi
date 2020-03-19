@@ -43,9 +43,13 @@ final class Restaurant(α:Expression<Real>, θ:Expression<Real>) <
   }
 
   function graftRestaurant() -> Restaurant? {
-    prune();
-    graftFinalize();
-    return this;
+    if !hasValue() {
+      prune();
+      graftFinalize();
+      return this;
+    } else {
+      return nil;
+    }
   }
 
   function graftFinalize() -> Boolean {

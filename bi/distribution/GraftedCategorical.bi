@@ -3,8 +3,10 @@
  */
 final class GraftedCategorical(ρ:Expression<Real[_]>) < Categorical(ρ) {
   function graft() -> Distribution<Integer> {
-    prune();
-    graftFinalize();
+    if !hasValue() {
+      prune();
+      graftFinalize();
+    }
     return this;
   }
 

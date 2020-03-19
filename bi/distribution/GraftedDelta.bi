@@ -3,8 +3,10 @@
  */
 class GraftedDelta(μ:Expression<Integer>) < Delta(μ) {
   function graft() -> Distribution<Integer> {
-    prune();
-    graftFinalize();
+    if !hasValue() {
+      prune();
+      graftFinalize();
+    }
     return this;
   }
 

@@ -38,21 +38,25 @@ class NegativeBinomial(k:Expression<Integer>, ρ:Expression<Real>) <
   }
 
   function graft() -> Distribution<Integer> {
-    prune();
-    ρ1:Beta?;
-    r:Distribution<Integer>?;
+    if !hasValue() {
+      prune();
+      ρ1:Beta?;
+      r:Distribution<Integer>?;
     
-    /* match a template */
-    if (ρ1 <- ρ.graftBeta())? {
-      r <- BetaNegativeBinomial(k, ρ1!);
-    }
+      /* match a template */
+      if (ρ1 <- ρ.graftBeta())? {
+        r <- BetaNegativeBinomial(k, ρ1!);
+      }
 
-    /* finalize, and if not valid, use default template */
-    if !r? || !r!.graftFinalize() {
-      r <- GraftedNegativeBinomial(k, ρ);
-      r!.graftFinalize();
+      /* finalize, and if not valid, use default template */
+      if !r? || !r!.graftFinalize() {
+        r <- GraftedNegativeBinomial(k, ρ);
+        r!.graftFinalize();
+      }
+      return r!;
+    } else {
+      return this;
     }
-    return r!;
   }
 
   function graftFinalize() -> Boolean {

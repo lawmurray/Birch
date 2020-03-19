@@ -4,8 +4,10 @@
 final class GraftedNegativeBinomial(k:Expression<Integer>,
     ρ:Expression<Real>) < NegativeBinomial(k, ρ) {
   function graft() -> Distribution<Integer> {
-    prune();
-    graftFinalize();
+    if !hasValue() {
+      prune();
+      graftFinalize();
+    }
     return this;
   }
 

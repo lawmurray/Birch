@@ -45,10 +45,14 @@ final class MatrixNormalInverseWishart(M:Expression<Real[_,_]>,
 
   function graftMatrixNormalInverseWishart(compare:Distribution<Real[_,_]>) ->
       MatrixNormalInverseWishart? {
-    prune();
-    graftFinalize();
-    if V == compare {
-      return this;
+    if !hasValue() {
+      prune();
+      graftFinalize();
+      if V == compare {
+        return this;
+      } else {
+        return nil;
+      }
     } else {
       return nil;
     }

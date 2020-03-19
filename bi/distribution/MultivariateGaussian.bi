@@ -38,45 +38,53 @@ class MultivariateGaussian(μ:Expression<Real[_]>, Σ:Expression<Real[_,_]>) <
   }
 
   function graft() -> Distribution<Real[_]> {
-    prune();
-    m1:TransformLinearMultivariate<MultivariateGaussian>?;
-    m2:MultivariateGaussian?;
-    r:Distribution<Real[_]>?;
+    if !hasValue() {
+      prune();
+      m1:TransformLinearMultivariate<MultivariateGaussian>?;
+      m2:MultivariateGaussian?;
+      r:Distribution<Real[_]>?;
     
-    /* match a template */
-    if (m1 <- μ.graftLinearMultivariateGaussian())? {
-      r <- LinearMultivariateGaussianMultivariateGaussian(m1!.A, m1!.x, m1!.c, Σ);
-    } else if (m2 <- μ.graftMultivariateGaussian())? {
-      r <- MultivariateGaussianMultivariateGaussian(m2!, Σ);
-    }
+      /* match a template */
+      if (m1 <- μ.graftLinearMultivariateGaussian())? {
+        r <- LinearMultivariateGaussianMultivariateGaussian(m1!.A, m1!.x, m1!.c, Σ);
+      } else if (m2 <- μ.graftMultivariateGaussian())? {
+        r <- MultivariateGaussianMultivariateGaussian(m2!, Σ);
+      }
 
-    /* finalize, and if not valid, use default template */
-    if !r? || !r!.graftFinalize() {
-      r <- GraftedMultivariateGaussian(μ, Σ);
-      r!.graftFinalize();
+      /* finalize, and if not valid, use default template */
+      if !r? || !r!.graftFinalize() {
+        r <- GraftedMultivariateGaussian(μ, Σ);
+        r!.graftFinalize();
+      }
+      return r!;
+    } else {
+      return this;
     }
-    return r!;
   }
 
   function graftMultivariateGaussian() -> MultivariateGaussian? {
-    prune();
-    m1:TransformLinearMultivariate<MultivariateGaussian>?;
-    m2:MultivariateGaussian?;
-    r:MultivariateGaussian?;
+    if !hasValue() {
+      prune();
+      m1:TransformLinearMultivariate<MultivariateGaussian>?;
+      m2:MultivariateGaussian?;
+      r:MultivariateGaussian?;
     
-    /* match a template */
-    if (m1 <- μ.graftLinearMultivariateGaussian())? {
-      r <- LinearMultivariateGaussianMultivariateGaussian(m1!.A, m1!.x, m1!.c, Σ);
-    } else if (m2 <- μ.graftMultivariateGaussian())? {
-      r <- MultivariateGaussianMultivariateGaussian(m2!, Σ);
-    }
+      /* match a template */
+      if (m1 <- μ.graftLinearMultivariateGaussian())? {
+        r <- LinearMultivariateGaussianMultivariateGaussian(m1!.A, m1!.x, m1!.c, Σ);
+      } else if (m2 <- μ.graftMultivariateGaussian())? {
+        r <- MultivariateGaussianMultivariateGaussian(m2!, Σ);
+      }
 
-    /* finalize, and if not valid, use default template */
-    if !r? || !r!.graftFinalize() {
-      r <- GraftedMultivariateGaussian(μ, Σ);
-      r!.graftFinalize();
+      /* finalize, and if not valid, use default template */
+      if !r? || !r!.graftFinalize() {
+        r <- GraftedMultivariateGaussian(μ, Σ);
+        r!.graftFinalize();
+      }
+      return r;
+    } else {
+      return nil;
     }
-    return r;
   }
 
   function graftFinalize() -> Boolean {

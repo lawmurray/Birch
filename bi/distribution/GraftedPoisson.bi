@@ -3,15 +3,21 @@
  */
 class GraftedPoisson(λ:Expression<Real>) < Poisson(λ) {
   function graft() -> Distribution<Integer> {
-    prune();
-    graftFinalize();
+    if !hasValue() {
+      prune();
+      graftFinalize();
+    }
     return this;
   }
 
   function graftDiscrete() -> Discrete? {
-    prune();
-    graftFinalize();
-    return this;
+    if !hasValue() {
+      prune();
+      graftFinalize();
+      return this;
+    } else {
+      return nil;
+    }
   }
 
   function graftFinalize() -> Boolean {

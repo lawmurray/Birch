@@ -36,31 +36,39 @@ class Poisson(λ:Expression<Real>) < Discrete {
   }
 
   function graft() -> Distribution<Integer> {
-    prune();
-    m1:TransformLinear<Gamma>?;
-    m2:Gamma?;
-    r:Distribution<Integer>?;
+    if !hasValue() {
+      prune();
+      m1:TransformLinear<Gamma>?;
+      m2:Gamma?;
+      r:Distribution<Integer>?;
 
-    /* match a template */      
-    if (m1 <- λ.graftScaledGamma())? {
-      r <- ScaledGammaPoisson(m1!.a, m1!.x);
-    } else if (m2 <- λ.graftGamma())? {
-      r <- GammaPoisson(m2!);
-    }
+      /* match a template */      
+      if (m1 <- λ.graftScaledGamma())? {
+        r <- ScaledGammaPoisson(m1!.a, m1!.x);
+      } else if (m2 <- λ.graftGamma())? {
+        r <- GammaPoisson(m2!);
+      }
     
-    /* finalize, and if not valid, use default template */
-    if !r? || !r!.graftFinalize() {
-      r <- GraftedPoisson(λ);
-      r!.graftFinalize();
+      /* finalize, and if not valid, use default template */
+      if !r? || !r!.graftFinalize() {
+        r <- GraftedPoisson(λ);
+        r!.graftFinalize();
+      }
+      return r!;
+    } else {
+      return this;
     }
-    return r!;
   }
 
   function graftDiscrete() -> Discrete? {
-    prune();
-    auto r <- GraftedPoisson(λ);
-    r!.graftFinalize();
-    return r;
+    if !hasValue() {
+      prune();
+      auto r <- GraftedPoisson(λ);
+      r!.graftFinalize();
+      return r;
+    } else {
+      return nil;
+    }
   }
 
   function graftFinalize() -> Boolean {

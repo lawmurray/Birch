@@ -29,21 +29,25 @@ class Delta(μ:Expression<Integer>) < Discrete {
   }
 
   function graft() -> Distribution<Integer> {
-    prune();
-    m:Discrete?;
-    r:Distribution<Integer>?;
+    if !hasValue() {
+      prune();
+      m:Discrete?;
+      r:Distribution<Integer>?;
     
-    /* match a template */
-    if (m <- μ.graftDiscrete())? {
-      r <- DiscreteDelta(m!);
-    }
+      /* match a template */
+      if (m <- μ.graftDiscrete())? {
+        r <- DiscreteDelta(m!);
+      }
     
-    /* finalize, and if not valid, use default template */
-    if !r? || !r!.graftFinalize() {
-      r <- GraftedDelta(μ);
-      r!.graftFinalize();
+      /* finalize, and if not valid, use default template */
+      if !r? || !r!.graftFinalize() {
+        r <- GraftedDelta(μ);
+        r!.graftFinalize();
+      }
+      return r!;
+    } else {
+      return this;
     }
-    return r!;
   }
 
   function graftFinalize() -> Boolean {
