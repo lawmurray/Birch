@@ -4,10 +4,8 @@
 final class GraftedMultinomial(n:Expression<Integer>,
     ρ:Expression<Real[_]>) < Multinomial(n, ρ) {
   function graft() -> Distribution<Integer[_]> {
-    if !hasValue() {
-      prune();
-      graftFinalize();
-    }
+    prune();
+    graftFinalize();
     return this;
   }
 

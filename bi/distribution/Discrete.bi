@@ -18,12 +18,8 @@ abstract class Discrete < Distribution<Integer> {
   }
 
   function graftDiscrete() -> Discrete? {
-    if !hasValue() {
-      prune();
-      graftFinalize();
-      return this;
-    } else {
-      return nil;
-    }
+    prune();
+    graftFinalize();
+    return this;
   }
 }

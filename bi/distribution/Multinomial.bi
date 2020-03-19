@@ -26,25 +26,21 @@ class Multinomial(n:Expression<Integer>, ρ:Expression<Real[_]>) <
   }
 
   function graft() -> Distribution<Integer[_]> {
-    if !hasValue() {
-      prune();
-      m:Dirichlet?;
-      r:Distribution<Integer[_]>?;
+    prune();
+    m:Dirichlet?;
+    r:Distribution<Integer[_]>?;
     
-      /* match a template */
-      if (m <- ρ.graftDirichlet())? {
-        r <- DirichletMultinomial(n, m!);
-      }
-    
-      /* finalize, and if not valid, use default template */
-      if !r? || !r!.graftFinalize() {
-        r <- GraftedMultinomial(n, ρ);
-        r!.graftFinalize();
-      }
-      return r!;
-    } else {
-      return this;
+    /* match a template */
+    if (m <- ρ.graftDirichlet())? {
+      r <- DirichletMultinomial(n, m!);
     }
+    
+    /* finalize, and if not valid, use default template */
+    if !r? || !r!.graftFinalize() {
+      r <- GraftedMultinomial(n, ρ);
+      r!.graftFinalize();
+    }
+    return r!;
   }
 
   function graftFinalize() -> Boolean {

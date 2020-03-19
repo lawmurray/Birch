@@ -44,7 +44,7 @@ final class Random<Value> < Expression<Value> {
    * Does this have a value?
    */
   function hasValue() -> Boolean {
-    return x?;
+    return x? || (p? && p!.hasValue());
   }
 
   /**
@@ -96,7 +96,7 @@ final class Random<Value> < Expression<Value> {
 
   function value() -> Value {
     if !x? {
-      p <- p!.graft();
+      graft();
       x <- p!.value();
       //p <- nil;
     }
@@ -128,7 +128,7 @@ final class Random<Value> < Expression<Value> {
     assert !hasValue();
     assert hasDistribution();
     this.x <- x;
-    p <- p!.graft();
+    graft();
     auto w <- p!.observe(x);
     //p <- nil;
     return w;
@@ -142,7 +142,7 @@ final class Random<Value> < Expression<Value> {
    * Return: the log probability density (or mass).
    */
   function logpdf(x:Value) -> Real {
-    p <- p!.graft();
+    graft();
     return p!.logpdf(x);
   }
 
@@ -154,7 +154,7 @@ final class Random<Value> < Expression<Value> {
    * Return: the probability density (or mass).
    */
   function pdf(x:Value) -> Real {
-    p <- p!.graft();
+    graft();
     return p!.pdf(x);
   }
 
@@ -166,7 +166,7 @@ final class Random<Value> < Expression<Value> {
    * Return: the cumulative probability, if supported.
    */
   function cdf(x:Value) -> Real? {
-    p <- p!.graft();
+    graft();
     return p!.cdf(x);
   }
 
@@ -178,7 +178,7 @@ final class Random<Value> < Expression<Value> {
    * Return: the quantile value, if supported.
    */
   function quantile(P:Real) -> Value? {
-    p <- p!.graft();
+    graft();
     return p!.quantile(P);
   }
   
@@ -186,7 +186,7 @@ final class Random<Value> < Expression<Value> {
    * Finite lower bound of the support of this node, if any.
    */
   function lower() -> Value? {
-    p <- p!.graft();
+    graft();
     return p!.lower();
   }
   
@@ -194,8 +194,14 @@ final class Random<Value> < Expression<Value> {
    * Finite upper bound of the support of this node, if any.
    */
   function upper() -> Value? {
-    p <- p!.graft();
+    graft();
     return p!.upper();
+  }
+
+  function graft() {
+    if !hasValue() {
+      p <- p!.graft();
+    }
   }
 
   function graftGaussian() -> Gaussian? {

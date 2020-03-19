@@ -3,10 +3,8 @@
  */
 final class GraftedExponential(λ:Expression<Real>) < Exponential(λ) {
   function graft() -> Distribution<Real> {
-    if !hasValue() {
-      prune();
-      graftFinalize();
-    }
+    prune();
+    graftFinalize();
     return this;
   }
 

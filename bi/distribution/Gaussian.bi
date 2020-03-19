@@ -37,91 +37,79 @@ class Gaussian(μ:Expression<Real>, σ2:Expression<Real>) < Distribution<Real> {
   }
 
   function graft() -> Distribution<Real> {
-    if !hasValue() {
-      prune();
-      m1:TransformLinear<NormalInverseGamma>?;
-      m3:NormalInverseGamma?;
-      m4:TransformLinear<Gaussian>?;
-      m5:TransformDot<MultivariateGaussian>?;
-      m6:Gaussian?;
-      s2:InverseGamma?;
-      r:Distribution<Real>?;
+    prune();
+    m1:TransformLinear<NormalInverseGamma>?;
+    m3:NormalInverseGamma?;
+    m4:TransformLinear<Gaussian>?;
+    m5:TransformDot<MultivariateGaussian>?;
+    m6:Gaussian?;
+    s2:InverseGamma?;
+    r:Distribution<Real>?;
 
-      /* match a template */
-      auto compare <- σ2.distribution();
-      if compare? && (m1 <- μ.graftLinearNormalInverseGamma(compare!))? {
-        r <- LinearNormalInverseGammaGaussian(m1!.a, m1!.x, m1!.c);
-      } else if compare? && (m3 <- μ.graftNormalInverseGamma(compare!))? {
-        r <- NormalInverseGammaGaussian(m3!);
-      } else if (m4 <- μ.graftLinearGaussian())? {
-        r <- LinearGaussianGaussian(m4!.a, m4!.x, m4!.c, σ2);
-      } else if (m5 <- μ.graftDotGaussian())? {
-        r <- LinearMultivariateGaussianGaussian(m5!.a, m5!.x, m5!.c, σ2);
-      } else if (m6 <- μ.graftGaussian())? {
-        r <- GaussianGaussian(m6!, σ2);
-      } else if (s2 <- σ2.graftInverseGamma())? {
-        r <- NormalInverseGamma(μ, Boxed(1.0), s2!);
-      }
-    
-      /* finalize, and if not valid, use default template */
-      if !r? || !r!.graftFinalize() {
-        r <- GraftedGaussian(μ, σ2);
-        r!.graftFinalize();
-      }
-      return r!;
-    } else {
-      return this;
+    /* match a template */
+    auto compare <- σ2.distribution();
+    if compare? && (m1 <- μ.graftLinearNormalInverseGamma(compare!))? {
+      r <- LinearNormalInverseGammaGaussian(m1!.a, m1!.x, m1!.c);
+    } else if compare? && (m3 <- μ.graftNormalInverseGamma(compare!))? {
+      r <- NormalInverseGammaGaussian(m3!);
+    } else if (m4 <- μ.graftLinearGaussian())? {
+      r <- LinearGaussianGaussian(m4!.a, m4!.x, m4!.c, σ2);
+    } else if (m5 <- μ.graftDotGaussian())? {
+      r <- LinearMultivariateGaussianGaussian(m5!.a, m5!.x, m5!.c, σ2);
+    } else if (m6 <- μ.graftGaussian())? {
+      r <- GaussianGaussian(m6!, σ2);
+    } else if (s2 <- σ2.graftInverseGamma())? {
+      r <- NormalInverseGamma(μ, Boxed(1.0), s2!);
     }
+    
+    /* finalize, and if not valid, use default template */
+    if !r? || !r!.graftFinalize() {
+      r <- GraftedGaussian(μ, σ2);
+      r!.graftFinalize();
+    }
+    return r!;
   }
 
   function graftGaussian() -> Gaussian? {
-    if !hasValue() {
-      prune();
-      m1:TransformLinear<Gaussian>?;
-      m2:TransformDot<MultivariateGaussian>?;
-      m3:Gaussian?;
-      r:Gaussian?;
+    prune();
+    m1:TransformLinear<Gaussian>?;
+    m2:TransformDot<MultivariateGaussian>?;
+    m3:Gaussian?;
+    r:Gaussian?;
     
-      /* match a template */
-      if (m1 <- μ.graftLinearGaussian())? {
-        r <- LinearGaussianGaussian(m1!.a, m1!.x, m1!.c, σ2);
-      } else if (m2 <- μ.graftDotGaussian())? {
-        r <- LinearMultivariateGaussianGaussian(m2!.a, m2!.x, m2!.c, σ2);
-      } else if (m3 <- μ.graftGaussian())? {
-        r <- GaussianGaussian(m3!, σ2);
-      }
-    
-      /* finalize, and if not valid, use default template */
-      if !r? || !r!.graftFinalize() {
-        r <- GraftedGaussian(μ, σ2);
-        r!.graftFinalize();
-      }
-      return r;
-    } else {
-      return nil;
+    /* match a template */
+    if (m1 <- μ.graftLinearGaussian())? {
+      r <- LinearGaussianGaussian(m1!.a, m1!.x, m1!.c, σ2);
+    } else if (m2 <- μ.graftDotGaussian())? {
+      r <- LinearMultivariateGaussianGaussian(m2!.a, m2!.x, m2!.c, σ2);
+    } else if (m3 <- μ.graftGaussian())? {
+      r <- GaussianGaussian(m3!, σ2);
     }
+    
+    /* finalize, and if not valid, use default template */
+    if !r? || !r!.graftFinalize() {
+      r <- GraftedGaussian(μ, σ2);
+      r!.graftFinalize();
+    }
+    return r;
   }
 
   function graftNormalInverseGamma(compare:Distribution<Real>) ->
       NormalInverseGamma? {
-    if !hasValue() {
-      prune();
-      s1:InverseGamma?;
-      r:NormalInverseGamma?;
+    prune();
+    s1:InverseGamma?;
+    r:NormalInverseGamma?;
     
-      /* match a template */
-      if (s1 <- σ2.graftInverseGamma())? && s1! == compare {
-        r <- NormalInverseGamma(μ, Boxed(1.0), s1!);
-      }
-    
-      /* finalize, and if not valid, return nil */
-      if !r? || !r!.graftFinalize() {
-        r <- nil;
-      }
-      return r;
-    } else {
-      return nil;
+    /* match a template */
+    if (s1 <- σ2.graftInverseGamma())? && s1! == compare {
+      r <- NormalInverseGamma(μ, Boxed(1.0), s1!);
     }
+    
+    /* finalize, and if not valid, return nil */
+    if !r? || !r!.graftFinalize() {
+      r <- nil;
+    }
+    return r;
   }
 
   function graftFinalize() -> Boolean {

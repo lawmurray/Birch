@@ -33,36 +33,28 @@ class Gamma(k:Expression<Real>, θ:Expression<Real>) < Distribution<Real> {
   }
 
   function graft() -> Distribution<Real> {
-    if !hasValue() {
-      prune();
-      θ1:InverseGamma?;
-      r:Distribution<Real>?;
+    prune();
+    θ1:InverseGamma?;
+    r:Distribution<Real>?;
     
-      /* match a template */
-      if (θ1 <- θ.graftInverseGamma())? {
-        r <- InverseGammaGamma(k, θ1!);
-      }
-
-      /* finalize, and if not valid, use default template */
-      if !r? || !r!.graftFinalize() {
-        r <- GraftedGamma(k, θ);
-        r!.graftFinalize();
-      }
-      return r!;
-    } else {
-      return this;
+    /* match a template */
+    if (θ1 <- θ.graftInverseGamma())? {
+      r <- InverseGammaGamma(k, θ1!);
     }
+
+    /* finalize, and if not valid, use default template */
+    if !r? || !r!.graftFinalize() {
+      r <- GraftedGamma(k, θ);
+      r!.graftFinalize();
+    }
+    return r!;
   }
 
   function graftGamma() -> Gamma? {
-    if !hasValue() {
-      prune();
-      auto r <- GraftedGamma(k, θ);
-      r.graftFinalize();
-      return r;
-    } else {
-      return nil;
-    }
+    prune();
+    auto r <- GraftedGamma(k, θ);
+    r.graftFinalize();
+    return r;
   }
 
   function graftFinalize() -> Boolean {

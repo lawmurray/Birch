@@ -67,21 +67,15 @@ final class IndependentInverseGamma(α:Expression<Real>,
   }
 
   function graft() -> Distribution<Real[_]> {
-    if !hasValue() {
-      prune();
-      graftFinalize();
-    }
+    prune();
+    graftFinalize();
     return this;
   }
 
   function graftIndependentInverseGamma() -> IndependentInverseGamma? {
-    if !hasValue() {
-      prune();
-      graftFinalize();
-      return this;
-    } else {
-      return nil;
-    }
+    prune();
+    graftFinalize();
+    return this;
   }
 
   function graftFinalize() -> Boolean {

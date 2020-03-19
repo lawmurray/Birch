@@ -38,13 +38,9 @@ final class Beta(α:Expression<Real>, β:Expression<Real>) <
   }
 
   function graftBeta() -> Beta? {
-    if !hasValue() {
-      prune();
-      graftFinalize();
-      return this;
-    } else {
-      return nil;
-    }
+    prune();
+    graftFinalize();
+    return this;
   }
 
   function graftFinalize() -> Boolean {

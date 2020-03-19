@@ -203,10 +203,8 @@ abstract class Distribution<Value> < Delay {
    * Call `attach()` on the object to finalize the graft.
    */
   function graft() -> Distribution<Value> {
-    if !hasValue() {
-      prune();
-      graftFinalize();
-    }
+    prune();
+    graftFinalize();
     return this;
   }
 

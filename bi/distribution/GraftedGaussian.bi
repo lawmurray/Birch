@@ -4,21 +4,15 @@
 class GraftedGaussian(μ:Expression<Real>, σ2:Expression<Real>) <
     Gaussian(μ, σ2) {
   function graft() -> Distribution<Real> {
-    if !hasValue() {
-      prune();
-      graftFinalize();
-    }
+    prune();
+    graftFinalize();
     return this;
   }
 
   function graftGaussian() -> Gaussian? {
-    if !hasValue() {
-      prune();
-      graftFinalize();
-      return this;
-    } else {
-      return nil;
-    }
+    prune();
+    graftFinalize();
+    return this;
   }
 
   function graftNormalInverseGamma(compare:Distribution<Real>) ->

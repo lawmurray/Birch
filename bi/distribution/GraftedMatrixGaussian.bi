@@ -4,21 +4,15 @@
 class GraftedMatrixGaussian(M:Expression<Real[_,_]>, U:Expression<Real[_,_]>,
     V:Expression<Real[_,_]>) < MatrixGaussian(M, U, V) {
   function graft() -> Distribution<Real[_,_]> {
-    if !hasValue() {
-      prune();
-      graftFinalize();
-    }
+    prune();
+    graftFinalize();
     return this;
   }
 
   function graftMatrixGaussian() -> MatrixGaussian? {
-    if !hasValue() {
-      prune();
-      graftFinalize();
-      return this;
-    } else {
-      return nil;
-    }
+    prune();
+    graftFinalize();
+    return this;
   }
 
   function graftFinalize() -> Boolean {

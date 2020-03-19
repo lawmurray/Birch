@@ -4,21 +4,15 @@
 final class GraftedGamma(k:Expression<Real>, θ:Expression<Real>) <
     Gamma(k, θ) {
   function graft() -> Distribution<Real> {
-    if !hasValue() {
-      prune();
-      graftFinalize();
-    }
+    prune();
+    graftFinalize();
     return this;
   }
 
   function graftGamma() -> Gamma? {
-    if !hasValue() {
-      prune();
-      graftFinalize();
-      return this;
-    } else {
-      return nil;
-    }
+    prune();
+    graftFinalize();
+    return this;
   }
 
   function graftFinalize() -> Boolean {

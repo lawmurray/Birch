@@ -35,58 +35,46 @@ class MatrixGaussian(M:Expression<Real[_,_]>, U:Expression<Real[_,_]>,
   }
 
   function graft() -> Distribution<Real[_,_]> {
-    if !hasValue() {
-      prune();
-      s1:InverseWishart?;
-      r:Distribution<Real[_,_]>?;
+    prune();
+    s1:InverseWishart?;
+    r:Distribution<Real[_,_]>?;
     
-      /* match a template */
-      if (s1 <- V.graftInverseWishart())? {
-        r <- MatrixNormalInverseWishart(M, U, s1!);
-      }
-    
-      /* finalize, and if not valid, use default template */
-      if !r? || !r!.graftFinalize() {
-        r <- GraftedMatrixGaussian(M, U, V);
-        r!.graftFinalize();
-      }
-      return r!;
-    } else {
-      return this;
+    /* match a template */
+    if (s1 <- V.graftInverseWishart())? {
+      r <- MatrixNormalInverseWishart(M, U, s1!);
     }
+    
+    /* finalize, and if not valid, use default template */
+    if !r? || !r!.graftFinalize() {
+      r <- GraftedMatrixGaussian(M, U, V);
+      r!.graftFinalize();
+    }
+    return r!;
   }
 
   function graftMatrixGaussian() -> MatrixGaussian? {
-    if !hasValue() {
-      prune();
-      auto r <- GraftedMatrixGaussian(M, U, V);
-      r!.graftFinalize();
-      return r;
-    } else {
-      return nil;
-    }
+    prune();
+    auto r <- GraftedMatrixGaussian(M, U, V);
+    r!.graftFinalize();
+    return r;
   }
 
   function graftMatrixNormalInverseWishart(compare:Distribution<Real[_,_]>) ->
       MatrixNormalInverseWishart? {
-    if !hasValue() {
-      prune();
-      s1:InverseWishart?;
-      r:MatrixNormalInverseWishart?;
+    prune();
+    s1:InverseWishart?;
+    r:MatrixNormalInverseWishart?;
     
-      /* match a template */
-      if (s1 <- V.graftInverseWishart())? && s1! == compare {
-        r <- MatrixNormalInverseWishart(M, U, s1!);
-      }
-
-      /* finalize, and if not valid, return nil */
-      if !r? || !r!.graftFinalize() {
-        r <- nil;
-      }
-      return r;
-    } else {
-      return nil;
+    /* match a template */
+    if (s1 <- V.graftInverseWishart())? && s1! == compare {
+      r <- MatrixNormalInverseWishart(M, U, s1!);
     }
+
+    /* finalize, and if not valid, return nil */
+    if !r? || !r!.graftFinalize() {
+      r <- nil;
+    }
+    return r;
   }
 
   function graftFinalize() -> Boolean {

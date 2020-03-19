@@ -16,13 +16,9 @@ final class Dirichlet(α:Expression<Real[_]>) < Distribution<Real[_]> {
   }
 
   function graftDirichlet() -> Dirichlet? {
-    if !hasValue() {
-      prune();
-      graftFinalize();
-      return this;
-    } else {
-      return nil;
-    }
+    prune();
+    graftFinalize();
+    return this;
   }
 
   function graftFinalize() -> Boolean {

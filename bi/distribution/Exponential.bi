@@ -28,28 +28,24 @@ class Exponential(λ:Expression<Real>) < Distribution<Real> {
   }
 
   function graft() -> Distribution<Real> {
-    if !hasValue() {
-      prune();
-      m1:TransformLinear<Gamma>?;
-      m2:Gamma?;
-      r:Distribution<Real>?;
+    prune();
+    m1:TransformLinear<Gamma>?;
+    m2:Gamma?;
+    r:Distribution<Real>?;
     
-      /* match a template */
-      if (m1 <- λ.graftScaledGamma())? {
-        r <- ScaledGammaExponential(m1!.a, m1!.x);
-      } else if (m2 <- λ.graftGamma())? {
-        r <- GammaExponential(m2!);
-      }
-    
-      /* finalize, and if not valid, use default template */
-      if !r? || !r!.graftFinalize() {    
-        r <- GraftedExponential(λ);
-        r!.graftFinalize();
-      }
-      return r!;
-    } else {
-      return this;
+    /* match a template */
+    if (m1 <- λ.graftScaledGamma())? {
+      r <- ScaledGammaExponential(m1!.a, m1!.x);
+    } else if (m2 <- λ.graftGamma())? {
+      r <- GammaExponential(m2!);
     }
+    
+    /* finalize, and if not valid, use default template */
+    if !r? || !r!.graftFinalize() {    
+      r <- GraftedExponential(λ);
+      r!.graftFinalize();
+    }
+    return r!;
   }
 
   function graftFinalize() -> Boolean {

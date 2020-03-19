@@ -79,14 +79,10 @@ final class MultivariateNormalInverseGamma(μ:Expression<Real[_]>,
 
   function graftMultivariateNormalInverseGamma(compare:Distribution<Real>) ->
       MultivariateNormalInverseGamma? {
-    if !hasValue() {
-      prune();
-      graftFinalize();
-      if σ2 == compare {
-        return this;
-      } else {
-        return nil;
-      }
+    prune();
+    graftFinalize();
+    if σ2 == compare {
+      return this;
     } else {
       return nil;
     }

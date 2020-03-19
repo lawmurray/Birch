@@ -68,14 +68,10 @@ final class NormalInverseGamma(μ:Expression<Real>, a2:Expression<Real>,
 
   function graftNormalInverseGamma(compare:Distribution<Real>) ->
       NormalInverseGamma? {
-    if !hasValue() {
-      prune();
-      graftFinalize();
-      if σ2 == compare {
-        return this;
-      } else {
-        return nil;
-      }
+    prune();
+    graftFinalize();
+    if σ2 == compare {
+      return this;
     } else {
       return nil;
     }

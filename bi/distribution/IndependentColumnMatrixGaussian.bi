@@ -36,58 +36,46 @@ final class IndependentColumnMatrixGaussian(M:Expression<Real[_,_]>,
   }
 
   function graft() -> Distribution<Real[_,_]> {
-    if !hasValue() {
-      prune();
-      s1:IndependentInverseGamma?;
-      r:Distribution<Real[_,_]>?;
+    prune();
+    s1:IndependentInverseGamma?;
+    r:Distribution<Real[_,_]>?;
     
-      /* match a template */
-      if (s1 <- σ2.graftIndependentInverseGamma())? {
-        r <- MatrixNormalInverseGamma(M, U, s1!);
-      }
-
-      /* finalize, and if not valid, use default template */
-      if !r? || !r!.graftFinalize() {
-        r <- GraftedMatrixGaussian(M, U, diagonal(σ2));
-        r!.graftFinalize();
-      }
-      return r!;
-    } else {
-      return this;
+    /* match a template */
+    if (s1 <- σ2.graftIndependentInverseGamma())? {
+      r <- MatrixNormalInverseGamma(M, U, s1!);
     }
+
+    /* finalize, and if not valid, use default template */
+    if !r? || !r!.graftFinalize() {
+      r <- GraftedMatrixGaussian(M, U, diagonal(σ2));
+      r!.graftFinalize();
+    }
+    return r!;
   }
 
   function graftMatrixGaussian() -> MatrixGaussian? {
-    if !hasValue() {
-      prune();
-      auto r <- GraftedMatrixGaussian(M, U, diagonal(σ2));
-      r.graftFinalize();
-      return r;
-    } else {
-      return nil;
-    }
+    prune();
+    auto r <- GraftedMatrixGaussian(M, U, diagonal(σ2));
+    r.graftFinalize();
+    return r;
   }
 
   function graftMatrixNormalInverseGamma(compare:Distribution<Real[_]>) ->
       MatrixNormalInverseGamma? {
-    if !hasValue() {
-      prune();
-      s1:IndependentInverseGamma?;
-      r:MatrixNormalInverseGamma?;
+    prune();
+    s1:IndependentInverseGamma?;
+    r:MatrixNormalInverseGamma?;
     
-      /* match a template */
-      if (s1 <- σ2.graftIndependentInverseGamma())? && s1! == compare {
-        r <- MatrixNormalInverseGamma(M, U, s1!);
-      }
-
-      /* finalize, and if not valid, return nil */
-      if !r? || !r!.graftFinalize() {
-        r <- nil;
-      }
-      return r;
-    } else {
-      return nil;
+    /* match a template */
+    if (s1 <- σ2.graftIndependentInverseGamma())? && s1! == compare {
+      r <- MatrixNormalInverseGamma(M, U, s1!);
     }
+
+    /* finalize, and if not valid, return nil */
+    if !r? || !r!.graftFinalize() {
+      r <- nil;
+    }
+    return r;
   }
 
   function graftFinalize() -> Boolean {

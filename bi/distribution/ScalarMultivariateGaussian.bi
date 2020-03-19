@@ -32,58 +32,46 @@ final class ScalarMultivariateGaussian(μ:Expression<Real[_]>,
   }
 
   function graft() -> Distribution<Real[_]> {
-    if !hasValue() {
-      prune();
-      s1:InverseGamma?;
-      r:Distribution<Real[_]>?;
+    prune();
+    s1:InverseGamma?;
+    r:Distribution<Real[_]>?;
     
-      /* match a template */
-      if (s1 <- σ2.graftInverseGamma())? {
-        r <- MultivariateNormalInverseGamma(μ, Σ, s1!);
-      }
-
-      /* finalize, and if not valid, use default template */
-      if !r? || !r!.graftFinalize() {
-        r <- GraftedMultivariateGaussian(μ, Σ*σ2);
-        r!.graftFinalize();
-      }
-      return r!;
-    } else {
-      return this;
+    /* match a template */
+    if (s1 <- σ2.graftInverseGamma())? {
+      r <- MultivariateNormalInverseGamma(μ, Σ, s1!);
     }
+
+    /* finalize, and if not valid, use default template */
+    if !r? || !r!.graftFinalize() {
+      r <- GraftedMultivariateGaussian(μ, Σ*σ2);
+      r!.graftFinalize();
+    }
+    return r!;
   }
 
   function graftMultivariateGaussian() -> MultivariateGaussian? {
-    if !hasValue() {
-      prune();
-      auto r <- GraftedMultivariateGaussian(μ, Σ*σ2);
-      r!.graftFinalize();
-      return r;
-    } else {
-      return nil;
-    }
+    prune();
+    auto r <- GraftedMultivariateGaussian(μ, Σ*σ2);
+    r!.graftFinalize();
+    return r;
   }
 
   function graftMultivariateNormalInverseGamma(compare:Distribution<Real>) ->
       MultivariateNormalInverseGamma? {
-    if !hasValue() {
-      prune();
-      s1:InverseGamma?;
-      r:MultivariateNormalInverseGamma?;
+    prune();
+    s1:InverseGamma?;
+    r:MultivariateNormalInverseGamma?;
 
-      /* match a template */    
-      if (s1 <- σ2.graftInverseGamma())? && s1! == compare {
-        r <- MultivariateNormalInverseGamma(μ, Σ, s1!);
-      }
-
-      /* finalize, and if not valid, return nil */
-      if !r? || !r!.graftFinalize() {
-        r <- nil;
-      }
-      return r;
-    } else {
-      return nil;
+    /* match a template */    
+    if (s1 <- σ2.graftInverseGamma())? && s1! == compare {
+      r <- MultivariateNormalInverseGamma(μ, Σ, s1!);
     }
+
+    /* finalize, and if not valid, return nil */
+    if !r? || !r!.graftFinalize() {
+      r <- nil;
+    }
+    return r;
   }
 
   function graftFinalize() -> Boolean {

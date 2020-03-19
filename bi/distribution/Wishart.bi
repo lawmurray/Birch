@@ -30,13 +30,9 @@ final class Wishart(Ψ:Expression<Real[_,_]>, k:Expression<Real>) <
   }
 
   function graftWishart() -> Wishart? {
-    if !hasValue() {
-      prune();
-      graftFinalize();
-      return this;
-    } else {
-      return nil;
-    }
+    prune();
+    graftFinalize();
+    return this;
   }
 
   function graftFinalize() -> Boolean {
