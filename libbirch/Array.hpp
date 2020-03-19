@@ -801,28 +801,28 @@ using DefaultArray = Array<T,typename DefaultShape<D>::type>;
  * @see https://eigen.tuxfamily.org/dox/TopicPitfalls.html#title3
  */
 template<class EigenType, std::enable_if_t<EigenType::ColsAtCompileTime == 1,int> = 0>
-auto canonical(const Eigen::MatrixBase<EigenType>& o) {
+auto canonical(Eigen::MatrixBase<EigenType>&& o) {
   using T = typename EigenType::value_type;
   using F = typename DefaultShape<1>::type;
   return Array<T,F>(o);
 }
 
 template<class EigenType, std::enable_if_t<EigenType::ColsAtCompileTime == 2,int> = 0>
-auto canonical(const Eigen::MatrixBase<EigenType>& o) {
+auto canonical(Eigen::MatrixBase<EigenType>&& o) {
   using T = typename EigenType::value_type;
   using F = typename DefaultShape<2>::type;
   return Array<T,F>(o);
 }
 
 template<class EigenType, std::enable_if_t<EigenType::ColsAtCompileTime == 2,int> = 0>
-auto canonical(const Eigen::DiagonalWrapper<EigenType>& o) {
+auto canonical(Eigen::DiagonalWrapper<EigenType>&& o) {
   using T = typename EigenType::value_type;
   using F = typename DefaultShape<2>::type;
   return Array<T,F>(o);
 }
 
 template<class EigenType, unsigned Mode, std::enable_if_t<EigenType::ColsAtCompileTime == 2,int> = 0>
-auto canonical(const Eigen::TriangularView<EigenType,Mode>& o) {
+auto canonical(Eigen::TriangularView<EigenType,Mode>&& o) {
   using T = typename EigenType::value_type;
   using F = typename DefaultShape<2>::type;
   return Array<T,F>(o);

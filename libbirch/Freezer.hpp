@@ -62,7 +62,7 @@ public:
   /**
    * Visit a value.
    */
-  template<class T, std::enable_if_t<is_value<T>::value,int> = 0>
+  template<class T>
   void visit(T& arg) const {
     //
   }
@@ -78,7 +78,7 @@ public:
   /**
    * Visit an array of non-value type.
    */
-  template<class T, class F, std::enable_if_t<!is_value<T>::value,int> = 0>
+  template<class T, class F>
   void visit(Array<T,F>& o) const {
     o.accept_(*this);
   }
@@ -86,7 +86,7 @@ public:
   /**
    * Visit an optional of non-value type.
    */
-  template<class T, std::enable_if_t<!is_value<T>::value,int> = 0>
+  template<class T>
   void visit(Optional<T>& o) const {
     o.accept_(*this);
   }
