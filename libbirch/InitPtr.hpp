@@ -17,6 +17,9 @@ namespace libbirch {
  */
 template<class T>
 class InitPtr {
+  template<class U> friend class SharedPtr;
+  template<class U> friend class WeakPtr;
+  template<class U> friend class InitPtr;
 public:
   using value_type = T;
 
@@ -34,9 +37,10 @@ public:
   template<class Q, class U = typename Q::value_type,
       std::enable_if_t<std::is_base_of<T,U>::value,int> = 0>
   InitPtr(const Q& o) :
-      ptr(o.get()) {
+      ptr(o.ptr) {
     //
   }
+
   /**
    * Is the pointer not null?
    *

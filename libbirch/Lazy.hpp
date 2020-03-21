@@ -35,39 +35,9 @@ public:
   /**
    * Constructor.
    */
-  template<class U>
-  Lazy(U* ptr, Label* label = rootLabel) :
+  Lazy(value_type* ptr, Label* label = rootLabel) :
       object(ptr),
       label(label) {
-    //
-  }
-
-  /**
-   * Constructor.
-   */
-  template<class Q, std::enable_if_t<std::is_base_of<value_type,
-      typename Q::value_type>::value,int> = 0>
-  Lazy(const Q& ptr, Label* label = rootLabel) :
-      object(ptr),
-      label(label) {
-    //
-  }
-
-  /**
-   * Generic copy constructor.
-   */
-  template<class Q, std::enable_if_t<std::is_base_of<value_type,
-      typename Q::value_type>::value,int> = 0>
-  Lazy(const Lazy<Q>& o) :
-      object(o.object),
-      label(o.label) {
-    //
-  }
-
-  /**
-   * Destructor.
-   */
-  ~Lazy() {
     //
   }
 
@@ -104,7 +74,7 @@ public:
    */
   template<class Arg, std::enable_if_t<!std::is_base_of<value_type,
       typename raw<Arg>::type>::value,int> = 0>
-  explicit Lazy(Arg arg) :
+  explicit Lazy(const Arg& arg) :
       object(new value_type(arg)),
       label(rootLabel) {
     //
@@ -126,9 +96,48 @@ public:
    * it by calling its constructor with the given arguments.
    */
   template<class Arg1, class Arg2, class... Args>
-  explicit Lazy(Arg1 arg1, Arg2 arg2, Args... args) :
+  explicit Lazy(const Arg1& arg1, const Arg2& arg2, const Args&... args) :
       object(new value_type(arg1, arg2, args...)),
       label(rootLabel) {
+    //
+  }
+
+  /**
+   * Copy constructor.
+   */
+  Lazy(const Lazy&) = default;
+
+  /**
+   * Generic copy constructor.
+   */
+  template<class Q, std::enable_if_t<std::is_base_of<value_type,
+      typename Q::value_type>::value,int> = 0>
+  Lazy(const Lazy<Q>& o) :
+      object(o.object),
+      label(o.label) {
+    //
+  }
+
+  /**
+   * Move constructor.
+   */
+  Lazy(Lazy&&) = default;
+
+  /**
+   * Generic move constructor.
+   */
+  template<class Q, std::enable_if_t<std::is_base_of<value_type,
+      typename Q::value_type>::value,int> = 0>
+  Lazy(Lazy<Q>&& o) :
+      object(std::move(o.object)),
+      label(o.label) {
+    //
+  }
+
+  /**
+   * Destructor.
+   */
+  ~Lazy() {
     //
   }
 
@@ -138,6 +147,38 @@ public:
   template<class U, std::enable_if_t<is_value<U>::value,int> = 0>
   Lazy<P>& operator=(const U& o) {
     *get() = o;
+    return *this;
+  }
+
+  /**
+   * Copy assignment.
+   */
+  Lazy& operator=(const Lazy&) = default;
+
+  /**
+   * Generic copy assignment.
+   */
+  template<class Q, std::enable_if_t<std::is_base_of<value_type,
+      typename Q::value_type>::value,int> = 0>
+  Lazy& operator=(const Lazy<Q>& o) {
+    object = o.object;
+    label = o.label;
+    return *this;
+  }
+
+  /**
+   * Move assignment.
+   */
+  Lazy& operator=(Lazy&&) = default;
+
+  /**
+   * Generic move assignment.
+   */
+  template<class Q, std::enable_if_t<std::is_base_of<value_type,
+      typename Q::value_type>::value,int> = 0>
+  Lazy& operator=(Lazy<Q>&& o) {
+    object = std::move(o.object);
+    label = o.label;
     return *this;
   }
 
@@ -152,8 +193,7 @@ public:
    * Get the raw pointer, with lazy cloning.
    */
   value_type* get() {
-    label->get(object);
-    return object.get();
+    return label->get(object);
   }
 
   /**
@@ -167,8 +207,7 @@ public:
    * Get the raw pointer for read-only use, without cloning.
    */
   value_type* pull() {
-    label->pull(object);
-    return object.get();
+    return label->pull(object);
   }
 
   /**

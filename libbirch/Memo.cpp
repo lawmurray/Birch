@@ -48,8 +48,7 @@ libbirch::Memo::value_type libbirch::Memo::get(const key_type key,
   }
   return value;
 }
-void libbirch::Memo::put(const key_type key,
-    const value_type value) {
+void libbirch::Memo::put(const key_type key, const value_type value) {
   assert(key);
   assert(value);
 
@@ -71,9 +70,8 @@ void libbirch::Memo::put(const key_type key,
 void libbirch::Memo::copy(const Memo& o) {
   assert(empty());
 
-  /* strategy here is to rehash the parent, which may reduce its size and
-   * remove unreachable entries, then just copy entry-by-entry into
-   * this, with no need to rehash */
+  /* strategy here is to assume the parent has been rehashed to reduce its
+   * size and remove unreachable entries, so now just copy entry-by-entry */
   if (o.nentries > 0u) {
     /* allocate */
     keys = (key_type*)allocate(o.nentries * sizeof(key_type));
@@ -90,8 +88,6 @@ void libbirch::Memo::copy(const Memo& o) {
       auto value = o.values[i];
       if (key) {
         key->incMemoKey();
-      }
-      if (value) {
         value->incMemoValue();
       }
       keys[i] = key;
@@ -111,6 +107,7 @@ void libbirch::Memo::reserve() {
 void libbirch::Memo::rehash() {
   if (nnew > 0u) {  // no need to rehash if no new entries since last time
     nnew = 0u;
+    unsigned nremoved = 0u;
 
     /* first pass, apply the table to itself; this has the effect of
      * replacing a -> b and b -> c with a -> c and b -> c, which may allow
@@ -128,8 +125,8 @@ void libbirch::Memo::rehash() {
         if (next != first) {
           next->incMemoValue();
           first->decMemoValue();
+          values[i] = next;
         }
-        values[i] = next;
       }
     }
 
@@ -143,23 +140,30 @@ void libbirch::Memo::rehash() {
         value->decMemoValue();
         keys[i] = nullptr;
         values[i] = nullptr;
-        --noccupied;
+        ++nremoved;
       }
     }
-
-    /* save previous table */
-    auto nentries1 = nentries;
-    auto tentries1 = tentries;
-    auto keys1 = keys;
-    auto values1 = values;
+    noccupied -= nremoved;
 
     if (noccupied == 0u) {
-      /* new table will be empty */
+      /* deallocate previous table */
+      if (nentries > 0) {
+        deallocate(keys, nentries * sizeof(key_type), tentries);
+        deallocate(values, nentries * sizeof(value_type), tentries);
+      }
+
+      /* new table empty */
       nentries = 0u;
       tentries = 0u;
       keys = nullptr;
       values = nullptr;
     } else {
+      /* save previous table */
+      auto nentries1 = nentries;
+      auto tentries1 = tentries;
+      auto keys1 = keys;
+      auto values1 = values;
+
       /* choose an appropriate size for the new table */
       unsigned minSize = (unsigned)CLONE_MEMO_INITIAL_SIZE;
       nentries = std::max(2u*nentries1, minSize);
@@ -167,31 +171,33 @@ void libbirch::Memo::rehash() {
         nentries /= 2u;
       }
 
-      /* allocate the new table */
-      keys = (key_type*)allocate(nentries * sizeof(key_type));
-      values = (value_type*)allocate(nentries * sizeof(value_type));
-      std::memset(keys, 0, nentries * sizeof(key_type));
-      std::memset(values, 0, nentries * sizeof(value_type));
-      tentries = get_thread_num();
+      if (nentries != nentries1 || nremoved > 0u) {
+        /* allocate the new table */
+        keys = (key_type*)allocate(nentries * sizeof(key_type));
+        values = (value_type*)allocate(nentries * sizeof(value_type));
+        std::memset(keys, 0, nentries * sizeof(key_type));
+        std::memset(values, 0, nentries * sizeof(value_type));
+        tentries = get_thread_num();
 
-      /* copy entries from previous table */
-      for (auto i = 0u; i < nentries1; ++i) {
-        auto key = keys1[i];
-        if (key) {
-          auto j = hash(key, nentries);
-          while (keys[j]) {
-            j = (j + 1u) & (nentries - 1u);
+        /* copy entries from previous table */
+        for (auto i = 0u; i < nentries1; ++i) {
+          auto key = keys1[i];
+          if (key) {
+            auto j = hash(key, nentries);
+            while (keys[j]) {
+              j = (j + 1u) & (nentries - 1u);
+            }
+            keys[j] = key;
+            values[j] = values1[i];
           }
-          keys[j] = key;
-          values[j] = values1[i];
+        }
+
+        /* deallocate previous table */
+        if (nentries1 > 0) {
+          deallocate(keys1, nentries1 * sizeof(key_type), tentries1);
+          deallocate(values1, nentries1 * sizeof(value_type), tentries1);
         }
       }
-    }
-
-    /* deallocate previous table */
-    if (nentries1 > 0) {
-      deallocate(keys1, nentries1 * sizeof(key_type), tentries1);
-      deallocate(values1, nentries1 * sizeof(value_type), tentries1);
     }
   }
 }

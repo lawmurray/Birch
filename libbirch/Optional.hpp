@@ -159,6 +159,47 @@ public:
     //
   }
 
+
+  /**
+   * Generic value copy assignment.
+   */
+  template<class Q, std::enable_if_t<std::is_base_of<typename P::value_type,
+      typename Q::value_type>::value,int> = 0>
+  Optional& operator=(const Lazy<Q>& value) {
+    this->value = value;
+    return *this;
+  }
+
+  /**
+   * Generic value move assignment.
+   */
+  template<class Q, std::enable_if_t<std::is_base_of<typename P::value_type,
+      typename Q::value_type>::value,int> = 0>
+  Optional& operator=(Lazy<Q>&& value) {
+    this->value = std::move(value);
+    return *this;
+  }
+
+  /**
+   * Generic copy assignment.
+   */
+  template<class Q, std::enable_if_t<std::is_base_of<typename P::value_type,
+      typename Q::value_type>::value,int> = 0>
+  Optional& operator=(const Optional<Lazy<Q>>& o) {
+    value = o.value;
+    return *this;
+  }
+
+  /**
+   * Generic move assignment.
+   */
+  template<class Q, std::enable_if_t<std::is_base_of<typename P::value_type,
+      typename Q::value_type>::value,int> = 0>
+  Optional& operator=(Optional<Lazy<Q>>&& o) {
+    value = std::move(o.value);
+    return *this;
+  }
+
   /**
    * Accept visitor.
    */

@@ -16,7 +16,7 @@ libbirch::Label::Label(const Label& o) {
   o1.lock.unread();
 }
 
-libbirch::Any* libbirch::Label::get(Any* o) {
+libbirch::Any* libbirch::Label::mapGet(Any* o) {
   Any* prev = nullptr;
   Any* next = o;
   bool frozen = o->isFrozen();
@@ -32,12 +32,12 @@ libbirch::Any* libbirch::Label::get(Any* o) {
 	}
   if (frozen) {
     Any* cloned;
-    if (false && next->isUnique()) {
+    if (next->isUnique()) {
       /* this is the last pointer to the object, recycle it */
-      cloned = next->recycle_(Recycler(this));
+      cloned = next->recycle_(this);
     } else {
       /* copy it */
-      cloned = next->copy_(Copier(this));
+      cloned = next->copy_(this);
       //if (!next->isFrozenUnique()) {
         memo.put(next, cloned);
       //}
@@ -47,7 +47,7 @@ libbirch::Any* libbirch::Label::get(Any* o) {
   return next;
 }
 
-libbirch::Any* libbirch::Label::pull(Any* o) {
+libbirch::Any* libbirch::Label::mapPull(Any* o) {
   Any* prev = nullptr;
   Any* next = o;
   bool frozen = o->isFrozen();

@@ -111,14 +111,11 @@ public:
  * @param o The pointer.
  */
 template<class P>
-Lazy<P> clone(const Lazy<P>& o) {
+auto clone(const Lazy<P>& o) {
   freeze(o);
   auto label = new Label(*o.getLabel());
   auto object = label->forward(o.pull());
-  auto r = Lazy<P>(P(object), label);
-  assert(r->numShared() == 1);
-  assert(label->numShared() == 1);
-  return r;
+  return Lazy<P>(object, label);
 }
 
 }

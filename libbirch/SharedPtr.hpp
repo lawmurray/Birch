@@ -16,6 +16,9 @@ namespace libbirch {
  */
 template<class T>
 class SharedPtr {
+  template<class U> friend class SharedPtr;
+  template<class U> friend class WeakPtr;
+  template<class U> friend class InitPtr;
 public:
   using value_type = T;
 
@@ -30,24 +33,23 @@ public:
   }
 
   /**
-   * Constructor.
+   * Copy constructor.
    */
-  template<class Q, class U = typename Q::value_type,
-      std::enable_if_t<std::is_base_of<T,U>::value,int> = 0>
-  SharedPtr(const Q& o) :
-      ptr(o.get()) {
+  SharedPtr(const SharedPtr& o) :
+      ptr(o.ptr) {
     if (ptr) {
       ptr->incShared();
     }
   }
 
   /**
-   * Copy constructor.
+   * Generic copy constructor.
    */
-  SharedPtr(const SharedPtr& o) :
+  template<class Q, class U = typename Q::value_type,
+      std::enable_if_t<std::is_base_of<T,U>::value,int> = 0>
+  SharedPtr(const Q& o) :
       ptr(o.ptr) {
     if (ptr) {
-      assert(ptr->numShared() > 0u);
       ptr->incShared();
     }
   }
@@ -56,6 +58,15 @@ public:
    * Move constructor.
    */
   SharedPtr(SharedPtr&& o) :
+      ptr(o.ptr) {
+    o.ptr = nullptr;
+  }
+
+  /**
+   * Generic move constructor.
+   */
+  template<class U, std::enable_if_t<std::is_base_of<T,U>::value,int> = 0>
+  SharedPtr(SharedPtr<U>&& o) :
       ptr(o.ptr) {
     o.ptr = nullptr;
   }
@@ -71,11 +82,28 @@ public:
    * Copy assignment.
    */
   SharedPtr& operator=(const SharedPtr& o) {
-    if (o.ptr) {
-      o.ptr->incShared();
-    }
     auto old = ptr;
     ptr = o.ptr;
+    if (ptr) {
+      ptr->incShared();
+    }
+    if (old) {
+      old->decShared();
+    }
+    return *this;
+  }
+
+  /**
+   * Generic copy assignment.
+   */
+  template<class Q, class U = typename Q::value_type,
+      std::enable_if_t<std::is_base_of<T,U>::value,int> = 0>
+  SharedPtr& operator=(const Q& o) {
+    auto old = ptr;
+    ptr = o.ptr;
+    if (ptr) {
+      ptr->incShared();
+    }
     if (old) {
       old->decShared();
     }
@@ -86,6 +114,20 @@ public:
    * Move assignment.
    */
   SharedPtr& operator=(SharedPtr&& o) {
+    auto old = ptr;
+    ptr = o.ptr;
+    o.ptr = nullptr;
+    if (old) {
+      old->decShared();
+    }
+    return *this;
+  }
+
+  /**
+   * Generic move assignment.
+   */
+  template<class U, std::enable_if_t<std::is_base_of<T,U>::value,int> = 0>
+  SharedPtr& operator=(SharedPtr<U>&& o) {
     auto old = ptr;
     ptr = o.ptr;
     o.ptr = nullptr;
@@ -126,10 +168,10 @@ public:
    */
   void replace(T* ptr) {
     auto old = this->ptr;
+    this->ptr = ptr;
     if (ptr) {
       ptr->incShared();
     }
-    this->ptr = ptr;
     if (old) {
       old->decShared();
     }

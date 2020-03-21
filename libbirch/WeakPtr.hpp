@@ -16,6 +16,9 @@ namespace libbirch {
  */
 template<class T>
 class WeakPtr {
+  template<class U> friend class SharedPtr;
+  template<class U> friend class WeakPtr;
+  template<class U> friend class InitPtr;
 public:
   using value_type = T;
 
@@ -30,24 +33,23 @@ public:
   }
 
   /**
-   * Constructor.
+   * Copy constructor.
    */
-  template<class Q, class U = typename Q::value_type,
-      std::enable_if_t<std::is_base_of<T,U>::value,int> = 0>
-  WeakPtr(const Q& o) :
-      ptr(o.get()) {
+  WeakPtr(const WeakPtr& o) :
+      ptr(o.ptr) {
     if (ptr) {
       ptr->incWeak();
     }
   }
 
   /**
-   * Copy constructor.
+   * Generic copy constructor.
    */
-  WeakPtr(const WeakPtr& o) :
+  template<class Q, class U = typename Q::value_type,
+      std::enable_if_t<std::is_base_of<T,U>::value,int> = 0>
+  WeakPtr(const Q& o) :
       ptr(o.ptr) {
     if (ptr) {
-      assert(ptr->numWeak() > 0);
       ptr->incWeak();
     }
   }
@@ -56,6 +58,15 @@ public:
    * Move constructor.
    */
   WeakPtr(WeakPtr&& o) :
+      ptr(o.ptr) {
+    o.ptr = nullptr;
+  }
+
+  /**
+   * Generic move constructor.
+   */
+  template<class U, std::enable_if_t<std::is_base_of<T,U>::value,int> = 0>
+  WeakPtr(WeakPtr<U>&& o) :
       ptr(o.ptr) {
     o.ptr = nullptr;
   }
@@ -71,11 +82,28 @@ public:
    * Copy assignment.
    */
   WeakPtr& operator=(const WeakPtr& o) {
-    if (o.ptr) {
-      o.ptr->incWeak();
-    }
     auto old = ptr;
     ptr = o.ptr;
+    if (ptr) {
+      ptr->incWeak();
+    }
+    if (old) {
+      old->decWeak();
+    }
+    return *this;
+  }
+
+  /**
+   * Generic copy assignment.
+   */
+  template<class Q, class U = typename Q::value_type,
+      std::enable_if_t<std::is_base_of<T,U>::value,int> = 0>
+  WeakPtr& operator=(const Q& o) {
+    auto old = ptr;
+    ptr = o.ptr;
+    if (ptr) {
+      ptr->incWeak();
+    }
     if (old) {
       old->decWeak();
     }
@@ -86,6 +114,20 @@ public:
    * Move assignment.
    */
   WeakPtr& operator=(WeakPtr&& o) {
+    auto old = ptr;
+    ptr = o.ptr;
+    o.ptr = nullptr;
+    if (old) {
+      old->decWeak();
+    }
+    return *this;
+  }
+
+  /**
+   * Generic move assignment.
+   */
+  template<class U, std::enable_if_t<std::is_base_of<T,U>::value,int> = 0>
+  WeakPtr& operator=(WeakPtr<U>&& o) {
     auto old = ptr;
     ptr = o.ptr;
     o.ptr = nullptr;
@@ -126,10 +168,10 @@ public:
    */
   void replace(T* ptr) {
     auto old = this->ptr;
+    this->ptr = ptr;
     if (ptr) {
       ptr->incWeak();
     }
-    this->ptr = ptr;
     if (old) {
       old->decWeak();
     }

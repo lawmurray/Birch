@@ -49,16 +49,18 @@ public:
    * @param Smart pointer (SharedPtr, WeakPtr or InitPtr).
    */
   template<class P>
-  void get(P& o)  {
+  auto get(P& o)  {
+    auto ptr = o.get();
     if (o.query() && o->isFrozen()) {
       lock.write();
-      Any* old = o.get();
-      Any* ptr = get(old);
+      auto old = ptr;
+      ptr = static_cast<typename P::value_type*>(mapGet(old));
       if (ptr != old) {
-        o.replace(static_cast<typename P::value_type*>(ptr));
+        o.replace(ptr);
       }
       lock.unwrite();
     }
+    return ptr;
   }
 
   /**
@@ -67,11 +69,12 @@ public:
    * @param Smart pointer (SharedPtr, WeakPtr or InitPtr).
    */
   template<class P>
-  void pull(P& o) {
+  auto pull(P& o) {
+    auto ptr = o.get();
     if (o.query() && o->isFrozen()) {
       lock.read();
-      Any* old = o.get();
-      Any* ptr = pull(old);
+      auto old = ptr;
+      ptr = static_cast<typename P::value_type*>(mapPull(old));
       lock.unread();
       if (ptr != old) {
         /* it is possible for multiple threads to try to update o
@@ -79,10 +82,11 @@ public:
          * incorrect reference count updates; ensure exclusive access with a
          * write lock */
         lock.write();
-        o.replace(static_cast<typename P::value_type*>(ptr));
+        o.replace(ptr);
         lock.unwrite();
       }
     }
+    return ptr;
   }
 
   /**
@@ -99,7 +103,7 @@ public:
     T* result = ptr;
     if (ptr->isFrozen()) {
       lock.write();
-      result = static_cast<T*>(get(static_cast<Any*>(ptr)));
+      result = static_cast<T*>(mapGet(ptr));
       lock.unwrite();
     }
     return result;
@@ -110,13 +114,13 @@ private:
    * Map an object that may not yet have been cloned, cloning it if
    * necessary.
    */
-  Any* get(Any* o);
+  Any* mapGet(Any* o);
 
   /**
    * Map an object that may not yet have been cloned, without cloning it.
    * This is used as an optimization for read-only access.
    */
-  Any* pull(Any* o);
+  Any* mapPull(Any* o);
 
   /**
    * Memo that maps source objects to clones.
