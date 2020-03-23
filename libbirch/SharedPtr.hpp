@@ -26,7 +26,8 @@ public:
    * Constructor.
    */
   explicit SharedPtr(value_type* ptr = nullptr) :
-      ptr(ptr) {
+      ptr(ptr),
+      discarded(false) {
     if (ptr) {
       ptr->incShared();
     }
@@ -36,7 +37,8 @@ public:
    * Copy constructor.
    */
   SharedPtr(const SharedPtr& o) :
-      ptr(o.ptr) {
+      ptr(o.ptr),
+      discarded(false) {
     if (ptr) {
       ptr->incShared();
     }
@@ -48,7 +50,8 @@ public:
   template<class Q, class U = typename Q::value_type,
       std::enable_if_t<std::is_base_of<T,U>::value,int> = 0>
   SharedPtr(const Q& o) :
-      ptr(o.ptr) {
+      ptr(o.ptr),
+      discarded(false) {
     if (ptr) {
       ptr->incShared();
     }
@@ -58,7 +61,11 @@ public:
    * Move constructor.
    */
   SharedPtr(SharedPtr&& o) :
-      ptr(o.ptr) {
+      ptr(o.ptr),
+      discarded(false) {
+    if (o.isDiscarded()) {
+      ptr->restoreShared();
+    }
     o.ptr = nullptr;
   }
 
@@ -67,7 +74,11 @@ public:
    */
   template<class U, std::enable_if_t<std::is_base_of<T,U>::value,int> = 0>
   SharedPtr(SharedPtr<U>&& o) :
-      ptr(o.ptr) {
+      ptr(o.ptr),
+      discarded(false) {
+    if (o.isDiscarded()) {
+      ptr->restoreShared();
+    }
     o.ptr = nullptr;
   }
 
@@ -117,6 +128,9 @@ public:
     auto old = ptr;
     ptr = o.ptr;
     o.ptr = nullptr;
+    if (o.isDiscarded()) {
+      ptr->restoreShared();
+    }
     if (old) {
       old->decShared();
     }
@@ -131,6 +145,9 @@ public:
     auto old = ptr;
     ptr = o.ptr;
     o.ptr = nullptr;
+    if (o.isDiscarded()) {
+      ptr->restoreShared();
+    }
     if (old) {
       old->decShared();
     }
@@ -151,7 +168,6 @@ public:
    * Get the raw pointer.
    */
   T* get() const {
-    assert(!ptr || ptr->numShared() > 0);
     return ptr;
   }
 
@@ -159,7 +175,6 @@ public:
    * Get the raw pointer as const.
    */
   T* pull() const {
-    assert(!ptr || ptr->numShared() > 0);
     return ptr;
   }
 
@@ -182,9 +197,42 @@ public:
    */
   void release() {
     if (ptr) {
-      ptr->decShared();
+      if (discarded) {
+        ptr->decMemoShared();
+      } else {
+        ptr->decShared();
+      }
       ptr = nullptr;
     }
+  }
+  
+  /**
+   * Discard.
+   */
+  void discard() {
+    assert(!discarded);
+    if (ptr) {
+      discarded = true;
+      ptr->discardShared();
+    }
+  }
+
+  /**
+   * Restore.
+   */
+  void restore() {
+    assert(discarded);
+    if (ptr) {
+      discarded = false;
+      ptr->restoreShared();
+    }
+  }
+
+  /**
+   * Has this been discarded?
+   */
+  bool isDiscarded() const {
+    return discarded;
   }
 
   /**
@@ -207,6 +255,10 @@ private:
    */
   T* ptr;
 
+  /**
+   * Has the pointer been discarded?
+   */
+  bool discarded;
 };
 
 template<class T>

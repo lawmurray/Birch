@@ -70,9 +70,9 @@ public:
   /**
    * Freeze all objects in the memo.
    *
-   * @param v Freeze visitor.
+   * @param label The new label.
    */
-  void freeze_(const Freezer& v);
+  void freeze_(Label* label);
 
 private:
   /**

@@ -12,15 +12,63 @@ class Label;
 class Freezer;
 class Copier;
 using Recycler = Copier;
+class Discarder;
+class Restorer;
 
 /**
  * Base class for reference counted objects.
  *
  * @ingroup libbirch
  *
- * @attention In order to work correctly, Any must be the *first* base
- * class in any inheritance hierarchy. This is particularly important when
- * multiple inheritance is used.
+ * @attention In order to work correctly with multiple inheritance, Any must
+ * be the *first* base class.
+ *
+ * Reference-counted objects in LibBirch require four counts, rather than
+ * the usual two (shared and weak), in order to support lazy deep copy
+ * operations. These are:
+ *
+ *   - a *shared* count,
+ *   - a *memo shared* count,
+ *   - a *weak* count, and
+ *   - a *memo weak* count.
+ *
+ * The shared and weak counts behave as normal. The memo shared and memo weak
+ * counts serve to determine when an object is only reachable via a memo used
+ * to bookkeep lazy deep copy operations. Objects that are only reachable via
+ * a memo may be eligible for collection.
+ *
+ * The movement of the four counts triggers the following operations:
+ *
+ *   -# When the shared count reaches zero, the object is *discarded*.
+ *   -# If the shared count subsequently becomes nonzero again (this is
+ *      allowed as long as the memo shared count is nonzero), the object is
+ *      *restored*.
+ *   -# If the shared and memo shared counts reach 0, the object is
+ *      *destroyed*.
+ *   -# If the weak and memo weak counts reach 0, the object is *deallocated*.
+ *
+ * These operations behave as follows:
+ *
+ *   - **Discard** downgrades all shared pointers in the object to memo
+ *     shared pointers.
+ *   - **Restore** upgrades those memo shared pointers to shared pointers
+ *     again.
+ *   - **Destroy** calls the destructor of the object.
+ *   - **Deallocate** collects the memory allocated to the object.
+ *
+ * The discard operation may be skipped when the destroy operation would
+ * immediately follow anyway; i.e. when the shared count reaches zero and the
+ * memo shared count is already at zero.
+ *
+ * At a high level, shared and weak pointers serve to determine which objects
+ * are reachable from the user program, while memo shared and memo weak
+ * pointers are used to determine which objects are reachable via a memo,
+ * and to break reference cycles that are induced by the memo, but which
+ * do not exist in the user program *per se*.
+ *
+ * A discarded object is in a state where reference cycles induced by a memo
+ * are broken, but it is otherwise still a valid object, and may still be
+ * accessible via a weak pointer in the user program.
  */
 class Any {
 public:
@@ -32,12 +80,13 @@ public:
    */
   Any() :
       sharedCount(0u),
-      memoValueCount(0u),
+      memoSharedCount(0u),
       weakCount(1u),
-      memoKeyCount(1u),
+      memoWeakCount(1u),
       label(rootLabel),
       frozen(false),
-      frozenUnique(false) {
+      frozenUnique(false),
+      discarded(false) {
     // size and tid set by operator new
   }
 
@@ -46,12 +95,13 @@ public:
    */
   Any(int) :
       sharedCount(0u),
-      memoValueCount(0u),
+      memoSharedCount(0u),
       weakCount(1u),
-      memoKeyCount(1u),
+      memoWeakCount(1u),
       label(nullptr),
       frozen(false),
-      frozenUnique(false) {
+      frozenUnique(false),
+      discarded(false) {
     // size and tid set by operator new
   }
 
@@ -67,7 +117,7 @@ public:
    */
   virtual ~Any() {
     assert(sharedCount.load() == 0u);
-    assert(memoValueCount.load() == 0u);
+    assert(memoSharedCount.load() == 0u);
   }
 
   /**
@@ -105,10 +155,9 @@ public:
 
   /**
    * Is this object reachable? An object is reachable if there exists a
-   * shared, memo value, or weak pointer to it. This is equivalent to a weak
-   * count of one or more. If only a memo key pointer to it exists, it is
-   * not considered reachable, and it may be cleaned up during memo
-   * maintenance.
+   * shared, memo shared, or weak pointer to it. If only a memo weak pointer
+   * to it exists, it is not considered reachable, and it may be cleaned up
+   * during memo maintenance.
    */
   bool isReachable() const {
     return numWeak() > 0u;
@@ -118,19 +167,18 @@ public:
    * Is there definitely only one pointer to this object? This is
    * conservative; it returns true if there is at most one shared or weak
    * pointer to the object. Note, in particular, that the presence of a memo
-   * value pointer means that an unknown number of pointers (including zero
+   * shared pointer means that an unknown number of pointers (including zero
    * pointers) may update to the object in future.
    */
   bool isUnique() const {
-    return numShared() <= 1u && numMemoValue() <= 1u && numWeak() <= 1u;
-    // ^ recall first shared count increments memo value and weak counts
+    return numShared() <= 1u && numMemoShared() <= 1u && numWeak() <= 1u;
   }
 
   /**
-   * Finalize. This is called when the memo value count reaches zero,
-   * but before destruction and deallocation of the object. Object
-   * resurrection is supported: if the finalizer results in a nonzero memo
-   * value count, destruction and deallocation do not proceed.
+   * Finalize. This is called when the shared and memo shared counts reach
+   * zero, but before destruction and deallocation of the object. Object
+   * resurrection is supported: if the finalizer results in a nonzero shared
+   * or memo shared count, destruction and deallocation do not proceed.
    */
   virtual void finalize() {
     //
@@ -139,23 +187,33 @@ public:
   /**
    * Freeze the object.
    *
-   * @param v Freeze visitor.
+   * @param label The new label.
    */
-  virtual void freeze_(const Freezer& v) = 0;
+  virtual void freeze_(Label* label) = 0;
 
   /**
    * Copy the object.
    *
-   * @param v Copy visitor.
+   * @param label The new label.
    */
-  virtual Any* copy_(const Copier& v) const = 0;
+  virtual Any* copy_(Label* label) const = 0;
 
   /**
    * Recycle the object.
    *
-   * @param v Recycle visitor.
+   * @param label The new label.
    */
-  virtual Any* recycle_(const Recycler& v) = 0;
+  virtual Any* recycle_(Label* label) = 0;
+
+  /**
+   * Discard the object.
+   */
+  virtual void discard_() = 0;
+
+  /**
+   * Restore the object.
+   */
+  virtual void restore_() = 0;
 
   /**
    * Shared count.
@@ -169,11 +227,12 @@ public:
    */
   void incShared() {
     if (++sharedCount == 1u) {
-      /* to support object resurrection, when the shared count increases from
-       * zero, increment the memo value count also; this also occurs when an
-       * object is first created */
-      incMemoValue();
+      incMemoShared();
       holdLabel();
+      if (discarded) {
+        discarded = false;
+        restore_();
+      }
     }
   }
 
@@ -183,40 +242,73 @@ public:
   void decShared() {
     assert(numShared() > 0u);
     if (--sharedCount == 0u) {
+      discarded = true;
+      discard_();
       releaseLabel();
-      decMemoValue();
+      decMemoShared();
     }
   }
 
   /**
-   * Memo value count.
+   * Memo shared count.
    */
-  unsigned numMemoValue() const {
-    return memoValueCount.load();
+  unsigned numMemoShared() const {
+    return memoSharedCount.load();
   }
 
   /**
-   * Increment the memo value count.
+   * Increment the memo shared count.
    */
-  void incMemoValue() {
-    memoValueCount.increment();
+  void incMemoShared() {
+    memoSharedCount.increment();
   }
 
   /**
-   * Decrement the memo value count.
+   * Decrement the memo shared count.
    */
-  void decMemoValue() {
-    assert(numMemoValue() > 0u);
-    if (--memoValueCount == 0u) {
+  void decMemoShared() {
+    assert(numMemoShared() > 0u);
+    if (--memoSharedCount == 0u) {
       assert(numShared() == 0u);
       finalize();
 
-      /* to support object resurrection, check the memo value count again
-       * before proceeding with destruction */
-      if (numMemoValue() == 0u) {
+      /* to support object resurrection, check the count again before
+       * proceeding with destruction */
+      if (numMemoShared() == 0u) {
         destroy();
         decWeak();
       }
+    }
+  }
+
+  /**
+   * Simultaneously decrement the shared count and increment the shared memo
+   * count.
+   */
+  void discardShared() {
+    assert(numShared() > 0u);
+    if (--sharedCount == 0u) {
+      assert(!discarded);
+      discarded = true;
+      discard_();
+      releaseLabel();
+    } else {
+      incMemoShared();
+    }
+  }
+
+  /**
+   * Simultaneously increment the shared count and decrement the shared memo
+   * count.
+   */
+  void restoreShared() {
+    if (++sharedCount == 1u) {
+      assert(discarded);
+      discarded = false;
+      restore_();
+      holdLabel();
+    } else {
+      decMemoShared();
     }
   }
 
@@ -241,33 +333,33 @@ public:
     assert(weakCount.load() > 0u);
     if (--weakCount == 0u) {
       assert(numShared() == 0u);
-      assert(numMemoValue() == 0u);
-      decMemoKey();
+      assert(numMemoShared() == 0u);
+      decMemoWeak();
     }
   }
 
   /**
-   * Memo key count.
+   * Memo weak count.
    */
-  unsigned numMemoKey() const {
-    return memoKeyCount.load();
+  unsigned numMemoWeak() const {
+    return memoWeakCount.load();
   }
 
   /**
-   * Increment the memo key count.
+   * Increment the memo weak count.
    */
-  void incMemoKey() {
-    memoKeyCount.increment();
+  void incMemoWeak() {
+    memoWeakCount.increment();
   }
 
   /**
-   * Decrement the memo key count.
+   * Decrement the memo weak count.
    */
-  void decMemoKey() {
-    assert(memoKeyCount.load() > 0u);
-    if (--memoKeyCount == 0u) {
+  void decMemoWeak() {
+    assert(memoWeakCount.load() > 0u);
+    if (--memoWeakCount == 0u) {
       assert(numShared() == 0u);
-      assert(numMemoValue() == 0u);
+      assert(numMemoShared() == 0u);
       assert(numWeak() == 0u);
       deallocate();
     }
@@ -281,7 +373,7 @@ public:
   }
 
   /**
-   * Set the label assigned to the object. The shared count must be zero, and
+   * Set the label assigned to the object. The shared count must be onoe, and
    * the current label the root label. Typically this is applied to the new
    * object immediately after a copy operation.
    */
@@ -304,6 +396,17 @@ public:
       holdLabel();
     }
   }
+
+  /**
+   * Increment the shared count of the label. This is used during
+   * initialization and restoration.
+   */
+  void holdLabel();
+
+  /**
+   * Decrement the shared count of the label. This is used during discard.
+   */
+  void releaseLabel();
 
   /**
    * Freeze the object.
@@ -355,24 +458,11 @@ protected:
 
 private:
   /**
-   * Increment the shared count of the label (if not null).
-   */
-  void holdLabel();
-
-  /**
-   * Decrement the shared count of the label (if not null). This is used
-   * when the shared count for the object reduces to zero, while the memo
-   * value count may still be greater than zero, in order to break any
-   * reference cycles between objects and memos with the same label.
-   */
-  void releaseLabel();
-
-  /**
    * Destroy, but do not deallocate, the object.
    */
   void destroy() {
     assert(sharedCount.load() == 0u);
-    assert(memoValueCount.load() == 0u);
+    assert(memoSharedCount.load() == 0u);
     this->~Any();
   }
 
@@ -381,9 +471,9 @@ private:
    */
   void deallocate() {
     assert(sharedCount.load() == 0u);
-    assert(memoValueCount.load() == 0u);
+    assert(memoSharedCount.load() == 0u);
     assert(weakCount.load() == 0u);
-    assert(memoKeyCount.load() == 0u);
+    assert(memoWeakCount.load() == 0u);
     libbirch::deallocate(this, size, tid);
   }
 
@@ -393,25 +483,22 @@ private:
   Atomic<unsigned> sharedCount;
 
   /**
-   * Memo value count. This is one plus the number of times that the object
-   * is held as a value in a memo. The plus one is a self-reference that is
-   * released when the shared count reaches zero.
+   * Memo shared count, or, if the shared count is nonzero, one plus the memo
+   * shared count.
    */
-  Atomic<unsigned> memoValueCount;
+  Atomic<unsigned> memoSharedCount;
 
   /**
-   * Weak count. This is one plus the number of times that the object is held
-   * by a weak pointer. The plus one is a self-reference that is released
-   * when the memo value count reaches zero.
+   * Weak count, or, if the memo shared count is nonzero, one plus the weak
+   * count.
    */
   Atomic<unsigned> weakCount;
 
   /**
-   * Memo key count. This is one plus the number of times that the object
-   * is held as a key in a memo. The plus one is a self-reference that is
-   * released when the weak count reaches zero.
+   * Memo weak count, or, if the weak count is nonzero, one plus the memo
+   * weak count.
    */
-  Atomic<unsigned> memoKeyCount;
+  Atomic<unsigned> memoWeakCount;
 
   /**
    * Label of the object.
@@ -444,5 +531,10 @@ private:
    * pointer to it?
    */
   bool frozenUnique:1;
+
+  /**
+   * Has the object been discarded?
+   */
+  bool discarded:1;
 };
 }

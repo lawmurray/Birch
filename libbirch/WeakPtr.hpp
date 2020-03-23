@@ -151,7 +151,6 @@ public:
    * Get the raw pointer.
    */
   T* get() const {
-    assert(!ptr || ptr->numWeak() > 0);
     return ptr;
   }
 
@@ -159,7 +158,6 @@ public:
    * Get the raw pointer as const.
    */
   T* pull() const {
-    assert(!ptr || ptr->numWeak() > 0);
     return ptr;
   }
 
@@ -185,6 +183,27 @@ public:
       ptr->decWeak();
       ptr = nullptr;
     }
+  }
+
+  /**
+   * Discard.
+   */
+  void discard() {
+    // nothing to do for weak pointers
+  }
+
+  /**
+   * Restore.
+   */
+  void restore() {
+    // nothing to do for weak pointers
+  }
+
+  /**
+   * Has this been discarded?
+   */
+  static bool isDiscarded() {
+    return false;
   }
 
   /**

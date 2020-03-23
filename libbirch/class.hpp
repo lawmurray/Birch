@@ -4,6 +4,40 @@
 #pragma once
 
 /**
+ * @intternal
+ *
+ * @def LIBBIRCH_VIRTUALS
+ *
+ * Declare common virtual functions for classes and fibers.
+ */
+#define LIBBIRCH_VIRTUALS(Name, Base...) \
+    virtual void freeze_(libbirch::Label* label) override { \
+    this->accept_(libbirch::Freezer(label)); \
+  } \
+  \
+  virtual Name* copy_(libbirch::Label* label) const override { \
+    auto o = new Name(*this); \
+    o->setLabel(label); \
+    o->accept_(libbirch::Copier(label)); \
+    return o; \
+  } \
+  \
+  virtual Name* recycle_(libbirch::Label* label) override { \
+    this->thaw(); \
+    this->replaceLabel(label); \
+    this->accept_(libbirch::Recycler(label)); \
+    return this; \
+  } \
+  \
+  virtual void discard_() override { \
+    this->accept_(libbirch::Discarder()); \
+  } \
+  \
+  virtual void restore_() override { \
+    this->accept_(libbirch::Restorer()); \
+  }
+
+/**
  * @def LIBBIRCH_CLASS
  *
  * Boilerplate macro for classes to support lazy deep copy. The first
@@ -29,24 +63,7 @@
  *     LIBBIRCH_CLASS(A, B<T,U>)
  */
 #define LIBBIRCH_CLASS(Name, Base...) \
-  virtual void freeze_(const libbirch::Freezer& v) override { \
-    this->accept_(v); \
-  } \
-  \
-  virtual Name* copy_(const libbirch::Copier& v) const override { \
-    auto o = new Name(*this); \
-    o->setLabel(v.label); \
-    o->accept_(v); \
-    return o; \
-  } \
-  \
-  virtual Name* recycle_(const libbirch::Recycler& v) override { \
-    this->thaw(); \
-    this->replaceLabel(v.label); \
-    this->accept_(v); \
-    return this; \
-  } \
-  \
+  LIBBIRCH_VIRTUALS(Name, Base) \
   LIBBIRCH_ABSTRACT_CLASS(Name, Base)
 
 /**
@@ -71,24 +88,13 @@
   void accept_(const Visitor& v) { \
     Base::accept_(v);
 
+/**
+ * @def LIBBIRCH_FIBER
+ *
+ * Use in place of LIBBIRCH_CLASS when the containing class is for a fiber.
+ */
 #define LIBBIRCH_FIBER(Name, Base...) \
-  virtual void freeze_(const libbirch::Freezer& v) override { \
-    this->accept_(v); \
-  } \
-  \
-  virtual Name* copy_(const libbirch::Copier& v) const override { \
-    auto o = new Name(*this); \
-    o->setLabel(v.label); \
-    o->accept_(v); \
-    return o; \
-  } \
-  \
-  virtual Name* recycle_(const libbirch::Recycler& v) override { \
-    this->thaw(); \
-    this->replaceLabel(v.label); \
-    this->accept_(v); \
-    return this; \
-  } \
+  LIBBIRCH_VIRTUALS(Name, Base...) \
   \
   virtual const char* getClassName() const { \
     return #Name; \
@@ -98,25 +104,14 @@
   void accept_(const Visitor& v) { \
     Base::accept_(v);
 
-
+/**
+ * @def LIBBIRCH_FIBER
+ *
+ * Use in place of LIBBIRCH_CLASS when the containing class is for a member
+ * fiber.
+ */
 #define LIBBIRCH_MEMBER_FIBER(Name, Base...) \
-  virtual void freeze_(const libbirch::Freezer& v) override { \
-    this->accept_(v); \
-  } \
-  \
-  virtual Name* copy_(const libbirch::Copier& v) const override { \
-    auto o = new Name(*this); \
-    o->setLabel(v.label); \
-    o->accept_(v); \
-    return o; \
-  } \
-  \
-  virtual Name* recycle_(const libbirch::Recycler& v) override { \
-    this->thaw(); \
-    this->replaceLabel(v.label); \
-    this->accept_(v); \
-    return this; \
-  } \
+  LIBBIRCH_VIRTUALS(Name, Base...) \
   \
   virtual const char* getClassName() const { \
     return #Name; \
@@ -161,3 +156,5 @@
 #include "libbirch/Freezer.hpp"
 #include "libbirch/Copier.hpp"
 #include "libbirch/Recycler.hpp"
+#include "libbirch/Discarder.hpp"
+#include "libbirch/Restorer.hpp"

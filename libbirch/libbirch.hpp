@@ -345,13 +345,10 @@ Optional<To> dynamic_pointer_cast(const From& from) {
 template<class To, class From>
 Optional<To> dynamic_pointer_cast(const Optional<From>& from) {
   if (from.query()) {
-    auto label = from.get().getLabel();
-    auto ptr = dynamic_cast<typename To::value_type*>(from.get().get());
-    if (ptr) {
-      return Optional<To>(To(ptr, label));
-    }
+    return dynamic_pointer_cast<To>(from.get());
+  } else {
+    return Optional<To>();
   }
-  return Optional<To>();
 }
 
 /**

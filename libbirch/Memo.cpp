@@ -21,8 +21,8 @@ libbirch::Memo::~Memo() {
       auto key = keys[i];
       if (key) {
         auto value = values[i];
-        key->decMemoKey();
-        value->decMemoValue();
+        key->decMemoWeak();
+        value->decMemoShared();
       }
     }
     deallocate(keys, nentries * sizeof(key_type), tentries);
@@ -52,8 +52,8 @@ void libbirch::Memo::put(const key_type key, const value_type value) {
   assert(key);
   assert(value);
 
-  key->incMemoKey();
-  value->incMemoValue();
+  key->incMemoWeak();
+  value->incMemoShared();
 
   reserve();
   auto i = hash(key, nentries);
@@ -87,8 +87,8 @@ void libbirch::Memo::copy(const Memo& o) {
       auto key = o.keys[i];
       auto value = o.values[i];
       if (key) {
-        key->incMemoKey();
-        value->incMemoValue();
+        key->incMemoWeak();
+        value->incMemoShared();
       }
       keys[i] = key;
       values[i] = value;
@@ -123,8 +123,8 @@ void libbirch::Memo::rehash() {
           next = get(prev, prev);
         } while (next != prev);
         if (next != first) {
-          next->incMemoValue();
-          first->decMemoValue();
+          next->incMemoShared();
+          first->decMemoShared();
           values[i] = next;
         }
       }
@@ -136,8 +136,8 @@ void libbirch::Memo::rehash() {
       auto key = keys[i];
       if (key && !key->isReachable()) {
         auto value = values[i];
-        key->decMemoKey();
-        value->decMemoValue();
+        key->decMemoWeak();
+        value->decMemoShared();
         keys[i] = nullptr;
         values[i] = nullptr;
         ++nremoved;
@@ -202,12 +202,12 @@ void libbirch::Memo::rehash() {
   }
 }
 
-void libbirch::Memo::freeze_(const Freezer& v) {
+void libbirch::Memo::freeze_(Label* label) {
   /* only need to freeze values here; keys are already frozen anyway */
   for (auto i = 0u; i < nentries; ++i) {
     auto value = values[i];
     if (value && value->freeze()) {
-      value->freeze_(v);
+      value->freeze_(label);
     }
   }
 }

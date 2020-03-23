@@ -80,6 +80,27 @@ public:
   }
 
   /**
+   * Discard.
+   */
+  void discard() {
+    // nothing to do for weak pointers
+  }
+
+  /**
+   * Restore.
+   */
+  void restore() {
+    // nothing to do for weak pointers
+  }
+
+  /**
+   * Has this been discarded?
+   */
+  static bool isDiscarded() {
+    return false;
+  }
+
+  /**
    * Dereference.
    */
   T& operator*() const {

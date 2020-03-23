@@ -218,6 +218,20 @@ public:
   }
 
   /**
+   * Discard.
+   */
+  void discard() {
+    object.discard();
+  }
+
+  /**
+   * Restore.
+   */
+  void restore() {
+    object.restore();
+  }
+
+  /**
    * Dereference.
    */
   value_type& operator*() const {
