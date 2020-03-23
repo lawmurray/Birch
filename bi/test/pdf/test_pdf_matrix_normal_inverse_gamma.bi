@@ -1,7 +1,7 @@
 /*
  * Test matrix normal-inverse-gamma pdf evaluations.
  */
-program test_pdf_matrix_normal_inverse_gamma(R:Integer <- 4, C:Integer <- 3,
+program test_pdf_matrix_normal_inverse_gamma(R:Integer <- 3, C:Integer <- 2,
     N:Integer <- 10000, B:Integer <- 500, S:Integer <- 30) {
   M:Real[R,C];
   U:Real[R,R];

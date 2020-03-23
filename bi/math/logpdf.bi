@@ -876,7 +876,7 @@ function logpdf_matrix_normal_inverse_gamma(X:Real[_,_], N:Real[_,_], Λ:LLT,
  */
 function logpdf_matrix_normal_inverse_gamma_matrix_gaussian(X:Real[_,_],
     N:Real[_,_], Λ:LLT, α:Real, γ:Real[_]) -> Real {
-  M:Real[_,_] <- solve(Λ, N);
+  auto M <- solve(Λ, N);
   auto Σ <- identity(rows(M)) + inv(Λ);
   auto β <- γ - 0.5*diagonal(transpose(M)*N);
   return logpdf_matrix_student_t(X, 2.0*α, M, Σ, β/α);
@@ -898,7 +898,7 @@ function logpdf_matrix_normal_inverse_gamma_matrix_gaussian(X:Real[_,_],
 function logpdf_linear_matrix_normal_inverse_gamma_matrix_gaussian(
     X:Real[_,_], A:Real[_,_], N:Real[_,_], Λ:LLT, C:Real[_,_], α:Real,
     γ:Real[_]) -> Real {
-  M:Real[_,_] <- solve(Λ, N);
+  auto M <- solve(Λ, N);
   auto β <- γ - 0.5*diagonal(transpose(M)*N);
   auto Σ <- identity(rows(A)) + A*solve(Λ, transpose(A));
   return logpdf_matrix_student_t(X, 2.0*α, A*M + C, Σ, β/α);
