@@ -8,14 +8,14 @@ program test_multivariate_normal_inverse_gamma_multivariate_gaussian(N:Integer <
   /* simulate forward */
   X1:Real[N,11];
   for n in 1..N {
-    auto m' <- clone<TestMultivariateNormalInverseGammaMultivariateGaussian>(m);
+    auto m' <- clone(m);
     X1[n,1..11] <- m'.forward();
   }
 
   /* simulate backward */
   X2:Real[N,11];
   for n in 1..N {
-    auto m' <- clone<TestMultivariateNormalInverseGammaMultivariateGaussian>(m);
+    auto m' <- clone(m);
     X2[n,1..11] <- m'.backward();
   }
   

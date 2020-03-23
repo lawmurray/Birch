@@ -8,14 +8,14 @@ program test_linear_normal_inverse_gamma_gaussian(N:Integer <- 10000) {
   /* simulate forward */
   X1:Real[N,3];
   for n in 1..N {
-    auto m' <- clone<TestLinearNormalInverseGammaGaussian>(m);
+    auto m' <- clone(m);
     X1[n,1..3] <- m'.forward();
   }
 
   /* simulate backward */
   X2:Real[N,3];
   for n in 1..N {
-    auto m' <- clone<TestLinearNormalInverseGammaGaussian>(m);
+    auto m' <- clone(m);
     X2[n,1..3] <- m'.backward();
   }
   

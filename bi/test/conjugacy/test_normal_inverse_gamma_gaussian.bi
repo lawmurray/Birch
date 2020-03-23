@@ -10,13 +10,13 @@ program test_normal_inverse_gamma_gaussian(N:Integer <- 10000) {
    
   /* simulate forward */
   for n in 1..N {
-    auto m' <- clone<TestNormalInverseGammaGaussian>(m);
+    auto m' <- clone(m);
     X1[n,1..3] <- m'.forward();
   }
 
   /* simulate backward */
   for n in 1..N {
-    auto m' <- clone<TestNormalInverseGammaGaussian>(m);
+    auto m' <- clone(m);
     X2[n,1..3] <- m'.backward();
   }
   

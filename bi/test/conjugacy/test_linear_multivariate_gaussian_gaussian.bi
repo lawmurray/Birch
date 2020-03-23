@@ -9,14 +9,14 @@ program test_linear_multivariate_gaussian_gaussian(
   /* simulate forward */
   X1:Real[N,6];
   for n in 1..N {
-    auto m' <- clone<TestLinearMultivariateGaussianGaussian>(m);
+    auto m' <- clone(m);
     X1[n,1..6] <- m'.forward();
   }
 
   /* simulate backward */
   X2:Real[N,6];
   for n in 1..N {
-    auto m' <- clone<TestLinearMultivariateGaussianGaussian>(m);
+    auto m' <- clone(m);
     X2[n,1..6] <- m'.backward();
   }
   

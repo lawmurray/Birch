@@ -8,14 +8,14 @@ program test_dirichlet_categorical(N:Integer <- 10000) {
   /* simulate forward */
   X1:Real[N,6];
   for n in 1..N {
-    auto m' <- clone<TestDirichletCategorical>(m);
+    auto m' <- clone(m);
     X1[n,1..6] <- m'.forward();
   }
 
   /* simulate backward */
   X2:Real[N,6];
   for n in 1..N {
-    auto m' <- clone<TestDirichletCategorical>(m);
+    auto m' <- clone(m);
     X2[n,1..6] <- m'.backward();
   }
   

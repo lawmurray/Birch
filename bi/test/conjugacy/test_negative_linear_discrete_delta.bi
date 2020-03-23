@@ -8,14 +8,14 @@ program test_negative_linear_discrete_delta(N:Integer <- 10000) {
   /* simulate forward */
   X1:Real[N,2];
   for i in 1..N {
-    auto m' <- clone<TestNegativeLinearDiscreteDelta>(m);
+    auto m' <- clone(m);
     X1[i,1..2] <- m'.forward();
   }
 
   /* simulate backward */
   X2:Real[N,2];
   for i in 1..N {
-    auto m' <- clone<TestNegativeLinearDiscreteDelta>(m);
+    auto m' <- clone(m);
     X2[i,1..2] <- m'.backward();
   }
   

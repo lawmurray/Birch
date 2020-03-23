@@ -8,14 +8,14 @@ program test_gamma_poisson(N:Integer <- 10000) {
   /* simulate forward */
   X1:Real[N,2];
   for n in 1..N {
-    auto m' <- clone<TestGammaPoisson>(m);
+    auto m' <- clone(m);
     X1[n,1..2] <- m'.forward();
   }
 
   /* simulate backward */
   X2:Real[N,2];
   for n in 1..N {
-    auto m' <- clone<TestGammaPoisson>(m);
+    auto m' <- clone(m);
     X2[n,1..2] <- m'.backward();
   }
   

@@ -9,13 +9,13 @@ program test_normal_inverse_gamma(N:Integer <- 10000) {
    
   /* simulate forward */
   for n in 1..N {
-    auto m' <- clone<TestNormalInverseGamma>(m);
+    auto m' <- clone(m);
     X1[n,1..2] <- m'.forward();
   }
 
   /* simulate backward */
   for n in 1..N {
-    auto m' <- clone<TestNormalInverseGamma>(m);
+    auto m' <- clone(m);
     X2[n,1..2] <- m'.backward();
   }
   

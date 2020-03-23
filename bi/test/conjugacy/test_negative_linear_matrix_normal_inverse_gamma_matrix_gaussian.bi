@@ -12,14 +12,14 @@ program test_negative_linear_matrix_normal_inverse_gamma_matrix_gaussian(
   /* simulate forward */
   X1:Real[N,p + 2*n*p];
   for i in 1..N {
-    auto m' <- clone<TestNegativeLinearMatrixNormalInverseGammaMatrixGaussian>(m);
+    auto m' <- clone(m);
     X1[i,1..columns(X1)] <- m'.forward();
   }
 
   /* simulate backward */
   X2:Real[N,p + 2*n*p];
   for i in 1..N {
-    auto m' <- clone<TestNegativeLinearMatrixNormalInverseGammaMatrixGaussian>(m);
+    auto m' <- clone(m);
     X2[i,1..columns(X1)] <- m'.backward();
   }
   

@@ -12,14 +12,14 @@ program test_linear_matrix_normal_inverse_wishart_matrix_gaussian(
   /* simulate forward */
   X1:Real[N,p*p + 2*n*p];
   for i in 1..N {
-    auto m' <- clone<TestLinearMatrixNormalInverseWishartMatrixGaussian>(m);
+    auto m' <- clone(m);
     X1[i,1..columns(X1)] <- m'.forward();
   }
 
   /* simulate backward */
   X2:Real[N,p*p + 2*n*p];
   for i in 1..N {
-    auto m' <- clone<TestLinearMatrixNormalInverseWishartMatrixGaussian>(m);
+    auto m' <- clone(m);
     X2[i,1..columns(X1)] <- m'.backward();
   }
   
