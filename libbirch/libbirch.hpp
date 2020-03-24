@@ -307,7 +307,8 @@ Optional<T> make() {
  * @return An optional with a value of the given type if that type is
  * a default-constructible class type, otherwise no value.
  */
-template<class T, IS_DEFAULT_CONSTRUCTIBLE(T)>
+template<class T, std::enable_if_t<is_pointer<T>::value &&
+    std::is_default_constructible<typename T::value_type>::value,int> = 0>
 Optional<T> make() {
   return Optional<T>(make_pointer<T>());
 }
@@ -320,68 +321,55 @@ Optional<T> make() {
  * @return An optional with a value of the given type if that type is
  * a default-constructible class type, otherwise no value.
  */
-template<class T, IS_NOT_DEFAULT_CONSTRUCTIBLE(T)>
+template<class T, std::enable_if_t<is_pointer<T>::value &&
+    !std::is_default_constructible<typename T::value_type>::value,int> = 0>
 Optional<T> make() {
   return Optional<T>();
 }
 
 /**
- * Cast an object.
+ * Identity cast of anything.
  */
-template<class To, class From>
-Optional<To> dynamic_pointer_cast(const From& from) {
-  auto label = from.getLabel();
+template<class To, class From,
+    std::enable_if_t<std::is_same<To,From>::value,int> = 0>
+Optional<To> cast(const From& from) {
+  return from;
+}
+
+/**
+ * Non-identity cast of a pointer.
+ */
+template<class To, class From,
+    std::enable_if_t<!std::is_same<To,From>::value &&
+    is_pointer<To>::value && is_pointer<From>::value,int> = 0>
+Optional<To> cast(const From& from) {
   auto ptr = dynamic_cast<typename To::value_type*>(from.get());
   if (ptr) {
-    return Optional<To>(To(ptr, label));
+    return To(ptr, from.getLabel());
   } else {
-    return Optional<To>();
+    return nil;
   }
 }
 
 /**
- * Cast an object optional.
+ * Non-identity cast of a non-pointer.
+ */
+template<class To, class From,
+    std::enable_if_t<!std::is_same<To,From>::value &&
+    (!is_pointer<To>::value || !is_pointer<From>::value),int> = 0>
+Optional<To> cast(const From& from) {
+  return nil;
+}
+
+/**
+ * Cast of an optional of anything.
  */
 template<class To, class From>
-Optional<To> dynamic_pointer_cast(const Optional<From>& from) {
+Optional<To> cast(const Optional<From>& from) {
   if (from.query()) {
-    return dynamic_pointer_cast<To>(from.get());
+    return cast<To>(from.get());
   } else {
-    return Optional<To>();
-  }
-}
-
-/**
- * Cast anything else.
- *
- * @return An optional, with a value only if @p from is of type To.
- */
-template<class To, class From, std::enable_if_t<std::is_same<To,From>::value,int> = 0>
-Optional<To> check_cast(const From& from) {
-  return Optional<To>(from);
-}
-
-/**
- * Cast anything else.
- *
- * @return An optional, with a value only if @p from is of type To.
- */
-template<class To, class From, std::enable_if_t<!std::is_same<To,From>::value,int> = 0>
-Optional<To> check_cast(const From& from) {
-  return Optional<To>();
-}
-
-/**
- * Cast an optional of anything else.
- *
- * @return An optional, with a value only if @p from has a value of type To.
- */
-template<class To, class From>
-Optional<To> check_cast(const Optional<From>& from) {
-  if (from.query()) {
-    return check_cast<To>(from.get());
-  } else {
-    return Optional<To>();
+    return nil;
   }
 }
 

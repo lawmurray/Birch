@@ -49,14 +49,6 @@ class MemoryBuffer < Buffer {
     return value.push();
   }
 
-  function getObject() -> Buffer? {
-    if value.isObject() {
-      return this;
-    } else {
-      return nil;
-    }
-  }
-
   function getArray() -> Buffer? {
     if value.isArray() {
       return this;

@@ -31,9 +31,13 @@ abstract class Buffer {
   abstract fiber walk() -> Buffer;
 
   /**
-   * Get this as an object.
+   * Get this as an object. This is an identity function, returning `this`,
+   * as object of class type use their `read()` and `write()` member
+   * functions to read and write to buffers as they please.
    */
-  abstract function getObject() -> Buffer?;
+  function getObject() -> Buffer? {
+    return this;
+  }
 
   /**
    * Get this as an array.
