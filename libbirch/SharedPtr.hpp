@@ -93,14 +93,7 @@ public:
    * Copy assignment.
    */
   SharedPtr& operator=(const SharedPtr& o) {
-    auto old = ptr;
-    ptr = o.ptr;
-    if (ptr) {
-      ptr->incShared();
-    }
-    if (old) {
-      old->decShared();
-    }
+    replace(o.ptr);
     return *this;
   }
 
@@ -110,14 +103,7 @@ public:
   template<class Q, class U = typename Q::value_type,
       std::enable_if_t<std::is_base_of<T,U>::value,int> = 0>
   SharedPtr& operator=(const Q& o) {
-    auto old = ptr;
-    ptr = o.ptr;
-    if (ptr) {
-      ptr->incShared();
-    }
-    if (old) {
-      old->decShared();
-    }
+    replace(o.ptr);
     return *this;
   }
 
@@ -128,11 +114,20 @@ public:
     auto old = ptr;
     ptr = o.ptr;
     o.ptr = nullptr;
-    if (o.isDiscarded()) {
-      ptr->restoreShared();
-    }
-    if (old) {
-      old->decShared();
+    if (discarded) {
+      if (ptr && !o.isDiscarded()) {
+        ptr->discardShared();
+      }
+      if (old) {
+        old->decMemoShared();
+      }
+    } else {
+      if (ptr && o.isDiscarded()) {
+        ptr->restoreShared();
+      }
+      if (old) {
+        old->decShared();
+      }
     }
     return *this;
   }
@@ -145,11 +140,20 @@ public:
     auto old = ptr;
     ptr = o.ptr;
     o.ptr = nullptr;
-    if (o.isDiscarded()) {
-      ptr->restoreShared();
-    }
-    if (old) {
-      old->decShared();
+    if (discarded) {
+      if (ptr && !o.isDiscarded()) {
+        ptr->discardShared();
+      }
+      if (old) {
+        old->decMemoShared();
+      }
+    } else {
+      if (ptr && o.isDiscarded()) {
+        ptr->restoreShared();
+      }
+      if (old) {
+        old->decShared();
+      }
     }
     return *this;
   }
@@ -184,11 +188,20 @@ public:
   void replace(T* ptr) {
     auto old = this->ptr;
     this->ptr = ptr;
-    if (ptr) {
-      ptr->incShared();
-    }
-    if (old) {
-      old->decShared();
+    if (discarded) {
+      if (ptr) {
+        ptr->incMemoShared();
+      }
+      if (old) {
+        old->decMemoShared();
+      }
+    } else {
+      if (ptr) {
+        ptr->incShared();
+      }
+      if (old) {
+        old->decShared();
+      }
     }
   }
 
