@@ -63,7 +63,7 @@ public:
   SharedPtr(SharedPtr&& o) :
       ptr(o.ptr),
       discarded(false) {
-    if (o.isDiscarded()) {
+    if (ptr && o.isDiscarded()) {
       ptr->restoreShared();
     }
     o.ptr = nullptr;
@@ -76,7 +76,7 @@ public:
   SharedPtr(SharedPtr<U>&& o) :
       ptr(o.ptr),
       discarded(false) {
-    if (o.isDiscarded()) {
+    if (ptr && o.isDiscarded()) {
       ptr->restoreShared();
     }
     o.ptr = nullptr;
