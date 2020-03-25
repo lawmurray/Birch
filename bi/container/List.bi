@@ -139,8 +139,9 @@ final class List<Type> {
   function popBack() {
     assert !empty();
 
-    assert tail?;
-    this.tail <- tail!.popBack();
+    assert this.tail?;
+    tail:ListNode<Type> <- this.tail!; // need shared pointer
+    this.tail <- tail.popBack();
     count <- count - 1;
     if count <= 1 {
       head <- this.tail;
