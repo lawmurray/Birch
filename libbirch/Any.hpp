@@ -175,6 +175,13 @@ public:
   }
 
   /**
+   * Get the classs name.
+   */
+  virtual const char* getClassName() const {
+    return "Any";
+  }
+
+  /**
    * Finalize. This is called when the shared and memo shared counts reach
    * zero, but before destruction and deallocation of the object. Object
    * resurrection is supported: if the finalizer results in a nonzero shared
