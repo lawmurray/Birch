@@ -476,7 +476,7 @@ public:
     return frozenUnique;
   }
 
-//protected:
+protected:
   /**
    * Finish the object.
    *
@@ -523,7 +523,7 @@ public:
     //
   }
 
-//private:
+private:
   /**
    * Destroy, but do not deallocate, the object.
    */
