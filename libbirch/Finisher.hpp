@@ -8,30 +8,23 @@
 #include "libbirch/Optional.hpp"
 #include "libbirch/Fiber.hpp"
 #include "libbirch/Lazy.hpp"
-#include "libbirch/EntryExitLock.hpp"
-#include "libbirch/Finisher.hpp"
-#include "libbirch/Freezer.hpp"
 
 namespace libbirch {
 /**
- * Visitor for relabelling members of a newly copied object.
+ * Visitor for recursively finishing lazy copies that involve a cross
+ * pointer.
  *
  * @ingroup libbirch
  */
-class Copier {
+class Finisher {
 public:
   /**
    * Constructor.
+   *
+   * @param label Label of the pointer on which the freeze was initiated.
    */
-  Copier(Label* label) :
+  Finisher(Label* label) :
       label(label) {
-    //
-  }
-
-  /**
-   * Visit empty list of variables (base case).
-   */
-  void visit() const {
     //
   }
 
@@ -45,6 +38,13 @@ public:
   void visit(Arg& arg, Args&... args) const {
     visit(arg);
     visit(args...);
+  }
+
+  /**
+   * Visit empty list of variables (base case).
+   */
+  void visit() const {
+    //
   }
 
   /**
@@ -92,49 +92,24 @@ public:
    */
   template<class P>
   void visit(Lazy<P>& o) const {
-    o.setLabel(label);
+    Any* object;
+    Label* label = o.getLabel();
+    if (label != this->label) {
+      assert(label == rootLabel);
+
+      /* cross pointer */
+      object = o.get();
+    } else {
+      /* not a cross pointer */
+      object = o.pull();
+    }
+    object->finish(this->label);
+    label->finish(this->label);
   }
 
   /**
-   * Label associated with the clone.
+   * Label of the pointer on which the freeze was initiated.
    */
   Label* label;
 };
-
-/**
- * Global clone lock.
- *
- * @ingroup libbirch
- */
-extern EntryExitLock cloneLock;
-
-/**
- * Clone an object via a pointer.
- *
- * @ingroup libbirch
- *
- * @param o The pointer.
-
- */
-template<class P>
-auto clone(const Lazy<P>& o) {
-  auto object = o.pull();
-  auto label = o.getLabel();
-
-  cloneLock.enter();
-
-  object->finish(label);
-  label->finish(label);
-
-  object->freeze(label);
-  label->freeze(label);
-
-  label = new Label(*label);
-  object = label->forward(object);
-
-  cloneLock.exit();
-
-  return Lazy<P>(object, label);
-}
-
 }

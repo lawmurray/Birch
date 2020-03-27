@@ -15,7 +15,7 @@ namespace libbirch {
  * barrier that will not allow them to exit it until all such threads have
  * reached the end of the critical region.
  *
- * This is used for thread safety in the particular case of freeze().
+ * This is used for thread safety in the particular case of clone().
  */
 class EntryExitLock {
 public:

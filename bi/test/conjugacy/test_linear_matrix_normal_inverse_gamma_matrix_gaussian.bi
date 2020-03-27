@@ -72,7 +72,7 @@ class TestLinearMatrixNormalInverseGammaMatrixGaussian < Model {
     X.value();
     assert !Y.hasValue();
     Y.value();
-    return copy();
+    return vectorize();
   }
 
   function backward() -> Real[_] {
@@ -82,14 +82,14 @@ class TestLinearMatrixNormalInverseGammaMatrixGaussian < Model {
     X.value();
     assert !σ2.hasValue();
     σ2.value();
-    return copy();
+    return vectorize();
   }
   
   function marginal() -> Distribution<Real[_,_]> {
     return Y.distribution()!;
   }
   
-  function copy() -> Real[_] {
+  function vectorize() -> Real[_] {
     y:Real[size()];
     y[1..length(σ2)] <- σ2.value();
     auto k <- length(σ2);

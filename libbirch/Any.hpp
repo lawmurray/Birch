@@ -9,6 +9,7 @@
 
 namespace libbirch {
 class Label;
+class Finisher;
 class Freezer;
 class Copier;
 using Recycler = Copier;
@@ -84,6 +85,7 @@ public:
       weakCount(1u),
       memoWeakCount(1u),
       label(rootLabel),
+      finished(false),
       frozen(false),
       frozenUnique(false),
       discarded(false) {
@@ -99,6 +101,7 @@ public:
       weakCount(1u),
       memoWeakCount(1u),
       label(nullptr),
+      finished(false),
       frozen(false),
       frozenUnique(false),
       discarded(false) {
@@ -192,35 +195,76 @@ public:
   }
 
   /**
+   * Finish the object.
+   *
+   * @param label The new label.
+   */
+  void finish(Label* label) {
+    bool finishedAlready = finished;
+    finished = true;
+    if (!finishedAlready) {
+      finish_(label);
+    }
+  }
+
+  /**
    * Freeze the object.
    *
    * @param label The new label.
    */
-  virtual void freeze_(Label* label) = 0;
+  void freeze(Label* label) {
+    bool frozenAlready = frozen;
+    frozen = true;
+    if (!frozenAlready) {
+      frozenUnique = isUnique();
+      freeze_(label);
+    }
+  }
 
   /**
    * Copy the object.
    *
    * @param label The new label.
    */
-  virtual Any* copy_(Label* label) const = 0;
+  Any* copy(Label* label) {
+    auto o = copy_(label);
+    o->setLabel(label);
+    return o;
+  }
 
   /**
    * Recycle the object.
    *
    * @param label The new label.
    */
-  virtual Any* recycle_(Label* label) = 0;
+  Any* recycle(Label* label) {
+    replaceLabel(label);
+    thaw();
+    return recycle_(label);
+  }
+
+  /**
+   * Thaw the object.
+   */
+  void thaw() {
+    finished = false;
+    frozen = false;
+    frozenUnique = false;
+  }
 
   /**
    * Discard the object.
    */
-  virtual void discard_() = 0;
+  void discard() {
+    discard_();
+  }
 
   /**
    * Restore the object.
    */
-  virtual void restore_() = 0;
+  void restore() {
+    restore_();
+  }
 
   /**
    * Shared count.
@@ -416,28 +460,6 @@ public:
   void releaseLabel();
 
   /**
-   * Freeze the object.
-   *
-   * @return Was the object *not* already frozen?
-   */
-  bool freeze() {
-    bool frozenAlready = frozen;
-    frozen = true;
-    if (!frozenAlready) {
-      frozenUnique = isUnique();
-    }
-    return !frozenAlready;
-  }
-
-  /**
-   * Thaw the object.
-   */
-  void thaw() {
-    frozen = false;
-    frozenUnique = false;
-  }
-
-  /**
    * Is the object frozen? This returns true if either a freeze is in
    * progress (i.e. another thread is in the process of freezing the object),
    * or if the freeze is complete.
@@ -454,7 +476,45 @@ public:
     return frozenUnique;
   }
 
-protected:
+//protected:
+  /**
+   * Finish the object.
+   *
+   * @param label The new label.
+   */
+  virtual void finish_(Label* label) = 0;
+
+  /**
+   * Freeze the object.
+   *
+   * @param label The new label.
+   */
+  virtual void freeze_(Label* label) = 0;
+
+  /**
+   * Copy the object.
+   *
+   * @param label The new label.
+   */
+  virtual Any* copy_(Label* label) const = 0;
+
+  /**
+   * Recycle the object.
+   *
+   * @param label The new label.
+   */
+  virtual Any* recycle_(Label* label) = 0;
+
+  /**
+   * Discard the object.
+   */
+  virtual void discard_() = 0;
+
+  /**
+   * Restore the object.
+   */
+  virtual void restore_() = 0;
+
   /**
    * Accept a visitor across member variables.
    */
@@ -463,7 +523,7 @@ protected:
     //
   }
 
-private:
+//private:
   /**
    * Destroy, but do not deallocate, the object.
    */
@@ -526,10 +586,15 @@ private:
    * allocation to the correct pool after use, even when returned by a
    * different thread.
    */
-  int tid:30;
+  int tid:28;
 
   /**
-   * Is this frozen (read-only)?
+   * Is this finished? A finished object contains no cross pointers.
+   */
+  bool finished:1;
+
+  /**
+   * Is this frozen? A frozen object is read-only.
    */
   bool frozen:1;
 

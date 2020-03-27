@@ -75,7 +75,7 @@ class TestLinearMatrixNormalInverseWishartMatrixGaussian < Model {
     X.value();
     assert !Y.hasValue();
     Y.value();
-    return copy();
+    return vectorize();
   }
 
   function backward() -> Real[_] {
@@ -85,14 +85,14 @@ class TestLinearMatrixNormalInverseWishartMatrixGaussian < Model {
     X.value();
     assert !V.hasValue();
     V.value();
-    return copy();
+    return vectorize();
   }
   
   function marginal() -> Distribution<Real[_,_]> {
     return Y.distribution()!;
   }
   
-  function copy() -> Real[_] {
+  function vectorize() -> Real[_] {
     y:Real[size()];
     auto k <- 0;
     for i in 1..rows(V) {

@@ -31,8 +31,12 @@ public:
     //
   }
 
+  virtual void finish_(Label* label) override {
+    memo.finish(label);
+  }
+
   virtual void freeze_(Label* label) override {
-    memo.freeze_(label);
+    memo.freeze(label);
   }
 
   virtual Label* copy_(Label* label) const override {
@@ -116,6 +120,8 @@ public:
     }
     return result;
   }
+
+  int generation;
 
 private:
   /**

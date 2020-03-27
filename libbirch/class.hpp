@@ -4,27 +4,28 @@
 #pragma once
 
 /**
- * @intternal
+ * @internal
  *
  * @def LIBBIRCH_VIRTUALS
  *
  * Declare common virtual functions for classes and fibers.
  */
 #define LIBBIRCH_VIRTUALS(Name, Base...) \
-    virtual void freeze_(libbirch::Label* label) override { \
+  virtual void finish_(libbirch::Label* label) override { \
+    this->accept_(libbirch::Finisher(label)); \
+  } \
+  \
+  virtual void freeze_(libbirch::Label* label) override { \
     this->accept_(libbirch::Freezer(label)); \
   } \
   \
   virtual Name* copy_(libbirch::Label* label) const override { \
     auto o = new Name(*this); \
-    o->setLabel(label); \
     o->accept_(libbirch::Copier(label)); \
     return o; \
   } \
   \
   virtual Name* recycle_(libbirch::Label* label) override { \
-    this->thaw(); \
-    this->replaceLabel(label); \
     this->accept_(libbirch::Recycler(label)); \
     return this; \
   } \
@@ -44,7 +45,7 @@
  * argument is the name of the class; this should exclude any generic type
  * arguments. The second argument is the base class; this should include any
  * generic type arguments. The macro should be placed in the public section
- * of the class.
+ * of the class.b
  *
  * LIBBIRCH_CLASS must be immediately followed by LIBBIRCH_MEMBERS, otherwise
  * the replacement code will have invalid syntax. For example:
@@ -153,6 +154,7 @@
     v.visit(members); \
   }
 
+#include "libbirch/Finisher.hpp"
 #include "libbirch/Freezer.hpp"
 #include "libbirch/Copier.hpp"
 #include "libbirch/Recycler.hpp"
