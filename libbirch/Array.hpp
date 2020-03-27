@@ -473,12 +473,14 @@ public:
         if (newSize == 0) {
           release();
         } else {
-          auto iter = begin() + shape.size();
-          auto last = end();
-          for (; iter != last; ++iter) {
-            iter->~T();
+          if (!is_value<T>::value) {
+            ///@todo in C++17 can use std::destroy()
+            auto iter = begin() + shape.size();
+            auto last = end();
+            for (; iter != last; ++iter) {
+              iter->~T();
+            }
           }
-          // ^ C++17 use std::destroy
           auto oldBytes = Buffer<T>::size(volume());
           auto newBytes = Buffer<T>::size(shape.volume());
           buffer = (Buffer<T>*)libbirch::reallocate(buffer, oldBytes,
@@ -685,11 +687,13 @@ private:
    */
   void release() {
     if (!isView && buffer && buffer->decUsage() == 0u) {
-      ///@todo in C++17 can use std::destroy()
-      auto iter = begin();
-      auto last = end();
-      for (; iter != last; ++iter) {
-        iter->~T();
+      if (!is_value<T>::value) {
+        ///@todo in C++17 can use std::destroy()
+        auto iter = begin();
+        auto last = end();
+        for (; iter != last; ++iter) {
+          iter->~T();
+        }
       }
       size_t bytes = Buffer<T>::size(volume());
       libbirch::deallocate(buffer, bytes, buffer->tid);
