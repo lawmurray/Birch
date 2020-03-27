@@ -12,7 +12,7 @@ final class LinearDiscrete(a:Expression<Integer>, μ:Discrete,
   /**
    * Location.
    */
-  μ:Discrete& <- μ;
+  μ:Discrete <- μ;
 
   /**
    * Offset.
@@ -63,7 +63,7 @@ final class LinearDiscrete(a:Expression<Integer>, μ:Discrete,
     a.value();
     c.value();
     if !μ.hasValue() {
-      μ.setChild(this);
+      //μ.setChild(this);  // not used for discretes
       return true;
     } else {
       return false;

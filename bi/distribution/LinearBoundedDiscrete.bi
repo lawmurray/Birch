@@ -12,7 +12,7 @@ final class LinearBoundedDiscrete(a:Expression<Integer>, μ:BoundedDiscrete,
   /**
    * Location.
    */
-  μ:BoundedDiscrete& <- μ;
+  μ:BoundedDiscrete <- μ;
 
   /**
    * Offset.
@@ -65,7 +65,7 @@ final class LinearBoundedDiscrete(a:Expression<Integer>, μ:BoundedDiscrete,
     a.value();
     c.value();
     if !μ.hasValue() {
-      μ.setChild(this);
+      //μ.setChild(this);  // not used for discretes
       return true;
     } else {
       return false;

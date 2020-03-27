@@ -7,12 +7,12 @@ final class SubtractBoundedDiscrete(x1:BoundedDiscrete, x2:BoundedDiscrete) <
   /**
    * First discrete random variate.
    */
-  x1:BoundedDiscrete& <- x1;
+  x1:BoundedDiscrete <- x1;
 
   /**
    * Second discrete random variate.
    */
-  x2:BoundedDiscrete& <- x2;
+  x2:BoundedDiscrete <- x2;
   
   /**
    * Value for which conditional probabilities have been enumerated.
@@ -107,8 +107,8 @@ final class SubtractBoundedDiscrete(x1:BoundedDiscrete, x2:BoundedDiscrete) <
 
   function graftFinalize() -> Boolean {
     if !x1.hasValue() && !x2.hasValue() {
-      x1.setChild(this);
-      x2.setChild(this);
+      //x1.setChild(this);  // not used for discretes
+      //x2.setChild(this);
       return true;
     } else {
       return false;

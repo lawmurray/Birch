@@ -5,7 +5,7 @@ final class DiscreteDelta(μ:Discrete) < Discrete {
   /**
    * Location.
    */
-  μ:Discrete& <- μ;
+  μ:Discrete <- μ;
 
   function simulate() -> Integer {
     if value? {
@@ -41,7 +41,7 @@ final class DiscreteDelta(μ:Discrete) < Discrete {
 
   function graftFinalize() -> Boolean {
     if !μ.hasValue() {
-      μ.setChild(this);
+      //μ.setChild(this);  // not used for discretes
       return true;
     } else {
       return false;
