@@ -4,6 +4,7 @@
 #pragma once
 
 #include "libbirch/Any.hpp"
+#include "libbirch/Atomic.hpp"
 #include "libbirch/type.hpp"
 
 namespace libbirch {
@@ -35,11 +36,12 @@ public:
   /**
    * Copy constructor.
    */
-  WeakPtr(const WeakPtr& o) :
-      ptr(o.ptr) {
+  WeakPtr(const WeakPtr& o) {
+    auto ptr = o.ptr.load();
     if (ptr) {
       ptr->incWeak();
     }
+    this->ptr.store(ptr);
   }
 
   /**
@@ -47,28 +49,27 @@ public:
    */
   template<class Q, class U = typename Q::value_type,
       std::enable_if_t<std::is_base_of<T,U>::value,int> = 0>
-  WeakPtr(const Q& o) :
-      ptr(o.ptr) {
+  WeakPtr(const Q& o) {
+    auto ptr = o.ptr.load();
     if (ptr) {
       ptr->incWeak();
     }
+    this->ptr.store(ptr);
   }
 
   /**
    * Move constructor.
    */
-  WeakPtr(WeakPtr&& o) :
-      ptr(o.ptr) {
-    o.ptr = nullptr;
+  WeakPtr(WeakPtr&& o) {
+    ptr.store(o.ptr.exchange(nullptr));
   }
 
   /**
    * Generic move constructor.
    */
   template<class U, std::enable_if_t<std::is_base_of<T,U>::value,int> = 0>
-  WeakPtr(WeakPtr<U>&& o) :
-      ptr(o.ptr) {
-    o.ptr = nullptr;
+  WeakPtr(WeakPtr<U>&& o) {
+    ptr.store(o.ptr.exchange(nullptr));
   }
 
   /**
@@ -82,14 +83,7 @@ public:
    * Copy assignment.
    */
   WeakPtr& operator=(const WeakPtr& o) {
-    auto old = ptr;
-    ptr = o.ptr;
-    if (ptr) {
-      ptr->incWeak();
-    }
-    if (old) {
-      old->decWeak();
-    }
+    replace(o.ptr.load());
     return *this;
   }
 
@@ -99,14 +93,7 @@ public:
   template<class Q, class U = typename Q::value_type,
       std::enable_if_t<std::is_base_of<T,U>::value,int> = 0>
   WeakPtr& operator=(const Q& o) {
-    auto old = ptr;
-    ptr = o.ptr;
-    if (ptr) {
-      ptr->incWeak();
-    }
-    if (old) {
-      old->decWeak();
-    }
+    replace(o.ptr.load());
     return *this;
   }
 
@@ -114,9 +101,8 @@ public:
    * Move assignment.
    */
   WeakPtr& operator=(WeakPtr&& o) {
-    auto old = ptr;
-    ptr = o.ptr;
-    o.ptr = nullptr;
+    auto ptr = o.ptr.exchange(nullptr);
+    auto old = this->ptr.exchange(ptr);
     if (old) {
       old->decWeak();
     }
@@ -128,9 +114,8 @@ public:
    */
   template<class U, std::enable_if_t<std::is_base_of<T,U>::value,int> = 0>
   WeakPtr& operator=(WeakPtr<U>&& o) {
-    auto old = ptr;
-    ptr = o.ptr;
-    o.ptr = nullptr;
+    auto ptr = o.ptr.exchange(nullptr);
+    auto old = this->ptr.exchange(ptr);
     if (old) {
       old->decWeak();
     }
@@ -144,29 +129,28 @@ public:
    * conversion operators in the referent type.
    */
   bool query() const {
-    return ptr != nullptr;
+    return ptr.load() != nullptr;
   }
 
   /**
    * Get the raw pointer.
    */
   T* get() const {
-    return ptr;
+    return ptr.load();
   }
 
   /**
    * Get the raw pointer as const.
    */
   T* pull() const {
-    return ptr;
+    return ptr.load();
   }
 
   /**
    * Replace.
    */
   void replace(T* ptr) {
-    auto old = this->ptr;
-    this->ptr = ptr;
+    auto old = this->ptr.exchange(ptr);
     if (ptr) {
       ptr->incWeak();
     }
@@ -179,9 +163,9 @@ public:
    * Release.
    */
   void release() {
-    if (ptr) {
-      ptr->decWeak();
-      ptr = nullptr;
+    auto old = ptr.exchange(nullptr);
+    if (old) {
+      old->decWeak();
     }
   }
 
@@ -224,7 +208,7 @@ private:
   /**
    * Raw pointer.
    */
-  T* ptr;
+  Atomic<T*> ptr;
 };
 
 template<class T>

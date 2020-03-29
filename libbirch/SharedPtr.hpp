@@ -4,6 +4,7 @@
 #pragma once
 
 #include "libbirch/Any.hpp"
+#include "libbirch/Atomic.hpp"
 #include "libbirch/type.hpp"
 
 namespace libbirch {
@@ -37,11 +38,12 @@ public:
    * Copy constructor.
    */
   SharedPtr(const SharedPtr& o) :
-      ptr(o.ptr),
       discarded(false) {
+    auto ptr = o.ptr.load();
     if (ptr) {
       ptr->incShared();
     }
+    this->ptr.store(ptr);
   }
 
   /**
@@ -50,23 +52,24 @@ public:
   template<class Q, class U = typename Q::value_type,
       std::enable_if_t<std::is_base_of<T,U>::value,int> = 0>
   SharedPtr(const Q& o) :
-      ptr(o.ptr),
       discarded(false) {
+    auto ptr = o.ptr.load();
     if (ptr) {
       ptr->incShared();
     }
+    this->ptr.store(ptr);
   }
 
   /**
    * Move constructor.
    */
   SharedPtr(SharedPtr&& o) :
-      ptr(o.ptr),
       discarded(false) {
+    auto ptr = o.ptr.exchange(nullptr);
     if (ptr && o.isDiscarded()) {
       ptr->restoreShared();
     }
-    o.ptr = nullptr;
+    this->ptr.store(ptr);
   }
 
   /**
@@ -74,12 +77,12 @@ public:
    */
   template<class U, std::enable_if_t<std::is_base_of<T,U>::value,int> = 0>
   SharedPtr(SharedPtr<U>&& o) :
-      ptr(o.ptr),
       discarded(false) {
+    auto ptr = o.ptr.exchange(nullptr);
     if (ptr && o.isDiscarded()) {
       ptr->restoreShared();
     }
-    o.ptr = nullptr;
+    this->ptr.store(ptr);
   }
 
   /**
@@ -93,7 +96,7 @@ public:
    * Copy assignment.
    */
   SharedPtr& operator=(const SharedPtr& o) {
-    replace(o.ptr);
+    replace(o.ptr.load());
     return *this;
   }
 
@@ -103,7 +106,7 @@ public:
   template<class Q, class U = typename Q::value_type,
       std::enable_if_t<std::is_base_of<T,U>::value,int> = 0>
   SharedPtr& operator=(const Q& o) {
-    replace(o.ptr);
+    replace(o.ptr.load());
     return *this;
   }
 
@@ -111,9 +114,8 @@ public:
    * Move assignment.
    */
   SharedPtr& operator=(SharedPtr&& o) {
-    auto old = ptr;
-    ptr = o.ptr;
-    o.ptr = nullptr;
+    auto ptr = o.ptr.exchange(nullptr);
+    auto old = this->ptr.exchange(ptr);
     if (discarded) {
       if (ptr && !o.isDiscarded()) {
         ptr->discardShared();
@@ -137,9 +139,8 @@ public:
    */
   template<class U, std::enable_if_t<std::is_base_of<T,U>::value,int> = 0>
   SharedPtr& operator=(SharedPtr<U>&& o) {
-    auto old = ptr;
-    ptr = o.ptr;
-    o.ptr = nullptr;
+    auto ptr = o.ptr.exchange(nullptr);
+    auto old = this->ptr.exchange(ptr);
     if (discarded) {
       if (ptr && !o.isDiscarded()) {
         ptr->discardShared();
@@ -165,29 +166,28 @@ public:
    * conversion operators in the referent type.
    */
   bool query() const {
-    return ptr != nullptr;
+    return ptr.load() != nullptr;
   }
 
   /**
    * Get the raw pointer.
    */
   T* get() const {
-    return ptr;
+    return ptr.load();
   }
 
   /**
    * Get the raw pointer as const.
    */
   T* pull() const {
-    return ptr;
+    return ptr.load();
   }
 
   /**
    * Replace.
    */
   void replace(T* ptr) {
-    auto old = this->ptr;
-    this->ptr = ptr;
+    auto old = this->ptr.exchange(ptr);
     if (discarded) {
       if (ptr) {
         ptr->incMemoShared();
@@ -209,13 +209,13 @@ public:
    * Release.
    */
   void release() {
-    if (ptr) {
+    auto old = ptr.exchange(nullptr);
+    if (old) {
       if (discarded) {
-        ptr->decMemoShared();
+        old->decMemoShared();
       } else {
-        ptr->decShared();
+        old->decShared();
       }
-      ptr = nullptr;
     }
   }
   
@@ -224,6 +224,7 @@ public:
    */
   void discard() {
     assert(!discarded);
+    auto ptr = this->ptr.load();
     if (ptr) {
       discarded = true;
       ptr->discardShared();
@@ -235,6 +236,7 @@ public:
    */
   void restore() {
     assert(discarded);
+    auto ptr = this->ptr.load();
     if (ptr) {
       discarded = false;
       ptr->restoreShared();
@@ -266,7 +268,7 @@ private:
   /**
    * Raw pointer.
    */
-  T* ptr;
+  Atomic<T*> ptr;
 
   /**
    * Has the pointer been discarded?

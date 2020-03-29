@@ -35,14 +35,7 @@ public:
    * @param value Initial value.
    */
   explicit Atomic(const T& value) {
-    init(value);
-  }
-
-  /**
-   * Initialize the value, not atomically.
-   */
-  void init(const T& value) {
-    this->value = value;
+    store(value);
   }
 
   /**
