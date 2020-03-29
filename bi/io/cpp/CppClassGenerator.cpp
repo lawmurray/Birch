@@ -265,7 +265,7 @@ void bi::CppClassGenerator::visit(const MemberFiber* o) {
       in();
       genTraceFunction(o->name->str(), o->loc);
       genTraceLine(o->loc);
-      line("yield_" << o->name << '_' << o->number << "_0_();");
+      line("yield_" << currentClass->name << '_' << o->name << '_' << o->number << "_0_();");
       out();
       line("}\n");
     }

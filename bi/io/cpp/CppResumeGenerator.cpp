@@ -186,6 +186,9 @@ void bi::CppResumeGenerator::visit(const LocalVariable* o) {
 }
 
 void bi::CppResumeGenerator::genUniqueName(const Numbered* o) {
+  if (currentClass) {
+    middle(currentClass->name << '_');
+  }
   middle(currentFiber->name << '_' << currentFiber->number << '_');
   middle(o->number << '_');
 }
