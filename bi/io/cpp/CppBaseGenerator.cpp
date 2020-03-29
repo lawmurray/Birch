@@ -199,7 +199,7 @@ void bi::CppBaseGenerator::visit(const This* o) {
   if (inConstructor) {
     middle("this");
   } else {
-    middle("selfShared()");
+    middle("self()");
   }
 }
 

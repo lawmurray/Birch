@@ -225,7 +225,7 @@ void bi::CppResumeGenerator::genPack(const Function* o) {
     middle("libbirch::make_tuple(");
   }
   if (currentClass) {
-    middle("selfShared()");
+    middle("self()");
     first = false;
   }
   for (auto param : params) {
