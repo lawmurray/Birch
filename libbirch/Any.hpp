@@ -171,7 +171,12 @@ public:
    * pointers) may update to the object in future.
    */
   bool isUnique() const {
-    return numShared() <= 1u && numMemoShared() <= 1u && numWeak() <= 1u;
+    auto sharedCount = numShared();
+    auto memoSharedCount = numMemoShared();
+    auto weakCount = numWeak();
+
+    return (sharedCount == 0u && memoSharedCount == 0u && weakCount <= 1u) ||
+        (sharedCount <= 1u && memoSharedCount <= 1u && weakCount <= 1u);
   }
 
   /**

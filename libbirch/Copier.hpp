@@ -113,11 +113,11 @@ auto clone(const Lazy<P>& o) {
   auto label = o.getLabel();
 
   object->freeze(label);
-
   label = new Label(*label);
-  object = label->forward(object);
 
-  return Lazy<P>(object, label);
+  Lazy<P> ptr(object, label);
+  ptr.get();
+  return ptr;
 }
 
 }

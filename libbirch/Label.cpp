@@ -38,7 +38,7 @@ libbirch::Any* libbirch::Label::mapGet(Any* o) {
     } else {
       /* copy it */
       cloned = next->copy(this);
-      if (!next->isFrozenUnique()) {
+      if (true || !next->isFrozenUnique()) {
         memo.put(next, cloned);
         thaw();
       }

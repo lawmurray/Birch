@@ -93,26 +93,6 @@ public:
     return ptr;
   }
 
-  /**
-   * Forward an object.
-   *
-   * @param Raw pointer.
-   *
-   * This is similar to get(), but used by objects which have access to their
-   * own label, and if frozen can forward themselves onto a descendant.
-   */
-  template<class T>
-  T* forward(T* ptr) {
-    assert(ptr);
-    T* result = ptr;
-    if (ptr->isFrozen()) {
-      lock.write();
-      result = static_cast<T*>(mapGet(ptr));
-      lock.unwrite();
-    }
-    return result;
-  }
-
 private:
   /**
    * Map an object that may not yet have been cloned, cloning it if

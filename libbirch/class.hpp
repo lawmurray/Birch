@@ -74,10 +74,6 @@
   } \
   \
   auto self() { \
-    return this->getLabel()->forward(this); \
-  } \
-  \
-  auto selfShared() { \
     return libbirch::Lazy<libbirch::SharedPtr<Name>>(this, this->getLabel()); \
   } \
   \
@@ -115,10 +111,6 @@
   } \
   \
   auto self() { \
-    return state_.template get<0>().get(); \
-  } \
-  \
-  auto selfShared() { \
     return state_.template get<0>(); \
   } \
   \
