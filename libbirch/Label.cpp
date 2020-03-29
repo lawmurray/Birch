@@ -38,10 +38,10 @@ libbirch::Any* libbirch::Label::mapGet(Any* o) {
     } else {
       /* copy it */
       cloned = next->copy(this);
-      //if (!next->isFrozenUnique()) {
+      if (!next->isFrozenUnique()) {
         memo.put(next, cloned);
         thaw();
-      //}
+      }
     }
     next = cloned;
   }
