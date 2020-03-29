@@ -84,9 +84,9 @@ public:
       weakCount(1u),
       memoWeakCount(1u),
       label(rootLabel),
-      frozen(false),
-      frozenUnique(false),
-      discarded(false) {
+      frozen(0u),
+      frozenUnique(0u),
+      discarded(0u) {
     // size and tid set by operator new
   }
 
@@ -99,9 +99,9 @@ public:
       weakCount(1u),
       memoWeakCount(1u),
       label(nullptr),
-      frozen(false),
-      frozenUnique(false),
-      discarded(false) {
+      frozen(0u),
+      frozenUnique(0u),
+      discarded(0u) {
     // size and tid set by operator new
   }
 
@@ -197,11 +197,23 @@ public:
    * @param label The new label.
    */
   void freeze(Label* label) {
-    bool frozenAlready = frozen;
-    frozen = true;
-    if (!frozenAlready) {
+    unsigned f = frozen.exchange(1u);
+    switch (f) {
+    case 0u:
+      /* proceed with freeze */
       frozenUnique = isUnique();
       freeze_(label);
+      frozen.store(2u);
+      break;
+    case 1u:
+      /* already freezing, move on */
+      break;
+    case 2u:
+      /* already frozen, put that back */
+      frozen.store(2u);
+      break;
+    default:
+      assert(false);
     }
   }
 
@@ -231,22 +243,26 @@ public:
    * Thaw the object.
    */
   void thaw() {
-    frozen = false;
-    frozenUnique = false;
+    frozen.store(0u);
+    frozenUnique = 0u;
   }
 
   /**
    * Discard the object.
    */
   void discard() {
+    discarded = 1u;
     discard_();
+    discarded = 2u;
   }
 
   /**
    * Restore the object.
    */
   void restore() {
+    discarded = 3u;
     restore_();
+    discarded = 0u;
   }
 
   /**
@@ -264,8 +280,7 @@ public:
       incMemoShared();
       holdLabel();
       if (discarded) {
-        discarded = false;
-        restore_();
+        restore();
       }
     }
   }
@@ -276,8 +291,7 @@ public:
   void decShared() {
     assert(numShared() > 0u);
     if (--sharedCount == 0u) {
-      discarded = true;
-      discard_();
+      discard();
       releaseLabel();
       decMemoShared();
     }
@@ -323,8 +337,7 @@ public:
     assert(numShared() > 0u);
     if (--sharedCount == 0u) {
       assert(!discarded);
-      discarded = true;
-      discard_();
+      discard();
       releaseLabel();
     } else {
       incMemoShared();
@@ -338,8 +351,7 @@ public:
   void restoreShared() {
     if (++sharedCount == 1u) {
       assert(discarded);
-      discarded = false;
-      restore_();
+      restore();
       holdLabel();
     } else {
       decMemoShared();
@@ -443,12 +455,18 @@ public:
   void releaseLabel();
 
   /**
-   * Is the object frozen? This returns true if either a freeze is in
-   * progress (i.e. another thread is in the process of freezing the object),
-   * or if the freeze is complete.
+   * Is the object frozen? Returns true if a freeze operation is either in
+   * progress or completed.
    */
   bool isFrozen() const {
-    return frozen;
+    return frozen.load();
+  }
+
+  /**
+   * Wait until any ongoing freeze operation is complete.
+   */
+  void waitForFreeze() const {
+    while (frozen.load() == 1u);
   }
 
   /**
@@ -562,22 +580,31 @@ private:
    * allocation to the correct pool after use, even when returned by a
    * different thread.
    */
-  int tid:29;
+  int tid;
 
   /**
-   * Is this frozen? A frozen object is read-only.
+   * Frozen flag. A frozen object is read-only. Valid values are:
+   *
+   * - 0: Not frozen.
+   * - 1: Frozen, operation in progress.
+   * - 2: Frozen, operation complete.
    */
-  bool frozen:1;
+  Atomic<unsigned> frozen;
 
   /**
    * Is the object frozen, and at the time of freezing, was there only one
    * pointer to it?
    */
-  bool frozenUnique:1;
+  unsigned frozenUnique;
 
   /**
-   * Has the object been discarded?
+   * Discard flag. Valid values are:
+   *
+   * - 0: Not discarded.
+   * - 1: Discarded, operation in progress.
+   * - 2: Discarded, operation complete.
+   * - 3: Not discarded (restored), operation in progress.
    */
-  bool discarded:1;
+  unsigned discarded;
 };
 }

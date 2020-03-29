@@ -232,6 +232,13 @@ public:
   }
 
   /**
+   * Wait until any ongoing freeze operation is complete.
+   */
+  void waitForFreeze() {
+    object->waitForFreeze();
+  }
+
+  /**
    * Dereference.
    */
   value_type& operator*() const {

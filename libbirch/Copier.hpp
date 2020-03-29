@@ -91,6 +91,7 @@ public:
   template<class P>
   void visit(Lazy<P>& o) const {
     o.setLabel(label);
+    o.waitForFreeze();
   }
 
   /**
