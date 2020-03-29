@@ -9,7 +9,6 @@
 
 namespace libbirch {
 class Label;
-class Finisher;
 class Freezer;
 class Copier;
 using Recycler = Copier;
@@ -85,7 +84,6 @@ public:
       weakCount(1u),
       memoWeakCount(1u),
       label(rootLabel),
-      finished(false),
       frozen(false),
       frozenUnique(false),
       discarded(false) {
@@ -101,7 +99,6 @@ public:
       weakCount(1u),
       memoWeakCount(1u),
       label(nullptr),
-      finished(false),
       frozen(false),
       frozenUnique(false),
       discarded(false) {
@@ -195,19 +192,6 @@ public:
   }
 
   /**
-   * Finish the object.
-   *
-   * @param label The new label.
-   */
-  void finish(Label* label) {
-    bool finishedAlready = finished;
-    finished = true;
-    if (!finishedAlready) {
-      finish_(label);
-    }
-  }
-
-  /**
    * Freeze the object.
    *
    * @param label The new label.
@@ -247,7 +231,6 @@ public:
    * Thaw the object.
    */
   void thaw() {
-    finished = false;
     frozen = false;
     frozenUnique = false;
   }
@@ -478,13 +461,6 @@ public:
 
 protected:
   /**
-   * Finish the object.
-   *
-   * @param label The new label.
-   */
-  virtual void finish_(Label* label) = 0;
-
-  /**
    * Freeze the object.
    *
    * @param label The new label.
@@ -586,12 +562,7 @@ private:
    * allocation to the correct pool after use, even when returned by a
    * different thread.
    */
-  int tid:28;
-
-  /**
-   * Is this finished? A finished object contains no cross pointers.
-   */
-  bool finished:1;
+  int tid:29;
 
   /**
    * Is this frozen? A frozen object is read-only.

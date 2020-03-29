@@ -91,10 +91,13 @@ public:
    */
   template<class P>
   void visit(Lazy<P>& o) const {
-    Any* object = o.pull();
-    Label* label = o.getLabel();
+    auto object = o.pull();
+    auto label = o.getLabel();
+    if (label != this->label && label != object->getLabel()) {
+      /* unfinished cross pointer */
+      object = o.get();
+    }
     object->freeze(this->label);
-    label->freeze(this->label);
   }
 
   /**

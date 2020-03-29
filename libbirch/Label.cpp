@@ -3,11 +3,11 @@
  */
 #include "libbirch/Label.hpp"
 
-libbirch::Label::Label() : Any(0), generation(0) {
+libbirch::Label::Label() : Any(0) {
   //
 }
 
-libbirch::Label::Label(const Label& o) : generation(o.generation + 1) {
+libbirch::Label::Label(const Label& o) {
   auto& o1 = const_cast<Label&>(o);
   o1.lock.write();
   o1.memo.rehash();

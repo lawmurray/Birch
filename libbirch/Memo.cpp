@@ -89,8 +89,6 @@ void libbirch::Memo::copy(const Memo& o) {
       if (key) {
         key->incMemoWeak();
         value->incMemoShared();
-        assert(value->frozen);
-        assert(value->finished);
       }
       keys[i] = key;
       values[i] = value;
@@ -200,16 +198,6 @@ void libbirch::Memo::rehash() {
           deallocate(values1, nentries1 * sizeof(value_type), tentries1);
         }
       }
-    }
-  }
-}
-
-void libbirch::Memo::finish(Label* label) {
-  /* only need to finish values here; keys are already finished anyway */
-  for (auto i = 0u; i < nentries; ++i) {
-    auto value = values[i];
-    if (value) {
-      value->finish(label);
     }
   }
 }

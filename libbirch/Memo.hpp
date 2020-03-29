@@ -68,13 +68,6 @@ public:
   void rehash();
 
   /**
-   * Finish all objects in the memo.
-   *
-   * @param label The new label.
-   */
-  void finish(Label* label);
-
-  /**
    * Freeze all objects in the memo.
    *
    * @param label The new label.

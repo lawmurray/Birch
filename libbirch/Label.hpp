@@ -31,12 +31,10 @@ public:
     //
   }
 
-  virtual void finish_(Label* label) override {
-    memo.finish(label);
-  }
-
   virtual void freeze_(Label* label) override {
+    lock.read();
     memo.freeze(label);
+    lock.unread();
   }
 
   virtual Label* copy_(Label* label) const override {
@@ -87,16 +85,10 @@ public:
       lock.read();
       auto old = ptr;
       ptr = static_cast<typename P::value_type*>(mapPull(old));
-      lock.unread();
       if (ptr != old) {
-        /* it is possible for multiple threads to try to update o
-         * simultaneously, and the interleaving operations to result in
-         * incorrect reference count updates; ensure exclusive access with a
-         * write lock */
-        lock.write();
         o.replace(ptr);
-        lock.unwrite();
       }
+      lock.unread();
     }
     return ptr;
   }
@@ -106,8 +98,8 @@ public:
    *
    * @param Raw pointer.
    *
-   * This is used by objects which have access to their own label, and is
-   * frozen can forward themselves onto a descendant.
+   * This is similar to get(), but used by objects which have access to their
+   * own label, and if frozen can forward themselves onto a descendant.
    */
   template<class T>
   T* forward(T* ptr) {
@@ -120,8 +112,6 @@ public:
     }
     return result;
   }
-
-  int generation;
 
 private:
   /**

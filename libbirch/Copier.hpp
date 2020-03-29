@@ -8,8 +8,6 @@
 #include "libbirch/Optional.hpp"
 #include "libbirch/Fiber.hpp"
 #include "libbirch/Lazy.hpp"
-#include "libbirch/EntryExitLock.hpp"
-#include "libbirch/Finisher.hpp"
 #include "libbirch/Freezer.hpp"
 
 namespace libbirch {
@@ -102,37 +100,21 @@ public:
 };
 
 /**
- * Global clone lock.
- *
- * @ingroup libbirch
- */
-extern EntryExitLock cloneLock;
-
-/**
  * Clone an object via a pointer.
  *
  * @ingroup libbirch
  *
  * @param o The pointer.
-
  */
 template<class P>
 auto clone(const Lazy<P>& o) {
   auto object = o.pull();
   auto label = o.getLabel();
 
-  cloneLock.enter();
-
-  object->finish(label);
-  label->finish(label);
-
   object->freeze(label);
-  label->freeze(label);
 
   label = new Label(*label);
   object = label->forward(object);
-
-  cloneLock.exit();
 
   return Lazy<P>(object, label);
 }
