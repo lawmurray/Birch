@@ -33,7 +33,7 @@ libbirch::Any* libbirch::Label::mapGet(Any* o) {
   if (frozen) {
     Any* cloned;
     if (next->isUnique()) {
-      /* this is the last pointer to the object, recycle it */
+      /* final-reference optimization */
       cloned = next->recycle(this);
     } else {
       /* copy it */

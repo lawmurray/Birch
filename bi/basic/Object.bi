@@ -8,14 +8,6 @@ abstract class Object {
   final function getClassName() -> String;
 
   /**
-   * Finalize. This is called immediately before destruction and deallocation
-   * of an object. Object resurrection is supported: if the function creates
-   * a new reference to this object, destruction and deallocation will not
-   * proceed.
-   */
-  function finalize();
-
-  /**
    * Read.
    */
   function read(buffer:Buffer?) {

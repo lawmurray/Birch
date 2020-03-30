@@ -187,16 +187,6 @@ public:
   }
 
   /**
-   * Finalize. This is called when the shared and memo shared counts reach
-   * zero, but before destruction and deallocation of the object. Object
-   * resurrection is supported: if the finalizer results in a nonzero shared
-   * or memo shared count, destruction and deallocation do not proceed.
-   */
-  virtual void finalize() {
-    //
-  }
-
-  /**
    * Freeze the object.
    *
    * @param label The new label.
@@ -296,9 +286,15 @@ public:
   void decShared() {
     assert(numShared() > 0u);
     if (--sharedCount == 0u) {
-      discard();
       releaseLabel();
-      decMemoShared();
+      assert(numMemoShared() > 0u);
+      if (--memoSharedCount == 0u) {
+        /* skip the discard() in this case, just destroy() */
+        destroy();
+        decWeak();
+      } else {
+        discard();
+      }
     }
   }
 
@@ -323,14 +319,8 @@ public:
     assert(numMemoShared() > 0u);
     if (--memoSharedCount == 0u) {
       assert(numShared() == 0u);
-      finalize();
-
-      /* to support object resurrection, check the count again before
-       * proceeding with destruction */
-      if (numMemoShared() == 0u) {
-        destroy();
-        decWeak();
-      }
+      destroy();
+      decWeak();
     }
   }
 
