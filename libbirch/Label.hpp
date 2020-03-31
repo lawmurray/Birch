@@ -56,7 +56,7 @@ public:
   /**
    * Update a pointer for writing.
    *
-   * @param Smart pointer (SharedPtr, WeakPtr or InitPtr).
+   * @param Smart pointer (Shared, Weak or Init).
    */
   template<class P>
   auto get(P& o)  {
@@ -76,7 +76,7 @@ public:
   /**
    * Update a pointer for reading.
    *
-   * @param Smart pointer (SharedPtr, WeakPtr or InitPtr).
+   * @param Smart pointer (Shared, Weak or Init).
    */
   template<class P>
   auto pull(P& o) {

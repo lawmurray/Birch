@@ -20,7 +20,8 @@ class YAMLReader < Reader {
     file <- fopen(path, READ);
   }
 
-  function read(buffer:MemoryBuffer) {
+  function scan() -> MemoryBuffer {
+    buffer:MemoryBuffer;
     cpp{{
     yaml_parser_initialize(&self()->parser);
     yaml_parser_set_input_file(&self()->parser, self()->file);
@@ -40,6 +41,7 @@ class YAMLReader < Reader {
     }
     yaml_parser_delete(&self()->parser);
     }}
+    return buffer;
   }
 
   fiber walk() -> Buffer {

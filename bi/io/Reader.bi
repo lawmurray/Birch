@@ -7,9 +7,9 @@
  *
  *     auto reader <- Reader(path);
  *
- * A read of a single buffer can then be performed with:
+ * The whole contents of the file can then be read into a buffer with:
  *
- *     reader.read(buffer);
+ *     auto buffer <- reader.scan();
  *
  * Finally, close the file:
  *
@@ -28,7 +28,7 @@ abstract class Reader {
    *
    * - buffer: Buffer into which to read.
    */
-  abstract function read(buffer:MemoryBuffer);
+  abstract function scan() -> MemoryBuffer;
 
   /**
    * Read the contents of the file sequentially.

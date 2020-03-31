@@ -29,7 +29,7 @@ class YAMLWriter < Writer {
     }}
   }
   
-  function write(buffer:MemoryBuffer) {
+  function print(buffer:MemoryBuffer) {
     buffer.value.accept(this);
   }
   

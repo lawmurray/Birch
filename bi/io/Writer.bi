@@ -9,14 +9,14 @@
  *
  * A write of a single buffer can then be performed with:
  *
- *     writer.write(buffer);
+ *     writer.print(buffer);
  *
  * A write of a sequence of buffers can be performed with:
  *
  *     writer.startSequence();
- *     writer.write(buffer1);
- *     writer.write(buffer2);
- *     writer.write(buffer3);
+ *     writer.print(buffer1);
+ *     writer.print(buffer2);
+ *     writer.print(buffer3);
  *     writer.endSequence();
  *
  * which is useful for not keeping the entire contents of the file, to be
@@ -38,11 +38,11 @@ abstract class Writer {
   abstract function open(path:String);
   
   /**
-   * Write the entire contents of the file.
+   * Write the contents of a buffer into the file.
    *
    * - buffer: Buffer to write.
    */
-  abstract function write(buffer:MemoryBuffer);
+  abstract function print(buffer:MemoryBuffer);
   
   /**
    * Flush accumulated writes to the file.

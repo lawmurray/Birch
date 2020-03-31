@@ -9,39 +9,37 @@
 
 namespace libbirch {
 /**
- * Shared pointer with intrusive implementation.
+ * Weak pointer.
  *
  * @ingroup libbirch
  *
  * @tparam T Type, must derive from Any.
  */
 template<class T>
-class SharedPtr {
-  template<class U> friend class SharedPtr;
-  template<class U> friend class WeakPtr;
-  template<class U> friend class InitPtr;
+class Weak {
+  template<class U> friend class Shared;
+  template<class U> friend class Weak;
+  template<class U> friend class Init;
 public:
   using value_type = T;
 
   /**
    * Constructor.
    */
-  explicit SharedPtr(value_type* ptr = nullptr) :
-      ptr(ptr),
-      discarded(false) {
+  explicit Weak(value_type* ptr = nullptr) :
+      ptr(ptr) {
     if (ptr) {
-      ptr->incShared();
+      ptr->incWeak();
     }
   }
 
   /**
    * Copy constructor.
    */
-  SharedPtr(const SharedPtr& o) :
-      discarded(false) {
+  Weak(const Weak& o) {
     auto ptr = o.ptr.load();
     if (ptr) {
-      ptr->incShared();
+      ptr->incWeak();
     }
     this->ptr.store(ptr);
   }
@@ -51,11 +49,10 @@ public:
    */
   template<class Q, class U = typename Q::value_type,
       std::enable_if_t<std::is_base_of<T,U>::value,int> = 0>
-  SharedPtr(const Q& o) :
-      discarded(false) {
+  Weak(const Q& o) {
     auto ptr = o.ptr.load();
     if (ptr) {
-      ptr->incShared();
+      ptr->incWeak();
     }
     this->ptr.store(ptr);
   }
@@ -63,39 +60,29 @@ public:
   /**
    * Move constructor.
    */
-  SharedPtr(SharedPtr&& o) :
-      discarded(false) {
-    auto ptr = o.ptr.exchange(nullptr);
-    if (ptr && o.isDiscarded()) {
-      ptr->restoreShared();
-    }
-    this->ptr.store(ptr);
+  Weak(Weak&& o) {
+    ptr.store(o.ptr.exchange(nullptr));
   }
 
   /**
    * Generic move constructor.
    */
   template<class U, std::enable_if_t<std::is_base_of<T,U>::value,int> = 0>
-  SharedPtr(SharedPtr<U>&& o) :
-      discarded(false) {
-    auto ptr = o.ptr.exchange(nullptr);
-    if (ptr && o.isDiscarded()) {
-      ptr->restoreShared();
-    }
-    this->ptr.store(ptr);
+  Weak(Weak<U>&& o) {
+    ptr.store(o.ptr.exchange(nullptr));
   }
 
   /**
    * Destructor.
    */
-  ~SharedPtr() {
+  ~Weak() {
     release();
   }
 
   /**
    * Copy assignment.
    */
-  SharedPtr& operator=(const SharedPtr& o) {
+  Weak& operator=(const Weak& o) {
     replace(o.ptr.load());
     return *this;
   }
@@ -105,7 +92,7 @@ public:
    */
   template<class Q, class U = typename Q::value_type,
       std::enable_if_t<std::is_base_of<T,U>::value,int> = 0>
-  SharedPtr& operator=(const Q& o) {
+  Weak& operator=(const Q& o) {
     replace(o.ptr.load());
     return *this;
   }
@@ -113,23 +100,11 @@ public:
   /**
    * Move assignment.
    */
-  SharedPtr& operator=(SharedPtr&& o) {
+  Weak& operator=(Weak&& o) {
     auto ptr = o.ptr.exchange(nullptr);
     auto old = this->ptr.exchange(ptr);
-    if (discarded) {
-      if (ptr && !o.isDiscarded()) {
-        ptr->discardShared();
-      }
-      if (old) {
-        old->decMemoShared();
-      }
-    } else {
-      if (ptr && o.isDiscarded()) {
-        ptr->restoreShared();
-      }
-      if (old) {
-        old->decShared();
-      }
+    if (old) {
+      old->decWeak();
     }
     return *this;
   }
@@ -138,23 +113,11 @@ public:
    * Generic move assignment.
    */
   template<class U, std::enable_if_t<std::is_base_of<T,U>::value,int> = 0>
-  SharedPtr& operator=(SharedPtr<U>&& o) {
+  Weak& operator=(Weak<U>&& o) {
     auto ptr = o.ptr.exchange(nullptr);
     auto old = this->ptr.exchange(ptr);
-    if (discarded) {
-      if (ptr && !o.isDiscarded()) {
-        ptr->discardShared();
-      }
-      if (old) {
-        old->decMemoShared();
-      }
-    } else {
-      if (ptr && o.isDiscarded()) {
-        ptr->restoreShared();
-      }
-      if (old) {
-        old->decShared();
-      }
+    if (old) {
+      old->decWeak();
     }
     return *this;
   }
@@ -188,20 +151,11 @@ public:
    */
   void replace(T* ptr) {
     auto old = this->ptr.exchange(ptr);
-    if (discarded) {
-      if (ptr) {
-        ptr->incMemoShared();
-      }
-      if (old) {
-        old->decMemoShared();
-      }
-    } else {
-      if (ptr) {
-        ptr->incShared();
-      }
-      if (old) {
-        old->decShared();
-      }
+    if (ptr) {
+      ptr->incWeak();
+    }
+    if (old) {
+      old->decWeak();
     }
   }
 
@@ -211,43 +165,29 @@ public:
   void release() {
     auto old = ptr.exchange(nullptr);
     if (old) {
-      if (discarded) {
-        old->decMemoShared();
-      } else {
-        old->decShared();
-      }
+      old->decWeak();
     }
   }
-  
+
   /**
    * Discard.
    */
   void discard() {
-    assert(!discarded);
-    auto ptr = this->ptr.load();
-    if (ptr) {
-      discarded = true;
-      ptr->discardShared();
-    }
+    // nothing to do for weak pointers
   }
 
   /**
    * Restore.
    */
   void restore() {
-    assert(discarded);
-    auto ptr = this->ptr.load();
-    if (ptr) {
-      discarded = false;
-      ptr->restoreShared();
-    }
+    // nothing to do for weak pointers
   }
 
   /**
    * Has this been discarded?
    */
-  bool isDiscarded() const {
-    return discarded;
+  static bool isDiscarded() {
+    return false;
   }
 
   /**
@@ -269,25 +209,20 @@ private:
    * Raw pointer.
    */
   Atomic<T*> ptr;
-
-  /**
-   * Has the pointer been discarded?
-   */
-  bool discarded;
 };
 
 template<class T>
-struct is_value<SharedPtr<T>> {
+struct is_value<Weak<T>> {
   static const bool value = false;
 };
 
 template<class T>
-struct is_pointer<SharedPtr<T>> {
+struct is_pointer<Weak<T>> {
   static const bool value = true;
 };
 
 template<class T>
-struct raw<SharedPtr<T>> {
+struct raw<Weak<T>> {
   using type = T*;
 };
 }

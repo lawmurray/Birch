@@ -10,26 +10,8 @@ abstract class Object {
   /**
    * Read.
    */
-  function read(buffer:Buffer?) {
-    if buffer? {
-      read(buffer!);
-    }
-  }
-
-  /**
-   * Read.
-   */
   function read(buffer:Buffer) {
     //
-  }
-  
-  /**
-   * Write.
-   */
-  function write(buffer:Buffer?) {
-    if buffer? {
-      write(buffer!);
-    }
   }
 
   /**

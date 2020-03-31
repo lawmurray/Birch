@@ -4,7 +4,7 @@
 #include "libbirch/memory.hpp"
 
 #include "libbirch/Label.hpp"
-#include "libbirch/SharedPtr.hpp"
+#include "libbirch/Shared.hpp"
 
 #if ENABLE_MEMORY_POOL
 /**

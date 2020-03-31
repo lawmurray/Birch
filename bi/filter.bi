@@ -27,8 +27,8 @@ program filter(
   /* config */
   configBuffer:MemoryBuffer;
   if config? {
-    reader:Reader <- Reader(config!);
-    reader.read(configBuffer);    
+    auto reader <- Reader(config!);
+    configBuffer <- reader.scan();    
     reader.close();
   }
 
@@ -78,9 +78,8 @@ program filter(
     inputPath <-? configBuffer.getString("input");
   }
   if inputPath? {
-    reader:Reader <- Reader(inputPath!);
-    inputBuffer:MemoryBuffer;
-    reader.read(inputBuffer);
+    auto reader <- Reader(inputPath!);
+    auto inputBuffer <- reader.scan();
     reader.close();
     inputBuffer.get(m!);
   }

@@ -8,25 +8,24 @@
 
 namespace libbirch {
 /**
- * Smart pointer that does not update reference counts, but that does
- * initialize to nullptr.
+ * Pointer that initializes to `nullptr`.
  *
  * @ingroup libbirch
  *
  * @tparam T Type, must derive from Any.
  */
 template<class T>
-class InitPtr {
-  template<class U> friend class SharedPtr;
-  template<class U> friend class WeakPtr;
-  template<class U> friend class InitPtr;
+class Init {
+  template<class U> friend class Shared;
+  template<class U> friend class Weak;
+  template<class U> friend class Init;
 public:
   using value_type = T;
 
   /**
    * Constructor.
    */
-  explicit InitPtr(value_type* ptr = nullptr) :
+  explicit Init(value_type* ptr = nullptr) :
       ptr(ptr) {
     //
   }
@@ -36,7 +35,7 @@ public:
    */
   template<class Q, class U = typename Q::value_type,
       std::enable_if_t<std::is_base_of<T,U>::value,int> = 0>
-  InitPtr(const Q& o) :
+  Init(const Q& o) :
       ptr(o.ptr) {
     //
   }
@@ -122,17 +121,17 @@ private:
 };
 
 template<class T>
-struct is_value<InitPtr<T>> {
+struct is_value<Init<T>> {
   static const bool value = false;
 };
 
 template<class T>
-struct is_pointer<InitPtr<T>> {
+struct is_pointer<Init<T>> {
   static const bool value = true;
 };
 
 template<class T>
-struct raw<InitPtr<T>> {
+struct raw<Init<T>> {
   using type = T*;
 };
 }

@@ -7,7 +7,7 @@
 #include "libbirch/type.hpp"
 #include "libbirch/Any.hpp"
 #include "libbirch/Label.hpp"
-#include "libbirch/InitPtr.hpp"
+#include "libbirch/Init.hpp"
 
 namespace libbirch {
 /**
@@ -15,7 +15,7 @@ namespace libbirch {
  *
  * @ingroup libbirch
  *
- * @tparam P Pointer type, e.g. a SharedPtr, WeakPtr, InitPtr.
+ * @tparam P Pointer type, e.g. a Shared, Weak, Init.
  */
 template<class P>
 class Lazy {
@@ -275,7 +275,7 @@ private:
   /**
    * Label.
    */
-  InitPtr<Label> label;
+  Init<Label> label;
 };
 
 template<class P>

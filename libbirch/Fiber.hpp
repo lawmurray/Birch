@@ -4,7 +4,7 @@
 #pragma once
 
 #include "libbirch/Lazy.hpp"
-#include "libbirch/SharedPtr.hpp"
+#include "libbirch/Shared.hpp"
 #include "libbirch/FiberState.hpp"
 #include "libbirch/Optional.hpp"
 
@@ -22,7 +22,7 @@ class Fiber {
 public:
   using yield_type = Yield;
   using return_type = Return;
-  using state_type = Lazy<SharedPtr<FiberState<Yield,Return>>>;
+  using state_type = Lazy<Shared<FiberState<Yield,Return>>>;
 
   /**
    * Constructor. Used:
@@ -134,7 +134,7 @@ class Fiber<void,Return> {
 public:
   using yield_type = void;
   using return_type = Return;
-  using state_type = Lazy<SharedPtr<FiberState<yield_type,return_type>>>;
+  using state_type = Lazy<Shared<FiberState<yield_type,return_type>>>;
 
   Fiber() {
     //
@@ -180,7 +180,7 @@ class Fiber<Yield,void> {
 public:
   using yield_type = Yield;
   using return_type = void;
-  using state_type = Lazy<SharedPtr<FiberState<yield_type,return_type>>>;
+  using state_type = Lazy<Shared<FiberState<yield_type,return_type>>>;
 
   Fiber() {
     //
@@ -231,7 +231,7 @@ class Fiber<void,void> {
 public:
   using yield_type = void;
   using return_type = void;
-  using state_type = Lazy<SharedPtr<FiberState<yield_type,return_type>>>;
+  using state_type = Lazy<Shared<FiberState<yield_type,return_type>>>;
 
   Fiber() {
     //

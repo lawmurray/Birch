@@ -74,7 +74,7 @@
   } \
   \
   auto self() { \
-    return libbirch::Lazy<libbirch::SharedPtr<Name>>(this, this->getLabel()); \
+    return libbirch::Lazy<libbirch::Shared<Name>>(this, this->getLabel()); \
   } \
   \
   template<class Visitor> \

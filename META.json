@@ -368,7 +368,7 @@
       "libbirch/FiberState.hpp",
       "libbirch/Freezer.hpp",
       "libbirch/Index.hpp",
-      "libbirch/InitPtr.hpp",
+      "libbirch/Init.hpp",
       "libbirch/Iterator.hpp",
       "libbirch/Label.hpp",
       "libbirch/Lazy.hpp",
@@ -386,7 +386,7 @@
       "libbirch/Recycler.hpp",
       "libbirch/Restorer.hpp",
       "libbirch/Shape.hpp",
-      "libbirch/SharedPtr.hpp",
+      "libbirch/Shared.hpp",
       "libbirch/Slice.hpp",
       "libbirch/stacktrace.hpp",
       "libbirch/Stride.hpp",
@@ -394,7 +394,7 @@
       "libbirch/Tie.hpp",
       "libbirch/Tuple.hpp",
       "libbirch/type.hpp",
-      "libbirch/WeakPtr.hpp"
+      "libbirch/Weak.hpp"
     ],
     "other": [
       "LICENSE",
