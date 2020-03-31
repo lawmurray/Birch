@@ -727,9 +727,9 @@ void bi::CppBaseGenerator::visit(const MemberType* o) {
 void bi::CppBaseGenerator::visit(const NamedType* o) {
   if (o->isClass()) {
     if (o->weak) {
-      middle("libbirch::Lazy<libbirch::WeakPtr<");
+      middle("libbirch::Lazy<libbirch::Weak<");
     } else {
-      middle("libbirch::Lazy<libbirch::SharedPtr<");
+      middle("libbirch::Lazy<libbirch::Shared<");
     }
     middle("bi::type::" << o->name);
     if (!o->typeArgs->isEmpty()) {
