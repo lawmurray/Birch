@@ -200,12 +200,13 @@ public:
       if (is_value<T>::value) {
         buffer->incUsage();
       } else {
-        auto src = buf();
         auto bytes = Buffer<T>::size(volume());
         if (bytes > 0u) {
+          void* src = buf();
           buffer = new (libbirch::allocate(bytes)) Buffer<T>();
           offset = 0;
-          std::memcpy(buffer->buf(), src, sizeof(T)*volume());
+          void* dst = buf();
+          std::memcpy(dst, src, sizeof(T)*volume());
         }
       }
     }
