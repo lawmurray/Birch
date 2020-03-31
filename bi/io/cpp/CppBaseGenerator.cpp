@@ -50,13 +50,25 @@ void bi::CppBaseGenerator::visit(const Literal<const char*>* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Parentheses* o) {
-  if (o->single->isList()) {
+  auto stripped = o->strip();
+  if (stripped->isTuple()) {
     if (inAssign) {
-      middle("libbirch::tie(" << o->single << ')');
+      --inAssign;
+      middle("libbirch::tie(");
+      for (auto iter = stripped->begin(); iter != stripped->end(); ++iter) {
+        if (iter != stripped->begin()) {
+          middle(", ");
+        }
+        if ((*iter)->isTuple() || (*iter)->isSlice()) {
+          ++inAssign;
+        }
+        middle(*iter);
+      }
+      middle(')');
     } else {
       middle("libbirch::make_tuple(");
-      for (auto iter = o->single->begin(); iter != o->single->end(); ++iter) {
-        if (iter != o->single->begin()) {
+      for (auto iter = stripped->begin(); iter != stripped->end(); ++iter) {
+        if (iter != stripped->begin()) {
           middle(", ");
         }
         middle("libbirch::canonical(" << *iter << ')');
@@ -64,7 +76,7 @@ void bi::CppBaseGenerator::visit(const Parentheses* o) {
       middle(')');
     }
   } else {
-    middle('(' << o->single << ')');
+    middle('(' << stripped << ')');
   }
 }
 
@@ -107,15 +119,16 @@ void bi::CppBaseGenerator::visit(const UnaryCall* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Assign* o) {
-  ++inAssign;
-  middle(o->left);
-  --inAssign;
-  middle(" = " << o->right);
+  if (o->left->isSlice() || o->left->isTuple()) {
+    ++inAssign;
+  }
+  middle(o->left << " = " << o->right);
 }
 
 void bi::CppBaseGenerator::visit(const Slice* o) {
   middle(o->single << '.');
   if (inAssign) {
+    --inAssign;
     middle("get");
   } else {
     middle("pull");
@@ -769,5 +782,5 @@ void bi::CppBaseGenerator::genTraceLine(const Location* loc) {
 }
 
 void bi::CppBaseGenerator::genSourceLine(const Location* loc) {
-  line("#line " << loc->firstLine << " \"" << loc->file->path << "\"");
+  line("//#line " << loc->firstLine << " \"" << loc->file->path << "\"");
 }

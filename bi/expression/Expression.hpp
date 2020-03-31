@@ -67,14 +67,19 @@ public:
   virtual bool isAssignable() const;
 
   /**
-   * Is this a list?
+   * Is this a tuple?
    */
-  virtual bool isList() const;
+  virtual bool isTuple() const;
+
+  /**
+   * Is this a slice?
+   */
+  virtual bool isSlice() const;
 
   /**
    * Strip parentheses, if any.
    */
-  virtual Expression* strip();
+  virtual const Expression* strip() const;
 
   /**
    * Number of items in a list.

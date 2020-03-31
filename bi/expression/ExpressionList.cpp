@@ -25,7 +25,7 @@ bool bi::ExpressionList::isAssignable() const {
   return head->isAssignable() && tail->isAssignable();
 }
 
-bool bi::ExpressionList::isList() const {
+bool bi::ExpressionList::isTuple() const {
   return true;
 }
 

@@ -16,12 +16,20 @@ bi::Parentheses::~Parentheses() {
   //
 }
 
-bi::Expression* bi::Parentheses::strip() {
+const bi::Expression* bi::Parentheses::strip() const {
   return single->strip();
 }
 
 bool bi::Parentheses::isAssignable() const {
   return single->isAssignable();
+}
+
+bool bi::Parentheses::isSlice() const {
+  return single->isSlice();
+}
+
+bool bi::Parentheses::isTuple() const {
+  return single->isTuple();
 }
 
 bi::Expression* bi::Parentheses::accept(Cloner* visitor) const {

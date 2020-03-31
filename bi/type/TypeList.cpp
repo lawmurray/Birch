@@ -29,7 +29,3 @@ bi::Type* bi::TypeList::accept(Modifier* visitor) {
 void bi::TypeList::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
-
-bool bi::TypeList::isList() const {
-  return true;
-}

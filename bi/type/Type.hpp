@@ -79,7 +79,7 @@ public:
   /**
    * Is this a list type?
    */
-  virtual bool isList() const;
+  virtual bool isTuple() const;
 
   /**
    * Is this a function type?

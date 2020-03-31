@@ -28,8 +28,10 @@ public:
    */
   virtual ~Parentheses();
 
-  virtual Expression* strip();
+  virtual const Expression* strip() const;
   virtual bool isAssignable() const;
+  virtual bool isSlice() const;
+  virtual bool isTuple() const;
 
   virtual Expression* accept(Cloner* visitor) const;
   virtual Expression* accept(Modifier* visitor);

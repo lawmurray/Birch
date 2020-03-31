@@ -26,11 +26,15 @@ bool bi::Expression::isAssignable() const {
   return false;
 }
 
-bool bi::Expression::isList() const {
+bool bi::Expression::isSlice() const {
   return false;
 }
 
-bi::Expression* bi::Expression::strip() {
+bool bi::Expression::isTuple() const {
+  return false;
+}
+
+const bi::Expression* bi::Expression::strip() const {
   return this;
 }
 

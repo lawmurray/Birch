@@ -30,3 +30,7 @@ bi::Expression* bi::Slice::accept(Modifier* visitor) {
 void bi::Slice::accept(Visitor* visitor) const {
   return visitor->visit(this);
 }
+
+bool bi::Slice::isSlice() const {
+  return true;
+}

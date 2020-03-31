@@ -26,3 +26,7 @@ bi::Type* bi::TupleType::accept(Modifier* visitor) {
 void bi::TupleType::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
+
+bool bi::TupleType::isTuple() const {
+  return true;
+}
