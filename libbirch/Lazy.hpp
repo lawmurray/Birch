@@ -105,7 +105,11 @@ public:
   /**
    * Copy constructor.
    */
-  Lazy(const Lazy&) = default;
+  Lazy(const Lazy& o) :
+      object(o.get()),
+      label(o.getLabel()) {
+    // ^ o.get() maintains the single-reference optimization
+  }
 
   /**
    * Generic copy constructor.
@@ -113,9 +117,9 @@ public:
   template<class Q, std::enable_if_t<std::is_base_of<value_type,
       typename Q::value_type>::value,int> = 0>
   Lazy(const Lazy<Q>& o) :
-      object(o.object),
-      label(o.label) {
-    //
+      object(o.get()),
+      label(o.getLabel()) {
+    // ^ o.get() maintains the single-reference optimization
   }
 
   /**
@@ -160,7 +164,12 @@ public:
   /**
    * Copy assignment.
    */
-  Lazy& operator=(const Lazy&) = default;
+  Lazy& operator=(const Lazy& o) {
+    object.replace(o.get());
+    label.replace(o.getLabel());
+    // ^ o.get() maintains the single-reference optimization
+    return *this;
+  }
 
   /**
    * Generic copy assignment.
@@ -168,8 +177,9 @@ public:
   template<class Q, std::enable_if_t<std::is_base_of<value_type,
       typename Q::value_type>::value,int> = 0>
   Lazy& operator=(const Lazy<Q>& o) {
-    object = o.object;
-    label = o.label;
+    object.replace(o.get());
+    label.replace(o.getLabel());
+    // ^ o.get() maintains the single-reference optimization
     return *this;
   }
 
