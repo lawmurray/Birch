@@ -20,6 +20,7 @@ class Shared {
   template<class U> friend class Shared;
   template<class U> friend class Weak;
   template<class U> friend class Init;
+  template<class U> friend class Lazy;
 public:
   using value_type = T;
 
@@ -90,6 +91,18 @@ public:
    */
   ~Shared() {
     release();
+  }
+
+  /**
+   * Correctly initialize after a bitwise copy.
+   */
+  void bitwiseFix() {
+    ///@todo Try without atomic load
+    discarded = false;
+    auto ptr = this->ptr.load();
+    if (ptr) {
+      ptr->incShared();
+    }
   }
 
   /**

@@ -191,6 +191,16 @@ public:
   }
 
   /**
+   * Correctly initialize after a bitwise copy.
+   */
+  void bitwiseFix() {
+    if (buffer) {
+      buffer->incUsage();
+    }
+    bufferLock.bitwiseFix();
+  }
+
+  /**
    * Copy assignment operator.
    */
   Array<T,F>& operator=(const Array<T,F>& o) {

@@ -66,6 +66,7 @@ public:
    */
   template<class T, class F>
   void visit(Array<T,F>& o) const {
+    o.bitwiseFix();
     o.accept_(*this);
   }
 
@@ -90,8 +91,8 @@ public:
    */
   template<class P>
   void visit(Lazy<P>& o) const {
+    o.bitwiseFix();
     o.setLabel(label);
-    o.waitForFreeze();
   }
 
   /**
@@ -113,9 +114,8 @@ auto clone(const Lazy<P>& o) {
   auto label = o.getLabel();
 
   object->freeze(label);
-  label = new Label(*label);
 
-  Lazy<P> ptr(object, label);
+  Lazy<P> ptr(object, new Label(*label));
   ptr.get();
   return ptr;
 }

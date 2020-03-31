@@ -142,6 +142,13 @@ public:
   }
 
   /**
+   * Correctly initialize after a bitwise copy.
+   */
+  void bitwiseFix() {
+    this->object.bitwiseFix();
+  }
+
+  /**
    * Value assignment.
    */
   template<class U, std::enable_if_t<is_value<U>::value,int> = 0>
@@ -229,13 +236,6 @@ public:
    */
   void restore() {
     object.restore();
-  }
-
-  /**
-   * Wait until any ongoing freeze operation is complete.
-   */
-  void waitForFreeze() {
-    object->waitForFreeze();
   }
 
   /**

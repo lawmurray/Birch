@@ -19,6 +19,7 @@ class Init {
   template<class U> friend class Shared;
   template<class U> friend class Weak;
   template<class U> friend class Init;
+  template<class U> friend class Lazy;
 public:
   using value_type = T;
 
@@ -37,6 +38,13 @@ public:
       std::enable_if_t<std::is_base_of<T,U>::value,int> = 0>
   Init(const Q& o) :
       ptr(o.ptr) {
+    //
+  }
+
+  /**
+   * Correctly initialize after a bitwise copy.
+   */
+  void bitwiseFix() {
     //
   }
 

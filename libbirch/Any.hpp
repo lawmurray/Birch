@@ -219,7 +219,17 @@ public:
    */
   Any* copy(Label* label) {
     auto o = copy_(label);
-    o->setLabel(label);
+    ///@todo Try without atomics
+    o->sharedCount.store(0u);
+    o->memoSharedCount.store(0u);
+    o->weakCount.store(1u);
+    o->memoWeakCount.store(1u);
+    o->label = rootLabel;
+    o->frozen.store(0u);
+    o->frozenUnique = 0u;
+    o->discarded = 0u;
+
+    o->replaceLabel(label);
     return o;
   }
 
@@ -414,23 +424,9 @@ public:
   }
 
   /**
-   * Set the label assigned to the object. The shared count must be onoe, and
-   * the current label the root label. Typically this is applied to the new
-   * object immediately after a copy operation.
-   */
-  void setLabel(Label* label) {
-    assert(getLabel() == rootLabel);
-    assert(numShared() == 0u);
-    this->label = label;
-  }
-
-  /**
-   * Replaced the label assigned to the object. The shared count must be
-   * greater than zero. Typically this is applied to an object immediately
-   * after a recycle operation.
+   * Replace the label assigned to the object.
    */
   void replaceLabel(Label* label) {
-    assert(numShared() > 0u);
     if (label != this->label) {
       releaseLabel();
       this->label = label;

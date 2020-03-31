@@ -80,8 +80,6 @@ class ParticleFilter {
     yield (x, w, W, ess, nparticles);
     
     for t in 1..nsteps! {
-      stderr.print(t + " ");
-    
       /* resample */
       if ess <= trigger*nparticles {
         auto a <- resample_systematic(w);
@@ -104,7 +102,6 @@ class ParticleFilter {
       W <- W + S - log(Real(nparticles));
       yield (x, w, W, ess, nparticles);
     }
-    stderr.print("\n");
   }
 
   fiber filter(model:Model, reference:Trace?, alreadyInitialized:Boolean) ->

@@ -19,6 +19,15 @@ public:
   ReaderWriterLock();
 
   /**
+   * Correctly initialize after a bitwise copy.
+   */
+  void bitwiseFix() {
+    ///@todo Try without atomic store
+    readers.store(0);
+    writer.store(false);
+  }
+
+  /**
    * Obtain read use.
    */
   void read();

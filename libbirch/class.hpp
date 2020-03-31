@@ -16,7 +16,10 @@
   } \
   \
   virtual Name* copy_(libbirch::Label* label) const override { \
-    auto o = new Name(*this); \
+    auto src = static_cast<const void*>(this); \
+    auto dst = libbirch::allocate(sizeof(*this)); \
+    std::memcpy(dst, src, sizeof(*this)); \
+    auto o = static_cast<Name*>(dst); \
     o->accept_(libbirch::Copier(label)); \
     return o; \
   } \
