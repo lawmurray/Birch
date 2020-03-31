@@ -194,10 +194,21 @@ public:
    * Correctly initialize after a bitwise copy.
    */
   void bitwiseFix() {
-    if (buffer) {
-      buffer->incUsage();
-    }
+    assert(!isView);
     bufferLock.bitwiseFix();
+    if (buffer) {
+      if (is_value<T>::value) {
+        buffer->incUsage();
+      } else {
+        auto src = buf();
+        auto bytes = Buffer<T>::size(volume());
+        if (bytes > 0u) {
+          buffer = new (libbirch::allocate(bytes)) Buffer<T>();
+          offset = 0;
+          std::memcpy(buffer->buf(), src, sizeof(T)*volume());
+        }
+      }
+    }
   }
 
   /**
@@ -219,12 +230,14 @@ public:
    */
   template<class Visitor>
   void accept_(const Visitor& v) {
-    pinWrite();
-    auto iter = begin();
-    auto last = end();
-    unpin();
-    for (; iter != last; ++iter) {
-      v.visit(*iter);
+    if (!is_value<T>::value) {
+      pinWrite();
+      auto iter = begin();
+      auto last = end();
+      unpin();
+      for (; iter != last; ++iter) {
+        v.visit(*iter);
+      }
     }
   }
 
@@ -311,21 +324,13 @@ public:
     return *(buf() + shape.serial(slice));
   }
   template<class V, std::enable_if_t<V::rangeCount() != 0,int> = 0>
-  auto get(const V& slice) const {
+  auto pull(const V& slice) const {
     return Array<T,decltype(shape(slice))>(shape(slice), buffer, offset +
         shape.serial(slice));
   }
   template<class V, std::enable_if_t<V::rangeCount() == 0,int> = 0>
-  const T& get(const V& slice) const {
+  T pull(const V& slice) const {
     return *(buf() + shape.serial(slice));
-  }
-  template<class V, std::enable_if_t<V::rangeCount() != 0,int> = 0>
-  auto pull(const V& slice) const {
-    return const_cast<const Array&>(*this).get(slice);
-  }
-  template<class V, std::enable_if_t<V::rangeCount() == 0,int> = 0>
-  const T& pull(const V& slice) const {
-    return const_cast<const Array&>(*this).get(slice);
   }
   ///@}
 
