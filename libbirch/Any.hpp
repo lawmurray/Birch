@@ -224,12 +224,10 @@ public:
     o->memoSharedCount.store(0u);
     o->weakCount.store(1u);
     o->memoWeakCount.store(1u);
-    o->label = rootLabel;
+    o->label = label;
     o->frozen.store(0u);
     o->frozenUnique = 0u;
     o->discarded = 0u;
-
-    o->replaceLabel(label);
     return o;
   }
 
@@ -239,9 +237,12 @@ public:
    * @param label The new label.
    */
   Any* recycle(Label* label) {
-    replaceLabel(label);
+    recycle_(label);
     thaw();
-    return recycle_(label);
+    releaseLabel();
+    this->label = label;
+    holdLabel();
+    return this;
   }
 
   /**
@@ -250,6 +251,7 @@ public:
   void thaw() {
     frozen.store(0u);
     frozenUnique = 0u;
+    discarded = 0u;
   }
 
   /**
@@ -284,7 +286,7 @@ public:
     if (++sharedCount == 1u) {
       incMemoShared();
       holdLabel();
-      if (discarded) {
+      if (discarded) {  // only false when initializing object
         restore();
       }
     }
@@ -356,8 +358,8 @@ public:
   void restoreShared() {
     if (++sharedCount == 1u) {
       assert(discarded);
-      restore();
       holdLabel();
+      restore();
     } else {
       decMemoShared();
     }
@@ -424,28 +426,6 @@ public:
   }
 
   /**
-   * Replace the label assigned to the object.
-   */
-  void replaceLabel(Label* label) {
-    if (label != this->label) {
-      releaseLabel();
-      this->label = label;
-      holdLabel();
-    }
-  }
-
-  /**
-   * Increment the shared count of the label. This is used during
-   * initialization and restoration.
-   */
-  void holdLabel();
-
-  /**
-   * Decrement the shared count of the label. This is used during discard.
-   */
-  void releaseLabel();
-
-  /**
    * Is the object frozen? Returns true if a freeze operation is either in
    * progress or completed.
    */
@@ -469,6 +449,17 @@ public:
   }
 
 protected:
+  /**
+   * Increment the shared count of the label. This is used during
+   * initialization and restoration.
+   */
+  void holdLabel();
+
+  /**
+   * Decrement the shared count of the label. This is used during discard.
+   */
+  void releaseLabel();
+
   /**
    * Freeze the object.
    *
