@@ -165,8 +165,9 @@ public:
    * Copy assignment.
    */
   Lazy& operator=(const Lazy& o) {
-    object.replace(o.get());
     label.replace(o.getLabel());
+    // ^ must go first, next line may invalidate o as a reference
+    object.replace(o.get());
     // ^ o.get() maintains the single-reference optimization
     return *this;
   }
@@ -177,8 +178,9 @@ public:
   template<class Q, std::enable_if_t<std::is_base_of<value_type,
       typename Q::value_type>::value,int> = 0>
   Lazy& operator=(const Lazy<Q>& o) {
-    object.replace(o.get());
     label.replace(o.getLabel());
+    // ^ must go first, next line may invalidate o as a reference
+    object.replace(o.get());
     // ^ o.get() maintains the single-reference optimization
     return *this;
   }
@@ -186,7 +188,12 @@ public:
   /**
    * Move assignment.
    */
-  Lazy& operator=(Lazy&&) = default;
+  Lazy& operator=(Lazy&& o) {
+    label = std::move(o.label);
+    // ^ must go first, next line may invalidate o as a reference
+    object = std::move(o.object);
+    return *this;
+  }
 
   /**
    * Generic move assignment.
@@ -194,8 +201,9 @@ public:
   template<class Q, std::enable_if_t<std::is_base_of<value_type,
       typename Q::value_type>::value,int> = 0>
   Lazy& operator=(Lazy<Q>&& o) {
+    label = std::move(o.label);
+    // ^ must go first, next line may invalidate o as a reference
     object = std::move(o.object);
-    label = o.label;
     return *this;
   }
 
