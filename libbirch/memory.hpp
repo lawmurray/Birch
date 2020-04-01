@@ -14,7 +14,7 @@ class Label;
 /**
  * The root label, used for lazy deep copy.
  */
-extern Label* rootLabel;
+extern Label* const rootLabel;
 
 /**
  * For an allocation size, determine the index of the pool to which it
