@@ -84,9 +84,9 @@ public:
       weakCount(1u),
       memoWeakCount(1u),
       label(rootLabel),
-      frozen(0u),
-      frozenUnique(0u),
-      discarded(0u) {
+      frozen(false),
+      frozenUnique(false),
+      discarded(false) {
     // size and tid set by operator new
   }
 
@@ -99,9 +99,9 @@ public:
       weakCount(1u),
       memoWeakCount(1u),
       label(nullptr),
-      frozen(0u),
-      frozenUnique(0u),
-      discarded(0u) {
+      frozen(false),
+      frozenUnique(false),
+      discarded(false) {
     // size and tid set by operator new
   }
 
@@ -192,23 +192,10 @@ public:
    * @param label The new label.
    */
   void freeze(Label* label) {
-    unsigned f = frozen.exchange(1u);
-    switch (f) {
-    case 0u:
+    if (!frozen.exchange(true)) {
       /* proceed with freeze */
-      frozenUnique = isUnique();
+      frozenUnique.store(isUnique());
       freeze_(label);
-      frozen.store(2u);
-      break;
-    case 1u:
-      /* already freezing, move on */
-      break;
-    case 2u:
-      /* already frozen, put that back */
-      frozen.store(2u);
-      break;
-    default:
-      assert(false);
     }
   }
 
@@ -225,9 +212,9 @@ public:
     o->weakCount.store(1u);
     o->memoWeakCount.store(1u);
     o->label = label;
-    o->frozen.store(0u);
-    o->frozenUnique = 0u;
-    o->discarded = 0u;
+    o->frozen.store(false);
+    o->frozenUnique.store(false);
+    o->discarded.store(false);
     return o;
   }
 
@@ -249,27 +236,27 @@ public:
    * Thaw the object.
    */
   void thaw() {
-    frozen.store(0u);
-    frozenUnique = 0u;
-    discarded = 0u;
+    frozen.store(false);
+    frozenUnique.store(false);
+    discarded.store(false);
   }
 
   /**
    * Discard the object.
    */
   void discard() {
-    discarded = 1u;
-    discard_();
-    discarded = 2u;
+    if (!discarded.exchange(true)) {
+      discard_();
+    }
   }
 
   /**
    * Restore the object.
    */
   void restore() {
-    discarded = 3u;
-    restore_();
-    discarded = 0u;
+    if (discarded.exchange(false)) {
+      restore_();
+    }
   }
 
   /**
@@ -286,7 +273,7 @@ public:
     if (++sharedCount == 1u) {
       incMemoShared();
       holdLabel();
-      if (discarded) {  // only false when initializing object
+      if (discarded.load()) {  // only false when initializing object
         restore();
       }
     }
@@ -343,7 +330,7 @@ public:
   void discardShared() {
     assert(numShared() > 0u);
     if (--sharedCount == 0u) {
-      assert(!discarded);
+      assert(!discarded.load());
       discard();
       releaseLabel();
     } else {
@@ -357,7 +344,7 @@ public:
    */
   void restoreShared() {
     if (++sharedCount == 1u) {
-      assert(discarded);
+      assert(discarded.load());
       holdLabel();
       restore();
     } else {
@@ -426,18 +413,10 @@ public:
   }
 
   /**
-   * Is the object frozen? Returns true if a freeze operation is either in
-   * progress or completed.
+   * Is the object frozen?
    */
   bool isFrozen() const {
     return frozen.load();
-  }
-
-  /**
-   * Wait until any ongoing freeze operation is complete.
-   */
-  void waitForFreeze() const {
-    while (frozen.load() == 1u);
   }
 
   /**
@@ -445,7 +424,14 @@ public:
    * pointer to it?
    */
   bool isFrozenUnique() const {
-    return frozenUnique;
+    return frozenUnique.load();
+  }
+
+  /**
+   * Is the object discarded?
+   */
+  bool isDiscarded() const {
+    return discarded.load();
   }
 
 protected:
@@ -565,28 +551,19 @@ private:
   int tid;
 
   /**
-   * Frozen flag. A frozen object is read-only. Valid values are:
-   *
-   * - 0: Not frozen.
-   * - 1: Frozen, operation in progress.
-   * - 2: Frozen, operation complete.
+   * Frozen flag. A frozen object is read-only.
    */
-  Atomic<unsigned> frozen;
+  Atomic<bool> frozen;
 
   /**
    * Is the object frozen, and at the time of freezing, was there only one
    * pointer to it?
    */
-  unsigned frozenUnique;
+  Atomic<bool> frozenUnique;
 
   /**
-   * Discard flag. Valid values are:
-   *
-   * - 0: Not discarded.
-   * - 1: Discarded, operation in progress.
-   * - 2: Discarded, operation complete.
-   * - 3: Not discarded (restored), operation in progress.
+   * Discard flag.
    */
-  unsigned discarded;
+  Atomic<bool> discarded;
 };
 }

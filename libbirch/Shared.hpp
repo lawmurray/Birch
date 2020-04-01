@@ -97,8 +97,8 @@ public:
    * Correctly initialize after a bitwise copy.
    */
   void bitwiseFix() {
-    ///@todo Try without atomic load
-    discarded = false;
+    ///@todo Try without atomics
+    discarded.store(false);
     auto ptr = this->ptr.load();
     if (ptr) {
       ptr->incShared();
@@ -129,7 +129,7 @@ public:
   Shared& operator=(Shared&& o) {
     auto ptr = o.ptr.exchange(nullptr);
     auto old = this->ptr.exchange(ptr);
-    if (discarded) {
+    if (discarded.load()) {
       if (ptr && !o.isDiscarded()) {
         ptr->discardShared();
       }
@@ -154,7 +154,7 @@ public:
   Shared& operator=(Shared<U>&& o) {
     auto ptr = o.ptr.exchange(nullptr);
     auto old = this->ptr.exchange(ptr);
-    if (discarded) {
+    if (discarded.load()) {
       if (ptr && !o.isDiscarded()) {
         ptr->discardShared();
       }
@@ -201,7 +201,7 @@ public:
    */
   void replace(T* ptr) {
     auto old = this->ptr.exchange(ptr);
-    if (discarded) {
+    if (discarded.load()) {
       if (ptr) {
         ptr->incMemoShared();
       }
@@ -224,7 +224,7 @@ public:
   void release() {
     auto old = ptr.exchange(nullptr);
     if (old) {
-      if (discarded) {
+      if (discarded.load()) {
         old->decMemoShared();
       } else {
         old->decShared();
@@ -236,10 +236,8 @@ public:
    * Discard.
    */
   void discard() {
-    assert(!discarded);
     auto ptr = this->ptr.load();
-    if (ptr) {
-      discarded = true;
+    if (ptr && !discarded.exchange(true)) {
       ptr->discardShared();
     }
   }
@@ -248,10 +246,8 @@ public:
    * Restore.
    */
   void restore() {
-    assert(discarded);
     auto ptr = this->ptr.load();
-    if (ptr) {
-      discarded = false;
+    if (ptr && discarded.exchange(false)) {
       ptr->restoreShared();
     }
   }
@@ -260,7 +256,7 @@ public:
    * Has this been discarded?
    */
   bool isDiscarded() const {
-    return discarded;
+    return discarded.load();
   }
 
   /**
@@ -286,7 +282,7 @@ private:
   /**
    * Has the pointer been discarded?
    */
-  bool discarded;
+  Atomic<bool> discarded;
 };
 
 template<class T>
