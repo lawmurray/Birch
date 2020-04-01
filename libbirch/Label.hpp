@@ -61,8 +61,9 @@ public:
   template<class P>
   auto get(P& o)  {
     auto ptr = o.get();
-    if (o.query() && o->isFrozen()) {
+    if (ptr && ptr->isFrozen()) {  // isFrozen a useful guard for performance
       lock.write();
+      ptr = o.get();  // reload now that within critical region
       auto old = ptr;
       ptr = static_cast<typename P::value_type*>(mapGet(old));
       if (ptr != old) {
@@ -81,8 +82,9 @@ public:
   template<class P>
   auto pull(P& o) {
     auto ptr = o.get();
-    if (o.query() && o->isFrozen()) {
+    if (ptr && ptr->isFrozen()) {  // isFrozen a useful guard for performance
       lock.read();
+      ptr = o.get();  // reload now that within critical region
       auto old = ptr;
       ptr = static_cast<typename P::value_type*>(mapPull(old));
       if (ptr != old) {

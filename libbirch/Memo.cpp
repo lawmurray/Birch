@@ -193,7 +193,7 @@ void libbirch::Memo::rehash() {
         }
 
         /* deallocate previous table */
-        if (nentries1 > 0) {
+        if (nentries1 > 0u) {
           deallocate(keys1, nentries1 * sizeof(key_type), tentries1);
           deallocate(values1, nentries1 * sizeof(value_type), tentries1);
         }
