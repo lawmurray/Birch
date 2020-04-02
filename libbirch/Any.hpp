@@ -85,6 +85,7 @@ public:
       weakCount(1u),
       memoWeakCount(1u),
       label(rootLabel),
+      finished(false),
       frozen(false),
       frozenUnique(false),
       discarded(false) {
@@ -100,6 +101,7 @@ public:
       weakCount(1u),
       memoWeakCount(1u),
       label(nullptr),
+      finished(false),
       frozen(false),
       frozenUnique(false),
       discarded(false) {
@@ -222,6 +224,7 @@ public:
     o->memoWeakCount.store(1u);
     o->label = label;
     // size and tid set by operator new
+    o->finished.store(false);
     o->frozen.store(false);
     o->frozenUnique.store(false);
     o->discarded.store(false);
@@ -246,6 +249,7 @@ public:
    * Thaw the object.
    */
   void thaw() {
+    finished.store(false);
     frozen.store(false);
     frozenUnique.store(false);
     discarded.store(false);
