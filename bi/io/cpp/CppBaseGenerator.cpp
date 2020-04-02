@@ -59,7 +59,7 @@ void bi::CppBaseGenerator::visit(const Parentheses* o) {
         if (iter != stripped->begin()) {
           middle(", ");
         }
-        if ((*iter)->isTuple() || (*iter)->isSlice()) {
+        if ((*iter)->isTuple()) {
           ++inAssign;
         }
         middle(*iter);
@@ -119,20 +119,20 @@ void bi::CppBaseGenerator::visit(const UnaryCall* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Assign* o) {
-  if (o->left->isSlice() || o->left->isTuple()) {
-    ++inAssign;
+  if (o->left->isSlice()) {
+    auto slice = dynamic_cast<const Slice*>(o->left);
+    middle(slice->single << ".set");
+    middle("(libbirch::make_slice(" << slice->brackets << "), " << o->right << ')');
+  } else {
+    if (o->left->isTuple()) {
+      ++inAssign;
+    }
+    middle(o->left << " = " << o->right);
   }
-  middle(o->left << " = " << o->right);
 }
 
 void bi::CppBaseGenerator::visit(const Slice* o) {
-  middle(o->single << '.');
-  if (inAssign) {
-    --inAssign;
-    middle("get");
-  } else {
-    middle("pull");
-  }
+  middle(o->single << ".get");
   middle("(libbirch::make_slice(" << o->brackets << "))");
 }
 
@@ -782,5 +782,5 @@ void bi::CppBaseGenerator::genTraceLine(const Location* loc) {
 }
 
 void bi::CppBaseGenerator::genSourceLine(const Location* loc) {
-  line("//#line " << loc->firstLine << " \"" << loc->file->path << "\"");
+  line("#line " << loc->firstLine << " \"" << loc->file->path << "\"");
 }
