@@ -37,9 +37,6 @@ final class Stack<Type> {
    * Get the top element.
    */
   function top() -> Type {
-    if !head? {
-      error("empty!\n");
-    }
     assert head?;
     return head!.x;
   }
