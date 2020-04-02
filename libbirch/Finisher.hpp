@@ -11,17 +11,22 @@
 
 namespace libbirch {
 /**
- * Visitor for discarding an object, downgrading shared pointers to shared
- * memo pointers.
+ * Visitor for finishing deep copies through cross pointers, for all
+ * reachable objects.
  *
  * @ingroup libbirch
  */
-class Discarder {
+class Finisher {
 public:
   /**
-   * Visit empty list of variables (base case).
+   * Constructor.
+   *
+   * @param label Label of the object being visited. Lazy pointers that do
+   * not have this label are identified as cross pointers, and require
+   * finishing.
    */
-  void visit() const {
+  Finisher(Label* label) :
+      label(label) {
     //
   }
 
@@ -35,6 +40,13 @@ public:
   void visit(Arg& arg, Args&... args) const {
     visit(arg);
     visit(args...);
+  }
+
+  /**
+   * Visit empty list of variables (base case).
+   */
+  void visit() const {
+    //
   }
 
   /**
@@ -82,7 +94,15 @@ public:
    */
   template<class P>
   void visit(Lazy<P>& o) const {
-    o.discard();
+    if (o.getLabel() != this->label) {
+      /* cross pointer, finish recursively */
+      o.get()->finish();
+    }
   }
+
+  /**
+   * Label of the pointer on which the freeze was initiated.
+   */
+  Label* label;
 };
 }

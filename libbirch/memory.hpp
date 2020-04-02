@@ -7,6 +7,7 @@
 #include "libbirch/thread.hpp"
 #include "libbirch/Atomic.hpp"
 #include "libbirch/Pool.hpp"
+#include "libbirch/EntryExitLock.hpp"
 
 namespace libbirch {
 class Label;
@@ -15,6 +16,16 @@ class Label;
  * The root label, used for lazy deep copy.
  */
 extern Label* const rootLabel;
+
+/**
+ * Lock for sharing finish operations.
+ */
+extern EntryExitLock finishLock;
+
+/**
+ * Lock for sharing freeze operations.
+ */
+extern EntryExitLock freezeLock;
 
 /**
  * For an allocation size, determine the index of the pool to which it

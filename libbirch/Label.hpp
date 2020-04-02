@@ -31,14 +31,17 @@ public:
     //
   }
 
-  virtual void freeze_(Label* label) override {
-    lock.read();
-    memo.freeze(label);
-    lock.unread();
+  virtual void finish_() override {
+    //
+  }
+
+  virtual void freeze_() override {
+    //
   }
 
   virtual Label* copy_(Label* label) const override {
-    return new Label(*this);
+    assert(false);
+    return nullptr;
   }
 
   virtual Label* recycle_(Label* label) override {

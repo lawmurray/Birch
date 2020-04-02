@@ -11,8 +11,12 @@
  * Declare common virtual functions for classes and fibers.
  */
 #define LIBBIRCH_VIRTUALS(Name, Base...) \
-  virtual void freeze_(libbirch::Label* label) override { \
-    this->accept_(libbirch::Freezer(label)); \
+  virtual void finish_() override { \
+    this->accept_(libbirch::Finisher(this->getLabel())); \
+  } \
+  \
+  virtual void freeze_() override { \
+    this->accept_(libbirch::Freezer()); \
   } \
   \
   virtual Name* copy_(libbirch::Label* label) const override { \

@@ -8,7 +8,9 @@
 #include "libbirch/Optional.hpp"
 #include "libbirch/Fiber.hpp"
 #include "libbirch/Lazy.hpp"
+#include "libbirch/Finisher.hpp"
 #include "libbirch/Freezer.hpp"
+#include "libbirch/memory.hpp"
 
 namespace libbirch {
 /**
@@ -48,7 +50,7 @@ public:
   /**
    * Visit a value.
    */
-  template<class T>
+  template<class T, std::enable_if_t<is_value<T>::value,int> = 0>
   void visit(T& arg) const {
     //
   }
@@ -113,7 +115,13 @@ auto clone(const Lazy<P>& o) {
   auto object = o.pull();
   auto label = o.getLabel();
 
-  object->freeze(label);
+  finishLock.enter();
+  object->finish();
+  finishLock.exit();
+
+  freezeLock.enter();
+  object->freeze();
+  freezeLock.exit();
 
   Lazy<P> ptr(object, new Label(*label));
   ptr.get();

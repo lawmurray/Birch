@@ -18,16 +18,6 @@ namespace libbirch {
 class Freezer {
 public:
   /**
-   * Constructor.
-   *
-   * @param label Label of the pointer on which the freeze was initiated.
-   */
-  Freezer(Label* label) :
-      label(label) {
-    //
-  }
-
-  /**
    * Visit list of variables.
    *
    * @param arg First variable.
@@ -49,7 +39,7 @@ public:
   /**
    * Visit a value.
    */
-  template<class T>
+  template<class T, std::enable_if_t<is_value<T>::value,int> = 0>
   void visit(T& arg) const {
     //
   }
@@ -91,18 +81,8 @@ public:
    */
   template<class P>
   void visit(Lazy<P>& o) const {
-    auto object = o.pull();
-    auto label = o.getLabel();
-    if (label != this->label && label != object->getLabel()) {
-      /* unfinished cross pointer */
-      object = o.get();
-    }
-    object->freeze(this->label);
+    o.pull()->freeze();
+    o.getLabel()->freeze();
   }
-
-  /**
-   * Label of the pointer on which the freeze was initiated.
-   */
-  Label* label;
 };
 }

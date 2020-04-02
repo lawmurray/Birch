@@ -207,7 +207,7 @@ void libbirch::Memo::freeze(Label* label) {
   for (auto i = 0u; i < nentries; ++i) {
     auto value = values[i];
     if (value) {
-      value->freeze(label);
+      value->freeze();
     }
   }
 }

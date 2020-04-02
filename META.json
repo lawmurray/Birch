@@ -366,6 +366,7 @@
       "libbirch/external.hpp",
       "libbirch/Fiber.hpp",
       "libbirch/FiberState.hpp",
+      "libbirch/Finisher.hpp",
       "libbirch/Freezer.hpp",
       "libbirch/Index.hpp",
       "libbirch/Init.hpp",

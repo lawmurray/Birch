@@ -9,6 +9,7 @@
 
 namespace libbirch {
 class Label;
+class Finisher;
 class Freezer;
 class Copier;
 using Recycler = Copier;
@@ -187,15 +188,23 @@ public:
   }
 
   /**
-   * Freeze the object.
-   *
-   * @param label The new label.
+   * Finish the object.
    */
-  void freeze(Label* label) {
+  void finish() {
+    if (!finished.exchange(true)) {
+      /* proceed with finish */
+      finish_();
+    }
+  }
+
+  /**
+   * Freeze the object.
+   */
+  void freeze() {
     if (!frozen.exchange(true)) {
       /* proceed with freeze */
       frozenUnique.store(isUnique());
-      freeze_(label);
+      freeze_();
     }
   }
 
@@ -212,6 +221,7 @@ public:
     o->weakCount.store(1u);
     o->memoWeakCount.store(1u);
     o->label = label;
+    // size and tid set by operator new
     o->frozen.store(false);
     o->frozenUnique.store(false);
     o->discarded.store(false);
@@ -413,6 +423,13 @@ public:
   }
 
   /**
+   * Is the object finished?
+   */
+  bool isFinished() const {
+    return finished.load();
+  }
+
+  /**
    * Is the object frozen?
    */
   bool isFrozen() const {
@@ -447,11 +464,14 @@ protected:
   void releaseLabel();
 
   /**
-   * Freeze the object.
-   *
-   * @param label The new label.
+   * Finish the member variables of the object.
    */
-  virtual void freeze_(Label* label) = 0;
+  virtual void finish_() = 0;
+
+  /**
+   * Freeze the member variables of the object.
+   */
+  virtual void freeze_() = 0;
 
   /**
    * Copy the object.
@@ -549,6 +569,11 @@ private:
    * different thread.
    */
   int tid;
+
+  /**
+   * Finished flag.
+   */
+  Atomic<bool> finished;
 
   /**
    * Frozen flag. A frozen object is read-only.

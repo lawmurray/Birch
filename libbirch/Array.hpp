@@ -311,27 +311,56 @@ public:
    *
    * @return The resulting view or element.
    */
-  template<class V, std::enable_if_t<V::rangeCount() != 0,int> = 0>
+  template<class V, class U, std::enable_if_t<V::rangeCount() != 0,int> = 0>
+  auto set(const V& slice, const U& value) {
+    pinWrite();
+    Array<T,decltype(shape(slice))> o(shape(slice), buffer, offset +
+        shape.serial(slice));
+    o = value;
+    unpin();
+    return o;
+  }
+
+  template<class V, class U, std::enable_if_t<V::rangeCount() == 0,int> = 0>
+  T set(const V& slice, const U& value) {
+    pinWrite();
+    auto o = (*(buf() + shape.serial(slice)) = value);
+    unpin();
+    return o;
+  }
+
+  /*template<class V, std::enable_if_t<V::rangeCount() != 0,int> = 0>
   auto get(const V& slice) {
     pinWrite();
-    unpin();
-    return Array<T,decltype(shape(slice))>(shape(slice), buffer, offset +
+    Array<T,decltype(shape(slice))> o(shape(slice), buffer, offset +
         shape.serial(slice));
+    unpin();
+    return o;
   }
+
   template<class V, std::enable_if_t<V::rangeCount() == 0,int> = 0>
   T& get(const V& slice) {
     pinWrite();
+    auto& o = *(buf() + shape.serial(slice));
     unpin();
-    return *(buf() + shape.serial(slice));
-  }
+    return o;
+  }*/
+
   template<class V, std::enable_if_t<V::rangeCount() != 0,int> = 0>
-  auto pull(const V& slice) const {
-    return Array<T,decltype(shape(slice))>(shape(slice), buffer, offset +
+  auto get(const V& slice) const {
+    pin();
+    Array<T,decltype(shape(slice))> o(shape(slice), buffer, offset +
         shape.serial(slice));
+    unpin();
+    return o;
   }
+
   template<class V, std::enable_if_t<V::rangeCount() == 0,int> = 0>
-  T pull(const V& slice) const {
-    return *(buf() + shape.serial(slice));
+  T get(const V& slice) const {
+    pin();
+    auto o = *(buf() + shape.serial(slice));
+    unpin();
+    return o;
   }
   ///@}
 

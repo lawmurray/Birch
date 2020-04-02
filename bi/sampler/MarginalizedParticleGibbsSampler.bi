@@ -25,7 +25,13 @@ class MarginalizedParticleGibbsSampler < ParticleSampler {
       auto f <- filter.filter(model, r, false);
       for t in 1..nsteps + 1 {
         f?;
-        (x, w, lnormalize[t], ess[t], npropagations[t]) <- f!;
+        lnormalize':Real;
+        ess':Real;
+        npropagations':Integer;
+        (x, w, lnormalize', ess', npropagations') <- f!;
+        lnormalize[t] <- lnormalize';
+        ess[t] <- ess';
+        npropagations[t] <- npropagations';
       }
       assert !r? || r!.empty();
       auto b <- ancestor(w);

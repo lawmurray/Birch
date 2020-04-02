@@ -6,6 +6,9 @@
 #include "libbirch/Label.hpp"
 #include "libbirch/Shared.hpp"
 
+libbirch::EntryExitLock libbirch::finishLock;
+libbirch::EntryExitLock libbirch::freezeLock;
+
 #if ENABLE_MEMORY_POOL
 /**
  * Allocate a large buffer for the heap.

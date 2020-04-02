@@ -80,10 +80,11 @@ class ParticleFilter {
     yield (x, w, W, ess, nparticles);
     
     for t in 1..nsteps! {
+    stderr.print(t + " ");
       /* resample */
       if ess <= trigger*nparticles {
         auto a <- resample_systematic(w);
-        dynamic parallel for n in 1..nparticles {
+        parallel for n in 1..nparticles {
           if a[n] != n {
             x[n] <- clone(x[a[n]]);
           }
@@ -102,6 +103,7 @@ class ParticleFilter {
       W <- W + S - log(Real(nparticles));
       yield (x, w, W, ess, nparticles);
     }
+    stderr.print("\n");
   }
 
   fiber filter(model:Model, reference:Trace?, alreadyInitialized:Boolean) ->
