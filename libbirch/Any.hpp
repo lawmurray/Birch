@@ -192,10 +192,10 @@ public:
   /**
    * Finish the object.
    */
-  void finish() {
+  void finish(Label* label) {
     if (!finished.exchange(true)) {
       /* proceed with finish */
-      finish_();
+      finish_(label);
     }
   }
 
@@ -470,7 +470,7 @@ protected:
   /**
    * Finish the member variables of the object.
    */
-  virtual void finish_() = 0;
+  virtual void finish_(Label* label) = 0;
 
   /**
    * Freeze the member variables of the object.

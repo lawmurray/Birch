@@ -87,6 +87,10 @@ void libbirch::Memo::copy(const Memo& o) {
       auto key = o.keys[i];
       auto value = o.values[i];
       if (key) {
+        if (!value->isFrozen()) {
+          std::cerr << value->getClassName() << std::endl;
+          assert(false);
+        }
         key->incMemoWeak();
         value->incMemoShared();
       }
@@ -202,8 +206,16 @@ void libbirch::Memo::rehash() {
   }
 }
 
-void libbirch::Memo::freeze(Label* label) {
-  /* only need to freeze values here; keys are already frozen anyway */
+void libbirch::Memo::finish(Label* label) {
+  for (auto i = 0u; i < nentries; ++i) {
+    auto value = values[i];
+    if (value) {
+      value->finish(label);
+    }
+  }
+}
+
+void libbirch::Memo::freeze() {
   for (auto i = 0u; i < nentries; ++i) {
     auto value = values[i];
     if (value) {

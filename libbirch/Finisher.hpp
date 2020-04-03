@@ -94,9 +94,9 @@ public:
    */
   template<class P>
   void visit(Lazy<P>& o) const {
-    if (o.getLabel() != this->label) {
+    if (o.getLabel() != label) {
       /* cross pointer, finish recursively */
-      o.get()->finish();
+      o.get()->finish(label);
     }
   }
 

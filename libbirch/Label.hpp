@@ -31,12 +31,16 @@ public:
     //
   }
 
-  virtual void finish_() override {
-    //
+  virtual void finish_(Label* label) override {
+    lock.read();
+    memo.finish(label);
+    lock.unread();
   }
 
   virtual void freeze_() override {
-    //
+    lock.read();
+    memo.freeze();
+    lock.unread();
   }
 
   virtual Label* copy_(Label* label) const override {
@@ -98,7 +102,7 @@ public:
     return ptr;
   }
 
-private:
+//private:
   /**
    * Map an object that may not yet have been cloned, cloning it if
    * necessary.

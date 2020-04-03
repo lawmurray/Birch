@@ -116,11 +116,12 @@ auto clone(const Lazy<P>& o) {
   auto label = o.getLabel();
 
   finishLock.enter();
-  object->finish();
+  object->finish(label);
   finishLock.exit();
 
   freezeLock.enter();
   object->freeze();
+  label->freeze();
   freezeLock.exit();
 
   Lazy<P> ptr(object, new Label(*label));
