@@ -331,29 +331,12 @@ public:
   }
 
   template<class V, class U, std::enable_if_t<V::rangeCount() == 0,int> = 0>
-  T set(const V& slice, const U& value) {
+  T& set(const V& slice, const U& value) {
     pinWrite();
-    auto o = (*(buf() + shape.serial(slice)) = value);
+    auto& o = (*(buf() + shape.serial(slice)) = value);
     unpin();
     return o;
   }
-
-  /*template<class V, std::enable_if_t<V::rangeCount() != 0,int> = 0>
-  auto get(const V& slice) {
-    pinWrite();
-    Array<T,decltype(shape(slice))> o(shape(slice), buffer, offset +
-        shape.serial(slice));
-    unpin();
-    return o;
-  }
-
-  template<class V, std::enable_if_t<V::rangeCount() == 0,int> = 0>
-  T& get(const V& slice) {
-    pinWrite();
-    auto& o = *(buf() + shape.serial(slice));
-    unpin();
-    return o;
-  }*/
 
   template<class V, std::enable_if_t<V::rangeCount() != 0,int> = 0>
   auto get(const V& slice) const {
