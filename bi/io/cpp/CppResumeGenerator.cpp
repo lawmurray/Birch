@@ -178,7 +178,7 @@ void bi::CppResumeGenerator::visit(const Return* o) {
 
 void bi::CppResumeGenerator::visit(const LocalVariable* o) {
   if (o->has(RESUME)) {
-    start("[[maybe_unused]] auto " << getName(o->name->str(), o->number));
+    start("[[maybe_unused]] auto& " << getName(o->name->str(), o->number));
     finish(" = state_.template get<" << stateIndex++ << ">();");
   } else {
     CppBaseGenerator::visit(o);
@@ -256,7 +256,7 @@ void bi::CppResumeGenerator::genUnpack(const Function* o) {
   }
   for (auto param : params) {
     genSourceLine(param->loc);
-    start("auto " << getName(param->name->str(), param->number));
+    start("auto& " << getName(param->name->str(), param->number));
     finish(" = state_.template get<" << stateIndex++ << ">();");
   }
 }
