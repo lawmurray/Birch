@@ -87,10 +87,6 @@ void libbirch::Memo::copy(const Memo& o) {
       auto key = o.keys[i];
       auto value = o.values[i];
       if (key) {
-        if (!value->isFrozen()) {
-          std::cerr << value->getClassName() << std::endl;
-          assert(false);
-        }
         key->incMemoWeak();
         value->incMemoShared();
       }

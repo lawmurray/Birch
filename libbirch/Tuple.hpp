@@ -58,7 +58,15 @@ public:
    * Get element.
    */
   template<int n, std::enable_if_t<n == 0,int> = 0>
-  auto get() const {
+  auto& get() {
+    return head;
+  }
+
+  /**
+   * Get element.
+   */
+  template<int n, std::enable_if_t<n == 0,int> = 0>
+  const auto& get() const {
     return head;
   }
 
@@ -66,7 +74,15 @@ public:
    * Get element.
    */
   template<int n, std::enable_if_t<(n > 0),int> = 0>
-  auto get() const {
+  auto& get() {
+    return tail.template get<n - 1>();
+  }
+
+  /**
+   * Get element.
+   */
+  template<int n, std::enable_if_t<(n > 0),int> = 0>
+  const auto& get() const {
     return tail.template get<n - 1>();
   }
 
@@ -126,7 +142,15 @@ public:
    * Get element.
    */
   template<int n, std::enable_if_t<n == 0,int> = 0>
-  auto get() const {
+  auto& get() {
+    return head;
+  }
+
+  /**
+   * Get element.
+   */
+  template<int n, std::enable_if_t<n == 0,int> = 0>
+  const auto& get() const {
     return head;
   }
 

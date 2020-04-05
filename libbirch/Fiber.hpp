@@ -83,6 +83,8 @@ public:
    * @return Was a value yielded?
    */
   bool query() {
+    yieldValue = nil;
+    returnValue = nil;
     if (state.query()) {
       *this = state.get()->query();
     }
@@ -156,6 +158,7 @@ public:
   }
 
   bool query() {
+    returnValue = nil;
     if (state.query()) {
       *this = state.get()->query();
     }
@@ -203,6 +206,7 @@ public:
   }
 
   bool query() {
+    yieldValue = nil;
     if (state.query()) {
       *this = state.get()->query();
     }

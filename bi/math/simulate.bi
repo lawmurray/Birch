@@ -23,11 +23,11 @@ function seed(s:Integer) {
  */
 function seed() {
   cpp{{
-  //std::random_device rd;
+  std::random_device rd;
   #pragma omp parallel num_threads(libbirch::get_max_threads())
   {
     #pragma omp critical
-    rng.seed(0);
+    rng.seed(rd());
   }
   }}
 }

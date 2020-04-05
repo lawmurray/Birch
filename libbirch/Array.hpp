@@ -145,7 +145,7 @@ public:
   }
 
   /**
-   * Copy constructor.
+   * Copy constructor. For value types, this uses a copy-on-write facility.
    */
   Array(const Array<T,F>& o) :
       shape(o.shape),
@@ -153,12 +153,21 @@ public:
       offset(o.offset),
       isView(o.isView) {
     if (!isView && buffer) {
-      buffer->incUsage();
+      if (is_value<T>::value) {
+        /* copy on write for value types */
+        buffer->incUsage();
+      } else {
+        /* immediate copy for other types */
+        buffer = nullptr;
+        offset = 0;
+        allocate();
+        uninitialized_copy(o);
+      }
     }
   }
 
   /**
-   * Copy constructor.
+   * Generic copy constructor.
    */
   template<class U, class G, std::enable_if_t<F::count() == G::count() &&
       std::is_convertible<U,T>::value,int> = 0>
@@ -348,19 +357,13 @@ public:
 
   template<class V, std::enable_if_t<V::rangeCount() != 0,int> = 0>
   auto get(const V& slice) const {
-    pin();
-    Array<T,decltype(shape(slice))> o(shape(slice), buffer, offset +
+    return Array<T,decltype(shape(slice))>(shape(slice), buffer, offset +
         shape.serial(slice));
-    unpin();
-    return o;
   }
 
   template<class V, std::enable_if_t<V::rangeCount() == 0,int> = 0>
-  T get(const V& slice) const {
-    pin();
-    auto o = *(buf() + shape.serial(slice));
-    unpin();
-    return o;
+  const T& get(const V& slice) const {
+    return *(buf() + shape.serial(slice));
   }
   ///@}
 

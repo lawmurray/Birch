@@ -113,18 +113,27 @@ public:
 template<class P>
 auto clone(const Lazy<P>& o) {
   auto object = o.pull();
-  auto label = o.getLabel();
+  auto oldLabel = o.getLabel();
 
   finishLock.enter();
-  object->finish(label);
+  object->finish(oldLabel);
   finishLock.exit();
 
   freezeLock.enter();
   object->freeze();
-  label->freeze();
   freezeLock.exit();
 
-  Lazy<P> ptr(object, new Label(*label));
+  auto newLabel = new Label(*oldLabel);
+
+  finishLock.enter();
+  newLabel->finish(oldLabel);
+  finishLock.exit();
+
+  freezeLock.enter();
+  newLabel->freeze();
+  freezeLock.exit();
+
+  Lazy<P> ptr(object, newLabel);
   ptr.get();
   return ptr;
 }

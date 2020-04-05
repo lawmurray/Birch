@@ -203,6 +203,7 @@ public:
    * Freeze the object.
    */
   void freeze() {
+    assert(finished.load());
     if (!frozen.exchange(true)) {
       /* proceed with freeze */
       frozenUnique.store(isUnique());

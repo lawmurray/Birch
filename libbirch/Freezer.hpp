@@ -82,7 +82,7 @@ public:
   template<class P>
   void visit(Lazy<P>& o) const {
     o.pull()->freeze();
-    o.getLabel()->freeze();
+    ///@todo May be able to eliminate pull here, Finisher already pulled
   }
 };
 }
