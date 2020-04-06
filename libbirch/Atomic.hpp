@@ -34,8 +34,23 @@ public:
    *
    * @param value Initial value.
    */
-  explicit Atomic(const T& value) {
-    store(value);
+  explicit Atomic(const T& value) :
+      value(value) {
+    //
+  }
+
+  /**
+   * Get the value, not atomically.
+   */
+  T get() const {
+    return value;
+  }
+
+  /**
+   * Get the value, not atomically.
+   */
+  void set(const T& value) {
+    this->value = value;
   }
 
   /**

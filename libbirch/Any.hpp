@@ -219,16 +219,16 @@ public:
   Any* copy(Label* label) {
     auto o = copy_(label);
     ///@todo Try without atomics
-    o->sharedCount.store(0u);
-    o->memoSharedCount.store(0u);
-    o->weakCount.store(1u);
-    o->memoWeakCount.store(1u);
+    o->sharedCount.set(0u);
+    o->memoSharedCount.set(0u);
+    o->weakCount.set(1u);
+    o->memoWeakCount.set(1u);
     o->label = label;
     // size and tid set by operator new
-    o->finished.store(false);
-    o->frozen.store(false);
-    o->frozenUnique.store(false);
-    o->discarded.store(false);
+    o->finished.set(false);
+    o->frozen.set(false);
+    o->frozenUnique.set(false);
+    o->discarded.set(false);
     return o;
   }
 

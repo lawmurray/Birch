@@ -22,9 +22,8 @@ public:
    * Correctly initialize after a bitwise copy.
    */
   void bitwiseFix() {
-    ///@todo Try without atomic store
-    readers.store(0);
-    writer.store(false);
+    readers.set(0u);
+    writer.set(false);
   }
 
   /**

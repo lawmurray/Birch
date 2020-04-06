@@ -97,11 +97,9 @@ public:
    * Fix after a bitwise copy.
    */
   void bitwiseFix() {
-    ///@todo Try without atomics
-    discarded.store(false);
-    auto ptr = this->ptr.load();
-    if (ptr) {
-      ptr->incShared();
+    discarded.set(false);
+    if (ptr.get()) {
+      ptr.get()->incShared();
     }
   }
 

@@ -84,10 +84,8 @@ public:
    * Fix after a bitwise copy.
    */
   void bitwiseFix() {
-    ///@todo Try without atomic load
-    auto ptr = this->ptr.load();
-    if (ptr) {
-      ptr->incWeak();
+    if (ptr.get()) {
+      ptr.get()->incWeak();
     }
   }
 
