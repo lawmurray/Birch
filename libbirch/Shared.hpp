@@ -94,7 +94,7 @@ public:
   }
 
   /**
-   * Correctly initialize after a bitwise copy.
+   * Fix after a bitwise copy.
    */
   void bitwiseFix() {
     ///@todo Try without atomics

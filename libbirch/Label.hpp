@@ -5,6 +5,7 @@
 
 #include "libbirch/Any.hpp"
 #include "libbirch/Memo.hpp"
+#include "libbirch/Shared.hpp"
 
 namespace libbirch {
 /**
@@ -74,6 +75,9 @@ public:
       auto old = ptr;
       ptr = static_cast<typename P::value_type*>(mapGet(old));
       if (ptr != old) {
+        ///@todo Creating a shared pointer here is a workaround for now,
+        ///fix properly
+        Shared<typename P::value_type> shared(ptr);
         o.replace(ptr);
       }
       lock.unwrite();

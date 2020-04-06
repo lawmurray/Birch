@@ -48,6 +48,7 @@ libbirch::Memo::value_type libbirch::Memo::get(const key_type key,
   }
   return value;
 }
+
 void libbirch::Memo::put(const key_type key, const value_type value) {
   assert(key);
   assert(value);

@@ -154,16 +154,17 @@ final class RaggedArray<Type> {
   function shrink(n:Integer) {
     assert n < nrows;
 
-    cpp{{
-    self()->offsets.shrink(libbirch::make_shape(n));
-    self()->ncols.shrink(libbirch::make_shape(n));
-    }}
     if (n == 0) {
       nelements <- 0;
     } else {
       nelements <- offsets[n] + ncols[n];
     }
     nrows <- n;
+    cpp{{
+    self()->offsets.shrink(libbirch::make_shape(n));
+    self()->ncols.shrink(libbirch::make_shape(n));
+    self()->values.shrink(libbirch::make_shape(self()->nelements));
+    }}
     
     assert length(offsets) == length(ncols);
   }
@@ -201,11 +202,11 @@ final class RaggedArray<Type> {
   function enlarge(n:Integer) {
     assert n > nrows;
 
+    nrows <- n;
     cpp{{    
     self()->offsets.enlarge(libbirch::make_shape(n), self()->nelements);
     self()->ncols.enlarge(libbirch::make_shape(n), 0);
     }}
-    nrows <- n;
 
     assert length(offsets) == length(ncols);
   }

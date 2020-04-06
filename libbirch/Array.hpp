@@ -200,7 +200,7 @@ public:
   }
 
   /**
-   * Correctly initialize after a bitwise copy.
+   * Fix after a bitwise copy.
    */
   void bitwiseFix() {
     assert(!isView);
@@ -496,29 +496,28 @@ public:
     lock();
     auto oldSize = size();
     auto newSize = shape.size();
-    if (newSize < oldSize) {
-      if (isShared()) {
-        Array<T,F> tmp(shape, *this);
-        swap(tmp);
+    assert(newSize < oldSize);
+    if (isShared()) {
+      Array<T,F> tmp(shape, *this);
+      swap(tmp);
+    } else {
+      if (newSize == 0) {
+        release();
       } else {
-        if (newSize == 0) {
-          release();
-        } else {
-          if (!is_value<T>::value) {
-            ///@todo in C++17 can use std::destroy()
-            auto iter = begin() + shape.size();
-            auto last = end();
-            for (; iter != last; ++iter) {
-              iter->~T();
-            }
+        if (!is_value<T>::value) {
+          ///@todo in C++17 can use std::destroy()
+          auto iter = begin() + shape.size();
+          auto last = end();
+          for (; iter != last; ++iter) {
+            iter->~T();
           }
-          auto oldBytes = Buffer<T>::size(volume());
-          auto newBytes = Buffer<T>::size(shape.volume());
-          buffer = (Buffer<T>*)libbirch::reallocate(buffer, oldBytes,
-              buffer->tid, newBytes);
         }
-        this->shape = shape;
+        auto oldBytes = Buffer<T>::size(volume());
+        auto newBytes = Buffer<T>::size(shape.volume());
+        buffer = (Buffer<T>*)libbirch::reallocate(buffer, oldBytes,
+            buffer->tid, newBytes);
       }
+      this->shape = shape;
     }
     unlock();
   }
@@ -541,19 +540,18 @@ public:
     lock();
     auto oldSize = size();
     auto newSize = shape.size();
-    if (newSize > oldSize) {
-      if (!buffer || isShared()) {
-        Array<T,F> tmp(shape, *this);
-        swap(tmp);
-      } else {
-        auto oldBytes = Buffer<T>::size(volume());
-        auto newBytes = Buffer<T>::size(shape.volume());
-        buffer = (Buffer<T>*)libbirch::reallocate(buffer, oldBytes,
-            buffer->tid, newBytes);
-        this->shape = shape;
-      }
-      std::uninitialized_fill(begin() + oldSize, begin() + newSize, x);
+    assert(newSize > oldSize);
+    if (!buffer || isShared()) {
+      Array<T,F> tmp(shape, *this);
+      swap(tmp);
+    } else {
+      auto oldBytes = Buffer<T>::size(volume());
+      auto newBytes = Buffer<T>::size(shape.volume());
+      buffer = (Buffer<T>*)libbirch::reallocate(buffer, oldBytes,
+          buffer->tid, newBytes);
+      this->shape = shape;
     }
+    std::uninitialized_fill(begin() + oldSize, begin() + newSize, x);
     unlock();
   }
   ///@}
