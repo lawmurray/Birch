@@ -31,3 +31,7 @@ void bi::FunctionType::accept(Visitor* visitor) const {
 bool bi::FunctionType::isFunction() const {
   return true;
 }
+
+bool bi::FunctionType::isValue() const {
+  return false;
+}

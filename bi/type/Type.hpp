@@ -112,6 +112,14 @@ public:
   virtual bool isGeneric() const;
 
   /**
+   * Is this a value type? A value type is either a basic type, or a compound
+   * type that does not include any class, function, fiber, or generic types.
+   * Generic types that resolve to value types would be included, but their
+   * handling is left to the C++ compiler.
+   */
+  virtual bool isValue() const = 0;
+
+  /**
    * Number of elements in a type list.
    */
   virtual int width() const;

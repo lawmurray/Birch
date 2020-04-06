@@ -31,6 +31,10 @@ bool bi::OptionalType::isOptional() const {
   return true;
 }
 
+bool bi::OptionalType::isValue() const {
+  return single->isValue();
+}
+
 const bi::Type* bi::OptionalType::unwrap() const {
   return single;
 }

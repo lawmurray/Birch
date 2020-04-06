@@ -5,6 +5,7 @@
 
 #include "bi/expression/Expression.hpp"
 #include "bi/common/Named.hpp"
+#include "bi/common/Typed.hpp"
 #include "bi/common/TypeArgumented.hpp"
 #include "bi/common/Scope.hpp"
 
@@ -18,6 +19,7 @@ namespace bi {
 class NamedExpression:
     public Expression,
     public Named,
+    public Typed,
     public TypeArgumented {
 public:
   /**

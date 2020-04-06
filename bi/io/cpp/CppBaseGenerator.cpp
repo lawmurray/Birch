@@ -124,7 +124,7 @@ void bi::CppBaseGenerator::visit(const Assign* o) {
     middle(slice->single << ".set");
     middle("(libbirch::make_slice(" << slice->brackets << "), " << o->right << ')');
   } else {
-    if (o->left->isTuple()) {
+    if (o->left->isTuple() || o->left->isMember()) {
       ++inAssign;
     }
     middle(o->left << " = " << o->right);
@@ -193,13 +193,16 @@ void bi::CppBaseGenerator::visit(const Member* o) {
       middle("self()->super_type_::");
     } else {
       middle(o->left);
-      ///@todo Restore read-only optimization
-      //auto rightVar = dynamic_cast<const NamedExpression*>(o->right);
-      //if (!inAssign && rightVar) {
-        /* optimization: just reading a value, so no need to copy-on-write the
-         * owning object */
-      //  middle(".pull()");
-      //}
+      auto named = dynamic_cast<const NamedExpression*>(o->right);
+      assert(named);
+      if (!inAssign && named->category == MEMBER_VARIABLE &&
+          named->type->isValue()) {
+        /* read optimization: just reading a value, no need to copy-on-write
+         * the containing object */
+        middle(".pull()");
+      } else {
+        inAssign = 0;
+      }
       middle("->");
     }
   }

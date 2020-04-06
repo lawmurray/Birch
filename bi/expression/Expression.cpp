@@ -34,6 +34,10 @@ bool bi::Expression::isTuple() const {
   return false;
 }
 
+bool bi::Expression::isMember() const {
+  return false;
+}
+
 const bi::Expression* bi::Expression::strip() const {
   return this;
 }

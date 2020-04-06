@@ -68,6 +68,7 @@ public:
   virtual bool isClass() const;
   virtual bool isGeneric() const;
   virtual bool isWeak() const;
+  virtual bool isValue() const;
 
   /**
    * Does this have a weak marker?

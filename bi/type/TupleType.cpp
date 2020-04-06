@@ -30,3 +30,7 @@ void bi::TupleType::accept(Visitor* visitor) const {
 bool bi::TupleType::isTuple() const {
   return true;
 }
+
+bool bi::TupleType::isValue() const {
+  return single->isValue();
+}

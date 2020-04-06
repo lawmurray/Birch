@@ -29,3 +29,12 @@ bi::Type* bi::TypeList::accept(Modifier* visitor) {
 void bi::TypeList::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
+
+bool bi::TypeList::isValue() const {
+  for (auto type : *this) {
+    if (!type->isValue()) {
+      return false;
+    }
+  }
+  return true;
+}

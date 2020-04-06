@@ -29,3 +29,7 @@ void bi::EmptyType::accept(Visitor* visitor) const {
 bool bi::EmptyType::isEmpty() const {
   return true;
 }
+
+bool bi::EmptyType::isValue() const {
+  return true;
+}

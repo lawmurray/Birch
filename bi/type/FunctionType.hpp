@@ -33,6 +33,7 @@ public:
   virtual void accept(Visitor* visitor) const;
 
   virtual bool isFunction() const;
+  virtual bool isValue() const;
 
   /**
    * Parameters type.

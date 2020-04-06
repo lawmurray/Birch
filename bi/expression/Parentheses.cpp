@@ -32,6 +32,10 @@ bool bi::Parentheses::isTuple() const {
   return single->isTuple();
 }
 
+bool bi::Parentheses::isMember() const {
+  return single->isMember();
+}
+
 bi::Expression* bi::Parentheses::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }

@@ -67,14 +67,19 @@ public:
   virtual bool isAssignable() const;
 
   /**
-   * Is this a tuple?
+   * Is this a tuple expression?
    */
   virtual bool isTuple() const;
 
   /**
-   * Is this a slice?
+   * Is this a slice expression?
    */
   virtual bool isSlice() const;
+
+  /**
+   * Is this a member expression?
+   */
+  virtual bool isMember() const;
 
   /**
    * Strip parentheses, if any.

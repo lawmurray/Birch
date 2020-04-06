@@ -63,3 +63,7 @@ bool bi::NamedType::isGeneric() const {
 bool bi::NamedType::isWeak() const {
   return weak;
 }
+
+bool bi::NamedType::isValue() const {
+  return isBasic();
+}

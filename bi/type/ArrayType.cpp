@@ -37,6 +37,10 @@ bool bi::ArrayType::isArray() const {
   return true;
 }
 
+bool bi::ArrayType::isValue() const {
+  return single->isValue();
+}
+
 bi::Type* bi::ArrayType::element() {
   return single->element();
 }

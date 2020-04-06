@@ -36,6 +36,7 @@ public:
   virtual Type* element();
   virtual const Type* element() const;
   virtual bool isArray() const;
+  virtual bool isValue() const;
 
   /**
    * Number of dimensions.
