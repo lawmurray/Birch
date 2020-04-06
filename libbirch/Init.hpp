@@ -55,35 +55,35 @@ public:
    * conversion operators in the referent type.
    */
   bool query() const {
-    return ptr != nullptr;
+    return ptr.load() != nullptr;
   }
 
   /**
    * Get the raw pointer.
    */
   T* get() const {
-    return ptr;
+    return ptr.load();
   }
 
   /**
    * Get the raw pointer as const.
    */
   T* pull() const {
-    return ptr;
+    return ptr.load();
   }
 
   /**
    * Replace.
    */
   void replace(T* ptr) {
-    this->ptr = ptr;
+    this->ptr.store(ptr);
   }
 
   /**
    * Release.
    */
   void release() {
-    ptr = nullptr;
+    ptr.store(nullptr);
   }
 
   /**
@@ -125,7 +125,7 @@ private:
   /**
    * Raw pointer.
    */
-  T* ptr;
+  Atomic<T*> ptr;
 };
 
 template<class T>

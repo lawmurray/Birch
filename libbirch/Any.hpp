@@ -218,13 +218,11 @@ public:
    */
   Any* copy(Label* label) {
     auto o = copy_(label);
-    ///@todo Try without atomics
     o->sharedCount.set(0u);
     o->memoSharedCount.set(0u);
     o->weakCount.set(1u);
     o->memoWeakCount.set(1u);
     o->label = label;
-    // size and tid set by operator new
     o->finished.set(false);
     o->frozen.set(false);
     o->frozenUnique.set(false);
