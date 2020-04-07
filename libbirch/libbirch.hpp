@@ -26,7 +26,6 @@
 #include "libbirch/Slice.hpp"
 #include "libbirch/Array.hpp"
 #include "libbirch/Tuple.hpp"
-#include "libbirch/Tie.hpp"
 #include "libbirch/Any.hpp"
 #include "libbirch/Nil.hpp"
 #include "libbirch/Optional.hpp"
@@ -274,7 +273,7 @@ auto make_tuple(const Head& head, const Tail&... tail) {
 }
 
 /**
- * Make an assignable tuple.
+ * Tie a tuple.
  *
  * @tparam Head First element type.
  * @tparam Tail Remaining element types.
@@ -283,8 +282,22 @@ auto make_tuple(const Head& head, const Tail&... tail) {
  * @param tail Remaining elements.
  */
 template<class Head, class ... Tail>
-auto tie(Head& head, Tail&... tail) {
-  return Tie<Head&,Tail&...>(head, tail...);
+auto tie(Head&& head, Tail&&... tail) {
+  return Tuple<Head&,Tail&...>(head, tail...);
+}
+
+/**
+ * Tie a constant tuple.
+ *
+ * @tparam Head First element type.
+ * @tparam Tail Remaining element types.
+ *
+ * @param head First element.
+ * @param tail Remaining elements.
+ */
+template<class Head, class ... Tail>
+auto const_tie(const Head& head, const Tail&... tail) {
+  return Tuple<const Head&,const Tail&...>(head, tail...);
 }
 
 /**

@@ -83,7 +83,7 @@ class ParticleFilter {
       /* resample */
       if ess <= trigger*nparticles {
         auto a <- resample_systematic(w);
-        parallel for n in 1..nparticles {
+        dynamic parallel for n in 1..nparticles {
           if a[n] != n {
             x[n] <- clone(x[a[n]]);
           }

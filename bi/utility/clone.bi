@@ -14,8 +14,13 @@ function clone<Type>(o:Type) -> Type {
  * - length: Length of vector.
  */
 function clone<Type>(o:Type, length:Integer) -> Type[_] {
-  auto l <- @(n:Integer) -> Type { return clone(o); };
+  /* use a C++ lambda function with reference capture here, rather than a
+   * Birch lambda function with copy capture, to avoid incrementing the
+   * reference count on `o`; this can have significant performance
+   * implications around the single-reference optimization */
   cpp{{
-  return libbirch::make_array_from_lambda<Type>(libbirch::make_shape(length), l);
+  auto l = [&](int64_t n) { return libbirch::clone(o); };
+  return libbirch::make_array_from_lambda<Type>(
+      libbirch::make_shape(length), l);
   }}
 }

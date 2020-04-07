@@ -220,7 +220,15 @@ public:
   /**
    * Get the value.
    */
-  Lazy<P> get() const {
+  Lazy<P>& get() {
+    libbirch_assert_msg_(query(), "optional has no value");
+    return value;
+  }
+
+  /**
+   * Get the value.
+   */
+  const Lazy<P>& get() const {
     libbirch_assert_msg_(query(), "optional has no value");
     return value;
   }

@@ -105,7 +105,7 @@
     Base::accept_(v);
 
 /**
- * @def LIBBIRCH_FIBER
+ * @def LIBBIRCH_MEMBER_FIBER
  *
  * Use in place of LIBBIRCH_CLASS when the containing class is for a member
  * fiber.
@@ -118,7 +118,7 @@
   } \
   \
   auto& self() { \
-    return state_.template get<0>(); \
+    return local_.template get<0>(); \
   } \
   \
   template<class Visitor> \

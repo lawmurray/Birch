@@ -20,29 +20,54 @@ template<class Head, class ...Tail>
 class Tuple {
   template<class Head1, class... Tail1> friend class Tuple;
   template<class Head1, class... Tail1> friend class Tie;
-
-  static_assert(!std::is_lvalue_reference<Head>::value,
-      "Tuple does not support lvalue reference types, try Tie instead.");
 public:
   Tuple() = default;
 
   /**
    * Constructor.
    */
-  Tuple(const Head& head, const Tail&... tail) :
+  Tuple(Head head, Tail... tail) :
       head(head),
       tail(tail...) {
     //
   }
 
   /**
-   * Generic constructor.
+   * Copy constructor.
+   */
+  Tuple(const Tuple& o) :
+      head(o.head),
+      tail(o.tail) {
+    //
+  }
+
+  /**
+   * Generic copy constructor.
    */
   template<class Head1, class... Tail1>
   Tuple(const Tuple<Head1,Tail1...>& o) :
       head(o.head),
       tail(o.tail) {
     //
+  }
+
+  /**
+   * Copy assignment.
+   */
+  Tuple& operator=(const Tuple& o) {
+    head = o.head;
+    tail = o.tail;
+    return *this;
+  }
+
+  /**
+   * Generic copy assignment.
+   */
+  template<class Head1, class... Tail1>
+  Tuple& operator=(const Tuple<Head1,Tail1...>& o) {
+    head = o.head;
+    tail = o.tail;
+    return *this;
   }
 
   /**
@@ -107,27 +132,49 @@ template<class Head>
 class Tuple<Head> {
   template<class Head1, class... Tail1> friend class Tuple;
   template<class Head1, class... Tail1> friend class Tie;
-
-  static_assert(!std::is_lvalue_reference<Head>::value,
-      "Tuple does not support lvalue reference types, try Tie instead.");
 public:
   Tuple() = default;
 
   /**
    * Constructor.
    */
-  Tuple(const Head& head) :
+  Tuple(Head head) :
       head(head) {
     //
   }
 
   /**
-   * Generic constructor.
+   * Copy constructor.
+   */
+  Tuple(const Tuple& o) :
+      head(o.head) {
+    //
+  }
+
+  /**
+   * Generic copy constructor.
    */
   template<class Head1>
   Tuple(const Tuple<Head1>& o) :
       head(o.head) {
     //
+  }
+
+  /**
+   * Copy assignment.
+   */
+  Tuple& operator=(const Tuple& o) {
+    head = o.head;
+    return *this;
+  }
+
+  /**
+   * Generic copy assignment.
+   */
+  template<class Head1>
+  Tuple& operator=(const Tuple<Head1>& o) {
+    head = o.head;
+    return *this;
   }
 
   /**

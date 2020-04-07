@@ -392,7 +392,6 @@
       "libbirch/stacktrace.hpp",
       "libbirch/Stride.hpp",
       "libbirch/thread.hpp",
-      "libbirch/Tie.hpp",
       "libbirch/Tuple.hpp",
       "libbirch/type.hpp",
       "libbirch/Weak.hpp"
