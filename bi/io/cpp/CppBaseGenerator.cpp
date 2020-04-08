@@ -18,7 +18,8 @@ bi::CppBaseGenerator::CppBaseGenerator(std::ostream& base, const int level,
     inConstructor(0),
     inLambda(0),
     inMember(0),
-    inSequence(0) {
+    inSequence(0),
+    inReturn(0) {
   //
 }
 
@@ -52,32 +53,13 @@ void bi::CppBaseGenerator::visit(const Literal<const char*>* o) {
 void bi::CppBaseGenerator::visit(const Parentheses* o) {
   auto stripped = o->strip();
   if (stripped->isTuple()) {
-    if (inAssign) {
-      --inAssign;
-      middle("libbirch::tie(");
-      for (auto iter = stripped->begin(); iter != stripped->end(); ++iter) {
-        if (iter != stripped->begin()) {
-          middle(", ");
-        }
-        if ((*iter)->isTuple()) {
-          ++inAssign;
-        }
-        middle(*iter);
-      }
-      middle(')');
+    if (inReturn) {
+      middle("libbirch::make_tuple");
     } else {
-      middle("libbirch::make_tuple(");
-      for (auto iter = stripped->begin(); iter != stripped->end(); ++iter) {
-        if (iter != stripped->begin()) {
-          middle(", ");
-        }
-        middle("libbirch::canonical(" << *iter << ')');
-      }
-      middle(')');
+      middle("libbirch::tie");
     }
-  } else {
-    middle('(' << stripped << ')');
   }
+  middle('(' << stripped << ')');
 }
 
 void bi::CppBaseGenerator::visit(const Sequence* o) {
@@ -124,7 +106,7 @@ void bi::CppBaseGenerator::visit(const Assign* o) {
     middle(slice->single << ".set");
     middle("(libbirch::make_slice(" << slice->brackets << "), " << o->right << ')');
   } else {
-    if (o->left->isTuple() || o->left->isMember()) {
+    if (o->left->isMember()) {
       ++inAssign;
     }
     middle(o->left << " = " << o->right);
@@ -689,7 +671,9 @@ void bi::CppBaseGenerator::visit(const Assert* o) {
 
 void bi::CppBaseGenerator::visit(const Return* o) {
   genTraceLine(o->loc);
+  ++inReturn;
   line("return " << o->single << ';');
+  --inReturn;
 }
 
 void bi::CppBaseGenerator::visit(const Yield* o) {

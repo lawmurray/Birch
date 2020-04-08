@@ -41,19 +41,24 @@ protected:
   void genUniqueName(const Numbered* o);
 
   /**
-   * Generate code for type when packing fiber state into a tuple to save.
+   * Generate code for type of pack.
    */
   void genPackType(const Function* o);
 
   /**
-   * Generate code for packing fiber state into a tuple to save.
+   * Generate code for packing parameters into a tuple.
    */
-  void genPack(const Function* o);
+  void genPackParam(const Function* o);
 
   /**
-   * Generate code for unpacking the fiber state from a tuple to resume.
+   * Generate code for packing local variables into a tuple.
    */
-  void genUnpack(const Function* o);
+  void genPackLocal(const Function* o);
+
+  /**
+   * Generate code for unpacking parameters from a tuple.
+   */
+  void genUnpackParam(const Function* o);
 
   /**
    * Generate code for the macro used to yield at a particular yield point.
@@ -61,9 +66,14 @@ protected:
   void genYieldMacro(const Function* o);
 
   /**
-   * Does this resume function require a state?
+   * Does the resume function require any parameters to be preserved?
    */
-  bool requiresState(const Function* o);
+  bool requiresParam(const Function* o);
+
+  /**
+   * Does the resume function require any local variables to be preserved?
+   */
+  bool requiresLocal(const Function* o);
 
   /**
    * Name mappings. Local variables become member variables of the fiber
@@ -92,9 +102,13 @@ protected:
   const Fiber* currentFiber;
 
   /**
-   * Next element from state to retrieve when restoring values of parameters
-   * and local variables.
+   * Index of next parameter when unpacking.
    */
-  int stateIndex;
+  int paramIndex;
+
+  /**
+   * Index of next local variable when unpacking.
+   */
+  int localIndex;
 };
 }

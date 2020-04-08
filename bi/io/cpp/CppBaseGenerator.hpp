@@ -168,6 +168,11 @@ protected:
    * Are we in a sequence?
    */
   int inSequence;
+
+  /**
+   * Are we in a return statement?
+   */
+  int inReturn;
 };
 }
 
