@@ -24,25 +24,30 @@ enum Annotation {
   AUTO = 2,
 
   /**
-   * `final` annotation on a class or member function.
-   */
-  FINAL = 4,
-
-  /**
    * `abstract` annotation on a class or member function.
    */
-  ABSTRACT = 8,
+  ABSTRACT = 4,
+
+  /**
+   * `override` annotation on a class or member function.
+   */
+  OVERRIDE = 8,
+
+  /**
+   * `final` annotation on a class or member function.
+   */
+  FINAL = 16,
 
   /**
    * Is this a resume function, or local variable to be restored in a resume
    * function?
    */
-  RESUME = 16,
+  RESUME = 32,
 
   /**
    * Is this a start function?
    */
-  START = 32,
+  START = 64,
 };
 
 /**

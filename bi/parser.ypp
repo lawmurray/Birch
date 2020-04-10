@@ -92,7 +92,8 @@
 
 %token <valString> PROGRAM CLASS TYPE FUNCTION FIBER OPERATOR AUTO
 %token <valString> IF ELSE FOR IN WHILE DO ASSERT RETURN YIELD
-%token <valString> CPP HPP THIS SUPER GLOBAL PARALLEL DYNAMIC FINAL ABSTRACT
+%token <valString> CPP HPP THIS SUPER GLOBAL PARALLEL DYNAMIC
+%token <valString> ABSTRACT OVERRIDE FINAL
 %token <valString> NIL DOUBLE_BRACE_OPEN DOUBLE_BRACE_CLOSE NAME
 %token <valString> BOOL_LITERAL INT_LITERAL REAL_LITERAL STRING_LITERAL
 %token <valString> LEFT_OP RIGHT_OP LEFT_TILDE_OP RIGHT_TILDE_OP LEFT_QUERY_OP
@@ -498,8 +499,9 @@ fiber_declaration
     ;
 
 member_function_annotation
-    : FINAL     { $$ = bi::FINAL; }
-    | ABSTRACT  { $$ = bi::ABSTRACT; }
+    : ABSTRACT  { $$ = bi::ABSTRACT; }
+    | OVERRIDE  { $$ = bi::OVERRIDE; }
+    | FINAL     { $$ = bi::FINAL; }
     //|         { $$ = bi::NONE; }
     //^ don't put bi::NONE here, messes up line numbers
     ;

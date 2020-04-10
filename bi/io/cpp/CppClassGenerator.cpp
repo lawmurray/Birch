@@ -219,6 +219,8 @@ void bi::CppClassGenerator::visit(const MemberFunction* o) {
     if (header) {
       if (o->has(FINAL)) {
         middle(" final");
+      } else if (o->has(OVERRIDE)) {
+        middle(" override");
       } else if (o->has(ABSTRACT)) {
         middle(" = 0");
       }
@@ -256,6 +258,8 @@ void bi::CppClassGenerator::visit(const MemberFiber* o) {
     if (header) {
       if (o->has(FINAL)) {
         middle(" final");
+      } else if (o->has(OVERRIDE)) {
+        middle(" override");
       } else if (o->has(ABSTRACT)) {
         middle(" = 0");
       }
