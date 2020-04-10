@@ -7,6 +7,8 @@ digraph {
 
   ParticleFilter [href="../classes/ParticleFilter/",target="_top"]
   AliveParticleFilter [href="../classes/AliveParticleFilter/",target="_top"]
+  ConditionalParticleFilter [href="../classes/ConditionalParticleFilter/",target="_top"]
 
   AliveParticleFilter -> ParticleFilter
+  ConditionalParticleFilter -> ParticleFilter
 }

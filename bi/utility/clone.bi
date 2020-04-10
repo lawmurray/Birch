@@ -1,5 +1,5 @@
 /**
- * Deep clone an object or fiber.
+ * Deep clone an object.
  */
 function clone<Type>(o:Type) -> Type {
   cpp{{
@@ -8,7 +8,16 @@ function clone<Type>(o:Type) -> Type {
 }
 
 /**
- * Deep clone an object or fiber multiple times to construct an array.
+ * Deep clone an array.
+ *
+ * - o: Source array.
+ */
+function clone<Type>(o:Type[_]) -> Type[_] {
+  return transform<Type>(o, @(x:Type) -> Type { return clone(x); });
+}
+
+/**
+ * Deep clone an object multiple times to construct an array.
  *
  * - o: Source object.
  * - length: Length of vector.

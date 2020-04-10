@@ -6,11 +6,13 @@ digraph {
   edge [arrowhead=empty]
 
   ParticleSampler [href="../classes/ParticleSampler/",target="_top"]
+  ConditionalParticleSampler [href="../classes/ConditionalParticleSampler/",target="_top"]
   ParticleGibbsSampler [href="../classes/ParticleGibbsSampler/",target="_top"]
   MarginalizedParticleGibbsSampler [href="../classes/MarginalizedParticleGibbsSampler/",target="_top"]
   MarginalizedParticleImportanceSampler [href="../classes/MarginalizedParticleImportanceSampler/",target="_top"]
 
-  ParticleGibbsSampler -> ParticleSampler
-  MarginalizedParticleGibbsSampler -> ParticleSampler
+  ParticleGibbsSampler -> ConditionalParticleSampler
+  MarginalizedParticleGibbsSampler -> ConditionalParticleSampler
+  ConditionalParticleSampler -> ParticleSampler
   MarginalizedParticleImportanceSampler -> ParticleSampler
 }

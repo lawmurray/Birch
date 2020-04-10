@@ -52,8 +52,8 @@ program filter(
   if !buffer!.getString("class")? && model? {
     buffer!.setString("class", model!);
   }
-  auto m <- Model?(make(buffer));
-  if !m? {
+  auto archetype <- Model?(make(buffer));
+  if !archetype? {
     error("could not create model; the model class should be given as " + 
         "model.class in the config file, and should derive from Model.");
   }
@@ -81,7 +81,7 @@ program filter(
     auto reader <- Reader(inputPath!);
     auto inputBuffer <- reader.scan();
     reader.close();
-    inputBuffer.get(m!);
+    inputBuffer.get(archetype!);
   }
 
   /* output */
@@ -102,51 +102,55 @@ program filter(
   }
 
   /* filter */
-  auto f <- filter!.filter(m!);
-  auto t <- 0;
-  while f? {
-    sample:Model[_];
-    lweight:Real[_];
-    lnormalize:Real;
-    ess:Real;
-    propagations:Integer;
-    (sample, lweight, lnormalize, ess, propagations) <- f!;
-
-    /* write filter distribution to buffer */
-    buffer:MemoryBuffer;
-    if outputWriter? {
-      s:Object[_] <- sample;
-      buffer.set("sample", s);
-      buffer.set("lweight", lweight);
-      buffer.set("lnormalize", lnormalize);
-      buffer.set("ess", ess);
-      buffer.set("npropagations", propagations);
+  for t in 0..filter!.size() {
+    if t == 0 {
+      /* start filter */
+      filter!.filter(archetype!);
+    } else {
+      /* step filter */
+      filter!.filter(archetype!, t);
     }
     
+    /* output current state */
+    buffer:MemoryBuffer;
+    filter!.write(buffer, t);
+
     /* forecast */
-    auto forecast <- buffer.setArray("forecast");
-    auto g <- filter!.forecast(t, sample, lweight);
-    while g? {
-      (sample, lweight) <- g!;
+    if filter!.nforecasts > 0 {
+      /* clone filter for forecast purposes */
+      auto filter' <- clone(filter!);
+    
+      /* resample current particles... */
+      filter'.resample();
       
-      /* write forecast to buffer */
-      if outputWriter? {
-        auto buffer <- forecast.push();
-        s:Object[_] <- sample;
-        buffer.set("sample", s);
-        buffer.set("lweight", lweight);
+      /* ...but in future, don't resample */
+      filter'.trigger <- 1.0;
+
+      /* preserve the weights after resampling */
+      auto w' <- filter'.w;
+      
+      /* turn off delayed sampling, as analytical conditioning on obervations
+       * may occur otherwise, which would be invalid for a forecast */
+      filter'.delayed <- false;
+      
+      /* with these settings, we just filter ahead as normal */
+      auto forecast <- buffer.setArray("forecast");
+      for s in (t + 1)..(t + filter'.nforecasts) {
+        filter'.filter(archetype!, s);
+        if outputWriter? {
+          auto state <- forecast.push();
+          state.set("sample", filter'.x);
+          state.set("lweight", w');
+          state.set("lnormalize", filter'.lnormalize);
+        }
       }
     }
-
-    /* write buffer to file */
     if outputWriter? {
-      outputWriter!.write(buffer);
+      outputWriter!.print(buffer);
       outputWriter!.flush();
     }
-    
-    t <- t + 1;
     if !quiet {
-      bar.update(Real(t)/(filter!.nsteps! + 1));
+      bar.update((t + 1.0)/(filter!.size() + 1.0));
     }
   }
   

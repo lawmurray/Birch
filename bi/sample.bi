@@ -52,24 +52,10 @@ program sample(
   if !buffer!.getString("class")? && model? {
     buffer!.setString("class", model!);
   }
-  auto m <- Model?(make(buffer));
-  if !m? {
+  auto archetype <- Model?(make(buffer));
+  if !archetype? {
     error("could not create model; the model class should be given as " + 
         "model.class in the config file, and should derive from Model.");
-  }
-
-  /* filter */
-  buffer <- configBuffer.getObject("filter");
-  if !buffer? {
-    buffer <- configBuffer.setObject("filter");
-  }
-  if !buffer!.getString("class")? {
-    buffer!.setString("class", "ParticleFilter");
-  }
-  auto filter <- ParticleFilter?(make(buffer));
-  if !filter? {
-    error("could not create filter; the filter class should be given as " + 
-        "filter.class in the config file, and should derive from ParticleFilter.");
   }
 
   /* sampler */
@@ -85,7 +71,24 @@ program sample(
     error("could not create sampler; the sampler class should be given as " + 
         "sampler.class in the config file, and should derive from ParticleSampler.");
   }
-  sampler!.filter <- filter!;
+
+  /* filter */
+  buffer <- configBuffer.getObject("filter");
+  if !buffer? {
+    buffer <- configBuffer.setObject("filter");
+  }
+  if !buffer!.getString("class")? {
+    if ConditionalParticleSampler?(sampler)? {
+      buffer!.setString("class", "ConditionalParticleFilter");
+    } else {
+      buffer!.setString("class", "ParticleFilter");
+    }
+  }
+  auto filter <- ParticleFilter?(make(buffer));
+  if !filter? {
+    error("could not create filter; the filter class should be given as " + 
+        "filter.class in the config file, and should derive from ParticleFilter.");
+  }
   
   /* input */
   auto inputPath <- input;
@@ -96,7 +99,7 @@ program sample(
     auto reader <- Reader(inputPath!);
     auto inputBuffer <- reader.scan();
     reader.close();
-    inputBuffer.get(m!);
+    inputBuffer.get(archetype!);
   }
 
   /* output */
@@ -116,29 +119,17 @@ program sample(
     bar.update(0.0);
   }
 
-  /* sample */  
-  auto f <- sampler!.sample(m!);
-  auto n <- 0;
-  while f? {
-    sample:Model;
-    lweight:Real;
-    lnormalize:Real[_];
-    ess:Real[_];
-    npropagations:Integer[_];
-    (sample, lweight, lnormalize, ess, npropagations) <- f!;
+  /* sample */
+  sampler!.sample(filter!, archetype!);
+  for n in 1..sampler!.size() {
+    sampler!.sample(filter!, archetype!, n);
     
     if outputWriter? {
       buffer:MemoryBuffer;
-      buffer.set("sample", sample);
-      buffer.set("lweight", lweight);
-      buffer.set("lnormalize", lnormalize);
-      buffer.set("ess", ess);
-      buffer.set("npropagations", npropagations);
-      outputWriter!.write(buffer);
+      sampler!.write(buffer, n);      
+      outputWriter!.print(buffer);
       outputWriter!.flush();
     }
-          
-    n <- n + 1;
     if !quiet {
       bar.update(Real(n)/sampler!.nsamples);
     }

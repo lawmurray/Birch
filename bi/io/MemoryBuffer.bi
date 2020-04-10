@@ -40,6 +40,13 @@ class MemoryBuffer < Buffer {
   function size() -> Integer {
     return value.size();
   }
+  
+  /**
+   * Clear all contents.
+   */
+  function clear() {
+    value <- ObjectValue();
+  }
 
   fiber walk() -> Buffer {
     value.walk()!!;

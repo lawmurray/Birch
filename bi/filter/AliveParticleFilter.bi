@@ -9,84 +9,46 @@
  * </center>
  */
 class AliveParticleFilter < ParticleFilter {
-  fiber filter(model:Model) -> (Model[_], Real[_], Real, Real, Integer) {
-    auto x <- clone(model, nparticles);  // particles
-    auto w <- vector(0.0, nparticles);  // log-weights
-    auto ess <- 0.0;  // effective sample size
-    auto S <- 0.0;  // logarithm of the sum of weights
-    auto W <- 0.0;  // cumulative log normalizing constant estimate
-
-    /* number of steps */
-    if !nsteps? {
-      nsteps <- model.size();
-    }
-
-    /* event handler */
-    h:Handler <- play;
-    if delayed {
-      h <- global.playDelay;
-    }
-
-    /* initialize and weight */
-    parallel for n in 1..nparticles {
-      w[n] <- h.handle(x[n].simulate());
-    }
-    (ess, S) <- resample_reduce(w);
-    W <- W + S - log(Real(nparticles));
-    yield (x, w, W, ess, nparticles);
-   
-    for t in 1..nsteps! {
-      /* resample */
-      auto a <- resample_systematic(w);
-      dynamic parallel for n in 1..nparticles {
-        if a[n] != n {
-          x[n] <- clone(x[a[n]]);
-        }
-        w[n] <- 0.0;
-      }
-
-      /* propagate and weight */
-      auto p <- vector(0, nparticles + 1);
-      auto x0 <- x;
-      auto w0 <- w;
-      parallel for n in 1..nparticles + 1 {
-        if n <= nparticles {
-          x[n] <- clone(x0[a[n]]);
-          w[n] <- h.handle(x[n].simulate(t));
-          p[n] <- 1;
-          while w[n] == -inf {  // repeat until weight is positive
-            a[n] <- global.ancestor(w0);
-            x[n] <- clone(x0[a[n]]);
-            p[n] <- p[n] + 1;
-            w[n] <- h.handle(x[n].simulate(t));
-          }
-        } else {
-          /* propagate and weight until one further acceptance, which is
-           * discarded for unbiasedness in the normalizing constant
-           * estimate */
-          auto w' <- 0.0;
-          p[n] <- 0;
-          do {
-            auto a' <- global.ancestor(w0);
-            auto x' <- clone(x0[a']);
-            p[n] <- p[n] + 1;
-            w' <- h.handle(x'.simulate(t));
-          } while w' == -inf;  // repeat until weight is positive
-        }
-      }
-
-      auto npropagations <- sum(p);
-      (ess, S) <- resample_reduce(w);
-      W <- W + S - log(npropagations - 1.0);
-      yield (x, w, W, ess, npropagations);
-    }
-  }
-
   /**
-   * Conditional filter.
+   * Number of propagations for each particle, along with the extra particle
+   * to be discarded.
    */
-  fiber filter(model:Model, reference:Trace?, alreadyInitialized:Boolean) ->
-      (Model[_], Real[_], Real, Real, Integer) {
-    error("conditional filter not yet supported for AliveParticleFilter");
+  p:Integer[_];
+
+  override function filter(archetype:Model, t:Integer) {
+    auto x0 <- x;
+    auto w0 <- w;
+    p <- vector(0, nparticles + 1);
+    parallel for n in 1..nparticles + 1 {
+      if n <= nparticles {
+        x[n] <- clone(x0[a[n]]);
+        w[n] <- play.handle(x[n].simulate(t));
+        p[n] <- 1;
+        while w[n] == -inf {  // repeat until weight is positive
+          a[n] <- global.ancestor(w0);
+          x[n] <- clone(x0[a[n]]);
+          p[n] <- p[n] + 1;
+          w[n] <- play.handle(x[n].simulate(t));
+        }
+      } else {
+        /* propagate and weight until one further acceptance, which is
+         * discarded for unbiasedness in the normalizing constant
+         * estimate */
+        auto w' <- 0.0;
+        p[n] <- 0;
+        do {
+          auto a' <- global.ancestor(w0);
+          auto x' <- clone(x0[a']);
+          p[n] <- p[n] + 1;
+          w' <- play.handle(x'.simulate(t));
+        } while w' == -inf;  // repeat until weight is positive
+      }
+    }    
+    reduce();
+  }
+  
+  override function reduce() {
+    npropagations <- sum(p);
+    super.reduce();
   }
 }

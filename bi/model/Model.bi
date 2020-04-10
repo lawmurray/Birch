@@ -33,11 +33,4 @@ class Model {
   fiber simulate(t:Integer) -> Event {
     //
   }
-
-  /**
-   * Forecast the `t`th step.
-   */
-  fiber forecast(t:Integer) -> Event {
-    error(getClassName() + " does not support forecast.");
-  }
 }

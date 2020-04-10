@@ -8,6 +8,44 @@
  */
 class ParticleFilter {
   /**
+   * Particles.
+   */
+  x:Model[_];
+
+  /**
+   * Log weights.
+   */
+  w:Real[_];
+
+  /**
+   * Ancestor indices.
+   */
+  a:Integer[_];
+
+  /**
+   * Effective sample size.
+   */
+  ess:Real <- 0.0;
+  
+  /**
+   * Logarithm of sum of weights.
+   */
+  lsum:Real <- 0.0;
+
+  /**
+   * Log normalizing constant.
+   */
+  lnormalize:Real <- 0.0;
+  
+  /**
+   * Number of propagations. This is not the same as the number of particles;
+   * the number of propagations performed may, according to the filter type,
+   * differ from the number of particles, such as for alive and rejection
+   * control particle filters.
+   */
+  npropagations:Integer <- 0;
+
+  /**
    * Number of steps. If this has no value, the model will be required to
    * suggest an appropriate value.
    */
@@ -34,220 +72,125 @@ class ParticleFilter {
    * Should delayed sampling be used?
    */
   delayed:Boolean <- true;
+  
+  /**
+   * Event handler.
+   */
+  play:Handler <- global.play;
 
   /**
-   * Should ancestor sampling be used for conditional filter?
+   * Size. This is the number of steps of `filter(Model, Integer)` to be
+   * performed after the initial call to `filter(Model)`. Note that
+   * `filter(Model, Integer)` must be called before `size()`.
    */
-  ancestor:Boolean <- false;
-
+  function size() -> Integer {
+    assert nsteps?;
+    return nsteps!;
+  }
+  
   /**
-   * Filter.
+   * Initialize filter.
    *
-   * - model: The model.
-   *
-   * Yields: a tuple giving, in order:
-   *   - particle states,
-   *   - particle log weights,
-   *   - log normalizing constant estimate,
-   *   - effective sample size,
-   *   - total number of propagations used to obtain these, which may include
-   *     rejected particles.
+   * - archetype: Archetype. This is an instance of the appropriate model class
+   *   that may have one more random variables fixed to known values,
+   *   representing the inference problem (or target distribution).
    */
-  fiber filter(model:Model) -> (Model[_], Real[_], Real, Real, Integer) {
-    auto x <- clone(model, nparticles);  // particles
-    auto w <- vector(0.0, nparticles);  // log weights
-    auto ess <- 0.0;  // effective sample size
-    auto S <- 0.0;  // logarithm of the sum of weights
-    auto W <- 0.0;  // cumulative log normalizing constant estimate
+  function filter(archetype:Model) {
+    x <- clone(archetype, nparticles);
+    w <- vector(0.0, nparticles);
+    a <- iota(1, nparticles);
+    ess <- nparticles;
+    lsum <- 0.0;
+    lnormalize <- 0.0;
+    npropagations <- nparticles;
     
-    /* number of steps */
+    /* size */
     if !nsteps? {
-      nsteps <- model.size();
+      nsteps <- archetype.size();
     }
     
     /* event handler */
-    h:Handler <- play;
-    if delayed {
-      h <- global.playDelay;
-    }
-
-    /* initialize and weight */
-    parallel for n in 1..nparticles {
-      w[n] <- h.handle(x[n].simulate());
-    }
-    (ess, S) <- resample_reduce(w);
-    W <- W + S - log(Real(nparticles));
-    yield (x, w, W, ess, nparticles);
-    
-    for t in 1..nsteps! {
-      /* resample */
-      if ess <= trigger*nparticles {
-        auto a <- resample_systematic(w);
-        dynamic parallel for n in 1..nparticles {
-          if a[n] != n {
-            x[n] <- clone(x[a[n]]);
-          }
-          w[n] <- 0.0;
-        }
-      } else {
-        /* normalize weights to sum to nparticles */
-        w <- w - (S - log(Real(nparticles)));
-      }
-      
-      /* propagate and weight */
-      parallel for n in 1..nparticles {
-        w[n] <- w[n] + h.handle(x[n].simulate(t));
-      }
-      (ess, S) <- resample_reduce(w);
-      W <- W + S - log(Real(nparticles));
-      yield (x, w, W, ess, nparticles);
-    }
-  }
-
-  fiber filter(model:Model, reference:Trace?, alreadyInitialized:Boolean) ->
-      (Model[_], Real[_], Real, Real, Integer) {
-    auto x <- clone(model, nparticles);  // particles
-    auto w <- vector(0.0, nparticles);  // log-weights
-    auto ess <- 1.0*nparticles;  // effective sample size
-    auto S <- 0.0;  // logarithm of the sum of weights
-    auto W <- 0.0;  // cumulative log normalizing constant estimate
-    auto a <- iota(1, nparticles);  // ancestor indices
-    auto b <- 1;  // reference particle index
-
-    /* number of steps */
-    if !nsteps? {
-      nsteps <- model.size();
-    }
-    
-    /* event handlers */
-    replay:TraceHandler <- global.replay;  // to replay reference particle
-    play:Handler <- global.play;  // for other particles
     if delayed {
       play <- global.playDelay;
-      replay <- global.replayDelay;
-    }
-
-    /* initialize and weight */
-    if !alreadyInitialized {
-      parallel for n in 1..nparticles {
-        if reference? && n == b {
-          w[n] <- replay.handle(reference!, x[n].simulate(), x[n].trace);
-        } else {
-          w[n] <- play.handle(x[n].simulate(), x[n].trace);
-        }
-      }
-      (ess, S) <- resample_reduce(w);
-      W <- W + S - log(Real(nparticles));
-      yield (x, w, W, ess, nparticles);
+    } else {
+      play <- global.play;
     }
     
-    for t in 1..nsteps! {
-      /* ancestor sampling */
-      if reference? && ancestor {
-        auto w' <- w;
-        dynamic parallel for n in 1..nparticles {
-          auto x' <- clone(x[n]);
-          auto reference' <- clone(reference!);
-          w'[n] <- w'[n] + replay.handle(reference', x'.simulate(t));
-          // ^ assuming Markov model here
-        }
-
-        /* simulate a new ancestor index */
-        b <- global.ancestor(w');
-      }
-    
-      /* resample */
-      if ess <= trigger*nparticles {
-        if reference? {
-          (a, b) <- conditional_resample_multinomial(w, b);
-        } else {
-          a <- resample_multinomial(w);
-        }
-        dynamic parallel for n in 1..nparticles {
-          if a[n] != n {
-            x[n] <- clone(x[a[n]]);
-          }
-          w[n] <- 0.0;
-        }
-      } else {
-        /* normalize weights to sum to nparticles */
-        w <- w - (S - log(Real(nparticles)));
-      }
-      
-      /* propagate and weight */
-      parallel for n in 1..nparticles {
-        if reference? && n == b {
-          w[n] <- replay.handle(reference!, x[n].simulate(t), x[n].trace);
-        } else {
-          w[n] <- play.handle(x[n].simulate(t), x[n].trace);
-        }
-      }
-      (ess, S) <- resample_reduce(w);
-      W <- W + S - log(Real(nparticles));
-      yield (x, w, W, ess, nparticles);
+    /* initialize particles */
+    parallel for n in 1..nparticles {
+      w[n] <- play.handle(x[n].simulate());
     }
   }
 
   /**
-   * Forecast.
+   * Filter one step.
    *
-   * - t: Time step.
-   * - x: Starting states.
-   * - w: Starting log weights.
-   *
-   * Yields: a tuple giving, in order:
-   *   - particle states,
-   *   - particle log weights.
+   * - archetype: Archetype. This is an instance of the appropriate model class
+   *   that may have one more random variables fixed to known values,
+   *   representing the inference problem (or target distribution).
+   * - t: The step number, beginning at 0.
    */
-  fiber forecast(t:Integer, x:Model[_], w:Real[_]) -> (Model[_],
-      Real[_]) {
-    assert length(x) == nparticles;
-
-    auto x' <- x;
-    auto w' <- w;
-
-    /* resample */
-    ess:Real;
-    S:Real;
-    (ess, S) <- resample_reduce(w);
+  function filter(archetype:Model, t:Integer) {
+    resample();
+    parallel for n in 1..nparticles {
+      w[n] <- w[n] + play.handle(x[n].simulate(t));
+    }
+    reduce();
+  }
+  
+  /**
+   * Compute reductions, such as effective sample size and normalizing
+   * constant estimate.
+   */
+  function reduce() {
+    (ess, lsum) <- resample_reduce(w);
+    lnormalize <- lnormalize + lsum - log(Real(nparticles));
+  }
+  
+  /**
+   * Resample particles.
+   */
+  function resample() {
     if ess <= trigger*nparticles {
-      auto a <- resample_systematic(w);
+      a <- resample_systematic(w);
       dynamic parallel for n in 1..nparticles {
-        x'[n] <- clone(x[a[n]]);
-        w'[n] <- 0.0;
+        if a[n] != n {
+          x[n] <- clone(x[a[n]]);
+        }
+        w[n] <- 0.0;
       }
     } else {
-      dynamic parallel for n in 1..nparticles {
-        x'[n] <- clone(x[n]);
-      }
-    }
-
-    /* forecast */
-    for s in 1..nforecasts {
-      parallel for n in 1..nparticles {
-        w'[n] <- w'[n] + play.handle(x'[n].forecast(t + s));
-      }
-      yield (x', w');
+      /* normalize weights to sum to nparticles */
+      w <- w - lsum + log(Real(nparticles));
     }
   }
 
-  function read(buffer:Buffer) {
+  /**
+   * Write only the current state to a buffer.
+   */
+  function write(buffer:Buffer, t:Integer) {
+    buffer.set("sample", clone(x));
+    buffer.set("lweight", w);
+    buffer.set("lnormalize", lnormalize);
+    buffer.set("ess", ess);
+    buffer.set("npropagations", npropagations);
+  }
+
+  override function read(buffer:Buffer) {
+    super.read(buffer);
     nsteps <-? buffer.get("nsteps", nsteps);
     nforecasts <-? buffer.get("nforecasts", nforecasts);
     nparticles <-? buffer.get("nparticles", nparticles);
     trigger <-? buffer.get("trigger", trigger);
     delayed <-? buffer.get("delayed", delayed);
-    ancestor <-? buffer.get("ancestor", ancestor);
   }
 
-  function write(buffer:Buffer) {
-    if nsteps? {
-      buffer.set("nsteps", nsteps!);
-    }
+  override function write(buffer:Buffer) {
+    super.write(buffer);
+    buffer.set("nsteps", nsteps!);
     buffer.set("nforecasts", nforecasts);
     buffer.set("nparticles", nparticles);
     buffer.set("trigger", trigger);
     buffer.set("delayed", delayed);
-    buffer.set("ancestor", ancestor);
   }
 }
