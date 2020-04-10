@@ -147,7 +147,7 @@ protected:
 template<class T, class F, class G>
 bool inside(const Iterator<T,F>& begin, const Iterator<T,F>& end,
      const Iterator<T,G>& iter) {
-  return begin <= iter && iter <= end;
+  return begin <= iter && iter < end;
 }
 
 /**

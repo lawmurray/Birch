@@ -181,12 +181,14 @@ final class RaggedArray<Type> {
     assert n < ncols[i];
   
     d:Integer <- ncols[i] - n;
-    values[(offsets[i] + n + 1)..(nelements - d)] <- values[(offsets[i] + n + 1 + d)..nelements];
+    if offsets[i] + ncols[i] - 1 < nelements {
+      values[(offsets[i] + ncols[i] - d)..(nelements - d)] <- values[(offsets[i] + ncols[i])..nelements];
+    }
     cpp{{
-    self()->values.shrink(libbirch::make_shape(self()->nelements));
+    self()->values.shrink(libbirch::make_shape(self()->nelements - d));
     }}
     ncols[i] <- n;
-    if i + 1 <= nrows {
+    if i < nrows {
       offsets[(i + 1)..nrows] <- offsets[(i + 1)..nrows] - d;
     }
     nelements <- nelements - d;
@@ -204,7 +206,7 @@ final class RaggedArray<Type> {
 
     nrows <- n;
     cpp{{    
-    self()->offsets.enlarge(libbirch::make_shape(n), self()->nelements);
+    self()->offsets.enlarge(libbirch::make_shape(n), self()->nelements + 1);
     self()->ncols.enlarge(libbirch::make_shape(n), 0);
     }}
 
@@ -227,14 +229,14 @@ final class RaggedArray<Type> {
     cpp{{
     self()->values.enlarge(libbirch::make_shape(self()->nelements + d), x);
     }}
-    if offsets[i] + n + 1 <= nelements {
-      values[(offsets[i] + n + 1)..(nelements + d)] <- values[(offsets[i] + n + 1 - d)..nelements];
-    }
-    for j in (offsets[i] + n + 1 - d)..(offsets[i] + n) {
-      values[j] <- x;
+    if offsets[i] + ncols[i] - 1 < nelements {
+      values[(offsets[i] + ncols[i] + d)..(nelements + d)] <- values[(offsets[i] + ncols[i])..nelements];
+      for j in (offsets[i] + ncols[i])..(offsets[i] + ncols[i] + d - 1) {
+        values[j] <- x;
+      }
     }
     ncols[i] <- n;
-    if i + 1 <= nrows {
+    if i < nrows {
       offsets[(i + 1)..nrows] <- offsets[(i + 1)..nrows] + d;
     }
     nelements <- nelements + d;
@@ -269,7 +271,7 @@ final class RaggedArray<Type> {
   function serial(i:Integer, j:Integer) -> Integer {
     assert 0 < i && i <= nrows;
     assert 0 < j && j <= ncols[i];
-    return offsets[i] + j;
+    return offsets[i] + j - 1;
   }
 
  function read(buffer:Buffer) {
