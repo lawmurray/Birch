@@ -224,6 +224,7 @@ public:
     o->weakCount.set(1u);
     o->memoWeakCount.set(1u);
     o->label = label;
+    o->tid = get_thread_num();
     o->finished.set(false);
     o->frozen.set(false);
     o->frozenUnique.set(false);
