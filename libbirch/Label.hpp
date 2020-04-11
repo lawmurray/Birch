@@ -25,11 +25,8 @@ public:
    */
   Label(const Label& o);
 
-  /**
-   * Destructor.
-   */
-  virtual ~Label() {
-    //
+  virtual const char* getClassName() const {
+    return "Label";
   }
 
   virtual void finish_(Label* label) override {

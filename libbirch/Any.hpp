@@ -12,7 +12,7 @@ class Label;
 class Finisher;
 class Freezer;
 class Copier;
-using Recycler = Copier;
+class Recycler;
 class Discarder;
 class Restorer;
 
@@ -177,13 +177,14 @@ public:
     auto sharedCount = numShared();
     auto memoSharedCount = numMemoShared();
     auto weakCount = numWeak();
+    auto memoWeakCount = numMemoWeak();
 
-    return (sharedCount == 0u && memoSharedCount == 0u && weakCount <= 1u) ||
-        (sharedCount <= 1u && memoSharedCount <= 1u && weakCount <= 1u);
+    return (sharedCount == 1u && memoSharedCount == 1u && weakCount == 1u && memoWeakCount == 1u) ||
+        (sharedCount == 0u && memoSharedCount == 0u && weakCount == 1u && memoWeakCount == 1u);
   }
 
   /**
-   * Get the classs name.
+   * Get the class name.
    */
   virtual const char* getClassName() const {
     return "Any";
@@ -236,11 +237,11 @@ public:
    * @param label The new label.
    */
   Any* recycle(Label* label) {
-    recycle_(label);
-    thaw();
-    releaseLabel();
-    this->label = label;
-    holdLabel();
+    auto o = recycle_(label);
+    o->releaseLabel();
+    o->label = label;
+    o->holdLabel();
+    o->thaw();
     return this;
   }
 

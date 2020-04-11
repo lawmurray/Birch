@@ -159,7 +159,6 @@ public:
     //
   }
 
-
   /**
    * Generic value copy assignment.
    */

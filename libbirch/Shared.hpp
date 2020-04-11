@@ -50,8 +50,7 @@ public:
   /**
    * Generic copy constructor.
    */
-  template<class Q, class U = typename Q::value_type,
-      std::enable_if_t<std::is_base_of<T,U>::value,int> = 0>
+  template<class Q, std::enable_if_t<std::is_base_of<T,typename Q::value_type>::value,int> = 0>
   Shared(const Q& o) :
       discarded(false) {
     auto ptr = o.ptr.load();
@@ -114,8 +113,7 @@ public:
   /**
    * Generic copy assignment.
    */
-  template<class Q, class U = typename Q::value_type,
-      std::enable_if_t<std::is_base_of<T,U>::value,int> = 0>
+  template<class Q, std::enable_if_t<std::is_base_of<T,typename Q::value_type>::value,int> = 0>
   Shared& operator=(const Q& o) {
     replace(o.ptr.load());
     return *this;
@@ -198,19 +196,19 @@ public:
    * Replace.
    */
   void replace(T* ptr) {
-    auto old = this->ptr.exchange(ptr);
-    if (discarded.load()) {
-      if (ptr) {
+    auto discarded = this->discarded.load();
+    if (ptr) {
+      if (discarded) {
         ptr->incMemoShared();
-      }
-      if (old) {
-        old->decMemoShared();
-      }
-    } else {
-      if (ptr) {
+      } else {
         ptr->incShared();
       }
-      if (old) {
+    }
+    auto old = this->ptr.exchange(ptr);
+    if (old) {
+      if (discarded) {
+        old->decMemoShared();
+      } else {
         old->decShared();
       }
     }
@@ -220,9 +218,10 @@ public:
    * Release.
    */
   void release() {
+    auto discarded = this->discarded.load();
     auto old = ptr.exchange(nullptr);
     if (old) {
-      if (discarded.load()) {
+      if (discarded) {
         old->decMemoShared();
       } else {
         old->decShared();
