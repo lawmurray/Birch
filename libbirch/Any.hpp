@@ -85,10 +85,7 @@ public:
       weakCount(1u),
       memoWeakCount(1u),
       label(rootLabel),
-      finished(false),
-      frozen(false),
-      frozenUnique(false),
-      discarded(false) {
+      packed(0) {
     // size and tid set by operator new
   }
 
@@ -101,10 +98,7 @@ public:
       weakCount(1u),
       memoWeakCount(1u),
       label(nullptr),
-      finished(false),
-      frozen(false),
-      frozenUnique(false),
-      discarded(false) {
+      packed(0) {
     // size and tid set by operator new
   }
 
@@ -128,7 +122,7 @@ public:
    */
   void* operator new(std::size_t size) {
     auto ptr = static_cast<Any*>(allocate(size));
-    ptr->size = static_cast<unsigned>(size);
+    ptr->size = static_cast<uint64_t>(size);
     ptr->tid = get_thread_num();
     return ptr;
   }
@@ -147,13 +141,6 @@ public:
    */
   Any& operator=(const Any&) {
     return *this;
-  }
-
-  /**
-   * Get the size, in bytes, of the object.
-   */
-  unsigned getSize() const {
-    return size;
   }
 
   /**
@@ -194,7 +181,8 @@ public:
    * Finish the object.
    */
   void finish(Label* label) {
-    if (!finished.exchange(true)) {
+    auto old = packed.maskOr(1 << 0) & (1 << 0);
+    if (!old) {
       /* proceed with finish */
       finish_(label);
     }
@@ -204,11 +192,34 @@ public:
    * Freeze the object.
    */
   void freeze() {
-    assert(finished.load());
-    if (!frozen.exchange(true)) {
+    assert(isFinished());
+    auto old = packed.maskOr(1 << 1) & (1 << 1);
+    if (!old) {
       /* proceed with freeze */
-      frozenUnique.store(isUnique());
+      if (isUnique()) {
+        packed.maskOr(1 << 2);
+      }
       freeze_();
+    }
+  }
+
+  /**
+   * Discard the object.
+   */
+  void discard() {
+    auto old = packed.maskOr(1 << 3) & (1 << 3);
+    if (!old) {
+      discard_();
+    }
+  }
+
+  /**
+   * Restore the object.
+   */
+  void restore() {
+    auto old = packed.maskAnd(~int16_t(1 << 3)) & (1 << 3);
+    if (old) {
+      restore_();
     }
   }
 
@@ -225,10 +236,7 @@ public:
     o->memoWeakCount.set(1u);
     o->label = label;
     o->tid = get_thread_num();
-    o->finished.set(false);
-    o->frozen.set(false);
-    o->frozenUnique.set(false);
-    o->discarded.set(false);
+    o->packed.set(0);
     return o;
   }
 
@@ -250,28 +258,7 @@ public:
    * Thaw the object.
    */
   void thaw() {
-    finished.store(false);
-    frozen.store(false);
-    frozenUnique.store(false);
-    discarded.store(false);
-  }
-
-  /**
-   * Discard the object.
-   */
-  void discard() {
-    if (!discarded.exchange(true)) {
-      discard_();
-    }
-  }
-
-  /**
-   * Restore the object.
-   */
-  void restore() {
-    if (discarded.exchange(false)) {
-      restore_();
-    }
+    packed.store(0);
   }
 
   /**
@@ -288,7 +275,7 @@ public:
     if (++sharedCount == 1u) {
       incMemoShared();
       holdLabel();
-      if (discarded.load()) {  // only false when initializing object
+      if (isDiscarded()) {  // only false when initializing object
         restore();
       }
     }
@@ -345,7 +332,7 @@ public:
   void discardShared() {
     assert(numShared() > 0u);
     if (--sharedCount == 0u) {
-      assert(!discarded.load());
+      assert(!isDiscarded());
       discard();
       releaseLabel();
     } else {
@@ -359,7 +346,7 @@ public:
    */
   void restoreShared() {
     if (++sharedCount == 1u) {
-      assert(discarded.load());
+      assert(isDiscarded());
       holdLabel();
       restore();
     } else {
@@ -431,14 +418,14 @@ public:
    * Is the object finished?
    */
   bool isFinished() const {
-    return finished.load();
+    return packed.load() & (1 << 0);
   }
 
   /**
    * Is the object frozen?
    */
   bool isFrozen() const {
-    return frozen.load();
+    return packed.load() & (1 << 1);
   }
 
   /**
@@ -446,14 +433,14 @@ public:
    * pointer to it?
    */
   bool isFrozenUnique() const {
-    return frozenUnique.load();
+    return packed.load() & (1 << 2);
   }
 
   /**
    * Is the object discarded?
    */
   bool isDiscarded() const {
-    return discarded.load();
+    return packed.load() & (1 << 3);
   }
 
 protected:
@@ -528,7 +515,7 @@ private:
     assert(memoSharedCount.load() == 0u);
     assert(weakCount.load() == 0u);
     assert(memoWeakCount.load() == 0u);
-    libbirch::deallocate(this, size, tid);
+    libbirch::deallocate(this, (unsigned)size, tid);
   }
 
   /**
@@ -560,40 +547,29 @@ private:
   Label* label;
 
   /**
-   * Size of the object. This is set immediately after construction. A value
-   * of zero is also indicative that the object is still being constructed.
-   * Consequently, if the shared count reaches zero while the size is zero,
-   * the object is not destroyed. This can happen when constructors create
-   * shared pointers to `this`.
-   */
-  unsigned size;
-
-  /**
-   * Id of the thread associated with the object. This is used to return the
-   * allocation to the correct pool after use, even when returned by a
-   * different thread.
+   * Id of the thread associated with the object. This is set immediately
+   * after allocation. It is used to return the allocation to the correct
+   * pool after use, even when returned by a different thread.
    */
   int tid;
 
   /**
-   * Finished flag.
+   * Size of the object. This is set immediately after allocation. It is used
+   * to return the allocation to the correct pool after use.
    */
-  Atomic<bool> finished;
+  uint16_t size;
 
   /**
-   * Frozen flag. A frozen object is read-only.
+   * Bitfield containing:
+   *
+   *   * Finished flag.
+   *   * Frozen flag.
+   *   * Unique frozen flag: is the object frozen, and at the time of
+   *     freezing, was there only one pointer to it?
+   *   * Discard flag.
+   *
+   * The first field occupies 28 bits, the remainder 1 bit each.
    */
-  Atomic<bool> frozen;
-
-  /**
-   * Is the object frozen, and at the time of freezing, was there only one
-   * pointer to it?
-   */
-  Atomic<bool> frozenUnique;
-
-  /**
-   * Discard flag.
-   */
-  Atomic<bool> discarded;
+  Atomic<uint16_t> packed;
 };
 }
