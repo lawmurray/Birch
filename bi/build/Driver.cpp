@@ -35,7 +35,7 @@ bi::Driver::Driver(int argc, char** argv) :
     coverage(false),
     verbose(true),
     memoryPool(true),
-    cloneMemoInitialSize(16),
+    cloneMemoInitialSize(8),
     newAutogen(false),
     newConfigure(false),
     newMake(false) {
