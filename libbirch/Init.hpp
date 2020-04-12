@@ -37,7 +37,7 @@ public:
   template<class Q, class U = typename Q::value_type,
       std::enable_if_t<std::is_base_of<T,U>::value,int> = 0>
   Init(const Q& o) :
-      ptr(o.ptr) {
+      ptr(o.get()) {
     //
   }
 
@@ -98,13 +98,6 @@ public:
    */
   void restore() {
     // nothing to do for weak pointers
-  }
-
-  /**
-   * Has this been discarded?
-   */
-  static bool isDiscarded() {
-    return false;
   }
 
   /**

@@ -90,6 +90,42 @@ public:
   }
 
   /**
+   * Apply a mask, with bitwise `and`, and return the previous value,
+   * atomically.
+   *
+   * @param m Mask.
+   *
+   * @return Old value.
+   */
+  T maskAnd(const T& m) {
+    T old;
+    #pragma omp atomic capture
+    {
+      old = this->value;
+      this->value &= m;
+    }
+    return old;
+  }
+
+  /**
+   * Apply a mask, with bitwise `or`, and return the previous value,
+   * atomically.
+   *
+   * @param m Mask.
+   *
+   * @return Old value.
+   */
+  T maskOr(const T& m) {
+    T old;
+    #pragma omp atomic capture
+    {
+      old = this->value;
+      this->value |= m;
+    }
+    return old;
+  }
+
+  /**
    * Increment the value by one, atomically, but without capturing the
    * current value.
    */

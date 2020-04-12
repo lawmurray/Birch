@@ -93,7 +93,7 @@ public:
    * Copy assignment.
    */
   Weak& operator=(const Weak& o) {
-    replace(o.ptr.load());
+    replace(o.get());
     return *this;
   }
 
@@ -103,7 +103,7 @@ public:
   template<class Q, class U = typename Q::value_type,
       std::enable_if_t<std::is_base_of<T,U>::value,int> = 0>
   Weak& operator=(const Q& o) {
-    replace(o.ptr.load());
+    replace(o.get());
     return *this;
   }
 
@@ -191,13 +191,6 @@ public:
    */
   void restore() {
     // nothing to do for weak pointers
-  }
-
-  /**
-   * Has this been discarded?
-   */
-  static bool isDiscarded() {
-    return false;
   }
 
   /**

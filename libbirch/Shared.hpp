@@ -28,8 +28,7 @@ public:
    * Constructor.
    */
   explicit Shared(value_type* ptr = nullptr) :
-      ptr(ptr),
-      discarded(false) {
+      packed(pack(ptr, false)) {
     if (ptr) {
       ptr->incShared();
     }
@@ -38,51 +37,67 @@ public:
   /**
    * Copy constructor.
    */
-  Shared(const Shared& o) :
-      discarded(false) {
-    auto ptr = o.ptr.load();
+  Shared(const Shared& o) {
+    T* ptr;
+    bool discarded;
+    std::tie(ptr, discarded) = unpack(o.packed.load());
+    packed.set(pack(ptr, false));
     if (ptr) {
       ptr->incShared();
     }
-    this->ptr.store(ptr);
   }
 
   /**
-   * Generic copy constructor.
+   * Generic shared pointer copy constructor.
    */
-  template<class Q, std::enable_if_t<std::is_base_of<T,typename Q::value_type>::value,int> = 0>
-  Shared(const Q& o) :
-      discarded(false) {
-    auto ptr = o.ptr.load();
+  template<class U, std::enable_if_t<std::is_base_of<T,U>::value,int> = 0>
+  Shared(const Shared<U>& o) {
+    T* ptr;
+    bool discarded;
+    std::tie(ptr, discarded) = unpack(o.packed.load());
+    packed.set(pack(ptr, false));
     if (ptr) {
       ptr->incShared();
     }
-    this->ptr.store(ptr);
+  }
+
+  /**
+   * Generic other pointer copy constructor.
+   */
+  template<class Q, std::enable_if_t<std::is_base_of<T,typename Q::value_type>::value,int> = 0>
+  Shared(const Q& o) {
+    T* ptr = o.get();
+    packed.set(pack(ptr, false));
+    if (ptr) {
+      ptr->incShared();
+    }
   }
 
   /**
    * Move constructor.
    */
-  Shared(Shared&& o) :
-      discarded(false) {
-    auto ptr = o.ptr.exchange(nullptr);
-    if (ptr && o.isDiscarded()) {
+  Shared(Shared&& o) {
+    T* ptr;
+    bool discarded;
+    std::tie(ptr, discarded) = unpack(o.packed.exchange(0));
+    packed.set(pack(ptr, false));
+    if (ptr && discarded) {
       ptr->restoreShared();
     }
-    this->ptr.store(ptr);
   }
 
   /**
    * Generic move constructor.
    */
   template<class U, std::enable_if_t<std::is_base_of<T,U>::value,int> = 0>
-  Shared(Shared<U>&& o) :
-      discarded(false) {
-    auto ptr = o.ptr.exchange(nullptr);
-    if (ptr && o.isDiscarded()) {
+  Shared(Shared<U>&& o) {
+    T* ptr;
+    bool discarded;
+    std::tie(ptr, discarded) = unpack(o.packed.exchange(0));
+    packed.set(pack(ptr, false));
+    if (ptr && discarded) {
       ptr->restoreShared();
     }
-    this->ptr.store(ptr);
   }
 
   /**
@@ -96,9 +111,12 @@ public:
    * Fix after a bitwise copy.
    */
   void bitwiseFix() {
-    discarded.set(false);
-    if (ptr.get()) {
-      ptr.get()->incShared();
+    T* ptr;
+    bool discarded;
+    std::tie(ptr, discarded) = unpack(packed.get());
+    packed.set(pack(ptr, false));
+    if (ptr) {
+      ptr->incShared();
     }
   }
 
@@ -106,16 +124,31 @@ public:
    * Copy assignment.
    */
   Shared& operator=(const Shared& o) {
-    replace(o.ptr.load());
+    T* ptr;
+    bool discarded;
+    std::tie(ptr, discarded) = unpack(o.packed.load());
+    replace(ptr);
     return *this;
   }
 
   /**
-   * Generic copy assignment.
+   * Generic shared pointer copy assignment.
+   */
+  template<class U, std::enable_if_t<std::is_base_of<T,U>::value,int> = 0>
+  Shared& operator=(const Shared<U>& o) {
+    T* ptr;
+    bool discarded;
+    std::tie(ptr, discarded) = unpack(o.packed.load());
+    replace(ptr);
+    return *this;
+  }
+
+  /**
+   * Generic other pointer copy assignment.
    */
   template<class Q, std::enable_if_t<std::is_base_of<T,typename Q::value_type>::value,int> = 0>
   Shared& operator=(const Q& o) {
-    replace(o.ptr.load());
+    replace(o.get());
     return *this;
   }
 
@@ -123,21 +156,30 @@ public:
    * Move assignment.
    */
   Shared& operator=(Shared&& o) {
-    auto ptr = o.ptr.exchange(nullptr);
-    auto old = this->ptr.exchange(ptr);
-    if (discarded.load()) {
-      if (ptr && !o.isDiscarded()) {
+    ///@todo Not thread safe, needs atomic CAS?
+    T* ptr;
+    bool discarded;
+    std::tie(ptr, discarded) = unpack(o.packed.exchange(0));
+
+    T* oldPtr;
+    bool oldDiscarded;
+    std::tie(oldPtr, oldDiscarded) = unpack(packed.load());
+
+    packed.store(pack(ptr, oldDiscarded));
+
+    if (oldDiscarded) {
+      if (ptr && !discarded) {
         ptr->discardShared();
       }
-      if (old) {
-        old->decMemoShared();
+      if (oldPtr) {
+        oldPtr->decMemoShared();
       }
     } else {
-      if (ptr && o.isDiscarded()) {
+      if (ptr && discarded) {
         ptr->restoreShared();
       }
-      if (old) {
-        old->decShared();
+      if (oldPtr) {
+        oldPtr->decShared();
       }
     }
     return *this;
@@ -148,21 +190,30 @@ public:
    */
   template<class U, std::enable_if_t<std::is_base_of<T,U>::value,int> = 0>
   Shared& operator=(Shared<U>&& o) {
-    auto ptr = o.ptr.exchange(nullptr);
-    auto old = this->ptr.exchange(ptr);
-    if (discarded.load()) {
-      if (ptr && !o.isDiscarded()) {
+    ///@todo Not thread safe, needs atomic CAS?
+    T* ptr;
+    bool discarded;
+    std::tie(ptr, discarded) = unpack(o.packed.exchange(0));
+
+    T* oldPtr;
+    bool oldDiscarded;
+    std::tie(oldPtr, oldDiscarded) = unpack(packed.load());
+
+    packed.store(pack(ptr, oldDiscarded));
+    
+    if (oldDiscarded) {
+      if (ptr && !discarded) {
         ptr->discardShared();
       }
-      if (old) {
-        old->decMemoShared();
+      if (oldPtr) {
+        oldPtr->decMemoShared();
       }
     } else {
-      if (ptr && o.isDiscarded()) {
+      if (ptr && discarded) {
         ptr->restoreShared();
       }
-      if (old) {
-        old->decShared();
+      if (oldPtr) {
+        oldPtr->decShared();
       }
     }
     return *this;
@@ -175,28 +226,38 @@ public:
    * conversion operators in the referent type.
    */
   bool query() const {
-    return ptr.load() != nullptr;
+    return get() != nullptr;
   }
 
   /**
    * Get the raw pointer.
    */
   T* get() const {
-    return ptr.load();
+    T* ptr;
+    bool discarded;
+    std::tie(ptr, discarded) = unpack(packed.load());
+    return ptr;
   }
 
   /**
    * Get the raw pointer as const.
    */
   T* pull() const {
-    return ptr.load();
+    T* ptr;
+    bool discarded;
+    std::tie(ptr, discarded) = unpack(packed.load());
+    return ptr;
   }
 
   /**
    * Replace.
    */
   void replace(T* ptr) {
-    auto discarded = this->discarded.load();
+    ///@todo Not thread safe, needs atomic CAS?
+    T* old;
+    bool discarded;
+    std::tie(old, discarded) = unpack(packed.load());
+    packed.store(pack(ptr, discarded));
     if (ptr) {
       if (discarded) {
         ptr->incMemoShared();
@@ -204,7 +265,6 @@ public:
         ptr->incShared();
       }
     }
-    auto old = this->ptr.exchange(ptr);
     if (old) {
       if (discarded) {
         old->decMemoShared();
@@ -218,8 +278,9 @@ public:
    * Release.
    */
   void release() {
-    auto discarded = this->discarded.load();
-    auto old = ptr.exchange(nullptr);
+    T* old;
+    bool discarded;
+    std::tie(old, discarded) = unpack(packed.maskAnd(int64_t(1)));
     if (old) {
       if (discarded) {
         old->decMemoShared();
@@ -233,8 +294,10 @@ public:
    * Discard.
    */
   void discard() {
-    auto ptr = this->ptr.load();
-    if (ptr && !discarded.exchange(true)) {
+    T* ptr;
+    bool discarded;
+    std::tie(ptr, discarded) = unpack(packed.maskOr(int64_t(1)));
+    if (ptr && !discarded) {
       ptr->discardShared();
     }
   }
@@ -243,17 +306,12 @@ public:
    * Restore.
    */
   void restore() {
-    auto ptr = this->ptr.load();
-    if (ptr && discarded.exchange(false)) {
+    T* ptr;
+    bool discarded;
+    std::tie(ptr, discarded) = unpack(packed.maskAnd(~int64_t(1)));
+    if (ptr && discarded) {
       ptr->restoreShared();
     }
-  }
-
-  /**
-   * Has this been discarded?
-   */
-  bool isDiscarded() const {
-    return discarded.load();
   }
 
   /**
@@ -272,14 +330,27 @@ public:
 
 private:
   /**
-   * Raw pointer.
+   * Combined pointer and discount flag. The rightmost bit is used for the
+   * discount flag; this will always be zero for the pointer value given
+   * memory alignment.
    */
-  Atomic<T*> ptr;
+  Atomic<int64_t> packed;
 
   /**
-   * Has the pointer been discarded?
+   * Unpack the pointer and discard flag from storage.
    */
-  Atomic<bool> discarded;
+  static std::pair<T*,bool> unpack(const int64_t packed) {
+    T* ptr = (T*)(packed & ~int64_t(1));
+    bool discarded = bool(packed & int64_t(1));
+    return std::make_pair(ptr, discarded);
+  }
+
+  /**
+   * Pack the pointer and discard flag into storage.
+   */
+  static int64_t pack(const T* ptr, const bool discarded) {
+    return int64_t(ptr) | int64_t(discarded);
+  }
 };
 
 template<class T>
