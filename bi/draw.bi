@@ -7,12 +7,13 @@ program draw(input:String <- "output/simulate.json",
     width:Integer <- 1024,
     height:Integer <- 1024) {
   /* input file */
-  inputBuffer:MemoryBuffer;
-  inputBuffer.load(input);
+  auto reader <- Reader(input);
+  auto inputBuffer <- reader.scan();
+  reader.close();
   
   /* output file and drawing surface */
-  surface:Surface <- createPDF(output, width, height);
-  cr:Context <- create(surface);
+  auto surface <- createPDF(output, width, height);
+  auto cr <- create(surface);
 
   /* background */
   cr.setSourceRGB(0.95, 0.95, 0.95);
@@ -20,8 +21,8 @@ program draw(input:String <- "output/simulate.json",
   cr.fill();
 
   /* config */
-  //col:Real[_] <- [0.3373, 0.7059, 0.9137]; // blue
-  col:Real[_] <- [0.8353, 0.3686, 0.0000];  // red
+  //auto col <- [0.3373, 0.7059, 0.9137]; // blue
+  auto col <- [0.8353, 0.3686, 0.0000];  // red
 
   auto array <- inputBuffer.walk();
   if array? {

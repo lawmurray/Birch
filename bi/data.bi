@@ -9,8 +9,9 @@
 program data(input:String <- "output/simulate.json",
     output:String <- "input/filter.json") {
   /* input */
-  inputBuffer:MemoryBuffer;
-  inputBuffer.load(input);
+  auto reader <- Reader(input);
+  auto inputBuffer <- reader.scan();
+  reader.close();
   
   /* read in the simulated observations from the track */
   θ:Global;
@@ -43,5 +44,8 @@ program data(input:String <- "output/simulate.json",
   outputBuffer:MemoryBuffer;
   outputBuffer.set("y", y);
   outputBuffer.set("θ", θ);
-  outputBuffer.save(output);
+
+  auto writer <- Writer(output);
+  writer.print(outputBuffer);
+  writer.close();
 }
