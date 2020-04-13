@@ -608,12 +608,10 @@ void bi::CppBaseGenerator::visit(const If* o) {
 }
 
 void bi::CppBaseGenerator::visit(const For* o) {
-  auto index = dynamic_cast<const LocalVariable*>(o->index);
-  assert(index);
-
+  auto index = getIndex(o->index);
   genTraceLine(o->loc);
-  start("for (auto " << index->name << " = " << o->from << "; ");
-  finish(index->name << " <= " << o->to << "; ++" << index->name << ") {");
+  start("for (auto " << index << " = " << o->from << "; ");
+  finish(index << " <= " << o->to << "; ++" << index << ") {");
   in();
   *this << o->braces->strip();
   out();
@@ -621,9 +619,7 @@ void bi::CppBaseGenerator::visit(const For* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Parallel* o) {
-  auto index = dynamic_cast<const LocalVariable*>(o->index);
-  assert(index);
-
+  auto index = getIndex(o->index);
   genTraceLine(o->loc);
   line("#pragma omp parallel");
   line("{");
@@ -636,8 +632,8 @@ void bi::CppBaseGenerator::visit(const Parallel* o) {
     middle("static");
   }
   finish(')');
-  start("for (auto " << index->name << " = " << o->from << "; ");
-  finish(index->name << " <= " << o->to << "; ++" << index->name << ") {");
+  start("for (auto " << index << " = " << o->from << "; ");
+  finish(index << " <= " << o->to << "; ++" << index << ") {");
   in();
   *this << o->braces->strip();
   out();
@@ -755,6 +751,12 @@ void bi::CppBaseGenerator::visit(const TypeList* o) {
   middle(o->head << ", " << o->tail);
 }
 
+std::string bi::CppBaseGenerator::getIndex(const Statement* o) {
+  auto index = dynamic_cast<const LocalVariable*>(o);
+  assert(index);
+  return internalise(index->name->str());
+}
+
 void bi::CppBaseGenerator::genTraceFunction(const std::string& name,
     const Location* loc) {
   genSourceLine(loc);
@@ -769,5 +771,5 @@ void bi::CppBaseGenerator::genTraceLine(const Location* loc) {
 }
 
 void bi::CppBaseGenerator::genSourceLine(const Location* loc) {
-  line("#line " << loc->firstLine << " \"" << loc->file->path << "\"");
+  line("//#line " << loc->firstLine << " \"" << loc->file->path << "\"");
 }

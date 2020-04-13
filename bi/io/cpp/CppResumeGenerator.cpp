@@ -194,9 +194,31 @@ void bi::CppResumeGenerator::visit(const Return* o) {
 }
 
 void bi::CppResumeGenerator::visit(const LocalVariable* o) {
+  auto name = getName(o->name->str(), o->number);
   if (o->has(RESUME)) {
-    start("[[maybe_unused]] auto& " << getName(o->name->str(), o->number));
+    start("[[maybe_unused]] auto& " << name);
+    middle("/* " << o->number << " */");
     finish(" = local_.template get<" << localIndex++ << ">();");
+  } else {
+    genTraceLine(o->loc);
+    if (o->has(AUTO)) {
+      start("auto " << name);
+    } else {
+      start(o->type << ' ' << name);
+    }
+    middle("/* " << o->number << " */");
+    genInit(o);
+    finish(';');
+  }
+}
+
+void bi::CppResumeGenerator::visit(const NamedExpression* o) {
+  if (o->isLocal()) {
+    middle(getName(o->name->str(), o->number));
+    middle("/* " << o->number << " */");
+    if (!o->typeArgs->isEmpty()) {
+      middle('<' << o->typeArgs << '>');
+    }
   } else {
     CppBaseGenerator::visit(o);
   }
@@ -245,7 +267,7 @@ void bi::CppResumeGenerator::genPackParam(const Function* o) {
   Gatherer<Parameter> params;
   o->accept(&params);
 
-  middle("libbirch::const_tie(");
+  middle("libbirch::make_tuple(");
   bool first = true;
   for (auto param : params) {
     if (!first) {
@@ -355,4 +377,10 @@ std::string bi::CppResumeGenerator::getName(const std::string& name,
     result = iter->second;
   }
   return result;
+}
+
+std::string bi::CppResumeGenerator::getIndex(const Statement* o) {
+  auto index = dynamic_cast<const LocalVariable*>(o);
+  assert(index);
+  return getName(index->name->str(), index->number);
 }

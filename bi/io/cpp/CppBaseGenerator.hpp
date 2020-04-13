@@ -118,6 +118,11 @@ protected:
   void genInit(const T* o);
 
   /**
+   * Generate the name of a loop index.
+   */
+  virtual std::string getIndex(const Statement* o);
+
+  /**
    * Generate macro to put function call on stack trace.
    */
   void genTraceFunction(const std::string& name, const Location* loc);

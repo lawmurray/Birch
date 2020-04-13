@@ -24,6 +24,7 @@ public:
   virtual void visit(const Yield* o);
   virtual void visit(const Return* o);
   virtual void visit(const LocalVariable* o);
+  virtual void visit(const NamedExpression* o);
 
 protected:
   /**
@@ -32,6 +33,11 @@ protected:
    * of the same name declared in differently-scoped blocks.
    */
   std::string getName(const std::string& name, const int number);
+
+  /**
+   * Generate the name of a loop index.
+   */
+  virtual std::string getIndex(const Statement* o);
 
   /**
    * Generate a unique name for a resume function.

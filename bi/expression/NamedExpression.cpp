@@ -40,6 +40,10 @@ bool bi::NamedExpression::isMember() const {
       category == MEMBER_FIBER || category == MEMBER_UNKNOWN;
 }
 
+bool bi::NamedExpression::isLocal() const {
+  return category == LOCAL_VARIABLE;
+}
+
 bi::Expression* bi::NamedExpression::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }
