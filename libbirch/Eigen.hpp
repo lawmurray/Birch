@@ -74,3 +74,9 @@ namespace bi {
 using LLT = Eigen::LLT<libbirch::EigenMatrix<Real64>>;
   }
 }
+
+namespace libbirch {
+inline auto canonical(const bi::type::LLT& o) {
+  return o;
+}
+}

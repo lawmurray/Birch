@@ -216,4 +216,9 @@ template<class Head>
 struct is_value<Tuple<Head>> {
   static const bool value = is_value<Head>::value;
 };
+
+template<class Head, class Tail>
+auto canonical(const Tuple<Head,Tail>& o) {
+  return o;
+}
 }

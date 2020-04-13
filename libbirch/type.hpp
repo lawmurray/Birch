@@ -78,10 +78,14 @@ struct raw<T*> {
  * keyword deduces the LibBirch type, and not the Eigen type, for which use
  * of `auto` can be problematic.
  *
+ * SFINAE disables this implementation, it is used only for documentation.
+ *
  * @see https://eigen.tuxfamily.org/dox/TopicPitfalls.html#title3
  */
-template<class T, std::enable_if_t<is_value<T>::value,int> = 0>
+template<class T, std::enable_if_t<is_value<T>::value && false,int> = 0>
 auto canonical(const T& o) {
+  //static_assert(false, "missing canonical() overload for this type");
+  assert(false);
   return o;
 }
 }
