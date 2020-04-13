@@ -288,14 +288,8 @@ public:
     assert(numShared() > 0u);
     if (--sharedCount == 0u) {
       releaseLabel();
-      assert(numMemoShared() > 0u);
-      if (--memoSharedCount == 0u) {
-        /* skip the discard() in this case, just destroy() */
-        destroy();
-        decWeak();
-      } else {
-        discard();
-      }
+      discard();
+      decMemoShared();
     }
   }
 

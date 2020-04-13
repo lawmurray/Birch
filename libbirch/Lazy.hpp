@@ -310,4 +310,10 @@ template<class P>
 struct raw<Lazy<P>> {
   using type = typename raw<P>::type;
 };
+
+template<class P>
+auto canonical(const Lazy<P>& o) {
+  return o;
+}
+
 }

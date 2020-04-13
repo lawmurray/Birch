@@ -274,4 +274,10 @@ template<class Yield, class Return>
 struct is_value<Fiber<Yield,Return>> {
   static const bool value = false;
 };
+
+template<class Yield, class Return>
+auto canonical(const Fiber<Yield,Return>& o) {
+  return o;
+}
+
 }

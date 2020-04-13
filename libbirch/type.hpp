@@ -80,8 +80,8 @@ struct raw<T*> {
  *
  * @see https://eigen.tuxfamily.org/dox/TopicPitfalls.html#title3
  */
-template<class T>
-auto canonical(T&& o) {
-  return std::forward<T>(o);
+template<class T, std::enable_if_t<is_value<T>::value,int> = 0>
+auto canonical(const T& o) {
+  return o;
 }
 }

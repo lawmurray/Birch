@@ -249,5 +249,10 @@ struct is_value<Optional<T>&> {
   static const bool value = is_value<T>::value;
 };
 
+template<class T>
+auto canonical(const Optional<T>& o) {
+  return o;
+}
+
 }
 
