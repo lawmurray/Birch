@@ -4,5 +4,7 @@
   },
   "filter": {
     "nparticles": 8192
-  }
+  },
+  "input": "input/filter.json",
+  "output": "output/filter.json"
 }
