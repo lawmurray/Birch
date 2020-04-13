@@ -134,7 +134,7 @@
 %type <valStatement> conversion_operator_declaration assignment_operator_declaration
 %type <valStatement> class_declaration basic_declaration
 %type <valStatement> cpp hpp expression_statement assume_statement if for parallel
-%type <valStatement> while do_while assertion return yield
+%type <valStatement> while do_while block assertion return yield
 %type <valStatement> statement statements optional_statements
 %type <valStatement> class_statement class_statements optional_class_statements
 %type <valStatement> file_statement file_statements optional_file_statements
@@ -623,6 +623,10 @@ do_while
     : DO braces WHILE expression ';'  { $$ = new bi::DoWhile($2, $4, make_loc(@$)); }
     ;
 
+block
+    : braces  { $$ = new bi::Block($1, make_loc(@$)); }
+    ;
+
 assertion
     : ASSERT expression ';'  { $$ = new bi::Assert($2, make_loc(@$)); }
     ;
@@ -636,8 +640,7 @@ yield
     ;
 
 statement
-    : braces
-    | local_variable_declaration
+    : local_variable_declaration
     | expression_statement
     | assume_statement
     | if
@@ -645,6 +648,7 @@ statement
     | parallel
     | while
     | do_while
+    | block
     | assertion
     | return
     | yield

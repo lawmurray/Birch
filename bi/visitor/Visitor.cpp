@@ -290,6 +290,10 @@ void bi::Visitor::visit(const DoWhile* o) {
   o->cond->accept(this);
 }
 
+void bi::Visitor::visit(const Block* o) {
+  o->braces->accept(this);
+}
+
 void bi::Visitor::visit(const Assert* o) {
   o->cond->accept(this);
 }

@@ -10,7 +10,7 @@ bi::Statement* bi::Spinner::modify(ExpressionStatement* o) {
   ContextualModifier::modify(o);
   auto loops = extract(o->single);
   if (loops) {
-    return new Braces(new StatementList(loops, o, o->loc), o->loc);
+    return new StatementList(loops, o, o->loc);
   } else {
     return o;
   }
@@ -21,7 +21,7 @@ bi::Statement* bi::Spinner::modify(Assume* o) {
   auto loops = extract(o->left);
   loops = extract(o->right, loops);
   if (loops) {
-    return new Braces(new StatementList(loops, o, o->loc), o->loc);
+    return new StatementList(loops, o, o->loc);
   } else {
     return o;
   }
@@ -43,7 +43,7 @@ bi::Statement* bi::Spinner::modify(If* o) {
   ContextualModifier::modify(o);
   auto loops = extract(o->cond);
   if (loops) {
-    return new Braces(new StatementList(loops, o, o->loc), o->loc);
+    return new StatementList(loops, o, o->loc);
   } else {
     return o;
   }
@@ -54,7 +54,7 @@ bi::Statement* bi::Spinner::modify(For* o) {
   auto loops = extract(o->from);
   loops = extract(o->to, loops);
   if (loops) {
-    return new Braces(new StatementList(loops, o, o->loc), o->loc);
+    return new StatementList(loops, o, o->loc);
   } else {
     return o;
   }
@@ -65,7 +65,7 @@ bi::Statement* bi::Spinner::modify(Parallel* o) {
   auto loops = extract(o->from);
   loops = extract(o->to, loops);
   if (loops) {
-    return new Braces(new StatementList(loops, o, o->loc), o->loc);
+    return new StatementList(loops, o, o->loc);
   } else {
     return o;
   }
@@ -75,7 +75,7 @@ bi::Statement* bi::Spinner::modify(While* o) {
   ContextualModifier::modify(o);
   auto loops = extract(o->cond);
   if (loops) {
-    return new Braces(new StatementList(loops, o, o->loc), o->loc);
+    return new StatementList(loops, o, o->loc);
   } else {
     return o;
   }
@@ -85,6 +85,8 @@ bi::Statement* bi::Spinner::modify(DoWhile* o) {
   ContextualModifier::modify(o);
   auto loops = extract(o->cond);
   if (loops) {
+    /* for a do-while loop, the extra statements need to be inserted at the
+     * end of the loop body, just before the condition */
     o->braces = new Braces(new StatementList(o->braces->strip(), loops,
         o->loc), o->loc);
   }
@@ -95,7 +97,7 @@ bi::Statement* bi::Spinner::modify(Assert* o) {
   ContextualModifier::modify(o);
   auto loops = extract(o->cond);
   if (loops) {
-    return new Braces(new StatementList(loops, o, o->loc), o->loc);
+    return new StatementList(loops, o, o->loc);
   } else {
     return o;
   }
@@ -105,7 +107,7 @@ bi::Statement* bi::Spinner::modify(Return* o) {
   ContextualModifier::modify(o);
   auto loops = extract(o->single);
   if (loops) {
-    return new Braces(new StatementList(loops, o, o->loc), o->loc);
+    return new StatementList(loops, o, o->loc);
   } else {
     return o;
   }
@@ -142,15 +144,15 @@ bi::Statement* bi::Spinner::extract(Expression* o, Statement* loops) {
       /* loop to run fiber to completion and yield values along the way */
       auto query = new Query(new NamedExpression(name, spin->loc), spin->loc);
       auto get = new Get(new NamedExpression(name, spin->loc), spin->loc);
-      auto yield = new Braces(new Yield(get, spin->loc), spin->loc);
-      auto loop = new While(query, yield, spin->loc);
-      auto block = new StatementList(var, loop, spin->loc);
+      auto yield = new Yield(get, spin->loc);
+      auto loop = new While(query, new Braces(yield, spin->loc), spin->loc);
+      auto pre = new StatementList(var, loop, spin->loc);
 
       /* accumulate loops */
       if (!loops) {
-        loops = block;
+        loops = pre;
       } else {
-        loops = new StatementList(loops, block, spin->loc);
+        loops = new StatementList(loops, pre, spin->loc);
       }
 
       /* replace the spin on the call with a spin on the temporary variable */

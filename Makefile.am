@@ -89,6 +89,7 @@ COMMON_SOURCES = \
   bi/statement/Assume.cpp \
   bi/statement/Basic.cpp \
   bi/statement/BinaryOperator.cpp \
+  bi/statement/Block.cpp \
   bi/statement/Braces.cpp \
   bi/statement/Class.cpp \
   bi/statement/ConversionOperator.cpp \
@@ -232,6 +233,7 @@ noinst_HEADERS = \
   bi/statement/Assume.hpp \
   bi/statement/Basic.hpp \
   bi/statement/BinaryOperator.hpp \
+  bi/statement/Block.hpp \
   bi/statement/Braces.hpp \
   bi/statement/Class.hpp \
   bi/statement/ConversionOperator.hpp \

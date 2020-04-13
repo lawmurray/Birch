@@ -169,3 +169,10 @@ bi::Statement* bi::ScopedModifier::modify(DoWhile* o) {
   o->cond = o->cond->accept(this);
   return o;
 }
+
+bi::Statement* bi::ScopedModifier::modify(Block* o) {
+  scopes.push_back(o->scope);
+  o->braces = o->braces->accept(this);
+  scopes.pop_back();
+  return o;
+}

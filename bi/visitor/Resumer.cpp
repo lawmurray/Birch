@@ -110,15 +110,6 @@ bi::Statement* bi::Resumer::clone(const StatementList* o) {
   }
 }
 
-bi::Statement* bi::Resumer::clone(const Braces* o) {
-  auto single = o->single->accept(this);
-  if (foundYield) {
-    return new Braces(single, o->loc);
-  } else {
-    return new EmptyStatement(o->loc);
-  }
-}
-
 bi::Statement* bi::Resumer::clone(const If* o) {
   auto cond = o->cond->accept(this);
   auto foundBefore = foundYield;
@@ -130,9 +121,9 @@ bi::Statement* bi::Resumer::clone(const If* o) {
   if (foundBefore) {
     return new If(cond, trueBraces, falseBraces, o->loc);
   } else if (foundTrue) {
-    return trueBraces;
+    return new Block(trueBraces, trueBraces->loc);
   } else if (foundFalse) {
-    return falseBraces;
+    return new Block(falseBraces, falseBraces->loc);
   } else {
     return new EmptyStatement(o->loc);
   }
@@ -164,7 +155,7 @@ bi::Statement* bi::Resumer::clone(const For* o) {
     auto loop = new While(cond, body, o->loc);
 
     Statement* result = new StatementList(index, inc->accept(this), o->loc);
-    result = new StatementList(result, braces, o->loc);
+    result = new StatementList(result, new Block(braces, braces->loc), o->loc);
     result = new StatementList(result, loop, o->loc);
     return result;
   } else {
@@ -195,7 +186,7 @@ bi::Statement* bi::Resumer::clone(const While* o) {
     /* `braces` has unrolled and reduced the first iteration of the loop
      * only, will need to clone in the entire loop after it */
     auto loop = new While(cond, o->braces->accept(this), o->loc);
-    return new StatementList(braces, loop, o->loc);
+    return new StatementList(new Block(braces, braces->loc), loop, o->loc);
   } else {
     return new EmptyStatement(o->loc);
   }
@@ -216,7 +207,16 @@ bi::Statement* bi::Resumer::clone(const DoWhile* o) {
      * while rather than do-while loop, to ensure that the condition is
      * checked before the second iteration */
     auto loop = new While(cond, o->braces->accept(this), o->loc);
-    return new StatementList(braces, loop, o->loc);
+    return new StatementList(new Block(braces, braces->loc), loop, o->loc);
+  } else {
+    return new EmptyStatement(o->loc);
+  }
+}
+
+bi::Statement* bi::Resumer::clone(const Block* o) {
+  auto braces = o->braces->accept(this);
+  if (foundYield) {
+    return new Block(braces, o->loc);
   } else {
     return new EmptyStatement(o->loc);
   }

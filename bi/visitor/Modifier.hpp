@@ -77,6 +77,7 @@ public:
   virtual Statement* modify(Parallel* o);
   virtual Statement* modify(While* o);
   virtual Statement* modify(DoWhile* o);
+  virtual Statement* modify(Block* o);
   virtual Statement* modify(Assert* o);
   virtual Statement* modify(Return* o);
   virtual Statement* modify(Yield* o);

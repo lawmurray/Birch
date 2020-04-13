@@ -57,6 +57,7 @@ public:
   virtual Statement* modify(Parallel* o);
   virtual Statement* modify(While* o);
   virtual Statement* modify(DoWhile* o);
+  virtual Statement* modify(Block* o);
 
 protected:
   /**

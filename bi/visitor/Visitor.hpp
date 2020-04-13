@@ -78,6 +78,7 @@ public:
   virtual void visit(const Parallel* o);
   virtual void visit(const While* o);
   virtual void visit(const DoWhile* o);
+  virtual void visit(const Block* o);
   virtual void visit(const Assert* o);
   virtual void visit(const Return* o);
   virtual void visit(const Yield* o);

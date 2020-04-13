@@ -264,6 +264,10 @@ bi::Statement* bi::Cloner::clone(const DoWhile* o) {
   return new DoWhile(o->braces->accept(this), o->cond->accept(this), o->loc);
 }
 
+bi::Statement* bi::Cloner::clone(const Block* o) {
+  return new Block(o->braces->accept(this), o->loc);
+}
+
 bi::Statement* bi::Cloner::clone(const Assert* o) {
   return new Assert(o->cond->accept(this), o->loc);
 }
