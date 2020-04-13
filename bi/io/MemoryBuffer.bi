@@ -7,28 +7,6 @@ class MemoryBuffer < Buffer {
    */
   value:Value <- ObjectValue();
 
-  /**
-   * Load from a file.
-   *
-   * - path: Path of the file.
-   */
-  function load(path:String) {
-    auto reader <- Reader(path);
-    reader.read(this);
-    reader.close();
-  }
-
-  /**
-   * Save to a JSON file.
-   *
-   * - path: Path of the file.
-   */
-  function save(path:String) {
-    auto writer <- Writer(path);
-    writer.write(this);
-    writer.close();
-  }
-
   function getChild(name:String) -> Buffer? {
     return value.getChild(name);
   }
