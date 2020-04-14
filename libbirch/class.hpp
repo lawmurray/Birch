@@ -85,8 +85,8 @@
   } \
   \
   template<class Visitor> \
-  void accept_(const Visitor& v) { \
-    Base::accept_(v);
+  void accept_(const Visitor& v_) { \
+    Base::accept_(v_);
 
 /**
  * @def LIBBIRCH_FIBER
@@ -101,8 +101,8 @@
   } \
   \
   template<class Visitor> \
-  void accept_(const Visitor& v) { \
-    Base::accept_(v);
+  void accept_(const Visitor& v_) { \
+    Base::accept_(v_);
 
 /**
  * @def LIBBIRCH_MEMBER_FIBER
@@ -122,8 +122,8 @@
   } \
   \
   template<class Visitor> \
-  void accept_(const Visitor& v) { \
-    Base::accept_(v);
+  void accept_(const Visitor& v_) { \
+    Base::accept_(v_);
 
 /**
  * @def LIBBIRCH_MEMBERS
@@ -146,7 +146,7 @@
  *     };
  */
 #define LIBBIRCH_MEMBERS(members...) \
-    v.visit(members); \
+    v_.visit(members); \
   }
 
 #include "libbirch/Freezer.hpp"

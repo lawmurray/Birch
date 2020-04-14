@@ -287,8 +287,8 @@ public:
   void decShared() {
     assert(numShared() > 0u);
     if (--sharedCount == 0u) {
-      releaseLabel();
       discard();
+      releaseLabel();
       decMemoShared();
     }
   }
