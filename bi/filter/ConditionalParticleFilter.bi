@@ -92,9 +92,9 @@ class ConditionalParticleFilter < ParticleFilter {
     resample();
     parallel for n in 1..nparticles {
       if r? && n == b {
-        w[n] <- replay.handle(r!, x[n].simulate(t), x[n].trace);
+        w[n] <- w[n] + replay.handle(r!, x[n].simulate(t), x[n].trace);
       } else {
-        w[n] <- play.handle(x[n].simulate(t), x[n].trace);
+        w[n] <- w[n] + play.handle(x[n].simulate(t), x[n].trace);
       }
     }
     reduce();
