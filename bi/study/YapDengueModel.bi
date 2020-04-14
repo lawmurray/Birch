@@ -54,7 +54,7 @@ final class YapDengueModel < MarkovModel<YapDengueParameter,YapDengueState> {
   }
   
   fiber transition(x':YapDengueState, x:YapDengueState, θ:YapDengueParameter) -> Event {
-    v.transition(x', x, θ);
+    v.transition(x', x, θ)!!;
     x'.z <- x.z + x'.h.Δi;
     if x'.y? {
       x'.y! ~> Binomial(x'.z, θ.ρ);
