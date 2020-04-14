@@ -63,7 +63,9 @@ abstract class Distribution<Value> < Delay {
     prune();
     this.x <- x;
     auto w <- logpdf(x);
-    update(x);
+    if w > -inf {
+      update(x);
+    }
     return w;
   }
   
@@ -85,7 +87,9 @@ abstract class Distribution<Value> < Delay {
       updateLazy(x);
     } else {
       w <- logpdf(x.value());
-      update(x.value());
+      if w > -inf {
+        update(x.value());
+      }
     }
     return w;  
   }

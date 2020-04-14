@@ -210,10 +210,28 @@ function min(x:Real64, y:Real64) -> Real64 {
 }
 
 /**
- * Does this have the value NaN?
+ * Is the value `inf`?
+ */
+function isinf(x:Real64) -> Boolean {
+  cpp{{
+  return std::isinf(x);
+  }}
+}
+
+/**
+ * Is the value `nan`?
  */
 function isnan(x:Real64) -> Boolean {
   cpp{{
   return std::isnan(x);
+  }}
+}
+
+/**
+ * Is the value finite (i.e. not `inf` or `nan`)?
+ */
+function isfinite(x:Real64) -> Boolean {
+  cpp{{
+  return std::isfinite(x);
   }}
 }

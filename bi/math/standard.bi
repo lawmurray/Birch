@@ -9,6 +9,11 @@
 inf:Real64 <- 1.0/0.0;
 
 /**
+ * NaN.
+ */
+nan:Real64 <- 0.0/0.0;
+
+/**
  * Natural logarithm.
  */
 function log(x:Real64) -> Real64 {
