@@ -25,7 +25,7 @@ final class SEIRModel < MarkovModel<SEIRParameter,SEIRState> {
   }
   
   fiber transition(x':SEIRState, x:SEIRState, θ:SEIRParameter) -> Event {
-    transition(x', x, θ, (x.s*x.i + x.n - 1)/x.n, x.e, x.i);
+    transition(x', x, θ, (x.s*x.i + x.n - 1)/x.n, x.e, x.i)!!;
   }
   
   fiber transition(x':SEIRState, x:SEIRState, θ:SEIRParameter, ns:Integer,
