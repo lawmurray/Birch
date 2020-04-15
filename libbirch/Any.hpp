@@ -287,9 +287,16 @@ public:
   void decShared() {
     assert(numShared() > 0u);
     if (--sharedCount == 0u) {
-      discard();
-      releaseLabel();
-      decMemoShared();
+      if (--memoSharedCount == 0u) {
+        /* skip-discard optimization; no need to run discard as object is about to
+         * be destroyed anyway */
+        releaseLabel();
+        destroy();
+        decWeak();
+      } else {
+        discard();
+        releaseLabel();
+      }
     }
   }
 
