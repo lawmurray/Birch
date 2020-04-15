@@ -23,7 +23,8 @@ class MarginalizedParticleGibbsSampler < ConditionalParticleSampler {
     }
     
     /* draw a single sample and weight with normalizing constant estimate */
-    x <- filter.x[ancestor(filter.w)];
-    w <- filter.lnormalize;
+    filter.b <- ancestor(filter.w);
+    x <- filter.x[filter.b];
+    w <- 0.0;
   }
 }

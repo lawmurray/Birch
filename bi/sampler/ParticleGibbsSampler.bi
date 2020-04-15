@@ -42,5 +42,10 @@ class ParticleGibbsSampler < ConditionalParticleSampler {
       }
       pushDiagnostics(filter);
     }
+
+    /* draw a single sample and weight with normalizing constant estimate */
+    filter.b <- ancestor(filter.w);
+    x <- filter.x[filter.b];
+    w <- 0.0;
   }
 }
