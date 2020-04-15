@@ -288,8 +288,8 @@ public:
     assert(numShared() > 0u);
     if (--sharedCount == 0u) {
       if (--memoSharedCount == 0u) {
-        /* skip-discard optimization; no need to run discard as object is about to
-         * be destroyed anyway */
+        /* skip-discard optimization; no need to run discard as object is
+         * about to be destroyed anyway */
         releaseLabel();
         destroy();
         decWeak();
