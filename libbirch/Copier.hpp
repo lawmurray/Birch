@@ -50,9 +50,21 @@ public:
   /**
    * Visit a value.
    */
-  template<class T, std::enable_if_t<is_value<T>::value,int> = 0>
+  template<class T, std::enable_if_t<is_value<T>::value && std::is_trivially_copy_constructible<T>::value,int> = 0>
   void visit(T& arg) const {
     //
+  }
+
+  /**
+   * Visit a value.
+   */
+  template<class T, std::enable_if_t<is_value<T>::value && !std::is_trivially_copy_constructible<T>::value,int> = 0>
+  void visit(T& arg) const {
+    /* for types that do not support trivial copy, the bitwise copy is
+     * invalid; we correct for this now by first performing a proper copy,
+     * then emplacing the result over the bitwise copy */
+    T proper(arg);
+    new (&arg) T(std::move(proper));
   }
 
   /**
