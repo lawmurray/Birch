@@ -74,6 +74,7 @@ class ConditionalParticleFilter < ParticleFilter {
         }
       }
     }
+    reduce();
   }
 
   override function filter(archetype:Model, t:Integer) {

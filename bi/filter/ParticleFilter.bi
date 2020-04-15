@@ -120,6 +120,7 @@ class ParticleFilter {
     parallel for n in 1..nparticles {
       w[n] <- play.handle(x[n].simulate());
     }
+    reduce();
   }
 
   /**
