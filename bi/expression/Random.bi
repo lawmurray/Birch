@@ -81,7 +81,7 @@ final class Random<Value> < Expression<Value> {
    * random variate is required, it will be simulated from this distribution
    * and trigger an *update* on the delayed sampling graph.
    *
-   * - v: The random variate.
+   * - p: The distribution.
    */
   function assume(p:Distribution<Value>) {
     assert !this.p?;
