@@ -38,8 +38,13 @@ class LinearRegressionModel < Model {
     P:Integer <- columns(X);
     if (N > 0 && P > 0) {
       σ2 ~ InverseGamma(3.0, 0.4);
-      β ~ Gaussian(vector(0.0, P), identity(P)*σ2);
+      assert !σ2.hasValue();
+      β ~ Gaussian(vector(0.0, P), identity(P), σ2);
+      assert !σ2.hasValue();
+      assert !β.hasValue();
       y ~ Gaussian(X*β, σ2);
+      assert !σ2.hasValue();
+      assert !β.hasValue();
     }
   }
   
