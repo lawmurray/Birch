@@ -15,7 +15,7 @@ class AliveParticleFilter < ParticleFilter {
    */
   p:Integer[_];
 
-  override function filter(archetype:Model, t:Integer) {
+  override function step(t:Integer) {
     auto x0 <- x;
     auto w0 <- w;
     p <- vector(0, nparticles + 1);
@@ -43,8 +43,7 @@ class AliveParticleFilter < ParticleFilter {
           w' <- play.handle(x'.simulate(t));
         } while w' == -inf;  // repeat until weight is positive
       }
-    }    
-    reduce();
+    }
   }
   
   override function reduce() {

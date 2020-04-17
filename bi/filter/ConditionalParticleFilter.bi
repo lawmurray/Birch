@@ -36,35 +36,43 @@ class ConditionalParticleFilter < ParticleFilter {
   alreadyInitialized:Boolean <- false;
 
   /**
-   * Replay event handler.
+   * Replay event handler, used for the reference particle.
    */
   replay:TraceHandler <- global.replay;
 
   override function filter(archetype:Model) {
-    x <- clone(archetype, nparticles);
-    w <- vector(0.0, nparticles);
-    a <- iota(1, nparticles);
+    super.filter(archetype);
     b <- 1;
-    ess <- nparticles;
-    lsum <- 0.0;
-    lnormalize <- 0.0;
-    npropagations <- nparticles;
-
-    /* size */
-    if !nsteps? {
-      nsteps <- archetype.size();
-    }
-        
-    /* event handlers */
+    
+    /* replay event handler */
     if delayed {
-      play <- global.playDelay;
       replay <- global.replayDelay;
     } else {
-      play <- global.play;
       replay <- global.replay;
     }
+  }
 
-    /* initialize particles */
+  override function filter(archetype:Model, t:Integer) {
+    if r? && ancestor {
+      ancestorSample(t);
+    }
+    resample();
+    step(t);
+    reduce();
+  }
+
+  function ancestorSample(t:Integer) {
+    auto w' <- w;
+    dynamic parallel for n in 1..nparticles {
+      auto x' <- clone(x[n]);
+      auto r' <- clone(r!);
+      w'[n] <- w'[n] + replay.handle(r', x'.simulate(t));
+      ///@todo Don't assume Markov model here
+    }
+    b <- global.ancestor(w');
+  }
+
+  override function start() {
     if !alreadyInitialized {
       parallel for n in 1..nparticles {
         if r? && n == b {
@@ -74,23 +82,9 @@ class ConditionalParticleFilter < ParticleFilter {
         }
       }
     }
-    reduce();
   }
 
-  override function filter(archetype:Model, t:Integer) {
-    if r? && ancestor {
-      /* ancestor sampling */
-      auto w' <- w;
-      dynamic parallel for n in 1..nparticles {
-        auto x' <- clone(x[n]);
-        auto r' <- clone(r!);
-        w'[n] <- w'[n] + replay.handle(r', x'.simulate(t));
-        ///@todo Don't assume Markov model here
-      }
-      b <- global.ancestor(w');
-    }
-    
-    resample();
+  override function step(t:Integer) {
     parallel for n in 1..nparticles {
       if r? && n == b {
         w[n] <- w[n] + replay.handle(r!, x[n].simulate(t), x[n].trace);
@@ -98,7 +92,6 @@ class ConditionalParticleFilter < ParticleFilter {
         w[n] <- w[n] + play.handle(x[n].simulate(t), x[n].trace);
       }
     }
-    reduce();
   }
 
   override function resample() {
@@ -108,12 +101,8 @@ class ConditionalParticleFilter < ParticleFilter {
       } else {
         a <- resample_multinomial(w);
       }
-      dynamic parallel for n in 1..nparticles {
-        if a[n] != n {
-          x[n] <- clone(x[a[n]]);
-        }
-        w[n] <- 0.0;
-      }
+      copy();
+      w <- vector(0.0, nparticles);
     } else {
       /* normalize weights to sum to nparticles */
       w <- w - lsum + log(Real(nparticles));

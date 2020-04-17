@@ -116,10 +116,7 @@ class ParticleFilter {
       play <- global.play;
     }
     
-    /* initialize particles */
-    parallel for n in 1..nparticles {
-      w[n] <- play.handle(x[n].simulate());
-    }
+    start();
     reduce();
   }
 
@@ -133,10 +130,26 @@ class ParticleFilter {
    */
   function filter(archetype:Model, t:Integer) {
     resample();
+    step(t);
+    reduce();
+  }
+  
+  /**
+   * Start particles.
+   */
+  function start() {
+    parallel for n in 1..nparticles {
+      w[n] <- play.handle(x[n].simulate());
+    }  
+  }
+  
+  /**
+   * Step particles.
+   */
+  function step(t:Integer) {
     parallel for n in 1..nparticles {
       w[n] <- w[n] + play.handle(x[n].simulate(t));
     }
-    reduce();
   }
   
   /**
@@ -154,15 +167,22 @@ class ParticleFilter {
   function resample() {
     if ess <= trigger*nparticles {
       a <- resample_systematic(w);
-      dynamic parallel for n in 1..nparticles {
-        if a[n] != n {
-          x[n] <- clone(x[a[n]]);
-        }
-        w[n] <- 0.0;
-      }
+      copy();
+      w <- vector(0.0, nparticles);
     } else {
       /* normalize weights to sum to nparticles */
       w <- w - lsum + log(Real(nparticles));
+    }
+  }
+
+  /**
+   * Copy particles during resample.
+   */
+  function copy() {
+    dynamic parallel for n in 1..nparticles {
+      if a[n] != n {
+        x[n] <- clone(x[a[n]]);
+      }
     }
   }
 
