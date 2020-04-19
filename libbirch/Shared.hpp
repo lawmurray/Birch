@@ -39,8 +39,7 @@ public:
    */
   Shared(const Shared& o) {
     T* ptr;
-    bool discarded;
-    std::tie(ptr, discarded) = unpack(o.packed.load());
+    std::tie(ptr, std::ignore) = unpack(o.packed.load());
     packed.set(pack(ptr, false));
     if (ptr) {
       ptr->incShared();
@@ -53,8 +52,7 @@ public:
   template<class U, std::enable_if_t<std::is_base_of<T,U>::value,int> = 0>
   Shared(const Shared<U>& o) {
     T* ptr;
-    bool discarded;
-    std::tie(ptr, discarded) = unpack(o.packed.load());
+    std::tie(ptr, std::ignore) = unpack(o.packed.load());
     packed.set(pack(ptr, false));
     if (ptr) {
       ptr->incShared();
@@ -112,8 +110,7 @@ public:
    */
   void bitwiseFix() {
     T* ptr;
-    bool discarded;
-    std::tie(ptr, discarded) = unpack(packed.get());
+    std::tie(ptr, std::ignore) = unpack(packed.get());
     packed.set(pack(ptr, false));
     if (ptr) {
       ptr->incShared();
@@ -125,8 +122,7 @@ public:
    */
   Shared& operator=(const Shared& o) {
     T* ptr;
-    bool discarded;
-    std::tie(ptr, discarded) = unpack(o.packed.load());
+    std::tie(ptr, std::ignore) = unpack(o.packed.load());
     replace(ptr);
     return *this;
   }
@@ -137,8 +133,7 @@ public:
   template<class U, std::enable_if_t<std::is_base_of<T,U>::value,int> = 0>
   Shared& operator=(const Shared<U>& o) {
     T* ptr;
-    bool discarded;
-    std::tie(ptr, discarded) = unpack(o.packed.load());
+    std::tie(ptr, std::ignore) = unpack(o.packed.load());
     replace(ptr);
     return *this;
   }
@@ -156,31 +151,16 @@ public:
    * Move assignment.
    */
   Shared& operator=(Shared&& o) {
-    ///@todo Not thread safe, needs atomic CAS?
     T* ptr;
     bool discarded;
-    std::tie(ptr, discarded) = unpack(o.packed.exchange(0));
-
-    T* oldPtr;
-    bool oldDiscarded;
-    std::tie(oldPtr, oldDiscarded) = unpack(packed.load());
-
-    packed.store(pack(ptr, oldDiscarded));
-
-    if (oldDiscarded) {
-      if (ptr && !discarded) {
-        ptr->discardShared();
-      }
-      if (oldPtr) {
-        oldPtr->decMemoShared();
-      }
-    } else {
-      if (ptr && discarded) {
-        ptr->restoreShared();
-      }
-      if (oldPtr) {
-        oldPtr->decShared();
-      }
+    std::tie(ptr, discarded) = unpack(o.packed.maskAnd(int64_t(1)));
+    if (ptr && discarded) {
+      ptr->restoreShared();
+    }
+    std::tie(ptr, discarded) = unpack(packed.exchange(pack(ptr, false)));
+    assert(!discarded);
+    if (ptr) {
+      ptr->decShared();
     }
     return *this;
   }
@@ -190,31 +170,16 @@ public:
    */
   template<class U, std::enable_if_t<std::is_base_of<T,U>::value,int> = 0>
   Shared& operator=(Shared<U>&& o) {
-    ///@todo Not thread safe, needs atomic CAS?
     T* ptr;
     bool discarded;
-    std::tie(ptr, discarded) = unpack(o.packed.exchange(0));
-
-    T* oldPtr;
-    bool oldDiscarded;
-    std::tie(oldPtr, oldDiscarded) = unpack(packed.load());
-
-    packed.store(pack(ptr, oldDiscarded));
-    
-    if (oldDiscarded) {
-      if (ptr && !discarded) {
-        ptr->discardShared();
-      }
-      if (oldPtr) {
-        oldPtr->decMemoShared();
-      }
-    } else {
-      if (ptr && discarded) {
-        ptr->restoreShared();
-      }
-      if (oldPtr) {
-        oldPtr->decShared();
-      }
+    std::tie(ptr, discarded) = unpack(o.packed.maskAnd(int64_t(1)));
+    if (ptr && discarded) {
+      ptr->restoreShared();
+    }
+    std::tie(ptr, discarded) = unpack(packed.exchange(pack(ptr, false)));
+    assert(!discarded);
+    if (ptr) {
+      ptr->decShared();
     }
     return *this;
   }
@@ -234,8 +199,7 @@ public:
    */
   T* get() const {
     T* ptr;
-    bool discarded;
-    std::tie(ptr, discarded) = unpack(packed.load());
+    std::tie(ptr, std::ignore) = unpack(packed.load());
     return ptr;
   }
 
@@ -243,24 +207,15 @@ public:
    * Replace.
    */
   void replace(T* ptr) {
-    ///@todo Not thread safe, needs atomic CAS?
+    if (ptr) {
+      ptr->incShared();
+    }
     T* old;
     bool discarded;
-    std::tie(old, discarded) = unpack(packed.load());
-    packed.store(pack(ptr, discarded));
-    if (ptr) {
-      if (discarded) {
-        ptr->incMemoShared();
-      } else {
-        ptr->incShared();
-      }
-    }
+    std::tie(old, discarded) = unpack(packed.exchange(pack(ptr, false)));
+    assert(!discarded);
     if (old) {
-      if (discarded) {
-        old->decMemoShared();
-      } else {
-        old->decShared();
-      }
+      old->decShared();
     }
   }
 
