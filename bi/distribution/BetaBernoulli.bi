@@ -5,7 +5,7 @@ final class BetaBernoulli(ρ:Beta) < Distribution<Boolean> {
   /**
    * Success probability.
    */
-  ρ:Beta& <- ρ;
+  ρ:Beta <- ρ;
 
   function simulate() -> Boolean {
     return simulate_beta_bernoulli(ρ.α.value(), ρ.β.value());
@@ -25,11 +25,19 @@ final class BetaBernoulli(ρ:Beta) < Distribution<Boolean> {
 
   function graftFinalize() -> Boolean {
     if !ρ.hasValue() {
-      ρ.setChild(this);
+      link();
       return true;
     } else {
       return false;
     }
+  }
+
+  function link() {
+    ρ.setChild(this);
+  }
+  
+  function unlink() {
+    ρ.releaseChild();
   }
 }
 

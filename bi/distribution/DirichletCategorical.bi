@@ -5,7 +5,7 @@ final class DirichletCategorical(ρ:Dirichlet) < Distribution<Integer> {
   /**
    * Category probabilities.
    */
-  ρ:Dirichlet& <- ρ;
+  ρ:Dirichlet <- ρ;
 
   function simulate() -> Integer {
     return simulate_dirichlet_categorical(ρ.α.value());
@@ -33,11 +33,19 @@ final class DirichletCategorical(ρ:Dirichlet) < Distribution<Integer> {
 
   function graftFinalize() -> Boolean {
     if !ρ.hasValue() {
-      ρ.setChild(this);
+      link();
       return true;
     } else {
       return false;
     }
+  }
+
+  function link() {
+    ρ.setChild(this);
+  }
+  
+  function unlink() {
+    ρ.releaseChild();
   }
 }
 

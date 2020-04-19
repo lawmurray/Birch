@@ -6,7 +6,7 @@ final class MultivariateNormalInverseGammaMultivariateGaussian(
   /**
    * Mean.
    */
-  μ:MultivariateNormalInverseGamma& <- μ;
+  μ:MultivariateNormalInverseGamma <- μ;
 
   function rows() -> Integer {
     return μ.rows();
@@ -34,11 +34,19 @@ final class MultivariateNormalInverseGammaMultivariateGaussian(
 
   function graftFinalize() -> Boolean {
     if !μ.hasValue() {
-      μ.setChild(this);
+      link();
       return true;
     } else {
       return false;
     }
+  }
+
+  function link() {
+    μ.setChild(this);
+  }
+  
+  function unlink() {
+    μ.releaseChild();
   }
 }
 

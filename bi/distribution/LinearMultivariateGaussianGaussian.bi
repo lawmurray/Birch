@@ -12,7 +12,7 @@ final class LinearMultivariateGaussianGaussian(a:Expression<Real[_]>,
   /**
    * Mean.
    */
-  m:MultivariateGaussian& <- m;
+  m:MultivariateGaussian <- m;
 
   /**
    * Offset.
@@ -44,11 +44,19 @@ final class LinearMultivariateGaussianGaussian(a:Expression<Real[_]>,
     c.value();
     s2.value();
     if !m.hasValue() {
-      m.setChild(this);
+      link();
       return true;
     } else {
       return false;
     }
+  }
+
+  function link() {
+    m.setChild(this);
+  }
+  
+  function unlink() {
+    m.releaseChild();
   }
 }
 

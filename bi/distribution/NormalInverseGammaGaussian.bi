@@ -6,7 +6,7 @@ final class NormalInverseGammaGaussian(μ:NormalInverseGamma) <
   /**
    * Mean.
    */
-  μ:NormalInverseGamma& <- μ;
+  μ:NormalInverseGamma <- μ;
 
   function simulate() -> Real {
     return simulate_normal_inverse_gamma_gaussian(μ.μ.value(),
@@ -40,11 +40,19 @@ final class NormalInverseGammaGaussian(μ:NormalInverseGamma) <
 
   function graftFinalize() -> Boolean {
     if !μ.hasValue() {
-      μ.setChild(this);
+      link();
       return true;
     } else {
       return false;
     }
+  }
+
+  function link() {
+    μ.setChild(this);
+  }
+  
+  function unlink() {
+    μ.releaseChild();
   }
 }
 

@@ -13,7 +13,7 @@ final class LinearMatrixNormalInverseGammaMatrixGaussian(
   /**
    * Mean.
    */
-  M:MatrixNormalInverseGamma& <- M;
+  M:MatrixNormalInverseGamma <- M;
 
   /**
    * Offset.
@@ -44,11 +44,19 @@ final class LinearMatrixNormalInverseGammaMatrixGaussian(
     A.value();
     C.value();
     if !M.hasValue() {
-      M.setChild(this);
+      link();
       return true;
     } else {
       return false;
     }
+  }
+
+  function link() {
+    M.setChild(this);
+  }
+  
+  function unlink() {
+    M.releaseChild();
   }
 }
 

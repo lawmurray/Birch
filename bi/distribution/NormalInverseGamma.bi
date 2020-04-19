@@ -40,7 +40,7 @@ final class NormalInverseGamma(μ:Expression<Real>, a2:Expression<Real>,
   /**
    * Variance.
    */
-  σ2:InverseGamma& <- σ2;
+  σ2:InverseGamma <- σ2;
 
   function simulate() -> Real {
     return simulate_normal_inverse_gamma(μ.value(), 1.0/λ.value(), σ2.α.value(), σ2.β.value());
@@ -81,11 +81,19 @@ final class NormalInverseGamma(μ:Expression<Real>, a2:Expression<Real>,
     μ.value();
     λ.value();
     if !σ2.hasValue() {
-      σ2.setChild(this);
+      link();
       return true;
     } else {
       return false;
     }
+  }
+
+  function link() {
+    σ2.setChild(this);
+  }
+  
+  function unlink() {
+    σ2.releaseChild();
   }
 
   function write(buffer:Buffer) {

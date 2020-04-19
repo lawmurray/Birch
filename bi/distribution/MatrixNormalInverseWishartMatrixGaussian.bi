@@ -6,7 +6,7 @@ final class MatrixNormalInverseWishartMatrixGaussian(
   /**
    * Mean.
    */
-  M:MatrixNormalInverseWishart& <- M;
+  M:MatrixNormalInverseWishart <- M;
 
   function rows() -> Integer {
     return M.rows();
@@ -38,11 +38,19 @@ final class MatrixNormalInverseWishartMatrixGaussian(
 
   function graftFinalize() -> Boolean {
     if !M.hasValue() {
-      M.setChild(this);
+      link();
       return true;
     } else {
       return false;
     }
+  }
+
+  function link() {
+    M.setChild(this);
+  }
+  
+  function unlink() {
+    M.releaseChild();
   }
 }
 

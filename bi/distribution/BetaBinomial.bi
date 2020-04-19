@@ -10,7 +10,7 @@ final class BetaBinomial(n:Expression<Integer>, ρ:Beta) < BoundedDiscrete {
   /**
    * Success probability.
    */
-  ρ:Beta& <- ρ;
+  ρ:Beta <- ρ;
 
   function simulate() -> Integer {
     if value? {
@@ -47,11 +47,19 @@ final class BetaBinomial(n:Expression<Integer>, ρ:Beta) < BoundedDiscrete {
   function graftFinalize() -> Boolean {
     n.value();
     if !ρ.hasValue() {
-      ρ.setChild(this);
+      link();
       return true;
     } else {
       return false;
     }
+  }
+
+  function link() {
+    ρ.setChild(this);
+  }
+  
+  function unlink() {
+    ρ.releaseChild();
   }
 }
 

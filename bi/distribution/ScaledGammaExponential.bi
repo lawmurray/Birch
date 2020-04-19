@@ -11,7 +11,7 @@ class ScaledGammaExponential(a:Expression<Real>, λ:Gamma) <
   /**
    * Rate.
    */
-  λ:Gamma& <- λ;
+  λ:Gamma <- λ;
 
   function simulate() -> Real {
     return simulate_lomax(1.0/(a.value()*λ.θ.value()), λ.k.value());
@@ -46,11 +46,19 @@ class ScaledGammaExponential(a:Expression<Real>, λ:Gamma) <
   function graftFinalize() -> Boolean {
     a.value();
     if !λ.hasValue() {
-      λ.setChild(this);
+      link();
       return true;
     } else {
       return false;
     }
+  }
+
+  function link() {
+    λ.setChild(this);
+  }
+  
+  function unlink() {
+    λ.releaseChild();
   }
 }
 

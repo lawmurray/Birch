@@ -13,7 +13,7 @@ final class LinearMatrixNormalInverseWishartMatrixGaussian(
   /**
    * Mean.
    */
-  M:MatrixNormalInverseWishart& <- M;
+  M:MatrixNormalInverseWishart <- M;
 
   /**
    * Offset.
@@ -44,11 +44,19 @@ final class LinearMatrixNormalInverseWishartMatrixGaussian(
     A.value();
     C.value();
     if !M.hasValue() {
-      M.setChild(this);
+      link();
       return true;
     } else {
       return false;
     }
+  }
+
+  function link() {
+    M.setChild(this);
+  }
+  
+  function unlink() {
+    M.releaseChild();
   }
 }
 

@@ -5,7 +5,7 @@ final class GammaPoisson(λ:Gamma) < Discrete {
   /**
    * Rate.
    */
-  λ:Gamma& <- λ;
+  λ:Gamma <- λ;
 
   function simulate() -> Integer {
     if value? {
@@ -41,11 +41,19 @@ final class GammaPoisson(λ:Gamma) < Discrete {
 
   function graftFinalize() -> Boolean {
     if !λ.hasValue() {
-      λ.setChild(this);
+      link();
       return true;
     } else {
       return false;
     }
+  }
+
+  function link() {
+    λ.setChild(this);
+  }
+  
+  function unlink() {
+    λ.releaseChild();
   }
 }
 

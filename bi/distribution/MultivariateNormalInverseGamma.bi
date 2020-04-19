@@ -51,7 +51,7 @@ final class MultivariateNormalInverseGamma(μ:Expression<Real[_]>,
   /**
    * Variance scale.
    */
-  σ2:InverseGamma& <- σ2;
+  σ2:InverseGamma <- σ2;
 
   function rows() -> Integer {
     return ν.rows();
@@ -94,11 +94,19 @@ final class MultivariateNormalInverseGamma(μ:Expression<Real[_]>,
     α.value();
     γ.value();
     if !σ2.hasValue() {
-      σ2.setChild(this);
+      link();
       return true;
     } else {
       return false;
     }
+  }
+
+  function link() {
+    σ2.setChild(this);
+  }
+  
+  function unlink() {
+    σ2.releaseChild();
   }
 
   function write(buffer:Buffer) {

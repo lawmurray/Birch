@@ -6,7 +6,7 @@ final class MatrixNormalInverseGammaMatrixGaussian(
   /**
    * Mean.
    */
-  M:MatrixNormalInverseGamma& <- M;
+  M:MatrixNormalInverseGamma <- M;
 
   function rows() -> Integer {
     return M.rows();
@@ -38,11 +38,19 @@ final class MatrixNormalInverseGammaMatrixGaussian(
 
   function graftFinalize() -> Boolean {
     if !M.hasValue() {
-      M.setChild(this);
+      link();
       return true;
     } else {
       return false;
     }
+  }
+
+  function link() {
+    M.setChild(this);
+  }
+  
+  function unlink() {
+    M.releaseChild();
   }
 }
 

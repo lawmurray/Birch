@@ -11,7 +11,7 @@ final class LinearNormalInverseGammaGaussian(a:Expression<Real>,
   /**
    * Mean.
    */
-  μ:NormalInverseGamma& <- μ;
+  μ:NormalInverseGamma <- μ;
 
   /**
    * Offset.
@@ -58,11 +58,19 @@ final class LinearNormalInverseGammaGaussian(a:Expression<Real>,
     a.value();
     c.value();
     if !μ.hasValue() {
-      μ.setChild(this);
+      link();
       return true;
     } else {
       return false;
     }
+  }
+
+  function link() {
+    μ.setChild(this);
+  }
+  
+  function unlink() {
+    μ.releaseChild();
   }
 }
 

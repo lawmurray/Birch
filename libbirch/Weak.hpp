@@ -150,13 +150,6 @@ public:
   }
 
   /**
-   * Get the raw pointer as const.
-   */
-  T* pull() const {
-    return ptr.load();
-  }
-
-  /**
    * Replace.
    */
   void replace(T* ptr) {
@@ -191,20 +184,6 @@ public:
    */
   void restore() {
     // nothing to do for weak pointers
-  }
-
-  /**
-   * Dereference.
-   */
-  T& operator*() const {
-    return *get();
-  }
-
-  /**
-   * Member access.
-   */
-  T* operator->() const {
-    return get();
   }
 
 private:

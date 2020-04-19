@@ -59,8 +59,9 @@ final class List<Type> {
    * Get the last element.
    */
   function back() -> Type {
-    assert tail?;
-    return tail!.x;
+    assert this.tail?;
+    auto tail <- this.tail!;
+    return tail.x;
   }
 
   /**
@@ -112,11 +113,12 @@ final class List<Type> {
     if empty() {
       head <- node;
     } else {
-      assert tail?;
-      tail!.next <- node;
-      node.prev <- tail!;
+      assert this.tail?;
+      auto tail <- this.tail!;
+      tail.next <- node;
+      node.prev <- tail;
     }
-    tail <- node;
+    this.tail <- node;
     count <- count + 1;
     
     assert this.head? && this.tail?;
@@ -146,12 +148,13 @@ final class List<Type> {
     assert !empty();
 
     assert tail?;
-    this.tail <- tail!.popBack();
+    auto tail <- this.tail!;
+    this.tail <- tail.popBack();
     count <- count - 1;
     if count <= 1 {
       head <- this.tail;
     }
-    
+        
     assert this.count == 0 || (this.head? && this.tail?);
     assert this.count > 0 || (!this.head? && !this.tail?);
   }

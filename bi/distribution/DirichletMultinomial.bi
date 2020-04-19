@@ -11,7 +11,7 @@ final class DirichletMultinomial(n:Expression<Integer>, ρ:Dirichlet) <
   /**
    * Category probabilities.
    */
-  ρ:Dirichlet& <- ρ;
+  ρ:Dirichlet <- ρ;
 
   function simulate() -> Integer[_] {
     return simulate_dirichlet_multinomial(n.value(), ρ.α.value());
@@ -31,11 +31,19 @@ final class DirichletMultinomial(n:Expression<Integer>, ρ:Dirichlet) <
 
   function graftFinalize() -> Boolean {
     if !ρ.hasValue() {
-      ρ.setChild(this);
+      link();
       return true;
     } else {
       return false;
     }
+  }
+
+  function link() {
+    ρ.setChild(this);
+  }
+  
+  function unlink() {
+    ρ.releaseChild();
   }
 }
 

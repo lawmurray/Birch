@@ -13,7 +13,7 @@ final class LinearMultivariateNormalInverseGammaMultivariateGaussian(
   /**
    * Mean.
    */
-  μ:MultivariateNormalInverseGamma& <- μ;
+  μ:MultivariateNormalInverseGamma <- μ;
 
   /**
    * Offset.
@@ -44,11 +44,19 @@ final class LinearMultivariateNormalInverseGammaMultivariateGaussian(
     A.value();
     c.value();
     if !μ.hasValue() {
-      μ.setChild(this);
+      link();
       return true;
     } else {
       return false;
     }
+  }
+
+  function link() {
+    μ.setChild(this);
+  }
+  
+  function unlink() {
+    μ.releaseChild();
   }
 }
 

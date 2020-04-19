@@ -10,7 +10,7 @@ final class BetaNegativeBinomial(k:Expression<Integer>, ρ:Beta) < Discrete {
   /**
    * Success probability.
    */
-  ρ:Beta& <- ρ;
+  ρ:Beta <- ρ;
 
   function simulate() -> Integer {
     if value? {
@@ -39,11 +39,19 @@ final class BetaNegativeBinomial(k:Expression<Integer>, ρ:Beta) < Discrete {
   function graftFinalize() -> Boolean {
     k.value();
     if !ρ.hasValue() {
-      ρ.setChild(this);
+      link();
       return true;
     } else {
       return false;
     }
+  }
+  
+  function link() {
+    ρ.setChild(this);
+  }
+  
+  function unlink() {
+    ρ.releaseChild();
   }
 }
 

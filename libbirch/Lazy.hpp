@@ -7,6 +7,8 @@
 #include "libbirch/type.hpp"
 #include "libbirch/Any.hpp"
 #include "libbirch/Label.hpp"
+#include "libbirch/Shared.hpp"
+#include "libbirch/Weak.hpp"
 #include "libbirch/Init.hpp"
 
 namespace libbirch {
@@ -266,6 +268,7 @@ public:
   /**
    * Member access.
    */
+  template<class Q = P, std::enable_if_t<!std::is_same<Q,Weak<value_type>>::value,int> = 0>
   value_type* operator->() const {
     return get();
   }
@@ -311,9 +314,19 @@ struct raw<Lazy<P>> {
   using type = typename raw<P>::type;
 };
 
-template<class P>
-auto canonical(const Lazy<P>& o) {
+template<class T>
+auto canonical(const Lazy<Shared<T>>& o) {
   return o;
+}
+
+template<class T>
+auto canonical(const Lazy<Weak<T>>& o) {
+  return Lazy<Shared<T>>(o);
+}
+
+template<class T>
+auto canonical(const Lazy<Init<T>>& o) {
+  return Lazy<Shared<T>>(o);
 }
 
 }

@@ -13,7 +13,7 @@ final class LinearMultivariateGaussianMultivariateGaussian(
   /**
    * Mean.
    */
-  m:MultivariateGaussian& <- m;
+  m:MultivariateGaussian <- m;
 
   /**
    * Offset.
@@ -45,11 +45,19 @@ final class LinearMultivariateGaussianMultivariateGaussian(
     c.value();
     S.value();
     if !m.hasValue() {
-      m.setChild(this);
+      link();
       return true;
     } else {
       return false;
     }
+  }
+
+  function link() {
+    m.setChild(this);
+  }
+  
+  function unlink() {
+    m.releaseChild();
   }
 }
 

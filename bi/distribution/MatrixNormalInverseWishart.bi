@@ -16,7 +16,7 @@ final class MatrixNormalInverseWishart(M:Expression<Real[_,_]>,
   /**
    * Among-column covariance.
    */
-  V:InverseWishart& <- V;
+  V:InverseWishart <- V;
 
   function rows() -> Integer {
     return N.rows();
@@ -58,11 +58,19 @@ final class MatrixNormalInverseWishart(M:Expression<Real[_,_]>,
     Λ.value();
     N.value();
     if !V.hasValue() {
-      V.setChild(this);
+      link();
       return true;
     } else {
       return false;
     }
+  }
+
+  function link() {
+    V.setChild(this);
+  }
+  
+  function unlink() {
+    V.releaseChild();
   }
 
   function write(buffer:Buffer) {

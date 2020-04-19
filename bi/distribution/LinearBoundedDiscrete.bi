@@ -65,11 +65,21 @@ final class LinearBoundedDiscrete(a:Expression<Integer>, μ:BoundedDiscrete,
     a.value();
     c.value();
     if !μ.hasValue() {
-      //μ.setChild(this);  // not used for discretes
+      link();
       return true;
     } else {
       return false;
     }
+  }
+
+  function link() {
+    // clamp() used instead for discrete enumerations
+    //μ.setChild(this);
+  }
+  
+  function unlink() {
+    // clamp() used instead for discrete enumerations
+    //μ.releaseChild();
   }
 }
 

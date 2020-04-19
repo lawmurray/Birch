@@ -12,7 +12,7 @@ final class LinearGaussianGaussian(a:Expression<Real>, m:Gaussian,
   /**
    * Mean.
    */
-  m:Gaussian& <- m;
+  m:Gaussian <- m;
 
   /**
    * Offset.
@@ -41,11 +41,19 @@ final class LinearGaussianGaussian(a:Expression<Real>, m:Gaussian,
     c.value();
     s2.value();
     if !m.hasValue() {
-      m.setChild(this);
+      link();
       return true;
     } else {
       return false;
     }
+  }
+
+  function link() {
+    m.setChild(this);
+  }
+  
+  function unlink() {
+    m.releaseChild();
   }
 }
 

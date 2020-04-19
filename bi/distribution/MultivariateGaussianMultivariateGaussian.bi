@@ -6,7 +6,7 @@ final class MultivariateGaussianMultivariateGaussian(m:MultivariateGaussian,
   /**
    * Mean.
    */
-  m:MultivariateGaussian& <- m;
+  m:MultivariateGaussian <- m;
 
   /**
    * Likelihood covariance.
@@ -24,11 +24,19 @@ final class MultivariateGaussianMultivariateGaussian(m:MultivariateGaussian,
   function graftFinalize() -> Boolean {
     S.value();
     if !m.hasValue() {
-      m.setChild(this);
+      link();
       return true;
     } else {
       return false;
     }
+  }
+
+  function link() {
+    m.setChild(this);
+  }
+  
+  function unlink() {
+    m.releaseChild();
   }
 }
 

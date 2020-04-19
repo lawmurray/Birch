@@ -107,12 +107,23 @@ final class AddBoundedDiscrete(x1:BoundedDiscrete, x2:BoundedDiscrete) <
   
   function graftFinalize() -> Boolean {
     if !x1.hasValue() && !x2.hasValue() {
-      //x1.setChild(this);  // not used for discretes
-      //x2.setChild(this);
+      link();
       return true;
     } else {
       return false;
     }
+  }
+  
+  function link() {
+    // clamp() used instead for discrete enumerations
+    //x1.setChild(this);
+    //x2.setChild(this);
+  }
+  
+  function unlink() {
+    // clamp() used instead for discrete enumerations
+    //x1.releaseChild();
+    //x2.releaseChild();
   }
 }
 

@@ -5,7 +5,7 @@ final class GammaExponential(λ:Gamma) < Distribution<Real> {
   /**
    * Rate.
    */
-  λ:Gamma& <- λ;
+  λ:Gamma <- λ;
 
   function simulate() -> Real {
     return simulate_lomax(1.0/λ.θ.value(), λ.k.value());
@@ -37,11 +37,19 @@ final class GammaExponential(λ:Gamma) < Distribution<Real> {
 
   function graftFinalize() -> Boolean {
     if !λ.hasValue() {
+      link();
       return true;
     } else {
-      λ.setChild(this);
       return false;
     }
+  }
+
+  function link() {
+    λ.setChild(this);
+  }
+  
+  function unlink() {
+    λ.releaseChild();
   }
 }
 

@@ -38,6 +38,7 @@ abstract class Distribution<Value> < Delay {
       prune();
       x <- simulate();
       update(x!);
+      unlink();
     }
     return x!;
   }
@@ -50,6 +51,7 @@ abstract class Distribution<Value> < Delay {
     prune();
     this.x <- x;
     update(x);
+    unlink();
   }
   
   /**
@@ -66,6 +68,7 @@ abstract class Distribution<Value> < Delay {
     if w > -inf {
       update(x);
     }
+    unlink();
     return w;
   }
   
@@ -91,6 +94,7 @@ abstract class Distribution<Value> < Delay {
         update(x.value());
       }
     }
+    unlink();
     return w;  
   }
 

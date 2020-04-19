@@ -66,13 +66,6 @@ public:
   }
 
   /**
-   * Get the raw pointer as const.
-   */
-  T* pull() const {
-    return ptr.load();
-  }
-
-  /**
    * Replace.
    */
   void replace(T* ptr) {

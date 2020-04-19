@@ -27,7 +27,7 @@ final class MatrixNormalInverseGamma(M:Expression<Real[_,_]>,
   /**
    * Variance scales.
    */
-  σ2:IndependentInverseGamma& <- σ2;
+  σ2:IndependentInverseGamma <- σ2;
 
   function rows() -> Integer {
     return N.rows();
@@ -76,11 +76,19 @@ final class MatrixNormalInverseGamma(M:Expression<Real[_,_]>,
     α.value();
     γ.value();
     if !σ2.hasValue() {
-      σ2.setChild(this);
+      link();
       return true;
     } else {
       return false;
     }
+  }
+
+  function link() {
+    σ2.setChild(this);
+  }
+  
+  function unlink() {
+    σ2.releaseChild();
   }
 
   function write(buffer:Buffer) {

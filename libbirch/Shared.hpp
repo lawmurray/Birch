@@ -240,16 +240,6 @@ public:
   }
 
   /**
-   * Get the raw pointer as const.
-   */
-  T* pull() const {
-    T* ptr;
-    bool discarded;
-    std::tie(ptr, discarded) = unpack(packed.load());
-    return ptr;
-  }
-
-  /**
    * Replace.
    */
   void replace(T* ptr) {
