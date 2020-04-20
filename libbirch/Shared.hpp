@@ -77,11 +77,11 @@ public:
   Shared(Shared&& o) {
     T* ptr;
     bool discarded;
-    std::tie(ptr, discarded) = unpack(o.packed.exchange(0));
-    packed.set(pack(ptr, false));
+    std::tie(ptr, discarded) = unpack(o.packed.maskAnd(int64_t(1)));
     if (ptr && discarded) {
       ptr->restoreShared();
     }
+    packed.set(pack(ptr, false));
   }
 
   /**
@@ -91,11 +91,11 @@ public:
   Shared(Shared<U>&& o) {
     T* ptr;
     bool discarded;
-    std::tie(ptr, discarded) = unpack(o.packed.exchange(0));
-    packed.set(pack(ptr, false));
+    std::tie(ptr, discarded) = unpack(o.packed.maskAnd(int64_t(1)));
     if (ptr && discarded) {
       ptr->restoreShared();
     }
+    packed.set(pack(ptr, false));
   }
 
   /**
