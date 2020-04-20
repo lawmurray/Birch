@@ -39,6 +39,10 @@
   \
   virtual void restore_() override { \
     this->accept_(libbirch::Restorer()); \
+  } \
+  \
+  virtual uint16_t size_() const override { \
+    return (uint16_t)sizeof(*this); \
   }
 
 /**

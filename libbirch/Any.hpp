@@ -85,8 +85,10 @@ public:
       weakCount(1u),
       memoWeakCount(1u),
       label(rootLabel),
+      tid(get_thread_num()),
+      size(0),
       packed(0) {
-    // size and tid set by operator new
+    //
   }
 
   /**
@@ -98,8 +100,10 @@ public:
       weakCount(1u),
       memoWeakCount(1u),
       label(nullptr),
+      tid(0),
+      size(0),
       packed(0) {
-    // size and tid set by operator new
+    //
   }
 
   /**
@@ -121,10 +125,7 @@ public:
    * New operator.
    */
   void* operator new(std::size_t size) {
-    auto ptr = static_cast<Any*>(allocate(size));
-    ptr->size = static_cast<uint64_t>(size);
-    ptr->tid = get_thread_num();
-    return ptr;
+    return allocate(size);
   }
 
   /**
@@ -491,6 +492,13 @@ protected:
   virtual void restore_() = 0;
 
   /**
+   * Size of the object.
+   */
+  virtual uint16_t size_() const {
+    return (uint16_t)sizeof(*this);
+  }
+
+  /**
    * Accept a visitor across member variables.
    */
   template<class Visitor>
@@ -505,6 +513,7 @@ private:
   void destroy() {
     assert(sharedCount.load() == 0u);
     assert(memoSharedCount.load() == 0u);
+    this->size = size_();
     this->~Any();
   }
 
@@ -555,8 +564,8 @@ private:
   int tid;
 
   /**
-   * Size of the object. This is set immediately after allocation. It is used
-   * to return the allocation to the correct pool after use.
+   * Size of the object. This is initially set to zero. Upon destruction, it
+   * is set to the correct size with a virtual function call.
    */
   uint16_t size;
 
@@ -569,7 +578,7 @@ private:
    *     freezing, was there only one pointer to it?
    *   * Discard flag.
    *
-   * The first field occupies 28 bits, the remainder 1 bit each.
+   * Each occupies 1 bit, from the right.
    */
   Atomic<uint16_t> packed;
 };
