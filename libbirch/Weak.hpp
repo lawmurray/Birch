@@ -153,10 +153,10 @@ public:
    * Replace.
    */
   void replace(T* ptr) {
-    auto old = this->ptr.exchange(ptr);
     if (ptr) {
       ptr->incWeak();
     }
+    auto old = this->ptr.exchange(ptr);
     if (old) {
       old->decWeak();
     }
