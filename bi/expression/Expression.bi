@@ -34,24 +34,47 @@ abstract class Expression<Value> {
   }    
 
   /**
-   * Value computation.
+   * Get the memoized value of the expression, assuming it has already been
+   * computed by a call to `value()` or `pilot()`.
+   */
+  abstract function get() -> Value;
+
+  /**
+   * Evaluate.
+   *
+   * Returns: The evaluated value of the expression.
    */
   abstract function value() -> Value;
 
   /**
-   * If this is a Random, get the distribution associated with it, if any,
-   * otherwise nil.
+   * Evaluate prior to `grad()`.
+   *
+   * Returns: The evaluated value of the expression.
+   *
+   * `pilot()` differs to `value()` in the following ways:
+   *
+   *   * For Random objects with no value but with a distribution, `pilot()`
+   *     proposes a value by simulating from the distribution. The subsequent
+   *     call to `grad()` will compute gradients with respect to this Random
+   *     object, as the proposed value. On the other hand, `value()` causes
+   *     Random objects to be subsequently treated as constant values, and
+   *     a subsequent call to `grad()` will not compute gradients with
+   *     respect to these.
+   *
+   *   * Each call to `pilot()` *must* be matched with a subsequent call to
+   *     `grad()`. This is because subexpressions may occur multiple times in
+   *     the same expression, and the `pilot()` call is used to determine how
+   *     many times. The computations for `grad()` are then optimized by
+   *     accumulating all upstream gradients before recursing into the
+   *     subexpression.
    */
-  function distribution() -> Distribution<Value>? {
-    return nil;
-  }
+  abstract function pilot() -> Value;
 
   /**
-   * Compute gradients of the expression with respect to all Random objects.
+   * Compute gradients of the expression with respect to all Random nodes.
    *
    * - d: Upstream gradient. For an initial call, this should be the unit for
-   *     the given type, e.g. 1.0, 1, true, a vector of ones, or the identity
-   *     matrix.
+   *     the given type, e.g. 1.0, a vector of ones, or the identity matrix.
    *
    * This uses reverse-mode automatic differentiation. If the expression
    * tree encodes
@@ -68,6 +91,14 @@ abstract class Expression<Value> {
    * result.
    */
   abstract function grad(d:Value);
+
+  /**
+   * If this is a Random, get the distribution associated with it, if any,
+   * otherwise nil.
+   */
+  function distribution() -> Distribution<Value>? {
+    return nil;
+  }
 
   /*
    * Attempt to graft this expression onto the delayed sampling graph.

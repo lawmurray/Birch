@@ -19,7 +19,15 @@ final class Boxed<Value> < Expression<Value> {
     return global.columns(x);
   }
 
+  function get() -> Value {
+    return x;
+  }
+
   function value() -> Value {
+    return x;
+  }
+  
+  function pilot() -> Value {
     return x;
   }
 

@@ -20,6 +20,10 @@ abstract class UnaryExpression<Argument,Value>(single:Expression<Argument>) <
     this.x <- x;
   }
 
+  final function get() -> Value {
+    return x!;
+  }
+
   final function value() -> Value {
     if !x? {
       x <- doValue(single.value());
@@ -27,9 +31,16 @@ abstract class UnaryExpression<Argument,Value>(single:Expression<Argument>) <
     return x!;
   }
   
+  final function pilot() -> Value {
+    if !x? {
+      x <- doValue(single.pilot());
+    }
+    return x!;
+  }
+  
   final function grad(d:Value) {
     assert x?;
-    single.grad(doGradient(d, single.value()));
+    single.grad(doGradient(d, single.get()));
   }
 
   /**

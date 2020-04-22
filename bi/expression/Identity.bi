@@ -15,7 +15,15 @@ final class Identity<Value>(n:Integer) < Expression<Value> {
     return n;
   }
 
+  function get() -> Value {
+    return identity(n);
+  }
+
   function value() -> Value {
+    return identity(n);
+  }
+
+  function pilot() -> Value {
     return identity(n);
   }
 

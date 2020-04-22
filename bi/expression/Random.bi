@@ -94,11 +94,24 @@ final class Random<Value> < Expression<Value> {
     this.x <- p.value();
   }
 
+  function get() -> Value {
+    return x!;
+  }
+
   function value() -> Value {
     if !x? {
       graft();
       x <- p!.value();
-      //p <- nil;
+      p <- nil;
+    }
+    return x!;
+  }
+  
+  function pilot() -> Value {
+    assert p?;
+    if !x? {
+      graft();
+      x <- p!.value();
     }
     return x!;
   }
@@ -113,25 +126,12 @@ final class Random<Value> < Expression<Value> {
         auto ψ <- p!.logpdfLazy(this);
         if ψ? {
           dfdx <- d;
-          w <- ψ!.value();
+          w <- ψ!.pilot();
           assert abs(w - p!.logpdf(x!)) < 1.0e-6;
           ψ!.grad(1.0);
         }
       }
     }
-  }
-
-  /**
-   * Observe the value of the random variate.
-   */
-  function observe(x:Value) -> Real {
-    assert !hasValue();
-    assert hasDistribution();
-    this.x <- x;
-    graft();
-    auto w <- p!.observe(x);
-    //p <- nil;
-    return w;
   }
 
   /**

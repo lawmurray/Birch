@@ -26,17 +26,28 @@ abstract class BinaryExpression<Left,Right,Value>(left:Expression<Left>,
     this.x <- x;
   }
 
+  final function get() -> Value {
+    return x!;
+  }
+
   final function value() -> Value {
     if !x? {
       x <- doValue(left.value(), right.value());
     }
     return x!;
   }
+
+  final function pilot() -> Value {
+    if !x? {
+      x <- doValue(left.pilot(), right.pilot());
+    }
+    return x!;
+  }
   
   final function grad(d:Value) {
     assert x?;
-    auto l <- left.value();
-    auto r <- right.value();
+    auto l <- left.get();
+    auto r <- right.get();
     dl:Left;
     dr:Right;
     (dl, dr) <- doGradient(d, l, r);
@@ -57,7 +68,7 @@ abstract class BinaryExpression<Left,Right,Value>(left:Expression<Left>,
   /**
    * Evaluate a gradient.
    *
-   * - d: Outer gradient.
+   * - d: Upstream gradient.
    * - l: Left argument.
    * - r: Right argument.
    *
