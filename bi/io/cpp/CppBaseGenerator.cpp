@@ -131,13 +131,21 @@ void bi::CppBaseGenerator::visit(const Spin* o) {
 }
 
 void bi::CppBaseGenerator::visit(const LambdaFunction* o) {
-  finish("[=](" << o->params << ") {");
+  middle("std::function<" << o->returnType << '(');
+  for (auto iter = o->params->begin(); iter != o->params->end(); ++iter) {
+    auto param = dynamic_cast<const Parameter*>(*iter);
+    if (iter != o->params->begin()) {
+      middle(',');
+    }
+    middle(param->type);
+  }
+  finish(")>([=](" << o->params << ") {");
   in();
   ++inLambda;
   *this << o->braces->strip();
   --inLambda;
   out();
-  start("}");
+  start("})");
 }
 
 void bi::CppBaseGenerator::visit(const Span* o) {
