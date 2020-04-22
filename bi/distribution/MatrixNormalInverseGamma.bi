@@ -75,7 +75,7 @@ final class MatrixNormalInverseGamma(M:Expression<Real[_,_]>,
     N.value();
     α.value();
     γ.value();
-    if !σ2.hasValue() {
+    if !σ2.isRealized() {
       link();
       return true;
     } else {

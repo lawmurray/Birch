@@ -43,7 +43,7 @@ final class LinearMultivariateNormalInverseGammaMultivariateGaussian(
   function graftFinalize() -> Boolean {
     A.value();
     c.value();
-    if !μ.hasValue() {
+    if !μ.isRealized() {
       link();
       return true;
     } else {

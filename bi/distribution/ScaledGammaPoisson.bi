@@ -48,7 +48,7 @@ final class ScaledGammaPoisson(a:Expression<Real>, λ:Gamma) < Discrete {
 
   function graftFinalize() -> Boolean {
     a.value();
-    if !λ.hasValue() {
+    if !λ.isRealized() {
       link();
       return true;
     } else {

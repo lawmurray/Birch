@@ -46,7 +46,7 @@ final class BetaBinomial(n:Expression<Integer>, ρ:Beta) < BoundedDiscrete {
 
   function graftFinalize() -> Boolean {
     n.value();
-    if !ρ.hasValue() {
+    if !ρ.isRealized() {
       link();
       return true;
     } else {

@@ -66,7 +66,8 @@ abstract class Expression<Value> {
    */
   final function value() -> Value {
     if !x? {
-      x <- doValue();
+      doValue();
+      assert x?;
     }
     return x!;
   }
@@ -74,7 +75,7 @@ abstract class Expression<Value> {
   /**
    * Evaluate; overridden by derived classes.
    */
-  abstract function doValue() -> Value;
+  abstract function doValue();
 
   /**
    * Evaluate before `grad()`.
@@ -101,15 +102,54 @@ abstract class Expression<Value> {
   final function pilot() -> Value {
     count <- count + 1;
     if !x? {
-      x <- doPilot();
+      doPilot();
+      assert x?;
     }
     return x!;
   }
   
   /**
-   * Evaluate before `grad()`; overriden by derived classes.
+   * Evaluate before `grad()`; overridden by derived classes.
    */
-  abstract function doPilot() -> Value;
+  abstract function doPilot();
+
+  /**
+   * Propose a value.
+   *
+   * - x: The value.
+   */
+  final function proposeValue(x:Value) {
+    assert !this.x?;
+    this.x <- x;
+    doProposeValue();
+  }
+  
+  /**
+   * Propose a value; overridden by derived classes if supported (notably
+   * Random).
+   */
+  function doProposeValue() {
+    assert false;
+  }
+
+  /**
+   * Propose a pilot value.
+   *
+   * - x: The value.
+   */
+  final function proposePilot(x:Value) {
+    assert !this.x?;
+    this.x <- x;
+    doProposePilot();
+  }
+  
+  /**
+   * Propose a pilot value; overridden by derived classes if supported
+   * (notably Random).
+   */
+  function doProposePilot() {
+    assert false;
+  }
 
   /**
    * Evaluate gradient with respect to all Random nodes.

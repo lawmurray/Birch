@@ -5,7 +5,8 @@
  */
 abstract class Distribution<Value> < Delay {
   /**
-   * Value.
+   * Realized value, if the distribution's parent on the delayed sampling
+   * $M$-path has forced its realization.
    */
   x:Value?;
 
@@ -21,37 +22,6 @@ abstract class Distribution<Value> < Delay {
    */
   function columns() -> Integer {
     return 1;
-  }
-
-  /**
-   * Does the node have a value?
-   */
-  function hasValue() -> Boolean {
-    return x?;
-  }
-
-  /**
-   * Realize a value for a random variate associated with this node.
-   */
-  function value() -> Value {
-    if !x? {
-      prune();
-      x <- simulate();
-      update(x!);
-      unlink();
-    }
-    return x!;
-  }
-
-  /**
-   * Set value.
-   */
-  function set(x:Value) {
-    assert !this.x?;
-    prune();
-    this.x <- x;
-    update(x);
-    unlink();
   }
   
   /**
@@ -98,8 +68,31 @@ abstract class Distribution<Value> < Delay {
     return w;  
   }
 
+  /**
+   * Realize a value from the distribution. This is used by the parent of the
+   * distribution on the delayed sampling $M$-path if it must prune.
+   */
   function realize() {
-    value();
+    if !x? {
+      prune();
+      x <- simulate();
+      update(x!);
+      unlink();
+    }
+  }
+  
+  /**
+   * Is a value realized?
+   */
+  function isRealized() -> Boolean {
+    return x?;
+  }
+  
+  /**
+   * Get the realized value.
+   */
+  function realized() -> Value {
+    return x!;
   }
   
   /**
@@ -180,6 +173,15 @@ abstract class Distribution<Value> < Delay {
    * Finite upper bound of the support of this node, if any.
    */
   function upper() -> Value? {
+    return nil;
+  }
+
+  /**
+   * Simulate a value as part of a lazy expression.
+   *
+   * Return: the value, if supported.
+   */
+  function simulateLazy() -> Value? {
     return nil;
   }
 
@@ -351,9 +353,5 @@ abstract class Distribution<Value> < Delay {
    */
   function graftFinalize() -> Boolean {
     return true;
-  }
-
-  function write(buffer:Buffer) {
-    buffer.set(value());
   }
 }

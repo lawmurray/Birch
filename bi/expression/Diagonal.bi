@@ -8,19 +8,19 @@ final class Diagonal<Argument,Value>(x:Expression<Argument>, n:Integer) <
    */
   n:Integer <- n;
   
-  function rows() -> Integer {
+  override function rows() -> Integer {
     return n;
   }
   
-  function columns() -> Integer {
+  override function columns() -> Integer {
     return n;
   }
 
-  function doValue(x:Argument) -> Value {
+  override function computeValue(x:Argument) -> Value {
     return diagonal(x, n);
   }
 
-  function doGrad(d:Value, x:Argument) -> Argument {
+  override function computeGrad(d:Value, x:Argument) -> Argument {
     return sum(diagonal(d));
   }
 }

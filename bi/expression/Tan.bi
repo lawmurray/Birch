@@ -3,11 +3,11 @@
  */
 final class Tan<Argument,Value>(x:Expression<Argument>) <
     UnaryExpression<Argument,Value>(x) {
-  function doValue(x:Argument) -> Value {
+  override function computeValue(x:Argument) -> Value {
     return tan(x);
   }
 
-  function doGrad(d:Value, x:Argument) -> Argument {
+  override function computeGrad(d:Value, x:Argument) -> Argument {
     return d*(1.0 + pow(tan(x), 2.0));
   }
 }

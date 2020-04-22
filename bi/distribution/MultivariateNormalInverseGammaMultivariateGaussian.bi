@@ -33,7 +33,7 @@ final class MultivariateNormalInverseGammaMultivariateGaussian(
   }
 
   function graftFinalize() -> Boolean {
-    if !μ.hasValue() {
+    if !μ.isRealized() {
       link();
       return true;
     } else {

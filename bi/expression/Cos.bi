@@ -3,11 +3,11 @@
  */
 final class Cos<Argument,Value>(x:Expression<Argument>) <
     UnaryExpression<Argument,Value>(x) {
-  function doValue(x:Argument) -> Value {
+  override function computeValue(x:Argument) -> Value {
     return cos(x);
   }
 
-  function doGrad(d:Value, x:Argument) -> Argument {
+  override function computeGrad(d:Value, x:Argument) -> Argument {
     return -d*sin(x);
   }
 }

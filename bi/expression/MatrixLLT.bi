@@ -3,19 +3,19 @@
  */
 final class MatrixLLT<Argument,Value>(x:Expression<Argument>) <
     UnaryExpression<Argument,Value>(x) {
-  function rows() -> Integer {
+  override function rows() -> Integer {
     return single.rows();
   }
   
-  function columns() -> Integer {
+  override function columns() -> Integer {
     return single.columns();
   }
 
-  function doValue(x:Argument) -> Value {
+  override function computeValue(x:Argument) -> Value {
     return llt(x);
   }
 
-  function doGrad(d:Value, x:Argument) -> Argument {
+  override function computeGrad(d:Value, x:Argument) -> Argument {
     ///@todo
     assert false;
   }

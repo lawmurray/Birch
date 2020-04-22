@@ -3,23 +3,23 @@
  */
 final class MatrixMultiply<Left,Right,Value>(left:Expression<Left>,
     right:Expression<Right>) < BinaryExpression<Left,Right,Value>(left, right) {  
-  function rows() -> Integer {
+  override function rows() -> Integer {
     return left.rows();
   }
   
-  function columns() -> Integer {
+  override function columns() -> Integer {
     return right.columns();
   }
 
-  function doValue(l:Left, r:Right) -> Value {
+  override function computeValue(l:Left, r:Right) -> Value {
     return l*r;
   }
 
-  function doGrad(d:Value, l:Left, r:Right) -> (Left, Right) {
+  override function computeGrad(d:Value, l:Left, r:Right) -> (Left, Right) {
     return (d*transpose(r), transpose(l)*d);
   }
 
-  function graftLinearMatrixGaussian() ->
+  override function graftLinearMatrixGaussian() ->
       TransformLinearMatrix<MatrixGaussian>? {
     y:TransformLinearMatrix<MatrixGaussian>?;
     z:MatrixGaussian?;
@@ -32,7 +32,7 @@ final class MatrixMultiply<Left,Right,Value>(left:Expression<Left>,
     return y;
   }
   
-  function graftLinearMatrixNormalInverseGamma(compare:Distribution<Real[_]>) ->
+  override function graftLinearMatrixNormalInverseGamma(compare:Distribution<Real[_]>) ->
       TransformLinearMatrix<MatrixNormalInverseGamma>? {
     y:TransformLinearMatrix<MatrixNormalInverseGamma>?;
     z:MatrixNormalInverseGamma?;
@@ -45,7 +45,7 @@ final class MatrixMultiply<Left,Right,Value>(left:Expression<Left>,
     return y;
   }
 
-  function graftLinearMatrixNormalInverseWishart(compare:Distribution<Real[_,_]>) ->
+  override function graftLinearMatrixNormalInverseWishart(compare:Distribution<Real[_,_]>) ->
       TransformLinearMatrix<MatrixNormalInverseWishart>? {
     y:TransformLinearMatrix<MatrixNormalInverseWishart>?;
     z:MatrixNormalInverseWishart?;

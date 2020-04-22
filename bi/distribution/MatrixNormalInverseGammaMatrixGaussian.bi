@@ -37,7 +37,7 @@ final class MatrixNormalInverseGammaMatrixGaussian(
   }
 
   function graftFinalize() -> Boolean {
-    if !M.hasValue() {
+    if !M.isRealized() {
       link();
       return true;
     } else {

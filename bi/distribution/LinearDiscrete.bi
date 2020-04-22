@@ -62,7 +62,7 @@ final class LinearDiscrete(a:Expression<Integer>, μ:Discrete,
   function graftFinalize() -> Boolean {
     a.value();
     c.value();
-    if !μ.hasValue() {
+    if !μ.isRealized() {
       link();
       return true;
     } else {

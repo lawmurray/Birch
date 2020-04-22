@@ -38,7 +38,7 @@ final class BetaNegativeBinomial(k:Expression<Integer>, ρ:Beta) < Discrete {
 
   function graftFinalize() -> Boolean {
     k.value();
-    if !ρ.hasValue() {
+    if !ρ.isRealized() {
       link();
       return true;
     } else {

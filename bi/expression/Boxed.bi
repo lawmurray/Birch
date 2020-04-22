@@ -2,25 +2,23 @@
  * Boxed value.
  */
 final class Boxed<Value> < Expression<Value> {  
-  function rows() -> Integer {
+  override function rows() -> Integer {
     return global.rows(get());
   }
 
-  function columns() -> Integer {
+  override function columns() -> Integer {
     return global.columns(get());
   }
 
-  function doValue() -> Value {
+  override function doValue() {
     assert false;  // should never arrive here, as x set by factory function
-    return get();
   }
 
-  function doPilot() -> Value {
+  override function doPilot() {
     assert false;  // should never arrive here, as x set by factory function
-    return get();
   }
 
-  function doGrad(d:Value) {
+  override function doGrad(d:Value) {
     //
   }
 }

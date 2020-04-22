@@ -40,7 +40,7 @@ final class DiscreteDelta(μ:Discrete) < Discrete {
   }
 
   function graftFinalize() -> Boolean {
-    if !μ.hasValue() {
+    if !μ.isRealized() {
       link();
       return true;
     } else {

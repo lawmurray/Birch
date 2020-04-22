@@ -57,7 +57,7 @@ final class LinearNormalInverseGammaGaussian(a:Expression<Real>,
   function graftFinalize() -> Boolean {
     a.value();
     c.value();
-    if !μ.hasValue() {
+    if !μ.isRealized() {
       link();
       return true;
     } else {

@@ -20,12 +20,12 @@ class Gaussian(μ:Expression<Real>, σ2:Expression<Real>) < Distribution<Real> {
     return logpdf_gaussian(x, μ.value(), σ2.value());
   }
 
-  function logpdfLazy(x:Expression<Real>) -> Expression<Real>? {
-    return logpdf_lazy_gaussian(x, μ, σ2);
+  function simulateLazy() -> Real? {
+    return simulate_gaussian(μ.pilot(), σ2.pilot());
   }
 
-  function updateLazy(x:Expression<Real>) {
-    //
+  function logpdfLazy(x:Expression<Real>) -> Expression<Real>? {
+    return logpdf_lazy_gaussian(x, μ, σ2);
   }
   
   function cdf(x:Real) -> Real? {

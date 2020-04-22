@@ -31,7 +31,7 @@ final class RestaurantCategorical(ρ:Restaurant) < Distribution<Integer> {
   }
 
   function graftFinalize() -> Boolean {
-    if !ρ.hasValue() {
+    if !ρ.isRealized() {
       link();
       return true;
     } else {

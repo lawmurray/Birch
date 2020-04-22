@@ -7,23 +7,23 @@ final class Identity<Value>(n:Integer) < Expression<Value> {
    */
   n:Integer <- n;
   
-  function rows() -> Integer {
+  override function rows() -> Integer {
     return n;
   }
   
-  function columns() -> Integer {
+  override function columns() -> Integer {
     return n;
   }
 
-  function doValue() -> Value {
-    return identity(n);
+  override function doValue() {
+    x <- identity(n);
   }
 
-  function doPilot() -> Value {
-    return identity(n);
+  override function doPilot() {
+    x <- identity(n);
   }
 
-  function doGrad(d:Value) {
+  override function doGrad(d:Value) {
     //
   }
 }

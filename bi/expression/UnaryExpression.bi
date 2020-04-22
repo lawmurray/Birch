@@ -11,17 +11,17 @@ abstract class UnaryExpression<Argument,Value>(single:Expression<Argument>) <
    */
   single:Expression<Argument> <- single;
 
-  final function doValue() -> Value {
-    return doValue(single.value());
+  final override function doValue() {
+    x <- computeValue(single.value());
   }
   
-  final function doPilot() -> Value {
-    return doValue(single.pilot());
+  final override function doPilot() {
+    x <- computeValue(single.pilot());
   }
   
-  final function doGrad(d:Value) {
+  final override function doGrad(d:Value) {
     assert x?;
-    single.grad(doGrad(d, single.get()));
+    single.grad(computeGrad(d, single.get()));
   }
 
   /**
@@ -31,7 +31,7 @@ abstract class UnaryExpression<Argument,Value>(single:Expression<Argument>) <
    *
    * Returns: Value for the given argument.
    */
-  abstract function doValue(x:Argument) -> Value;
+  abstract function computeValue(x:Argument) -> Value;
 
   /**
    * Evaluate a gradient.
@@ -41,5 +41,5 @@ abstract class UnaryExpression<Argument,Value>(single:Expression<Argument>) <
    *
    * Returns: Gradient with respect to the argument at the given position.
    */
-  abstract function doGrad(d:Value, x:Argument) -> Argument;
+  abstract function computeGrad(d:Value, x:Argument) -> Argument;
 }

@@ -57,7 +57,7 @@ final class MatrixNormalInverseWishart(M:Expression<Real[_,_]>,
   function graftFinalize() -> Boolean {
     Λ.value();
     N.value();
-    if !V.hasValue() {
+    if !V.isRealized() {
       link();
       return true;
     } else {

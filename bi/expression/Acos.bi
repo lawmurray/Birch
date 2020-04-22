@@ -3,11 +3,11 @@
  */
 final class Acos<Argument,Value>(x:Expression<Argument>) <
     UnaryExpression<Argument,Value>(x) {
-  function doValue(x:Argument) -> Value {
+  override function computeValue(x:Argument) -> Value {
     return acos(x);
   }
 
-  function doGrad(d:Value, x:Argument) -> Argument {
+  override function computeGrad(d:Value, x:Argument) -> Argument {
     return -d/sqrt(1.0 - x*x);
   }
 }

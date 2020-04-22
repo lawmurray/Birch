@@ -106,7 +106,7 @@ final class AddBoundedDiscrete(x1:BoundedDiscrete, x2:BoundedDiscrete) <
   }
   
   function graftFinalize() -> Boolean {
-    if !x1.hasValue() && !x2.hasValue() {
+    if !x1.isRealized() && !x2.isRealized() {
       link();
       return true;
     } else {

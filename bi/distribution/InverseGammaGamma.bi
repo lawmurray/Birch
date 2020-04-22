@@ -39,7 +39,7 @@ final class InverseGammaGamma(k:Expression<Real>, θ:InverseGamma) <
 
   function graftFinalize() -> Boolean {
     k.value();
-    if !θ.hasValue() {
+    if !θ.isRealized() {
       link();
       return true;
     } else {

@@ -40,7 +40,7 @@ final class GammaPoisson(λ:Gamma) < Discrete {
   }
 
   function graftFinalize() -> Boolean {
-    if !λ.hasValue() {
+    if !λ.isRealized() {
       link();
       return true;
     } else {

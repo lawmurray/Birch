@@ -36,7 +36,7 @@ final class GammaExponential(λ:Gamma) < Distribution<Real> {
   }
 
   function graftFinalize() -> Boolean {
-    if !λ.hasValue() {
+    if !λ.isRealized() {
       link();
       return true;
     } else {

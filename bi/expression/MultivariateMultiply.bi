@@ -3,19 +3,19 @@
  */
 final class MultivariateMultiply<Left,Right,Value>(left:Expression<Left>,
     right:Expression<Right>) < BinaryExpression<Left,Right,Value>(left, right) {  
-  function rows() -> Integer {
+  override function rows() -> Integer {
     return left.rows();
   }
 
-  function doValue(l:Left, r:Right) -> Value {
+  override function computeValue(l:Left, r:Right) -> Value {
     return l*r;
   }
 
-  function doGrad(d:Value, l:Left, r:Right) -> (Left, Right) {
+  override function computeGrad(d:Value, l:Left, r:Right) -> (Left, Right) {
     return (d*transpose(r), transpose(l)*d);
   }
 
-  function graftLinearMultivariateGaussian() ->
+  override function graftLinearMultivariateGaussian() ->
       TransformLinearMultivariate<MultivariateGaussian>? {
     y:TransformLinearMultivariate<MultivariateGaussian>?;
     z:MultivariateGaussian?;
@@ -28,7 +28,7 @@ final class MultivariateMultiply<Left,Right,Value>(left:Expression<Left>,
     return y;
   }
   
-  function graftLinearMultivariateNormalInverseGamma(compare:Distribution<Real>) ->
+  override function graftLinearMultivariateNormalInverseGamma(compare:Distribution<Real>) ->
       TransformLinearMultivariate<MultivariateNormalInverseGamma>? {
     y:TransformLinearMultivariate<MultivariateNormalInverseGamma>?;
     z:MultivariateNormalInverseGamma?;

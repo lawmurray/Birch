@@ -45,7 +45,7 @@ class ScaledGammaExponential(a:Expression<Real>, λ:Gamma) <
 
   function graftFinalize() -> Boolean {
     a.value();
-    if !λ.hasValue() {
+    if !λ.isRealized() {
       link();
       return true;
     } else {

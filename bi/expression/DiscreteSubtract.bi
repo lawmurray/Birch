@@ -3,15 +3,15 @@
  */
 final class DiscreteSubtract<Left,Right,Value>(left:Expression<Left>,
     right:Expression<Right>) < BinaryExpression<Left,Right,Value>(left, right) {  
-  function doValue(l:Left, r:Right) -> Value {
+  override function computeValue(l:Left, r:Right) -> Value {
     return l - r;
   }
   
-  function doGrad(d:Value, l:Left, r:Right) -> (Left, Right) {
+  override function computeGrad(d:Value, l:Left, r:Right) -> (Left, Right) {
     return (d, -d);
   }
 
-  function graftDiscrete() -> Discrete? {
+  override function graftDiscrete() -> Discrete? {
     r:Discrete? <- graftBoundedDiscrete();
     if !r? {
       /* match a template */
@@ -30,7 +30,7 @@ final class DiscreteSubtract<Left,Right,Value>(left:Expression<Left>,
     return r;
   }
 
-  function graftBoundedDiscrete() -> BoundedDiscrete? {
+  override function graftBoundedDiscrete() -> BoundedDiscrete? {
     x1:BoundedDiscrete? <- left.graftBoundedDiscrete();
     x2:BoundedDiscrete? <- right.graftBoundedDiscrete();
     r:BoundedDiscrete?;

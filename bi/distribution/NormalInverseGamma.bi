@@ -80,7 +80,7 @@ final class NormalInverseGamma(μ:Expression<Real>, a2:Expression<Real>,
   function graftFinalize() -> Boolean {
     μ.value();
     λ.value();
-    if !σ2.hasValue() {
+    if !σ2.isRealized() {
       link();
       return true;
     } else {

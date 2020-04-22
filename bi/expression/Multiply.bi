@@ -3,15 +3,15 @@
  */
 final class Multiply<Left,Right,Value>(left:Expression<Left>,
     right:Expression<Right>) < BinaryExpression<Left,Right,Value>(left, right) {  
-  function doValue(l:Left, r:Right) -> Value {
+  override function computeValue(l:Left, r:Right) -> Value {
     return l*r;
   }
 
-  function doGrad(d:Value, l:Left, r:Right) -> (Left, Right) {
+  override function computeGrad(d:Value, l:Left, r:Right) -> (Left, Right) {
     return (d*r, d*l);
   }
 
-  function graftScaledGamma() -> TransformLinear<Gamma>? {
+  override function graftScaledGamma() -> TransformLinear<Gamma>? {
     y:TransformLinear<Gamma>?;
     z:Gamma?;
     
@@ -27,7 +27,7 @@ final class Multiply<Left,Right,Value>(left:Expression<Left>,
     return y;
   }
 
-  function graftLinearGaussian() -> TransformLinear<Gaussian>? {
+  override function graftLinearGaussian() -> TransformLinear<Gaussian>? {
     y:TransformLinear<Gaussian>?;
     z:Gaussian?;
     
@@ -43,7 +43,7 @@ final class Multiply<Left,Right,Value>(left:Expression<Left>,
     return y;
   }
 
-  function graftDotGaussian() -> TransformDot<MultivariateGaussian>? {
+  override function graftDotGaussian() -> TransformDot<MultivariateGaussian>? {
     y:TransformDot<MultivariateGaussian>?;
     
     if (y <- left.graftDotGaussian())? {
@@ -54,7 +54,7 @@ final class Multiply<Left,Right,Value>(left:Expression<Left>,
     return y;
   }
  
-  function graftLinearNormalInverseGamma(compare:Distribution<Real>) ->
+  override function graftLinearNormalInverseGamma(compare:Distribution<Real>) ->
       TransformLinear<NormalInverseGamma>? {
     y:TransformLinear<NormalInverseGamma>?;
     z:NormalInverseGamma?;

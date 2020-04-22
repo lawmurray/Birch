@@ -3,11 +3,11 @@
  */
 final class Pow<Left,Right,Value>(left:Expression<Left>,
     right:Expression<Right>) < BinaryExpression<Left,Right,Value>(left, right) {  
-  function doValue(l:Left, r:Right) -> Value {
+  override function computeValue(l:Left, r:Right) -> Value {
     return pow(l, r);
   }
 
-  function doGrad(d:Value, l:Left, r:Right) -> (Left, Right) {
+  override function computeGrad(d:Value, l:Left, r:Right) -> (Left, Right) {
     auto dl <- d*r*pow(l, r - 1);
     auto dr <- 0.0;
     if l > 0.0 {

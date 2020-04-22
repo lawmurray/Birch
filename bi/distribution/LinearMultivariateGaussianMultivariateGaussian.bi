@@ -44,7 +44,7 @@ final class LinearMultivariateGaussianMultivariateGaussian(
     A.value();
     c.value();
     S.value();
-    if !m.hasValue() {
+    if !m.isRealized() {
       link();
       return true;
     } else {

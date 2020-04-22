@@ -29,12 +29,12 @@ class MultivariateGaussian(μ:Expression<Real[_]>, Σ:Expression<Real[_,_]>) <
     return logpdf_multivariate_gaussian(x, μ.value(), Σ.value());
   }
 
-  function logpdfLazy(x:Expression<Real[_]>) -> Expression<Real>? {
-    return logpdf_lazy_multivariate_gaussian(x, μ, Σ);
+  function simulateLazy() -> Real[_]? {
+    return simulate_multivariate_gaussian(μ.pilot(), Σ.pilot());
   }
 
-  function updateLazy(x:Expression<Real[_]>) {
-    //
+  function logpdfLazy(x:Expression<Real[_]>) -> Expression<Real>? {
+    return logpdf_lazy_multivariate_gaussian(x, μ, Σ);
   }
 
   function graft() -> Distribution<Real[_]> {

@@ -39,7 +39,7 @@ final class NormalInverseGammaGaussian(μ:NormalInverseGamma) <
   }
 
   function graftFinalize() -> Boolean {
-    if !μ.hasValue() {
+    if !μ.isRealized() {
       link();
       return true;
     } else {

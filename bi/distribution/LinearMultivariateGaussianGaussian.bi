@@ -43,7 +43,7 @@ final class LinearMultivariateGaussianGaussian(a:Expression<Real[_]>,
     a.value();
     c.value();
     s2.value();
-    if !m.hasValue() {
+    if !m.isRealized() {
       link();
       return true;
     } else {

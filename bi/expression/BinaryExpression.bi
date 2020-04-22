@@ -17,37 +17,37 @@ abstract class BinaryExpression<Left,Right,Value>(left:Expression<Left>,
    */
   right:Expression<Right> <- right;
 
-  final function doValue() -> Value {
-    return doValue(left.value(), right.value());
+  final override function doValue() {
+    x <- computeValue(left.value(), right.value());
   }
 
-  final function doPilot() -> Value {
-    return doValue(left.pilot(), right.pilot());
+  final override function doPilot() {
+    x <- computeValue(left.pilot(), right.pilot());
   }
   
-  final function doGrad(d:Value) {
+  final override function doGrad(d:Value) {
     assert x?;
     auto l <- left.get();
     auto r <- right.get();
     dl:Left;
     dr:Right;
-    (dl, dr) <- doGrad(d, l, r);
+    (dl, dr) <- computeGrad(d, l, r);
     left.grad(dl);
     right.grad(dr);
   }
 
   /**
-   * Evaluate a value.
+   * Compute a value.
    *
    * - l: Left argument.
    * - r: Right argument.
    *
    * Returns: Value for the given arguments.
    */
-  abstract function doValue(l:Left, r:Right) -> Value;
+  abstract function computeValue(l:Left, r:Right) -> Value;
 
   /**
-   * Evaluate a gradient.
+   * Compute a gradient.
    *
    * - d: Upstream gradient.
    * - l: Left argument.
@@ -56,5 +56,5 @@ abstract class BinaryExpression<Left,Right,Value>(left:Expression<Left>,
    * Returns: Gradient with respect to the left and right arguments at the
    * given position.
    */
-  abstract function doGrad(d:Value, l:Left, r:Right) -> (Left, Right);
+  abstract function computeGrad(d:Value, l:Left, r:Right) -> (Left, Right);
 }

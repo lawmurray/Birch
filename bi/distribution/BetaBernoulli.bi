@@ -24,7 +24,7 @@ final class BetaBernoulli(ρ:Beta) < Distribution<Boolean> {
   }
 
   function graftFinalize() -> Boolean {
-    if !ρ.hasValue() {
+    if !ρ.isRealized() {
       link();
       return true;
     } else {

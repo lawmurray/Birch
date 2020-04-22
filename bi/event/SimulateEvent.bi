@@ -24,7 +24,9 @@ final class SimulateEvent<Value>(p:Distribution<Value>) < ValueEvent<Value> {
   }
 
   function play() -> Real {
-    v <- p.value();
+    p <- p.graft();
+    v <- p.simulate();
+    p.update(v!);
     return 0.0;
   }
 
