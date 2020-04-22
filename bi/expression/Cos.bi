@@ -7,7 +7,7 @@ final class Cos<Argument,Value>(x:Expression<Argument>) <
     return cos(x);
   }
 
-  function doGradient(d:Value, x:Argument) -> Argument {
+  function doGrad(d:Value, x:Argument) -> Argument {
     return -d*sin(x);
   }
 }

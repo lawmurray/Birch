@@ -20,7 +20,7 @@ final class Diagonal<Argument,Value>(x:Expression<Argument>, n:Integer) <
     return diagonal(x, n);
   }
 
-  function doGradient(d:Value, x:Argument) -> Argument {
+  function doGrad(d:Value, x:Argument) -> Argument {
     return sum(diagonal(d));
   }
 }

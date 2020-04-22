@@ -7,7 +7,7 @@ final class Sqrt<Argument,Value>(x:Expression<Argument>) <
     return sqrt(x);
   }
 
-  function doGradient(d:Value, x:Argument) -> Argument {
+  function doGrad(d:Value, x:Argument) -> Argument {
     return d*0.5/sqrt(x);
   }
 }

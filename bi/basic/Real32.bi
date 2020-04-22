@@ -210,6 +210,15 @@ function min(x:Real32, y:Real32) -> Real32 {
 }
 
 /**
+ * Add two values.
+ */
+function add(x:Real32, y:Real32) -> Real32 {
+  cpp {{
+  return x + y;
+  }}
+}
+
+/**
  * Is the value `inf`?
  */
 function isinf(x:Real32) -> Boolean {

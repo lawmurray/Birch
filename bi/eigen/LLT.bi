@@ -52,6 +52,13 @@ function matrix(X:LLT) -> Real[_,_] {
 }
 
 /**
+ * Add two Cholesky decompositions.
+ */
+function add(X:LLT, Y:LLT) -> LLT {
+  return rank_update(X, matrix(Y), 1.0);
+}
+
+/**
  * Cholesky decomposition of the symmetric positive definite matrix $S$.
  *
  * - S: The symmetric positive definite matrix $S$.

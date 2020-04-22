@@ -2,36 +2,25 @@
  * Boxed value.
  */
 final class Boxed<Value> < Expression<Value> {  
-  /**
-   * Value.
-   */
-  x:Value;
-
-  operator <- x:Value {
-    this.x <- x;
-  }
-
   function rows() -> Integer {
-    return global.rows(x);
+    return global.rows(get());
   }
 
   function columns() -> Integer {
-    return global.columns(x);
+    return global.columns(get());
   }
 
-  function get() -> Value {
-    return x;
+  function doValue() -> Value {
+    assert false;  // should never arrive here, as x set by factory function
+    return get();
   }
 
-  function value() -> Value {
-    return x;
-  }
-  
-  function pilot() -> Value {
-    return x;
+  function doPilot() -> Value {
+    assert false;  // should never arrive here, as x set by factory function
+    return get();
   }
 
-  function grad(d:Value) {
+  function doGrad(d:Value) {
     //
   }
 }

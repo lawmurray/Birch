@@ -180,6 +180,13 @@ function columns<Value>(x:Value[_]) -> Integer {
 }
 
 /**
+ * Add two vectors.
+ */
+function add<Value>(x:Value[_], y:Value[_]) -> Value[_] {
+  return transform(x, y, @(a:Value, b:Value) -> Value { return add(a, b); });
+}
+
+/**
  * Sum of a vector.
  */
 function sum(x:Real[_]) -> Real {

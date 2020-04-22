@@ -7,7 +7,7 @@ final class Log<Argument,Value>(x:Expression<Argument>) <
     return log(x);
   }
 
-  function doGradient(d:Value, x:Argument) -> Argument {
+  function doGrad(d:Value, x:Argument) -> Argument {
     return d/x;
   }
 }

@@ -26,6 +26,13 @@ function columns<Value>(X:Value[_,_]) -> Integer {
 }
 
 /**
+ * Add two matrices.
+ */
+function add<Value>(X:Value[_,_], Y:Value[_,_]) -> Value[_,_] {
+  return transform(X, Y, @(x:Value, y:Value) -> Value { return add(x, y); });
+}
+
+/**
  * Create matrix filled with a given scalar value.
  *
  * - x: The value.

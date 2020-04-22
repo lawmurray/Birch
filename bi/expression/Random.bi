@@ -8,17 +8,7 @@ final class Random<Value> < Expression<Value> {
    * Associated distribution.
    */
   p:Distribution<Value>?;
-
-  /**
-   * Value.
-   */
-  x:Value?;
   
-  /**
-   * Gradient.
-   */
-  dfdx:Value?;
-
   /**
    * Log-weight of prior.
    */
@@ -94,29 +84,19 @@ final class Random<Value> < Expression<Value> {
     this.x <- p.value();
   }
 
-  function get() -> Value {
-    return x!;
-  }
-
-  function value() -> Value {
-    if !x? {
-      graft();
-      x <- p!.value();
-      p <- nil;
-    }
-    return x!;
+  function doValue() -> Value {
+    graft();
+    auto x <- p!.value();
+    p <- nil;
+    return x;
   }
   
-  function pilot() -> Value {
-    assert p?;
-    if !x? {
-      graft();
-      x <- p!.value();
-    }
-    return x!;
+  function doPilot() -> Value {
+    graft();
+    return p!.value();
   }
 
-  function grad(d:Value) {
+  function doGrad(d:Value) {
     assert x?;
     if p? {
       if dfdx? {

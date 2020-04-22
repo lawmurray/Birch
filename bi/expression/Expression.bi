@@ -5,11 +5,29 @@
  */
 abstract class Expression<Value> {  
   /**
+   * Memoized value.
+   */
+  x:Value?;
+  
+  /**
+   * Accumulated upstream gradient.
+   */
+  dfdx:Value?;
+  
+  /**
+   * Count of the number of times `pilot()` has been called on this, minus
+   * the number of times `grad()` has been called. This is used to accumulate
+   * upstream gradients before recursing into a subexpression that may be
+   * shared.
+   */
+  count:Integer <- 0;
+
+  /**
    * Value assignment. Once an expression has been assigned a value, it is
    * treated as though of type Boxed.
    */
   operator <- x:Value {
-    assert false;
+    this.x <- x;
   }
 
   /**
@@ -37,17 +55,29 @@ abstract class Expression<Value> {
    * Get the memoized value of the expression, assuming it has already been
    * computed by a call to `value()` or `pilot()`.
    */
-  abstract function get() -> Value;
+  final function get() -> Value {
+    return x!;
+  }
 
   /**
    * Evaluate.
    *
    * Returns: The evaluated value of the expression.
    */
-  abstract function value() -> Value;
+  final function value() -> Value {
+    if !x? {
+      x <- doValue();
+    }
+    return x!;
+  }
+  
+  /**
+   * Evaluate; overridden by derived classes.
+   */
+  abstract function doValue() -> Value;
 
   /**
-   * Evaluate prior to `grad()`.
+   * Evaluate before `grad()`.
    *
    * Returns: The evaluated value of the expression.
    *
@@ -68,10 +98,21 @@ abstract class Expression<Value> {
    *     accumulating all upstream gradients before recursing into the
    *     subexpression.
    */
-  abstract function pilot() -> Value;
+  final function pilot() -> Value {
+    count <- count + 1;
+    if !x? {
+      x <- doPilot();
+    }
+    return x!;
+  }
+  
+  /**
+   * Evaluate before `grad()`; overriden by derived classes.
+   */
+  abstract function doPilot() -> Value;
 
   /**
-   * Compute gradients of the expression with respect to all Random nodes.
+   * Evaluate gradient with respect to all Random nodes.
    *
    * - d: Upstream gradient. For an initial call, this should be the unit for
    *     the given type, e.g. 1.0, a vector of ones, or the identity matrix.
@@ -90,7 +131,27 @@ abstract class Expression<Value> {
    * the computation. The Random object that encodes $x_0$ keeps the final
    * result.
    */
-  abstract function grad(d:Value);
+  function grad(d:Value) {
+    assert count > 0;
+    
+    /* accumulate gradient */
+    if dfdx? {
+      dfdx <- add(dfdx!, d);
+    } else {
+      dfdx <- d;
+    }
+    
+    /* continue recursion if all upstream gradients accumulated */
+    count <- count - 1;
+    if count == 0 {
+      doGrad(d);
+    }
+  }
+  
+  /**
+   * Evaluate gradient; overriden by derived classes;
+   */
+  abstract function doGrad(d:Value);
 
   /**
    * If this is a Random, get the distribution associated with it, if any,

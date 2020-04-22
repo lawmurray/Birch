@@ -7,7 +7,7 @@ final class LogGamma<Argument,Value>(x:Expression<Argument>) <
     return lgamma(x);
   }
 
-  function doGradient(d:Value, x:Argument) -> Argument {
+  function doGrad(d:Value, x:Argument) -> Argument {
     return d*digamma(x);
   }
 }

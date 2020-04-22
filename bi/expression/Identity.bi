@@ -15,19 +15,15 @@ final class Identity<Value>(n:Integer) < Expression<Value> {
     return n;
   }
 
-  function get() -> Value {
+  function doValue() -> Value {
     return identity(n);
   }
 
-  function value() -> Value {
+  function doPilot() -> Value {
     return identity(n);
   }
 
-  function pilot() -> Value {
-    return identity(n);
-  }
-
-  function grad(d:Value) {
+  function doGrad(d:Value) {
     //
   }
 }

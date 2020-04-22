@@ -17,7 +17,7 @@ final class MatrixAdd<Left,Right,Value>(left:Expression<Left>,
     return l + r;
   }
 
-  function doGradient(d:Value, l:Left, r:Right) -> (Left, Right) {
+  function doGrad(d:Value, l:Left, r:Right) -> (Left, Right) {
     return (d, d);
   }
 

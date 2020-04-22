@@ -208,3 +208,12 @@ function min(x:Integer64, y:Integer64) -> Integer64 {
   return std::min(x, y);
   }}
 }
+
+/**
+ * Add two values.
+ */
+function add(x:Integer64, y:Integer64) -> Integer64 {
+  cpp {{
+  return x + y;
+  }}
+}

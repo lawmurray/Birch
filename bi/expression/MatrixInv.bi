@@ -15,7 +15,7 @@ final class MatrixInv<Argument,Value>(x:Expression<Argument>) <
     return inv(x);
   }
 
-  function doGradient(d:Value, x:Argument) -> Argument {
+  function doGrad(d:Value, x:Argument) -> Argument {
     ///@todo
     assert false;
   }

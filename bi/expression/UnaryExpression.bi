@@ -7,40 +7,21 @@
 abstract class UnaryExpression<Argument,Value>(single:Expression<Argument>) <
     Expression<Value> {  
   /**
-   * Final value.
-   */
-  x:Value?;
-
-  /**
    * Single argument.
    */
   single:Expression<Argument> <- single;
 
-  operator <- x:Value {
-    this.x <- x;
-  }
-
-  final function get() -> Value {
-    return x!;
-  }
-
-  final function value() -> Value {
-    if !x? {
-      x <- doValue(single.value());
-    }
-    return x!;
+  final function doValue() -> Value {
+    return doValue(single.value());
   }
   
-  final function pilot() -> Value {
-    if !x? {
-      x <- doValue(single.pilot());
-    }
-    return x!;
+  final function doPilot() -> Value {
+    return doValue(single.pilot());
   }
   
-  final function grad(d:Value) {
+  final function doGrad(d:Value) {
     assert x?;
-    single.grad(doGradient(d, single.get()));
+    single.grad(doGrad(d, single.get()));
   }
 
   /**
@@ -60,5 +41,5 @@ abstract class UnaryExpression<Argument,Value>(single:Expression<Argument>) <
    *
    * Returns: Gradient with respect to the argument at the given position.
    */
-  abstract function doGradient(d:Value, x:Argument) -> Argument;
+  abstract function doGrad(d:Value, x:Argument) -> Argument;
 }

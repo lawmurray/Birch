@@ -7,7 +7,7 @@ final class Atan<Argument,Value>(x:Expression<Argument>) <
     return atan(x);
   }
 
-  function doGradient(d:Value, x:Argument) -> Argument {
+  function doGrad(d:Value, x:Argument) -> Argument {
     return d/(1.0 + x*x);
   }
 }

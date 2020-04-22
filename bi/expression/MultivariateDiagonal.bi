@@ -15,7 +15,7 @@ final class MultivariateDiagonal<Argument,Value>(x:Expression<Argument>) <
     return diagonal(x);
   }
 
-  function doGradient(d:Value, x:Argument) -> Argument {
+  function doGrad(d:Value, x:Argument) -> Argument {
     return diagonal(d);
   }
 }

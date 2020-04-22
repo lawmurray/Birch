@@ -7,7 +7,7 @@ final class Asin<Argument,Value>(x:Expression<Argument>) <
     return asin(x);
   }
 
-  function doGradient(d:Value, x:Argument) -> Argument {
+  function doGrad(d:Value, x:Argument) -> Argument {
     return d/sqrt(1.0 - x*x);
   }
 }

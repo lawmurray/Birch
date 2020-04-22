@@ -7,7 +7,7 @@ final class Pow<Left,Right,Value>(left:Expression<Left>,
     return pow(l, r);
   }
 
-  function doGradient(d:Value, l:Left, r:Right) -> (Left, Right) {
+  function doGrad(d:Value, l:Left, r:Right) -> (Left, Right) {
     auto dl <- d*r*pow(l, r - 1);
     auto dr <- 0.0;
     if l > 0.0 {

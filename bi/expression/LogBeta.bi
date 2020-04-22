@@ -7,7 +7,7 @@ final class LogBeta<Left,Right,Value>(left:Expression<Left>,
     return lbeta(l, r);
   }
   
-  function doGradient(d:Value, l:Left, r:Right) -> (Left, Right) {
+  function doGrad(d:Value, l:Left, r:Right) -> (Left, Right) {
     auto d1 <- digamma(l);
     auto d2 <- digamma(r);
     auto d3 <- digamma(l + r);

@@ -208,3 +208,12 @@ function min(x:Integer32, y:Integer32) -> Integer32 {
   return std::min(x, y);
   }}
 }
+
+/**
+ * Add two values.
+ */
+function add(x:Integer32, y:Integer32) -> Integer32 {
+  cpp {{
+  return x + y;
+  }}
+}

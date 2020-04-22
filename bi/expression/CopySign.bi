@@ -7,7 +7,7 @@ final class CopySign<Left,Right,Value>(left:Expression<Left>,
     return copysign(l, r);
   }
   
-  function doGradient(d:Value, l:Left, r:Right) -> (Left, Right) {
+  function doGrad(d:Value, l:Left, r:Right) -> (Left, Right) {
     if copysign(l, r) == l {
       return (d, 0.0);
     } else {
