@@ -184,7 +184,7 @@ abstract class Expression<Value> {
     /* continue recursion if all upstream gradients accumulated */
     count <- count - 1;
     if count == 0 {
-      doGrad(d);
+      doGrad(dfdx!);
     }
   }
   

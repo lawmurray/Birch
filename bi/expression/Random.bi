@@ -29,20 +29,6 @@ final class Random<Value> < Expression<Value> {
     assert !p?;
     this.x <- x;
   }
-
-  /**
-   * Does this have a value?
-   */
-  function hasValue() -> Boolean {
-    return x? || (p? && p!.isRealized());
-  }
-
-  /**
-   * Does this have a distribution?
-   */
-  function hasDistribution() -> Boolean {
-    return p?;
-  }
   
   override function rows() -> Integer {
     if x? {
@@ -62,21 +48,22 @@ final class Random<Value> < Expression<Value> {
     }
   }
 
-  function distribution() -> Distribution<Value>? {
+  override function distribution() -> Distribution<Value>? {
     return p;
   }
 
   /**
-   * Assume the distribution for the random variate. When a value for the
-   * random variate is required, it will be simulated from this distribution
-   * and trigger an *update* on the delayed sampling graph.
-   *
-   * - p: The distribution.
+   * Does this have a value?
    */
-  function assume(p:Distribution<Value>) {
-    assert !this.p?;
-    assert !this.x?;
-    this.p <- p;
+  function hasValue() -> Boolean {
+    return x? || (p? && p!.isRealized());
+  }
+
+  /**
+   * Does this have a distribution?
+   */
+  function hasDistribution() -> Boolean {
+    return p?;
   }
 
   override function doValue() {
@@ -84,13 +71,14 @@ final class Random<Value> < Expression<Value> {
       /* distribution was forced to realize by its parent, use the value that
        * was simulated */
       x <- p!.realized();
+      p <- nil;
     } else {
-      p!.prune();
+      p <- p!.graft();
       x <- p!.simulate();
       p!.update(x!);
       p!.unlink();
+      p <- nil;
     }
-    p <- nil;
   }
 
   override function doPilot() {
@@ -100,10 +88,12 @@ final class Random<Value> < Expression<Value> {
       x <- p!.realized();
       p <- nil;
     } else {
-      p!.prune();
+      p <- p!.graft();
       x <- p!.simulateLazy();
       p!.updateLazy(this);
-      // keep p here, this distinguishes between pilot vs value
+      p!.unlink();
+      // keep p here, this distinguishes between whether or not a subsequent
+      // gradient computation is possible
     }
   }
 
@@ -122,25 +112,31 @@ final class Random<Value> < Expression<Value> {
   override function doGrad(d:Value) {
     assert x?;
     if p? {
-      if dfdx? {
-        y:Value <- dfdx! + d;
-        dfdx <- y;
+      auto ψ <- p!.logpdfLazy(this);
+      if ψ? {
+        w <- ψ!.pilot();
+        ψ!.grad(1.0);
       } else {
-        auto ψ <- p!.logpdfLazy(this);
-        if ψ? {
-          dfdx <- d;
-          w <- ψ!.pilot();
-          assert abs(w - p!.logpdf(x!)) < 1.0e-6;
-          ψ!.grad(1.0);
-        }
+        /* treat as a constant */
+        dfdx <- nil;
       }
+    } else {
+      /* treat as a constant */
+      dfdx <- nil;
     }
   }
 
-  function graft() {
-    if !hasValue() {
-      p <- p!.graft();
-    }
+  /**
+   * Assume the distribution for the random variate. When a value for the
+   * random variate is required, it will be simulated from this distribution
+   * and trigger an *update* on the delayed sampling graph.
+   *
+   * - p: The distribution.
+   */
+  function assume(p:Distribution<Value>) {
+    assert !this.p?;
+    assert !this.x?;
+    this.p <- p;
   }
 
   override function graftGaussian() -> Gaussian? {
