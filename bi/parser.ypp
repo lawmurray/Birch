@@ -499,10 +499,11 @@ fiber_declaration
     ;
 
 member_function_annotation
-    : ABSTRACT  { $$ = bi::ABSTRACT; }
-    | OVERRIDE  { $$ = bi::OVERRIDE; }
-    | FINAL     { $$ = bi::FINAL; }
-    //|         { $$ = bi::NONE; }
+    : ABSTRACT        { $$ = bi::ABSTRACT; }
+    | FINAL           { $$ = bi::FINAL; }
+    | OVERRIDE        { $$ = bi::OVERRIDE; }
+    | FINAL OVERRIDE  { $$ = bi::Annotation(bi::FINAL|bi::OVERRIDE); }
+    //|               { $$ = bi::NONE; }
     //^ don't put bi::NONE here, messes up line numbers
     ;
 
