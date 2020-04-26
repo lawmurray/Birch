@@ -167,6 +167,15 @@ void bi::Scope::inherit(Class* o) const {
     auto iter = classTypes.find(name);
     if (iter != classTypes.end()) {
       o->scope->base = iter->second->scope;
+
+      /* check for loops in inheritance */
+      auto scope = o->scope;
+      do {
+        if (scope->base == o->scope) {
+          throw InheritanceLoopException(o);
+        }
+        scope = scope->base;
+      } while (scope);
     }
   }
 }

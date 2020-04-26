@@ -42,6 +42,7 @@ COMMON_SOURCES = \
   bi/exception/DriverException.cpp \
   bi/exception/Exception.cpp \
   bi/exception/FileNotFoundException.cpp \
+  bi/exception/InheritanceLoopException.cpp \
   bi/exception/SpinException.cpp \
   bi/exception/UnresolvedException.cpp \
   bi/exception/YieldException.cpp \
@@ -181,6 +182,7 @@ noinst_HEADERS = \
   bi/exception/DriverException.hpp \
   bi/exception/Exception.hpp \
   bi/exception/FileNotFoundException.hpp \
+  bi/exception/InheritanceLoopException.hpp \
   bi/exception/SpinException.hpp \
   bi/exception/UnresolvedException.hpp \
   bi/exception/YieldException.hpp \
