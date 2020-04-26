@@ -1219,7 +1219,15 @@ void bi::Driver::target(const std::string& cmd) {
   if (!notes) {
     buf << " | grep --line-buffered -v 'note:'";
   }
-  buf << " | sed -lE 's/[a-zA-Z]+:://g' 1>&2";  // strip namespaces
+
+  /* strip namespaces, which are meant to be internal */
+  buf << " | sed -lE 's/[a-zA-Z0-9_]+:://g'";
+
+  /* strip suggestions that reveal internal workings */
+  buf << " | sed -lE \"s/; did you mean '[[:alnum:]_]+_'\\?/./\"";
+  buf << " | sed -lE \"/note: '[[:alnum:]_]+_' declared here/d\"";
+  buf << " | grep --line-buffered -v 'note: expanded from macro'";
+  buf << " 1>&2";
 
   /* handle output */
   std::string log = cmd + ".log";
