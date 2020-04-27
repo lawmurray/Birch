@@ -546,9 +546,10 @@ void bi::Driver::docs() {
   }
   mkdocsStream << "site_name: '" << packageName << "'\n";
   mkdocsStream << "theme:\n";
-  mkdocsStream << "  name: 'readthedocs'\n";
+  mkdocsStream << "  name: 'material'\n";
   mkdocsStream << "markdown_extensions:\n";
   mkdocsStream << "  - admonition\n";
+  mkdocsStream << "  - footnotes\n";
   mkdocsStream << "  - mdx_math:\n";
   mkdocsStream << "      enable_dollar_delimiter: True\n";
   mkdocsStream << "extra_javascript:\n";
