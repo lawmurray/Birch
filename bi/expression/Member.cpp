@@ -20,7 +20,7 @@ bool bi::Member::isAssignable() const {
   return right->isAssignable();
 }
 
-bool bi::Member::isMember() const {
+bool bi::Member::isMembership() const {
   return true;
 }
 

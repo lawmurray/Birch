@@ -106,7 +106,7 @@ void bi::CppBaseGenerator::visit(const Assign* o) {
     middle(slice->single << ".set");
     middle("(libbirch::make_slice(" << slice->brackets << "), " << o->right << ')');
   } else {
-    if (o->left->isMember()) {
+    if (o->left->isMembership()) {
       ++inAssign;
     }
     middle(o->left << " = " << o->right);
@@ -165,22 +165,20 @@ void bi::CppBaseGenerator::visit(const Range* o) {
 }
 
 void bi::CppBaseGenerator::visit(const Member* o) {
-  auto leftThis = dynamic_cast<const This*>(o->left);
-  auto leftSuper = dynamic_cast<const Super*>(o->left);
-  if (inConstructor && (leftThis || leftSuper)) {
+  if (inConstructor && (o->left->isThis() || o->left->isSuper())) {
     /* don't have access to the `self` variable here, but because we're
      * constructing, so the object cannot possibly be frozen, `this`
      * suffices */
-    if (leftThis) {
+    if (o->left->isThis()) {
       middle("this->");
-    } else if (leftSuper) {
+    } else if (o->left->isSuper()) {
       middle("this->super_type_::");
     }
   } else {
-    if (leftThis) {
-      middle("self()->");
-    } else if (leftSuper) {
-      middle("self()->super_type_::");
+    if (o->left->isThis()) {
+      middle("this->get_()->");
+    } else if (o->left->isSuper()) {
+      middle("this->get_()->super_type_::");
     } else {
       middle(o->left);
       auto named = dynamic_cast<const NamedExpression*>(o->right);
@@ -190,9 +188,8 @@ void bi::CppBaseGenerator::visit(const Member* o) {
         /* read optimization: just reading a value, no need to copy-on-write
          * the containing object */
         middle(".pull()");
-      } else {
-        inAssign = 0;
       }
+	    inAssign = 0;
       middle("->");
     }
   }
@@ -205,7 +202,7 @@ void bi::CppBaseGenerator::visit(const This* o) {
   if (inConstructor) {
     middle("this");
   } else {
-    middle("self()");
+    middle("self_()");
   }
 }
 
@@ -237,7 +234,7 @@ void bi::CppBaseGenerator::visit(const NamedExpression* o) {
     }
   } else if (o->isMember()) {
     if (!inMember && !inConstructor) {
-      middle("self()->");
+      middle("self_()->");
     }
     middle(o->name);
   } else {

@@ -77,9 +77,39 @@ public:
   virtual bool isSlice() const;
 
   /**
-   * Is this a member expression?
+   * Is this a membership expression?
+   */
+  virtual bool isMembership() const;
+
+  /**
+   * Is this a `this` expression?
+   */
+  virtual bool isThis() const;
+
+  /**
+   * Is this a `super` expression?
+   */
+  virtual bool isSuper() const;
+
+  /**
+   * Is this a reference to a global variable, function, or fiber?
+   */
+  virtual bool isGlobal() const;
+
+  /**
+   * Is this a reference to a member variable, function, or fiber?
    */
   virtual bool isMember() const;
+
+  /**
+   * Is this a reference to a local variable, function, or fiber?
+   */
+  virtual bool isLocal() const;
+
+  /**
+   * Is this a reference to a parameter?
+   */
+  virtual bool isParameter() const;
 
   /**
    * Strip parentheses, if any.

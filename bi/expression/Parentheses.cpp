@@ -32,8 +32,24 @@ bool bi::Parentheses::isTuple() const {
   return single->isTuple();
 }
 
+bool bi::Parentheses::isMembership() const {
+  return single->isMembership();
+}
+
+bool bi::Parentheses::isGlobal() const {
+  return single->isGlobal();
+}
+
 bool bi::Parentheses::isMember() const {
   return single->isMember();
+}
+
+bool bi::Parentheses::isLocal() const {
+  return single->isLocal();
+}
+
+bool bi::Parentheses::isParameter() const {
+  return single->isParameter();
 }
 
 bi::Expression* bi::Parentheses::accept(Cloner* visitor) const {

@@ -31,7 +31,7 @@ int bi::MemberType::depth() const {
   return right->depth();
 }
 
-bool bi::MemberType::isMember() const {
+bool bi::MemberType::isMembership() const {
   return true;
 }
 

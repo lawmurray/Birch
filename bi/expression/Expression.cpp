@@ -34,7 +34,31 @@ bool bi::Expression::isTuple() const {
   return false;
 }
 
+bool bi::Expression::isMembership() const {
+  return false;
+}
+
+bool bi::Expression::isThis() const {
+  return false;
+}
+
+bool bi::Expression::isSuper() const {
+  return false;
+}
+
+bool bi::Expression::isGlobal() const {
+  return false;
+}
+
 bool bi::Expression::isMember() const {
+  return false;
+}
+
+bool bi::Expression::isLocal() const {
+  return false;
+}
+
+bool bi::Expression::isParameter() const {
   return false;
 }
 

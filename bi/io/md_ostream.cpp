@@ -252,7 +252,7 @@ void bi::md_ostream::visit(const MemberVariable* o) {
 }
 
 void bi::md_ostream::visit(const Function* o) {
-  start("!!! quote \"function " << o->name);
+  start("!!! abstract \"function " << o->name);
   if (o->isGeneric()) {
     middle("&lt;" << o->typeParams << "&gt;");
   }
@@ -264,7 +264,7 @@ void bi::md_ostream::visit(const Function* o) {
 }
 
 void bi::md_ostream::visit(const Fiber* o) {
-  start("!!! quote \"fiber " << o->name);
+  start("!!! abstract \"fiber " << o->name);
   if (o->isGeneric()) {
     middle("&lt;" << o->typeParams << "&gt;");
   }
@@ -276,11 +276,11 @@ void bi::md_ostream::visit(const Fiber* o) {
 }
 
 void bi::md_ostream::visit(const Program* o) {
-  start("!!! quote \"program " << o->name << '(' << o->params << ")\"");
+  start("!!! abstract \"program " << o->name << '(' << o->params << ")\"");
 }
 
 void bi::md_ostream::visit(const MemberFunction* o) {
-  start("!!! quote \"");
+  start("!!! abstract \"");
   if (o->has(ABSTRACT)) {
     middle("abstract ");
   }
@@ -296,7 +296,7 @@ void bi::md_ostream::visit(const MemberFunction* o) {
 }
 
 void bi::md_ostream::visit(const MemberFiber* o) {
-  start("!!! quote \"");
+  start("!!! abstract \"");
   if (o->has(ABSTRACT)) {
     middle("abstract ");
   }
@@ -312,7 +312,7 @@ void bi::md_ostream::visit(const MemberFiber* o) {
 }
 
 void bi::md_ostream::visit(const BinaryOperator* o) {
-  start("!!! quote \"operator (");
+  start("!!! abstract \"operator (");
   middle(o->left << ' ' << o->name << ' ' << o->right << ')');
   if (!o->returnType->isEmpty()) {
     middle(" -> " << o->returnType);
@@ -321,7 +321,7 @@ void bi::md_ostream::visit(const BinaryOperator* o) {
 }
 
 void bi::md_ostream::visit(const UnaryOperator* o) {
-  start("!!! quote \"operator (");
+  start("!!! abstract \"operator (");
   middle(o->name << ' ' << o->single << ')');
   if (!o->returnType->isEmpty()) {
     middle(" -> " << o->returnType);
@@ -366,7 +366,7 @@ void bi::md_ostream::visit(const Class* o) {
   /* anchor for internal links */
   genHead(o->name->str());
   line("<a name=\"" << anchor(o->name->str()) << "\"></a>\n");
-  start("!!! quote \"");
+  start("!!! abstract \"");
   if (o->has(ABSTRACT)) {
     middle("abstract ");
   }

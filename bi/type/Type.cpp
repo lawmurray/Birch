@@ -45,7 +45,7 @@ bool bi::Type::isFiber() const {
   return false;
 }
 
-bool bi::Type::isMember() const {
+bool bi::Type::isMembership() const {
   return false;
 }
 

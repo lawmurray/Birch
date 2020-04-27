@@ -14,6 +14,10 @@ bi::This::~This() {
   //
 }
 
+bool bi::This::isThis() const {
+  return true;
+}
+
 bi::Expression* bi::This::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }

@@ -44,6 +44,10 @@ bool bi::NamedExpression::isLocal() const {
   return category == LOCAL_VARIABLE;
 }
 
+bool bi::NamedExpression::isParameter() const {
+  return category == PARAMETER;
+}
+
 bi::Expression* bi::NamedExpression::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }
