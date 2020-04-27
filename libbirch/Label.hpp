@@ -59,9 +59,9 @@ public:
   }
 
   /**
-   * Update a pointer for writing.
+   * Update a smart pointer for writing.
    *
-   * @param Smart pointer (Shared, Weak or Init).
+   * @param o Smart pointer (Shared, Weak or Init).
    */
   template<class P>
   auto get(P& o)  {
@@ -80,9 +80,9 @@ public:
   }
 
   /**
-   * Update a pointer for reading.
+   * Update a smart pointer for reading.
    *
-   * @param Smart pointer (Shared, Weak or Init).
+   * @param o Smart pointer (Shared, Weak or Init).
    */
   template<class P>
   auto pull(P& o) {
@@ -95,6 +95,36 @@ public:
       if (ptr != old) {
         o.replace(ptr);
       }
+      lock.unread();
+    }
+    return ptr;
+  }
+
+  /**
+   * Map a raw pointer for writing.
+   *
+   * @param ptr Raw pointer.
+   */
+  template<class T>
+  auto get(T* ptr)  {
+    if (ptr && ptr->isFrozen()) {  // isFrozen a useful guard for performance
+      lock.write();
+      ptr = static_cast<T*>(mapGet(ptr));
+      lock.unwrite();
+    }
+    return ptr;
+  }
+
+  /**
+   * Map a raw pointer for reading.
+   *
+   * @param ptr Raw pointer.
+   */
+  template<class T>
+  auto pull(T* ptr) {
+    if (ptr && ptr->isFrozen()) {  // isFrozen a useful guard for performance
+      lock.read();
+      ptr = static_cast<T*>(mapPull(ptr));
       lock.unread();
     }
     return ptr;

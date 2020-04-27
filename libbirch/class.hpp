@@ -84,8 +84,16 @@
     return #Name; \
   } \
   \
-  auto self() { \
-    return libbirch::Lazy<libbirch::Init<Name>>(this, this->getLabel()); \
+  Name* self_() { \
+    return libbirch::Lazy<libbirch::Shared<Name>>(this); \
+  } \
+  \
+  Name* get_() { \
+    return this->getLabel()->get(this); \
+  } \
+  \
+  Name* pull_() { \
+    return this->getLabel()->pull(this); \
   } \
   \
   template<class Visitor> \
@@ -121,7 +129,7 @@
     return #Name; \
   } \
   \
-  auto& self() { \
+  auto& self_() { \
     return local_.template get<0>(); \
   } \
   \

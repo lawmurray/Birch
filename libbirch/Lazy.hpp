@@ -37,9 +37,9 @@ public:
   /**
    * Constructor.
    */
-  Lazy(value_type* ptr, Label* label = rootLabel) :
+  Lazy(value_type* ptr, Label* label = nullptr) :
       object(ptr),
-      label(label) {
+      label(label ? label : ptr->getLabel()) {
     //
   }
 
@@ -261,6 +261,7 @@ public:
   /**
    * Dereference.
    */
+  template<class Q = P, std::enable_if_t<!std::is_same<Q,Weak<value_type>>::value,int> = 0>
   value_type& operator*() const {
     return *get();
   }
@@ -270,6 +271,14 @@ public:
    */
   template<class Q = P, std::enable_if_t<!std::is_same<Q,Weak<value_type>>::value,int> = 0>
   value_type* operator->() const {
+    return get();
+  }
+
+  /**
+   * Convert to raw pointer.
+   */
+  template<class U, std::enable_if_t<!std::is_same<P,Weak<value_type>>::value && std::is_base_of<U,value_type>::value,int> = 0>
+  operator U*() const {
     return get();
   }
 
@@ -327,6 +336,11 @@ auto canonical(const Lazy<Weak<T>>& o) {
 template<class T>
 auto canonical(const Lazy<Init<T>>& o) {
   return Lazy<Shared<T>>(o);
+}
+
+template<class T, std::enable_if_t<std::is_base_of<Any,T>::value,int> = 0>
+auto canonical(T* ptr) {
+  return Lazy<Shared<T>>(ptr);
 }
 
 }

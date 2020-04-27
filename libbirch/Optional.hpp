@@ -120,6 +120,14 @@ public:
   }
 
   /**
+   * Constructor.
+   */
+  Optional(typename P::value_type* ptr) :
+      value(ptr) {
+    //
+  }
+
+  /**
    * Generic value copy constructor.
    */
   template<class Q, std::enable_if_t<std::is_base_of<typename P::value_type,

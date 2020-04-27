@@ -82,9 +82,8 @@ struct raw<T*> {
  *
  * @see https://eigen.tuxfamily.org/dox/TopicPitfalls.html#title3
  */
-template<class T, std::enable_if_t<is_value<T>::value && false,int> = 0>
+template<class T, std::enable_if_t<!std::is_void<T>::value,int> = 0>
 auto canonical(const T& o) {
-  //static_assert(false, "missing canonical() overload for this type");
   assert(false);
   return o;
 }
