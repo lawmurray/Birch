@@ -14,7 +14,7 @@ class SQLite3Statement {
    */ 
   function bind(i:Integer, x:Integer) {
     cpp{{
-    auto res = sqlite3_bind_int64(self->stmt, i, x);
+    auto res = sqlite3_bind_int64(this_()->stmt, i, x);
     libbirch_error_msg_(res == SQLITE_OK, "sqlite3_bind_int64 failed");
     }}
   }
@@ -27,7 +27,7 @@ class SQLite3Statement {
    */ 
   function bind(i:Integer, x:Real) {
     cpp{{
-    auto res = sqlite3_bind_double(self->stmt, i, x);
+    auto res = sqlite3_bind_double(this_()->stmt, i, x);
     libbirch_error_msg_(res == SQLITE_OK, "sqlite3_bind_double failed");
     }}
   }
@@ -40,7 +40,7 @@ class SQLite3Statement {
    */ 
   function bind(i:Integer, x:String) {
     cpp{{
-    auto res = sqlite3_bind_text(self->stmt, i, x.c_str(), x.length(), SQLITE_TRANSIENT);
+    auto res = sqlite3_bind_text(this_()->stmt, i, x.c_str(), x.length(), SQLITE_TRANSIENT);
     libbirch_error_msg_(res == SQLITE_OK, "sqlite3_bind_text failed");
     }}
   }
@@ -52,7 +52,7 @@ class SQLite3Statement {
    */ 
   function bindNull(i:Integer) {
     cpp{{
-    auto res = sqlite3_bind_null(self->stmt, i);
+    auto res = sqlite3_bind_null(this_()->stmt, i);
     libbirch_error_msg_(res == SQLITE_OK, "sqlite3_bind_null failed");
     }}
   }
@@ -73,7 +73,7 @@ class SQLite3Statement {
    */
   function step() -> Boolean {
     cpp{{
-    auto res = sqlite3_step(self->stmt);
+    auto res = sqlite3_step(this_()->stmt);
     libbirch_error_msg_(res == SQLITE_ROW || res == SQLITE_DONE, "sqlite3_step failed");
     return (res == SQLITE_ROW);
     }}
@@ -84,7 +84,7 @@ class SQLite3Statement {
    */
   function columnCount() -> Integer {
     cpp{{
-    return sqlite3_column_count(self->stmt);
+    return sqlite3_column_count(this_()->stmt);
     }}
   }
   
@@ -97,8 +97,8 @@ class SQLite3Statement {
    */ 
   function columnInteger(i:Integer) -> Integer? {
     cpp{{
-    if (sqlite3_column_type(self->stmt, i - 1) == SQLITE_INTEGER) {
-      return sqlite3_column_int64(self->stmt, i - 1);
+    if (sqlite3_column_type(this_()->stmt, i - 1) == SQLITE_INTEGER) {
+      return sqlite3_column_int64(this_()->stmt, i - 1);
     }
     }}
     return nil;
@@ -113,11 +113,11 @@ class SQLite3Statement {
    */ 
   function columnReal(i:Integer) -> Real? {
     cpp{{
-    if (sqlite3_column_type(self->stmt, i - 1) == SQLITE_FLOAT) {
-      return sqlite3_column_double(self->stmt, i - 1);
+    if (sqlite3_column_type(this_()->stmt, i - 1) == SQLITE_FLOAT) {
+      return sqlite3_column_double(this_()->stmt, i - 1);
     }
     }}
-    return columnInteger(i);
+    return Real?(columnInteger(i));
   }
 
   /**
@@ -129,8 +129,8 @@ class SQLite3Statement {
    */ 
   function columnString(i:Integer) -> String? {
     cpp{{
-    if (sqlite3_column_type(self->stmt, i - 1) == SQLITE_TEXT) {
-      return std::string(reinterpret_cast<const char*>(sqlite3_column_text(self->stmt, i - 1)));
+    if (sqlite3_column_type(this_()->stmt, i - 1) == SQLITE_TEXT) {
+      return std::string(reinterpret_cast<const char*>(sqlite3_column_text(this_()->stmt, i - 1)));
     }
     }}
     return nil;
@@ -143,7 +143,7 @@ class SQLite3Statement {
    */
   function columnNull(i:Integer) -> Boolean {
     cpp{{
-    return sqlite3_column_type(self->stmt, i - 1) == SQLITE_NULL;
+    return sqlite3_column_type(this_()->stmt, i - 1) == SQLITE_NULL;
     }}
   }
 
@@ -152,7 +152,7 @@ class SQLite3Statement {
    */
   function reset() {
     cpp{{
-    auto res = sqlite3_reset(self->stmt);
+    auto res = sqlite3_reset(this_()->stmt);
     libbirch_error_msg_(res == SQLITE_OK, "sqlite3_reset failed");
     }}
   }
@@ -162,7 +162,7 @@ class SQLite3Statement {
    */
   function finalize() {
     cpp{{
-    auto res = sqlite3_finalize(self->stmt);
+    auto res = sqlite3_finalize(this_()->stmt);
     libbirch_error_msg_(res == SQLITE_OK, "sqlite3_finalize failed");
     }}
   }
