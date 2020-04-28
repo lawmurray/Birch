@@ -201,13 +201,17 @@ void bi::CppClassGenerator::visit(const MemberVariable* o) {
 
 void bi::CppClassGenerator::visit(const MemberFunction* o) {
   if ((header && o->has(ABSTRACT)) || !o->braces->isEmpty()) {
+    start("");
     if (header) {
+      genTemplateParams(o);
       genSourceLine(o->loc);
-      start("virtual ");
+      if (o->typeParams->isEmpty()) {
+        middle("virtual ");
+      }
     } else {
       genTemplateParams(currentClass);
+      genTemplateParams(o);
       genSourceLine(o->loc);
-      start("");
     }
     middle(o->returnType << ' ');
     if (!header) {
