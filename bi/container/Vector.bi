@@ -154,7 +154,7 @@ final class Vector<Type> {
    */
   function shrink(n:Integer) {
     cpp{{
-    self_()->values.shrink(libbirch::make_shape(n));
+    this_()->values.shrink(libbirch::make_shape(n));
     }}
     nelements <- n;
   }
@@ -169,7 +169,7 @@ final class Vector<Type> {
    */
   function enlarge(n:Integer, x:Type) {
     cpp{{
-    self_()->values.enlarge(libbirch::make_shape(n), x);
+    this_()->values.enlarge(libbirch::make_shape(n), x);
     }}
     nelements <- n;
   }

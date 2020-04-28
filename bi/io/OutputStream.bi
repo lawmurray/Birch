@@ -49,7 +49,7 @@ class OutputStream {
   function print(value:String) {
     assert file?;
     cpp{{
-    ::fprintf(self_()->file.get(), "%s", value.c_str());
+    ::fprintf(this_()->file.get(), "%s", value.c_str());
     }}
   }
 

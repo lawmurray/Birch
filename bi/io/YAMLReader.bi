@@ -23,23 +23,23 @@ class YAMLReader < Reader {
   function scan() -> MemoryBuffer {
     buffer:MemoryBuffer;
     cpp{{
-    yaml_parser_initialize(&self_()->parser);
-    yaml_parser_set_input_file(&self_()->parser, self_()->file);
+    yaml_parser_initialize(&this_()->parser);
+    yaml_parser_set_input_file(&this_()->parser, this_()->file);
     int done = 0;
     while (!done) {
-      if (!yaml_parser_parse(&self_()->parser, &self_()->event)) {
+      if (!yaml_parser_parse(&this_()->parser, &this_()->event)) {
         error("parse error");
       }
-      if (self_()->event.type == YAML_SEQUENCE_START_EVENT) {
-        self_()->parseSequence(buffer);
-      } else if (self_()->event.type == YAML_MAPPING_START_EVENT) {
-        self_()->parseMapping(buffer);
+      if (this_()->event.type == YAML_SEQUENCE_START_EVENT) {
+        this_()->parseSequence(buffer);
+      } else if (this_()->event.type == YAML_MAPPING_START_EVENT) {
+        this_()->parseMapping(buffer);
       } else {
-        done = self_()->event.type == YAML_STREAM_END_EVENT;
-        yaml_event_delete(&self_()->event);
+        done = this_()->event.type == YAML_STREAM_END_EVENT;
+        yaml_event_delete(&this_()->event);
       }
     }
-    yaml_parser_delete(&self_()->parser);
+    yaml_parser_delete(&this_()->parser);
     }}
     return buffer;
   }
@@ -47,42 +47,42 @@ class YAMLReader < Reader {
   fiber walk() -> Buffer {
     auto done <- false;
     cpp{{
-    yaml_parser_initialize(&self_()->parser);
-    yaml_parser_set_input_file(&self_()->parser, self_()->file);
+    yaml_parser_initialize(&this_()->parser);
+    yaml_parser_set_input_file(&this_()->parser, this_()->file);
     while (!done) {
-      if (!yaml_parser_parse(&self_()->parser, &self_()->event)) {
+      if (!yaml_parser_parse(&this_()->parser, &this_()->event)) {
         error("parse error");
-      } else if (self_()->event.type == YAML_MAPPING_START_EVENT) {
+      } else if (this_()->event.type == YAML_MAPPING_START_EVENT) {
         error("not a sequential file");
-      } else if (self_()->event.type == YAML_SEQUENCE_START_EVENT ||
-          self_()->event.type == YAML_STREAM_END_EVENT) {
+      } else if (this_()->event.type == YAML_SEQUENCE_START_EVENT ||
+          this_()->event.type == YAML_STREAM_END_EVENT) {
         done = true;
       } else {
-        yaml_event_delete(&self_()->event);
+        yaml_event_delete(&this_()->event);
       }
     }
-    done = self_()->event.type == YAML_STREAM_END_EVENT;
-    yaml_event_delete(&self_()->event);
+    done = this_()->event.type == YAML_STREAM_END_EVENT;
+    yaml_event_delete(&this_()->event);
     }}
     while !done {
       buffer:MemoryBuffer;
       substantial:Boolean <- false;
       cpp{{
-      if (!yaml_parser_parse(&self_()->parser, &self_()->event)) {
+      if (!yaml_parser_parse(&this_()->parser, &this_()->event)) {
         error("parse error");
       }
-      if (self_()->event.type == YAML_SCALAR_EVENT) {
-        self_()->parseScalar(buffer);
+      if (this_()->event.type == YAML_SCALAR_EVENT) {
+        this_()->parseScalar(buffer);
         substantial = true;
-      } else if (self_()->event.type == YAML_SEQUENCE_START_EVENT) {
-        self_()->parseSequence(buffer);
+      } else if (this_()->event.type == YAML_SEQUENCE_START_EVENT) {
+        this_()->parseSequence(buffer);
         substantial = true;
-      } else if (self_()->event.type == YAML_MAPPING_START_EVENT) {
-        self_()->parseMapping(buffer);
+      } else if (this_()->event.type == YAML_MAPPING_START_EVENT) {
+        this_()->parseMapping(buffer);
         substantial = true;
       } else {
-        done = self_()->event.type == YAML_SEQUENCE_END_EVENT;
-        yaml_event_delete(&self_()->event);
+        done = this_()->event.type == YAML_SEQUENCE_END_EVENT;
+        yaml_event_delete(&this_()->event);
       }
       }}
       if substantial {
@@ -90,7 +90,7 @@ class YAMLReader < Reader {
       }
     }
     cpp{{
-    yaml_parser_delete(&self_()->parser);
+    yaml_parser_delete(&this_()->parser);
     }}
   }
 
@@ -101,37 +101,37 @@ class YAMLReader < Reader {
   function parseMapping(buffer:Buffer) {
     buffer.setObject();
     cpp{{
-    yaml_event_delete(&self_()->event);
+    yaml_event_delete(&this_()->event);
     int done = 0;
     while (!done) {
       /* read one name/value pair on each iteration */
-      if (!yaml_parser_parse(&self_()->parser, &self_()->event)) {
+      if (!yaml_parser_parse(&this_()->parser, &this_()->event)) {
         error("parse error");
       }
-      if (self_()->event.type == YAML_SCALAR_EVENT) {
+      if (this_()->event.type == YAML_SCALAR_EVENT) {
         /* name */
-        char* data = (char*)self_()->event.data.scalar.value;
-        size_t length = self_()->event.data.scalar.length;
+        char* data = (char*)this_()->event.data.scalar.value;
+        size_t length = this_()->event.data.scalar.length;
         std::string name(data, length);
-        yaml_event_delete(&self_()->event);
+        yaml_event_delete(&this_()->event);
         
         /* value */
-        if (!yaml_parser_parse(&self_()->parser, &self_()->event)) {
+        if (!yaml_parser_parse(&this_()->parser, &this_()->event)) {
           error("parse error");
         }
-        if (self_()->event.type == YAML_SCALAR_EVENT) {
-          self_()->parseScalar(buffer->setChild(name));
-        } else if (self_()->event.type == YAML_SEQUENCE_START_EVENT) {
-          self_()->parseSequence(buffer->setChild(name));
-        } else if (self_()->event.type == YAML_MAPPING_START_EVENT) {
-          self_()->parseMapping(buffer->setChild(name));
+        if (this_()->event.type == YAML_SCALAR_EVENT) {
+          this_()->parseScalar(buffer->setChild(name));
+        } else if (this_()->event.type == YAML_SEQUENCE_START_EVENT) {
+          this_()->parseSequence(buffer->setChild(name));
+        } else if (this_()->event.type == YAML_MAPPING_START_EVENT) {
+          this_()->parseMapping(buffer->setChild(name));
         } else {
           buffer->setChild(name);
-          yaml_event_delete(&self_()->event);
+          yaml_event_delete(&this_()->event);
         }
       } else {
-        done = self_()->event.type == YAML_MAPPING_END_EVENT;
-        yaml_event_delete(&self_()->event);
+        done = this_()->event.type == YAML_MAPPING_END_EVENT;
+        yaml_event_delete(&this_()->event);
       }
     }
     }}
@@ -140,21 +140,21 @@ class YAMLReader < Reader {
   function parseSequence(buffer:Buffer) {
     buffer.setArray();
     cpp{{
-    yaml_event_delete(&self_()->event);
+    yaml_event_delete(&this_()->event);
     int done = 0;
     while (!done) {
-      if (!yaml_parser_parse(&self_()->parser, &self_()->event)) {
+      if (!yaml_parser_parse(&this_()->parser, &this_()->event)) {
         error("parse error");
       }
-      if (self_()->event.type == YAML_SCALAR_EVENT) {
-        self_()->parseScalar(buffer->push());
-      } else if (self_()->event.type == YAML_SEQUENCE_START_EVENT) {
-        self_()->parseSequence(buffer->push());
-      } else if (self_()->event.type == YAML_MAPPING_START_EVENT) {
-        self_()->parseMapping(buffer->push());
+      if (this_()->event.type == YAML_SCALAR_EVENT) {
+        this_()->parseScalar(buffer->push());
+      } else if (this_()->event.type == YAML_SEQUENCE_START_EVENT) {
+        this_()->parseSequence(buffer->push());
+      } else if (this_()->event.type == YAML_MAPPING_START_EVENT) {
+        this_()->parseMapping(buffer->push());
       } else {
-        done = self_()->event.type == YAML_SEQUENCE_END_EVENT;
-        yaml_event_delete(&self_()->event);
+        done = this_()->event.type == YAML_SEQUENCE_END_EVENT;
+        yaml_event_delete(&this_()->event);
       }
     }
     }}
@@ -162,8 +162,8 @@ class YAMLReader < Reader {
   
   function parseScalar(buffer:Buffer) {
     cpp{{
-    auto data = (char*)self_()->event.data.scalar.value;
-    auto length = self_()->event.data.scalar.length;
+    auto data = (char*)this_()->event.data.scalar.value;
+    auto length = this_()->event.data.scalar.length;
     auto endptr = data;
     
     auto intValue = std::strtoll(data, &endptr, 10);
@@ -189,7 +189,7 @@ class YAMLReader < Reader {
         buffer->setString(std::string(data, length));
       }
     }
-    yaml_event_delete(&self_()->event);
+    yaml_event_delete(&this_()->event);
     }}
   }
 }
