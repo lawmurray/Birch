@@ -24,7 +24,10 @@ bi::Statement* bi::Transformer::modify(Assume* o) {
     if (*o->name == "<~") {
       auto identifier = new NamedExpression(new Name("SimulateEvent"),
           new EmptyType(o->loc), o->loc);
-      auto call = new Call(identifier, o->right->accept(&cloner));
+      auto distribution = new Call(new Member(o->right->accept(&cloner),
+          new NamedExpression(new Name("distribution"), new EmptyType(),
+          o->loc), o->loc), o->loc);
+      auto call = new Call(identifier, distribution);
       auto tmp = new LocalVariable(call, o->loc);
       auto yield = new Yield(new NamedExpression(tmp->name, o->loc), o->loc);
       auto member = new Member(new NamedExpression(tmp->name, o->loc),
@@ -38,8 +41,10 @@ bi::Statement* bi::Transformer::modify(Assume* o) {
     } else if (*o->name == "~>") {
       auto identifier = new NamedExpression(new Name("ObserveEvent"),
           new EmptyType(o->loc), o->loc);
-      auto args = new ExpressionList(o->left, o->right->accept(&cloner),
-          o->loc);
+      auto distribution = new Call(new Member(o->right->accept(&cloner),
+          new NamedExpression(new Name("distribution"), new EmptyType(),
+          o->loc), o->loc), o->loc);
+      auto args = new ExpressionList(o->left, distribution, o->loc);
       result = new Yield(new Call(identifier, args, o->loc), o->loc);
     } else if (*o->name == "~") {
       auto identifier = new NamedExpression(new Name("AssumeEvent"),

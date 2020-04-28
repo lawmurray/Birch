@@ -14,7 +14,8 @@ namespace bi {
 class CppClassGenerator: public CppBaseGenerator {
 public:
   CppClassGenerator(std::ostream& base, const int level = 0,
-      const bool header = false);
+      const bool header = false, const bool generic = false,
+      const Class* currentClass = nullptr);
 
   using CppBaseGenerator::visit;
 

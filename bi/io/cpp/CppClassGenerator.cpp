@@ -8,9 +8,9 @@
 #include "bi/primitive/encode.hpp"
 
 bi::CppClassGenerator::CppClassGenerator(std::ostream& base, const int level,
-    const bool header) :
-    CppBaseGenerator(base, level, header),
-    currentClass(nullptr) {
+    const bool header, const bool generic, const Class* currentClass) :
+    CppBaseGenerator(base, level, header, generic),
+    currentClass(currentClass) {
   //
 }
 
@@ -200,7 +200,8 @@ void bi::CppClassGenerator::visit(const MemberVariable* o) {
 }
 
 void bi::CppClassGenerator::visit(const MemberFunction* o) {
-  if ((header && o->has(ABSTRACT)) || !o->braces->isEmpty()) {
+  if ((generic || !o->isGeneric()) && (!o->braces->isEmpty() ||
+      (header && o->has(ABSTRACT)))) {
     start("");
     if (header) {
       genTemplateParams(o);
@@ -242,7 +243,8 @@ void bi::CppClassGenerator::visit(const MemberFunction* o) {
 }
 
 void bi::CppClassGenerator::visit(const MemberFiber* o) {
-  if ((header && o->has(ABSTRACT)) || !o->braces->isEmpty()) {
+  if ((generic || !o->isGeneric()) && (!o->braces->isEmpty() ||
+      (header && o->has(ABSTRACT)))) {
     /* initialization function */
     if (header) {
       genSourceLine(o->loc);

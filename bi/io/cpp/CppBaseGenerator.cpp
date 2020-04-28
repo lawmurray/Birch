@@ -571,7 +571,7 @@ void bi::CppBaseGenerator::visit(const Basic* o) {
 
 void bi::CppBaseGenerator::visit(const Class* o) {
   if (generic || !o->isGeneric()) {
-    CppClassGenerator auxClass(base, level, header);
+    CppClassGenerator auxClass(base, level, header, generic);
     auxClass << o;
   }
 }
@@ -776,5 +776,5 @@ void bi::CppBaseGenerator::genTraceLine(const Location* loc) {
 }
 
 void bi::CppBaseGenerator::genSourceLine(const Location* loc) {
-  line("#line " << loc->firstLine << " \"" << loc->file->path << "\"");
+  line("//#line " << loc->firstLine << " \"" << loc->file->path << "\"");
 }

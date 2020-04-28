@@ -19,7 +19,7 @@ public:
    *
    * @param base Base stream.
    * @param level Indentation level.
-   * @param header Output header instead of course?
+   * @param header Output header instead of source?
    * @param generic Include generic classes, functions and fibers?
    */
   CppBaseGenerator(std::ostream& base, const int level = 0,
