@@ -46,22 +46,10 @@ final class MatrixNormalInverseWishart(M:Expression<Real[_,_]>,
   function graftMatrixNormalInverseWishart(compare:Distribution<Real[_,_]>) ->
       MatrixNormalInverseWishart? {
     prune();
-    graftFinalize();
     if V == compare {
       return this;
     } else {
       return nil;
-    }
-  }
-
-  function graftFinalize() -> Boolean {
-    Λ.value();
-    N.value();
-    if !V.isRealized() {
-      link();
-      return true;
-    } else {
-      return false;
     }
   }
 
@@ -86,5 +74,6 @@ final class MatrixNormalInverseWishart(M:Expression<Real[_,_]>,
 function MatrixNormalInverseWishart(M:Expression<Real[_,_]>,
     U:Expression<Real[_,_]>, V:InverseWishart) -> MatrixNormalInverseWishart {
   m:MatrixNormalInverseWishart(M, U, V);
+  m.link();
   return m;
 }

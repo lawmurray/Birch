@@ -19,6 +19,10 @@ final class SimulateEvent<Value>(p:Distribution<Value>) < Event {
    */
   p:Distribution<Value> <- p;
 
+  function value() -> Value {
+    return x!;
+  }
+
   function record() -> Record {
     return SimulateRecord(x!);
   }

@@ -62,24 +62,10 @@ final class MatrixNormalInverseGamma(M:Expression<Real[_,_]>,
   function graftMatrixNormalInverseGamma(compare:Distribution<Real[_]>) ->
       MatrixNormalInverseGamma? {
     prune();
-    graftFinalize();
     if σ2 == compare {
       return this;
     } else {
       return nil;
-    }
-  }
-
-  function graftFinalize() -> Boolean {
-    Λ.value();
-    N.value();
-    α.value();
-    γ.value();
-    if !σ2.isRealized() {
-      link();
-      return true;
-    } else {
-      return false;
     }
   }
 
@@ -105,6 +91,7 @@ function MatrixNormalInverseGamma(M:Expression<Real[_,_]>,
     Σ:Expression<Real[_,_]>, σ2:IndependentInverseGamma) ->
     MatrixNormalInverseGamma {
   m:MatrixNormalInverseGamma(M, Σ, σ2);
+  m.link();
   return m;
 }
 

@@ -21,11 +21,6 @@ final class DiscreteAdd<Left,Right,Value>(left:Expression<Left>,
       } else if (x <- right.graftDiscrete())? {
         r <- LinearDiscrete(Boxed(1), x!, left);
       }
-
-      /* finalize, and if not valid, return nil */
-      if !r? || !r!.graftFinalize() {
-        r <- nil;
-      }
     }
     return r;
   }
@@ -42,11 +37,6 @@ final class DiscreteAdd<Left,Right,Value>(left:Expression<Left>,
       r <- LinearBoundedDiscrete(Boxed(1), x1!, right);
     } else if x2? {
       r <- LinearBoundedDiscrete(Boxed(1), x2!, left);
-    }
-    
-    /* finalize, and if not valid, return nil */
-    if !r? || !r!.graftFinalize() {
-      r <- nil;
     }
     return r;
   }

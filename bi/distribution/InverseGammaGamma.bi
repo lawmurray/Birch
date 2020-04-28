@@ -37,16 +37,6 @@ final class InverseGammaGamma(k:Expression<Real>, θ:InverseGamma) <
     return 0.0;
   }
 
-  function graftFinalize() -> Boolean {
-    k.value();
-    if !θ.isRealized() {
-      link();
-      return true;
-    } else {
-      return false;
-    }
-  }
-
   function link() {
     θ.setChild(this);
   }
@@ -59,5 +49,6 @@ final class InverseGammaGamma(k:Expression<Real>, θ:InverseGamma) <
 function InverseGammaGamma(k:Expression<Real>, θ:InverseGamma) ->
     InverseGammaGamma {
   m:InverseGammaGamma(k, θ);
+  m.link();
   return m;
 }

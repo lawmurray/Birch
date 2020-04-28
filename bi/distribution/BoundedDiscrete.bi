@@ -7,7 +7,6 @@ abstract class BoundedDiscrete < Discrete {
 
   function graftBoundedDiscrete() -> BoundedDiscrete? {
     prune();
-    graftFinalize();
     return this;
   }
 }

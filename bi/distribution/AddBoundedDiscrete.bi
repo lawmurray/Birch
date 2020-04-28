@@ -105,15 +105,6 @@ final class AddBoundedDiscrete(x1:BoundedDiscrete, x2:BoundedDiscrete) <
     return x1.upper()! + x2.upper()!;
   }
   
-  function graftFinalize() -> Boolean {
-    if !x1.isRealized() && !x2.isRealized() {
-      link();
-      return true;
-    } else {
-      return false;
-    }
-  }
-  
   function link() {
     // clamp() used instead for discrete enumerations
     //x1.setChild(this);
@@ -130,5 +121,6 @@ final class AddBoundedDiscrete(x1:BoundedDiscrete, x2:BoundedDiscrete) <
 function AddBoundedDiscrete(x1:BoundedDiscrete, x2:BoundedDiscrete) ->
     AddBoundedDiscrete {
   m:AddBoundedDiscrete(x1, x2);
+  m.link();
   return m;
 }

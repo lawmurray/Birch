@@ -36,15 +36,6 @@ final class MatrixNormalInverseGammaMatrixGaussian(
         X, M.N.value(), M.Λ.value(), M.α.value(), M.γ.value());
   }
 
-  function graftFinalize() -> Boolean {
-    if !M.isRealized() {
-      link();
-      return true;
-    } else {
-      return false;
-    }
-  }
-
   function link() {
     M.setChild(this);
   }
@@ -57,5 +48,6 @@ final class MatrixNormalInverseGammaMatrixGaussian(
 function MatrixNormalInverseGammaMatrixGaussian(
     M:MatrixNormalInverseGamma) -> MatrixNormalInverseGammaMatrixGaussian {
   m:MatrixNormalInverseGammaMatrixGaussian(M);
+  m.link();
   return m;
 }

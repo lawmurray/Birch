@@ -69,22 +69,10 @@ final class NormalInverseGamma(μ:Expression<Real>, a2:Expression<Real>,
   function graftNormalInverseGamma(compare:Distribution<Real>) ->
       NormalInverseGamma? {
     prune();
-    graftFinalize();
     if σ2 == compare {
       return this;
     } else {
       return nil;
-    }
-  }
-
-  function graftFinalize() -> Boolean {
-    μ.value();
-    λ.value();
-    if !σ2.isRealized() {
-      link();
-      return true;
-    } else {
-      return false;
     }
   }
 
@@ -109,5 +97,6 @@ final class NormalInverseGamma(μ:Expression<Real>, a2:Expression<Real>,
 function NormalInverseGamma(μ:Expression<Real>, a2:Expression<Real>,
     σ2:InverseGamma) -> NormalInverseGamma {
   m:NormalInverseGamma(μ, a2, σ2);
+  m.link();
   return m;
 }

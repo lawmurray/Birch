@@ -2,7 +2,7 @@
  * Grafted Gaussian-Gaussian distribution.
  */
 final class GaussianGaussian(m:Gaussian, s2:Expression<Real>) <
-    GraftedGaussian(m.μ, m.σ2 + s2) {
+    Gaussian(m.μ, m.σ2 + s2) {
   /**
    * Mean.
    */
@@ -25,16 +25,6 @@ final class GaussianGaussian(m:Gaussian, s2:Expression<Real>) <
     (m.μ, m.σ2) <- update_lazy_gaussian_gaussian(x, m.μ, m.σ2, s2);
   }
 
-  function graftFinalize() -> Boolean {
-    s2.value();
-    if !m.isRealized() {
-      link();
-      return true;
-    } else {
-      return false;
-    }
-  }
-
   function link() {
     m.setChild(this);
   }
@@ -46,5 +36,6 @@ final class GaussianGaussian(m:Gaussian, s2:Expression<Real>) <
 
 function GaussianGaussian(μ:Gaussian, σ2:Expression<Real>) -> GaussianGaussian {
   m:GaussianGaussian(μ, σ2);
+  m.link();
   return m;
 }

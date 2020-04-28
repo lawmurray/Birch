@@ -31,15 +31,6 @@ final class DirichletCategorical(ρ:Dirichlet) < Distribution<Integer> {
     return ρ.α.rows();
   }
 
-  function graftFinalize() -> Boolean {
-    if !ρ.isRealized() {
-      link();
-      return true;
-    } else {
-      return false;
-    }
-  }
-
   function link() {
     ρ.setChild(this);
   }
@@ -51,5 +42,6 @@ final class DirichletCategorical(ρ:Dirichlet) < Distribution<Integer> {
 
 function DirichletCategorical(ρ:Dirichlet) -> DirichletCategorical {
   m:DirichletCategorical(ρ);
+  m.link();
   return m;
 }

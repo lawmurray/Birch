@@ -40,17 +40,6 @@ final class LinearMultivariateNormalInverseGammaMultivariateGaussian(
         x, A.value(), μ.ν.value(), μ.Λ.value(), c.value(), μ.α.value(), μ.γ.value());
   }
 
-  function graftFinalize() -> Boolean {
-    A.value();
-    c.value();
-    if !μ.isRealized() {
-      link();
-      return true;
-    } else {
-      return false;
-    }
-  }
-
   function link() {
     μ.setChild(this);
   }
@@ -65,5 +54,6 @@ function LinearMultivariateNormalInverseGammaMultivariateGaussian(
     c:Expression<Real[_]>) ->
     LinearMultivariateNormalInverseGammaMultivariateGaussian {
   m:LinearMultivariateNormalInverseGammaMultivariateGaussian(A, μ, c);
+  m.link();
   return m;
 }

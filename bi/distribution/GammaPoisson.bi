@@ -39,15 +39,6 @@ final class GammaPoisson(λ:Gamma) < Discrete {
     return 0;
   }
 
-  function graftFinalize() -> Boolean {
-    if !λ.isRealized() {
-      link();
-      return true;
-    } else {
-      return false;
-    }
-  }
-
   function link() {
     λ.setChild(this);
   }
@@ -59,5 +50,6 @@ final class GammaPoisson(λ:Gamma) < Discrete {
 
 function GammaPoisson(λ:Gamma) -> GammaPoisson {
   m:GammaPoisson(λ);
+  m.link();
   return m;
 }

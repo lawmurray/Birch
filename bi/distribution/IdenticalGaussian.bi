@@ -33,7 +33,7 @@ final class IdenticalGaussian(μ:Expression<Real[_]>, σ2:Expression<Real>) <
     m2:MultivariateNormalInverseGamma?;
     m3:TransformLinearMultivariate<MultivariateGaussian>?;
     m4:MultivariateGaussian?;
-    r:Distribution<Real[_]>?;
+    r:Distribution<Real[_]> <- this;
 
     /* match a template */
     auto compare <- σ2.distribution();
@@ -49,12 +49,7 @@ final class IdenticalGaussian(μ:Expression<Real[_]>, σ2:Expression<Real>) <
       r <- MultivariateNormalInverseGamma(μ, Identity(μ.rows()), s1!);
     }
     
-    /* finalize, and if not valid, use default template */
-    if !r? || !r!.graftFinalize() {
-      r <- GraftedMultivariateGaussian(μ, diagonal(σ2, μ.rows()));
-      r!.graftFinalize();
-    }
-    return r!;
+    return r;
   }
 
   function graftMultivariateGaussian() -> MultivariateGaussian? {
@@ -68,13 +63,10 @@ final class IdenticalGaussian(μ:Expression<Real[_]>, σ2:Expression<Real>) <
       r <- LinearMultivariateGaussianMultivariateGaussian(m1!.A, m1!.x, m1!.c, diagonal(σ2, m1!.c.rows()));
     } else if (m2 <- μ.graftMultivariateGaussian())? {
       r <- MultivariateGaussianMultivariateGaussian(m2!, diagonal(σ2, m2!.rows()));
+    } else {
+      r <- Gaussian(μ, diagonal(σ2, μ.rows()));
     }
-    
-    /* finalize, and if not valid, use default template */
-    if !r? || !r!.graftFinalize() {    
-      r <- GraftedMultivariateGaussian(μ, diagonal(σ2, μ.rows()));
-      r!.graftFinalize();
-    }
+
     return r;
   }
 
@@ -88,16 +80,7 @@ final class IdenticalGaussian(μ:Expression<Real[_]>, σ2:Expression<Real>) <
       r <- MultivariateNormalInverseGamma(μ, Identity(μ.rows()), s1!);
     }
 
-    /* finalize, and if not valid, return nil */
-    if !r? || !r!.graftFinalize() {
-      r <- nil;
-    }
     return r;
-  }
-
-  function graftFinalize() -> Boolean {
-    assert false;  // should have been replaced during graft
-    return false;
   }
 }
 

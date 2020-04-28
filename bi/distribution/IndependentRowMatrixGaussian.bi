@@ -34,7 +34,7 @@ final class IndependentRowMatrixGaussian(M:Expression<Real[_,_]>,
     s1:InverseWishart?;
     m1:TransformLinearMatrix<MatrixNormalInverseWishart>?;
     m2:MatrixNormalInverseWishart?;
-    r:Distribution<Real[_,_]>?;
+    r:Distribution<Real[_,_]> <- this;
 
     /* match a template */
     auto compare <- V.distribution();
@@ -45,20 +45,13 @@ final class IndependentRowMatrixGaussian(M:Expression<Real[_,_]>,
     } else if (s1 <- V.graftInverseWishart())? {
       r <- MatrixNormalInverseWishart(M, Identity(M.rows()), s1!);
     }
-    
-    /* finalize, and if not valid, use default template */
-    if !r? || !r!.graftFinalize() {
-      r <- GraftedMatrixGaussian(M, Identity(M.rows()), V);
-      r!.graftFinalize();
-    }
-    return r!;
+
+    return r;
   }
 
   function graftMatrixGaussian() -> MatrixGaussian? {
     prune();
-    auto r <- GraftedMatrixGaussian(M, Identity(M.rows()), V);
-    r.graftFinalize();
-    return r;
+    return Gaussian(M, Identity(M.rows()), V);
   }
 
   function graftMatrixNormalInverseWishart(compare:Distribution<Real[_,_]>) ->
@@ -72,16 +65,7 @@ final class IndependentRowMatrixGaussian(M:Expression<Real[_,_]>,
       r <- MatrixNormalInverseWishart(M, Identity(M.rows()), s1!);
     }
 
-    /* finalize, and if not valid, return nil */
-    if !r? || !r!.graftFinalize() {
-      r <- nil;
-    }
     return r;
-  }
-
-  function graftFinalize() -> Boolean {
-    assert false;  // should have been replaced during graft
-    return false;
   }
 }
 

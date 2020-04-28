@@ -8,7 +8,6 @@ program test(N:Integer <- 10000) {
   code <- code + run_test("deep_clone_chain");
   code <- code + run_test("deep_clone_modify_dst");
   code <- code + run_test("deep_clone_modify_src");
-  code <- code + run_test("invalid_gaussian_gaussian");
   code <- code + run_test("add_bounded_discrete_delta", N);
   code <- code + run_test("beta_bernoulli", N);
   code <- code + run_test("beta_binomial", N);

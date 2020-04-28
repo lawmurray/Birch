@@ -41,7 +41,7 @@ class MultivariateGaussian(μ:Expression<Real[_]>, Σ:Expression<Real[_,_]>) <
     prune();
     m1:TransformLinearMultivariate<MultivariateGaussian>?;
     m2:MultivariateGaussian?;
-    r:Distribution<Real[_]>?;
+    r:Distribution<Real[_]> <- this;
     
     /* match a template */
     if (m1 <- μ.graftLinearMultivariateGaussian())? {
@@ -50,19 +50,14 @@ class MultivariateGaussian(μ:Expression<Real[_]>, Σ:Expression<Real[_,_]>) <
       r <- MultivariateGaussianMultivariateGaussian(m2!, Σ);
     }
 
-    /* finalize, and if not valid, use default template */
-    if !r? || !r!.graftFinalize() {
-      r <- GraftedMultivariateGaussian(μ, Σ);
-      r!.graftFinalize();
-    }
-    return r!;
+    return r;
   }
 
   function graftMultivariateGaussian() -> MultivariateGaussian? {
     prune();
     m1:TransformLinearMultivariate<MultivariateGaussian>?;
     m2:MultivariateGaussian?;
-    r:MultivariateGaussian?;
+    r:MultivariateGaussian <- this;
     
     /* match a template */
     if (m1 <- μ.graftLinearMultivariateGaussian())? {
@@ -71,17 +66,7 @@ class MultivariateGaussian(μ:Expression<Real[_]>, Σ:Expression<Real[_,_]>) <
       r <- MultivariateGaussianMultivariateGaussian(m2!, Σ);
     }
 
-    /* finalize, and if not valid, use default template */
-    if !r? || !r!.graftFinalize() {
-      r <- GraftedMultivariateGaussian(μ, Σ);
-      r!.graftFinalize();
-    }
     return r;
-  }
-
-  function graftFinalize() -> Boolean {
-    assert false;  // should have been replaced during graft
-    return false;
   }
 
   function write(buffer:Buffer) {

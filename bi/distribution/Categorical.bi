@@ -35,7 +35,7 @@ class Categorical(ρ:Expression<Real[_]>) < Distribution<Integer> {
     prune();
     m1:Dirichlet?;
     m2:Restaurant?;
-    r:Distribution<Integer>?;
+    r:Distribution<Integer> <- this;
     
     /* match a template */
     if (m1 <- ρ.graftDirichlet())? {
@@ -44,17 +44,7 @@ class Categorical(ρ:Expression<Real[_]>) < Distribution<Integer> {
       r <- RestaurantCategorical(m2!);
     }
     
-    /* finalize, and if not valid, use default template */
-    if !r? || !r!.graftFinalize() {
-      r <- GraftedCategorical(ρ);
-      r!.graftFinalize();
-    }
-    return r!;
-  }
-
-  function graftFinalize() -> Boolean {
-    assert false;  // should have been replaced during graft
-    return false;
+    return r;
   }
 
   function write(buffer:Buffer) {

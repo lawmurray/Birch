@@ -40,17 +40,6 @@ final class LinearMatrixNormalInverseGammaMatrixGaussian(
         X, A.value(), M.N.value(), M.Λ.value(), C.value(), M.α.value(), M.γ.value());
   }
 
-  function graftFinalize() -> Boolean {
-    A.value();
-    C.value();
-    if !M.isRealized() {
-      link();
-      return true;
-    } else {
-      return false;
-    }
-  }
-
   function link() {
     M.setChild(this);
   }
@@ -64,5 +53,6 @@ function LinearMatrixNormalInverseGammaMatrixGaussian(A:Expression<Real[_,_]>,
     M:MatrixNormalInverseGamma, C:Expression<Real[_,_]>) ->
     LinearMatrixNormalInverseGammaMatrixGaussian {
   m:LinearMatrixNormalInverseGammaMatrixGaussian(A, M, C);
+  m.link();
   return m;
 }

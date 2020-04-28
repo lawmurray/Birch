@@ -35,14 +35,7 @@ final class InverseGamma(α:Expression<Real>, β:Expression<Real>) <
   
   function graftInverseGamma() -> InverseGamma? {
     prune();
-    graftFinalize();
     return this;
-  }
-
-  function graftFinalize() -> Boolean {
-    α.value();
-    β.value();
-    return true;
   }
 
   function write(buffer:Buffer) {

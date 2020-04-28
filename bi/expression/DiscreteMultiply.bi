@@ -21,11 +21,6 @@ final class DiscreteMultiply<Left,Right,Value>(left:Expression<Left>,
       } else if (x <- right.graftDiscrete())? {
         r <- LinearDiscrete(left, x!, Boxed(0));
       }
-
-      /* finalize, and if not valid, return nil */
-      if !r? || !r!.graftFinalize() {
-        r <- nil;
-      }
     }
     return r;
   }
@@ -42,10 +37,6 @@ final class DiscreteMultiply<Left,Right,Value>(left:Expression<Left>,
       r <- LinearBoundedDiscrete(left, x2!, Boxed(0));
     }
     
-    /* finalize, and if not valid, return nil */
-    if !r? || !r!.graftFinalize() {
-      r <- nil;
-    }
     return r;
   }
 }

@@ -37,12 +37,6 @@ final class Uniform(l:Expression<Real>, u:Expression<Real>) <
     return u.value();
   }
 
-  function graftFinalize() -> Boolean {
-    l.value();
-    u.value();
-    return true;
-  }
-
   function write(buffer:Buffer) {
     prune();
     buffer.set("class", "Uniform");

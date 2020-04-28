@@ -40,24 +40,14 @@ class NegativeBinomial(k:Expression<Integer>, ρ:Expression<Real>) <
   function graft() -> Distribution<Integer> {
     prune();
     ρ1:Beta?;
-    r:Distribution<Integer>?;
+    r:Distribution<Integer> <- this;
     
     /* match a template */
     if (ρ1 <- ρ.graftBeta())? {
       r <- BetaNegativeBinomial(k, ρ1!);
     }
 
-    /* finalize, and if not valid, use default template */
-    if !r? || !r!.graftFinalize() {
-      r <- GraftedNegativeBinomial(k, ρ);
-      r!.graftFinalize();
-    }
-    return r!;
-  }
-
-  function graftFinalize() -> Boolean {
-    assert false;  // should have been replaced during graft
-    return false;
+    return r;
   }
 
   function write(buffer:Buffer) {

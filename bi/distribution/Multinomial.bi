@@ -28,24 +28,14 @@ class Multinomial(n:Expression<Integer>, ρ:Expression<Real[_]>) <
   function graft() -> Distribution<Integer[_]> {
     prune();
     m:Dirichlet?;
-    r:Distribution<Integer[_]>?;
+    r:Distribution<Integer[_]> <- this;
     
     /* match a template */
     if (m <- ρ.graftDirichlet())? {
       r <- DirichletMultinomial(n, m!);
     }
     
-    /* finalize, and if not valid, use default template */
-    if !r? || !r!.graftFinalize() {
-      r <- GraftedMultinomial(n, ρ);
-      r!.graftFinalize();
-    }
-    return r!;
-  }
-
-  function graftFinalize() -> Boolean {
-    assert false;  // should have been replaced during graft
-    return false;
+    return r;
   }
 
   function write(buffer:Buffer) {

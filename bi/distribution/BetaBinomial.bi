@@ -44,16 +44,6 @@ final class BetaBinomial(n:Expression<Integer>, ρ:Beta) < BoundedDiscrete {
     return n.value();
   }
 
-  function graftFinalize() -> Boolean {
-    n.value();
-    if !ρ.isRealized() {
-      link();
-      return true;
-    } else {
-      return false;
-    }
-  }
-
   function link() {
     ρ.setChild(this);
   }
@@ -65,5 +55,6 @@ final class BetaBinomial(n:Expression<Integer>, ρ:Beta) < BoundedDiscrete {
 
 function BetaBinomial(n:Expression<Integer>, ρ:Beta) -> BetaBinomial {
   m:BetaBinomial(n, ρ);
+  m.link();
   return m;
 }

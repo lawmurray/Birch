@@ -2,7 +2,7 @@
  * Grafted multivariate Gaussian-Gaussian distribution.
  */
 final class MultivariateGaussianMultivariateGaussian(m:MultivariateGaussian,
-    S:Expression<Real[_,_]>) < GraftedMultivariateGaussian(m.μ, m.Σ + S) {
+    S:Expression<Real[_,_]>) < MultivariateGaussian(m.μ, m.Σ + S) {
   /**
    * Mean.
    */
@@ -21,16 +21,6 @@ final class MultivariateGaussianMultivariateGaussian(m:MultivariateGaussian,
     (m.μ, m.Σ) <- downdate_multivariate_gaussian_multivariate_gaussian(x, m.μ.value(), m.Σ.value(), S.value());
   }
 
-  function graftFinalize() -> Boolean {
-    S.value();
-    if !m.isRealized() {
-      link();
-      return true;
-    } else {
-      return false;
-    }
-  }
-
   function link() {
     m.setChild(this);
   }
@@ -43,5 +33,6 @@ final class MultivariateGaussianMultivariateGaussian(m:MultivariateGaussian,
 function MultivariateGaussianMultivariateGaussian(μ:MultivariateGaussian,
     Σ:Expression<Real[_,_]>) -> MultivariateGaussianMultivariateGaussian {
   m:MultivariateGaussianMultivariateGaussian(μ, Σ);
+  m.link();
   return m;
 }

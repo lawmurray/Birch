@@ -39,15 +39,6 @@ final class DiscreteDelta(μ:Discrete) < Discrete {
     return μ.upper();
   }
 
-  function graftFinalize() -> Boolean {
-    if !μ.isRealized() {
-      link();
-      return true;
-    } else {
-      return false;
-    }
-  }
-
   function link() {
     // clamp() used instead for discrete enumerations
     //μ.setChild(this);
@@ -61,5 +52,6 @@ final class DiscreteDelta(μ:Discrete) < Discrete {
 
 function DiscreteDelta(μ:Discrete) -> DiscreteDelta {
   m:DiscreteDelta(μ);
+  m.link();
   return m;
 }

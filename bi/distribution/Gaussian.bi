@@ -44,7 +44,7 @@ class Gaussian(μ:Expression<Real>, σ2:Expression<Real>) < Distribution<Real> {
     m5:TransformDot<MultivariateGaussian>?;
     m6:Gaussian?;
     s2:InverseGamma?;
-    r:Distribution<Real>?;
+    r:Distribution<Real> <- this;
 
     /* match a template */
     auto compare <- σ2.distribution();
@@ -62,12 +62,7 @@ class Gaussian(μ:Expression<Real>, σ2:Expression<Real>) < Distribution<Real> {
       r <- NormalInverseGamma(μ, Boxed(1.0), s2!);
     }
     
-    /* finalize, and if not valid, use default template */
-    if !r? || !r!.graftFinalize() {
-      r <- GraftedGaussian(μ, σ2);
-      r!.graftFinalize();
-    }
-    return r!;
+    return r;
   }
 
   function graftGaussian() -> Gaussian? {
@@ -75,7 +70,7 @@ class Gaussian(μ:Expression<Real>, σ2:Expression<Real>) < Distribution<Real> {
     m1:TransformLinear<Gaussian>?;
     m2:TransformDot<MultivariateGaussian>?;
     m3:Gaussian?;
-    r:Gaussian?;
+    r:Gaussian <- this;
     
     /* match a template */
     if (m1 <- μ.graftLinearGaussian())? {
@@ -86,11 +81,6 @@ class Gaussian(μ:Expression<Real>, σ2:Expression<Real>) < Distribution<Real> {
       r <- GaussianGaussian(m3!, σ2);
     }
     
-    /* finalize, and if not valid, use default template */
-    if !r? || !r!.graftFinalize() {
-      r <- GraftedGaussian(μ, σ2);
-      r!.graftFinalize();
-    }
     return r;
   }
 
@@ -105,16 +95,7 @@ class Gaussian(μ:Expression<Real>, σ2:Expression<Real>) < Distribution<Real> {
       r <- NormalInverseGamma(μ, Boxed(1.0), s1!);
     }
     
-    /* finalize, and if not valid, return nil */
-    if !r? || !r!.graftFinalize() {
-      r <- nil;
-    }
     return r;
-  }
-
-  function graftFinalize() -> Boolean {
-    assert false;  // should have been replaced during graft
-    return false;
   }
 
   function write(buffer:Buffer) {

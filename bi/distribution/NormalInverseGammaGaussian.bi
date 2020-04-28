@@ -38,15 +38,6 @@ final class NormalInverseGammaGaussian(μ:NormalInverseGamma) <
         1.0/μ.λ.value(), μ.σ2.α.value(), μ.σ2.β.value());
   }
 
-  function graftFinalize() -> Boolean {
-    if !μ.isRealized() {
-      link();
-      return true;
-    } else {
-      return false;
-    }
-  }
-
   function link() {
     μ.setChild(this);
   }
@@ -59,5 +50,6 @@ final class NormalInverseGammaGaussian(μ:NormalInverseGamma) <
 function NormalInverseGammaGaussian(μ:NormalInverseGamma) ->
     NormalInverseGammaGaussian {
   m:NormalInverseGammaGaussian(μ);
+  m.link();
   return m;
 }

@@ -37,26 +37,19 @@ class MatrixGaussian(M:Expression<Real[_,_]>, U:Expression<Real[_,_]>,
   function graft() -> Distribution<Real[_,_]> {
     prune();
     s1:InverseWishart?;
-    r:Distribution<Real[_,_]>?;
+    r:Distribution<Real[_,_]> <- this;
     
     /* match a template */
     if (s1 <- V.graftInverseWishart())? {
       r <- MatrixNormalInverseWishart(M, U, s1!);
     }
     
-    /* finalize, and if not valid, use default template */
-    if !r? || !r!.graftFinalize() {
-      r <- GraftedMatrixGaussian(M, U, V);
-      r!.graftFinalize();
-    }
-    return r!;
+    return r;
   }
 
   function graftMatrixGaussian() -> MatrixGaussian? {
     prune();
-    auto r <- GraftedMatrixGaussian(M, U, V);
-    r!.graftFinalize();
-    return r;
+    return this;
   }
 
   function graftMatrixNormalInverseWishart(compare:Distribution<Real[_,_]>) ->
@@ -70,18 +63,7 @@ class MatrixGaussian(M:Expression<Real[_,_]>, U:Expression<Real[_,_]>,
       r <- MatrixNormalInverseWishart(M, U, s1!);
     }
 
-    /* finalize, and if not valid, return nil */
-    if !r? || !r!.graftFinalize() {
-      r <- nil;
-    }
     return r;
-  }
-
-  function graftFinalize() -> Boolean {
-    M.value();
-    U.value();
-    V.value();
-    return true;
   }
 
   function write(buffer:Buffer) {

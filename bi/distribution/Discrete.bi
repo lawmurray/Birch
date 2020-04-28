@@ -19,7 +19,6 @@ abstract class Discrete < Distribution<Integer> {
 
   function graftDiscrete() -> Discrete? {
     prune();
-    graftFinalize();
     return this;
   }
 }

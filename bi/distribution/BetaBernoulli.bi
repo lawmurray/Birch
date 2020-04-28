@@ -23,15 +23,6 @@ final class BetaBernoulli(ρ:Beta) < Distribution<Boolean> {
     (ρ.α, ρ.β) <- downdate_beta_bernoulli(x, ρ.α.value(), ρ.β.value());
   }
 
-  function graftFinalize() -> Boolean {
-    if !ρ.isRealized() {
-      link();
-      return true;
-    } else {
-      return false;
-    }
-  }
-
   function link() {
     ρ.setChild(this);
   }
@@ -43,5 +34,6 @@ final class BetaBernoulli(ρ:Beta) < Distribution<Boolean> {
 
 function BetaBernoulli(ρ:Beta) -> BetaBernoulli {
   m:BetaBernoulli(ρ);
+  m.link();
   return m;
 }

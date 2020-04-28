@@ -41,12 +41,6 @@ final class UniformInteger(l:Expression<Integer>, u:Expression<Integer>) <
     return u.value();
   }
 
-  function graftFinalize() -> Boolean {
-    l.value();
-    u.value();
-    return true;
-  }
-
   function write(buffer:Buffer) {
     prune();
     buffer.set("class", "UniformInteger");

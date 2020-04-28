@@ -2,7 +2,7 @@
  * Grafted linear-Gaussian-Gaussian distribution.
  */
 final class LinearGaussianGaussian(a:Expression<Real>, m:Gaussian,
-    c:Expression<Real>, s2:Expression<Real>) < GraftedGaussian(a*m.μ + c,
+    c:Expression<Real>, s2:Expression<Real>) < Gaussian(a*m.μ + c,
     a*a*m.σ2 + s2) {
   /**
    * Scale.
@@ -36,18 +36,6 @@ final class LinearGaussianGaussian(a:Expression<Real>, m:Gaussian,
     (m.μ, m.σ2) <- update_lazy_linear_gaussian_gaussian(x, a, m.μ, m.σ2, c, s2);
   }
 
-  function graftFinalize() -> Boolean {
-    a.value();
-    c.value();
-    s2.value();
-    if !m.isRealized() {
-      link();
-      return true;
-    } else {
-      return false;
-    }
-  }
-
   function link() {
     m.setChild(this);
   }
@@ -60,5 +48,6 @@ final class LinearGaussianGaussian(a:Expression<Real>, m:Gaussian,
 function LinearGaussianGaussian(a:Expression<Real>, μ:Gaussian,
     c:Expression<Real>, σ2:Expression<Real>) -> LinearGaussianGaussian {
   m:LinearGaussianGaussian(a, μ, c, σ2);
+  m.link();
   return m;
 }

@@ -34,26 +34,19 @@ final class ScalarMultivariateGaussian(μ:Expression<Real[_]>,
   function graft() -> Distribution<Real[_]> {
     prune();
     s1:InverseGamma?;
-    r:Distribution<Real[_]>?;
+    r:Distribution<Real[_]> <- this;
     
     /* match a template */
     if (s1 <- σ2.graftInverseGamma())? {
       r <- MultivariateNormalInverseGamma(μ, Σ, s1!);
     }
 
-    /* finalize, and if not valid, use default template */
-    if !r? || !r!.graftFinalize() {
-      r <- GraftedMultivariateGaussian(μ, Σ*σ2);
-      r!.graftFinalize();
-    }
-    return r!;
+    return r;
   }
 
   function graftMultivariateGaussian() -> MultivariateGaussian? {
     prune();
-    auto r <- GraftedMultivariateGaussian(μ, Σ*σ2);
-    r!.graftFinalize();
-    return r;
+    return Gaussian(μ, Σ*σ2);
   }
 
   function graftMultivariateNormalInverseGamma(compare:Distribution<Real>) ->
@@ -67,16 +60,7 @@ final class ScalarMultivariateGaussian(μ:Expression<Real[_]>,
       r <- MultivariateNormalInverseGamma(μ, Σ, s1!);
     }
 
-    /* finalize, and if not valid, return nil */
-    if !r? || !r!.graftFinalize() {
-      r <- nil;
-    }
     return r;
-  }
-
-  function graftFinalize() -> Boolean {
-    assert false;  // should have been replaced during graft
-    return false;
   }
 }
 

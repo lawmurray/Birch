@@ -18,24 +18,14 @@ class Bernoulli(ρ:Expression<Real>) < Distribution<Boolean> {
   function graft() -> Distribution<Boolean> {
     prune();
     m:Beta?;
-    r:Distribution<Boolean>?;
+    r:Distribution<Boolean> <- this;
     
     /* match a template */
     if (m <- ρ.graftBeta())? {
       r <- BetaBernoulli(m!);
     }
-    
-    /* finalize, and if not valid, use default template */
-    if !r? || !r!.graftFinalize() {
-      r <- GraftedBernoulli(ρ);
-      r!.graftFinalize();
-    }
-    return r!;
-  }
-  
-  function graftFinalize() -> Boolean {
-    assert false;  // should have been replaced during graft
-    return false;
+
+    return r;
   }
 
   function write(buffer:Buffer) {

@@ -30,15 +30,6 @@ final class RestaurantCategorical(ρ:Restaurant) < Distribution<Integer> {
     ρ.N <- ρ.N + 1;
   }
 
-  function graftFinalize() -> Boolean {
-    if !ρ.isRealized() {
-      link();
-      return true;
-    } else {
-      return false;
-    }
-  }
-
   function link() {
     ρ.setChild(this);
   }
@@ -50,5 +41,6 @@ final class RestaurantCategorical(ρ:Restaurant) < Distribution<Integer> {
 
 function RestaurantCategorical(ρ:Restaurant) -> RestaurantCategorical {
   m:RestaurantCategorical(ρ);
+  m.link();
   return m;
 }

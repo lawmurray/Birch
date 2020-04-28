@@ -3,7 +3,7 @@
  */
 final class LinearMultivariateGaussianMultivariateGaussian(
     A:Expression<Real[_,_]>, m:MultivariateGaussian, c:Expression<Real[_]>,
-    S:Expression<Real[_,_]>) < GraftedMultivariateGaussian(A*m.μ + c,
+    S:Expression<Real[_,_]>) < MultivariateGaussian(A*m.μ + c,
     A*m.Σ*transpose(A) + S) {
   /**
    * Scale.
@@ -40,18 +40,6 @@ final class LinearMultivariateGaussianMultivariateGaussian(
         x, A, m.μ, m.Σ, c, S);
   }
 
-  function graftFinalize() -> Boolean {
-    A.value();
-    c.value();
-    S.value();
-    if !m.isRealized() {
-      link();
-      return true;
-    } else {
-      return false;
-    }
-  }
-
   function link() {
     m.setChild(this);
   }
@@ -66,5 +54,6 @@ function LinearMultivariateGaussianMultivariateGaussian(
     Σ:Expression<Real[_,_]>) ->
     LinearMultivariateGaussianMultivariateGaussian {
   m:LinearMultivariateGaussianMultivariateGaussian(A, μ, c, Σ);
+  m.link();
   return m;
 }

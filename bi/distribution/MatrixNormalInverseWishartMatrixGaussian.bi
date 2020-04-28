@@ -36,15 +36,6 @@ final class MatrixNormalInverseWishartMatrixGaussian(
         X, M.N.value(), M.Λ.value(), M.V.Ψ.value(), M.V.k.value());
   }
 
-  function graftFinalize() -> Boolean {
-    if !M.isRealized() {
-      link();
-      return true;
-    } else {
-      return false;
-    }
-  }
-
   function link() {
     M.setChild(this);
   }
@@ -58,5 +49,6 @@ function MatrixNormalInverseWishartMatrixGaussian(
     M:MatrixNormalInverseWishart) ->
     MatrixNormalInverseWishartMatrixGaussian {
   m:MatrixNormalInverseWishartMatrixGaussian(M);
+  m.link();
   return m;
 }

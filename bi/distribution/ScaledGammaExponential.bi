@@ -43,16 +43,6 @@ class ScaledGammaExponential(a:Expression<Real>, λ:Gamma) <
     return 0.0;
   }
 
-  function graftFinalize() -> Boolean {
-    a.value();
-    if !λ.isRealized() {
-      link();
-      return true;
-    } else {
-      return false;
-    }
-  }
-
   function link() {
     λ.setChild(this);
   }
@@ -65,5 +55,6 @@ class ScaledGammaExponential(a:Expression<Real>, λ:Gamma) <
 function ScaledGammaExponential(a:Expression<Real>, λ:Gamma) ->
     ScaledGammaExponential {
   m:ScaledGammaExponential(a, λ);
+  m.link();
   return m;
 }

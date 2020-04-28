@@ -54,17 +54,6 @@ final class LinearNormalInverseGammaGaussian(a:Expression<Real>,
         μ.σ2.β.value());
   }
 
-  function graftFinalize() -> Boolean {
-    a.value();
-    c.value();
-    if !μ.isRealized() {
-      link();
-      return true;
-    } else {
-      return false;
-    }
-  }
-
   function link() {
     μ.setChild(this);
   }
@@ -78,5 +67,6 @@ function LinearNormalInverseGammaGaussian(a:Expression<Real>,
     μ:NormalInverseGamma, c:Expression<Real>) ->
     LinearNormalInverseGammaGaussian {
   m:LinearNormalInverseGammaGaussian(a, μ, c);
+  m.link();
   return m;
 }

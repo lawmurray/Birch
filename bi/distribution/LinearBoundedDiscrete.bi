@@ -61,17 +61,6 @@ final class LinearBoundedDiscrete(a:Expression<Integer>, μ:BoundedDiscrete,
     }
   }
 
-  function graftFinalize() -> Boolean {
-    a.value();
-    c.value();
-    if !μ.isRealized() {
-      link();
-      return true;
-    } else {
-      return false;
-    }
-  }
-
   function link() {
     // clamp() used instead for discrete enumerations
     //μ.setChild(this);
@@ -86,5 +75,6 @@ final class LinearBoundedDiscrete(a:Expression<Integer>, μ:BoundedDiscrete,
 function LinearBoundedDiscrete(a:Expression<Integer>, μ:BoundedDiscrete,
     c:Expression<Integer>) -> LinearBoundedDiscrete {
   m:LinearBoundedDiscrete(a, μ, c);
+  m.link();
   return m;
 }

@@ -230,7 +230,6 @@ abstract class Distribution<Value> < Delay {
    */
   function graft() -> Distribution<Value> {
     prune();
-    graftFinalize();
     return this;
   }
 
@@ -347,27 +346,5 @@ abstract class Distribution<Value> < Delay {
    */
   function graftBoundedDiscrete() -> BoundedDiscrete? {
     return nil;
-  }
-  
-  /**
-   * Finalize a graft onto the delayed sampling $M$-path. Use this on an
-   * object returned by `graft*()` member functions as a final check.
-   *
-   * - Returns: True if the graft was successfully finalized, false
-   *   otherwise.
-   *
-   * False is returned in a situation where an object is proposed due to a
-   * matching template for variable elimination, but further checks determine
-   * that the object is invalid. For example:
-   *
-   *     x ~ Gaussian(μ, σ2);
-   *     y ~ Gaussian(x, x*x);
-   *
-   * This initially matches for a Gaussian-Gaussian conjugacy, but this
-   * further check evaluates the variance of `y`, determining that this then
-   * realizes `x`, and thus the conjugacy is no longer valid.
-   */
-  function graftFinalize() -> Boolean {
-    return true;
   }
 }

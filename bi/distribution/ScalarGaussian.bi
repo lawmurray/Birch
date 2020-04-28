@@ -38,7 +38,7 @@ final class ScalarGaussian(μ:Expression<Real>, σ2:Expression<Real>,
   function graft() -> Distribution<Real> {
     prune();
     s1:InverseGamma?;
-    r:Distribution<Real>?;
+    r:Distribution<Real> <- this;
     
     /* match a template */
     if (s1 <- σ2.graftInverseGamma())? {
@@ -47,19 +47,12 @@ final class ScalarGaussian(μ:Expression<Real>, σ2:Expression<Real>,
       r <- NormalInverseGamma(μ, σ2, s1!);
     }
     
-    /* finalize, and if not valid, use default template */
-    if !r? || !r!.graftFinalize() {
-      r <- GraftedGaussian(μ, σ2*τ2);
-      r!.graftFinalize();
-    }
-    return r!;
+    return r;
   }
 
   function graftGaussian() -> Gaussian? {
     prune();
-    auto r <- GraftedGaussian(μ, σ2*τ2);
-    r!.graftFinalize();
-    return r;
+    return Gaussian(μ, σ2*τ2);
   }
 
   function graftNormalInverseGamma(compare:Distribution<Real>) ->
@@ -75,16 +68,7 @@ final class ScalarGaussian(μ:Expression<Real>, σ2:Expression<Real>,
       r <- NormalInverseGamma(μ, σ2, s1!);
     }
 
-    /* finalize, and if not valid, return nil */
-    if !r? || !r!.graftFinalize() {
-      r <- nil;
-    }
     return r;
-  }
-
-  function graftFinalize() -> Boolean {
-    assert false;  // should have been replaced during graft
-    return false;
   }
 }
 

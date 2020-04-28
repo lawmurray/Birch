@@ -36,16 +36,6 @@ final class BetaNegativeBinomial(k:Expression<Integer>, ρ:Beta) < Discrete {
     return 0;
   }
 
-  function graftFinalize() -> Boolean {
-    k.value();
-    if !ρ.isRealized() {
-      link();
-      return true;
-    } else {
-      return false;
-    }
-  }
-  
   function link() {
     ρ.setChild(this);
   }
@@ -58,5 +48,6 @@ final class BetaNegativeBinomial(k:Expression<Integer>, ρ:Beta) < Discrete {
 function BetaNegativeBinomial(k:Expression<Integer>, ρ:Beta) ->
     BetaNegativeBinomial {
   m:BetaNegativeBinomial(k, ρ);
+  m.link();
   return m;
 }

@@ -31,7 +31,7 @@ class Exponential(λ:Expression<Real>) < Distribution<Real> {
     prune();
     m1:TransformLinear<Gamma>?;
     m2:Gamma?;
-    r:Distribution<Real>?;
+    r:Distribution<Real> <- this;
     
     /* match a template */
     if (m1 <- λ.graftScaledGamma())? {
@@ -39,18 +39,8 @@ class Exponential(λ:Expression<Real>) < Distribution<Real> {
     } else if (m2 <- λ.graftGamma())? {
       r <- GammaExponential(m2!);
     }
-    
-    /* finalize, and if not valid, use default template */
-    if !r? || !r!.graftFinalize() {    
-      r <- GraftedExponential(λ);
-      r!.graftFinalize();
-    }
-    return r!;
-  }
 
-  function graftFinalize() -> Boolean {
-    assert false;  // should have been replaced during graft
-    return false;
+    return r;
   }
 
   function write(buffer:Buffer) {
