@@ -60,12 +60,14 @@ class Multi < StateSpaceModel<Global,Vector<Track>,Vector<Random<Real[_]>>> {
     while track? {
       auto o <- track!.y.back();  // observed random variable
       if o.hasDistribution() {
+        auto p <- o.distribution()!;
+      
         /* object is detected, compute proposal */
         q:Real[y.size()];
         auto n <- 1;
         auto detection <- y.walk();
         while detection? {
-          q[n] <- o.pdf(detection!.value());
+          q[n] <- p.pdf(detection!.value());
           n <- n + 1;
         }
         auto Q <- sum(q);
@@ -74,7 +76,7 @@ class Multi < StateSpaceModel<Global,Vector<Track>,Vector<Random<Real[_]>>> {
         if Q > 0.0 {
           q <- q/Q;
           n <~ Categorical(q);  // propose an observation to associate with
-          auto w <- o.observe(y.get(n).value());  // likelihood
+          auto w <- p.observe(y.get(n).value());  // likelihood
           w <- w - log(Real(y.size()));  // prior correction (uniform prior)
           w <- w - log(q[n]);  // proposal correction
           y.erase(n);  // remove the observation for future associations
