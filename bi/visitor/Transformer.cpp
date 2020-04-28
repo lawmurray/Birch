@@ -44,8 +44,10 @@ bi::Statement* bi::Transformer::modify(Assume* o) {
     } else if (*o->name == "~") {
       auto identifier = new NamedExpression(new Name("AssumeEvent"),
           new EmptyType(o->loc), o->loc);
-      auto args = new ExpressionList(o->left, o->right->accept(&cloner),
-          o->loc);
+      auto distribution = new Call(new Member(o->right->accept(&cloner),
+          new NamedExpression(new Name("distribution"), new EmptyType(),
+          o->loc), o->loc), o->loc);
+      auto args = new ExpressionList(o->left, distribution, o->loc);
       result = new Yield(new Call(identifier, args, o->loc), o->loc);
     } else {
       assert(false);
