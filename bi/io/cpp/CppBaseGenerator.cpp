@@ -176,9 +176,9 @@ void bi::CppBaseGenerator::visit(const Member* o) {
     }
   } else {
     if (o->left->isThis()) {
-      middle("this->get_()->");
+      middle("this_()->");
     } else if (o->left->isSuper()) {
-      middle("this->get_()->super_type_::");
+      middle("this_()->super_type_::");
     } else {
       middle(o->left);
       auto named = dynamic_cast<const NamedExpression*>(o->right);
@@ -202,7 +202,7 @@ void bi::CppBaseGenerator::visit(const This* o) {
   if (inConstructor) {
     middle("this");
   } else {
-    middle("self_()");
+    middle("shared_from_this_()");
   }
 }
 
@@ -234,7 +234,7 @@ void bi::CppBaseGenerator::visit(const NamedExpression* o) {
     }
   } else if (o->isMember()) {
     if (!inMember && !inConstructor) {
-      middle("self_()->");
+      middle("this_()->");
     }
     middle(o->name);
   } else {

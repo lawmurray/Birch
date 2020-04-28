@@ -287,7 +287,7 @@ void bi::CppResumeGenerator::genPackLocal(const Function* o) {
   bool first = true;
   if (currentClass) {
     first = false;
-    middle("self_()");
+    middle("shared_from_this_()");
   }
   for (auto local : locals) {
     if (!first) {
