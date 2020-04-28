@@ -3,39 +3,28 @@
  */
 program test_negative_linear_gaussian_gaussian(N:Integer <- 10000) { 
   m:TestNegativeLinearGaussianGaussian;
-  playDelay.handle(m.simulate());
-    
-  /* simulate forward */
-  X1:Real[N,2];
-  for i in 1..N {
-    auto m' <- clone(m);
-    X1[i,1..2] <- m'.forward();
-  }
-
-  /* simulate backward */
-  X2:Real[N,2];
-  for i in 1..N {
-    auto m' <- clone(m);
-    X2[i,1..2] <- m'.backward();
-  }
-  
-  /* test result */
-  if !pass(X1, X2) {
-    exit(1);
-  }
+  test_conjugacy(m, N, 2);
 }
 
 class TestNegativeLinearGaussianGaussian < Model {
   μ_1:Random<Real>;
   x:Random<Real>;
   
-  fiber simulate() -> Event {
-    a:Real <- simulate_uniform(-2.0, 2.0);
-    c:Real <- simulate_uniform(-10.0, 10.0);
-    μ_0:Real <- simulate_uniform(-10.0, 10.0);
-    σ2_0:Real <- simulate_uniform(0.0, 2.0);
-    σ2_1:Real <- simulate_uniform(0.0, 2.0);
+  a:Real;
+  c:Real;
+  μ_0:Real;
+  σ2_0:Real;
+  σ2_1:Real;
 
+  function initialize() {
+    a <- simulate_uniform(-2.0, 2.0);
+    c <- simulate_uniform(-10.0, 10.0);
+    μ_0 <- simulate_uniform(-10.0, 10.0);
+    σ2_0 <- simulate_uniform(0.0, 2.0);
+    σ2_1 <- simulate_uniform(0.0, 2.0);
+  }
+
+  fiber simulate() -> Event {
     μ_1 ~ Gaussian(μ_0, σ2_0);
     x ~ Gaussian(μ_1/a - c, σ2_1);
   }

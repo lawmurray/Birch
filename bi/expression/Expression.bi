@@ -118,17 +118,17 @@ abstract class Expression<Value> {
    *
    * - x: The value.
    */
-  final function proposeValue(x:Value) {
+  final function setValue(x:Value) {
     assert !this.x?;
     this.x <- x;
-    doProposeValue();
+    doSetValue();
   }
   
   /**
    * Propose a value; overridden by derived classes if supported (notably
    * Random).
    */
-  function doProposeValue() {
+  function doSetValue() {
     assert false;
   }
 
@@ -137,17 +137,17 @@ abstract class Expression<Value> {
    *
    * - x: The value.
    */
-  final function proposePilot(x:Value) {
+  final function setPilot(x:Value) {
     assert !this.x?;
     this.x <- x;
-    doProposePilot();
+    doSetPilot();
   }
   
   /**
    * Propose a pilot value; overridden by derived classes if supported
    * (notably Random).
    */
-  function doProposePilot() {
+  function doSetPilot() {
     assert false;
   }
 

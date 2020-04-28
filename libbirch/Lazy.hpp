@@ -275,14 +275,6 @@ public:
   }
 
   /**
-   * Convert to raw pointer.
-   */
-  template<class U, std::enable_if_t<!std::is_same<P,Weak<value_type>>::value && std::is_base_of<U,value_type>::value,int> = 0>
-  operator U*() const {
-    return get();
-  }
-
-  /**
    * Get the label associated with the pointer.
    */
   Label* getLabel() const {

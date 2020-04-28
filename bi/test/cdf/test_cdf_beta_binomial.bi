@@ -3,6 +3,7 @@
  */
 program test_cdf_beta_binomial() {
   m:TestBetaBinomial;
-  playDelay.handle(m.simulate());
+  m.initialize();
+  handle(m.simulate());
   test_cdf(m.marginal());
 }

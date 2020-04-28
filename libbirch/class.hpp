@@ -84,7 +84,7 @@
     return #Name; \
   } \
   \
-  Name* self_() { \
+  auto self_() { \
     return libbirch::Lazy<libbirch::Shared<Name>>(this); \
   } \
   \

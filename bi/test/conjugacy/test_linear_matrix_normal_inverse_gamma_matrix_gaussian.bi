@@ -3,30 +3,8 @@
  */
 program test_linear_matrix_normal_inverse_gamma_matrix_gaussian(
     N:Integer <- 10000) {
-  auto n <- 5;
-  auto p <- 2;
-
   m:TestLinearMatrixNormalInverseGammaMatrixGaussian;
-  playDelay.handle(m.simulate());
-   
-  /* simulate forward */
-  X1:Real[N,p + 2*n*p];
-  for i in 1..N {
-    auto m' <- clone(m);
-    X1[i,1..columns(X1)] <- m'.forward();
-  }
-
-  /* simulate backward */
-  X2:Real[N,p + 2*n*p];
-  for i in 1..N {
-    auto m' <- clone(m);
-    X2[i,1..columns(X1)] <- m'.backward();
-  }
-  
-  /* test result */
-  if !pass(X1, X2) {
-    exit(1);
-  }
+  test_conjugacy(m, N, m.size());
 }
 
 class TestLinearMatrixNormalInverseGammaMatrixGaussian < Model {
@@ -34,17 +12,17 @@ class TestLinearMatrixNormalInverseGammaMatrixGaussian < Model {
   X:Random<Real[_,_]>;
   Y:Random<Real[_,_]>;
   
-  fiber simulate() -> Event {
-    auto n <- 5;
-    auto p <- 2;
-
-    A:Real[n,n];
-    M:Real[n,p];
-    Σ:Real[n,n];
-    C:Real[n,p];
-    α:Real <- simulate_uniform(2.0, 10.0);
-    β:Real[p];
- 
+  n:Integer <- 5;
+  p:Integer <- 2;
+  α:Real;
+  A:Real[n,n];
+  M:Real[n,p];
+  Σ:Real[n,n];
+  C:Real[n,p];
+  β:Real[p];
+  
+  function initialize() { 
+    α <- simulate_uniform(2.0, 10.0);
     for i in 1..n {
       for j in 1..n {
         A[i,j] <- simulate_uniform(-2.0, 2.0);
@@ -59,7 +37,9 @@ class TestLinearMatrixNormalInverseGammaMatrixGaussian < Model {
       β[i] <- simulate_uniform(0.0, 10.0);
     }
     Σ <- Σ*transpose(Σ);
-
+  }
+  
+  fiber simulate() -> Event {
     σ2 ~ InverseGamma(α, β);
     X ~ Gaussian(M, Σ, σ2);
     Y ~ Gaussian(A*X + C, σ2);
@@ -105,6 +85,6 @@ class TestLinearMatrixNormalInverseGammaMatrixGaussian < Model {
   }
   
   function size() -> Integer {
-    return length(σ2) + rows(X)*columns(X) + rows(Y)*columns(Y);
+    return p + 2*n*p;
   }
 }

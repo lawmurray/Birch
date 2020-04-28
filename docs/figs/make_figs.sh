@@ -8,3 +8,4 @@ dot -Tsvg Model.dot > Model.svg
 dot -Tsvg Filter.dot > Filter.svg
 dot -Tsvg Sampler.dot > Sampler.svg
 dot -Tsvg Handler.dot > Handler.svg
+dot -Tsvg Event.dot > Event.svg

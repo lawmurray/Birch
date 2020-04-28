@@ -2,41 +2,25 @@
  * Test a chain of conjugate Gaussians.
  */
 program test_chain_gaussian(N:Integer <- 10000) {
-  X1:Real[N,5];
-  X2:Real[N,5];
-  μ:Real <- simulate_uniform(-10.0, 10.0);
-  auto σ2 <- [
+  m:TestChainGaussian;
+  test_conjugacy(m, N, 5);
+}
+
+class TestChainGaussian < Model {
+  x:Random<Real>[5];
+  μ:Real;
+  σ2:Real[_];
+  
+  function initialize() {
+    μ <- simulate_uniform(-10.0, 10.0);
+    σ2 <- [
       simulate_uniform(0.0, 10.0),
       simulate_uniform(0.0, 10.0),
       simulate_uniform(0.0, 10.0),
       simulate_uniform(0.0, 10.0),
       simulate_uniform(0.0, 10.0)
     ];
- 
-  /* simulate forward */
-  for i in 1..N {
-    m:TestChainGaussian(μ, σ2);
-    playDelay.handle(m.simulate());
-    X1[i,1..5] <- m.forward();
   }
-
-  /* simulate backward */
-  for i in 1..N {
-    m:TestChainGaussian(μ, σ2);
-    playDelay.handle(m.simulate());
-    X2[i,1..5] <- m.backward();
-  }
-  
-  /* test result */
-  if !pass(X1, X2) {
-    exit(1);
-  }
-}
-
-class TestChainGaussian(μ:Real, σ2:Real[_]) < Model {
-  μ:Real <- μ;
-  σ2:Real[_] <- σ2;
-  x:Random<Real>[5];
   
   fiber simulate() -> Event {
     x[1] ~ Gaussian(μ, σ2[1]);

@@ -3,36 +3,21 @@
  */
 program test_gamma_exponential(N:Integer <- 10000) {
   m:TestGammaExponential;
-  playDelay.handle(m.simulate());
-
-  /* simulate forward */
-  X1:Real[N,2];
-  for n in 1..N {
-    auto m' <- clone(m);
-    X1[n,1..2] <- m'.forward();
-  }
-
-  /* simulate backward */
-  X2:Real[N,2];
-  for n in 1..N {
-    auto m' <- clone(m);
-    X2[n,1..2] <- m'.backward();
-  }
-
-  /* test result */
-  if !pass(X1, X2) {
-    exit(1);
-  }
+  test_conjugacy(m, N, 2);
 }
 
 class TestGammaExponential < Model {
+  k:Real;
+  θ:Real;
   λ:Random<Real>;
   x:Random<Real>;
 
-  fiber simulate() -> Event {
-    auto k <- simulate_uniform(1.0, 10.0);
-    auto θ <- simulate_uniform(0.0, 2.0);
+  function initialize() {
+    k <- simulate_uniform(1.0, 10.0);
+    θ <- simulate_uniform(0.0, 2.0);
+  }
 
+  fiber simulate() -> Event {
     λ ~ Gamma(k, θ);
     x ~ Exponential(λ);
   }

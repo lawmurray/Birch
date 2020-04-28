@@ -3,48 +3,26 @@
  */
 program test_negative_linear_matrix_normal_inverse_wishart_matrix_gaussian(
     N:Integer <- 10000) {
-  auto n <- 5;
-  auto p <- 2;
-
   m:TestNegativeLinearMatrixNormalInverseWishartMatrixGaussian;
-  playDelay.handle(m.simulate());
-
-  /* simulate forward */
-  X1:Real[N,p*p + 2*n*p];
-  for i in 1..N {
-    auto m' <- clone(m);
-    X1[i,1..columns(X1)] <- m'.forward();
-  }
-
-  /* simulate backward */
-  X2:Real[N,p*p + 2*n*p];
-  for i in 1..N {
-    auto m' <- clone(m);
-    X2[i,1..columns(X1)] <- m'.backward();
-  }
-  
-  /* test result */
-  if !pass(X1, X2) {
-    exit(1);
-  }
+  test_conjugacy(m, N, m.size());
 }
 
 class TestNegativeLinearMatrixNormalInverseWishartMatrixGaussian < Model {
   V:Random<Real[_,_]>;
   X:Random<Real[_,_]>;
   Y:Random<Real[_,_]>;
-  
-  fiber simulate() -> Event {
-    auto n <- 5;
-    auto p <- 2;
 
-    A:Real[n,n];
-    M:Real[n,p];
-    U:Real[n,n];
-    C:Real[n,p];
-    k:Real <- simulate_uniform(p - 1.0, p + 9.0);
-    Ψ:Real[p,p];
- 
+  n:Integer <- 5;
+  p:Integer <- 2;
+  A:Real[n,n];
+  M:Real[n,p];
+  U:Real[n,n];
+  C:Real[n,p];
+  k:Real;
+  Ψ:Real[p,p];
+  
+  function initialize() {
+    k <- simulate_uniform(p - 1.0, p + 9.0);
     for i in 1..n {
       for j in 1..n {
         A[i,j] <- simulate_uniform(-2.0, 2.0);
@@ -62,7 +40,9 @@ class TestNegativeLinearMatrixNormalInverseWishartMatrixGaussian < Model {
     }
     U <- U*transpose(U);
     Ψ <- Ψ*transpose(Ψ);
-
+  }
+  
+  fiber simulate() -> Event {
     V ~ InverseWishart(Ψ, k);
     X ~ Gaussian(M, U, V);
     Y ~ Gaussian(A*X - C, V);
@@ -111,6 +91,6 @@ class TestNegativeLinearMatrixNormalInverseWishartMatrixGaussian < Model {
   }
   
   function size() -> Integer {
-    return rows(V)*columns(V) + rows(X)*columns(X) + rows(Y)*columns(Y);
+    return p*p + 2*n*p;
   }
 }

@@ -4,7 +4,7 @@
  * - π: The target distribution. 
  * - N: Number of samples.
  */
-function test_pdf(π:Distribution<Boolean>, N:Integer) {  
+function test_pdf(π:Distribution<Boolean>, N:Integer) {
   /* simulate, counting the occurrence of each value */
   auto k <- 0;
   for n in 1..N {

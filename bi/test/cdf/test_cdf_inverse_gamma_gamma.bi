@@ -3,6 +3,7 @@
  */
 program test_cdf_inverse_gamma_gamma(N:Integer <- 10000) {
   m:TestInverseGammaGamma;
-  playDelay.handle(m.simulate());
+  m.initialize();
+  handle(m.simulate());
   test_cdf(m.marginal(), N);
 }

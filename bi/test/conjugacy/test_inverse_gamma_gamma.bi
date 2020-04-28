@@ -3,37 +3,23 @@
  */
 program test_inverse_gamma_gamma(N:Integer <- 10000) {
   m:TestInverseGammaGamma;
-  playDelay.handle(m.simulate());
- 
-  /* simulate forward */
-  X1:Real[N,2];
-  for n in 1..N {
-    auto m' <- clone(m);
-    X1[n,1..2] <- m'.forward();
-  }
-
-  /* simulate backward */
-  X2:Real[N,2];
-  for n in 1..N {
-    auto m' <- clone(m);
-    X2[n,1..2] <- m'.backward();
-  }
-  
-  /* test result */
-  if !pass(X1, X2) {
-    exit(1);
-  }
+  test_conjugacy(m, N, 2);
 }
 
 class TestInverseGammaGamma < Model {
   θ:Random<Real>;
   x:Random<Real>;
+  k:Real;
+  α:Real;
+  β:Real;
+  
+  function initialize() {
+    k <- simulate_uniform(1.0, 10.0);
+    α <- simulate_uniform(2.0, 10.0);
+    β <- simulate_uniform(0.0, 10.0);  
+  }
   
   fiber simulate() -> Event {
-    auto k <- simulate_uniform(1.0, 10.0);
-    auto α <- simulate_uniform(2.0, 10.0);
-    auto β <- simulate_uniform(0.0, 10.0);
-  
     θ ~ InverseGamma(α, β);
     x ~ Gamma(k, θ);
   }

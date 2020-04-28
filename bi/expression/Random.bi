@@ -97,16 +97,17 @@ final class Random<Value> < Expression<Value> {
     }
   }
 
-  override function doProposeValue() {
+  override function doSetValue() {
     p!.prune();
     p!.update(x!);
     p!.unlink();
     p <- nil;
   }
 
-  override function doProposePilot() {
+  override function doSetPilot() {
     p!.prune();
     p!.updateLazy(this);
+    p!.unlink();
   }
 
   override function doGrad(d:Value) {

@@ -3,7 +3,7 @@
  */
 program test_invalid_gaussian_gaussian() {
   m:TestInvalidGaussianGaussian;
-  playDelay.handle(m.simulate());
+  handle(m.simulate());
   
   /* if y is instantiated now, x should also be instantiated; establishing
    * a Gaussian-Gaussian relationship when x appears in the variance of y

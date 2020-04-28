@@ -1,48 +1,45 @@
 /**
  * Event triggered for a factor.
  *
- * - w: Associated (log-)weight.
+ * - w: Associated log-weight.
+ *
+ * The Event class hierarchy is as follows:
+ * <center>
+ * <object type="image/svg+xml" data="../../figs/Event.svg"></object>
+ * </center>
  */
 final class FactorEvent(w:Real) < Event {
   /**
    * Associated (log-)weight.
    */
   w:Real <- w;
-
-  function play() -> Real {
-    return w;
-  }
-
-  function playMove() -> Real {
-    return w;
-  }
-
-  function playDelay() -> Real {
-    return w;
-  }
-
-  function playDelayMove() -> Real {
-    return w;
-  }
-
-  function replay(record:Record) -> Real {
-    return w;
-  }
-
-  function replayMove(record:Record, scale:Real) -> Real {
-    return w;
-  }
-
-  function replayDelay(record:Record) -> Real {
-    return w;
-  }
-
-  function replayDelayMove(record:Record, scale:Real) -> Real {
-    return w;
-  }
   
   function record() -> Record {
     return FactorRecord(w);
+  }
+
+  function coerce(record:Record) -> FactorRecord {
+    auto r <- FactorRecord?(record);
+    if !r? {
+      error("incompatible trace");
+    }
+    return r!;
+  }
+
+  function accept(handler:PlayHandler) -> Real {
+    return handler.handle(this);
+  }
+  
+  function accept(handler:MoveHandler) -> Real {
+    return handler.handle(this);
+  }
+
+  function accept(record:Record, handler:PlayHandler) -> Real {
+    return handler.handle(coerce(record), this);
+  }
+
+  function accept(record:Record, handler:MoveHandler) -> Real {
+    return handler.handle(coerce(record), this);
   }
 }
 

@@ -1,0 +1,18 @@
+digraph {
+  splines=ortho
+  concentrate=true
+  rankdir=BT
+  node [shape=box,fontname=Helvetica,fontsize=10,margin="0.1,0.01"]
+  edge [arrowhead=empty]
+
+  Event [href="../classes/Event/",target="_top"]
+  SimulateEvent [href="../classes/SimulateEvent/",target="_top"]
+  ObserveEvent [href="../classes/ObserveEvent/",target="_top"]
+  AssumeEvent [href="../classes/AssumeEvent/",target="_top"]
+  FactorEvent [href="../classes/FactorEvent/",target="_top"]
+
+  SimulateEvent -> Event
+  ObserveEvent -> Event
+  AssumeEvent -> Event
+  FactorEvent -> Event
+}

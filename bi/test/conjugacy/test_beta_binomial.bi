@@ -1,45 +1,31 @@
 /*
  * Test beta-binomial conjugacy.
  */
-program test_beta_binomial(N:Integer <- 10000) {  
+program test_beta_binomial(N:Integer <- 10000) {
   m:TestBetaBinomial;
-  playDelay.handle(m.simulate());
- 
-  /* simulate forward */
-  X1:Real[N,2];
-  for i in 1..N {
-    auto m' <- clone(m);
-    X1[i,1..2] <- m'.forward();
-  }
-
-  /* simulate backward */
-  X2:Real[N,2];
-  for i in 1..N {
-    auto m' <- clone(m);
-    X2[i,1..2] <- m'.backward();
-  }
-  
-  /* test result */
-  if !pass(X1, X2) {
-    exit(1);
-  }
+  test_conjugacy(m, N, 2);
 }
 
 class TestBetaBinomial < Model {
   ρ:Random<Real>;
   x:Random<Integer>;
+  n:Integer;
+  α:Real;
+  β:Real;
   
-  fiber simulate() -> Event {
-    auto n <- simulate_uniform_int(1, 100);
-    auto α <- simulate_uniform(1.0, 10.0);
-    auto β <- simulate_uniform(1.0, 10.0);
-    
+  function initialize() {
+    n <- simulate_uniform_int(1, 100);
+    α <- simulate_uniform(1.0, 10.0);
+    β <- simulate_uniform(1.0, 10.0);
+  }
+  
+  fiber simulate() -> Event {    
     ρ ~ Beta(α, β);
     x ~ Binomial(n, ρ);
   }
   
   function forward() -> Real[_] {
-    y:Real[2];    
+    y:Real[2];
     y[1] <- ρ.value();
     assert !x.hasValue();
     y[2] <- x.value();

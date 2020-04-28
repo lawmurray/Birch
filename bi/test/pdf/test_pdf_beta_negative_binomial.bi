@@ -3,6 +3,7 @@
  */
 program test_pdf_beta_negative_binomial(N:Integer <- 10000) {
   m:TestBetaNegativeBinomial;
-  playDelay.handle(m.simulate());
+  m.initialize();
+  handle(m.simulate());
   test_pdf(m.marginal(), N);
 }

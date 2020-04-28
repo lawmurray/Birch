@@ -3,6 +3,7 @@
  */
 program test_cdf_normal_inverse_gamma_gaussian(N:Integer <- 10000) {
   m:TestNormalInverseGammaGaussian;
-  playDelay.handle(m.simulate());
+  m.initialize();
+  handle(m.simulate());
   test_cdf(m.marginal(), N);
 }

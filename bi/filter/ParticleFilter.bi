@@ -72,11 +72,6 @@ class ParticleFilter {
    * Should delayed sampling be used?
    */
   delayed:Boolean <- true;
-  
-  /**
-   * Event handler.
-   */
-  play:Handler <- global.play;
 
   /**
    * Size. This is the number of steps of `filter(Model, Integer)` to be
@@ -109,13 +104,6 @@ class ParticleFilter {
       nsteps <- archetype.size();
     }
     
-    /* event handler */
-    if delayed {
-      play <- global.playDelay;
-    } else {
-      play <- global.play;
-    }
-    
     start();
     reduce();
   }
@@ -138,6 +126,7 @@ class ParticleFilter {
    * Start particles.
    */
   function start() {
+    auto play <- PlayHandler(delayed);
     parallel for n in 1..nparticles {
       w[n] <- play.handle(x[n].simulate());
     }  
@@ -147,6 +136,7 @@ class ParticleFilter {
    * Step particles.
    */
   function step(t:Integer) {
+    auto play <- PlayHandler(delayed);
     parallel for n in 1..nparticles {
       w[n] <- w[n] + play.handle(x[n].simulate(t));
     }

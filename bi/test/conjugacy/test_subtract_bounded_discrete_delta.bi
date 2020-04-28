@@ -3,33 +3,18 @@
  * variates.
  */
 program test_subtract_bounded_discrete_delta(N:Integer <- 10000) {
-  X1:Real[N,2];
-  X2:Real[N,2];
- 
-  /* simulate forward */
-  for n in 1..N {
-    m:TestSubtractBoundedDiscreteDelta;
-    playDelay.handle(m.simulate());
-    X1[n,1..2] <- m.forward();
-  }
-
-  /* simulate backward */
-  for n in 1..N {
-    m:TestSubtractBoundedDiscreteDelta;
-    playDelay.handle(m.simulate());
-    X2[n,1..2] <- m.backward();
-  }
-  
-  /* test result */
-  if !pass(X1, X2) {
-    exit(1);
-  }
+  m:TestSubtractBoundedDiscreteDelta;
+  test_conjugacy(m, N, 2);
 }
 
 class TestSubtractBoundedDiscreteDelta < Model {
   x1:Random<Integer>;
   x2:Random<Integer>;
   s:Random<Integer>;
+  
+  function initialize() {
+    //
+  }
   
   fiber simulate() -> Event {
     x1 ~ Binomial(100, 0.75);

@@ -2,39 +2,27 @@
  * Test normal-inverse-gamma conjugacy.
  */
 program test_normal_inverse_gamma(N:Integer <- 10000) {
-  X1:Real[N,2];
-  X2:Real[N,2];
   m:TestNormalInverseGamma;
-  playDelay.handle(m.simulate());
-   
-  /* simulate forward */
-  for n in 1..N {
-    auto m' <- clone(m);
-    X1[n,1..2] <- m'.forward();
-  }
-
-  /* simulate backward */
-  for n in 1..N {
-    auto m' <- clone(m);
-    X2[n,1..2] <- m'.backward();
-  }
-  
-  /* test result */
-  if !pass(X1, X2) {
-    exit(1);
-  }
+  test_conjugacy(m, N, 2);
 }
 
 class TestNormalInverseGamma < Model {  
   σ2:Random<Real>;
   x:Random<Real>;
+
+  μ:Real;
+  a2:Real;
+  α:Real;
+  β:Real;
+  
+  function initialize() {
+    μ <- simulate_uniform(-10.0, 10.0);
+    a2 <- simulate_uniform(0.1, 2.0);
+    α <- simulate_uniform(2.0, 10.0);
+    β <- simulate_uniform(0.1, 10.0);
+  }
   
   fiber simulate() -> Event {
-    auto μ <- simulate_uniform(-10.0, 10.0);
-    auto a2 <- simulate_uniform(0.1, 2.0);
-    auto α <- simulate_uniform(2.0, 10.0);
-    auto β <- simulate_uniform(0.1, 10.0);
-
     σ2 ~ InverseGamma(α, β);
     x ~ Gaussian(μ, a2, σ2);
   }

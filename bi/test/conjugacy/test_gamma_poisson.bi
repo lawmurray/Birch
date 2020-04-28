@@ -3,36 +3,21 @@
  */
 program test_gamma_poisson(N:Integer <- 10000) {
   m:TestGammaPoisson;
-  playDelay.handle(m.simulate());
-
-  /* simulate forward */
-  X1:Real[N,2];
-  for n in 1..N {
-    auto m' <- clone(m);
-    X1[n,1..2] <- m'.forward();
-  }
-
-  /* simulate backward */
-  X2:Real[N,2];
-  for n in 1..N {
-    auto m' <- clone(m);
-    X2[n,1..2] <- m'.backward();
-  }
-  
-  /* test result */
-  if !pass(X1, X2) {
-    exit(1);
-  }
+  test_conjugacy(m, N, 2);
 }
 
 class TestGammaPoisson < Model {
   λ:Random<Real>;
   x:Random<Integer>;
+  k:Real;
+  θ:Real;
+  
+  function initialize() {
+    k <- simulate_uniform_int(1, 10);
+    θ <- simulate_uniform(0.0, 10.0);
+  }
   
   fiber simulate() -> Event {
-    auto k <- simulate_uniform_int(1, 10);
-    auto θ <- simulate_uniform(0.0, 10.0);
-
     λ ~ Gamma(k, θ);
     x ~ Poisson(λ);
   }

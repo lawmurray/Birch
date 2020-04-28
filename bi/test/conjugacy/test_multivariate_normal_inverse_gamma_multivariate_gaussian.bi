@@ -3,39 +3,22 @@
  */
 program test_multivariate_normal_inverse_gamma_multivariate_gaussian(N:Integer <- 10000) {
   m:TestMultivariateNormalInverseGammaMultivariateGaussian;
-  playDelay.handle(m.simulate());
-   
-  /* simulate forward */
-  X1:Real[N,11];
-  for n in 1..N {
-    auto m' <- clone(m);
-    X1[n,1..11] <- m'.forward();
-  }
-
-  /* simulate backward */
-  X2:Real[N,11];
-  for n in 1..N {
-    auto m' <- clone(m);
-    X2[n,1..11] <- m'.backward();
-  }
-  
-  /* test result */
-  if !pass(X1, X2) {
-    exit(1);
-  }
+  test_conjugacy(m, N, 11);
 }
 
 class TestMultivariateNormalInverseGammaMultivariateGaussian < Model {
   σ2:Random<Real>;
   μ:Random<Real[_]>;
   x:Random<Real[_]>;
+
+  μ_0:Real[5];
+  A:Real[5,5];
+  α:Real;
+  β:Real;
   
-  fiber simulate() -> Event {
-    μ_0:Real[5];
-    A:Real[5,5];
-    α:Real <- simulate_uniform(2.0, 10.0);
-    β:Real <- simulate_uniform(0.0, 10.0);
- 
+  function initialize() {
+    α <- simulate_uniform(2.0, 10.0);
+    β <- simulate_uniform(0.0, 10.0); 
     for i in 1..5 {
       μ_0[i] <- simulate_uniform(-10.0, 10.0);
       for j in 1..5 {
@@ -43,7 +26,9 @@ class TestMultivariateNormalInverseGammaMultivariateGaussian < Model {
       }
     }
     A <- A*transpose(A);
-
+  }
+  
+  fiber simulate() -> Event {
     σ2 ~ InverseGamma(α, β);
     μ ~ Gaussian(μ_0, A, σ2);
     x ~ Gaussian(μ, σ2);

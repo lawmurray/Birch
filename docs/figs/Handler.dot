@@ -7,25 +7,10 @@ digraph {
 
   Handler [href="../classes/Handler/",target="_top"]
   PlayHandler [href="../classes/PlayHandler/",target="_top"]
-  PlayDelayHandler [href="../classes/PlayDelayHandler/",target="_top"]
-  PlayMoveHandler [href="../classes/PlayMoveHandler/",target="_top"]
-  PlayDelayMoveHandler [href="../classes/PlayDelayMoveHandler/",target="_top"]
 
-  TraceHandler [href="../classes/TraceHandler/",target="_top"]
-  ReplayHandler [href="../classes/ReplayHandler/",target="_top"]
-  ReplayDelayHandler [href="../classes/ReplayDelayHandler/",target="_top"]
-  ReplayMoveHandler [href="../classes/ReplayMoveHandler/",target="_top"]
-  ReplayDelayMoveHandler [href="../classes/ReplayDelayMoveHandler/",target="_top"]
+  LazyHandler [href="../classes/LazyHandler/",target="_top"]
+  MoveHandler [href="../classes/MoveHandler/",target="_top"]
 
   PlayHandler -> Handler
-  PlayDelayHandler -> Handler
-  PlayMoveHandler -> Handler
-  PlayDelayMoveHandler -> Handler
-
-  ReplayHandler -> TraceHandler
-  ReplayDelayHandler -> TraceHandler
-  ReplayMoveHandler -> TraceHandler
-  ReplayDelayMoveHandler -> TraceHandler
-
-  TraceHandler -> PlayMoveHandler [style=invis]
+  MoveHandler -> LazyHandler
 }

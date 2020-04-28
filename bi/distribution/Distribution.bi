@@ -24,6 +24,22 @@ abstract class Distribution<Value> < Delay {
     return 1;
   }
   
+  function value() -> Value {
+    if !isRealized() {
+      x <- simulate();
+      update(x!);
+      unlink();
+    }
+    return x!;
+  }
+  
+  /**
+   * Returns `this`; a convenience for code generation within the compiler.
+   */
+  function distribution() -> Distribution<Value> {
+    return this;
+  }
+  
   /**
    * Observe a value for a random variate associated with this node,
    * updating (or downdating) the delayed sampling graph accordingly, and

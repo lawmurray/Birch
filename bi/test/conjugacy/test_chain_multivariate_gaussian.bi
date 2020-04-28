@@ -2,44 +2,24 @@
  * Test a chain of conjugate multivariate Gaussians.
  */
 program test_chain_multivariate_gaussian(N:Integer <- 10000) {
-  X1:Real[N,15];
-  X2:Real[N,15];
-  
-  μ:Real[3];
-  Σ:Real[3,3];
-
-  for i in 1..3 {
-    μ[i] <- simulate_uniform(-10.0, 10.0);
-    for j in 1..3 {
-      Σ[i,j] <- simulate_uniform(-2.0, 2.0);
-    }
-  }
-  Σ <- Σ*transpose(Σ);
- 
-  /* simulate forward */
-  for i in 1..N {
-    m:TestChainMultivariateGaussian(μ, Σ);
-    playDelay.handle(m.simulate());
-    X1[i,1..15] <- m.forward();
-  }
-
-  /* simulate backward */
-  for i in 1..N {
-    m:TestChainMultivariateGaussian(μ, Σ);
-    playDelay.handle(m.simulate());
-    X2[i,1..15] <- m.backward();
-  }
-  
-  /* test result */
-  if !pass(X1, X2) {
-    exit(1);
-  }
+  m:TestChainMultivariateGaussian;
+  test_conjugacy(m, N, 15);
 }
 
-class TestChainMultivariateGaussian(μ:Real[_], Σ:Real[_,_]) < Model {
-  μ:Real[_] <- μ;
-  Σ:Real[_,_] <- Σ;
+class TestChainMultivariateGaussian < Model {
   x:Random<Real[_]>[5];
+  μ:Real[3];
+  Σ:Real[3,3];
+  
+  function initialize() {
+    for i in 1..3 {
+      μ[i] <- simulate_uniform(-10.0, 10.0);
+      for j in 1..3 {
+        Σ[i,j] <- simulate_uniform(-2.0, 2.0);
+      }
+    }
+    Σ <- Σ*transpose(Σ);
+  }
   
   fiber simulate() -> Event {
     x[1] ~ Gaussian(μ, Σ);

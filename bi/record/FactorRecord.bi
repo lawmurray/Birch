@@ -1,17 +1,13 @@
 /**
- * Record of a factor.
+ * Record of a FactorEvent.
  *
- * - w: Associated weight.
+ * - w: Log-weight.
  */
 final class FactorRecord(w:Real) < Record {
   /**
-   * Associated weight.
+   * Log-weight.
    */
   w:Real <- w;
-
-  function hasValue() -> Boolean {
-    return false;
-  }
 }
 
 /**

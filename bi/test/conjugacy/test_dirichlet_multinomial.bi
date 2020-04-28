@@ -2,39 +2,22 @@
  * Test Dirichlet-multinomial conjugacy.
  */
 program test_dirichlet_multinomial(N:Integer <- 10000) {
-  X1:Real[N,10];
-  X2:Real[N,10];
-  n:Integer <- simulate_uniform_int(100, 500);
-  α:Real[5];
-  for i in 1..5 {
-    α[i] <- simulate_uniform(1.0, 10.0);
-  }
- 
-  /* simulate forward */
-  for i in 1..N {
-    m:TestDirichletMultinomial(n, α);
-    playDelay.handle(m.simulate());
-    X1[i,1..10] <- m.forward();
-  }
-
-  /* simulate backward */
-  for i in 1..N {
-    m:TestDirichletMultinomial(n, α);
-    playDelay.handle(m.simulate());
-    X2[i,1..10] <- m.backward();
-  }
-  
-  /* test result */
-  if !pass(X1, X2) {
-    exit(1);
-  }
+  m:TestDirichletMultinomial;
+  test_conjugacy(m, N, 10);
 }
 
-class TestDirichletMultinomial(n:Integer, α:Real[_]) < Model {
-  n:Integer <- n;
-  α:Real[_] <- α; 
+class TestDirichletMultinomial < Model {
+  n:Integer;
+  α:Real[5]; 
   ρ:Random<Real[_]>;
   x:Random<Integer[_]>;
+  
+  function initialize() {
+    n <- simulate_uniform_int(100, 500);
+    for i in 1..5 {
+      α[i] <- simulate_uniform(1.0, 10.0);
+    } 
+  }
   
   fiber simulate() -> Event {
     ρ ~ Dirichlet(α);

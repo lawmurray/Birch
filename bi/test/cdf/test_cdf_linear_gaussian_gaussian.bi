@@ -3,6 +3,7 @@
  */
 program test_cdf_linear_gaussian_gaussian(N:Integer <- 10000) {
   m:TestLinearGaussianGaussian;
-  playDelay.handle(m.simulate());
+  m.initialize();
+  handle(m.simulate());
   test_cdf(m.marginal(), N);
 }

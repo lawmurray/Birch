@@ -3,41 +3,31 @@
  */
 program test_linear_normal_inverse_gamma_gaussian(N:Integer <- 10000) {  
   m:TestLinearNormalInverseGammaGaussian;
-  playDelay.handle(m.simulate());
-  
-  /* simulate forward */
-  X1:Real[N,3];
-  for n in 1..N {
-    auto m' <- clone(m);
-    X1[n,1..3] <- m'.forward();
-  }
-
-  /* simulate backward */
-  X2:Real[N,3];
-  for n in 1..N {
-    auto m' <- clone(m);
-    X2[n,1..3] <- m'.backward();
-  }
-  
-  /* test result */
-  if !pass(X1, X2) {
-    exit(1);
-  }
+  test_conjugacy(m, N, 3);
 }
 
 class TestLinearNormalInverseGammaGaussian < Model {  
   σ2:Random<Real>;
   μ:Random<Real>;
   x:Random<Real>;
+
+  a:Real;
+  μ_0:Real;
+  a2:Real;
+  c:Real;
+  α:Real;
+  β:Real;
+  
+  function initialize() {
+    a <- simulate_uniform(-2.0, 2.0);
+    μ_0 <- simulate_uniform(-10.0, 10.0);
+    a2 <- simulate_uniform(0.1, 2.0);
+    c <- simulate_uniform(-10.0, 10.0);
+    α <- simulate_uniform(2.0, 10.0);
+    β <- simulate_uniform(0.1, 10.0);
+  }
   
   fiber simulate() -> Event {
-    auto a <- simulate_uniform(-2.0, 2.0);
-    auto μ_0 <- simulate_uniform(-10.0, 10.0);
-    auto a2 <- simulate_uniform(0.1, 2.0);
-    auto c <- simulate_uniform(-10.0, 10.0);
-    auto α <- simulate_uniform(2.0, 10.0);
-    auto β <- simulate_uniform(0.1, 10.0);
-
     σ2 ~ InverseGamma(α, β);
     μ ~ Gaussian(μ_0, a2, σ2);
     x ~ Gaussian(a*μ + c, σ2);

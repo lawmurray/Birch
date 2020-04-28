@@ -3,37 +3,18 @@
  */
 program test_multivariate_gaussian_multivariate_gaussian(N:Integer <- 10000) {
   m:TestMultivariateGaussianMultivariateGaussian;
-  playDelay.handle(m.simulate());
-   
-  /* simulate forward */
-  X1:Real[N,10];
-  for n in 1..N {
-    auto m' <- clone(m);
-    X1[n,1..10] <- m'.forward();
-  }
-
-  /* simulate backward */
-  X2:Real[N,10];
-  for n in 1..N {
-    auto m' <- clone(m);
-    X2[n,1..10] <- m'.backward();
-  }
-  
-  /* test result */
-  if !pass(X1, X2) {
-    exit(1);
-  }
-}
+  test_conjugacy(m, N, 10);
+ }
 
 class TestMultivariateGaussianMultivariateGaussian < Model {
   μ_1:Random<Real[_]>;
   x:Random<Real[_]>;
-  
-  fiber simulate() -> Event {
-    μ_0:Real[5];
-    Σ_0:Real[5,5];
-    Σ_1:Real[5,5];
 
+  μ_0:Real[5];
+  Σ_0:Real[5,5];
+  Σ_1:Real[5,5];
+
+  function initialize() {
     for i in 1..5 {
       μ_0[i] <- simulate_uniform(-10.0, 10.0);
       for j in 1..5 {
@@ -43,7 +24,9 @@ class TestMultivariateGaussianMultivariateGaussian < Model {
     }
     Σ_0 <- Σ_0*transpose(Σ_0);
     Σ_1 <- Σ_1*transpose(Σ_1);
+  }
 
+  fiber simulate() -> Event {
     μ_1 ~ Gaussian(μ_0, Σ_0);
     x ~ Gaussian(μ_1, Σ_1);
   }

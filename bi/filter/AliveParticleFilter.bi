@@ -16,6 +16,7 @@ class AliveParticleFilter < ParticleFilter {
   p:Integer[_];
 
   override function step(t:Integer) {
+    auto play <- PlayHandler(delayed);
     auto x0 <- x;
     auto w0 <- w;
     p <- vector(0, nparticles + 1);

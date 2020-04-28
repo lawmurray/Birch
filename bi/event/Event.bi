@@ -1,87 +1,34 @@
 /**
- * Event during the simulation of a model.
+ * Abstract event emitted during the execution of a model.
  *
- * An Event requires that an action be taken. The choice of action is made
- * by a Handler. The action is performed by calling the appropriate
- * member function of event, such as `play()`, `playDelay()`, `playMove()`,
- * etc.
+ * The Event class hierarchy is as follows:
+ * <center>
+ * <object type="image/svg+xml" data="../../figs/Event.svg"></object>
+ * </center>
  */
 abstract class Event {
   /**
-   * Perform the *play* action.
-   *
-   * Returns: The required weight adjustment.
+   * Accept an event handler.
    */
-  abstract function play() -> Real;
+  abstract function accept(handler:PlayHandler) -> Real;
+  
+  /**
+   * Accept an event handler.
+   */
+  abstract function accept(handler:MoveHandler) -> Real;
 
   /**
-   * Perform the *playMove* action.
-   *
-   * Returns: The required weight adjustment.
+   * Accept an event handler.
    */
-  abstract function playMove() -> Real;
+  abstract function accept(record:Record, handler:PlayHandler) -> Real;
 
   /**
-   * Perform the *playDelay* action.
-   *
-   * Returns: The required weight adjustment.
+   * Accept an event handler.
    */
-  abstract function playDelay() -> Real;
+  abstract function accept(record:Record, handler:MoveHandler) -> Real;
 
   /**
-   * Perform the *playDelayMove* action.
-   *
-   * Returns: The required weight adjustment.
-   */
-  abstract function playDelayMove() -> Real;
-
-  /**
-   * Perform the *replay* action. This is typically used when reconstructing
-   * a trace that was originally simulated forward using `play()`.
-   *
-   * - record: Associated record in the trace.
-   *
-   * Returns: The required weight adjustment.
-   */
-  abstract function replay(record:Record) -> Real;
-
-  /**
-   * Perform the *replayMove* action. This is typically used when
-   * proposing a new trace that is a modication of a trace that was simulated
-   * forward using `playMove()`.
-   *
-   * - record: Associated record in the trace.
-   * - scale: Scale of the move.
-   *
-   * Returns: The required weight adjustment.
-   */
-  abstract function replayMove(record:Record, scale:Real) -> Real;
-
-  /**
-   * Perform the *replayDelay* action. This is typically used when
-   * reconstructing a trace that was originally simulated forward using
-   * `playDelay()`.
-   *
-   * - record: Associated record in the trace.
-   *
-   * Returns: The required weight adjustment.
-   */
-  abstract function replayDelay(record:Record) -> Real;
-
-  /**
-   * Perform the *replayDelayMove* action. This is typically used when
-   * proposing a new trace that is a modication of a trace that was simulated
-   * forward using `playDelayMove()`.
-   *
-   * - record: Associated record in the trace.
-   * - scale: Scale of the move.
-   *
-   * Returns: The required weight adjustment.
-   */
-  abstract function replayDelayMove(record:Record, scale:Real) -> Real;
-
-  /**
-   * Produce a record for the event.
+   * Make a record for the event, in order to enter into a trace.
    *
    * Returns: The record.
    */

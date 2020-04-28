@@ -1,18 +1,12 @@
 /**
- * Trace of a model execution. Each record in the trace corresponds to an
- * event emitted during execution.
- */
-class Trace = Tape<Record>;
-
-/**
- * Abstract event handler that eagerly computes weights.
+ * Abstract event handler that lazily computes weights.
  *
  * The Handler class hierarchy is as follows:
  * <center>
  * <object type="image/svg+xml" data="../../figs/Handler.svg"></object>
  * </center>
  */
-abstract class Handler {
+abstract class LazyHandler {
   /**
    * Handle a sequence of events.
    *
@@ -102,16 +96,4 @@ abstract class Handler {
    * Returns: Log-weight.
    */
   abstract function handle(record:Record, event:Event) -> Real;
-}
-
-/**
- * Handle a sequence of events using the default event handler. This is a
- * convenience function equivalent to `PlayHandler(true).handle(events)`.
- *
- * - events: Event sequence.
- *
- * Returns: Accumulated log-weight.
- */
-function handle(events:Event!) -> Real {
-  return PlayHandler(true).handle(events);
 }

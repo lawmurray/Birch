@@ -3,31 +3,16 @@
  */
 program test_beta_bernoulli(N:Integer <- 10000) {
   m:TestBetaBernoulli;
-  playDelay.handle(m.simulate());
- 
-  /* simulate forward */
-  X1:Real[N,2];
-  for n in 1..N {
-    auto m' <- clone(m);
-    X1[n,1..2] <- m'.forward();
-  }
-
-  /* simulate backward */
-  X2:Real[N,2];
-  for n in 1..N {
-    auto m' <- clone(m);
-    X2[n,1..2] <- m'.backward();
-  }
-  
-  /* test result */
-  if !pass(X1, X2) {
-    exit(1);
-  }
+  test_conjugacy(m, N, 2);
 }
 
 class TestBetaBernoulli < Model {
   ρ:Random<Real>;
   x:Random<Boolean>;
+  
+  function initialize() {
+    //
+  }
   
   fiber simulate() -> Event {
     α:Real <- simulate_uniform(1.0, 10.0);

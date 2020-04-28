@@ -2,39 +2,22 @@
  * Test Gaussian-Gaussian conjugacy.
  */
 program test_gaussian_gaussian(N:Integer <- 10000) {
-  X1:Real[N,2];
-  X2:Real[N,2];
-  μ_0:Real <- simulate_uniform(-10.0, 10.0);
-  σ2_0:Real <- simulate_uniform(0.0, 10.0);
-  σ2_1:Real <- simulate_uniform(0.0, 10.0);
- 
-  /* simulate forward */
-  for i in 1..N {
-    m:TestGaussianGaussian(μ_0, σ2_0, σ2_1);
-    playDelay.handle(m.simulate());
-    X1[i,1..2] <- m.forward();
-  }
-
-  /* simulate backward */
-  for i in 1..N {
-    m:TestGaussianGaussian(μ_0, σ2_0, σ2_1);
-    playDelay.handle(m.simulate());
-    X2[i,1..2] <- m.backward();
-  }
-  
-  /* test result */
-  if !pass(X1, X2) {
-    exit(1);
-  }
+  m:TestGaussianGaussian;
+  test_conjugacy(m, N, 2);
 }
 
-class TestGaussianGaussian(μ_0:Real, σ2_0:Real, σ2_1:Real) < Model {
-  μ_0:Real <- μ_0;
-  σ2_0:Real <- σ2_0;
-  σ2_1:Real <- σ2_1;
-  
+class TestGaussianGaussian < Model {  
   μ_1:Random<Real>;
   x:Random<Real>;
+  μ_0:Real;
+  σ2_0:Real;
+  σ2_1:Real;
+
+  function initialize() {
+    μ_0 <- simulate_uniform(-10.0, 10.0);
+    σ2_0 <- simulate_uniform(0.0, 10.0);
+    σ2_1 <- simulate_uniform(0.0, 10.0);
+  }
   
   fiber simulate() -> Event {
     μ_1 ~ Gaussian(μ_0, σ2_0);

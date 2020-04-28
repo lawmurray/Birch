@@ -1,34 +1,19 @@
 /*
  * Test analytical solution for addition of bounded discrete random variates.
  */
-program test_add_bounded_discrete_delta(N:Integer <- 10000) {
-  X1:Real[N,2];
-  X2:Real[N,2];
- 
-  /* simulate forward */
-  for n in 1..N {
-    m:TestAddBoundedDiscreteDelta;
-    playDelay.handle(m.simulate());
-    X1[n,1..2] <- m.forward();
-  }
-
-  /* simulate backward */
-  for n in 1..N {
-    m:TestAddBoundedDiscreteDelta;
-    playDelay.handle(m.simulate());
-    X2[n,1..2] <- m.backward();
-  }
-  
-  /* test result */
-  if !pass(X1, X2) {
-    exit(1);
-  }
+program test_add_bounded_discrete_delta(N:Integer <- 10000) { 
+  m:TestAddBoundedDiscreteDelta;
+  test_conjugacy(m, N, 2);
 }
 
 class TestAddBoundedDiscreteDelta < Model {
   x1:Random<Integer>;
   x2:Random<Integer>;
   s:Random<Integer>;
+  
+  function initialize() {
+    //
+  }
   
   fiber simulate() -> Event {
     x1 ~ Uniform(1, 6);

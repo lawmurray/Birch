@@ -3,37 +3,24 @@
  */
 program test_negative_scaled_gamma_exponential(N:Integer <- 10000) {
   m:TestNegativeScaledGammaExponential;
-  playDelay.handle(m.simulate());
- 
-  /* simulate forward */
-  X1:Real[N,2];
-  for n in 1..N {
-    auto m' <- clone(m);
-    X1[n,1..2] <- m'.forward();
-  }
-
-  /* simulate backward */
-  X2:Real[N,2];
-  for n in 1..N {
-    auto m' <- clone(m);
-    X2[n,1..2] <- m'.backward();
-  }
-  
-  /* test result */
-  if !pass(X1, X2) {
-    exit(1);
-  }
+  test_conjugacy(m, N, 2);
 }
 
 class TestNegativeScaledGammaExponential < Model {
   λ:Random<Real>;
   x:Random<Real>;
+
+  a:Real;
+  k:Real;
+  θ:Real;
+  
+  function initialize() {
+    a <- simulate_uniform(1.0, 10.0);
+    k <- simulate_uniform(1.0, 10.0);
+    θ <- simulate_uniform(0.0, 10.0);
+  }
   
   fiber simulate() -> Event {
-    a:Real <- simulate_uniform(1.0, 10.0);
-    k:Real <- simulate_uniform(1.0, 10.0);
-    θ:Real <- simulate_uniform(0.0, 10.0);
-
     λ ~ Gamma(k, θ);
     x ~ Exponential(λ/a);
   }

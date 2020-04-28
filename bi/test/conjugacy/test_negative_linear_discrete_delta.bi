@@ -3,26 +3,7 @@
  */
 program test_negative_linear_discrete_delta(N:Integer <- 10000) {
   m:TestNegativeLinearDiscreteDelta;
-  playDelay.handle(m.simulate());
-     
-  /* simulate forward */
-  X1:Real[N,2];
-  for i in 1..N {
-    auto m' <- clone(m);
-    X1[i,1..2] <- m'.forward();
-  }
-
-  /* simulate backward */
-  X2:Real[N,2];
-  for i in 1..N {
-    auto m' <- clone(m);
-    X2[i,1..2] <- m'.backward();
-  }
-  
-  /* test result */
-  if!pass(X1, X2) {
-    exit(1);
-  }
+  test_conjugacy(m, N, 2);
 }
 
 class TestNegativeLinearDiscreteDelta < Model {
@@ -30,13 +11,21 @@ class TestNegativeLinearDiscreteDelta < Model {
   x:Random<Integer>;
   y:Random<Integer>;
   
+  a:Integer;
+  n:Integer;
+  α:Real;
+  β:Real;
+  c:Integer;
+  
+  function initialize() {
+    a <- 2*simulate_uniform_int(0, 1) - 1;
+    n <- simulate_uniform_int(1, 100);
+    α <- simulate_uniform(0.0, 10.0);
+    β <- simulate_uniform(0.0, 10.0);
+    c <- simulate_uniform_int(0, 100);
+  }
+  
   fiber simulate() -> Event {
-    a:Integer <- 2*simulate_uniform_int(0, 1) - 1;
-    n:Integer <- simulate_uniform_int(1, 100);
-    α:Real <- simulate_uniform(0.0, 10.0);
-    β:Real <- simulate_uniform(0.0, 10.0);
-    c:Integer <- simulate_uniform_int(0, 100);
-
     ρ ~ Beta(α, β);
     x ~ Binomial(n, ρ);
     y ~ Delta(a*x - c);

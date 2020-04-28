@@ -82,7 +82,7 @@ struct raw<T*> {
  *
  * @see https://eigen.tuxfamily.org/dox/TopicPitfalls.html#title3
  */
-template<class T, std::enable_if_t<!std::is_void<T>::value,int> = 0>
+template<class T, std::enable_if_t<std::is_void<T>::value,int> = 0>
 auto canonical(const T& o) {
   assert(false);
   return o;
