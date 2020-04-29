@@ -36,7 +36,7 @@ final class ObserveEvent<Value>(x:Value, p:Distribution<Value>) < Event {
     return handler.handle(this);
   }
   
-  function accept(handler:MoveHandler) -> Real {
+  function accept(handler:MoveHandler) -> Expression<Real>? {
     return handler.handle(this);
   }
 
@@ -44,7 +44,7 @@ final class ObserveEvent<Value>(x:Value, p:Distribution<Value>) < Event {
     return handler.handle(coerce(record), this);
   }
 
-  function accept(record:Record, handler:MoveHandler) -> Real {
+  function accept(record:Record, handler:MoveHandler) -> Expression<Real>? {
     return handler.handle(coerce(record), this);
   }
 }

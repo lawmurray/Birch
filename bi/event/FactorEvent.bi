@@ -10,7 +10,7 @@
  */
 final class FactorEvent(w:Real) < Event {
   /**
-   * Associated (log-)weight.
+   * Associated log-weight.
    */
   w:Real <- w;
   
@@ -30,7 +30,7 @@ final class FactorEvent(w:Real) < Event {
     return handler.handle(this);
   }
   
-  function accept(handler:MoveHandler) -> Real {
+  function accept(handler:MoveHandler) -> Expression<Real>? {
     return handler.handle(this);
   }
 
@@ -38,7 +38,7 @@ final class FactorEvent(w:Real) < Event {
     return handler.handle(coerce(record), this);
   }
 
-  function accept(record:Record, handler:MoveHandler) -> Real {
+  function accept(record:Record, handler:MoveHandler) -> Expression<Real>? {
     return handler.handle(coerce(record), this);
   }
 }

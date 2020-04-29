@@ -25,12 +25,14 @@ abstract class Distribution<Value> < Delay {
   }
   
   function value() -> Value {
-    if !isRealized() {
-      x <- simulate();
-      update(x!);
+    if isRealized() {
+      return x!;
+    } else {
+      auto x <- simulate();
+      update(x);
       unlink();
+      return x;
     }
-    return x!;
   }
   
   /**
@@ -42,14 +44,12 @@ abstract class Distribution<Value> < Delay {
   
   /**
    * Observe a value for a random variate associated with this node,
-   * updating (or downdating) the delayed sampling graph accordingly, and
-   * returning a weight giving the log pdf (or pmf) of that variate under the
-   * distribution.
+   * updating the delayed sampling graph accordingly, and returning a weight
+   * giving the log pdf (or pmf) of that variate under the distribution.
    */
   function observe(x:Value) -> Real {
     assert !this.x?;
     prune();
-    this.x <- x;
     auto w <- logpdf(x);
     if w > -inf {
       update(x);
@@ -60,25 +60,19 @@ abstract class Distribution<Value> < Delay {
   
   /**
    * Observe a value for a random variate associated with this node,
-   * updating (or downdating) the delayed sampling graph accordingly, and
-   * returning a weight giving the log pdf (or pmf) of that variate under the
-   * distribution. Additionally computes gradients for subsequent moves.
+   * updating the delayed sampling graph accordingly, and returning a lazy
+   * expression giving the log pdf (or pmf) of that variate under the
+   * distribution.
    */
-  function observeLazy(x:Expression<Value>) -> Real {
+  function observeLazy(x:Expression<Value>) -> Expression<Real>? {
     assert !this.x?;
     prune();
-    this.x <- x.value();
-    auto ψ <- logpdfLazy(x);
-    auto w <- 0.0;
-    if ψ? {
-      w <- ψ!.value();
-      ψ!.grad(1.0);
+    auto w <- logpdfLazy(x);
+    if w? {
       updateLazy(x);
     } else {
-      w <- logpdf(x.value());
-      if w > -inf {
-        update(x.value());
-      }
+      w <- Boxed(logpdf(x.value()));
+      update(x.value());
     }
     unlink();
     return w;  

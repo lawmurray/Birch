@@ -39,9 +39,8 @@ abstract class Handler {
   function handle(events:Event!, output:Trace) -> Real {
     auto w <- 0.0;
     while w > -inf && events? {
-      auto event <- events!;
-      w <- w + handle(event);
-      output.pushBack(event.record());
+      w <- w + handle(events!);
+      output.pushBack(events!.record());
     }
     return w;
   }
@@ -85,10 +84,9 @@ abstract class Handler {
   function handle(input:Trace, events:Event!, output:Trace) -> Real {
     auto w <- 0.0;
     while w > -inf && events? {
-      auto event <- events!;
-      w <- w + handle(input.here(), event);
+      w <- w + handle(input.here(), events!);
       input.next();
-      output.pushBack(event.record());
+      output.pushBack(events!.record());
     }
     return w;
   }

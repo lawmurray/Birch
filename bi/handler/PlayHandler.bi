@@ -60,19 +60,8 @@ class PlayHandler(delayed:Boolean) < Handler {
     if delayed {
       event.p <- event.p.graft();
     }
-    
-    /* in some situations, e.g. replaying a trace with different parameters,
-     * it is possible that a recorded value is now outside the support of
-     * its prior distribution; handle this situation by treating the recorded
-     * value as an observation at first, then returning a log-weight of -inf
-     * if outside the support of the prior distribution, zero otherwise */
-    auto w <- event.p.observe(record.x);
-    if w > -inf {
-      /* recorded value is within the support of the prior distribution */
-      event.x <- record.x;
-      w <- 0.0;
-    }
-    return w;
+    event.x <- record.x;
+    return 0.0;
   }
 
   function handle<Value>(record:ObserveRecord<Value>,
@@ -94,20 +83,14 @@ class PlayHandler(delayed:Boolean) < Handler {
        * observed values actually match */
       assert record.x.hasValue() && record.x.value() == event.x.value();
       return event.p.observe(event.x.value());
-    } else if record.x.hasValue() {
-      /* if the record has a value, we can set it now, even if its
-       * simulation was delayed when originally played; such delays do not
-       * change the distribution, only the way it is computed */
-      auto w <- event.p.observe(record.x.value());
-      if w > -inf {
-        /* recorded value is within the support of the prior distribution */
-        event.x <- record.x;
-        w <- 0.0;
-      }
-      return w;
     } else {
-      /* ...otherwise it can be eliminated again */
       event.x.assume(event.p);
+      if record.x.hasValue() {
+        /* if the record has a value, we can set it now, even if its
+         * simulation was delayed when originally played; such delays do not
+         * change the distribution, only the way it is computed */
+        event.x.setValue(record.x.value());
+      }
       return 0.0;
     }
   }

@@ -14,10 +14,17 @@ abstract class LazyHandler {
    *
    * Returns: Accumulated log-weight.
    */
-  function handle(events:Event!) -> Real {
-    auto w <- 0.0;
-    while w > -inf && events? {
-      w <- w + handle(events!);
+  function handle(events:Event!) -> Expression<Real>? {
+    w:Expression<Real>?;
+    while events? {
+      auto v <- handle(events!);
+      if v? {
+        if w? {
+          w <- w! + v!;
+        } else {
+          w <- v;
+        }
+      }
     }
     return w;
   }
@@ -30,12 +37,18 @@ abstract class LazyHandler {
    *
    * Returns: Accumulated log-weight.
    */
-  function handle(events:Event!, output:Trace) -> Real {
-    auto w <- 0.0;
-    while w > -inf && events? {
-      auto event <- events!;
-      w <- w + handle(event);
-      output.pushBack(event.record());
+  function handle(events:Event!, output:Trace) -> Expression<Real>? {
+    w:Expression<Real>?;
+    while events? {
+      auto v <- handle(events!);
+      if v? {
+        if w? {
+          w <- w! + v!;
+        } else {
+          w <- v;
+        }
+      }
+      output.pushBack(events!.record());
     }
     return w;
   }
@@ -47,7 +60,7 @@ abstract class LazyHandler {
    *
    * Returns: Log-weight.
    */
-  abstract function handle(event:Event) -> Real;
+  abstract function handle(event:Event) -> Expression<Real>?;
 
   /**
    * Handle a sequence of events with an input trace.
@@ -57,10 +70,17 @@ abstract class LazyHandler {
    *
    * Returns: Accumulated log-weight.
    */
-  function handle(input:Trace, events:Event!) -> Real {
-    auto w <- 0.0;
-    while w > -inf && events? {
-      w <- w + handle(input.here(), events!);
+  function handle(input:Trace, events:Event!) -> Expression<Real>? {
+    w:Expression<Real>?;
+    while events? {
+      auto v <- handle(input.here(), events!);
+      if v? {
+        if w? {
+          w <- w! + v!;
+        } else {
+          w <- v;
+        }
+      }
       input.next();
     }
     return w;
@@ -76,13 +96,20 @@ abstract class LazyHandler {
    *
    * Returns: Accumulated log-weight.
    */
-  function handle(input:Trace, events:Event!, output:Trace) -> Real {
-    auto w <- 0.0;
-    while w > -inf && events? {
-      auto event <- events!;
-      w <- w + handle(input.here(), event);
+  function handle(input:Trace, events:Event!, output:Trace) ->
+      Expression<Real>? {
+    w:Expression<Real>?;
+    while events? {
+      auto v <- handle(input.here(), events!);
+      if v? {
+        if w? {
+          w <- w! + v!;
+        } else {
+          w <- v;
+        }
+      }
       input.next();
-      output.pushBack(event.record());
+      output.pushBack(events!.record());
     }
     return w;
   }
@@ -95,5 +122,5 @@ abstract class LazyHandler {
    *
    * Returns: Log-weight.
    */
-  abstract function handle(record:Record, event:Event) -> Real;
+  abstract function handle(record:Record, event:Event) -> Expression<Real>?;
 }
