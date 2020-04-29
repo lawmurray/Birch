@@ -43,7 +43,7 @@ class MoveHandler(delayed:Boolean, scale:Real) < LazyHandler {
     if delayed {
       event.p <- event.p.graft();
     }
-    return event.p.observeLazy(event.x);
+    return event.p.observeLazy(Boxed(event.x));
   }
 
   function handle<Value>(event:AssumeEvent<Value>) -> Expression<Real>? {
@@ -59,7 +59,7 @@ class MoveHandler(delayed:Boolean, scale:Real) < LazyHandler {
   }
 
   function handle(event:FactorEvent) -> Expression<Real>? {
-    return Boxed(event.w);  ///@todo Support lazy factor
+    return event.w;
   }
 
   function handle<Value>(record:SimulateRecord<Value>,
@@ -109,7 +109,7 @@ class MoveHandler(delayed:Boolean, scale:Real) < LazyHandler {
   function handle(record:FactorRecord, event:FactorEvent) ->
       Expression<Real>? {
     /* factor events are replayed in the same way they are played */
-    return Boxed(event.w);  ///@todo Support lazy factor
+    return event.w;
   }
 }
 

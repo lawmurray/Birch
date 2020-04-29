@@ -1,9 +1,9 @@
 /**
  * Record of an ObserveEvent.
  *
- * - v: Observed value.
+ * - x: Observed value.
  */
-final class ObserveRecord<Value>(v:Value) < Record {
+final class ObserveRecord<Value>(x:Value) < Record {
   /**
    * Observed value.
    */
@@ -13,7 +13,7 @@ final class ObserveRecord<Value>(v:Value) < Record {
 /**
  * Create an ObserveRecord.
  */
-function ObserveRecord<Value>(v:Value) -> ObserveRecord<Value> {
-  evt:ObserveRecord<Value>(v);
+function ObserveRecord<Value>(x:Value) -> ObserveRecord<Value> {
+  evt:ObserveRecord<Value>(x);
   return evt;
 }

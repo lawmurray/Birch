@@ -8,14 +8,14 @@
  * <object type="image/svg+xml" data="../../figs/Event.svg"></object>
  * </center>
  */
-final class FactorEvent(w:Real) < Event {
+final class FactorEvent(w:Expression<Real>) < Event {
   /**
    * Associated log-weight.
    */
-  w:Real <- w;
+  w:Expression<Real> <- w;
   
   function record() -> Record {
-    return FactorRecord(w);
+    return FactorRecord();
   }
 
   function coerce(record:Record) -> FactorRecord {
@@ -46,7 +46,14 @@ final class FactorEvent(w:Real) < Event {
 /**
  * Create a FactorEvent.
  */
-function FactorEvent(w:Real) -> FactorEvent {
+function FactorEvent(w:Expression<Real>) -> FactorEvent {
   evt:FactorEvent(w);
   return evt;
+}
+
+/**
+ * Create a FactorEvent.
+ */
+function FactorEvent(w:Real) -> FactorEvent {
+  return FactorEvent(Boxed(w));
 }

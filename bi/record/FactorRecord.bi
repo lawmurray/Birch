@@ -1,19 +1,14 @@
 /**
  * Record of a FactorEvent.
- *
- * - w: Log-weight.
  */
-final class FactorRecord(w:Real) < Record {
-  /**
-   * Log-weight.
-   */
-  w:Real <- w;
+final class FactorRecord < Record {
+  //
 }
 
 /**
  * Create a FactorRecord.
  */
-function FactorRecord(w:Real) -> FactorRecord {
-  evt:FactorRecord(w);
+function FactorRecord() -> FactorRecord {
+  evt:FactorRecord;
   return evt;
 }

@@ -52,7 +52,7 @@ class PlayHandler(delayed:Boolean) < Handler {
   }
 
   function handle(event:FactorEvent) -> Real {
-    return event.w;
+    return event.w.value();
   }
 
   function handle<Value>(record:SimulateRecord<Value>,
@@ -97,7 +97,7 @@ class PlayHandler(delayed:Boolean) < Handler {
 
   function handle(record:FactorRecord, event:FactorEvent) -> Real {
     /* factor events are replayed in the same way they are played */
-    return event.w;
+    return event.w.value();
   }
 }
 
