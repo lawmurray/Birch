@@ -23,13 +23,13 @@ class AliveParticleFilter < ParticleFilter {
     parallel for n in 1..nparticles + 1 {
       if n <= nparticles {
         x[n] <- clone(x0[a[n]]);
-        w[n] <- play.handle(x[n].simulate(t));
+        w[n] <- play.handle(x[n].m.simulate(t));
         p[n] <- 1;
         while w[n] == -inf {  // repeat until weight is positive
           a[n] <- global.ancestor(w0);
           x[n] <- clone(x0[a[n]]);
           p[n] <- p[n] + 1;
-          w[n] <- play.handle(x[n].simulate(t));
+          w[n] <- play.handle(x[n].m.simulate(t));
         }
       } else {
         /* propagate and weight until one further acceptance, which is
@@ -41,9 +41,20 @@ class AliveParticleFilter < ParticleFilter {
           auto a' <- global.ancestor(w0);
           auto x' <- clone(x0[a']);
           p[n] <- p[n] + 1;
-          w' <- play.handle(x'.simulate(t));
+          w' <- play.handle(x'.m.simulate(t));
         } while w' == -inf;  // repeat until weight is positive
       }
+    }
+  }
+  
+  override function resample() {
+    if ess <= trigger*nparticles {
+      /* compute ancestor indices, but don't copy, step() handles this */
+      a <- resample_systematic(w);
+      w <- vector(0.0, nparticles);
+    } else {
+      /* normalize weights to sum to nparticles */
+      w <- w - lsum + log(Real(nparticles));
     }
   }
   

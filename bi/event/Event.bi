@@ -15,7 +15,7 @@ abstract class Event {
   /**
    * Accept an event handler.
    */
-  abstract function accept(handler:MoveHandler) -> Expression<Real>?;
+  abstract function accept(handler:MoveHandler) -> Real;
 
   /**
    * Accept an event handler.
@@ -25,8 +25,7 @@ abstract class Event {
   /**
    * Accept an event handler.
    */
-  abstract function accept(record:Record, handler:MoveHandler) ->
-      Expression<Real>?;
+  abstract function accept(record:Record, handler:MoveHandler) -> Real;
 
   /**
    * Make a record for the event, in order to enter into a trace.

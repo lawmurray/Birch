@@ -38,7 +38,7 @@ final class AssumeEvent<Value>(x:Random<Value>, p:Distribution<Value>) <
     return handler.handle(this);
   }
   
-  function accept(handler:MoveHandler) -> Expression<Real>? {
+  function accept(handler:MoveHandler) -> Real {
     return handler.handle(this);
   }
 
@@ -46,7 +46,7 @@ final class AssumeEvent<Value>(x:Random<Value>, p:Distribution<Value>) <
     return handler.handle(coerce(record), this);
   }
 
-  function accept(record:Record, handler:MoveHandler) -> Expression<Real>? {
+  function accept(record:Record, handler:MoveHandler) -> Real {
     return handler.handle(coerce(record), this);
   }
 }

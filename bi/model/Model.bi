@@ -8,11 +8,6 @@
  */
 class Model {
   /**
-   * Trace.
-   */
-  trace:Trace;
-
-  /**
    * Size. This is the number of steps of `simulate(Integer)` to be performed
    * after the initial call to `simulate()`.
    */

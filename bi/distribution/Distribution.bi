@@ -212,7 +212,7 @@ abstract class Distribution<Value> < Delay {
    * - x: The value.
    */
   function updateLazy(x:Expression<Value>) {
-    assert false;
+    //
   }
 
   /**

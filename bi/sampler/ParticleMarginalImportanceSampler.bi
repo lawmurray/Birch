@@ -18,7 +18,7 @@ class ParticleMarginalImportanceSampler < ParticleSampler {
     }
 
     /* draw a single sample and weight with normalizing constant estimate */
-    x <- filter.x[ancestor(filter.w)];
+    x <- filter.x[ancestor(filter.w)].m;
     w <- filter.lnormalize;
   }
 }

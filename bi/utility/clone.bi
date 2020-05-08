@@ -13,7 +13,17 @@ function clone<Type>(o:Type) -> Type {
  * - o: Source array.
  */
 function clone<Type>(o:Type[_]) -> Type[_] {
-  return transform<Type>(o, @(x:Type) -> Type { return clone(x); });
+  /* use a C++ lambda function with reference capture here, rather than a
+   * Birch lambda function with copy capture, to avoid incrementing the
+   * reference count on `o`; this can have significant performance
+   * implications around the single-reference optimization */
+  cpp{{
+  auto l = [&](int64_t n) {
+      return libbirch::clone(o.get(libbirch::make_slice(n)));
+    };
+  return libbirch::make_array_from_lambda<Type>(
+      libbirch::make_shape(length(o)), l);
+  }}
 }
 
 /**
@@ -28,7 +38,9 @@ function clone<Type>(o:Type, length:Integer) -> Type[_] {
    * reference count on `o`; this can have significant performance
    * implications around the single-reference optimization */
   cpp{{
-  auto l = [&](int64_t n) { return libbirch::clone(o); };
+  auto l = [&](int64_t n) {
+      return libbirch::clone(o);
+    };
   return libbirch::make_array_from_lambda<Type>(
       libbirch::make_shape(length), l);
   }}

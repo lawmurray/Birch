@@ -2,6 +2,13 @@
  * Random variate.
  *
  * - Value: Value type.
+ *
+ * Random objects, like all [Expression](../../classes/Expression/) objects,
+ * are stateful. Random objects in the pilot state are considered
+ * *variables*, meaning that a call to `grad()` will compute gradients with
+ * respect to them, and a further call to `move()` will apply a Markov kernel
+ * to update their value. Random objects in the value state are considered
+ * *constants*.
  */
 final class Random<Value> < Expression<Value> {  
   /**

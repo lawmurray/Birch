@@ -10,7 +10,7 @@ class ParticleFilter {
   /**
    * Particles.
    */
-  x:Model[_];
+  x:Particle[_];
 
   /**
    * Log weights.
@@ -84,14 +84,21 @@ class ParticleFilter {
   }
   
   /**
+   * Create a particle of the type required for this filter.
+   */
+  function particle(archetype:Model) -> Particle {
+    return Particle(archetype);
+  }
+  
+  /**
    * Initialize filter.
    *
-   * - archetype: Archetype. This is an instance of the appropriate model class
-   *   that may have one more random variables fixed to known values,
+   * - archetype: Archetype. This is an instance of the appropriate model
+   *   class that may have one more random variables fixed to known values,
    *   representing the inference problem (or target distribution).
    */
   function filter(archetype:Model) {
-    x <- clone(archetype, nparticles);
+    x <- clone(particle(archetype), nparticles);
     w <- vector(0.0, nparticles);
     a <- iota(1, nparticles);
     ess <- nparticles;
@@ -128,7 +135,7 @@ class ParticleFilter {
   function start() {
     auto play <- PlayHandler(delayed);
     parallel for n in 1..nparticles {
-      w[n] <- play.handle(x[n].simulate());
+      w[n] <- play.handle(x[n].m.simulate());
     }  
   }
   
@@ -138,7 +145,7 @@ class ParticleFilter {
   function step(t:Integer) {
     auto play <- PlayHandler(delayed);
     parallel for n in 1..nparticles {
-      w[n] <- w[n] + play.handle(x[n].simulate(t));
+      w[n] <- w[n] + play.handle(x[n].m.simulate(t));
     }
   }
   
@@ -157,22 +164,15 @@ class ParticleFilter {
   function resample() {
     if ess <= trigger*nparticles {
       a <- resample_systematic(w);
-      copy();
       w <- vector(0.0, nparticles);
+      dynamic parallel for n in 1..nparticles {
+        if a[n] != n {
+          x[n] <- clone(x[a[n]]);
+        }
+      }
     } else {
       /* normalize weights to sum to nparticles */
       w <- w - lsum + log(Real(nparticles));
-    }
-  }
-
-  /**
-   * Copy particles during resample.
-   */
-  function copy() {
-    dynamic parallel for n in 1..nparticles {
-      if a[n] != n {
-        x[n] <- clone(x[a[n]]);
-      }
     }
   }
 

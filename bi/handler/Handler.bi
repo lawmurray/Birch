@@ -31,12 +31,14 @@ abstract class Handler {
   /**
    * Handle a sequence of events and record them in an output trace.
    *
+   * - Container: Type supporting `pushBack(Record)`.
+   *
    * - events: Event sequence.
    * - trace: Output trace.
    *
    * Returns: Accumulated log-weight.
    */
-  function handle(events:Event!, output:Trace) -> Real {
+  final function handle<Container>(events:Event!, output:Container) -> Real {
     auto w <- 0.0;
     while w > -inf && events? {
       w <- w + handle(events!);
@@ -75,13 +77,16 @@ abstract class Handler {
    * Handle a sequence of events with an input trace and record them in an
    * output trace.
    *
+   * - Container: Type supporting `pushBack(Record)`.
+   *
    * - input: Input trace.
    * - events: Event sequence.
    * - output: Output trace.
    *
    * Returns: Accumulated log-weight.
    */
-  function handle(input:Trace, events:Event!, output:Trace) -> Real {
+  final function handle<Container>(input:Trace, events:Event!,
+      output:Container) -> Real {
     auto w <- 0.0;
     while w > -inf && events? {
       w <- w + handle(input.here(), events!);

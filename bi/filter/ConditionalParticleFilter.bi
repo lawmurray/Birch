@@ -35,6 +35,10 @@ class ConditionalParticleFilter < ParticleFilter {
    */
   alreadyInitialized:Boolean <- false;
 
+  function particle(archetype:Model) -> Particle {
+    return ConditionalParticle(archetype);
+  }
+
   override function filter(archetype:Model) {
     super.filter(archetype);
     b <- 1;
@@ -55,7 +59,7 @@ class ConditionalParticleFilter < ParticleFilter {
     dynamic parallel for n in 1..nparticles {
       auto x' <- clone(x[n]);
       auto r' <- clone(r!);
-      w'[n] <- w'[n] + play.handle(r', x'.simulate(t));
+      w'[n] <- w'[n] + play.handle(r', x'.m.simulate(t));
       ///@todo Don't assume Markov model here
     }
     b <- global.ancestor(w');
@@ -65,10 +69,11 @@ class ConditionalParticleFilter < ParticleFilter {
     auto play <- PlayHandler(delayed);
     if !alreadyInitialized {
       parallel for n in 1..nparticles {
+        auto x <- ConditionalParticle?(this.x[n])!;
         if r? && n == b {
-          w[n] <- play.handle(r!, x[n].simulate(), x[n].trace);
+          w[n] <- play.handle(r!, x.m.simulate(), x.trace);
         } else {
-          w[n] <- play.handle(x[n].simulate(), x[n].trace);
+          w[n] <- play.handle(x.m.simulate(), x.trace);
         }
       }
     }
@@ -77,10 +82,11 @@ class ConditionalParticleFilter < ParticleFilter {
   override function step(t:Integer) {
     auto play <- PlayHandler(delayed);
     parallel for n in 1..nparticles {
+        auto x <- ConditionalParticle?(this.x[n])!;
       if r? && n == b {
-        w[n] <- w[n] + play.handle(r!, x[n].simulate(t), x[n].trace);
+        w[n] <- w[n] + play.handle(r!, x.m.simulate(t), x.trace);
       } else {
-        w[n] <- w[n] + play.handle(x[n].simulate(t), x[n].trace);
+        w[n] <- w[n] + play.handle(x.m.simulate(t), x.trace);
       }
     }
   }
@@ -92,8 +98,12 @@ class ConditionalParticleFilter < ParticleFilter {
       } else {
         a <- resample_multinomial(w);
       }
-      copy();
       w <- vector(0.0, nparticles);
+      dynamic parallel for n in 1..nparticles {
+        if a[n] != n {
+          x[n] <- clone(x[a[n]]);
+        }
+      }
     } else {
       /* normalize weights to sum to nparticles */
       w <- w - lsum + log(Real(nparticles));

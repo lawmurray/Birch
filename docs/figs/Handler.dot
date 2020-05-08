@@ -7,10 +7,8 @@ digraph {
 
   Handler [href="../classes/Handler/",target="_top"]
   PlayHandler [href="../classes/PlayHandler/",target="_top"]
-
-  LazyHandler [href="../classes/LazyHandler/",target="_top"]
   MoveHandler [href="../classes/MoveHandler/",target="_top"]
 
   PlayHandler -> Handler
-  MoveHandler -> LazyHandler
+  MoveHandler -> Handler
 }

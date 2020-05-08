@@ -1,5 +1,5 @@
 /**
- * Event handler for gradient-based moves.
+ * Event handler for MoveParticleFilter.
  *
  * - delayed: Enable delayed sampling?
  * - scale: Scale of moves.
@@ -9,7 +9,7 @@
  * <object type="image/svg+xml" data="../../figs/Handler.svg"></object>
  * </center>
  */
-class MoveHandler(delayed:Boolean, scale:Real) < LazyHandler {
+class MoveHandler(delayed:Boolean, scale:Real) < Handler {
   /**
    * Is delayed sampling enabled?
    */
@@ -19,60 +19,91 @@ class MoveHandler(delayed:Boolean, scale:Real) < LazyHandler {
    * Scale of moves.
    */
   scale:Real <- scale;
+  
+  /**
+   * Deferred log-likelihood.
+   */
+  z:Expression<Real>?;
 
-  final override function handle(event:Event) -> Expression<Real>? {
+  final override function handle(event:Event) -> Real {
     /* double dispatch to one of the more specific handle() functions */
     return event.accept(this);
   }
 
-  final override function handle(record:Record, event:Event) ->
-      Expression<Real>? {
+  final override function handle(record:Record, event:Event) -> Real {
     /* double dispatch to one of the more specific handle() functions */
     return event.accept(record, this);
   }
 
-  function handle<Value>(event:SimulateEvent<Value>) -> Expression<Real>? {
+  function handle<Value>(event:SimulateEvent<Value>) -> Real {
     if delayed {
       event.p <- event.p.graft();
     }
     event.x <- event.p.value();
-    return nil;
+    return 0.0;
   }
 
-  function handle<Value>(event:ObserveEvent<Value>) -> Expression<Real>? {
+  function handle<Value>(event:ObserveEvent<Value>) -> Real {
     if delayed {
       event.p <- event.p.graft();
     }
-    return event.p.observeLazy(Boxed(event.x));
+    auto w <- event.p.observeLazy(Boxed(event.x));
+    if w? {
+      if z? {
+        z <- z! + w!;
+      } else {
+        z <- w;
+      }
+      return 0.0;
+    } else {
+      /* lazy observe not supported for this distribution type */
+      return event.p.observe(event.x);
+    }
   }
 
-  function handle<Value>(event:AssumeEvent<Value>) -> Expression<Real>? {
+  function handle<Value>(event:AssumeEvent<Value>) -> Real {
     if delayed {
       event.p <- event.p.graft();
     }
     if event.x.hasValue() {
-      return event.p.observeLazy(event.x);
+      auto w <- event.p.observeLazy(event.x);
+      if w? {
+        if z? {
+          z <- z! + w!;
+        } else {
+          z <- w;
+        }
+        return 0.0;
+      } else {
+        /* lazy observe not supported for this distribution type */
+        return event.p.observe(event.x.value());
+      }
     } else {
       event.x.assume(event.p);
-      return nil;
+      return 0.0;
     }
   }
 
-  function handle(event:FactorEvent) -> Expression<Real>? {
-    return event.w;
+  function handle(event:FactorEvent) -> Real {
+    if z? {
+      z <- z! + event.w;
+    } else {
+      z <- event.w;
+    }
+    return 0.0;
   }
 
   function handle<Value>(record:SimulateRecord<Value>,
-      event:SimulateEvent<Value>) -> Expression<Real>? {
+      event:SimulateEvent<Value>) -> Real {
     if delayed {
       event.p <- event.p.graft();
     }
     event.x <- record.x;
-    return nil;
+    return 0.0;
   }
 
   function handle<Value>(record:ObserveRecord<Value>,
-      event:ObserveEvent<Value>) -> Expression<Real>? {
+      event:ObserveEvent<Value>) -> Real {
     /* observe events are replayed in the same way they are played, it's
      * only necessary to check that the observed values actually match */
     assert record.x == event.x;
@@ -80,7 +111,7 @@ class MoveHandler(delayed:Boolean, scale:Real) < LazyHandler {
   }
 
   function handle<Value>(record:AssumeRecord<Value>,
-      event:AssumeEvent<Value>) -> Expression<Real>? {
+      event:AssumeEvent<Value>) -> Real {
     if delayed {
       event.p <- event.p.graft();
     }
@@ -89,27 +120,33 @@ class MoveHandler(delayed:Boolean, scale:Real) < LazyHandler {
        * same way they are played, it's only necessary to check that the
        * observed values actually match */
       assert record.x.hasValue() && record.x.value() == event.x.value();
-      return event.p.observeLazy(event.x);
+      auto w <- event.p.observeLazy(event.x);
+      if w? {
+        if z? {
+          z <- z! + w!;
+        } else {
+          z <- w;
+        }
+        return 0.0;
+      } else {
+        /* lazy observe not supported for this distribution type */
+        return event.p.observe(event.x.value());
+      }
     } else {
       event.x.assume(event.p);    
       if record.x.hasValue() {
         /* if the record has a value, we can set it now, even if its
          * simulation was delayed when originally played; such delays do not
          * change the distribution, only the way it is computed */
-        if record.x.dfdx? {
-          event.x.setPilot(simulate_propose(record.x.x!, record.x.dfdx!, scale));
-        } else {
-          event.x.setValue(record.x.value());
-        }
+        event.x.setValue(record.x.value());
       }
-      return nil;
+      return 0.0;
     }
   }
 
-  function handle(record:FactorRecord, event:FactorEvent) ->
-      Expression<Real>? {
+  function handle(record:FactorRecord, event:FactorEvent) -> Real {
     /* factor events are replayed in the same way they are played */
-    return event.w;
+    return handle(event);
   }
 }
 
