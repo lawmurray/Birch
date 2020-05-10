@@ -23,7 +23,7 @@ class MoveParticleFilter < ParticleFilter {
 
   override function start() {
     parallel for n in 1..nparticles {
-      auto play <- MoveHandler(delayed, scale);
+      auto play <- MoveHandler(delayed);
       auto x <- MoveParticle?(this.x[n])!;
       w[n] <- w[n] + play.handle(x.m.simulate());
       w[n] <- w[n] + x.add(play.z);
@@ -32,7 +32,7 @@ class MoveParticleFilter < ParticleFilter {
 
   override function step(t:Integer) {
     parallel for n in 1..nparticles {
-      auto play <- MoveHandler(delayed, scale/(t + 1.0));
+      auto play <- MoveHandler(delayed);
       auto x <- MoveParticle?(this.x[n])!;
       w[n] <- w[n] + play.handle(x.m.simulate(t));
       w[n] <- w[n] + x.add(play.z);
@@ -76,11 +76,13 @@ class MoveParticleFilter < ParticleFilter {
       }
       
       /* move particles */
+      κ:LangevinKernel;
+      //κ.scale <- scale/(t + 1.0);
       parallel for n in 1..nparticles {
         auto x <- MoveParticle?(this.x[n])!;
         for m in 1..nmoves {
           auto x' <- clone(x);
-          x'.move();
+          x'.move(κ);
           ratio:Real/* <- ratio(x', x, scale) */;          
           if log(simulate_uniform(0.0, 1.0)) <= x'.π - x.π + ratio {
             x <- x';  // accept

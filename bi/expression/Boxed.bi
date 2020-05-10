@@ -18,7 +18,7 @@ final class Boxed<Value> < Expression<Value> {
     //
   }
 
-  override function doMove() {
+  override function doMove(κ:Kernel) {
     //
   }
 

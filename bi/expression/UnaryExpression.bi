@@ -19,8 +19,8 @@ abstract class UnaryExpression<Argument,Value>(single:Expression<Argument>) <
     x <- computeValue(single.pilot());
   }
 
-  final override function doMove() {
-    x <- computeValue(single.move());
+  final override function doMove(κ:Kernel) {
+    x <- computeValue(single.move(κ));
   }
   
   final override function doGrad() {

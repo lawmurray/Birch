@@ -25,8 +25,8 @@ abstract class BinaryExpression<Left,Right,Value>(left:Expression<Left>,
     x <- computeValue(left.pilot(), right.pilot());
   }
 
-  final override function doMove() {
-    x <- computeValue(left.move(), right.move());
+  final override function doMove(κ:Kernel) {
+    x <- computeValue(left.move(κ), right.move(κ));
   }
   
   final override function doGrad() {

@@ -118,7 +118,7 @@ final class Random<Value> < Expression<Value> {
     }
   }
 
-  override function doMove() {
+  override function doMove(κ:Kernel) {
     if p!.isRealized() {
       /* distribution was forced to realize by its parent; this must be
        * treated as a constant */
@@ -127,7 +127,7 @@ final class Random<Value> < Expression<Value> {
       dfdx <- nil;
       p <- nil;
     } else {
-      x <- p!.simulateLazy();
+      x <- κ.simulate(this);
     }
   }
 

@@ -173,15 +173,17 @@ abstract class Expression<Value> < DelayExpression {
    *
    * Pre-condition: The expression is in the pilot or gradient state.
    *
+   * - κ: Markov kernel.
+   *
    * Returns: The evaluated value of the expression.
    *
    * Post-condition: The expression is in the pilot state.
    */
-  final function move() -> Value {
+  final function move(κ:Kernel) -> Value {
     assert state == EXPRESSION_PILOT || state == EXPRESSION_GRADIENT;
     count <- count + 1;
     if state == EXPRESSION_GRADIENT {
-      doMove();
+      doMove(κ);
       state <- EXPRESSION_PILOT;
     }
     assert state == EXPRESSION_PILOT;
@@ -191,7 +193,7 @@ abstract class Expression<Value> < DelayExpression {
   /*
    * Move and re-evaluate; overridden by derived classes.
    */
-  abstract function doMove();
+  abstract function doMove(κ:Kernel);
 
   /**
    * Evaluate gradients. Gradients are computed with respect to all

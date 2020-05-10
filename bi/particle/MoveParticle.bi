@@ -81,13 +81,15 @@ class MoveParticle(m:Model) < Particle(m) {
   
   /**
    * Move the particle.
+   *
+   * - κ: Markov kernel.
    */
-  function move() {
+  function move(κ:Kernel) {
     π <- 0.0;
     n <- 0;
     for t in 1..z.size() {
-      π <- π + z.get(t).move();
-      π <- π + p.get(t).move();
+      π <- π + z.get(t).move(κ);
+      π <- π + p.get(t).move(κ);
     }
     grad();
   }

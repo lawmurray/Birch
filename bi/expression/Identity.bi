@@ -23,7 +23,7 @@ final class Identity<Value>(n:Integer) < Expression<Value> {
     x <- identity(n);
   }
 
-  override function doMove() {
+  override function doMove(κ:Kernel) {
     //
   }
 

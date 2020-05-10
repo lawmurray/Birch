@@ -2,23 +2,17 @@
  * Event handler for MoveParticleFilter.
  *
  * - delayed: Enable delayed sampling?
- * - scale: Scale of moves.
  *
  * The Handler class hierarchy is as follows:
  * <center>
  * <object type="image/svg+xml" data="../../figs/Handler.svg"></object>
  * </center>
  */
-class MoveHandler(delayed:Boolean, scale:Real) < Handler {
+class MoveHandler(delayed:Boolean) < Handler {
   /**
    * Is delayed sampling enabled?
    */
   delayed:Boolean <- delayed;
-
-  /**
-   * Scale of moves.
-   */
-  scale:Real <- scale;
   
   /**
    * Deferred log-likelihood.
@@ -153,7 +147,7 @@ class MoveHandler(delayed:Boolean, scale:Real) < Handler {
 /**
  * Create a MoveHandler.
  */
-function MoveHandler(delayed:Boolean, scale:Real) -> MoveHandler {
-  o:MoveHandler(delayed, scale);
+function MoveHandler(delayed:Boolean) -> MoveHandler {
+  o:MoveHandler(delayed);
   return o;
 }
