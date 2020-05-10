@@ -101,10 +101,9 @@ abstract class Expression<Value> < DelayExpression {
   final function value() -> Value {
     if !x? {
       doValue();
-      state <- EXPRESSION_VALUE;
       assert x?;
     }
-    assert state == EXPRESSION_VALUE;
+    state <- EXPRESSION_VALUE;
     return x!;
   }
   
