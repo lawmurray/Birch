@@ -127,7 +127,7 @@ final class Random<Value> < Expression<Value> {
       dfdx <- nil;
       p <- nil;
     } else {
-      x <- κ.simulate(this);
+      x <- κ.move(this);
     }
   }
 
