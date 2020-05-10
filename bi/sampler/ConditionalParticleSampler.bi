@@ -1,5 +1,5 @@
 /**
- * Abstract particle sampler that requires a conditional particle filter.
+ * Particle sampler that requires a conditional particle filter.
  *
  * The ParticleSampler class hierarchy is as follows:
  * <center>

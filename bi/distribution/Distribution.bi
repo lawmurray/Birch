@@ -3,7 +3,7 @@
  *
  * - Value: Value type.
  */
-abstract class Distribution<Value> < Delay {
+abstract class Distribution<Value> < DelayDistribution {
   /**
    * Realized value, if the distribution's parent on the delayed sampling
    * $M$-path has forced its realization.

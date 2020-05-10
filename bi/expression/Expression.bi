@@ -1,28 +1,3 @@
-/*
- * Expression state type.
- */
-type ExpressionState = Integer8;
-
-/*
- * Initial state for an Expression.
- */
-EXPRESSION_INITIAL:ExpressionState <- 0;
-
-/*
- * Pilot state for an Expression.
- */
-EXPRESSION_PILOT:ExpressionState <- 1;
-
-/*
- * Gradient state for an Expression.
- */
-EXPRESSION_GRADIENT:ExpressionState <- 2;
-
-/*
- * Value state for an Expression.
- */
-EXPRESSION_VALUE:ExpressionState <- 3;
-
 /**
  * Lazy expression.
  *
@@ -50,7 +25,7 @@ EXPRESSION_VALUE:ExpressionState <- 3;
  * `move()` will apply a Markov kernel to update its value. Random objects in
  * the value state are considered *constants*.
  */
-abstract class Expression<Value> {  
+abstract class Expression<Value> < DelayExpression {  
   /**
    * Memoized value.
    */
@@ -68,11 +43,6 @@ abstract class Expression<Value> {
    * shared.
    */
   count:Integer <- 0;
-  
-  /**
-   * Expression state.
-   */
-  state:ExpressionState <- EXPRESSION_INITIAL;
 
   /**
    * Value assignment. Once an expression has been assigned a value, it is
@@ -222,7 +192,7 @@ abstract class Expression<Value> {
    * the computation. The variable (Random object) that encodes $x_0$ keeps
    * the final result.
    */
-  function grad(d:Value) {
+  final function grad(d:Value) {
     assert state == EXPRESSION_PILOT;
     assert count >= 1;
     
@@ -243,7 +213,7 @@ abstract class Expression<Value> {
   }
   
   /*
-   * Evaluate gradient; overridden by derived classes;
+   * Evaluate gradient; overridden by derived classes.
    */
   abstract function doGrad(d:Value);
 
@@ -258,7 +228,7 @@ abstract class Expression<Value> {
    *
    * Post-condition: The expression is in the pilot state.
    */
-  function move() -> Value {
+  final function move() -> Value {
     assert state == EXPRESSION_PILOT || state == EXPRESSION_GRADIENT;
     count <- count + 1;
     if state == EXPRESSION_GRADIENT {
@@ -272,29 +242,9 @@ abstract class Expression<Value> {
   /*
    * Move and re-evaluate; overridden by derived classes.
    */
-  abstract function doMove();
-
-  /**
-   * Construct a lazy expression for the log-prior. This examines the
-   * entire expression for moveable variables (Random objects) that have not
-   * already been included in a log-prior expression (as indicated by a flag
-   * in each Random object), and constructs a lazy expression that evaluates
-   * to the log-prior.
-   *
-   * Pre-condition: the expression is in the pilot or gradient state.
-   *
-   * Returns: the log-prior expression, or nil if no such Random objectss
-   * exist, which may be interpreted as the log-prior evaluating to zero.
-   */
-  function prior() -> Expression<Real>? {
-    assert state == EXPRESSION_PILOT || state == EXPRESSSION_GRADIENT;
-    return doPrior();
+  function doMove() {
+    //
   }
-
-  /*
-   * Evaluate prior; overridden by derived classes;
-   */
-  abstract function doPrior() -> Expression<Real>?;
 
   /**
    * Set the value.
@@ -315,32 +265,7 @@ abstract class Expression<Value> {
    * Random).
    */
   function doSetValue() {
-    assert false;
-  }
-
-  /**
-   * Propose a pilot value.
-   *
-   * - x: The value.
-   *
-   * Pre-condition: The expression is in the initial state.
-   *
-   * Post-condition: The expression is in the pilot state.
-   */
-  final function setPilot(x:Value) {
-    assert state == EXPRESSION_INITIAL;
-    assert !this.x?;
-    this.x <- x;
-    doSetPilot();
-    state <- EXPRESSION_PILOT;
-  }
-  
-  /*
-   * Propose a pilot value; overridden by derived classes if supported
-   * (notably Random).
-   */
-  function doSetPilot() {
-    assert false;
+    //
   }
 
   /**

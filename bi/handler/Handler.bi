@@ -5,7 +5,7 @@
 class Trace = Tape<Record>;
 
 /**
- * Abstract event handler that eagerly computes weights.
+ * Event handler that eagerly computes weights.
  *
  * The Handler class hierarchy is as follows:
  * <center>

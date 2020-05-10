@@ -1,5 +1,5 @@
 /**
- * Abstract event emitted during the execution of a model.
+ * Event emitted during the execution of a model.
  *
  * The Event class hierarchy is as follows:
  * <center>

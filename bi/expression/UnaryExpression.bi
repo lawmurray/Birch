@@ -1,5 +1,5 @@
 /**
- * Abstract lazy unary expression.
+ * Unary expression.
  *
  * - Argument: Argument type.
  * - Value: Value type.

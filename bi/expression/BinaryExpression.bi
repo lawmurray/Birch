@@ -1,5 +1,5 @@
 /**
- * Abstract lazy binary expression.
+ * Binary expression.
  *
  * - Left: Left argument type.
  * - Right: Right argument type.

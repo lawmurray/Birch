@@ -1,5 +1,5 @@
 /**
- * Abstract particle sampler.
+ * Particle sampler.
  *
  * The ParticleSampler class hierarchy is as follows:
  * <center>

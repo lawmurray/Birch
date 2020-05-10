@@ -1,12 +1,14 @@
 /**
- * Interface for distributions that may appear as nodes on the delayed
- * sampling $M$-path.
+ * Value-agnostic interface for distributions. Provides essential
+ * functionality for *delayed sampling*, an implementation of automatic
+ * marginalization (variable elimination, Rao--Blackwellization) and
+ * automatic conjugacy.
  */
-abstract class Delay {
+abstract class DelayDistribution {
   /**
    * Child, if one exists and it is on the $M$-path.
    */
-  child:Delay&?;
+  child:DelayDistribution&?;
   
   /**
    * Realize a value for the node.
@@ -27,7 +29,7 @@ abstract class Delay {
    * Set the $M$-path child of this node. This is used internally by the
    * `link()` member function of the child node.
    */
-  final function setChild(child:Delay) {
+  final function setChild(child:DelayDistribution) {
     assert !this.child? || this.child! == child;
     this.child <- child;
   }

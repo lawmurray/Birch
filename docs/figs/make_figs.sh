@@ -10,4 +10,5 @@ dot -Tsvg Filter.dot > Filter.svg
 dot -Tsvg Sampler.dot > Sampler.svg
 dot -Tsvg Handler.dot > Handler.svg
 dot -Tsvg Event.dot > Event.svg
+dot -Tsvg Kernel.dot > Kernel.svg
 dot -Tsvg ExpressionState.dot > ExpressionState.svg

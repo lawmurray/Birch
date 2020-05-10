@@ -1,5 +1,5 @@
 /**
- * Abstract record of an event as entered into a trace.
+ * Record of an event as entered into a trace.
  *
  * The Record class hierarchy is analogous the Event class hierarchy. It
  * exists because events may contain more information than is necessary to

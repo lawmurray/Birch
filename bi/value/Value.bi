@@ -1,5 +1,5 @@
 /**
- * Abstract value.
+ * Value.
  */
 abstract class Value {
   /**

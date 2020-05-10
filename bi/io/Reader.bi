@@ -1,5 +1,5 @@
 /**
- * Abstract reader.
+ * Reader.
  *
  * Typical use is to use the `Reader` factory function to instantiate an
  * object of an appropriate derived class based on the file extension of the

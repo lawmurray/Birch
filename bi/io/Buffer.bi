@@ -1,5 +1,5 @@
 /**
- * Abstract buffer.
+ * Buffer.
  *
  * When reading and writing objects, defers to the `read()` and `write()`
  * member functions, declared in `Object`.

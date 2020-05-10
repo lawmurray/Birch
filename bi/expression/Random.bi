@@ -111,12 +111,6 @@ final class Random<Value> < Expression<Value> {
     p <- nil;
   }
 
-  override function doSetPilot() {
-    p!.prune();
-    p!.updateLazy(this);
-    p!.unlink();
-  }
-
   override function doGrad(d:Value) {
     assert x?;
     if p? {
