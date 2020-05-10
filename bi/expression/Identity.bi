@@ -34,6 +34,11 @@ final class Identity<Value>(n:Integer) < Expression<Value> {
   override function doPrior() -> Expression<Real>? {
     return nil;
   }
+
+  override function doZip(x':DelayExpression, κ:Kernel) -> Real {
+    assert Identity<Value>?(x')?;
+    return 0.0;
+  }
 }
 
 /**

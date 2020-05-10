@@ -31,6 +31,12 @@ abstract class UnaryExpression<Argument,Value>(single:Expression<Argument>) <
     return single.prior();
   }
 
+  final override function doZip(x':DelayExpression, κ:Kernel) -> Real {
+    auto y <- UnaryExpression<Argument,Value>?(x');
+    assert y?;
+    return single.zip(y!.single, κ);
+  }
+
   /**
    * Evaluate a value.
    *

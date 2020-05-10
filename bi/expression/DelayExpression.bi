@@ -52,4 +52,27 @@ abstract class DelayExpression {
    * classes.
    */
   abstract function doPrior() -> Expression<Real>?;
+  
+  /**
+   * Finalize contribution to the log-acceptance probability for the
+   * proposed and current states. This object is considered the current state
+   * $x$.
+   *
+   * - x': Proposed state $x^\prime$. This must be an expression of the same
+   *       structure as this ($x$) but with potentially different values.
+   * - κ: Markov kernel.
+   *
+   * Returns: contribution to the log-acceptance probability, as required for
+   * the particular kernel.
+   */
+  final function zip(x':DelayExpression, κ:Kernel) -> Real {
+    assert state == EXPRESSION_PILOT || state == EXPRESSION_GRADIENT;
+    return doZip(x', κ);
+  }
+
+  /*
+   * Finalize contribution to the log-acceptance probability for the
+   * proposed and current states.
+   */
+  abstract function doZip(x':DelayExpression, κ:Kernel) -> Real;
 }

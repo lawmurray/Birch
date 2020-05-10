@@ -131,6 +131,12 @@ final class Random<Value> < Expression<Value> {
     }
   }
 
+  override function doZip(x':DelayExpression, κ:Kernel) -> Real {
+    auto y <- Random<Value>?(x');
+    assert y?;
+    return κ.zip(y!, this);
+  }
+
   override function doSetValue() {
     p!.prune();
     p!.update(x!);

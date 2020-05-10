@@ -53,6 +53,12 @@ abstract class BinaryExpression<Left,Right,Value>(left:Expression<Left>,
     }
   }
 
+  final override function doZip(x':DelayExpression, κ:Kernel) -> Real {
+    auto y <- BinaryExpression<Left,Right,Value>?(x');
+    assert y?;
+    return left.zip(y!.left, κ) + right.zip(y!.right, κ);
+  }
+
   /**
    * Compute a value.
    *
