@@ -32,7 +32,7 @@ abstract class Expression<Value> < DelayExpression {
   x:Value?;
   
   /**
-   * Accumulated upstream gradient.
+   * Accumulated gradient.
    */
   dfdx:Value?;
   
@@ -79,6 +79,14 @@ abstract class Expression<Value> < DelayExpression {
    */
   final function get() -> Value {
     return x!;
+  }
+
+  /**
+   * If this is a Random, get the distribution associated with it, if any,
+   * otherwise nil.
+   */
+  function distribution() -> Distribution<Value>? {
+    return nil;
   }
 
   /**
@@ -159,6 +167,33 @@ abstract class Expression<Value> < DelayExpression {
   abstract function doPilot();
 
   /**
+   * Move and re-evaluate. Variables are updated with a Markov kernel,
+   * possibly using gradient information, and the expression re-evaluated
+   * with these new values.
+   *
+   * Pre-condition: The expression is in the pilot or gradient state.
+   *
+   * Returns: The evaluated value of the expression.
+   *
+   * Post-condition: The expression is in the pilot state.
+   */
+  final function move() -> Value {
+    assert state == EXPRESSION_PILOT || state == EXPRESSION_GRADIENT;
+    count <- count + 1;
+    if state == EXPRESSION_GRADIENT {
+      doMove();
+      state <- EXPRESSION_PILOT;
+    }
+    assert state == EXPRESSION_PILOT;
+    return x!;
+  }
+
+  /*
+   * Move and re-evaluate; overridden by derived classes.
+   */
+  abstract function doMove();
+
+  /**
    * Evaluate gradients. Gradients are computed with respect to all
    * variables (Random objects in the pilot or gradient state).
    *
@@ -206,7 +241,7 @@ abstract class Expression<Value> < DelayExpression {
     /* continue recursion if all upstream gradients accumulated */
     count <- count - 1;
     if count == 0 {
-      doGrad(dfdx!);
+      doGrad();
       state <- EXPRESSION_GRADIENT;
     }
     assert state == EXPRESSION_PILOT || state == EXPRESSION_GRADIENT;
@@ -215,36 +250,7 @@ abstract class Expression<Value> < DelayExpression {
   /*
    * Evaluate gradient; overridden by derived classes.
    */
-  abstract function doGrad(d:Value);
-
-  /**
-   * Move and re-evaluate. Variables are updated with a Markov kernel,
-   * possibly using gradient information, and the expression re-evaluated
-   * with these new values.
-   *
-   * Pre-condition: The expression is in the pilot or gradient state.
-   *
-   * Returns: The evaluated value of the expression.
-   *
-   * Post-condition: The expression is in the pilot state.
-   */
-  final function move() -> Value {
-    assert state == EXPRESSION_PILOT || state == EXPRESSION_GRADIENT;
-    count <- count + 1;
-    if state == EXPRESSION_GRADIENT {
-      doMove();
-      state <- EXPRESSION_PILOT;
-    }
-    assert state == EXPRESSION_PILOT;
-    return x!;
-  }
-
-  /*
-   * Move and re-evaluate; overridden by derived classes.
-   */
-  function doMove() {
-    //
-  }
+  abstract function doGrad();
 
   /**
    * Set the value.
@@ -261,19 +267,10 @@ abstract class Expression<Value> < DelayExpression {
   }
   
   /*
-   * Propose a value; overridden by derived classes if supported (notably
-   * Random).
+   * Set the value; overridden by derived classes if necessary.
    */
   function doSetValue() {
     //
-  }
-
-  /**
-   * If this is a Random, get the distribution associated with it, if any,
-   * otherwise nil.
-   */
-  function distribution() -> Distribution<Value>? {
-    return nil;
   }
 
   /*

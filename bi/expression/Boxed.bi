@@ -11,15 +11,23 @@ final class Boxed<Value> < Expression<Value> {
   }
 
   override function doValue() {
-    assert false;  // should never arrive here, as x set by factory function
+    //
   }
 
   override function doPilot() {
-    assert false;  // should never arrive here, as x set by factory function
+    //
   }
 
-  override function doGrad(d:Value) {
+  override function doMove() {
     //
+  }
+
+  override function doGrad() {
+    //
+  }
+
+  override function doPrior() -> Expression<Real>? {
+    return nil;
   }
 }
 

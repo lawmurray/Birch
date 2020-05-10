@@ -51,27 +51,5 @@ abstract class DelayExpression {
    * Construct a lazy expression for the log-prior; overridden by derived
    * classes.
    */
-  function doPrior() -> Expression<Real>? {
-    return nil;
-  }
-  
-  /**
-   * Evaluate log-ratio of proposal densities.
-   *
-   * Pre-condition: the expression is in the pilot or gradient state.
-   *
-   * Returns: the log-prior expression, or nil if no such Random objectss
-   * exist, which may be interpreted as the log-prior evaluating to zero.
-   */
-  final function ratio(to:DelayExpression) -> Real {
-    assert state == EXPRESSION_PILOT || state == EXPRESSION_GRADIENT;
-    return doRatio(to);
-  }
-  
-  /*
-   * Evaluate log-ratio of proposal densities; overridden by derived classes.
-   */
-  function doRatio(to:DelayExpression) -> Real {
-    return 0.0;
-  }
+  abstract function doPrior() -> Expression<Real>?;
 }

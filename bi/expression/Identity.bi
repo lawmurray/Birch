@@ -23,8 +23,16 @@ final class Identity<Value>(n:Integer) < Expression<Value> {
     x <- identity(n);
   }
 
-  override function doGrad(d:Value) {
+  override function doMove() {
     //
+  }
+
+  override function doGrad() {
+    //
+  }
+
+  override function doPrior() -> Expression<Real>? {
+    return nil;
   }
 }
 

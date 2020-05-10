@@ -24,16 +24,33 @@ abstract class BinaryExpression<Left,Right,Value>(left:Expression<Left>,
   final override function doPilot() {
     x <- computeValue(left.pilot(), right.pilot());
   }
+
+  final override function doMove() {
+    x <- computeValue(left.move(), right.move());
+  }
   
-  final override function doGrad(d:Value) {
-    assert x?;
+  final override function doGrad() {
     auto l <- left.get();
     auto r <- right.get();
     dl:Left;
     dr:Right;
-    (dl, dr) <- computeGrad(d, l, r);
+    (dl, dr) <- computeGrad(dfdx!, l, r);
     left.grad(dl);
     right.grad(dr);
+  }
+  
+  final override function doPrior() -> Expression<Real>? {
+    auto l <- left.prior();
+    auto r <- right.prior();
+    if l? && r? {
+      return l! + r!;
+    } else if l? {
+      return l!;
+    } else if r? {
+      return r!;
+    } else {
+      return nil;
+    }
   }
 
   /**

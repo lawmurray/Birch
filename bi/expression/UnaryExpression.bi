@@ -18,10 +18,17 @@ abstract class UnaryExpression<Argument,Value>(single:Expression<Argument>) <
   final override function doPilot() {
     x <- computeValue(single.pilot());
   }
+
+  final override function doMove() {
+    x <- computeValue(single.move());
+  }
   
-  final override function doGrad(d:Value) {
-    assert x?;
-    single.grad(computeGrad(d, single.get()));
+  final override function doGrad() {
+    single.grad(computeGrad(dfdx!, single.get()));
+  }
+
+  final override function doPrior() -> Expression<Real>? {
+    return single.prior();
   }
 
   /**

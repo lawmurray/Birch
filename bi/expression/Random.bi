@@ -73,61 +73,6 @@ final class Random<Value> < Expression<Value> {
     return p?;
   }
 
-  override function doValue() {
-    if p!.isRealized() {
-      /* distribution was forced to realize by its parent, use the value that
-       * was simulated */
-      x <- p!.realized();
-      p <- nil;
-    } else {
-      p <- p!.graft();
-      x <- p!.simulate();
-      p!.update(x!);
-      p!.unlink();
-      p <- nil;
-    }
-  }
-
-  override function doPilot() {
-    if p!.isRealized() {
-      /* value must be considered escaped in this case, act the same as
-       * doValue() */
-      x <- p!.realized();
-      p <- nil;
-    } else {
-      p <- p!.graft();
-      x <- p!.simulateLazy();
-      p!.updateLazy(this);
-      p!.unlink();
-      // keep p here, this distinguishes between whether or not a subsequent
-      // gradient computation is possible
-    }
-  }
-
-  override function doSetValue() {
-    p!.prune();
-    p!.update(x!);
-    p!.unlink();
-    p <- nil;
-  }
-
-  override function doGrad(d:Value) {
-    assert x?;
-    if p? {
-      auto ψ <- p!.logpdfLazy(this);
-      if ψ? {
-        w <- ψ!.pilot();
-        ψ!.grad(1.0);
-      } else {
-        /* treat as a constant */
-        dfdx <- nil;
-      }
-    } else {
-      /* treat as a constant */
-      dfdx <- nil;
-    }
-  }
-
   /**
    * Assume the distribution for the random variate. When a value for the
    * random variate is required, it will be simulated from this distribution
@@ -139,6 +84,85 @@ final class Random<Value> < Expression<Value> {
     assert !this.p?;
     assert !this.x?;
     this.p <- p;
+  }
+
+  override function doValue() {
+    if p!.isRealized() {
+      /* distribution was forced to realize by its parent; this must be
+       * treated as a constant */
+      state <- EXPRESSION_VALUE;
+      x <- p!.realized();
+      dfdx <- nil;
+      p <- nil;
+    } else {
+      x <- p!.simulate();
+      p!.update(x!);
+      p!.unlink();
+      p <- nil;
+    }
+  }
+
+  override function doPilot() {
+    if p!.isRealized() {
+      /* distribution was forced to realize by its parent; this must be
+       * treated as a constant */
+      state <- EXPRESSION_VALUE;
+      x <- p!.realized();
+      dfdx <- nil;
+      p <- nil;
+    } else {
+      x <- p!.simulateLazy();
+      p!.updateLazy(this);
+      p!.unlink();
+      // keep p here, subsequent call to doPrior() may remove
+    }
+  }
+
+  override function doMove() {
+    if p!.isRealized() {
+      /* distribution was forced to realize by its parent; this must be
+       * treated as a constant */
+      state <- EXPRESSION_VALUE;
+      x <- p!.realized();
+      dfdx <- nil;
+      p <- nil;
+    } else {
+      x <- p!.simulateLazy();
+    }
+  }
+
+  override function doSetValue() {
+    p!.prune();
+    p!.update(x!);
+    p!.unlink();
+    p <- nil;
+  }
+
+  override function doGrad() {
+    if p!.isRealized() {
+      /* distribution was forced to realize by its parent; this must be
+       * treated as a constant */
+      state <- EXPRESSION_VALUE;
+      x <- p!.realized();
+      dfdx <- nil;
+      p <- nil;
+    }
+  }
+
+  override function doPrior() -> Expression<Real>? {
+    if p? {
+      auto p1 <- p!.logpdfLazy(this);
+      p <- nil;
+      if p1? {
+        auto p2 <- p1!.prior();
+        if p2? {
+          return p1! + p2!;
+        } else {
+          return p1!;
+        }
+      }
+    }
+    return nil;
   }
 
   override function graftGaussian() -> Gaussian? {
