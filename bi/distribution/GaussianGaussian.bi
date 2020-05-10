@@ -1,5 +1,5 @@
-/*
- * Grafted Gaussian-Gaussian distribution.
+/**
+ * Gaussian-Gaussian distribution.
  */
 final class GaussianGaussian(m:Gaussian, s2:Expression<Real>) <
     Gaussian(m.μ, m.σ2 + s2) {

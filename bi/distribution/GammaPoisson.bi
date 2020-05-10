@@ -1,5 +1,5 @@
-/*
- * Grafted gamma-Poisson distribution.
+/**
+ * Gamma-Poisson distribution.
  */
 final class GammaPoisson(λ:Gamma) < Discrete {
   /**

@@ -1,5 +1,5 @@
-/*
- * Grafted matrix normal-inverse-gamma-Gaussian distribution.
+/**
+ * Matrix normal-inverse-gamma-Gaussian distribution.
  */
 final class MatrixNormalInverseGammaMatrixGaussian(
     M:MatrixNormalInverseGamma) < Distribution<Real[_,_]> {

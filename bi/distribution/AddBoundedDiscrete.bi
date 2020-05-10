@@ -1,5 +1,5 @@
-/*
- * Grafted delta function on a sum of two bounded discrete distributions.
+/**
+ * Delta function on a sum of two bounded discrete distributions.
  */
 final class AddBoundedDiscrete(x1:BoundedDiscrete, x2:BoundedDiscrete) <
     BoundedDiscrete {

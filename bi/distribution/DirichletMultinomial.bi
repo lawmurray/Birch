@@ -1,4 +1,4 @@
-/*
+/**
  * Dirichlet-multinomial distribution.
  */
 final class DirichletMultinomial(n:Expression<Integer>, ρ:Dirichlet) <

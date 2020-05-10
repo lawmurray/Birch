@@ -1,5 +1,5 @@
-/*
- * Grafted linear-Gaussian-Gaussian distribution.
+/**
+ * Linear-Gaussian-Gaussian distribution.
  */
 final class LinearGaussianGaussian(a:Expression<Real>, m:Gaussian,
     c:Expression<Real>, s2:Expression<Real>) < Gaussian(a*m.μ + c,

@@ -1,5 +1,5 @@
-/*
- * Grafted inverse-gamma-gamma distribution.
+/**
+ * Inverse-gamma-gamma distribution.
  */
 final class InverseGammaGamma(k:Expression<Real>, θ:InverseGamma) <
     Distribution<Real> {

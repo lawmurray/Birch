@@ -1,4 +1,4 @@
-/*
+/**
  * Beta-Bernoulli distribution.
  */
 final class BetaBernoulli(ρ:Beta) < Distribution<Boolean> {

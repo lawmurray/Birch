@@ -1,5 +1,5 @@
-/*
- * Grafted delta function on a linear transformation of a bounded discrete
+/**
+ * Delta function on a linear transformation of a bounded discrete
  * distribution.
  */
 final class LinearBoundedDiscrete(a:Expression<Integer>, μ:BoundedDiscrete,

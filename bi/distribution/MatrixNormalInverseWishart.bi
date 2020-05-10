@@ -1,5 +1,5 @@
-/*
- * Grafted matrix normal-inverse-Wishart distribution.
+/**
+ * Matrix normal-inverse-Wishart distribution.
  */
 final class MatrixNormalInverseWishart(M:Expression<Real[_,_]>,
     U:Expression<Real[_,_]>, V:InverseWishart) < Distribution<Real[_,_]> {

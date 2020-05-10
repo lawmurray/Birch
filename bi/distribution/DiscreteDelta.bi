@@ -1,4 +1,4 @@
-/*
+/**
  * Delta distribution on a discrete distribution.
  */
 final class DiscreteDelta(μ:Discrete) < Discrete {

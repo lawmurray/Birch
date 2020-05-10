@@ -1,4 +1,4 @@
-/*
+/**
  * Beta-binomial distribution.
  */
 final class BetaBinomial(n:Expression<Integer>, ρ:Beta) < BoundedDiscrete {

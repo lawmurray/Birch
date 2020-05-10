@@ -1,4 +1,4 @@
-/*
+/**
  * Multivariate uniform distribution over integers where each element is
  * independent.
  */

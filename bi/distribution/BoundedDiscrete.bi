@@ -1,4 +1,4 @@
-/*
+/**
  * Bounded discrete distribution.
  */
 abstract class BoundedDiscrete < Discrete {

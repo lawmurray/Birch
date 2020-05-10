@@ -1,5 +1,5 @@
-/*
- * Grafted uniform integer distribution.
+/**
+ * Uniform integer distribution.
  */
 final class UniformInteger(l:Expression<Integer>, u:Expression<Integer>) <
     BoundedDiscrete {

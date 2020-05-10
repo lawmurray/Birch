@@ -1,5 +1,5 @@
-/*
- * Grafted linear-normal-inverse-gamma-Gaussian distribution where
+/**
+ * Linear-normal-inverse-gamma-Gaussian distribution where
  * components have independent and identical variance.
  */
 final class LinearMultivariateNormalInverseGammaMultivariateGaussian(

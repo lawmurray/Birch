@@ -1,4 +1,4 @@
-/*
+/**
  * Multivariate uniform distribution where each element is independent.
  */
 final class IndependentUniform(l:Expression<Real[_]>,

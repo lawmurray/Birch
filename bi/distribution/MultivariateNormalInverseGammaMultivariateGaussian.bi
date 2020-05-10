@@ -1,5 +1,5 @@
-/*
- * Grafted multivariate normal-inverse-gamma-Gaussian distribution.
+/**
+ * Multivariate normal-inverse-gamma-Gaussian distribution.
  */
 final class MultivariateNormalInverseGammaMultivariateGaussian(
     μ:MultivariateNormalInverseGamma) < Distribution<Real[_]> {

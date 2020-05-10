@@ -1,4 +1,4 @@
-/*
+/**
  * Multivariate linear-Gaussian-Gaussian distribution.
  */
 final class LinearMultivariateGaussianMultivariateGaussian(

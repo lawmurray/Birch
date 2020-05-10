@@ -1,5 +1,5 @@
-/*
- * Grafted restaurant-categorical distribution.
+/**
+ * Restaurant-categorical distribution.
  */
 final class RestaurantCategorical(ρ:Restaurant) < Distribution<Integer> {
   /**

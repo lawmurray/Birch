@@ -1,5 +1,5 @@
-/*
- * Grafted normal-inverse-gamma-Gaussian distribution.
+/**
+ * Normal-inverse-gamma-Gaussian distribution.
  */
 final class NormalInverseGammaGaussian(μ:NormalInverseGamma) <
     Distribution<Real> {

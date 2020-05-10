@@ -1,5 +1,5 @@
-/*
- * Grafted multivariate linear-Gaussian-Gaussian distribution.
+/**
+ * Multivariate linear-Gaussian-Gaussian distribution.
  */
 final class LinearMultivariateGaussianGaussian(a:Expression<Real[_]>,
     m:MultivariateGaussian, c:Expression<Real>, s2:Expression<Real>) <

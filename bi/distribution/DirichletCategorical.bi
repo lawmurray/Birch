@@ -1,4 +1,4 @@
-/*
+/**
  * Dirichlet-categorical distribution.
  */
 final class DirichletCategorical(ρ:Dirichlet) < Distribution<Integer> {

@@ -1,5 +1,9 @@
-/*
+/**
  * Matrix Gaussian distribution.
+ *
+ * !!! note
+ *     See Gaussian for associated factory functions for the creation of
+ *     MatrixGaussian objects.
  */
 class MatrixGaussian(M:Expression<Real[_,_]>, U:Expression<Real[_,_]>,
     V:Expression<Real[_,_]>) < Distribution<Real[_,_]> {

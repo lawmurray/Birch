@@ -1,5 +1,5 @@
-/*
- * Grafted delta function on a difference of two bounded discrete random
+/**
+ * Delta function on a difference of two bounded discrete random
  * variates.
  */
 final class SubtractBoundedDiscrete(x1:BoundedDiscrete, x2:BoundedDiscrete) <

@@ -1,5 +1,5 @@
-/*
- * Grafted scaled gamma-exponential distribution.
+/**
+ * Scaled gamma-exponential distribution.
  */
 class ScaledGammaExponential(a:Expression<Real>, λ:Gamma) <
     Distribution<Real> {

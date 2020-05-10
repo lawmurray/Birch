@@ -1,4 +1,4 @@
-/*
+/**
  * Matrix Gaussian distribution where each element is independent.
  */
 final class IndependentMatrixGaussian(M:Expression<Real[_,_]>,

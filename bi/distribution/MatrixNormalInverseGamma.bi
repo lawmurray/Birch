@@ -1,5 +1,5 @@
-/*
- * Grafted matrix normal-inverse-gamma distribution.
+/**
+ * Matrix normal-inverse-gamma distribution.
  */
 final class MatrixNormalInverseGamma(M:Expression<Real[_,_]>,
     Σ:Expression<Real[_,_]>, σ2:IndependentInverseGamma) <

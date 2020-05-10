@@ -1,5 +1,5 @@
-/*
- * Grafted scaled gamma-Poisson distribution.
+/**
+ * Scaled gamma-Poisson distribution.
  */
 final class ScaledGammaPoisson(a:Expression<Real>, λ:Gamma) < Discrete {
   /**

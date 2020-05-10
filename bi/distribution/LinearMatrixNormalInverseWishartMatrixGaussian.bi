@@ -1,5 +1,5 @@
-/*
- * Grafted matrix Gaussian variate with linear transformation of
+/**
+ * Matrix Gaussian variate with linear transformation of
  * matrix-normal-inverse-Wishart prior.
  */
 final class LinearMatrixNormalInverseWishartMatrixGaussian(

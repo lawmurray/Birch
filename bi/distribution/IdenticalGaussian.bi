@@ -1,4 +1,4 @@
-/*
+/**
  * Multivariate Gaussian distribution with independent and identical
  * variance.
  */

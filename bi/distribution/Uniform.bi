@@ -1,5 +1,5 @@
-/*
- * Grafted uniform random variable.
+/**
+ * Uniform distribution.
  */
 final class Uniform(l:Expression<Real>, u:Expression<Real>) <
     Distribution<Real> {

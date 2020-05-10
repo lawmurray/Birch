@@ -1,5 +1,5 @@
-/*
- * Grafted matrix Gaussian variate with linear transformation of
+/**
+ * Matrix Gaussian variate with linear transformation of
  * matrix-normal-inverse-gamma prior.
  */
 final class LinearMatrixNormalInverseGammaMatrixGaussian(
