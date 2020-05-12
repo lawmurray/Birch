@@ -222,7 +222,7 @@ void bi::CppClassGenerator::visit(const MemberFunction* o) {
     }
     middle(o->name << '(' << o->params << ')');
     if (header) {
-      if (o->has(FINAL)) {
+      if (o->has(FINAL) && !o->isGeneric()) {
         middle(" final");
       } else if (o->has(OVERRIDE)) {
         middle(" override");
@@ -262,7 +262,7 @@ void bi::CppClassGenerator::visit(const MemberFiber* o) {
     }
     middle(o->name << '(' << o->params << ')');
     if (header) {
-      if (o->has(FINAL)) {
+      if (o->has(FINAL) && !o->isGeneric()) {
         middle(" final");
       } else if (o->has(OVERRIDE)) {
         middle(" override");
