@@ -87,71 +87,52 @@ final class Random<Value> < Expression<Value> {
   }
 
   override function doValue() {
-    if p!.isRealized() {
-      /* distribution was forced to realize by its parent; this must be
-       * treated as a constant */
-      state <- EXPRESSION_VALUE;
-      x <- p!.realized();
-      dfdx <- nil;
-      p <- nil;
-    } else {
-      x <- p!.simulate();
-      p!.update(x!);
-      p!.unlink();
-      p <- nil;
+    if p? {
+      if p!.isRealized() {
+        /* distribution was forced to realize by its parent; this must be
+         * treated as a constant */
+        setValue(p!.realized());
+      } else {
+        x <- p!.simulate();
+        p!.update(x!);
+        p!.unlink();
+        p <- nil;
+      }
     }
   }
 
   override function doPilot() {
+    if p? {
+      if p!.isRealized() {
+        /* distribution was forced to realize by its parent; this must be
+         * treated as a constant */
+        setValue(p!.realized());
+      } else {
+        x <- p!.simulateLazy();
+        p!.updateLazy(this);
+        p!.unlink();
+        // keep p here, subsequent call to doPrior() may remove
+      }
+    }
+  }
+
+  override function doGrad() {
+    assert p?;
     if p!.isRealized() {
       /* distribution was forced to realize by its parent; this must be
        * treated as a constant */
-      state <- EXPRESSION_VALUE;
-      x <- p!.realized();
-      dfdx <- nil;
-      p <- nil;
-    } else {
-      x <- p!.simulateLazy();
-      p!.updateLazy(this);
-      p!.unlink();
-      // keep p here, subsequent call to doPrior() may remove
+      setValue(p!.realized());
     }
   }
 
   override function doMove(κ:Kernel) {
+    assert p?;
     if p!.isRealized() {
       /* distribution was forced to realize by its parent; this must be
        * treated as a constant */
-      state <- EXPRESSION_VALUE;
-      x <- p!.realized();
-      dfdx <- nil;
-      p <- nil;
+      setValue(p!.realized());
     } else {
       x <- κ.move(this);
-    }
-  }
-
-  override function doZip(x':DelayExpression, κ:Kernel) -> Real {
-    auto y <- Random<Value>?(x');
-    assert y?;
-    return κ.zip(y!, this);
-  }
-
-  override function doSetValue() {
-    p!.prune();
-    p!.update(x!);
-    p!.unlink();
-    p <- nil;
-  }
-
-  override function doGrad() {
-    if p!.isRealized() {
-      /* distribution was forced to realize by its parent; this must be
-       * treated as a constant */
-      state <- EXPRESSION_VALUE;
-      x <- p!.realized();
-      dfdx <- nil;
-      p <- nil;
     }
   }
 
@@ -169,6 +150,19 @@ final class Random<Value> < Expression<Value> {
       }
     }
     return nil;
+  }
+
+  override function doZip(x':DelayExpression, κ:Kernel) -> Real {
+    auto y <- Random<Value>?(x');
+    assert y?;
+    return κ.zip(y!, this);
+  }
+
+  override function doSetValue() {
+    p!.prune();
+    p!.update(x!);
+    p!.unlink();
+    p <- nil;
   }
 
   override function graftGaussian() -> Gaussian? {

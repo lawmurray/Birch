@@ -24,6 +24,10 @@
  * `grad()` will compute gradients with respect to it, and a further call to
  * `move()` will apply a Markov kernel to update its value. Random objects in
  * the value state are considered *constants*.
+ *
+ * Because of the way the count is used to maintain state, the recursion
+ * order of `pilot()` and `move()` is left-to-right, while that for `grad()`
+ * and `zip()` is right-to-left.
  */
 abstract class Expression<Value> < DelayExpression {  
   /**
@@ -37,12 +41,20 @@ abstract class Expression<Value> < DelayExpression {
   dfdx:Value?;
   
   /**
-   * Count of the number of times `pilot()` has been called on this, minus
-   * the number of times `grad()` has been called. This is used to accumulate
-   * upstream gradients before recursing into a subexpression that may be
-   * shared.
+   * Count of the number of times `pilot()` or `move()` has been called on
+   * this, minus the number of times `grad()` has been called. This is used
+   * to accumulate upstream gradients before recursing into a subexpression
+   * that may be shared.
    */
   count:Integer <- 0;
+  
+  /**
+   * Is this constant? An expression is constant once `value()` has been
+   * called on it. All subexpressions are necessarily also then constant,
+   * including any Random objects that occur, which become constants, not
+   * variables, for the purpose of `grad()` and `move()`.
+   */
+  constant:Boolean <- false;
 
   /**
    * Value assignment. Once an expression has been assigned a value, it is
@@ -95,15 +107,14 @@ abstract class Expression<Value> < DelayExpression {
    * required.
    *
    * Returns: The evaluated value of the expression.
-   *
-   * Post-condition: The expression is in the value state.
    */
   final function value() -> Value {
+    count <- 0;
+    constant <- true;
     if !x? {
       doValue();
-      assert x?;
+      dfdx <- nil;
     }
-    state <- EXPRESSION_VALUE;
     return x!;
   }
   
@@ -117,11 +128,7 @@ abstract class Expression<Value> < DelayExpression {
    * references to subexpressions, such as operands and arguments, as they
    * may yet be needed for gradient or Markov kernel computations.
    *
-   * Pre-condition: The expression is in the initial or pilot state.
-   *
    * Returns: The evaluated value of the expression.
-   *
-   * Post-condition: The expression is in the pilot state.
    *
    * `pilot()` may be called multiple times, which accumulates a count. If
    * the intent is to compute gradients, `grad()` must subsequently be called
@@ -149,14 +156,13 @@ abstract class Expression<Value> < DelayExpression {
    *     This would produce incorrect results.
    */
   final function pilot() -> Value {
-    assert state == EXPRESSION_INITIAL || state == EXPRESSION_PILOT;
-    count <- count + 1;
-    if !x? {
-      doPilot();
-      state <- EXPRESSION_PILOT;
-      assert x?;
+    if !constant {
+      if count == 0 {
+        doPilot();
+        dfdx <- nil;
+      }
+      count <- count + 1;
     }
-    assert state == EXPRESSION_PILOT;
     return x!;
   }
   
@@ -166,44 +172,11 @@ abstract class Expression<Value> < DelayExpression {
   abstract function doPilot();
 
   /**
-   * Move and re-evaluate. Variables are updated with a Markov kernel,
-   * possibly using gradient information, and the expression re-evaluated
-   * with these new values.
-   *
-   * Pre-condition: The expression is in the pilot or gradient state.
-   *
-   * - κ: Markov kernel.
-   *
-   * Returns: The evaluated value of the expression.
-   *
-   * Post-condition: The expression is in the pilot state.
-   */
-  final function move(κ:Kernel) -> Value {
-    assert state == EXPRESSION_PILOT || state == EXPRESSION_GRADIENT;
-    count <- count + 1;
-    if state == EXPRESSION_GRADIENT {
-      doMove(κ);
-      state <- EXPRESSION_PILOT;
-    }
-    assert state == EXPRESSION_PILOT;
-    return x!;
-  }
-
-  /*
-   * Move and re-evaluate; overridden by derived classes.
-   */
-  abstract function doMove(κ:Kernel);
-
-  /**
    * Evaluate gradients. Gradients are computed with respect to all
    * variables (Random objects in the pilot or gradient state).
    *
    * - d: Upstream gradient. For an initial call, this should be the unit for
    *     the given type, e.g. 1.0, a vector of ones, or the identity matrix.
-   *
-   * Pre-condition: The expression is in the pilot state.
-   *
-   * Post-condition: The expression is in the pilot or gradient state.
    *
    * `grad()` must be called as many times as `pilot()` was previously
    * called. This is because subexpressions may be shared. The calls to
@@ -229,23 +202,21 @@ abstract class Expression<Value> < DelayExpression {
    * the final result.
    */
   final function grad(d:Value) {
-    assert state == EXPRESSION_PILOT;
-    assert count >= 1;
-    
-    /* accumulate gradient */
-    if dfdx? {
-      dfdx <- add(dfdx!, d);
-    } else {
-      dfdx <- d;
+    if !constant {
+      /* accumulate gradient */
+      if dfdx? {
+        dfdx <- add(dfdx!, d);
+      } else {
+        dfdx <- d;
+      }
+
+      /* continue recursion if all upstream gradients accumulated */
+      assert count > 0;
+      count <- count - 1;
+      if count == 0 {
+        doGrad();
+      }
     }
-    
-    /* continue recursion if all upstream gradients accumulated */
-    count <- count - 1;
-    if count == 0 {
-      doGrad();
-      state <- EXPRESSION_GRADIENT;
-    }
-    assert state == EXPRESSION_PILOT || state == EXPRESSION_GRADIENT;
   }
   
   /*
@@ -254,17 +225,88 @@ abstract class Expression<Value> < DelayExpression {
   abstract function doGrad();
 
   /**
+   * Move and re-evaluate. Variables are updated with a Markov kernel,
+   * possibly using gradient information, and the expression re-evaluated
+   * with these new values.
+   *
+   * - κ: Markov kernel.
+   *
+   * Returns: The evaluated value of the expression.
+   */
+  final function move(κ:Kernel) -> Value {
+    if !constant {
+      if count == 0 {
+        doMove(κ);
+        dfdx <- nil;
+      }
+      count <- count + 1;
+    }
+    return x!;
+  }
+
+  /*
+   * Move and re-evaluate; overridden by derived classes.
+   */
+  abstract function doMove(κ:Kernel);
+
+  /**
+   * Construct a lazy expression for the log-prior.
+   *
+   * Returns: If the expression is a variable, the log-prior expression,
+   * otherwise nil, which may be interpreted as the log-prior evaluating to
+   * zero.
+   */
+  final function prior() -> Expression<Real>? {
+    return doPrior();
+  }
+
+  /*
+   * Construct a lazy expression for the log-prior; overridden by derived
+   * classes.
+   */
+  abstract function doPrior() -> Expression<Real>?;
+  
+  /**
+   * Finalize contribution to the log-acceptance probability for the
+   * proposed and current states. This object is considered the current state
+   * $x$.
+   *
+   * - x': Proposed state $x^\prime$. This must be an expression of the same
+   *       structure as this ($x$) but with potentially different values.
+   * - κ: Markov kernel.
+   *
+   * Returns: contribution to the log-acceptance probability, as required for
+   * the particular kernel.
+   */
+  final function zip(x':DelayExpression, κ:Kernel) -> Real {
+    if !constant {
+      assert count > 0;
+      count <- count - 1;
+      if count == 0 {
+        return doZip(x', κ);
+      }
+    }
+    return 0.0;
+  }
+
+  /*
+   * Finalize contribution to the log-acceptance probability for the
+   * proposed and current states.
+   */
+  abstract function doZip(x':DelayExpression, κ:Kernel) -> Real;
+
+  /**
    * Set the value.
    *
    * - x: The value.
-   *
-   * Post-condition: The expression is in the value state.
    */
   final function setValue(x:Value) {
     assert !this.x?;
     this.x <- x;
+    dfdx <- nil;
+    count <- 0;
+    constant <- true;    
     doSetValue();
-    state <- EXPRESSION_VALUE;
   }
   
   /*
@@ -391,7 +433,6 @@ abstract class Expression<Value> < DelayExpression {
       TransformLinear<NormalInverseGamma>? {
     return nil;
   }
-
 
   /*
    * Attempt to graft this expression onto the delayed sampling graph.

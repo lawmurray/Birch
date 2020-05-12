@@ -18,15 +18,21 @@ abstract class BinaryExpression<Left,Right,Value>(left:Expression<Left>,
   right:Expression<Right> <- right;
 
   final override function doValue() {
-    x <- computeValue(left.value(), right.value());
+    auto l <- left.value();  // ensure left-to-right recursion
+    auto r <- right.value();
+    x <- computeValue(l, r);
   }
 
   final override function doPilot() {
-    x <- computeValue(left.pilot(), right.pilot());
+    auto l <- left.pilot();  // ensure left-to-right recursion
+    auto r <- right.pilot();
+    x <- computeValue(l, r);
   }
 
   final override function doMove(κ:Kernel) {
-    x <- computeValue(left.move(κ), right.move(κ));
+    auto l <- left.move(κ);  // ensure left-to-right recursion
+    auto r <- right.move(κ);
+    x <- computeValue(l, r);
   }
   
   final override function doGrad() {
@@ -35,8 +41,8 @@ abstract class BinaryExpression<Left,Right,Value>(left:Expression<Left>,
     dl:Left;
     dr:Right;
     (dl, dr) <- computeGrad(dfdx!, l, r);
+    right.grad(dr);  // ensure right-to-left recursion
     left.grad(dl);
-    right.grad(dr);
   }
   
   final override function doPrior() -> Expression<Real>? {
@@ -56,7 +62,9 @@ abstract class BinaryExpression<Left,Right,Value>(left:Expression<Left>,
   final override function doZip(x':DelayExpression, κ:Kernel) -> Real {
     auto y <- BinaryExpression<Left,Right,Value>?(x');
     assert y?;
-    return left.zip(y!.left, κ) + right.zip(y!.right, κ);
+    auto r <- right.zip(y!.right, κ);  // ensure right-to-left recursion
+    auto l <- left.zip(y!.left, κ);
+    return l + r;
   }
 
   /**
