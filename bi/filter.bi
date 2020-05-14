@@ -121,7 +121,7 @@ program filter(
       auto filter' <- clone(filter!);
     
       /* resample current particles... */
-      filter'.resample();
+      filter'.resample(t);
       
       /* ...but in future, don't resample */
       filter'.trigger <- 1.0;

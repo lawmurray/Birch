@@ -12,22 +12,18 @@
  *
  * More elaborate use cases include computing gradients and applying Markov
  * kernels. These may require multiple calls to member functions, and for
- * this purpose expressions are *stateful*, with the following state machine:
+ * this purpose expressions are stateful:
  *
- * <center>
- * <object type="image/svg+xml" data="../../figs/ExpressionState.svg"></object>
- * </center>
+ * - An Expression is initially considered *variable*.
+ * - Once `value()` is called on the Expression, it and any subexpressions
+ *   are considered *constant*.
  *
- * [Random](../../classes/Random/) objects that occur in the expression are
- * treated as *variables* or *constants* according to these states. A Random
- * object in the pilot state is considered a variables, meaning that calls to
- * `grad()` will compute gradients with respect to it, and a further call to
- * `move()` will apply a Markov kernel to update its value. Random objects in
- * the value state are considered *constants*.
+ * This particularly affects the `grad()` and `move()` operations:
  *
- * Because of the way the count is used to maintain state, the recursion
- * order of `pilot()` and `move()` is left-to-right, while that for `grad()`
- * and `zip()` is right-to-left.
+ * - `grad()` will compute gradients with respect to any
+ *   [Random](../classes/Random/) objects considered variables, and similarly,
+ * - `move()` will apply a Markov kernel to any [Random](../classes/Random/)
+ *   objects considered variables.
  */
 abstract class Expression<Value> < DelayExpression {  
   /**
@@ -140,9 +136,9 @@ abstract class Expression<Value> < DelayExpression {
    * through Bayesian updates.
    *
    * !!! caution
-   *     Unless you are working on something like a gradient-based Markov
-   *     kernel, you probably want to use `value()`, not `pilot()`. Doing
-   *     otherwise may risk correctness. Consider the following:
+   *     Unless you are working on something like a Markov kernel, you
+   *     probably want to use `value()`, not `pilot()`. Doing otherwise may
+   *     risk correctness. Consider the following:
    *
    *         if x.value() > 0.0 {
    *           doThis();
@@ -152,8 +148,8 @@ abstract class Expression<Value> < DelayExpression {
    *
    *     This is correct usage. Using `pilot()` instead of `value()` here
    *     may result in a subsequent move on the value of `x` (by e.g.
-   *     `MoveParticleFilter`), without an adjustment on the branch taken.
-   *     This would produce incorrect results.
+   *     `MoveParticleFilter`), without an adjustment on the branch taken,
+   *     resulting in an invalid trace and incorrect results.
    */
   final function pilot() -> Value {
     if !constant {

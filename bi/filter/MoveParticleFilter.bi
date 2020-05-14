@@ -39,7 +39,7 @@ class MoveParticleFilter < ParticleFilter {
     }
   }
 
-  override function resample() {
+  override function resample(t:Integer) {
     /* throughout, we use the property that `a[n] == n` if and only if
      * particle `n` has survived resampling */
     auto triggered <- ess <= trigger*nparticles;
@@ -77,14 +77,14 @@ class MoveParticleFilter < ParticleFilter {
       
       /* move particles */
       κ:LangevinKernel;
-      //κ.scale <- scale/(t + 1.0);
+      κ.scale <- scale/(t + 1.0);
       parallel for n in 1..nparticles {
         auto x <- MoveParticle?(this.x[n])!;
         for m in 1..nmoves {
           auto x' <- clone(x);
           x'.move(κ);
-          ratio:Real/* <- ratio(x', x, scale) */;          
-          if log(simulate_uniform(0.0, 1.0)) <= x'.π - x.π + ratio {
+          auto α <- x'.π - x.π + x.zip(x', κ);          
+          if log(simulate_uniform(0.0, 1.0)) <= α {
             x <- x';  // accept
           }
         }

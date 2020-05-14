@@ -47,7 +47,7 @@ class AliveParticleFilter < ParticleFilter {
     }
   }
   
-  override function resample() {
+  override function resample(t:Integer) {
     if ess <= trigger*nparticles {
       /* compute ancestor indices, but don't copy, step() handles this */
       a <- resample_systematic(w);

@@ -41,8 +41,8 @@ abstract class BinaryExpression<Left,Right,Value>(left:Expression<Left>,
     dl:Left;
     dr:Right;
     (dl, dr) <- computeGrad(dfdx!, l, r);
-    right.grad(dr);  // ensure right-to-left recursion
     left.grad(dl);
+    right.grad(dr);
   }
   
   final override function doPrior() -> Expression<Real>? {
@@ -62,8 +62,8 @@ abstract class BinaryExpression<Left,Right,Value>(left:Expression<Left>,
   final override function doZip(x':DelayExpression, κ:Kernel) -> Real {
     auto y <- BinaryExpression<Left,Right,Value>?(x');
     assert y?;
-    auto r <- right.zip(y!.right, κ);  // ensure right-to-left recursion
     auto l <- left.zip(y!.left, κ);
+    auto r <- right.zip(y!.right, κ);
     return l + r;
   }
 

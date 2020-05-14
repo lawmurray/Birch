@@ -51,7 +51,7 @@ class MoveParticle(m:Model) < Particle(m) {
   }
   
   /**
-   * Bring the prior up-to-date after one or more calls to `add()`.
+   * Update the prior after one or more calls to `add()`.
    */
   function prior() {
     for t in (p.size() + 1)..z.size() {
@@ -72,26 +72,53 @@ class MoveParticle(m:Model) < Particle(m) {
    * `prior()`.
    */
   function grad() {
+    assert p.size() == z.size();
     while n + 1 < z.size() {
       n <- n + 1;
       z.get(n).grad(1.0);
       p.get(n).grad(1.0);
     }
-  } 
-  
+    assert n == z.size();
+    assert n == p.size();
+  }
+
   /**
    * Move the particle.
    *
    * - κ: Markov kernel.
    */
   function move(κ:Kernel) {
+    assert n == z.size();
+    assert n == p.size();
     π <- 0.0;
-    n <- 0;
-    for t in 1..z.size() {
+    for t in 1..n {
       π <- π + z.get(t).move(κ);
       π <- π + p.get(t).move(κ);
     }
     grad();
+  }
+
+  /**
+   * Finalize contribution to the log-acceptance probability for the
+   * proposed and current particles.
+   *
+   * - x': Proposed particle $x^\prime$.
+   * - κ: Markov kernel.
+   *
+   * This particle is considered the current particle, $x$.
+   *
+   * Returns: contribution to the log-acceptance probability, as required for
+   * the particular kernel.
+   */
+  function zip(x':MoveParticle, κ:Kernel) -> Real {
+    assert n == z.size();
+    assert n == p.size();
+    auto r <- 0.0;
+    for t in 1..n {
+      r <- r + z.get(t).zip(x'.z.get(t), κ);
+      r <- r + p.get(t).zip(x'.z.get(t), κ);
+    }
+    return r;
   }
   
   /**
@@ -100,9 +127,9 @@ class MoveParticle(m:Model) < Particle(m) {
    * moving. This is used by resample-move particle filters with a finite
    * lag to make steps outside of that lag ineligible for move.
    */
-  function popFront() {
-  
-  }
+  //function popFront() {
+  //
+  //}
 }
 
 /**

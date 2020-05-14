@@ -48,7 +48,7 @@ class ConditionalParticleFilter < ParticleFilter {
     if r? && ancestor {
       ancestorSample(t);
     }
-    resample();
+    resample(t);
     step(t);
     reduce();
   }
@@ -91,7 +91,7 @@ class ConditionalParticleFilter < ParticleFilter {
     }
   }
 
-  override function resample() {
+  override function resample(t:Integer) {
     if ess <= trigger*nparticles {
       if r? {
         (a, b) <- conditional_resample_multinomial(w, b);

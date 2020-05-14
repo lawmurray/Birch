@@ -124,7 +124,7 @@ class ParticleFilter {
    * - t: The step number, beginning at 0.
    */
   function filter(archetype:Model, t:Integer) {
-    resample();
+    resample(t);
     step(t);
     reduce();
   }
@@ -161,7 +161,7 @@ class ParticleFilter {
   /**
    * Resample particles.
    */
-  function resample() {
+  function resample(t:Integer) {
     if ess <= trigger*nparticles {
       a <- resample_systematic(w);
       w <- vector(0.0, nparticles);
