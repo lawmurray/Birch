@@ -284,7 +284,14 @@ void bi::bi_ostream::visit(const MemberFunction* o) {
   if (o->has(FINAL)) {
     middle("final ");
   }
-  start("function " << o->name << '(' << o->params << ')');
+  if (o->has(OVERRIDE)) {
+    middle("override ");
+  }
+  start("function " << o->name);
+  if (!o->typeParams->isEmpty()) {
+    middle('<' << o->typeParams << '>');
+  }
+  middle('(' << o->params << ')');
   if (!o->returnType->isEmpty()) {
     middle(" -> " << o->returnType);
   }
@@ -302,7 +309,14 @@ void bi::bi_ostream::visit(const MemberFiber* o) {
   if (o->has(FINAL)) {
     middle("final ");
   }
-  start("fiber " << o->name << '(' << o->params << ')');
+  if (o->has(OVERRIDE)) {
+    middle("override ");
+  }
+  start("fiber " << o->name);
+  if (!o->typeParams->isEmpty()) {
+    middle('<' << o->typeParams << '>');
+  }
+  middle('(' << o->params << ')');
   if (!o->returnType->isEmpty()) {
     middle(" -> " << o->returnType);
   }
