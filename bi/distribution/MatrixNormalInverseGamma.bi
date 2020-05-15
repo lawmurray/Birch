@@ -48,15 +48,15 @@ final class MatrixNormalInverseGamma(M:Expression<Real[_,_]>,
   }
 
   function update(X:Real[_,_]) {
-    (σ2.α, σ2.β) <- update_matrix_normal_inverse_gamma(X, N.value(),
+    (σ2.α, σ2.β) <- box(update_matrix_normal_inverse_gamma(X, N.value(),
         Λ.value(), α.value(), gamma_to_beta(γ.value(), N.value(),
-        Λ.value()));
+        Λ.value())));
   }
 
   function downdate(X:Real[_,_]) {
-    (σ2.α, σ2.β) <- downdate_matrix_normal_inverse_gamma(X, N.value(),
+    (σ2.α, σ2.β) <- box(downdate_matrix_normal_inverse_gamma(X, N.value(),
         Λ.value(), α.value(), gamma_to_beta(γ.value(), N.value(),
-        Λ.value()));
+        Λ.value())));
   }
 
   function graftMatrixNormalInverseGamma(compare:Distribution<Real[_]>) ->

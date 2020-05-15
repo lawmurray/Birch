@@ -36,11 +36,11 @@ final class MatrixNormalInverseWishart(M:Expression<Real[_,_]>,
   }
 
   function update(X:Real[_,_]) {
-    (V.Ψ, V.k) <- update_matrix_normal_inverse_wishart(X, N.value(), Λ.value(), V.Ψ.value(), V.k.value());
+    (V.Ψ, V.k) <- box(update_matrix_normal_inverse_wishart(X, N.value(), Λ.value(), V.Ψ.value(), V.k.value()));
   }
 
   function downdate(X:Real[_,_]) {
-    (V.Ψ, V.k) <- downdate_matrix_normal_inverse_wishart(X, N.value(), Λ.value(), V.Ψ.value(), V.k.value());
+    (V.Ψ, V.k) <- box(downdate_matrix_normal_inverse_wishart(X, N.value(), Λ.value(), V.Ψ.value(), V.k.value()));
   }
 
   function graftMatrixNormalInverseWishart(compare:Distribution<Real[_,_]>) ->

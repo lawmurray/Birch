@@ -16,11 +16,11 @@ final class BetaBernoulli(ρ:Beta) < Distribution<Boolean> {
   }
 
   function update(x:Boolean) {
-    (ρ.α, ρ.β) <- update_beta_bernoulli(x, ρ.α.value(), ρ.β.value());
+    (ρ.α, ρ.β) <- box(update_beta_bernoulli(x, ρ.α.value(), ρ.β.value()));
   }
 
   function downdate(x:Boolean) {
-    (ρ.α, ρ.β) <- downdate_beta_bernoulli(x, ρ.α.value(), ρ.β.value());
+    (ρ.α, ρ.β) <- box(downdate_beta_bernoulli(x, ρ.α.value(), ρ.β.value()));
   }
 
   function link() {

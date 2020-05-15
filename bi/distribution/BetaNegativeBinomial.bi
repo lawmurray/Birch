@@ -25,11 +25,11 @@ final class BetaNegativeBinomial(k:Expression<Integer>, ρ:Beta) < Discrete {
   }
 
   function update(x:Integer) {
-    (ρ.α, ρ.β) <- update_beta_negative_binomial(x, k.value(), ρ.α.value(), ρ.β.value());
+    (ρ.α, ρ.β) <- box(update_beta_negative_binomial(x, k.value(), ρ.α.value(), ρ.β.value()));
   }
 
   function downdate(x:Integer) {
-    (ρ.α, ρ.β) <- downdate_beta_negative_binomial(x, k.value(), ρ.α.value(), ρ.β.value());
+    (ρ.α, ρ.β) <- box(downdate_beta_negative_binomial(x, k.value(), ρ.α.value(), ρ.β.value()));
   }
   
   function lower() -> Integer? {

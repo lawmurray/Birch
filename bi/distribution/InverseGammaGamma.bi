@@ -22,11 +22,11 @@ final class InverseGammaGamma(k:Expression<Real>, θ:InverseGamma) <
   }
 
   function update(x:Real) {
-    (θ.α, θ.β) <- update_inverse_gamma_gamma(x, k.value(), θ.α.value(), θ.β.value());
+    (θ.α, θ.β) <- box(update_inverse_gamma_gamma(x, k.value(), θ.α.value(), θ.β.value()));
   }
 
   function downdate(x:Real) {
-    (θ.α, θ.β) <- downdate_inverse_gamma_gamma(x, k.value(), θ.α.value(), θ.β.value());
+    (θ.α, θ.β) <- box(downdate_inverse_gamma_gamma(x, k.value(), θ.α.value(), θ.β.value()));
   }
 
   function cdf(x:Real) -> Real? {

@@ -23,18 +23,7 @@ abstract class Distribution<Value> < DelayDistribution {
   function columns() -> Integer {
     return 1;
   }
-  
-  function value() -> Value {
-    if isRealized() {
-      return x!;
-    } else {
-      auto x <- simulate();
-      update(x);
-      unlink();
-      return x;
-    }
-  }
-  
+
   /**
    * Returns `this`; a convenience for code generation within the compiler.
    */
@@ -43,13 +32,26 @@ abstract class Distribution<Value> < DelayDistribution {
   }
   
   /**
+   * Simulate a value for a random variate associated with this node,
+   * updating the delayed sampling graph accordingly, and returning the
+   * value.
+   */
+  function value() -> Value {
+    if !isRealized() {
+      realize();
+    }
+    return x!;
+  }
+  
+  /**
    * Observe a value for a random variate associated with this node,
    * updating the delayed sampling graph accordingly, and returning a weight
    * giving the log pdf (or pmf) of that variate under the distribution.
    */
   function observe(x:Value) -> Real {
-    assert !this.x?;
+    assert !isRealized();
     prune();
+    this.x <- x;
     auto w <- logpdf(x);
     if w > -inf {
       update(x);
@@ -70,11 +72,8 @@ abstract class Distribution<Value> < DelayDistribution {
     auto w <- logpdfLazy(x);
     if w? {
       updateLazy(x);
-    } else {
-      w <- Boxed(logpdf(x.value()));
-      update(x.value());
+      unlink();
     }
-    unlink();
     return w;  
   }
 
@@ -83,12 +82,11 @@ abstract class Distribution<Value> < DelayDistribution {
    * distribution on the delayed sampling $M$-path if it must prune.
    */
   function realize() {
-    if !x? {
-      prune();
-      x <- simulate();
-      update(x!);
-      unlink();
-    }
+    assert !x?;
+    prune();
+    x <- simulate();
+    update(x!);
+    unlink();
   }
   
   /**
@@ -96,13 +94,6 @@ abstract class Distribution<Value> < DelayDistribution {
    */
   function isRealized() -> Boolean {
     return x?;
-  }
-  
-  /**
-   * Get the realized value.
-   */
-  function realized() -> Value {
-    return x!;
   }
   
   /**

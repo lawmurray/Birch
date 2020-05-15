@@ -36,44 +36,116 @@ final class Boxed<Value> < Expression<Value> {
   }
 }
 
-function Boxed(x:Real) -> Boxed<Real> {
-  m:Boxed<Real>;
-  m.x <- x;
-  return m;
+/**
+ * Create a Boxed value.
+ */
+function Boxed<Value>(x:Value) -> Boxed<Value> {
+  o:Boxed<Value>;
+  o.x <- x;
+  return o;
 }
 
-function Boxed(x:Integer) -> Boxed<Integer> {
-  m:Boxed<Integer>;
-  m.x <- x;
-  return m;
+/**
+ * Box a value.
+ */
+function box<Value>(x:Value) -> Boxed<Value> {
+  return Boxed(x);
 }
 
-function Boxed(x:Boolean) -> Boxed<Boolean> {
-  m:Boxed<Boolean>;
-  m.x <- x;
-  return m;
+/**
+ * Box elements of a tuple.
+ */
+function box<Value1,Value2>(x:(Value1,Value2)) ->
+    (Boxed<Value1>, Boxed<Value2>) {
+  x1:Value1?;
+  x2:Value2?;
+  (x1, x2) <- x;
+  return (box(x1!), box(x2!));
 }
 
-function Boxed(x:Real[_]) -> Boxed<Real[_]> {
-  m:Boxed<Real[_]>;
-  m.x <- x;
-  return m;
+/**
+ * Box elements of a tuple.
+ */
+function box<Value1,Value2,Value3>(x:(Value1,Value2,Value3)) ->
+    (Boxed<Value1>, Boxed<Value2>, Boxed<Value3>) {
+  x1:Value1?;
+  x2:Value2?;
+  x3:Value3?;
+  (x1, x2, x3) <- x;
+  return (box(x1!), box(x2!), box(x3!));
 }
 
-function Boxed(x:Integer[_]) -> Boxed<Integer[_]> {
-  m:Boxed<Integer[_]>;
-  m.x <- x;
-  return m;
+/**
+ * Box elements of a tuple.
+ */
+function box<Value1,Value2,Value3,Value4>(x:(Value1,Value2,Value3,Value4)) ->
+    (Boxed<Value1>, Boxed<Value2>, Boxed<Value3>, Boxed<Value4>) {
+  x1:Value1?;
+  x2:Value2?;
+  x3:Value3?;
+  x4:Value4?;
+  (x1, x2, x3, x4) <- x;
+  return (box(x1!), box(x2!), box(x3!), box(x4!));
 }
 
-function Boxed(x:Real[_,_]) -> Boxed<Real[_,_]> {
-  m:Boxed<Real[_,_]>;
-  m.x <- x;
-  return m;
+/**
+ * Box elements of a tuple.
+ */
+function box<Value1,Value2,Value3,Value4,Value5>(x:(Value1,Value2,Value3,Value4,Value5)) ->
+    (Boxed<Value1>, Boxed<Value2>, Boxed<Value3>, Boxed<Value4>, Boxed<Value5>) {
+  x1:Value1?;
+  x2:Value2?;
+  x3:Value3?;
+  x4:Value4?;
+  x5:Value5?;
+  (x1, x2, x3, x4, x5) <- x;
+  return (box(x1!), box(x2!), box(x3!), box(x4!), box(x5!));
 }
 
-function Boxed(x:Integer[_,_]) -> Boxed<Integer[_,_]> {
-  m:Boxed<Integer[_,_]>;
-  m.x <- x;
-  return m;
+/**
+ * Box elements of a tuple.
+ */
+function box<Value1,Value2,Value3,Value4,Value5,Value6>(x:(Value1,Value2,Value3,Value4,Value5,Value6)) ->
+    (Boxed<Value1>, Boxed<Value2>, Boxed<Value3>, Boxed<Value4>, Boxed<Value5>, Boxed<Value6>) {
+  x1:Value1?;
+  x2:Value2?;
+  x3:Value3?;
+  x4:Value4?;
+  x5:Value5?;
+  x6:Value6?;
+  (x1, x2, x3, x4, x5, x6) <- x;
+  return (box(x1!), box(x2!), box(x3!), box(x4!), box(x5!), box(x6!));
+}
+
+/**
+ * Box elements of a tuple.
+ */
+function box<Value1,Value2,Value3,Value4,Value5,Value6,Value7>(x:(Value1,Value2,Value3,Value4,Value5,Value6,Value7)) ->
+    (Boxed<Value1>, Boxed<Value2>, Boxed<Value3>, Boxed<Value4>, Boxed<Value5>, Boxed<Value6>, Boxed<Value7>) {
+  x1:Value1?;
+  x2:Value2?;
+  x3:Value3?;
+  x4:Value4?;
+  x5:Value5?;
+  x6:Value6?;
+  x7:Value7?;
+  (x1, x2, x3, x4, x5, x6, x7) <- x;
+  return (box(x1!), box(x2!), box(x3!), box(x4!), box(x5!), box(x6!), box(x7!));
+}
+
+/**
+ * Box elements of a tuple.
+ */
+function box<Value1,Value2,Value3,Value4,Value5,Value6,Value7,Value8>(x:(Value1,Value2,Value3,Value4,Value5,Value6,Value7,Value8)) ->
+    (Boxed<Value1>, Boxed<Value2>, Boxed<Value3>, Boxed<Value4>, Boxed<Value5>, Boxed<Value6>, Boxed<Value7>, Boxed<Value8>) {
+  x1:Value1?;
+  x2:Value2?;
+  x3:Value3?;
+  x4:Value4?;
+  x5:Value5?;
+  x6:Value6?;
+  x7:Value7?;
+  x8:Value8?;
+  (x1, x2, x3, x4, x5, x6, x7, x8) <- x;
+  return (box(x1!), box(x2!), box(x3!), box(x4!), box(x5!), box(x6!), box(x7!), box(x8!));
 }

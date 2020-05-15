@@ -26,7 +26,7 @@ final class Random<Value> < Expression<Value> {
    */
   operator <- x:Value {
     assert !p?;
-    this.x <- x;
+    assign(x);
   }
 
   /**
@@ -34,7 +34,9 @@ final class Random<Value> < Expression<Value> {
    */
   operator <- x:Value? {
     assert !p?;
-    this.x <- x;
+    if x? {
+      assign(x!);
+    }
   }
   
   override function rows() -> Integer {
@@ -88,16 +90,8 @@ final class Random<Value> < Expression<Value> {
 
   override function doValue() {
     if p? {
-      if p!.isRealized() {
-        /* distribution was forced to realize by its parent; this must be
-         * treated as a constant */
-        setValue(p!.realized());
-      } else {
-        x <- p!.simulate();
-        p!.update(x!);
-        p!.unlink();
-        p <- nil;
-      }
+      x <- p!.value();
+      p <- nil;
     }
   }
 
@@ -106,8 +100,10 @@ final class Random<Value> < Expression<Value> {
       if p!.isRealized() {
         /* distribution was forced to realize by its parent; this must be
          * treated as a constant */
-        setValue(p!.realized());
+        x <- p!.value();
+        p <- nil;
       } else {
+        p!.prune();
         x <- p!.simulateLazy();
         p!.updateLazy(this);
         p!.unlink();
@@ -121,7 +117,8 @@ final class Random<Value> < Expression<Value> {
     if p!.isRealized() {
       /* distribution was forced to realize by its parent; this must be
        * treated as a constant */
-      setValue(p!.realized());
+      x <- p!.value();
+      p <- nil;
     }
   }
 
@@ -130,7 +127,8 @@ final class Random<Value> < Expression<Value> {
     if p!.isRealized() {
       /* distribution was forced to realize by its parent; this must be
        * treated as a constant */
-      setValue(p!.realized());
+      x <- p!.value();
+      p <- nil;
     } else {
       x <- κ.move(this);
     }
@@ -158,11 +156,13 @@ final class Random<Value> < Expression<Value> {
     return κ.zip(y!, this);
   }
 
-  override function doSetValue() {
-    p!.prune();
-    p!.update(x!);
-    p!.unlink();
-    p <- nil;
+  override function doAssign() {
+    if p? {
+      p!.prune();
+      p!.update(x!);
+      p!.unlink();
+      p <- nil;
+    }
   }
 
   override function graftGaussian() -> Gaussian? {

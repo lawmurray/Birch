@@ -57,7 +57,7 @@ abstract class Expression<Value> < DelayExpression {
    * treated as though of type Boxed.
    */
   operator <- x:Value {
-    this.x <- x;
+    assign(x);
   }
 
   /**
@@ -296,19 +296,19 @@ abstract class Expression<Value> < DelayExpression {
    *
    * - x: The value.
    */
-  final function setValue(x:Value) {
+  final function assign(x:Value) {
     assert !this.x?;
     this.x <- x;
     dfdx <- nil;
     count <- 0;
-    constant <- true;    
-    doSetValue();
+    constant <- true;
+    doAssign();
   }
   
   /*
    * Set the value; overridden by derived classes if necessary.
    */
-  function doSetValue() {
+  function doAssign() {
     //
   }
 

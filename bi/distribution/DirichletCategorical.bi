@@ -16,11 +16,11 @@ final class DirichletCategorical(ρ:Dirichlet) < Distribution<Integer> {
   }
 
   function update(x:Integer) {
-    ρ.α <- update_dirichlet_categorical(x, ρ.α.value());
+    ρ.α <- box(update_dirichlet_categorical(x, ρ.α.value()));
   }
 
   function downdate(x:Integer) {
-    ρ.α <- downdate_dirichlet_categorical(x, ρ.α.value());
+    ρ.α <- box(downdate_dirichlet_categorical(x, ρ.α.value()));
   }
 
   function lower() -> Integer? {

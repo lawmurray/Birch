@@ -31,15 +31,15 @@ final class LinearNormalInverseGammaGaussian(a:Expression<Real>,
   }
 
   function update(x:Real) {
-    (μ.μ, μ.λ, μ.σ2.α, μ.σ2.β) <- update_linear_normal_inverse_gamma_gaussian(
+    (μ.μ, μ.λ, μ.σ2.α, μ.σ2.β) <- box(update_linear_normal_inverse_gamma_gaussian(
         x, a.value(), μ.μ.value(), μ.λ.value(), c.value(), μ.σ2.α.value(), 
-        μ.σ2.β.value());
+        μ.σ2.β.value()));
   }
 
   function downdate(x:Real) {
-    (μ.μ, μ.λ, μ.σ2.α, μ.σ2.β) <- downdate_linear_normal_inverse_gamma_gaussian(
+    (μ.μ, μ.λ, μ.σ2.α, μ.σ2.β) <- box(downdate_linear_normal_inverse_gamma_gaussian(
         x, a.value(), μ.μ.value(), μ.λ.value(), c.value(), μ.σ2.α.value(),
-        μ.σ2.β.value());
+        μ.σ2.β.value()));
   }
 
   function cdf(x:Real) -> Real? {

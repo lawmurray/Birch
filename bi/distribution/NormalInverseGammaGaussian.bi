@@ -19,13 +19,13 @@ final class NormalInverseGammaGaussian(μ:NormalInverseGamma) <
   }
 
   function update(x:Real) {
-    (μ.μ, μ.λ, μ.σ2.α, μ.σ2.β) <- update_normal_inverse_gamma_gaussian(
-        x, μ.μ.value(), μ.λ.value(), μ.σ2.α.value(), μ.σ2.β.value());
+    (μ.μ, μ.λ, μ.σ2.α, μ.σ2.β) <- box(update_normal_inverse_gamma_gaussian(
+        x, μ.μ.value(), μ.λ.value(), μ.σ2.α.value(), μ.σ2.β.value()));
   }
 
   function downdate(x:Real) {
-    (μ.μ, μ.λ, μ.σ2.α, μ.σ2.β) <- downdate_normal_inverse_gamma_gaussian(
-        x, μ.μ.value(), μ.λ.value(), μ.σ2.α.value(), μ.σ2.β.value());
+    (μ.μ, μ.λ, μ.σ2.α, μ.σ2.β) <- box(downdate_normal_inverse_gamma_gaussian(
+        x, μ.μ.value(), μ.λ.value(), μ.σ2.α.value(), μ.σ2.β.value()));
   }
 
   function cdf(x:Real) -> Real? {

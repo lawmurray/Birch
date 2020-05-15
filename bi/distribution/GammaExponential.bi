@@ -16,11 +16,11 @@ final class GammaExponential(λ:Gamma) < Distribution<Real> {
   }
 
   function update(x:Real) {
-    (λ.k, λ.θ) <- update_gamma_exponential(x, λ.k.value(), λ.θ.value());
+    (λ.k, λ.θ) <- box(update_gamma_exponential(x, λ.k.value(), λ.θ.value()));
   }
 
   function downdate(x:Real) {
-    (λ.k, λ.θ) <- downdate_gamma_exponential(x, λ.k.value(), λ.θ.value());
+    (λ.k, λ.θ) <- box(downdate_gamma_exponential(x, λ.k.value(), λ.θ.value()));
   }
 
   function cdf(x:Real) -> Real? {

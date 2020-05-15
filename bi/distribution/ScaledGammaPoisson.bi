@@ -25,13 +25,13 @@ final class ScaledGammaPoisson(a:Expression<Real>, λ:Gamma) < Discrete {
   }
 
   function update(x:Integer) {
-    (λ.k, λ.θ) <- update_scaled_gamma_poisson(x, a.value(), λ.k.value(),
-        λ.θ.value());
+    (λ.k, λ.θ) <- box(update_scaled_gamma_poisson(x, a.value(), λ.k.value(),
+        λ.θ.value()));
   }
 
   function downdate(x:Integer) {
-    (λ.k, λ.θ) <- downdate_scaled_gamma_poisson(x, a.value(), λ.k.value(),
-        λ.θ.value());
+    (λ.k, λ.θ) <- box(downdate_scaled_gamma_poisson(x, a.value(), λ.k.value(),
+        λ.θ.value()));
   }
 
   function cdf(x:Integer) -> Real? {

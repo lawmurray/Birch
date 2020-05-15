@@ -22,11 +22,11 @@ final class DirichletMultinomial(n:Expression<Integer>, ρ:Dirichlet) <
   }
 
   function update(x:Integer[_]) {
-    ρ.α <- update_dirichlet_multinomial(x, n.value(), ρ.α.value());
+    ρ.α <- box(update_dirichlet_multinomial(x, n.value(), ρ.α.value()));
   }
 
   function downdate(x:Integer[_]) {
-    ρ.α <- downdate_dirichlet_multinomial(x, n.value(), ρ.α.value());
+    ρ.α <- box(downdate_dirichlet_multinomial(x, n.value(), ρ.α.value()));
   }
 
   function link() {

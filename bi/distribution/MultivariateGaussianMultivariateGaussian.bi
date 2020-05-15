@@ -14,11 +14,11 @@ final class MultivariateGaussianMultivariateGaussian(m:MultivariateGaussian,
   S:Expression<Real[_,_]> <- S;
 
   function update(x:Real[_]) {
-    (m.μ, m.Σ) <- update_multivariate_gaussian_multivariate_gaussian(x, m.μ.value(), m.Σ.value(), S.value());
+    (m.μ, m.Σ) <- box(update_multivariate_gaussian_multivariate_gaussian(x, m.μ.value(), m.Σ.value(), S.value()));
   }
 
   function downdate(x:Real[_]) {
-    (m.μ, m.Σ) <- downdate_multivariate_gaussian_multivariate_gaussian(x, m.μ.value(), m.Σ.value(), S.value());
+    (m.μ, m.Σ) <- box(downdate_multivariate_gaussian_multivariate_gaussian(x, m.μ.value(), m.Σ.value(), S.value()));
   }
 
   function link() {

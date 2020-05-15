@@ -27,13 +27,13 @@ final class MatrixNormalInverseWishartMatrixGaussian(
   }
 
   function update(X:Real[_,_]) {
-    (M.N, M.Λ, M.V.Ψ, M.V.k) <- update_matrix_normal_inverse_wishart_matrix_gaussian(
-        X, M.N.value(), M.Λ.value(), M.V.Ψ.value(), M.V.k.value());
+    (M.N, M.Λ, M.V.Ψ, M.V.k) <- box(update_matrix_normal_inverse_wishart_matrix_gaussian(
+        X, M.N.value(), M.Λ.value(), M.V.Ψ.value(), M.V.k.value()));
   }
 
   function downdate(X:Real[_,_]) {
-    (M.N, M.Λ, M.V.Ψ, M.V.k) <- downdate_matrix_normal_inverse_wishart_matrix_gaussian(
-        X, M.N.value(), M.Λ.value(), M.V.Ψ.value(), M.V.k.value());
+    (M.N, M.Λ, M.V.Ψ, M.V.k) <- box(downdate_matrix_normal_inverse_wishart_matrix_gaussian(
+        X, M.N.value(), M.Λ.value(), M.V.Ψ.value(), M.V.k.value()));
   }
 
   function link() {

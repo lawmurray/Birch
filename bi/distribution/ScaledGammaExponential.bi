@@ -22,13 +22,13 @@ class ScaledGammaExponential(a:Expression<Real>, λ:Gamma) <
   }
 
   function update(x:Real) {
-    (λ.k, λ.θ) <- update_scaled_gamma_exponential(x, a.value(),
-        λ.k.value(), λ.θ.value());
+    (λ.k, λ.θ) <- box(update_scaled_gamma_exponential(x, a.value(),
+        λ.k.value(), λ.θ.value()));
   }
   
   function downdate(x:Real) {
-    (λ.k, λ.θ) <- downdate_scaled_gamma_exponential(x, a.value(),
-        λ.k.value(), λ.θ.value());
+    (λ.k, λ.θ) <- box(downdate_scaled_gamma_exponential(x, a.value(),
+        λ.k.value(), λ.θ.value()));
   }
 
   function cdf(x:Real) -> Real? {

@@ -51,11 +51,11 @@ final class NormalInverseGamma(μ:Expression<Real>, a2:Expression<Real>,
   }
 
   function update(x:Real) {
-    (σ2.α, σ2.β) <- update_normal_inverse_gamma(x, μ.value(), λ.value(), σ2.α.value(), σ2.β.value());
+    (σ2.α, σ2.β) <- box(update_normal_inverse_gamma(x, μ.value(), λ.value(), σ2.α.value(), σ2.β.value()));
   }
 
   function downdate(x:Real) {
-    (σ2.α, σ2.β) <- downdate_normal_inverse_gamma(x, μ.value(), λ.value(), σ2.α.value(), σ2.β.value());
+    (σ2.α, σ2.β) <- box(downdate_normal_inverse_gamma(x, μ.value(), λ.value(), σ2.α.value(), σ2.β.value()));
   }
 
   function cdf(x:Real) -> Real? {
