@@ -174,7 +174,7 @@ public:
   /**
    * Get the class name.
    */
-  virtual const char* getClassName() const {
+  virtual bi::type::String getClassName() const {
     return "Any";
   }
 

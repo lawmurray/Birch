@@ -25,7 +25,7 @@ public:
    */
   Label(const Label& o);
 
-  virtual const char* getClassName() const {
+  virtual bi::type::String getClassName() const {
     return "Label";
   }
 

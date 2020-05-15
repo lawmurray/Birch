@@ -80,7 +80,7 @@
  * Use in place of LIBBIRCH_CLASS when the containing class is abstract.
  */
 #define LIBBIRCH_ABSTRACT_CLASS(Name, Base...) \
-  virtual const char* getClassName() const { \
+  virtual bi::type::String getClassName() const { \
     return #Name; \
   } \
   \
@@ -104,7 +104,7 @@
 #define LIBBIRCH_FIBER(Name, Base...) \
   LIBBIRCH_VIRTUALS(Name, Base...) \
   \
-  virtual const char* getClassName() const { \
+  virtual bi::type::String getClassName() const { \
     return #Name; \
   } \
   \
@@ -121,7 +121,7 @@
 #define LIBBIRCH_MEMBER_FIBER(Name, Base...) \
   LIBBIRCH_VIRTUALS(Name, Base...) \
   \
-  virtual const char* getClassName() const { \
+  virtual bi::type::String getClassName() const { \
     return #Name; \
   } \
   \
