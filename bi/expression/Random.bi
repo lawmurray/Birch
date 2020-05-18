@@ -15,27 +15,26 @@ final class Random<Value> < Expression<Value> {
    * Associated distribution.
    */
   p:Distribution<Value>?;
-  
-  /**
-   * Log-weight of prior.
-   */
-  w:Real <- 0.0;
 
   /**
    * Value assignment.
    */
   operator <- x:Value {
-    assert !p?;
-    assign(x);
+    assert !this.x?;
+    assert !this.p?;
+    this.x <- x;
+    this.flagValue <- true;
   }
 
   /**
-   * Optional value assignment.
+   * Optional assignment.
    */
   operator <- x:Value? {
-    assert !p?;
+    assert !this.x?;
+    assert !this.p?;
     if x? {
-      assign(x!);
+      this.x <- x!;
+      this.flagValue <- true;
     }
   }
   
@@ -89,46 +88,46 @@ final class Random<Value> < Expression<Value> {
   }
 
   override function doValue() {
-    if p? {
-      x <- p!.value();
-      p <- nil;
-    }
+    assert p?;
+    x <- p!.value();
+    p <- nil;
+  }
+
+  override function doMakeConstant() {
+    p <- nil;
   }
 
   override function doPilot() {
-    if p? {
-      if p!.isRealized() {
-        /* distribution was forced to realize by its parent; this must be
-         * treated as a constant */
-        x <- p!.value();
-        p <- nil;
-      } else {
-        p!.prune();
-        x <- p!.simulateLazy();
-        p!.updateLazy(this);
-        p!.unlink();
-        // keep p here, subsequent call to doPrior() may remove
-      }
-    }
-  }
-
-  override function doGrad() {
     assert p?;
     if p!.isRealized() {
       /* distribution was forced to realize by its parent; this must be
        * treated as a constant */
-      x <- p!.value();
-      p <- nil;
+      value();
+    } else {
+      p!.prune();
+      x <- p!.simulateLazy();
+      p!.updateLazy(this);
+      p!.unlink();
+    }
+  }
+
+  override function doRestoreCount() {
+    //
+  }
+
+  override function doGrad() {
+    if p? && p!.isRealized() {
+      /* distribution was forced to realize by its parent; this must be
+       * treated as a constant */
+      value();
     }
   }
 
   override function doMove(κ:Kernel) {
-    assert p?;
-    if p!.isRealized() {
+    if p? && p!.isRealized() {
       /* distribution was forced to realize by its parent; this must be
        * treated as a constant */
-      x <- p!.value();
-      p <- nil;
+      value();
     } else {
       x <- κ.move(this);
     }
@@ -150,19 +149,14 @@ final class Random<Value> < Expression<Value> {
     return nil;
   }
 
-  override function doZip(x':DelayExpression, κ:Kernel) -> Real {
-    auto y <- Random<Value>?(x');
+  override function doZip(x:DelayExpression, κ:Kernel) -> Real {
+    auto y <- Random<Value>?(x);
     assert y?;
-    return κ.zip(y!, this);
+    return κ.zip(this, y!);
   }
 
-  override function doAssign() {
-    if p? {
-      p!.prune();
-      p!.update(x!);
-      p!.unlink();
-      p <- nil;
-    }
+  override function doClearZip() {
+    //
   }
 
   override function graftGaussian() -> Gaussian? {

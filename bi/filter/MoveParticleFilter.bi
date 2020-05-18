@@ -83,8 +83,10 @@ class MoveParticleFilter < ParticleFilter {
         for m in 1..nmoves {
           auto x' <- clone(x);
           x'.move(κ);
-          auto α <- x'.π - x.π + x.zip(x', κ);          
+          x'.grad();
+          auto α <- x'.π - x.π - x'.zip(x, κ);          
           if log(simulate_uniform(0.0, 1.0)) <= α {
+            x'.clearZip();
             x <- x';  // accept
           }
         }

@@ -132,7 +132,7 @@ class MoveHandler(delayed:Boolean) < Handler {
         /* if the record has a value, we can set it now, even if its
          * simulation was delayed when originally played; such delays do not
          * change the distribution, only the way it is computed */
-        event.x.assign(record.x.value());
+        event.x <- record.x.value();
       }
       return 0.0;
     }

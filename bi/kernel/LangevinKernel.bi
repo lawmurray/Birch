@@ -43,11 +43,11 @@ class LangevinKernel < Kernel {
    * - x': Proposed state $x^\prime$.
    * - x: Current state $x$.
    *
-   * Returns: Log-ratio of proposal densities, $\log q(x \mid x^\prime) -
-   * \log q(x^\prime \mid x)$.
+   * Returns: Log-ratio of proposal densities, $\log q(x^\prime \mid x) -
+   * \log q(x \mid x^\prime)$.
    */
   override function zip(x':Random<Real>, x:Random<Real>) -> Real {
-    return logpdf(x, x') - logpdf(x', x);
+    return logpdf(x', x) - logpdf(x, x');
   }
 
   /**
@@ -57,11 +57,11 @@ class LangevinKernel < Kernel {
    * - x': Proposed state $x^\prime$.
    * - x: Current state $x$.
    *
-   * Returns: Log-ratio of proposal densities, $\log q(x \mid x^\prime) -
-   * \log q(x^\prime \mid x)$.
+   * Returns: Log-ratio of proposal densities, $\log q(x^\prime \mid x) -
+   * \log q(x \mid x^\prime)$.
    */
   override function zip(x':Random<Real[_]>, x:Random<Real[_]>) -> Real {
-    return logpdf(x, x') - logpdf(x', x);
+    return logpdf(x', x) - logpdf(x, x');
   }
 
   /**
@@ -71,11 +71,11 @@ class LangevinKernel < Kernel {
    * - x': Proposed state $x^\prime$.
    * - x: Current state $x$.
    *
-   * Returns: Log-ratio of proposal densities, $\log q(x \mid x^\prime) -
-   * \log q(x^\prime \mid x)$.
+   * Returns: Log-ratio of proposal densities, $\log q(x^\prime \mid x) -
+   * \log q(x \mid x^\prime)$.
    */
   override function zip(x':Random<Real[_,_]>, x:Random<Real[_,_]>) -> Real {
-    return logpdf(x, x') - logpdf(x', x);
+    return logpdf(x', x) - logpdf(x, x');
   }
   
   override function read(buffer:Buffer) {

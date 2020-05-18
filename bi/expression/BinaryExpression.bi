@@ -22,11 +22,21 @@ abstract class BinaryExpression<Left,Right,Value>(left:Expression<Left>,
     auto r <- right.value();
     x <- computeValue(l, r);
   }
+  
+  final override function doMakeConstant() {
+    left.makeConstant();
+    right.makeConstant();
+  }
 
   final override function doPilot() {
     auto l <- left.pilot();  // ensure left-to-right recursion
     auto r <- right.pilot();
     x <- computeValue(l, r);
+  }
+
+  final override function doRestoreCount() {
+    left.restoreCount();
+    right.restoreCount();
   }
 
   final override function doMove(κ:Kernel) {
@@ -59,12 +69,17 @@ abstract class BinaryExpression<Left,Right,Value>(left:Expression<Left>,
     }
   }
 
-  final override function doZip(x':DelayExpression, κ:Kernel) -> Real {
-    auto y <- BinaryExpression<Left,Right,Value>?(x');
+  final override function doZip(x:DelayExpression, κ:Kernel) -> Real {
+    auto y <- BinaryExpression<Left,Right,Value>?(x);
     assert y?;
     auto l <- left.zip(y!.left, κ);
     auto r <- right.zip(y!.right, κ);
     return l + r;
+  }
+  
+  final override function doClearZip() {
+    left.clearZip();
+    right.clearZip();
   }
 
   /**

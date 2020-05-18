@@ -14,7 +14,15 @@ final class Boxed<Value> < Expression<Value> {
     //
   }
 
+  override function doMakeConstant() {
+    //
+  }
+
   override function doPilot() {
+    //
+  }
+
+  override function doRestoreCount() {
     //
   }
 
@@ -30,9 +38,13 @@ final class Boxed<Value> < Expression<Value> {
     return nil;
   }
 
-  override function doZip(x':DelayExpression, κ:Kernel) -> Real {
-    assert Boxed<Value>?(x')?;
+  override function doZip(x:DelayExpression, κ:Kernel) -> Real {
+    assert Boxed<Value>?(x)?;
     return 0.0;
+  }
+
+  override function doClearZip() {
+    //
   }
 }
 

@@ -34,52 +34,7 @@ abstract class Expression<Value> < DelayExpression {
   /**
    * Accumulated gradient.
    */
-  dfdx:Value?;
-  
-  /**
-   * Count of the number of times `pilot()` or `move()` has been called on
-   * this, minus the number of times `grad()` has been called. This is used
-   * to accumulate upstream gradients before recursing into a subexpression
-   * that may be shared.
-   */
-  count:Integer <- 0;
-  
-  /**
-   * Is this constant? An expression is constant once `value()` has been
-   * called on it. All subexpressions are necessarily also then constant,
-   * including any Random objects that occur, which become constants, not
-   * variables, for the purpose of `grad()` and `move()`.
-   */
-  constant:Boolean <- false;
-
-  /**
-   * Value assignment. Once an expression has been assigned a value, it is
-   * treated as though of type Boxed.
-   */
-  operator <- x:Value {
-    assign(x);
-  }
-
-  /**
-   * Length of result. This is equal to `rows()`.
-   */
-  final function length() -> Integer {
-    return rows();
-  }
-
-  /**
-   * Number of rows in result.
-   */
-  function rows() -> Integer {
-    return 1;
-  }
-  
-  /**
-   * Number of columns in result.
-   */
-  function columns() -> Integer {
-    return 1;
-  }    
+  dfdx:Value?;  
 
   /**
    * Get the memoized value of the expression, assuming it has already been
@@ -98,31 +53,51 @@ abstract class Expression<Value> < DelayExpression {
   }
 
   /**
-   * Evaluate and sever. Evaluates the expression and severs any references
-   * to subexpressions, such as operands and arguments, as they are no longer
-   * required.
+   * Evaluate and make constant.
    *
    * Returns: The evaluated value of the expression.
+   *
+   * An expression is considered constant once `value()` has been called on
+   * it. All subexpressions are necessarily also then constant, including any
+   * Random objects that occur, which are no longer considered variables for
+   * the purpose of `grad()` and `move()`.
+   *
+   * If this is not the intended behavior, consider `pilot()`.
    */
   final function value() -> Value {
-    count <- 0;
-    constant <- true;
-    if !x? {
-      doValue();
-      dfdx <- nil;
+    if !flagValue {
+      if !x? {
+        doValue();
+      } else {
+        doMakeConstant();
+      }
+      flagValue <- true;
     }
     return x!;
   }
   
   /*
-   * Evaluate and sever; overridden by derived classes.
+   * Evaluate and make constant for `value()`.
    */
   abstract function doValue();
 
+  /*
+   * Make constant. This is used when a value has already been evaluated
+   * (e.g. with `pilot()`), to make the expression constant.
+   */
+  final function makeConstant() {
+    assert x?;
+    doMakeConstant();
+    flagValue <- true;
+  }
+
+  /*
+   * Make constant for `value()`.
+   */
+  abstract function doMakeConstant();
+
   /**
-   * Evaluate and preserve. Evaluates the expression and preserves any
-   * references to subexpressions, such as operands and arguments, as they
-   * may yet be needed for gradient or Markov kernel computations.
+   * Evaluate with count.
    *
    * Returns: The evaluated value of the expression.
    *
@@ -152,20 +127,39 @@ abstract class Expression<Value> < DelayExpression {
    *     resulting in an invalid trace and incorrect results.
    */
   final function pilot() -> Value {
-    if !constant {
-      if count == 0 {
+    if count == 0 {
+      if !x? {
         doPilot();
-        dfdx <- nil;
+      } else {
+        doRestoreCount();
       }
-      count <- count + 1;
     }
+    count <- count + 1;
     return x!;
   }
   
   /*
-   * Evaluate and preserve; overridden by derived classes.
+   * Evaluate and count for `pilot()`.
    */
   abstract function doPilot();
+  
+  /*
+   * Restore count. This is used when a value has already been evaluated
+   * (e.g. with `pilot()`), but a subsequent call to e.g. `grad()` has
+   * updated the count. This call restores it.
+   */
+  final function restoreCount() {
+    assert x?;
+    if count == 0 {
+      doRestoreCount();
+    }
+    count <- count + 1;
+  }
+  
+  /*
+   * Count for `pilot()`.
+   */
+  abstract function doRestoreCount();
 
   /**
    * Evaluate gradients. Gradients are computed with respect to all
@@ -198,7 +192,7 @@ abstract class Expression<Value> < DelayExpression {
    * the final result.
    */
   final function grad(d:Value) {
-    if !constant {
+    if !flagValue {
       /* accumulate gradient */
       if dfdx? {
         dfdx <- add(dfdx!, d);
@@ -206,17 +200,17 @@ abstract class Expression<Value> < DelayExpression {
         dfdx <- d;
       }
 
-      /* continue recursion if all upstream gradients accumulated */
       assert count > 0;
       count <- count - 1;
       if count == 0 {
+        /* all upstream gradients accumulated, continue recursion */
         doGrad();
       }
     }
   }
   
   /*
-   * Evaluate gradient; overridden by derived classes.
+   * Evaluate gradient.
    */
   abstract function doGrad();
 
@@ -230,7 +224,7 @@ abstract class Expression<Value> < DelayExpression {
    * Returns: The evaluated value of the expression.
    */
   final function move(κ:Kernel) -> Value {
-    if !constant {
+    if !flagValue {
       if count == 0 {
         doMove(κ);
         dfdx <- nil;
@@ -241,7 +235,7 @@ abstract class Expression<Value> < DelayExpression {
   }
 
   /*
-   * Move and re-evaluate; overridden by derived classes.
+   * Move and re-evaluate.
    */
   abstract function doMove(κ:Kernel);
 
@@ -253,7 +247,12 @@ abstract class Expression<Value> < DelayExpression {
    * zero.
    */
   final function prior() -> Expression<Real>? {
-    return doPrior();
+    if !flagPrior {
+      flagPrior <- true;
+      return doPrior();
+    } else {
+      return nil;
+    }
   }
 
   /*
@@ -264,53 +263,47 @@ abstract class Expression<Value> < DelayExpression {
   
   /**
    * Finalize contribution to the log-acceptance probability for the
-   * proposed and current states. This object is considered the current state
-   * $x$.
+   * proposed and current states. This object is considered the proposed
+   * state $x^\prime$.
    *
-   * - x': Proposed state $x^\prime$. This must be an expression of the same
-   *       structure as this ($x$) but with potentially different values.
+   * - x: Current state $x$. This must be an expression of the same structure
+   *      as this ($x^\prime$) but with potentially different values.
    * - κ: Markov kernel.
    *
    * Returns: contribution to the log-acceptance probability, as required for
    * the particular kernel.
    */
-  final function zip(x':DelayExpression, κ:Kernel) -> Real {
-    if !constant {
-      assert count > 0;
-      count <- count - 1;
-      if count == 0 {
-        return doZip(x', κ);
-      }
+  final function zip(x:DelayExpression, κ:Kernel) -> Real {
+    if !flagValue && !flagZip {
+      flagZip < true;
+      return doZip(x, κ);
+    } else {
+      return 0.0;
     }
-    return 0.0;
   }
 
   /*
    * Finalize contribution to the log-acceptance probability for the
    * proposed and current states.
    */
-  abstract function doZip(x':DelayExpression, κ:Kernel) -> Real;
+  abstract function doZip(x:DelayExpression, κ:Kernel) -> Real;
 
   /**
-   * Set the value.
-   *
-   * - x: The value.
+   * Clear zip flag. If multiple calls to `zip()` are required, call this
+   * in between to reset the flag used to short-circuit visits to shared
+   * subexpressions.
    */
-  final function assign(x:Value) {
-    assert !this.x?;
-    this.x <- x;
-    dfdx <- nil;
-    count <- 0;
-    constant <- true;
-    doAssign();
+  final function clearZip() {
+    if flagZip {
+      flagZip <- false;
+      doClearZip();
+    }
   }
-  
+
   /*
-   * Set the value; overridden by derived classes if necessary.
+   * Clear zip flag.
    */
-  function doAssign() {
-    //
-  }
+  abstract function doClearZip();
 
   /*
    * Attempt to graft this expression onto the delayed sampling graph.

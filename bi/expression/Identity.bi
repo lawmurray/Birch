@@ -19,8 +19,16 @@ final class Identity<Value>(n:Integer) < Expression<Value> {
     x <- identity(n);
   }
 
+  override function doMakeConstant() {
+    //
+  }
+
   override function doPilot() {
     x <- identity(n);
+  }
+
+  override function doRestoreCount() {
+    //
   }
 
   override function doMove(κ:Kernel) {
@@ -35,9 +43,13 @@ final class Identity<Value>(n:Integer) < Expression<Value> {
     return nil;
   }
 
-  override function doZip(x':DelayExpression, κ:Kernel) -> Real {
-    assert Identity<Value>?(x')?;
+  override function doZip(x:DelayExpression, κ:Kernel) -> Real {
+    assert Identity<Value>?(x)?;
     return 0.0;
+  }
+
+  override function doClearZip() {
+    //
   }
 }
 

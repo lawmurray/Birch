@@ -14,9 +14,17 @@ abstract class UnaryExpression<Argument,Value>(single:Expression<Argument>) <
   final override function doValue() {
     x <- computeValue(single.value());
   }
+
+  final override function doMakeConstant() {
+    single.makeConstant();
+  }
   
   final override function doPilot() {
     x <- computeValue(single.pilot());
+  }
+
+  final override function doRestoreCount() {
+    single.restoreCount();
   }
 
   final override function doMove(κ:Kernel) {
@@ -31,10 +39,14 @@ abstract class UnaryExpression<Argument,Value>(single:Expression<Argument>) <
     return single.prior();
   }
 
-  final override function doZip(x':DelayExpression, κ:Kernel) -> Real {
-    auto y <- UnaryExpression<Argument,Value>?(x');
+  final override function doZip(x:DelayExpression, κ:Kernel) -> Real {
+    auto y <- UnaryExpression<Argument,Value>?(x);
     assert y?;
     return single.zip(y!.single, κ);
+  }
+
+  final override function doClearZip() {
+    single.clearZip();
   }
 
   /**
