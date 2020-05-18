@@ -8,6 +8,11 @@
  */
 class MoveParticleFilter < ParticleFilter {
   /**
+   * Number of moves accepted for each particle.
+   */
+  naccepts:Integer[_];
+
+  /**
    * Scale of moves.
    */
   scale:Real <- 0.1;
@@ -19,6 +24,11 @@ class MoveParticleFilter < ParticleFilter {
 
   function particle(archetype:Model) -> Particle {
     return MoveParticle(archetype);
+  }
+
+  override function filter(archetype:Model) {
+    super.filter(archetype);
+    naccepts <- vector(0, nparticles);
   }
 
   override function start() {
@@ -40,6 +50,8 @@ class MoveParticleFilter < ParticleFilter {
   }
 
   override function resample(t:Integer) {
+    naccepts <- vector(0, nparticles);
+  
     /* throughout, we use the property that `a[n] == n` if and only if
      * particle `n` has survived resampling */
     auto triggered <- ess <= trigger*nparticles;
@@ -86,8 +98,10 @@ class MoveParticleFilter < ParticleFilter {
           x'.grad();
           auto α <- x'.π - x.π - x'.zip(x, κ);          
           if log(simulate_uniform(0.0, 1.0)) <= α {
+            /* accept */
             x'.clearZip();
-            x <- x';  // accept
+            x <- x';
+            naccepts[n] <- naccepts[n] + 1;
           }
         }
         this.x[n] <- x;
@@ -95,13 +109,18 @@ class MoveParticleFilter < ParticleFilter {
     }
   }
 
-  function read(buffer:Buffer) {
+  override function reduce() {
+    super.reduce();
+    raccept <- Real(sum(naccepts))/(nparticles*nmoves);
+  }
+
+  override function read(buffer:Buffer) {
     super.read(buffer);
     scale <-? buffer.get("scale", scale);
     nmoves <-? buffer.get("nmoves", nmoves);
   }
 
-  function write(buffer:Buffer) {
+  override function write(buffer:Buffer) {
     super.write(buffer);
     buffer.set("scale", scale);
     buffer.set("nmoves", nmoves);

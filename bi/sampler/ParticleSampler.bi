@@ -33,6 +33,11 @@ abstract class ParticleSampler {
   npropagations:Vector<Real>;
 
   /**
+   * Acceptance rate at each step.
+   */
+  raccepts:Vector<Real>;
+
+  /**
    * Number of samples.
    */
   nsamples:Integer <- 1;
@@ -69,13 +74,14 @@ abstract class ParticleSampler {
   abstract function sample(filter:ParticleFilter, archetype:Model, n:Integer);
   
   /**
-   * Clear diagnostics. These are the record sof ESS, normalizing constants,
+   * Clear diagnostics. These are the records of ESS, normalizing constants,
    * etc.
    */
   function clearDiagnostics() {
     lnormalize.clear();
     ess.clear();
     npropagations.clear();
+    raccepts.clear();
   }
   
   /**
@@ -85,6 +91,7 @@ abstract class ParticleSampler {
     lnormalize.pushBack(filter.lnormalize);
     ess.pushBack(filter.ess);
     npropagations.pushBack(filter.npropagations);
+    raccepts.pushBack(filter.raccept);
   }
   
   /**
@@ -96,6 +103,7 @@ abstract class ParticleSampler {
     buffer.set("lnormalize", lnormalize);
     buffer.set("ess", ess);
     buffer.set("npropagations", npropagations);
+    buffer.set("raccepts", raccepts);
   }
   
   function read(buffer:Buffer) {

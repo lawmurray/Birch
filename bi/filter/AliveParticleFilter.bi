@@ -59,7 +59,7 @@ class AliveParticleFilter < ParticleFilter {
   }
   
   override function reduce() {
-    npropagations <- sum(p);
     super.reduce();
+    npropagations <- sum(p);
   }
 }

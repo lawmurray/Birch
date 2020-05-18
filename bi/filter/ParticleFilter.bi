@@ -44,6 +44,11 @@ class ParticleFilter {
    * control particle filters.
    */
   npropagations:Integer <- 0;
+  
+  /**
+   * Accept rate of moves.
+   */
+  raccept:Real <- 0.0;
 
   /**
    * Number of steps. If this has no value, the model will be required to
