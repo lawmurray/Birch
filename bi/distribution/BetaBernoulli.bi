@@ -28,7 +28,7 @@ final class BetaBernoulli(ρ:Beta) < Distribution<Boolean> {
   }
   
   function unlink() {
-    ρ.releaseChild();
+    ρ.releaseChild(this);
   }
 }
 

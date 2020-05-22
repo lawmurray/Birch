@@ -133,12 +133,14 @@ final class Random<Value> < Expression<Value> {
     }
   }
 
-  override function doPrior() -> Expression<Real>? {
+  override function doPrior(vars:RaggedArray<DelayExpression>) ->
+      Expression<Real>? {
     if p? {
       auto p1 <- p!.logpdfLazy(this);
       p <- nil;
       if p1? {
-        auto p2 <- p1!.prior();
+        vars.pushBack(this);
+        auto p2 <- p1!.prior(vars);
         if p2? {
           return p1! + p2!;
         } else {
@@ -148,15 +150,19 @@ final class Random<Value> < Expression<Value> {
     }
     return nil;
   }
-
-  override function doZip(x:DelayExpression, κ:Kernel) -> Real {
-    auto y <- Random<Value>?(x);
+  
+  override function logpdf(x':DelayExpression, κ:Kernel) -> Real {
+    auto y <- Random<Value>?(x');
     assert y?;
-    return κ.zip(this, y!);
-  }
-
-  override function doClearZip() {
-    //
+    assert y!.flagValue == flagValue;
+      
+    if flagValue {
+      /* constant */
+      return 0.0;
+    } else {
+      /* variable */
+      return κ.logpdf(y!, this);
+    }
   }
 
   override function graftGaussian() -> Gaussian? {

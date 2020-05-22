@@ -92,7 +92,7 @@ final class MultivariateNormalInverseGamma(μ:Expression<Real[_]>,
   }
   
   function unlink() {
-    σ2.releaseChild();
+    σ2.releaseChild(this);
   }
 
   function write(buffer:Buffer) {

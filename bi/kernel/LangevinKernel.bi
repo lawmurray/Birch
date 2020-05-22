@@ -35,48 +35,6 @@ class LangevinKernel < Kernel {
   override function logpdf(x':Random<Real[_,_]>, x:Random<Real[_,_]>) -> Real {
     return logpdf_matrix_gaussian(x'.x!, x.x! + scale*x.dfdx!, 2.0*scale);
   }
-
-  /**
-   * Finalize contribution to the log-acceptance probability for the
-   * proposed and current states.
-   *
-   * - x': Proposed state $x^\prime$.
-   * - x: Current state $x$.
-   *
-   * Returns: Log-ratio of proposal densities, $\log q(x^\prime \mid x) -
-   * \log q(x \mid x^\prime)$.
-   */
-  override function zip(x':Random<Real>, x:Random<Real>) -> Real {
-    return logpdf(x', x) - logpdf(x, x');
-  }
-
-  /**
-   * Finalize contribution to the log-acceptance probability for the
-   * proposed and current states.
-   *
-   * - x': Proposed state $x^\prime$.
-   * - x: Current state $x$.
-   *
-   * Returns: Log-ratio of proposal densities, $\log q(x^\prime \mid x) -
-   * \log q(x \mid x^\prime)$.
-   */
-  override function zip(x':Random<Real[_]>, x:Random<Real[_]>) -> Real {
-    return logpdf(x', x) - logpdf(x, x');
-  }
-
-  /**
-   * Finalize contribution to the log-acceptance probability for the
-   * proposed and current states.
-   *
-   * - x': Proposed state $x^\prime$.
-   * - x: Current state $x$.
-   *
-   * Returns: Log-ratio of proposal densities, $\log q(x^\prime \mid x) -
-   * \log q(x \mid x^\prime)$.
-   */
-  override function zip(x':Random<Real[_,_]>, x:Random<Real[_,_]>) -> Real {
-    return logpdf(x', x) - logpdf(x, x');
-  }
   
   override function read(buffer:Buffer) {
     super.read(buffer);

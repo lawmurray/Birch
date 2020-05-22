@@ -37,7 +37,7 @@ final class MultivariateNormalInverseGammaMultivariateGaussian(
   }
   
   function unlink() {
-    μ.releaseChild();
+    μ.releaseChild(this);
   }
 }
 

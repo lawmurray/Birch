@@ -89,17 +89,16 @@ class MoveParticleFilter < ParticleFilter {
       
       /* move particles */
       κ:LangevinKernel;
-      κ.scale <- scale/(t + 1.0);
+      κ.scale <- scale/pow(t + 1.0, 2.0);
       parallel for n in 1..nparticles {
         auto x <- MoveParticle?(this.x[n])!;
         for m in 1..nmoves {
           auto x' <- clone(x);
           x'.move(κ);
           x'.grad();
-          auto α <- x'.π - x.π - x'.zip(x, κ);          
+          auto α <- x'.π - x.π + x'.logpdf(x, κ) - x.logpdf(x', κ);          
           if log(simulate_uniform(0.0, 1.0)) <= α {
             /* accept */
-            x'.clearZip();
             x <- x';
             naccepts[n] <- naccepts[n] + 1;
           }

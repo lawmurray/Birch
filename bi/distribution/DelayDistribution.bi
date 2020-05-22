@@ -28,6 +28,9 @@ abstract class DelayDistribution {
   /**
    * Set the $M$-path child of this node. This is used internally by the
    * `link()` member function of the child node.
+   *
+   * - child: The child node. The current child must match this node, or
+   *   there must be no current child.
    */
   final function setChild(child:DelayDistribution) {
     assert !this.child? || this.child! == child;
@@ -37,8 +40,12 @@ abstract class DelayDistribution {
   /**
    * Release the $M$-path child of this node. This is used internally by the
    * `unlink()` member function of the child node.
+   *
+   * - child: The child node. The current child must match this node, or
+   *   there must be no current child.
    */
-  final function releaseChild() {
+  final function releaseChild(child:DelayDistribution) {
+    assert !this.child? || this.child! == child;
     this.child <- nil;
   }
 
@@ -48,7 +55,7 @@ abstract class DelayDistribution {
   function link() {
     //
   }
-  
+
   /**
    * Remove links with the parent node on the $M$-path.
    */

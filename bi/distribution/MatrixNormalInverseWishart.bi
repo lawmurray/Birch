@@ -58,7 +58,7 @@ final class MatrixNormalInverseWishart(M:Expression<Real[_,_]>,
   }
   
   function unlink() {
-    V.releaseChild();
+    V.releaseChild(this);
   }
 
   function write(buffer:Buffer) {

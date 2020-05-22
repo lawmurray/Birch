@@ -155,6 +155,14 @@ public:
   }
 
   /**
+   * Is this object destroyed? An object is destroyed if there only exist
+   * weak pointers to it.
+   */
+  bool isDestroyed() const {
+    return numShared() == 0u && numMemoShared() == 0u;
+  }
+
+  /**
    * Is there definitely only one pointer to this object? This is
    * conservative; it returns true if there is at most one shared or weak
    * pointer to the object. Note, in particular, that the presence of a memo

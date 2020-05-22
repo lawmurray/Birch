@@ -34,7 +34,7 @@ final class DirichletMultinomial(n:Expression<Integer>, ρ:Dirichlet) <
   }
   
   function unlink() {
-    ρ.releaseChild();
+    ρ.releaseChild(this);
   }
 }
 

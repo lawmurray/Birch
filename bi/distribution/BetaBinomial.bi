@@ -49,7 +49,7 @@ final class BetaBinomial(n:Expression<Integer>, ρ:Beta) < BoundedDiscrete {
   }
   
   function unlink() {
-    ρ.releaseChild();
+    ρ.releaseChild(this);
   }
 }
 

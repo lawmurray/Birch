@@ -45,7 +45,7 @@ final class LinearMatrixNormalInverseGammaMatrixGaussian(
   }
   
   function unlink() {
-    M.releaseChild();
+    M.releaseChild(this);
   }
 }
 

@@ -113,8 +113,8 @@ final class AddBoundedDiscrete(x1:BoundedDiscrete, x2:BoundedDiscrete) <
   
   function unlink() {
     // clamp() used instead for discrete enumerations
-    //x1.releaseChild();
-    //x2.releaseChild();
+    //x1.releaseChild(this);
+    //x2.releaseChild(this);
   }
 }
 

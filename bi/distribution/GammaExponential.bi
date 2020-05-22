@@ -40,7 +40,7 @@ final class GammaExponential(λ:Gamma) < Distribution<Real> {
   }
   
   function unlink() {
-    λ.releaseChild();
+    λ.releaseChild(this);
   }
 }
 

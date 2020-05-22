@@ -51,7 +51,7 @@ final class ScaledGammaPoisson(a:Expression<Real>, λ:Gamma) < Discrete {
   }
   
   function unlink() {
-    λ.releaseChild();
+    λ.releaseChild(this);
   }
 }
 

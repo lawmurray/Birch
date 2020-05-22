@@ -44,7 +44,7 @@ final class GammaPoisson(λ:Gamma) < Discrete {
   }
   
   function unlink() {
-    λ.releaseChild();
+    λ.releaseChild(this);
   }
 }
 

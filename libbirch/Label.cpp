@@ -32,8 +32,9 @@ libbirch::Any* libbirch::Label::mapGet(Any* o) {
 	  next = prev;
 	}
   if (frozen) {
+    assert(!next->isDestroyed());
     Any* cloned;
-    if (next->isUnique()) {
+    if (false && next->isUnique()) {
       /* final-reference optimization: the pointer being updated is the final
        * remaining pointer to the object, rather than copying the object and
        * then destroying it, recycle the object to be the copy */
@@ -45,7 +46,7 @@ libbirch::Any* libbirch::Label::mapGet(Any* o) {
       /* single-reference optimization: at the time of freezing, if there was
        * only one reference to the object, it need not be memoized, as there
        * are no other pointers to update to the copy */
-      if (!next->isFrozenUnique()) {
+      if (true || !next->isFrozenUnique()) {
         memo.put(next, cloned);
         thaw();
       }

@@ -74,7 +74,7 @@ final class MatrixNormalInverseGamma(M:Expression<Real[_,_]>,
   }
   
   function unlink() {
-    σ2.releaseChild();
+    σ2.releaseChild(this);
   }
 
   function write(buffer:Buffer) {

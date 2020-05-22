@@ -46,7 +46,7 @@ final class DiscreteDelta(μ:Discrete) < Discrete {
   
   function unlink() {
     // clamp() used instead for discrete enumerations
-    //μ.releaseChild();
+    //μ.releaseChild(this);
   }
 }
 

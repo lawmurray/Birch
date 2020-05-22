@@ -26,7 +26,7 @@ final class MultivariateGaussianMultivariateGaussian(m:MultivariateGaussian,
   }
   
   function unlink() {
-    m.releaseChild();
+    m.releaseChild(this);
   }
 }
 

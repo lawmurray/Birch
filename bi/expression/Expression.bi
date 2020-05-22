@@ -240,28 +240,6 @@ abstract class Expression<Value> < DelayExpression {
    * Move and re-evaluate.
    */
   abstract function doMove(κ:Kernel);
-
-  /**
-   * Construct a lazy expression for the log-prior.
-   *
-   * Returns: If the expression is a variable, the log-prior expression,
-   * otherwise nil, which may be interpreted as the log-prior evaluating to
-   * zero.
-   */
-  final function prior() -> Expression<Real>? {
-    if !flagPrior {
-      flagPrior <- true;
-      return doPrior();
-    } else {
-      return nil;
-    }
-  }
-
-  /*
-   * Construct a lazy expression for the log-prior; overridden by derived
-   * classes.
-   */
-  abstract function doPrior() -> Expression<Real>?;
   
   /*
    * Attempt to graft this expression onto the delayed sampling graph.

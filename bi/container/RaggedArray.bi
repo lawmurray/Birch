@@ -104,14 +104,21 @@ final class RaggedArray<Type> {
   } 
 
   /**
-   * Add a new row at the back.
+   * Add a new row at the end.
    */
   function pushBack() {
     enlarge(nrows + 1);
   }
 
   /**
-   * Add a new element to the end of a row.
+   * Add a new element to the end of the last row.
+   */
+  function pushBack(x:Type) {
+    pushBack(nrows, x);
+  }
+
+  /**
+   * Add a new element to the end of a specified row.
    *
    * - i: Row.
    * - x: Value.

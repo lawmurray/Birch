@@ -55,9 +55,10 @@ abstract class BinaryExpression<Left,Right,Value>(left:Expression<Left>,
     right.grad(dr);
   }
   
-  final override function doPrior() -> Expression<Real>? {
-    auto l <- left.prior();
-    auto r <- right.prior();
+  final override function doPrior(vars:RaggedArray<DelayExpression>) ->
+      Expression<Real>? {
+    auto l <- left.prior(vars);
+    auto r <- right.prior(vars);
     if l? && r? {
       return l! + r!;
     } else if l? {
@@ -67,19 +68,6 @@ abstract class BinaryExpression<Left,Right,Value>(left:Expression<Left>,
     } else {
       return nil;
     }
-  }
-
-  final override function doZip(x:DelayExpression, κ:Kernel) -> Real {
-    auto y <- BinaryExpression<Left,Right,Value>?(x);
-    assert y?;
-    auto l <- left.zip(y!.left, κ);
-    auto r <- right.zip(y!.right, κ);
-    return l + r;
-  }
-  
-  final override function doClearZip() {
-    left.clearZip();
-    right.clearZip();
   }
 
   /**

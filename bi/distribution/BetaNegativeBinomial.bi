@@ -41,7 +41,7 @@ final class BetaNegativeBinomial(k:Expression<Integer>, ρ:Beta) < Discrete {
   }
   
   function unlink() {
-    ρ.releaseChild();
+    ρ.releaseChild(this);
   }
 }
 

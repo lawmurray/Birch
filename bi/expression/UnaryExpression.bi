@@ -35,18 +35,9 @@ abstract class UnaryExpression<Argument,Value>(single:Expression<Argument>) <
     single.grad(computeGrad(dfdx!, single.get()));
   }
 
-  final override function doPrior() -> Expression<Real>? {
-    return single.prior();
-  }
-
-  final override function doZip(x:DelayExpression, κ:Kernel) -> Real {
-    auto y <- UnaryExpression<Argument,Value>?(x);
-    assert y?;
-    return single.zip(y!.single, κ);
-  }
-
-  final override function doClearZip() {
-    single.clearZip();
+  final override function doPrior(vars:RaggedArray<DelayExpression>) ->
+      Expression<Real>? {
+    return single.prior(vars);
   }
 
   /**

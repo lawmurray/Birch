@@ -42,7 +42,7 @@ final class InverseGammaGamma(k:Expression<Real>, θ:InverseGamma) <
   }
   
   function unlink() {
-    θ.releaseChild();
+    θ.releaseChild(this);
   }
 }
 

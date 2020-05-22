@@ -48,7 +48,7 @@ class ScaledGammaExponential(a:Expression<Real>, λ:Gamma) <
   }
   
   function unlink() {
-    λ.releaseChild();
+    λ.releaseChild(this);
   }
 }
 

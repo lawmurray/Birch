@@ -81,7 +81,7 @@ final class NormalInverseGamma(μ:Expression<Real>, a2:Expression<Real>,
   }
   
   function unlink() {
-    σ2.releaseChild();
+    σ2.releaseChild(this);
   }
 
   function write(buffer:Buffer) {

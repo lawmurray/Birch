@@ -59,7 +59,7 @@ final class LinearNormalInverseGammaGaussian(a:Expression<Real>,
   }
   
   function unlink() {
-    μ.releaseChild();
+    μ.releaseChild(this);
   }
 }
 

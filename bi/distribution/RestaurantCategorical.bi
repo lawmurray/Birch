@@ -35,7 +35,7 @@ final class RestaurantCategorical(ρ:Restaurant) < Distribution<Integer> {
   }
   
   function unlink() {
-    ρ.releaseChild();
+    ρ.releaseChild(this);
   }
 }
 

@@ -30,7 +30,7 @@ final class GaussianGaussian(m:Gaussian, s2:Expression<Real>) <
   }
   
   function unlink() {
-    m.releaseChild();
+    m.releaseChild(this);
   }
 }
 

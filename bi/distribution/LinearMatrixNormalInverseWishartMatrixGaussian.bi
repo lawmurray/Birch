@@ -45,7 +45,7 @@ final class LinearMatrixNormalInverseWishartMatrixGaussian(
   }
   
   function unlink() {
-    M.releaseChild();
+    M.releaseChild(this);
   }
 }
 

@@ -22,6 +22,11 @@ class MoveParticle(m:Model) < Particle(m) {
   p:Vector<Expression<Real>>;
   
   /**
+   * Variables. Each row collects the variables encountered in a single step.
+   */
+  vars:RaggedArray<DelayExpression>;
+  
+  /**
    * Log-posterior density.
    */
   π:Real <- 0.0;
@@ -56,9 +61,11 @@ class MoveParticle(m:Model) < Particle(m) {
    * Update the prior after one or more calls to `add()`.
    */
   function prior() {
+    assert vars.size() == p.size();
     for t in (p.size() + 1)..z.size() {
+      vars.pushBack();
       auto z <- this.z.get(t);
-      auto p <- z.prior();
+      auto p <- z.prior(vars);
       if p? {
         π <- π + p!.pilot();
         this.p.pushBack(p!);
@@ -68,7 +75,8 @@ class MoveParticle(m:Model) < Particle(m) {
         this.p.pushBack(p);
       }
     }
-    assert z.size() == p.size();
+    assert p.size() == z.size();
+    assert vars.size() == z.size();
   }
   
   /**
@@ -103,38 +111,24 @@ class MoveParticle(m:Model) < Particle(m) {
   }
 
   /**
-   * Finalize contribution to the log-acceptance probability for the
-   * proposed and current particles.
+   * Compute the log-pdf of a proposed state. This object is considered the
+   * current state, $x$.
    *
-   * - x: Current particle $x.
+   * - x': Proposed state $x^\prime$.
    * - κ: Markov kernel.
    *
-   * This particle is considered the proposed particle, $x^\prime$.
-   *
-   * Returns: contribution to the log-acceptance probability, as required for
-   * the particular kernel.
+   * Returns: $\log q(x^\prime \mid x)$.
    */
-  function zip(x:MoveParticle, κ:Kernel) -> Real {
-    assert n == z.size();
-    assert n == p.size();
-    auto r <- 0.0;
-    for t in 1..n {
-      r <- r + z.get(t).zip(x.z.get(t), κ);
-      r <- r + p.get(t).zip(x.p.get(t), κ);
+  function logpdf(x':MoveParticle, κ:Kernel) -> Real {
+    assert vars.size() == x'.vars.size();
+    auto q <- 0.0;
+    for t in 1..vars.size() {
+      assert vars.size(t) == x'.vars.size(t);
+      for i in 1..vars.size(t) {
+        q <- q + vars.get(t, i).logpdf(x'.vars.get(t, i), κ);
+      }
     }
-    return r;
-  }
-  
-  /**
-   * Clear zip flags.
-   */
-  function clearZip() {
-    assert n == z.size();
-    assert n == p.size();
-    for t in 1..n {
-      z.get(t).clearZip();
-      p.get(t).clearZip();
-    }
+    return q;
   }
   
   /**

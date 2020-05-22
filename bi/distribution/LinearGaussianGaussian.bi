@@ -41,7 +41,7 @@ final class LinearGaussianGaussian(a:Expression<Real>, m:Gaussian,
   }
   
   function unlink() {
-    m.releaseChild();
+    m.releaseChild(this);
   }
 }
 

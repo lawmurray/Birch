@@ -66,7 +66,7 @@ final class LinearDiscrete(a:Expression<Integer>, μ:Discrete,
   
   function unlink() {
     // clamp() used instead for discrete enumerations
-    //μ.releaseChild();
+    //μ.releaseChild(this);
   }
 }
 

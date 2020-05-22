@@ -34,17 +34,9 @@ final class Boxed<Value> < Expression<Value> {
     //
   }
 
-  override function doPrior() -> Expression<Real>? {
+  override function doPrior(vars:RaggedArray<DelayExpression>) ->
+      Expression<Real>? {
     return nil;
-  }
-
-  override function doZip(x:DelayExpression, κ:Kernel) -> Real {
-    assert Boxed<Value>?(x)?;
-    return 0.0;
-  }
-
-  override function doClearZip() {
-    //
   }
 }
 

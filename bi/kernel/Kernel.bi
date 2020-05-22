@@ -19,7 +19,7 @@
  *   value,
  * - `logpdf()`: to evaluate the log-density of the new value for a variable
  *   given its previous value, and
- * - `zip()`: which is used for any final computations necessary to decide
+ * - `logratio()`: which is used for any final computations necessary to decide
  *   whether to accept or reject a move, for example computing the log-ratio
  *   of proposal densities for Metropolis--Hastings.
  *
@@ -41,9 +41,9 @@
  * 2. Calling `move(κ)` on the Expression object proposes a new state via
  *    subsequent calls to `κ.move(...)`, as well as computing
  *    $\log \pi(x^\prime)$.
- * 3. Calling `zip(κ)` on the Expression object computes the log-ratio
+ * 3. Calling `logratio(κ)` on the Expression object computes the log-ratio
  *    $\log q(x \mid x^\prime) - \log q(x^\prime \mid x)$, via subsequent
- *    calls to `zip(...)` on the Kernel object `κ`.
+ *    calls to `logratio(...)` on the Kernel object `κ`.
  */
 class Kernel {
   /**
@@ -181,90 +181,6 @@ class Kernel {
    * Returns: the log probability mass.
    */
   function logpdf(x':Random<Boolean>, x:Random<Boolean>) -> Real {
-    return 0.0;
-  }
-
-  /**
-   * Finalize contribution to the log-acceptance probability for the
-   * proposed and current states.
-   *
-   * - x': Proposed state $x^\prime$.
-   * - x: Current state $x$.
-   *
-   * Returns: contribution to the log-acceptance probability, as required for
-   * the particular kernel.
-   */
-  function zip(x':Random<Real>, x:Random<Real>) -> Real {
-    return 0.0;
-  }
-
-  /**
-   * Finalize contribution to the log-acceptance probability for the
-   * proposed and current states.
-   *
-   * - x': Proposed state $x^\prime$.
-   * - x: Current state $x$.
-   *
-   * Returns: contribution to the log-acceptance probability, as required for
-   * the particular kernel.
-   */
-  function zip(x':Random<Real[_]>, x:Random<Real[_]>) -> Real {
-    return 0.0;
-  }
-
-  /**
-   * Finalize contribution to the log-acceptance probability for the
-   * proposed and current states.
-   *
-   * - x': Proposed state $x^\prime$.
-   * - x: Current state $x$.
-   *
-   * Returns: contribution to the log-acceptance probability, as required for
-   * the particular kernel.
-   */
-  function zip(x':Random<Real[_,_]>, x:Random<Real[_,_]>) -> Real {
-    return 0.0;
-  }
-
-  /**
-   * Finalize contribution to the log-acceptance probability for the
-   * proposed and current states.
-   *
-   * - x': Proposed state $x^\prime$.
-   * - x: Current state $x$.
-   *
-   * Returns: contribution to the log-acceptance probability, as required for
-   * the particular kernel.
-   */
-  function zip(x':Random<Integer>, x:Random<Integer>) -> Real {
-    return 0.0;
-  }
-
-  /**
-   * Finalize contribution to the log-acceptance probability for the
-   * proposed and current states.
-   *
-   * - x': Proposed state $x^\prime$.
-   * - x: Current state $x$.
-   *
-   * Returns: contribution to the log-acceptance probability, as required for
-   * the particular kernel.
-   */
-  function zip(x':Random<Integer[_]>, x:Random<Integer[_]>) -> Real {
-    return 0.0;
-  }
-
-  /**
-   * Finalize contribution to the log-acceptance probability for the
-   * proposed and current states.
-   *
-   * - x': Proposed state $x^\prime$.
-   * - x: Current state $x$.
-   *
-   * Returns: contribution to the log-acceptance probability, as required for
-   * the particular kernel.
-   */
-  function zip(x':Random<Boolean>, x:Random<Boolean>) -> Real {
     return 0.0;
   }
 }

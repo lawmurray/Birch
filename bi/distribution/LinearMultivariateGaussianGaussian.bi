@@ -44,7 +44,7 @@ final class LinearMultivariateGaussianGaussian(a:Expression<Real[_]>,
   }
   
   function unlink() {
-    m.releaseChild();
+    m.releaseChild(this);
   }
 }
 

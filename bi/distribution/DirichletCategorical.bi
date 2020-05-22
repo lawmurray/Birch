@@ -36,7 +36,7 @@ final class DirichletCategorical(ρ:Dirichlet) < Distribution<Integer> {
   }
   
   function unlink() {
-    ρ.releaseChild();
+    ρ.releaseChild(this);
   }
 }
 

@@ -45,7 +45,7 @@ final class LinearMultivariateGaussianMultivariateGaussian(
   }
   
   function unlink() {
-    m.releaseChild();
+    m.releaseChild(this);
   }
 }
 

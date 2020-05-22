@@ -43,7 +43,7 @@ final class NormalInverseGammaGaussian(μ:NormalInverseGamma) <
   }
   
   function unlink() {
-    μ.releaseChild();
+    μ.releaseChild(this);
   }
 }
 
