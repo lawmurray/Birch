@@ -19,9 +19,8 @@ abstract class DelayDistribution {
    * Prune the $M$-path from below this node.
    */
   final function prune() {
-    if this.child? {
-      auto child <- this.child!;
-      child.realize();
+    if child? {
+      child!.realize();
     }
   }
 
