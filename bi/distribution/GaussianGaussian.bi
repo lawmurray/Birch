@@ -6,7 +6,7 @@ final class GaussianGaussian(m:Gaussian, s2:Expression<Real>) <
   /**
    * Mean.
    */
-  m:Gaussian <- m;
+  m:Gaussian& <- m;
 
   /**
    * Variance.

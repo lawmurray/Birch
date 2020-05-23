@@ -12,7 +12,7 @@ final class LinearMultivariateGaussianGaussian(a:Expression<Real[_]>,
   /**
    * Mean.
    */
-  m:MultivariateGaussian <- m;
+  m:MultivariateGaussian& <- m;
 
   /**
    * Offset.

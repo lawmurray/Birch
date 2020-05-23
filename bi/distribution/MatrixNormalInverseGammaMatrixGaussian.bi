@@ -6,7 +6,7 @@ final class MatrixNormalInverseGammaMatrixGaussian(
   /**
    * Mean.
    */
-  M:MatrixNormalInverseGamma <- M;
+  M:MatrixNormalInverseGamma& <- M;
 
   function rows() -> Integer {
     return M.rows();

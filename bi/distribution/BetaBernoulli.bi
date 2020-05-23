@@ -5,7 +5,7 @@ final class BetaBernoulli(ρ:Beta) < Distribution<Boolean> {
   /**
    * Success probability.
    */
-  ρ:Beta <- ρ;
+  ρ:Beta& <- ρ;
 
   function simulate() -> Boolean {
     return simulate_beta_bernoulli(ρ.α.value(), ρ.β.value());

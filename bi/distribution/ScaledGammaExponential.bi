@@ -11,7 +11,7 @@ class ScaledGammaExponential(a:Expression<Real>, λ:Gamma) <
   /**
    * Rate.
    */
-  λ:Gamma <- λ;
+  λ:Gamma& <- λ;
 
   function simulate() -> Real {
     return simulate_lomax(1.0/(a.value()*λ.θ.value()), λ.k.value());

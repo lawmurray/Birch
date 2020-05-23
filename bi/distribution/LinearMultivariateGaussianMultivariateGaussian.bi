@@ -13,7 +13,7 @@ final class LinearMultivariateGaussianMultivariateGaussian(
   /**
    * Mean.
    */
-  m:MultivariateGaussian <- m;
+  m:MultivariateGaussian& <- m;
 
   /**
    * Offset.

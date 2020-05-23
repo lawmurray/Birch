@@ -10,7 +10,7 @@ final class BetaBinomial(n:Expression<Integer>, ρ:Beta) < BoundedDiscrete {
   /**
    * Success probability.
    */
-  ρ:Beta <- ρ;
+  ρ:Beta& <- ρ;
 
   function simulate() -> Integer {
     if value? {

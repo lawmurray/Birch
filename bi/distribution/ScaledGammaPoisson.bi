@@ -10,7 +10,7 @@ final class ScaledGammaPoisson(a:Expression<Real>, λ:Gamma) < Discrete {
   /**
    * Rate.
    */
-  λ:Gamma <- λ;
+  λ:Gamma& <- λ;
 
   function simulate() -> Integer {
     if value? {

@@ -5,7 +5,7 @@ final class DirichletCategorical(ρ:Dirichlet) < Distribution<Integer> {
   /**
    * Category probabilities.
    */
-  ρ:Dirichlet <- ρ;
+  ρ:Dirichlet& <- ρ;
 
   function simulate() -> Integer {
     return simulate_dirichlet_categorical(ρ.α.value());

@@ -5,7 +5,7 @@ final class RestaurantCategorical(ρ:Restaurant) < Distribution<Integer> {
   /**
    * Category probabilities.
    */
-  ρ:Restaurant <- ρ;
+  ρ:Restaurant& <- ρ;
 
   function simulate() -> Integer {
     return simulate_crp_categorical(ρ.α.value(), ρ.θ.value(), ρ.n, ρ.N);

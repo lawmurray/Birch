@@ -6,7 +6,7 @@ final class MultivariateNormalInverseGammaMultivariateGaussian(
   /**
    * Mean.
    */
-  μ:MultivariateNormalInverseGamma <- μ;
+  μ:MultivariateNormalInverseGamma& <- μ;
 
   function rows() -> Integer {
     return μ.rows();

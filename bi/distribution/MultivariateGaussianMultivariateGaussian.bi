@@ -6,7 +6,7 @@ final class MultivariateGaussianMultivariateGaussian(m:MultivariateGaussian,
   /**
    * Mean.
    */
-  m:MultivariateGaussian <- m;
+  m:MultivariateGaussian& <- m;
 
   /**
    * Likelihood covariance.

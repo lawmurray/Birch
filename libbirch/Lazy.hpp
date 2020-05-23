@@ -261,7 +261,6 @@ public:
   /**
    * Dereference.
    */
-  template<class Q = P, std::enable_if_t<!std::is_same<Q,Weak<value_type>>::value,int> = 0>
   value_type& operator*() const {
     return *get();
   }
@@ -269,7 +268,6 @@ public:
   /**
    * Member access.
    */
-  template<class Q = P, std::enable_if_t<!std::is_same<Q,Weak<value_type>>::value,int> = 0>
   value_type* operator->() const {
     return get();
   }

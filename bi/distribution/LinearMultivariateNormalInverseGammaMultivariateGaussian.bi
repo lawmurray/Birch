@@ -13,7 +13,7 @@ final class LinearMultivariateNormalInverseGammaMultivariateGaussian(
   /**
    * Mean.
    */
-  μ:MultivariateNormalInverseGamma <- μ;
+  μ:MultivariateNormalInverseGamma& <- μ;
 
   /**
    * Offset.

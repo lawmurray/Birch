@@ -6,7 +6,7 @@ final class MatrixNormalInverseWishartMatrixGaussian(
   /**
    * Mean.
    */
-  M:MatrixNormalInverseWishart <- M;
+  M:MatrixNormalInverseWishart& <- M;
 
   function rows() -> Integer {
     return M.rows();

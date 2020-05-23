@@ -11,7 +11,7 @@ final class LinearNormalInverseGammaGaussian(a:Expression<Real>,
   /**
    * Mean.
    */
-  μ:NormalInverseGamma <- μ;
+  μ:NormalInverseGamma& <- μ;
 
   /**
    * Offset.

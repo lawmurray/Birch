@@ -10,7 +10,7 @@ final class BetaNegativeBinomial(k:Expression<Integer>, ρ:Beta) < Discrete {
   /**
    * Success probability.
    */
-  ρ:Beta <- ρ;
+  ρ:Beta& <- ρ;
 
   function simulate() -> Integer {
     if value? {

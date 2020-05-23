@@ -8,7 +8,7 @@ abstract class DelayDistribution {
   /**
    * Child, if one exists and it is on the $M$-path.
    */
-  child:DelayDistribution&?;
+  child:DelayDistribution?;
   
   /**
    * Realize a value for the node.

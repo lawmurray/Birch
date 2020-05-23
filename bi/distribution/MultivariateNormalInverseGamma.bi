@@ -51,7 +51,7 @@ final class MultivariateNormalInverseGamma(μ:Expression<Real[_]>,
   /**
    * Variance scale.
    */
-  σ2:InverseGamma <- σ2;
+  σ2:InverseGamma& <- σ2;
 
   function rows() -> Integer {
     return ν.rows();

@@ -13,7 +13,7 @@ final class LinearMatrixNormalInverseWishartMatrixGaussian(
   /**
    * Mean.
    */
-  M:MatrixNormalInverseWishart <- M;
+  M:MatrixNormalInverseWishart& <- M;
 
   /**
    * Offset.

@@ -11,7 +11,7 @@ final class InverseGammaGamma(k:Expression<Real>, θ:InverseGamma) <
   /**
    * Scale.
    */
-  θ:InverseGamma <- θ;
+  θ:InverseGamma& <- θ;
 
   function simulate() -> Real {
     return simulate_inverse_gamma_gamma(k.value(), θ.α.value(), θ.β.value());

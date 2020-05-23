@@ -6,7 +6,7 @@ final class NormalInverseGammaGaussian(μ:NormalInverseGamma) <
   /**
    * Mean.
    */
-  μ:NormalInverseGamma <- μ;
+  μ:NormalInverseGamma& <- μ;
 
   function simulate() -> Real {
     return simulate_normal_inverse_gamma_gaussian(μ.μ.value(),

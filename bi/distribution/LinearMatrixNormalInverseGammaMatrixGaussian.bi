@@ -13,7 +13,7 @@ final class LinearMatrixNormalInverseGammaMatrixGaussian(
   /**
    * Mean.
    */
-  M:MatrixNormalInverseGamma <- M;
+  M:MatrixNormalInverseGamma& <- M;
 
   /**
    * Offset.

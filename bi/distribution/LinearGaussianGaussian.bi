@@ -12,7 +12,7 @@ final class LinearGaussianGaussian(a:Expression<Real>, m:Gaussian,
   /**
    * Mean.
    */
-  m:Gaussian <- m;
+  m:Gaussian& <- m;
 
   /**
    * Offset.

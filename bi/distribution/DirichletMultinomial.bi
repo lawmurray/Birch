@@ -11,7 +11,7 @@ final class DirichletMultinomial(n:Expression<Integer>, ρ:Dirichlet) <
   /**
    * Category probabilities.
    */
-  ρ:Dirichlet <- ρ;
+  ρ:Dirichlet& <- ρ;
 
   function simulate() -> Integer[_] {
     return simulate_dirichlet_multinomial(n.value(), ρ.α.value());
