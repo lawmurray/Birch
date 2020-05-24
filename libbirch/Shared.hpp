@@ -110,10 +110,15 @@ public:
    */
   void bitwiseFix() {
     T* ptr;
-    std::tie(ptr, std::ignore) = unpack(packed.get());
-    packed.set(pack(ptr, false));
+    bool discarded;
+    std::tie(ptr, discarded) = unpack(packed.get());
+    // ^ get() not load(), as no need to be thread safe here
     if (ptr) {
-      ptr->incShared();
+      if (discarded) {
+        ptr->incMemoShared();
+      } else {
+        ptr->incShared();
+      }
     }
   }
 
@@ -121,9 +126,7 @@ public:
    * Copy assignment.
    */
   Shared& operator=(const Shared& o) {
-    T* ptr;
-    std::tie(ptr, std::ignore) = unpack(o.packed.load());
-    replace(ptr);
+    replace(o.get());
     return *this;
   }
 
@@ -132,9 +135,7 @@ public:
    */
   template<class U, std::enable_if_t<std::is_base_of<T,U>::value,int> = 0>
   Shared& operator=(const Shared<U>& o) {
-    T* ptr;
-    std::tie(ptr, std::ignore) = unpack(o.packed.load());
-    replace(ptr);
+    replace(o.get());
     return *this;
   }
 
@@ -151,16 +152,25 @@ public:
    * Move assignment.
    */
   Shared& operator=(Shared&& o) {
+    /* assume that the pointer is not discarded at first; once the atomic
+     * write is complete, if it is meant to be discarded, then discard */
     T* ptr;
+    T* old;
     bool discarded;
     std::tie(ptr, discarded) = unpack(o.packed.maskAnd(int64_t(1)));
     if (ptr && discarded) {
       ptr->restoreShared();
     }
-    std::tie(ptr, discarded) = unpack(packed.exchange(pack(ptr, false)));
-    assert(!discarded);
-    if (ptr) {
-      ptr->decShared();
+    std::tie(old, discarded) = unpack(packed.exchange(pack(ptr, false)));
+    if (old) {
+      if (discarded) {
+        old->decMemoShared();
+      } else {
+        old->decShared();
+      }
+    }
+    if (discarded) {
+      discard();  // was meant to be discarded
     }
     return *this;
   }
@@ -170,16 +180,25 @@ public:
    */
   template<class U, std::enable_if_t<std::is_base_of<T,U>::value,int> = 0>
   Shared& operator=(Shared<U>&& o) {
+    /* assume that the pointer is not discarded at first; once the atomic
+     * write is complete, if it is meant to be discarded, then discard */
     T* ptr;
+    T* old;
     bool discarded;
     std::tie(ptr, discarded) = unpack(o.packed.maskAnd(int64_t(1)));
     if (ptr && discarded) {
       ptr->restoreShared();
     }
-    std::tie(ptr, discarded) = unpack(packed.exchange(pack(ptr, false)));
-    assert(!discarded);
-    if (ptr) {
-      ptr->decShared();
+    std::tie(old, discarded) = unpack(packed.exchange(pack(ptr, false)));
+    if (old) {
+      if (discarded) {
+        old->decMemoShared();
+      } else {
+        old->decShared();
+      }
+    }
+    if (discarded) {
+      discard();  // was meant to be discarded
     }
     return *this;
   }
@@ -207,15 +226,23 @@ public:
    * Replace.
    */
   void replace(T* ptr) {
+    /* assume that the pointer is not discarded at first; once the atomic
+     * write is complete, if it is meant to be discarded, then discard */
     if (ptr) {
       ptr->incShared();
     }
     T* old;
     bool discarded;
     std::tie(old, discarded) = unpack(packed.exchange(pack(ptr, false)));
-    assert(!discarded);
     if (old) {
-      old->decShared();
+      if (discarded) {
+        old->decMemoShared();
+      } else {
+        old->decShared();
+      }
+    }
+    if (discarded) {
+      discard();  // was meant to be discarded
     }
   }
 

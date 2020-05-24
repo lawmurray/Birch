@@ -245,7 +245,7 @@ public:
     o->memoWeakCount.set(1u);
     o->label = label;
     o->tid = get_thread_num();
-    o->packed.set(0);
+    o->packed.maskAnd(1 << 3);  // preserve discard flag only
     return o;
   }
 
@@ -267,7 +267,7 @@ public:
    * Thaw the object.
    */
   void thaw() {
-    packed.store(0);
+    packed.maskAnd(1 << 3);  // preserve discard flag only
   }
 
   /**
@@ -284,9 +284,7 @@ public:
     if (++sharedCount == 1u) {
       incMemoShared();
       holdLabel();
-      if (isDiscarded()) {  // only false when initializing object
-        restore();
-      }
+      restore();
     }
   }
 
