@@ -23,7 +23,11 @@ final class Column<Argument,Value>(x:Expression<Argument>) <
 /**
  * Lazy `column`.
  */
-function column(x:Expression<Real[_]>) -> Column<Real[_],Real[_,_]> {
-  m:Column<Real[_],Real[_,_]>(x);
-  return m;
+function column(x:Expression<Real[_]>) -> Expression<Real[_,_]> {
+  if x.isConstant() {
+    return box(column(x.value()));
+  } else {
+    m:Column<Real[_],Real[_,_]>(x);
+    return m;
+  }
 }

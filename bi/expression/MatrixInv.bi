@@ -24,15 +24,23 @@ final class MatrixInv<Argument,Value>(x:Expression<Argument>) <
 /**
  * Lazy `inv`.
  */
-function inv(x:Expression<Real[_,_]>) -> MatrixInv<Real[_,_],Real[_,_]> {
-  m:MatrixInv<Real[_,_],Real[_,_]>(x);
-  return m;
+function inv(x:Expression<Real[_,_]>) -> Expression<Real[_,_]> {
+  if x.isConstant() {
+    return box(matrix(inv(x.value())));
+  } else {
+    m:MatrixInv<Real[_,_],Real[_,_]>(x);
+    return m;
+  }
 }
 
 /**
  * Lazy `inv`.
  */
-function inv(x:Expression<LLT>) -> MatrixInv<LLT,Real[_,_]> {
-  m:MatrixInv<LLT,Real[_,_]>(x);
-  return m;
+function inv(x:Expression<LLT>) -> Expression<Real[_,_]> {
+  if x.isConstant() {
+    return box(matrix(inv(x.value())));
+  } else {
+    m:MatrixInv<LLT,Real[_,_]>(x);
+    return m;
+  }
 }

@@ -42,6 +42,13 @@ abstract class DelayExpression {
   function columns() -> Integer {
     return 1;
   }
+  
+  /**
+   * Is this a constant expression?
+   */
+  function isConstant() -> Boolean {
+    return flagValue;
+  }
 
   /**
    * Construct a lazy expression for the log-prior, and collect variables.

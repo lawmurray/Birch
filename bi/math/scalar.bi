@@ -60,3 +60,24 @@ function columns(x:Integer) -> Integer {
 function columns(x:Boolean) -> Integer {
   return 1;
 }
+
+/**
+ * Transpose of a scalar (identity operation).
+ */
+function transpose(x:Real) -> Real {
+  return x;
+}
+
+/**
+ * Transpose of a scalar (identity operation).
+ */
+function transpose(x:Integer) -> Integer {
+  return x;
+}
+
+/**
+ * Transpose of a scalar (identity operation).
+ */
+function transpose(x:Boolean) -> Boolean {
+  return x;
+}

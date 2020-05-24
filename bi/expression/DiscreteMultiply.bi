@@ -45,23 +45,33 @@ final class DiscreteMultiply<Left,Right,Value>(left:Expression<Left>,
  * Lazy add.
  */
 operator (left:Expression<Integer>*right:Expression<Integer>) ->
-    DiscreteMultiply<Integer,Integer,Integer> {
-  m:DiscreteMultiply<Integer,Integer,Integer>(left, right);
-  return m;
+    Expression<Integer> {
+  if left.isConstant() && right.isConstant() {
+    return box(left.value() + right.value());
+  } else {
+    m:DiscreteMultiply<Integer,Integer,Integer>(left, right);
+    return m;
+  }
 }
 
 /**
  * Lazy add.
  */
-operator (left:Integer*right:Expression<Integer>) ->
-    DiscreteMultiply<Integer,Integer,Integer> {
-  return Boxed(left)*right;
+operator (left:Integer*right:Expression<Integer>) -> Expression<Integer> {
+  if right.isConstant() {
+    return box(left + right.value());
+  } else {
+    return Boxed(left)*right;
+  }
 }
 
 /**
  * Lazy add.
  */
-operator (left:Expression<Integer>*right:Integer) ->
-    DiscreteMultiply<Integer,Integer,Integer> {
-  return left*Boxed(right);
+operator (left:Expression<Integer>*right:Integer) -> Expression<Integer> {
+  if left.isConstant() {
+    return box(left.value() + right);
+  } else {
+    return left*Boxed(right);
+  }
 }

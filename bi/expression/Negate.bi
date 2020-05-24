@@ -15,31 +15,47 @@ final class Negate<Argument,Value>(x:Expression<Argument>) <
 /**
  * Lazy negation.
  */
-operator (-x:Expression<Real>) -> Negate<Real,Real> {
-  m:Negate<Real,Real>(x);
-  return m;
+operator (-x:Expression<Real>) -> Expression<Real> {
+  if x.isConstant() {
+    return box(-x.value());
+  } else {
+    m:Negate<Real,Real>(x);
+    return m;
+  }
 }
 
 /**
  * Lazy negation.
  */
-operator (-x:Expression<Integer>) -> Negate<Integer,Integer> {
-  m:Negate<Integer,Integer>(x);
-  return m;
+operator (-x:Expression<Integer>) -> Expression<Integer> {
+  if x.isConstant() {
+    return box(-x.value());
+  } else {
+    m:Negate<Integer,Integer>(x);
+    return m;
+  }
 }
 
 /**
  * Lazy negation.
  */
-operator (-x:Expression<Real[_]>) -> Negate<Real[_],Real[_]> {
-  m:Negate<Real[_],Real[_]>(x);
-  return m;
+operator (-x:Expression<Real[_]>) -> Expression<Real[_]> {
+  if x.isConstant() {
+    return box(vector(-x.value()));
+  } else {
+    m:Negate<Real[_],Real[_]>(x);
+    return m;
+  }
 }
 
 /**
  * Lazy negation.
  */
-operator (-x:Expression<Real[_,_]>) -> Negate<Real[_,_],Real[_,_]> {
-  m:Negate<Real[_,_],Real[_,_]>(x);
-  return m;
+operator (-x:Expression<Real[_,_]>) -> Expression<Real[_,_]> {
+  if x.isConstant() {
+    return box(matrix(-x.value()));
+  } else {
+    m:Negate<Real[_,_],Real[_,_]>(x);
+    return m;
+  }
 }

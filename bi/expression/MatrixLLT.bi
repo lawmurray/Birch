@@ -24,7 +24,11 @@ final class MatrixLLT<Argument,Value>(x:Expression<Argument>) <
 /**
  * Lazy `inv`.
  */
-function llt(x:Expression<Real[_,_]>) -> MatrixLLT<Real[_,_],LLT> {
-  m:MatrixLLT<Real[_,_],LLT>(x);
-  return m;
+function llt(x:Expression<Real[_,_]>) -> Expression<LLT> {
+  if x.isConstant() {
+    return box(llt(x.value()));
+  } else {
+    m:MatrixLLT<Real[_,_],LLT>(x);
+    return m;
+  }
 }

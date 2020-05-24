@@ -15,7 +15,11 @@ final class Sqrt<Argument,Value>(x:Expression<Argument>) <
 /**
  * Lazy `sqrt`.
  */
-function sqrt(x:Expression<Real>) -> Sqrt<Real,Real> {
-  m:Sqrt<Real,Real>(x);
-  return m;
+function sqrt(x:Expression<Real>) -> Expression<Real> {
+  if x.isConstant() {
+    return box(sqrt(x.value()));
+  } else {
+    m:Sqrt<Real,Real>(x);
+    return m;
+  }
 }

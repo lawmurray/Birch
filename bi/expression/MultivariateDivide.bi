@@ -2,22 +2,32 @@
  * Lazy multivariate divide.
  */
 operator (left:Expression<Real[_]>/right:Expression<Real>) ->
-    MultivariateMultiply<Real[_,_],Real[_],Real[_]> {
-  return diagonal(1.0/right, left.rows())*left;
+    Expression<Real[_]> {
+  if left.isConstant() && right.isConstant() {
+    return box(vector(left.value()/right.value()));
+  } else {
+    return diagonal(1.0/right, left.rows())*left;
+  }
 }
 
 /**
  * Lazy multivariate divide.
  */
-operator (left:Real[_]/right:Expression<Real>) ->
-    MultivariateMultiply<Real[_,_],Real[_],Real[_]> {
-  return Boxed(left)/right;
+operator (left:Real[_]/right:Expression<Real>) -> Expression<Real[_]> {
+  if right.isConstant() {
+    return box(vector(left/right.value()));
+  } else {
+    return Boxed(left)/right;
+  }
 }
 
 /**
  * Lazy multivariate divide.
  */
-operator (left:Expression<Real[_]>/right:Real) ->
-    MultivariateMultiply<Real[_,_],Real[_],Real[_]> {
-  return left/Boxed(right);
+operator (left:Expression<Real[_]>/right:Real) -> Expression<Real[_]> {
+  if left.isConstant() {
+    return box(vector(left.value()/right));
+  } else {
+    return left/Boxed(right);
+  }
 }

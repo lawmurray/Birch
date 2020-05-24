@@ -15,7 +15,11 @@ final class Asin<Argument,Value>(x:Expression<Argument>) <
 /**
  * Lazy `asin`.
  */
-function asin(x:Expression<Real>) -> Asin<Real,Real> {
-  m:Asin<Real,Real>(x);
-  return m;
+function asin(x:Expression<Real>) -> Expression<Real> {
+  if x.isConstant() {
+    return box(asin(x.value()));
+  } else {
+    m:Asin<Real,Real>(x);
+    return m;
+  }
 }

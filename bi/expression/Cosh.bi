@@ -15,7 +15,11 @@ final class Cosh<Argument,Value>(x:Expression<Argument>) <
 /**
  * Lazy `cosh`.
  */
-function cosh(x:Expression<Real>) -> Cosh<Real,Real> {
-  m:Cosh<Real,Real>(x);
-  return m;
+function cosh(x:Expression<Real>) -> Expression<Real> {
+  if x.isConstant() {
+    return box(cosh(x.value()));
+  } else {
+    m:Cosh<Real,Real>(x);
+    return m;
+  }
 }

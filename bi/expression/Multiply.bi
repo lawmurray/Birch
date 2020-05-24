@@ -75,22 +75,33 @@ final class Multiply<Left,Right,Value>(left:Expression<Left>,
 /**
  * Lazy multiply.
  */
-operator (left:Expression<Real>*right:Expression<Real>) ->
-    Multiply<Real,Real,Real> {
-  m:Multiply<Real,Real,Real>(left, right);
-  return m;
+operator (left:Expression<Real>*right:Expression<Real>) -> Expression<Real> {
+  if left.isConstant() && right.isConstant() {
+    return box(left.value()*right.value());
+  } else {
+    m:Multiply<Real,Real,Real>(left, right);
+    return m;
+  }
 }
 
 /**
  * Lazy multiply.
  */
-operator (left:Real*right:Expression<Real>) -> Multiply<Real,Real,Real> {
-  return Boxed(left)*right;
+operator (left:Real*right:Expression<Real>) -> Expression<Real> {
+  if right.isConstant() {
+    return box(left*right.value());
+  } else {
+    return Boxed(left)*right;
+  }
 }
 
 /**
  * Lazy multiply.
  */
-operator (left:Expression<Real>*right:Real) -> Multiply<Real,Real,Real> {
-  return left*Boxed(right);
+operator (left:Expression<Real>*right:Real) -> Expression<Real> {
+  if left.isConstant() {
+    return box(left.value()*right);
+  } else {
+    return left*Boxed(right);
+  }
 }

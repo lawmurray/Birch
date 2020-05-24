@@ -15,7 +15,11 @@ final class Sin<Argument,Value>(x:Expression<Argument>) <
 /**
  * Lazy `sin`.
  */
-function sin(x:Expression<Real>) -> Sin<Real,Real> {
-  m:Sin<Real,Real>(x);
-  return m;
+function sin(x:Expression<Real>) -> Expression<Real> {
+  if x.isConstant() {
+    return box(sin(x.value()));
+  } else {
+    m:Sin<Real,Real>(x);
+    return m;
+  }
 }

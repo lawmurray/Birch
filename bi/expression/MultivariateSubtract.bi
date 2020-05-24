@@ -26,9 +26,9 @@ final class MultivariateSubtract<Left,Right,Value>(left:Expression<Left>,
     } else if (y <- right.graftLinearMultivariateGaussian())? {
       y!.negateAndAdd(left);
     } else if (z <- left.graftMultivariateGaussian())? {
-      y <- TransformLinearMultivariate<MultivariateGaussian>(Identity(z!.rows()), z!, -right);
+      y <- TransformLinearMultivariate<MultivariateGaussian>(box(identity(z!.rows())), z!, -right);
     } else if (z <- right.graftMultivariateGaussian())? {
-      y <- TransformLinearMultivariate<MultivariateGaussian>(-Identity(z!.rows()), z!, left);
+      y <- TransformLinearMultivariate<MultivariateGaussian>(box(diagonal(-1.0, z!.rows())), z!, left);
     }
     return y;
   }
@@ -43,9 +43,9 @@ final class MultivariateSubtract<Left,Right,Value>(left:Expression<Left>,
     } else if (y <- right.graftLinearMultivariateNormalInverseGamma(compare))? {
       y!.negateAndAdd(left);
     } else if (z <- left.graftMultivariateNormalInverseGamma(compare))? {
-      y <- TransformLinearMultivariate<MultivariateNormalInverseGamma>(Identity(z!.rows()), z!, -right);
+      y <- TransformLinearMultivariate<MultivariateNormalInverseGamma>(box(identity(z!.rows())), z!, -right);
     } else if (z <- right.graftMultivariateNormalInverseGamma(compare))? {
-      y <- TransformLinearMultivariate<MultivariateNormalInverseGamma>(-Identity(z!.rows()), z!, left);
+      y <- TransformLinearMultivariate<MultivariateNormalInverseGamma>(box(diagonal(-1.0, z!.rows())), z!, left);
     }
     return y;
   }
@@ -55,24 +55,34 @@ final class MultivariateSubtract<Left,Right,Value>(left:Expression<Left>,
  * Lazy multivariate subtract.
  */
 operator (left:Expression<Real[_]> - right:Expression<Real[_]>) ->
-    MultivariateSubtract<Real[_],Real[_],Real[_]> {
+    Expression<Real[_]> {
   assert left.rows() == right.rows();
-  m:MultivariateSubtract<Real[_],Real[_],Real[_]>(left, right);
-  return m;
+  if left.isConstant() && right.isConstant() {
+    return box(vector(left.value() - right.value()));
+  } else {
+    m:MultivariateSubtract<Real[_],Real[_],Real[_]>(left, right);
+    return m;
+  }
 }
 
 /**
  * Lazy multivariate subtract.
  */
-operator (left:Real[_] - right:Expression<Real[_]>) ->
-    MultivariateSubtract<Real[_],Real[_],Real[_]> {
-  return Boxed(left) - right;
+operator (left:Real[_] - right:Expression<Real[_]>) -> Expression<Real[_]> {
+  if right.isConstant() {
+    return box(vector(left - right.value()));
+  } else {
+    return Boxed(left) - right;
+  }
 }
 
 /**
  * Lazy multivariate subtract.
  */
-operator (left:Expression<Real[_]> - right:Real[_]) ->
-    MultivariateSubtract<Real[_],Real[_],Real[_]> {
-  return left - Boxed(right);
+operator (left:Expression<Real[_]> - right:Real[_]) -> Expression<Real[_]> {
+  if left.isConstant() {
+    return box(vector(left.value() - right));
+  } else {
+    return left - Boxed(right);
+  }
 }

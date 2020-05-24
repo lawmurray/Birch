@@ -20,21 +20,33 @@ final class CopySign<Left,Right,Value>(left:Expression<Left>,
  * Lazy `copysign`.
  */
 function copysign(x:Expression<Real>, y:Expression<Real>) ->
-    CopySign<Real,Real,Real> {
-  m:CopySign<Real,Real,Real>(x, y);
-  return m;
+    Expression<Real> {
+  if x.isConstant() && y.isConstant() {
+    return box(copysign(x.value(), y.value()));
+  } else {
+    m:CopySign<Real,Real,Real>(x, y);
+    return m;
+  }
 }
 
 /**
  * Lazy `copysign`.
  */
-function copysign(x:Real, y:Expression<Real>) -> CopySign<Real,Real,Real> {
-  return copysign(Boxed(x), y);
+function copysign(x:Real, y:Expression<Real>) -> Expression<Real> {
+  if y.isConstant() {
+    return box(copysign(x, y.value()));
+  } else {
+    return copysign(Boxed(x), y);
+  }
 }
 
 /**
  * Lazy `lbeta`.
  */
-function copysign(x:Expression<Real>, y:Real) -> CopySign<Real,Real,Real> {
-  return copysign(x, Boxed(y));
+function copysign(x:Expression<Real>, y:Real) -> Expression<Real> {
+  if x.isConstant() {
+    return box(copysign(x.value(), y));
+  } else {
+    return copysign(x, Boxed(y));
+  }
 }

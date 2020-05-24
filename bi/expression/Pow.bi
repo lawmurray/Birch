@@ -20,21 +20,33 @@ final class Pow<Left,Right,Value>(left:Expression<Left>,
 /**
  * Lazy `pow`.
  */
-function pow(x:Expression<Real>, y:Expression<Real>) -> Pow<Real,Real,Real> {
-  m:Pow<Real,Real,Real>(x, y);
-  return m;
+function pow(x:Expression<Real>, y:Expression<Real>) -> Expression<Real> {
+  if x.isConstant() && y.isConstant() {
+    return box(pow(x.value(), y.value()));
+  } else {
+    m:Pow<Real,Real,Real>(x, y);
+    return m;
+  }
 }
 
 /**
  * Lazy `pow`.
  */
-function pow(x:Real, y:Expression<Real>) -> Pow<Real,Real,Real> {
-  return pow(Boxed(x), y);
+function pow(x:Real, y:Expression<Real>) -> Expression<Real> {
+  if y.isConstant() {
+    return box(pow(x, y.value()));
+  } else {
+    return pow(Boxed(x), y);
+  }
 }
 
 /**
  * Lazy `pow`.
  */
-function pow(x:Expression<Real>, y:Real) -> Pow<Real,Real,Real> {
-  return pow(x, Boxed(y));
+function pow(x:Expression<Real>, y:Real) -> Expression<Real> {
+  if x.isConstant() {
+    return box(pow(x.value(), y));
+  } else {
+    return pow(x, Boxed(y));
+  }
 }

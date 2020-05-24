@@ -24,7 +24,42 @@ final class Matrix<Argument,Value>(x:Expression<Argument>) <
 /**
  * Lazy `matrix`.
  */
-function matrix(x:Expression<LLT>) -> Matrix<LLT,Real[_,_]> {
-  m:Matrix<LLT,Real[_,_]>(x);
-  return m;
+function matrix(x:Expression<LLT>) -> Expression<Real[_,_]> {
+  if x.isConstant() {
+    return box(matrix(x.value()));
+  } else {
+    m:Matrix<LLT,Real[_,_]>(x);
+    return m;
+  }
+}
+
+/**
+ * Lazy `matrix`.
+ */
+function matrix(x:Expression<Real[_,_]>) -> Expression<Real[_,_]> {
+  return x;
+}
+
+/**
+ * Lazy `matrix`.
+ */
+function matrix(x:Expression<Real[_]>) -> Expression<Real[_,_]> {
+  if x.isConstant() {
+    return box(matrix(x.value()));
+  } else {
+    m:Matrix<Real[_],Real[_,_]>(x);
+    return m;
+  }
+}
+
+/**
+ * Lazy `matrix`.
+ */
+function matrix(x:Expression<Real>) -> Expression<Real[_,_]> {
+  if x.isConstant() {
+    return box(matrix(x.value()));
+  } else {
+    m:Matrix<Real,Real[_,_]>(x);
+    return m;
+  }
 }

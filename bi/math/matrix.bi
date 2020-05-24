@@ -33,51 +33,6 @@ function add<Value>(X:Value[_,_], Y:Value[_,_]) -> Value[_,_] {
 }
 
 /**
- * Create matrix filled with a given scalar value.
- *
- * - x: The value.
- * - rows: Number of rows.
- * - columns: Number of columns.
- */
-function matrix(x:Real, rows:Integer, columns:Integer) -> Real[_,_] {
-  Z:Real[rows,columns];
-  cpp{{
-  std::fill(Z.begin(), Z.end(), x);
-  }}
-  return Z;
-}
-
-/**
- * Create matrix filled with a given scalar value.
- *
- * - x: The value.
- * - rows: Number of rows.
- * - columns: Number of columns.
- */
-function matrix(x:Integer, rows:Integer, columns:Integer) -> Integer[_,_] {
-  Z:Integer[rows,columns];
-  cpp{{
-  std::fill(Z.begin(), Z.end(), x);
-  }}
-  return Z;
-}
-
-/**
- * Create matrix filled with a given scalar value.
- *
- * - x: The value.
- * - rows: Number of rows.
- * - columns: Number of columns.
- */
-function matrix(x:Boolean, rows:Integer, columns:Integer) -> Boolean[_,_] {
-  Z:Boolean[rows,columns];
-  cpp{{
-  std::fill(Z.begin(), Z.end(), x);
-  }}
-  return Z;
-}
-
-/**
  * Create diagonal matrix, filling the diagonal with a given scalar value.
  *
  * - x: The value.
@@ -195,30 +150,21 @@ function vector(X:Integer[_,_]) -> Integer[_] {
 }
 
 /**
- * Convert matrix to matrix (identity operation).
+ * Convert vector to matrix with single row.
  */
-function matrix(X:Boolean[_,_], rows:Integer, cols:Integer) -> Boolean[_,_] {
-  assert global.rows(X) == rows;
-  assert global.columns(X) == cols;
-  return X;
+function row(x:Real[_]) -> Real[_,_] {
+  y:Real[1,length(x)];
+  y[1,1..rows(y)] <- x;
+  return y;
 }
 
 /**
- * Convert matrix to matrix (identity operation).
+ * Convert vector to matrix with single row.
  */
-function matrix(X:Real[_,_], rows:Integer, cols:Integer) -> Real[_,_] {
-  assert global.rows(X) == rows;
-  assert global.columns(X) == cols;
-  return X;
-}
-
-/**
- * Convert matrix to matrix (identity operation).
- */
-function matrix(X:Integer[_,_], rows:Integer, cols:Integer) -> Integer[_,_] {
-  assert global.rows(X) == rows;
-  assert global.columns(X) == cols;
-  return X;
+function row(x:Integer[_]) -> Integer[_,_] {
+  y:Integer[1,length(x)];
+  y[1,1..rows(y)] <- x;
+  return y;
 }
 
 /**
@@ -255,6 +201,195 @@ function column(x:Boolean[_]) -> Boolean[_,_] {
   y:Boolean[length(x),1];
   y[1..rows(y),1] <- x;
   return y;
+}
+
+/**
+ * Convert matrix to matrix (identity operation).
+ */
+function matrix(X:Boolean[_,_]) -> Boolean[_,_] {
+  return X;
+}
+
+/**
+ * Convert matrix to matrix (identity operation).
+ */
+function matrix(X:Real[_,_]) -> Real[_,_] {
+  return X;
+}
+
+/**
+ * Convert matrix to matrix (identity operation).
+ */
+function matrix(X:Integer[_,_]) -> Integer[_,_] {
+  return X;
+}
+
+/**
+ * Convert matrix to matrix (identity operation).
+ */
+function matrix(X:Boolean[_,_], rows:Integer, cols:Integer) -> Boolean[_,_] {
+  assert global.rows(X) == rows;
+  assert global.columns(X) == cols;
+  return X;
+}
+
+/**
+ * Convert matrix to matrix (identity operation).
+ */
+function matrix(X:Real[_,_], rows:Integer, cols:Integer) -> Real[_,_] {
+  assert global.rows(X) == rows;
+  assert global.columns(X) == cols;
+  return X;
+}
+
+/**
+ * Convert matrix to matrix (identity operation).
+ */
+function matrix(X:Integer[_,_], rows:Integer, cols:Integer) -> Integer[_,_] {
+  assert global.rows(X) == rows;
+  assert global.columns(X) == cols;
+  return X;
+}
+
+/**
+ * Convert vector to matrix with single column.
+ */
+function matrix(x:Real[_]) -> Real[_,_] {
+  return column(x);
+}
+
+/**
+ * Convert vector to matrix with single column.
+ */
+function matrix(x:Integer[_]) -> Integer[_,_] {
+  return column(x);
+}
+
+/**
+ * Convert vector to matrix with single column.
+ */
+function matrix(x:Boolean[_]) -> Boolean[_,_] {
+  return column(x);
+}
+
+/**
+ * Convert vector to matrix.
+ *
+ * - x: The vector; `rows*cols` must equal the length of `x`.
+ * - rows: Number of rows of matrix.
+ * - cols: Number of columns of matrix.
+ *
+ * Returns: the matrix.
+ */
+function matrix(x:Boolean[_], rows:Integer, cols:Integer) -> Boolean[_,_] {
+  assert rows*cols == length(x);
+  X:Boolean[rows,cols];
+  for i in 1..rows {
+    X[i,1..cols] <- x[(i - 1)*cols + 1..i*cols];
+  }
+  return X;
+}
+
+/**
+ * Convert vector to matrix.
+ *
+ * - x: The vector; `rows*cols` must equal the length of `x`.
+ * - rows: Number of rows of matrix.
+ * - cols: Number of columns of matrix.
+ *
+ * Returns: the matrix.
+ */
+function matrix(x:Real[_], rows:Integer, cols:Integer) -> Real[_,_] {
+  assert rows*cols == length(x);
+  X:Real[rows,cols];
+  for i in 1..rows {
+    X[i,1..cols] <- x[(i - 1)*cols + 1..i*cols];
+  }
+  return X;
+}
+
+/**
+ * Convert vector to matrix.
+ *
+ * - x: The vector; `rows*cols` must equal the length of `x`.
+ * - rows: Number of rows of matrix.
+ * - cols: Number of columns of matrix.
+ *
+ * Returns: the matrix.
+ */
+function matrix(x:Integer[_], rows:Integer, cols:Integer) -> Integer[_,_] {
+  assert rows*cols == length(x);
+  X:Integer[rows,cols];
+  for i in 1..rows {
+    X[i,1..cols] <- x[(i - 1)*cols + 1..i*cols];
+  }
+  return X;
+}
+
+/**
+ * Convert scalar to matrix with single element.
+ */
+function matrix(x:Real) -> Real[_,_] {
+  return matrix(x, 1, 1);
+}
+
+/**
+ * Convert scalar to matrix with single element.
+ */
+function matrix(x:Integer) -> Integer[_,_] {
+  return matrix(x, 1, 1);
+}
+
+/**
+ * Convert scalar to matrix with single element.
+ */
+function matrix(x:Boolean) -> Boolean[_,_] {
+  return matrix(x, 1, 1);
+}
+
+/**
+ * Create matrix filled with a given scalar value.
+ *
+ * - x: The value.
+ * - rows: Number of rows.
+ * - columns: Number of columns.
+ */
+function matrix(x:Real, rows:Integer, columns:Integer) -> Real[_,_] {
+  Z:Real[rows,columns];
+  cpp{{
+  std::fill(Z.begin(), Z.end(), x);
+  }}
+  return Z;
+}
+
+/**
+ * Create matrix filled with a given scalar value.
+ *
+ * - x: The value.
+ * - rows: Number of rows.
+ * - columns: Number of columns.
+ */
+function matrix(x:Integer, rows:Integer, columns:Integer) -> Integer[_,_] {
+  Z:Integer[rows,columns];
+  cpp{{
+  std::fill(Z.begin(), Z.end(), x);
+  }}
+  return Z;
+}
+
+/**
+ * Create matrix filled with a given scalar value.
+ *
+ * - x: The value.
+ * - rows: Number of rows.
+ * - columns: Number of columns.
+ */
+function matrix(x:Boolean, rows:Integer, columns:Integer) -> Boolean[_,_] {
+  Z:Boolean[rows,columns];
+  cpp{{
+  std::fill(Z.begin(), Z.end(), x);
+  }}
+  return Z;
 }
 
 /**

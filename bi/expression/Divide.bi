@@ -61,21 +61,33 @@ final class Divide<Left,Right,Value>(left:Expression<Left>,
 /**
  * Lazy divide.
  */
-operator (left:Expression<Real>/right:Expression<Real>) -> Divide<Real,Real,Real> {
-  m:Divide<Real,Real,Real>(left, right);
-  return m;
+operator (left:Expression<Real>/right:Expression<Real>) -> Expression<Real> {
+  if left.isConstant() && right.isConstant() {
+    return box(left.value()/right.value());
+  } else {
+    m:Divide<Real,Real,Real>(left, right);
+    return m;
+  }
 }
 
 /**
  * Lazy divide.
  */
-operator (left:Real/right:Expression<Real>) -> Divide<Real,Real,Real> {
-  return Boxed(left)/right;
+operator (left:Real/right:Expression<Real>) -> Expression<Real> {
+  if right.isConstant() {
+    return box(left/right.value());
+  } else {
+    return Boxed(left)/right;
+  }
 }
 
 /**
  * Lazy divide.
  */
-operator (left:Expression<Real>/right:Real) -> Divide<Real,Real,Real> {
-  return left/Boxed(right);
+operator (left:Expression<Real>/right:Real) -> Expression<Real> {
+  if left.isConstant() {
+    return box(left.value()/right);
+  } else {
+    return left/Boxed(right);
+  }
 }

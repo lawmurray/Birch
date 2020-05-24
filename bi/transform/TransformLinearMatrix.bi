@@ -34,6 +34,11 @@ class TransformLinearMatrix<Value>(A:Expression<Real[_,_]>, X:Value,
     C <- Y*C;
   }
 
+  function leftMultiply(y:Expression<Real>) {
+    A <- y*A;
+    C <- y*C;
+  }
+
   function add(Y:Expression<Real[_,_]>) {
     C <- C + Y;
   }

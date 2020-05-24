@@ -46,72 +46,102 @@ final class MultivariateMultiply<Left,Right,Value>(left:Expression<Left>,
  * Lazy multivariate multiply.
  */
 operator (left:Expression<Real[_,_]>*right:Expression<Real[_]>) ->
-    MultivariateMultiply<Real[_,_],Real[_],Real[_]> {
+    Expression<Real[_]> {
   assert left.columns() == right.rows();
-  m:MultivariateMultiply<Real[_,_],Real[_],Real[_]>(left, right);
-  return m;
+  if left.isConstant() && right.isConstant() {
+    return box(vector(left.value()*right.value()));
+  } else {
+    m:MultivariateMultiply<Real[_,_],Real[_],Real[_]>(left, right);
+    return m;
+  }
 }
 
 /**
  * Lazy multivariate multiply.
  */
-operator (left:Real[_,_]*right:Expression<Real[_]>) ->
-    MultivariateMultiply<Real[_,_],Real[_],Real[_]> {
-  return Boxed(left)*right;
+operator (left:Real[_,_]*right:Expression<Real[_]>) -> Expression<Real[_]> {
+  if right.isConstant() {
+    return box(vector(left*right.value()));
+  } else {
+    return Boxed(left)*right;
+  }
 }
 
 /**
  * Lazy multivariate multiply.
  */
-operator (left:Expression<Real[_,_]>*right:Real[_]) ->
-    MultivariateMultiply<Real[_,_],Real[_],Real[_]> {
-  return left*Boxed(right);
+operator (left:Expression<Real[_,_]>*right:Real[_]) -> Expression<Real[_]> {
+  if left.isConstant() {
+    return box(vector(left.value()*right));
+  } else {
+    return left*Boxed(right);
+  }
 }
 
 /**
  * Lazy multivariate multiply.
  */
 operator (left:Expression<Real>*right:Expression<Real[_]>) ->
-    MultivariateMultiply<Real[_,_],Real[_],Real[_]> {
-  return diagonal(left, right.rows())*right;
+    Expression<Real[_]> {
+  if left.isConstant() && right.isConstant() {
+    return box(vector(left.value()*right.value()));
+  } else {
+    return diagonal(left, right.rows())*right;
+  }
 }
 
 /**
  * Lazy multivariate multiply.
  */
-operator (left:Real*right:Expression<Real[_]>) ->
-    MultivariateMultiply<Real[_,_],Real[_],Real[_]> {
-  return Boxed(left)*right;
+operator (left:Real*right:Expression<Real[_]>) -> Expression<Real[_]> {
+  if right.isConstant() {
+    return box(vector(left*right.value()));
+  } else {
+    return Boxed(left)*right;
+  }
 }
 
 /**
  * Lazy multivariate multiply.
  */
-operator (left:Expression<Real>*right:Real[_]) ->
-    MultivariateMultiply<Real[_,_],Real[_],Real[_]> {
-  return left*Boxed(right);
+operator (left:Expression<Real>*right:Real[_]) -> Expression<Real[_]> {
+  if left.isConstant() {
+    return box(vector(left.value()*right));
+  } else {
+    return left*Boxed(right);
+  }
 }
 
 /**
  * Lazy multivariate multiply.
  */
 operator (left:Expression<Real[_]>*right:Expression<Real>) ->
-    MultivariateMultiply<Real[_,_],Real[_],Real[_]> {
-  return diagonal(right, left.rows())*left;
+    Expression<Real[_]> {
+  if left.isConstant() && right.isConstant() {
+    return box(vector(left.value()*right.value()));
+  } else {
+    return diagonal(right, left.rows())*left;
+  }
 }
 
 /**
  * Lazy multivariate multiply.
  */
-operator (left:Real[_]*right:Expression<Real>) ->
-    MultivariateMultiply<Real[_,_],Real[_],Real[_]> {
-  return Boxed(left)*right;
+operator (left:Real[_]*right:Expression<Real>) -> Expression<Real[_]> {
+  if right.isConstant() {
+    return box(vector(left*right.value()));
+  } else {
+    return Boxed(left)*right;
+  }
 }
 
 /**
  * Lazy multivariate multiply.
  */
-operator (left:Expression<Real[_]>*right:Real) ->
-    MultivariateMultiply<Real[_,_],Real[_],Real[_]> {
-  return left*Boxed(right);
+operator (left:Expression<Real[_]>*right:Real) -> Expression<Real[_]> {
+  if left.isConstant() {
+    return box(vector(left.value()*right));
+  } else {
+    return left*Boxed(right);
+  }
 }

@@ -23,8 +23,11 @@ final class MultivariateTranspose<Argument,Value>(x:Expression<Argument>) <
 /**
  * Lazy `transpose`.
  */
-function transpose(x:Expression<Real[_]>) ->
-    MultivariateTranspose<Real[_],Real[_,_]> {
-  m:MultivariateTranspose<Real[_],Real[_,_]>(x);
-  return m;
+function transpose(x:Expression<Real[_]>) -> Expression<Real[_,_]> {
+  if x.isConstant() {
+    return box(matrix(transpose(x.value())));
+  } else {
+    m:MultivariateTranspose<Real[_],Real[_,_]>(x);
+    return m;
+  }
 }

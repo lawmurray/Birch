@@ -30,6 +30,11 @@ class TransformLinearMultivariate<Value>(A:Expression<Real[_,_]>, x:Value,
     c <- Y*c;
   }
 
+  function leftMultiply(y:Expression<Real>) {
+    A <- y*A;
+    c <- y*c;
+  }
+
   function add(y:Expression<Real[_]>) {
     c <- c + y;
   }

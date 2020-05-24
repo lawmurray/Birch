@@ -47,23 +47,33 @@ final class DiscreteSubtract<Left,Right,Value>(left:Expression<Left>,
  * Lazy subtract.
  */
 operator (left:Expression<Integer> - right:Expression<Integer>) ->
-    DiscreteSubtract<Integer,Integer,Integer> {
-  m:DiscreteSubtract<Integer,Integer,Integer>(left, right);
-  return m;
+    Expression<Integer> {
+  if left.isConstant() && right.isConstant() {
+    return box(left.value() - right.value());
+  } else {
+    m:DiscreteSubtract<Integer,Integer,Integer>(left, right);
+    return m;
+  }
 }
 
 /**
  * Lazy subtract.
  */
-operator (left:Integer - right:Expression<Integer>) ->
-    DiscreteSubtract<Integer,Integer,Integer> {
-  return Boxed(left) - right;
+operator (left:Integer - right:Expression<Integer>) -> Expression<Integer> {
+  if right.isConstant() {
+    return box(left - right.value());
+  } else {
+    return Boxed(left) - right;
+  }
 }
 
 /**
  * Lazy subtract.
  */
-operator (left:Expression<Integer> - right:Integer) ->
-    DiscreteSubtract<Integer,Integer,Integer> {
-  return left - Boxed(right);
+operator (left:Expression<Integer> - right:Integer) -> Expression<Integer> {
+  if left.isConstant() {
+    return box(left.value() + right);
+  } else {
+    return left - Boxed(right);
+  }
 }

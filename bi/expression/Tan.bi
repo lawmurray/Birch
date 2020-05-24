@@ -15,7 +15,11 @@ final class Tan<Argument,Value>(x:Expression<Argument>) <
 /**
  * Lazy `tan`.
  */
-function tan(x:Expression<Real>) -> Tan<Real,Real> {
-  m:Tan<Real,Real>(x);
-  return m;
+function tan(x:Expression<Real>) -> Expression<Real> {
+  if x.isConstant() {
+    return box(tan(x.value()));
+  } else {
+    m:Tan<Real,Real>(x);
+    return m;
+  }
 }

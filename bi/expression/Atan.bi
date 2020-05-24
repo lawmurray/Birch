@@ -15,7 +15,11 @@ final class Atan<Argument,Value>(x:Expression<Argument>) <
 /**
  * Lazy `atan`.
  */
-function atan(x:Expression<Real>) -> Atan<Real,Real> {
-  m:Atan<Real,Real>(x);
-  return m;
+function atan(x:Expression<Real>) -> Expression<Real> {
+  if x.isConstant() {
+    return box(atan(x.value()));
+  } else {
+    m:Atan<Real,Real>(x);
+    return m;
+  }
 }

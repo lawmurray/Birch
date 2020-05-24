@@ -61,21 +61,33 @@ final class Subtract<Left,Right,Value>(left:Expression<Left>,
  * Lazy subtract.
  */
 operator (left:Expression<Real> - right:Expression<Real>) ->
-    Subtract<Real,Real,Real> {
-  m:Subtract<Real,Real,Real>(left, right);
-  return m;
+    Expression<Real> {
+  if left.isConstant() && right.isConstant() {
+    return box(left.value() - right.value());
+  } else {
+    m:Subtract<Real,Real,Real>(left, right);
+    return m;
+  }
 }
 
 /**
  * Lazy subtract.
  */
-operator (left:Real - right:Expression<Real>) -> Subtract<Real,Real,Real> {
-  return Boxed(left) - right;
+operator (left:Real - right:Expression<Real>) -> Expression<Real> {
+  if right.isConstant() {
+    return box(left - right.value());
+  } else {
+    return Boxed(left) - right;
+  }
 }
 
 /**
  * Lazy subtract.
  */
-operator (left:Expression<Real> - right:Real) -> Subtract<Real,Real,Real> {
-  return left - Boxed(right);
+operator (left:Expression<Real> - right:Real) -> Expression<Real> {
+  if left.isConstant() {
+    return box(left.value() - right);
+  } else {
+    return left - Boxed(right);
+  }
 }

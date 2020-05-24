@@ -15,7 +15,11 @@ final class Cos<Argument,Value>(x:Expression<Argument>) <
 /**
  * Lazy `cos`.
  */
-function cos(x:Expression<Real>) -> Cos<Real,Real> {
-  m:Cos<Real,Real>(x);
-  return m;
+function cos(x:Expression<Real>) -> Expression<Real> {
+  if x.isConstant() {
+    return box(cos(x.value()));
+  } else {
+    m:Cos<Real,Real>(x);
+    return m;
+  }
 }

@@ -23,8 +23,11 @@ final class MatrixTranspose<Argument,Value>(x:Expression<Argument>) <
 /**
  * Lazy `transpose`.
  */
-function transpose(x:Expression<Real[_,_]>) ->
-    MatrixTranspose<Real[_,_],Real[_,_]> {
-  m:MatrixTranspose<Real[_,_],Real[_,_]>(x);
-  return m;
+function transpose(x:Expression<Real[_,_]>) -> Expression<Real[_,_]> {
+  if x.isConstant() {
+    return box(matrix(transpose(x.value())));
+  } else {
+    m:MatrixTranspose<Real[_,_],Real[_,_]>(x);
+    return m;
+  }
 }

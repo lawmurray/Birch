@@ -15,7 +15,11 @@ final class Acos<Argument,Value>(x:Expression<Argument>) <
 /**
  * Lazy `acos`.
  */
-function acos(x:Expression<Real>) -> Acos<Real,Real> {
-  m:Acos<Real,Real>(x);
-  return m;
+function acos(x:Expression<Real>) -> Expression<Real> {
+  if x.isConstant() {
+    return box(acos(x.value()));
+  } else {
+    m:Acos<Real,Real>(x);
+    return m;
+  }
 }

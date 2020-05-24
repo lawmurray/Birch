@@ -15,7 +15,11 @@ final class Sinh<Argument,Value>(x:Expression<Argument>) <
 /**
  * Lazy `sinh`.
  */
-function sinh(x:Expression<Real>) -> Sinh<Real,Real> {
-  m:Sinh<Real,Real>(x);
-  return m;
+function sinh(x:Expression<Real>) -> Expression<Real> {
+  if x.isConstant() {
+    return box(sinh(x.value()));
+  } else {
+    m:Sinh<Real,Real>(x);
+    return m;
+  }
 }

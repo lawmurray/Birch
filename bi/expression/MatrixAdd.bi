@@ -31,9 +31,9 @@ final class MatrixAdd<Left,Right,Value>(left:Expression<Left>,
     } else if (y <- right.graftLinearMatrixGaussian())? {
       y!.add(left);
     } else if (z <- left.graftMatrixGaussian())? {
-      y <- TransformLinearMatrix<MatrixGaussian>(Identity(z!.rows()), z!, right);
+      y <- TransformLinearMatrix<MatrixGaussian>(box(identity(z!.rows())), z!, right);
     } else if (z <- right.graftMatrixGaussian())? {
-      y <- TransformLinearMatrix<MatrixGaussian>(Identity(z!.rows()), z!, left);
+      y <- TransformLinearMatrix<MatrixGaussian>(box(identity(z!.rows())), z!, left);
     }
     return y;
   }
@@ -48,9 +48,9 @@ final class MatrixAdd<Left,Right,Value>(left:Expression<Left>,
     } else if (y <- right.graftLinearMatrixNormalInverseGamma(compare))? {
       y!.add(left);
     } else if (z <- left.graftMatrixNormalInverseGamma(compare))? {
-      y <- TransformLinearMatrix<MatrixNormalInverseGamma>(Identity(z!.rows()), z!, right);
+      y <- TransformLinearMatrix<MatrixNormalInverseGamma>(box(identity(z!.rows())), z!, right);
     } else if (z <- right.graftMatrixNormalInverseGamma(compare))? {
-      y <- TransformLinearMatrix<MatrixNormalInverseGamma>(Identity(z!.rows()), z!, left);
+      y <- TransformLinearMatrix<MatrixNormalInverseGamma>(box(identity(z!.rows())), z!, left);
     }
     return y;
   }
@@ -65,9 +65,9 @@ final class MatrixAdd<Left,Right,Value>(left:Expression<Left>,
     } else if (y <- right.graftLinearMatrixNormalInverseWishart(compare))? {
       y!.add(left);
     } else if (z <- left.graftMatrixNormalInverseWishart(compare))? {
-      y <- TransformLinearMatrix<MatrixNormalInverseWishart>(Identity(z!.rows()), z!, right);
+      y <- TransformLinearMatrix<MatrixNormalInverseWishart>(box(identity(z!.rows())), z!, right);
     } else if (z <- right.graftMatrixNormalInverseWishart(compare))? {
-      y <- TransformLinearMatrix<MatrixNormalInverseWishart>(Identity(z!.rows()), z!, left);
+      y <- TransformLinearMatrix<MatrixNormalInverseWishart>(box(identity(z!.rows())), z!, left);
     }
     return y;
   }
@@ -77,25 +77,37 @@ final class MatrixAdd<Left,Right,Value>(left:Expression<Left>,
  * Lazy matrix addition.
  */
 operator (left:Expression<Real[_,_]> + right:Expression<Real[_,_]>) ->
-    MatrixAdd<Real[_,_],Real[_,_],Real[_,_]> {
+    Expression<Real[_,_]> {
   assert left.rows() == right.rows();
   assert left.columns() == right.columns();
-  m:MatrixAdd<Real[_,_],Real[_,_],Real[_,_]>(left, right);
-  return m;
+  if left.isConstant() && right.isConstant() {
+    return box(matrix(left.value() + right.value()));
+  } else {
+    m:MatrixAdd<Real[_,_],Real[_,_],Real[_,_]>(left, right);
+    return m;
+  }
 }
 
 /**
  * Lazy matrix addition.
  */
 operator (left:Real[_,_] + right:Expression<Real[_,_]>) ->
-    MatrixAdd<Real[_,_],Real[_,_],Real[_,_]> {
-  return Boxed(left) + right;
+    Expression<Real[_,_]> {
+  if right.isConstant() {
+    return box(matrix(left + right.value()));
+  } else {
+    return Boxed(left) + right;
+  }
 }
 
 /**
  * Lazy matrix addition.
  */
 operator (left:Expression<Real[_,_]> + right:Real[_,_]) ->
-    MatrixAdd<Real[_,_],Real[_,_],Real[_,_]> {
-  return left + Boxed(right);
+    Expression<Real[_,_]> {
+  if left.isConstant() {
+    return box(matrix(left.value() + right));
+  } else {
+    return left + Boxed(right);
+  }
 }

@@ -46,7 +46,7 @@ final class IdenticalGaussian(μ:Expression<Real[_]>, σ2:Expression<Real>) <
     } else if (m4 <- μ.graftMultivariateGaussian())? {
       r <- MultivariateGaussianMultivariateGaussian(m4!, diagonal(σ2, m4!.rows()));
     } else if (s1 <- σ2.graftInverseGamma())? {
-      r <- MultivariateNormalInverseGamma(μ, Identity(μ.rows()), s1!);
+      r <- MultivariateNormalInverseGamma(μ, box(identity(μ.rows())), s1!);
     }
     
     return r;
@@ -77,7 +77,7 @@ final class IdenticalGaussian(μ:Expression<Real[_]>, σ2:Expression<Real>) <
     r:MultivariateNormalInverseGamma?;
     
     if (s1 <- σ2.graftInverseGamma())? && s1! == compare {
-      r <- MultivariateNormalInverseGamma(μ, Identity(μ.rows()), s1!);
+      r <- MultivariateNormalInverseGamma(μ, box(identity(μ.rows())), s1!);
     }
 
     return r;

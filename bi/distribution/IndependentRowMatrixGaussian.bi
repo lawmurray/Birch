@@ -43,7 +43,7 @@ final class IndependentRowMatrixGaussian(M:Expression<Real[_,_]>,
     } else if compare? && (m2 <- M.graftMatrixNormalInverseWishart(compare!))? {
       r <- MatrixNormalInverseWishartMatrixGaussian(m2!);
     } else if (s1 <- V.graftInverseWishart())? {
-      r <- MatrixNormalInverseWishart(M, Identity(M.rows()), s1!);
+      r <- MatrixNormalInverseWishart(M, box(identity(M.rows())), s1!);
     }
 
     return r;
@@ -51,7 +51,7 @@ final class IndependentRowMatrixGaussian(M:Expression<Real[_,_]>,
 
   function graftMatrixGaussian() -> MatrixGaussian? {
     prune();
-    return Gaussian(M, Identity(M.rows()), V);
+    return Gaussian(M, box(identity(M.rows())), V);
   }
 
   function graftMatrixNormalInverseWishart(compare:Distribution<Real[_,_]>) ->
@@ -62,7 +62,7 @@ final class IndependentRowMatrixGaussian(M:Expression<Real[_,_]>,
     
     /* match a template */
     if (s1 <- V.graftInverseWishart())? && s1! == compare {
-      r <- MatrixNormalInverseWishart(M, Identity(M.rows()), s1!);
+      r <- MatrixNormalInverseWishart(M, box(identity(M.rows())), s1!);
     }
 
     return r;

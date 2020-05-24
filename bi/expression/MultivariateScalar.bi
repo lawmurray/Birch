@@ -15,7 +15,11 @@ final class MultivariateScalar<Argument,Value>(x:Expression<Argument>) <
 /**
  * Lazy `scalar`.
  */
-function scalar(x:Expression<Real[_]>) -> MultivariateScalar<Real[_],Real> {
-  m:MultivariateScalar<Real[_],Real>(x);
-  return m;
+function scalar(x:Expression<Real[_]>) -> Expression<Real> {
+  if x.isConstant() {
+    return box(scalar(x.value()));
+  } else {
+    m:MultivariateScalar<Real[_],Real>(x);
+    return m;
+  }
 }

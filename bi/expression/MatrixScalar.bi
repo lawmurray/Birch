@@ -15,7 +15,11 @@ final class MatrixScalar<Argument,Value>(x:Expression<Argument>) <
 /**
  * Lazy `scalar`.
  */
-function scalar(x:Expression<Real[_,_]>) -> MatrixScalar<Real[_,_],Real> {
-  m:MatrixScalar<Real[_,_],Real>(x);
-  return m;
+function scalar(x:Expression<Real[_,_]>) -> Expression<Real> {
+  if x.isConstant() {
+    return box(scalar(x.value()));
+  } else {
+    m:MatrixScalar<Real[_,_],Real>(x);
+    return m;
+  }
 }

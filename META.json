@@ -117,7 +117,6 @@
       "bi/expression/Dot.bi",
       "bi/expression/Exp.bi",
       "bi/expression/Expression.bi",
-      "bi/expression/Identity.bi",
       "bi/expression/Log.bi",
       "bi/expression/LogBeta.bi",
       "bi/expression/LogDet.bi",

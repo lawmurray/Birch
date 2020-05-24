@@ -28,7 +28,11 @@ final class Diagonal<Argument,Value>(x:Expression<Argument>, n:Integer) <
 /**
  * Lazy `diagonal`.
  */
-function diagonal(x:Expression<Real>, n:Integer) -> Diagonal<Real,Real[_,_]> {
-  m:Diagonal<Real,Real[_,_]>(x, n);
-  return m;
+function diagonal(x:Expression<Real>, n:Integer) -> Expression<Real[_,_]> {
+  if x.isConstant() {
+    return box(diagonal(x.value(), n));
+  } else {
+    m:Diagonal<Real,Real[_,_]>(x, n);
+    return m;
+  }
 }

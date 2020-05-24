@@ -16,7 +16,11 @@ final class LogDet<Argument,Value>(x:Expression<Argument>) <
 /**
  * Lazy `ldet`.
  */
-function ldet(x:Expression<LLT>) -> LogDet<LLT,Real> {
-  m:LogDet<LLT,Real>(x);
-  return m;
+function ldet(x:Expression<LLT>) -> Expression<Real> {
+  if x.isConstant() {
+    return box(ldet(x.value()));
+  } else {
+    m:LogDet<LLT,Real>(x);
+    return m;
+  }
 }

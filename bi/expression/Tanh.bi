@@ -15,7 +15,11 @@ final class Tanh<Argument,Value>(x:Expression<Argument>) <
 /**
  * Lazy `tanh`.
  */
-function tanh(x:Expression<Real>) -> Tanh<Real,Real> {
-  m:Tanh<Real,Real>(x);
-  return m;
+function tanh(x:Expression<Real>) -> Expression<Real> {
+  if x.isConstant() {
+    return box(tanh(x.value()));
+  } else {
+    m:Tanh<Real,Real>(x);
+    return m;
+  }
 }

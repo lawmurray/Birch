@@ -35,24 +35,34 @@ final class Dot<Left,Right,Value>(left:Expression<Left>,
  * Lazy `dot`.
  */
 function dot(left:Expression<Real[_]>, right:Expression<Real[_]>) ->
-    Dot<Real[_],Real[_],Real> {
+    Expression<Real> {
   assert left.rows() == right.rows();
-  m:Dot<Real[_],Real[_],Real>(left, right);
-  return m;
+  if left.isConstant() && right.isConstant() {
+    return box(dot(left.value(), right.value()));
+  } else {
+    m:Dot<Real[_],Real[_],Real>(left, right);
+    return m;
+  }
 }
 
 /**
  * Lazy `dot`.
  */
-function dot(left:Real[_], right:Expression<Real[_]>) ->
-    Dot<Real[_],Real[_],Real> {
-  return dot(Boxed(left), right);
+function dot(left:Real[_], right:Expression<Real[_]>) -> Expression<Real> {
+  if right.isConstant() {
+    return box(dot(left, right.value()));
+  } else {
+    return dot(Boxed(left), right);
+  }
 }
 
 /**
  * Lazy `dot`.
  */
-function dot(left:Expression<Real[_]>, right:Real[_]) ->
-    Dot<Real[_],Real[_],Real> {
-  return dot(left, Boxed(right));
+function dot(left:Expression<Real[_]>, right:Real[_]) -> Expression<Real> {
+  if left.isConstant() {
+    return box(dot(left.value(), right));
+  } else {
+    return dot(left, Boxed(right));
+  }
 }

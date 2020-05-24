@@ -18,22 +18,33 @@ final class LogBeta<Left,Right,Value>(left:Expression<Left>,
 /**
  * Lazy `lbeta`.
  */
-function lbeta(x:Expression<Real>, y:Expression<Real>) ->
-    LogBeta<Real,Real,Real> {
-  m:LogBeta<Real,Real,Real>(x, y);
-  return m;
+function lbeta(x:Expression<Real>, y:Expression<Real>) -> Expression<Real> {
+  if x.isConstant() && y.isConstant() {
+    return box(lbeta(x.value(), y.value()));
+  } else {
+    m:LogBeta<Real,Real,Real>(x, y);
+    return m;
+  }
 }
 
 /**
  * Lazy `lbeta`.
  */
-function lbeta(x:Real, y:Expression<Real>) -> LogBeta<Real,Real,Real> {
-  return lbeta(Boxed(x), y);
+function lbeta(x:Real, y:Expression<Real>) -> Expression<Real> {
+  if y.isConstant() {
+    return box(lbeta(x, y.value()));
+  } else {
+    return lbeta(Boxed(x), y);
+  }
 }
 
 /**
  * Lazy `lbeta`.
  */
-function lbeta(x:Expression<Real>, y:Real) -> LogBeta<Real,Real,Real> {
-  return lbeta(x, Boxed(y));
+function lbeta(x:Expression<Real>, y:Real) -> Expression<Real> {
+  if x.isConstant() {
+    return box(lbeta(x.value(), y));
+  } else {
+    return lbeta(x, Boxed(y));
+  }
 }

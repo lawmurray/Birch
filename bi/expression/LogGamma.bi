@@ -15,7 +15,11 @@ final class LogGamma<Argument,Value>(x:Expression<Argument>) <
 /**
  * Lazy `lgamma`.
  */
-function lgamma(x:Expression<Real>) -> LogGamma<Real,Real> {
-  m:LogGamma<Real,Real>(x);
-  return m;
+function lgamma(x:Expression<Real>) -> Expression<Real> {
+  if x.isConstant() {
+    return box(lgamma(x.value()));
+  } else {
+    m:LogGamma<Real,Real>(x);
+    return m;
+  }
 }

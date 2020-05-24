@@ -23,8 +23,11 @@ final class MatrixDiagonal<Argument,Value>(x:Expression<Argument>) <
 /**
  * Lazy `diagonal`.
  */
-function diagonal(x:Expression<Real[_,_]>) ->
-    MatrixDiagonal<Real[_,_],Real[_]> {
-  m:MatrixDiagonal<Real[_,_],Real[_]>(x);
-  return m;
+function diagonal(x:Expression<Real[_,_]>) -> Expression<Real[_]> {
+  if x.isConstant() {
+    return box(vector(diagonal(x.value())));
+  } else {
+    m:MatrixDiagonal<Real[_,_],Real[_]>(x);
+    return m;
+  }
 }

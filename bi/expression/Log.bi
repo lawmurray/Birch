@@ -15,7 +15,11 @@ final class Log<Argument,Value>(x:Expression<Argument>) <
 /**
  * Lazy `log`.
  */
-function log(x:Expression<Real>) -> Log<Real,Real> {
-  m:Log<Real,Real>(x);
-  return m;
+function log(x:Expression<Real>) -> Expression<Real> {
+  if x.isConstant() {
+    return box(log(x.value()));
+  } else {
+    m:Log<Real,Real>(x);
+    return m;
+  }
 }

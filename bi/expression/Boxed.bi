@@ -46,6 +46,7 @@ final class Boxed<Value> < Expression<Value> {
 function Boxed<Value>(x:Value) -> Boxed<Value> {
   o:Boxed<Value>;
   o.x <- x;
+  o.makeConstant();
   return o;
 }
 

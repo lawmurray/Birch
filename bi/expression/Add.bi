@@ -60,21 +60,33 @@ final class Add<Left,Right,Value>(left:Expression<Left>,
  * Lazy add.
  */
 operator (left:Expression<Real> + right:Expression<Real>) ->
-    Add<Real,Real,Real> {
-  m:Add<Real,Real,Real>(left, right);
-  return m;
+    Expression<Real> {
+  if left.isConstant() && right.isConstant() {
+    return box(left.value() + right.value());
+  } else {
+    m:Add<Real,Real,Real>(left, right);
+    return m;
+  }
 }
 
 /**
  * Lazy add.
  */
-operator (left:Real + right:Expression<Real>) -> Add<Real,Real,Real> {
-  return Boxed(left) + right;
+operator (left:Real + right:Expression<Real>) -> Expression<Real> {
+  if right.isConstant() {
+    return box(left + right.value());
+  } else {
+    return Boxed(left) + right;
+  }
 }
 
 /**
  * Lazy add.
  */
-operator (left:Expression<Real> + right:Real) -> Add<Real,Real,Real> {
-  return left + Boxed(right);
+operator (left:Expression<Real> + right:Real) -> Expression<Real> {
+  if left.isConstant() {
+    return box(left.value() + right);
+  } else {
+    return left + Boxed(right);
+  }
 }

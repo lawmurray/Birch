@@ -15,7 +15,11 @@ final class Exp<Argument,Value>(x:Expression<Argument>) <
 /**
  * Lazy `exp`.
  */
-function exp(x:Expression<Real>) -> Exp<Real,Real> {
-  m:Exp<Real,Real>(x);
-  return m;
+function exp(x:Expression<Real>) -> Expression<Real> {
+  if x.isConstant() {
+    return box(exp(x.value()));
+  } else {
+    m:Exp<Real,Real>(x);
+    return m;
+  }
 }
