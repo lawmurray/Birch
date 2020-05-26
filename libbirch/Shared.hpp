@@ -38,12 +38,11 @@ public:
    * Copy constructor.
    */
   Shared(const Shared& o) {
-    T* ptr;
-    std::tie(ptr, std::ignore) = unpack(o.packed.load());
-    packed.set(pack(ptr, false));
+    T* ptr = std::get<0>(unpack(o.packed.load()));
     if (ptr) {
       ptr->incShared();
     }
+    packed.set(pack(ptr, false));
   }
 
   /**
@@ -51,12 +50,11 @@ public:
    */
   template<class U, std::enable_if_t<std::is_base_of<T,U>::value,int> = 0>
   Shared(const Shared<U>& o) {
-    T* ptr;
-    std::tie(ptr, std::ignore) = unpack(o.packed.load());
-    packed.set(pack(ptr, false));
+    T* ptr = std::get<0>(unpack(o.packed.load()));
     if (ptr) {
       ptr->incShared();
     }
+    packed.set(pack(ptr, false));
   }
 
   /**
@@ -234,15 +232,15 @@ public:
     T* old;
     bool discarded;
     std::tie(old, discarded) = unpack(packed.exchange(pack(ptr, false)));
+    if (discarded) {
+      discard();  // was meant to be discarded
+    }
     if (old) {
       if (discarded) {
         old->decMemoShared();
       } else {
         old->decShared();
       }
-    }
-    if (discarded) {
-      discard();  // was meant to be discarded
     }
   }
 

@@ -87,7 +87,7 @@ public:
       label(rootLabel),
       tid(get_thread_num()),
       size(0),
-      packed(0) {
+      packed(1 << 3) {
     //
   }
 
@@ -102,7 +102,7 @@ public:
       label(nullptr),
       tid(0),
       size(0),
-      packed(0) {
+      packed(1 << 3) {
     //
   }
 
@@ -245,7 +245,7 @@ public:
     o->memoWeakCount.set(1u);
     o->label = label;
     o->tid = get_thread_num();
-    o->packed.maskAnd(1 << 3);  // preserve discard flag only
+    o->packed.set(1 << 3);
     return o;
   }
 
@@ -256,9 +256,7 @@ public:
    */
   Any* recycle(Label* label) {
     auto o = recycle_(label);
-    o->releaseLabel();
-    o->label = label;
-    o->holdLabel();
+    o->replaceLabel(label);
     o->thaw();
     return this;
   }
@@ -343,6 +341,7 @@ public:
       assert(!isDiscarded());
       discard();
       releaseLabel();
+      // omission of decMemoShared() serves as the increment
     } else {
       incMemoShared();
     }
@@ -355,6 +354,7 @@ public:
   void restoreShared() {
     if (++sharedCount == 1u) {
       assert(isDiscarded());
+      // omission of incMemoShared() serves as the decrement
       holdLabel();
       restore();
     } else {
@@ -462,6 +462,11 @@ protected:
    * Decrement the shared count of the label. This is used during discard.
    */
   void releaseLabel();
+
+  /**
+   * Replace the label.
+   */
+  void replaceLabel(Label* label);
 
   /**
    * Finish the member variables of the object.

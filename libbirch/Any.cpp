@@ -16,3 +16,15 @@ void libbirch::Any::releaseLabel() {
     label->decShared();
   }
 }
+
+void libbirch::Any::replaceLabel(Label* label) {
+  if (!isDiscarded()) {
+    if (label && label != rootLabel) {
+      label->incShared();
+    }
+    if (this->label && this->label != rootLabel) {
+      this->label->decShared();
+    }
+  }
+  this->label = label;
+}
