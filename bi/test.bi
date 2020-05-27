@@ -4,6 +4,8 @@
 program test(N:Integer <- 10000) {
   code:Integer <- 0;
 
+  code <- code + run_test("ragged_array");
+  code <- code + run_test("vector");
   code <- code + run_test("deep_clone_alias");
   code <- code + run_test("deep_clone_chain");
   code <- code + run_test("deep_clone_modify_dst");

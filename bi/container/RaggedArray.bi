@@ -32,14 +32,23 @@ final class RaggedArray<Type> {
    * Is this empty?
    */
   function empty() -> Boolean {
-    return nelements == 0;
+    return length(values) == 0;
   }
 
   /**
    * Clear all elements.
    */
   function clear() {
-    shrink(0);
+    values:Type[_];
+    offsets:Integer[_];
+    ncols:Integer[_];
+    
+    this.values <- values;
+    this.offsets <- offsets;
+    this.ncols <- ncols;
+    
+    nrows <- 0;
+    nelements <- 0;
   }
 
   /**
@@ -55,7 +64,6 @@ final class RaggedArray<Type> {
    * - i: Row.
    */
   function size(i:Integer) -> Integer {
-    assert 0 < i && i <= nrows;
     return ncols[i];
   }
   
@@ -75,7 +83,6 @@ final class RaggedArray<Type> {
    * - i: Row.
    */
   function get(i:Integer) -> Type[_] {
-    assert 0 < i && i <= nrows;
     return values[from(i)..to(i)];
   }
 
@@ -97,7 +104,7 @@ final class RaggedArray<Type> {
    * - x: Values.
    *
    * The number of columns in the row must match the number of columns in
-   * `x`. Use `shrink` or `enlarge` beforehand if necessary.
+   * `x`.
    */
   function set(i:Integer, x:Type[_]) {
     values[from(i)..to(i)] <- x;
@@ -107,7 +114,13 @@ final class RaggedArray<Type> {
    * Add a new row at the end.
    */
   function pushBack() {
-    enlarge(nrows + 1);
+    auto nrows <- this.nrows;
+    auto nelements <- this.nelements;
+    cpp{{    
+    this_()->offsets.insert(nrows, nelements + 1);
+    this_()->ncols.insert(nrows, 0);
+    }}
+    this.nrows <- nrows + 1;
   }
 
   /**
@@ -124,7 +137,15 @@ final class RaggedArray<Type> {
    * - x: Value.
    */
   function pushBack(i:Integer, x:Type) {
-    enlarge(i, ncols[i] + 1, x);
+    auto j <- offsets[i] + ncols[i];
+    cpp{{
+    this_()->values.insert(j - 1, x);
+    }}
+    for k in (i + 1)..nrows {
+      offsets[k] <- offsets[k] + 1;
+    }
+    ncols[i] <- ncols[i] + 1;
+    nelements <- nelements + 1;
   }
 
   /**
@@ -152,110 +173,13 @@ final class RaggedArray<Type> {
   }
 
   /**
-   * Decrease the number of rows.
-   *
-   * - n: Number of rows.
-   *
-   * The current contents is preserved.
-   */
-  function shrink(n:Integer) {
-    assert n < nrows;
-
-    if (n == 0) {
-      nelements <- 0;
-    } else {
-      nelements <- offsets[n] + ncols[n];
-    }
-    nrows <- n;
-    cpp{{
-    this_()->offsets.shrink(libbirch::make_shape(n));
-    this_()->ncols.shrink(libbirch::make_shape(n));
-    this_()->values.shrink(libbirch::make_shape(this_()->nelements));
-    }}
-    
-    assert length(offsets) == length(ncols);
-  }
-
-  /**
-   * Decrease the number of columns in a row.
-   *
-   * - i: Row.
-   * - n: Number of columns.
-   *
-   * The current contents of the row is preserved.
-   */
-  function shrink(i:Integer, n:Integer) {
-    assert n < ncols[i];
-  
-    d:Integer <- ncols[i] - n;
-    if offsets[i] + ncols[i] - 1 < nelements {
-      values[(offsets[i] + ncols[i] - d)..(nelements - d)] <- values[(offsets[i] + ncols[i])..nelements];
-    }
-    cpp{{
-    this_()->values.shrink(libbirch::make_shape(this_()->nelements - d));
-    }}
-    ncols[i] <- n;
-    if i < nrows {
-      offsets[(i + 1)..nrows] <- offsets[(i + 1)..nrows] - d;
-    }
-    nelements <- nelements - d;
-  }
-
-  /**
-   * Increase the number of rows.
-   *
-   * - n: Number of rows.
-   *
-   * The current contents is preserved.
-   */
-  function enlarge(n:Integer) {
-    assert n > nrows;
-
-    nrows <- n;
-    cpp{{    
-    this_()->offsets.enlarge(libbirch::make_shape(n), this_()->nelements + 1);
-    this_()->ncols.enlarge(libbirch::make_shape(n), 0);
-    }}
-
-    assert length(offsets) == length(ncols);
-  }
-  
-  /**
-   * Increase the number of columns in a row.
-   *
-   * - i: Row.
-   * - n: Number of columns.
-   * - x: Value for new elements.
-   *
-   * The current contents of the row is preserved.
-   */
-  function enlarge(i:Integer, n:Integer, x:Type) {
-    assert n > ncols[i];
-  
-    d:Integer <- n - ncols[i];
-    cpp{{
-    this_()->values.enlarge(libbirch::make_shape(this_()->nelements + d), x);
-    }}
-    if offsets[i] + ncols[i] - 1 < nelements {
-      values[(offsets[i] + ncols[i] + d)..(nelements + d)] <- values[(offsets[i] + ncols[i])..nelements];
-      for j in (offsets[i] + ncols[i])..(offsets[i] + ncols[i] + d - 1) {
-        values[j] <- x;
-      }
-    }
-    ncols[i] <- n;
-    if i < nrows {
-      offsets[(i + 1)..nrows] <- offsets[(i + 1)..nrows] + d;
-    }
-    nelements <- nelements + d;
-  }
-
-  /**
    * First serial index of a row.
    *
    * - i: Row.
    */
   function from(i:Integer) -> Integer {
-    assert 0 < i && i <= nrows;
+    assert 1 <= i && i <= nrows;
+    assert offsets[i] != 0;  // not an empty row
     return offsets[i];
   }
   
@@ -265,7 +189,8 @@ final class RaggedArray<Type> {
    * - i: Row.
    */
   function to(i:Integer) -> Integer {
-    assert 0 < i && i <= nrows;
+    assert 1 <= i && i <= nrows;
+    assert offsets[i] != 0;  // not an empty row
     return offsets[i] + ncols[i] - 1;
   }
   
@@ -276,9 +201,9 @@ final class RaggedArray<Type> {
    * - j: Column.
    */
   function serial(i:Integer, j:Integer) -> Integer {
-    assert 0 < i && i <= nrows;
-    assert 0 < j && j <= ncols[i];
-    return offsets[i] + j - 1;
+    assert 1 <= i && i <= nrows;
+    assert 1 <= j && j <= ncols[i];
+    return from(i) + j - 1;
   }
 
  function read(buffer:Buffer) {

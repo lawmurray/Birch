@@ -210,13 +210,12 @@ public:
         buffer->incUsage();
       } else {
         auto bytes = Buffer<T>::size(volume());
-        if (bytes > 0u) {
-          void* src = buf();
-          buffer = new (libbirch::allocate(bytes)) Buffer<T>();
-          offset = 0;
-          void* dst = buf();
-          std::memcpy(dst, src, sizeof(T)*volume());
-        }
+        assert(bytes > 0u);
+	      void* src = buf();
+        buffer = new (libbirch::allocate(bytes)) Buffer<T>();
+        offset = 0;
+        void* dst = buf();
+        std::memcpy(dst, src, sizeof(T)*volume());
       }
     }
   }
@@ -480,78 +479,67 @@ public:
    */
   ///@{
   /**
-   * Shrink a one-dimensional array in-place.
+   * For a one-dimensional array, insert an element at a given position. This
+   * increases the array size by one.
    *
-   * @tparam G Shape type.
-   *
-   * @param shape New shape.
+   * @param i Position.
+   * @param x Value.
    */
-  template<class G>
-  void shrink(const G& shape) {
-    static_assert(F::count() == 1, "can only shrink one-dimensional arrays");
-    static_assert(G::count() == 1, "can only shrink one-dimensional arrays");
+  void insert(const int64_t i, const T& x) {
+    static_assert(F::count() == 1, "can only enlarge one-dimensional arrays");
     assert(!isView);
-    assert(shape.size() <= size());
 
     lock();
-    auto oldSize = size();
-    auto newSize = shape.size();
-    assert(newSize < oldSize);
-    if (isShared()) {
-      Array<T,F> tmp(shape, *this);
+    auto n = size();
+    auto s = F(n + 1);
+    if (!buffer || isShared()) {
+      Array<T,F> tmp(s, *this);
       swap(tmp);
     } else {
-      if (newSize == 0) {
-        release();
-      } else {
-        if (!is_value<T>::value) {
-          ///@todo in C++17 can use std::destroy()
-          auto iter = begin() + shape.size();
-          auto last = end();
-          for (; iter != last; ++iter) {
-            iter->~T();
-          }
-        }
-        auto oldBytes = Buffer<T>::size(volume());
-        auto newBytes = Buffer<T>::size(shape.volume());
-        buffer = (Buffer<T>*)libbirch::reallocate(buffer, oldBytes,
-            buffer->tid, newBytes);
-      }
-      this->shape = shape;
+      auto oldBytes = Buffer<T>::size(shape.volume());
+      auto newBytes = Buffer<T>::size(s.volume());
+      buffer = (Buffer<T>*)libbirch::reallocate(buffer, oldBytes,
+          buffer->tid, newBytes);
     }
+    if (n - i > 0) {
+      std::memmove(buf() + i + 1, buf() + i, (n - i)*sizeof(T));
+    }
+    new (buf() + i) T(x);
+    shape = s;
     unlock();
   }
 
   /**
-   * Enlarge a one-dimensional array in-place.
+   * For a one-dimensional array, erase an element at a given position. This
+   * decreases the array size by one.
    *
-   * @tparam G Shape type.
-   *
-   * @param shape New shape.
-   * @param x Value to assign to new elements.
+   * @param i Position.
    */
-  template<class G>
-  void enlarge(const G& shape, const T& x) {
-    static_assert(F::count() == 1, "can only enlarge one-dimensional arrays");
-    static_assert(G::count() == 1, "can only enlarge one-dimensional arrays");
+  void erase(const int64_t i) {
+    static_assert(F::count() == 1, "can only shrink one-dimensional arrays");
     assert(!isView);
-    assert(shape.size() >= size());
+    assert(size() > 0);
 
     lock();
-    auto oldSize = size();
-    auto newSize = shape.size();
-    assert(newSize > oldSize);
-    if (!buffer || isShared()) {
-      Array<T,F> tmp(shape, *this);
-      swap(tmp);
+    auto n = size();
+    auto s = F(n - 1);
+    if (s.size() == 0) {
+      release();
     } else {
-      auto oldBytes = Buffer<T>::size(volume());
-      auto newBytes = Buffer<T>::size(shape.volume());
+      if (isShared()) {
+        Array<T,F> tmp(shape, *this);
+        swap(tmp);
+      }
+      buf()[i].~T();
+      if (n - 1 - i > 0) {
+        std::memmove(buf() + i, buf() + i + 1, (n - 1 - i)*sizeof(T));
+      }
+      auto oldBytes = Buffer<T>::size(shape.volume());
+      auto newBytes = Buffer<T>::size(s.volume());
       buffer = (Buffer<T>*)libbirch::reallocate(buffer, oldBytes,
           buffer->tid, newBytes);
-      this->shape = shape;
     }
-    std::uninitialized_fill(begin() + oldSize, begin() + newSize, x);
+    shape = s;
     unlock();
   }
   ///@}

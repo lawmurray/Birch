@@ -6,33 +6,27 @@ final class Vector<Type> {
    * Elements.
    */
   values:Type[_];
-  
-  /**
-   * Number of elements.
-   */
-  nelements:Integer <- 0;
 
   /**
    * Number of elements.
    */
   function size() -> Integer {
-    return nelements;
+    return length(values);
   }
 
   /**
    * Is this empty?
    */
   function empty() -> Boolean {
-    return nelements == 0;
+    return size() == 0;
   }
 
   /**
    * Clear all elements.
    */
   function clear() {
-    if nelements > 0 {
-      shrink(0);
-    }
+    values:Type[_];
+    this.values <- values;
   }
   
   /**
@@ -58,7 +52,7 @@ final class Vector<Type> {
    * Get the first element.
    */
   function front() -> Type {
-    assert nelements > 0;
+    assert size() > 0;
     return values[1];
   }
 
@@ -66,8 +60,8 @@ final class Vector<Type> {
    * Get the last element.
    */
   function back() -> Type {
-    assert nelements > 0;
-    return values[nelements];
+    assert size() > 0;
+    return values[size()];
   }
 
   /**
@@ -85,7 +79,7 @@ final class Vector<Type> {
    * - x: Value.
    */
   function pushBack(x:Type) {
-    insert(nelements + 1, x);
+    insert(size() + 1, x);
   }
 
   /**
@@ -99,7 +93,7 @@ final class Vector<Type> {
    * Remove the last element.
    */
   function popBack() {
-    erase(nelements);
+    erase(size());
   }
   
   /**
@@ -113,12 +107,10 @@ final class Vector<Type> {
    * is one more than the current size, or `pushBack()`.
    */
   function insert(i:Integer, x:Type) {
-    assert 1 <= i && i <= nelements + 1;
-    enlarge(nelements + 1, x);
-    if i < nelements {
-      values[(i + 1)..nelements] <- values[i..(nelements - 1)];
-    }
-    values[i] <- x;
+    assert 1 <= i && i <= size() + 1;
+    cpp{{
+    this_()->values.insert(i - 1, x);
+    }}
   }
 
   /**
@@ -127,11 +119,10 @@ final class Vector<Type> {
    * - i: Position.
    */
   function erase(i:Integer) {
-    assert 1 <= i && i <= nelements;
-    if i < nelements {
-      values[i..(nelements - 1)] <- values[(i + 1)..nelements];
-    }
-    shrink(nelements - 1);
+    assert 1 <= i && i <= size();
+    cpp{{
+    this_()->values.erase(i - 1);
+    }}
   }
 
   /**
@@ -140,38 +131,9 @@ final class Vector<Type> {
    * Return: a fiber object that yields each element in forward order.
    */
   fiber walk() -> Type {
-    for i in 1..nelements {
+    for i in 1..size() {
       yield values[i];
     }
-  }
-
-  /**
-   * Shrink the size.
-   *
-   * - n: Number of elements.
-   *
-   * The current contents are preserved.
-   */
-  function shrink(n:Integer) {
-    cpp{{
-    this_()->values.shrink(libbirch::make_shape(n));
-    }}
-    nelements <- n;
-  }
-  
-  /**
-   * Enlarge the size.
-   *
-   * - n: Number of elements.
-   * - x: Value for new elements.
-   *
-   * The current contents are preserved.
-   */
-  function enlarge(n:Integer, x:Type) {
-    cpp{{
-    this_()->values.enlarge(libbirch::make_shape(n), x);
-    }}
-    nelements <- n;
   }
 
   /**
@@ -186,7 +148,6 @@ final class Vector<Type> {
    */
   function fromArray(x:Type[_]) {
     values <- x;
-    nelements <- length(x);
   }
 
   function read(buffer:Buffer) {

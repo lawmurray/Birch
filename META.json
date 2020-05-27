@@ -276,6 +276,8 @@
       "bi/test/conjugacy/test_scaled_gamma_exponential.bi",
       "bi/test/conjugacy/test_scaled_gamma_poisson.bi",
       "bi/test/conjugacy/test_subtract_bounded_discrete_delta.bi",
+      "bi/test/container/test_ragged_array.bi",
+      "bi/test/container/test_vector.bi",
       "bi/test/pdf/test_pdf.bi",
       "bi/test/pdf/test_pdf_bernoulli.bi",
       "bi/test/pdf/test_pdf_beta_bernoulli.bi",
