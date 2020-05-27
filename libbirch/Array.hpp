@@ -501,9 +501,7 @@ public:
       buffer = (Buffer<T>*)libbirch::reallocate(buffer, oldBytes,
           buffer->tid, newBytes);
     }
-    if (n - i > 0) {
-      std::memmove(buf() + i + 1, buf() + i, (n - i)*sizeof(T));
-    }
+    std::memmove((void*)(buf() + i + 1), (void*)(buf() + i), (n - i)*sizeof(T));
     new (buf() + i) T(x);
     shape = s;
     unlock();
@@ -531,9 +529,7 @@ public:
         swap(tmp);
       }
       buf()[i].~T();
-      if (n - 1 - i > 0) {
-        std::memmove(buf() + i, buf() + i + 1, (n - 1 - i)*sizeof(T));
-      }
+      std::memmove((void*)(buf() + i), (void*)(buf() + i + 1), (n - 1 - i)*sizeof(T));
       auto oldBytes = Buffer<T>::size(shape.volume());
       auto newBytes = Buffer<T>::size(s.volume());
       buffer = (Buffer<T>*)libbirch::reallocate(buffer, oldBytes,
