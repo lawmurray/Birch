@@ -3,7 +3,7 @@
  */
 #pragma once
 
-#include "libbirch/ReaderWriterLock.hpp"
+#include "libbirch/ReadersWriterLock.hpp"
 
 namespace libbirch {
 /**

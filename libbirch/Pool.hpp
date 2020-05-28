@@ -4,7 +4,7 @@
 #if ENABLE_MEMORY_POOL
 #pragma once
 
-#include "libbirch/ExclusiveLock.hpp"
+#include "libbirch/Lock.hpp"
 
 namespace libbirch {
 /**
@@ -60,7 +60,7 @@ private:
   /**
    * Mutex.
    */
-  ExclusiveLock lock;
+  Lock lock;
 };
 
 /**

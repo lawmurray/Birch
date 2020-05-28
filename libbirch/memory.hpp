@@ -7,7 +7,8 @@
 #include "libbirch/thread.hpp"
 #include "libbirch/Atomic.hpp"
 #include "libbirch/Pool.hpp"
-#include "libbirch/EntryExitLock.hpp"
+#include "libbirch/ExitBarrierLock.hpp"
+#include "libbirch/SwitchLock.hpp"
 
 namespace libbirch {
 class Label;
@@ -18,14 +19,28 @@ class Label;
 extern Label* const rootLabel;
 
 /**
- * Lock for sharing finish operations.
+ * Lock for sharing finish operations. Finish operations may intersect on the
+ * graph of reachable objects, and so workshare. This lock creates a barrier
+ * on exit to ensure that all reachable objects are finished despite this
+ * sharing.
  */
-extern EntryExitLock finishLock;
+extern ExitBarrierLock finishLock;
 
 /**
- * Lock for sharing freeze operations.
+ * Lock for sharing freeze operations. Freeze operations may intersect on the
+ * graph of reachable objects, and so workshare. This lock creates a barrier
+ * on exit to ensure that all reachable objects are frozen despite this
+ * sharing.
  */
-extern EntryExitLock freezeLock;
+extern ExitBarrierLock freezeLock;
+
+/**
+ * Lock for sharing (and excluding) discard and restore operations. Allows
+ * any number of discard operations (first task) to proceed concurrently, and
+ * any number of restore operations (second task) to proceed concurrently,
+ * but never a mix of the two.
+ */
+extern SwitchLock discardLock;
 
 /**
  * For an allocation size, determine the index of the pool to which it

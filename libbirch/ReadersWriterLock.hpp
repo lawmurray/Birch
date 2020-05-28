@@ -11,12 +11,12 @@ namespace libbirch {
  *
  * @ingroup libbirch
  */
-class ReaderWriterLock {
+class ReadersWriterLock {
 public:
   /**
    * Default constructor.
    */
-  ReaderWriterLock();
+  ReadersWriterLock();
 
   /**
    * Correctly initialize after a bitwise copy.
@@ -29,22 +29,22 @@ public:
   /**
    * Obtain read use.
    */
-  void read();
+  void setRead();
 
   /**
    * Release read use.
    */
-  void unread();
+  void unsetRead();
 
   /**
    * Obtain exclusive use.
    */
-  void write();
+  void setWrite();
 
   /**
    * Release exclusive use.
    */
-  void unwrite();
+  void unsetWrite();
 
   /**
    * Assuming that the calling thread already has a write lock, downgrades
@@ -65,24 +65,24 @@ private:
 };
 }
 
-inline libbirch::ReaderWriterLock::ReaderWriterLock() :
+inline libbirch::ReadersWriterLock::ReadersWriterLock() :
     readers(0),
     writer(false) {
   //
 }
 
-inline void libbirch::ReaderWriterLock::read() {
+inline void libbirch::ReadersWriterLock::setRead() {
   readers.increment();
   while (writer.load()) {
     //
   }
 }
 
-inline void libbirch::ReaderWriterLock::unread() {
+inline void libbirch::ReadersWriterLock::unsetRead() {
   readers.decrement();
 }
 
-inline void libbirch::ReaderWriterLock::write() {
+inline void libbirch::ReadersWriterLock::setWrite() {
   bool w;
   do {
     /* obtain the write lock */
@@ -98,11 +98,11 @@ inline void libbirch::ReaderWriterLock::write() {
   } while (!w);
 }
 
-inline void libbirch::ReaderWriterLock::unwrite() {
+inline void libbirch::ReadersWriterLock::unsetWrite() {
   writer.store(false);
 }
 
-inline void libbirch::ReaderWriterLock::downgrade() {
+inline void libbirch::ReadersWriterLock::downgrade() {
   readers.increment();
   writer.store(false);
 }

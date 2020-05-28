@@ -15,14 +15,15 @@ namespace libbirch {
  * barrier that will not allow them to exit it until all such threads have
  * reached the end of the critical region.
  *
- * This is used for thread safety in the particular case of clone().
+ * This is used for thread safety in the particular case of *finish* and
+ * *freeze* operations on objects.
  */
-class EntryExitLock {
+class ExitBarrierLock {
 public:
   /**
    * Default constructor.
    */
-  EntryExitLock();
+  ExitBarrierLock();
 
   /**
    * Enter the critical region, possibly blocking.
@@ -42,16 +43,16 @@ private:
 };
 }
 
-inline libbirch::EntryExitLock::EntryExitLock() :
+inline libbirch::ExitBarrierLock::ExitBarrierLock() :
     ninternal(0) {
   //
 }
 
-inline void libbirch::EntryExitLock::enter() {
+inline void libbirch::ExitBarrierLock::enter() {
   ++ninternal;
 }
 
-inline void libbirch::EntryExitLock::exit() {
+inline void libbirch::ExitBarrierLock::exit() {
   if (--ninternal == 0) {
     return;
   } else {

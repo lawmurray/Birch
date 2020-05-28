@@ -10,11 +10,12 @@ libbirch::Label::Label() : Any(0) {
 libbirch::Label::Label(const Label& o) :
     Any(o) {
   auto& o1 = const_cast<Label&>(o);
-  o1.lock.write();
+
+  o1.lock.setWrite();
   o1.memo.rehash();
   o1.lock.downgrade();
   memo.copy(o1.memo);
-  o1.lock.unread();
+  o1.lock.unsetRead();
 }
 
 libbirch::Any* libbirch::Label::mapGet(Any* o) {

@@ -30,15 +30,15 @@ public:
   }
 
   virtual void finish_(Label* label) override {
-    lock.read();
+    lock.setRead();
     memo.finish(label);
-    lock.unread();
+    lock.unsetRead();
   }
 
   virtual void freeze_() override {
-    lock.read();
+    lock.setRead();
     memo.freeze();
-    lock.unread();
+    lock.unsetRead();
   }
 
   virtual Label* copy_(Label* label) const override {
@@ -67,7 +67,7 @@ public:
   auto get(P& o)  {
     auto ptr = o.get();
     if (ptr && ptr->isFrozen()) {  // isFrozen a useful guard for performance
-      lock.write();
+      lock.setWrite();
       ptr = o.get();  // reload now that within critical region
       auto old = ptr;
       ptr = static_cast<typename P::value_type*>(mapGet(old));
@@ -83,7 +83,7 @@ public:
         Shared<typename P::value_type> shared(ptr);
         o = std::move(shared);
       }
-      lock.unwrite();
+      lock.unsetWrite();
     }
     return ptr;
   }
@@ -97,7 +97,7 @@ public:
   auto pull(P& o) {
     auto ptr = o.get();
     if (ptr && ptr->isFrozen()) {  // isFrozen a useful guard for performance
-      lock.read();
+      lock.setRead();
       ptr = o.get();  // reload now that within critical region
       auto old = ptr;
       ptr = static_cast<typename P::value_type*>(mapPull(old));
@@ -106,7 +106,7 @@ public:
          * mapPull() never copies */
         o.replace(ptr);
       }
-      lock.unread();
+      lock.unsetRead();
     }
     return ptr;
   }
@@ -119,9 +119,9 @@ public:
   template<class T>
   auto get(T* ptr)  {
     if (ptr && ptr->isFrozen()) {  // isFrozen a useful guard for performance
-      lock.write();
+      lock.setWrite();
       ptr = static_cast<T*>(mapGet(ptr));
-      lock.unwrite();
+      lock.unsetWrite();
     }
     return ptr;
   }
@@ -134,9 +134,9 @@ public:
   template<class T>
   auto pull(T* ptr) {
     if (ptr && ptr->isFrozen()) {  // isFrozen a useful guard for performance
-      lock.read();
+      lock.setRead();
       ptr = static_cast<T*>(mapPull(ptr));
-      lock.unread();
+      lock.unsetRead();
     }
     return ptr;
   }
@@ -162,6 +162,6 @@ private:
   /**
    * Lock.
    */
-  ReaderWriterLock lock;
+  ReadersWriterLock lock;
 };
 }

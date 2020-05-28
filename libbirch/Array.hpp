@@ -11,7 +11,7 @@
 #include "libbirch/Buffer.hpp"
 #include "libbirch/Iterator.hpp"
 #include "libbirch/Eigen.hpp"
-#include "libbirch/ReaderWriterLock.hpp"
+#include "libbirch/ReadersWriterLock.hpp"
 
 namespace libbirch {
 /**
@@ -428,7 +428,7 @@ public:
    * copy-on-write operations until unpinned.
    */
   void pin() const {
-    const_cast<Array*>(this)->bufferLock.read();
+    const_cast<Array*>(this)->bufferLock.setRead();
   }
 
   /**
@@ -440,14 +440,14 @@ public:
   void pinWrite() {
     assert(!isView);
     if (isShared()) {
-      bufferLock.write();
+      bufferLock.setWrite();
       if (isShared()) {
         Array<T,F> tmp(shape, *this);
         swap(tmp);
       }
       bufferLock.downgrade();
     } else {
-      bufferLock.read();
+      bufferLock.setRead();
     }
   }
 
@@ -455,7 +455,7 @@ public:
    * Unpin the buffer.
    */
   void unpin() const {
-    const_cast<Array*>(this)->bufferLock.unread();
+    const_cast<Array*>(this)->bufferLock.unsetRead();
   }
 
   /**
@@ -463,14 +463,14 @@ public:
    * copy-on-write operation.
    */
   void lock() {
-    bufferLock.write();
+    bufferLock.setWrite();
   }
 
   /**
    * Unlock the buffer.
    */
   void unlock() {
-    bufferLock.unwrite();
+    bufferLock.unsetWrite();
   }
   ///@}
 
@@ -787,7 +787,7 @@ private:
    * buffer must be preserved for either read or write operations. Write use
    * is obtained to substitute the current buffer with another.
    */
-  ReaderWriterLock bufferLock;
+  ReadersWriterLock bufferLock;
 };
 
 template<class T, class F>

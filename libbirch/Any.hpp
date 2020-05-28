@@ -192,7 +192,6 @@ public:
   void finish(Label* label) {
     auto old = packed.maskOr(1 << 0) & (1 << 0);
     if (!old) {
-      /* proceed with finish */
       finish_(label);
     }
   }
@@ -204,7 +203,6 @@ public:
     assert(isFinished());
     auto old = packed.maskOr(1 << 1) & (1 << 1);
     if (!old) {
-      /* proceed with freeze */
       if (isUnique()) {
         packed.maskOr(1 << 2);
       }
@@ -282,7 +280,9 @@ public:
     if (++sharedCount == 1u) {
       incMemoShared();
       holdLabel();
+      discardLock.enterLeft();
       restore();
+      discardLock.exitLeft();
     }
   }
 
@@ -292,15 +292,16 @@ public:
   void decShared() {
     assert(numShared() > 0u);
     if (--sharedCount == 0u) {
+      releaseLabel();
       if (--memoSharedCount == 0u) {
         /* skip-discard optimization; no need to run discard as object is
          * about to be destroyed anyway */
-        releaseLabel();
         destroy();
         decWeak();
       } else {
+        discardLock.enterRight();
         discard();
-        releaseLabel();
+        discardLock.exitRight();
       }
     }
   }
@@ -316,6 +317,7 @@ public:
    * Increment the memo shared count.
    */
   void incMemoShared() {
+    assert(numWeak() > 0u);
     memoSharedCount.increment();
   }
 
@@ -338,7 +340,6 @@ public:
   void discardShared() {
     assert(numShared() > 0u);
     if (--sharedCount == 0u) {
-      assert(!isDiscarded());
       discard();
       releaseLabel();
       // omission of decMemoShared() serves as the increment
@@ -353,7 +354,6 @@ public:
    */
   void restoreShared() {
     if (++sharedCount == 1u) {
-      assert(isDiscarded());
       // omission of incMemoShared() serves as the decrement
       holdLabel();
       restore();
@@ -373,6 +373,7 @@ public:
    * Increment the weak count.
    */
   void incWeak() {
+    assert(numMemoWeak() > 0u);
     weakCount.increment();
   }
 

@@ -6,8 +6,9 @@
 #include "libbirch/Label.hpp"
 #include "libbirch/Shared.hpp"
 
-libbirch::EntryExitLock libbirch::finishLock;
-libbirch::EntryExitLock libbirch::freezeLock;
+libbirch::ExitBarrierLock libbirch::finishLock;
+libbirch::ExitBarrierLock libbirch::freezeLock;
+libbirch::SwitchLock libbirch::discardLock;
 
 #if ENABLE_MEMORY_POOL
 /**
