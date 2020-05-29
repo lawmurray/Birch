@@ -291,9 +291,21 @@ public:
   void decShared() {
     assert(numShared() > 0u);
     if (--sharedCount == 0u) {
-      //discardLock.enterRight();
-      discard();
-      //discardLock.exitRight();
+      /* the sequence of operations to perform here is discard(), then
+       * releaseLabel(), then decMemoShared(), but the first of these can be
+       * expensive; consequently we skip it if possible, but for thread
+       * safety hold an extra memo shared reference throughout so that the
+       * memo shared count cannot be reduced to zero by another thread, thus
+       * destroying the object, while we're still operating on it */
+      incMemoShared();
+      if (--memoSharedCount > 1u) {
+        //discardLock.enterRight();
+        discard();
+        //discardLock.exitRight();
+      } else {
+        /* skip-discard optimization; no need to run discard as object is
+         * about to be destroyed anyway */
+      }
       releaseLabel();
       decMemoShared();
     }
