@@ -3,14 +3,17 @@
  */
 #include "libbirch/Label.hpp"
 
-libbirch::Label::Label() : Any(0) {
+libbirch::Label::Label() :
+    tid(get_thread_num()),
+    useCount(0u),
+    finished(false),
+    frozen(false) {
   //
 }
 
 libbirch::Label::Label(const Label& o) :
-    Any(o) {
+    Label() {
   auto& o1 = const_cast<Label&>(o);
-
   o1.lock.setWrite();
   o1.memo.rehash();
   o1.lock.downgrade();

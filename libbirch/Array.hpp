@@ -240,10 +240,8 @@ public:
   template<class Visitor>
   void accept_(const Visitor& v) {
     if (!is_value<T>::value) {
-      pinWrite();
       auto iter = begin();
       auto last = end();
-      unpin();
       for (; iter != last; ++iter) {
         v.visit(*iter);
       }

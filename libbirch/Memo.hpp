@@ -6,6 +6,8 @@
 #include "libbirch/ReadersWriterLock.hpp"
 
 namespace libbirch {
+class Any;
+
 /**
  * Memo of object mappings, implemented as a hash table.
  *

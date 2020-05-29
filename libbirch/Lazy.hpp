@@ -151,7 +151,7 @@ public:
    * Correctly initialize after a bitwise copy.
    */
   void bitwiseFix() {
-    this->object.bitwiseFix();
+    object.bitwiseFix();
   }
 
   /**

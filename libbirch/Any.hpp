@@ -133,7 +133,6 @@ public:
    */
   void operator delete(void* ptr) {
     auto o = static_cast<Any*>(ptr);
-    o->destroy();
     o->deallocate();
   }
 
@@ -280,9 +279,9 @@ public:
     if (++sharedCount == 1u) {
       incMemoShared();
       holdLabel();
-      discardLock.enterLeft();
+      //discardLock.enterLeft();
       restore();
-      discardLock.exitLeft();
+      //discardLock.exitLeft();
     }
   }
 
@@ -292,17 +291,11 @@ public:
   void decShared() {
     assert(numShared() > 0u);
     if (--sharedCount == 0u) {
+      //discardLock.enterRight();
+      discard();
+      //discardLock.exitRight();
       releaseLabel();
-      if (--memoSharedCount == 0u) {
-        /* skip-discard optimization; no need to run discard as object is
-         * about to be destroyed anyway */
-        destroy();
-        decWeak();
-      } else {
-        discardLock.enterRight();
-        discard();
-        discardLock.exitRight();
-      }
+      decMemoShared();
     }
   }
 
@@ -339,12 +332,11 @@ public:
    */
   void discardShared() {
     assert(numShared() > 0u);
+    incMemoShared();
     if (--sharedCount == 0u) {
       discard();
       releaseLabel();
-      // omission of decMemoShared() serves as the increment
-    } else {
-      incMemoShared();
+      decMemoShared();
     }
   }
 
@@ -354,12 +346,11 @@ public:
    */
   void restoreShared() {
     if (++sharedCount == 1u) {
-      // omission of incMemoShared() serves as the decrement
+      incMemoShared();
       holdLabel();
       restore();
-    } else {
-      decMemoShared();
     }
+    decMemoShared();
   }
 
   /**

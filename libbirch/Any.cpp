@@ -7,23 +7,27 @@
 
 void libbirch::Any::holdLabel() {
   if (label && label != rootLabel) {
-    label->incShared();
+    label->incUsage();
   }
 }
 
 void libbirch::Any::releaseLabel() {
   if (label && label != rootLabel) {
-    label->decShared();
+    if (label->decUsage() == 0u) {
+      delete label;
+    }
   }
 }
 
 void libbirch::Any::replaceLabel(Label* label) {
   if (!isDiscarded()) {
     if (label && label != rootLabel) {
-      label->incShared();
+      label->incUsage();
     }
     if (this->label && this->label != rootLabel) {
-      this->label->decShared();
+      if (this->label->decUsage() == 0u) {
+        delete this->label;
+      }
     }
   }
   this->label = label;

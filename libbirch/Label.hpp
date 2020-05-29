@@ -3,7 +3,6 @@
  */
 #pragma once
 
-#include "libbirch/Any.hpp"
 #include "libbirch/Memo.hpp"
 #include "libbirch/Shared.hpp"
 
@@ -13,7 +12,7 @@ namespace libbirch {
  *
  * @ingroup libbirch
  */
-class Label final: public Any {
+class Label {
 public:
   /**
    * Constructor.
@@ -25,37 +24,64 @@ public:
    */
   Label(const Label& o);
 
-  virtual bi::type::String getClassName() const {
-    return "Label";
+  /**
+   * New operator.
+   */
+  void* operator new(std::size_t size) {
+    return allocate(size);
   }
 
-  virtual void finish_(Label* label) override {
-    lock.setRead();
-    memo.finish(label);
-    lock.unsetRead();
+  /**
+   * Delete operator.
+   */
+  void operator delete(void* ptr) {
+    auto o = static_cast<Label*>(ptr);
+    o->deallocate();
   }
 
-  virtual void freeze_() override {
-    lock.setRead();
-    memo.freeze();
-    lock.unsetRead();
+  void finish(Label* label) {
+    if (!finished.exchange(true)) {
+      lock.setRead();
+      memo.finish(label);
+      lock.unsetRead();
+    }
   }
 
-  virtual Label* copy_(Label* label) const override {
-    assert(false);
-    return nullptr;
+  void freeze() {
+    if (!frozen.exchange(true)) {
+      lock.setRead();
+      memo.freeze();
+      lock.unsetRead();
+    }
   }
 
-  virtual Label* recycle_(Label* label) override {
-    return this;
+  void thaw() {
+    finished.store(false);
+    frozen.store(false);
   }
 
-  virtual void discard_() override {
-    //
+  /**
+   * Increment the usage count.
+   */
+  void incUsage() {
+    useCount.increment();
   }
 
-  virtual void restore_() override {
-    //
+  /**
+   * Decrement the usage count.
+   *
+   * @return Use count.
+   */
+  unsigned decUsage() {
+    assert(useCount.load() > 0u);
+    return --useCount;
+  }
+
+  /**
+   * Usage count.
+   */
+  unsigned numUsage() const {
+    return useCount.load();
   }
 
   /**
@@ -141,7 +167,17 @@ public:
     return ptr;
   }
 
+  /**
+   * Id of the thread that allocated the buffer.
+   */
+  int tid;
+
 private:
+  void deallocate() {
+    assert(useCount.load() == 0u);
+    libbirch::deallocate(this, sizeof(Label), tid);
+  }
+
   /**
    * Map an object that may not yet have been cloned, cloning it if
    * necessary.
@@ -163,5 +199,20 @@ private:
    * Lock.
    */
   ReadersWriterLock lock;
+
+  /**
+   * Use count (the number of objects sharing this label).
+   */
+  Atomic<unsigned> useCount;
+
+  /**
+   * Have all entries in the memo been finished?
+   */
+  Atomic<bool> finished;
+
+  /**
+   * Have all entries in the memo been frozen?
+   */
+  Atomic<bool> frozen;
 };
 }
