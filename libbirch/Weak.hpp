@@ -153,6 +153,7 @@ public:
    * Replace.
    */
   void replace(T* ptr) {
+    assert(ptr->numMemoShared() > 0u);
     if (ptr) {
       ptr->incWeak();
     }
