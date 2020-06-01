@@ -152,6 +152,7 @@ public:
    */
   void bitwiseFix() {
     object.bitwiseFix();
+    label.bitwiseFix();
   }
 
   /**

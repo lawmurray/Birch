@@ -30,7 +30,7 @@ public:
   explicit Shared(value_type* ptr = nullptr) :
       packed(pack(ptr, false)) {
     if (ptr) {
-      ptr->incShared();
+      ptr->initShared();
     }
   }
 
@@ -107,17 +107,11 @@ public:
    * Fix after a bitwise copy.
    */
   void bitwiseFix() {
-    T* ptr;
-    bool discarded;
-    std::tie(ptr, discarded) = unpack(packed.get());
-    // ^ get() not load(), as no need to be thread safe here
+    T* ptr = std::get<0>(unpack(packed.get()));
     if (ptr) {
-      if (discarded) {
-        ptr->incMemoShared();
-      } else {
-        ptr->incShared();
-      }
+      ptr->incShared();
     }
+    packed.set(pack(ptr, false));
   }
 
   /**
@@ -227,7 +221,7 @@ public:
     /* assume that the pointer is not discarded at first; once the atomic
      * write is complete, if it is meant to be discarded, then discard */
     if (ptr) {
-      ptr->incShared();
+      ptr->initShared();
     }
     T* old;
     bool discarded;

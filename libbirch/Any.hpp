@@ -21,10 +21,12 @@ class Restorer;
  *
  * @ingroup libbirch
  *
- * @attention In order to work correctly with multiple inheritance, Any must
- * be the *first* base class.
+ * @attention A newly created object of type Any, or of a type derived from
+ * it, must be assigned to at least one Shared pointer in its lifetime to
+ * be correctly destroyed and deallocated. Furthermore, in order to work
+ * correctly with multiple inheritance, Any must be the *first* base class.
  *
- * Reference-counted objects in LibBirch require four counts, rather than
+ * Reference-counted objects in LibBirch use four counts, rather than
  * the usual two (shared and weak), in order to support lazy deep copy
  * operations. These are:
  *
@@ -80,14 +82,14 @@ public:
    * Constructor.
    */
   Any() :
-      sharedCount(0u),
-      memoSharedCount(0u),
+      sharedCount(1u),
+      memoSharedCount(1u),
       weakCount(1u),
       memoWeakCount(1u),
       label(rootLabel),
       tid(get_thread_num()),
-      size(0),
-      packed(1 << 3) {
+      size(0u),
+      packed(0u) {
     //
   }
 
@@ -95,14 +97,14 @@ public:
    * Special constructor for the root label.
    */
   Any(int) :
-      sharedCount(0u),
-      memoSharedCount(0u),
+      sharedCount(1u),
+      memoSharedCount(1u),
       weakCount(1u),
       memoWeakCount(1u),
       label(nullptr),
       tid(0),
-      size(0),
-      packed(1 << 3) {
+      size(0u),
+      packed(0u) {
     //
   }
 
@@ -174,8 +176,9 @@ public:
     auto weakCount = numWeak();
     auto memoWeakCount = numMemoWeak();
 
-    return (sharedCount == 1u && memoSharedCount == 1u && weakCount == 1u && memoWeakCount == 1u) ||
-        (sharedCount == 0u && memoSharedCount == 0u && weakCount == 1u && memoWeakCount == 1u);
+    return (sharedCount == 1u && memoSharedCount == 1u && weakCount == 1u &&
+        memoWeakCount == 1u) || (sharedCount == 0u && memoSharedCount == 0u &&
+        weakCount == 1u && memoWeakCount == 1u);
   }
 
   /**
@@ -189,7 +192,7 @@ public:
    * Finish the object.
    */
   void finish(Label* label) {
-    auto old = packed.maskOr(1 << 0) & (1 << 0);
+    auto old = packed.maskOr(FINISHED) & FINISHED;
     if (!old) {
       finish_(label);
     }
@@ -200,10 +203,10 @@ public:
    */
   void freeze() {
     assert(isFinished());
-    auto old = packed.maskOr(1 << 1) & (1 << 1);
+    auto old = packed.maskOr(FROZEN) & FROZEN;
     if (!old) {
       if (isUnique()) {
-        packed.maskOr(1 << 2);
+        packed.maskOr(FROZEN_UNIQUE);
       }
       freeze_();
     }
@@ -213,7 +216,7 @@ public:
    * Discard the object.
    */
   void discard() {
-    auto old = packed.maskOr(1 << 3) & (1 << 3);
+    auto old = packed.maskOr(DISCARDED) & DISCARDED;
     if (!old) {
       discard_();
     }
@@ -223,7 +226,7 @@ public:
    * Restore the object.
    */
   void restore() {
-    auto old = packed.maskAnd(~int16_t(1 << 3)) & (1 << 3);
+    auto old = packed.maskAnd(~DISCARDED) & DISCARDED;
     if (old) {
       restore_();
     }
@@ -236,13 +239,14 @@ public:
    */
   Any* copy(Label* label) {
     auto o = copy_(label);
-    o->sharedCount.set(0u);
-    o->memoSharedCount.set(0u);
+    o->sharedCount.set(1u);
+    o->memoSharedCount.set(1u);
     o->weakCount.set(1u);
     o->memoWeakCount.set(1u);
     o->label = label;
     o->tid = get_thread_num();
-    o->packed.set(1 << 3);
+    o->packed.set(0u);
+    o->holdLabel();
     return o;
   }
 
@@ -253,16 +257,9 @@ public:
    */
   Any* recycle(Label* label) {
     auto o = recycle_(label);
+    o->packed.set(INITIALIZED);
     o->replaceLabel(label);
-    o->thaw();
     return this;
-  }
-
-  /**
-   * Thaw the object.
-   */
-  void thaw() {
-    packed.maskAnd(1 << 3);  // preserve discard flag only
   }
 
   /**
@@ -273,9 +270,30 @@ public:
   }
 
   /**
-   * Increment the shared count.
+   * Increment the shared count, possibly for the first time. This should be
+   * used when a raw pointer is used to initialize a shared pointer,
+   * otherwise incShared() is adequate. A check is made as to whether this is
+   * the first shared pointer to the object, in which case behavior is
+   * slightly different, and optimized.
+   */
+  void initShared() {
+    auto initialized = packed.maskOr(INITIALIZED) & INITIALIZED;
+    if (!initialized) {
+      /* first shared pointer to this object; nothing to do, not even to
+       * increment the shared count, as the object is initialized for this
+       * purpose already */
+    } else {
+      /* not the first shared pointer to this object, behave as normal */
+      incShared();
+    }
+  }
+
+  /**
+   * Increment the shared count. This can be used when a shared pointer to
+   * the object is already known to exist, otherwise use initShared().
    */
   void incShared() {
+    assert(isInitialized());
     if (++sharedCount == 1u) {
       incMemoShared();
       holdLabel();
@@ -427,17 +445,24 @@ public:
   }
 
   /**
+   * Is the object initialized?
+   */
+  bool isInitialized() const {
+    return packed.load() & INITIALIZED;
+  }
+
+  /**
    * Is the object finished?
    */
   bool isFinished() const {
-    return packed.load() & (1 << 0);
+    return packed.load() & FINISHED;
   }
 
   /**
    * Is the object frozen?
    */
   bool isFrozen() const {
-    return packed.load() & (1 << 1);
+    return packed.load() & FROZEN;
   }
 
   /**
@@ -445,14 +470,14 @@ public:
    * pointer to it?
    */
   bool isFrozenUnique() const {
-    return packed.load() & (1 << 2);
+    return packed.load() & FROZEN_UNIQUE;
   }
 
   /**
    * Is the object discarded?
    */
   bool isDiscarded() const {
-    return packed.load() & (1 << 3);
+    return packed.load() & DISCARDED;
   }
 
 protected:
@@ -587,14 +612,26 @@ private:
   /**
    * Bitfield containing:
    *
-   *   * Finished flag.
-   *   * Frozen flag.
-   *   * Unique frozen flag: is the object frozen, and at the time of
-   *     freezing, was there only one pointer to it?
-   *   * Discard flag.
+   *   - *initialized* flag,
+   *   - *finished* flag,
+   *   - *frozen* flag,
+   *   - *frozen unique* flag (is the object frozen, and at the time of
+   *     freezing, was there only one pointer to it?), and
+   *   - *discarded* flag.
    *
    * Each occupies 1 bit, from the right.
    */
   Atomic<uint16_t> packed;
+
+  /*
+   * Flags for packed.
+   */
+  enum {
+    INITIALIZED = 1,
+    FINISHED = 2,
+    FROZEN = 4,
+    FROZEN_UNIQUE = 8,
+    DISCARDED = 16
+  };
 };
 }
