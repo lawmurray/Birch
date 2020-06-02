@@ -68,19 +68,19 @@ function Restaurant(α:Expression<Real>, θ:Expression<Real>) -> Restaurant {
  * Create Chinese restaurant process.
  */
 function Restaurant(α:Expression<Real>, θ:Real) -> Restaurant {
-  return Restaurant(α, Boxed(θ));
+  return Restaurant(α, box(θ));
 }
 
 /**
  * Create Chinese restaurant process.
  */
 function Restaurant(α:Real, θ:Expression<Real>) -> Restaurant {
-  return Restaurant(Boxed(α), θ);
+  return Restaurant(box(α), θ);
 }
 
 /**
  * Create Chinese restaurant process.
  */
 function Restaurant(α:Real, θ:Real) -> Restaurant {
-  return Restaurant(Boxed(α), Boxed(θ));
+  return Restaurant(box(α), box(θ));
 }

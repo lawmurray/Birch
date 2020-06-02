@@ -36,7 +36,7 @@ function copysign(x:Real, y:Expression<Real>) -> Expression<Real> {
   if y.isConstant() {
     return box(copysign(x, y.value()));
   } else {
-    return copysign(Boxed(x), y);
+    return copysign(box(x), y);
   }
 }
 
@@ -47,6 +47,6 @@ function copysign(x:Expression<Real>, y:Real) -> Expression<Real> {
   if x.isConstant() {
     return box(copysign(x.value(), y));
   } else {
-    return copysign(x, Boxed(y));
+    return copysign(x, box(y));
   }
 }

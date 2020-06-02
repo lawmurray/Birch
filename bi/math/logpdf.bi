@@ -748,9 +748,32 @@ function logpdf_multivariate_normal_inverse_gamma_multivariate_gaussian(x:Real[_
  */
 function logpdf_linear_multivariate_normal_inverse_gamma_multivariate_gaussian(x:Real[_],
     A:Real[_,_], ν:Real[_], Λ:LLT, c:Real[_], α:Real, γ:Real) -> Real {
-  auto β <- γ - 0.5*dot(solve(cholesky(Λ), ν));
-  return logpdf_multivariate_student_t(x, 2.0*α, A*solve(Λ, ν) + c,
+  auto μ <- solve(Λ, ν);
+  auto β <- γ - 0.5*dot(μ, ν);
+  return logpdf_multivariate_student_t(x, 2.0*α, A*μ + c,
       (β/α)*(identity(rows(A)) + A*solve(Λ, transpose(A))));
+}
+
+/**
+ * Observe a Gaussian variate with a multivariate linear normal inverse-gamma
+ * prior with linear transformation.
+ *
+ * - x: The variate.
+ * - a: Scale.
+ * - ν: Precision times mean.
+ * - Λ: Precision.
+ * - c: Offset.
+ * - α: Shape of the inverse-gamma.
+ * - γ: Scale accumulator of the inverse-gamma.
+ *
+ * Returns: the log probability density.
+ */
+function logpdf_linear_multivariate_normal_inverse_gamma_gaussian(x:Real,
+    a:Real[_], ν:Real[_], Λ:LLT, c:Real, α:Real, γ:Real) -> Real {
+  auto μ <- solve(Λ, ν);
+  auto β <- γ - 0.5*dot(μ, ν);
+  return logpdf_student_t(x, 2.0*α, dot(a, μ) + c,
+      (β/α)*(1.0 + dot(a, solve(Λ, a))));
 }
 
 /**

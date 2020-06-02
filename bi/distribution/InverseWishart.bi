@@ -81,19 +81,19 @@ function InverseWishart(Ψ:Expression<Real[_,_]>, k:Expression<Real>) ->
  * Create inverse-Wishart distribution.
  */
 function InverseWishart(Ψ:Expression<Real[_,_]>, k:Real) -> InverseWishart {
-  return InverseWishart(Ψ, Boxed(k));
+  return InverseWishart(Ψ, box(k));
 }
 
 /**
  * Create inverse-Wishart distribution.
  */
 function InverseWishart(Ψ:Real[_,_], k:Expression<Real>) -> InverseWishart {
-  return InverseWishart(Boxed(Ψ), k);
+  return InverseWishart(box(Ψ), k);
 }
 
 /**
  * Create inverse-Wishart distribution.
  */
 function InverseWishart(Ψ:Real[_,_], k:Real) -> InverseWishart {
-  return InverseWishart(Boxed(Ψ), Boxed(k));
+  return InverseWishart(box(Ψ), box(k));
 }

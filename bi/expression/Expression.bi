@@ -345,7 +345,8 @@ abstract class Expression<Value> < DelayExpression {
    *
    * Return: The node if successful, nil if not.
    */
-  function graftNormalInverseGamma(compare:Distribution<Real>) -> NormalInverseGamma? {
+  function graftNormalInverseGamma(compare:Distribution<Real>) ->
+      NormalInverseGamma? {
     return nil;
   }
 
@@ -356,6 +357,16 @@ abstract class Expression<Value> < DelayExpression {
    */
   function graftLinearNormalInverseGamma(compare:Distribution<Real>) ->
       TransformLinear<NormalInverseGamma>? {
+    return nil;
+  }
+
+  /*
+   * Attempt to graft this expression onto the delayed sampling graph.
+   *
+   * Return: The node if successful, nil if not.
+   */
+  function graftDotNormalInverseGamma(compare:Distribution<Real>) ->
+      TransformDot<MultivariateNormalInverseGamma>? {
     return nil;
   }
 
@@ -478,88 +489,4 @@ abstract class Expression<Value> < DelayExpression {
   function graftBoundedDiscrete() -> BoundedDiscrete? {
     return nil;
   }
-}
-
-/**
- * Length of a vector.
- */
-function length(x:Expression<Real[_]>) -> Integer {
-  return x.length();
-}
-
-/**
- * Number of rows of a vector; equals `length()`.
- */
-function rows(x:Expression<Real[_]>) -> Integer {
-  return x.rows();
-}
-
-/**
- * Number of columns of a vector; equals 1.
- */
-function columns(x:Expression<Real[_]>) -> Integer {
-  return x.columns();
-}
-
-/**
- * Length of a matrix; equals `rows()`.
- */
-function length(x:Expression<Real[_,_]>) -> Integer {
-  return x.length();
-}
-
-/**
- * Number of rows of a matrix.
- */
-function rows(x:Expression<Real[_,_]>) -> Integer {
-  return x.rows();
-}
-
-/**
- * Number of columns of a matrix.
- */
-function columns(x:Expression<Real[_,_]>) -> Integer {
-  return x.columns();
-}
-
-/**
- * Length of a vector.
- */
-function length(x:Expression<Integer[_]>) -> Integer {
-  return x.length();
-}
-
-/**
- * Number of rows of a vector; equals `length()`.
- */
-function rows(x:Expression<Integer[_]>) -> Integer {
-  return x.rows();
-}
-
-/**
- * Number of columns of a vector; equals 1.
- */
-function columns(x:Expression<Integer[_]>) -> Integer {
-  return x.columns();
-}
-
-/**
- * Length of a matrix; equals `rows()`.
- */
-function length(x:Expression<Integer[_,_]>) -> Integer {
-  return x.length();
-}
-
-/**
- * Number of rows of a matrix.
- */
-function rows(x:Expression<Integer[_,_]>) -> Integer {
-  return x.rows();
-}
-
-/**
- * Number of columns of a matrix.
- */
-function columns(x:Expression<Integer[_,_]>) -> Integer {
-  return x.columns();
 }

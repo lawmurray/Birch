@@ -62,5 +62,5 @@ function Exponential(λ:Expression<Real>) -> Exponential {
  * Create Exponential distribution.
  */
 function Exponential(λ:Real) -> Exponential {
-  return Exponential(Boxed(λ));
+  return Exponential(box(λ));
 }

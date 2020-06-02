@@ -83,7 +83,7 @@ function Gaussian(M:Expression<Real[_,_]>, V:Expression<Real[_,_]>) ->
  */
 function Gaussian(M:Expression<Real[_,_]>, V:Real[_,_]) ->
     IndependentRowMatrixGaussian {
-  return Gaussian(M, Boxed(V));
+  return Gaussian(M, box(V));
 }
 
 /**
@@ -91,5 +91,5 @@ function Gaussian(M:Expression<Real[_,_]>, V:Real[_,_]) ->
  */
 function Gaussian(M:Real[_,_], V:Expression<Real[_,_]>) ->
     IndependentRowMatrixGaussian {
-  return Gaussian(Boxed(M), V);
+  return Gaussian(box(M), V);
 }

@@ -45,13 +45,25 @@ final class NormalInverseGamma(μ:Expression<Real>, a2:Expression<Real>,
   function simulate() -> Real {
     return simulate_normal_inverse_gamma(μ.value(), 1.0/λ.value(), σ2.α.value(), σ2.β.value());
   }
+
+  function simulateLazy() -> Real? {
+    return simulate_normal_inverse_gamma(μ.pilot(), 1.0/λ.pilot(), σ2.α.pilot(), σ2.β.pilot());
+  }
   
   function logpdf(x:Real) -> Real {
     return logpdf_normal_inverse_gamma(x, μ.value(), 1.0/λ.value(), σ2.α.value(), σ2.β.value());
   }
 
+  function logpdfLazy(x:Expression<Real>) -> Expression<Real>? {
+    return logpdf_lazy_normal_inverse_gamma(x, μ, 1.0/λ, σ2.α, σ2.β);
+  }
+
   function update(x:Real) {
     (σ2.α, σ2.β) <- box(update_normal_inverse_gamma(x, μ.value(), λ.value(), σ2.α.value(), σ2.β.value()));
+  }
+
+  function updateLazy(x:Expression<Real>) {
+    (σ2.α, σ2.β) <- update_lazy_normal_inverse_gamma(x, μ, λ, σ2.α, σ2.β);
   }
 
   function downdate(x:Real) {

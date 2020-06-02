@@ -57,19 +57,19 @@ function Uniform(l:Expression<Real>, u:Expression<Real>) -> Uniform {
  * Create a uniform distribution.
  */
 function Uniform(l:Expression<Real>, u:Real) -> Uniform {
-  return Uniform(l, Boxed(u));
+  return Uniform(l, box(u));
 }
 
 /**
  * Create a uniform distribution.
  */
 function Uniform(l:Real, u:Expression<Real>) -> Uniform {
-  return Uniform(Boxed(l), u);
+  return Uniform(box(l), u);
 }
 
 /**
  * Create a uniform distribution.
  */
 function Uniform(l:Real, u:Real) -> Uniform {
-  return Uniform(Boxed(l), Boxed(u));
+  return Uniform(box(l), box(u));
 }

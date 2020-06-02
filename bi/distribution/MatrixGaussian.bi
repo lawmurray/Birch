@@ -93,7 +93,7 @@ function Gaussian(M:Expression<Real[_,_]>, U:Expression<Real[_,_]>,
  */
 function Gaussian(M:Expression<Real[_,_]>, U:Expression<Real[_,_]>,
     V:Real[_,_]) -> MatrixGaussian {
-  return Gaussian(M, U, Boxed(V));
+  return Gaussian(M, U, box(V));
 }
 
 /**
@@ -101,7 +101,7 @@ function Gaussian(M:Expression<Real[_,_]>, U:Expression<Real[_,_]>,
  */
 function Gaussian(M:Expression<Real[_,_]>, U:Real[_,_],
     V:Expression<Real[_,_]>) -> MatrixGaussian {
-  return Gaussian(M, Boxed(U), V);
+  return Gaussian(M, box(U), V);
 }
 
 /**
@@ -109,7 +109,7 @@ function Gaussian(M:Expression<Real[_,_]>, U:Real[_,_],
  */
 function Gaussian(M:Expression<Real[_,_]>, U:Real[_,_], V:Real[_,_]) ->
       MatrixGaussian {
-  return Gaussian(M, Boxed(U), Boxed(V));
+  return Gaussian(M, box(U), box(V));
 }
 
 /**
@@ -117,7 +117,7 @@ function Gaussian(M:Expression<Real[_,_]>, U:Real[_,_], V:Real[_,_]) ->
  */
 function Gaussian(M:Real[_,_], U:Expression<Real[_,_]>,
     V:Expression<Real[_,_]>) -> MatrixGaussian {
-  return Gaussian(Boxed(M), U, V);
+  return Gaussian(box(M), U, V);
 }
 
 /**
@@ -125,7 +125,7 @@ function Gaussian(M:Real[_,_], U:Expression<Real[_,_]>,
  */
 function Gaussian(M:Real[_,_], U:Expression<Real[_,_]>, V:Real[_,_]) ->
     MatrixGaussian {
-  return Gaussian(Boxed(M), U, Boxed(V));
+  return Gaussian(box(M), U, box(V));
 }
 
 /**
@@ -133,12 +133,12 @@ function Gaussian(M:Real[_,_], U:Expression<Real[_,_]>, V:Real[_,_]) ->
  */
 function Gaussian(M:Real[_,_], U:Real[_,_], V:Expression<Real[_,_]>) ->
     MatrixGaussian {
-  return Gaussian(Boxed(M), Boxed(U), V);
+  return Gaussian(box(M), box(U), V);
 }
 
 /**
  * Create matrix Gaussian distribution.
  */
 function Gaussian(M:Real[_,_], U:Real[_,_], V:Real[_,_]) -> MatrixGaussian {
-  return Gaussian(Boxed(M), Boxed(U), Boxed(V));
+  return Gaussian(box(M), box(U), box(V));
 }

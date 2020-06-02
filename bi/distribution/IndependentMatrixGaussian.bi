@@ -83,7 +83,7 @@ function Gaussian(M:Expression<Real[_,_]>, σ2:Expression<Real[_]>) ->
  */
 function Gaussian(M:Expression<Real[_,_]>, σ2:Real[_]) ->
     IndependentMatrixGaussian {
-  return Gaussian(M, Boxed(σ2));
+  return Gaussian(M, box(σ2));
 }
 
 /**
@@ -91,12 +91,12 @@ function Gaussian(M:Expression<Real[_,_]>, σ2:Real[_]) ->
  */
 function Gaussian(M:Real[_,_], σ2:Expression<Real[_]>) ->
     IndependentMatrixGaussian {
-  return Gaussian(Boxed(M), σ2);
+  return Gaussian(box(M), σ2);
 }
 
 /**
  * Create matrix Gaussian distribution where each element is independent.
  */
 function Gaussian(M:Real[_,_], σ2:Real[_]) -> IndependentMatrixGaussian {
-  return Gaussian(Boxed(M), Boxed(σ2));
+  return Gaussian(box(M), box(σ2));
 }

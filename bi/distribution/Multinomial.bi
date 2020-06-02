@@ -59,19 +59,19 @@ function Multinomial(n:Expression<Integer>, ρ:Expression<Real[_]>) ->
  * Create multinomial distribution.
  */
 function Multinomial(n:Expression<Integer>, ρ:Real[_]) -> Multinomial {
-  return Multinomial(n, Boxed(ρ));
+  return Multinomial(n, box(ρ));
 }
 
 /**
  * Create multinomial distribution.
  */
 function Multinomial(n:Integer, ρ:Expression<Real[_]>) -> Multinomial {
-  return Multinomial(Boxed(n), ρ);
+  return Multinomial(box(n), ρ);
 }
 
 /**
  * Create multinomial distribution.
  */
 function Multinomial(n:Integer, ρ:Real[_]) -> Multinomial {
-  return Multinomial(Boxed(n), Boxed(ρ));
+  return Multinomial(box(n), box(ρ));
 }

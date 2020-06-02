@@ -62,19 +62,19 @@ function Beta(α:Expression<Real>, β:Expression<Real>) -> Beta {
  * Create beta distribution.
  */
 function Beta(α:Expression<Real>, β:Real) -> Beta {
-  return Beta(α, Boxed(β));
+  return Beta(α, box(β));
 }
 
 /**
  * Create beta distribution.
  */
 function Beta(α:Real, β:Expression<Real>) -> Beta {
-  return Beta(Boxed(α), β);
+  return Beta(box(α), β);
 }
 
 /**
  * Create beta distribution.
  */
 function Beta(α:Real, β:Real) -> Beta {
-  return Beta(Boxed(α), Boxed(β));
+  return Beta(box(α), box(β));
 }

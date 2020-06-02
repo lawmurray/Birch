@@ -11,8 +11,16 @@ class Poisson(λ:Expression<Real>) < Discrete {
     return simulate_poisson(λ.value());
   }
 
+  function simulateLazy() -> Integer? {
+    return simulate_poisson(λ.pilot());
+  }
+
   function logpdf(x:Integer) -> Real {
     return logpdf_poisson(x, λ.value());
+  }
+
+  function logpdfLazy(x:Expression<Integer>) -> Expression<Real>? {
+    return logpdf_lazy_poisson(x, λ);
   }
 
   function cdf(x:Integer) -> Real? {
@@ -25,14 +33,6 @@ class Poisson(λ:Expression<Real>) < Discrete {
 
   function lower() -> Integer? {
     return 0;
-  }
-
-  function simulateLazy() -> Integer? {
-    return simulate_poisson(λ.pilot());
-  }
-
-  function logpdfLazy(x:Expression<Integer>) -> Expression<Real>? {
-    return logpdf_lazy_poisson(x, λ);
   }
 
   function graft() -> Distribution<Integer> {
@@ -70,5 +70,5 @@ function Poisson(λ:Expression<Real>) -> Poisson {
  * Create Poisson distribution.
  */
 function Poisson(λ:Real) -> Poisson {
-  return Poisson(Boxed(λ));
+  return Poisson(box(λ));
 }

@@ -84,7 +84,7 @@ function Gaussian(μ:Expression<Real[_]>, Σ:Expression<Real[_,_]>,
  */
 function Gaussian(μ:Expression<Real[_]>, Σ:Expression<Real[_,_]>,
     σ2:Real) -> ScalarMultivariateGaussian {
-  return Gaussian(μ, Σ, Boxed(σ2));
+  return Gaussian(μ, Σ, box(σ2));
 }
 
 /**
@@ -95,7 +95,7 @@ function Gaussian(μ:Expression<Real[_]>, Σ:Expression<Real[_,_]>,
  */
 function Gaussian(μ:Expression<Real[_]>, Σ:Real[_,_],
     σ2:Expression<Real>) -> ScalarMultivariateGaussian {
-  return Gaussian(μ, Boxed(Σ), σ2);
+  return Gaussian(μ, box(Σ), σ2);
 }
 
 /**
@@ -106,7 +106,7 @@ function Gaussian(μ:Expression<Real[_]>, Σ:Real[_,_],
  */
 function Gaussian(μ:Expression<Real[_]>, Σ:Real[_,_], σ2:Real) ->
       ScalarMultivariateGaussian {
-  return Gaussian(μ, Boxed(Σ), Boxed(σ2));
+  return Gaussian(μ, box(Σ), box(σ2));
 }
 
 /**
@@ -117,7 +117,7 @@ function Gaussian(μ:Expression<Real[_]>, Σ:Real[_,_], σ2:Real) ->
  */
 function Gaussian(μ:Real[_], Σ:Expression<Real[_,_]>,
     σ2:Expression<Real>) -> ScalarMultivariateGaussian {
-  return Gaussian(Boxed(μ), Σ, σ2);
+  return Gaussian(box(μ), Σ, σ2);
 }
 
 /**
@@ -128,7 +128,7 @@ function Gaussian(μ:Real[_], Σ:Expression<Real[_,_]>,
  */
 function Gaussian(μ:Real[_], Σ:Expression<Real[_,_]>, σ2:Real) ->
     ScalarMultivariateGaussian {
-  return Gaussian(Boxed(μ), Σ, Boxed(σ2));
+  return Gaussian(box(μ), Σ, box(σ2));
 }
 
 /**
@@ -139,7 +139,7 @@ function Gaussian(μ:Real[_], Σ:Expression<Real[_,_]>, σ2:Real) ->
  */
 function Gaussian(μ:Real[_], Σ:Real[_,_], σ2:Expression<Real>) ->
     ScalarMultivariateGaussian {
-  return Gaussian(Boxed(μ), Boxed(Σ), σ2);
+  return Gaussian(box(μ), box(Σ), σ2);
 }
 
 /**
@@ -149,5 +149,5 @@ function Gaussian(μ:Real[_], Σ:Real[_,_], σ2:Expression<Real>) ->
  * inverse-gamma distributed.
  */
 function Gaussian(μ:Real[_], Σ:Real[_,_], σ2:Real) -> ScalarMultivariateGaussian {
-  return Gaussian(Boxed(μ), Boxed(Σ), Boxed(σ2));
+  return Gaussian(box(μ), box(Σ), box(σ2));
 }

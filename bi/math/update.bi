@@ -403,7 +403,7 @@ function update_multivariate_normal_inverse_gamma_multivariate_gaussian(
 
 /**
  * Update the parameters of a normal inverse-gamma distribution with a
- * multivariate Gaussian likelihood and scaling.
+ * linear transformation and multivariate Gaussian likelihood.
  *
  * - x: The variate.
  * - A: Scale.
@@ -423,6 +423,30 @@ function update_linear_multivariate_normal_inverse_gamma_multivariate_gaussian(
   auto ν' <- ν + transpose(A)*(x - c);
   auto α' <- α + 0.5*D;
   auto γ' <- γ + 0.5*dot(x - c);
+  return (ν', Λ', α', γ');
+}
+
+/**
+ * Update the parameters of a normal inverse-gamma distribution with a
+ * linear transformation involving a dot product, and Gaussian likelihood.
+ *
+ * - x: The variate.
+ * - A: Scale.
+ * - ν: Prior precision times mean.
+ * - Λ: Prior precision.
+ * - c: Offset.
+ * - α: Prior shape of the inverse-gamma.
+ * - γ: Prior scale accumulator.
+ *
+ * Returns: the posterior hyperparameters `μ'`, `Λ'`, `γ'`, `α'` and `β'`.
+ */
+function update_linear_multivariate_normal_inverse_gamma_gaussian(
+    x:Real, a:Real[_], ν:Real[_], Λ:LLT, c:Real, α:Real, γ:Real) ->
+    (Real[_], LLT, Real, Real) {
+  auto Λ' <- rank_update(Λ, a, 1.0);
+  auto ν' <- ν + a*(x - c);
+  auto α' <- α + 0.5;
+  auto γ' <- γ + 0.5*pow(x - c, 2.0);
   return (ν', Λ', α', γ');
 }
 

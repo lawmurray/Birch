@@ -56,61 +56,61 @@ function Student(ν:Expression<Real>, μ:Expression<Real>,
  * Create Student's $t$-distribution.
  */
 function Student(ν:Expression<Real>) -> Student {
-  return Student(ν, Boxed(0.0), Boxed(1.0));
+  return Student(ν, box(0.0), box(1.0));
 }
 
 /**
  * Create Student's $t$-distribution.
  */
 function Student(ν:Real) -> Student {
-  return Student(Boxed(ν), Boxed(0.0), Boxed(1.0));
+  return Student(box(ν), box(0.0), box(1.0));
 }
 
 /**
  * Create Student's $t$-distribution.
  */
 function Student(ν:Real, μ:Expression<Real>, σ2:Expression<Real> ) -> Student {
-  return Student(Boxed(ν), μ, σ2);
+  return Student(box(ν), μ, σ2);
 }
 
 /**
  * Create Student's $t$-distribution.
  */
 function Student(ν:Expression<Real>, μ:Real, σ2:Expression<Real> ) -> Student {
-  return Student(ν, Boxed(μ), σ2);
+  return Student(ν, box(μ), σ2);
 }
 
 /**
  * Create Student's $t$-distribution.
  */
 function Student(ν:Expression<Real>, μ:Expression<Real>, σ2:Real ) -> Student {
-  return Student(ν, μ, Boxed(σ2));
+  return Student(ν, μ, box(σ2));
 }
 
 /**
  * Create Student's $t$-distribution.
  */
 function Student(ν:Real, μ:Real, σ2:Expression<Real> ) -> Student {
-  return Student(Boxed(ν), Boxed(μ), σ2);
+  return Student(box(ν), box(μ), σ2);
 }
 
 /**
  * Create Student's $t$-distribution.
  */
 function Student(ν:Real, μ:Expression<Real>, σ2:Real ) -> Student {
-  return Student(Boxed(ν), μ, Boxed(σ2));
+  return Student(box(ν), μ, box(σ2));
 }
 
 /**
  * Create Student's $t$-distribution.
  */
 function Student(ν:Expression<Real>, μ:Real, σ2:Real ) -> Student {
-  return Student(ν, Boxed(μ), Boxed(σ2));
+  return Student(ν, box(μ), box(σ2));
 }
 
 /**
  * Create Student's $t$-distribution.
  */
 function Student(ν:Real, μ:Real, σ2:Real ) -> Student {
-  return Student(Boxed(ν), Boxed(μ), Boxed(σ2));
+  return Student(box(ν), box(μ), box(σ2));
 }

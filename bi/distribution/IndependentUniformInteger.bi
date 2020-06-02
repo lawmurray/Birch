@@ -50,7 +50,7 @@ function Uniform(l:Expression<Integer[_]>, u:Expression<Integer[_]>) ->
  */
 function Uniform(l:Expression<Integer[_]>, u:Integer[_]) ->
     IndependentUniformInteger {
-  return Uniform(l, Boxed(u));
+  return Uniform(l, box(u));
 }
 
 /**
@@ -59,7 +59,7 @@ function Uniform(l:Expression<Integer[_]>, u:Integer[_]) ->
  */
 function Uniform(l:Integer[_], u:Expression<Integer[_]>) ->
     IndependentUniformInteger {
-  return Uniform(Boxed(l), u);
+  return Uniform(box(l), u);
 }
 
 /**
@@ -67,5 +67,5 @@ function Uniform(l:Integer[_], u:Expression<Integer[_]>) ->
  * is independent.
  */
 function Uniform(l:Integer[_], u:Integer[_]) -> IndependentUniformInteger {
-  return Uniform(Boxed(l), Boxed(u));
+  return Uniform(box(l), box(u));
 }

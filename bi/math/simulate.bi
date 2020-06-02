@@ -694,8 +694,8 @@ function simulate_multivariate_normal_inverse_gamma_multivariate_gaussian(
 }
 
 /**
- * Simulate a Gaussian distribution with a linear transformation of a
- * multivariate linear normal inverse-gamma prior.
+ * Simulate a multivariate Gaussian distribution with a linear transformation
+ * of a multivariate linear normal inverse-gamma prior.
  *
  * - A: Scale.
  * - ν: Precision times mean.
@@ -710,6 +710,25 @@ function simulate_linear_multivariate_normal_inverse_gamma_multivariate_gaussian
   auto β <- γ - 0.5*dot(μ, ν);
   return simulate_multivariate_student_t(2.0*α, A*μ + c,
       (β/α)*(identity(rows(A)) + A*solve(Λ, transpose(A))));
+}
+
+/**
+ * Simulate a Gaussian distribution with a linear transformation of a
+ * multivariate linear normal inverse-gamma prior.
+ *
+ * - a: Scale.
+ * - ν: Precision times mean.
+ * - Λ: Precision.
+ * - c: Offset.
+ * - α: Shape of the inverse-gamma.
+ * - γ: Scale accumulator of the inverse-gamma.
+ */
+function simulate_linear_multivariate_normal_inverse_gamma_gaussian(
+    a:Real[_], ν:Real[_], Λ:LLT, c:Real, α:Real, γ:Real) -> Real {
+  auto μ <- solve(Λ, ν);
+  auto β <- γ - 0.5*dot(μ, ν);
+  return simulate_student_t(2.0*α, dot(a, μ) + c,
+      (β/α)*(1.0 + dot(a, solve(Λ, a))));
 }
 
 /**

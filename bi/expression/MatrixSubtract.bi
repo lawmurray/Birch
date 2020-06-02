@@ -96,7 +96,7 @@ operator (left:Real[_,_] - right:Expression<Real[_,_]>) ->
   if right.isConstant() {
     return box(matrix(left - right.value()));
   } else {
-    return Boxed(left) - right;
+    return box(left) - right;
   }
 }
 
@@ -108,6 +108,6 @@ operator (left:Expression<Real[_,_]> - right:Real[_,_]) ->
   if left.isConstant() {
     return box(matrix(left.value() - right));
   } else {
-    return left - Boxed(right);
+    return left - box(right);
   }
 }

@@ -23,9 +23,28 @@ final class Dot<Left,Right,Value>(left:Expression<Left>,
       return TransformDot<MultivariateGaussian>(y!.A*right, y!.x,
           dot(y!.c, right));
     } else if (z <- right.graftMultivariateGaussian())? {
-      return TransformDot<MultivariateGaussian>(left, z!, Boxed(0.0));
+      return TransformDot<MultivariateGaussian>(left, z!, box(0.0));
     } else if (z <- left.graftMultivariateGaussian())? {
-      return TransformDot<MultivariateGaussian>(right, z!, Boxed(0.0));
+      return TransformDot<MultivariateGaussian>(right, z!, box(0.0));
+    }
+    return nil;
+  }
+
+  override function graftDotNormalInverseGamma(compare:Distribution<Real>) ->
+      TransformDot<MultivariateNormalInverseGamma>? {
+    y:TransformLinearMultivariate<MultivariateNormalInverseGamma>?;
+    z:MultivariateNormalInverseGamma?;
+    
+    if (y <- right.graftLinearMultivariateNormalInverseGamma(compare))? {
+      return TransformDot<MultivariateNormalInverseGamma>(
+          transpose(y!.A)*left, y!.x, dot(left, y!.c));
+    } else if (y <- left.graftLinearMultivariateNormalInverseGamma(compare))? {
+      return TransformDot<MultivariateNormalInverseGamma>(y!.A*right, y!.x,
+          dot(y!.c, right));
+    } else if (z <- right.graftMultivariateNormalInverseGamma(compare))? {
+      return TransformDot<MultivariateNormalInverseGamma>(left, z!, box(0.0));
+    } else if (z <- left.graftMultivariateNormalInverseGamma(compare))? {
+      return TransformDot<MultivariateNormalInverseGamma>(right, z!, box(0.0));
     }
     return nil;
   }
@@ -52,7 +71,7 @@ function dot(left:Real[_], right:Expression<Real[_]>) -> Expression<Real> {
   if right.isConstant() {
     return box(dot(left, right.value()));
   } else {
-    return dot(Boxed(left), right);
+    return dot(box(left), right);
   }
 }
 
@@ -63,6 +82,6 @@ function dot(left:Expression<Real[_]>, right:Real[_]) -> Expression<Real> {
   if left.isConstant() {
     return box(dot(left.value(), right));
   } else {
-    return dot(left, Boxed(right));
+    return dot(left, box(right));
   }
 }

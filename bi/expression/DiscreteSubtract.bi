@@ -17,9 +17,9 @@ final class DiscreteSubtract<Left,Right,Value>(left:Expression<Left>,
       /* match a template */
       x:Discrete?;
       if (x <- left.graftDiscrete())? {
-        r <- LinearDiscrete(Boxed(1), x!, -right);
+        r <- LinearDiscrete(box(1), x!, -right);
       } else if (x <- right.graftDiscrete())? {
-        r <- LinearDiscrete(Boxed(-1), x!, left);
+        r <- LinearDiscrete(box(-1), x!, left);
       }
     }
     return r;
@@ -34,9 +34,9 @@ final class DiscreteSubtract<Left,Right,Value>(left:Expression<Left>,
     if x1? && x2? {
       r <- SubtractBoundedDiscrete(x1!, x2!);
     } else if x1? {
-      r <- LinearBoundedDiscrete(Boxed(1), x1!, -right);
+      r <- LinearBoundedDiscrete(box(1), x1!, -right);
     } else if x2? {
-      r <- LinearBoundedDiscrete(Boxed(-1), x2!, left);
+      r <- LinearBoundedDiscrete(box(-1), x2!, left);
     }
 
     return r;
@@ -63,7 +63,7 @@ operator (left:Integer - right:Expression<Integer>) -> Expression<Integer> {
   if right.isConstant() {
     return box(left - right.value());
   } else {
-    return Boxed(left) - right;
+    return box(left) - right;
   }
 }
 
@@ -74,6 +74,6 @@ operator (left:Expression<Integer> - right:Integer) -> Expression<Integer> {
   if left.isConstant() {
     return box(left.value() + right);
   } else {
-    return left - Boxed(right);
+    return left - box(right);
   }
 }

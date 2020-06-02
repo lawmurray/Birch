@@ -307,8 +307,8 @@ function quantile_normal_inverse_gamma_gaussian(P:Real, μ:Real, a2:Real,
 }
 
 /**
- * Quantile of a Gaussian distribution with a normal inverse-gamma prior with linear
- * transformation.
+ * Quantile of a Gaussian distribution with a normal inverse-gamma prior with
+ * linear transformation.
  *
  * - P: The cumulative probability.
  * - a: Scale.
@@ -323,4 +323,26 @@ function quantile_normal_inverse_gamma_gaussian(P:Real, μ:Real, a2:Real,
 function quantile_linear_normal_inverse_gamma_gaussian(P:Real, a:Real,
     μ:Real, a2:Real, c:Real, α:Real, β:Real) -> Real {
   return quantile_student_t(P, 2.0*α, a*μ + c, (β/α)*(1.0 + a*a*a2));
+}
+
+/**
+ * Quantile of a Gaussian distribution with a multivariate linear normal
+ * inverse-gamma prior with linear transformation.
+ *
+ * - P: The cumulative probability.
+ * - a: Scale.
+ * - ν: Precision times mean.
+ * - Λ: Precision.
+ * - c: Offset.
+ * - α: Shape of the inverse-gamma.
+ * - γ: Scale accumulator of the inverse-gamma.
+ *
+ * Return: the quantile.
+ */
+function quantile_linear_multivariate_normal_inverse_gamma_gaussian(P:Real,
+    a:Real[_], ν:Real[_], Λ:LLT, c:Real, α:Real, γ:Real) -> Real {
+  auto μ <- solve(Λ, ν);
+  auto β <- γ - 0.5*dot(μ, ν);
+  return quantile_student_t(P, 2.0*α, dot(a, μ) + c,
+      (β/α)*(1.0 + dot(a, solve(Λ, a))));
 }

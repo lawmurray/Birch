@@ -34,7 +34,7 @@ function lbeta(x:Real, y:Expression<Real>) -> Expression<Real> {
   if y.isConstant() {
     return box(lbeta(x, y.value()));
   } else {
-    return lbeta(Boxed(x), y);
+    return lbeta(box(x), y);
   }
 }
 
@@ -45,6 +45,6 @@ function lbeta(x:Expression<Real>, y:Real) -> Expression<Real> {
   if x.isConstant() {
     return box(lbeta(x.value(), y));
   } else {
-    return lbeta(x, Boxed(y));
+    return lbeta(x, box(y));
   }
 }

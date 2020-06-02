@@ -90,7 +90,7 @@ function Gaussian(μ:Expression<Real>, σ2:Expression<Real>,
  */
 function Gaussian(μ:Expression<Real>, σ2:Expression<Real>,
     τ2:Real) -> ScalarGaussian {
-  return Gaussian(μ, σ2, Boxed(τ2));
+  return Gaussian(μ, σ2, box(τ2));
 }
 
 /**
@@ -100,7 +100,7 @@ function Gaussian(μ:Expression<Real>, σ2:Expression<Real>,
  */
 function Gaussian(μ:Expression<Real>, σ2:Real, τ2:Expression<Real>) ->
     ScalarGaussian {
-  return Gaussian(μ, Boxed(σ2), τ2);
+  return Gaussian(μ, box(σ2), τ2);
 }
 
 /**
@@ -110,7 +110,7 @@ function Gaussian(μ:Expression<Real>, σ2:Real, τ2:Expression<Real>) ->
  */
 function Gaussian(μ:Expression<Real>, σ2:Real, τ2:Real) ->
       ScalarGaussian {
-  return Gaussian(μ, Boxed(σ2), Boxed(τ2));
+  return Gaussian(μ, box(σ2), box(τ2));
 }
 
 /**
@@ -120,7 +120,7 @@ function Gaussian(μ:Expression<Real>, σ2:Real, τ2:Real) ->
  */
 function Gaussian(μ:Real, σ2:Expression<Real>, τ2:Expression<Real>) ->
     ScalarGaussian {
-  return Gaussian(Boxed(μ), σ2, τ2);
+  return Gaussian(box(μ), σ2, τ2);
 }
 
 /**
@@ -130,7 +130,7 @@ function Gaussian(μ:Real, σ2:Expression<Real>, τ2:Expression<Real>) ->
  */
 function Gaussian(μ:Real, σ2:Expression<Real>, τ2:Real) ->
     ScalarGaussian {
-  return Gaussian(Boxed(μ), σ2, Boxed(τ2));
+  return Gaussian(box(μ), σ2, box(τ2));
 }
 
 /**
@@ -140,7 +140,7 @@ function Gaussian(μ:Real, σ2:Expression<Real>, τ2:Real) ->
  */
 function Gaussian(μ:Real, σ2:Real, τ2:Expression<Real>) ->
     ScalarGaussian {
-  return Gaussian(Boxed(μ), Boxed(σ2), τ2);
+  return Gaussian(box(μ), box(σ2), τ2);
 }
 
 /**
@@ -149,5 +149,5 @@ function Gaussian(μ:Real, σ2:Real, τ2:Expression<Real>) ->
  * distribution, where one of the arguments is inverse-gamma distributed.
  */
 function Gaussian(μ:Real, σ2:Real, τ2:Real) -> ScalarGaussian {
-  return Gaussian(Boxed(μ), Boxed(σ2), Boxed(τ2));
+  return Gaussian(box(μ), box(σ2), box(τ2));
 }

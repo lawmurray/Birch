@@ -59,19 +59,19 @@ function InverseGamma(α:Expression<Real>, β:Expression<Real>) ->
  * Create inverse-gamma distribution.
  */
 function InverseGamma(α:Expression<Real>, β:Real) -> InverseGamma {
-  return InverseGamma(α, Boxed(β));
+  return InverseGamma(α, box(β));
 }
 
 /**
  * Create inverse-gamma distribution.
  */
 function InverseGamma(α:Real, β:Expression<Real>) -> InverseGamma {
-  return InverseGamma(Boxed(α), β);
+  return InverseGamma(box(α), β);
 }
 
 /**
  * Create inverse-gamma distribution.
  */
 function InverseGamma(α:Real, β:Real) -> InverseGamma {
-  return InverseGamma(Boxed(α), Boxed(β));
+  return InverseGamma(box(α), box(β));
 }

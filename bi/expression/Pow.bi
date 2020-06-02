@@ -36,7 +36,7 @@ function pow(x:Real, y:Expression<Real>) -> Expression<Real> {
   if y.isConstant() {
     return box(pow(x, y.value()));
   } else {
-    return pow(Boxed(x), y);
+    return pow(box(x), y);
   }
 }
 
@@ -47,6 +47,6 @@ function pow(x:Expression<Real>, y:Real) -> Expression<Real> {
   if x.isConstant() {
     return box(pow(x.value(), y));
   } else {
-    return pow(x, Boxed(y));
+    return pow(x, box(y));
   }
 }

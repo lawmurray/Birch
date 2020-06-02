@@ -53,19 +53,19 @@ function Weibull(k:Expression<Real>, λ:Expression<Real>) -> Weibull {
  * Create Weibull distribution.
  */
 function Weibull(k:Expression<Real>, λ:Real) -> Weibull {
-  return Weibull(k, Boxed(λ));
+  return Weibull(k, box(λ));
 }
 
 /**
  * Create Weibull distribution.
  */
 function Weibull(k:Real, λ:Expression<Real>) -> Weibull {
-  return Weibull(Boxed(k), λ);
+  return Weibull(box(k), λ);
 }
 
 /**
  * Create Weibull distribution.
  */
 function Weibull(k:Real, λ:Real) -> Weibull {
-  return Weibull(Boxed(k), Boxed(λ));
+  return Weibull(box(k), box(λ));
 }

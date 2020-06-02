@@ -93,3 +93,24 @@ abstract class DelayExpression {
     return 0.0;
   }
 }
+
+/**
+ * Length of a vector.
+ */
+function length(x:DelayExpression) -> Integer {
+  return x.length();
+}
+
+/**
+ * Number of rows of a vector; equals `length()`.
+ */
+function rows(x:DelayExpression) -> Integer {
+  return x.rows();
+}
+
+/**
+ * Number of columns of a vector; equals 1.
+ */
+function columns(x:DelayExpression) -> Integer {
+  return x.columns();
+}

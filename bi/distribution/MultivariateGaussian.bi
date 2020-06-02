@@ -24,13 +24,13 @@ class MultivariateGaussian(μ:Expression<Real[_]>, Σ:Expression<Real[_,_]>) <
   function simulate() -> Real[_] {
     return simulate_multivariate_gaussian(μ.value(), Σ.value());
   }
-  
-  function logpdf(x:Real[_]) -> Real {
-    return logpdf_multivariate_gaussian(x, μ.value(), Σ.value());
-  }
 
   function simulateLazy() -> Real[_]? {
     return simulate_multivariate_gaussian(μ.pilot(), Σ.pilot());
+  }
+  
+  function logpdf(x:Real[_]) -> Real {
+    return logpdf_multivariate_gaussian(x, μ.value(), Σ.value());
   }
 
   function logpdfLazy(x:Expression<Real[_]>) -> Expression<Real>? {
@@ -91,7 +91,7 @@ function Gaussian(μ:Expression<Real[_]>, Σ:Expression<Real[_,_]>) ->
  */
 function Gaussian(μ:Expression<Real[_]>, Σ:Real[_,_]) ->
     MultivariateGaussian {
-  return Gaussian(μ, Boxed(Σ));
+  return Gaussian(μ, box(Σ));
 }
 
 /**
@@ -99,12 +99,12 @@ function Gaussian(μ:Expression<Real[_]>, Σ:Real[_,_]) ->
  */
 function Gaussian(μ:Real[_], Σ:Expression<Real[_,_]>) ->
     MultivariateGaussian {
-  return Gaussian(Boxed(μ), Σ);
+  return Gaussian(box(μ), Σ);
 }
 
 /**
  * Create multivariate Gaussian distribution.
  */
 function Gaussian(μ:Real[_], Σ:Real[_,_]) -> MultivariateGaussian {
-  return Gaussian(Boxed(μ), Boxed(Σ));
+  return Gaussian(box(μ), box(Σ));
 }

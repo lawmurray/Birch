@@ -99,7 +99,7 @@ function Gaussian(μ:Expression<Real[_]>, σ2:Expression<Real>) ->
  * variance.
  */
 function Gaussian(μ:Expression<Real[_]>, σ2:Real) -> IdenticalGaussian {
-  return Gaussian(μ, Boxed(σ2));
+  return Gaussian(μ, box(σ2));
 }
 
 /**
@@ -107,7 +107,7 @@ function Gaussian(μ:Expression<Real[_]>, σ2:Real) -> IdenticalGaussian {
  * variance.
  */
 function Gaussian(μ:Real[_], σ2:Expression<Real>) -> IdenticalGaussian {
-  return Gaussian(Boxed(μ), σ2);
+  return Gaussian(box(μ), σ2);
 }
 
 /**
@@ -115,5 +115,5 @@ function Gaussian(μ:Real[_], σ2:Expression<Real>) -> IdenticalGaussian {
  * variance.
  */
 function Gaussian(μ:Real[_], σ2:Real) -> IdenticalGaussian {
-  return Gaussian(Boxed(μ), Boxed(σ2));
+  return Gaussian(box(μ), box(σ2));
 }

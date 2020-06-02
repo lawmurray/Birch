@@ -43,7 +43,7 @@ final class Boxed<Value> < Expression<Value> {
 /**
  * Create a Boxed value.
  */
-function Boxed<Value>(x:Value) -> Boxed<Value> {
+function Boxed<Value>(x:Value) -> Expression<Value> {
   o:Boxed<Value>;
   o.x <- x;
   o.makeConstant();
@@ -53,7 +53,7 @@ function Boxed<Value>(x:Value) -> Boxed<Value> {
 /**
  * Box a value.
  */
-function box<Value>(x:Value) -> Boxed<Value> {
+function box<Value>(x:Value) -> Expression<Value> {
   return Boxed(x);
 }
 
@@ -61,7 +61,7 @@ function box<Value>(x:Value) -> Boxed<Value> {
  * Box elements of a tuple.
  */
 function box<Value1,Value2>(x:(Value1,Value2)) ->
-    (Boxed<Value1>, Boxed<Value2>) {
+    (Expression<Value1>, Expression<Value2>) {
   x1:Value1?;
   x2:Value2?;
   (x1, x2) <- x;
@@ -72,7 +72,7 @@ function box<Value1,Value2>(x:(Value1,Value2)) ->
  * Box elements of a tuple.
  */
 function box<Value1,Value2,Value3>(x:(Value1,Value2,Value3)) ->
-    (Boxed<Value1>, Boxed<Value2>, Boxed<Value3>) {
+    (Expression<Value1>, Expression<Value2>, Expression<Value3>) {
   x1:Value1?;
   x2:Value2?;
   x3:Value3?;
@@ -84,7 +84,7 @@ function box<Value1,Value2,Value3>(x:(Value1,Value2,Value3)) ->
  * Box elements of a tuple.
  */
 function box<Value1,Value2,Value3,Value4>(x:(Value1,Value2,Value3,Value4)) ->
-    (Boxed<Value1>, Boxed<Value2>, Boxed<Value3>, Boxed<Value4>) {
+    (Expression<Value1>, Expression<Value2>, Expression<Value3>, Expression<Value4>) {
   x1:Value1?;
   x2:Value2?;
   x3:Value3?;
@@ -97,7 +97,7 @@ function box<Value1,Value2,Value3,Value4>(x:(Value1,Value2,Value3,Value4)) ->
  * Box elements of a tuple.
  */
 function box<Value1,Value2,Value3,Value4,Value5>(x:(Value1,Value2,Value3,Value4,Value5)) ->
-    (Boxed<Value1>, Boxed<Value2>, Boxed<Value3>, Boxed<Value4>, Boxed<Value5>) {
+    (Expression<Value1>, Expression<Value2>, Expression<Value3>, Expression<Value4>, Expression<Value5>) {
   x1:Value1?;
   x2:Value2?;
   x3:Value3?;
@@ -111,7 +111,7 @@ function box<Value1,Value2,Value3,Value4,Value5>(x:(Value1,Value2,Value3,Value4,
  * Box elements of a tuple.
  */
 function box<Value1,Value2,Value3,Value4,Value5,Value6>(x:(Value1,Value2,Value3,Value4,Value5,Value6)) ->
-    (Boxed<Value1>, Boxed<Value2>, Boxed<Value3>, Boxed<Value4>, Boxed<Value5>, Boxed<Value6>) {
+    (Expression<Value1>, Expression<Value2>, Expression<Value3>, Expression<Value4>, Expression<Value5>, Expression<Value6>) {
   x1:Value1?;
   x2:Value2?;
   x3:Value3?;
@@ -126,7 +126,7 @@ function box<Value1,Value2,Value3,Value4,Value5,Value6>(x:(Value1,Value2,Value3,
  * Box elements of a tuple.
  */
 function box<Value1,Value2,Value3,Value4,Value5,Value6,Value7>(x:(Value1,Value2,Value3,Value4,Value5,Value6,Value7)) ->
-    (Boxed<Value1>, Boxed<Value2>, Boxed<Value3>, Boxed<Value4>, Boxed<Value5>, Boxed<Value6>, Boxed<Value7>) {
+    (Expression<Value1>, Expression<Value2>, Expression<Value3>, Expression<Value4>, Expression<Value5>, Expression<Value6>, Expression<Value7>) {
   x1:Value1?;
   x2:Value2?;
   x3:Value3?;
@@ -142,7 +142,7 @@ function box<Value1,Value2,Value3,Value4,Value5,Value6,Value7>(x:(Value1,Value2,
  * Box elements of a tuple.
  */
 function box<Value1,Value2,Value3,Value4,Value5,Value6,Value7,Value8>(x:(Value1,Value2,Value3,Value4,Value5,Value6,Value7,Value8)) ->
-    (Boxed<Value1>, Boxed<Value2>, Boxed<Value3>, Boxed<Value4>, Boxed<Value5>, Boxed<Value6>, Boxed<Value7>, Boxed<Value8>) {
+    (Expression<Value1>, Expression<Value2>, Expression<Value3>, Expression<Value4>, Expression<Value5>, Expression<Value6>, Expression<Value7>, Expression<Value8>) {
   x1:Value1?;
   x2:Value2?;
   x3:Value3?;

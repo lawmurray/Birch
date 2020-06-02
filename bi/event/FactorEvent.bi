@@ -55,5 +55,5 @@ function FactorEvent(w:Expression<Real>) -> FactorEvent {
  * Create a FactorEvent.
  */
 function FactorEvent(w:Real) -> FactorEvent {
-  return FactorEvent(Boxed(w));
+  return FactorEvent(box(w));
 }

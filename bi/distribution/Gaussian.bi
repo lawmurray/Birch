@@ -15,13 +15,13 @@ class Gaussian(μ:Expression<Real>, σ2:Expression<Real>) < Distribution<Real> {
   function simulate() -> Real {
     return simulate_gaussian(μ.value(), σ2.value());
   }
-  
-  function logpdf(x:Real) -> Real {
-    return logpdf_gaussian(x, μ.value(), σ2.value());
-  }
 
   function simulateLazy() -> Real? {
     return simulate_gaussian(μ.pilot(), σ2.pilot());
+  }
+  
+  function logpdf(x:Real) -> Real {
+    return logpdf_gaussian(x, μ.value(), σ2.value());
   }
 
   function logpdfLazy(x:Expression<Real>) -> Expression<Real>? {
@@ -39,6 +39,7 @@ class Gaussian(μ:Expression<Real>, σ2:Expression<Real>) < Distribution<Real> {
   function graft() -> Distribution<Real> {
     prune();
     m1:TransformLinear<NormalInverseGamma>?;
+    m2:TransformDot<MultivariateNormalInverseGamma>?;
     m3:NormalInverseGamma?;
     m4:TransformLinear<Gaussian>?;
     m5:TransformDot<MultivariateGaussian>?;
@@ -50,6 +51,8 @@ class Gaussian(μ:Expression<Real>, σ2:Expression<Real>) < Distribution<Real> {
     auto compare <- σ2.distribution();
     if compare? && (m1 <- μ.graftLinearNormalInverseGamma(compare!))? {
       r <- LinearNormalInverseGammaGaussian(m1!.a, m1!.x, m1!.c);
+    } else if compare? && (m2 <- μ.graftDotNormalInverseGamma(compare!))? {
+      r <- LinearMultivariateNormalInverseGammaGaussian(m2!.a, m2!.x, m2!.c);
     } else if compare? && (m3 <- μ.graftNormalInverseGamma(compare!))? {
       r <- NormalInverseGammaGaussian(m3!);
     } else if (m4 <- μ.graftLinearGaussian())? {
@@ -59,7 +62,7 @@ class Gaussian(μ:Expression<Real>, σ2:Expression<Real>) < Distribution<Real> {
     } else if (m6 <- μ.graftGaussian())? {
       r <- GaussianGaussian(m6!, σ2);
     } else if (s2 <- σ2.graftInverseGamma())? {
-      r <- NormalInverseGamma(μ, Boxed(1.0), s2!);
+      r <- NormalInverseGamma(μ, box(1.0), s2!);
     }
     
     return r;
@@ -92,7 +95,7 @@ class Gaussian(μ:Expression<Real>, σ2:Expression<Real>) < Distribution<Real> {
     
     /* match a template */
     if (s1 <- σ2.graftInverseGamma())? && s1! == compare {
-      r <- NormalInverseGamma(μ, Boxed(1.0), s1!);
+      r <- NormalInverseGamma(μ, box(1.0), s1!);
     }
     
     return r;
@@ -118,19 +121,19 @@ function Gaussian(μ:Expression<Real>, σ2:Expression<Real>) -> Gaussian {
  * Create Gaussian distribution.
  */
 function Gaussian(μ:Expression<Real>, σ2:Real) -> Gaussian {
-  return Gaussian(μ, Boxed(σ2));
+  return Gaussian(μ, box(σ2));
 }
 
 /**
  * Create Gaussian distribution.
  */
 function Gaussian(μ:Real, σ2:Expression<Real>) -> Gaussian {
-  return Gaussian(Boxed(μ), σ2);
+  return Gaussian(box(μ), σ2);
 }
 
 /**
  * Create Gaussian distribution.
  */
 function Gaussian(μ:Real, σ2:Real) -> Gaussian {
-  return Gaussian(Boxed(μ), Boxed(σ2));
+  return Gaussian(box(μ), box(σ2));
 }

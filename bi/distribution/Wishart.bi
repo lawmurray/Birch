@@ -54,19 +54,19 @@ function Wishart(Ψ:Expression<Real[_,_]>, k:Expression<Real>) -> Wishart {
  * Create Wishart distribution.
  */
 function Wishart(Ψ:Expression<Real[_,_]>, k:Real) -> Wishart {
-  return Wishart(Ψ, Boxed(k));
+  return Wishart(Ψ, box(k));
 }
 
 /**
  * Create Wishart distribution.
  */
 function Wishart(Ψ:Real[_,_], k:Expression<Real>) -> Wishart {
-  return Wishart(Boxed(Ψ), k);
+  return Wishart(box(Ψ), k);
 }
 
 /**
  * Create Wishart distribution.
  */
 function Wishart(Ψ:Real[_,_], k:Real) -> Wishart {
-  return Wishart(Boxed(Ψ), Boxed(k));
+  return Wishart(box(Ψ), box(k));
 }

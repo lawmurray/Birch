@@ -47,5 +47,5 @@ function Bernoulli(ρ:Expression<Real>) -> Bernoulli {
  * Create Bernoulli distribution.
  */
 function Bernoulli(ρ:Real) -> Bernoulli {
-  return Bernoulli(Boxed(ρ));
+  return Bernoulli(box(ρ));
 }

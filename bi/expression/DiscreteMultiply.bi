@@ -17,9 +17,9 @@ final class DiscreteMultiply<Left,Right,Value>(left:Expression<Left>,
       /* match a template */
       x:Discrete?;
       if (x <- left.graftDiscrete())? {
-        r <- LinearDiscrete(right, x!, Boxed(0));
+        r <- LinearDiscrete(right, x!, box(0));
       } else if (x <- right.graftDiscrete())? {
-        r <- LinearDiscrete(left, x!, Boxed(0));
+        r <- LinearDiscrete(left, x!, box(0));
       }
     }
     return r;
@@ -32,9 +32,9 @@ final class DiscreteMultiply<Left,Right,Value>(left:Expression<Left>,
 
     /* match a template */       
     if x1? {
-      r <- LinearBoundedDiscrete(right, x1!, Boxed(0));
+      r <- LinearBoundedDiscrete(right, x1!, box(0));
     } else if x2? {
-      r <- LinearBoundedDiscrete(left, x2!, Boxed(0));
+      r <- LinearBoundedDiscrete(left, x2!, box(0));
     }
     
     return r;
@@ -61,7 +61,7 @@ operator (left:Integer*right:Expression<Integer>) -> Expression<Integer> {
   if right.isConstant() {
     return box(left + right.value());
   } else {
-    return Boxed(left)*right;
+    return box(left)*right;
   }
 }
 
@@ -72,6 +72,6 @@ operator (left:Expression<Integer>*right:Integer) -> Expression<Integer> {
   if left.isConstant() {
     return box(left.value() + right);
   } else {
-    return left*Boxed(right);
+    return left*box(right);
   }
 }

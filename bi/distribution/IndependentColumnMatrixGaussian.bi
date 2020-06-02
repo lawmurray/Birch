@@ -84,7 +84,7 @@ function Gaussian(M:Expression<Real[_,_]>, U:Expression<Real[_,_]>,
  */
 function Gaussian(M:Expression<Real[_,_]>, U:Expression<Real[_,_]>,
     σ2:Real[_]) -> IndependentColumnMatrixGaussian {
-  return Gaussian(M, U, Boxed(σ2));
+  return Gaussian(M, U, box(σ2));
 }
 
 /**
@@ -92,7 +92,7 @@ function Gaussian(M:Expression<Real[_,_]>, U:Expression<Real[_,_]>,
  */
 function Gaussian(M:Expression<Real[_,_]>, U:Real[_,_],
     σ2:Expression<Real[_]>) -> IndependentColumnMatrixGaussian {
-  return Gaussian(M, Boxed(U), σ2);
+  return Gaussian(M, box(U), σ2);
 }
 
 /**
@@ -100,7 +100,7 @@ function Gaussian(M:Expression<Real[_,_]>, U:Real[_,_],
  */
 function Gaussian(M:Expression<Real[_,_]>, U:Real[_,_], σ2:Real[_]) ->
       IndependentColumnMatrixGaussian {
-  return Gaussian(M, Boxed(U), Boxed(σ2));
+  return Gaussian(M, box(U), box(σ2));
 }
 
 /**
@@ -108,7 +108,7 @@ function Gaussian(M:Expression<Real[_,_]>, U:Real[_,_], σ2:Real[_]) ->
  */
 function Gaussian(M:Real[_,_], U:Expression<Real[_,_]>,
     σ2:Expression<Real[_]>) -> IndependentColumnMatrixGaussian {
-  return Gaussian(Boxed(M), U, σ2);
+  return Gaussian(box(M), U, σ2);
 }
 
 /**
@@ -116,7 +116,7 @@ function Gaussian(M:Real[_,_], U:Expression<Real[_,_]>,
  */
 function Gaussian(M:Real[_,_], U:Expression<Real[_,_]>, σ2:Real[_]) ->
     IndependentColumnMatrixGaussian {
-  return Gaussian(Boxed(M), U, Boxed(σ2));
+  return Gaussian(box(M), U, box(σ2));
 }
 
 /**
@@ -124,7 +124,7 @@ function Gaussian(M:Real[_,_], U:Expression<Real[_,_]>, σ2:Real[_]) ->
  */
 function Gaussian(M:Real[_,_], U:Real[_,_], σ2:Expression<Real[_]>) ->
     IndependentColumnMatrixGaussian {
-  return Gaussian(Boxed(M), Boxed(U), σ2);
+  return Gaussian(box(M), box(U), σ2);
 }
 
 /**
@@ -132,5 +132,5 @@ function Gaussian(M:Real[_,_], U:Real[_,_], σ2:Expression<Real[_]>) ->
  */
 function Gaussian(M:Real[_,_], U:Real[_,_], σ2:Real[_]) ->
     IndependentColumnMatrixGaussian {
-  return Gaussian(Boxed(M), Boxed(U), Boxed(σ2));
+  return Gaussian(box(M), box(U), box(σ2));
 }

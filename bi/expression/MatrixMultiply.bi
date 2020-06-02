@@ -84,7 +84,7 @@ operator (left:Real[_,_]*right:Expression<Real[_,_]>) ->
   if right.isConstant() {
     return box(matrix(left*right.value()));
   } else {
-    return Boxed(left)*right;
+    return box(left)*right;
   }
 }
 
@@ -96,7 +96,7 @@ operator (left:Expression<Real[_,_]>*right:Real[_,_]) ->
   if left.isConstant() {
     return box(matrix(left.value()*right));
   } else {
-    return left*Boxed(right);
+    return left*box(right);
   }
 }
 
@@ -121,7 +121,7 @@ operator (left:Real*right:Expression<Real[_,_]>) -> Expression<Real[_,_]> {
   if right.isConstant() {
     return box(matrix(left*right.value()));
   } else {
-    return Boxed(left)*right;
+    return box(left)*right;
   }
 }
 
@@ -132,7 +132,7 @@ operator (left:Expression<Real>*right:Real[_,_]) -> Expression<Real[_,_]> {
   if left.isConstant() {
     return box(matrix(left.value()*right));
   } else {
-    return left*Boxed(right);
+    return left*box(right);
   }
 }
 
@@ -157,7 +157,7 @@ operator (left:Real[_,_]*right:Expression<Real>) -> Expression<Real[_,_]> {
   if right.isConstant() {
     return box(matrix(left*right.value()));
   } else {
-    return Boxed(left)*right;
+    return box(left)*right;
   }
 }
 
@@ -168,6 +168,6 @@ operator (left:Expression<Real[_,_]>*right:Real) -> Expression<Real[_,_]> {
   if left.isConstant() {
     return box(matrix(left.value()*right));
   } else {
-    return left*Boxed(right);
+    return left*box(right);
   }
 }

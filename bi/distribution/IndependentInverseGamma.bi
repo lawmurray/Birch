@@ -93,7 +93,7 @@ function InverseGamma(α:Expression<Real>, β:Expression<Real[_]>) ->
  */
 function InverseGamma(α:Expression<Real>, β:Real[_]) ->
     IndependentInverseGamma {
-  return InverseGamma(α, Boxed(β));
+  return InverseGamma(α, box(β));
 }
 
 /**
@@ -101,12 +101,12 @@ function InverseGamma(α:Expression<Real>, β:Real[_]) ->
  */
 function InverseGamma(α:Real, β:Expression<Real[_]>) ->
     IndependentInverseGamma {
-  return InverseGamma(Boxed(α), β);
+  return InverseGamma(box(α), β);
 }
 
 /**
  * Create inverse-gamma distribution with multiple independent components.
  */
 function InverseGamma(α:Real, β:Real[_]) -> IndependentInverseGamma {
-  return InverseGamma(Boxed(α), Boxed(β));
+  return InverseGamma(box(α), box(β));
 }

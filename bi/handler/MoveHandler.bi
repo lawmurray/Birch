@@ -41,7 +41,7 @@ class MoveHandler(delayed:Boolean) < Handler {
     if delayed {
       event.p <- event.p.graft();
     }
-    auto w <- event.p.observeLazy(Boxed(event.x));
+    auto w <- event.p.observeLazy(box(event.x));
     if w? {
       if z? {
         z <- z! + w!;

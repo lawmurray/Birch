@@ -39,5 +39,5 @@ function Dirichlet(α:Expression<Real[_]>) -> Dirichlet {
  * Create Dirichlet distribution.
  */
 function Dirichlet(α:Real[_]) -> Dirichlet {
-  return Dirichlet(Boxed(α));
+  return Dirichlet(box(α));
 }

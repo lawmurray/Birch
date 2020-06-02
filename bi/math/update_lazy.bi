@@ -44,6 +44,24 @@ function update_lazy_linear_gaussian_gaussian(x:Expression<Real>,
 }
 
 /**
+ * Update the parameters of an inverse-gamma distribution that is part
+ * of a normal inverse-gamma joint distribution.
+ *
+ * - x: The variate.
+ * - μ: Mean.
+ * - λ: Precision.
+ * - α: Prior shape of the inverse-gamma.
+ * - β: Prior scale of the inverse-gamma.
+ *
+ * Returns: the posterior hyperparameters `α'` and `β'`.
+ */
+function update_lazy_normal_inverse_gamma(x:Expression<Real>, μ:Expression<Real>,
+    λ:Expression<Real>, α:Expression<Real>, β:Expression<Real>) ->
+    (Expression<Real>, Expression<Real>) {
+  return (α + 0.5, β + 0.5*pow(x - μ, 2.0)*λ);
+}
+
+/**
  * Update the parameters of a multivariate Gaussian distribution with a
  * multivariate Gaussian likelihood.
  *

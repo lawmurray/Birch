@@ -66,5 +66,5 @@ function Categorical(ρ:Expression<Real[_]>) -> Categorical {
  * Create categorical distribution.
  */
 function Categorical(ρ:Real[_]) -> Categorical {
-  return Categorical(Boxed(ρ));
+  return Categorical(box(ρ));
 }

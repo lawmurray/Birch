@@ -48,7 +48,7 @@ function Uniform(l:Expression<Real[_]>, u:Expression<Real[_]>) ->
  * independent.
  */
 function Uniform(l:Expression<Real[_]>, u:Real[_]) -> IndependentUniform {
-  return Uniform(l, Boxed(u));
+  return Uniform(l, box(u));
 }
 
 /**
@@ -56,7 +56,7 @@ function Uniform(l:Expression<Real[_]>, u:Real[_]) -> IndependentUniform {
  * independent.
  */
 function Uniform(l:Real[_], u:Expression<Real[_]>) -> IndependentUniform {
-  return Uniform(Boxed(l), u);
+  return Uniform(box(l), u);
 }
 
 /**
@@ -64,5 +64,5 @@ function Uniform(l:Real[_], u:Expression<Real[_]>) -> IndependentUniform {
  * independent.
  */
 function Uniform(l:Real[_], u:Real[_]) -> IndependentUniform {
-  return Uniform(Boxed(l), Boxed(u));
+  return Uniform(box(l), box(u));
 }

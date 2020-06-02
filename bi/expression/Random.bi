@@ -106,6 +106,10 @@ final class Random<Value> < Expression<Value> {
     } else {
       p!.prune();
       x <- p!.simulateLazy();
+      if !x? {
+        stderr.print(p!.getClassName() + "\n");
+      }
+      assert x?;
       p!.updateLazy(this);
       p!.unlink();
     }
@@ -313,9 +317,7 @@ final class Random<Value> < Expression<Value> {
   }
 
   function read(buffer:Buffer) {
-    assert !hasDistribution();
-    assert !hasValue();
-    x <- buffer.get(x);
+    this <- buffer.get(x);
   }
 
   function write(buffer:Buffer) {

@@ -53,5 +53,5 @@ function TransformDot<Value>(a:Expression<Real[_]>, x:Value,
 
 function TransformDot<Value>(a:Expression<Real[_]>, x:Value) ->
     TransformDot<Value> {
-  return TransformDot<Value>(a, x, Boxed(0.0));
+  return TransformDot<Value>(a, x, box(0.0));
 }

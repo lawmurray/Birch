@@ -82,19 +82,19 @@ function Binomial(n:Expression<Integer>, ρ:Expression<Real>) -> Binomial {
  * Create binomial distribution.
  */
 function Binomial(n:Expression<Integer>, ρ:Real) -> Binomial {
-  return Binomial(n, Boxed(ρ));
+  return Binomial(n, box(ρ));
 }
 
 /**
  * Create binomial distribution.
  */
 function Binomial(n:Integer, ρ:Expression<Real>) -> Binomial {
-  return Binomial(Boxed(n), ρ);
+  return Binomial(box(n), ρ);
 }
 
 /**
  * Create binomial distribution.
  */
 function Binomial(n:Integer, ρ:Real) -> Binomial {
-  return Binomial(Boxed(n), Boxed(ρ));
+  return Binomial(box(n), box(ρ));
 }

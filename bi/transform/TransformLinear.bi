@@ -53,5 +53,5 @@ function TransformLinear<Value>(a:Expression<Real>, x:Value,
 
 function TransformLinear<Value>(a:Expression<Real>, x:Value) ->
     TransformLinear<Value> {
-  return TransformLinear<Value>(a, x, Boxed(0.0));
+  return TransformLinear<Value>(a, x, box(0.0));
 }

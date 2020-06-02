@@ -1,12 +1,114 @@
 /**
+ * Unary map.
+ *
+ * - x: Operand.
+ * - f: Operator.
+ *
+ * Applies `f` to each element of `X`.
+ */
+function for_each<Value>(x:Value[_], f:@(Value)) {
+  for i in 1..length(x) {
+    f(x[i]);
+  }
+}
+
+/**
+ * Unary map.
+ *
+ * - X: Operand.
+ * - f: Operator.
+ *
+ * Applies `f` to each element of `X`.
+ */
+function for_each<Value>(X:Value[_,_], f:@(Value)) {
+  for i in 1..rows(X) {
+    for j in 1..columns(X) {
+      f(X[i,j]);
+    }
+  }
+}
+
+/**
+ * Binary map.
+ *
+ * - x: First operand.
+ * - y: Second operand.
+ * - f: Operator.
+ */
+function for_each<Value1,Value2>(x:Value1[_], y:Value2[_],
+    f:@(Value1, Value2)) {
+  assert length(x) == length(y);
+  for i in 1..length(x) {
+    f(x[i], y[i]);
+  }
+}
+
+/**
+ * Binary map.
+ *
+ * - X: First operand.
+ * - Y: Second operand.
+ * - f: Operator.
+ */
+function for_each<Value1,Value2>(X:Value1[_,_], Y:Value2[_,_],
+    f:@(Value1, Value2)) {
+  assert rows(X) == rows(Y);
+  assert columns(X) == columns(Y);
+  for i in 1..rows(X) {
+    for j in 1..columns(X) {
+      f(X[i,j], Y[i,j]);
+    }
+  }
+}
+
+/**
+ * Ternary map.
+ *
+ * - x: First operand.
+ * - y: Second operand.
+ * - z: Third operand.
+ * - f: Operator.
+ */
+function for_each<Value1,Value2,Value3>(x:Value1[_], y:Value2[_],
+    z:Value3[_], f:@(Value1, Value2, Value3)) {
+  assert length(x) == length(y);
+  assert length(y) == length(z);
+  for i in 1..length(x) {
+    f(x[i], y[i], z[i]);
+  }
+}
+
+/**
+ * Ternary map.
+ *
+ * - X: First operand.
+ * - Y: Second operand.
+ * - Z: Third operand.
+ * - f: Operator.
+ */
+function for_each<Value1,Value2,Value3>(X:Value1[_,_], Y:Value2[_,_],
+    Z:Value3[_,_], f:@(Value1, Value2, Value3)) {
+  assert rows(X) == rows(Y);
+  assert rows(Y) == rows(Z);
+  assert columns(X) == columns(Y);
+  assert columns(Y) == columns(Z);
+  for i in 1..rows(X) {
+    for j in 1..columns(X) {
+      f(X[i,j], Y[i,j], Z[i,j]);
+    }
+  }
+}
+
+/**
  * Unary transformation.
  *
  * - x: Operand.
  * - f: Operator.
  */
-function transform<Value>(x:Value[_], f:@(Value) -> Value) -> Value[_] {
+function transform<Value1,Result>(x:Value1[_], f:@(Value1) -> Result) ->
+    Result[_] {
   // in C++17 can use std::transform
-  y:Value[length(x)];
+  y:Result[length(x)];
   for i in 1..length(x) {
     y[i] <- f(x[i]);
   }
@@ -19,9 +121,10 @@ function transform<Value>(x:Value[_], f:@(Value) -> Value) -> Value[_] {
  * - X: Operand.
  * - f: Operator.
  */
-function transform<Value>(X:Value[_,_], f:@(Value) -> Value) -> Value[_,_] {
+function transform<Value,Result>(X:Value[_,_], f:@(Value) -> Result) ->
+    Result[_,_] {
   // in C++17 can use std::transform
-  Y:Value[rows(X),columns(X)];
+  Y:Result[rows(X),columns(X)];
   for i in 1..rows(X) {
     for j in 1..columns(X) {
       Y[i,j] <- f(X[i,j]);
@@ -37,10 +140,10 @@ function transform<Value>(X:Value[_,_], f:@(Value) -> Value) -> Value[_,_] {
  * - y: Second operand.
  * - f: Operator.
  */
-function transform<Value>(x:Value[_], y:Value[_],
-    f:@(Value, Value) -> Value) -> Value[_] {
+function transform<Value1,Value2,Result>(x:Value1[_], y:Value2[_],
+    f:@(Value1, Value1) -> Result) -> Result[_] {
   assert length(x) == length(y);
-  z:Value[length(x)];
+  z:Result[length(x)];
   for i in 1..length(x) {
     z[i] <- f(x[i], y[i]);
   }
@@ -54,11 +157,11 @@ function transform<Value>(x:Value[_], y:Value[_],
  * - Y: Second operand.
  * - f: Operator.
  */
-function transform<Value>(X:Value[_,_], Y:Value[_,_],
-    f:@(Value, Value) -> Value) -> Value[_,_] {
+function transform<Value1,Value2,Result>(X:Value1[_,_], Y:Value2[_,_],
+    f:@(Value1, Value2) -> Result) -> Result[_,_] {
   assert rows(X) == rows(Y);
   assert columns(X) == columns(Y);
-  Z:Value[rows(X),columns(X)];
+  Z:Result[rows(X),columns(X)];
   for i in 1..rows(X) {
     for j in 1..columns(X) {
       Z[i,j] <- f(X[i,j], Y[i,j]);
@@ -75,11 +178,11 @@ function transform<Value>(X:Value[_,_], Y:Value[_,_],
  * - z: Third operand.
  * - f: Operator.
  */
-function transform<Value>(x:Value[_], y:Value[_], z:Value[_],
-    f:@(Value, Value, Value) -> Value) -> Value[_] {
+function transform<Value1,Value2,Value3,Result>(x:Value1[_], y:Value2[_],
+    z:Value3[_], f:@(Value1, Value2, Value3) -> Result) -> Result[_] {
   assert length(x) == length(y);
   assert length(y) == length(z);
-  a:Value[length(x)];
+  a:Result[length(x)];
   for i in 1..length(x) {
     a[i] <- f(x[i], y[i], z[i]);
   }
@@ -94,13 +197,13 @@ function transform<Value>(x:Value[_], y:Value[_], z:Value[_],
  * - Z: Third operand.
  * - f: Operator.
  */
-function transform<Value>(X:Value[_,_], Y:Value[_,_], Z:Value[_,_],
-    f:@(Value, Value, Value) -> Value) -> Value[_,_] {
+function transform<Value1,Value2,Value3,Result>(X:Value1[_,_], Y:Value2[_,_],
+    Z:Value3[_,_], f:@(Value1, Value2, Value3) -> Result) -> Result[_,_] {
   assert rows(X) == rows(Y);
   assert rows(Y) == rows(Z);
   assert columns(X) == columns(Y);
   assert columns(Y) == columns(Z);
-  A:Value[rows(X),columns(X)];
+  A:Result[rows(X),columns(X)];
   for i in 1..rows(X) {
     for j in 1..columns(X) {
       A[i,j] <- f(X[i,j], Y[i,j], Z[i,j]);

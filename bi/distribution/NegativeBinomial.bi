@@ -71,19 +71,19 @@ function NegativeBinomial(k:Expression<Integer>, ρ:Expression<Real>) ->
  * Create negative binomial distribution.
  */
 function NegativeBinomial(k:Expression<Integer>, ρ:Real) -> NegativeBinomial {
-  return NegativeBinomial(k, Boxed(ρ));
+  return NegativeBinomial(k, box(ρ));
 }
 
 /**
  * Create negative binomial distribution.
  */
 function NegativeBinomial(k:Integer, ρ:Expression<Real>) -> NegativeBinomial {
-  return NegativeBinomial(Boxed(k), ρ);
+  return NegativeBinomial(box(k), ρ);
 }
 
 /**
  * Create negative binomial distribution.
  */
 function NegativeBinomial(k:Integer, ρ:Real) -> NegativeBinomial {
-  return NegativeBinomial(Boxed(k), Boxed(ρ));
+  return NegativeBinomial(box(k), box(ρ));
 }

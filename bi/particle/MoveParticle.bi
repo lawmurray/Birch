@@ -49,7 +49,7 @@ class MoveParticle(m:Model) < Particle(m) {
       w <- z!.pilot();
       this.z.pushBack(z!);
     } else {
-      auto z <- Boxed(0.0);
+      auto z <- box(0.0);
       w <- z.pilot();  // must evaluate for later grad()
       this.z.pushBack(z);
     }
@@ -70,7 +70,7 @@ class MoveParticle(m:Model) < Particle(m) {
         π <- π + p!.pilot();
         this.p.pushBack(p!);
       } else {
-        auto p <- Boxed(0.0);
+        auto p <- box(0.0);
         π <- π + p.pilot();  // must evaluate for later grad()
         this.p.pushBack(p);
       }

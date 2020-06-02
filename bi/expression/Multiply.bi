@@ -70,6 +70,18 @@ final class Multiply<Left,Right,Value>(left:Expression<Left>,
     }
     return y;
   }
+
+  override function graftDotNormalInverseGamma(compare:Distribution<Real>) ->
+      TransformDot<MultivariateNormalInverseGamma>? {
+    y:TransformDot<MultivariateNormalInverseGamma>?;
+    
+    if (y <- left.graftDotNormalInverseGamma(compare))? {
+      y!.multiply(right);
+    } else if (y <- right.graftDotNormalInverseGamma(compare))? {
+      y!.multiply(left);
+    }
+    return y;
+  }
 }
 
 /**
@@ -91,7 +103,7 @@ operator (left:Real*right:Expression<Real>) -> Expression<Real> {
   if right.isConstant() {
     return box(left*right.value());
   } else {
-    return Boxed(left)*right;
+    return box(left)*right;
   }
 }
 
@@ -102,6 +114,6 @@ operator (left:Expression<Real>*right:Real) -> Expression<Real> {
   if left.isConstant() {
     return box(left.value()*right);
   } else {
-    return left*Boxed(right);
+    return left*box(right);
   }
 }

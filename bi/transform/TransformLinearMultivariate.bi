@@ -68,5 +68,5 @@ function TransformLinearMultivariate<Value>(A:Expression<Real[_,_]>,
 
 function TransformLinearMultivariate<Value>(A:Expression<Real[_,_]>,
     x:Value) -> TransformLinearMultivariate<Value> {
-  return TransformLinearMultivariate<Value>(A, x, Boxed(vector(0.0, A.rows())));
+  return TransformLinearMultivariate<Value>(A, x, box(vector(0.0, A.rows())));
 }

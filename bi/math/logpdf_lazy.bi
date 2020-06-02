@@ -26,6 +26,52 @@ function logpdf_lazy_gaussian(x:Expression<Real>, μ:Expression<Real>,
 }
 
 /**
+ * Observe a Student's $t$ variate.
+ *
+ * - x: The variate.
+ * - k: Degrees of freedom.
+ *
+ * Returns: the log probability density.
+ */
+function logpdf_lazy_student_t(x:Expression<Real>, k:Expression<Real>) ->
+    Expression<Real> {
+  auto a <- 0.5*(k + 1.0);
+  return lgamma(a) - lgamma(0.5*k) - 0.5*log(π*k) - a*log1p(x*x/k);
+}
+
+/**
+ * Observe a Student's $t$ variate with location and scale.
+ *
+ * - x: The variate.
+ * - k: Degrees of freedom.
+ * - μ: Location.
+ * - σ2: Squared scale.
+ *
+ * Returns: the log probability density.
+ */
+function logpdf_lazy_student_t(x:Expression<Real>, k:Expression<Real>,
+    μ:Expression<Real>, σ2:Expression<Real>) -> Expression<Real> {
+  return logpdf_lazy_student_t((x - μ)/sqrt(σ2), k) - 0.5*log(σ2);
+}
+
+/**
+ * Observe a normal inverse-gamma variate.
+ *
+ * - x: The variate.
+ * - μ: Mean.
+ * - a2: Variance scale.
+ * - α: Shape of inverse-gamma on variance.
+ * - β: Scale of inverse-gamma on variance.
+ *
+ * Returns: the log probability density.
+ */
+function logpdf_lazy_normal_inverse_gamma(x:Expression<Real>,
+    μ:Expression<Real>, a2:Expression<Real>, α:Expression<Real>,
+    β:Expression<Real>) -> Expression<Real> {
+  return logpdf_lazy_student_t(x, 2.0*α, μ, a2*β/α);
+}
+
+/**
  * Observe a multivariate Gaussian variate.
  *
  * - x: The variate.

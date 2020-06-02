@@ -408,7 +408,7 @@ function downdate_multivariate_normal_inverse_gamma_multivariate_gaussian(
 
 /**
  * Downdate the parameters of a normal inverse-gamma distribution with a
- * multivariate Gaussian likelihood and scaling.
+ * linear transformation and multivariate Gaussian likelihood.
  *
  * - x: The variate.
  * - A: Scale.
@@ -428,6 +428,30 @@ function downdate_linear_multivariate_normal_inverse_gamma_multivariate_gaussian
   ν:Real[_] <- ν' - transpose(A)*(x - c);
   α:Real <- α' - 0.5*D;
   γ:Real <- γ' - 0.5*dot(x - c);
+  return (ν, Λ, α, γ);
+}
+
+/**
+ * Downdate the parameters of a normal inverse-gamma distribution with a
+ * linear transformation involving a dot product, and Gaussian likelihood.
+ *
+ * - x: The variate.
+ * - a: Scale.
+ * - ν': Posterior precision times mean.
+ * - Λ': Posterior precision.
+ * - c: Offset.
+ * - α': Posterior shape of the inverse-gamma.
+ * - γ': Posterior scale accumulator.
+ *
+ * Returns: the prior hyperparameters `μ`, `Λ`, `α`, and `γ`.
+ */
+function downdate_linear_multivariate_normal_inverse_gamma_gaussian(
+    x:Real, a:Real[_], ν':Real[_], Λ':LLT, c:Real, α':Real,
+    γ':Real) -> (Real[_], LLT, Real, Real) {
+  Λ:LLT <- rank_update(Λ', a, -1.0);
+  ν:Real[_] <- ν' - a*(x - c);
+  α:Real <- α' - 0.5;
+  γ:Real <- γ' - 0.5*pow(x - c, 2.0);
   return (ν, Λ, α, γ);
 }
 
