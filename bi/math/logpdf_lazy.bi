@@ -86,3 +86,27 @@ function logpdf_lazy_multivariate_gaussian(x:Expression<Real[_]>,
   auto C <- llt(Σ);
   return -0.5*(dot(x - μ, inv(C)*(x - μ)) + (D*log(2.0*π) + ldet(C)));
 }
+
+/**
+ * Observe a Gaussian variate with a multivariate linear normal inverse-gamma
+ * prior with linear transformation.
+ *
+ * - x: The variate.
+ * - a: Scale.
+ * - ν: Precision times mean.
+ * - Λ: Precision.
+ * - c: Offset.
+ * - α: Shape of the inverse-gamma.
+ * - γ: Scale accumulator of the inverse-gamma.
+ *
+ * Returns: the log probability density.
+ */
+function logpdf_lazy_linear_multivariate_normal_inverse_gamma_gaussian(
+    x:Expression<Real>, a:Expression<Real[_]>, ν:Expression<Real[_]>,
+    Λ:Expression<LLT>, c:Expression<Real>, α:Expression<Real>,
+    γ:Expression<Real>) -> Expression<Real> {
+  auto μ <- inv(Λ)*ν;
+  auto β <- γ - 0.5*dot(μ, ν);
+  return logpdf_lazy_student_t(x, 2.0*α, dot(a, μ) + c,
+      (β/α)*(1.0 + dot(a, inv(Λ)*a)));
+}

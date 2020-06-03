@@ -24,6 +24,12 @@ final class LinearMultivariateNormalInverseGammaGaussian(
         a.value(), μ.ν.value(), μ.Λ.value(), c.value(), μ.α.value(),
         μ.γ.value());
   }
+
+  function simulateLazy() -> Real? {
+    return simulate_linear_multivariate_normal_inverse_gamma_gaussian(
+        a.pilot(), μ.ν.pilot(), μ.Λ.pilot(), c.pilot(), μ.α.pilot(),
+        μ.γ.pilot());
+  }
   
   function logpdf(x:Real) -> Real {
     return logpdf_linear_multivariate_normal_inverse_gamma_gaussian(x,
@@ -31,10 +37,20 @@ final class LinearMultivariateNormalInverseGammaGaussian(
         μ.γ.value());
   }
 
+  function logpdfLazy(x:Expression<Real>) -> Expression<Real>? {
+    return logpdf_lazy_linear_multivariate_normal_inverse_gamma_gaussian(x,
+        a, μ.ν, μ.Λ, c, μ.α, μ.γ);
+  }
+
   function update(x:Real) {
     (μ.ν, μ.Λ, μ.α, μ.γ) <- box(update_linear_multivariate_normal_inverse_gamma_gaussian(
         x, a.value(), μ.ν.value(), μ.Λ.value(), c.value(), μ.α.value(), 
         μ.γ.value()));
+  }
+
+  function updateLazy(x:Expression<Real>) {
+    //(μ.ν, μ.Λ, μ.α, μ.γ) <- update_lazy_linear_multivariate_normal_inverse_gamma_gaussian(
+    //    x, a, μ.ν, μ.Λ, c, μ.α, μ.γ);
   }
 
   function downdate(x:Real) {
