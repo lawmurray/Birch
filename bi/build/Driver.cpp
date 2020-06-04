@@ -1227,6 +1227,7 @@ void bi::Driver::target(const std::string& cmd) {
   /* strip suggestions that reveal internal workings */
   buf << " | sed -lE \"s/; did you mean '[[:alnum:]_]+_'\\?/./\"";
   buf << " | sed -lE \"/note: '[[:alnum:]_]+_' declared here/d\"";
+  buf << " | sed -lE \"s/'='/'<-'/\"";
   buf << " | grep --line-buffered -v 'note: expanded from macro'";
   buf << " 1>&2";
 
