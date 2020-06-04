@@ -149,24 +149,26 @@ void bi::CppPackageGenerator::visit(const Package* o) {
     /* generic class type definitions, generic member definitions */
     for (auto o : classes) {
       if (o->isGeneric() && !o->isAlias()) {
+        /* whole class (which may include generic members) */
         auxDefinition << o;
-      }
+      } else {
+        /* just generic members of the class */
+        CppClassGenerator auxMember(base, level, false, true, o);
 
-      CppClassGenerator auxMember(base, level, false, true, o);
-
-      Gatherer<MemberFunction> memberFunctions;
-      o->accept(&memberFunctions);
-      for (auto o : memberFunctions) {
-        if (o->isGeneric()) {
-          auxMember << o;
+        Gatherer<MemberFunction> memberFunctions;
+         o->accept(&memberFunctions);
+        for (auto o : memberFunctions) {
+          if (o->isGeneric()) {
+            auxMember << o;
+          }
         }
-      }
 
-      Gatherer<MemberFiber> memberFibers;
-      o->accept(&memberFibers);
-      for (auto o : memberFibers) {
-        if (o->isGeneric()) {
-          auxMember << o;
+        Gatherer<MemberFiber> memberFibers;
+        o->accept(&memberFibers);
+        for (auto o : memberFibers) {
+          if (o->isGeneric()) {
+            auxMember << o;
+          }
         }
       }
     }
