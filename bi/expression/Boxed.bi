@@ -29,6 +29,10 @@ final class Boxed<Value> < Expression<Value> {
   override function doMove(κ:Kernel) {
     //
   }
+  
+  override function doClearGrad() {
+    //
+  }
 
   override function doGrad() {
     //

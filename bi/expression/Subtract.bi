@@ -1,14 +1,23 @@
 /**
  * Lazy subtract.
  */
-final class Subtract<Left,Right,Value>(left:Expression<Left>,
-    right:Expression<Right>) < BinaryExpression<Left,Right,Value>(left, right) {
-  override function computeValue(l:Left, r:Right) -> Value {
-    return l - r;
+final class Subtract<Left,Right,Value>(left:Left, right:Right) <
+    ScalarBinaryExpression<Left,Right,Value>(left, right) {
+  override function doValue() {
+    x <- left.value() - right.value();
+  }
+
+  override function doPilot() {
+    x <- left.pilot() - right.pilot();
+  }
+
+  override function doMove(κ:Kernel) {
+    x <- left.move(κ) - right.move(κ);
   }
   
-  override function computeGrad(d:Value, l:Left, r:Right) -> (Left, Right) {
-    return (d, -d);
+  override function doGrad() {
+    left.grad(d!);
+    right.grad(-d!);
   }
 
   override function graftLinearGaussian() -> TransformLinear<Gaussian>? {
@@ -77,7 +86,7 @@ operator (left:Expression<Real> - right:Expression<Real>) ->
   if left.isConstant() && right.isConstant() {
     return box(left.value() - right.value());
   } else {
-    m:Subtract<Real,Real,Real>(left, right);
+    m:Subtract<Expression<Real>,Expression<Real>,Real>(left, right);
     return m;
   }
 }

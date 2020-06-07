@@ -11,10 +11,20 @@
 
 namespace bi {
 /**
- * Length of a vector.
+ * Length of a vector, number of rows of a matrix.
  */
 template<class T>
 auto length(const Eigen::MatrixBase<T>& o) {
+  return o.rows();
+}
+
+template<class T>
+auto length(const Eigen::DiagonalWrapper<T>& o) {
+  return o.rows();
+}
+
+template<class T, unsigned Mode>
+auto length(const Eigen::TriangularView<T,Mode>& o) {
   return o.rows();
 }
 
@@ -26,11 +36,31 @@ auto rows(const Eigen::MatrixBase<T>& o) {
   return o.rows();
 }
 
+template<class T>
+auto rows(const Eigen::DiagonalWrapper<T>& o) {
+  return o.rows();
+}
+
+template<class T, unsigned Mode>
+auto rows(const Eigen::TriangularView<T,Mode>& o) {
+  return o.rows();
+}
+
 /**
  * Number of columns of a matrix.
  */
 template<class T>
 auto columns(const Eigen::MatrixBase<T>& o) {
+  return o.columns();
+}
+
+template<class T>
+auto columns(const Eigen::DiagonalWrapper<T>& o) {
+  return o.columns();
+}
+
+template<class T, unsigned Mode>
+auto columns(const Eigen::TriangularView<T,Mode>& o) {
   return o.columns();
 }
 
@@ -69,18 +99,6 @@ inline auto dot(const libbirch::DefaultArray<bi::type::Real64,1>& o1, const libb
 }
 
 /**
- * Norm of a vector.
- */
-template<class T>
-auto norm(const Eigen::MatrixBase<T>& o) {
-  return o.norm();
-}
-
-inline auto norm(const libbirch::DefaultArray<bi::type::Real64,1>& o) {
-  return norm(o.toEigen());
-}
-
-/**
  * Element-wise square root of a vector.
  */
 template<class T>
@@ -93,6 +111,18 @@ inline auto sqrt(const libbirch::DefaultArray<bi::type::Real64,1>& o) {
 }
 
 /**
+ * Norm of a vector.
+ */
+template<class T>
+auto norm(const Eigen::MatrixBase<T>& o) {
+  return o.norm();
+}
+
+inline auto norm(const libbirch::DefaultArray<bi::type::Real64,1>& o) {
+  return norm(o.toEigen());
+}
+
+/**
  * Transpose of a matrix (or vector).
  */
 template<class T>
@@ -102,7 +132,7 @@ auto transpose(const Eigen::MatrixBase<T>& o) {
 
 template<class T>
 auto transpose(const Eigen::LLT<T>& o) {
-  return o.transpose();
+  return o;  // symmetric
 }
 
 template<class T>
@@ -115,12 +145,46 @@ auto transpose(const Eigen::TriangularView<T,Mode>& o) {
   return o.transpose();
 }
 
+inline auto transpose(const libbirch::DefaultArray<bi::type::Real64,1>& o) {
+  return transpose(o.toEigen());
+}
+
 inline auto transpose(const libbirch::DefaultArray<bi::type::Real64,2>& o) {
   return transpose(o.toEigen());
 }
 
-inline auto transpose(const libbirch::DefaultArray<bi::type::Real64,1>& o) {
-  return transpose(o.toEigen());
+/**
+ * Outer product of vector with itself.
+ */
+template<class T>
+auto outer(const Eigen::MatrixBase<T>& o) {
+  return o*o.transpose();
+}
+
+inline auto outer(const libbirch::DefaultArray<bi::type::Real64,1>& o) {
+  return outer(o.toEigen());
+}
+
+/**
+ * Outer product of vector with another.
+ */
+template<class T, class U>
+auto outer(const Eigen::MatrixBase<T>& o1, const Eigen::MatrixBase<U>& o2) {
+  return o1*transpose(o2);
+}
+
+template<class T>
+auto outer(const Eigen::MatrixBase<T>& o1, const libbirch::DefaultArray<bi::type::Real64,1>& o2) {
+  return outer(o1, o2.toEigen());
+}
+
+template<class T>
+auto outer(const libbirch::DefaultArray<bi::type::Real64,1>& o1, const Eigen::MatrixBase<T>& o2) {
+  return outer(o1.toEigen(), o2);
+}
+
+inline auto outer(const libbirch::DefaultArray<bi::type::Real64,1>& o1, const libbirch::DefaultArray<bi::type::Real64,1>& o2) {
+  return outer(o1.toEigen(), o2.toEigen());
 }
 
 /**
@@ -143,6 +207,21 @@ auto diagonal(const Eigen::MatrixBase<T>& o) {
   return o.diagonal();
 }
 
+template<class T>
+auto diagonal(const Eigen::LLT<T>& o) {
+  return o.diagonal();
+}
+
+template<class T>
+auto diagonal(const Eigen::DiagonalWrapper<T>& o) {
+  return o.diagonal();
+}
+
+template<class T, unsigned Mode>
+auto diagonal(const Eigen::TriangularView<T,Mode>& o) {
+  return o.nestedExpression().diagonal();
+}
+
 inline auto diagonal(const libbirch::DefaultArray<bi::type::Real64,2>& o) {
   return diagonal(o.toEigen());
 }
@@ -162,6 +241,11 @@ auto trace(const Eigen::LLT<T>& o) {
 
 template<class T>
 auto trace(const Eigen::DiagonalWrapper<T>& o) {
+  return o.trace();
+}
+
+template<class T, unsigned Mode>
+auto trace(const Eigen::TriangularView<T,Mode>& o) {
   return o.trace();
 }
 
@@ -187,8 +271,40 @@ auto det(const Eigen::DiagonalWrapper<T>& o) {
   return o.determinant();
 }
 
+template<class T, unsigned Mode>
+auto det(const Eigen::TriangularView<T,Mode>& o) {
+  return o.determinant();
+}
+
 inline auto det(const libbirch::DefaultArray<bi::type::Real64,2>& o) {
   return det(o.toEigen());
+}
+
+/**
+ * Log-determinant of a matrix.
+ */
+template<class T>
+auto ldet(const Eigen::MatrixBase<T>& o) {
+  return o.householderQr().logAbsDeterminant();
+}
+
+template<class T>
+auto ldet(const Eigen::LLT<T>& o) {
+  return 2.0*o.matrixL().nestedExpression().diagonal().array().log().sum();
+}
+
+template<class T>
+auto ldet(const Eigen::DiagonalWrapper<T>& o) {
+  return o.array().log().sum();
+}
+
+template<class T, unsigned Mode>
+auto ldet(const Eigen::TriangularView<T,Mode>& o) {
+  return o.nestedExpression().diagonal().array().log().sum();
+}
+
+inline auto ldet(const libbirch::DefaultArray<bi::type::Real64,2>& o) {
+  return ldet(o.toEigen());
 }
 
 /**

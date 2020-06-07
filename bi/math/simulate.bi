@@ -423,7 +423,7 @@ function simulate_wishart(Ψ:Real[_,_], k:Real) -> Real[_,_] {
       }
     }
   }
-  auto L <- cholesky(Ψ)*A;
+  auto L <- cholesky(llt(Ψ))*A;
   return L*transpose(L);
 }
 
@@ -627,7 +627,7 @@ function simulate_multivariate_gaussian(μ:Real[_], Σ:Real[_,_]) -> Real[_] {
   for d in 1..D {
     z[d] <- simulate_gaussian(0.0, 1.0);
   }
-  return μ + cholesky(Σ)*z;
+  return μ + cholesky(llt(Σ))*z;
 }
 
 /**
@@ -753,7 +753,7 @@ function simulate_matrix_gaussian(M:Real[_,_], U:Real[_,_], V:Real[_,_]) ->
       Z[n,p] <- simulate_gaussian(0.0, 1.0);
     }
   }
-  return M + cholesky(U)*Z*transpose(cholesky(V));
+  return M + cholesky(llt(U))*Z*transpose(cholesky(llt(V)));
 }
 
 /**
@@ -777,7 +777,7 @@ function simulate_matrix_gaussian(M:Real[_,_], U:Real[_,_], σ2:Real[_]) ->
       Z[n,p] <- simulate_gaussian(0.0, 1.0);
     }
   }
-  return M + cholesky(U)*Z*diagonal(sqrt(σ2));
+  return M + cholesky(llt(U))*Z*diagonal(sqrt(σ2));
 }
 
 /**
@@ -798,7 +798,7 @@ function simulate_matrix_gaussian(M:Real[_,_], V:Real[_,_]) -> Real[_,_] {
       Z[n,p] <- simulate_gaussian(0.0, 1.0);
     }
   }
-  return M + Z*transpose(cholesky(V));
+  return M + Z*transpose(cholesky(llt(V)));
 }
 
 /**
@@ -957,7 +957,7 @@ function simulate_multivariate_student_t(k:Real, μ:Real[_], Σ:Real[_,_]) ->
   for d in 1..D {
     z[d] <- simulate_student_t(k);
   }
-  return μ + cholesky(Σ)*z;
+  return μ + cholesky(llt(Σ))*z;
 }
 
 /**
@@ -1002,7 +1002,7 @@ function simulate_matrix_student_t(k:Real, M:Real[_,_], U:Real[_,_],
       Z[n,p] <- simulate_student_t(k);
     }
   }
-  return M + cholesky(U)*Z*transpose(cholesky(V));
+  return M + cholesky(llt(U))*Z*transpose(cholesky(llt(V)));
 }
 
 /**
@@ -1027,7 +1027,7 @@ function simulate_matrix_student_t(k:Real, M:Real[_,_], U:Real[_,_],
       Z[n,p] <- simulate_student_t(k);
     }
   }
-  return M + cholesky(U)*Z*diagonal(sqrt(v));
+  return M + cholesky(llt(U))*Z*diagonal(sqrt(v));
 }
 
 /**

@@ -1,18 +1,27 @@
 /**
  * Lazy multivariate multiply.
  */
-final class MultivariateMultiply<Left,Right,Value>(left:Expression<Left>,
-    right:Expression<Right>) < BinaryExpression<Left,Right,Value>(left, right) {  
+final class MultivariateMultiply<Left,Right,Value>(left:Left, right:Right) <
+    MultivariateBinaryExpression<Left,Right,Value>(left, right) {  
   override function rows() -> Integer {
     return left.rows();
   }
 
-  override function computeValue(l:Left, r:Right) -> Value {
-    return l*r;
+  override function doValue() {
+    x <- left.value()*right.value();
   }
 
-  override function computeGrad(d:Value, l:Left, r:Right) -> (Left, Right) {
-    return (d*transpose(r), transpose(l)*d);
+  override function doPilot() {
+    x <- left.pilot()*right.pilot();
+  }
+
+  override function doMove(κ:Kernel) {
+    x <- left.move(κ)*right.move(κ);
+  }
+
+  override function doGrad() {
+    left.grad(d!*transpose(right.get()));
+    right.grad(transpose(left.get())*d!);
   }
 
   override function graftLinearMultivariateGaussian() ->
@@ -21,9 +30,9 @@ final class MultivariateMultiply<Left,Right,Value>(left:Expression<Left>,
     z:MultivariateGaussian?;
     
     if (y <- right.graftLinearMultivariateGaussian())? {
-      y!.leftMultiply(left);
+      y!.leftMultiply(matrix(left));
     } else if (z <- right.graftMultivariateGaussian())? {
-      y <- TransformLinearMultivariate<MultivariateGaussian>(left, z!);
+      y <- TransformLinearMultivariate<MultivariateGaussian>(matrix(left), z!);
     }
     return y;
   }
@@ -34,9 +43,9 @@ final class MultivariateMultiply<Left,Right,Value>(left:Expression<Left>,
     z:MultivariateNormalInverseGamma?;
 
     if (y <- right.graftLinearMultivariateNormalInverseGamma(compare))? {
-      y!.leftMultiply(left);
+      y!.leftMultiply(matrix(left));
     } else if (z <- right.graftMultivariateNormalInverseGamma(compare))? {
-      y <- TransformLinearMultivariate<MultivariateNormalInverseGamma>(left, z!);
+      y <- TransformLinearMultivariate<MultivariateNormalInverseGamma>(matrix(left), z!);
     }
     return y;
   }
@@ -51,7 +60,7 @@ operator (left:Expression<Real[_,_]>*right:Expression<Real[_]>) ->
   if left.isConstant() && right.isConstant() {
     return box(vector(left.value()*right.value()));
   } else {
-    m:MultivariateMultiply<Real[_,_],Real[_],Real[_]>(left, right);
+    m:MultivariateMultiply<Expression<Real[_,_]>,Expression<Real[_]>,Real[_]>(left, right);
     return m;
   }
 }
@@ -81,19 +90,21 @@ operator (left:Expression<Real[_,_]>*right:Real[_]) -> Expression<Real[_]> {
 /**
  * Lazy multivariate multiply.
  */
-operator (left:Expression<Real>*right:Expression<Real[_]>) ->
+operator (left:Expression<LLT>*right:Expression<Real[_]>) ->
     Expression<Real[_]> {
+  assert left.columns() == right.rows();
   if left.isConstant() && right.isConstant() {
     return box(vector(left.value()*right.value()));
   } else {
-    return diagonal(left, right.rows())*right;
+    m:MultivariateMultiply<Expression<LLT>,Expression<Real[_]>,Real[_]>(left, right);
+    return m;
   }
 }
 
 /**
  * Lazy multivariate multiply.
  */
-operator (left:Real*right:Expression<Real[_]>) -> Expression<Real[_]> {
+operator (left:LLT*right:Expression<Real[_]>) -> Expression<Real[_]> {
   if right.isConstant() {
     return box(vector(left*right.value()));
   } else {
@@ -104,12 +115,34 @@ operator (left:Real*right:Expression<Real[_]>) -> Expression<Real[_]> {
 /**
  * Lazy multivariate multiply.
  */
-operator (left:Expression<Real>*right:Real[_]) -> Expression<Real[_]> {
+operator (left:Expression<LLT>*right:Real[_]) -> Expression<Real[_]> {
   if left.isConstant() {
     return box(vector(left.value()*right));
   } else {
     return left*box(right);
   }
+}
+
+/**
+ * Lazy multivariate multiply.
+ */
+operator (left:Expression<Real>*right:Expression<Real[_]>) ->
+    Expression<Real[_]> {
+  return diagonal(left, right.rows())*right;
+}
+
+/**
+ * Lazy multivariate multiply.
+ */
+operator (left:Real*right:Expression<Real[_]>) -> Expression<Real[_]> {
+  return box(left)*right;
+}
+
+/**
+ * Lazy multivariate multiply.
+ */
+operator (left:Expression<Real>*right:Real[_]) -> Expression<Real[_]> {
+  return left*box(right);
 }
 
 /**
@@ -117,31 +150,19 @@ operator (left:Expression<Real>*right:Real[_]) -> Expression<Real[_]> {
  */
 operator (left:Expression<Real[_]>*right:Expression<Real>) ->
     Expression<Real[_]> {
-  if left.isConstant() && right.isConstant() {
-    return box(vector(left.value()*right.value()));
-  } else {
-    return diagonal(right, left.rows())*left;
-  }
+  return right*left;
 }
 
 /**
  * Lazy multivariate multiply.
  */
 operator (left:Real[_]*right:Expression<Real>) -> Expression<Real[_]> {
-  if right.isConstant() {
-    return box(vector(left*right.value()));
-  } else {
-    return box(left)*right;
-  }
+  return right*left;
 }
 
 /**
  * Lazy multivariate multiply.
  */
 operator (left:Expression<Real[_]>*right:Real) -> Expression<Real[_]> {
-  if left.isConstant() {
-    return box(vector(left.value()*right));
-  } else {
-    return left*box(right);
-  }
+  return right*left;
 }

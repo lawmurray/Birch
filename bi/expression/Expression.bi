@@ -30,11 +30,6 @@ abstract class Expression<Value> < DelayExpression {
    * Memoized value.
    */
   x:Value?;
-  
-  /**
-   * Accumulated gradient.
-   */
-  dfdx:Value?;  
 
   /**
    * Get the memoized value of the expression, assuming it has already been
@@ -167,8 +162,11 @@ abstract class Expression<Value> < DelayExpression {
    * Evaluate gradients. Gradients are computed with respect to all
    * variables (Random objects in the pilot or gradient state).
    *
+   * - Gradient: Gradient type. Must be one of `Real`, `Real[_]` or
+   *   `Real[_,_]`.
+   *
    * - d: Upstream gradient. For an initial call, this should be the unit for
-   *     the given type, e.g. 1.0, a vector of ones, or the identity matrix.
+   *      the given type, e.g. 1.0, a vector of ones, or the identity matrix.
    *
    * `grad()` must be called as many times as `pilot()` was previously
    * called. This is because subexpressions may be shared. The calls to
@@ -193,15 +191,9 @@ abstract class Expression<Value> < DelayExpression {
    * the computation. The variable (Random object) that encodes $x_0$ keeps
    * the final result.
    */
-  final function grad(d:Value) {
+  final function grad<Gradient>(d:Gradient) {
     if !flagValue {
-      /* accumulate gradient */
-      if dfdx? {
-        dfdx <- add(dfdx!, d);
-      } else {
-        dfdx <- d;
-      }
-
+      doAccumulateGrad(d);
       assert count > 0;
       count <- count - 1;
       if count == 0 {
@@ -210,6 +202,32 @@ abstract class Expression<Value> < DelayExpression {
       }
     }
   }
+
+  /*
+   * Accumulate gradient.
+   */
+  function doAccumulateGrad(d:Real) {
+    assert false;
+  }
+  
+  /*
+   * Accumulate gradient.
+   */
+  function doAccumulateGrad(d:Real[_]) {
+    assert false;
+  }
+  
+  /*
+   * Accumulate gradient.
+   */
+  function doAccumulateGrad(D:Real[_,_]) {
+    assert false;
+  }
+
+  /*
+   * Clear accumulated gradient.
+   */
+  abstract function doClearGrad();
   
   /*
    * Evaluate gradient.
@@ -229,7 +247,7 @@ abstract class Expression<Value> < DelayExpression {
     if !flagValue {
       if count == 0 {
         doMove(κ);
-        dfdx <- nil;
+        doClearGrad();
       }
       count <- count + 1;
     }

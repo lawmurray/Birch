@@ -15,6 +15,11 @@ final class Random<Value> < Expression<Value> {
    * Associated distribution.
    */
   p:Distribution<Value>?;
+  
+  /**
+   * Accumulated gradient.
+   */
+  d:Value?;
 
   /**
    * Value assignment.
@@ -106,17 +111,35 @@ final class Random<Value> < Expression<Value> {
     } else {
       p!.prune();
       x <- p!.simulateLazy();
-      if !x? {
-        stderr.print(p!.getClassName() + "\n");
+      if x? {
+        /* lazy operations supported */
+        p!.updateLazy(this);
+      } else {
+        /* lazy operations not supported */
+        x <- p!.simulate();
+        p!.update(x!);
       }
-      assert x?;
-      p!.updateLazy(this);
       p!.unlink();
     }
   }
 
   override function doRestoreCount() {
     //
+  }
+  
+  function doAccumulateGrad(d:Value) {
+    // ^ override is committed from the declaration as Value is not
+    //   necessarily one of the supported gradient types in Expression (and
+    //   need not be for this to work correctly)
+    if this.d? {
+      this.d <- this.d! + d;
+    } else {
+      this.d <- d;
+    }
+  }
+
+  override function doClearGrad() {
+    d <- nil;
   }
 
   override function doGrad() {

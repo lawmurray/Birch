@@ -1,19 +1,30 @@
 /**
  * Lazy `pow`.
  */
-final class Pow<Left,Right,Value>(left:Expression<Left>,
-    right:Expression<Right>) < BinaryExpression<Left,Right,Value>(left, right) {  
-  override function computeValue(l:Left, r:Right) -> Value {
-    return pow(l, r);
+final class Pow<Left,Right,Value>(left:Left, right:Right) <
+    ScalarBinaryExpression<Left,Right,Value>(left, right) {  
+  override function doValue() {
+    x <- pow(left.value(), right.value());
   }
 
-  override function computeGrad(d:Value, l:Left, r:Right) -> (Left, Right) {
-    auto dl <- d*r*pow(l, r - 1);
+  override function doPilot() {
+    x <- pow(left.pilot(), right.pilot());
+  }
+
+  override function doMove(κ:Kernel) {
+    x <- pow(left.move(κ), right.move(κ));
+  }
+
+  override function doGrad() {
+    auto l <- left.get();
+    auto r <- right.get();
+    auto dl <- d!*r*pow(l, r - 1.0);
     auto dr <- 0.0;
     if l > 0.0 {
-      dr <- d*pow(l, r)*log(l);
+      dr <- d!*pow(l, r)*log(l);
     }
-    return (dl, dr);
+    left.grad(dl);
+    right.grad(dr);
   }
 }
 
@@ -24,7 +35,7 @@ function pow(x:Expression<Real>, y:Expression<Real>) -> Expression<Real> {
   if x.isConstant() && y.isConstant() {
     return box(pow(x.value(), y.value()));
   } else {
-    m:Pow<Real,Real,Real>(x, y);
+    m:Pow<Expression<Real>,Expression<Real>,Real>(x, y);
     return m;
   }
 }

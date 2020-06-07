@@ -11,7 +11,7 @@ final class MatrixNormalInverseWishart(M:Expression<Real[_,_]>,
   /**
    * Precision times mean.
    */
-  N:Expression<Real[_,_]> <- matrix(Λ)*M;
+  N:Expression<Real[_,_]> <- Λ*M;
   
   /**
    * Among-column covariance.

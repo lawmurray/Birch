@@ -52,6 +52,11 @@ class TransformLinearMultivariate<Value>(A:Expression<Real[_,_]>, x:Value,
     A <- A/y;
     c <- c/y;
   }
+
+  function negate() {
+    A <- -A;
+    c <- -c;
+  }
   
   function negateAndAdd(y:Expression<Real[_]>) {
     A <- -A;

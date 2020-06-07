@@ -52,13 +52,6 @@ function matrix(X:LLT) -> Real[_,_] {
 }
 
 /**
- * Add two Cholesky decompositions.
- */
-function add(X:LLT, Y:LLT) -> LLT {
-  return rank_update(X, matrix(Y), 1.0);
-}
-
-/**
  * Cholesky decomposition of the symmetric positive definite matrix $S$.
  *
  * - S: The symmetric positive definite matrix $S$.
@@ -150,49 +143,3 @@ function rank_update(S:LLT, X:Real[_,_], a:Real) -> LLT {
   }
   return A;
 }
-
-/**
- * Trace of a symmetric positive-definite matrix.
- */
-function trace(S:LLT) -> Real;
-
-/**
- * Determinant of a symmetric positive-definite matrix.
- */
-function det(S:LLT) -> Real;
-
-/**
- * Logarithm of the determinant of a symmetric positive-definite matrix.
- */
-function ldet(S:LLT) -> Real {
-  L:Real[_,_] <- cholesky(S);
-  // ^ auto here causes C++ compile error on Eigen types
-  auto n <- rows(S);
-  auto d <- 0.0;
-  for i in 1..n {
-    d <- d + log(L[i,i]);
-  }
-  return 2.0*d;
-}
-
-/**
- * Inverse of a symmetric positive definite matrix.
- */
-function inv(S:LLT) -> Real[_,_];
-
-/**
- * Solve a system of equations with a symmetric positive definite matrix.
- */
-function solve(S:LLT, y:Real[_]) -> Real[_];
-
-/**
- * Solve a system of equations with a symmetric positive definite matrix.
- */
-function solve(S:LLT, Y:Real[_,_]) -> Real[_,_];
-
-/**
- * Cholesky factor of a matrix, $X = LL^{\top}$.
- *
- * Returns: the lower-triangular factor $L$.
- */
-function cholesky(S:LLT) -> Real[_,_];

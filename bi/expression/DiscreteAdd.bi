@@ -1,20 +1,28 @@
 /**
  * Lazy add.
  */
-final class DiscreteAdd<Left,Right,Value>(left:Expression<Left>,
-    right:Expression<Right>) < BinaryExpression<Left,Right,Value>(left, right) {  
-  override function computeValue(l:Left, r:Right) -> Value {
-    return l + r;
+final class DiscreteAdd<Left,Right,Value>(left:Left, right:Right) <
+    ScalarBinaryExpression<Left,Right,Value>(left, right) {  
+  override function doValue() {
+    x <- left.value() + right.value();
+  }
+
+  override function doPilot() {
+    x <- left.pilot() + right.pilot();
+  }
+
+  override function doMove(κ:Kernel) {
+    x <- left.move(κ) + right.move(κ);
   }
   
-  override function computeGrad(d:Value, l:Left, r:Right) -> (Left, Right) {
-    return (d, d);
+  override function doGrad() {
+    left.grad(d!);
+    right.grad(d!);
   }
 
   override function graftDiscrete() -> Discrete? {
     r:Discrete? <- graftBoundedDiscrete();
     if !r? {
-      /* match a template */
       x:Discrete?;
       if (x <- left.graftDiscrete())? {
         r <- LinearDiscrete(box(1), x!, right);
@@ -30,7 +38,6 @@ final class DiscreteAdd<Left,Right,Value>(left:Expression<Left>,
     x2:BoundedDiscrete? <- right.graftBoundedDiscrete();
     r:BoundedDiscrete?;
 
-    /* match a template */
     if x1? && x2? {
       r <- AddBoundedDiscrete(x1!, x2!);
     } else if x1? {
@@ -50,7 +57,7 @@ operator (left:Expression<Integer> + right:Expression<Integer>) ->
   if left.isConstant() && right.isConstant() {
     return box(left.value() + right.value());
   } else {
-    m:DiscreteAdd<Integer,Integer,Integer>(left, right);
+    m:DiscreteAdd<Expression<Integer>,Expression<Integer>,Integer>(left, right);
     return m;
   }
 }

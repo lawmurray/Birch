@@ -1,14 +1,22 @@
 /**
  * Lazy `tanh`.
  */
-final class Tanh<Argument,Value>(x:Expression<Argument>) <
-    UnaryExpression<Argument,Value>(x) {
-  override function computeValue(x:Argument) -> Value {
-    return tanh(x);
+final class Tanh(x:Expression<Real>) <
+    ScalarUnaryExpression<Expression<Real>,Real>(x) {
+  override function doValue() {
+    x <- tanh(single.value());
   }
 
-  override function computeGrad(d:Value, x:Argument) -> Argument {
-    return d*(1.0 + pow(tanh(x), 2.0));
+  override function doPilot() {
+    x <- tanh(single.pilot());
+  }
+
+  override function doMove(κ:Kernel) {
+    x <- tanh(single.move(κ));
+  }
+
+  override function doGrad() {
+    single.grad(d!*(1.0 + pow(tanh(single.get()), 2.0)));
   }
 }
 
@@ -19,7 +27,7 @@ function tanh(x:Expression<Real>) -> Expression<Real> {
   if x.isConstant() {
     return box(tanh(x.value()));
   } else {
-    m:Tanh<Real,Real>(x);
+    m:Tanh(x);
     return m;
   }
 }

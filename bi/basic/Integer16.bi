@@ -208,12 +208,3 @@ function min(x:Integer16, y:Integer16) -> Integer16 {
   return std::min(x, y);
   }}
 }
-
-/**
- * Add two values.
- */
-function add(x:Integer16, y:Integer16) -> Integer16 {
-  cpp {{
-  return x + y;
-  }}
-}

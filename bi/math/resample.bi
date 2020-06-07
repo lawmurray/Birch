@@ -55,7 +55,7 @@ function log_sum_exp(x:Real[_]) -> Real {
 }
 
 /**
- * Take the logarithm of each elements of a vector and return the sum.
+ * Take the logarithm of each element of a vector and return the sum.
  */
 function log_sum(x:Real[_]) -> Real {
   return transform_reduce<Real>(x, 0.0, @(x:Real, y:Real) -> Real {

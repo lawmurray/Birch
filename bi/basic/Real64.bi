@@ -210,15 +210,6 @@ function min(x:Real64, y:Real64) -> Real64 {
 }
 
 /**
- * Add two values.
- */
-function add(x:Real64, y:Real64) -> Real64 {
-  cpp {{
-  return x + y;
-  }}
-}
-
-/**
  * Is the value `inf`?
  */
 function isinf(x:Real64) -> Boolean {

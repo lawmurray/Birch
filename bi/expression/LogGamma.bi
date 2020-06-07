@@ -1,14 +1,22 @@
 /**
  * Lazy `lgamma`.
  */
-final class LogGamma<Argument,Value>(x:Expression<Argument>) <
-    UnaryExpression<Argument,Value>(x) {
-  override function computeValue(x:Argument) -> Value {
-    return lgamma(x);
+final class LogGamma(x:Expression<Real>) <
+    ScalarUnaryExpression<Expression<Real>,Real>(x) {
+  override function doValue() {
+    x <- lgamma(single.value());
   }
 
-  override function computeGrad(d:Value, x:Argument) -> Argument {
-    return d*digamma(x);
+  override function doPilot() {
+    x <- lgamma(single.pilot());
+  }
+
+  override function doMove(κ:Kernel) {
+    x <- lgamma(single.move(κ));
+  }
+
+  override function doGrad() {
+    single.grad(d!*digamma(single.get()));
   }
 }
 
@@ -19,7 +27,7 @@ function lgamma(x:Expression<Real>) -> Expression<Real> {
   if x.isConstant() {
     return box(lgamma(x.value()));
   } else {
-    m:LogGamma<Real,Real>(x);
+    m:LogGamma(x);
     return m;
   }
 }

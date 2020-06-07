@@ -1,23 +1,30 @@
 /**
  * Lazy `matrix`.
  */
-final class Matrix<Argument,Value>(x:Expression<Argument>) <
-    UnaryExpression<Argument,Value>(x) {
+final class Matrix<Single,Value>(x:Single) <
+    MatrixUnaryExpression<Single,Value>(x) {
   override function rows() -> Integer {
-    return single.columns();
+    return single.rows();
   }
   
   override function columns() -> Integer {
-    return single.rows();
+    return single.columns();
   }
 
-  override function computeValue(x:Argument) -> Value {
-    return matrix(x);
+  override function doValue() {
+    x <- matrix(single.value());
   }
 
-  override function computeGrad(d:Value, x:Argument) -> Argument {
-    ///@todo
-    assert false;
+  override function doPilot() {
+    x <- matrix(single.pilot());
+  }
+
+  override function doMove(κ:Kernel) {
+    x <- matrix(single.move(κ));
+  }
+
+  override function doGrad() {
+    single.grad(D!);
   }
 }
 
@@ -28,7 +35,7 @@ function matrix(x:Expression<LLT>) -> Expression<Real[_,_]> {
   if x.isConstant() {
     return box(matrix(x.value()));
   } else {
-    m:Matrix<LLT,Real[_,_]>(x);
+    m:Matrix<Expression<LLT>,Real[_,_]>(x);
     return m;
   }
 }
@@ -38,28 +45,4 @@ function matrix(x:Expression<LLT>) -> Expression<Real[_,_]> {
  */
 function matrix(x:Expression<Real[_,_]>) -> Expression<Real[_,_]> {
   return x;
-}
-
-/**
- * Lazy `matrix`.
- */
-function matrix(x:Expression<Real[_]>) -> Expression<Real[_,_]> {
-  if x.isConstant() {
-    return box(matrix(x.value()));
-  } else {
-    m:Matrix<Real[_],Real[_,_]>(x);
-    return m;
-  }
-}
-
-/**
- * Lazy `matrix`.
- */
-function matrix(x:Expression<Real>) -> Expression<Real[_,_]> {
-  if x.isConstant() {
-    return box(matrix(x.value()));
-  } else {
-    m:Matrix<Real,Real[_,_]>(x);
-    return m;
-  }
 }

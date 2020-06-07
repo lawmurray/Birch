@@ -38,6 +38,11 @@ class TransformDot<Value>(a:Expression<Real[_]>, x:Value,
   function subtract(y:Expression<Real>) {
     c <- c - y;
   }
+
+  function negate() {
+    a <- -a;
+    c <- -c;
+  }
   
   function negateAndAdd(y:Expression<Real>) {
     a <- -a;

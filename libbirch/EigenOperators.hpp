@@ -30,9 +30,29 @@
   auto operator op(const libbirch::Array<T,F>& x, const Eigen::MatrixBase<U>& y) { \
     return x.toEigen() op y; \
   } \
+  \
+  template<class T, class U, class G> \
+  auto operator op(const Eigen::DiagonalWrapper<T>& x, const libbirch::Array<U,G>& y) { \
+    return x op y.toEigen(); \
+  } \
+  \
+  template<class T, class F, class U> \
+  auto operator op(const libbirch::Array<T,F>& x, const Eigen::DiagonalWrapper<U>& y) { \
+    return x.toEigen() op y; \
+  } \
+  \
+  template<class T, unsigned Mode, class U, class G> \
+  auto operator op(const Eigen::TriangularView<T,Mode>& x, const libbirch::Array<U,G>& y) { \
+    return x op y.toEigen(); \
+  } \
+  \
+  template<class T, class F, class U, unsigned Mode> \
+  auto operator op(const libbirch::Array<T,F>& x, const Eigen::TriangularView<U,Mode>& y) { \
+    return x.toEigen() op y; \
+  } \
+  \
   template<class T, class F, class U, class G> \
-  auto operator op(const libbirch::Array<T,F>& x, \
-      const libbirch::Array<U,G>& y) { \
+  auto operator op(const libbirch::Array<T,F>& x, const libbirch::Array<U,G>& y) { \
     return x.toEigen() op y.toEigen(); \
   }
 
@@ -54,26 +74,6 @@
     return (x.toEigen().array() op y).matrix(); \
   }
 
-/**
- * A binary operator with a scalar on the left that Eigen does not define
- * itself.
- */
-#define LEFT_EXTRA_SCALAR_BINARY_OPERATOR(op) \
-  template<class T, class U, typename = std::enable_if_t<std::is_same<T,typename U::value_type>::value>> \
-  auto operator op(const T& x, const Eigen::MatrixBase<U>& y) { \
-    return (x op y.array()).matrix(); \
-  }
-
-/**
- * A binary operator with a scalar on the right that Eigen does not define
- * itself.
- */
-#define RIGHT_EXTRA_SCALAR_BINARY_OPERATOR(op) \
-  template<class T, class U, typename = std::enable_if_t<std::is_same<U,typename T::value_type>::value>> \
-  auto operator op(const Eigen::MatrixBase<T>& x, const U& y) { \
-    return (x.array() op y).matrix(); \
-  }
-
 namespace bi {
 UNARY_OPERATOR(+)
 UNARY_OPERATOR(-)
@@ -90,10 +90,4 @@ RIGHT_SCALAR_BINARY_OPERATOR(+)
 RIGHT_SCALAR_BINARY_OPERATOR(-)
 RIGHT_SCALAR_BINARY_OPERATOR(*)
 RIGHT_SCALAR_BINARY_OPERATOR(/)
-
-LEFT_EXTRA_SCALAR_BINARY_OPERATOR(+)
-LEFT_EXTRA_SCALAR_BINARY_OPERATOR(-)
-
-RIGHT_EXTRA_SCALAR_BINARY_OPERATOR(+)
-RIGHT_EXTRA_SCALAR_BINARY_OPERATOR(-)
 }

@@ -1,14 +1,23 @@
 /**
  * Lazy `asin`.
  */
-final class Asin<Argument,Value>(x:Expression<Argument>) <
-    UnaryExpression<Argument,Value>(x) {  
-  override function computeValue(x:Argument) -> Value {
-    return asin(x);
+final class Asin(x:Expression<Real>) <
+    ScalarUnaryExpression<Expression<Real>,Real>(x) {
+  override function doValue() {
+    x <- asin(single.value());
   }
 
-  override function computeGrad(d:Value, x:Argument) -> Argument {
-    return d/sqrt(1.0 - x*x);
+  override function doPilot() {
+    x <- asin(single.pilot());
+  }
+
+  override function doMove(κ:Kernel) {
+    x <- asin(single.move(κ));
+  }
+
+  override function doGrad() {
+    auto x <- single.get();
+    single.grad(d!/sqrt(1.0 - x*x));
   }
 }
 
@@ -19,7 +28,7 @@ function asin(x:Expression<Real>) -> Expression<Real> {
   if x.isConstant() {
     return box(asin(x.value()));
   } else {
-    m:Asin<Real,Real>(x);
+    m:Asin(x);
     return m;
   }
 }

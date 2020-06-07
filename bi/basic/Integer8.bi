@@ -208,12 +208,3 @@ function min(x:Integer8, y:Integer8) -> Integer8 {
   return std::min(x, y);
   }}
 }
-
-/**
- * Add two values.
- */
-function add(x:Integer8, y:Integer8) -> Integer8 {
-  cpp {{
-  return x + y;
-  }}
-}

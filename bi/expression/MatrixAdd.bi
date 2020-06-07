@@ -1,24 +1,31 @@
 /**
  * Lazy matrix addition.
  */
-final class MatrixAdd<Left,Right,Value>(left:Expression<Left>,
-    right:Expression<Right>) < BinaryExpression<Left,Right,Value>(left, right) {  
+final class MatrixAdd<Left,Right,Value>(left:Left, right:Right) <
+    MatrixBinaryExpression<Left,Right,Value>(left, right) {  
   override function rows() -> Integer {
-    assert left.rows() == right.rows();
     return left.rows();
   }
   
   override function columns() -> Integer {
-    assert left.rows() == right.rows();
     return left.columns();
   }
     
-  override function computeValue(l:Left, r:Right) -> Value {
-    return l + r;
+  override function doValue() {
+    x <- left.value() + right.value();
   }
 
-  override function computeGrad(d:Value, l:Left, r:Right) -> (Left, Right) {
-    return (d, d);
+  override function doPilot() {
+    x <- left.pilot() + right.pilot();
+  }
+
+  override function doMove(κ:Kernel) {
+    x <- left.move(κ) + right.move(κ);
+  }
+
+  override function doGrad() {
+    left.grad(D!);
+    right.grad(D!);
   }
 
   override function graftLinearMatrixGaussian() ->
@@ -83,7 +90,7 @@ operator (left:Expression<Real[_,_]> + right:Expression<Real[_,_]>) ->
   if left.isConstant() && right.isConstant() {
     return box(matrix(left.value() + right.value()));
   } else {
-    m:MatrixAdd<Real[_,_],Real[_,_],Real[_,_]>(left, right);
+    m:MatrixAdd<Expression<Real[_,_]>,Expression<Real[_,_]>,Real[_,_]>(left, right);
     return m;
   }
 }

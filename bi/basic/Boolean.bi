@@ -59,10 +59,3 @@ function max(x:Boolean, y:Boolean) -> Boolean {
 function min(x:Boolean, y:Boolean) -> Boolean {
   return x && y;
 }
-
-/**
- * Add two values (logical *or*).
- */
-function add(x:Boolean, y:Boolean) -> Boolean {
-  return x || y;
-}

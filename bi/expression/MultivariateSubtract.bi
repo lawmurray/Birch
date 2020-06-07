@@ -1,19 +1,27 @@
 /**
  * Lazy multivariate subtract.
  */
-final class MultivariateSubtract<Left,Right,Value>(left:Expression<Left>,
-    right:Expression<Right>) < BinaryExpression<Left,Right,Value>(left, right) {  
+final class MultivariateSubtract<Left,Right,Value>(left:Left, right:Right) <
+    MultivariateBinaryExpression<Left,Right,Value>(left, right) {  
   override function rows() -> Integer {
-    assert left.rows() == right.rows();
     return left.rows();
   }
 
-  override function computeValue(l:Left, r:Right) -> Value {
-    return l - r;
+  override function doValue() {
+    x <- left.value() - right.value();
   }
 
-  override function computeGrad(d:Value, l:Left, r:Right) -> (Left, Right) {
-    return (d, -d);
+  override function doPilot() {
+    x <- left.pilot() - right.pilot();
+  }
+
+  override function doMove(κ:Kernel) {
+    x <- left.move(κ) - right.move(κ);
+  }
+
+  override function doGrad() {
+    left.grad(d!);
+    right.grad(-d!);
   }
 
   override function graftLinearMultivariateGaussian() ->
@@ -60,7 +68,7 @@ operator (left:Expression<Real[_]> - right:Expression<Real[_]>) ->
   if left.isConstant() && right.isConstant() {
     return box(vector(left.value() - right.value()));
   } else {
-    m:MultivariateSubtract<Real[_],Real[_],Real[_]>(left, right);
+    m:MultivariateSubtract<Expression<Real[_]>,Expression<Real[_]>,Real[_]>(left, right);
     return m;
   }
 }

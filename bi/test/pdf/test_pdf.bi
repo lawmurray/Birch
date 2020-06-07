@@ -109,10 +109,10 @@ function test_pdf(π:Distribution<Real[_]>, D:Integer, N:Integer, B:Integer,
   for n in 1..N {
     auto x <- X1[n,1..D];
     μ <- μ + x;
-    Σ <- Σ + x*transpose(x);
+    Σ <- Σ + outer(x);
   }
   μ <- μ/Real(N);
-  Σ <- Σ/Real(N) - μ*transpose(μ);
+  Σ <- Σ/Real(N) - outer(μ);
   
   /* scale this proposal to get a reasonable acceptance rate */
   auto done <- false;
@@ -192,10 +192,10 @@ function test_pdf(π:Distribution<Real[_,_]>, R:Integer, C:Integer, N:Integer,
   for n in 1..N {
     auto x <- X1[n,1..R*C];
     μ <- μ + x;
-    Σ <- Σ + x*transpose(x);
+    Σ <- Σ + outer(x);
   }
   μ <- μ/Real(N);
-  Σ <- Σ/Real(N) - μ*transpose(μ);
+  Σ <- Σ/Real(N) - outer(μ);
   
   /* scale this proposal to get a reasonable acceptance rate */
   auto done <- false;

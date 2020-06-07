@@ -1,8 +1,8 @@
 /**
  * Lazy `transpose`.
  */
-final class MatrixTranspose<Argument,Value>(x:Expression<Argument>) <
-    UnaryExpression<Argument,Value>(x) {
+final class MatrixTranspose(x:Expression<Real[_,_]>) <
+    MatrixUnaryExpression<Expression<Real[_,_]>,Real[_,_]>(x) {
   override function rows() -> Integer {
     return single.columns();
   }
@@ -11,12 +11,20 @@ final class MatrixTranspose<Argument,Value>(x:Expression<Argument>) <
     return single.rows();
   }
 
-  override function computeValue(x:Argument) -> Value {
-    return transpose(x);
+  override function doValue() {
+    x <- transpose(single.value());
   }
 
-  override function computeGrad(d:Value, x:Argument) -> Argument {
-    return transpose(d);
+  override function doPilot() {
+    x <- transpose(single.pilot());
+  }
+
+  override function doMove(κ:Kernel) {
+    x <- transpose(single.move(κ));
+  }
+
+  override function doGrad() {
+    single.grad(transpose(D!));
   }
 }
 
@@ -27,7 +35,7 @@ function transpose(x:Expression<Real[_,_]>) -> Expression<Real[_,_]> {
   if x.isConstant() {
     return box(matrix(transpose(x.value())));
   } else {
-    m:MatrixTranspose<Real[_,_],Real[_,_]>(x);
+    m:MatrixTranspose(x);
     return m;
   }
 }

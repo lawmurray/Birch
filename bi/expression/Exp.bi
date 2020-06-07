@@ -1,14 +1,22 @@
 /**
  * Lazy `exp`.
  */
-final class Exp<Argument,Value>(x:Expression<Argument>) <
-    UnaryExpression<Argument,Value>(x) {
-  override function computeValue(x:Argument) -> Value {
-    return exp(x);
+final class Exp(x:Expression<Real>) <
+    ScalarUnaryExpression<Expression<Real>,Real>(x) {
+  override function doValue() {
+    x <- exp(single.value());
   }
 
-  override function computeGrad(d:Value, x:Argument) -> Argument {
-    return d*exp(x);
+  override function doPilot() {
+    x <- exp(single.pilot());
+  }
+
+  override function doMove(κ:Kernel) {
+    x <- exp(single.move(κ));
+  }
+
+  override function doGrad() {
+    single.grad(d!*exp(single.get()));
   }
 }
 
@@ -19,7 +27,7 @@ function exp(x:Expression<Real>) -> Expression<Real> {
   if x.isConstant() {
     return box(exp(x.value()));
   } else {
-    m:Exp<Real,Real>(x);
+    m:Exp(x);
     return m;
   }
 }

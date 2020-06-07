@@ -1,19 +1,27 @@
 /**
  * Lazy multivariate add.
  */
-final class MultivariateAdd<Left,Right,Value>(left:Expression<Left>,
-    right:Expression<Right>) < BinaryExpression<Left,Right,Value>(left, right) {  
+final class MultivariateAdd<Left,Right,Value>(left:Left, right:Right) <
+    MultivariateBinaryExpression<Left,Right,Value>(left, right) {  
   override function rows() -> Integer {
-    assert left.rows() == right.rows();
     return left.rows();
   }
 
-  override function computeValue(l:Left, r:Right) -> Value {
-    return l + r;
+  override function doValue() {
+    x <- left.value() + right.value();
   }
 
-  override function computeGrad(d:Value, l:Left, r:Right) -> (Left, Right) {
-    return (d, d);
+  override function doPilot() {
+    x <- left.pilot() + right.pilot();
+  }
+
+  override function doMove(κ:Kernel) {
+    x <- left.move(κ) + right.move(κ);
+  }
+
+  override function doGrad() {
+    left.grad(d!);
+    right.grad(d!);
   }
 
   override function graftLinearMultivariateGaussian() ->
@@ -26,9 +34,11 @@ final class MultivariateAdd<Left,Right,Value>(left:Expression<Left>,
     } else if (y <- right.graftLinearMultivariateGaussian())? {
       y!.add(left);
     } else if (z <- left.graftMultivariateGaussian())? {
-      y <- TransformLinearMultivariate<MultivariateGaussian>(box(identity(z!.rows())), z!, right);
+      y <- TransformLinearMultivariate<MultivariateGaussian>(
+          box(identity(z!.rows())), z!, right);
     } else if (z <- right.graftMultivariateGaussian())? {
-      y <- TransformLinearMultivariate<MultivariateGaussian>(box(identity(z!.rows())), z!, left);
+      y <- TransformLinearMultivariate<MultivariateGaussian>(
+          box(identity(z!.rows())), z!, left);
     }
     return y;
   }
@@ -43,9 +53,11 @@ final class MultivariateAdd<Left,Right,Value>(left:Expression<Left>,
     } else if (y <- right.graftLinearMultivariateNormalInverseGamma(compare))? {
       y!.add(left);
     } else if (z <- left.graftMultivariateNormalInverseGamma(compare))? {
-      y <- TransformLinearMultivariate<MultivariateNormalInverseGamma>(box(identity(z!.rows())), z!, right);
+      y <- TransformLinearMultivariate<MultivariateNormalInverseGamma>(
+          box(identity(z!.rows())), z!, right);
     } else if (z <- right.graftMultivariateNormalInverseGamma(compare))? {
-      y <- TransformLinearMultivariate<MultivariateNormalInverseGamma>(box(identity(z!.rows())), z!, left);
+      y <- TransformLinearMultivariate<MultivariateNormalInverseGamma>(
+          box(identity(z!.rows())), z!, left);
     }
     return y;
   }
@@ -60,7 +72,7 @@ operator (left:Expression<Real[_]> + right:Expression<Real[_]>) ->
   if left.isConstant() && right.isConstant() {
     return box(vector(left.value() + right.value()));
   } else {
-    m:MultivariateAdd<Real[_],Real[_],Real[_]>(left, right);
+    m:MultivariateAdd<Expression<Real[_]>,Expression<Real[_]>,Real[_]>(left, right);
     return m;
   }
 }

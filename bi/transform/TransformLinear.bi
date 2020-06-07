@@ -38,6 +38,11 @@ class TransformLinear<Value>(a:Expression<Real>, x:Value,
   function subtract(y:Expression<Real>) {
     c <- c - y;
   }
+
+  function negate() {
+    a <- -a;
+    c <- -c;
+  }
   
   function negateAndAdd(y:Expression<Real>) {
     a <- -a;

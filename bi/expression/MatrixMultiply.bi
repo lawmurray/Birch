@@ -1,9 +1,8 @@
 /**
  * Lazy matrix multiply.
  */
-final class MatrixMultiply<Left,Right,Value>(left:Expression<Left>,
-    right:Expression<Right>) <
-    BinaryExpression<Left,Right,Value>(left, right) {  
+final class MatrixMultiply<Left,Right,Value>(left:Left, right:Right) <
+    MatrixBinaryExpression<Left,Right,Value>(left, right) {  
   override function rows() -> Integer {
     return left.rows();
   }
@@ -12,12 +11,21 @@ final class MatrixMultiply<Left,Right,Value>(left:Expression<Left>,
     return right.columns();
   }
 
-  override function computeValue(l:Left, r:Right) -> Value {
-    return l*r;
+  override function doValue() {
+    x <- left.value()*right.value();
   }
 
-  override function computeGrad(d:Value, l:Left, r:Right) -> (Left, Right) {
-    return (d*transpose(r), transpose(l)*d);
+  override function doPilot() {
+    x <- left.pilot()*right.pilot();
+  }
+
+  override function doMove(κ:Kernel) {
+    x <- left.move(κ)*right.move(κ);
+  }
+
+  override function doGrad() {
+    left.grad(D!*transpose(right.get()));
+    right.grad(transpose(left.get())*D!);
   }
 
   override function graftLinearMatrixGaussian() ->
@@ -26,7 +34,7 @@ final class MatrixMultiply<Left,Right,Value>(left:Expression<Left>,
     z:MatrixGaussian?;
     
     if (y <- right.graftLinearMatrixGaussian())? {
-      y!.leftMultiply(left);
+      y!.leftMultiply(matrix(left));
     } else if (z <- right.graftMatrixGaussian())? {
       y <- TransformLinearMatrix<MatrixGaussian>(matrix(left), z!);
     }
@@ -40,7 +48,7 @@ final class MatrixMultiply<Left,Right,Value>(left:Expression<Left>,
     z:MatrixNormalInverseGamma?;
 
     if (y <- right.graftLinearMatrixNormalInverseGamma(compare))? {
-      y!.leftMultiply(left);
+      y!.leftMultiply(matrix(left));
     } else if (z <- right.graftMatrixNormalInverseGamma(compare))? {
       y <- TransformLinearMatrix<MatrixNormalInverseGamma>(matrix(left), z!);
     }
@@ -54,7 +62,7 @@ final class MatrixMultiply<Left,Right,Value>(left:Expression<Left>,
     z:MatrixNormalInverseWishart?;
 
     if (y <- right.graftLinearMatrixNormalInverseWishart(compare))? {
-      y!.leftMultiply(left);
+      y!.leftMultiply(matrix(left));
     } else if (z <- right.graftMatrixNormalInverseWishart(compare))? {
       y <- TransformLinearMatrix<MatrixNormalInverseWishart>(matrix(left), z!);
     }
@@ -71,7 +79,7 @@ operator (left:Expression<Real[_,_]>*right:Expression<Real[_,_]>) ->
   if left.isConstant() && right.isConstant() {
     return box(matrix(left.value()*right.value()));
   } else {
-    m:MatrixMultiply<Real[_,_],Real[_,_],Real[_,_]>(left, right);
+    m:MatrixMultiply<Expression<Real[_,_]>,Expression<Real[_,_]>,Real[_,_]>(left, right);
     return m;
   }
 }
@@ -103,13 +111,13 @@ operator (left:Expression<Real[_,_]>*right:Real[_,_]) ->
 /**
  * Lazy matrix multiply.
  */
-operator (left:Expression<Real>*right:Expression<Real[_,_]>) ->
+operator (left:Expression<LLT>*right:Expression<Real[_,_]>) ->
     Expression<Real[_,_]> {
+  assert left.columns() == right.rows();
   if left.isConstant() && right.isConstant() {
     return box(matrix(left.value()*right.value()));
   } else {
-    m:MatrixMultiply<Real[_,_],Real[_,_],Real[_,_]>(
-        diagonal(left, right.rows()), right);
+    m:MatrixMultiply<Expression<LLT>,Expression<Real[_,_]>,Real[_,_]>(left, right);
     return m;
   }
 }
@@ -117,7 +125,7 @@ operator (left:Expression<Real>*right:Expression<Real[_,_]>) ->
 /**
  * Lazy matrix multiply.
  */
-operator (left:Real*right:Expression<Real[_,_]>) -> Expression<Real[_,_]> {
+operator (left:LLT*right:Expression<Real[_,_]>) -> Expression<Real[_,_]> {
   if right.isConstant() {
     return box(matrix(left*right.value()));
   } else {
@@ -128,12 +136,70 @@ operator (left:Real*right:Expression<Real[_,_]>) -> Expression<Real[_,_]> {
 /**
  * Lazy matrix multiply.
  */
-operator (left:Expression<Real>*right:Real[_,_]) -> Expression<Real[_,_]> {
+operator (left:Expression<LLT>*right:Real[_,_]) -> Expression<Real[_,_]> {
   if left.isConstant() {
     return box(matrix(left.value()*right));
   } else {
     return left*box(right);
   }
+}
+
+/**
+ * Lazy matrix multiply.
+ */
+operator (left:Expression<Real[_,_]>*right:Expression<LLT>) ->
+    Expression<Real[_,_]> {
+  assert left.columns() == right.rows();
+  if left.isConstant() && right.isConstant() {
+    return box(matrix(left.value()*right.value()));
+  } else {
+    m:MatrixMultiply<Expression<Real[_,_]>,Expression<LLT>,Real[_,_]>(left, right);
+    return m;
+  }
+}
+
+/**
+ * Lazy matrix multiply.
+ */
+operator (left:Real[_,_]*right:Expression<LLT>) -> Expression<Real[_,_]> {
+  if right.isConstant() {
+    return box(matrix(left*right.value()));
+  } else {
+    return box(left)*right;
+  }
+}
+
+/**
+ * Lazy matrix multiply.
+ */
+operator (left:Expression<Real[_,_]>*right:LLT) -> Expression<Real[_,_]> {
+  if left.isConstant() {
+    return box(matrix(left.value()*right));
+  } else {
+    return left*box(right);
+  }
+}
+
+/**
+ * Lazy matrix multiply.
+ */
+operator (left:Expression<Real>*right:Expression<Real[_,_]>) ->
+    Expression<Real[_,_]> {
+  return diagonal(left, right.rows())*right;
+}
+
+/**
+ * Lazy matrix multiply.
+ */
+operator (left:Real*right:Expression<Real[_,_]>) -> Expression<Real[_,_]> {
+  return box(left)*right;
+}
+
+/**
+ * Lazy matrix multiply.
+ */
+operator (left:Expression<Real>*right:Real[_,_]) -> Expression<Real[_,_]> {
+  return left*box(right);
 }
 
 /**
@@ -141,33 +207,19 @@ operator (left:Expression<Real>*right:Real[_,_]) -> Expression<Real[_,_]> {
  */
 operator (left:Expression<Real[_,_]>*right:Expression<Real>) ->
     Expression<Real[_,_]> {
-  if left.isConstant() && right.isConstant() {
-    return box(matrix(left.value()*right.value()));
-  } else {
-    m:MatrixMultiply<Real[_,_],Real[_,_],Real[_,_]>(left,
-        diagonal(right, left.columns()));
-    return m;
-  }
+  return right*left;
 }
 
 /**
  * Lazy matrix multiply.
  */
 operator (left:Real[_,_]*right:Expression<Real>) -> Expression<Real[_,_]> {
-  if right.isConstant() {
-    return box(matrix(left*right.value()));
-  } else {
-    return box(left)*right;
-  }
+  return right*left;
 }
 
 /**
  * Lazy matrix multiply.
  */
 operator (left:Expression<Real[_,_]>*right:Real) -> Expression<Real[_,_]> {
-  if left.isConstant() {
-    return box(matrix(left.value()*right));
-  } else {
-    return left*box(right);
-  }
+  return right*left;
 }

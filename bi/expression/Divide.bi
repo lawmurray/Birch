@@ -1,14 +1,25 @@
 /**
  * Lazy divide.
  */
-final class Divide<Left,Right,Value>(left:Expression<Left>,
-    right:Expression<Right>) < BinaryExpression<Left,Right,Value>(left, right) {  
-  override function computeValue(l:Left, r:Right) -> Value {
-    return l/r;
+final class Divide<Left,Right,Value>(left:Left, right:Right) <
+    ScalarBinaryExpression<Left,Right,Value>(left, right) {  
+  override function doValue() {
+    x <- left.value()/right.value();
   }
 
-  override function computeGrad(d:Value, l:Left, r:Right) -> (Left, Right) {
-    return (d/r, -d*l/(r*r));
+  override function doPilot() {
+    x <- left.pilot()/right.pilot();
+  }
+
+  override function doMove(κ:Kernel) {
+    x <- left.move(κ)/right.move(κ);
+  }
+
+  override function doGrad() {
+    auto l <- left.get();
+    auto r <- right.get();
+    left.grad(d!/r);
+    right.grad(-d!*l/(r*r));
   }
 
   override function graftLinearGaussian() -> TransformLinear<Gaussian>? {
@@ -73,7 +84,7 @@ operator (left:Expression<Real>/right:Expression<Real>) -> Expression<Real> {
   if left.isConstant() && right.isConstant() {
     return box(left.value()/right.value());
   } else {
-    m:Divide<Real,Real,Real>(left, right);
+    m:Divide<Expression<Real>,Expression<Real>,Real>(left, right);
     return m;
   }
 }

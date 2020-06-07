@@ -55,6 +55,25 @@ public:
   }
 
   /**
+   * Nil assignment.
+   */
+  Optional& operator=(const Nil&) {
+    this->value = T();
+    this->hasValue = false;
+    return *this;
+  }
+
+  /**
+   * Generic assignment.
+   */
+  template<class U>
+  Optional& operator=(const U& value) {
+    this->value = value;
+    this->hasValue = true;
+    return *this;
+  }
+
+  /**
    * Accept visitor.
    */
   template<class Visitor>
@@ -204,6 +223,15 @@ public:
       typename Q::value_type>::value,int> = 0>
   Optional& operator=(Optional<Lazy<Q>>&& o) {
     value = std::move(o.value);
+    return *this;
+  }
+
+  /**
+   * Generic assignment.
+   */
+  template<class T, std::enable_if_t<std::is_assignable<P,T>::value,int> = 0>
+  Optional& operator=(const T& value) {
+    this->value = value;
     return *this;
   }
 

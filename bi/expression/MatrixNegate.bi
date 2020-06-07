@@ -1,0 +1,81 @@
+/**
+ * Lazy negation.
+ */
+final class MatrixNegate(x:Expression<Real[_,_]>) <
+    MatrixUnaryExpression<Expression<Real[_,_]>,Real[_,_]>(x) {
+  override function doValue() {
+    x <- -single.value();
+  }
+
+  override function doPilot() {
+    x <- -single.pilot();
+  }
+
+  override function doMove(κ:Kernel) {
+    x <- -single.move(κ);
+  }
+
+  override function doGrad() {
+    single.grad(-D!);
+  }
+
+  override function graftLinearMatrixGaussian() ->
+      TransformLinearMatrix<MatrixGaussian>? {
+    y:TransformLinearMatrix<MatrixGaussian>?;
+    z:MatrixGaussian?;
+
+    if (y <- single.graftLinearMatrixGaussian())? {
+      y!.negate();
+    } else if (z <- single.graftMatrixGaussian())? {
+      auto R <- z!.rows();
+      auto C <- z!.columns();
+      y <- TransformLinearMatrix<MatrixGaussian>(diagonal(box(-1.0), R), z!,
+          box(matrix(0.0, R, C)));
+    }
+    return y;
+  }
+  
+  override function graftLinearMatrixNormalInverseGamma(compare:Distribution<Real[_]>) ->
+      TransformLinearMatrix<MatrixNormalInverseGamma>? {
+    y:TransformLinearMatrix<MatrixNormalInverseGamma>?;
+    z:MatrixNormalInverseGamma?;
+
+    if (y <- single.graftLinearMatrixNormalInverseGamma(compare))? {
+      y!.negate();
+    } else if (z <- single.graftMatrixNormalInverseGamma(compare))? {
+      auto R <- z!.rows();
+      auto C <- z!.columns();
+      y <- TransformLinearMatrix<MatrixNormalInverseGamma>(
+          diagonal(box(-1.0), R), z!, box(matrix(0.0, R, C)));
+    }
+    return y;
+  }
+
+  override function graftLinearMatrixNormalInverseWishart(compare:Distribution<Real[_,_]>) ->
+      TransformLinearMatrix<MatrixNormalInverseWishart>? {
+    y:TransformLinearMatrix<MatrixNormalInverseWishart>?;
+    z:MatrixNormalInverseWishart?;
+
+    if (y <- single.graftLinearMatrixNormalInverseWishart(compare))? {
+      y!.negate();
+    } else if (z <- single.graftMatrixNormalInverseWishart(compare))? {
+      auto R <- z!.rows();
+      auto C <- z!.columns();
+      y <- TransformLinearMatrix<MatrixNormalInverseWishart>(
+          diagonal(box(-1.0), R), z!, box(matrix(0.0, R, C)));
+    }
+    return y;
+  }
+}
+
+/**
+ * Lazy negation.
+ */
+operator (-x:Expression<Real[_,_]>) -> Expression<Real[_,_]> {
+  if x.isConstant() {
+    return box(matrix(-x.value()));
+  } else {
+    m:MatrixNegate(x);
+    return m;
+  }
+}

@@ -56,6 +56,11 @@ class TransformLinearMatrix<Value>(A:Expression<Real[_,_]>, X:Value,
     A <- A/y;
     C <- C/y;
   }
+
+  function negate() {
+    A <- -A;
+    C <- -C;
+  }
   
   function negateAndAdd(Y:Expression<Real[_,_]>) {
     A <- -A;

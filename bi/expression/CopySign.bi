@@ -1,17 +1,25 @@
 /**
  * Lazy `copysign`.
  */
-final class CopySign<Left,Right,Value>(left:Expression<Left>,
-    right:Expression<Right>) < BinaryExpression<Left,Right,Value>(left, right) {  
-  override function computeValue(l:Left, r:Right) -> Value {
-    return copysign(l, r);
+final class CopySign<Left,Right,Value>(left:Left, right:Right) <
+    ScalarBinaryExpression<Left,Right,Value>(left, right) {  
+  override function doValue() {
+    x <- copysign(left.value(), right.value());
+  }
+
+  override function doPilot() {
+    x <- copysign(left.pilot(), right.pilot());
+  }
+
+  override function doMove(κ:Kernel) {
+    x <- copysign(left.move(κ), right.move(κ));
   }
   
-  override function computeGrad(d:Value, l:Left, r:Right) -> (Left, Right) {
-    if copysign(l, r) == l {
-      return (d, 0.0);
+  override function doGrad() {
+    if x! == left.get() {
+      left.grad(d!);
     } else {
-      return (-d, 0.0);
+      left.grad(-d!);
     }
   }
 }
@@ -24,7 +32,7 @@ function copysign(x:Expression<Real>, y:Expression<Real>) ->
   if x.isConstant() && y.isConstant() {
     return box(copysign(x.value(), y.value()));
   } else {
-    m:CopySign<Real,Real,Real>(x, y);
+    m:CopySign<Expression<Real>,Expression<Real>,Real>(x, y);
     return m;
   }
 }

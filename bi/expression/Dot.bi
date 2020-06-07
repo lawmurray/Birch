@@ -1,15 +1,23 @@
 /**
  * Lazy `dot`.
  */
-final class Dot<Left,Right,Value>(left:Expression<Left>,
-    right:Expression<Right>) < BinaryExpression<Left,Right,Value>(left,
-    right) {
-  override function computeValue(l:Left, r:Right) -> Value {
-    return dot(l, r);
+final class Dot<Left,Right,Value>(left:Left, right:Right) <
+    ScalarBinaryExpression<Left,Right,Value>(left, right) {
+  override function doValue() {
+    x <- dot(left.value(), right.value());
   }
 
-  override function computeGrad(d:Value, l:Left, r:Right) -> (Left, Right) {
-    return (d*r, d*l);
+  override function doPilot() {
+    x <- dot(left.pilot(), right.pilot());
+  }
+
+  override function doMove(κ:Kernel) {
+    x <- dot(left.move(κ), right.move(κ));
+  }
+
+  override function doGrad() {
+    left.grad(d!*right.get());
+    right.grad(d!*left.get());
   }
 
   override function graftDotGaussian() -> TransformDot<MultivariateGaussian>? {
@@ -59,7 +67,7 @@ function dot(left:Expression<Real[_]>, right:Expression<Real[_]>) ->
   if left.isConstant() && right.isConstant() {
     return box(dot(left.value(), right.value()));
   } else {
-    m:Dot<Real[_],Real[_],Real>(left, right);
+    m:Dot<Expression<Real[_]>,Expression<Real[_]>,Real>(left, right);
     return m;
   }
 }

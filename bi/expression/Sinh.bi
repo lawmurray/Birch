@@ -1,14 +1,22 @@
 /**
  * Lazy `sinh`.
  */
-final class Sinh<Argument,Value>(x:Expression<Argument>) <
-    UnaryExpression<Argument,Value>(x) {
-  override function computeValue(x:Argument) -> Value {
-    return sinh(x);
+final class Sinh(x:Expression<Real>) <
+    ScalarUnaryExpression<Expression<Real>,Real>(x) {
+  override function doValue() {
+    x <- sinh(single.value());
   }
 
-  override function computeGrad(d:Value, x:Argument) -> Argument {
-    return d*cosh(x);
+  override function doPilot() {
+    x <- sinh(single.pilot());
+  }
+
+  override function doMove(κ:Kernel) {
+    x <- sinh(single.move(κ));
+  }
+
+  override function doGrad() {
+    single.grad(d!*cosh(single.get()));
   }
 }
 
@@ -19,7 +27,7 @@ function sinh(x:Expression<Real>) -> Expression<Real> {
   if x.isConstant() {
     return box(sinh(x.value()));
   } else {
-    m:Sinh<Real,Real>(x);
+    m:Sinh(x);
     return m;
   }
 }

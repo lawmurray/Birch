@@ -1,33 +1,41 @@
 /**
  * Lazy `diagonal`.
  */
-final class MultivariateDiagonal<Argument,Value>(x:Expression<Argument>) <
-    UnaryExpression<Argument,Value>(x) {
+final class MultivariateDiagonal(x:Expression<Real[_,_]>) <
+    MultivariateUnaryExpression<Expression<Real[_,_]>,Real[_]>(x) {
   override function rows() -> Integer {
-    return single.rows();
+    return min(single.rows(), single.columns());
   }
   
   override function columns() -> Integer {
-    return single.rows();
+    return 1;
   }
 
-  override function computeValue(x:Argument) -> Value {
-    return diagonal(x);
+  override function doValue() {
+    x <- diagonal(single.value());
   }
 
-  override function computeGrad(d:Value, x:Argument) -> Argument {
-    return diagonal(d);
+  override function doPilot() {
+    x <- diagonal(single.pilot());
+  }
+
+  override function doMove(κ:Kernel) {
+    x <- diagonal(single.move(κ));
+  }
+
+  override function doGrad() {
+    single.grad(diagonal(d!));
   }
 }
 
 /**
  * Lazy `diagonal`.
  */
-function diagonal(x:Expression<Real[_]>) -> Expression<Real[_,_]> {
+function diagonal(x:Expression<Real[_,_]>) -> Expression<Real[_]> {
   if x.isConstant() {
-    return box(matrix(diagonal(x.value())));
+    return box(vector(diagonal(x.value())));
   } else {
-    m:MultivariateDiagonal<Real[_],Real[_,_]>(x);
+    m:MultivariateDiagonal(x);
     return m;
   }
 }
