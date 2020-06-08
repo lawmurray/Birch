@@ -18,7 +18,13 @@ class ParticleMarginalImportanceSampler < ParticleSampler {
     }
 
     /* draw a single sample and weight with normalizing constant estimate */
-    x <- filter.x[ancestor(filter.w)].m;
-    w <- filter.lnormalize;
+    auto b <- ancestor(filter.w);
+    if b == 0 {
+      warn("particle filter degenerated, problem sample will be assigned zero weight");
+      w <- -inf;
+    } else {
+      x <- filter.x[b].m;
+      w <- filter.lnormalize;
+    }
   }
 }

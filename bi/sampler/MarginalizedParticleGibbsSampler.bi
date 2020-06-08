@@ -24,6 +24,9 @@ class MarginalizedParticleGibbsSampler < ConditionalParticleSampler {
     
     /* draw a single sample and weight with normalizing constant estimate */
     filter.b <- ancestor(filter.w);
+    if filter.b == 0 {
+      error("particle filter degenerated");
+    }
     x <- filter.x[filter.b].m;
     w <- 0.0;
   }
