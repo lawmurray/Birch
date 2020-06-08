@@ -5,10 +5,10 @@
  */
 abstract class Distribution<Value> < DelayDistribution {
   /**
-   * Realized value, if the distribution's parent on the delayed sampling
-   * $M$-path has forced its realization.
+   * Random variate associated with the distibution, if it is on the delayed
+   * sampling $M$-path.
    */
-  x:Value?;
+  x:Random<Value>&?;
 
   /**
    * Number of rows, when interpreted as a matrix.
@@ -25,22 +25,36 @@ abstract class Distribution<Value> < DelayDistribution {
   }
 
   /**
+   * Are lazy operations supported?
+   */
+  function supportsLazy() -> Boolean {
+    return false;
+  }
+
+  /**
    * Returns `this`; a convenience for code generation within the compiler.
    */
-  function distribution() -> Distribution<Value> {
+  final function distribution() -> Distribution<Value> {
     return this;
   }
-  
+
   /**
-   * Simulate a value for a random variate associated with this node,
-   * updating the delayed sampling graph accordingly, and returning the
-   * value.
+   * Set the random variate associated with the distribution, if any.
    */
-  function value() -> Value {
-    if !isRealized() {
-      realize();
+  final function setRandom(x:Random<Value>) {
+    assert !this.x?;
+    this.x <- x;
+  }
+
+  /**
+   * Realize the random variate associated with the distribution.
+   */
+  final function realize() {
+    if supportsLazy() {
+      x!.pilot();
+    } else {
+      x!.value();
     }
-    return x!;
   }
   
   /**
@@ -48,10 +62,8 @@ abstract class Distribution<Value> < DelayDistribution {
    * updating the delayed sampling graph accordingly, and returning a weight
    * giving the log pdf (or pmf) of that variate under the distribution.
    */
-  function observe(x:Value) -> Real {
-    assert !isRealized();
+  final function observe(x:Value) -> Real {
     prune();
-    this.x <- x;
     auto w <- logpdf(x);
     if w > -inf {
       update(x);
@@ -66,34 +78,13 @@ abstract class Distribution<Value> < DelayDistribution {
    * expression giving the log pdf (or pmf) of that variate under the
    * distribution.
    */
-  function observeLazy(x:Expression<Value>) -> Expression<Real>? {
-    assert !this.x?;
+  final function observeLazy(x:Expression<Value>) -> Expression<Real>? {
+    assert supportsLazy();
     prune();
     auto w <- logpdfLazy(x);
-    if w? {
-      updateLazy(x);
-      unlink();
-    }
-    return w;  
-  }
-
-  /**
-   * Realize a value from the distribution. This is used by the parent of the
-   * distribution on the delayed sampling $M$-path if it must prune.
-   */
-  function realize() {
-    assert !x?;
-    prune();
-    x <- simulate();
-    update(x!);
+    updateLazy(x);
     unlink();
-  }
-  
-  /**
-   * Is a value realized?
-   */
-  function isRealized() -> Boolean {
-    return x?;
+    return w;
   }
   
   /**
@@ -102,6 +93,15 @@ abstract class Distribution<Value> < DelayDistribution {
    * Return: the value.
    */
   abstract function simulate() -> Value;
+
+  /**
+   * Simulate a value as part of a lazy expression.
+   *
+   * Return: the value, if supported.
+   */
+  function simulateLazy() -> Value? {
+    return nil;
+  }
 
   /**
    * Evaluate the log probability density (or mass) function.
@@ -113,11 +113,31 @@ abstract class Distribution<Value> < DelayDistribution {
   abstract function logpdf(x:Value) -> Real;
 
   /**
+   * Construct a lazy expression for the log probability density (or mass).
+   *
+   * - x: The value.
+   *
+   * Return: the log probability density (or mass), if supported.
+   */
+  function logpdfLazy(x:Expression<Value>) -> Expression<Real>? {
+    return nil;
+  }
+
+  /**
    * Update the parent node on the $M$-path given the value of this node.
    *
    * - x: The value.
    */
   function update(x:Value) {
+    //
+  }
+
+  /**
+   * Update the parent node on the $M$-path given the value of this node.
+   *
+   * - x: The value.
+   */
+  function updateLazy(x:Expression<Value>) {
     //
   }
 
@@ -175,35 +195,6 @@ abstract class Distribution<Value> < DelayDistribution {
    */
   function upper() -> Value? {
     return nil;
-  }
-
-  /**
-   * Simulate a value as part of a lazy expression.
-   *
-   * Return: the value, if supported.
-   */
-  function simulateLazy() -> Value? {
-    return nil;
-  }
-
-  /**
-   * Construct a lazy expression for the log probability density (or mass).
-   *
-   * - x: The value.
-   *
-   * Return: the log probability density (or mass), if supported.
-   */
-  function logpdfLazy(x:Expression<Value>) -> Expression<Real>? {
-    return nil;
-  }
-
-  /**
-   * Update the parent node on the $M$-path given the value of this node.
-   *
-   * - x: The value.
-   */
-  function updateLazy(x:Expression<Value>) {
-    //
   }
 
   /**

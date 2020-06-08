@@ -41,6 +41,10 @@ final class NormalInverseGamma(μ:Expression<Real>, a2:Expression<Real>,
    * Variance.
    */
   σ2:InverseGamma <- σ2;
+  
+  function supportsLazy() -> Boolean {
+    return true;
+  }
 
   function simulate() -> Real {
     return simulate_normal_inverse_gamma(μ.value(), 1.0/λ.value(), σ2.α.value(), σ2.β.value());

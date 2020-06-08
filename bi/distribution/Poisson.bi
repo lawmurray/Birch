@@ -7,6 +7,10 @@ class Poisson(λ:Expression<Real>) < Discrete {
    */
   λ:Expression<Real> <- λ;
 
+  function supportsLazy() -> Boolean {
+    return true;
+  }
+
   function simulate() -> Integer {
     return simulate_poisson(λ.value());
   }

@@ -19,6 +19,10 @@ final class LinearMultivariateNormalInverseGammaGaussian(
    */
   c:Expression<Real> <- c;
 
+  function supportsLazy() -> Boolean {
+    return true;
+  }
+
   function simulate() -> Real {
     return simulate_linear_multivariate_normal_inverse_gamma_gaussian(
         a.value(), μ.ν.value(), μ.Λ.value(), c.value(), μ.α.value(),

@@ -69,7 +69,7 @@ final class Random<Value> < Expression<Value> {
    * Does this have a value?
    */
   function hasValue() -> Boolean {
-    return x? || (p? && p!.isRealized());
+    return x?;
   }
 
   /**
@@ -89,38 +89,33 @@ final class Random<Value> < Expression<Value> {
   function assume(p:Distribution<Value>) {
     assert !this.p?;
     assert !this.x?;
+    p.setRandom(this);
     this.p <- p;
   }
 
   override function doValue() {
     assert p?;
-    x <- p!.value();
-    p <- nil;
-  }
-
-  override function doMakeConstant() {
+    p!.prune();
+    x <- p!.simulate();
+    p!.update(x!);
+    p!.unlink();
     p <- nil;
   }
 
   override function doPilot() {
     assert p?;
-    if p!.isRealized() {
-      /* distribution was forced to realize by its parent; this must be
-       * treated as a constant */
-      value();
-    } else {
+    if p!.supportsLazy() {
       p!.prune();
       x <- p!.simulateLazy();
-      if x? {
-        /* lazy operations supported */
-        p!.updateLazy(this);
-      } else {
-        /* lazy operations not supported */
-        x <- p!.simulate();
-        p!.update(x!);
-      }
+      p!.updateLazy(this);
       p!.unlink();
+    } else {
+      doValue();
     }
+  }
+
+  override function doMakeConstant() {
+    p <- nil;
   }
 
   override function doRestoreCount() {
@@ -143,21 +138,11 @@ final class Random<Value> < Expression<Value> {
   }
 
   override function doGrad() {
-    if p? && p!.isRealized() {
-      /* distribution was forced to realize by its parent; this must be
-       * treated as a constant */
-      value();
-    }
+    //  
   }
 
   override function doMove(κ:Kernel) {
-    if p? && p!.isRealized() {
-      /* distribution was forced to realize by its parent; this must be
-       * treated as a constant */
-      value();
-    } else {
-      x <- κ.move(this);
-    }
+    x <- κ.move(this);
   }
 
   override function doPrior(vars:RaggedArray<DelayExpression>) ->

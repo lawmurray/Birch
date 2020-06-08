@@ -1,7 +1,8 @@
 /**
  * Gaussian distribution.
  */
-class Gaussian(μ:Expression<Real>, σ2:Expression<Real>) < Distribution<Real> {
+class Gaussian(μ:Expression<Real>, σ2:Expression<Real>) <
+    Distribution<Real> {
   /**
    * Mean.
    */
@@ -11,6 +12,10 @@ class Gaussian(μ:Expression<Real>, σ2:Expression<Real>) < Distribution<Real> {
    * Variance.
    */
   σ2:Expression<Real> <- σ2;
+
+  function supportsLazy() -> Boolean {
+    return true;
+  }
 
   function simulate() -> Real {
     return simulate_gaussian(μ.value(), σ2.value());

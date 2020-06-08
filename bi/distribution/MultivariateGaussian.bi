@@ -21,6 +21,10 @@ class MultivariateGaussian(μ:Expression<Real[_]>, Σ:Expression<Real[_,_]>) <
     return μ.rows();
   }
 
+  function supportsLazy() -> Boolean {
+    return true;
+  }
+
   function simulate() -> Real[_] {
     return simulate_multivariate_gaussian(μ.value(), Σ.value());
   }

@@ -16,7 +16,7 @@ final class Exp(x:Expression<Real>) <
   }
 
   override function doGrad() {
-    single.grad(d!*exp(single.get()));
+    single.grad(d!*x!);
   }
 }
 
