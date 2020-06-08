@@ -3,6 +3,14 @@
  */
 final class MatrixNegate(x:Expression<Real[_,_]>) <
     MatrixUnaryExpression<Expression<Real[_,_]>,Real[_,_]>(x) {
+  override function rows() -> Integer {
+    return single.rows();
+  }
+  
+  override function columns() -> Integer {
+    return single.columns();
+  }
+
   override function doValue() {
     x <- -single.value();
   }

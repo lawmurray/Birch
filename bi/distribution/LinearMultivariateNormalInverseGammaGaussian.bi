@@ -49,8 +49,8 @@ final class LinearMultivariateNormalInverseGammaGaussian(
   }
 
   function updateLazy(x:Expression<Real>) {
-    //(μ.ν, μ.Λ, μ.α, μ.γ) <- update_lazy_linear_multivariate_normal_inverse_gamma_gaussian(
-    //    x, a, μ.ν, μ.Λ, c, μ.α, μ.γ);
+    (μ.ν, μ.Λ, μ.α, μ.γ) <- update_lazy_linear_multivariate_normal_inverse_gamma_gaussian(
+        x, a, μ.ν, μ.Λ, c, μ.α, μ.γ);
   }
 
   function downdate(x:Real) {

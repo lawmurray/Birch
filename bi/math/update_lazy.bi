@@ -142,14 +142,14 @@ function update_lazy_linear_multivariate_gaussian_gaussian(
  *
  * Returns: the posterior hyperparameters `μ'`, `Λ'`, `γ'`, `α'` and `β'`.
  */
-//function update_lazy_linear_multivariate_normal_inverse_gamma_gaussian(
-//    x:Expression<Real>, a:Expression<Real[_]>, ν:Expression<Real[_]>,
-//    Λ:Expression<LLT>, c:Expression<Real>, α:Expression<Real>,
-//    γ:Expression<Real>) -> (Expression<Real[_]>, Expression<LLT>,
-//    Expression<Real>, Expression<Real>) {
-//  auto Λ' <- rank_update(Λ, a, 1.0);
-//  auto ν' <- ν + a*(x - c);
-//  auto α' <- α + 0.5;
-//  auto γ' <- γ + 0.5*pow(x - c, 2.0);
-//  return (ν', Λ', α', γ');
-//}
+function update_lazy_linear_multivariate_normal_inverse_gamma_gaussian(
+    x:Expression<Real>, a:Expression<Real[_]>, ν:Expression<Real[_]>,
+    Λ:Expression<LLT>, c:Expression<Real>, α:Expression<Real>,
+    γ:Expression<Real>) -> (Expression<Real[_]>, Expression<LLT>,
+    Expression<Real>, Expression<Real>) {
+  auto Λ' <- llt(matrix(Λ) + outer(a));
+  auto ν' <- ν + a*(x - c);
+  auto α' <- α + 0.5;
+  auto γ' <- γ + 0.5*pow(x - c, 2.0);
+  return (ν', Λ', α', γ');
+}

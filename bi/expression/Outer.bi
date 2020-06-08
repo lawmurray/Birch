@@ -3,6 +3,14 @@
  */
 final class Outer<Left,Right,Value>(left:Left, right:Right) <
     MatrixBinaryExpression<Left,Right,Value>(left, right) {
+  override function rows() -> Integer {
+    return left.rows();
+  }
+  
+  override function columns() -> Integer {
+    return right.rows();
+  }
+    
   override function doValue() {
     x <- outer(left.value(), right.value());
   }
@@ -56,5 +64,16 @@ function outer(left:Expression<Real[_]>, right:Real[_]) ->
     return box(matrix(outer(left.value(), right)));
   } else {
     return outer(left, box(right));
+  }
+}
+
+/**
+ * Lazy `outer`.
+ */
+function outer(single:Expression<Real[_]>) -> Expression<Real[_,_]> {
+  if single.isConstant() {
+    return box(matrix(outer(single.value())));
+  } else {
+    return outer(single, single);
   }
 }

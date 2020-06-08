@@ -93,3 +93,14 @@ function dot(left:Expression<Real[_]>, right:Real[_]) -> Expression<Real> {
     return dot(left, box(right));
   }
 }
+
+/**
+ * Lazy `dot`.
+ */
+function dot(single:Expression<Real[_]>) -> Expression<Real> {
+  if single.isConstant() {
+    return box(dot(single.value()));
+  } else {
+    return dot(single, single);
+  }
+}

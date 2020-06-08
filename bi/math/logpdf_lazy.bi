@@ -84,7 +84,7 @@ function logpdf_lazy_multivariate_gaussian(x:Expression<Real[_]>,
     μ:Expression<Real[_]>, Σ:Expression<Real[_,_]>) -> Expression<Real> {
   auto D <- μ.rows();
   auto C <- llt(Σ);
-  return -0.5*(dot(x - μ, inv(C)*(x - μ)) + (D*log(2.0*π) + ldet(C)));
+  return -0.5*(dot(x - μ, inv(C)*(x - μ)) + D*log(2.0*π) + ldet(C));
 }
 
 /**
