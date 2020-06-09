@@ -366,7 +366,7 @@ void bi::md_ostream::visit(const Class* o) {
   /* anchor for internal links */
   genHead(o->name->str());
   line("<a name=\"" << anchor(o->name->str()) << "\"></a>\n");
-  start("!!! abstract \"");
+  start("**");
   if (o->has(ABSTRACT)) {
     middle("abstract ");
   }
@@ -391,8 +391,8 @@ void bi::md_ostream::visit(const Class* o) {
       middle('(' << o->args << ')');
     }
   }
-  finish("\"\n");
-  line(quote(detailed(o->loc->doc), "    ") << "\n");
+  finish("**\n\n");
+  line(detailed(o->loc->doc) << "\n");
 
   ++depth;
 
