@@ -56,6 +56,19 @@ abstract class Distribution<Value> < DelayDistribution {
       x!.value();
     }
   }
+
+  /**
+   * Simulate a value for a random variate associated with this node,
+   * updating the delayed sampling graph accordingly, and returning the
+   * value.
+   */
+  function value() -> Value {
+    prune();
+    auto x <- simulate();
+    update(x);
+    unlink();
+    return x;
+  }
   
   /**
    * Observe a value for a random variate associated with this node,
