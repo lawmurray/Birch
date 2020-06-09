@@ -173,8 +173,8 @@ function pass(X1:Real[_,_], X2:Real[_,_]) -> Boolean {
     /* normalise onto the interval [0,1] */
     auto mn <- min(min(x1), min(x2));
     auto mx <- max(max(x1), max(x2));
-    auto z1 <- (x1 - mn)/(mx - mn);
-    auto z2 <- (x2 - mn)/(mx - mn);
+    auto z1 <- (x1 - vector(mn, R))/(mx - mn);
+    auto z2 <- (x2 - vector(mn, R))/(mx - mn);
     
     /* compute distance and suggested pass threshold */
     auto δ <- wasserstein(z1, z2);
@@ -197,8 +197,8 @@ function pass(X1:Real[_,_], X2:Real[_,_]) -> Boolean {
     /* normalise onto the interval [0,1] */
     auto mn <- min(min(x1), min(x2));
     auto mx <- max(max(x1), max(x2));
-    auto z1 <- (x1 - mn)/(mx - mn);
-    auto z2 <- (x2 - mn)/(mx - mn);
+    auto z1 <- (x1 - vector(mn, R))/(mx - mn);
+    auto z2 <- (x2 - vector(mn, R))/(mx - mn);
   
     /* compute distance and suggested pass threshold */
     auto δ <- wasserstein(z1, z2);    

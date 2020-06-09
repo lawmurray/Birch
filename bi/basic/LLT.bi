@@ -3,66 +3,6 @@
  */
 type LLT;
 
-operator (X:LLT*y:Real[_]) -> Real[_] {
-  return cholesky(X)*(transpose(cholesky(X))*y);
-}
-
-operator (X:LLT*Y:Real[_,_]) -> Real[_,_] {
-  return matrix(X)*Y;
-}
-
-operator (X:Real[_,_]*Y:LLT) -> Real[_,_] {
-  return X*matrix(Y);
-}
-
-operator (X:LLT*Y:LLT) -> Real[_,_] {
-  return matrix(X)*matrix(Y);
-}
-
-operator (X:LLT + Y:Real[_,_]) -> Real[_,_] {
-  return matrix(X) + Y;
-}
-
-operator (X:Real[_,_] + Y:LLT) -> Real[_,_] {
-  return X + matrix(Y);
-}
-
-operator (X:LLT + Y:LLT) -> LLT {
-  return rank_update(X, matrix(Y));
-}
-
-operator (X:LLT - Y:Real[_,_]) -> Real[_,_] {
-  return matrix(X) - Y;
-}
-
-operator (X:Real[_,_] - Y:LLT) -> Real[_,_] {
-  return X - matrix(Y);
-}
-
-operator (X:LLT - Y:LLT) -> Real[_,_] {
-  return matrix(X) - matrix(Y);
-}
-
-operator (x:Real*Y:LLT) -> Real[_,_] {
-  return x*matrix(Y);
-}
-
-operator (X:LLT*y:Real) -> Real[_,_] {
-  return matrix(X)*y;
-}
-
-operator (X:LLT/y:Real) -> Real[_,_] {
-  return matrix(X)/y;
-}
-
-operator (X:LLT == Y:LLT) -> Boolean {
-  return matrix(X) == matrix(Y);
-}
-
-operator (X:LLT != Y:LLT) -> Boolean {
-  return matrix(X) != matrix(Y);
-}
-
 /**
  * Number of rows of a symmetric positive definite matrix.
  */

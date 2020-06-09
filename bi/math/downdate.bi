@@ -471,7 +471,7 @@ function downdate_matrix_normal_inverse_gamma(X:Real[_,_], N:Real[_,_], Λ:LLT,
   auto D <- rows(X);
   auto M <- solve(Λ, N);
   auto α <- α' - 0.5*D;
-  auto β <- β'- 0.5*diagonal(transpose(X - M)*Λ*(X - M));
+  auto β <- β'- 0.5*diagonal(outer(transpose(solve(cholesky(Λ), X - M))));
   return (α, β);
 }
 
@@ -494,7 +494,7 @@ function downdate_matrix_normal_inverse_gamma_matrix_gaussian(
   auto Λ <- rank_downdate(Λ', identity(rows(N')));
   auto N <- N' - X;
   auto α <- α' - 0.5*D;
-  auto γ <- γ' - 0.5*diagonal(transpose(X)*X);
+  auto γ <- γ' - 0.5*diagonal(outer(transpose(X)));
   return (N, Λ, α, γ);
 }
 
@@ -519,7 +519,7 @@ function downdate_linear_matrix_normal_inverse_gamma_matrix_gaussian(
   auto Λ <- rank_downdate(Λ', transpose(A));
   auto N <- N' - transpose(A)*(X - C);
   auto α <- α' - 0.5*D;
-  auto γ <- γ' - 0.5*diagonal(transpose(X - C)*(X - C));
+  auto γ <- γ' - 0.5*diagonal(outer(transpose(X - C)));
   return (N, Λ, α, γ);
 }
 
