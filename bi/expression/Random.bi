@@ -296,7 +296,7 @@ final class Random<Value> < Expression<Value> {
     return nil;
   }
 
-  override function graftMatrixNormalInverseWishart(compare:Distribution<Real[_,_]>) ->
+  override function graftMatrixNormalInverseWishart(compare:Distribution<LLT>) ->
       MatrixNormalInverseWishart? {
     if !hasValue() {
       auto q <- p!.graftMatrixNormalInverseWishart(compare);

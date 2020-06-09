@@ -475,7 +475,7 @@ abstract class Expression<Value> < DelayExpression {
    *
    * Return: The node if successful, nil if not.
    */
-  function graftMatrixNormalInverseWishart(compare:Distribution<Real[_,_]>) ->
+  function graftMatrixNormalInverseWishart(compare:Distribution<LLT>) ->
       MatrixNormalInverseWishart? {
     return nil;
   }
@@ -485,7 +485,7 @@ abstract class Expression<Value> < DelayExpression {
    *
    * Return: The node if successful, nil if not.
    */
-  function graftLinearMatrixNormalInverseWishart(compare:Distribution<Real[_,_]>) ->
+  function graftLinearMatrixNormalInverseWishart(compare:Distribution<LLT>) ->
       TransformLinearMatrix<MatrixNormalInverseWishart>? {
     return nil;
   }

@@ -24,6 +24,6 @@ program test_pdf_matrix_normal_inverse_gamma(R:Integer <- 3, C:Integer <- 2,
   U <- U*transpose(U);
 
   σ2:IndependentInverseGamma(box(α), box(v));
-  π:MatrixNormalInverseGamma(box(M), box(U), σ2);
+  π:MatrixNormalInverseGamma(box(M), box(llt(U)), σ2);
   test_pdf(π, R, C, N, B, S);
 }

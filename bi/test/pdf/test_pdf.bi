@@ -122,7 +122,7 @@ function test_pdf(π:Distribution<Real[_]>, D:Integer, N:Integer, B:Integer,
     auto l <- π.logpdf(x);
 
     for n in 1..B {
-      auto x' <- simulate_multivariate_gaussian(x, Σ);
+      auto x' <- simulate_multivariate_gaussian(x, llt(Σ));
       auto l' <- π.logpdf(x');
       if log(simulate_uniform(0.0, 1.0)) <= l' - l {
         /* accept */
@@ -147,7 +147,7 @@ function test_pdf(π:Distribution<Real[_]>, D:Integer, N:Integer, B:Integer,
   auto l <- π.logpdf(x);
   for n in 1..N {
     for s in 1..S {
-      auto x' <- simulate_multivariate_gaussian(x, Σ);
+      auto x' <- simulate_multivariate_gaussian(x, llt(Σ));
       auto l' <- π.logpdf(x');
       if log(simulate_uniform(0.0, 1.0)) <= l' - l {
         /* accept */
@@ -205,7 +205,7 @@ function test_pdf(π:Distribution<Real[_,_]>, R:Integer, C:Integer, N:Integer,
     auto l <- π.logpdf(x);
 
     for n in 1..B {
-      auto x' <- matrix(simulate_multivariate_gaussian(vector(x), Σ), R, C);
+      auto x' <- matrix(simulate_multivariate_gaussian(vector(x), llt(Σ)), R, C);
       auto l' <- π.logpdf(x');
       if log(simulate_uniform(0.0, 1.0)) <= l' - l {
         /* accept */
@@ -230,7 +230,7 @@ function test_pdf(π:Distribution<Real[_,_]>, R:Integer, C:Integer, N:Integer,
   auto l <- π.logpdf(x);
   for n in 1..N {
     for s in 1..S {
-      auto x' <- matrix(simulate_multivariate_gaussian(vector(x), Σ), R, C);
+      auto x' <- matrix(simulate_multivariate_gaussian(vector(x), llt(Σ)), R, C);
       auto l' <- π.logpdf(x');
       if log(simulate_uniform(0.0, 1.0)) <= l' - l {
         /* accept */

@@ -363,13 +363,11 @@ function logpdf_gamma(x:Real, k:Real, θ:Real) -> Real {
  *
  * Returns: the log probability density.
  */
-function logpdf_wishart(X:Real[_,_], Ψ:Real[_,_], ν:Real) -> Real {
+function logpdf_wishart(X:LLT, Ψ:LLT, ν:Real) -> Real {
   assert ν > rows(Ψ) - 1;
   auto p <- rows(Ψ);
-  auto C <- llt(Ψ);
-
-  return 0.5*(ν - p - 1.0)*ldet(llt(X)) - 0.5*trace(inv(C)*X) -
-      0.5*ν*p*log(2.0) - 0.5*ν*ldet(C) - lgamma(0.5*ν, p);
+  return 0.5*(ν - p - 1.0)*ldet(X) - 0.5*trace(solve(Ψ, matrix(X))) -
+      0.5*ν*p*log(2.0) - 0.5*ν*ldet(Ψ) - lgamma(0.5*ν, p);
 }
 
 /**
@@ -401,13 +399,11 @@ function logpdf_inverse_gamma(x:Real, α:Real, β:Real) -> Real {
  *
  * Returns: the log probability density.
  */
-function logpdf_inverse_wishart(X:Real[_,_], Ψ:Real[_,_], ν:Real) -> Real {
+function logpdf_inverse_wishart(X:LLT, Ψ:LLT, ν:Real) -> Real {
   assert ν > rows(Ψ) - 1;
   auto p <- rows(Ψ);
-  auto C <- llt(X);
-
-  return 0.5*ν*ldet(llt(Ψ)) - 0.5*(ν + p - 1.0)*ldet(C) - 0.5*trace(Ψ*inv(C)) -
-      0.5*ν*p*log(2.0) - lgamma(0.5*ν, p);
+  return 0.5*ν*ldet(Ψ) - 0.5*(ν + p - 1.0)*ldet(X) -
+      0.5*trace(Ψ*inv(X)) - 0.5*ν*p*log(2.0) - lgamma(0.5*ν, p);
 }
 
 /**
@@ -657,11 +653,9 @@ function logpdf_linear_normal_inverse_gamma_gaussian(x:Real, a:Real,
  *
  * Returns: the log probability density.
  */
-function logpdf_multivariate_gaussian(x:Real[_], μ:Real[_], Σ:Real[_,_]) ->
-    Real {
-  auto D <- length(μ);
-  auto C <- llt(Σ);
-  return -0.5*(dot(x - μ, solve(C, x - μ)) + D*log(2.0*π) + ldet(C));
+function logpdf_multivariate_gaussian(x:Real[_], μ:Real[_], Σ:LLT) -> Real {
+  auto n <- length(μ);
+  return -0.5*(dot(x - μ, solve(Σ, x - μ)) + n*log(2.0*π) + ldet(Σ));
 }
 
 /**
@@ -674,9 +668,9 @@ function logpdf_multivariate_gaussian(x:Real[_], μ:Real[_], Σ:Real[_,_]) ->
  * Returns: the log probability density.
  */
 function logpdf_multivariate_gaussian(x:Real[_], μ:Real[_], σ2:Real[_]) -> Real {
-  auto D <- length(μ);
+  auto n <- length(μ);
   auto w <- 0.0;
-  for d in 1..D {
+  for d in 1..n {
     w <- w + logpdf_gaussian(x[d], μ[d], σ2[d]);
   }
   return w;
@@ -693,8 +687,8 @@ function logpdf_multivariate_gaussian(x:Real[_], μ:Real[_], σ2:Real[_]) -> Rea
  * Returns: the log probability density.
  */
 function logpdf_multivariate_gaussian(x:Real[_], μ:Real[_], σ2:Real) -> Real {
-  auto D <- length(μ);
-  return -0.5*(dot(x - μ)/σ2 + D*log(2.0*π*σ2));
+  auto n <- length(μ);
+  return -0.5*(dot(x - μ)/σ2 + n*log(2.0*π*σ2));
 }
 
 /**
@@ -710,7 +704,8 @@ function logpdf_multivariate_gaussian(x:Real[_], μ:Real[_], σ2:Real) -> Real {
  */
 function logpdf_multivariate_normal_inverse_gamma(x:Real[_], ν:Real[_],
     Λ:LLT, α:Real, β:Real) -> Real {
-  return logpdf_multivariate_student_t(x, 2.0*α, solve(Λ, ν), (β/α)*inv(Λ));
+  return logpdf_multivariate_student_t(x, 2.0*α, solve(Λ, ν),
+      llt((β/α)*inv(Λ)));
 }
 
 /**
@@ -727,9 +722,10 @@ function logpdf_multivariate_normal_inverse_gamma(x:Real[_], ν:Real[_],
  */
 function logpdf_multivariate_normal_inverse_gamma_multivariate_gaussian(x:Real[_],
     ν:Real[_], Λ:LLT, α:Real, γ:Real) -> Real {
-  auto D <- length(ν);
+  auto n <- length(ν);
   auto β <- γ - 0.5*dot(solve(cholesky(Λ), ν));
-  return logpdf_multivariate_student_t(x, 2.0*α, solve(Λ, ν), (β/α)*(identity(D) + inv(Λ)));
+  return logpdf_multivariate_student_t(x, 2.0*α, solve(Λ, ν),
+      llt((β/α)*(identity(n) + inv(Λ))));
 }
 
 /**
@@ -746,12 +742,14 @@ function logpdf_multivariate_normal_inverse_gamma_multivariate_gaussian(x:Real[_
  *
  * Returns: the log probability density.
  */
-function logpdf_linear_multivariate_normal_inverse_gamma_multivariate_gaussian(x:Real[_],
-    A:Real[_,_], ν:Real[_], Λ:LLT, c:Real[_], α:Real, γ:Real) -> Real {
+function logpdf_linear_multivariate_normal_inverse_gamma_multivariate_gaussian(
+    x:Real[_], A:Real[_,_], ν:Real[_], Λ:LLT, c:Real[_], α:Real, γ:Real) ->
+    Real {
+  auto n <- rows(A);
   auto μ <- solve(Λ, ν);
   auto β <- γ - 0.5*dot(μ, ν);
   return logpdf_multivariate_student_t(x, 2.0*α, A*μ + c,
-      (β/α)*(identity(rows(A)) + A*solve(Λ, transpose(A))));
+      llt((β/α)*(identity(n) + outer(transpose(solve(cholesky(Λ), transpose(A)))))));
 }
 
 /**
@@ -786,14 +784,12 @@ function logpdf_linear_multivariate_normal_inverse_gamma_gaussian(x:Real,
  *
  * Returns: the log probability density.
  */
-function logpdf_matrix_gaussian(X:Real[_,_], M:Real[_,_], U:Real[_,_],
-    V:Real[_,_]) -> Real {
+function logpdf_matrix_gaussian(X:Real[_,_], M:Real[_,_], U:LLT, V:LLT) ->
+    Real {
   auto n <- rows(M);
   auto p <- columns(M);
-  auto C <- llt(U);
-  auto D <- llt(V);
-  return -0.5*(trace(inv(D)*transpose(X - M)*inv(C)*(X - M)) +
-      n*p*log(2.0*π) + n*ldet(D) + p*ldet(C));
+  return -0.5*(trace(solve(V, transpose(X - M))*solve(U, X - M)) +
+      n*p*log(2.0*π) + n*ldet(V) + p*ldet(U));
 }
 
 /**
@@ -806,13 +802,12 @@ function logpdf_matrix_gaussian(X:Real[_,_], M:Real[_,_], U:Real[_,_],
  *
  * Returns: the log probability density.
  */
-function logpdf_matrix_gaussian(X:Real[_,_], M:Real[_,_], U:Real[_,_],
-    σ2:Real[_]) -> Real {
+function logpdf_matrix_gaussian(X:Real[_,_], M:Real[_,_], U:LLT, σ2:Real[_])
+    -> Real {
   auto n <- rows(M);
   auto p <- columns(M);
-  auto C <- llt(U);
-  return -0.5*(trace(inv(diagonal(σ2))*transpose(X - M)*inv(C)*(X - M)) +
-      n*p*log(2.0*π) + n*log_sum(σ2) + p*ldet(C));
+  return -0.5*(trace(solve(diagonal(σ2), outer(transpose(X - M)*cholesky(U)))) +
+      n*p*log(2.0*π) + n*log_sum(σ2) + p*ldet(U));
 }
 
 /**
@@ -824,13 +819,11 @@ function logpdf_matrix_gaussian(X:Real[_,_], M:Real[_,_], U:Real[_,_],
  *
  * Returns: the log probability density.
  */
-function logpdf_matrix_gaussian(X:Real[_,_], M:Real[_,_], V:Real[_,_]) ->
-    Real {
+function logpdf_matrix_gaussian(X:Real[_,_], M:Real[_,_], V:LLT) -> Real {
   auto n <- rows(M);
   auto p <- columns(M);
-  auto D <- llt(V);
-  return -0.5*(trace(inv(D)*transpose(X - M)*(X - M)) + n*p*log(2.0*π) +
-      n*ldet(D));
+  return -0.5*(trace(solve(V, outer(transpose(X - M)))) + n*p*log(2.0*π) +
+      n*ldet(V));
 }
 
 /**
@@ -846,7 +839,7 @@ function logpdf_matrix_gaussian(X:Real[_,_], M:Real[_,_], σ2:Real[_]) ->
     Real {
   auto n <- rows(M);
   auto p <- columns(M);
-  return -0.5*(trace(inv(diagonal(σ2))*transpose(X - M)*(X - M)) +
+  return -0.5*(trace(solve(diagonal(σ2), outer(transpose(X - M)))) +
       n*p*log(2.0*π) + n*log_sum(σ2));
 }
 
@@ -864,8 +857,7 @@ function logpdf_matrix_gaussian(X:Real[_,_], M:Real[_,_], σ2:Real) ->
     Real {
   auto n <- rows(M);
   auto p <- columns(M);
-  return -0.5*(trace(transpose(X - M)*(X - M)/σ2) +
-      n*p*log(2.0*π*σ2));
+  return -0.5*(trace(outer(transpose(X - M))/σ2) + n*p*log(2.0*π*σ2));
 }
 
 /**
@@ -881,9 +873,7 @@ function logpdf_matrix_gaussian(X:Real[_,_], M:Real[_,_], σ2:Real) ->
  */
 function logpdf_matrix_normal_inverse_gamma(X:Real[_,_], N:Real[_,_], Λ:LLT,
     α:Real, β:Real[_]) -> Real {
-  auto M <- solve(Λ, N);
-  auto Σ <- inv(Λ);
-  return logpdf_matrix_student_t(X, 2.0*α, M, Σ, β/α);
+  return logpdf_matrix_student_t(X, 2.0*α, solve(Λ, N), inv(Λ), β/α);
 }
 
 /**
@@ -900,7 +890,7 @@ function logpdf_matrix_normal_inverse_gamma(X:Real[_,_], N:Real[_,_], Λ:LLT,
 function logpdf_matrix_normal_inverse_gamma_matrix_gaussian(X:Real[_,_],
     N:Real[_,_], Λ:LLT, α:Real, γ:Real[_]) -> Real {
   auto M <- solve(Λ, N);
-  auto Σ <- identity(rows(M)) + inv(Λ);
+  auto Σ <- llt(identity(rows(M)) + inv(Λ));
   auto β <- γ - 0.5*diagonal(transpose(M)*N);
   return logpdf_matrix_student_t(X, 2.0*α, M, Σ, β/α);
 }
@@ -921,9 +911,10 @@ function logpdf_matrix_normal_inverse_gamma_matrix_gaussian(X:Real[_,_],
 function logpdf_linear_matrix_normal_inverse_gamma_matrix_gaussian(
     X:Real[_,_], A:Real[_,_], N:Real[_,_], Λ:LLT, C:Real[_,_], α:Real,
     γ:Real[_]) -> Real {
+  auto n <- rows(A);
   auto M <- solve(Λ, N);
   auto β <- γ - 0.5*diagonal(transpose(M)*N);
-  auto Σ <- identity(rows(A)) + A*solve(Λ, transpose(A));
+  auto Σ <- llt(identity(n) + outer(transpose(solve(cholesky(Λ), transpose(A)))));
   return logpdf_matrix_student_t(X, 2.0*α, A*M + C, Σ, β/α);
 }
 
@@ -939,10 +930,10 @@ function logpdf_linear_matrix_normal_inverse_gamma_matrix_gaussian(
  * Returns: the log probability density.
  */
 function logpdf_matrix_normal_inverse_wishart(X:Real[_,_], N:Real[_,_],
-    Λ:LLT,  Ψ:Real[_,_], k:Real) -> Real {
+    Λ:LLT,  Ψ:LLT, k:Real) -> Real {
   auto p <- columns(N);
   auto M <- solve(Λ, N);
-  auto Σ <- inv(Λ)/(k - p + 1.0);
+  auto Σ <- llt(inv(Λ)/(k - p + 1.0));
   return logpdf_matrix_student_t(X, k - p + 1.0, M, Σ, Ψ);
 }
 
@@ -958,10 +949,11 @@ function logpdf_matrix_normal_inverse_wishart(X:Real[_,_], N:Real[_,_],
  * Returns: the log probability density.
  */
 function logpdf_matrix_normal_inverse_wishart_matrix_gaussian(X:Real[_,_],
-    N:Real[_,_], Λ:LLT, Ψ:Real[_,_], k:Real) -> Real {
+    N:Real[_,_], Λ:LLT, Ψ:LLT, k:Real) -> Real {
+  auto n <- rows(N);
   auto p <- columns(N);
   auto M <- solve(Λ, N);
-  auto Σ <- (identity(rows(N)) + inv(Λ))/(k - p + 1.0);
+  auto Σ <- llt((identity(n) + inv(Λ))/(k - p + 1.0));
   return logpdf_matrix_student_t(X, k - p + 1.0, M, Σ, Ψ);
 }
 
@@ -980,11 +972,12 @@ function logpdf_matrix_normal_inverse_wishart_matrix_gaussian(X:Real[_,_],
  * Returns: the log probability density.
  */
 function logpdf_linear_matrix_normal_inverse_wishart_matrix_gaussian(
-    X:Real[_,_], A:Real[_,_], N:Real[_,_], Λ:LLT, C:Real[_,_], Ψ:Real[_,_],
+    X:Real[_,_], A:Real[_,_], N:Real[_,_], Λ:LLT, C:Real[_,_], Ψ:LLT,
     k:Real) -> Real {
+  auto n <- rows(A);
   auto p <- columns(N);
   auto M <- solve(Λ, N);
-  auto Σ <- (identity(rows(A)) + A*solve(Λ, transpose(A)))/(k - p + 1.0);
+  auto Σ <- llt((identity(n) + outer(transpose(solve(cholesky(Λ), transpose(A)))))/(k - p + 1.0));
   return logpdf_matrix_student_t(X, k - p + 1.0, A*M + C, Σ, Ψ);
 }
 
@@ -999,13 +992,12 @@ function logpdf_linear_matrix_normal_inverse_wishart_matrix_gaussian(
  *
  * Returns: the log probability density.
  */
-function logpdf_multivariate_student_t(x:Real[_], k:Real, μ:Real[_], Σ:Real[_,_])
+function logpdf_multivariate_student_t(x:Real[_], k:Real, μ:Real[_], Σ:LLT)
     -> Real {
   auto n <- length(μ);
   auto a <- 0.5*(k + n);
-  auto C <- llt(Σ);
-  return lgamma(a) - lgamma(0.5*k) - 0.5*n*log(k*π) - 0.5*ldet(C) -
-      a*log1p(dot(x - μ, solve(C, x - μ))/k) ;
+  return lgamma(a) - lgamma(0.5*k) - 0.5*n*log(k*π) - 0.5*ldet(Σ) -
+      a*log1p(dot(x - μ, solve(Σ, x - μ))/k) ;
 }
 
 /**
@@ -1039,17 +1031,15 @@ function logpdf_multivariate_student_t(x:Real[_], k:Real, μ:Real[_],
  *
  * Returns: the log probability density.
  */
-function logpdf_matrix_student_t(X:Real[_,_], k:Real, M:Real[_,_],
-    U:Real[_,_], V:Real[_,_]) -> Real {
+function logpdf_matrix_student_t(X:Real[_,_], k:Real, M:Real[_,_], U:LLT,
+    V:LLT) -> Real {
   auto n <- rows(M);
   auto p <- columns(M);
   auto a <- 0.5*(k + n + p - 1.0);
-  auto C <- llt(U);
-  auto D <- llt(V);
-  auto E <- identity(n) + solve(C, X - M)*solve(D, transpose(X - M));
+  auto E <- identity(n) + solve(U, X - M)*solve(V, transpose(X - M));
   
   return lgamma(a, p) - lgamma(0.5*(k + p - 1.0), p) - 0.5*n*p*log(π) -
-      0.5*n*ldet(C) - 0.5*p*ldet(D) - a*ldet(E);
+      0.5*n*ldet(U) - 0.5*p*ldet(V) - a*ldet(E);
 }
 
 /**
@@ -1064,16 +1054,15 @@ function logpdf_matrix_student_t(X:Real[_,_], k:Real, M:Real[_,_],
  *
  * Returns: the log probability density.
  */
-function logpdf_matrix_student_t(X:Real[_,_], k:Real, M:Real[_,_],
-    U:Real[_,_], v:Real[_]) -> Real {
+function logpdf_matrix_student_t(X:Real[_,_], k:Real, M:Real[_,_], U:LLT,
+    v:Real[_]) -> Real {
   auto n <- rows(M);
   auto p <- columns(M);
   auto a <- 0.5*(k + n + p - 1.0);
-  auto C <- llt(U);
-  auto E <- identity(n) + solve(C, X - M)*solve(diagonal(v), transpose(X - M));
+  auto E <- identity(n) + solve(U, X - M)*solve(diagonal(v), transpose(X - M));
   
   return lgamma(a, p) - lgamma(0.5*(k + p - 1.0), p) - 0.5*n*p*log(π) -
-      0.5*n*ldet(C) - 0.5*p*log_sum(v) - a*ldet(E);
+      0.5*n*ldet(U) - 0.5*p*log_sum(v) - a*ldet(E);
 }
 
 /**

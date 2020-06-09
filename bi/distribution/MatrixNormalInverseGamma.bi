@@ -2,12 +2,12 @@
  * Matrix normal-inverse-gamma distribution.
  */
 final class MatrixNormalInverseGamma(M:Expression<Real[_,_]>,
-    Σ:Expression<Real[_,_]>, σ2:IndependentInverseGamma) <
+    Σ:Expression<LLT>, σ2:IndependentInverseGamma) <
     Distribution<Real[_,_]> {
   /**
    * Precision.
    */
-  Λ:Expression<LLT> <- llt(inv(llt(Σ)));
+  Λ:Expression<LLT> <- inv(Σ);
 
   /**
    * Precision times mean.
@@ -87,9 +87,8 @@ final class MatrixNormalInverseGamma(M:Expression<Real[_,_]>,
   }
 }
 
-function MatrixNormalInverseGamma(M:Expression<Real[_,_]>,
-    Σ:Expression<Real[_,_]>, σ2:IndependentInverseGamma) ->
-    MatrixNormalInverseGamma {
+function MatrixNormalInverseGamma(M:Expression<Real[_,_]>, Σ:Expression<LLT>,
+    σ2:IndependentInverseGamma) -> MatrixNormalInverseGamma {
   m:MatrixNormalInverseGamma(M, Σ, σ2);
   m.link();
   return m;

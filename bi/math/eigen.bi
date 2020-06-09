@@ -70,6 +70,11 @@ function outer(x:Real[_]) -> Real[_,_];
 function outer(x:Real[_], y:Real[_]) -> Real[_,_];
 
 /**
+ * Outer product of matrix with itself.
+ */
+function outer(X:Real[_,_]) -> Real[_,_];
+
+/**
  * Norm of a vector.
  */
 function norm(x:Real[_]) -> Real;
@@ -142,7 +147,7 @@ function inv(X:Real[_,_]) -> Real[_,_];
 /**
  * Inverse of a symmetric positive definite matrix.
  */
-function inv(S:LLT) -> Real[_,_];
+function inv(S:LLT) -> LLT;
 
 /**
  * Solve a system of equations.

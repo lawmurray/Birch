@@ -4,24 +4,63 @@
 type LLT;
 
 operator (X:LLT*y:Real[_]) -> Real[_] {
-  assert columns(X) == length(y);
-  cpp{{
-  return X.matrixL()*(X.matrixU()*y.toEigen()).eval();
-  }}
+  return cholesky(X)*(transpose(cholesky(X))*y);
 }
 
 operator (X:LLT*Y:Real[_,_]) -> Real[_,_] {
-  assert columns(X) == rows(Y);
-  cpp{{
-  return X.matrixL()*(X.matrixU()*Y.toEigen()).eval();
-  }}
+  return matrix(X)*Y;
 }
 
 operator (X:Real[_,_]*Y:LLT) -> Real[_,_] {
-  assert columns(X) == rows(Y);
-  cpp{{
-  return X.toEigen()*Y.matrixL()*Y.matrixU();
-  }}
+  return X*matrix(Y);
+}
+
+operator (X:LLT*Y:LLT) -> Real[_,_] {
+  return matrix(X)*matrix(Y);
+}
+
+operator (X:LLT + Y:Real[_,_]) -> Real[_,_] {
+  return matrix(X) + Y;
+}
+
+operator (X:Real[_,_] + Y:LLT) -> Real[_,_] {
+  return X + matrix(Y);
+}
+
+operator (X:LLT + Y:LLT) -> LLT {
+  return rank_update(X, matrix(Y));
+}
+
+operator (X:LLT - Y:Real[_,_]) -> Real[_,_] {
+  return matrix(X) - Y;
+}
+
+operator (X:Real[_,_] - Y:LLT) -> Real[_,_] {
+  return X - matrix(Y);
+}
+
+operator (X:LLT - Y:LLT) -> Real[_,_] {
+  return matrix(X) - matrix(Y);
+}
+
+operator (x:Real*Y:LLT) -> Real[_,_] {
+  return x*matrix(Y);
+}
+
+operator (X:LLT*y:Real) -> Real[_,_] {
+  return matrix(X)*y;
+}
+
+operator (X:LLT/y:Real) -> Real[_,_] {
+  return matrix(X)/y;
+}
+
+operator (X:LLT == Y:LLT) -> Boolean {
+  return matrix(X) == matrix(Y);
+}
+
+operator (X:LLT != Y:LLT) -> Boolean {
+  return matrix(X) != matrix(Y);
 }
 
 /**
@@ -94,40 +133,46 @@ function llt(S:Real[_,_]) -> LLT {
 }
 
 /**
- * Rank one update (or downdate) of a Cholesky decomposition.
+ * Cholesky decomposition of the symmetric positive definite matrix $S$
+ * (identity function).
+ */
+function llt(S:LLT) -> LLT {
+  return S;
+}
+
+/**
+ * Rank one update of a Cholesky decomposition.
  *
  * - S: Existing Cholesky decomposition of the symmetric positive definite
  *      matrix $S$.
  * - x: Vector $x$.
- * - a: Scalar $a$. Positive for an update, negative for a downdate.
  *
  * Returns: A new Cholesky decomposition of the symmetric positive definite
- * matrix $S + axx^\top$.
+ * matrix $S + xx^\top$.
  */
-function rank_update(S:LLT, x:Real[_], a:Real) -> LLT {
+function rank_update(S:LLT, x:Real[_]) -> LLT {
   assert rows(S) == length(x);
   cpp{{
   auto A = S;
-  A.rankUpdate(x.toEigen(), a);
+  A.rankUpdate(x.toEigen(), 1.0);
   return A;
   }}
 }
 
 /**
- * Rank $k$ update (or downdate) of a Cholesky decomposition.
+ * Rank $k$ update of a Cholesky decomposition.
  *
  * - S: Existing Cholesky decomposition of the symmetric positive definite
  *      matrix $S$.
  * - X: Matrix $X$.
- * - a: Scalar $a$. Positive for an update, negative for a downdate.
  *
  * Returns: A new Cholesky decomposition of the symmetric positive definite
- * matrix $S + aXX^\top$.
+ * matrix $S + XX^\top$.
  *
  * The computation is performed as $k$ separate rank-1 updates using the
  * columns of `X
  */
-function rank_update(S:LLT, X:Real[_,_], a:Real) -> LLT {
+function rank_update(S:LLT, X:Real[_,_]) -> LLT {
   assert rows(S) == rows(X);
   A:LLT;
   cpp{{
@@ -138,7 +183,56 @@ function rank_update(S:LLT, X:Real[_,_], a:Real) -> LLT {
   for j in 1..C {
     auto x <- X[1..R,j];
     cpp{{
-    A.rankUpdate(x.toEigen(), a);
+    A.rankUpdate(x.toEigen(), 1.0);
+    }}
+  }
+  return A;
+}
+
+/**
+ * Rank one downdate of a Cholesky decomposition.
+ *
+ * - S: Existing Cholesky decomposition of the symmetric positive definite
+ *      matrix $S$.
+ * - x: Vector $x$.
+ *
+ * Returns: A new Cholesky decomposition of the symmetric positive definite
+ * matrix $S - xx^\top$.
+ */
+function rank_downdate(S:LLT, x:Real[_]) -> LLT {
+  assert rows(S) == length(x);
+  cpp{{
+  auto A = S;
+  A.rankUpdate(x.toEigen(), -1.0);
+  return A;
+  }}
+}
+
+/**
+ * Rank $k$ downdate of a Cholesky decomposition.
+ *
+ * - S: Existing Cholesky decomposition of the symmetric positive definite
+ *      matrix $S$.
+ * - X: Matrix $X$.
+ *
+ * Returns: A new Cholesky decomposition of the symmetric positive definite
+ * matrix $S - XX^\top$.
+ *
+ * The computation is performed as $k$ separate rank-1 downdates using the
+ * columns of `X
+ */
+function rank_downdate(S:LLT, X:Real[_,_]) -> LLT {
+  assert rows(S) == rows(X);
+  A:LLT;
+  cpp{{
+  A = S;
+  }}
+  auto R <- rows(X);
+  auto C <- columns(X);
+  for j in 1..C {
+    auto x <- X[1..R,j];
+    cpp{{
+    A.rankUpdate(x.toEigen(), -1.0);
     }}
   }
   return A;

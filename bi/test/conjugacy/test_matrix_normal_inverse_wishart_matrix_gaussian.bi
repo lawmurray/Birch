@@ -8,7 +8,7 @@ program test_matrix_normal_inverse_wishart_matrix_gaussian(
 }
 
 class TestMatrixNormalInverseWishartMatrixGaussian < Model {
-  V:Random<Real[_,_]>;
+  V:Random<LLT>;
   X:Random<Real[_,_]>;
   Y:Random<Real[_,_]>;
 
@@ -73,7 +73,7 @@ class TestMatrixNormalInverseWishartMatrixGaussian < Model {
     y:Real[size()];
     auto k <- 0;
     for i in 1..rows(V) {
-      y[k + 1 .. k + columns(V)] <- V.value()[i,1..columns(V)];
+      y[k + 1 .. k + columns(V)] <- matrix(V.value())[i,1..columns(V)];
       k <- k + columns(V);
     }
     for i in 1..rows(X) {

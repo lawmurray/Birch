@@ -59,7 +59,7 @@ final class MatrixNegate(x:Expression<Real[_,_]>) <
     return y;
   }
 
-  override function graftLinearMatrixNormalInverseWishart(compare:Distribution<Real[_,_]>) ->
+  override function graftLinearMatrixNormalInverseWishart(compare:Distribution<LLT>) ->
       TransformLinearMatrix<MatrixNormalInverseWishart>? {
     y:TransformLinearMatrix<MatrixNormalInverseWishart>?;
     z:MatrixNormalInverseWishart?;
@@ -86,4 +86,11 @@ operator (-x:Expression<Real[_,_]>) -> Expression<Real[_,_]> {
     m:MatrixNegate(x);
     return m;
   }
+}
+
+/**
+ * Lazy negation.
+ */
+operator (-x:Expression<LLT>) -> Expression<Real[_,_]> {
+  return -matrix(x);
 }

@@ -2,8 +2,7 @@
  * Matrix Gaussian distribution where each column is independent.
  */
 final class IndependentColumnMatrixGaussian(M:Expression<Real[_,_]>,
-    U:Expression<Real[_,_]>, v:Expression<Real[_]>) <
-    Distribution<Real[_,_]> {
+    U:Expression<LLT>, v:Expression<Real[_]>) < Distribution<Real[_,_]> {
   /**
    * Mean.
    */
@@ -12,7 +11,7 @@ final class IndependentColumnMatrixGaussian(M:Expression<Real[_,_]>,
   /**
    * Among-row covariance.
    */
-  U:Expression<Real[_,_]> <- U;
+  U:Expression<LLT> <- U;
 
   /**
    * Among-column variances.
@@ -73,7 +72,7 @@ final class IndependentColumnMatrixGaussian(M:Expression<Real[_,_]>,
 /**
  * Create matrix Gaussian distribution where each column is independent.
  */
-function Gaussian(M:Expression<Real[_,_]>, U:Expression<Real[_,_]>,
+function Gaussian(M:Expression<Real[_,_]>, U:Expression<LLT>,
     σ2:Expression<Real[_]>) -> IndependentColumnMatrixGaussian {
   m:IndependentColumnMatrixGaussian(M, U, σ2);
   return m;
@@ -82,23 +81,23 @@ function Gaussian(M:Expression<Real[_,_]>, U:Expression<Real[_,_]>,
 /**
  * Create matrix Gaussian distribution where each column is independent.
  */
-function Gaussian(M:Expression<Real[_,_]>, U:Expression<Real[_,_]>,
-    σ2:Real[_]) -> IndependentColumnMatrixGaussian {
+function Gaussian(M:Expression<Real[_,_]>, U:Expression<LLT>, σ2:Real[_]) ->
+    IndependentColumnMatrixGaussian {
   return Gaussian(M, U, box(σ2));
 }
 
 /**
  * Create matrix Gaussian distribution where each column is independent.
  */
-function Gaussian(M:Expression<Real[_,_]>, U:Real[_,_],
-    σ2:Expression<Real[_]>) -> IndependentColumnMatrixGaussian {
+function Gaussian(M:Expression<Real[_,_]>, U:LLT, σ2:Expression<Real[_]>) ->
+    IndependentColumnMatrixGaussian {
   return Gaussian(M, box(U), σ2);
 }
 
 /**
  * Create matrix Gaussian distribution where each column is independent.
  */
-function Gaussian(M:Expression<Real[_,_]>, U:Real[_,_], σ2:Real[_]) ->
+function Gaussian(M:Expression<Real[_,_]>, U:LLT, σ2:Real[_]) ->
       IndependentColumnMatrixGaussian {
   return Gaussian(M, box(U), box(σ2));
 }
@@ -106,15 +105,15 @@ function Gaussian(M:Expression<Real[_,_]>, U:Real[_,_], σ2:Real[_]) ->
 /**
  * Create matrix Gaussian distribution where each column is independent.
  */
-function Gaussian(M:Real[_,_], U:Expression<Real[_,_]>,
-    σ2:Expression<Real[_]>) -> IndependentColumnMatrixGaussian {
+function Gaussian(M:Real[_,_], U:Expression<LLT>, σ2:Expression<Real[_]>) ->
+    IndependentColumnMatrixGaussian {
   return Gaussian(box(M), U, σ2);
 }
 
 /**
  * Create matrix Gaussian distribution where each column is independent.
  */
-function Gaussian(M:Real[_,_], U:Expression<Real[_,_]>, σ2:Real[_]) ->
+function Gaussian(M:Real[_,_], U:Expression<LLT>, σ2:Real[_]) ->
     IndependentColumnMatrixGaussian {
   return Gaussian(box(M), U, box(σ2));
 }
@@ -122,7 +121,7 @@ function Gaussian(M:Real[_,_], U:Expression<Real[_,_]>, σ2:Real[_]) ->
 /**
  * Create matrix Gaussian distribution where each column is independent.
  */
-function Gaussian(M:Real[_,_], U:Real[_,_], σ2:Expression<Real[_]>) ->
+function Gaussian(M:Real[_,_], U:LLT, σ2:Expression<Real[_]>) ->
     IndependentColumnMatrixGaussian {
   return Gaussian(box(M), box(U), σ2);
 }
@@ -130,7 +129,74 @@ function Gaussian(M:Real[_,_], U:Real[_,_], σ2:Expression<Real[_]>) ->
 /**
  * Create matrix Gaussian distribution where each column is independent.
  */
-function Gaussian(M:Real[_,_], U:Real[_,_], σ2:Real[_]) ->
+function Gaussian(M:Real[_,_], U:LLT, σ2:Real[_]) ->
     IndependentColumnMatrixGaussian {
   return Gaussian(box(M), box(U), box(σ2));
+}
+
+
+
+
+/**
+ * Create matrix Gaussian distribution where each column is independent.
+ */
+function Gaussian(M:Expression<Real[_,_]>, U:Expression<Real[_,_]>,
+    σ2:Expression<Real[_]>) -> IndependentColumnMatrixGaussian {
+  return Gaussian(M, llt(U), σ2);
+}
+
+/**
+ * Create matrix Gaussian distribution where each column is independent.
+ */
+function Gaussian(M:Expression<Real[_,_]>, U:Expression<Real[_,_]>,
+    σ2:Real[_]) -> IndependentColumnMatrixGaussian {
+  return Gaussian(M, llt(U), σ2);
+}
+
+/**
+ * Create matrix Gaussian distribution where each column is independent.
+ */
+function Gaussian(M:Expression<Real[_,_]>, U:Real[_,_],
+    σ2:Expression<Real[_]>) -> IndependentColumnMatrixGaussian {
+  return Gaussian(M, llt(U), σ2);
+}
+
+/**
+ * Create matrix Gaussian distribution where each column is independent.
+ */
+function Gaussian(M:Expression<Real[_,_]>, U:Real[_,_], σ2:Real[_]) ->
+      IndependentColumnMatrixGaussian {
+  return Gaussian(M, llt(U), σ2);
+}
+
+/**
+ * Create matrix Gaussian distribution where each column is independent.
+ */
+function Gaussian(M:Real[_,_], U:Expression<Real[_,_]>,
+    σ2:Expression<Real[_]>) -> IndependentColumnMatrixGaussian {
+  return Gaussian(M, llt(U), σ2);
+}
+
+/**
+ * Create matrix Gaussian distribution where each column is independent.
+ */
+function Gaussian(M:Real[_,_], U:Expression<Real[_,_]>, σ2:Real[_]) ->
+    IndependentColumnMatrixGaussian {
+  return Gaussian(M, llt(U), σ2);
+}
+
+/**
+ * Create matrix Gaussian distribution where each column is independent.
+ */
+function Gaussian(M:Real[_,_], U:Real[_,_], σ2:Expression<Real[_]>) ->
+    IndependentColumnMatrixGaussian {
+  return Gaussian(M, llt(U), σ2);
+}
+
+/**
+ * Create matrix Gaussian distribution where each column is independent.
+ */
+function Gaussian(M:Real[_,_], U:Real[_,_], σ2:Real[_]) ->
+    IndependentColumnMatrixGaussian {
+  return Gaussian(M, llt(U), σ2);
 }

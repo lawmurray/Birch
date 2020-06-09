@@ -27,11 +27,11 @@
  * right.
  */
 final class MultivariateNormalInverseGamma(μ:Expression<Real[_]>,
-    Σ:Expression<Real[_,_]>, σ2:InverseGamma) < Distribution<Real[_]> {
+    Σ:Expression<LLT>, σ2:InverseGamma) < Distribution<Real[_]> {
   /**
    * Precision.
    */
-  Λ:Expression<LLT> <- llt(inv(llt(Σ)));
+  Λ:Expression<LLT> <- inv(Σ);
 
   /**
    * Precision times mean.
@@ -106,8 +106,7 @@ final class MultivariateNormalInverseGamma(μ:Expression<Real[_]>,
 }
 
 function MultivariateNormalInverseGamma(μ:Expression<Real[_]>,
-    Σ:Expression<Real[_,_]>, σ2:InverseGamma) ->
-    MultivariateNormalInverseGamma {
+    Σ:Expression<LLT>, σ2:InverseGamma) -> MultivariateNormalInverseGamma {
   m:MultivariateNormalInverseGamma(μ, Σ, σ2);
   m.link();
   return m;

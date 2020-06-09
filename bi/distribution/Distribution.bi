@@ -305,7 +305,7 @@ abstract class Distribution<Value> < DelayDistribution {
   /**
    * Graft this onto the delayed sampling graph.
    */
-  function graftMatrixNormalInverseWishart(compare:Distribution<Real[_,_]>) ->
+  function graftMatrixNormalInverseWishart(compare:Distribution<LLT>) ->
       MatrixNormalInverseWishart? {
     return nil;
   }

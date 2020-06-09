@@ -86,6 +86,17 @@ class Kernel {
    *
    * Returns: Proposed state.
    */
+  function move(x:Random<LLT>) -> LLT {
+    return x.x!;
+  }
+
+  /**
+   * Propose a transition.
+   *
+   * - x: Current state.
+   *
+   * Returns: Proposed state.
+   */
   function move(x:Random<Integer>) -> Integer {
     return x.x!;
   }
@@ -145,6 +156,18 @@ class Kernel {
    * Returns: the log probability density $q(x^\prime \mid x)$.
    */
   function logpdf(x':Random<Real[_,_]>, x:Random<Real[_,_]>) -> Real {
+    return 0.0;
+  }
+
+  /**
+   * Observe a transition.
+   *
+   * - x': Proposed state $x^\prime$.
+   * - x: Current state $x$.
+   *
+   * Returns: the log probability density $q(x^\prime \mid x)$.
+   */
+  function logpdf(x':Random<LLT>, x:Random<LLT>) -> Real {
     return 0.0;
   }
 

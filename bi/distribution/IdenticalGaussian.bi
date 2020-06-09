@@ -42,11 +42,13 @@ final class IdenticalGaussian(μ:Expression<Real[_]>, σ2:Expression<Real>) <
     } else if compare? && (m2 <- μ.graftMultivariateNormalInverseGamma(compare!))? {
       r <- MultivariateNormalInverseGammaMultivariateGaussian(m2!);
     } else if (m3 <- μ.graftLinearMultivariateGaussian())? {
-      r <- LinearMultivariateGaussianMultivariateGaussian(m3!.A, m3!.x, m3!.c, diagonal(σ2, m3!.rows()));
+      r <- LinearMultivariateGaussianMultivariateGaussian(m3!.A, m3!.x, m3!.c,
+          llt(diagonal(σ2, m3!.rows())));
     } else if (m4 <- μ.graftMultivariateGaussian())? {
-      r <- MultivariateGaussianMultivariateGaussian(m4!, diagonal(σ2, m4!.rows()));
+      r <- MultivariateGaussianMultivariateGaussian(m4!,
+          llt(diagonal(σ2, m4!.rows())));
     } else if (s1 <- σ2.graftInverseGamma())? {
-      r <- MultivariateNormalInverseGamma(μ, box(identity(μ.rows())), s1!);
+      r <- MultivariateNormalInverseGamma(μ, box(llt(identity(μ.rows()))), s1!);
     }
     
     return r;
@@ -60,9 +62,11 @@ final class IdenticalGaussian(μ:Expression<Real[_]>, σ2:Expression<Real>) <
     
     /* match a template */
     if (m1 <- μ.graftLinearMultivariateGaussian())? {
-      r <- LinearMultivariateGaussianMultivariateGaussian(m1!.A, m1!.x, m1!.c, diagonal(σ2, m1!.c.rows()));
+      r <- LinearMultivariateGaussianMultivariateGaussian(m1!.A, m1!.x, m1!.c,
+          llt(diagonal(σ2, m1!.c.rows())));
     } else if (m2 <- μ.graftMultivariateGaussian())? {
-      r <- MultivariateGaussianMultivariateGaussian(m2!, diagonal(σ2, m2!.rows()));
+      r <- MultivariateGaussianMultivariateGaussian(m2!,
+          llt(diagonal(σ2, m2!.rows())));
     } else {
       r <- Gaussian(μ, diagonal(σ2, μ.rows()));
     }
@@ -77,7 +81,7 @@ final class IdenticalGaussian(μ:Expression<Real[_]>, σ2:Expression<Real>) <
     r:MultivariateNormalInverseGamma?;
     
     if (s1 <- σ2.graftInverseGamma())? && s1! == compare {
-      r <- MultivariateNormalInverseGamma(μ, box(identity(μ.rows())), s1!);
+      r <- MultivariateNormalInverseGamma(μ, box(llt(identity(μ.rows()))), s1!);
     }
 
     return r;

@@ -56,7 +56,7 @@ final class MatrixMultiply<Left,Right,Value>(left:Left, right:Right) <
   }
 
   override function graftLinearMatrixNormalInverseWishart(
-      compare:Distribution<Real[_,_]>) ->
+      compare:Distribution<LLT>) ->
       TransformLinearMatrix<MatrixNormalInverseWishart>? {
     y:TransformLinearMatrix<MatrixNormalInverseWishart>?;
     z:MatrixNormalInverseWishart?;
@@ -183,6 +183,42 @@ operator (left:Expression<Real[_,_]>*right:LLT) -> Expression<Real[_,_]> {
 /**
  * Lazy matrix multiply.
  */
+operator (left:Expression<LLT>*right:Expression<LLT>) ->
+    Expression<Real[_,_]> {
+  assert left.columns() == right.rows();
+  if left.isConstant() && right.isConstant() {
+    return box(matrix(left.value()*right.value()));
+  } else {
+    m:MatrixMultiply<Expression<LLT>,Expression<LLT>,Real[_,_]>(left, right);
+    return m;
+  }
+}
+
+/**
+ * Lazy matrix multiply.
+ */
+operator (left:LLT*right:Expression<LLT>) -> Expression<Real[_,_]> {
+  if right.isConstant() {
+    return box(matrix(left*right.value()));
+  } else {
+    return box(left)*right;
+  }
+}
+
+/**
+ * Lazy matrix multiply.
+ */
+operator (left:Expression<LLT>*right:LLT) -> Expression<Real[_,_]> {
+  if left.isConstant() {
+    return box(matrix(left.value()*right));
+  } else {
+    return left*box(right);
+  }
+}
+
+/**
+ * Lazy matrix multiply.
+ */
 operator (left:Expression<Real>*right:Expression<Real[_,_]>) ->
     Expression<Real[_,_]> {
   return diagonal(left, right.rows())*right;
@@ -221,5 +257,52 @@ operator (left:Real[_,_]*right:Expression<Real>) -> Expression<Real[_,_]> {
  * Lazy matrix multiply.
  */
 operator (left:Expression<Real[_,_]>*right:Real) -> Expression<Real[_,_]> {
+  return right*left;
+}
+
+
+
+
+/**
+ * Lazy matrix multiply.
+ */
+operator (left:Expression<Real>*right:Expression<LLT>) ->
+    Expression<Real[_,_]> {
+  return diagonal(left, right.rows())*right;
+}
+
+/**
+ * Lazy matrix multiply.
+ */
+operator (left:Real*right:Expression<LLT>) -> Expression<Real[_,_]> {
+  return box(left)*right;
+}
+
+/**
+ * Lazy matrix multiply.
+ */
+operator (left:Expression<Real>*right:LLT) -> Expression<Real[_,_]> {
+  return left*box(right);
+}
+
+/**
+ * Lazy matrix multiply.
+ */
+operator (left:Expression<LLT>*right:Expression<Real>) ->
+    Expression<Real[_,_]> {
+  return right*left;
+}
+
+/**
+ * Lazy matrix multiply.
+ */
+operator (left:LLT*right:Expression<Real>) -> Expression<Real[_,_]> {
+  return right*left;
+}
+
+/**
+ * Lazy matrix multiply.
+ */
+operator (left:Expression<LLT>*right:Real) -> Expression<Real[_,_]> {
   return right*left;
 }

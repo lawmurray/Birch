@@ -5,7 +5,7 @@
  *     See Gaussian for associated factory functions for the creation of
  *     MultivariateGaussian objects.
  */
-class MultivariateGaussian(μ:Expression<Real[_]>, Σ:Expression<Real[_,_]>) <
+class MultivariateGaussian(μ:Expression<Real[_]>, Σ:Expression<LLT>) <
     Distribution<Real[_]> {
   /**
    * Mean.
@@ -15,7 +15,7 @@ class MultivariateGaussian(μ:Expression<Real[_]>, Σ:Expression<Real[_,_]>) <
   /**
    * Covariance.
    */
-  Σ:Expression<Real[_,_]> <- Σ;
+  Σ:Expression<LLT> <- Σ;
 
   function rows() -> Integer {
     return μ.rows();
@@ -84,7 +84,7 @@ class MultivariateGaussian(μ:Expression<Real[_]>, Σ:Expression<Real[_,_]>) <
 /**
  * Create multivariate Gaussian distribution.
  */
-function Gaussian(μ:Expression<Real[_]>, Σ:Expression<Real[_,_]>) ->
+function Gaussian(μ:Expression<Real[_]>, Σ:Expression<LLT>) ->
     MultivariateGaussian {
   m:MultivariateGaussian(μ, Σ);
   return m;
@@ -93,9 +93,38 @@ function Gaussian(μ:Expression<Real[_]>, Σ:Expression<Real[_,_]>) ->
 /**
  * Create multivariate Gaussian distribution.
  */
+function Gaussian(μ:Expression<Real[_]>, Σ:LLT) -> MultivariateGaussian {
+  return Gaussian(μ, box(Σ));
+}
+
+/**
+ * Create multivariate Gaussian distribution.
+ */
+function Gaussian(μ:Real[_], Σ:Expression<LLT>) -> MultivariateGaussian {
+  return Gaussian(box(μ), Σ);
+}
+
+/**
+ * Create multivariate Gaussian distribution.
+ */
+function Gaussian(μ:Real[_], Σ:LLT) -> MultivariateGaussian {
+  return Gaussian(box(μ), box(Σ));
+}
+
+/**
+ * Create multivariate Gaussian distribution.
+ */
+function Gaussian(μ:Expression<Real[_]>, Σ:Expression<Real[_,_]>) ->
+    MultivariateGaussian {
+  return Gaussian(μ, llt(Σ));
+}
+
+/**
+ * Create multivariate Gaussian distribution.
+ */
 function Gaussian(μ:Expression<Real[_]>, Σ:Real[_,_]) ->
     MultivariateGaussian {
-  return Gaussian(μ, box(Σ));
+  return Gaussian(μ, llt(Σ));
 }
 
 /**
@@ -103,12 +132,12 @@ function Gaussian(μ:Expression<Real[_]>, Σ:Real[_,_]) ->
  */
 function Gaussian(μ:Real[_], Σ:Expression<Real[_,_]>) ->
     MultivariateGaussian {
-  return Gaussian(box(μ), Σ);
+  return Gaussian(μ, llt(Σ));
 }
 
 /**
  * Create multivariate Gaussian distribution.
  */
 function Gaussian(μ:Real[_], Σ:Real[_,_]) -> MultivariateGaussian {
-  return Gaussian(box(μ), box(Σ));
+  return Gaussian(μ, llt(Σ));
 }

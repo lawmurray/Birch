@@ -31,3 +31,25 @@ operator (left:Expression<Real[_,_]>/right:Real) -> Expression<Real[_,_]> {
     return left/box(right);
   }
 }
+
+/**
+ * Lazy matrix divide.
+ */
+operator (left:Expression<LLT>/right:Expression<Real>) ->
+    Expression<Real[_,_]> {
+  return matrix(left)/right;
+}
+
+/**
+ * Lazy matrix divide.
+ */
+operator (left:LLT/right:Expression<Real>) -> Expression<Real[_,_]> {
+  return matrix(left)/right;
+}
+
+/**
+ * Lazy matrix divide.
+ */
+operator (left:Expression<LLT>/right:Real) -> Expression<Real[_,_]> {
+  return matrix(left)/right;
+}

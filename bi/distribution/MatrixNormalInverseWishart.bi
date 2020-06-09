@@ -2,11 +2,11 @@
  * Matrix normal-inverse-Wishart distribution.
  */
 final class MatrixNormalInverseWishart(M:Expression<Real[_,_]>,
-    U:Expression<Real[_,_]>, V:InverseWishart) < Distribution<Real[_,_]> {
+    U:Expression<LLT>, V:InverseWishart) < Distribution<Real[_,_]> {
   /**
    * Precision.
    */
-  Λ:Expression<LLT> <- llt(inv(llt(U)));
+  Λ:Expression<LLT> <- inv(U);
 
   /**
    * Precision times mean.
@@ -27,8 +27,7 @@ final class MatrixNormalInverseWishart(M:Expression<Real[_,_]>,
   }
 
   function simulate() -> Real[_,_] {
-    return simulate_matrix_normal_inverse_wishart(N.value(), Λ.value(),
-        V.Ψ.value(), V.k.value());
+    return simulate_matrix_normal_inverse_wishart(N.value(), Λ.value(), V.Ψ.value(), V.k.value());
   }
   
   function logpdf(X:Real[_,_]) -> Real {   
@@ -43,7 +42,7 @@ final class MatrixNormalInverseWishart(M:Expression<Real[_,_]>,
     (V.Ψ, V.k) <- box(downdate_matrix_normal_inverse_wishart(X, N.value(), Λ.value(), V.Ψ.value(), V.k.value()));
   }
 
-  function graftMatrixNormalInverseWishart(compare:Distribution<Real[_,_]>) ->
+  function graftMatrixNormalInverseWishart(compare:Distribution<LLT>) ->
       MatrixNormalInverseWishart? {
     prune();
     if V == compare {
@@ -72,7 +71,7 @@ final class MatrixNormalInverseWishart(M:Expression<Real[_,_]>,
 }
 
 function MatrixNormalInverseWishart(M:Expression<Real[_,_]>,
-    U:Expression<Real[_,_]>, V:InverseWishart) -> MatrixNormalInverseWishart {
+    U:Expression<LLT>, V:InverseWishart) -> MatrixNormalInverseWishart {
   m:MatrixNormalInverseWishart(M, U, V);
   m.link();
   return m;

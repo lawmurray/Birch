@@ -121,6 +121,21 @@ abstract class Buffer {
   abstract function getRealMatrix() -> Real[_,_]?;
 
   /**
+   * Get this as a positive definite symmetric matrix of reals.
+   *
+   * Return: An optional with a value if this is an array where all elements
+   * are themselves arrays of the same length and compatible type.
+   */
+  function getLLT() -> LLT? {
+    auto x <- getRealMatrix();
+    if x? {
+      return llt(x!);
+    } else {
+      return nil;
+    }
+  }
+
+  /**
    * Get the size of an array.
    */
   function size(name:String) -> Integer {
@@ -347,6 +362,23 @@ abstract class Buffer {
   }
 
   /**
+   * Get a child as a symmetric positive definite matrix.
+   *
+   * - name: Name of the child.
+   *
+   * Return: An optional with a value if this is an array where all elements
+   * are themselves arrays of the same length and compatible type.
+   */
+  function getLLT(name:String) -> LLT? {
+    auto buffer <- getChild(name);
+    if buffer? {
+      return buffer!.getLLT();
+    } else {
+      return nil;
+    }
+  }
+
+  /**
    * Get this as an object.
    *
    * - value: The object.
@@ -474,6 +506,18 @@ abstract class Buffer {
    */
   function get(value:Real[_,_]?) -> Real[_,_]? {
     return getRealMatrix();
+  }
+
+  /**
+   * Get this as a symmetric positive definite matrix of reals.
+   *
+   * - value: Unused, but necessary for overload resolution.
+   *
+   * Return: An optional with a value if this is an array where all elements
+   * are themselves arrays of the same length and compatible type.
+   */
+  function get(value:LLT?) -> LLT? {
+    return getLLT();
   }
 
   /**
@@ -622,6 +666,19 @@ abstract class Buffer {
   function get(name:String, value:Real[_,_]?) -> Real[_,_]? {
     return getRealMatrix(name);
   }
+
+  /**
+   * Get a symmetric positive definite matrix of reals.
+   *
+   * - name: Name of the child.
+   * - value: Unused, but necessary for overload resolution.
+   *
+   * Return: An optional with a value if this is an array where all elements
+   * are themselves arrays of the same length and compatible type.
+   */
+  function get(name:String, value:LLT?) -> LLT? {
+    return getLLT(name);
+  }
   
   /**
    * Set this as an object.
@@ -714,6 +771,15 @@ abstract class Buffer {
    * - value: Value.
    */
   abstract function setRealMatrix(value:Real[_,_]);
+
+  /**
+   * Set this as a symmetric positive definite matrix of reals.
+   *
+   * - value: Value.
+   */
+  function setLLT(value:LLT) {
+    setRealMatrix(matrix(value));
+  }
 
   /**
    * Set this as a matrix of objects.
@@ -860,6 +926,16 @@ abstract class Buffer {
   }
 
   /**
+   * Set child as a symmetric positive definite matrix of reals.
+   *
+   * - name: Name of the child.
+   * - value: Value.
+   */
+  function setLLT(name:String, value:LLT) {
+    setChild(name).setLLT(value);  
+  }
+
+  /**
    * Set child as a matrix of objects.
    *
    * - name: Name of the child.
@@ -976,6 +1052,15 @@ abstract class Buffer {
    */
   function set(value:Real[_,_]) {
     setRealMatrix(value);
+  }
+
+  /**
+   * Set this as a symmetric positive definite matrix of reals.
+   *
+   * - value: Value.
+   */
+  function set(value:LLT) {
+    setLLT(value);
   }
 
   /**
@@ -1105,6 +1190,16 @@ abstract class Buffer {
    */
   function set(name:String, value:Real[_,_]) {
     setRealMatrix(name, value);
+  }
+
+  /**
+   * Set a symmetric positive definite matrix of reals.
+   *
+   * - name: Name of the child.
+   * - value: Value.
+   */
+  function set(name:String, value:LLT) {
+    setLLT(name, value);
   }
   
   /**

@@ -44,11 +44,11 @@ function inv(x:Expression<Real[_,_]>) -> Expression<Real[_,_]> {
 /**
  * Lazy `inv`.
  */
-function inv(x:Expression<LLT>) -> Expression<Real[_,_]> {
+function inv(x:Expression<LLT>) -> Expression<LLT> {
   if x.isConstant() {
-    return box(matrix(inv(x.value())));
+    return box(llt(inv(x.value())));
   } else {
-    m:MatrixInv<Expression<LLT>,Real[_,_]>(x);
+    m:MatrixInv<Expression<LLT>,LLT>(x);
     return m;
   }
 }

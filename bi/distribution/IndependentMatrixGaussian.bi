@@ -43,7 +43,7 @@ final class IndependentMatrixGaussian(M:Expression<Real[_,_]>,
     } else if compare? && (m2 <- M.graftMatrixNormalInverseGamma(compare!))? {
       r <- MatrixNormalInverseGammaMatrixGaussian(m2!);
     } else if (s1 <- σ2.graftIndependentInverseGamma())? {
-      r <- MatrixNormalInverseGamma(M, box(identity(M.rows())), s1!);
+      r <- MatrixNormalInverseGamma(M, box(llt(identity(M.rows()))), s1!);
     }
     
     return r;
@@ -51,7 +51,7 @@ final class IndependentMatrixGaussian(M:Expression<Real[_,_]>,
 
   function graftMatrixGaussian() -> MatrixGaussian? {
     prune();
-    return Gaussian(M, box(identity(M.rows())), diagonal(σ2));
+    return Gaussian(M, box(llt(identity(M.rows()))), diagonal(σ2));
   }
 
   function graftMatrixNormalInverseGamma(compare:Distribution<Real[_]>) ->
@@ -62,7 +62,7 @@ final class IndependentMatrixGaussian(M:Expression<Real[_,_]>,
     
     /* match a template */
     if (s1 <- σ2.graftIndependentInverseGamma())? && s1! == compare {
-      r <- MatrixNormalInverseGamma(M, box(identity(M.rows())), s1!);
+      r <- MatrixNormalInverseGamma(M, box(llt(identity(M.rows()))), s1!);
     }
 
     return r;

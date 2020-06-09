@@ -45,8 +45,8 @@ final class MatrixNormalInverseGammaMatrixGaussian(
   }
 }
 
-function MatrixNormalInverseGammaMatrixGaussian(
-    M:MatrixNormalInverseGamma) -> MatrixNormalInverseGammaMatrixGaussian {
+function MatrixNormalInverseGammaMatrixGaussian(M:MatrixNormalInverseGamma)
+    -> MatrixNormalInverseGammaMatrixGaussian {
   m:MatrixNormalInverseGammaMatrixGaussian(M);
   m.link();
   return m;

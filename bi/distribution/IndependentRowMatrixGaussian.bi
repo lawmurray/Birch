@@ -2,7 +2,7 @@
  * Matrix Gaussian distribution where each row is independent.
  */
 final class IndependentRowMatrixGaussian(M:Expression<Real[_,_]>,
-    V:Expression<Real[_,_]>) < Distribution<Real[_,_]> {
+    V:Expression<LLT>) < Distribution<Real[_,_]> {
   /**
    * Mean.
    */
@@ -11,7 +11,7 @@ final class IndependentRowMatrixGaussian(M:Expression<Real[_,_]>,
   /**
    * Among-column covariance.
    */
-  V:Expression<Real[_,_]> <- V;
+  V:Expression<LLT> <- V;
 
   function rows() -> Integer {
     return M.rows();
@@ -43,7 +43,7 @@ final class IndependentRowMatrixGaussian(M:Expression<Real[_,_]>,
     } else if compare? && (m2 <- M.graftMatrixNormalInverseWishart(compare!))? {
       r <- MatrixNormalInverseWishartMatrixGaussian(m2!);
     } else if (s1 <- V.graftInverseWishart())? {
-      r <- MatrixNormalInverseWishart(M, box(identity(M.rows())), s1!);
+      r <- MatrixNormalInverseWishart(M, box(llt(identity(M.rows()))), s1!);
     }
 
     return r;
@@ -51,10 +51,10 @@ final class IndependentRowMatrixGaussian(M:Expression<Real[_,_]>,
 
   function graftMatrixGaussian() -> MatrixGaussian? {
     prune();
-    return Gaussian(M, box(identity(M.rows())), V);
+    return Gaussian(M, box(llt(identity(M.rows()))), V);
   }
 
-  function graftMatrixNormalInverseWishart(compare:Distribution<Real[_,_]>) ->
+  function graftMatrixNormalInverseWishart(compare:Distribution<LLT>) ->
       MatrixNormalInverseWishart? {
     prune();
     s1:InverseWishart?;
@@ -62,7 +62,7 @@ final class IndependentRowMatrixGaussian(M:Expression<Real[_,_]>,
     
     /* match a template */
     if (s1 <- V.graftInverseWishart())? && s1! == compare {
-      r <- MatrixNormalInverseWishart(M, box(identity(M.rows())), s1!);
+      r <- MatrixNormalInverseWishart(M, box(llt(identity(M.rows()))), s1!);
     }
 
     return r;
@@ -72,7 +72,7 @@ final class IndependentRowMatrixGaussian(M:Expression<Real[_,_]>,
 /**
  * Create matrix Gaussian distribution where each row is independent.
  */
-function Gaussian(M:Expression<Real[_,_]>, V:Expression<Real[_,_]>) ->
+function Gaussian(M:Expression<Real[_,_]>, V:Expression<LLT>) ->
     IndependentRowMatrixGaussian {
   m:IndependentRowMatrixGaussian(M, V);
   return m;
@@ -81,7 +81,7 @@ function Gaussian(M:Expression<Real[_,_]>, V:Expression<Real[_,_]>) ->
 /**
  * Create matrix Gaussian distribution where each row is independent.
  */
-function Gaussian(M:Expression<Real[_,_]>, V:Real[_,_]) ->
+function Gaussian(M:Expression<Real[_,_]>, V:LLT) ->
     IndependentRowMatrixGaussian {
   return Gaussian(M, box(V));
 }
@@ -89,7 +89,31 @@ function Gaussian(M:Expression<Real[_,_]>, V:Real[_,_]) ->
 /**
  * Create matrix Gaussian distribution where each row is independent.
  */
-function Gaussian(M:Real[_,_], V:Expression<Real[_,_]>) ->
+function Gaussian(M:Real[_,_], V:Expression<LLT>) ->
     IndependentRowMatrixGaussian {
   return Gaussian(box(M), V);
+}
+
+/**
+ * Create matrix Gaussian distribution where each row is independent.
+ */
+function Gaussian(M:Expression<Real[_,_]>, V:Expression<Real[_,_]>) ->
+    IndependentRowMatrixGaussian {
+  return Gaussian(M, llt(V));
+}
+
+/**
+ * Create matrix Gaussian distribution where each row is independent.
+ */
+function Gaussian(M:Expression<Real[_,_]>, V:Real[_,_]) ->
+    IndependentRowMatrixGaussian {
+  return Gaussian(M, llt(V));
+}
+
+/**
+ * Create matrix Gaussian distribution where each row is independent.
+ */
+function Gaussian(M:Real[_,_], V:Expression<Real[_,_]>) ->
+    IndependentRowMatrixGaussian {
+  return Gaussian(M, llt(V));
 }

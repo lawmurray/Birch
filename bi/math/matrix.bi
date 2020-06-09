@@ -482,3 +482,10 @@ function String(X:Boolean[_,_]) -> String {
   }}
   return result;
 }
+
+/**
+ * Convert matrix to String.
+ */
+function String(X:LLT) -> String {
+  return String(matrix(X));
+}

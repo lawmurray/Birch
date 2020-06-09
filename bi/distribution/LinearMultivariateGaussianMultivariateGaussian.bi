@@ -3,8 +3,8 @@
  */
 final class LinearMultivariateGaussianMultivariateGaussian(
     A:Expression<Real[_,_]>, m:MultivariateGaussian, c:Expression<Real[_]>,
-    S:Expression<Real[_,_]>) < MultivariateGaussian(A*m.μ + c,
-    A*m.Σ*transpose(A) + S) {
+    S:Expression<LLT>) < MultivariateGaussian(A*m.μ + c,
+    llt(A*m.Σ*transpose(A) + matrix(S))) {
   /**
    * Scale.
    */
@@ -23,7 +23,7 @@ final class LinearMultivariateGaussianMultivariateGaussian(
   /**
    * Likelihood covariance.
    */
-  S:Expression<Real[_,_]> <- S;
+  S:Expression<LLT> <- S;
 
   function update(x:Real[_]) {
     (m.μ, m.Σ) <- box(update_linear_multivariate_gaussian_multivariate_gaussian(
@@ -51,7 +51,7 @@ final class LinearMultivariateGaussianMultivariateGaussian(
 
 function LinearMultivariateGaussianMultivariateGaussian(
     A:Expression<Real[_,_]>, μ:MultivariateGaussian, c:Expression<Real[_]>,
-    Σ:Expression<Real[_,_]>) ->
+    Σ:Expression<LLT>) ->
     LinearMultivariateGaussianMultivariateGaussian {
   m:LinearMultivariateGaussianMultivariateGaussian(A, μ, c, Σ);
   m.link();

@@ -165,6 +165,10 @@ inline auto outer(const libbirch::DefaultArray<bi::type::Real64,1>& o) {
   return outer(o.toEigen());
 }
 
+inline auto outer(const libbirch::DefaultArray<bi::type::Real64,2>& o) {
+  return outer(o.toEigen());
+}
+
 /**
  * Outer product of vector with another.
  */
@@ -326,7 +330,7 @@ auto inv(const Eigen::MatrixBase<T>& o) {
 template<class T>
 auto inv(const Eigen::LLT<T>& o) {
   return o.solve(libbirch::EigenMatrix<typename T::value_type>::Identity(
-      o.rows(), o.cols())).eval();
+      o.rows(), o.cols())).llt();
 }
 
 template<class T>

@@ -16,7 +16,7 @@ final class LogDet<Single,Value>(x:Single) <
   }
 
   override function doGrad() {
-    single.grad(inv(transpose(single.get())));
+    single.grad(matrix(inv(transpose(single.get()))));
   }
 }
 

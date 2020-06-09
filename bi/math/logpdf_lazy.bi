@@ -81,10 +81,9 @@ function logpdf_lazy_normal_inverse_gamma(x:Expression<Real>,
  * Returns: the log probability density.
  */
 function logpdf_lazy_multivariate_gaussian(x:Expression<Real[_]>,
-    μ:Expression<Real[_]>, Σ:Expression<Real[_,_]>) -> Expression<Real> {
+    μ:Expression<Real[_]>, Σ:Expression<LLT>) -> Expression<Real> {
   auto D <- μ.rows();
-  auto C <- llt(Σ);
-  return -0.5*(dot(x - μ, inv(C)*(x - μ)) + D*log(2.0*π) + ldet(C));
+  return -0.5*(dot(x - μ, inv(Σ)*(x - μ)) + D*log(2.0*π) + ldet(Σ));
 }
 
 /**

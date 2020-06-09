@@ -62,7 +62,7 @@ final class MatrixAdd<Left,Right,Value>(left:Left, right:Right) <
     return y;
   }
 
-  override function graftLinearMatrixNormalInverseWishart(compare:Distribution<Real[_,_]>) ->
+  override function graftLinearMatrixNormalInverseWishart(compare:Distribution<LLT>) ->
       TransformLinearMatrix<MatrixNormalInverseWishart>? {
     y:TransformLinearMatrix<MatrixNormalInverseWishart>?;
     z:MatrixNormalInverseWishart?;
@@ -117,4 +117,70 @@ operator (left:Expression<Real[_,_]> + right:Real[_,_]) ->
   } else {
     return left + box(right);
   }
+}
+
+/**
+ * Lazy matrix addition.
+ */
+operator (left:Expression<LLT> + right:Expression<Real[_,_]>) ->
+    Expression<Real[_,_]> {
+  return matrix(left) + right;
+}
+
+/**
+ * Lazy matrix addition.
+ */
+operator (left:LLT + right:Expression<Real[_,_]>) -> Expression<Real[_,_]> {
+  return matrix(left) + right;
+}
+
+/**
+ * Lazy matrix addition.
+ */
+operator (left:Expression<LLT> + right:Real[_,_]) -> Expression<Real[_,_]> {
+  return matrix(left) + right;
+}
+
+/**
+ * Lazy matrix addition.
+ */
+operator (left:Expression<Real[_,_]> + right:Expression<LLT>) ->
+    Expression<Real[_,_]> {
+  return left + matrix(right);
+}
+
+/**
+ * Lazy matrix addition.
+ */
+operator (left:Real[_,_] + right:Expression<LLT>) -> Expression<Real[_,_]> {
+  return left + matrix(right);
+}
+
+/**
+ * Lazy matrix addition.
+ */
+operator (left:Expression<Real[_,_]> + right:LLT) -> Expression<Real[_,_]> {
+  return left + matrix(right);
+}
+
+/**
+ * Lazy matrix addition.
+ */
+operator (left:Expression<LLT> + right:Expression<LLT>) ->
+    Expression<Real[_,_]> {
+  return matrix(left) + matrix(right);
+}
+
+/**
+ * Lazy matrix addition.
+ */
+operator (left:LLT + right:Expression<LLT>) -> Expression<Real[_,_]> {
+  return matrix(left) + matrix(right);
+}
+
+/**
+ * Lazy matrix addition.
+ */
+operator (left:Expression<LLT> + right:LLT) -> Expression<Real[_,_]> {
+  return matrix(left) + matrix(right);
 }

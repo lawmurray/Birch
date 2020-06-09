@@ -115,6 +115,13 @@ class OutputStream {
   function print(value:Real[_,_]) {
     print(String(value));
   }
+
+  /**
+   * Print symmetric positive definite matrix.
+   */
+  function print(value:LLT) {
+    print(String(value));
+  }
 }
 
 /**
