@@ -1036,10 +1036,11 @@ function logpdf_matrix_student_t(X:Real[_,_], k:Real, M:Real[_,_], U:LLT,
   auto n <- rows(M);
   auto p <- columns(M);
   auto a <- 0.5*(k + n + p - 1.0);
+  auto b <- 0.5*(k + p - 1.0);
   auto E <- identity(n) + solve(U, X - M)*solve(V, transpose(X - M));
   
-  return lgamma(a, p) - lgamma(0.5*(k + p - 1.0), p) - 0.5*n*p*log(π) -
-      0.5*n*ldet(U) - 0.5*p*ldet(V) - a*ldet(E);
+  return lgamma(a, p) - lgamma(b, p) - 0.5*n*p*log(π) - 0.5*n*ldet(U) -
+      0.5*p*ldet(V) - a*ldet(E);
 }
 
 /**
@@ -1059,10 +1060,11 @@ function logpdf_matrix_student_t(X:Real[_,_], k:Real, M:Real[_,_], U:LLT,
   auto n <- rows(M);
   auto p <- columns(M);
   auto a <- 0.5*(k + n + p - 1.0);
+  auto b <- 0.5*(k + p - 1.0);
   auto E <- identity(n) + solve(U, X - M)*solve(diagonal(v), transpose(X - M));
   
-  return lgamma(a, p) - lgamma(0.5*(k + p - 1.0), p) - 0.5*n*p*log(π) -
-      0.5*n*ldet(U) - 0.5*p*log_sum(v) - a*ldet(E);
+  return lgamma(a, p) - lgamma(b, p) - 0.5*n*p*log(π) - 0.5*n*ldet(U) -
+      0.5*p*log_sum(v) - a*ldet(E);
 }
 
 /**
