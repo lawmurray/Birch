@@ -7,6 +7,10 @@ final class LogBeta<Left,Right,Value>(left:Left, right:Right) <
     x <- lbeta(left.value(), right.value());
   }
 
+  override function doGet() {
+    x <- lbeta(left.get(), right.get());
+  }
+
   override function doPilot() {
     x <- lbeta(left.pilot(), right.pilot());
   }

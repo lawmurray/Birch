@@ -22,7 +22,7 @@ class Gaussian(μ:Expression<Real>, σ2:Expression<Real>) <
   }
 
   function simulateLazy() -> Real? {
-    return simulate_gaussian(μ.pilot(), σ2.pilot());
+    return simulate_gaussian(μ.get(), σ2.get());
   }
   
   function logpdf(x:Real) -> Real {

@@ -11,6 +11,10 @@ final class Multiply<Left,Right,Value>(left:Left, right:Right) <
     x <- left.pilot()*right.pilot();
   }
 
+  override function doGet() {
+    x <- left.get()*right.get();
+  }
+
   override function doMove(κ:Kernel) {
     x <- left.move(κ)*right.move(κ);
   }

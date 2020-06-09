@@ -14,6 +14,10 @@ final class Boxed<Value> < Expression<Value> {
     //
   }
 
+  override function doGet() {
+    //
+  }
+
   override function doMakeConstant() {
     //
   }

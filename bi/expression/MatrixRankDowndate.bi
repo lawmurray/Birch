@@ -15,6 +15,10 @@ final class MatrixRankDowndate<Left,Right,Value>(left:Left, right:Right) <
     x <- rank_downdate(left.value(), right.value());
   }
 
+  override function doGet() {
+    x <- rank_downdate(left.get(), right.get());
+  }
+
   override function doPilot() {
     x <- rank_downdate(left.pilot(), right.pilot());
   }

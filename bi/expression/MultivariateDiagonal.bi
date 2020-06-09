@@ -15,6 +15,10 @@ final class MultivariateDiagonal(x:Expression<Real[_,_]>) <
     x <- diagonal(single.value());
   }
 
+  override function doGet() {
+    x <- diagonal(single.get());
+  }
+
   override function doPilot() {
     x <- diagonal(single.pilot());
   }

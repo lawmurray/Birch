@@ -15,6 +15,10 @@ final class Matrix<Single,Value>(x:Single) <
     x <- matrix(single.value());
   }
 
+  override function doGet() {
+    x <- matrix(single.get());
+  }
+
   override function doPilot() {
     x <- matrix(single.pilot());
   }

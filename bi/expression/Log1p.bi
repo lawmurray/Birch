@@ -7,6 +7,10 @@ final class Log1p(x:Expression<Real>) <
     x <- log1p(single.value());
   }
 
+  override function doGet() {
+    x <- log1p(single.get());
+  }
+
   override function doPilot() {
     x <- log1p(single.pilot());
   }

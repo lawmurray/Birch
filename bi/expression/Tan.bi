@@ -7,6 +7,10 @@ final class Tan(x:Expression<Real>) <
     x <- tan(single.value());
   }
 
+  override function doGet() {
+    x <- tan(single.get());
+  }
+
   override function doPilot() {
     x <- tan(single.pilot());
   }

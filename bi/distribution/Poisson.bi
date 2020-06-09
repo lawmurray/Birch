@@ -16,7 +16,7 @@ class Poisson(λ:Expression<Real>) < Discrete {
   }
 
   function simulateLazy() -> Integer? {
-    return simulate_poisson(λ.pilot());
+    return simulate_poisson(λ.get());
   }
 
   function logpdf(x:Integer) -> Real {

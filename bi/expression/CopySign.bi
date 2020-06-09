@@ -7,6 +7,10 @@ final class CopySign<Left,Right,Value>(left:Left, right:Right) <
     x <- copysign(left.value(), right.value());
   }
 
+  override function doGet() {
+    x <- copysign(left.get(), right.get());
+  }
+
   override function doPilot() {
     x <- copysign(left.pilot(), right.pilot());
   }

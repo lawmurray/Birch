@@ -7,6 +7,10 @@ final class Sinh(x:Expression<Real>) <
     x <- sinh(single.value());
   }
 
+  override function doGet() {
+    x <- sinh(single.get());
+  }
+
   override function doPilot() {
     x <- sinh(single.pilot());
   }

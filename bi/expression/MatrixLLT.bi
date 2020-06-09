@@ -15,6 +15,10 @@ final class MatrixLLT(x:Expression<Real[_,_]>) <
     x <- llt(single.value());
   }
 
+  override function doGet() {
+    x <- llt(single.get());
+  }
+
   override function doPilot() {
     x <- llt(single.pilot());
   }

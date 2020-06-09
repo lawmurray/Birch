@@ -7,6 +7,10 @@ final class LogDet<Single,Value>(x:Single) <
     x <- ldet(single.value());
   }
 
+  override function doGet() {
+    x <- ldet(single.get());
+  }
+
   override function doPilot() {
     x <- ldet(single.pilot());
   }

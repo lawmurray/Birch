@@ -7,6 +7,10 @@ final class Asin(x:Expression<Real>) <
     x <- asin(single.value());
   }
 
+  override function doGet() {
+    x <- asin(single.get());
+  }
+
   override function doPilot() {
     x <- asin(single.pilot());
   }

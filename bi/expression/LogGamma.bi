@@ -7,6 +7,10 @@ final class LogGamma(x:Expression<Real>) <
     x <- lgamma(single.value());
   }
 
+  override function doGet() {
+    x <- lgamma(single.get());
+  }
+
   override function doPilot() {
     x <- lgamma(single.pilot());
   }

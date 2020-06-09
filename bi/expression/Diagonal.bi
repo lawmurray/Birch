@@ -15,6 +15,10 @@ final class Diagonal<Left,Right,Value>(x:Left, n:Right) <
     x <- diagonal(left.value(), right.value());
   }
 
+  override function doGet() {
+    x <- diagonal(left.get(), right.get());
+  }
+
   override function doPilot() {
     x <- diagonal(left.pilot(), right.pilot());
   }

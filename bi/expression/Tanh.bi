@@ -7,6 +7,10 @@ final class Tanh(x:Expression<Real>) <
     x <- tanh(single.value());
   }
 
+  override function doGet() {
+    x <- tanh(single.get());
+  }
+
   override function doPilot() {
     x <- tanh(single.pilot());
   }

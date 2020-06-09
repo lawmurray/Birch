@@ -7,6 +7,10 @@ final class Sqrt(x:Expression<Real>) <
     x <- sqrt(single.value());
   }
 
+  override function doGet() {
+    x <- sqrt(single.get());
+  }
+
   override function doPilot() {
     x <- sqrt(single.pilot());
   }

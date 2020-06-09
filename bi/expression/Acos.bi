@@ -7,6 +7,10 @@ final class Acos(x:Expression<Real>) <
     x <- acos(single.value());
   }
 
+  override function doGet() {
+    x <- acos(single.get());
+  }
+
   override function doPilot() {
     x <- acos(single.pilot());
   }

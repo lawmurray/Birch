@@ -15,6 +15,10 @@ final class MatrixDiagonal(x:Expression<Real[_]>) <
     x <- diagonal(single.value());
   }
 
+  override function doGet() {
+    x <- diagonal(single.get());
+  }
+
   override function doPilot() {
     x <- diagonal(single.pilot());
   }

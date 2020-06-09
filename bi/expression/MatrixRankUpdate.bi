@@ -15,6 +15,10 @@ final class MatrixRankUpdate<Left,Right,Value>(left:Left, right:Right) <
     x <- rank_update(left.value(), right.value());
   }
 
+  override function doGet() {
+    x <- rank_update(left.get(), right.get());
+  }
+
   override function doPilot() {
     x <- rank_update(left.pilot(), right.pilot());
   }

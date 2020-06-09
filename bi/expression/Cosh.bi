@@ -7,6 +7,10 @@ final class Cosh(x:Expression<Real>) <
     x <- cosh(single.value());
   }
 
+  override function doGet() {
+    x <- cosh(single.get());
+  }
+
   override function doPilot() {
     x <- cosh(single.pilot());
   }

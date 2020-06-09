@@ -30,7 +30,7 @@ class MultivariateGaussian(μ:Expression<Real[_]>, Σ:Expression<LLT>) <
   }
 
   function simulateLazy() -> Real[_]? {
-    return simulate_multivariate_gaussian(μ.pilot(), Σ.pilot());
+    return simulate_multivariate_gaussian(μ.get(), Σ.get());
   }
   
   function logpdf(x:Real[_]) -> Real {

@@ -10,9 +10,13 @@ final class Outer<Left,Right,Value>(left:Left, right:Right) <
   override function columns() -> Integer {
     return right.rows();
   }
-    
+  
   override function doValue() {
     x <- outer(left.value(), right.value());
+  }
+
+  override function doGet() {
+    x <- outer(left.get(), right.get());
   }
 
   override function doPilot() {

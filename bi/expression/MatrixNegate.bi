@@ -15,6 +15,10 @@ final class MatrixNegate(x:Expression<Real[_,_]>) <
     x <- -single.value();
   }
 
+  override function doGet() {
+    x <- -single.get();
+  }
+
   override function doPilot() {
     x <- -single.pilot();
   }

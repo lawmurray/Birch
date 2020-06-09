@@ -7,6 +7,10 @@ final class Exp(x:Expression<Real>) <
     x <- exp(single.value());
   }
 
+  override function doGet() {
+    x <- exp(single.get());
+  }
+
   override function doPilot() {
     x <- exp(single.pilot());
   }

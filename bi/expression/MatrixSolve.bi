@@ -15,6 +15,10 @@ final class MatrixSolve<Left,Right,Value>(left:Left, right:Right) <
     x <- solve(left.value(), right.value());
   }
 
+  override function doGet() {
+    x <- solve(left.get(), right.get());
+  }
+
   override function doPilot() {
     x <- solve(left.pilot(), right.pilot());
   }

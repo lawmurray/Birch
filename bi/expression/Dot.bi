@@ -7,6 +7,10 @@ final class Dot<Left,Right,Value>(left:Left, right:Right) <
     x <- dot(left.value(), right.value());
   }
 
+  override function doGet() {
+    x <- dot(left.get(), right.get());
+  }
+
   override function doPilot() {
     x <- dot(left.pilot(), right.pilot());
   }

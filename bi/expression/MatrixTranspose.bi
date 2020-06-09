@@ -15,6 +15,10 @@ final class MatrixTranspose(x:Expression<Real[_,_]>) <
     x <- transpose(single.value());
   }
 
+  override function doGet() {
+    x <- transpose(single.get());
+  }
+
   override function doPilot() {
     x <- transpose(single.pilot());
   }

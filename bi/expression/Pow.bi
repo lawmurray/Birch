@@ -7,6 +7,10 @@ final class Pow<Left,Right,Value>(left:Left, right:Right) <
     x <- pow(left.value(), right.value());
   }
 
+  override function doGet() {
+    x <- pow(left.get(), right.get());
+  }
+
   override function doPilot() {
     x <- pow(left.pilot(), right.pilot());
   }

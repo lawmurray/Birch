@@ -102,6 +102,18 @@ final class Random<Value> < Expression<Value> {
     p <- nil;
   }
 
+  override function doGet() {
+    assert p?;
+    if p!.supportsLazy() {
+      p!.prune();
+      x <- p!.simulateLazy();
+      p!.updateLazy(this);
+      p!.unlink();
+    } else {
+      doValue();
+    }
+  }
+
   override function doPilot() {
     assert p?;
     if p!.supportsLazy() {

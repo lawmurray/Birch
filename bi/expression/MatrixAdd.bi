@@ -10,9 +10,13 @@ final class MatrixAdd<Left,Right,Value>(left:Left, right:Right) <
   override function columns() -> Integer {
     return left.columns();
   }
-    
+  
   override function doValue() {
     x <- left.value() + right.value();
+  }
+
+  override function doGet() {
+    x <- left.get() + right.get();
   }
 
   override function doPilot() {

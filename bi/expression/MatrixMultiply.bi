@@ -15,6 +15,10 @@ final class MatrixMultiply<Left,Right,Value>(left:Left, right:Right) <
     x <- left.value()*right.value();
   }
 
+  override function doGet() {
+    x <- left.get()*right.get();
+  }
+
   override function doPilot() {
     x <- left.pilot()*right.pilot();
   }

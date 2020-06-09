@@ -21,6 +21,12 @@ final class Join<Value>(x:Expression<Value>[_]) <
   override function doMakeConstant() {
     for_each(args, @(x:Expression<Value>) { x.makeConstant(); });
   }
+
+  override function doGet() {
+    x <- transform(args, @(x:Expression<Value>) -> Value {
+        return x.get();
+      });
+  }
   
   override function doPilot() {
     x <- transform(args, @(x:Expression<Value>) -> Value {

@@ -7,6 +7,10 @@ final class DiscreteNegate(x:Expression<Integer>) <
     x <- -single.value();
   }
 
+  override function doGet() {
+    x <- -single.get();
+  }
+
   override function doPilot() {
     x <- -single.pilot();
   }

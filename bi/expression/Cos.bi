@@ -7,6 +7,10 @@ final class Cos(x:Expression<Real>) <
     x <- cos(single.value());
   }
 
+  override function doGet() {
+    x <- cos(single.get());
+  }
+
   override function doPilot() {
     x <- cos(single.pilot());
   }

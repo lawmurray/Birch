@@ -7,6 +7,10 @@ final class Atan(x:Expression<Real>) <
     x <- atan(single.value());
   }
 
+  override function doGet() {
+    x <- atan(single.get());
+  }
+
   override function doPilot() {
     x <- atan(single.pilot());
   }

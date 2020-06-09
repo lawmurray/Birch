@@ -7,6 +7,10 @@ final class Negate(x:Expression<Real>) <
     x <- -single.value();
   }
 
+  override function doGet() {
+    x <- -single.get();
+  }
+
   override function doPilot() {
     x <- -single.pilot();
   }

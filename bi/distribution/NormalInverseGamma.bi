@@ -51,7 +51,7 @@ final class NormalInverseGamma(μ:Expression<Real>, a2:Expression<Real>,
   }
 
   function simulateLazy() -> Real? {
-    return simulate_normal_inverse_gamma(μ.pilot(), 1.0/λ.pilot(), σ2.α.pilot(), σ2.β.pilot());
+    return simulate_normal_inverse_gamma(μ.get(), 1.0/λ.get(), σ2.α.get(), σ2.β.get());
   }
   
   function logpdf(x:Real) -> Real {

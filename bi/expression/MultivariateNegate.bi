@@ -7,6 +7,10 @@ final class MultivariateNegate(x:Expression<Real[_]>) <
     x <- -single.value();
   }
 
+  override function doGet() {
+    x <- -single.get();
+  }
+
   override function doPilot() {
     x <- -single.pilot();
   }

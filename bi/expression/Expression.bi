@@ -11,33 +11,61 @@
  * can share that subexpression.
  *
  * More elaborate use cases include computing gradients and applying Markov
- * kernels. These may require multiple calls to member functions, and for
- * this purpose expressions are stateful:
+ * kernels. For this purpose operations are separated into *closed world*
+ * and *open world* operations. The world is that of lazy expressions.
+ *
+ * 1. The quintessential **open world** operation is `value()`. The evaluated
+ *    value may be used in any context, including eager-mode expressions and
+ *    I/O operations. Consequently, the evaluated value of the expression
+ *    must be made *constant* to avoid the inconsistency (and possibly
+ *    incorrectness) of different evaluated values being used in different
+ *    contexts.
+ *
+ * 2. **Closed world** operations include `get()`, `pilot()`, `grad()`, and
+ *    `move()`. The caller of such member functions guarantees that the value
+ *    is only used in the world of lazy expressions. The evaluated value of
+ *    the expression can remain *variable* and still produce consistent
+ *    results---it may, for example, be moved with a Markov kernel.
+ *
+ * To keep track of whether an evaluated value is open world (constant) or
+ * closed world (variable), expressions are stateful:
  *
  * - An Expression is initially considered *variable*.
- * - Once `value()` is called on the Expression, it and any subexpressions
- *   are considered *constant*.
+ * - Once an open world operation is performed on the Expression, it and any
+ *   subexpressions are considered *constant*.
  *
  * This particularly affects the `grad()` and `move()` operations:
  *
- * - `grad()` will compute gradients with respect to any
- *   [Random](../classes/Random/) objects considered variables, and similarly,
- * - `move()` will apply a Markov kernel to any [Random](../classes/Random/)
- *   objects considered variables.
+ * - `grad()` will compute gradients with respect to any variable
+ *   [Random](../classes/Random/) objects but not constant objects, and
+ *   similarly,
+ * - `move()` will apply a Markov kernel to any variable
+ *   [Random](../classes/Random/) objects but not constant objects.
+ *
+ * !!! caution
+ *     Unless you are working on something like a Markov kernel, or other
+ *     closed-world feature, you want to use `value()`, not `get()` or
+ *     `pilot()`. Doing otherwise may risk correctness. Consider:
+ *
+ *         if x.value() >= 0.0 {
+ *           doThis();
+ *         } else {
+ *           doThat();
+ *         }
+ *
+ *     This is correct usage. Using `get()` or `pilot()` instead of `value()`
+ *     here may result in a subsequent move on the value of `x` (by e.g.
+ *     `MoveParticleFilter`) that switches the sign of the evaluated value,
+ *     but does not change the branch taken, resulting in an invalid trace
+ *     and incorrect results. This is because the evaluated value of the
+ *     expression is not being used in the world of lazy expressions here:
+ *     the `if` statement is not lazily evaluated.
  */
 abstract class Expression<Value> < DelayExpression {  
   /**
    * Memoized value.
    */
   x:Value?;
-
-  /**
-   * Get the memoized value of the expression, assuming it has already been
-   * computed by a call to `value()` or `pilot()`.
-   */
-  final function get() -> Value {
-    return x!;
-  }
 
   /**
    * If this is a Random, get the distribution associated with it, if any,
@@ -48,7 +76,7 @@ abstract class Expression<Value> < DelayExpression {
   }
 
   /**
-   * Evaluate and make constant.
+   * Evaluate, open world.
    *
    * Returns: The evaluated value of the expression.
    *
@@ -57,7 +85,7 @@ abstract class Expression<Value> < DelayExpression {
    * Random objects that occur, which are no longer considered variables for
    * the purpose of `grad()` and `move()`.
    *
-   * If this is not the intended behavior, consider `pilot()`.
+   * If this is not the intended behavior, consider `get()` or `pilot()`.
    */
   final function value() -> Value {
     if !flagValue {
@@ -94,7 +122,24 @@ abstract class Expression<Value> < DelayExpression {
   abstract function doMakeConstant();
 
   /**
-   * Evaluate with count.
+   * Evaluate, closed world.
+   *
+   * Returns: The evaluated value of the expression.
+   */
+  final function get() -> Value {
+    if !x? {
+      doGet();
+    }
+    return x!;
+  }
+
+  /*
+   * Evaluate for `get()`.
+   */
+  abstract function doGet();
+
+  /**
+   * Evaluate prior to a `grad()`, closed world.
    *
    * Returns: The evaluated value of the expression.
    *
@@ -106,22 +151,6 @@ abstract class Expression<Value> < DelayExpression {
    * upstream gradients this number of times before recursing. This is an
    * important optimization for many use cases, such as computing gradients
    * through Bayesian updates.
-   *
-   * !!! caution
-   *     Unless you are working on something like a Markov kernel, you
-   *     probably want to use `value()`, not `pilot()`. Doing otherwise may
-   *     risk correctness. Consider the following:
-   *
-   *         if x.value() > 0.0 {
-   *           doThis();
-   *         } else {
-   *           doThat();
-   *         }
-   *
-   *     This is correct usage. Using `pilot()` instead of `value()` here
-   *     may result in a subsequent move on the value of `x` (by e.g.
-   *     `MoveParticleFilter`), without an adjustment on the branch taken,
-   *     resulting in an invalid trace and incorrect results.
    */
   final function pilot() -> Value {
     if count == 0 {
@@ -136,7 +165,7 @@ abstract class Expression<Value> < DelayExpression {
   }
   
   /*
-   * Evaluate and count for `pilot()`.
+   * Evaluate for `pilot()`.
    */
   abstract function doPilot();
   

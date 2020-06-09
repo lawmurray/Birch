@@ -7,6 +7,10 @@ final class ScalarMatrix(x:Expression<Real[_,_]>) <
     x <- scalar(single.value());
   }
 
+  override function doGet() {
+    x <- scalar(single.get());
+  }
+
   override function doPilot() {
     x <- scalar(single.pilot());
   }

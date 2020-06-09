@@ -7,6 +7,10 @@ final class Sin(x:Expression<Real>) <
     x <- sin(single.value());
   }
 
+  override function doGet() {
+    x <- sin(single.get());
+  }
+
   override function doPilot() {
     x <- sin(single.pilot());
   }
