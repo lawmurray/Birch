@@ -24,8 +24,7 @@ final class MatrixInv<Single,Value>(x:Single) <
   }
 
   override function doGrad() {
-    auto X <- single.get();
-    single.grad(-(transpose(X)*D!*transpose(X)));
+    single.grad(-transpose(x!)*D!*transpose(x!));
   }
 }
 

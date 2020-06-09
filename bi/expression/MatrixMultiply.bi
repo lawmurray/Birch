@@ -260,9 +260,6 @@ operator (left:Expression<Real[_,_]>*right:Real) -> Expression<Real[_,_]> {
   return right*left;
 }
 
-
-
-
 /**
  * Lazy matrix multiply.
  */
