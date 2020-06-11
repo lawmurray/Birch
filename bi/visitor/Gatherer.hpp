@@ -100,4 +100,5 @@ void bi::Gatherer<T>::visit(const T* o) {
   if (predicate(o)) {
     gathered.push_back(const_cast<T*>(o));
   }
+  Visitor::visit(o);
 }

@@ -126,6 +126,10 @@ void bi::CppBaseGenerator::visit(const Get* o) {
   middle(o->single << ".get()");
 }
 
+void bi::CppBaseGenerator::visit(const GetReturn* o) {
+  middle(o->single << ".getReturn()");
+}
+
 void bi::CppBaseGenerator::visit(const Spin* o) {
   middle(o->single << ".spin()");
 }
@@ -714,7 +718,7 @@ void bi::CppBaseGenerator::visit(const FunctionType* o) {
 }
 
 void bi::CppBaseGenerator::visit(const FiberType* o) {
-  middle("libbirch::Fiber<" << o->yieldType << ',' << o->returnType << '>');
+  middle("libbirch::Fiber<" << o->returnType << ',' << o->yieldType << '>');
 }
 
 void bi::CppBaseGenerator::visit(const OptionalType* o) {

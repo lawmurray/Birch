@@ -17,6 +17,7 @@ namespace bi {
  */
 class Transformer: public ContextualModifier {
 public:
+  virtual Expression* modify(Spin* o);
   virtual Statement* modify(Assume* o);
   virtual Statement* modify(Class* o);
   virtual Statement* modify(Fiber* o);

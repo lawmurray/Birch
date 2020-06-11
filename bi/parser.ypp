@@ -143,6 +143,7 @@
 
 %type <valType> named_type primary_type type type_list optional_type_list
 %type <valType> return_type optional_return_type
+%type <valType> fiber_return_type optional_fiber_return_type
 %type <valType> generic_argument generic_argument_list generic_arguments optional_generic_arguments
 
 %type <valBool> weak_modifier
@@ -206,7 +207,7 @@ cast_expression
     ;
 
 function_expression
-    : '@' parameters optional_return_type optional_braces  { $$ = new bi::LambdaFunction($2, $3, $4, make_loc(@$)); }
+    : '\\' parameters optional_return_type optional_braces  { $$ = new bi::LambdaFunction($2, $3, $4, make_loc(@$)); }
     ;
 
 this_expression
@@ -254,10 +255,12 @@ postfix_expression
     | postfix_expression slice           { $$ = new bi::Slice($1, $2, make_loc(@$)); }
     | postfix_expression arguments       { $$ = new bi::Call($1, $2, make_loc(@$)); }
     | postfix_expression '!'             { $$ = new bi::Get($1, make_loc(@$)); }
-    | postfix_expression SPIN_OP         { $$ = new bi::Spin($1, make_loc(@$)); }
+    | postfix_expression '%'             { $$ = new bi::GetReturn($1, make_loc(@$)); }
     ;
 
 query_expression
+    /* separating this from postfix_expression resolves ambiguity between
+     * x? and Type?(x) expressions */
     : postfix_expression
     | postfix_expression '?'  { $$ = new bi::Query($1, make_loc(@$)); }
     ;
@@ -271,6 +274,7 @@ prefix_operator
 prefix_expression
     : query_expression
     | prefix_operator prefix_expression  { $$ = new bi::UnaryCall($1, $2, make_loc(@$)); }
+    | '@' prefix_expression              { $$ = new bi::Spin($2, make_loc(@$)); }
     ;
 
 multiplicative_operator
@@ -495,7 +499,7 @@ function_declaration
     ;
 
 fiber_declaration
-    : FIBER name optional_generics parameters optional_return_type { push_raw(); } optional_braces  { $$ = new bi::Fiber(bi::NONE, $2, $3, $4, $5, $7, make_doc_loc(@$)); }
+    : FIBER name optional_generics parameters optional_fiber_return_type { push_raw(); } optional_braces  { $$ = new bi::Fiber(bi::NONE, $2, $3, $4, $5, $7, make_doc_loc(@$)); }
     ;
 
 member_function_annotation
@@ -513,8 +517,8 @@ member_function_declaration
     ;
 
 member_fiber_declaration
-    : member_function_annotation FIBER name optional_generics parameters optional_return_type { push_raw(); } optional_braces  { $$ = new bi::MemberFiber($1, $3, $4, $5, $6, $8, make_doc_loc(@$)); }
-    | FIBER name optional_generics parameters optional_return_type { push_raw(); } optional_braces                             { $$ = new bi::MemberFiber(bi::NONE, $2, $3, $4, $5, $7, make_doc_loc(@$)); }
+    : member_function_annotation FIBER name optional_generics parameters optional_fiber_return_type { push_raw(); } optional_braces  { $$ = new bi::MemberFiber($1, $3, $4, $5, $6, $8, make_doc_loc(@$)); }
+    | FIBER name optional_generics parameters optional_fiber_return_type { push_raw(); } optional_braces                             { $$ = new bi::MemberFiber(bi::NONE, $2, $3, $4, $5, $7, make_doc_loc(@$)); }
     ;
 
 program_declaration
@@ -721,6 +725,17 @@ optional_return_type
     |              { $$ = empty_type(@$); }
     ;
 
+fiber_return_type 
+    : RIGHT_OP type                   { $$ = new bi::FiberType(empty_type(@$), $2, make_loc(@$)); }
+    | RIGHT_OP type '%' primary_type  { $$ = new bi::FiberType($2, $4, make_loc(@$)); }
+    | RIGHT_OP type '%'               { $$ = new bi::FiberType($2, empty_type(@$), make_loc(@$)); }
+    ;
+    
+optional_fiber_return_type
+    : fiber_return_type
+    |                    { $$ = new bi::FiberType(empty_type(@$), empty_type(@$), make_loc(@$)); }
+    ;
+
 value
     : LEFT_OP expression  { $$ = $2; }
     ;
@@ -773,12 +788,14 @@ primary_type
 
 type
     : primary_type
-    | type '?'                                             { $$ = new bi::OptionalType($1, make_loc(@$)); }
-    | type '!'                                             { $$ = new bi::FiberType($1, empty_type(@$), make_loc(@$)); }
-    | type '!' primary_type                                { $$ = new bi::FiberType($1, $3, make_loc(@$)); }
-    | named_type '.' named_type                            { $$ = new bi::MemberType($1, $3, make_loc(@$)); }
-    | type '[' shape ']'                                   { $$ = new bi::ArrayType($1, $3, make_loc(@$)); }
-    | '@' '(' optional_type_list ')' optional_return_type  { $$ = new bi::FunctionType($3, $5, make_loc(@$)); }
+    | type '?'                                              { $$ = new bi::OptionalType($1, make_loc(@$)); }
+    | type '%' primary_type '!'                             { $$ = new bi::FiberType($1, $3, make_loc(@$)); }
+    | type '!'                                              { $$ = new bi::FiberType(empty_type(@$), $1, make_loc(@$)); }
+    | type '%' '!'                                          { $$ = new bi::FiberType($1, empty_type(@$), make_loc(@$)); }
+    | '!'                                                   { $$ = new bi::FiberType(empty_type(@$), empty_type(@$), make_loc(@$)); }
+    | named_type '.' named_type                             { $$ = new bi::MemberType($1, $3, make_loc(@$)); }
+    | type '[' shape ']'                                    { $$ = new bi::ArrayType($1, $3, make_loc(@$)); }
+    | '\\' '(' optional_type_list ')' optional_return_type  { $$ = new bi::FunctionType($3, $5, make_loc(@$)); }
     ;
 
 type_list

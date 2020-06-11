@@ -58,7 +58,7 @@ void bi::CppResumeGenerator::visit(const Function* o) {
     start("struct ");
     genUniqueName(o);
     middle(" final : public libbirch::FiberState<");
-    finish(fiberType->yieldType << ',' << fiberType->returnType << "> {");
+    finish(fiberType->returnType << ',' << fiberType->yieldType << "> {");
     in();
 
     if (params) {
@@ -110,8 +110,8 @@ void bi::CppResumeGenerator::visit(const Function* o) {
       start("LIBBIRCH_FIBER(");
     }
     genUniqueName(o);
-    middle(", libbirch::FiberState<" << fiberType->yieldType << ',');
-    finish(fiberType->returnType << ">)");
+    middle(", libbirch::FiberState<" << fiberType->returnType << ',');
+    finish(fiberType->yieldType << ">)");
     start("LIBBIRCH_MEMBERS(");
     if (params) {
       middle("param_");
@@ -197,7 +197,6 @@ void bi::CppResumeGenerator::visit(const LocalVariable* o) {
   auto name = getName(o->name->str(), o->number);
   if (o->has(RESUME)) {
     start("[[maybe_unused]] auto& " << name);
-    middle("/* " << o->number << " */");
     finish(" = local_.template get<" << localIndex++ << ">();");
   } else {
     genTraceLine(o->loc);
@@ -206,7 +205,6 @@ void bi::CppResumeGenerator::visit(const LocalVariable* o) {
     } else {
       start(o->type << ' ' << name);
     }
-    middle("/* " << o->number << " */");
     genInit(o);
     finish(';');
   }
@@ -215,7 +213,6 @@ void bi::CppResumeGenerator::visit(const LocalVariable* o) {
 void bi::CppResumeGenerator::visit(const NamedExpression* o) {
   if (o->isLocal()) {
     middle(getName(o->name->str(), o->number));
-    middle("/* " << o->number << " */");
     if (!o->typeArgs->isEmpty()) {
       middle('<' << o->typeArgs << '>');
     }

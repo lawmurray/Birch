@@ -39,6 +39,7 @@ public:
   virtual Expression* modify(Slice* o);
   virtual Expression* modify(Query* o);
   virtual Expression* modify(Get* o);
+  virtual Expression* modify(GetReturn* o);
   virtual Expression* modify(Spin* o);
   virtual Expression* modify(LambdaFunction* o);
   virtual Expression* modify(Span* o);

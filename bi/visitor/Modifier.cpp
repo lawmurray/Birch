@@ -100,6 +100,11 @@ bi::Expression* bi::Modifier::modify(Get* o) {
   return o;
 }
 
+bi::Expression* bi::Modifier::modify(GetReturn* o) {
+  o->single = o->single->accept(this);
+  return o;
+}
+
 bi::Expression* bi::Modifier::modify(Spin* o) {
   o->single = o->single->accept(this);
   return o;
@@ -394,8 +399,8 @@ bi::Type* bi::Modifier::modify(FunctionType* o) {
 }
 
 bi::Type* bi::Modifier::modify(FiberType* o) {
-  o->yieldType = o->yieldType->accept(this);
   o->returnType = o->returnType->accept(this);
+  o->yieldType = o->yieldType->accept(this);
   return o;
 }
 

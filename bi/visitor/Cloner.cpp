@@ -84,6 +84,10 @@ bi::Expression* bi::Cloner::clone(const Get* o) {
   return new Get(o->single->accept(this), o->loc);
 }
 
+bi::Expression* bi::Cloner::clone(const GetReturn* o) {
+  return new GetReturn(o->single->accept(this), o->loc);
+}
+
 bi::Expression* bi::Cloner::clone(const Spin* o) {
   return new Spin(o->single->accept(this), o->loc);
 }
@@ -315,8 +319,8 @@ bi::Type* bi::Cloner::clone(const FunctionType* o) {
 }
 
 bi::Type* bi::Cloner::clone(const FiberType* o) {
-  return new FiberType(o->yieldType->accept(this),
-      o->returnType->accept(this), o->loc);
+  return new FiberType(o->returnType->accept(this),
+      o->yieldType->accept(this), o->loc);
 }
 
 bi::Type* bi::Cloner::clone(const OptionalType* o) {

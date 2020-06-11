@@ -91,6 +91,10 @@ void bi::Visitor::visit(const Get* o) {
   o->single->accept(this);
 }
 
+void bi::Visitor::visit(const GetReturn* o) {
+  o->single->accept(this);
+}
+
 void bi::Visitor::visit(const Spin* o) {
   o->single->accept(this);
 }
@@ -342,8 +346,8 @@ void bi::Visitor::visit(const FunctionType* o) {
 }
 
 void bi::Visitor::visit(const FiberType* o) {
-  o->yieldType->accept(this);
   o->returnType->accept(this);
+  o->yieldType->accept(this);
 }
 
 void bi::Visitor::visit(const OptionalType* o) {

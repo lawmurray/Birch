@@ -5,6 +5,14 @@
 
 #include "bi/visitor/all.hpp"
 
+bi::Expression* bi::Transformer::modify(Spin* o) {
+  ContextualModifier::modify(o);
+
+  /* Spinner will have previously extracted a loop for the spin portion of
+   * the operation, now just need to replace with a get of the return value */
+  return new GetReturn(o->single, o->loc);
+}
+
 bi::Statement* bi::Transformer::modify(Assume* o) {
   Cloner cloner;
 

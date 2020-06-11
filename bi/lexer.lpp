@@ -158,6 +158,7 @@ E                                  [Ee][+-]?{D}+
 "-"                                 { return '-'; }
 "*"                                 { return '*'; }
 "/"                                 { return '/'; }
+"\\"                                { return '\\'; }
 ";"                                 { return ';'; }
 "{"                                 { return '{'; }
 "}"                                 { return '}'; }
@@ -171,6 +172,7 @@ E                                  [Ee][+-]?{D}+
 "."                                 { return '.'; }
 "_"                                 { return '_'; }
 "@"                                 { return '@'; }
+"%"                                 { return '%'; }
 .                                   { yyerror("syntax error"); }
 
 %%

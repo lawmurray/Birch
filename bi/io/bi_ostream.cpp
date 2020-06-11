@@ -85,12 +85,16 @@ void bi::bi_ostream::visit(const Get* o) {
   middle(o->single << '!');
 }
 
+void bi::bi_ostream::visit(const GetReturn* o) {
+  middle(o->single << '%');
+}
+
 void bi::bi_ostream::visit(const Spin* o) {
-  middle(o->single << "!!");
+  middle('@' << o->single);
 }
 
 void bi::bi_ostream::visit(const LambdaFunction* o) {
-  middle("@(" << o->params << ')');
+  middle("\\(" << o->params << ')');
   if (!o->returnType->isEmpty()) {
     middle(" -> " << o->returnType);
   }
@@ -259,7 +263,13 @@ void bi::bi_ostream::visit(const Fiber* o) {
   }
   middle('(' << o->params << ')');
   if (!o->returnType->isEmpty()) {
-    middle(" -> " << o->returnType);
+    auto type = dynamic_cast<const FiberType*>(o->returnType);
+    assert(type);
+    middle(" -> ");
+    if (!type->returnType->isEmpty()) {
+      middle(type->returnType << '%');
+    }
+    middle(type->yieldType);
   }
   if (!o->braces->isEmpty() && (!header || o->isGeneric())) {
     finish(o->braces << "\n");
@@ -318,7 +328,13 @@ void bi::bi_ostream::visit(const MemberFiber* o) {
   }
   middle('(' << o->params << ')');
   if (!o->returnType->isEmpty()) {
-    middle(" -> " << o->returnType);
+    auto type = dynamic_cast<const FiberType*>(o->returnType);
+    assert(type);
+    middle(" -> ");
+    if (!type->returnType->isEmpty()) {
+      middle(type->returnType << '%');
+    }
+    middle(type->yieldType);
   }
   if (!o->braces->isEmpty() && (!header || (type && type->isGeneric()))) {
     finish(o->braces << "\n");
@@ -506,14 +522,17 @@ void bi::bi_ostream::visit(const TupleType* o) {
 }
 
 void bi::bi_ostream::visit(const FunctionType* o) {
-  middle("@(" << o->params << ')');
+  middle("\\(" << o->params << ')');
   if (!o->returnType->isEmpty()) {
     middle(" -> " << o->returnType);
   }
 }
 
 void bi::bi_ostream::visit(const FiberType* o) {
-  middle(o->yieldType << '!' << o->returnType);
+  if (!o->returnType->isEmpty()) {
+    middle(o->returnType << '%');
+  }
+  middle(o->yieldType << '!');
 }
 
 void bi::bi_ostream::visit(const OptionalType* o) {

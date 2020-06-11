@@ -13,16 +13,16 @@ namespace bi {
    *
    * @ingroup type
    */
-  class FiberType: public Type, public YieldTyped, public ReturnTyped {
+  class FiberType: public Type, public ReturnTyped, public YieldTyped {
   public:
     /**
      * Constructor.
      *
-     * @param yieldType Yield type.
      * @param returnType Return type.
+     * @param yieldType Yield type.
      * @param loc Location.
      */
-    FiberType(Type* yieldType, Type* returnType, Location* loc = nullptr);
+    FiberType(Type* returnType, Type* yieldType, Location* loc = nullptr);
 
     /**
      * Destructor.

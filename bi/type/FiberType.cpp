@@ -5,10 +5,10 @@
 
 #include "bi/visitor/all.hpp"
 
-bi::FiberType::FiberType(Type* yieldType, Type* returnType, Location* loc) :
+bi::FiberType::FiberType(Type* returnType, Type* yieldType, Location* loc) :
     Type(loc),
-    YieldTyped(yieldType),
-    ReturnTyped(returnType) {
+    ReturnTyped(returnType),
+    YieldTyped(yieldType) {
   //
 }
 
