@@ -42,7 +42,7 @@
  * - `move()` will apply a Markov kernel to any variable
  *   [Random](../classes/Random/) objects but not constant objects.
  *
- * !!! caution
+ * !!! attention
  *     Unless you are working on something like a Markov kernel, or other
  *     closed-world feature, you want to use `value()`, not `get()` or
  *     `pilot()`. Doing otherwise may risk correctness. Consider:

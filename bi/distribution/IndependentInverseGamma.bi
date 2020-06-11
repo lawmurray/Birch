@@ -50,14 +50,14 @@ final class IndependentInverseGamma(α:Expression<Real>,
   }
 
   function simulate() -> Real[_] {
-    return transform<Real>(β.value(), @(b:Real) -> Real {
+    return transform<Real>(β.value(), \(b:Real) -> Real {
         return simulate_inverse_gamma(α.value(), b); });
   }
   
   function logpdf(x:Real[_]) -> Real {
-    return transform_reduce<Real>(x, β.value(), 0.0, @(a:Real, b:Real) -> Real {
+    return transform_reduce<Real>(x, β.value(), 0.0, \(a:Real, b:Real) -> Real {
         return a + b;
-      }, @(x:Real, b:Real) -> Real {
+      }, \(x:Real, b:Real) -> Real {
         return logpdf_inverse_gamma(x, α.value(), b);
       });
   }

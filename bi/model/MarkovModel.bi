@@ -36,7 +36,7 @@ class MarkovModel<Parameter,State> < Model {
   }
 
   fiber simulate() -> Event {
-    parameter(θ)!!;
+    @parameter(θ);
   }
   
   fiber simulate(t:Integer) -> Event {
@@ -53,11 +53,11 @@ class MarkovModel<Parameter,State> < Model {
     }
     
     if before? {
-      transition(here!, before!, θ)!!;
+      @transition(here!, before!, θ);
       x.pushBefore(before!);
       x.pushBefore(here!);
     } else {
-      initial(here!, θ)!!;
+      @initial(here!, θ);
       x.pushBefore(here!);
     }
   }

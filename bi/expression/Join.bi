@@ -13,39 +13,39 @@ final class Join<Value>(x:Expression<Value>[_]) <
   }
 
   override function doValue() {
-    x <- transform(args, @(x:Expression<Value>) -> Value {
+    x <- transform(args, \(x:Expression<Value>) -> Value {
         return x.value();
       });
   }
 
   override function doMakeConstant() {
-    for_each(args, @(x:Expression<Value>) { x.makeConstant(); });
+    for_each(args, \(x:Expression<Value>) { x.makeConstant(); });
   }
 
   override function doGet() {
-    x <- transform(args, @(x:Expression<Value>) -> Value {
+    x <- transform(args, \(x:Expression<Value>) -> Value {
         return x.get();
       });
   }
   
   override function doPilot() {
-    x <- transform(args, @(x:Expression<Value>) -> Value {
+    x <- transform(args, \(x:Expression<Value>) -> Value {
         return x.pilot();
       });
   }
 
   override function doRestoreCount() {
-    for_each(args, @(x:Expression<Value>) { x.restoreCount(); });
+    for_each(args, \(x:Expression<Value>) { x.restoreCount(); });
   }
 
   override function doMove(κ:Kernel) {
-    x <- transform(args, @(x:Expression<Value>) -> Value {
+    x <- transform(args, \(x:Expression<Value>) -> Value {
         return x.move(κ);
       });
   }
   
   override function doGrad() {
-    for_each(args, d!, @(x:Expression<Value>, d:Value) { x.grad(d); });
+    for_each(args, d!, \(x:Expression<Value>, d:Value) { x.grad(d); });
   }
 
   override function doPrior(vars:RaggedArray<DelayExpression>) ->

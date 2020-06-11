@@ -12,6 +12,6 @@ function wasserstein(x1:Real[_], x2:Real[_]) -> Real {
   auto N <- length(x1);
   auto y1 <- sort<Real>(x1);
   auto y2 <- sort<Real>(x2);
-  return reduce<Real>(y1 - y2, 0.0, @(a:Real, b:Real) -> Real {
+  return reduce<Real>(y1 - y2, 0.0, \(a:Real, b:Real) -> Real {
       return abs(a) + abs(b); })/N;
 }

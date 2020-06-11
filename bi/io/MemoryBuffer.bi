@@ -27,7 +27,7 @@ class MemoryBuffer < Buffer {
   }
 
   fiber walk() -> Buffer {
-    value.walk()!!;
+    @value.walk();
   }
 
   function push() -> Buffer {

@@ -58,8 +58,8 @@ function log_sum_exp(x:Real[_]) -> Real {
  * Take the logarithm of each element of a vector and return the sum.
  */
 function log_sum(x:Real[_]) -> Real {
-  return transform_reduce<Real>(x, 0.0, @(x:Real, y:Real) -> Real {
-      return x + y; }, @(x:Real) -> Real { return log(x); });
+  return transform_reduce<Real>(x, 0.0, \(x:Real, y:Real) -> Real {
+      return x + y; }, \(x:Real) -> Real { return log(x); });
 }
 
 /**
@@ -86,7 +86,7 @@ function norm_exp(x:Real[_]) -> Real[_] {
     r <- r + nan_exp(x[n] - mx);
   }
   auto W <- mx + log(r);
-  return transform<Real>(x, @(w:Real) -> Real { return nan_exp(w - W); });
+  return transform<Real>(x, \(w:Real) -> Real { return nan_exp(w - W); });
 }
 
 /**
@@ -238,7 +238,7 @@ function cumulative_offspring_to_ancestors_permute(O:Integer[_]) ->
  * Convert a cumulative offspring vector into an offspring vector.
  */
 function cumulative_offspring_to_offspring(O:Integer[_]) -> Integer[_] {
-  return adjacent_difference<Integer>(O, @(x:Integer, y:Integer) -> Integer {
+  return adjacent_difference<Integer>(O, \(x:Integer, y:Integer) -> Integer {
       return x - y; });
 }
 

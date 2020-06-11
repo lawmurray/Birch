@@ -6,17 +6,17 @@
 #include "libbirch/Any.hpp"
 
 namespace libbirch {
-template<class Yield, class Return> class Fiber;
+template<class Return, class Yield> class Fiber;
 
 /**
  * Abstract state of a fiber.
  *
  * @ingroup libbirch
  *
- * @tparam Yield Yield type.
  * @tparam Return Return type.
+ * @tparam Yield Yield type.
  */
-template<class Yield, class Return>
+template<class Return, class Yield>
 class FiberState: public Any {
 public:
   LIBBIRCH_ABSTRACT_CLASS(FiberState, Any)
@@ -34,6 +34,6 @@ public:
    *
    * @return New fiber handle.
    */
-  virtual Fiber<Yield,Return> query() = 0;
+  virtual Fiber<Return,Yield> query() = 0;
 };
 }

@@ -14,15 +14,15 @@ namespace libbirch {
  *
  * @ingroup libbirch
  *
- * @tparam Yield Yield type.
  * @tparam Return Return type.
+ * @tparam Yield Yield type.
  */
-template<class Yield, class Return>
+template<class Return, class Yield>
 class Fiber {
 public:
-  using yield_type = Yield;
   using return_type = Return;
-  using state_type = Lazy<Shared<FiberState<Yield,Return>>>;
+  using yield_type = Yield;
+  using state_type = Lazy<Shared<FiberState<Return,Yield>>>;
 
   /**
    * Constructor. Used:
@@ -74,7 +74,7 @@ public:
    */
   template<class Visitor>
   void accept_(const Visitor& v) {
-    v.visit(yieldValue, returnValue, state);
+    v.visit(returnValue, yieldValue, state);
   }
 
   /**
@@ -83,8 +83,8 @@ public:
    * @return Was a value yielded?
    */
   bool query() {
-    yieldValue = nil;
     returnValue = nil;
+    yieldValue = nil;
     if (state.query()) {
       *this = state.get()->query();
     }
@@ -110,20 +110,20 @@ public:
   /**
    * Get the current return value.
    */
-  auto spin() const {
+  auto getReturn() const {
     return returnValue.get();
   }
 
 private:
   /**
-   * Yield value.
-   */
-  Optional<yield_type> yieldValue;
-
-  /**
    * Return value.
    */
   Optional<return_type> returnValue;
+
+  /**
+   * Yield value.
+   */
+  Optional<yield_type> yieldValue;
 
   /**
    * Fiber state.
@@ -132,11 +132,11 @@ private:
 };
 
 template<class Return>
-class Fiber<void,Return> {
+class Fiber<Return,void> {
 public:
-  using yield_type = void;
   using return_type = Return;
-  using state_type = Lazy<Shared<FiberState<yield_type,return_type>>>;
+  using yield_type = void;
+  using state_type = Lazy<Shared<FiberState<return_type,yield_type>>>;
 
   Fiber() {
     //
@@ -169,7 +169,7 @@ public:
     return const_cast<Fiber*>(this)->query();
   }
 
-  auto spin() const {
+  auto getReturn() const {
     return returnValue.get();
   }
 
@@ -179,11 +179,11 @@ private:
 };
 
 template<class Yield>
-class Fiber<Yield,void> {
+class Fiber<void,Yield> {
 public:
-  using yield_type = Yield;
   using return_type = void;
-  using state_type = Lazy<Shared<FiberState<yield_type,return_type>>>;
+  using yield_type = Yield;
+  using state_type = Lazy<Shared<FiberState<return_type,yield_type>>>;
 
   Fiber() {
     //
@@ -221,7 +221,7 @@ public:
     return yieldValue.get();
   }
 
-  void spin() const {
+  void getReturn() const {
     //
   }
 
@@ -233,9 +233,9 @@ private:
 template<>
 class Fiber<void,void> {
 public:
-  using yield_type = void;
   using return_type = void;
-  using state_type = Lazy<Shared<FiberState<yield_type,return_type>>>;
+  using yield_type = void;
+  using state_type = Lazy<Shared<FiberState<return_type,yield_type>>>;
 
   Fiber() {
     //
@@ -262,7 +262,7 @@ public:
     return const_cast<Fiber*>(this)->query();
   }
 
-  void spin() const {
+  void getReturn() const {
     //
   }
 
@@ -270,13 +270,13 @@ private:
   Optional<state_type> state;
 };
 
-template<class Yield, class Return>
-struct is_value<Fiber<Yield,Return>> {
+template<class Return, class Yield>
+struct is_value<Fiber<Return,Yield>> {
   static const bool value = false;
 };
 
-template<class Yield, class Return>
-auto canonical(const Fiber<Yield,Return>& o) {
+template<class Return, class Yield>
+auto canonical(const Fiber<Return,Yield>& o) {
   return o;
 }
 
