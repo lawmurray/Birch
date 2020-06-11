@@ -270,49 +270,5 @@ private:
    * Leftover command-line arguments for program calls.
    */
   std::vector<char*> largv;
-
-  /**
-   * Compile and run the package for each of a set of parameter values,
-   * set the parameter to the value corresponding to the fastest time, and
-   * return that time.
-   *
-   * @param parameter Pointer to the parameter to set (typically a member
-   * variable of the same object, e.g. cloneMemoInitialSize).
-   * @param values List of values of the parameter to try.
-   *
-   * @return The fastest time.
-   */
-  template<class T>
-  double choose(T* parameter, const std::initializer_list<T>& values);
 };
-}
-
-template<class T>
-double bi::Driver::choose(T* parameter,
-    const std::initializer_list<T>& values) {
-  assert(values.size() > 0);
-
-  double t = std::numeric_limits<double>::infinity();
-  double best = t;
-  int strikes = 0;
-  T chosen = *values.begin();
-
-  for (auto value = values.begin(); value != values.end() && strikes < 3;
-      ++value) {
-    *parameter = *value;
-    std::cerr << '@' << *value << " = ";
-    t = time();
-    std::cerr << t << 's';
-    if (t < best) {
-      std::cerr << '*';
-      best = t;
-      chosen = *value;
-      strikes = 0;
-    } else {
-      ++strikes;
-    }
-    std::cerr << std::endl;
-  }
-  *parameter = chosen;
-  return t;
 }
