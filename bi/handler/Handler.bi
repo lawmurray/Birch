@@ -1,10 +1,4 @@
 /**
- * Trace of a model execution. Each record in the trace corresponds to an
- * event emitted during execution.
- */
-class Trace = Tape<Record>;
-
-/**
  * Event handler that eagerly computes weights.
  *
  * The Handler class hierarchy is as follows:
@@ -64,7 +58,7 @@ abstract class Handler {
    *
    * Returns: Accumulated log-weight.
    */
-  function handle(input:Trace, events:Event!) -> Real {
+  function handle(input:Tape<Record>, events:Event!) -> Real {
     auto w <- 0.0;
     while w > -inf && events? {
       w <- w + handle(input.here(), events!);
@@ -85,7 +79,7 @@ abstract class Handler {
    *
    * Returns: Accumulated log-weight.
    */
-  final function handle<Container>(input:Trace, events:Event!,
+  final function handle<Container>(input:Tape<Record>, events:Event!,
       output:Container) -> Real {
     auto w <- 0.0;
     while w > -inf && events? {

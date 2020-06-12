@@ -8,12 +8,12 @@
  */
 class ConditionalParticleFilter < ParticleFilter {
   /**
-   * Trace of the reference particle. This will have no value for the first
+   * Tape<Record> of the reference particle. This will have no value for the first
    * iteration of the filter. Subsequent iterations will draw a particle from
    * the previous iteration to condition the new iteration, setting this
    * variable.
    */
-  r:Trace?;
+  r:Tape<Record>?;
 
   /**
    * Chosen particle index. This is the index, at the final step, of the

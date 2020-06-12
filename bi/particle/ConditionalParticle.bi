@@ -10,10 +10,10 @@
  */
 class ConditionalParticle(m:Model) < Particle(m) {
   /**
-   * Trace of the model simulation. This is required in order to replay the
+   * Tape<Record> of the model simulation. This is required in order to replay the
    * particle.
    */
-  trace:Trace;
+  trace:Tape<Record>;
 }
 
 /**

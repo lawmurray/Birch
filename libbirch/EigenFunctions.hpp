@@ -178,11 +178,6 @@ auto outer(const Eigen::MatrixBase<T>& o1, const Eigen::MatrixBase<U>& o2) {
 }
 
 template<class T>
-auto outer(const Eigen::MatrixBase<T>& o1, const libbirch::DefaultArray<bi::type::Real64,1>& o2) {
-  return outer(o1, o2.toEigen());
-}
-
-template<class T>
 auto outer(const libbirch::DefaultArray<bi::type::Real64,1>& o1, const Eigen::MatrixBase<T>& o2) {
   return outer(o1.toEigen(), o2);
 }
@@ -240,7 +235,7 @@ auto trace(const Eigen::MatrixBase<T>& o) {
 
 template<class T>
 auto trace(const Eigen::LLT<T>& o) {
-  return o.trace();
+  return o.reconstructedMatrix().trace();
 }
 
 template<class T>
@@ -272,7 +267,7 @@ auto det(const Eigen::LLT<T>& o) {
 
 template<class T>
 auto det(const Eigen::DiagonalWrapper<T>& o) {
-  return o.determinant();
+  return o.diagonal().array().prod();
 }
 
 template<class T, unsigned Mode>
@@ -299,7 +294,7 @@ auto ldet(const Eigen::LLT<T>& o) {
 
 template<class T>
 auto ldet(const Eigen::DiagonalWrapper<T>& o) {
-  return o.array().log().sum();
+  return o.diagonal().array().log().sum();
 }
 
 template<class T, unsigned Mode>
@@ -355,6 +350,21 @@ auto solve(const Eigen::MatrixBase<T>& o1, const Eigen::MatrixBase<U>& o2) {
   return o1.householderQr().solve(o2).eval();
 }
 
+template<class T, class U>
+auto solve(const Eigen::MatrixBase<T>& o1, const Eigen::LLT<U>& o2) {
+  return o1.householderQr().solve(o2.reconstructedMatrix()).eval();
+}
+
+template<class T, class U>
+auto solve(const Eigen::MatrixBase<T>& o1, const Eigen::DiagonalWrapper<U>& o2) {
+  return o1.householderQr().solve(o2).eval();
+}
+
+template<class T, class U, unsigned Mode>
+auto solve(const Eigen::MatrixBase<T>& o1, const Eigen::TriangularView<U,Mode>& o2) {
+  return o1.householderQr().solve(o2).eval();
+}
+
 template<class T>
 auto solve(const Eigen::MatrixBase<T>& o1, const libbirch::DefaultArray<bi::type::Real64,2>& o2) {
   return solve(o1, o2.toEigen());
@@ -367,6 +377,21 @@ auto solve(const Eigen::MatrixBase<T>& o1, const libbirch::DefaultArray<bi::type
 
 template<class T>
 auto solve(const libbirch::DefaultArray<bi::type::Real64,2>& o1, const Eigen::MatrixBase<T>& o2) {
+  return solve(o1.toEigen(), o2);
+}
+
+template<class T>
+auto solve(const libbirch::DefaultArray<bi::type::Real64,2>& o1, const Eigen::LLT<T>& o2) {
+  return solve(o1.toEigen(), o2.reconstructedMatrix());
+}
+
+template<class T>
+auto solve(const libbirch::DefaultArray<bi::type::Real64,2>& o1, const Eigen::DiagonalWrapper<T>& o2) {
+  return solve(o1.toEigen(), o2);
+}
+
+template<class T, unsigned Mode>
+auto solve(const libbirch::DefaultArray<bi::type::Real64,2>& o1, const Eigen::TriangularView<T,Mode>& o2) {
   return solve(o1.toEigen(), o2);
 }
 
@@ -383,6 +408,21 @@ auto solve(const Eigen::LLT<T>& o1, const Eigen::MatrixBase<U>& o2) {
   return o1.solve(o2).eval();
 }
 
+template<class T, class U>
+auto solve(const Eigen::LLT<T>& o1, const Eigen::LLT<U>& o2) {
+  return o1.solve(o2.reconstructedMatrix()).eval();
+}
+
+template<class T, class U>
+auto solve(const Eigen::LLT<T>& o1, const Eigen::DiagonalWrapper<U>& o2) {
+  return o1.solve(o2).eval();
+}
+
+template<class T, class U, unsigned Mode>
+auto solve(const Eigen::LLT<T>& o1, const Eigen::TriangularView<U,Mode>& o2) {
+  return o1.solve(o2).eval();
+}
+
 template<class T>
 auto solve(const Eigen::LLT<T>& o1, const libbirch::DefaultArray<bi::type::Real64,2>& o2) {
   return solve(o1, o2.toEigen());
@@ -393,8 +433,24 @@ auto solve(const Eigen::LLT<T>& o1, const libbirch::DefaultArray<bi::type::Real6
   return solve(o1, o2.toEigen());
 }
 
+
 template<class T, class U>
 auto solve(const Eigen::DiagonalWrapper<T>& o1, const Eigen::MatrixBase<U>& o2) {
+  return o1.inverse()*o2;
+}
+
+template<class T, class U>
+auto solve(const Eigen::DiagonalWrapper<T>& o1, const Eigen::LLT<U>& o2) {
+  return o1.inverse()*o2.reconstructedMatrix();
+}
+
+template<class T, class U>
+auto solve(const Eigen::DiagonalWrapper<T>& o1, const Eigen::DiagonalWrapper<U>& o2) {
+  return o1.inverse()*o2;
+}
+
+template<class T, class U, unsigned Mode>
+auto solve(const Eigen::DiagonalWrapper<T>& o1, const Eigen::TriangularView<U,Mode>& o2) {
   return o1.inverse()*o2;
 }
 
@@ -410,6 +466,21 @@ auto solve(const Eigen::DiagonalWrapper<T>& o1, const libbirch::DefaultArray<bi:
 
 template<class T, unsigned Mode1, class U>
 auto solve(const Eigen::TriangularView<T,Mode1>& o1, const Eigen::MatrixBase<U>& o2) {
+  return o1.solve(o2).eval();
+}
+
+template<class T, unsigned Mode1, class U>
+auto solve(const Eigen::TriangularView<T,Mode1>& o1, const Eigen::LLT<U>& o2) {
+  return o1.solve(o2.reconstructedMatrix()).eval();
+}
+
+template<class T, unsigned Mode1, class U>
+auto solve(const Eigen::TriangularView<T,Mode1>& o1, const Eigen::DiagonalWrapper<U>& o2) {
+  return o1.solve(o2).eval();
+}
+
+template<class T, unsigned Mode1, class U, unsigned Mode2>
+auto solve(const Eigen::TriangularView<T,Mode1>& o1, const Eigen::TriangularView<U,Mode2>& o2) {
   return o1.solve(o2).eval();
 }
 

@@ -18,8 +18,8 @@ class ParticleGibbsSampler < ConditionalParticleSampler {
 
     if filter.r? {
       /* Gibbs update of parameters */ 
-      r:Trace <- filter.r!;       
-      r':Trace;
+      r:Tape<Record> <- filter.r!;       
+      r':Tape<Record>;
       
       auto play <- PlayHandler(true);
       auto x' <- clone(archetype);

@@ -75,9 +75,5 @@ function outer(left:Expression<Real[_]>, right:Real[_]) ->
  * Lazy `outer`.
  */
 function outer(single:Expression<Real[_]>) -> Expression<Real[_,_]> {
-  if single.isConstant() {
-    return box(matrix(outer(single.value())));
-  } else {
-    return outer(single, single);
-  }
+  return outer(single, single);
 }

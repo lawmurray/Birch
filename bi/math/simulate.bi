@@ -711,7 +711,7 @@ function simulate_linear_multivariate_normal_inverse_gamma_multivariate_gaussian
   auto μ <- solve(Λ, ν);
   auto β <- γ - 0.5*dot(μ, ν);
   return simulate_multivariate_student_t(2.0*α, A*μ + c,
-      llt((β/α)*(identity(n) + outer(transpose(solve(cholesky(Λ), transpose(A)))))));
+      llt((β/α)*(identity(n) + A*solve(Λ, transpose(A)))));
 }
 
 /**
@@ -730,7 +730,8 @@ function simulate_linear_multivariate_normal_inverse_gamma_gaussian(
   auto μ <- solve(Λ, ν);
   auto β <- γ - 0.5*dot(μ, ν);
   return simulate_student_t(2.0*α, dot(a, μ) + c,
-      (β/α)*(1.0 + dot(solve(cholesky(Λ), a))));
+      (β/α)*(1.0 + dot(a, solve(Λ, a))));
+
 }
 
 /**
@@ -888,8 +889,9 @@ function simulate_linear_matrix_normal_inverse_gamma_matrix_gaussian(
   auto n <- rows(A);
   auto M <- solve(Λ, N);
   auto β <- γ - 0.5*diagonal(transpose(M)*N);
-  auto Σ <- llt(identity(n) + outer(transpose(solve(cholesky(Λ), transpose(A)))));
+  auto Σ <- llt(identity(rows(A)) + A*solve(Λ, transpose(A)));
   return simulate_matrix_student_t(2.0*α, A*M + C, Σ, β/α);
+
 }
 
 /**
@@ -942,7 +944,7 @@ function simulate_linear_matrix_normal_inverse_wishart_matrix_gaussian(
   auto n <- rows(A);
   auto p <- columns(N);
   auto M <- solve(Λ, N);
-  auto Σ <- llt((identity(n) + outer(transpose(solve(cholesky(Λ), transpose(A)))))/(k - p + 1.0));
+  auto Σ <- llt((identity(rows(A)) + A*solve(Λ, transpose(A)))/(k - p + 1.0));
   return simulate_matrix_student_t(k - p + 1.0, A*M + C, Σ, Ψ);
 }
 
