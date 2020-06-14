@@ -17,6 +17,10 @@ final class MultivariateGaussianMultivariateGaussian(m:MultivariateGaussian,
     (m.μ, m.Σ) <- box(update_multivariate_gaussian_multivariate_gaussian(x, m.μ.value(), m.Σ.value(), S.value()));
   }
 
+  function updateLazy(x:Expression<Real[_]>) {
+    (m.μ, m.Σ) <- update_lazy_multivariate_gaussian_multivariate_gaussian(x, m.μ, m.Σ, S);
+  }
+
   function downdate(x:Real[_]) {
     (m.μ, m.Σ) <- box(downdate_multivariate_gaussian_multivariate_gaussian(x, m.μ.value(), m.Σ.value(), S.value()));
   }

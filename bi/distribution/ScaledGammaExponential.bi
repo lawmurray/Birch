@@ -13,17 +13,33 @@ class ScaledGammaExponential(a:Expression<Real>, λ:Gamma) <
    */
   λ:Gamma& <- λ;
 
+  function supportsLazy() -> Boolean {
+    return true;
+  }
+
   function simulate() -> Real {
     return simulate_lomax(1.0/(a.value()*λ.θ.value()), λ.k.value());
+  }
+
+  function simulateLazy() -> Real? {
+    return simulate_lomax(1.0/(a.get()*λ.θ.get()), λ.k.get());
   }
 
   function logpdf(x:Real) -> Real {
     return logpdf_lomax(x, 1.0/(a.value()*λ.θ.value()), λ.k.value());
   }
 
+  function logpdfLazy(x:Expression<Real>) -> Expression<Real>? {
+    return logpdf_lazy_lomax(x, 1.0/(a*λ.θ), λ.k);
+  }
+
   function update(x:Real) {
     (λ.k, λ.θ) <- box(update_scaled_gamma_exponential(x, a.value(),
         λ.k.value(), λ.θ.value()));
+  }
+
+  function updateLazy(x:Expression<Real>) {
+    (λ.k, λ.θ) <- update_lazy_scaled_gamma_exponential(x, a, λ.k, λ.θ);
   }
   
   function downdate(x:Real) {

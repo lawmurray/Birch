@@ -26,12 +26,24 @@ final class IndependentColumnMatrixGaussian(M:Expression<Real[_,_]>,
     return M.columns();
   }
 
+  function supportsLazy() -> Boolean {
+    return true;
+  }
+
   function simulate() -> Real[_,_] {
     return simulate_matrix_gaussian(M.value(), U.value(), σ2.value());
+  }
+
+  function simulateLazy() -> Real[_,_]? {
+    return simulate_matrix_gaussian(M.get(), U.get(), σ2.get());
   }
   
   function logpdf(x:Real[_,_]) -> Real {
     return logpdf_matrix_gaussian(x, M.value(), U.value(), σ2.value());
+  }
+
+  function logpdfLazy(x:Expression<Real[_,_]>) -> Expression<Real>? {
+    return logpdf_lazy_matrix_gaussian(x, M, U, σ2);
   }
 
   function graft() -> Distribution<Real[_,_]> {

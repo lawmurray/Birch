@@ -12,6 +12,10 @@ class Binomial(n:Expression<Integer>, ρ:Expression<Real>) < BoundedDiscrete {
    */
   ρ:Expression<Real> <- ρ;
 
+  function supportsLazy() -> Boolean {
+    return true;
+  }
+
   function simulate() -> Integer {
     if value? {
       return value!;
@@ -20,8 +24,20 @@ class Binomial(n:Expression<Integer>, ρ:Expression<Real>) < BoundedDiscrete {
     }
   }
   
+  function simulateLazy() -> Integer? {
+    if value? {
+      return value!;
+    } else {
+      return simulate_binomial(n.get(), ρ.get());
+    }
+  }
+
   function logpdf(x:Integer) -> Real {
     return logpdf_binomial(x, n.value(), ρ.value());
+  }
+
+  function logpdfLazy(x:Expression<Integer>) -> Expression<Real>? {
+    return logpdf_lazy_binomial(x, n, ρ);
   }
 
   function cdf(x:Integer) -> Real? {

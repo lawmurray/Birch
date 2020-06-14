@@ -17,13 +17,25 @@ final class IndependentUniform(l:Expression<Real[_]>,
     return l.rows();
   }
 
+  function supportsLazy() -> Boolean {
+    return false;
+  }
+
   function simulate() -> Real[_] {
     return simulate_independent_uniform(l.value(), u.value());
   }
   
+//  function simulateLazy() -> Real[_]? {
+//    return simulate_independent_uniform(l.get(), u.get());
+//  }
+
   function logpdf(x:Real[_]) -> Real {
     return logpdf_independent_uniform(x, l.value(), u.value());
   }
+
+//  function logpdfLazy(x:Expression<Real[_]>) -> Expression<Real>? {
+//    return logpdf_lazy_independent_uniform(x, l, u);
+//  }
 
   function write(buffer:Buffer) {
     prune();

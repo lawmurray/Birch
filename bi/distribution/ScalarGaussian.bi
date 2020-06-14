@@ -19,12 +19,24 @@ final class ScalarGaussian(μ:Expression<Real>, σ2:Expression<Real>,
    */
   τ2:Expression<Real> <- τ2;
 
+  function supportsLazy() -> Boolean {
+    return true;
+  }
+
   function simulate() -> Real {
     return simulate_gaussian(μ.value(), σ2.value()*τ2.value());
+  }
+
+  function simulateLazy() -> Real? {
+    return simulate_gaussian(μ.get(), σ2.get()*τ2.get());
   }
   
   function logpdf(x:Real) -> Real {
     return logpdf_gaussian(x, μ.value(), σ2.value()*τ2.value());
+  }
+
+  function logpdfLazy(x:Expression<Real>) -> Expression<Real>? {
+    return logpdf_lazy_gaussian(x, μ, σ2*τ2);
   }
 
   function cdf(x:Real) -> Real? {

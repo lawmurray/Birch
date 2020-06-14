@@ -47,12 +47,24 @@ final class InverseWishart(Ψ:Expression<LLT>, k:Expression<Real>) <
     return Ψ.columns();
   }
 
+  function supportsLazy() -> Boolean {
+    return true;
+  }
+
   function simulate() -> LLT {
     return simulate_inverse_wishart(Ψ.value(), k.value());
+  }
+
+  function simulateLazy() -> LLT? {
+    return simulate_inverse_wishart(Ψ.get(), k.get());
   }
   
   function logpdf(X:LLT) -> Real {
     return logpdf_inverse_wishart(X, Ψ.value(), k.value());
+  }
+
+  function logpdfLazy(X:Expression<LLT>) -> Expression<Real>? {
+    return logpdf_lazy_inverse_wishart(X, Ψ, k);
   }
 
   function graftInverseWishart() -> InverseWishart? {

@@ -13,12 +13,24 @@ final class InverseGamma(α:Expression<Real>, β:Expression<Real>) <
    */
   β:Expression<Real> <- β;
 
+  function supportsLazy() -> Boolean {
+    return true;
+  }
+
   function simulate() -> Real {
     return simulate_inverse_gamma(α.value(), β.value());
+  }
+
+  function simulateLazy() -> Real? {
+    return simulate_inverse_gamma(α.get(), β.get());
   }
   
   function logpdf(x:Real) -> Real {
     return logpdf_inverse_gamma(x, α.value(), β.value());
+  }
+
+  function logpdfLazy(x:Expression<Real>) -> Expression<Real>? {
+    return logpdf_lazy_inverse_gamma(x, α, β);
   }
 
   function cdf(x:Real) -> Real? {

@@ -49,10 +49,18 @@ final class IndependentInverseGamma(α:Expression<Real>,
     return β.rows();
   }
 
+  function supportsLazy() -> Boolean {
+    return false;
+  }
+
   function simulate() -> Real[_] {
     return transform<Real>(β.value(), \(b:Real) -> Real {
         return simulate_inverse_gamma(α.value(), b); });
   }
+
+//  function simulateLazy() -> Real[_]? {
+//
+//  }
   
   function logpdf(x:Real[_]) -> Real {
     return transform_reduce<Real>(x, β.value(), 0.0, \(a:Real, b:Real) -> Real {
@@ -61,6 +69,10 @@ final class IndependentInverseGamma(α:Expression<Real>,
         return logpdf_inverse_gamma(x, α.value(), b);
       });
   }
+
+//  function logpdfLazy(x:Expression<Real[_]>) -> Expression<Real>? {
+//
+//  }
 
   function lower() -> Real[_]? {
     return vector(0.0, β.rows());

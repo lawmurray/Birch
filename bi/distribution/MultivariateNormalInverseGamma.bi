@@ -57,9 +57,18 @@ final class MultivariateNormalInverseGamma(μ:Expression<Real[_]>,
     return ν.rows();
   }
 
+  function supportsLazy() -> Boolean {
+    return true;
+  }
+
   function simulate() -> Real[_] {
     return simulate_multivariate_normal_inverse_gamma(ν.value(), Λ.value(),
         α.value(), gamma_to_beta(γ.value(), ν.value(), Λ.value()));
+  }
+
+  function simulateLazy() -> Real[_]? {
+    return simulate_multivariate_normal_inverse_gamma(ν.get(), Λ.get(),
+        α.get(), gamma_to_beta(γ.get(), ν.get(), Λ.get()));
   }
   
   function logpdf(x:Real[_]) -> Real {
@@ -67,9 +76,19 @@ final class MultivariateNormalInverseGamma(μ:Expression<Real[_]>,
         α.value(), gamma_to_beta(γ.value(), ν.value(), Λ.value()));
   }
 
+  function logpdfLazy(x:Expression<Real[_]>) -> Expression<Real>? {
+    return logpdf_lazy_multivariate_normal_inverse_gamma(x, ν, Λ,
+        α, gamma_to_beta(γ, ν, Λ));
+  }
+
   function update(x:Real[_]) {
     (σ2.α, σ2.β) <- box(update_multivariate_normal_inverse_gamma(x, ν.value(),
         Λ.value(), α.value(), gamma_to_beta(γ.value(), ν.value(), Λ.value())));
+  }
+
+  function updateLazy(x:Expression<Real[_]>) {
+    (σ2.α, σ2.β) <- update_lazy_multivariate_normal_inverse_gamma(x, ν,
+        Λ, α, gamma_to_beta(γ, ν, Λ));
   }
 
   function downdate(x:Real[_]) {
@@ -117,5 +136,14 @@ function MultivariateNormalInverseGamma(μ:Expression<Real[_]>,
  * parameters.
  */
 function gamma_to_beta(γ:Real, ν:Real[_], Λ:LLT) -> Real {
-  return γ - 0.5*dot(solve(cholesky(Λ), ν));
+  return γ - 0.5*dot(ν, solve(Λ, ν));
+}
+
+/*
+ * Compute the variance scale from the variance scale accumulator and other
+ * parameters.
+ */
+function gamma_to_beta(γ:Expression<Real>, ν:Expression<Real[_]>,
+    Λ:Expression<LLT>) -> Expression<Real> {
+  return γ - 0.5*dot(ν, solve(Λ, ν));
 }

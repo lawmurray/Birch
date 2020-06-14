@@ -19,6 +19,10 @@ final class LinearDiscrete(a:Expression<Integer>, μ:Discrete,
    */
   c:Expression<Integer> <- c;
 
+  function supportsLazy() -> Boolean {
+    return false;
+  }
+
   function simulate() -> Integer {
     if value? {
       return simulate_delta(value!);
@@ -26,6 +30,14 @@ final class LinearDiscrete(a:Expression<Integer>, μ:Discrete,
       return simulate_delta(a.value()*μ.simulate() + c.value());
     }
   }
+
+//  function simulateLazy() -> Integer? {
+//    if value? {
+//      return simulate_delta(value!);
+//    } else {
+//      return simulate_delta(a.get()*μ.simulateLazy()! + c.get());
+//    }
+//  }
   
   function logpdf(x:Integer) -> Real {
     if value? {
@@ -34,10 +46,22 @@ final class LinearDiscrete(a:Expression<Integer>, μ:Discrete,
       return μ.logpdf((x - c.value())/a.value()) - log(abs(Real(a.value())));
     }
   }
+
+//  function logpdfLazy(x:Expression<Integer>) -> Expression<Real>? {
+//    if value? {
+//      return logpdf_lazy_delta(x, value!);
+//    } else {
+//      return μ.logpdfLazy((x - c)/a) - log(abs(Real(a)));
+//    }
+//  }
   
   function update(x:Integer) {
     μ.clamp((x - c.value())/a.value());
   }
+
+//  function updateLazy(x:Expression<Integer>) {
+//
+//  }
 
   function cdf(x:Integer) -> Real? {
     return μ.cdf((x - c.value())/a.value());

@@ -37,9 +37,18 @@ final class MatrixNormalInverseGamma(M:Expression<Real[_,_]>,
     return N.columns();
   }
 
+  function supportsLazy() -> Boolean {
+    return true;
+  }
+
   function simulate() -> Real[_,_] {
     return simulate_matrix_normal_inverse_gamma(N.value(), Λ.value(),
         α.value(), gamma_to_beta(γ.value(), N.value(), Λ.value()));
+  }
+
+  function simulateLazy() -> Real[_,_]? {
+    return simulate_matrix_normal_inverse_gamma(N.get(), Λ.get(),
+        α.get(), gamma_to_beta(γ.get(), N.get(), Λ.get()));
   }
   
   function logpdf(X:Real[_,_]) -> Real {
@@ -47,10 +56,20 @@ final class MatrixNormalInverseGamma(M:Expression<Real[_,_]>,
         α.value(), gamma_to_beta(γ.value(), N.value(), Λ.value()));
   }
 
+  function logpdfLazy(X:Expression<Real[_,_]>) -> Expression<Real>? {
+    return logpdf_lazy_matrix_normal_inverse_gamma(X, N, Λ,
+        α, gamma_to_beta(γ, N, Λ));
+  }
+
   function update(X:Real[_,_]) {
     (σ2.α, σ2.β) <- box(update_matrix_normal_inverse_gamma(X, N.value(),
         Λ.value(), α.value(), gamma_to_beta(γ.value(), N.value(),
         Λ.value())));
+  }
+
+  function updateLazy(X:Expression<Real[_,_]>) {
+    (σ2.α, σ2.β) <- update_lazy_matrix_normal_inverse_gamma(X, N,
+        Λ, α, gamma_to_beta(γ, N, Λ));
   }
 
   function downdate(X:Real[_,_]) {
@@ -81,7 +100,7 @@ final class MatrixNormalInverseGamma(M:Expression<Real[_,_]>,
     prune();
     buffer.set("class", "MatrixNormalInverseGamma");
     buffer.set("M", solve(Λ.value(), N.value()));
-    buffer.set("Σ", inv(Λ));
+    buffer.set("Σ", inv(Λ.value()));
     buffer.set("α", α);
     buffer.set("β", gamma_to_beta(γ.value(), N.value(), Λ.value()));
   }
@@ -99,6 +118,10 @@ function MatrixNormalInverseGamma(M:Expression<Real[_,_]>, Σ:Expression<LLT>,
  * parameters.
  */
 function gamma_to_beta(γ:Real[_], N:Real[_,_], Λ:LLT) -> Real[_] {
-  auto A <- solve(cholesky(Λ), N);
-  return γ - 0.5*diagonal(transpose(A)*A);
+  return γ - 0.5*diagonal(transpose(N)*solve(Λ, N));
+}
+
+function gamma_to_beta(γ:Expression<Real[_]>, N:Expression<Real[_,_]>,
+    Λ:Expression<LLT>) -> Expression<Real[_]> {
+  return γ - 0.5*diagonal(transpose(N)*solve(Λ, N));
 }

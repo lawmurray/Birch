@@ -7,13 +7,25 @@ class Categorical(ρ:Expression<Real[_]>) < Distribution<Integer> {
    */
   ρ:Expression<Real[_]> <- ρ;
 
+  function supportsLazy() -> Boolean {
+    return false;
+  }
+
   function simulate() -> Integer {
     return simulate_categorical(ρ.value());
   }
+
+//  function simulateLazy() -> Integer? {
+//    return simulate_categorical(ρ.get());
+//  }
   
   function logpdf(x:Integer) -> Real {
     return logpdf_categorical(x, ρ.value());
   }
+
+//  function logpdfLazy(x:Expression<Integer>) -> Expression<Real>? {
+//    return logpdf_lazy_categorical(x, ρ);
+//  }
 
   function cdf(x:Integer) -> Real? {
     return cdf_categorical(x, ρ.value());

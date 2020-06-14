@@ -32,7 +32,16 @@ final class Restaurant(α:Expression<Real>, θ:Expression<Real>) <
    */
   N:Integer <- 0;
 
+  function supportsLazy() -> Boolean {
+    return false;
+  }
+
   function simulate() -> Real[_] {
+    assert false;
+    return vector(0.0, 0);
+  }
+
+  function simulateLazy() -> Real[_]? {
     assert false;
     return vector(0.0, 0);
   }
@@ -40,6 +49,11 @@ final class Restaurant(α:Expression<Real>, θ:Expression<Real>) <
   function logpdf(x:Real[_]) -> Real {
     assert false;
     return 0.0;
+  }
+
+  function logpdfLazy(x:Expression<Real[_]>) -> Expression<Real>? {
+    assert false;
+    return box(0.0);
   }
 
   function graftRestaurant() -> Restaurant? {

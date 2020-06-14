@@ -12,11 +12,19 @@ class Poisson(λ:Expression<Real>) < Discrete {
   }
 
   function simulate() -> Integer {
-    return simulate_poisson(λ.value());
+    if value? {
+      return value!;
+    } else {
+      return simulate_poisson(λ.value());
+    }
   }
 
   function simulateLazy() -> Integer? {
-    return simulate_poisson(λ.get());
+    if value? {
+      return value!;
+    } else {
+      return simulate_poisson(λ.get());
+    }
   }
 
   function logpdf(x:Integer) -> Real {

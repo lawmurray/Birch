@@ -7,13 +7,25 @@ final class Dirichlet(α:Expression<Real[_]>) < Distribution<Real[_]> {
    */
   α:Expression<Real[_]> <- α;
 
+  function supportsLazy() -> Boolean {
+    return false;
+  }
+
   function simulate() -> Real[_] {
     return simulate_dirichlet(α.value());
   }
+
+//  function simulateLazy() -> Real[_]? {
+//    return simulate_dirichlet(α.get());
+//  }
   
   function logpdf(x:Real[_]) -> Real {
     return logpdf_dirichlet(x, α.value());
   }
+
+//  function logpdfLazy(x:Expression<Real[_]>) -> Expression<Real>? {
+//    return logpdf_lazy_dirichlet(x, α);
+//  }
 
   function graftDirichlet() -> Dirichlet? {
     prune();

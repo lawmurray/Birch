@@ -18,13 +18,25 @@ final class IndependentUniformInteger(l:Expression<Integer[_]>,
     return l.rows();
   }
 
+  function supportsLazy() -> Boolean {
+    return false;
+  }
+
   function simulate() -> Integer[_] {
     return simulate_independent_uniform_int(l.value(), u.value());
   }
+
+//  function simulateLazy() -> Integer[_]? {
+//    return simulate_independent_uniform_int(l.get(), u.get());
+//  }
   
   function logpdf(x:Integer[_]) -> Real {
     return logpdf_independent_uniform_int(x, l.value(), u.value());
   }
+
+//  function logpdfLazy(x:Expression<Integer[_]>) -> Expression<Real>? {
+//    return logpdf_lazy_independent_uniform_int(x, l, u);
+//  }
 
   function write(buffer:Buffer) {
     prune();

@@ -7,6 +7,10 @@ final class DiscreteDelta(μ:Discrete) < Discrete {
    */
   μ:Discrete <- μ;
 
+  function supportsLazy() -> Boolean {
+    return false;
+  }
+
   function simulate() -> Integer {
     if value? {
       return simulate_delta(value!);
@@ -15,6 +19,14 @@ final class DiscreteDelta(μ:Discrete) < Discrete {
     }
   }
   
+//  function simulateLazy() -> Integer? {
+//    if value? {
+//      return simulate_delta(value!);
+//    } else {
+//      return simulate_delta(μ.simulateLazy()!);
+//    }
+//  }
+  
   function logpdf(x:Integer) -> Real {
     if value? {
       return logpdf_delta(x, value!);
@@ -22,10 +34,22 @@ final class DiscreteDelta(μ:Discrete) < Discrete {
       return μ.logpdf(x);
     }
   }
+
+//  function logpdfLazy(x:Expression<Integer>) -> Expression<Real>? {
+//    if value? {
+//      return logpdf_lazy_delta(x, value!);
+//    } else {
+//      return μ.logpdfLazy(x);
+//    }
+//  }
   
   function update(x:Integer) {
     μ.clamp(x);
   }
+
+//  function updateLazy(x:Expression<Integer>) {
+//
+//  }
 
   function cdf(x:Integer) -> Real? {
     return μ.cdf(x);

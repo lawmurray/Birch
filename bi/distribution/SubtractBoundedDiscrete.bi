@@ -61,6 +61,10 @@ final class SubtractBoundedDiscrete(x1:BoundedDiscrete, x2:BoundedDiscrete) <
     }
   }
 
+  function supportsLazy() -> Boolean {
+    return false;
+  }
+
   function simulate() -> Integer {
     if value? {
       return simulate_delta(value!);
@@ -69,6 +73,14 @@ final class SubtractBoundedDiscrete(x1:BoundedDiscrete, x2:BoundedDiscrete) <
     }
   }
   
+//  function simulateLazy() -> Integer? {
+//    if value? {
+//      return simulate_delta(value!);
+//    } else {
+//      return simulate_delta(x1.simulateLazy()! - x2.simulateLazy()!);
+//    }
+//  }
+
   function logpdf(x:Integer) -> Real {
     if value? {
       return logpdf_delta(x, value!);
@@ -77,6 +89,15 @@ final class SubtractBoundedDiscrete(x1:BoundedDiscrete, x2:BoundedDiscrete) <
       return log(Z);
     }
   }
+
+//  function logpdfLazy(x:Expression<Integer>) -> Expression<Real>? {
+//    if value? {
+//      return logpdf_lazy_delta(x, value!);
+//    } else {
+//      enumerate(x);
+//      return log(Z);
+//    }
+//  }
 
   function update(x:Integer) {
     if !alreadyUpdated {
@@ -88,6 +109,10 @@ final class SubtractBoundedDiscrete(x1:BoundedDiscrete, x2:BoundedDiscrete) <
       alreadyUpdated <- true;
     }
   }
+
+//  function updateLazy(x:Expression<Integer>) {
+//
+//  }
 
   function cdf(x:Integer) -> Real? {
     auto P <- 0.0;

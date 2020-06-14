@@ -17,13 +17,25 @@ final class IdenticalGaussian(μ:Expression<Real[_]>, σ2:Expression<Real>) <
   function rows() -> Integer {
     return μ.rows();
   }
+  
+  function supportsLazy() -> Boolean {
+    return true;
+  }
 
   function simulate() -> Real[_] {
     return simulate_multivariate_gaussian(μ.value(), σ2.value());
   }
+
+  function simulateLazy() -> Real[_]? {
+    return simulate_multivariate_gaussian(μ.get(), σ2.get());
+  }
   
   function logpdf(x:Real[_]) -> Real {
     return logpdf_multivariate_gaussian(x, μ.value(), σ2.value());
+  }
+
+  function logpdfLazy(x:Expression<Real[_]>) -> Expression<Real>? {
+    return logpdf_lazy_multivariate_gaussian(x, μ, σ2);
   }
 
   function graft() -> Distribution<Real[_]> {

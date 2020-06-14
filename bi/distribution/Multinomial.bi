@@ -17,13 +17,25 @@ class Multinomial(n:Expression<Integer>, ρ:Expression<Real[_]>) <
     return ρ.rows();
   }
 
+  function supportsLazy() -> Boolean {
+    return false;
+  }
+
   function simulate() -> Integer[_] {
     return simulate_multinomial(n.value(), ρ.value());
   }
+
+//  function simulateLazy() -> Integer[_]? {
+//    return simulate_multinomial(n.get(), ρ.get());
+//  }
   
   function logpdf(x:Integer[_]) -> Real {
     return logpdf_multinomial(x, n.value(), ρ.value());
   }
+
+//  function logpdfLazy(x:Expression<Integer[_]>) -> Expression<Real>? {
+//    return logpdf_lazy_multinomial(x, n, ρ);
+//  }
 
   function graft() -> Distribution<Integer[_]> {
     prune();

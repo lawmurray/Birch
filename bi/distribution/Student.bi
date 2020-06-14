@@ -18,12 +18,24 @@ final class Student(ν:Expression<Real>, μ:Expression<Real>,
    */
   σ2:Expression<Real> <- σ2;
   
+  function supportsLazy() -> Boolean {
+    return true;
+  }
+
   function simulate() -> Real {
     return simulate_student_t(ν.value(), μ.value(), σ2.value());
+  }
+
+  function simulateLazy() -> Real? {
+    return simulate_student_t(ν.get(), μ.get(), σ2.get());
   }
   
   function logpdf(x:Real) -> Real {
     return logpdf_student_t(x, ν.value(), μ.value(), σ2.value());
+  }
+
+  function logpdfLazy(x:Expression<Real>) -> Expression<Real>? {
+    return logpdf_lazy_student_t(x, ν, μ, σ2);
   }
 
   function cdf(x:Real) -> Real? {

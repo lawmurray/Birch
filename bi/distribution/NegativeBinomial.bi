@@ -13,6 +13,10 @@ class NegativeBinomial(k:Expression<Integer>, ρ:Expression<Real>) <
    */
   ρ:Expression<Real> <- ρ;
 
+  function supportsLazy() -> Boolean {
+    return true;
+  }
+
   function simulate() -> Integer {
     if value? {
       return value!;
@@ -20,9 +24,21 @@ class NegativeBinomial(k:Expression<Integer>, ρ:Expression<Real>) <
       return simulate_negative_binomial(k.value(), ρ.value());
     }
   }
+
+  function simulateLazy() -> Integer? {
+    if value? {
+      return value!;
+    } else {
+      return simulate_negative_binomial(k.get(), ρ.get());
+    }
+  }
   
   function logpdf(x:Integer) -> Real {
     return logpdf_negative_binomial(x, k.value(), ρ.value());
+  }
+
+  function logpdfLazy(x:Expression<Integer>) -> Expression<Real>? {
+    return logpdf_lazy_negative_binomial(x, k, ρ);
   }
 
   function cdf(x:Integer) -> Real? {

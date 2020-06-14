@@ -12,7 +12,11 @@ final class UniformInteger(l:Expression<Integer>, u:Expression<Integer>) <
    * Upper bound.
    */
   u:Expression<Integer> <- u;
-    
+
+  function supportsLazy() -> Boolean {
+    return false;
+  }
+
   function simulate() -> Integer {
     if value? {
       return value!;
@@ -21,9 +25,21 @@ final class UniformInteger(l:Expression<Integer>, u:Expression<Integer>) <
     }
   }
 
+//  function simulateLazy() -> Integer? {
+//    if value? {
+//      return value!;
+//    } else {
+//      return simulate_uniform_int(l.get(), u.get());
+//    }
+//  }
+
   function logpdf(x:Integer) -> Real {
     return logpdf_uniform_int(x, l.value(), u.value());
   }
+
+//  function logpdfLazy(x:Expression<Integer>) -> Expression<Real>? {
+//    return logpdf_lazy_uniform_int(x, l, u);
+//  }
 
   function cdf(x:Integer) -> Real? {
     return cdf_uniform_int(x, l.value(), u.value());

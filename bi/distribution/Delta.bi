@@ -8,6 +8,10 @@ class Delta(μ:Expression<Integer>) < Discrete {
    */
   μ:Expression<Integer> <- μ;
 
+  function supportsLazy() -> Boolean {
+    return false;
+  }
+
   function simulate() -> Integer {
     if value? {
       return value!;
@@ -16,9 +20,21 @@ class Delta(μ:Expression<Integer>) < Discrete {
     }
   }
   
+//  function simulateLazy() -> Integer? {
+//    if value? {
+//      return value!;
+//    } else {
+//      return simulate_delta(μ.get());
+//    }
+//  }
+  
   function logpdf(x:Integer) -> Real {
     return logpdf_delta(x, μ.value());
   }
+
+//  function logpdfLazy(x:Expression<Integer>) -> Expression<Real>? {
+//    return logpdf_lazy_delta(x, μ);
+//  }
 
   function lower() -> Integer? {
     return μ.value();

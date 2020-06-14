@@ -30,12 +30,24 @@ class MatrixGaussian(M:Expression<Real[_,_]>, U:Expression<LLT>,
     return M.columns();
   }
 
+  function supportsLazy() -> Boolean {
+    return true;
+  }
+
   function simulate() -> Real[_,_] {
     return simulate_matrix_gaussian(M.value(), U.value(), V.value());
+  }
+
+  function simulateLazy() -> Real[_,_]? {
+    return simulate_matrix_gaussian(M.get(), U.get(), V.get());
   }
   
   function logpdf(X:Real[_,_]) -> Real {
     return logpdf_matrix_gaussian(X, M.value(), U.value(), V.value());
+  }
+
+  function logpdfLazy(X:Expression<Real[_,_]>) -> Expression<Real>? {
+    return logpdf_lazy_matrix_gaussian(X, M, U, V);
   }
 
   function graft() -> Distribution<Real[_,_]> {

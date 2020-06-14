@@ -13,12 +13,24 @@ final class Weibull(k:Expression<Real>, λ:Expression<Real>) <
    */
   λ:Expression<Real> <- λ;
 
+  function supportsLazy() -> Boolean {
+    return true;
+  }
+
   function simulate() -> Real {
     return simulate_weibull(k.value(), λ.value());
+  }
+
+  function simulateLazy() -> Real? {
+    return simulate_weibull(k.get(), λ.get());
   }
   
   function logpdf(x:Real) -> Real {
     return logpdf_weibull(x, k.value(), λ.value());
+  }
+
+  function logpdfLazy(x:Expression<Real>) -> Expression<Real>? {
+    return logpdf_lazy_weibull(x, k, λ);
   }
 
   function cdf(x:Real) -> Real? {

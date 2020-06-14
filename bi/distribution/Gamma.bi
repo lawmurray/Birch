@@ -12,12 +12,24 @@ class Gamma(k:Expression<Real>, θ:Expression<Real>) < Distribution<Real> {
    */
   θ:Expression<Real> <- θ;
 
+  function supportsLazy() -> Boolean {
+    return true;
+  }
+
   function simulate() -> Real {
     return simulate_gamma(k.value(), θ.value());
+  }
+
+  function simulateLazy() -> Real? {
+    return simulate_gamma(k.get(), θ.get());
   }
   
   function logpdf(x:Real) -> Real {
     return logpdf_gamma(x, k.value(), θ.value());
+  }
+
+  function logpdfLazy(x:Expression<Real>) -> Expression<Real>? {
+    return logpdf_lazy_gamma(x, k, θ);
   }
 
   function cdf(x:Real) -> Real? {

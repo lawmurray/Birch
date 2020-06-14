@@ -13,13 +13,25 @@ final class Uniform(l:Expression<Real>, u:Expression<Real>) <
    */
   u:Expression<Real> <- u;
 
+  function supportsLazy() -> Boolean {
+    return false;
+  }
+
   function simulate() -> Real {
     return simulate_uniform(l.value(), u.value());
   }
+
+//  function simulateLazy() -> Real? {
+//    return simulate_uniform(l.get(), u.get());
+//  }
   
   function logpdf(x:Real) -> Real {
     return logpdf_uniform(x, l.value(), u.value());
   }
+
+//  function logpdfLazy(x:Expression<Real>) -> Expression<Real>? {
+//    return logpdf_lazy_uniform(x, l, u);
+//  }
 
   function cdf(x:Real) -> Real? {
     return cdf_uniform(x, l.value(), u.value());

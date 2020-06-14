@@ -21,12 +21,24 @@ final class Wishart(Ψ:Expression<LLT>, k:Expression<Real>) <
     return Ψ.columns();
   }
 
+  function supportsLazy() -> Boolean {
+    return true;
+  }
+
   function simulate() -> LLT {
     return simulate_wishart(Ψ.value(), k.value());
+  }
+
+  function simulateLazy() -> LLT? {
+    return simulate_wishart(Ψ.get(), k.get());
   }
   
   function logpdf(X:LLT) -> Real {
     return logpdf_wishart(X, Ψ.value(), k.value());
+  }
+
+  function logpdfLazy(X:Expression<LLT>) -> Expression<Real>? {
+    return logpdf_lazy_wishart(X, Ψ, k);
   }
 
   function graftWishart() -> Wishart? {

@@ -7,13 +7,25 @@ final class RestaurantCategorical(ρ:Restaurant) < Distribution<Integer> {
    */
   ρ:Restaurant& <- ρ;
 
+  function supportsLazy() -> Boolean {
+    return false;
+  }
+
   function simulate() -> Integer {
     return simulate_crp_categorical(ρ.α.value(), ρ.θ.value(), ρ.n, ρ.N);
   }
+
+//  function simulateLazy() -> Integer? {
+//    return simulate_crp_categorical(ρ.α.get(), ρ.θ.get(), ρ.n, ρ.N);
+//  }
   
   function logpdf(x:Integer) -> Real {
     return logpdf_crp_categorical(x, ρ.α.value(), ρ.θ.value(), ρ.n, ρ.N);
   }
+
+//  function logpdfLazy(x:Expression<Integer>) -> Expression<Real>? {
+//    return logpdf_lazy_crp_categorical(x, ρ.α, ρ.θ, ρ.n, ρ.N);
+//  }
 
   function update(x:Integer) {
     //@todo use Vector with its in-place enlarge support?
@@ -30,6 +42,10 @@ final class RestaurantCategorical(ρ:Restaurant) < Distribution<Integer> {
     ρ.N <- ρ.N + 1;
   }
 
+//  function updateLazy(x:Expression<Integer>) {
+//
+//  }
+  
   function link() {
     ρ.setChild(this);
   }

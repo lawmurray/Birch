@@ -63,6 +63,7 @@ program test(N:Integer <- 10000) {
   code <- code + run_test("pdf_matrix_gaussian", N);
   code <- code + run_test("pdf_matrix_normal_inverse_gamma", N);
   code <- code + run_test("pdf_matrix_normal_inverse_gamma_matrix_gaussian", N);
+  code <- code + run_test("pdf_matrix_normal_inverse_wishart", N);
   code <- code + run_test("pdf_matrix_normal_inverse_wishart_matrix_gaussian", N);
   code <- code + run_test("pdf_multivariate_gaussian", N);
   code <- code + run_test("pdf_multivariate_gaussian_multivariate_gaussian", N);

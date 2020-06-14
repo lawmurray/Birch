@@ -315,6 +315,7 @@
       "bi/test/pdf/test_pdf_matrix_gaussian.bi",
       "bi/test/pdf/test_pdf_matrix_normal_inverse_gamma.bi",
       "bi/test/pdf/test_pdf_matrix_normal_inverse_gamma_matrix_gaussian.bi",
+      "bi/test/pdf/test_pdf_matrix_normal_inverse_wishart.bi",
       "bi/test/pdf/test_pdf_matrix_normal_inverse_wishart_matrix_gaussian.bi",
       "bi/test/pdf/test_pdf_multivariate_gaussian.bi",
       "bi/test/pdf/test_pdf_multivariate_gaussian_multivariate_gaussian.bi",

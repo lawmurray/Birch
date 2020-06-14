@@ -7,12 +7,24 @@ class Exponential(λ:Expression<Real>) < Distribution<Real> {
    */
   λ:Expression<Real> <- λ;
 
+  function supportsLazy() -> Boolean {
+    return true;
+  }
+
   function simulate() -> Real {
     return simulate_exponential(λ.value());
   }
 
+  function simulateLazy() -> Real? {
+    return simulate_exponential(λ.get());
+  }
+
   function logpdf(x:Real) -> Real {
     return logpdf_exponential(x, λ.value());
+  }
+
+  function logpdfLazy(x:Expression<Real>) -> Expression<Real>? {
+    return logpdf_lazy_exponential(x, λ);
   }
 
   function cdf(x:Real) -> Real? {

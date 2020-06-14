@@ -7,17 +7,33 @@ final class DirichletCategorical(ρ:Dirichlet) < Distribution<Integer> {
    */
   ρ:Dirichlet& <- ρ;
 
+  function supportsLazy() -> Boolean {
+    return false;
+  }
+
   function simulate() -> Integer {
     return simulate_dirichlet_categorical(ρ.α.value());
   }
+
+//  function simulateLazy() -> Integer? {
+//    return simulate_dirichlet_categorical(ρ.α.get());
+//  }
   
   function logpdf(x:Integer) -> Real {
     return logpdf_dirichlet_categorical(x, ρ.α.value());
   }
 
+//  function logpdfLazy(x:Expression<Integer>) -> Expression<Real>? {
+//    return logpdf_lazy_dirichlet_categorical(x, ρ.α);
+//  }
+
   function update(x:Integer) {
     ρ.α <- box(update_dirichlet_categorical(x, ρ.α.value()));
   }
+
+//  function updateLazy(x:Expression<Integer>) {
+//    ρ.α <- update_lazy_dirichlet_categorical(x, ρ.α);
+//  }
 
   function downdate(x:Integer) {
     ρ.α <- box(downdate_dirichlet_categorical(x, ρ.α.value()));

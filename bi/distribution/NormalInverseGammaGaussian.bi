@@ -8,9 +8,18 @@ final class NormalInverseGammaGaussian(μ:NormalInverseGamma) <
    */
   μ:NormalInverseGamma& <- μ;
 
+  function supportsLazy() -> Boolean {
+    return true;
+  }
+
   function simulate() -> Real {
     return simulate_normal_inverse_gamma_gaussian(μ.μ.value(),
         1.0/μ.λ.value(), μ.σ2.α.value(), μ.σ2.β.value());
+  }
+
+  function simulateLazy() -> Real? {
+    return simulate_normal_inverse_gamma_gaussian(μ.μ.get(),
+        1.0/μ.λ.get(), μ.σ2.α.get(), μ.σ2.β.get());
   }
   
   function logpdf(x:Real) -> Real {
@@ -18,9 +27,19 @@ final class NormalInverseGammaGaussian(μ:NormalInverseGamma) <
         1.0/μ.λ.value(), μ.σ2.α.value(), μ.σ2.β.value());
   }
 
+  function logpdfLazy(x:Expression<Real>) -> Expression<Real>? {
+    return logpdf_lazy_normal_inverse_gamma_gaussian(x, μ.μ,
+        1.0/μ.λ, μ.σ2.α, μ.σ2.β);
+  }
+
   function update(x:Real) {
     (μ.μ, μ.λ, μ.σ2.α, μ.σ2.β) <- box(update_normal_inverse_gamma_gaussian(
         x, μ.μ.value(), μ.λ.value(), μ.σ2.α.value(), μ.σ2.β.value()));
+  }
+
+  function updateLazy(x:Expression<Real>) {
+    (μ.μ, μ.λ, μ.σ2.α, μ.σ2.β) <- update_lazy_normal_inverse_gamma_gaussian(
+        x, μ.μ, μ.λ, μ.σ2.α, μ.σ2.β);
   }
 
   function downdate(x:Real) {

@@ -20,9 +20,18 @@ final class LinearMatrixNormalInverseWishartMatrixGaussian(
    */
   C:Expression<Real[_,_]> <- C;
 
+  function supportsLazy() -> Boolean {
+    return true;
+  }
+
   function simulate() -> Real[_,_] {
     return simulate_linear_matrix_normal_inverse_wishart_matrix_gaussian(
         A.value(), M.N.value(), M.Λ.value(), C.value(), M.V.Ψ.value(), M.V.k.value());
+  }
+
+  function simulateLazy() -> Real[_,_]? {
+    return simulate_linear_matrix_normal_inverse_wishart_matrix_gaussian(
+        A.get(), M.N.get(), M.Λ.get(), C.get(), M.V.Ψ.get(), M.V.k.get());
   }
   
   function logpdf(X:Real[_,_]) -> Real {
@@ -30,9 +39,19 @@ final class LinearMatrixNormalInverseWishartMatrixGaussian(
         X, A.value(), M.N.value(), M.Λ.value(), C.value(), M.V.Ψ.value(), M.V.k.value());
   }
 
+  function logpdfLazy(X:Expression<Real[_,_]>) -> Expression<Real>? {
+    return logpdf_lazy_linear_matrix_normal_inverse_wishart_matrix_gaussian(
+        X, A, M.N, M.Λ, C, M.V.Ψ, M.V.k);
+  }
+
   function update(X:Real[_,_]) {
     (M.N, M.Λ, M.V.Ψ, M.V.k) <- box(update_linear_matrix_normal_inverse_wishart_matrix_gaussian(
         X, A.value(), M.N.value(), M.Λ.value(), C.value(), M.V.Ψ.value(), M.V.k.value()));
+  }
+
+  function updateLazy(X:Expression<Real[_,_]>) {
+    (M.N, M.Λ, M.V.Ψ, M.V.k) <- update_lazy_linear_matrix_normal_inverse_wishart_matrix_gaussian(
+        X, A, M.N, M.Λ, C, M.V.Ψ, M.V.k);
   }
 
   function downdate(X:Real[_,_]) {

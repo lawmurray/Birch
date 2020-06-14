@@ -12,6 +12,10 @@ final class ScaledGammaPoisson(a:Expression<Real>, λ:Gamma) < Discrete {
    */
   λ:Gamma& <- λ;
 
+  function supportsLazy() -> Boolean {
+    return true;
+  }
+
   function simulate() -> Integer {
     if value? {
       return value!;
@@ -19,14 +23,30 @@ final class ScaledGammaPoisson(a:Expression<Real>, λ:Gamma) < Discrete {
       return simulate_gamma_poisson(λ.k.value(), a.value()*λ.θ.value());
     }
   }
+
+  function simulateLazy() -> Integer? {
+    if value? {
+      return value!;
+    } else {
+      return simulate_gamma_poisson(λ.k.get(), a.get()*λ.θ.get());
+    }
+  }
   
   function logpdf(x:Integer) -> Real {
     return logpdf_gamma_poisson(x, λ.k.value(), a.value()*λ.θ.value());
   }
 
+  function logpdfLazy(x:Expression<Integer>) -> Expression<Real>? {
+    return logpdf_lazy_gamma_poisson(x, λ.k, a*λ.θ);
+  }
+
   function update(x:Integer) {
     (λ.k, λ.θ) <- box(update_scaled_gamma_poisson(x, a.value(), λ.k.value(),
         λ.θ.value()));
+  }
+
+  function updateLazy(x:Expression<Integer>) {
+    (λ.k, λ.θ) <- update_lazy_scaled_gamma_poisson(x, a, λ.k, λ.θ);
   }
 
   function downdate(x:Integer) {

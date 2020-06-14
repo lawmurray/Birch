@@ -12,6 +12,10 @@ final class BetaBinomial(n:Expression<Integer>, ρ:Beta) < BoundedDiscrete {
    */
   ρ:Beta& <- ρ;
 
+  function supportsLazy() -> Boolean {
+    return true;
+  }
+
   function simulate() -> Integer {
     if value? {
       return value!;
@@ -20,12 +24,28 @@ final class BetaBinomial(n:Expression<Integer>, ρ:Beta) < BoundedDiscrete {
     }
   }
   
+  function simulateLazy() -> Integer? {
+    if value? {
+      return value!;
+    } else {
+      return simulate_beta_binomial(n.get(), ρ.α.get(), ρ.β.get());
+    }
+  }
+  
   function logpdf(x:Integer) -> Real {
     return logpdf_beta_binomial(x, n.value(), ρ.α.value(), ρ.β.value());
   }
 
+  function logpdfLazy(x:Expression<Integer>) -> Expression<Real>? {
+    return logpdf_lazy_beta_binomial(x, n, ρ.α, ρ.β);
+  }
+
   function update(x:Integer) {
     (ρ.α, ρ.β) <- box(update_beta_binomial(x, n.value(), ρ.α.value(), ρ.β.value()));
+  }
+
+  function updateLazy(x:Expression<Integer>) {
+    (ρ.α, ρ.β) <- update_lazy_beta_binomial(x, n, ρ.α, ρ.β);
   }
 
   function downdate(x:Integer) {
