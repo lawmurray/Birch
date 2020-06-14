@@ -31,7 +31,7 @@ function update_beta_binomial(x:Integer, n:Integer, α:Real, β:Real) ->
   assert 0 <= n;
   assert 0.0 < α;
   assert 0.0 < β;
-  return (α + x, β + (n - x));
+  return (α + x, β + n - x);
 }
 
 /**
@@ -248,10 +248,10 @@ function update_normal_inverse_gamma(x:Real, μ:Real, λ:Real, α:Real,
  */
 function update_normal_inverse_gamma_gaussian(x:Real, μ:Real, λ:Real,
     α:Real, β:Real) -> (Real, Real, Real, Real) {
-  λ':Real <- λ + 1.0;
-  μ':Real <- (λ*μ + x)/λ';
-  α':Real <- α + 0.5;
-  β':Real <- β + 0.5*(λ/λ')*pow(x - μ, 2.0);
+  auto λ' <- λ + 1.0;
+  auto μ' <- (λ*μ + x)/λ';
+  auto α' <- α + 0.5;
+  auto β' <- β + 0.5*(λ/λ')*pow(x - μ, 2.0);
   
   return (μ', λ', α', β');
 }
@@ -272,11 +272,11 @@ function update_normal_inverse_gamma_gaussian(x:Real, μ:Real, λ:Real,
  */
 function update_linear_normal_inverse_gamma_gaussian(x:Real, a:Real,
     μ:Real, λ:Real, c:Real, α:Real, β:Real) -> (Real, Real, Real, Real) {
-  y:Real <- x - c;
-  λ':Real <- λ + a*a;
-  μ':Real <- (λ*μ + a*y)/λ';
-  α':Real <- α + 0.5;
-  β':Real <- β + 0.5*(y*y + μ*μ*λ - μ'*μ'*λ');
+  auto y <- x - c;
+  auto λ' <- λ + a*a;
+  auto μ' <- (λ*μ + a*y)/λ';
+  auto α' <- α + 0.5;
+  auto β' <- β + 0.5*(y*y + μ*μ*λ - μ'*μ'*λ');
   
   return (μ', λ', α', β');
 }
@@ -310,7 +310,7 @@ function update_inverse_gamma_gamma(x:Real, k:Real, α:Real, β:Real) ->
  */
 function update_multivariate_gaussian_multivariate_gaussian(x:Real[_],
     μ:Real[_], Σ:LLT, S:LLT) -> (Real[_], LLT) {
-  auto K' <- solve(llt(Σ + S), matrix(Σ));
+  auto K' <- solve(llt(Σ + S), Σ);
   auto μ' <- μ + K'*(x - μ);
   auto Σ' <- llt(Σ - K'*Σ);
   return (μ', Σ');
@@ -489,7 +489,7 @@ function update_matrix_normal_inverse_gamma_matrix_gaussian(
   auto Λ' <- rank_update(Λ, identity(rows(N)));
   auto N' <- N + X;
   auto α' <- α + 0.5*D;
-  auto γ' <- γ + 0.5*diagonal(outer(transpose(X)));
+  auto γ' <- γ + 0.5*diagonal(transpose(X)*X);
   return (N', Λ', α', γ');
 }
 
@@ -514,7 +514,7 @@ function update_linear_matrix_normal_inverse_gamma_matrix_gaussian(
   auto Λ' <- rank_update(Λ, transpose(A));
   auto N' <- N + transpose(A)*(X - C);
   auto α' <- α + 0.5*D;
-  auto γ' <- γ + 0.5*diagonal(outer(transpose(X - C)));
+  auto γ' <- γ + 0.5*diagonal(transpose(X - C)*(X - C));
   return (N', Λ', α', γ');
 }
 
