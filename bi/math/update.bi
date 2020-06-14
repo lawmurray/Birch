@@ -310,7 +310,7 @@ function update_inverse_gamma_gamma(x:Real, k:Real, α:Real, β:Real) ->
  */
 function update_multivariate_gaussian_multivariate_gaussian(x:Real[_],
     μ:Real[_], Σ:LLT, S:LLT) -> (Real[_], LLT) {
-  auto K' <- solve(llt(Σ + S), Σ);
+  auto K' <- transpose(solve(llt(Σ + S), Σ));
   auto μ' <- μ + K'*(x - μ);
   auto Σ' <- llt(Σ - K'*Σ);
   return (μ', Σ');

@@ -315,7 +315,7 @@ function update_lazy_inverse_gamma_gamma(x:Expression<Real>,
 function update_lazy_multivariate_gaussian_multivariate_gaussian(x:Expression<Real[_]>,
     μ:Expression<Real[_]>, Σ:Expression<LLT>, S:Expression<LLT>) ->
     (Expression<Real[_]>, Expression<LLT>) {
-  auto K' <- solve(llt(Σ + S), Σ);
+  auto K' <- transpose(solve(llt(Σ + S), Σ));
   auto μ' <- μ + K'*(x - μ);
   auto Σ' <- llt(Σ - K'*Σ);
   return (μ', Σ');
