@@ -607,7 +607,7 @@ void bi::md_ostream::visit(const TupleType* o) {
 }
 
 void bi::md_ostream::visit(const FunctionType* o) {
-  middle('@' << '(' << o->params << ')');
+  middle("&bsol;(" << o->params << ')');
   if (!o->returnType->isEmpty()) {
     middle(" -> " << o->returnType);
   }
