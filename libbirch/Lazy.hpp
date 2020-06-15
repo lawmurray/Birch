@@ -165,6 +165,15 @@ public:
   }
 
   /**
+   * Value assignment.
+   */
+  template<class U, std::enable_if_t<is_value<U>::value,int> = 0>
+  const Lazy<P>& operator=(const U& o) const {
+    *get() = o;
+    return *this;
+  }
+
+  /**
    * Copy assignment.
    */
   Lazy& operator=(const Lazy& o) {
