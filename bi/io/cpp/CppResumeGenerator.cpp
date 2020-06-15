@@ -185,12 +185,16 @@ void bi::CppResumeGenerator::visit(const Yield* o) {
 }
 
 void bi::CppResumeGenerator::visit(const Return* o) {
-  genTraceLine(o->loc);
-  start("return " << currentFiber->returnType << '(');
-  if (!o->single->isEmpty()) {
-    middle(o->single);
+  if (inLambda) {
+    CppBaseGenerator::visit(o);
+  } else {
+    genTraceLine(o->loc);
+    start("return " << currentFiber->returnType << '(');
+    if (!o->single->isEmpty()) {
+      middle(o->single);
+    }
+    finish(");");
   }
-  finish(");");
 }
 
 void bi::CppResumeGenerator::visit(const LocalVariable* o) {
@@ -262,7 +266,7 @@ void bi::CppResumeGenerator::genPackType(const Function* o) {
 
 void bi::CppResumeGenerator::genPackParam(const Function* o) {
   Gatherer<Parameter> params;
-  o->accept(&params);
+  o->params->accept(&params);
 
   middle("libbirch::make_tuple(");
   bool first = true;
