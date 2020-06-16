@@ -139,7 +139,7 @@ abstract class Expression<Value> < DelayExpression {
   abstract function doGet();
 
   /**
-   * Evaluate prior to a `grad()`, closed world.
+   * Evaluate before a call to `grad()`, closed world.
    *
    * Returns: The evaluated value of the expression.
    *
@@ -232,6 +232,43 @@ abstract class Expression<Value> < DelayExpression {
     }
   }
 
+  /**
+   * Evaluate gradient for an element of a vector.
+   *
+   * - d: Upstream gradient.
+   * - i: Element index.
+   */
+  final function grad(d:Real, i:Integer) {
+    if !flagValue {
+      doAccumulateGrad(d, i);
+      assert count > 0;
+      count <- count - 1;
+      if count == 0 {
+        /* all upstream gradients accumulated, continue recursion */
+        doGrad();
+      }
+    }
+  }
+
+  /**
+   * Evaluate gradient for an element of a matrix.
+   *
+   * - d: Upstream gradient.
+   * - i: Row index.
+   * - j: Column index.
+   */
+  final function grad(d:Real, i:Integer, j:Integer) {
+    if !flagValue {
+      doAccumulateGrad(d, i, j);
+      assert count > 0;
+      count <- count - 1;
+      if count == 0 {
+        /* all upstream gradients accumulated, continue recursion */
+        doGrad();
+      }
+    }
+  }
+  
   /*
    * Accumulate gradient.
    */
@@ -250,6 +287,20 @@ abstract class Expression<Value> < DelayExpression {
    * Accumulate gradient.
    */
   function doAccumulateGrad(D:Real[_,_]) {
+    assert false;
+  }
+
+  /*
+   * Accumulate gradient.
+   */
+  function doAccumulateGrad(d:Real, i:Integer) {
+    assert false;
+  }
+
+  /*
+   * Accumulate gradient.
+   */
+  function doAccumulateGrad(d:Real, i:Integer, j:Integer) {
     assert false;
   }
 

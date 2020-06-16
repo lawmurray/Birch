@@ -6,7 +6,7 @@
  *
  * Applies `f` to each element of `X`.
  */
-function for_each<Value>(x:Value[_], f:\(Value)) {
+function for_each<Type>(x:Type[_], f:\(Type)) {
   for i in 1..length(x) {
     f(x[i]);
   }
@@ -20,7 +20,7 @@ function for_each<Value>(x:Value[_], f:\(Value)) {
  *
  * Applies `f` to each element of `X`.
  */
-function for_each<Value>(X:Value[_,_], f:\(Value)) {
+function for_each<Type>(X:Type[_,_], f:\(Type)) {
   for i in 1..rows(X) {
     for j in 1..columns(X) {
       f(X[i,j]);
@@ -35,8 +35,8 @@ function for_each<Value>(X:Value[_,_], f:\(Value)) {
  * - y: Second operand.
  * - f: Operator.
  */
-function for_each<Value1,Value2>(x:Value1[_], y:Value2[_],
-    f:\(Value1, Value2)) {
+function for_each<Type1,Type2>(x:Type1[_], y:Type2[_],
+    f:\(Type1, Type2)) {
   assert length(x) == length(y);
   for i in 1..length(x) {
     f(x[i], y[i]);
@@ -50,8 +50,8 @@ function for_each<Value1,Value2>(x:Value1[_], y:Value2[_],
  * - Y: Second operand.
  * - f: Operator.
  */
-function for_each<Value1,Value2>(X:Value1[_,_], Y:Value2[_,_],
-    f:\(Value1, Value2)) {
+function for_each<Type1,Type2>(X:Type1[_,_], Y:Type2[_,_],
+    f:\(Type1, Type2)) {
   assert rows(X) == rows(Y);
   assert columns(X) == columns(Y);
   for i in 1..rows(X) {
@@ -69,8 +69,8 @@ function for_each<Value1,Value2>(X:Value1[_,_], Y:Value2[_,_],
  * - z: Third operand.
  * - f: Operator.
  */
-function for_each<Value1,Value2,Value3>(x:Value1[_], y:Value2[_],
-    z:Value3[_], f:\(Value1, Value2, Value3)) {
+function for_each<Type1,Type2,Type3>(x:Type1[_], y:Type2[_],
+    z:Type3[_], f:\(Type1, Type2, Type3)) {
   assert length(x) == length(y);
   assert length(y) == length(z);
   for i in 1..length(x) {
@@ -86,8 +86,8 @@ function for_each<Value1,Value2,Value3>(x:Value1[_], y:Value2[_],
  * - Z: Third operand.
  * - f: Operator.
  */
-function for_each<Value1,Value2,Value3>(X:Value1[_,_], Y:Value2[_,_],
-    Z:Value3[_,_], f:\(Value1, Value2, Value3)) {
+function for_each<Type1,Type2,Type3>(X:Type1[_,_], Y:Type2[_,_],
+    Z:Type3[_,_], f:\(Type1, Type2, Type3)) {
   assert rows(X) == rows(Y);
   assert rows(Y) == rows(Z);
   assert columns(X) == columns(Y);
@@ -105,7 +105,7 @@ function for_each<Value1,Value2,Value3>(X:Value1[_,_], Y:Value2[_,_],
  * - x: Operand.
  * - f: Operator.
  */
-function transform<Value1,Result>(x:Value1[_], f:\(Value1) -> Result) ->
+function transform<Type1,Result>(x:Type1[_], f:\(Type1) -> Result) ->
     Result[_] {
   // in C++17 can use std::transform
   y:Result[length(x)];
@@ -121,7 +121,7 @@ function transform<Value1,Result>(x:Value1[_], f:\(Value1) -> Result) ->
  * - X: Operand.
  * - f: Operator.
  */
-function transform<Value,Result>(X:Value[_,_], f:\(Value) -> Result) ->
+function transform<Type,Result>(X:Type[_,_], f:\(Type) -> Result) ->
     Result[_,_] {
   // in C++17 can use std::transform
   Y:Result[rows(X),columns(X)];
@@ -140,8 +140,8 @@ function transform<Value,Result>(X:Value[_,_], f:\(Value) -> Result) ->
  * - y: Second operand.
  * - f: Operator.
  */
-function transform<Value1,Value2,Result>(x:Value1[_], y:Value2[_],
-    f:\(Value1, Value1) -> Result) -> Result[_] {
+function transform<Type1,Type2,Result>(x:Type1[_], y:Type2[_],
+    f:\(Type1, Type1) -> Result) -> Result[_] {
   assert length(x) == length(y);
   z:Result[length(x)];
   for i in 1..length(x) {
@@ -157,8 +157,8 @@ function transform<Value1,Value2,Result>(x:Value1[_], y:Value2[_],
  * - Y: Second operand.
  * - f: Operator.
  */
-function transform<Value1,Value2,Result>(X:Value1[_,_], Y:Value2[_,_],
-    f:\(Value1, Value2) -> Result) -> Result[_,_] {
+function transform<Type1,Type2,Result>(X:Type1[_,_], Y:Type2[_,_],
+    f:\(Type1, Type2) -> Result) -> Result[_,_] {
   assert rows(X) == rows(Y);
   assert columns(X) == columns(Y);
   Z:Result[rows(X),columns(X)];
@@ -178,8 +178,8 @@ function transform<Value1,Value2,Result>(X:Value1[_,_], Y:Value2[_,_],
  * - z: Third operand.
  * - f: Operator.
  */
-function transform<Value1,Value2,Value3,Result>(x:Value1[_], y:Value2[_],
-    z:Value3[_], f:\(Value1, Value2, Value3) -> Result) -> Result[_] {
+function transform<Type1,Type2,Type3,Result>(x:Type1[_], y:Type2[_],
+    z:Type3[_], f:\(Type1, Type2, Type3) -> Result) -> Result[_] {
   assert length(x) == length(y);
   assert length(y) == length(z);
   a:Result[length(x)];
@@ -197,8 +197,8 @@ function transform<Value1,Value2,Value3,Result>(x:Value1[_], y:Value2[_],
  * - Z: Third operand.
  * - f: Operator.
  */
-function transform<Value1,Value2,Value3,Result>(X:Value1[_,_], Y:Value2[_,_],
-    Z:Value3[_,_], f:\(Value1, Value2, Value3) -> Result) -> Result[_,_] {
+function transform<Type1,Type2,Type3,Result>(X:Type1[_,_], Y:Type2[_,_],
+    Z:Type3[_,_], f:\(Type1, Type2, Type3) -> Result) -> Result[_,_] {
   assert rows(X) == rows(Y);
   assert rows(Y) == rows(Z);
   assert columns(X) == columns(Y);
@@ -219,9 +219,9 @@ function transform<Value1,Value2,Value3,Result>(X:Value1[_,_], Y:Value2[_,_],
  * - init: Initial value.
  * - op: Operator.
  */
-function reduce<Value>(x:Value[_], init:Value,
-    op:\(Value, Value) -> Value) -> Value {
-  result:Value;
+function reduce<Type>(x:Type[_], init:Type,
+    op:\(Type, Type) -> Type) -> Type {
+  result:Type;
   cpp{{
   x.pin();
   // result = return std::reduce(x.begin(), x.end(), init, op);
@@ -240,8 +240,8 @@ function reduce<Value>(x:Value[_], init:Value,
  * - op1: Reduction operator.
  * - op2: Transformation operator.
  */
-function transform_reduce<Value>(x:Value[_], init:Value,
-    op1:\(Value, Value) -> Value, op2:\(Value) -> Value) -> Value {
+function transform_reduce<Type>(x:Type[_], init:Type,
+    op1:\(Type, Type) -> Type, op2:\(Type) -> Type) -> Type {
   auto y <- init;
   for n in 1..length(x) {
     y <- op1(y, op2(x[n]));
@@ -258,8 +258,8 @@ function transform_reduce<Value>(x:Value[_], init:Value,
  * - op1: Reduction operator.
  * - op2: Transformation operator.
  */
-function transform_reduce<Value>(x:Value[_], y:Value[_], init:Value,
-    op1:\(Value, Value) -> Value, op2:\(Value, Value) -> Value) -> Value {
+function transform_reduce<Type>(x:Type[_], y:Type[_], init:Type,
+    op1:\(Type, Type) -> Type, op2:\(Type, Type) -> Type) -> Type {
   assert length(x) == length(y);
   auto z <- init;
   for n in 1..length(x) {
@@ -278,9 +278,9 @@ function transform_reduce<Value>(x:Value[_], y:Value[_], init:Value,
  * - op1: Reduction operator.
  * - op2: Transformation operator.
  */
-function transform_reduce<Value>(x:Value[_], y:Value[_], z:Value[_],
-    init:Value, op1:\(Value, Value) -> Value,
-    op2:\(Value, Value, Value) -> Value) -> Value {
+function transform_reduce<Type>(x:Type[_], y:Type[_], z:Type[_],
+    init:Type, op1:\(Type, Type) -> Type,
+    op2:\(Type, Type, Type) -> Type) -> Type {
   assert length(x) == length(y);
   assert length(y) == length(z);
   auto a <- init;
@@ -296,8 +296,8 @@ function transform_reduce<Value>(x:Value[_], y:Value[_], z:Value[_],
  * - x: Vector.
  * - op: Operator.
  */
-function inclusive_scan<Value>(x:Value[_], op:\(Value, Value) -> Value) -> Value[_] {
-  y:Value[length(x)];
+function inclusive_scan<Type>(x:Type[_], op:\(Type, Type) -> Type) -> Type[_] {
+  y:Type[length(x)];
   cpp{{
   x.pin();
   // std::inclusive_scan(x.begin(), x.end(), y.begin(), op);
@@ -315,10 +315,10 @@ function inclusive_scan<Value>(x:Value[_], op:\(Value, Value) -> Value) -> Value
  * - init: Initial value.
  * - op: Operator.
  */
-function exclusive_scan<Value>(x:Value[_], init:Value,
-    op:\(Value, Value) -> Value) -> Value[_] {
+function exclusive_scan<Type>(x:Type[_], init:Type,
+    op:\(Type, Type) -> Type) -> Type[_] {
   assert length(x) > 0;
-  y:Value[length(x)];
+  y:Type[length(x)];
   //cpp{{
   // std::exclusive_scan(x.begin(), x.end(), y.begin(), init, op);
   // ^ C++17
@@ -336,9 +336,9 @@ function exclusive_scan<Value>(x:Value[_], init:Value,
  * - x: Vector.
  * - op: Operator.
  */
-function adjacent_difference<Value>(x:Value[_],
-    op:\(Value, Value) -> Value) -> Value[_] {
-  y:Value[length(x)];
+function adjacent_difference<Type>(x:Type[_],
+    op:\(Type, Type) -> Type) -> Type[_] {
+  y:Type[length(x)];
   cpp{{
   x.pin();
   std::adjacent_difference(x.begin(), x.end(), y.begin(), op);
@@ -354,7 +354,7 @@ function adjacent_difference<Value>(x:Value[_],
  *
  * Returns: A vector giving the elements of `x` in ascending order.
  */
-function sort<Value>(x:Value[_]) -> Value[_] {
+function sort<Type>(x:Type[_]) -> Type[_] {
   auto y <- x;
   cpp{{
   y.pinWrite();
@@ -372,7 +372,7 @@ function sort<Value>(x:Value[_]) -> Value[_] {
  * Returns: A vector giving the indices of elements in `x` in ascending
  * order.
  */
-function sort_index<Value>(x:Value[_]) -> Integer[_] {
+function sort_index<Type>(x:Type[_]) -> Integer[_] {
   auto a <- iota(1, length(x));
   cpp{{
   x.pin();
@@ -392,9 +392,9 @@ function sort_index<Value>(x:Value[_]) -> Integer[_] {
  *
  * Returns: a vector `y` where `y[n] == x[a[n]]`.
  */
-function gather<Value>(a:Integer[_], x:Value[_]) -> Value[_] {
+function gather<Type>(a:Integer[_], x:Type[_]) -> Type[_] {
   auto N <- length(a);
-  y:Value[N];
+  y:Type[N];
   for n in 1..N {
     y[n] <- x[a[n]];
   }
@@ -411,9 +411,9 @@ function gather<Value>(a:Integer[_], x:Value[_]) -> Value[_] {
  *
  * If the same index appears more than once in `a`, the result is undefined.
  */
-function scatter<Value>(a:Integer[_], x:Value[_]) -> Value[_] {
+function scatter<Type>(a:Integer[_], x:Type[_]) -> Type[_] {
   auto N <- length(a);
-  y:Value[N];
+  y:Type[N];
   for n in 1..N {
     y[a[n]] <- x[n];
   }

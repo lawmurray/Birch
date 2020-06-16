@@ -34,3 +34,10 @@ function Real<From>(x:Expression<From>) -> Expression<Real> {
     return m;
   }
 }
+
+/**
+ * Lazy cast, identity function.
+ */
+function Real(x:Expression<Real>) -> Expression<Real> {
+  return x;
+}

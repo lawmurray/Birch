@@ -44,6 +44,28 @@ abstract class DelayExpression {
   }
   
   /**
+   * For a vector, get an element.
+   *
+   * - i: Element index.
+   */
+  function element(i:Expression<Integer>) -> Expression<Real> {
+    assert false;
+    return box(0.0);
+  }
+
+  /**
+   * For a matrix, get an element.
+   *
+   * - i: Row index.
+   * - j: Column index.
+   */
+  function element(i:Expression<Integer>, j:Expression<Integer>) ->
+      Expression<Real> {
+    assert false;
+    return box(0.0);
+  }
+  
+  /**
    * Is this a constant expression?
    */
   function isConstant() -> Boolean {

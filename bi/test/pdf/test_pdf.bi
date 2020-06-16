@@ -183,7 +183,7 @@ function test_pdf(π:Distribution<Real[_,_]>, R:Integer, C:Integer, N:Integer,
   
   /* iid samples */
   for n in 1..N {
-    X1[n,1..R*C] <- vector(π.simulate());
+    X1[n,1..R*C] <- vec(π.simulate());
   }
   
   /* compute the shape for a Gaussian proposal using the iid samples */
@@ -205,7 +205,7 @@ function test_pdf(π:Distribution<Real[_,_]>, R:Integer, C:Integer, N:Integer,
     auto l <- π.logpdf(x);
 
     for n in 1..B {
-      auto x' <- matrix(simulate_multivariate_gaussian(vector(x), llt(Σ)), R, C);
+      auto x' <- mat(simulate_multivariate_gaussian(vec(x), llt(Σ)), C);
       auto l' <- π.logpdf(x');
       if log(simulate_uniform(0.0, 1.0)) <= l' - l {
         /* accept */
@@ -230,7 +230,7 @@ function test_pdf(π:Distribution<Real[_,_]>, R:Integer, C:Integer, N:Integer,
   auto l <- π.logpdf(x);
   for n in 1..N {
     for s in 1..S {
-      auto x' <- matrix(simulate_multivariate_gaussian(vector(x), llt(Σ)), R, C);
+      auto x' <- mat(simulate_multivariate_gaussian(vec(x), llt(Σ)), C);
       auto l' <- π.logpdf(x');
       if log(simulate_uniform(0.0, 1.0)) <= l' - l {
         /* accept */
@@ -239,7 +239,7 @@ function test_pdf(π:Distribution<Real[_,_]>, R:Integer, C:Integer, N:Integer,
         a <- a + 1.0/(N*S);
       }
     }
-    X2[n,1..R*C] <- vector(x);
+    X2[n,1..R*C] <- vec(x);
   }
   //stderr.print("final acceptance rate: " + a + "\n");
   

@@ -1,127 +1,7 @@
 /**
- * Create vector filled with a given scalar.
- */
-function vector(x:Real, length:Integer) -> Real[_] {
-  z:Real[length];
-  cpp{{
-  std::fill(z.begin(), z.end(), x);
-  }}
-  return z;
-}
-
-/**
- * Create vector filled with a given value.
- */
-function vector(x:Integer, length:Integer) -> Integer[_] {
-  z:Integer[length];
-  cpp{{
-  std::fill(z.begin(), z.end(), x);
-  }}
-  return z;
-}
-
-/**
- * Create vector filled with a given value.
- */
-function vector(x:Boolean, length:Integer) -> Boolean[_] {
-  z:Boolean[length];
-  cpp{{
-  std::fill(z.begin(), z.end(), x);
-  }}
-  return z;
-}
-
-/**
- * Create vector filled with a sequentially incrementing values.
- *
- * - x: Initial value.
- * - length: Length.
- */
-function iota(x:Real, length:Integer) -> Real[_] {
-  z:Real[length];
-  cpp{{
-  std::iota(z.begin(), z.end(), x);
-  }}
-  return z;
-}
-
-/**
- * Create vector filled with a sequentially incrementing values.
- *
- * - x: Initial value.
- * - length: Length.
- */
-function iota(x:Integer, length:Integer) -> Integer[_] {
-  z:Integer[length];
-  cpp{{
-  std::iota(z.begin(), z.end(), x);
-  }}
-  return z;
-}
-
-/**
- * Create vector filled with a sequentially incrementing values.
- *
- * - x: Initial value.
- * - length: Length.
- */
-function iota(x:Boolean, length:Integer) -> Boolean[_] {
-  z:Boolean[length];
-  cpp{{
-  std::iota(z.begin(), z.end(), x);
-  }}
-  return z;
-}
-
-/**
- * Convert single-element vector to scalar value.
- */
-function scalar(x:Real[_]) -> Real {
-  assert length(x) == 1;  
-  return x[1];
-}
-
-/**
- * Convert single-element vector to scalar value.
- */
-function scalar(x:Integer[_]) -> Integer {
-  assert length(x) == 1;  
-  return x[1];
-}
-
-/**
- * Convert single-element vector to scalar value.
- */
-function scalar(x:Boolean[_]) -> Boolean {
-  assert length(x) == 1;  
-  return x[1];
-}
-
-/**
- * Convert vector to vector (identity operation).
- */
-function vector(x:Real[_]) -> Real[_] {
-  return x;
-}
-
-/**
- * Convert vector to vector (identity operation).
- */
-function vector(x:Integer[_]) -> Integer[_] {
-  return x;
-}
-
-/**
- * Convert vector to vector (identity operation).
- */
-function vector(x:Boolean[_]) -> Boolean[_] {
-  return x;
-}
-
-/**
  * Length of a vector.
  */
-function length<Value>(x:Value[_]) -> Integer {
+function length<Type>(x:Type[_]) -> Integer {
   cpp{{
   return x.rows();
   }}
@@ -130,7 +10,7 @@ function length<Value>(x:Value[_]) -> Integer {
 /**
  * Number of rows of a vector; equals `length()`.
  */
-function rows<Value>(x:Value[_]) -> Integer {
+function rows<Type>(x:Type[_]) -> Integer {
   cpp{{
   return x.rows();
   }}
@@ -139,156 +19,149 @@ function rows<Value>(x:Value[_]) -> Integer {
 /**
  * Number of columns of a vector; equals 1.
  */
-function columns<Value>(x:Value[_]) -> Integer {
+function columns<Type>(x:Type[_]) -> Integer {
   return 1;
 }
 
 /**
- * Sum of a vector.
+ * Convert single-element vector to scalar value.
  */
-function sum(x:Real[_]) -> Real {
-  return reduce<Real>(x, 0.0, \(x:Real, y:Real) -> Real {
-      return x + y; });
+function scalar<Type>(x:Type[_]) -> Type {
+  assert length(x) == 1;  
+  return x[1];
 }
 
 /**
- * Sum of a vector.
+ * Create a vector filled by a lambda function.
+ *
+ * - λ: Lambda function.
+ * - length: Length of the vector.
+ *
+ * Returns: The new vector.
+ *
+ * The lambda function is called once for each element in the new vector,
+ * receiving, as its argument, the index of that element, and returning the
+ * value at that element.
  */
-function sum(x:Integer[_]) -> Integer {
-  return reduce<Integer>(x, 0, \(x:Integer, y:Integer) -> Integer {
-      return x + y; });
+function vector<Type>(λ:\(Integer) -> Type, length:Integer) -> Type[_] {
+  cpp{{
+  /* wrap λ in another lambda function to translate 0-based indices into
+   * 1-based indices */
+  return libbirch::make_array_from_lambda<Type>(libbirch::make_shape(length),
+        [&](int64_t i) { return λ(i + 1); });
+  }}
 }
 
 /**
- * Sum of a vector.
+ * Create vector filled with a given value.
  */
-function sum(x:Boolean[_]) -> Boolean {
-  return reduce<Boolean>(x, false, \(x:Boolean, y:Boolean) -> Boolean {
-      return x + y; });
+function vector<Type>(x:Type, length:Integer) -> Type[_] {
+  cpp{{
+  return libbirch::make_array<Type>(libbirch::make_shape(length), x);
+  }}
 }
 
 /**
- * Product of a vector.
+ * Convert a vector.
+ *
+ * !!! tip
+ *     This is typically an identity operation, but in some contexts is
+ *     essential to explicitly evaluate and convert an
+ *     [Eigen](https://eigen.tuxfamily.org) expression.
  */
-function product(x:Real[_]) -> Real {
-  return reduce<Real>(x, 1.0, \(x:Real, y:Real) -> Real {
-      return x*y; });
+function vector(x:Real[_]) -> Real[_] {
+  return x;
 }
 
 /**
- * Product of a vector.
+ * Convert a vector.
+ *
+ * !!! tip
+ *     This is typically an identity operation, but in some contexts is
+ *     essential to explicitly evaluate and convert an
+ *     [Eigen](https://eigen.tuxfamily.org) expression.
  */
-function product(x:Integer[_]) -> Integer {
-  return reduce<Integer>(x, 1, \(x:Integer, y:Integer) -> Integer {
-      return x*y; });
+function vector(x:Integer[_]) -> Integer[_] {
+  return x;
+}
+/**
+ * Convert a vector.
+ *
+ * !!! tip
+ *     This is typically an identity operation, but in some contexts is
+ *     essential to explicitly evaluate and convert an
+ *     [Eigen](https://eigen.tuxfamily.org) expression.
+ */
+function vector(x:Boolean[_]) -> Boolean[_] {
+  return x;
 }
 
 /**
- * Product of a vector.
+ * Create vector filled with a sequentially incrementing values.
+ *
+ * - x: Initial value.
+ * - length: Length.
  */
-function product(x:Boolean[_]) -> Boolean {
-  return reduce<Boolean>(x, true, \(x:Boolean, y:Boolean) -> Boolean {
-      return x*y; });
+function iota<Type>(x:Type, length:Integer) -> Real[_] {
+  return vector(\(i:Integer) -> Type {
+    return x + (i - 1);
+  }, length);
 }
 
 /**
- * Maximum of a vector.
+ * Sum reduction.
  */
-function max(x:Real[_]) -> Real {
+function sum<Type>(x:Type[_]) -> Type {
   assert length(x) > 0;
-  return reduce<Real>(x, x[1], \(x:Real, y:Real) -> Real {
-      return max(x, y); });
+  return reduce(x[2..length(x)], x[1], \(x:Type, y:Type) -> Type {
+      return x + y;
+    });
 }
 
 /**
- * Maximum of a vector.
+ * Product reduction.
  */
-function max(x:Integer[_]) -> Integer {
+function product<Type>(x:Type[_]) -> Type {
   assert length(x) > 0;
-  return reduce<Integer>(x, x[1], \(x:Integer, y:Integer) -> Integer {
-      return max(x, y); });
+  return reduce(x[2..length(x)], x[1], \(x:Type, y:Type) -> Type {
+      return x*y;
+    });
 }
 
 /**
- * Maximum of a vector.
+ * Maximum reduction.
  */
-function max(x:Boolean[_]) -> Boolean {
+function max<Type>(x:Type[_]) -> Type {
   assert length(x) > 0;
-  return reduce<Boolean>(x, x[1], \(x:Boolean, y:Boolean) -> Boolean {
-      return max(x, y); });
+  return reduce(x[2..length(x)], x[1], \(x:Type, y:Type) -> Type {
+      return max(x, y);
+    });
 }
 
 /**
- * Minimum of a vector.
+ * Minimum reduction.
  */
-function min(x:Real[_]) -> Real {
+function min<Type>(x:Type[_]) -> Type {
   assert length(x) > 0;
-  return reduce<Real>(x, x[1], \(x:Real, y:Real) -> Real {
-      return min(x, y); });
+  return reduce(x[2..length(x)], x[1], \(x:Type, y:Type) -> Type {
+      return min(x, y);
+    });
 }
 
 /**
- * Minimum of a vector.
+ * Inclusive prefix sum.
  */
-function min(x:Integer[_]) -> Integer {
-  assert length(x) > 0;
-  return reduce<Integer>(x, x[1], \(x:Integer, y:Integer) -> Integer {
-      return min(x, y); });
+function inclusive_scan_sum<Type>(x:Type[_]) -> Type[_] {
+  return inclusive_scan(x, \(x:Type, y:Type) -> Type { return x + y; });
 }
 
 /**
- * Minimum of a vector.
+ * Exclusive prefix sum.
  */
-function min(x:Boolean[_]) -> Boolean {
-  assert length(x) > 0;
-  return reduce<Boolean>(x, x[1], \(x:Boolean, y:Boolean) -> Boolean {
-      return min(x, y); });
-}
-
-/**
- * Inclusive prefix sum of a vector.
- */
-function inclusive_scan_sum(x:Real[_]) -> Real[_] {
-  return inclusive_scan<Real>(x, \(x:Real, y:Real) -> Real { return x + y; });
-}
-
-/**
- * Inclusive prefix sum of a vector.
- */
-function inclusive_scan_sum(x:Integer[_]) -> Integer[_] {
-  return inclusive_scan<Integer>(x, \(x:Integer, y:Integer) -> Integer {
-      return x + y; });
-}
-
-/**
- * Inclusive prefix sum of a vector.
- */
-function inclusive_scan_sum(x:Boolean[_]) -> Boolean[_] {
-  return inclusive_scan<Boolean>(x, \(x:Boolean, y:Boolean) -> Boolean {
-      return x + y; });
-}
-
-/**
- * Exclusive prefix sum of a vector.
- */
-function exclusive_scan_sum(x:Real[_]) -> Real[_] {
-  return exclusive_scan<Real>(x, 0.0, \(x:Real, y:Real) -> Real { return x + y; });
-}
-
-/**
- * Exclusive prefix sum of a vector.
- */
-function exclusive_scan_sum(x:Integer[_]) -> Integer[_] {
-  return exclusive_scan<Integer>(x, 0, \(x:Integer, y:Integer) -> Integer {
-      return x + y; });
-}
-
-/**
- * Exclusive prefix sum of a vector.
- */
-function exclusive_scan_sum(x:Boolean[_]) -> Boolean[_] {
-  return exclusive_scan<Boolean>(x, false, \(x:Boolean, y:Boolean) -> Boolean {
-      return x + y; });
+function exclusive_scan_sum<Type>(x:Type[_]) -> Type[_] {
+  return exclusive_scan(x, 0.0, \(x:Type, y:Type) -> Type {
+      return x + y;
+    });
 }
 
 /**

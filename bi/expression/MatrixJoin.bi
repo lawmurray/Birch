@@ -1,12 +1,12 @@
 /**
  * Lazy `join`.
  */
-final class Join<Value>(x:Expression<Value>[_]) <
-    MultivariateExpression<Value[_]> {
+final class MatrixJoin<Value>(x:Expression<Value>[_,_]) <
+    MatrixExpression<Value[_,_]> {
   /**
    * Arguments.
    */
-  args:Expression<Value>[_] <- x;
+  args:Expression<Value>[_,_] <- x;
 
   override function rows() -> Integer {
     return global.length(args);
@@ -45,19 +45,23 @@ final class Join<Value>(x:Expression<Value>[_]) <
   }
   
   override function doGrad() {
-    for_each(args, d!, \(x:Expression<Value>, d:Value) { x.grad(d); });
+    for_each(args, D!, \(x:Expression<Value>, d:Value) { x.grad(d); });
   }
 
   override function doPrior(vars:RaggedArray<DelayExpression>) ->
       Expression<Real>? {
     p:Expression<Real>?;
-    for i in 1..global.length(args) {
-      auto q <- args[i].prior(vars);
-      if q? {
-        if p? {
-          p <- p! + q!;
-        } else {
-          p <- q;
+    auto R <- rows();
+    auto C <- columns();
+    for i in 1..R {
+      for j in 1..C {
+        auto q <- args[i,j].prior(vars);
+        if q? {
+          if p? {
+            p <- p! + q!;
+          } else {
+            p <- q;
+          }
         }
       }
     }
@@ -66,10 +70,10 @@ final class Join<Value>(x:Expression<Value>[_]) <
 }
 
 /**
- * Lazy `join`. Converts a vector of scalar expressions into a single vector
+ * Lazy `join`. Converts a matrix of scalar expressions into a single matrix
  * expression.
  */
-function join(x:Expression<Real>[_]) -> Expression<Real[_]> {
-  m:Join<Real>(x);
+function join(x:Expression<Real>[_,_]) -> Expression<Real[_,_]> {
+  m:MatrixJoin<Real>(x);
   return m;
 }

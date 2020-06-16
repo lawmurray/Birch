@@ -9,7 +9,12 @@ abstract class MultivariateExpression<Value> < Expression<Value> {
    */
   d:Real[_]?;  
 
-  final function doAccumulateGrad(d:Real[_]) {
+  final override function element(i:Expression<Integer>) ->
+      Expression<Real> {
+    return MultivariateElement(this, i);
+  }
+
+  final override function doAccumulateGrad(d:Real[_]) {
     if this.d? {
       this.d <- this.d! + d;
     } else {
@@ -17,7 +22,14 @@ abstract class MultivariateExpression<Value> < Expression<Value> {
     }
   }
 
-  final function doClearGrad() {
-    d <- nil;
+  final override function doAccumulateGrad(d:Real, i:Integer) {
+    if !this.d? {
+      this.d <- vector(0.0, length());
+    }
+    this.d![i] <- this.d![i] + d;
+  }
+
+  final override function doClearGrad() {
+    this.d <- nil;
   }
 }

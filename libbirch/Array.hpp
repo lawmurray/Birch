@@ -140,7 +140,7 @@ public:
     allocate();
     int64_t n = 0;
     for (auto iter = begin(); iter != end(); ++iter) {
-      new (&*iter) T(l(++n));
+      new (&*iter) T(l(n++));
     }
   }
 
