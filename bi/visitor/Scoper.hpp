@@ -15,8 +15,16 @@ class Scoper: public ScopedModifier {
 public:
   /**
    * Constructor.
+   *
+   * @param currentPackage If the visitor will not begin by visiting the
+   * package, provide it for scoping purposes.
+   * @param currentClass If the visitor will begin by visiting the members of
+   * a class, but not the class itself, provide it for scoping purposes.
+   * @param currentFiber If the visitor will begin by visiting the body of a
+   * fiber or member fiber, provide it for scoping purposes.
    */
-  Scoper();
+  Scoper(Package* currentPackage = nullptr, Class* currentClass = nullptr,
+      Fiber* currentFiber = nullptr);
 
   /**
    * Destructor.
@@ -36,6 +44,7 @@ public:
   virtual Statement* modify(Program* o);
   virtual Statement* modify(Basic* o);
   virtual Statement* modify(Class* o);
+  virtual Statement* modify(Yield* o);
   virtual Expression* modify(Generic* o);
 };
 }

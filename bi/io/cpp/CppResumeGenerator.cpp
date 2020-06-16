@@ -33,8 +33,11 @@ void bi::CppResumeGenerator::visit(const Function* o) {
     start("template<");
   }
   for (auto typeParam : *o->typeParams) {
+    if (!first) {
+      middle(", ");
+    }
     first = false;
-    middle("class " << typeParam << ',');
+    middle("class " << typeParam);
   }
   if (params) {
     if (!first) {
@@ -144,7 +147,7 @@ void bi::CppResumeGenerator::visit(const Function* o) {
         middle(", ");
       }
       first = false;
-      middle("class " << typeParam);
+      middle(typeParam);
     }
     if (params) {
       if (!first) {

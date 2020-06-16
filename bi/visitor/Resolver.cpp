@@ -83,6 +83,7 @@ bi::Type* bi::Resolver::modify(NamedType* o) {
     (*iter)->lookup(o);
   }
   if (!o->category) {
+    assert(false);
     throw UnresolvedException(o);
   }
   return o;
