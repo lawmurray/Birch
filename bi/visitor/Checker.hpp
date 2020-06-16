@@ -24,6 +24,7 @@ public:
    */
   virtual ~Checker();
 
+  virtual void visit(const LambdaFunction* o);
   virtual void visit(const Fiber* o);
   virtual void visit(const MemberFiber* o);
   virtual void visit(const Yield* o);
@@ -33,5 +34,10 @@ private:
    * Are we in a fiber?
    */
   int inFiber;
+
+  /**
+   * Are we in a lambda function?
+   */
+  int inLambda;
 };
 }
