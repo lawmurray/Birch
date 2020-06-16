@@ -6,6 +6,7 @@
 #pragma once
 
 #include "bi/visitor/Baser.hpp"
+#include "bi/visitor/Checker.hpp"
 #include "bi/visitor/Cloner.hpp"
 #include "bi/visitor/ContextualModifier.hpp"
 #include "bi/visitor/Gatherer.hpp"

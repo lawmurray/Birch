@@ -50,19 +50,22 @@ void bi::Compiler::parse() {
 
 void bi::Compiler::resolve() {
   Spinner spinner;
-  package = package->accept(&spinner);
+  package->accept(&spinner);
 
   Transformer transformer;
-  package = package->accept(&transformer);
+  package->accept(&transformer);
+
+  Checker checker;
+  package->accept(&checker);
 
   Scoper scoper;
-  package = package->accept(&scoper);
+  package->accept(&scoper);
 
   Baser baser;
-  package = package->accept(&baser);
+  package->accept(&baser);
 
   Resolver resolver;
-  package = package->accept(&resolver);
+  package->accept(&resolver);
 }
 
 void bi::Compiler::gen() {

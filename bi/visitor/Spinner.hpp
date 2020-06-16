@@ -10,7 +10,7 @@
 
 namespace bi {
 /**
- * Extract use of the spin operator into a preceding while loop that yields
+ * Unwind use of the spin operator into a preceding while loop that yields
  * until the fiber is complete.
  *
  * @ingroup visitor

@@ -16,7 +16,7 @@ bi::YieldException::YieldException(const Yield* o) {
     buf << o->loc;
   }
   buf << "note: in\n";
-  buf << o << '\n';
+  buf << o;
 
   msg = base.str();
 }
