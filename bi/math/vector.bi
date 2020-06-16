@@ -113,9 +113,13 @@ function iota<Type>(x:Type, length:Integer) -> Real[_] {
  */
 function sum<Type>(x:Type[_]) -> Type {
   assert length(x) > 0;
-  return reduce(x[2..length(x)], x[1], \(x:Type, y:Type) -> Type {
-      return x + y;
-    });
+  if length(x) == 1 {
+    return x[1];
+  } else {
+    return reduce(x[2..length(x)], x[1], \(x:Type, y:Type) -> Type {
+        return x + y;
+      });
+  }
 }
 
 /**
@@ -123,9 +127,13 @@ function sum<Type>(x:Type[_]) -> Type {
  */
 function product<Type>(x:Type[_]) -> Type {
   assert length(x) > 0;
-  return reduce(x[2..length(x)], x[1], \(x:Type, y:Type) -> Type {
-      return x*y;
-    });
+  if length(x) == 1 {
+    return x[1];
+  } else {
+    return reduce(x[2..length(x)], x[1], \(x:Type, y:Type) -> Type {
+        return x*y;
+      });
+   }
 }
 
 /**
@@ -133,9 +141,13 @@ function product<Type>(x:Type[_]) -> Type {
  */
 function max<Type>(x:Type[_]) -> Type {
   assert length(x) > 0;
-  return reduce(x[2..length(x)], x[1], \(x:Type, y:Type) -> Type {
-      return max(x, y);
-    });
+  if length(x) == 1 {
+    return x[1];
+  } else {
+    return reduce(x[2..length(x)], x[1], \(x:Type, y:Type) -> Type {
+        return max(x, y);
+      });
+  }
 }
 
 /**
@@ -143,9 +155,13 @@ function max<Type>(x:Type[_]) -> Type {
  */
 function min<Type>(x:Type[_]) -> Type {
   assert length(x) > 0;
-  return reduce(x[2..length(x)], x[1], \(x:Type, y:Type) -> Type {
-      return min(x, y);
-    });
+  if length(x) == 1 {
+    return x[1];
+  } else {
+    return reduce(x[2..length(x)], x[1], \(x:Type, y:Type) -> Type {
+        return min(x, y);
+      });
+  }
 }
 
 /**
