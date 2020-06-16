@@ -54,6 +54,15 @@ abstract class DelayExpression {
   }
 
   /**
+   * For a vector, get an element.
+   *
+   * - i: Element index.
+   */
+  final function element(i:Integer) -> Expression<Real> {
+    return element(box(i));
+  }
+
+  /**
    * For a matrix, get an element.
    *
    * - i: Row index.
@@ -63,6 +72,36 @@ abstract class DelayExpression {
       Expression<Real> {
     assert false;
     return box(0.0);
+  }
+
+  /**
+   * For a matrix, get an element.
+   *
+   * - i: Row index.
+   * - j: Column index.
+   */
+  function element(i:Integer, j:Expression<Integer>) -> Expression<Real> {
+    return element(box(i), j);
+  }
+
+  /**
+   * For a matrix, get an element.
+   *
+   * - i: Row index.
+   * - j: Column index.
+   */
+  function element(i:Expression<Integer>, j:Integer) -> Expression<Real> {
+    return element(i, box(j));
+  }
+
+  /**
+   * For a matrix, get an element.
+   *
+   * - i: Row index.
+   * - j: Column index.
+   */
+  function element(i:Integer, j:Integer) -> Expression<Real> {
+    return element(box(i), box(j));
   }
   
   /**
