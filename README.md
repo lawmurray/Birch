@@ -14,7 +14,7 @@ It is licensed under the Apache License, Version 2.0 (the "License"); you may no
 
 ## Installing
 
-For a complete guide to installing Birch, see <http://www.birch-lang.org/getting-started>. To install just the compiler, use:
+For a complete guide to installing Birch, see <http://www.birch-lang.org>. To install just the compiler, use:
 
 ```sh
 ./autogen.sh
