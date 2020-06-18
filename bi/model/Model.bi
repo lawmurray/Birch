@@ -1,12 +1,15 @@
 /**
- * Model.
+ * A model.
  *
- * The Model class hierarchy is as follows:
- * <center>
- * <object type="image/svg+xml" data="../../figs/Model.svg"></object>
- * </center>
+ * ```mermaid
+ * classDiagram
+ *    Model <|-- MarkovModel
+ *    Model <|-- HiddenMarkovModel
+ *    HiddenMarkovModel -- StateSpaceModel
+ *    link Model "../Model/"
+ * ```
  */
-class Model {
+abstract class Model {
   /**
    * Size. This is the number of steps of `simulate(Integer)` to be performed
    * after the initial call to `simulate()`.

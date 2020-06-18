@@ -82,6 +82,46 @@ function mat<Type>(x:Type[_], columns:Integer) -> Type[_,_] {
 }
 
 /**
+ * Stack two matrices atop one another (i.e. append columns) to create a
+ * new matrix.
+ */
+function stack<Type>(X:Type[_,_], Y:Type[_,_]) -> Type[_,_] {
+  assert columns(X) == columns(Y);
+  
+  auto R1 <- rows(X);
+  auto R2 <- rows(Y);
+  auto C <- columns(X);
+  
+  return matrix(\(i:Integer, j:Integer) -> Type {
+        if i <= R1 {
+          return X[i,j];
+        } else {
+          return Y[i - R1,j];
+        }
+      }, R1 + R2, C);
+}
+
+/**
+ * Pack two matrices next to one another (i.e. append rows) to create a
+ * new matrix.
+ */
+function pack<Type>(X:Type[_,_], Y:Type[_,_]) -> Type[_,_] {
+  assert rows(X) == rows(Y);
+  
+  auto R <- rows(X);
+  auto C1 <- columns(X);
+  auto C2 <- columns(Y);
+  
+  return matrix(\(i:Integer, j:Integer) -> Type {
+        if j <= C1 {
+          return X[i,j];
+        } else {
+          return Y[i,j - C1];
+        }
+      }, R, C1 + C2);
+}
+
+/**
  * Create diagonal matrix, filling the diagonal with a given scalar value.
  *
  * - x: The value.
