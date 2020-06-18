@@ -550,11 +550,17 @@ void bi::Driver::docs() {
   mkdocsStream << "markdown_extensions:\n";
   mkdocsStream << "  - admonition\n";
   mkdocsStream << "  - footnotes\n";
-  mkdocsStream << "  - mdx_math:\n";
-  mkdocsStream << "      enable_dollar_delimiter: True\n";
+  mkdocsStream << "  - pymdownx.arithmatex\n";
+  mkdocsStream << "  - pymdownx.superfences:\n";
+  mkdocsStream << "      custom_fences:\n";
+  mkdocsStream << "        - name: mermaid\n";
+  mkdocsStream << "          class: mermaid\n";
+  mkdocsStream << "          format: !!python/name:pymdownx.superfences.fence_div_format\n";
+  mkdocsStream << "extra_css:\n";
+  mkdocsStream << "  - 'https://unpkg.com/mermaid@8.5.1/dist/mermaid.css'\n";
   mkdocsStream << "extra_javascript:\n";
-  mkdocsStream
-      << "  - 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML'\n";
+  mkdocsStream << "  - 'https://unpkg.com/mermaid@8.5.1/dist/mermaid.min.js'\n";
+  mkdocsStream << "  - 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML'\n";
   mkdocsStream << "nav:\n";
 
   fs::path docs("docs"), file;
