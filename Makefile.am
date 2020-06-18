@@ -44,7 +44,6 @@ COMMON_SOURCES = \
   bi/exception/FileNotFoundException.cpp \
   bi/exception/InheritanceLoopException.cpp \
   bi/exception/SpinException.cpp \
-  bi/exception/UnresolvedException.cpp \
   bi/exception/YieldException.cpp \
   bi/expression/Assign.cpp \
   bi/expression/BinaryCall.cpp \
@@ -185,8 +184,9 @@ noinst_HEADERS = \
   bi/exception/Exception.hpp \
   bi/exception/FileNotFoundException.hpp \
   bi/exception/InheritanceLoopException.hpp \
+  bi/exception/RedefinedException.hpp \
   bi/exception/SpinException.hpp \
-  bi/exception/UnresolvedException.hpp \
+  bi/exception/UndefinedException.hpp \
   bi/exception/YieldException.hpp \
   bi/expression/all.hpp \
   bi/expression/Assign.hpp \

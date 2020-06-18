@@ -69,7 +69,7 @@ bi::Expression* bi::Resolver::modify(NamedExpression* o) {
          * MEMBER_UNKNOWN, and let the C++ handle the rest. */
         o->category = MEMBER_UNKNOWN;
       } else {
-        throw UnresolvedException(o);
+        throw UndefinedException(o);
       }
     }
   }
@@ -83,7 +83,7 @@ bi::Type* bi::Resolver::modify(NamedType* o) {
     (*iter)->lookup(o);
   }
   if (!o->category) {
-    throw UnresolvedException(o);
+    throw UndefinedException(o);
   }
   return o;
 }

@@ -7,29 +7,29 @@
 
 namespace bi {
 /**
- * Unresolved identifier.
+ * Undefined identifier.
  *
  * @ingroup exception
  */
-struct UnresolvedException: public Exception {
+struct UndefinedException: public Exception {
   /**
    * Constructor.
    */
-  template<class ObjectType>
-  UnresolvedException(const ObjectType* o);
+  template<class T>
+  UndefinedException(const T* o);
 };
 }
 
 #include "bi/io/bih_ostream.hpp"
 
-template<class ObjectType>
-bi::UnresolvedException::UnresolvedException(const ObjectType* o) {
+template<class T>
+bi::UndefinedException::UndefinedException(const T* o) {
   std::stringstream base;
   bih_ostream buf(base);
   if (o->loc) {
     buf << o->loc;
   }
-  buf << "error: unresolved identifier '" << o->name << "'\n";
+  buf << "error: '" << o->name << "' is undefined\n";
   if (o->loc) {
     buf << o->loc;
   }

@@ -105,10 +105,26 @@ void bi::Scope::lookup(NamedType* o) const {
 }
 
 void bi::Scope::add(Parameter* o) {
+  auto param = parameters.find(o->name->str());
+  if (param != parameters.end()) {
+    throw RedefinedException(o, param->second);
+  }
+  auto local = localVariables.find(o->name->str());
+  if (local != localVariables.end()) {
+    throw RedefinedException(o, local->second);
+  }
   parameters.insert(std::make_pair(o->name->str(), o));
 }
 
 void bi::Scope::add(LocalVariable* o) {
+  auto param = parameters.find(o->name->str());
+  if (param != parameters.end()) {
+    throw RedefinedException(o, param->second);
+  }
+  auto local = localVariables.find(o->name->str());
+  if (local != localVariables.end()) {
+    throw RedefinedException(o, local->second);
+  }
   localVariables.insert(std::make_pair(o->name->str(), o));
 }
 
