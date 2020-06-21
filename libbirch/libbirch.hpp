@@ -371,7 +371,7 @@ template<class To, class From,
     std::enable_if_t<!std::is_same<To,From>::value &&
     (!is_pointer<To>::value || !is_pointer<From>::value),int> = 0>
 Optional<To> cast(const From& from) {
-  return nil;
+  return static_cast<To>(from);
 }
 
 /**
