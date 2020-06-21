@@ -20,6 +20,14 @@ final class LinearMatrixNormalInverseGammaMatrixGaussian(
    */
   C:Expression<Real[_,_]> <- C;
 
+  function rows() -> Integer {
+    return C.rows();
+  }
+  
+  function columns() -> Integer {
+    return C.columns();
+  }
+
   function supportsLazy() -> Boolean {
     return true;
   }

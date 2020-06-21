@@ -20,6 +20,10 @@ final class LinearMultivariateNormalInverseGammaMultivariateGaussian(
    */
   c:Expression<Real[_]> <- c;
 
+  function rows() -> Integer {
+    return c.rows();
+  }
+
   function supportsLazy() -> Boolean {
     return true;
   }
