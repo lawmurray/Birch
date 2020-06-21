@@ -462,3 +462,17 @@ function copysign(x:Real32, y:Real32) -> Real32 {
   return ::copysignf(x, y);
   }}
 }
+
+/**
+ * Rectify.
+ */
+function rectify(x:Real64) -> Real64 {
+  return max(0.0, x);
+}
+
+/**
+ * Rectify.
+ */
+function rectify(x:Real32) -> Real32 {
+  return max(Real32(0.0), x);
+}

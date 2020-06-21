@@ -35,8 +35,8 @@ function for_each<Type>(X:Type[_,_], f:\(Type)) {
  * - y: Second operand.
  * - f: Operator.
  */
-function for_each<Type1,Type2>(x:Type1[_], y:Type2[_],
-    f:\(Type1, Type2)) {
+function for_each<Input1,Input2>(x:Input1[_], y:Input2[_],
+    f:\(Input1, Input2)) {
   assert length(x) == length(y);
   for i in 1..length(x) {
     f(x[i], y[i]);
@@ -50,8 +50,8 @@ function for_each<Type1,Type2>(x:Type1[_], y:Type2[_],
  * - Y: Second operand.
  * - f: Operator.
  */
-function for_each<Type1,Type2>(X:Type1[_,_], Y:Type2[_,_],
-    f:\(Type1, Type2)) {
+function for_each<Input1,Input2>(X:Input1[_,_], Y:Input2[_,_],
+    f:\(Input1, Input2)) {
   assert rows(X) == rows(Y);
   assert columns(X) == columns(Y);
   for i in 1..rows(X) {
@@ -69,8 +69,8 @@ function for_each<Type1,Type2>(X:Type1[_,_], Y:Type2[_,_],
  * - z: Third operand.
  * - f: Operator.
  */
-function for_each<Type1,Type2,Type3>(x:Type1[_], y:Type2[_],
-    z:Type3[_], f:\(Type1, Type2, Type3)) {
+function for_each<Input1,Input2,Input3>(x:Input1[_], y:Input2[_],
+    z:Input3[_], f:\(Input1, Input2, Input3)) {
   assert length(x) == length(y);
   assert length(y) == length(z);
   for i in 1..length(x) {
@@ -86,8 +86,8 @@ function for_each<Type1,Type2,Type3>(x:Type1[_], y:Type2[_],
  * - Z: Third operand.
  * - f: Operator.
  */
-function for_each<Type1,Type2,Type3>(X:Type1[_,_], Y:Type2[_,_],
-    Z:Type3[_,_], f:\(Type1, Type2, Type3)) {
+function for_each<Input1,Input2,Input3>(X:Input1[_,_], Y:Input2[_,_],
+    Z:Input3[_,_], f:\(Input1, Input2, Input3)) {
   assert rows(X) == rows(Y);
   assert rows(Y) == rows(Z);
   assert columns(X) == columns(Y);
@@ -105,14 +105,11 @@ function for_each<Type1,Type2,Type3>(X:Type1[_,_], Y:Type2[_,_],
  * - x: Operand.
  * - f: Operator.
  */
-function transform<Type1,Result>(x:Type1[_], f:\(Type1) -> Result) ->
-    Result[_] {
-  // in C++17 can use std::transform
-  y:Result[length(x)];
-  for i in 1..length(x) {
-    y[i] <- f(x[i]);
-  }
-  return y;
+function transform<Input,Output>(x:Input[_], f:\(Input) -> Output) ->
+    Output[_] {
+  return vector(\(i:Integer) -> Output {
+        return f(x[i]);
+      }, length(x));
 }
 
 /**
@@ -121,16 +118,11 @@ function transform<Type1,Result>(x:Type1[_], f:\(Type1) -> Result) ->
  * - X: Operand.
  * - f: Operator.
  */
-function transform<Type,Result>(X:Type[_,_], f:\(Type) -> Result) ->
-    Result[_,_] {
-  // in C++17 can use std::transform
-  Y:Result[rows(X),columns(X)];
-  for i in 1..rows(X) {
-    for j in 1..columns(X) {
-      Y[i,j] <- f(X[i,j]);
-    }
-  }
-  return Y;
+function transform<Input,Output>(X:Input[_,_], f:\(Input) -> Output) ->
+    Output[_,_] {
+  return matrix(\(i:Integer, j:Integer) -> Output {
+        return f(X[i,j]);
+      }, rows(X), columns(X));
 }
 
 /**
@@ -140,14 +132,12 @@ function transform<Type,Result>(X:Type[_,_], f:\(Type) -> Result) ->
  * - y: Second operand.
  * - f: Operator.
  */
-function transform<Type1,Type2,Result>(x:Type1[_], y:Type2[_],
-    f:\(Type1, Type1) -> Result) -> Result[_] {
+function transform<Input1,Input2,Output>(x:Input1[_], y:Input2[_],
+    f:\(Input1, Input1) -> Output) -> Output[_] {
   assert length(x) == length(y);
-  z:Result[length(x)];
-  for i in 1..length(x) {
-    z[i] <- f(x[i], y[i]);
-  }
-  return y;
+  return vector(\(i:Integer) -> Output {
+        return f(x[i], y[i]);
+      }, length(x));
 }
 
 /**
@@ -157,17 +147,13 @@ function transform<Type1,Type2,Result>(x:Type1[_], y:Type2[_],
  * - Y: Second operand.
  * - f: Operator.
  */
-function transform<Type1,Type2,Result>(X:Type1[_,_], Y:Type2[_,_],
-    f:\(Type1, Type2) -> Result) -> Result[_,_] {
+function transform<Input1,Input2,Output>(X:Input1[_,_], Y:Input2[_,_],
+    f:\(Input1, Input2) -> Output) -> Output[_,_] {
   assert rows(X) == rows(Y);
   assert columns(X) == columns(Y);
-  Z:Result[rows(X),columns(X)];
-  for i in 1..rows(X) {
-    for j in 1..columns(X) {
-      Z[i,j] <- f(X[i,j], Y[i,j]);
-    }
-  }
-  return Y;
+  return matrix(\(i:Integer, j:Integer) -> Output {
+        return f(X[i,j], Y[i,j]);
+      }, rows(X), columns(X));
 }
 
 /**
@@ -178,15 +164,13 @@ function transform<Type1,Type2,Result>(X:Type1[_,_], Y:Type2[_,_],
  * - z: Third operand.
  * - f: Operator.
  */
-function transform<Type1,Type2,Type3,Result>(x:Type1[_], y:Type2[_],
-    z:Type3[_], f:\(Type1, Type2, Type3) -> Result) -> Result[_] {
+function transform<Input1,Input2,Input3,Output>(x:Input1[_], y:Input2[_],
+    z:Input3[_], f:\(Input1, Input2, Input3) -> Output) -> Output[_] {
   assert length(x) == length(y);
-  assert length(y) == length(z);
-  a:Result[length(x)];
-  for i in 1..length(x) {
-    a[i] <- f(x[i], y[i], z[i]);
-  }
-  return a;
+  assert length(x) == length(z);
+  return vector(\(i:Integer) -> Output {
+        return f(x[i], y[i], z[i]);
+      }, length(x));
 }
 
 /**
@@ -197,19 +181,15 @@ function transform<Type1,Type2,Type3,Result>(x:Type1[_], y:Type2[_],
  * - Z: Third operand.
  * - f: Operator.
  */
-function transform<Type1,Type2,Type3,Result>(X:Type1[_,_], Y:Type2[_,_],
-    Z:Type3[_,_], f:\(Type1, Type2, Type3) -> Result) -> Result[_,_] {
+function transform<Input1,Input2,Input3,Output>(X:Input1[_,_], Y:Input2[_,_],
+    Z:Input3[_,_], f:\(Input1, Input2, Input3) -> Output) -> Output[_,_] {
   assert rows(X) == rows(Y);
-  assert rows(Y) == rows(Z);
+  assert rows(X) == rows(Z);
   assert columns(X) == columns(Y);
   assert columns(Y) == columns(Z);
-  A:Result[rows(X),columns(X)];
-  for i in 1..rows(X) {
-    for j in 1..columns(X) {
-      A[i,j] <- f(X[i,j], Y[i,j], Z[i,j]);
-    }
-  }
-  return A;
+  return matrix(\(i:Integer, j:Integer) -> Output {
+        return f(X[i,j], Y[i,j], Z[i,j]);
+      }, rows(X), columns(X));
 }
 
 /**
@@ -219,8 +199,8 @@ function transform<Type1,Type2,Type3,Result>(X:Type1[_,_], Y:Type2[_,_],
  * - init: Initial value.
  * - op: Operator.
  */
-function reduce<Type>(x:Type[_], init:Type,
-    op:\(Type, Type) -> Type) -> Type {
+function reduce<Type>(x:Type[_], init:Type, op:\(Type, Type) -> Type) ->
+    Type {
   result:Type;
   cpp{{
   x.pin();
@@ -393,12 +373,7 @@ function sort_index<Type>(x:Type[_]) -> Integer[_] {
  * Returns: a vector `y` where `y[n] == x[a[n]]`.
  */
 function gather<Type>(a:Integer[_], x:Type[_]) -> Type[_] {
-  auto N <- length(a);
-  y:Type[N];
-  for n in 1..N {
-    y[n] <- x[a[n]];
-  }
-  return y;
+  return vector(\(i:Integer) -> Type { return x[a[i]]; }, length(a));
 }
 
 /**

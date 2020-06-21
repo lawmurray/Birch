@@ -163,6 +163,7 @@
       "bi/expression/Outer.bi",
       "bi/expression/Pow.bi",
       "bi/expression/Random.bi",
+      "bi/expression/Rectify.bi",
       "bi/expression/ScalarBinaryExpression.bi",
       "bi/expression/ScalarExpression.bi",
       "bi/expression/ScalarMatrix.bi",

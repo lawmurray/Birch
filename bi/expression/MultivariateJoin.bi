@@ -74,3 +74,13 @@ function join(x:Expression<Real>[_]) -> Expression<Real[_]> {
   m:MultivariateJoin<Real>(x);
   return m;
 }
+
+/**
+ * Lazy `split`. Converts a vector expression into a vector of scalar
+ * expressions.
+ */
+function split(x:Expression<Real[_]>) -> Expression<Real>[_] {
+  return vector(\(i:Integer) -> Expression<Real> {
+        return x.element(i);
+      }, x.length());
+}

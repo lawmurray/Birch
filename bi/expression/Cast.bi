@@ -26,11 +26,23 @@ final class Cast<From,To>(x:From) < ScalarUnaryExpression<From,To>(x) {
 /**
  * Lazy cast.
  */
-function Real<From>(x:Expression<From>) -> Expression<Real> {
+function Real(x:Expression<Integer>) -> Expression<Real> {
   if x.isConstant() {
     return box(Real(x.value()));
   } else {
-    m:Cast<Expression<From>,Real>(x);
+    m:Cast<Expression<Integer>,Real>(x);
+    return m;
+  }
+}
+
+/**
+ * Lazy cast.
+ */
+function Real(x:Expression<Boolean>) -> Expression<Real> {
+  if x.isConstant() {
+    return box(Real(x.value()));
+  } else {
+    m:Cast<Expression<Boolean>,Real>(x);
     return m;
   }
 }

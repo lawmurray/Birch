@@ -73,7 +73,17 @@ final class MatrixJoin<Value>(x:Expression<Value>[_,_]) <
  * Lazy `join`. Converts a matrix of scalar expressions into a single matrix
  * expression.
  */
-function join(x:Expression<Real>[_,_]) -> Expression<Real[_,_]> {
-  m:MatrixJoin<Real>(x);
+function join(X:Expression<Real>[_,_]) -> Expression<Real[_,_]> {
+  m:MatrixJoin<Real>(X);
   return m;
+}
+
+/**
+ * Lazy `split`. Converts a matrix expression into a matrix of scalar
+ * expressions.
+ */
+function split(X:Expression<Real[_,_]>) -> Expression<Real>[_,_] {
+  return matrix(\(i:Integer, j:Integer) -> Expression<Real> {
+        return X.element(i, j);
+      }, X.rows(), X.columns());
 }
