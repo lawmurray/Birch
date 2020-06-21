@@ -23,7 +23,7 @@ program filter(
     config:String?,
     model:String?,
     seed:Integer?,
-    quiet:Boolean) {
+    quiet:Boolean <- false) {
   /* config */
   configBuffer:MemoryBuffer;
   if config? {
