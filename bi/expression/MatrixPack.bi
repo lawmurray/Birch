@@ -33,11 +33,11 @@ final class MatrixPack<Left,Right,Value>(left:Left, right:Right) <
     auto R2 <- right.rows();
     auto C1 <- left.columns();
     auto C2 <- right.columns();
-    assert R1 == global.rows(D!);
-    assert R2 == global.rows(D!);
+    assert R1 == global.rows(d!);
+    assert R2 == global.rows(d!);
     
-    left.grad(D![1..R1,1..C1]);
-    right.grad(D![1..R2,(C1 + 1)..(C1 + C2)]);
+    left.grad(d![1..R1,1..C1]);
+    right.grad(d![1..R2,(C1 + 1)..(C1 + C2)]);
   }
 }
 

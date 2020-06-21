@@ -28,7 +28,7 @@ final class MatrixDiagonal(x:Expression<Real[_]>) <
   }
 
   override function doGrad() {
-    single.grad(diagonal(D!));
+    single.grad(diagonal(d!));
   }
 }
 

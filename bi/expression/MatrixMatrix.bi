@@ -28,7 +28,7 @@ final class MatrixMatrix<Single,Value>(x:Single) <
   }
 
   override function doGrad() {
-    single.grad(D!);
+    single.grad(d!);
   }
 }
 

@@ -28,7 +28,7 @@ final class Diagonal<Left,Right,Value>(x:Left, n:Right) <
   }
 
   override function doGrad() {
-    left.grad(trace(D!));
+    left.grad(trace(d!));
   }
 }
 

@@ -28,8 +28,8 @@ final class MatrixRankUpdate<Left,Right,Value>(left:Left, right:Right) <
   }
 
   override function doGrad() {
-    left.grad(D!);
-    right.grad((D! + transpose(D!))*right.get());
+    left.grad(d!);
+    right.grad((d! + transpose(d!))*right.get());
   }
 }
 

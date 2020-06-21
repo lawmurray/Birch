@@ -28,7 +28,7 @@ final class MatrixNegate(x:Expression<Real[_,_]>) <
   }
 
   override function doGrad() {
-    single.grad(-D!);
+    single.grad(-d!);
   }
 
   override function graftLinearMatrixGaussian() ->

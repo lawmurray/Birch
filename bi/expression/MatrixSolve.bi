@@ -30,8 +30,8 @@ final class MatrixSolve<Left,Right,Value>(left:Left, right:Right) <
   override function doGrad() {
     auto L <- left.get();
     auto R <- right.get();
-    left.grad(-solve(transpose(L), D!)*transpose(solve(L, R)));
-    right.grad(solve(transpose(L), D!));
+    left.grad(-solve(transpose(L), d!)*transpose(solve(L, R)));
+    right.grad(solve(transpose(L), d!));
   }
 }
 

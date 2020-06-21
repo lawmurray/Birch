@@ -28,8 +28,8 @@ final class Outer<Left,Right,Value>(left:Left, right:Right) <
   }
 
   override function doGrad() {
-    left.grad(D!*right.get());
-    right.grad(transpose(D!)*left.get());
+    left.grad(d!*right.get());
+    right.grad(transpose(d!)*left.get());
   }
 }
 

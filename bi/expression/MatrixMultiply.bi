@@ -28,8 +28,8 @@ final class MatrixMultiply<Left,Right,Value>(left:Left, right:Right) <
   }
 
   override function doGrad() {
-    left.grad(D!*transpose(right.get()));
-    right.grad(transpose(left.get())*D!);
+    left.grad(d!*transpose(right.get()));
+    right.grad(transpose(left.get())*d!);
   }
 
   override function graftLinearMatrixGaussian() ->

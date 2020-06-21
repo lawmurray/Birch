@@ -49,7 +49,7 @@ final class MatrixJoin<Value>(X:Expression<Value>[_,_]) <
   }
   
   override function doGrad() {
-    for_each(args, D!, \(x:Expression<Value>, d:Value) { x.grad(d); });
+    for_each(args, d!, \(x:Expression<Value>, d:Value) { x.grad(d); });
   }
 
   override function doPrior(vars:RaggedArray<DelayExpression>) ->

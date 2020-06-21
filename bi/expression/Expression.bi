@@ -293,7 +293,7 @@ abstract class Expression<Value> < DelayExpression {
   /*
    * Accumulate gradient.
    */
-  function doAccumulateGrad(D:Real[_,_]) {
+  function doAccumulateGrad(d:Real[_,_]) {
     assert false;
   }
 

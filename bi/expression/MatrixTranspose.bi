@@ -28,7 +28,7 @@ final class MatrixTranspose<Single,Value>(x:Single) <
   }
 
   override function doGrad() {
-    single.grad(transpose(D!));
+    single.grad(transpose(d!));
   }
 }
 

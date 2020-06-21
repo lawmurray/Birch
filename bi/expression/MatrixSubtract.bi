@@ -28,8 +28,8 @@ final class MatrixSubtract<Left,Right,Value>(left:Left, right:Right) <
   }
 
   override function doGrad() {
-    left.grad(D!);
-    right.grad(-D!);
+    left.grad(d!);
+    right.grad(-d!);
   }
 
   override function graftLinearMatrixGaussian() ->

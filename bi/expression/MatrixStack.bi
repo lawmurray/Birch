@@ -33,11 +33,11 @@ final class MatrixStack<Left,Right,Value>(left:Left, right:Right) <
     auto R2 <- right.rows();
     auto C1 <- left.columns();
     auto C2 <- right.columns();
-    assert C1 == global.columns(D!);
-    assert C2 == global.columns(D!);
+    assert C1 == global.columns(d!);
+    assert C2 == global.columns(d!);
     
-    left.grad(D![1..R1,1..C1]);
-    right.grad(D![(R1 + 1)..(R1 + R2),1..C2]);
+    left.grad(d![1..R1,1..C1]);
+    right.grad(d![(R1 + 1)..(R1 + R2),1..C2]);
   }
 }
 

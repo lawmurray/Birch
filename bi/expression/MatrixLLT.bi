@@ -29,7 +29,7 @@ final class MatrixLLT(x:Expression<Real[_,_]>) <
 
   override function doGrad() {
     /* just a factorization, so only need to pass through */
-    single.grad(D!);
+    single.grad(d!);
   }
 }
 
