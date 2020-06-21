@@ -16,7 +16,7 @@ final class MatrixNormalInverseWishart(M:Expression<Real[_,_]>,
   /**
    * Among-column covariance.
    */
-  V:InverseWishart <- V;
+  V:InverseWishart& <- V;
 
   function rows() -> Integer {
     return N.rows();

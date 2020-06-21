@@ -40,7 +40,7 @@ final class NormalInverseGamma(μ:Expression<Real>, a2:Expression<Real>,
   /**
    * Variance.
    */
-  σ2:InverseGamma <- σ2;
+  σ2:InverseGamma& <- σ2;
   
   function supportsLazy() -> Boolean {
     return true;
