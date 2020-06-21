@@ -202,13 +202,21 @@ public:
    * Freeze the object.
    */
   void freeze() {
-    assert(isFinished());
-    auto old = packed.maskOr(FROZEN) & FROZEN;
-    if (!old) {
-      if (isUnique()) {
-        packed.maskOr(FROZEN_UNIQUE);
+    /* objects must be finished before they are frozen; however, it can be the
+     * case that, after one thread reaches an object during its finish pass,
+     * but before it reaches it again during its freeze pass, a second thread
+     * freezes and subsequently copies it; the first thread then reaches the
+     * new copy during its freeze pass; it should not attempt to finish or
+     * freeze such an object---the work has already been done by the second
+     * thread */
+    if (isFinished()) {
+      auto old = packed.maskOr(FROZEN) & FROZEN;
+      if (!old) {
+        if (isUnique()) {
+          packed.maskOr(FROZEN_UNIQUE);
+        }
+        freeze_();
       }
-      freeze_();
     }
   }
 
