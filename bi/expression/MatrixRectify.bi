@@ -3,6 +3,14 @@
  */
 final class MatrixRectify(x:Expression<Real[_,_]>) <
     MatrixUnaryExpression<Expression<Real[_,_]>,Real[_,_]>(x) {
+  override function rows() -> Integer {
+    return single.rows();
+  }
+
+  override function columns() -> Integer {
+    return single.columns();
+  }
+
   override function doValue() {
     x <- transform(single.value(), \(y:Real) -> Real { return rectify(y); });
   }

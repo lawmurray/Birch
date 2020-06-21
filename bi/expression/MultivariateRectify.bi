@@ -3,6 +3,10 @@
  */
 final class MultivariateRectify(x:Expression<Real[_]>) <
     MultivariateUnaryExpression<Expression<Real[_]>,Real[_]>(x) {
+  override function rows() -> Integer {
+    return single.rows();
+  }
+    
   override function doValue() {
     x <- transform(single.value(), \(y:Real) -> Real { return rectify(y); });
   }
