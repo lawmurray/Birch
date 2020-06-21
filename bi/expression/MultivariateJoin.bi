@@ -81,6 +81,6 @@ function join(x:Expression<Real>[_]) -> Expression<Real[_]> {
  */
 function split(x:Expression<Real[_]>) -> Expression<Real>[_] {
   return vector(\(i:Integer) -> Expression<Real> {
-        return x.element(i);
+        return MultivariateElement(x, i);
       }, x.length());
 }

@@ -1,84 +1,61 @@
 /**
  * Lazy access of a vector element.
  */
-final class MultivariateElement<Base,Index>(y:Base, i:Index) <
-    ScalarExpression<Real> {
+final class MultivariateElement<Single,Value>(y:Single, i:Integer) <
+    ScalarExpression<Value> {
   /**
    * Vector.
    */
-  y:Base <- y;
+  y:Single <- y;
     
   /**
    * Element.
    */
-  i:Index <- i;
+  i:Integer <- i;
   
   override function doValue() {
-    x <- y.value()[i.value()];
+    x <- y.value()[i];
   }
 
   override function doGet() {
-    x <- y.get()[i.get()];
+    x <- y.get()[i];
   }
 
   override function doPilot() {
-    x <- y.pilot()[i.pilot()];
+    x <- y.pilot()[i];
   }
 
   override function doMove(κ:Kernel) {
-    x <- y.move(κ)[i.move(κ)];
+    x <- y.move(κ)[i];
   }
 
   override function doGrad() {
-    y.grad(d!, i.get());
-    i.grad(0.0);
+    y.grad(d!, i);
   }
 
   final override function doMakeConstant() {
     y.makeConstant();
-    i.makeConstant();
   }
 
   final override function doRestoreCount() {
     y.restoreCount();
-    i.restoreCount();
   }
   
   final override function doPrior(vars:RaggedArray<DelayExpression>) ->
       Expression<Real>? {
-    r:Expression<Real>?;   
-     
-    auto p1 <- y.prior(vars);
-    if p1? {
-      if r? {
-        r <- p1! + r!;
-      } else {
-        r <- p1;
-      }
-    }
-    
-    auto p2 <- i.prior(vars);
-    if p2? {
-      if r? {
-        r <- p2! + r!;
-      } else {
-        r <- p2;
-      }
-    }
-    
-    return r;
+    return y.prior(vars);
   }
 }
 
 /**
  * Lazy access of a vector element.
  */
-function MultivariateElement(y:Expression<Real[_]>,
-    i:Expression<Integer>) -> Expression<Real> {
-  if y.isConstant() && i.isConstant() {
-    return box(Real(y.value()[i.value()]));
+function MultivariateElement(y:Expression<Real[_]>, i:Integer) ->
+    Expression<Real> {
+  if y.isConstant() {
+    return box(y.value()[i]);
   } else {
-    m:MultivariateElement<Expression<Real[_]>,Expression<Integer>>(y, i);
+    m:MultivariateElement<Expression<Real[_]>,Real>(y, i);
     return m;
   }
 }
@@ -86,12 +63,12 @@ function MultivariateElement(y:Expression<Real[_]>,
 /**
  * Lazy access of a vector element.
  */
-function MultivariateElement(y:Expression<Integer[_]>,
-    i:Expression<Integer>) -> Expression<Real> {
-  if y.isConstant() && i.isConstant() {
-    return box(Real(y.value()[i.value()]));
+function MultivariateElement(y:Expression<Integer[_]>, i:Integer) ->
+    Expression<Integer> {
+  if y.isConstant() {
+    return box(y.value()[i]);
   } else {
-    m:MultivariateElement<Expression<Integer[_]>,Expression<Integer>>(y, i);
+    m:MultivariateElement<Expression<Integer[_]>,Integer>(y, i);
     return m;
   }
 }

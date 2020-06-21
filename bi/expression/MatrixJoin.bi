@@ -1,15 +1,19 @@
 /**
  * Lazy `join`.
  */
-final class MatrixJoin<Value>(x:Expression<Value>[_,_]) <
+final class MatrixJoin<Value>(X:Expression<Value>[_,_]) <
     MatrixExpression<Value[_,_]> {
   /**
    * Arguments.
    */
-  args:Expression<Value>[_,_] <- x;
+  args:Expression<Value>[_,_] <- X;
 
   override function rows() -> Integer {
-    return global.length(args);
+    return global.rows(args);
+  }
+
+  override function columns() -> Integer {
+    return global.columns(args);
   }
 
   override function doValue() {
@@ -84,6 +88,6 @@ function join(X:Expression<Real>[_,_]) -> Expression<Real[_,_]> {
  */
 function split(X:Expression<Real[_,_]>) -> Expression<Real>[_,_] {
   return matrix(\(i:Integer, j:Integer) -> Expression<Real> {
-        return X.element(i, j);
+        return MatrixElement(X, i, j);
       }, X.rows(), X.columns());
 }

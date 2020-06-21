@@ -9,11 +9,6 @@ abstract class MultivariateExpression<Value> < Expression<Value> {
    */
   d:Real[_]?;  
 
-  final override function element(i:Expression<Integer>) ->
-      Expression<Real> {
-    return MultivariateElement(this, i);
-  }
-
   final override function doAccumulateGrad(d:Real[_]) {
     if this.d? {
       this.d <- this.d! + d;
