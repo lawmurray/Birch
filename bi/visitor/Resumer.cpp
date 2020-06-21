@@ -154,8 +154,8 @@ bi::Statement* bi::Resumer::clone(const For* o) {
         inc->accept(this), o->loc);
     auto loop = new While(cond, body, o->loc);
 
-    Statement* result = new StatementList(index, inc->accept(this), o->loc);
-    result = new StatementList(result, new Block(braces, braces->loc), o->loc);
+    Statement* result = new StatementList(index, new Block(braces, braces->loc), o->loc);
+    result = new StatementList(result, inc->accept(this), o->loc);
     result = new StatementList(result, loop, o->loc);
     return result;
   } else {
