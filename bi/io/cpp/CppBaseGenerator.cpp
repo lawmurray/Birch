@@ -503,6 +503,9 @@ void bi::CppBaseGenerator::visit(const Program* o) {
     *this << o->braces->strip();
 
     genTraceLine(o->loc);
+    line("delete libbirch::rootLabel;");
+
+    genTraceLine(o->loc);
     line("return 0;");
     out();
     line("}\n");
