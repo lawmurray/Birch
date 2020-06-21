@@ -120,13 +120,8 @@ program filter(
       /* clone filter for forecast purposes */
       auto filter' <- clone(filter!);
     
-      /* resample current particles... */
+      /* resample current particles, preserve weights */
       filter'.resample(t);
-      
-      /* ...but in future, don't resample */
-      filter'.trigger <- 1.0;
-
-      /* preserve the weights after resampling */
       auto w' <- filter'.w;
       
       /* turn off delayed sampling, as analytical conditioning on obervations
@@ -136,7 +131,8 @@ program filter(
       /* with these settings, we just filter ahead as normal */
       auto forecast <- buffer.setArray("forecast");
       for s in (t + 1)..(t + filter'.nforecasts) {
-        filter'.filter(archetype!, s);
+        filter'.forecast(s);
+        filter'.reduce();
         if outputWriter? {
           auto state <- forecast.push();
           state.set("sample", filter'.x);

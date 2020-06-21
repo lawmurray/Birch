@@ -89,7 +89,7 @@ class MoveParticleFilter < ParticleFilter {
       
       /* move particles */
       κ:LangevinKernel;
-      κ.scale <- scale/pow(t + 1.0, 2.0);
+      κ.scale <- scale/pow(t + 1.0, 3.0);
       parallel for n in 1..nparticles {
         auto x <- MoveParticle?(this.x[n])!;
         for m in 1..nmoves {

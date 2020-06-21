@@ -153,6 +153,16 @@ class ParticleFilter {
       w[n] <- w[n] + play.handle(x[n].m.simulate(t));
     }
   }
+
+  /**
+   * Forecast particles.
+   */
+  function forecast(t:Integer) {
+    auto play <- PlayHandler(delayed);
+    parallel for n in 1..nparticles {
+      w[n] <- w[n] + play.handle(x[n].m.forecast(t));
+    }
+  }
   
   /**
    * Compute reductions, such as effective sample size and normalizing
@@ -190,6 +200,7 @@ class ParticleFilter {
     buffer.set("lnormalize", lnormalize);
     buffer.set("ess", ess);
     buffer.set("npropagations", npropagations);
+    buffer.set("raccept", raccept);
   }
 
   override function read(buffer:Buffer) {

@@ -13,6 +13,10 @@ class Particle(m:Model) {
    * State.
    */
   m:Model <- m;
+  
+  override function write(buffer:Buffer) {
+    buffer.set(m);
+  }
 }
 
 /**
