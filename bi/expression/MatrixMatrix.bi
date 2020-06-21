@@ -1,7 +1,7 @@
 /**
  * Lazy `matrix`.
  */
-final class Matrix<Single,Value>(x:Single) <
+final class MatrixMatrix<Single,Value>(x:Single) <
     MatrixUnaryExpression<Single,Value>(x) {
   override function rows() -> Integer {
     return single.rows();
@@ -39,7 +39,7 @@ function matrix(x:Expression<LLT>) -> Expression<Real[_,_]> {
   if x.isConstant() {
     return box(matrix(x.value()));
   } else {
-    m:Matrix<Expression<LLT>,Real[_,_]>(x);
+    m:MatrixMatrix<Expression<LLT>,Real[_,_]>(x);
     return m;
   }
 }
@@ -48,5 +48,16 @@ function matrix(x:Expression<LLT>) -> Expression<Real[_,_]> {
  * Lazy `matrix`.
  */
 function matrix(x:Expression<Real[_,_]>) -> Expression<Real[_,_]> {
-  return x;
+  if x.isRandom() {
+    /* Random objects are wrapped as the accumulation of gradients by element
+     * requires this; see note in split() also */
+    if x.isConstant() {
+      return box(matrix(x.value()));
+    } else {
+      m:MatrixMatrix<Expression<Real[_,_]>,Real[_,_]>(x);
+      return m;
+    }
+  } else {
+    return x;
+  }
 }

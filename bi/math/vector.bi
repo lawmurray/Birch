@@ -112,8 +112,9 @@ function iota<Type>(x:Type, length:Integer) -> Real[_] {
  * Sum reduction.
  */
 function sum<Type>(x:Type[_]) -> Type {
-  assert length(x) > 0;
-  if length(x) == 1 {
+  if length(x) == 0 {
+    return 0.0;
+  } else if length(x) == 1 {
     return x[1];
   } else {
     return reduce(x[2..length(x)], x[1], \(x:Type, y:Type) -> Type {

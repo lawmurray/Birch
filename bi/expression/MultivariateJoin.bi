@@ -81,6 +81,10 @@ function join(x:Expression<Real>[_]) -> Expression<Real[_]> {
  */
 function split(x:Expression<Real[_]>) -> Expression<Real>[_] {
   return vector(\(i:Integer) -> Expression<Real> {
-        return MultivariateElement(x, i);
+        return MultivariateElement(vector(x), i);
       }, x.length());
+  // ^ vector(x) above is an identity function for all but Random objects;
+  //   for these it wraps the Random in an additional expression that can
+  //   accumulate gradients by element (which a Random cannot) before passing
+  //   the whole vector of accumulated gradients onto the Random
 }

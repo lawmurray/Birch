@@ -88,6 +88,20 @@ function join(X:Expression<Real>[_,_]) -> Expression<Real[_,_]> {
  */
 function split(X:Expression<Real[_,_]>) -> Expression<Real>[_,_] {
   return matrix(\(i:Integer, j:Integer) -> Expression<Real> {
-        return MatrixElement(X, i, j);
+        return MatrixElement(matrix(X), i, j);
+      }, X.rows(), X.columns());
+  // ^ matrix(X) above is an identity function for all but Random objects;
+  //   for these it wraps the Random in an additional expression that can
+  //   accumulate gradients by element (which a Random cannot) before passing
+  //   the whole matrix of accumulated gradients onto the Random
+}
+
+/**
+ * Lazy `split`. Converts a matrix expression into a matrix of scalar
+ * expressions.
+ */
+function split(X:Expression<LLT>) -> Expression<Real>[_,_] {
+  return matrix(\(i:Integer, j:Integer) -> Expression<Real> {
+        return MatrixElement(matrix(X), i, j);
       }, X.rows(), X.columns());
 }

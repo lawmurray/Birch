@@ -68,6 +68,13 @@ abstract class Expression<Value> < DelayExpression {
   x:Value?;
 
   /**
+   * Is this a Random?
+   */
+  function isRandom() -> Boolean {
+    return false;
+  }
+
+  /**
    * If this is a Random, get the distribution associated with it, if any,
    * otherwise nil.
    */

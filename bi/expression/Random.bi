@@ -61,6 +61,10 @@ final class Random<Value> < Expression<Value> {
     }
   }
 
+  override function isRandom() -> Boolean {
+    return true;
+  }
+
   override function distribution() -> Distribution<Value>? {
     return p;
   }
