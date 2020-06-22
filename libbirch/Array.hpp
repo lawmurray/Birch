@@ -506,19 +506,21 @@ public:
   }
 
   /**
-   * For a one-dimensional array, erase an element at a given position. This
-   * decreases the array size by one.
+   * For a one-dimensional array, erase elements from a given position. This
+   * decreases the array size by the number of elements.
    *
    * @param i Position.
+   * @param len Number of elements to erase.
    */
-  void erase(const int64_t i) {
+  void erase(const int64_t i, const int64_t len = 1) {
     static_assert(F::count() == 1, "can only shrink one-dimensional arrays");
     assert(!isView);
-    assert(size() > 0);
+    assert(len > 0);
+    assert(size() >= len);
 
     lock();
     auto n = size();
-    auto s = F(n - 1);
+    auto s = F(n - len);
     if (s.size() == 0) {
       release();
     } else {
@@ -527,7 +529,7 @@ public:
         swap(tmp);
       }
       buf()[i].~T();
-      std::memmove((void*)(buf() + i), (void*)(buf() + i + 1), (n - 1 - i)*sizeof(T));
+      std::memmove((void*)(buf() + i), (void*)(buf() + i + len), (n - len - i)*sizeof(T));
       auto oldBytes = Buffer<T>::size(shape.volume());
       auto newBytes = Buffer<T>::size(s.volume());
       buffer = (Buffer<T>*)libbirch::reallocate(buffer, oldBytes,
