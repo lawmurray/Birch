@@ -68,13 +68,6 @@ abstract class Expression<Value> < DelayExpression {
   x:Value?;
 
   /**
-   * Is this a Random?
-   */
-  function isRandom() -> Boolean {
-    return false;
-  }
-
-  /**
    * If this is a Random, get the distribution associated with it, if any,
    * otherwise nil.
    */
@@ -95,13 +88,13 @@ abstract class Expression<Value> < DelayExpression {
    * If this is not the intended behavior, consider `get()` or `pilot()`.
    */
   final function value() -> Value {
-    if !flagValue {
+    if !flagConstant {
       if !x? {
         doValue();
       } else {
         doMakeConstant();
       }
-      flagValue <- true;
+      flagConstant <- true;
     }
     return x!;
   }
@@ -111,14 +104,14 @@ abstract class Expression<Value> < DelayExpression {
    */
   abstract function doValue();
 
-  /*
+  /**
    * Make constant. This is used when a value has already been evaluated
    * (e.g. with `pilot()`), to make the expression constant.
    */
   final function makeConstant() {
     assert x?;
-    if !flagValue {
-      flagValue <- true;
+    if !flagConstant {
+      flagConstant <- true;
       doMakeConstant();
     }
   }
@@ -228,7 +221,7 @@ abstract class Expression<Value> < DelayExpression {
    * the final result.
    */
   final function grad<Gradient>(d:Gradient) {
-    if !flagValue {
+    if !flagConstant {
       doAccumulateGrad(d);
       assert count > 0;
       count <- count - 1;
@@ -246,7 +239,7 @@ abstract class Expression<Value> < DelayExpression {
    * - i: Element index.
    */
   final function grad(d:Real, i:Integer) {
-    if !flagValue {
+    if !flagConstant {
       doAccumulateGrad(d, i);
       assert count > 0;
       count <- count - 1;
@@ -265,7 +258,7 @@ abstract class Expression<Value> < DelayExpression {
    * - j: Column index.
    */
   final function grad(d:Real, i:Integer, j:Integer) {
-    if !flagValue {
+    if !flagConstant {
       doAccumulateGrad(d, i, j);
       assert count > 0;
       count <- count - 1;
@@ -331,7 +324,7 @@ abstract class Expression<Value> < DelayExpression {
    * Returns: The evaluated value of the expression.
    */
   final function move(κ:Kernel) -> Value {
-    if !flagValue {
+    if !flagConstant {
       if count == 0 {
         doMove(κ);
         doClearGrad();

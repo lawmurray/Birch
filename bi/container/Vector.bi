@@ -117,11 +117,29 @@ final class Vector<Type> {
    * Erase an element.
    *
    * - i: Position.
+   *
+   * The size decreases by one.
    */
   function erase(i:Integer) {
     assert 1 <= i && i <= size();
     cpp{{
     this_()->values.erase(i - 1);
+    }}
+  }
+
+  /**
+   * Erase multiple elements.
+   *
+   * - i: Position.
+   * - n: Number of elements.
+   *
+   * The size decreases by `n`.
+   */
+  function erase(i:Integer, n:Integer) {
+    assert 1 <= i && i <= size();
+    assert 1 <= n && n <= size() - i + 1;
+    cpp{{
+    this_()->values.erase(i - 1, n);
     }}
   }
 

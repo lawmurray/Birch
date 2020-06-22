@@ -13,18 +13,18 @@ class MoveParticle(m:Model) < Particle(m) {
    * Log-likelihoods. Each element is a lazy expression giving a single
    * step's contribution to the log-likelihood.
    */
-  z:Vector<Expression<Real>>;
+  zs:Vector<Expression<Real>>;
   
   /**
    * Log-priors. Each element is a lazy expression giving a single step's
    * contribution to the log-prior.
    */
-  p:Vector<Expression<Real>>;
+  ps:Vector<Expression<Real>>;
   
   /**
    * Variables. Each row collects the variables encountered in a single step.
    */
-  vars:RaggedArray<DelayExpression>;
+  vs:RaggedArray<DelayExpression>;
   
   /**
    * Log-posterior density.
@@ -35,77 +35,103 @@ class MoveParticle(m:Model) < Particle(m) {
    * Step up to which gradients have been evaluated.
    */
   n:Integer <- 0;
-  
+
   /**
-   * Add the deferred log-likelihood for a new step.
-   *
-   * - z: Log-likelihood.
-   *
-   * Returns: The evaluation of the expression.
+   * Number of steps.
    */
-  function add(z:Expression<Real>?) -> Real {
-    auto w <- 0.0;
-    if z? {
-      w <- z!.pilot();
-      this.z.pushBack(z!);
-    } else {
-      auto z <- box(0.0);
-      w <- z.pilot();  // must evaluate for later grad()
-      this.z.pushBack(z);
+  function size() -> Integer {
+    return zs.size();
+  } 
+
+  /**
+   * Add a new step.
+   *
+   * - z: Expression giving the incremental log-likelihood for th new step.
+   *
+   * Returns: Incremental log-likelihood; zero if the argument is `nil`.
+   */
+  function likelihood(z:Expression<Real>?) -> Real {
+    auto z' <- z;
+    if !z'? {
+      z' <- box(0.0);
     }
+    auto w <- z'!.pilot();
+    zs.pushBack(z'!);
     π <- π + w;
     return w;
   }
-  
+
   /**
-   * Update the prior after one or more calls to `add()`.
+   * Catch up priors after one or more calls to `likelihood()`.
    */
   function prior() {
-    assert vars.size() == p.size();
-    for t in (p.size() + 1)..z.size() {
-      vars.pushBack();
-      auto z <- this.z.get(t);
-      auto p <- z.prior(vars);
-      if p? {
-        π <- π + p!.pilot();
-        this.p.pushBack(p!);
-      } else {
-        auto p <- box(0.0);
-        π <- π + p.pilot();  // must evaluate for later grad()
-        this.p.pushBack(p);
+    assert vs.size() == ps.size();
+    for i in (ps.size() + 1)..zs.size() {
+      vs.pushBack();
+      auto z <- zs.get(i);
+      auto p <- z.prior(vs);
+      if !p? {
+        p <- box(0.0);
       }
+      π <- π + p!.pilot();
+      ps.pushBack(p!);
     }
-    assert p.size() == z.size();
-    assert vars.size() == z.size();
+    assert ps.size() == zs.size();
+    assert vs.size() == zs.size();
   }
   
   /**
-   * Bring gradients up-to-date after one or more calls to `add()` then
-   * `prior()`.
+   * Catch up gradients after one or more calls to `prior()`.
    */
   function grad() {
-    assert p.size() == z.size();
-    while n < z.size() {
+    assert ps.size() == zs.size();
+    assert vs.size() == zs.size();
+    while n < zs.size() {
       n <- n + 1;
-      z.get(n).grad(1.0);
-      p.get(n).grad(1.0);
+      zs.get(n).grad(1.0);
+      ps.get(n).grad(1.0);
     }
-    assert n == z.size();
-    assert n == p.size();
+    assert n == zs.size();
+    assert n == ps.size();
+    assert n == vs.size();
   }
 
   /**
-   * Move the particle.
+   * Remove the oldest step after a call to `grad()`.
+   *
+   * This must be called after `grad()` and not at any other time, as at this
+   * point [Expression](../classes/Expression) evaluation counts are at zero.
+   * Calling it at any time with nonzero counts expression states invalidate
+   * the state of those expressions.
+   */
+  function truncate() {
+    /* make variables from the oldest time step constant, so that they are
+     * no longer eligible to move */
+    for j in 1..vs.size(1) {
+      vs.get(1, j).makeConstant();
+    }
+  
+    /* update state */
+    π <- π - zs.front().get() - ps.front().get();
+    n <- n - 1;
+    zs.popFront();
+    ps.popFront();
+    vs.popFront();
+  }
+
+  /**
+   * Move the particle after one or more calls to `grad()`.
    *
    * - κ: Markov kernel.
    */
   function move(κ:Kernel) {
-    assert n == z.size();
-    assert n == p.size();
+    assert n == zs.size();
+    assert n == ps.size();
+    assert n == vs.size();
     π <- 0.0;
-    for t in 1..n {
-      π <- π + z.get(t).move(κ);
-      π <- π + p.get(t).move(κ);
+    for i in 1..n {
+      π <- π + zs.get(i).move(κ);
+      π <- π + ps.get(i).move(κ);
     }
     n <- 0;
   }
@@ -120,26 +146,17 @@ class MoveParticle(m:Model) < Particle(m) {
    * Returns: $\log q(x^\prime \mid x)$.
    */
   function logpdf(x':MoveParticle, κ:Kernel) -> Real {
-    assert vars.size() == x'.vars.size();
+    assert size() == x'.size();
+    assert vs.size() == x'.vs.size();
     auto q <- 0.0;
-    for t in 1..vars.size() {
-      assert vars.size(t) == x'.vars.size(t);
-      for i in 1..vars.size(t) {
-        q <- q + vars.get(t, i).logpdf(x'.vars.get(t, i), κ);
+    for i in 1..vs.size() {
+      assert vs.size(i) == x'.vs.size(i);
+      for j in 1..vs.size(i) {
+        q <- q + vs.get(i,j).logpdf(x'.vs.get(i,j), κ);
       }
     }
     return q;
   }
-  
-  /**
-   * Remove the first step. Latent random variates for the step are realized
-   * and explicitly escaped, in order that they are no longer eligible for
-   * moving. This is used by resample-move particle filters with a finite
-   * lag to make steps outside of that lag ineligible for move.
-   */
-  //function popFront() {
-  //
-  //}
 }
 
 /**

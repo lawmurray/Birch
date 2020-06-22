@@ -28,7 +28,7 @@ final class Random<Value> < Expression<Value> {
     assert !this.x?;
     assert !this.p?;
     this.x <- x;
-    this.flagValue <- true;
+    this.flagConstant <- true;
   }
 
   /**
@@ -39,7 +39,7 @@ final class Random<Value> < Expression<Value> {
     assert !this.p?;
     if x? {
       this.x <- x!;
-      this.flagValue <- true;
+      this.flagConstant <- true;
     }
   }
   
@@ -167,7 +167,7 @@ final class Random<Value> < Expression<Value> {
       auto p1 <- p!.logpdfLazy(this);
       p <- nil;
       if p1? {
-        vars.pushBack(this);
+        vars.pushBack(vars.size(), this);
         auto p2 <- p1!.prior(vars);
         if p2? {
           return p1! + p2!;
@@ -182,9 +182,9 @@ final class Random<Value> < Expression<Value> {
   override function logpdf(x':DelayExpression, κ:Kernel) -> Real {
     auto y <- Random<Value>?(x');
     assert y?;
-    assert y!.flagValue == flagValue;
+    assert y!.flagConstant == flagConstant;
       
-    if flagValue {
+    if flagConstant {
       /* constant */
       return 0.0;
     } else {

@@ -14,7 +14,7 @@ abstract class DelayExpression {
    * Has `value()` been called? This is used as a short-circuit for shared
    * subexpressions.
    */
-  flagValue:Boolean <- false;
+  flagConstant:Boolean <- false;
 
   /**
    * Has `prior()` been called? This is used as a short-circuit for shared
@@ -42,13 +42,25 @@ abstract class DelayExpression {
   function columns() -> Integer {
     return 1;
   }
+
+  /**
+   * Is this a Random expression?
+   */
+  function isRandom() -> Boolean {
+    return false;
+  }
   
   /**
    * Is this a constant expression?
    */
   function isConstant() -> Boolean {
-    return flagValue;
+    return flagConstant;
   }
+  
+  /**
+   * Make this a constant expression.
+   */
+  abstract function makeConstant();
 
   /**
    * Construct a lazy expression for the log-prior, and collect variables.

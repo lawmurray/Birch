@@ -21,6 +21,11 @@ class MoveParticleFilter < ParticleFilter {
    * Number of moves at each step.
    */
   nmoves:Integer <- 1;
+  
+  /**
+   * Number of lag steps for each move.
+   */
+  nlags:Integer <- 1;
 
   function particle(archetype:Model) -> Particle {
     return MoveParticle(archetype);
@@ -36,7 +41,7 @@ class MoveParticleFilter < ParticleFilter {
       auto play <- MoveHandler(delayed);
       auto x <- MoveParticle?(this.x[n])!;
       w[n] <- w[n] + play.handle(x.m.simulate());
-      w[n] <- w[n] + x.add(play.z);
+      w[n] <- w[n] + x.likelihood(play.z);
     }
   }
 
@@ -45,7 +50,7 @@ class MoveParticleFilter < ParticleFilter {
       auto play <- MoveHandler(delayed);
       auto x <- MoveParticle?(this.x[n])!;
       w[n] <- w[n] + play.handle(x.m.simulate(t));
-      w[n] <- w[n] + x.add(play.z);
+      w[n] <- w[n] + x.likelihood(play.z);
     }
   }
 
@@ -77,6 +82,9 @@ class MoveParticleFilter < ParticleFilter {
         if a[n] == n {  // if particle `n` survives, then `a[n] == n`
           auto x <- MoveParticle?(this.x[n])!;
           x.grad();
+          if t > nlags {
+            x.truncate();
+          }
         }
       }
 
@@ -89,7 +97,7 @@ class MoveParticleFilter < ParticleFilter {
       
       /* move particles */
       κ:LangevinKernel;
-      κ.scale <- scale/pow(t + 1.0, 3.0);
+      κ.scale <- scale/pow(Real(min(nlags, t)), 3.0);
       parallel for n in 1..nparticles {
         auto x <- MoveParticle?(this.x[n])!;
         for m in 1..nmoves {
@@ -117,11 +125,13 @@ class MoveParticleFilter < ParticleFilter {
     super.read(buffer);
     scale <-? buffer.get("scale", scale);
     nmoves <-? buffer.get("nmoves", nmoves);
+    nlags <-? buffer.get("nlags", nmoves);
   }
 
   override function write(buffer:Buffer) {
     super.write(buffer);
     buffer.set("scale", scale);
     buffer.set("nmoves", nmoves);
+    buffer.set("nlags", nlags);
   }
 }

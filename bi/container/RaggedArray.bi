@@ -16,18 +16,8 @@ final class RaggedArray<Type> {
   /**
    * Number of columns in each row.
    */
-  ncols:Integer[_];
+  sizes:Integer[_];
   
-  /**
-   * Number of rows.
-   */
-  nrows:Integer <- 0;
-  
-  /**
-   * Number of elements.
-   */
-  nelements:Integer <- 0;
-
   /**
    * Is this empty?
    */
@@ -41,21 +31,18 @@ final class RaggedArray<Type> {
   function clear() {
     values:Type[_];
     offsets:Integer[_];
-    ncols:Integer[_];
+    sizes:Integer[_];
     
     this.values <- values;
     this.offsets <- offsets;
-    this.ncols <- ncols;
-    
-    nrows <- 0;
-    nelements <- 0;
+    this.sizes <- sizes;
   }
 
   /**
    * Number of rows.
    */
   function size() -> Integer {
-    return nrows;
+    return length(offsets);
   }
   
   /**
@@ -64,7 +51,7 @@ final class RaggedArray<Type> {
    * - i: Row.
    */
   function size(i:Integer) -> Integer {
-    return ncols[i];
+    return sizes[i];
   }
   
   /**
@@ -111,23 +98,56 @@ final class RaggedArray<Type> {
   } 
 
   /**
-   * Add a new row at the end.
+   * Remove the first row.
    */
-  function pushBack() {
-    auto nrows <- this.nrows;
-    auto nelements <- this.nelements;
-    cpp{{    
-    this_()->offsets.insert(nrows, nelements + 1);
-    this_()->ncols.insert(nrows, 0);
-    }}
-    this.nrows <- nrows + 1;
+  function popFront() {
+    assert size() > 0;
+    if size() == 1 {
+      clear();
+    } else {
+      auto ncols <- sizes[1];
+      cpp{{
+      this_()->offsets.erase(0);
+      this_()->sizes.erase(0);
+      }}
+      if ncols > 0 {
+        cpp{{
+        this_()->values.erase(0, ncols);
+        }}
+        for k in 1..length(offsets) {
+          offsets[k] <- offsets[k] - ncols;
+        }
+      }
+    }
   }
 
   /**
-   * Add a new element to the end of the last row.
+   * Remove the first element from a specified row.
+   *
+   * - i: Row.
    */
-  function pushBack(x:Type) {
-    pushBack(nrows, x);
+  function popFront(i:Integer) {
+    assert size(i) > 0;
+    auto j <- offsets[i];
+    cpp{{
+    this_()->values.erase(j - 1);
+    }}
+    for k in (i + 1)..length(offsets) {
+      offsets[k] <- offsets[k] - 1;
+    }
+    sizes[i] <- sizes[i] - 1;
+  }
+
+  /**
+   * Add a new row at the end.
+   */
+  function pushBack() {
+    auto nrows <- length(offsets);
+    auto nvalues <- length(values);
+    cpp{{    
+    this_()->offsets.insert(nrows, nvalues + 1);
+    this_()->sizes.insert(nrows, 0);
+    }}
   }
 
   /**
@@ -137,15 +157,14 @@ final class RaggedArray<Type> {
    * - x: Value.
    */
   function pushBack(i:Integer, x:Type) {
-    auto j <- offsets[i] + ncols[i];
+    auto j <- offsets[i] + sizes[i];
     cpp{{
     this_()->values.insert(j - 1, x);
     }}
-    for k in (i + 1)..nrows {
+    for k in (i + 1)..size() {
       offsets[k] <- offsets[k] + 1;
     }
-    ncols[i] <- ncols[i] + 1;
-    nelements <- nelements + 1;
+    sizes[i] <- sizes[i] + 1;
   }
 
   /**
@@ -154,7 +173,7 @@ final class RaggedArray<Type> {
    * Return: a fiber object that yields each row in forward order.
    */
   fiber walk() -> Type[_] {
-    for i in 1..nrows {
+    for i in 1..size() {
       yield get(i);
     }
   }
@@ -167,7 +186,7 @@ final class RaggedArray<Type> {
    * Return: a fiber object that yields each row in forward order.
    */
   fiber walk(i:Integer) -> Type {
-    for j in 1..ncols[i] {
+    for j in 1..sizes[i] {
       yield get(i, j);
     }
   }
@@ -178,7 +197,7 @@ final class RaggedArray<Type> {
    * - i: Row.
    */
   function from(i:Integer) -> Integer {
-    assert 1 <= i && i <= nrows;
+    assert 1 <= i && i <= size();
     assert offsets[i] != 0;  // not an empty row
     return offsets[i];
   }
@@ -189,9 +208,9 @@ final class RaggedArray<Type> {
    * - i: Row.
    */
   function to(i:Integer) -> Integer {
-    assert 1 <= i && i <= nrows;
+    assert 1 <= i && i <= size();
     assert offsets[i] != 0;  // not an empty row
-    return offsets[i] + ncols[i] - 1;
+    return offsets[i] + sizes[i] - 1;
   }
   
   /**
@@ -201,8 +220,8 @@ final class RaggedArray<Type> {
    * - j: Column.
    */
   function serial(i:Integer, j:Integer) -> Integer {
-    assert 1 <= i && i <= nrows;
-    assert 1 <= j && j <= ncols[i];
+    assert 1 <= i && i <= size();
+    assert 1 <= j && j <= sizes[i];
     return from(i) + j - 1;
   }
 
