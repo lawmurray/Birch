@@ -4,32 +4,28 @@
 final class Negate(x:Expression<Real>) <
     ScalarUnaryExpression<Expression<Real>,Real>(x) {
   override function doValue() {
-    x <- -single.value();
-  }
-
-  override function doGet() {
-    x <- -single.get();
+    x <- -single!.value();
   }
 
   override function doPilot() {
-    x <- -single.pilot();
+    x <- -single!.pilot();
   }
 
   override function doMove(κ:Kernel) {
-    x <- -single.move(κ);
+    x <- -single!.move(κ);
   }
 
   override function doGrad() {
-    single.grad(-d!);
+    single!.grad(-d!);
   }
 
   override function graftLinearGaussian() -> TransformLinear<Gaussian>? {
     y:TransformLinear<Gaussian>?;
     z:Gaussian?;
     
-    if (y <- single.graftLinearGaussian())? {
+    if (y <- single!.graftLinearGaussian())? {
       y!.negate();
-    } else if (z <- single.graftGaussian())? {
+    } else if (z <- single!.graftGaussian())? {
       y <- TransformLinear<Gaussian>(box(-1.0), z!, box(0.0));
     }
     return y;
@@ -38,7 +34,7 @@ final class Negate(x:Expression<Real>) <
   override function graftDotGaussian() -> TransformDot<MultivariateGaussian>? {
     y:TransformDot<MultivariateGaussian>?;
     
-    if (y <- single.graftDotGaussian())? {
+    if (y <- single!.graftDotGaussian())? {
       y!.negate();
     }
     return y;
@@ -49,9 +45,9 @@ final class Negate(x:Expression<Real>) <
     y:TransformLinear<NormalInverseGamma>?;
     z:NormalInverseGamma?;
 
-    if (y <- single.graftLinearNormalInverseGamma(compare))? {
+    if (y <- single!.graftLinearNormalInverseGamma(compare))? {
       y!.negate();
-    } else if (z <- single.graftNormalInverseGamma(compare))? {
+    } else if (z <- single!.graftNormalInverseGamma(compare))? {
       y <- TransformLinear<NormalInverseGamma>(box(-1.0), z!, box(0.0));
     }
     return y;
@@ -61,7 +57,7 @@ final class Negate(x:Expression<Real>) <
       TransformDot<MultivariateNormalInverseGamma>? {
     y:TransformDot<MultivariateNormalInverseGamma>?;
     
-    if (y <- single.graftDotNormalInverseGamma(compare))? {
+    if (y <- single!.graftDotNormalInverseGamma(compare))? {
       y!.negate();
     }
     return y;

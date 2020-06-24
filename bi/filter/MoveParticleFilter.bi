@@ -42,6 +42,9 @@ class MoveParticleFilter < ParticleFilter {
       auto x <- MoveParticle?(this.x[n])!;
       w[n] <- w[n] + play.handle(x.m.simulate());
       w[n] <- w[n] + x.likelihood(play.z);
+      while x.size() > nlags {
+        x.truncate();
+      }
     }
   }
 
@@ -51,6 +54,9 @@ class MoveParticleFilter < ParticleFilter {
       auto x <- MoveParticle?(this.x[n])!;
       w[n] <- w[n] + play.handle(x.m.simulate(t));
       w[n] <- w[n] + x.likelihood(play.z);
+      while x.size() > nlags {
+        x.truncate();
+      }
     }
   }
 
@@ -67,23 +73,15 @@ class MoveParticleFilter < ParticleFilter {
       /* normalize weights to sum to nparticles */
       w <- w - vector(lsum - log(Real(nparticles)), nparticles);
     }
-    
-    /* update prior for surviving particles */
-    dynamic parallel for n in 1..nparticles {
-      if a[n] == n {
-        auto x <- MoveParticle?(this.x[n])!;
-        x.prior();
-      }
-    }
 
     if triggered {
-      /* calculate derivatives */
-      dynamic parallel for n in 1..nparticles {
-        if a[n] == n {  // if particle `n` survives, then `a[n] == n`
-          auto x <- MoveParticle?(this.x[n])!;
-          x.grad();
-          if t > nlags {
-            x.truncate();
+      /* update prior and compute gradients for surviving particles only */
+      if nmoves > 0 {
+        dynamic parallel for n in 1..nparticles {
+          if a[n] == n {  // if particle `n` survives, then `a[n] == n`
+            auto x <- MoveParticle?(this.x[n])!;
+            x.prior();
+            x.grad();
           }
         }
       }
@@ -96,22 +94,24 @@ class MoveParticleFilter < ParticleFilter {
       }
       
       /* move particles */
-      κ:LangevinKernel;
-      κ.scale <- scale/pow(Real(min(nlags, t)), 3.0);
-      parallel for n in 1..nparticles {
-        auto x <- MoveParticle?(this.x[n])!;
-        for m in 1..nmoves {
-          auto x' <- clone(x);
-          x'.move(κ);
-          x'.grad();
-          auto α <- x'.π - x.π + x'.logpdf(x, κ) - x.logpdf(x', κ);
-          if log(simulate_uniform(0.0, 1.0)) <= α {
-            /* accept */
-            x <- x';
-            naccepts[n] <- naccepts[n] + 1;
+      if nmoves > 0 {
+        κ:LangevinKernel;
+        κ.scale <- scale/pow(min(nlags, t), 3);
+        parallel for n in 1..nparticles {
+          auto x <- MoveParticle?(this.x[n])!;
+          for m in 1..nmoves {
+            auto x' <- clone(x);
+            x'.move(κ);
+            x'.grad();
+            auto α <- x'.π - x.π + x'.logpdf(x, κ) - x.logpdf(x', κ);
+            if log(simulate_uniform(0.0, 1.0)) <= α {
+              /* accept */
+              x <- x';
+              naccepts[n] <- naccepts[n] + 1;
+            }
           }
+          this.x[n] <- x;
         }
-        this.x[n] <- x;
       }
     }
   }
@@ -125,7 +125,7 @@ class MoveParticleFilter < ParticleFilter {
     super.read(buffer);
     scale <-? buffer.get("scale", scale);
     nmoves <-? buffer.get("nmoves", nmoves);
-    nlags <-? buffer.get("nlags", nmoves);
+    nlags <-? buffer.get("nlags", nlags);
   }
 
   override function write(buffer:Buffer) {

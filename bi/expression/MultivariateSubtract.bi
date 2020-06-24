@@ -3,29 +3,25 @@
  */
 final class MultivariateSubtract<Left,Right,Value>(left:Left, right:Right) <
     MultivariateBinaryExpression<Left,Right,Value>(left, right) {  
-  override function rows() -> Integer {
-    return left.rows();
+  override function doRows() -> Integer {
+    return left!.rows();
   }
 
   override function doValue() {
-    x <- left.value() - right.value();
-  }
-
-  override function doGet() {
-    x <- left.get() - right.get();
+    x <- left!.value() - right!.value();
   }
 
   override function doPilot() {
-    x <- left.pilot() - right.pilot();
+    x <- left!.pilot() - right!.pilot();
   }
 
   override function doMove(κ:Kernel) {
-    x <- left.move(κ) - right.move(κ);
+    x <- left!.move(κ) - right!.move(κ);
   }
 
   override function doGrad() {
-    left.grad(d!);
-    right.grad(-d!);
+    left!.grad(d!);
+    right!.grad(-d!);
   }
 
   override function graftLinearMultivariateGaussian() ->
@@ -33,14 +29,14 @@ final class MultivariateSubtract<Left,Right,Value>(left:Left, right:Right) <
     y:TransformLinearMultivariate<MultivariateGaussian>?;
     z:MultivariateGaussian?;
 
-    if (y <- left.graftLinearMultivariateGaussian())? {
-      y!.subtract(right);
-    } else if (y <- right.graftLinearMultivariateGaussian())? {
-      y!.negateAndAdd(left);
-    } else if (z <- left.graftMultivariateGaussian())? {
-      y <- TransformLinearMultivariate<MultivariateGaussian>(box(identity(z!.rows())), z!, -right);
-    } else if (z <- right.graftMultivariateGaussian())? {
-      y <- TransformLinearMultivariate<MultivariateGaussian>(box(diagonal(-1.0, z!.rows())), z!, left);
+    if (y <- left!.graftLinearMultivariateGaussian())? {
+      y!.subtract(right!);
+    } else if (y <- right!.graftLinearMultivariateGaussian())? {
+      y!.negateAndAdd(left!);
+    } else if (z <- left!.graftMultivariateGaussian())? {
+      y <- TransformLinearMultivariate<MultivariateGaussian>(box(identity(z!.rows())), z!, -right!);
+    } else if (z <- right!.graftMultivariateGaussian())? {
+      y <- TransformLinearMultivariate<MultivariateGaussian>(box(diagonal(-1.0, z!.rows())), z!, left!);
     }
     return y;
   }
@@ -50,14 +46,14 @@ final class MultivariateSubtract<Left,Right,Value>(left:Left, right:Right) <
     y:TransformLinearMultivariate<MultivariateNormalInverseGamma>?;
     z:MultivariateNormalInverseGamma?;
 
-    if (y <- left.graftLinearMultivariateNormalInverseGamma(compare))? {
-      y!.subtract(right);
-    } else if (y <- right.graftLinearMultivariateNormalInverseGamma(compare))? {
-      y!.negateAndAdd(left);
-    } else if (z <- left.graftMultivariateNormalInverseGamma(compare))? {
-      y <- TransformLinearMultivariate<MultivariateNormalInverseGamma>(box(identity(z!.rows())), z!, -right);
-    } else if (z <- right.graftMultivariateNormalInverseGamma(compare))? {
-      y <- TransformLinearMultivariate<MultivariateNormalInverseGamma>(box(diagonal(-1.0, z!.rows())), z!, left);
+    if (y <- left!.graftLinearMultivariateNormalInverseGamma(compare))? {
+      y!.subtract(right!);
+    } else if (y <- right!.graftLinearMultivariateNormalInverseGamma(compare))? {
+      y!.negateAndAdd(left!);
+    } else if (z <- left!.graftMultivariateNormalInverseGamma(compare))? {
+      y <- TransformLinearMultivariate<MultivariateNormalInverseGamma>(box(identity(z!.rows())), z!, -right!);
+    } else if (z <- right!.graftMultivariateNormalInverseGamma(compare))? {
+      y <- TransformLinearMultivariate<MultivariateNormalInverseGamma>(box(diagonal(-1.0, z!.rows())), z!, left!);
     }
     return y;
   }

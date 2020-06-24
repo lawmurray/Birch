@@ -4,38 +4,34 @@
 final class Multiply<Left,Right,Value>(left:Left, right:Right) <
     ScalarBinaryExpression<Left,Right,Value>(left, right) {  
   override function doValue() {
-    x <- left.value()*right.value();
+    x <- left!.value()*right!.value();
   }
 
   override function doPilot() {
-    x <- left.pilot()*right.pilot();
-  }
-
-  override function doGet() {
-    x <- left.get()*right.get();
+    x <- left!.pilot()*right!.pilot();
   }
 
   override function doMove(κ:Kernel) {
-    x <- left.move(κ)*right.move(κ);
+    x <- left!.move(κ)*right!.move(κ);
   }
 
   override function doGrad() {
-    left.grad(d!*right.get());
-    right.grad(d!*left.get());
+    left!.grad(d!*right!.get());
+    right!.grad(d!*left!.get());
   }
 
   override function graftScaledGamma() -> TransformLinear<Gamma>? {
     y:TransformLinear<Gamma>?;
     z:Gamma?;
     
-    if (y <- left.graftScaledGamma())? {
-      y!.multiply(right);
-    } else if (y <- right.graftScaledGamma())? {
-      y!.multiply(left);
-    } else if (z <- left.graftGamma())? {
-      y <- TransformLinear<Gamma>(right, z!);
-    } else if (z <- right.graftGamma())? {
-      y <- TransformLinear<Gamma>(left, z!);
+    if (y <- left!.graftScaledGamma())? {
+      y!.multiply(right!);
+    } else if (y <- right!.graftScaledGamma())? {
+      y!.multiply(left!);
+    } else if (z <- left!.graftGamma())? {
+      y <- TransformLinear<Gamma>(right!, z!);
+    } else if (z <- right!.graftGamma())? {
+      y <- TransformLinear<Gamma>(left!, z!);
     }
     return y;
   }
@@ -44,14 +40,14 @@ final class Multiply<Left,Right,Value>(left:Left, right:Right) <
     y:TransformLinear<Gaussian>?;
     z:Gaussian?;
     
-    if (y <- left.graftLinearGaussian())? {
-      y!.multiply(right);
-    } else if (y <- right.graftLinearGaussian())? {
-      y!.multiply(left);
-    } else if (z <- left.graftGaussian())? {
-      y <- TransformLinear<Gaussian>(right, z!);
-    } else if (z <- right.graftGaussian())? {
-      y <- TransformLinear<Gaussian>(left, z!);
+    if (y <- left!.graftLinearGaussian())? {
+      y!.multiply(right!);
+    } else if (y <- right!.graftLinearGaussian())? {
+      y!.multiply(left!);
+    } else if (z <- left!.graftGaussian())? {
+      y <- TransformLinear<Gaussian>(right!, z!);
+    } else if (z <- right!.graftGaussian())? {
+      y <- TransformLinear<Gaussian>(left!, z!);
     }
     return y;
   }
@@ -59,10 +55,10 @@ final class Multiply<Left,Right,Value>(left:Left, right:Right) <
   override function graftDotGaussian() -> TransformDot<MultivariateGaussian>? {
     y:TransformDot<MultivariateGaussian>?;
     
-    if (y <- left.graftDotGaussian())? {
-      y!.multiply(right);
-    } else if (y <- right.graftDotGaussian())? {
-      y!.multiply(left);
+    if (y <- left!.graftDotGaussian())? {
+      y!.multiply(right!);
+    } else if (y <- right!.graftDotGaussian())? {
+      y!.multiply(left!);
     }
     return y;
   }
@@ -72,14 +68,14 @@ final class Multiply<Left,Right,Value>(left:Left, right:Right) <
     y:TransformLinear<NormalInverseGamma>?;
     z:NormalInverseGamma?;
     
-    if (y <- left.graftLinearNormalInverseGamma(compare))? {
-      y!.multiply(right);
-    } else if (y <- right.graftLinearNormalInverseGamma(compare))? {
-      y!.multiply(left);
-    } else if (z <- left.graftNormalInverseGamma(compare))? {
-      y <- TransformLinear<NormalInverseGamma>(right, z!);
-    } else if (z <- right.graftNormalInverseGamma(compare))? {
-      y <- TransformLinear<NormalInverseGamma>(left, z!);
+    if (y <- left!.graftLinearNormalInverseGamma(compare))? {
+      y!.multiply(right!);
+    } else if (y <- right!.graftLinearNormalInverseGamma(compare))? {
+      y!.multiply(left!);
+    } else if (z <- left!.graftNormalInverseGamma(compare))? {
+      y <- TransformLinear<NormalInverseGamma>(right!, z!);
+    } else if (z <- right!.graftNormalInverseGamma(compare))? {
+      y <- TransformLinear<NormalInverseGamma>(left!, z!);
     }
     return y;
   }
@@ -88,10 +84,10 @@ final class Multiply<Left,Right,Value>(left:Left, right:Right) <
       TransformDot<MultivariateNormalInverseGamma>? {
     y:TransformDot<MultivariateNormalInverseGamma>?;
     
-    if (y <- left.graftDotNormalInverseGamma(compare))? {
-      y!.multiply(right);
-    } else if (y <- right.graftDotNormalInverseGamma(compare))? {
-      y!.multiply(left);
+    if (y <- left!.graftDotNormalInverseGamma(compare))? {
+      y!.multiply(right!);
+    } else if (y <- right!.graftDotNormalInverseGamma(compare))? {
+      y!.multiply(left!);
     }
     return y;
   }

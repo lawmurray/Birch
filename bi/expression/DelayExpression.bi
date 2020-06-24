@@ -3,14 +3,6 @@
  */
 abstract class DelayExpression {
   /**
-   * Count of the number of times `pilot()` or `move()` has been called on
-   * this, minus the number of times `grad()` has been called. This is used
-   * to accumulate upstream gradients before recursing into a subexpression
-   * that may be shared.
-   */
-  count:Integer <- 0;
-  
-  /**
    * Has `value()` been called? This is used as a short-circuit for shared
    * subexpressions.
    */

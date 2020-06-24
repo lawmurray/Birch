@@ -4,23 +4,19 @@
 final class Exp(x:Expression<Real>) <
     ScalarUnaryExpression<Expression<Real>,Real>(x) {
   override function doValue() {
-    x <- exp(single.value());
-  }
-
-  override function doGet() {
-    x <- exp(single.get());
+    x <- exp(single!.value());
   }
 
   override function doPilot() {
-    x <- exp(single.pilot());
+    x <- exp(single!.pilot());
   }
 
   override function doMove(κ:Kernel) {
-    x <- exp(single.move(κ));
+    x <- exp(single!.move(κ));
   }
 
   override function doGrad() {
-    single.grad(d!*x!);
+    single!.grad(d!*x!);
   }
 }
 

@@ -103,19 +103,14 @@ final class Random<Value> < Expression<Value> {
     x <- p!.simulate();
     p!.update(x!);
     p!.unlink();
-    p <- nil;
   }
 
-  override function doGet() {
-    assert p?;
-    if p!.supportsLazy() {
-      p!.prune();
-      x <- p!.simulateLazy();
-      p!.updateLazy(this);
-      p!.unlink();
-    } else {
-      doValue();
-    }
+  override function doMakeConstant() {
+    //
+  }
+
+  override function doDetach() {
+    p <- nil;
   }
 
   override function doPilot() {
@@ -128,14 +123,6 @@ final class Random<Value> < Expression<Value> {
     } else {
       doValue();
     }
-  }
-
-  override function doMakeConstant() {
-    p <- nil;
-  }
-
-  override function doRestoreCount() {
-    //
   }
   
   function doAccumulateGrad(d:Value) {

@@ -4,31 +4,27 @@
 final class Pow<Left,Right,Value>(left:Left, right:Right) <
     ScalarBinaryExpression<Left,Right,Value>(left, right) {  
   override function doValue() {
-    x <- pow(left.value(), right.value());
-  }
-
-  override function doGet() {
-    x <- pow(left.get(), right.get());
+    x <- pow(left!.value(), right!.value());
   }
 
   override function doPilot() {
-    x <- pow(left.pilot(), right.pilot());
+    x <- pow(left!.pilot(), right!.pilot());
   }
 
   override function doMove(κ:Kernel) {
-    x <- pow(left.move(κ), right.move(κ));
+    x <- pow(left!.move(κ), right!.move(κ));
   }
 
   override function doGrad() {
-    auto l <- left.get();
-    auto r <- right.get();
+    auto l <- left!.get();
+    auto r <- right!.get();
     auto dl <- d!*r*pow(l, r - 1.0);
     auto dr <- 0.0;
     if l > 0.0 {
       dr <- d!*pow(l, r)*log(l);
     }
-    left.grad(dl);
-    right.grad(dr);
+    left!.grad(dl);
+    right!.grad(dr);
   }
 }
 

@@ -4,48 +4,44 @@
 final class Add<Left,Right>(left:Left, right:Right) <
     ScalarBinaryExpression<Left,Right,Real>(left, right) {  
   override function doValue() {
-    x <- left.value() + right.value();
-  }
-
-  override function doGet() {
-    x <- left.get() + right.get();
+    x <- left!.value() + right!.value();
   }
 
   override function doPilot() {
-    x <- left.pilot() + right.pilot();
+    x <- left!.pilot() + right!.pilot();
   }
 
   override function doMove(κ:Kernel) {
-    x <- left.move(κ) + right.move(κ);
+    x <- left!.move(κ) + right!.move(κ);
   }
   
   override function doGrad() {
-    left.grad(d!);
-    right.grad(d!);
+    left!.grad(d!);
+    right!.grad(d!);
   }
 
   override function graftLinearGaussian() -> TransformLinear<Gaussian>? {
     y:TransformLinear<Gaussian>?;
     z:Gaussian?;
     
-    if (y <- left.graftLinearGaussian())? {
-      y!.add(right);
-    } else if (y <- right.graftLinearGaussian())? {
-      y!.add(left);
-    } else if (z <- left.graftGaussian())? {
-      y <- TransformLinear<Gaussian>(box(1.0), z!, right);
-    } else if (z <- right.graftGaussian())? {
-      y <- TransformLinear<Gaussian>(box(1.0), z!, left);
+    if (y <- left!.graftLinearGaussian())? {
+      y!.add(right!);
+    } else if (y <- right!.graftLinearGaussian())? {
+      y!.add(left!);
+    } else if (z <- left!.graftGaussian())? {
+      y <- TransformLinear<Gaussian>(box(1.0), z!, right!);
+    } else if (z <- right!.graftGaussian())? {
+      y <- TransformLinear<Gaussian>(box(1.0), z!, left!);
     }
     return y;
   }
 
   override function graftDotGaussian() -> TransformDot<MultivariateGaussian>? {
     y:TransformDot<MultivariateGaussian>?;
-    if (y <- left.graftDotGaussian())? {
-      y!.add(right);
-    } else if (y <- right.graftDotGaussian())? {
-      y!.add(left);
+    if (y <- left!.graftDotGaussian())? {
+      y!.add(right!);
+    } else if (y <- right!.graftDotGaussian())? {
+      y!.add(left!);
     }
     return y;
   }
@@ -55,14 +51,14 @@ final class Add<Left,Right>(left:Left, right:Right) <
     y:TransformLinear<NormalInverseGamma>?;
     z:NormalInverseGamma?;
 
-    if (y <- left.graftLinearNormalInverseGamma(compare))? {
-      y!.add(right);
-    } else if (y <- right.graftLinearNormalInverseGamma(compare))? {
-      y!.add(left);
-    } else if (z <- left.graftNormalInverseGamma(compare))? {
-      y <- TransformLinear<NormalInverseGamma>(box(1.0), z!, right);
-    } else if (z <- right.graftNormalInverseGamma(compare))? {
-      y <- TransformLinear<NormalInverseGamma>(box(1.0), z!, left);
+    if (y <- left!.graftLinearNormalInverseGamma(compare))? {
+      y!.add(right!);
+    } else if (y <- right!.graftLinearNormalInverseGamma(compare))? {
+      y!.add(left!);
+    } else if (z <- left!.graftNormalInverseGamma(compare))? {
+      y <- TransformLinear<NormalInverseGamma>(box(1.0), z!, right!);
+    } else if (z <- right!.graftNormalInverseGamma(compare))? {
+      y <- TransformLinear<NormalInverseGamma>(box(1.0), z!, left!);
     }
     return y;
   }
@@ -71,10 +67,10 @@ final class Add<Left,Right>(left:Left, right:Right) <
       TransformDot<MultivariateNormalInverseGamma>? {
     y:TransformDot<MultivariateNormalInverseGamma>?;
     
-    if (y <- left.graftDotNormalInverseGamma(compare))? {
-      y!.add(right);
-    } else if (y <- right.graftDotNormalInverseGamma(compare))? {
-      y!.add(left);
+    if (y <- left!.graftDotNormalInverseGamma(compare))? {
+      y!.add(right!);
+    } else if (y <- right!.graftDotNormalInverseGamma(compare))? {
+      y!.add(left!);
     }
     return y;
   }

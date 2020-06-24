@@ -4,24 +4,20 @@
 final class LogChoose<Left,Right,Value>(left:Left, right:Right) <
     ScalarBinaryExpression<Left,Right,Value>(left, right) {  
   override function doValue() {
-    x <- lchoose(left.value(), right.value());
-  }
-
-  override function doGet() {
-    x <- lchoose(left.get(), right.get());
+    x <- lchoose(left!.value(), right!.value());
   }
 
   override function doPilot() {
-    x <- lchoose(left.pilot(), right.pilot());
+    x <- lchoose(left!.pilot(), right!.pilot());
   }
 
   override function doMove(κ:Kernel) {
-    x <- lchoose(left.move(κ), right.move(κ));
+    x <- lchoose(left!.move(κ), right!.move(κ));
   }
   
   override function doGrad() {
-    left.grad(0.0);
-    right.grad(0.0);
+    left!.grad(0.0);
+    right!.grad(0.0);
   }
 }
 

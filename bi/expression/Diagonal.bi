@@ -3,32 +3,28 @@
  */
 final class Diagonal<Left,Right,Value>(x:Left, n:Right) <
     MatrixBinaryExpression<Left,Right,Value>(x, n) {  
-  override function rows() -> Integer {
-    return right.value();
+  override function doRows() -> Integer {
+    return right!.value();
   }
   
-  override function columns() -> Integer {
-    return right.value();
+  override function doColumns() -> Integer {
+    return right!.value();
   }
 
   override function doValue() {
-    x <- diagonal(left.value(), right.value());
-  }
-
-  override function doGet() {
-    x <- diagonal(left.get(), right.get());
+    x <- diagonal(left!.value(), right!.value());
   }
 
   override function doPilot() {
-    x <- diagonal(left.pilot(), right.pilot());
+    x <- diagonal(left!.pilot(), right!.pilot());
   }
 
   override function doMove(κ:Kernel) {
-    x <- diagonal(left.move(κ), right.move(κ));
+    x <- diagonal(left!.move(κ), right!.move(κ));
   }
 
   override function doGrad() {
-    left.grad(trace(d!));
+    left!.grad(trace(d!));
   }
 }
 

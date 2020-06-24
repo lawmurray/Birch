@@ -4,23 +4,19 @@
 final class LogDet<Single,Value>(x:Single) <
     ScalarUnaryExpression<Single,Value>(x) {
   override function doValue() {
-    x <- ldet(single.value());
-  }
-
-  override function doGet() {
-    x <- ldet(single.get());
+    x <- ldet(single!.value());
   }
 
   override function doPilot() {
-    x <- ldet(single.pilot());
+    x <- ldet(single!.pilot());
   }
 
   override function doMove(κ:Kernel) {
-    x <- ldet(single.move(κ));
+    x <- ldet(single!.move(κ));
   }
 
   override function doGrad() {
-    single.grad(matrix(inv(transpose(single.get()))));
+    single!.grad(matrix(inv(transpose(single!.get()))));
   }
 }
 

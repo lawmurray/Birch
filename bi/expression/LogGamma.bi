@@ -4,23 +4,19 @@
 final class LogGamma(x:Expression<Real>) <
     ScalarUnaryExpression<Expression<Real>,Real>(x) {
   override function doValue() {
-    x <- lgamma(single.value());
-  }
-
-  override function doGet() {
-    x <- lgamma(single.get());
+    x <- lgamma(single!.value());
   }
 
   override function doPilot() {
-    x <- lgamma(single.pilot());
+    x <- lgamma(single!.pilot());
   }
 
   override function doMove(κ:Kernel) {
-    x <- lgamma(single.move(κ));
+    x <- lgamma(single!.move(κ));
   }
 
   override function doGrad() {
-    single.grad(d!*digamma(single.get()));
+    single!.grad(d!*digamma(single!.get()));
   }
 }
 

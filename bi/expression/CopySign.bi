@@ -4,26 +4,22 @@
 final class CopySign<Left,Right,Value>(left:Left, right:Right) <
     ScalarBinaryExpression<Left,Right,Value>(left, right) {  
   override function doValue() {
-    x <- copysign(left.value(), right.value());
-  }
-
-  override function doGet() {
-    x <- copysign(left.get(), right.get());
+    x <- copysign(left!.value(), right!.value());
   }
 
   override function doPilot() {
-    x <- copysign(left.pilot(), right.pilot());
+    x <- copysign(left!.pilot(), right!.pilot());
   }
 
   override function doMove(κ:Kernel) {
-    x <- copysign(left.move(κ), right.move(κ));
+    x <- copysign(left!.move(κ), right!.move(κ));
   }
   
   override function doGrad() {
-    if x! == left.get() {
-      left.grad(d!);
+    if x! == left!.get() {
+      left!.grad(d!);
     } else {
-      left.grad(-d!);
+      left!.grad(-d!);
     }
   }
 }

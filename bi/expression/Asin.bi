@@ -4,24 +4,20 @@
 final class Asin(x:Expression<Real>) <
     ScalarUnaryExpression<Expression<Real>,Real>(x) {
   override function doValue() {
-    x <- asin(single.value());
-  }
-
-  override function doGet() {
-    x <- asin(single.get());
+    x <- asin(single!.value());
   }
 
   override function doPilot() {
-    x <- asin(single.pilot());
+    x <- asin(single!.pilot());
   }
 
   override function doMove(κ:Kernel) {
-    x <- asin(single.move(κ));
+    x <- asin(single!.move(κ));
   }
 
   override function doGrad() {
-    auto x <- single.get();
-    single.grad(d!/sqrt(1.0 - x*x));
+    auto x <- single!.get();
+    single!.grad(d!/sqrt(1.0 - x*x));
   }
 }
 

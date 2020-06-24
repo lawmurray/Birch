@@ -3,33 +3,29 @@
  */
 final class MatrixMultiply<Left,Right,Value>(left:Left, right:Right) <
     MatrixBinaryExpression<Left,Right,Value>(left, right) {  
-  override function rows() -> Integer {
-    return left.rows();
+  override function doRows() -> Integer {
+    return left!.rows();
   }
   
-  override function columns() -> Integer {
-    return right.columns();
+  override function doColumns() -> Integer {
+    return right!.columns();
   }
 
   override function doValue() {
-    x <- left.value()*right.value();
-  }
-
-  override function doGet() {
-    x <- left.get()*right.get();
+    x <- left!.value()*right!.value();
   }
 
   override function doPilot() {
-    x <- left.pilot()*right.pilot();
+    x <- left!.pilot()*right!.pilot();
   }
 
   override function doMove(κ:Kernel) {
-    x <- left.move(κ)*right.move(κ);
+    x <- left!.move(κ)*right!.move(κ);
   }
 
   override function doGrad() {
-    left.grad(d!*transpose(right.get()));
-    right.grad(transpose(left.get())*d!);
+    left!.grad(d!*transpose(right!.get()));
+    right!.grad(transpose(left!.get())*d!);
   }
 
   override function graftLinearMatrixGaussian() ->
@@ -37,10 +33,10 @@ final class MatrixMultiply<Left,Right,Value>(left:Left, right:Right) <
     y:TransformLinearMatrix<MatrixGaussian>?;
     z:MatrixGaussian?;
     
-    if (y <- right.graftLinearMatrixGaussian())? {
-      y!.leftMultiply(matrix(left));
-    } else if (z <- right.graftMatrixGaussian())? {
-      y <- TransformLinearMatrix<MatrixGaussian>(matrix(left), z!);
+    if (y <- right!.graftLinearMatrixGaussian())? {
+      y!.leftMultiply(matrix(left!));
+    } else if (z <- right!.graftMatrixGaussian())? {
+      y <- TransformLinearMatrix<MatrixGaussian>(matrix(left!), z!);
     }
     return y;
   }
@@ -51,10 +47,10 @@ final class MatrixMultiply<Left,Right,Value>(left:Left, right:Right) <
     y:TransformLinearMatrix<MatrixNormalInverseGamma>?;
     z:MatrixNormalInverseGamma?;
 
-    if (y <- right.graftLinearMatrixNormalInverseGamma(compare))? {
-      y!.leftMultiply(matrix(left));
-    } else if (z <- right.graftMatrixNormalInverseGamma(compare))? {
-      y <- TransformLinearMatrix<MatrixNormalInverseGamma>(matrix(left), z!);
+    if (y <- right!.graftLinearMatrixNormalInverseGamma(compare))? {
+      y!.leftMultiply(matrix(left!));
+    } else if (z <- right!.graftMatrixNormalInverseGamma(compare))? {
+      y <- TransformLinearMatrix<MatrixNormalInverseGamma>(matrix(left!), z!);
     }
     return y;
   }
@@ -65,10 +61,10 @@ final class MatrixMultiply<Left,Right,Value>(left:Left, right:Right) <
     y:TransformLinearMatrix<MatrixNormalInverseWishart>?;
     z:MatrixNormalInverseWishart?;
 
-    if (y <- right.graftLinearMatrixNormalInverseWishart(compare))? {
-      y!.leftMultiply(matrix(left));
-    } else if (z <- right.graftMatrixNormalInverseWishart(compare))? {
-      y <- TransformLinearMatrix<MatrixNormalInverseWishart>(matrix(left), z!);
+    if (y <- right!.graftLinearMatrixNormalInverseWishart(compare))? {
+      y!.leftMultiply(matrix(left!));
+    } else if (z <- right!.graftMatrixNormalInverseWishart(compare))? {
+      y <- TransformLinearMatrix<MatrixNormalInverseWishart>(matrix(left!), z!);
     }
     return y;
   }

@@ -3,23 +3,19 @@
  */
 final class Cast<From,To>(x:From) < ScalarUnaryExpression<From,To>(x) {
   override function doValue() {
-    x <- To?(single.value())!;
-  }
-
-  override function doGet() {
-    x <- To?(single.get())!;
+    x <- To?(single!.value())!;
   }
 
   override function doPilot() {
-    x <- To?(single.pilot())!;
+    x <- To?(single!.pilot())!;
   }
 
   override function doMove(κ:Kernel) {
-    x <- To?(single.move(κ))!;
+    x <- To?(single!.move(κ))!;
   }
 
   override function doGrad() {
-    single.grad(d!);
+    single!.grad(d!);
   }
 }
 

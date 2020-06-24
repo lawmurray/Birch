@@ -62,6 +62,27 @@ class MoveParticle(m:Model) < Particle(m) {
   }
 
   /**
+   * Remove the oldest step.
+   */
+  function truncate() {
+    /* calling value() on these expressions has the side effect of making
+     * them constant, so that Random objects appearing in them will be
+     * ineligible for moves in future */
+    if !zs.empty() {
+      π <- π - zs.front().value();
+      zs.popFront();
+    }
+    if !ps.empty() {
+      π <- π - ps.front().value();
+      ps.popFront();
+    }
+    if !vs.empty() {
+      vs.popFront();
+    }
+    n <- n - 1;
+  }
+
+  /**
    * Catch up priors after one or more calls to `likelihood()`.
    */
   function prior() {
@@ -94,29 +115,6 @@ class MoveParticle(m:Model) < Particle(m) {
     assert n == zs.size();
     assert n == ps.size();
     assert n == vs.size();
-  }
-
-  /**
-   * Remove the oldest step after a call to `grad()`.
-   *
-   * This must be called after `grad()` and not at any other time, as at this
-   * point [Expression](../classes/Expression) evaluation counts are at zero.
-   * Calling it at any time with nonzero counts expression states invalidate
-   * the state of those expressions.
-   */
-  function truncate() {
-    /* make variables from the oldest time step constant, so that they are
-     * no longer eligible to move */
-    for j in 1..vs.size(1) {
-      vs.get(1, j).makeConstant();
-    }
-  
-    /* update state */
-    π <- π - zs.front().get() - ps.front().get();
-    n <- n - 1;
-    zs.popFront();
-    ps.popFront();
-    vs.popFront();
   }
 
   /**

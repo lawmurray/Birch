@@ -3,28 +3,24 @@
  */
 final class MultivariateVector<Single,Value>(x:Single) <
     MultivariateUnaryExpression<Single,Value>(x) {
-  override function rows() -> Integer {
-    return single.rows();
+  override function doRows() -> Integer {
+    return single!.rows();
   }
 
   override function doValue() {
-    x <- vector(single.value());
-  }
-
-  override function doGet() {
-    x <- vector(single.get());
+    x <- vector(single!.value());
   }
 
   override function doPilot() {
-    x <- vector(single.pilot());
+    x <- vector(single!.pilot());
   }
 
   override function doMove(κ:Kernel) {
-    x <- vector(single.move(κ));
+    x <- vector(single!.move(κ));
   }
 
   override function doGrad() {
-    single.grad(d!);
+    single!.grad(d!);
   }
 }
 

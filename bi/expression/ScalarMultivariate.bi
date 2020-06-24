@@ -4,23 +4,19 @@
 final class ScalarMultivariate(x:Expression<Real[_]>) <
     ScalarUnaryExpression<Expression<Real[_]>,Real>(x) {
   override function doValue() {
-    x <- scalar(single.value());
-  }
-
-  override function doGet() {
-    x <- scalar(single.get());
+    x <- scalar(single!.value());
   }
 
   override function doPilot() {
-    x <- scalar(single.pilot());
+    x <- scalar(single!.pilot());
   }
 
   override function doMove(κ:Kernel) {
-    x <- scalar(single.move(κ));
+    x <- scalar(single!.move(κ));
   }
 
   override function doGrad() {
-    single.grad([d!]);
+    single!.grad([d!]);
   }
 }
 

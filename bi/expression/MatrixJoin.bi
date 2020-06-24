@@ -6,50 +6,44 @@ final class MatrixJoin<Value>(X:Expression<Value>[_,_]) <
   /**
    * Arguments.
    */
-  args:Expression<Value>[_,_] <- X;
+  args:Expression<Value>[_,_]? <- X;
 
-  override function rows() -> Integer {
-    return global.rows(args);
+  override function doRows() -> Integer {
+    return global.rows(args!);
   }
 
-  override function columns() -> Integer {
-    return global.columns(args);
+  override function doColumns() -> Integer {
+    return global.columns(args!);
+  }
+
+  override function doDetach() {
+    args <- nil;
   }
 
   override function doValue() {
-    x <- transform(args, \(x:Expression<Value>) -> Value {
+    x <- transform(args!, \(x:Expression<Value>) -> Value {
         return x.value();
       });
   }
 
   override function doMakeConstant() {
-    for_each(args, \(x:Expression<Value>) { x.makeConstant(); });
-  }
-
-  override function doGet() {
-    x <- transform(args, \(x:Expression<Value>) -> Value {
-        return x.get();
-      });
+    for_each(args!, \(x:Expression<Value>) { x.makeConstant(); });
   }
   
   override function doPilot() {
-    x <- transform(args, \(x:Expression<Value>) -> Value {
+    x <- transform(args!, \(x:Expression<Value>) -> Value {
         return x.pilot();
       });
   }
 
-  override function doRestoreCount() {
-    for_each(args, \(x:Expression<Value>) { x.restoreCount(); });
-  }
-
   override function doMove(κ:Kernel) {
-    x <- transform(args, \(x:Expression<Value>) -> Value {
+    x <- transform(args!, \(x:Expression<Value>) -> Value {
         return x.move(κ);
       });
   }
   
   override function doGrad() {
-    for_each(args, d!, \(x:Expression<Value>, d:Value) { x.grad(d); });
+    for_each(args!, d!, \(x:Expression<Value>, d:Value) { x.grad(d); });
   }
 
   override function doPrior(vars:RaggedArray<DelayExpression>) ->
@@ -59,7 +53,7 @@ final class MatrixJoin<Value>(X:Expression<Value>[_,_]) <
     auto C <- columns();
     for i in 1..R {
       for j in 1..C {
-        auto q <- args[i,j].prior(vars);
+        auto q <- args![i,j].prior(vars);
         if q? {
           if p? {
             p <- p! + q!;

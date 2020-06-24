@@ -6,46 +6,40 @@ final class MultivariateJoin<Value>(x:Expression<Value>[_]) <
   /**
    * Arguments.
    */
-  args:Expression<Value>[_] <- x;
+  args:Expression<Value>[_]? <- x;
 
-  override function rows() -> Integer {
-    return global.length(args);
+  override function doRows() -> Integer {
+    return global.length(args!);
+  }
+
+  override function doDetach() {
+    args <- nil;
   }
 
   override function doValue() {
-    x <- transform(args, \(x:Expression<Value>) -> Value {
+    x <- transform(args!, \(x:Expression<Value>) -> Value {
         return x.value();
       });
   }
 
   override function doMakeConstant() {
-    for_each(args, \(x:Expression<Value>) { x.makeConstant(); });
-  }
-
-  override function doGet() {
-    x <- transform(args, \(x:Expression<Value>) -> Value {
-        return x.get();
-      });
+    for_each(args!, \(x:Expression<Value>) { x.makeConstant(); });
   }
   
   override function doPilot() {
-    x <- transform(args, \(x:Expression<Value>) -> Value {
+    x <- transform(args!, \(x:Expression<Value>) -> Value {
         return x.pilot();
       });
   }
 
-  override function doRestoreCount() {
-    for_each(args, \(x:Expression<Value>) { x.restoreCount(); });
-  }
-
   override function doMove(κ:Kernel) {
-    x <- transform(args, \(x:Expression<Value>) -> Value {
+    x <- transform(args!, \(x:Expression<Value>) -> Value {
         return x.move(κ);
       });
   }
   
   override function doGrad() {
-    for_each(args, d!, \(x:Expression<Value>, d:Value) { x.grad(d); });
+    for_each(args!, d!, \(x:Expression<Value>, d:Value) { x.grad(d); });
   }
 
   override function doPrior(vars:RaggedArray<DelayExpression>) ->
@@ -53,7 +47,7 @@ final class MultivariateJoin<Value>(x:Expression<Value>[_]) <
     p:Expression<Real>?;
     auto n <- length();
     for i in 1..n {
-      auto q <- args[i].prior(vars);
+      auto q <- args![i].prior(vars);
       if q? {
         if p? {
           p <- p! + q!;

@@ -3,29 +3,25 @@
  */
 final class MultivariateMultiply<Left,Right,Value>(left:Left, right:Right) <
     MultivariateBinaryExpression<Left,Right,Value>(left, right) {  
-  override function rows() -> Integer {
-    return left.rows();
+  override function doRows() -> Integer {
+    return left!.rows();
   }
 
   override function doValue() {
-    x <- left.value()*right.value();
-  }
-
-  override function doGet() {
-    x <- left.get()*right.get();
+    x <- left!.value()*right!.value();
   }
 
   override function doPilot() {
-    x <- left.pilot()*right.pilot();
+    x <- left!.pilot()*right!.pilot();
   }
 
   override function doMove(κ:Kernel) {
-    x <- left.move(κ)*right.move(κ);
+    x <- left!.move(κ)*right!.move(κ);
   }
 
   override function doGrad() {
-    left.grad(d!*transpose(right.get()));
-    right.grad(transpose(left.get())*d!);
+    left!.grad(d!*transpose(right!.get()));
+    right!.grad(transpose(left!.get())*d!);
   }
 
   override function graftLinearMultivariateGaussian() ->
@@ -33,10 +29,10 @@ final class MultivariateMultiply<Left,Right,Value>(left:Left, right:Right) <
     y:TransformLinearMultivariate<MultivariateGaussian>?;
     z:MultivariateGaussian?;
     
-    if (y <- right.graftLinearMultivariateGaussian())? {
-      y!.leftMultiply(matrix(left));
-    } else if (z <- right.graftMultivariateGaussian())? {
-      y <- TransformLinearMultivariate<MultivariateGaussian>(matrix(left), z!);
+    if (y <- right!.graftLinearMultivariateGaussian())? {
+      y!.leftMultiply(matrix(left!));
+    } else if (z <- right!.graftMultivariateGaussian())? {
+      y <- TransformLinearMultivariate<MultivariateGaussian>(matrix(left!), z!);
     }
     return y;
   }
@@ -46,10 +42,10 @@ final class MultivariateMultiply<Left,Right,Value>(left:Left, right:Right) <
     y:TransformLinearMultivariate<MultivariateNormalInverseGamma>?;
     z:MultivariateNormalInverseGamma?;
 
-    if (y <- right.graftLinearMultivariateNormalInverseGamma(compare))? {
-      y!.leftMultiply(matrix(left));
-    } else if (z <- right.graftMultivariateNormalInverseGamma(compare))? {
-      y <- TransformLinearMultivariate<MultivariateNormalInverseGamma>(matrix(left), z!);
+    if (y <- right!.graftLinearMultivariateNormalInverseGamma(compare))? {
+      y!.leftMultiply(matrix(left!));
+    } else if (z <- right!.graftMultivariateNormalInverseGamma(compare))? {
+      y <- TransformLinearMultivariate<MultivariateNormalInverseGamma>(matrix(left!), z!);
     }
     return y;
   }

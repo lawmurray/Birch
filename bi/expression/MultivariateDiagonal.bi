@@ -3,32 +3,24 @@
  */
 final class MultivariateDiagonal(x:Expression<Real[_,_]>) <
     MultivariateUnaryExpression<Expression<Real[_,_]>,Real[_]>(x) {
-  override function rows() -> Integer {
-    return min(single.rows(), single.columns());
-  }
-  
-  override function columns() -> Integer {
-    return 1;
+  override function doRows() -> Integer {
+    return min(single!.rows(), single!.columns());
   }
 
   override function doValue() {
-    x <- diagonal(single.value());
-  }
-
-  override function doGet() {
-    x <- diagonal(single.get());
+    x <- diagonal(single!.value());
   }
 
   override function doPilot() {
-    x <- diagonal(single.pilot());
+    x <- diagonal(single!.pilot());
   }
 
   override function doMove(κ:Kernel) {
-    x <- diagonal(single.move(κ));
+    x <- diagonal(single!.move(κ));
   }
 
   override function doGrad() {
-    single.grad(diagonal(d!));
+    single!.grad(diagonal(d!));
   }
 }
 

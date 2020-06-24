@@ -6,7 +6,7 @@ final class MatrixElement<Single,Value>(Y:Single, i:Integer, j:Integer) <
   /**
    * Matrix.
    */
-  Y:Single <- Y;
+  Y:Single? <- Y;
     
   /**
    * Row.
@@ -18,37 +18,33 @@ final class MatrixElement<Single,Value>(Y:Single, i:Integer, j:Integer) <
    */
   j:Integer <- j;
   
-  override function doValue() {
-    x <- matrix(Y.value())[i,j];
+  override function doDetach() {
+    Y <- nil;
   }
-
-  override function doGet() {
-    x <- matrix(Y.get())[i,j];
+  
+  override function doValue() {
+    x <- matrix(Y!.value())[i,j];
   }
 
   override function doPilot() {
-    x <- matrix(Y.pilot())[i,j];
+    x <- matrix(Y!.pilot())[i,j];
   }
 
   override function doMove(κ:Kernel) {
-    x <- matrix(Y.move(κ))[i,j];
+    x <- matrix(Y!.move(κ))[i,j];
   }
 
   override function doGrad() {
-    Y.grad(d!, i, j);
+    Y!.grad(d!, i, j);
   }
 
   final override function doMakeConstant() {
-    Y.makeConstant();
-  }
-
-  final override function doRestoreCount() {
-    Y.restoreCount();
+    Y!.makeConstant();
   }
   
   final override function doPrior(vars:RaggedArray<DelayExpression>) ->
       Expression<Real>? {
-    return Y.prior(vars);
+    return Y!.prior(vars);
   }
 }
 
@@ -57,7 +53,7 @@ final class MatrixElement<Single,Value>(Y:Single, i:Integer, j:Integer) <
  */
 function MatrixElement(Y:Expression<Real[_,_]>, i:Integer, j:Integer) ->
     Expression<Real> {
-  if Y.isConstant() {
+  if Y!.isConstant() {
     return box(Y.value()[i,j]);
   } else {
     m:MatrixElement<Expression<Real[_,_]>,Real>(Y, i, j);
@@ -70,7 +66,7 @@ function MatrixElement(Y:Expression<Real[_,_]>, i:Integer, j:Integer) ->
  */
 function MatrixElement(Y:Expression<LLT>, i:Integer, j:Integer) ->
     Expression<Real> {
-  if Y.isConstant() {
+  if Y!.isConstant() {
     return box(matrix(Y.value())[i,j]);
   } else {
     m:MatrixElement<Expression<LLT>,Real>(Y, i, j);
@@ -83,7 +79,7 @@ function MatrixElement(Y:Expression<LLT>, i:Integer, j:Integer) ->
  */
 function MatrixElement(Y:Expression<Integer[_,_]>, i:Integer, j:Integer) ->
     Expression<Integer> {
-  if Y.isConstant() {
+  if Y!.isConstant() {
     return box(Y.value()[i,j]);
   } else {
     m:MatrixElement<Expression<Integer[_,_]>,Integer>(Y, i, j);

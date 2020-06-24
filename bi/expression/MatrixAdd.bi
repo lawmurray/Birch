@@ -3,33 +3,29 @@
  */
 final class MatrixAdd<Left,Right,Value>(left:Left, right:Right) <
     MatrixBinaryExpression<Left,Right,Value>(left, right) {  
-  override function rows() -> Integer {
-    return left.rows();
+  override function doRows() -> Integer {
+    return left!.rows();
   }
   
-  override function columns() -> Integer {
-    return left.columns();
+  override function doColumns() -> Integer {
+    return left!.columns();
   }
   
   override function doValue() {
-    x <- left.value() + right.value();
-  }
-
-  override function doGet() {
-    x <- left.get() + right.get();
+    x <- left!.value() + right!.value();
   }
 
   override function doPilot() {
-    x <- left.pilot() + right.pilot();
+    x <- left!.pilot() + right!.pilot();
   }
 
   override function doMove(κ:Kernel) {
-    x <- left.move(κ) + right.move(κ);
+    x <- left!.move(κ) + right!.move(κ);
   }
 
   override function doGrad() {
-    left.grad(d!);
-    right.grad(d!);
+    left!.grad(d!);
+    right!.grad(d!);
   }
 
   override function graftLinearMatrixGaussian() ->
@@ -37,14 +33,14 @@ final class MatrixAdd<Left,Right,Value>(left:Left, right:Right) <
     y:TransformLinearMatrix<MatrixGaussian>?;
     z:MatrixGaussian?;
 
-    if (y <- left.graftLinearMatrixGaussian())? {
-      y!.add(right);
-    } else if (y <- right.graftLinearMatrixGaussian())? {
-      y!.add(left);
-    } else if (z <- left.graftMatrixGaussian())? {
-      y <- TransformLinearMatrix<MatrixGaussian>(box(identity(z!.rows())), z!, right);
-    } else if (z <- right.graftMatrixGaussian())? {
-      y <- TransformLinearMatrix<MatrixGaussian>(box(identity(z!.rows())), z!, left);
+    if (y <- left!.graftLinearMatrixGaussian())? {
+      y!.add(right!);
+    } else if (y <- right!.graftLinearMatrixGaussian())? {
+      y!.add(left!);
+    } else if (z <- left!.graftMatrixGaussian())? {
+      y <- TransformLinearMatrix<MatrixGaussian>(box(identity(z!.rows())), z!, right!);
+    } else if (z <- right!.graftMatrixGaussian())? {
+      y <- TransformLinearMatrix<MatrixGaussian>(box(identity(z!.rows())), z!, left!);
     }
     return y;
   }
@@ -54,14 +50,14 @@ final class MatrixAdd<Left,Right,Value>(left:Left, right:Right) <
     y:TransformLinearMatrix<MatrixNormalInverseGamma>?;
     z:MatrixNormalInverseGamma?;
 
-    if (y <- left.graftLinearMatrixNormalInverseGamma(compare))? {
-      y!.add(right);
-    } else if (y <- right.graftLinearMatrixNormalInverseGamma(compare))? {
-      y!.add(left);
-    } else if (z <- left.graftMatrixNormalInverseGamma(compare))? {
-      y <- TransformLinearMatrix<MatrixNormalInverseGamma>(box(identity(z!.rows())), z!, right);
-    } else if (z <- right.graftMatrixNormalInverseGamma(compare))? {
-      y <- TransformLinearMatrix<MatrixNormalInverseGamma>(box(identity(z!.rows())), z!, left);
+    if (y <- left!.graftLinearMatrixNormalInverseGamma(compare))? {
+      y!.add(right!);
+    } else if (y <- right!.graftLinearMatrixNormalInverseGamma(compare))? {
+      y!.add(left!);
+    } else if (z <- left!.graftMatrixNormalInverseGamma(compare))? {
+      y <- TransformLinearMatrix<MatrixNormalInverseGamma>(box(identity(z!.rows())), z!, right!);
+    } else if (z <- right!.graftMatrixNormalInverseGamma(compare))? {
+      y <- TransformLinearMatrix<MatrixNormalInverseGamma>(box(identity(z!.rows())), z!, left!);
     }
     return y;
   }
@@ -71,14 +67,14 @@ final class MatrixAdd<Left,Right,Value>(left:Left, right:Right) <
     y:TransformLinearMatrix<MatrixNormalInverseWishart>?;
     z:MatrixNormalInverseWishart?;
 
-    if (y <- left.graftLinearMatrixNormalInverseWishart(compare))? {
-      y!.add(right);
-    } else if (y <- right.graftLinearMatrixNormalInverseWishart(compare))? {
-      y!.add(left);
-    } else if (z <- left.graftMatrixNormalInverseWishart(compare))? {
-      y <- TransformLinearMatrix<MatrixNormalInverseWishart>(box(identity(z!.rows())), z!, right);
-    } else if (z <- right.graftMatrixNormalInverseWishart(compare))? {
-      y <- TransformLinearMatrix<MatrixNormalInverseWishart>(box(identity(z!.rows())), z!, left);
+    if (y <- left!.graftLinearMatrixNormalInverseWishart(compare))? {
+      y!.add(right!);
+    } else if (y <- right!.graftLinearMatrixNormalInverseWishart(compare))? {
+      y!.add(left!);
+    } else if (z <- left!.graftMatrixNormalInverseWishart(compare))? {
+      y <- TransformLinearMatrix<MatrixNormalInverseWishart>(box(identity(z!.rows())), z!, right!);
+    } else if (z <- right!.graftMatrixNormalInverseWishart(compare))? {
+      y <- TransformLinearMatrix<MatrixNormalInverseWishart>(box(identity(z!.rows())), z!, left!);
     }
     return y;
   }

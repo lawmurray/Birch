@@ -68,6 +68,24 @@ abstract class Expression<Value> < DelayExpression {
   x:Value?;
 
   /**
+   * Number of times `pilot()` has been called.
+   */
+  pilotCount:Integer <- 0;
+
+  /**
+   * Number of times `grad()` has been called. Used to track accumulation of
+   * upstream gradients before recursion, after which it is reset to zero.
+   */
+  gradCount:Integer <- 0;
+  
+  /**
+   * Number of times `move()` has been called. Used to ensure each
+   * subexpression is moved only once, and upon reaching `countPilot` is
+   * reset to zero.
+   */
+  moveCount:Integer <- 0;
+
+  /**
    * If this is a Random, get the distribution associated with it, if any,
    * otherwise nil.
    */
@@ -88,13 +106,19 @@ abstract class Expression<Value> < DelayExpression {
    * If this is not the intended behavior, consider `get()` or `pilot()`.
    */
   final function value() -> Value {
-    if !flagConstant {
+    if !isConstant() {
       if !x? {
         doValue();
       } else {
         doMakeConstant();
       }
+      doClearGrad();
+      doDetach();
       flagConstant <- true;
+      flagPrior <- true;
+      pilotCount <- 0;
+      gradCount <- 0;
+      moveCount <- 0;
     }
     return x!;
   }
@@ -110,9 +134,15 @@ abstract class Expression<Value> < DelayExpression {
    */
   final function makeConstant() {
     assert x?;
-    if !flagConstant {
-      flagConstant <- true;
+    if !isConstant() {
       doMakeConstant();
+      doClearGrad();
+      doDetach();
+      flagConstant <- true;
+      flagPrior <- true;
+      pilotCount <- 0;
+      gradCount <- 0;
+      moveCount <- 0;
     }
   }
 
@@ -121,22 +151,10 @@ abstract class Expression<Value> < DelayExpression {
    */
   abstract function doMakeConstant();
 
-  /**
-   * Evaluate, closed world.
-   *
-   * Returns: The evaluated value of the expression.
-   */
-  final function get() -> Value {
-    if !x? {
-      doGet();
-    }
-    return x!;
-  }
-
   /*
-   * Evaluate for `get()`.
+   * Detach from any children for `value()` and `makeConstant()`.
    */
-  abstract function doGet();
+  abstract function doDetach();
 
   /**
    * Evaluate before a call to `grad()`, closed world.
@@ -153,14 +171,13 @@ abstract class Expression<Value> < DelayExpression {
    * through Bayesian updates.
    */
   final function pilot() -> Value {
-    if count == 0 {
-      if !x? {
+    if !isConstant() {
+      if pilotCount == 0 && !x? {
+        // ^ x can have a value if get() called previously
         doPilot();
-      } else {
-        doRestoreCount();
       }
+      pilotCount <- pilotCount + 1;
     }
-    count <- count + 1;
     return x!;
   }
   
@@ -168,24 +185,23 @@ abstract class Expression<Value> < DelayExpression {
    * Evaluate for `pilot()`.
    */
   abstract function doPilot();
-  
-  /*
-   * Restore count. This is used when a value has already been evaluated
-   * (e.g. with `pilot()`), but a subsequent call to e.g. `grad()` has
-   * updated the count. This call restores it.
+
+  /**
+   * Evaluate, closed world.
+   *
+   * Returns: The evaluated value of the expression.
+   *
+   * `get()` is similar to `pilot()` except that it does not update the
+   * count on this object, only on child objects if an evaluation is
+   * necessary. It is used to obtain the evaluated value of an expression
+   * without disrupting the counting optimization described under `pilot()`.
    */
-  final function restoreCount() {
-    assert x?;
-    if count == 0 {
-      doRestoreCount();
+  final function get() -> Value {
+    if !isConstant() && !x? {
+      doPilot();
     }
-    count <- count + 1;
+    return x!;
   }
-  
-  /*
-   * Count for `pilot()`.
-   */
-  abstract function doRestoreCount();
 
   /**
    * Evaluate gradients. Gradients are computed with respect to all
@@ -221,13 +237,15 @@ abstract class Expression<Value> < DelayExpression {
    * the final result.
    */
   final function grad<Gradient>(d:Gradient) {
-    if !flagConstant {
+    if !isConstant() {
+      assert pilotCount > 0;
       doAccumulateGrad(d);
-      assert count > 0;
-      count <- count - 1;
-      if count == 0 {
-        /* all upstream gradients accumulated, continue recursion */
+      gradCount <- gradCount + 1;
+      if gradCount == pilotCount {
+        /* all upstream gradients accumulated, continue recursion and reset
+         * count for next time */
         doGrad();
+        gradCount <- 0;
       }
     }
   }
@@ -239,13 +257,15 @@ abstract class Expression<Value> < DelayExpression {
    * - i: Element index.
    */
   final function grad(d:Real, i:Integer) {
-    if !flagConstant {
+    if !isConstant() {
+      assert pilotCount > 0;
       doAccumulateGrad(d, i);
-      assert count > 0;
-      count <- count - 1;
-      if count == 0 {
-        /* all upstream gradients accumulated, continue recursion */
+      gradCount <- gradCount + 1;
+      if gradCount == pilotCount {
+        /* all upstream gradients accumulated, continue recursion and reset
+         * count for next time */
         doGrad();
+        gradCount <- 0;
       }
     }
   }
@@ -258,13 +278,16 @@ abstract class Expression<Value> < DelayExpression {
    * - j: Column index.
    */
   final function grad(d:Real, i:Integer, j:Integer) {
-    if !flagConstant {
+    if !isConstant() {
+      assert x?;
+      assert pilotCount > 0;
       doAccumulateGrad(d, i, j);
-      assert count > 0;
-      count <- count - 1;
-      if count == 0 {
-        /* all upstream gradients accumulated, continue recursion */
+      gradCount <- gradCount + 1;
+      if gradCount == pilotCount {
+        /* all upstream gradients accumulated, continue recursion and reset
+         * count for next time */
         doGrad();
+        gradCount <- 0;
       }
     }
   }
@@ -324,12 +347,15 @@ abstract class Expression<Value> < DelayExpression {
    * Returns: The evaluated value of the expression.
    */
   final function move(κ:Kernel) -> Value {
-    if !flagConstant {
-      if count == 0 {
+    if !isConstant() {
+      if moveCount == 0 {
         doMove(κ);
         doClearGrad();
       }
-      count <- count + 1;
+      moveCount <- moveCount + 1;
+      if moveCount == pilotCount {
+        moveCount <- 0;
+      }
     }
     return x!;
   }

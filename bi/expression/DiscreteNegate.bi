@@ -4,30 +4,26 @@
 final class DiscreteNegate(x:Expression<Integer>) <
     ScalarUnaryExpression<Expression<Integer>,Integer>(x) {
   override function doValue() {
-    x <- -single.value();
-  }
-
-  override function doGet() {
-    x <- -single.get();
+    x <- -single!.value();
   }
 
   override function doPilot() {
-    x <- -single.pilot();
+    x <- -single!.pilot();
   }
 
   override function doMove(κ:Kernel) {
-    x <- -single.move(κ);
+    x <- -single!.move(κ);
   }
 
   override function doGrad() {
-    single.grad(-d!);
+    single!.grad(-d!);
   }
 
   override function graftDiscrete() -> Discrete? {
     r:Discrete? <- graftBoundedDiscrete();
     if !r? {
       x:Discrete?;
-      if (x <- single.graftDiscrete())? {
+      if (x <- single!.graftDiscrete())? {
         r <- LinearDiscrete(box(-1), x!, box(0));
       }
     }
@@ -38,7 +34,7 @@ final class DiscreteNegate(x:Expression<Integer>) <
     x:BoundedDiscrete?;
     r:BoundedDiscrete?;
 
-    if (x <- single.graftBoundedDiscrete())? {
+    if (x <- single!.graftBoundedDiscrete())? {
       r <- LinearBoundedDiscrete(box(-1), x!, box(0));
     }
     return r;

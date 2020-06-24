@@ -10,27 +10,27 @@ abstract class MultivariateBinaryExpression<Left,Right,Value>(left:Left,
   /**
    * Left argument.
    */
-  left:Left <- left;
+  left:Left? <- left;
   
   /**
    * Right argument.
    */
-  right:Right <- right;
+  right:Right? <- right;
 
-  final override function doMakeConstant() {
-    left.makeConstant();
-    right.makeConstant();
+  final override function doDetach() {
+    left <- nil;
+    right <- nil;
   }
 
-  final override function doRestoreCount() {
-    left.restoreCount();
-    right.restoreCount();
+  final override function doMakeConstant() {
+    left!.makeConstant();
+    right!.makeConstant();
   }
   
   final override function doPrior(vars:RaggedArray<DelayExpression>) ->
       Expression<Real>? {
-    auto l <- left.prior(vars);
-    auto r <- right.prior(vars);
+    auto l <- left!.prior(vars);
+    auto r <- right!.prior(vars);
     if l? && r? {
       return l! + r!;
     } else if l? {

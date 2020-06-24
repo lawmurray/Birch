@@ -3,32 +3,28 @@
  */
 final class MatrixDiagonal(x:Expression<Real[_]>) <
     MatrixUnaryExpression<Expression<Real[_]>,Real[_,_]>(x) {
-  override function rows() -> Integer {
-    return single.rows();
+  override function doRows() -> Integer {
+    return single!.rows();
   }
   
-  override function columns() -> Integer {
-    return single.rows();
+  override function doColumns() -> Integer {
+    return single!.rows();
   }
 
   override function doValue() {
-    x <- diagonal(single.value());
-  }
-
-  override function doGet() {
-    x <- diagonal(single.get());
+    x <- diagonal(single!.value());
   }
 
   override function doPilot() {
-    x <- diagonal(single.pilot());
+    x <- diagonal(single!.pilot());
   }
 
   override function doMove(κ:Kernel) {
-    x <- diagonal(single.move(κ));
+    x <- diagonal(single!.move(κ));
   }
 
   override function doGrad() {
-    single.grad(diagonal(d!));
+    single!.grad(diagonal(d!));
   }
 }
 

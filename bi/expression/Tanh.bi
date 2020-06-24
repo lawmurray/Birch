@@ -4,23 +4,19 @@
 final class Tanh(x:Expression<Real>) <
     ScalarUnaryExpression<Expression<Real>,Real>(x) {
   override function doValue() {
-    x <- tanh(single.value());
-  }
-
-  override function doGet() {
-    x <- tanh(single.get());
+    x <- tanh(single!.value());
   }
 
   override function doPilot() {
-    x <- tanh(single.pilot());
+    x <- tanh(single!.pilot());
   }
 
   override function doMove(κ:Kernel) {
-    x <- tanh(single.move(κ));
+    x <- tanh(single!.move(κ));
   }
 
   override function doGrad() {
-    single.grad(d!*(1.0 + pow(tanh(single.get()), 2.0)));
+    single!.grad(d!*(1.0 + pow(tanh(single!.get()), 2.0)));
   }
 }
 

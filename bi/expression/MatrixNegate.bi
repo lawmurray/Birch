@@ -3,32 +3,28 @@
  */
 final class MatrixNegate(x:Expression<Real[_,_]>) <
     MatrixUnaryExpression<Expression<Real[_,_]>,Real[_,_]>(x) {
-  override function rows() -> Integer {
-    return single.rows();
+  override function doRows() -> Integer {
+    return single!.rows();
   }
   
-  override function columns() -> Integer {
-    return single.columns();
+  override function doColumns() -> Integer {
+    return single!.columns();
   }
 
   override function doValue() {
-    x <- -single.value();
-  }
-
-  override function doGet() {
-    x <- -single.get();
+    x <- -single!.value();
   }
 
   override function doPilot() {
-    x <- -single.pilot();
+    x <- -single!.pilot();
   }
 
   override function doMove(κ:Kernel) {
-    x <- -single.move(κ);
+    x <- -single!.move(κ);
   }
 
   override function doGrad() {
-    single.grad(-d!);
+    single!.grad(-d!);
   }
 
   override function graftLinearMatrixGaussian() ->
@@ -36,9 +32,9 @@ final class MatrixNegate(x:Expression<Real[_,_]>) <
     y:TransformLinearMatrix<MatrixGaussian>?;
     z:MatrixGaussian?;
 
-    if (y <- single.graftLinearMatrixGaussian())? {
+    if (y <- single!.graftLinearMatrixGaussian())? {
       y!.negate();
-    } else if (z <- single.graftMatrixGaussian())? {
+    } else if (z <- single!.graftMatrixGaussian())? {
       auto R <- z!.rows();
       auto C <- z!.columns();
       y <- TransformLinearMatrix<MatrixGaussian>(diagonal(box(-1.0), R), z!,
@@ -52,9 +48,9 @@ final class MatrixNegate(x:Expression<Real[_,_]>) <
     y:TransformLinearMatrix<MatrixNormalInverseGamma>?;
     z:MatrixNormalInverseGamma?;
 
-    if (y <- single.graftLinearMatrixNormalInverseGamma(compare))? {
+    if (y <- single!.graftLinearMatrixNormalInverseGamma(compare))? {
       y!.negate();
-    } else if (z <- single.graftMatrixNormalInverseGamma(compare))? {
+    } else if (z <- single!.graftMatrixNormalInverseGamma(compare))? {
       auto R <- z!.rows();
       auto C <- z!.columns();
       y <- TransformLinearMatrix<MatrixNormalInverseGamma>(
@@ -68,9 +64,9 @@ final class MatrixNegate(x:Expression<Real[_,_]>) <
     y:TransformLinearMatrix<MatrixNormalInverseWishart>?;
     z:MatrixNormalInverseWishart?;
 
-    if (y <- single.graftLinearMatrixNormalInverseWishart(compare))? {
+    if (y <- single!.graftLinearMatrixNormalInverseWishart(compare))? {
       y!.negate();
-    } else if (z <- single.graftMatrixNormalInverseWishart(compare))? {
+    } else if (z <- single!.graftMatrixNormalInverseWishart(compare))? {
       auto R <- z!.rows();
       auto C <- z!.columns();
       y <- TransformLinearMatrix<MatrixNormalInverseWishart>(

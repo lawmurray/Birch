@@ -4,24 +4,20 @@
 final class Atan(x:Expression<Real>) <
     ScalarUnaryExpression<Expression<Real>,Real>(x) {
   override function doValue() {
-    x <- atan(single.value());
-  }
-
-  override function doGet() {
-    x <- atan(single.get());
+    x <- atan(single!.value());
   }
 
   override function doPilot() {
-    x <- atan(single.pilot());
+    x <- atan(single!.pilot());
   }
 
   override function doMove(κ:Kernel) {
-    x <- atan(single.move(κ));
+    x <- atan(single!.move(κ));
   }
 
   override function doGrad() {
-    auto x <- single.get();
-    single.grad(d!/(1.0 + x*x));
+    auto x <- single!.get();
+    single!.grad(d!/(1.0 + x*x));
   }
 }
 

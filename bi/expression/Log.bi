@@ -4,23 +4,19 @@
 final class Log(x:Expression<Real>) <
     ScalarUnaryExpression<Expression<Real>,Real>(x) {
   override function doValue() {
-    x <- log(single.value());
-  }
-
-  override function doGet() {
-    x <- log(single.get());
+    x <- log(single!.value());
   }
 
   override function doPilot() {
-    x <- log(single.pilot());
+    x <- log(single!.pilot());
   }
 
   override function doMove(κ:Kernel) {
-    x <- log(single.move(κ));
+    x <- log(single!.move(κ));
   }
 
   override function doGrad() {
-    single.grad(d!/single.get());
+    single!.grad(d!/single!.get());
   }
 }
 

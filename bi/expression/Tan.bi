@@ -4,23 +4,19 @@
 final class Tan(x:Expression<Real>) <
     ScalarUnaryExpression<Expression<Real>,Real>(x) {
   override function doValue() {
-    x <- tan(single.value());
-  }
-
-  override function doGet() {
-    x <- tan(single.get());
+    x <- tan(single!.value());
   }
 
   override function doPilot() {
-    x <- tan(single.pilot());
+    x <- tan(single!.pilot());
   }
 
   override function doMove(κ:Kernel) {
-    x <- tan(single.move(κ));
+    x <- tan(single!.move(κ));
   }
 
   override function doGrad() {
-    single.grad(d!*(1.0 + pow(tan(single.get()), 2.0)));
+    single!.grad(d!*(1.0 + pow(tan(single!.get()), 2.0)));
   }
 }
 

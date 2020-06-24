@@ -3,10 +3,10 @@
  */
 operator (left:Expression<Real[_]>/right:Expression<Real>) ->
     Expression<Real[_]> {
-  if left.isConstant() && right.isConstant() {
-    return box(vector(left.value()/right.value()));
+  if left!.isConstant() && right!.isConstant() {
+    return box(vector(left!.value()/right!.value()));
   } else {
-    return diagonal(1.0/right, left.rows())*left;
+    return diagonal(1.0/right, left!.rows())*left;
   }
 }
 
@@ -14,8 +14,8 @@ operator (left:Expression<Real[_]>/right:Expression<Real>) ->
  * Lazy multivariate divide.
  */
 operator (left:Real[_]/right:Expression<Real>) -> Expression<Real[_]> {
-  if right.isConstant() {
-    return box(vector(left/right.value()));
+  if right!.isConstant() {
+    return box(vector(left/right!.value()));
   } else {
     return box(left)/right;
   }
@@ -25,8 +25,8 @@ operator (left:Real[_]/right:Expression<Real>) -> Expression<Real[_]> {
  * Lazy multivariate divide.
  */
 operator (left:Expression<Real[_]>/right:Real) -> Expression<Real[_]> {
-  if left.isConstant() {
-    return box(vector(left.value()/right));
+  if left!.isConstant() {
+    return box(vector(left!.value()/right));
   } else {
     return left/box(right);
   }

@@ -4,23 +4,19 @@
 final class Trace<Single,Value>(x:Single) <
     ScalarUnaryExpression<Single,Value>(x) {
   override function doValue() {
-    x <- trace(single.value());
-  }
-
-  override function doGet() {
-    x <- trace(single.get());
+    x <- trace(single!.value());
   }
 
   override function doPilot() {
-    x <- trace(single.pilot());
+    x <- trace(single!.pilot());
   }
 
   override function doMove(κ:Kernel) {
-    x <- trace(single.move(κ));
+    x <- trace(single!.move(κ));
   }
 
   override function doGrad() {
-    single.grad(diagonal(d!, single.rows()));
+    single!.grad(diagonal(d!, single!.rows()));
   }
 }
 

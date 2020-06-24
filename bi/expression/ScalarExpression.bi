@@ -7,7 +7,15 @@ abstract class ScalarExpression<Value> < Expression<Value> {
   /**
    * Accumulated upstream gradient.
    */
-  d:Real?;  
+  d:Real?;
+
+  final override function rows() -> Integer {
+    return 1;
+  }
+  
+  final override function columns() -> Integer {
+    return 1;
+  }
 
   final function doAccumulateGrad(d:Real) {
     if this.d? {

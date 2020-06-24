@@ -4,23 +4,19 @@
 final class Sin(x:Expression<Real>) <
     ScalarUnaryExpression<Expression<Real>,Real>(x) {
   override function doValue() {
-    x <- sin(single.value());
-  }
-
-  override function doGet() {
-    x <- sin(single.get());
+    x <- sin(single!.value());
   }
 
   override function doPilot() {
-    x <- sin(single.pilot());
+    x <- sin(single!.pilot());
   }
 
   override function doMove(κ:Kernel) {
-    x <- sin(single.move(κ));
+    x <- sin(single!.move(κ));
   }
 
   override function doGrad() {
-    single.grad(d!*cos(single.get()));
+    single!.grad(d!*cos(single!.get()));
   }
 }
 

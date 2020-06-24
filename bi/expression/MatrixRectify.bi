@@ -3,32 +3,28 @@
  */
 final class MatrixRectify(x:Expression<Real[_,_]>) <
     MatrixUnaryExpression<Expression<Real[_,_]>,Real[_,_]>(x) {
-  override function rows() -> Integer {
-    return single.rows();
+  override function doRows() -> Integer {
+    return single!.rows();
   }
 
-  override function columns() -> Integer {
-    return single.columns();
+  override function doColumns() -> Integer {
+    return single!.columns();
   }
 
   override function doValue() {
-    x <- transform(single.value(), \(y:Real) -> Real { return rectify(y); });
-  }
-
-  override function doGet() {
-    x <- transform(single.get(), \(y:Real) -> Real { return rectify(y); });
+    x <- transform(single!.value(), \(y:Real) -> Real { return rectify(y); });
   }
 
   override function doPilot() {
-    x <- transform(single.pilot(), \(y:Real) -> Real { return rectify(y); });
+    x <- transform(single!.pilot(), \(y:Real) -> Real { return rectify(y); });
   }
 
   override function doMove(κ:Kernel) {
-    x <- transform(single.move(κ), \(y:Real) -> Real { return rectify(y); });
+    x <- transform(single!.move(κ), \(y:Real) -> Real { return rectify(y); });
   }
 
   override function doGrad() {
-    single.grad(transform(x!, d!, \(x:Real, d:Real) -> Real {
+    single!.grad(transform(x!, d!, \(x:Real, d:Real) -> Real {
           if x > 0.0 {
             return d;
           } else {

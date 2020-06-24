@@ -4,29 +4,25 @@
 final class LogBeta<Left,Right,Value>(left:Left, right:Right) <
     ScalarBinaryExpression<Left,Right,Value>(left, right) {  
   override function doValue() {
-    x <- lbeta(left.value(), right.value());
-  }
-
-  override function doGet() {
-    x <- lbeta(left.get(), right.get());
+    x <- lbeta(left!.value(), right!.value());
   }
 
   override function doPilot() {
-    x <- lbeta(left.pilot(), right.pilot());
+    x <- lbeta(left!.pilot(), right!.pilot());
   }
 
   override function doMove(κ:Kernel) {
-    x <- lbeta(left.move(κ), right.move(κ));
+    x <- lbeta(left!.move(κ), right!.move(κ));
   }
   
   override function doGrad() {
-    auto l <- left.get();
-    auto r <- right.get();
+    auto l <- left!.get();
+    auto r <- right!.get();
     auto d1 <- digamma(l);
     auto d2 <- digamma(r);
     auto d3 <- digamma(l + r);
-    left.grad(d!*(d1 + d3));
-    right.grad(d!*(d2 + d3));
+    left!.grad(d!*(d1 + d3));
+    right!.grad(d!*(d2 + d3));
   }
 }
 

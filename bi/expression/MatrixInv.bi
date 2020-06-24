@@ -3,32 +3,28 @@
  */
 final class MatrixInv<Single,Value>(x:Single) <
     MatrixUnaryExpression<Single,Value>(x) {
-  override function rows() -> Integer {
-    return single.rows();
+  override function doRows() -> Integer {
+    return single!.rows();
   }
   
-  override function columns() -> Integer {
-    return single.columns();
+  override function doColumns() -> Integer {
+    return single!.columns();
   }
 
   override function doValue() {
-    x <- inv(single.value());
-  }
-
-  override function doGet() {
-    x <- inv(single.get());
+    x <- inv(single!.value());
   }
 
   override function doPilot() {
-    x <- inv(single.pilot());
+    x <- inv(single!.pilot());
   }
 
   override function doMove(κ:Kernel) {
-    x <- inv(single.move(κ));
+    x <- inv(single!.move(κ));
   }
 
   override function doGrad() {
-    single.grad(-transpose(x!)*d!*transpose(x!));
+    single!.grad(-transpose(x!)*d!*transpose(x!));
   }
 }
 

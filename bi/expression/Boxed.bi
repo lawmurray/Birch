@@ -3,18 +3,18 @@
  */
 final class Boxed<Value> < Expression<Value> {  
   override function rows() -> Integer {
-    return global.rows(get());
+    return global.rows(x!);
   }
 
   override function columns() -> Integer {
-    return global.columns(get());
+    return global.columns(x!);
   }
 
   override function doValue() {
     //
   }
-
-  override function doGet() {
+  
+  override function doDetach() {
     //
   }
 
@@ -23,10 +23,6 @@ final class Boxed<Value> < Expression<Value> {
   }
 
   override function doPilot() {
-    //
-  }
-
-  override function doRestoreCount() {
     //
   }
 
