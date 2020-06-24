@@ -528,7 +528,9 @@ public:
         Array<T,F> tmp(shape, *this);
         swap(tmp);
       }
-      buf()[i].~T();
+      for (int j = i; j < i + len; ++j) {
+        buf()[j].~T();
+      }
       std::memmove((void*)(buf() + i), (void*)(buf() + i + len), (n - len - i)*sizeof(T));
       auto oldBytes = Buffer<T>::size(shape.volume());
       auto newBytes = Buffer<T>::size(s.volume());
