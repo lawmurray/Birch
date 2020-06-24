@@ -10,6 +10,7 @@
 #include "libbirch/Shared.hpp"
 #include "libbirch/Weak.hpp"
 #include "libbirch/Init.hpp"
+#include "libbirch/LabelPtr.hpp"
 
 namespace libbirch {
 /**
@@ -28,9 +29,7 @@ public:
   /**
    * Constructor.
    */
-  Lazy(const std::nullptr_t& nil) :
-      object(nullptr),
-      label(rootLabel) {
+  Lazy(const std::nullptr_t& nil) {
     //
   }
 
@@ -109,7 +108,7 @@ public:
    */
   Lazy(const Lazy& o) :
       object(o.get()),
-      label(o.getLabel()) {
+      label(o.label) {
     // ^ o.get() maintains the single-reference optimization
   }
 
@@ -120,7 +119,7 @@ public:
       typename Q::value_type>::value,int> = 0>
   Lazy(const Lazy<Q>& o) :
       object(o.get()),
-      label(o.getLabel()) {
+      label(o.label) {
     // ^ o.get() maintains the single-reference optimization
   }
 
@@ -136,7 +135,7 @@ public:
       typename Q::value_type>::value,int> = 0>
   Lazy(Lazy<Q>&& o) :
       object(std::move(o.object)),
-      label(o.label) {
+      label(std::move(o.label)) {
     //
   }
 
@@ -150,9 +149,9 @@ public:
   /**
    * Correctly initialize after a bitwise copy.
    */
-  void bitwiseFix() {
+  void bitwiseFix(Label* newLabel) {
     object.bitwiseFix();
-    label.bitwiseFix();
+    label.bitwiseFix(newLabel);
   }
 
   /**
@@ -177,9 +176,9 @@ public:
    * Copy assignment.
    */
   Lazy& operator=(const Lazy& o) {
-    label.replace(o.getLabel());
+    label = o.label;
     // ^ must go first, next line may invalidate o as a reference
-    object.replace(o.get());
+    object = o.object;
     // ^ o.get() maintains the single-reference optimization
     return *this;
   }
@@ -190,9 +189,9 @@ public:
   template<class Q, std::enable_if_t<std::is_base_of<value_type,
       typename Q::value_type>::value,int> = 0>
   Lazy& operator=(const Lazy<Q>& o) {
-    label.replace(o.getLabel());
+    label = o.label;
     // ^ must go first, next line may invalidate o as a reference
-    object.replace(o.get());
+    object = o.object;
     // ^ o.get() maintains the single-reference optimization
     return *this;
   }
@@ -230,7 +229,13 @@ public:
    * Get the raw pointer, with lazy cloning.
    */
   value_type* get() {
-    return label->get(object);
+    auto label = this->label.get();  // ensures only single read of atomic
+    if (label) {
+      return label->get(object);
+    } else {
+      assert(!object.query());
+      return nullptr;
+    }
   }
 
   /**
@@ -244,7 +249,13 @@ public:
    * Get the raw pointer for read-only use, without cloning.
    */
   value_type* pull() {
-    return label->pull(object);
+    auto label = this->label.get();  // ensures only single read of atomic
+    if (label) {
+      return label->pull(object);
+    } else {
+      assert(!object.query());
+      return nullptr;
+    }
   }
 
   /**
@@ -259,6 +270,7 @@ public:
    */
   void discard() {
     object.discard();
+    label.discard();
   }
 
   /**
@@ -266,6 +278,7 @@ public:
    */
   void restore() {
     object.restore();
+    label.restore();
   }
 
   /**
@@ -305,7 +318,7 @@ private:
   /**
    * Label.
    */
-  Init<Label> label;
+  LabelPtr label;
 };
 
 template<class P>

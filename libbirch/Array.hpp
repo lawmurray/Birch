@@ -6,7 +6,6 @@
 #include "libbirch/external.hpp"
 #include "libbirch/memory.hpp"
 #include "libbirch/type.hpp"
-#include "libbirch/Label.hpp"
 #include "libbirch/Shape.hpp"
 #include "libbirch/Buffer.hpp"
 #include "libbirch/Iterator.hpp"

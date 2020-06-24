@@ -253,8 +253,8 @@ public:
     o->memoWeakCount.set(1u);
     o->label = label;
     o->tid = get_thread_num();
+    o->size = 0u;
     o->packed.set(0u);
-    o->holdLabel();
     return o;
   }
 
@@ -266,7 +266,7 @@ public:
   Any* recycle(Label* label) {
     auto o = recycle_(label);
     o->packed.set(INITIALIZED);
-    o->replaceLabel(label);
+    o->label = label;
     return this;
   }
 
@@ -304,10 +304,9 @@ public:
     assert(isInitialized());
     if (++sharedCount == 1u) {
       incMemoShared();
-      holdLabel();
-      //discardLock.enterLeft();
+      discardLock.enterLeft();
       restore();
-      //discardLock.exitLeft();
+      discardLock.exitLeft();
     }
   }
 
@@ -317,22 +316,21 @@ public:
   void decShared() {
     assert(numShared() > 0u);
     if (--sharedCount == 0u) {
-      /* the sequence of operations to perform here is discard(), then
-       * releaseLabel(), then decMemoShared(), but the first of these can be
-       * expensive; consequently we skip it if possible, but for thread
-       * safety hold an extra memo shared reference throughout so that the
-       * memo shared count cannot be reduced to zero by another thread, thus
-       * destroying the object, while we're still operating on it */
+      /* the sequence of operations to perform here is discard() then
+       * decMemoShared(), but the first of these can be expensive;
+       * consequently we skip it if possible, but for thread safety hold an
+       * extra memo shared reference throughout so that the memo shared count
+       * cannot be reduced to zero by another thread, thus destroying the
+       * object, while we're still operating on it */
       incMemoShared();
       if (--memoSharedCount > 1u) {
-        //discardLock.enterRight();
+        discardLock.enterRight();
         discard();
-        //discardLock.exitRight();
+        discardLock.exitRight();
       } else {
         /* skip-discard optimization; no need to run discard as object is
          * about to be destroyed anyway */
       }
-      releaseLabel();
       decMemoShared();
     }
   }
@@ -373,7 +371,6 @@ public:
     incMemoShared();
     if (--sharedCount == 0u) {
       discard();
-      releaseLabel();
       decMemoShared();
     }
   }
@@ -384,11 +381,10 @@ public:
    */
   void restoreShared() {
     if (++sharedCount == 1u) {
-      incMemoShared();
-      holdLabel();
       restore();
+    } else {
+      decMemoShared();
     }
-    decMemoShared();
   }
 
   /**
@@ -489,22 +485,6 @@ public:
   }
 
 protected:
-  /**
-   * Increment the shared count of the label. This is used during
-   * initialization and restoration.
-   */
-  void holdLabel();
-
-  /**
-   * Decrement the shared count of the label. This is used during discard.
-   */
-  void releaseLabel();
-
-  /**
-   * Replace the label.
-   */
-  void replaceLabel(Label* label);
-
   /**
    * Finish the member variables of the object.
    */

@@ -107,8 +107,7 @@ public:
    */
   template<class P>
   void visit(Lazy<P>& o) const {
-    o.bitwiseFix();
-    o.setLabel(label);
+    o.bitwiseFix(label);
   }
 
   /**
@@ -139,9 +138,7 @@ auto clone(const Lazy<P>& o) {
   label->freeze();
   freezeLock.exit();
 
-  Lazy<P> ptr(object, new Label(*label));
-  ptr.get();
-  return ptr;
+  return Lazy<P>(object, new Label(*label));
 }
 
 }
