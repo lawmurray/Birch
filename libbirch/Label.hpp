@@ -98,16 +98,7 @@ public:
       auto old = ptr;
       ptr = static_cast<typename P::value_type*>(mapGet(old));
       if (ptr != old) {
-        /* new objects must always be assigned to a Shared first; it is
-         * possible that `ptr` points to a new object, resulting from a copy,
-         * so we put it in a Shared first then move assign; if `o` is a
-         * Shared this will not result in additional reference count
-         * updates, while if it's a Weak or Init this satisfies the
-         * requirement to assign to Shared first; in this latter case the
-         * object will not be immediate destroyed, as it will necessarily be
-         * in a memo and so have a nonzero memo shared count */
-        Shared<typename P::value_type> shared(ptr);
-        o = std::move(shared);
+        o.replace(ptr);
       }
       lock.unsetWrite();
     }
@@ -128,8 +119,6 @@ public:
       auto old = ptr;
       ptr = static_cast<typename P::value_type*>(mapPull(old));
       if (ptr != old) {
-        /* unlike get() above, `ptr` cannot point to a new object here, as
-         * mapPull() never copies */
         o.replace(ptr);
       }
       lock.unsetRead();

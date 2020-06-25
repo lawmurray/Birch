@@ -62,17 +62,20 @@ final class MatrixNormalInverseGamma(M:Expression<Real[_,_]>,
   }
 
   function update(X:Real[_,_]) {
+    auto σ2 <- this.σ2;
     (σ2.α, σ2.β) <- box(update_matrix_normal_inverse_gamma(X, N.value(),
         Λ.value(), α.value(), gamma_to_beta(γ.value(), N.value(),
         Λ.value())));
   }
 
   function updateLazy(X:Expression<Real[_,_]>) {
+    auto σ2 <- this.σ2;
     (σ2.α, σ2.β) <- update_lazy_matrix_normal_inverse_gamma(X, N,
         Λ, α, gamma_to_beta(γ, N, Λ));
   }
 
   function downdate(X:Real[_,_]) {
+    auto σ2 <- this.σ2;
     (σ2.α, σ2.β) <- box(downdate_matrix_normal_inverse_gamma(X, N.value(),
         Λ.value(), α.value(), gamma_to_beta(γ.value(), N.value(),
         Λ.value())));
@@ -81,6 +84,7 @@ final class MatrixNormalInverseGamma(M:Expression<Real[_,_]>,
   function graftMatrixNormalInverseGamma(compare:Distribution<Real[_]>) ->
       MatrixNormalInverseGamma? {
     prune();
+    auto σ2 <- this.σ2;
     if σ2 == compare {
       return this;
     } else {
@@ -89,10 +93,12 @@ final class MatrixNormalInverseGamma(M:Expression<Real[_,_]>,
   }
 
   function link() {
+    auto σ2 <- this.σ2;
     σ2.setChild(this);
   }
   
   function unlink() {
+    auto σ2 <- this.σ2;
     σ2.releaseChild(this);
   }
 

@@ -266,24 +266,27 @@ public:
   }
 
   /**
-   * Discard.
+   * Get the raw pointer for read-only use, without cloning. This version is
+   * disabled for weak pointer types.
    */
-  void discard() {
-    object.discard();
-    label.discard();
+  template<class Q = P, std::enable_if_t<!std::is_same<Q,Weak<value_type>>::value,int> = 0>
+  value_type* read() {
+    return pull();
   }
 
   /**
-   * Restore.
+   * Get the raw pointer for read-only use, without cloning. This version is
+   * disabled for weak pointer types.
    */
-  void restore() {
-    object.restore();
-    label.restore();
+  template<class Q = P, std::enable_if_t<!std::is_same<Q,Weak<value_type>>::value,int> = 0>
+  value_type* read() const {
+    return pull();
   }
 
   /**
    * Dereference.
    */
+  template<class Q = P, std::enable_if_t<!std::is_same<Q,Weak<value_type>>::value,int> = 0>
   value_type& operator*() const {
     return *get();
   }
@@ -291,6 +294,7 @@ public:
   /**
    * Member access.
    */
+  template<class Q = P, std::enable_if_t<!std::is_same<Q,Weak<value_type>>::value,int> = 0>
   value_type* operator->() const {
     return get();
   }
@@ -307,6 +311,22 @@ public:
    */
   void setLabel(Label* label) {
     this->label.replace(label);
+  }
+
+  /**
+   * Discard.
+   */
+  void discard() {
+    object.discard();
+    label.discard();
+  }
+
+  /**
+   * Restore.
+   */
+  void restore() {
+    object.restore();
+    label.restore();
   }
 
 private:
