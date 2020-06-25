@@ -191,7 +191,7 @@ void bi::CppBaseGenerator::visit(const Member* o) {
           named->type->isValue()) {
         /* read optimization: just reading a value, no need to copy-on-write
          * the containing object */
-        middle(".pull()");
+        middle(".read()");
       }
 	    inAssign = 0;
       middle("->");
