@@ -1230,6 +1230,10 @@ void bi::Driver::target(const std::string& cmd) {
   /* strip namespaces, which are meant to be internal */
   buf << " | sed -lE 's/[a-zA-Z0-9_]+:://g'";
 
+  /* replace some operators */
+  buf << " | sed -lE 's/operator->/./g'";
+
+
   /* strip suggestions that reveal internal workings */
   buf << " | sed -lE \"s/; did you mean '[[:alnum:]_]+_'\\?/./\"";
   buf << " | sed -lE \"/note: '[[:alnum:]_]+_' declared here/d\"";
