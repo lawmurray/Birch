@@ -298,7 +298,7 @@ function logpdf_lazy_normal_inverse_gamma(x:Expression<Real>, μ:Expression<Real
  * Returns: the log probability mass.
  */
 function logpdf_lazy_beta_bernoulli(x:Expression<Boolean>, α:Expression<Real>, β:Expression<Real>) -> Expression<Real> {
-  return Real(x)*lbeta(1.0 + α, β) + (1.0 - Real(x))*lbeta(α, 1.0 + β) - lbeta(α, β);
+  return Real(x)*log(α) + (1.0 - Real(x))*log(β) - log(α + β);
 }
 
 /**

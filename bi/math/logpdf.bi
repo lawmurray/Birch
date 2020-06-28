@@ -458,10 +458,10 @@ function logpdf_beta_bernoulli(x:Boolean, α:Real, β:Real) -> Real {
   assert 0.0 < α;
   assert 0.0 < β;
 
-  if (x) {
-    return lbeta(1.0 + α, β) - lbeta(α, β);
+  if x {
+    return log(α) - log(α + β);
   } else {
-    return lbeta(α, 1.0 + β) - lbeta(α, β);
+    return log(β) - log(α + β);
   }
 }
 
