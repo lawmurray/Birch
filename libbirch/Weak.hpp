@@ -42,7 +42,7 @@ public:
     if (ptr) {
       ptr->incWeak();
     }
-    this->ptr.store(ptr);
+    this->ptr.set(ptr);
   }
 
   /**
@@ -55,14 +55,14 @@ public:
     if (ptr) {
       ptr->incWeak();
     }
-    this->ptr.store(ptr);
+    this->ptr.set(ptr);
   }
 
   /**
    * Move constructor.
    */
   Weak(Weak&& o) {
-    ptr.store(o.ptr.exchange(nullptr));
+    ptr.set(o.ptr.exchange(nullptr));
   }
 
   /**
@@ -70,7 +70,7 @@ public:
    */
   template<class U, std::enable_if_t<std::is_base_of<T,U>::value,int> = 0>
   Weak(Weak<U>&& o) {
-    ptr.store(o.ptr.exchange(nullptr));
+    ptr.set(o.ptr.exchange(nullptr));
   }
 
   /**
@@ -84,8 +84,9 @@ public:
    * Fix after a bitwise copy.
    */
   void bitwiseFix() {
-    if (ptr.get()) {
-      ptr.get()->incWeak();
+    auto ptr = this->ptr.get();
+    if (ptr) {
+      ptr->incWeak();
     }
   }
 
@@ -153,7 +154,6 @@ public:
    * Replace.
    */
   void replace(T* ptr) {
-    assert(ptr->numMemoShared() > 0u);
     if (ptr) {
       ptr->incWeak();
     }
@@ -171,20 +171,6 @@ public:
     if (old) {
       old->decWeak();
     }
-  }
-
-  /**
-   * Discard.
-   */
-  void discard() {
-    // nothing to do for weak pointers
-  }
-
-  /**
-   * Restore.
-   */
-  void restore() {
-    // nothing to do for weak pointers
   }
 
 private:

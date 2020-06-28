@@ -94,13 +94,15 @@ public:
    */
   template<class P>
   void visit(Lazy<P>& o) const {
+    Shared<typename P::value_type> ptr;
     if (o.getLabel() != label) {
       /* cross pointer, finish copies with get() */
-      o.get()->finish(label);
+      ptr.replace(o.get());
     } else {
       /* not a cross pointer, just pull() */
-      o.pull()->finish(label);
+      ptr.replace(o.pull());
     }
+    ptr->finish(label);
   }
 
   /**

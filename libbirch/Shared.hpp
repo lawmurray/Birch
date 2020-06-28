@@ -28,9 +28,9 @@ public:
    * Constructor.
    */
   explicit Shared(value_type* ptr = nullptr) :
-      packed(pack(ptr, false)) {
+      ptr(ptr) {
     if (ptr) {
-      ptr->initShared();
+      ptr->incShared();
     }
   }
 
@@ -38,11 +38,11 @@ public:
    * Copy constructor.
    */
   Shared(const Shared& o) {
-    T* ptr = std::get<0>(unpack(o.packed.load()));
+    auto ptr = o.ptr.load();
     if (ptr) {
       ptr->incShared();
     }
-    packed.set(pack(ptr, false));
+    this->ptr.set(ptr);
   }
 
   /**
@@ -50,11 +50,11 @@ public:
    */
   template<class U, std::enable_if_t<std::is_base_of<T,U>::value,int> = 0>
   Shared(const Shared<U>& o) {
-    T* ptr = std::get<0>(unpack(o.packed.load()));
+    auto ptr = o.ptr.load();
     if (ptr) {
       ptr->incShared();
     }
-    packed.set(pack(ptr, false));
+    this->ptr.set(ptr);
   }
 
   /**
@@ -62,24 +62,18 @@ public:
    */
   template<class Q, std::enable_if_t<std::is_base_of<T,typename Q::value_type>::value,int> = 0>
   Shared(const Q& o) {
-    T* ptr = o.get();
-    packed.set(pack(ptr, false));
+    auto ptr = o.ptr.load();
     if (ptr) {
       ptr->incShared();
     }
+    this->ptr.set(ptr);
   }
 
   /**
    * Move constructor.
    */
   Shared(Shared&& o) {
-    T* ptr;
-    bool discarded;
-    std::tie(ptr, discarded) = unpack(o.packed.maskAnd(int64_t(1)));
-    if (ptr && discarded) {
-      ptr->restoreShared();
-    }
-    packed.set(pack(ptr, false));
+    ptr.set(o.ptr.exchange(nullptr));
   }
 
   /**
@@ -87,13 +81,7 @@ public:
    */
   template<class U, std::enable_if_t<std::is_base_of<T,U>::value,int> = 0>
   Shared(Shared<U>&& o) {
-    T* ptr;
-    bool discarded;
-    std::tie(ptr, discarded) = unpack(o.packed.maskAnd(int64_t(1)));
-    if (ptr && discarded) {
-      ptr->restoreShared();
-    }
-    packed.set(pack(ptr, false));
+    ptr.set(o.ptr.exchange(nullptr));
   }
 
   /**
@@ -107,7 +95,7 @@ public:
    * Fix after a bitwise copy.
    */
   void bitwiseFix() {
-    T* ptr = std::get<0>(unpack(packed.maskAnd(~int64_t(1))));
+    auto ptr = this->ptr.get();
     if (ptr) {
       ptr->incShared();
     }
@@ -117,7 +105,6 @@ public:
    * Copy assignment.
    */
   Shared& operator=(const Shared& o) {
-    assert(!isDiscarded());
     replace(o.get());
     return *this;
   }
@@ -127,7 +114,6 @@ public:
    */
   template<class U, std::enable_if_t<std::is_base_of<T,U>::value,int> = 0>
   Shared& operator=(const Shared<U>& o) {
-    assert(!isDiscarded());
     replace(o.get());
     return *this;
   }
@@ -137,7 +123,6 @@ public:
    */
   template<class Q, std::enable_if_t<std::is_base_of<T,typename Q::value_type>::value,int> = 0>
   Shared& operator=(const Q& o) {
-    assert(!isDiscarded());
     replace(o.get());
     return *this;
   }
@@ -146,14 +131,8 @@ public:
    * Move assignment.
    */
   Shared& operator=(Shared&& o) {
-    assert(!isDiscarded());
-    T* ptr;
-    bool discarded;
-    std::tie(ptr, discarded) = unpack(o.packed.maskAnd(int64_t(1)));
-    if (ptr && discarded) {
-      ptr->restoreShared();
-    }
-    auto old = std::get<0>(unpack(packed.exchange(pack(ptr, false))));
+    auto ptr = o.ptr.exchange(nullptr);
+    auto old = this->ptr.exchange(ptr);
     if (old) {
       old->decShared();
     }
@@ -165,14 +144,8 @@ public:
    */
   template<class U, std::enable_if_t<std::is_base_of<T,U>::value,int> = 0>
   Shared& operator=(Shared<U>&& o) {
-    assert(!isDiscarded());
-    T* ptr;
-    bool discarded;
-    std::tie(ptr, discarded) = unpack(o.packed.maskAnd(int64_t(1)));
-    if (ptr && discarded) {
-      ptr->restoreShared();
-    }
-    auto old = std::get<0>(unpack(packed.exchange(pack(ptr, false))));
+    auto ptr = o.ptr.exchange(nullptr);
+    auto old = this->ptr.exchange(ptr);
     if (old) {
       old->decShared();
     }
@@ -186,25 +159,24 @@ public:
    * conversion operators in the referent type.
    */
   bool query() const {
-    return get() != nullptr;
+    return ptr.load() != nullptr;
   }
 
   /**
    * Get the raw pointer.
    */
   T* get() const {
-    return std::get<0>(unpack(packed.load()));
+    return ptr.load();
   }
 
   /**
    * Replace.
    */
   void replace(T* ptr) {
-    assert(!isDiscarded());
     if (ptr) {
-      ptr->initShared();
+      ptr->incShared();
     }
-    auto old = std::get<0>(unpack(packed.exchange(pack(ptr, false))));
+    auto old = this->ptr.exchange(ptr);
     if (old) {
       old->decShared();
     }
@@ -214,39 +186,9 @@ public:
    * Release.
    */
   void release() {
-    T* ptr;
-    bool discarded;
-    std::tie(ptr, discarded) = unpack(packed.maskAnd(int64_t(1)));
-    if (ptr) {
-      if (discarded) {
-        ptr->decMemoShared();
-      } else {
-        ptr->decShared();
-      }
-    }
-  }
-  
-  /**
-   * Discard.
-   */
-  void discard() {
-    T* ptr;
-    bool discarded;
-    std::tie(ptr, discarded) = unpack(packed.maskOr(int64_t(1)));
-    if (ptr) {
-      ptr->discardShared();
-    }
-  }
-
-  /**
-   * Restore.
-   */
-  void restore() {
-    T* ptr;
-    bool discarded;
-    std::tie(ptr, discarded) = unpack(packed.maskAnd(~int64_t(1)));
-    if (ptr) {
-      ptr->restoreShared();
+    auto old = ptr.exchange(nullptr);
+    if (old) {
+      old->decShared();
     }
   }
 
@@ -254,7 +196,6 @@ public:
    * Dereference.
    */
   T& operator*() const {
-    assert(!isDiscarded());
     return *get();
   }
 
@@ -262,40 +203,14 @@ public:
    * Member access.
    */
   T* operator->() const {
-    assert(!isDiscarded());
     return get();
   }
 
 private:
   /**
-   * Combined pointer and discount flag. The rightmost bit is used for the
-   * discount flag; this will always be zero for the pointer value given
-   * memory alignment.
+   * Raw pointer.
    */
-  Atomic<int64_t> packed;
-
-  /**
-   * Is this discarded?
-   */
-  bool isDiscarded() const {
-    return std::get<1>(unpack(packed.load()));
-  }
-
-  /**
-   * Unpack the pointer and discard flag from an integer.
-   */
-  static std::pair<T*,bool> unpack(const int64_t packed) {
-    T* ptr = (T*)(packed & ~int64_t(1));
-    bool discarded = bool(packed & int64_t(1));
-    return std::make_pair(ptr, discarded);
-  }
-
-  /**
-   * Pack the pointer and discard flag into an integer.
-   */
-  static int64_t pack(const T* ptr, const bool discarded) {
-    return int64_t(ptr) | int64_t(discarded);
-  }
+  Atomic<T*> ptr;
 };
 
 template<class T>

@@ -3,11 +3,7 @@
  */
 #include "libbirch/Label.hpp"
 
-libbirch::Label::Label() :
-    tid(get_thread_num()),
-    useCount(0u),
-    finished(false),
-    frozen(false) {
+libbirch::Label::Label() : Any() {
   //
 }
 

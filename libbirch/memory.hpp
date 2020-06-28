@@ -8,7 +8,6 @@
 #include "libbirch/Atomic.hpp"
 #include "libbirch/Pool.hpp"
 #include "libbirch/ExitBarrierLock.hpp"
-#include "libbirch/SwitchLock.hpp"
 
 namespace libbirch {
 class Label;
@@ -33,14 +32,6 @@ extern ExitBarrierLock finishLock;
  * sharing.
  */
 extern ExitBarrierLock freezeLock;
-
-/**
- * Lock for sharing (and excluding) discard and restore operations. Allows
- * any number of discard operations (first task) to proceed concurrently, and
- * any number of restore operations (second task) to proceed concurrently,
- * but never a mix of the two.
- */
-extern SwitchLock discardLock;
 
 /**
  * For an allocation size, determine the index of the pool to which it

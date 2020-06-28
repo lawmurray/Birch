@@ -33,14 +33,6 @@
     return this; \
   } \
   \
-  virtual void discard_() override { \
-    this->accept_(libbirch::Discarder()); \
-  } \
-  \
-  virtual void restore_() override { \
-    this->accept_(libbirch::Restorer()); \
-  } \
-  \
   virtual uint16_t size_() const override { \
     return (uint16_t)sizeof(*this); \
   }
@@ -164,5 +156,3 @@
 #include "libbirch/Freezer.hpp"
 #include "libbirch/Copier.hpp"
 #include "libbirch/Recycler.hpp"
-#include "libbirch/Discarder.hpp"
-#include "libbirch/Restorer.hpp"

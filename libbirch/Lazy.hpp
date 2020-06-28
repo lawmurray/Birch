@@ -10,7 +10,6 @@
 #include "libbirch/Shared.hpp"
 #include "libbirch/Weak.hpp"
 #include "libbirch/Init.hpp"
-#include "libbirch/LabelPtr.hpp"
 
 namespace libbirch {
 /**
@@ -151,7 +150,7 @@ public:
    */
   void bitwiseFix(Label* newLabel) {
     object.bitwiseFix();
-    label.bitwiseFix(newLabel);
+    new (&label) Shared<Label>(newLabel);  // overwrite with new label
   }
 
   /**
@@ -313,22 +312,6 @@ public:
     this->label.replace(label);
   }
 
-  /**
-   * Discard.
-   */
-  void discard() {
-    object.discard();
-    label.discard();
-  }
-
-  /**
-   * Restore.
-   */
-  void restore() {
-    object.restore();
-    label.restore();
-  }
-
 private:
   /**
    * Object.
@@ -338,7 +321,7 @@ private:
   /**
    * Label.
    */
-  LabelPtr label;
+  Shared<Label> label;
 };
 
 template<class P>
@@ -357,23 +340,28 @@ struct raw<Lazy<P>> {
 };
 
 template<class T>
-auto canonical(const Lazy<Shared<T>>& o) {
+Lazy<Shared<T>> canonical(const Lazy<Shared<T>>& o) {
   return o;
 }
 
 template<class T>
-auto canonical(const Lazy<Weak<T>>& o) {
-  return Lazy<Shared<T>>(o);
+Lazy<Shared<T>>&& canonical(Lazy<Shared<T>>&& o) {
+  return std::move(o);
 }
 
 template<class T>
-auto canonical(const Lazy<Init<T>>& o) {
-  return Lazy<Shared<T>>(o);
+Lazy<Shared<T>> canonical(const Lazy<Weak<T>>& o) {
+  return o;
+}
+
+template<class T>
+Lazy<Shared<T>> canonical(const Lazy<Init<T>>& o) {
+  return o;
 }
 
 template<class T, std::enable_if_t<std::is_base_of<Any,T>::value,int> = 0>
-auto canonical(T* ptr) {
-  return Lazy<Shared<T>>(ptr);
+Lazy<Shared<T>> canonical(T* ptr) {
+  return ptr;
 }
 
 }

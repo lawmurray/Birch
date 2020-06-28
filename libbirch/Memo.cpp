@@ -21,12 +21,14 @@ libbirch::Memo::~Memo() {
       auto key = keys[i];
       if (key) {
         auto value = values[i];
-        key->decMemoWeak();
-        value->decMemoShared();
+        key->decMemo();
+        value->decShared();
       }
     }
     deallocate(keys, nentries * sizeof(key_type), tentries);
     deallocate(values, nentries * sizeof(value_type), tentries);
+    keys = nullptr;
+    values = nullptr;
   }
 }
 
@@ -53,8 +55,8 @@ void libbirch::Memo::put(const key_type key, const value_type value) {
   assert(key);
   assert(value);
 
-  key->incMemoWeak();
-  value->incMemoShared();
+  key->incMemo();
+  value->incShared();
 
   reserve();
   auto i = hash(key, nentries);
@@ -88,8 +90,8 @@ void libbirch::Memo::copy(const Memo& o) {
       auto key = o.keys[i];
       auto value = o.values[i];
       if (key) {
-        key->incMemoWeak();
-        value->incMemoShared();
+        key->incMemo();
+        value->incShared();
       }
       keys[i] = key;
       values[i] = value;
@@ -124,8 +126,8 @@ void libbirch::Memo::rehash() {
           next = get(prev, prev);
         } while (next != prev);
         if (next != first) {
-          next->incMemoShared();
-          first->decMemoShared();
+          next->incShared();
+          first->decShared();
           values[i] = next;
         }
       }
@@ -137,8 +139,8 @@ void libbirch::Memo::rehash() {
       auto key = keys[i];
       if (key && !key->isReachable()) {
         auto value = values[i];
-        key->decMemoWeak();
-        value->decMemoShared();
+        key->decMemo();
+        value->decShared();
         keys[i] = nullptr;
         values[i] = nullptr;
         ++nremoved;
@@ -205,8 +207,9 @@ void libbirch::Memo::rehash() {
 
 void libbirch::Memo::finish(Label* label) {
   for (auto i = 0u; i < nentries; ++i) {
-    auto value = values[i];
-    if (value) {
+    auto key = keys[i];
+    if (key && key->isReachable()) {
+      auto value = values[i];
       value->finish(label);
     }
   }
@@ -214,8 +217,9 @@ void libbirch::Memo::finish(Label* label) {
 
 void libbirch::Memo::freeze() {
   for (auto i = 0u; i < nentries; ++i) {
-    auto value = values[i];
-    if (value) {
+    auto key = keys[i];
+    if (key && key->isReachable()) {
+      auto value = values[i];
       value->freeze();
     }
   }

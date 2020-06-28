@@ -3,8 +3,8 @@
  */
 #pragma once
 
+#include "libbirch/Any.hpp"
 #include "libbirch/Memo.hpp"
-#include "libbirch/Shared.hpp"
 
 namespace libbirch {
 /**
@@ -12,7 +12,7 @@ namespace libbirch {
  *
  * @ingroup libbirch
  */
-class Label {
+class Label : public Any {
 public:
   /**
    * Constructor.
@@ -23,66 +23,6 @@ public:
    * Copy constructor.
    */
   Label(const Label& o);
-
-  /**
-   * New operator.
-   */
-  void* operator new(std::size_t size) {
-    return allocate(size);
-  }
-
-  /**
-   * Delete operator.
-   */
-  void operator delete(void* ptr) {
-    auto o = static_cast<Label*>(ptr);
-    o->deallocate();
-  }
-
-  void finish(Label* label) {
-    if (!finished.exchange(true)) {
-      lock.setRead();
-      memo.finish(label);
-      lock.unsetRead();
-    }
-  }
-
-  void freeze() {
-    if (!frozen.exchange(true)) {
-      lock.setRead();
-      memo.freeze();
-      lock.unsetRead();
-    }
-  }
-
-  void thaw() {
-    finished.store(false);
-    frozen.store(false);
-  }
-
-  /**
-   * Increment the usage count.
-   */
-  void incUsage() {
-    useCount.increment();
-  }
-
-  /**
-   * Decrement the usage count.
-   *
-   * @return Use count.
-   */
-  unsigned decUsage() {
-    assert(useCount.load() > 0u);
-    return --useCount;
-  }
-
-  /**
-   * Usage count.
-   */
-  unsigned numUsage() const {
-    return useCount.load();
-  }
 
   /**
    * Update a smart pointer for writing.
@@ -156,17 +96,36 @@ public:
     return ptr;
   }
 
-  /**
-   * Id of the thread that allocated the buffer.
-   */
-  int tid;
-
-private:
-  void deallocate() {
-    assert(useCount.load() == 0u);
-    libbirch::deallocate(this, sizeof(Label), tid);
+protected:
+  virtual void finish_(libbirch::Label* label) override {
+    lock.setRead();
+    memo.finish(label);
+    lock.unsetRead();
   }
 
+  virtual void freeze_() override {
+    lock.setRead();
+    memo.freeze();
+    lock.unsetRead();
+  }
+
+  virtual Label* copy_(libbirch::Label* label) const override {
+    return new Label(*this);
+  }
+
+  virtual Label* recycle_(libbirch::Label* label) override {
+    return this;
+  }
+
+  virtual uint16_t size_() const override {
+    return (uint16_t)sizeof(*this);
+  }
+
+  virtual bi::type::String getClassName() const {
+    return "Label";
+  }
+
+private:
   /**
    * Map an object that may not yet have been cloned, cloning it if
    * necessary.
@@ -188,20 +147,5 @@ private:
    * Lock.
    */
   ReadersWriterLock lock;
-
-  /**
-   * Use count (the number of objects sharing this label).
-   */
-  Atomic<unsigned> useCount;
-
-  /**
-   * Have all entries in the memo been finished?
-   */
-  Atomic<bool> finished;
-
-  /**
-   * Have all entries in the memo been frozen?
-   */
-  Atomic<bool> frozen;
 };
 }

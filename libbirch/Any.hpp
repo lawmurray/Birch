@@ -9,12 +9,6 @@
 
 namespace libbirch {
 class Label;
-class Finisher;
-class Freezer;
-class Copier;
-class Recycler;
-class Discarder;
-class Restorer;
 
 /**
  * Base class for reference counted objects.
@@ -26,52 +20,27 @@ class Restorer;
  * be correctly destroyed and deallocated. Furthermore, in order to work
  * correctly with multiple inheritance, Any must be the *first* base class.
  *
- * Reference-counted objects in LibBirch use four counts, rather than
+ * Reference-counted objects in LibBirch use three counts, rather than
  * the usual two (shared and weak), in order to support lazy deep copy
  * operations. These are:
  *
  *   - a *shared* count,
- *   - a *memo shared* count,
  *   - a *weak* count, and
- *   - a *memo weak* count.
+ *   - a *memo* count.
  *
- * The shared and weak counts behave as normal. The memo shared and memo weak
- * counts serve to determine when an object is only reachable via a memo used
- * to bookkeep lazy deep copy operations. Objects that are only reachable via
- * a memo may be eligible for collection.
+ * The shared and weak counts behave as normal. The memo count is used for
+ * keys in the memos used to bookkeep lazy deep copy operations.
  *
- * The movement of the four counts triggers the following operations:
+ * The movement of the three counts triggers the following operations:
  *
- *   -# When the shared count reaches zero, the object is *discarded*.
- *   -# If the shared count subsequently becomes nonzero again (this is
- *      allowed as long as the memo shared count is nonzero), the object is
- *      *restored*.
- *   -# If the shared and memo shared counts reach 0, the object is
- *      *destroyed*.
+ *   -# When the shared count reaches zero, the object is *destroyed*.
  *   -# If the weak and memo weak counts reach 0, the object is *deallocated*.
  *
- * These operations behave as follows:
- *
- *   - **Discard** downgrades all shared pointers in the object to memo
- *     shared pointers.
- *   - **Restore** upgrades those memo shared pointers to shared pointers
- *     again.
- *   - **Destroy** calls the destructor of the object.
- *   - **Deallocate** collects the memory allocated to the object.
- *
- * The discard operation may be skipped when the destroy operation would
- * immediately follow anyway; i.e. when the shared count reaches zero and the
- * memo shared count is already at zero.
- *
- * At a high level, shared and weak pointers serve to determine which objects
- * are reachable from the user program, while memo shared and memo weak
- * pointers are used to determine which objects are reachable via a memo,
- * and to break reference cycles that are induced by the memo, but which
- * do not exist in the user program *per se*.
- *
- * A discarded object is in a state where reference cycles induced by a memo
- * are broken, but it is otherwise still a valid object, and may still be
- * accessible via a weak pointer in the user program.
+ * Shared and weak pointers determine which objects are reachable from the
+ * user program, while memo pointers are used to determine which objects are
+ * reachable via memos. Memos voluntarily surrender their pointers during
+ * cleanup, upon discovery that there are no shared or weak pointers to those
+ * referents.
  */
 class Any {
 public:
@@ -82,10 +51,9 @@ public:
    * Constructor.
    */
   Any() :
-      sharedCount(1u),
-      memoSharedCount(1u),
+      sharedCount(0u),
       weakCount(1u),
-      memoWeakCount(1u),
+      memoCount(1u),
       label(rootLabel),
       tid(get_thread_num()),
       size(0u),
@@ -97,10 +65,9 @@ public:
    * Special constructor for the root label.
    */
   Any(int) :
-      sharedCount(1u),
-      memoSharedCount(1u),
+      sharedCount(0u),
       weakCount(1u),
-      memoWeakCount(1u),
+      memoCount(1u),
       label(nullptr),
       tid(0),
       size(0u),
@@ -120,7 +87,6 @@ public:
    */
   virtual ~Any() {
     assert(sharedCount.load() == 0u);
-    assert(memoSharedCount.load() == 0u);
   }
 
   /**
@@ -147,9 +113,9 @@ public:
 
   /**
    * Is this object reachable? An object is reachable if there exists a
-   * shared, memo shared, or weak pointer to it. If only a memo weak pointer
-   * to it exists, it is not considered reachable, and it may be cleaned up
-   * during memo maintenance.
+   * shared or weak pointer to it. If only memo pointers to it exists, it is
+   * not considered reachable, and it may be cleaned up during memo
+   * maintenance.
    */
   bool isReachable() const {
     return numWeak() > 0u;
@@ -160,25 +126,19 @@ public:
    * weak pointers to it.
    */
   bool isDestroyed() const {
-    return numShared() == 0u && numMemoShared() == 0u;
+    return numShared() == 0u;
   }
 
   /**
-   * Is there definitely only one pointer to this object? This is
-   * conservative; it returns true if there is at most one shared or weak
-   * pointer to the object. Note, in particular, that the presence of a memo
-   * shared pointer means that an unknown number of pointers (including zero
-   * pointers) may update to the object in future.
+   * Is there only one pointer to this object?
    */
   bool isUnique() const {
     auto sharedCount = numShared();
-    auto memoSharedCount = numMemoShared();
     auto weakCount = numWeak();
-    auto memoWeakCount = numMemoWeak();
+    auto memoCount = numMemo();
 
-    return (sharedCount == 1u && memoSharedCount == 1u && weakCount == 1u &&
-        memoWeakCount == 1u) || (sharedCount == 0u && memoSharedCount == 0u &&
-        weakCount == 1u && memoWeakCount == 1u);
+    return (sharedCount == 1u && weakCount == 1u && memoCount == 1u) ||
+        (sharedCount == 0u && weakCount == 1u && memoCount == 1u);
   }
 
   /**
@@ -221,23 +181,10 @@ public:
   }
 
   /**
-   * Discard the object.
+   * Thaw the object.
    */
-  void discard() {
-    auto old = packed.maskOr(DISCARDED) & DISCARDED;
-    if (!old) {
-      discard_();
-    }
-  }
-
-  /**
-   * Restore the object.
-   */
-  void restore() {
-    auto old = packed.maskAnd(~DISCARDED) & DISCARDED;
-    if (old) {
-      restore_();
-    }
+  void thaw() {
+    packed.store(0u);
   }
 
   /**
@@ -247,10 +194,9 @@ public:
    */
   Any* copy(Label* label) {
     auto o = copy_(label);
-    o->sharedCount.set(1u);
-    o->memoSharedCount.set(1u);
+    o->sharedCount.set(0u);
     o->weakCount.set(1u);
-    o->memoWeakCount.set(1u);
+    o->memoCount.set(1u);
     o->label = label;
     o->tid = get_thread_num();
     o->size = 0u;
@@ -265,7 +211,6 @@ public:
    */
   Any* recycle(Label* label) {
     auto o = recycle_(label);
-    o->packed.set(INITIALIZED);
     o->label = label;
     return this;
   }
@@ -278,36 +223,10 @@ public:
   }
 
   /**
-   * Increment the shared count, possibly for the first time. This should be
-   * used when a raw pointer is used to initialize a shared pointer,
-   * otherwise incShared() is adequate. A check is made as to whether this is
-   * the first shared pointer to the object, in which case behavior is
-   * slightly different, and optimized.
-   */
-  void initShared() {
-    auto initialized = packed.maskOr(INITIALIZED) & INITIALIZED;
-    if (!initialized) {
-      /* first shared pointer to this object; nothing to do, not even to
-       * increment the shared count, as the object is initialized for this
-       * purpose already */
-    } else {
-      /* not the first shared pointer to this object, behave as normal */
-      incShared();
-    }
-  }
-
-  /**
-   * Increment the shared count. This can be used when a shared pointer to
-   * the object is already known to exist, otherwise use initShared().
+   * Increment the shared count.
    */
   void incShared() {
-    assert(isInitialized());
-    if (++sharedCount == 1u) {
-      incMemoShared();
-      discardLock.enterLeft();
-      restore();
-      discardLock.exitLeft();
-    }
+    sharedCount.increment();
   }
 
   /**
@@ -316,74 +235,8 @@ public:
   void decShared() {
     assert(numShared() > 0u);
     if (--sharedCount == 0u) {
-      /* the sequence of operations to perform here is discard() then
-       * decMemoShared(), but the first of these can be expensive;
-       * consequently we skip it if possible, but for thread safety hold an
-       * extra memo shared reference throughout so that the memo shared count
-       * cannot be reduced to zero by another thread, thus destroying the
-       * object, while we're still operating on it */
-      incMemoShared();
-      if (--memoSharedCount > 1u) {
-        discardLock.enterRight();
-        discard();
-        discardLock.exitRight();
-      } else {
-        /* skip-discard optimization; no need to run discard as object is
-         * about to be destroyed anyway */
-      }
-      decMemoShared();
-    }
-  }
-
-  /**
-   * Memo shared count.
-   */
-  unsigned numMemoShared() const {
-    return memoSharedCount.load();
-  }
-
-  /**
-   * Increment the memo shared count.
-   */
-  void incMemoShared() {
-    assert(numWeak() > 0u);
-    memoSharedCount.increment();
-  }
-
-  /**
-   * Decrement the memo shared count.
-   */
-  void decMemoShared() {
-    assert(numMemoShared() > 0u);
-    if (--memoSharedCount == 0u) {
-      assert(numShared() == 0u);
       destroy();
       decWeak();
-    }
-  }
-
-  /**
-   * Simultaneously decrement the shared count and increment the shared memo
-   * count.
-   */
-  void discardShared() {
-    assert(numShared() > 0u);
-    incMemoShared();
-    if (--sharedCount == 0u) {
-      discard();
-      decMemoShared();
-    }
-  }
-
-  /**
-   * Simultaneously increment the shared count and decrement the shared memo
-   * count.
-   */
-  void restoreShared() {
-    if (++sharedCount == 1u) {
-      restore();
-    } else {
-      decMemoShared();
     }
   }
 
@@ -398,7 +251,7 @@ public:
    * Increment the weak count.
    */
   void incWeak() {
-    assert(numMemoWeak() > 0u);
+    assert(numMemo() > 0u);
     weakCount.increment();
   }
 
@@ -409,33 +262,31 @@ public:
     assert(weakCount.load() > 0u);
     if (--weakCount == 0u) {
       assert(numShared() == 0u);
-      assert(numMemoShared() == 0u);
-      decMemoWeak();
+      decMemo();
     }
   }
 
   /**
    * Memo weak count.
    */
-  unsigned numMemoWeak() const {
-    return memoWeakCount.load();
+  unsigned numMemo() const {
+    return memoCount.load();
   }
 
   /**
    * Increment the memo weak count.
    */
-  void incMemoWeak() {
-    memoWeakCount.increment();
+  void incMemo() {
+    memoCount.increment();
   }
 
   /**
    * Decrement the memo weak count.
    */
-  void decMemoWeak() {
-    assert(memoWeakCount.load() > 0u);
-    if (--memoWeakCount == 0u) {
+  void decMemo() {
+    assert(memoCount.load() > 0u);
+    if (--memoCount == 0u) {
       assert(numShared() == 0u);
-      assert(numMemoShared() == 0u);
       assert(numWeak() == 0u);
       deallocate();
     }
@@ -446,13 +297,6 @@ public:
    */
   Label* getLabel() const {
     return label;
-  }
-
-  /**
-   * Is the object initialized?
-   */
-  bool isInitialized() const {
-    return packed.load() & INITIALIZED;
   }
 
   /**
@@ -475,13 +319,6 @@ public:
    */
   bool isFrozenUnique() const {
     return packed.load() & FROZEN_UNIQUE;
-  }
-
-  /**
-   * Is the object discarded?
-   */
-  bool isDiscarded() const {
-    return packed.load() & DISCARDED;
   }
 
 protected:
@@ -510,16 +347,6 @@ protected:
   virtual Any* recycle_(Label* label) = 0;
 
   /**
-   * Discard the object.
-   */
-  virtual void discard_() = 0;
-
-  /**
-   * Restore the object.
-   */
-  virtual void restore_() = 0;
-
-  /**
    * Size of the object.
    */
   virtual uint16_t size_() const {
@@ -540,7 +367,6 @@ private:
    */
   void destroy() {
     assert(sharedCount.load() == 0u);
-    assert(memoSharedCount.load() == 0u);
     this->size = size_();
     this->~Any();
   }
@@ -550,9 +376,8 @@ private:
    */
   void deallocate() {
     assert(sharedCount.load() == 0u);
-    assert(memoSharedCount.load() == 0u);
     assert(weakCount.load() == 0u);
-    assert(memoWeakCount.load() == 0u);
+    assert(memoCount.load() == 0u);
     libbirch::deallocate(this, (unsigned)size, tid);
   }
 
@@ -562,22 +387,14 @@ private:
   Atomic<unsigned> sharedCount;
 
   /**
-   * Memo shared count, or, if the shared count is nonzero, one plus the memo
-   * shared count.
-   */
-  Atomic<unsigned> memoSharedCount;
-
-  /**
-   * Weak count, or, if the memo shared count is nonzero, one plus the weak
-   * count.
+   * Weak count, or, if the shared count is nonzero, one plus the weak count.
    */
   Atomic<unsigned> weakCount;
 
   /**
-   * Memo weak count, or, if the weak count is nonzero, one plus the memo
-   * weak count.
+   * Memo count, or, if the weak count is nonzero, one plus the memo count.
    */
-  Atomic<unsigned> memoWeakCount;
+  Atomic<unsigned> memoCount;
 
   /**
    * Label of the object.
@@ -600,12 +417,10 @@ private:
   /**
    * Bitfield containing:
    *
-   *   - *initialized* flag,
    *   - *finished* flag,
    *   - *frozen* flag,
    *   - *frozen unique* flag (is the object frozen, and at the time of
-   *     freezing, was there only one pointer to it?), and
-   *   - *discarded* flag.
+   *     freezing, was there only one pointer to it?).
    *
    * Each occupies 1 bit, from the right.
    */
@@ -615,11 +430,9 @@ private:
    * Flags for packed.
    */
   enum {
-    INITIALIZED = 1,
-    FINISHED = 2,
-    FROZEN = 4,
-    FROZEN_UNIQUE = 8,
-    DISCARDED = 16
+    FINISHED = 1,
+    FROZEN = 2,
+    FROZEN_UNIQUE = 4
   };
 };
 }

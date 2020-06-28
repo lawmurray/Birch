@@ -13,9 +13,6 @@ namespace libbirch {
  * task concurrently, but two or more tasks cannot be performed concurrently.
  *
  * @ingroup libbirch
- *
- * This is used for thread safety in the particular case of *discard* and
- * *restore* operations on objects.
  */
 class SwitchLock {
 public:

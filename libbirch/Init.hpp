@@ -80,20 +80,6 @@ public:
   }
 
   /**
-   * Discard.
-   */
-  void discard() {
-    // nothing to do for weak pointers
-  }
-
-  /**
-   * Restore.
-   */
-  void restore() {
-    // nothing to do for weak pointers
-  }
-
-  /**
    * Dereference.
    */
   T& operator*() const {

@@ -95,6 +95,7 @@ public:
     o.setLabel(label);
   }
 
+private:
   /**
    * Label associated with the clone.
    */

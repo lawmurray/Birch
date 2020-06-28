@@ -8,7 +8,6 @@
 
 libbirch::ExitBarrierLock libbirch::finishLock;
 libbirch::ExitBarrierLock libbirch::freezeLock;
-libbirch::SwitchLock libbirch::discardLock;
 
 #if ENABLE_MEMORY_POOL
 /**
@@ -117,7 +116,7 @@ void* libbirch::reallocate(void* ptr1, const size_t n1, const int tid1,
 }
 
 static libbirch::Label* makeRootLabel() {
-  static libbirch::LabelPtr rootLabel(new libbirch::Label());
+  static libbirch::Shared<libbirch::Label> rootLabel(new libbirch::Label());
   return rootLabel.get();
 }
 
