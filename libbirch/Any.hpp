@@ -11,7 +11,8 @@ namespace libbirch {
 class Label;
 
 /**
- * Base class for reference counted objects.
+ * Base class providing reference counting, cycle breaking, and lazy deep
+ * copy support.
  *
  * @ingroup libbirch
  *
@@ -19,28 +20,6 @@ class Label;
  * it, must be assigned to at least one Shared pointer in its lifetime to
  * be correctly destroyed and deallocated. Furthermore, in order to work
  * correctly with multiple inheritance, Any must be the *first* base class.
- *
- * Reference-counted objects in LibBirch use three counts, rather than
- * the usual two (shared and weak), in order to support lazy deep copy
- * operations. These are:
- *
- *   - a *shared* count,
- *   - a *weak* count, and
- *   - a *memo* count.
- *
- * The shared and weak counts behave as normal. The memo count is used for
- * keys in the memos used to bookkeep lazy deep copy operations.
- *
- * The movement of the three counts triggers the following operations:
- *
- *   -# When the shared count reaches zero, the object is *destroyed*.
- *   -# If the weak and memo weak counts reach 0, the object is *deallocated*.
- *
- * Shared and weak pointers determine which objects are reachable from the
- * user program, while memo pointers are used to determine which objects are
- * reachable via memos. Memos voluntarily surrender their pointers during
- * cleanup, upon discovery that there are no shared or weak pointers to those
- * referents.
  */
 class Any {
 public:
@@ -54,6 +33,7 @@ public:
       sharedCount(0u),
       weakCount(1u),
       memoCount(1u),
+      markCount(0u),
       label(rootLabel),
       tid(get_thread_num()),
       size(0u),
@@ -68,6 +48,7 @@ public:
       sharedCount(0u),
       weakCount(1u),
       memoCount(1u),
+      markCount(0u),
       label(nullptr),
       tid(0),
       size(0u),
@@ -197,6 +178,7 @@ public:
     o->sharedCount.set(0u);
     o->weakCount.set(1u);
     o->memoCount.set(1u);
+    o->markCount.set(0u);
     o->label = label;
     o->tid = get_thread_num();
     o->size = 0u;
@@ -267,21 +249,21 @@ public:
   }
 
   /**
-   * Memo weak count.
+   * Memo count.
    */
   unsigned numMemo() const {
     return memoCount.load();
   }
 
   /**
-   * Increment the memo weak count.
+   * Increment the memo count.
    */
   void incMemo() {
     memoCount.increment();
   }
 
   /**
-   * Decrement the memo weak count.
+   * Decrement the memo count.
    */
   void decMemo() {
     assert(memoCount.load() > 0u);
@@ -290,6 +272,27 @@ public:
       assert(numWeak() == 0u);
       deallocate();
     }
+  }
+
+  /**
+   * Mark count.
+   */
+  unsigned numMark() const {
+    return markCount.load();
+  }
+
+  /**
+   * Increment the mark count.
+   */
+  void incMark() {
+    markCount.increment();
+  }
+
+  /**
+   * Clear the mark count back to zero.
+   */
+  void clearMark() {
+    markCount.store(0u);
   }
 
   /**
@@ -319,6 +322,86 @@ public:
    */
   bool isFrozenUnique() const {
     return packed.load() & FROZEN_UNIQUE;
+  }
+
+  /**
+   * Is the object buffered as a potential root of a cycle?
+   */
+  bool isBuffered() const {
+    return packed.load() & BUFFERED;
+  }
+
+  /**
+   * Set the buffered flag.
+   */
+  void setBuffered() {
+    packed.maskOr(BUFFERED);
+  }
+
+  /**
+   * Clear the buffered flag.
+   */
+  void clearBuffered() {
+    packed.maskAnd(~BUFFERED);
+  }
+
+  /**
+   * Is the object colored black?
+   */
+  bool isBlack() const {
+    return (packed.load() & COLOR) == BLACK;
+  }
+
+  /**
+   * Set the color to black.
+   */
+  void setBlack() {
+    packed.maskAnd(~COLOR | BLACK);
+  }
+
+  /**
+   * Is the object colored purple?
+   */
+  bool isPurple() const {
+    return (packed.load() & COLOR) == PURPLE;
+  }
+
+  /**
+   * Set the color to purple.
+   */
+  void setPurple() {
+    [[maybe_unused]] auto old = packed.maskOr(PURPLE);
+    assert((old & COLOR) == BLACK);
+  }
+
+  /**
+   * Is the object colored white?
+   */
+  bool isWhite() const {
+    return (packed.load() & COLOR) == WHITE;
+  }
+
+  /**
+   * Set the color to white.
+   */
+  void setWhite() {
+    [[maybe_unused]] auto old = packed.maskAnd(~COLOR|WHITE);
+    assert((old & COLOR) == GRAY);
+  }
+
+  /**
+   * Is the object colored gray?
+   */
+  bool isGray() const {
+    return (packed.load() & COLOR) == GRAY;
+  }
+
+  /**
+   * Set the color to gray.
+   */
+  void setGray() {
+    [[maybe_unused]] auto old = packed.maskOr(GRAY);
+    assert((old & COLOR) == BLACK || (old & COLOR) == PURPLE);
   }
 
 protected:
@@ -397,6 +480,16 @@ private:
   Atomic<unsigned> memoCount;
 
   /**
+   * Mark count. This is used during the cycle collection algorithm to count
+   * the number times the object is reached via a shared pointer when marking
+   * from the root set. This is slightly different to @ref Bacon2001
+   * "Bacon & Rajan (2001)": where they decrement the shared reference count
+   * and test the result against zero, we increment this mark count and
+   * compare it against the shared count, so as to leave the latter untouched.
+   */
+  Atomic<unsigned> markCount;
+
+  /**
    * Label of the object.
    */
   Label* label;
@@ -415,24 +508,59 @@ private:
   uint16_t size;
 
   /**
-   * Bitfield containing:
+   * Bitfield containing, from right to left:
    *
    *   - *finished* flag,
    *   - *frozen* flag,
    *   - *frozen unique* flag (is the object frozen, and at the time of
-   *     freezing, was there only one pointer to it?).
+   *     freezing, was there only one pointer to it?)
    *
-   * Each occupies 1 bit, from the right.
+   * these first three used for lazy deep copy operations as in
+   * @ref Murray2020 "Murray (2020)", then
+   *
+   *   - *buffered* flag, and
+   *   - a 2-bit *color*,
+   *
+   * where these next two are used for cycle collection as in
+   * @ref Bacon2001 "Bacon & Rajan (2001)". The colors are encoded as:
+   *
+   *   - `00` black,
+   *   - `01` purple,
+   *   - `10` white,
+   *   - `11` gray.
+   *
+   * These values are deliberately chosen given the state diagram in Figure 3
+   * of @ref Bacon2001 "Bacon & Rajan (2001)". They allow the convenience of
+   * atomic mask operations to be used to transition to each color from each
+   * other (valid) color. In particular:
+   *
+   *   - `| 01` transitions to purple (from black),
+   *   - `| 11` transitions to gray (from black or purple),
+   *   - `& 10` transitions to white (from gray)
+   *   - `& 00` transitions to black (from purple, gray or white).
    */
   Atomic<uint16_t> packed;
 
-  /*
+  /**
    * Flags for packed.
    */
   enum {
-    FINISHED = 1,
-    FROZEN = 2,
-    FROZEN_UNIQUE = 4
+    FINISHED = 1 << 0,
+    FROZEN = 1 << 1,
+    FROZEN_UNIQUE = 1 << 2,
+    BUFFERED = 1 << 3,
+    COLOR = (1 << 4) | (1 << 5)
+  };
+
+  /**
+   * Colors for packed. These are the 2-bit values described, but shifted
+   * to the position of the color field in packed.
+   */
+  enum {
+    BLACK = 0 << 4,
+    PURPLE = 1 << 4,
+    WHITE = 2 << 4,
+    GRAY = 3 << 4
   };
 };
 }
