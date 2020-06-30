@@ -135,7 +135,6 @@ void* libbirch::reallocate(void* ptr1, const size_t n1, const int tid1,
 }
 
 void libbirch::collect() {
-  return;
   #pragma omp parallel num_threads(libbirch::get_max_threads())
   {
     auto& possible_roots = get_thread_possible_roots();
