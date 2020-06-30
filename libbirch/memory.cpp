@@ -3,17 +3,32 @@
  */
 #include "libbirch/memory.hpp"
 
+#include "libbirch/Any.hpp"
 #include "libbirch/Label.hpp"
 #include "libbirch/Shared.hpp"
+#include "libbirch/Weak.hpp"
 
-libbirch::ExitBarrierLock libbirch::finish_lock;
-libbirch::ExitBarrierLock libbirch::freeze_lock;
-
-#if ENABLE_MEMORY_POOL
 /**
- * Allocate a large buffer for the heap.
+ * Root list.
+ */
+using root_list = std::vector<libbirch::Weak<libbirch::Any>,libbirch::Allocator<libbirch::Weak<libbirch::Any>>>;
+
+/**
+ * Get the root list for the current thread.
+ */
+static root_list& get_thread_possible_roots() {
+  static std::vector<root_list,libbirch::Allocator<root_list>> root_lists(
+      libbirch::get_max_threads());
+  return root_lists[libbirch::get_thread_num()];
+}
+
+/**
+ * Create the heap.
  */
 static char* make_heap() {
+  #if !ENABLE_MEMORY_POOL
+  return nullptr;
+  #else
   /* determine a preferred size of the heap based on total physical memory */
   size_t size = sysconf(_SC_PAGE_SIZE);
   size_t npages = sysconf(_SC_PHYS_PAGES);
@@ -29,34 +44,44 @@ static char* make_heap() {
   } while (res > 0 && n > 0u);
   assert(ptr);
 
-  libbirch::buffer_start = (char*)ptr;
-  libbirch::buffer_size = n;
-
   return (char*)ptr;
+  #endif
 }
 
-libbirch::Atomic<char*> libbirch::buffer(make_heap());
-char* libbirch::buffer_start;
-size_t libbirch::buffer_size;
-#endif
+/**
+ * Create the root label.
+ */
+static libbirch::Label* make_root_label() {
+  static libbirch::Shared<libbirch::Label> root_label(new libbirch::Label());
+  return root_label.get();
+}
+
+libbirch::ExitBarrierLock libbirch::finish_lock;
+libbirch::ExitBarrierLock libbirch::freeze_lock;
+libbirch::Atomic<char*> libbirch::heap(make_heap());
+libbirch::Label* const libbirch::root_label(make_root_label());
+
+libbirch::Pool& libbirch::pool(const int i) {
+  static libbirch::Pool* pools = new libbirch::Pool[64*get_max_threads()];
+  return pools[i];
+}
 
 void* libbirch::allocate(const size_t n) {
   assert(n > 0u);
 
-#if !ENABLE_MEMORY_POOL
+  #if !ENABLE_MEMORY_POOL
   return std::malloc(n);
-#else
+  #else
   int tid = get_thread_num();
   int i = bin(n);       // determine which pool
   auto ptr = pool(64*tid + i).pop();  // attempt to reuse from this pool
   if (!ptr) {           // otherwise allocate new
     size_t m = unbin(i);
-    ptr = (buffer += m) - m;
-    assert((char*)ptr + m <= buffer_start + buffer_size); // otherwise out of memory
+    ptr = (heap += m) - m;
   }
   assert(ptr);
   return ptr;
-#endif
+  #endif
 }
 
 void libbirch::deallocate(void* ptr, const size_t n, const int tid) {
@@ -64,12 +89,12 @@ void libbirch::deallocate(void* ptr, const size_t n, const int tid) {
   assert(n > 0u);
   assert(tid < get_max_threads());
 
-#if !ENABLE_MEMORY_POOL
+  #if !ENABLE_MEMORY_POOL
   std::free(ptr);
-#else
+  #else
   int i = bin(n);
   pool(64*tid + i).push(ptr);
-#endif
+  #endif
 }
 
 void libbirch::deallocate(void* ptr, const unsigned n, const int tid) {
@@ -77,12 +102,12 @@ void libbirch::deallocate(void* ptr, const unsigned n, const int tid) {
   assert(n > 0u);
   assert(tid < get_max_threads());
 
-#if !ENABLE_MEMORY_POOL
+  #if !ENABLE_MEMORY_POOL
   std::free(ptr);
-#else
+  #else
   int i = bin(n);
   pool(64*tid + i).push(ptr);
-#endif
+  #endif
 }
 
 void* libbirch::reallocate(void* ptr1, const size_t n1, const int tid1,
@@ -92,9 +117,9 @@ void* libbirch::reallocate(void* ptr1, const size_t n1, const int tid1,
   assert(tid1 < get_max_threads());
   assert(n2 > 0u);
 
-#if !ENABLE_MEMORY_POOL
+  #if !ENABLE_MEMORY_POOL
   return std::realloc(ptr1, n2);
-#else
+  #else
   int i1 = bin(n1);
   int i2 = bin(n2);
   void* ptr2 = ptr1;
@@ -107,12 +132,16 @@ void* libbirch::reallocate(void* ptr1, const size_t n1, const int tid1,
     deallocate(ptr1, n1, tid1);
   }
   return ptr2;
-#endif
+  #endif
 }
 
-static libbirch::Label* make_root_label() {
-  static libbirch::Shared<libbirch::Label> root_label(new libbirch::Label());
-  return root_label.get();
+void libbirch::collect() {
+  #pragma omp parallel
+  {
+    get_thread_possible_roots().clear();
+  }
 }
 
-libbirch::Label* const libbirch::root_label(make_root_label());
+void libbirch::register_possible_root(Any* o) {
+  get_thread_possible_roots().push_back(Weak<Any>(o));
+}

@@ -1,7 +1,6 @@
 /**
  * @file
  */
-#if ENABLE_MEMORY_POOL
 #pragma once
 
 #include "libbirch/Lock.hpp"
@@ -63,11 +62,4 @@ private:
    */
   Lock lock;
 };
-
-/**
- * Get the `i`th pool.
- */
-Pool& pool(const int i);
 }
-
-#endif

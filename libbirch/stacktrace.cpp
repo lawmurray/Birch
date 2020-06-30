@@ -5,17 +5,27 @@
 
 #include "libbirch/thread.hpp"
 
+/**
+ * Stack frame.
+ */
 struct stack_frame {
   const char* func;
   const char* file;
   int line;
 };
+
+/**
+ * Stack trace.
+ */
 using stack_trace = std::vector<stack_frame,libbirch::Allocator<stack_frame>>;
 
-stack_trace& get_thread_stack_trace() {
-  static std::vector<stack_trace,libbirch::Allocator<stack_trace>> stacktraces(
+/**
+ * Get the stack trace for the current thread.
+ */
+static stack_trace& get_thread_stack_trace() {
+  static std::vector<stack_trace,libbirch::Allocator<stack_trace>> stack_traces(
       libbirch::get_max_threads());
-  return stacktraces[libbirch::get_thread_num()];
+  return stack_traces[libbirch::get_thread_num()];
 }
 
 libbirch::StackFunction::StackFunction(const char* func, const char* file,

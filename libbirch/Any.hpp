@@ -225,6 +225,8 @@ public:
     if (--sharedCount == 0u) {
       destroy();
       decWeak();
+    } else if (color.exchange(PURPLE) != PURPLE) {
+      register_possible_root(this);
     }
   }
 

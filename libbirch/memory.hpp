@@ -10,6 +10,7 @@
 #include "libbirch/ExitBarrierLock.hpp"
 
 namespace libbirch {
+class Any;
 class Label;
 
 /**
@@ -36,17 +37,7 @@ extern ExitBarrierLock freeze_lock;
 /**
  * Buffer for heap allocations.
  */
-extern Atomic<char*> buffer;
-
-/**
- * Start of heap (for debugging purposes).
- */
-extern char* buffer_start;
-
-/**
- * Size of heap (for debugging purposes).
- */
-extern size_t buffer_size;
+extern Atomic<char*> heap;
 
 /**
  * For an allocation size, determine the index of the pool to which it
@@ -62,16 +53,16 @@ extern size_t buffer_size;
 inline int bin(const size_t n) {
   assert(n > 0ull);
   int result = 0;
-#ifdef HAVE___BUILTIN_CLZLL
+  #ifdef HAVE___BUILTIN_CLZLL
   if (n > 64ull) {
     /* __builtin_clzll undefined for zero argument */
     result = 64 - __builtin_clzll((n - 1ull) >> 6ull);
   }
-#else
+  #else
   while (((n - 1ull) >> (6 + result)) > 0) {
     ++result;
   }
-#endif
+  #endif
   assert(0 <= result && result <= 63);
   return result;
 }
@@ -90,16 +81,16 @@ inline int bin(const size_t n) {
 inline int bin(const unsigned n) {
   assert(n > 0);
   int result = 0;
-#ifdef HAVE___BUILTIN_CLZ
+  #ifdef HAVE___BUILTIN_CLZ
   if (n > 64u) {
     /* __builtin_clz undefined for zero argument */
     result = 32 - __builtin_clz((n - 1u) >> 6u);
   }
-#else
+  #else
   while (((n - 1u) >> (6 + result)) > 0) {
     ++result;
   }
-#endif
+  #endif
   assert(0 <= result && result <= 63);
   return result;
 }
@@ -119,16 +110,16 @@ template<unsigned n>
 inline int bin() {
   assert(n > 0);
   int result = 0;
-#ifdef HAVE___BUILTIN_CLZ
+  #ifdef HAVE___BUILTIN_CLZ
   if (n > 64u) {
     /* __builtin_clz undefined for zero argument */
     result = 32 - __builtin_clz((n - 1u) >> 6u);
   }
-#else
+  #else
   while (((n - 1u) >> (6 + result)) > 0) {
     ++result;
   }
-#endif
+  #endif
   assert(0 <= result && result <= 63);
   return result;
 }
@@ -139,6 +130,11 @@ inline int bin() {
 inline size_t unbin(const int i) {
   return 64ull << i;
 }
+
+/**
+ * Get the `i`th pool.
+ */
+Pool& pool(const int i);
 
 /**
  * Allocate memory from heap.
@@ -164,19 +160,19 @@ template<unsigned n>
 void* allocate() {
   static_assert(n > 0, "cannot make zero length allocation");
 
-#if !ENABLE_MEMORY_POOL
+  #if !ENABLE_MEMORY_POOL
   return std::malloc(n);
-#else
+  #else
   int tid = get_thread_num();
   int i = bin<n>();     // determine which pool
   auto ptr = pool(64*tid + i).pop();  // attempt to reuse from this pool
   if (!ptr) {           // otherwise allocate new
     unsigned m = unbin(i);
-    ptr = (buffer += m) - m;
+    ptr = (heap += m) - m;
   }
   assert(ptr);
   return ptr;
-#endif
+  #endif
 }
 
 /**
@@ -214,4 +210,16 @@ void deallocate(void* ptr, const unsigned n, const int tid);
  */
 void* reallocate(void* ptr1, const size_t n1, const int tid1,
     const size_t n2);
+
+/**
+ * Run the cycle collector.
+ */
+void collect();
+
+/**
+ * Register an object with the cycle collector as the possible root of a
+ * cycle. This corresponds to the `PossibleRoot()` operation in @ref Bacon2001
+ * "Bacon & Rajan (2001)".
+ */
+void register_possible_root(Any* o);
 }
