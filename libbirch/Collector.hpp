@@ -11,25 +11,12 @@
 
 namespace libbirch {
 /**
- * Visitor for finishing deep copies through cross pointers, for all
- * reachable objects.
+ * Visitor for recursively collecting objects in unreachable reference cycles.
  *
  * @ingroup libbirch
  */
-class Finisher {
+class Collector {
 public:
-  /**
-   * Constructor.
-   *
-   * @param label Label of the object being visited. Lazy pointers that do
-   * not have this label are identified as cross pointers, and require
-   * finishing.
-   */
-  Finisher(Label* label) :
-      label(label) {
-    //
-  }
-
   /**
    * Visit list of variables.
    *
@@ -94,12 +81,7 @@ public:
    */
   template<class P>
   void visit(Lazy<P>& o) const {
-    o.finish(label);
+    o.collect();
   }
-
-  /**
-   * Label of the pointer on which the freeze was initiated.
-   */
-  Label* label;
 };
 }

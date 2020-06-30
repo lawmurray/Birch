@@ -97,6 +97,10 @@ public:
   }
 
 protected:
+  virtual uint16_t size_() const override {
+    return (uint16_t)sizeof(*this);
+  }
+
   virtual void finish_(libbirch::Label* label) override {
     lock.setRead();
     memo.finish(label);
@@ -117,8 +121,22 @@ protected:
     return this;
   }
 
-  virtual uint16_t size_() const override {
-    return (uint16_t)sizeof(*this);
+  virtual void mark_() override {
+    lock.setRead();
+    memo.mark();
+    lock.unsetRead();
+  }
+
+  virtual void scan_(const bool reachable) override {
+    lock.setRead();
+    memo.scan(reachable);
+    lock.unsetRead();
+  }
+
+  virtual void collect_() override {
+    lock.setRead();
+    memo.collect();
+    lock.unsetRead();
   }
 
   virtual bi::type::String getClassName() const {

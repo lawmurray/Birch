@@ -6,14 +6,14 @@
 #include "libbirch/Label.hpp"
 #include "libbirch/Shared.hpp"
 
-libbirch::ExitBarrierLock libbirch::finishLock;
-libbirch::ExitBarrierLock libbirch::freezeLock;
+libbirch::ExitBarrierLock libbirch::finish_lock;
+libbirch::ExitBarrierLock libbirch::freeze_lock;
 
 #if ENABLE_MEMORY_POOL
 /**
  * Allocate a large buffer for the heap.
  */
-static char* makeHeap() {
+static char* make_heap() {
   /* determine a preferred size of the heap based on total physical memory */
   size_t size = sysconf(_SC_PAGE_SIZE);
   size_t npages = sysconf(_SC_PHYS_PAGES);
@@ -29,20 +29,15 @@ static char* makeHeap() {
   } while (res > 0 && n > 0u);
   assert(ptr);
 
-  libbirch::bufferStart = (char*)ptr;
-  libbirch::bufferSize = n;
+  libbirch::buffer_start = (char*)ptr;
+  libbirch::buffer_size = n;
 
   return (char*)ptr;
 }
 
-libbirch::Pool& libbirch::pool(const int i) {
-  static libbirch::Pool* pools = new libbirch::Pool[64*get_max_threads()];
-  return pools[i];
-}
-
-libbirch::Atomic<char*> libbirch::buffer(makeHeap());
-char* libbirch::bufferStart;
-size_t libbirch::bufferSize;
+libbirch::Atomic<char*> libbirch::buffer(make_heap());
+char* libbirch::buffer_start;
+size_t libbirch::buffer_size;
 #endif
 
 void* libbirch::allocate(const size_t n) {
@@ -57,7 +52,7 @@ void* libbirch::allocate(const size_t n) {
   if (!ptr) {           // otherwise allocate new
     size_t m = unbin(i);
     ptr = (buffer += m) - m;
-    assert((char*)ptr + m <= bufferStart + bufferSize); // otherwise out of memory
+    assert((char*)ptr + m <= buffer_start + buffer_size); // otherwise out of memory
   }
   assert(ptr);
   return ptr;
@@ -115,9 +110,9 @@ void* libbirch::reallocate(void* ptr1, const size_t n1, const int tid1,
 #endif
 }
 
-static libbirch::Label* makeRootLabel() {
-  static libbirch::Shared<libbirch::Label> rootLabel(new libbirch::Label());
-  return rootLabel.get();
+static libbirch::Label* make_root_label() {
+  static libbirch::Shared<libbirch::Label> root_label(new libbirch::Label());
+  return root_label.get();
 }
 
-libbirch::Label* const libbirch::rootLabel(makeRootLabel());
+libbirch::Label* const libbirch::root_label(make_root_label());

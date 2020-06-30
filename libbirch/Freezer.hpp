@@ -53,7 +53,7 @@ public:
   }
 
   /**
-   * Visit an array of non-value type.
+   * Visit an array.
    */
   template<class T, class F>
   void visit(Array<T,F>& o) const {
@@ -61,7 +61,7 @@ public:
   }
 
   /**
-   * Visit an optional of non-value type.
+   * Visit an optional.
    */
   template<class T>
   void visit(Optional<T>& o) const {
@@ -81,6 +81,7 @@ public:
    */
   template<class P>
   void visit(Lazy<P>& o) const {
+    o.freeze();
     o.pull()->freeze();
     ///@todo May be able to eliminate pull here, Finisher already pulled
   }

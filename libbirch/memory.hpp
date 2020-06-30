@@ -15,7 +15,7 @@ class Label;
 /**
  * The root label, used for lazy deep copy.
  */
-extern Label* const rootLabel;
+extern Label* const root_label;
 
 /**
  * Lock for sharing finish operations. Finish operations may intersect on the
@@ -23,7 +23,7 @@ extern Label* const rootLabel;
  * on exit to ensure that all reachable objects are finished despite this
  * sharing.
  */
-extern ExitBarrierLock finishLock;
+extern ExitBarrierLock finish_lock;
 
 /**
  * Lock for sharing freeze operations. Freeze operations may intersect on the
@@ -31,7 +31,22 @@ extern ExitBarrierLock finishLock;
  * on exit to ensure that all reachable objects are frozen despite this
  * sharing.
  */
-extern ExitBarrierLock freezeLock;
+extern ExitBarrierLock freeze_lock;
+
+/**
+ * Buffer for heap allocations.
+ */
+extern Atomic<char*> buffer;
+
+/**
+ * Start of heap (for debugging purposes).
+ */
+extern char* buffer_start;
+
+/**
+ * Size of heap (for debugging purposes).
+ */
+extern size_t buffer_size;
 
 /**
  * For an allocation size, determine the index of the pool to which it

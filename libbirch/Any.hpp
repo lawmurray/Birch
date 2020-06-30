@@ -34,10 +34,10 @@ public:
       weakCount(1u),
       memoCount(1u),
       markCount(0u),
-      label(rootLabel),
+      label(root_label),
       tid(get_thread_num()),
       size(0u),
-      packed(0u) {
+      flags(0u) {
     //
   }
 
@@ -52,7 +52,7 @@ public:
       label(nullptr),
       tid(0),
       size(0u),
-      packed(0u) {
+      flags(0u) {
     //
   }
 
@@ -93,36 +93,6 @@ public:
   }
 
   /**
-   * Is this object reachable? An object is reachable if there exists a
-   * shared or weak pointer to it. If only memo pointers to it exists, it is
-   * not considered reachable, and it may be cleaned up during memo
-   * maintenance.
-   */
-  bool isReachable() const {
-    return numWeak() > 0u;
-  }
-
-  /**
-   * Is this object destroyed? An object is destroyed if there only exist
-   * weak pointers to it.
-   */
-  bool isDestroyed() const {
-    return numShared() == 0u;
-  }
-
-  /**
-   * Is there only one pointer to this object?
-   */
-  bool isUnique() const {
-    auto sharedCount = numShared();
-    auto weakCount = numWeak();
-    auto memoCount = numMemo();
-
-    return (sharedCount == 1u && weakCount == 1u && memoCount == 1u) ||
-        (sharedCount == 0u && weakCount == 1u && memoCount == 1u);
-  }
-
-  /**
    * Get the class name.
    */
   virtual bi::type::String getClassName() const {
@@ -133,7 +103,7 @@ public:
    * Finish the object.
    */
   void finish(Label* label) {
-    auto old = packed.maskOr(FINISHED) & FINISHED;
+    auto old = flags.maskOr(FINISHED) & FINISHED;
     if (!old) {
       finish_(label);
     }
@@ -151,10 +121,10 @@ public:
      * freeze such an object---the work has already been done by the second
      * thread */
     if (isFinished()) {
-      auto old = packed.maskOr(FROZEN) & FROZEN;
+      auto old = flags.maskOr(FROZEN) & FROZEN;
       if (!old) {
         if (isUnique()) {
-          packed.maskOr(FROZEN_UNIQUE);
+          flags.maskOr(FROZEN_UNIQUE);
         }
         freeze_();
       }
@@ -165,7 +135,7 @@ public:
    * Thaw the object.
    */
   void thaw() {
-    packed.store(0u);
+    flags.store(0u);
   }
 
   /**
@@ -182,12 +152,15 @@ public:
     o->label = label;
     o->tid = get_thread_num();
     o->size = 0u;
-    o->packed.set(0u);
+    o->flags.set(0u);
     return o;
   }
 
   /**
-   * Recycle the object.
+   * Recycle the object. This can be used as an optimization in place of
+   * copy(), where only one pointer remains to the source object, and it would
+   * otherwise be copied and then destroyed; instead, the source object is
+   * modified for reuse.
    *
    * @param label The new label.
    */
@@ -195,6 +168,39 @@ public:
     auto o = recycle_(label);
     o->label = label;
     return this;
+  }
+
+  /**
+   * Mark the object.
+   *
+   * This performs the `MarkGray()` operation of @ref Bacon2001
+   * "Bacon & Rajan (2001)".
+   */
+  void mark() {
+    mark_();
+  }
+
+  /**
+   * Scan the object.
+   *
+   * @param reachable Is the object definitely reachable?
+   *
+   * This performs the `Scan()` (when @p reachable is false) and `ScanBlack()`
+   * (when @p reachable is true) operations of @ref Bacon2001
+   * "Bacon & Rajan (2001)".
+   */
+  void scan(const bool reachable) {
+    scan_(reachable);
+  }
+
+  /**
+   * Collect the object.
+   *
+   * This performs the `CollectWhite()` operation of @ref Bacon2001
+   * "Bacon & Rajan (2001)".
+   */
+  void collect() {
+    collect_();
   }
 
   /**
@@ -303,17 +309,47 @@ public:
   }
 
   /**
+   * Is this object reachable? An object is reachable if there exists a
+   * shared or weak pointer to it. If only memo pointers to it exists, it is
+   * not considered reachable, and it may be cleaned up during memo
+   * maintenance.
+   */
+  bool isReachable() const {
+    return numWeak() > 0u;
+  }
+
+  /**
+   * Is this object destroyed? An object is destroyed if there only exist
+   * weak pointers to it.
+   */
+  bool isDestroyed() const {
+    return numShared() == 0u;
+  }
+
+  /**
+   * Is there only one pointer to this object?
+   */
+  bool isUnique() const {
+    auto sharedCount = numShared();
+    auto weakCount = numWeak();
+    auto memoCount = numMemo();
+
+    return (sharedCount == 1u && weakCount == 1u && memoCount == 1u) ||
+        (sharedCount == 0u && weakCount == 1u && memoCount == 1u);
+  }
+
+  /**
    * Is the object finished?
    */
   bool isFinished() const {
-    return packed.load() & FINISHED;
+    return flags.load() & FINISHED;
   }
 
   /**
    * Is the object frozen?
    */
   bool isFrozen() const {
-    return packed.load() & FROZEN;
+    return flags.load() & FROZEN;
   }
 
   /**
@@ -321,113 +357,101 @@ public:
    * pointer to it?
    */
   bool isFrozenUnique() const {
-    return packed.load() & FROZEN_UNIQUE;
-  }
-
-  /**
-   * Is the object buffered as a potential root of a cycle?
-   */
-  bool isBuffered() const {
-    return packed.load() & BUFFERED;
-  }
-
-  /**
-   * Set the buffered flag.
-   */
-  void setBuffered() {
-    packed.maskOr(BUFFERED);
-  }
-
-  /**
-   * Clear the buffered flag.
-   */
-  void clearBuffered() {
-    packed.maskAnd(~BUFFERED);
+    return flags.load() & FROZEN_UNIQUE;
   }
 
   /**
    * Is the object colored black?
    */
   bool isBlack() const {
-    return (packed.load() & COLOR) == BLACK;
+    return color.load() == BLACK;
   }
 
   /**
    * Set the color to black.
    */
   void setBlack() {
-    packed.maskAnd(~COLOR | BLACK);
+    color.store(BLACK);
   }
 
   /**
    * Is the object colored purple?
    */
   bool isPurple() const {
-    return (packed.load() & COLOR) == PURPLE;
+    return color.load() == PURPLE;
   }
 
   /**
    * Set the color to purple.
    */
   void setPurple() {
-    [[maybe_unused]] auto old = packed.maskOr(PURPLE);
-    assert((old & COLOR) == BLACK);
+    color.store(PURPLE);
   }
 
   /**
    * Is the object colored white?
    */
   bool isWhite() const {
-    return (packed.load() & COLOR) == WHITE;
+    return color.load() == WHITE;
   }
 
   /**
    * Set the color to white.
    */
   void setWhite() {
-    [[maybe_unused]] auto old = packed.maskAnd(~COLOR|WHITE);
-    assert((old & COLOR) == GRAY);
+    color.store(WHITE);
   }
 
   /**
    * Is the object colored gray?
    */
   bool isGray() const {
-    return (packed.load() & COLOR) == GRAY;
+    return color.load() == GRAY;
   }
 
   /**
    * Set the color to gray.
    */
   void setGray() {
-    [[maybe_unused]] auto old = packed.maskOr(GRAY);
-    assert((old & COLOR) == BLACK || (old & COLOR) == PURPLE);
+    color.store(GRAY);
   }
 
 protected:
   /**
-   * Finish the member variables of the object.
+   * Called internally by finish() to recurse into member variables.
    */
   virtual void finish_(Label* label) = 0;
 
   /**
-   * Freeze the member variables of the object.
+   * Called internally by freeze() to recurse into member variables.
    */
   virtual void freeze_() = 0;
 
   /**
-   * Copy the object.
-   *
-   * @param label The new label.
+   * Called internally by copy() to ensure the most derived type is copied.
    */
   virtual Any* copy_(Label* label) const = 0;
 
   /**
-   * Recycle the object.
-   *
-   * @param label The new label.
+   * Called internally by recycle() to ensure the most derived type is
+   * recycled.
    */
   virtual Any* recycle_(Label* label) = 0;
+
+  /**
+   * Called internally by mark() to recurse into member variables.
+   */
+  virtual void mark_() = 0;
+
+  /**
+   * Called internally by scan() to recurse into member variables.
+   */
+  virtual void scan_(const bool reachable) = 0;
+
+  /**
+   * Called internally by collect() to recurse into member variables.
+   */
+  virtual void collect_() = 0;
 
   /**
    * Size of the object.
@@ -512,17 +536,27 @@ private:
    *
    *   - *finished* flag,
    *   - *frozen* flag,
-   *   - *frozen unique* flag (is the object frozen, and at the time of
-   *     freezing, was there only one pointer to it?)
+   *   - *frozen unique* flag.
    *
-   * these first three used for lazy deep copy operations as in
-   * @ref Murray2020 "Murray (2020)", then
+   * These first three used for lazy deep copy operations as in
+   * @ref Murray2020 "Murray (2020)".
+   */
+  Atomic<uint8_t> flags;
+
+  /**
+   * Flags.
+   */
+  enum {
+    FINISHED = 1 << 0,
+    FROZEN = 1 << 1,
+    FROZEN_UNIQUE = 1 << 2
+  };
+
+  /**
+   * Color.
    *
-   *   - *buffered* flag, and
-   *   - a 2-bit *color*,
-   *
-   * where these next two are used for cycle collection as in
-   * @ref Bacon2001 "Bacon & Rajan (2001)". The colors are encoded as:
+   * This is used for cycle collection as in @ref Bacon2001
+   * "Bacon & Rajan (2001)". The colors are encoded as:
    *
    *   - `00` black,
    *   - `01` purple,
@@ -534,33 +568,29 @@ private:
    * atomic mask operations to be used to transition to each color from each
    * other (valid) color. In particular:
    *
-   *   - `| 01` transitions to purple (from black),
-   *   - `| 11` transitions to gray (from black or purple),
-   *   - `& 10` transitions to white (from gray)
-   *   - `& 00` transitions to black (from purple, gray or white).
+   *   - `|01` transitions to purple (from black),
+   *   - `|11` transitions to gray (from black or purple),
+   *   - `&10` transitions to white (from gray)
+   *   - `&00` transitions to black (from purple, gray or white).
+   *
+   * However, the transition from purple to black is not used due to a race
+   * condition. This only has the effect of potentially (wastefully) checking
+   * for cycles from a candidate root node that may otherwise have been
+   * eliminated earlier. But it also means that the *buffered* flag in
+   * @ref Bacon2001 "Bacon & Rajan (2001)" is unnecessary: the color purple
+   * suffices to indicate that an object is in the root set.
    */
-  Atomic<uint16_t> packed;
+  Atomic<uint8_t> color;
 
   /**
-   * Flags for packed.
+   * Colors. These are the 2-bit values described, but shifted
+   * to the position of the color field in flags.
    */
   enum {
-    FINISHED = 1 << 0,
-    FROZEN = 1 << 1,
-    FROZEN_UNIQUE = 1 << 2,
-    BUFFERED = 1 << 3,
-    COLOR = (1 << 4) | (1 << 5)
-  };
-
-  /**
-   * Colors for packed. These are the 2-bit values described, but shifted
-   * to the position of the color field in packed.
-   */
-  enum {
-    BLACK = 0 << 4,
-    PURPLE = 1 << 4,
-    WHITE = 2 << 4,
-    GRAY = 3 << 4
+    BLACK = 0,
+    PURPLE = 1,
+    WHITE = 2,
+    GRAY = 3
   };
 };
 }

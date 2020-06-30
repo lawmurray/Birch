@@ -206,6 +206,27 @@ public:
     return get();
   }
 
+  /**
+   * Mark.
+   */
+  void mark() {
+    ptr.load()->Any::mark();
+  }
+
+  /**
+   * Scan.
+   */
+  void scan(const bool reachable) {
+    ptr.load()->Any::scan(reachable);
+  }
+
+  /**
+   * Collect.
+   */
+  void collect() {
+    ptr.load()->Any::collect();
+  }
+
 private:
   /**
    * Raw pointer.

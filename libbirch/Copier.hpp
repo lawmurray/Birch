@@ -8,9 +8,6 @@
 #include "libbirch/Optional.hpp"
 #include "libbirch/Fiber.hpp"
 #include "libbirch/Lazy.hpp"
-#include "libbirch/Finisher.hpp"
-#include "libbirch/Freezer.hpp"
-#include "libbirch/memory.hpp"
 
 namespace libbirch {
 /**
@@ -128,15 +125,15 @@ auto clone(const Lazy<P>& o) {
   auto object = o.pull();
   auto label = o.getLabel();
 
-  finishLock.enter();
+  finish_lock.enter();
   object->finish(label);
   label->finish(label);
-  finishLock.exit();
+  finish_lock.exit();
 
-  freezeLock.enter();
+  freeze_lock.enter();
   object->freeze();
   label->freeze();
-  freezeLock.exit();
+  freeze_lock.exit();
 
   return Lazy<P>(object, new Label(*label));
 }

@@ -8,9 +8,6 @@
 #include "libbirch/Optional.hpp"
 #include "libbirch/Fiber.hpp"
 #include "libbirch/Lazy.hpp"
-#include "libbirch/Finisher.hpp"
-#include "libbirch/Freezer.hpp"
-#include "libbirch/memory.hpp"
 
 namespace libbirch {
 /**

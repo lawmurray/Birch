@@ -173,6 +173,41 @@ public:
     }
   }
 
+  /**
+   * Dereference.
+   */
+  T& operator*() const {
+    return *get();
+  }
+
+  /**
+   * Member access.
+   */
+  T* operator->() const {
+    return get();
+  }
+
+  /**
+   * Mark.
+   */
+  void mark() {
+    // nothing to do here, weak references do not create cycles
+  }
+
+  /**
+   * Scan.
+   */
+  void scan(const bool reachable) {
+    // nothing to do here, weak references do not create cycles
+  }
+
+  /**
+   * Collect.
+   */
+  void collect() {
+    // nothing to do here, weak references do not create cycles
+  }
+
 private:
   /**
    * Raw pointer.

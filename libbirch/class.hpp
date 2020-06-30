@@ -11,6 +11,10 @@
  * Declare common virtual functions for classes and fibers.
  */
 #define LIBBIRCH_VIRTUALS(Name, Base...) \
+  virtual uint16_t size_() const override { \
+    return (uint16_t)sizeof(*this); \
+  } \
+  \
   virtual void finish_(libbirch::Label* label) override { \
     this->accept_(libbirch::Finisher(label)); \
   } \
@@ -33,8 +37,16 @@
     return this; \
   } \
   \
-  virtual uint16_t size_() const override { \
-    return (uint16_t)sizeof(*this); \
+  virtual void mark_() override { \
+    this->accept_(libbirch::Marker()); \
+  } \
+  \
+  virtual void scan_(const bool reachable) override { \
+    this->accept_(libbirch::Scanner(reachable)); \
+  } \
+  \
+  virtual void collect_() override { \
+    this->accept_(libbirch::Collector()); \
   }
 
 /**
@@ -153,6 +165,10 @@
     v_.visit(members); \
   }
 
+#include "libbirch/Finisher.hpp"
 #include "libbirch/Freezer.hpp"
 #include "libbirch/Copier.hpp"
 #include "libbirch/Recycler.hpp"
+#include "libbirch/Marker.hpp"
+#include "libbirch/Scanner.hpp"
+#include "libbirch/Collector.hpp"

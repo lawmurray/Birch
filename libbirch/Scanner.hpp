@@ -11,22 +11,21 @@
 
 namespace libbirch {
 /**
- * Visitor for finishing deep copies through cross pointers, for all
- * reachable objects.
+ * Visitor for recursively scanning objects for cycle collection.
  *
  * @ingroup libbirch
  */
-class Finisher {
+class Scanner {
 public:
   /**
-   * Constructor.
+   * Constructor.s
    *
-   * @param label Label of the object being visited. Lazy pointers that do
-   * not have this label are identified as cross pointers, and require
-   * finishing.
+   * @param reachable In reaching this point in the recursion, have we passed
+   * through an object that is reachable from an object outside of the set
+   * of objects reachable from candidate roots?
    */
-  Finisher(Label* label) :
-      label(label) {
+  Scanner(const bool reachable = false) :
+      reachable(reachable) {
     //
   }
 
@@ -94,12 +93,12 @@ public:
    */
   template<class P>
   void visit(Lazy<P>& o) const {
-    o.finish(label);
+    o.scan(reachable);
   }
 
   /**
-   * Label of the pointer on which the freeze was initiated.
+   * Reachable flag.
    */
-  Label* label;
+  const bool reachable;
 };
 }

@@ -37,7 +37,7 @@ public:
    */
   Lazy(value_type* ptr, Label* label = nullptr) :
       object(ptr),
-      label(label ? label : ptr->getLabel()) {
+      label(label ? label : ptr->Any::getLabel()) {
     //
   }
 
@@ -50,7 +50,7 @@ public:
    */
   Lazy() :
       object(new value_type()),
-      label(rootLabel) {
+      label(root_label) {
     static_assert(std::is_default_constructible<value_type>::value,
         "invalid call to class constructor");
     // ^ ideally this condition would be checked with SFINAE, but the
@@ -76,7 +76,7 @@ public:
       typename raw<Arg>::type>::value,int> = 0>
   explicit Lazy(const Arg& arg) :
       object(new value_type(arg)),
-      label(rootLabel) {
+      label(root_label) {
     //
   }
 
@@ -98,7 +98,7 @@ public:
   template<class Arg1, class Arg2, class... Args>
   explicit Lazy(const Arg1& arg1, const Arg2& arg2, const Args&... args) :
       object(new value_type(arg1, arg2, args...)),
-      label(rootLabel) {
+      label(root_label) {
     //
   }
 
@@ -310,6 +310,50 @@ public:
    */
   void setLabel(Label* label) {
     this->label.replace(label);
+  }
+
+  /**
+   * Finish.
+   */
+  void finish(Label* label) {
+    if (getLabel() != label) {
+      /* cross pointer, finish copies with get() */
+      get()->Any::finish(label);
+    } else {
+      /* not a cross pointer, just pull() */
+      pull()->Any::finish(label);
+    }
+  }
+
+  /**
+   * Freeze.
+   */
+  void freeze() {
+    pull()->Any::freeze();
+  }
+
+  /**
+   * Mark.
+   */
+  void mark() {
+    object->Any::mark();
+    label->Any::mark();
+  }
+
+  /**
+   * Scan.
+   */
+  void scan(const bool reachable) {
+    object->Any::scan(reachable);
+    label->Any::scan(reachable);
+  }
+
+  /**
+   * Collect.
+   */
+  void collect() {
+    object->Any::collect();
+    label->Any::collect();
   }
 
 private:
