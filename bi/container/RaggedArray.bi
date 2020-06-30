@@ -39,6 +39,13 @@ final class RaggedArray<Type> {
   }
 
   /**
+   * Number of elements.
+   */
+  function count() -> Integer {
+    return length(values);
+  }
+
+  /**
    * Number of rows.
    */
   function size() -> Integer {
