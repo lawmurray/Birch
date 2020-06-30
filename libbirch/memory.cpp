@@ -10,7 +10,7 @@
 /**
  * Root list.
  */
-using root_list = std::list<libbirch::Any*,libbirch::Allocator<libbirch::Any*>>;
+using root_list = std::vector<libbirch::Any*,libbirch::Allocator<libbirch::Any*>>;
 
 /**
  * Get the root list for the current thread.
