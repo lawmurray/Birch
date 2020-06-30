@@ -97,6 +97,7 @@ public:
     o.finish(label);
   }
 
+private:
   /**
    * Label of the pointer on which the freeze was initiated.
    */

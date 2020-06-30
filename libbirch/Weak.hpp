@@ -191,21 +191,21 @@ public:
    * Mark.
    */
   void mark() {
-    // nothing to do here, weak references do not create cycles
+    // nothing to do here, cannot create cycles
   }
 
   /**
    * Scan.
    */
   void scan(const bool reachable) {
-    // nothing to do here, weak references do not create cycles
+    // nothing to do here, cannot create cycles
   }
 
   /**
    * Collect.
    */
   void collect() {
-    // nothing to do here, weak references do not create cycles
+    // nothing to do here, cannot create cycles
   }
 
 private:

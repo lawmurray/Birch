@@ -6,12 +6,11 @@
 #include "libbirch/Any.hpp"
 #include "libbirch/Label.hpp"
 #include "libbirch/Shared.hpp"
-#include "libbirch/Weak.hpp"
 
 /**
  * Root list.
  */
-using root_list = std::vector<libbirch::Weak<libbirch::Any>,libbirch::Allocator<libbirch::Weak<libbirch::Any>>>;
+using root_list = std::list<libbirch::Any*,libbirch::Allocator<libbirch::Any*>>;
 
 /**
  * Get the root list for the current thread.
@@ -136,12 +135,35 @@ void* libbirch::reallocate(void* ptr1, const size_t n1, const int tid1,
 }
 
 void libbirch::collect() {
-  #pragma omp parallel
+  return;
+  #pragma omp parallel num_threads(libbirch::get_max_threads())
   {
-    get_thread_possible_roots().clear();
+    auto& possible_roots = get_thread_possible_roots();
+    for (auto& o : possible_roots) {
+      if (!o->isDestroyed()) {
+        o->mark();
+      }
+    }
+    #pragma omp barrier
+    for (auto& o : possible_roots) {
+      if (!o->isDestroyed()) {
+        o->scan(false);
+      }
+    }
+    #pragma omp barrier
+    for (auto& o : possible_roots) {
+      if (!o->isDestroyed()) {
+        o->collect();
+      }
+      o->decMemo();
+    }
+    #pragma omp barrier
+    possible_roots.clear();
   }
 }
 
 void libbirch::register_possible_root(Any* o) {
-  get_thread_possible_roots().push_back(Weak<Any>(o));
+  assert(o);
+  o->incMemo();
+  get_thread_possible_roots().emplace_back(o);
 }

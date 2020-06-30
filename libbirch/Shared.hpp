@@ -210,21 +210,34 @@ public:
    * Mark.
    */
   void mark() {
-    ptr.load()->Any::mark();
+    auto o = ptr.load();
+    o->breakShared();  // break the reference
+    if (o) {
+      o->Any::mark();
+    }
   }
 
   /**
    * Scan.
    */
   void scan(const bool reachable) {
-    ptr.load()->Any::scan(reachable);
+    auto o = ptr.load();
+    if (reachable) {
+      o->incShared();  // restore the broken reference
+    }
+    if (o) {
+      o->Any::scan(reachable);
+    }
   }
 
   /**
    * Collect.
    */
   void collect() {
-    ptr.load()->Any::collect();
+    auto o = ptr.exchange(nullptr);  // reference still broken, just set null
+    if (o) {
+      o->Any::collect();
+    }
   }
 
 private:

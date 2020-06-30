@@ -130,6 +130,7 @@ class ParticleFilter {
    */
   function filter(archetype:Model, t:Integer) {
     resample(t);
+    collect();
     step(t);
     reduce();
   }

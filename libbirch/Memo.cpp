@@ -227,9 +227,8 @@ void libbirch::Memo::freeze() {
 
 void libbirch::Memo::mark() {
   for (auto i = 0u; i < nentries; ++i) {
-    auto key = keys[i];
-    if (key && key->isReachable()) {
-      auto value = values[i];
+    auto value = values[i];
+    if (value) {
       value->mark();
     }
   }
@@ -237,9 +236,8 @@ void libbirch::Memo::mark() {
 
 void libbirch::Memo::scan(const bool reachable) {
   for (auto i = 0u; i < nentries; ++i) {
-    auto key = keys[i];
-    if (key && key->isReachable()) {
-      auto value = values[i];
+    auto value = values[i];
+    if (value) {
       value->scan(reachable);
     }
   }
@@ -247,9 +245,8 @@ void libbirch::Memo::scan(const bool reachable) {
 
 void libbirch::Memo::collect() {
   for (auto i = 0u; i < nentries; ++i) {
-    auto key = keys[i];
-    if (key && key->isReachable()) {
-      auto value = values[i];
+    auto value = values[i];
+    if (value) {
       value->collect();
     }
   }

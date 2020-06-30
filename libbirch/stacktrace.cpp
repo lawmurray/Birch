@@ -49,7 +49,7 @@ void libbirch::abort(const std::string& msg, const int skip) {
   printf("error: %s\n", msg.c_str());
   #ifndef NDEBUG
   printf("stack trace:\n");
-  auto trace = get_thread_stack_trace();
+  auto& trace = get_thread_stack_trace();
   int i = 0;
   for (auto iter = trace.rbegin() + skip; (i < 20 + skip) &&
       iter != trace.rend(); ++iter) {

@@ -336,24 +336,24 @@ public:
    * Mark.
    */
   void mark() {
-    object->Any::mark();
-    label->Any::mark();
+    object.mark();
+    label.mark();
   }
 
   /**
    * Scan.
    */
   void scan(const bool reachable) {
-    object->Any::scan(reachable);
-    label->Any::scan(reachable);
+    object.scan(reachable);
+    label.scan(reachable);
   }
 
   /**
    * Collect.
    */
   void collect() {
-    object->Any::collect();
-    label->Any::collect();
+    object.collect();
+    label.collect();
   }
 
 private:

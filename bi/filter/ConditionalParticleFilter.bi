@@ -49,6 +49,7 @@ class ConditionalParticleFilter < ParticleFilter {
       ancestorSample(t);
     }
     resample(t);
+    collect();
     step(t);
     reduce();
   }

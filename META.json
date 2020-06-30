@@ -338,6 +338,7 @@
       "bi/transform/TransformLinearMultivariate.bi",
       "bi/utility/chrono.bi",
       "bi/utility/clone.bi",
+      "bi/utility/collect.bi",
       "bi/utility/error.bi",
       "bi/utility/make.bi",
       "bi/utility/ProgressBar.bi",

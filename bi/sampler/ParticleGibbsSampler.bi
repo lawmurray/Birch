@@ -52,5 +52,7 @@ class ParticleGibbsSampler < ConditionalParticleSampler {
     }
     x <- filter.x[filter.b].m;
     w <- 0.0;
+
+    collect();
   }
 }

@@ -96,6 +96,7 @@ public:
     o.scan(reachable);
   }
 
+private:
   /**
    * Reachable flag.
    */

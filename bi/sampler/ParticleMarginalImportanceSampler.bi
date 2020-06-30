@@ -26,5 +26,6 @@ class ParticleMarginalImportanceSampler < ParticleSampler {
       x <- filter.x[b].m;
       w <- filter.lnormalize;
     }
+    collect();
   }
 }

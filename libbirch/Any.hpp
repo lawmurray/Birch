@@ -30,14 +30,14 @@ public:
    * Constructor.
    */
   Any() :
+      label(root_label),
       sharedCount(0u),
       weakCount(1u),
       memoCount(1u),
-      markCount(0u),
-      label(root_label),
-      tid(get_thread_num()),
       size(0u),
-      flags(0u) {
+      tid(get_thread_num()),
+      flags(0u),
+      color(BLACK) {
     //
   }
 
@@ -45,14 +45,14 @@ public:
    * Special constructor for the root label.
    */
   Any(int) :
+      label(nullptr),
       sharedCount(0u),
       weakCount(1u),
       memoCount(1u),
-      markCount(0u),
-      label(nullptr),
-      tid(0),
       size(0u),
-      flags(0u) {
+      tid(0),
+      flags(0u),
+      color(BLACK) {
     //
   }
 
@@ -145,13 +145,12 @@ public:
    */
   Any* copy(Label* label) {
     auto o = copy_(label);
+    o->label = label;
     o->sharedCount.set(0u);
     o->weakCount.set(1u);
     o->memoCount.set(1u);
-    o->markCount.set(0u);
-    o->label = label;
-    o->tid = get_thread_num();
     o->size = 0u;
+    o->tid = get_thread_num();
     o->flags.set(0u);
     return o;
   }
@@ -177,7 +176,9 @@ public:
    * "Bacon & Rajan (2001)".
    */
   void mark() {
-    mark_();
+    if (color.exchange(GRAY) != GRAY) {
+      mark_();
+    }
   }
 
   /**
@@ -190,7 +191,15 @@ public:
    * "Bacon & Rajan (2001)".
    */
   void scan(const bool reachable) {
-    scan_(reachable);
+    if (reachable || numShared() > 0u) {
+      if (color.exchange(BLACK) != BLACK) {
+        scan_(true);
+      }
+    } else {
+      if (color.exchange(WHITE) != WHITE) {
+        scan_(false);
+      }
+    }
   }
 
   /**
@@ -200,7 +209,11 @@ public:
    * "Bacon & Rajan (2001)".
    */
   void collect() {
-    collect_();
+    if (color.exchange(BLACK) != BLACK) {
+      collect_();
+      destroy();
+      decWeak();
+    }
   }
 
   /**
@@ -222,12 +235,27 @@ public:
    */
   void decShared() {
     assert(numShared() > 0u);
+
+    /* if the count will reduce to nonzero, this is possible the root of
+     * a cycle; check this before decrementing rather than after, as otherwise
+     * another thread may destroy the object while this thread registers */
+    if (sharedCount.load() > 1u && color.exchange(PURPLE) == BLACK) {
+      register_possible_root(this);
+    }
+
+    /* decrement */
     if (--sharedCount == 0u) {
       destroy();
       decWeak();
-    } else if (color.exchange(PURPLE) != PURPLE) {
-      register_possible_root(this);
     }
+  }
+
+  /**
+   * Decrement the shared count during mark() operation.
+   */
+  void breakShared() {
+    assert(numShared() > 0u);
+    sharedCount.decrement();
   }
 
   /**
@@ -283,27 +311,6 @@ public:
   }
 
   /**
-   * Mark count.
-   */
-  unsigned numMark() const {
-    return markCount.load();
-  }
-
-  /**
-   * Increment the mark count.
-   */
-  void incMark() {
-    markCount.increment();
-  }
-
-  /**
-   * Clear the mark count back to zero.
-   */
-  void clearMark() {
-    markCount.store(0u);
-  }
-
-  /**
    * Get the label assigned to the object.
    */
   Label* getLabel() const {
@@ -329,15 +336,10 @@ public:
   }
 
   /**
-   * Is there only one pointer to this object?
+   * Is there only one shared or weak pointer to this object?
    */
   bool isUnique() const {
-    auto sharedCount = numShared();
-    auto weakCount = numWeak();
-    auto memoCount = numMemo();
-
-    return (sharedCount == 1u && weakCount == 1u && memoCount == 1u) ||
-        (sharedCount == 0u && weakCount == 1u && memoCount == 1u);
+    return numShared() <= 1u && numWeak() <= 1u;
   }
 
   /**
@@ -487,8 +489,13 @@ private:
     assert(sharedCount.load() == 0u);
     assert(weakCount.load() == 0u);
     assert(memoCount.load() == 0u);
-    libbirch::deallocate(this, (unsigned)size, tid);
+    libbirch::deallocate(this, size, tid);
   }
+
+  /**
+   * Label of the object.
+   */
+  Label* label;
 
   /**
    * Shared count.
@@ -506,19 +513,10 @@ private:
   Atomic<unsigned> memoCount;
 
   /**
-   * Mark count. This is used during the cycle collection algorithm to count
-   * the number times the object is reached via a shared pointer when marking
-   * from the root set. This is slightly different to @ref Bacon2001
-   * "Bacon & Rajan (2001)": where they decrement the shared reference count
-   * and test the result against zero, we increment this mark count and
-   * compare it against the shared count, so as to leave the latter untouched.
+   * Size of the object. This is initially set to zero. Upon destruction, it
+   * is set to the correct size with a virtual function call.
    */
-  Atomic<unsigned> markCount;
-
-  /**
-   * Label of the object.
-   */
-  Label* label;
+  unsigned size;
 
   /**
    * Id of the thread associated with the object. This is set immediately
@@ -526,12 +524,6 @@ private:
    * pool after use, even when returned by a different thread.
    */
   int tid;
-
-  /**
-   * Size of the object. This is initially set to zero. Upon destruction, it
-   * is set to the correct size with a virtual function call.
-   */
-  uint16_t size;
 
   /**
    * Bitfield containing, from right to left:
@@ -558,29 +550,14 @@ private:
    * Color.
    *
    * This is used for cycle collection as in @ref Bacon2001
-   * "Bacon & Rajan (2001)". The colors are encoded as:
-   *
-   *   - `00` black,
-   *   - `01` purple,
-   *   - `10` white,
-   *   - `11` gray.
-   *
-   * These values are deliberately chosen given the state diagram in Figure 3
-   * of @ref Bacon2001 "Bacon & Rajan (2001)". They allow the convenience of
-   * atomic mask operations to be used to transition to each color from each
-   * other (valid) color. In particular:
-   *
-   *   - `|01` transitions to purple (from black),
-   *   - `|11` transitions to gray (from black or purple),
-   *   - `&10` transitions to white (from gray)
-   *   - `&00` transitions to black (from purple, gray or white).
-   *
-   * However, the transition from purple to black is not used due to a race
-   * condition. This only has the effect of potentially (wastefully) checking
-   * for cycles from a candidate root node that may otherwise have been
-   * eliminated earlier. But it also means that the *buffered* flag in
+   * "Bacon & Rajan (2001)", with some adaptation. A small difference is
+   * that we do not allow an object colored purple to return to black, as it
+   * creates a race condition in our implementation. This only has the effect
+   * of potentially (wastefully) checking for cycles from a possible root that
+   * is definitely reachable. It also means that the *buffered* flag in
    * @ref Bacon2001 "Bacon & Rajan (2001)" is unnecessary: the color purple
-   * suffices to indicate that an object is in the root set.
+   * suffices to indicate that an object has been registered as a possible
+   * root.
    */
   Atomic<uint8_t> color;
 
@@ -591,8 +568,8 @@ private:
   enum {
     BLACK = 0,
     PURPLE = 1,
-    WHITE = 2,
-    GRAY = 3
+    GRAY = 2,
+    WHITE = 3
   };
 };
 }
