@@ -70,13 +70,6 @@ final class Random<Value> < Expression<Value> {
   }
 
   /**
-   * Does this have a value?
-   */
-  function hasValue() -> Boolean {
-    return x?;
-  }
-
-  /**
    * Does this have a distribution?
    */
   function hasDistribution() -> Boolean {

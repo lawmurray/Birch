@@ -86,6 +86,19 @@ abstract class Expression<Value> < DelayExpression {
   moveCount:Integer <- 0;
 
   /**
+   * Does this have a value?
+   *
+   * Returns: true if a value has been evaluated with `value()`, `pilot()`
+   * or `get()`, false otherwise.
+   *
+   * Note that this differs from `isConstant()`, which will only return true
+   * for a value that has been evaluated with `value()`.
+   */
+  function hasValue() -> Boolean {
+    return x?;
+  }
+
+  /**
    * If this is a Random, get the distribution associated with it, if any,
    * otherwise nil.
    */

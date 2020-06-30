@@ -31,16 +31,18 @@ final class MatrixAdd<Left,Right,Value>(left:Left, right:Right) <
   override function graftLinearMatrixGaussian() ->
       TransformLinearMatrix<MatrixGaussian>? {
     y:TransformLinearMatrix<MatrixGaussian>?;
-    z:MatrixGaussian?;
+    if !hasValue() {
+      z:MatrixGaussian?;
 
-    if (y <- left!.graftLinearMatrixGaussian())? {
-      y!.add(right!);
-    } else if (y <- right!.graftLinearMatrixGaussian())? {
-      y!.add(left!);
-    } else if (z <- left!.graftMatrixGaussian())? {
-      y <- TransformLinearMatrix<MatrixGaussian>(box(identity(z!.rows())), z!, right!);
-    } else if (z <- right!.graftMatrixGaussian())? {
-      y <- TransformLinearMatrix<MatrixGaussian>(box(identity(z!.rows())), z!, left!);
+      if (y <- left!.graftLinearMatrixGaussian())? {
+        y!.add(right!);
+      } else if (y <- right!.graftLinearMatrixGaussian())? {
+        y!.add(left!);
+      } else if (z <- left!.graftMatrixGaussian())? {
+        y <- TransformLinearMatrix<MatrixGaussian>(box(identity(z!.rows())), z!, right!);
+      } else if (z <- right!.graftMatrixGaussian())? {
+        y <- TransformLinearMatrix<MatrixGaussian>(box(identity(z!.rows())), z!, left!);
+      }
     }
     return y;
   }
@@ -48,16 +50,18 @@ final class MatrixAdd<Left,Right,Value>(left:Left, right:Right) <
   override function graftLinearMatrixNormalInverseGamma(compare:Distribution<Real[_]>) ->
       TransformLinearMatrix<MatrixNormalInverseGamma>? {
     y:TransformLinearMatrix<MatrixNormalInverseGamma>?;
-    z:MatrixNormalInverseGamma?;
-
-    if (y <- left!.graftLinearMatrixNormalInverseGamma(compare))? {
-      y!.add(right!);
-    } else if (y <- right!.graftLinearMatrixNormalInverseGamma(compare))? {
-      y!.add(left!);
-    } else if (z <- left!.graftMatrixNormalInverseGamma(compare))? {
-      y <- TransformLinearMatrix<MatrixNormalInverseGamma>(box(identity(z!.rows())), z!, right!);
-    } else if (z <- right!.graftMatrixNormalInverseGamma(compare))? {
-      y <- TransformLinearMatrix<MatrixNormalInverseGamma>(box(identity(z!.rows())), z!, left!);
+    if !hasValue() {
+      z:MatrixNormalInverseGamma?;
+      
+      if (y <- left!.graftLinearMatrixNormalInverseGamma(compare))? {
+        y!.add(right!);
+      } else if (y <- right!.graftLinearMatrixNormalInverseGamma(compare))? {
+        y!.add(left!);
+      } else if (z <- left!.graftMatrixNormalInverseGamma(compare))? {
+        y <- TransformLinearMatrix<MatrixNormalInverseGamma>(box(identity(z!.rows())), z!, right!);
+      } else if (z <- right!.graftMatrixNormalInverseGamma(compare))? {
+        y <- TransformLinearMatrix<MatrixNormalInverseGamma>(box(identity(z!.rows())), z!, left!);
+      }
     }
     return y;
   }
@@ -65,16 +69,18 @@ final class MatrixAdd<Left,Right,Value>(left:Left, right:Right) <
   override function graftLinearMatrixNormalInverseWishart(compare:Distribution<LLT>) ->
       TransformLinearMatrix<MatrixNormalInverseWishart>? {
     y:TransformLinearMatrix<MatrixNormalInverseWishart>?;
-    z:MatrixNormalInverseWishart?;
+    if !hasValue() {
+      z:MatrixNormalInverseWishart?;
 
-    if (y <- left!.graftLinearMatrixNormalInverseWishart(compare))? {
-      y!.add(right!);
-    } else if (y <- right!.graftLinearMatrixNormalInverseWishart(compare))? {
-      y!.add(left!);
-    } else if (z <- left!.graftMatrixNormalInverseWishart(compare))? {
-      y <- TransformLinearMatrix<MatrixNormalInverseWishart>(box(identity(z!.rows())), z!, right!);
-    } else if (z <- right!.graftMatrixNormalInverseWishart(compare))? {
-      y <- TransformLinearMatrix<MatrixNormalInverseWishart>(box(identity(z!.rows())), z!, left!);
+       if (y <- left!.graftLinearMatrixNormalInverseWishart(compare))? {
+        y!.add(right!);
+      } else if (y <- right!.graftLinearMatrixNormalInverseWishart(compare))? {
+        y!.add(left!);
+      } else if (z <- left!.graftMatrixNormalInverseWishart(compare))? {
+        y <- TransformLinearMatrix<MatrixNormalInverseWishart>(box(identity(z!.rows())), z!, right!);
+      } else if (z <- right!.graftMatrixNormalInverseWishart(compare))? {
+        y <- TransformLinearMatrix<MatrixNormalInverseWishart>(box(identity(z!.rows())), z!, left!);
+      }
     }
     return y;
   }

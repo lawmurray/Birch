@@ -27,18 +27,20 @@ final class MultivariateAdd<Left,Right,Value>(left:Left, right:Right) <
   override function graftLinearMultivariateGaussian() ->
       TransformLinearMultivariate<MultivariateGaussian>? {
     y:TransformLinearMultivariate<MultivariateGaussian>?;
-    z:MultivariateGaussian?;
+    if !hasValue() {
+      z:MultivariateGaussian?;
 
-    if (y <- left!.graftLinearMultivariateGaussian())? {
-      y!.add(right!);
-    } else if (y <- right!.graftLinearMultivariateGaussian())? {
-      y!.add(left!);
-    } else if (z <- left!.graftMultivariateGaussian())? {
-      y <- TransformLinearMultivariate<MultivariateGaussian>(
-          box(identity(z!.rows())), z!, right!);
-    } else if (z <- right!.graftMultivariateGaussian())? {
-      y <- TransformLinearMultivariate<MultivariateGaussian>(
-          box(identity(z!.rows())), z!, left!);
+      if (y <- left!.graftLinearMultivariateGaussian())? {
+        y!.add(right!);
+      } else if (y <- right!.graftLinearMultivariateGaussian())? {
+        y!.add(left!);
+      } else if (z <- left!.graftMultivariateGaussian())? {
+        y <- TransformLinearMultivariate<MultivariateGaussian>(
+            box(identity(z!.rows())), z!, right!);
+      } else if (z <- right!.graftMultivariateGaussian())? {
+        y <- TransformLinearMultivariate<MultivariateGaussian>(
+            box(identity(z!.rows())), z!, left!);
+      }
     }
     return y;
   }
@@ -46,18 +48,20 @@ final class MultivariateAdd<Left,Right,Value>(left:Left, right:Right) <
   override function graftLinearMultivariateNormalInverseGamma(compare:Distribution<Real>) ->
       TransformLinearMultivariate<MultivariateNormalInverseGamma>? {
     y:TransformLinearMultivariate<MultivariateNormalInverseGamma>?;
-    z:MultivariateNormalInverseGamma?;
+    if !hasValue() {
+      z:MultivariateNormalInverseGamma?;
 
-    if (y <- left!.graftLinearMultivariateNormalInverseGamma(compare))? {
-      y!.add(right!);
-    } else if (y <- right!.graftLinearMultivariateNormalInverseGamma(compare))? {
-      y!.add(left!);
-    } else if (z <- left!.graftMultivariateNormalInverseGamma(compare))? {
-      y <- TransformLinearMultivariate<MultivariateNormalInverseGamma>(
-          box(identity(z!.rows())), z!, right!);
-    } else if (z <- right!.graftMultivariateNormalInverseGamma(compare))? {
-      y <- TransformLinearMultivariate<MultivariateNormalInverseGamma>(
-          box(identity(z!.rows())), z!, left!);
+      if (y <- left!.graftLinearMultivariateNormalInverseGamma(compare))? {
+        y!.add(right!);
+      } else if (y <- right!.graftLinearMultivariateNormalInverseGamma(compare))? {
+        y!.add(left!);
+      } else if (z <- left!.graftMultivariateNormalInverseGamma(compare))? {
+        y <- TransformLinearMultivariate<MultivariateNormalInverseGamma>(
+            box(identity(z!.rows())), z!, right!);
+      } else if (z <- right!.graftMultivariateNormalInverseGamma(compare))? {
+        y <- TransformLinearMultivariate<MultivariateNormalInverseGamma>(
+            box(identity(z!.rows())), z!, left!);
+      }
     }
     return y;
   }

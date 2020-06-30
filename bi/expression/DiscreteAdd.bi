@@ -21,29 +21,33 @@ final class DiscreteAdd<Left,Right,Value>(left:Left, right:Right) <
   }
 
   override function graftDiscrete() -> Discrete? {
-    r:Discrete? <- graftBoundedDiscrete();
-    if !r? {
-      x:Discrete?;
-      if (x <- left!.graftDiscrete())? {
-        r <- LinearDiscrete(box(1), x!, right!);
-      } else if (x <- right!.graftDiscrete())? {
-        r <- LinearDiscrete(box(1), x!, left!);
+    r:Discrete?;
+    if !hasValue() {
+      r <- graftBoundedDiscrete();
+      if !r? {
+        x:Discrete?;
+        if (x <- left!.graftDiscrete())? {
+          r <- LinearDiscrete(box(1), x!, right!);
+        } else if (x <- right!.graftDiscrete())? {
+          r <- LinearDiscrete(box(1), x!, left!);
+        }
       }
     }
     return r;
   }
 
   override function graftBoundedDiscrete() -> BoundedDiscrete? {
-    x1:BoundedDiscrete? <- left!.graftBoundedDiscrete();
-    x2:BoundedDiscrete? <- right!.graftBoundedDiscrete();
     r:BoundedDiscrete?;
-
-    if x1? && x2? {
-      r <- AddBoundedDiscrete(x1!, x2!);
-    } else if x1? {
-      r <- LinearBoundedDiscrete(box(1), x1!, right!);
-    } else if x2? {
-      r <- LinearBoundedDiscrete(box(1), x2!, left!);
+    if !hasValue() {
+      auto x1 <- left!.graftBoundedDiscrete();
+      auto x2 <- right!.graftBoundedDiscrete();
+      if x1? && x2? {
+        r <- AddBoundedDiscrete(x1!, x2!);
+      } else if x1? {
+        r <- LinearBoundedDiscrete(box(1), x1!, right!);
+      } else if x2? {
+        r <- LinearBoundedDiscrete(box(1), x2!, left!);
+      }
     }
     return r;
   }

@@ -21,29 +21,32 @@ final class DiscreteMultiply<Left,Right,Value>(left:Left, right:Right) <
   }
 
   override function graftDiscrete() -> Discrete? {
-    r:Discrete? <- graftBoundedDiscrete();
-    if !r? {
-      x:Discrete?;
-      if (x <- left!.graftDiscrete())? {
-        r <- LinearDiscrete(right!, x!, box(0));
-      } else if (x <- right!.graftDiscrete())? {
-        r <- LinearDiscrete(left!, x!, box(0));
+    r:Discrete?;
+    if !hasValue() {
+      r <- graftBoundedDiscrete();
+      if !r? {
+        x:Discrete?;
+        if (x <- left!.graftDiscrete())? {
+          r <- LinearDiscrete(right!, x!, box(0));
+        } else if (x <- right!.graftDiscrete())? {
+          r <- LinearDiscrete(left!, x!, box(0));
+        }
       }
     }
     return r;
   }
 
   override function graftBoundedDiscrete() -> BoundedDiscrete? {
-    x1:BoundedDiscrete? <- left!.graftBoundedDiscrete();
-    x2:BoundedDiscrete? <- right!.graftBoundedDiscrete();
     r:BoundedDiscrete?;
-
-    if x1? {
-      r <- LinearBoundedDiscrete(right!, x1!, box(0));
-    } else if x2? {
-      r <- LinearBoundedDiscrete(left!, x2!, box(0));
+    if !hasValue() {
+      auto x1 <- left!.graftBoundedDiscrete();
+      auto x2 <- right!.graftBoundedDiscrete();
+      if x1? {
+        r <- LinearBoundedDiscrete(right!, x1!, box(0));
+      } else if x2? {
+        r <- LinearBoundedDiscrete(left!, x2!, box(0));
+      }
     }
-    
     return r;
   }
 }

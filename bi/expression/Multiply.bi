@@ -22,43 +22,48 @@ final class Multiply<Left,Right,Value>(left:Left, right:Right) <
 
   override function graftScaledGamma() -> TransformLinear<Gamma>? {
     y:TransformLinear<Gamma>?;
-    z:Gamma?;
+    if !hasValue() {
+      z:Gamma?;
     
-    if (y <- left!.graftScaledGamma())? {
-      y!.multiply(right!);
-    } else if (y <- right!.graftScaledGamma())? {
-      y!.multiply(left!);
-    } else if (z <- left!.graftGamma())? {
-      y <- TransformLinear<Gamma>(right!, z!);
-    } else if (z <- right!.graftGamma())? {
-      y <- TransformLinear<Gamma>(left!, z!);
+      if (y <- left!.graftScaledGamma())? {
+        y!.multiply(right!);
+      } else if (y <- right!.graftScaledGamma())? {
+        y!.multiply(left!);
+      } else if (z <- left!.graftGamma())? {
+        y <- TransformLinear<Gamma>(right!, z!);
+      } else if (z <- right!.graftGamma())? {
+        y <- TransformLinear<Gamma>(left!, z!);
+      }
     }
     return y;
   }
 
   override function graftLinearGaussian() -> TransformLinear<Gaussian>? {
     y:TransformLinear<Gaussian>?;
-    z:Gaussian?;
+    if !hasValue() {
+      z:Gaussian?;
     
-    if (y <- left!.graftLinearGaussian())? {
-      y!.multiply(right!);
-    } else if (y <- right!.graftLinearGaussian())? {
-      y!.multiply(left!);
-    } else if (z <- left!.graftGaussian())? {
-      y <- TransformLinear<Gaussian>(right!, z!);
-    } else if (z <- right!.graftGaussian())? {
-      y <- TransformLinear<Gaussian>(left!, z!);
+      if (y <- left!.graftLinearGaussian())? {
+        y!.multiply(right!);
+      } else if (y <- right!.graftLinearGaussian())? {
+        y!.multiply(left!);
+      } else if (z <- left!.graftGaussian())? {
+        y <- TransformLinear<Gaussian>(right!, z!);
+      } else if (z <- right!.graftGaussian())? {
+        y <- TransformLinear<Gaussian>(left!, z!);
+      }
     }
     return y;
   }
 
   override function graftDotGaussian() -> TransformDot<MultivariateGaussian>? {
     y:TransformDot<MultivariateGaussian>?;
-    
-    if (y <- left!.graftDotGaussian())? {
-      y!.multiply(right!);
-    } else if (y <- right!.graftDotGaussian())? {
-      y!.multiply(left!);
+    if !hasValue() {
+      if (y <- left!.graftDotGaussian())? {
+        y!.multiply(right!);
+      } else if (y <- right!.graftDotGaussian())? {
+        y!.multiply(left!);
+      }
     }
     return y;
   }
@@ -66,16 +71,18 @@ final class Multiply<Left,Right,Value>(left:Left, right:Right) <
   override function graftLinearNormalInverseGamma(compare:Distribution<Real>) ->
       TransformLinear<NormalInverseGamma>? {
     y:TransformLinear<NormalInverseGamma>?;
-    z:NormalInverseGamma?;
+    if !hasValue() {
+      z:NormalInverseGamma?;
     
-    if (y <- left!.graftLinearNormalInverseGamma(compare))? {
-      y!.multiply(right!);
-    } else if (y <- right!.graftLinearNormalInverseGamma(compare))? {
-      y!.multiply(left!);
-    } else if (z <- left!.graftNormalInverseGamma(compare))? {
-      y <- TransformLinear<NormalInverseGamma>(right!, z!);
-    } else if (z <- right!.graftNormalInverseGamma(compare))? {
-      y <- TransformLinear<NormalInverseGamma>(left!, z!);
+      if (y <- left!.graftLinearNormalInverseGamma(compare))? {
+        y!.multiply(right!);
+      } else if (y <- right!.graftLinearNormalInverseGamma(compare))? {
+        y!.multiply(left!);
+      } else if (z <- left!.graftNormalInverseGamma(compare))? {
+        y <- TransformLinear<NormalInverseGamma>(right!, z!);
+      } else if (z <- right!.graftNormalInverseGamma(compare))? {
+        y <- TransformLinear<NormalInverseGamma>(left!, z!);
+      }
     }
     return y;
   }
@@ -83,11 +90,12 @@ final class Multiply<Left,Right,Value>(left:Left, right:Right) <
   override function graftDotNormalInverseGamma(compare:Distribution<Real>) ->
       TransformDot<MultivariateNormalInverseGamma>? {
     y:TransformDot<MultivariateNormalInverseGamma>?;
-    
-    if (y <- left!.graftDotNormalInverseGamma(compare))? {
-      y!.multiply(right!);
-    } else if (y <- right!.graftDotNormalInverseGamma(compare))? {
-      y!.multiply(left!);
+    if !hasValue() {
+      if (y <- left!.graftDotNormalInverseGamma(compare))? {
+        y!.multiply(right!);
+      } else if (y <- right!.graftDotNormalInverseGamma(compare))? {
+        y!.multiply(left!);
+      }
     }
     return y;
   }

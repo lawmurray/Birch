@@ -30,15 +30,17 @@ final class MatrixNegate(x:Expression<Real[_,_]>) <
   override function graftLinearMatrixGaussian() ->
       TransformLinearMatrix<MatrixGaussian>? {
     y:TransformLinearMatrix<MatrixGaussian>?;
-    z:MatrixGaussian?;
+    if !hasValue() {
+      z:MatrixGaussian?;
 
-    if (y <- single!.graftLinearMatrixGaussian())? {
-      y!.negate();
-    } else if (z <- single!.graftMatrixGaussian())? {
-      auto R <- z!.rows();
-      auto C <- z!.columns();
-      y <- TransformLinearMatrix<MatrixGaussian>(diagonal(box(-1.0), R), z!,
-          box(matrix(0.0, R, C)));
+      if (y <- single!.graftLinearMatrixGaussian())? {
+        y!.negate();
+      } else if (z <- single!.graftMatrixGaussian())? {
+        auto R <- z!.rows();
+        auto C <- z!.columns();
+        y <- TransformLinearMatrix<MatrixGaussian>(diagonal(box(-1.0), R), z!,
+            box(matrix(0.0, R, C)));
+      }
     }
     return y;
   }

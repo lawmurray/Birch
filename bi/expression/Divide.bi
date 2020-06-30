@@ -24,20 +24,23 @@ final class Divide<Left,Right,Value>(left:Left, right:Right) <
 
   override function graftLinearGaussian() -> TransformLinear<Gaussian>? {
     y:TransformLinear<Gaussian>?;
-    z:Gaussian?;
-    
-    if (y <- left!.graftLinearGaussian())? {
-      y!.divide(right!);
-    } else if (z <- left!.graftGaussian())? {
-      y <- TransformLinear<Gaussian>(1.0/right!, z!);
+    if !hasValue() {
+      z:Gaussian?;
+      if (y <- left!.graftLinearGaussian())? {
+        y!.divide(right!);
+      } else if (z <- left!.graftGaussian())? {
+        y <- TransformLinear<Gaussian>(1.0/right!, z!);
+      }
     }
     return y;
   }
 
   override function graftDotGaussian() -> TransformDot<MultivariateGaussian>? {
     y:TransformDot<MultivariateGaussian>?;
-    if (y <- left!.graftDotGaussian())? {
-      y!.divide(right!);
+    if !hasValue() {
+      if (y <- left!.graftDotGaussian())? {
+        y!.divide(right!);
+      }
     }
     return y;
   }
@@ -45,12 +48,13 @@ final class Divide<Left,Right,Value>(left:Left, right:Right) <
   override function graftLinearNormalInverseGamma(compare:Distribution<Real>) ->
       TransformLinear<NormalInverseGamma>? {
     y:TransformLinear<NormalInverseGamma>?;
-    z:NormalInverseGamma?;
-    
-    if (y <- left!.graftLinearNormalInverseGamma(compare))? {
-      y!.divide(right!);
-    } else if (z <- left!.graftNormalInverseGamma(compare))? {
-      y <- TransformLinear<NormalInverseGamma>(1.0/right!, z!);
+    if !hasValue() {
+      z:NormalInverseGamma?;
+      if (y <- left!.graftLinearNormalInverseGamma(compare))? {
+        y!.divide(right!);
+      } else if (z <- left!.graftNormalInverseGamma(compare))? {
+        y <- TransformLinear<NormalInverseGamma>(1.0/right!, z!);
+      }
     }
     return y;
   }
@@ -58,20 +62,23 @@ final class Divide<Left,Right,Value>(left:Left, right:Right) <
   override function graftDotNormalInverseGamma(compare:Distribution<Real>) ->
       TransformDot<MultivariateNormalInverseGamma>? {
     y:TransformDot<MultivariateNormalInverseGamma>?;
-    if (y <- left!.graftDotNormalInverseGamma(compare))? {
-      y!.divide(right!);
+    if !hasValue() {
+      if (y <- left!.graftDotNormalInverseGamma(compare))? {
+        y!.divide(right!);
+      }
     }
     return y;
   }
 
   override function graftScaledGamma() -> TransformLinear<Gamma>? {
     y:TransformLinear<Gamma>?;
-    z:Gamma?;
-    
-    if (y <- left!.graftScaledGamma())? {
-      y!.divide(right!);
-    } else if (z <- left!.graftGamma())? {
-      y <- TransformLinear<Gamma>(1.0/right!, z!);
+    if !hasValue() {
+      z:Gamma?;
+      if (y <- left!.graftScaledGamma())? {
+        y!.divide(right!);
+      } else if (z <- left!.graftGamma())? {
+        y <- TransformLinear<Gamma>(1.0/right!, z!);
+      }
     }
     return y;
   }

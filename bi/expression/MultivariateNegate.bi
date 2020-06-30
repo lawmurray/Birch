@@ -22,14 +22,16 @@ final class MultivariateNegate(x:Expression<Real[_]>) <
   override function graftLinearMultivariateGaussian() ->
       TransformLinearMultivariate<MultivariateGaussian>? {
     y:TransformLinearMultivariate<MultivariateGaussian>?;
-    z:MultivariateGaussian?;
+    if !hasValue() {
+      z:MultivariateGaussian?;
 
-    if (y <- single!.graftLinearMultivariateGaussian())? {
-      y!.negate();
-    } else if (z <- single!.graftMultivariateGaussian())? {
-      auto R <- z!.rows();
-      y <- TransformLinearMultivariate<MultivariateGaussian>(
-          box(diagonal(-1.0, R)), z!, box(vector(0.0, R)));
+      if (y <- single!.graftLinearMultivariateGaussian())? {
+        y!.negate();
+      } else if (z <- single!.graftMultivariateGaussian())? {
+        auto R <- z!.rows();
+        y <- TransformLinearMultivariate<MultivariateGaussian>(
+            box(diagonal(-1.0, R)), z!, box(vector(0.0, R)));
+      }
     }
     return y;
   }
@@ -37,14 +39,16 @@ final class MultivariateNegate(x:Expression<Real[_]>) <
   override function graftLinearMultivariateNormalInverseGamma(compare:Distribution<Real>) ->
       TransformLinearMultivariate<MultivariateNormalInverseGamma>? {
     y:TransformLinearMultivariate<MultivariateNormalInverseGamma>?;
-    z:MultivariateNormalInverseGamma?;
+    if !hasValue() {
+      z:MultivariateNormalInverseGamma?;
 
-    if (y <- single!.graftLinearMultivariateNormalInverseGamma(compare))? {
-      y!.negate();
-    } else if (z <- single!.graftMultivariateNormalInverseGamma(compare))? {
-      auto R <- z!.rows();
-      y <- TransformLinearMultivariate<MultivariateNormalInverseGamma>(
-          box(diagonal(-1.0, R)), z!, box(vector(0.0, R)));
+      if (y <- single!.graftLinearMultivariateNormalInverseGamma(compare))? {
+        y!.negate();
+      } else if (z <- single!.graftMultivariateNormalInverseGamma(compare))? {
+        auto R <- z!.rows();
+        y <- TransformLinearMultivariate<MultivariateNormalInverseGamma>(
+            box(diagonal(-1.0, R)), z!, box(vector(0.0, R)));
+      }
     }
     return y;
   }

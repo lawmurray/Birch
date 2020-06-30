@@ -31,12 +31,14 @@ final class MatrixMultiply<Left,Right,Value>(left:Left, right:Right) <
   override function graftLinearMatrixGaussian() ->
       TransformLinearMatrix<MatrixGaussian>? {
     y:TransformLinearMatrix<MatrixGaussian>?;
-    z:MatrixGaussian?;
+    if !hasValue() {
+      z:MatrixGaussian?;
     
-    if (y <- right!.graftLinearMatrixGaussian())? {
-      y!.leftMultiply(matrix(left!));
-    } else if (z <- right!.graftMatrixGaussian())? {
-      y <- TransformLinearMatrix<MatrixGaussian>(matrix(left!), z!);
+      if (y <- right!.graftLinearMatrixGaussian())? {
+        y!.leftMultiply(matrix(left!));
+      } else if (z <- right!.graftMatrixGaussian())? {
+        y <- TransformLinearMatrix<MatrixGaussian>(matrix(left!), z!);
+      }
     }
     return y;
   }
@@ -45,12 +47,14 @@ final class MatrixMultiply<Left,Right,Value>(left:Left, right:Right) <
       compare:Distribution<Real[_]>) ->
       TransformLinearMatrix<MatrixNormalInverseGamma>? {
     y:TransformLinearMatrix<MatrixNormalInverseGamma>?;
-    z:MatrixNormalInverseGamma?;
+    if !hasValue() {
+      z:MatrixNormalInverseGamma?;
 
-    if (y <- right!.graftLinearMatrixNormalInverseGamma(compare))? {
-      y!.leftMultiply(matrix(left!));
-    } else if (z <- right!.graftMatrixNormalInverseGamma(compare))? {
-      y <- TransformLinearMatrix<MatrixNormalInverseGamma>(matrix(left!), z!);
+      if (y <- right!.graftLinearMatrixNormalInverseGamma(compare))? {
+        y!.leftMultiply(matrix(left!));
+      } else if (z <- right!.graftMatrixNormalInverseGamma(compare))? {
+        y <- TransformLinearMatrix<MatrixNormalInverseGamma>(matrix(left!), z!);
+      }
     }
     return y;
   }
@@ -59,12 +63,14 @@ final class MatrixMultiply<Left,Right,Value>(left:Left, right:Right) <
       compare:Distribution<LLT>) ->
       TransformLinearMatrix<MatrixNormalInverseWishart>? {
     y:TransformLinearMatrix<MatrixNormalInverseWishart>?;
-    z:MatrixNormalInverseWishart?;
+    if !hasValue() {
+      z:MatrixNormalInverseWishart?;
 
-    if (y <- right!.graftLinearMatrixNormalInverseWishart(compare))? {
-      y!.leftMultiply(matrix(left!));
-    } else if (z <- right!.graftMatrixNormalInverseWishart(compare))? {
-      y <- TransformLinearMatrix<MatrixNormalInverseWishart>(matrix(left!), z!);
+      if (y <- right!.graftLinearMatrixNormalInverseWishart(compare))? {
+        y!.leftMultiply(matrix(left!));
+      } else if (z <- right!.graftMatrixNormalInverseWishart(compare))? {
+        y <- TransformLinearMatrix<MatrixNormalInverseWishart>(matrix(left!), z!);
+      }
     }
     return y;
   }

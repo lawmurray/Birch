@@ -20,22 +20,26 @@ final class DiscreteNegate(x:Expression<Integer>) <
   }
 
   override function graftDiscrete() -> Discrete? {
-    r:Discrete? <- graftBoundedDiscrete();
-    if !r? {
-      x:Discrete?;
-      if (x <- single!.graftDiscrete())? {
-        r <- LinearDiscrete(box(-1), x!, box(0));
+    r:Discrete?;
+    if !hasValue() {
+      r <- graftBoundedDiscrete();
+      if !r? {
+        x:Discrete?;
+        if (x <- single!.graftDiscrete())? {
+          r <- LinearDiscrete(box(-1), x!, box(0));
+        }
       }
     }
     return r;
   }
 
   override function graftBoundedDiscrete() -> BoundedDiscrete? {
-    x:BoundedDiscrete?;
     r:BoundedDiscrete?;
-
-    if (x <- single!.graftBoundedDiscrete())? {
-      r <- LinearBoundedDiscrete(box(-1), x!, box(0));
+    if !hasValue() {
+      x:BoundedDiscrete?;
+      if (x <- single!.graftBoundedDiscrete())? {
+        r <- LinearBoundedDiscrete(box(-1), x!, box(0));
+      }
     }
     return r;
   }

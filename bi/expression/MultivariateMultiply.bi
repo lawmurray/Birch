@@ -27,12 +27,14 @@ final class MultivariateMultiply<Left,Right,Value>(left:Left, right:Right) <
   override function graftLinearMultivariateGaussian() ->
       TransformLinearMultivariate<MultivariateGaussian>? {
     y:TransformLinearMultivariate<MultivariateGaussian>?;
-    z:MultivariateGaussian?;
+    if !hasValue() {
+      z:MultivariateGaussian?;
     
-    if (y <- right!.graftLinearMultivariateGaussian())? {
-      y!.leftMultiply(matrix(left!));
-    } else if (z <- right!.graftMultivariateGaussian())? {
-      y <- TransformLinearMultivariate<MultivariateGaussian>(matrix(left!), z!);
+      if (y <- right!.graftLinearMultivariateGaussian())? {
+        y!.leftMultiply(matrix(left!));
+      } else if (z <- right!.graftMultivariateGaussian())? {
+        y <- TransformLinearMultivariate<MultivariateGaussian>(matrix(left!), z!);
+      }
     }
     return y;
   }
@@ -40,12 +42,14 @@ final class MultivariateMultiply<Left,Right,Value>(left:Left, right:Right) <
   override function graftLinearMultivariateNormalInverseGamma(compare:Distribution<Real>) ->
       TransformLinearMultivariate<MultivariateNormalInverseGamma>? {
     y:TransformLinearMultivariate<MultivariateNormalInverseGamma>?;
-    z:MultivariateNormalInverseGamma?;
+    if !hasValue() {
+      z:MultivariateNormalInverseGamma?;
 
-    if (y <- right!.graftLinearMultivariateNormalInverseGamma(compare))? {
-      y!.leftMultiply(matrix(left!));
-    } else if (z <- right!.graftMultivariateNormalInverseGamma(compare))? {
-      y <- TransformLinearMultivariate<MultivariateNormalInverseGamma>(matrix(left!), z!);
+      if (y <- right!.graftLinearMultivariateNormalInverseGamma(compare))? {
+        y!.leftMultiply(matrix(left!));
+      } else if (z <- right!.graftMultivariateNormalInverseGamma(compare))? {
+        y <- TransformLinearMultivariate<MultivariateNormalInverseGamma>(matrix(left!), z!);
+      }
     }
     return y;
   }
