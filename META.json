@@ -363,6 +363,7 @@
       "bi/test.bi",
 
       "libbirch/Label.cpp",
+      "libbirch/LabelPtr.cpp",
       "libbirch/Memo.cpp",
       "libbirch/memory.cpp",
       "libbirch/Pool.cpp",
@@ -394,6 +395,7 @@
       "libbirch/Init.hpp",
       "libbirch/Iterator.hpp",
       "libbirch/Label.hpp",
+      "libbirch/LabelPtr.hpp",
       "libbirch/Lazy.hpp",
       "libbirch/libbirch.hpp",
       "libbirch/Length.hpp",

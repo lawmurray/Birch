@@ -6,10 +6,11 @@
 #include "libbirch/external.hpp"
 #include "libbirch/type.hpp"
 #include "libbirch/Any.hpp"
-#include "libbirch/Label.hpp"
 #include "libbirch/Shared.hpp"
 #include "libbirch/Weak.hpp"
 #include "libbirch/Init.hpp"
+#include "libbirch/Label.hpp"
+#include "libbirch/LabelPtr.hpp"
 
 namespace libbirch {
 /**
@@ -365,7 +366,7 @@ private:
   /**
    * Label.
    */
-  Shared<Label> label;
+  LabelPtr label;
 };
 
 template<class P>
