@@ -41,8 +41,12 @@
     this->accept_(libbirch::Marker()); \
   } \
   \
-  virtual void scan_(const bool reachable) override { \
-    this->accept_(libbirch::Scanner(reachable)); \
+  virtual void scan_() override { \
+    this->accept_(libbirch::Scanner()); \
+  } \
+  \
+  virtual void reach_() override { \
+    this->accept_(libbirch::Reacher()); \
   } \
   \
   virtual void collect_() override { \
@@ -171,4 +175,5 @@
 #include "libbirch/Recycler.hpp"
 #include "libbirch/Marker.hpp"
 #include "libbirch/Scanner.hpp"
+#include "libbirch/Reacher.hpp"
 #include "libbirch/Collector.hpp"

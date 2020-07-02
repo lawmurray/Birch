@@ -92,21 +92,28 @@ void libbirch::LabelPtr::mark() {
   }
 }
 
-void libbirch::LabelPtr::scan(const bool reachable) {
-  /* c.f. Shared::mark(); because we don't keep a shared reference to the root
+void libbirch::LabelPtr::scan() {
+  /* c.f. Shared::scan(); because we don't keep a shared reference to the root
    * label, it is not necessary to recurse into it */
   auto o = ptr.load();
   if (o && o != root_label) {
-    if (reachable) {
-      o->incShared();
-    }
-    o->scan(reachable);
+    o->scan();
+  }
+}
+
+void libbirch::LabelPtr::reach() {
+  /* c.f. Shared::reach(); because we don't keep a shared reference to the
+   * root label, it is not necessary to recurse into it */
+  auto o = ptr.load();
+  if (o && o != root_label) {
+    o->incShared();
+    o->reach();
   }
 }
 
 void libbirch::LabelPtr::collect() {
-  /* c.f. Shared::mark(); because we don't keep a shared reference to the root
-   * label, it is not necessary to recurse into it */
+  /* c.f. Shared::collect(); because we don't keep a shared reference to the
+   * root label, it is not necessary to recurse into it */
   auto o = ptr.exchange(nullptr);
   if (o && o != root_label) {
     o->collect();

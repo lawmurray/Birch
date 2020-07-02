@@ -20,9 +20,11 @@ libbirch::Memo::~Memo() {
     for (unsigned i = 0u; i < nentries; ++i) {
       auto key = keys[i];
       if (key) {
-        auto value = values[i];
         key->decMemo();
-        value->decShared();
+        auto value = values[i];
+        if (value) {  // may be null if collect() already destroyed
+          value->decShared();
+        }
       }
     }
     deallocate(keys, nentries * sizeof(key_type), tentries);
@@ -229,16 +231,27 @@ void libbirch::Memo::mark() {
   for (auto i = 0u; i < nentries; ++i) {
     auto value = values[i];
     if (value) {
+      value->breakShared();  // break the reference
       value->mark();
     }
   }
 }
 
-void libbirch::Memo::scan(const bool reachable) {
+void libbirch::Memo::scan() {
   for (auto i = 0u; i < nentries; ++i) {
     auto value = values[i];
     if (value) {
-      value->scan(reachable);
+      value->scan();
+    }
+  }
+}
+
+void libbirch::Memo::reach() {
+  for (auto i = 0u; i < nentries; ++i) {
+    auto value = values[i];
+    if (value) {
+      value->incShared();  // restore the broken reference
+      value->reach();
     }
   }
 }
@@ -247,6 +260,7 @@ void libbirch::Memo::collect() {
   for (auto i = 0u; i < nentries; ++i) {
     auto value = values[i];
     if (value) {
+      values[i] = nullptr;
       value->collect();
     }
   }

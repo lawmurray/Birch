@@ -87,7 +87,12 @@ public:
   /**
    * Scan values.
    */
-  void scan(const bool reachable);
+  void scan();
+
+  /**
+   * Reach values.
+   */
+  void reach();
 
   /**
    * Collect values.

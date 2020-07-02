@@ -211,8 +211,8 @@ public:
    */
   void mark() {
     auto o = ptr.load();
-    o->breakShared();  // break the reference
     if (o) {
+      o->breakShared();  // break the reference
       o->Any::mark();
     }
   }
@@ -220,13 +220,21 @@ public:
   /**
    * Scan.
    */
-  void scan(const bool reachable) {
+  void scan() {
     auto o = ptr.load();
-    if (reachable) {
-      o->incShared();  // restore the broken reference
-    }
     if (o) {
-      o->Any::scan(reachable);
+      o->Any::scan();
+    }
+  }
+
+  /**
+   * Reach.
+   */
+  void reach() {
+    auto o = ptr.load();
+    if (o) {
+      o->incShared();  // restore the broken reference
+      o->Any::reach();
     }
   }
 

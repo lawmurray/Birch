@@ -97,7 +97,12 @@ public:
   /**
    * Scan.
    */
-  void scan(const bool reachable);
+  void scan();
+
+  /**
+   * Reach.
+   */
+  void reach();
 
   /**
    * Collect.

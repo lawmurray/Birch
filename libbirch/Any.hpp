@@ -36,8 +36,7 @@ public:
       memoCount(1u),
       size(0u),
       tid(get_thread_num()),
-      flags(0u),
-      color(BLACK) {
+      flags(0u) {
     //
   }
 
@@ -51,8 +50,7 @@ public:
       memoCount(1u),
       size(0u),
       tid(0),
-      flags(0u),
-      color(BLACK) {
+      flags(0u) {
     //
   }
 
@@ -103,8 +101,7 @@ public:
    * Finish the object.
    */
   void finish(Label* label) {
-    auto old = flags.maskOr(FINISHED) & FINISHED;
-    if (!old) {
+    if (set(FINISHED)) {
       finish_(label);
     }
   }
@@ -120,11 +117,10 @@ public:
      * new copy during its freeze pass; it should not attempt to finish or
      * freeze such an object---the work has already been done by the second
      * thread */
-    if (isFinished()) {
-      auto old = flags.maskOr(FROZEN) & FROZEN;
-      if (!old) {
+    if (is(FINISHED)) {
+      if (set(FROZEN)) {
         if (isUnique()) {
-          flags.maskOr(FROZEN_UNIQUE);
+          set(FROZEN_UNIQUE);
         }
         freeze_();
       }
@@ -135,7 +131,7 @@ public:
    * Thaw the object.
    */
   void thaw() {
-    flags.store(0u);
+    unset(~BUFFERED);
   }
 
   /**
@@ -176,7 +172,8 @@ public:
    * "Bacon & Rajan (2001)".
    */
   void mark() {
-    if (color.exchange(GRAY) != GRAY) {
+    if (set(MARKED)) {
+      unset(BUFFERED|SCANNED|REACHED|COLLECTED);  // unset for later passes
       mark_();
     }
   }
@@ -184,21 +181,34 @@ public:
   /**
    * Scan the object.
    *
-   * @param reachable Is the object definitely reachable?
-   *
-   * This performs the `Scan()` (when @p reachable is false) and `ScanBlack()`
-   * (when @p reachable is true) operations of @ref Bacon2001
+   * This performs the `Scan()` operation of @ref Bacon2001
    * "Bacon & Rajan (2001)".
    */
-  void scan(const bool reachable) {
-    if (reachable || numShared() > 0u) {
-      if (color.exchange(BLACK) != BLACK) {
-        scan_(true);
+  void scan() {
+    if (set(SCANNED)) {
+      unset(MARKED);  // unset for next time
+      if (numShared() > 0u) {
+        if (set(REACHED)) {
+          reach_();
+        }
+      } else {
+        scan_();
       }
-    } else {
-      if (color.exchange(WHITE) != WHITE) {
-        scan_(false);
-      }
+    }
+  }
+
+  /**
+   * Reach the object.
+   *
+   * This performs the `ScanBlack()` operation of @ref Bacon2001
+   * "Bacon & Rajan (2001)".
+   */
+  void reach() {
+    if (set(SCANNED)) {
+      unset(MARKED);  // unset for next time
+    }
+    if (set(REACHED)) {
+      reach_();
     }
   }
 
@@ -209,7 +219,7 @@ public:
    * "Bacon & Rajan (2001)".
    */
   void collect() {
-    if (color.exchange(BLACK) != BLACK) {
+    if (!is(REACHED) && set(COLLECTED)) {
       collect_();
       destroy();
       decWeak();
@@ -239,7 +249,7 @@ public:
     /* if the count will reduce to nonzero, this is possible the root of
      * a cycle; check this before decrementing rather than after, as otherwise
      * another thread may destroy the object while this thread registers */
-    if (sharedCount.load() > 1u && color.exchange(PURPLE) == BLACK) {
+    if (sharedCount.load() > 1u && set(BUFFERED)) {
       register_possible_root(this);
     }
 
@@ -322,6 +332,10 @@ public:
    * shared or weak pointer to it. If only memo pointers to it exists, it is
    * not considered reachable, and it may be cleaned up during memo
    * maintenance.
+   *
+   * This only determines whether the object is locally reachable. An object
+   * may be part of a cycle that is unreachable from a root (e.g. a global
+   * variable or stack pointer), but still be considered locally reachable.
    */
   bool isReachable() const {
     return numWeak() > 0u;
@@ -343,17 +357,10 @@ public:
   }
 
   /**
-   * Is the object finished?
-   */
-  bool isFinished() const {
-    return flags.load() & FINISHED;
-  }
-
-  /**
    * Is the object frozen?
    */
   bool isFrozen() const {
-    return flags.load() & FROZEN;
+    return is(FROZEN);
   }
 
   /**
@@ -361,63 +368,7 @@ public:
    * pointer to it?
    */
   bool isFrozenUnique() const {
-    return flags.load() & FROZEN_UNIQUE;
-  }
-
-  /**
-   * Is the object colored black?
-   */
-  bool isBlack() const {
-    return color.load() == BLACK;
-  }
-
-  /**
-   * Set the color to black.
-   */
-  void setBlack() {
-    color.store(BLACK);
-  }
-
-  /**
-   * Is the object colored purple?
-   */
-  bool isPurple() const {
-    return color.load() == PURPLE;
-  }
-
-  /**
-   * Set the color to purple.
-   */
-  void setPurple() {
-    color.store(PURPLE);
-  }
-
-  /**
-   * Is the object colored white?
-   */
-  bool isWhite() const {
-    return color.load() == WHITE;
-  }
-
-  /**
-   * Set the color to white.
-   */
-  void setWhite() {
-    color.store(WHITE);
-  }
-
-  /**
-   * Is the object colored gray?
-   */
-  bool isGray() const {
-    return color.load() == GRAY;
-  }
-
-  /**
-   * Set the color to gray.
-   */
-  void setGray() {
-    color.store(GRAY);
+    return is(FROZEN_UNIQUE);
   }
 
 protected:
@@ -450,7 +401,12 @@ protected:
   /**
    * Called internally by scan() to recurse into member variables.
    */
-  virtual void scan_(const bool reachable) = 0;
+  virtual void scan_() = 0;
+
+  /**
+   * Called internally by reach() to recurse into member variables.
+   */
+  virtual void reach_() = 0;
 
   /**
    * Called internally by collect() to recurse into member variables.
@@ -493,6 +449,39 @@ private:
   }
 
   /**
+   * Are one or more flags set?
+   *
+   * @param flags Bitmask of the flags (possibly just one).
+   *
+   * @return Are one or more of the flags set?
+   */
+  bool is(const uint8_t flags) const {
+    return this->flags.load() & flags;
+  }
+
+  /**
+   * Set one or more flags.
+   *
+   * @param flags Bitmask of the flags (possibly just one).
+   *
+   * @return Were one or more of the flags not set?
+   */
+  bool set(const uint8_t flags) {
+    return !(this->flags.maskOr(flags) & flags);
+  }
+
+  /**
+   * Unset one or more flags.
+   *
+   * @param flags Bitmask of the flags (possibly just one).
+   *
+   * @return Were one or more of the flags set?
+   */
+  bool unset(const uint8_t flags) {
+    return this->flags.maskAnd(~flags) & flags;
+  }
+
+  /**
    * Label of the object.
    */
   Label* label;
@@ -523,53 +512,71 @@ private:
    * after allocation. It is used to return the allocation to the correct
    * pool after use, even when returned by a different thread.
    */
-  int tid;
+  int tid:24;
 
   /**
-   * Bitfield containing, from right to left:
+   * Bitfield containing flags. These are, from least to most significant
+   * bits:
    *
-   *   - *finished* flag,
-   *   - *frozen* flag,
-   *   - *frozen unique* flag.
+   *   - *finished*,
+   *   - *frozen*,
+   *   - *single reference when frozen*---
    *
-   * These first three used for lazy deep copy operations as in
-   * @ref Murray2020 "Murray (2020)".
+   * ---these used for lazy deep copy operations as in @ref Murray2020
+   * "Murray (2020)"---then
+   *
+   *   - *buffered*,
+   *   - *marked*,
+   *   - *scanned*,
+   *   - *reached*,
+   *   - *collected*---
+   *
+   * ---these used for cycle collection as in @ref Bacon2001
+   * "Bacon & Rajan (2001)".
+   *
+   * The second group of flags take the place of the colors described in
+   * @ref Bacon2001 "Bacon & Rajan (2001)". The reason is to ensure that both
+   * the bookkeeping required during normal execution can be multithreaded,
+   * and likewise that the operations required during cycle collection can be
+   * multithreaded. The basic principle to ensure this is that flags can be
+   * safely set during normal execution (with atomic operations), but should
+   * only be unset with careful consideration of thread safety.
+   *
+   * Notwithstanding, the flags do map to colors in @ref Bacon2001
+   * "Bacon & Rajan (2001)":
+   *
+   *   - *buffered* maps to *purple* as well as the same-named *buffered*
+   *     flag (the transition from purple to black is disallowed for
+   *     reasons of thread safety, so purple and *buffered* are, anyway,
+   *     synonymous),
+   *   - *marked* maps to *gray*,
+   *   - *scanned* and *reachable* together map to *black* (both on) or
+   *     *white* (first on, second off),
+   *   - *collected* is set once a white object has been destroyed.
+   *
+   * Disallowing the transition from purple to black has the effect of
+   * potentially (and wastefully) checking for cycles from an object that
+   * could otherwise have been eliminated as a possible root. This compromises
+   * performance, but not correctness.. The use of these flags also resolves
+   * some thread safety issues that can otherwise exist during the scan
+   * operation, when coloring an object white (eligible for collection) then
+   * later recoloring it black (reachable); the sequencing of this coloring
+   * can become problematic with multiple threads.
    */
   Atomic<uint8_t> flags;
 
   /**
    * Flags.
    */
-  enum {
-    FINISHED = 1 << 0,
-    FROZEN = 1 << 1,
-    FROZEN_UNIQUE = 1 << 2
-  };
-
-  /**
-   * Color.
-   *
-   * This is used for cycle collection as in @ref Bacon2001
-   * "Bacon & Rajan (2001)", with some adaptation. A small difference is
-   * that we do not allow an object colored purple to return to black, as it
-   * creates a race condition in our implementation. This only has the effect
-   * of potentially (wastefully) checking for cycles from a possible root that
-   * is definitely reachable. It also means that the *buffered* flag in
-   * @ref Bacon2001 "Bacon & Rajan (2001)" is unnecessary: the color purple
-   * suffices to indicate that an object has been registered as a possible
-   * root.
-   */
-  Atomic<uint8_t> color;
-
-  /**
-   * Colors. These are the 2-bit values described, but shifted
-   * to the position of the color field in flags.
-   */
-  enum {
-    BLACK = 0,
-    PURPLE = 1,
-    GRAY = 2,
-    WHITE = 3
+  enum Flag : uint8_t {
+    BUFFERED = 1 << 0,
+    FINISHED = 1 << 1,
+    FROZEN = 1 << 2,
+    FROZEN_UNIQUE = 1 << 3,
+    MARKED = 1 << 4,
+    SCANNED = 1 << 5,
+    REACHED = 1 << 6,
+    COLLECTED = 1 << 7
   };
 };
 }

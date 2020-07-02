@@ -103,7 +103,14 @@ public:
   /**
    * Scan.
    */
-  void scan(const bool reachable) {
+  void scan() {
+    // nothing to do here, cannot create cycles
+  }
+
+  /**
+   * Reach.
+   */
+  void reach() {
     // nothing to do here, cannot create cycles
   }
 

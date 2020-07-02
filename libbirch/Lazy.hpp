@@ -344,9 +344,17 @@ public:
   /**
    * Scan.
    */
-  void scan(const bool reachable) {
-    object.scan(reachable);
-    label.scan(reachable);
+  void scan() {
+    object.scan();
+    label.scan();
+  }
+
+  /**
+   * Reach.
+   */
+  void reach() {
+    object.reach();
+    label.reach();
   }
 
   /**

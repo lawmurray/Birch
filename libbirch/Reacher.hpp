@@ -11,11 +11,11 @@
 
 namespace libbirch {
 /**
- * Visitor for recursively scanning objects for cycle collection.
+ * Visitor for recursively flagging reachable objects for cycle collection.
  *
  * @ingroup libbirch
  */
-class Scanner {
+class Reacher {
 public:
   /**
    * Visit list of variables.
@@ -81,7 +81,7 @@ public:
    */
   template<class P>
   void visit(Lazy<P>& o) const {
-    o.scan();
+    o.reach();
   }
 };
 }

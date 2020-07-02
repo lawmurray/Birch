@@ -146,7 +146,7 @@ void libbirch::collect() {
     #pragma omp barrier
     for (auto& o : possible_roots) {
       if (!o->isDestroyed()) {
-        o->scan(false);
+        o->scan();
       }
     }
     #pragma omp barrier
