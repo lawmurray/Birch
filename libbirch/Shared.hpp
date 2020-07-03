@@ -18,7 +18,6 @@ namespace libbirch {
 template<class T>
 class Shared {
   template<class U> friend class Shared;
-  template<class U> friend class Weak;
   template<class U> friend class Init;
   template<class U> friend class Lazy;
 public:

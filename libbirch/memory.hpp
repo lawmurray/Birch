@@ -222,4 +222,9 @@ void collect();
  * "Bacon & Rajan (2001)".
  */
 void register_possible_root(Any* o);
+
+/**
+ * Register an object with the cycle collector as unreachable.
+ */
+void register_unreachable(Any* o);
 }

@@ -130,7 +130,6 @@ class ParticleFilter {
    */
   function filter(archetype:Model, t:Integer) {
     resample(t);
-    collect();
     step(t);
     reduce();
   }
@@ -186,6 +185,7 @@ class ParticleFilter {
           x[n] <- clone(x[a[n]]);
         }
       }
+      collect();
     } else {
       /* normalize weights to sum to nparticles */
       w <- w - vector(lsum - log(Real(nparticles)), nparticles);

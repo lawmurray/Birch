@@ -16,7 +16,6 @@
 #include "libbirch/type.hpp"
 
 #include "libbirch/Shared.hpp"
-#include "libbirch/Weak.hpp"
 #include "libbirch/Init.hpp"
 #include "libbirch/Lazy.hpp"
 #include "libbirch/Dimension.hpp"

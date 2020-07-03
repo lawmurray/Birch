@@ -139,7 +139,7 @@ void libbirch::Memo::rehash() {
      * from this point, the old buffers are no long valid as a hash table */
     for (auto i = 0u; i < nentries; ++i) {
       auto key = keys[i];
-      if (key && !key->isReachable()) {
+      if (key && key->isDestroyed()) {
         auto value = values[i];
         key->decMemo();
         value->decShared();
@@ -210,7 +210,7 @@ void libbirch::Memo::rehash() {
 void libbirch::Memo::finish(Label* label) {
   for (auto i = 0u; i < nentries; ++i) {
     auto key = keys[i];
-    if (key && key->isReachable()) {
+    if (key && !key->isDestroyed()) {
       auto value = values[i];
       value->finish(label);
     }
@@ -220,7 +220,7 @@ void libbirch::Memo::finish(Label* label) {
 void libbirch::Memo::freeze() {
   for (auto i = 0u; i < nentries; ++i) {
     auto key = keys[i];
-    if (key && key->isReachable()) {
+    if (key && !key->isDestroyed()) {
       auto value = values[i];
       value->freeze();
     }

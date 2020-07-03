@@ -23,6 +23,7 @@
       "bi/container/Stack.bi",
       "bi/container/StackNode.bi",
       "bi/container/Tape.bi",
+      "bi/container/TapeNode.bi",
       "bi/container/Vector.bi",
       "bi/distribution/AddBoundedDiscrete.bi",
       "bi/distribution/Bernoulli.bi",
@@ -422,8 +423,7 @@
       "libbirch/SwitchLock.hpp",
       "libbirch/thread.hpp",
       "libbirch/Tuple.hpp",
-      "libbirch/type.hpp",
-      "libbirch/Weak.hpp"
+      "libbirch/type.hpp"
     ],
     "other": [
       "LICENSE",

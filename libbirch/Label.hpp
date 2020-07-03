@@ -27,7 +27,7 @@ public:
   /**
    * Update a smart pointer for writing.
    *
-   * @param o Smart pointer (Shared, Weak or Init).
+   * @param o Smart pointer (Shared or Init).
    */
   template<class P>
   auto get(P& o)  {
@@ -48,7 +48,7 @@ public:
   /**
    * Update a smart pointer for reading.
    *
-   * @param o Smart pointer (Shared, Weak or Init).
+   * @param o Smart pointer (Shared or Init).
    */
   template<class P>
   auto pull(P& o) {
@@ -97,8 +97,8 @@ public:
   }
 
 protected:
-  virtual uint16_t size_() const override {
-    return (uint16_t)sizeof(*this);
+  virtual unsigned size_() const override {
+    return sizeof(*this);
   }
 
   virtual void finish_(libbirch::Label* label) override {
@@ -117,8 +117,8 @@ protected:
     return new Label(*this);
   }
 
-  virtual Label* recycle_(libbirch::Label* label) override {
-    return this;
+  virtual void recycle_(libbirch::Label* label) override {
+    //
   }
 
   virtual void mark_() override {

@@ -44,7 +44,7 @@ public:
   /**
    * Fix after a bitwise copy.
    */
-  void bitwiseFix(Label* label);
+  void bitwiseFix();
 
   /**
    * Copy assignment.

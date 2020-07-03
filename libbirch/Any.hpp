@@ -32,7 +32,6 @@ public:
   Any() :
       label(root_label),
       sharedCount(0u),
-      weakCount(1u),
       memoCount(1u),
       size(0u),
       tid(get_thread_num()),
@@ -46,7 +45,6 @@ public:
   Any(int) :
       label(nullptr),
       sharedCount(0u),
-      weakCount(1u),
       memoCount(1u),
       size(0u),
       tid(0),
@@ -119,7 +117,10 @@ public:
      * thread */
     if (is(FINISHED)) {
       if (set(FROZEN)) {
-        if (isUnique()) {
+        if (sharedCount.load() == 1u) {
+          // ^ small optimization: isUnique() makes sense, but unnecessarily
+          //   loads memoCount as well, which is unnecessary for a objects
+          //   that are not frozen
           set(FROZEN_UNIQUE);
         }
         freeze_();
@@ -143,9 +144,8 @@ public:
     auto o = copy_(label);
     o->label = label;
     o->sharedCount.set(0u);
-    o->weakCount.set(1u);
     o->memoCount.set(1u);
-    o->size = 0u;
+    o->size.set(0u);
     o->tid = get_thread_num();
     o->flags.set(0u);
     return o;
@@ -159,10 +159,8 @@ public:
    *
    * @param label The new label.
    */
-  Any* recycle(Label* label) {
-    auto o = recycle_(label);
-    o->label = label;
-    return this;
+  void recycle(Label* label) {
+    recycle_(label);
   }
 
   /**
@@ -219,11 +217,19 @@ public:
    * "Bacon & Rajan (2001)".
    */
   void collect() {
-    if (!is(REACHED) && set(COLLECTED)) {
+    if (set(COLLECTED) && !is(REACHED)) {
+      register_unreachable(this);
       collect_();
-      destroy();
-      decWeak();
     }
+  }
+
+  /**
+   * Destroy, but do not deallocate, the object.
+   */
+  void destroy() {
+    assert(sharedCount.load() == 0u);
+    this->size.store(size_());
+    this->~Any();
   }
 
   /**
@@ -256,7 +262,7 @@ public:
     /* decrement */
     if (--sharedCount == 0u) {
       destroy();
-      decWeak();
+      decMemo();
     }
   }
 
@@ -266,32 +272,6 @@ public:
   void breakShared() {
     assert(numShared() > 0u);
     sharedCount.decrement();
-  }
-
-  /**
-   * Weak count.
-   */
-  unsigned numWeak() const {
-    return weakCount.load();
-  }
-
-  /**
-   * Increment the weak count.
-   */
-  void incWeak() {
-    assert(numMemo() > 0u);
-    weakCount.increment();
-  }
-
-  /**
-   * Decrement the weak count.
-   */
-  void decWeak() {
-    assert(weakCount.load() > 0u);
-    if (--weakCount == 0u) {
-      assert(numShared() == 0u);
-      decMemo();
-    }
   }
 
   /**
@@ -315,7 +295,6 @@ public:
     assert(memoCount.load() > 0u);
     if (--memoCount == 0u) {
       assert(numShared() == 0u);
-      assert(numWeak() == 0u);
       deallocate();
     }
   }
@@ -328,32 +307,21 @@ public:
   }
 
   /**
-   * Is this object reachable? An object is reachable if there exists a
-   * shared or weak pointer to it. If only memo pointers to it exists, it is
-   * not considered reachable, and it may be cleaned up during memo
-   * maintenance.
-   *
-   * This only determines whether the object is locally reachable. An object
-   * may be part of a cycle that is unreachable from a root (e.g. a global
-   * variable or stack pointer), but still be considered locally reachable.
-   */
-  bool isReachable() const {
-    return numWeak() > 0u;
-  }
-
-  /**
-   * Is this object destroyed? An object is destroyed if there only exist
-   * weak pointers to it.
+   * Has the object been destroyed?
    */
   bool isDestroyed() const {
-    return numShared() == 0u;
+    /* the shared count being zero is not a good indicator here: new objects
+     * start with a zero count, and objects may temporarily have a zero count
+     * during cycle collection; a better indicator is a nonzero size, which is
+     * only set in destroy() */
+    return size.load() > 0u;
   }
 
   /**
-   * Is there only one shared or weak pointer to this object?
+   * Is there only one pointer (of any type) to this object?
    */
   bool isUnique() const {
-    return numShared() <= 1u && numWeak() <= 1u;
+    return numShared() == 1u && numMemo() == 1u;
   }
 
   /**
@@ -365,7 +333,7 @@ public:
 
   /**
    * Is the object frozen, and at the time of freezing, was there only one
-   * pointer to it?
+   * shared pointer to it?
    */
   bool isFrozenUnique() const {
     return is(FROZEN_UNIQUE);
@@ -391,7 +359,9 @@ protected:
    * Called internally by recycle() to ensure the most derived type is
    * recycled.
    */
-  virtual Any* recycle_(Label* label) = 0;
+  virtual void recycle_(Label* label) {
+    this->label = label;
+  }
 
   /**
    * Called internally by mark() to recurse into member variables.
@@ -416,8 +386,8 @@ protected:
   /**
    * Size of the object.
    */
-  virtual uint16_t size_() const {
-    return (uint16_t)sizeof(*this);
+  virtual unsigned size_() const {
+    return sizeof(*this);
   }
 
   /**
@@ -430,22 +400,12 @@ protected:
 
 private:
   /**
-   * Destroy, but do not deallocate, the object.
-   */
-  void destroy() {
-    assert(sharedCount.load() == 0u);
-    this->size = size_();
-    this->~Any();
-  }
-
-  /**
    * Deallocate the object. It should have previously been destroyed.
    */
   void deallocate() {
     assert(sharedCount.load() == 0u);
-    assert(weakCount.load() == 0u);
     assert(memoCount.load() == 0u);
-    libbirch::deallocate(this, size, tid);
+    libbirch::deallocate(this, size.load(), tid);
   }
 
   /**
@@ -492,12 +452,7 @@ private:
   Atomic<unsigned> sharedCount;
 
   /**
-   * Weak count, or, if the shared count is nonzero, one plus the weak count.
-   */
-  Atomic<unsigned> weakCount;
-
-  /**
-   * Memo count, or, if the weak count is nonzero, one plus the memo count.
+   * Memo count, or, if the shared count is nonzero, one plus the memo count.
    */
   Atomic<unsigned> memoCount;
 
@@ -505,7 +460,7 @@ private:
    * Size of the object. This is initially set to zero. Upon destruction, it
    * is set to the correct size with a virtual function call.
    */
-  unsigned size;
+  Atomic<unsigned> size;
 
   /**
    * Id of the thread associated with the object. This is set immediately
@@ -569,14 +524,14 @@ private:
    * Flags.
    */
   enum Flag : uint8_t {
-    BUFFERED = 1 << 0,
-    FINISHED = 1 << 1,
-    FROZEN = 1 << 2,
-    FROZEN_UNIQUE = 1 << 3,
-    MARKED = 1 << 4,
-    SCANNED = 1 << 5,
-    REACHED = 1 << 6,
-    COLLECTED = 1 << 7
+    BUFFERED = (1u << 0u),
+    FINISHED = (1u << 1u),
+    FROZEN = (1u << 2u),
+    FROZEN_UNIQUE = (1u << 3u),
+    MARKED = (1u << 4u),
+    SCANNED = (1u << 5u),
+    REACHED = (1u << 6u),
+    COLLECTED = (1u << 7u)
   };
 };
 }

@@ -7,7 +7,6 @@
 #include "libbirch/type.hpp"
 #include "libbirch/Any.hpp"
 #include "libbirch/Shared.hpp"
-#include "libbirch/Weak.hpp"
 #include "libbirch/Init.hpp"
 #include "libbirch/Label.hpp"
 #include "libbirch/LabelPtr.hpp"
@@ -18,7 +17,7 @@ namespace libbirch {
  *
  * @ingroup libbirch
  *
- * @tparam P Pointer type, e.g. a Shared, Weak, Init.
+ * @tparam P Pointer type, e.g. Shared or Init.
  */
 template<class P>
 class Lazy {
@@ -151,7 +150,7 @@ public:
    */
   void bitwiseFix(Label* newLabel) {
     object.bitwiseFix();
-    new (&label) Shared<Label>(newLabel);  // overwrite with new label
+    new (&label) LabelPtr(newLabel);  // overwrite with new label
   }
 
   /**
@@ -266,27 +265,9 @@ public:
   }
 
   /**
-   * Get the raw pointer for read-only use, without cloning. This version is
-   * disabled for weak pointer types.
-   */
-  template<class Q = P, std::enable_if_t<!std::is_same<Q,Weak<value_type>>::value,int> = 0>
-  value_type* read() {
-    return pull();
-  }
-
-  /**
-   * Get the raw pointer for read-only use, without cloning. This version is
-   * disabled for weak pointer types.
-   */
-  template<class Q = P, std::enable_if_t<!std::is_same<Q,Weak<value_type>>::value,int> = 0>
-  value_type* read() const {
-    return pull();
-  }
-
-  /**
    * Dereference.
    */
-  template<class Q = P, std::enable_if_t<!std::is_same<Q,Weak<value_type>>::value,int> = 0>
+  template<class Q = P>
   value_type& operator*() const {
     return *get();
   }
@@ -294,7 +275,7 @@ public:
   /**
    * Member access.
    */
-  template<class Q = P, std::enable_if_t<!std::is_same<Q,Weak<value_type>>::value,int> = 0>
+  template<class Q = P>
   value_type* operator->() const {
     return get();
   }
@@ -400,11 +381,6 @@ Lazy<Shared<T>> canonical(const Lazy<Shared<T>>& o) {
 template<class T>
 Lazy<Shared<T>>&& canonical(Lazy<Shared<T>>&& o) {
   return std::move(o);
-}
-
-template<class T>
-Lazy<Shared<T>> canonical(const Lazy<Weak<T>>& o) {
-  return o;
 }
 
 template<class T>

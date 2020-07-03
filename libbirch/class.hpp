@@ -11,8 +11,8 @@
  * Declare common virtual functions for classes and fibers.
  */
 #define LIBBIRCH_VIRTUALS(Name, Base...) \
-  virtual uint16_t size_() const override { \
-    return (uint16_t)sizeof(*this); \
+  virtual unsigned size_() const override { \
+    return sizeof(*this); \
   } \
   \
   virtual void finish_(libbirch::Label* label) override { \
@@ -32,9 +32,8 @@
     return o; \
   } \
   \
-  virtual Name* recycle_(libbirch::Label* label) override { \
+  virtual void recycle_(libbirch::Label* label) override { \
     this->accept_(libbirch::Recycler(label)); \
-    return this; \
   } \
   \
   virtual void mark_() override { \

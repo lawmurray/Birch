@@ -49,7 +49,6 @@ class ConditionalParticleFilter < ParticleFilter {
       ancestorSample(t);
     }
     resample(t);
-    collect();
     step(t);
     reduce();
   }
@@ -105,6 +104,7 @@ class ConditionalParticleFilter < ParticleFilter {
           x[n] <- clone(x[a[n]]);
         }
       }
+      collect();
     } else {
       /* normalize weights to sum to nparticles */
       w <- w - vector(lsum - log(Real(nparticles)), nparticles);

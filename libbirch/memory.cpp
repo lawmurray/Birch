@@ -8,17 +8,26 @@
 #include "libbirch/Shared.hpp"
 
 /**
- * Root list.
+ * Type for object lists in cycle collection.
  */
-using root_list = std::vector<libbirch::Any*,libbirch::Allocator<libbirch::Any*>>;
+using object_list = std::vector<libbirch::Any*,libbirch::Allocator<libbirch::Any*>>;
 
 /**
- * Get the root list for the current thread.
+ * Get the possible roots list for the current thread.
  */
-static root_list& get_thread_possible_roots() {
-  static std::vector<root_list,libbirch::Allocator<root_list>> root_lists(
+static object_list& get_thread_possible_roots() {
+  static std::vector<object_list,libbirch::Allocator<object_list>> objects(
       libbirch::get_max_threads());
-  return root_lists[libbirch::get_thread_num()];
+  return objects[libbirch::get_thread_num()];
+}
+
+/**
+ * Get the unreachable list for the current thread.
+ */
+static object_list& get_thread_unreachable() {
+  static std::vector<object_list,libbirch::Allocator<object_list>> objects(
+      libbirch::get_max_threads());
+  return objects[libbirch::get_thread_num()];
 }
 
 /**
@@ -157,12 +166,27 @@ void libbirch::collect() {
       o->decMemo();
     }
     #pragma omp barrier
+
+    auto& unreachable = get_thread_unreachable();
+    for (auto& o : unreachable) {
+      o->destroy();
+      o->decMemo();
+    }
+    unreachable.clear();
     possible_roots.clear();
   }
 }
 
 void libbirch::register_possible_root(Any* o) {
   assert(o);
+  if (o != root_label) {  // special exclusion, always reachable
+    o->incMemo();
+    get_thread_possible_roots().emplace_back(o);
+  }
+}
+
+void libbirch::register_unreachable(Any* o) {
+  assert(o);
   o->incMemo();
-  get_thread_possible_roots().emplace_back(o);
+  get_thread_unreachable().emplace_back(o);
 }

@@ -11,8 +11,8 @@
  *     destruction of large Tape objects. 
  */
 final class Tape<Type> {
-  forward:StackNode<Type>?;
-  backward:StackNode<Type>?;
+  forward:TapeNode<Type>?;
+  backward:TapeNode<Type>?;
   forwardCount:Integer <- 0;
   backwardCount:Integer <- 0;
 
@@ -128,7 +128,7 @@ final class Tape<Type> {
    * - x: Value.
    */
   function pushHere(x:Type) {
-    node:StackNode<Type>(x);
+    node:TapeNode<Type>(x);
     node.next <- forward;
     forward <- node;
     forwardCount <- forwardCount + 1;
@@ -140,7 +140,7 @@ final class Tape<Type> {
    * - x: Value.
    */
   function pushBefore(x:Type) {
-    node:StackNode<Type>(x);
+    node:TapeNode<Type>(x);
     node.next <- backward;
     backward <- node;
     backwardCount <- backwardCount + 1;

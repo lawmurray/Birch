@@ -2,30 +2,9 @@
  * List node.
  */
 final class ListNode<Type>(x:Type) {
-  x:Type <- x;
   prev:ListNode<Type>&?;
   next:ListNode<Type>?;
-
-  /**
-   * Get value.
-   */
-  function getValue() -> Type {
-    return x;
-  }
-  
-  /**
-   * Get previous node.
-   */
-  function getPrevious() -> ListNode<Type>? {
-    return prev;
-  }
-  
-  /**
-   * Get next node.
-   */
-  function getNext() -> ListNode<Type>? {
-    return next;
-  }
+  x:Type <- x;
 
   /**
    * Insert a new node just before this one in the list.

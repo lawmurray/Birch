@@ -28,11 +28,11 @@ libbirch::LabelPtr::~LabelPtr() {
   release();
 }
 
-void libbirch::LabelPtr::bitwiseFix(Label* label) {
-  if (label && label != root_label) {
-    label->incShared();
+void libbirch::LabelPtr::bitwiseFix() {
+  auto ptr = this->ptr.get();
+  if (ptr && ptr != root_label) {
+    ptr->incShared();
   }
-  ptr.set(label);
 }
 
 libbirch::LabelPtr& libbirch::LabelPtr::operator=(const LabelPtr& o) {
