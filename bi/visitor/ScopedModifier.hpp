@@ -8,8 +8,6 @@
 #include "bi/statement/all.hpp"
 #include "bi/type/all.hpp"
 
-#include <list>
-
 namespace bi {
 /**
  * Modifier that keeps track of the stack of scopes during traversal.

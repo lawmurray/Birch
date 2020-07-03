@@ -108,7 +108,6 @@ union YYSTYPE
 {
 #line 71 "bi/parser.ypp"
 
-  bool valBool;
   int32_t valInt;
   double valReal;
   const char* valString;
@@ -119,7 +118,7 @@ union YYSTYPE
   bi::Type* valType;
   bi::Statement* valStatement;
 
-#line 123 "bi/parser.hpp"
+#line 122 "bi/parser.hpp"
 
 };
 typedef union YYSTYPE YYSTYPE;

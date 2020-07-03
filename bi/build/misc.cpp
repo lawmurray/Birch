@@ -6,9 +6,6 @@
 #include "bi/common/Location.hpp"
 #include "bi/statement/File.hpp"
 
-#include "boost/filesystem/fstream.hpp"
-#include "boost/algorithm/string.hpp"
-
 void bi::warn(const std::string& msg) {
   std::cerr << "warning: " << msg << std::endl;
 }

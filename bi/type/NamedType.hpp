@@ -20,22 +20,11 @@ public:
   /**
    * Constructor.
    *
-   * @param weak Is this annotated weak?
    * @param name Name.
    * @param typeArgs Generic type arguments.
    * @param loc Location.
    */
-  NamedType(const bool weak, Name* name, Type* typeArgs,
-      Location* loc = nullptr);
-
-  /**
-   * Constructor.
-   *
-   * @param weak Is this annotated weak?
-   * @param name Name.
-   * @param loc Location.
-   */
-  NamedType(const bool weak, Name* name, Location* loc = nullptr);
+  NamedType(Name* name, Type* typeArgs, Location* loc = nullptr);
 
   /**
    * Constructor.
@@ -67,13 +56,7 @@ public:
   virtual bool isBasic() const;
   virtual bool isClass() const;
   virtual bool isGeneric() const;
-  virtual bool isWeak() const;
   virtual bool isValue() const;
-
-  /**
-   * Does this have a weak marker?
-   */
-  bool weak;
 
   /**
    * The category of the identifier.

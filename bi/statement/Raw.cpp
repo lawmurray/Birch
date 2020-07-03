@@ -5,8 +5,6 @@
 
 #include "bi/visitor/all.hpp"
 
-#include "boost/algorithm/string/trim.hpp"
-
 bi::Raw::Raw(Name* name, const std::string& raw,
     Location* loc) :
     Statement(loc),

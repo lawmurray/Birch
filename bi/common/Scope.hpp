@@ -5,8 +5,6 @@
 
 #include "bi/common/Named.hpp"
 
-#include <unordered_map>
-
 namespace bi {
 class Parameter;
 class GlobalVariable;

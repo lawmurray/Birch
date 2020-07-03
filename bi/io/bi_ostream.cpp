@@ -497,9 +497,6 @@ void bi::bi_ostream::visit(const NamedType* o) {
   if (!o->typeArgs->isEmpty()) {
     middle('<' << o->typeArgs << '>');
   }
-  if (o->weak) {
-    middle('&');
-  }
 }
 
 void bi::bi_ostream::visit(const MemberType* o) {

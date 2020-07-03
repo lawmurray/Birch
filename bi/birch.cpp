@@ -8,6 +8,7 @@
 
 int main(int argc, char** argv) {
   using namespace bi;
+
   try {
     /* first option (should be a program name) */
     std::string prog = argc > 1 ? argv[1]: "help";
@@ -32,6 +33,8 @@ int main(int argc, char** argv) {
     } else if (prog.compare("help") == 0) {
       driver.help();
     } else {
+
+
       driver.run(prog);
     }
     return 0;

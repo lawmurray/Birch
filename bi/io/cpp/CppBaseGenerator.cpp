@@ -7,8 +7,6 @@
 #include "bi/io/cpp/CppResumeGenerator.hpp"
 #include "bi/primitive/encode.hpp"
 
-#include "boost/algorithm/string.hpp"
-
 bi::CppBaseGenerator::CppBaseGenerator(std::ostream& base, const int level,
     const bool header, const bool generic) :
     indentable_ostream(base, level),
@@ -502,6 +500,11 @@ void bi::CppBaseGenerator::visit(const Program* o) {
     /* body of program */
     *this << o->braces->strip();
 
+    /* run garbage collector one last time (useful to clean up when running
+     * under valgrind) */
+    genTraceLine(o->loc);
+    line("libbirch::collect();\n");
+
     genTraceLine(o->loc);
     line("return 0;");
     out();
@@ -731,11 +734,7 @@ void bi::CppBaseGenerator::visit(const MemberType* o) {
 
 void bi::CppBaseGenerator::visit(const NamedType* o) {
   if (o->isClass()) {
-    if (o->weak) {
-      middle("libbirch::Lazy<libbirch::Weak<");
-    } else {
-      middle("libbirch::Lazy<libbirch::Shared<");
-    }
+    middle("libbirch::Lazy<libbirch::Shared<");
     middle("bi::type::" << o->name);
     if (!o->typeArgs->isEmpty()) {
       middle('<' << o->typeArgs << '>');

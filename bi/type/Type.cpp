@@ -53,10 +53,6 @@ bool bi::Type::isOptional() const {
   return false;
 }
 
-bool bi::Type::isWeak() const {
-  return false;
-}
-
 bool bi::Type::isGeneric() const {
   return false;
 }

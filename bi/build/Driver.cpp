@@ -9,14 +9,6 @@
 #include "bi/primitive/encode.hpp"
 #include "bi/exception/DriverException.hpp"
 
-#include "boost/algorithm/string.hpp"
-
-#include <getopt.h>
-#include <dlfcn.h>
-#ifdef HAVE_LIBEXPLAIN_SYSTEM_H
-#include <libexplain/system.h>
-#endif
-
 bi::Driver::Driver(int argc, char** argv) :
     /* keep these paths relative, or at least call configure with a
      * relative path from the build directory to the work directory,

@@ -69,7 +69,6 @@
 }
 
 %union {
-  bool valBool;
   int32_t valInt;
   double valReal;
   const char* valString;
@@ -146,8 +145,6 @@
 %type <valType> fiber_return_type optional_fiber_return_type
 %type <valType> generic_argument generic_argument_list generic_arguments optional_generic_arguments
 
-%type <valBool> weak_modifier
-
 %locations
 
 %start file
@@ -203,7 +200,7 @@ sequence_expression
     ;
 
 cast_expression
-    : name optional_generic_arguments '?' '(' expression ')'  { $$ = new bi::Cast(new bi::NamedType(false, $1, $2, make_loc(@$)), $5, make_loc(@$)); }
+    : name optional_generic_arguments '?' '(' expression ')'  { $$ = new bi::Cast(new bi::NamedType($1, $2, make_loc(@$)), $5, make_loc(@$)); }
     ;
 
 function_expression
@@ -772,13 +769,9 @@ double_braces
  * Types                                                                   *
  ***************************************************************************/
 
-weak_modifier
-    : '&'  { $$ = true; }
-    |      { $$ = false; }
-    ;
-
 named_type
-    : name optional_generic_arguments weak_modifier  { $$ = new bi::NamedType($3, $1, $2, make_loc(@$)); }
+    : name optional_generic_arguments      { $$ = new bi::NamedType($1, $2, make_loc(@$)); }
+    | name optional_generic_arguments '&'  { yywarn("using weak pointers is no longer necessary"); $$ = new bi::NamedType($1, $2, make_loc(@$)); }
     ;
 
 primary_type

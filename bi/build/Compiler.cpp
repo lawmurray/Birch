@@ -3,15 +3,13 @@
  */
 #include "Compiler.hpp"
 
+#include "bi/birch.hpp"
 #include "bi/visitor/all.hpp"
 #include "bi/io/cpp/CppPackageGenerator.hpp"
 #include "bi/io/bi_ostream.hpp"
 #include "bi/io/cpp_ostream.hpp"
 #include "bi/io/hpp_ostream.hpp"
 #include "bi/lexer.hpp"
-
-#include <getopt.h>
-#include <dlfcn.h>
 
 bi::Compiler* compiler = nullptr;
 std::stringstream raw;

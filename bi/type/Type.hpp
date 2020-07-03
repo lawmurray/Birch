@@ -102,11 +102,6 @@ public:
   virtual bool isOptional() const;
 
   /**
-   * Is this a weak pointer type?
-   */
-  virtual bool isWeak() const;
-
-  /**
    * Is this a generic type?
    */
   virtual bool isGeneric() const;

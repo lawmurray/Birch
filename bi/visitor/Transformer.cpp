@@ -73,7 +73,7 @@ bi::Statement* bi::Transformer::modify(Class* o) {
   if (o->base->isEmpty() && o->name->str() != "Object") {
     /* if the class derives from nothing else, then derive from Object,
      * unless this is itself the declaration of the Object class */
-    o->base = new NamedType(false, new Name("Object"), new EmptyType(), o->loc);
+    o->base = new NamedType(new Name("Object"), new EmptyType(), o->loc);
   }
   return ContextualModifier::modify(o);
 }

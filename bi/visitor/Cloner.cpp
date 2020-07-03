@@ -297,7 +297,7 @@ bi::Type* bi::Cloner::clone(const TypeList* o) {
 }
 
 bi::Type* bi::Cloner::clone(const NamedType* o) {
-  return new NamedType(o->weak, o->name, o->typeArgs->accept(this), o->loc);
+  return new NamedType(o->name, o->typeArgs->accept(this), o->loc);
 }
 
 bi::Type* bi::Cloner::clone(const MemberType* o) {

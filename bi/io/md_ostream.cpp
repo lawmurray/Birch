@@ -586,9 +586,6 @@ void bi::md_ostream::visit(const NamedType* o) {
   if (!o->typeArgs->isEmpty()) {
     middle("&lt;" << o->typeArgs << "&gt;");
   }
-  if (o->weak) {
-    middle("&amp;");
-  }
 }
 
 void bi::md_ostream::visit(const ArrayType* o) {

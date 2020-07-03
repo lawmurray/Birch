@@ -3,12 +3,6 @@
  */
 #include "bi/primitive/encode.hpp"
 
-#include "boost/algorithm/string.hpp"
-
-#include <iomanip>
-#include <locale>
-#include <codecvt>
-
 std::string bi::encode32(const std::string& in) {
   std::string out;
   out.resize((in.length() + 4) / 5 * 7);
