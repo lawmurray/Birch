@@ -51,7 +51,7 @@ final class MultivariateNormalInverseGamma(μ:Expression<Real[_]>,
   /**
    * Variance scale.
    */
-  σ2:InverseGamma& <- σ2;
+  σ2:InverseGamma <- σ2;
 
   function rows() -> Integer {
     return ν.rows();
@@ -82,19 +82,16 @@ final class MultivariateNormalInverseGamma(μ:Expression<Real[_]>,
   }
 
   function update(x:Real[_]) {
-    auto σ2 <- this.σ2;
     (σ2.α, σ2.β) <- box(update_multivariate_normal_inverse_gamma(x, ν.value(),
         Λ.value(), α.value(), gamma_to_beta(γ.value(), ν.value(), Λ.value())));
   }
 
   function updateLazy(x:Expression<Real[_]>) {
-    auto σ2 <- this.σ2;
     (σ2.α, σ2.β) <- update_lazy_multivariate_normal_inverse_gamma(x, ν,
         Λ, α, gamma_to_beta(γ, ν, Λ));
   }
 
   function downdate(x:Real[_]) {
-    auto σ2 <- this.σ2;
     (σ2.α, σ2.β) <- box(downdate_multivariate_normal_inverse_gamma(x, ν.value(),
         Λ.value(), α.value(), gamma_to_beta(γ.value(), ν.value(), Λ.value())));
   }
@@ -102,7 +99,6 @@ final class MultivariateNormalInverseGamma(μ:Expression<Real[_]>,
   function graftMultivariateNormalInverseGamma(compare:Distribution<Real>) ->
       MultivariateNormalInverseGamma? {
     prune();
-    auto σ2 <- this.σ2;
     if σ2 == compare {
       return this;
     } else {
@@ -111,12 +107,10 @@ final class MultivariateNormalInverseGamma(μ:Expression<Real[_]>,
   }
 
   function link() {
-    auto σ2 <- this.σ2;
     σ2.setChild(this);
   }
   
   function unlink() {
-    auto σ2 <- this.σ2;
     σ2.releaseChild(this);
   }
 

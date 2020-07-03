@@ -8,7 +8,7 @@ abstract class Distribution<Value> < DelayDistribution {
    * Random variate associated with the distibution, if it is on the delayed
    * sampling $M$-path.
    */
-  x:Random<Value>&?;
+  x:Random<Value>?;
 
   /**
    * Number of rows, when interpreted as a matrix.
@@ -51,10 +51,8 @@ abstract class Distribution<Value> < DelayDistribution {
    */
   final function realize() {
     if supportsLazy() {
-      auto x <- this.x!;
       x!.pilot();
     } else {
-      auto x <- this.x!;
       x!.value();
     }
   }

@@ -16,7 +16,7 @@ final class MatrixNormalInverseWishart(M:Expression<Real[_,_]>,
   /**
    * Among-column covariance.
    */
-  V:InverseWishart& <- V;
+  V:InverseWishart <- V;
 
   function rows() -> Integer {
     return N.rows();
@@ -31,44 +31,36 @@ final class MatrixNormalInverseWishart(M:Expression<Real[_,_]>,
   }
 
   function simulate() -> Real[_,_] {
-    auto V <- this.V;
     return simulate_matrix_normal_inverse_wishart(N.value(), Λ.value(), V.Ψ.value(), V.k.value());
   }
 
   function simulateLazy() -> Real[_,_]? {
-    auto V <- this.V;
     return simulate_matrix_normal_inverse_wishart(N.get(), Λ.get(), V.Ψ.get(), V.k.get());
   }
   
   function logpdf(X:Real[_,_]) -> Real {   
-    auto V <- this.V;
     return logpdf_matrix_normal_inverse_wishart(X, N.value(), Λ.value(), V.Ψ.value(), V.k.value());
   }
 
   function logpdfLazy(X:Expression<Real[_,_]>) -> Expression<Real>? {   
-    auto V <- this.V;
     return logpdf_lazy_matrix_normal_inverse_wishart(X, N, Λ, V.Ψ, V.k);
   }
 
   function update(X:Real[_,_]) {
-    auto V <- this.V;
     (V.Ψ, V.k) <- box(update_matrix_normal_inverse_wishart(X, N.value(), Λ.value(), V.Ψ.value(), V.k.value()));
   }
 
   function updateLazy(X:Expression<Real[_,_]>) {
-    auto V <- this.V;
     (V.Ψ, V.k) <- update_lazy_matrix_normal_inverse_wishart(X, N, Λ, V.Ψ, V.k);
   }
 
   function downdate(X:Real[_,_]) {
-    auto V <- this.V;
     (V.Ψ, V.k) <- box(downdate_matrix_normal_inverse_wishart(X, N.value(), Λ.value(), V.Ψ.value(), V.k.value()));
   }
 
   function graftMatrixNormalInverseWishart(compare:Distribution<LLT>) ->
       MatrixNormalInverseWishart? {
     prune();
-    auto V <- this.V;
     if V == compare {
       return this;
     } else {
@@ -77,17 +69,14 @@ final class MatrixNormalInverseWishart(M:Expression<Real[_,_]>,
   }
 
   function link() {
-    auto V <- this.V;
     V.setChild(this);
   }
   
   function unlink() {
-    auto V <- this.V;
     V.releaseChild(this);
   }
 
   function write(buffer:Buffer) {
-    auto V <- this.V;
     prune();
     buffer.set("class", "MatrixNormalInverseWishart");
     buffer.set("M", solve(Λ.value(), N.value()));

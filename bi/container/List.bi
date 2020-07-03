@@ -21,7 +21,7 @@
  */
 final class List<Type> {
   head:ListNode<Type>?;
-  tail:ListNode<Type>&?;
+  tail:ListNode<Type>?;
   count:Integer <- 0;
 
   /**

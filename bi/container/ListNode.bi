@@ -2,7 +2,7 @@
  * List node.
  */
 final class ListNode<Type>(x:Type) {
-  prev:ListNode<Type>&?;
+  prev:ListNode<Type>?;
   next:ListNode<Type>?;
   x:Type <- x;
 
@@ -12,9 +12,7 @@ final class ListNode<Type>(x:Type) {
    * - node: the new node.
    */
   function insert(node:ListNode<Type>) {
-    prev:ListNode<Type>? <- this.prev;
-    assert prev?;
-
+    assert prev?;    
     node.prev <- prev;
     node.next <- this;
     prev!.next <- node;
@@ -25,10 +23,8 @@ final class ListNode<Type>(x:Type) {
    * Remove this node from the list.
    */
   function erase() {
-    prev:ListNode<Type>? <- this.prev;
     assert prev?;
     assert next?;
-    
     next!.prev <- prev;
     prev!.next <- next;
     this.next <- nil;
@@ -41,7 +37,7 @@ final class ListNode<Type>(x:Type) {
    * Return: the new front node of the list.
    */
   function popFront() -> ListNode<Type>? {
-    node:ListNode<Type>? <- this.next;
+    auto node <- this.next;
     if node? {
       node!.prev <- nil;
     }
@@ -56,7 +52,7 @@ final class ListNode<Type>(x:Type) {
    * Return: the new back node of the list.
    */
   function popBack() -> ListNode<Type>? {
-    node:ListNode<Type>? <- this.prev;
+    auto node <- this.prev;
     if node? {
       node!.next <- nil;
     }

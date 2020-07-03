@@ -6,7 +6,7 @@ final class GaussianGaussian(m:Gaussian, s2:Expression<Real>) <
   /**
    * Mean.
    */
-  m:Gaussian& <- m;
+  m:Gaussian <- m;
 
   /**
    * Variance.
@@ -14,27 +14,22 @@ final class GaussianGaussian(m:Gaussian, s2:Expression<Real>) <
   s2:Expression<Real> <- s2;
 
   function update(x:Real) {
-    auto m <- this.m;
     (m.μ, m.σ2) <- box(update_gaussian_gaussian(x, m.μ.value(), m.σ2.value(), s2.value()));
   }
 
   function updateLazy(x:Expression<Real>) {
-    auto m <- this.m;
     (m.μ, m.σ2) <- update_lazy_gaussian_gaussian(x, m.μ, m.σ2, s2);
   }
 
   function downdate(x:Real) {
-    auto m <- this.m;
     (m.μ, m.σ2) <- box(downdate_gaussian_gaussian(x, m.μ.value(), m.σ2.value(), s2.value()));
   }
 
   function link() {
-    auto m <- this.m;
     m.setChild(this);
   }
   
   function unlink() {
-    auto m <- this.m;
     m.releaseChild(this);
   }
 }
