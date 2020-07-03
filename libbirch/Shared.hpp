@@ -133,7 +133,11 @@ public:
     auto ptr = o.ptr.exchange(nullptr);
     auto old = this->ptr.exchange(ptr);
     if (old) {
-      old->decShared();
+      if (ptr == old) {
+        old->decSharedReachable();
+      } else {
+        old->decShared();
+      }
     }
     return *this;
   }
@@ -146,7 +150,11 @@ public:
     auto ptr = o.ptr.exchange(nullptr);
     auto old = this->ptr.exchange(ptr);
     if (old) {
-      old->decShared();
+      if (ptr == old) {
+        old->decSharedReachable();
+      } else {
+        old->decShared();
+      }
     }
     return *this;
   }
@@ -177,7 +185,11 @@ public:
     }
     auto old = this->ptr.exchange(ptr);
     if (old) {
-      old->decShared();
+      if (ptr == old) {
+        old->decSharedReachable();
+      } else {
+        old->decShared();
+      }
     }
   }
 
@@ -211,7 +223,7 @@ public:
   void mark() {
     auto o = ptr.load();
     if (o) {
-      o->breakShared();  // break the reference
+      o->decSharedReachable();  // break the reference
       o->Any::mark();
     }
   }

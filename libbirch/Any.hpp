@@ -247,7 +247,9 @@ public:
   }
 
   /**
-   * Decrement the shared count.
+   * Decrement the shared count. This decrements the count; if the new count
+   * is nonzero, it registers the object as a possible root for cycle
+   * collection, or if the new count is zero, it destroys the object.
    */
   void decShared() {
     assert(numShared() > 0u);
@@ -267,9 +269,27 @@ public:
   }
 
   /**
-   * Decrement the shared count during mark() operation.
+   * Decrement the shared count with a known acyclic referent. This decrements
+   * the count, and if the new count is zero, it destroys the object. The
+   * caller asserts that the object is of acyclic type (@see is_acyclic), so
+   * that there is no need to register the object as a possible root for cycle
+   * collection.
    */
-  void breakShared() {
+  void decSharedAcyclic() {
+    assert(numShared() > 0u);
+    if (--sharedCount == 0u) {
+      destroy();
+      decMemo();
+    }
+  }
+
+  /**
+   * Decrement the shared count for an object that will remain reachable. The
+   * caller asserts that the object will remain reachable after the operation.
+   * The object will not be destroyed, and will not be registered as a
+   * possible root for cycle collection.
+   */
+  void decSharedReachable() {
     assert(numShared() > 0u);
     sharedCount.decrement();
   }

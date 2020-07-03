@@ -44,7 +44,11 @@ libbirch::LabelPtr& libbirch::LabelPtr::operator=(LabelPtr&& o) {
   auto ptr = o.ptr.exchange(nullptr);
   auto old = this->ptr.exchange(ptr);
   if (old && old != root_label) {
-    old->decShared();
+    if (ptr == old) {
+      old->decSharedReachable();
+    } else {
+      old->decShared();
+    }
   }
   return *this;
 }
@@ -63,7 +67,11 @@ void libbirch::LabelPtr::replace(Label* ptr) {
   }
   auto old = this->ptr.exchange(ptr);
   if (old && old != root_label) {
-    old->decShared();
+    if (ptr == old) {
+      old->decSharedReachable();
+    } else {
+      old->decShared();
+    }
   }
 }
 
@@ -87,7 +95,7 @@ void libbirch::LabelPtr::mark() {
    * label, it is not necessary to recurse into it */
   auto o = ptr.load();
   if (o && o != root_label) {
-    o->breakShared();
+    o->decSharedReachable();
     o->mark();
   }
 }

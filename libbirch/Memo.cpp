@@ -231,7 +231,7 @@ void libbirch::Memo::mark() {
   for (auto i = 0u; i < nentries; ++i) {
     auto value = values[i];
     if (value) {
-      value->breakShared();  // break the reference
+      value->decSharedReachable();  // break the reference
       value->mark();
     }
   }

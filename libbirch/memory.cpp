@@ -165,7 +165,6 @@ void libbirch::collect() {
       }
       o->decMemo();
     }
-    #pragma omp barrier
 
     auto& unreachable = get_thread_unreachable();
     for (auto& o : unreachable) {
