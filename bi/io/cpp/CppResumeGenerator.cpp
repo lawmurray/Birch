@@ -107,6 +107,10 @@ void bi::CppResumeGenerator::visit(const Function* o) {
 
     genSourceLine(o->loc);
     line("virtual " << fiberType << " query();");
+
+    /* boilerplace */
+    line("");
+    genSourceLine(o->loc);
     if (currentClass) {
       start("LIBBIRCH_MEMBER_FIBER(");
     } else {
@@ -115,6 +119,7 @@ void bi::CppResumeGenerator::visit(const Function* o) {
     genUniqueName(o);
     middle(", libbirch::FiberState<" << fiberType->returnType << ',');
     finish(fiberType->yieldType << ">)");
+    genSourceLine(o->loc);
     start("LIBBIRCH_MEMBERS(");
     if (params) {
       middle("param_");

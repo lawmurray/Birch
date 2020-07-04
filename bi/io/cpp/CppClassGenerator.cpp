@@ -88,34 +88,6 @@ void bi::CppClassGenerator::visit(const Class* o) {
       line("");
     }
 
-    /* boilerplate */
-    if (header) {
-    	if (o->has(ABSTRACT)) {
-    	  start("LIBBIRCH_ABSTRACT_CLASS");
-    	} else {
-    	  start("LIBBIRCH_CLASS");
-    	}
-      middle('(' << o->name << ", ");
-      if (base) {
-        middle(base->name);
-        if (!base->typeArgs->isEmpty()) {
-          middle('<' << base->typeArgs << '>');
-        }
-      } else {
-        middle("libbirch::Any");
-      }
-      finish(')');
-      start("LIBBIRCH_MEMBERS(");
-      for (auto iter = memberVariables.begin(); iter != memberVariables.end();
-          ++iter) {
-        if (iter != memberVariables.begin()) {
-          middle(", ");
-        }
-        middle((*iter)->name);
-      }
-      finish(")\n");
-    }
-
     /* constructor */
     if (!header) {
       genTemplateParams(o);
@@ -165,6 +137,37 @@ void bi::CppClassGenerator::visit(const Class* o) {
 
     /* member variables and functions */
     *this << o->braces->strip();
+
+    /* boilerplate */
+    if (header) {
+      line("");
+      genSourceLine(o->loc);
+      if (o->has(ABSTRACT)) {
+        start("LIBBIRCH_ABSTRACT_CLASS");
+      } else {
+        start("LIBBIRCH_CLASS");
+      }
+      middle('(' << o->name << ", ");
+      if (base) {
+        middle(base->name);
+        if (!base->typeArgs->isEmpty()) {
+          middle('<' << base->typeArgs << '>');
+        }
+      } else {
+        middle("libbirch::Any");
+      }
+      finish(')');
+      genSourceLine(o->loc);
+      start("LIBBIRCH_MEMBERS(");
+      for (auto iter = memberVariables.begin(); iter != memberVariables.end();
+          ++iter) {
+        if (iter != memberVariables.begin()) {
+          middle(", ");
+        }
+        middle((*iter)->name);
+      }
+      finish(")");
+    }
 
     /* end class */
     if (header) {
