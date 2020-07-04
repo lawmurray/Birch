@@ -5,6 +5,7 @@
 
 #include "libbirch/external.hpp"
 #include "libbirch/memory.hpp"
+#include "libbirch/Init.hpp"
 #include "libbirch/Atomic.hpp"
 
 namespace libbirch {
@@ -135,7 +136,7 @@ public:
    */
   Any* copy(Label* label) {
     auto o = copy_(label);
-    o->label = label;
+    new (&o->label) Init<Label>(label);
     o->sharedCount.set(0u);
     o->memoCount.set(1u);
     o->size.set(0u);
@@ -153,8 +154,8 @@ public:
    * @param label The new label.
    */
   void recycle(Label* label) {
-    this->label = label;
-    flags.maskAnd(~(FINISHED|FROZEN|FROZEN_UNIQUE));
+    this->label.replace(label);
+    this->flags.maskAnd(~(FINISHED|FROZEN|FROZEN_UNIQUE));
     recycle_(label);
   }
 
@@ -329,7 +330,7 @@ public:
    * Get the label assigned to the object.
    */
   Label* getLabel() const {
-    return label;
+    return label.get();
   }
 
   /**
@@ -385,7 +386,7 @@ private:
   /**
    * Label of the object.
    */
-  Label* label;
+  Init<Label> label;
 
   /**
    * Shared count.
@@ -537,6 +538,6 @@ public:
   /**
    * Type of members.
    */
-  using member_type_ = int;
+  using member_type_ = decltype(label);
 };
 }
