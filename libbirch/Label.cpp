@@ -45,12 +45,13 @@ libbirch::Any* libbirch::Label::mapGet(Any* o) {
        * only one reference to the object, it need not be memoized, as there
        * are no other pointers to update to the copy */
       if (!next->isFrozenUnique()) {
-        memo.put(next, copied);
         thaw();
+        memo.put(next, copied);
       }
       next = copied;
     }
   }
+  assert(!next->isFrozen());
   return next;
 }
 

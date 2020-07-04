@@ -7,6 +7,11 @@
 #include "libbirch/type.hpp"
 
 namespace libbirch {
+template<class... Args>
+class Tuple {
+  //
+};
+
 /**
  * Tuple.
  *
@@ -17,9 +22,8 @@ namespace libbirch {
  * reference types, Tie may be used instead.
  */
 template<class Head, class ...Tail>
-class Tuple {
-  template<class Head1, class... Tail1> friend class Tuple;
-  template<class Head1, class... Tail1> friend class Tie;
+class Tuple<Head,Tail...> {
+  template<class... Args> friend class Tuple;
 public:
   Tuple() = default;
 
@@ -130,8 +134,7 @@ private:
  */
 template<class Head>
 class Tuple<Head> {
-  template<class Head1, class... Tail1> friend class Tuple;
-  template<class Head1, class... Tail1> friend class Tie;
+  template<class... Args> friend class Tuple;
 public:
   Tuple() = default;
 
@@ -208,17 +211,119 @@ private:
   Head head;
 };
 
-template<class Head, class ...Tail>
-struct is_value<Tuple<Head,Tail...>> {
-  static const bool value = is_value<Head>::value && is_value<Tuple<Tail...>>::value;
+/*
+ * Empty tuple.
+ */
+template<>
+class Tuple<> {
+  template<class... Args> friend class Tuple;
+public:
+  Tuple() = default;
+
+  /**
+   * Accept visitor.
+   */
+  template<class Visitor>
+  void accept_(const Visitor& v) {
+    //
+  }
 };
+
+template<class Head, class... Tail>
+struct is_value<Tuple<Head,Tail...>> {
+  static const bool value = is_value<Head>::value &&
+      is_value<Tuple<Tail...>>::value;
+};
+
 template<class Head>
 struct is_value<Tuple<Head>> {
   static const bool value = is_value<Head>::value;
 };
 
+template<>
+struct is_value<Tuple<>> {
+  static const bool value = true;
+};
+
+template<class Head, class... Tail, unsigned N>
+struct is_acyclic<Tuple<Head,Tail...>,N> {
+  static const bool value = is_acyclic<Head,N>::value &&
+       is_acyclic<Tuple<Tail...>,N>::value;
+};
+
+template<class Head, unsigned N>
+struct is_acyclic<Tuple<Head>,N> {
+  static const bool value = is_acyclic<Head,N>::value;
+};
+
+template<unsigned N>
+struct is_acyclic<Tuple<>,N> {
+  static const bool value = true;
+};
+
 template<class Head, class Tail>
 auto canonical(const Tuple<Head,Tail>& o) {
   return o;
+}
+
+/**
+ * Make a tuple.
+ *
+ * @tparam Head First element type.
+ * @tparam Tail Remaining element types.
+ *
+ * @param head First element.
+ * @param tail Remaining elements.
+ */
+template<class Head, class ... Tail>
+auto make_tuple(const Head& head, const Tail&... tail) {
+  return Tuple<Head,Tail...>(head, tail...);
+}
+
+/**
+ * Make a tuple with a single element.
+ *
+ * @tparam Head First element type.
+ *
+ * @param head First element.
+ */
+template<class Head>
+auto make_tuple(const Head& head) {
+  return Tuple<Head>(head);
+}
+
+/**
+ * Make an empty tuple.
+ */
+inline auto make_tuple() {
+  return Tuple<>();
+}
+
+/**
+ * Tie a tuple.
+ *
+ * @tparam Head First element type.
+ * @tparam Tail Remaining element types.
+ *
+ * @param head First element.
+ * @param tail Remaining elements.
+ */
+template<class Head, class ... Tail>
+auto tie(Head&& head, Tail&&... tail) {
+  return Tuple<Head&,Tail&...>(head, tail...);
+}
+
+/**
+ * Tie a constant tuple.
+ *
+ * @tparam Head First element type.
+ * @tparam Tail Remaining element types.
+ *
+ * @param head First element.
+ * @param tail Remaining elements.
+ */
+template<class Head, class ... Tail>
+auto const_tie(const Head& head, const Tail&... tail) {
+  return Tuple<const Head&,const Tail&...>(head, tail...);
 }
 }

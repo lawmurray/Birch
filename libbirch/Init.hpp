@@ -137,6 +137,11 @@ struct is_pointer<Init<T>> {
   static const bool value = true;
 };
 
+template<class T, unsigned N>
+struct is_acyclic<Init<T>,N> {
+  static const bool value = true;
+};
+
 template<class T>
 struct raw<Init<T>> {
   using type = T*;

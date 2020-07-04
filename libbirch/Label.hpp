@@ -12,7 +12,7 @@ namespace libbirch {
  *
  * @ingroup libbirch
  */
-class Label : public Any {
+class Label final : public Any {
 public:
   /**
    * Constructor.
@@ -96,7 +96,34 @@ public:
     return ptr;
   }
 
-protected:
+private:
+  /**
+   * Map an object that may not yet have been cloned, cloning it if
+   * necessary.
+   */
+  Any* mapGet(Any* o);
+
+  /**
+   * Map an object that may not yet have been cloned, without cloning it.
+   * This is used as an optimization for read-only access.
+   */
+  Any* mapPull(Any* o);
+
+  /**
+   * Memo that maps source objects to clones.
+   */
+  Memo memo;
+
+  /**
+   * Lock.
+   */
+  ReadersWriterLock lock;
+
+public:
+  virtual bi::type::String getClassName() const {
+    return "Label";
+  }
+
   virtual unsigned size_() const override {
     return sizeof(*this);
   }
@@ -137,31 +164,11 @@ protected:
     memo.collect();
   }
 
-  virtual bi::type::String getClassName() const {
-    return "Label";
-  }
+  using base_type = Any;
+};
 
-private:
-  /**
-   * Map an object that may not yet have been cloned, cloning it if
-   * necessary.
-   */
-  Any* mapGet(Any* o);
-
-  /**
-   * Map an object that may not yet have been cloned, without cloning it.
-   * This is used as an optimization for read-only access.
-   */
-  Any* mapPull(Any* o);
-
-  /**
-   * Memo that maps source objects to clones.
-   */
-  Memo memo;
-
-  /**
-   * Lock.
-   */
-  ReadersWriterLock lock;
+template<unsigned N>
+struct is_acyclic_class<Label,N> {
+  static const bool value = false;
 };
 }

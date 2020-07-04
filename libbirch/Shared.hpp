@@ -135,6 +135,8 @@ public:
     if (old) {
       if (ptr == old) {
         old->decSharedReachable();
+      } else if (is_acyclic<Shared<T>>::value) {
+        old->decSharedAcyclic();
       } else {
         old->decShared();
       }
@@ -152,6 +154,8 @@ public:
     if (old) {
       if (ptr == old) {
         old->decSharedReachable();
+      } else if (is_acyclic<Shared<T>>::value) {
+        old->decSharedAcyclic();
       } else {
         old->decShared();
       }
@@ -187,6 +191,8 @@ public:
     if (old) {
       if (ptr == old) {
         old->decSharedReachable();
+      } else if (is_acyclic<Shared<T>>::value) {
+        old->decSharedAcyclic();
       } else {
         old->decShared();
       }
@@ -199,7 +205,11 @@ public:
   void release() {
     auto old = ptr.exchange(nullptr);
     if (old) {
-      old->decShared();
+      if (is_acyclic<Shared<T>>::value) {
+        old->decSharedAcyclic();
+      } else {
+        old->decShared();
+      }
     }
   }
 
@@ -221,10 +231,12 @@ public:
    * Mark.
    */
   void mark() {
-    auto o = ptr.load();
-    if (o) {
-      o->decSharedReachable();  // break the reference
-      o->Any::mark();
+    if (!is_acyclic<Shared<T>>::value) {
+      auto o = ptr.load();
+      if (o) {
+        o->decSharedReachable();  // break the reference
+        o->Any::mark();
+      }
     }
   }
 
@@ -232,9 +244,11 @@ public:
    * Scan.
    */
   void scan() {
-    auto o = ptr.load();
-    if (o) {
-      o->Any::scan();
+    if (!is_acyclic<Shared<T>>::value) {
+      auto o = ptr.load();
+      if (o) {
+        o->Any::scan();
+      }
     }
   }
 
@@ -242,10 +256,12 @@ public:
    * Reach.
    */
   void reach() {
-    auto o = ptr.load();
-    if (o) {
-      o->incShared();  // restore the broken reference
-      o->Any::reach();
+    if (!is_acyclic<Shared<T>>::value) {
+      auto o = ptr.load();
+      if (o) {
+        o->incShared();  // restore the broken reference
+        o->Any::reach();
+      }
     }
   }
 
@@ -253,9 +269,11 @@ public:
    * Collect.
    */
   void collect() {
-    auto o = ptr.exchange(nullptr);  // reference still broken, just set null
-    if (o) {
-      o->Any::collect();
+    if (!is_acyclic<Shared<T>>::value) {
+      auto o = ptr.exchange(nullptr);  // reference still broken, just set null
+      if (o) {
+        o->Any::collect();
+      }
     }
   }
 
@@ -274,6 +292,18 @@ struct is_value<Shared<T>> {
 template<class T>
 struct is_pointer<Shared<T>> {
   static const bool value = true;
+};
+
+template<class T, unsigned N>
+struct is_acyclic<Shared<T>,N> {
+  // because pointers are polymorphic, the class must be both final and
+  // acyclic for the pointer to be considered acyclic
+  static const bool value = std::is_final<T>::value && is_acyclic_class<T,N-1>::value;
+};
+
+template<class T>
+struct is_acyclic<Shared<T>,0> {
+  static const bool value = false;
 };
 
 template<class T>

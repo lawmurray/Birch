@@ -31,6 +31,10 @@ libbirch::Memo::~Memo() {
     deallocate(values, nentries * sizeof(value_type), tentries);
     keys = nullptr;
     values = nullptr;
+    //nentries = 0u;
+    //tentries = 0u;
+    //noccupied = 0u;
+    //nnew = 0u;
   }
 }
 

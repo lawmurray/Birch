@@ -373,6 +373,12 @@ struct raw<Lazy<P>> {
   using type = typename raw<P>::type;
 };
 
+template<class P, unsigned N>
+struct is_acyclic<Lazy<P>,N> {
+  static const bool value = is_acyclic<LabelPtr,N>::value &&
+      is_acyclic<P,N>::value;
+};
+
 template<class T>
 Lazy<Shared<T>> canonical(const Lazy<Shared<T>>& o) {
   return o;

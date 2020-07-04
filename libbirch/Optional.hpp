@@ -280,9 +280,9 @@ struct is_value<Optional<T>> {
   static const bool value = is_value<T>::value;
 };
 
-template<class T>
-struct is_value<Optional<T>&> {
-  static const bool value = is_value<T>::value;
+template<class T, unsigned N>
+struct is_acyclic<Optional<T>,N> {
+  static const bool value = is_acyclic<T,N>::value;
 };
 
 template<class T>

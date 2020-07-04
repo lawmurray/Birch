@@ -258,48 +258,6 @@ auto make_pointer(Args... args) {
 }
 
 /**
- * Make a tuple.
- *
- * @tparam Head First element type.
- * @tparam Tail Remaining element types.
- *
- * @param head First element.
- * @param tail Remaining elements.
- */
-template<class Head, class ... Tail>
-auto make_tuple(const Head& head, const Tail&... tail) {
-  return Tuple<Head,Tail...>(head, tail...);
-}
-
-/**
- * Tie a tuple.
- *
- * @tparam Head First element type.
- * @tparam Tail Remaining element types.
- *
- * @param head First element.
- * @param tail Remaining elements.
- */
-template<class Head, class ... Tail>
-auto tie(Head&& head, Tail&&... tail) {
-  return Tuple<Head&,Tail&...>(head, tail...);
-}
-
-/**
- * Tie a constant tuple.
- *
- * @tparam Head First element type.
- * @tparam Tail Remaining element types.
- *
- * @param head First element.
- * @param tail Remaining elements.
- */
-template<class Head, class ... Tail>
-auto const_tie(const Head& head, const Tail&... tail) {
-  return Tuple<const Head&,const Tail&...>(head, tail...);
-}
-
-/**
  * Make a value.
  *
  * @tparam T Value type.

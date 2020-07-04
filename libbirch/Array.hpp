@@ -796,9 +796,9 @@ struct is_value<Array<T,F>> {
   static const bool value = is_value<T>::value;
 };
 
-template<class T, class F>
-struct is_array<Array<T,F>> {
-  static const bool value = true;
+template<class T, class F, unsigned N>
+struct is_acyclic<Array<T,F>,N> {
+  static const bool value = is_acyclic<T,N>::value;
 };
 
 /**

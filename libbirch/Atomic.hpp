@@ -95,9 +95,9 @@ public:
    *
    * @param m Mask.
    *
-   * @return Old value.
+   * @return Previous value.
    */
-  T maskAnd(const T& m) {
+  T exchangeAnd(const T& m) {
     T old;
     #pragma omp atomic capture
     {
@@ -113,9 +113,9 @@ public:
    *
    * @param m Mask.
    *
-   * @return Old value.
+   * @return Previous value.
    */
-  T maskOr(const T& m) {
+  T exchangeOr(const T& m) {
     T old;
     #pragma omp atomic capture
     {
@@ -123,6 +123,26 @@ public:
       this->value |= m;
     }
     return old;
+  }
+
+  /**
+   * Apply a mask, with bitwise `and`, atomically.
+   *
+   * @param m Mask.
+   */
+  void maskAnd(const T& m) {
+    #pragma omp atomic update
+    this->value &= m;
+  }
+
+  /**
+   * Apply a mask, with bitwise `or`, atomically.
+   *
+   * @param m Mask.
+   */
+  void maskOr(const T& m) {
+    #pragma omp atomic update
+    this->value |= m;
   }
 
   /**

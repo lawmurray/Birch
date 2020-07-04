@@ -130,4 +130,14 @@ template<>
 struct raw<LabelPtr> {
   using type = Label*;
 };
+
+template<unsigned N>
+struct is_acyclic<LabelPtr,N> {
+  static const bool value = is_acyclic_class<Label,N-1>::value;
+};
+
+template<>
+struct is_acyclic<LabelPtr,0> {
+  static const bool value = false;
+};
 }

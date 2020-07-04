@@ -89,17 +89,10 @@ public:
   }
 
   /**
-   * Get the class name.
-   */
-  virtual bi::type::String getClassName() const {
-    return "Any";
-  }
-
-  /**
    * Finish the object.
    */
   void finish(Label* label) {
-    if (set(FINISHED)) {
+    if (!(flags.exchangeOr(FINISHED) & FINISHED)) {
       finish_(label);
     }
   }
@@ -115,13 +108,13 @@ public:
      * new copy during its freeze pass; it should not attempt to finish or
      * freeze such an object---the work has already been done by the second
      * thread */
-    if (is(FINISHED)) {
-      if (set(FROZEN)) {
+    if (flags.load() & FINISHED) {
+      if (!(flags.exchangeOr(FROZEN) & FROZEN)) {
         if (sharedCount.load() == 1u) {
           // ^ small optimization: isUnique() makes sense, but unnecessarily
           //   loads memoCount as well, which is unnecessary for a objects
           //   that are not frozen
-          set(FROZEN_UNIQUE);
+          flags.maskOr(FROZEN_UNIQUE);
         }
         freeze_();
       }
@@ -132,7 +125,7 @@ public:
    * Thaw the object.
    */
   void thaw() {
-    unset(~BUFFERED);
+    flags.maskAnd(~BUFFERED);
   }
 
   /**
@@ -160,6 +153,8 @@ public:
    * @param label The new label.
    */
   void recycle(Label* label) {
+    this->label = label;
+    flags.maskAnd(~(FINISHED|FROZEN|FROZEN_UNIQUE));
     recycle_(label);
   }
 
@@ -170,8 +165,8 @@ public:
    * "Bacon & Rajan (2001)".
    */
   void mark() {
-    if (set(MARKED)) {
-      unset(BUFFERED|SCANNED|REACHED|COLLECTED);  // unset for later passes
+    if (!(flags.exchangeOr(MARKED) & MARKED)) {
+      flags.maskAnd(~(BUFFERED|SCANNED|REACHED|COLLECTED));
       mark_();
     }
   }
@@ -183,10 +178,10 @@ public:
    * "Bacon & Rajan (2001)".
    */
   void scan() {
-    if (set(SCANNED)) {
-      unset(MARKED);  // unset for next time
+    if (!(flags.exchangeOr(SCANNED) & SCANNED)) {
+      flags.maskAnd(~MARKED);  // unset for next time
       if (numShared() > 0u) {
-        if (set(REACHED)) {
+        if (!(flags.exchangeOr(REACHED) & REACHED)) {
           reach_();
         }
       } else {
@@ -202,10 +197,10 @@ public:
    * "Bacon & Rajan (2001)".
    */
   void reach() {
-    if (set(SCANNED)) {
-      unset(MARKED);  // unset for next time
+    if (!(flags.exchangeOr(SCANNED) & SCANNED)) {
+      flags.maskAnd(~MARKED);  // unset for next time
     }
-    if (set(REACHED)) {
+    if (!(flags.exchangeOr(REACHED) & REACHED)) {
       reach_();
     }
   }
@@ -217,7 +212,8 @@ public:
    * "Bacon & Rajan (2001)".
    */
   void collect() {
-    if (set(COLLECTED) && !is(REACHED)) {
+    auto old = flags.exchangeOr(COLLECTED);
+    if (!(old & COLLECTED) && !(old & REACHED)) {
       register_unreachable(this);
       collect_();
     }
@@ -228,6 +224,7 @@ public:
    */
   void destroy() {
     assert(sharedCount.load() == 0u);
+    this->flags.maskAnd(~POSSIBLE_ROOT);
     this->size.store(size_());
     this->~Any();
   }
@@ -243,6 +240,11 @@ public:
    * Increment the shared count.
    */
   void incShared() {
+    flags.maskAnd(~POSSIBLE_ROOT);
+    // ^ any interleaving with decShared() switching on POSSIBLE_ROOT should
+    //   not be problematic; having it on is never a correctness issue, only
+    //   a performance issue, and as long as one thread can reach the object
+    //   it is fine to be off
     sharedCount.increment();
   }
 
@@ -257,7 +259,8 @@ public:
     /* if the count will reduce to nonzero, this is possible the root of
      * a cycle; check this before decrementing rather than after, as otherwise
      * another thread may destroy the object while this thread registers */
-    if (sharedCount.load() > 1u && set(BUFFERED)) {
+    if (sharedCount.load() > 1u &&
+        !(flags.exchangeOr(BUFFERED|POSSIBLE_ROOT) & BUFFERED)) {
       register_possible_root(this);
     }
 
@@ -274,6 +277,9 @@ public:
    * caller asserts that the object is of acyclic type (@see is_acyclic), so
    * that there is no need to register the object as a possible root for cycle
    * collection.
+   *
+   * Acyclic objects occur in @ref Bacon2001 "Bacon & Rajan (2001)", where
+   * they are colored *green*.
    */
   void decSharedAcyclic() {
     assert(numShared() > 0u);
@@ -338,6 +344,13 @@ public:
   }
 
   /**
+   * Is this object the possible root of a cycle?
+   */
+  bool isPossibleRoot() const {
+    return flags.load() & POSSIBLE_ROOT;
+  }
+
+  /**
    * Is there only one pointer (of any type) to this object?
    */
   bool isUnique() const {
@@ -348,7 +361,7 @@ public:
    * Is the object frozen?
    */
   bool isFrozen() const {
-    return is(FROZEN);
+    return flags.load() & FROZEN;
   }
 
   /**
@@ -356,66 +369,7 @@ public:
    * shared pointer to it?
    */
   bool isFrozenUnique() const {
-    return is(FROZEN_UNIQUE);
-  }
-
-protected:
-  /**
-   * Called internally by finish() to recurse into member variables.
-   */
-  virtual void finish_(Label* label) = 0;
-
-  /**
-   * Called internally by freeze() to recurse into member variables.
-   */
-  virtual void freeze_() = 0;
-
-  /**
-   * Called internally by copy() to ensure the most derived type is copied.
-   */
-  virtual Any* copy_(Label* label) const = 0;
-
-  /**
-   * Called internally by recycle() to ensure the most derived type is
-   * recycled.
-   */
-  virtual void recycle_(Label* label) {
-    this->label = label;
-  }
-
-  /**
-   * Called internally by mark() to recurse into member variables.
-   */
-  virtual void mark_() = 0;
-
-  /**
-   * Called internally by scan() to recurse into member variables.
-   */
-  virtual void scan_() = 0;
-
-  /**
-   * Called internally by reach() to recurse into member variables.
-   */
-  virtual void reach_() = 0;
-
-  /**
-   * Called internally by collect() to recurse into member variables.
-   */
-  virtual void collect_() = 0;
-
-  /**
-   * Size of the object.
-   */
-  virtual unsigned size_() const {
-    return sizeof(*this);
-  }
-
-  /**
-   * Accept a visitor across member variables.
-   */
-  template<class Visitor>
-  void accept_(const Visitor& v) {
-    //
+    return flags.load() & FROZEN_UNIQUE;
   }
 
 private:
@@ -426,39 +380,6 @@ private:
     assert(sharedCount.load() == 0u);
     assert(memoCount.load() == 0u);
     libbirch::deallocate(this, size.load(), tid);
-  }
-
-  /**
-   * Are one or more flags set?
-   *
-   * @param flags Bitmask of the flags (possibly just one).
-   *
-   * @return Are one or more of the flags set?
-   */
-  bool is(const uint8_t flags) const {
-    return this->flags.load() & flags;
-  }
-
-  /**
-   * Set one or more flags.
-   *
-   * @param flags Bitmask of the flags (possibly just one).
-   *
-   * @return Were one or more of the flags not set?
-   */
-  bool set(const uint8_t flags) {
-    return !(this->flags.maskOr(flags) & flags);
-  }
-
-  /**
-   * Unset one or more flags.
-   *
-   * @param flags Bitmask of the flags (possibly just one).
-   *
-   * @return Were one or more of the flags set?
-   */
-  bool unset(const uint8_t flags) {
-    return this->flags.maskAnd(~flags) & flags;
   }
 
   /**
@@ -487,7 +408,7 @@ private:
    * after allocation. It is used to return the allocation to the correct
    * pool after use, even when returned by a different thread.
    */
-  int tid:24;
+  int16_t tid;
 
   /**
    * Bitfield containing flags. These are, from least to most significant
@@ -500,6 +421,7 @@ private:
    * ---these used for lazy deep copy operations as in @ref Murray2020
    * "Murray (2020)"---then
    *
+   *   - *possible root*,
    *   - *buffered*,
    *   - *marked*,
    *   - *scanned*,
@@ -520,38 +442,101 @@ private:
    * Notwithstanding, the flags do map to colors in @ref Bacon2001
    * "Bacon & Rajan (2001)":
    *
-   *   - *buffered* maps to *purple* as well as the same-named *buffered*
-   *     flag (the transition from purple to black is disallowed for
-   *     reasons of thread safety, so purple and *buffered* are, anyway,
-   *     synonymous),
+   *   - *possible root* maps to *purple*,
    *   - *marked* maps to *gray*,
    *   - *scanned* and *reachable* together map to *black* (both on) or
    *     *white* (first on, second off),
    *   - *collected* is set once a white object has been destroyed.
    *
-   * Disallowing the transition from purple to black has the effect of
-   * potentially (and wastefully) checking for cycles from an object that
-   * could otherwise have been eliminated as a possible root. This compromises
-   * performance, but not correctness.. The use of these flags also resolves
-   * some thread safety issues that can otherwise exist during the scan
-   * operation, when coloring an object white (eligible for collection) then
-   * later recoloring it black (reachable); the sequencing of this coloring
-   * can become problematic with multiple threads.
+   * The use of these flags also resolves some thread safety issues that can
+   * otherwise exist during the scan operation, when coloring an object white
+   * (eligible for collection) then later recoloring it black (reachable); the
+   * sequencing of this coloring can become problematic with multiple threads.
    */
-  Atomic<uint8_t> flags;
+  Atomic<uint16_t> flags;
 
   /**
    * Flags.
    */
-  enum Flag : uint8_t {
-    BUFFERED = (1u << 0u),
-    FINISHED = (1u << 1u),
-    FROZEN = (1u << 2u),
-    FROZEN_UNIQUE = (1u << 3u),
-    MARKED = (1u << 4u),
-    SCANNED = (1u << 5u),
-    REACHED = (1u << 6u),
-    COLLECTED = (1u << 7u)
+  enum Flag : uint16_t {
+    FINISHED = (1u << 0u),
+    FROZEN = (1u << 1u),
+    FROZEN_UNIQUE = (1u << 2u),
+    POSSIBLE_ROOT = (1u << 3u),
+    BUFFERED = (1u << 4u),
+    MARKED = (1u << 5u),
+    SCANNED = (1u << 6u),
+    REACHED = (1u << 7u),
+    COLLECTED = (1u << 8u)
   };
+
+public:
+  /**
+   * Get the class name.
+   */
+  virtual bi::type::String getClassName() const {
+    return "Any";
+  }
+
+  /**
+   * Size of the object.
+   */
+  virtual unsigned size_() const {
+    return sizeof(*this);
+  }
+
+  /**
+   * Called internally by finish() to recurse into member variables.
+   */
+  virtual void finish_(Label* label) = 0;
+
+  /**
+   * Called internally by freeze() to recurse into member variables.
+   */
+  virtual void freeze_() = 0;
+
+  /**
+   * Called internally by copy() to ensure the most derived type is copied.
+   */
+  virtual Any* copy_(Label* label) const = 0;
+
+  /**
+   * Called internally by recycle() to ensure the most derived type is
+   * recycled.
+   */
+  virtual void recycle_(Label* label) = 0;
+
+  /**
+   * Called internally by mark() to recurse into member variables.
+   */
+  virtual void mark_() = 0;
+
+  /**
+   * Called internally by scan() to recurse into member variables.
+   */
+  virtual void scan_() = 0;
+
+  /**
+   * Called internally by reach() to recurse into member variables.
+   */
+  virtual void reach_() = 0;
+
+  /**
+   * Called internally by collect() to recurse into member variables.
+   */
+  virtual void collect_() = 0;
+
+  /**
+   * Accept a visitor across member variables.
+   */
+  template<class Visitor>
+  void accept_(const Visitor& v) {
+    //
+  }
+
+  /**
+   * Type of members.
+   */
+  using member_type_ = int;
 };
 }

@@ -275,6 +275,12 @@ struct is_value<Fiber<Return,Yield>> {
   static const bool value = false;
 };
 
+template<class Return, class Yield, unsigned N>
+struct is_acyclic<Fiber<Return,Yield>,N> {
+  // Fiber is type-erased; no access to state to guarantee this
+  static const bool value = false;
+};
+
 template<class Return, class Yield>
 auto canonical(const Fiber<Return,Yield>& o) {
   return o;

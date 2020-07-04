@@ -148,19 +148,19 @@ void libbirch::collect() {
   {
     auto& possible_roots = get_thread_possible_roots();
     for (auto& o : possible_roots) {
-      if (!o->isDestroyed()) {
+      if (o->isPossibleRoot()) {
         o->mark();
       }
     }
     #pragma omp barrier
     for (auto& o : possible_roots) {
-      if (!o->isDestroyed()) {
+      if (o->isPossibleRoot()) {
         o->scan();
       }
     }
     #pragma omp barrier
     for (auto& o : possible_roots) {
-      if (!o->isDestroyed()) {
+      if (o->isPossibleRoot()) {
         o->collect();
       }
       o->decMemo();

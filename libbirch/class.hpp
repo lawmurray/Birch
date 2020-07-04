@@ -6,11 +6,25 @@
 /**
  * @internal
  *
- * @def LIBBIRCH_VIRTUALS
+ * @def LIBBIRCH_BASE
  *
- * Declare common virtual functions for classes and fibers.
+ * Declare the base type for a class.
  */
-#define LIBBIRCH_VIRTUALS(Name, Base...) \
+#define LIBBIRCH_BASE(Base...) \
+  using base_type_ = Base; \
+
+/**
+ * @internal
+ *
+ * @def LIBBIRCH_COMMON
+ *
+ * Declare common functions for classes and fibers.
+ */
+#define LIBBIRCH_COMMON(Name, Base...) \
+  virtual bi::type::String getClassName() const { \
+    return #Name; \
+  } \
+  \
   virtual unsigned size_() const override { \
     return sizeof(*this); \
   } \
@@ -58,18 +72,18 @@
  * Boilerplate macro for classes to support lazy deep copy. The first
  * argument is the name of the class; this should exclude any generic type
  * arguments. The second argument is the base class; this should include any
- * generic type arguments. The macro should be placed in the public section
- * of the class.b
+ * generic type arguments. It is recommended that the macro is used at the
+ * very end of the class definition.
  *
  * LIBBIRCH_CLASS must be immediately followed by LIBBIRCH_MEMBERS, otherwise
  * the replacement code will have invalid syntax. For example:
  *
  *     class A : public B {
- *     public:
- *       LIBBIRCH_CLASS(A, B)
- *       LIBBIRCH_MEMBERS(x, y, z)
  *     private:
  *       int x, y, z;
+ *
+ *       LIBBIRCH_CLASS(A, B)
+ *       LIBBIRCH_MEMBERS(x, y, z)
  *     };
  *
  * The use of a variadic macro here supports base classes that contain
@@ -77,21 +91,11 @@
  *
  *     LIBBIRCH_CLASS(A, B<T,U>)
  */
-#define LIBBIRCH_CLASS(Name, Base...) \
-  LIBBIRCH_VIRTUALS(Name, Base) \
-  LIBBIRCH_ABSTRACT_CLASS(Name, Base)
-
-/**
- * @def LIBBIRCH_ABSTRACT_CLASS
- *
- * Use in place of LIBBIRCH_CLASS when the containing class is abstract.
- */
-#define LIBBIRCH_ABSTRACT_CLASS(Name, Base...) \
-  virtual bi::type::String getClassName() const { \
-    return #Name; \
-  } \
-  \
-  Name* this_() { \
+#define LIBBIRCH_CLASS(Name, Base...) public: \
+  LIBBIRCH_BASE(Base) \
+  LIBBIRCH_COMMON(Name, Base) \
+   \
+  auto this_() { \
     return this->getLabel()->get(this); \
   } \
   \
@@ -101,23 +105,40 @@
   \
   template<class Visitor> \
   void accept_(const Visitor& v_) { \
-    Base::accept_(v_);
+    base_type_::accept_(v_);
+
+/**
+ * @def LIBBIRCH_ABSTRACT_CLASS
+ *
+ * Use in place of LIBBIRCH_CLASS when the containing class is abstract.
+ */
+#define LIBBIRCH_ABSTRACT_CLASS(Name, Base...) public: \
+  LIBBIRCH_BASE(Base) \
+   \
+  auto this_() { \
+    return this->getLabel()->get(this); \
+  } \
+  \
+  auto shared_from_this_() { \
+    return libbirch::Lazy<libbirch::Shared<Name>>(this); \
+  } \
+  \
+  template<class Visitor> \
+  void accept_(const Visitor& v_) { \
+    base_type_::accept_(v_);
 
 /**
  * @def LIBBIRCH_FIBER
  *
  * Use in place of LIBBIRCH_CLASS when the containing class is for a fiber.
  */
-#define LIBBIRCH_FIBER(Name, Base...) \
-  LIBBIRCH_VIRTUALS(Name, Base...) \
-  \
-  virtual bi::type::String getClassName() const { \
-    return #Name; \
-  } \
+#define LIBBIRCH_FIBER(Name, Base...) public: \
+  LIBBIRCH_BASE(Base) \
+  LIBBIRCH_COMMON(Name, Base) \
   \
   template<class Visitor> \
   void accept_(const Visitor& v_) { \
-    Base::accept_(v_);
+    base_type_::accept_(v_);
 
 /**
  * @def LIBBIRCH_MEMBER_FIBER
@@ -125,12 +146,9 @@
  * Use in place of LIBBIRCH_CLASS when the containing class is for a member
  * fiber.
  */
-#define LIBBIRCH_MEMBER_FIBER(Name, Base...) \
-  LIBBIRCH_VIRTUALS(Name, Base...) \
-  \
-  virtual bi::type::String getClassName() const { \
-    return #Name; \
-  } \
+#define LIBBIRCH_MEMBER_FIBER(Name, Base...) public: \
+  LIBBIRCH_BASE(Base) \
+  LIBBIRCH_COMMON(Name, Base) \
   \
   auto& this_() { \
     return local_.template get<0>(); \
@@ -142,7 +160,7 @@
   \
   template<class Visitor> \
   void accept_(const Visitor& v_) { \
-    Base::accept_(v_);
+    base_type_::accept_(v_);
 
 /**
  * @def LIBBIRCH_MEMBERS
@@ -157,16 +175,17 @@
  * syntax. For example:
  *
  *     class A : public B {
- *     public:
- *       LIBBIRCH_CLASS(A, B)
- *       LIBBIRCH_MEMBERS(x, y, z)
  *     private:
  *       int x, y, z;
+ *
+ *       LIBBIRCH_CLASS(A, B)
+ *       LIBBIRCH_MEMBERS(x, y, z)
  *     };
  */
 #define LIBBIRCH_MEMBERS(members...) \
     v_.visit(members); \
-  }
+  } \
+  using member_type_ = libbirch::Tuple<typename base_type_::member_type_,decltype(libbirch::make_tuple(members))>;
 
 #include "libbirch/Finisher.hpp"
 #include "libbirch/Freezer.hpp"
