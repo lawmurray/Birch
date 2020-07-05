@@ -54,6 +54,10 @@ inline auto canonical(const bi::type::String& o) {
   return o;
 }
 
+inline auto canonical(bi::type::String&& o) {
+  return std::move(o);
+}
+
 inline auto canonical(const bi::type::File& o) {
   return o;
 }

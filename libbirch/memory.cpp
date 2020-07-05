@@ -165,6 +165,7 @@ void libbirch::collect() {
       }
       o->decMemo();
     }
+    possible_roots.clear();
 
     auto& unreachable = get_thread_unreachable();
     for (auto& o : unreachable) {
@@ -172,15 +173,21 @@ void libbirch::collect() {
       o->decMemo();
     }
     unreachable.clear();
-    possible_roots.clear();
   }
 }
 
 void libbirch::register_possible_root(Any* o) {
   assert(o);
-  if (o != root_label) {  // special exclusion, always reachable
-    o->incMemo();
-    get_thread_possible_roots().emplace_back(o);
+  o->incMemo();
+  get_thread_possible_roots().emplace_back(o);
+}
+
+void libbirch::deregister_possible_root(Any* o) {
+  assert(o);
+  auto& possible_roots = get_thread_possible_roots();
+  if (!possible_roots.empty() && possible_roots.back() == o) {
+    possible_roots.pop_back();
+    o->decMemo();
   }
 }
 

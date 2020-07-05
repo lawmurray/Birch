@@ -24,6 +24,8 @@ class Lazy {
   template<class Q> friend class Lazy;
 public:
   using value_type = typename P::value_type;
+  using pointer_type = P;
+  using label_type = LabelPtr;
 
   /**
    * Constructor.
@@ -350,12 +352,12 @@ private:
   /**
    * Object.
    */
-  P object;
+  pointer_type object;
 
   /**
    * Label.
    */
-  LabelPtr label;
+  label_type label;
 };
 
 template<class P>
@@ -375,28 +377,30 @@ struct raw<Lazy<P>> {
 
 template<class P, unsigned N>
 struct is_acyclic<Lazy<P>,N> {
-  static const bool value = is_acyclic<LabelPtr,N>::value &&
-      is_acyclic<P,N>::value;
+  using pointer_type = typename Lazy<P>::pointer_type;
+  using label_type = typename Lazy<P>::label_type;
+  static const bool value = is_acyclic<label_type,N>::value &&
+      is_acyclic<pointer_type,N>::value;
 };
 
 template<class T>
-Lazy<Shared<T>> canonical(const Lazy<Shared<T>>& o) {
+auto canonical(const Lazy<Shared<T>>& o) {
   return o;
 }
 
 template<class T>
-Lazy<Shared<T>>&& canonical(Lazy<Shared<T>>&& o) {
+auto canonical(Lazy<Shared<T>>&& o) {
   return std::move(o);
 }
 
 template<class T>
-Lazy<Shared<T>> canonical(const Lazy<Init<T>>& o) {
-  return o;
+auto canonical(const Lazy<Init<T>>& o) {
+  return Lazy<Shared<T>>(o);
 }
 
 template<class T, std::enable_if_t<std::is_base_of<Any,T>::value,int> = 0>
-Lazy<Shared<T>> canonical(T* ptr) {
-  return ptr;
+auto canonical(T* ptr) {
+  return Lazy<Shared<T>>(ptr);
 }
 
 }

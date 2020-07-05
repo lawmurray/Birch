@@ -290,5 +290,10 @@ auto canonical(const Optional<T>& o) {
   return o;
 }
 
+template<class T>
+auto canonical(Optional<T>&& o) {
+  return std::move(o);
+}
+
 }
 

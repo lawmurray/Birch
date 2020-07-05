@@ -8,6 +8,11 @@
 
 namespace libbirch {
 template<class... Args>
+/**
+ * Tuple.
+ *
+ * @tparam Args... element types.
+ */
 class Tuple {
   //
 };
@@ -16,10 +21,7 @@ class Tuple {
  * Tuple.
  *
  * @tparam Head First element type.
- * @tparam ...Tail Remaining element types.
- *
- * Tuples do not support lvalue reference types. If all types are lvalue
- * reference types, Tie may be used instead.
+ * @tparam Tail... Remaining element types.
  */
 template<class Head, class ...Tail>
 class Tuple<Head,Tail...> {
@@ -30,20 +32,17 @@ public:
   /**
    * Constructor.
    */
-  Tuple(Head head, Tail... tail) :
-      head(head),
-      tail(tail...) {
+  template<class Head1, class... Tail1>
+  Tuple(Head1&& head, Tail1&&... tail) :
+      head(std::forward<Head1>(head)),
+      tail(std::forward<Tail1>(tail)...) {
     //
   }
 
   /**
    * Copy constructor.
    */
-  Tuple(const Tuple& o) :
-      head(o.head),
-      tail(o.tail) {
-    //
-  }
+  Tuple(const Tuple& o) = default;
 
   /**
    * Generic copy constructor.
@@ -56,13 +55,24 @@ public:
   }
 
   /**
+   * Move constructor.
+   */
+  Tuple(Tuple&& o) = default;
+
+  /**
+   * Generic move constructor.
+   */
+  template<class Head1, class... Tail1>
+  Tuple(Tuple<Head1,Tail1...>&& o) :
+      head(std::move(o.head)),
+      tail(std::move(o.tail)) {
+    //
+  }
+
+  /**
    * Copy assignment.
    */
-  Tuple& operator=(const Tuple& o) {
-    head = o.head;
-    tail = o.tail;
-    return *this;
-  }
+  Tuple& operator=(const Tuple& o) = default;
 
   /**
    * Generic copy assignment.
@@ -71,6 +81,21 @@ public:
   Tuple& operator=(const Tuple<Head1,Tail1...>& o) {
     head = o.head;
     tail = o.tail;
+    return *this;
+  }
+
+  /**
+   * Move assignment.
+   */
+  Tuple& operator=(Tuple&& o) = default;
+
+  /**
+   * Generic move assignment.
+   */
+  template<class Head1, class... Tail1>
+  Tuple& operator=(Tuple<Head1,Tail1...>&& o) {
+    head = std::move(o.head);
+    tail = std::move(o.tail);
     return *this;
   }
 
@@ -127,7 +152,7 @@ private:
   Tuple<Tail...> tail;
 };
 
-/*
+/**
  * Tuple with a single element.
  *
  * @tparam Head Element type.
@@ -141,18 +166,16 @@ public:
   /**
    * Constructor.
    */
-  Tuple(Head head) :
-      head(head) {
+  template<class Head1>
+  Tuple(Head1&& head) :
+      head(std::forward<Head1>(head)) {
     //
   }
 
   /**
    * Copy constructor.
    */
-  Tuple(const Tuple& o) :
-      head(o.head) {
-    //
-  }
+  Tuple(const Tuple& o) = default;
 
   /**
    * Generic copy constructor.
@@ -163,13 +186,24 @@ public:
     //
   }
 
+  /**s
+   * Move constructor.
+   */
+  Tuple(Tuple&& o) = default;
+
+  /**
+   * Generic move constructor.
+   */
+  template<class Head1>
+  Tuple(Tuple<Head1>&& o) :
+      head(std::move(o.head)) {
+    //
+  }
+
   /**
    * Copy assignment.
    */
-  Tuple& operator=(const Tuple& o) {
-    head = o.head;
-    return *this;
-  }
+  Tuple& operator=(const Tuple& o) = default;
 
   /**
    * Generic copy assignment.
@@ -177,6 +211,20 @@ public:
   template<class Head1>
   Tuple& operator=(const Tuple<Head1>& o) {
     head = o.head;
+    return *this;
+  }
+
+  /**
+   * Move assignment.
+   */
+  Tuple& operator=(Tuple&& o) = default;
+
+  /**
+   * Generic move assignment.
+   */
+  template<class Head1>
+  Tuple& operator=(Tuple<Head1>&& o) {
+    head = std::move(o.head);
     return *this;
   }
 
@@ -211,15 +259,13 @@ private:
   Head head;
 };
 
-/*
+/**
  * Empty tuple.
  */
 template<>
 class Tuple<> {
   template<class... Args> friend class Tuple;
 public:
-  Tuple() = default;
-
   /**
    * Accept visitor.
    */
@@ -235,11 +281,6 @@ struct is_value<Tuple<Head,Tail...>> {
       is_value<Tuple<Tail...>>::value;
 };
 
-template<class Head>
-struct is_value<Tuple<Head>> {
-  static const bool value = is_value<Head>::value;
-};
-
 template<>
 struct is_value<Tuple<>> {
   static const bool value = true;
@@ -251,19 +292,19 @@ struct is_acyclic<Tuple<Head,Tail...>,N> {
        is_acyclic<Tuple<Tail...>,N>::value;
 };
 
-template<class Head, unsigned N>
-struct is_acyclic<Tuple<Head>,N> {
-  static const bool value = is_acyclic<Head,N>::value;
-};
-
 template<unsigned N>
 struct is_acyclic<Tuple<>,N> {
   static const bool value = true;
 };
 
-template<class Head, class Tail>
-auto canonical(const Tuple<Head,Tail>& o) {
+template<class... Args>
+auto canonical(const Tuple<Args...>& o) {
   return o;
+}
+
+template<class... Args>
+auto canonical(Tuple<Args...>&& o) {
+  return std::move(o);
 }
 
 /**
@@ -275,9 +316,24 @@ auto canonical(const Tuple<Head,Tail>& o) {
  * @param head First element.
  * @param tail Remaining elements.
  */
-template<class Head, class ... Tail>
-auto make_tuple(const Head& head, const Tail&... tail) {
-  return Tuple<Head,Tail...>(head, tail...);
+template<class Head, class... Tail>
+Tuple<Head,Tail...> make_tuple(const Head& head, Tail&&... tail) {
+  return Tuple<Head,Tail...>(head, std::forward<Tail>(tail)...);
+}
+
+/**
+ * Make a tuple, moving in arguments.
+ *
+ * @tparam Head First element type.
+ * @tparam Tail Remaining element types.
+ *
+ * @param head First element.
+ * @param tail Remaining elements.
+ */
+template<class Head, class... Tail,
+    std::enable_if_t<std::is_rvalue_reference<Head&&>::value,int> = 0>
+Tuple<Head,Tail...> make_tuple(Head&& head, Tail&&... tail) {
+  return Tuple<Head,Tail...>(std::move(head), std::forward<Tail>(tail)...);
 }
 
 /**
@@ -288,14 +344,27 @@ auto make_tuple(const Head& head, const Tail&... tail) {
  * @param head First element.
  */
 template<class Head>
-auto make_tuple(const Head& head) {
+Tuple<Head> make_tuple(const Head& head) {
   return Tuple<Head>(head);
+}
+
+/**
+ * Make a tuple with a single element, moving in the argument.
+ *
+ * @tparam Head First element type.
+ *
+ * @param head First element.
+ */
+template<class Head,
+    std::enable_if_t<std::is_rvalue_reference<Head&&>::value,int> = 0>
+Tuple<Head> make_tuple(Head&& head) {
+  return Tuple<Head>(std::move(head));
 }
 
 /**
  * Make an empty tuple.
  */
-inline auto make_tuple() {
+inline Tuple<> make_tuple() {
   return Tuple<>();
 }
 
@@ -309,21 +378,7 @@ inline auto make_tuple() {
  * @param tail Remaining elements.
  */
 template<class Head, class ... Tail>
-auto tie(Head&& head, Tail&&... tail) {
+Tuple<Head&,Tail&...> tie(Head& head, Tail&... tail) {
   return Tuple<Head&,Tail&...>(head, tail...);
-}
-
-/**
- * Tie a constant tuple.
- *
- * @tparam Head First element type.
- * @tparam Tail Remaining element types.
- *
- * @param head First element.
- * @param tail Remaining elements.
- */
-template<class Head, class ... Tail>
-auto const_tie(const Head& head, const Tail&... tail) {
-  return Tuple<const Head&,const Tail&...>(head, tail...);
 }
 }

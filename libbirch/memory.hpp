@@ -224,6 +224,13 @@ void collect();
 void register_possible_root(Any* o);
 
 /**
+ * Deregister an object with the cycle collector as the possible root of a
+ * cycle. The operation is optional; it is only performed if it can be done
+ * efficiently, typically because the object was the last registered.
+ */
+void deregister_possible_root(Any* o);
+
+/**
  * Register an object with the cycle collector as unreachable.
  */
 void register_unreachable(Any* o);

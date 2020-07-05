@@ -812,15 +812,11 @@ auto canonical(const Array<T,F>& o) {
   return o;
 }
 
-/**
- * Convert an Eigen object to its canonical LibBirch type.
- *
- * This is used as a wrapper around expressions to ensure that the `auto`
- * keyword deduces the LibBirch type, and not the Eigen type, for which use
- * of `auto` can be problematic.
- *
- * @see https://eigen.tuxfamily.org/dox/TopicPitfalls.html#title3
- */
+template<class T, class F>
+auto canonical(Array<T,F>&& o) {
+  return std::move(o);
+}
+
 template<class EigenType, std::enable_if_t<EigenType::ColsAtCompileTime == 1,int> = 0>
 auto canonical(const Eigen::MatrixBase<EigenType>& o) {
   using T = typename EigenType::value_type;
@@ -828,15 +824,6 @@ auto canonical(const Eigen::MatrixBase<EigenType>& o) {
   return Array<T,F>(o);
 }
 
-/**
- * Convert an Eigen object to its canonical LibBirch type.
- *
- * This is used as a wrapper around expressions to ensure that the `auto`
- * keyword deduces the LibBirch type, and not the Eigen type, for which use
- * of `auto` can be problematic.
- *
- * @see https://eigen.tuxfamily.org/dox/TopicPitfalls.html#title3
- */
 template<class EigenType, std::enable_if_t<EigenType::ColsAtCompileTime == Eigen::Dynamic,int> = 0>
 auto canonical(const Eigen::MatrixBase<EigenType>& o) {
   using T = typename EigenType::value_type;
@@ -844,15 +831,6 @@ auto canonical(const Eigen::MatrixBase<EigenType>& o) {
   return Array<T,F>(o);
 }
 
-/**
- * Convert an Eigen object to its canonical LibBirch type.
- *
- * This is used as a wrapper around expressions to ensure that the `auto`
- * keyword deduces the LibBirch type, and not the Eigen type, for which use
- * of `auto` can be problematic.
- *
- * @see https://eigen.tuxfamily.org/dox/TopicPitfalls.html#title3
- */
 template<class EigenType, std::enable_if_t<EigenType::ColsAtCompileTime == 1,int> = 0>
 auto canonical(const Eigen::DiagonalWrapper<EigenType>& o) {
   using T = typename EigenType::value_type;
@@ -860,17 +838,8 @@ auto canonical(const Eigen::DiagonalWrapper<EigenType>& o) {
   return Array<T,F>(o);
 }
 
-/**
- * Convert an Eigen object to its canonical LibBirch type.
- *
- * This is used as a wrapper around expressions to ensure that the `auto`
- * keyword deduces the LibBirch type, and not the Eigen type, for which use
- * of `auto` can be problematic.
- *
- * @see https://eigen.tuxfamily.org/dox/TopicPitfalls.html#title3
- */
 template<class EigenType, unsigned Mode, std::enable_if_t<EigenType::ColsAtCompileTime == Eigen::Dynamic,int> = 0>
-auto canonical(const Eigen::TriangularView<EigenType,Mode>& o) {
+auto canonical(const Eigen::TriangularView<EigenType,Mode>&& o) {
   using T = typename EigenType::value_type;
   using F = typename DefaultShape<2>::type;
   return Array<T,F>(o);

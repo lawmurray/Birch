@@ -79,4 +79,7 @@ namespace libbirch {
 inline auto canonical(const bi::type::LLT& o) {
   return o;
 }
+inline auto canonical(bi::type::LLT&& o) {
+  return std::move(o);
+}
 }

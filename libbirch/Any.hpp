@@ -5,8 +5,9 @@
 
 #include "libbirch/external.hpp"
 #include "libbirch/memory.hpp"
-#include "libbirch/Init.hpp"
 #include "libbirch/Atomic.hpp"
+#include "libbirch/Init.hpp"
+#include "libbirch/LabelPtr.hpp"
 
 namespace libbirch {
 class Label;
@@ -136,7 +137,7 @@ public:
    */
   Any* copy(Label* label) {
     auto o = copy_(label);
-    new (&o->label) Init<Label>(label);
+    new (&o->label) decltype(o->label)(label);
     o->sharedCount.set(0u);
     o->memoCount.set(1u);
     o->size.set(0u);
@@ -168,6 +169,7 @@ public:
   void mark() {
     if (!(flags.exchangeOr(MARKED) & MARKED)) {
       flags.maskAnd(~(BUFFERED|SCANNED|REACHED|COLLECTED));
+      label.mark();
       mark_();
     }
   }
@@ -183,9 +185,11 @@ public:
       flags.maskAnd(~MARKED);  // unset for next time
       if (numShared() > 0u) {
         if (!(flags.exchangeOr(REACHED) & REACHED)) {
+          label.reach();
           reach_();
         }
       } else {
+        label.scan();
         scan_();
       }
     }
@@ -202,6 +206,7 @@ public:
       flags.maskAnd(~MARKED);  // unset for next time
     }
     if (!(flags.exchangeOr(REACHED) & REACHED)) {
+      label.reach();
       reach_();
     }
   }
@@ -216,6 +221,7 @@ public:
     auto old = flags.exchangeOr(COLLECTED);
     if (!(old & COLLECTED) && !(old & REACHED)) {
       register_unreachable(this);
+      label.collect();
       collect_();
     }
   }
@@ -267,6 +273,7 @@ public:
 
     /* decrement */
     if (--sharedCount == 0u) {
+      deregister_possible_root(this);
       destroy();
       decMemo();
     }

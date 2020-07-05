@@ -111,17 +111,14 @@ struct is_acyclic_class {
   static const bool value = is_acyclic<typename T::member_type_,N>::value;
 };
 
-
 /**
- * Convert an object to its canonical LibBirch type. This is an identity
- * operation in most cases. For Eigen types, a overload converts objects to
- * their corresponding LibBirch type.
+ * Convert an object to its canonical LibBirch type. It is used as a wrapper
+ * around initial values when the `auto` keyword is used to ensure that a
+ * desirable type is inferred. For example, some pointer types convert to the
+ * shared pointer types. In most cases, however, it is an identity operationo.
  *
- * This is used as a wrapper around expressions to ensure that the `auto`
- * keyword deduces the LibBirch type, and not the Eigen type, for which use
- * of `auto` can be problematic.
- *
- * SFINAE disables this implementation, it is used only for documentation.
+ * Eigen types are converted to their corresponding LibBirch type, as the
+ * use of `auto` with Eigen types can be problematic.
  *
  * @see https://eigen.tuxfamily.org/dox/TopicPitfalls.html#title3
  */

@@ -43,7 +43,7 @@ public:
    * @li for yields in fibers with a yield type of `void`, where a state and
    * resume function are required, but no value is yielded.
    */
-  Fiber(const state_type& state) :
+  Fiber(FiberState<return_type,yield_type>* state) :
       state(state) {
     //
   }
@@ -53,7 +53,8 @@ public:
    * `void`, where a state and resume function are required, along with a
    * yield value.
    */
-  Fiber(const yield_type& yieldValue, const state_type& state) :
+  Fiber(const yield_type& yieldValue,
+      FiberState<return_type,yield_type>* state) :
       yieldValue(yieldValue),
       state(state) {
     //
@@ -142,7 +143,7 @@ public:
     //
   }
 
-  Fiber(const state_type& state) :
+  Fiber(FiberState<return_type,yield_type>* state) :
       state(state) {
     //
   }
@@ -189,12 +190,13 @@ public:
     //
   }
 
-  Fiber(const state_type& state) :
+  Fiber(FiberState<return_type,yield_type>* state) :
       state(state) {
     //
   }
 
-  Fiber(const yield_type& yieldValue, const state_type& state) :
+  Fiber(const yield_type& yieldValue,
+      FiberState<return_type,yield_type>* state) :
       yieldValue(yieldValue),
       state(state) {
     //
@@ -241,7 +243,7 @@ public:
     //
   }
 
-  Fiber(const state_type& state) :
+  Fiber(FiberState<return_type,yield_type>* state) :
       state(state) {
     //
   }
@@ -284,6 +286,11 @@ struct is_acyclic<Fiber<Return,Yield>,N> {
 template<class Return, class Yield>
 auto canonical(const Fiber<Return,Yield>& o) {
   return o;
+}
+
+template<class Return, class Yield>
+auto canonical(Fiber<Return,Yield>&& o) {
+  return std::move(o);
 }
 
 }

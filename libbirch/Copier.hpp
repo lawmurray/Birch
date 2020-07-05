@@ -107,6 +107,7 @@ public:
     o.bitwiseFix(label);
   }
 
+private:
   /**
    * Label associated with the clone.
    */
