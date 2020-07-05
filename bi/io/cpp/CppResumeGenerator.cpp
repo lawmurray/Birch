@@ -78,26 +78,26 @@ void bi::CppResumeGenerator::visit(const Function* o) {
     genUniqueName(o);
     middle('(');
     if (params) {
-      middle("const Param_& param_");
+      middle("Param_&& param_");
     }
     if (locals) {
       if (params) {
         middle(", ");
       }
-      middle("const Local_& local_");
+      middle("Local_&& local_");
     }
     middle(") ");
     if (params || locals) {
       middle(":");
     }
     if (params) {
-      middle(" param_(param_)");
+      middle(" param_(std::move(param_))");
     }
     if (locals) {
       if (params) {
         middle(',');
       }
-      middle(" local_(local_)");
+      middle(" local_(std::move(local_))");
     }
     finish(" {");
     in();
@@ -303,7 +303,7 @@ void bi::CppResumeGenerator::genPackLocal(const Function* o) {
       middle(", ");
     }
     first = false;
-    middle(getName(local->name->str(), local->number));
+    middle("std::move(" << getName(local->name->str(), local->number) << ')');
   }
   middle(')');
 }
