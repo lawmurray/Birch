@@ -59,9 +59,10 @@ static char* make_heap() {
 /**
  * Create the root label.
  */
-static libbirch::Label* make_root_label() {
-  static libbirch::Shared<libbirch::Label> root_label(new libbirch::Label());
-  return root_label.get();
+static auto make_root_label() {
+  auto label = new libbirch::Label();
+  label->incShared();
+  return label;
 }
 
 libbirch::ExitBarrierLock libbirch::finish_lock;
