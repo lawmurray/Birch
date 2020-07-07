@@ -168,7 +168,7 @@ public:
    */
   void mark() {
     if (!(flags.exchangeOr(MARKED) & MARKED)) {
-      flags.maskAnd(~(BUFFERED|SCANNED|REACHED|COLLECTED));
+      flags.maskAnd(~(POSSIBLE_ROOT|BUFFERED|SCANNED|REACHED|COLLECTED));
       label.mark();
       mark_();
     }
@@ -247,11 +247,12 @@ public:
    * Increment the shared count.
    */
   void incShared() {
-    flags.maskAnd(~POSSIBLE_ROOT);
+    //flags.maskAnd(~POSSIBLE_ROOT);
     // ^ any interleaving with decShared() switching on POSSIBLE_ROOT should
     //   not be problematic; having it on is never a correctness issue, only
     //   a performance issue, and as long as one thread can reach the object
     //   it is fine to be off
+    // ^ disabling this option improves performance on several examples
     sharedCount.increment();
   }
 
@@ -263,17 +264,19 @@ public:
   void decShared() {
     assert(numShared() > 0u);
 
-    /* if the count will reduce to nonzero, this is possible the root of
-     * a cycle; check this before decrementing rather than after, as otherwise
-     * another thread may destroy the object while this thread registers */
-    if (sharedCount.load() > 1u &&
-        !(flags.exchangeOr(BUFFERED|POSSIBLE_ROOT) & BUFFERED)) {
+    /* if the count will reduce to nonzero, this is possibly the root of
+     * a cycle; rather than checking the count before decrementing (okay,
+     * but another atomic operation) or after decrementing (problematic,
+     * leaves the object vulnerable to deallocation by another thread), we
+     * simply register it as a possible root first, and let it be
+     * deregistered again below if appropriate */
+    if (!(flags.exchangeOr(BUFFERED|POSSIBLE_ROOT) & BUFFERED)) {
       register_possible_root(this);
     }
 
     /* decrement */
     if (--sharedCount == 0u) {
-      deregister_possible_root(this);
+      trim(this);
       destroy();
       decMemo();
     }

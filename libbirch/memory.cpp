@@ -67,6 +67,7 @@ static auto make_root_label() {
 
 libbirch::ExitBarrierLock libbirch::finish_lock;
 libbirch::ExitBarrierLock libbirch::freeze_lock;
+
 libbirch::Atomic<char*> libbirch::heap(make_heap());
 libbirch::Label* const libbirch::root_label(make_root_label());
 
@@ -144,56 +145,71 @@ void* libbirch::reallocate(void* ptr1, const size_t n1, const int tid1,
   #endif
 }
 
-void libbirch::collect() {
-  #pragma omp parallel num_threads(libbirch::get_max_threads())
-  {
-    auto& possible_roots = get_thread_possible_roots();
-    for (auto& o : possible_roots) {
-      if (o->isPossibleRoot()) {
-        o->mark();
-      }
-    }
-    #pragma omp barrier
-    for (auto& o : possible_roots) {
-      if (o->isPossibleRoot()) {
-        o->scan();
-      }
-    }
-    #pragma omp barrier
-    for (auto& o : possible_roots) {
-      if (o->isPossibleRoot()) {
-        o->collect();
-      }
-      o->decMemo();
-    }
-    possible_roots.clear();
-
-    auto& unreachable = get_thread_unreachable();
-    for (auto& o : unreachable) {
-      o->destroy();
-      o->decMemo();
-    }
-    unreachable.clear();
-  }
-}
-
 void libbirch::register_possible_root(Any* o) {
   assert(o);
   o->incMemo();
   get_thread_possible_roots().emplace_back(o);
 }
 
-void libbirch::deregister_possible_root(Any* o) {
-  assert(o);
-  auto& possible_roots = get_thread_possible_roots();
-  if (!possible_roots.empty() && possible_roots.back() == o) {
-    possible_roots.pop_back();
-    o->decMemo();
-  }
-}
-
 void libbirch::register_unreachable(Any* o) {
   assert(o);
   o->incMemo();
   get_thread_unreachable().emplace_back(o);
+}
+
+void libbirch::collect() {
+  #pragma omp parallel num_threads(get_max_threads())
+  {
+    /* mark */
+    auto& possible_roots = get_thread_possible_roots();
+    for (auto& o : possible_roots) {
+      if (o && o->isPossibleRoot()) {
+        o->mark();
+      } else {
+        o->decMemo();
+        o = nullptr;
+      }
+    }
+    #pragma omp barrier
+
+    /* scan */
+    for (auto& o : possible_roots) {
+      if (o) {
+        o->scan();
+      }
+    }
+    #pragma omp barrier
+
+    /* collect */
+    for (auto& o : possible_roots) {
+      if (o) {
+        o->collect();
+        o->decMemo();
+        o = nullptr;
+      }
+    }
+    possible_roots.clear();
+
+    /* destroy the objects indicated during collect */
+    auto& unreachable = get_thread_unreachable();
+    for (auto& o : unreachable) {
+      o->destroy();
+      o->decMemo();
+    }
+
+    unreachable.clear();
+  }
+}
+
+void libbirch::trim(Any* o) {
+  auto& possible_roots = get_thread_possible_roots();
+  while (!possible_roots.empty()) {
+    auto ptr = possible_roots.back();
+    if (ptr == o || !ptr->isPossibleRoot()) {
+      possible_roots.pop_back();
+      ptr->decMemo();
+    } else {
+      return;
+    }
+  }
 }

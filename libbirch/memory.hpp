@@ -21,16 +21,15 @@ extern Label* const root_label;
 /**
  * Lock for sharing finish operations. Finish operations may intersect on the
  * graph of reachable objects, and so workshare. This lock creates a barrier
- * on exit to ensure that all reachable objects are finished despite this
+ * on exit to ensure that all reachable objects are visited despite this
  * sharing.
  */
 extern ExitBarrierLock finish_lock;
 
 /**
- * Lock for sharing freeze operations. Freeze operations may intersect on the
- * graph of reachable objects, and so workshare. This lock creates a barrier
- * on exit to ensure that all reachable objects are frozen despite this
- * sharing.
+ * Lock for sharing freeze operations.
+ *
+ * @seealso finish_lock
  */
 extern ExitBarrierLock freeze_lock;
 
@@ -212,11 +211,6 @@ void* reallocate(void* ptr1, const size_t n1, const int tid1,
     const size_t n2);
 
 /**
- * Run the cycle collector.
- */
-void collect();
-
-/**
  * Register an object with the cycle collector as the possible root of a
  * cycle. This corresponds to the `PossibleRoot()` operation in @ref Bacon2001
  * "Bacon & Rajan (2001)".
@@ -224,14 +218,28 @@ void collect();
 void register_possible_root(Any* o);
 
 /**
- * Deregister an object with the cycle collector as the possible root of a
- * cycle. The operation is optional; it is only performed if it can be done
- * efficiently, typically because the object was the last registered.
- */
-void deregister_possible_root(Any* o);
-
-/**
  * Register an object with the cycle collector as unreachable.
  */
 void register_unreachable(Any* o);
+
+/**
+ * Run the cycle collector.
+ */
+void collect();
+
+/**
+ * Performs some maintenance operations on the current thread's set of
+ * registered possible roots.
+ *
+ * @param o The object that called this operation, and that is not a possible
+ * root.
+ *
+ * Specifically, from the back of the vector of possible roots, this removes
+ * any pointers to objects that are (no longer) possible roots, either because
+ * they are flagged as such, or because they match `o`. Working from the back
+ * is a reasonable heuristic, especially for pointers on the stack, which
+ * a destroyed in the reverse order in which they are created.
+ */
+void trim(Any* o);
+
 }
