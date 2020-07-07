@@ -500,8 +500,11 @@ void bi::CppBaseGenerator::visit(const Program* o) {
     /* body of program */
     *this << o->braces->strip();
 
-    /* run garbage collector one last time (useful to clean up when running
-     * under valgrind) */
+    /* delete root label and run garbage collector one last time (not strictly
+     * necessary, but useful as a final cleanup when e.g. checking for memory
+     * leaks with valgrind */
+    genTraceLine(o->loc);
+    line("libbirch::root_label->decShared();\n");
     genTraceLine(o->loc);
     line("libbirch::collect();\n");
 
