@@ -32,9 +32,9 @@ public:
   /**
    * Constructor.
    */
-  template<class Head1, class... Tail1>
-  Tuple(Head1&& head, Tail1&&... tail) :
-      head(std::forward<Head1>(head)),
+  template<class... Tail1>
+  Tuple(Head head, Tail1&&... tail) :
+      head(head),
       tail(std::forward<Tail1>(tail)...) {
     //
   }
@@ -166,9 +166,8 @@ public:
   /**
    * Constructor.
    */
-  template<class Head1>
-  Tuple(Head1&& head) :
-      head(std::forward<Head1>(head)) {
+  Tuple(Head head) :
+      head(head) {
     //
   }
 
@@ -317,23 +316,9 @@ auto canonical(Tuple<Args...>&& o) {
  * @param tail Remaining elements.
  */
 template<class Head, class... Tail>
-Tuple<Head,Tail...> make_tuple(const Head& head, Tail&&... tail) {
-  return Tuple<Head,Tail...>(head, std::forward<Tail>(tail)...);
-}
-
-/**
- * Make a tuple, moving in arguments.
- *
- * @tparam Head First element type.
- * @tparam Tail Remaining element types.
- *
- * @param head First element.
- * @param tail Remaining elements.
- */
-template<class Head, class... Tail,
-    std::enable_if_t<std::is_rvalue_reference<Head&&>::value,int> = 0>
-Tuple<Head,Tail...> make_tuple(Head&& head, Tail&&... tail) {
-  return Tuple<Head,Tail...>(std::move(head), std::forward<Tail>(tail)...);
+auto make_tuple(Head&& head, Tail&&... tail) {
+  return Tuple<typename std::decay<Head>::type,
+      typename std::decay<Tail>::type...>(head, std::forward<Tail>(tail)...);
 }
 
 /**
@@ -344,21 +329,8 @@ Tuple<Head,Tail...> make_tuple(Head&& head, Tail&&... tail) {
  * @param head First element.
  */
 template<class Head>
-Tuple<Head> make_tuple(const Head& head) {
-  return Tuple<Head>(head);
-}
-
-/**
- * Make a tuple with a single element, moving in the argument.
- *
- * @tparam Head First element type.
- *
- * @param head First element.
- */
-template<class Head,
-    std::enable_if_t<std::is_rvalue_reference<Head&&>::value,int> = 0>
-Tuple<Head> make_tuple(Head&& head) {
-  return Tuple<Head>(std::move(head));
+auto make_tuple(Head&& head) {
+  return Tuple<typename std::decay<Head>::type>(head);
 }
 
 /**

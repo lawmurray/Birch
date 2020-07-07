@@ -31,9 +31,7 @@ public:
    * @li for returns in fibers with a return type of `void`, where no state
    * or resume function is required, and no value is returned.
    */
-  Fiber() {
-    //
-  }
+  Fiber() = default;
 
   /**
    * Constructor. Used:
@@ -43,8 +41,8 @@ public:
    * @li for yields in fibers with a yield type of `void`, where a state and
    * resume function are required, but no value is yielded.
    */
-  Fiber(FiberState<return_type,yield_type>* state) :
-      state(state) {
+  Fiber(state_type&& state) :
+      state(std::move(state)) {
     //
   }
 
@@ -53,10 +51,8 @@ public:
    * `void`, where a state and resume function are required, along with a
    * yield value.
    */
-  Fiber(const yield_type& yieldValue,
-      FiberState<return_type,yield_type>* state) :
-      yieldValue(yieldValue),
-      state(state) {
+  Fiber(yield_type&& yieldValue, state_type&& state) :
+      yieldValue(std::move(yieldValue)) {
     //
   }
 
@@ -65,8 +61,8 @@ public:
    * `void`, where a state and resume function are not required, and a value
    * is returned.
    */
-  Fiber(const return_type& returnValue) :
-      returnValue(returnValue) {
+  Fiber(return_type&& returnValue) :
+      returnValue(std::move(returnValue)) {
     //
   }
 
@@ -104,14 +100,14 @@ public:
   /**
    * Get the current yield value.
    */
-  auto get() const {
+  auto& get() const {
     return yieldValue.get();
   }
 
   /**
    * Get the current return value.
    */
-  auto getReturn() const {
+  auto& getReturn() const {
     return returnValue.get();
   }
 
@@ -139,17 +135,15 @@ public:
   using yield_type = void;
   using state_type = Lazy<Shared<FiberState<return_type,yield_type>>>;
 
-  Fiber() {
+  Fiber() = default;
+
+  Fiber(state_type&& state) :
+      state(std::move(state)) {
     //
   }
 
-  Fiber(FiberState<return_type,yield_type>* state) :
-      state(state) {
-    //
-  }
-
-  Fiber(const return_type& returnValue) :
-      returnValue(returnValue) {
+  Fiber(return_type&& returnValue) :
+      returnValue(std::move(returnValue)) {
     //
   }
 
@@ -170,7 +164,7 @@ public:
     return const_cast<Fiber*>(this)->query();
   }
 
-  auto getReturn() const {
+  auto& getReturn() const {
     return returnValue.get();
   }
 
@@ -186,19 +180,16 @@ public:
   using yield_type = Yield;
   using state_type = Lazy<Shared<FiberState<return_type,yield_type>>>;
 
-  Fiber() {
+  Fiber() = default;
+
+  Fiber(state_type&& state) :
+      state(std::move(state)) {
     //
   }
 
-  Fiber(FiberState<return_type,yield_type>* state) :
-      state(state) {
-    //
-  }
-
-  Fiber(const yield_type& yieldValue,
-      FiberState<return_type,yield_type>* state) :
-      yieldValue(yieldValue),
-      state(state) {
+  Fiber(yield_type&& yieldValue, state_type&& state) :
+      yieldValue(std::move(yieldValue)),
+      state(std::move(state)) {
     //
   }
 
@@ -219,7 +210,7 @@ public:
     return const_cast<Fiber*>(this)->query();
   }
 
-  auto get() const {
+  auto& get() const {
     return yieldValue.get();
   }
 
@@ -239,12 +230,10 @@ public:
   using yield_type = void;
   using state_type = Lazy<Shared<FiberState<return_type,yield_type>>>;
 
-  Fiber() {
-    //
-  }
+  Fiber() = default;
 
-  Fiber(FiberState<return_type,yield_type>* state) :
-      state(state) {
+  Fiber(state_type&& state) :
+      state(std::move(state)) {
     //
   }
 
