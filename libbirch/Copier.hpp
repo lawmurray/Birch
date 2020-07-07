@@ -136,7 +136,9 @@ auto clone(const Lazy<P>& o) {
   label->freeze();
   freeze_lock.exit();
 
-  return Lazy<P>(object, new Label(*label));
+  Lazy<P> result(object, new Label(*label));
+  result.get();  // ensures new label taken by a shared pointer in object
+  return result;
 }
 
 }

@@ -25,7 +25,7 @@ class Lazy {
 public:
   using value_type = typename P::value_type;
   using pointer_type = P;
-  using label_type = LabelPtr;
+  using label_type = Init<Label>;
 
   /**
    * Constructor.
@@ -152,7 +152,7 @@ public:
    */
   void bitwiseFix(Label* newLabel) {
     object.bitwiseFix();
-    new (&label) LabelPtr(newLabel);  // overwrite with new label
+    new (&label) label_type(newLabel);  // overwrite with new label
   }
 
   /**

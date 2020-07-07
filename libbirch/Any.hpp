@@ -393,7 +393,7 @@ private:
   /**
    * Label of the object.
    */
-  Init<Label> label;
+  LabelPtr label;
 
   /**
    * Shared count.
