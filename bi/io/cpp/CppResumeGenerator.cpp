@@ -78,26 +78,26 @@ void bi::CppResumeGenerator::visit(const Function* o) {
     genUniqueName(o);
     middle('(');
     if (params) {
-      middle("Param_&& param_");
+      middle("Param_ param_");
     }
     if (locals) {
       if (params) {
         middle(", ");
       }
-      middle("Local_&& local_");
+      middle("Local_ local_");
     }
     middle(") ");
     if (params || locals) {
       middle(":");
     }
     if (params) {
-      middle(" param_(std::move(param_))");
+      middle(" param_(param_)");
     }
     if (locals) {
       if (params) {
         middle(',');
       }
-      middle(" local_(std::move(local_))");
+      middle(" local_(local_)");
     }
     finish(" {");
     in();
@@ -255,7 +255,7 @@ void bi::CppResumeGenerator::genPackType(const Function* o) {
         middle(',');
       }
       middle("decltype(");
-      genPackParam(o);
+      genPackParam(o, false);
       middle(')');
       first = false;
     }
@@ -264,7 +264,7 @@ void bi::CppResumeGenerator::genPackType(const Function* o) {
         middle(',');
       }
       middle("decltype(");
-      genPackLocal(o);
+      genPackLocal(o, false);
       middle(')');
       first = false;
     }
@@ -272,7 +272,7 @@ void bi::CppResumeGenerator::genPackType(const Function* o) {
   }
 }
 
-void bi::CppResumeGenerator::genPackParam(const Function* o) {
+void bi::CppResumeGenerator::genPackParam(const Function* o, const bool move) {
   Gatherer<Parameter> params;
   o->params->accept(&params);
 
@@ -283,12 +283,18 @@ void bi::CppResumeGenerator::genPackParam(const Function* o) {
       middle(", ");
     }
     first = false;
+    if (move) {
+      middle("std::move(");
+    }
     middle(getName(param->name->str(), param->number));
+    if (move) {
+      middle(')');
+    }
   }
   middle(')');
 }
 
-void bi::CppResumeGenerator::genPackLocal(const Function* o) {
+void bi::CppResumeGenerator::genPackLocal(const Function* o, const bool move) {
   Gatherer<LocalVariable> locals([](auto o) { return o->has(RESUME); });
   o->accept(&locals);
 
@@ -303,7 +309,13 @@ void bi::CppResumeGenerator::genPackLocal(const Function* o) {
       middle(", ");
     }
     first = false;
-    middle("std::move(" << getName(local->name->str(), local->number) << ')');
+    if (move) {
+      middle("std::move(");
+    }
+    middle(getName(local->name->str(), local->number));
+    if (move) {
+      middle(')');
+    }
   }
   middle(')');
 }
@@ -331,23 +343,25 @@ void bi::CppResumeGenerator::genYieldMacro(const Function* o) {
   }
   middle(") return " << currentFiber->returnType << '(');
   if (!o->has(START)) {
-    middle("__VA_ARGS__");
+    auto fiberType = dynamic_cast<const FiberType*>(currentFiber->returnType);
+    assert(fiberType);
+    middle(fiberType->yieldType << "(__VA_ARGS__)");
   }
   if (!o->has(START)) {
     middle(", ");
   }
-  middle("new ");
+  middle("libbirch::Lazy<libbirch::Shared<");
   genUniqueName(o);
   genPackType(o);
-  middle('(');
+  middle(">>(");
   if (params) {
-    genPackParam(o);
+    genPackParam(o, o->number != 0);  // don't move for start function
   }
   if (locals) {
     if (params) {
       middle(", ");
     }
-    genPackLocal(o);
+    genPackLocal(o, o->number != 0);  // don't move for start function
   }
   middle(')');
   finish(")\n");

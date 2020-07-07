@@ -54,12 +54,12 @@ protected:
   /**
    * Generate code for packing parameters into a tuple.
    */
-  void genPackParam(const Function* o);
+  void genPackParam(const Function* o, const bool move);
 
   /**
    * Generate code for packing local variables into a tuple.
    */
-  void genPackLocal(const Function* o);
+  void genPackLocal(const Function* o, const bool move);
 
   /**
    * Generate code for unpacking parameters from a tuple.
