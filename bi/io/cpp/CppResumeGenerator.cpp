@@ -196,10 +196,12 @@ void bi::CppResumeGenerator::visit(const Return* o) {
   if (inLambda) {
     CppBaseGenerator::visit(o);
   } else {
+    auto fiberType = dynamic_cast<const FiberType*>(currentFiber->returnType);
+    assert(fiberType);
     genTraceLine(o->loc);
     start("return " << currentFiber->returnType << '(');
     if (!o->single->isEmpty()) {
-      middle(o->single);
+      middle(fiberType->returnType << '(' << o->single << ')');
     }
     finish(");");
   }
