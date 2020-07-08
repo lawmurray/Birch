@@ -80,18 +80,18 @@ public:
     }
     return ptr;
   }
-
+  
   /**
-   * Map a raw pointer for reading.
+   * Copy a raw pointer as first step of deep copy.
    *
    * @param ptr Raw pointer.
    */
   template<class T>
-  auto pull(T* ptr) {
+  auto copy(T* ptr)  {
     if (ptr && ptr->isFrozen()) {  // isFrozen a useful guard for performance
-      lock.setRead();
-      ptr = static_cast<T*>(mapPull(ptr));
-      lock.unsetRead();
+      lock.setWrite();
+      ptr = static_cast<T*>(mapCopy(ptr));
+      lock.unsetWrite();
     }
     return ptr;
   }
@@ -108,6 +108,11 @@ private:
    * This is used as an optimization for read-only access.
    */
   Any* mapPull(Any* o);
+
+  /**
+   * Map an object that must be immediately cloned.
+   */
+  Any* mapCopy(Any* o);
 
   /**
    * Memo that maps source objects to clones.

@@ -140,7 +140,7 @@ public:
     new (&o->label) decltype(o->label)(label);
     o->sharedCount.set(0u);
     o->memoCount.set(1u);
-    o->size.set(0u);
+    o->size = 0u;
     o->tid = get_thread_num();
     o->flags.set(0u);
     return o;
@@ -231,8 +231,8 @@ public:
    */
   void destroy() {
     assert(sharedCount.load() == 0u);
-    this->flags.maskAnd(~POSSIBLE_ROOT);
-    this->size.store(size_());
+    this->flags.maskOr(DESTROYED);
+    this->size = size_();
     this->~Any();
   }
 
@@ -347,18 +347,15 @@ public:
    * Has the object been destroyed?
    */
   bool isDestroyed() const {
-    /* the shared count being zero is not a good indicator here: new objects
-     * start with a zero count, and objects may temporarily have a zero count
-     * during cycle collection; a better indicator is a nonzero size, which is
-     * only set in destroy() */
-    return size.load() > 0u;
+    return flags.load() & DESTROYED;
   }
 
   /**
    * Is this object the possible root of a cycle?
    */
   bool isPossibleRoot() const {
-    return flags.load() & POSSIBLE_ROOT;
+    auto flags = this->flags.load();
+    return (flags & POSSIBLE_ROOT) && !(flags & DESTROYED);
   }
 
   /**
@@ -390,7 +387,7 @@ private:
   void deallocate() {
     assert(sharedCount.load() == 0u);
     assert(memoCount.load() == 0u);
-    libbirch::deallocate(this, size.load(), tid);
+    libbirch::deallocate(this, size, tid);
   }
 
   /**
@@ -412,7 +409,7 @@ private:
    * Size of the object. This is initially set to zero. Upon destruction, it
    * is set to the correct size with a virtual function call.
    */
-  Atomic<unsigned> size;
+  unsigned size;
 
   /**
    * Id of the thread associated with the object. This is set immediately
@@ -478,7 +475,8 @@ private:
     MARKED = (1u << 5u),
     SCANNED = (1u << 6u),
     REACHED = (1u << 7u),
-    COLLECTED = (1u << 8u)
+    COLLECTED = (1u << 8u),
+    DESTROYED = (1u << 9u)
   };
 
 public:

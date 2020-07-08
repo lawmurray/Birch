@@ -123,22 +123,25 @@ private:
  */
 template<class P>
 auto clone(const Lazy<P>& o) {
-  auto object = o.pull();
+  auto ptr = o.pull();
   auto label = o.getLabel();
 
   finish_lock.enter();
-  object->finish(label);
+  ptr->finish(label);
   label->finish(label);
   finish_lock.exit();
 
   freeze_lock.enter();
-  object->freeze();
+  ptr->freeze();
   label->freeze();
   freeze_lock.exit();
 
-  Lazy<P> result(object, new Label(*label));
-  result.get();  // ensures new label taken by a shared pointer in object
-  return result;
+  /* shared counts on labels are handled by Any, not Lazy; consequently we
+   * need to complete the first copy in order to create a shared pointer to
+   * the new label */
+  auto newLabel = new Label(*label);
+  auto newPtr = newLabel->copy(ptr);
+  return Lazy<P>(newPtr, newLabel);
 }
 
 }

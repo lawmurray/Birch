@@ -163,11 +163,13 @@ void libbirch::collect() {
     /* mark */
     auto& possible_roots = get_thread_possible_roots();
     for (auto& o : possible_roots) {
-      if (o && o->isPossibleRoot()) {
-        o->mark();
-      } else {
-        o->decMemo();
-        o = nullptr;
+      if (o) {
+        if (o->isPossibleRoot()) {
+          o->mark();
+        } else {
+          o->decMemo();
+          o = nullptr;
+        }
       }
     }
     #pragma omp barrier

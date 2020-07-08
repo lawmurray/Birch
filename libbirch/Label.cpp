@@ -71,3 +71,17 @@ libbirch::Any* libbirch::Label::mapPull(Any* o) {
 	}
   return next;
 }
+
+libbirch::Any* libbirch::Label::mapCopy(Any* o) {
+  /* copy the object */
+  auto next = o->copy(this);
+
+  /* single-reference optimization: at the time of freezing, if there was
+   * only one reference to the object, it need not be memoized, as there
+   * are no other pointers to update to the copy */
+  if (!o->isFrozenUnique()) {
+    thaw();
+    memo.put(o, next);
+  }
+  return next;
+}
