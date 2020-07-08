@@ -41,6 +41,22 @@ public:
   }
 
   /**
+   * Copy constructor.
+   */
+  Init(const Init& o) :
+      ptr(o.ptr.load()) {
+    //
+  }
+
+  /**
+   * Copy assignment.
+   */
+  Init& operator=(const Init& o) {
+    ptr.store(o.ptr.load());
+    return *this;
+  }
+
+  /**
    * Correctly initialize after a bitwise copy.
    */
   void bitwiseFix() {
