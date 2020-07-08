@@ -21,7 +21,7 @@ class Multi < StateSpaceModel<Global,Vector<Track>,Vector<Random<Real[_]>>> {
       s:Boolean;
       s <~ Bernoulli(1.0 - ρ/R);  // does the object survive?
       if s {
-        track!.simulate(t - track!.t + 1)!!;
+        @track!.simulate(t - track!.t + 1);
         x'.pushBack(track!);
       }
     }
@@ -33,8 +33,8 @@ class Multi < StateSpaceModel<Global,Vector<Track>,Vector<Random<Real[_]>>> {
       track:Track;
       track.t <- t;
       track.θ <- θ;
-      track.simulate()!!;   // up to parameters
-      track.simulate(1)!!;  // up to initial time
+      @track.simulate();   // up to parameters
+      @track.simulate(1);  // up to initial time
       x'.pushBack(track);
       z.pushBack(track);
     }
@@ -42,7 +42,7 @@ class Multi < StateSpaceModel<Global,Vector<Track>,Vector<Random<Real[_]>>> {
 
   fiber observation(y:Vector<Random<Real[_]>>, x:Vector<Track>, θ:Global) -> Event {
     if !y.empty() {
-      association(y, x, θ)!!;
+      @association(y, x, θ);
     } else {
       /* clutter */
       N:Integer;
