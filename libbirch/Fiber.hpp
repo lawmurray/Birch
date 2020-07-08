@@ -52,7 +52,8 @@ public:
    * yield value.
    */
   Fiber(yield_type&& yieldValue, state_type&& state) :
-      yieldValue(std::move(yieldValue)) {
+      yieldValue(std::move(yieldValue)),
+      state(std::move(state)) {
     //
   }
 
