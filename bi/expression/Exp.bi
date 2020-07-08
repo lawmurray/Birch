@@ -27,7 +27,6 @@ function exp(x:Expression<Real>) -> Expression<Real> {
   if x.isConstant() {
     return box(exp(x.value()));
   } else {
-    m:Exp(x);
-    return m;
+    return construct<Exp>(x);
   }
 }

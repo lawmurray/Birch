@@ -72,8 +72,7 @@ final class MatrixJoin<Value>(X:Expression<Value>[_,_]) <
  * expression.
  */
 function join(X:Expression<Real>[_,_]) -> Expression<Real[_,_]> {
-  m:MatrixJoin<Real>(X);
-  return m;
+  return construct<MatrixJoin<Real>>(X);
 }
 
 /**

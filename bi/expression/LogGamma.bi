@@ -27,7 +27,6 @@ function lgamma(x:Expression<Real>) -> Expression<Real> {
   if x.isConstant() {
     return box(lgamma(x.value()));
   } else {
-    m:LogGamma(x);
-    return m;
+    return construct<LogGamma>(x);
   }
 }

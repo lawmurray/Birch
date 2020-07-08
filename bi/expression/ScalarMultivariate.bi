@@ -27,7 +27,6 @@ function scalar(x:Expression<Real[_]>) -> Expression<Real> {
   if x.isConstant() {
     return box(scalar(x.value()));
   } else {
-    m:ScalarMultivariate(x);
-    return m;
+    return construct<ScalarMultivariate>(x);
   }
 }

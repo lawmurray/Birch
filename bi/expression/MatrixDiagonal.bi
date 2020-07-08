@@ -35,8 +35,7 @@ function diagonal(x:Expression<Real[_]>) -> Expression<Real[_,_]> {
   if x.isConstant() {
     return box(matrix(diagonal(x.value())));
   } else {
-    m:MatrixDiagonal(x);
-    return m;
+    return construct<MatrixDiagonal>(x);
   }
 }
 

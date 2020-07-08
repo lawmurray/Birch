@@ -1,7 +1,7 @@
 /**
  * Boxed value.
  */
-final class Boxed<Value> < Expression<Value> {  
+final class Boxed<Value>(x:Value) < Expression<Value>(x) {  
   override function rows() -> Integer {
     return global.rows(x!);
   }
@@ -48,10 +48,7 @@ final class Boxed<Value> < Expression<Value> {
  * Create a Boxed value.
  */
 function Boxed<Value>(x:Value) -> Expression<Value> {
-  o:Boxed<Value>;
-  o.x <- x;
-  o.makeConstant();
-  return o;
+  return construct<Boxed<Value>>(x);
 }
 
 /**

@@ -34,8 +34,7 @@ function vector(x:Expression<Real[_]>) -> Expression<Real[_]> {
     if x.isConstant() {
       return box(vector(x.value()));
     } else {
-      m:MultivariateVector<Expression<Real[_]>,Real[_]>(x);
-      return m;
+      return construct<MultivariateVector<Expression<Real[_]>,Real[_]>>(x);
     }
   } else {
     return x;

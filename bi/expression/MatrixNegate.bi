@@ -85,8 +85,7 @@ operator (-x:Expression<Real[_,_]>) -> Expression<Real[_,_]> {
   if x.isConstant() {
     return box(matrix(-x.value()));
   } else {
-    m:MatrixNegate(x);
-    return m;
+    return construct<MatrixNegate>(x);
   }
 }
 

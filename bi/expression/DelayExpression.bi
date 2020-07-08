@@ -1,12 +1,14 @@
 /**
  * Value-agnostic interface for expressions.
+ *
+ * - isConstant: Is this a constant expression?
  */
-abstract class DelayExpression {
+abstract class DelayExpression(isConstant:Boolean) {
   /**
    * Has `value()` been called? This is used as a short-circuit for shared
    * subexpressions.
    */
-  flagConstant:Boolean <- false;
+  flagConstant:Boolean <- isConstant;
 
   /**
    * Has `prior()` been called? This is used as a short-circuit for shared

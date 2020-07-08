@@ -86,8 +86,7 @@ final class IndependentColumnMatrixGaussian(M:Expression<Real[_,_]>,
  */
 function Gaussian(M:Expression<Real[_,_]>, U:Expression<LLT>,
     σ2:Expression<Real[_]>) -> IndependentColumnMatrixGaussian {
-  m:IndependentColumnMatrixGaussian(M, U, σ2);
-  return m;
+  return construct<IndependentColumnMatrixGaussian>(M, U, σ2);
 }
 
 /**

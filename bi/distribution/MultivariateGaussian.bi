@@ -86,8 +86,7 @@ class MultivariateGaussian(μ:Expression<Real[_]>, Σ:Expression<LLT>) <
  */
 function Gaussian(μ:Expression<Real[_]>, Σ:Expression<LLT>) ->
     MultivariateGaussian {
-  m:MultivariateGaussian(μ, Σ);
-  return m;
+  return construct<MultivariateGaussian>(μ, Σ);
 }
 
 /**

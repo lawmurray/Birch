@@ -105,6 +105,5 @@ class PlayHandler(delayed:Boolean) < Handler {
  * Create a PlayHandler.
  */
 function PlayHandler(delayed:Boolean) -> PlayHandler {
-  o:PlayHandler(delayed);
-  return o;
+  return construct<PlayHandler>(delayed);
 }

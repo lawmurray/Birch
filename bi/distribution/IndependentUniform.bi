@@ -51,8 +51,7 @@ final class IndependentUniform(l:Expression<Real[_]>,
  */
 function Uniform(l:Expression<Real[_]>, u:Expression<Real[_]>) ->
     IndependentUniform {
-  m:IndependentUniform(l, u);
-  return m;
+  return construct<IndependentUniform>(l, u);
 }
 
 /**

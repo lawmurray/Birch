@@ -61,8 +61,7 @@ final class Uniform(l:Expression<Real>, u:Expression<Real>) <
  * Create a uniform distribution.
  */
 function Uniform(l:Expression<Real>, u:Expression<Real>) -> Uniform {
-  m:Uniform(l, u);
-  return m;
+  return construct<Uniform>(l, u);
 }
 
 /**

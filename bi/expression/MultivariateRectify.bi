@@ -39,7 +39,6 @@ function rectify(x:Expression<Real[_]>) -> Expression<Real[_]> {
           return rectify(y);
         }));
   } else {
-    m:MultivariateRectify(x);
-    return m;
+    return construct<MultivariateRectify>(x);
   }
 }

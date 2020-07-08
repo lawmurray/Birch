@@ -118,8 +118,7 @@ class Gaussian(μ:Expression<Real>, σ2:Expression<Real>) <
  * Create Gaussian distribution.
  */
 function Gaussian(μ:Expression<Real>, σ2:Expression<Real>) -> Gaussian {
-  o:Gaussian(μ, σ2);
-  return o;
+  return construct<Gaussian>(μ, σ2);
 }
 
 /**

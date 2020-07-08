@@ -27,8 +27,7 @@ function trace(x:Expression<LLT>) -> Expression<Real> {
   if x.isConstant() {
     return box(trace(x.value()));
   } else {
-    m:Trace<Expression<LLT>,Real>(x);
-    return m;
+    return construct<Trace<Expression<LLT>,Real>>(x);
   }
 }
 
@@ -39,7 +38,6 @@ function trace(x:Expression<Real[_,_]>) -> Expression<Real> {
   if x.isConstant() {
     return box(trace(x.value()));
   } else {
-    m:Trace<Expression<Real[_,_]>,Real>(x);
-    return m;
+    return construct<Trace<Expression<Real[_,_]>,Real>>(x);
   }
 }

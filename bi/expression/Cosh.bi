@@ -27,7 +27,6 @@ function cosh(x:Expression<Real>) -> Expression<Real> {
   if x.isConstant() {
     return box(cosh(x.value()));
   } else {
-    m:Cosh(x);
-    return m;
+    return construct<Cosh>(x);
   }
 }

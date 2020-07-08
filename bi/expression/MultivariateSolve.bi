@@ -36,8 +36,7 @@ function solve(left:Expression<Real[_,_]>, right:Expression<Real[_]>) ->
   if left!.isConstant() && right!.isConstant() {
     return box(vector(solve(left!.value(), right!.value())));
   } else {
-    m:MultivariateSolve<Expression<Real[_,_]>,Expression<Real[_]>,Real[_]>(left, right);
-    return m;
+    return construct<MultivariateSolve<Expression<Real[_,_]>,Expression<Real[_]>,Real[_]>>(left, right);
   }
 }
 
@@ -74,8 +73,7 @@ function solve(left:Expression<LLT>, right:Expression<Real[_]>) ->
   if left!.isConstant() && right!.isConstant() {
     return box(vector(solve(left!.value(), right!.value())));
   } else {
-    m:MultivariateSolve<Expression<LLT>,Expression<Real[_]>,Real[_]>(left, right);
-    return m;
+    return construct<MultivariateSolve<Expression<LLT>,Expression<Real[_]>,Real[_]>>(left, right);
   }
 }
 

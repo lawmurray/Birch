@@ -33,6 +33,5 @@ class ObjectValue < Value {
 }
 
 function ObjectValue() -> ObjectValue {
-  o:ObjectValue;
-  return o;
+  return construct<ObjectValue>();
 }

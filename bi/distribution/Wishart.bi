@@ -58,8 +58,7 @@ final class Wishart(Ψ:Expression<LLT>, k:Expression<Real>) <
  * Create Wishart distribution.
  */
 function Wishart(Ψ:Expression<LLT>, k:Expression<Real>) -> Wishart {
-  m:Wishart(Ψ, k);
-  return m;
+  return construct<Wishart>(Ψ, k);
 }
 
 /**

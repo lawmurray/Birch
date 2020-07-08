@@ -67,8 +67,7 @@ class TransformLinearMultivariate<Value>(A:Expression<Real[_,_]>, x:Value,
 function TransformLinearMultivariate<Value>(A:Expression<Real[_,_]>,
     x:Value, c:Expression<Real[_]>) ->
     TransformLinearMultivariate<Value> {
-  m:TransformLinearMultivariate<Value>(A, x, c);
-  return m;
+  return construct<TransformLinearMultivariate<Value>>(A, x, c);
 }
 
 function TransformLinearMultivariate<Value>(A:Expression<Real[_,_]>,

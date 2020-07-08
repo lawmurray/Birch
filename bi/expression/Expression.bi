@@ -3,6 +3,8 @@
  *
  * - Value: Value type.
  *
+ * - x: Fixed value, or nil to evaluate.
+ *
  * The simplest use case of lazy expressions is to simply construct them and
  * then call `value()` to evaluate them. Evaluations are memoized, so that
  * subsequent calls to `value()` do not require re-evaluation of the
@@ -61,11 +63,11 @@
  *     expression is not being used in the world of lazy expressions here:
  *     the `if` statement is not lazily evaluated.
  */
-abstract class Expression<Value> < DelayExpression {  
+abstract class Expression<Value>(x:Value?) < DelayExpression(x?) {
   /**
    * Memoized value.
    */
-  x:Value?;
+  x:Value? <- x;
 
   /**
    * Number of times `pilot()` has been called.

@@ -3,7 +3,7 @@
  *
  * - Value: Matrix type.
  */
-abstract class MatrixExpression<Value> < Expression<Value> {  
+abstract class MatrixExpression<Value> < Expression<Value>(nil) {  
   /**
    * Accumulated upstream gradient.
    */

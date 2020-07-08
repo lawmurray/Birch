@@ -36,7 +36,6 @@ function llt(x:Expression<Real[_,_]>) -> Expression<LLT> {
   if x.isConstant() {
     return box(llt(x.value()));
   } else {
-    m:MatrixLLT(x);
-    return m;
+    return construct<MatrixLLT>(x);
   }
 }

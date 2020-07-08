@@ -63,8 +63,7 @@ final class InverseGamma(α:Expression<Real>, β:Expression<Real>) <
  */
 function InverseGamma(α:Expression<Real>, β:Expression<Real>) ->
     InverseGamma {
-  m:InverseGamma(α, β);
-  return m;
+  return construct<InverseGamma>(α, β);
 }
 
 /**

@@ -28,7 +28,6 @@ function asin(x:Expression<Real>) -> Expression<Real> {
   if x.isConstant() {
     return box(asin(x.value()));
   } else {
-    m:Asin(x);
-    return m;
+    return construct<Asin>(x);
   }
 }

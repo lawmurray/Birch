@@ -89,9 +89,7 @@ class Binomial(n:Expression<Integer>, ρ:Expression<Real>) < BoundedDiscrete {
  * Create binomial distribution.
  */
 function Binomial(n:Expression<Integer>, ρ:Expression<Real>) -> Binomial {
-  m:Binomial(n, ρ);
-  m.link();
-  return m;
+  return construct<Binomial>(n, ρ);
 }
 
 /**

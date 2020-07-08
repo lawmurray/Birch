@@ -35,8 +35,7 @@ function matrix(x:Expression<LLT>) -> Expression<Real[_,_]> {
   if x.isConstant() {
     return box(matrix(x.value()));
   } else {
-    m:MatrixMatrix<Expression<LLT>,Real[_,_]>(x);
-    return m;
+    return construct<MatrixMatrix<Expression<LLT>,Real[_,_]>>(x);
   }
 }
 
@@ -50,8 +49,7 @@ function matrix(x:Expression<Real[_,_]>) -> Expression<Real[_,_]> {
     if x.isConstant() {
       return box(matrix(x.value()));
     } else {
-      m:MatrixMatrix<Expression<Real[_,_]>,Real[_,_]>(x);
-      return m;
+      return construct<MatrixMatrix<Expression<Real[_,_]>,Real[_,_]>>(x);
     }
   } else {
     return x;

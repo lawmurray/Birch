@@ -52,7 +52,6 @@ operator (-x:Expression<Integer>) -> Expression<Integer> {
   if x.isConstant() {
     return box(-x.value());
   } else {
-    m:DiscreteNegate(x);
-    return m;
+    return construct<DiscreteNegate>(x);
   }
 }

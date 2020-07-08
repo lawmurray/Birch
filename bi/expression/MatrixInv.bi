@@ -35,8 +35,7 @@ function inv(x:Expression<Real[_,_]>) -> Expression<Real[_,_]> {
   if x.isConstant() {
     return box(matrix(inv(x.value())));
   } else {
-    m:MatrixInv<Expression<Real[_,_]>,Real[_,_]>(x);
-    return m;
+    return construct<MatrixInv<Expression<Real[_,_]>,Real[_,_]>>(x);
   }
 }
 
@@ -47,7 +46,6 @@ function inv(x:Expression<LLT>) -> Expression<LLT> {
   if x.isConstant() {
     return box(llt(inv(x.value())));
   } else {
-    m:MatrixInv<Expression<LLT>,LLT>(x);
-    return m;
+    return construct<MatrixInv<Expression<LLT>,LLT>>(x);
   }
 }

@@ -54,6 +54,5 @@ final class ObserveEvent<Value>(x:Value, p:Distribution<Value>) < Event {
  */
 function ObserveEvent<Value>(x:Value, p:Distribution<Value>) ->
     ObserveEvent<Value> {
-  evt:ObserveEvent<Value>(x, p);
-  return evt;
+  return construct<ObserveEvent<Value>>(x, p);
 }

@@ -20,6 +20,5 @@ class ConditionalParticle(m:Model) < Particle(m) {
  * Create a ConditionalParticle.
  */
 function ConditionalParticle(m:Model) -> ConditionalParticle {
-  o:ConditionalParticle(m);
-  return o;
+  return construct<ConditionalParticle>(m);
 }

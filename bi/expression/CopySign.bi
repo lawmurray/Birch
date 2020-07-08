@@ -32,8 +32,7 @@ function copysign(x:Expression<Real>, y:Expression<Real>) ->
   if x.isConstant() && y.isConstant() {
     return box(copysign(x.value(), y.value()));
   } else {
-    m:CopySign<Expression<Real>,Expression<Real>,Real>(x, y);
-    return m;
+    return construct<CopySign<Expression<Real>,Expression<Real>,Real>>(x, y);
   }
 }
 

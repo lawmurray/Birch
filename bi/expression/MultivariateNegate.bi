@@ -61,7 +61,6 @@ operator (-x:Expression<Real[_]>) -> Expression<Real[_]> {
   if x.isConstant() {
     return box(vector(-x.value()));
   } else {
-    m:MultivariateNegate(x);
-    return m;
+    return construct<MultivariateNegate>(x);
   }
 }

@@ -71,8 +71,7 @@ function dot(left:Expression<Real[_]>, right:Expression<Real[_]>) ->
   if left!.isConstant() && right!.isConstant() {
     return box(dot(left!.value(), right!.value()));
   } else {
-    m:Dot<Expression<Real[_]>,Expression<Real[_]>,Real>(left, right);
-    return m;
+    return construct<Dot<Expression<Real[_]>,Expression<Real[_]>,Real>>(left, right);
   }
 }
 

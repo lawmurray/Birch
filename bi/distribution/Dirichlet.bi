@@ -43,8 +43,7 @@ final class Dirichlet(α:Expression<Real[_]>) < Distribution<Real[_]> {
  * Create Dirichlet distribution.
  */
 function Dirichlet(α:Expression<Real[_]>) -> Dirichlet {
-  m:Dirichlet(α);
-  return m;
+  return construct<Dirichlet>(α);
 }
 
 /**

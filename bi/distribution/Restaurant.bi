@@ -74,8 +74,7 @@ final class Restaurant(α:Expression<Real>, θ:Expression<Real>) <
  * Create Chinese restaurant process.
  */
 function Restaurant(α:Expression<Real>, θ:Expression<Real>) -> Restaurant {
-  m:Restaurant(α, θ);
-  return m;
+  return construct<Restaurant>(α, θ);
 }
 
 /**

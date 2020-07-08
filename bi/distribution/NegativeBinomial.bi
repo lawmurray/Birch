@@ -79,8 +79,7 @@ class NegativeBinomial(k:Expression<Integer>, ρ:Expression<Real>) <
  */
 function NegativeBinomial(k:Expression<Integer>, ρ:Expression<Real>) ->
     NegativeBinomial {
-  m:NegativeBinomial(k, ρ);
-  return m;
+  return construct<NegativeBinomial>(k, ρ);
 }
 
 /**

@@ -26,8 +26,7 @@ function Real(x:Expression<Integer>) -> Expression<Real> {
   if x.isConstant() {
     return box(Real(x.value()));
   } else {
-    m:Cast<Expression<Integer>,Real>(x);
-    return m;
+    return construct<Cast<Expression<Integer>,Real>>(x);
   }
 }
 
@@ -38,8 +37,7 @@ function Real(x:Expression<Boolean>) -> Expression<Real> {
   if x.isConstant() {
     return box(Real(x.value()));
   } else {
-    m:Cast<Expression<Boolean>,Real>(x);
-    return m;
+    return construct<Cast<Expression<Boolean>,Real>>(x);
   }
 }
 

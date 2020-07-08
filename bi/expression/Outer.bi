@@ -38,8 +38,7 @@ function outer(left:Expression<Real[_]>, right:Expression<Real[_]>) ->
   if left!.isConstant() && right!.isConstant() {
     return box(matrix(outer(left!.value(), right!.value())));
   } else {
-    m:Outer<Expression<Real[_]>,Expression<Real[_]>,Real[_,_]>(left, right);
-    return m;
+    return construct<Outer<Expression<Real[_]>,Expression<Real[_]>,Real[_,_]>>(left, right);
   }
 }
 

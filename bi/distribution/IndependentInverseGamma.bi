@@ -100,8 +100,7 @@ final class IndependentInverseGamma(α:Expression<Real>,
  */
 function InverseGamma(α:Expression<Real>, β:Expression<Real[_]>) ->
     IndependentInverseGamma {
-  m:IndependentInverseGamma(α, β);
-  return m;
+  return construct<IndependentInverseGamma>(α, β);
 }
 
 /**

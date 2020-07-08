@@ -65,8 +65,7 @@ final class MultivariateJoin<Value>(x:Expression<Value>[_]) <
  * expression.
  */
 function join(x:Expression<Real>[_]) -> Expression<Real[_]> {
-  m:MultivariateJoin<Real>(x);
-  return m;
+  return construct<MultivariateJoin<Real>>(x);
 }
 
 /**

@@ -27,7 +27,6 @@ function sqrt(x:Expression<Real>) -> Expression<Real> {
   if x.isConstant() {
     return box(sqrt(x.value()));
   } else {
-    m:Sqrt(x);
-    return m;
+    return construct<Sqrt>(x);
   }
 }

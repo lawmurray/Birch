@@ -254,7 +254,7 @@ auto make_array_and_assign(const F& shape, const Value& value) {
  */
 template<class P, class ... Args>
 auto make_pointer(Args... args) {
-  return P(new typename P::value_type(args...));
+  return P(args...);
 }
 
 /**

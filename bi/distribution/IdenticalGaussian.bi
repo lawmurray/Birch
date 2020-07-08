@@ -106,8 +106,7 @@ final class IdenticalGaussian(μ:Expression<Real[_]>, σ2:Expression<Real>) <
  */
 function Gaussian(μ:Expression<Real[_]>, σ2:Expression<Real>) ->
     IdenticalGaussian {
-  m:IdenticalGaussian(μ, σ2);
-  return m;
+  return construct<IdenticalGaussian>(μ, σ2);
 }
 
 /**

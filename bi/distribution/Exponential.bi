@@ -66,8 +66,7 @@ class Exponential(λ:Expression<Real>) < Distribution<Real> {
  * Create Exponential distribution.
  */
 function Exponential(λ:Expression<Real>) -> Exponential {
-  m:Exponential(λ);
-  return m;
+  return construct<Exponential>(λ);
 }
 
 /**

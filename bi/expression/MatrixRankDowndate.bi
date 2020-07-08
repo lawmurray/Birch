@@ -38,8 +38,7 @@ function rank_downdate(left:Expression<LLT>, right:Expression<Real[_]>) ->
   if left!.isConstant() && right!.isConstant() {
     return box(rank_downdate(left!.value(), right!.value()));
   } else {
-    m:MatrixRankDowndate<Expression<LLT>,Expression<Real[_]>,LLT>(left, right);
-    return m;
+    return construct<MatrixRankDowndate<Expression<LLT>,Expression<Real[_]>,LLT>>(left, right);
   }
 }
 
@@ -76,8 +75,7 @@ function rank_downdate(left:Expression<LLT>, right:Expression<Real[_,_]>) ->
   if left!.isConstant() && right!.isConstant() {
     return box(rank_downdate(left!.value(), right!.value()));
   } else {
-    m:MatrixRankDowndate<Expression<LLT>,Expression<Real[_,_]>,LLT>(left, right);
-    return m;
+    return construct<MatrixRankDowndate<Expression<LLT>,Expression<Real[_,_]>,LLT>>(left, right);
   }
 }
 

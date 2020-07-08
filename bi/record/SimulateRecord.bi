@@ -14,6 +14,5 @@ final class SimulateRecord<Value>(x:Value) < Record {
  * Create a SimulateRecord.
  */
 function SimulateRecord<Value>(v:Value) -> SimulateRecord<Value> {
-  evt:SimulateRecord<Value>(v);
-  return evt;
+  return construct<SimulateRecord<Value>>(v);
 }

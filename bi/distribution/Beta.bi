@@ -66,8 +66,7 @@ final class Beta(α:Expression<Real>, β:Expression<Real>) <
  * Create beta distribution.
  */
 function Beta(α:Expression<Real>, β:Expression<Real>) -> Beta {
-  m:Beta(α, β);
-  return m;
+  return construct<Beta>(α, β);
 }
 
 /**

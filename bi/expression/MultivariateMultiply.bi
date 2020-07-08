@@ -64,8 +64,7 @@ operator (left:Expression<Real[_,_]>*right:Expression<Real[_]>) ->
   if left.isConstant() && right.isConstant() {
     return box(vector(left.value()*right.value()));
   } else {
-    m:MultivariateMultiply<Expression<Real[_,_]>,Expression<Real[_]>,Real[_]>(left, right);
-    return m;
+    return construct<MultivariateMultiply<Expression<Real[_,_]>,Expression<Real[_]>,Real[_]>>(left, right);
   }
 }
 
@@ -100,8 +99,7 @@ operator (left:Expression<LLT>*right:Expression<Real[_]>) ->
   if left.isConstant() && right.isConstant() {
     return box(vector(left.value()*right.value()));
   } else {
-    m:MultivariateMultiply<Expression<LLT>,Expression<Real[_]>,Real[_]>(left, right);
-    return m;
+    return construct<MultivariateMultiply<Expression<LLT>,Expression<Real[_]>,Real[_]>>(left, right);
   }
 }
 

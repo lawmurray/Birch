@@ -63,8 +63,7 @@ class Multinomial(n:Expression<Integer>, ρ:Expression<Real[_]>) <
  */
 function Multinomial(n:Expression<Integer>, ρ:Expression<Real[_]>) ->
     Multinomial {
-  m:Multinomial(n, ρ);
-  return m;
+  return construct<Multinomial>(n, ρ);
 }
 
 /**

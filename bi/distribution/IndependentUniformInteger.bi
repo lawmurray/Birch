@@ -52,8 +52,7 @@ final class IndependentUniformInteger(l:Expression<Integer[_]>,
  */
 function Uniform(l:Expression<Integer[_]>, u:Expression<Integer[_]>) ->
     IndependentUniformInteger {
-  m:IndependentUniformInteger(l, u);
-  return m;
+  return construct<IndependentUniformInteger>(l, u);
 }
 
 /**

@@ -43,7 +43,6 @@ function rectify(x:Expression<Real[_,_]>) -> Expression<Real[_,_]> {
           return rectify(y);
         }));
   } else {
-    m:MatrixRectify(x);
-    return m;
+    return construct<MatrixRectify>(x);
   }
 }

@@ -96,8 +96,7 @@ class MatrixGaussian(M:Expression<Real[_,_]>, U:Expression<LLT>,
  */
 function Gaussian(M:Expression<Real[_,_]>, U:Expression<LLT>,
     V:Expression<LLT>) -> MatrixGaussian {
-  m:MatrixGaussian(M, U, V);
-  return m;
+  return construct<MatrixGaussian>(M, U, V);
 }
 
 /**

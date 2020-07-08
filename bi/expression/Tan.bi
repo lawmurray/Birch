@@ -27,7 +27,6 @@ function tan(x:Expression<Real>) -> Expression<Real> {
   if x.isConstant() {
     return box(tan(x.value()));
   } else {
-    m:Tan(x);
-    return m;
+    return construct<Tan>(x);
   }
 }

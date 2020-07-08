@@ -27,8 +27,7 @@ function Integer<From>(x:Expression<From>) -> Expression<Integer> {
   if x.isConstant() {
     return box(Integer(x.value()));
   } else {
-    m:DiscreteCast<Expression<From>,Integer>(x);
-    return m;
+    return construct<DiscreteCast<Expression<From>,Integer>>(x);
   }
 }
 
@@ -39,7 +38,6 @@ function Boolean<From>(x:Expression<From>) -> Expression<Boolean> {
   if x.isConstant() {
     return box(Integer(x.value()));
   } else {
-    m:DiscreteCast<Expression<From>,Integer>(x);
-    return m;
+    return construct<DiscreteCast<Expression<From>,Integer>>(x);
   }
 }

@@ -76,8 +76,7 @@ operator (left:Expression<Real[_]> + right:Expression<Real[_]>) ->
   if left.isConstant() && right.isConstant() {
     return box(vector(left.value() + right.value()));
   } else {
-    m:MultivariateAdd<Expression<Real[_]>,Expression<Real[_]>,Real[_]>(left, right);
-    return m;
+    return construct<MultivariateAdd<Expression<Real[_]>,Expression<Real[_]>,Real[_]>>(left, right);
   }
 }
 

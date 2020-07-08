@@ -61,8 +61,7 @@ operator (left:Expression<Integer> + right:Expression<Integer>) ->
   if left.isConstant() && right.isConstant() {
     return box(left.value() + right.value());
   } else {
-    m:DiscreteAdd<Expression<Integer>,Expression<Integer>,Integer>(left, right);
-    return m;
+    return construct<DiscreteAdd<Expression<Integer>,Expression<Integer>,Integer>>(left, right);
   }
 }
 

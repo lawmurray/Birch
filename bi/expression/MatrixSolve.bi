@@ -40,8 +40,7 @@ function solve(left:Expression<Real[_,_]>, right:Expression<Real[_,_]>) ->
   if left!.isConstant() && right!.isConstant() {
     return box(matrix(solve(left!.value(), right!.value())));
   } else {
-    m:MatrixSolve<Expression<Real[_,_]>,Expression<Real[_,_]>,Real[_,_]>(left, right);
-    return m;
+    return construct<MatrixSolve<Expression<Real[_,_]>,Expression<Real[_,_]>,Real[_,_]>>(left, right);
   }
 }
 
@@ -78,8 +77,7 @@ function solve(left:Expression<Real[_,_]>, right:Expression<LLT>) ->
   if left!.isConstant() && right!.isConstant() {
     return box(matrix(solve(left!.value(), right!.value())));
   } else {
-    m:MatrixSolve<Expression<Real[_,_]>,Expression<LLT>,Real[_,_]>(left, right);
-    return m;
+    return construct<MatrixSolve<Expression<Real[_,_]>,Expression<LLT>,Real[_,_]>>(left, right);
   }
 }
 
@@ -116,8 +114,7 @@ function solve(left:Expression<LLT>, right:Expression<Real[_,_]>) ->
   if left!.isConstant() && right!.isConstant() {
     return box(matrix(solve(left!.value(), right!.value())));
   } else {
-    m:MatrixSolve<Expression<LLT>,Expression<Real[_,_]>,Real[_,_]>(left, right);
-    return m;
+    return construct<MatrixSolve<Expression<LLT>,Expression<Real[_,_]>,Real[_,_]>>(left, right);
   }
 }
 
@@ -152,8 +149,7 @@ function solve(left:Expression<LLT>, right:Expression<LLT>) ->
   if left!.isConstant() && right!.isConstant() {
     return box(matrix(solve(left!.value(), right!.value())));
   } else {
-    m:MatrixSolve<Expression<LLT>,Expression<LLT>,Real[_,_]>(left, right);
-    return m;
+    return construct<MatrixSolve<Expression<LLT>,Expression<LLT>,Real[_,_]>>(left, right);
   }
 }
 

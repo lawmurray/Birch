@@ -148,6 +148,5 @@ class MoveHandler(delayed:Boolean) < Handler {
  * Create a MoveHandler.
  */
 function MoveHandler(delayed:Boolean) -> MoveHandler {
-  o:MoveHandler(delayed);
-  return o;
+  return construct<MoveHandler>(delayed);
 }

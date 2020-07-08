@@ -27,8 +27,7 @@ function ldet(x:Expression<LLT>) -> Expression<Real> {
   if x.isConstant() {
     return box(ldet(x.value()));
   } else {
-    m:LogDet<Expression<LLT>,Real>(x);
-    return m;
+    return construct<LogDet<Expression<LLT>,Real>>(x);
   }
 }
 
@@ -39,7 +38,6 @@ function ldet(x:Expression<Real[_,_]>) -> Expression<Real> {
   if x.isConstant() {
     return box(ldet(x.value()));
   } else {
-    m:LogDet<Expression<Real[_,_]>,Real>(x);
-    return m;
+    return construct<LogDet<Expression<Real[_,_]>,Real>>(x);
   }
 }

@@ -28,7 +28,6 @@ function atan(x:Expression<Real>) -> Expression<Real> {
   if x.isConstant() {
     return box(atan(x.value()));
   } else {
-    m:Atan(x);
-    return m;
+    return construct<Atan>(x);
   }
 }

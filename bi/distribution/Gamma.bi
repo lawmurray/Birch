@@ -74,8 +74,7 @@ class Gamma(k:Expression<Real>, θ:Expression<Real>) < Distribution<Real> {
  * Create gamma distribution.
  */
 function Gamma(k:Expression<Real>, θ:Expression<Real>) -> Gamma {
-  m:Gamma(k, θ);
-  return m;
+  return construct<Gamma>(k, θ);
 }
 
 /**

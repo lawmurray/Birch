@@ -51,8 +51,7 @@ class Bernoulli(ρ:Expression<Real>) < Distribution<Boolean> {
  * Create Bernoulli distribution.
  */
 function Bernoulli(ρ:Expression<Real>) -> Bernoulli {
-  m:Bernoulli(ρ);
-  return m;
+  return construct<Bernoulli>(ρ);
 }
 
 /**

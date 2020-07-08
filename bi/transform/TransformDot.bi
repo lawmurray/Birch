@@ -52,8 +52,7 @@ class TransformDot<Value>(a:Expression<Real[_]>, x:Value,
 
 function TransformDot<Value>(a:Expression<Real[_]>, x:Value,
     c:Expression<Real>) -> TransformDot<Value> {
-  m:TransformDot<Value>(a, x, c);
-  return m;
+  return construct<TransformDot<Value>>(a, x, c);
 }
 
 function TransformDot<Value>(a:Expression<Real[_]>, x:Value) ->

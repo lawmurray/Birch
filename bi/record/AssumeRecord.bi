@@ -14,6 +14,5 @@ final class AssumeRecord<Value>(x:Random<Value>) < Record {
  * Create a AssumeRecord.
  */
 function AssumeRecord<Value>(v:Random<Value>) -> AssumeRecord<Value> {
-  evt:AssumeRecord<Value>(v);
-  return evt;
+  return construct<AssumeRecord<Value>>(v);
 }

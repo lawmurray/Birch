@@ -90,8 +90,7 @@ operator (left:Expression<Real> + right:Expression<Real>) ->
   if left.isConstant() && right.isConstant() {
     return box(left.value() + right.value());
   } else {
-    m:Add<Expression<Real>,Expression<Real>>(left, right);
-    return m;
+    return construct<Add<Expression<Real>,Expression<Real>>>(left, right);
   }
 }
 

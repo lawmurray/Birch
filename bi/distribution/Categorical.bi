@@ -70,8 +70,7 @@ class Categorical(ρ:Expression<Real[_]>) < Distribution<Integer> {
  * Create categorical distribution.
  */
 function Categorical(ρ:Expression<Real[_]>) -> Categorical {
-  m:Categorical(ρ);
-  return m;
+  return construct<Categorical>(ρ);
 }
 
 /**

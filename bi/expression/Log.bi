@@ -27,7 +27,6 @@ function log(x:Expression<Real>) -> Expression<Real> {
   if x.isConstant() {
     return box(log(x.value()));
   } else {
-    m:Log(x);
-    return m;
+    return construct<Log>(x);
   }
 }

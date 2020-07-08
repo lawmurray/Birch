@@ -47,8 +47,7 @@ final class FactorEvent(w:Expression<Real>) < Event {
  * Create a FactorEvent.
  */
 function FactorEvent(w:Expression<Real>) -> FactorEvent {
-  evt:FactorEvent(w);
-  return evt;
+  return construct<FactorEvent>(w);
 }
 
 /**

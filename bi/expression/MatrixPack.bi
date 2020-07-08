@@ -46,8 +46,7 @@ function pack(left:Expression<Real[_,_]>, right:Expression<Real[_,_]>) ->
   if left!.isConstant() && right!.isConstant() {
     return box(pack(left!.value(), right!.value()));
   } else {
-    m:MatrixPack<Expression<Real[_,_]>,Expression<Real[_,_]>,Real[_,_]>(left, right);
-    return m;
+    return construct<MatrixPack<Expression<Real[_,_]>,Expression<Real[_,_]>,Real[_,_]>>(left, right);
   }
 }
 

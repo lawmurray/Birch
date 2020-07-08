@@ -27,7 +27,6 @@ function sinh(x:Expression<Real>) -> Expression<Real> {
   if x.isConstant() {
     return box(sinh(x.value()));
   } else {
-    m:Sinh(x);
-    return m;
+    return construct<Sinh>(x);
   }
 }

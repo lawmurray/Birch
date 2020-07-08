@@ -70,8 +70,7 @@ final class UniformInteger(l:Expression<Integer>, u:Expression<Integer>) <
  */
 function Uniform(l:Expression<Integer>, u:Expression<Integer>) ->
     UniformInteger {
-  m:UniformInteger(l, u);
-  return m;
+  return construct<UniformInteger>(l, u);
 }
 
 /**

@@ -161,6 +161,5 @@ class MoveParticle(m:Model) < Particle(m) {
  * Create a MoveParticle.
  */
 function MoveParticle(m:Model) -> MoveParticle {
-  o:MoveParticle(m);
-  return o;
+  return construct<MoveParticle>(m);
 }

@@ -60,8 +60,7 @@ final class Student(ν:Expression<Real>, μ:Expression<Real>,
  */
 function Student(ν:Expression<Real>, μ:Expression<Real>,
     σ2:Expression<Real>) -> Student {
-  m:Student(ν, μ, σ2);
-  return m;
+  return construct<Student>(ν, μ, σ2);
 }
 
 /**

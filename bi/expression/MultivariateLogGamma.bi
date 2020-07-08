@@ -34,8 +34,7 @@ function lgamma(x:Expression<Real>, p:Expression<Integer>) -> Expression<Real> {
   if x.isConstant() && p.isConstant() {
     return box(lgamma(x.value(), p.value()));
   } else {
-    m:MultivariateLogGamma(x, p);
-    return m;
+    return construct<MultivariateLogGamma>(x, p);
   }
 }
 

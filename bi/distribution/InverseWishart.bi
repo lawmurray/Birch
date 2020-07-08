@@ -85,8 +85,7 @@ final class InverseWishart(Ψ:Expression<LLT>, k:Expression<Real>) <
  */
 function InverseWishart(Ψ:Expression<LLT>, k:Expression<Real>) ->
     InverseWishart {
-  m:InverseWishart(Ψ, k);
-  return m;
+  return construct<InverseWishart>(Ψ, k);
 }
 
 /**

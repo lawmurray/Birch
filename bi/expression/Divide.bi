@@ -91,8 +91,7 @@ operator (left:Expression<Real>/right:Expression<Real>) -> Expression<Real> {
   if left.isConstant() && right.isConstant() {
     return box(left.value()/right.value());
   } else {
-    m:Divide<Expression<Real>,Expression<Real>,Real>(left, right);
-    return m;
+    return construct<Divide<Expression<Real>,Expression<Real>,Real>>(left, right);
   }
 }
 

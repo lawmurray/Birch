@@ -52,8 +52,7 @@ class TransformLinear<Value>(a:Expression<Real>, x:Value,
 
 function TransformLinear<Value>(a:Expression<Real>, x:Value,
     c:Expression<Real>) -> TransformLinear<Value> {
-  m:TransformLinear<Value>(a, x, c);
-  return m;
+  return construct<TransformLinear<Value>>(a, x, c);
 }
 
 function TransformLinear<Value>(a:Expression<Real>, x:Value) ->

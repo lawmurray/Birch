@@ -75,7 +75,6 @@ operator (-x:Expression<Real>) -> Expression<Real> {
   if x.isConstant() {
     return box(-x.value());
   } else {
-    m:Negate(x);
-    return m;
+    return construct<Negate>(x);
   }
 }

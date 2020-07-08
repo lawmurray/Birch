@@ -23,6 +23,5 @@ class Particle(m:Model) {
  * Create a Particle.
  */
 function Particle(m:Model) -> Particle {
-  o:Particle(m);
-  return o;
+  return construct<Particle>(m);
 }

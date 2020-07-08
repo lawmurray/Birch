@@ -56,8 +56,7 @@ function MatrixElement(Y:Expression<Real[_,_]>, i:Integer, j:Integer) ->
   if Y!.isConstant() {
     return box(Y.value()[i,j]);
   } else {
-    m:MatrixElement<Expression<Real[_,_]>,Real>(Y, i, j);
-    return m;
+    return construct<MatrixElement<Expression<Real[_,_]>,Real>>(Y, i, j);
   }
 }
 
@@ -69,8 +68,7 @@ function MatrixElement(Y:Expression<LLT>, i:Integer, j:Integer) ->
   if Y!.isConstant() {
     return box(matrix(Y.value())[i,j]);
   } else {
-    m:MatrixElement<Expression<LLT>,Real>(Y, i, j);
-    return m;
+    return construct<MatrixElement<Expression<LLT>,Real>>(Y, i, j);
   }
 }
 
@@ -82,7 +80,6 @@ function MatrixElement(Y:Expression<Integer[_,_]>, i:Integer, j:Integer) ->
   if Y!.isConstant() {
     return box(Y.value()[i,j]);
   } else {
-    m:MatrixElement<Expression<Integer[_,_]>,Integer>(Y, i, j);
-    return m;
+    return construct<MatrixElement<Expression<Integer[_,_]>,Integer>>(Y, i, j);
   }
 }

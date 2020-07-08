@@ -28,8 +28,7 @@ function lchoose(x:Expression<Integer>, y:Expression<Integer>) -> Expression<Rea
   if x.isConstant() && y.isConstant() {
     return box(lchoose(x.value(), y.value()));
   } else {
-    m:LogChoose<Expression<Integer>,Expression<Integer>,Real>(x, y);
-    return m;
+    return construct<LogChoose<Expression<Integer>,Expression<Integer>,Real>>(x, y);
   }
 }
 

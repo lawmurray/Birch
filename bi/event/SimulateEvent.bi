@@ -56,6 +56,5 @@ final class SimulateEvent<Value>(p:Distribution<Value>) < Event {
  * Create a SimulateEvent.
  */
 function SimulateEvent<Value>(p:Distribution<Value>) -> SimulateEvent<Value> {
-  evt:SimulateEvent<Value>(p);
-  return evt;
+  return construct<SimulateEvent<Value>>(p);
 }

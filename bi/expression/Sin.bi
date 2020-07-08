@@ -27,7 +27,6 @@ function sin(x:Expression<Real>) -> Expression<Real> {
   if x.isConstant() {
     return box(sin(x.value()));
   } else {
-    m:Sin(x);
-    return m;
+    return construct<Sin>(x);
   }
 }

@@ -27,7 +27,6 @@ function scalar(x:Expression<Real[_,_]>) -> Expression<Real> {
   if x.isConstant() {
     return box(scalar(x.value()));
   } else {
-    m:ScalarMatrix(x);
-    return m;
+    return construct<ScalarMatrix>(x);
   }
 }

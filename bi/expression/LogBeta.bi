@@ -33,8 +33,7 @@ function lbeta(x:Expression<Real>, y:Expression<Real>) -> Expression<Real> {
   if x.isConstant() && y.isConstant() {
     return box(lbeta(x.value(), y.value()));
   } else {
-    m:LogBeta<Expression<Real>,Expression<Real>,Real>(x, y);
-    return m;
+    return construct<LogBeta<Expression<Real>,Expression<Real>,Real>>(x, y);
   }
 }
 

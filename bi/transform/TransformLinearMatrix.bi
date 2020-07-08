@@ -70,8 +70,7 @@ class TransformLinearMatrix<Value>(A:Expression<Real[_,_]>, X:Value,
 
 function TransformLinearMatrix<Value>(A:Expression<Real[_,_]>, X:Value,
     C:Expression<Real[_,_]>) -> TransformLinearMatrix<Value> {
-  m:TransformLinearMatrix<Value>(A, X, C);
-  return m;
+  return construct<TransformLinearMatrix<Value>>(A, X, C);
 }
 
 function TransformLinearMatrix<Value>(A:Expression<Real[_,_]>, X:Value) ->

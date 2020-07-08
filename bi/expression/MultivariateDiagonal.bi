@@ -31,7 +31,6 @@ function diagonal(x:Expression<Real[_,_]>) -> Expression<Real[_]> {
   if x.isConstant() {
     return box(vector(diagonal(x.value())));
   } else {
-    m:MultivariateDiagonal(x);
-    return m;
+    return construct<MultivariateDiagonal>(x);
   }
 }

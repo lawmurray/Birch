@@ -108,8 +108,7 @@ operator (left:Expression<Real>*right:Expression<Real>) -> Expression<Real> {
   if left.isConstant() && right.isConstant() {
     return box(left.value()*right.value());
   } else {
-    m:Multiply<Expression<Real>,Expression<Real>,Real>(left, right);
-    return m;
+    return construct<Multiply<Expression<Real>,Expression<Real>,Real>>(left, right);
   }
 }
 

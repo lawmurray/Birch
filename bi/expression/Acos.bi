@@ -28,7 +28,6 @@ function acos(x:Expression<Real>) -> Expression<Real> {
   if x.isConstant() {
     return box(acos(x.value()));
   } else {
-    m:Acos(x);
-    return m;
+    return construct<Acos>(x);
   }
 }

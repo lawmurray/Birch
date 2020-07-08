@@ -14,6 +14,5 @@ final class ObserveRecord<Value>(x:Value) < Record {
  * Create an ObserveRecord.
  */
 function ObserveRecord<Value>(x:Value) -> ObserveRecord<Value> {
-  evt:ObserveRecord<Value>(x);
-  return evt;
+  return construct<ObserveRecord<Value>>(x);
 }

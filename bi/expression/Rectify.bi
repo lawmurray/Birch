@@ -31,7 +31,6 @@ function rectify(x:Expression<Real>) -> Expression<Real> {
   if x.isConstant() {
     return box(rectify(x.value()));
   } else {
-    m:Rectify(x);
-    return m;
+    return construct<Rectify>(x);
   }
 }

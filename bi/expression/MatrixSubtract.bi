@@ -96,8 +96,7 @@ operator (left:Expression<Real[_,_]> - right:Expression<Real[_,_]>) ->
   if left.isConstant() && right.isConstant() {
     return box(matrix(left.value() - right.value()));
   } else {
-    m:MatrixSubtract<Expression<Real[_,_]>,Expression<Real[_,_]>,Real[_,_]>(left, right);
-    return m;
+    return construct<MatrixSubtract<Expression<Real[_,_]>,Expression<Real[_,_]>,Real[_,_]>>(left, right);
   }
 }
 

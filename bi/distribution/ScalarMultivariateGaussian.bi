@@ -84,8 +84,7 @@ final class ScalarMultivariateGaussian(μ:Expression<Real[_]>,
  */
 function Gaussian(μ:Expression<Real[_]>, Σ:Expression<LLT>,
     σ2:Expression<Real>) -> ScalarMultivariateGaussian {
-  m:ScalarMultivariateGaussian(μ, Σ, σ2);
-  return m;
+  return construct<ScalarMultivariateGaussian>(μ, Σ, σ2);
 }
 
 /**

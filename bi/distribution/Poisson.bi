@@ -74,8 +74,7 @@ class Poisson(λ:Expression<Real>) < Discrete {
  * Create Poisson distribution.
  */
 function Poisson(λ:Expression<Real>) -> Poisson {
-  o:Poisson(λ);
-  return o;
+  return construct<Poisson>(λ);
 }
 
 /**

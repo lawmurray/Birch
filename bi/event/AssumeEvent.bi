@@ -56,6 +56,5 @@ final class AssumeEvent<Value>(x:Random<Value>, p:Distribution<Value>) <
  */
 function AssumeEvent<Value>(x:Random<Value>, p:Distribution<Value>) ->
     AssumeEvent<Value> {
-  evt:AssumeEvent<Value>(x, p);
-  return evt;
+  return construct<AssumeEvent<Value>>(x, p);
 }

@@ -27,7 +27,6 @@ function cos(x:Expression<Real>) -> Expression<Real> {
   if x.isConstant() {
     return box(cos(x.value()));
   } else {
-    m:Cos(x);
-    return m;
+    return construct<Cos>(x);
   }
 }

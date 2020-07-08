@@ -27,7 +27,6 @@ function tanh(x:Expression<Real>) -> Expression<Real> {
   if x.isConstant() {
     return box(tanh(x.value()));
   } else {
-    m:Tanh(x);
-    return m;
+    return construct<Tanh>(x);
   }
 }

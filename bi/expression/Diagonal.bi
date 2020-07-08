@@ -36,8 +36,7 @@ function diagonal(x:Expression<Real>, n:Expression<Integer>) ->
   if x.isConstant() && n.isConstant() {
     return box(diagonal(x.value(), n.value()));
   } else {
-    m:Diagonal<Expression<Real>,Expression<Integer>,Real[_,_]>(x, n);
-    return m;
+    return construct<Diagonal<Expression<Real>,Expression<Integer>,Real[_,_]>>(x, n);
   }
 }
 

@@ -91,8 +91,7 @@ final class ScalarGaussian(μ:Expression<Real>, σ2:Expression<Real>,
  */
 function Gaussian(μ:Expression<Real>, σ2:Expression<Real>,
     τ2:Expression<Real>) -> ScalarGaussian {
-  m:ScalarGaussian(μ, σ2, τ2);
-  return m;
+  return construct<ScalarGaussian>(μ, σ2, τ2);
 }
 
 /**

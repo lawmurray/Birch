@@ -51,8 +51,7 @@ function MultivariateElement(y:Expression<Real[_]>, i:Integer) ->
   if y.isConstant() {
     return box(y.value()[i]);
   } else {
-    m:MultivariateElement<Expression<Real[_]>,Real>(y, i);
-    return m;
+    return construct<MultivariateElement<Expression<Real[_]>,Real>>(y, i);
   }
 }
 
@@ -64,7 +63,6 @@ function MultivariateElement(y:Expression<Integer[_]>, i:Integer) ->
   if y.isConstant() {
     return box(y.value()[i]);
   } else {
-    m:MultivariateElement<Expression<Integer[_]>,Integer>(y, i);
-    return m;
+    return construct<MultivariateElement<Expression<Integer[_]>,Integer>>(y, i);
   }
 }

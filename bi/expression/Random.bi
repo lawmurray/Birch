@@ -10,7 +10,7 @@
  * to update their value. Random objects in the value state are considered
  * *constants*.
  */
-final class Random<Value> < Expression<Value> {  
+final class Random<Value> < Expression<Value>(nil) {  
   /**
    * Associated distribution.
    */

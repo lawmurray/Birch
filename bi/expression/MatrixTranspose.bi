@@ -35,8 +35,7 @@ function transpose(x:Expression<Real[_,_]>) -> Expression<Real[_,_]> {
   if x.isConstant() {
     return box(matrix(transpose(x.value())));
   } else {
-    m:MatrixTranspose<Expression<Real[_,_]>,Real[_,_]>(x);
-    return m;
+    return construct<MatrixTranspose<Expression<Real[_,_]>,Real[_,_]>>(x);
   }
 }
 
@@ -47,7 +46,6 @@ function transpose(x:Expression<LLT>) -> Expression<LLT> {
   if x.isConstant() {
     return box(transpose(x.value()));
   } else {
-    m:MatrixTranspose<Expression<LLT>,LLT>(x);
-    return m;
+    return construct<MatrixTranspose<Expression<LLT>,LLT>>(x);
   }
 }

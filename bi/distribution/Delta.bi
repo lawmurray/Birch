@@ -70,8 +70,7 @@ class Delta(μ:Expression<Integer>) < Discrete {
  * - μ: Location.
  */
 function Delta(μ:Expression<Integer>) -> Delta {
-  m:Delta(μ);
-  return m;
+  return construct<Delta>(μ);
 }
 
 /**
