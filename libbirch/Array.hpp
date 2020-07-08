@@ -150,13 +150,13 @@ public:
       shape(o.shape),
       buffer(o.buffer),
       offset(o.offset),
-      isView(o.isView) {
-    if (!isView && buffer) {
-      if (is_value<T>::value) {
-        /* copy on write for value types */
+      isView(false) {
+    if (o.buffer) {
+      if (!o.isView && is_value<T>::value) {
+        /* copy on write for non-views of value types */
         buffer->incUsage();
       } else {
-        /* immediate copy for other types */
+        /* immediate copy for others */
         buffer = nullptr;
         offset = 0;
         allocate();
@@ -177,18 +177,6 @@ public:
       isView(false) {
     allocate();
     uninitialized_copy(o);
-  }
-
-  /**
-   * Move constructor.
-   */
-  Array(Array<T,F>&& o) :
-      shape(o.shape),
-      buffer(o.buffer),
-      offset(o.offset),
-      isView(o.isView) {
-    o.buffer = nullptr;
-    o.offset = 0;
   }
 
   /**
@@ -227,13 +215,6 @@ public:
   }
 
   /**
-   * Move assignment operator.
-   */
-  Array<T,F>& operator=(Array<T,F>&& o) {
-    return assign(std::move(o));
-  }
-
-  /**
    * Accept visitor.
    */
   template<class Visitor>
@@ -263,26 +244,6 @@ public:
       } else {
         Array<T,F> tmp(o);
         swap(tmp);
-      }
-      unlock();
-    }
-    return *this;
-  }
-
-  /**
-   * Move assignment.
-   */
-  Array<T,F>& assign(Array<T,F>&& o) {
-    if (isView) {
-      libbirch_assert_msg_(o.shape.conforms(shape), "array sizes are different");
-      copy(o);
-    } else {
-      lock();
-      if (o.isView) {
-        Array<T,F> tmp(o.shape, o);
-        swap(tmp);
-      } else {
-        swap(o);
       }
       unlock();
     }
