@@ -140,6 +140,7 @@ program filter(
           state.set("lnormalize", filter'.lnormalize);
         }
       }
+      collect();
     }
     if outputWriter? {
       outputWriter!.print(buffer);

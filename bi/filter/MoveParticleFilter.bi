@@ -76,7 +76,7 @@ class MoveParticleFilter < ParticleFilter {
 
     if triggered {
       /* update prior and compute gradients for surviving particles only */
-      if nmoves > 0 {
+      if nlags > 0 && nmoves > 0 {
         dynamic parallel for n in 1..nparticles {
           if a[n] == n {  // if particle `n` survives, then `a[n] == n`
             auto x <- MoveParticle?(this.x[n])!;
@@ -92,9 +92,10 @@ class MoveParticleFilter < ParticleFilter {
           x[n] <- clone(x[a[n]]);
         }
       }
+      collect();
       
       /* move particles */
-      if nmoves > 0 {
+      if nlags > 0 && nmoves > 0 {
         κ:LangevinKernel;
         κ.scale <- scale/pow(min(nlags, t), 3);
         parallel for n in 1..nparticles {
@@ -112,6 +113,7 @@ class MoveParticleFilter < ParticleFilter {
           }
           this.x[n] <- x;
         }
+        collect();
       }
     }
   }

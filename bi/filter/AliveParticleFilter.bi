@@ -45,6 +45,7 @@ class AliveParticleFilter < ParticleFilter {
         } while w' == -inf;  // repeat until weight is positive
       }
     }
+    collect();
   }
   
   override function resample(t:Integer) {
