@@ -194,6 +194,7 @@ void libbirch::collect() {
       }
     }
     possible_roots.clear();
+    #pragma omp barrier
 
     /* destroy the objects indicated during collect */
     auto& unreachable = get_thread_unreachable();
