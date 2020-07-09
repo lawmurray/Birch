@@ -50,14 +50,28 @@ class MoveParticle(m:Model) < Particle(m) {
    *
    * Returns: Incremental log-likelihood; zero if the argument is `nil`.
    */
-  function likelihood(z:Expression<Real>?) -> Real {
+  function augment(z:Expression<Real>?) -> Real {
+    /* likelihood */
     auto z' <- z;
     if !z'? {
       z' <- box(0.0);
     }
     auto w <- z'!.pilot();
-    zs.pushBack(z'!);
     π <- π + w;
+    zs.pushBack(z'!);
+    
+    /* prior */
+    vs.pushBack();
+    auto p <- z'!.prior(vs);
+    if !p? {
+      p <- box(0.0);
+    }
+    π <- π + p!.pilot();
+    ps.pushBack(p!);
+
+    assert ps.size() == zs.size();
+    assert vs.size() == zs.size();
+    
     return w;
   }
 
@@ -79,35 +93,19 @@ class MoveParticle(m:Model) < Particle(m) {
     if !vs.empty() {
       vs.popFront();
     }
-    n <- n - 1;
-  }
-
-  /**
-   * Catch up priors after one or more calls to `likelihood()`.
-   */
-  function prior() {
-    assert vs.size() == ps.size();
-    for i in (ps.size() + 1)..zs.size() {
-      vs.pushBack();
-      auto z <- zs.get(i);
-      auto p <- z.prior(vs);
-      if !p? {
-        p <- box(0.0);
-      }
-      π <- π + p!.pilot();
-      ps.pushBack(p!);
+    if n > 0 {
+      n <- n - 1;
     }
-    assert ps.size() == zs.size();
-    assert vs.size() == zs.size();
   }
   
   /**
-   * Catch up gradients after one or more calls to `prior()`.
+   * Catch up gradient computations after one or more calls to `augment()`.
    */
   function grad() {
     assert ps.size() == zs.size();
     assert vs.size() == zs.size();
     while n < zs.size() {
+    assert n >= 0;
       n <- n + 1;
       zs.get(n).grad(1.0);
       ps.get(n).grad(1.0);

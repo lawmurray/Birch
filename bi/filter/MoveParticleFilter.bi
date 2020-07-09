@@ -41,7 +41,7 @@ class MoveParticleFilter < ParticleFilter {
       auto play <- MoveHandler(delayed);
       auto x <- MoveParticle?(this.x[n])!;
       w[n] <- w[n] + play.handle(x.m.simulate());
-      w[n] <- w[n] + x.likelihood(play.z);
+      w[n] <- w[n] + x.augment(play.z);
       while x.size() > nlags {
         x.truncate();
       }
@@ -53,7 +53,7 @@ class MoveParticleFilter < ParticleFilter {
       auto play <- MoveHandler(delayed);
       auto x <- MoveParticle?(this.x[n])!;
       w[n] <- w[n] + play.handle(x.m.simulate(t));
-      w[n] <- w[n] + x.likelihood(play.z);
+      w[n] <- w[n] + x.augment(play.z);
       while x.size() > nlags {
         x.truncate();
       }
@@ -80,7 +80,6 @@ class MoveParticleFilter < ParticleFilter {
         dynamic parallel for n in 1..nparticles {
           if a[n] == n {  // if particle `n` survives, then `a[n] == n`
             auto x <- MoveParticle?(this.x[n])!;
-            x.prior();
             x.grad();
           }
         }
