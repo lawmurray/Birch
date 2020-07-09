@@ -8,6 +8,18 @@ final class MatrixJoin<Value>(X:Expression<Value>[_,_]) <
    */
   args:Expression<Value>[_,_]? <- X;
 
+  override function depth() -> Integer {
+    auto argsDepth <- 0;
+    if args? {
+      for i in 1..rows() {
+        for j in 1..columns() {
+          argsDepth <- max(argsDepth, args![i,j].depth());
+        }
+      }
+    }
+    return argsDepth + 1;
+  }
+
   override function doRows() -> Integer {
     return global.rows(args!);
   }

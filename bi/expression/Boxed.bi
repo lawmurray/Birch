@@ -10,6 +10,10 @@ final class Boxed<Value>(x:Value) < Expression<Value>(x) {
     return global.columns(x!);
   }
 
+  override function depth() -> Integer {
+    return 1;
+  }
+
   override function doValue() {
     //
   }

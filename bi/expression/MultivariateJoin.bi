@@ -8,6 +8,16 @@ final class MultivariateJoin<Value>(x:Expression<Value>[_]) <
    */
   args:Expression<Value>[_]? <- x;
 
+  override function depth() -> Integer {
+    auto argsDepth <- 0;
+    if args? {
+      for i in 1..length() {
+        argsDepth <- max(argsDepth, args![i].depth());
+      }
+    }
+    return argsDepth + 1;
+  }
+
   override function doRows() -> Integer {
     return global.length(args!);
   }

@@ -38,6 +38,11 @@ abstract class DelayExpression(isConstant:Boolean) {
   }
 
   /**
+   * Depth of the expression tree.
+   */
+  abstract function depth() -> Integer;
+
+  /**
    * Is this a Random expression?
    */
   function isRandom() -> Boolean {

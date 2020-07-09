@@ -13,6 +13,14 @@ final class MultivariateElement<Single,Value>(y:Single, i:Integer) <
    */
   i:Integer <- i;
 
+  override function depth() -> Integer {
+    auto argDepth <- 0;
+    if y? {
+      argDepth <- y!.depth();
+    }
+    return argDepth + 1;
+  }
+
   override function doDetach() {
     y <- nil;
   }

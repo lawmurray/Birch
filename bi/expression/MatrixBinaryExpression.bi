@@ -17,6 +17,19 @@ abstract class MatrixBinaryExpression<Left,Right,Value>(left:Left,
    */
   right:Right? <- right;
 
+  final override function depth() -> Integer {
+    auto leftDepth <- 0;
+    auto rightDepth <- 0;
+    if left? {
+    assert !isConstant();
+      leftDepth <- left!.depth();
+    }
+    if right? {
+      rightDepth <- right!.depth();
+    }
+    return max(leftDepth, rightDepth) + 1;
+  }
+
   final override function doDetach() {
     left <- nil;
     right <- nil;

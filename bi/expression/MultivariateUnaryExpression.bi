@@ -11,6 +11,14 @@ abstract class MultivariateUnaryExpression<Single,Value>(single:Single) <
    */
   single:Single? <- single;
 
+  final override function depth() -> Integer {
+    auto argDepth <- 0;
+    if single? {
+      return single!.depth();
+    }
+    return argDepth + 1;
+  }
+
   final override function doDetach() {
     single <- nil;
   }

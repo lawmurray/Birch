@@ -60,6 +60,10 @@ final class Random<Value> < Expression<Value>(nil) {
       return p!.columns();
     }
   }
+  
+  override function depth() -> Integer {
+    return 1;
+  }
 
   override function isRandom() -> Boolean {
     return true;

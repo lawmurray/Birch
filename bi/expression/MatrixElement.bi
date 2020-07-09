@@ -18,6 +18,14 @@ final class MatrixElement<Single,Value>(Y:Single, i:Integer, j:Integer) <
    */
   j:Integer <- j;
   
+  override function depth() -> Integer {
+    auto argDepth <- 0;
+    if Y? {
+      argDepth <- Y!.depth();
+    }
+    return argDepth + 1;
+  }
+  
   override function doDetach() {
     Y <- nil;
   }
