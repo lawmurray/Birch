@@ -41,8 +41,8 @@ public:
    * @li for yields in fibers with a yield type of `void`, where a state and
    * resume function are required, but no value is yielded.
    */
-  Fiber(state_type&& state) :
-      state(std::move(state)) {
+  Fiber(const state_type& state) :
+      state(state) {
     //
   }
 
@@ -51,9 +51,9 @@ public:
    * `void`, where a state and resume function are required, along with a
    * yield value.
    */
-  Fiber(yield_type&& yieldValue, state_type&& state) :
-      yieldValue(std::move(yieldValue)),
-      state(std::move(state)) {
+  Fiber(const yield_type& yieldValue, const state_type& state) :
+      yieldValue(yieldValue),
+      state(state) {
     //
   }
 
@@ -62,8 +62,8 @@ public:
    * `void`, where a state and resume function are not required, and a value
    * is returned.
    */
-  Fiber(return_type&& returnValue) :
-      returnValue(std::move(returnValue)) {
+  Fiber(const return_type& returnValue) :
+      returnValue(returnValue) {
     //
   }
 
@@ -138,13 +138,13 @@ public:
 
   Fiber() = default;
 
-  Fiber(state_type&& state) :
-      state(std::move(state)) {
+  Fiber(const state_type& state) :
+      state(state) {
     //
   }
 
-  Fiber(return_type&& returnValue) :
-      returnValue(std::move(returnValue)) {
+  Fiber(const return_type& returnValue) :
+      returnValue(returnValue) {
     //
   }
 
@@ -183,14 +183,14 @@ public:
 
   Fiber() = default;
 
-  Fiber(state_type&& state) :
-      state(std::move(state)) {
+  Fiber(const state_type& state) :
+      state(state) {
     //
   }
 
-  Fiber(yield_type&& yieldValue, state_type&& state) :
-      yieldValue(std::move(yieldValue)),
-      state(std::move(state)) {
+  Fiber(const yield_type& yieldValue, const state_type& state) :
+      yieldValue(yieldValue),
+      state(state) {
     //
   }
 
@@ -233,8 +233,8 @@ public:
 
   Fiber() = default;
 
-  Fiber(state_type&& state) :
-      state(std::move(state)) {
+  Fiber(const state_type& state) :
+      state(state) {
     //
   }
 
