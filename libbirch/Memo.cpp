@@ -116,19 +116,18 @@ void libbirch::Memo::rehash() {
      * replacing a -> b and b -> c with a -> c and b -> c, which may allow
      * b to be collected sooner */
     for (auto i = 0u; i < nentries; ++i) {
-      auto key = keys[i];
-      if (key) {
-        auto first = values[i];
-        auto prev = first;
-        auto next = first;
+      auto value = values[i];
+      if (value) {
+        auto prev = value;
+        auto next = value;
         do {
           prev = next;
-          next = get(prev, prev);
-        } while (next != prev);
-        if (next != first) {
-          next->incShared();
-          first->decShared();
-          values[i] = next;
+          next = get(prev);
+        } while (next);
+        if (prev != value) {
+          prev->incShared();
+          value->decShared();
+          values[i] = prev;
         }
       }
     }
