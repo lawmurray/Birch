@@ -153,7 +153,10 @@ void libbirch::register_possible_root(Any* o) {
 
 void libbirch::register_unreachable(Any* o) {
   assert(o);
-  o->incMemo();
+  //o->incMemo();
+  // ^ no need to increment the memo count here; any object in this list has
+  //   had its shared count decremented to zero, but no the additional memo
+  //   count removed, just yet
   get_thread_unreachable().emplace_back(o);
 }
 
@@ -196,7 +199,7 @@ void libbirch::collect() {
     auto& unreachable = get_thread_unreachable();
     for (auto& o : unreachable) {
       o->destroy();
-      o->decMemo();
+      o->decMemo();  // removes last memo count
     }
 
     unreachable.clear();
