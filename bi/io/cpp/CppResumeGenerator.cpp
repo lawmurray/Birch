@@ -196,12 +196,10 @@ void bi::CppResumeGenerator::visit(const Return* o) {
   if (inLambda) {
     CppBaseGenerator::visit(o);
   } else {
-    auto fiberType = dynamic_cast<const FiberType*>(currentFiber->returnType);
-    assert(fiberType);
     genTraceLine(o->loc);
     start("return " << currentFiber->returnType << '(');
     if (!o->single->isEmpty()) {
-      middle(fiberType->returnType << '(' << o->single << ')');
+      middle(o->single);
     }
     finish(");");
   }
@@ -345,25 +343,20 @@ void bi::CppResumeGenerator::genYieldMacro(const Function* o) {
   }
   middle(") return " << currentFiber->returnType << '(');
   if (!o->has(START)) {
-    auto fiberType = dynamic_cast<const FiberType*>(currentFiber->returnType);
-    assert(fiberType);
-    middle(fiberType->yieldType << "(__VA_ARGS__)");
-  }
-  if (!o->has(START)) {
-    middle(", ");
+    middle("__VA_ARGS__,");
   }
   middle("libbirch::Lazy<libbirch::Shared<");
   genUniqueName(o);
   genPackType(o);
   middle(">>(");
   if (params) {
-    genPackParam(o, o->number != 0);  // don't move for start function
+    genPackParam(o, false);
   }
   if (locals) {
     if (params) {
       middle(", ");
     }
-    genPackLocal(o, o->number != 0);  // don't move for start function
+    genPackLocal(o, false);
   }
   middle(')');
   finish(")\n");
