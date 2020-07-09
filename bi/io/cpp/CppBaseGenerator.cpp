@@ -497,11 +497,16 @@ void bi::CppBaseGenerator::visit(const Program* o) {
     genTraceLine(o->loc);
     line("bi::seed();\n");
 
-    /* body of program */
+    /* body of program; wrapped in braces to put local variables out of scope
+     * before clean up below */
+    line('{');
+    in();
     *this << o->braces->strip();
+    out();
+    line('}');
 
-    /* delete root label and run garbage collector one last time (not strictly
-     * necessary, but useful as a final cleanup when e.g. checking for memory
+    /* clean up: delete root label and run garbage collector one last time
+     * (not strictly necessary, but useful when e.g. checking for memory
      * leaks with valgrind */
     genTraceLine(o->loc);
     line("libbirch::root_label->decShared();\n");
