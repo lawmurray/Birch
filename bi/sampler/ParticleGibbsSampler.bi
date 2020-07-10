@@ -40,7 +40,7 @@ class ParticleGibbsSampler < ConditionalParticleSampler {
       if t == 0 {
         filter.filter(archetype);
       } else {
-        filter.filter(archetype, t);
+        filter.filter(t);
       }
       pushDiagnostics(filter);
     }

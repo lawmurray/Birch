@@ -44,7 +44,7 @@ class ConditionalParticleFilter < ParticleFilter {
     b <- 1;
   }
 
-  override function filter(archetype:Model, t:Integer) {
+  override function filter(t:Integer) {
     if r? && ancestor {
       ancestorSample(t);
     }

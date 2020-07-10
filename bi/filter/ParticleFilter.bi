@@ -123,12 +123,9 @@ class ParticleFilter {
   /**
    * Filter one step.
    *
-   * - archetype: Archetype. This is an instance of the appropriate model class
-   *   that may have one more random variables fixed to known values,
-   *   representing the inference problem (or target distribution).
    * - t: The step number, beginning at 0.
    */
-  function filter(archetype:Model, t:Integer) {
+  function filter(t:Integer) {
     resample(t);
     step(t);
     reduce();

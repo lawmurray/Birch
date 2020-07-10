@@ -18,7 +18,7 @@ class MarginalizedParticleGibbsSampler < ConditionalParticleSampler {
     filter.filter(archetype);
     pushDiagnostics(filter);
     for t in 1..filter.size() {
-      filter.filter(archetype, t);
+      filter.filter(t);
       pushDiagnostics(filter);
     }
     

@@ -108,7 +108,7 @@ program filter(
       filter!.filter(archetype!);
     } else {
       /* step filter */
-      filter!.filter(archetype!, t);
+      filter!.filter(t);
     }
     
     /* output current state */
