@@ -19,14 +19,16 @@ final class RaggedArray<Type> {
   sizes:Integer[_];
   
   /**
-   * Is this empty?
+   * Is this empty? A RaggedArray is considered empty if it has no rows. A
+   * RaggedArray with one or more rows is not considered empty, even if those
+   * rows have no elements.
    */
   function empty() -> Boolean {
-    return length(values) == 0;
+    return length(offsets) == 0;
   }
 
   /**
-   * Clear all elements.
+   * Clear all rows.
    */
   function clear() {
     values:Type[_];
