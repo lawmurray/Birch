@@ -778,7 +778,7 @@ abstract class Buffer {
    * - value: Value.
    */
   function setLLT(value:LLT) {
-    setRealMatrix(matrix(value));
+    setRealMatrix(canonical(value));
   }
 
   /**

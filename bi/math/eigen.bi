@@ -200,3 +200,124 @@ function hadamard(x:Real[_], y:Real[_]) -> Real[_];
  * Hadamard (element-wise) matrix product.
  */
 function hadamard(X:Real[_,_], Y:Real[_,_]) -> Real[_,_];
+
+/**
+ * Convert a scalar to its canonical type.
+ *
+ * !!! tip
+ *     This is typically an identity operation, but in some contexts is
+ *     essential to explicitly evaluate and convert an
+ *     [Eigen](https://eigen.tuxfamily.org) expression.
+ */
+function canonical(x:Real) -> Real {
+  return x;
+}
+
+/**
+ * Convert a scalar to its canonical type.
+ *
+ * !!! tip
+ *     This is typically an identity operation, but in some contexts is
+ *     essential to explicitly evaluate and convert an
+ *     [Eigen](https://eigen.tuxfamily.org) expression.
+ */
+function canonical(x:Integer) -> Integer {
+  return x;
+}
+
+/**
+ * Convert a scalar to its canonical type.
+ *
+ * !!! tip
+ *     This is typically an identity operation, but in some contexts is
+ *     essential to explicitly evaluate and convert an
+ *     [Eigen](https://eigen.tuxfamily.org) expression.
+ */
+function canonical(x:Boolean) -> Boolean {
+  return x;
+}
+
+/**
+ * Convert a vector to its canonical type.
+ *
+ * !!! tip
+ *     This is typically an identity operation, but in some contexts is
+ *     essential to explicitly evaluate and convert an
+ *     [Eigen](https://eigen.tuxfamily.org) expression.
+ */
+function canonical(x:Real[_]) -> Real[_] {
+  return x;
+}
+
+/**
+ * Convert a vector to its canonical type.
+ *
+ * !!! tip
+ *     This is typically an identity operation, but in some contexts is
+ *     essential to explicitly evaluate and convert an
+ *     [Eigen](https://eigen.tuxfamily.org) expression.
+ */
+function canonical(x:Integer[_]) -> Integer[_] {
+  return x;
+}
+/**
+ * Convert a vector to its canonical type.
+ *
+ * !!! tip
+ *     This is typically an identity operation, but in some contexts is
+ *     essential to explicitly evaluate and convert an
+ *     [Eigen](https://eigen.tuxfamily.org) expression.
+ */
+function canonical(x:Boolean[_]) -> Boolean[_] {
+  return x;
+}
+
+/**
+ * Convert a matrix to its canonical type.
+ *
+ * !!! tip
+ *     This is typically an identity operation, but in some contexts is
+ *     essential to explicitly evaluate and convert an
+ *     [Eigen](https://eigen.tuxfamily.org) expression.
+ */
+function canonical(X:Real[_,_]) -> Real[_,_] {
+  return X;
+}
+
+/**
+ * Convert a matrix to its canonical type.
+ *
+ * !!! tip
+ *     This is typically an identity operation, but in some contexts is
+ *     essential to explicitly evaluate and convert an
+ *     [Eigen](https://eigen.tuxfamily.org) expression.
+ */
+function canonical(X:Integer[_,_]) -> Integer[_,_] {
+  return X;
+}
+
+/**
+ * Convert a matrix to its canonical type.
+ *
+ * !!! tip
+ *     This is typically an identity operation, but in some contexts is
+ *     essential to explicitly evaluate and convert an
+ *     [Eigen](https://eigen.tuxfamily.org) expression.
+ */
+function canonical(X:Boolean[_,_]) -> Boolean[_,_] {
+  return X;
+}
+
+/**
+ * Convert a matrix to its canonical type.
+ *
+ * !!! tip
+ *     This is typically an identity operation, but in some contexts is
+ *     essential to explicitly evaluate and convert an
+ *     [Eigen](https://eigen.tuxfamily.org) expression.
+ */
+function canonical(X:LLT) -> Real[_,_] {
+  cpp{{
+  return X.reconstructedMatrix();
+  }}
+}

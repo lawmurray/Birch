@@ -3,7 +3,7 @@
  */
 final class MultivariateGaussianMultivariateGaussian(m:MultivariateGaussian,
     S:Expression<LLT>) < MultivariateGaussian(m.μ,
-    llt(matrix(m.Σ) + matrix(S))) {
+    llt(canonical(m.Σ) + canonical(S))) {
   /**
    * Mean.
    */

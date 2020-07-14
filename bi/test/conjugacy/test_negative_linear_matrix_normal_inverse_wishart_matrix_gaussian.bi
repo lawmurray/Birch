@@ -76,7 +76,7 @@ class TestNegativeLinearMatrixNormalInverseWishartMatrixGaussian < Model {
     y:Real[size()];
     auto k <- 0;
     for i in 1..rows(V) {
-      y[k + 1 .. k + columns(V)] <- matrix(V.value())[i,1..columns(V)];
+      y[k + 1 .. k + columns(V)] <- canonical(V.value())[i,1..columns(V)];
       k <- k + columns(V);
     }
     for i in 1..rows(X) {

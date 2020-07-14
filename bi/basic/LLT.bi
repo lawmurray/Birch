@@ -22,15 +22,6 @@ function columns(X:LLT) -> Integer64 {
 }
 
 /**
- * Convert Cholesky decomposition to an ordinary matrix.
- */
-function matrix(X:LLT) -> Real[_,_] {
-  cpp{{
-  return X.reconstructedMatrix();
-  }}
-}
-
-/**
  * Cholesky decomposition of the symmetric positive definite matrix $S$.
  *
  * - S: The symmetric positive definite matrix $S$.
@@ -176,4 +167,13 @@ function rank_downdate(S:LLT, X:Real[_,_]) -> LLT {
     }}
   }
   return A;
+}
+
+/**
+ * Sum of two positive definite matrices.
+ */
+operator (x:LLT + y:LLT) -> LLT {
+  cpp{{
+  return (x.reconstructedMatrix() + y.reconstructedMatrix()).llt();
+  }}
 }

@@ -1,7 +1,7 @@
 /**
- * Lazy `matrix`.
+ * Lazy `canonical`.
  */
-final class MatrixMatrix<Argument,ArgumentValue>(y:Argument) <
+final class MatrixCanonical<Argument,ArgumentValue>(y:Argument) <
     MatrixUnaryExpression<Argument,ArgumentValue,Real[_,_],Real[_,_]>(y) {
   override function doRows() -> Integer {
     return y!.rows();
@@ -12,7 +12,7 @@ final class MatrixMatrix<Argument,ArgumentValue>(y:Argument) <
   }
 
   override function doEvaluate(y:ArgumentValue) -> Real[_,_] {
-    return matrix(y);
+    return canonical(y);
   }
 
   override function doEvaluateGrad(d:Real[_,_], x:Real[_,_],
@@ -22,22 +22,22 @@ final class MatrixMatrix<Argument,ArgumentValue>(y:Argument) <
 }
 
 /**
- * Lazy `matrix`.
+ * Lazy `canonical`.
  */
-function matrix(y:Expression<LLT>) -> Expression<Real[_,_]> {
-  return construct<MatrixMatrix<Expression<LLT>,LLT>>(y);
+function canonical(y:Expression<LLT>) -> Expression<Real[_,_]> {
+  return construct<MatrixCanonical<Expression<LLT>,LLT>>(y);
 }
 
 /**
- * Lazy `matrix`.
+ * Lazy `canonical`.
  */
-function matrix(y:Expression<Real[_,_]>) -> Expression<Real[_,_]> {
+function canonical(y:Expression<Real[_,_]>) -> Expression<Real[_,_]> {
   if !y.isRandom() {
     /* just an identity function */
     return y;
   } else {  
     /* Random objects should be wrapped to allow the accumulation of
      * gradients by element if necessary; see note in split() also */
-    return construct<MatrixMatrix<Expression<Real[_,_]>,Real[_,_]>>(y);
+    return construct<MatrixCanonical<Expression<Real[_,_]>,Real[_,_]>>(y);
   }
 }

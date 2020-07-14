@@ -33,9 +33,9 @@ final class MatrixMultiply(y:Expression<Real[_,_]>,
       x1:MatrixGaussian?;
     
       if (r <- z!.graftLinearMatrixGaussian())? {
-        r!.leftMultiply(matrix(y!));
+        r!.leftMultiply(y!);
       } else if (x1 <- z!.graftMatrixGaussian())? {
-        r <- TransformLinearMatrix<MatrixGaussian>(matrix(y!), x1!);
+        r <- TransformLinearMatrix<MatrixGaussian>(y!, x1!);
       }
     }
     return r;
@@ -48,9 +48,9 @@ final class MatrixMultiply(y:Expression<Real[_,_]>,
       x1:MatrixNormalInverseGamma?;
 
       if (r <- z!.graftLinearMatrixNormalInverseGamma(compare))? {
-        r!.leftMultiply(matrix(y!));
+        r!.leftMultiply(y!);
       } else if (x1 <- z!.graftMatrixNormalInverseGamma(compare))? {
-        r <- TransformLinearMatrix<MatrixNormalInverseGamma>(matrix(y!), x1!);
+        r <- TransformLinearMatrix<MatrixNormalInverseGamma>(y!, x1!);
       }
     }
     return r;
@@ -63,9 +63,9 @@ final class MatrixMultiply(y:Expression<Real[_,_]>,
       x1:MatrixNormalInverseWishart?;
 
       if (r <- z!.graftLinearMatrixNormalInverseWishart(compare))? {
-        r!.leftMultiply(matrix(y!));
+        r!.leftMultiply(y!);
       } else if (x1 <- z!.graftMatrixNormalInverseWishart(compare))? {
-        r <- TransformLinearMatrix<MatrixNormalInverseWishart>(matrix(y!), x1!);
+        r <- TransformLinearMatrix<MatrixNormalInverseWishart>(y!, x1!);
       }
     }
     return r;

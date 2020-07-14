@@ -1,7 +1,7 @@
 /**
- * Lazy `vector`.
+ * Lazy `canonical`.
  */
-final class MultivariateVector(y:Expression<Real[_]>) <
+final class MultivariateCanonical(y:Expression<Real[_]>) <
     MultivariateUnaryExpression<Expression<Real[_]>,Real[_],Real[_],
     Real[_]>(y) {
   override function doRows() -> Integer {
@@ -19,15 +19,15 @@ final class MultivariateVector(y:Expression<Real[_]>) <
 }
 
 /**
- * Lazy `vector`.
+ * Lazy `canonical`.
  */
-function vector(y:Expression<Real[_]>) -> Expression<Real[_]> {
+function canonical(y:Expression<Real[_]>) -> Expression<Real[_]> {
   if !y.isRandom() {
     /* just an identity function */
     return y;
   } else {  
     /* Random objects should be wrapped to allow the accumulation of
      * gradients by element if necessary; see note in split() also */
-    return construct<MultivariateVector>(y);
+    return construct<MultivariateCanonical>(y);
   }
 }

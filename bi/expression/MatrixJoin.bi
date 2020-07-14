@@ -100,8 +100,8 @@ function join<Value>(y:Expression<Value>[_,_]) -> MatrixJoin<Value> {
  * expressions.
  */
 function split<Value>(y:Expression<Value[_,_]>) -> Expression<Value>[_,_] {
-  auto z <- matrix(y);
-  // ^ matrix(y) above is an identity function for all but Random objects;
+  auto z <- canonical(y);
+  // ^ canonical(y) above is an identity function for all but Random objects;
   //   for these it wraps the Random in an additional expression that can
   //   accumulate gradients by element (which a Random cannot) before passing
   //   the whole matrix of accumulated gradients onto the Random

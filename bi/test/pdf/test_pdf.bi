@@ -100,7 +100,7 @@ function test_pdf(π:Distribution<Real[_]>, D:Integer, N:Integer, B:Integer,
   
   /* iid samples */
   for n in 1..N {
-    X1[n,1..D] <- vector(π.simulate());
+    X1[n,1..D] <- canonical(π.simulate());
   }
   
   /* compute the shape for a Gaussian proposal using the iid samples */
@@ -156,7 +156,7 @@ function test_pdf(π:Distribution<Real[_]>, D:Integer, N:Integer, B:Integer,
         a <- a + 1.0/(N*S);
       }
     }
-    X2[n,1..D] <- vector(x);
+    X2[n,1..D] <- x;
   }
   //stderr.print("final acceptance rate: " + a + "\n");
   

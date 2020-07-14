@@ -216,42 +216,6 @@ function matrix<Type>(x:Type, rows:Integer, columns:Integer) -> Type[_,_] {
 }
 
 /**
- * Convert a matrix.
- *
- * !!! tip
- *     This is typically an identity operation, but in some contexts is
- *     essential to explicitly evaluate and convert an
- *     [Eigen](https://eigen.tuxfamily.org) expression.
- */
-function matrix(X:Real[_,_]) -> Real[_,_] {
-  return X;
-}
-
-/**
- * Convert a matrix.
- *
- * !!! tip
- *     This is typically an identity operation, but in some contexts is
- *     essential to explicitly evaluate and convert an
- *     [Eigen](https://eigen.tuxfamily.org) expression.
- */
-function matrix(X:Integer[_,_]) -> Integer[_,_] {
-  return X;
-}
-
-/**
- * Convert a matrix.
- *
- * !!! tip
- *     This is typically an identity operation, but in some contexts is
- *     essential to explicitly evaluate and convert an
- *     [Eigen](https://eigen.tuxfamily.org) expression.
- */
-function matrix(X:Boolean[_,_]) -> Boolean[_,_] {
-  return X;
-}
-
-/**
  * Convert matrix to String.
  */
 function String(X:Real[_,_]) -> String {
@@ -353,5 +317,5 @@ function String(X:Boolean[_,_]) -> String {
  * Convert matrix to String.
  */
 function String(X:LLT) -> String {
-  return String(matrix(X));
+  return String(canonical(X));
 }

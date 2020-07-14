@@ -226,7 +226,7 @@ function logpdf_lazy_gamma(x:Expression<Real>, k:Expression<Real>, θ:Expression
  */
 function logpdf_lazy_wishart(X:Expression<LLT>, Ψ:Expression<LLT>, ν:Expression<Real>) -> Expression<Real> {
   auto p <- rows(Ψ);
-  return 0.5*(ν - p - 1.0)*ldet(X) - 0.5*trace(solve(Ψ, matrix(X))) -
+  return 0.5*(ν - p - 1.0)*ldet(X) - 0.5*trace(solve(Ψ, canonical(X))) -
       0.5*ν*p*log(2.0) - 0.5*ν*ldet(Ψ) - lgamma(0.5*ν, p);
 }
 
@@ -255,7 +255,7 @@ function logpdf_lazy_inverse_gamma(x:Expression<Real>, α:Expression<Real>, β:E
 function logpdf_lazy_inverse_wishart(X:Expression<LLT>, Ψ:Expression<LLT>, ν:Expression<Real>) -> Expression<Real> {
   auto p <- rows(Ψ);
   return 0.5*ν*ldet(Ψ) - 0.5*(ν + p - 1.0)*ldet(X) -
-      0.5*trace(solve(X, matrix(transpose(Ψ)))) - 0.5*ν*p*log(2.0) - lgamma(0.5*ν, p);
+      0.5*trace(solve(X, canonical(transpose(Ψ)))) - 0.5*ν*p*log(2.0) - lgamma(0.5*ν, p);
 }
 
 /**

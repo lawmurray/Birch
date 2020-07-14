@@ -366,7 +366,7 @@ function logpdf_gamma(x:Real, k:Real, θ:Real) -> Real {
 function logpdf_wishart(X:LLT, Ψ:LLT, ν:Real) -> Real {
   assert ν > rows(Ψ) - 1;
   auto p <- rows(Ψ);
-  return 0.5*(ν - p - 1.0)*ldet(X) - 0.5*trace(solve(Ψ, X)) -
+  return 0.5*(ν - p - 1.0)*ldet(X) - 0.5*trace(solve(Ψ, canonical(X))) -
       0.5*ν*p*log(2.0) - 0.5*ν*ldet(Ψ) - lgamma(0.5*ν, p);
 }
 
@@ -403,7 +403,7 @@ function logpdf_inverse_wishart(X:LLT, Ψ:LLT, ν:Real) -> Real {
   assert ν > rows(Ψ) - 1;
   auto p <- rows(Ψ);
   return 0.5*ν*ldet(Ψ) - 0.5*(ν + p - 1.0)*ldet(X) -
-      0.5*trace(solve(X, transpose(Ψ))) - 0.5*ν*p*log(2.0) -
+      0.5*trace(solve(X, canonical(transpose(Ψ)))) - 0.5*ν*p*log(2.0) -
       lgamma(0.5*ν, p);
 }
 

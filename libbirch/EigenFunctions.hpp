@@ -351,11 +351,6 @@ auto solve(const Eigen::MatrixBase<T>& o1, const Eigen::MatrixBase<U>& o2) {
 }
 
 template<class T, class U>
-auto solve(const Eigen::MatrixBase<T>& o1, const Eigen::LLT<U>& o2) {
-  return o1.householderQr().solve(o2.reconstructedMatrix()).eval();
-}
-
-template<class T, class U>
 auto solve(const Eigen::MatrixBase<T>& o1, const Eigen::DiagonalWrapper<U>& o2) {
   return o1.householderQr().solve(o2).eval();
 }
@@ -381,11 +376,6 @@ auto solve(const libbirch::DefaultArray<bi::type::Real64,2>& o1, const Eigen::Ma
 }
 
 template<class T>
-auto solve(const libbirch::DefaultArray<bi::type::Real64,2>& o1, const Eigen::LLT<T>& o2) {
-  return solve(o1.toEigen(), o2.reconstructedMatrix());
-}
-
-template<class T>
 auto solve(const libbirch::DefaultArray<bi::type::Real64,2>& o1, const Eigen::DiagonalWrapper<T>& o2) {
   return solve(o1.toEigen(), o2);
 }
@@ -406,11 +396,6 @@ inline auto solve(const libbirch::DefaultArray<bi::type::Real64,2>& o1, const li
 template<class T, class U>
 auto solve(const Eigen::LLT<T>& o1, const Eigen::MatrixBase<U>& o2) {
   return o1.solve(o2).eval();
-}
-
-template<class T, class U>
-auto solve(const Eigen::LLT<T>& o1, const Eigen::LLT<U>& o2) {
-  return o1.solve(o2.reconstructedMatrix()).eval();
 }
 
 template<class T, class U>
@@ -440,11 +425,6 @@ auto solve(const Eigen::DiagonalWrapper<T>& o1, const Eigen::MatrixBase<U>& o2) 
 }
 
 template<class T, class U>
-auto solve(const Eigen::DiagonalWrapper<T>& o1, const Eigen::LLT<U>& o2) {
-  return o1.inverse()*o2.reconstructedMatrix();
-}
-
-template<class T, class U>
 auto solve(const Eigen::DiagonalWrapper<T>& o1, const Eigen::DiagonalWrapper<U>& o2) {
   return o1.inverse()*o2;
 }
@@ -467,11 +447,6 @@ auto solve(const Eigen::DiagonalWrapper<T>& o1, const libbirch::DefaultArray<bi:
 template<class T, unsigned Mode1, class U>
 auto solve(const Eigen::TriangularView<T,Mode1>& o1, const Eigen::MatrixBase<U>& o2) {
   return o1.solve(o2).eval();
-}
-
-template<class T, unsigned Mode1, class U>
-auto solve(const Eigen::TriangularView<T,Mode1>& o1, const Eigen::LLT<U>& o2) {
-  return o1.solve(o2.reconstructedMatrix()).eval();
 }
 
 template<class T, unsigned Mode1, class U>

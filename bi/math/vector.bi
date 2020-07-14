@@ -62,41 +62,6 @@ function vector<Type>(x:Type, length:Integer) -> Type[_] {
 }
 
 /**
- * Convert a vector.
- *
- * !!! tip
- *     This is typically an identity operation, but in some contexts is
- *     essential to explicitly evaluate and convert an
- *     [Eigen](https://eigen.tuxfamily.org) expression.
- */
-function vector(x:Real[_]) -> Real[_] {
-  return x;
-}
-
-/**
- * Convert a vector.
- *
- * !!! tip
- *     This is typically an identity operation, but in some contexts is
- *     essential to explicitly evaluate and convert an
- *     [Eigen](https://eigen.tuxfamily.org) expression.
- */
-function vector(x:Integer[_]) -> Integer[_] {
-  return x;
-}
-/**
- * Convert a vector.
- *
- * !!! tip
- *     This is typically an identity operation, but in some contexts is
- *     essential to explicitly evaluate and convert an
- *     [Eigen](https://eigen.tuxfamily.org) expression.
- */
-function vector(x:Boolean[_]) -> Boolean[_] {
-  return x;
-}
-
-/**
  * Create vector filled with a sequentially incrementing values.
  *
  * - x: Initial value.
