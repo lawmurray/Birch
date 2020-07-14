@@ -9,7 +9,7 @@ final class LogDet<Argument,ArgumentValue>(y:Argument) <
 
   override function doEvaluateGrad(d:Real, x:Real, y:ArgumentValue) ->
       Real[_,_] {
-    return d*inv(transpose(y));
+    return d*canonical(inv(transpose(y)));
   }
 }
 

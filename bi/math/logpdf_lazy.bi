@@ -487,7 +487,7 @@ function logpdf_lazy_multivariate_gaussian(x:Expression<Real[_]>, μ:Expression<
 function logpdf_lazy_multivariate_normal_inverse_gamma(x:Expression<Real[_]>, ν:Expression<Real[_]>,
     Λ:Expression<LLT>, α:Expression<Real>, β:Expression<Real>) -> Expression<Real> {
   return logpdf_lazy_multivariate_student_t(x, 2.0*α, solve(Λ, ν),
-      llt((β/α)*inv(Λ)));
+      llt((β/α)*canonical(inv(Λ))));
 }
 
 /**
@@ -508,7 +508,7 @@ function logpdf_lazy_multivariate_normal_inverse_gamma_multivariate_gaussian(x:E
   auto μ <- solve(Λ, ν);
   auto β <- γ - 0.5*dot(μ, ν);
   return logpdf_lazy_multivariate_student_t(x, 2.0*α, μ,
-      llt((β/α)*(identity(n) + inv(Λ))));
+      llt((β/α)*(identity(n) + canonical(inv(Λ)))));
 }
 
 /**
@@ -657,7 +657,7 @@ function logpdf_lazy_matrix_gaussian(X:Expression<Real[_,_]>, M:Expression<Real[
  */
 function logpdf_lazy_matrix_normal_inverse_gamma(X:Expression<Real[_,_]>, N:Expression<Real[_,_]>, Λ:Expression<LLT>,
     α:Expression<Real>, β:Expression<Real[_]>) -> Expression<Real> {
-  return logpdf_lazy_matrix_student_t(X, 2.0*α, solve(Λ, N), llt(inv(Λ)), β/α);
+  return logpdf_lazy_matrix_student_t(X, 2.0*α, solve(Λ, N), inv(Λ), β/α);
 }
 
 /**
@@ -674,7 +674,7 @@ function logpdf_lazy_matrix_normal_inverse_gamma(X:Expression<Real[_,_]>, N:Expr
 function logpdf_lazy_matrix_normal_inverse_gamma_matrix_gaussian(X:Expression<Real[_,_]>,
     N:Expression<Real[_,_]>, Λ:Expression<LLT>, α:Expression<Real>, γ:Expression<Real[_]>) -> Expression<Real> {
   auto M <- solve(Λ, N);
-  auto Σ <- llt(identity(rows(M)) + inv(Λ));
+  auto Σ <- llt(identity(rows(M)) + canonical(inv(Λ)));
   auto β <- γ - 0.5*diagonal(transpose(M)*N);
   return logpdf_lazy_matrix_student_t(X, 2.0*α, M, Σ, β/α);
 }
@@ -717,7 +717,7 @@ function logpdf_lazy_matrix_normal_inverse_wishart(X:Expression<Real[_,_]>, N:Ex
     Λ:Expression<LLT>,  Ψ:Expression<LLT>, k:Expression<Real>) -> Expression<Real> {
   auto p <- columns(N);
   auto M <- solve(Λ, N);
-  auto Σ <- llt(inv(Λ)/(k - p + 1.0));
+  auto Σ <- llt(canonical(inv(Λ))/(k - p + 1.0));
   return logpdf_lazy_matrix_student_t(X, k - p + 1.0, M, Σ, Ψ);
 }
 
@@ -737,7 +737,7 @@ function logpdf_lazy_matrix_normal_inverse_wishart_matrix_gaussian(X:Expression<
   auto n <- rows(N);
   auto p <- columns(N);
   auto M <- solve(Λ, N);
-  auto Σ <- llt((identity(n) + inv(Λ))/(k - p + 1.0));
+  auto Σ <- llt((identity(n) + canonical(inv(Λ)))/(k - p + 1.0));
   return logpdf_lazy_matrix_student_t(X, k - p + 1.0, M, Σ, Ψ);
 }
 

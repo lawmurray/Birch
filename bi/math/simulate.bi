@@ -444,7 +444,7 @@ function simulate_inverse_gamma(α:Real, β:Real) -> Real {
  * - k: Degrees of freedeom.
  */
 function simulate_inverse_wishart(Ψ:LLT, k:Real) -> LLT {
-  return llt(inv(simulate_wishart(llt(inv(Ψ)), k)));
+  return inv(simulate_wishart(inv(Ψ), k));
 }
 
 /**
@@ -672,7 +672,8 @@ function simulate_multivariate_gaussian(μ:Real[_], σ2:Real) -> Real[_] {
  */
 function simulate_multivariate_normal_inverse_gamma(ν:Real[_], Λ:LLT,
     α:Real, β:Real) -> Real[_] {
-  return simulate_multivariate_student_t(2.0*α, solve(Λ, ν), llt((β/α)*inv(Λ)));
+  return simulate_multivariate_student_t(2.0*α, solve(Λ, ν),
+      llt((β/α)*canonical(inv(Λ))));
 }
 
 /**
@@ -691,7 +692,7 @@ function simulate_multivariate_normal_inverse_gamma_multivariate_gaussian(
   auto μ <- solve(Λ, ν);
   auto β <- γ - 0.5*dot(μ, ν);
   return simulate_multivariate_student_t(2.0*α, μ,
-      llt((β/α)*(identity(n) + inv(Λ))));
+      llt((β/α)*(identity(n) + canonical(inv(Λ)))));
 }
 
 /**
@@ -852,7 +853,7 @@ function simulate_matrix_gaussian(M:Real[_,_], σ2:Real) -> Real[_,_] {
  */
 function simulate_matrix_normal_inverse_gamma(N:Real[_,_], Λ:LLT, α:Real,
     β:Real[_]) -> Real[_,_] {
-  return simulate_matrix_student_t(2.0*α, solve(Λ, N), llt(inv(Λ)), β/α);
+  return simulate_matrix_student_t(2.0*α, solve(Λ, N), inv(Λ), β/α);
 }
 
 /**
@@ -868,7 +869,7 @@ function simulate_matrix_normal_inverse_gamma_matrix_gaussian(
   auto n <- rows(N);
   auto M <- solve(Λ, N);
   auto β <- γ - 0.5*diagonal(transpose(M)*N);
-  auto Σ <- llt(identity(n) + inv(Λ));
+  auto Σ <- llt(identity(n) + canonical(inv(Λ)));
   return simulate_matrix_student_t(2.0*α, M, Σ, β/α);
 }
 
@@ -906,7 +907,7 @@ function simulate_matrix_normal_inverse_wishart(N:Real[_,_], Λ:LLT, Ψ:LLT,
     k:Real) -> Real[_,_] {
   auto p <- columns(N);
   auto M <- solve(Λ, N);
-  auto Σ <- llt(inv(Λ)/(k - p + 1.0));
+  auto Σ <- llt(canonical(inv(Λ))/(k - p + 1.0));
   return simulate_matrix_student_t(k - p + 1.0, M, Σ, Ψ);
 }
 
@@ -923,7 +924,7 @@ function simulate_matrix_normal_inverse_wishart_matrix_gaussian(N:Real[_,_],
   auto n <- rows(N);
   auto p <- columns(N);
   auto M <- solve(Λ, N);
-  auto Σ <- llt((identity(n) + inv(Λ))/(k - p + 1.0));
+  auto Σ <- llt((identity(n) + canonical(inv(Λ)))/(k - p + 1.0));
   return simulate_matrix_student_t(k - p + 1.0, M, Σ, Ψ);
 }
 

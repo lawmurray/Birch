@@ -706,7 +706,7 @@ function logpdf_multivariate_gaussian(x:Real[_], μ:Real[_], σ2:Real) -> Real {
 function logpdf_multivariate_normal_inverse_gamma(x:Real[_], ν:Real[_],
     Λ:LLT, α:Real, β:Real) -> Real {
   return logpdf_multivariate_student_t(x, 2.0*α, solve(Λ, ν),
-      llt((β/α)*inv(Λ)));
+      llt((β/α)*canonical(inv(Λ))));
 }
 
 /**
@@ -727,7 +727,7 @@ function logpdf_multivariate_normal_inverse_gamma_multivariate_gaussian(x:Real[_
   auto μ <- solve(Λ, ν);
   auto β <- γ - 0.5*dot(μ, ν);
   return logpdf_multivariate_student_t(x, 2.0*α, μ,
-      llt((β/α)*(identity(n) + inv(Λ))));
+      llt((β/α)*(identity(n) + canonical(inv(Λ)))));
 }
 
 /**
@@ -875,7 +875,7 @@ function logpdf_matrix_gaussian(X:Real[_,_], M:Real[_,_], σ2:Real) ->
  */
 function logpdf_matrix_normal_inverse_gamma(X:Real[_,_], N:Real[_,_], Λ:LLT,
     α:Real, β:Real[_]) -> Real {
-  return logpdf_matrix_student_t(X, 2.0*α, solve(Λ, N), llt(inv(Λ)), β/α);
+  return logpdf_matrix_student_t(X, 2.0*α, solve(Λ, N), inv(Λ), β/α);
 }
 
 /**
@@ -892,7 +892,7 @@ function logpdf_matrix_normal_inverse_gamma(X:Real[_,_], N:Real[_,_], Λ:LLT,
 function logpdf_matrix_normal_inverse_gamma_matrix_gaussian(X:Real[_,_],
     N:Real[_,_], Λ:LLT, α:Real, γ:Real[_]) -> Real {
   auto M <- solve(Λ, N);
-  auto Σ <- llt(identity(rows(M)) + inv(Λ));
+  auto Σ <- llt(identity(rows(M)) + canonical(inv(Λ)));
   auto β <- γ - 0.5*diagonal(transpose(M)*N);
   return logpdf_matrix_student_t(X, 2.0*α, M, Σ, β/α);
 }
@@ -935,7 +935,7 @@ function logpdf_matrix_normal_inverse_wishart(X:Real[_,_], N:Real[_,_],
     Λ:LLT,  Ψ:LLT, k:Real) -> Real {
   auto p <- columns(N);
   auto M <- solve(Λ, N);
-  auto Σ <- llt(inv(Λ)/(k - p + 1.0));
+  auto Σ <- llt(canonical(inv(Λ))/(k - p + 1.0));
   return logpdf_matrix_student_t(X, k - p + 1.0, M, Σ, Ψ);
 }
 
@@ -955,7 +955,7 @@ function logpdf_matrix_normal_inverse_wishart_matrix_gaussian(X:Real[_,_],
   auto n <- rows(N);
   auto p <- columns(N);
   auto M <- solve(Λ, N);
-  auto Σ <- llt((identity(n) + inv(Λ))/(k - p + 1.0));
+  auto Σ <- llt((identity(n) + canonical(inv(Λ)))/(k - p + 1.0));
   return logpdf_matrix_student_t(X, k - p + 1.0, M, Σ, Ψ);
 }
 

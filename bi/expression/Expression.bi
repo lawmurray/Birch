@@ -90,6 +90,36 @@ abstract class Expression<Value>(x:Value?) < DelayExpression(x?) {
     return nil;
   }
 
+  function rows() -> Integer {
+    if x? {
+      return global.rows(x!);
+    } else {
+      return doRows();
+    }
+  }
+  
+  abstract function doRows() -> Integer;
+  
+  function columns() -> Integer {
+    if x? {
+      return global.columns(x!);
+    } else {
+      return doColumns();
+    }
+  }
+
+  abstract function doColumns() -> Integer;
+
+  function depth() -> Integer {
+    if isConstant() {
+      return 1;
+    } else {
+      return doDepth();
+    }
+  }
+  
+  abstract function doDepth() -> Integer;
+
   /**
    * Evaluate, open world.
    *

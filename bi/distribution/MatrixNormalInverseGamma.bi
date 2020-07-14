@@ -7,7 +7,7 @@ final class MatrixNormalInverseGamma(M:Expression<Real[_,_]>,
   /**
    * Precision.
    */
-  Λ:Expression<LLT> <- llt(inv(Σ));
+  Λ:Expression<LLT> <- inv(Σ);
 
   /**
    * Precision times mean.

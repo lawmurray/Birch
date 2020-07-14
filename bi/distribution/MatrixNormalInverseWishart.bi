@@ -6,7 +6,7 @@ final class MatrixNormalInverseWishart(M:Expression<Real[_,_]>,
   /**
    * Precision.
    */
-  Λ:Expression<LLT> <- llt(inv(U));
+  Λ:Expression<LLT> <- inv(U);
 
   /**
    * Precision times mean.

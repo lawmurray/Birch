@@ -58,41 +58,17 @@ abstract class DelayExpression(isConstant:Boolean) {
   /**
    * Number of rows in result.
    */
-  function rows() -> Integer {
-    if isConstant() {
-      return 1;
-    } else {
-      return doRows();
-    }
-  }
-  
-  abstract function doRows() -> Integer;
+  abstract function rows() -> Integer;
   
   /**
    * Number of columns in result.
    */
-  function columns() -> Integer {
-    if isConstant() {
-      return 1;
-    } else {
-      return doColumns();
-    }
-  }
-
-  abstract function doColumns() -> Integer;
+  abstract function columns() -> Integer;
 
   /**
    * Depth of the expression tree.
    */
-  function depth() -> Integer {
-    if isConstant() {
-      return 1;
-    } else {
-      return doDepth();
-    }
-  }
-  
-  abstract function doDepth() -> Integer;
+  abstract function depth() -> Integer;
   
   /**
    * Construct a lazy expression for the log-prior, and collect variables.

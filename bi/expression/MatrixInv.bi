@@ -1,8 +1,8 @@
 /**
  * Lazy `inv`.
  */
-final class MatrixInv<Argument,ArgumentValue>(y:Argument) <
-    MatrixUnaryExpression<Argument,ArgumentValue,Real[_,_],Real[_,_]>(y) {
+final class MatrixInv<Argument,ArgumentValue,Value>(y:Argument) <
+    MatrixUnaryExpression<Argument,ArgumentValue,Real[_,_],Value>(y) {
   override function doRows() -> Integer {
     return y!.rows();
   }
@@ -11,13 +11,14 @@ final class MatrixInv<Argument,ArgumentValue>(y:Argument) <
     return y!.columns();
   }
 
-  override function doEvaluate(y:ArgumentValue) -> Real[_,_] {
+  override function doEvaluate(y:ArgumentValue) -> Value {
     return inv(y);
   }
 
-  override function doEvaluateGrad(d:Real[_,_], x:Real[_,_],
-      y:ArgumentValue) -> Real[_,_] {
-    return -transpose(x)*d*transpose(x);
+  override function doEvaluateGrad(d:Real[_,_], x:Value, y:ArgumentValue) ->
+      Real[_,_] {
+    auto x' <- canonical(transpose(x));
+    return -x'*d*x';
   }
 }
 
@@ -25,13 +26,13 @@ final class MatrixInv<Argument,ArgumentValue>(y:Argument) <
  * Lazy `inv`.
  */
 function inv(x:Expression<Real[_,_]>) ->
-    MatrixInv<Expression<Real[_,_]>,Real[_,_]> {
-  return construct<MatrixInv<Expression<Real[_,_]>,Real[_,_]>>(x);
+    MatrixInv<Expression<Real[_,_]>,Real[_,_],Real[_,_]> {
+  return construct<MatrixInv<Expression<Real[_,_]>,Real[_,_],Real[_,_]>>(x);
 }
 
 /**
  * Lazy `inv`.
  */
-function inv(x:Expression<LLT>) -> MatrixInv<Expression<LLT>,LLT> {
-  return construct<MatrixInv<Expression<LLT>,LLT>>(x);
+function inv(x:Expression<LLT>) -> MatrixInv<Expression<LLT>,LLT,LLT> {
+  return construct<MatrixInv<Expression<LLT>,LLT,LLT>>(x);
 }
