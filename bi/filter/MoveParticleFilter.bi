@@ -65,10 +65,11 @@ class MoveParticleFilter < ParticleFilter {
   function move(t:Integer) {
     naccepts <- vector(0, nparticles);
     if nlags > 0 && nmoves > 0 {
+      collect();
       κ:LangevinKernel;
-      κ.scale <- scale/pow(min(nlags, t), 3);
+      κ.scale <- scale/pow(t, 3);
       parallel for n in 1..nparticles {
-        auto x <- MoveParticle?(this.x[n])!;
+        auto x <- MoveParticle?(clone(this.x[n]))!;
         x.grad();
         for m in 1..nmoves {
           auto x' <- clone(x);
