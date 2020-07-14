@@ -26,26 +26,26 @@ final class MatrixJoin<Value>(y:Expression<Value>[_,_]) <
     return global.columns(y!);
   }
 
-  override function doValue() {
-    x <- transform(y!, \(x:Expression<Value>) -> Value {
+  override function doValue() -> Value[_,_] {
+    return transform(y!, \(x:Expression<Value>) -> Value {
         return x.value();
       });
   }
   
-  override function doPilot() {
-    x <- transform(y!, \(x:Expression<Value>) -> Value {
+  override function doPilot() -> Value[_,_] {
+    return transform(y!, \(x:Expression<Value>) -> Value {
         return x.pilot();
       });
   }
 
-  override function doGet() {
-    x <- transform(y!, \(x:Expression<Value>) -> Value {
+  override function doGet() -> Value[_,_] {
+    return transform(y!, \(x:Expression<Value>) -> Value {
         return x.get();
       });
   }
 
-  override function doMove(κ:Kernel) {
-    x <- transform(y!, \(x:Expression<Value>) -> Value {
+  override function doMove(κ:Kernel) -> Value[_,_] {
+    return transform(y!, \(x:Expression<Value>) -> Value {
         return x.move(κ);
       });
   }

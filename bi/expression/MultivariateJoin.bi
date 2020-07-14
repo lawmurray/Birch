@@ -20,26 +20,26 @@ final class MultivariateJoin<Value>(x:Expression<Value>[_]) <
     return global.length(args!);
   }
 
-  override function doValue() {
-    x <- transform(args!, \(x:Expression<Value>) -> Value {
+  override function doValue() -> Value[_] {
+    return transform(args!, \(x:Expression<Value>) -> Value {
         return x.value();
       });
   }
   
-  override function doPilot() {
-    x <- transform(args!, \(x:Expression<Value>) -> Value {
+  override function doPilot() -> Value[_] {
+    return transform(args!, \(x:Expression<Value>) -> Value {
         return x.pilot();
       });
   }
 
-  override function doGet() {
-    x <- transform(args!, \(x:Expression<Value>) -> Value {
+  override function doGet() -> Value[_] {
+    return transform(args!, \(x:Expression<Value>) -> Value {
         return x.get();
       });
   }
 
-  override function doMove(κ:Kernel) {
-    x <- transform(args!, \(x:Expression<Value>) -> Value {
+  override function doMove(κ:Kernel) -> Value[_] {
+    return transform(args!, \(x:Expression<Value>) -> Value {
         return x.move(κ);
       });
   }
