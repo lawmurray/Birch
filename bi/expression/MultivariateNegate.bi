@@ -1,66 +1,60 @@
 /**
  * Lazy negation.
  */
-final class MultivariateNegate(x:Expression<Real[_]>) <
-    ScalarUnaryExpression<Expression<Real[_]>,Real[_]>(x) {
-  override function doValue() {
-    x <- -single!.value();
+final class MultivariateNegate(y:Expression<Real[_]>) <
+    MultivariateUnaryExpression<Expression<Real[_]>,Real[_],Real[_],
+    Real[_]>(y) {
+  override function doRows() -> Integer {
+    return y!.rows();
+  }
+    
+  override function doEvaluate(y:Real[_]) -> Real[_] {
+    return -y;
   }
 
-  override function doPilot() {
-    x <- -single!.pilot();
-  }
-
-  override function doMove(κ:Kernel) {
-    x <- -single!.move(κ);
-  }
-
-  override function doGrad() {
-    single!.grad(-d!);
+  override function doEvaluateGrad(d:Real[_], x:Real[_], y:Real[_]) ->
+      Real[_] {
+    return -d;
   }
 
   override function graftLinearMultivariateGaussian() ->
       TransformLinearMultivariate<MultivariateGaussian>? {
-    y:TransformLinearMultivariate<MultivariateGaussian>?;
+    r:TransformLinearMultivariate<MultivariateGaussian>?;
     if !hasValue() {
-      z:MultivariateGaussian?;
+      x1:MultivariateGaussian?;
 
-      if (y <- single!.graftLinearMultivariateGaussian())? {
-        y!.negate();
-      } else if (z <- single!.graftMultivariateGaussian())? {
-        auto R <- z!.rows();
-        y <- TransformLinearMultivariate<MultivariateGaussian>(
-            box(diagonal(-1.0, R)), z!, box(vector(0.0, R)));
+      if (r <- y!.graftLinearMultivariateGaussian())? {
+        r!.negate();
+      } else if (x1 <- y!.graftMultivariateGaussian())? {
+        auto R <- x1!.rows();
+        r <- TransformLinearMultivariate<MultivariateGaussian>(
+            box(diagonal(-1.0, R)), x1!, box(vector(0.0, R)));
       }
     }
-    return y;
+    return r;
   }
   
   override function graftLinearMultivariateNormalInverseGamma(compare:Distribution<Real>) ->
       TransformLinearMultivariate<MultivariateNormalInverseGamma>? {
-    y:TransformLinearMultivariate<MultivariateNormalInverseGamma>?;
+    r:TransformLinearMultivariate<MultivariateNormalInverseGamma>?;
     if !hasValue() {
-      z:MultivariateNormalInverseGamma?;
+      x1:MultivariateNormalInverseGamma?;
 
-      if (y <- single!.graftLinearMultivariateNormalInverseGamma(compare))? {
-        y!.negate();
-      } else if (z <- single!.graftMultivariateNormalInverseGamma(compare))? {
-        auto R <- z!.rows();
-        y <- TransformLinearMultivariate<MultivariateNormalInverseGamma>(
-            box(diagonal(-1.0, R)), z!, box(vector(0.0, R)));
+      if (r <- y!.graftLinearMultivariateNormalInverseGamma(compare))? {
+        r!.negate();
+      } else if (x1 <- y!.graftMultivariateNormalInverseGamma(compare))? {
+        auto R <- x1!.rows();
+        r <- TransformLinearMultivariate<MultivariateNormalInverseGamma>(
+            box(diagonal(-1.0, R)), x1!, box(vector(0.0, R)));
       }
     }
-    return y;
+    return r;
   }
 }
 
 /**
  * Lazy negation.
  */
-operator (-x:Expression<Real[_]>) -> Expression<Real[_]> {
-  if x.isConstant() {
-    return box(vector(-x.value()));
-  } else {
-    return construct<MultivariateNegate>(x);
-  }
+operator (-y:Expression<Real[_]>) -> MultivariateNegate {
+  return construct<MultivariateNegate>(y);
 }

@@ -1,25 +1,17 @@
 /**
  * Lazy `rectify`.
  */
-final class Rectify(x:Expression<Real>) <
-    ScalarUnaryExpression<Expression<Real>,Real>(x) {
-  override function doValue() {
-    x <- rectify(single!.value());
+final class Rectify(y:Expression<Real>) <
+    ScalarUnaryExpression<Expression<Real>,Real,Real,Real>(y) {
+  override function doEvaluate(y:Real) -> Real {
+    return rectify(y);
   }
 
-  override function doPilot() {
-    x <- rectify(single!.pilot());
-  }
-
-  override function doMove(κ:Kernel) {
-    x <- rectify(single!.move(κ));
-  }
-
-  override function doGrad() {
-    if x! > 0.0 {
-      single!.grad(1.0);
+  override function doEvaluateGrad(d:Real, x:Real, y:Real) -> Real {
+    if x > 0.0 {
+      return d;
     } else {
-      single!.grad(0.0);
+      return 0.0;
     }
   }
 }
@@ -27,10 +19,6 @@ final class Rectify(x:Expression<Real>) <
 /**
  * Lazy `rectify`.
  */
-function rectify(x:Expression<Real>) -> Expression<Real> {
-  if x.isConstant() {
-    return box(rectify(x.value()));
-  } else {
-    return construct<Rectify>(x);
-  }
+function rectify(y:Expression<Real>) -> Rectify {
+  return construct<Rectify>(y);
 }

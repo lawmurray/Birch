@@ -1,74 +1,57 @@
 /**
  * Lazy `outer`.
  */
-final class Outer<Left,Right,Value>(left:Left, right:Right) <
-    MatrixBinaryExpression<Left,Right,Value>(left, right) {
+final class Outer(y:Expression<Real[_]>, z:Expression<Real[_]>) <
+    MatrixBinaryExpression<Expression<Real[_]>,Expression<Real[_]>,Real[_],
+    Real[_],Real[_],Real[_],Real[_,_]>(y, z) {
   override function doRows() -> Integer {
-    return left!.rows();
+    return y!.rows();
   }
   
   override function doColumns() -> Integer {
-    return right!.rows();
+    return z!.rows();
   }
   
-  override function doValue() {
-    x <- outer(left!.value(), right!.value());
+  override function doEvaluate(y:Real[_], z:Real[_]) -> Real[_,_] {
+    return outer(y, z);
   }
 
-  override function doPilot() {
-    x <- outer(left!.pilot(), right!.pilot());
+  override function doEvaluateGradLeft(d:Real[_,_], x:Real[_,_], y:Real[_],
+      z:Real[_]) -> Real[_] {
+    return d*z;
   }
 
-  override function doMove(κ:Kernel) {
-    x <- outer(left!.move(κ), right!.move(κ));
-  }
-
-  override function doGrad() {
-    left!.grad(d!*right!.get());
-    right!.grad(transpose(d!)*left!.get());
+  override function doEvaluateGradRight(d:Real[_,_], x:Real[_,_], y:Real[_],
+  
+      z:Real[_]) -> Real[_] {
+    return transpose(d)*y;
   }
 }
 
 /**
  * Lazy `outer`.
  */
-function outer(left:Expression<Real[_]>, right:Expression<Real[_]>) ->
-    Expression<Real[_,_]> {
-  assert left!.rows() == right!.rows();
-  if left!.isConstant() && right!.isConstant() {
-    return box(matrix(outer(left!.value(), right!.value())));
-  } else {
-    return construct<Outer<Expression<Real[_]>,Expression<Real[_]>,Real[_,_]>>(left, right);
-  }
+function outer(y:Expression<Real[_]>, z:Expression<Real[_]>) -> Outer {
+  return construct<Outer>(y, z);
 }
 
 /**
  * Lazy `outer`.
  */
-function outer(left:Real[_], right:Expression<Real[_]>) ->
-    Expression<Real[_,_]> {
-  if right!.isConstant() {
-    return box(matrix(outer(left, right!.value())));
-  } else {
-    return outer(box(left), right);
-  }
+function outer(y:Real[_], z:Expression<Real[_]>) -> Outer {
+  return outer(box(y), z);
 }
 
 /**
  * Lazy `outer`.
  */
-function outer(left:Expression<Real[_]>, right:Real[_]) ->
-    Expression<Real[_,_]> {
-  if left!.isConstant() {
-    return box(matrix(outer(left!.value(), right)));
-  } else {
-    return outer(left, box(right));
-  }
+function outer(y:Expression<Real[_]>, z:Real[_]) -> Outer {
+  return outer(y, box(z));
 }
 
 /**
  * Lazy `outer`.
  */
-function outer(single:Expression<Real[_]>) -> Expression<Real[_,_]> {
-  return outer(single, single);
+function outer(y:Expression<Real[_]>) -> Outer {
+  return outer(y, y);
 }

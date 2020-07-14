@@ -9,19 +9,7 @@ abstract class MultivariateExpression<Value> < Expression<Value>(nil) {
    */
   d:Real[_]?;  
 
-  final override function rows() -> Integer {
-    if x? {
-      return global.rows(x!);
-    } else {
-      return doRows();
-    }
-  }
-  
-  final override function columns() -> Integer {
-    return 1;
-  }
-  
-  function doRows() -> Integer {
+  final override function doColumns() -> Integer {
     return 1;
   }
 

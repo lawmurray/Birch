@@ -1,33 +1,20 @@
 /**
  * Lazy `asin`.
  */
-final class Asin(x:Expression<Real>) <
-    ScalarUnaryExpression<Expression<Real>,Real>(x) {
-  override function doValue() {
-    x <- asin(single!.value());
+final class Asin(y:Expression<Real>) <
+    ScalarUnaryExpression<Expression<Real>,Real,Real,Real>(y) {
+  override function doEvaluate(y:Real) -> Real {
+    return asin(y);
   }
 
-  override function doPilot() {
-    x <- asin(single!.pilot());
-  }
-
-  override function doMove(κ:Kernel) {
-    x <- asin(single!.move(κ));
-  }
-
-  override function doGrad() {
-    auto x <- single!.get();
-    single!.grad(d!/sqrt(1.0 - x*x));
+  override function doEvaluateGrad(d:Real, x:Real, y:Real) -> Real {
+    return d/sqrt(1.0 - y*y);
   }
 }
 
 /**
  * Lazy `asin`.
  */
-function asin(x:Expression<Real>) -> Expression<Real> {
-  if x.isConstant() {
-    return box(asin(x.value()));
-  } else {
-    return construct<Asin>(x);
-  }
+function asin(y:Expression<Real>) -> Asin {
+  return construct<Asin>(y);
 }

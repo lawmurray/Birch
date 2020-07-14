@@ -1,33 +1,20 @@
 /**
  * Lazy `atan`.
  */
-final class Atan(x:Expression<Real>) <
-    ScalarUnaryExpression<Expression<Real>,Real>(x) {
-  override function doValue() {
-    x <- atan(single!.value());
+final class Atan(y:Expression<Real>) <
+    ScalarUnaryExpression<Expression<Real>,Real,Real,Real>(y) {
+  override function doEvaluate(y:Real) -> Real {
+    return atan(y);
   }
 
-  override function doPilot() {
-    x <- atan(single!.pilot());
-  }
-
-  override function doMove(κ:Kernel) {
-    x <- atan(single!.move(κ));
-  }
-
-  override function doGrad() {
-    auto x <- single!.get();
-    single!.grad(d!/(1.0 + x*x));
+  override function doEvaluateGrad(d:Real, x:Real, y:Real) -> Real {
+    return d/(1.0 + y*y);
   }
 }
 
 /**
  * Lazy `atan`.
  */
-function atan(x:Expression<Real>) -> Expression<Real> {
-  if x.isConstant() {
-    return box(atan(x.value()));
-  } else {
-    return construct<Atan>(x);
-  }
+function atan(y:Expression<Real>) -> Atan {
+  return construct<Atan>(y);
 }

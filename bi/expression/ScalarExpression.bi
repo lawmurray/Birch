@@ -1,7 +1,7 @@
 /**
  * Expression that evaluates to a scalar.
  *
- * - Value: Scalar type.
+ * - `Value`: Scalar type.
  */
 abstract class ScalarExpression<Value> < Expression<Value>(nil) {  
   /**
@@ -9,11 +9,11 @@ abstract class ScalarExpression<Value> < Expression<Value>(nil) {
    */
   d:Real?;
 
-  final override function rows() -> Integer {
+  final override function doRows() -> Integer {
     return 1;
   }
   
-  final override function columns() -> Integer {
+  final override function doColumns() -> Integer {
     return 1;
   }
 

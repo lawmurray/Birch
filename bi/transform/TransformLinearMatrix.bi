@@ -47,12 +47,12 @@ class TransformLinearMatrix<Value>(A:Expression<Real[_,_]>, X:Value,
     C <- C - Y;
   }
 
-  function multiply(y:Real) {
+  function multiply(y:Expression<Real>) {
     A <- A*y;
     C <- C*y;
   }
   
-  function divide(y:Real) {
+  function divide(y:Expression<Real>) {
     A <- A/y;
     C <- C/y;
   }

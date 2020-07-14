@@ -1,32 +1,22 @@
 /**
  * Lazy `scalar`.
  */
-final class ScalarMatrix(x:Expression<Real[_,_]>) <
-    ScalarUnaryExpression<Expression<Real[_,_]>,Real>(x) {
-  override function doValue() {
-    x <- scalar(single!.value());
+final class ScalarMatrix<Value>(y:Expression<Value[_,_]>) <
+    ScalarUnaryExpression<Expression<Value[_,_]>,Value[_,_],Real[_,_],
+    Value>(y) {
+  override function doEvaluate(y:Value[_,_]) -> Value {
+    return scalar(y);
   }
 
-  override function doPilot() {
-    x <- scalar(single!.pilot());
-  }
-
-  override function doMove(κ:Kernel) {
-    x <- scalar(single!.move(κ));
-  }
-
-  override function doGrad() {
-    single!.grad([[d!]]);
+  override function doEvaluateGrad(d:Real, x:Value, y:Value[_,_]) ->
+      Real[_,_] {
+    return [[d]];
   }
 }
 
 /**
  * Lazy `scalar`.
  */
-function scalar(x:Expression<Real[_,_]>) -> Expression<Real> {
-  if x.isConstant() {
-    return box(scalar(x.value()));
-  } else {
-    return construct<ScalarMatrix>(x);
-  }
+function scalar<Value>(y:Expression<Value[_,_]>) -> ScalarMatrix<Value> {
+  return construct<ScalarMatrix<Value>>(y);
 }

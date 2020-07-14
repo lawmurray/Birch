@@ -31,12 +31,12 @@ final class MultivariateNormalInverseGamma(μ:Expression<Real[_]>,
   /**
    * Precision.
    */
-  Λ:Expression<LLT> <- inv(Σ);
+  Λ:Expression<LLT> <- llt(inv(Σ));
 
   /**
    * Precision times mean.
    */
-  ν:Expression<Real[_]> <- Λ*μ;
+  ν:Expression<Real[_]> <- matrix(Λ)*μ;
 
   /**
    * Variance shape.

@@ -4,7 +4,7 @@
 final class LinearMultivariateGaussianMultivariateGaussian(
     A:Expression<Real[_,_]>, m:MultivariateGaussian, c:Expression<Real[_]>,
     S:Expression<LLT>) < MultivariateGaussian(A*m.μ + c,
-    llt(A*m.Σ*transpose(A) + matrix(S))) {
+    llt(A*matrix(m.Σ)*transpose(A) + matrix(S))) {
   /**
    * Scale.
    */

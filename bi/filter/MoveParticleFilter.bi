@@ -75,8 +75,7 @@ class MoveParticleFilter < ParticleFilter {
           x'.move(κ);
           x'.grad();
           auto α <- x'.π - x.π + x'.logpdf(x, κ) - x.logpdf(x', κ);
-          if log(simulate_uniform(0.0, 1.0)) <= α {
-            /* accept */
+          if log(simulate_uniform(0.0, 1.0)) <= α {  // accept?
             x <- x';
             naccepts[n] <- naccepts[n] + 1;
           }

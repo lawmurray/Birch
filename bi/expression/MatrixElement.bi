@@ -1,13 +1,13 @@
 /**
  * Lazy access of a matrix element.
  */
-final class MatrixElement<Single,Value>(Y:Single, i:Integer, j:Integer) <
-    ScalarExpression<Value> {
+final class MatrixElement<Value>(y:Expression<Value[_,_]>, i:Integer,
+    j:Integer) < ScalarExpression<Value> {
   /**
-   * Matrix.
+   * Argument.
    */
-  Y:Single? <- Y;
-    
+  y:Expression<Value[_,_]>? <- y;
+
   /**
    * Row.
    */
@@ -18,76 +18,68 @@ final class MatrixElement<Single,Value>(Y:Single, i:Integer, j:Integer) <
    */
   j:Integer <- j;
   
-  override function depth() -> Integer {
-    auto argDepth <- 0;
-    if Y? {
-      argDepth <- Y!.depth();
-    }
-    return argDepth + 1;
-  }
-  
-  override function doDetach() {
-    Y <- nil;
-  }
-  
-  override function doValue() {
-    x <- matrix(Y!.value())[i,j];
+  override function doDepth() -> Integer {
+    return y!.depth() + 1;
   }
 
-  override function doPilot() {
-    x <- matrix(Y!.pilot())[i,j];
+  override function doValue() -> Value {
+    return y!.value()[i,j];
   }
 
-  override function doMove(κ:Kernel) {
-    x <- matrix(Y!.move(κ))[i,j];
+  override function doPilot() -> Value {
+    return y!.pilot()[i,j];
+  }
+
+  override function doGet() -> Value {
+    return y!.get()[i,j];
+  }
+
+  override function doMove(κ:Kernel) -> Value {
+    return y!.move(κ)[i,j];
   }
 
   override function doGrad() {
-    Y!.grad(d!, i, j);
+    y!.grad(d!, i, j);
   }
 
-  final override function doMakeConstant() {
-    Y!.makeConstant();
-  }
-  
-  final override function doPrior(vars:RaggedArray<DelayExpression>) ->
+  override function doPrior(vars:RaggedArray<DelayExpression>) ->
       Expression<Real>? {
-    return Y!.prior(vars);
+    return y!.prior(vars);
+  }
+
+  override function doConstant() {
+    y!.constant();
+  }
+
+  override function doCount() {
+    y!.count();
+  }
+
+  override function doDetach() {
+    y <- nil;
   }
 }
 
 /**
  * Lazy access of a matrix element.
  */
-function MatrixElement(Y:Expression<Real[_,_]>, i:Integer, j:Integer) ->
-    Expression<Real> {
-  if Y!.isConstant() {
-    return box(Y.value()[i,j]);
-  } else {
-    return construct<MatrixElement<Expression<Real[_,_]>,Real>>(Y, i, j);
-  }
+function MatrixElement(y:Expression<Real[_,_]>, i:Integer, j:Integer) ->
+    MatrixElement<Real> {
+  return construct<MatrixElement<Real>>(y, i, j);
 }
 
 /**
  * Lazy access of a matrix element.
  */
-function MatrixElement(Y:Expression<LLT>, i:Integer, j:Integer) ->
-    Expression<Real> {
-  if Y!.isConstant() {
-    return box(matrix(Y.value())[i,j]);
-  } else {
-    return construct<MatrixElement<Expression<LLT>,Real>>(Y, i, j);
-  }
+function MatrixElement(y:Expression<Integer[_,_]>, i:Integer, j:Integer) ->
+    MatrixElement<Integer> {
+  return construct<MatrixElement<Integer>>(y, i, j);
 }
 
 /**
  * Lazy access of a matrix element.
  */
-function MatrixElement(Y:Expression<Integer[_,_]>, i:Integer, j:Integer) ->
-    Expression<Integer> {
-  if Y!.isConstant() {
-    return box(Y.value()[i,j]);
-  } else {
-    return construct<MatrixElement<Expression<Integer[_,_]>,Integer>>(Y, i, j);
-  }
+function MatrixElement(y:Expression<Boolean[_,_]>, i:Integer, j:Integer) ->
+    MatrixElement<Boolean> {
+  return construct<MatrixElement<Boolean>>(y, i, j);
 }

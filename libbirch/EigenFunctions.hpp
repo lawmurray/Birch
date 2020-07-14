@@ -325,7 +325,7 @@ auto inv(const Eigen::MatrixBase<T>& o) {
 template<class T>
 auto inv(const Eigen::LLT<T>& o) {
   return o.solve(libbirch::EigenMatrix<typename T::value_type>::Identity(
-      o.rows(), o.cols())).llt();
+      o.rows(), o.cols()));
 }
 
 template<class T>

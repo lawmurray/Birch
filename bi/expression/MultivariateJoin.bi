@@ -8,22 +8,16 @@ final class MultivariateJoin<Value>(x:Expression<Value>[_]) <
    */
   args:Expression<Value>[_]? <- x;
 
-  override function depth() -> Integer {
-    auto argsDepth <- 0;
-    if args? {
-      for i in 1..length() {
-        argsDepth <- max(argsDepth, args![i].depth());
-      }
+  override function doDepth() -> Integer {
+    auto depth <- 0;
+    for i in 1..length() {
+      depth <- max(depth, args![i].depth());
     }
-    return argsDepth + 1;
+    return depth + 1;
   }
 
   override function doRows() -> Integer {
     return global.length(args!);
-  }
-
-  override function doDetach() {
-    args <- nil;
   }
 
   override function doValue() {
@@ -31,14 +25,16 @@ final class MultivariateJoin<Value>(x:Expression<Value>[_]) <
         return x.value();
       });
   }
-
-  override function doMakeConstant() {
-    for_each(args!, \(x:Expression<Value>) { x.makeConstant(); });
-  }
   
   override function doPilot() {
     x <- transform(args!, \(x:Expression<Value>) -> Value {
         return x.pilot();
+      });
+  }
+
+  override function doGet() {
+    x <- transform(args!, \(x:Expression<Value>) -> Value {
+        return x.get();
       });
   }
 
@@ -55,8 +51,8 @@ final class MultivariateJoin<Value>(x:Expression<Value>[_]) <
   override function doPrior(vars:RaggedArray<DelayExpression>) ->
       Expression<Real>? {
     p:Expression<Real>?;
-    auto n <- length();
-    for i in 1..n {
+    auto L <- length();
+    for i in 1..L {
       auto q <- args![i].prior(vars);
       if q? {
         if p? {
@@ -68,26 +64,40 @@ final class MultivariateJoin<Value>(x:Expression<Value>[_]) <
     }
     return p;
   }
+
+  override function doCount() {
+    for_each(y!, \(x:Expression<Value>) { x.count(); });
+  }
+
+  override function doConstant() {
+    for_each(y!, \(x:Expression<Value>) { x.constant(); });
+  }
+
+  override function doDetach() {
+    args <- nil;
+  }
 }
 
 /**
- * Lazy `join`. Converts a vector of scalar expressions into a single vector
+ * Lazy `join`. Converts a vector of scalar expressions into a vector
  * expression.
  */
-function join(x:Expression<Real>[_]) -> Expression<Real[_]> {
-  return construct<MultivariateJoin<Real>>(x);
+function join<Value>(y:Expression<Value>[_]) -> MultivariateJoin<Value> {
+  return construct<MultivariateJoin<Value>>(y);
 }
 
 /**
  * Lazy `split`. Converts a vector expression into a vector of scalar
  * expressions.
  */
-function split(x:Expression<Real[_]>) -> Expression<Real>[_] {
-  return vector(\(i:Integer) -> Expression<Real> {
-        return MultivariateElement(vector(x), i);
-      }, x.length());
-  // ^ vector(x) above is an identity function for all but Random objects;
+function split<Value>(y:Expression<Value[_]>) -> Expression<Value>[_] {
+  auto z <- vector(y);
+  // ^ vector(y) above is an identity function for all but Random objects;
   //   for these it wraps the Random in an additional expression that can
   //   accumulate gradients by element (which a Random cannot) before passing
   //   the whole vector of accumulated gradients onto the Random
+
+  return vector(\(i:Integer) -> Expression<Value> {
+        return construct<MultivariateElement<Value>>(z, i);
+      }, z.length());
 }

@@ -1,43 +1,55 @@
 /**
- * Lazy cast to discrete type.
+ * Lazy cast.
  */
-final class DiscreteCast<From,To>(x:From) <
-    ScalarUnaryExpression<From,To>(x) {
-  override function doValue() {
-    x <- To?(single!.value())!;
+final class DiscreteCast<From,To>(y:Expression<From>) <
+    ScalarUnaryExpression<Expression<From>,From,Real,To>(y) {
+  override function doEvaluate(y:From) -> To {
+    return To?(y)!;
   }
 
-  override function doPilot() {
-    x <- To?(single!.pilot())!;
-  }
-
-  override function doMove(κ:Kernel) {
-    x <- To?(single!.move(κ))!;
-  }
-
-  override function doGrad() {
-    single!.grad(0.0);
+  override function doEvaluateGrad(d:Real, x:To, y:From) -> Real {
+    return d;
   }
 }
 
 /**
  * Lazy cast.
  */
-function Integer<From>(x:Expression<From>) -> Expression<Integer> {
-  if x.isConstant() {
-    return box(Integer(x.value()));
-  } else {
-    return construct<DiscreteCast<Expression<From>,Integer>>(x);
-  }
+function Integer(y:Expression<Real>) -> DiscreteCast<Real,Integer> {
+  return construct<DiscreteCast<Real,Integer>>(y);
+}
+
+/**
+ * Lazy cast, identity function.
+ */
+function Integer(y:Expression<Integer>) -> Expression<Integer> {
+  return y;
 }
 
 /**
  * Lazy cast.
  */
-function Boolean<From>(x:Expression<From>) -> Expression<Boolean> {
-  if x.isConstant() {
-    return box(Integer(x.value()));
-  } else {
-    return construct<DiscreteCast<Expression<From>,Integer>>(x);
-  }
+function Integer(y:Expression<Boolean>) -> DiscreteCast<Boolean,Integer> {
+  return construct<DiscreteCast<Boolean,Integer>>(y);
+}
+
+/**
+ * Lazy cast.
+ */
+function Boolean(y:Expression<Real>) -> DiscreteCast<Real,Boolean> {
+  return construct<DiscreteCast<Real,Boolean>>(y);
+}
+
+/**
+ * Lazy cast.
+ */
+function Boolean(y:Expression<Integer>) -> DiscreteCast<Integer,Boolean> {
+  return construct<DiscreteCast<Integer,Boolean>>(y);
+}
+
+/**
+ * Lazy cast, identity function.
+ */
+function Boolean(y:Expression<Boolean>) -> Expression<Boolean> {
+  return y;
 }

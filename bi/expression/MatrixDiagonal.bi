@@ -1,41 +1,29 @@
 /**
  * Lazy `diagonal`.
  */
-final class MatrixDiagonal(x:Expression<Real[_]>) <
-    MatrixUnaryExpression<Expression<Real[_]>,Real[_,_]>(x) {
+final class MatrixDiagonal(y:Expression<Real[_]>) <
+    MatrixUnaryExpression<Expression<Real[_]>,Real[_],Real[_],Real[_,_]>(y) {
   override function doRows() -> Integer {
-    return single!.rows();
+    return y!.rows();
   }
   
   override function doColumns() -> Integer {
-    return single!.rows();
+    return y!.rows();
   }
 
-  override function doValue() {
-    x <- diagonal(single!.value());
+  override function doEvaluate(y:Real[_]) -> Real[_,_] {
+    return diagonal(y);
   }
 
-  override function doPilot() {
-    x <- diagonal(single!.pilot());
-  }
-
-  override function doMove(κ:Kernel) {
-    x <- diagonal(single!.move(κ));
-  }
-
-  override function doGrad() {
-    single!.grad(diagonal(d!));
+  override function doEvaluateGrad(d:Real[_,_], x:Real[_,_],
+      y:Real[_]) -> Real[_] {
+    return diagonal(d);
   }
 }
 
 /**
  * Lazy `diagonal`.
  */
-function diagonal(x:Expression<Real[_]>) -> Expression<Real[_,_]> {
-  if x.isConstant() {
-    return box(matrix(diagonal(x.value())));
-  } else {
-    return construct<MatrixDiagonal>(x);
-  }
+function diagonal(x:Expression<Real[_]>) -> MatrixDiagonal {
+  return construct<MatrixDiagonal>(x);
 }
-

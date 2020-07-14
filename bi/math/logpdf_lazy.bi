@@ -226,7 +226,7 @@ function logpdf_lazy_gamma(x:Expression<Real>, k:Expression<Real>, θ:Expression
  */
 function logpdf_lazy_wishart(X:Expression<LLT>, Ψ:Expression<LLT>, ν:Expression<Real>) -> Expression<Real> {
   auto p <- rows(Ψ);
-  return 0.5*(ν - p - 1.0)*ldet(X) - 0.5*trace(solve(Ψ, X)) -
+  return 0.5*(ν - p - 1.0)*ldet(X) - 0.5*trace(solve(Ψ, matrix(X))) -
       0.5*ν*p*log(2.0) - 0.5*ν*ldet(Ψ) - lgamma(0.5*ν, p);
 }
 
@@ -255,7 +255,7 @@ function logpdf_lazy_inverse_gamma(x:Expression<Real>, α:Expression<Real>, β:E
 function logpdf_lazy_inverse_wishart(X:Expression<LLT>, Ψ:Expression<LLT>, ν:Expression<Real>) -> Expression<Real> {
   auto p <- rows(Ψ);
   return 0.5*ν*ldet(Ψ) - 0.5*(ν + p - 1.0)*ldet(X) -
-      0.5*trace(solve(X, transpose(Ψ))) - 0.5*ν*p*log(2.0) - lgamma(0.5*ν, p);
+      0.5*trace(solve(X, matrix(transpose(Ψ)))) - 0.5*ν*p*log(2.0) - lgamma(0.5*ν, p);
 }
 
 /**
@@ -657,7 +657,7 @@ function logpdf_lazy_matrix_gaussian(X:Expression<Real[_,_]>, M:Expression<Real[
  */
 function logpdf_lazy_matrix_normal_inverse_gamma(X:Expression<Real[_,_]>, N:Expression<Real[_,_]>, Λ:Expression<LLT>,
     α:Expression<Real>, β:Expression<Real[_]>) -> Expression<Real> {
-  return logpdf_lazy_matrix_student_t(X, 2.0*α, solve(Λ, N), inv(Λ), β/α);
+  return logpdf_lazy_matrix_student_t(X, 2.0*α, solve(Λ, N), llt(inv(Λ)), β/α);
 }
 
 /**

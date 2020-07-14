@@ -142,7 +142,7 @@ function inv(X:Real[_,_]) -> Real[_,_];
 /**
  * Inverse of a symmetric positive definite matrix.
  */
-function inv(S:LLT) -> LLT;
+function inv(S:LLT) -> Real[_,_];
 
 /**
  * Solve a system of equations.

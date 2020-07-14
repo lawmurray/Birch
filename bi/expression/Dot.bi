@@ -1,40 +1,36 @@
 /**
  * Lazy `dot`.
  */
-final class Dot<Left,Right,Value>(left:Left, right:Right) <
-    ScalarBinaryExpression<Left,Right,Value>(left, right) {
-  override function doValue() {
-    x <- dot(left!.value(), right!.value());
+final class Dot(y:Expression<Real[_]>, z:Expression<Real[_]>) <
+    ScalarBinaryExpression<Expression<Real[_]>,Expression<Real[_]>,Real[_],
+    Real[_],Real[_],Real[_],Real>(y, z) {
+  override function doEvaluate(y:Real[_], z:Real[_]) -> Real {
+    return dot(y, z);
   }
 
-  override function doPilot() {
-    x <- dot(left!.pilot(), right!.pilot());
+  override function doEvaluateGradLeft(d:Real, x:Real, y:Real[_],
+      z:Real[_]) -> Real[_] {
+    return d*z;
   }
 
-  override function doMove(κ:Kernel) {
-    x <- dot(left!.move(κ), right!.move(κ));
-  }
-
-  override function doGrad() {
-    left!.grad(d!*right!.get());
-    right!.grad(d!*left!.get());
+  override function doEvaluateGradRight(d:Real, x:Real, y:Real[_],
+      z:Real[_]) -> Real[_] {
+    return d*y;
   }
 
   override function graftDotGaussian() -> TransformDot<MultivariateGaussian>? {
     if !hasValue() {
-      y:TransformLinearMultivariate<MultivariateGaussian>?;
-      z:MultivariateGaussian?;
+      x1:TransformLinearMultivariate<MultivariateGaussian>?;
+      x2:MultivariateGaussian?;
       
-      if (y <- right!.graftLinearMultivariateGaussian())? {
-        return TransformDot<MultivariateGaussian>(y!.A*left!, y!.x,
-            dot(y!.c, left!));
-      } else if (y <- left!.graftLinearMultivariateGaussian())? {
-        return TransformDot<MultivariateGaussian>(y!.A*right!, y!.x,
-            dot(y!.c, right!));
-      } else if (z <- right!.graftMultivariateGaussian())? {
-        return TransformDot<MultivariateGaussian>(left!, z!, box(0.0));
-      } else if (z <- left!.graftMultivariateGaussian())? {
-        return TransformDot<MultivariateGaussian>(right!, z!, box(0.0));
+      if (x1 <- z!.graftLinearMultivariateGaussian())? {
+        return TransformDot<MultivariateGaussian>(x1!.A*y!, x1!.x, dot(x1!.c, y!));
+      } else if (x1 <- y!.graftLinearMultivariateGaussian())? {
+        return TransformDot<MultivariateGaussian>(x1!.A*z!, x1!.x, dot(x1!.c, z!));
+      } else if (x2 <- z!.graftMultivariateGaussian())? {
+        return TransformDot<MultivariateGaussian>(y!, x2!, box(0.0));
+      } else if (x2 <- y!.graftMultivariateGaussian())? {
+        return TransformDot<MultivariateGaussian>(z!, x2!, box(0.0));
       }
     }
     return nil;
@@ -43,19 +39,17 @@ final class Dot<Left,Right,Value>(left:Left, right:Right) <
   override function graftDotNormalInverseGamma(compare:Distribution<Real>) ->
       TransformDot<MultivariateNormalInverseGamma>? {
     if !hasValue() {
-      y:TransformLinearMultivariate<MultivariateNormalInverseGamma>?;
-      z:MultivariateNormalInverseGamma?;
+      x1:TransformLinearMultivariate<MultivariateNormalInverseGamma>?;
+      x2:MultivariateNormalInverseGamma?;
     
-      if (y <- right!.graftLinearMultivariateNormalInverseGamma(compare))? {
-        return TransformDot<MultivariateNormalInverseGamma>(
-            transpose(y!.A)*left!, y!.x, dot(left!, y!.c));
-      } else if (y <- left!.graftLinearMultivariateNormalInverseGamma(compare))? {
-        return TransformDot<MultivariateNormalInverseGamma>(y!.A*right!, y!.x,
-            dot(y!.c, right!));
-      } else if (z <- right!.graftMultivariateNormalInverseGamma(compare))? {
-        return TransformDot<MultivariateNormalInverseGamma>(left!, z!, box(0.0));
-      } else if (z <- left!.graftMultivariateNormalInverseGamma(compare))? {
-        return TransformDot<MultivariateNormalInverseGamma>(right!, z!, box(0.0));
+      if (x1 <- z!.graftLinearMultivariateNormalInverseGamma(compare))? {
+        return TransformDot<MultivariateNormalInverseGamma>(transpose(x1!.A)*y!, x1!.x, dot(y!, x1!.c));
+      } else if (x1 <- y!.graftLinearMultivariateNormalInverseGamma(compare))? {
+        return TransformDot<MultivariateNormalInverseGamma>(x1!.A*z!, x1!.x, dot(x1!.c, z!));
+      } else if (x2 <- z!.graftMultivariateNormalInverseGamma(compare))? {
+        return TransformDot<MultivariateNormalInverseGamma>(y!, x2!, box(0.0));
+      } else if (x2 <- y!.graftMultivariateNormalInverseGamma(compare))? {
+        return TransformDot<MultivariateNormalInverseGamma>(z!, x2!, box(0.0));
       }
     }
     return nil;
@@ -65,41 +59,28 @@ final class Dot<Left,Right,Value>(left:Left, right:Right) <
 /**
  * Lazy `dot`.
  */
-function dot(left:Expression<Real[_]>, right:Expression<Real[_]>) ->
-    Expression<Real> {
-  assert left!.rows() == right!.rows();
-  if left!.isConstant() && right!.isConstant() {
-    return box(dot(left!.value(), right!.value()));
-  } else {
-    return construct<Dot<Expression<Real[_]>,Expression<Real[_]>,Real>>(left, right);
-  }
+function dot(y:Expression<Real[_]>, z:Expression<Real[_]>) -> Dot {
+  assert y!.rows() == z!.rows();
+  return construct<Dot>(y, z);
 }
 
 /**
  * Lazy `dot`.
  */
-function dot(left:Real[_], right:Expression<Real[_]>) -> Expression<Real> {
-  if right!.isConstant() {
-    return box(dot(left, right!.value()));
-  } else {
-    return dot(box(left), right);
-  }
+function dot(y:Real[_], z:Expression<Real[_]>) -> Dot {
+  return dot(box(y), z);
 }
 
 /**
  * Lazy `dot`.
  */
-function dot(left:Expression<Real[_]>, right:Real[_]) -> Expression<Real> {
-  if left!.isConstant() {
-    return box(dot(left!.value(), right));
-  } else {
-    return dot(left, box(right));
-  }
+function dot(y:Expression<Real[_]>, z:Real[_]) -> Dot {
+  return dot(y, box(z));
 }
 
 /**
  * Lazy `dot`.
  */
-function dot(single:Expression<Real[_]>) -> Expression<Real> {
-  return dot(single, single);
+function dot(y:Expression<Real[_]>) -> Dot {
+  return dot(y, y);
 }

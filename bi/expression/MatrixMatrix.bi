@@ -1,57 +1,43 @@
 /**
  * Lazy `matrix`.
  */
-final class MatrixMatrix<Single,Value>(x:Single) <
-    MatrixUnaryExpression<Single,Value>(x) {
+final class MatrixMatrix<Argument,ArgumentValue>(y:Argument) <
+    MatrixUnaryExpression<Argument,ArgumentValue,Real[_,_],Real[_,_]>(y) {
   override function doRows() -> Integer {
-    return single!.rows();
+    return y!.rows();
   }
   
   override function doColumns() -> Integer {
-    return single!.columns();
+    return y!.columns();
   }
 
-  override function doValue() {
-    x <- matrix(single!.value());
+  override function doEvaluate(y:ArgumentValue) -> Real[_,_] {
+    return matrix(y);
   }
 
-  override function doPilot() {
-    x <- matrix(single!.pilot());
-  }
-
-  override function doMove(κ:Kernel) {
-    x <- matrix(single!.move(κ));
-  }
-
-  override function doGrad() {
-    single!.grad(d!);
+  override function doEvaluateGrad(d:Real[_,_], x:Real[_,_],
+      y:ArgumentValue) -> Real[_,_] {
+    return d;
   }
 }
 
 /**
  * Lazy `matrix`.
  */
-function matrix(x:Expression<LLT>) -> Expression<Real[_,_]> {
-  if x.isConstant() {
-    return box(matrix(x.value()));
-  } else {
-    return construct<MatrixMatrix<Expression<LLT>,Real[_,_]>>(x);
-  }
+function matrix(y:Expression<LLT>) -> Expression<Real[_,_]> {
+  return construct<MatrixMatrix<Expression<LLT>,LLT>>(y);
 }
 
 /**
  * Lazy `matrix`.
  */
-function matrix(x:Expression<Real[_,_]>) -> Expression<Real[_,_]> {
-  if x.isRandom() {
-    /* Random objects are wrapped as the accumulation of gradients by element
-     * requires this; see note in split() also */
-    if x.isConstant() {
-      return box(matrix(x.value()));
-    } else {
-      return construct<MatrixMatrix<Expression<Real[_,_]>,Real[_,_]>>(x);
-    }
-  } else {
-    return x;
+function matrix(y:Expression<Real[_,_]>) -> Expression<Real[_,_]> {
+  if !y.isRandom() {
+    /* just an identity function */
+    return y;
+  } else {  
+    /* Random objects should be wrapped to allow the accumulation of
+     * gradients by element if necessary; see note in split() also */
+    return construct<MatrixMatrix<Expression<Real[_,_]>,Real[_,_]>>(y);
   }
 }

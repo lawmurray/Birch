@@ -1,43 +1,29 @@
 /**
  * Lazy `ldet`.
  */
-final class LogDet<Single,Value>(x:Single) <
-    ScalarUnaryExpression<Single,Value>(x) {
-  override function doValue() {
-    x <- ldet(single!.value());
+final class LogDet<Argument,ArgumentValue>(y:Argument) <
+    ScalarUnaryExpression<Argument,ArgumentValue,Real[_,_],Real>(y) {
+  override function doEvaluate(y:ArgumentValue) -> Real {
+    return ldet(y);
   }
 
-  override function doPilot() {
-    x <- ldet(single!.pilot());
-  }
-
-  override function doMove(κ:Kernel) {
-    x <- ldet(single!.move(κ));
-  }
-
-  override function doGrad() {
-    single!.grad(matrix(inv(transpose(single!.get()))));
+  override function doEvaluateGrad(d:Real, x:Real, y:ArgumentValue) ->
+      Real[_,_] {
+    return d*matrix(inv(transpose(y)));
   }
 }
 
 /**
  * Lazy `ldet`.
  */
-function ldet(x:Expression<LLT>) -> Expression<Real> {
-  if x.isConstant() {
-    return box(ldet(x.value()));
-  } else {
-    return construct<LogDet<Expression<LLT>,Real>>(x);
-  }
+function ldet(y:Expression<LLT>) -> LogDet<Expression<LLT>,LLT> {
+  return construct<LogDet<Expression<LLT>,LLT>>(y);
 }
 
 /**
  * Lazy `ldet`.
  */
-function ldet(x:Expression<Real[_,_]>) -> Expression<Real> {
-  if x.isConstant() {
-    return box(ldet(x.value()));
-  } else {
-    return construct<LogDet<Expression<Real[_,_]>,Real>>(x);
-  }
+function ldet(y:Expression<Real[_,_]>) ->
+    LogDet<Expression<Real[_,_]>,Real[_,_]> {
+  return construct<LogDet<Expression<Real[_,_]>,Real[_,_]>>(y);
 }

@@ -1,118 +1,100 @@
 /**
  * Lazy divide.
  */
-final class Divide<Left,Right,Value>(left:Left, right:Right) <
-    ScalarBinaryExpression<Left,Right,Value>(left, right) {  
-  override function doValue() {
-    x <- left!.value()/right!.value();
+final class Divide(y:Expression<Real>, z:Expression<Real>) <
+    ScalarBinaryExpression<Expression<Real>,Expression<Real>,Real,Real,Real,
+    Real,Real>(y, z) {  
+  override function doEvaluate(y:Real, z:Real) -> Real {
+    return y/z;
   }
 
-  override function doPilot() {
-    x <- left!.pilot()/right!.pilot();
+  override function doEvaluateGradLeft(d:Real, x:Real, y:Real, z:Real) -> Real {
+    return d/z;
   }
 
-  override function doMove(κ:Kernel) {
-    x <- left!.move(κ)/right!.move(κ);
-  }
-
-  override function doGrad() {
-    auto l <- left!.get();
-    auto r <- right!.get();
-    left!.grad(d!/r);
-    right!.grad(-d!*l/(r*r));
+  override function doEvaluateGradRight(d:Real, x:Real, y:Real, z:Real) -> Real {
+    return -d*y/(z*z);
   }
 
   override function graftLinearGaussian() -> TransformLinear<Gaussian>? {
-    y:TransformLinear<Gaussian>?;
+    r:TransformLinear<Gaussian>?;
     if !hasValue() {
-      z:Gaussian?;
-      if (y <- left!.graftLinearGaussian())? {
-        y!.divide(right!);
-      } else if (z <- left!.graftGaussian())? {
-        y <- TransformLinear<Gaussian>(1.0/right!, z!);
+      x1:Gaussian?;
+      if (r <- y!.graftLinearGaussian())? {
+        r!.divide(z!);
+      } else if (x1 <- y!.graftGaussian())? {
+        r <- TransformLinear<Gaussian>(1.0/z!, x1!);
       }
     }
-    return y;
+    return r;
   }
 
   override function graftDotGaussian() -> TransformDot<MultivariateGaussian>? {
-    y:TransformDot<MultivariateGaussian>?;
+    r:TransformDot<MultivariateGaussian>?;
     if !hasValue() {
-      if (y <- left!.graftDotGaussian())? {
-        y!.divide(right!);
+      if (r <- y!.graftDotGaussian())? {
+        r!.divide(z!);
       }
     }
-    return y;
+    return r;
   }
   
   override function graftLinearNormalInverseGamma(compare:Distribution<Real>) ->
       TransformLinear<NormalInverseGamma>? {
-    y:TransformLinear<NormalInverseGamma>?;
+    r:TransformLinear<NormalInverseGamma>?;
     if !hasValue() {
-      z:NormalInverseGamma?;
-      if (y <- left!.graftLinearNormalInverseGamma(compare))? {
-        y!.divide(right!);
-      } else if (z <- left!.graftNormalInverseGamma(compare))? {
-        y <- TransformLinear<NormalInverseGamma>(1.0/right!, z!);
+      x1:NormalInverseGamma?;
+      if (r <- y!.graftLinearNormalInverseGamma(compare))? {
+        r!.divide(z!);
+      } else if (x1 <- y!.graftNormalInverseGamma(compare))? {
+        r <- TransformLinear<NormalInverseGamma>(1.0/z!, x1!);
       }
     }
-    return y;
+    return r;
   }
 
   override function graftDotNormalInverseGamma(compare:Distribution<Real>) ->
       TransformDot<MultivariateNormalInverseGamma>? {
-    y:TransformDot<MultivariateNormalInverseGamma>?;
+    r:TransformDot<MultivariateNormalInverseGamma>?;
     if !hasValue() {
-      if (y <- left!.graftDotNormalInverseGamma(compare))? {
-        y!.divide(right!);
+      if (r <- y!.graftDotNormalInverseGamma(compare))? {
+        r!.divide(z!);
       }
     }
-    return y;
+    return r;
   }
 
   override function graftScaledGamma() -> TransformLinear<Gamma>? {
-    y:TransformLinear<Gamma>?;
+    r:TransformLinear<Gamma>?;
     if !hasValue() {
-      z:Gamma?;
-      if (y <- left!.graftScaledGamma())? {
-        y!.divide(right!);
-      } else if (z <- left!.graftGamma())? {
-        y <- TransformLinear<Gamma>(1.0/right!, z!);
+      x1:Gamma?;
+      if (r <- y!.graftScaledGamma())? {
+        r!.divide(z!);
+      } else if (x1 <- y!.graftGamma())? {
+        r <- TransformLinear<Gamma>(1.0/z!, x1!);
       }
     }
-    return y;
+    return r;
   }
 }
 
 /**
  * Lazy divide.
  */
-operator (left:Expression<Real>/right:Expression<Real>) -> Expression<Real> {
-  if left.isConstant() && right.isConstant() {
-    return box(left.value()/right.value());
-  } else {
-    return construct<Divide<Expression<Real>,Expression<Real>,Real>>(left, right);
-  }
+operator (y:Expression<Real>/z:Expression<Real>) -> Divide {
+  return construct<Divide>(y, z);
 }
 
 /**
  * Lazy divide.
  */
-operator (left:Real/right:Expression<Real>) -> Expression<Real> {
-  if right.isConstant() {
-    return box(left/right.value());
-  } else {
-    return box(left)/right;
-  }
+operator (y:Real/z:Expression<Real>) -> Divide {
+  return box(y)/z;
 }
 
 /**
  * Lazy divide.
  */
-operator (left:Expression<Real>/right:Real) -> Expression<Real> {
-  if left.isConstant() {
-    return box(left.value()/right);
-  } else {
-    return left/box(right);
-  }
+operator (y:Expression<Real>/z:Real) -> Divide {
+  return y/box(z);
 }

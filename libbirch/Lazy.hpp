@@ -153,6 +153,7 @@ public:
   void bitwiseFix(Label* newLabel) {
     object.bitwiseFix();
     new (&label) label_type(newLabel);  // overwrite with new label
+    pullNoLock();
   }
 
   /**
@@ -264,6 +265,19 @@ public:
    */
   value_type* pull() const {
     return const_cast<Lazy*>(this)->pull();
+  }
+
+  /**
+   * Get the raw pointer for read-only use, without cloning.
+   */
+  value_type* pullNoLock() {
+    auto label = this->label.get();  // ensures only single read of atomic
+    if (label) {
+      return label->pullNoLock(object);
+    } else {
+      assert(!object.query());
+      return nullptr;
+    }
   }
 
   /**

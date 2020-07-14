@@ -1,32 +1,20 @@
 /**
  * Lazy `sin`.
  */
-final class Sin(x:Expression<Real>) <
-    ScalarUnaryExpression<Expression<Real>,Real>(x) {
-  override function doValue() {
-    x <- sin(single!.value());
+final class Sin(y:Expression<Real>) <
+    ScalarUnaryExpression<Expression<Real>,Real,Real,Real>(y) {
+  override function doEvaluate(y:Real) -> Real {
+    return sin(y);
   }
 
-  override function doPilot() {
-    x <- sin(single!.pilot());
-  }
-
-  override function doMove(κ:Kernel) {
-    x <- sin(single!.move(κ));
-  }
-
-  override function doGrad() {
-    single!.grad(d!*cos(single!.get()));
+  override function doEvaluateGrad(d:Real, x:Real, y:Real) -> Real {
+    return d*cos(y);
   }
 }
 
 /**
  * Lazy `sin`.
  */
-function sin(x:Expression<Real>) -> Expression<Real> {
-  if x.isConstant() {
-    return box(sin(x.value()));
-  } else {
-    return construct<Sin>(x);
-  }
+function sin(y:Expression<Real>) -> Sin {
+  return construct<Sin>(y);
 }

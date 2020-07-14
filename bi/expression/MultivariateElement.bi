@@ -1,53 +1,57 @@
 /**
  * Lazy access of a vector element.
  */
-final class MultivariateElement<Single,Value>(y:Single, i:Integer) <
+final class MultivariateElement<Value>(y:Expression<Value[_]>, i:Integer) <
     ScalarExpression<Value> {
   /**
-   * Vector.
+   * Argument.
    */
-  y:Single? <- y;
+  y:Expression<Value[_]>? <- y;
     
   /**
    * Element.
    */
   i:Integer <- i;
 
-  override function depth() -> Integer {
-    auto argDepth <- 0;
-    if y? {
-      argDepth <- y!.depth();
-    }
-    return argDepth + 1;
+  override function doDepth() -> Integer {
+    return y!.depth() + 1;
   }
 
-  override function doDetach() {
-    y <- nil;
-  }
-  
-  override function doValue() {
-    x <- y!.value()[i];
+  override function doValue() -> Value {
+    return y!.value()[i];
   }
 
-  override function doPilot() {
-    x <- y!.pilot()[i];
+  override function doPilot() -> Value {
+    return y!.pilot()[i];
   }
 
-  override function doMove(κ:Kernel) {
-    x <- y!.move(κ)[i];
+  override function doGet() -> Value {
+    return y!.get()[i];
+  }
+
+  override function doMove(κ:Kernel) -> Value {
+    return y!.move(κ)[i];
   }
 
   override function doGrad() {
     y!.grad(d!, i);
   }
 
-  final override function doMakeConstant() {
-    y!.makeConstant();
-  }
-  
-  final override function doPrior(vars:RaggedArray<DelayExpression>) ->
+  override function doPrior(vars:RaggedArray<DelayExpression>) ->
       Expression<Real>? {
     return y!.prior(vars);
+  }
+
+  override function doConstant() {
+    y!.constant();
+  }
+
+  override function doCount() {
+    y!.count();
+  }
+
+  override function doDetach() {
+    y <- nil;
   }
 }
 
@@ -55,22 +59,22 @@ final class MultivariateElement<Single,Value>(y:Single, i:Integer) <
  * Lazy access of a vector element.
  */
 function MultivariateElement(y:Expression<Real[_]>, i:Integer) ->
-    Expression<Real> {
-  if y.isConstant() {
-    return box(y.value()[i]);
-  } else {
-    return construct<MultivariateElement<Expression<Real[_]>,Real>>(y, i);
-  }
+    MultivariateElement<Real> {
+  return construct<MultivariateElement<Real>>(y, i);
 }
 
 /**
  * Lazy access of a vector element.
  */
 function MultivariateElement(y:Expression<Integer[_]>, i:Integer) ->
-    Expression<Integer> {
-  if y.isConstant() {
-    return box(y.value()[i]);
-  } else {
-    return construct<MultivariateElement<Expression<Integer[_]>,Integer>>(y, i);
-  }
+    MultivariateElement<Integer> {
+  return construct<MultivariateElement<Integer>>(y, i);
+}
+
+/**
+ * Lazy access of a vector element.
+ */
+function MultivariateElement(y:Expression<Boolean[_]>, i:Integer) ->
+    MultivariateElement<Boolean> {
+  return construct<MultivariateElement<Boolean>>(y, i);
 }

@@ -1,48 +1,36 @@
 /**
  * Lazy `rectify`.
  */
-final class MatrixRectify(x:Expression<Real[_,_]>) <
-    MatrixUnaryExpression<Expression<Real[_,_]>,Real[_,_]>(x) {
+final class MatrixRectify(y:Expression<Real[_,_]>) <
+    MatrixUnaryExpression<Expression<Real[_,_]>,Real[_,_],Real[_,_],
+    Real[_,_]>(y) {
   override function doRows() -> Integer {
-    return single!.rows();
+    return y!.rows();
   }
 
   override function doColumns() -> Integer {
-    return single!.columns();
+    return y!.columns();
   }
 
-  override function doValue() {
-    x <- transform(single!.value(), \(y:Real) -> Real { return rectify(y); });
+  override function doEvaluate(y:Real[_,_]) -> Real[_,_] {
+    return transform(y, \(y:Real) -> Real { return rectify(y); });
   }
 
-  override function doPilot() {
-    x <- transform(single!.pilot(), \(y:Real) -> Real { return rectify(y); });
-  }
-
-  override function doMove(κ:Kernel) {
-    x <- transform(single!.move(κ), \(y:Real) -> Real { return rectify(y); });
-  }
-
-  override function doGrad() {
-    single!.grad(transform(x!, d!, \(x:Real, d:Real) -> Real {
-          if x > 0.0 {
-            return d;
-          } else {
-            return 0.0;
-          }
-        }));
+  override function doEvaluateGrad(d:Real[_,_], x:Real[_,_], y:Real[_,_]) ->
+      Real[_,_] {
+    return transform(d, x, \(d:Real, x:Real) -> Real {
+        if x > 0.0 {
+          return d;
+        } else {
+          return 0.0;
+        }
+      });
   }
 }
 
 /**
  * Lazy `rectify`.
  */
-function rectify(x:Expression<Real[_,_]>) -> Expression<Real[_,_]> {
-  if x.isConstant() {
-    return box(transform(x.value(), \(y:Real) -> Real {
-          return rectify(y);
-        }));
-  } else {
-    return construct<MatrixRectify>(x);
-  }
+function rectify(y:Expression<Real[_,_]>) -> MatrixRectify {
+  return construct<MatrixRectify>(y);
 }

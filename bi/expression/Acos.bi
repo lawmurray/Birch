@@ -1,33 +1,20 @@
 /**
  * Lazy `acos`.
  */
-final class Acos(x:Expression<Real>) <
-    ScalarUnaryExpression<Expression<Real>,Real>(x) {
-  override function doValue() {
-    x <- acos(single!.value());
+final class Acos(y:Expression<Real>) <
+    ScalarUnaryExpression<Expression<Real>,Real,Real,Real>(y) {
+  override function doEvaluate(y:Real) -> Real {
+    return acos(y);
   }
 
-  override function doPilot() {
-    x <- acos(single!.pilot());
-  }
-
-  override function doMove(κ:Kernel) {
-    x <- acos(single!.move(κ));
-  }
-
-  override function doGrad() {
-    auto x <- single!.get();
-    single!.grad(-d!/sqrt(1.0 - x*x));
+  override function doEvaluateGrad(d:Real, x:Real, y:Real) -> Real {
+    return -d/sqrt(1.0 - y*y);
   }
 }
 
 /**
  * Lazy `acos`.
  */
-function acos(x:Expression<Real>) -> Expression<Real> {
-  if x.isConstant() {
-    return box(acos(x.value()));
-  } else {
-    return construct<Acos>(x);
-  }
+function acos(y:Expression<Real>) -> Acos {
+  return construct<Acos>(y);
 }

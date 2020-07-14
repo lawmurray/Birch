@@ -42,35 +42,13 @@ final class Random<Value> < Expression<Value>(nil) {
       this.flagConstant <- true;
     }
   }
-  
-  override function rows() -> Integer {
-    if x? {
-      return global.rows(x!);
-    } else {
-      assert p?;
-      return p!.rows();
-    }
-  }
 
-  override function columns() -> Integer {
-    if x? {
-      return global.columns(x!);
-    } else {
-      assert p?;
-      return p!.columns();
-    }
-  }
-  
-  override function depth() -> Integer {
-    return 1;
+  override function distribution() -> Distribution<Value>? {
+    return p;
   }
 
   override function isRandom() -> Boolean {
     return true;
-  }
-
-  override function distribution() -> Distribution<Value>? {
-    return p;
   }
 
   /**
@@ -94,55 +72,47 @@ final class Random<Value> < Expression<Value>(nil) {
     this.p <- p;
   }
 
-  override function doValue() {
+  override function doDepth() -> Integer {
+    return 1;
+  }
+  
+  override function doRows() -> Integer {
+    return p!.rows();
+  }
+
+  override function doColumns() -> Integer {
+    return p!.columns();
+  }
+
+  override function doValue() -> Value {
     assert p?;
     p!.prune();
-    x <- p!.simulate();
-    p!.update(x!);
+    auto x <- p!.simulate();
+    p!.update(x);
     p!.unlink();
+    return x;
   }
 
-  override function doMakeConstant() {
-    //
-  }
-
-  override function doDetach() {
-    p <- nil;
-  }
-
-  override function doPilot() {
+  override function doPilot() -> Value {
     assert p?;
     if p!.supportsLazy() {
       p!.prune();
-      x <- p!.simulateLazy();
+      auto x <- p!.simulateLazy();
+      assert x?;
       p!.updateLazy(this);
       p!.unlink();
+      return x!;
     } else {
-      doValue();
-    }
-  }
-  
-  function doAccumulateGrad(d:Value) {
-    // ^ override is committed from the declaration as Value is not
-    //   necessarily one of the supported gradient types in Expression (and
-    //   need not be for this to work correctly)
-    if this.d? {
-      this.d <- this.d! + d;
-    } else {
-      this.d <- d;
+      return doValue();
     }
   }
 
-  override function doClearGrad() {
-    d <- nil;
+  override function doGet() -> Value {
+    return doPilot();
   }
 
-  override function doGrad() {
-    //  
-  }
-
-  override function doMove(κ:Kernel) {
-    x <- κ.move(this);
+  override function doMove(κ:Kernel) -> Value {
+    return κ.move(this);
   }
 
   override function doPrior(vars:RaggedArray<DelayExpression>) ->
@@ -161,6 +131,37 @@ final class Random<Value> < Expression<Value>(nil) {
       }
     }
     return nil;
+  }
+
+  function doAccumulateGrad(d:Value) {
+    // ^ override is committed from the declaration as Value is not
+    //   necessarily one of the supported gradient types in Expression (and
+    //   need not be for this to work correctly)
+    if this.d? {
+      this.d <- this.d! + d;
+    } else {
+      this.d <- d;
+    }
+  }
+
+  override function doGrad() {
+    //  
+  }
+
+  override function doClearGrad() {
+    d <- nil;
+  }
+
+  override function doCount() {
+    //
+  }
+  
+  override function doConstant() {
+    //
+  }
+
+  override function doDetach() {
+    p <- nil;
   }
   
   override function logpdf(x':DelayExpression, κ:Kernel) -> Real {

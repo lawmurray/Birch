@@ -1,49 +1,34 @@
 /**
  * Lazy cast.
  */
-final class Cast<From,To>(x:From) < ScalarUnaryExpression<From,To>(x) {
-  override function doValue() {
-    x <- To?(single!.value())!;
+final class Cast<From,To>(y:Expression<From>) <
+    ScalarUnaryExpression<Expression<From>,From,Real,To>(y) {
+  override function doEvaluate(y:From) -> To {
+    return To?(y)!;
   }
 
-  override function doPilot() {
-    x <- To?(single!.pilot())!;
-  }
-
-  override function doMove(κ:Kernel) {
-    x <- To?(single!.move(κ))!;
-  }
-
-  override function doGrad() {
-    single!.grad(d!);
-  }
-}
-
-/**
- * Lazy cast.
- */
-function Real(x:Expression<Integer>) -> Expression<Real> {
-  if x.isConstant() {
-    return box(Real(x.value()));
-  } else {
-    return construct<Cast<Expression<Integer>,Real>>(x);
-  }
-}
-
-/**
- * Lazy cast.
- */
-function Real(x:Expression<Boolean>) -> Expression<Real> {
-  if x.isConstant() {
-    return box(Real(x.value()));
-  } else {
-    return construct<Cast<Expression<Boolean>,Real>>(x);
+  override function doEvaluateGrad(d:Real, x:To, y:From) -> Real {
+    return d;
   }
 }
 
 /**
  * Lazy cast, identity function.
  */
-function Real(x:Expression<Real>) -> Expression<Real> {
-  return x;
+function Real(y:Expression<Real>) -> Expression<Real> {
+  return y;
+}
+
+/**
+ * Lazy cast.
+ */
+function Real(y:Expression<Integer>) -> Cast<Integer,Real> {
+  return construct<Cast<Integer,Real>>(y);
+}
+
+/**
+ * Lazy cast.
+ */
+function Real(y:Expression<Boolean>) -> Cast<Boolean,Real> {
+  return construct<Cast<Boolean,Real>>(y);
 }

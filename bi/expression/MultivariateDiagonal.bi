@@ -1,36 +1,26 @@
 /**
  * Lazy `diagonal`.
  */
-final class MultivariateDiagonal(x:Expression<Real[_,_]>) <
-    MultivariateUnaryExpression<Expression<Real[_,_]>,Real[_]>(x) {
+final class MultivariateDiagonal(y:Expression<Real[_,_]>) <
+    MultivariateUnaryExpression<Expression<Real[_,_]>,Real[_,_],Real[_,_],
+    Real[_]>(y) {
   override function doRows() -> Integer {
-    return min(single!.rows(), single!.columns());
+    return min(y!.rows(), y!.columns());
   }
 
-  override function doValue() {
-    x <- diagonal(single!.value());
+  override function doEvaluate(y:Real[_,_]) -> Real[_] {
+    return diagonal(y);
   }
 
-  override function doPilot() {
-    x <- diagonal(single!.pilot());
-  }
-
-  override function doMove(κ:Kernel) {
-    x <- diagonal(single!.move(κ));
-  }
-
-  override function doGrad() {
-    single!.grad(diagonal(d!));
+  override function doEvaluateGrad(d:Real[_], x:Real[_], y:Real[_,_]) ->
+      Real[_,_] {
+    return diagonal(d);
   }
 }
 
 /**
  * Lazy `diagonal`.
  */
-function diagonal(x:Expression<Real[_,_]>) -> Expression<Real[_]> {
-  if x.isConstant() {
-    return box(vector(diagonal(x.value())));
-  } else {
-    return construct<MultivariateDiagonal>(x);
-  }
+function diagonal(y:Expression<Real[_,_]>) -> MultivariateDiagonal {
+  return construct<MultivariateDiagonal>(y);
 }

@@ -1,41 +1,29 @@
 /**
  * Lazy `llt`.
  */
-final class MatrixLLT(x:Expression<Real[_,_]>) <
-    MatrixUnaryExpression<Expression<Real[_,_]>,LLT>(x) {
+final class MatrixLLT(y:Expression<Real[_,_]>) <
+    MatrixUnaryExpression<Expression<Real[_,_]>,Real[_,_],Real[_,_],LLT>(y) {
   override function doRows() -> Integer {
-    return single!.rows();
+    return y!.rows();
   }
   
   override function doColumns() -> Integer {
-    return single!.columns();
+    return y!.columns();
   }
 
-  override function doValue() {
-    x <- llt(single!.value());
+  override function doEvaluate(y:Real[_,_]) -> LLT {
+    return llt(y);
   }
 
-  override function doPilot() {
-    x <- llt(single!.pilot());
-  }
-
-  override function doMove(κ:Kernel) {
-    x <- llt(single!.move(κ));
-  }
-
-  override function doGrad() {
-    /* just a factorization, so only need to pass through */
-    single!.grad(d!);
+  override function doEvaluateGrad(d:Real[_,_], x:LLT, y:Real[_,_]) ->
+      Real[_,_] {
+    return d;  // just a factorization, so pass along
   }
 }
 
 /**
  * Lazy `inv`.
  */
-function llt(x:Expression<Real[_,_]>) -> Expression<LLT> {
-  if x.isConstant() {
-    return box(llt(x.value()));
-  } else {
-    return construct<MatrixLLT>(x);
-  }
+function llt(y:Expression<Real[_,_]>) -> MatrixLLT {
+  return construct<MatrixLLT>(y);
 }

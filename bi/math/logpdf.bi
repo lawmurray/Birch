@@ -875,7 +875,7 @@ function logpdf_matrix_gaussian(X:Real[_,_], M:Real[_,_], σ2:Real) ->
  */
 function logpdf_matrix_normal_inverse_gamma(X:Real[_,_], N:Real[_,_], Λ:LLT,
     α:Real, β:Real[_]) -> Real {
-  return logpdf_matrix_student_t(X, 2.0*α, solve(Λ, N), inv(Λ), β/α);
+  return logpdf_matrix_student_t(X, 2.0*α, solve(Λ, N), llt(inv(Λ)), β/α);
 }
 
 /**

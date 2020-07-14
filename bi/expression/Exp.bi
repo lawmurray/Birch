@@ -1,32 +1,20 @@
 /**
  * Lazy `exp`.
  */
-final class Exp(x:Expression<Real>) <
-    ScalarUnaryExpression<Expression<Real>,Real>(x) {
-  override function doValue() {
-    x <- exp(single!.value());
+final class Exp(y:Expression<Real>) <
+    ScalarUnaryExpression<Expression<Real>,Real,Real,Real>(y) {
+  override function doEvaluate(y:Real) -> Real {
+    return exp(y);
   }
 
-  override function doPilot() {
-    x <- exp(single!.pilot());
-  }
-
-  override function doMove(κ:Kernel) {
-    x <- exp(single!.move(κ));
-  }
-
-  override function doGrad() {
-    single!.grad(d!*x!);
+  override function doEvaluateGrad(d:Real, x:Real, y:Real) -> Real {
+    return d*x;
   }
 }
 
 /**
  * Lazy `exp`.
  */
-function exp(x:Expression<Real>) -> Expression<Real> {
-  if x.isConstant() {
-    return box(exp(x.value()));
-  } else {
-    return construct<Exp>(x);
-  }
+function exp(y:Expression<Real>) -> Exp {
+  return construct<Exp>(y);
 }

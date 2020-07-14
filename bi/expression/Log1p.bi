@@ -1,32 +1,20 @@
 /**
  * Lazy `log1p`.
  */
-final class Log1p(x:Expression<Real>) <
-    ScalarUnaryExpression<Expression<Real>,Real>(x) {
-  override function doValue() {
-    x <- log1p(single!.value());
+final class Log1p(y:Expression<Real>) <
+    ScalarUnaryExpression<Expression<Real>,Real,Real,Real>(y) {
+  override function doEvaluate(y:Real) -> Real {
+    return log1p(y);
   }
 
-  override function doPilot() {
-    x <- log1p(single!.pilot());
-  }
-
-  override function doMove(κ:Kernel) {
-    x <- log1p(single!.move(κ));
-  }
-
-  override function doGrad() {
-    single!.grad(d!/(1.0 + single!.get()));
+  override function doEvaluateGrad(d:Real, x:Real, y:Real) -> Real {
+    return d/(1.0 + y);
   }
 }
 
 /**
  * Lazy `log1p`.
  */
-function log1p(x:Expression<Real>) -> Expression<Real> {
-  if x.isConstant() {
-    return box(log1p(x.value()));
-  } else {
-    return construct<Log1p>(x);
-  }
+function log1p(y:Expression<Real>) -> Log1p {
+  return construct<Log1p>(y);
 }

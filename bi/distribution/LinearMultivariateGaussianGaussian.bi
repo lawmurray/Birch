@@ -3,7 +3,7 @@
  */
 final class LinearMultivariateGaussianGaussian(a:Expression<Real[_]>,
     m:MultivariateGaussian, c:Expression<Real>, s2:Expression<Real>) <
-    Gaussian(dot(a, m.μ) + c, dot(a, m.Σ*a) + s2) {
+    Gaussian(dot(a, m.μ) + c, dot(a, matrix(m.Σ)*a) + s2) {
   /**
    * Scale.
    */

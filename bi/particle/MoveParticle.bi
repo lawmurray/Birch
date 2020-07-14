@@ -30,11 +30,6 @@ class MoveParticle(m:Model) < Particle(m) {
    * Log-posterior density.
    */
   π:Real <- 0.0;
-  
-  /**
-   * Step up to which gradients have been evaluated.
-   */
-  n:Integer <- 0;
 
   /**
    * Number of steps.
@@ -81,7 +76,7 @@ class MoveParticle(m:Model) < Particle(m) {
   function truncate() {
     /* calling value() on these expressions has the side effect of making
      * them constant, so that Random objects appearing in them will be
-     * ineligible for moves in future */
+     * ineligible for moves in future; that's what we want */
     if !zs.empty() {
       π <- π - zs.front().value();
       zs.popFront();
@@ -93,43 +88,36 @@ class MoveParticle(m:Model) < Particle(m) {
     if !vs.empty() {
       vs.popFront();
     }
-    if n > 0 {
-      n <- n - 1;
-    }
+
+    assert ps.size() == zs.size();
+    assert vs.size() == zs.size();
   }
   
   /**
-   * Catch up gradient computations after one or more calls to `augment()`.
+   * Compute gradient.
    */
   function grad() {
     assert ps.size() == zs.size();
-    assert vs.size() == zs.size();
-    while n < zs.size() {
-    assert n >= 0;
-      n <- n + 1;
-      zs.get(n).grad(1.0);
-      ps.get(n).grad(1.0);
+    auto L <- zs.size();    
+    for l in 1..L {
+      zs.get(l).grad(1.0);
+      ps.get(l).grad(1.0);
     }
-    assert n == zs.size();
-    assert n == ps.size();
-    assert n == vs.size();
   }
 
   /**
-   * Move the particle after one or more calls to `grad()`.
+   * Move.
    *
    * - κ: Markov kernel.
    */
   function move(κ:Kernel) {
-    assert n == zs.size();
-    assert n == ps.size();
-    assert n == vs.size();
+    assert ps.size() == zs.size();
+    auto L <- zs.size();    
     π <- 0.0;
-    for i in 1..n {
-      π <- π + zs.get(i).move(κ);
-      π <- π + ps.get(i).move(κ);
+    for l in 1..L {
+      π <- π + zs.get(l).move(κ);
+      π <- π + ps.get(l).move(κ);
     }
-    n <- 0;
   }
 
   /**

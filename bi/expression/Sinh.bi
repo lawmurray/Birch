@@ -1,32 +1,20 @@
 /**
  * Lazy `sinh`.
  */
-final class Sinh(x:Expression<Real>) <
-    ScalarUnaryExpression<Expression<Real>,Real>(x) {
-  override function doValue() {
-    x <- sinh(single!.value());
+final class Sinh(y:Expression<Real>) <
+    ScalarUnaryExpression<Expression<Real>,Real,Real,Real>(y) {
+  override function doEvaluate(y:Real) -> Real {
+    return sinh(y);
   }
 
-  override function doPilot() {
-    x <- sinh(single!.pilot());
-  }
-
-  override function doMove(κ:Kernel) {
-    x <- sinh(single!.move(κ));
-  }
-
-  override function doGrad() {
-    single!.grad(d!*cosh(single!.get()));
+  override function doEvaluateGrad(d:Real, x:Real, y:Real) -> Real {
+    return d*cosh(y);
   }
 }
 
 /**
  * Lazy `sinh`.
  */
-function sinh(x:Expression<Real>) -> Expression<Real> {
-  if x.isConstant() {
-    return box(sinh(x.value()));
-  } else {
-    return construct<Sinh>(x);
-  }
+function sinh(y:Expression<Real>) -> Sinh {
+  return construct<Sinh>(y);
 }

@@ -1,32 +1,20 @@
 /**
  * Lazy `cosh`.
  */
-final class Cosh(x:Expression<Real>) <
-    ScalarUnaryExpression<Expression<Real>,Real>(x) {
-  override function doValue() {
-    x <- cosh(single!.value());
+final class Cosh(y:Expression<Real>) <
+    ScalarUnaryExpression<Expression<Real>,Real,Real,Real>(y) {
+  override function doEvaluate(y:Real) -> Real {
+    return cosh(y);
   }
 
-  override function doPilot() {
-    x <- cosh(single!.pilot());
-  }
-
-  override function doMove(κ:Kernel) {
-    x <- cosh(single!.move(κ));
-  }
-
-  override function doGrad() {
-    single!.grad(-d!*sinh(single!.get()));
+  override function doEvaluateGrad(d:Real, x:Real, y:Real) -> Real {
+    return -d*sinh(y);
   }
 }
 
 /**
  * Lazy `cosh`.
  */
-function cosh(x:Expression<Real>) -> Expression<Real> {
-  if x.isConstant() {
-    return box(cosh(x.value()));
-  } else {
-    return construct<Cosh>(x);
-  }
+function cosh(x:Expression<Real>) -> Cosh {
+  return construct<Cosh>(x);
 }

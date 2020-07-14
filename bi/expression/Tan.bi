@@ -1,32 +1,20 @@
 /**
  * Lazy `tan`.
  */
-final class Tan(x:Expression<Real>) <
-    ScalarUnaryExpression<Expression<Real>,Real>(x) {
-  override function doValue() {
-    x <- tan(single!.value());
+final class Tan(y:Expression<Real>) <
+    ScalarUnaryExpression<Expression<Real>,Real,Real,Real>(y) {
+  override function doEvaluate(y:Real) -> Real {
+    return tan(y);
   }
 
-  override function doPilot() {
-    x <- tan(single!.pilot());
-  }
-
-  override function doMove(κ:Kernel) {
-    x <- tan(single!.move(κ));
-  }
-
-  override function doGrad() {
-    single!.grad(d!*(1.0 + pow(tan(single!.get()), 2.0)));
+  override function doEvaluateGrad(d:Real, x:Real, y:Real) -> Real {
+    return d*(1.0 + pow(tan(y), 2.0));
   }
 }
 
 /**
  * Lazy `tan`.
  */
-function tan(x:Expression<Real>) -> Expression<Real> {
-  if x.isConstant() {
-    return box(tan(x.value()));
-  } else {
-    return construct<Tan>(x);
-  }
+function tan(y:Expression<Real>) -> Tan {
+  return construct<Tan>(y);
 }

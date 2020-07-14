@@ -1,59 +1,45 @@
 /**
  * Lazy `copysign`.
  */
-final class CopySign<Left,Right,Value>(left:Left, right:Right) <
-    ScalarBinaryExpression<Left,Right,Value>(left, right) {  
-  override function doValue() {
-    x <- copysign(left!.value(), right!.value());
-  }
-
-  override function doPilot() {
-    x <- copysign(left!.pilot(), right!.pilot());
-  }
-
-  override function doMove(κ:Kernel) {
-    x <- copysign(left!.move(κ), right!.move(κ));
+final class CopySign(y:Expression<Real>, z:Expression<Real>) <
+    ScalarBinaryExpression<Expression<Real>,Expression<Real>,Real,Real,Real,
+    Real,Real>(y, z) {  
+  override function doEvaluate(y:Real, z:Real) -> Real {
+    return copysign(y, z);
   }
   
-  override function doGrad() {
-    if x! == left!.get() {
-      left!.grad(d!);
+  override function doEvaluateGradLeft(d:Real, x:Real, y:Real, z:Real) ->
+      Real {
+    if x == y {
+      return d;
     } else {
-      left!.grad(-d!);
+      return -d;
     }
   }
-}
 
-/**
- * Lazy `copysign`.
- */
-function copysign(x:Expression<Real>, y:Expression<Real>) ->
-    Expression<Real> {
-  if x.isConstant() && y.isConstant() {
-    return box(copysign(x.value(), y.value()));
-  } else {
-    return construct<CopySign<Expression<Real>,Expression<Real>,Real>>(x, y);
+  override function doEvaluateGradRight(d:Real, x:Real, y:Real, z:Real) ->
+      Real {
+    return 0.0;
   }
 }
 
 /**
  * Lazy `copysign`.
  */
-function copysign(x:Real, y:Expression<Real>) -> Expression<Real> {
-  if y.isConstant() {
-    return box(copysign(x, y.value()));
-  } else {
-    return copysign(box(x), y);
-  }
+function copysign(y:Expression<Real>, z:Expression<Real>) -> CopySign {
+  return construct<CopySign>(y, z);
 }
 
 /**
- * Lazy `lbeta`.
+ * Lazy `copysign`.
  */
-function copysign(x:Expression<Real>, y:Real) -> Expression<Real> {
-  if x.isConstant() {
-    return box(copysign(x.value(), y));
-  } else {
-    return copysign(x, box(y));
-  }
+function copysign(y:Real, z:Expression<Real>) -> CopySign {
+  return copysign(box(y), z);
+}
+
+/**
+ * Lazy `copysign`.
+ */
+function copysign(y:Expression<Real>, z:Real) -> CopySign {
+  return copysign(y, box(z));
 }

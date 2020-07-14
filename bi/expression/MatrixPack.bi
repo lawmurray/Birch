@@ -1,75 +1,50 @@
 /**
  * Lazy matrix pack.
  */
-final class MatrixPack<Left,Right,Value>(left:Left, right:Right) <
-    MatrixBinaryExpression<Left,Right,Value>(left, right) {  
+final class MatrixPack(y:Expression<Real[_,_]>, z:Expression<Real[_,_]>) <
+    MatrixBinaryExpression<Expression<Real[_,_]>,Expression<Real[_,_]>,
+    Real[_,_],Real[_,_],Real[_,_],Real[_,_],Real[_,_]>(y, z) {  
   override function doRows() -> Integer {
-    assert left!.rows() == right!.rows();
-    return left!.rows();
+    return y!.rows();
   }
   
   override function doColumns() -> Integer {
-    return left!.columns() + right!.columns();
+    return y!.columns() + z!.columns();
   }
 
-  override function doValue() {
-    x <- pack(left!.value(), right!.value());
+  override function doEvaluate(y:Real[_,_], z:Real[_,_]) -> Real[_,_] {
+    return pack(y, z);
   }
 
-  override function doPilot() {
-    x <- pack(left!.pilot(), right!.pilot());
+  override function doEvaluateGradLeft(d:Real[_,_], x:Real[_,_], y:Real[_,_],
+      z:Real[_,_]) -> Real[_,_] {
+    return d[1..global.rows(y), 1..global.columns(y)];
   }
 
-  override function doMove(κ:Kernel) {
-    x <- pack(left!.move(κ), right!.move(κ));
-  }
-
-  override function doGrad() {
-    auto R1 <- left!.rows();
-    auto R2 <- right!.rows();
-    auto C1 <- left!.columns();
-    auto C2 <- right!.columns();
-    assert R1 == global.rows(d!);
-    assert R2 == global.rows(d!);
-    
-    left!.grad(d![1..R1,1..C1]);
-    right!.grad(d![1..R2,(C1 + 1)..(C1 + C2)]);
+  override function doEvaluateGradRight(d:Real[_,_], x:Real[_,_], y:Real[_,_],
+      z:Real[_,_]) -> Real[_,_] {
+    return d[1..global.rows(y), (global.columns(y) + 1)..global.columns(x)];
   }
 }
 
 /**
  * Lazy matrix pack.
  */
-function pack(left:Expression<Real[_,_]>, right:Expression<Real[_,_]>) ->
-    Expression<Real[_,_]> {
-  assert left!.rows() == right!.rows();
-  if left!.isConstant() && right!.isConstant() {
-    return box(pack(left!.value(), right!.value()));
-  } else {
-    return construct<MatrixPack<Expression<Real[_,_]>,Expression<Real[_,_]>,Real[_,_]>>(left, right);
-  }
+function pack(y:Expression<Real[_,_]>, z:Expression<Real[_,_]>) ->
+    MatrixPack {
+  return construct<MatrixPack>(y, z);
 }
 
 /**
  * Lazy matrix pack.
  */
-function pack(left:Real[_,_], right:Expression<Real[_,_]>) ->
-    Expression<Real[_,_]> {
-  if right!.isConstant() {
-    return box(pack(left, right!.value()));
-  } else {
-    return pack(box(left), right);
-  }
+function pack(y:Real[_,_], z:Expression<Real[_,_]>) -> MatrixPack {
+  return pack(box(y), z);
 }
 
 /**
  * Lazy matrix pack.
  */
-function pack(left:Expression<Real[_,_]>, right:Real[_,_]) ->
-    Expression<Real[_,_]> {
-  if left!.isConstant() {
-    return box(pack(left!.value(), right));
-  } else {
-    return pack(left, box(right));
-  }
+function pack(y:Expression<Real[_,_]>, z:Real[_,_]) -> MatrixPack {
+  return pack(y, box(z));
 }

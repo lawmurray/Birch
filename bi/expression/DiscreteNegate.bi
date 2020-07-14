@@ -1,22 +1,14 @@
 /**
  * Lazy negation.
  */
-final class DiscreteNegate(x:Expression<Integer>) <
-    ScalarUnaryExpression<Expression<Integer>,Integer>(x) {
-  override function doValue() {
-    x <- -single!.value();
+final class DiscreteNegate(y:Expression<Integer>) <
+    ScalarUnaryExpression<Expression<Integer>,Integer,Real,Integer>(y) {
+  override function doEvaluate(y:Integer) -> Integer {
+    return -y;
   }
 
-  override function doPilot() {
-    x <- -single!.pilot();
-  }
-
-  override function doMove(κ:Kernel) {
-    x <- -single!.move(κ);
-  }
-
-  override function doGrad() {
-    single!.grad(-d!);
+  override function doEvaluateGrad(d:Real, x:Integer, y:Integer) -> Real {
+    return -d;
   }
 
   override function graftDiscrete() -> Discrete? {
@@ -24,9 +16,9 @@ final class DiscreteNegate(x:Expression<Integer>) <
     if !hasValue() {
       r <- graftBoundedDiscrete();
       if !r? {
-        x:Discrete?;
-        if (x <- single!.graftDiscrete())? {
-          r <- LinearDiscrete(box(-1), x!, box(0));
+        x1:Discrete?;
+        if (x1 <- y!.graftDiscrete())? {
+          r <- LinearDiscrete(box(-1), x1!, box(0));
         }
       }
     }
@@ -36,9 +28,9 @@ final class DiscreteNegate(x:Expression<Integer>) <
   override function graftBoundedDiscrete() -> BoundedDiscrete? {
     r:BoundedDiscrete?;
     if !hasValue() {
-      x:BoundedDiscrete?;
-      if (x <- single!.graftBoundedDiscrete())? {
-        r <- LinearBoundedDiscrete(box(-1), x!, box(0));
+      x1:BoundedDiscrete?;
+      if (x1 <- y!.graftBoundedDiscrete())? {
+        r <- LinearBoundedDiscrete(box(-1), x1!, box(0));
       }
     }
     return r;
@@ -48,10 +40,6 @@ final class DiscreteNegate(x:Expression<Integer>) <
 /**
  * Lazy negation.
  */
-operator (-x:Expression<Integer>) -> Expression<Integer> {
-  if x.isConstant() {
-    return box(-x.value());
-  } else {
-    return construct<DiscreteNegate>(x);
-  }
+operator (-x:Expression<Integer>) -> DiscreteNegate {
+  return construct<DiscreteNegate>(x);
 }

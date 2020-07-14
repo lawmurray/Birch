@@ -1,55 +1,41 @@
 /**
  * Lazy `lchoose`.
  */
-final class LogChoose<Left,Right,Value>(left:Left, right:Right) <
-    ScalarBinaryExpression<Left,Right,Value>(left, right) {  
-  override function doValue() {
-    x <- lchoose(left!.value(), right!.value());
-  }
-
-  override function doPilot() {
-    x <- lchoose(left!.pilot(), right!.pilot());
-  }
-
-  override function doMove(κ:Kernel) {
-    x <- lchoose(left!.move(κ), right!.move(κ));
+final class LogChoose(y:Expression<Integer>, z:Expression<Integer>) <
+    ScalarBinaryExpression<Expression<Integer>,Expression<Integer>,Integer,
+    Integer,Real,Real,Real>(y, z) {  
+  override function doEvaluate(y:Integer, z:Integer) -> Real {
+    return lchoose(y, z);
   }
   
-  override function doGrad() {
-    left!.grad(0.0);
-    right!.grad(0.0);
+  override function doEvaluateGradLeft(d:Real, x:Real, y:Integer, z:Integer) -> Real {
+    ///@todo Can gamma function be used to provide a gradient here?
+    return 0.0;
+  }
+
+  override function doEvaluateGradRight(d:Real, x:Real, y:Integer, z:Integer) -> Real {
+    ///@todo Can gamma function be used to provide a gradient here?
+    return 0.0;
   }
 }
 
 /**
  * Lazy `lchoose`.
  */
-function lchoose(x:Expression<Integer>, y:Expression<Integer>) -> Expression<Real> {
-  if x.isConstant() && y.isConstant() {
-    return box(lchoose(x.value(), y.value()));
-  } else {
-    return construct<LogChoose<Expression<Integer>,Expression<Integer>,Real>>(x, y);
-  }
+function lchoose(y:Expression<Integer>, z:Expression<Integer>) -> LogChoose {
+  return construct<LogChoose>(y, z);
 }
 
 /**
  * Lazy `lchoose`.
  */
-function lchoose(x:Integer, y:Expression<Integer>) -> Expression<Real> {
-  if y.isConstant() {
-    return box(lchoose(x, y.value()));
-  } else {
-    return lchoose(box(x), y);
-  }
+function lchoose(y:Integer, z:Expression<Integer>) -> LogChoose {
+  return lchoose(box(y), z);
 }
 
 /**
  * Lazy `lchoose`.
  */
-function lchoose(x:Expression<Integer>, y:Integer) -> Expression<Real> {
-  if x.isConstant() {
-    return box(lchoose(x.value(), y));
-  } else {
-    return lchoose(x, box(y));
-  }
+function lchoose(y:Expression<Integer>, z:Integer) -> LogChoose {
+  return lchoose(y, box(z));
 }

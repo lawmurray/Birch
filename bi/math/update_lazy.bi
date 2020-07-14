@@ -315,9 +315,11 @@ function update_lazy_inverse_gamma_gamma(x:Expression<Real>,
 function update_lazy_multivariate_gaussian_multivariate_gaussian(x:Expression<Real[_]>,
     μ:Expression<Real[_]>, Σ:Expression<LLT>, S:Expression<LLT>) ->
     (Expression<Real[_]>, Expression<LLT>) {
-  auto K' <- transpose(solve(llt(Σ + S), Σ));
+  auto Σ0 <- matrix(Σ);
+  auto S0 <- matrix(S);
+  auto K' <- transpose(solve(llt(Σ0 + S0), Σ0));
   auto μ' <- μ + K'*(x - μ);
-  auto Σ' <- llt(Σ - K'*Σ);
+  auto Σ' <- llt(Σ0 - K'*Σ0);
   return (μ', Σ');
 }
 
@@ -338,9 +340,11 @@ function update_lazy_linear_multivariate_gaussian_multivariate_gaussian(
     x:Expression<Real[_]>, A:Expression<Real[_,_]>, μ:Expression<Real[_]>,
     Σ:Expression<LLT>, c:Expression<Real[_]>, S:Expression<LLT>) ->
     (Expression<Real[_]>, Expression<LLT>) {
-  auto K' <- Σ*transpose(solve(llt(A*Σ*transpose(A) + S), A));
+  auto Σ0 <- matrix(Σ);
+  auto S0 <- matrix(S);
+  auto K' <- Σ0*transpose(solve(llt(A*Σ0*transpose(A) + S0), A));
   auto μ' <- μ + K'*(x - A*μ - c);
-  auto Σ' <- llt(Σ - K'*A*Σ);
+  auto Σ' <- llt(Σ0 - K'*A*Σ0);
   return (μ', Σ');
 }
 
@@ -362,9 +366,10 @@ function update_lazy_linear_multivariate_gaussian_gaussian(
     x:Expression<Real>, a:Expression<Real[_]>, μ:Expression<Real[_]>,
     Σ:Expression<LLT>, c:Expression<Real>, s2:Expression<Real>) ->
     (Expression<Real[_]>, Expression<LLT>) {
-  auto k' <- Σ*a/(dot(a, Σ*a) + s2);
+  auto Σ0 <- matrix(Σ);
+  auto k' <- Σ0*a/(dot(a, Σ0*a) + s2);
   auto μ' <- μ + k'*(x - dot(a, μ) - c);
-  auto Σ' <- llt(Σ - outer(k', a)*Σ);
+  auto Σ' <- llt(Σ0 - outer(k', a)*Σ0);
   return (μ', Σ');
 }
 
@@ -385,7 +390,7 @@ function update_lazy_multivariate_normal_inverse_gamma(x:Expression<Real[_]>,
     β:Expression<Real>) -> (Expression<Real>, Expression<Real>) {
   auto D <- x.length();
   auto μ <- solve(Λ, ν);
-  return (α + 0.5*D, β + 0.5*dot(x - μ, Λ*(x - μ)));
+  return (α + 0.5*D, β + 0.5*dot(x - μ, matrix(Λ)*(x - μ)));
 }
 
 /**
@@ -482,7 +487,7 @@ function update_lazy_matrix_normal_inverse_gamma(X:Expression<Real[_,_]>,
   auto D <- rows(X);
   auto M <- solve(Λ, N);
   auto α' <- α + 0.5*D;
-  auto β' <- β + 0.5*diagonal(transpose(X - M)*Λ*(X - M));
+  auto β' <- β + 0.5*diagonal(transpose(X - M)*matrix(Λ)*(X - M));
   return (α', β');
 }
 
@@ -579,7 +584,7 @@ function update_lazy_matrix_normal_inverse_wishart_matrix_gaussian(
   auto N' <- N + X;
   auto M <- solve(Λ, N);
   auto M' <- solve(Λ', N');
-  auto V' <- llt(V + transpose(X - M')*(X - M') + transpose(M' - M)*Λ*(M' - M));
+  auto V' <- llt(matrix(V) + transpose(X - M')*(X - M') + transpose(M' - M)*matrix(Λ)*(M' - M));
   auto k' <- k + D;
   return (N', Λ', V', k');
 }
@@ -608,7 +613,7 @@ function update_lazy_linear_matrix_normal_inverse_wishart_matrix_gaussian(
   auto N' <- N + transpose(A)*(X - C);
   auto M <- solve(Λ, N);
   auto M' <- solve(Λ', N');
-  auto V' <- llt(V + transpose(X - A*M' - C)*(X - A*M' - C) + transpose(M' - M)*Λ*(M' - M));
+  auto V' <- llt(matrix(V) + transpose(X - A*M' - C)*(X - A*M' - C) + transpose(M' - M)*matrix(Λ)*(M' - M));
   auto k' <- k + D;
   return (N', Λ', V', k');
 }

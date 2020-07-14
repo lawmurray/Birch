@@ -1,176 +1,78 @@
 /**
  * Lazy matrix solve.
  */
-final class MatrixSolve<Left,Right,Value>(left:Left, right:Right) <
-    MatrixBinaryExpression<Left,Right,Value>(left, right) {  
+final class MatrixSolve<Left,LeftValue>(y:Left, z:Expression<Real[_,_]>) <
+    MatrixBinaryExpression<Left,Expression<Real[_,_]>,LeftValue,Real[_,_],
+    Real[_,_],Real[_,_],Real[_,_]>(y, z) {  
   override function doRows() -> Integer {
-    return left!.rows();
+    return y!.rows();
   }
   
   override function doColumns() -> Integer {
-    return right!.columns();
+    return z!.columns();
   }
 
-  override function doValue() {
-    x <- solve(left!.value(), right!.value());
+  override function doEvaluate(y:LeftValue, z:Real[_,_]) -> Real[_,_] {
+    return solve(y, z);
   }
 
-  override function doPilot() {
-    x <- solve(left!.pilot(), right!.pilot());
+  override function doEvaluateGradLeft(d:Real[_,_], x:Real[_,_],
+      y:LeftValue, z:Real[_,_]) -> Real[_,_] {
+    return -solve(transpose(y), d)*transpose(solve(y, z));
   }
-
-  override function doMove(κ:Kernel) {
-    x <- solve(left!.move(κ), right!.move(κ));
-  }
-
-  override function doGrad() {
-    auto L <- left!.get();
-    auto R <- right!.get();
-    left!.grad(-solve(transpose(L), d!)*transpose(solve(L, R)));
-    right!.grad(solve(transpose(L), d!));
+  
+  override function doEvaluateGradRight(d:Real[_,_], x:Real[_,_],
+      y:LeftValue, z:Real[_,_]) -> Real[_,_] {
+    return solve(transpose(y), d);
   }
 }
 
 /**
  * Lazy solve.
  */
-function solve(left:Expression<Real[_,_]>, right:Expression<Real[_,_]>) ->
-    Expression<Real[_,_]> {
-  assert left!.columns() == right!.rows();
-  if left!.isConstant() && right!.isConstant() {
-    return box(matrix(solve(left!.value(), right!.value())));
-  } else {
-    return construct<MatrixSolve<Expression<Real[_,_]>,Expression<Real[_,_]>,Real[_,_]>>(left, right);
-  }
+function solve(y:Expression<Real[_,_]>, z:Expression<Real[_,_]>) ->
+    MatrixSolve<Expression<Real[_,_]>,Real[_,_]> {
+  assert y!.columns() == z!.rows();
+  return construct<MatrixSolve<Expression<Real[_,_]>,Real[_,_]>>(y, z);
 }
 
 /**
  * Lazy solve.
  */
-function solve(left:Real[_,_], right:Expression<Real[_,_]>) ->
-    Expression<Real[_,_]> {
-  if right!.isConstant() {
-    return box(matrix(solve(left, right!.value())));
-  } else {
-    return solve(box(left), right);
-  }
+function solve(y:Real[_,_], z:Expression<Real[_,_]>) ->
+    MatrixSolve<Expression<Real[_,_]>,Real[_,_]> {
+  return solve(box(y), z);
 }
 
 /**
  * Lazy solve.
  */
-function solve(left:Expression<Real[_,_]>, right:Real[_,_]) ->
-    Expression<Real[_,_]> {
-  if left!.isConstant() {
-    return box(matrix(solve(left!.value(), right)));
-  } else {
-    return solve(left, box(right));
-  }
+function solve(y:Expression<Real[_,_]>, z:Real[_,_]) ->
+    MatrixSolve<Expression<Real[_,_]>,Real[_,_]> {
+  return solve(y, box(z));
 }
 
 /**
  * Lazy solve.
  */
-function solve(left:Expression<Real[_,_]>, right:Expression<LLT>) ->
-    Expression<Real[_,_]> {
-  assert left!.columns() == right!.rows();
-  if left!.isConstant() && right!.isConstant() {
-    return box(matrix(solve(left!.value(), right!.value())));
-  } else {
-    return construct<MatrixSolve<Expression<Real[_,_]>,Expression<LLT>,Real[_,_]>>(left, right);
-  }
+function solve(y:Expression<LLT>, z:Expression<Real[_,_]>) ->
+    MatrixSolve<Expression<LLT>,LLT> {
+  assert y!.columns() == z!.rows();
+  return construct<MatrixSolve<Expression<LLT>,LLT>>(y, z);
 }
 
 /**
  * Lazy solve.
  */
-function solve(left:Real[_,_], right:Expression<LLT>) ->
-    Expression<Real[_,_]> {
-  if right!.isConstant() {
-    return box(matrix(solve(left, right!.value())));
-  } else {
-    return solve(box(left), right);
-  }
+function solve(y:LLT, z:Expression<Real[_,_]>) ->
+    MatrixSolve<Expression<LLT>,LLT> {
+  return solve(box(y), z);
 }
 
 /**
  * Lazy solve.
  */
-function solve(left:Expression<Real[_,_]>, right:LLT) ->
-    Expression<Real[_,_]> {
-  if left!.isConstant() {
-    return box(matrix(solve(left!.value(), right)));
-  } else {
-    return solve(left, box(right));
-  }
-}
-
-/**
- * Lazy solve.
- */
-function solve(left:Expression<LLT>, right:Expression<Real[_,_]>) ->
-    Expression<Real[_,_]> {
-  assert left!.columns() == right!.rows();
-  if left!.isConstant() && right!.isConstant() {
-    return box(matrix(solve(left!.value(), right!.value())));
-  } else {
-    return construct<MatrixSolve<Expression<LLT>,Expression<Real[_,_]>,Real[_,_]>>(left, right);
-  }
-}
-
-/**
- * Lazy solve.
- */
-function solve(left:LLT, right:Expression<Real[_,_]>) -> Expression<Real[_,_]> {
-  if right!.isConstant() {
-    return box(matrix(solve(left, right!.value())));
-  } else {
-    return solve(box(left), right);
-  }
-}
-
-/**
- * Lazy solve.
- */
-function solve(left:Expression<LLT>, right:Real[_,_]) -> Expression<Real[_,_]> {
-  if left!.isConstant() {
-    return box(matrix(solve(left!.value(), right)));
-  } else {
-    return solve(left, box(right));
-  }
-}
-
-/**
- * Lazy solve.
- */
-function solve(left:Expression<LLT>, right:Expression<LLT>) ->
-    Expression<Real[_,_]> {
-  assert left!.columns() == right!.rows();
-  if left!.isConstant() && right!.isConstant() {
-    return box(matrix(solve(left!.value(), right!.value())));
-  } else {
-    return construct<MatrixSolve<Expression<LLT>,Expression<LLT>,Real[_,_]>>(left, right);
-  }
-}
-
-/**
- * Lazy solve.
- */
-function solve(left:LLT, right:Expression<LLT>) -> Expression<Real[_,_]> {
-  if right!.isConstant() {
-    return box(matrix(solve(left, right!.value())));
-  } else {
-    return solve(box(left), right);
-  }
-}
-
-/**
- * Lazy solve.
- */
-function solve(left:Expression<LLT>, right:LLT) -> Expression<Real[_,_]> {
-  if left!.isConstant() {
-    return box(matrix(solve(left!.value(), right)));
-  } else {
-    return solve(left, box(right));
-  }
+function solve(y:Expression<LLT>, z:Real[_,_]) ->
+    MatrixSolve<Expression<LLT>,LLT> {
+  return solve(y, box(z));
 }

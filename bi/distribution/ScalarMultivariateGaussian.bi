@@ -58,7 +58,7 @@ final class ScalarMultivariateGaussian(μ:Expression<Real[_]>,
 
   function graftMultivariateGaussian() -> MultivariateGaussian? {
     prune();
-    return Gaussian(μ, Σ*σ2);
+    return Gaussian(μ, matrix(Σ)*σ2);
   }
 
   function graftMultivariateNormalInverseGamma(compare:Distribution<Real>) ->

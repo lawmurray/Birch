@@ -1,135 +1,119 @@
 /**
  * Lazy multiply.
  */
-final class Multiply<Left,Right,Value>(left:Left, right:Right) <
-    ScalarBinaryExpression<Left,Right,Value>(left, right) {  
-  override function doValue() {
-    x <- left!.value()*right!.value();
+final class Multiply(y:Expression<Real>, z:Expression<Real>) <
+    ScalarBinaryExpression<Expression<Real>,Expression<Real>,Real,Real,Real,
+    Real,Real>(y, z) {  
+  override function doEvaluate(y:Real, z:Real) -> Real {
+    return y*z;
   }
 
-  override function doPilot() {
-    x <- left!.pilot()*right!.pilot();
+  override function doEvaluateGradLeft(d:Real, x:Real, y:Real, z:Real) -> Real {
+    return d*z;
   }
-
-  override function doMove(κ:Kernel) {
-    x <- left!.move(κ)*right!.move(κ);
-  }
-
-  override function doGrad() {
-    left!.grad(d!*right!.get());
-    right!.grad(d!*left!.get());
+  
+  override function doEvaluateGradRight(d:Real, x:Real, y:Real, z:Real) -> Real {
+    return d*y;
   }
 
   override function graftScaledGamma() -> TransformLinear<Gamma>? {
-    y:TransformLinear<Gamma>?;
+    r:TransformLinear<Gamma>?;
     if !hasValue() {
-      z:Gamma?;
+      x1:Gamma?;
     
-      if (y <- left!.graftScaledGamma())? {
-        y!.multiply(right!);
-      } else if (y <- right!.graftScaledGamma())? {
-        y!.multiply(left!);
-      } else if (z <- left!.graftGamma())? {
-        y <- TransformLinear<Gamma>(right!, z!);
-      } else if (z <- right!.graftGamma())? {
-        y <- TransformLinear<Gamma>(left!, z!);
+      if (r <- y!.graftScaledGamma())? {
+        r!.multiply(z!);
+      } else if (r <- z!.graftScaledGamma())? {
+        r!.multiply(y!);
+      } else if (x1 <- y!.graftGamma())? {
+        r <- TransformLinear<Gamma>(z!, x1!);
+      } else if (x1 <- z!.graftGamma())? {
+        r <- TransformLinear<Gamma>(y!, x1!);
       }
     }
-    return y;
+    return r;
   }
 
   override function graftLinearGaussian() -> TransformLinear<Gaussian>? {
-    y:TransformLinear<Gaussian>?;
+    r:TransformLinear<Gaussian>?;
     if !hasValue() {
-      z:Gaussian?;
+      x1:Gaussian?;
     
-      if (y <- left!.graftLinearGaussian())? {
-        y!.multiply(right!);
-      } else if (y <- right!.graftLinearGaussian())? {
-        y!.multiply(left!);
-      } else if (z <- left!.graftGaussian())? {
-        y <- TransformLinear<Gaussian>(right!, z!);
-      } else if (z <- right!.graftGaussian())? {
-        y <- TransformLinear<Gaussian>(left!, z!);
+      if (r <- y!.graftLinearGaussian())? {
+        r!.multiply(z!);
+      } else if (r <- z!.graftLinearGaussian())? {
+        r!.multiply(y!);
+      } else if (x1 <- y!.graftGaussian())? {
+        r <- TransformLinear<Gaussian>(z!, x1!);
+      } else if (x1 <- z!.graftGaussian())? {
+        r <- TransformLinear<Gaussian>(y!, x1!);
       }
     }
-    return y;
+    return r;
   }
 
   override function graftDotGaussian() -> TransformDot<MultivariateGaussian>? {
-    y:TransformDot<MultivariateGaussian>?;
+    r:TransformDot<MultivariateGaussian>?;
     if !hasValue() {
-      if (y <- left!.graftDotGaussian())? {
-        y!.multiply(right!);
-      } else if (y <- right!.graftDotGaussian())? {
-        y!.multiply(left!);
+      if (r <- y!.graftDotGaussian())? {
+        r!.multiply(z!);
+      } else if (r <- z!.graftDotGaussian())? {
+        r!.multiply(y!);
       }
     }
-    return y;
+    return r;
   }
  
   override function graftLinearNormalInverseGamma(compare:Distribution<Real>) ->
       TransformLinear<NormalInverseGamma>? {
-    y:TransformLinear<NormalInverseGamma>?;
+    r:TransformLinear<NormalInverseGamma>?;
     if !hasValue() {
-      z:NormalInverseGamma?;
+      x1:NormalInverseGamma?;
     
-      if (y <- left!.graftLinearNormalInverseGamma(compare))? {
-        y!.multiply(right!);
-      } else if (y <- right!.graftLinearNormalInverseGamma(compare))? {
-        y!.multiply(left!);
-      } else if (z <- left!.graftNormalInverseGamma(compare))? {
-        y <- TransformLinear<NormalInverseGamma>(right!, z!);
-      } else if (z <- right!.graftNormalInverseGamma(compare))? {
-        y <- TransformLinear<NormalInverseGamma>(left!, z!);
+      if (r <- y!.graftLinearNormalInverseGamma(compare))? {
+        r!.multiply(z!);
+      } else if (r <- z!.graftLinearNormalInverseGamma(compare))? {
+        r!.multiply(y!);
+      } else if (x1 <- y!.graftNormalInverseGamma(compare))? {
+        r <- TransformLinear<NormalInverseGamma>(z!, x1!);
+      } else if (x1 <- z!.graftNormalInverseGamma(compare))? {
+        r <- TransformLinear<NormalInverseGamma>(y!, x1!);
       }
     }
-    return y;
+    return r;
   }
 
   override function graftDotNormalInverseGamma(compare:Distribution<Real>) ->
       TransformDot<MultivariateNormalInverseGamma>? {
-    y:TransformDot<MultivariateNormalInverseGamma>?;
+    r:TransformDot<MultivariateNormalInverseGamma>?;
     if !hasValue() {
-      if (y <- left!.graftDotNormalInverseGamma(compare))? {
-        y!.multiply(right!);
-      } else if (y <- right!.graftDotNormalInverseGamma(compare))? {
-        y!.multiply(left!);
+      if (r <- y!.graftDotNormalInverseGamma(compare))? {
+        r!.multiply(z!);
+      } else if (r <- z!.graftDotNormalInverseGamma(compare))? {
+        r!.multiply(y!);
       }
     }
-    return y;
+    return r;
   }
 }
 
 /**
  * Lazy multiply.
  */
-operator (left:Expression<Real>*right:Expression<Real>) -> Expression<Real> {
-  if left.isConstant() && right.isConstant() {
-    return box(left.value()*right.value());
-  } else {
-    return construct<Multiply<Expression<Real>,Expression<Real>,Real>>(left, right);
-  }
+operator (y:Expression<Real>*z:Expression<Real>) -> Multiply {
+  return construct<Multiply>(y, z);
 }
 
 /**
  * Lazy multiply.
  */
-operator (left:Real*right:Expression<Real>) -> Expression<Real> {
-  if right.isConstant() {
-    return box(left*right.value());
-  } else {
-    return box(left)*right;
-  }
+operator (y:Real*z:Expression<Real>) -> Multiply {
+  return box(y)*z;
 }
 
 /**
  * Lazy multiply.
  */
-operator (left:Expression<Real>*right:Real) -> Expression<Real> {
-  if left.isConstant() {
-    return box(left.value()*right);
-  } else {
-    return left*box(right);
-  }
+operator (y:Expression<Real>*z:Real) -> Multiply {
+  return y*box(z);
 }

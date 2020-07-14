@@ -1,42 +1,33 @@
 /**
  * Lazy `vector`.
  */
-final class MultivariateVector<Single,Value>(x:Single) <
-    MultivariateUnaryExpression<Single,Value>(x) {
+final class MultivariateVector(y:Expression<Real[_]>) <
+    MultivariateUnaryExpression<Expression<Real[_]>,Real[_],Real[_],
+    Real[_]>(y) {
   override function doRows() -> Integer {
-    return single!.rows();
+    return y!.rows();
   }
 
-  override function doValue() {
-    x <- vector(single!.value());
+  override function doEvaluate(y:Real[_]) -> Real[_] {
+    return y;
   }
 
-  override function doPilot() {
-    x <- vector(single!.pilot());
-  }
-
-  override function doMove(κ:Kernel) {
-    x <- vector(single!.move(κ));
-  }
-
-  override function doGrad() {
-    single!.grad(d!);
+  override function doEvaluateGrad(d:Real[_], x:Real[_], y:Real[_]) ->
+      Real[_] {
+    return d;
   }
 }
 
 /**
  * Lazy `vector`.
  */
-function vector(x:Expression<Real[_]>) -> Expression<Real[_]> {
-  if x.isRandom() {
-    /* Random objects are wrapped as the accumulation of gradients by element
-     * requires this; see note in split() also */
-    if x.isConstant() {
-      return box(vector(x.value()));
-    } else {
-      return construct<MultivariateVector<Expression<Real[_]>,Real[_]>>(x);
-    }
-  } else {
-    return x;
+function vector(y:Expression<Real[_]>) -> Expression<Real[_]> {
+  if !y.isRandom() {
+    /* just an identity function */
+    return y;
+  } else {  
+    /* Random objects should be wrapped to allow the accumulation of
+     * gradients by element if necessary; see note in split() also */
+    return construct<MultivariateVector>(y);
   }
 }

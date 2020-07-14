@@ -5,6 +5,24 @@
  */
 abstract class DelayExpression(isConstant:Boolean) {
   /**
+   * Number of times `pilot()` has been called.
+   */
+  pilotCount:Integer16 <- 0;
+
+  /**
+   * Number of times `grad()` has been called. Used to track accumulation of
+   * upstream gradients before recursion, after which it is reset to zero.
+   */
+  gradCount:Integer16 <- 0;
+  
+  /**
+   * Number of times `move()` has been called. Used to ensure each
+   * subexpression is moved only once, and upon reaching `countPilot` is
+   * reset to zero.
+   */
+  moveCount:Integer16 <- 0;
+
+  /**
    * Has `value()` been called? This is used as a short-circuit for shared
    * subexpressions.
    */
@@ -15,32 +33,6 @@ abstract class DelayExpression(isConstant:Boolean) {
    * subexpressions.
    */
   flagPrior:Boolean <- false;
-
-  /**
-   * Length of result. This is equal to `rows()`.
-   */
-  final function length() -> Integer {
-    return rows();
-  }
-
-  /**
-   * Number of rows in result.
-   */
-  function rows() -> Integer {
-    return 1;
-  }
-  
-  /**
-   * Number of columns in result.
-   */
-  function columns() -> Integer {
-    return 1;
-  }
-
-  /**
-   * Depth of the expression tree.
-   */
-  abstract function depth() -> Integer;
 
   /**
    * Is this a Random expression?
@@ -55,12 +47,53 @@ abstract class DelayExpression(isConstant:Boolean) {
   function isConstant() -> Boolean {
     return flagConstant;
   }
+
+  /**
+   * Length of result. This is synonymous with `rows()`.
+   */
+  final function length() -> Integer {
+    return rows();
+  }
+
+  /**
+   * Number of rows in result.
+   */
+  function rows() -> Integer {
+    if isConstant() {
+      return 1;
+    } else {
+      return doRows();
+    }
+  }
+  
+  abstract function doRows() -> Integer;
   
   /**
-   * Make this a constant expression.
+   * Number of columns in result.
    */
-  abstract function makeConstant();
+  function columns() -> Integer {
+    if isConstant() {
+      return 1;
+    } else {
+      return doColumns();
+    }
+  }
 
+  abstract function doColumns() -> Integer;
+
+  /**
+   * Depth of the expression tree.
+   */
+  function depth() -> Integer {
+    if isConstant() {
+      return 1;
+    } else {
+      return doDepth();
+    }
+  }
+  
+  abstract function doDepth() -> Integer;
+  
   /**
    * Construct a lazy expression for the log-prior, and collect variables.
    *
@@ -81,10 +114,6 @@ abstract class DelayExpression(isConstant:Boolean) {
     }
   }
 
-  /*
-   * Construct a lazy expression for the log-prior; overridden by derived
-   * classes.
-   */
   abstract function doPrior(vars:RaggedArray<DelayExpression>) ->
       Expression<Real>?;
       

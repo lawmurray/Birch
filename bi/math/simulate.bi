@@ -444,7 +444,7 @@ function simulate_inverse_gamma(α:Real, β:Real) -> Real {
  * - k: Degrees of freedeom.
  */
 function simulate_inverse_wishart(Ψ:LLT, k:Real) -> LLT {
-  return inv(llt(simulate_wishart(inv(Ψ), k)));
+  return llt(inv(simulate_wishart(llt(inv(Ψ)), k)));
 }
 
 /**
@@ -852,7 +852,7 @@ function simulate_matrix_gaussian(M:Real[_,_], σ2:Real) -> Real[_,_] {
  */
 function simulate_matrix_normal_inverse_gamma(N:Real[_,_], Λ:LLT, α:Real,
     β:Real[_]) -> Real[_,_] {
-  return simulate_matrix_student_t(2.0*α, solve(Λ, N), inv(Λ), β/α);
+  return simulate_matrix_student_t(2.0*α, solve(Λ, N), llt(inv(Λ)), β/α);
 }
 
 /**

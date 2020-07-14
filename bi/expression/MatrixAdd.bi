@@ -1,191 +1,106 @@
 /**
  * Lazy matrix addition.
  */
-final class MatrixAdd<Left,Right,Value>(left:Left, right:Right) <
-    MatrixBinaryExpression<Left,Right,Value>(left, right) {  
+final class MatrixAdd(y:Expression<Real[_,_]>, z:Expression<Real[_,_]>) <
+    MatrixBinaryExpression<Expression<Real[_,_]>,Expression<Real[_,_]>,
+    Real[_,_],Real[_,_],Real[_,_],Real[_,_],Real[_,_]>(y, z) {  
   override function doRows() -> Integer {
-    return left!.rows();
+    return y!.rows();
   }
   
   override function doColumns() -> Integer {
-    return left!.columns();
+    return y!.columns();
   }
   
-  override function doValue() {
-    x <- left!.value() + right!.value();
+  override function doEvaluate(y:Real[_,_], z:Real[_,_]) -> Real[_,_] {
+    return y + z;
   }
 
-  override function doPilot() {
-    x <- left!.pilot() + right!.pilot();
+  override function doEvaluateGradLeft(d:Real[_,_], x:Real[_,_], y:Real[_,_], z:Real[_,_]) -> Real[_,_] {
+    return d;
   }
 
-  override function doMove(κ:Kernel) {
-    x <- left!.move(κ) + right!.move(κ);
-  }
-
-  override function doGrad() {
-    left!.grad(d!);
-    right!.grad(d!);
+  override function doEvaluateGradRight(d:Real[_,_], x:Real[_,_], y:Real[_,_], z:Real[_,_]) -> Real[_,_] {
+    return d;
   }
 
   override function graftLinearMatrixGaussian() ->
       TransformLinearMatrix<MatrixGaussian>? {
-    y:TransformLinearMatrix<MatrixGaussian>?;
+    r:TransformLinearMatrix<MatrixGaussian>?;
     if !hasValue() {
-      z:MatrixGaussian?;
+      x1:MatrixGaussian?;
 
-      if (y <- left!.graftLinearMatrixGaussian())? {
-        y!.add(right!);
-      } else if (y <- right!.graftLinearMatrixGaussian())? {
-        y!.add(left!);
-      } else if (z <- left!.graftMatrixGaussian())? {
-        y <- TransformLinearMatrix<MatrixGaussian>(box(identity(z!.rows())), z!, right!);
-      } else if (z <- right!.graftMatrixGaussian())? {
-        y <- TransformLinearMatrix<MatrixGaussian>(box(identity(z!.rows())), z!, left!);
+      if (r <- y!.graftLinearMatrixGaussian())? {
+        r!.add(z!);
+      } else if (r <- z!.graftLinearMatrixGaussian())? {
+        r!.add(y!);
+      } else if (x1 <- y!.graftMatrixGaussian())? {
+        r <- TransformLinearMatrix<MatrixGaussian>(box(identity(z!.rows())), x1!, z!);
+      } else if (x1 <- z!.graftMatrixGaussian())? {
+        r <- TransformLinearMatrix<MatrixGaussian>(box(identity(z!.rows())), x1!, y!);
       }
     }
-    return y;
+    return r;
   }
   
   override function graftLinearMatrixNormalInverseGamma(compare:Distribution<Real[_]>) ->
       TransformLinearMatrix<MatrixNormalInverseGamma>? {
-    y:TransformLinearMatrix<MatrixNormalInverseGamma>?;
+    r:TransformLinearMatrix<MatrixNormalInverseGamma>?;
     if !hasValue() {
-      z:MatrixNormalInverseGamma?;
+      x1:MatrixNormalInverseGamma?;
       
-      if (y <- left!.graftLinearMatrixNormalInverseGamma(compare))? {
-        y!.add(right!);
-      } else if (y <- right!.graftLinearMatrixNormalInverseGamma(compare))? {
-        y!.add(left!);
-      } else if (z <- left!.graftMatrixNormalInverseGamma(compare))? {
-        y <- TransformLinearMatrix<MatrixNormalInverseGamma>(box(identity(z!.rows())), z!, right!);
-      } else if (z <- right!.graftMatrixNormalInverseGamma(compare))? {
-        y <- TransformLinearMatrix<MatrixNormalInverseGamma>(box(identity(z!.rows())), z!, left!);
+      if (r <- y!.graftLinearMatrixNormalInverseGamma(compare))? {
+        r!.add(z!);
+      } else if (r <- z!.graftLinearMatrixNormalInverseGamma(compare))? {
+        r!.add(y!);
+      } else if (x1 <- y!.graftMatrixNormalInverseGamma(compare))? {
+        r <- TransformLinearMatrix<MatrixNormalInverseGamma>(box(identity(z!.rows())), x1!, z!);
+      } else if (x1 <- z!.graftMatrixNormalInverseGamma(compare))? {
+        r <- TransformLinearMatrix<MatrixNormalInverseGamma>(box(identity(z!.rows())), x1!, y!);
       }
     }
-    return y;
+    return r;
   }
 
   override function graftLinearMatrixNormalInverseWishart(compare:Distribution<LLT>) ->
       TransformLinearMatrix<MatrixNormalInverseWishart>? {
-    y:TransformLinearMatrix<MatrixNormalInverseWishart>?;
+    r:TransformLinearMatrix<MatrixNormalInverseWishart>?;
     if !hasValue() {
-      z:MatrixNormalInverseWishart?;
+      x1:MatrixNormalInverseWishart?;
 
-       if (y <- left!.graftLinearMatrixNormalInverseWishart(compare))? {
-        y!.add(right!);
-      } else if (y <- right!.graftLinearMatrixNormalInverseWishart(compare))? {
-        y!.add(left!);
-      } else if (z <- left!.graftMatrixNormalInverseWishart(compare))? {
-        y <- TransformLinearMatrix<MatrixNormalInverseWishart>(box(identity(z!.rows())), z!, right!);
-      } else if (z <- right!.graftMatrixNormalInverseWishart(compare))? {
-        y <- TransformLinearMatrix<MatrixNormalInverseWishart>(box(identity(z!.rows())), z!, left!);
+      if (r <- y!.graftLinearMatrixNormalInverseWishart(compare))? {
+        r!.add(z!);
+      } else if (r <- z!.graftLinearMatrixNormalInverseWishart(compare))? {
+        r!.add(y!);
+      } else if (x1 <- y!.graftMatrixNormalInverseWishart(compare))? {
+        r <- TransformLinearMatrix<MatrixNormalInverseWishart>(box(identity(z!.rows())), x1!, z!);
+      } else if (x1 <- z!.graftMatrixNormalInverseWishart(compare))? {
+        r <- TransformLinearMatrix<MatrixNormalInverseWishart>(box(identity(z!.rows())), x1!, y!);
       }
     }
-    return y;
+    return r;
   }
 }
 
 /**
  * Lazy matrix addition.
  */
-operator (left:Expression<Real[_,_]> + right:Expression<Real[_,_]>) ->
-    Expression<Real[_,_]> {
-  assert left.rows() == right.rows();
-  assert left.columns() == right.columns();
-  if left.isConstant() && right.isConstant() {
-    return box(matrix(left.value() + right.value()));
-  } else {
-    return construct<MatrixAdd<Expression<Real[_,_]>,Expression<Real[_,_]>,Real[_,_]>>(left, right);
-  }
+operator (y:Expression<Real[_,_]> + z:Expression<Real[_,_]>) -> MatrixAdd {
+  assert y.rows() == z.rows();
+  assert y.columns() == z.columns();
+  return construct<MatrixAdd>(y, z);
 }
 
 /**
  * Lazy matrix addition.
  */
-operator (left:Real[_,_] + right:Expression<Real[_,_]>) ->
-    Expression<Real[_,_]> {
-  if right.isConstant() {
-    return box(matrix(left + right.value()));
-  } else {
-    return box(left) + right;
-  }
+operator (y:Real[_,_] + z:Expression<Real[_,_]>) -> MatrixAdd {
+  return box(y) + z;
 }
 
 /**
  * Lazy matrix addition.
  */
-operator (left:Expression<Real[_,_]> + right:Real[_,_]) ->
-    Expression<Real[_,_]> {
-  if left.isConstant() {
-    return box(matrix(left.value() + right));
-  } else {
-    return left + box(right);
-  }
-}
-
-/**
- * Lazy matrix addition.
- */
-operator (left:Expression<LLT> + right:Expression<Real[_,_]>) ->
-    Expression<Real[_,_]> {
-  return matrix(left) + right;
-}
-
-/**
- * Lazy matrix addition.
- */
-operator (left:LLT + right:Expression<Real[_,_]>) -> Expression<Real[_,_]> {
-  return matrix(left) + right;
-}
-
-/**
- * Lazy matrix addition.
- */
-operator (left:Expression<LLT> + right:Real[_,_]) -> Expression<Real[_,_]> {
-  return matrix(left) + right;
-}
-
-/**
- * Lazy matrix addition.
- */
-operator (left:Expression<Real[_,_]> + right:Expression<LLT>) ->
-    Expression<Real[_,_]> {
-  return left + matrix(right);
-}
-
-/**
- * Lazy matrix addition.
- */
-operator (left:Real[_,_] + right:Expression<LLT>) -> Expression<Real[_,_]> {
-  return left + matrix(right);
-}
-
-/**
- * Lazy matrix addition.
- */
-operator (left:Expression<Real[_,_]> + right:LLT) -> Expression<Real[_,_]> {
-  return left + matrix(right);
-}
-
-/**
- * Lazy matrix addition.
- */
-operator (left:Expression<LLT> + right:Expression<LLT>) ->
-    Expression<Real[_,_]> {
-  return matrix(left) + matrix(right);
-}
-
-/**
- * Lazy matrix addition.
- */
-operator (left:LLT + right:Expression<LLT>) -> Expression<Real[_,_]> {
-  return matrix(left) + matrix(right);
-}
-
-/**
- * Lazy matrix addition.
- */
-operator (left:Expression<LLT> + right:LLT) -> Expression<Real[_,_]> {
-  return matrix(left) + matrix(right);
+operator (y:Expression<Real[_,_]> + z:Real[_,_]) -> MatrixAdd {
+  return y + box(z);
 }

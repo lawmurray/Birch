@@ -1,61 +1,57 @@
 /**
  * Lazy `join`.
  */
-final class MatrixJoin<Value>(X:Expression<Value>[_,_]) <
+final class MatrixJoin<Value>(y:Expression<Value>[_,_]) <
     MatrixExpression<Value[_,_]> {
   /**
    * Arguments.
    */
-  args:Expression<Value>[_,_]? <- X;
+  y:Expression<Value>[_,_]? <- y;
 
-  override function depth() -> Integer {
-    auto argsDepth <- 0;
-    if args? {
-      for i in 1..rows() {
-        for j in 1..columns() {
-          argsDepth <- max(argsDepth, args![i,j].depth());
-        }
+  override function doDepth() -> Integer {
+    auto depth <- 0;
+    for i in 1..rows() {
+      for j in 1..columns() {
+        depth <- max(depth, y![i,j].depth());
       }
     }
-    return argsDepth + 1;
+    return depth + 1;
   }
 
   override function doRows() -> Integer {
-    return global.rows(args!);
+    return global.rows(y!);
   }
 
   override function doColumns() -> Integer {
-    return global.columns(args!);
-  }
-
-  override function doDetach() {
-    args <- nil;
+    return global.columns(y!);
   }
 
   override function doValue() {
-    x <- transform(args!, \(x:Expression<Value>) -> Value {
+    x <- transform(y!, \(x:Expression<Value>) -> Value {
         return x.value();
       });
   }
-
-  override function doMakeConstant() {
-    for_each(args!, \(x:Expression<Value>) { x.makeConstant(); });
-  }
   
   override function doPilot() {
-    x <- transform(args!, \(x:Expression<Value>) -> Value {
+    x <- transform(y!, \(x:Expression<Value>) -> Value {
         return x.pilot();
       });
   }
 
+  override function doGet() {
+    x <- transform(y!, \(x:Expression<Value>) -> Value {
+        return x.get();
+      });
+  }
+
   override function doMove(κ:Kernel) {
-    x <- transform(args!, \(x:Expression<Value>) -> Value {
+    x <- transform(y!, \(x:Expression<Value>) -> Value {
         return x.move(κ);
       });
   }
   
   override function doGrad() {
-    for_each(args!, d!, \(x:Expression<Value>, d:Value) { x.grad(d); });
+    for_each(y!, d!, \(x:Expression<Value>, d:Value) { x.grad(d); });
   }
 
   override function doPrior(vars:RaggedArray<DelayExpression>) ->
@@ -65,7 +61,7 @@ final class MatrixJoin<Value>(X:Expression<Value>[_,_]) <
     auto C <- columns();
     for i in 1..R {
       for j in 1..C {
-        auto q <- args![i,j].prior(vars);
+        auto q <- y![i,j].prior(vars);
         if q? {
           if p? {
             p <- p! + q!;
@@ -77,36 +73,40 @@ final class MatrixJoin<Value>(X:Expression<Value>[_,_]) <
     }
     return p;
   }
+
+  override function doCount() {
+    for_each(y!, \(x:Expression<Value>) { x.count(); });
+  }
+
+  override function doConstant() {
+    for_each(y!, \(x:Expression<Value>) { x.constant(); });
+  }
+
+  override function doDetach() {
+    y <- nil;
+  }
 }
 
 /**
- * Lazy `join`. Converts a matrix of scalar expressions into a single matrix
+ * Lazy `join`. Converts a matrix of scalar expressions into a matrix
  * expression.
  */
-function join(X:Expression<Real>[_,_]) -> Expression<Real[_,_]> {
-  return construct<MatrixJoin<Real>>(X);
+function join<Value>(y:Expression<Value>[_,_]) -> MatrixJoin<Value> {
+  return construct<MatrixJoin<Value>>(y);
 }
 
 /**
  * Lazy `split`. Converts a matrix expression into a matrix of scalar
  * expressions.
  */
-function split(X:Expression<Real[_,_]>) -> Expression<Real>[_,_] {
-  return matrix(\(i:Integer, j:Integer) -> Expression<Real> {
-        return MatrixElement(matrix(X), i, j);
-      }, X.rows(), X.columns());
-  // ^ matrix(X) above is an identity function for all but Random objects;
+function split<Value>(y:Expression<Value[_,_]>) -> Expression<Value>[_,_] {
+  auto z <- matrix(y);
+  // ^ matrix(y) above is an identity function for all but Random objects;
   //   for these it wraps the Random in an additional expression that can
   //   accumulate gradients by element (which a Random cannot) before passing
   //   the whole matrix of accumulated gradients onto the Random
-}
 
-/**
- * Lazy `split`. Converts a matrix expression into a matrix of scalar
- * expressions.
- */
-function split(X:Expression<LLT>) -> Expression<Real>[_,_] {
-  return matrix(\(i:Integer, j:Integer) -> Expression<Real> {
-        return MatrixElement(matrix(X), i, j);
-      }, X.rows(), X.columns());
+  return matrix(\(i:Integer, j:Integer) -> Expression<Value> {
+        return construct<MatrixElement<Value>>(z, i, j);
+      }, z.rows(), z.columns());
 }

@@ -2,7 +2,8 @@
  * Multivariate Gaussian-Gaussian distribution.
  */
 final class MultivariateGaussianMultivariateGaussian(m:MultivariateGaussian,
-    S:Expression<LLT>) < MultivariateGaussian(m.μ, llt(m.Σ + S)) {
+    S:Expression<LLT>) < MultivariateGaussian(m.μ,
+    llt(matrix(m.Σ) + matrix(S))) {
   /**
    * Mean.
    */

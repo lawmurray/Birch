@@ -1,120 +1,101 @@
 /**
  * Lazy subtract.
  */
-final class Subtract<Left,Right,Value>(left:Left, right:Right) <
-    ScalarBinaryExpression<Left,Right,Value>(left, right) {
-  override function doValue() {
-    x <- left!.value() - right!.value();
-  }
-
-  override function doPilot() {
-    x <- left!.pilot() - right!.pilot();
-  }
-
-  override function doMove(κ:Kernel) {
-    x <- left!.move(κ) - right!.move(κ);
+final class Subtract(y:Expression<Real>, z:Expression<Real>) <
+    ScalarBinaryExpression<Expression<Real>,Expression<Real>,Real,Real,Real,
+    Real,Real>(y, z) {
+  override function doEvaluate(y:Real, z:Real) -> Real {
+    return y - z;
   }
   
-  override function doGrad() {
-    left!.grad(d!);
-    right!.grad(-d!);
+  override function doEvaluateGradLeft(d:Real, x:Real, y:Real, z:Real) -> Real {
+    return d;
+  }
+
+  override function doEvaluateGradRight(d:Real, x:Real, y:Real, z:Real) -> Real {
+    return -d;
   }
 
   override function graftLinearGaussian() -> TransformLinear<Gaussian>? {
-    y:TransformLinear<Gaussian>?;
+    r:TransformLinear<Gaussian>?;
     if !hasValue() {
-      z:Gaussian?;
+      x1:Gaussian?;
     
-      if (y <- left!.graftLinearGaussian())? {
-        y!.add(-right!);
-      } else if (y <- right!.graftLinearGaussian())? {
-        y!.negateAndAdd(left!);
-      } else if (z <- left!.graftGaussian())? {
-        y <- TransformLinear<Gaussian>(box(1.0), z!, -right!);
-      } else if (z <- right!.graftGaussian())? {
-        y <- TransformLinear<Gaussian>(box(-1.0), z!, left!);
+      if (r <- y!.graftLinearGaussian())? {
+        r!.add(-z!);
+      } else if (r <- z!.graftLinearGaussian())? {
+        r!.negateAndAdd(y!);
+      } else if (x1 <- y!.graftGaussian())? {
+        r <- TransformLinear<Gaussian>(box(1.0), x1!, -z!);
+      } else if (x1 <- z!.graftGaussian())? {
+        r <- TransformLinear<Gaussian>(box(-1.0), x1!, y!);
       }
     }
-    return y;
+    return r;
   }
 
   override function graftDotGaussian() -> TransformDot<MultivariateGaussian>? {
-    y:TransformDot<MultivariateGaussian>?;
+    r:TransformDot<MultivariateGaussian>?;
     if !hasValue() {
-      z:Gaussian?;
-    
-      if (y <- left!.graftDotGaussian())? {
-        y!.add(-right!);
-      } else if (y <- right!.graftDotGaussian())? {
-        y!.negateAndAdd(left!);
+      if (r <- y!.graftDotGaussian())? {
+        r!.add(-z!);
+      } else if (r <- z!.graftDotGaussian())? {
+        r!.negateAndAdd(y!);
       }
     }
-    return y;
+    return r;
   }
 
   override function graftLinearNormalInverseGamma(compare:Distribution<Real>) ->
       TransformLinear<NormalInverseGamma>? {
-    y:TransformLinear<NormalInverseGamma>?;
+    r:TransformLinear<NormalInverseGamma>?;
     if !hasValue() {
-      z:NormalInverseGamma?;
+      x1:NormalInverseGamma?;
 
-      if (y <- left!.graftLinearNormalInverseGamma(compare))? {
-        y!.subtract(right!);
-      } else if (y <- right!.graftLinearNormalInverseGamma(compare))? {
-        y!.negateAndAdd(left!);
-      } else if (z <- left!.graftNormalInverseGamma(compare))? {
-        y <- TransformLinear<NormalInverseGamma>(box(1.0), z!, -right!);
-      } else if (z <- right!.graftNormalInverseGamma(compare))? {
-        y <- TransformLinear<NormalInverseGamma>(box(-1.0), z!, left!);
+      if (r <- y!.graftLinearNormalInverseGamma(compare))? {
+        r!.subtract(z!);
+      } else if (r <- z!.graftLinearNormalInverseGamma(compare))? {
+        r!.negateAndAdd(y!);
+      } else if (x1 <- y!.graftNormalInverseGamma(compare))? {
+        r <- TransformLinear<NormalInverseGamma>(box(1.0), x1!, -z!);
+      } else if (x1 <- z!.graftNormalInverseGamma(compare))? {
+        r <- TransformLinear<NormalInverseGamma>(box(-1.0), x1!, y!);
       }
     }
-    return y;
+    return r;
   }
 
   override function graftDotNormalInverseGamma(compare:Distribution<Real>) ->
       TransformDot<MultivariateNormalInverseGamma>? {
-    y:TransformDot<MultivariateNormalInverseGamma>?;
+    r:TransformDot<MultivariateNormalInverseGamma>?;
     if !hasValue() {
-      if (y <- left!.graftDotNormalInverseGamma(compare))? {
-        y!.subtract(right!);
-      } else if (y <- right!.graftDotNormalInverseGamma(compare))? {
-        y!.negateAndAdd(left!);
+      if (r <- y!.graftDotNormalInverseGamma(compare))? {
+        r!.subtract(z!);
+      } else if (r <- z!.graftDotNormalInverseGamma(compare))? {
+        r!.negateAndAdd(y!);
       }
     }
-    return y;
+    return r;
   }
 }
 
 /**
  * Lazy subtract.
  */
-operator (left:Expression<Real> - right:Expression<Real>) ->
-    Expression<Real> {
-  if left.isConstant() && right.isConstant() {
-    return box(left.value() - right.value());
-  } else {
-    return construct<Subtract<Expression<Real>,Expression<Real>,Real>>(left, right);
-  }
+operator (y:Expression<Real> - z:Expression<Real>) -> Subtract {
+  return construct<Subtract>(y, z);
 }
 
 /**
  * Lazy subtract.
  */
-operator (left:Real - right:Expression<Real>) -> Expression<Real> {
-  if right.isConstant() {
-    return box(left - right.value());
-  } else {
-    return box(left) - right;
-  }
+operator (y:Real - z:Expression<Real>) -> Subtract {
+  return box(y) - z;
 }
 
 /**
  * Lazy subtract.
  */
-operator (left:Expression<Real> - right:Real) -> Expression<Real> {
-  if left.isConstant() {
-    return box(left.value() - right);
-  } else {
-    return left - box(right);
-  }
+operator (y:Expression<Real> - z:Real) -> Subtract {
+  return y - box(z);
 }

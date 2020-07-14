@@ -70,24 +70,6 @@ abstract class Expression<Value>(x:Value?) < DelayExpression(x?) {
   x:Value? <- x;
 
   /**
-   * Number of times `pilot()` has been called.
-   */
-  pilotCount:Integer <- 0;
-
-  /**
-   * Number of times `grad()` has been called. Used to track accumulation of
-   * upstream gradients before recursion, after which it is reset to zero.
-   */
-  gradCount:Integer <- 0;
-  
-  /**
-   * Number of times `move()` has been called. Used to ensure each
-   * subexpression is moved only once, and upon reaching `countPilot` is
-   * reset to zero.
-   */
-  moveCount:Integer <- 0;
-
-  /**
    * Does this have a value?
    *
    * Returns: true if a value has been evaluated with `value()`, `pilot()`
@@ -122,10 +104,10 @@ abstract class Expression<Value>(x:Value?) < DelayExpression(x?) {
    */
   final function value() -> Value {
     if !isConstant() {
-      if !x? {
-        doValue();
+      if !hasValue() {
+        x <- doValue();
       } else {
-        doMakeConstant();
+        doConstant();
       }
       doClearGrad();
       doDetach();
@@ -138,41 +120,10 @@ abstract class Expression<Value>(x:Value?) < DelayExpression(x?) {
     return x!;
   }
   
-  /*
-   * Evaluate and make constant for `value()`.
-   */
-  abstract function doValue();
+  abstract function doValue() -> Value;
 
   /**
-   * Make constant. This is used when a value has already been evaluated
-   * (e.g. with `pilot()`), to make the expression constant.
-   */
-  final function makeConstant() {
-    assert x?;
-    if !isConstant() {
-      doMakeConstant();
-      doClearGrad();
-      doDetach();
-      flagConstant <- true;
-      flagPrior <- true;
-      pilotCount <- 0;
-      gradCount <- 0;
-      moveCount <- 0;
-    }
-  }
-
-  /*
-   * Make constant for `value()`.
-   */
-  abstract function doMakeConstant();
-
-  /*
-   * Detach from any children for `value()` and `makeConstant()`.
-   */
-  abstract function doDetach();
-
-  /**
-   * Evaluate before a call to `grad()`, closed world.
+   * Evaluate, closed world, before a call to `grad()`.
    *
    * Returns: The evaluated value of the expression.
    *
@@ -187,36 +138,106 @@ abstract class Expression<Value>(x:Value?) < DelayExpression(x?) {
    */
   final function pilot() -> Value {
     if !isConstant() {
-      if pilotCount == 0 && !x? {
-        // ^ x can have a value if get() called previously
-        doPilot();
+      if pilotCount == 0 {
+        if !hasValue() {
+          x <- doPilot();
+        } else {
+          /* occurs when get() called previously, must update counts */
+          doCount();
+        }
       }
       pilotCount <- pilotCount + 1;
     }
     return x!;
   }
   
-  /*
-   * Evaluate for `pilot()`.
-   */
-  abstract function doPilot();
+  abstract function doPilot() -> Value;
 
   /**
    * Evaluate, closed world.
    *
    * Returns: The evaluated value of the expression.
    *
-   * `get()` is similar to `pilot()` except that it does not update the
-   * count on this object, only on child objects if an evaluation is
-   * necessary. It is used to obtain the evaluated value of an expression
-   * without disrupting the counting optimization described under `pilot()`.
+   * `get()` is similar to `pilot()` except that it does not update counts
+   * in anticipation of a following call too `grad()`. It can be used at any
+   * time to retrieve the evaluated value of the expression, evaluating it if
+   * necessary, without disrupting the state.
    */
   final function get() -> Value {
-    if !isConstant() && !x? {
-      doPilot();
+    if !x? {
+      x <- doGet();
     }
     return x!;
   }
+
+  abstract function doGet() -> Value;
+
+  /**
+   * Move and re-evaluate. Variables are updated with a Markov kernel,
+   * possibly using gradient information, and the expression re-evaluated
+   * with these new values.
+   *
+   * - κ: Markov kernel.
+   *
+   * Returns: The evaluated value of the expression.
+   */
+  final function move(κ:Kernel) -> Value {
+    if !isConstant() {
+      assert pilotCount > 0;
+      if moveCount == 0 {
+        x <- doMove(κ);
+        doClearGrad();
+      }
+      moveCount <- moveCount + 1;
+      if moveCount == pilotCount {
+        moveCount <- 0;
+      }
+    }
+    return x!;
+  }
+
+  abstract function doMove(κ:Kernel) -> Value;
+
+  /**
+   * Make constant, as though calling `value()`, but without re-evaluating
+   * the expression.
+   */
+  function count() {
+    if !isConstant() {
+      if pilotCount == 0 {
+        assert hasValue();
+        doCount();
+      }
+      pilotCount <- pilotCount + 1;
+    }
+  }
+  
+  abstract function doCount();
+  
+  /**
+   * Update counts, as though calling `pilot()`, but without re-evaluating
+   * the expression.
+   */
+  function constant() {
+    if !isConstant() {
+      assert hasValue();
+      doConstant();
+      doClearGrad();
+      doDetach();
+      flagConstant <- true;
+      flagPrior <- true;
+      pilotCount <- 0;
+      gradCount <- 0;
+      moveCount <- 0;
+    }
+  }
+  
+  abstract function doConstant();
+  
+  /*
+   * Detach any children.
+   */
+  abstract function doDetach();
 
   /**
    * Evaluate gradients. Gradients are computed with respect to all
@@ -239,14 +260,20 @@ abstract class Expression<Value>(x:Value?) < DelayExpression(x?) {
    * Reverse-mode automatic differentiation is used. The previous calls to
    * `pilot()` constitute the forward pass, the subsequent calls to `grad()`
    * constitute the backward pass. If the expression tree encodes
+   *
    * $$x_n = f(x_0) = (f_n \circ \cdots \circ f_1)(x_0),$$
+   *
    * and this particular node encodes one of those functions
    * $x_i = f_i(x_{i-1})$, the argument to the function is
+   *
    * $$\frac{\partial (f_n \circ \cdots \circ f_{i+1})}
-   * {\partial x_i}\left(x_i\right),$$
+   * {\partial x_i}\y(x_i\z),$$
+   *
    * it computes
+   *
    * $$\frac{\partial (f_n \circ \cdots \circ f_{i})}
-   * {\partial x_{i-1}}\left(x_{i-1}\right),$$
+   * {\partial x_{i-1}}\y(x_{i-1}\z),$$
+   *
    * and passes the result to its child, which encodes $f_{i-1}$, to continue
    * the computation. The variable (Random object) that encodes $x_0$ keeps
    * the final result.
@@ -254,7 +281,12 @@ abstract class Expression<Value>(x:Value?) < DelayExpression(x?) {
   final function grad<Gradient>(d:Gradient) {
     if !isConstant() {
       assert pilotCount > 0;
+      
+      if gradCount == 0 {
+        doClearGrad();
+      }
       doAccumulateGrad(d);
+      
       gradCount <- gradCount + 1;
       if gradCount == pilotCount {
         /* all upstream gradients accumulated, continue recursion and reset
@@ -274,7 +306,12 @@ abstract class Expression<Value>(x:Value?) < DelayExpression(x?) {
   final function grad(d:Real, i:Integer) {
     if !isConstant() {
       assert pilotCount > 0;
+      
+      if gradCount == 0 {
+        doClearGrad();
+      }
       doAccumulateGrad(d, i);
+      
       gradCount <- gradCount + 1;
       if gradCount == pilotCount {
         /* all upstream gradients accumulated, continue recursion and reset
@@ -294,9 +331,13 @@ abstract class Expression<Value>(x:Value?) < DelayExpression(x?) {
    */
   final function grad(d:Real, i:Integer, j:Integer) {
     if !isConstant() {
-      assert x?;
       assert pilotCount > 0;
+      
+      if gradCount == 0 {
+        doClearGrad();
+      }
       doAccumulateGrad(d, i, j);
+      
       gradCount <- gradCount + 1;
       if gradCount == pilotCount {
         /* all upstream gradients accumulated, continue recursion and reset
@@ -307,37 +348,22 @@ abstract class Expression<Value>(x:Value?) < DelayExpression(x?) {
     }
   }
   
-  /*
-   * Accumulate gradient.
-   */
   function doAccumulateGrad(d:Real) {
     assert false;
   }
   
-  /*
-   * Accumulate gradient.
-   */
   function doAccumulateGrad(d:Real[_]) {
     assert false;
   }
   
-  /*
-   * Accumulate gradient.
-   */
   function doAccumulateGrad(d:Real[_,_]) {
     assert false;
   }
 
-  /*
-   * Accumulate gradient.
-   */
   function doAccumulateGrad(d:Real, i:Integer) {
     assert false;
   }
 
-  /*
-   * Accumulate gradient.
-   */
   function doAccumulateGrad(d:Real, i:Integer, j:Integer) {
     assert false;
   }
@@ -352,34 +378,6 @@ abstract class Expression<Value>(x:Value?) < DelayExpression(x?) {
    */
   abstract function doGrad();
 
-  /**
-   * Move and re-evaluate. Variables are updated with a Markov kernel,
-   * possibly using gradient information, and the expression re-evaluated
-   * with these new values.
-   *
-   * - κ: Markov kernel.
-   *
-   * Returns: The evaluated value of the expression.
-   */
-  final function move(κ:Kernel) -> Value {
-    if !isConstant() {
-      if moveCount == 0 {
-        doMove(κ);
-        doClearGrad();
-      }
-      moveCount <- moveCount + 1;
-      if moveCount == pilotCount {
-        moveCount <- 0;
-      }
-    }
-    return x!;
-  }
-
-  /*
-   * Move and re-evaluate.
-   */
-  abstract function doMove(κ:Kernel);
-  
   /*
    * Attempt to graft this expression onto the delayed sampling graph.
    *

@@ -1,62 +1,43 @@
 /**
  * Lazy `pow`.
  */
-final class Pow<Left,Right,Value>(left:Left, right:Right) <
-    ScalarBinaryExpression<Left,Right,Value>(left, right) {  
-  override function doValue() {
-    x <- pow(left!.value(), right!.value());
+final class Pow(y:Expression<Real>, z:Expression<Real>) <
+    ScalarBinaryExpression<Expression<Real>,Expression<Real>,Real,Real,Real,
+    Real,Real>(y, z) {  
+  override function doEvaluate(y:Real, z:Real) -> Real {
+    return pow(y, z);
   }
 
-  override function doPilot() {
-    x <- pow(left!.pilot(), right!.pilot());
+  override function doEvaluateGradLeft(d:Real, x:Real, y:Real, z:Real) -> Real {
+    return d*z*pow(y, z - 1.0);
   }
 
-  override function doMove(κ:Kernel) {
-    x <- pow(left!.move(κ), right!.move(κ));
-  }
-
-  override function doGrad() {
-    auto l <- left!.get();
-    auto r <- right!.get();
-    auto dl <- d!*r*pow(l, r - 1.0);
-    auto dr <- 0.0;
-    if l > 0.0 {
-      dr <- d!*pow(l, r)*log(l);
+  override function doEvaluateGradRight(d:Real, x:Real, y:Real, z:Real) -> Real {
+    if y > 0.0 {
+      return d*pow(y, z)*log(y);
+    } else {
+      return 0.0;
     }
-    left!.grad(dl);
-    right!.grad(dr);
   }
 }
 
 /**
  * Lazy `pow`.
  */
-function pow(x:Expression<Real>, y:Expression<Real>) -> Expression<Real> {
-  if x.isConstant() && y.isConstant() {
-    return box(pow(x.value(), y.value()));
-  } else {
-    return construct<Pow<Expression<Real>,Expression<Real>,Real>>(x, y);
-  }
+function pow(y:Expression<Real>, z:Expression<Real>) -> Pow {
+  return construct<Pow>(y, z);
 }
 
 /**
  * Lazy `pow`.
  */
-function pow(x:Real, y:Expression<Real>) -> Expression<Real> {
-  if y.isConstant() {
-    return box(pow(x, y.value()));
-  } else {
-    return pow(box(x), y);
-  }
+function pow(y:Real, z:Expression<Real>) -> Pow {
+  return pow(box(y), z);
 }
 
 /**
  * Lazy `pow`.
  */
-function pow(x:Expression<Real>, y:Real) -> Expression<Real> {
-  if x.isConstant() {
-    return box(pow(x.value(), y));
-  } else {
-    return pow(x, box(y));
-  }
+function pow(y:Expression<Real>, z:Real) -> Pow {
+  return pow(y, box(z));
 }

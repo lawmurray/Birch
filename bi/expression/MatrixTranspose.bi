@@ -1,51 +1,37 @@
 /**
  * Lazy `transpose`.
  */
-final class MatrixTranspose<Single,Value>(x:Single) <
-    MatrixUnaryExpression<Single,Value>(x) {
+final class MatrixTranspose(x:Expression<Real[_,_]>) <
+    MatrixUnaryExpression<Expression<Real[_,_]>,Real[_,_],Real[_,_],
+    Real[_,_]>(x) {
   override function doRows() -> Integer {
-    return single!.columns();
+    return y!.columns();
   }
   
   override function doColumns() -> Integer {
-    return single!.rows();
+    return y!.rows();
   }
 
-  override function doValue() {
-    x <- transpose(single!.value());
+  override function doEvaluate(y:Real[_,_]) -> Real[_,_] {
+    return transpose(y);
   }
 
-  override function doPilot() {
-    x <- transpose(single!.pilot());
-  }
-
-  override function doMove(κ:Kernel) {
-    x <- transpose(single!.move(κ));
-  }
-
-  override function doGrad() {
-    single!.grad(transpose(d!));
+  override function doEvaluateGrad(d:Real[_,_], x:Real[_,_], y:Real[_,_]) ->
+      Real[_,_] {
+    return transpose(d);
   }
 }
 
 /**
  * Lazy `transpose`.
  */
-function transpose(x:Expression<Real[_,_]>) -> Expression<Real[_,_]> {
-  if x.isConstant() {
-    return box(matrix(transpose(x.value())));
-  } else {
-    return construct<MatrixTranspose<Expression<Real[_,_]>,Real[_,_]>>(x);
-  }
+function transpose(y:Expression<Real[_,_]>) -> MatrixTranspose {
+  return construct<MatrixTranspose>(y);
 }
 
 /**
- * Lazy `transpose`.
+ * Lazy `transpose`, identity function.
  */
-function transpose(x:Expression<LLT>) -> Expression<LLT> {
-  if x.isConstant() {
-    return box(transpose(x.value()));
-  } else {
-    return construct<MatrixTranspose<Expression<LLT>,LLT>>(x);
-  }
+function transpose(y:Expression<LLT>) -> Expression<LLT> {
+  return y;
 }

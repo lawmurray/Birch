@@ -1,43 +1,29 @@
 /**
  * Lazy `trace`.
  */
-final class Trace<Single,Value>(x:Single) <
-    ScalarUnaryExpression<Single,Value>(x) {
-  override function doValue() {
-    x <- trace(single!.value());
+final class Trace<Argument,ArgumentValue>(y:Argument) <
+    ScalarUnaryExpression<Argument,ArgumentValue,Real[_,_],Real>(y) {
+  override function doEvaluate(y:ArgumentValue) -> Real {
+    return trace(y);
   }
 
-  override function doPilot() {
-    x <- trace(single!.pilot());
-  }
-
-  override function doMove(κ:Kernel) {
-    x <- trace(single!.move(κ));
-  }
-
-  override function doGrad() {
-    single!.grad(diagonal(d!, single!.rows()));
+  override function doEvaluateGrad(d:Real, x:Real, y:ArgumentValue) ->
+      Real[_,_] {
+    return diagonal(d, global.rows(y));
   }
 }
 
 /**
  * Lazy `trace`.
  */
-function trace(x:Expression<LLT>) -> Expression<Real> {
-  if x.isConstant() {
-    return box(trace(x.value()));
-  } else {
-    return construct<Trace<Expression<LLT>,Real>>(x);
-  }
+function trace(y:Expression<LLT>) -> Trace<Expression<LLT>,LLT> {
+  return construct<Trace<Expression<LLT>,LLT>>(y);
 }
 
 /**
  * Lazy `trace`.
  */
-function trace(x:Expression<Real[_,_]>) -> Expression<Real> {
-  if x.isConstant() {
-    return box(trace(x.value()));
-  } else {
-    return construct<Trace<Expression<Real[_,_]>,Real>>(x);
-  }
+function trace(y:Expression<Real[_,_]>) ->
+    Trace<Expression<Real[_,_]>,Real[_,_]> {
+  return construct<Trace<Expression<Real[_,_]>,Real[_,_]>>(y);
 }

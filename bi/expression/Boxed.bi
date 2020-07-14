@@ -2,49 +2,57 @@
  * Boxed value.
  */
 final class Boxed<Value>(x:Value) < Expression<Value>(x) {  
-  override function rows() -> Integer {
+  override function doRows() -> Integer {
     return global.rows(x!);
   }
 
-  override function columns() -> Integer {
+  override function doColumns() -> Integer {
     return global.columns(x!);
   }
 
-  override function depth() -> Integer {
+  override function doDepth() -> Integer {
     return 1;
   }
 
-  override function doValue() {
-    //
+  override function doValue() -> Value {
+    return x!;
+  }
+
+  override function doPilot() -> Value {
+    return x!;
+  }
+
+  override function doGet() -> Value {
+    return x!;
+  }
+
+  override function doMove(κ:Kernel) -> Value {
+    return x!;
   }
   
-  override function doDetach() {
-    //
-  }
-
-  override function doMakeConstant() {
-    //
-  }
-
-  override function doPilot() {
-    //
-  }
-
-  override function doMove(κ:Kernel) {
-    //
-  }
-  
-  override function doClearGrad() {
-    //
+  override function doPrior(vars:RaggedArray<DelayExpression>) ->
+      Expression<Real>? {
+    return nil;
   }
 
   override function doGrad() {
     //
   }
 
-  override function doPrior(vars:RaggedArray<DelayExpression>) ->
-      Expression<Real>? {
-    return nil;
+  override function doClearGrad() {
+    //
+  }
+
+  override function doConstant() {
+    //
+  }
+
+  override function doCount() {
+    //
+  }
+
+  override function doDetach() {
+    //
   }
 }
 

@@ -1,23 +1,21 @@
 /**
  * Lazy add.
  */
-final class DiscreteAdd<Left,Right,Value>(left:Left, right:Right) <
-    ScalarBinaryExpression<Left,Right,Value>(left, right) {  
-  override function doValue() {
-    x <- left!.value() + right!.value();
+final class DiscreteAdd(y:Expression<Integer>, z:Expression<Integer>) <
+    ScalarBinaryExpression<Expression<Integer>,Expression<Integer>,Integer,
+    Integer,Real,Real,Integer>(y, z) {  
+  override function doEvaluate(y:Integer, z:Integer) -> Integer {
+    return y + z;
   }
 
-  override function doPilot() {
-    x <- left!.pilot() + right!.pilot();
+  override function doEvaluateGradLeft(d:Real, x:Integer, y:Integer,
+      z:Integer) -> Real {
+    return d;
   }
 
-  override function doMove(κ:Kernel) {
-    x <- left!.move(κ) + right!.move(κ);
-  }
-  
-  override function doGrad() {
-    left!.grad(d!);
-    right!.grad(d!);
+  override function doEvaluateGradRight(d:Real, x:Integer, y:Integer,
+      z:Integer) -> Real {
+    return d;
   }
 
   override function graftDiscrete() -> Discrete? {
@@ -25,11 +23,11 @@ final class DiscreteAdd<Left,Right,Value>(left:Left, right:Right) <
     if !hasValue() {
       r <- graftBoundedDiscrete();
       if !r? {
-        x:Discrete?;
-        if (x <- left!.graftDiscrete())? {
-          r <- LinearDiscrete(box(1), x!, right!);
-        } else if (x <- right!.graftDiscrete())? {
-          r <- LinearDiscrete(box(1), x!, left!);
+        x1:Discrete?;
+        if (x1 <- y!.graftDiscrete())? {
+          r <- LinearDiscrete(box(1), x1!, z!);
+        } else if (x1 <- z!.graftDiscrete())? {
+          r <- LinearDiscrete(box(1), x1!, y!);
         }
       }
     }
@@ -39,14 +37,14 @@ final class DiscreteAdd<Left,Right,Value>(left:Left, right:Right) <
   override function graftBoundedDiscrete() -> BoundedDiscrete? {
     r:BoundedDiscrete?;
     if !hasValue() {
-      auto x1 <- left!.graftBoundedDiscrete();
-      auto x2 <- right!.graftBoundedDiscrete();
+      auto x1 <- y!.graftBoundedDiscrete();
+      auto x2 <- z!.graftBoundedDiscrete();
       if x1? && x2? {
         r <- AddBoundedDiscrete(x1!, x2!);
       } else if x1? {
-        r <- LinearBoundedDiscrete(box(1), x1!, right!);
+        r <- LinearBoundedDiscrete(box(1), x1!, z!);
       } else if x2? {
-        r <- LinearBoundedDiscrete(box(1), x2!, left!);
+        r <- LinearBoundedDiscrete(box(1), x2!, y!);
       }
     }
     return r;
@@ -56,33 +54,20 @@ final class DiscreteAdd<Left,Right,Value>(left:Left, right:Right) <
 /**
  * Lazy add.
  */
-operator (left:Expression<Integer> + right:Expression<Integer>) ->
-    Expression<Integer> {
-  if left.isConstant() && right.isConstant() {
-    return box(left.value() + right.value());
-  } else {
-    return construct<DiscreteAdd<Expression<Integer>,Expression<Integer>,Integer>>(left, right);
-  }
+operator (y:Expression<Integer> + z:Expression<Integer>) -> DiscreteAdd {
+  return construct<DiscreteAdd>(y, z);
 }
 
 /**
  * Lazy add.
  */
-operator (left:Integer + right:Expression<Integer>) -> Expression<Integer> {
-  if right.isConstant() {
-    return box(left + right.value());
-  } else {
-    return box(left) + right;
-  }
+operator (y:Integer + z:Expression<Integer>) -> DiscreteAdd {
+  return box(y) + z;
 }
 
 /**
  * Lazy add.
  */
-operator (left:Expression<Integer> + right:Integer) -> Expression<Integer> {
-  if left.isConstant() {
-    return box(left.value() + right);
-  } else {
-    return left + box(right);
-  }
+operator (y:Expression<Integer> + z:Integer) -> DiscreteAdd {
+  return y + box(z);
 }
