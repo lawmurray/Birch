@@ -88,8 +88,8 @@ public:
    */
   template<class T>
   T* pullNoLock(T* ptr) {
-    assert(ptr->isFrozen());
     if (ptr) {
+      assert(ptr->isFrozen());
       ptr = static_cast<T*>(mapPull(ptr));
     }
     return ptr;
