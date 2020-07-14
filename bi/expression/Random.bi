@@ -28,18 +28,15 @@ final class Random<Value> < Expression<Value>(nil) {
     assert !this.x?;
     assert !this.p?;
     this.x <- x;
-    this.flagConstant <- true;
+    constant();
   }
 
   /**
    * Optional assignment.
    */
   operator <- x:Value? {
-    assert !this.x?;
-    assert !this.p?;
     if x? {
-      this.x <- x!;
-      this.flagConstant <- true;
+      this <- x!;
     }
   }
 

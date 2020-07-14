@@ -6,46 +6,46 @@ final class MultivariateJoin<Value>(x:Expression<Value>[_]) <
   /**
    * Arguments.
    */
-  args:Expression<Value>[_]? <- x;
+  y:Expression<Value>[_]? <- x;
 
   override function doDepth() -> Integer {
     auto depth <- 0;
     for i in 1..length() {
-      depth <- max(depth, args![i].depth());
+      depth <- max(depth, y![i].depth());
     }
     return depth + 1;
   }
 
   override function doRows() -> Integer {
-    return global.length(args!);
+    return global.length(y!);
   }
 
   override function doValue() -> Value[_] {
-    return transform(args!, \(x:Expression<Value>) -> Value {
+    return transform(y!, \(x:Expression<Value>) -> Value {
         return x.value();
       });
   }
   
   override function doPilot() -> Value[_] {
-    return transform(args!, \(x:Expression<Value>) -> Value {
+    return transform(y!, \(x:Expression<Value>) -> Value {
         return x.pilot();
       });
   }
 
   override function doGet() -> Value[_] {
-    return transform(args!, \(x:Expression<Value>) -> Value {
+    return transform(y!, \(x:Expression<Value>) -> Value {
         return x.get();
       });
   }
 
   override function doMove(κ:Kernel) -> Value[_] {
-    return transform(args!, \(x:Expression<Value>) -> Value {
+    return transform(y!, \(x:Expression<Value>) -> Value {
         return x.move(κ);
       });
   }
   
   override function doGrad() {
-    for_each(args!, d!, \(x:Expression<Value>, d:Value) { x.grad(d); });
+    for_each(y!, d!, \(x:Expression<Value>, d:Value) { x.grad(d); });
   }
 
   override function doPrior(vars:RaggedArray<DelayExpression>) ->
@@ -53,7 +53,7 @@ final class MultivariateJoin<Value>(x:Expression<Value>[_]) <
     p:Expression<Real>?;
     auto L <- length();
     for i in 1..L {
-      auto q <- args![i].prior(vars);
+      auto q <- y![i].prior(vars);
       if q? {
         if p? {
           p <- p! + q!;
@@ -74,7 +74,7 @@ final class MultivariateJoin<Value>(x:Expression<Value>[_]) <
   }
 
   override function doDetach() {
-    args <- nil;
+    y <- nil;
   }
 }
 

@@ -67,25 +67,6 @@ public:
   }
 
   /**
-   * Update a smart pointer for reading, with no locking.
-   *
-   * @param o Smart pointer (Shared or Init).
-   */
-  template<class P>
-  auto pullNoLock(P& o) {
-    auto ptr = o.get();
-    if (ptr && ptr->isFrozen()) {  // isFrozen a useful guard for performance
-      ptr = o.get();  // reload now that within critical region
-      auto old = ptr;
-      ptr = static_cast<typename P::value_type*>(mapPull(old));
-      if (ptr != old) {
-        o.replace(ptr);
-      }
-    }
-    return ptr;
-  }
-
-  /**
    * Map a raw pointer for writing.
    *
    * @param ptr Raw pointer.
@@ -99,14 +80,28 @@ public:
     }
     return ptr;
   }
-  
+
+  /**
+   * Map a raw pointer for reading, with no locking.
+   *
+   * @param ptr Raw pointer.
+   */
+  template<class T>
+  T* pullNoLock(T* ptr) {
+    assert(ptr->isFrozen());
+    if (ptr) {
+      ptr = static_cast<T*>(mapPull(ptr));
+    }
+    return ptr;
+  }
+
   /**
    * Copy a raw pointer as first step of deep copy.
    *
    * @param ptr Raw pointer.
    */
   template<class T>
-  auto copy(T* ptr)  {
+  T* copy(T* ptr)  {
     if (ptr && ptr->isFrozen()) {  // isFrozen a useful guard for performance
       lock.setWrite();
       ptr = static_cast<T*>(mapCopy(ptr));
