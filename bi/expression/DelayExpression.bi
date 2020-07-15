@@ -5,6 +5,14 @@
  */
 abstract class DelayExpression(isConstant:Boolean) {
   /**
+   * Generation in which the expression was evaluated. This is zero unless
+   * `pilot()` has been called with a given generation provided, and the
+   * expression has not subsequently been made constant (in which case it
+   * reverts to zero).
+   */
+  generation:Integer <- 0;
+
+  /**
    * Number of times `pilot()` has been called.
    */
   pilotCount:Integer16 <- 0;

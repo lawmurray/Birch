@@ -141,11 +141,11 @@ abstract class Expression<Value>(x:Value?) < DelayExpression(x?) {
       }
       doClearGrad();
       doDetach();
-      flagConstant <- true;
-      flagPrior <- true;
+      generation <- 0;
       pilotCount <- 0;
       gradCount <- 0;
-      gradCount <- 0;
+      flagConstant <- true;
+      flagPrior <- true;
     }
     return x!;
   }
@@ -155,7 +155,13 @@ abstract class Expression<Value>(x:Value?) < DelayExpression(x?) {
   /**
    * Evaluate, closed world, before a call to `grad()`.
    *
+   * - gen: Generation number.
+   *
    * Returns: The evaluated value of the expression.
+   *
+   * If the expression has not yet been evaluated (excepting a previous call
+   * to `get()`), the generation number `gen` is assigned to it for future
+   * use.
    *
    * `pilot()` may be called multiple times, which accumulates a count. If
    * the intent is to compute gradients, `grad()` must subsequently be called
@@ -166,22 +172,23 @@ abstract class Expression<Value>(x:Value?) < DelayExpression(x?) {
    * important optimization for many use cases, such as computing gradients
    * through Bayesian updates.
    */
-  final function pilot() -> Value {
+  final function pilot(gen:Integer) -> Value {
     if !isConstant() {
       if pilotCount == 0 {
         if !hasValue() {
-          x <- doPilot();
+          x <- doPilot(gen);
         } else {
           /* occurs when get() called previously, must update counts */
-          doCount();
+          doCount(gen);
         }
+        generation <- gen;
       }
       pilotCount <- pilotCount + 1;
     }
     return x!;
   }
   
-  abstract function doPilot() -> Value;
+  abstract function doPilot(gen:Integer) -> Value;
 
   /**
    * Evaluate, closed world.
@@ -207,15 +214,19 @@ abstract class Expression<Value>(x:Value?) < DelayExpression(x?) {
    * possibly using gradient information, and the expression re-evaluated
    * with these new values.
    *
+   * - gen: Generation number.
    * - κ: Markov kernel.
    *
    * Returns: The evaluated value of the expression.
+   *
+   * The generation number `gen` works to truncate the recursion, as for
+   * `grad()`.
    */
-  final function move(κ:Kernel) -> Value {
-    if !isConstant() {
+  final function move(gen:Integer, κ:Kernel) -> Value {
+    if !isConstant() && generation >= gen {
       assert pilotCount > 0;
       if gradCount == 0 {
-        x <- doMove(κ);
+        x <- doMove(gen, κ);
         doClearGrad();
       }
       gradCount <- gradCount + 1;
@@ -226,23 +237,24 @@ abstract class Expression<Value>(x:Value?) < DelayExpression(x?) {
     return x!;
   }
 
-  abstract function doMove(κ:Kernel) -> Value;
+  abstract function doMove(gen:Integer, κ:Kernel) -> Value;
 
   /**
    * Make constant, as though calling `value()`, but without re-evaluating
    * the expression.
    */
-  function count() {
+  function count(gen:Integer) {
     if !isConstant() {
       if pilotCount == 0 {
         assert hasValue();
-        doCount();
+        doCount(gen);
+        generation <- gen;
       }
       pilotCount <- pilotCount + 1;
     }
   }
   
-  abstract function doCount();
+  abstract function doCount(gen:Integer);
   
   /**
    * Update counts, as though calling `pilot()`, but without re-evaluating
@@ -254,11 +266,11 @@ abstract class Expression<Value>(x:Value?) < DelayExpression(x?) {
       doConstant();
       doClearGrad();
       doDetach();
-      flagConstant <- true;
-      flagPrior <- true;
+      generation <- 0;
       pilotCount <- 0;
       gradCount <- 0;
-      gradCount <- 0;
+      flagConstant <- true;
+      flagPrior <- true;
     }
   }
   
@@ -276,8 +288,16 @@ abstract class Expression<Value>(x:Value?) < DelayExpression(x?) {
    * - Gradient: Gradient type. Must be one of `Real`, `Real[_]` or
    *   `Real[_,_]`.
    *
+   * - gen: Generation number.
    * - d: Upstream gradient. For an initial call, this should be the unit for
    *      the given type, e.g. 1.0, a vector of ones, or the identity matrix.
+   *
+   * The generation number `gen` is used to truncate the recursion. Any
+   * expressions that have been assigned a generation number less of than
+   * `gen` (usually at the time they are evaluated with `pilot()`), are
+   * considered constant for the purposes of gradient evaluation. As the
+   * default generation is zero, a value of less than or equal to zero here
+   * will not truncate the recursion.
    *
    * `grad()` must be called as many times as `pilot()` was previously
    * called. This is because subexpressions may be shared. The calls to
@@ -297,19 +317,21 @@ abstract class Expression<Value>(x:Value?) < DelayExpression(x?) {
    * $x_i = f_i(x_{i-1})$, the argument to the function is
    *
    * $$\frac{\partial (f_n \circ \cdots \circ f_{i+1})}
-   * {\partial x_i}\y(x_i\z),$$
+   * {\partial x_i}\left(x_i\right),$$
    *
    * it computes
    *
    * $$\frac{\partial (f_n \circ \cdots \circ f_{i})}
-   * {\partial x_{i-1}}\y(x_{i-1}\z),$$
+   * {\partial x_{i-1}}\left(x_{i-1}\right),$$
    *
    * and passes the result to its child, which encodes $f_{i-1}$, to continue
    * the computation. The variable (Random object) that encodes $x_0$ keeps
    * the final result.
    */
-  final function grad<Gradient>(d:Gradient) {
-    if !isConstant() {
+  final function grad<Gradient>(gen:Integer, d:Gradient) {
+    if generation < gen {
+      constant();
+    } else if !isConstant() {
       assert pilotCount > 0;
       
       if gradCount == 0 {
@@ -321,7 +343,7 @@ abstract class Expression<Value>(x:Value?) < DelayExpression(x?) {
       if gradCount == pilotCount {
         /* all upstream gradients accumulated, continue recursion and reset
          * count for next time */
-        doGrad();
+        doGrad(gen);
         gradCount <- 0;
       }
     }
@@ -330,11 +352,14 @@ abstract class Expression<Value>(x:Value?) < DelayExpression(x?) {
   /**
    * Evaluate gradient for an element of a vector.
    *
+   * - gen: Generation number.
    * - d: Upstream gradient.
    * - i: Element index.
    */
-  final function grad(d:Real, i:Integer) {
-    if !isConstant() {
+  final function grad(gen:Integer, d:Real, i:Integer) {
+    if generation < gen {
+      constant();
+    } else if !isConstant() {
       assert pilotCount > 0;
       
       if gradCount == 0 {
@@ -346,7 +371,7 @@ abstract class Expression<Value>(x:Value?) < DelayExpression(x?) {
       if gradCount == pilotCount {
         /* all upstream gradients accumulated, continue recursion and reset
          * count for next time */
-        doGrad();
+        doGrad(gen);
         gradCount <- 0;
       }
     }
@@ -355,12 +380,15 @@ abstract class Expression<Value>(x:Value?) < DelayExpression(x?) {
   /**
    * Evaluate gradient for an element of a matrix.
    *
+   * - gen: Generation number.
    * - d: Upstream gradient.
    * - i: Row index.
    * - j: Column index.
    */
-  final function grad(d:Real, i:Integer, j:Integer) {
-    if !isConstant() {
+  final function grad(gen:Integer, d:Real, i:Integer, j:Integer) {
+    if generation < gen {
+      constant();
+    } else if !isConstant() {
       assert pilotCount > 0;
       
       if gradCount == 0 {
@@ -372,7 +400,7 @@ abstract class Expression<Value>(x:Value?) < DelayExpression(x?) {
       if gradCount == pilotCount {
         /* all upstream gradients accumulated, continue recursion and reset
          * count for next time */
-        doGrad();
+        doGrad(gen);
         gradCount <- 0;
       }
     }
@@ -406,7 +434,7 @@ abstract class Expression<Value>(x:Value?) < DelayExpression(x?) {
   /*
    * Evaluate gradient.
    */
-  abstract function doGrad();
+  abstract function doGrad(gen:Integer);
 
   /*
    * Attempt to graft this expression onto the delayed sampling graph.

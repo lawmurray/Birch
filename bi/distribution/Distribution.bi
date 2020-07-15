@@ -59,7 +59,7 @@ abstract class Distribution<Value> < DelayDistribution {
    */
   final function realize() {
     if supportsLazy() {
-      x!.pilot();
+      x!.get();
     } else {
       x!.value();
     }

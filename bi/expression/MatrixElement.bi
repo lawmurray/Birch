@@ -26,20 +26,20 @@ final class MatrixElement<Value>(y:Expression<Value[_,_]>, i:Integer,
     return y!.value()[i,j];
   }
 
-  override function doPilot() -> Value {
-    return y!.pilot()[i,j];
+  override function doPilot(gen:Integer) -> Value {
+    return y!.pilot(gen)[i,j];
   }
 
   override function doGet() -> Value {
     return y!.get()[i,j];
   }
 
-  override function doMove(κ:Kernel) -> Value {
-    return y!.move(κ)[i,j];
+  override function doMove(gen:Integer, κ:Kernel) -> Value {
+    return y!.move(gen, κ)[i,j];
   }
 
-  override function doGrad() {
-    y!.grad(d!, i, j);
+  override function doGrad(gen:Integer) {
+    y!.grad(gen, d!, i, j);
   }
 
   override function doPrior(vars:RaggedArray<DelayExpression>) ->
@@ -51,8 +51,8 @@ final class MatrixElement<Value>(y:Expression<Value[_,_]>, i:Integer,
     y!.constant();
   }
 
-  override function doCount() {
-    y!.count();
+  override function doCount(gen:Integer) {
+    y!.count(gen);
   }
 
   override function doDetach() {

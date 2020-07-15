@@ -41,17 +41,18 @@ class MoveParticle(m:Model) < Particle(m) {
   /**
    * Add a new step.
    *
+   * - t: The step number, beginning at 0.
    * - z: Expression giving the incremental log-likelihood for th new step.
    *
    * Returns: Incremental log-likelihood; zero if the argument is `nil`.
    */
-  function augment(z:Expression<Real>?) -> Real {
+  function augment(t:Integer, z:Expression<Real>?) -> Real {
     /* likelihood */
     auto z' <- z;
     if !z'? {
       z' <- box(0.0);
     }
-    auto w <- z'!.pilot();
+    auto w <- z'!.pilot(t);
     π <- π + w;
     zs.pushBack(z'!);
     
@@ -61,7 +62,7 @@ class MoveParticle(m:Model) < Particle(m) {
     if !p? {
       p <- box(0.0);
     }
-    π <- π + p!.pilot();
+    π <- π + p!.pilot(t);
     ps.pushBack(p!);
 
     assert ps.size() == zs.size();
@@ -78,11 +79,11 @@ class MoveParticle(m:Model) < Particle(m) {
      * them constant, so that Random objects appearing in them will be
      * ineligible for moves in future; that's what we want */
     if !zs.empty() {
-      π <- π - zs.front().value();
+      π <- π - zs.front().get();
       zs.popFront();
     }
     if !ps.empty() {
-      π <- π - ps.front().value();
+      π <- π - ps.front().get();
       ps.popFront();
     }
     if !vs.empty() {
@@ -96,12 +97,12 @@ class MoveParticle(m:Model) < Particle(m) {
   /**
    * Compute gradient.
    */
-  function grad() {
+  function grad(gen:Integer) {
     assert ps.size() == zs.size();
     auto L <- zs.size();    
     for l in 1..L {
-      zs.get(l).grad(1.0);
-      ps.get(l).grad(1.0);
+      zs.get(l).grad(gen, 1.0);
+      ps.get(l).grad(gen, 1.0);
     }
   }
 
@@ -110,13 +111,13 @@ class MoveParticle(m:Model) < Particle(m) {
    *
    * - κ: Markov kernel.
    */
-  function move(κ:Kernel) {
+  function move(gen:Integer, κ:Kernel) {
     assert ps.size() == zs.size();
     auto L <- zs.size();    
     π <- 0.0;
     for l in 1..L {
-      π <- π + zs.get(l).move(κ);
-      π <- π + ps.get(l).move(κ);
+      π <- π + zs.get(l).move(gen, κ);
+      π <- π + ps.get(l).move(gen, κ);
     }
   }
 

@@ -35,20 +35,20 @@ abstract class MatrixUnaryExpression<Argument,ArgumentValue,
     return doEvaluate(y!.value());
   }
 
-  final override function doPilot() -> Value {
-    return doEvaluate(y!.pilot());
+  final override function doPilot(gen:Integer) -> Value {
+    return doEvaluate(y!.pilot(gen));
   }
 
   final override function doGet() -> Value {
     return doEvaluate(y!.get());
   }
 
-  final override function doMove(κ:Kernel) -> Value {
-    return doEvaluate(y!.move(κ));
+  final override function doMove(gen:Integer, κ:Kernel) -> Value {
+    return doEvaluate(y!.move(gen, κ));
   }
   
-  final override function doGrad() {
-    y!.grad(doEvaluateGrad(d!, x!, y!.get()));
+  final override function doGrad(gen:Integer) {
+    y!.grad(gen, doEvaluateGrad(d!, x!, y!.get()));
   }
 
   final override function doPrior(vars:RaggedArray<DelayExpression>) ->
@@ -60,8 +60,8 @@ abstract class MatrixUnaryExpression<Argument,ArgumentValue,
     y!.constant();
   }
 
-  final override function doCount() {
-    y!.count();
+  final override function doCount(gen:Integer) {
+    y!.count(gen);
   }
 
   final override function doDetach() {

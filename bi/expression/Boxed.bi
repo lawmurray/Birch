@@ -18,7 +18,7 @@ final class Boxed<Value>(x:Value) < Expression<Value>(x) {
     return x!;
   }
 
-  override function doPilot() -> Value {
+  override function doPilot(gen:Integer) -> Value {
     return x!;
   }
 
@@ -26,7 +26,7 @@ final class Boxed<Value>(x:Value) < Expression<Value>(x) {
     return x!;
   }
 
-  override function doMove(κ:Kernel) -> Value {
+  override function doMove(gen:Integer, κ:Kernel) -> Value {
     return x!;
   }
   
@@ -35,7 +35,7 @@ final class Boxed<Value>(x:Value) < Expression<Value>(x) {
     return nil;
   }
 
-  override function doGrad() {
+  override function doGrad(gen:Integer) {
     //
   }
 
@@ -47,7 +47,7 @@ final class Boxed<Value>(x:Value) < Expression<Value>(x) {
     //
   }
 
-  override function doCount() {
+  override function doCount(gen:Integer) {
     //
   }
 

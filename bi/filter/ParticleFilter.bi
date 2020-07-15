@@ -123,7 +123,7 @@ class ParticleFilter {
   /**
    * Filter one step.
    *
-   * - t: The step number, beginning at 0.
+   * - t: The step number, beginning at 1.
    */
   function filter(t:Integer) {
     resample(t);

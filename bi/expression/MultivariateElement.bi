@@ -21,20 +21,20 @@ final class MultivariateElement<Value>(y:Expression<Value[_]>, i:Integer) <
     return y!.value()[i];
   }
 
-  override function doPilot() -> Value {
-    return y!.pilot()[i];
+  override function doPilot(gen:Integer) -> Value {
+    return y!.pilot(gen)[i];
   }
 
   override function doGet() -> Value {
     return y!.get()[i];
   }
 
-  override function doMove(κ:Kernel) -> Value {
-    return y!.move(κ)[i];
+  override function doMove(gen:Integer, κ:Kernel) -> Value {
+    return y!.move(gen, κ)[i];
   }
 
-  override function doGrad() {
-    y!.grad(d!, i);
+  override function doGrad(gen:Integer) {
+    y!.grad(gen, d!, i);
   }
 
   override function doPrior(vars:RaggedArray<DelayExpression>) ->
@@ -46,8 +46,8 @@ final class MultivariateElement<Value>(y:Expression<Value[_]>, i:Integer) <
     y!.constant();
   }
 
-  override function doCount() {
-    y!.count();
+  override function doCount(gen:Integer) {
+    y!.count(gen);
   }
 
   override function doDetach() {

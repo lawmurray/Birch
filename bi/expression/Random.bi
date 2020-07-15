@@ -91,7 +91,11 @@ final class Random<Value> < Expression<Value>(nil) {
     return x;
   }
 
-  override function doPilot() -> Value {
+  override function doPilot(gen:Integer) -> Value {
+    return doGet();
+  }
+
+  override function doGet() -> Value {
     assert p?;
     if p!.supportsLazy() {
       p!.prune();
@@ -106,11 +110,7 @@ final class Random<Value> < Expression<Value>(nil) {
     }
   }
 
-  override function doGet() -> Value {
-    return doPilot();
-  }
-
-  override function doMove(κ:Kernel) -> Value {
+  override function doMove(gen:Integer, κ:Kernel) -> Value {
     return κ.move(this);
   }
 
@@ -143,7 +143,7 @@ final class Random<Value> < Expression<Value>(nil) {
     }
   }
 
-  override function doGrad() {
+  override function doGrad(gen:Integer) {
     //  
   }
 
@@ -151,7 +151,7 @@ final class Random<Value> < Expression<Value>(nil) {
     d <- nil;
   }
 
-  override function doCount() {
+  override function doCount(gen:Integer) {
     //
   }
   

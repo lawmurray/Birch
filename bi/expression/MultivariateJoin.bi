@@ -26,9 +26,9 @@ final class MultivariateJoin<Value>(x:Expression<Value>[_]) <
       });
   }
   
-  override function doPilot() -> Value[_] {
+  override function doPilot(gen:Integer) -> Value[_] {
     return transform(y!, \(x:Expression<Value>) -> Value {
-        return x.pilot();
+        return x.pilot(gen);
       });
   }
 
@@ -38,14 +38,14 @@ final class MultivariateJoin<Value>(x:Expression<Value>[_]) <
       });
   }
 
-  override function doMove(κ:Kernel) -> Value[_] {
+  override function doMove(gen:Integer, κ:Kernel) -> Value[_] {
     return transform(y!, \(x:Expression<Value>) -> Value {
-        return x.move(κ);
+        return x.move(gen, κ);
       });
   }
   
-  override function doGrad() {
-    for_each(y!, d!, \(x:Expression<Value>, d:Value) { x.grad(d); });
+  override function doGrad(gen:Integer) {
+    for_each(y!, d!, \(x:Expression<Value>, d:Value) { x.grad(gen, d); });
   }
 
   override function doPrior(vars:RaggedArray<DelayExpression>) ->
@@ -65,8 +65,8 @@ final class MultivariateJoin<Value>(x:Expression<Value>[_]) <
     return p;
   }
 
-  override function doCount() {
-    for_each(y!, \(x:Expression<Value>) { x.count(); });
+  override function doCount(gen:Integer) {
+    for_each(y!, \(x:Expression<Value>) { x.count(gen); });
   }
 
   override function doConstant() {

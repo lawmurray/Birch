@@ -43,7 +43,7 @@ class MoveParticleFilter < ParticleFilter {
       auto play <- MoveHandler(delayed);
       auto x <- MoveParticle?(this.x[n])!;
       w[n] <- w[n] + play.handle(x.m.simulate());
-      w[n] <- w[n] + x.augment(play.z);
+      w[n] <- w[n] + x.augment(0, play.z);
       while x.size() > nlags {
         x.truncate();
       }
@@ -55,7 +55,7 @@ class MoveParticleFilter < ParticleFilter {
       auto play <- MoveHandler(delayed);
       auto x <- MoveParticle?(this.x[n])!;
       w[n] <- w[n] + play.handle(x.m.simulate(t));
-      w[n] <- w[n] + x.augment(play.z);
+      w[n] <- w[n] + x.augment(t, play.z);
       while x.size() > nlags {
         x.truncate();
       }
@@ -69,11 +69,11 @@ class MoveParticleFilter < ParticleFilter {
       κ.scale <- scale/pow(t, 3);
       parallel for n in 1..nparticles {
         auto x <- MoveParticle?(clone(this.x[n]))!;
-        x.grad();
+        x.grad(t - nlags);
         for m in 1..nmoves {
           auto x' <- clone(x);
-          x'.move(κ);
-          x'.grad();
+          x'.move(t - nlags, κ);
+          x'.grad(t - nlags);
           auto α <- x'.π - x.π + x'.logpdf(x, κ) - x.logpdf(x', κ);
           if log(simulate_uniform(0.0, 1.0)) <= α {  // accept?
             x <- x';

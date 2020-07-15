@@ -53,21 +53,21 @@ abstract class MultivariateBinaryExpression<Left,Right,LeftValue,RightValue,
     return doEvaluate(y!.value(), z!.value());
   }
 
-  final override function doPilot() -> Value {
-    return doEvaluate(y!.pilot(), z!.pilot());
+  final override function doPilot(gen:Integer) -> Value {
+    return doEvaluate(y!.pilot(gen), z!.pilot(gen));
   }
 
   final override function doGet() -> Value {
     return doEvaluate(y!.get(), z!.get());
   }
 
-  final override function doMove(κ:Kernel) -> Value {
-    return doEvaluate(y!.move(κ), z!.move(κ));
+  final override function doMove(gen:Integer, κ:Kernel) -> Value {
+    return doEvaluate(y!.move(gen, κ), z!.move(gen, κ));
   }
   
-  final override function doGrad() {
-    y!.grad(doEvaluateGradLeft(d!, x!, y!.get(), z!.get()));
-    z!.grad(doEvaluateGradRight(d!, x!, y!.get(), z!.get()));
+  final override function doGrad(gen:Integer) {
+    y!.grad(gen, doEvaluateGradLeft(d!, x!, y!.get(), z!.get()));
+    z!.grad(gen, doEvaluateGradRight(d!, x!, y!.get(), z!.get()));
   }
   
   final override function doPrior(vars:RaggedArray<DelayExpression>) ->
@@ -90,9 +90,9 @@ abstract class MultivariateBinaryExpression<Left,Right,LeftValue,RightValue,
     z!.constant();
   }
 
-  final override function doCount() {
-    y!.count();
-    z!.count();
+  final override function doCount(gen:Integer) {
+    y!.count(gen);
+    z!.count(gen);
   }
   
   final override function doDetach() {

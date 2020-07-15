@@ -32,9 +32,9 @@ final class MatrixJoin<Value>(y:Expression<Value>[_,_]) <
       });
   }
   
-  override function doPilot() -> Value[_,_] {
+  override function doPilot(gen:Integer) -> Value[_,_] {
     return transform(y!, \(x:Expression<Value>) -> Value {
-        return x.pilot();
+        return x.pilot(gen);
       });
   }
 
@@ -44,14 +44,14 @@ final class MatrixJoin<Value>(y:Expression<Value>[_,_]) <
       });
   }
 
-  override function doMove(κ:Kernel) -> Value[_,_] {
+  override function doMove(gen:Integer, κ:Kernel) -> Value[_,_] {
     return transform(y!, \(x:Expression<Value>) -> Value {
-        return x.move(κ);
+        return x.move(gen, κ);
       });
   }
   
-  override function doGrad() {
-    for_each(y!, d!, \(x:Expression<Value>, d:Value) { x.grad(d); });
+  override function doGrad(gen:Integer) {
+    for_each(y!, d!, \(x:Expression<Value>, d:Value) { x.grad(gen, d); });
   }
 
   override function doPrior(vars:RaggedArray<DelayExpression>) ->
@@ -74,8 +74,8 @@ final class MatrixJoin<Value>(y:Expression<Value>[_,_]) <
     return p;
   }
 
-  override function doCount() {
-    for_each(y!, \(x:Expression<Value>) { x.count(); });
+  override function doCount(gen:Integer) {
+    for_each(y!, \(x:Expression<Value>) { x.count(gen); });
   }
 
   override function doConstant() {
