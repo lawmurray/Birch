@@ -179,7 +179,7 @@ public:
   Lazy& operator=(const Lazy& o) {
     label = o.label;
     // ^ must go first, next line may invalidate o as a reference
-    object = o.object;
+    object.replace(o.get());
     // ^ o.get() maintains the single-reference optimization
     return *this;
   }
@@ -192,7 +192,7 @@ public:
   Lazy& operator=(const Lazy<Q>& o) {
     label = o.label;
     // ^ must go first, next line may invalidate o as a reference
-    object = o.object;
+    object.replace(o.get());
     // ^ o.get() maintains the single-reference optimization
     return *this;
   }
@@ -204,6 +204,7 @@ public:
     label = std::move(o.label);
     // ^ must go first, next line may invalidate o as a reference
     object = std::move(o.object);
+    // ^ std::move() maintains the single-reference optimization
     return *this;
   }
 
@@ -216,6 +217,7 @@ public:
     label = std::move(o.label);
     // ^ must go first, next line may invalidate o as a reference
     object = std::move(o.object);
+    // ^ std::move() maintains the single-reference optimization
     return *this;
   }
 
@@ -313,7 +315,8 @@ public:
    * Freeze.
    */
   void freeze() {
-    pull()->Any::freeze();
+    /* don't get() or pull() again, finish() has already done so */
+    object.get()->Any::freeze();
   }
 
   /**

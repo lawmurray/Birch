@@ -103,23 +103,15 @@ public:
    * Freeze the object.
    */
   void freeze() {
-    /* objects must be finished before they are frozen; however, it can be the
-     * case that, after one thread reaches an object during its finish pass,
-     * but before it reaches it again during its freeze pass, a second thread
-     * freezes and subsequently copies it; the first thread then reaches the
-     * new copy during its freeze pass; it should not attempt to finish or
-     * freeze such an object---the work has already been done by the second
-     * thread */
-    if (flags.load() & FINISHED) {
-      if (!(flags.exchangeOr(FROZEN) & FROZEN)) {
-        if (sharedCount.load() == 1u) {
-          // ^ small optimization: isUnique() makes sense, but unnecessarily
-          //   loads memoCount as well, which is unnecessary for a objects
-          //   that are not frozen
-          flags.maskOr(FROZEN_UNIQUE);
-        }
-        freeze_();
+    libbirch_assert_(isFinished());
+    if (!(flags.exchangeOr(FROZEN) & FROZEN)) {
+      if (sharedCount.load() == 1u) {
+        // ^ small optimization: isUnique() makes sense, but unnecessarily
+        //   loads memoCount as well, which is unnecessary for a objects
+        //   that are not frozen
+        flags.maskOr(FROZEN_UNIQUE);
       }
+      freeze_();
     }
   }
 
@@ -363,6 +355,13 @@ public:
    */
   bool isUnique() const {
     return numShared() == 1u && numMemo() == 1u;
+  }
+
+  /**
+   * Is the object finished?
+   */
+  bool isFinished() const {
+    return flags.load() & FINISHED;
   }
 
   /**
