@@ -145,7 +145,7 @@ abstract class Expression<Value>(x:Value?) < DelayExpression(x?) {
       flagPrior <- true;
       pilotCount <- 0;
       gradCount <- 0;
-      moveCount <- 0;
+      gradCount <- 0;
     }
     return x!;
   }
@@ -214,13 +214,13 @@ abstract class Expression<Value>(x:Value?) < DelayExpression(x?) {
   final function move(κ:Kernel) -> Value {
     if !isConstant() {
       assert pilotCount > 0;
-      if moveCount == 0 {
+      if gradCount == 0 {
         x <- doMove(κ);
         doClearGrad();
       }
-      moveCount <- moveCount + 1;
-      if moveCount == pilotCount {
-        moveCount <- 0;
+      gradCount <- gradCount + 1;
+      if gradCount == pilotCount {
+        gradCount <- 0;
       }
     }
     return x!;
@@ -258,7 +258,7 @@ abstract class Expression<Value>(x:Value?) < DelayExpression(x?) {
       flagPrior <- true;
       pilotCount <- 0;
       gradCount <- 0;
-      moveCount <- 0;
+      gradCount <- 0;
     }
   }
   

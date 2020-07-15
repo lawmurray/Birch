@@ -10,17 +10,13 @@ abstract class DelayExpression(isConstant:Boolean) {
   pilotCount:Integer16 <- 0;
 
   /**
-   * Number of times `grad()` has been called. Used to track accumulation of
-   * upstream gradients before recursion, after which it is reset to zero.
-   */
-  gradCount:Integer16 <- 0;
-  
-  /**
-   * Number of times `move()` has been called. Used to ensure each
-   * subexpression is moved only once, and upon reaching `countPilot` is
+   * Number of times `grad()` or `move()` has been called. In the former
+   * case, used to track accumulation of upstream gradients before recursion,
+   * after which it is reset to zero. In the latter case, used to ensure that
+   * each subexpression is moved only once, and upon reaching `pilotCount` is
    * reset to zero.
    */
-  moveCount:Integer16 <- 0;
+  gradCount:Integer16 <- 0;
 
   /**
    * Has `value()` been called? This is used as a short-circuit for shared
