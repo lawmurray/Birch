@@ -87,6 +87,7 @@ final class Random<Value> < Expression<Value>(nil) {
     auto x <- p!.simulate();
     p!.update(x);
     p!.unlink();
+    p!.unsetRandom(this);
     return x;
   }
 
@@ -98,6 +99,7 @@ final class Random<Value> < Expression<Value>(nil) {
       assert x?;
       p!.updateLazy(this);
       p!.unlink();
+      p!.unsetRandom(this);
       return x!;
     } else {
       return doValue();

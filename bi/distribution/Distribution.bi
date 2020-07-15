@@ -39,11 +39,19 @@ abstract class Distribution<Value> < DelayDistribution {
   }
 
   /**
-   * Set the random variate associated with the distribution, if any.
+   * Set a random variate associated with the distribution.
    */
   final function setRandom(x:Random<Value>) {
     assert !this.x?;
     this.x <- x;
+  }
+
+  /**
+   * Unset the random variate associated with the distribution.
+   */
+  final function unsetRandom(x:Random<Value>) {
+    assert this.x? && this.x! == x;
+    this.x <- nil;
   }
 
   /**
