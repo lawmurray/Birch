@@ -175,7 +175,6 @@ class ParticleFilter {
    */
   function resample(t:Integer) {
     if ess <= trigger*nparticles {
-      collect();
       a <- resample_systematic(w);
       w <- vector(0.0, nparticles);
       dynamic parallel for n in 1..nparticles {

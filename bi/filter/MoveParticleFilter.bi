@@ -65,7 +65,6 @@ class MoveParticleFilter < ParticleFilter {
   function move(t:Integer) {
     naccepts <- vector(0, nparticles);
     if nlags > 0 && nmoves > 0 {
-      collect();
       κ:LangevinKernel;
       κ.scale <- scale/pow(t, 3);
       parallel for n in 1..nparticles {
