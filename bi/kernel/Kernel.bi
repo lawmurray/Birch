@@ -13,15 +13,12 @@
  * subsequently accepted or rejected (according to e.g. a
  * Metropolis--Hastings acceptance probability).
  *
- * A Kernel has three basic operations:
+ * A Kernel has τςο basic operations:
  *
  * - `move()`: to simulate a new value for a variable given its previous
  *   value,
  * - `logpdf()`: to evaluate the log-density of the new value for a variable
  *   given its previous value, and
- * - `logratio()`: which is used for any final computations necessary to decide
- *   whether to accept or reject a move, for example computing the log-ratio
- *   of proposal densities for Metropolis--Hastings.
  *
  * For example, consider a random-walk Metropolis-Hastings algorithm
  * targeting a distribution $\pi(\mathrm{d}x)$. The Kernel object represents

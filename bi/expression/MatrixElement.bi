@@ -42,9 +42,14 @@ final class MatrixElement<Value>(y:Expression<Value[_,_]>, i:Integer,
     y!.grad(gen, d!, i, j);
   }
 
-  override function doPrior(vars:RaggedArray<DelayExpression>) ->
-      Expression<Real>? {
-    return y!.prior(vars);
+  override function doPrior() -> Expression<Real>? {
+    return y!.prior();
+  }
+
+  override function doCompare(gen:Integer, x:DelayExpression,
+      κ:Kernel) -> Real {
+    auto o <- MatrixElement<Value>?(x)!;
+    return y!.compare(gen, o.y!, κ);
   }
 
   override function doConstant() {

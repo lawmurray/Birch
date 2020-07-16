@@ -48,12 +48,11 @@ final class MultivariateJoin<Value>(x:Expression<Value>[_]) <
     for_each(y!, d!, \(x:Expression<Value>, d:Value) { x.grad(gen, d); });
   }
 
-  override function doPrior(vars:RaggedArray<DelayExpression>) ->
-      Expression<Real>? {
+  override function doPrior() -> Expression<Real>? {
     p:Expression<Real>?;
     auto L <- length();
     for i in 1..L {
-      auto q <- y![i].prior(vars);
+      auto q <- y![i].prior();
       if q? {
         if p? {
           p <- p! + q!;
@@ -63,6 +62,23 @@ final class MultivariateJoin<Value>(x:Expression<Value>[_]) <
       }
     }
     return p;
+  }
+
+  override function doCompare(gen:Integer, x:DelayExpression,
+      κ:Kernel) -> Real {
+    assert rows() == x.rows();
+    assert columns() == x.columns();
+    
+    auto o <- MultivariateJoin<Value>?(x)!;
+    auto w <- 0.0;
+    auto R <- rows();
+    auto C <- columns();
+    for i in 1..R {
+      for j in 1..C {
+        w <- w + y![i,j].compare(gen, o.y![i,j], κ);
+      }
+    }
+    return w;
   }
 
   override function doCount(gen:Integer) {

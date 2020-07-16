@@ -71,10 +71,9 @@ abstract class MatrixBinaryExpression<Left,Right,LeftValue,RightValue,
     z!.grad(gen, doEvaluateGradRight(d!, x!, y!.get(), z!.get()));
   }
   
-  final override function doPrior(vars:RaggedArray<DelayExpression>) ->
-      Expression<Real>? {
-    auto l <- y!.prior(vars);
-    auto r <- z!.prior(vars);
+  final override function doPrior() -> Expression<Real>? {
+    auto l <- y!.prior();
+    auto r <- z!.prior();
     if l? && r? {
       return l! + r!;
     } else if l? {
@@ -84,6 +83,13 @@ abstract class MatrixBinaryExpression<Left,Right,LeftValue,RightValue,
     } else {
       return nil;
     }
+  }
+
+  final override function doCompare(gen:Integer, x:DelayExpression,
+      κ:Kernel) -> Real {
+    auto o <- MatrixBinaryExpression<Left,Right,LeftValue,RightValue,
+        LeftGradient,RightGradient,Value>?(x)!;
+    return y!.compare(gen, o.y!, κ) + z!.compare(gen, o.z!, κ);
   }
 
   final override function doConstant() {

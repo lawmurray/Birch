@@ -22,11 +22,6 @@ class MoveParticle(m:Model) < Particle(m) {
   ps:Vector<Expression<Real>>;
   
   /**
-   * Variables. Each row collects the variables encountered in a single step.
-   */
-  vs:RaggedArray<DelayExpression>;
-  
-  /**
    * Log-posterior density.
    */
   π:Real <- 0.0;
@@ -57,17 +52,13 @@ class MoveParticle(m:Model) < Particle(m) {
     zs.pushBack(z'!);
     
     /* prior */
-    vs.pushBack();
-    auto p <- z'!.prior(vs);
+    auto p <- z'!.prior();
     if !p? {
       p <- box(0.0);
     }
     π <- π + p!.pilot(t);
     ps.pushBack(p!);
 
-    assert ps.size() == zs.size();
-    assert vs.size() == zs.size();
-    
     return w;
   }
 
@@ -86,20 +77,13 @@ class MoveParticle(m:Model) < Particle(m) {
       π <- π - ps.front().get();
       ps.popFront();
     }
-    if !vs.empty() {
-      vs.popFront();
-    }
-
-    assert ps.size() == zs.size();
-    assert vs.size() == zs.size();
   }
   
   /**
    * Compute gradient.
    */
   function grad(gen:Integer) {
-    assert ps.size() == zs.size();
-    auto L <- zs.size();    
+    auto L <- size();    
     for l in 1..L {
       zs.get(l).grad(gen, 1.0);
       ps.get(l).grad(gen, 1.0);
@@ -109,38 +93,37 @@ class MoveParticle(m:Model) < Particle(m) {
   /**
    * Move.
    *
+   * - gen: Generation limit.
    * - κ: Markov kernel.
    */
   function move(gen:Integer, κ:Kernel) {
-    assert ps.size() == zs.size();
-    auto L <- zs.size();    
-    π <- 0.0;
+    auto L <- size();    
+    auto π <- 0.0;
     for l in 1..L {
       π <- π + zs.get(l).move(gen, κ);
       π <- π + ps.get(l).move(gen, κ);
     }
+    this.π <- π;
   }
 
   /**
-   * Compute the log-pdf of a proposed state. This object is considered the
-   * current state, $x$.
+   * Compute log-ratio of proposal after move.
    *
-   * - x': Proposed state $x^\prime$.
+   * - gen: Generation limit.
+   * - x: Original state $x$.
    * - κ: Markov kernel.
    *
    * Returns: $\log q(x^\prime \mid x)$.
    */
-  function logpdf(x':MoveParticle, κ:Kernel) -> Real {
-    assert size() == x'.size();
-    assert vs.size() == x'.vs.size();
-    auto q <- 0.0;
-    for i in 1..vs.size() {
-      assert vs.size(i) == x'.vs.size(i);
-      for j in 1..vs.size(i) {
-        q <- q + vs.get(i,j).logpdf(x'.vs.get(i,j), κ);
-      }
+  function compare(gen:Integer, x:MoveParticle, κ:Kernel) -> Real {
+    assert size() == x.size();
+    auto L <- size();    
+    auto w <- 0.0;
+    for l in 1..L {
+      w <- w + zs.get(l).compare(gen, x.zs.get(l), κ);
+      w <- w + ps.get(l).compare(gen, x.ps.get(l), κ);
     }
-    return q;
+    return w;
   }
 }
 

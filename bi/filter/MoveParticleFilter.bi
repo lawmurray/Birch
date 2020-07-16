@@ -64,9 +64,9 @@ class MoveParticleFilter < ParticleFilter {
 
   function move(t:Integer) {
     naccepts <- vector(0, nparticles);
-    if nlags > 0 && nmoves > 0 {
+    if ess <= trigger*nparticles && nlags > 0 && nmoves > 0 {
       κ:LangevinKernel;
-      κ.scale <- scale/pow(t, 3);
+      κ.scale <- scale/pow(min(t, nlags), 3);
       parallel for n in 1..nparticles {
         auto x <- MoveParticle?(clone(this.x[n]))!;
         x.grad(t - nlags);
@@ -74,7 +74,7 @@ class MoveParticleFilter < ParticleFilter {
           auto x' <- clone(x);
           x'.move(t - nlags, κ);
           x'.grad(t - nlags);
-          auto α <- x'.π - x.π + x'.logpdf(x, κ) - x.logpdf(x', κ);
+          auto α <- x'.π - x.π + x'.compare(t - nlags, x, κ);
           if log(simulate_uniform(0.0, 1.0)) <= α {  // accept?
             x <- x';
             naccepts[n] <- naccepts[n] + 1;

@@ -214,12 +214,12 @@ abstract class Expression<Value>(x:Value?) < DelayExpression(x?) {
    * possibly using gradient information, and the expression re-evaluated
    * with these new values.
    *
-   * - gen: Generation number.
-   * - κ: Markov kernel.
+   * - gen: Generation limit.
+   * - κ: Markov kernel, $\kappa(\mathrm{d}x^\prime \mid x)$.
    *
    * Returns: The evaluated value of the expression.
    *
-   * The generation number `gen` works to truncate the recursion, as for
+   * The generation limit `gen` works to truncate the recursion, as for
    * `grad()`.
    */
   final function move(gen:Integer, κ:Kernel) -> Value {
@@ -238,6 +238,38 @@ abstract class Expression<Value>(x:Value?) < DelayExpression(x?) {
   }
 
   abstract function doMove(gen:Integer, κ:Kernel) -> Value;
+
+  /**
+   * Evaluate log-ratio of proposal probability densities after move.
+   *
+   * - gen: Generation limit.
+   * - x: Starting state, $x$.
+   * - κ: Markov kernel, $\kappa(\mathrm{d}x^\prime \mid x)$.
+   *
+   * Returns: The log-ratio of proposal probability densities after move,
+   * $\log q(x \mid x^\prime) - \log q(x^\prime \mid x)$. This object is
+   * considered to represent the proposed state $x^\prime$.
+   *
+   * The generation limit `gen` works to truncate the recursion, as for
+   * `grad()`.
+   */
+  final function compare(gen:Integer, x:DelayExpression, κ:Kernel) -> Real {
+    auto w <- 0.0;
+    if !isConstant() && generation >= gen {
+      assert pilotCount > 0;
+      if gradCount == 0 {
+        w <- doCompare(gen, x, κ);
+      }
+      gradCount <- gradCount + 1;
+      if gradCount == pilotCount {
+        gradCount <- 0;
+      }
+    }
+    return w;
+  }
+
+  abstract function doCompare(gen:Integer, x:DelayExpression,
+      κ:Kernel) -> Real;
 
   /**
    * Make constant, as though calling `value()`, but without re-evaluating
@@ -288,11 +320,11 @@ abstract class Expression<Value>(x:Value?) < DelayExpression(x?) {
    * - Gradient: Gradient type. Must be one of `Real`, `Real[_]` or
    *   `Real[_,_]`.
    *
-   * - gen: Generation number.
+   * - gen: Generation limit.
    * - d: Upstream gradient. For an initial call, this should be the unit for
    *      the given type, e.g. 1.0, a vector of ones, or the identity matrix.
    *
-   * The generation number `gen` is used to truncate the recursion. Any
+   * The generation limit `gen` is used to truncate the recursion. Any
    * expressions that have been assigned a generation number less of than
    * `gen` (usually at the time they are evaluated with `pilot()`), are
    * considered constant for the purposes of gradient evaluation. As the
@@ -352,7 +384,7 @@ abstract class Expression<Value>(x:Value?) < DelayExpression(x?) {
   /**
    * Evaluate gradient for an element of a vector.
    *
-   * - gen: Generation number.
+   * - gen: Generation limit.
    * - d: Upstream gradient.
    * - i: Element index.
    */
@@ -380,7 +412,7 @@ abstract class Expression<Value>(x:Value?) < DelayExpression(x?) {
   /**
    * Evaluate gradient for an element of a matrix.
    *
-   * - gen: Generation number.
+   * - gen: Generation limit.
    * - d: Upstream gradient.
    * - i: Row index.
    * - j: Column index.

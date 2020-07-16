@@ -30,9 +30,13 @@ final class Boxed<Value>(x:Value) < Expression<Value>(x) {
     return x!;
   }
   
-  override function doPrior(vars:RaggedArray<DelayExpression>) ->
-      Expression<Real>? {
+  override function doPrior() -> Expression<Real>? {
     return nil;
+  }
+
+  override function doCompare(gen:Integer, x:DelayExpression, κ:Kernel) ->
+      Real {
+    return 0.0;
   }
 
   override function doGrad(gen:Integer) {

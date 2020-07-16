@@ -77,41 +77,20 @@ abstract class DelayExpression(isConstant:Boolean) {
   /**
    * Construct a lazy expression for the log-prior, and collect variables.
    *
-   * - vars: Container into which to collect variables.
-   *
    * Returns: An expression giving the log-prior of any variables in the
    * expression, or nil if there are no variables (which may be interpreted
-   * as a log-prior of zero). Meanwhile, those variables are accumulated in
-   * the argument `vars`, calling `pushBack()` for each.
+   * as a log-prior of zero).
    */
-  final function prior(vars:RaggedArray<DelayExpression>) ->
-      Expression<Real>? {
+  final function prior() -> Expression<Real>? {
     if !flagPrior {
       flagPrior <- true;
-      return doPrior(vars);
+      return doPrior();
     } else {
       return nil;
     }
   }
 
-  abstract function doPrior(vars:RaggedArray<DelayExpression>) ->
-      Expression<Real>?;
-      
-  /**
-   * Compute the log-pdf of a proposed state. This expression is considered
-   * the current state, $x$.
-   *
-   * - x': Proposed state $x^\prime$.
-   * - κ: Markov kernel.
-   *
-   * Returns: $\log q(x^\prime \mid x)$.
-   *
-   * This is only valid for [Random](../classes/Random/) objects. It returns
-   * zero for anything else.
-   */
-  function logpdf(x':DelayExpression, κ:Kernel) -> Real {
-    return 0.0;
-  }
+  abstract function doPrior() -> Expression<Real>?;
 }
 
 /**

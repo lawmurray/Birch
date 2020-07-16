@@ -54,14 +54,13 @@ final class MatrixJoin<Value>(y:Expression<Value>[_,_]) <
     for_each(y!, d!, \(x:Expression<Value>, d:Value) { x.grad(gen, d); });
   }
 
-  override function doPrior(vars:RaggedArray<DelayExpression>) ->
-      Expression<Real>? {
+  override function doPrior() -> Expression<Real>? {
     p:Expression<Real>?;
     auto R <- rows();
     auto C <- columns();
     for i in 1..R {
       for j in 1..C {
-        auto q <- y![i,j].prior(vars);
+        auto q <- y![i,j].prior();
         if q? {
           if p? {
             p <- p! + q!;
@@ -72,6 +71,23 @@ final class MatrixJoin<Value>(y:Expression<Value>[_,_]) <
       }
     }
     return p;
+  }
+
+  override function doCompare(gen:Integer, x:DelayExpression,
+      κ:Kernel) -> Real {
+    assert rows() == x.rows();
+    assert columns() == x.columns();
+    
+    auto o <- MatrixJoin<Value>?(x)!;
+    auto w <- 0.0;
+    auto R <- rows();
+    auto C <- columns();
+    for i in 1..R {
+      for j in 1..C {
+        w <- w + y![i,j].compare(gen, o.y![i,j], κ);
+      }
+    }
+    return w;
   }
 
   override function doCount(gen:Integer) {

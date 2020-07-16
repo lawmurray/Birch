@@ -114,14 +114,12 @@ final class Random<Value> < Expression<Value>(nil) {
     return κ.move(this);
   }
 
-  override function doPrior(vars:RaggedArray<DelayExpression>) ->
-      Expression<Real>? {
+  override function doPrior() -> Expression<Real>? {
     if p? {
       auto p1 <- p!.logpdfLazy(this);
       p <- nil;
       if p1? {
-        vars.pushBack(vars.size(), this);
-        auto p2 <- p1!.prior(vars);
+        auto p2 <- p1!.prior();
         if p2? {
           return p1! + p2!;
         } else {
@@ -130,6 +128,12 @@ final class Random<Value> < Expression<Value>(nil) {
       }
     }
     return nil;
+  }
+
+  override function doCompare(gen:Integer, x:DelayExpression, κ:Kernel) ->
+      Real {
+    auto y <- Random<Value>?(x)!;
+    return κ.logpdf(y, this) - κ.logpdf(this, y);
   }
 
   function doAccumulateGrad(d:Value) {
@@ -161,20 +165,6 @@ final class Random<Value> < Expression<Value>(nil) {
 
   override function doDetach() {
     p <- nil;
-  }
-  
-  override function logpdf(x':DelayExpression, κ:Kernel) -> Real {
-    auto y <- Random<Value>?(x');
-    assert y?;
-    assert y!.flagConstant == flagConstant;
-      
-    if flagConstant {
-      /* constant */
-      return 0.0;
-    } else {
-      /* variable */
-      return κ.logpdf(y!, this);
-    }
   }
 
   override function graftGaussian() -> Gaussian? {

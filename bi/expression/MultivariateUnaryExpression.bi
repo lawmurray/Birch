@@ -51,9 +51,15 @@ abstract class MultivariateUnaryExpression<Argument,ArgumentValue,
     y!.grad(gen, doEvaluateGrad(d!, x!, y!.get()));
   }
 
-  final override function doPrior(vars:RaggedArray<DelayExpression>) ->
-      Expression<Real>? {
-    return y!.prior(vars);
+  final override function doPrior() -> Expression<Real>? {
+    return y!.prior();
+  }
+
+  final override function doCompare(gen:Integer, x:DelayExpression,
+      κ:Kernel) -> Real {
+    auto o <- MultivariateUnaryExpression<Argument,ArgumentValue,
+        ArgumentGradient,Value>?(x)!;
+    return y!.compare(gen, o.y!, κ);
   }
 
   final override function doConstant() {
