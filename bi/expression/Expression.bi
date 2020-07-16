@@ -377,6 +377,9 @@ abstract class Expression<Value>(x:Value?) < DelayExpression(x?) {
          * count for next time */
         doGrad(gen);
         gradCount <- 0;
+        if !isRandom() {
+          doClearGrad();
+        }
       }
     }
   }
@@ -405,6 +408,9 @@ abstract class Expression<Value>(x:Value?) < DelayExpression(x?) {
          * count for next time */
         doGrad(gen);
         gradCount <- 0;
+        if !isRandom() {
+          doClearGrad();
+        }
       }
     }
   }
@@ -434,6 +440,9 @@ abstract class Expression<Value>(x:Value?) < DelayExpression(x?) {
          * count for next time */
         doGrad(gen);
         gradCount <- 0;
+        if !isRandom() {
+          doClearGrad();
+        }
       }
     }
   }
