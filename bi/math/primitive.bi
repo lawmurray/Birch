@@ -199,8 +199,8 @@ function transform<Input1,Input2,Input3,Output>(X:Input1[_,_], Y:Input2[_,_],
  * - init: Initial value.
  * - op: Operator.
  */
-function reduce<Type>(x:Type[_], init:Type, op:\(Type, Type) -> Type) ->
-    Type {
+function reduce<Type>(x:Type[_], init:Type,
+    op:\(Type, Type) -> Type) -> Type {
   result:Type;
   cpp{{
   x.pin();
@@ -220,8 +220,8 @@ function reduce<Type>(x:Type[_], init:Type, op:\(Type, Type) -> Type) ->
  * - op1: Reduction operator.
  * - op2: Transformation operator.
  */
-function transform_reduce<Type>(x:Type[_], init:Type,
-    op1:\(Type, Type) -> Type, op2:\(Type) -> Type) -> Type {
+function transform_reduce<Input,Output>(x:Input[_], init:Output,
+    op1:\(Output, Output) -> Output, op2:\(Input) -> Output) -> Output {
   auto y <- init;
   for n in 1..length(x) {
     y <- op1(y, op2(x[n]));
@@ -238,8 +238,9 @@ function transform_reduce<Type>(x:Type[_], init:Type,
  * - op1: Reduction operator.
  * - op2: Transformation operator.
  */
-function transform_reduce<Type>(x:Type[_], y:Type[_], init:Type,
-    op1:\(Type, Type) -> Type, op2:\(Type, Type) -> Type) -> Type {
+function transform_reduce<Input1,Input2,Output>(x:Input1[_], y:Input2[_],
+    init:Output, op1:\(Output, Output) -> Output,
+    op2:\(Input1, Input2) -> Output) -> Output {
   assert length(x) == length(y);
   auto z <- init;
   for n in 1..length(x) {
@@ -258,9 +259,9 @@ function transform_reduce<Type>(x:Type[_], y:Type[_], init:Type,
  * - op1: Reduction operator.
  * - op2: Transformation operator.
  */
-function transform_reduce<Type>(x:Type[_], y:Type[_], z:Type[_],
-    init:Type, op1:\(Type, Type) -> Type,
-    op2:\(Type, Type, Type) -> Type) -> Type {
+function transform_reduce<Input1,Input2,Input3,Output>(x:Input1[_],
+    y:Input2[_], z:Input3[_], init:Output, op1:\(Output, Output) -> Output,
+    op2:\(Input1, Input2, Input3) -> Output) -> Output {
   assert length(x) == length(y);
   assert length(y) == length(z);
   auto a <- init;
