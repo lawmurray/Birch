@@ -144,7 +144,6 @@ E                                  [Ee][+-]?{D}+
 ".."                                { return RANGE_OP; }
 "?"                                 { return '?'; }
 "!"                                 { return '!'; }
-"!!"                                { return SPIN_OP; }
 "&"                                 { return '&'; }
 "&&"                                { return AND_OP; }
 "||"                                { return OR_OP; }

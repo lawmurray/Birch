@@ -97,8 +97,7 @@ extern int yydebug;
     GE_OP = 300,
     EQ_OP = 301,
     NE_OP = 302,
-    RANGE_OP = 303,
-    SPIN_OP = 304
+    RANGE_OP = 303
   };
 #endif
 
@@ -118,7 +117,7 @@ union YYSTYPE
   bi::Type* valType;
   bi::Statement* valStatement;
 
-#line 122 "bi/parser.hpp"
+#line 121 "bi/parser.hpp"
 
 };
 typedef union YYSTYPE YYSTYPE;
