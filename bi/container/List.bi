@@ -146,7 +146,7 @@ final class List<Type> {
   function popBack() {
     assert !empty();
     assert tail?;
-    tail <- tail.popBack();
+    tail <- tail!.popBack();
     count <- count - 1;
     if count <= 1 {
       head <- tail;
