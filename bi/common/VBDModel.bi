@@ -20,8 +20,8 @@ final class VBDModel < MarkovModel<VBDParameter,VBDState> {
   }
 
   fiber initial(x:VBDState, θ:VBDParameter) -> Event {
-    h.initial(x.h, θ.h)!!;
-    m.initial(x.m, θ.m)!!;
+    @h.initial(x.h, θ.h);
+    @m.initial(x.m, θ.m);
   }
   
   fiber transition(x':VBDState, x:VBDState, θ:VBDParameter) -> Event {
@@ -31,7 +31,7 @@ final class VBDModel < MarkovModel<VBDParameter,VBDState> {
     nhe <~ Binomial(x.h.s, 1.0 - exp(-x.m.i/Real(x.h.n)));
     nme <~ Binomial(x.m.s, 1.0 - exp(-x.h.i/Real(x.h.n)));
 
-    h.transition(x'.h, x.h, θ.h, nhe, x.h.e, x.h.i)!!;
-    m.transition(x'.m, x.m, θ.m, nme, x.m.e, x.m.i)!!;
+    @h.transition(x'.h, x.h, θ.h, nhe, x.h.e, x.h.i);
+    @m.transition(x'.m, x.m, θ.m, nme, x.m.e, x.m.i);
   }
 }
