@@ -129,7 +129,6 @@ final class List<Type> {
    */
   function popFront() {
     assert !empty();
-    
     assert head?;
     head <- head!.popFront();
     count <- count - 1;
@@ -137,8 +136,8 @@ final class List<Type> {
       tail <- head;
     }
     
-    assert this.count == 0 || (this.head? && this.tail?);
-    assert this.count > 0 || (!this.head? && !this.tail?);
+    assert count == 0 || (head? && tail?);
+    assert count > 0 || (!head? && !tail?);
   }
 
   /**
@@ -146,17 +145,15 @@ final class List<Type> {
    */
   function popBack() {
     assert !empty();
-
     assert tail?;
-    auto tail <- this.tail!;
-    this.tail <- tail.popBack();
+    tail <- tail.popBack();
     count <- count - 1;
     if count <= 1 {
-      head <- this.tail;
+      head <- tail;
     }
-        
-    assert this.count == 0 || (this.head? && this.tail?);
-    assert this.count > 0 || (!this.head? && !this.tail?);
+    
+    assert count == 0 || (head? && tail?);
+    assert count > 0 || (!head? && !tail?);
   }
   
   /**
