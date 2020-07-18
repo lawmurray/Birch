@@ -66,7 +66,7 @@ class MoveParticleFilter < ParticleFilter {
     naccepts <- vector(0, nparticles);
     if ess <= trigger*nparticles && nlags > 0 && nmoves > 0 {
       κ:LangevinKernel;
-      κ.scale <- scale/pow(min(t, nlags), 3);
+      κ.scale <- scale/pow(t, 2);
       parallel for n in 1..nparticles {
         auto x <- MoveParticle?(clone(this.x[n]))!;
         x.grad(t - nlags);
