@@ -1,0 +1,12 @@
+digraph {
+  splines=ortho
+  concentrate=true
+  rankdir=BT
+  node [shape=box,fontname=Helvetica,fontsize=10,margin="0.1,0.01"]
+  edge [arrowhead=empty]
+
+  Kernel [href="../classes/Kernel/",target="_top"]
+  LangevinKernel [href="../classes/LangevinKernel/",target="_top"]
+
+  LangevinKernel -> Kernel
+}

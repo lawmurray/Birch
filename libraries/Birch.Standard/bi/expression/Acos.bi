@@ -1,0 +1,20 @@
+/**
+ * Lazy `acos`.
+ */
+final class Acos(y:Expression<Real>) <
+    ScalarUnaryExpression<Expression<Real>,Real,Real,Real>(y) {
+  override function doEvaluate(y:Real) -> Real {
+    return acos(y);
+  }
+
+  override function doEvaluateGrad(d:Real, x:Real, y:Real) -> Real {
+    return -d/sqrt(1.0 - y*y);
+  }
+}
+
+/**
+ * Lazy `acos`.
+ */
+function acos(y:Expression<Real>) -> Acos {
+  return construct<Acos>(y);
+}

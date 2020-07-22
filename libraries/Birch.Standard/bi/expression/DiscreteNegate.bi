@@ -1,0 +1,45 @@
+/**
+ * Lazy negation.
+ */
+final class DiscreteNegate(y:Expression<Integer>) <
+    ScalarUnaryExpression<Expression<Integer>,Integer,Real,Integer>(y) {
+  override function doEvaluate(y:Integer) -> Integer {
+    return -y;
+  }
+
+  override function doEvaluateGrad(d:Real, x:Integer, y:Integer) -> Real {
+    return -d;
+  }
+
+  override function graftDiscrete() -> Discrete? {
+    r:Discrete?;
+    if !hasValue() {
+      r <- graftBoundedDiscrete();
+      if !r? {
+        x1:Discrete?;
+        if (x1 <- y!.graftDiscrete())? {
+          r <- LinearDiscrete(box(-1), x1!, box(0));
+        }
+      }
+    }
+    return r;
+  }
+
+  override function graftBoundedDiscrete() -> BoundedDiscrete? {
+    r:BoundedDiscrete?;
+    if !hasValue() {
+      x1:BoundedDiscrete?;
+      if (x1 <- y!.graftBoundedDiscrete())? {
+        r <- LinearBoundedDiscrete(box(-1), x1!, box(0));
+      }
+    }
+    return r;
+  }
+}
+
+/**
+ * Lazy negation.
+ */
+operator (-x:Expression<Integer>) -> DiscreteNegate {
+  return construct<DiscreteNegate>(x);
+}

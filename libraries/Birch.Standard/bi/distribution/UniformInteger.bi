@@ -1,0 +1,95 @@
+/**
+ * Uniform integer distribution.
+ */
+final class UniformInteger(l:Expression<Integer>, u:Expression<Integer>) <
+    BoundedDiscrete {
+  /**
+   * Lower bound.
+   */
+  l:Expression<Integer> <- l;
+
+  /**
+   * Upper bound.
+   */
+  u:Expression<Integer> <- u;
+
+  function supportsLazy() -> Boolean {
+    return false;
+  }
+
+  function simulate() -> Integer {
+    if value? {
+      return value!;
+    } else {
+      return simulate_uniform_int(l.value(), u.value());
+    }
+  }
+
+//  function simulateLazy() -> Integer? {
+//    if value? {
+//      return value!;
+//    } else {
+//      return simulate_uniform_int(l.get(), u.get());
+//    }
+//  }
+
+  function logpdf(x:Integer) -> Real {
+    return logpdf_uniform_int(x, l.value(), u.value());
+  }
+
+//  function logpdfLazy(x:Expression<Integer>) -> Expression<Real>? {
+//    return logpdf_lazy_uniform_int(x, l, u);
+//  }
+
+  function cdf(x:Integer) -> Real? {
+    return cdf_uniform_int(x, l.value(), u.value());
+  }
+
+  function quantile(P:Real) -> Integer? {
+    return quantile_uniform_int(P, l.value(), u.value());
+  }
+  
+  function lower() -> Integer? {
+    return l.value();
+  }
+  
+  function upper() -> Integer? {
+    return u.value();
+  }
+
+  function write(buffer:Buffer) {
+    prune();
+    buffer.set("class", "UniformInteger");
+    buffer.set("l", l);
+    buffer.set("u", u);
+  }
+}
+
+/**
+ * Create uniform distribution over integers.
+ */
+function Uniform(l:Expression<Integer>, u:Expression<Integer>) ->
+    UniformInteger {
+  return construct<UniformInteger>(l, u);
+}
+
+/**
+ * Create uniform distribution over integers.
+ */
+function Uniform(l:Expression<Integer>, u:Integer) -> UniformInteger {
+  return Uniform(l, box(u));
+}
+
+/**
+ * Create uniform distribution over integers.
+ */
+function Uniform(l:Integer, u:Expression<Integer>) -> UniformInteger {
+  return Uniform(box(l), u);
+}
+
+/**
+ * Create uniform distribution over integers.
+ */
+function Uniform(l:Integer, u:Integer) -> UniformInteger {
+  return Uniform(box(l), box(u));
+}

@@ -1,0 +1,88 @@
+/**
+ * Lazy multivariate add.
+ */
+final class MultivariateAdd(y:Expression<Real[_]>, z:Expression<Real[_]>) <
+    MultivariateBinaryExpression<Expression<Real[_]>,Expression<Real[_]>,
+    Real[_],Real[_],Real[_],Real[_],Real[_]>(y, z) {  
+  override function doRows() -> Integer {
+    return y!.rows();
+  }
+
+  override function doEvaluate(y:Real[_], z:Real[_]) -> Real[_] {
+    return y + z;
+  }
+
+  override function doEvaluateGradLeft(d:Real[_], x:Real[_], y:Real[_],
+      z:Real[_]) -> Real[_] {
+    return d;
+  }
+
+  override function doEvaluateGradRight(d:Real[_], x:Real[_], y:Real[_],
+      z:Real[_]) -> Real[_] {
+    return d;
+  }
+
+  override function graftLinearMultivariateGaussian() ->
+      TransformLinearMultivariate<MultivariateGaussian>? {
+    r:TransformLinearMultivariate<MultivariateGaussian>?;
+    if !hasValue() {
+      x1:MultivariateGaussian?;
+
+      if (r <- y!.graftLinearMultivariateGaussian())? {
+        r!.add(z!);
+      } else if (r <- z!.graftLinearMultivariateGaussian())? {
+        r!.add(y!);
+      } else if (x1 <- y!.graftMultivariateGaussian())? {
+        r <- TransformLinearMultivariate<MultivariateGaussian>(
+            box(identity(z!.rows())), x1!, z!);
+      } else if (x1 <- z!.graftMultivariateGaussian())? {
+        r <- TransformLinearMultivariate<MultivariateGaussian>(
+            box(identity(z!.rows())), x1!, y!);
+      }
+    }
+    return r;
+  }
+  
+  override function graftLinearMultivariateNormalInverseGamma(compare:Distribution<Real>) ->
+      TransformLinearMultivariate<MultivariateNormalInverseGamma>? {
+    r:TransformLinearMultivariate<MultivariateNormalInverseGamma>?;
+    if !hasValue() {
+      x1:MultivariateNormalInverseGamma?;
+
+      if (r <- y!.graftLinearMultivariateNormalInverseGamma(compare))? {
+        r!.add(z!);
+      } else if (r <- z!.graftLinearMultivariateNormalInverseGamma(compare))? {
+        r!.add(y!);
+      } else if (x1 <- y!.graftMultivariateNormalInverseGamma(compare))? {
+        r <- TransformLinearMultivariate<MultivariateNormalInverseGamma>(
+            box(identity(z!.rows())), x1!, z!);
+      } else if (x1 <- z!.graftMultivariateNormalInverseGamma(compare))? {
+        r <- TransformLinearMultivariate<MultivariateNormalInverseGamma>(
+            box(identity(z!.rows())), x1!, y!);
+      }
+    }
+    return r;
+  }
+}
+
+/**
+ * Lazy multivariate add.
+ */
+operator (y:Expression<Real[_]> + z:Expression<Real[_]>) -> MultivariateAdd {
+  assert y.rows() == z.rows();
+  return construct<MultivariateAdd>(y, z);
+}
+
+/**
+ * Lazy multivariate add.
+ */
+operator (y:Real[_] + z:Expression<Real[_]>) -> MultivariateAdd {
+  return box(y) + z;
+}
+
+/**
+ * Lazy multivariate add.
+ */
+operator (y:Expression<Real[_]> + z:Real[_]) -> MultivariateAdd {
+  return y + box(z);
+}

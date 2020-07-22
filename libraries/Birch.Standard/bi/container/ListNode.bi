@@ -1,0 +1,63 @@
+/*
+ * List node.
+ */
+final class ListNode<Type>(x:Type) {
+  prev:ListNode<Type>?;
+  next:ListNode<Type>?;
+  x:Type <- x;
+
+  /**
+   * Insert a new node just before this one in the list.
+   *
+   * - node: the new node.
+   */
+  function insert(node:ListNode<Type>) {
+    assert prev?;    
+    node.prev <- prev;
+    node.next <- this;
+    prev!.next <- node;
+    this.prev <- node;
+  }
+  
+  /**
+   * Remove this node from the list.
+   */
+  function erase() {
+    assert prev?;
+    assert next?;
+    next!.prev <- prev;
+    prev!.next <- next;
+    this.next <- nil;
+    this.prev <- nil;
+  }
+  
+  /**
+   * Pop this node from the front of the list.
+   *
+   * Return: the new front node of the list.
+   */
+  function popFront() -> ListNode<Type>? {
+    auto node <- this.next;
+    if node? {
+      node!.prev <- nil;
+    }
+    this.next <- nil;
+    this.prev <- nil;
+    return node;
+  }
+
+  /**
+   * Pop this node from the back of the list.
+   *
+   * Return: the new back node of the list.
+   */
+  function popBack() -> ListNode<Type>? {
+    auto node <- this.prev;
+    if node? {
+      node!.next <- nil;
+    }
+    this.next <- nil;
+    this.prev <- nil;
+    return node;
+  }
+}

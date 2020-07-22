@@ -1,0 +1,82 @@
+/**
+ * Weibull distribution.
+ */
+final class Weibull(k:Expression<Real>, λ:Expression<Real>) <
+    Distribution<Real> {
+  /**
+   * Shape.
+   */
+  k:Expression<Real> <- k;
+
+  /**
+   * Scale.
+   */
+  λ:Expression<Real> <- λ;
+
+  function supportsLazy() -> Boolean {
+    return true;
+  }
+
+  function simulate() -> Real {
+    return simulate_weibull(k.value(), λ.value());
+  }
+
+  function simulateLazy() -> Real? {
+    return simulate_weibull(k.get(), λ.get());
+  }
+  
+  function logpdf(x:Real) -> Real {
+    return logpdf_weibull(x, k.value(), λ.value());
+  }
+
+  function logpdfLazy(x:Expression<Real>) -> Expression<Real>? {
+    return logpdf_lazy_weibull(x, k, λ);
+  }
+
+  function cdf(x:Real) -> Real? {
+    return cdf_weibull(x, k.value(), λ.value());
+  }
+
+  function quantile(P:Real) -> Real? {
+    return quantile_weibull(P, k.value(), λ.value());
+  }
+
+  function lower() -> Real? {
+    return 0.0;
+  }
+
+  function write(buffer:Buffer) {
+    prune();
+    buffer.set("class", "Weibull");
+    buffer.set("k", k);
+    buffer.set("λ", λ);
+  }
+}
+
+/**
+ * Create Weibull distribution.
+ */
+function Weibull(k:Expression<Real>, λ:Expression<Real>) -> Weibull {
+  return construct<Weibull>(k, λ);
+}
+
+/**
+ * Create Weibull distribution.
+ */
+function Weibull(k:Expression<Real>, λ:Real) -> Weibull {
+  return Weibull(k, box(λ));
+}
+
+/**
+ * Create Weibull distribution.
+ */
+function Weibull(k:Real, λ:Expression<Real>) -> Weibull {
+  return Weibull(box(k), λ);
+}
+
+/**
+ * Create Weibull distribution.
+ */
+function Weibull(k:Real, λ:Real) -> Weibull {
+  return Weibull(box(k), box(λ));
+}

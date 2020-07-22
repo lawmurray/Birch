@@ -1,0 +1,139 @@
+/**
+ * Inverse Wishart distribution.
+ *
+ * This is typically used to establish a conjugate prior for a Bayesian
+ * multivariate linear regression:
+ *
+ * $$\begin{align*}
+ * \boldsymbol{\Sigma} &\sim \mathcal{W}^{-1}(\boldsymbol{\Psi}, \nu) \\
+ * \mathbf{W} &\sim \mathcal{MN}(\mathbf{M}, \mathbf{A}, \boldsymbol{\Sigma}) \\
+ * \mathbf{Y} &\sim \mathcal{N}(\mathbf{X}\mathbf{W}, \boldsymbol{\Sigma}),
+ * \end{align*}$$
+ *
+ * where $\mathbf{X}$ are inputs and $\mathbf{Y}$ are outputs.
+ *
+ * The relationship is established in code as follows:
+ *
+ *     V:Random<Real[_,_]>;
+ *     Ψ:LLT;
+ *     k:Real;
+ *     W:Random<Real[_,_]>;
+ *     M:Real[_,_];
+ *     U:Real[_,_];
+ *     Y:Random<LLT>;
+ *     X:Real[_,_];
+ *
+ *     V ~ InverseWishart(Ψ, k);
+ *     W ~ Gaussian(M, U, V);
+ *     Y ~ Gaussian(X*W, V);
+ */
+final class InverseWishart(Ψ:Expression<LLT>, k:Expression<Real>) <
+    Distribution<LLT> {
+  /**
+   * Scale.
+   */
+  Ψ:Expression<LLT> <- Ψ;
+  
+  /**
+   * Degrees of freedom.
+   */
+  k:Expression<Real> <- k;
+
+  function rows() -> Integer {
+    return Ψ.rows();
+  }
+
+  function columns() -> Integer {
+    return Ψ.columns();
+  }
+
+  function supportsLazy() -> Boolean {
+    return true;
+  }
+
+  function simulate() -> LLT {
+    return simulate_inverse_wishart(Ψ.value(), k.value());
+  }
+
+  function simulateLazy() -> LLT? {
+    return simulate_inverse_wishart(Ψ.get(), k.get());
+  }
+  
+  function logpdf(X:LLT) -> Real {
+    return logpdf_inverse_wishart(X, Ψ.value(), k.value());
+  }
+
+  function logpdfLazy(X:Expression<LLT>) -> Expression<Real>? {
+    return logpdf_lazy_inverse_wishart(X, Ψ, k);
+  }
+
+  function graftInverseWishart() -> InverseWishart? {
+    prune();
+    return this;
+  }
+
+  function write(buffer:Buffer) {
+    prune();
+    buffer.set("class", "InverseWishart");
+    buffer.set("Ψ", Ψ);
+    buffer.set("k", k);
+  }
+}
+
+/**
+ * Create inverse-Wishart distribution.
+ */
+function InverseWishart(Ψ:Expression<LLT>, k:Expression<Real>) ->
+    InverseWishart {
+  return construct<InverseWishart>(Ψ, k);
+}
+
+/**
+ * Create inverse-Wishart distribution.
+ */
+function InverseWishart(Ψ:Expression<LLT>, k:Real) -> InverseWishart {
+  return InverseWishart(Ψ, box(k));
+}
+
+/**
+ * Create inverse-Wishart distribution.
+ */
+function InverseWishart(Ψ:LLT, k:Expression<Real>) -> InverseWishart {
+  return InverseWishart(box(Ψ), k);
+}
+
+/**
+ * Create inverse-Wishart distribution.
+ */
+function InverseWishart(Ψ:LLT, k:Real) -> InverseWishart {
+  return InverseWishart(box(Ψ), box(k));
+}
+
+/**
+ * Create inverse-Wishart distribution.
+ */
+function InverseWishart(Ψ:Expression<Real[_,_]>, k:Expression<Real>) ->
+    InverseWishart {
+  return InverseWishart(llt(Ψ), k);
+}
+
+/**
+ * Create inverse-Wishart distribution.
+ */
+function InverseWishart(Ψ:Expression<Real[_,_]>, k:Real) -> InverseWishart {
+  return InverseWishart(llt(Ψ), k);
+}
+
+/**
+ * Create inverse-Wishart distribution.
+ */
+function InverseWishart(Ψ:Real[_,_], k:Expression<Real>) -> InverseWishart {
+  return InverseWishart(llt(Ψ), k);
+}
+
+/**
+ * Create inverse-Wishart distribution.
+ */
+function InverseWishart(Ψ:Real[_,_], k:Real) -> InverseWishart {
+  return InverseWishart(llt(Ψ), k);
+}

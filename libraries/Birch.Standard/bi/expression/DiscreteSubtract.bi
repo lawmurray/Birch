@@ -1,0 +1,74 @@
+/**
+ * Lazy subtract.
+ */
+final class DiscreteSubtract(y:Expression<Integer>, z:Expression<Integer>) <
+    ScalarBinaryExpression<Expression<Integer>,Expression<Integer>,Integer,
+    Integer,Real,Real,Integer>(y, z) {  
+  override function doEvaluate(y:Integer, z:Integer) -> Integer {
+    return y - z;
+  }
+  
+  override function doEvaluateGradLeft(d:Real, x:Integer, y:Integer,
+      z:Integer) -> Real {
+    return d;
+  }
+
+  override function doEvaluateGradRight(d:Real, x:Integer, y:Integer,
+      z:Integer) -> Real {
+    return -d;
+  }
+
+  override function graftDiscrete() -> Discrete? {
+    r:Discrete?;
+    if !hasValue() {
+      r <- graftBoundedDiscrete();
+      if !r? {
+        x1:Discrete?;
+        if (x1 <- y!.graftDiscrete())? {
+          r <- LinearDiscrete(box(1), x1!, -z!);
+        } else if (x1 <- z!.graftDiscrete())? {
+          r <- LinearDiscrete(box(-1), x1!, y!);
+        }
+      }
+    }
+    return r;
+  }
+
+  override function graftBoundedDiscrete() -> BoundedDiscrete? {
+    r:BoundedDiscrete?;
+    if !hasValue() {
+      auto x1 <- y!.graftBoundedDiscrete();
+      auto x2 <- z!.graftBoundedDiscrete();
+      if x1? && x2? {
+        r <- SubtractBoundedDiscrete(x1!, x2!);
+      } else if x1? {
+        r <- LinearBoundedDiscrete(box(1), x1!, -z!);
+      } else if x2? {
+        r <- LinearBoundedDiscrete(box(-1), x2!, y!);
+      }
+    }
+    return r;
+  }
+}
+
+/**
+ * Lazy subtract.
+ */
+operator (y:Expression<Integer> - z:Expression<Integer>) ->
+    DiscreteSubtract {
+  return construct<DiscreteSubtract>(y, z);
+}
+
+/**
+ * Lazy subtract.
+ */
+operator (y:Integer - z:Expression<Integer>) -> DiscreteSubtract {
+  return box(y) - z;
+}
+
+/**
+ * Lazy subtract.
+ */
+operator (y:Expression<Integer> - z:Integer) -> DiscreteSubtract {
+  return y - box(z);
+}

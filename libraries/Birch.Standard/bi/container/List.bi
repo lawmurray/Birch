@@ -1,0 +1,284 @@
+/**
+ * Doubly-linked list. Beyond its typical uses, because List is a recursive
+ * data structure, it provides good sharing under Birch's lazy deep copy
+ * mechanism, although not as good as Stack or Tape, as they are
+ * singly-linked.
+ *
+ * !!! attention
+ *     Large recursive data structures such as stacks, lists and tapes
+ *     (size in the tens of thousands) can cause a stack overflow on
+ *     destruction that usually manifests as a segfault. Possible solutions
+ *     are:
+ *
+ *     1. Use an array or Vector instead.
+ *     2. Remove items one-by-one before the object goes out of scope, with
+ *        e.g. `popBack()`.
+ *     3. Increase the stack size with `ulimit` or similar.
+ *
+ *     While callable from the object finalizer, the second option is not
+ *     used by default as it can currently cause unnecessary copying under
+ *     Birch's lazy deep copy mechanism.
+ */
+final class List<Type> {
+  head:ListNode<Type>?;
+  tail:ListNode<Type>?;
+  count:Integer <- 0;
+
+  /**
+   * Number of elements.
+   */
+  function size() -> Integer {
+    return count;
+  }
+
+  /**
+   * Is this empty?
+   */
+  function empty() -> Boolean {
+    return count == 0;
+  }
+
+  /**
+   * Clear all elements.
+   */
+  function clear() {
+    head <- nil;
+    tail <- nil;
+    count <- 0;
+  }
+
+  /**
+   * Get the first element.
+   */
+  function front() -> Type {
+    assert head?;
+    return head!.x;
+  }
+
+  /**
+   * Get the last element.
+   */
+  function back() -> Type {
+    assert this.tail?;
+    auto tail <- this.tail!;
+    return tail.x;
+  }
+
+  /**
+   * Get an element.
+   *
+   * - i: Position.
+   */
+  function get(i:Integer) -> Type {
+    return getNode(i).x;
+  }
+
+  /**
+   * Set an element.
+   *
+   * - i: Position.
+   * - x: Value.
+   */
+  function set(i:Integer, x:Type) {
+    getNode(i).x <- x;
+  }
+
+  /**
+   * Insert a new element at the start.
+   *
+   * - x: Value.
+   */
+  function pushFront(x:Type) {
+    node:ListNode<Type>(x);
+    if empty() {
+      tail <- node;
+    } else {
+      assert head?;
+      head!.prev <- node;
+      node.next <- head;
+    }
+    head <- node;
+    count <- count + 1;
+    
+    assert this.head? && this.tail?;
+  }
+
+  /**
+   * Insert a new element at the end.
+   *
+   * - x: Value.
+   */
+  function pushBack(x:Type) {
+    node:ListNode<Type>(x);
+    if empty() {
+      head <- node;
+    } else {
+      assert this.tail?;
+      auto tail <- this.tail!;
+      tail.next <- node;
+      node.prev <- tail;
+    }
+    this.tail <- node;
+    count <- count + 1;
+    
+    assert this.head? && this.tail?;
+  }
+
+  /**
+   * Remove the first element.
+   */
+  function popFront() {
+    assert !empty();
+    assert head?;
+    head <- head!.popFront();
+    count <- count - 1;
+    if count <= 1 {
+      tail <- head;
+    }
+    
+    assert count == 0 || (head? && tail?);
+    assert count > 0 || (!head? && !tail?);
+  }
+
+  /**
+   * Remove the last element.
+   */
+  function popBack() {
+    assert !empty();
+    assert tail?;
+    tail <- tail!.popBack();
+    count <- count - 1;
+    if count <= 1 {
+      head <- tail;
+    }
+    
+    assert count == 0 || (head? && tail?);
+    assert count > 0 || (!head? && !tail?);
+  }
+  
+  /**
+   * Insert a new element.
+   *
+   * - i: Position.
+   * - x: Value.
+   *
+   * Inserts the new element immediately before the current element at
+   * position `i`. To insert at the end of the container, use a position that
+   * is one more than the current size, or `pushBack()`.
+   */
+  function insert(i:Integer, x:Type) {
+    assert 1 <= i && i <= count + 1;
+    
+    if (i == 1) {
+      pushFront(x);
+    } else if (i == count + 1) {
+      pushBack(x);
+    } else {
+      node:ListNode<Type>(x);
+      getNode(i).insert(node);
+      count <- count + 1;
+    }
+    
+    assert this.head? && this.tail?;
+  }
+
+  /**
+   * Erase an element.
+   *
+   * - i: Position.
+   */
+  function erase(i:Integer) {
+    assert 1 <= i && i <= count;
+    
+    if (i == 1) {
+      popFront();
+    } else if (i == count) {
+      popBack();
+    } else {
+      getNode(i).erase();
+      count <- count - 1;
+    }
+    
+    assert this.count == 0 || (this.head? && this.tail?);
+    assert this.count > 0 || (!this.head? && !this.tail?);
+  }
+
+  /**
+   * Forward iteration.
+   *
+   * Return: a fiber object that yields each element in forward order.
+   */
+  fiber walk() -> Type {
+    node:ListNode<Type>? <- head;
+    while (node?) {
+      yield node!.x;
+      node <- node!.next;
+    }
+  }
+
+  /**
+   * First node, if any. This can be used to maintain a bidirectional
+   * iterator over the container.
+   */
+  function begin() -> ListNode<Type>? {
+    return head;
+  }
+  
+  /**
+   * Last node, if any. This can be used to maintain a bidirectional
+   * iterator over the container.
+   */
+  function end() -> ListNode<Type>? {
+    return tail;
+  }
+
+  /**
+   * Get a node.
+   *
+   * - i: Position.
+   */
+  function getNode(i:Integer) -> ListNode<Type> {
+    assert 1 <= i && i <= count;
+    
+    node:ListNode<Type>?;
+    if (2*i <= count) {
+      /* walk forward */
+      node <- head;
+      for j in 1..i-1 {
+        assert node?;
+        node <- node!.next;
+      }
+    } else {
+      /* walk backward */
+      node <- tail;
+      for j in 1..count - i {
+        assert node?;
+        node <- node!.prev;
+      }
+    }
+    
+    assert node?;
+    return node!;
+  }
+  
+  function read(buffer:Buffer) {
+    auto f <- buffer.walk();
+    while f? {
+      /* tricky, but works for both value and class types */
+      auto x <- make<Type>();
+      auto y <- f!.get(x);
+      if (y?) {
+        x <- Type?(y);  // cast needed for y:Object?
+        pushBack(x!);
+      }
+    }
+  }
+
+  function write(buffer:Buffer) {
+    buffer.setArray();
+    auto f <- walk();
+    while (f?) {
+      buffer.push().set(f!);
+    }
+  }
+}

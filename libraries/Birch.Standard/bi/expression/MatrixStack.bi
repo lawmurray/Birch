@@ -1,0 +1,52 @@
+/**
+ * Lazy matrix stack.
+ */
+final class MatrixStack(y:Expression<Real[_,_]>, z:Expression<Real[_,_]>) <
+    MatrixBinaryExpression<Expression<Real[_,_]>,Expression<Real[_,_]>,
+    Real[_,_],Real[_,_],Real[_,_],Real[_,_],Real[_,_]>(y, z) {  
+  override function doRows() -> Integer {
+    return y!.rows() + z!.rows();
+  }
+  
+  override function doColumns() -> Integer {
+    assert y!.columns() == z!.columns();
+    return y!.columns();
+  }
+
+  override function doEvaluate(y:Real[_,_], z:Real[_,_]) -> Real[_,_] {
+    return stack(y, z);
+  }
+
+  override function doEvaluateGradLeft(d:Real[_,_], x:Real[_,_], y:Real[_,_],
+      z:Real[_,_]) -> Real[_,_] {
+    return d[1..global.rows(y), 1..global.columns(y)];
+  }
+
+  override function doEvaluateGradRight(d:Real[_,_], x:Real[_,_], y:Real[_,_],
+      z:Real[_,_]) -> Real[_,_] {
+    return d[(global.rows(y) + 1)..global.rows(x), 1..global.columns(z)];
+  }
+}
+
+/**
+ * Lazy matrix stack.
+ */
+function stack(y:Expression<Real[_,_]>, z:Expression<Real[_,_]>) ->
+    MatrixStack {
+  assert y!.columns() == z!.columns();
+  return construct<MatrixStack>(y, z);
+}
+
+/**
+ * Lazy matrix stack.
+ */
+function stack(y:Real[_,_], z:Expression<Real[_,_]>) -> MatrixStack {
+  return stack(box(y), z);
+}
+
+/**
+ * Lazy matrix stack.
+ */
+function stack(y:Expression<Real[_,_]>, z:Real[_,_]) -> MatrixStack {
+  return stack(y, box(z));
+}

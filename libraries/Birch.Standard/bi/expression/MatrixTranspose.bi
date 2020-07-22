@@ -1,0 +1,37 @@
+/**
+ * Lazy `transpose`.
+ */
+final class MatrixTranspose(x:Expression<Real[_,_]>) <
+    MatrixUnaryExpression<Expression<Real[_,_]>,Real[_,_],Real[_,_],
+    Real[_,_]>(x) {
+  override function doRows() -> Integer {
+    return y!.columns();
+  }
+  
+  override function doColumns() -> Integer {
+    return y!.rows();
+  }
+
+  override function doEvaluate(y:Real[_,_]) -> Real[_,_] {
+    return transpose(y);
+  }
+
+  override function doEvaluateGrad(d:Real[_,_], x:Real[_,_], y:Real[_,_]) ->
+      Real[_,_] {
+    return transpose(d);
+  }
+}
+
+/**
+ * Lazy `transpose`.
+ */
+function transpose(y:Expression<Real[_,_]>) -> MatrixTranspose {
+  return construct<MatrixTranspose>(y);
+}
+
+/**
+ * Lazy `transpose`, identity function.
+ */
+function transpose(y:Expression<LLT>) -> Expression<LLT> {
+  return y;
+}

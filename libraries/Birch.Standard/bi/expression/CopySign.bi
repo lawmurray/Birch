@@ -1,0 +1,45 @@
+/**
+ * Lazy `copysign`.
+ */
+final class CopySign(y:Expression<Real>, z:Expression<Real>) <
+    ScalarBinaryExpression<Expression<Real>,Expression<Real>,Real,Real,Real,
+    Real,Real>(y, z) {  
+  override function doEvaluate(y:Real, z:Real) -> Real {
+    return copysign(y, z);
+  }
+  
+  override function doEvaluateGradLeft(d:Real, x:Real, y:Real, z:Real) ->
+      Real {
+    if x == y {
+      return d;
+    } else {
+      return -d;
+    }
+  }
+
+  override function doEvaluateGradRight(d:Real, x:Real, y:Real, z:Real) ->
+      Real {
+    return 0.0;
+  }
+}
+
+/**
+ * Lazy `copysign`.
+ */
+function copysign(y:Expression<Real>, z:Expression<Real>) -> CopySign {
+  return construct<CopySign>(y, z);
+}
+
+/**
+ * Lazy `copysign`.
+ */
+function copysign(y:Real, z:Expression<Real>) -> CopySign {
+  return copysign(box(y), z);
+}
+
+/**
+ * Lazy `copysign`.
+ */
+function copysign(y:Expression<Real>, z:Real) -> CopySign {
+  return copysign(y, box(z));
+}

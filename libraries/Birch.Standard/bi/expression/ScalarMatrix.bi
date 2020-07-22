@@ -1,0 +1,22 @@
+/**
+ * Lazy `scalar`.
+ */
+final class ScalarMatrix<Value>(y:Expression<Value[_,_]>) <
+    ScalarUnaryExpression<Expression<Value[_,_]>,Value[_,_],Real[_,_],
+    Value>(y) {
+  override function doEvaluate(y:Value[_,_]) -> Value {
+    return scalar(y);
+  }
+
+  override function doEvaluateGrad(d:Real, x:Value, y:Value[_,_]) ->
+      Real[_,_] {
+    return [[d]];
+  }
+}
+
+/**
+ * Lazy `scalar`.
+ */
+function scalar<Value>(y:Expression<Value[_,_]>) -> ScalarMatrix<Value> {
+  return construct<ScalarMatrix<Value>>(y);
+}

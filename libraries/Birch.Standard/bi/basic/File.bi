@@ -1,0 +1,4 @@
+/**
+ * File handle.
+ */
+type File;

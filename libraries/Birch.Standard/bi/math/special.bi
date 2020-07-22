@@ -1,0 +1,247 @@
+/**
+ * The gamma function.
+ */
+function gamma(x:Real64) -> Real64 {
+  cpp {{
+  return ::tgamma(x);
+  }}
+}
+
+/**
+ * The gamma function.
+ */
+function gamma(x:Real32) -> Real32 {
+  cpp {{
+  return ::tgammaf(x);
+  }}
+}
+
+/**
+ * Logarithm of the gamma function.
+ */
+function lgamma(x:Real64) -> Real64 {
+  cpp {{
+  return ::lgamma(x);
+  }}
+}
+
+/**
+ * Logarithm of the gamma function.
+ */
+function lgamma(x:Real32) -> Real32 {
+  cpp {{
+  return ::lgammaf(x);
+  }}
+}
+
+/**
+ * The multivariate gamma function.
+ */
+function gamma(x:Real64, p:Integer) -> Real64 {
+  assert p > 0;
+  auto y <- 0.25*(p*(p - 1))*log(π);
+  for i in 1..p {
+    y <- y*gamma(x + 0.5*(1 - i));
+  }
+  return y;
+}
+
+/**
+ * The multivariate gamma function.
+ */
+function gamma(x:Real32, p:Integer) -> Real32 {
+  assert p > 0;
+  auto y <- Real32(0.25)*Real32(p*(p - 1))*log(Real32(π));
+  for i in 1..p {
+    y <- y*gamma(x + Real32(0.5)*Real32(1 - i));
+  }
+  return y;
+}
+
+/**
+ * Logarithm of the multivariate gamma function.
+ */
+function lgamma(x:Real64, p:Integer) -> Real64 {
+  assert p > 0;
+  auto y <- 0.25*(p*(p - 1))*log(π);
+  for i in 1..p {
+    y <- y + lgamma(x + 0.5*(1 - i));
+  }
+  return y;
+}
+
+/**
+ * Logarithm of the multivariate gamma function.
+ */
+function lgamma(x:Real32, p:Integer) -> Real32 {
+  assert p > 0;
+  auto y <- Real32(0.25)*Real32(p*(p - 1))*log(Real32(π));
+  for i in 1..p {
+    y <- y + lgamma(x + Real32(0.5)*Real32(1 - i));
+  }
+  return y;
+}
+
+/**
+ * The beta function.
+ */
+function beta(x:Real64, y:Real64) -> Real64 {
+  cpp {{
+  return boost::math::beta(x, y);
+  }}
+}
+
+/**
+ * The beta function.
+ */
+function beta(x:Real32, y:Real32) -> Real32 {
+  cpp {{
+  return boost::math::beta(x, y);
+  }}
+}
+
+/**
+ * The incomplete beta function.
+ */
+function ibeta(a:Real64, b:Real64, x:Real64) -> Real64 {
+  cpp {{
+    return boost::math::ibeta(a, b, x);
+  }}
+}
+
+/**
+ * The incomplete beta function.
+ */
+function ibeta(a:Real32, b:Real32, x:Real32) -> Real32 {
+  cpp {{
+    return boost::math::ibeta(a, b, x);
+  }}
+}
+
+/**
+ * Logarithm of the beta function.
+ */
+function lbeta(x:Real64, y:Real64) -> Real64 {
+  return lgamma(x) + lgamma(y) - lgamma(x + y);
+}
+
+/**
+ * Logarithm of the beta function.
+ */
+function lbeta(x:Real32, y:Real32) -> Real32 {
+  return lgamma(x) + lgamma(y) - lgamma(x + y);
+}
+
+/**
+ * The digamma function (derivative of `lgamma`).
+ */
+function digamma(x:Real64) -> Real64 {
+  cpp {{
+  return boost::math::digamma(x);
+  }}
+}
+
+/**
+ * The digamma function (derivative of `lgamma`).
+ */
+function digamma(x:Real32) -> Real32 {
+  cpp {{
+  return boost::math::digamma(x);
+  }}
+}
+
+/**
+ * The binomial coefficient.
+ */
+function choose(x:Integer, y:Integer) -> Real64 {
+  assert 0 <= x;
+  assert 0 <= y;
+  assert x >= y;
+  
+  if (y == 0) {
+    return 1.0;
+  } else {
+    // see Boost binomial_coefficient function for this implementation
+    return 1.0/(Real(y)*beta(Real(y), Real(x - y + 1)));
+  }
+}
+
+/**
+ * The binomial coefficient.
+ */
+function choose(x:Real64, y:Real64) -> Real64 {
+  assert 0.0 <= x;
+  assert 0.0 <= y;
+  assert x >= y;
+  
+  if (y == 0.0) {
+    return 1.0;
+  } else {
+    // see Boost binomial_coefficient function for this implementation
+    return 1.0/(y*beta(y, x - y + 1.0));
+  }
+}
+
+/**
+ * The binomial coefficient.
+ */
+function choose(x:Real32, y:Real32) -> Real32 {
+  assert Real32(0.0) <= x;
+  assert Real32(0.0) <= y;
+  assert x >= y;
+  
+  if (y == Real32(0.0)) {
+    return Real32(1.0);
+  } else {
+    // see Boost binomial_coefficient function for this implementation
+    return Real32(1.0)/(y*beta(y, x - y + Real32(1.0)));
+  }
+}
+
+/**
+ * Logarithm of the binomial coefficient.
+ */
+function lchoose(x:Integer, y:Integer) -> Real64 {
+  assert 0 <= x;
+  assert 0 <= y;
+  assert x >= y;
+  
+  if (y == 0) {
+    return 0.0;
+  } else {
+    // see Boost binomial_coefficient function for this implementation
+    return -log(Real(y)) - lbeta(Real(y), Real(x - y + 1));
+  }
+}
+
+/**
+ * Logarithm of the binomial coefficient.
+ */
+function lchoose(x:Real64, y:Real64) -> Real64 {
+  assert 0.0 <= x;
+  assert 0.0 <= y;
+  assert x >= y;
+  
+  if (y == 0.0) {
+    return 0.0;
+  } else {
+    // see Boost binomial_coefficient function for this implementation
+    return -log(y) - lbeta(y, x - y + 1.0);
+  }
+}
+
+/**
+ * Logarithm of the binomial coefficient.
+ */
+function lchoose(x:Real32, y:Real32) -> Real32 {
+  assert Real32(0.0) <= x;
+  assert Real32(0.0) <= y;
+  assert x >= y;
+  
+  if (y == Real32(0.0)) {
+    return log(Real32(1.0));
+  } else {
+    // see Boost binomial_coefficient function for this implementation
+    return -log(y) - lbeta(y, x - y + Real32(1.0));
+  }
+}

@@ -1,0 +1,16 @@
+digraph {
+  splines=ortho
+  concentrate=true
+  rankdir=BT
+  node [shape=box,fontname=Helvetica,fontsize=10,margin="0.1,0.01"]
+  edge [arrowhead=empty]
+
+  ParticleFilter [href="../classes/ParticleFilter/",target="_top"]
+  AliveParticleFilter [href="../classes/AliveParticleFilter/",target="_top"]
+  MoveParticleFilter [href="../classes/MoveParticleFilter/",target="_top"]
+  ConditionalParticleFilter [href="../classes/ConditionalParticleFilter/",target="_top"]
+
+  AliveParticleFilter -> ParticleFilter
+  MoveParticleFilter -> ParticleFilter
+  ConditionalParticleFilter -> ParticleFilter
+}

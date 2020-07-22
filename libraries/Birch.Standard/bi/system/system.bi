@@ -1,0 +1,32 @@
+/**
+ * Execute a command.
+ *
+ *   - cmd: The command string.
+ *
+ * Return: the return code of the execution.
+ */
+function system(cmd:String) -> Integer {
+  cpp{{
+  int status = std::system(cmd.c_str());
+  if (WIFEXITED(status)) {
+    return WEXITSTATUS(status);
+  } else if (WIFSIGNALED(status)) {
+    return WTERMSIG(status);
+  } else if (WIFSTOPPED(status)) {
+    return WSTOPSIG(status);
+  } else {
+    return status;
+  }
+  }}
+}
+
+/**
+ * Exit.
+ *
+ *   - code: An exit code.
+ */
+function exit(code:Integer) {
+  cpp{{
+  std::exit(code);
+  }}
+}

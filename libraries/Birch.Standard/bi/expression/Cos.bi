@@ -1,0 +1,20 @@
+/**
+ * Lazy `cos`.
+ */
+final class Cos(y:Expression<Real>) <
+    ScalarUnaryExpression<Expression<Real>,Real,Real,Real>(y) {
+  override function doEvaluate(y:Real) -> Real {
+    return cos(y);
+  }
+
+  override function doEvaluateGrad(d:Real, x:Real, y:Real) -> Real {
+    return -d*sin(y);
+  }
+}
+
+/**
+ * Lazy `cos`.
+ */
+function cos(y:Expression<Real>) -> Cos {
+  return construct<Cos>(y);
+}

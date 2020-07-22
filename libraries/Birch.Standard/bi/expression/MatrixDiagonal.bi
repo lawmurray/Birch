@@ -1,0 +1,29 @@
+/**
+ * Lazy `diagonal`.
+ */
+final class MatrixDiagonal(y:Expression<Real[_]>) <
+    MatrixUnaryExpression<Expression<Real[_]>,Real[_],Real[_],Real[_,_]>(y) {
+  override function doRows() -> Integer {
+    return y!.rows();
+  }
+  
+  override function doColumns() -> Integer {
+    return y!.rows();
+  }
+
+  override function doEvaluate(y:Real[_]) -> Real[_,_] {
+    return diagonal(y);
+  }
+
+  override function doEvaluateGrad(d:Real[_,_], x:Real[_,_],
+      y:Real[_]) -> Real[_] {
+    return diagonal(d);
+  }
+}
+
+/**
+ * Lazy `diagonal`.
+ */
+function diagonal(x:Expression<Real[_]>) -> MatrixDiagonal {
+  return construct<MatrixDiagonal>(x);
+}

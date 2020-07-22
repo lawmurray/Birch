@@ -1,0 +1,20 @@
+/**
+ * Lazy `scalar`.
+ */
+final class ScalarMultivariate<Value>(y:Expression<Value[_]>) <
+    ScalarUnaryExpression<Expression<Value[_]>,Value[_],Real[_],Value>(y) {
+  override function doEvaluate(y:Value[_]) -> Value {
+    return scalar(y);
+  }
+
+  override function doEvaluateGrad(d:Real, x:Value, y:Value[_]) -> Value[_] {
+    return [d];
+  }
+}
+
+/**
+ * Lazy `scalar`.
+ */
+function scalar<Value>(y:Expression<Value[_]>) -> ScalarMultivariate<Value> {
+  return construct<ScalarMultivariate<Value>>(y);
+}

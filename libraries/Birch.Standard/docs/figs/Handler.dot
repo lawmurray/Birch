@@ -1,0 +1,14 @@
+digraph {
+  splines=ortho
+  concentrate=true
+  rankdir=BT
+  node [shape=box,fontname=Helvetica,fontsize=10,margin="0.1,0.01"]
+  edge [arrowhead=empty]
+
+  Handler [href="../classes/Handler/",target="_top"]
+  PlayHandler [href="../classes/PlayHandler/",target="_top"]
+  MoveHandler [href="../classes/MoveHandler/",target="_top"]
+
+  PlayHandler -> Handler
+  MoveHandler -> Handler
+}

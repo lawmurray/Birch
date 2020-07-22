@@ -1,0 +1,60 @@
+/**
+ * Lazy negation.
+ */
+final class MultivariateNegate(y:Expression<Real[_]>) <
+    MultivariateUnaryExpression<Expression<Real[_]>,Real[_],Real[_],
+    Real[_]>(y) {
+  override function doRows() -> Integer {
+    return y!.rows();
+  }
+    
+  override function doEvaluate(y:Real[_]) -> Real[_] {
+    return -y;
+  }
+
+  override function doEvaluateGrad(d:Real[_], x:Real[_], y:Real[_]) ->
+      Real[_] {
+    return -d;
+  }
+
+  override function graftLinearMultivariateGaussian() ->
+      TransformLinearMultivariate<MultivariateGaussian>? {
+    r:TransformLinearMultivariate<MultivariateGaussian>?;
+    if !hasValue() {
+      x1:MultivariateGaussian?;
+
+      if (r <- y!.graftLinearMultivariateGaussian())? {
+        r!.negate();
+      } else if (x1 <- y!.graftMultivariateGaussian())? {
+        auto R <- x1!.rows();
+        r <- TransformLinearMultivariate<MultivariateGaussian>(
+            box(diagonal(-1.0, R)), x1!, box(vector(0.0, R)));
+      }
+    }
+    return r;
+  }
+  
+  override function graftLinearMultivariateNormalInverseGamma(compare:Distribution<Real>) ->
+      TransformLinearMultivariate<MultivariateNormalInverseGamma>? {
+    r:TransformLinearMultivariate<MultivariateNormalInverseGamma>?;
+    if !hasValue() {
+      x1:MultivariateNormalInverseGamma?;
+
+      if (r <- y!.graftLinearMultivariateNormalInverseGamma(compare))? {
+        r!.negate();
+      } else if (x1 <- y!.graftMultivariateNormalInverseGamma(compare))? {
+        auto R <- x1!.rows();
+        r <- TransformLinearMultivariate<MultivariateNormalInverseGamma>(
+            box(diagonal(-1.0, R)), x1!, box(vector(0.0, R)));
+      }
+    }
+    return r;
+  }
+}
+
+/**
+ * Lazy negation.
+ */
+operator (-y:Expression<Real[_]>) -> MultivariateNegate {
+  return construct<MultivariateNegate>(y);
+}

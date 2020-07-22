@@ -1,0 +1,78 @@
+/**
+ * Lazy rank downdate.
+ */
+final class MatrixRankDowndate<Right,RightValue,RightGradient>(y:Expression<LLT>,
+    z:Right) < MatrixBinaryExpression<Expression<LLT>,Right,LLT,RightValue,
+    Real[_,_],RightGradient,LLT>(y, z) {  
+  override function doRows() -> Integer {
+    return y!.rows();
+  }
+  
+  override function doColumns() -> Integer {
+    return y!.columns();
+  }
+
+  override function doEvaluate(y:LLT, z:RightValue) -> LLT {
+    return rank_downdate(y, z);
+  }
+
+  override function doEvaluateGradLeft(d:Real[_,_], x:LLT, y:LLT,
+      z:RightValue) -> Real[_,_] {
+    return d;
+  }
+  
+  override function doEvaluateGradRight(d:Real[_,_], x:LLT, y:LLT,
+      z:RightValue) -> RightGradient {
+    return -(d + transpose(d))*z;
+  }
+}
+
+/**
+ * Lazy rank 1 downdate.
+ */
+function rank_downdate(y:Expression<LLT>, z:Expression<Real[_]>) ->
+    MatrixRankDowndate<Expression<Real[_]>,Real[_],Real[_]> {
+  assert y!.columns() == z!.rows();
+  return construct<MatrixRankDowndate<Expression<Real[_]>,Real[_],Real[_]>>(y, z);
+}
+
+/**
+ * Lazy rank 1 downdate.
+ */
+function rank_downdate(y:LLT, z:Expression<Real[_]>) ->
+    MatrixRankDowndate<Expression<Real[_]>,Real[_],Real[_]> {
+  return rank_downdate(box(y), z);
+}
+
+/**
+ * Lazy rank 1 downdate.
+ */
+function rank_downdate(y:Expression<LLT>, z:Real[_]) ->
+    MatrixRankDowndate<Expression<Real[_]>,Real[_],Real[_]> {
+  return rank_downdate(y, box(z));
+}
+
+/**
+ * Lazy rank $k$ downdate.
+ */
+function rank_downdate(y:Expression<LLT>, z:Expression<Real[_,_]>) ->
+    MatrixRankDowndate<Expression<Real[_,_]>,Real[_,_],Real[_,_]> {
+  assert y!.columns() == z!.rows();
+  return construct<MatrixRankDowndate<Expression<Real[_,_]>,Real[_,_],Real[_,_]>>(y, z);
+}
+
+/**
+ * Lazy rank $k$ downdate.
+ */
+function rank_downdate(y:LLT, z:Expression<Real[_,_]>) ->
+    MatrixRankDowndate<Expression<Real[_,_]>,Real[_,_],Real[_,_]> {
+  return rank_downdate(box(y), z);
+}
+
+/**
+ * Lazy rank $k$ downdate.
+ */
+function rank_downdate(y:Expression<LLT>, z:Real[_,_]) ->
+    MatrixRankDowndate<Expression<Real[_,_]>,Real[_,_],Real[_,_]> {
+  return rank_downdate(y, box(z));
+}

@@ -1,0 +1,43 @@
+/**
+ * Lazy `pow`.
+ */
+final class Pow(y:Expression<Real>, z:Expression<Real>) <
+    ScalarBinaryExpression<Expression<Real>,Expression<Real>,Real,Real,Real,
+    Real,Real>(y, z) {  
+  override function doEvaluate(y:Real, z:Real) -> Real {
+    return pow(y, z);
+  }
+
+  override function doEvaluateGradLeft(d:Real, x:Real, y:Real, z:Real) -> Real {
+    return d*z*pow(y, z - 1.0);
+  }
+
+  override function doEvaluateGradRight(d:Real, x:Real, y:Real, z:Real) -> Real {
+    if y > 0.0 {
+      return d*pow(y, z)*log(y);
+    } else {
+      return 0.0;
+    }
+  }
+}
+
+/**
+ * Lazy `pow`.
+ */
+function pow(y:Expression<Real>, z:Expression<Real>) -> Pow {
+  return construct<Pow>(y, z);
+}
+
+/**
+ * Lazy `pow`.
+ */
+function pow(y:Real, z:Expression<Real>) -> Pow {
+  return pow(box(y), z);
+}
+
+/**
+ * Lazy `pow`.
+ */
+function pow(y:Expression<Real>, z:Real) -> Pow {
+  return pow(y, box(z));
+}

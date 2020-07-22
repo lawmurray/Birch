@@ -1,0 +1,224 @@
+/**
+ * Length of a vector.
+ */
+function length<Type>(x:Type[_]) -> Integer {
+  cpp{{
+  return x.rows();
+  }}
+}
+
+/**
+ * Number of rows of a vector; equals `length()`.
+ */
+function rows<Type>(x:Type[_]) -> Integer {
+  cpp{{
+  return x.rows();
+  }}
+}
+
+/**
+ * Number of columns of a vector; equals 1.
+ */
+function columns<Type>(x:Type[_]) -> Integer {
+  return 1;
+}
+
+/**
+ * Convert single-element vector to scalar value.
+ */
+function scalar<Type>(x:Type[_]) -> Type {
+  assert length(x) == 1;  
+  return x[1];
+}
+
+/**
+ * Create a vector filled by a lambda function.
+ *
+ * - λ: Lambda function.
+ * - length: Length of the vector.
+ *
+ * Returns: The new vector.
+ *
+ * The lambda function is called once for each element in the new vector,
+ * receiving, as its argument, the index of that element, and returning the
+ * value at that element.
+ */
+function vector<Type>(λ:\(Integer) -> Type, length:Integer) -> Type[_] {
+  cpp{{
+  /* wrap λ in another lambda function to translate 0-based indices into
+   * 1-based indices */
+  return libbirch::make_array_from_lambda<Type>(libbirch::make_shape(length),
+        [&](int64_t i) { return λ(i + 1); });
+  }}
+}
+
+/**
+ * Create vector filled with a given value.
+ */
+function vector<Type>(x:Type, length:Integer) -> Type[_] {
+  cpp{{
+  return libbirch::make_array<Type>(libbirch::make_shape(length), x);
+  }}
+}
+
+/**
+ * Create vector filled with a sequentially incrementing values.
+ *
+ * - x: Initial value.
+ * - length: Length.
+ */
+function iota<Type>(x:Type, length:Integer) -> Real[_] {
+  return vector(\(i:Integer) -> Type {
+    return x + (i - 1);
+  }, length);
+}
+
+/**
+ * Sum reduction.
+ */
+function sum<Type>(x:Type[_]) -> Type {
+  if length(x) == 0 {
+    return 0.0;
+  } else if length(x) == 1 {
+    return x[1];
+  } else {
+    return reduce(x[2..length(x)], x[1], \(x:Type, y:Type) -> Type {
+        return x + y;
+      });
+  }
+}
+
+/**
+ * Product reduction.
+ */
+function product<Type>(x:Type[_]) -> Type {
+  assert length(x) > 0;
+  if length(x) == 1 {
+    return x[1];
+  } else {
+    return reduce(x[2..length(x)], x[1], \(x:Type, y:Type) -> Type {
+        return x*y;
+      });
+   }
+}
+
+/**
+ * Maximum reduction.
+ */
+function max<Type>(x:Type[_]) -> Type {
+  assert length(x) > 0;
+  if length(x) == 1 {
+    return x[1];
+  } else {
+    return reduce(x[2..length(x)], x[1], \(x:Type, y:Type) -> Type {
+        return max(x, y);
+      });
+  }
+}
+
+/**
+ * Minimum reduction.
+ */
+function min<Type>(x:Type[_]) -> Type {
+  assert length(x) > 0;
+  if length(x) == 1 {
+    return x[1];
+  } else {
+    return reduce(x[2..length(x)], x[1], \(x:Type, y:Type) -> Type {
+        return min(x, y);
+      });
+  }
+}
+
+/**
+ * Inclusive prefix sum.
+ */
+function inclusive_scan_sum<Type>(x:Type[_]) -> Type[_] {
+  return inclusive_scan(x, \(x:Type, y:Type) -> Type { return x + y; });
+}
+
+/**
+ * Exclusive prefix sum.
+ */
+function exclusive_scan_sum<Type>(x:Type[_]) -> Type[_] {
+  return exclusive_scan(x, 0.0, \(x:Type, y:Type) -> Type {
+      return x + y;
+    });
+}
+
+/**
+ * Convert vector to String.
+ */
+function String(x:Real[_]) -> String {
+  result:String;
+  cpp{{
+  std::stringstream buf;
+  }}
+  for i in 1..length(x) {
+    auto value <- x[i];
+    cpp{{
+    if (i > 1) {
+      buf << ' ';
+    }
+    if (value == floor(value)) {
+      buf << (int64_t)value << ".0";
+    } else {
+      buf << std::scientific << std::setprecision(6) << value;
+    }
+    }}
+  }
+  cpp{{
+  result = buf.str();
+  }}
+  return result;
+}
+
+/**
+ * Convert vector to String.
+ */
+function String(x:Integer[_]) -> String {
+  result:String;
+  cpp{{
+  std::stringstream buf;
+  }}
+  for i in 1..length(x) {
+    auto value <- x[i];
+    cpp{{
+    if (i > 1) {
+      buf << ' ';
+    }
+    buf << value;
+    }}
+  }
+  cpp{{
+  result = buf.str();
+  }}
+  return result;
+}
+
+/**
+ * Convert vector to String.
+ */
+function String(x:Boolean[_]) -> String {
+  result:String;
+  cpp{{
+  std::stringstream buf;
+  }}
+  for i in 1..length(x) {
+    auto value <- x[i];
+    cpp{{
+    if (i > 1) {
+      buf << ' ';
+    }
+    if (value) {
+      buf << "true";
+    } else {
+      buf << "false";
+    }
+    }}
+  }
+  cpp{{
+  result = buf.str();
+  }}
+  return result;
+}

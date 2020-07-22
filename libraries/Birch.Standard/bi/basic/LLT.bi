@@ -1,0 +1,179 @@
+/**
+ * Cholesky decomposition of a symmetric positive definite matrix, $S = LL^T$.
+ */
+type LLT;
+
+/**
+ * Number of rows of a symmetric positive definite matrix.
+ */
+function rows(X:LLT) -> Integer64 {
+  cpp{{
+  return X.rows();
+  }}
+}
+
+/**
+ * Number of columns of a symmetric positive definite matrix.
+ */
+function columns(X:LLT) -> Integer64 {
+  cpp{{
+  return X.cols();
+  }}
+}
+
+/**
+ * Cholesky decomposition of the symmetric positive definite matrix $S$.
+ *
+ * - S: The symmetric positive definite matrix $S$.
+ *
+ * Returns: an object representing the symmetric positive definite matrix $S$
+ * in its decomposed form.
+ *
+ * This differs from `chol` in that `chol` returns the lower-triangular
+ * Cholesky factor, while this returns the original matrix, but decomposed.
+ *
+ * The object acts as the matrix $S$, defines conversion to and assignment
+ * from `Real[_,_]`, and is intended as more or less a drop-in replacement
+ * for that type, albeit sharing, as usual for objects (i.e. copy-by-reference
+ * rather than copy-by-value semantics). That sharing permits, for example,
+ * multiple multivariate Gaussian distributions to share the same covariance
+ * or precision matrix with common posterior updates performed only once.
+ *
+ * Various functions, such as `solve`, have overloads that make use of `LLT`
+ * objects for more efficient computation.
+ *
+ * !!! attention
+ *     To emphasize, the matrix represented is $S$, not $L$, which is to say,
+ *     code such as the following:
+ *
+ *         auto A <- llt(S);
+ *         y <- solve(A, x);
+ *
+ *     computes the matrix-vector product $y = S^{^-1}x$, not $y = L^{-1}x$,
+ *     however the Cholesky decomposition will be used to solve this more
+ *     efficiently than a general matrix solve. The point of an `LLT` object
+ *     is to maintain the original matrix in a decomposed form for more
+ *     efficient computation. 
+ */
+function llt(S:Real[_,_]) -> LLT {
+  A:LLT;
+  cpp{{
+  A.compute(S.toEigen());
+  }}
+  return A;
+}
+
+/**
+ * Cholesky decomposition of the symmetric positive definite matrix $S$
+ * (identity function).
+ */
+function llt(S:LLT) -> LLT {
+  return S;
+}
+
+/**
+ * Rank one update of a Cholesky decomposition.
+ *
+ * - S: Existing Cholesky decomposition of the symmetric positive definite
+ *      matrix $S$.
+ * - x: Vector $x$.
+ *
+ * Returns: A new Cholesky decomposition of the symmetric positive definite
+ * matrix $S + xx^\top$.
+ */
+function rank_update(S:LLT, x:Real[_]) -> LLT {
+  assert rows(S) == length(x);
+  cpp{{
+  auto A = S;
+  A.rankUpdate(x.toEigen(), 1.0);
+  return A;
+  }}
+}
+
+/**
+ * Rank $k$ update of a Cholesky decomposition.
+ *
+ * - S: Existing Cholesky decomposition of the symmetric positive definite
+ *      matrix $S$.
+ * - X: Matrix $X$.
+ *
+ * Returns: A new Cholesky decomposition of the symmetric positive definite
+ * matrix $S + XX^\top$.
+ *
+ * The computation is performed as $k$ separate rank-1 updates using the
+ * columns of `X
+ */
+function rank_update(S:LLT, X:Real[_,_]) -> LLT {
+  assert rows(S) == rows(X);
+  A:LLT;
+  cpp{{
+  A = S;
+  }}
+  auto R <- rows(X);
+  auto C <- columns(X);
+  for j in 1..C {
+    auto x <- X[1..R,j];
+    cpp{{
+    A.rankUpdate(x.toEigen(), 1.0);
+    }}
+  }
+  return A;
+}
+
+/**
+ * Rank one downdate of a Cholesky decomposition.
+ *
+ * - S: Existing Cholesky decomposition of the symmetric positive definite
+ *      matrix $S$.
+ * - x: Vector $x$.
+ *
+ * Returns: A new Cholesky decomposition of the symmetric positive definite
+ * matrix $S - xx^\top$.
+ */
+function rank_downdate(S:LLT, x:Real[_]) -> LLT {
+  assert rows(S) == length(x);
+  cpp{{
+  auto A = S;
+  A.rankUpdate(x.toEigen(), -1.0);
+  return A;
+  }}
+}
+
+/**
+ * Rank $k$ downdate of a Cholesky decomposition.
+ *
+ * - S: Existing Cholesky decomposition of the symmetric positive definite
+ *      matrix $S$.
+ * - X: Matrix $X$.
+ *
+ * Returns: A new Cholesky decomposition of the symmetric positive definite
+ * matrix $S - XX^\top$.
+ *
+ * The computation is performed as $k$ separate rank-1 downdates using the
+ * columns of `X
+ */
+function rank_downdate(S:LLT, X:Real[_,_]) -> LLT {
+  assert rows(S) == rows(X);
+  A:LLT;
+  cpp{{
+  A = S;
+  }}
+  auto R <- rows(X);
+  auto C <- columns(X);
+  for j in 1..C {
+    auto x <- X[1..R,j];
+    cpp{{
+    A.rankUpdate(x.toEigen(), -1.0);
+    }}
+  }
+  return A;
+}
+
+/**
+ * Sum of two positive definite matrices.
+ */
+operator (x:LLT + y:LLT) -> LLT {
+  cpp{{
+  return (x.reconstructedMatrix() + y.reconstructedMatrix()).llt();
+  }}
+}

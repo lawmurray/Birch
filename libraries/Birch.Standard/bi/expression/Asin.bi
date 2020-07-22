@@ -1,0 +1,20 @@
+/**
+ * Lazy `asin`.
+ */
+final class Asin(y:Expression<Real>) <
+    ScalarUnaryExpression<Expression<Real>,Real,Real,Real>(y) {
+  override function doEvaluate(y:Real) -> Real {
+    return asin(y);
+  }
+
+  override function doEvaluateGrad(d:Real, x:Real, y:Real) -> Real {
+    return d/sqrt(1.0 - y*y);
+  }
+}
+
+/**
+ * Lazy `asin`.
+ */
+function asin(y:Expression<Real>) -> Asin {
+  return construct<Asin>(y);
+}

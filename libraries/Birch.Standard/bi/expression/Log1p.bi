@@ -1,0 +1,20 @@
+/**
+ * Lazy `log1p`.
+ */
+final class Log1p(y:Expression<Real>) <
+    ScalarUnaryExpression<Expression<Real>,Real,Real,Real>(y) {
+  override function doEvaluate(y:Real) -> Real {
+    return log1p(y);
+  }
+
+  override function doEvaluateGrad(d:Real, x:Real, y:Real) -> Real {
+    return d/(1.0 + y);
+  }
+}
+
+/**
+ * Lazy `log1p`.
+ */
+function log1p(y:Expression<Real>) -> Log1p {
+  return construct<Log1p>(y);
+}

@@ -1,0 +1,20 @@
+/**
+ * Lazy `sqrt`.
+ */
+final class Sqrt(y:Expression<Real>) <
+    ScalarUnaryExpression<Expression<Real>,Real,Real,Real>(y) {
+  override function doEvaluate(y:Real) -> Real {
+    return sqrt(y);
+  }
+
+  override function doEvaluateGrad(d:Real, x:Real, y:Real) -> Real {
+    return d*0.5/sqrt(y);
+  }
+}
+
+/**
+ * Lazy `sqrt`.
+ */
+function sqrt(x:Expression<Real>) -> Sqrt {
+  return construct<Sqrt>(x);
+}

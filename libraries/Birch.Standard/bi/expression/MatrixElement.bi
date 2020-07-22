@@ -1,0 +1,90 @@
+/**
+ * Lazy access of a matrix element.
+ */
+final class MatrixElement<Value>(y:Expression<Value[_,_]>, i:Integer,
+    j:Integer) < ScalarExpression<Value> {
+  /**
+   * Argument.
+   */
+  y:Expression<Value[_,_]>? <- y;
+
+  /**
+   * Row.
+   */
+  i:Integer <- i;
+
+  /**
+   * Column.
+   */
+  j:Integer <- j;
+  
+  override function doDepth() -> Integer {
+    return y!.depth() + 1;
+  }
+
+  override function doValue() -> Value {
+    return y!.value()[i,j];
+  }
+
+  override function doPilot(gen:Integer) -> Value {
+    return y!.pilot(gen)[i,j];
+  }
+
+  override function doGet() -> Value {
+    return y!.get()[i,j];
+  }
+
+  override function doMove(gen:Integer, κ:Kernel) -> Value {
+    return y!.move(gen, κ)[i,j];
+  }
+
+  override function doGrad(gen:Integer) {
+    y!.grad(gen, d!, i, j);
+  }
+
+  override function doPrior() -> Expression<Real>? {
+    return y!.prior();
+  }
+
+  override function doCompare(gen:Integer, x:DelayExpression,
+      κ:Kernel) -> Real {
+    auto o <- MatrixElement<Value>?(x)!;
+    return y!.compare(gen, o.y!, κ);
+  }
+
+  override function doConstant() {
+    y!.constant();
+  }
+
+  override function doCount(gen:Integer) {
+    y!.count(gen);
+  }
+
+  override function doDetach() {
+    y <- nil;
+  }
+}
+
+/**
+ * Lazy access of a matrix element.
+ */
+function MatrixElement(y:Expression<Real[_,_]>, i:Integer, j:Integer) ->
+    MatrixElement<Real> {
+  return construct<MatrixElement<Real>>(y, i, j);
+}
+
+/**
+ * Lazy access of a matrix element.
+ */
+function MatrixElement(y:Expression<Integer[_,_]>, i:Integer, j:Integer) ->
+    MatrixElement<Integer> {
+  return construct<MatrixElement<Integer>>(y, i, j);
+}
+
+/**
+ * Lazy access of a matrix element.
+ */
+function MatrixElement(y:Expression<Boolean[_,_]>, i:Integer, j:Integer) ->
+    MatrixElement<Boolean> {
+  return construct<MatrixElement<Boolean>>(y, i, j);
+}

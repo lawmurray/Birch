@@ -1,0 +1,128 @@
+/**
+ * Lazy `join`.
+ */
+final class MatrixJoin<Value>(y:Expression<Value>[_,_]) <
+    MatrixExpression<Value[_,_]> {
+  /**
+   * Arguments.
+   */
+  y:Expression<Value>[_,_]? <- y;
+
+  override function doDepth() -> Integer {
+    auto depth <- 0;
+    for i in 1..rows() {
+      for j in 1..columns() {
+        depth <- max(depth, y![i,j].depth());
+      }
+    }
+    return depth + 1;
+  }
+
+  override function doRows() -> Integer {
+    return global.rows(y!);
+  }
+
+  override function doColumns() -> Integer {
+    return global.columns(y!);
+  }
+
+  override function doValue() -> Value[_,_] {
+    return transform(y!, \(x:Expression<Value>) -> Value {
+        return x.value();
+      });
+  }
+  
+  override function doPilot(gen:Integer) -> Value[_,_] {
+    return transform(y!, \(x:Expression<Value>) -> Value {
+        return x.pilot(gen);
+      });
+  }
+
+  override function doGet() -> Value[_,_] {
+    return transform(y!, \(x:Expression<Value>) -> Value {
+        return x.get();
+      });
+  }
+
+  override function doMove(gen:Integer, κ:Kernel) -> Value[_,_] {
+    return transform(y!, \(x:Expression<Value>) -> Value {
+        return x.move(gen, κ);
+      });
+  }
+  
+  override function doGrad(gen:Integer) {
+    for_each(y!, d!, \(x:Expression<Value>, d:Value) { x.grad(gen, d); });
+  }
+
+  override function doPrior() -> Expression<Real>? {
+    p:Expression<Real>?;
+    auto R <- rows();
+    auto C <- columns();
+    for i in 1..R {
+      for j in 1..C {
+        auto q <- y![i,j].prior();
+        if q? {
+          if p? {
+            p <- p! + q!;
+          } else {
+            p <- q;
+          }
+        }
+      }
+    }
+    return p;
+  }
+
+  override function doCompare(gen:Integer, x:DelayExpression,
+      κ:Kernel) -> Real {
+    assert rows() == x.rows();
+    assert columns() == x.columns();
+    
+    auto o <- MatrixJoin<Value>?(x)!;
+    auto w <- 0.0;
+    auto R <- rows();
+    auto C <- columns();
+    for i in 1..R {
+      for j in 1..C {
+        w <- w + y![i,j].compare(gen, o.y![i,j], κ);
+      }
+    }
+    return w;
+  }
+
+  override function doCount(gen:Integer) {
+    for_each(y!, \(x:Expression<Value>) { x.count(gen); });
+  }
+
+  override function doConstant() {
+    for_each(y!, \(x:Expression<Value>) { x.constant(); });
+  }
+
+  override function doDetach() {
+    y <- nil;
+  }
+}
+
+/**
+ * Lazy `join`. Converts a matrix of scalar expressions into a matrix
+ * expression.
+ */
+function join<Value>(y:Expression<Value>[_,_]) -> MatrixJoin<Value> {
+  return construct<MatrixJoin<Value>>(y);
+}
+
+/**
+ * Lazy `split`. Converts a matrix expression into a matrix of scalar
+ * expressions.
+ */
+function split<Value>(y:Expression<Value[_,_]>) -> Expression<Value>[_,_] {
+  auto z <- canonical(y);
+  // ^ canonical(y) above is an identity function for all but Random objects;
+  //   for these it wraps the Random in an additional expression that can
+  //   accumulate gradients by element (which a Random cannot) before passing
+  //   the whole matrix of accumulated gradients onto the Random
+
+  return matrix(\(i:Integer, j:Integer) -> Expression<Value> {
+        return construct<MatrixElement<Value>>(z, i, j);
+      }, z.rows(), z.columns());
+}

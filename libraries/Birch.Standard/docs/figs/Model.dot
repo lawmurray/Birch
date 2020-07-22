@@ -1,0 +1,20 @@
+digraph {
+  splines=ortho
+  concentrate=true
+  rankdir=BT
+  node [shape=box,fontname=Helvetica,fontsize=10,margin="0.1,0.01"]
+  edge [arrowhead=empty]
+
+  Model [href="../classes/Model/",target="_top"]
+  MarkovModel [href="../classes/MarkovModel/",target="_top"]
+  HiddenMarkovModel [href="../classes/HiddenMarkovModel/",target="_top"]
+  StateSpaceModel [href="../classes/StateSpaceModel/",target="_top"]
+
+  MarkovModel -> Model
+  HiddenMarkovModel -> MarkovModel
+
+  edge [arrowhead=none,color="black:white:black"]
+  StateSpaceModel -> HiddenMarkovModel [constraint=false]
+
+  {rank=same; StateSpaceModel; HiddenMarkovModel}
+}

@@ -1,0 +1,20 @@
+/**
+ * Lazy `sin`.
+ */
+final class Sin(y:Expression<Real>) <
+    ScalarUnaryExpression<Expression<Real>,Real,Real,Real>(y) {
+  override function doEvaluate(y:Real) -> Real {
+    return sin(y);
+  }
+
+  override function doEvaluateGrad(d:Real, x:Real, y:Real) -> Real {
+    return d*cos(y);
+  }
+}
+
+/**
+ * Lazy `sin`.
+ */
+function sin(y:Expression<Real>) -> Sin {
+  return construct<Sin>(y);
+}

@@ -1,0 +1,100 @@
+/**
+ * Lazy divide.
+ */
+final class Divide(y:Expression<Real>, z:Expression<Real>) <
+    ScalarBinaryExpression<Expression<Real>,Expression<Real>,Real,Real,Real,
+    Real,Real>(y, z) {  
+  override function doEvaluate(y:Real, z:Real) -> Real {
+    return y/z;
+  }
+
+  override function doEvaluateGradLeft(d:Real, x:Real, y:Real, z:Real) -> Real {
+    return d/z;
+  }
+
+  override function doEvaluateGradRight(d:Real, x:Real, y:Real, z:Real) -> Real {
+    return -d*y/(z*z);
+  }
+
+  override function graftLinearGaussian() -> TransformLinear<Gaussian>? {
+    r:TransformLinear<Gaussian>?;
+    if !hasValue() {
+      x1:Gaussian?;
+      if (r <- y!.graftLinearGaussian())? {
+        r!.divide(z!);
+      } else if (x1 <- y!.graftGaussian())? {
+        r <- TransformLinear<Gaussian>(1.0/z!, x1!);
+      }
+    }
+    return r;
+  }
+
+  override function graftDotGaussian() -> TransformDot<MultivariateGaussian>? {
+    r:TransformDot<MultivariateGaussian>?;
+    if !hasValue() {
+      if (r <- y!.graftDotGaussian())? {
+        r!.divide(z!);
+      }
+    }
+    return r;
+  }
+  
+  override function graftLinearNormalInverseGamma(compare:Distribution<Real>) ->
+      TransformLinear<NormalInverseGamma>? {
+    r:TransformLinear<NormalInverseGamma>?;
+    if !hasValue() {
+      x1:NormalInverseGamma?;
+      if (r <- y!.graftLinearNormalInverseGamma(compare))? {
+        r!.divide(z!);
+      } else if (x1 <- y!.graftNormalInverseGamma(compare))? {
+        r <- TransformLinear<NormalInverseGamma>(1.0/z!, x1!);
+      }
+    }
+    return r;
+  }
+
+  override function graftDotNormalInverseGamma(compare:Distribution<Real>) ->
+      TransformDot<MultivariateNormalInverseGamma>? {
+    r:TransformDot<MultivariateNormalInverseGamma>?;
+    if !hasValue() {
+      if (r <- y!.graftDotNormalInverseGamma(compare))? {
+        r!.divide(z!);
+      }
+    }
+    return r;
+  }
+
+  override function graftScaledGamma() -> TransformLinear<Gamma>? {
+    r:TransformLinear<Gamma>?;
+    if !hasValue() {
+      x1:Gamma?;
+      if (r <- y!.graftScaledGamma())? {
+        r!.divide(z!);
+      } else if (x1 <- y!.graftGamma())? {
+        r <- TransformLinear<Gamma>(1.0/z!, x1!);
+      }
+    }
+    return r;
+  }
+}
+
+/**
+ * Lazy divide.
+ */
+operator (y:Expression<Real>/z:Expression<Real>) -> Divide {
+  return construct<Divide>(y, z);
+}
+
+/**
+ * Lazy divide.
+ */
+operator (y:Real/z:Expression<Real>) -> Divide {
+  return box(y)/z;
+}
+
+/**
+ * Lazy divide.
+ */
+operator (y:Expression<Real>/z:Real) -> Divide {
+  return y/box(z);
+}

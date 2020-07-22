@@ -1,0 +1,173 @@
+/**
+ * Boxed value.
+ */
+final class Boxed<Value>(x:Value) < Expression<Value>(x) {  
+  override function doRows() -> Integer {
+    return global.rows(x!);
+  }
+
+  override function doColumns() -> Integer {
+    return global.columns(x!);
+  }
+
+  override function doDepth() -> Integer {
+    return 1;
+  }
+
+  override function doValue() -> Value {
+    return x!;
+  }
+
+  override function doPilot(gen:Integer) -> Value {
+    return x!;
+  }
+
+  override function doGet() -> Value {
+    return x!;
+  }
+
+  override function doMove(gen:Integer, κ:Kernel) -> Value {
+    return x!;
+  }
+  
+  override function doPrior() -> Expression<Real>? {
+    return nil;
+  }
+
+  override function doCompare(gen:Integer, x:DelayExpression, κ:Kernel) ->
+      Real {
+    return 0.0;
+  }
+
+  override function doGrad(gen:Integer) {
+    //
+  }
+
+  override function doClearGrad() {
+    //
+  }
+
+  override function doConstant() {
+    //
+  }
+
+  override function doCount(gen:Integer) {
+    //
+  }
+
+  override function doDetach() {
+    //
+  }
+}
+
+/**
+ * Create a Boxed value.
+ */
+function Boxed<Value>(x:Value) -> Expression<Value> {
+  return construct<Boxed<Value>>(x);
+}
+
+/**
+ * Box a value.
+ */
+function box<Value>(x:Value) -> Expression<Value> {
+  return Boxed(x);
+}
+
+/**
+ * Box elements of a tuple.
+ */
+function box<Value1,Value2>(x:(Value1,Value2)) ->
+    (Expression<Value1>, Expression<Value2>) {
+  x1:Value1?;
+  x2:Value2?;
+  (x1, x2) <- x;
+  return (box(x1!), box(x2!));
+}
+
+/**
+ * Box elements of a tuple.
+ */
+function box<Value1,Value2,Value3>(x:(Value1,Value2,Value3)) ->
+    (Expression<Value1>, Expression<Value2>, Expression<Value3>) {
+  x1:Value1?;
+  x2:Value2?;
+  x3:Value3?;
+  (x1, x2, x3) <- x;
+  return (box(x1!), box(x2!), box(x3!));
+}
+
+/**
+ * Box elements of a tuple.
+ */
+function box<Value1,Value2,Value3,Value4>(x:(Value1,Value2,Value3,Value4)) ->
+    (Expression<Value1>, Expression<Value2>, Expression<Value3>, Expression<Value4>) {
+  x1:Value1?;
+  x2:Value2?;
+  x3:Value3?;
+  x4:Value4?;
+  (x1, x2, x3, x4) <- x;
+  return (box(x1!), box(x2!), box(x3!), box(x4!));
+}
+
+/**
+ * Box elements of a tuple.
+ */
+function box<Value1,Value2,Value3,Value4,Value5>(x:(Value1,Value2,Value3,Value4,Value5)) ->
+    (Expression<Value1>, Expression<Value2>, Expression<Value3>, Expression<Value4>, Expression<Value5>) {
+  x1:Value1?;
+  x2:Value2?;
+  x3:Value3?;
+  x4:Value4?;
+  x5:Value5?;
+  (x1, x2, x3, x4, x5) <- x;
+  return (box(x1!), box(x2!), box(x3!), box(x4!), box(x5!));
+}
+
+/**
+ * Box elements of a tuple.
+ */
+function box<Value1,Value2,Value3,Value4,Value5,Value6>(x:(Value1,Value2,Value3,Value4,Value5,Value6)) ->
+    (Expression<Value1>, Expression<Value2>, Expression<Value3>, Expression<Value4>, Expression<Value5>, Expression<Value6>) {
+  x1:Value1?;
+  x2:Value2?;
+  x3:Value3?;
+  x4:Value4?;
+  x5:Value5?;
+  x6:Value6?;
+  (x1, x2, x3, x4, x5, x6) <- x;
+  return (box(x1!), box(x2!), box(x3!), box(x4!), box(x5!), box(x6!));
+}
+
+/**
+ * Box elements of a tuple.
+ */
+function box<Value1,Value2,Value3,Value4,Value5,Value6,Value7>(x:(Value1,Value2,Value3,Value4,Value5,Value6,Value7)) ->
+    (Expression<Value1>, Expression<Value2>, Expression<Value3>, Expression<Value4>, Expression<Value5>, Expression<Value6>, Expression<Value7>) {
+  x1:Value1?;
+  x2:Value2?;
+  x3:Value3?;
+  x4:Value4?;
+  x5:Value5?;
+  x6:Value6?;
+  x7:Value7?;
+  (x1, x2, x3, x4, x5, x6, x7) <- x;
+  return (box(x1!), box(x2!), box(x3!), box(x4!), box(x5!), box(x6!), box(x7!));
+}
+
+/**
+ * Box elements of a tuple.
+ */
+function box<Value1,Value2,Value3,Value4,Value5,Value6,Value7,Value8>(x:(Value1,Value2,Value3,Value4,Value5,Value6,Value7,Value8)) ->
+    (Expression<Value1>, Expression<Value2>, Expression<Value3>, Expression<Value4>, Expression<Value5>, Expression<Value6>, Expression<Value7>, Expression<Value8>) {
+  x1:Value1?;
+  x2:Value2?;
+  x3:Value3?;
+  x4:Value4?;
+  x5:Value5?;
+  x6:Value6?;
+  x7:Value7?;
+  x8:Value8?;
+  (x1, x2, x3, x4, x5, x6, x7, x8) <- x;
+  return (box(x1!), box(x2!), box(x3!), box(x4!), box(x5!), box(x6!), box(x7!), box(x8!));
+}

@@ -1,0 +1,20 @@
+/**
+ * Lazy `atan`.
+ */
+final class Atan(y:Expression<Real>) <
+    ScalarUnaryExpression<Expression<Real>,Real,Real,Real>(y) {
+  override function doEvaluate(y:Real) -> Real {
+    return atan(y);
+  }
+
+  override function doEvaluateGrad(d:Real, x:Real, y:Real) -> Real {
+    return d/(1.0 + y*y);
+  }
+}
+
+/**
+ * Lazy `atan`.
+ */
+function atan(y:Expression<Real>) -> Atan {
+  return construct<Atan>(y);
+}

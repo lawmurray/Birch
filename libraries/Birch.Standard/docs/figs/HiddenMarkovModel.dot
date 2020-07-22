@@ -1,0 +1,31 @@
+digraph {
+  graph [layout=dot]
+  node [shape=circle]
+
+  Θ [label=<<i>Θ</i>>]
+  X0 [label=<<i>X</i><sub>0</sub>>]
+  X1 [label=<<i>X</i><sub>1</sub>>]
+  X2 [label=<<i>X</i><sub>2</sub>>]
+  X3 [label=<<i>X</i><sub>3</sub>>]
+  Y0 [label=<<i>Y</i><sub>0</sub>>]
+  Y1 [label=<<i>Y</i><sub>1</sub>>]
+  Y2 [label=<<i>Y</i><sub>2</sub>>]
+  Y3 [label=<<i>Y</i><sub>3</sub>>]
+
+  Θ -> X0
+  Θ -> X1
+  Θ -> X2
+  Θ -> X3
+  Θ -> Y0
+  Θ -> Y1
+  Θ -> Y2
+  Θ -> Y3
+  X0 -> X1 -> X2 -> X3
+  X0 -> Y0
+  X1 -> Y1
+  X2 -> Y2
+  X3 -> Y3
+
+  {rank=same; X0 X1 X2 X3}
+  {rank=same; Y0 Y1 Y2 Y3}
+}

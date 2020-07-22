@@ -1,0 +1,78 @@
+/**
+ * Lazy matrix solve.
+ */
+final class MatrixSolve<Left,LeftValue>(y:Left, z:Expression<Real[_,_]>) <
+    MatrixBinaryExpression<Left,Expression<Real[_,_]>,LeftValue,Real[_,_],
+    Real[_,_],Real[_,_],Real[_,_]>(y, z) {  
+  override function doRows() -> Integer {
+    return y!.rows();
+  }
+  
+  override function doColumns() -> Integer {
+    return z!.columns();
+  }
+
+  override function doEvaluate(y:LeftValue, z:Real[_,_]) -> Real[_,_] {
+    return solve(y, z);
+  }
+
+  override function doEvaluateGradLeft(d:Real[_,_], x:Real[_,_],
+      y:LeftValue, z:Real[_,_]) -> Real[_,_] {
+    return -solve(transpose(y), d)*transpose(solve(y, z));
+  }
+  
+  override function doEvaluateGradRight(d:Real[_,_], x:Real[_,_],
+      y:LeftValue, z:Real[_,_]) -> Real[_,_] {
+    return solve(transpose(y), d);
+  }
+}
+
+/**
+ * Lazy solve.
+ */
+function solve(y:Expression<Real[_,_]>, z:Expression<Real[_,_]>) ->
+    MatrixSolve<Expression<Real[_,_]>,Real[_,_]> {
+  assert y!.columns() == z!.rows();
+  return construct<MatrixSolve<Expression<Real[_,_]>,Real[_,_]>>(y, z);
+}
+
+/**
+ * Lazy solve.
+ */
+function solve(y:Real[_,_], z:Expression<Real[_,_]>) ->
+    MatrixSolve<Expression<Real[_,_]>,Real[_,_]> {
+  return solve(box(y), z);
+}
+
+/**
+ * Lazy solve.
+ */
+function solve(y:Expression<Real[_,_]>, z:Real[_,_]) ->
+    MatrixSolve<Expression<Real[_,_]>,Real[_,_]> {
+  return solve(y, box(z));
+}
+
+/**
+ * Lazy solve.
+ */
+function solve(y:Expression<LLT>, z:Expression<Real[_,_]>) ->
+    MatrixSolve<Expression<LLT>,LLT> {
+  assert y!.columns() == z!.rows();
+  return construct<MatrixSolve<Expression<LLT>,LLT>>(y, z);
+}
+
+/**
+ * Lazy solve.
+ */
+function solve(y:LLT, z:Expression<Real[_,_]>) ->
+    MatrixSolve<Expression<LLT>,LLT> {
+  return solve(box(y), z);
+}
+
+/**
+ * Lazy solve.
+ */
+function solve(y:Expression<LLT>, z:Real[_,_]) ->
+    MatrixSolve<Expression<LLT>,LLT> {
+  return solve(y, box(z));
+}

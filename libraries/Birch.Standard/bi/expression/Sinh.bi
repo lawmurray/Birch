@@ -1,0 +1,20 @@
+/**
+ * Lazy `sinh`.
+ */
+final class Sinh(y:Expression<Real>) <
+    ScalarUnaryExpression<Expression<Real>,Real,Real,Real>(y) {
+  override function doEvaluate(y:Real) -> Real {
+    return sinh(y);
+  }
+
+  override function doEvaluateGrad(d:Real, x:Real, y:Real) -> Real {
+    return d*cosh(y);
+  }
+}
+
+/**
+ * Lazy `sinh`.
+ */
+function sinh(y:Expression<Real>) -> Sinh {
+  return construct<Sinh>(y);
+}
