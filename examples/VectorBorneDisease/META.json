@@ -1,0 +1,28 @@
+{
+  "name": "VectorBorneDisease",
+  "version": "0.0.0",
+  "description": "Vector-borne disease models.",
+  "manifest": {
+    "source": [
+      "bi/common/SEIRModel.bi",
+      "bi/common/SEIRParameter.bi",
+      "bi/common/SEIRState.bi",
+      "bi/common/VBDModel.bi",
+      "bi/common/VBDParameter.bi",
+      "bi/common/VBDState.bi",
+      "bi/study/YapDengueModel.bi",
+      "bi/study/YapDengueParameter.bi",
+      "bi/study/YapDengueState.bi"
+    ],
+    "other": [
+      "LICENSE",
+      "META.json",
+      "README.md",
+      "run.sh",
+      "config/yap_dengue.json",
+      "input/fais_dengue.json",
+      "input/yap_dengue.json",
+      "input/yap_zika.json"
+    ]
+  }
+}

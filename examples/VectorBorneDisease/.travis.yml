@@ -1,0 +1,51 @@
+language: cpp
+matrix:
+  include:
+    # macOS environment
+    - os: osx
+      compiler: clang
+      osx_image: xcode10.3
+      addons:
+        homebrew:
+          update: true
+          packages:
+            - flex
+            - bison
+            - eigen
+            - libyaml
+            - libomp
+
+    # Ubuntu 16.04 environment
+    - os: linux
+      dist: xenial
+      compiler: gcc
+      addons:
+        apt:
+          packages:
+            - autoconf
+            - libtool
+            - flex
+            - bison
+            - libeigen3-dev
+            - libyaml-dev
+            - libboost-all-dev
+before_install:
+  # Checkout Birch, which may be cached, and (re)build
+  - git clone "https://github.com/lawmurray/Birch.git" || cd .
+  - cd Birch && git stash && git pull && git checkout filter && ./autogen.sh && ./configure INSTALL="install -p" && make -j 2 && sudo make install && cd ..
+
+  # Checkout Birch.Standard, which may be cached, and (re)build
+  - git clone "https://github.com/lawmurray/Birch.Standard.git" || cd .
+  - cd Birch.Standard && git stash && git pull && git checkout filter && birch build --enable-unity && sudo birch install --enable-unity && cd ..
+install:
+  - birch build --enable-unity && sudo birch install --enable-unity
+script:
+  - ./run.sh
+cache:
+  directories:
+    - Birch
+    - Birch.Standard
+notifications:
+  email: false
+  slack:
+    secure: HpeaqGojQr14hrYZ91i5WmDcaSpeQGgu5Tq0nDEShfeHCw32259ed7NXu/jRsrJ2haoLdxv/gFnZIqn1yOCfHApaCcZ0mazj1bIzlBuKpkwbq4nFT7KceQY8lid6f5HPxFrMyrquuSM3QKMJ1qM1Ti8lfE63wL6vcdCI+cq4yhQs+J0nsHJq8LrS+geDyQT7EHnwsyEryjX6zCkJihZy3o9Bdf8MWDIIRnHgLaT3CRTR0lJe6JYrx8ZsLIjpWdsiuJHWjVRqhMHi4wNB68b0MSRfwv8+PD2mXpudc9s+4cRGRqf4mmivnVSbAv1hzc0nVtkNjG4r3zu+IwR/kWlqlCJEK/c2Aaazfee1lPuSwwNwdYmP8VJp8xiE5oGpxFhgB3aop723Fbi9lTY189vEy8OWTyj0TdbFtmCSOucFGggJ9LhSoKvZzqTrb/usJ1GL1ykltwbWGiKA/8aSiI1essR+SGrZzjJ58UTLTHDwTcGhz4ATBheSQbSMQtU0rUWfaC8SqJMMQjQYKnQAMlMW7UkP+15geryEAC13MvXQH2DHdvbreVpCQ4Nz2qh9YHVb3vL+s4AT4ZmteCWvOo5UWLGKmLSJ5Thh9PALdnhehun5uUNqmYAaOlcoozYqe3T41Pbfa6wEdJqULqZxAdQIIxb3JC12jIagzLT1za/Fkug=
