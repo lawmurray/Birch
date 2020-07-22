@@ -1,0 +1,14 @@
+{
+  "model": {
+    "class": "LinearGaussianModel"
+  },
+  "filter": {
+    "nsteps": 100
+  },
+  "sampler": {
+    "class": "ParticleGibbsSampler",
+    "nsamples": 10
+  },
+  "input": "input/linear_gaussian.json",
+  "output": "output/linear_gaussian.json"
+}

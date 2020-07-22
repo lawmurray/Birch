@@ -1,0 +1,16 @@
+{
+  "model": {
+    "class": "MixedGaussianModel"
+  },
+  "filter": {
+    "nsteps": 100,
+    "nparticles": 128,
+    "ancestor": true
+  },
+  "sampler": {
+    "class": "ParticleGibbsSampler",
+    "nsamples": 10
+  },
+  "input": "input/mixed_gaussian.json",
+  "output": "output/mixed_gaussian.json"
+}
