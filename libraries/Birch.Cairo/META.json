@@ -1,0 +1,32 @@
+{
+  "name": "Birch.Cairo",
+  "version": "0.0.0",
+  "description": "Birch wrapper for the Cairo graphics library.",
+  
+  "manifest": {
+    "source": [
+      "bi/Context.bi",
+      "bi/Pattern.bi",
+      "bi/Surface.bi",
+      "bi/SurfacePDF.bi",
+      "bi/SurfacePNG.bi",
+      "bi/SurfaceSVG.bi"
+    ],
+    "other": [
+      "LICENSE",
+      "META.json",
+      "README.md"
+    ]
+  },
+  
+  "require": {
+    "header": [
+      "cairo/cairo.h",
+      "cairo/cairo-pdf.h",
+      "cairo/cairo-svg.h"
+    ],
+    "library": [
+      "cairo"
+    ]
+  }
+}
