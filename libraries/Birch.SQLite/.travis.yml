@@ -1,0 +1,48 @@
+language: cpp
+matrix:
+  include:
+  - os: osx
+    compiler: clang
+    osx_image: xcode10.3
+    addons:
+      homebrew:
+        update: true
+        packages:
+        - flex
+        - bison
+        - eigen
+        - libyaml
+        - libomp
+        - sqlite3
+  - os: linux
+    dist: xenial
+    compiler: gcc
+    addons:
+      apt:
+        packages:
+        - autoconf
+        - libtool
+        - flex
+        - bison
+        - libeigen3-dev
+        - libyaml-dev
+        - libboost-all-dev
+        - libsqlite3-dev
+before_install:
+  # Checkout Birch, which may be cached, and (re)build
+  - git clone "https://github.com/lawmurray/Birch.git" || cd .
+  - cd Birch && git stash && git pull && git checkout light && ./autogen.sh && ./configure INSTALL="install -p" && make -j 2 && sudo make install && cd ..
+
+  # Checkout Birch.Standard, which may be cached, and (re)build
+  - git clone "https://github.com/lawmurray/Birch.Standard.git" || cd .
+  - cd Birch.Standard && git stash && git pull && git checkout light && birch build --enable-unity && sudo birch install --enable-unity && cd ..
+script:
+- birch build --enable-unity && sudo birch install --enable-unity
+cache:
+  directories:
+  - Birch
+  - Birch.Standard
+notifications:
+  email: false
+  slack:
+    secure: PMD9WhYlDkqUeKkwQKLWjDqpYUhWXNSCkJu60jb76bv6S4wLoxNlP9IjoaXjZgkbxh0NytOk5t6Se8GfB0+cgT15kFLffo5eTEOb42Vf5zx26Q8hERcA6oIh2huS7bVexUKdexzeqpFgy1GZ0JXFi4wkoDWDMeIipYans16B2W7tsIWavvV+q4AkjX0b5vgaByS734jHEJluOgvMIi0DjEAZ6YzXFvCOd/I7eqGMJT8F29tZsn48DDhtJ4Oa7V/dBIvwyLpOWObLQdU5n9zTlk++HjzUSOLex1amyZqUKCplNGA5KPp+k6oGj902DBQXqCjcv+AyfgXTEN097o9dNziRBHiz19atO2AJs12euL/Dbz6eVVBt9x1mFt9V+XvTpZqwNJxuIte77OXkuv0MZHbge6rMPzFFjqsnjoqrs78sJD/IRa8Cf55Ln5JHWLD9OUwFD0Fe2jxGOEmlUJOor+POpiM5wwnebFl8kxy3wGw8bDC8Q9E/hypAHC6Qn+RKjNUgA1o9Mz3M7G2tGel+EsqyLY+w9z66z4LYIE5LVNbim8ajjFpqcV5Yc1PQm/GkLnoMVXiL99V/0PYEkFXB5wP1Fg3l7K3elOEqfYcrgcIfmdpKHNORKG+BgEuGxlGTIaK7tBsnvz/OYpIXlkT6EsQmcvfwD6IXAM0LZvNd9TQ=
