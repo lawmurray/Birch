@@ -1,0 +1,10 @@
+{
+  "model": {
+    "class": "Multi"
+  },
+  "filter": {
+    "nsteps": 100
+  },
+  "input": "input/simulate.json",
+  "output": "output/simulate.json"
+}
