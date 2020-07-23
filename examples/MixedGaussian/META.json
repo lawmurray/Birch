@@ -1,0 +1,20 @@
+{
+  "name": "MixedGaussian",
+  "version": "0.0.0",
+  "description": "",
+  "manifest": {
+    "source": [
+      "bi/MixedGaussianModel.bi"
+    ],
+    "data": [
+
+    ],
+    "other": [
+      "LICENSE",
+      "META.json",
+      "README.md",
+      "config/mixed_gaussian.json",
+      "input/mixed_gaussian.json"
+    ]
+  }
+}

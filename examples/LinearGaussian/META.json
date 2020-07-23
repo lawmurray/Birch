@@ -1,0 +1,20 @@
+{
+  "name": "LinearGaussian",
+  "version": "0.0.0",
+  "description": "",
+  "manifest": {
+    "source": [
+      "bi/LinearGaussianModel.bi"
+    ],
+    "data": [
+
+    ],
+    "other": [
+      "LICENSE",
+      "META.json",
+      "README.md",
+      "config/linear_gaussian.json",
+      "input/linear_gaussian.json"
+    ]
+  }
+}

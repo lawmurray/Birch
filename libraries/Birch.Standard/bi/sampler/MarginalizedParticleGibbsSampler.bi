@@ -1,6 +1,6 @@
 /**
  * Marginalized particle Gibbs sampler.
- * 
+ *
  * The ParticleSampler class hierarchy is as follows:
  * <center>
  * <object type="image/svg+xml" data="../../figs/Sampler.svg"></object>
@@ -15,13 +15,14 @@ class MarginalizedParticleGibbsSampler < ConditionalParticleSampler {
   override function sample(filter:ConditionalParticleFilter,
       archetype:Model, n:Integer) {
     clearDiagnostics();
-    filter.filter(archetype);
+    filter.initialize(archetype);
+    filter.filter();
     pushDiagnostics(filter);
     for t in 1..filter.size() {
       filter.filter(t);
       pushDiagnostics(filter);
     }
-    
+
     /* draw a single sample and weight with normalizing constant estimate */
     filter.b <- ancestor(filter.w);
     if filter.b == 0 {

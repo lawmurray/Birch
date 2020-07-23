@@ -1,6 +1,6 @@
 /**
  * Particle marginal importance sampler.
- * 
+ *
  * The ParticleSampler class hierarchy is as follows:
  * <center>
  * <object type="image/svg+xml" data="../../figs/Sampler.svg"></object>
@@ -8,9 +8,10 @@
  */
 class ParticleMarginalImportanceSampler < ParticleSampler {
   override function sample(filter:ParticleFilter, archetype:Model,
-      n:Integer) {    
+      n:Integer) {
     clearDiagnostics();
-    filter.filter(archetype);
+    filter.initialize(archetype);
+    filter.filter();
     pushDiagnostics(filter);
     for t in 1..filter.size() {
       filter.filter(t);

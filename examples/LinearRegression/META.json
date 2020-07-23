@@ -1,0 +1,20 @@
+{
+  "name": "LinearRegression",
+  "version": "0.0.0",
+  "description": "",
+  "manifest": {
+    "source": [
+      "bi/LinearRegressionModel.bi"
+    ],
+    "data": [
+
+    ],
+    "other": [
+      "LICENSE",
+      "META.json",
+      "README.md",
+      "config/linear_regression.json",
+      "input/bike_share.json"
+    ]
+  }
+}

@@ -26,7 +26,7 @@ class ParticleFilter {
    * Effective sample size.
    */
   ess:Real <- 0.0;
-  
+
   /**
    * Logarithm of sum of weights.
    */
@@ -36,7 +36,7 @@ class ParticleFilter {
    * Log normalizing constant.
    */
   lnormalize:Real <- 0.0;
-  
+
   /**
    * Number of propagations. This is not the same as the number of particles;
    * the number of propagations performed may, according to the filter type,
@@ -44,7 +44,7 @@ class ParticleFilter {
    * control particle filters.
    */
   npropagations:Integer <- 0;
-  
+
   /**
    * Accept rate of moves.
    */
@@ -60,7 +60,7 @@ class ParticleFilter {
    * Number of additional forecast steps per step.
    */
   nforecasts:Integer <- 0;
-  
+
   /**
    * Number of particles.
    */
@@ -72,7 +72,7 @@ class ParticleFilter {
    * threshold.
    */
   trigger:Real <- 0.7;
-  
+
   /**
    * Should delayed sampling be used?
    */
@@ -81,20 +81,20 @@ class ParticleFilter {
   /**
    * Size. This is the number of steps of `filter(Model, Integer)` to be
    * performed after the initial call to `filter(Model)`. Note that
-   * `filter(Model, Integer)` must be called before `size()`.
+   * `initialize()` must be called before `size()`.
    */
   function size() -> Integer {
     assert nsteps?;
     return nsteps!;
   }
-  
+
   /**
    * Create a particle of the type required for this filter.
    */
   function particle(archetype:Model) -> Particle {
     return Particle(archetype);
   }
-  
+
   /**
    * Initialize filter.
    *
@@ -102,7 +102,7 @@ class ParticleFilter {
    *   class that may have one more random variables fixed to known values,
    *   representing the inference problem (or target distribution).
    */
-  function filter(archetype:Model) {
+  function initialize(archetype:Model) {
     x <- clone(particle(archetype), nparticles);
     w <- vector(0.0, nparticles);
     a <- iota(1, nparticles);
@@ -110,12 +110,16 @@ class ParticleFilter {
     lsum <- 0.0;
     lnormalize <- 0.0;
     npropagations <- nparticles;
-    
-    /* size */
+
     if !nsteps? {
       nsteps <- archetype.size();
     }
-    
+  }
+
+  /**
+   * Filter first step.
+   */
+  function filter() {
     start();
     reduce();
   }
@@ -130,7 +134,7 @@ class ParticleFilter {
     step(t);
     reduce();
   }
-  
+
   /**
    * Start particles.
    */
@@ -138,9 +142,9 @@ class ParticleFilter {
     auto play <- PlayHandler(delayed);
     parallel for n in 1..nparticles {
       w[n] <- play.handle(x[n].m.simulate());
-    }  
+    }
   }
-  
+
   /**
    * Step particles.
    */
@@ -160,7 +164,7 @@ class ParticleFilter {
       w[n] <- w[n] + play.handle(x[n].m.forecast(t));
     }
   }
-  
+
   /**
    * Compute reductions, such as effective sample size and normalizing
    * constant estimate.
@@ -169,7 +173,7 @@ class ParticleFilter {
     (ess, lsum) <- resample_reduce(w);
     lnormalize <- lnormalize + lsum - log(Real(nparticles));
   }
-  
+
   /**
    * Resample particles.
    */

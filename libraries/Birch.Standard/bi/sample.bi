@@ -28,7 +28,7 @@ program sample(
   configBuffer:MemoryBuffer;
   if config? {
     auto reader <- Reader(config!);
-    configBuffer <- reader.scan();    
+    configBuffer <- reader.scan();
     reader.close();
   }
 
@@ -54,7 +54,7 @@ program sample(
   }
   auto archetype <- Model?(make(buffer));
   if !archetype? {
-    error("could not create model; the model class should be given as " + 
+    error("could not create model; the model class should be given as " +
         "model.class in the config file, and should derive from Model.");
   }
 
@@ -68,7 +68,7 @@ program sample(
   }
   auto sampler <- ParticleSampler?(make(buffer));
   if !sampler? {
-    error("could not create sampler; the sampler class should be given as " + 
+    error("could not create sampler; the sampler class should be given as " +
         "sampler.class in the config file, and should derive from ParticleSampler.");
   }
 
@@ -86,16 +86,16 @@ program sample(
   }
   auto filter <- ParticleFilter?(make(buffer));
   if !filter? {
-    error("could not create filter; the filter class should be given as " + 
+    error("could not create filter; the filter class should be given as " +
         "filter.class in the config file, and should derive from ParticleFilter.");
   }
-  
+
   /* input */
   auto inputPath <- input;
   if !inputPath? {
     inputPath <-? configBuffer.getString("input");
   }
-  if inputPath? {
+  if inputPath? && inputPath! != "" {
     auto reader <- Reader(inputPath!);
     auto inputBuffer <- reader.scan();
     reader.close();
@@ -108,7 +108,7 @@ program sample(
   if !outputPath? {
     outputPath <-? configBuffer.getString("output");
   }
-  if outputPath? {
+  if outputPath? && outputPath! != "" {
     outputWriter <- Writer(outputPath!);
     outputWriter!.startSequence();
   }
@@ -123,10 +123,10 @@ program sample(
   sampler!.sample(filter!, archetype!);
   for n in 1..sampler!.size() {
     sampler!.sample(filter!, archetype!, n);
-    
+
     if outputWriter? {
       buffer:MemoryBuffer;
-      sampler!.write(buffer, n);      
+      sampler!.write(buffer, n);
       outputWriter!.print(buffer);
       outputWriter!.flush();
     }
@@ -134,7 +134,7 @@ program sample(
       bar.update(Real(n)/sampler!.nsamples);
     }
   }
-  
+
   /* finalize output */
   if outputWriter? {
     outputWriter!.endSequence();

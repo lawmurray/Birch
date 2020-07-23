@@ -1,0 +1,63 @@
+{
+  "name": "TestConjugacy",
+  "version": "0.0.0",
+  "description": "",
+  "require": {
+    "package": [
+      "Birch.Test"
+    ]
+  },
+  "manifest": {
+    "source": [
+      "bi/test_add_bounded_discrete_delta.bi",
+      "bi/test_beta_bernoulli.bi",
+      "bi/test_beta_binomial.bi",
+      "bi/test_beta_geometric.bi",
+      "bi/test_beta_negative_binomial.bi",
+      "bi/test_chain_gaussian.bi",
+      "bi/test_chain_multivariate_gaussian.bi",
+      "bi/test_conjugacy.bi",
+      "bi/test_dirichlet_categorical.bi",
+      "bi/test_dirichlet_multinomial.bi",
+      "bi/test_gamma_exponential.bi",
+      "bi/test_gamma_poisson.bi",
+      "bi/test_gaussian_gaussian.bi",
+      "bi/test_inverse_gamma_gamma.bi",
+      "bi/test_linear_discrete_delta.bi",
+      "bi/test_linear_gaussian_gaussian.bi",
+      "bi/test_linear_matrix_normal_inverse_gamma_matrix_gaussian.bi",
+      "bi/test_linear_matrix_normal_inverse_wishart_matrix_gaussian.bi",
+      "bi/test_linear_multivariate_gaussian_gaussian.bi",
+      "bi/test_linear_multivariate_gaussian_multivariate_gaussian.bi",
+      "bi/test_linear_multivariate_normal_inverse_gamma_gaussian.bi",
+      "bi/test_linear_multivariate_normal_inverse_gamma_multivariate_gaussian.bi",
+      "bi/test_linear_normal_inverse_gamma_gaussian.bi",
+      "bi/test_matrix_normal_inverse_gamma_matrix_gaussian.bi",
+      "bi/test_matrix_normal_inverse_wishart_matrix_gaussian.bi",
+      "bi/test_multivariate_gaussian_multivariate_gaussian.bi",
+      "bi/test_multivariate_normal_inverse_gamma_multivariate_gaussian.bi",
+      "bi/test_negative_linear_discrete_delta.bi",
+      "bi/test_negative_linear_gaussian_gaussian.bi",
+      "bi/test_negative_linear_matrix_normal_inverse_gamma_matrix_gaussian.bi",
+      "bi/test_negative_linear_matrix_normal_inverse_wishart_matrix_gaussian.bi",
+      "bi/test_negative_linear_multivariate_gaussian_multivariate_gaussian.bi",
+      "bi/test_negative_linear_multivariate_normal_inverse_gamma_multivariate_gaussian.bi",
+      "bi/test_negative_linear_normal_inverse_gamma_gaussian.bi",
+      "bi/test_negative_scaled_gamma_exponential.bi",
+      "bi/test_negative_scaled_gamma_poisson.bi",
+      "bi/test_normal_inverse_gamma.bi",
+      "bi/test_normal_inverse_gamma_gaussian.bi",
+      "bi/test_scaled_gamma_exponential.bi",
+      "bi/test_scaled_gamma_poisson.bi",
+      "bi/test_subtract_bounded_discrete_delta.bi"
+    ],
+    "data": [
+
+    ],
+    "other": [
+      "LICENSE",
+      "META.json",
+      "README.md"
+    ]
+  }
+}

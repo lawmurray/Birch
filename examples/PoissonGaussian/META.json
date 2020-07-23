@@ -1,0 +1,20 @@
+{
+  "name": "PoissonGaussian",
+  "version": "0.0.0",
+  "description": "",
+  "manifest": {
+    "source": [
+      "bi/PoissonGaussianModel.bi"
+    ],
+    "data": [
+
+    ],
+    "other": [
+      "LICENSE",
+      "META.json",
+      "README.md",
+      "config/poisson_gaussian.json",
+      "input/poisson_gaussian.json"
+    ]
+  }
+}

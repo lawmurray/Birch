@@ -1,0 +1,14 @@
+{
+  "model": {
+    "class": "SIRModel"
+  },
+  "filter": {
+    "class": "AliveParticleFilter",
+    "nparticles": 128
+  },
+  "sampler": {
+    "nsamples": 10
+  },
+  "input": "input/influenza.json",
+  "output": "output/sir.json"
+}

@@ -1,0 +1,28 @@
+{
+  "name": "TestBasic",
+  "version": "0.0.0",
+  "description": "",
+  "require": {
+    "package": [
+      "Birch.Test"
+    ]
+  },
+  "manifest": {
+    "source": [
+      "bi/test_deep_clone_alias.bi",
+      "bi/test_deep_clone_chain.bi",
+      "bi/test_deep_clone_modify_dst.bi",
+      "bi/test_deep_clone_modify_src.bi",
+      "bi/test_ragged_array.bi",
+      "bi/test_vector.bi"
+    ],
+    "data": [
+
+    ],
+    "other": [
+      "LICENSE",
+      "META.json",
+      "README.md"
+    ]
+  }
+}

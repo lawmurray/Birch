@@ -38,7 +38,10 @@
 #include <boost/math/special_functions.hpp>
 #define __SSE2__ OLD_SSE2
 
-
-#ifdef _OPENMP
+#ifdef HAVE_OMP_H
 #include <omp.h>
+#endif
+
+#ifdef HAVE_LIBEXPLAIN_SYSTEM_H
+#include <libexplain/system.h>
 #endif

@@ -1,0 +1,158 @@
+version: 2.1
+
+executors:
+  # --disable-unity: unity builds can exceed memory limits of container, so
+  #     disable.
+  # --jobs: default value is based on hardware, not container, and is too
+  #     high, so override.
+  debug:
+    docker:
+      - image: lawmurray/birch-circleci:ubuntu-20.04
+    environment:
+      BIRCH_PREFIX: "/birch"
+      BIRCH_FLAGS: "--enable-coverage --disable-unity --jobs 3"
+
+  release:
+    docker:
+      - image: lawmurray/birch-circleci:ubuntu-20.04
+    environment:
+      BIRCH_PREFIX: "/birch"
+      BIRCH_FLAGS: "--disable-debug --disable-unity --jobs 3"
+
+commands:
+  environment:
+    description: "Set environment variables."
+    steps:
+      - run:
+          name: Environment
+          command: |
+              echo "export PATH=/birch/bin:$PATH" >> $BASH_ENV
+              echo "export CPATH=/birch/include:$CPATH" >> $BASH_ENV
+              echo "export LD_LIBRARY_PATH=/birch/lib:$LD_LIBRARY_PATH" >> $BASH_ENV
+
+  build_package:
+    description: "Build and install package."
+    parameters:
+      package:
+        type: string
+    steps:
+      - environment
+      - checkout
+      - attach_workspace:
+          at: /birch
+      - run:
+          name: Build and install
+          command: cd << parameters.package >> && birch install $BIRCH_FLAGS
+      - persist_to_workspace:
+          root: /birch
+          paths:
+            - '*'
+
+  build_and_run_package:
+    description: "Build, install and run package."
+    parameters:
+      package:
+        type: string
+      command:
+        type: string
+        default: ./run
+    steps:
+      - environment
+      - checkout
+      - attach_workspace:
+          at: /birch
+      - run:
+          name: Build and install
+          command: cd << parameters.package >> && birch install $BIRCH_FLAGS
+      - run:
+          name: Run
+          command: cd << parameters.package >> && << parameters.command >>
+
+jobs:
+  # compiler
+  build_Birch:
+    executor: debug
+    steps:
+      - checkout
+      - run:
+          name: Build and install
+          command: |
+              cd compilers/Birch
+              ./autogen.sh
+              mkdir -p build
+              cd build
+              ../configure --prefix=/birch --config-cache CFLAGS="-Wall -g -O0 --coverage" CXXFLAGS="-Wall -Wno-overloaded-virtual -g -O0 --coverage" INSTALL="install -p"
+              make -j 4
+              make install
+      - persist_to_workspace:
+          root: /birch
+          paths:
+            - '*'
+
+  # libraries
+  build_debug_libraries_Standard:
+    executor: debug
+    steps:
+      - build_package:
+          package: libraries/Birch.Standard
+
+  build_debug_libraries_Test:
+    executor: debug
+    steps:
+      - build_package:
+          package: libraries/Birch.Test
+
+  # tests
+  run_debug_tests_Basic:
+    executor: debug
+    steps:
+      - build_and_run_package:
+          package: tests/TestBasic
+
+  run_debug_tests_Cdf:
+    executor: debug
+    steps:
+      - build_and_run_package:
+          package: tests/TestCdf
+
+  run_debug_tests_Conjugacy:
+    executor: debug
+    steps:
+      - build_and_run_package:
+          package: tests/TestConjugacy
+
+  run_debug_tests_Pdf:
+    executor: debug
+    steps:
+      - build_and_run_package:
+          package: tests/TestPdf
+
+workflows:
+  version: 2
+  test:
+    jobs:
+      - build_Birch
+
+      - build_debug_libraries_Standard:
+          requires:
+            - build_Birch
+
+      - build_debug_libraries_Test:
+          requires:
+            - build_debug_libraries_Standard
+
+      - run_debug_tests_Basic:
+          requires:
+            - build_debug_libraries_Test
+
+      - run_debug_tests_Cdf:
+          requires:
+            - build_debug_libraries_Test
+
+      - run_debug_tests_Conjugacy:
+          requires:
+            - build_debug_libraries_Test
+
+      - run_debug_tests_Pdf:
+          requires:
+            - build_debug_libraries_Test

@@ -1,0 +1,20 @@
+{
+  "name": "SIR",
+  "version": "0.0.0",
+  "description": "",
+  "manifest": {
+    "source": [
+      "bi/SIRModel.bi"
+    ],
+    "data": [
+
+    ],
+    "other": [
+      "LICENSE",
+      "META.json",
+      "README.md",
+      "config/sir.json",
+      "input/influenza.json"
+    ]
+  }
+}

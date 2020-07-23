@@ -7,16 +7,23 @@
  */
 function system(cmd:String) -> Integer {
   cpp{{
+  int code;
   int status = std::system(cmd.c_str());
   if (WIFEXITED(status)) {
-    return WEXITSTATUS(status);
+    code = WEXITSTATUS(status);
   } else if (WIFSIGNALED(status)) {
-    return WTERMSIG(status);
+    code = WTERMSIG(status);
   } else if (WIFSTOPPED(status)) {
-    return WSTOPSIG(status);
+    code = WSTOPSIG(status);
   } else {
-    return status;
+    code = status;
   }
+  #ifdef HAVE_LIBEXPLAIN_SYSTEM_H
+  if (code != 0) {
+    ::fprintf(::stderr, "%s\n", ::explain_system(cmd.c_str()));
+  }
+  #endif
+  return code;
   }}
 }
 

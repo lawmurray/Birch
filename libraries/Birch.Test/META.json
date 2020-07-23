@@ -1,0 +1,58 @@
+{
+  "name": "Birch.Test",
+  "version": "0.0.0",
+  "description": "",
+  "manifest": {
+    "source": [
+      "bi/model/TestNegativeLinearMatrixNormalInverseGammaMatrixGaussian.bi",
+      "bi/model/TestMultivariateGaussianMultivariateGaussian.bi",
+      "bi/model/TestMultivariateNormalInverseGammaMultivariateGaussian.bi",
+      "bi/model/TestNegativeLinearMatrixNormalInverseWishartMatrixGaussian.bi",
+      "bi/model/TestBetaBinomial.bi",
+      "bi/model/TestChainMultivariateGaussian.bi",
+      "bi/model/TestChainGaussian.bi",
+      "bi/model/TestNegativeScaledGammaExponential.bi",
+      "bi/model/TestNegativeLinearDiscreteDelta.bi",
+      "bi/model/TestGaussianGaussian.bi",
+      "bi/model/TestBetaNegativeBinomial.bi",
+      "bi/model/TestLinearMultivariateGaussianMultivariateGaussian.bi",
+      "bi/model/TestScaledGammaPoisson.bi",
+      "bi/model/TestScaledGammaExponential.bi",
+      "bi/model/TestBetaGeometric.bi",
+      "bi/model/TestLinearNormalInverseGammaGaussian.bi",
+      "bi/model/TestLinearMultivariateGaussianGaussian.bi",
+      "bi/model/TestNegativeLinearMultivariateGaussianMultivariateGaussian.bi",
+      "bi/model/TestNegativeScaledGammaPoisson.bi",
+      "bi/model/TestLinearMultivariateNormalInverseGammaGaussian.bi",
+      "bi/model/TestBetaBernoulli.bi",
+      "bi/model/TestGammaExponential.bi",
+      "bi/model/TestNegativeLinearMultivariateNormalInverseGammaMultivariateGaussian.bi",
+      "bi/model/TestNegativeLinearGaussianGaussian.bi",
+      "bi/model/TestNegativeLinearNormalInverseGammaGaussian.bi",
+      "bi/model/TestLinearMatrixNormalInverseGammaMatrixGaussian.bi",
+      "bi/model/TestGammaPoisson.bi",
+      "bi/model/TestMatrixNormalInverseGammaMatrixGaussian.bi",
+      "bi/model/TestDirichletCategorical.bi",
+      "bi/model/TestMatrixNormalInverseWishartMatrixGaussian.bi",
+      "bi/model/TestSubtractBoundedDiscreteDelta.bi",
+      "bi/model/TestLinearMatrixNormalInverseWishartMatrixGaussian.bi",
+      "bi/model/TestNormalInverseGamma.bi",
+      "bi/model/TestAddBoundedDiscreteDelta.bi",
+      "bi/model/TestDirichletMultinomial.bi",
+      "bi/model/TestLinearGaussianGaussian.bi",
+      "bi/model/TestInverseGammaGaussian.bi",
+      "bi/model/TestLinearDiscreteDelta.bi",
+      "bi/model/TestNormalInverseGammaGaussian.bi",
+      "bi/model/TestLinearMultivariateNormalInverseGammaMultivariateGaussian.bi",
+      "bi/test.bi"
+    ],
+    "data": [
+
+    ],
+    "other": [
+      "LICENSE",
+      "META.json",
+      "README.md"
+    ]
+  }
+}

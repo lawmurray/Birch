@@ -39,8 +39,8 @@ class ConditionalParticleFilter < ParticleFilter {
     return ConditionalParticle(archetype);
   }
 
-  override function filter(archetype:Model) {
-    super.filter(archetype);
+  override function initialize(archetype:Model) {
+    super.initialize(archetype);
     b <- 1;
   }
 

@@ -1,0 +1,10 @@
+#!/bin/sh
+
+xargs -t -L 1 -P 4 birch <<End
+test_ragged_array
+test_vector
+test_deep_clone_alias
+test_deep_clone_chain
+test_deep_clone_modify_dst
+test_deep_clone_modify_src
+End
