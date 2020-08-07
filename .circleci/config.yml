@@ -63,6 +63,9 @@ commands:
       - run:
           name: Run
           command: cd << parameters.package >> && << parameters.command >>
+      - run:
+          name: Codecov
+          command: bash <(curl -s https://codecov.io/bash)
 
 jobs:
   # compiler
