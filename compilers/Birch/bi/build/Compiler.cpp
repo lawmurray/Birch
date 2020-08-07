@@ -15,11 +15,11 @@ bi::Compiler* compiler = nullptr;
 std::stringstream raw;
 
 bi::Compiler::Compiler(Package* package, const fs::path& build_dir,
-    const bool unity) :
+    const std::string& unit) :
     scope(new Scope(GLOBAL_SCOPE)),
     package(package),
     build_dir(build_dir),
-    unity(unity) {
+    unit(unit) {
   //
 }
 
@@ -69,6 +69,7 @@ void bi::Compiler::resolve() {
 void bi::Compiler::gen() {
   fs::path path;
   std::stringstream stream;
+  std::string internalName = tarname(package->name);
 
   bih_ostream bihOutput(stream);
   cpp_ostream cppOutput(stream);
@@ -79,7 +80,7 @@ void bi::Compiler::gen() {
   /* single *.bih header for whole package */
   stream.str("");
   bihOutput << package;
-  path = build_dir / "bi" / tarname(package->name);
+  path = build_dir / "bi" / internalName;
   path.replace_extension(".bih");
   write_all_if_different(path, stream.str());
 
@@ -87,29 +88,45 @@ void bi::Compiler::gen() {
   stream.str("");
   hppPackageOutput << package;
   cppPackageOutput << package;  // generic class and function definitions
-  path = build_dir / "bi" / tarname(package->name);
+  path = build_dir / "bi" / internalName;
   path.replace_extension(".hpp");
   write_all_if_different(path, stream.str());
 
-  if (unity) {
-    /* for a unity build, generated source goes into the one *.cpp file for
-     * the whole package */
+  if (unit == "unity") {
+    /* sources go into one *.cpp file for the whole package */
     stream.str("");
     for (auto file : package->sources) {
       cppOutput << file;
     }
-    path = build_dir / "bi" / tarname(package->name);
+    path = build_dir / "bi" / internalName;
     path.replace_extension(".cpp");
     write_all_if_different(path, stream.str());
-  } else {
-    /* for a non-unity build, generated source goes into a separate *.cpp
-     * file for each *.bi file */
+  } else if (unit == "file") {
+    /* sources go into one *.cpp file for each *.bi file */
     for (auto file : package->sources) {
       stream.str("");
       cppOutput << file;
       path = build_dir / file->path;
       path.replace_extension(".cpp");
       write_all_if_different(path, stream.str());
+    }
+  } else {
+    /* sources go into one *.cpp file for each directory */
+    std::unordered_map<std::string,std::string> sources;
+    for (auto file : package->sources) {
+      auto dir = fs::path(file->path).parent_path().string();
+      auto iter = sources.find(dir);
+      if (iter == sources.end()) {
+        iter = sources.insert(std::make_pair(dir, std::string(""))).first;
+      }
+      stream.str("");
+      cppOutput << file;
+      iter->second += stream.str();
+    }
+    for (auto pair : sources) {
+      path = build_dir / pair.first / internalName;
+      path.replace_extension(".cpp");
+      write_all_if_different(path, pair.second);
     }
   }
 }

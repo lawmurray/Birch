@@ -20,10 +20,10 @@ public:
    *
    * @param package The package.
    * @param build_dir Build directory.
-   * @param unity Use unity build?
+   * @param unit Build unit.
    */
   Compiler(Package* package, const fs::path& build_dir,
-      const bool unity = false);
+      const std::string& unit = "dir");
 
   /**
    * Parse all input files.
@@ -67,9 +67,9 @@ private:
   fs::path build_dir;
 
   /**
-   * Use unity build?
+   * Compilation unit (unity, dir, or file).
    */
-  bool unity;
+  std::string unit;
 };
 }
 

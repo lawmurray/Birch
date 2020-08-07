@@ -1,23 +1,19 @@
 version: 2.1
 
 executors:
-  # --disable-unity: unity builds can exceed memory limits of container, so
-  #     disable.
-  # --jobs: default value is based on hardware, not container, and is too
-  #     high, so override.
   debug:
     docker:
       - image: lawmurray/birch-circleci:ubuntu-20.04
     environment:
       BIRCH_PREFIX: "/birch"
-      BIRCH_FLAGS: "--enable-coverage --disable-unity --jobs 3"
+      BIRCH_FLAGS: "--mode=test --unit=dir --jobs=2"
 
   release:
     docker:
       - image: lawmurray/birch-circleci:ubuntu-20.04
     environment:
       BIRCH_PREFIX: "/birch"
-      BIRCH_FLAGS: "--disable-debug --disable-unity --jobs 3"
+      BIRCH_FLAGS: "--mode=release --unit=dir --jobs=2"
 
 commands:
   environment:

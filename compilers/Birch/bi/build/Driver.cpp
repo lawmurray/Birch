@@ -10,91 +10,82 @@
 #include "bi/exception/DriverException.hpp"
 
 bi::Driver::Driver(int argc, char** argv) :
-    /* keep these paths relative, or at least call configure with a
+    /* keep paths relative, or at least call configure with a
      * relative path from the build directory to the work directory,
      * otherwise a work directory containing spaces causes problems */
-    work_dir("."),
-    arch("native"),
-    prefix(""),
     packageName("Untitled"),
-    jobs(std::thread::hardware_concurrency()),
-    unity(true),
+    work_dir("."),
+    prefix(""),
+    arch("native"),
+    mode("debug"),
+    unit("dir"),
     staticLib(false),
     sharedLib(true),
     openmp(true),
-    warnings(true),
-    notes(true),
-    debug(true),
-    coverage(false),
-    verbose(true),
     memoryPool(true),
     cloneMemoInitialSize(8),
+    jobs(std::thread::hardware_concurrency()),
+    warnings(true),
+    notes(true),
+    verbose(true),
     newAutogen(false),
     newConfigure(false),
     newMake(false) {
   enum {
-    WORK_DIR_ARG = 256,
+    NAME_ARG = 256,
+    WORK_DIR_ARG,
     SHARE_DIR_ARG,
     INCLUDE_DIR_ARG,
     LIB_DIR_ARG,
-    ARCH_ARG,
     PREFIX_ARG,
-    NAME_ARG,
-    JOBS_ARG,
-    ENABLE_UNITY_ARG,
-    DISABLE_UNITY_ARG,
+    ARCH_ARG,
+    MODE_ARG,
+    UNIT_ARG,
     ENABLE_STATIC_ARG,
     DISABLE_STATIC_ARG,
     ENABLE_SHARED_ARG,
     DISABLE_SHARED_ARG,
     ENABLE_OPENMP_ARG,
     DISABLE_OPENMP_ARG,
+    ENABLE_MEMORY_POOL_ARG,
+    DISABLE_MEMORY_POOL_ARG,
+    CLONE_MEMO_INITIAL_SIZE_ARG,
+    JOBS_ARG,
     ENABLE_WARNINGS_ARG,
     DISABLE_WARNINGS_ARG,
     ENABLE_NOTES_ARG,
     DISABLE_NOTES_ARG,
-    ENABLE_DEBUG_ARG,
-    DISABLE_DEBUG_ARG,
-    ENABLE_COVERAGE_ARG,
-    DISABLE_COVERAGE_ARG,
     ENABLE_VERBOSE_ARG,
-    DISABLE_VERBOSE_ARG,
-    ENABLE_MEMORY_POOL_ARG,
-    DISABLE_MEMORY_POOL_ARG,
-    CLONE_MEMO_INITIAL_SIZE_ARG
+    DISABLE_VERBOSE_ARG
   };
 
   int c, option_index;
   option long_options[] = {
+      { "name", required_argument, 0, NAME_ARG },
       { "work-dir", required_argument, 0, WORK_DIR_ARG },
       { "share-dir", required_argument, 0, SHARE_DIR_ARG },
       { "include-dir", required_argument, 0, INCLUDE_DIR_ARG },
       { "lib-dir", required_argument, 0, LIB_DIR_ARG },
-      { "arch", required_argument, 0, ARCH_ARG },
       { "prefix", required_argument, 0, PREFIX_ARG },
-      { "name", required_argument, 0, NAME_ARG },
-      { "jobs", required_argument, 0, JOBS_ARG },
-      { "enable-unity", no_argument, 0, ENABLE_UNITY_ARG },
-      { "disable-unity", no_argument, 0, DISABLE_UNITY_ARG },
+      { "arch", required_argument, 0, ARCH_ARG },
+      { "mode", required_argument, 0, MODE_ARG },
+      { "unit", required_argument, 0, UNIT_ARG },
       { "enable-static", no_argument, 0, ENABLE_STATIC_ARG },
       { "disable-static", no_argument, 0, DISABLE_STATIC_ARG },
       { "enable-shared", no_argument, 0, ENABLE_SHARED_ARG },
       { "disable-shared", no_argument, 0, DISABLE_SHARED_ARG },
       { "enable-openmp", no_argument, 0, ENABLE_OPENMP_ARG },
       { "disable-openmp", no_argument, 0, DISABLE_OPENMP_ARG },
+      { "enable-memory-pool", no_argument, 0, ENABLE_MEMORY_POOL_ARG },
+      { "disable-memory-pool", no_argument, 0, DISABLE_MEMORY_POOL_ARG },
+      { "clone-memo-initial-size", required_argument, 0, CLONE_MEMO_INITIAL_SIZE_ARG },
+      { "jobs", required_argument, 0, JOBS_ARG },
       { "enable-warnings", no_argument, 0, ENABLE_WARNINGS_ARG },
       { "disable-warnings", no_argument, 0, DISABLE_WARNINGS_ARG },
       { "enable-notes", no_argument, 0, ENABLE_NOTES_ARG },
       { "disable-notes", no_argument, 0, DISABLE_NOTES_ARG },
-      { "enable-debug", no_argument, 0, ENABLE_DEBUG_ARG },
-      { "disable-debug", no_argument, 0, DISABLE_DEBUG_ARG },
-      { "enable-coverage", no_argument, 0, ENABLE_COVERAGE_ARG },
-      { "disable-coverage", no_argument, 0, DISABLE_COVERAGE_ARG },
       { "enable-verbose", no_argument, 0, ENABLE_VERBOSE_ARG },
       { "disable-verbose", no_argument, 0, DISABLE_VERBOSE_ARG },
-      { "enable-memory-pool", no_argument, 0, ENABLE_MEMORY_POOL_ARG },
-      { "disable-memory-pool", no_argument, 0, DISABLE_MEMORY_POOL_ARG },
-      { "clone-memo-initial-size", required_argument, 0, CLONE_MEMO_INITIAL_SIZE_ARG },
       { 0, 0, 0, 0 }
   };
   const char* short_options = "-";  // treats non-options as short option 1
@@ -108,6 +99,9 @@ bi::Driver::Driver(int argc, char** argv) :
       long_options, &option_index);
   while (c != -1) {
     switch (c) {
+    case NAME_ARG:
+      packageName = optarg;
+      break;
     case WORK_DIR_ARG:
       work_dir = optarg;
       break;
@@ -120,23 +114,17 @@ bi::Driver::Driver(int argc, char** argv) :
     case LIB_DIR_ARG:
       lib_dirs.push_back(optarg);
       break;
-    case ARCH_ARG:
-      arch = optarg;
-      break;
     case PREFIX_ARG:
       prefix = optarg;
       break;
-    case NAME_ARG:
-      packageName = optarg;
+    case ARCH_ARG:
+      arch = optarg;
       break;
-    case JOBS_ARG:
-      jobs = atoi(optarg);
+    case MODE_ARG:
+      mode = optarg;
       break;
-   case ENABLE_UNITY_ARG:
-      unity = true;
-      break;
-    case DISABLE_UNITY_ARG:
-      unity = false;
+    case UNIT_ARG:
+      unit = optarg;
       break;
     case ENABLE_STATIC_ARG:
       staticLib = true;
@@ -156,6 +144,18 @@ bi::Driver::Driver(int argc, char** argv) :
     case DISABLE_OPENMP_ARG:
       openmp = false;
       break;
+    case ENABLE_MEMORY_POOL_ARG:
+      memoryPool = true;
+      break;
+    case DISABLE_MEMORY_POOL_ARG:
+      memoryPool = false;
+      break;
+    case CLONE_MEMO_INITIAL_SIZE_ARG:
+      cloneMemoInitialSize = atoi(optarg);
+      break;
+    case JOBS_ARG:
+      jobs = atoi(optarg);
+      break;
     case ENABLE_WARNINGS_ARG:
       warnings = true;
       break;
@@ -168,32 +168,11 @@ bi::Driver::Driver(int argc, char** argv) :
     case DISABLE_NOTES_ARG:
       notes = false;
       break;
-    case ENABLE_DEBUG_ARG:
-      debug = true;
-      break;
-    case DISABLE_DEBUG_ARG:
-      debug = false;
-      break;
-    case ENABLE_COVERAGE_ARG:
-      coverage = true;
-      break;
-    case DISABLE_COVERAGE_ARG:
-      coverage = false;
-      break;
     case ENABLE_VERBOSE_ARG:
       verbose = true;
       break;
     case DISABLE_VERBOSE_ARG:
       verbose = false;
-      break;
-    case ENABLE_MEMORY_POOL_ARG:
-      memoryPool = true;
-      break;
-    case DISABLE_MEMORY_POOL_ARG:
-      memoryPool = false;
-      break;
-    case CLONE_MEMO_INITIAL_SIZE_ARG:
-      cloneMemoInitialSize = atoi(optarg);
       break;
     case '?':  // unknown option
     case 1:  // not an option
@@ -211,6 +190,18 @@ bi::Driver::Driver(int argc, char** argv) :
   if (!isPower2(cloneMemoInitialSize)) {
     throw DriverException(
         "--clone-memo-initial-size must be a positive power of 2.");
+  }
+  if (jobs <= 0) {
+    throw DriverException("--jobs must be a positive integer.");
+  }
+  if (arch != "native" && arch != "js" && arch != "wasm") {
+    throw DriverException("--arch must be native, js, or wasm.");
+  }
+  if (mode != "debug" && mode != "test" && mode != "release") {
+    throw DriverException("--mode must be debug, test, or release.");
+  }
+  if (unit != "unity" && unit != "dir" && unit != "file") {
+    throw DriverException("--unit must be unity, dir, or file.");
   }
 
   /* environment variables */
@@ -520,7 +511,7 @@ void bi::Driver::docs() {
   Package* package = createPackage();
 
   /* parse all files */
-  Compiler compiler(package, fs::path("build") / suffix(), unity);
+  Compiler compiler(package, fs::path("build") / suffix(), mode);
   compiler.parse();
   compiler.resolve();
 
@@ -665,21 +656,14 @@ void bi::Driver::help() {
       std::cout << std::endl;
       std::cout << "Basic options:" << std::endl;
       std::cout << std::endl;
+      std::cout << "  --mode={debug|test|release} (default debug):" << std::endl;
+      std::cout << "  Build for debugging (no optimizations, all assertion checks), testing" << std::endl;
+      std::cout << "  (debugging plus code coverage) or release (all optimizations, no assertion" << std::endl;
+      std::cout << "  checks)." << std::endl;
+      std::cout << std::endl;
       std::cout << "  --jobs (default imputed):" << std::endl;
       std::cout << "  Number of jobs for a parallel build. By default, a reasonable value is" << std::endl;
       std::cout << "  determined from the environment." << std::endl;
-      std::cout << std::endl;
-      std::cout << "  --enable-unity / --disable-unity (default enabled):" << std::endl;
-      std::cout << "  Enable/disable unity build. A unity build is typically faster from a clean" << std::endl;
-      std::cout << "  state, but does not support incremental builds (i.e. a change to any file" << std::endl;
-      std::cout << "  will trigger a full rebuild)." << std::endl;
-      std::cout << std::endl;
-      std::cout << "  --enable-debug / --disable-debug (default enabled):" << std::endl;
-      std::cout << "  Enable/disable debug mode. In debug mode, assertion checking is enabled and" << std::endl;
-      std::cout << "  most compiler optimizations are disabled." << std::endl;
-      std::cout << std::endl;
-      std::cout << "  --enable-coverage / --disable-coverage (default disabled):" << std::endl;
-      std::cout << "  Enable/disable test coverage mode." << std::endl;
       std::cout << std::endl;
       std::cout << "  --enable-warnings / --disable-warnings (default enabled):" << std::endl;
       std::cout << "  Enable/disable compiler warnings." << std::endl;
@@ -690,7 +674,7 @@ void bi::Driver::help() {
       std::cout << "  --enable-verbose / --disable-verbose (default enabled):" << std::endl;
       std::cout << "  Show all compiler output." << std::endl;
       std::cout << std::endl;
-      std::cout << "Documentation for the advanced and optimization options can be found at:" << std::endl;
+      std::cout << "Documentation for the advanced options can be found at:" << std::endl;
       std::cout << std::endl;
       std::cout << "  https://birch-lang.org/documentation/driver/commands/build/" << std::endl;
     } else if (command.compare("install") == 0) {
@@ -946,14 +930,28 @@ void bi::Driver::setup() {
 
   /* sources derived from *.bi files */
   makeStream << "nodist_lib" << internalName << "_la_SOURCES =";
-  if (unity) {
+  if (unit == "unity") {
+    /* sources go into one *.cpp file for the whole package */
     makeStream << " \\\n  bi/" << internalName << ".cpp";
-  } else {
+  } else if (unit == "file") {
+    /* sources go into one *.cpp file for each *.bi file */
     for (auto file : metaFiles["manifest.source"]) {
       if (file.extension().compare(".bi") == 0) {
         fs::path cppFile = file;
         cppFile.replace_extension(".cpp");
         makeStream << " \\\n  " << cppFile.string();
+      }
+    }
+  } else {
+    /* sources go into one *.cpp file for each directory */
+    std::unordered_set<std::string> sources;
+    for (auto file : metaFiles["manifest.source"]) {
+      if (file.extension().compare(".bi") == 0) {
+        fs::path cppFile = file.parent_path() / internalName;
+        cppFile.replace_extension(".cpp");
+        if (sources.insert(cppFile.string()).second) {
+          makeStream << " \\\n  " << cppFile.string();
+        }
       }
     }
   }
@@ -1020,7 +1018,7 @@ void bi::Driver::compile() {
   auto build_dir = fs::path("build") / suffix();
   CWD cwd(work_dir);
 
-  Compiler compiler(package, build_dir, unity);
+  Compiler compiler(package, build_dir, unit);
   compiler.parse();
   compiler.resolve();
   compiler.gen();
@@ -1099,7 +1097,7 @@ void bi::Driver::configure() {
       cflags << " -Wall";
       cxxflags << " -Wall";
     }
-    if (debug) {
+    if (mode == "debug" || mode == "test") {
       cflags << " -O0 -fno-inline -g";
       cxxflags << " -O0 -fno-inline -g";
     } else {
@@ -1107,7 +1105,7 @@ void bi::Driver::configure() {
       cflags << " -O3 -flto -g";
       cxxflags << " -O3 -flto -g";
     }
-    if (coverage) {
+    if (mode == "test") {
       cflags << " --coverage";
       cxxflags << " --coverage";
     }
@@ -1209,12 +1207,6 @@ void bi::Driver::target(const std::string& cmd) {
   /* concurrency */
   if (jobs > 1) {
     buf << " -j " << jobs;
-    #ifndef __APPLE__
-    buf << " --output-sync=line";
-    // ^ --output-sync seems to get around occasional (spurious?)
-    //   "write error: stdout" errors from make with many concurrent jobs on
-    //   Ubuntu; not supported in the older version of make on macos
-    #endif
   }
 
   /* target */
@@ -1284,13 +1276,12 @@ std::string bi::Driver::suffix() const {
   /* the suffix is built by joining all build options, in a prescribed order,
    * joined by spaces, then encoding in base 32 */
   std::stringstream buf;
+  buf << mode << ' ';
+  buf << unit << ' ';
   buf << arch << ' ';
-  buf << unity << ' ';
   buf << staticLib << ' ';
   buf << sharedLib << ' ';
   buf << openmp << ' ';
-  buf << debug << ' ';
-  buf << coverage << ' ';
   buf << memoryPool << ' ';
   buf << cloneMemoInitialSize << ' ';
   return encode32(buf.str());

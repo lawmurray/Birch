@@ -145,9 +145,15 @@ private:
       const std::string& key, const bool checkExists);
 
   /**
-   * @name Command-line options
+   * Name of the package.
    */
-  //@{
+  std::string packageName;
+
+  /**
+   * Description of the package.
+   */
+  std::string packageDesc;
+
   /**
    * Working directory.
    */
@@ -169,35 +175,24 @@ private:
   std::list<fs::path> lib_dirs;
 
   /**
-   * Target architecture.
-   */
-  std::string arch;
-
-  /**
    * Installation directory.
    */
   std::string prefix;
 
   /**
-   * Name of the package.
+   * Target architecture (native, js, or wasm).
    */
-  std::string packageName;
+  std::string arch;
 
   /**
-   * Description of the package.
+   * Build mode (debug, test, or release).
    */
-  std::string packageDesc;
+  std::string mode;
 
   /**
-   * Number of jobs for parallel build. If zero, a reasonable value is
-   * determined from the environment.
+   * Compilation unit (unity, dir, or file).
    */
-  int jobs;
-
-  /**
-   * Use unity build?
-   */
-  bool unity;
+  std::string unit;
 
   /**
    * Build static library?
@@ -215,6 +210,23 @@ private:
   bool openmp;
 
   /**
+   * Is the memory pool enabled?
+   */
+  bool memoryPool;
+
+  /**
+   * Initial allocation size (number of entries) in maps used for clone
+   * memoization.
+   */
+  int cloneMemoInitialSize;
+
+  /**
+   * Number of jobs for parallel build. If zero, a reasonable value is
+   * determined from the environment.
+   */
+  int jobs;
+
+  /**
    * Are compiler warnings enabled?
    */
   bool warnings;
@@ -225,31 +237,9 @@ private:
   bool notes;
 
   /**
-   * Is debugging mode enabled?
-   */
-  bool debug;
-
-  /**
-   * Is test coverage mode enabled?
-   */
-  bool coverage;
-
-  /**
    * Is verbose reporting enabled?
    */
   bool verbose;
-
-  /**
-   * Is the memory pool enabled?
-   */
-  bool memoryPool;
-
-  /**
-   * Initial allocation size (number of entries) in maps used for clone
-   * memoization.
-   */
-  int cloneMemoInitialSize;
-  //@}
 
   /**
    * Is the autogen.sh file new?
