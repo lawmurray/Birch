@@ -2,6 +2,7 @@ version: 2.1
 
 orbs:
   codecov: codecov/codecov@1.1.1
+  slack: circleci/slack@3.4.2
 
 executors:
   debug:
@@ -46,6 +47,8 @@ commands:
           root: /birch
           paths:
             - '*'
+      - slack/status:
+          fail_only: true
 
   build_and_run_package:
     description: "Build, install and run package."
@@ -67,6 +70,8 @@ commands:
           name: Run
           command: cd << parameters.package >> && << parameters.command >>
       - codecov/upload
+      - slack/status:
+          fail_only: true
 
 jobs:
   # compiler
@@ -88,6 +93,8 @@ jobs:
           root: /birch
           paths:
             - '*'
+      - slack/status:
+          fail_only: true
 
   # libraries
   build_debug_libraries_Standard:
