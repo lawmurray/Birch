@@ -6,6 +6,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ssh \
     tar \
     gzip \
+    curl \
     ca-certificates \
     g++ \
     make \
