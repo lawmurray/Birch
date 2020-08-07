@@ -1,5 +1,8 @@
 version: 2.1
 
+orbs:
+  codecov: codecov/codecov@1.1.1
+
 executors:
   debug:
     docker:
@@ -63,9 +66,7 @@ commands:
       - run:
           name: Run
           command: cd << parameters.package >> && << parameters.command >>
-      - run:
-          name: Codecov
-          command: bash <(curl -s https://codecov.io/bash)
+      - codecov/upload
 
 jobs:
   # compiler
