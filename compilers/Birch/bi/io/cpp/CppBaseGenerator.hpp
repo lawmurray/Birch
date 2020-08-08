@@ -18,12 +18,13 @@ public:
    * Constructor.
    *
    * @param base Base stream.
+   * @param unit Compilation unit.
    * @param level Indentation level.
    * @param header Output header instead of source?
    * @param generic Include generic classes, functions and fibers?
    */
-  CppBaseGenerator(std::ostream& base, const int level = 0,
-      const bool header = false, const bool generic = false);
+  CppBaseGenerator(std::ostream& base, const std::string& unit,
+      const int level = 0, const bool header = false, const bool generic = false);
 
   using indentable_ostream::visit;
 
@@ -139,6 +140,11 @@ protected:
    * lists.
    */
   void genSourceLine(const Location* loc);
+
+  /**
+   * Compilation unit.
+   */
+  std::string unit;
 
   /**
    * Output header instead of source?

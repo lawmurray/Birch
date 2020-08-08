@@ -72,10 +72,9 @@ void bi::Compiler::gen() {
   std::string internalName = tarname(package->name);
 
   bih_ostream bihOutput(stream);
-  cpp_ostream cppOutput(stream);
+  cpp_ostream cppOutput(stream, unit);
 
-  CppPackageGenerator hppPackageOutput(stream, 0, true);
-  CppPackageGenerator cppPackageOutput(stream, 0, false);
+  CppPackageGenerator hppPackageOutput(stream, unit, 0, true);
 
   /* single *.bih header for whole package */
   stream.str("");
@@ -87,7 +86,6 @@ void bi::Compiler::gen() {
   /* single *.hpp header for whole package */
   stream.str("");
   hppPackageOutput << package;
-  cppPackageOutput << package;  // generic class and function definitions
   path = build_dir / "bi" / internalName;
   path.replace_extension(".hpp");
   write_all_if_different(path, stream.str());

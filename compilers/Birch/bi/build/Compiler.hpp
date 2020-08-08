@@ -20,7 +20,7 @@ public:
    *
    * @param package The package.
    * @param build_dir Build directory.
-   * @param unit Build unit.
+   * @param unit Compilation unit.
    */
   Compiler(Package* package, const fs::path& build_dir,
       const std::string& unit = "dir");

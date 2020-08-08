@@ -84,7 +84,6 @@ COMMON_SOURCES = \
   bi/io/cpp/CppBaseGenerator.cpp \
   bi/io/cpp/CppClassGenerator.cpp \
   bi/io/cpp/CppPackageGenerator.cpp \
-  bi/io/cpp/CppRawGenerator.cpp \
   bi/io/cpp/CppResumeGenerator.cpp \
   bi/io/bi_ostream.cpp \
   bi/io/cpp_ostream.cpp \
@@ -228,7 +227,6 @@ noinst_HEADERS = \
   bi/io/cpp/CppBaseGenerator.hpp \
   bi/io/cpp/CppClassGenerator.hpp \
   bi/io/cpp/CppPackageGenerator.hpp \
-  bi/io/cpp/CppRawGenerator.hpp \
   bi/io/cpp/CppResumeGenerator.hpp \
   bi/io/cpp_ostream.hpp \
   bi/io/bi_ostream.hpp \

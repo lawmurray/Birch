@@ -3,7 +3,6 @@
  */
 #include "bi/io/cpp/CppPackageGenerator.hpp"
 
-#include "bi/io/cpp/CppRawGenerator.hpp"
 #include "bi/io/cpp/CppClassGenerator.hpp"
 #include "bi/visitor/Gatherer.hpp"
 #include "bi/primitive/poset.hpp"
@@ -11,16 +10,15 @@
 #include "bi/build/misc.hpp"
 
 bi::CppPackageGenerator::CppPackageGenerator(std::ostream& base,
-    const int level, const bool header) :
-    CppBaseGenerator(base, level, header) {
+    const std::string& unit, const int level, const bool header) :
+    CppBaseGenerator(base, unit, level, header) {
   //
 }
 
 void bi::CppPackageGenerator::visit(const Package* o) {
   /* auxiliary generators */
-  CppRawGenerator auxRaw(base, level, header);
-  CppBaseGenerator auxDeclaration(base, level, true, true);
-  CppBaseGenerator auxDefinition(base, level, false, true);
+  CppBaseGenerator auxDeclaration(base, unit, level, true, true);
+  CppBaseGenerator auxDefinition(base, unit, level, false, true);
 
   /* gather important objects */
   Gatherer<Basic> basics;
@@ -65,7 +63,14 @@ void bi::CppPackageGenerator::visit(const Package* o) {
     }
 
     /* raw C++ code for headers */
-    auxRaw << o;
+    for (auto file : o->files) {
+      for (auto o : *file->root) {
+        auto raw = dynamic_cast<const Raw*>(o);
+        if (raw) {
+          *this << raw;
+        }
+      }
+    }
 
     line("");
     line("namespace bi {");
@@ -158,7 +163,7 @@ void bi::CppPackageGenerator::visit(const Package* o) {
         auxDefinition << o;
       } else {
         /* just generic members of the class */
-        CppClassGenerator auxMember(base, level, false, true, o);
+        CppClassGenerator auxMember(base, unit, level, false, true, o);
 
         Gatherer<MemberFunction> memberFunctions;
          o->accept(&memberFunctions);

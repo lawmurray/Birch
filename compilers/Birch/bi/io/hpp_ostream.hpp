@@ -13,8 +13,9 @@ namespace bi {
  */
 class hpp_ostream: public cpp_ostream {
 public:
-  hpp_ostream(std::ostream& base, const int level = 0) :
-      cpp_ostream(base, level, true) {
+  hpp_ostream(std::ostream& base, const std::string& unit,
+      const int level = 0) :
+      cpp_ostream(base, unit, level, true) {
     //
   }
 };

@@ -7,9 +7,11 @@
 #include "bi/io/cpp/CppResumeGenerator.hpp"
 #include "bi/primitive/encode.hpp"
 
-bi::CppBaseGenerator::CppBaseGenerator(std::ostream& base, const int level,
-    const bool header, const bool generic) :
+bi::CppBaseGenerator::CppBaseGenerator(std::ostream& base,
+    const std::string& unit, const int level, const bool header,
+    const bool generic) :
     indentable_ostream(base, level),
+    unit(unit),
     header(header),
     generic(generic),
     inAssign(0),
@@ -336,7 +338,7 @@ void bi::CppBaseGenerator::visit(const Fiber* o) {
     }
 
     /* start function */
-    CppResumeGenerator auxResume(nullptr, o, base, level, header);
+    CppResumeGenerator auxResume(nullptr, o, base, unit, level, header);
     auxResume << o->start;
 
     /* resume functions */
@@ -344,7 +346,7 @@ void bi::CppBaseGenerator::visit(const Fiber* o) {
     o->accept(&yields);
     for (auto yield : yields) {
       if (yield->resume) {
-        CppResumeGenerator auxResume(nullptr, o, base, level, header);
+        CppResumeGenerator auxResume(nullptr, o, base, unit, level, header);
         auxResume << yield->resume;
       }
     }
@@ -586,7 +588,7 @@ void bi::CppBaseGenerator::visit(const Basic* o) {
 
 void bi::CppBaseGenerator::visit(const Class* o) {
   if (generic || !o->isGeneric()) {
-    CppClassGenerator auxClass(base, level, header, generic);
+    CppClassGenerator auxClass(base, unit, level, header, generic);
     auxClass << o;
   }
 }
@@ -787,5 +789,13 @@ void bi::CppBaseGenerator::genTraceLine(const Location* loc) {
 }
 
 void bi::CppBaseGenerator::genSourceLine(const Location* loc) {
-  line("#line " << loc->firstLine << " \"" << loc->file->path << "\"");
+  int line = loc->firstLine;
+  fs::path path = loc->file->path;
+  std::string file;
+  if (header || unit == "unity") {
+    file = path.string();
+  } else {
+    file = path.filename().string();
+  }
+  line("#line " << line << " \"" << file << "\"");
 }
