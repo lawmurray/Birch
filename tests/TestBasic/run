@@ -1,6 +1,6 @@
 #!/bin/sh
 
-xargs -t -L 1 -P 2 birch <<End
+xargs -t -L 1 -P 4 birch <<End
 test_ragged_array
 test_vector
 test_deep_clone_alias
