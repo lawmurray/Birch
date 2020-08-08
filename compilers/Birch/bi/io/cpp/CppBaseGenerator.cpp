@@ -789,13 +789,5 @@ void bi::CppBaseGenerator::genTraceLine(const Location* loc) {
 }
 
 void bi::CppBaseGenerator::genSourceLine(const Location* loc) {
-  int line = loc->firstLine;
-  fs::path path = loc->file->path;
-  std::string file;
-  if (header || unit == "unity") {
-    file = path.string();
-  } else {
-    file = path.filename().string();
-  }
-  line("#line " << line << " \"" << file << "\"");
+  line("#line " << loc->firstLine << " \"" << loc->file->path << "\"");
 }

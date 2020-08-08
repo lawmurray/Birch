@@ -1106,8 +1106,8 @@ void bi::Driver::configure() {
       cxxflags << " -O3 -flto -g";
     }
     if (mode == "test") {
-      cflags << " --coverage";
-      cxxflags << " --coverage";
+      cflags << " --coverage -fprofile-abs-path";
+      cxxflags << " --coverage -fprofile-abs-path";
     }
 
     /* defines */
