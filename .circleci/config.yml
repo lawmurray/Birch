@@ -82,7 +82,7 @@ jobs:
           command: |
               cd compilers/Birch
               ./autogen.sh
-              ./configure --prefix=$BIRCH_PREFIX --config-cache CFLAGS="-Wall -g -O0 --coverage" CXXFLAGS="-Wall -Wno-overloaded-virtual -g -O0 --coverage"
+              ./configure --prefix=$BIRCH_PREFIX --config-cache CFLAGS="-Wall -g -O0 --coverage -fprofile-abs-path" CXXFLAGS="-Wall -Wno-overloaded-virtual -g -O0 --coverage -fprofile-abs-path"
               make -j 4
               make install
       - persist_to_workspace:
