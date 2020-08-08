@@ -15,8 +15,8 @@ namespace bi {
 class CppResumeGenerator: public CppBaseGenerator {
 public:
   CppResumeGenerator(const Class* currentClass, const Fiber* currentFiber,
-      std::ostream& base, const std::string& unit, const int level = 0,
-      const bool header = false);
+      std::ostream& base, const int level = 0, const bool header = false,
+      const bool absolute = false);
 
   using CppBaseGenerator::visit;
 

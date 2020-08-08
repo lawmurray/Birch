@@ -5,20 +5,20 @@
 
 #include "bi/birch.hpp"
 #include "bi/visitor/all.hpp"
+#include "bi/io/bih_ostream.hpp"
+#include "bi/io/cpp/CppBaseGenerator.hpp"
 #include "bi/io/cpp/CppPackageGenerator.hpp"
-#include "bi/io/bi_ostream.hpp"
-#include "bi/io/cpp_ostream.hpp"
-#include "bi/io/hpp_ostream.hpp"
 #include "bi/lexer.hpp"
 
 bi::Compiler* compiler = nullptr;
 std::stringstream raw;
 
 bi::Compiler::Compiler(Package* package, const fs::path& build_dir,
-    const std::string& unit) :
+    const std::string& mode, const std::string& unit) :
     scope(new Scope(GLOBAL_SCOPE)),
     package(package),
     build_dir(build_dir),
+    mode(mode),
     unit(unit) {
   //
 }
@@ -72,9 +72,9 @@ void bi::Compiler::gen() {
   std::string internalName = tarname(package->name);
 
   bih_ostream bihOutput(stream);
-  cpp_ostream cppOutput(stream, unit);
 
-  CppPackageGenerator hppPackageOutput(stream, unit, 0, true);
+  CppBaseGenerator cppOutput(stream, 0, false, false, mode == "test");
+  CppPackageGenerator hppPackageOutput(stream, 0, true, mode == "test");
 
   /* single *.bih header for whole package */
   stream.str("");

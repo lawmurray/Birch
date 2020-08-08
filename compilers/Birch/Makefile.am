@@ -86,7 +86,6 @@ COMMON_SOURCES = \
   bi/io/cpp/CppPackageGenerator.cpp \
   bi/io/cpp/CppResumeGenerator.cpp \
   bi/io/bi_ostream.cpp \
-  bi/io/cpp_ostream.cpp \
   bi/io/indentable_ostream.cpp \
   bi/io/md_ostream.cpp \
   bi/primitive/encode.cpp \
@@ -228,10 +227,8 @@ noinst_HEADERS = \
   bi/io/cpp/CppClassGenerator.hpp \
   bi/io/cpp/CppPackageGenerator.hpp \
   bi/io/cpp/CppResumeGenerator.hpp \
-  bi/io/cpp_ostream.hpp \
   bi/io/bi_ostream.hpp \
   bi/io/bih_ostream.hpp \
-  bi/io/hpp_ostream.hpp \
   bi/io/indentable_ostream.hpp \
   bi/io/md_ostream.hpp \
   bi/primitive/encode.hpp \

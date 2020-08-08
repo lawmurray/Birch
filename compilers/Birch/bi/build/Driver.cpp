@@ -511,7 +511,7 @@ void bi::Driver::docs() {
   Package* package = createPackage();
 
   /* parse all files */
-  Compiler compiler(package, fs::path("build") / suffix(), mode);
+  Compiler compiler(package, fs::path("build") / suffix(), mode, unit);
   compiler.parse();
   compiler.resolve();
 
@@ -1018,7 +1018,7 @@ void bi::Driver::compile() {
   auto build_dir = fs::path("build") / suffix();
   CWD cwd(work_dir);
 
-  Compiler compiler(package, build_dir, unit);
+  Compiler compiler(package, build_dir, mode, unit);
   compiler.parse();
   compiler.resolve();
   compiler.gen();

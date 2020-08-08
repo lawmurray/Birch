@@ -10,15 +10,15 @@
 #include "bi/build/misc.hpp"
 
 bi::CppPackageGenerator::CppPackageGenerator(std::ostream& base,
-    const std::string& unit, const int level, const bool header) :
-    CppBaseGenerator(base, unit, level, header) {
+    const int level, const bool header, const bool absolute) :
+    CppBaseGenerator(base, level, header, false, absolute) {
   //
 }
 
 void bi::CppPackageGenerator::visit(const Package* o) {
   /* auxiliary generators */
-  CppBaseGenerator auxDeclaration(base, unit, level, true, true);
-  CppBaseGenerator auxDefinition(base, unit, level, false, true);
+  CppBaseGenerator auxDeclaration(base, level, true, true, absolute);
+  CppBaseGenerator auxDefinition(base, level, false, true, absolute);
 
   /* gather important objects */
   Gatherer<Basic> basics;
@@ -163,7 +163,7 @@ void bi::CppPackageGenerator::visit(const Package* o) {
         auxDefinition << o;
       } else {
         /* just generic members of the class */
-        CppClassGenerator auxMember(base, unit, level, false, true, o);
+        CppClassGenerator auxMember(base, level, false, true, absolute, o);
 
         Gatherer<MemberFunction> memberFunctions;
          o->accept(&memberFunctions);

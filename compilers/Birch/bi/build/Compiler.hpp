@@ -20,10 +20,11 @@ public:
    *
    * @param package The package.
    * @param build_dir Build directory.
+   * @param mode Build mode.
    * @param unit Compilation unit.
    */
   Compiler(Package* package, const fs::path& build_dir,
-      const std::string& unit = "dir");
+      const std::string& mode, const std::string& unit);
 
   /**
    * Parse all input files.
@@ -67,7 +68,12 @@ private:
   fs::path build_dir;
 
   /**
-   * Compilation unit (unity, dir, or file).
+   * Build mode.
+   */
+  std::string mode;
+
+  /**
+   * Compilation unit.
    */
   std::string unit;
 };

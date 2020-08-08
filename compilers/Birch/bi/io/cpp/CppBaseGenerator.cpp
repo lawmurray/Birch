@@ -7,13 +7,12 @@
 #include "bi/io/cpp/CppResumeGenerator.hpp"
 #include "bi/primitive/encode.hpp"
 
-bi::CppBaseGenerator::CppBaseGenerator(std::ostream& base,
-    const std::string& unit, const int level, const bool header,
-    const bool generic) :
+bi::CppBaseGenerator::CppBaseGenerator(std::ostream& base, const int level,
+    const bool header, const bool generic, const bool absolute) :
     indentable_ostream(base, level),
-    unit(unit),
     header(header),
     generic(generic),
+    absolute(absolute),
     inAssign(0),
     inConstructor(0),
     inLambda(0),
@@ -338,7 +337,7 @@ void bi::CppBaseGenerator::visit(const Fiber* o) {
     }
 
     /* start function */
-    CppResumeGenerator auxResume(nullptr, o, base, unit, level, header);
+    CppResumeGenerator auxResume(nullptr, o, base, level, header, absolute);
     auxResume << o->start;
 
     /* resume functions */
@@ -346,7 +345,7 @@ void bi::CppBaseGenerator::visit(const Fiber* o) {
     o->accept(&yields);
     for (auto yield : yields) {
       if (yield->resume) {
-        CppResumeGenerator auxResume(nullptr, o, base, unit, level, header);
+        CppResumeGenerator auxResume(nullptr, o, base, level, header, absolute);
         auxResume << yield->resume;
       }
     }
@@ -588,7 +587,7 @@ void bi::CppBaseGenerator::visit(const Basic* o) {
 
 void bi::CppBaseGenerator::visit(const Class* o) {
   if (generic || !o->isGeneric()) {
-    CppClassGenerator auxClass(base, unit, level, header, generic);
+    CppClassGenerator auxClass(base, level, header, generic, absolute);
     auxClass << o;
   }
 }
@@ -789,5 +788,12 @@ void bi::CppBaseGenerator::genTraceLine(const Location* loc) {
 }
 
 void bi::CppBaseGenerator::genSourceLine(const Location* loc) {
-  line("#line " << loc->firstLine << " \"" << loc->file->path << "\"");
+  auto line = loc->firstLine;
+  std::string file;
+  if (absolute) {
+    file = fs::absolute(loc->file->path).string();
+  } else {
+    file = loc->file->path;
+  }
+  line("#line " << line << " \"" << file << "\"");
 }

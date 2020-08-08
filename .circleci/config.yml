@@ -84,9 +84,7 @@ jobs:
           command: |
               cd compilers/Birch
               ./autogen.sh
-              mkdir -p build
-              cd build
-              ../configure --prefix=/birch --config-cache CFLAGS="-Wall -g -O0 --coverage" CXXFLAGS="-Wall -Wno-overloaded-virtual -g -O0 --coverage" INSTALL="install -p"
+              ./configure --prefix=/birch --config-cache CFLAGS="-Wall -g -O0 --coverage" CXXFLAGS="-Wall -Wno-overloaded-virtual -g -O0 --coverage"
               make -j 4
               make install
       - persist_to_workspace:

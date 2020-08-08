@@ -7,9 +7,9 @@
 #include "bi/primitive/encode.hpp"
 
 bi::CppResumeGenerator::CppResumeGenerator(const Class* currentClass,
-    const Fiber* currentFiber, std::ostream& base, const std::string& unit,
-    const int level, const bool header) :
-    CppBaseGenerator(base, unit, level, header),
+    const Fiber* currentFiber, std::ostream& base, const int level,
+    const bool header, const bool absolute) :
+    CppBaseGenerator(base, level, header, false, absolute),
     currentClass(currentClass),
     currentFiber(currentFiber),
     paramIndex(0),

@@ -18,13 +18,14 @@ public:
    * Constructor.
    *
    * @param base Base stream.
-   * @param unit Compilation unit.
    * @param level Indentation level.
    * @param header Output header instead of source?
    * @param generic Include generic classes, functions and fibers?
+   * @param absolute Use absolute paths in #line annotations?
    */
-  CppBaseGenerator(std::ostream& base, const std::string& unit,
-      const int level = 0, const bool header = false, const bool generic = false);
+  CppBaseGenerator(std::ostream& base, const int level = 0,
+      const bool header = false, const bool generic = false,
+      const bool absolute = false);
 
   using indentable_ostream::visit;
 
@@ -142,11 +143,6 @@ protected:
   void genSourceLine(const Location* loc);
 
   /**
-   * Compilation unit.
-   */
-  std::string unit;
-
-  /**
    * Output header instead of source?
    */
   bool header;
@@ -155,6 +151,11 @@ protected:
    * Include generic classes, functions and fibers?
    */
   bool generic;
+
+  /**
+   * Use absolute paths in #line annotations?
+   */
+  bool absolute;
 
   /**
    * Are we on the left side of an assignment statement?
