@@ -1,8 +1,11 @@
-# precompiled header; note $(CXXCOMPILE) has a -include flag for the header,
-# ensure that this won't use the old precompiled header by removing it first
-%.hpp.pch: %.hpp
-	rm -f $@
-	$(CXXCOMPILE) -o $@ $<
+# precompiled header; most recent tests show that this is slightly slowing
+# built times for all --unit settings (unity, dir and file), so disabled at
+# present
+#%.hpp.pch: %.hpp
+#	# $(CXXCOMPILE) has an -include flag for the header, ensure that this won't
+#	# use the old precompiled header by removing it first
+#	rm -f $@
+#	$(CXXCOMPILE) -o $@ $<
 
 # placeholder source file for Emscripten program wrapper
 main.cpp:
@@ -24,5 +27,5 @@ AM_CPPFLAGS = -DEIGEN_NO_STATIC_ASSERT -DEIGEN_NO_AUTOMATIC_RESIZING=1 -DEIGEN_D
 AM_CXXFLAGS = -include bi/PACKAGE_TARNAME.hpp $(OPENMP_CXXFLAGS)
 AM_CFLAGS = $(OPENMP_CFLAGS)
 
-BUILT_SOURCES = main.cpp bi/PACKAGE_TARNAME.hpp.pch
+BUILT_SOURCES = main.cpp #bi/PACKAGE_TARNAME.hpp.pch
 CLEANFILES = $(BUILT_SOURCES)

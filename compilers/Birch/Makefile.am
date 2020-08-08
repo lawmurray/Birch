@@ -1,10 +1,12 @@
 AUTOMAKE_OPTIONS = subdir-objects
 
-# precompiled header; note $(CXXCOMPILE) has a -include flag for the header,
-# ensure that this won't use the old precompiled header by removing it first
-%.hpp.pch: %.hpp
-	rm -f $@
-	$(CXXCOMPILE) -o $@ $<
+# precompiled header; most recent tests show that this is slightly slowing
+# build times, so disabled at present
+#%.hpp.pch: %.hpp
+#	# $(CXXCOMPILE) has an -include flag for the header, ensure that this won't
+#	# use the old precompiled header by removing it first
+#	rm -f $@
+#	$(CXXCOMPILE) -o $@ $<
 
 # Flex/Bison setup
 AM_YFLAGS = -d -Wno-yacc
@@ -311,5 +313,5 @@ dist_pkgdata_DATA = \
   share/META.json \
   share/README.md
 
-BUILT_SOURCES = bi/parser.hpp bi/parser.cpp bi/lexer.cpp bi/birch.hpp.pch
+BUILT_SOURCES = bi/parser.hpp bi/parser.cpp bi/lexer.cpp #bi/birch.hpp.pch
 CLEANFILES = $(BUILT_SOURCES)
