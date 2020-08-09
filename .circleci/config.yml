@@ -49,14 +49,14 @@ commands:
       - slack/status:
           fail_only: true
 
-  build_and_run_package:
+  build_and_test_package:
     description: "Build, install and run package."
     parameters:
       package:
         type: string
       command:
         type: string
-        default: ./run
+        default: ./test
     steps:
       - environment
       - attach_workspace:
@@ -65,22 +65,22 @@ commands:
           name: Build and install
           command: cd << parameters.package >> && birch install $BIRCH_FLAGS
       - run:
-          name: Run
+          name: Test
           command: cd << parameters.package >> && << parameters.command >>
       - codecov/upload
       - slack/status:
           fail_only: true
 
 jobs:
-  # compiler
-  build_Birch:
+  # driver
+  build_driver:
     executor: debug
     steps:
       - checkout
       - run:
           name: Build and install
           command: |
-              cd compilers/Birch
+              cd driver
               ./autogen.sh
               ./configure --prefix=$BIRCH_PREFIX --config-cache CFLAGS="-Wall -g -O0 --coverage -fprofile-abs-path" CXXFLAGS="-Wall -Wno-overloaded-virtual -g -O0 --coverage -fprofile-abs-path"
               make -j 4
@@ -97,65 +97,25 @@ jobs:
     executor: debug
     steps:
       - build_package:
-          package: libraries/Birch.Standard
-
-  build_debug_libraries_Test:
-    executor: debug
-    steps:
-      - build_package:
-          package: libraries/Birch.Test
+          package: libraries/Standard
 
   # tests
-  run_debug_tests_Basic:
+  test_debug_libraries_Standard:
     executor: debug
     steps:
-      - build_and_run_package:
-          package: tests/TestBasic
-
-  run_debug_tests_Cdf:
-    executor: debug
-    steps:
-      - build_and_run_package:
-          package: tests/TestCdf
-
-  run_debug_tests_Conjugacy:
-    executor: debug
-    steps:
-      - build_and_run_package:
-          package: tests/TestConjugacy
-
-  run_debug_tests_Pdf:
-    executor: debug
-    steps:
-      - build_and_run_package:
-          package: tests/TestPdf
+      - build_and_test_package:
+          package: libraries/Standard.Test
 
 workflows:
   version: 2
   test:
     jobs:
-      - build_Birch
+      - build_driver
 
       - build_debug_libraries_Standard:
           requires:
-            - build_Birch
+            - build_driver
 
-      - build_debug_libraries_Test:
+      - test_debug_libraries_Standard:
           requires:
             - build_debug_libraries_Standard
-
-      - run_debug_tests_Basic:
-          requires:
-            - build_debug_libraries_Test
-
-      - run_debug_tests_Cdf:
-          requires:
-            - build_debug_libraries_Test
-
-      - run_debug_tests_Conjugacy:
-          requires:
-            - build_debug_libraries_Test
-
-      - run_debug_tests_Pdf:
-          requires:
-            - build_debug_libraries_Test

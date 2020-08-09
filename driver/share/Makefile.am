@@ -1,0 +1,31 @@
+# precompiled header; most recent tests show that this is slightly slowing
+# built times for all --unit settings (unity, dir and file), so disabled at
+# present
+#%.hpp.pch: %.hpp
+#	# $(CXXCOMPILE) has an -include flag for the header, ensure that this won't
+#	# use the old precompiled header by removing it first
+#	rm -f $@
+#	$(CXXCOMPILE) -o $@ $<
+
+# placeholder source file for Emscripten program wrapper
+main.cpp:
+	touch main.cpp
+
+# Emscripten program wrapper
+EXTRA_PROGRAMS = birch.js birch.html
+
+birch_js_LDADD = libbirch_PACKAGE_TARNAME.la
+birch_js_SOURCES = main.cpp
+birch_js_LDFLAGS = -s MAIN_MODULE=1 --emrun
+
+birch_html_LDADD = libbirch_PACKAGE_TARNAME.la
+birch_html_SOURCES = main.cpp
+birch_html_LDFLAGS = -s MAIN_MODULE=1 --emrun
+
+AM_CPPFLAGS = -DEIGEN_NO_STATIC_ASSERT -DEIGEN_NO_AUTOMATIC_RESIZING=1 -DEIGEN_DONT_PARALLELIZE=1 -DBOOST_MATH_NO_LONG_DOUBLE_MATH_FUNCTIONS=1
+# -Deigen_assert=bi_assert
+AM_CXXFLAGS = -include bi/PACKAGE_TARNAME.hpp $(OPENMP_CXXFLAGS)
+AM_CFLAGS = $(OPENMP_CFLAGS)
+
+BUILT_SOURCES = main.cpp #bi/PACKAGE_TARNAME.hpp.pch
+CLEANFILES = $(BUILT_SOURCES)
