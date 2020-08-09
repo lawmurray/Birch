@@ -1,4 +1,4 @@
-# Standard.Test package
+# StandardTest package
 
 Tests for the Birch standard library.
 

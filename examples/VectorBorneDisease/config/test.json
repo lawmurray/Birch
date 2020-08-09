@@ -1,0 +1,14 @@
+{
+  "model": {
+    "class": "YapDengueModel"
+  },
+  "filter": {
+    "nparticles": 64,
+    "nsteps": 20   
+  },
+  "sampler": {
+    "class": "MarginalizedParticleGibbsSampler",
+    "nsamples": 3
+  },
+  "input": "input/yap_dengue.json"
+}

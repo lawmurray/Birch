@@ -1,5 +1,5 @@
 {
-  "name": "Standard.Test",
+  "name": "StandardTest",
   "version": "0.0.0",
   "description": "Tests for the Birch standard library.",
   "manifest": {

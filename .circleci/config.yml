@@ -30,7 +30,7 @@ commands:
               echo "export CPATH=$BIRCH_PREFIX/include:$CPATH" >> $BASH_ENV
               echo "export LD_LIBRARY_PATH=$BIRCH_PREFIX/lib:$LD_LIBRARY_PATH" >> $BASH_ENV
 
-  build_package:
+  build:
     description: "Build and install package."
     parameters:
       package:
@@ -49,7 +49,7 @@ commands:
       - slack/status:
           fail_only: true
 
-  build_and_test_package:
+  build_and_test:
     description: "Build, install and run package."
     parameters:
       package:
@@ -73,7 +73,7 @@ commands:
 
 jobs:
   # driver
-  build_driver:
+  driver:
     executor: debug
     steps:
       - checkout
@@ -93,29 +93,116 @@ jobs:
           fail_only: true
 
   # libraries
-  build_debug_libraries_Standard:
+  libraries_Cairo:
     executor: debug
     steps:
-      - build_package:
-          package: libraries/Standard
+      - build:
+          package: libraries_Cairo
 
-  # tests
-  test_debug_libraries_Standard:
+  libraries_SQLite:
     executor: debug
     steps:
-      - build_and_test_package:
-          package: libraries/Standard.Test
+      - build:
+          package: libraries_SQLite
+
+  libraries_Standard:
+    executor: debug
+    steps:
+      - build:
+          package: libraries_Standard
+        
+  libraries_StandardTest:
+    executor: debug
+    steps:
+      - build_and_test:
+          package: libraries_StandardTest
+
+  # examples
+  examples_LinearGaussian:
+    executor: debug
+    steps: 
+      - build_and_test:
+          package: examples_LinearGaussian
+
+  examples_LinearRegression:
+    executor: debug
+    steps: 
+      - build_and_test:
+          package: examples_LinearRegression
+
+  examples_MixedGaussian:
+    executor: debug
+    steps: 
+      - build_and_test:
+          package: examples_MixedGaussian
+
+  examples_MultiObjectTracking:
+    executor: debug
+    steps: 
+      - build_and_test:
+          package: examples_MultiObjectTracking
+
+  examples_PoissonGaussian:
+    executor: debug
+    steps: 
+      - build_and_test:
+          package: examples_PoissonGaussian
+
+  examples_SIR:
+    executor: debug
+    steps: 
+      - build_and_test:
+          package: examples_SIR
+
+  examples_VectorBorneDisease:
+    executor: debug
+    steps: 
+      - build_and_test:
+          package: examples_VectorBorneDisease
 
 workflows:
   version: 2
   test:
     jobs:
-      - build_driver
+      - driver
 
-      - build_debug_libraries_Standard:
+      - libraries_Standard:
           requires:
-            - build_driver
+            - driver
 
-      - test_debug_libraries_Standard:
+      - libraries_StandardTest:
           requires:
-            - build_debug_libraries_Standard
+            - libraries_Standard
+
+      - libraries_Cairo:
+          requires:
+            - libraries_Standard
+
+      - libraries_SQLite:
+          requires:
+            - libraries_Standard
+    
+      - examples_LinearGaussian:
+          requires:
+            - libraries_Standard
+
+      - examples_MixedGaussian:
+          requires:
+            - libraries_Standard
+
+      - examples_PoissonGaussian:
+          requires:
+            - libraries_Standard
+
+      - examples_SIR:
+          requires:
+            - libraries_Standard
+
+      - examples_MultiObjectTracking:
+          requires:
+            - libraries_Standard
+            - libraries_Cairo
+      
+      - examples_VectorBorneDisease:
+          requires:
+            - libraries_Standard
