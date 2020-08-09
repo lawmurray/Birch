@@ -97,68 +97,68 @@ jobs:
     executor: debug
     steps:
       - build:
-          package: libraries_Cairo
+          package: libraries/Cairo
 
   libraries_SQLite:
     executor: debug
     steps:
       - build:
-          package: libraries_SQLite
+          package: libraries/SQLite
 
   libraries_Standard:
     executor: debug
     steps:
       - build:
-          package: libraries_Standard
+          package: libraries/Standard
         
   libraries_StandardTest:
     executor: debug
     steps:
       - build_and_test:
-          package: libraries_StandardTest
+          package: libraries/StandardTest
 
   # examples
   examples_LinearGaussian:
     executor: debug
     steps: 
       - build_and_test:
-          package: examples_LinearGaussian
+          package: examples/LinearGaussian
 
   examples_LinearRegression:
     executor: debug
     steps: 
       - build_and_test:
-          package: examples_LinearRegression
+          package: examples/LinearRegression
 
   examples_MixedGaussian:
     executor: debug
     steps: 
       - build_and_test:
-          package: examples_MixedGaussian
+          package: examples/MixedGaussian
 
   examples_MultiObjectTracking:
     executor: debug
     steps: 
       - build_and_test:
-          package: examples_MultiObjectTracking
+          package: examples/MultiObjectTracking
 
   examples_PoissonGaussian:
     executor: debug
     steps: 
       - build_and_test:
-          package: examples_PoissonGaussian
+          package: examples/PoissonGaussian
 
   examples_SIR:
     executor: debug
     steps: 
       - build_and_test:
-          package: examples_SIR
+          package: examples/SIR
 
   examples_VectorBorneDisease:
     executor: debug
     steps: 
       - build_and_test:
-          package: examples_VectorBorneDisease
+          package: examples/VectorBorneDisease
 
 workflows:
   version: 2
@@ -184,25 +184,25 @@ workflows:
     
       - examples_LinearGaussian:
           requires:
-            - libraries_Standard
+            - libraries_StandardTest
 
       - examples_MixedGaussian:
           requires:
-            - libraries_Standard
+            - libraries_StandardTest
 
       - examples_PoissonGaussian:
           requires:
-            - libraries_Standard
+            - libraries_StandardTest
 
       - examples_SIR:
           requires:
-            - libraries_Standard
+            - libraries_StandardTest
 
       - examples_MultiObjectTracking:
           requires:
-            - libraries_Standard
+            - libraries_StandardTest
             - libraries_Cairo
       
       - examples_VectorBorneDisease:
           requires:
-            - libraries_Standard
+            - libraries_StandardTest

@@ -98,7 +98,7 @@ class SQLite3Statement {
   function columnInteger(i:Integer) -> Integer? {
     cpp{{
     if (sqlite3_column_type(this_()->stmt, i - 1) == SQLITE_INTEGER) {
-      return sqlite3_column_int64(this_()->stmt, i - 1);
+      return (Integer)sqlite3_column_int64(this_()->stmt, i - 1);
     }
     }}
     return nil;
