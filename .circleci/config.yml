@@ -151,7 +151,7 @@ jobs:
     steps:
       - build_and_run_library:
           package: libraries/Standard
-          command: ./smoke
+          command: ./smoke.sh
 
   # example smoke tests
   smoke_examples_LinearGaussian:
@@ -159,49 +159,49 @@ jobs:
     steps: 
       - build_and_run_example:
           package: examples/LinearGaussian
-          command: ./smoke
+          command: ./smoke.sh
 
   smoke_examples_LinearRegression:
     executor: smoke
     steps: 
       - build_and_run_example:
           package: examples/LinearRegression
-          command: ./smoke
+          command: ./smoke.sh
 
   smoke_examples_MixedGaussian:
     executor: smoke
     steps: 
       - build_and_run_example:
           package: examples/MixedGaussian
-          command: ./smoke
+          command: ./smoke.sh
 
   smoke_examples_MultiObjectTracking:
     executor: smoke
     steps: 
       - build_and_run_example:
           package: examples/MultiObjectTracking
-          command: ./smoke
+          command: ./smoke.sh
 
   smoke_examples_PoissonGaussian:
     executor: smoke
     steps: 
       - build_and_run_example:
           package: examples/PoissonGaussian
-          command: ./smoke
+          command: ./smoke.sh
 
   smoke_examples_SIR:
     executor: smoke
     steps: 
       - build_and_run_example:
           package: examples/SIR
-          command: ./smoke
+          command: ./smoke.sh
 
   smoke_examples_VectorBorneDisease:
     executor: smoke
     steps: 
       - build_and_run_example:
           package: examples/VectorBorneDisease
-          command: ./smoke
+          command: ./smoke.sh
 
   # library thorough tests
   test_libraries_Cairo:
@@ -221,7 +221,7 @@ jobs:
     steps:
       - build_and_run_library:
           package: libraries/Standard
-          command: ./test
+          command: ./test.sh
 
   # example thorough tests
   test_examples_LinearGaussian:
@@ -229,49 +229,49 @@ jobs:
     steps: 
       - build_and_run_example:
           package: examples/LinearGaussian
-          command: ./test
+          command: ./test.sh
 
   test_examples_LinearRegression:
     executor: test
     steps: 
       - build_and_run_example:
           package: examples/LinearRegression
-          command: ./test
+          command: ./test.sh
 
   test_examples_MixedGaussian:
     executor: test
     steps: 
       - build_and_run_example:
           package: examples/MixedGaussian
-          command: ./test
+          command: ./test.sh
 
   test_examples_MultiObjectTracking:
     executor: test
     steps: 
       - build_and_run_example:
           package: examples/MultiObjectTracking
-          command: ./test
+          command: ./test.sh
 
   test_examples_PoissonGaussian:
     executor: test
     steps: 
       - build_and_run_example:
           package: examples/PoissonGaussian
-          command: ./test
+          command: ./test.sh
 
   test_examples_SIR:
     executor: test
     steps: 
       - build_and_run_example:
           package: examples/SIR
-          command: ./test
+          command: ./test.sh
 
   test_examples_VectorBorneDisease:
     executor: test
     steps: 
       - build_and_run_example:
           package: examples/VectorBorneDisease
-          command: ./test
+          command: ./test.sh
 
 workflows:
   version: 2
