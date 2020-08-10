@@ -30,8 +30,17 @@ commands:
               echo "export CPATH=$BIRCH_PREFIX/include:$CPATH" >> $BASH_ENV
               echo "export LD_LIBRARY_PATH=$BIRCH_PREFIX/lib:$LD_LIBRARY_PATH" >> $BASH_ENV
 
+  # send Slack message on failure
+  slack:
+    description: "Send Slack message on failure"
+    steps:
+      - slack/status:
+         fail_only: true
+
+  # build a library package; this builds the library and persists the
+  # workspace to downstream jobs
   build:
-    description: "Build and install package."
+    description: "Build library package."
     parameters:
       package:
         type: string
@@ -40,17 +49,21 @@ commands:
       - attach_workspace:
           at: /root/project
       - run:
-          name: Build and install
+          name: Build library
           command: cd << parameters.package >> && birch install $BIRCH_FLAGS
+      - slack
       - persist_to_workspace:
           root: /root/project
           paths:
             - '*'
-      - slack/status:
-          fail_only: true
+      - codecov/upload
 
-  build_and_test:
-    description: "Build, install and run package."
+  # build and run a library package; this builds the library and persists the
+  # workspace to downstream jobs, then builds and runs the library's
+  # associated test package (the artifacts of which do not need to be
+  # persisted to downstream jobs)
+  build_and_run_library:
+    description: "Build and test a library package."
     parameters:
       package:
         type: string
@@ -62,14 +75,45 @@ commands:
       - attach_workspace:
           at: /root/project
       - run:
-          name: Build and install
+          name: Build library
           command: cd << parameters.package >> && birch install $BIRCH_FLAGS
+      - slack
+      - persist_to_workspace:
+          root: /root/project
+          paths:
+            - '*'
       - run:
-          name: Test
-          command: cd << parameters.package >> && << parameters.command >>
+          name: Build test
+          command: cd << parameters.package >>Test && birch install $BIRCH_FLAGS
+      - slack
+      - run:
+          name: Run test
+          command: cd << parameters.package >>Test && << parameters.command >>
+      - slack
       - codecov/upload
-      - slack/status:
-          fail_only: true
+        
+  # build and run an example package
+  build_and_run_example:
+    description: "Build and test an example package."
+    parameters:
+      package:
+        type: string
+      command:
+        type: string
+        default: ./test
+    steps:
+      - environment
+      - attach_workspace:
+          at: /root/project
+      - run:
+          name: Build example
+          command: cd << parameters.package >> && birch install $BIRCH_FLAGS
+      - slack
+      - run:
+          name: Run example
+          command: cd << parameters.package >> && << parameters.command >>
+      - slack
+      - codecov/upload
 
 jobs:
   # driver
@@ -78,19 +122,18 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Build and install
+          name: Build
           command: |
               cd driver
               ./autogen.sh
-              ./configure --prefix=$BIRCH_PREFIX --config-cache CFLAGS="-Wall -g -O0 --coverage -fprofile-abs-path" CXXFLAGS="-Wall -Wno-overloaded-virtual -g -O0 --coverage -fprofile-abs-path"
+              ./configure --prefix=$BIRCH_PREFIX --config-cache CXXFLAGS="-Wall -Wno-overloaded-virtual -g -O0 --coverage -fprofile-abs-path"
               make -j 4
               make install
+      - slack
       - persist_to_workspace:
           root: /root/project
           paths:
             - '*'
-      - slack/status:
-          fail_only: true
 
   # libraries
   libraries_Cairo:
@@ -108,56 +151,50 @@ jobs:
   libraries_Standard:
     executor: debug
     steps:
-      - build:
+      - build_and_run_library:
           package: libraries/Standard
-        
-  libraries_StandardTest:
-    executor: debug
-    steps:
-      - build_and_test:
-          package: libraries/StandardTest
 
   # examples
   examples_LinearGaussian:
     executor: debug
     steps: 
-      - build_and_test:
+      - build_and_run_example:
           package: examples/LinearGaussian
 
   examples_LinearRegression:
     executor: debug
     steps: 
-      - build_and_test:
+      - build_and_run_example:
           package: examples/LinearRegression
 
   examples_MixedGaussian:
     executor: debug
     steps: 
-      - build_and_test:
+      - build_and_run_example:
           package: examples/MixedGaussian
 
   examples_MultiObjectTracking:
     executor: debug
     steps: 
-      - build_and_test:
+      - build_and_run_example:
           package: examples/MultiObjectTracking
 
   examples_PoissonGaussian:
     executor: debug
     steps: 
-      - build_and_test:
+      - build_and_run_example:
           package: examples/PoissonGaussian
 
   examples_SIR:
     executor: debug
     steps: 
-      - build_and_test:
+      - build_and_run_example:
           package: examples/SIR
 
   examples_VectorBorneDisease:
     executor: debug
     steps: 
-      - build_and_test:
+      - build_and_run_example:
           package: examples/VectorBorneDisease
 
 workflows:
@@ -170,10 +207,6 @@ workflows:
           requires:
             - driver
 
-      - libraries_StandardTest:
-          requires:
-            - libraries_Standard
-
       - libraries_Cairo:
           requires:
             - libraries_Standard
@@ -184,25 +217,25 @@ workflows:
     
       - examples_LinearGaussian:
           requires:
-            - libraries_StandardTest
+            - libraries_Standard
 
       - examples_MixedGaussian:
           requires:
-            - libraries_StandardTest
+            - libraries_Standard
 
       - examples_PoissonGaussian:
           requires:
-            - libraries_StandardTest
+            - libraries_Standard
 
       - examples_SIR:
           requires:
-            - libraries_StandardTest
+            - libraries_Standard
 
       - examples_MultiObjectTracking:
           requires:
-            - libraries_StandardTest
+            - libraries_Standard
             - libraries_Cairo
       
       - examples_VectorBorneDisease:
           requires:
-            - libraries_StandardTest
+            - libraries_Standard
