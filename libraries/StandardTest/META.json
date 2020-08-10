@@ -11,7 +11,6 @@
       "bi/basic/test_ragged_array.bi",
       "bi/basic/test_vector.bi",
 
-      "bi/cdf/test_cdf.bi",
       "bi/cdf/test_cdf_beta.bi",
       "bi/cdf/test_cdf_beta_binomial.bi",
       "bi/cdf/test_cdf_binomial.bi",
@@ -45,7 +44,6 @@
       "bi/conjugacy/test_beta_negative_binomial.bi",
       "bi/conjugacy/test_chain_gaussian.bi",
       "bi/conjugacy/test_chain_multivariate_gaussian.bi",
-      "bi/conjugacy/test_conjugacy.bi",
       "bi/conjugacy/test_dirichlet_categorical.bi",
       "bi/conjugacy/test_dirichlet_multinomial.bi",
       "bi/conjugacy/test_gamma_exponential.bi",
@@ -121,7 +119,6 @@
       "bi/model/TestNormalInverseGammaGaussian.bi",
       "bi/model/TestLinearMultivariateNormalInverseGammaMultivariateGaussian.bi",
 
-      "bi/pdf/test_pdf.bi",
       "bi/pdf/test_pdf_bernoulli.bi",
       "bi/pdf/test_pdf_beta_bernoulli.bi",
       "bi/pdf/test_pdf_beta_negative_binomial.bi",
@@ -144,7 +141,10 @@
       "bi/pdf/test_pdf_multivariate_uniform.bi",
       "bi/pdf/test_pdf_uniform_int.bi",
 
-      "bi/test.bi"
+      "bi/test.bi",
+      "bi/test_cdf.bi",
+      "bi/test_conjugacy.bi",
+      "bi/test_pdf.bi"
     ],
     "data": [
 

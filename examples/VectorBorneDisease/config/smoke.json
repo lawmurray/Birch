@@ -4,7 +4,7 @@
   },
   "filter": {
     "nparticles": 64,
-    "nsteps": 20   
+    "nsteps": 10   
   },
   "sampler": {
     "class": "MarginalizedParticleGibbsSampler",

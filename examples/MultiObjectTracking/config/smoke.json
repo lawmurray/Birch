@@ -1,0 +1,11 @@
+{
+  "model": {
+    "class": "Multi"
+  },
+  "filter": {
+    "nparticles": 64,
+    "nsteps": 10
+  },
+  "input": "input/filter.json",
+  "output": "output/filter.json"
+}

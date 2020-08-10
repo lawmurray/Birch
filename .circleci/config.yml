@@ -5,14 +5,14 @@ orbs:
   slack: circleci/slack@3.4.2
 
 executors:
-  debug:
+  smoke:
     docker:
       - image: lawmurray/birch-circleci:ubuntu-20.04
     environment:
       BIRCH_PREFIX: "/root/project"
       BIRCH_FLAGS: "--mode=test --unit=dir --jobs=2"
 
-  release:
+  test:
     docker:
       - image: lawmurray/birch-circleci:ubuntu-20.04
     environment:
@@ -69,7 +69,6 @@ commands:
         type: string
       command:
         type: string
-        default: ./test
     steps:
       - environment
       - attach_workspace:
@@ -100,7 +99,6 @@ commands:
         type: string
       command:
         type: string
-        default: ./test
     steps:
       - environment
       - attach_workspace:
@@ -118,7 +116,7 @@ commands:
 jobs:
   # driver
   driver:
-    executor: debug
+    executor: smoke
     steps:
       - checkout
       - run:
@@ -135,67 +133,145 @@ jobs:
           paths:
             - '*'
 
-  # libraries
-  libraries_Cairo:
-    executor: debug
+  # library smoke tests
+  smoke_libraries_Cairo:
+    executor: smoke
     steps:
       - build:
           package: libraries/Cairo
 
-  libraries_SQLite:
-    executor: debug
+  smoke_libraries_SQLite:
+    executor: smoke
     steps:
       - build:
           package: libraries/SQLite
 
-  libraries_Standard:
-    executor: debug
+  smoke_libraries_Standard:
+    executor: smoke
     steps:
       - build_and_run_library:
           package: libraries/Standard
+          command: ./smoke
 
-  # examples
-  examples_LinearGaussian:
-    executor: debug
+  # example smoke tests
+  smoke_examples_LinearGaussian:
+    executor: smoke
     steps: 
       - build_and_run_example:
           package: examples/LinearGaussian
+          command: ./smoke
 
-  examples_LinearRegression:
-    executor: debug
+  smoke_examples_LinearRegression:
+    executor: smoke
     steps: 
       - build_and_run_example:
           package: examples/LinearRegression
+          command: ./smoke
 
-  examples_MixedGaussian:
-    executor: debug
+  smoke_examples_MixedGaussian:
+    executor: smoke
     steps: 
       - build_and_run_example:
           package: examples/MixedGaussian
+          command: ./smoke
 
-  examples_MultiObjectTracking:
-    executor: debug
+  smoke_examples_MultiObjectTracking:
+    executor: smoke
     steps: 
       - build_and_run_example:
           package: examples/MultiObjectTracking
+          command: ./smoke
 
-  examples_PoissonGaussian:
-    executor: debug
+  smoke_examples_PoissonGaussian:
+    executor: smoke
     steps: 
       - build_and_run_example:
           package: examples/PoissonGaussian
+          command: ./smoke
 
-  examples_SIR:
-    executor: debug
+  smoke_examples_SIR:
+    executor: smoke
     steps: 
       - build_and_run_example:
           package: examples/SIR
+          command: ./smoke
 
-  examples_VectorBorneDisease:
-    executor: debug
+  smoke_examples_VectorBorneDisease:
+    executor: smoke
     steps: 
       - build_and_run_example:
           package: examples/VectorBorneDisease
+          command: ./smoke
+
+  # library thorough tests
+  test_libraries_Cairo:
+    executor: test
+    steps:
+      - build:
+          package: libraries/Cairo
+
+  test_libraries_SQLite:
+    executor: test
+    steps:
+      - build:
+          package: libraries/SQLite
+
+  test_libraries_Standard:
+    executor: test
+    steps:
+      - build_and_run_library:
+          package: libraries/Standard
+          command: ./test
+
+  # example thorough tests
+  test_examples_LinearGaussian:
+    executor: test
+    steps: 
+      - build_and_run_example:
+          package: examples/LinearGaussian
+          command: ./test
+
+  test_examples_LinearRegression:
+    executor: test
+    steps: 
+      - build_and_run_example:
+          package: examples/LinearRegression
+          command: ./test
+
+  test_examples_MixedGaussian:
+    executor: test
+    steps: 
+      - build_and_run_example:
+          package: examples/MixedGaussian
+          command: ./test
+
+  test_examples_MultiObjectTracking:
+    executor: test
+    steps: 
+      - build_and_run_example:
+          package: examples/MultiObjectTracking
+          command: ./test
+
+  test_examples_PoissonGaussian:
+    executor: test
+    steps: 
+      - build_and_run_example:
+          package: examples/PoissonGaussian
+          command: ./test
+
+  test_examples_SIR:
+    executor: test
+    steps: 
+      - build_and_run_example:
+          package: examples/SIR
+          command: ./test
+
+  test_examples_VectorBorneDisease:
+    executor: test
+    steps: 
+      - build_and_run_example:
+          package: examples/VectorBorneDisease
+          command: ./test
 
 workflows:
   version: 2
@@ -203,39 +279,94 @@ workflows:
     jobs:
       - driver
 
-      - libraries_Standard:
+      - smoke_libraries_Standard:
           requires:
             - driver
 
-      - libraries_Cairo:
+      - smoke_libraries_Cairo:
           requires:
-            - libraries_Standard
+            - smoke_libraries_Standard
 
-      - libraries_SQLite:
+      - smoke_libraries_SQLite:
           requires:
-            - libraries_Standard
+            - smoke_libraries_Standard
     
-      - examples_LinearGaussian:
+      - smoke_examples_LinearGaussian:
           requires:
-            - libraries_Standard
+            - smoke_libraries_Standard
 
-      - examples_MixedGaussian:
+      - smoke_examples_LinearRegression:
           requires:
-            - libraries_Standard
+            - smoke_libraries_Standard    
 
-      - examples_PoissonGaussian:
+      - smoke_examples_MixedGaussian:
           requires:
-            - libraries_Standard
+            - smoke_libraries_Standard
 
-      - examples_SIR:
+      - smoke_examples_PoissonGaussian:
           requires:
-            - libraries_Standard
+            - smoke_libraries_Standard
 
-      - examples_MultiObjectTracking:
+      - smoke_examples_SIR:
           requires:
-            - libraries_Standard
-            - libraries_Cairo
+            - smoke_libraries_Standard
+
+      - smoke_examples_MultiObjectTracking:
+          requires:
+            - smoke_libraries_Standard
+            - smoke_libraries_Cairo
       
-      - examples_VectorBorneDisease:
+      - smoke_examples_VectorBorneDisease:
           requires:
-            - libraries_Standard
+            - smoke_libraries_Standard
+
+      - test_libraries_Standard:
+          requires:
+            - smoke_libraries_Standard
+            - driver
+
+      - test_libraries_Cairo:
+          requires:
+            - smoke_libraries_Cairo
+            - test_libraries_Standard
+
+      - test_libraries_SQLite:
+          requires:
+            - smoke_libraries_SQLite
+            - test_libraries_Standard
+    
+      - test_examples_LinearGaussian:
+          requires:
+            - smoke_examples_LinearGaussian
+            - test_libraries_Standard
+
+      - test_examples_LinearRegression:
+          requires:
+            - smoke_examples_LinearRegression
+            - test_libraries_Standard    
+
+      - test_examples_MixedGaussian:
+          requires:
+            - smoke_examples_MixedGaussian
+            - test_libraries_Standard
+
+      - test_examples_PoissonGaussian:
+          requires:
+            - smoke_examples_PoissonGaussian
+            - test_libraries_Standard
+
+      - test_examples_SIR:
+          requires:
+            - smoke_examples_SIR
+            - test_libraries_Standard
+
+      - test_examples_MultiObjectTracking:
+          requires:
+            - smoke_examples_MultiObjectTracking
+            - test_libraries_Standard
+            - test_libraries_Cairo
+      
+      - test_examples_VectorBorneDisease:
+          requires:
+            - smoke_examples_VectorBorneDisease
+            - test_libraries_Standard

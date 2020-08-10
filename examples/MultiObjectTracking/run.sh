@@ -1,5 +1,3 @@
-#!/bin/sh
-
 echo "Simulating"
 birch sample --config config/simulate.json
 
