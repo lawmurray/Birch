@@ -52,18 +52,17 @@ commands:
     steps:
       - environment
       - attach_workspace:
-          at: /root/project
+          at: .
       - run:
           name: Build library
           command: cd libraries/<< parameters.package >> && birch install $BIRCH_FLAGS
       - slack
       - persist_to_workspace:
-          root: /root/project
+          root: .
           paths:
             - libraries/<< parameters.package >>
-            - lib/libbirch_<< parameters.tar >>.so
-            - include/bi/<< parameters.tar >>.hpp
-            - include/bi/<< parameters.tar >>.bih
+            - lib/libbirch_<< parameters.tar >>.*
+            - include/bi/<< parameters.tar >>.*
       - codecov/upload
 
   # build and run a library package; this builds the library and persists the
@@ -82,18 +81,11 @@ commands:
     steps:
       - environment
       - attach_workspace:
-          at: /root/project
+          at: .
       - run:
           name: Build library
           command: cd libraries/<< parameters.package >> && birch install $BIRCH_FLAGS
       - slack
-      - persist_to_workspace:
-          root: /root/project
-          paths:
-            - libraries/<< parameters.package >>
-            - lib/libbirch_<< parameters.tar >>.so
-            - include/bi/<< parameters.tar >>.hpp
-            - include/bi/<< parameters.tar >>.bih
       - run:
           name: Build test
           command: cd libraries/<< parameters.package >>Test && birch install $BIRCH_FLAGS
@@ -102,6 +94,12 @@ commands:
           name: Run test
           command: cd libraries/<< parameters.package >>Test && << parameters.command >>
       - slack
+      - persist_to_workspace:
+          root: .
+          paths:
+            - libraries/<< parameters.package >>
+            - lib/libbirch_<< parameters.tar >>.*
+            - include/bi/<< parameters.tar >>.*
       - codecov/upload
         
   # build and run an example package
@@ -120,7 +118,7 @@ commands:
     steps:
       - environment
       - attach_workspace:
-          at: /root/project
+          at: .
       - run:
           name: Build example
           command: cd examples/<< parameters.package >> && birch install $BIRCH_FLAGS
@@ -153,7 +151,7 @@ jobs:
               make install
       - slack
       - persist_to_workspace:
-          root: /root/project
+          root: .
           paths:
             - '*'
 
