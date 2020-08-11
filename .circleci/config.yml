@@ -47,18 +47,22 @@ commands:
     parameters:
       package:
         type: string
+      tar:
+        type: string
     steps:
       - environment
       - attach_workspace:
           at: /root/project
       - run:
           name: Build library
-          command: cd << parameters.package >> && birch install $BIRCH_FLAGS
+          command: cd libraries/<< parameters.package >> && birch install $BIRCH_FLAGS
       - slack
       - persist_to_workspace:
           root: /root/project
           paths:
-            - << parameters.package >>
+            - libraries/<< parameters.package >>
+            - lib/libbirch_<< parameters.tar >>.*
+            - include/<< parameters.tar >>.*
       - codecov/upload
 
   # build and run a library package; this builds the library and persists the
@@ -70,6 +74,8 @@ commands:
     parameters:
       package:
         type: string
+      tar:
+        type: string
       command:
         type: string
     steps:
@@ -78,19 +84,21 @@ commands:
           at: /root/project
       - run:
           name: Build library
-          command: cd << parameters.package >> && birch install $BIRCH_FLAGS
+          command: cd libraries/<< parameters.package >> && birch install $BIRCH_FLAGS
       - slack
       - persist_to_workspace:
           root: /root/project
           paths:
-            - << parameters.package >>
+            - libraries/<< parameters.package >>
+            - lib/libbirch_<< parameters.tar >>.*
+            - include/<< parameters.tar >>.*
       - run:
           name: Build test
-          command: cd << parameters.package >>Test && birch install $BIRCH_FLAGS
+          command: cd libraries/<< parameters.package >>Test && birch install $BIRCH_FLAGS
       - slack
       - run:
           name: Run test
-          command: cd << parameters.package >>Test && << parameters.command >>
+          command: cd libraries/<< parameters.package >>Test && << parameters.command >>
       - slack
       - codecov/upload
         
@@ -99,6 +107,8 @@ commands:
     description: "Build and test an example package."
     parameters:
       package:
+        type: string
+      tar:
         type: string
       command:
         type: string
@@ -111,18 +121,18 @@ commands:
           at: /root/project
       - run:
           name: Build example
-          command: cd << parameters.package >> && birch install $BIRCH_FLAGS
+          command: cd examples/<< parameters.package >> && birch install $BIRCH_FLAGS
       - slack
       - run:
           name: Run example
-          command: cd << parameters.package >> && << parameters.command >>
+          command: cd examples/<< parameters.package >> && << parameters.command >>
       - slack
       - when:
           condition: mongodb
           steps:
             - run:
                 name: MongoDB import
-                command: cd << parameters.package >> && mongoimport --host $MONGODB_HOST --ssl --username $MONGODB_USERNAME --password $MONGODB_HOST --authenticationDatabase admin --db $CIRCLE_BRANCH --collection << parameters.package >> --type json --file output/*.json
+                command: cd examples/<< parameters.package >> && mongoimport --host $MONGODB_HOST --ssl --username $MONGODB_USERNAME --password $MONGODB_HOST --authenticationDatabase admin --db $CIRCLE_BRANCH --collection << parameters.package >> --type json --file output/*.json
       - codecov/upload
 
 jobs:
@@ -150,19 +160,22 @@ jobs:
     executor: smoke
     steps:
       - build:
-          package: libraries/Cairo
+          package: Cairo
+          tar: cairo
 
   smoke_libraries_SQLite:
     executor: smoke
     steps:
       - build:
-          package: libraries/SQLite
+          package: SQLite
+          tar: sqlite
 
   smoke_libraries_Standard:
     executor: smoke
     steps:
       - build_and_run_library:
-          package: libraries/Standard
+          package: Standard
+          tar: standard
           command: ./smoke.sh
 
   # example smoke tests
@@ -170,49 +183,56 @@ jobs:
     executor: smoke
     steps: 
       - build_and_run_example:
-          package: examples/LinearGaussian
+          package: LinearGaussian
+          tar: lineargaussian
           command: ./smoke.sh
 
   smoke_examples_LinearRegression:
     executor: smoke
     steps: 
       - build_and_run_example:
-          package: examples/LinearRegression
+          package: LinearRegression
+          tar: linearregression
           command: ./smoke.sh
 
   smoke_examples_MixedGaussian:
     executor: smoke
     steps: 
       - build_and_run_example:
-          package: examples/MixedGaussian
+          package: MixedGaussian
+          tar: mixedgaussian
           command: ./smoke.sh
 
   smoke_examples_MultiObjectTracking:
     executor: smoke
     steps: 
       - build_and_run_example:
-          package: examples/MultiObjectTracking
+          package: MultiObjectTracking
+          tar: multiobjecttracking
           command: ./smoke.sh
 
   smoke_examples_PoissonGaussian:
     executor: smoke
     steps: 
       - build_and_run_example:
-          package: examples/PoissonGaussian
+          package: PoissonGaussian
+          tar: poissongaussian
           command: ./smoke.sh
 
   smoke_examples_SIR:
     executor: smoke
     steps: 
       - build_and_run_example:
-          package: examples/SIR
+          package: SIR
+          tar: sir
           command: ./smoke.sh
 
   smoke_examples_VectorBorneDisease:
     executor: smoke
     steps: 
       - build_and_run_example:
-          package: examples/VectorBorneDisease
+          package: VectorBorneDisease
+          tar: vectorbornedisease
           command: ./smoke.sh
 
   # library thorough tests
@@ -220,19 +240,22 @@ jobs:
     executor: test
     steps:
       - build:
-          package: libraries/Cairo
+          package: Cairo
+          tar: cairo
 
   test_libraries_SQLite:
     executor: test
     steps:
       - build:
-          package: libraries/SQLite
+          package: SQLite
+          tar: sqlite
 
   test_libraries_Standard:
     executor: test
     steps:
       - build_and_run_library:
-          package: libraries/Standard
+          package: Standard
+          tar: standard
           command: ./test.sh
 
   # example thorough tests
@@ -240,7 +263,8 @@ jobs:
     executor: test
     steps: 
       - build_and_run_example:
-          package: examples/LinearGaussian
+          package: LinearGaussian
+          tar: lineargaussian
           command: ./test.sh
           mongodb: true
 
@@ -248,7 +272,8 @@ jobs:
     executor: test
     steps: 
       - build_and_run_example:
-          package: examples/LinearRegression
+          package: LinearRegression
+          tar: linearregression
           command: ./test.sh
           mongodb: true
 
@@ -256,7 +281,8 @@ jobs:
     executor: test
     steps: 
       - build_and_run_example:
-          package: examples/MixedGaussian
+          package: MixedGaussian
+          tar: mixedgaussian
           command: ./test.sh
           mongodb: true
 
@@ -264,7 +290,8 @@ jobs:
     executor: test
     steps: 
       - build_and_run_example:
-          package: examples/MultiObjectTracking
+          package: MultiObjectTracking
+          tar: multiobjecttracking
           command: ./test.sh
           mongodb: true
 
@@ -272,7 +299,8 @@ jobs:
     executor: test
     steps: 
       - build_and_run_example:
-          package: examples/PoissonGaussian
+          package: PoissonGaussian
+          tar: poissongaussian
           command: ./test.sh
           mongodb: true
 
@@ -280,7 +308,8 @@ jobs:
     executor: test
     steps: 
       - build_and_run_example:
-          package: examples/SIR
+          package: SIR
+          tar: sir
           command: ./test.sh
           mongodb: true
 
@@ -288,7 +317,8 @@ jobs:
     executor: test
     steps: 
       - build_and_run_example:
-          package: examples/VectorBorneDisease
+          package: VectorBorneDisease
+          tar: vectorbornedisease
           command: ./test.sh
           mongodb: true
 
