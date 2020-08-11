@@ -114,12 +114,10 @@ commands:
       - run:
           name: Build example
           command: cd examples/<< parameters.package >> && birch install $BIRCH_FLAGS; cat 
-      - when:
-          condition: always
-          steps:
-            - run:
-                name: Cat
-                command: cd examples/<< parameters.package >> && cat build/latest/config.log
+      - run:
+          name: Cat
+          command: cd examples/<< parameters.package >> && cat build/latest/config.log
+          when: always
       - run:
           name: Run example
           command: cd examples/<< parameters.package >> && << parameters.command >>
