@@ -56,6 +56,12 @@ commands:
       - run:
           name: Build library
           command: cd libraries/<< parameters.package >> && birch install $BIRCH_FLAGS
+      - persist_to_workspace:
+          root: .
+          paths:
+            - libraries/<< parameters.package >>
+            - lib/libbirch_<< parameters.tar >>.*
+            - include/bi/<< parameters.tar >>.*
       - slack
       - codecov/upload
 
