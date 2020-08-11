@@ -14,11 +14,6 @@ class Any;
 class Label;
 
 /**
- * The root label, used for lazy deep copy.
- */
-extern Label* const root_label;
-
-/**
  * Lock for sharing finish operations. Finish operations may intersect on the
  * graph of reachable objects, and so workshare. This lock creates a barrier
  * on exit to ensure that all reachable objects are visited despite this
@@ -34,9 +29,14 @@ extern ExitBarrierLock finish_lock;
 extern ExitBarrierLock freeze_lock;
 
 /**
- * Buffer for heap allocations.
+ * Get the root label.
  */
-extern Atomic<char*> heap;
+Label*& root();
+
+/**
+ * Get the heap.
+ */
+Atomic<char*>& heap();
 
 /**
  * For an allocation size, determine the index of the pool to which it

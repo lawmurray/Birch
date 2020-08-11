@@ -274,7 +274,6 @@
       "libbirch/LabelPtr.cpp",
       "libbirch/Memo.cpp",
       "libbirch/memory.cpp",
-      "libbirch/Pool.cpp",
       "libbirch/stacktrace.cpp"
     ],
     "header": [

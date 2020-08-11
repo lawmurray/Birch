@@ -33,8 +33,6 @@ int main(int argc, char** argv) {
     } else if (prog.compare("help") == 0) {
       driver.help();
     } else {
-
-
       driver.run(prog);
     }
     return 0;

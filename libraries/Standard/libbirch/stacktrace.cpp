@@ -15,14 +15,10 @@ struct stack_frame {
 };
 
 /**
- * Stack trace.
- */
-using stack_trace = std::vector<stack_frame,libbirch::Allocator<stack_frame>>;
-
-/**
  * Get the stack trace for the current thread.
  */
-static stack_trace& get_thread_stack_trace() {
+static auto& get_thread_stack_trace() {
+  using stack_trace = std::vector<stack_frame,libbirch::Allocator<stack_frame>>;
   static std::vector<stack_trace,libbirch::Allocator<stack_trace>> stack_traces(
       libbirch::get_max_threads());
   return stack_traces[libbirch::get_thread_num()];

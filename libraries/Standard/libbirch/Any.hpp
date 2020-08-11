@@ -32,7 +32,7 @@ public:
    * Constructor.
    */
   Any() :
-      label(root_label),
+      label(root()),
       sharedCount(0u),
       memoCount(1u),
       size(0u),
@@ -255,20 +255,16 @@ public:
    */
   void decShared() {
     assert(numShared() > 0u);
-
+    
     /* if the count will reduce to nonzero, this is possibly the root of
-     * a cycle; rather than checking the count before decrementing (okay,
-     * but another atomic operation) or after decrementing (problematic,
-     * leaves the object vulnerable to deallocation by another thread), we
-     * simply register it as a possible root first, and let it be
-     * deregistered again below if appropriate */
-    if (!(flags.exchangeOr(BUFFERED|POSSIBLE_ROOT) & BUFFERED)) {
+     * a cycle */
+    if (numShared() > 1u &&
+        !(flags.exchangeOr(BUFFERED|POSSIBLE_ROOT) & BUFFERED)) {
       register_possible_root(this);
     }
 
     /* decrement */
     if (--sharedCount == 0u) {
-      trim(this);
       destroy();
       decMemo();
     }

@@ -7,14 +7,14 @@
 
 libbirch::LabelPtr::LabelPtr(Label* ptr) :
     ptr(ptr) {
-  if (ptr && ptr != root_label) {
+  if (ptr && ptr != root()) {
     ptr->incShared();
   }
 }
 
 libbirch::LabelPtr::LabelPtr(const LabelPtr& o) {
   auto ptr = o.ptr.load();
-  if (ptr && ptr != root_label) {
+  if (ptr && ptr != root()) {
     ptr->incShared();
   }
   this->ptr.set(ptr);
@@ -30,7 +30,7 @@ libbirch::LabelPtr::~LabelPtr() {
 
 void libbirch::LabelPtr::bitwiseFix() {
   auto ptr = this->ptr.get();
-  if (ptr && ptr != root_label) {
+  if (ptr && ptr != root()) {
     ptr->incShared();
   }
 }
@@ -43,7 +43,7 @@ libbirch::LabelPtr& libbirch::LabelPtr::operator=(const LabelPtr& o) {
 libbirch::LabelPtr& libbirch::LabelPtr::operator=(LabelPtr&& o) {
   auto ptr = o.ptr.exchange(nullptr);
   auto old = this->ptr.exchange(ptr);
-  if (old && old != root_label) {
+  if (old && old != root()) {
     if (ptr == old) {
       old->decSharedReachable();
     } else {
@@ -62,11 +62,11 @@ libbirch::Label* libbirch::LabelPtr::get() const {
 }
 
 void libbirch::LabelPtr::replace(Label* ptr) {
-  if (ptr && ptr != root_label) {
+  if (ptr && ptr != root()) {
     ptr->incShared();
   }
   auto old = this->ptr.exchange(ptr);
-  if (old && old != root_label) {
+  if (old && old != root()) {
     if (ptr == old) {
       old->decSharedReachable();
     } else {
@@ -77,7 +77,7 @@ void libbirch::LabelPtr::replace(Label* ptr) {
 
 void libbirch::LabelPtr::release() {
   auto old = ptr.exchange(nullptr);
-  if (old && old != root_label) {
+  if (old && old != root()) {
     old->decShared();
   }
 }
@@ -94,7 +94,7 @@ void libbirch::LabelPtr::mark() {
   /* c.f. Shared::mark(); because we don't keep a shared reference to the root
    * label, it is not necessary to recurse into it */
   auto o = ptr.load();
-  if (o && o != root_label) {
+  if (o && o != root()) {
     o->decSharedReachable();
     o->mark();
   }
@@ -104,7 +104,7 @@ void libbirch::LabelPtr::scan() {
   /* c.f. Shared::scan(); because we don't keep a shared reference to the root
    * label, it is not necessary to recurse into it */
   auto o = ptr.load();
-  if (o && o != root_label) {
+  if (o && o != root()) {
     o->scan();
   }
 }
@@ -113,7 +113,7 @@ void libbirch::LabelPtr::reach() {
   /* c.f. Shared::reach(); because we don't keep a shared reference to the
    * root label, it is not necessary to recurse into it */
   auto o = ptr.load();
-  if (o && o != root_label) {
+  if (o && o != root()) {
     o->incShared();
     o->reach();
   }
@@ -123,7 +123,7 @@ void libbirch::LabelPtr::collect() {
   /* c.f. Shared::collect(); because we don't keep a shared reference to the
    * root label, it is not necessary to recurse into it */
   auto o = ptr.exchange(nullptr);
-  if (o && o != root_label) {
+  if (o && o != root()) {
     o->collect();
   }
 }

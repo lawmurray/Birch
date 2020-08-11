@@ -56,20 +56,22 @@ static char* make_heap() {
   #endif
 }
 
-/**
- * Create the root label.
- */
-static auto make_root_label() {
-  auto label = new libbirch::Label();
-  label->incShared();
-  return label;
+static libbirch::Label* make_root() {
+  return new libbirch::Label();
 }
 
 libbirch::ExitBarrierLock libbirch::finish_lock;
 libbirch::ExitBarrierLock libbirch::freeze_lock;
 
-libbirch::Atomic<char*> libbirch::heap(make_heap());
-libbirch::Label* const libbirch::root_label(make_root_label());
+libbirch::Atomic<char*>& libbirch::heap() {
+  static libbirch::Atomic<char*> heap(make_heap());
+  return heap;
+}
+
+libbirch::Label*& libbirch::root() {
+  static Label* root(make_root());
+  return root;
+}
 
 libbirch::Pool& libbirch::pool(const int i) {
   static libbirch::Pool* pools = new libbirch::Pool[64*get_max_threads()];
@@ -87,7 +89,7 @@ void* libbirch::allocate(const size_t n) {
   auto ptr = pool(64*tid + i).pop();  // attempt to reuse from this pool
   if (!ptr) {           // otherwise allocate new
     size_t m = unbin(i);
-    ptr = (heap += m) - m;
+    ptr = (heap() += m) - m;
   }
   assert(ptr);
   return ptr;

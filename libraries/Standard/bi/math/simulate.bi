@@ -1,7 +1,21 @@
 cpp{{
 #include <random>
 
-thread_local static std::mt19937_64 rng;
+static auto make_rngs() {
+  std::vector<std::mt19937_64,libbirch::Allocator<std::mt19937_64>> rngs(
+      libbirch::get_max_threads());
+  std::random_device rd;
+  for (auto i = 0; i < rngs.size(); ++i) {
+    rngs[i].seed(rd());
+  }
+  return rngs;
+}
+
+static auto& get_rng() {
+  static std::vector<std::mt19937_64,libbirch::Allocator<std::mt19937_64>> rngs(
+      make_rngs());
+  return rngs[libbirch::get_thread_num()];
+}
 }}
 
 /**
@@ -13,7 +27,7 @@ function seed(s:Integer) {
   cpp{{
   #pragma omp parallel num_threads(libbirch::get_max_threads())
   {
-    rng.seed(s + libbirch::get_thread_num());
+    get_rng().seed(s + libbirch::get_thread_num());
   }
   }}
 }
@@ -27,7 +41,7 @@ function seed() {
   #pragma omp parallel num_threads(libbirch::get_max_threads())
   {
     #pragma omp critical
-    rng.seed(rd());
+    get_rng().seed(rd());
   }
   }}
 }
@@ -40,7 +54,7 @@ function seed() {
 function simulate_bernoulli(ρ:Real) -> Boolean {
   assert 0.0 <= ρ && ρ <= 1.0;
   cpp{{
-  return std::bernoulli_distribution(ρ)(rng);
+  return std::bernoulli_distribution(ρ)(get_rng());
   }}
 }
 
@@ -63,7 +77,7 @@ function simulate_binomial(n:Integer, ρ:Real) -> Integer {
   assert 0 <= n;
   assert 0.0 <= ρ && ρ <= 1.0;
   cpp{{
-  return std::binomial_distribution<bi::type::Integer>(n, ρ)(rng);
+  return std::binomial_distribution<bi::type::Integer>(n, ρ)(get_rng());
   }}
 }
 
@@ -79,7 +93,7 @@ function simulate_negative_binomial(k:Integer, ρ:Real) -> Integer {
   assert 0 < k;
   assert 0.0 <= ρ && ρ <= 1.0;
   cpp{{
-  return std::negative_binomial_distribution<bi::type::Integer>(k, ρ)(rng);
+  return std::negative_binomial_distribution<bi::type::Integer>(k, ρ)(get_rng());
   }}
 }
 
@@ -92,7 +106,7 @@ function simulate_poisson(λ:Real) -> Integer {
   assert 0.0 <= λ;
   if (λ > 0.0) {
     cpp{{
-    return std::poisson_distribution<bi::type::Integer>(λ)(rng);
+    return std::poisson_distribution<bi::type::Integer>(λ)(get_rng());
     }}
   } else {
     return 0;
@@ -254,7 +268,7 @@ function simulate_dirichlet(α:Real, D:Integer) -> Real[_] {
 function simulate_uniform(l:Real, u:Real) -> Real {
   assert l <= u;
   cpp{{
-  return std::uniform_real_distribution<bi::type::Real>(l, u)(rng);
+  return std::uniform_real_distribution<bi::type::Real>(l, u)(get_rng());
   }}
 }
 
@@ -267,7 +281,7 @@ function simulate_uniform(l:Real, u:Real) -> Real {
 function simulate_uniform_int(l:Integer, u:Integer) -> Integer {
   assert l <= u;
   cpp{{
-  return std::uniform_int_distribution<bi::type::Integer>(l, u)(rng);
+  return std::uniform_int_distribution<bi::type::Integer>(l, u)(get_rng());
   }}
 }
 
@@ -292,7 +306,7 @@ function simulate_uniform_unit_vector(D:Integer) -> Real[_] {
 function simulate_exponential(λ:Real) -> Real {
   assert 0.0 < λ;
   cpp{{
-  return std::exponential_distribution<bi::type::Real>(λ)(rng);
+  return std::exponential_distribution<bi::type::Real>(λ)(get_rng());
   }}
 }
 
@@ -306,7 +320,7 @@ function simulate_weibull(k:Real, λ:Real) -> Real {
   assert 0.0 < k;
   assert 0.0 < λ;
   cpp{{
-  return std::weibull_distribution<bi::type::Real>(k, λ)(rng);
+  return std::weibull_distribution<bi::type::Real>(k, λ)(get_rng());
   }}
 }
 
@@ -322,7 +336,7 @@ function simulate_gaussian(μ:Real, σ2:Real) -> Real {
     return μ;
   } else {
     cpp{{
-    return std::normal_distribution<bi::type::Real>(μ, std::sqrt(σ2))(rng);
+    return std::normal_distribution<bi::type::Real>(μ, std::sqrt(σ2))(get_rng());
     }}
   }
 }
@@ -335,7 +349,7 @@ function simulate_gaussian(μ:Real, σ2:Real) -> Real {
 function simulate_student_t(ν:Real) -> Real {
   assert 0.0 < ν;
   cpp{{
-  return std::student_t_distribution<bi::type::Real>(ν)(rng);
+  return std::student_t_distribution<bi::type::Real>(ν)(get_rng());
   }}
 }
 
@@ -379,7 +393,7 @@ function simulate_beta(α:Real, β:Real) -> Real {
 function simulate_chi_squared(ν:Real) -> Real {
   assert 0.0 < ν;
   cpp{{
-  return std::chi_squared_distribution<bi::type::Real>(ν)(rng);
+  return std::chi_squared_distribution<bi::type::Real>(ν)(get_rng());
   }}
 }
 
@@ -393,7 +407,7 @@ function simulate_gamma(k:Real, θ:Real) -> Real {
   assert 0.0 < k;
   assert 0.0 < θ;
   cpp{{
-  return std::gamma_distribution<bi::type::Real>(k, θ)(rng);
+  return std::gamma_distribution<bi::type::Real>(k, θ)(get_rng());
   }}
 }
 

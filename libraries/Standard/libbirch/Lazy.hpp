@@ -52,7 +52,7 @@ public:
    */
   Lazy() :
       object(new value_type()),
-      label(root_label) {
+      label(root()) {
     static_assert(std::is_default_constructible<value_type>::value,
         "invalid call to class constructor");
     // ^ ideally this condition would be checked with SFINAE, but the
@@ -78,7 +78,7 @@ public:
       typename raw<Arg>::type>::value,int> = 0>
   explicit Lazy(const Arg& arg) :
       object(new value_type(arg)),
-      label(root_label) {
+      label(root()) {
     //
   }
 
@@ -100,7 +100,7 @@ public:
   template<class Arg1, class Arg2, class... Args>
   explicit Lazy(const Arg1& arg1, const Arg2& arg2, const Args&... args) :
       object(new value_type(arg1, arg2, args...)),
-      label(root_label) {
+      label(root()) {
     //
   }
 

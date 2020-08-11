@@ -494,25 +494,8 @@ void bi::CppBaseGenerator::visit(const Program* o) {
       line("}\n");
     }
 
-    /* seed random number generator with random entropy */
-    genTraceLine(o->loc);
-    line("bi::seed();\n");
-
-    /* body of program; wrapped in braces to put local variables out of scope
-     * before clean up below */
-    line('{');
-    in();
+    /* body of program */
     *this << o->braces->strip();
-    out();
-    line('}');
-
-    /* clean up: delete root label and run garbage collector one last time
-     * (not strictly necessary, but useful when e.g. checking for memory
-     * leaks with valgrind */
-    genTraceLine(o->loc);
-    line("libbirch::root_label->decShared();\n");
-    genTraceLine(o->loc);
-    line("libbirch::collect();\n");
 
     genTraceLine(o->loc);
     line("return 0;");

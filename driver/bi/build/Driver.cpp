@@ -282,7 +282,6 @@ void bi::Driver::run(const std::string& prog,
   so.replace_extension(".so");
 #endif
 
-  /* look in built libs first */
   handle = dlopen(so.c_str(), RTLD_NOW);
   msg = dlerror();
   if (handle == NULL) {

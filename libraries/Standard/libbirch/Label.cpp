@@ -3,7 +3,7 @@
  */
 #include "libbirch/Label.hpp"
 
-libbirch::Label::Label() : Any() {
+libbirch::Label::Label() : Any(0) {
   //
 }
 

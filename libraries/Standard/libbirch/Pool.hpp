@@ -23,39 +23,60 @@ public:
   /**
    * Constructor.
    */
-  Pool();
+  Pool() :
+      top(nullptr) {
+    //
+  }
 
   /**
    * Is the pool empty?
    */
-  bool empty() const;
+  bool empty() const {
+    return !top;
+  }
 
   /**
    * Pop an allocation from the pool. Returns `nullptr` if the pool is
    * empty.
    */
-  void* pop();
+  void* pop() {
+    lock.set();
+    auto result = top;
+    top = getNext(result);
+    lock.unset();
+    return result;
+  }
 
   /**
    * Push an allocation to the pool.
    */
-  void push(void* block);
+  void push(void* block) {
+    lock.set();
+    setNext(block, top);
+    top = block;
+    lock.unset();
+  }
 
 private:
   /**
-   * Stack of allocations.
-   */
-  void* top;
-
-  /**
    * Get the first 8 bytes of a block as a pointer.
    */
-  static void* getNext(void* block);
+  static void* getNext(void* block) {
+    return (block) ? *reinterpret_cast<void**>(block) : nullptr;
+  }
 
   /**
    * Set the first 8 bytes of a block as a pointer.
    */
-  static void setNext(void* block, void* next);
+  static void setNext(void* block, void* next) {
+    assert(block);
+    *reinterpret_cast<void**>(block) = next;
+  }
+
+  /**
+   * Stack of allocations.
+   */
+  void* top;
 
   /**
    * Mutex.
