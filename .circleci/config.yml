@@ -54,6 +54,8 @@ commands:
       - attach_workspace:
           at: .
       - run:
+          command: tree
+      - run:
           name: Build library
           command: cd libraries/<< parameters.package >> && birch install $BIRCH_FLAGS
       - slack
@@ -76,6 +78,8 @@ commands:
       - environment
       - attach_workspace:
           at: .
+      - run:
+          command: tree
       - run:
           name: Build library
           command: cd libraries/<< parameters.package >> && birch install $BIRCH_FLAGS
@@ -105,6 +109,8 @@ commands:
       - environment
       - attach_workspace:
           at: .
+      - run:
+          command: tree
       - run:
           name: Build example
           command: cd examples/<< parameters.package >> && birch install $BIRCH_FLAGS
@@ -174,6 +180,8 @@ jobs:
           package: Standard
           tar: standard
           command: ./smoke.sh
+      - run:
+          command: tree
       - persist_to_workspace:
           root: .
           paths:
