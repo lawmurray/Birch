@@ -89,6 +89,12 @@ commands:
       - run:
           name: Run test
           command: cd libraries/<< parameters.package >>Test && << parameters.command >>
+      - persist_to_workspace:
+          root: .
+          paths:
+            - libraries/<< parameters.package >>
+            - lib/libbirch_<< parameters.tar >>.*
+            - include/bi/<< parameters.tar >>.*
       - slack
       - codecov/upload
         
@@ -114,10 +120,6 @@ commands:
       - run:
           name: Build example
           command: cd examples/<< parameters.package >> && birch install $BIRCH_FLAGS; cat 
-      - run:
-          name: Cat
-          command: cd examples/<< parameters.package >> && cat build/latest/config.log
-          when: always
       - run:
           name: Run example
           command: cd examples/<< parameters.package >> && << parameters.command >>
@@ -157,12 +159,6 @@ jobs:
       - build:
           package: Cairo
           tar: cairo
-      - persist_to_workspace:
-          root: .
-          paths:
-            - libraries/Cairo
-            - lib/libbirch_cairo.*
-            - include/bi/cairo.*
 
   smoke_libraries_SQLite:
     executor: smoke
@@ -170,12 +166,6 @@ jobs:
       - build:
           package: SQLite
           tar: sqlite
-      - persist_to_workspace:
-          root: .
-          paths:
-            - libraries/SQLite
-            - lib/libbirch_sqlite.*
-            - include/bi/sqlite.*
   
   smoke_libraries_Standard:
     executor: smoke
@@ -189,9 +179,7 @@ jobs:
       - persist_to_workspace:
           root: .
           paths:
-            - libraries/Standard
-            - lib/libbirch_standard.*
-            - include/bi/standard.*
+            - include/libbirch/*.*
 
   # example smoke tests
   smoke_examples_LinearGaussian:
@@ -272,7 +260,11 @@ jobs:
           package: Standard
           tar: standard
           command: ./test.sh
-
+      - persist_to_workspace:
+          root: .
+          paths:
+            - include/libbirch/*.*
+  
   # example thorough tests
   test_examples_LinearGaussian:
     executor: test
