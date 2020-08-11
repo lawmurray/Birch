@@ -167,7 +167,7 @@ void* allocate() {
   auto ptr = pool(64*tid + i).pop();  // attempt to reuse from this pool
   if (!ptr) {           // otherwise allocate new
     unsigned m = unbin(i);
-    ptr = (heap += m) - m;
+    ptr = (heap() += m) - m;
   }
   assert(ptr);
   return ptr;
