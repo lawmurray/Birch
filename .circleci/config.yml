@@ -49,6 +49,9 @@ commands:
         type: string
       tar:
         type: string
+      coverage:
+        type: boolean
+        default: false
     steps:
       - environment
       - attach_workspace:
@@ -62,9 +65,12 @@ commands:
             - libraries/<< parameters.package >>
             - lib/libbirch_<< parameters.tar >>.*
             - include/bi/<< parameters.tar >>.*
+      - when:
+          condition: << parameters.coverage >>
+          steps:
+            - codecov/upload
       - slack
-      - codecov/upload
-
+    
   # build and run a library package; this builds the library and persists the
   # workspace to downstream jobs, then builds and runs the library's
   # associated test package (the artifacts of which do not need to be
@@ -78,6 +84,9 @@ commands:
         type: string
       command:
         type: string
+      coverage:
+        type: boolean
+        default: false
     steps:
       - environment
       - attach_workspace:
@@ -97,9 +106,12 @@ commands:
             - libraries/<< parameters.package >>
             - lib/libbirch_<< parameters.tar >>.*
             - include/bi/<< parameters.tar >>.*
+      - when:
+          condition: << parameters.coverage >>
+          steps:
+            - codecov/upload
       - slack
-      - codecov/upload
-        
+            
   # build and run an example package
   build_and_run_example:
     description: "Build and test an example package."
@@ -111,6 +123,9 @@ commands:
       command:
         type: string
       mongodb:
+        type: boolean
+        default: false
+      coverage:
         type: boolean
         default: false
     steps:
@@ -129,8 +144,11 @@ commands:
             - run:
                 name: MongoDB import
                 command: cd examples/<< parameters.package >> && mongoimport --host $MONGODB_HOST --ssl --username $MONGODB_USERNAME --password $MONGODB_HOST --authenticationDatabase admin --db $CIRCLE_BRANCH --collection << parameters.package >> --type json --file output/*.json
+      - when:
+          condition: << parameters.coverage >>
+          steps:
+            - codecov/upload
       - slack
-      - codecov/upload
 
 jobs:
   # driver
@@ -159,6 +177,7 @@ jobs:
       - build:
           package: Cairo
           tar: cairo
+          coverage: true
 
   smoke_libraries_SQLite:
     executor: smoke
@@ -166,6 +185,7 @@ jobs:
       - build:
           package: SQLite
           tar: sqlite
+          coverage: true
   
   smoke_libraries_Standard:
     executor: smoke
@@ -174,67 +194,11 @@ jobs:
           package: Standard
           tar: standard
           command: ./smoke.sh
+          coverage: true
       - persist_to_workspace:
           root: .
           paths:
             - include/libbirch/*.*
-
-  # example smoke tests
-  smoke_examples_LinearGaussian:
-    executor: smoke
-    steps: 
-      - build_and_run_example:
-          package: LinearGaussian
-          tar: lineargaussian
-          command: ./smoke.sh
-
-  smoke_examples_LinearRegression:
-    executor: smoke
-    steps: 
-      - build_and_run_example:
-          package: LinearRegression
-          tar: linearregression
-          command: ./smoke.sh
-
-  smoke_examples_MixedGaussian:
-    executor: smoke
-    steps: 
-      - build_and_run_example:
-          package: MixedGaussian
-          tar: mixedgaussian
-          command: ./smoke.sh
-
-  smoke_examples_MultiObjectTracking:
-    executor: smoke
-    steps: 
-      - build_and_run_example:
-          package: MultiObjectTracking
-          tar: multiobjecttracking
-          command: ./smoke.sh
-
-  smoke_examples_PoissonGaussian:
-    executor: smoke
-    steps: 
-      - build_and_run_example:
-          package: PoissonGaussian
-          tar: poissongaussian
-          command: ./smoke.sh
-
-  smoke_examples_SIR:
-    executor: smoke
-    steps: 
-      - build_and_run_example:
-          package: SIR
-          tar: sir
-          command: ./smoke.sh
-
-  smoke_examples_VectorBorneDisease:
-    executor: smoke
-    steps: 
-      - build_and_run_example:
-          package: VectorBorneDisease
-          tar: vectorbornedisease
-          command: ./smoke.sh
 
   # library thorough tests
   test_libraries_Cairo:
@@ -262,7 +226,71 @@ jobs:
           root: .
           paths:
             - include/libbirch/*.*
-  
+
+  # example smoke tests
+  smoke_examples_LinearGaussian:
+    executor: smoke
+    steps: 
+      - build_and_run_example:
+          package: LinearGaussian
+          tar: lineargaussian
+          command: ./smoke.sh
+          coverage: true
+
+  smoke_examples_LinearRegression:
+    executor: smoke
+    steps: 
+      - build_and_run_example:
+          package: LinearRegression
+          tar: linearregression
+          command: ./smoke.sh
+          coverage: true
+
+  smoke_examples_MixedGaussian:
+    executor: smoke
+    steps: 
+      - build_and_run_example:
+          package: MixedGaussian
+          tar: mixedgaussian
+          command: ./smoke.sh
+          coverage: true
+
+  smoke_examples_MultiObjectTracking:
+    executor: smoke
+    steps: 
+      - build_and_run_example:
+          package: MultiObjectTracking
+          tar: multiobjecttracking
+          command: ./smoke.sh
+          coverage: true
+
+  smoke_examples_PoissonGaussian:
+    executor: smoke
+    steps: 
+      - build_and_run_example:
+          package: PoissonGaussian
+          tar: poissongaussian
+          command: ./smoke.sh
+          coverage: true
+
+  smoke_examples_SIR:
+    executor: smoke
+    steps: 
+      - build_and_run_example:
+          package: SIR
+          tar: sir
+          command: ./smoke.sh
+          coverage: true
+
+  smoke_examples_VectorBorneDisease:
+    executor: smoke
+    steps: 
+      - build_and_run_example:
+          package: VectorBorneDisease
+          tar: vectorbornedisease
+          command: ./smoke.sh
+          coverage: true
+
   # example thorough tests
   test_examples_LinearGaussian:
     executor: test
