@@ -22,6 +22,7 @@ executors:
       OMP_NUM_THREADS: "2"
 
 commands:
+  # set environment variables
   environment:
     description: "Set environment variables."
     steps:
@@ -57,7 +58,7 @@ commands:
       - persist_to_workspace:
           root: /root/project
           paths:
-            - '*'
+            - << parameters.package >>
       - codecov/upload
 
   # build and run a library package; this builds the library and persists the
@@ -82,7 +83,7 @@ commands:
       - persist_to_workspace:
           root: /root/project
           paths:
-            - '*'
+            - << parameters.package >>
       - run:
           name: Build test
           command: cd << parameters.package >>Test && birch install $BIRCH_FLAGS
@@ -101,6 +102,9 @@ commands:
         type: string
       command:
         type: string
+      mongodb:
+        type: boolean
+        default: false
     steps:
       - environment
       - attach_workspace:
@@ -113,6 +117,12 @@ commands:
           name: Run example
           command: cd << parameters.package >> && << parameters.command >>
       - slack
+      - when:
+          condition: mongodb
+          steps:
+            - run:
+                name: MongoDB import
+                command: cd << parameters.package >> && mongoimport --host $MONGODB_HOST --ssl --username $MONGODB_USERNAME --password $MONGODB_HOST --authenticationDatabase admin --db $CIRCLE_BRANCH --collection << parameters.package >> --type json --file output/*.json
       - codecov/upload
 
 jobs:
@@ -232,6 +242,7 @@ jobs:
       - build_and_run_example:
           package: examples/LinearGaussian
           command: ./test.sh
+          mongodb: true
 
   test_examples_LinearRegression:
     executor: test
@@ -239,6 +250,7 @@ jobs:
       - build_and_run_example:
           package: examples/LinearRegression
           command: ./test.sh
+          mongodb: true
 
   test_examples_MixedGaussian:
     executor: test
@@ -246,6 +258,7 @@ jobs:
       - build_and_run_example:
           package: examples/MixedGaussian
           command: ./test.sh
+          mongodb: true
 
   test_examples_MultiObjectTracking:
     executor: test
@@ -253,6 +266,7 @@ jobs:
       - build_and_run_example:
           package: examples/MultiObjectTracking
           command: ./test.sh
+          mongodb: true
 
   test_examples_PoissonGaussian:
     executor: test
@@ -260,6 +274,7 @@ jobs:
       - build_and_run_example:
           package: examples/PoissonGaussian
           command: ./test.sh
+          mongodb: true
 
   test_examples_SIR:
     executor: test
@@ -267,6 +282,7 @@ jobs:
       - build_and_run_example:
           package: examples/SIR
           command: ./test.sh
+          mongodb: true
 
   test_examples_VectorBorneDisease:
     executor: test
@@ -274,6 +290,7 @@ jobs:
       - build_and_run_example:
           package: examples/VectorBorneDisease
           command: ./test.sh
+          mongodb: true
 
 workflows:
   version: 2

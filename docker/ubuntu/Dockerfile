@@ -24,4 +24,5 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libboost-math-dev \
     libsqlite3-dev \
     libcairo2-dev \
+    mongo-tools \
     && rm -rf /var/lib/apt/lists/*

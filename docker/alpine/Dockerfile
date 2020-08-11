@@ -17,4 +17,5 @@ RUN apk update && apk add --no-cache \
     yaml-dev \
     boost-dev \
     sqlite-dev \
-    cairo-dev
+    cairo-dev \
+    mongodb-tools
