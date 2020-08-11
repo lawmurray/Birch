@@ -113,10 +113,7 @@ commands:
           command: ls * */*
       - run:
           name: Build example
-          command: cd examples/<< parameters.package >> && birch install $BIRCH_FLAGS
-      - run:
-          name: Cat
-          command: cd examples/<< parameters.package >> && cat build/latest/config.log
+          command: cd examples/<< parameters.package >> && birch install $BIRCH_FLAGS; cat examples/<< parameters.package >>/build/latest/config.log
       - run:
           name: Run example
           command: cd examples/<< parameters.package >> && << parameters.command >>
