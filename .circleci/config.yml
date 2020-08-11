@@ -54,7 +54,7 @@ commands:
       - attach_workspace:
           at: .
       - run:
-          command: tree
+          command: ls bin/* include/* lib/*
       - run:
           name: Build library
           command: cd libraries/<< parameters.package >> && birch install $BIRCH_FLAGS
@@ -79,7 +79,7 @@ commands:
       - attach_workspace:
           at: .
       - run:
-          command: tree
+          command: ls bin/* include/* lib/*
       - run:
           name: Build library
           command: cd libraries/<< parameters.package >> && birch install $BIRCH_FLAGS
@@ -110,7 +110,7 @@ commands:
       - attach_workspace:
           at: .
       - run:
-          command: tree
+          command: ls bin/* include/* lib/*
       - run:
           name: Build example
           command: cd examples/<< parameters.package >> && birch install $BIRCH_FLAGS
@@ -181,7 +181,7 @@ jobs:
           tar: standard
           command: ./smoke.sh
       - run:
-          command: tree
+          command: ls bin/* include/* lib/*
       - persist_to_workspace:
           root: .
           paths:
