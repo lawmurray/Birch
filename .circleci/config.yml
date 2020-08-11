@@ -62,7 +62,7 @@ commands:
           paths:
             - libraries/<< parameters.package >>
             - lib/libbirch_<< parameters.tar >>.*
-            - include/<< parameters.tar >>.*
+            - include/bi/<< parameters.tar >>.*
       - codecov/upload
 
   # build and run a library package; this builds the library and persists the
@@ -91,7 +91,7 @@ commands:
           paths:
             - libraries/<< parameters.package >>
             - lib/libbirch_<< parameters.tar >>.*
-            - include/<< parameters.tar >>.*
+            - include/bi/<< parameters.tar >>.*
       - run:
           name: Build test
           command: cd libraries/<< parameters.package >>Test && birch install $BIRCH_FLAGS
