@@ -1077,8 +1077,8 @@ void bi::Driver::configure() {
       cxxflags << " -O0 -fno-inline -g";
     } else {
       cppflags << " -DNDEBUG";
-      cflags << " -O3 -flto -g";
-      cxxflags << " -O3 -flto -g";
+      cflags << " -O3 -g";
+      cxxflags << " -O3 -g";
     }
     if (mode == "test") {
       cflags << " --coverage -fprofile-abs-path";

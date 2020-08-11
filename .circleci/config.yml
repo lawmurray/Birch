@@ -11,6 +11,7 @@ executors:
     environment:
       BIRCH_PREFIX: "/root/project"
       BIRCH_FLAGS: "--mode=test --unit=dir --jobs=2"
+      OMP_NUM_THREADS: "2"
 
   test:
     docker:
@@ -18,6 +19,7 @@ executors:
     environment:
       BIRCH_PREFIX: "/root/project"
       BIRCH_FLAGS: "--mode=release --unit=dir --jobs=2"
+      OMP_NUM_THREADS: "2"
 
 commands:
   environment:
