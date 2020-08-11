@@ -9,7 +9,7 @@ executors:
     docker:
       - image: lawmurray/birch-circleci:ubuntu-20.04
     environment:
-      BIRCH_PREFIX: "/root/project"
+      BIRCH_PREFIX: "/birch"
       BIRCH_FLAGS: "--mode=test --unit=dir --jobs=2"
       OMP_NUM_THREADS: "2"
 
@@ -17,7 +17,7 @@ executors:
     docker:
       - image: lawmurray/birch-circleci:ubuntu-20.04
     environment:
-      BIRCH_PREFIX: "/root/project"
+      BIRCH_PREFIX: "/birch"
       BIRCH_FLAGS: "--mode=release --unit=dir --jobs=2"
       OMP_NUM_THREADS: "2"
 
@@ -61,8 +61,8 @@ commands:
           root: .
           paths:
             - libraries/<< parameters.package >>
-            - lib/libbirch_<< parameters.tar >>.*
-            - include/bi/<< parameters.tar >>.*
+            - /birch/lib/libbirch_<< parameters.tar >>.*
+            - /birch/include/bi/<< parameters.tar >>.*
       - codecov/upload
 
   # build and run a library package; this builds the library and persists the
@@ -98,8 +98,8 @@ commands:
           root: .
           paths:
             - libraries/<< parameters.package >>
-            - lib/libbirch_<< parameters.tar >>.*
-            - include/bi/<< parameters.tar >>.*
+            - /birch/lib/libbirch_<< parameters.tar >>.*
+            - /birch/include/bi/<< parameters.tar >>.*
       - codecov/upload
         
   # build and run an example package
