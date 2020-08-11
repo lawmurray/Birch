@@ -143,7 +143,7 @@ commands:
           steps:
             - run:
                 name: MongoDB import
-                command: cd examples/<< parameters.package >> && mongoimport --host $MONGODB_HOST --ssl --username $MONGODB_USERNAME --password $MONGODB_PASSWORD --authenticationDatabase admin --db $CIRCLE_BRANCH --collection << parameters.package >> --type json --file output/*.json
+                command: cd examples/<< parameters.package >> && mongoimport --host $MONGODB_HOST --ssl --username $MONGODB_USERNAME --password $MONGODB_PASSWORD --authenticationDatabase admin --db $CIRCLE_BRANCH --collection << parameters.package >> --jsonArray --file output/*.json
       - when:
           condition: << parameters.coverage >>
           steps:
