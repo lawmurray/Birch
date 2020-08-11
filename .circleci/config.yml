@@ -57,12 +57,6 @@ commands:
           name: Build library
           command: cd libraries/<< parameters.package >> && birch install $BIRCH_FLAGS
       - slack
-      - persist_to_workspace:
-          root: .
-          paths:
-            - libraries/<< parameters.package >>
-            - /birch/lib/libbirch_<< parameters.tar >>.*
-            - /birch/include/bi/<< parameters.tar >>.*
       - codecov/upload
 
   # build and run a library package; this builds the library and persists the
@@ -85,21 +79,13 @@ commands:
       - run:
           name: Build library
           command: cd libraries/<< parameters.package >> && birch install $BIRCH_FLAGS
-      - slack
       - run:
           name: Build test
           command: cd libraries/<< parameters.package >>Test && birch install $BIRCH_FLAGS
-      - slack
       - run:
           name: Run test
           command: cd libraries/<< parameters.package >>Test && << parameters.command >>
       - slack
-      - persist_to_workspace:
-          root: .
-          paths:
-            - libraries/<< parameters.package >>
-            - /birch/lib/libbirch_<< parameters.tar >>.*
-            - /birch/include/bi/<< parameters.tar >>.*
       - codecov/upload
         
   # build and run an example package
@@ -122,17 +108,16 @@ commands:
       - run:
           name: Build example
           command: cd examples/<< parameters.package >> && birch install $BIRCH_FLAGS
-      - slack
       - run:
           name: Run example
           command: cd examples/<< parameters.package >> && << parameters.command >>
-      - slack
       - when:
           condition: mongodb
           steps:
             - run:
                 name: MongoDB import
                 command: cd examples/<< parameters.package >> && mongoimport --host $MONGODB_HOST --ssl --username $MONGODB_USERNAME --password $MONGODB_HOST --authenticationDatabase admin --db $CIRCLE_BRANCH --collection << parameters.package >> --type json --file output/*.json
+      - slack
       - codecov/upload
 
 jobs:
@@ -149,11 +134,11 @@ jobs:
               ./configure --prefix=$BIRCH_PREFIX --config-cache CXXFLAGS="-Wall -Wno-overloaded-virtual -g -O0 --coverage -fprofile-abs-path"
               make -j 4
               make install
-      - slack
       - persist_to_workspace:
           root: .
           paths:
             - '*'
+      - slack
 
   # library smoke tests
   smoke_libraries_Cairo:
@@ -162,6 +147,12 @@ jobs:
       - build:
           package: Cairo
           tar: cairo
+      - persist_to_workspace:
+          root: .
+          paths:
+            - libraries/Cairo
+            - lib/libbirch_cairo.*
+            - include/bi/cairo.*
 
   smoke_libraries_SQLite:
     executor: smoke
@@ -169,7 +160,13 @@ jobs:
       - build:
           package: SQLite
           tar: sqlite
-
+      - persist_to_workspace:
+          root: .
+          paths:
+            - libraries/SQLite
+            - lib/libbirch_sqlite.*
+            - include/bi/sqlite.*
+  
   smoke_libraries_Standard:
     executor: smoke
     steps:
@@ -177,6 +174,12 @@ jobs:
           package: Standard
           tar: standard
           command: ./smoke.sh
+      - persist_to_workspace:
+          root: .
+          paths:
+            - libraries/Standard
+            - lib/libbirch_standard.*
+            - include/bi/standard.*
 
   # example smoke tests
   smoke_examples_LinearGaussian:
