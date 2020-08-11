@@ -54,8 +54,6 @@ commands:
       - attach_workspace:
           at: .
       - run:
-          command: ls * */*
-      - run:
           name: Build library
           command: cd libraries/<< parameters.package >> && birch install $BIRCH_FLAGS
       - slack
@@ -78,8 +76,6 @@ commands:
       - environment
       - attach_workspace:
           at: .
-      - run:
-          command: ls * */*
       - run:
           name: Build library
           command: cd libraries/<< parameters.package >> && birch install $BIRCH_FLAGS
@@ -116,15 +112,13 @@ commands:
       - attach_workspace:
           at: .
       - run:
-          command: ls * */*
-      - run:
           name: Build example
           command: cd examples/<< parameters.package >> && birch install $BIRCH_FLAGS; cat 
       - run:
           name: Run example
           command: cd examples/<< parameters.package >> && << parameters.command >>
       - when:
-          condition: mongodb
+          condition: << parameters.mongodb >>
           steps:
             - run:
                 name: MongoDB import
@@ -174,8 +168,6 @@ jobs:
           package: Standard
           tar: standard
           command: ./smoke.sh
-      - run:
-          command: ls * */*
       - persist_to_workspace:
           root: .
           paths:
@@ -336,93 +328,113 @@ workflows:
       - driver
 
       - smoke_libraries_Standard:
+          context: lawmurray
           requires:
-            - driver
+              - driver
 
       - smoke_libraries_Cairo:
+          context: lawmurray
           requires:
             - smoke_libraries_Standard
 
       - smoke_libraries_SQLite:
+          context: lawmurray
           requires:
             - smoke_libraries_Standard
     
       - smoke_examples_LinearGaussian:
+          context: lawmurray
           requires:
             - smoke_libraries_Standard
 
       - smoke_examples_LinearRegression:
+          context: lawmurray
           requires:
             - smoke_libraries_Standard    
 
       - smoke_examples_MixedGaussian:
+          context: lawmurray
           requires:
             - smoke_libraries_Standard
 
       - smoke_examples_PoissonGaussian:
+          context: lawmurray
           requires:
             - smoke_libraries_Standard
 
       - smoke_examples_SIR:
+          context: lawmurray
           requires:
             - smoke_libraries_Standard
 
       - smoke_examples_MultiObjectTracking:
+          context: lawmurray
           requires:
             - smoke_libraries_Standard
             - smoke_libraries_Cairo
       
       - smoke_examples_VectorBorneDisease:
+          context: lawmurray
           requires:
             - smoke_libraries_Standard
 
       - test_libraries_Standard:
+          context: lawmurray
           requires:
             - smoke_libraries_Standard
             - driver
 
       - test_libraries_Cairo:
+          context: lawmurray
           requires:
             - smoke_libraries_Cairo
             - test_libraries_Standard
 
       - test_libraries_SQLite:
+          context: lawmurray
           requires:
             - smoke_libraries_SQLite
             - test_libraries_Standard
     
       - test_examples_LinearGaussian:
+          context: lawmurray
           requires:
             - smoke_examples_LinearGaussian
             - test_libraries_Standard
 
       - test_examples_LinearRegression:
+          context: lawmurray
           requires:
             - smoke_examples_LinearRegression
             - test_libraries_Standard    
 
       - test_examples_MixedGaussian:
+          context: lawmurray
           requires:
             - smoke_examples_MixedGaussian
             - test_libraries_Standard
 
       - test_examples_PoissonGaussian:
+          context: lawmurray
           requires:
             - smoke_examples_PoissonGaussian
             - test_libraries_Standard
 
       - test_examples_SIR:
+          context: lawmurray
           requires:
             - smoke_examples_SIR
             - test_libraries_Standard
 
       - test_examples_MultiObjectTracking:
+          context: lawmurray
           requires:
             - smoke_examples_MultiObjectTracking
             - test_libraries_Standard
             - test_libraries_Cairo
       
       - test_examples_VectorBorneDisease:
+          context: lawmurray
           requires:
             - smoke_examples_VectorBorneDisease
             - test_libraries_Standard
