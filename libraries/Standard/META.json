@@ -1,6 +1,5 @@
 {
   "name": "Standard",
-  "version": "0.0.0",
   "description": "Birch standard library.",
   "manifest": {
     "source": [

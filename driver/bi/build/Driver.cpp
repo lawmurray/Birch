@@ -14,6 +14,8 @@ bi::Driver::Driver(int argc, char** argv) :
      * relative path from the build directory to the work directory,
      * otherwise a work directory containing spaces causes problems */
     packageName("Untitled"),
+    packageVersion(""),
+    packageDescription(""),
     work_dir("."),
     prefix(""),
     arch("native"),
@@ -542,7 +544,7 @@ void bi::Driver::docs() {
     copy_with_force("README.md", docs / "index.md");
   } else {
     docsStream.open(docs / "index.md");
-    docsStream << packageDesc << '\n';
+    docsStream << packageDescription << '\n';
     docsStream.close();
   }
   mkdocsStream << "  - index.md\n";
@@ -744,7 +746,8 @@ void bi::Driver::help() {
 void bi::Driver::meta() {
   /* clear any previous read */
   packageName = "Untitled";
-  packageDesc = "";
+  packageVersion = "";
+  packageDescription = "";
   metaFiles.clear();
   allFiles.clear();
 
@@ -770,8 +773,14 @@ void bi::Driver::meta() {
     throw DriverException(
         "META.json must provide a 'name' entry with the name of this package.");
   }
-  if (auto desc = meta.get_optional<std::string>("description")) {
-    packageDesc = desc.get();
+  if (auto description = meta.get_optional<std::string>("description")) {
+    packageDescription = description.get();
+  }
+  if (auto version = meta.get_optional<std::string>("version")) {
+    packageVersion = version.get();
+  } else {
+    /* try to use a git hash */
+    packageVersion = "m4_esyscmd_s([git rev-parse HEAD 2> /dev/null || echo 0])";
   }
 
   /* external requirements */
@@ -853,6 +862,7 @@ void bi::Driver::setup() {
   /* update configure.ac */
   std::string contents = read_all(find(share_dirs, "configure.ac"));
   boost::replace_all(contents, "PACKAGE_NAME", packageName);
+  boost::replace_all(contents, "PACKAGE_VERSION", packageVersion);
   boost::replace_all(contents, "PACKAGE_TARNAME", internalName);
   std::stringstream configureStream;
   configureStream << contents << "\n\n";
@@ -1086,6 +1096,7 @@ void bi::Driver::configure() {
     }
 
     /* defines */
+    cppflags << " -DBIRCH_VERSION=\\\"" PACKAGE_VERSION "\\\"";
     if (memoryPool) {
       cppflags << " -DENABLE_MEMORY_POOL=1";
     } else {

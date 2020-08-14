@@ -1,6 +1,5 @@
 {
   "name": "Cairo",
-  "version": "0.0.0",
   "description": "Birch wrapper for the Cairo graphics library.",
   
   "manifest": {

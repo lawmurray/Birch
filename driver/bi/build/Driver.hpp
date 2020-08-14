@@ -138,14 +138,19 @@ private:
       const std::string& key, const bool checkExists);
 
   /**
-   * Name of the package.
+   * Package name.
    */
   std::string packageName;
 
   /**
-   * Description of the package.
+   * Package version.
    */
-  std::string packageDesc;
+  std::string packageVersion;
+
+  /**
+   * Package description.
+   */
+  std::string packageDescription;
 
   /**
    * Working directory.

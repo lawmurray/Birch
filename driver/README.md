@@ -22,10 +22,3 @@ For a complete guide to installing Birch, see <http://www.birch-lang.org>. To in
 make
 make install
 ```
-
-
-## Version history
-
-### v0.0.0
-
-* Pre-release.

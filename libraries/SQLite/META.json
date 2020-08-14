@@ -1,6 +1,5 @@
 {
   "name": "SQLite",
-  "version": "0.0.0",
   "description": "Birch wrapper for SQLite.",
   
   "manifest": {
