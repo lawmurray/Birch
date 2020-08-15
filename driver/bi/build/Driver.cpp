@@ -1086,7 +1086,10 @@ void bi::Driver::configure() {
     }
 
     /* defines */
-    cppflags << " -DBIRCH_VERSION=\\\"" PACKAGE_VERSION "\\\"";
+    cppflags << " -DBIRCH_VERSION=\\\\\\\"" PACKAGE_VERSION "\\\\\\\"";
+    // ^ the value of the define is to be a quoted string, i.e. we want
+    //   -DBIRCH_VERSION=\"xxxx\" --> CPPFLAGS="-DBIRCH_VERSION=\\\"xxxx\\\"",
+    //   with each of those further escaped in the C++ string above
     if (memoryPool) {
       cppflags << " -DENABLE_MEMORY_POOL=1";
     } else {
