@@ -1,7 +1,7 @@
 cpp{{
 #include <chrono>
 
-thread_local static std::chrono::time_point<std::chrono::system_clock> savedTimePoint = std::chrono::system_clock::now();
+thread_local static std::chrono::time_point<std::chrono::steady_clock> savedTimePoint = std::chrono::steady_clock::now();
 }}
 
 /**
@@ -9,7 +9,7 @@ thread_local static std::chrono::time_point<std::chrono::system_clock> savedTime
  */
 function tic() {
   cpp {{
-  savedTimePoint = std::chrono::system_clock::now();
+  savedTimePoint = std::chrono::steady_clock::now();
   }}
 }
 
@@ -19,7 +19,7 @@ function tic() {
 function toc() -> Real {
   elapsed:Real;
   cpp {{
-  std::chrono::duration<double> e = std::chrono::system_clock::now() - savedTimePoint;
+  std::chrono::duration<double> e = std::chrono::steady_clock::now() - savedTimePoint;
   elapsed = e.count();
   }}
   return elapsed;
