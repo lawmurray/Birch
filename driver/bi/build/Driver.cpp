@@ -780,7 +780,7 @@ void bi::Driver::meta() {
     packageVersion = version.get();
   } else {
     /* try to use a git hash */
-    packageVersion = "m4_esyscmd_s([git rev-parse HEAD 2> /dev/null || echo 0])";
+    packageVersion = "m4_esyscmd_s([git rev-parse --short=8 HEAD 2> /dev/null || echo 0])";
   }
 
   /* external requirements */

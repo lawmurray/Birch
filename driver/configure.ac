@@ -1,4 +1,4 @@
-AC_INIT([Birch], [m4_esyscmd_s([git rev-parse HEAD 2> /dev/null || echo 0])], [], [birch], [https://birch-lang.org])
+AC_INIT([Birch], [m4_esyscmd_s([git rev-parse --short=8 HEAD 2> /dev/null || echo 0])], [], [birch], [https://birch-lang.org])
 AC_PREREQ([2.62])
 AC_LANG([C++])
 AM_INIT_AUTOMAKE([1.10 no-define foreign])

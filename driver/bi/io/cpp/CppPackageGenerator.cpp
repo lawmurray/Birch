@@ -196,9 +196,7 @@ void bi::CppPackageGenerator::visit(const Package* o) {
         auxDefinition << o;
       }
     }
-  }
 
-  if (header) {
     line("#endif");
   }
 }
