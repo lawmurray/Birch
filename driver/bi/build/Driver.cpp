@@ -25,7 +25,6 @@ bi::Driver::Driver(int argc, char** argv) :
     sharedLib(true),
     openmp(true),
     memoryPool(true),
-    cloneMemoInitialSize(8),
     jobs(std::thread::hardware_concurrency()),
     warnings(true),
     notes(true),
@@ -51,7 +50,6 @@ bi::Driver::Driver(int argc, char** argv) :
     DISABLE_OPENMP_ARG,
     ENABLE_MEMORY_POOL_ARG,
     DISABLE_MEMORY_POOL_ARG,
-    CLONE_MEMO_INITIAL_SIZE_ARG,
     JOBS_ARG,
     ENABLE_WARNINGS_ARG,
     DISABLE_WARNINGS_ARG,
@@ -80,7 +78,6 @@ bi::Driver::Driver(int argc, char** argv) :
       { "disable-openmp", no_argument, 0, DISABLE_OPENMP_ARG },
       { "enable-memory-pool", no_argument, 0, ENABLE_MEMORY_POOL_ARG },
       { "disable-memory-pool", no_argument, 0, DISABLE_MEMORY_POOL_ARG },
-      { "clone-memo-initial-size", required_argument, 0, CLONE_MEMO_INITIAL_SIZE_ARG },
       { "jobs", required_argument, 0, JOBS_ARG },
       { "enable-warnings", no_argument, 0, ENABLE_WARNINGS_ARG },
       { "disable-warnings", no_argument, 0, DISABLE_WARNINGS_ARG },
@@ -152,9 +149,6 @@ bi::Driver::Driver(int argc, char** argv) :
     case DISABLE_MEMORY_POOL_ARG:
       memoryPool = false;
       break;
-    case CLONE_MEMO_INITIAL_SIZE_ARG:
-      cloneMemoInitialSize = atoi(optarg);
-      break;
     case JOBS_ARG:
       jobs = atoi(optarg);
       break;
@@ -189,10 +183,6 @@ bi::Driver::Driver(int argc, char** argv) :
   largv.insert(largv.end(), unknown.begin(), unknown.end());
 
   /* some error checking */
-  if (!isPower2(cloneMemoInitialSize)) {
-    throw DriverException(
-        "--clone-memo-initial-size must be a positive power of 2.");
-  }
   if (jobs <= 0) {
     throw DriverException("--jobs must be a positive integer.");
   }
@@ -914,7 +904,7 @@ void bi::Driver::setup() {
   makeStream << "lib_LTLIBRARIES = libbirch_" << internalName << ".la\n\n";
 
   /* sources derived from *.bi files */
-  makeStream << "nodist_libbirch_" << internalName << "_la_SOURCES =";
+  makeStream << "dist_libbirch_" << internalName << "_la_SOURCES =";
   if (unit == "unity") {
     /* sources go into one *.cpp file for the whole package */
     makeStream << " \\\n  bi/" << internalName << ".cpp";
@@ -971,8 +961,8 @@ void bi::Driver::setup() {
   }
   makeStream << '\n';
 
-  /* other files to not distribute */
-  makeStream << "noinst_DATA = ";
+  /* other files to distribute */
+  makeStream << "dist_noinst_DATA = ";
   for (auto file : metaFiles["manifest.other"]) {
     makeStream << " \\\n  " << file.string();
   }
@@ -1102,7 +1092,6 @@ void bi::Driver::configure() {
     } else {
       cppflags << " -DENABLE_MEMORY_POOL=0";
     }
-    cppflags << " -DCLONE_MEMO_INITIAL_SIZE=" << cloneMemoInitialSize;
 
     /* include path */
     for (auto iter = include_dirs.begin(); iter != include_dirs.end();
@@ -1269,7 +1258,6 @@ std::string bi::Driver::suffix() const {
   buf << sharedLib << ' ';
   buf << openmp << ' ';
   buf << memoryPool << ' ';
-  buf << cloneMemoInitialSize << ' ';
   return encode32(buf.str());
 }
 

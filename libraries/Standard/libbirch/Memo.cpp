@@ -167,7 +167,7 @@ void libbirch::Memo::rehash() {
       auto values1 = values;
 
       /* choose an appropriate size for the new table */
-      unsigned minSize = (unsigned)CLONE_MEMO_INITIAL_SIZE;
+      unsigned minSize = 8u;
       nentries = std::max(2u*nentries1, minSize);
       while (minSize < nentries && noccupied <= crowd()/2) {
         nentries /= 2u;

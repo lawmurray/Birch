@@ -213,12 +213,6 @@ private:
   bool memoryPool;
 
   /**
-   * Initial allocation size (number of entries) in maps used for clone
-   * memoization.
-   */
-  int cloneMemoInitialSize;
-
-  /**
    * Number of jobs for parallel build. If zero, a reasonable value is
    * determined from the environment.
    */
