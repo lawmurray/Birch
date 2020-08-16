@@ -278,7 +278,7 @@ void bi::Driver::run(const std::string& prog,
   msg = dlerror();
   if (handle == NULL) {
     std::stringstream buf;
-    buf << "Could not load " << so.string() << ", " << msg << '.';
+    buf << msg << '.';
     throw DriverException(buf.str());
   } else {
     addr = dlsym(handle, prog.c_str());
@@ -440,10 +440,8 @@ void bi::Driver::check() {
 
   interesting.insert(".bi");
   interesting.insert(".sh");
-  interesting.insert(".m");
-  interesting.insert(".R");
   interesting.insert(".json");
-  interesting.insert(".ubj");
+  interesting.insert(".yml");
   interesting.insert(".cpp");
   interesting.insert(".hpp");
 
@@ -474,12 +472,11 @@ void bi::Driver::docs() {
   meta();
 
   CWD cwd(work_dir);
-  Package* package = createPackage();
+  Package* package = createPackage(false);
 
   /* parse all files */
   Compiler compiler(package, fs::path("build") / suffix(), mode, unit);
-  compiler.parse();
-  compiler.resolve();
+  compiler.parse(false);
 
   /* output everything into single file */
   fs::ofstream docsStream("DOCS.md");
@@ -971,13 +968,15 @@ void bi::Driver::setup() {
   newMake = write_all_if_different("Makefile.am", makeStream.str());
 }
 
-bi::Package* bi::Driver::createPackage() {
+bi::Package* bi::Driver::createPackage(bool includeRequires) {
   Package* package = new Package(packageName);
-  for (auto name : metaFiles["require.package"]) {
-    /* add *.bih dependency */
-    fs::path header = fs::path("bi") / tarname(name.string());
-    header.replace_extension(".bih");
-    package->addHeader(find(include_dirs, header).string());
+  if (includeRequires) {
+    for (auto name : metaFiles["require.package"]) {
+      /* add *.bih dependency */
+      fs::path header = fs::path("bi") / tarname(name.string());
+      header.replace_extension(".bih");
+      package->addHeader(find(include_dirs, header).string());
+    }
   }
   for (auto file : metaFiles["manifest.source"]) {
     if (file.extension().compare(".bi") == 0) {
@@ -988,13 +987,13 @@ bi::Package* bi::Driver::createPackage() {
 }
 
 void bi::Driver::compile() {
-  Package* package = createPackage();
+  Package* package = createPackage(true);
 
   auto build_dir = fs::path("build") / suffix();
   CWD cwd(work_dir);
 
   Compiler compiler(package, build_dir, mode, unit);
-  compiler.parse();
+  compiler.parse(true);
   compiler.resolve();
   compiler.gen();
 

@@ -23,9 +23,13 @@ bi::Compiler::Compiler(Package* package, const fs::path& build_dir,
   //
 }
 
-void bi::Compiler::parse() {
+void bi::Compiler::parse(bool includeHeaders) {
   compiler = this;  // set global variable needed by parser for callbacks
-  for (auto file : package->files) {
+  auto files = package->sources;
+  if (includeHeaders) {
+    files = package->files;
+  }
+  for (auto file : files) {
     raw.str("");
     auto fd = fopen(file->path.c_str(), "r");
     if (!fd) {

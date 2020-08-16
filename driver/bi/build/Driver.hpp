@@ -85,8 +85,10 @@ private:
 
   /**
    * Create the package.
+   * 
+   * @param includeRequires Include checks for required packages?
    */
-  Package* createPackage();
+  Package* createPackage(bool includeRequires);
 
   /**
    * Compile Birch files to C++.

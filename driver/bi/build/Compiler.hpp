@@ -27,9 +27,11 @@ public:
       const std::string& mode, const std::string& unit);
 
   /**
-   * Parse all input files.
+   * Parse source files.
+   * 
+   * @param includeHeaders Include header files also?
    */
-  void parse();
+  void parse(bool includeHeaders);
 
   /**
    * Resolve identifiers and check types.
