@@ -238,6 +238,7 @@ noinst_HEADERS = \
   bi/primitive/poset.hpp \
   bi/statement/all.hpp \
   bi/statement/AssignmentOperator.hpp \
+  bi/statement/Assert.hpp \
   bi/statement/Assume.hpp \
   bi/statement/Basic.hpp \
   bi/statement/BinaryOperator.hpp \
@@ -312,6 +313,11 @@ dist_pkgdata_DATA = \
   share/Makefile.am \
   share/META.json \
   share/README.md
+
+dist_noinst_DATA = \
+  Doxyfile \
+  LICENSE \
+  README.md
 
 BUILT_SOURCES = bi/parser.hpp bi/parser.cpp bi/lexer.cpp #bi/birch.hpp.pch
 CLEANFILES = $(BUILT_SOURCES)
