@@ -34,7 +34,7 @@ static object_list& get_thread_unreachable() {
  * Create the heap.
  */
 static char* make_heap() {
-  #if !ENABLE_MEMORY_POOL
+  #ifdef DISABLE_MEMORY_POOL
   return nullptr;
   #else
   /* determine a preferred size of the heap based on total physical memory */
@@ -81,7 +81,7 @@ libbirch::Pool& libbirch::pool(const int i) {
 void* libbirch::allocate(const size_t n) {
   assert(n > 0u);
 
-  #if !ENABLE_MEMORY_POOL
+  #ifdef DISABLE_MEMORY_POOL
   return std::malloc(n);
   #else
   int tid = get_thread_num();
@@ -101,7 +101,7 @@ void libbirch::deallocate(void* ptr, const size_t n, const int tid) {
   assert(n > 0u);
   assert(tid < get_max_threads());
 
-  #if !ENABLE_MEMORY_POOL
+  #ifdef DISABLE_MEMORY_POOL
   std::free(ptr);
   #else
   int i = bin(n);
@@ -114,7 +114,7 @@ void libbirch::deallocate(void* ptr, const unsigned n, const int tid) {
   assert(n > 0u);
   assert(tid < get_max_threads());
 
-  #if !ENABLE_MEMORY_POOL
+  #ifdef DISABLE_MEMORY_POOL
   std::free(ptr);
   #else
   int i = bin(n);
@@ -129,7 +129,7 @@ void* libbirch::reallocate(void* ptr1, const size_t n1, const int tid1,
   assert(tid1 < get_max_threads());
   assert(n2 > 0u);
 
-  #if !ENABLE_MEMORY_POOL
+  #ifdef DISABLE_MEMORY_POOL
   return std::realloc(ptr1, n2);
   #else
   int i1 = bin(n1);

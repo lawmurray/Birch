@@ -85,7 +85,7 @@ private:
 
   /**
    * Create the package.
-   * 
+   *
    * @param includeRequires Include checks for required packages?
    */
   Package* createPackage(bool includeRequires);
@@ -208,11 +208,6 @@ private:
    * Is OpenMP enabled?
    */
   bool openmp;
-
-  /**
-   * Is the memory pool enabled?
-   */
-  bool memoryPool;
 
   /**
    * Number of jobs for parallel build. If zero, a reasonable value is

@@ -24,7 +24,6 @@ bi::Driver::Driver(int argc, char** argv) :
     staticLib(false),
     sharedLib(true),
     openmp(true),
-    memoryPool(true),
     jobs(std::thread::hardware_concurrency()),
     warnings(true),
     notes(true),
@@ -48,8 +47,6 @@ bi::Driver::Driver(int argc, char** argv) :
     DISABLE_SHARED_ARG,
     ENABLE_OPENMP_ARG,
     DISABLE_OPENMP_ARG,
-    ENABLE_MEMORY_POOL_ARG,
-    DISABLE_MEMORY_POOL_ARG,
     JOBS_ARG,
     ENABLE_WARNINGS_ARG,
     DISABLE_WARNINGS_ARG,
@@ -76,8 +73,6 @@ bi::Driver::Driver(int argc, char** argv) :
       { "disable-shared", no_argument, 0, DISABLE_SHARED_ARG },
       { "enable-openmp", no_argument, 0, ENABLE_OPENMP_ARG },
       { "disable-openmp", no_argument, 0, DISABLE_OPENMP_ARG },
-      { "enable-memory-pool", no_argument, 0, ENABLE_MEMORY_POOL_ARG },
-      { "disable-memory-pool", no_argument, 0, DISABLE_MEMORY_POOL_ARG },
       { "jobs", required_argument, 0, JOBS_ARG },
       { "enable-warnings", no_argument, 0, ENABLE_WARNINGS_ARG },
       { "disable-warnings", no_argument, 0, DISABLE_WARNINGS_ARG },
@@ -142,12 +137,6 @@ bi::Driver::Driver(int argc, char** argv) :
       break;
     case DISABLE_OPENMP_ARG:
       openmp = false;
-      break;
-    case ENABLE_MEMORY_POOL_ARG:
-      memoryPool = true;
-      break;
-    case DISABLE_MEMORY_POOL_ARG:
-      memoryPool = false;
       break;
     case JOBS_ARG:
       jobs = atoi(optarg);
@@ -1072,27 +1061,17 @@ void bi::Driver::configure() {
       cxxflags << " -Wall";
     }
     if (mode == "debug" || mode == "test") {
+      options << " --enable-debug";
       cflags << " -O0 -fno-inline -g";
       cxxflags << " -O0 -fno-inline -g";
     } else {
-      cppflags << " -DNDEBUG";
+      options << " --disable-debug";
       cflags << " -O3 -g";
       cxxflags << " -O3 -g";
     }
     if (mode == "test") {
       cflags << " --coverage -fprofile-abs-path";
       cxxflags << " --coverage -fprofile-abs-path";
-    }
-
-    /* defines */
-    cppflags << " -DBIRCH_VERSION=\\\\\\\"" PACKAGE_VERSION "\\\\\\\"";
-    // ^ the value of the define is to be a quoted string, i.e. we want
-    //   -DBIRCH_VERSION=\"xxxx\" --> CPPFLAGS="-DBIRCH_VERSION=\\\"xxxx\\\"",
-    //   with each of those further escaped in the C++ string above
-    if (memoryPool) {
-      cppflags << " -DENABLE_MEMORY_POOL=1";
-    } else {
-      cppflags << " -DENABLE_MEMORY_POOL=0";
     }
 
     /* include path */
@@ -1259,7 +1238,6 @@ std::string bi::Driver::suffix() const {
   buf << staticLib << ' ';
   buf << sharedLib << ' ';
   buf << openmp << ' ';
-  buf << memoryPool << ' ';
   return encode32(buf.str());
 }
 

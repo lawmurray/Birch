@@ -145,36 +145,6 @@ Pool& pool(const int i);
 void* allocate(const size_t n);
 
 /**
- * Allocate memory from heap.
- *
- * @tparam n Number of bytes.
- *
- * @return Pointer to the allocated memory.
-
- * This implementation, where the size is given by a static 32-bit
- * integer, is typically slightly faster than the 64-bit integer
- * version.
- */
-template<unsigned n>
-void* allocate() {
-  static_assert(n > 0, "cannot make zero length allocation");
-
-  #if !ENABLE_MEMORY_POOL
-  return std::malloc(n);
-  #else
-  int tid = get_thread_num();
-  int i = bin<n>();     // determine which pool
-  auto ptr = pool(64*tid + i).pop();  // attempt to reuse from this pool
-  if (!ptr) {           // otherwise allocate new
-    unsigned m = unbin(i);
-    ptr = (heap() += m) - m;
-  }
-  assert(ptr);
-  return ptr;
-  #endif
-}
-
-/**
  * Deallocate memory from the heap, previously allocated with
  * allocate() or reallocate().
  *
