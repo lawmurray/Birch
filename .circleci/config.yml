@@ -65,8 +65,8 @@ commands:
           root: .
           paths:
             - libraries/<< parameters.package >>/**/*.gcno
-            - lib/libbirch_<< parameters.tar >>.*
-            - include/bi/<< parameters.tar >>.*
+            - lib/libbirch_<< parameters.tar >>*
+            - include/bi/<< parameters.tar >>*
       - when:
           condition: << parameters.coverage >>
           steps:
@@ -106,8 +106,8 @@ commands:
           root: .
           paths:
             - libraries/<< parameters.package >>/**/*.gcno
-            - lib/libbirch_<< parameters.tar >>.*
-            - include/bi/<< parameters.tar >>.*
+            - lib/libbirch_<< parameters.tar >>*
+            - include/bi/<< parameters.tar >>*
       - when:
           condition: << parameters.coverage >>
           steps:
@@ -202,33 +202,6 @@ jobs:
           paths:
             - include/libbirch/*.*
 
-  # library thorough tests
-  test_libraries_Cairo:
-    executor: test
-    steps:
-      - build:
-          package: Cairo
-          tar: cairo
-
-  test_libraries_SQLite:
-    executor: test
-    steps:
-      - build:
-          package: SQLite
-          tar: sqlite
-
-  test_libraries_Standard:
-    executor: test
-    steps:
-      - build_and_run_library:
-          package: Standard
-          tar: standard
-          command: ./test.sh
-      - persist_to_workspace:
-          root: .
-          paths:
-            - include/libbirch/*.*
-
   # example smoke tests
   smoke_examples_LinearGaussian:
     executor: smoke
@@ -292,6 +265,33 @@ jobs:
           tar: vectorbornedisease
           command: ./smoke.sh
           coverage: true
+
+  # library thorough tests
+  test_libraries_Cairo:
+    executor: test
+    steps:
+      - build:
+          package: Cairo
+          tar: cairo
+
+  test_libraries_SQLite:
+    executor: test
+    steps:
+      - build:
+          package: SQLite
+          tar: sqlite
+
+  test_libraries_Standard:
+    executor: test
+    steps:
+      - build_and_run_library:
+          package: Standard
+          tar: standard
+          command: ./test.sh
+      - persist_to_workspace:
+          root: .
+          paths:
+            - include/libbirch/*.*
 
   # example thorough tests
   test_examples_LinearGaussian:
@@ -381,96 +381,104 @@ workflows:
       - smoke_examples_LinearGaussian:
           context: lawmurray
           requires:
-            - smoke_libraries_Standard
+            - smoke_libraries_Cairo
+            - smoke_libraries_SQLite
 
       - smoke_examples_LinearRegression:
           context: lawmurray
           requires:
-            - smoke_libraries_Standard    
+            - smoke_libraries_Cairo
+            - smoke_libraries_SQLite
 
       - smoke_examples_MixedGaussian:
           context: lawmurray
           requires:
-            - smoke_libraries_Standard
+            - smoke_libraries_Cairo
+            - smoke_libraries_SQLite
 
       - smoke_examples_PoissonGaussian:
           context: lawmurray
           requires:
-            - smoke_libraries_Standard
+            - smoke_libraries_Cairo
+            - smoke_libraries_SQLite
 
       - smoke_examples_SIR:
           context: lawmurray
           requires:
-            - smoke_libraries_Standard
+            - smoke_libraries_Cairo
+            - smoke_libraries_SQLite
 
       - smoke_examples_MultiObjectTracking:
           context: lawmurray
           requires:
-            - smoke_libraries_Standard
             - smoke_libraries_Cairo
+            - smoke_libraries_SQLite
       
       - smoke_examples_VectorBorneDisease:
           context: lawmurray
           requires:
-            - smoke_libraries_Standard
+            - smoke_libraries_Cairo
+            - smoke_libraries_SQLite
 
       - test_libraries_Standard:
           context: lawmurray
           requires:
-            - smoke_libraries_Standard
-            - driver
+            - smoke_examples_LinearGaussian
+            - smoke_examples_LinearRegression
+            - smoke_examples_MixedGaussian
+            - smoke_examples_PoissonGaussian
+            - smoke_examples_SIR
+            - smoke_examples_MultiObjectTracking
+            - smoke_examples_VectorBorneDisease
 
       - test_libraries_Cairo:
           context: lawmurray
           requires:
-            - smoke_libraries_Cairo
             - test_libraries_Standard
 
       - test_libraries_SQLite:
           context: lawmurray
           requires:
-            - smoke_libraries_SQLite
             - test_libraries_Standard
     
       - test_examples_LinearGaussian:
           context: lawmurray
           requires:
-            - smoke_examples_LinearGaussian
-            - test_libraries_Standard
+            - test_libraries_Cairo
+            - test_libraries_SQLite
 
       - test_examples_LinearRegression:
           context: lawmurray
           requires:
-            - smoke_examples_LinearRegression
-            - test_libraries_Standard    
+            - test_libraries_Cairo
+            - test_libraries_SQLite
 
       - test_examples_MixedGaussian:
           context: lawmurray
           requires:
-            - smoke_examples_MixedGaussian
-            - test_libraries_Standard
+            - test_libraries_Cairo
+            - test_libraries_SQLite
 
       - test_examples_PoissonGaussian:
           context: lawmurray
           requires:
-            - smoke_examples_PoissonGaussian
-            - test_libraries_Standard
+            - test_libraries_Cairo
+            - test_libraries_SQLite
 
       - test_examples_SIR:
           context: lawmurray
           requires:
-            - smoke_examples_SIR
-            - test_libraries_Standard
+            - test_libraries_Cairo
+            - test_libraries_SQLite
 
       - test_examples_MultiObjectTracking:
           context: lawmurray
           requires:
-            - smoke_examples_MultiObjectTracking
-            - test_libraries_Standard
             - test_libraries_Cairo
+            - test_libraries_SQLite
       
       - test_examples_VectorBorneDisease:
           context: lawmurray
           requires:
-            - smoke_examples_VectorBorneDisease
-            - test_libraries_Standard
+            - test_libraries_Cairo
+            - test_libraries_SQLite
