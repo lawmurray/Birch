@@ -5,6 +5,8 @@ orbs:
   slack: circleci/slack@3.4.2
 
 executors:
+  # executors have limited memory, so it's necessary to reduce the thread
+  # thread count for each of these to 2
   smoke:
     docker:
       - image: lawmurray/birch-circleci:ubuntu-20.04

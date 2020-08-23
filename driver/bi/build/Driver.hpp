@@ -157,22 +157,22 @@ private:
   /**
    * Working directory.
    */
-  fs::path work_dir;
+  fs::path workDir;
 
   /**
    * Share directories.
    */
-  std::list<fs::path> share_dirs;
+  std::list<fs::path> shareDirs;
 
   /**
    * Include directories.
    */
-  std::list<fs::path> include_dirs;
+  std::list<fs::path> includeDirs;
 
   /**
    * Library directories.
    */
-  std::list<fs::path> lib_dirs;
+  std::list<fs::path> libDirs;
 
   /**
    * Installation directory.

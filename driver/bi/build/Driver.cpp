@@ -16,7 +16,7 @@ bi::Driver::Driver(int argc, char** argv) :
     packageName("Untitled"),
     packageVersion(""),
     packageDescription(""),
-    work_dir("."),
+    workDir("."),
     prefix(""),
     arch("native"),
     mode("debug"),
@@ -32,7 +32,7 @@ bi::Driver::Driver(int argc, char** argv) :
     newConfigure(false),
     newMake(false) {
   enum {
-    NAME_ARG = 256,
+    PACKAGE_ARG = 256,
     WORK_DIR_ARG,
     SHARE_DIR_ARG,
     INCLUDE_DIR_ARG,
@@ -58,7 +58,7 @@ bi::Driver::Driver(int argc, char** argv) :
 
   int c, option_index;
   option long_options[] = {
-      { "name", required_argument, 0, NAME_ARG },
+      { "package", required_argument, 0, PACKAGE_ARG },
       { "work-dir", required_argument, 0, WORK_DIR_ARG },
       { "share-dir", required_argument, 0, SHARE_DIR_ARG },
       { "include-dir", required_argument, 0, INCLUDE_DIR_ARG },
@@ -93,20 +93,20 @@ bi::Driver::Driver(int argc, char** argv) :
       long_options, &option_index);
   while (c != -1) {
     switch (c) {
-    case NAME_ARG:
+    case PACKAGE_ARG:
       packageName = optarg;
       break;
     case WORK_DIR_ARG:
-      work_dir = optarg;
+      workDir = optarg;
       break;
     case SHARE_DIR_ARG:
-      share_dirs.push_back(optarg);
+      shareDirs.push_back(optarg);
       break;
     case INCLUDE_DIR_ARG:
-      include_dirs.push_back(optarg);
+      includeDirs.push_back(optarg);
       break;
     case LIB_DIR_ARG:
-      lib_dirs.push_back(optarg);
+      libDirs.push_back(optarg);
       break;
     case PREFIX_ARG:
       prefix = optarg;
@@ -179,7 +179,7 @@ bi::Driver::Driver(int argc, char** argv) :
     throw DriverException("--arch must be native, js, or wasm.");
   }
   if (mode != "debug" && mode != "test" && mode != "release") {
-    throw DriverException("--mode must be debug, test, or release.");
+    throw DriverException("--mode must be latest, debug, test, or release.");
   }
   if (unit != "unity" && unit != "dir" && unit != "file") {
     throw DriverException("--unit must be unity, dir, or file.");
@@ -201,53 +201,90 @@ bi::Driver::Driver(int argc, char** argv) :
   if (BIRCH_SHARE_PATH) {
     std::stringstream birch_share_path(BIRCH_SHARE_PATH);
     while (std::getline(birch_share_path, input, ':')) {
-      share_dirs.push_back(input);
+      shareDirs.push_back(input);
     }
   }
   if (!prefix.empty()) {
-    share_dirs.push_back(fs::path(prefix) / "share" / "birch");
+    shareDirs.push_back(fs::path(prefix) / "share" / "birch");
   }
 #ifdef DATADIR
-  share_dirs.push_back(fs::path(STRINGIFY(DATADIR)) / "birch");
+  shareDirs.push_back(fs::path(STRINGIFY(DATADIR)) / "birch");
 #endif
 
   /* include dirs */
-  include_dirs.push_back(work_dir);
-  include_dirs.push_back(work_dir / "build" / suffix());
+  includeDirs.push_back(workDir);
+  includeDirs.push_back(workDir / "build" / "latest");
   if (BIRCH_INCLUDE_PATH) {
     std::stringstream birch_include_path(BIRCH_INCLUDE_PATH);
     while (std::getline(birch_include_path, input, ':')) {
-      include_dirs.push_back(input);
+      includeDirs.push_back(input);
     }
   }
   if (!prefix.empty()) {
-    include_dirs.push_back(fs::path(prefix) / "include");
+    includeDirs.push_back(fs::path(prefix) / "include");
   }
 #ifdef INCLUDEDIR
-  include_dirs.push_back(STRINGIFY(INCLUDEDIR));
+  includeDirs.push_back(STRINGIFY(INCLUDEDIR));
 #endif
 
   /* lib dirs */
+  auto local = workDir / "build" / "latest" / ".libs";
+  if (fs::exists(local)) {
+    libDirs.push_back(local);
+  }
   if (BIRCH_LIBRARY_PATH) {
     std::stringstream birch_library_path(BIRCH_LIBRARY_PATH);
     while (std::getline(birch_library_path, input, ':')) {
-      lib_dirs.push_back(input);
+      libDirs.push_back(input);
     }
   }
   if (!prefix.empty()) {
-    lib_dirs.push_back(fs::path(prefix) / "lib");
+    if (fs::exists(fs::path(prefix) / "lib64")) {
+      libDirs.push_back(fs::path(prefix) / "lib64");
+    }
+    if (fs::exists(fs::path(prefix) / "lib")) {
+      libDirs.push_back(fs::path(prefix) / "lib");
+    }
   }
 #ifdef LIBDIR
-  lib_dirs.push_back(STRINGIFY(LIBDIR));
+  libDirs.push_back(STRINGIFY(LIBDIR));
 #endif
 }
 
 void bi::Driver::run(const std::string& prog,
     const std::vector<char*>& xargv) {
   /* get package information */
-  meta();
+  try {
+    /* load the package meta information, if indeed there is any, otherwise
+     * this will throw an exception which is caught below */
+    meta();
 
-  CWD cwd(work_dir);
+    /* when running in a package directory we'd like to use the latest build,
+     * regardless of what mode was given in the call, so update the mode if
+     * we find a latest build */
+    auto symlink = workDir / "build" / "latest";
+    if (fs::exists(symlink)) {
+      auto build = fs::read_symlink(symlink).string();
+      if (build.find("debug_") == 0) {
+        mode = "debug";
+      } else if (build.find("test_") == 0) {
+        mode = "test";
+      } else if (build.find("release_") == 0) {
+        mode = "release";
+      }
+    }
+  } catch (DriverException) {
+    // probably not running in a package directory, but can use installed
+    // libraries instead
+  }
+
+  /* name of the shared library file we expect to find */
+  fs::path so = std::string("libbirch_") + tarname(packageName) + '_' + mode;
+  #ifdef __APPLE__
+  so.replace_extension(".dylib");
+  #else
+  so.replace_extension(".so");
+  #endif
 
   /* dynamically load possible programs */
   typedef int prog_t(int argc, char** argv);
@@ -256,14 +293,8 @@ void bi::Driver::run(const std::string& prog,
   char* msg;
   prog_t* fcn;
 
-  fs::path so = std::string("libbirch_") + tarname(packageName);
-#ifdef __APPLE__
-  so.replace_extension(".dylib");
-#else
-  so.replace_extension(".so");
-#endif
-
-  handle = dlopen(so.c_str(), RTLD_NOW);
+  auto path = find(libDirs, so);
+  handle = dlopen(path.c_str(), RTLD_NOW);
   msg = dlerror();
   if (handle == NULL) {
     std::stringstream buf;
@@ -306,20 +337,12 @@ void bi::Driver::build() {
 
 void bi::Driver::install() {
   meta();
-  setup();
-  compile();
-  autogen();
-  configure();
   target("install");
   ldconfig();
 }
 
 void bi::Driver::uninstall() {
   meta();
-  setup();
-  compile();
-  autogen();
-  configure();
   target("uninstall");
   ldconfig();
 }
@@ -335,9 +358,7 @@ void bi::Driver::dist() {
 
 void bi::Driver::clean() {
   meta();
-  setup();
 
-  CWD cwd(work_dir);
   fs::remove_all("build");
   fs::remove_all("autom4te.cache");
   fs::remove_all("m4");
@@ -366,18 +387,16 @@ const char* bi::Driver::explain(const std::string& cmd) {
 }
 
 void bi::Driver::init() {
-  CWD cwd(work_dir);
-
   fs::create_directory("bi");
   fs::create_directory("config");
   fs::create_directory("input");
   fs::create_directory("output");
-  copy_with_prompt(find(share_dirs, "gitignore"), ".gitignore");
-  copy_with_prompt(find(share_dirs, "LICENSE"), "LICENSE");
+  copy_with_prompt(find(shareDirs, "gitignore"), ".gitignore");
+  copy_with_prompt(find(shareDirs, "LICENSE"), "LICENSE");
 
   std::string contents;
 
-  contents = read_all(find(share_dirs, "META.json"));
+  contents = read_all(find(shareDirs, "META.json"));
   boost::replace_all(contents, "PACKAGE_NAME", packageName);
   fs::ofstream metaStream("META.json");
   if (metaStream.fail()) {
@@ -387,7 +406,7 @@ void bi::Driver::init() {
   }
   metaStream << contents;
 
-  contents = read_all(find(share_dirs, "README.md"));
+  contents = read_all(find(shareDirs, "README.md"));
   boost::replace_all(contents, "PACKAGE_NAME", packageName);
   fs::ofstream readmeStream("README.md");
   if (readmeStream.fail()) {
@@ -399,8 +418,6 @@ void bi::Driver::init() {
 }
 
 void bi::Driver::check() {
-  CWD cwd(work_dir);
-
   /* read META.json */
   if (!fs::exists("META.json")) {
     warn("no META.json file.");
@@ -459,12 +476,10 @@ void bi::Driver::check() {
 
 void bi::Driver::docs() {
   meta();
-
-  CWD cwd(work_dir);
   Package* package = createPackage(false);
 
   /* parse all files */
-  Compiler compiler(package, fs::path("build") / suffix(), mode, unit);
+  Compiler compiler(package, fs::path("build") / "latest", mode, unit);
   compiler.parse(false);
 
   /* output everything into single file */
@@ -584,16 +599,16 @@ void bi::Driver::help() {
       std::cout << std::endl;
       std::cout << "  birch init [options]" << std::endl;
       std::cout << std::endl;
-      std::cout << "Initialise the working directory for a new project." << std::endl;
+      std::cout << "Initialise the working directory for a new package." << std::endl;
       std::cout << std::endl;
-      std::cout << "  --name (default Untitled): Name of the project." << std::endl;
+      std::cout << "  --package (default Untitled): Name of the package." << std::endl;
     } else if (command.compare("check") == 0) {
       std::cout << "Usage:" << std::endl;
       std::cout << std::endl;
       std::cout << "  birch check" << std::endl;
       std::cout << std::endl;
-      std::cout << "Check the file structure of the project for possible issues. This makes no" << std::endl;
-      std::cout << "modifications to the project, but will output warnings for possible issues such" << std::endl;
+      std::cout << "Check the file structure of the package for possible issues. This makes no" << std::endl;
+      std::cout << "modifications to the package, but will output warnings for possible issues such" << std::endl;
       std::cout << "as:" << std::endl;
       std::cout << std::endl;
       std::cout << "  * files listed in META.json that do not exist," << std::endl;
@@ -604,7 +619,7 @@ void bi::Driver::help() {
       std::cout << std::endl;
       std::cout << "  birch build [options]" << std::endl;
       std::cout << std::endl;
-      std::cout << "Build the project." << std::endl;
+      std::cout << "Build the package." << std::endl;
       std::cout << std::endl;
       std::cout << "Basic options:" << std::endl;
       std::cout << std::endl;
@@ -634,17 +649,17 @@ void bi::Driver::help() {
       std::cout << std::endl;
       std::cout << "  birch install [options]" << std::endl;
       std::cout << std::endl;
-      std::cout << "Install the project after building. Accepts the same options as birch build," << std::endl;
+      std::cout << "Install the package after building. Accepts the same options as birch build," << std::endl;
       std::cout << "and indeed should be used with the same options as the preceding build." << std::endl;
       std::cout << std::endl;
-      std::cout << "This installs all header, library and data files needed by the project into" << std::endl;
+      std::cout << "This installs all header, library and data files needed by the package into" << std::endl;
       std::cout << "the directory specified by --prefix (or the default if this was not specified)." << std::endl;
     } else if (command.compare("uninstall") == 0) {
       std::cout << "Usage:" << std::endl;
       std::cout << std::endl;
       std::cout << "  birch uninstall" << std::endl;
       std::cout << std::endl;
-      std::cout << "Uninstall the project. This uninstalls all header, library and data files from" << std::endl;
+      std::cout << "Uninstall the package. This uninstalls all header, library and data files from" << std::endl;
       std::cout << "the directory specified by --prefix (or the system default if this was not" << std::endl;
       std::cout << "specified)." << std::endl;
     } else if (command.compare("dist") == 0) {
@@ -652,7 +667,7 @@ void bi::Driver::help() {
       std::cout << std::endl;
       std::cout << "  birch dist" << std::endl;
       std::cout << std::endl;
-      std::cout << "Build a distributable archive for the project." << std::endl;
+      std::cout << "Build a distributable archive for the package." << std::endl;
       std::cout << std::endl;
       std::cout << "More information can be found at:" << std::endl;
       std::cout << std::endl;
@@ -662,7 +677,7 @@ void bi::Driver::help() {
       std::cout << std::endl;
       std::cout << "  birch docs" << std::endl;
       std::cout << std::endl;
-      std::cout << "Build the reference documentation for the project. This creates a Markdown file" << std::endl;
+      std::cout << "Build the reference documentation for the package. This creates a Markdown file" << std::endl;
       std::cout << "DOCS.md in the current working directory." << std::endl;
       std::cout << std::endl;
       std::cout << "It will be overwritten if it already exists, and may be readily converted to" << std::endl;
@@ -676,7 +691,7 @@ void bi::Driver::help() {
       std::cout << std::endl;
       std::cout << "  birch clean" << std::endl;
       std::cout << std::endl;
-      std::cout << "Clean the project directory of all build files." << std::endl;
+      std::cout << "Clean the package directory of all build files." << std::endl;
     } else if (command.compare("help") == 0) {
       std::cout << "Usage:" << std::endl;
       std::cout << std::endl;
@@ -693,14 +708,14 @@ void bi::Driver::help() {
     std::cout << std::endl;
     std::cout << "Available commands:" << std::endl;
     std::cout << std::endl;
-    std::cout << "  init          Initialise the working directory for a new project." << std::endl;
-    std::cout << "  check         Check the file structure of the project for possible issues." << std::endl;
-    std::cout << "  build         Build the project." << std::endl;
-    std::cout << "  install       Install the project after building." << std::endl;
-    std::cout << "  uninstall     Uninstall the project." << std::endl;
-    std::cout << "  dist          Build a distributable archive for the project." << std::endl;
-    std::cout << "  docs          Build the reference documentation for the project." << std::endl;
-    std::cout << "  clean         Clean the project directory of all build files." << std::endl;
+    std::cout << "  init          Initialize the working directory for a new package." << std::endl;
+    std::cout << "  check         Check the file structure of the package for possible issues." << std::endl;
+    std::cout << "  build         Build the package." << std::endl;
+    std::cout << "  install       Install the package after building." << std::endl;
+    std::cout << "  uninstall     Uninstall the package." << std::endl;
+    std::cout << "  dist          Build a distributable archive for the package." << std::endl;
+    std::cout << "  docs          Build the reference documentation for the package." << std::endl;
+    std::cout << "  clean         Clean the package directory of all build files." << std::endl;
     std::cout << "  help          Print this help message." << std::endl;
     std::cout << std::endl;
     std::cout << "To print more detailed description of a command, including available options," << std::endl;
@@ -708,7 +723,7 @@ void bi::Driver::help() {
     std::cout << std::endl;
     std::cout << "  birch help <command>" << std::endl;
     std::cout << std::endl;
-    std::cout << "To call a program defined in the project use:" << std::endl;
+    std::cout << "To call a program defined in the package use:" << std::endl;
     std::cout << std::endl;
     std::cout << "  birch <program name> [program options]" << std::endl;
     std::cout << std::endl;
@@ -721,13 +736,8 @@ void bi::Driver::help() {
 
 void bi::Driver::meta() {
   /* clear any previous read */
-  packageName = "Untitled";
-  packageVersion = "";
-  packageDescription = "";
   metaFiles.clear();
   allFiles.clear();
-
-  CWD cwd(work_dir);
 
   /* check for META.json */
   if (!fs::exists("META.json")) {
@@ -778,25 +788,22 @@ void bi::Driver::meta() {
 }
 
 void bi::Driver::setup() {
-  auto build_dir = fs::path("build") / suffix();
-  CWD cwd(work_dir);
-
-  /* internal name of package */
+  auto buildDir = fs::path("build") / suffix();
   auto internalName = tarname(packageName);
 
   /* create build directory */
-  if (!fs::exists(build_dir)) {
-    if (!fs::create_directories(build_dir)) {
+  if (!fs::exists(buildDir)) {
+    if (!fs::create_directories(buildDir)) {
       std::stringstream buf;
-      buf << "could not create build directory " << build_dir << '.';
+      buf << "could not create build directory " << buildDir << '.';
       throw DriverException(buf.str());
     }
 
     /* workaround for error given by some versions of autotools, "Something
      * went wrong bootstrapping makefile fragments for automatic dependency
      * tracking..." */
-    fs::create_directories(build_dir / "bi" / ".deps");
-    fs::ofstream(build_dir / "bi" / ".deps" / (internalName + ".gch.Plo"));
+    fs::create_directories(buildDir / "bi" / ".deps");
+    fs::ofstream(buildDir / "bi" / ".deps" / (internalName + ".gch.Plo"));
   }
 
   /* update "latest" symlink to point to this build directory */
@@ -805,7 +812,7 @@ void bi::Driver::setup() {
   fs::create_symlink(suffix(), symlink_dir);
 
   /* copy build files into build directory */
-  newAutogen = copy_if_newer(find(share_dirs, "autogen.sh"), "autogen.sh");
+  newAutogen = copy_if_newer(find(shareDirs, "autogen.sh"), "autogen.sh");
   fs::permissions("autogen.sh", fs::add_perms | fs::owner_exe);
 
   fs::path m4_dir("m4");
@@ -816,17 +823,17 @@ void bi::Driver::setup() {
       throw DriverException(buf.str());
     }
   }
-  copy_if_newer(find(share_dirs, "ax_check_compile_flag.m4"),
+  copy_if_newer(find(shareDirs, "ax_check_compile_flag.m4"),
       m4_dir / "ax_check_compile_flag.m4");
-  copy_if_newer(find(share_dirs, "ax_check_define.m4"),
+  copy_if_newer(find(shareDirs, "ax_check_define.m4"),
       m4_dir / "ax_check_define.m4");
-  copy_if_newer(find(share_dirs, "ax_cxx_compile_stdcxx.m4"),
+  copy_if_newer(find(shareDirs, "ax_cxx_compile_stdcxx.m4"),
       m4_dir / "ax_cxx_compile_stdcxx.m4");
-  copy_if_newer(find(share_dirs, "ax_gcc_builtin.m4"),
+  copy_if_newer(find(shareDirs, "ax_gcc_builtin.m4"),
       m4_dir / "ax_gcc_builtin.m4");
 
   /* update configure.ac */
-  std::string contents = read_all(find(share_dirs, "configure.ac"));
+  std::string contents = read_all(find(shareDirs, "configure.ac"));
   boost::replace_all(contents, "PACKAGE_NAME", packageName);
   boost::replace_all(contents, "PACKAGE_VERSION", packageVersion);
   boost::replace_all(contents, "PACKAGE_TARNAME", internalName);
@@ -863,7 +870,7 @@ void bi::Driver::setup() {
   for (auto name : metaFiles["require.package"]) {
     auto internalName = tarname(name.string());
     auto library = std::string("birch_") + internalName;
-    configureStream << "  AC_CHECK_LIB([" << library << "], [main], "
+    configureStream << "  AC_CHECK_LIB([" << library << "$SUFFIX], [main], "
         << "[], [AC_MSG_ERROR([library required by " << packageName
         << " package not found.])])\n";
   }
@@ -886,16 +893,16 @@ void bi::Driver::setup() {
       configureStream.str());
 
   /* update Makefile.am */
-  contents = read_all(find(share_dirs, "Makefile.am"));
+  contents = read_all(find(shareDirs, "Makefile.am"));
   boost::replace_all(contents, "PACKAGE_NAME", packageName);
   boost::replace_all(contents, "PACKAGE_TARNAME", internalName);
 
   std::stringstream makeStream;
   makeStream << contents << "\n\n";
-  makeStream << "lib_LTLIBRARIES = libbirch_" << internalName << ".la\n\n";
+  makeStream << "lib_LTLIBRARIES = libbirch_" << internalName << "@SUFFIX@.la\n\n";
 
   /* sources derived from *.bi files */
-  makeStream << "dist_libbirch_" << internalName << "_la_SOURCES =";
+  makeStream << "dist_libbirch_" << internalName << "@SUFFIX@_la_SOURCES =";
   if (unit == "unity") {
     /* sources go into one *.cpp file for the whole package */
     makeStream << " \\\n  bi/" << internalName << ".cpp";
@@ -924,7 +931,7 @@ void bi::Driver::setup() {
   makeStream << '\n';
 
   /* other *.cpp files */
-  makeStream << "libbirch_" << internalName << "_la_SOURCES = ";
+  makeStream << "libbirch_" << internalName << "@SUFFIX@_la_SOURCES = ";
   for (auto file : metaFiles["manifest.source"]) {
     if (file.extension().compare(".cpp") == 0
         || file.extension().compare(".c") == 0) {
@@ -969,7 +976,7 @@ bi::Package* bi::Driver::createPackage(bool includeRequires) {
       /* add *.bih dependency */
       fs::path header = fs::path("bi") / tarname(name.string());
       header.replace_extension(".bih");
-      package->addHeader(find(include_dirs, header).string());
+      package->addHeader(find(includeDirs, header).string());
     }
   }
   for (auto file : metaFiles["manifest.source"]) {
@@ -983,10 +990,9 @@ bi::Package* bi::Driver::createPackage(bool includeRequires) {
 void bi::Driver::compile() {
   Package* package = createPackage(true);
 
-  auto build_dir = fs::path("build") / suffix();
-  CWD cwd(work_dir);
+  auto buildDir = fs::path("build") / suffix();
 
-  Compiler compiler(package, build_dir, mode, unit);
+  Compiler compiler(package, buildDir, mode, unit);
   compiler.parse(true);
   compiler.resolve();
   compiler.gen();
@@ -996,10 +1002,8 @@ void bi::Driver::compile() {
 
 void bi::Driver::autogen() {
   if (newAutogen || newConfigure || newMake
-      || !fs::exists(work_dir / "configure")
-      || !fs::exists(work_dir / "install-sh")) {
-    CWD cwd(work_dir);
-
+      || !fs::exists(workDir / "configure")
+      || !fs::exists(workDir / "install-sh")) {
     std::stringstream cmd;
     cmd << (fs::path(".") / "autogen.sh");
     if (verbose) {
@@ -1019,7 +1023,7 @@ void bi::Driver::autogen() {
       buf << "autogen.sh died with signal " << ret
           << "; make sure autoconf, automake and libtool are installed";
       if (!verbose) {
-        buf << ", see " << (work_dir / "autogen.log").string()
+        buf << ", see " << (workDir / "autogen.log").string()
             << " for details";
       }
       buf << '.';
@@ -1029,10 +1033,10 @@ void bi::Driver::autogen() {
 }
 
 void bi::Driver::configure() {
-  auto build_dir = work_dir / "build" / suffix();
+  auto buildDir = workDir / "build" / suffix();
   if (newAutogen || newConfigure || newMake
-      || !exists(build_dir / "Makefile")) {
-    CWD cwd(build_dir);
+      || !exists(buildDir / "Makefile")) {
+    CWD cwd(buildDir);
 
     /* compile and link flags */
     std::stringstream cppflags, cflags, cxxflags, ldflags, options, cmd;
@@ -1061,16 +1065,14 @@ void bi::Driver::configure() {
           "unknown architecture '" + arch
               + "'; valid values are 'native', 'js' and 'wasm'");
     }
-    if (warnings) {
-      cflags << " -Wall";
-      cxxflags << " -Wall";
-    }
+    cflags << " -Wall";
+    cxxflags << " -Wall";
     if (mode == "debug" || mode == "test") {
-      options << " --enable-debug";
+      options << " --enable-assert";
       cflags << " -O0 -fno-inline -g";
       cxxflags << " -O0 -fno-inline -g";
     } else {
-      options << " --disable-debug";
+      options << " --disable-assert";
       cflags << " -O3 -g";
       cxxflags << " -O3 -g";
     }
@@ -1080,16 +1082,16 @@ void bi::Driver::configure() {
     }
 
     /* include path */
-    for (auto iter = include_dirs.begin(); iter != include_dirs.end();
+    for (auto iter = includeDirs.begin(); iter != includeDirs.end();
         ++iter) {
       cppflags << " -I" << iter->string();
     }
-    for (auto iter = lib_dirs.begin(); iter != lib_dirs.end(); ++iter) {
+    for (auto iter = libDirs.begin(); iter != libDirs.end(); ++iter) {
       ldflags << " -L" << iter->string();
     }
 
     /* library path */
-    for (auto iter = lib_dirs.begin(); iter != lib_dirs.end(); ++iter) {
+    for (auto iter = libDirs.begin(); iter != libDirs.end(); ++iter) {
       ldflags << " -Wl,-rpath," << iter->string();
     }
 
@@ -1115,7 +1117,7 @@ void bi::Driver::configure() {
       cmd << "emconfigure ";
     }
     cmd << (fs::path("..") / ".." / "configure").string() << " " << options.str();
-    // ^ build dir is work_dir/build/suffix, so configure script two dirs up
+    // ^ build dir is workDir/build/suffix, so configure script two dirs up
     if (!cppflags.str().empty()) {
       cmd << " CPPFLAGS=\"$CPPFLAGS " << cppflags.str() << "\"";
     }
@@ -1128,6 +1130,7 @@ void bi::Driver::configure() {
     if (!ldflags.str().empty()) {
       cmd << " LDFLAGS=\"$LDFLAGS " << ldflags.str() << "\"";
     }
+    cmd << " SUFFIX=\"_" << mode << "\"";
     if (verbose) {
       std::cerr << cmd.str() << std::endl;
     } else {
@@ -1145,8 +1148,8 @@ void bi::Driver::configure() {
       buf << "configure died with signal " << ret
           << "; make sure all dependencies are installed";
       if (!verbose) {
-        buf << ", see " << (build_dir / "configure.log").string() << " and "
-            << (build_dir / "config.log").string() << " for details";
+        buf << ", see " << (buildDir / "configure.log").string() << " and "
+            << (buildDir / "config.log").string() << " for details";
       }
       buf << '.';
       throw DriverException(buf.str());
@@ -1155,8 +1158,8 @@ void bi::Driver::configure() {
 }
 
 void bi::Driver::target(const std::string& cmd) {
-  auto build_dir = work_dir / "build" / suffix();
-  CWD cwd(build_dir);
+  auto buildDir = fs::canonical(workDir / "build" / "latest");
+  CWD cwd(buildDir);
 
   /* command */
   std::stringstream buf;
@@ -1217,7 +1220,7 @@ void bi::Driver::target(const std::string& cmd) {
       buf << " died with signal " << ret;
     }
     if (!verbose) {
-      buf << ", see " << (build_dir / log).string() << " for details.";
+      buf << ", see " << (buildDir / log).string() << " for details.";
     }
     buf << '.';
     throw DriverException(buf.str());
@@ -1237,13 +1240,19 @@ std::string bi::Driver::suffix() const {
   /* the suffix is built by joining all build options, in a prescribed order,
    * joined by spaces, then encoding in base 32 */
   std::stringstream buf;
-  buf << mode << ' ';
-  buf << unit << ' ';
-  buf << arch << ' ';
-  buf << staticLib << ' ';
-  buf << sharedLib << ' ';
-  buf << openmp << ' ';
-  return encode32(buf.str());
+  buf << mode;
+  buf << '_' << unit;
+  buf << '_' << arch;
+  if (staticLib) {
+    buf << "_static";
+  }
+  if (sharedLib) {
+    buf << "_shared";
+  }
+  if (openmp) {
+    buf << "_openmp";
+  }
+  return buf.str();
 }
 
 void bi::Driver::readFiles(const boost::property_tree::ptree& meta,
@@ -1255,7 +1264,7 @@ void bi::Driver::readFiles(const boost::property_tree::ptree& meta,
         if (str) {
           auto filePath = fs::path(str.get());
           auto fileStr = filePath.string();
-          if (checkExists && !exists(work_dir / filePath)) {
+          if (checkExists && !exists(workDir / filePath)) {
             warn(fileStr + " in META.json does not exist.");
           }
           if (std::regex_search(fileStr,
