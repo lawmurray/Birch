@@ -28,6 +28,9 @@ AC_HEADER_STDBOOL
 AC_C_INLINE
 AC_OPENMP
 
+# Suffix on installed libraries
+AC_ARG_VAR(SUFFIX, [suffix on Birch library names, such as _debug or _release; used for both dependencies and the installed library.])
+
 # Checks for compiler flags
 AX_CHECK_COMPILE_FLAG([-fno-caret-diagnostics], [CXXFLAGS="$CXXFLAGS -fno-caret-diagnostics"])
 AX_CHECK_COMPILE_FLAG([-fno-diagnostics-show-option], [CXXFLAGS="$CXXFLAGS -fno-diagnostics-show-option"])
@@ -51,16 +54,8 @@ if test x$emscripten = xfalse; then
   AC_CHECK_LIB([boost_system], [main], [], [AC_CHECK_LIB([boost_system-mt], [main], [], [AC_MSG_ERROR([Boost.System library not found])])])
 
   # Checks for headers
-  if test xPACKAGE_TARNAME != xstandard; then
-    AC_CHECK_HEADERS([bi/standard.hpp], [], [AC_MSG_ERROR([Birch standard library header not found.])], [-])
-  fi
   AC_CHECK_HEADERS([omp.h], [], [], [-])
   AC_CHECK_HEADERS([libexplain/system.h], [], [], [-])
-fi
-
-# Checks for libraries
-if test xPACKAGE_TARNAME != xstandard; then
-  AC_CHECK_LIB([birch_standard], [main], [], [AC_MSG_ERROR([Birch standard library not found])])
 fi
 
 # Checks for functions

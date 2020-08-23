@@ -770,16 +770,6 @@ void bi::Driver::meta() {
   readFiles(meta, "require.library", false);
   readFiles(meta, "require.program", false);
 
-  /* convert package requirements to header and library requirements */
-  for (auto name : metaFiles["require.package"]) {
-    auto internalName = tarname(name.string());
-    auto header = fs::path("bi") / internalName;
-    auto library = std::string("birch_") + internalName;
-    header.replace_extension(".hpp");
-    metaFiles["require.header"].push_back(header.string());
-    metaFiles["require.library"].push_back(library);
-  }
-
   /* manifest */
   readFiles(meta, "manifest.header", true);
   readFiles(meta, "manifest.source", true);
@@ -852,6 +842,14 @@ void bi::Driver::setup() {
         << "[AC_MSG_ERROR([header required by " << packageName
         << " package not found.])], [-])\n";
   }
+  for (auto name : metaFiles["require.package"]) {
+    auto internalName = tarname(name.string());
+    auto header = fs::path("bi") / internalName;
+    header.replace_extension(".hpp");
+    configureStream << "  AC_CHECK_HEADERS([" << header.string() << "], [], "
+        << "[AC_MSG_ERROR([header required by " << packageName
+        << " package not found.])], [-])\n";
+  }
   if (!metaFiles["require.header"].empty()) {
     configureStream << "fi\n";
   }
@@ -859,6 +857,13 @@ void bi::Driver::setup() {
   /* required libraries */
   for (auto file : metaFiles["require.library"]) {
     configureStream << "  AC_CHECK_LIB([" << file.string() << "], [main], "
+        << "[], [AC_MSG_ERROR([library required by " << packageName
+        << " package not found.])])\n";
+  }
+  for (auto name : metaFiles["require.package"]) {
+    auto internalName = tarname(name.string());
+    auto library = std::string("birch_") + internalName;
+    configureStream << "  AC_CHECK_LIB([" << library << "], [main], "
         << "[], [AC_MSG_ERROR([library required by " << packageName
         << " package not found.])])\n";
   }
