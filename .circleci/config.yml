@@ -60,7 +60,7 @@ commands:
           at: .
       - run:
           name: Build library
-          command: cd libraries/<< parameters.package >> && birch install $BIRCH_FLAGS
+          command: cd libraries/<< parameters.package >> && birch build $BIRCH_FLAGS && birch install
       - persist_to_workspace:
           root: .
           paths:
@@ -95,10 +95,10 @@ commands:
           at: .
       - run:
           name: Build library
-          command: cd libraries/<< parameters.package >> && birch install $BIRCH_FLAGS
+          command: cd libraries/<< parameters.package >> && birch build $BIRCH_FLAGS && birch install
       - run:
           name: Build test
-          command: cd libraries/<< parameters.package >>Test && birch install $BIRCH_FLAGS
+          command: cd libraries/<< parameters.package >>Test && birch build $BIRCH_FLAGS && birch install
       - run:
           name: Run test
           command: cd libraries/<< parameters.package >>Test && << parameters.command >>
@@ -136,7 +136,7 @@ commands:
           at: .
       - run:
           name: Build example
-          command: cd examples/<< parameters.package >> && birch install $BIRCH_FLAGS; cat 
+          command: cd examples/<< parameters.package >> && birch build $BIRCH_FLAGS && birch install
       - run:
           name: Run example
           command: cd examples/<< parameters.package >> && << parameters.command >>
