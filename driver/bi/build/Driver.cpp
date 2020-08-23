@@ -230,7 +230,8 @@ bi::Driver::Driver(int argc, char** argv) :
   /* lib dirs */
   auto local = workDir / "build" / "latest" / ".libs";
   if (fs::exists(local)) {
-    libDirs.push_back(local);
+    libDirs.push_back(fs::canonical(local));
+    // ^ use canonical here as "latest" symlink may be updated before use
   }
   if (BIRCH_LIBRARY_PATH) {
     std::stringstream birch_library_path(BIRCH_LIBRARY_PATH);
