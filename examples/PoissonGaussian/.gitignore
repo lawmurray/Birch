@@ -11,6 +11,7 @@
 /autogen.sh
 /common.am
 /compile
+/config.cache
 /config.guess
 /config.log
 /config.sub
@@ -22,6 +23,8 @@
 /Makefile.am
 /Makefile.in
 /missing
-/.autotools
 /mkdocs.yml
 /DOCS.md
+/.autotools
+/.version
+.deps

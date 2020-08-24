@@ -1,6 +1,6 @@
 {
   "name": "MixedGaussian",
-  "description": "",
+
   "manifest": {
     "source": [
       "bi/MixedGaussianModel.bi"

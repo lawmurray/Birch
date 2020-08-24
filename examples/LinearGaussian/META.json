@@ -1,6 +1,6 @@
 {
   "name": "LinearGaussian",
-  "description": "",
+
   "manifest": {
     "source": [
       "bi/LinearGaussianModel.bi"

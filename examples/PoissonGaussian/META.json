@@ -1,6 +1,6 @@
 {
   "name": "PoissonGaussian",
-  "description": "",
+
   "manifest": {
     "source": [
       "bi/PoissonGaussianModel.bi"

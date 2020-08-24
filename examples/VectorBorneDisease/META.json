@@ -1,6 +1,6 @@
 {
   "name": "VectorBorneDisease",
-  "description": "Vector-borne disease models.",
+
   "manifest": {
     "source": [
       "bi/common/SEIRModel.bi",

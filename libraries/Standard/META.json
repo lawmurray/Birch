@@ -1,6 +1,6 @@
 {
   "name": "Standard",
-  "description": "Birch standard library.",
+
   "manifest": {
     "source": [
       "bi/basic/Boolean.bi",

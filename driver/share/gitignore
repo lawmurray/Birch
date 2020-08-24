@@ -27,3 +27,4 @@
 /DOCS.md
 /.autotools
 /.version
+.deps

@@ -1,6 +1,6 @@
 {
   "name": "SIR",
-  "description": "",
+
   "manifest": {
     "source": [
       "bi/SIRModel.bi"

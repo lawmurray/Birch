@@ -1,6 +1,5 @@
 {
   "name": "MultiObjectTracking",
-  "description": "",
   
   "require": {
     "package": [

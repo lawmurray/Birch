@@ -1,6 +1,5 @@
 {
   "name": "SQLite",
-  "description": "Birch wrapper for SQLite.",
   
   "manifest": {
     "source": [

@@ -1,6 +1,6 @@
 {
   "name": "LinearRegression",
-  "description": "",
+
   "manifest": {
     "source": [
       "bi/LinearRegressionModel.bi"

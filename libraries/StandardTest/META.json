@@ -1,6 +1,6 @@
 {
   "name": "StandardTest",
-  "description": "Tests for the Birch standard library.",
+
   "manifest": {
     "source": [
       "bi/basic/test_deep_clone_alias.bi",
