@@ -42,6 +42,24 @@ commands:
       - slack/status:
          fail_only: true
 
+  # build the driver
+  build_driver:
+    description: "Build driver."
+    steps:
+      - run:
+          name: Build
+          command: |
+              cd driver
+              ./autogen.sh
+              ./configure --prefix=$BIRCH_PREFIX CXXFLAGS="-Wall -Wno-overloaded-virtual -g -O0 --coverage -fprofile-abs-path"
+              make -j 4
+              make install
+      - persist_to_workspace:
+          root: .
+          paths:
+            - '*'
+      - slack
+
   # build a library package; this builds the library and persists the
   # workspace to downstream jobs
   build:
@@ -158,19 +176,7 @@ jobs:
     executor: smoke
     steps:
       - checkout
-      - run:
-          name: Build
-          command: |
-              cd driver
-              ./autogen.sh
-              ./configure --prefix=$BIRCH_PREFIX --config-cache CXXFLAGS="-Wall -Wno-overloaded-virtual -g -O0 --coverage -fprofile-abs-path"
-              make -j 4
-              make install
-      - persist_to_workspace:
-          root: .
-          paths:
-            - '*'
-      - slack
+      - build_driver
 
   # library smoke tests
   smoke_libraries_Cairo:
