@@ -352,7 +352,7 @@ void bi::Driver::dist() {
   meta();
 
   /* determine archive name, format 'name-version' */
-  std::string archive = packageName;
+  std::string archive = "birch-" + tarname(packageName);
   if (packageVersion.find("git") == 0) {
     /* package version is given using git, wrap in $(...) to call */
     archive += "-$(" + packageVersion + ")";
