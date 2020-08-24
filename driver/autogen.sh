@@ -1,3 +1,3 @@
 #!/bin/sh
 
-autoreconf --install --no-recursive
+autoreconf --force --install --no-recursive
