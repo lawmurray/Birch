@@ -350,11 +350,35 @@ void bi::Driver::uninstall() {
 
 void bi::Driver::dist() {
   meta();
-  setup();
-  compile();
-  autogen();
-  configure();
-  target("dist");
+
+  /* determine archive name, format 'name-version' */
+  std::string archive = packageName;
+  if (packageVersion.find("git") == 0) {
+    /* package version is given using git, wrap in $(...) to call */
+    archive += "-$(" + packageVersion + ")";
+  } else {
+    archive += "-" + packageVersion;
+  }
+  
+  /* archiving command */
+  std::stringstream cmd;
+  cmd << "tar czf " << archive << ".tar.gz ";
+  cmd << "--transform=\"s/^/" << archive << "\\//\"";
+  for (auto key : {
+      "manifest.header",
+      "manifest.source",
+      "manifest.data",
+      "manifest.other"}) {
+    for (auto file : metaFiles[key]) {
+      cmd << ' ' << file;
+    }
+  }
+
+  /* run command */
+  int ret = std::system(cmd.str().c_str());
+  if (ret != 0) {
+    throw DriverException(explain(cmd.str()));
+  }
 }
 
 void bi::Driver::clean() {
@@ -377,14 +401,6 @@ void bi::Driver::clean() {
   fs::remove("Makefile.am");
   fs::remove("Makefile.in");
   fs::remove("missing");
-}
-
-const char* bi::Driver::explain(const std::string& cmd) {
-  #ifdef HAVE_LIBEXPLAIN_SYSTEM_H
-  return explain_system(cmd.c_str());
-  #else
-  return "";
-  #endif
 }
 
 void bi::Driver::init() {
@@ -767,7 +783,7 @@ void bi::Driver::meta() {
     packageVersion = version.get();
   } else {
     /* try to use a git hash */
-    packageVersion = "m4_esyscmd_s([git describe --tags --dirty --always 2> /dev/null || echo 0])";
+    packageVersion = "git describe --tags --dirty --always 2> /dev/null || echo 0";
   }
 
   /* external requirements */
@@ -836,7 +852,13 @@ void bi::Driver::setup() {
   /* update configure.ac */
   std::string contents = read_all(find(shareDirs, "configure.ac"));
   boost::replace_all(contents, "PACKAGE_NAME", packageName);
-  boost::replace_all(contents, "PACKAGE_VERSION", packageVersion);
+  if (packageVersion.find("git") == 0) {
+    /* package version is given using git, wrap in call macro */
+    boost::replace_all(contents, "PACKAGE_VERSION",
+        std::string("m4_esyscmd_s([") + packageVersion + "])");
+  } else {
+    boost::replace_all(contents, "PACKAGE_VERSION", packageVersion);
+  }
   boost::replace_all(contents, "PACKAGE_TARNAME", internalName);
   std::stringstream configureStream;
   configureStream << contents << "\n\n";
@@ -1192,7 +1214,6 @@ void bi::Driver::target(const std::string& cmd) {
   /* replace some operators */
   buf << " | sed -lE 's/operator->/./g'";
 
-
   /* strip suggestions that reveal internal workings */
   buf << " | sed -lE \"s/; did you mean '[[:alnum:]_]+_'\\?/./\"";
   buf << " | sed -lE \"/note: '[[:alnum:]_]+_' declared here/d\"";
@@ -1234,6 +1255,14 @@ void bi::Driver::ldconfig() {
   if (euid == 0) {
     [[maybe_unused]] int result = std::system("ldconfig");
   }
+  #endif
+}
+
+const char* bi::Driver::explain(const std::string& cmd) {
+  #ifdef HAVE_LIBEXPLAIN_SYSTEM_H
+  return explain_system(cmd.c_str());
+  #else
+  return "";
   #endif
 }
 
