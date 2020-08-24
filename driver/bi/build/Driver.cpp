@@ -352,13 +352,7 @@ void bi::Driver::dist() {
   meta();
 
   /* determine archive name, format 'name-version' */
-  std::string archive = "birch-" + tarname(packageName);
-  if (packageVersion.find("git") == 0) {
-    /* package version is given using git, wrap in $(...) to call */
-    archive += "-$(" + packageVersion + ")";
-  } else {
-    archive += "-" + packageVersion;
-  }
+  auto archive = "birch-" + tarname(packageName) + "-" + packageVersion;
   
   /* archiving command */
   std::stringstream cmd;
@@ -376,7 +370,7 @@ void bi::Driver::dist() {
 
   /* run command */
   int ret = std::system(cmd.str().c_str());
-  if (ret != 0) {
+  if (ret == -1) {
     throw DriverException(explain(cmd.str()));
   }
 }
@@ -782,8 +776,14 @@ void bi::Driver::meta() {
   if (auto version = meta.get_optional<std::string>("version")) {
     packageVersion = version.get();
   } else {
-    /* try to use a git hash */
-    packageVersion = "git describe --tags --dirty --always 2> /dev/null || echo 0";
+    /* try to assign a version number from git */
+    int ret = std::system("git describe --tags --dirty --always | sed -E 's/v([0-9]+)-([0-9]+)-g[a-f0-9]+/\\1.\\2/' > .version");
+    if (ret == -1) {
+      packageVersion = "0";
+    } else {
+      std::ifstream versionStream(".version");
+      versionStream >> packageVersion;
+    }
   }
 
   /* external requirements */
@@ -852,13 +852,7 @@ void bi::Driver::setup() {
   /* update configure.ac */
   std::string contents = read_all(find(shareDirs, "configure.ac"));
   boost::replace_all(contents, "PACKAGE_NAME", packageName);
-  if (packageVersion.find("git") == 0) {
-    /* package version is given using git, wrap in call macro */
-    boost::replace_all(contents, "PACKAGE_VERSION",
-        std::string("m4_esyscmd_s([") + packageVersion + "])");
-  } else {
-    boost::replace_all(contents, "PACKAGE_VERSION", packageVersion);
-  }
+  boost::replace_all(contents, "PACKAGE_VERSION", packageVersion);
   boost::replace_all(contents, "PACKAGE_TARNAME", internalName);
   std::stringstream configureStream;
   configureStream << contents << "\n\n";
@@ -1230,7 +1224,7 @@ void bi::Driver::target(const std::string& cmd) {
   }
 
   int ret = std::system(buf.str().c_str());
-  if (ret != 0) {
+  if (ret == -1) {
     if (verbose) {
       std::cerr << explain(buf.str()) << std::endl;
     }

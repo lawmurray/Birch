@@ -317,7 +317,8 @@ dist_pkgdata_DATA = \
 dist_noinst_DATA = \
   Doxyfile \
   LICENSE \
-  README.md
+  README.md \
+  version.sh
 
 BUILT_SOURCES = bi/parser.hpp bi/parser.cpp bi/lexer.cpp #bi/birch.hpp.pch
 CLEANFILES = $(BUILT_SOURCES)
