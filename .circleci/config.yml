@@ -62,7 +62,7 @@ commands:
 
   # build a library package; this builds the library and persists the
   # workspace to downstream jobs
-  build:
+  build_library:
     description: "Build library package."
     parameters:
       package:
@@ -182,7 +182,7 @@ jobs:
   smoke_libraries_Cairo:
     executor: smoke
     steps:
-      - build:
+      - build_library:
           package: Cairo
           tar: cairo
           coverage: true
@@ -190,7 +190,7 @@ jobs:
   smoke_libraries_SQLite:
     executor: smoke
     steps:
-      - build:
+      - build_library:
           package: SQLite
           tar: sqlite
           coverage: true
@@ -276,14 +276,14 @@ jobs:
   test_libraries_Cairo:
     executor: test
     steps:
-      - build:
+      - build_library:
           package: Cairo
           tar: cairo
 
   test_libraries_SQLite:
     executor: test
     steps:
-      - build:
+      - build_library:
           package: SQLite
           tar: sqlite
 
