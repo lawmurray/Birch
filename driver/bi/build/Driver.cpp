@@ -14,7 +14,7 @@ bi::Driver::Driver(int argc, char** argv) :
      * relative path from the build directory to the work directory,
      * otherwise a work directory containing spaces causes problems */
     packageName("Untitled"),
-    packageVersion(""),
+    packageVersion("unversioned"),
     packageDescription(""),
     workDir("."),
     prefix(""),
@@ -352,10 +352,7 @@ void bi::Driver::dist() {
   meta();
 
   /* determine archive name, format 'name-version' */
-  auto archive = "birch-" + tarname(packageName);
-  if (!packageVersion.empty()) {
-    archive += "-" + packageVersion;
-  }
+  auto archive = "birch-" + tarname(packageName) + "-" + packageVersion;
 
   /* archiving command */
   std::stringstream cmd;
@@ -846,11 +843,7 @@ void bi::Driver::setup() {
   /* update configure.ac */
   std::string contents = read_all(find(shareDirs, "configure.ac"));
   boost::replace_all(contents, "PACKAGE_NAME", packageName);
-  if (!packageVersion.empty()) {
-    boost::replace_all(contents, "PACKAGE_VERSION", packageVersion);
-  } else {
-    boost::replace_all(contents, "PACKAGE_VERSION", "unversioned");
-  }
+  boost::replace_all(contents, "PACKAGE_VERSION", packageVersion);
   boost::replace_all(contents, "PACKAGE_TARNAME", internalName);
   std::stringstream configureStream;
   configureStream << contents << "\n\n";
