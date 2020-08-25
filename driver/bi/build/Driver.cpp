@@ -352,8 +352,11 @@ void bi::Driver::dist() {
   meta();
 
   /* determine archive name, format 'name-version' */
-  auto archive = "birch-" + tarname(packageName) + "-" + packageVersion;
-  
+  auto archive = "birch-" + tarname(packageName);
+  if (!packageVersion.empty()) {
+    archive += "-" + packageVersion;
+  }
+
   /* archiving command */
   std::stringstream cmd;
   cmd << "tar czf " << archive << ".tar.gz ";
@@ -775,15 +778,6 @@ void bi::Driver::meta() {
   }
   if (auto version = meta.get_optional<std::string>("version")) {
     packageVersion = version.get();
-  } else {
-    /* try to assign a version number from git */
-    int ret = std::system("git describe --tags --dirty --always | sed -E 's/v([0-9]+)-([0-9]+)-g[a-f0-9]+/\\1.\\2/' > .version");
-    if (ret == -1) {
-      packageVersion = "0";
-    } else {
-      std::ifstream versionStream(".version");
-      versionStream >> packageVersion;
-    }
   }
 
   /* external requirements */
@@ -852,7 +846,11 @@ void bi::Driver::setup() {
   /* update configure.ac */
   std::string contents = read_all(find(shareDirs, "configure.ac"));
   boost::replace_all(contents, "PACKAGE_NAME", packageName);
-  boost::replace_all(contents, "PACKAGE_VERSION", packageVersion);
+  if (!packageVersion.empty()) {
+    boost::replace_all(contents, "PACKAGE_VERSION", packageVersion);
+  } else {
+    boost::replace_all(contents, "PACKAGE_VERSION", "unversioned");
+  }
   boost::replace_all(contents, "PACKAGE_TARNAME", internalName);
   std::stringstream configureStream;
   configureStream << contents << "\n\n";
