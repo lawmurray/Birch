@@ -17,6 +17,7 @@ bi::Driver::Driver(int argc, char** argv) :
     packageVersion("unversioned"),
     packageDescription(""),
     workDir("."),
+    destDir(""),
     prefix(""),
     arch("native"),
     mode("debug"),
@@ -34,6 +35,7 @@ bi::Driver::Driver(int argc, char** argv) :
   enum {
     PACKAGE_ARG = 256,
     WORK_DIR_ARG,
+    DEST_DIR_ARG,
     SHARE_DIR_ARG,
     INCLUDE_DIR_ARG,
     LIB_DIR_ARG,
@@ -60,6 +62,7 @@ bi::Driver::Driver(int argc, char** argv) :
   option long_options[] = {
       { "package", required_argument, 0, PACKAGE_ARG },
       { "work-dir", required_argument, 0, WORK_DIR_ARG },
+      { "dest-dir", required_argument, 0, DEST_DIR_ARG },
       { "share-dir", required_argument, 0, SHARE_DIR_ARG },
       { "include-dir", required_argument, 0, INCLUDE_DIR_ARG },
       { "lib-dir", required_argument, 0, LIB_DIR_ARG },
@@ -98,6 +101,9 @@ bi::Driver::Driver(int argc, char** argv) :
       break;
     case WORK_DIR_ARG:
       workDir = optarg;
+      break;
+    case DEST_DIR_ARG:
+      destDir = optarg;
       break;
     case SHARE_DIR_ARG:
       shareDirs.push_back(optarg);
@@ -338,7 +344,11 @@ void bi::Driver::build() {
 
 void bi::Driver::install() {
   meta();
-  target("install");
+  if (!destDir.empty()) {
+    target("install DESTDIR=" + destDir);
+  } else {
+    target("install");
+  }
   ldconfig();
 }
 
@@ -1054,8 +1064,9 @@ void bi::Driver::configure() {
       cflags << " -s WASM=1";
       cxxflags << " -s WASM=1";
     } else if (arch == "native") {
-      cflags << " -march=native";
-      cxxflags << " -march=native";
+      //cflags << " -march=native";
+      //cxxflags << " -march=native";
+      //^ can cause cross-compile issues, e.g. on Open Build Service
       if (openmp) {
         #ifdef __APPLE__
         /* the system compiler on Apple requires different options for

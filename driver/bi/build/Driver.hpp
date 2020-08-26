@@ -160,6 +160,11 @@ private:
   fs::path workDir;
 
   /**
+   * Installation directory (`DESTDIR` given to `make install`).
+   */
+  std::string destDir;
+
+  /**
    * Share directories.
    */
   std::list<fs::path> shareDirs;
@@ -175,7 +180,7 @@ private:
   std::list<fs::path> libDirs;
 
   /**
-   * Installation directory.
+   * Installation prefix.
    */
   std::string prefix;
 
