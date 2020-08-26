@@ -15,10 +15,7 @@ bi::Driver::Driver(int argc, char** argv) :
      * otherwise a work directory containing spaces causes problems */
     packageName("Untitled"),
     packageVersion("unversioned"),
-    packageDescription(""),
     workDir("."),
-    destDir(""),
-    prefix(""),
     arch("native"),
     mode("debug"),
     unit("dir"),
@@ -36,10 +33,11 @@ bi::Driver::Driver(int argc, char** argv) :
     PACKAGE_ARG = 256,
     WORK_DIR_ARG,
     DEST_DIR_ARG,
-    SHARE_DIR_ARG,
-    INCLUDE_DIR_ARG,
-    LIB_DIR_ARG,
     PREFIX_ARG,
+    BIN_DIR_ARG,
+    LIB_DIR_ARG,
+    INCLUDE_DIR_ARG,
+    DATA_DIR_ARG,
     ARCH_ARG,
     MODE_ARG,
     UNIT_ARG,
@@ -63,9 +61,10 @@ bi::Driver::Driver(int argc, char** argv) :
       { "package", required_argument, 0, PACKAGE_ARG },
       { "work-dir", required_argument, 0, WORK_DIR_ARG },
       { "dest-dir", required_argument, 0, DEST_DIR_ARG },
-      { "share-dir", required_argument, 0, SHARE_DIR_ARG },
-      { "include-dir", required_argument, 0, INCLUDE_DIR_ARG },
-      { "lib-dir", required_argument, 0, LIB_DIR_ARG },
+      { "bindir", required_argument, 0, BIN_DIR_ARG },
+      { "libdir", required_argument, 0, LIB_DIR_ARG },
+      { "includedir", required_argument, 0, INCLUDE_DIR_ARG },
+      { "datadir", required_argument, 0, DATA_DIR_ARG },
       { "prefix", required_argument, 0, PREFIX_ARG },
       { "arch", required_argument, 0, ARCH_ARG },
       { "mode", required_argument, 0, MODE_ARG },
@@ -105,17 +104,20 @@ bi::Driver::Driver(int argc, char** argv) :
     case DEST_DIR_ARG:
       destDir = optarg;
       break;
-    case SHARE_DIR_ARG:
-      shareDirs.push_back(optarg);
-      break;
-    case INCLUDE_DIR_ARG:
-      includeDirs.push_back(optarg);
-      break;
-    case LIB_DIR_ARG:
-      libDirs.push_back(optarg);
-      break;
     case PREFIX_ARG:
       prefix = optarg;
+      break;
+    case BIN_DIR_ARG:
+      binDir = optarg;
+      break;
+    case LIB_DIR_ARG:
+      libDir = optarg;
+      break;
+    case INCLUDE_DIR_ARG:
+      includeDir = optarg;
+      break;
+    case DATA_DIR_ARG:
+      dataDir = optarg;
       break;
     case ARCH_ARG:
       arch = optarg;
@@ -345,7 +347,7 @@ void bi::Driver::build() {
 void bi::Driver::install() {
   meta();
   if (!destDir.empty()) {
-    target("install DESTDIR=" + destDir);
+    target("DESTDIR=" + destDir + " install");
   } else {
     target("install");
   }
@@ -1130,6 +1132,31 @@ void bi::Driver::configure() {
     }
     options << " --config-cache";
     options << " INSTALL=\"install -p\"";
+    if (!binDir.empty()) {
+      options << " --bindir=" << fs::absolute(binDir);
+    }
+    if (!libDir.empty()) {
+      options << " --libdir=" << fs::absolute(libDir);
+    }
+    if (!includeDir.empty()) {
+      options << " --includedir=" << fs::absolute(includeDir);
+    }
+    if (!dataDir.empty()) {
+      options << " --datadir=" << fs::absolute(dataDir);
+    }
+    if (!cppflags.str().empty()) {
+      options << " CPPFLAGS=\"$CPPFLAGS " << cppflags.str() << "\"";
+    }
+    if (!cflags.str().empty()) {
+      options << " CFLAGS=\"$CFLAGS " << cflags.str() << "\"";
+    }
+    if (!cxxflags.str().empty()) {
+      options << " CXXFLAGS=\"$CXXFLAGS " << cxxflags.str() << "\"";
+    }
+    if (!ldflags.str().empty()) {
+      options << " LDFLAGS=\"$LDFLAGS " << ldflags.str() << "\"";
+    }
+    options << " SUFFIX=\"_" << mode << "\"";
 
     /* command */
     if (arch == "js" || arch == "wasm") {
@@ -1137,19 +1164,6 @@ void bi::Driver::configure() {
     }
     cmd << (fs::path("..") / ".." / "configure").string() << " " << options.str();
     // ^ build dir is workDir/build/suffix, so configure script two dirs up
-    if (!cppflags.str().empty()) {
-      cmd << " CPPFLAGS=\"$CPPFLAGS " << cppflags.str() << "\"";
-    }
-    if (!cflags.str().empty()) {
-      cmd << " CFLAGS=\"$CFLAGS " << cflags.str() << "\"";
-    }
-    if (!cxxflags.str().empty()) {
-      cmd << " CXXFLAGS=\"$CXXFLAGS " << cxxflags.str() << "\"";
-    }
-    if (!ldflags.str().empty()) {
-      cmd << " LDFLAGS=\"$LDFLAGS " << ldflags.str() << "\"";
-    }
-    cmd << " SUFFIX=\"_" << mode << "\"";
     if (verbose) {
       std::cerr << cmd.str() << std::endl;
     } else {

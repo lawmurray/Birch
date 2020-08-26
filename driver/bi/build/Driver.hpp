@@ -160,29 +160,34 @@ private:
   fs::path workDir;
 
   /**
-   * Installation directory (`DESTDIR` given to `make install`).
+   * Destination directory (`DESTDIR` given to `make install`).
    */
   std::string destDir;
 
   /**
-   * Share directories.
-   */
-  std::list<fs::path> shareDirs;
-
-  /**
-   * Include directories.
-   */
-  std::list<fs::path> includeDirs;
-
-  /**
-   * Library directories.
-   */
-  std::list<fs::path> libDirs;
-
-  /**
    * Installation prefix.
    */
-  std::string prefix;
+  fs::path prefix;
+
+  /**
+   * Installation directory for executables.
+   */
+  fs::path binDir;
+
+  /**
+   * Installation directory for libraries.
+   */
+  fs::path libDir;
+
+  /**
+   * Installation directory for headers.
+   */
+  fs::path includeDir;
+
+  /**
+   * Installation directory for data.
+   */
+  fs::path dataDir;
 
   /**
    * Target architecture (native, js, or wasm).
@@ -249,6 +254,22 @@ private:
    * Is the Makefile.am file new?
    */
   bool newMake;
+
+  /**
+   * Share directories.
+   */
+  std::list<fs::path> shareDirs;
+
+  /**
+   * Include directories.
+   */
+  std::list<fs::path> includeDirs;
+
+  /**
+   * Library directories.
+   */
+  std::list<fs::path> libDirs;
+
 
   /**
    * Lists of files from meta.
