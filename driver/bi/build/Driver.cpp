@@ -59,8 +59,8 @@ bi::Driver::Driver(int argc, char** argv) :
   int c, option_index;
   option long_options[] = {
       { "package", required_argument, 0, PACKAGE_ARG },
-      { "work-dir", required_argument, 0, WORK_DIR_ARG },
-      { "dest-dir", required_argument, 0, DEST_DIR_ARG },
+      { "workdir", required_argument, 0, WORK_DIR_ARG },
+      { "destdir", required_argument, 0, DEST_DIR_ARG },
       { "bindir", required_argument, 0, BIN_DIR_ARG },
       { "libdir", required_argument, 0, LIB_DIR_ARG },
       { "includedir", required_argument, 0, INCLUDE_DIR_ARG },
