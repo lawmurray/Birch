@@ -96,9 +96,9 @@ private:
   void compile();
 
   /**
-   * Run autogen.sh.
+   * Run bootstrap.
    */
-  void autogen();
+  void bootstrap();
 
   /**
    * Run configure.
@@ -241,9 +241,9 @@ private:
   bool verbose;
 
   /**
-   * Is the autogen.sh file new?
+   * Is the bootstrap file new?
    */
-  bool newAutogen;
+  bool newBootstrap;
 
   /**
    * Is the configure.ac file new?

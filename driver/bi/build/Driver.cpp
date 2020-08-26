@@ -26,7 +26,7 @@ bi::Driver::Driver(int argc, char** argv) :
     warnings(true),
     notes(true),
     verbose(true),
-    newAutogen(false),
+    newBootstrap(false),
     newConfigure(false),
     newMake(false) {
   enum {
@@ -340,7 +340,7 @@ void bi::Driver::build() {
   meta();
   setup();
   compile();
-  autogen();
+  bootstrap();
   configure();
   target();
   if (arch == "js" || arch == "wasm") {
@@ -398,8 +398,8 @@ void bi::Driver::clean() {
   fs::remove_all("autom4te.cache");
   fs::remove_all("m4");
   fs::remove("aclocal.m4");
-  fs::remove("autogen.log");
-  fs::remove("autogen.sh");
+  fs::remove("bootstrap.log");
+  fs::remove("bootstrap");
   fs::remove("compile");
   fs::remove("config.guess");
   fs::remove("config.sub");
@@ -478,7 +478,7 @@ void bi::Driver::check() {
   interesting.insert(".cpp");
   interesting.insert(".hpp");
 
-  exclude.insert("autogen.sh");
+  exclude.insert("bootstrap");
   exclude.insert("ltmain.sh");
 
   fs::recursive_directory_iterator iter("."), end;
@@ -822,12 +822,6 @@ void bi::Driver::setup() {
       buf << "could not create build directory " << buildDir << '.';
       throw DriverException(buf.str());
     }
-
-    /* workaround for error given by some versions of autotools, "Something
-     * went wrong bootstrapping makefile fragments for automatic dependency
-     * tracking..." */
-    fs::create_directories(buildDir / "bi" / ".deps");
-    fs::ofstream(buildDir / "bi" / ".deps" / (internalName + ".gch.Plo"));
   }
 
   /* update "latest" symlink to point to this build directory */
@@ -836,8 +830,8 @@ void bi::Driver::setup() {
   fs::create_symlink(suffix(), symlink_dir);
 
   /* copy build files into build directory */
-  newAutogen = copy_if_newer(find(shareDirs, "autogen.sh"), "autogen.sh");
-  fs::permissions("autogen.sh", fs::add_perms | fs::owner_exe);
+  newBootstrap = copy_if_newer(find(shareDirs, "bootstrap"), "bootstrap");
+  fs::permissions("bootstrap", fs::add_perms | fs::owner_exe);
 
   fs::path m4_dir("m4");
   if (!fs::exists(m4_dir)) {
@@ -1024,16 +1018,16 @@ void bi::Driver::compile() {
   delete package;
 }
 
-void bi::Driver::autogen() {
-  if (newAutogen || newConfigure || newMake
+void bi::Driver::bootstrap() {
+  if (newBootstrap || newConfigure || newMake
       || !fs::exists(workDir / "configure")
       || !fs::exists(workDir / "install-sh")) {
     std::stringstream cmd;
-    cmd << (fs::path(".") / "autogen.sh");
+    cmd << (fs::path(".") / "bootstrap");
     if (verbose) {
       std::cerr << cmd.str() << std::endl;
     } else {
-      cmd << " > autogen.log 2>&1";
+      cmd << " > bootstrap.log 2>&1";
     }
 
     int ret = std::system(cmd.str().c_str());
@@ -1041,13 +1035,13 @@ void bi::Driver::autogen() {
       if (verbose) {
         std::cerr << explain(cmd.str()) << std::endl;
       }
-      throw DriverException("autogen.sh failed to execute.");
+      throw DriverException("bootstrap failed to execute.");
     } else if (ret != 0) {
       std::stringstream buf;
-      buf << "autogen.sh died with signal " << ret
+      buf << "bootstrap died with signal " << ret
           << "; make sure autoconf, automake and libtool are installed";
       if (!verbose) {
-        buf << ", see " << (workDir / "autogen.log").string()
+        buf << ", see " << (workDir / "bootstrap.log").string()
             << " for details";
       }
       buf << '.';
@@ -1058,7 +1052,7 @@ void bi::Driver::autogen() {
 
 void bi::Driver::configure() {
   auto buildDir = workDir / "build" / suffix();
-  if (newAutogen || newConfigure || newMake
+  if (newBootstrap || newConfigure || newMake
       || !exists(buildDir / "Makefile")) {
     CWD cwd(buildDir);
 
