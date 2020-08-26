@@ -288,7 +288,11 @@ void bi::Driver::run(const std::string& prog,
   }
 
   /* name of the shared library file we expect to find */
-  fs::path so = std::string("libbirch_") + tarname(packageName) + '_' + mode;
+  auto name = "libbirch_" + tarname(packageName);
+  if (mode != "release") {
+    name += '_' + mode;
+  }
+  fs::path so = name;
   #ifdef __APPLE__
   so.replace_extension(".dylib");
   #else
