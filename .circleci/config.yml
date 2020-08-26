@@ -50,7 +50,7 @@ commands:
           name: Build
           command: |
               cd driver
-              ./autogen.sh
+              ./bootstrap
               ./configure --prefix=$BIRCH_PREFIX CXXFLAGS="-Wall -Wno-overloaded-virtual -g -O0 --coverage -fprofile-abs-path"
               make -j 4
               make install
