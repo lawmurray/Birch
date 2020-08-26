@@ -109,19 +109,6 @@ void libbirch::deallocate(void* ptr, const size_t n, const int tid) {
   #endif
 }
 
-void libbirch::deallocate(void* ptr, const unsigned n, const int tid) {
-  assert(ptr);
-  assert(n > 0u);
-  assert(tid < get_max_threads());
-
-  #ifdef DISABLE_MEMORY_POOL
-  std::free(ptr);
-  #else
-  int i = bin(n);
-  pool(64*tid + i).push(ptr);
-  #endif
-}
-
 void* libbirch::reallocate(void* ptr1, const size_t n1, const int tid1,
     const size_t n2) {
   assert(ptr1);
