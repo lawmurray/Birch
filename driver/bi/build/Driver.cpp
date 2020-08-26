@@ -1156,7 +1156,9 @@ void bi::Driver::configure() {
     if (!ldflags.str().empty()) {
       options << " LDFLAGS=\"$LDFLAGS " << ldflags.str() << "\"";
     }
-    options << " SUFFIX=\"_" << mode << "\"";
+    if (mode != "release") {
+      options << " SUFFIX=\"_" << mode << "\"";
+    }
 
     /* command */
     if (arch == "js" || arch == "wasm") {
