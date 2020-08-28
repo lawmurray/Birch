@@ -19,12 +19,11 @@ public:
    * Constructor.
    *
    * @param package The package.
-   * @param build_dir Build directory.
    * @param mode Build mode.
    * @param unit Compilation unit.
    */
-  Compiler(Package* package, const fs::path& build_dir,
-      const std::string& mode, const std::string& unit);
+  Compiler(Package* package, const std::string& mode,
+      const std::string& unit);
 
   /**
    * Parse source files.
@@ -63,11 +62,6 @@ private:
    * Package.
    */
   Package* package;
-
-  /**
-   * Build directory.
-   */
-  fs::path build_dir;
 
   /**
    * Build mode.

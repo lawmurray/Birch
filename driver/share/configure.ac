@@ -4,8 +4,18 @@ AC_LANG([C++])
 AM_INIT_AUTOMAKE([1.10 no-define foreign subdir-objects])
 AC_CONFIG_MACRO_DIR([m4])
 
-AC_PROG_CPP
-AC_PROG_CC
+# Default CXXFLAGS to empty, user can either override with their own, or use
+# MODE to select a preset
+: ${CXXFLAGS=""}
+AC_ARG_VAR(MODE, [build mode for flag presets: debug, test, release, or empty.])
+AM_CONDITIONAL([DEBUG], [test x$MODE = xdebug])
+AM_CONDITIONAL([TEST], [test x$MODE = xtest])
+AM_CONDITIONAL([RELEASE], [test x$MODE = xrelease])
+
+# Suffix on installed libraries
+AC_ARG_VAR(SUFFIX, [suffix for libaries, e.g. _debug, or empty.])
+
+# Programs
 AC_PROG_CXXCPP
 AC_PROG_CXX
 AC_PROG_INSTALL
@@ -25,11 +35,7 @@ LT_INIT([dlopen,pic-only])
 # Checks for basic things
 AC_HEADER_ASSERT
 AC_HEADER_STDBOOL
-AC_C_INLINE
 AC_OPENMP
-
-# Suffix on installed libraries
-AC_ARG_VAR(SUFFIX, [suffix on Birch library names, such as _debug or _release; used for both dependencies and the installed library.])
 
 # Checks for compiler flags
 AX_CHECK_COMPILE_FLAG([-fno-caret-diagnostics], [CXXFLAGS="$CXXFLAGS -fno-caret-diagnostics"], [], [-Werror])
@@ -48,16 +54,14 @@ AX_CHECK_COMPILE_FLAG([-Wno-unknown-pragmas], [CXXFLAGS="$CXXFLAGS -Wno-unknown-
 if test x$emscripten = xfalse; then
   AC_SEARCH_LIBS([dlopen], [dl], [], [])
   AC_CHECK_LIB([atomic], [main], [], [], [])
-  AC_CHECK_LIB([explain], [explain_system], [], [], [])
   AC_CHECK_LIB([omp], [main], [], [], [])
-  AC_CHECK_LIB([boost_filesystem], [main], [], [AC_CHECK_LIB([boost_filesystem-mt], [main], [], [AC_MSG_ERROR([Boost.FileSystem library not found])])])
-  AC_CHECK_LIB([boost_system], [main], [], [AC_CHECK_LIB([boost_system-mt], [main], [], [AC_MSG_ERROR([Boost.System library not found])])])
+  AC_CHECK_LIB([explain], [explain_system], [], [], [])
+  AC_CHECK_LIB([boost_filesystem], [main], [], [AC_CHECK_LIB([boost_filesystem-mt], [main], [], [AC_MSG_ERROR([required library not found])])])
+  AC_CHECK_LIB([boost_system], [main], [], [AC_CHECK_LIB([boost_system-mt], [main], [], [AC_MSG_ERROR([required library not found])])])
+  AC_CHECK_LIB([birch$SUFFIX], [main], [], [AC_MSG_ERROR([required library not found])])
 
   # Checks for headers
   AC_CHECK_HEADERS([omp.h], [], [], [-])
   AC_CHECK_HEADERS([libexplain/system.h], [], [], [-])
+  AC_CHECK_HEADERS([libbirch.hpp], [], [AC_MSG_ERROR([required header not found])], [-])
 fi
-
-# Checks for functions
-AX_GCC_BUILTIN([__builtin_clz])
-AX_GCC_BUILTIN([__builtin_clzll])

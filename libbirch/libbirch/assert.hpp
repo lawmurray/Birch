@@ -4,6 +4,7 @@
 #pragma once
 
 #include "libbirch/external.hpp"
+#include "libbirch/stacktrace.hpp"
 
 /**
  * @def libbirch_error_

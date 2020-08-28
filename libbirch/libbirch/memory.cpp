@@ -3,6 +3,8 @@
  */
 #include "libbirch/memory.hpp"
 
+#include "libbirch/Atomic.hpp"
+#include "libbirch/Pool.hpp"
 #include "libbirch/Any.hpp"
 #include "libbirch/Label.hpp"
 #include "libbirch/Shared.hpp"
@@ -31,7 +33,7 @@ static object_list& get_thread_unreachable() {
 }
 
 /**
- * Create the heap.
+ * Make the heap.
  */
 static char* make_heap() {
   #ifdef DISABLE_MEMORY_POOL
@@ -56,6 +58,9 @@ static char* make_heap() {
   #endif
 }
 
+/**
+ * Make the root label.
+ */
 static libbirch::Label* make_root() {
   return new libbirch::Label();
 }
@@ -63,19 +68,61 @@ static libbirch::Label* make_root() {
 libbirch::ExitBarrierLock libbirch::finish_lock;
 libbirch::ExitBarrierLock libbirch::freeze_lock;
 
-libbirch::Atomic<char*>& libbirch::heap() {
+/**
+ * Get the heap.
+ */
+inline libbirch::Atomic<char*>& heap() {
   static libbirch::Atomic<char*> heap(make_heap());
   return heap;
+}
+
+/**
+ * Get the `i`th pool.
+ */
+inline libbirch::Pool& pool(const int i) {
+  static libbirch::Pool* pools =
+      new libbirch::Pool[64*libbirch::get_max_threads()];
+  return pools[i];
+}
+
+/**
+ * For an allocation size, determine the index of the pool to which it
+ * belongs.
+ *
+ * @param n Number of bytes.
+ *
+ * @return Pool index.
+ *
+ * Pool sizes are multiples of 8 bytes up to 64 bytes, and powers of two
+ * thereafter.
+ */
+inline int bin(const size_t n) {
+  assert(n > 0ull);
+  int result = 0;
+  #ifdef HAVE___BUILTIN_CLZLL
+  if (n > 64ull) {
+    /* __builtin_clzll undefined for zero argument */
+    result = 64 - __builtin_clzll((n - 1ull) >> 6ull);
+  }
+  #else
+  while (((n - 1ull) >> (6 + result)) > 0) {
+    ++result;
+  }
+  #endif
+  assert(0 <= result && result <= 63);
+  return result;
+}
+
+/**
+ * Determine the size for a given bin.
+ */
+inline size_t unbin(const int i) {
+  return 64ull << i;
 }
 
 libbirch::Label*& libbirch::root() {
   static Label* root(make_root());
   return root;
-}
-
-libbirch::Pool& libbirch::pool(const int i) {
-  static libbirch::Pool* pools = new libbirch::Pool[64*get_max_threads()];
-  return pools[i];
 }
 
 void* libbirch::allocate(const size_t n) {

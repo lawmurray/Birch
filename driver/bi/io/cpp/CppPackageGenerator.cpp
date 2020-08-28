@@ -54,7 +54,7 @@ void bi::CppPackageGenerator::visit(const Package* o) {
     boost::to_upper(name);
     line("#ifndef BI_" << name << "_HPP");
     line("#define BI_" << name << "_HPP\n");
-    line("#include \"libbirch/libbirch.hpp\"\n");
+    line("#include \"libbirch.hpp\"\n");
 
     for (auto header : o->headers) {
       fs::path include = header->path;

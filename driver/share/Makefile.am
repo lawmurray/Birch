@@ -1,11 +1,19 @@
-# precompiled header; most recent tests show that this is slightly slowing
-# built times for all --unit settings (unity, dir and file), so disabled at
-# present
-#%.hpp.pch: %.hpp
-#	# $(CXXCOMPILE) has an -include flag for the header, ensure that this won't
-#	# use the old precompiled header by removing it first
-#	rm -f $@
-#	$(CXXCOMPILE) -o $@ $<
+# compile flags
+AM_CPPFLAGS = -Wall -DEIGEN_NO_STATIC_ASSERT -DEIGEN_NO_AUTOMATIC_RESIZING=1 -DEIGEN_DONT_PARALLELIZE=1
+COMMON_CXXFLAGS = -include birch_PACKAGE_TARNAME.hpp $(OPENMP_CXXFLAGS)
+if DEBUG
+AM_CXXFLAGS = $(COMMON_CXXFLAGS) -O0 -g -fno-inline
+else
+if TEST
+AM_CXXFLAGS = $(COMMON_CXXFLAGS) -O0 -g -fno-inline -fprofile-abs-path --coverage
+else
+if RELEASE
+AM_CXXFLAGS = $(COMMON_CXXFLAGS) -O3 -g
+else
+AM_CXXFLAGS = $(COMMON_CXXFLAGS)
+endif
+endif
+endif
 
 # placeholder source file for Emscripten program wrapper
 main.cpp:
@@ -22,10 +30,5 @@ birch_html_LDADD = libbirch_PACKAGE_TARNAME.la
 birch_html_SOURCES = main.cpp
 birch_html_LDFLAGS = -s MAIN_MODULE=1 --emrun
 
-AM_CPPFLAGS = -DEIGEN_NO_STATIC_ASSERT -DEIGEN_NO_AUTOMATIC_RESIZING=1 -DEIGEN_DONT_PARALLELIZE=1 -DBOOST_MATH_NO_LONG_DOUBLE_MATH_FUNCTIONS=1
-# -Deigen_assert=bi_assert
-AM_CXXFLAGS = -include bi/PACKAGE_TARNAME.hpp $(OPENMP_CXXFLAGS)
-AM_CFLAGS = $(OPENMP_CFLAGS)
-
-BUILT_SOURCES = main.cpp #bi/PACKAGE_TARNAME.hpp.pch
+BUILT_SOURCES = main.cpp
 CLEANFILES = $(BUILT_SOURCES)

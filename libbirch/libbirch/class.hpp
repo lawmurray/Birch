@@ -21,7 +21,7 @@
  * Declare common functions for classes and fibers.
  */
 #define LIBBIRCH_COMMON(Name, Base...) \
-  virtual bi::type::String getClassName() const { \
+  virtual const char* getClassName() const { \
     return #Name; \
   } \
   \

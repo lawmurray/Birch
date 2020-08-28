@@ -4,20 +4,19 @@
 #include "Compiler.hpp"
 
 #include "bi/birch.hpp"
+#include "bi/lexer.hpp"
 #include "bi/visitor/all.hpp"
 #include "bi/io/bih_ostream.hpp"
 #include "bi/io/cpp/CppBaseGenerator.hpp"
 #include "bi/io/cpp/CppPackageGenerator.hpp"
-#include "bi/lexer.hpp"
 
 bi::Compiler* compiler = nullptr;
 std::stringstream raw;
 
-bi::Compiler::Compiler(Package* package, const fs::path& build_dir,
-    const std::string& mode, const std::string& unit) :
+bi::Compiler::Compiler(Package* package, const std::string& mode,
+    const std::string& unit) :
     scope(new Scope(GLOBAL_SCOPE)),
     package(package),
-    build_dir(build_dir),
     mode(mode),
     unit(unit) {
   //
@@ -71,26 +70,23 @@ void bi::Compiler::resolve() {
 }
 
 void bi::Compiler::gen() {
-  fs::path path;
   std::stringstream stream;
   std::string internalName = tarname(package->name);
+  fs::path path = fs::path("src") / ("birch_" + internalName);
 
   bih_ostream bihOutput(stream);
-
+  CppPackageGenerator hppOutput(stream, 0, true, mode == "test");
   CppBaseGenerator cppOutput(stream, 0, false, false, mode == "test");
-  CppPackageGenerator hppPackageOutput(stream, 0, true, mode == "test");
 
   /* single *.bih header for whole package */
   stream.str("");
   bihOutput << package;
-  path = build_dir / "bi" / internalName;
   path.replace_extension(".bih");
   write_all_if_different(path, stream.str());
 
   /* single *.hpp header for whole package */
   stream.str("");
-  hppPackageOutput << package;
-  path = build_dir / "bi" / internalName;
+  hppOutput << package;
   path.replace_extension(".hpp");
   write_all_if_different(path, stream.str());
 
@@ -100,7 +96,6 @@ void bi::Compiler::gen() {
     for (auto file : package->sources) {
       cppOutput << file;
     }
-    path = build_dir / "bi" / internalName;
     path.replace_extension(".cpp");
     write_all_if_different(path, stream.str());
   } else if (unit == "file") {
@@ -108,7 +103,7 @@ void bi::Compiler::gen() {
     for (auto file : package->sources) {
       stream.str("");
       cppOutput << file;
-      path = build_dir / file->path;
+      path = fs::path("src") / file->path;
       path.replace_extension(".cpp");
       write_all_if_different(path, stream.str());
     }
@@ -126,7 +121,7 @@ void bi::Compiler::gen() {
       iter->second += stream.str();
     }
     for (auto pair : sources) {
-      path = build_dir / pair.first / internalName;
+      path = fs::path("src") / pair.first / internalName;
       path.replace_extension(".cpp");
       write_all_if_different(path, pair.second);
     }

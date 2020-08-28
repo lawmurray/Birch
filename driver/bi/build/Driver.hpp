@@ -84,16 +84,9 @@ private:
   void setup();
 
   /**
-   * Create the package.
-   *
-   * @param includeRequires Include checks for required packages?
+   * Transpile Birch files to C++.
    */
-  Package* createPackage(bool includeRequires);
-
-  /**
-   * Compile Birch files to C++.
-   */
-  void compile();
+  void transpile();
 
   /**
    * Run bootstrap.
@@ -130,6 +123,13 @@ private:
   std::string suffix() const;
 
   /**
+   * Create the package.r
+   *
+   * @param includeRequires Include checks for required packages?
+   */
+  Package* createPackage(bool includeRequires);
+
+  /**
    * Consume a list of files from the meta file.
    *
    * @param meta Property tree of the meta file.
@@ -155,39 +155,9 @@ private:
   std::string packageDescription;
 
   /**
-   * Working directory.
-   */
-  fs::path workDir;
-
-  /**
-   * Destination directory (`DESTDIR` given to `make install`).
-   */
-  std::string destDir;
-
-  /**
    * Installation prefix.
    */
   fs::path prefix;
-
-  /**
-   * Installation directory for executables.
-   */
-  fs::path binDir;
-
-  /**
-   * Installation directory for libraries.
-   */
-  fs::path libDir;
-
-  /**
-   * Installation directory for headers.
-   */
-  fs::path includeDir;
-
-  /**
-   * Installation directory for data.
-   */
-  fs::path dataDir;
 
   /**
    * Target architecture (native, js, or wasm).
@@ -205,6 +175,12 @@ private:
   std::string unit;
 
   /**
+   * Number of jobs for parallel build. If zero, a reasonable value is
+   * determined from the environment.
+   */
+  int jobs;
+
+  /**
    * Build static library?
    */
   bool staticLib;
@@ -218,12 +194,6 @@ private:
    * Is OpenMP enabled?
    */
   bool openmp;
-
-  /**
-   * Number of jobs for parallel build. If zero, a reasonable value is
-   * determined from the environment.
-   */
-  int jobs;
 
   /**
    * Are compiler warnings enabled?

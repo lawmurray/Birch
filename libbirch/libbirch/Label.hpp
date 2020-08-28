@@ -139,7 +139,7 @@ private:
   ReadersWriterLock lock;
 
 public:
-  virtual bi::type::String getClassName() const {
+  virtual const char* getClassName() const {
     return "Label";
   }
 

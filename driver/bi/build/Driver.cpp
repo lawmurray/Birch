@@ -15,14 +15,13 @@ bi::Driver::Driver(int argc, char** argv) :
      * otherwise a work directory containing spaces causes problems */
     packageName("Untitled"),
     packageVersion("unversioned"),
-    workDir("."),
     arch("native"),
     mode("debug"),
     unit("dir"),
+    jobs(std::thread::hardware_concurrency()),
     staticLib(false),
     sharedLib(true),
     openmp(true),
-    jobs(std::thread::hardware_concurrency()),
     warnings(true),
     notes(true),
     verbose(true),
@@ -31,13 +30,7 @@ bi::Driver::Driver(int argc, char** argv) :
     newMake(false) {
   enum {
     PACKAGE_ARG = 256,
-    WORK_DIR_ARG,
-    DEST_DIR_ARG,
     PREFIX_ARG,
-    BIN_DIR_ARG,
-    LIB_DIR_ARG,
-    INCLUDE_DIR_ARG,
-    DATA_DIR_ARG,
     ARCH_ARG,
     MODE_ARG,
     UNIT_ARG,
@@ -59,23 +52,17 @@ bi::Driver::Driver(int argc, char** argv) :
   int c, option_index;
   option long_options[] = {
       { "package", required_argument, 0, PACKAGE_ARG },
-      { "workdir", required_argument, 0, WORK_DIR_ARG },
-      { "destdir", required_argument, 0, DEST_DIR_ARG },
-      { "bindir", required_argument, 0, BIN_DIR_ARG },
-      { "libdir", required_argument, 0, LIB_DIR_ARG },
-      { "includedir", required_argument, 0, INCLUDE_DIR_ARG },
-      { "datadir", required_argument, 0, DATA_DIR_ARG },
       { "prefix", required_argument, 0, PREFIX_ARG },
       { "arch", required_argument, 0, ARCH_ARG },
       { "mode", required_argument, 0, MODE_ARG },
       { "unit", required_argument, 0, UNIT_ARG },
+      { "jobs", required_argument, 0, JOBS_ARG },
       { "enable-static", no_argument, 0, ENABLE_STATIC_ARG },
       { "disable-static", no_argument, 0, DISABLE_STATIC_ARG },
       { "enable-shared", no_argument, 0, ENABLE_SHARED_ARG },
       { "disable-shared", no_argument, 0, DISABLE_SHARED_ARG },
       { "enable-openmp", no_argument, 0, ENABLE_OPENMP_ARG },
       { "disable-openmp", no_argument, 0, DISABLE_OPENMP_ARG },
-      { "jobs", required_argument, 0, JOBS_ARG },
       { "enable-warnings", no_argument, 0, ENABLE_WARNINGS_ARG },
       { "disable-warnings", no_argument, 0, DISABLE_WARNINGS_ARG },
       { "enable-notes", no_argument, 0, ENABLE_NOTES_ARG },
@@ -98,26 +85,8 @@ bi::Driver::Driver(int argc, char** argv) :
     case PACKAGE_ARG:
       packageName = optarg;
       break;
-    case WORK_DIR_ARG:
-      workDir = optarg;
-      break;
-    case DEST_DIR_ARG:
-      destDir = optarg;
-      break;
     case PREFIX_ARG:
       prefix = optarg;
-      break;
-    case BIN_DIR_ARG:
-      binDir = optarg;
-      break;
-    case LIB_DIR_ARG:
-      libDir = optarg;
-      break;
-    case INCLUDE_DIR_ARG:
-      includeDir = optarg;
-      break;
-    case DATA_DIR_ARG:
-      dataDir = optarg;
       break;
     case ARCH_ARG:
       arch = optarg;
@@ -127,6 +96,9 @@ bi::Driver::Driver(int argc, char** argv) :
       break;
     case UNIT_ARG:
       unit = optarg;
+      break;
+    case JOBS_ARG:
+      jobs = atoi(optarg);
       break;
     case ENABLE_STATIC_ARG:
       staticLib = true;
@@ -145,9 +117,6 @@ bi::Driver::Driver(int argc, char** argv) :
       break;
     case DISABLE_OPENMP_ARG:
       openmp = false;
-      break;
-    case JOBS_ARG:
-      jobs = atoi(optarg);
       break;
     case ENABLE_WARNINGS_ARG:
       warnings = true;
@@ -220,8 +189,7 @@ bi::Driver::Driver(int argc, char** argv) :
 #endif
 
   /* include dirs */
-  includeDirs.push_back(workDir);
-  includeDirs.push_back(workDir / "build" / "latest");
+  includeDirs.push_back(fs::canonical("src"));
   if (BIRCH_INCLUDE_PATH) {
     std::stringstream birch_include_path(BIRCH_INCLUDE_PATH);
     while (std::getline(birch_include_path, input, ':')) {
@@ -236,9 +204,9 @@ bi::Driver::Driver(int argc, char** argv) :
 #endif
 
   /* lib dirs */
-  auto local = workDir / "build" / "latest" / ".libs";
+  fs::path local = ".libs";
   if (fs::exists(local)) {
-    libDirs.push_back(fs::canonical(local));
+    libDirs.push_back(local);
     // ^ use canonical here as "latest" symlink may be updated before use
   }
   if (BIRCH_LIBRARY_PATH) {
@@ -271,7 +239,7 @@ void bi::Driver::run(const std::string& prog,
     /* when running in a package directory we'd like to use the latest build,
      * regardless of what mode was given in the call, so update the mode if
      * we find a latest build */
-    auto symlink = workDir / "build" / "latest";
+    auto symlink = fs::path("build") / "latest";
     if (fs::exists(symlink)) {
       auto build = fs::read_symlink(symlink).string();
       if (build.find("debug_") == 0) {
@@ -339,7 +307,7 @@ void bi::Driver::run(const std::string& prog,
 void bi::Driver::build() {
   meta();
   setup();
-  compile();
+  transpile();
   bootstrap();
   configure();
   target();
@@ -350,11 +318,7 @@ void bi::Driver::build() {
 
 void bi::Driver::install() {
   meta();
-  if (!destDir.empty()) {
-    target("DESTDIR=" + destDir + " install");
-  } else {
-    target("install");
-  }
+  target("install");
   ldconfig();
 }
 
@@ -506,7 +470,7 @@ void bi::Driver::docs() {
   Package* package = createPackage(false);
 
   /* parse all files */
-  Compiler compiler(package, fs::path("build") / "latest", mode, unit);
+  Compiler compiler(package, mode, unit);
   compiler.parse(false);
 
   /* output everything into single file */
@@ -614,7 +578,6 @@ void bi::Driver::docs() {
     docsStream << str1;
     docsStream.close();
   }
-  delete package;
 }
 
 void bi::Driver::help() {
@@ -829,11 +792,11 @@ void bi::Driver::setup() {
   fs::remove(symlink_dir);
   fs::create_symlink(suffix(), symlink_dir);
 
-  /* copy build files into build directory */
+  /* copy build files */
   newBootstrap = copy_if_newer(find(shareDirs, "bootstrap"), "bootstrap");
-  fs::permissions("bootstrap", fs::add_perms | fs::owner_exe);
+  fs::permissions("bootstrap", fs::add_perms|fs::owner_exe);
 
-  fs::path m4_dir("m4");
+  auto m4_dir = fs::path("m4");
   if (!fs::exists(m4_dir)) {
     if (!fs::create_directory(m4_dir)) {
       std::stringstream buf;
@@ -864,16 +827,12 @@ void bi::Driver::setup() {
   }
   for (auto file : metaFiles["require.header"]) {
     configureStream << "  AC_CHECK_HEADERS([" << file.string() << "], [], "
-        << "[AC_MSG_ERROR([header required by " << packageName
-        << " package not found.])], [-])\n";
+        << "[AC_MSG_ERROR([required header not found.])], [-])\n";
   }
   for (auto name : metaFiles["require.package"]) {
-    auto internalName = tarname(name.string());
-    auto header = fs::path("bi") / internalName;
-    header.replace_extension(".hpp");
-    configureStream << "  AC_CHECK_HEADERS([" << header.string() << "], [], "
-        << "[AC_MSG_ERROR([header required by " << packageName
-        << " package not found.])], [-])\n";
+    auto internalName = "birch_" + tarname(name.string());
+    configureStream << "  AC_CHECK_HEADERS([" << internalName << ".hpp], [], "
+        << "[AC_MSG_ERROR([required header not found.])], [-])\n";
   }
   if (!metaFiles["require.header"].empty()) {
     configureStream << "fi\n";
@@ -882,24 +841,21 @@ void bi::Driver::setup() {
   /* required libraries */
   for (auto file : metaFiles["require.library"]) {
     configureStream << "  AC_CHECK_LIB([" << file.string() << "], [main], "
-        << "[], [AC_MSG_ERROR([library required by " << packageName
-        << " package not found.])])\n";
+        << "[], [AC_MSG_ERROR([required library not found.])])\n";
   }
   for (auto name : metaFiles["require.package"]) {
-    auto internalName = tarname(name.string());
-    auto library = std::string("birch_") + internalName;
-    configureStream << "  AC_CHECK_LIB([" << library << "$SUFFIX], [main], "
-        << "[], [AC_MSG_ERROR([library required by " << packageName
-        << " package not found.])])\n";
+    auto internalName = "birch_" + tarname(name.string());
+    configureStream << "  AC_CHECK_LIB([" << internalName <<
+        "$SUFFIX], [main], [], " <<
+        "[AC_MSG_ERROR([required library not found.])])\n";
   }
 
   /* required programs */
   for (auto file : metaFiles["require.program"]) {
-    configureStream << "  AC_PATH_PROG([PROG], [" << file.string()
-        << "], [])\n";
+    configureStream << "  AC_PATH_PROG([PROG], [" << file.string() <<
+        "], [])\n";
     configureStream << "  if test \"$PROG\" = \"\"; then\n";
-    configureStream << "    AC_MSG_ERROR([" << file.string() << " program "
-        << "required by " << packageName << " package not found.])\n";
+    configureStream << "    AC_MSG_ERROR([required program not found.])\n";
     configureStream << "  fi\n";
   }
 
@@ -917,20 +873,23 @@ void bi::Driver::setup() {
 
   std::stringstream makeStream;
   makeStream << contents << "\n\n";
-  makeStream << "lib_LTLIBRARIES = libbirch_" << internalName << "@SUFFIX@.la\n\n";
+  makeStream << "lib_LTLIBRARIES = libbirch_" << internalName <<
+      "@SUFFIX@.la\n\n";
 
   /* sources derived from *.bi files */
   makeStream << "dist_libbirch_" << internalName << "@SUFFIX@_la_SOURCES =";
   if (unit == "unity") {
     /* sources go into one *.cpp file for the whole package */
-    makeStream << " \\\n  bi/" << internalName << ".cpp";
+    auto source = fs::path("src") / ("birch_" + internalName);
+    source.replace_extension(".cpp");
+    makeStream << " \\\n  " << source.string() << ".cpp";
   } else if (unit == "file") {
     /* sources go into one *.cpp file for each *.bi file */
     for (auto file : metaFiles["manifest.source"]) {
       if (file.extension().compare(".bi") == 0) {
-        fs::path cppFile = file;
-        cppFile.replace_extension(".cpp");
-        makeStream << " \\\n  " << cppFile.string();
+        auto source = file;
+        source.replace_extension(".cpp");
+        makeStream << " \\\n  " << source.string();
       }
     }
   } else {
@@ -938,36 +897,24 @@ void bi::Driver::setup() {
     std::unordered_set<std::string> sources;
     for (auto file : metaFiles["manifest.source"]) {
       if (file.extension().compare(".bi") == 0) {
-        fs::path cppFile = file.parent_path() / internalName;
-        cppFile.replace_extension(".cpp");
-        if (sources.insert(cppFile.string()).second) {
-          makeStream << " \\\n  " << cppFile.string();
+        auto source = fs::path("src") / file.parent_path() /
+            ("birch_" + internalName);
+        source.replace_extension(".cpp");
+        if (sources.insert(source.string()).second) {
+          makeStream << " \\\n  " << source.string();
         }
       }
     }
   }
   makeStream << '\n';
 
-  /* other *.cpp files */
-  makeStream << "libbirch_" << internalName << "@SUFFIX@_la_SOURCES = ";
-  for (auto file : metaFiles["manifest.source"]) {
-    if (file.extension().compare(".cpp") == 0
-        || file.extension().compare(".c") == 0) {
-      makeStream << " \\\n  " << file.string();
-    }
-  }
-  makeStream << '\n';
-
   /* headers to install and distribute */
-  makeStream << "nobase_include_HEADERS =";
-  makeStream << " \\\n  bi/" << internalName << ".hpp";
-  makeStream << " \\\n  bi/" << internalName << ".bih";
-  for (auto file : metaFiles["manifest.header"]) {
-    if (file.extension().compare(".hpp") == 0
-        || file.extension().compare(".h") == 0) {
-      makeStream << " \\\n  " << file.string();
-    }
-  }
+  makeStream << "include_HEADERS =";
+  auto header = fs::path("src") / ("birch_" + internalName);
+  header.replace_extension(".hpp");
+  makeStream << " \\\n  " << header.string();
+  header.replace_extension(".bih");
+  makeStream << " \\\n  " << header.string();
   makeStream << '\n';
 
   /* data files to distribute */
@@ -987,41 +934,16 @@ void bi::Driver::setup() {
   newMake = write_all_if_different("Makefile.am", makeStream.str());
 }
 
-bi::Package* bi::Driver::createPackage(bool includeRequires) {
-  Package* package = new Package(packageName);
-  if (includeRequires) {
-    for (auto name : metaFiles["require.package"]) {
-      /* add *.bih dependency */
-      fs::path header = fs::path("bi") / tarname(name.string());
-      header.replace_extension(".bih");
-      package->addHeader(find(includeDirs, header).string());
-    }
-  }
-  for (auto file : metaFiles["manifest.source"]) {
-    if (file.extension().compare(".bi") == 0) {
-      package->addSource(file.string());
-    }
-  }
-  return package;
-}
-
-void bi::Driver::compile() {
-  Package* package = createPackage(true);
-
-  auto buildDir = fs::path("build") / suffix();
-
-  Compiler compiler(package, buildDir, mode, unit);
+void bi::Driver::transpile() {
+  Compiler compiler(createPackage(true), mode, unit);
   compiler.parse(true);
   compiler.resolve();
   compiler.gen();
-
-  delete package;
 }
 
 void bi::Driver::bootstrap() {
-  if (newBootstrap || newConfigure || newMake
-      || !fs::exists(workDir / "configure")
-      || !fs::exists(workDir / "install-sh")) {
+  if (newBootstrap || newConfigure || newMake || !fs::exists("configure") ||
+      !fs::exists("install-sh")) {
     std::stringstream cmd;
     cmd << (fs::path(".") / "bootstrap");
     if (verbose) {
@@ -1041,8 +963,7 @@ void bi::Driver::bootstrap() {
       buf << "bootstrap died with signal " << ret
           << "; make sure autoconf, automake and libtool are installed";
       if (!verbose) {
-        buf << ", see " << (workDir / "bootstrap.log").string()
-            << " for details";
+        buf << ", see bootstrap.log for details";
       }
       buf << '.';
       throw DriverException(buf.str());
@@ -1051,9 +972,9 @@ void bi::Driver::bootstrap() {
 }
 
 void bi::Driver::configure() {
-  auto buildDir = workDir / "build" / suffix();
-  if (newBootstrap || newConfigure || newMake
-      || !exists(buildDir / "Makefile")) {
+  auto buildDir = fs::path("build") / suffix();
+  if (newBootstrap || newConfigure || newMake ||
+      !exists(buildDir / "Makefile")) {
     CWD cwd(buildDir);
 
     /* compile and link flags */
@@ -1084,21 +1005,6 @@ void bi::Driver::configure() {
           "unknown architecture '" + arch
               + "'; valid values are 'native', 'js' and 'wasm'");
     }
-    cflags << " -Wall";
-    cxxflags << " -Wall";
-    if (mode == "debug" || mode == "test") {
-      options << " --enable-assert";
-      cflags << " -O0 -fno-inline -g";
-      cxxflags << " -O0 -fno-inline -g";
-    } else {
-      options << " --disable-assert";
-      cflags << " -O3 -g";
-      cxxflags << " -O3 -g";
-    }
-    if (mode == "test") {
-      cflags << " --coverage -fprofile-abs-path";
-      cxxflags << " --coverage -fprofile-abs-path";
-    }
 
     /* include path */
     for (auto iter = includeDirs.begin(); iter != includeDirs.end();
@@ -1115,6 +1021,11 @@ void bi::Driver::configure() {
     }
 
     /* configure options */
+    if (mode == "debug" || mode == "test") {
+      options << " --enable-assert";
+    } else {
+      options << " --disable-assert";
+    }
     if (staticLib) {
       options << " --enable-static";
     } else {
@@ -1130,18 +1041,6 @@ void bi::Driver::configure() {
     }
     options << " --config-cache";
     options << " INSTALL=\"install -p\"";
-    if (!binDir.empty()) {
-      options << " --bindir=" << fs::absolute(binDir);
-    }
-    if (!libDir.empty()) {
-      options << " --libdir=" << fs::absolute(libDir);
-    }
-    if (!includeDir.empty()) {
-      options << " --includedir=" << fs::absolute(includeDir);
-    }
-    if (!dataDir.empty()) {
-      options << " --datadir=" << fs::absolute(dataDir);
-    }
     if (!cppflags.str().empty()) {
       options << " CPPFLAGS=\"$CPPFLAGS " << cppflags.str() << "\"";
     }
@@ -1155,15 +1054,15 @@ void bi::Driver::configure() {
       options << " LDFLAGS=\"$LDFLAGS " << ldflags.str() << "\"";
     }
     if (mode != "release") {
-      options << " SUFFIX=\"_" << mode << "\"";
+      options << " SUFFIX=_" << mode;
     }
+    options << " MODE=" << mode;
 
     /* command */
     if (arch == "js" || arch == "wasm") {
       cmd << "emconfigure ";
     }
-    cmd << (fs::path("..") / ".." / "configure").string() << " " << options.str();
-    // ^ build dir is workDir/build/suffix, so configure script two dirs up
+    cmd << (fs::path("..") / ".." / "configure") << ' ' << options.str();
     if (verbose) {
       std::cerr << cmd.str() << std::endl;
     } else {
@@ -1191,7 +1090,7 @@ void bi::Driver::configure() {
 }
 
 void bi::Driver::target(const std::string& cmd) {
-  auto buildDir = fs::canonical(workDir / "build" / "latest");
+  auto buildDir = fs::canonical(fs::path("build") / "latest");
   CWD cwd(buildDir);
 
   /* command */
@@ -1295,6 +1194,24 @@ std::string bi::Driver::suffix() const {
   return buf.str();
 }
 
+bi::Package* bi::Driver::createPackage(bool includeRequires) {
+  Package* package = new Package(packageName);
+  if (includeRequires) {
+    for (auto name : metaFiles["require.package"]) {
+      /* add *.bih dependency */
+      fs::path header = "birch_" + tarname(name.string());
+      header.replace_extension(".bih");
+      package->addHeader(find(includeDirs, header).string());
+    }
+  }
+  for (auto file : metaFiles["manifest.source"]) {
+    if (file.extension().compare(".bi") == 0) {
+      package->addSource(file.string());
+    }
+  }
+  return package;
+}
+
 void bi::Driver::readFiles(const boost::property_tree::ptree& meta,
     const std::string& key, bool checkExists) {
   auto files = meta.get_child_optional(key);
@@ -1304,7 +1221,7 @@ void bi::Driver::readFiles(const boost::property_tree::ptree& meta,
         if (str) {
           auto filePath = fs::path(str.get());
           auto fileStr = filePath.string();
-          if (checkExists && !exists(workDir / filePath)) {
+          if (checkExists && !exists(filePath)) {
             warn(fileStr + " in META.json does not exist.");
           }
           if (std::regex_search(fileStr,
@@ -1312,12 +1229,6 @@ void bi::Driver::readFiles(const boost::property_tree::ptree& meta,
             throw DriverException(
                 std::string("file name ") + fileStr
                     + " in META.json contains whitespace, which is not supported.");
-          }
-          if (filePath.parent_path().string() == "bi"
-              && filePath.stem().string() == tarname(packageName)) {
-            throw DriverException(
-                std::string("file name ") + fileStr
-                    + " in META.json is the same as the package name, which is not supported.");
           }
           auto inserted = allFiles.insert(filePath);
           if (!inserted.second) {

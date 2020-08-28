@@ -13,6 +13,7 @@ executors:
     environment:
       BIRCH_PREFIX: "/root/project"
       BIRCH_FLAGS: "--mode=test --unit=dir --jobs=2"
+      CONFIGURE_FLAGS: "MODE=test SUFFIX=_debug --enable-assert"
       OMP_NUM_THREADS: "2"
 
   test:
@@ -21,6 +22,7 @@ executors:
     environment:
       BIRCH_PREFIX: "/root/project"
       BIRCH_FLAGS: "--mode=release --unit=dir --jobs=2"
+      CONFIGURE_FLAGS: "MODE=release --disable-assert"
       OMP_NUM_THREADS: "2"
 
 commands:
@@ -51,13 +53,36 @@ commands:
           command: |
               cd driver
               ./bootstrap
-              ./configure --prefix=$BIRCH_PREFIX CXXFLAGS="-Wall -Wno-overloaded-virtual -g -O0 --coverage -fprofile-abs-path"
+              ./configure --prefix=$BIRCH_PREFIX CXXFLAGS="-Wall -Wno-overloaded-virtual -g -O0 -fno-inline -fprofile-abs-path --coverage"
               make -j 4
               make install
       - persist_to_workspace:
           root: .
           paths:
             - '*'
+      - slack
+
+  # build a C++ library
+  build_lib:
+    description: "Build C++ library."
+    parameters:
+      lib:
+        type: string
+    steps:
+      - run:
+          name: Build
+          command: |
+              cd << parameters.lib >>
+              ./bootstrap
+              ./configure --prefix=$BIRCH_PREFIX $CONFIGURE_FLAGS
+              make -j 4
+              make install
+      - persist_to_workspace:
+          root: .
+          paths:
+            - << parameters.lib >>/**/*.gcno
+            - lib/<< parameters.lib >>.so.*
+            - include/<< parameters.lib >>
       - slack
 
   # build a library package; this builds the library and persists the
@@ -83,8 +108,8 @@ commands:
           root: .
           paths:
             - libraries/<< parameters.package >>/**/*.gcno
-            - lib/libbirch_<< parameters.tar >>*
-            - include/bi/<< parameters.tar >>*
+            - lib/libbirch_<< parameters.tar >>.so.*
+            - include/birch_<< parameters.tar >>.*
       - when:
           condition: << parameters.coverage >>
           steps:
@@ -179,6 +204,12 @@ jobs:
       - build_driver
 
   # library smoke tests
+  smoke_libbirch:
+    executor: smoke
+    steps:
+      - build_lib:
+          lib: libbirch
+
   smoke_libraries_Cairo:
     executor: smoke
     steps:
@@ -203,10 +234,6 @@ jobs:
           tar: standard
           command: ./smoke.sh
           coverage: true
-      - persist_to_workspace:
-          root: .
-          paths:
-            - include/libbirch/*.*
 
   # example smoke tests
   smoke_examples_LinearGaussian:
@@ -273,6 +300,12 @@ jobs:
           coverage: true
 
   # library thorough tests
+  test_libbirch:
+    executor: test
+    steps:
+      - build_lib:
+          lib: libbirch
+
   test_libraries_Cairo:
     executor: test
     steps:
@@ -294,10 +327,6 @@ jobs:
           package: Standard
           tar: standard
           command: ./test.sh
-      - persist_to_workspace:
-          root: .
-          paths:
-            - include/libbirch/*.*
 
   # example thorough tests
   test_examples_LinearGaussian:
@@ -367,12 +396,17 @@ workflows:
   version: 2
   test:
     jobs:
-      - driver
+      - driver:
+          context: lawmurray
+
+      - smoke_libbirch:
+          context: lawmurray
 
       - smoke_libraries_Standard:
           context: lawmurray
           requires:
-              - driver
+            - driver
+            - smoke_libbirch
 
       - smoke_libraries_Cairo:
           context: lawmurray
@@ -426,6 +460,11 @@ workflows:
             - smoke_libraries_Cairo
             - smoke_libraries_SQLite
 
+      - test_libbirch:
+          context: lawmurray
+          requires:
+            - smoke_libbirch
+
       - test_libraries_Standard:
           context: lawmurray
           requires:
@@ -436,6 +475,7 @@ workflows:
             - smoke_examples_SIR
             - smoke_examples_MultiObjectTracking
             - smoke_examples_VectorBorneDisease
+            - test_libbirch
 
       - test_libraries_Cairo:
           context: lawmurray

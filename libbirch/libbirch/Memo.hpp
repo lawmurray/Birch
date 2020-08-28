@@ -7,6 +7,7 @@
 
 namespace libbirch {
 class Any;
+class Label;
 
 /**
  * Memo of object mappings, implemented as a hash table.

@@ -4,6 +4,7 @@
 #pragma once
 
 #include "libbirch/external.hpp"
+#include "libbirch/assert.hpp"
 #include "libbirch/memory.hpp"
 #include "libbirch/Atomic.hpp"
 #include "libbirch/Init.hpp"
@@ -478,7 +479,7 @@ public:
   /**
    * Get the class name.
    */
-  virtual bi::type::String getClassName() const {
+  virtual const char* getClassName() const {
     return "Any";
   }
 

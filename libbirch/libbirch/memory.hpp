@@ -5,8 +5,6 @@
 
 #include "libbirch/external.hpp"
 #include "libbirch/thread.hpp"
-#include "libbirch/Atomic.hpp"
-#include "libbirch/Pool.hpp"
 #include "libbirch/ExitBarrierLock.hpp"
 
 namespace libbirch {
@@ -32,51 +30,6 @@ extern ExitBarrierLock freeze_lock;
  * Get the root label.
  */
 Label*& root();
-
-/**
- * Get the heap.
- */
-Atomic<char*>& heap();
-
-/**
- * For an allocation size, determine the index of the pool to which it
- * belongs.
- *
- * @param n Number of bytes.
- *
- * @return Pool index.
- *
- * Pool sizes are multiples of 8 bytes up to 64 bytes, and powers of two
- * thereafter.
- */
-inline int bin(const size_t n) {
-  assert(n > 0ull);
-  int result = 0;
-  #ifdef HAVE___BUILTIN_CLZLL
-  if (n > 64ull) {
-    /* __builtin_clzll undefined for zero argument */
-    result = 64 - __builtin_clzll((n - 1ull) >> 6ull);
-  }
-  #else
-  while (((n - 1ull) >> (6 + result)) > 0) {
-    ++result;
-  }
-  #endif
-  assert(0 <= result && result <= 63);
-  return result;
-}
-
-/**
- * Determine the size for a given bin.
- */
-inline size_t unbin(const int i) {
-  return 64ull << i;
-}
-
-/**
- * Get the `i`th pool.
- */
-Pool& pool(const int i);
 
 /**
  * Allocate memory from heap.
