@@ -84,7 +84,7 @@ commands:
           root: .
           paths:
             - << parameters.lib >>/**/*.gcno
-            - lib/<< parameters.lib >>.so.*
+            - lib/<< parameters.lib >>*.so.*
             - include/<< parameters.lib >>
       - slack
 
@@ -111,7 +111,7 @@ commands:
           root: .
           paths:
             - libraries/<< parameters.package >>/**/*.gcno
-            - lib/libbirch_<< parameters.tar >>.so.*
+            - lib/libbirch_<< parameters.tar >>*.so.*
             - include/birch_<< parameters.tar >>.*
       - when:
           condition: << parameters.coverage >>
@@ -152,8 +152,8 @@ commands:
           root: .
           paths:
             - libraries/<< parameters.package >>/**/*.gcno
-            - lib/libbirch_<< parameters.tar >>*
-            - include/bi/<< parameters.tar >>*
+            - lib/libbirch_<< parameters.tar >>*.so.*
+            - include/birch_<< parameters.tar >>.*
       - when:
           condition: << parameters.coverage >>
           steps:
