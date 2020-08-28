@@ -5,7 +5,6 @@
 /include/
 /lib/
 /output/
-/m4/
 /site/
 /src/
 /aclocal.m4
@@ -30,6 +29,8 @@
 /mkdocs.yml
 /DOCS.md
 /.autotools
+/m4/lt*
+/m4/libtool*
 .deps
 .dirstamp
 .libs
