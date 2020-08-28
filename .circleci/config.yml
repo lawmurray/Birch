@@ -401,7 +401,7 @@ workflows:
 
       - smoke_libbirch:
           context: lawmurray
-          require:
+          requires:
             - driver
 
       - smoke_libraries_Standard:
