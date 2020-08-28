@@ -13,7 +13,7 @@ executors:
     environment:
       BIRCH_PREFIX: "/root/project"
       BIRCH_FLAGS: "--mode=test --unit=dir --jobs=2"
-      CONFIGURE_FLAGS: "MODE=test SUFFIX=_debug --enable-assert"
+      CONFIGURE_FLAGS: "MODE=test SUFFIX=_test --enable-assert"
       OMP_NUM_THREADS: "2"
 
   test:
