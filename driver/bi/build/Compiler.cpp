@@ -121,7 +121,7 @@ void bi::Compiler::gen() {
       iter->second += stream.str();
     }
     for (auto pair : sources) {
-      path = fs::path("src") / pair.first / internalName;
+      path = fs::path("src") / pair.first / ("birch_" + internalName);
       path.replace_extension(".cpp");
       write_all_if_different(path, pair.second);
     }

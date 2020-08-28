@@ -189,7 +189,7 @@ bi::Driver::Driver(int argc, char** argv) :
 #endif
 
   /* include dirs */
-  includeDirs.push_back(fs::canonical("src"));
+  includeDirs.push_back(fs::absolute("src"));
   if (BIRCH_INCLUDE_PATH) {
     std::stringstream birch_include_path(BIRCH_INCLUDE_PATH);
     while (std::getline(birch_include_path, input, ':')) {
@@ -204,10 +204,9 @@ bi::Driver::Driver(int argc, char** argv) :
 #endif
 
   /* lib dirs */
-  fs::path local = ".libs";
+  fs::path local = fs::path("build") / "latest" / ".libs";
   if (fs::exists(local)) {
     libDirs.push_back(local);
-    // ^ use canonical here as "latest" symlink may be updated before use
   }
   if (BIRCH_LIBRARY_PATH) {
     std::stringstream birch_library_path(BIRCH_LIBRARY_PATH);
