@@ -401,11 +401,12 @@ workflows:
 
       - smoke_libbirch:
           context: lawmurray
+          require:
+            - driver
 
       - smoke_libraries_Standard:
           context: lawmurray
           requires:
-            - driver
             - smoke_libbirch
 
       - smoke_libraries_Cairo:
@@ -463,11 +464,6 @@ workflows:
       - test_libbirch:
           context: lawmurray
           requires:
-            - smoke_libbirch
-
-      - test_libraries_Standard:
-          context: lawmurray
-          requires:
             - smoke_examples_LinearGaussian
             - smoke_examples_LinearRegression
             - smoke_examples_MixedGaussian
@@ -475,6 +471,10 @@ workflows:
             - smoke_examples_SIR
             - smoke_examples_MultiObjectTracking
             - smoke_examples_VectorBorneDisease
+
+      - test_libraries_Standard:
+          context: lawmurray
+          requires:
             - test_libbirch
 
       - test_libraries_Cairo:
