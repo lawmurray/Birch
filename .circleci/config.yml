@@ -69,8 +69,11 @@ commands:
       lib:
         type: string
     steps:
+      - environment
+      - attach_workspace:
+          at: .
       - run:
-          name: Build
+          name: Build C++ library
           command: |
               cd << parameters.lib >>
               ./bootstrap
