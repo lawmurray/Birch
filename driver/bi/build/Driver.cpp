@@ -361,6 +361,7 @@ void bi::Driver::clean() {
   fs::remove_all("build");
   fs::remove_all("autom4te.cache");
   fs::remove_all("m4");
+  fs::remove_all("src");
   fs::remove("aclocal.m4");
   fs::remove("bootstrap.log");
   fs::remove("bootstrap");
