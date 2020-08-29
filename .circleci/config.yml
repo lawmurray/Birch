@@ -85,7 +85,7 @@ commands:
           paths:
             - << parameters.lib >>/**/*.gcno
             - lib/<< parameters.lib >>*.so*
-            - include/<< parameters.lib >>
+            - include/<< parameters.lib >>*
       - slack
 
   # build a library package; this builds the library and persists the
@@ -112,7 +112,7 @@ commands:
           paths:
             - libraries/<< parameters.package >>/**/*.gcno
             - lib/libbirch_<< parameters.tar >>*.so*
-            - include/birch_<< parameters.tar >>.*
+            - include/birch_<< parameters.tar >>.hpp
       - when:
           condition: << parameters.coverage >>
           steps:
