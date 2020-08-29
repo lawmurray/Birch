@@ -111,8 +111,8 @@ commands:
           root: .
           paths:
             - libraries/<< parameters.package >>/**/*.gcno
-            - lib/libbirch_<< parameters.tar >>*.so*
-            - include/birch_<< parameters.tar >>.hpp
+            - lib/libbirch_<< parameters.tar >>*.*
+            - include/birch_<< parameters.tar >>.*
       - when:
           condition: << parameters.coverage >>
           steps:
@@ -152,7 +152,7 @@ commands:
           root: .
           paths:
             - libraries/<< parameters.package >>/**/*.gcno
-            - lib/libbirch_<< parameters.tar >>*.so*
+            - lib/libbirch_<< parameters.tar >>*.*
             - include/birch_<< parameters.tar >>.*
       - when:
           condition: << parameters.coverage >>
