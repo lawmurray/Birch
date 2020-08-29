@@ -18,11 +18,6 @@ function system(cmd:String) -> Integer {
   } else {
     code = status;
   }
-  #ifdef HAVE_LIBEXPLAIN_SYSTEM_H
-  if (code != 0) {
-    ::fprintf(::stderr, "%s\n", ::explain_system(cmd.c_str()));
-  }
-  #endif
   return code;
   }}
 }

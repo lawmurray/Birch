@@ -873,14 +873,13 @@ void bi::Driver::setup() {
 
   std::stringstream makeStream;
   makeStream << contents << "\n\n";
-  makeStream << "lib_LTLIBRARIES = libbirch_" << internalName <<
-      "@SUFFIX@.la\n\n";
+  makeStream << "lib_LTLIBRARIES = lib" << internalName << "@SUFFIX@.la\n\n";
 
   /* sources derived from *.bi files */
-  makeStream << "dist_libbirch_" << internalName << "@SUFFIX@_la_SOURCES =";
+  makeStream << "dist_lib" << internalName << "@SUFFIX@_la_SOURCES =";
   if (unit == "unity") {
     /* sources go into one *.cpp file for the whole package */
-    auto source = fs::path("src") / ("birch_" + internalName);
+    auto source = fs::path("src") / internalName;
     source.replace_extension(".cpp");
     makeStream << " \\\n  " << source.string() << ".cpp";
   } else if (unit == "file") {
@@ -897,8 +896,7 @@ void bi::Driver::setup() {
     std::unordered_set<std::string> sources;
     for (auto file : metaFiles["manifest.source"]) {
       if (file.extension().compare(".bi") == 0) {
-        auto source = fs::path("src") / file.parent_path() /
-            ("birch_" + internalName);
+        auto source = fs::path("src") / file.parent_path() / internalName;
         source.replace_extension(".cpp");
         if (sources.insert(source.string()).second) {
           makeStream << " \\\n  " << source.string();
@@ -910,7 +908,7 @@ void bi::Driver::setup() {
 
   /* headers to install and distribute */
   makeStream << "include_HEADERS =";
-  auto header = fs::path("src") / ("birch_" + internalName);
+  auto header = fs::path("src") / internalName;
   header.replace_extension(".hpp");
   makeStream << " \\\n  " << header.string();
   header.replace_extension(".bih");

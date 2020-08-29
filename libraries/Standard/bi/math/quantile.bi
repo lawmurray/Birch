@@ -1,3 +1,7 @@
+cpp{{
+#include <boost/math/distributions.hpp>
+}}
+
 /**
  * Quantile of a binomial distribution.
  *
