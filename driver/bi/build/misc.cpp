@@ -148,7 +148,7 @@ std::string bi::tarname(const std::string& name) {
   boost::to_lower(result);
   boost::replace_all(result, ".", "_");
   boost::replace_all(result, "-", "_");
-  return result;
+  return "birch_" + result;
 }
 
 bool bi::isPower2(const int x) {

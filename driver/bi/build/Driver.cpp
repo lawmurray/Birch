@@ -255,7 +255,7 @@ void bi::Driver::run(const std::string& prog,
   }
 
   /* name of the shared library file we expect to find */
-  auto name = "libbirch_" + tarname(packageName);
+  auto name = "lib" + tarname(packageName);
   if (mode != "release") {
     name += '_' + mode;
   }
@@ -331,7 +331,7 @@ void bi::Driver::dist() {
   meta();
 
   /* determine archive name, format 'name-version' */
-  auto archive = "birch-" + tarname(packageName) + "-" + packageVersion;
+  auto archive = tarname(packageName) + "-" + packageVersion;
 
   /* archiving command */
   std::stringstream cmd;
@@ -830,7 +830,7 @@ void bi::Driver::setup() {
         << "[AC_MSG_ERROR([required header not found.])], [-])\n";
   }
   for (auto name : metaFiles["require.package"]) {
-    auto internalName = "birch_" + tarname(name.string());
+    auto internalName = tarname(name.string());
     configureStream << "  AC_CHECK_HEADERS([" << internalName << ".hpp], [], "
         << "[AC_MSG_ERROR([required header not found.])], [-])\n";
   }
@@ -844,7 +844,7 @@ void bi::Driver::setup() {
         << "[], [AC_MSG_ERROR([required library not found.])])\n";
   }
   for (auto name : metaFiles["require.package"]) {
-    auto internalName = "birch_" + tarname(name.string());
+    auto internalName = tarname(name.string());
     configureStream << "  AC_CHECK_LIB([" << internalName <<
         "$SUFFIX], [main], [], " <<
         "[AC_MSG_ERROR([required library not found.])])\n";
@@ -1199,7 +1199,7 @@ bi::Package* bi::Driver::createPackage(bool includeRequires) {
   if (includeRequires) {
     for (auto name : metaFiles["require.package"]) {
       /* add *.bih dependency */
-      fs::path header = "birch_" + tarname(name.string());
+      fs::path header = tarname(name.string());
       header.replace_extension(".bih");
       package->addHeader(find(includeDirs, header).string());
     }
