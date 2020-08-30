@@ -23,7 +23,6 @@
 /install-sh
 /libtool
 /ltmain.sh
-/main.cpp
 /Makefile
 /Makefile.am
 /Makefile.in

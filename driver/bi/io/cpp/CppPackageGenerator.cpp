@@ -50,7 +50,7 @@ void bi::CppPackageGenerator::visit(const Package* o) {
   if (header) {
     /* don't use #pragma once here, use a macro guard instead, as the header
      * may be used as a source file to create a pre-compiled header */
-    std::string name = tarname(o->name);
+    std::string name = canonical(o->name);
     boost::to_upper(name);
     line("#ifndef BI_" << name << "_HPP");
     line("#define BI_" << name << "_HPP\n");

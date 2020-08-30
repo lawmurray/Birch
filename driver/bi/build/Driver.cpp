@@ -12,7 +12,6 @@
 bi::Driver::Driver(int argc, char** argv) :
     packageName("Untitled"),
     packageVersion("unversioned"),
-    arch("native"),
     unit("dir"),
     jobs(std::thread::hardware_concurrency()),
     debug(true),
@@ -261,8 +260,8 @@ bi::Driver::Driver(int argc, char** argv) :
   if (jobs <= 0) {
     throw DriverException("--jobs must be a positive integer.");
   }
-  if (arch != "native" && arch != "js" && arch != "wasm") {
-    throw DriverException("--arch must be native, js, or wasm.");
+  if (!arch.empty() && arch != "native") {
+    throw DriverException("--arch must be native, or empty.");
   }
   if (unit != "unity" && unit != "dir" && unit != "file") {
     throw DriverException("--unit must be unity, dir, or file.");
@@ -282,7 +281,7 @@ void bi::Driver::run(const std::string& prog,
   }
 
   /* name of the shared library file we expect to find */
-  auto name = "lib" + tarname(packageName);
+  auto name = "lib" + tar(packageName);
   if (release) {
     // no suffix
   } else if (test) {
@@ -341,19 +340,24 @@ void bi::Driver::build() {
   bootstrap();
   configure();
   target();
-  if (arch == "js" || arch == "wasm") {
-    target("birch.html");
-  }
 }
 
 void bi::Driver::install() {
   meta();
+  setup();
+  transpile();
+  bootstrap();
+  configure();
   target("install");
   ldconfig();
 }
 
 void bi::Driver::uninstall() {
   meta();
+  setup();
+  transpile();
+  bootstrap();
+  configure();
   target("uninstall");
   ldconfig();
 }
@@ -362,7 +366,7 @@ void bi::Driver::dist() {
   meta();
 
   /* determine archive name, format 'name-version' */
-  auto archive = tarname(packageName) + "-" + packageVersion;
+  auto archive = tar(packageName) + "-" + packageVersion;
 
   /* archiving command */
   std::stringstream cmd;
@@ -818,7 +822,8 @@ void bi::Driver::meta() {
 }
 
 void bi::Driver::setup() {
-  auto internalName = tarname(packageName);
+  auto tarName = tar(packageName);
+  auto canonicalName = canonical(packageName);
 
   /* copy build files */
   newBootstrap = copy_if_newer(find(shareDirs, "bootstrap"), "bootstrap");
@@ -845,7 +850,8 @@ void bi::Driver::setup() {
   std::string contents = read_all(find(shareDirs, "configure.ac"));
   boost::replace_all(contents, "PACKAGE_NAME", packageName);
   boost::replace_all(contents, "PACKAGE_VERSION", packageVersion);
-  boost::replace_all(contents, "PACKAGE_TARNAME", internalName);
+  boost::replace_all(contents, "PACKAGE_TARNAME", tarName);
+  boost::replace_all(contents, "PACKAGE_CANONICAL_NAME", canonicalName);
   std::stringstream configureStream;
   configureStream << contents << "\n\n";
 
@@ -857,8 +863,8 @@ void bi::Driver::setup() {
     configureStream << "  AC_CHECK_HEADERS([" << file.string() << "], [], [AC_MSG_ERROR([required header not found.])], [-])\n";
   }
   for (auto name : metaFiles["require.package"]) {
-    auto internalName = tarname(name.string());
-    configureStream << "  AC_CHECK_HEADERS([" << internalName << ".hpp], [], [AC_MSG_ERROR([required header not found.])], [-])\n";
+    auto tarName = tar(name.string());
+    configureStream << "  AC_CHECK_HEADERS([" << tarName << ".hpp], [], [AC_MSG_ERROR([required header not found.])], [-])\n";
   }
   if (!metaFiles["require.header"].empty()) {
     configureStream << "fi\n";
@@ -869,15 +875,15 @@ void bi::Driver::setup() {
     configureStream << "  AC_CHECK_LIB([" << file.string() << "], [main], [], [AC_MSG_ERROR([required library not found.])])\n";
   }
   for (auto name : metaFiles["require.package"]) {
-    auto internalName = tarname(name.string());
+    auto tarName = tar(name.string());
     configureStream << "  if $debug; then\n";
-    configureStream << "    AC_CHECK_LIB([" << internalName << "-debug], [main], [DEBUG_LIBS=\"$DEBUG_LIBS -l" << internalName << "-debug\"], [AC_MSG_ERROR([required library not found.])], [$DEBUG_LIBS])\n";
+    configureStream << "    AC_CHECK_LIB([" << tarName << "-debug], [main], [DEBUG_LIBS=\"$DEBUG_LIBS -l" << tarName << "-debug\"], [AC_MSG_ERROR([required library not found.])], [$DEBUG_LIBS])\n";
     configureStream << "  fi\n";
     configureStream << "  if $test; then\n";
-    configureStream << "    AC_CHECK_LIB([" << internalName << "-test], [main], [TEST_LIBS=\"$TEST_LIBS -l" << internalName << "-test\"], [AC_MSG_ERROR([required library not found.])], [$TEST_LIBS])\n";
+    configureStream << "    AC_CHECK_LIB([" << tarName << "-test], [main], [TEST_LIBS=\"$TEST_LIBS -l" << tarName << "-test\"], [AC_MSG_ERROR([required library not found.])], [$TEST_LIBS])\n";
     configureStream << "  fi\n";
     configureStream << "  if $release; then\n";
-    configureStream << "    AC_CHECK_LIB([" << internalName << "], [main], [RELEASE_LIBS=\"$RELEASE_LIBS -l" << internalName << "\"], [AC_MSG_ERROR([required library not found.])], [$RELEASE_LIBS])\n";
+    configureStream << "    AC_CHECK_LIB([" << tarName << "], [main], [RELEASE_LIBS=\"$RELEASE_LIBS -l" << tarName << "\"], [AC_MSG_ERROR([required library not found.])], [$RELEASE_LIBS])\n";
     configureStream << "  fi\n";
   }
 
@@ -904,14 +910,16 @@ void bi::Driver::setup() {
   /* update Makefile.am */
   contents = read_all(find(shareDirs, "Makefile.am"));
   boost::replace_all(contents, "PACKAGE_NAME", packageName);
-  boost::replace_all(contents, "PACKAGE_TARNAME", internalName);
+  boost::replace_all(contents, "PACKAGE_VERSION", packageVersion);
+  boost::replace_all(contents, "PACKAGE_TARNAME", tarName);
+  boost::replace_all(contents, "PACKAGE_CANONICAL_NAME", canonicalName);
 
   std::stringstream makeStream;
   makeStream << contents << "\n\n";
   makeStream << "COMMON_SOURCES =";
   if (unit == "unity") {
     /* sources go into one *.cpp file for the whole package */
-    auto source = fs::path("src") / internalName;
+    auto source = fs::path("src") / tarName;
     source.replace_extension(".cpp");
     makeStream << " \\\n  " << source.string() << ".cpp";
   } else if (unit == "file") {
@@ -928,7 +936,7 @@ void bi::Driver::setup() {
     std::unordered_set<std::string> sources;
     for (auto file : metaFiles["manifest.source"]) {
       if (file.extension().compare(".bi") == 0) {
-        auto source = fs::path("src") / file.parent_path() / internalName;
+        auto source = fs::path("src") / file.parent_path() / tarName;
         source.replace_extension(".cpp");
         if (sources.insert(source.string()).second) {
           makeStream << " \\\n  " << source.string();
@@ -940,7 +948,7 @@ void bi::Driver::setup() {
 
   /* headers to install and distribute */
   makeStream << "include_HEADERS =";
-  auto header = fs::path("src") / internalName;
+  auto header = fs::path("src") / tarName;
   header.replace_extension(".hpp");
   makeStream << " \\\n  " << header.string();
   header.replace_extension(".bih");
@@ -1006,31 +1014,9 @@ void bi::Driver::configure() {
 
     /* compile and link flags */
     std::stringstream cppflags, cflags, cxxflags, ldflags, options, cmd;
-    if (arch == "js") {
-      //
-    } else if (arch == "wasm") {
-      cflags << " -s WASM=1";
-      cxxflags << " -s WASM=1";
-    } else if (arch == "native") {
-      //cflags << " -march=native";
-      //cxxflags << " -march=native";
-      //^ can cause cross-compile issues, e.g. on Open Build Service
-      if (openmp) {
-        #ifdef __APPLE__
-        /* the system compiler on Apple requires different options for
-         * OpenMP; disable the configure check and customize these */
-        options << " --disable-openmp";
-        cppflags << " -Xpreprocessor -fopenmp";
-        #else
-        options << " --enable-openmp";
-        #endif
-      } else {
-        options << " --disable-openmp";
-      }
-    } else {
-      throw DriverException(
-          "unknown architecture '" + arch
-              + "'; valid values are 'native', 'js' and 'wasm'");
+    if (arch == "native") {
+      cflags << " -march=native";
+      cxxflags << " -march=native";
     }
 
     /* include path */
@@ -1072,6 +1058,18 @@ void bi::Driver::configure() {
       options << " --enable-shared";
     } else {
       options << " --disable-shared";
+    }
+    if (openmp) {
+      #ifdef __APPLE__
+      /* the system compiler on Apple requires different options for
+        * OpenMP; disable the configure check and customize these */
+      options << " --disable-openmp";
+      cppflags << " -Xpreprocessor -fopenmp";
+      #else
+      options << " --enable-openmp";
+      #endif
+    } else {
+      options << " --disable-openmp";
     }
     if (!prefix.empty()) {
       options << " --prefix=" << prefix;
@@ -1209,7 +1207,7 @@ bi::Package* bi::Driver::createPackage(bool includeRequires) {
   if (includeRequires) {
     for (auto name : metaFiles["require.package"]) {
       /* add *.bih dependency */
-      fs::path header = tarname(name.string());
+      fs::path header = tar(name.string());
       header.replace_extension(".bih");
       package->addHeader(find(includeDirs, header).string());
     }

@@ -87,9 +87,15 @@ bool write_all_if_different(const fs::path& path,
     const std::string& contents);
 
 /**
- * Internal name for a package.
+ * Tar name for a package.
  */
-std::string tarname(const std::string& name);
+std::string tar(const std::string& name);
+
+/**
+ * Canonical name for a package. This is the same as the tar name, with
+ * hyphens replaced with underscores.
+ */
+std::string canonical(const std::string& name);
 
 /**
  * Is an integer a positive power of two?

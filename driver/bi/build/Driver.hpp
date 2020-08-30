@@ -154,7 +154,7 @@ private:
   fs::path prefix;
 
   /**
-   * Target architecture (native, js, or wasm).
+   * Target architecture (native or empty).
    */
   std::string arch;
 

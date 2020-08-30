@@ -143,14 +143,17 @@ bool bi::write_all_if_different(const fs::path& path,
   return false;
 }
 
-std::string bi::tarname(const std::string& name) {
+std::string bi::tar(const std::string& name) {
   std::string result = name;
   boost::to_lower(result);
-  boost::replace_all(result, ".", "_");
-  boost::replace_all(result, "-", "_");
-  return "birch_" + result;
+  return "birch-" + result;
 }
 
+std::string bi::canonical(const std::string& name) {
+  std::string result = tar(name);
+  boost::replace_all(result, "-", "_");
+  return result;
+}
 bool bi::isPower2(const int x) {
   return x > 0 && !(x & (x - 1));
 }

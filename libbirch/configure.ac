@@ -41,16 +41,9 @@ AC_PROG_CXXCPP
 AC_PROG_CXX
 AC_PROG_INSTALL
 
-AC_CHECK_DEFINE(__EMSCRIPTEN__, emscripten=true, emscripten=false)
-if test x$emscripten = xtrue; then
-  AC_ENABLE_STATIC
-  AC_DISABLE_SHARED
-  AX_CXX_COMPILE_STDCXX(17, [noext], [mandatory])
-else
-  AC_DISABLE_STATIC
-  AC_ENABLE_SHARED
-  AX_CXX_COMPILE_STDCXX(14, [noext], [mandatory])
-fi
+AC_DISABLE_STATIC
+AC_ENABLE_SHARED
+AX_CXX_COMPILE_STDCXX(14, [noext], [mandatory])
 LT_INIT([dlopen,pic-only])
 
 # Checks for basic things
@@ -63,16 +56,14 @@ AC_OPENMP
 AX_GCC_BUILTIN([__builtin_clz])
 AX_GCC_BUILTIN([__builtin_clzll])
 
-# Checks for things that fail under Emscripten, but won't prevent compilation
-if test x$emscripten = xfalse; then
-  AC_SEARCH_LIBS([dlopen], [dl], [], [])
-  AC_CHECK_LIB([atomic], [main], [], [], [])
-  AC_CHECK_LIB([omp], [main], [], [], [])
+# Checks for libraries
+AC_SEARCH_LIBS([dlopen], [dl], [], [])
+AC_CHECK_LIB([atomic], [main], [], [], [])
+AC_CHECK_LIB([omp], [main], [], [], [])
 
-  # Checks for headers
-  AC_CHECK_HEADERS([omp.h], [], [], [-])
-  AC_CHECK_HEADERS([eigen3/Eigen/Dense], [], [AC_MSG_ERROR([required header not found.])], [-])
-fi
+# Checks for headers
+AC_CHECK_HEADERS([omp.h], [], [], [-])
+AC_CHECK_HEADERS([eigen3/Eigen/Dense], [], [AC_MSG_ERROR([required header not found.])], [-])
 
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT

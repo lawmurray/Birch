@@ -41,16 +41,9 @@ AC_PROG_CXXCPP
 AC_PROG_CXX
 AC_PROG_INSTALL
 
-AC_CHECK_DEFINE(__EMSCRIPTEN__, emscripten=true, emscripten=false)
-if test x$emscripten = xtrue; then
-  AC_ENABLE_STATIC
-  AC_DISABLE_SHARED
-  AX_CXX_COMPILE_STDCXX(17, [noext], [mandatory])
-else
-  AC_DISABLE_STATIC
-  AC_ENABLE_SHARED
-  AX_CXX_COMPILE_STDCXX(14, [noext], [mandatory])
-fi
+AC_DISABLE_STATIC
+AC_ENABLE_SHARED
+AX_CXX_COMPILE_STDCXX(14, [noext], [mandatory])
 LT_INIT([dlopen,pic-only])
 
 # Checks for basic things
@@ -71,23 +64,20 @@ AX_CHECK_COMPILE_FLAG([-Wno-unused-value], [CXXFLAGS="$CXXFLAGS -Wno-unused-valu
 AX_CHECK_COMPILE_FLAG([-Wno-unused-local-typedefs], [CXXFLAGS="$CXXFLAGS -Wno-unused-local-typedefs"], [], [-Werror])
 AX_CHECK_COMPILE_FLAG([-Wno-unknown-pragmas], [CXXFLAGS="$CXXFLAGS -Wno-unknown-pragmas"], [], [-Werror])
 
-# Checks for things that fail under Emscripten, but won't prevent compilation
-if test x$emscripten = xfalse; then
-  AC_SEARCH_LIBS([dlopen], [dl], [], [])
-  AC_CHECK_LIB([atomic], [main], [], [], [])
-  AC_CHECK_LIB([omp], [main], [], [], [])
-
-  if $debug; then
-    AC_CHECK_LIB([birch-debug], [main], [DEBUG_LIBS="$DEBUG_LIBS -lbirch-debug"], [AC_MSG_ERROR([required library not found])])
-  fi
-  if $test; then
-    AC_CHECK_LIB([birch-test], [main], [TEST_LIBS="$TEST_LIBS -lbirch-test"], [AC_MSG_ERROR([required library not found])])
-  fi
-  if $release; then
-    AC_CHECK_LIB([birch], [main], [RELEASE_LIBS="$RELEASE_LIBS -lbirch"], [AC_MSG_ERROR([required library not found])])
-  fi
-
-  # Checks for headers
-  AC_CHECK_HEADERS([omp.h], [], [], [-])
-  AC_CHECK_HEADERS([libbirch.hpp], [], [AC_MSG_ERROR([required header not found])], [-])
+# Checks for libraries
+AC_SEARCH_LIBS([dlopen], [dl], [], [])
+AC_CHECK_LIB([atomic], [main], [], [], [])
+AC_CHECK_LIB([omp], [main], [], [], [])
+if $debug; then
+  AC_CHECK_LIB([birch-debug], [main], [DEBUG_LIBS="$DEBUG_LIBS -lbirch-debug"], [AC_MSG_ERROR([required library not found])])
 fi
+if $test; then
+  AC_CHECK_LIB([birch-test], [main], [TEST_LIBS="$TEST_LIBS -lbirch-test"], [AC_MSG_ERROR([required library not found])])
+fi
+if $release; then
+  AC_CHECK_LIB([birch], [main], [RELEASE_LIBS="$RELEASE_LIBS -lbirch"], [AC_MSG_ERROR([required library not found])])
+fi
+
+# Checks for headers
+AC_CHECK_HEADERS([omp.h], [], [], [-])
+AC_CHECK_HEADERS([libbirch.hpp], [], [AC_MSG_ERROR([required header not found])], [-])
