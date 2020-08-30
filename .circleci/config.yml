@@ -113,6 +113,9 @@ commands:
           root: .
           paths:
             - libraries/<< parameters.package >>/**/*.gcno
+            - libraries/<< parameters.package >>/**/*.cpp
+            - libraries/<< parameters.package >>/**/*.hpp
+            - libraries/<< parameters.package >>/**/*.bih
             - lib/libbirch-<< parameters.tar >>*.*
             - include/birch-<< parameters.tar >>.*
       - when:
@@ -154,6 +157,9 @@ commands:
           root: .
           paths:
             - libraries/<< parameters.package >>/**/*.gcno
+            - libraries/<< parameters.package >>/**/*.cpp
+            - libraries/<< parameters.package >>/**/*.hpp
+            - libraries/<< parameters.package >>/**/*.bih
             - lib/libbirch-<< parameters.tar >>*.*
             - include/birch-<< parameters.tar >>.*
       - when:
