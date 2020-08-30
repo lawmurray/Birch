@@ -71,7 +71,6 @@ bi::Driver::Driver(int argc, char** argv) :
 #endif
 
   /* include dirs */
-  includeDirs.push_back(fs::absolute("src"));
   if (BIRCH_INCLUDE_PATH) {
     std::stringstream birch_include_path(BIRCH_INCLUDE_PATH);
     while (std::getline(birch_include_path, input, ':')) {
@@ -391,11 +390,12 @@ void bi::Driver::dist() {
 
 void bi::Driver::clean() {
   meta();
+  auto tarName = tar(packageName);
+  auto canonicalName = canonical(packageName);
 
   fs::remove_all("build");
   fs::remove_all("autom4te.cache");
   fs::remove_all("m4");
-  fs::remove_all("src");
   fs::remove_all(".deps");
   fs::remove_all(".libs");
   fs::remove("aclocal.m4");
@@ -416,8 +416,71 @@ void bi::Driver::clean() {
   fs::remove("Makefile");
   fs::remove("Makefile.am");
   fs::remove("Makefile.in");
-  fs::remove("main.cpp");
   fs::remove("missing");
+  fs::remove("lib" + tarName + "-debug.la");
+  fs::remove("lib" + tarName + "-test.la");
+  fs::remove("lib" + tarName + ".la");
+  fs::remove(tarName + ".bih");
+  fs::remove(tarName + ".hpp");
+
+  if (unit == "unity") {
+    /* sources go into one *.cpp file for the whole package */
+    fs::path source = tarName;
+    source.replace_extension(".cpp");
+    fs::remove(source);
+    source.replace_extension(".lo");
+
+    fs::path object;
+    object = source.parent_path() / ("lib" + canonicalName + "_debug_la-" + source.filename().string());
+    fs::remove(object);
+    object = source.parent_path() / ("lib" + canonicalName + "_test_la-" + source.filename().string());
+    fs::remove(object);
+    object = source.parent_path() / ("lib" + canonicalName + "_la-" + source.filename().string());
+    fs::remove(object);
+  } else if (unit == "file") {
+    /* sources go into one *.cpp file for each *.bi file */
+    for (auto file : metaFiles["manifest.source"]) {
+      if (file.extension().compare(".bi") == 0) {
+        fs::path libs = file.parent_path() / ".libs";
+        fs::remove_all(libs);
+
+        fs::path source = file;
+        source.replace_extension(".cpp");
+        fs::remove(source);
+        source.replace_extension(".lo");
+
+        fs::path object;
+        object = source.parent_path() / ("lib" + canonicalName + "_debug_la-" + source.filename().string());
+        fs::remove(object);
+        object = source.parent_path() / ("lib" + canonicalName + "_test_la-" + source.filename().string());
+        fs::remove(object);
+        object = source.parent_path() / ("lib" + canonicalName + "_la-" + source.filename().string());
+        fs::remove(object);
+      }
+    }
+  } else {
+    /* sources go into one *.cpp file for each directory */
+    std::unordered_set<std::string> sources;
+    for (auto file : metaFiles["manifest.source"]) {
+      if (file.extension().compare(".bi") == 0) {
+        fs::path libs = file.parent_path() / ".libs";
+        fs::remove_all(libs);
+
+        fs::path source = file.parent_path() / tarName;
+        source.replace_extension(".cpp");
+        fs::remove(source);
+        source.replace_extension(".lo");
+
+        fs::path object;
+        object = source.parent_path() / ("lib" + canonicalName + "_debug_la-" + source.filename().string());
+        fs::remove(object);
+        object = source.parent_path() / ("lib" + canonicalName + "_test_la-" + source.filename().string());
+        fs::remove(object);
+        object = source.parent_path() / ("lib" + canonicalName + "_la-" + source.filename().string());
+        fs::remove(object);
+      }
+    }
+  }
 }
 
 void bi::Driver::init() {
@@ -919,7 +982,7 @@ void bi::Driver::setup() {
   makeStream << "COMMON_SOURCES =";
   if (unit == "unity") {
     /* sources go into one *.cpp file for the whole package */
-    auto source = fs::path("src") / tarName;
+    auto source = fs::path(tarName);
     source.replace_extension(".cpp");
     makeStream << " \\\n  " << source.string() << ".cpp";
   } else if (unit == "file") {
@@ -936,7 +999,7 @@ void bi::Driver::setup() {
     std::unordered_set<std::string> sources;
     for (auto file : metaFiles["manifest.source"]) {
       if (file.extension().compare(".bi") == 0) {
-        auto source = fs::path("src") / file.parent_path() / tarName;
+        auto source = file.parent_path() / tarName;
         source.replace_extension(".cpp");
         if (sources.insert(source.string()).second) {
           makeStream << " \\\n  " << source.string();
@@ -948,7 +1011,7 @@ void bi::Driver::setup() {
 
   /* headers to install and distribute */
   makeStream << "include_HEADERS =";
-  auto header = fs::path("src") / tarName;
+  auto header = fs::path(tarName);
   header.replace_extension(".hpp");
   makeStream << " \\\n  " << header.string();
   header.replace_extension(".bih");

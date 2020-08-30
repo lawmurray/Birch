@@ -70,7 +70,7 @@ void bi::Compiler::resolve() {
 void bi::Compiler::gen() {
   std::stringstream stream;
   std::string tarName = tar(package->name);
-  fs::path path = fs::path("src") / tarName;
+  fs::path path = fs::path(tarName);
 
   bih_ostream bihOutput(stream);
   CppPackageGenerator hppOutput(stream, 0, true);
@@ -101,7 +101,7 @@ void bi::Compiler::gen() {
     for (auto file : package->sources) {
       stream.str("");
       cppOutput << file;
-      path = fs::path("src") / file->path;
+      path = file->path;
       path.replace_extension(".cpp");
       write_all_if_different(path, stream.str());
     }
@@ -119,7 +119,7 @@ void bi::Compiler::gen() {
       iter->second += stream.str();
     }
     for (auto pair : sources) {
-      path = fs::path("src") / pair.first / tarName;
+      path = fs::path(pair.first) / tarName;
       path.replace_extension(".cpp");
       write_all_if_different(path, pair.second);
     }
