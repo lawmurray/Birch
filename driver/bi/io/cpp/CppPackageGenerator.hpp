@@ -14,7 +14,7 @@ namespace bi {
 class CppPackageGenerator: public CppBaseGenerator {
 public:
   CppPackageGenerator(std::ostream& base, const int level = 0,
-      const bool header = true, const bool absolute = false);
+      const bool header = true);
 
   using CppBaseGenerator::visit;
 

@@ -117,12 +117,6 @@ private:
   const char* explain(const std::string& cmd);
 
   /**
-   * Produce a suffix to use on the build directory name, where this is
-   * unique to the particular configuration.
-   */
-  std::string suffix() const;
-
-  /**
    * Create the package.r
    *
    * @param includeRequires Include checks for required packages?
@@ -165,11 +159,6 @@ private:
   std::string arch;
 
   /**
-   * Build mode (debug, test, or release).
-   */
-  std::string mode;
-
-  /**
    * Compilation unit (unity, dir, or file).
    */
   std::string unit;
@@ -181,32 +170,47 @@ private:
   int jobs;
 
   /**
-   * Build static library?
+   * Enable debug build?
+   */
+  bool debug;
+
+  /**
+   * Enable test build?
+   */
+  bool test;
+
+  /**
+   * Enable release build?
+   */
+  bool release;
+
+  /**
+   * Enable static library?
    */
   bool staticLib;
 
   /**
-   * Build shared library?
+   * Enable shared library?
    */
   bool sharedLib;
 
   /**
-   * Is OpenMP enabled?
+   * Enable OpenMP?
    */
   bool openmp;
 
   /**
-   * Are compiler warnings enabled?
+   * Enable compiler warnings?
    */
   bool warnings;
 
   /**
-   * Are compiler notes enabled?
+   * Enable compiler notes?
    */
   bool notes;
 
   /**
-   * Is verbose reporting enabled?
+   * Enable verbose reporting?
    */
   bool verbose;
 
@@ -239,7 +243,6 @@ private:
    * Library directories.
    */
   std::list<fs::path> libDirs;
-
 
   /**
    * Lists of files from meta.

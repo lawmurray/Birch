@@ -8,8 +8,8 @@
 
 bi::CppResumeGenerator::CppResumeGenerator(const Class* currentClass,
     const Fiber* currentFiber, std::ostream& base, const int level,
-    const bool header, const bool absolute) :
-    CppBaseGenerator(base, level, header, false, absolute),
+    const bool header) :
+    CppBaseGenerator(base, level, header, false),
     currentClass(currentClass),
     currentFiber(currentFiber),
     paramIndex(0),

@@ -15,7 +15,7 @@ class CppClassGenerator: public CppBaseGenerator {
 public:
   CppClassGenerator(std::ostream& base, const int level = 0,
       const bool header = false, const bool generic = false,
-      const bool absolute = false, const Class* currentClass = nullptr);
+      const Class* currentClass = nullptr);
 
   using CppBaseGenerator::visit;
 

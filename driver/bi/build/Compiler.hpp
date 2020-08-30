@@ -19,11 +19,9 @@ public:
    * Constructor.
    *
    * @param package The package.
-   * @param mode Build mode.
    * @param unit Compilation unit.
    */
-  Compiler(Package* package, const std::string& mode,
-      const std::string& unit);
+  Compiler(Package* package, const std::string& unit);
 
   /**
    * Parse source files.
@@ -62,11 +60,6 @@ private:
    * Package.
    */
   Package* package;
-
-  /**
-   * Build mode.
-   */
-  std::string mode;
 
   /**
    * Compilation unit.

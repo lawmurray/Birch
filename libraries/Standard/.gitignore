@@ -30,6 +30,7 @@
 /mkdocs.yml
 /DOCS.md
 /.autotools
+/main.cpp
 .deps
 .dirstamp
 .libs

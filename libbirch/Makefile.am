@@ -1,27 +1,25 @@
-# compile flags
-AM_CPPFLAGS = -Wall -DEIGEN_NO_STATIC_ASSERT -DEIGEN_NO_AUTOMATIC_RESIZING=1 -DEIGEN_DONT_PARALLELIZE=1
+lib_LTLIBRARIES =
 if DEBUG
-AM_CXXFLAGS = $(OPENMP_CXXFLAGS) -O0 -g -fno-inline
-else
+lib_LTLIBRARIES += libbirch-debug.la
+endif
 if TEST
-AM_CXXFLAGS = $(OPENMP_CXXFLAGS) -O0 -g -fno-inline -fprofile-abs-path --coverage
-else
+lib_LTLIBRARIES += libbirch-test.la
+endif
 if RELEASE
-AM_CXXFLAGS = $(OPENMP_CXXFLAGS) -O3 -g
-else
-AM_CXXFLAGS = $(OPENMP_CXXFLAGS)
-endif
-endif
+lib_LTLIBRARIES += libbirch.la
 endif
 
-lib_LTLIBRARIES = libbirch@SUFFIX@.la
+AM_CPPFLAGS = -Wall -DEIGEN_NO_STATIC_ASSERT -DEIGEN_NO_AUTOMATIC_RESIZING=1 -DEIGEN_DONT_PARALLELIZE=1
 
-libbirch@SUFFIX@_la_SOURCES =  \
-  libbirch/Label.cpp \
-  libbirch/LabelPtr.cpp \
-  libbirch/Memo.cpp \
-  libbirch/memory.cpp \
-  libbirch/stacktrace.cpp
+libbirch_debug_la_CXXFLAGS = $(OPENMP_CXXFLAGS) -O0 -g -fno-inline
+libbirch_debug_la_SOURCES = $(COMMON_SOURCES)
+
+libbirch_test_la_CXXFLAGS = $(OPENMP_CXXFLAGS) -O0 -g -fno-inline --coverage
+libbirch_test_la_SOURCES = $(COMMON_SOURCES)
+
+libbirch_la_CPPFLAGS = -DNDEBUG
+libbirch_la_CXXFLAGS = $(OPENMP_CXXFLAGS) -O3
+libbirch_la_SOURCES = $(COMMON_SOURCES)
 
 include_HEADERS = \
   libbirch/libbirch.hpp
@@ -79,6 +77,13 @@ nobase_include_HEADERS = \
   libbirch/thread.hpp \
   libbirch/Tuple.hpp \
   libbirch/type.hpp
+
+COMMON_SOURCES =  \
+  libbirch/Label.cpp \
+  libbirch/LabelPtr.cpp \
+  libbirch/Memo.cpp \
+  libbirch/memory.cpp \
+  libbirch/stacktrace.cpp
 
 dist_noinst_DATA =  \
   Doxyfile \

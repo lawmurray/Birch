@@ -10,15 +10,14 @@
 #include "bi/exception/DriverException.hpp"
 
 bi::Driver::Driver(int argc, char** argv) :
-    /* keep paths relative, or at least call configure with a
-     * relative path from the build directory to the work directory,
-     * otherwise a work directory containing spaces causes problems */
     packageName("Untitled"),
     packageVersion("unversioned"),
     arch("native"),
-    mode("debug"),
     unit("dir"),
     jobs(std::thread::hardware_concurrency()),
+    debug(true),
+    test(false),
+    release(false),
     staticLib(false),
     sharedLib(true),
     openmp(true),
@@ -28,12 +27,101 @@ bi::Driver::Driver(int argc, char** argv) :
     newBootstrap(false),
     newConfigure(false),
     newMake(false) {
+  /* environment */
+  char* BIRCH_MODE = getenv("BIRCH_MODE");
+  char* BIRCH_PREFIX = getenv("BIRCH_PREFIX");
+  char* BIRCH_SHARE_PATH = getenv("BIRCH_SHARE_PATH");
+  char* BIRCH_INCLUDE_PATH = getenv("BIRCH_INCLUDE_PATH");
+  char* BIRCH_LIBRARY_PATH = getenv("BIRCH_LIBRARY_PATH");
+  std::string input;
+
+  /* mode */
+  if (BIRCH_MODE) {
+    if (strcmp(BIRCH_MODE, "debug") == 0) {
+      debug = true;
+      test = false;
+      release = false;
+    } else if (strcmp(BIRCH_MODE, "test") == 0) {
+      debug = false;
+      test = true;
+      release = false;
+    } else if (strcmp(BIRCH_MODE, "release") == 0) {
+      debug = false;
+      test = false;
+      release = true;
+    }
+  }
+
+  /* prefix */
+  if (prefix.empty() && BIRCH_PREFIX) {
+    prefix = BIRCH_PREFIX;
+  }
+
+  /* share dirs */
+  if (BIRCH_SHARE_PATH) {
+    std::stringstream birch_share_path(BIRCH_SHARE_PATH);
+    while (std::getline(birch_share_path, input, ':')) {
+      shareDirs.push_back(input);
+    }
+  }
+  if (!prefix.empty()) {
+    shareDirs.push_back(fs::path(prefix) / "share" / "birch");
+  }
+#ifdef DATADIR
+  shareDirs.push_back(fs::path(STRINGIFY(DATADIR)) / "birch");
+#endif
+
+  /* include dirs */
+  includeDirs.push_back(fs::absolute("src"));
+  if (BIRCH_INCLUDE_PATH) {
+    std::stringstream birch_include_path(BIRCH_INCLUDE_PATH);
+    while (std::getline(birch_include_path, input, ':')) {
+      includeDirs.push_back(input);
+    }
+  }
+  if (!prefix.empty()) {
+    includeDirs.push_back(fs::path(prefix) / "include");
+  }
+#ifdef INCLUDEDIR
+  includeDirs.push_back(STRINGIFY(INCLUDEDIR));
+#endif
+
+  /* lib dirs */
+  fs::path local = fs::path(".libs");
+  if (fs::exists(local)) {
+    libDirs.push_back(local);
+  }
+  if (BIRCH_LIBRARY_PATH) {
+    std::stringstream birch_library_path(BIRCH_LIBRARY_PATH);
+    while (std::getline(birch_library_path, input, ':')) {
+      libDirs.push_back(input);
+    }
+  }
+  if (!prefix.empty()) {
+    if (fs::exists(fs::path(prefix) / "lib64")) {
+      libDirs.push_back(fs::path(prefix) / "lib64");
+    }
+    if (fs::exists(fs::path(prefix) / "lib")) {
+      libDirs.push_back(fs::path(prefix) / "lib");
+    }
+  }
+#ifdef LIBDIR
+  libDirs.push_back(STRINGIFY(LIBDIR));
+#endif
+
+  /* command-line options */
   enum {
     PACKAGE_ARG = 256,
     PREFIX_ARG,
     ARCH_ARG,
     MODE_ARG,
     UNIT_ARG,
+    ENABLE_DEBUG_ARG,
+    DISABLE_DEBUG_ARG,
+    ENABLE_TEST_ARG,
+    DISABLE_TEST_ARG,
+    ENABLE_RELEASE_ARG,
+    DISABLE_RELEASE_ARG,
     ENABLE_STATIC_ARG,
     DISABLE_STATIC_ARG,
     ENABLE_SHARED_ARG,
@@ -57,6 +145,12 @@ bi::Driver::Driver(int argc, char** argv) :
       { "mode", required_argument, 0, MODE_ARG },
       { "unit", required_argument, 0, UNIT_ARG },
       { "jobs", required_argument, 0, JOBS_ARG },
+      { "enable-debug", no_argument, 0, ENABLE_DEBUG_ARG },
+      { "disable-debug", no_argument, 0, DISABLE_DEBUG_ARG },
+      { "enable-test", no_argument, 0, ENABLE_TEST_ARG },
+      { "disable-test", no_argument, 0, DISABLE_TEST_ARG },
+      { "enable-release", no_argument, 0, ENABLE_RELEASE_ARG },
+      { "disable-release", no_argument, 0, DISABLE_RELEASE_ARG },
       { "enable-static", no_argument, 0, ENABLE_STATIC_ARG },
       { "disable-static", no_argument, 0, DISABLE_STATIC_ARG },
       { "enable-shared", no_argument, 0, ENABLE_SHARED_ARG },
@@ -91,14 +185,29 @@ bi::Driver::Driver(int argc, char** argv) :
     case ARCH_ARG:
       arch = optarg;
       break;
-    case MODE_ARG:
-      mode = optarg;
-      break;
     case UNIT_ARG:
       unit = optarg;
       break;
     case JOBS_ARG:
       jobs = atoi(optarg);
+      break;
+    case ENABLE_DEBUG_ARG:
+      debug = true;
+      break;
+    case DISABLE_DEBUG_ARG:
+      debug = false;
+      break;
+    case ENABLE_TEST_ARG:
+      test = true;
+      break;
+    case DISABLE_TEST_ARG:
+      test = false;
+      break;
+    case ENABLE_RELEASE_ARG:
+      release = true;
+      break;
+    case DISABLE_RELEASE_ARG:
+      release = false;
       break;
     case ENABLE_STATIC_ARG:
       staticLib = true;
@@ -155,76 +264,9 @@ bi::Driver::Driver(int argc, char** argv) :
   if (arch != "native" && arch != "js" && arch != "wasm") {
     throw DriverException("--arch must be native, js, or wasm.");
   }
-  if (mode != "debug" && mode != "test" && mode != "release") {
-    throw DriverException("--mode must be latest, debug, test, or release.");
-  }
   if (unit != "unity" && unit != "dir" && unit != "file") {
     throw DriverException("--unit must be unity, dir, or file.");
   }
-
-  /* environment variables */
-  char* BIRCH_PREFIX = getenv("BIRCH_PREFIX");
-  char* BIRCH_SHARE_PATH = getenv("BIRCH_SHARE_PATH");
-  char* BIRCH_INCLUDE_PATH = getenv("BIRCH_INCLUDE_PATH");
-  char* BIRCH_LIBRARY_PATH = getenv("BIRCH_LIBRARY_PATH");
-  std::string input;
-
-  /* install prefix */
-  if (prefix.empty() && BIRCH_PREFIX) {
-    prefix = BIRCH_PREFIX;
-  }
-
-  /* share dirs */
-  if (BIRCH_SHARE_PATH) {
-    std::stringstream birch_share_path(BIRCH_SHARE_PATH);
-    while (std::getline(birch_share_path, input, ':')) {
-      shareDirs.push_back(input);
-    }
-  }
-  if (!prefix.empty()) {
-    shareDirs.push_back(fs::path(prefix) / "share" / "birch");
-  }
-#ifdef DATADIR
-  shareDirs.push_back(fs::path(STRINGIFY(DATADIR)) / "birch");
-#endif
-
-  /* include dirs */
-  includeDirs.push_back(fs::absolute("src"));
-  if (BIRCH_INCLUDE_PATH) {
-    std::stringstream birch_include_path(BIRCH_INCLUDE_PATH);
-    while (std::getline(birch_include_path, input, ':')) {
-      includeDirs.push_back(input);
-    }
-  }
-  if (!prefix.empty()) {
-    includeDirs.push_back(fs::path(prefix) / "include");
-  }
-#ifdef INCLUDEDIR
-  includeDirs.push_back(STRINGIFY(INCLUDEDIR));
-#endif
-
-  /* lib dirs */
-  fs::path local = fs::path("build") / "latest" / ".libs";
-  if (fs::exists(local)) {
-    libDirs.push_back(local);
-  }
-  if (BIRCH_LIBRARY_PATH) {
-    std::stringstream birch_library_path(BIRCH_LIBRARY_PATH);
-    while (std::getline(birch_library_path, input, ':')) {
-      libDirs.push_back(input);
-    }
-  }
-  if (!prefix.empty()) {
-    if (fs::exists(fs::path(prefix) / "lib64")) {
-      libDirs.push_back(fs::path(prefix) / "lib64");
-    }
-    if (fs::exists(fs::path(prefix) / "lib")) {
-      libDirs.push_back(fs::path(prefix) / "lib");
-    }
-  }
-#ifdef LIBDIR
-  libDirs.push_back(STRINGIFY(LIBDIR));
-#endif
 }
 
 void bi::Driver::run(const std::string& prog,
@@ -234,21 +276,6 @@ void bi::Driver::run(const std::string& prog,
     /* load the package meta information, if indeed there is any, otherwise
      * this will throw an exception which is caught below */
     meta();
-
-    /* when running in a package directory we'd like to use the latest build,
-     * regardless of what mode was given in the call, so update the mode if
-     * we find a latest build */
-    auto symlink = fs::path("build") / "latest";
-    if (fs::exists(symlink)) {
-      auto build = fs::read_symlink(symlink).string();
-      if (build.find("debug_") == 0) {
-        mode = "debug";
-      } else if (build.find("test_") == 0) {
-        mode = "test";
-      } else if (build.find("release_") == 0) {
-        mode = "release";
-      }
-    }
   } catch (DriverException) {
     // probably not running in a package directory, but can use installed
     // libraries instead
@@ -256,8 +283,12 @@ void bi::Driver::run(const std::string& prog,
 
   /* name of the shared library file we expect to find */
   auto name = "lib" + tarname(packageName);
-  if (mode != "release") {
-    name += '_' + mode;
+  if (release) {
+    // no suffix
+  } else if (test) {
+    name += "-test";
+  } else if (debug) {
+    name += "-debug";
   }
   fs::path so = name;
   #ifdef __APPLE__
@@ -361,19 +392,27 @@ void bi::Driver::clean() {
   fs::remove_all("autom4te.cache");
   fs::remove_all("m4");
   fs::remove_all("src");
+  fs::remove_all(".deps");
+  fs::remove_all(".libs");
   fs::remove("aclocal.m4");
   fs::remove("bootstrap.log");
   fs::remove("bootstrap");
   fs::remove("compile");
+  fs::remove("config.cache");
   fs::remove("config.guess");
+  fs::remove("config.log");
+  fs::remove("config.status");
   fs::remove("config.sub");
   fs::remove("configure");
   fs::remove("configure.ac");
   fs::remove("depcomp");
   fs::remove("install-sh");
+  fs::remove("libtool");
   fs::remove("ltmain.sh");
+  fs::remove("Makefile");
   fs::remove("Makefile.am");
   fs::remove("Makefile.in");
+  fs::remove("main.cpp");
   fs::remove("missing");
 }
 
@@ -470,7 +509,7 @@ void bi::Driver::docs() {
   Package* package = createPackage(false);
 
   /* parse all files */
-  Compiler compiler(package, mode, unit);
+  Compiler compiler(package, unit);
   compiler.parse(false);
 
   /* output everything into single file */
@@ -613,14 +652,18 @@ void bi::Driver::help() {
       std::cout << std::endl;
       std::cout << "Basic options:" << std::endl;
       std::cout << std::endl;
-      std::cout << "  --mode={debug|test|release} (default debug):" << std::endl;
-      std::cout << "  Build for debugging (no optimizations, all assertion checks), testing" << std::endl;
-      std::cout << "  (debugging plus code coverage) or release (all optimizations, no assertion" << std::endl;
-      std::cout << "  checks)." << std::endl;
-      std::cout << std::endl;
       std::cout << "  --jobs (default imputed):" << std::endl;
       std::cout << "  Number of jobs for a parallel build. By default, a reasonable value is" << std::endl;
       std::cout << "  determined from the environment." << std::endl;
+      std::cout << std::endl;
+      std::cout << "  --enable-debug / --disable-debug (default enabled):" << std::endl;
+      std::cout << "  Enable/disable debug build." << std::endl;
+      std::cout << std::endl;
+      std::cout << "  --enable-test / --disable-test (default disabled):" << std::endl;
+      std::cout << "  Enable/disable test build." << std::endl;
+      std::cout << std::endl;
+      std::cout << "  --enable-release / --disable-release (default enabled):" << std::endl;
+      std::cout << "  Enable/disable release build." << std::endl;
       std::cout << std::endl;
       std::cout << "  --enable-warnings / --disable-warnings (default enabled):" << std::endl;
       std::cout << "  Enable/disable compiler warnings." << std::endl;
@@ -775,22 +818,7 @@ void bi::Driver::meta() {
 }
 
 void bi::Driver::setup() {
-  auto buildDir = fs::path("build") / suffix();
   auto internalName = tarname(packageName);
-
-  /* create build directory */
-  if (!fs::exists(buildDir)) {
-    if (!fs::create_directories(buildDir)) {
-      std::stringstream buf;
-      buf << "could not create build directory " << buildDir << '.';
-      throw DriverException(buf.str());
-    }
-  }
-
-  /* update "latest" symlink to point to this build directory */
-  auto symlink_dir = fs::path("build") / "latest";
-  fs::remove(symlink_dir);
-  fs::create_symlink(suffix(), symlink_dir);
 
   /* copy build files */
   newBootstrap = copy_if_newer(find(shareDirs, "bootstrap"), "bootstrap");
@@ -826,13 +854,11 @@ void bi::Driver::setup() {
     configureStream << "if test x$emscripten = xfalse; then\n";
   }
   for (auto file : metaFiles["require.header"]) {
-    configureStream << "  AC_CHECK_HEADERS([" << file.string() << "], [], "
-        << "[AC_MSG_ERROR([required header not found.])], [-])\n";
+    configureStream << "  AC_CHECK_HEADERS([" << file.string() << "], [], [AC_MSG_ERROR([required header not found.])], [-])\n";
   }
   for (auto name : metaFiles["require.package"]) {
     auto internalName = tarname(name.string());
-    configureStream << "  AC_CHECK_HEADERS([" << internalName << ".hpp], [], "
-        << "[AC_MSG_ERROR([required header not found.])], [-])\n";
+    configureStream << "  AC_CHECK_HEADERS([" << internalName << ".hpp], [], [AC_MSG_ERROR([required header not found.])], [-])\n";
   }
   if (!metaFiles["require.header"].empty()) {
     configureStream << "fi\n";
@@ -840,14 +866,19 @@ void bi::Driver::setup() {
 
   /* required libraries */
   for (auto file : metaFiles["require.library"]) {
-    configureStream << "  AC_CHECK_LIB([" << file.string() << "], [main], "
-        << "[], [AC_MSG_ERROR([required library not found.])])\n";
+    configureStream << "  AC_CHECK_LIB([" << file.string() << "], [main], [], [AC_MSG_ERROR([required library not found.])])\n";
   }
   for (auto name : metaFiles["require.package"]) {
     auto internalName = tarname(name.string());
-    configureStream << "  AC_CHECK_LIB([" << internalName <<
-        "$SUFFIX], [main], [], " <<
-        "[AC_MSG_ERROR([required library not found.])])\n";
+    configureStream << "  if $debug; then\n";
+    configureStream << "    AC_CHECK_LIB([" << internalName << "-debug], [main], [DEBUG_LIBS=\"$DEBUG_LIBS -l" << internalName << "\"], [AC_MSG_ERROR([required library not found.])], [$DEBUG_LIBS])\n";
+    configureStream << "  fi\n";
+    configureStream << "  if $test; then\n";
+    configureStream << "    AC_CHECK_LIB([" << internalName << "-test], [main], [TEST_LIBS=\"$TEST_LIBS -l" << internalName << "\"], [AC_MSG_ERROR([required library not found.])], [$TEST_LIBS])\n";
+    configureStream << "  fi\n";
+    configureStream << "  if $release; then\n";
+    configureStream << "    AC_CHECK_LIB([" << internalName << "], [main], [RELEASE_LIBS=\"$RELEASE_LIBS -l" << internalName << "\"], [AC_MSG_ERROR([required library not found.])], [$RELEASE_LIBS])\n";
+    configureStream << "  fi\n";
   }
 
   /* required programs */
@@ -860,6 +891,10 @@ void bi::Driver::setup() {
   }
 
   /* footer */
+  configureStream << "AC_SUBST([DEBUG_LIBS])\n";
+  configureStream << "AC_SUBST([TEST_LIBS])\n";
+  configureStream << "AC_SUBST([RELEASE_LIBS])\n";
+  configureStream << "\n";
   configureStream << "AC_CONFIG_FILES([Makefile])\n";
   configureStream << "AC_OUTPUT\n";
 
@@ -873,10 +908,7 @@ void bi::Driver::setup() {
 
   std::stringstream makeStream;
   makeStream << contents << "\n\n";
-  makeStream << "lib_LTLIBRARIES = lib" << internalName << "@SUFFIX@.la\n\n";
-
-  /* sources derived from *.bi files */
-  makeStream << "dist_lib" << internalName << "@SUFFIX@_la_SOURCES =";
+  makeStream << "COMMON_SOURCES =";
   if (unit == "unity") {
     /* sources go into one *.cpp file for the whole package */
     auto source = fs::path("src") / internalName;
@@ -933,7 +965,7 @@ void bi::Driver::setup() {
 }
 
 void bi::Driver::transpile() {
-  Compiler compiler(createPackage(true), mode, unit);
+  Compiler compiler(createPackage(true), unit);
   compiler.parse(true);
   compiler.resolve();
   compiler.gen();
@@ -970,10 +1002,7 @@ void bi::Driver::bootstrap() {
 }
 
 void bi::Driver::configure() {
-  auto buildDir = fs::path("build") / suffix();
-  if (newBootstrap || newConfigure || newMake ||
-      !exists(buildDir / "Makefile")) {
-    CWD cwd(buildDir);
+  if (newBootstrap || newConfigure || newMake || !fs::exists("Makefile")) {
 
     /* compile and link flags */
     std::stringstream cppflags, cflags, cxxflags, ldflags, options, cmd;
@@ -1019,10 +1048,20 @@ void bi::Driver::configure() {
     }
 
     /* configure options */
-    if (mode == "debug" || mode == "test") {
-      options << " --enable-assert";
+    if (release) {
+      options << " --enable-release";
     } else {
-      options << " --disable-assert";
+      options << " --disable-release";
+    }
+    if (debug) {
+      options << " --enable-debug";
+    } else {
+      options << " --disable-debug";
+    }
+    if (test) {
+      options << " --enable-test";
+    } else {
+      options << " --disable-test";
     }
     if (staticLib) {
       options << " --enable-static";
@@ -1051,16 +1090,12 @@ void bi::Driver::configure() {
     if (!ldflags.str().empty()) {
       options << " LDFLAGS=\"$LDFLAGS " << ldflags.str() << "\"";
     }
-    if (mode != "release") {
-      options << " SUFFIX=_" << mode;
-    }
-    options << " MODE=" << mode;
 
     /* command */
     if (arch == "js" || arch == "wasm") {
       cmd << "emconfigure ";
     }
-    cmd << (fs::path("..") / ".." / "configure") << ' ' << options.str();
+    cmd << (fs::path(".") / "configure") << ' ' << options.str();
     if (verbose) {
       std::cerr << cmd.str() << std::endl;
     } else {
@@ -1078,8 +1113,7 @@ void bi::Driver::configure() {
       buf << "configure died with signal " << ret
           << "; make sure all dependencies are installed";
       if (!verbose) {
-        buf << ", see " << (buildDir / "configure.log").string() << " and "
-            << (buildDir / "config.log").string() << " for details";
+        buf << ", see configure.log and config.log for details";
       }
       buf << '.';
       throw DriverException(buf.str());
@@ -1088,9 +1122,6 @@ void bi::Driver::configure() {
 }
 
 void bi::Driver::target(const std::string& cmd) {
-  auto buildDir = fs::canonical(fs::path("build") / "latest");
-  CWD cwd(buildDir);
-
   /* command */
   std::stringstream buf;
   if (arch == "js" || arch == "wasm") {
@@ -1149,7 +1180,7 @@ void bi::Driver::target(const std::string& cmd) {
       buf << " died with signal " << ret;
     }
     if (!verbose) {
-      buf << ", see " << (buildDir / log).string() << " for details.";
+      buf << ", see " << log << " for details.";
     }
     buf << '.';
     throw DriverException(buf.str());
@@ -1171,25 +1202,6 @@ const char* bi::Driver::explain(const std::string& cmd) {
   #else
   return "";
   #endif
-}
-
-std::string bi::Driver::suffix() const {
-  /* the suffix is built by joining all build options, in a prescribed order,
-   * joined by spaces, then encoding in base 32 */
-  std::stringstream buf;
-  buf << mode;
-  buf << '_' << unit;
-  buf << '_' << arch;
-  if (staticLib) {
-    buf << "_static";
-  }
-  if (sharedLib) {
-    buf << "_shared";
-  }
-  if (openmp) {
-    buf << "_openmp";
-  }
-  return buf.str();
 }
 
 bi::Package* bi::Driver::createPackage(bool includeRequires) {

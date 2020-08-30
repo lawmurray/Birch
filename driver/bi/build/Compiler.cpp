@@ -13,11 +13,9 @@
 bi::Compiler* compiler = nullptr;
 std::stringstream raw;
 
-bi::Compiler::Compiler(Package* package, const std::string& mode,
-    const std::string& unit) :
+bi::Compiler::Compiler(Package* package, const std::string& unit) :
     scope(new Scope(GLOBAL_SCOPE)),
     package(package),
-    mode(mode),
     unit(unit) {
   //
 }
@@ -75,8 +73,8 @@ void bi::Compiler::gen() {
   fs::path path = fs::path("src") / internalName;
 
   bih_ostream bihOutput(stream);
-  CppPackageGenerator hppOutput(stream, 0, true, mode == "test");
-  CppBaseGenerator cppOutput(stream, 0, false, false, mode == "test");
+  CppPackageGenerator hppOutput(stream, 0, true);
+  CppBaseGenerator cppOutput(stream, 0, false, false);
 
   /* single *.bih header for whole package */
   stream.str("");

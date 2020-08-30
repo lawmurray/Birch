@@ -9,8 +9,8 @@
 
 bi::CppClassGenerator::CppClassGenerator(std::ostream& base,
     const int level, const bool header, const bool generic,
-    const bool absolute, const Class* currentClass) :
-    CppBaseGenerator(base, level, header, generic, absolute),
+    const Class* currentClass) :
+    CppBaseGenerator(base, level, header, generic),
     currentClass(currentClass) {
   //
 }
@@ -238,7 +238,7 @@ void bi::CppClassGenerator::visit(const MemberFunction* o) {
       finish(" {");
       in();
       genTraceFunction(o->name->str(), o->loc);
-      CppBaseGenerator auxBase(base, level, header, generic, absolute);
+      CppBaseGenerator auxBase(base, level, header, generic);
       auxBase << o->braces->strip();
       out();
       finish("}\n");
@@ -285,7 +285,7 @@ void bi::CppClassGenerator::visit(const MemberFiber* o) {
     }
 
     /* start function */
-    CppResumeGenerator auxResume(currentClass, o, base, level, header, absolute);
+    CppResumeGenerator auxResume(currentClass, o, base, level, header);
     auxResume << o->start;
 
     /* resume functions */
@@ -293,7 +293,7 @@ void bi::CppClassGenerator::visit(const MemberFiber* o) {
     o->accept(&yields);
     for (auto yield : yields) {
       if (yield->resume) {
-        CppResumeGenerator auxResume(currentClass, o, base, level, header, absolute);
+        CppResumeGenerator auxResume(currentClass, o, base, level, header);
         auxResume << yield->resume;
       }
     }
@@ -325,7 +325,7 @@ void bi::CppClassGenerator::visit(const AssignmentOperator* o) {
       finish(" {");
       in();
       genTraceFunction("<assignment>", o->loc);
-      CppBaseGenerator auxBase(base, level, header, generic, absolute);
+      CppBaseGenerator auxBase(base, level, header, generic);
       auxBase << o->braces->strip();
       genSourceLine(o->loc);
       line("return *this;");
@@ -354,7 +354,7 @@ void bi::CppClassGenerator::visit(const ConversionOperator* o) {
       finish(" {");
       in();
       genTraceFunction("<conversion>", o->loc);
-      CppBaseGenerator auxBase(base, level, header, generic, absolute);
+      CppBaseGenerator auxBase(base, level, header, generic);
       auxBase << o->braces->strip();
       out();
       finish("}\n");

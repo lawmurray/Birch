@@ -8,11 +8,10 @@
 #include "bi/primitive/encode.hpp"
 
 bi::CppBaseGenerator::CppBaseGenerator(std::ostream& base, const int level,
-    const bool header, const bool generic, const bool absolute) :
+    const bool header, const bool generic) :
     indentable_ostream(base, level),
     header(header),
     generic(generic),
-    absolute(absolute),
     inAssign(0),
     inConstructor(0),
     inLambda(0),
@@ -337,7 +336,7 @@ void bi::CppBaseGenerator::visit(const Fiber* o) {
     }
 
     /* start function */
-    CppResumeGenerator auxResume(nullptr, o, base, level, header, absolute);
+    CppResumeGenerator auxResume(nullptr, o, base, level, header);
     auxResume << o->start;
 
     /* resume functions */
@@ -345,7 +344,7 @@ void bi::CppBaseGenerator::visit(const Fiber* o) {
     o->accept(&yields);
     for (auto yield : yields) {
       if (yield->resume) {
-        CppResumeGenerator auxResume(nullptr, o, base, level, header, absolute);
+        CppResumeGenerator auxResume(nullptr, o, base, level, header);
         auxResume << yield->resume;
       }
     }
@@ -570,7 +569,7 @@ void bi::CppBaseGenerator::visit(const Basic* o) {
 
 void bi::CppBaseGenerator::visit(const Class* o) {
   if (generic || !o->isGeneric()) {
-    CppClassGenerator auxClass(base, level, header, generic, absolute);
+    CppClassGenerator auxClass(base, level, header, generic);
     auxClass << o;
   }
 }
@@ -773,10 +772,6 @@ void bi::CppBaseGenerator::genTraceLine(const Location* loc) {
 void bi::CppBaseGenerator::genSourceLine(const Location* loc) {
   auto line = loc->firstLine;
   std::string file;
-  if (absolute) {
-    file = fs::absolute(loc->file->path).string();
-  } else {
-    file = loc->file->path;
-  }
+  file = loc->file->path;
   line("#line " << line << " \"" << file << "\"");
 }

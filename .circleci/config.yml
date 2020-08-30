@@ -12,8 +12,9 @@ executors:
       - image: lawmurray/birch-circleci:ubuntu-20.04
     environment:
       BIRCH_PREFIX: "/root/project"
-      BIRCH_FLAGS: "--mode=test --unit=dir --jobs=2"
-      CONFIGURE_FLAGS: "MODE=test SUFFIX=_test --enable-assert"
+      BIRCH_FLAGS: "--unit=dir --jobs=2"
+      BIRCH_MODE: "test"
+      CONFIGURE_FLAGS: "--disable-debug --enable-test --disable-release"
       OMP_NUM_THREADS: "2"
 
   test:
@@ -21,8 +22,9 @@ executors:
       - image: lawmurray/birch-circleci:ubuntu-20.04
     environment:
       BIRCH_PREFIX: "/root/project"
-      BIRCH_FLAGS: "--mode=release --unit=dir --jobs=2"
-      CONFIGURE_FLAGS: "MODE=release --disable-assert"
+      BIRCH_FLAGS: "--unit=dir --jobs=2"
+      BIRCH_MODE: "release"
+      CONFIGURE_FLAGS: "--disable-debug --disable-test --enable-release"
       OMP_NUM_THREADS: "2"
 
 commands:
@@ -53,7 +55,7 @@ commands:
           command: |
               cd driver
               ./bootstrap
-              ./configure --prefix=$BIRCH_PREFIX CXXFLAGS="-Wall -Wno-overloaded-virtual -g -O0 -fno-inline -fprofile-abs-path --coverage"
+              ./configure --prefix=$BIRCH_PREFIX CXXFLAGS="-Wall -Wno-overloaded-virtual -g -O0 -fno-inline --coverage"
               make -j 4
               make install
       - persist_to_workspace:

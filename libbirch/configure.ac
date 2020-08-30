@@ -4,16 +4,37 @@ AC_LANG([C++])
 AM_INIT_AUTOMAKE([1.10 no-define foreign subdir-objects])
 AC_CONFIG_MACRO_DIR([m4])
 
-# Default CXXFLAGS to empty, user can either override with their own, or use
-# MODE to select a preset
+# Both debug and release libraries are built, with AM_CXXFLAGS provided for
+# these that should override the default CXXFLAGS; user-defined CXXFLAGS will
+# still take precedence over these, however
 : ${CXXFLAGS=""}
-AC_ARG_VAR(MODE, [build mode for flag presets: debug, test, release, or empty.])
-AM_CONDITIONAL([DEBUG], [test x$MODE = xdebug])
-AM_CONDITIONAL([TEST], [test x$MODE = xtest])
-AM_CONDITIONAL([RELEASE], [test x$MODE = xrelease])
 
-# Suffix on installed libraries
-AC_ARG_VAR(SUFFIX, [suffix for libaries, e.g. _debug, or empty.])
+AC_ARG_ENABLE([debug],
+[AS_HELP_STRING[--enable-debug], [Build debug library]],
+[case "${enableval}" in
+  yes) debug=true ;;
+  no)  debug=false ;;
+  *) AC_MSG_ERROR([bad value ${enableval} for --enable-debug]) ;;
+esac],[debug=true])
+AM_CONDITIONAL([DEBUG], [test x$debug = xtrue])
+
+AC_ARG_ENABLE([test],
+[AS_HELP_STRING[--enable-test], [Build test library]],
+[case "${enableval}" in
+  yes) test=true ;;
+  no)  test=false ;;
+  *) AC_MSG_ERROR([bad value ${enableval} for --enable-test]) ;;
+esac],[test=false])
+AM_CONDITIONAL([TEST], [test x$test = xtrue])
+
+AC_ARG_ENABLE([release],
+[AS_HELP_STRING[--enable-release], [Build release library]],
+[case "${enableval}" in
+  yes) release=true ;;
+  no)  release=false ;;
+  *) AC_MSG_ERROR([bad value ${enableval} for --enable-release]) ;;
+esac],[release=false])
+AM_CONDITIONAL([RELEASE], [test x$release = xtrue])
 
 # Programs
 AC_PROG_CXXCPP
