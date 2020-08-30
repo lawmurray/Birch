@@ -14,7 +14,7 @@ AM_CPPFLAGS = -Wall -DEIGEN_NO_STATIC_ASSERT -DEIGEN_NO_AUTOMATIC_RESIZING=1 -DE
 libbirch_debug_la_CXXFLAGS = $(OPENMP_CXXFLAGS) -O0 -g -fno-inline
 libbirch_debug_la_SOURCES = $(COMMON_SOURCES)
 
-libbirch_test_la_CXXFLAGS = $(OPENMP_CXXFLAGS) -O0 -g -fno-inline --coverage
+libbirch_test_la_CXXFLAGS = $(OPENMP_CXXFLAGS) -O0 -g -fno-inline -fprofile-abs-path --coverage
 libbirch_test_la_SOURCES = $(COMMON_SOURCES)
 
 libbirch_la_CPPFLAGS = -DNDEBUG

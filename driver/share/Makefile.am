@@ -16,7 +16,7 @@ libPACKAGE_TARNAME_debug_la_CXXFLAGS = $(COMMON_CXXFLAGS) -O0 -g -fno-inline
 libPACKAGE_TARNAME_debug_la_LIBADD = $(DEBUG_LIBS)
 libPACKAGE_TARNAME_debug_la_SOURCES = $(COMMON_SOURCES)
 
-libPACKAGE_TARNAME_test_la_CXXFLAGS = $(COMMON_CXXFLAGS) -O0 -g -fno-inline --coverage
+libPACKAGE_TARNAME_test_la_CXXFLAGS = $(COMMON_CXXFLAGS) -O0 -g -fno-inline -fprofile-abs-path --coverage
 libPACKAGE_TARNAME_test_la_LIBADD = $(TEST_LIBS)
 libPACKAGE_TARNAME_test_la_SOURCES = $(COMMON_SOURCES)
 

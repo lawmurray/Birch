@@ -55,7 +55,7 @@ commands:
           command: |
               cd driver
               ./bootstrap
-              ./configure --prefix=$BIRCH_PREFIX CXXFLAGS="-Wall -Wno-overloaded-virtual -g -O0 -fno-inline --coverage"
+              ./configure --prefix=$BIRCH_PREFIX CXXFLAGS="-Wall -Wno-overloaded-virtual -g -O0 -fno-inline -fprofile-abs-path --coverage"
               make -j 4
               make install
       - persist_to_workspace:
