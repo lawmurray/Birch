@@ -871,10 +871,10 @@ void bi::Driver::setup() {
   for (auto name : metaFiles["require.package"]) {
     auto internalName = tarname(name.string());
     configureStream << "  if $debug; then\n";
-    configureStream << "    AC_CHECK_LIB([" << internalName << "-debug], [main], [DEBUG_LIBS=\"$DEBUG_LIBS -l" << internalName << "\"], [AC_MSG_ERROR([required library not found.])], [$DEBUG_LIBS])\n";
+    configureStream << "    AC_CHECK_LIB([" << internalName << "-debug], [main], [DEBUG_LIBS=\"$DEBUG_LIBS -l" << internalName << "-debug\"], [AC_MSG_ERROR([required library not found.])], [$DEBUG_LIBS])\n";
     configureStream << "  fi\n";
     configureStream << "  if $test; then\n";
-    configureStream << "    AC_CHECK_LIB([" << internalName << "-test], [main], [TEST_LIBS=\"$TEST_LIBS -l" << internalName << "\"], [AC_MSG_ERROR([required library not found.])], [$TEST_LIBS])\n";
+    configureStream << "    AC_CHECK_LIB([" << internalName << "-test], [main], [TEST_LIBS=\"$TEST_LIBS -l" << internalName << "-test\"], [AC_MSG_ERROR([required library not found.])], [$TEST_LIBS])\n";
     configureStream << "  fi\n";
     configureStream << "  if $release; then\n";
     configureStream << "    AC_CHECK_LIB([" << internalName << "], [main], [RELEASE_LIBS=\"$RELEASE_LIBS -l" << internalName << "\"], [AC_MSG_ERROR([required library not found.])], [$RELEASE_LIBS])\n";
