@@ -112,11 +112,7 @@ commands:
       - persist_to_workspace:
           root: .
           paths:
-            - libraries/<< parameters.package >>/**/*.gcno
-            - libraries/<< parameters.package >>/**/*.o
-            - libraries/<< parameters.package >>/**/*.cpp
-            - libraries/<< parameters.package >>/**/*.hpp
-            - libraries/<< parameters.package >>/**/*.bih
+            - libraries/<< parameters.package >>/**.gcno
             - lib/libbirch-<< parameters.tar >>*.*
             - include/birch-<< parameters.tar >>.*
       - when:
@@ -157,11 +153,7 @@ commands:
       - persist_to_workspace:
           root: .
           paths:
-            - libraries/<< parameters.package >>/**/*.gcno
-            - libraries/<< parameters.package >>/**/*.o
-            - libraries/<< parameters.package >>/**/*.cpp
-            - libraries/<< parameters.package >>/**/*.hpp
-            - libraries/<< parameters.package >>/**/*.bih
+            - libraries/<< parameters.package >>/**.gcno
             - lib/libbirch-<< parameters.tar >>*.*
             - include/birch-<< parameters.tar >>.*
       - when:

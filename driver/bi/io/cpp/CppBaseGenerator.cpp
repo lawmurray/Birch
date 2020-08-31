@@ -771,6 +771,6 @@ void bi::CppBaseGenerator::genTraceLine(const Location* loc) {
 
 void bi::CppBaseGenerator::genSourceLine(const Location* loc) {
   auto line = loc->firstLine;
-  auto file = fs::absolute(loc->file->path).string();
+  auto file = loc->file->path;
   line("#line " << line << " \"" << file << "\"");
 }
