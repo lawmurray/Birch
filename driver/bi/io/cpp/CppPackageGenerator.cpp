@@ -56,14 +56,14 @@ void bi::CppPackageGenerator::visit(const Package* o) {
     line("#define BI_" << name << "_HPP\n");
     line("#include \"libbirch.hpp\"\n");
 
-    for (auto header : o->headers) {
-      fs::path include = header->path;
+    for (auto name : o->packages) {
+      fs::path include(tar(name));
       include.replace_extension(".hpp");
       line("#include \"" << include.string() << "\"");
     }
 
     /* raw C++ code for headers */
-    for (auto file : o->files) {
+    for (auto file : o->sources) {
       for (auto o : *file->root) {
         auto raw = dynamic_cast<const Raw*>(o);
         if (raw) {

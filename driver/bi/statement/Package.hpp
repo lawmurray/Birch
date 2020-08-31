@@ -31,6 +31,11 @@ public:
   virtual ~Package();
 
   /**
+   * Add package dependency.
+   */
+  void addPackage(const std::string& name);
+
+  /**
    * Add header file.
    */
   void addHeader(const std::string& path);
@@ -48,6 +53,11 @@ public:
    * Package name.
    */
   std::string name;
+
+  /**
+   * Package dependencies;
+   */
+  std::list<std::string> packages;
 
   /**
    * Header files needed by the package.

@@ -1269,6 +1269,8 @@ bi::Package* bi::Driver::createPackage(bool includeRequires) {
   Package* package = new Package(packageName);
   if (includeRequires) {
     for (auto name : metaFiles["require.package"]) {
+      package->addPackage(name.string());
+
       /* add *.bih dependency */
       fs::path header = tar(name.string());
       header.replace_extension(".bih");

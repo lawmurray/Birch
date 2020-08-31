@@ -19,6 +19,10 @@ bi::Package::~Package() {
   //
 }
 
+void bi::Package::addPackage(const std::string& name) {
+  packages.push_back(name);
+}
+
 void bi::Package::addHeader(const std::string& path) {
   headers.push_back(new File(path));
   files.push_back(headers.back());
