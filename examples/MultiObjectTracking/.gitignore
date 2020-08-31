@@ -1,5 +1,4 @@
 /autom4te.cache/
-/build/
 /docs/
 /figs/
 /include/
@@ -30,9 +29,12 @@
 /mkdocs.yml
 /DOCS.md
 /.autotools
+/.libs
 .deps
 .dirstamp
-.libs
+*.bih
+*.hpp
+*.cpp
 *.la
 *.lo
 *.o
