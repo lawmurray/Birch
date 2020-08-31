@@ -85,8 +85,8 @@ commands:
       - persist_to_workspace:
           root: .
           paths:
-            - << parameters.lib >>/**/*.gcno
-            - lib/<< parameters.lib >>*.so*
+            - << parameters.lib >>
+            - lib/<< parameters.lib >>*
             - include/<< parameters.lib >>*
       - slack
 
@@ -112,9 +112,9 @@ commands:
       - persist_to_workspace:
           root: .
           paths:
-            - libraries/<< parameters.package >>/**/.libs/*.gcno
-            - lib/libbirch-<< parameters.tar >>*.*
-            - include/birch-<< parameters.tar >>.*
+            - libraries/<< parameters.package >>
+            - lib/libbirch-<< parameters.tar >>*
+            - include/birch-<< parameters.tar >>*
       - when:
           condition: << parameters.coverage >>
           steps:
@@ -153,9 +153,9 @@ commands:
       - persist_to_workspace:
           root: .
           paths:
-            - libraries/<< parameters.package >>/**/.libs/*.gcno
-            - lib/libbirch-<< parameters.tar >>*.*
-            - include/birch-<< parameters.tar >>.*
+            - libraries/<< parameters.package >>
+            - lib/libbirch-<< parameters.tar >>*
+            - include/birch-<< parameters.tar >>*
       - when:
           condition: << parameters.coverage >>
           steps:
