@@ -11,18 +11,19 @@ executors:
 
 commands:
   environment:
-    description: Set environment variables.
+    description: Set environment variables
     steps:
       - run:
           name: Environment
           command: |
-              echo "export BIRCH_PREFIX=/root/project" >> $BASH_ENV
+              echo "export PREFIX=/root/project" >> $BASH_ENV
+              echo "export PATH=\$PREFIX/bin:$PATH" >> $BASH_ENV
+              echo "export CPLUS_INCLUDE_PATH=\$PREFIX/include:$CPLUS_INCLUDE_PATH" >> $BASH_ENV
+              echo "export LD_LIBRARY_PATH=\$PREFIX/lib:$LD_LIBRARY_PATH" >> $BASH_ENV
+              echo "export OMP_NUM_THREADS=2" >> $BASH_ENV
               echo "export BIRCH_FLAGS='--unit=dir --jobs=2'" >> $BASH_ENV
               echo "export CONFIGURE_FLAGS='--disable-debug --enable-test --enable-release'" >> $BASH_ENV
-              echo "export PATH=$BIRCH_PREFIX/bin:$PATH" >> $BASH_ENV
-              echo "export CPLUS_INCLUDE_PATH=$BIRCH_PREFIX/include:$CPLUS_INCLUDE_PATH" >> $BASH_ENV
-              echo "export LD_LIBRARY_PATH=$BIRCH_PREFIX/lib:$LD_LIBRARY_PATH" >> $BASH_ENV
-              echo "export OMP_NUM_THREADS=2" >> $BASH_ENV
+              echo "export VERSION=`git describe | sed -E 's/v([0-9]+)-([0-9]+)-g[0-9a-f]+/\1.\2/'`" >> $BASH_ENV
             # ^ limited to two parallel jobs to avoid exhausting memory
 
   slack:
@@ -32,15 +33,16 @@ commands:
          fail_only: true
 
   driver:
-    description: Build the driver.
+    description: Build the driver
     steps:
+      - checkout
       - environment
       - run:
           name: Build
           command: |
               cd driver
               ./bootstrap
-              ./configure --prefix=$BIRCH_PREFIX CXXFLAGS="-Wall -Wno-overloaded-virtual -g -O0 -fno-inline -fprofile-abs-path --coverage"
+              ./configure --prefix=$PREFIX CXXFLAGS="-Wall -Wno-overloaded-virtual -g -O0 -fno-inline -fprofile-abs-path --coverage"
               make -j 4
               make install
       - slack
@@ -50,10 +52,10 @@ commands:
             - '*'
 
   cxx:
-    description: Build a C++ library.
+    description: Build a C++ library
     parameters:
       package:
-        description: Name of the library.
+        description: Name of the library
         type: string
     steps:
       - environment
@@ -64,7 +66,7 @@ commands:
           command: |
               cd << parameters.package >>
               ./bootstrap
-              ./configure --prefix=$BIRCH_PREFIX $CONFIGURE_FLAGS
+              ./configure --prefix=$PREFIX $CONFIGURE_FLAGS
               make -j 4
               make install
       - slack
@@ -76,7 +78,7 @@ commands:
             - include/<< parameters.package >>*
     
   library:
-    description: Build a Birch library package and optionally run tests.
+    description: Build a Birch library package and optionally run tests
     parameters:
       package:
         description: Name of package (e.g. Standard).
@@ -128,10 +130,10 @@ commands:
             - include/<< parameters.tar >>*
             
   example:
-    description: "Build a Birch example package and optionally run tests."
+    description: Build a Birch example package and optionally run tests
     parameters:
       package:
-        description: Name of package (e.g. LinearGaussian).
+        description: Name of package (e.g. LinearGaussian)
         type: string
       smoke:
         description: Run smoke tests?
@@ -185,7 +187,6 @@ jobs:
   driver:
     executor: test
     steps:
-      - checkout
       - driver
 
   libbirch:
