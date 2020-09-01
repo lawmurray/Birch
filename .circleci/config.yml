@@ -50,6 +50,7 @@ commands:
           root: .
           paths:
             - '*'
+            - .*
 
   cxx:
     description: Build a C++ library
