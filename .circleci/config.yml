@@ -310,7 +310,9 @@ jobs:
       - environment
       - run:
           name: Checkout package sources
-          command: osc checkout home:lawmurray:birch
+          command: |
+              echo "[https://api.opensuse.org]\nuser = $OSC_USERNAME\npass = $OSC_PASSWORD\n" > /root/.config/osc/oscrc
+              osc checkout home:lawmurray:birch
       - package_linux:
           dir: driver
           tar: birch
