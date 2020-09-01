@@ -102,7 +102,7 @@ commands:
           name: Build
           command: |
               cd libraries/<< parameters.package >>
-              birch build $BIRCH_FLAGS
+              birch build --prefix=PREFIX $CONFIGURE_FLAGS $BIRCH_FLAGS
               birch install
       - when:
           condition: << parameters.smoke >>
@@ -155,7 +155,7 @@ commands:
           name: Build
           command: |
               cd examples/<< parameters.package >>
-              birch build $BIRCH_FLAGS
+              birch build --prefix=PREFIX $CONFIGURE_FLAGS $BIRCH_FLAGS
       - when:
           condition: << parameters.smoke >>
           steps:

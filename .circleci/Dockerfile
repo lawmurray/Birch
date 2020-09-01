@@ -27,4 +27,5 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     mongo-tools \
     moreutils \
     time \
+    osc \
     && rm -rf /var/lib/apt/lists/*
