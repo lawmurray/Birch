@@ -112,6 +112,7 @@ commands:
                 name: Run smoke tests
                 command: |
                     cd libraries/<< parameters.package >>
+                    export MODE=test
                     ./smoke.sh
       - when:
           condition: << parameters.unit >>
@@ -120,6 +121,7 @@ commands:
                 name: Run unit tests
                 command: |
                     cd libraries/<< parameters.package >>
+                    export MODE=release
                     ./test.sh
       - slack
       - codecov/upload
@@ -164,6 +166,7 @@ commands:
                 name: Run smoke tests
                 command: |
                     cd examples/<< parameters.package >>
+                    export MODE=test
                     ./smoke.sh
       - when:
           condition: << parameters.unit >>
@@ -172,6 +175,7 @@ commands:
                 name: Run unit tests
                 command: |
                     cd examples/<< parameters.package >>
+                    export MODE=release
                     ./test.sh
       - slack
       - codecov/upload
@@ -183,6 +187,24 @@ commands:
                 command: |
                     cd examples/<< parameters.package >>
                     mongoimport --host $MONGODB_HOST --ssl --username $MONGODB_USERNAME --password $MONGODB_PASSWORD --authenticationDatabase admin --db $CIRCLE_BRANCH --collection << parameters.package >> --jsonArray --file output/*.json
+
+  package_linux:
+    description: Update Open Build Service package
+    parameters:
+      dir:
+        description: Directory of package (e.g. libraries/Standard).
+        type: string
+      tar:
+        description: Tarname of package (e.g. birch-standard).
+        type: string
+    steps:
+      - run:
+          name: Environment
+          command: |
+              cd << parameters.dir >>
+              make dist
+              mv << parameters.tar >>-unversioned.tar.gz ~/osc/home:lawmurray:birch/<< parameters.tar >>/.
+              osc status
 
 jobs:
   driver:
@@ -282,6 +304,18 @@ jobs:
           unit: true
           mongodb: true
 
+  deploy_linux:
+    executor: test
+    steps:
+      - environment
+      - run:
+          name: Checkout package sources
+          command: osc checkout home:lawmurray:birch
+      - package_linux:
+          dir: driver
+          tar: birch
+
+
 workflows:
   version: 2
   test:
@@ -338,3 +372,13 @@ workflows:
           requires:
             - libraries_Cairo
             - libraries_SQLite
+
+      - deploy_linux:
+          requires:
+            - examples_LinearGaussian
+            - examples_LinearRegression
+            - examples_MixedGaussian
+            - examples_PoissonGaussian
+            - examples_SIR
+            - examples_MultiObjectTracking
+            - examples_VectorBorneDisease
