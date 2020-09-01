@@ -311,6 +311,7 @@ jobs:
       - run:
           name: Checkout package sources
           command: |
+            | mkdir -p /root/.config/osc
               echo "[https://api.opensuse.org]\nuser = $OSC_USERNAME\npass = $OSC_PASSWORD\n" > /root/.config/osc/oscrc
               osc checkout home:lawmurray:birch
       - package_linux:
