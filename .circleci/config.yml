@@ -112,7 +112,7 @@ commands:
                 name: Run smoke tests
                 command: |
                     cd libraries/<< parameters.package >>
-                    export MODE=test
+                    export BIRCH_MODE=test
                     ./smoke.sh
       - when:
           condition: << parameters.unit >>
@@ -121,7 +121,7 @@ commands:
                 name: Run unit tests
                 command: |
                     cd libraries/<< parameters.package >>
-                    export MODE=release
+                    export BIRCH_MODE=release
                     ./test.sh
       - slack
       - codecov/upload
@@ -166,7 +166,7 @@ commands:
                 name: Run smoke tests
                 command: |
                     cd examples/<< parameters.package >>
-                    export MODE=test
+                    export BIRCH_MODE=test
                     ./smoke.sh
       - when:
           condition: << parameters.unit >>
@@ -175,7 +175,7 @@ commands:
                 name: Run unit tests
                 command: |
                     cd examples/<< parameters.package >>
-                    export MODE=release
+                    export BIRCH_MODE=release
                     ./test.sh
       - slack
       - codecov/upload
