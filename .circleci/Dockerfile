@@ -25,4 +25,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libsqlite3-dev \
     libcairo2-dev \
     mongo-tools \
+    moreutils \
+    time \
     && rm -rf /var/lib/apt/lists/*

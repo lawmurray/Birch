@@ -11,7 +11,7 @@ executors:
 
 commands:
   environment:
-    description: "Set environment variables."
+    description: Set environment variables.
     steps:
       - run:
           name: Environment
@@ -34,6 +34,7 @@ commands:
   driver:
     description: Build the driver.
     steps:
+      - environment
       - run:
           name: Build
           command: |
@@ -42,11 +43,11 @@ commands:
               ./configure --prefix=$BIRCH_PREFIX CXXFLAGS="-Wall -Wno-overloaded-virtual -g -O0 -fno-inline -fprofile-abs-path --coverage"
               make -j 4
               make install
+      - slack
       - persist_to_workspace:
           root: .
           paths:
             - '*'
-      - slack
 
   cxx:
     description: Build a C++ library.
@@ -66,16 +67,16 @@ commands:
               ./configure --prefix=$BIRCH_PREFIX $CONFIGURE_FLAGS
               make -j 4
               make install
+      - slack
       - persist_to_workspace:
           root: .
           paths:
             - << parameters.package >>
             - lib/<< parameters.package >>*
             - include/<< parameters.package >>*
-      - slack
     
   library:
-    description: "Build a Birch library package and optionally run tests."
+    description: Build a Birch library package and optionally run tests.
     parameters:
       package:
         description: Name of package (e.g. Standard).
@@ -284,7 +285,7 @@ workflows:
   test:
     jobs:
       - driver
-      
+
       - libbirch:
           requires:
             - driver
