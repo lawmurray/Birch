@@ -5,50 +5,34 @@ orbs:
   slack: circleci/slack@3.4.2
 
 executors:
-  # executors have limited memory, so it's necessary to reduce the thread
-  # thread count for each of these to 2
-  smoke:
-    docker:
-      - image: lawmurray/birch-circleci:ubuntu-20.04
-    environment:
-      BIRCH_PREFIX: "/root/project"
-      BIRCH_FLAGS: "--unit=dir --jobs=2"
-      BIRCH_MODE: "test"
-      CONFIGURE_FLAGS: "--disable-debug --enable-test --disable-release"
-      OMP_NUM_THREADS: "2"
-
   test:
     docker:
       - image: lawmurray/birch-circleci:ubuntu-20.04
-    environment:
-      BIRCH_PREFIX: "/root/project"
-      BIRCH_FLAGS: "--unit=dir --jobs=2"
-      BIRCH_MODE: "release"
-      CONFIGURE_FLAGS: "--disable-debug --disable-test --enable-release"
-      OMP_NUM_THREADS: "2"
 
 commands:
-  # set environment variables
   environment:
     description: "Set environment variables."
     steps:
       - run:
           name: Environment
           command: |
+              echo "export BIRCH_PREFIX=/root/project" >> $BASH_ENV
+              echo "export BIRCH_FLAGS='--unit=dir --jobs=2'" >> $BASH_ENV
+              echo "export CONFIGURE_FLAGS='--disable-debug --enable-test --enable-release'" >> $BASH_ENV
               echo "export PATH=$BIRCH_PREFIX/bin:$PATH" >> $BASH_ENV
               echo "export CPLUS_INCLUDE_PATH=$BIRCH_PREFIX/include:$CPLUS_INCLUDE_PATH" >> $BASH_ENV
               echo "export LD_LIBRARY_PATH=$BIRCH_PREFIX/lib:$LD_LIBRARY_PATH" >> $BASH_ENV
+              echo "export OMP_NUM_THREADS=2" >> $BASH_ENV
+            # ^ limited to two parallel jobs to avoid exhausting memory
 
-  # send Slack message on failure
   slack:
-    description: "Send Slack message on failure"
+    description: Send Slack message on failure
     steps:
       - slack/status:
          fail_only: true
 
-  # build the driver
-  build_driver:
-    description: "Build driver."
+  driver:
+    description: Build the driver.
     steps:
       - run:
           name: Build
@@ -64,11 +48,11 @@ commands:
             - '*'
       - slack
 
-  # build a C++ library
-  build_lib:
-    description: "Build C++ library."
+  cxx:
+    description: Build a C++ library.
     parameters:
-      lib:
+      package:
+        description: Name of the library.
         type: string
     steps:
       - environment
@@ -77,7 +61,7 @@ commands:
       - run:
           name: Build C++ library
           command: |
-              cd << parameters.lib >>
+              cd << parameters.package >>
               ./bootstrap
               ./configure --prefix=$BIRCH_PREFIX $CONFIGURE_FLAGS
               make -j 4
@@ -85,56 +69,26 @@ commands:
       - persist_to_workspace:
           root: .
           paths:
-            - << parameters.lib >>
-            - lib/<< parameters.lib >>*
-            - include/<< parameters.lib >>*
-      - slack
-
-  # build a library package; this builds the library and persists the
-  # workspace to downstream jobs
-  build_library:
-    description: "Build library package."
-    parameters:
-      package:
-        type: string
-      tar:
-        type: string
-      coverage:
-        type: boolean
-        default: false
-    steps:
-      - environment
-      - attach_workspace:
-          at: .
-      - run:
-          name: Build library
-          command: cd libraries/<< parameters.package >> && birch build $BIRCH_FLAGS && birch install
-      - persist_to_workspace:
-          root: .
-          paths:
-            - libraries/<< parameters.package >>
-            - lib/libbirch-<< parameters.tar >>*
-            - include/birch-<< parameters.tar >>*
-      - when:
-          condition: << parameters.coverage >>
-          steps:
-            - codecov/upload
+            - << parameters.package >>
+            - lib/<< parameters.package >>*
+            - include/<< parameters.package >>*
       - slack
     
-  # build and run a library package; this builds the library and persists the
-  # workspace to downstream jobs, then builds and runs the library's
-  # associated test package (the artifacts of which do not need to be
-  # persisted to downstream jobs)
-  build_and_run_library:
-    description: "Build and test a library package."
+  library:
+    description: "Build a Birch library package and optionally run tests."
     parameters:
       package:
+        description: Name of package (e.g. Standard).
         type: string
       tar:
+        description: Tarname of package (e.g. birch-standard).
         type: string
-      command:
-        type: string
-      coverage:
+      smoke:
+        description: Run smoke tests?
+        type: boolean
+        default: false
+      unit:
+        description: Run unit tests?
         type: boolean
         default: false
     steps:
@@ -142,40 +96,52 @@ commands:
       - attach_workspace:
           at: .
       - run:
-          name: Build library
-          command: cd libraries/<< parameters.package >> && birch build $BIRCH_FLAGS && birch install
-      - run:
-          name: Build test
-          command: cd libraries/<< parameters.package >>Test && birch build $BIRCH_FLAGS && birch install
-      - run:
-          name: Run test
-          command: cd libraries/<< parameters.package >>Test && << parameters.command >>
+          name: Build
+          command: |
+              cd libraries/<< parameters.package >>
+              birch build $BIRCH_FLAGS
+              birch install
+      - when:
+          condition: << parameters.smoke >>
+          steps:
+            - run:
+                name: Run smoke tests
+                command: |
+                    cd libraries/<< parameters.package >>
+                    ./smoke.sh
+      - when:
+          condition: << parameters.unit >>
+          steps:
+            - run:
+                name: Run unit tests
+                command: |
+                    cd libraries/<< parameters.package >>
+                    ./test.sh
+      - slack
+      - codecov/upload
       - persist_to_workspace:
           root: .
           paths:
             - libraries/<< parameters.package >>
-            - lib/libbirch-<< parameters.tar >>*
-            - include/birch-<< parameters.tar >>*
-      - when:
-          condition: << parameters.coverage >>
-          steps:
-            - codecov/upload
-      - slack
+            - lib/lib<< parameters.tar >>*
+            - include/<< parameters.tar >>*
             
-  # build and run an example package
-  build_and_run_example:
-    description: "Build and test an example package."
+  example:
+    description: "Build a Birch example package and optionally run tests."
     parameters:
       package:
+        description: Name of package (e.g. LinearGaussian).
         type: string
-      tar:
-        type: string
-      command:
-        type: string
-      mongodb:
+      smoke:
+        description: Run smoke tests?
         type: boolean
         default: false
-      coverage:
+      unit:
+        description: Run unit tests?
+        type: boolean
+        default: false
+      mongodb:
+        description: Upload unit test output to MongoDB Atlas?
         type: boolean
         default: false
     steps:
@@ -183,353 +149,189 @@ commands:
       - attach_workspace:
           at: .
       - run:
-          name: Build example
-          command: cd examples/<< parameters.package >> && birch build $BIRCH_FLAGS && birch install
-      - run:
-          name: Run example
-          command: cd examples/<< parameters.package >> && << parameters.command >>
+          name: Build
+          command: |
+              cd examples/<< parameters.package >>
+              birch build $BIRCH_FLAGS
+      - when:
+          condition: << parameters.smoke >>
+          steps:
+            - run:
+                name: Run smoke tests
+                command: |
+                    cd examples/<< parameters.package >>
+                    ./smoke.sh
+      - when:
+          condition: << parameters.unit >>
+          steps:
+            - run:
+                name: Run unit tests
+                command: |
+                    cd examples/<< parameters.package >>
+                    ./test.sh
+      - slack
+      - codecov/upload
       - when:
           condition: << parameters.mongodb >>
           steps:
             - run:
                 name: MongoDB import
-                command: cd examples/<< parameters.package >> && mongoimport --host $MONGODB_HOST --ssl --username $MONGODB_USERNAME --password $MONGODB_PASSWORD --authenticationDatabase admin --db $CIRCLE_BRANCH --collection << parameters.package >> --jsonArray --file output/*.json
-      - when:
-          condition: << parameters.coverage >>
-          steps:
-            - codecov/upload
-      - slack
+                command: |
+                    cd examples/<< parameters.package >>
+                    mongoimport --host $MONGODB_HOST --ssl --username $MONGODB_USERNAME --password $MONGODB_PASSWORD --authenticationDatabase admin --db $CIRCLE_BRANCH --collection << parameters.package >> --jsonArray --file output/*.json
 
 jobs:
-  # driver
   driver:
-    executor: smoke
+    executor: test
     steps:
       - checkout
-      - build_driver
+      - driver
 
-  # library smoke tests
-  smoke_libbirch:
-    executor: smoke
+  libbirch:
+    executor: test
     steps:
-      - build_lib:
-          lib: libbirch
+      - cxx:
+          package: libbirch
 
-  smoke_libraries_Cairo:
-    executor: smoke
+  libraries_Standard:
+    executor: test
     steps:
-      - build_library:
-          package: Cairo
-          tar: cairo
-          coverage: true
-
-  smoke_libraries_SQLite:
-    executor: smoke
-    steps:
-      - build_library:
-          package: SQLite
-          tar: sqlite
-          coverage: true
-  
-  smoke_libraries_Standard:
-    executor: smoke
-    steps:
-      - build_and_run_library:
+      - library:
           package: Standard
-          tar: standard
-          command: ./smoke.sh
-          coverage: true
-
-  # example smoke tests
-  smoke_examples_LinearGaussian:
-    executor: smoke
-    steps: 
-      - build_and_run_example:
-          package: LinearGaussian
-          tar: lineargaussian
-          command: ./smoke.sh
-          coverage: true
-
-  smoke_examples_LinearRegression:
-    executor: smoke
-    steps: 
-      - build_and_run_example:
-          package: LinearRegression
-          tar: linearregression
-          command: ./smoke.sh
-          coverage: true
-
-  smoke_examples_MixedGaussian:
-    executor: smoke
-    steps: 
-      - build_and_run_example:
-          package: MixedGaussian
-          tar: mixedgaussian
-          command: ./smoke.sh
-          coverage: true
-
-  smoke_examples_MultiObjectTracking:
-    executor: smoke
-    steps: 
-      - build_and_run_example:
-          package: MultiObjectTracking
-          tar: multiobjecttracking
-          command: ./smoke.sh
-          coverage: true
-
-  smoke_examples_PoissonGaussian:
-    executor: smoke
-    steps: 
-      - build_and_run_example:
-          package: PoissonGaussian
-          tar: poissongaussian
-          command: ./smoke.sh
-          coverage: true
-
-  smoke_examples_SIR:
-    executor: smoke
-    steps: 
-      - build_and_run_example:
-          package: SIR
-          tar: sir
-          command: ./smoke.sh
-          coverage: true
-
-  smoke_examples_VectorBorneDisease:
-    executor: smoke
-    steps: 
-      - build_and_run_example:
-          package: VectorBorneDisease
-          tar: vectorbornedisease
-          command: ./smoke.sh
-          coverage: true
-
-  # library thorough tests
-  test_libbirch:
+          tar: birch-standard
+          smoke: true
+          unit: true
+          
+  libraries_Cairo:
     executor: test
     steps:
-      - build_lib:
-          lib: libbirch
-
-  test_libraries_Cairo:
-    executor: test
-    steps:
-      - build_library:
+      - library:
           package: Cairo
-          tar: cairo
+          tar: birch-cairo
 
-  test_libraries_SQLite:
+  libraries_SQLite:
     executor: test
     steps:
-      - build_library:
+      - library:
           package: SQLite
-          tar: sqlite
+          tar: birch-sqlite
 
-  test_libraries_Standard:
-    executor: test
-    steps:
-      - build_and_run_library:
-          package: Standard
-          tar: standard
-          command: ./test.sh
-
-  # example thorough tests
-  test_examples_LinearGaussian:
+  examples_LinearGaussian:
     executor: test
     steps: 
-      - build_and_run_example:
+      - example:
           package: LinearGaussian
-          tar: lineargaussian
-          command: ./test.sh
+          smoke: true
+          unit: true
           mongodb: true
 
-  test_examples_LinearRegression:
+  examples_LinearRegression:
     executor: test
     steps: 
-      - build_and_run_example:
+      - example:
           package: LinearRegression
-          tar: linearregression
-          command: ./test.sh
+          smoke: true
+          unit: true
           mongodb: true
 
-  test_examples_MixedGaussian:
+  examples_MixedGaussian:
     executor: test
     steps: 
-      - build_and_run_example:
+      - example:
           package: MixedGaussian
-          tar: mixedgaussian
-          command: ./test.sh
+          smoke: true
+          unit: true
           mongodb: true
 
-  test_examples_MultiObjectTracking:
+  examples_MultiObjectTracking:
     executor: test
     steps: 
-      - build_and_run_example:
+      - example:
           package: MultiObjectTracking
-          tar: multiobjecttracking
-          command: ./test.sh
+          smoke: true
+          unit: true
           mongodb: true
 
-  test_examples_PoissonGaussian:
+  examples_PoissonGaussian:
     executor: test
     steps: 
-      - build_and_run_example:
+      - example:
           package: PoissonGaussian
-          tar: poissongaussian
-          command: ./test.sh
+          smoke: true
+          unit: true
           mongodb: true
 
-  test_examples_SIR:
+  examples_SIR:
     executor: test
     steps: 
-      - build_and_run_example:
+      - example:
           package: SIR
-          tar: sir
-          command: ./test.sh
+          smoke: true
+          unit: true
           mongodb: true
 
-  test_examples_VectorBorneDisease:
+  examples_VectorBorneDisease:
     executor: test
     steps: 
-      - build_and_run_example:
+      - example:
           package: VectorBorneDisease
-          tar: vectorbornedisease
-          command: ./test.sh
+          smoke: true
+          unit: true
           mongodb: true
 
 workflows:
   version: 2
   test:
     jobs:
-      - driver:
-          context: lawmurray
-
-      - smoke_libbirch:
-          context: lawmurray
+      - driver
+      
+      - libbirch:
           requires:
             - driver
 
-      - smoke_libraries_Standard:
-          context: lawmurray
+      - libraries_Standard:
           requires:
-            - smoke_libbirch
+            - libbirch
 
-      - smoke_libraries_Cairo:
-          context: lawmurray
+      - libraries_Cairo:
           requires:
-            - smoke_libraries_Standard
+            - libraries_Standard
 
-      - smoke_libraries_SQLite:
-          context: lawmurray
+      - libraries_SQLite:
           requires:
-            - smoke_libraries_Standard
+            - libraries_Standard
     
-      - smoke_examples_LinearGaussian:
-          context: lawmurray
+      - examples_LinearGaussian:
           requires:
-            - smoke_libraries_Cairo
-            - smoke_libraries_SQLite
+            - libraries_Cairo
+            - libraries_SQLite
 
-      - smoke_examples_LinearRegression:
-          context: lawmurray
+      - examples_LinearRegression:
           requires:
-            - smoke_libraries_Cairo
-            - smoke_libraries_SQLite
+            - libraries_Cairo
+            - libraries_SQLite
 
-      - smoke_examples_MixedGaussian:
-          context: lawmurray
+      - examples_MixedGaussian:
           requires:
-            - smoke_libraries_Cairo
-            - smoke_libraries_SQLite
+            - libraries_Cairo
+            - libraries_SQLite
 
-      - smoke_examples_PoissonGaussian:
-          context: lawmurray
+      - examples_PoissonGaussian:
           requires:
-            - smoke_libraries_Cairo
-            - smoke_libraries_SQLite
+            - libraries_Cairo
+            - libraries_SQLite
 
-      - smoke_examples_SIR:
-          context: lawmurray
+      - examples_SIR:
           requires:
-            - smoke_libraries_Cairo
-            - smoke_libraries_SQLite
+            - libraries_Cairo
+            - libraries_SQLite
 
-      - smoke_examples_MultiObjectTracking:
-          context: lawmurray
+      - examples_MultiObjectTracking:
           requires:
-            - smoke_libraries_Cairo
-            - smoke_libraries_SQLite
+            - libraries_Cairo
+            - libraries_SQLite
       
-      - smoke_examples_VectorBorneDisease:
-          context: lawmurray
+      - examples_VectorBorneDisease:
           requires:
-            - smoke_libraries_Cairo
-            - smoke_libraries_SQLite
-
-      - test_libbirch:
-          context: lawmurray
-          requires:
-            - smoke_examples_LinearGaussian
-            - smoke_examples_LinearRegression
-            - smoke_examples_MixedGaussian
-            - smoke_examples_PoissonGaussian
-            - smoke_examples_SIR
-            - smoke_examples_MultiObjectTracking
-            - smoke_examples_VectorBorneDisease
-
-      - test_libraries_Standard:
-          context: lawmurray
-          requires:
-            - test_libbirch
-
-      - test_libraries_Cairo:
-          context: lawmurray
-          requires:
-            - test_libraries_Standard
-
-      - test_libraries_SQLite:
-          context: lawmurray
-          requires:
-            - test_libraries_Standard
-    
-      - test_examples_LinearGaussian:
-          context: lawmurray
-          requires:
-            - test_libraries_Cairo
-            - test_libraries_SQLite
-
-      - test_examples_LinearRegression:
-          context: lawmurray
-          requires:
-            - test_libraries_Cairo
-            - test_libraries_SQLite
-
-      - test_examples_MixedGaussian:
-          context: lawmurray
-          requires:
-            - test_libraries_Cairo
-            - test_libraries_SQLite
-
-      - test_examples_PoissonGaussian:
-          context: lawmurray
-          requires:
-            - test_libraries_Cairo
-            - test_libraries_SQLite
-
-      - test_examples_SIR:
-          context: lawmurray
-          requires:
-            - test_libraries_Cairo
-            - test_libraries_SQLite
-
-      - test_examples_MultiObjectTracking:
-          context: lawmurray
-          requires:
-            - test_libraries_Cairo
-            - test_libraries_SQLite
-      
-      - test_examples_VectorBorneDisease:
-          context: lawmurray
-          requires:
-            - test_libraries_Cairo
-            - test_libraries_SQLite
+            - libraries_Cairo
+            - libraries_SQLite
