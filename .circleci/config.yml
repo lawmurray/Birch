@@ -312,12 +312,12 @@ jobs:
           name: Checkout package sources
           command: |
               mkdir -p /root/.config/osc
-              echo "[https://api.opensuse.org]\nuser = $OSC_USERNAME\npass = $OSC_PASSWORD\n" > /root/.config/osc/oscrc
+              echo "[general]\napiurl = https://api.opensuse.org\n\n[https://api.opensuse.org]\nuser = $OSC_USERNAME\npass = $OSC_PASSWORD\n" > /root/.config/osc/oscrc
               osc checkout home:lawmurray:birch
       - package_linux:
           dir: driver
           tar: birch
-
+      - slack
 
 workflows:
   version: 2
