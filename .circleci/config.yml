@@ -11,10 +11,16 @@ executors:
 
 commands:
   environment:
-    description: Set environment variables
+    description: Preparing more environment variables
     steps:
       - run:
+          name: Git check
+          description: Fail if not a git repository
+          command: git describe
+            # ensures failure if git describe to find version number fails below
+      - run:
           name: Environment
+          description: Set environment variables for builds
           command: |
               echo "export PREFIX=/root/project" >> $BASH_ENV
               echo "export PATH=\$PREFIX/bin:$PATH" >> $BASH_ENV
@@ -25,7 +31,7 @@ commands:
               echo "export CONFIGURE_FLAGS='--disable-debug --enable-test --enable-release'" >> $BASH_ENV
               echo "export VERSION=`git describe | sed -E 's/v([0-9]+)-([0-9]+)-g[0-9a-f]+/\1.\2/'`" >> $BASH_ENV
               echo "export OSC=/root/project/osc/home:lawmurray:birch" >> $BASH_ENV
-            # ^ limited to two parallel jobs to avoid exhausting memory
+            # limited to two parallel jobs to avoid exhausting memory
 
   slack:
     description: Send Slack message on failure
@@ -60,9 +66,9 @@ commands:
         description: Name of the library
         type: string
     steps:
-      - environment
       - attach_workspace:
           at: .
+      - environment
       - run:
           name: Build C++ library
           command: |
@@ -97,9 +103,9 @@ commands:
         type: boolean
         default: false
     steps:
-      - environment
       - attach_workspace:
           at: .
+      - environment
       - run:
           name: Build
           command: |
@@ -152,9 +158,9 @@ commands:
         type: boolean
         default: false
     steps:
-      - environment
       - attach_workspace:
           at: .
+      - environment
       - run:
           name: Build
           command: |
@@ -197,6 +203,7 @@ commands:
         type: string
     steps:
       - run:
+          name: Update version number in file
           command: |
             cat << parameters.file >> | 
             sed -E "s/Version: [0-9]+.[0-9]+/Version: $VERSION/g" |
@@ -215,7 +222,7 @@ commands:
         type: string
     steps:
       - run:
-          name: Source tarball
+          name: Prepare source tarball
           command: |
               cd << parameters.dir >>
               make dist
@@ -330,9 +337,9 @@ jobs:
   deploy_linux:
     executor: test
     steps:
-      - environment
       - attach_workspace:
           at: .
+      - environment
       - run:
           name: Configure OSC
           command: |
