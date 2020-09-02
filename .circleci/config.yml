@@ -312,7 +312,11 @@ jobs:
           name: Checkout package sources
           command: |
               mkdir -p /root/.config/osc
-              echo $"[general]\napiurl = https://api.opensuse.org\n\n[https://api.opensuse.org]\nuser = $OSC_USERNAME\npass = $OSC_PASSWORD\n" > /root/.config/osc/oscrc
+              echo [general]                           > /root/.config/osc/oscrc
+              echo apiurl = https://api.opensuse.org  >> /root/.config/osc/oscrc
+              echo [https://api.opensuse.org]         >> /root/.config/osc/oscrc
+              echo user = $OSC_USERNAME               >> /root/.config/osc/oscrc
+              echo pass = $OSC_PASSWORD               >> /root/.config/osc/oscrc
               cat /root/.config/osc/oscrc
               osc checkout home:lawmurray:birch
       - package_linux:
