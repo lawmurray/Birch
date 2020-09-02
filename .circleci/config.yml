@@ -24,6 +24,7 @@ commands:
               echo "export BIRCH_FLAGS='--unit=dir --jobs=2'" >> $BASH_ENV
               echo "export CONFIGURE_FLAGS='--disable-debug --enable-test --enable-release'" >> $BASH_ENV
               echo "export VERSION=`git describe | sed -E 's/v([0-9]+)-([0-9]+)-g[0-9a-f]+/\1.\2/'`" >> $BASH_ENV
+              echo "export OSC=/root/project/osc/home:lawmurray:birch" >> $BASH_ENV
             # ^ limited to two parallel jobs to avoid exhausting memory
 
   slack:
@@ -188,8 +189,23 @@ commands:
                     cd examples/<< parameters.package >>
                     mongoimport --host $MONGODB_HOST --ssl --username $MONGODB_USERNAME --password $MONGODB_PASSWORD --authenticationDatabase admin --db $CIRCLE_BRANCH --collection << parameters.package >> --jsonArray --file output/*.json
 
+  update_version:
+    description: Update Linux package version number
+    parameters:
+      file:
+        description: File name
+        type: string
+    steps:
+      - run:
+          command: |
+            cat << parameters.file >> | 
+            sed -E "s/Version: [0-9]+.[0-9]+/Version: $VERSION/g" |
+            sed -E "s/pkgver=[0-9]+.[0-9]+/pkgver=$VERSION/g" |
+            sed -E "s/>=( ?)[0-9]+.[0-9]+/>=\\1$VERSION/g" |
+            sponge << parameters.file >>
+
   package_linux:
-    description: Update Open Build Service package
+    description: Update Linux package
     parameters:
       dir:
         description: Directory of package (e.g. libraries/Standard).
@@ -199,13 +215,20 @@ commands:
         type: string
     steps:
       - run:
-          name: Environment
+          name: Source tarball
           command: |
               cd << parameters.dir >>
               make dist
-              mv << parameters.tar >>-unversioned.tar.gz ~/osc/home:lawmurray:birch/<< parameters.tar >>/.
-              osc status
-
+              mv << parameters.tar >>-unversioned.tar.gz $OSC/<< parameters.tar >>/.
+      - update_version:
+          file: $OSC/<< parameters.tar >>/<< parameters.tar >>.spec
+      - update_version:
+          file: $OSC/<< parameters.tar >>/<< parameters.tar >>.dsc
+      - update_version:
+          file: $OSC/<< parameters.tar >>/debian.control
+      - update_version:
+          file: $OSC/<< parameters.tar >>/PKGBUILD
+          
 jobs:
   driver:
     executor: test
@@ -311,19 +334,40 @@ jobs:
       - attach_workspace:
           at: .
       - run:
-          name: Checkout package sources
+          name: Configure OSC
           command: |
               mkdir -p /root/.config/osc
-              echo [general]                           > /root/.config/osc/oscrc
-              echo apiurl = https://api.opensuse.org  >> /root/.config/osc/oscrc
-              echo [https://api.opensuse.org]         >> /root/.config/osc/oscrc
-              echo user = $OSC_USERNAME               >> /root/.config/osc/oscrc
-              echo pass = $OSC_PASSWORD               >> /root/.config/osc/oscrc
-              cat /root/.config/osc/oscrc
-              osc checkout home:lawmurray:birch
+              echo [general]                          > /root/.config/osc/oscrc
+              echo apiurl = https://api.opensuse.org >> /root/.config/osc/oscrc
+              echo [https://api.opensuse.org]        >> /root/.config/osc/oscrc
+              echo user = $OSC_USERNAME              >> /root/.config/osc/oscrc
+              echo pass = $OSC_PASSWORD              >> /root/.config/osc/oscrc
+      - run:
+          name: Checkout package sources
+          command: |
+             mkdir osc
+             cd osc
+             osc checkout home:lawmurray:birch
       - package_linux:
           dir: driver
           tar: birch
+      - package_linux:
+          dir: libbirch
+          tar: libbirch
+      - package_linux:
+          dir: libraries/Standard
+          tar: birch-standard
+      - package_linux:
+          dir: libraries/Cairo
+          tar: birch-cairo
+      - package_linux:
+          dir: libraries/SQLite
+          tar: birch-sqlite
+      - run:
+          name: Commit package sources
+          command: |
+            cd $OSC
+            osc commit -m "Updated to version $VERSION."
       - slack
 
 workflows:
