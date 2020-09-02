@@ -1,7 +1,7 @@
 FROM opensuse/tumbleweed
-RUN zypper --non-interactive --gpg-auto-import-keys addrepo https://download.opensuse.org/repositories/server:database/openSUSE_Tumbleweed/server:database.repo \
-    && zypper --non-interactive --gpg-auto-import-keys refresh \
-    && zypper --non-interactive --gpg-auto-import-keys install \
+RUN zypper --non-interactive addrepo --no-gpgcheck "https://repo.mongodb.org/zypper/suse/15/mongodb-org/4.4/x86_64/" mongodb \
+    && zypper --non-interactive refresh \
+    && zypper --non-interactive install --no-recommends \
     git \
     openssh \
     tar \
@@ -25,5 +25,6 @@ RUN zypper --non-interactive --gpg-auto-import-keys addrepo https://download.ope
     eigen3-devel \
     cairo-devel \
     sqlite3-devel \
-    mongo-tools \
-    osc
+    mongodb-database-tools \
+    osc \
+    && zypper clean --all
