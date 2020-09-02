@@ -308,6 +308,8 @@ jobs:
     executor: test
     steps:
       - environment
+      - attach_workspace:
+          at: .
       - run:
           name: Checkout package sources
           command: |
