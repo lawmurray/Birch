@@ -7,7 +7,7 @@ orbs:
 executors:
   test:
     docker:
-      - image: lawmurray/birch-circleci:ubuntu-20.04
+      - image: lawmurray/birch-circleci:opensuse-tumbleweed
 
 commands:
   environment:

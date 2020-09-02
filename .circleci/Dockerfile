@@ -1,31 +1,29 @@
-FROM ubuntu:20.04
-ARG DEBIAN_FRONTEND="noninteractive"
-ENV TZ=Europe/London
-RUN apt-get update && apt-get install -y --no-install-recommends \
+FROM opensuse/tumbleweed
+RUN zypper --non-interactive --gpg-auto-import-keys addrepo https://download.opensuse.org/repositories/server:database/openSUSE_Tumbleweed/server:database.repo \
+    && zypper --non-interactive --gpg-auto-import-keys refresh \
+    && zypper --non-interactive --gpg-auto-import-keys install \
     git \
-    ssh \
+    openssh \
     tar \
     gzip \
     curl \
     ca-certificates \
-    g++ \
+    moreutils \
+    time \
+    gcc-c++ \
     make \
     autoconf \
     automake \
     flex \
     bison \
     libtool \
-    libexplain-dev \
-    libeigen3-dev \
-    libyaml-dev \
-    libboost-dev \
-    libboost-filesystem-dev \
-    libboost-system-dev \
-    libboost-math-dev \
-    libsqlite3-dev \
-    libcairo2-dev \
+    libexplain-devel \
+    libyaml-devel \
+    boost-devel \
+    libboost_filesystem-devel \
+    libboost_system-devel \
+    eigen3-devel \
+    cairo-devel \
+    sqlite3-devel \
     mongo-tools \
-    moreutils \
-    time \
-    osc \
-    && rm -rf /var/lib/apt/lists/*
+    osc
