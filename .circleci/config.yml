@@ -22,7 +22,7 @@ commands:
           name: Environment
           description: Set environment variables for builds
           command: |
-              echo "export PREFIX=/root/project" >> $BASH_ENV
+              echo "export PREFIX=~/project" >> $BASH_ENV
               echo "export PATH=\$PREFIX/bin:$PATH" >> $BASH_ENV
               echo "export CPLUS_INCLUDE_PATH=\$PREFIX/include:$CPLUS_INCLUDE_PATH" >> $BASH_ENV
               echo "export LD_LIBRARY_PATH=\$PREFIX/lib:$LD_LIBRARY_PATH" >> $BASH_ENV
@@ -223,7 +223,7 @@ commands:
       - run:
           name: Checkout package
           command: |
-             cd osc
+             cd ~/osc
              osc checkout $OSC_PROJECT << parameters.tar >>
       - run:
           name: Update source tarball
@@ -232,17 +232,17 @@ commands:
               make dist
               mv << parameters.tar >>-unversioned.tar.gz ~/osc/$OSC_PROJECT/<< parameters.tar >>/.
       - update_version:
-          file: osc/$OSC_PROJECT/<< parameters.tar >>/<< parameters.tar >>.spec
+          file: ~/osc/$OSC_PROJECT/<< parameters.tar >>/<< parameters.tar >>.spec
       - update_version:
-          file: osc/$OSC_PROJECT/<< parameters.tar >>/<< parameters.tar >>.dsc
+          file: ~/osc/$OSC_PROJECT/<< parameters.tar >>/<< parameters.tar >>.dsc
       - update_version:
-          file: osc/$OSC_PROJECT/<< parameters.tar >>/debian.control
+          file: ~/osc/$OSC_PROJECT/<< parameters.tar >>/debian.control
       - update_version:
-          file: osc/$OSC_PROJECT/<< parameters.tar >>/PKGBUILD
+          file: ~/osc/$OSC_PROJECT/<< parameters.tar >>/PKGBUILD
       - run:
           name: Commit package
           command: |
-            cd osc/$OSC_PROJECT/<< parameters.tar >>
+            cd ~/osc/$OSC_PROJECT/<< parameters.tar >>
             osc commit -m "Updated to version $VERSION."
           
 jobs:
@@ -352,13 +352,13 @@ jobs:
       - run:
           name: Configure OSC
           command: |
-              mkdir -p osc
-              mkdir -p /root/.config/osc
-              echo [general]                          > /root/.config/osc/oscrc
-              echo apiurl = https://api.opensuse.org >> /root/.config/osc/oscrc
-              echo [https://api.opensuse.org]        >> /root/.config/osc/oscrc
-              echo user = $OSC_USERNAME              >> /root/.config/osc/oscrc
-              echo pass = $OSC_PASSWORD              >> /root/.config/osc/oscrc
+              mkdir -p ~/osc
+              mkdir -p ~/.config/osc
+              echo [general]                          > ~/.config/osc/oscrc
+              echo apiurl = https://api.opensuse.org >> ~/.config/osc/oscrc
+              echo [https://api.opensuse.org]        >> ~/.config/osc/oscrc
+              echo user = $OSC_USERNAME              >> ~/.config/osc/oscrc
+              echo pass = $OSC_PASSWORD              >> ~/.config/osc/oscrc
       - package_linux:
           dir: driver
           tar: birch
