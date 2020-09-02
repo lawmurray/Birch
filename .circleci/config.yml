@@ -30,7 +30,6 @@ commands:
               echo "export BIRCH_FLAGS='--unit=dir --jobs=2'" >> $BASH_ENV
               echo "export CONFIGURE_FLAGS='--disable-debug --enable-test --enable-release'" >> $BASH_ENV
               echo "export VERSION=`git describe | sed -E 's/v([0-9]+)-([0-9]+)-g[0-9a-f]+/\1.\2/'`" >> $BASH_ENV
-              echo "export OSC=/root/project/osc/home:lawmurray:birch" >> $BASH_ENV
             # limited to two parallel jobs to avoid exhausting memory
 
   slack:
@@ -222,23 +221,28 @@ commands:
         type: string
     steps:
       - run:
-          name: Prepare source tarball
+          name: Checkout package
+          command: |
+             cd osc
+             osc checkout $OSC_PROJECT << parameters.tar >>
+      - run:
+          name: Update source tarball
           command: |
               cd << parameters.dir >>
               make dist
-              mv << parameters.tar >>-unversioned.tar.gz $OSC/<< parameters.tar >>/.
+              mv << parameters.tar >>-unversioned.tar.gz ~/osc/$OSC_PROJECT/<< parameters.tar >>/.
       - update_version:
-          file: $OSC/<< parameters.tar >>/<< parameters.tar >>.spec
+          file: osc/$OSC_PROJECT/<< parameters.tar >>/<< parameters.tar >>.spec
       - update_version:
-          file: $OSC/<< parameters.tar >>/<< parameters.tar >>.dsc
+          file: osc/$OSC_PROJECT/<< parameters.tar >>/<< parameters.tar >>.dsc
       - update_version:
-          file: $OSC/<< parameters.tar >>/debian.control
+          file: osc/$OSC_PROJECT/<< parameters.tar >>/debian.control
       - update_version:
-          file: $OSC/<< parameters.tar >>/PKGBUILD
+          file: osc/$OSC_PROJECT/<< parameters.tar >>/PKGBUILD
       - run:
           name: Commit package
           command: |
-            cd $OSC/<< parameters.tar >>
+            cd osc/$OSC_PROJECT/<< parameters.tar >>
             osc commit -m "Updated to version $VERSION."
           
 jobs:
@@ -348,18 +352,13 @@ jobs:
       - run:
           name: Configure OSC
           command: |
+              mkdir -p osc
               mkdir -p /root/.config/osc
               echo [general]                          > /root/.config/osc/oscrc
               echo apiurl = https://api.opensuse.org >> /root/.config/osc/oscrc
               echo [https://api.opensuse.org]        >> /root/.config/osc/oscrc
               echo user = $OSC_USERNAME              >> /root/.config/osc/oscrc
               echo pass = $OSC_PASSWORD              >> /root/.config/osc/oscrc
-      - run:
-          name: Checkout package sources
-          command: |
-             mkdir osc
-             cd osc
-             osc checkout home:lawmurray:birch
       - package_linux:
           dir: driver
           tar: birch
@@ -383,7 +382,6 @@ workflows:
     jobs:
       - driver:
           context: lawmurray
-
 
       - libbirch:
           context: lawmurray
