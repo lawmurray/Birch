@@ -235,6 +235,11 @@ commands:
           file: $OSC/<< parameters.tar >>/debian.control
       - update_version:
           file: $OSC/<< parameters.tar >>/PKGBUILD
+      - run:
+          name: Commit package
+          command: |
+            cd $OSC/<< parameters.tar >>
+            osc commit -m "Updated to version $VERSION."
           
 jobs:
   driver:
@@ -370,11 +375,6 @@ jobs:
       - package_linux:
           dir: libraries/SQLite
           tar: birch-sqlite
-      - run:
-          name: Commit package sources
-          command: |
-            cd $OSC
-            osc commit -m "Updated to version $VERSION."
       - slack
 
 workflows:
