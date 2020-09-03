@@ -192,7 +192,7 @@ commands:
                 name: MongoDB import
                 command: |
                     cd examples/<< parameters.package >>
-                    mongoimport --host $MONGODB_HOST --ssl --username $MONGODB_USERNAME --password $MONGODB_PASSWORD --authenticationDatabase admin --db $CIRCLE_BRANCH --collection << parameters.package >> --jsonArray --file output/*.json
+                    mongoimport --uri mongodb+srv://$MONGODB_USERNAME:$MONGODB_PASSWORD@$MONGODB_HOST/$CIRCLE_BRANCH --collection << parameters.package >> --jsonArray --file output/*.json
 
   update_version:
     description: Update Linux package version number
