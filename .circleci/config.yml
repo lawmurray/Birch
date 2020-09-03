@@ -191,60 +191,61 @@ commands:
             - run:
                 name: MongoDB import
                 command: |
-                    cd examples/<< parameters.package >>
-                    mongoimport --uri mongodb+srv://$MONGODB_USERNAME:$MONGODB_PASSWORD@$MONGODB_HOST/$CIRCLE_BRANCH --collection << parameters.package >> --jsonArray --file output/*.json
+                    if [[ -n "$MONGODB_HOST" && -n "$MONGODB_USERNAME" && -n "$MONGODB_PASSWORD" ]]
+                    then
+                      cd examples/<< parameters.package >>
+                      mongoimport --uri mongodb+srv://$MONGODB_USERNAME:$MONGODB_PASSWORD@$MONGODB_HOST/$CIRCLE_BRANCH --collection << parameters.package >> --jsonArray --file output/*.json
+                    fi
 
-  update_version:
-    description: Update Linux package version number
-    parameters:
-      file:
-        description: File name
-        type: string
+  configure_osc:
+    description: Configure Open Build Service command-line interface
     steps:
       - run:
-          name: Update version number in file
+          name: Configure OSC
           command: |
-            cat << parameters.file >> | 
-            sed -E "s/Version: [0-9]+.[0-9]+/Version: $VERSION/g" |
-            sed -E "s/pkgver=[0-9]+.[0-9]+/pkgver=$VERSION/g" |
-            sed -E "s/>=( ?)[0-9]+.[0-9]+/>=\\1$VERSION/g" |
-            sponge << parameters.file >>
+              if [[ -n "$OSC_USERNAME" && -n "$OSC_PASSWORD" ]]
+              then
+                mkdir -p ~/.config/osc
+                echo [general]                          > ~/.config/osc/oscrc
+                echo apiurl = https://api.opensuse.org >> ~/.config/osc/oscrc
+                echo [https://api.opensuse.org]        >> ~/.config/osc/oscrc
+                echo user = $OSC_USERNAME              >> ~/.config/osc/oscrc
+                echo pass = $OSC_PASSWORD              >> ~/.config/osc/oscrc
+              fi
 
-  package_linux:
-    description: Update Linux package
+  osc:
+    description: Update package on Open Build Service
     parameters:
       dir:
-        description: Directory of package (e.g. libraries/Standard).
+        description: Directory of package (e.g. libraries/Standard)
         type: string
       tar:
-        description: Tarname of package (e.g. birch-standard).
+        description: Tarname of package (e.g. birch-standard)
         type: string
     steps:
       - run:
-          name: Checkout package
+          name: Update package
           command: |
-             cd ~/osc
-             osc checkout $OSC_PROJECT << parameters.tar >>
-      - run:
-          name: Update source tarball
-          command: |
-              cd << parameters.dir >>
-              make dist
-              mv << parameters.tar >>-unversioned.tar.gz ~/osc/$OSC_PROJECT/<< parameters.tar >>/.
-      - update_version:
-          file: ~/osc/$OSC_PROJECT/<< parameters.tar >>/<< parameters.tar >>.spec
-      - update_version:
-          file: ~/osc/$OSC_PROJECT/<< parameters.tar >>/<< parameters.tar >>.dsc
-      - update_version:
-          file: ~/osc/$OSC_PROJECT/<< parameters.tar >>/debian.control
-      - update_version:
-          file: ~/osc/$OSC_PROJECT/<< parameters.tar >>/PKGBUILD
-      - run:
-          name: Commit package
-          command: |
-            cd ~/osc/$OSC_PROJECT/<< parameters.tar >>
-            osc commit -m "Updated to version $VERSION."
-          
+              if [[ -n "$OSC_PROJECT" && -n "$OSC_USERNAME" && -n "$OSC_PASSWORD" && -n "$VERSION" ]]
+              then
+                cd << parameters.dir >>
+                make dist
+                mkdir osc
+                cd osc
+                osc checkout $OSC_PROJECT << parameters.tar >>
+                cd << parameters.tar >>
+                mv ../../<< parameters.tar >>-unversioned.tar.gz .
+                for file in << parameters.tar >>.spec << parameters.tar >>.dsc debian.control PKGBUILD
+                do
+                  cat $file | 
+                    sed -E "s/Version: [0-9]+.[0-9]+/Version: $VERSION/g" |
+                    sed -E "s/pkgver=[0-9]+.[0-9]+/pkgver=$VERSION/g" |
+                    sed -E "s/>=( ?)[0-9]+.[0-9]+/>=\\1$VERSION/g" |
+                    sponge $file
+                done
+                osc commit -m "Updated to version $VERSION."
+              fi
+
 jobs:
   driver:
     executor: test
@@ -349,29 +350,20 @@ jobs:
       - attach_workspace:
           at: .
       - environment
-      - run:
-          name: Configure OSC
-          command: |
-              mkdir -p ~/osc
-              mkdir -p ~/.config/osc
-              echo [general]                          > ~/.config/osc/oscrc
-              echo apiurl = https://api.opensuse.org >> ~/.config/osc/oscrc
-              echo [https://api.opensuse.org]        >> ~/.config/osc/oscrc
-              echo user = $OSC_USERNAME              >> ~/.config/osc/oscrc
-              echo pass = $OSC_PASSWORD              >> ~/.config/osc/oscrc
-      - package_linux:
+      - configure_osc
+      - osc:
           dir: driver
           tar: birch
-      - package_linux:
+      - osc:
           dir: libbirch
           tar: libbirch
-      - package_linux:
+      - osc:
           dir: libraries/Standard
           tar: birch-standard
-      - package_linux:
+      - osc:
           dir: libraries/Cairo
           tar: birch-cairo
-      - package_linux:
+      - osc:
           dir: libraries/SQLite
           tar: birch-sqlite
       - slack
