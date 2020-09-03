@@ -380,73 +380,65 @@ workflows:
   version: 2
   test:
     jobs:
-      - driver:
-          context: lawmurray
+      - driver
 
       - libbirch:
-          context: lawmurray
           requires:
             - driver
 
       - libraries_Standard:
-          context: lawmurray
           requires:
             - libbirch
 
       - libraries_Cairo:
-          context: lawmurray
           requires:
             - libraries_Standard
 
       - libraries_SQLite:
-          context: lawmurray
           requires:
             - libraries_Standard
     
       - examples_LinearGaussian:
-          context: lawmurray
           requires:
             - libraries_Cairo
             - libraries_SQLite
 
       - examples_LinearRegression:
-          context: lawmurray
           requires:
             - libraries_Cairo
             - libraries_SQLite
 
       - examples_MixedGaussian:
-          context: lawmurray
           requires:
             - libraries_Cairo
             - libraries_SQLite
 
       - examples_PoissonGaussian:
-          context: lawmurray
           requires:
             - libraries_Cairo
             - libraries_SQLite
 
       - examples_SIR:
-          context: lawmurray
           requires:
             - libraries_Cairo
             - libraries_SQLite
 
       - examples_MultiObjectTracking:
-          context: lawmurray
           requires:
             - libraries_Cairo
             - libraries_SQLite
       
       - examples_VectorBorneDisease:
-          context: lawmurray
           requires:
             - libraries_Cairo
             - libraries_SQLite
 
       - deploy_linux:
-          context: lawmurray
+          filters:
+            branches:
+              only:
+                - master
+                - monorepo
           requires:
             - examples_LinearGaussian
             - examples_LinearRegression
