@@ -151,7 +151,7 @@ commands:
                 command: |
                     cd << parameters.dir >>/<< parameters.package >>
                     export BIRCH_MODE=release
-                    env time --format "$FORMAT" ./test.sh 2> /tmp/time.txt
+                    env time --format="$FORMAT" --output=/tmp/time.txt ./test.sh
                   # ^ env time to use GNU time, not Bash built-in time
       - when:
           condition: << parameters.mongoimport >>
@@ -169,7 +169,6 @@ commands:
                         cat /tmp/time.txt >> /tmp/mongoimport.json
                       fi
                       echo '}' >> /tmp/mongoimport.json
-                      cat /tmp/mongoimport.json
                       mongoimport --uri mongodb+srv://$MONGODB_USERNAME:$MONGODB_PASSWORD@$MONGODB_HOST/$CIRCLE_BRANCH --collection << parameters.package >> --file /tmp/mongoimport.json
                     fi
       - when:
