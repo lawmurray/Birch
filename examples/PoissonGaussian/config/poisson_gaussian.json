@@ -3,7 +3,7 @@
     "class": "PoissonGaussianModel"
   },
   "filter": {
-    "nsteps": 100,
+    "nsteps": 1000,
     "nparticles": 64
   },
   "sampler": {

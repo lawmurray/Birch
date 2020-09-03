@@ -3,7 +3,8 @@
     "class": "YapDengueModel"
   },
   "filter": {
-    "nparticles": 1024
+    "class": "AliveParticleFilter",
+    "nparticles": 256
   },
   "sampler": {
     "class": "MarginalizedParticleGibbsSampler",

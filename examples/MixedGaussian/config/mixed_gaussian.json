@@ -3,7 +3,7 @@
     "class": "MixedGaussianModel"
   },
   "filter": {
-    "nsteps": 100,
+    "nsteps": 500,
     "nparticles": 128,
     "ancestor": true
   },

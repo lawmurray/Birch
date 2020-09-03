@@ -3,10 +3,9 @@
     "class": "LinearGaussianModel"
   },
   "filter": {
-    "nsteps": 100
+    "nsteps": 2000
   },
   "sampler": {
-    "class": "ParticleGibbsSampler",
     "nsamples": 10
   },
   "input": "input/linear_gaussian.json",
