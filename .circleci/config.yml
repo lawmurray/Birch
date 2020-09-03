@@ -58,7 +58,7 @@ commands:
             - '*'
             - .*
 
-  cxx:
+  library:
     description: Build a C++ library
     parameters:
       package:
@@ -76,74 +76,30 @@ commands:
               ./configure --prefix=$PREFIX $CONFIGURE_FLAGS
               make -j 4
               make install
-      - slack
       - persist_to_workspace:
           root: .
           paths:
             - << parameters.package >>
             - lib/<< parameters.package >>*
             - include/<< parameters.package >>*
+      - slack
     
-  library:
-    description: Build a Birch library package and optionally run tests
+  package:
+    description: Build a Birch package
     parameters:
+      dir:
+        description: Directory containing the package (e.g. libraries).
+        type: string
       package:
         description: Name of package (e.g. Standard).
         type: string
       tar:
-        description: Tarname of package (e.g. birch-standard).
+        description: Tarname of package (e.g. birch-standard)
         type: string
-      smoke:
-        description: Run smoke tests?
+      install:
+        description: Install the package?
         type: boolean
         default: false
-      unit:
-        description: Run unit tests?
-        type: boolean
-        default: false
-    steps:
-      - attach_workspace:
-          at: .
-      - environment
-      - run:
-          name: Build
-          command: |
-              cd libraries/<< parameters.package >>
-              birch build --prefix=$PREFIX $CONFIGURE_FLAGS $BIRCH_FLAGS
-              birch install
-      - when:
-          condition: << parameters.smoke >>
-          steps:
-            - run:
-                name: Run smoke tests
-                command: |
-                    cd libraries/<< parameters.package >>
-                    export BIRCH_MODE=test
-                    ./smoke.sh
-      - when:
-          condition: << parameters.unit >>
-          steps:
-            - run:
-                name: Run unit tests
-                command: |
-                    cd libraries/<< parameters.package >>
-                    export BIRCH_MODE=release
-                    ./test.sh
-      - slack
-      - codecov/upload
-      - persist_to_workspace:
-          root: .
-          paths:
-            - libraries/<< parameters.package >>
-            - lib/lib<< parameters.tar >>*
-            - include/<< parameters.tar >>*
-            
-  example:
-    description: Build a Birch example package and optionally run tests
-    parameters:
-      package:
-        description: Name of package (e.g. LinearGaussian)
-        type: string
       smoke:
         description: Run smoke tests?
         type: boolean
@@ -153,7 +109,11 @@ commands:
         type: boolean
         default: false
       mongodb:
-        description: Upload unit test output to MongoDB Atlas?
+        description: Upload output to MongoDB Atlas?
+        type: boolean
+        default: false
+      persist:
+        description: Persist to workspace?
         type: boolean
         default: false
     steps:
@@ -163,15 +123,23 @@ commands:
       - run:
           name: Build
           command: |
-              cd examples/<< parameters.package >>
+              cd << parameters.dir >>/<< parameters.package >>
               birch build --prefix=$PREFIX $CONFIGURE_FLAGS $BIRCH_FLAGS
+      - when:
+          condition: << parameters.install >>
+          steps:
+            - run:
+                name: Install
+                command: |
+                    cd << parameters.dir >>/<< parameters.package >>
+                    birch install
       - when:
           condition: << parameters.smoke >>
           steps:
             - run:
                 name: Run smoke tests
                 command: |
-                    cd examples/<< parameters.package >>
+                    cd << parameters.dir >>/<< parameters.package >>
                     export BIRCH_MODE=test
                     ./smoke.sh
       - when:
@@ -180,22 +148,34 @@ commands:
             - run:
                 name: Run unit tests
                 command: |
-                    cd examples/<< parameters.package >>
+                    cd << parameters.dir >>/<< parameters.package >>
                     export BIRCH_MODE=release
                     ./test.sh
-      - slack
-      - codecov/upload
       - when:
           condition: << parameters.mongodb >>
           steps:
             - run:
-                name: MongoDB import
+                name: MongoDB upload
                 command: |
                     if [[ -n "$MONGODB_HOST" && -n "$MONGODB_USERNAME" && -n "$MONGODB_PASSWORD" ]]
                     then
-                      cd examples/<< parameters.package >>
-                      mongoimport --uri mongodb+srv://$MONGODB_USERNAME:$MONGODB_PASSWORD@$MONGODB_HOST/$CIRCLE_BRANCH --collection << parameters.package >> --jsonArray --file output/*.json
+                      cd << parameters.dir >>
+                      echo '{ "output": ' > output/mongodb.json
+                      cat output/*.json >> output/mongodb.json
+                      echo '}' >> output/mongodb.json
+                      mongoimport --uri mongodb+srv://$MONGODB_USERNAME:$MONGODB_PASSWORD@$MONGODB_HOST/$CIRCLE_BRANCH --collection << parameters.package >> --file output/mongodb.json
                     fi
+      - when:
+          condition: << parameters.persist >>
+          steps:
+            - persist_to_workspace:
+                root: .
+                paths:
+                  - << parameters.dir >>/<< parameters.package >>
+                  - lib/lib<< parameters.tar >>*
+                  - include/<< parameters.tar >>*
+      - codecov/upload
+      - slack
 
   configure_osc:
     description: Configure Open Build Service command-line interface
@@ -217,7 +197,11 @@ commands:
     description: Update package on Open Build Service
     parameters:
       dir:
-        description: Directory of package (e.g. libraries/Standard)
+        description: Directory containing the package (e.g. libraries).
+        type: string
+        default: .
+      package:
+        description: Name of package (e.g. Standard).
         type: string
       tar:
         description: Tarname of package (e.g. birch-standard)
@@ -228,12 +212,10 @@ commands:
           command: |
               if [[ -n "$OSC_PROJECT" && -n "$OSC_USERNAME" && -n "$OSC_PASSWORD" && -n "$VERSION" ]]
               then
-                cd << parameters.dir >>
+                cd << parameters.dir >>/<< parameters.package >>
                 make dist
-                mkdir osc
-                cd osc
                 osc checkout $OSC_PROJECT << parameters.tar >>
-                cd << parameters.tar >>
+                cd $OSC_PROJECT/<< parameters.tar >>
                 mv ../../<< parameters.tar >>-unversioned.tar.gz .
                 for file in << parameters.tar >>.spec << parameters.tar >>.dsc debian.control PKGBUILD
                 do
@@ -255,37 +237,52 @@ jobs:
   libbirch:
     executor: test
     steps:
-      - cxx:
+      - library:
           package: libbirch
 
   libraries_Standard:
     executor: test
     steps:
-      - library:
+      - package:
+          dir: libraries
           package: Standard
           tar: birch-standard
+          install: true
           smoke: true
           unit: true
+          persist: true
           
   libraries_Cairo:
     executor: test
     steps:
-      - library:
+      - package:
+          dir: libraries
           package: Cairo
           tar: birch-cairo
+          install: true
+          smoke: true
+          unit: true
+          persist: true
 
   libraries_SQLite:
     executor: test
     steps:
-      - library:
+      - package:
+          dir: libraries
           package: SQLite
           tar: birch-sqlite
+          install: true
+          smoke: true
+          unit: true
+          persist: true
 
   examples_LinearGaussian:
     executor: test
     steps: 
-      - example:
+      - package:
+          dir: examples
           package: LinearGaussian
+          tar: birch-lineargaussian
           smoke: true
           unit: true
           mongodb: true
@@ -293,8 +290,10 @@ jobs:
   examples_LinearRegression:
     executor: test
     steps: 
-      - example:
+      - package:
+          dir: examples
           package: LinearRegression
+          tar: birch-linearregression
           smoke: true
           unit: true
           mongodb: true
@@ -302,8 +301,10 @@ jobs:
   examples_MixedGaussian:
     executor: test
     steps: 
-      - example:
+      - package:
+          dir: examples
           package: MixedGaussian
+          tar: birch-mixedgaussian
           smoke: true
           unit: true
           mongodb: true
@@ -311,8 +312,10 @@ jobs:
   examples_MultiObjectTracking:
     executor: test
     steps: 
-      - example:
+      - package:
+          dir: examples
           package: MultiObjectTracking
+          tar: birch-multiobjecttracking
           smoke: true
           unit: true
           mongodb: true
@@ -320,8 +323,10 @@ jobs:
   examples_PoissonGaussian:
     executor: test
     steps: 
-      - example:
+      - package:
+          dir: examples
           package: PoissonGaussian
+          tar: birch-poissongaussian
           smoke: true
           unit: true
           mongodb: true
@@ -329,8 +334,10 @@ jobs:
   examples_SIR:
     executor: test
     steps: 
-      - example:
+      - package:
+          dir: examples
           package: SIR
+          tar: birch-sir
           smoke: true
           unit: true
           mongodb: true
@@ -338,8 +345,10 @@ jobs:
   examples_VectorBorneDisease:
     executor: test
     steps: 
-      - example:
+      - package:
+          dir: examples
           package: VectorBorneDisease
+          tar: birch-vectorbornedisease
           smoke: true
           unit: true
           mongodb: true
@@ -352,19 +361,22 @@ jobs:
       - environment
       - configure_osc
       - osc:
-          dir: driver
+          package: driver
           tar: birch
       - osc:
-          dir: libbirch
+          package: libbirch
           tar: libbirch
       - osc:
-          dir: libraries/Standard
+          dir: libraries
+          package: Standard
           tar: birch-standard
       - osc:
-          dir: libraries/Cairo
+          dir: libraries
+          package: Cairo
           tar: birch-cairo
       - osc:
-          dir: libraries/SQLite
+          dir: libraries
+          package: SQLite
           tar: birch-sqlite
       - slack
 
