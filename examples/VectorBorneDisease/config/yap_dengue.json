@@ -7,7 +7,6 @@
     "nparticles": 256
   },
   "sampler": {
-    "class": "MarginalizedParticleGibbsSampler",
     "nsamples": 5
   },
   "input": "input/yap_dengue.json",

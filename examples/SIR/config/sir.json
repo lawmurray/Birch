@@ -7,7 +7,6 @@
     "nparticles": 128
   },
   "sampler": {
-    "class": "ParticleGibbsSampler",
     "nsamples": 100
   },
   "input": "input/influenza.json",
