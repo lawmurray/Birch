@@ -109,7 +109,7 @@ commands:
         description: Run unit tests?
         type: boolean
         default: false
-      mongodb:
+      mongoimport:
         description: Upload output to MongoDB Atlas?
         type: boolean
         default: false
@@ -151,25 +151,25 @@ commands:
                 command: |
                     cd << parameters.dir >>/<< parameters.package >>
                     export BIRCH_MODE=release
-                    env time --format "$FORMAT" ./test.sh 2> time.txt
+                    env time --format "$FORMAT" ./test.sh 2> /tmp/time.txt
                   # ^ env time to use GNU time, not Bash built-in time
       - when:
-          condition: << parameters.mongodb >>
+          condition: << parameters.mongoimport >>
           steps:
             - run:
-                name: MongoDB upload
+                name: Upload to MongoDB Atlas
                 command: |
                     if [[ -n "$MONGODB_HOST" && -n "$MONGODB_USERNAME" && -n "$MONGODB_PASSWORD" ]]
                     then
                       cd << parameters.dir >>/<< parameters.package >>
-                      echo '{ "output": ' > output/mongodb.json
-                      cat output/*.json >> output/mongodb.json
-                      if [[ -e time.txt ]]
+                      echo '{ "output": ' > /tmp/mongoimport.json
+                      cat output/*.json >> /tmp/mongoimport.json
+                      if [[ -e /tmp/time.txt ]]
                       then
-                        cat time.txt >> output/mongodb.json
+                        cat /tmp/time.txt >> /tmp/mongoimport.json
                       fi
-                      echo '}' >> output/mongodb.json
-                      mongoimport --uri mongodb+srv://$MONGODB_USERNAME:$MONGODB_PASSWORD@$MONGODB_HOST/$CIRCLE_BRANCH --collection << parameters.package >> --file output/mongodb.json
+                      echo '}' >> /tmp/mongoimport.json
+                      mongoimport --uri mongodb+srv://$MONGODB_USERNAME:$MONGODB_PASSWORD@$MONGODB_HOST/$CIRCLE_BRANCH --collection << parameters.package >> --file /tmp/mongoimport.json
                     fi
       - when:
           condition: << parameters.persist >>
@@ -287,7 +287,7 @@ jobs:
           tar: birch-lineargaussian
           smoke: true
           unit: true
-          mongodb: true
+          mongoimport: true
 
   examples_LinearRegression:
     executor: test
@@ -298,7 +298,7 @@ jobs:
           tar: birch-linearregression
           smoke: true
           unit: true
-          mongodb: true
+          mongoimport: true
 
   examples_MixedGaussian:
     executor: test
@@ -309,7 +309,7 @@ jobs:
           tar: birch-mixedgaussian
           smoke: true
           unit: true
-          mongodb: true
+          mongoimport: true
 
   examples_MultiObjectTracking:
     executor: test
@@ -320,7 +320,7 @@ jobs:
           tar: birch-multiobjecttracking
           smoke: true
           unit: true
-          mongodb: true
+          mongoimport: true
 
   examples_PoissonGaussian:
     executor: test
@@ -331,7 +331,7 @@ jobs:
           tar: birch-poissongaussian
           smoke: true
           unit: true
-          mongodb: true
+          mongoimport: true
 
   examples_SIR:
     executor: test
@@ -342,7 +342,7 @@ jobs:
           tar: birch-sir
           smoke: true
           unit: true
-          mongodb: true
+          mongoimport: true
 
   examples_VectorBorneDisease:
     executor: test
@@ -353,7 +353,7 @@ jobs:
           tar: birch-vectorbornedisease
           smoke: true
           unit: true
-          mongodb: true
+          mongoimport: true
 
   deploy_linux:
     executor: test
