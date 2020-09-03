@@ -3,10 +3,10 @@
     "class": "LinearGaussianModel"
   },
   "filter": {
-    "nsteps": 2000
+    "nsteps": 1000
   },
   "sampler": {
-    "nsamples": 10
+    "nsamples": 5
   },
   "input": "input/linear_gaussian.json",
   "output": "output/linear_gaussian.json"

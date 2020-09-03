@@ -1,1 +1,1 @@
-birch sample --config config/yap_dengue.json
+birch sample --config config/yap_dengue.json --seed 0

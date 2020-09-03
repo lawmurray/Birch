@@ -9,7 +9,7 @@
   },
   "sampler": {
     "class": "ParticleGibbsSampler",
-    "nsamples": 10
+    "nsamples": 5
   },
   "input": "input/mixed_gaussian.json",
   "output": "output/mixed_gaussian.json"

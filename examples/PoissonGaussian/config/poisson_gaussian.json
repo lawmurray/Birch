@@ -7,7 +7,7 @@
     "nparticles": 64
   },
   "sampler": {
-    "nsamples": 10
+    "nsamples": 5
   },
   "input": "input/poisson_gaussian.json",
   "output": "output/poisson_gaussian.json"
