@@ -169,6 +169,7 @@ commands:
                         cat /tmp/time.txt >> /tmp/mongoimport.json
                       fi
                       echo '}' >> /tmp/mongoimport.json
+                      cat /tmp/mongoimport.json
                       mongoimport --uri mongodb+srv://$MONGODB_USERNAME:$MONGODB_PASSWORD@$MONGODB_HOST/$CIRCLE_BRANCH --collection << parameters.package >> --file /tmp/mongoimport.json
                     fi
       - when:
