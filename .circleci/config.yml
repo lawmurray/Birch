@@ -159,6 +159,7 @@ commands:
             - run:
                 name: MongoDB upload
                 command: |
+                    cd << parameters.dir >>/<< parameters.package >>
                     if [[ -n "$MONGODB_HOST" && -n "$MONGODB_USERNAME" && -n "$MONGODB_PASSWORD" ]]
                     then
                       cd << parameters.dir >>
