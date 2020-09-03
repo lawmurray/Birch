@@ -22,15 +22,15 @@ commands:
           name: Environment
           description: Set environment variables for builds
           command: |
-              echo export PREFIX=~/project >> $BASH_ENV
-              echo export PATH=\$PREFIX/bin:$PATH >> $BASH_ENV
-              echo export CPLUS_INCLUDE_PATH=\$PREFIX/include:$CPLUS_INCLUDE_PATH >> $BASH_ENV
-              echo export LD_LIBRARY_PATH=\$PREFIX/lib:$LD_LIBRARY_PATH >> $BASH_ENV
-              echo export OMP_NUM_THREADS=2 >> $BASH_ENV
-              echo export BIRCH_FLAGS='--unit=dir --jobs=2' >> $BASH_ENV
-              echo export CONFIGURE_FLAGS='--disable-debug --enable-test --enable-release' >> $BASH_ENV
-              echo export VERSION=`git describe | sed -E 's/v([0-9]+)-([0-9]+)-g[0-9a-f]+/\1.\2/'` >> $BASH_ENV
-              echo export FORMAT=', "real": %e, "user": %U, "system": %S, "memory": %M, "involuntary": %c, "voluntary": %w' >> $BASH_ENV
+              echo "export PREFIX=~/project" >> $BASH_ENV
+              echo "export PATH=\$PREFIX/bin:$PATH" >> $BASH_ENV
+              echo "export CPLUS_INCLUDE_PATH=\$PREFIX/include:$CPLUS_INCLUDE_PATH" >> $BASH_ENV
+              echo "export LD_LIBRARY_PATH=\$PREFIX/lib:$LD_LIBRARY_PATH" >> $BASH_ENV
+              echo "export OMP_NUM_THREADS=2" >> $BASH_ENV
+              echo "export BIRCH_FLAGS='--unit=dir --jobs=2'" >> $BASH_ENV
+              echo "export CONFIGURE_FLAGS='--disable-debug --enable-test --enable-release'" >> $BASH_ENV
+              echo "export VERSION=`git describe | sed -E 's/v([0-9]+)-([0-9]+)-g[0-9a-f]+/\1.\2/'`" >> $BASH_ENV
+              echo "export FORMAT=', \"real\": %e, \"user\": %U, \"system\": %S, \"memory\": %M, \"involuntary\": %c, \"voluntary\": %w'" >> $BASH_ENV
             # limited to two parallel jobs to avoid exhausting memory
 
   slack:
