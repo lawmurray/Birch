@@ -4,7 +4,7 @@
   },
   "filter": {
     "nsteps": 1000,
-    "nparticles": 128
+    "nparticles": 64
   },
   "sampler": {
     "nsamples": 3

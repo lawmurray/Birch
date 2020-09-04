@@ -30,6 +30,7 @@ commands:
               echo "export BIRCH_FLAGS='--unit=dir --jobs=2'" >> $BASH_ENV
               echo "export CONFIGURE_FLAGS='--disable-debug --enable-test --enable-release'" >> $BASH_ENV
               echo "export VERSION=`git describe | sed -E 's/v([0-9]+)-([0-9]+)-g[0-9a-f]+/\1.\2/'`" >> $BASH_ENV
+              echo "export VERSION_LONG=`git describe --long`" >> $BASH_ENV
               echo "export FORMAT=', \"real\": %e, \"user\": %U, \"system\": %S, \"memory\": %M, \"involuntary\": %c, \"voluntary\": %w'" >> $BASH_ENV
             # limited to two parallel jobs to avoid exhausting memory
 
@@ -168,8 +169,10 @@ commands:
                       then
                         cat /tmp/time.txt >> /tmp/mongoimport.json
                       fi
+                      echo ", \"branch\": \"$CIRCLE_BRANCH\"" >> /tmp/mongoimport.json
+                      echo ", \"version\": \"$VERSION_LONG\"" >> /tmp/mongoimport.json
                       echo '}' >> /tmp/mongoimport.json
-                      mongoimport --uri mongodb+srv://$MONGODB_USERNAME:$MONGODB_PASSWORD@$MONGODB_HOST/$CIRCLE_BRANCH --collection << parameters.package >> --file /tmp/mongoimport.json
+                      mongoimport --uri mongodb+srv://$MONGODB_USERNAME:$MONGODB_PASSWORD@$MONGODB_HOST/test --collection << parameters.package >> --file /tmp/mongoimport.json
                     fi
       - when:
           condition: << parameters.persist >>

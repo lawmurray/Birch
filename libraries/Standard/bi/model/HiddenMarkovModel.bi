@@ -73,6 +73,6 @@ class HiddenMarkovModel<Parameter,State,Observation> <
   
   function write(buffer:Buffer) {
     super.write(buffer);
-    buffer.set("y", y);
+    //buffer.set("y", y);
   }
 }
