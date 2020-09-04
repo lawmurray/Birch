@@ -6,7 +6,7 @@
     "nsteps": 1000
   },
   "sampler": {
-    "nsamples": 5
+    "nsamples": 3
   },
   "input": "input/linear_gaussian.json",
   "output": "output/linear_gaussian.json"

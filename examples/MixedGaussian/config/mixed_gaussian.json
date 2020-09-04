@@ -3,13 +3,11 @@
     "class": "MixedGaussianModel"
   },
   "filter": {
-    "nsteps": 500,
-    "nparticles": 128,
-    "ancestor": true
+    "nsteps": 1000,
+    "nparticles": 128
   },
   "sampler": {
-    "class": "ParticleGibbsSampler",
-    "nsamples": 5
+    "nsamples": 3
   },
   "input": "input/mixed_gaussian.json",
   "output": "output/mixed_gaussian.json"

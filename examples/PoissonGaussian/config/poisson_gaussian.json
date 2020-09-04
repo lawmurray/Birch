@@ -4,10 +4,10 @@
   },
   "filter": {
     "nsteps": 1000,
-    "nparticles": 64
+    "nparticles": 128
   },
   "sampler": {
-    "nsamples": 5
+    "nsamples": 3
   },
   "input": "input/poisson_gaussian.json",
   "output": "output/poisson_gaussian.json"

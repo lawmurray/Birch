@@ -7,7 +7,7 @@
     "nparticles": 256
   },
   "sampler": {
-    "nsamples": 5
+    "nsamples": 3
   },
   "input": "input/yap_dengue.json",
   "output": "output/yap_dengue.json"
