@@ -1,0 +1,804 @@
+%code requires {
+  #include "src/lexer.hpp"
+  #include "src/build/Compiler.hpp"
+}
+
+%code {
+  #include "src/expression/all.hpp"
+  #include "src/statement/all.hpp"
+  #include "src/type/all.hpp"
+
+  /**
+   * Raw string stack.
+   */
+  std::stack<std::string> raws;
+
+  /**
+   * Push the current raw string onto the stack, and restart it.
+   */
+  void push_raw() {
+    raws.push(raw.str());
+    raw.str("");
+  }
+
+  /**
+   * Pop a raw string from the stack.
+   */
+  std::string pop_raw() {
+    std::string raw = raws.top();
+    raws.pop();
+    return raw;
+  }
+
+  /**
+   * Make a location, without documentation string.
+   */
+  birch::Location* make_loc(YYLTYPE& loc) {
+    return new birch::Location(compiler->file, loc.first_line, loc.last_line,
+        loc.first_column, loc.last_column);
+  }
+
+  /**
+   * Make a location, with documentation string.
+   */
+  birch::Location* make_doc_loc(YYLTYPE& loc) {
+    return new birch::Location(compiler->file, loc.first_line, loc.last_line,
+        loc.first_column, loc.last_column, pop_raw());
+  }
+
+  /**
+   * Make an empty expression.
+   */
+  birch::Expression* empty_expr(YYLTYPE& loc) {
+    return new birch::EmptyExpression(make_loc(loc));
+  }
+
+  /**
+   * Make an empty statement.
+   */
+  birch::Statement* empty_stmt(YYLTYPE& loc) {
+    return new birch::EmptyStatement(make_loc(loc));
+  }
+
+  /**
+   * Make an empty type.
+   */
+  birch::Type* empty_type(YYLTYPE& loc) {
+    return new birch::EmptyType(make_loc(loc));
+  }
+}
+
+%union {
+  int32_t valInt;
+  double valReal;
+  const char* valString;
+  
+  birch::Annotation valAnnotation;
+  birch::Name* valName;
+  birch::Expression* valExpression;
+  birch::Type* valType;
+  birch::Statement* valStatement;
+}
+
+%glr-parser
+%expect-rr 0
+%expect 10
+// ^ Type?(...) vs x?
+// ^ for generic function calls, f<Type>(expr) ambiguous with f < x > (expr),
+//   the former is favoured by %dprec directives 
+// ^ for generic class declaration, opening '<' ambiguous with inheritance,
+//   but closing '>' disambiguates
+
+%token <valString> PROGRAM CLASS TYPE FUNCTION FIBER OPERATOR AUTO
+%token <valString> IF ELSE FOR IN WHILE DO ASSERT RETURN YIELD
+%token <valString> CPP HPP THIS SUPER GLOBAL PARALLEL DYNAMIC
+%token <valString> ABSTRACT OVERRIDE FINAL
+%token <valString> NIL DOUBLE_BRACE_OPEN DOUBLE_BRACE_CLOSE NAME
+%token <valString> BOOL_LITERAL INT_LITERAL REAL_LITERAL STRING_LITERAL
+%token <valString> LEFT_OP RIGHT_OP LEFT_TILDE_OP RIGHT_TILDE_OP LEFT_QUERY_OP
+%token <valString> AND_OP OR_OP LE_OP GE_OP EQ_OP NE_OP RANGE_OP
+
+%type <valName> name binary_operator unary_operator assume_operator
+%type <valName> assign_operator prefix_operator
+%type <valName> multiplicative_operator additive_operator relational_operator
+%type <valName> equality_operator logical_and_operator logical_or_operator
+
+%type <valInt> shape
+
+%type <valAnnotation> parallel_annotation class_annotation member_function_annotation
+
+%type <valExpression> bool_literal int_literal real_literal string_literal
+%type <valExpression> literal identifier
+%type <valExpression> this_expression super_expression nil_expression
+%type <valExpression> parens_expression sequence_expression cast_expression
+%type <valExpression> function_expression primary_expression
+%type <valExpression> slice index_expression index_list
+%type <valExpression> postfix_expression query_expression prefix_expression
+%type <valExpression> multiplicative_expression additive_expression
+%type <valExpression> relational_expression equality_expression
+%type <valExpression> logical_and_expression logical_or_expression
+%type <valExpression> assign_expression expression_list expression optional_expression
+%type <valExpression> parameter parameter_list parameters optional_parameters
+%type <valExpression> span_expression span_list brackets option option_list options
+%type <valExpression> arguments optional_arguments
+%type <valExpression> value optional_value
+%type <valExpression> generic generic_list generics optional_generics
+
+%type <valStatement> global_variable_declaration local_variable_declaration
+%type <valStatement> for_variable_declaration function_declaration
+%type <valStatement> fiber_declaration program_declaration
+%type <valStatement> member_variable_declaration member_function_declaration
+%type <valStatement> member_fiber_declaration
+%type <valStatement> binary_operator_declaration unary_operator_declaration
+%type <valStatement> conversion_operator_declaration assignment_operator_declaration
+%type <valStatement> class_declaration basic_declaration
+%type <valStatement> cpp hpp expression_statement assume_statement if for parallel
+%type <valStatement> while do_while block assertion return yield
+%type <valStatement> statement statements optional_statements
+%type <valStatement> class_statement class_statements optional_class_statements
+%type <valStatement> file_statement file_statements optional_file_statements
+%type <valStatement> braces optional_braces
+%type <valStatement> class_braces optional_class_braces
+
+%type <valType> named_type primary_type type type_list optional_type_list
+%type <valType> return_type optional_return_type
+%type <valType> fiber_return_type optional_fiber_return_type
+%type <valType> generic_argument generic_argument_list generic_arguments optional_generic_arguments
+
+%locations
+
+%start file
+%%
+
+
+/***************************************************************************
+ * Names                                                                   *
+ ***************************************************************************/
+
+name
+    : NAME  { $$ = new birch::Name($1); }
+    ;
+
+
+/***************************************************************************
+ * Expressions                                                             *
+ ***************************************************************************/
+
+bool_literal
+    : BOOL_LITERAL  { $$ = new birch::Literal<bool>($1, make_loc(@$)); }
+    ;
+
+int_literal
+    : INT_LITERAL  { $$ = new birch::Literal<int64_t>($1, make_loc(@$)); }
+    ;
+
+real_literal
+    : REAL_LITERAL  { $$ = new birch::Literal<double>($1, make_loc(@$)); }
+    ;
+
+string_literal
+    : STRING_LITERAL  { $$ = new birch::Literal<const char*>($1, make_loc(@$)); }
+    ;
+
+literal
+    : bool_literal
+    | int_literal
+    | real_literal
+    | string_literal
+    ;
+
+identifier
+    : name optional_generic_arguments  { $$ = new birch::NamedExpression($1, $2, make_loc(@$)); }
+    ;
+
+parens_expression
+    : '(' expression_list ')'  { $$ = new birch::Parentheses($2, make_loc(@$)); }
+    ;
+
+sequence_expression
+    : '[' expression_list ']'  { $$ = new birch::Sequence($2, make_loc(@$)); }
+    ;
+
+cast_expression
+    : name optional_generic_arguments '?' '(' expression ')'  { $$ = new birch::Cast(new birch::NamedType($1, $2, make_loc(@$)), $5, make_loc(@$)); }
+    ;
+
+function_expression
+    : '\\' parameters optional_return_type optional_braces  { $$ = new birch::LambdaFunction($2, $3, $4, make_loc(@$)); }
+    ;
+
+this_expression
+    : THIS  { $$ = new birch::This(make_loc(@$)); }
+    ;
+
+super_expression
+    : SUPER  { $$ = new birch::Super(make_loc(@$)); }
+    ;
+
+nil_expression
+    : NIL  { $$ = new birch::Nil(make_loc(@$)); }
+    ;
+
+primary_expression
+    : literal
+    | identifier
+    | parens_expression
+    | sequence_expression
+    | cast_expression
+    | function_expression
+    | this_expression
+    | nil_expression
+    ;
+
+index_expression
+    : expression RANGE_OP expression  { $$ = new birch::Range($1, $3, make_loc(@$)); }
+    | expression                      { $$ = new birch::Index($1, make_loc(@$)); }
+    ;
+    
+index_list
+    : index_expression
+    | index_expression ',' index_list  { $$ = new birch::ExpressionList($1, $3, make_loc(@$)); }
+    ;
+
+slice
+    : '[' index_list ']'  { $$ = $2; }
+    ;
+
+postfix_expression
+    : primary_expression
+    | super_expression '.' identifier    { $$ = new birch::Member($1, $3, make_loc(@$)); }
+    | GLOBAL '.' identifier              { $$ = new birch::Global($3, make_loc(@$)); }
+    | postfix_expression '.' identifier  { $$ = new birch::Member($1, $3, make_loc(@$)); }
+    | postfix_expression slice           { $$ = new birch::Slice($1, $2, make_loc(@$)); }
+    | postfix_expression arguments       { $$ = new birch::Call($1, $2, make_loc(@$)); }
+    | postfix_expression '!'             { $$ = new birch::Get($1, make_loc(@$)); }
+    | postfix_expression '%'             { $$ = new birch::GetReturn($1, make_loc(@$)); }
+    ;
+
+query_expression
+    /* separating this from postfix_expression resolves ambiguity between
+     * x? and Type?(x) expressions */
+    : postfix_expression
+    | postfix_expression '?'  { $$ = new birch::Query($1, make_loc(@$)); }
+    ;
+
+prefix_operator
+    : '+'  { $$ = new birch::Name("+"); }
+    | '-'  { $$ = new birch::Name("-"); }
+    | '!'  { $$ = new birch::Name("!"); }
+    ;
+
+prefix_expression
+    : query_expression
+    | prefix_operator prefix_expression  { $$ = new birch::UnaryCall($1, $2, make_loc(@$)); }
+    | '@' prefix_expression              { $$ = new birch::Spin($2, make_loc(@$)); }
+    ;
+
+multiplicative_operator
+    : '*'  { $$ = new birch::Name("*"); }
+    | '/'  { $$ = new birch::Name("/"); }
+    ;
+
+multiplicative_expression
+    : prefix_expression
+    | multiplicative_expression multiplicative_operator prefix_expression  { $$ = new birch::BinaryCall($1, $2, $3, make_loc(@$)); }
+    ;
+
+additive_operator
+    : '+'  { $$ = new birch::Name("+"); }
+    | '-'  { $$ = new birch::Name("-"); }
+    ;
+
+additive_expression
+    : multiplicative_expression
+    | additive_expression additive_operator multiplicative_expression  { $$ = new birch::BinaryCall($1, $2, $3, make_loc(@$)); }
+    ;
+
+relational_operator
+    : '<'    { $$ = new birch::Name("<"); }
+    | '>'    { $$ = new birch::Name(">"); }
+    | LE_OP  { $$ = new birch::Name("<="); }
+    | GE_OP  { $$ = new birch::Name(">="); }
+    ;
+
+/* here we resolve the ambiguity between a function call with generic
+ * arguments, f<Type>(expr), and an expression with relational operators
+ * such as x < y > (z), favouring the former, as the latter is both
+ * unusual and can be readily disambiguated with parentheses; this is
+ * favoured simply by giving precedence to the first rule */
+relational_expression
+    : additive_expression                                            %dprec 3
+    | relational_expression relational_operator additive_expression  %dprec 2  { $$ = new birch::BinaryCall($1, $2, $3, make_loc(@$)); }
+    ;
+
+equality_operator
+    : EQ_OP  { $$ = new birch::Name("=="); }
+    | NE_OP  { $$ = new birch::Name("!="); }
+    ;
+
+equality_expression
+    : relational_expression
+    | equality_expression equality_operator relational_expression  { $$ = new birch::BinaryCall($1, $2, $3, make_loc(@$)); }
+    ;
+
+logical_and_operator
+    : AND_OP  { $$ = new birch::Name("&&"); }
+    ;
+
+logical_and_expression
+    : equality_expression
+    | logical_and_expression logical_and_operator equality_expression  { $$ = new birch::BinaryCall($1, $2, $3, make_loc(@$)); }
+    ;
+
+logical_or_operator
+    : OR_OP  { $$ = new birch::Name("||"); }
+    ;
+
+logical_or_expression
+    : logical_and_expression
+    | logical_or_expression logical_or_operator logical_and_expression  { $$ = new birch::BinaryCall($1, $2, $3, make_loc(@$)); }
+    ;
+
+assign_operator
+    : LEFT_OP    { $$ = new birch::Name("<-"); }
+    ;
+
+assign_expression
+    : logical_or_expression
+    | logical_or_expression assign_operator assign_expression  { $$ = new birch::Assign($1, $2, $3, make_loc(@$)); }
+    ;
+
+expression
+    : assign_expression
+    ;
+
+optional_expression
+    : expression
+    |             { $$ = empty_expr(@$); }
+    ;
+
+expression_list
+    : expression
+    | expression ',' expression_list  { $$ = new birch::ExpressionList($1, $3, make_loc(@$)); }
+    ;
+
+span_expression
+    : expression   { $$ = new birch::Span($1, make_loc(@$)); }
+    ;
+    
+span_list
+    : span_expression
+    | span_expression ',' span_list  { $$ = new birch::ExpressionList($1, $3, make_loc(@$)); }
+    ;
+
+brackets
+    : '[' span_list ']'  { $$ = $2; }
+    ;
+
+parameters
+    : '(' ')'                 { $$ = empty_expr(@$); }
+    | '(' parameter_list ')'  { $$ = $2; }
+    ;
+
+optional_parameters
+    : parameters
+    |             { $$ = empty_expr(@$); }
+    ;
+
+parameter_list
+    : parameter
+    | parameter ',' parameter_list  { $$ = new birch::ExpressionList($1, $3, make_loc(@$)); }
+    ;
+
+parameter
+    : name ':' type  { $$ = new birch::Parameter(birch::NONE, $1, $3, empty_expr(@$), make_loc(@$)); }
+    ;
+
+options
+    : '(' ')'              { $$ = empty_expr(@$); }
+    | '(' option_list ')'  { $$ = $2; }
+    ;
+
+option_list
+    : option
+    | option ',' option_list  { $$ = new birch::ExpressionList($1, $3, make_loc(@$)); }
+    ;
+
+option
+    : name ':' type optional_value  { $$ = new birch::Parameter(birch::NONE, $1, $3, $4, make_loc(@$)); }
+    ;
+
+arguments
+    : '(' ')'                  { $$ = empty_expr(@$); }
+    | '(' expression_list ')'  { $$ = $2; }
+    ;
+
+optional_arguments
+    : arguments
+    |            { $$ = empty_expr(@$); }
+    ;
+
+shape
+    : '_'            { $$ = 1; }
+    | '_' ',' shape  { $$ = $3 + 1; }
+    ;
+
+generics
+    : '<' '>'               { $$ = empty_expr(@$); }
+    | '<' generic_list '>'  { $$ = $2; }
+    ;
+
+generic_list
+    : generic
+    | generic ',' generic_list  { $$ = new birch::ExpressionList($1, $3, make_loc(@$)); }
+    ;
+
+generic
+    : name  { $$ = new birch::Generic(birch::NONE, $1, empty_type(@$), make_loc(@$)); }
+    ;
+
+optional_generics
+    : generics
+    |           { $$ = empty_expr(@$); }
+    ;
+
+generic_arguments
+    : '<' '>'                        { $$ = empty_type(@$); }
+    | '<' generic_argument_list '>'  { $$ = $2; }
+    ;
+
+generic_argument_list
+    : generic_argument
+    | generic_argument ',' generic_argument_list  { $$ = new birch::TypeList($1, $3, make_loc(@$)); }
+    ;
+
+generic_argument
+    : type
+    ;
+    
+optional_generic_arguments
+    : generic_arguments
+    |                    { $$ = empty_type(@$); }
+    ;
+
+
+/***************************************************************************
+ * Statements                                                              *
+ ***************************************************************************/
+
+global_variable_declaration
+    : name ':' type ';'                     { push_raw(); $$ = new birch::GlobalVariable(birch::NONE, $1, $3, empty_expr(@$), empty_expr(@$), empty_expr(@$), make_doc_loc(@$)); }
+    | name ':' type arguments ';'           { push_raw(); $$ = new birch::GlobalVariable(birch::NONE, $1, $3, empty_expr(@$), $4, empty_expr(@$), make_doc_loc(@$)); }
+    | name ':' type value ';'               { push_raw(); $$ = new birch::GlobalVariable(birch::NONE, $1, $3, empty_expr(@$), empty_expr(@$), $4, make_doc_loc(@$)); }
+    | name ':' type brackets ';'            { push_raw(); $$ = new birch::GlobalVariable(birch::NONE, $1, new birch::ArrayType($3, $4->width(), make_loc(@$)), $4, empty_expr(@$), empty_expr(@$), make_doc_loc(@$)); }
+    | name ':' type brackets arguments ';'  { push_raw(); $$ = new birch::GlobalVariable(birch::NONE, $1, new birch::ArrayType($3, $4->width(), make_loc(@$)), $4, $5, empty_expr(@$), make_doc_loc(@$)); }
+    ;
+
+member_variable_declaration
+    : name ':' type ';'                     { push_raw(); $$ = new birch::MemberVariable(birch::NONE, $1, $3, empty_expr(@$), empty_expr(@$), empty_expr(@$), make_doc_loc(@$)); }
+    | name ':' type arguments ';'           { push_raw(); $$ = new birch::MemberVariable(birch::NONE, $1, $3, empty_expr(@$), $4, empty_expr(@$), make_doc_loc(@$)); }
+    | name ':' type value ';'               { push_raw(); $$ = new birch::MemberVariable(birch::NONE, $1, $3, empty_expr(@$), empty_expr(@$), $4, make_doc_loc(@$)); }
+    | name ':' type brackets ';'            { push_raw(); $$ = new birch::MemberVariable(birch::NONE, $1, new birch::ArrayType($3, $4->width(), make_loc(@$)), $4, empty_expr(@$), empty_expr(@$), make_doc_loc(@$)); }
+    | name ':' type brackets arguments ';'  { push_raw(); $$ = new birch::MemberVariable(birch::NONE, $1, new birch::ArrayType($3, $4->width(), make_loc(@$)), $4, $5, empty_expr(@$), make_doc_loc(@$)); }
+    ;
+
+local_variable_declaration
+    : AUTO name value ';'                   { push_raw(); $$ = new birch::LocalVariable(birch::AUTO, $2, empty_type(@$), empty_expr(@$), empty_expr(@$), $3, make_doc_loc(@$)); }
+    | name ':' type ';'                     { push_raw(); $$ = new birch::LocalVariable(birch::NONE, $1, $3, empty_expr(@$), empty_expr(@$), empty_expr(@$), make_doc_loc(@$)); }
+    | name ':' type arguments ';'           { push_raw(); $$ = new birch::LocalVariable(birch::NONE, $1, $3, empty_expr(@$), $4, empty_expr(@$), make_doc_loc(@$)); }
+    | name ':' type value ';'               { push_raw(); $$ = new birch::LocalVariable(birch::NONE, $1, $3, empty_expr(@$), empty_expr(@$), $4, make_doc_loc(@$)); }
+    | name ':' type brackets ';'            { push_raw(); $$ = new birch::LocalVariable(birch::NONE, $1, new birch::ArrayType($3, $4->width(), make_loc(@$)), $4, empty_expr(@$), empty_expr(@$), make_doc_loc(@$)); }
+    | name ':' type brackets arguments ';'  { push_raw(); $$ = new birch::LocalVariable(birch::NONE, $1, new birch::ArrayType($3, $4->width(), make_loc(@$)), $4, $5, empty_expr(@$), make_doc_loc(@$)); }
+    ;
+
+function_declaration
+    : FUNCTION name optional_generics parameters optional_return_type { push_raw(); } optional_braces  { $$ = new birch::Function(birch::NONE, $2, $3, $4, $5, $7, make_doc_loc(@$)); }
+    ;
+
+fiber_declaration
+    : FIBER name optional_generics parameters optional_fiber_return_type { push_raw(); } optional_braces  { $$ = new birch::Fiber(birch::NONE, $2, $3, $4, $5, $7, make_doc_loc(@$)); }
+    ;
+
+member_function_annotation
+    : ABSTRACT        { $$ = birch::ABSTRACT; }
+    | FINAL           { $$ = birch::FINAL; }
+    | OVERRIDE        { $$ = birch::OVERRIDE; }
+    | FINAL OVERRIDE  { $$ = birch::Annotation(birch::FINAL|birch::OVERRIDE); }
+    //|               { $$ = birch::NONE; }
+    //^ don't put birch::NONE here, messes up line numbers
+    ;
+
+member_function_declaration
+    : member_function_annotation FUNCTION name optional_generics parameters optional_return_type { push_raw(); } optional_braces  { $$ = new birch::MemberFunction($1, $3, $4, $5, $6, $8, make_doc_loc(@$)); }
+    | FUNCTION name optional_generics parameters optional_return_type { push_raw(); } optional_braces                             { $$ = new birch::MemberFunction(birch::NONE, $2, $3, $4, $5, $7, make_doc_loc(@$)); }
+    ;
+
+member_fiber_declaration
+    : member_function_annotation FIBER name optional_generics parameters optional_fiber_return_type { push_raw(); } optional_braces  { $$ = new birch::MemberFiber($1, $3, $4, $5, $6, $8, make_doc_loc(@$)); }
+    | FIBER name optional_generics parameters optional_fiber_return_type { push_raw(); } optional_braces                             { $$ = new birch::MemberFiber(birch::NONE, $2, $3, $4, $5, $7, make_doc_loc(@$)); }
+    ;
+
+program_declaration
+    : PROGRAM name options { push_raw(); } optional_braces  { $$ = new birch::Program($2, $3, $5, make_doc_loc(@$)); }
+    ;
+    
+binary_operator
+    : multiplicative_operator
+    | additive_operator
+    | relational_operator
+    | equality_operator
+    | logical_and_operator
+    | logical_or_operator
+    ;    
+
+unary_operator
+    : prefix_operator
+    ;    
+
+binary_operator_declaration
+    : OPERATOR '(' parameter binary_operator parameter ')' optional_return_type { push_raw(); } optional_braces  { $$ = new birch::BinaryOperator(birch::NONE, $3, $4, $5, $7, $9, make_doc_loc(@$)); }
+    ;
+    
+unary_operator_declaration
+    : OPERATOR '(' unary_operator parameter ')' optional_return_type { push_raw(); } optional_braces  { $$ = new birch::UnaryOperator(birch::NONE, $3, $4, $6, $8, make_doc_loc(@$)); }
+    ;
+
+assignment_operator_declaration
+    : OPERATOR LEFT_OP parameter { push_raw(); } optional_braces  { $$ = new birch::AssignmentOperator($3, $5, make_doc_loc(@$)); }
+    ;
+
+conversion_operator_declaration
+    : OPERATOR return_type { push_raw(); } optional_braces  { $$ = new birch::ConversionOperator($2, $4, make_doc_loc(@$)); }
+    ;
+
+class_annotation
+    : FINAL     { $$ = birch::FINAL; }
+    | ABSTRACT  { $$ = birch::ABSTRACT; }
+    |           { $$ = birch::NONE; }
+    ;
+
+class_declaration
+    : class_annotation CLASS name optional_generics optional_parameters '<' named_type optional_arguments { push_raw(); } optional_class_braces  { $$ = new birch::Class($1, $3, $4, $5, $7, false, $8, $10, make_doc_loc(@$)); }
+    | class_annotation CLASS name optional_generics optional_parameters { push_raw(); } optional_class_braces                                    { $$ = new birch::Class($1, $3, $4, $5, empty_type(@$), false, empty_expr(@$), $7, make_doc_loc(@$)); }
+    | class_annotation CLASS name optional_generics '=' named_type { push_raw(); } ';'                                                           { $$ = new birch::Class($1, $3, $4, empty_expr(@$), $6, true, empty_expr(@$), empty_stmt(@$), make_doc_loc(@$)); }
+    ;
+
+basic_declaration
+    : TYPE name '<' named_type ';'  { push_raw(); $$ = new birch::Basic(birch::NONE, $2, empty_expr(@$), $4, false, make_doc_loc(@$)); }
+    | TYPE name '=' named_type ';'  { push_raw(); $$ = new birch::Basic(birch::NONE, $2, empty_expr(@$), $4, true, make_doc_loc(@$)); }
+    | TYPE name ';'                 { push_raw(); $$ = new birch::Basic(birch::NONE, $2, empty_expr(@$), empty_type(@$), false, make_doc_loc(@$)); }
+    ;
+
+cpp
+    : CPP double_braces  { push_raw(); $$ = new birch::Raw(new birch::Name("cpp"), pop_raw(), make_loc(@$)); }
+    ;
+
+hpp
+    : HPP double_braces  { push_raw(); $$ = new birch::Raw(new birch::Name("hpp"), pop_raw(), make_loc(@$)); }
+    ;
+
+assume_operator
+    : '~'             { $$ = new birch::Name("~"); }
+    | LEFT_TILDE_OP   { $$ = new birch::Name("<~"); }
+    | RIGHT_TILDE_OP  { $$ = new birch::Name("~>"); }
+    | LEFT_QUERY_OP   { $$ = new birch::Name("<-?"); }
+    ;
+
+assume_statement
+    : expression assume_operator expression ';'  { $$ = new birch::Assume($1, $2, $3, make_loc(@$)); }
+    ;
+
+expression_statement
+    : expression ';'  { $$ = new birch::ExpressionStatement($1, make_loc(@$)); }
+    ;
+
+if
+    : IF expression braces ELSE braces  { $$ = new birch::If($2, $3, $5, make_loc(@$)); }
+    | IF expression braces ELSE if      { $$ = new birch::If($2, $3, $5, make_loc(@$)); }
+    | IF expression braces              { $$ = new birch::If($2, $3, empty_stmt(@$), make_loc(@$)); }
+    ;
+
+for_variable_declaration
+    : name                { $$ = new birch::LocalVariable($1, new birch::NamedType(new birch::Name("Integer")), make_loc(@$)); }
+    ;
+
+for
+    : FOR for_variable_declaration IN expression RANGE_OP expression braces  { $$ = new birch::For(birch::NONE, $2, $4, $6, $7, make_loc(@$)); }
+    ;
+
+parallel_annotation
+    : DYNAMIC  { $$ = birch::DYNAMIC; }
+    //|        { $$ = birch::NONE; }
+    //^ don't put birch::NONE here, messes up line numbers
+    ;
+
+parallel
+    : parallel_annotation PARALLEL FOR for_variable_declaration IN expression RANGE_OP expression braces  { $$ = new birch::Parallel($1, $4, $6, $8, $9, make_loc(@$)); }
+    | PARALLEL FOR for_variable_declaration IN expression RANGE_OP expression braces                      { $$ = new birch::Parallel(birch::NONE, $3, $5, $7, $8, make_loc(@$)); }
+    ;
+
+while
+    : WHILE expression braces  { $$ = new birch::While($2, $3, make_loc(@$)); }
+    ;
+
+do_while
+    : DO braces WHILE expression ';'  { $$ = new birch::DoWhile($2, $4, make_loc(@$)); }
+    ;
+
+block
+    : braces  { $$ = new birch::Block($1, make_loc(@$)); }
+    ;
+
+assertion
+    : ASSERT expression ';'  { $$ = new birch::Assert($2, make_loc(@$)); }
+    ;
+
+return
+    : RETURN optional_expression ';'  { $$ = new birch::Return($2, make_loc(@$)); }
+    ;
+
+yield
+    : YIELD expression ';'  { $$ = new birch::Yield($2, make_loc(@$)); }
+    ;
+
+statement
+    : local_variable_declaration
+    | expression_statement
+    | assume_statement
+    | if
+    | for
+    | parallel
+    | while
+    | do_while
+    | block
+    | assertion
+    | return
+    | yield
+    | cpp
+    ;
+
+statements
+    : statement
+    | statement statements  { $$ = new birch::StatementList($1, $2, make_loc(@$)); }
+    ;
+
+optional_statements
+    : statements
+    |             { $$ = empty_stmt(@$); }
+    ;
+
+class_statement
+    : member_variable_declaration
+    | member_function_declaration
+    | member_fiber_declaration
+    | assignment_operator_declaration
+    | conversion_operator_declaration
+    | hpp
+    ;
+    
+class_statements
+    : class_statement
+    | class_statement class_statements  { $$ = new birch::StatementList($1, $2, make_loc(@$)); }
+    ;
+    
+optional_class_statements
+    : class_statements
+    |                   { $$ = empty_stmt(@$); }
+    ;
+    
+file_statement
+    : global_variable_declaration
+    | function_declaration
+    | fiber_declaration
+    | program_declaration
+    | binary_operator_declaration
+    | unary_operator_declaration
+    | class_declaration
+    | basic_declaration
+    | cpp
+    | hpp
+    ;
+
+file_statements
+    : file_statement
+    | file_statement file_statements  { $$ = new birch::StatementList($1, $2, make_loc(@$)); }
+    ;
+
+optional_file_statements
+    : file_statements
+    |                  { $$ = empty_stmt(@$); }
+    ;
+    
+file
+    : optional_file_statements  { compiler->setRoot($1); }
+    ;
+
+return_type 
+    : RIGHT_OP type  { $$ = $2; }
+    ;
+    
+optional_return_type
+    : return_type
+    |              { $$ = empty_type(@$); }
+    ;
+
+fiber_return_type 
+    : RIGHT_OP type                   { $$ = new birch::FiberType(empty_type(@$), $2, make_loc(@$)); }
+    | RIGHT_OP type '%' primary_type  { $$ = new birch::FiberType($2, $4, make_loc(@$)); }
+    | RIGHT_OP type '%'               { $$ = new birch::FiberType($2, empty_type(@$), make_loc(@$)); }
+    ;
+    
+optional_fiber_return_type
+    : fiber_return_type
+    |                    { $$ = new birch::FiberType(empty_type(@$), empty_type(@$), make_loc(@$)); }
+    ;
+
+value
+    : LEFT_OP expression  { $$ = $2; }
+    ;
+    
+optional_value
+    : value
+    |        { $$ = empty_expr(@$); }
+    ;
+
+braces
+    : '{' optional_statements '}'  { $$ = new birch::Braces($2, make_loc(@$)); }
+    ;
+
+optional_braces
+    : braces
+    | ';'     { $$ = empty_stmt(@$); }
+    ;
+
+class_braces
+    : '{' optional_class_statements '}'  { $$ = new birch::Braces($2, make_loc(@$)); }
+    ;
+
+optional_class_braces
+    : class_braces
+    | ';'           { $$ = empty_stmt(@$); }
+    ;
+    
+double_braces
+    : DOUBLE_BRACE_OPEN DOUBLE_BRACE_CLOSE
+    ;
+
+
+/***************************************************************************
+ * Types                                                                   *
+ ***************************************************************************/
+
+named_type
+    : name optional_generic_arguments      { $$ = new birch::NamedType($1, $2, make_loc(@$)); }
+    | name optional_generic_arguments '&'  { yywarn("using weak pointers is no longer necessary"); $$ = new birch::NamedType($1, $2, make_loc(@$)); }
+    ;
+
+primary_type
+    : named_type
+    | '(' type_list ')'  { $$ = new birch::TupleType($2, make_loc(@$)); }
+    ;
+
+type
+    : primary_type
+    | type '?'                                              { $$ = new birch::OptionalType($1, make_loc(@$)); }
+    | type '%' primary_type '!'                             { $$ = new birch::FiberType($1, $3, make_loc(@$)); }
+    | type '!'                                              { $$ = new birch::FiberType(empty_type(@$), $1, make_loc(@$)); }
+    | type '%' '!'                                          { $$ = new birch::FiberType($1, empty_type(@$), make_loc(@$)); }
+    | '!'                                                   { $$ = new birch::FiberType(empty_type(@$), empty_type(@$), make_loc(@$)); }
+    | named_type '.' named_type                             { $$ = new birch::MemberType($1, $3, make_loc(@$)); }
+    | type '[' shape ']'                                    { $$ = new birch::ArrayType($1, $3, make_loc(@$)); }
+    | '\\' '(' optional_type_list ')' optional_return_type  { $$ = new birch::FunctionType($3, $5, make_loc(@$)); }
+    ;
+
+type_list
+    : type
+    | type ',' type_list  { $$ = new birch::TypeList($1, $3, make_loc(@$)); }
+    ;
+
+optional_type_list
+    : type_list
+    |            { $$ = empty_type(@$); }
+    ;
+
+%%

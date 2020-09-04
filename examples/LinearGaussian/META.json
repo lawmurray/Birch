@@ -3,7 +3,7 @@
 
   "manifest": {
     "source": [
-      "bi/LinearGaussianModel.bi"
+      "birch/LinearGaussianModel.birch"
     ],
     "data": [
 

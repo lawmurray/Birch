@@ -74,7 +74,7 @@
     return x.toEigen() op y; \
   }
 
-namespace bi {
+namespace birch {
 UNARY_OPERATOR(+)
 UNARY_OPERATOR(-)
 BINARY_OPERATOR(+)

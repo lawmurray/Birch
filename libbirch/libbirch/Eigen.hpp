@@ -69,17 +69,17 @@ struct is_triangle_compatible {
 };
 }
 
-namespace bi {
+namespace birch {
   namespace type {
 using LLT = Eigen::LLT<libbirch::EigenMatrix<Real64>>;
   }
 }
 
 namespace libbirch {
-inline auto canonical(const bi::type::LLT& o) {
+inline auto canonical(const birch::type::LLT& o) {
   return o;
 }
-inline auto canonical(bi::type::LLT&& o) {
+inline auto canonical(birch::type::LLT&& o) {
   return std::move(o);
 }
 }

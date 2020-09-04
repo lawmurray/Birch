@@ -9,11 +9,11 @@
   
   "manifest": {
     "source": [
-      "bi/data.bi",
-      "bi/draw.bi",
-      "bi/Global.bi",
-      "bi/Multi.bi",
-      "bi/Track.bi"
+      "birch/data.birch",
+      "birch/draw.birch",
+      "birch/Global.birch",
+      "birch/Multi.birch",
+      "birch/Track.birch"
     ],
     "data": [
     

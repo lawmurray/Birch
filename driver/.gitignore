@@ -2,9 +2,9 @@
 /.libs
 /aclocal.m4
 /autom4te.cache/
-/bi/lexer.cpp
-/bi/parser.cpp
-/bi/parser.hpp
+/src/lexer.cpp
+/src/parser.cpp
+/src/parser.hpp
 /bin/
 /birch
 /build

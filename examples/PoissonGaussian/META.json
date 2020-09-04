@@ -3,7 +3,7 @@
 
   "manifest": {
     "source": [
-      "bi/PoissonGaussianModel.bi"
+      "birch/PoissonGaussianModel.birch"
     ],
     "data": [
 

@@ -3,7 +3,7 @@
 
   "manifest": {
     "source": [
-      "bi/LinearRegressionModel.bi"
+      "birch/LinearRegressionModel.birch"
     ],
     "data": [
 

@@ -1,12 +1,9 @@
 /autom4te.cache/
 /docs/
 /figs/
-/include/
-/lib/
 /output/
 /m4/
 /site/
-/src/
 /aclocal.m4
 /bootstrap
 /common.am
@@ -29,10 +26,10 @@
 /mkdocs.yml
 /DOCS.md
 /.autotools
+/*.birch
 .libs
 .deps
 .dirstamp
-*.bih
 *.hpp
 *.cpp
 *.la

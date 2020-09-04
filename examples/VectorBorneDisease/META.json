@@ -3,15 +3,15 @@
 
   "manifest": {
     "source": [
-      "bi/common/SEIRModel.bi",
-      "bi/common/SEIRParameter.bi",
-      "bi/common/SEIRState.bi",
-      "bi/common/VBDModel.bi",
-      "bi/common/VBDParameter.bi",
-      "bi/common/VBDState.bi",
-      "bi/study/YapDengueModel.bi",
-      "bi/study/YapDengueParameter.bi",
-      "bi/study/YapDengueState.bi"
+      "birch/common/SEIRModel.birch",
+      "birch/common/SEIRParameter.birch",
+      "birch/common/SEIRState.birch",
+      "birch/common/VBDModel.birch",
+      "birch/common/VBDParameter.birch",
+      "birch/common/VBDState.birch",
+      "birch/study/YapDengueModel.birch",
+      "birch/study/YapDengueParameter.birch",
+      "birch/study/YapDengueState.birch"
     ],
     "other": [
       "LICENSE",

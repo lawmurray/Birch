@@ -3,8 +3,8 @@
   
   "manifest": {
     "source": [
-      "bi/SQLite3.bi",
-      "bi/SQLite3Statement.bi"
+      "birch/SQLite3.birch",
+      "birch/SQLite3Statement.birch"
     ],
     "other": [
       "LICENSE",

@@ -3,7 +3,7 @@
 
   "manifest": {
     "source": [
-      "bi/SIRModel.bi"
+      "birch/SIRModel.birch"
     ],
     "data": [
 

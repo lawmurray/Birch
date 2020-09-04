@@ -9,7 +9,7 @@
 #include "libbirch/Array.hpp"
 #include "libbirch/basic.hpp"
 
-namespace bi {
+namespace birch {
 /**
  * Length of a vector, number of rows of a matrix.
  */
@@ -72,7 +72,7 @@ auto dot(const Eigen::MatrixBase<T>& o) {
   return o.squaredNorm();
 }
 
-inline auto dot(const libbirch::DefaultArray<bi::type::Real64,1>& o) {
+inline auto dot(const libbirch::DefaultArray<birch::type::Real64,1>& o) {
   return dot(o.toEigen());
 }
 
@@ -85,16 +85,16 @@ auto dot(const Eigen::MatrixBase<T>& o1, const Eigen::MatrixBase<U>& o2) {
 }
 
 template<class T>
-auto dot(const Eigen::MatrixBase<T>& o1, const libbirch::DefaultArray<bi::type::Real64,1>& o2) {
+auto dot(const Eigen::MatrixBase<T>& o1, const libbirch::DefaultArray<birch::type::Real64,1>& o2) {
   return dot(o1, o2.toEigen());
 }
 
 template<class T>
-auto dot(const libbirch::DefaultArray<bi::type::Real64,1>& o1, const Eigen::MatrixBase<T>& o2) {
+auto dot(const libbirch::DefaultArray<birch::type::Real64,1>& o1, const Eigen::MatrixBase<T>& o2) {
   return dot(o1.toEigen(), o2);
 }
 
-inline auto dot(const libbirch::DefaultArray<bi::type::Real64,1>& o1, const libbirch::DefaultArray<bi::type::Real64,1>& o2) {
+inline auto dot(const libbirch::DefaultArray<birch::type::Real64,1>& o1, const libbirch::DefaultArray<birch::type::Real64,1>& o2) {
   return dot(o1.toEigen(), o2.toEigen());
 }
 
@@ -106,7 +106,7 @@ auto sqrt(const Eigen::MatrixBase<T>& o) {
   return o.array().sqrt().matrix();
 }
 
-inline auto sqrt(const libbirch::DefaultArray<bi::type::Real64,1>& o) {
+inline auto sqrt(const libbirch::DefaultArray<birch::type::Real64,1>& o) {
   return sqrt(o.toEigen());
 }
 
@@ -118,7 +118,7 @@ auto norm(const Eigen::MatrixBase<T>& o) {
   return o.norm();
 }
 
-inline auto norm(const libbirch::DefaultArray<bi::type::Real64,1>& o) {
+inline auto norm(const libbirch::DefaultArray<birch::type::Real64,1>& o) {
   return norm(o.toEigen());
 }
 
@@ -145,11 +145,11 @@ auto transpose(const Eigen::TriangularView<T,Mode>& o) {
   return o.transpose();
 }
 
-inline auto transpose(const libbirch::DefaultArray<bi::type::Real64,1>& o) {
+inline auto transpose(const libbirch::DefaultArray<birch::type::Real64,1>& o) {
   return transpose(o.toEigen());
 }
 
-inline auto transpose(const libbirch::DefaultArray<bi::type::Real64,2>& o) {
+inline auto transpose(const libbirch::DefaultArray<birch::type::Real64,2>& o) {
   return transpose(o.toEigen());
 }
 
@@ -161,11 +161,11 @@ auto outer(const Eigen::MatrixBase<T>& o) {
   return o*o.transpose();
 }
 
-inline auto outer(const libbirch::DefaultArray<bi::type::Real64,1>& o) {
+inline auto outer(const libbirch::DefaultArray<birch::type::Real64,1>& o) {
   return outer(o.toEigen());
 }
 
-inline auto outer(const libbirch::DefaultArray<bi::type::Real64,2>& o) {
+inline auto outer(const libbirch::DefaultArray<birch::type::Real64,2>& o) {
   return outer(o.toEigen());
 }
 
@@ -178,11 +178,11 @@ auto outer(const Eigen::MatrixBase<T>& o1, const Eigen::MatrixBase<U>& o2) {
 }
 
 template<class T>
-auto outer(const libbirch::DefaultArray<bi::type::Real64,1>& o1, const Eigen::MatrixBase<T>& o2) {
+auto outer(const libbirch::DefaultArray<birch::type::Real64,1>& o1, const Eigen::MatrixBase<T>& o2) {
   return outer(o1.toEigen(), o2);
 }
 
-inline auto outer(const libbirch::DefaultArray<bi::type::Real64,1>& o1, const libbirch::DefaultArray<bi::type::Real64,1>& o2) {
+inline auto outer(const libbirch::DefaultArray<birch::type::Real64,1>& o1, const libbirch::DefaultArray<birch::type::Real64,1>& o2) {
   return outer(o1.toEigen(), o2.toEigen());
 }
 
@@ -194,7 +194,7 @@ auto diagonal(const Eigen::MatrixBase<T>& o) {
   return o.asDiagonal();
 }
 
-inline auto diagonal(const libbirch::DefaultArray<bi::type::Real64,1>& o) {
+inline auto diagonal(const libbirch::DefaultArray<birch::type::Real64,1>& o) {
   return diagonal(o.toEigen());
 }
 
@@ -221,7 +221,7 @@ auto diagonal(const Eigen::TriangularView<T,Mode>& o) {
   return o.nestedExpression().diagonal();
 }
 
-inline auto diagonal(const libbirch::DefaultArray<bi::type::Real64,2>& o) {
+inline auto diagonal(const libbirch::DefaultArray<birch::type::Real64,2>& o) {
   return diagonal(o.toEigen());
 }
 
@@ -248,7 +248,7 @@ auto trace(const Eigen::TriangularView<T,Mode>& o) {
   return o.trace();
 }
 
-inline auto trace(const libbirch::DefaultArray<bi::type::Real64,2>& o) {
+inline auto trace(const libbirch::DefaultArray<birch::type::Real64,2>& o) {
   return trace(o.toEigen());
 }
 
@@ -275,7 +275,7 @@ auto det(const Eigen::TriangularView<T,Mode>& o) {
   return o.determinant();
 }
 
-inline auto det(const libbirch::DefaultArray<bi::type::Real64,2>& o) {
+inline auto det(const libbirch::DefaultArray<birch::type::Real64,2>& o) {
   return det(o.toEigen());
 }
 
@@ -302,7 +302,7 @@ auto ldet(const Eigen::TriangularView<T,Mode>& o) {
   return o.nestedExpression().diagonal().array().log().sum();
 }
 
-inline auto ldet(const libbirch::DefaultArray<bi::type::Real64,2>& o) {
+inline auto ldet(const libbirch::DefaultArray<birch::type::Real64,2>& o) {
   return ldet(o.toEigen());
 }
 
@@ -338,7 +338,7 @@ auto inv(const Eigen::TriangularView<T,Mode>& o) {
   return o.inverse();
 }
 
-inline auto inv(const libbirch::DefaultArray<bi::type::Real64,2>& o) {
+inline auto inv(const libbirch::DefaultArray<birch::type::Real64,2>& o) {
   return inv(o.toEigen());
 }
 
@@ -361,35 +361,35 @@ auto solve(const Eigen::MatrixBase<T>& o1, const Eigen::TriangularView<U,Mode>& 
 }
 
 template<class T>
-auto solve(const Eigen::MatrixBase<T>& o1, const libbirch::DefaultArray<bi::type::Real64,2>& o2) {
+auto solve(const Eigen::MatrixBase<T>& o1, const libbirch::DefaultArray<birch::type::Real64,2>& o2) {
   return solve(o1, o2.toEigen());
 }
 
 template<class T>
-auto solve(const Eigen::MatrixBase<T>& o1, const libbirch::DefaultArray<bi::type::Real64,1>& o2) {
+auto solve(const Eigen::MatrixBase<T>& o1, const libbirch::DefaultArray<birch::type::Real64,1>& o2) {
   return solve(o1, o2.toEigen());
 }
 
 template<class T>
-auto solve(const libbirch::DefaultArray<bi::type::Real64,2>& o1, const Eigen::MatrixBase<T>& o2) {
+auto solve(const libbirch::DefaultArray<birch::type::Real64,2>& o1, const Eigen::MatrixBase<T>& o2) {
   return solve(o1.toEigen(), o2);
 }
 
 template<class T>
-auto solve(const libbirch::DefaultArray<bi::type::Real64,2>& o1, const Eigen::DiagonalWrapper<T>& o2) {
+auto solve(const libbirch::DefaultArray<birch::type::Real64,2>& o1, const Eigen::DiagonalWrapper<T>& o2) {
   return solve(o1.toEigen(), o2);
 }
 
 template<class T, unsigned Mode>
-auto solve(const libbirch::DefaultArray<bi::type::Real64,2>& o1, const Eigen::TriangularView<T,Mode>& o2) {
+auto solve(const libbirch::DefaultArray<birch::type::Real64,2>& o1, const Eigen::TriangularView<T,Mode>& o2) {
   return solve(o1.toEigen(), o2);
 }
 
-inline auto solve(const libbirch::DefaultArray<bi::type::Real64,2>& o1, const libbirch::DefaultArray<bi::type::Real64,2>& o2) {
+inline auto solve(const libbirch::DefaultArray<birch::type::Real64,2>& o1, const libbirch::DefaultArray<birch::type::Real64,2>& o2) {
   return solve(o1.toEigen(), o2.toEigen());
 }
 
-inline auto solve(const libbirch::DefaultArray<bi::type::Real64,2>& o1, const libbirch::DefaultArray<bi::type::Real64,1>& o2) {
+inline auto solve(const libbirch::DefaultArray<birch::type::Real64,2>& o1, const libbirch::DefaultArray<birch::type::Real64,1>& o2) {
   return solve(o1.toEigen(), o2.toEigen());
 }
 
@@ -409,12 +409,12 @@ auto solve(const Eigen::LLT<T>& o1, const Eigen::TriangularView<U,Mode>& o2) {
 }
 
 template<class T>
-auto solve(const Eigen::LLT<T>& o1, const libbirch::DefaultArray<bi::type::Real64,2>& o2) {
+auto solve(const Eigen::LLT<T>& o1, const libbirch::DefaultArray<birch::type::Real64,2>& o2) {
   return solve(o1, o2.toEigen());
 }
 
 template<class T>
-auto solve(const Eigen::LLT<T>& o1, const libbirch::DefaultArray<bi::type::Real64,1>& o2) {
+auto solve(const Eigen::LLT<T>& o1, const libbirch::DefaultArray<birch::type::Real64,1>& o2) {
   return solve(o1, o2.toEigen());
 }
 
@@ -435,12 +435,12 @@ auto solve(const Eigen::DiagonalWrapper<T>& o1, const Eigen::TriangularView<U,Mo
 }
 
 template<class T>
-auto solve(const Eigen::DiagonalWrapper<T>& o1, const libbirch::DefaultArray<bi::type::Real64,2>& o2) {
+auto solve(const Eigen::DiagonalWrapper<T>& o1, const libbirch::DefaultArray<birch::type::Real64,2>& o2) {
   return solve(o1, o2.toEigen());
 }
 
 template<class T>
-auto solve(const Eigen::DiagonalWrapper<T>& o1, const libbirch::DefaultArray<bi::type::Real64,1>& o2) {
+auto solve(const Eigen::DiagonalWrapper<T>& o1, const libbirch::DefaultArray<birch::type::Real64,1>& o2) {
   return solve(o1, o2.toEigen());
 }
 
@@ -460,12 +460,12 @@ auto solve(const Eigen::TriangularView<T,Mode1>& o1, const Eigen::TriangularView
 }
 
 template<class T, unsigned Mode1>
-auto solve(const Eigen::TriangularView<T,Mode1>& o1, const libbirch::DefaultArray<bi::type::Real64,2>& o2) {
+auto solve(const Eigen::TriangularView<T,Mode1>& o1, const libbirch::DefaultArray<birch::type::Real64,2>& o2) {
   return solve(o1, o2.toEigen());
 }
 
 template<class T, unsigned Mode1>
-auto solve(const Eigen::TriangularView<T,Mode1>& o1, const libbirch::DefaultArray<bi::type::Real64,1>& o2) {
+auto solve(const Eigen::TriangularView<T,Mode1>& o1, const libbirch::DefaultArray<birch::type::Real64,1>& o2) {
   return solve(o1, o2.toEigen());
 }
 
@@ -478,38 +478,38 @@ auto kronecker(const Eigen::MatrixBase<T>& o1, const Eigen::MatrixBase<U>& o2) {
 }
 
 template<class T>
-auto kronecker(const Eigen::MatrixBase<T>& o1, const libbirch::DefaultArray<bi::type::Real64,2>& o2) {
+auto kronecker(const Eigen::MatrixBase<T>& o1, const libbirch::DefaultArray<birch::type::Real64,2>& o2) {
   return kronecker(o1, o2.toEigen());
 }
 
 template<class T>
-auto kronecker(const Eigen::MatrixBase<T>& o1, const libbirch::DefaultArray<bi::type::Real64,1>& o2) {
+auto kronecker(const Eigen::MatrixBase<T>& o1, const libbirch::DefaultArray<birch::type::Real64,1>& o2) {
   return kronecker(o1, o2.toEigen());
 }
 
 template<class T>
-auto kronecker(const libbirch::DefaultArray<bi::type::Real64,2>& o1, const Eigen::MatrixBase<T>& o2) {
+auto kronecker(const libbirch::DefaultArray<birch::type::Real64,2>& o1, const Eigen::MatrixBase<T>& o2) {
   return kronecker(o1.toEigen(), o2);
 }
 
 template<class T>
-auto kronecker(const libbirch::DefaultArray<bi::type::Real64,1>& o1, const Eigen::MatrixBase<T>& o2) {
+auto kronecker(const libbirch::DefaultArray<birch::type::Real64,1>& o1, const Eigen::MatrixBase<T>& o2) {
   return kronecker(o1.toEigen(), o2);
 }
 
-inline auto kronecker(const libbirch::DefaultArray<bi::type::Real64,2>& o1, const libbirch::DefaultArray<bi::type::Real64,2>& o2) {
+inline auto kronecker(const libbirch::DefaultArray<birch::type::Real64,2>& o1, const libbirch::DefaultArray<birch::type::Real64,2>& o2) {
   return kronecker(o1.toEigen(), o2.toEigen());
 }
 
-inline auto kronecker(const libbirch::DefaultArray<bi::type::Real64,2>& o1, const libbirch::DefaultArray<bi::type::Real64,1>& o2) {
+inline auto kronecker(const libbirch::DefaultArray<birch::type::Real64,2>& o1, const libbirch::DefaultArray<birch::type::Real64,1>& o2) {
   return kronecker(o1.toEigen(), o2.toEigen());
 }
 
-inline auto kronecker(const libbirch::DefaultArray<bi::type::Real64,1>& o1, const libbirch::DefaultArray<bi::type::Real64,2>& o2) {
+inline auto kronecker(const libbirch::DefaultArray<birch::type::Real64,1>& o1, const libbirch::DefaultArray<birch::type::Real64,2>& o2) {
   return kronecker(o1.toEigen(), o2.toEigen());
 }
 
-inline auto kronecker(const libbirch::DefaultArray<bi::type::Real64,1>& o1, const libbirch::DefaultArray<bi::type::Real64,1>& o2) {
+inline auto kronecker(const libbirch::DefaultArray<birch::type::Real64,1>& o1, const libbirch::DefaultArray<birch::type::Real64,1>& o2) {
   return kronecker(o1.toEigen(), o2.toEigen());
 }
 
@@ -522,25 +522,25 @@ auto hadamard(const Eigen::MatrixBase<T>& o1, const Eigen::MatrixBase<U>& o2) {
 }
 
 template<class T>
-auto hadamard(const Eigen::MatrixBase<T>& o1, const libbirch::DefaultArray<bi::type::Real64,2>& o2) {
+auto hadamard(const Eigen::MatrixBase<T>& o1, const libbirch::DefaultArray<birch::type::Real64,2>& o2) {
   return hadamard(o1, o2.toEigen());
 }
 
 template<class T>
-auto hadamard(const libbirch::DefaultArray<bi::type::Real64,2>& o1, const Eigen::MatrixBase<T>& o2) {
+auto hadamard(const libbirch::DefaultArray<birch::type::Real64,2>& o1, const Eigen::MatrixBase<T>& o2) {
   return hadamard(o1.toEigen(), o2);
 }
 
-inline auto hadamard(const libbirch::DefaultArray<bi::type::Real64,2>& o1, const libbirch::DefaultArray<bi::type::Real64,2>& o2) {
+inline auto hadamard(const libbirch::DefaultArray<birch::type::Real64,2>& o1, const libbirch::DefaultArray<birch::type::Real64,2>& o2) {
   return hadamard(o1.toEigen(), o2.toEigen());
 }
 
 template<class T>
-auto hadamard(const libbirch::DefaultArray<bi::type::Real64,1>& o1, const Eigen::MatrixBase<T>& o2) {
+auto hadamard(const libbirch::DefaultArray<birch::type::Real64,1>& o1, const Eigen::MatrixBase<T>& o2) {
   return hadamard(o1.toEigen(), o2);
 }
 
-inline auto hadamard(const libbirch::DefaultArray<bi::type::Real64,1>& o1, const libbirch::DefaultArray<bi::type::Real64,1>& o2) {
+inline auto hadamard(const libbirch::DefaultArray<birch::type::Real64,1>& o1, const libbirch::DefaultArray<birch::type::Real64,1>& o2) {
   return hadamard(o1.toEigen(), o2.toEigen());
 }
 
