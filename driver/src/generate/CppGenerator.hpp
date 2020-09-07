@@ -196,14 +196,7 @@ void birch::CppGenerator::genInit(const T* o) {
   } else if (!o->args->isEmpty()) {
     middle('(' << o->args << ')');
   } else if (!o->value->isEmpty()) {
-    middle(" = ");
-    if (o->type->isEmpty()) {
-      /* wrap the value with libbirch::canonical, which converts Eigen types
-       * to LibBirch array types */
-      middle("libbirch::canonical(" << o->value << ')');
-    } else {
-      middle(o->value);
-    }
+    middle(" = " << o->value);
   }
 }
 

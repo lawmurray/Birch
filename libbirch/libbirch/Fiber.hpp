@@ -273,14 +273,4 @@ struct is_acyclic<Fiber<Return,Yield>,N> {
   static const bool value = false;
 };
 
-template<class Return, class Yield>
-auto canonical(const Fiber<Return,Yield>& o) {
-  return o;
-}
-
-template<class Return, class Yield>
-auto canonical(Fiber<Return,Yield>&& o) {
-  return std::move(o);
-}
-
 }

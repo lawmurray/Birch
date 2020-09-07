@@ -67,19 +67,11 @@ struct is_triangle_compatible {
       std::is_same<typename ArrayType::value_type,typename EigenType::value_type>::value &&
           ArrayType::shape_type::count() == 2 && EigenType::ColsAtCompileTime == Eigen::Dynamic;
 };
+
 }
 
 namespace birch {
   namespace type {
 using LLT = Eigen::LLT<libbirch::EigenMatrix<Real64>>;
   }
-}
-
-namespace libbirch {
-inline auto canonical(const birch::type::LLT& o) {
-  return o;
-}
-inline auto canonical(birch::type::LLT&& o) {
-  return std::move(o);
-}
 }

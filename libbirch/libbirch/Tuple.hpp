@@ -296,16 +296,6 @@ struct is_acyclic<Tuple<>,N> {
   static const bool value = true;
 };
 
-template<class... Args>
-auto canonical(const Tuple<Args...>& o) {
-  return o;
-}
-
-template<class... Args>
-auto canonical(Tuple<Args...>&& o) {
-  return std::move(o);
-}
-
 /**
  * Make a tuple.
  *
@@ -353,4 +343,5 @@ template<class Head, class ... Tail>
 Tuple<Head&,Tail&...> tie(Head& head, Tail&... tail) {
   return Tuple<Head&,Tail&...>(head, tail...);
 }
+
 }

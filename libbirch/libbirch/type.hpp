@@ -111,20 +111,4 @@ struct is_acyclic_class {
   static const bool value = is_acyclic<typename T::member_type_,N>::value;
 };
 
-/**
- * Convert an object to its canonical LibBirch type. It is used as a wrapper
- * around initial values when the `auto` keyword is used to ensure that a
- * desirable type is inferred. For example, some pointer types convert to the
- * shared pointer types. In most cases, however, it is an identity operationo.
- *
- * Eigen types are converted to their corresponding LibBirch type, as the
- * use of `auto` with Eigen types can be problematic.
- *
- * @see https://eigen.tuxfamily.org/dox/TopicPitfalls.html#title3
- */
-template<class T, std::enable_if_t<std::is_void<T>::value,int> = 0>
-auto canonical(const T& o) {
-  assert(false);
-  return o;
-}
 }

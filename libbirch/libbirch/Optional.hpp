@@ -285,15 +285,5 @@ struct is_acyclic<Optional<T>,N> {
   static const bool value = is_acyclic<T,N>::value;
 };
 
-template<class T>
-auto canonical(const Optional<T>& o) {
-  return o;
-}
-
-template<class T>
-auto canonical(Optional<T>&& o) {
-  return std::move(o);
-}
-
 }
 

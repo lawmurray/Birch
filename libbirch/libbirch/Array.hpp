@@ -768,41 +768,4 @@ struct is_acyclic<Array<T,F>,N> {
 template<class T, int D>
 using DefaultArray = Array<T,typename DefaultShape<D>::type>;
 
-template<class T, class F>
-auto canonical(const Array<T,F>& o) {
-  return o;
-}
-
-template<class T, class F>
-auto canonical(Array<T,F>&& o) {
-  return std::move(o);
-}
-
-template<class EigenType, std::enable_if_t<EigenType::ColsAtCompileTime == 1,int> = 0>
-auto canonical(const Eigen::MatrixBase<EigenType>& o) {
-  using T = typename EigenType::value_type;
-  using F = typename DefaultShape<1>::type;
-  return Array<T,F>(o);
-}
-
-template<class EigenType, std::enable_if_t<EigenType::ColsAtCompileTime == Eigen::Dynamic,int> = 0>
-auto canonical(const Eigen::MatrixBase<EigenType>& o) {
-  using T = typename EigenType::value_type;
-  using F = typename DefaultShape<2>::type;
-  return Array<T,F>(o);
-}
-
-template<class EigenType, std::enable_if_t<EigenType::ColsAtCompileTime == 1,int> = 0>
-auto canonical(const Eigen::DiagonalWrapper<EigenType>& o) {
-  using T = typename EigenType::value_type;
-  using F = typename DefaultShape<2>::type;
-  return Array<T,F>(o);
-}
-
-template<class EigenType, unsigned Mode, std::enable_if_t<EigenType::ColsAtCompileTime == Eigen::Dynamic,int> = 0>
-auto canonical(const Eigen::TriangularView<EigenType,Mode>&& o) {
-  using T = typename EigenType::value_type;
-  using F = typename DefaultShape<2>::type;
-  return Array<T,F>(o);
-}
 }

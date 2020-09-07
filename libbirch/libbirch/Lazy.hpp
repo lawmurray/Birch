@@ -386,24 +386,4 @@ struct is_acyclic<Lazy<P>,N> {
       is_acyclic<pointer_type,N>::value;
 };
 
-template<class T>
-auto canonical(const Lazy<Shared<T>>& o) {
-  return o;
-}
-
-template<class T>
-auto canonical(Lazy<Shared<T>>&& o) {
-  return std::move(o);
-}
-
-template<class T>
-auto canonical(const Lazy<Init<T>>& o) {
-  return Lazy<Shared<T>>(o);
-}
-
-template<class T, std::enable_if_t<std::is_base_of<Any,T>::value,int> = 0>
-auto canonical(T* ptr) {
-  return Lazy<Shared<T>>(ptr);
-}
-
 }
