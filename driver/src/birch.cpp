@@ -14,7 +14,11 @@ int main(int argc, char** argv) {
     std::string prog = argc > 1 ? argv[1]: "help";
 
     Driver driver(argc - 1, argv + 1);
-    if (prog.compare("build") == 0) {
+    if (prog.compare("bootstrap") == 0) {
+      driver.bootstrap();
+    } else if (prog.compare("configure") == 0) {
+      driver.configure();
+    } else if (prog.compare("build") == 0) {
       driver.build();
     } else if (prog.compare("install") == 0) {
       driver.install();

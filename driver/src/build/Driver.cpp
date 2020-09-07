@@ -52,8 +52,13 @@ birch::Driver::Driver(int argc, char** argv) :
   }
 
   /* prefix */
-  if (prefix.empty() && BIRCH_PREFIX) {
-    prefix = BIRCH_PREFIX;
+  if (prefix.empty()) {
+    #ifdef PREFIX
+    prefix = STRINGIFY(PREFIX);
+    #endif
+    if (BIRCH_PREFIX) {
+      prefix = BIRCH_PREFIX;
+    }
   }
 
   /* share dirs */
@@ -332,30 +337,163 @@ void birch::Driver::run(const std::string& prog,
   }
 }
 
-void birch::Driver::build() {
+void birch::Driver::bootstrap() {
   meta();
   setup();
   transpile();
+
+  if (newBootstrap || newConfigure || newMake || !fs::exists("configure") ||
+      !fs::exists("install-sh")) {
+    std::stringstream cmd;
+    cmd << (fs::path(".") / "bootstrap");
+    if (verbose) {
+      std::cerr << cmd.str() << std::endl;
+    } else {
+      cmd << " > bootstrap.log 2>&1";
+    }
+
+    int ret = std::system(cmd.str().c_str());
+    if (ret == -1) {
+      if (verbose) {
+        std::cerr << explain(cmd.str()) << std::endl;
+      }
+      throw DriverException("bootstrap failed to execute.");
+    } else if (ret != 0) {
+      std::stringstream buf;
+      buf << "bootstrap died with signal " << ret
+          << "; make sure autoconf, automake and libtool are installed";
+      if (!verbose) {
+        buf << ", see bootstrap.log for details";
+      }
+      buf << '.';
+      throw DriverException(buf.str());
+    }
+  }
+}
+
+void birch::Driver::configure() {
   bootstrap();
+
+  if (newBootstrap || newConfigure || newMake || !fs::exists("Makefile")) {
+    /* compile and link flags */
+    std::stringstream cppflags, cflags, cxxflags, ldflags, options, cmd;
+    if (arch == "native") {
+      cflags << " -march=native";
+      cxxflags << " -march=native";
+    }
+
+    /* include path */
+    for (auto iter = includeDirs.begin(); iter != includeDirs.end();
+        ++iter) {
+      cppflags << " -I" << iter->string();
+    }
+    for (auto iter = libDirs.begin(); iter != libDirs.end(); ++iter) {
+      ldflags << " -L" << iter->string();
+    }
+
+    /* library path */
+    for (auto iter = libDirs.begin(); iter != libDirs.end(); ++iter) {
+      ldflags << " -Wl,-rpath," << iter->string();
+    }
+
+    /* configure options */
+    if (release) {
+      options << " --enable-release";
+    } else {
+      options << " --disable-release";
+    }
+    if (debug) {
+      options << " --enable-debug";
+    } else {
+      options << " --disable-debug";
+    }
+    if (test) {
+      options << " --enable-test";
+    } else {
+      options << " --disable-test";
+    }
+    if (staticLib) {
+      options << " --enable-static";
+    } else {
+      options << " --disable-static";
+    }
+    if (sharedLib) {
+      options << " --enable-shared";
+    } else {
+      options << " --disable-shared";
+    }
+    if (openmp) {
+      #ifdef __APPLE__
+      /* the system compiler on Apple requires different options for
+        * OpenMP; disable the configure check and customize these */
+      options << " --disable-openmp";
+      cppflags << " -Xpreprocessor -fopenmp";
+      #else
+      options << " --enable-openmp";
+      #endif
+    } else {
+      options << " --disable-openmp";
+    }
+    if (!prefix.empty()) {
+      options << " --prefix=" << prefix;
+    }
+    options << " --config-cache";
+    options << " INSTALL=\"install -p\"";
+    if (!cppflags.str().empty()) {
+      options << " CPPFLAGS=\"$CPPFLAGS " << cppflags.str() << "\"";
+    }
+    if (!cflags.str().empty()) {
+      options << " CFLAGS=\"$CFLAGS " << cflags.str() << "\"";
+    }
+    if (!cxxflags.str().empty()) {
+      options << " CXXFLAGS=\"$CXXFLAGS " << cxxflags.str() << "\"";
+    }
+    if (!ldflags.str().empty()) {
+      options << " LDFLAGS=\"$LDFLAGS " << ldflags.str() << "\"";
+    }
+
+    /* command */
+    if (arch == "js" || arch == "wasm") {
+      cmd << "emconfigure ";
+    }
+    cmd << (fs::path(".") / "configure") << ' ' << options.str();
+    if (verbose) {
+      std::cerr << cmd.str() << std::endl;
+    } else {
+      cmd << " > configure.log 2>&1";
+    }
+
+    int ret = std::system(cmd.str().c_str());
+    if (ret == -1) {
+      if (verbose) {
+        std::cerr << explain(cmd.str()) << std::endl;
+      }
+      throw DriverException("configure failed to execute.");
+    } else if (ret != 0) {
+      std::stringstream buf;
+      buf << "configure died with signal " << ret
+          << "; make sure all dependencies are installed";
+      if (!verbose) {
+        buf << ", see configure.log and config.log for details";
+      }
+      buf << '.';
+      throw DriverException(buf.str());
+    }
+  }
+}
+
+void birch::Driver::build() {
   configure();
   target();
 }
 
 void birch::Driver::install() {
-  meta();
-  setup();
-  transpile();
-  bootstrap();
   configure();
   target("install");
   ldconfig();
 }
 
 void birch::Driver::uninstall() {
-  meta();
-  setup();
-  transpile();
-  bootstrap();
   configure();
   target("uninstall");
   ldconfig();
@@ -708,12 +846,19 @@ void birch::Driver::help() {
       std::cout << "  * files listed in META.json that do not exist," << std::endl;
       std::cout << "  * files of recognisable types that exist but are not listed in META.json, and" << std::endl;
       std::cout << "  * standard meta files that do not exist." << std::endl;
-    } else if (command.compare("build") == 0) {
+    } else if (command.compare("bootstrap") == 0 ||
+        command.compare("configure") == 0 ||
+        command.compare("build") == 0 ||
+        command.compare("install") == 0) {
       std::cout << "Usage:" << std::endl;
       std::cout << std::endl;
+      std::cout << "  birch bootstrap [options]" << std::endl;
+      std::cout << "  birch configure [options]" << std::endl;
       std::cout << "  birch build [options]" << std::endl;
+      std::cout << "  birch install [options]" << std::endl;
       std::cout << std::endl;
-      std::cout << "Build the package." << std::endl;
+      std::cout << "Build the package up to the given stage (in order: bootstrap, configure, build," << std::endl;
+      std::cout << "install)." << std::endl;
       std::cout << std::endl;
       std::cout << "Basic options:" << std::endl;
       std::cout << std::endl;
@@ -1038,146 +1183,6 @@ void birch::Driver::transpile() {
   compiler.parse(true);
   compiler.resolve();
   compiler.gen();
-}
-
-void birch::Driver::bootstrap() {
-  if (newBootstrap || newConfigure || newMake || !fs::exists("configure") ||
-      !fs::exists("install-sh")) {
-    std::stringstream cmd;
-    cmd << (fs::path(".") / "bootstrap");
-    if (verbose) {
-      std::cerr << cmd.str() << std::endl;
-    } else {
-      cmd << " > bootstrap.log 2>&1";
-    }
-
-    int ret = std::system(cmd.str().c_str());
-    if (ret == -1) {
-      if (verbose) {
-        std::cerr << explain(cmd.str()) << std::endl;
-      }
-      throw DriverException("bootstrap failed to execute.");
-    } else if (ret != 0) {
-      std::stringstream buf;
-      buf << "bootstrap died with signal " << ret
-          << "; make sure autoconf, automake and libtool are installed";
-      if (!verbose) {
-        buf << ", see bootstrap.log for details";
-      }
-      buf << '.';
-      throw DriverException(buf.str());
-    }
-  }
-}
-
-void birch::Driver::configure() {
-  if (newBootstrap || newConfigure || newMake || !fs::exists("Makefile")) {
-
-    /* compile and link flags */
-    std::stringstream cppflags, cflags, cxxflags, ldflags, options, cmd;
-    if (arch == "native") {
-      cflags << " -march=native";
-      cxxflags << " -march=native";
-    }
-
-    /* include path */
-    for (auto iter = includeDirs.begin(); iter != includeDirs.end();
-        ++iter) {
-      cppflags << " -I" << iter->string();
-    }
-    for (auto iter = libDirs.begin(); iter != libDirs.end(); ++iter) {
-      ldflags << " -L" << iter->string();
-    }
-
-    /* library path */
-    for (auto iter = libDirs.begin(); iter != libDirs.end(); ++iter) {
-      ldflags << " -Wl,-rpath," << iter->string();
-    }
-
-    /* configure options */
-    if (release) {
-      options << " --enable-release";
-    } else {
-      options << " --disable-release";
-    }
-    if (debug) {
-      options << " --enable-debug";
-    } else {
-      options << " --disable-debug";
-    }
-    if (test) {
-      options << " --enable-test";
-    } else {
-      options << " --disable-test";
-    }
-    if (staticLib) {
-      options << " --enable-static";
-    } else {
-      options << " --disable-static";
-    }
-    if (sharedLib) {
-      options << " --enable-shared";
-    } else {
-      options << " --disable-shared";
-    }
-    if (openmp) {
-      #ifdef __APPLE__
-      /* the system compiler on Apple requires different options for
-        * OpenMP; disable the configure check and customize these */
-      options << " --disable-openmp";
-      cppflags << " -Xpreprocessor -fopenmp";
-      #else
-      options << " --enable-openmp";
-      #endif
-    } else {
-      options << " --disable-openmp";
-    }
-    if (!prefix.empty()) {
-      options << " --prefix=" << prefix;
-    }
-    options << " --config-cache";
-    options << " INSTALL=\"install -p\"";
-    if (!cppflags.str().empty()) {
-      options << " CPPFLAGS=\"$CPPFLAGS " << cppflags.str() << "\"";
-    }
-    if (!cflags.str().empty()) {
-      options << " CFLAGS=\"$CFLAGS " << cflags.str() << "\"";
-    }
-    if (!cxxflags.str().empty()) {
-      options << " CXXFLAGS=\"$CXXFLAGS " << cxxflags.str() << "\"";
-    }
-    if (!ldflags.str().empty()) {
-      options << " LDFLAGS=\"$LDFLAGS " << ldflags.str() << "\"";
-    }
-
-    /* command */
-    if (arch == "js" || arch == "wasm") {
-      cmd << "emconfigure ";
-    }
-    cmd << (fs::path(".") / "configure") << ' ' << options.str();
-    if (verbose) {
-      std::cerr << cmd.str() << std::endl;
-    } else {
-      cmd << " > configure.log 2>&1";
-    }
-
-    int ret = std::system(cmd.str().c_str());
-    if (ret == -1) {
-      if (verbose) {
-        std::cerr << explain(cmd.str()) << std::endl;
-      }
-      throw DriverException("configure failed to execute.");
-    } else if (ret != 0) {
-      std::stringstream buf;
-      buf << "configure died with signal " << ret
-          << "; make sure all dependencies are installed";
-      if (!verbose) {
-        buf << ", see configure.log and config.log for details";
-      }
-      buf << '.';
-      throw DriverException(buf.str());
-    }
-  }
 }
 
 void birch::Driver::target(const std::string& cmd) {

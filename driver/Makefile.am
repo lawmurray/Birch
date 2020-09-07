@@ -5,7 +5,7 @@ AM_YFLAGS = -d -Wno-yacc
 AM_FLAGS =
 
 # compiler setup
-AM_CPPFLAGS = -DDATADIR="$(datadir)" -DINCLUDEDIR="$(includedir)" -DLIBDIR="$(libdir)"
+AM_CPPFLAGS = -DPREFIX="$(prefix)" -DDATADIR="$(datadir)" -DINCLUDEDIR="$(includedir)" -DLIBDIR="$(libdir)"
 AM_CXXFLAGS = -include src/birch.hpp
 
 # driver program

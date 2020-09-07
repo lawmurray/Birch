@@ -28,6 +28,16 @@ public:
   void run(const std::string& prog, const std::vector<char*>& xargs = {});
 
   /**
+   * Bootstrap package.
+   */
+  void bootstrap();
+
+  /**
+   * Configure package.
+   */
+  void configure();
+
+  /**
    * Build package.
    */
   void build();
@@ -87,16 +97,6 @@ private:
    * Transpile Birch files to C++.
    */
   void transpile();
-
-  /**
-   * Run bootstrap.
-   */
-  void bootstrap();
-
-  /**
-   * Run configure.
-   */
-  void configure();
 
   /**
    * Run make with a given target.
