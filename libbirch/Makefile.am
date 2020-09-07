@@ -30,7 +30,6 @@ nobase_include_HEADERS = \
   libbirch/Array.hpp \
   libbirch/Atomic.hpp \
   libbirch/assert.hpp \
-  libbirch/basic.hpp \
   libbirch/Buffer.hpp \
   libbirch/class.hpp \
   libbirch/Collector.hpp \

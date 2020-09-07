@@ -1,13 +1,6 @@
-/**
- * @file
- */
-#pragma once
-
+hpp{{
 namespace birch {
   namespace type {
-/*
- * Basic types.
- */
 using Boolean = bool;
 using Real64 = double;
 using Real32 = float;
@@ -17,6 +10,7 @@ using Integer16 = std::int16_t;
 using Integer8 = std::int8_t;
 using String = std::string;
 using File = FILE*;
-
+using LLT = Eigen::LLT<libbirch::EigenMatrix<Real64>>;
   }
 }
+}}

@@ -6,7 +6,6 @@
 #pragma once
 
 #include "libbirch/external.hpp"
-#include "libbirch/basic.hpp"
 
 namespace libbirch {
 
@@ -68,10 +67,4 @@ struct is_triangle_compatible {
           ArrayType::shape_type::count() == 2 && EigenType::ColsAtCompileTime == Eigen::Dynamic;
 };
 
-}
-
-namespace birch {
-  namespace type {
-using LLT = Eigen::LLT<libbirch::EigenMatrix<Real64>>;
-  }
 }

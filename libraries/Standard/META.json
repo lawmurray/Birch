@@ -3,6 +3,7 @@
 
   "manifest": {
     "source": [
+      "birch/basic/basic.birch",
       "birch/basic/Boolean.birch",
       "birch/basic/File.birch",
       "birch/basic/Integer.birch",
@@ -402,7 +403,6 @@
       "birch/value/StringValue.birch",
       "birch/value/Value.birch",
       "birch/filter.birch",
-      "birch/main.birch",
       "birch/sample.birch"
     ],
     "other": [
