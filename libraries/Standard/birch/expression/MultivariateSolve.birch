@@ -14,7 +14,7 @@ final class MultivariateSolve<Left,LeftValue>(y:Left,
 
   override function doEvaluateGradLeft(d:Real[_], x:Real[_], y:LeftValue,
       z:Real[_]) -> Real[_,_] {
-    return -solve(transpose(y), d)*transpose(solve(y, z));
+    return outer(-solve(transpose(y), d), solve(y, z));
   }
 
   override function doEvaluateGradRight(d:Real[_], x:Real[_], y:LeftValue,

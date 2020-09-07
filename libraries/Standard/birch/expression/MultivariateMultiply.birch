@@ -15,7 +15,7 @@ final class MultivariateMultiply(y:Expression<Real[_,_]>,
 
   override function doEvaluateGradLeft(d:Real[_], x:Real[_], y:Real[_,_],
       z:Real[_]) -> Real[_,_] {
-    return d*transpose(z);
+    return outer(d, z);
   }
 
   override function doEvaluateGradRight(d:Real[_], x:Real[_], y:Real[_,_],

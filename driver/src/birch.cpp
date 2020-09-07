@@ -42,6 +42,6 @@ int main(int argc, char** argv) {
     return 0;
   } catch (Exception& e) {
     std::cerr << e.msg << std::endl;
-    return 1;
+    return -1;
   }
 }

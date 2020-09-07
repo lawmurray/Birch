@@ -30,8 +30,6 @@
 #include "libbirch/Optional.hpp"
 #include "libbirch/Fiber.hpp"
 #include "libbirch/Eigen.hpp"
-#include "libbirch/EigenFunctions.hpp"
-#include "libbirch/EigenOperators.hpp"
 
 /**
  * LibBirch.

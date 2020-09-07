@@ -38,8 +38,6 @@ nobase_include_HEADERS = \
   libbirch/docs.hpp \
   libbirch/Dimension.hpp \
   libbirch/Eigen.hpp \
-  libbirch/EigenFunctions.hpp \
-  libbirch/EigenOperators.hpp \
   libbirch/ExitBarrierLock.hpp \
   libbirch/external.hpp \
   libbirch/Fiber.hpp \
