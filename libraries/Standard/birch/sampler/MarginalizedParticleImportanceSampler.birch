@@ -1,5 +1,5 @@
 /**
- * Marginalized particle Gibbs sampler.
+ * Particle marginal importance sampler.
  *
  * ```mermaid
  * classDiagram
@@ -14,14 +14,9 @@
  *    link MarginalizedParticleGibbsSampler "../MarginalizedParticleGibbsSampler/"
  * ```
  */
-class MarginalizedParticleGibbsSampler < ConditionalParticleSampler {
-  override function sample(filter:ConditionalParticleFilter,
-      archetype:Model) {
-    filter.alreadyInitialized <- false;
-  }
-
-  override function sample(filter:ConditionalParticleFilter,
-      archetype:Model, n:Integer) {
+class MarginalizedParticleImportanceSampler < ParticleSampler {
+  override function sample(filter:ParticleFilter, archetype:Model,
+      n:Integer) {
     clearDiagnostics();
     filter.initialize(archetype);
     filter.filter();
@@ -32,13 +27,14 @@ class MarginalizedParticleGibbsSampler < ConditionalParticleSampler {
     }
 
     /* draw a single sample and weight with normalizing constant estimate */
-    filter.b <- ancestor(filter.w);
-    if filter.b == 0 {
-      error("particle filter degenerated");
+    auto b <- ancestor(filter.w);
+    if b == 0 {
+      warn("particle filter degenerated, problem sample will be assigned zero weight");
+      w <- -inf;
+    } else {
+      x <- filter.x[b].m;
+      w <- filter.lnormalize;
     }
-    x <- filter.x[filter.b].m;
-    w <- 0.0;
-
     collect();
   }
 }

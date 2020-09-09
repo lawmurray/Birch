@@ -1,10 +1,12 @@
 /**
  * Markov kernel.
  *
- * The Kernel class hierarchy is as follows:
- * <center>
- * <object type="image/svg+xml" data="../../figs/Kernel.svg"></object>
- * </center>
+ * ```mermaid
+ * classDiagram
+ *    Kernel <|-- LangevinKernel
+ *    link Kernel "../Kernel/"
+ *    link LangevinKernel "../LangevinKernel/"
+ * ```
  *
  * The basic use of a Kernel is to pass it to the `move()` member function of
  * an Expression to simultaneously update variables and re-evaluate the

@@ -5,10 +5,18 @@
  * - x: Associated random variate.
  * - p: Associated distribution.
  *
- * The Event class hierarchy is as follows:
- * <center>
- * <object type="image/svg+xml" data="../../figs/Event.svg"></object>
- * </center>
+ * ```mermaid
+ * classDiagram
+ *    Event <|-- SimulateEvent
+ *    Event <|-- ObserveEvent
+ *    Event <|-- AssumeEvent
+ *    Event <|-- FactorEvent
+ *    link Event "../Event/"
+ *    link SimulateEvent "../SimulateEvent/"
+ *    link ObserveEvent "../ObserveEvent/"
+ *    link AssumeEvent "../AssumeEvent/"
+ *    link FactorEvent "../FactorEvent/"
+ * ```
  */
 final class AssumeEvent<Value>(x:Random<Value>, p:Distribution<Value>) <
     Event {

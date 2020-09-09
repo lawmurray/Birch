@@ -3,10 +3,18 @@
  *
  * - w: Associated log-weight.
  *
- * The Event class hierarchy is as follows:
- * <center>
- * <object type="image/svg+xml" data="../../figs/Event.svg"></object>
- * </center>
+ * ```mermaid
+ * classDiagram
+ *    Event <|-- SimulateEvent
+ *    Event <|-- ObserveEvent
+ *    Event <|-- AssumeEvent
+ *    Event <|-- FactorEvent
+ *    link Event "../Event/"
+ *    link SimulateEvent "../SimulateEvent/"
+ *    link ObserveEvent "../ObserveEvent/"
+ *    link AssumeEvent "../AssumeEvent/"
+ *    link FactorEvent "../FactorEvent/"
+ * ```
  */
 final class FactorEvent(w:Expression<Real>) < Event {
   /**

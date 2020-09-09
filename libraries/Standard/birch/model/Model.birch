@@ -1,13 +1,5 @@
 /**
- * A model.
- *
- * ```mermaid
- * classDiagram
- *    Model <|-- MarkovModel
- *    Model <|-- HiddenMarkovModel
- *    HiddenMarkovModel -- StateSpaceModel
- *    link Model "../Model/"
- * ```
+ * Model.
  */
 abstract class Model {
   /**

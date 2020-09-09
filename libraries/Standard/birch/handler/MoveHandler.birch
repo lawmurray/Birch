@@ -3,10 +3,14 @@
  *
  * - delayed: Enable delayed sampling?
  *
- * The Handler class hierarchy is as follows:
- * <center>
- * <object type="image/svg+xml" data="../../figs/Handler.svg"></object>
- * </center>
+ * ```mermaid
+ * classDiagram
+ *    Handler <|-- PlayHandler
+ *    Handler <|-- MoveHandler
+ *    link Handler "../Handler/"
+ *    link PlayHandler "../PlayHandler/"
+ *    link MoveHandler "../MoveHandler/"
+ * ```
  */
 class MoveHandler(delayed:Boolean) < Handler {
   /**

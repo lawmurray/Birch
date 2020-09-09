@@ -1,10 +1,18 @@
 /**
  * Particle sampler.
  *
- * The ParticleSampler class hierarchy is as follows:
- * <center>
- * <object type="image/svg+xml" data="../../figs/Sampler.svg"></object>
- * </center>
+ * ```mermaid
+ * classDiagram
+ *    ParticleSampler <|-- MarginalizedParticleImportanceSampler
+ *    ParticleSampler <|-- ConditionalParticleSampler
+ *    ConditionalParticleSampler <|-- ParticleGibbsSampler
+ *    ConditionalParticleSampler <|-- MarginalizedParticleGibbsSampler
+ *    link ParticleSampler "../ParticleSampler/"
+ *    link MarginalizedParticleImportanceSampler "../MarginalizedParticleImportanceSampler/"
+ *    link ConditionalParticleSampler "../ConditionalParticleSampler/"
+ *    link ParticleGibbsSampler "../ParticleGibbsSampler/"
+ *    link MarginalizedParticleGibbsSampler "../MarginalizedParticleGibbsSampler/"
+ * ```
  */
 abstract class ParticleSampler {
   /**

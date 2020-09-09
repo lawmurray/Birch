@@ -1,10 +1,12 @@
 /**
  * (Metropolis-adjusted) Langevin Markov kernel.
  *
- * The Kernel class hierarchy is as follows:
- * <center>
- * <object type="image/svg+xml" data="../../figs/Kernel.svg"></object>
- * </center>
+ * ```mermaid
+ * classDiagram
+ *    Kernel <|-- LangevinKernel
+ *    link Kernel "../Kernel/"
+ *    link LangevinKernel "../LangevinKernel/"
+ * ```
  */
 class LangevinKernel < Kernel {
   /**

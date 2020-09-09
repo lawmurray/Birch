@@ -64,7 +64,7 @@ program sample(
     buffer <- configBuffer.setObject("sampler");
   }
   if !buffer!.getString("class")? {
-    buffer!.setString("class", "ParticleMarginalImportanceSampler");
+    buffer!.setString("class", "MarginalizedParticleImportanceSampler");
   }
   auto sampler <- ParticleSampler?(make(buffer));
   if !sampler? {

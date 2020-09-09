@@ -1,10 +1,16 @@
 /**
  * Particle filter.
  *
- * The ParticleFilter class hierarchy is as follows:
- * <center>
- * <object type="image/svg+xml" data="../../figs/Filter.svg"></object>
- * </center>
+ * ```mermaid
+ * classDiagram
+ *    ParticleFilter <|-- AliveParticleFilter
+ *    ParticleFilter <|-- MoveParticleFilter
+ *    ParticleFilter <|-- ConditionalParticleFilter
+ *    link ParticleFilter "../ParticleFilter/"
+ *    link AliveParticleFilter "../AliveParticleFilter/"
+ *    link MoveParticleFilter "../MoveParticleFilter/"
+ *    link ConditionalParticleFilter "../ConditionalParticleFilter/"
+ * ```
  */
 class ParticleFilter {
   /**

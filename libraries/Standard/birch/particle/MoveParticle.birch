@@ -3,10 +3,14 @@
  *
  * - m: Model.
  *
- * The Particle class hierarchy is as follows:
- * <center>
- * <object type="image/svg+xml" data="../../figs/Particle.svg"></object>
- * </center>
+ * ```mermaid
+ * classDiagram
+ *    Particle <|-- MoveParticle
+ *    Particle <|-- ConditionalParticle
+ *    link Particle "../Particle/"
+ *    link MoveParticle "../MoveParticle/"
+ *    link ConditionalParticle "../ConditionalParticle/"
+ * ```
  */
 class MoveParticle(m:Model) < Particle(m) {
   /**
