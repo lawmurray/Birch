@@ -39,8 +39,6 @@ public:
   virtual Expression* modify(Slice* o);
   virtual Expression* modify(Query* o);
   virtual Expression* modify(Get* o);
-  virtual Expression* modify(GetReturn* o);
-  virtual Expression* modify(Spin* o);
   virtual Expression* modify(LambdaFunction* o);
   virtual Expression* modify(Span* o);
   virtual Expression* modify(Index* o);
@@ -62,10 +60,8 @@ public:
   virtual Statement* modify(MemberVariable* o);
   virtual Statement* modify(LocalVariable* o);
   virtual Statement* modify(Function* o);
-  virtual Statement* modify(Fiber* o);
   virtual Statement* modify(Program* o);
   virtual Statement* modify(MemberFunction* o);
-  virtual Statement* modify(MemberFiber* o);
   virtual Statement* modify(BinaryOperator* o);
   virtual Statement* modify(UnaryOperator* o);
   virtual Statement* modify(AssignmentOperator* o);
@@ -78,10 +74,11 @@ public:
   virtual Statement* modify(Parallel* o);
   virtual Statement* modify(While* o);
   virtual Statement* modify(DoWhile* o);
+  virtual Statement* modify(With* o);
   virtual Statement* modify(Block* o);
   virtual Statement* modify(Assert* o);
   virtual Statement* modify(Return* o);
-  virtual Statement* modify(Yield* o);
+  virtual Statement* modify(Factor* o);
   virtual Statement* modify(Raw* o);
 
   virtual Type* modify(EmptyType* o);
@@ -91,7 +88,6 @@ public:
   virtual Type* modify(ArrayType* o);
   virtual Type* modify(TupleType* o);
   virtual Type* modify(FunctionType* o);
-  virtual Type* modify(FiberType* o);
   virtual Type* modify(OptionalType* o);
 };
 }

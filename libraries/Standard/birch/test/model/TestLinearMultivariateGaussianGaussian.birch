@@ -21,7 +21,7 @@ class TestLinearMultivariateGaussianGaussian < Model {
     σ2_1 <- pow(simulate_uniform(-2.0, 2.0), 2.0);
   }
 
-  fiber simulate() -> Event {
+  function simulate() {
     μ ~ Gaussian(μ_0, Σ_0);
     x ~ Gaussian(dot(a, μ) + c, σ2_1);
   }

@@ -15,7 +15,9 @@ function test_conjugacy<Conjugate>(m:Conjugate, N:Integer, D:Integer) {
   X1:Real[N,D];
   for n in 1..N {
     auto m' <- clone(m);
-    forward.handle(m'.simulate());
+    with (forward) {
+      m'.simulate();
+    }
     X1[n,1..D] <- m'.forward();
   }
 
@@ -23,7 +25,9 @@ function test_conjugacy<Conjugate>(m:Conjugate, N:Integer, D:Integer) {
   X2:Real[N,D];
   for n in 1..N {
     auto m' <- clone(m);
-    backward.handle(m'.simulate());
+    with (backward) {
+      m'.simulate();
+    }
     X2[n,1..D] <- m'.backward();
   }
   

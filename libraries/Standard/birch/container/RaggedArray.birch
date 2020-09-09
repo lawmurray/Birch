@@ -177,27 +177,24 @@ final class RaggedArray<Type> {
   }
 
   /**
-   * Iterate over the rows.
+   * Obtain an iterator over rows.
    *
-   * Return: a fiber object that yields each row in forward order.
+   * Return: an iterator across entire rows from top to bottom.
    */
-  fiber walk() -> Type[_] {
-    for i in 1..size() {
-      yield get(i);
-    }
+  function walk() -> Iterator<Type[_]> {
+    return RaggedArrayRowIterator<Type>(this);
   }
 
   /**
-   * Iterate over the columns of a row.
+   * Obtain an iterator over columns.
    *
    * - i: Row.
    *
-   * Return: a fiber object that yields each row in forward order.
+   * Return: an iterator across the elements of the given row, from left to
+   * right.
    */
-  fiber walk(i:Integer) -> Type {
-    for j in 1..sizes[i] {
-      yield get(i, j);
-    }
+  function walk(i:Integer) -> Iterator<Type> {
+    return RaggedArrayElementIterator<Type>(this, i);
   }
 
   /**
@@ -236,13 +233,13 @@ final class RaggedArray<Type> {
 
  function read(buffer:Buffer) {
     auto row <- buffer.walk();
-    while row? {
+    while row.hasNext() {
       pushBack();
-      auto col <- row!.walk();
-      while col? {
+      auto col <- row.next().walk();
+      while col.hasNext() {
         /* tricky, but works for both value and class types */
         auto x <- make<Type>();
-        auto y <- col!.get(x);
+        auto y <- col.next().get(x);
         if y? {
           x <- Type?(y);  // cast needed for y:Object?
           pushBack(size(), x!);

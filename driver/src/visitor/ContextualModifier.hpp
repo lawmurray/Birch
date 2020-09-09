@@ -10,8 +10,8 @@
 
 namespace birch {
 /**
- * Modifier that keeps track of the current context (e.g. within a package,
- * class or fiber).
+ * Modifier that keeps track of the current context (e.g. within a package or
+ * class).
  *
  * @ingroup visitor
  */
@@ -22,10 +22,9 @@ public:
    *
    * @param currentPackage Initial package context.
    * @param currentClass Initial class context.
-   * @param currentFiber Initial fiber context.
    */
   ContextualModifier(Package* currentPackage = nullptr,
-      Class* currentClass = nullptr, Fiber* currentFiber = nullptr);
+      Class* currentClass = nullptr);
 
   /**
    * Destructor.
@@ -36,8 +35,6 @@ public:
 
   virtual Package* modify(Package* o);
   virtual Statement* modify(Class* o);
-  virtual Statement* modify(Fiber* o);
-  virtual Statement* modify(MemberFiber* o);
 
 protected:
   /**
@@ -49,10 +46,5 @@ protected:
    * If in a class, a pointer to that class, otherwise `nullptr`.
    */
   Class* currentClass;
-
-  /**
-   * If in a fiber, a pointer to that fiber, otherwise `nullptr`.
-   */
-  Fiber* currentFiber;
 };
 }

@@ -96,7 +96,6 @@ E                                  [Ee][+-]?{D}+
 <DOUBLE_BRACE>.                     { raw << yytext; }
 
 "function"                          { return FUNCTION; }
-"fiber"                             { return FIBER; }
 "program"                           { return PROGRAM; }
 "class"                             { return CLASS; }
 "type"                              { return TYPE; }
@@ -108,9 +107,10 @@ E                                  [Ee][+-]?{D}+
 "in"                                { return IN; }
 "while"                             { return WHILE; }
 "do"                                { return DO; }
+"with"                              { return WITH; }
 "assert"                            { return ASSERT; }
 "return"                            { return RETURN; }
-"yield"                             { return YIELD; }
+"factor"                            { return FACTOR; }
 "cpp"                               { return CPP; }
 "hpp"                               { return HPP; }
 "this"                              { return THIS; }

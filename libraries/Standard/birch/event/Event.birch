@@ -10,22 +10,22 @@ abstract class Event {
   /**
    * Accept an event handler.
    */
-  abstract function accept(handler:PlayHandler) -> Real;
+  abstract function accept(handler:PlayHandler);
   
   /**
    * Accept an event handler.
    */
-  abstract function accept(handler:MoveHandler) -> Real;
+  abstract function accept(handler:MoveHandler);
 
   /**
    * Accept an event handler.
    */
-  abstract function accept(record:Record, handler:PlayHandler) -> Real;
+  abstract function accept(record:Record, handler:PlayHandler);
 
   /**
    * Accept an event handler.
    */
-  abstract function accept(record:Record, handler:MoveHandler) -> Real;
+  abstract function accept(record:Record, handler:MoveHandler);
 
   /**
    * Make a record for the event, in order to enter into a trace.

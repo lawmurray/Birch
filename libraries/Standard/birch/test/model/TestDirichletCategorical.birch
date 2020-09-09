@@ -9,7 +9,7 @@ class TestDirichletCategorical < Model {
     }
   }
 
-  fiber simulate() -> Event {
+  function simulate() {
     ρ ~ Dirichlet(α);
     x ~ Categorical(ρ);
   }

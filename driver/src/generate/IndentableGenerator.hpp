@@ -33,7 +33,7 @@ public:
    */
   birch::IndentableGenerator& operator<<(const char o) {
     base << o;
-    return *this; // @suppress("Return with parenthesis")
+    return *this;
   }
 
   birch::IndentableGenerator& operator<<(const bool o) {

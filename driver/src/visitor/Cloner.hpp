@@ -39,8 +39,6 @@ public:
   virtual Expression* clone(const Slice* o);
   virtual Expression* clone(const Query* o);
   virtual Expression* clone(const Get* o);
-  virtual Expression* clone(const GetReturn* o);
-  virtual Expression* clone(const Spin* o);
   virtual Expression* clone(const LambdaFunction* o);
   virtual Expression* clone(const Span* o);
   virtual Expression* clone(const Index* o);
@@ -62,10 +60,8 @@ public:
   virtual Statement* clone(const MemberVariable* o);
   virtual Statement* clone(const LocalVariable* o);
   virtual Statement* clone(const Function* o);
-  virtual Statement* clone(const Fiber* o);
   virtual Statement* clone(const Program* o);
   virtual Statement* clone(const MemberFunction* o);
-  virtual Statement* clone(const MemberFiber* o);
   virtual Statement* clone(const BinaryOperator* o);
   virtual Statement* clone(const UnaryOperator* o);
   virtual Statement* clone(const AssignmentOperator* o);
@@ -78,10 +74,11 @@ public:
   virtual Statement* clone(const Parallel* o);
   virtual Statement* clone(const While* o);
   virtual Statement* clone(const DoWhile* o);
+  virtual Statement* clone(const With* o);
   virtual Statement* clone(const Block* o);
   virtual Statement* clone(const Assert* o);
   virtual Statement* clone(const Return* o);
-  virtual Statement* clone(const Yield* o);
+  virtual Statement* clone(const Factor* o);
   virtual Statement* clone(const Raw* o);
 
   virtual Type* clone(const EmptyType* o);
@@ -91,7 +88,6 @@ public:
   virtual Type* clone(const ArrayType* o);
   virtual Type* clone(const TupleType* o);
   virtual Type* clone(const FunctionType* o);
-  virtual Type* clone(const FiberType* o);
   virtual Type* clone(const OptionalType* o);
 };
 }

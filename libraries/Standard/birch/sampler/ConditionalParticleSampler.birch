@@ -12,7 +12,7 @@ abstract class ConditionalParticleSampler < ParticleSampler {
     if conditionalFilter? {
       sample(conditionalFilter!, archetype);
     } else {
-      error(getClassName() + " requires ConditionalParticleFilter.");
+      error("A ConditionalParticleSampler requires a ConditionalParticleFilter.");
     }
   }
 
@@ -22,7 +22,7 @@ abstract class ConditionalParticleSampler < ParticleSampler {
     if conditionalFilter? {
       sample(conditionalFilter!, archetype, t);
     } else {
-      error(getClassName() + " requires ConditionalParticleFilter.");
+      error("A ConditionalParticleSampler requires a ConditionalParticleFilter.");
     }
   }
   

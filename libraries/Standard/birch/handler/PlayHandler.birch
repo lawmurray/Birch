@@ -14,66 +14,63 @@ class PlayHandler(delayed:Boolean) < Handler {
    */
   delayed:Boolean <- delayed;
 
-  final override function handle(event:Event) -> Real {
-    /* double dispatch to one of the more specific handle() functions */
-    return event.accept(this);
+  final override function doHandle(event:Event) {
+    /* double dispatch to one of the more specific doHandle() functions */
+    event.accept(this);
   }
 
-  final override function handle(record:Record, event:Event) -> Real {
-    /* double dispatch to one of the more specific handle() functions */
-    return event.accept(record, this);
+  final override function doHandle(record:Record, event:Event) {
+    /* double dispatch to one of the more specific doHandle() functions */
+    event.accept(record, this);
   }
 
-  function handle<Value>(event:SimulateEvent<Value>) -> Real {
+  function doHandle<Value>(event:SimulateEvent<Value>) {
     if delayed {
       event.p <- event.p.graft();
     }
     event.x <- event.p.value();
-    return 0.0;
   }
 
-  function handle<Value>(event:ObserveEvent<Value>) -> Real {
+  function doHandle<Value>(event:ObserveEvent<Value>) {
     if delayed {
       event.p <- event.p.graft();
     }
-    return event.p.observe(event.x);
+    w <- w + event.p.observe(event.x);
   }
 
-  function handle<Value>(event:AssumeEvent<Value>) -> Real {
+  function doHandle<Value>(event:AssumeEvent<Value>) {
     if delayed {
       event.p <- event.p.graft();
     }
     if event.x.hasValue() {
-      return event.p.observe(event.x.value());
+      w <- w + event.p.observe(event.x.value());
     } else {
       event.x.assume(event.p);
-      return 0.0;
     }
   }
 
-  function handle(event:FactorEvent) -> Real {
-    return event.w.value();
+  function doHandle(event:FactorEvent) {
+    w <- w + event.w.value();
   }
 
-  function handle<Value>(record:SimulateRecord<Value>,
-      event:SimulateEvent<Value>) -> Real {
+  function doHandle<Value>(record:SimulateRecord<Value>,
+      event:SimulateEvent<Value>) {
     if delayed {
       event.p <- event.p.graft();
     }
     event.x <- record.x;
-    return 0.0;
   }
 
-  function handle<Value>(record:ObserveRecord<Value>,
-      event:ObserveEvent<Value>) -> Real {
+  function doHandle<Value>(record:ObserveRecord<Value>,
+      event:ObserveEvent<Value>) {
     /* observe events are replayed in the same way they are played, it's
      * only necessary to check that the observed values actually match */
     assert record.x == event.x;
-    return handle(event);
+    doHandle(event);
   }
 
-  function handle<Value>(record:AssumeRecord<Value>,
-      event:AssumeEvent<Value>) -> Real {
+  function doHandle<Value>(record:AssumeRecord<Value>,
+      event:AssumeEvent<Value>) {
     if delayed {
       event.p <- event.p.graft();
     }
@@ -82,7 +79,7 @@ class PlayHandler(delayed:Boolean) < Handler {
        * same way they are played, it's only necessary to check that the
        * observed values actually match */
       assert record.x.hasValue() && record.x.value() == event.x.value();
-      return event.p.observe(event.x.value());
+      w <- w + event.p.observe(event.x.value());
     } else {
       event.x.assume(event.p);
       if record.x.hasValue() {
@@ -91,13 +88,12 @@ class PlayHandler(delayed:Boolean) < Handler {
          * change the distribution, only the way it is computed */
         event.x <- record.x.value();
       }
-      return 0.0;
     }
   }
 
-  function handle(record:FactorRecord, event:FactorEvent) -> Real {
+  function doHandle(record:FactorRecord, event:FactorEvent) {
     /* factor events are replayed in the same way they are played */
-    return event.w.value();
+    w <- w + event.w.value();
   }
 }
 

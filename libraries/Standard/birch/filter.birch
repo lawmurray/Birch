@@ -25,7 +25,7 @@ program filter(
     seed:Integer?,
     quiet:Boolean <- false) {
   /* config */
-  configBuffer:MemoryBuffer;
+  configBuffer:Buffer;
   if config? {
     auto reader <- Reader(config!);
     configBuffer <- reader.scan();
@@ -111,7 +111,7 @@ program filter(
     }
 
     /* output current state */
-    buffer:MemoryBuffer;
+    buffer:Buffer;
     if outputWriter? {
       filter!.write(buffer, t);
     }

@@ -15,7 +15,7 @@
  * </center>
  *
  * A model inheriting from `HiddenMarkovModel`/`StateSpaceModel` overrides
- * the `parameter`, `initial`, `transition` and `observation` member fibers
+ * the `parameter`, `initial`, `transition` and `observation` member functions
  * to specify the individual components of the joint distribution.
  *
  * The Model class hierarchy is as follows:
@@ -38,8 +38,8 @@ class HiddenMarkovModel<Parameter,State,Observation> <
    * Step. Simulates the initial state, or the transition to the next state,
    * and an observation.
    */
-  fiber simulate(t:Integer) -> Event {
-    @super.simulate(t);
+  function simulate(t:Integer) {
+    super.simulate(t);
     before:State?;
     here:Observation?;
     
@@ -50,7 +50,7 @@ class HiddenMarkovModel<Parameter,State,Observation> <
       here':Observation;
       here <- here';
     }
-    @observation(here!, before!, θ);
+    observation(here!, before!, θ);
     x.pushBefore(before!);
     y.pushBefore(here!);
   }
@@ -62,7 +62,7 @@ class HiddenMarkovModel<Parameter,State,Observation> <
    * - x: The current state.
    * - θ: The parameters.
    */
-  fiber observation(y:Observation, x:State, θ:Parameter) -> Event {
+  function observation(y:Observation, x:State, θ:Parameter) {
     //
   }
 

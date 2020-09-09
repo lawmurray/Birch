@@ -38,13 +38,10 @@ birch_SOURCES = \
   src/common/TypeArgumented.cpp \
   src/common/TypeParameterised.cpp \
   src/common/Valued.cpp \
-  src/common/YieldTyped.cpp \
   src/exception/DriverException.cpp \
   src/exception/Exception.cpp \
   src/exception/FileNotFoundException.cpp \
   src/exception/InheritanceLoopException.cpp \
-  src/exception/SpinException.cpp \
-  src/exception/YieldException.cpp \
   src/expression/Assign.cpp \
   src/expression/BinaryCall.cpp \
   src/expression/Cast.cpp \
@@ -56,7 +53,6 @@ birch_SOURCES = \
   src/expression/ExpressionList.cpp \
   src/expression/Generic.cpp \
   src/expression/Get.cpp \
-  src/expression/GetReturn.cpp \
   src/expression/Global.cpp \
   src/expression/Index.cpp \
   src/expression/LambdaFunction.cpp \
@@ -71,7 +67,6 @@ birch_SOURCES = \
   src/expression/Sequence.cpp \
   src/expression/Slice.cpp \
   src/expression/Span.cpp \
-  src/expression/Spin.cpp \
   src/expression/Super.cpp \
   src/expression/This.cpp \
   src/expression/UnaryCall.cpp \
@@ -79,7 +74,6 @@ birch_SOURCES = \
   src/generate/CppClassGenerator.cpp \
   src/generate/CppGenerator.cpp \
   src/generate/CppPackageGenerator.cpp \
-  src/generate/CppResumeGenerator.cpp \
   src/generate/IndentableGenerator.cpp \
   src/generate/MarkdownGenerator.cpp \
   src/primitive/encode.cpp \
@@ -95,14 +89,13 @@ birch_SOURCES = \
   src/statement/DoWhile.cpp \
   src/statement/EmptyStatement.cpp \
   src/statement/ExpressionStatement.cpp \
-  src/statement/Fiber.cpp \
+  src/statement/Factor.cpp \
   src/statement/File.cpp \
   src/statement/For.cpp \
   src/statement/Function.cpp \
   src/statement/GlobalVariable.cpp \
   src/statement/If.cpp \
   src/statement/LocalVariable.cpp \
-  src/statement/MemberFiber.cpp \
   src/statement/MemberFunction.cpp \
   src/statement/MemberVariable.cpp \
   src/statement/Package.cpp \
@@ -115,10 +108,9 @@ birch_SOURCES = \
   src/statement/StatementList.cpp \
   src/statement/UnaryOperator.cpp \
   src/statement/While.cpp \
-  src/statement/Yield.cpp \
+  src/statement/With.cpp \
   src/type/ArrayType.cpp \
   src/type/EmptyType.cpp \
-  src/type/FiberType.cpp \
   src/type/FunctionType.cpp \
   src/type/MemberType.cpp \
   src/type/NamedType.cpp \
@@ -129,17 +121,13 @@ birch_SOURCES = \
   src/type/TypeIterator.cpp \
   src/type/TypeList.cpp \
   src/visitor/Baser.cpp \
-  src/visitor/Checker.cpp \
   src/visitor/Cloner.cpp \
   src/visitor/ContextualModifier.cpp \
   src/visitor/Gatherer.cpp \
   src/visitor/Modifier.cpp \
   src/visitor/Resolver.cpp \
-  src/visitor/Resumer.cpp \
   src/visitor/ScopedModifier.cpp \
   src/visitor/Scoper.cpp \
-  src/visitor/Spinner.cpp \
-  src/visitor/Transformer.cpp \
   src/visitor/Visitor.cpp \
   src/birch.cpp \
   src/lexer.lpp \
@@ -173,16 +161,13 @@ noinst_HEADERS = \
   src/common/TypeArgumented.hpp \
   src/common/TypeParameterised.hpp \
   src/common/Valued.hpp \
-  src/common/YieldTyped.hpp \
   src/exception/all.hpp \
   src/exception/DriverException.hpp \
   src/exception/Exception.hpp \
   src/exception/FileNotFoundException.hpp \
   src/exception/InheritanceLoopException.hpp \
   src/exception/RedefinedException.hpp \
-  src/exception/SpinException.hpp \
   src/exception/UndefinedException.hpp \
-  src/exception/YieldException.hpp \
   src/expression/all.hpp \
   src/expression/Assign.hpp \
   src/expression/BinaryCall.hpp \
@@ -195,7 +180,6 @@ noinst_HEADERS = \
   src/expression/ExpressionList.hpp \
   src/expression/Generic.hpp \
   src/expression/Get.hpp \
-  src/expression/GetReturn.hpp \
   src/expression/Global.hpp \
   src/expression/Index.hpp \
   src/expression/LambdaFunction.hpp \
@@ -210,7 +194,6 @@ noinst_HEADERS = \
   src/expression/Sequence.hpp \
   src/expression/Slice.hpp \
   src/expression/Span.hpp \
-  src/expression/Spin.hpp \
   src/expression/Super.hpp \
   src/expression/This.hpp \
   src/expression/UnaryCall.hpp \
@@ -218,7 +201,6 @@ noinst_HEADERS = \
   src/generate/CppClassGenerator.hpp \
   src/generate/CppGenerator.hpp \
   src/generate/CppPackageGenerator.hpp \
-  src/generate/CppResumeGenerator.hpp \
   src/generate/IndentableGenerator.hpp \
   src/generate/MarkdownGenerator.hpp \
   src/primitive/encode.hpp \
@@ -237,14 +219,13 @@ noinst_HEADERS = \
   src/statement/DoWhile.hpp \
   src/statement/EmptyStatement.hpp \
   src/statement/ExpressionStatement.hpp \
-  src/statement/Fiber.hpp \
+  src/statement/Factor.hpp \
   src/statement/File.hpp \
   src/statement/For.hpp \
   src/statement/Function.hpp \
   src/statement/GlobalVariable.hpp \
   src/statement/If.hpp \
   src/statement/LocalVariable.hpp \
-  src/statement/MemberFiber.hpp \
   src/statement/MemberFunction.hpp \
   src/statement/MemberVariable.hpp \
   src/statement/Package.hpp \
@@ -257,11 +238,10 @@ noinst_HEADERS = \
   src/statement/StatementList.hpp \
   src/statement/UnaryOperator.hpp \
   src/statement/While.hpp \
-  src/statement/Yield.hpp \
+  src/statement/With.hpp \
   src/type/all.hpp \
   src/type/ArrayType.hpp \
   src/type/EmptyType.hpp \
-  src/type/FiberType.hpp \
   src/type/FunctionType.hpp \
   src/type/MemberType.hpp \
   src/type/NamedType.hpp \
@@ -273,17 +253,13 @@ noinst_HEADERS = \
   src/type/TypeList.hpp \
   src/visitor/all.hpp \
   src/visitor/Baser.hpp \
-  src/visitor/Checker.hpp \
   src/visitor/Cloner.hpp \
   src/visitor/ContextualModifier.hpp \
   src/visitor/Gatherer.hpp \
   src/visitor/Modifier.hpp \
   src/visitor/Resolver.hpp \
-  src/visitor/Resumer.hpp \
   src/visitor/ScopedModifier.hpp \
   src/visitor/Scoper.hpp \
-  src/visitor/Spinner.hpp \
-  src/visitor/Transformer.hpp \
   src/visitor/Visitor.hpp \
   src/birch.hpp \
   src/doxygen.hpp \

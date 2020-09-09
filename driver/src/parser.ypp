@@ -82,15 +82,15 @@
 
 %glr-parser
 %expect-rr 0
-%expect 10
+%expect 8
 // ^ Type?(...) vs x?
 // ^ for generic function calls, f<Type>(expr) ambiguous with f < x > (expr),
 //   the former is favoured by %dprec directives 
 // ^ for generic class declaration, opening '<' ambiguous with inheritance,
 //   but closing '>' disambiguates
 
-%token <valString> PROGRAM CLASS TYPE FUNCTION FIBER OPERATOR AUTO
-%token <valString> IF ELSE FOR IN WHILE DO ASSERT RETURN YIELD
+%token <valString> PROGRAM CLASS TYPE FUNCTION OPERATOR AUTO
+%token <valString> IF ELSE FOR IN WHILE DO WITH ASSERT RETURN FACTOR
 %token <valString> CPP HPP THIS SUPER GLOBAL PARALLEL DYNAMIC
 %token <valString> ABSTRACT OVERRIDE FINAL
 %token <valString> NIL DOUBLE_BRACE_OPEN DOUBLE_BRACE_CLOSE NAME
@@ -126,14 +126,13 @@
 
 %type <valStatement> global_variable_declaration local_variable_declaration
 %type <valStatement> for_variable_declaration function_declaration
-%type <valStatement> fiber_declaration program_declaration
+%type <valStatement> program_declaration
 %type <valStatement> member_variable_declaration member_function_declaration
-%type <valStatement> member_fiber_declaration
 %type <valStatement> binary_operator_declaration unary_operator_declaration
 %type <valStatement> conversion_operator_declaration assignment_operator_declaration
 %type <valStatement> class_declaration basic_declaration
 %type <valStatement> cpp hpp expression_statement assume_statement if for parallel
-%type <valStatement> while do_while block assertion return yield
+%type <valStatement> while do_while with block assertion return factor
 %type <valStatement> statement statements optional_statements
 %type <valStatement> class_statement class_statements optional_class_statements
 %type <valStatement> file_statement file_statements optional_file_statements
@@ -142,7 +141,6 @@
 
 %type <valType> named_type primary_type type type_list optional_type_list
 %type <valType> return_type optional_return_type
-%type <valType> fiber_return_type optional_fiber_return_type
 %type <valType> generic_argument generic_argument_list generic_arguments optional_generic_arguments
 
 %locations
@@ -252,7 +250,6 @@ postfix_expression
     | postfix_expression slice           { $$ = new birch::Slice($1, $2, make_loc(@$)); }
     | postfix_expression arguments       { $$ = new birch::Call($1, $2, make_loc(@$)); }
     | postfix_expression '!'             { $$ = new birch::Get($1, make_loc(@$)); }
-    | postfix_expression '%'             { $$ = new birch::GetReturn($1, make_loc(@$)); }
     ;
 
 query_expression
@@ -271,7 +268,6 @@ prefix_operator
 prefix_expression
     : query_expression
     | prefix_operator prefix_expression  { $$ = new birch::UnaryCall($1, $2, make_loc(@$)); }
-    | '@' prefix_expression              { $$ = new birch::Spin($2, make_loc(@$)); }
     ;
 
 multiplicative_operator
@@ -495,10 +491,6 @@ function_declaration
     : FUNCTION name optional_generics parameters optional_return_type { push_raw(); } optional_braces  { $$ = new birch::Function(birch::NONE, $2, $3, $4, $5, $7, make_doc_loc(@$)); }
     ;
 
-fiber_declaration
-    : FIBER name optional_generics parameters optional_fiber_return_type { push_raw(); } optional_braces  { $$ = new birch::Fiber(birch::NONE, $2, $3, $4, $5, $7, make_doc_loc(@$)); }
-    ;
-
 member_function_annotation
     : ABSTRACT        { $$ = birch::ABSTRACT; }
     | FINAL           { $$ = birch::FINAL; }
@@ -511,11 +503,6 @@ member_function_annotation
 member_function_declaration
     : member_function_annotation FUNCTION name optional_generics parameters optional_return_type { push_raw(); } optional_braces  { $$ = new birch::MemberFunction($1, $3, $4, $5, $6, $8, make_doc_loc(@$)); }
     | FUNCTION name optional_generics parameters optional_return_type { push_raw(); } optional_braces                             { $$ = new birch::MemberFunction(birch::NONE, $2, $3, $4, $5, $7, make_doc_loc(@$)); }
-    ;
-
-member_fiber_declaration
-    : member_function_annotation FIBER name optional_generics parameters optional_fiber_return_type { push_raw(); } optional_braces  { $$ = new birch::MemberFiber($1, $3, $4, $5, $6, $8, make_doc_loc(@$)); }
-    | FIBER name optional_generics parameters optional_fiber_return_type { push_raw(); } optional_braces                             { $$ = new birch::MemberFiber(birch::NONE, $2, $3, $4, $5, $7, make_doc_loc(@$)); }
     ;
 
 program_declaration
@@ -625,6 +612,10 @@ do_while
     : DO braces WHILE expression ';'  { $$ = new birch::DoWhile($2, $4, make_loc(@$)); }
     ;
 
+with
+    : WITH expression braces  { $$ = new birch::With($2, $3, make_loc(@$)); }
+    ;
+
 block
     : braces  { $$ = new birch::Block($1, make_loc(@$)); }
     ;
@@ -637,8 +628,8 @@ return
     : RETURN optional_expression ';'  { $$ = new birch::Return($2, make_loc(@$)); }
     ;
 
-yield
-    : YIELD expression ';'  { $$ = new birch::Yield($2, make_loc(@$)); }
+factor
+    : FACTOR optional_expression ';'  { $$ = new birch::Factor($2, make_loc(@$)); }
     ;
 
 statement
@@ -650,10 +641,11 @@ statement
     | parallel
     | while
     | do_while
+    | with
     | block
     | assertion
     | return
-    | yield
+    | factor
     | cpp
     ;
 
@@ -670,7 +662,6 @@ optional_statements
 class_statement
     : member_variable_declaration
     | member_function_declaration
-    | member_fiber_declaration
     | assignment_operator_declaration
     | conversion_operator_declaration
     | hpp
@@ -689,7 +680,6 @@ optional_class_statements
 file_statement
     : global_variable_declaration
     | function_declaration
-    | fiber_declaration
     | program_declaration
     | binary_operator_declaration
     | unary_operator_declaration
@@ -720,17 +710,6 @@ return_type
 optional_return_type
     : return_type
     |              { $$ = empty_type(@$); }
-    ;
-
-fiber_return_type 
-    : RIGHT_OP type                   { $$ = new birch::FiberType(empty_type(@$), $2, make_loc(@$)); }
-    | RIGHT_OP type '%' primary_type  { $$ = new birch::FiberType($2, $4, make_loc(@$)); }
-    | RIGHT_OP type '%'               { $$ = new birch::FiberType($2, empty_type(@$), make_loc(@$)); }
-    ;
-    
-optional_fiber_return_type
-    : fiber_return_type
-    |                    { $$ = new birch::FiberType(empty_type(@$), empty_type(@$), make_loc(@$)); }
     ;
 
 value
@@ -782,10 +761,6 @@ primary_type
 type
     : primary_type
     | type '?'                                              { $$ = new birch::OptionalType($1, make_loc(@$)); }
-    | type '%' primary_type '!'                             { $$ = new birch::FiberType($1, $3, make_loc(@$)); }
-    | type '!'                                              { $$ = new birch::FiberType(empty_type(@$), $1, make_loc(@$)); }
-    | type '%' '!'                                          { $$ = new birch::FiberType($1, empty_type(@$), make_loc(@$)); }
-    | '!'                                                   { $$ = new birch::FiberType(empty_type(@$), empty_type(@$), make_loc(@$)); }
     | named_type '.' named_type                             { $$ = new birch::MemberType($1, $3, make_loc(@$)); }
     | type '[' shape ']'                                    { $$ = new birch::ArrayType($1, $3, make_loc(@$)); }
     | '\\' '(' optional_type_list ')' optional_return_type  { $$ = new birch::FunctionType($3, $5, make_loc(@$)); }

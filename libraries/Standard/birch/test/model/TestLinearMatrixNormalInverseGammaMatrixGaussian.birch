@@ -30,7 +30,7 @@ class TestLinearMatrixNormalInverseGammaMatrixGaussian < Model {
     Σ <- Σ*transpose(Σ);
   }
 
-  fiber simulate() -> Event {
+  function simulate() {
     σ2 ~ InverseGamma(α, β);
     X ~ Gaussian(M, Σ, σ2);
     Y ~ Gaussian(A*X + C, σ2);

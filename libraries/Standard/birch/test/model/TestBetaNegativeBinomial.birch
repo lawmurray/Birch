@@ -9,7 +9,7 @@ class TestBetaNegativeBinomial < Model {
     //
   }
 
-  fiber simulate() -> Event {
+  function simulate() {
     k <- simulate_uniform_int(1, 100);
     α <- simulate_uniform(1.0, 100.0);
     β <- simulate_uniform(1.0, 100.0);

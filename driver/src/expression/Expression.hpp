@@ -92,17 +92,17 @@ public:
   virtual bool isSuper() const;
 
   /**
-   * Is this a reference to a global variable, function, or fiber?
+   * Is this a reference to a global variable or function?
    */
   virtual bool isGlobal() const;
 
   /**
-   * Is this a reference to a member variable, function, or fiber?
+   * Is this a reference to a member variable or function?
    */
   virtual bool isMember() const;
 
   /**
-   * Is this a reference to a local variable, function, or fiber?
+   * Is this a reference to a local variable?
    */
   virtual bool isLocal() const;
 

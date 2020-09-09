@@ -87,11 +87,6 @@ public:
   virtual bool isFunction() const;
 
   /**
-   * Is this a fiber type?
-   */
-  virtual bool isFiber() const;
-
-  /**
    * Is this a member type?
    */
   virtual bool isMembership() const;
@@ -108,9 +103,9 @@ public:
 
   /**
    * Is this a value type? A value type is either a basic type, or a compound
-   * type that does not include any class, function, fiber, or generic types.
-   * Generic types that resolve to value types would be included, but their
-   * handling is left to the C++ compiler.
+   * type that does not include any class, function, or generic types. Generic
+   * types that resolve to value types would be included, but their handling
+   * is left to the C++ compiler.
    */
   virtual bool isValue() const = 0;
 
@@ -126,8 +121,8 @@ public:
   virtual int depth() const;
 
   /**
-   * For an optional, fiber or pointer type, the type that is wrapped,
-   * otherwise this.
+   * For an optional or pointer type, the type that is wrapped, otherwise
+   * this.
    */
   virtual Type* unwrap();
   virtual const Type* unwrap() const;

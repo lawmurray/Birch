@@ -29,7 +29,7 @@ class YAMLWriter < Writer {
     }}
   }
   
-  function print(buffer:MemoryBuffer) {
+  function print(buffer:Buffer) {
     buffer.value.accept(this);
   }
   
@@ -54,8 +54,8 @@ class YAMLWriter < Writer {
   function visit(value:ObjectValue) {
     startMapping();
     auto entry <- value.entries.walk();
-    while entry? {
-      auto e <- entry!;
+    while entry.hasNext() {
+      auto e <- entry.next();
       scalar(e.name);
       e.buffer.value.accept(this);
     }
@@ -65,8 +65,8 @@ class YAMLWriter < Writer {
   function visit(value:ArrayValue) {
     startSequence();
     auto element <- value.buffers.walk();
-    while element? {
-      element!.value.accept(this);
+    while element.hasNext() {
+      element.next().value.accept(this);
     }
     endSequence();
   }

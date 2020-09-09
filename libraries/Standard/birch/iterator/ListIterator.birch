@@ -1,0 +1,35 @@
+/**
+ * Iterator over a List.
+ *
+ * - head: Head node.
+ */
+final class ListIterator<Type>(head:ListNode<Type>?) < Iterator<Type> {
+  /**
+   * Current node.
+   */
+  node:ListNode<Type>? <- head;
+
+  /**
+   * Is there a next element?
+   */
+  function hasNext() -> Boolean {
+    return node?;
+  }
+
+  /**
+   * Get the next element.
+   */
+  function next() -> Type {
+    auto x <- node!.x;
+    node <- node!.next;
+    return x;
+  }
+}
+
+/**
+ * Create a ListIterator.
+ */
+function ListIterator<Type>(head:ListNode<Type>?) -> ListIterator<Type> {
+  iter:ListIterator<Type>(head);
+  return iter;
+}

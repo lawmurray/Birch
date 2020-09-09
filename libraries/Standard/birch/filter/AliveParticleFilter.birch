@@ -23,13 +23,21 @@ class AliveParticleFilter < ParticleFilter {
     parallel for n in 1..nparticles + 1 {
       if n <= nparticles {
         x[n] <- clone(x0[a[n]]);
-        w[n] <- play.handle(x[n].m.simulate(t));
+        auto handler <- PlayHandler(delayed);
+        with (handler) {
+          x[n].m.simulate(t);
+          w[n] <- handler.w;
+        }
         p[n] <- 1;
         while w[n] == -inf {  // repeat until weight is positive
           a[n] <- global.ancestor(w0);
           x[n] <- clone(x0[a[n]]);
           p[n] <- p[n] + 1;
-          w[n] <- play.handle(x[n].m.simulate(t));
+          auto handler <- PlayHandler(delayed);
+          with (handler) {
+            x[n].m.simulate(t);
+            w[n] <- handler.w;
+          }
         }
       } else {
         /* propagate and weight until one further acceptance, which is
@@ -41,7 +49,11 @@ class AliveParticleFilter < ParticleFilter {
           auto a' <- global.ancestor(w0);
           auto x' <- clone(x0[a']);
           p[n] <- p[n] + 1;
-          w' <- play.handle(x'.m.simulate(t));
+          auto handler <- PlayHandler(delayed);
+          with (handler) {
+            x'.m.simulate(t);
+            w' <- handler.w;
+          }
         } while w' == -inf;  // repeat until weight is positive
       }
     }

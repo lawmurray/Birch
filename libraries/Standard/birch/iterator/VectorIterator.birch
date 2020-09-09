@@ -1,0 +1,39 @@
+/**
+ * Iterator over a Vector.
+ *
+ * - o: Container.
+ */
+final class VectorIterator<Type>(o:Vector<Type>) < Iterator<Type> {
+  /**
+   * Container.
+   */
+  o:Vector<Type> <- o;
+  
+  /**
+   * Current index into the vector.
+   */
+  i:Integer <- 0;
+
+  /**
+   * Is there a next element?
+   */
+  function hasNext() -> Boolean {
+    return i < o.size();
+  }
+
+  /**
+   * Get the next element.
+   */
+  function next() -> Type {
+    i <- i + 1;
+    return o.get(i);
+  }
+}
+
+/**
+ * Create a VectorIterator.
+ */
+function VectorIterator<Type>(o:Vector<Type>) -> VectorIterator<Type> {
+  iter:VectorIterator<Type>(o);
+  return iter;
+}

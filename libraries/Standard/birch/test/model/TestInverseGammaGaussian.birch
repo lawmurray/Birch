@@ -11,7 +11,7 @@ class TestInverseGammaGamma < Model {
     β <- simulate_uniform(0.0, 10.0);
   }
 
-  fiber simulate() -> Event {
+  function simulate() {
     θ ~ InverseGamma(α, β);
     x ~ Gamma(k, θ);
   }

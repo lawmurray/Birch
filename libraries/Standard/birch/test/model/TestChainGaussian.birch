@@ -14,7 +14,7 @@ class TestChainGaussian < Model {
     ];
   }
 
-  fiber simulate() -> Event {
+  function simulate() {
     x[1] ~ Gaussian(μ, σ2[1]);
     x[2] ~ Gaussian(x[1], σ2[2]);
     x[3] ~ Gaussian(x[2], σ2[3]);

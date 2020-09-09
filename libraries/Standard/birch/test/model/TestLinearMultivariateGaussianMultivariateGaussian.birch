@@ -22,7 +22,7 @@ class TestLinearMultivariateGaussianMultivariateGaussian < Model {
     Σ_1 <- Σ_1*transpose(Σ_1);
   }
 
-  fiber simulate() -> Event {
+  function simulate() {
     μ ~ Gaussian(μ_0, Σ_0);
     x ~ Gaussian(A*μ + c, Σ_1);
   }

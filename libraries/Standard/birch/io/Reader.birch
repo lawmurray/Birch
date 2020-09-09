@@ -28,18 +28,37 @@ abstract class Reader {
    *
    * - buffer: Buffer into which to read.
    */
-  abstract function scan() -> MemoryBuffer;
+  abstract function scan() -> Buffer;
 
   /**
-   * Read the contents of the file sequentially.
+   * Start reading the contents of the file sequentially, if the root element
+   * is a sequence. This avoids reading the entire file into memory at once.
    *
-   * Yields: A buffer for each element of the top level sequence.
-   * 
-   * For a file that consists of a sequence at the top level, yields each
-   * element of that sequence one at a time, to avoid reading the whole file
-   * into memory at once.
+   * The call should be followed by alternating calls to `hasNext()` and
+   * `next()` to read each element of the sequence, e.g.:
+   *
+   *     reader.walk();
+   *     while reader.hasNext() {
+   *       auto buffer <- reader.next();
+   *       ...
+   *     }
+   *
+   * See also: `hasNext()`, `next()`.
    */
-  abstract fiber walk() -> Buffer;
+  abstract function walk();
+
+  /**
+   * When reading the contents of the file sequentially, is there another
+   * element?
+   *
+   * See also: `walk()`, `next()`.
+   */
+  abstract function hasNext() -> Boolean;
+
+  /**
+   * When reading the contents of the file sequentially, get the next element.
+   */
+  abstract function next() -> Buffer;
   
   /**
    * Close the file.

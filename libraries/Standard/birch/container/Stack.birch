@@ -61,4 +61,13 @@ final class Stack<Type> {
     head <- head!.next;
     count <- count - 1;
   }
+
+  /**
+   * Obtain an iterator.
+   *
+   * Return: an iterator across elements from top to bottom.
+   */
+  function walk() -> Iterator<Type> {
+    return StackIterator<Type>(head);
+  }
 }

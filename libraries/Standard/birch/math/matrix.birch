@@ -198,7 +198,8 @@ function matrix<Type>(λ:\(Integer, Integer) -> Type, rows:Integer,
   /* wrap λ in another lambda function to translate 0-based serial (row-wise)
    * indices into 1-based row/column indices */
   return libbirch::make_array_from_lambda<Type>(libbirch::make_shape(rows,
-      columns), [&](int64_t i) { return λ(i/columns + 1, i%columns + 1); });
+      columns), [&](int64_t i) { return λ(i/columns + 1, i%columns + 1,
+      handler_); });
   }}
 }
 

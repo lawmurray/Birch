@@ -22,7 +22,6 @@ public:
   virtual void visit(const Class* o);
   virtual void visit(const MemberVariable* o);
   virtual void visit(const MemberFunction* o);
-  virtual void visit(const MemberFiber* o);
   virtual void visit(const AssignmentOperator* o);
   virtual void visit(const ConversionOperator* o);
 
@@ -31,5 +30,10 @@ protected:
    * The class being generated.
    */
   const Class* currentClass;
+
+  /**
+   * Generate code for the base type.
+   */
+  void genBase(const Class* o);
 };
 }

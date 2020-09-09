@@ -3,11 +3,6 @@
  */
 abstract class Object {
   /**
-   * Class name. This is the name of the most specific type of the object.
-   */
-  final function getClassName() -> String;
-
-  /**
    * Read.
    */
   function read(buffer:Buffer) {
@@ -18,7 +13,7 @@ abstract class Object {
    * Write.
    */
   function write(buffer:Buffer) {
-    buffer.set("class", getClassName());
+    //
   }
 }
 

@@ -18,7 +18,7 @@
  *
  * @def LIBBIRCH_COMMON
  *
- * Declare common functions for classes and fibers.
+ * Declare common functions for classes.
  */
 #define LIBBIRCH_COMMON(Name, Base...) \
   virtual const char* getClassName() const { \
@@ -121,41 +121,6 @@
   \
   auto shared_from_this_() { \
     return libbirch::Lazy<libbirch::Shared<Name>>(this); \
-  } \
-  \
-  template<class Visitor> \
-  void accept_(const Visitor& v_) { \
-    base_type_::accept_(v_);
-
-/**
- * @def LIBBIRCH_FIBER
- *
- * Use in place of LIBBIRCH_CLASS when the containing class is for a fiber.
- */
-#define LIBBIRCH_FIBER(Name, Base...) public: \
-  LIBBIRCH_BASE(Base) \
-  LIBBIRCH_COMMON(Name, Base) \
-  \
-  template<class Visitor> \
-  void accept_(const Visitor& v_) { \
-    base_type_::accept_(v_);
-
-/**
- * @def LIBBIRCH_MEMBER_FIBER
- *
- * Use in place of LIBBIRCH_CLASS when the containing class is for a member
- * fiber.
- */
-#define LIBBIRCH_MEMBER_FIBER(Name, Base...) public: \
-  LIBBIRCH_BASE(Base) \
-  LIBBIRCH_COMMON(Name, Base) \
-  \
-  auto& this_() { \
-    return local_.template get<0>(); \
-  } \
-  \
-  auto& shared_from_this_() { \
-    return local_.template get<0>(); \
   } \
   \
   template<class Visitor> \

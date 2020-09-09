@@ -1,0 +1,35 @@
+/**
+ * Iterator over a Tape.
+ *
+ * - head: Head node.
+ */
+final class TapeIterator<Type>(head:TapeNode<Type>?) < Iterator<Type> {
+  /**
+   * Current node.
+   */
+  node:TapeNode<Type>? <- head;
+
+  /**
+   * Is there a next element?
+   */
+  function hasNext() -> Boolean {
+    return node?;
+  }
+
+  /**
+   * Get the next element.
+   */
+  function next() -> Type {
+    auto x <- node!.x;
+    node <- node!.next;
+    return x;
+  }
+}
+
+/**
+ * Create a TapeIterator.
+ */
+function TapeIterator<Type>(head:TapeNode<Type>?) -> TapeIterator<Type> {
+  iter:TapeIterator<Type>(head);
+  return iter;
+}

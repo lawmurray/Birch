@@ -11,7 +11,7 @@ class TestDirichletMultinomial < Model {
     }
   }
 
-  fiber simulate() -> Event {
+  function simulate() {
     ρ ~ Dirichlet(α);
     x ~ Multinomial(n, ρ);
   }

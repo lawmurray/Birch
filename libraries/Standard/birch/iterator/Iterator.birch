@@ -1,0 +1,14 @@
+/**
+ * Iterator over the elements of a container.
+ */
+abstract class Iterator<Type> {
+  /**
+   * Is there a next element?
+   */
+  abstract function hasNext() -> Boolean;
+
+  /**
+   * Get the next element.
+   */
+  abstract function next() -> Type;
+}

@@ -20,8 +20,8 @@ class YAMLReader < Reader {
     file <- fopen(path, READ);
   }
 
-  function scan() -> MemoryBuffer {
-    buffer:MemoryBuffer;
+  function scan() -> Buffer {
+    buffer:Buffer;
     cpp{{
     yaml_parser_initialize(&this_()->parser);
     yaml_parser_set_input_file(&this_()->parser, this_()->file);
@@ -44,54 +44,58 @@ class YAMLReader < Reader {
     return buffer;
   }
 
-  fiber walk() -> Buffer {
-    auto done <- false;
+  function walk() {
     cpp{{
+    bool done = false;
     yaml_parser_initialize(&this_()->parser);
     yaml_parser_set_input_file(&this_()->parser, this_()->file);
-    while (!done) {
-      if (!yaml_parser_parse(&this_()->parser, &this_()->event)) {
-        error("parse error");
-      } else if (this_()->event.type == YAML_MAPPING_START_EVENT) {
-        error("not a sequential file");
-      } else if (this_()->event.type == YAML_SEQUENCE_START_EVENT ||
-          this_()->event.type == YAML_STREAM_END_EVENT) {
-        done = true;
-      } else {
-        yaml_event_delete(&this_()->event);
-      }
-    }
-    done = this_()->event.type == YAML_STREAM_END_EVENT;
-    yaml_event_delete(&this_()->event);
     }}
-    while !done {
-      buffer:MemoryBuffer;
-      substantial:Boolean <- false;
-      cpp{{
-      if (!yaml_parser_parse(&this_()->parser, &this_()->event)) {
-        error("parse error");
-      }
-      if (this_()->event.type == YAML_SCALAR_EVENT) {
-        this_()->parseScalar(buffer);
-        substantial = true;
-      } else if (this_()->event.type == YAML_SEQUENCE_START_EVENT) {
-        this_()->parseSequence(buffer);
-        substantial = true;
-      } else if (this_()->event.type == YAML_MAPPING_START_EVENT) {
-        this_()->parseMapping(buffer);
-        substantial = true;
-      } else {
-        done = this_()->event.type == YAML_SEQUENCE_END_EVENT;
-        yaml_event_delete(&this_()->event);
-      }
-      }}
-      if substantial {
-        yield buffer;
-      }
-    }
+  }
+
+  function hasNext() -> Boolean {
     cpp{{
-    yaml_parser_delete(&this_()->parser);
+    bool repeat = false, eof = false;
+    do {
+      if (!yaml_parser_parse(&this_()->parser, &this_()->event)) {
+        error("parse error");
+      }
+      switch (this_()->event.type) {
+        case YAML_SCALAR_EVENT:
+        case YAML_SEQUENCE_START_EVENT:
+        case YAML_MAPPING_START_EVENT:
+          break;
+        case YAML_STREAM_END_EVENT:
+          eof = true;
+          break;
+        default:
+          yaml_event_delete(&this_()->event);
+          repeat = true;
+          break;
+      }
+    } while (repeat);
+    return !eof;
     }}
+  }
+
+  function next() -> Buffer {
+    buffer:Buffer;
+    cpp{{
+    switch (this_()->event.type) {
+      case YAML_SCALAR_EVENT:
+        this_()->parseScalar(buffer);
+        break;
+      case YAML_SEQUENCE_START_EVENT:
+        this_()->parseSequence(buffer);
+        break;
+      case YAML_MAPPING_START_EVENT:
+        this_()->parseMapping(buffer);
+        break;
+      default:
+        /* hasNext() should have dealt with all other events */
+        assert(false);
+    }
+    }}
+    return buffer;
   }
 
   function close() {

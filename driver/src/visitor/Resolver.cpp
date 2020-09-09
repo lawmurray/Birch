@@ -7,30 +7,13 @@
 #include "src/visitor/all.hpp"
 #include "src/build/misc.hpp"
 
-birch::Resolver::Resolver(Package* currentPackage, Class* currentClass,
-    Fiber* currentFiber) :
-    ScopedModifier(currentPackage, currentClass, currentFiber) {
+birch::Resolver::Resolver(Package* currentPackage, Class* currentClass) :
+    ScopedModifier(currentPackage, currentClass) {
   //
 }
 
 birch::Resolver::~Resolver() {
   //
-}
-
-birch::Statement* birch::Resolver::modify(ExpressionStatement* o) {
-  ScopedModifier::modify(o);
-
-  /* warn about use of old implicit spin */
-  auto call = dynamic_cast<Call*>(o->single);
-  if (call) {
-    auto named = dynamic_cast<NamedExpression*>(call->single);
-    if (named && (named->category == GLOBAL_FIBER ||
-        named->category == MEMBER_FIBER)) {
-      warn("implicit running of fibers is no longer supported, use postfix !! operator instead, i.e. f(a, b, c)!!.", o->loc);
-    }
-  }
-
-  return o;
 }
 
 birch::Expression* birch::Resolver::modify(Parameter* o) {
@@ -47,8 +30,8 @@ birch::Expression* birch::Resolver::modify(NamedExpression* o) {
   ScopedModifier::modify(o);
   if (inMember) {
     /* Clearly a member something, but cannot determine whether this
-     * something is a variable, function or fiber without type deduction.
-     * Instead categorize as MEMBER_UNKNOWN, and let C++ handle the rest */
+     * something is a variable or function without type deduction. Instead
+     * categorize as MEMBER_UNKNOWN, and let C++ handle the rest */
     o->category = MEMBER_UNKNOWN;
   } else if (inGlobal) {
     /* just check the global scope */
@@ -90,30 +73,5 @@ birch::Type* birch::Resolver::modify(NamedType* o) {
 
 birch::Statement* birch::Resolver::modify(Class* o) {
   scopes.back()->inherit(o);
-  return ScopedModifier::modify(o);
-}
-
-birch::Statement* birch::Resolver::modify(Fiber* o) {
-  /* resolve start function, using new Resolver for correct scoping */
-  Resolver resolver(currentPackage, currentClass);
-  o->start = o->start->accept(&resolver);
-
-  return ScopedModifier::modify(o);
-}
-
-birch::Statement* birch::Resolver::modify(MemberFiber* o) {
-  /* resolve start function, using new Resolver for correct scoping */
-  Resolver resolver(currentPackage, currentClass);
-  o->start = o->start->accept(&resolver);
-
-  return ScopedModifier::modify(o);
-}
-
-birch::Statement* birch::Resolver::modify(Yield* o) {
-  if (o->resume) {
-    /* resolve resume function, using new Resolver for correct scoping */
-    Resolver resolver(currentPackage, currentClass);
-    o->resume = o->resume->accept(&resolver);
-  }
   return ScopedModifier::modify(o);
 }

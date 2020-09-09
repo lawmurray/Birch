@@ -27,7 +27,6 @@
 #include "libbirch/Any.hpp"
 #include "libbirch/Nil.hpp"
 #include "libbirch/Optional.hpp"
-#include "libbirch/Fiber.hpp"
 #include "libbirch/Eigen.hpp"
 
 /**
@@ -338,6 +337,70 @@ Optional<To> cast(const Optional<From>& from) {
   } else {
     return nil;
   }
+}
+
+/**
+ * Optional assign. Corresponds to the `<-?` operator in Birch.
+ *
+ * @param to Target.
+ * @param from Source.
+ *
+ * If @p from has a value, then assign it to @p to, otherwise do nothing.
+ */
+template<class To, class From>
+To& optional_assign(To& to, const Optional<From>& from) {
+  if (from.query()) {
+    return to = from.get();
+  } else {
+    return to;
+  }
+}
+
+/**
+ * Simulate. Corresponds to the `<~` operator in Birch.
+ *
+ * @param left Target.
+ * @param event Event.
+ * @param handler Event handler.
+ */
+template<class Left, class Event, class Handler>
+Left& simulate(Left& left, const Event& event, const Handler& handler) {
+  handler->handle(event);
+  left = event->value();
+  return left;
+}
+
+/**
+ * Observe. Corresponds to the `<~` operator in Birch.
+ *
+ * @param event Event.
+ * @param handler Event handler.
+ */
+template<class Event, class Handler>
+void observe(const Event& event, const Handler& handler) {
+  handler->handle(event);
+}
+
+/**
+ * Assume. Corresponds to the `~` operator in Birch.
+ *
+ * @param event Event.
+ * @param handler Event handler.
+ */
+template<class Event, class Handler>
+void assume(const Event& event, const Handler& handler) {
+  handler->handle(event);
+}
+
+/**
+ * Factor. Corresponds to the `factor` statement in Birch.
+ *
+ * @param event Event.
+ * @param handler Event handler.
+ */
+template<class Event, class Handler>
+void factor(const Event& event, const Handler& handler) {
+  handler->handle(event);
 }
 
 }

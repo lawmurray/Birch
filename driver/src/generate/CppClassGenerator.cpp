@@ -3,7 +3,6 @@
  */
 #include "src/generate/CppClassGenerator.hpp"
 
-#include "src/generate/CppResumeGenerator.hpp"
 #include "src/visitor/Gatherer.hpp"
 #include "src/primitive/encode.hpp"
 
@@ -18,13 +17,9 @@ birch::CppClassGenerator::CppClassGenerator(std::ostream& base,
 void birch::CppClassGenerator::visit(const Class* o) {
   if (!o->isAlias() && !o->braces->isEmpty()) {
     currentClass = o;
-    auto base = dynamic_cast<const NamedType*>(o->base);
-
     Gatherer<MemberFunction> memberFunctions;
-    Gatherer<MemberFiber> memberFibers;
     Gatherer<MemberVariable> memberVariables;
     o->accept(&memberFunctions);
-    o->accept(&memberFibers);
     o->accept(&memberVariables);
 
     if (header) {
@@ -35,14 +30,7 @@ void birch::CppClassGenerator::visit(const Class* o) {
         middle(" final");
       }
       middle(" : public ");
-      if (base) {
-        middle(base->name);
-        if (!base->typeArgs->isEmpty()) {
-          middle('<' << base->typeArgs << '>');
-        }
-      } else {
-        middle("libbirch::Any");
-      }
+      genBase(o);
       finish(" {");
       line("public:");
       in();
@@ -54,26 +42,13 @@ void birch::CppClassGenerator::visit(const Class* o) {
       line("using this_type_ = class_type_;");
       genSourceLine(o->loc);
       start("using super_type_ = ");
-      if (base) {
-        middle(base->name);
-        if (!base->typeArgs->isEmpty()) {
-          middle('<' << base->typeArgs << '>');
-        }
-      } else {
-        middle("libbirch::Any");
-      }
+      genBase(o);
       finish(";\n");
 
-      /* using declarations for member functions and fibers in base classes
-       * that are overridden */
+      /* using declarations for member functions in base classes that are
+       * overridden */
       std::set<std::string> names;
       for (auto f : memberFunctions) {
-        auto name = f->name->str();
-        if (o->scope->overrides(name)) {
-          names.insert(name);
-        }
-      }
-      for (auto f : memberFibers) {
         auto name = f->name->str();
         if (o->scope->overrides(name)) {
           names.insert(name);
@@ -100,11 +75,15 @@ void birch::CppClassGenerator::visit(const Class* o) {
       genSourceLine(o->loc);
       start("");
     }
-    middle(o->name << '(' << o->params << ')');
+    middle(o->name << '(' << o->params);
+    if (!o->params->isEmpty()) {
+      middle(", ");
+    }
+    middle("const libbirch::Lazy<libbirch::Shared<birch::type::Handler>>& handler_");
     if (header) {
-      finish(";\n");
+      finish(" = nullptr);\n");
     } else {
-      finish(" :");
+      finish(") :");
       in();
       in();
       genSourceLine(o->loc);
@@ -149,14 +128,7 @@ void birch::CppClassGenerator::visit(const Class* o) {
         start("LIBBIRCH_CLASS");
       }
       middle('(' << o->name << ", ");
-      if (base) {
-        middle(base->name);
-        if (!base->typeArgs->isEmpty()) {
-          middle('<' << base->typeArgs << '>');
-        }
-      } else {
-        middle("libbirch::Any");
-      }
+      genBase(o);
       finish(')');
       genSourceLine(o->loc);
       start("LIBBIRCH_MEMBERS(");
@@ -224,7 +196,15 @@ void birch::CppClassGenerator::visit(const MemberFunction* o) {
       genTemplateArgs(currentClass);
       middle("::");
     }
-    middle(o->name << '(' << o->params << ')');
+    middle(o->name << '(' << o->params);
+    if (!o->params->isEmpty()) {
+      middle(", ");
+    }
+    middle("const libbirch::Lazy<libbirch::Shared<birch::type::Handler>>& handler_");
+    if (header) {
+      middle(" = nullptr");
+    }
+    middle(')');
     if (header) {
       if (o->has(FINAL) && !o->isGeneric()) {
         middle(" final");
@@ -238,64 +218,9 @@ void birch::CppClassGenerator::visit(const MemberFunction* o) {
       finish(" {");
       in();
       genTraceFunction(o->name->str(), o->loc);
-      CppGenerator auxBase(base, level, header, generic);
-      auxBase << o->braces->strip();
+      *this << o->braces->strip();
       out();
       finish("}\n");
-    }
-  }
-}
-
-void birch::CppClassGenerator::visit(const MemberFiber* o) {
-  if ((generic || !o->isGeneric()) && (!o->braces->isEmpty() ||
-      (header && o->has(ABSTRACT)))) {
-    /* initialization function */
-    if (header) {
-      genSourceLine(o->loc);
-      start("virtual ");
-    } else {
-      genTemplateParams(currentClass);
-      genSourceLine(o->loc);
-      start("");
-    }
-    middle(o->returnType << ' ');
-    if (!header) {
-      middle("birch::type::" << currentClass->name);
-      genTemplateArgs(currentClass);
-      middle("::");
-    }
-    middle(o->name << '(' << o->params << ')');
-    if (header) {
-      if (o->has(FINAL) && !o->isGeneric()) {
-        middle(" final");
-      } else if (o->has(OVERRIDE)) {
-        middle(" override");
-      } else if (o->has(ABSTRACT)) {
-        middle(" = 0");
-      }
-      finish(';');
-    } else {
-      finish(" {");
-      in();
-      genTraceFunction(o->name->str(), o->loc);
-      genTraceLine(o->loc);
-      line("yield_" << currentClass->name << '_' << o->name << '_' << o->number << "_0_();");
-      out();
-      line("}\n");
-    }
-
-    /* start function */
-    CppResumeGenerator auxResume(currentClass, o, base, level, header);
-    auxResume << o->start;
-
-    /* resume functions */
-    Gatherer<Yield> yields;
-    o->accept(&yields);
-    for (auto yield : yields) {
-      if (yield->resume) {
-        CppResumeGenerator auxResume(currentClass, o, base, level, header);
-        auxResume << yield->resume;
-      }
     }
   }
 }
@@ -325,10 +250,11 @@ void birch::CppClassGenerator::visit(const AssignmentOperator* o) {
       finish(" {");
       in();
       genTraceFunction("<assignment>", o->loc);
-      CppGenerator auxBase(base, level, header, generic);
-      auxBase << o->braces->strip();
+      ++inOperator;
+      *this << o->braces->strip();
       genSourceLine(o->loc);
       line("return *this;");
+      --inOperator;
       out();
       finish("}\n");
     }
@@ -354,10 +280,25 @@ void birch::CppClassGenerator::visit(const ConversionOperator* o) {
       finish(" {");
       in();
       genTraceFunction("<conversion>", o->loc);
-      CppGenerator auxBase(base, level, header, generic);
-      auxBase << o->braces->strip();
+      ++inOperator;
+      *this << o->braces->strip();
+      --inOperator;
       out();
       finish("}\n");
     }
+  }
+}
+
+void birch::CppClassGenerator::genBase(const Class* o) {
+  auto base = dynamic_cast<const NamedType*>(o->base);
+  if (base) {
+    middle(base->name);
+    if (!base->typeArgs->isEmpty()) {
+      middle('<' << base->typeArgs << '>');
+    }
+  } else if (o->name->str() == "Object") {
+    middle("libbirch::Any");
+  } else {
+    middle("Object");
   }
 }

@@ -21,21 +21,21 @@ abstract class Model {
   /**
    * Simulate.
    */
-  fiber simulate() -> Event {
+  function simulate() {
     //
   }
 
   /**
    * Simulate the `t`th step.
    */
-  fiber simulate(t:Integer) -> Event {
+  function simulate(t:Integer) {
     //
   }
 
   /**
    * Forecast the `t`th step.
    */
-  fiber forecast(t:Integer) -> Event {
+  function forecast(t:Integer) {
     //
   }
 }

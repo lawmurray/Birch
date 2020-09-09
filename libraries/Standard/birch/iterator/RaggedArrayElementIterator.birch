@@ -1,0 +1,47 @@
+/**
+ * Iterator over the elements of a row in a RaggedArray.
+ *
+ * - o: Container.
+ * - i: Row index.
+ */
+final class RaggedArrayElementIterator<Type>(o:RaggedArray<Type>, i:Integer) <
+    Iterator<Type> {
+  /**
+   * Container.
+   */
+  o:RaggedArray<Type> <- o;
+  
+  /**
+   * Row index.
+   */
+  i:Integer <- i;
+
+  /**
+   * Current column index.
+   */
+  j:Integer <- 0;
+
+  /**
+   * Is there a next element?
+   */
+  function hasNext() -> Boolean {
+    return j < o.size(i);
+  }
+
+  /**
+   * Get the next element.
+   */
+  function next() -> Type {
+    j <- j + 1;
+    return o.get(i, j);
+  }
+}
+
+/**
+ * Create a RaggedArrayElementIterator.
+ */
+function RaggedArrayElementIterator<Type>(o:RaggedArray<Type>, i:Integer) ->
+    RaggedArrayElementIterator<Type> {
+  iter:RaggedArrayElementIterator<Type>(o, i);
+  return iter;
+}

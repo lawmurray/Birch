@@ -4,10 +4,9 @@
 #include "src/visitor/ContextualModifier.hpp"
 
 birch::ContextualModifier::ContextualModifier(Package* currentPackage,
-    Class* currentClass, Fiber* currentFiber) :
+    Class* currentClass) :
     currentPackage(currentPackage),
-    currentClass(currentClass),
-    currentFiber(currentFiber) {
+    currentClass(currentClass) {
   //
 }
 
@@ -26,19 +25,5 @@ birch::Statement* birch::ContextualModifier::modify(Class* o) {
   currentClass = o;
   Modifier::modify(o);
   currentClass = nullptr;
-  return o;
-}
-
-birch::Statement* birch::ContextualModifier::modify(Fiber* o) {
-  currentFiber = o;
-  Modifier::modify(o);
-  currentFiber = nullptr;
-  return o;
-}
-
-birch::Statement* birch::ContextualModifier::modify(MemberFiber* o) {
-  currentFiber = o;
-  Modifier::modify(o);
-  currentFiber = nullptr;
   return o;
 }

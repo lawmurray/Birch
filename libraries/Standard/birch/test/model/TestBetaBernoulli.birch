@@ -6,7 +6,7 @@ class TestBetaBernoulli < Model {
     //
   }
 
-  fiber simulate() -> Event {
+  function simulate() {
     α:Real <- simulate_uniform(1.0, 10.0);
     β:Real <- simulate_uniform(1.0, 10.0);
     ρ ~ Beta(α, β);

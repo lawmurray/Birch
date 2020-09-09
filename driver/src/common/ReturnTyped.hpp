@@ -8,7 +8,7 @@
 
 namespace birch {
 /**
- * Function, fiber or operator with return type.
+ * Function or operator with return type.
  *
  * @ingroup common
  */

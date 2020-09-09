@@ -1,0 +1,35 @@
+/**
+ * Iterator over a Stack.
+ *
+ * - head: Head node.
+ */
+final class StackIterator<Type>(head:StackNode<Type>?) < Iterator<Type> {
+  /**
+   * Current node.
+   */
+  node:StackNode<Type>? <- head;
+
+  /**
+   * Is there a next element?
+   */
+  function hasNext() -> Boolean {
+    return node?;
+  }
+
+  /**
+   * Get the next element.
+   */
+  function next() -> Type {
+    auto x <- node!.x;
+    node <- node!.next;
+    return x;
+  }
+}
+
+/**
+ * Create a StackIterator.
+ */
+function StackIterator<Type>(head:StackNode<Type>?) -> StackIterator<Type> {
+  iter:StackIterator<Type>(head);
+  return iter;
+}

@@ -91,14 +91,6 @@ void birch::Visitor::visit(const Get* o) {
   o->single->accept(this);
 }
 
-void birch::Visitor::visit(const GetReturn* o) {
-  o->single->accept(this);
-}
-
-void birch::Visitor::visit(const Spin* o) {
-  o->single->accept(this);
-}
-
 void birch::Visitor::visit(const LambdaFunction* o) {
   o->params->accept(this);
   o->returnType->accept(this);
@@ -194,26 +186,12 @@ void birch::Visitor::visit(const Function* o) {
   o->braces->accept(this);
 }
 
-void birch::Visitor::visit(const Fiber* o) {
-  o->typeParams->accept(this);
-  o->params->accept(this);
-  o->returnType->accept(this);
-  o->braces->accept(this);
-}
-
 void birch::Visitor::visit(const Program* o) {
   o->params->accept(this);
   o->braces->accept(this);
 }
 
 void birch::Visitor::visit(const MemberFunction* o) {
-  o->typeParams->accept(this);
-  o->params->accept(this);
-  o->returnType->accept(this);
-  o->braces->accept(this);
-}
-
-void birch::Visitor::visit(const MemberFiber* o) {
   o->typeParams->accept(this);
   o->params->accept(this);
   o->returnType->accept(this);
@@ -294,6 +272,11 @@ void birch::Visitor::visit(const DoWhile* o) {
   o->cond->accept(this);
 }
 
+void birch::Visitor::visit(const With* o) {
+  o->single->accept(this);
+  o->braces->accept(this);
+}
+
 void birch::Visitor::visit(const Block* o) {
   o->braces->accept(this);
 }
@@ -306,7 +289,7 @@ void birch::Visitor::visit(const Return* o) {
   o->single->accept(this);
 }
 
-void birch::Visitor::visit(const Yield* o) {
+void birch::Visitor::visit(const Factor* o) {
   o->single->accept(this);
 }
 
@@ -343,11 +326,6 @@ void birch::Visitor::visit(const TupleType* o) {
 void birch::Visitor::visit(const FunctionType* o) {
   o->params->accept(this);
   o->returnType->accept(this);
-}
-
-void birch::Visitor::visit(const FiberType* o) {
-  o->returnType->accept(this);
-  o->yieldType->accept(this);
 }
 
 void birch::Visitor::visit(const OptionalType* o) {

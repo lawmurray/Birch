@@ -7,7 +7,7 @@ class TestAddBoundedDiscreteDelta < Model {
     //
   }
 
-  fiber simulate() -> Event {
+  function simulate() {
     x1 ~ Uniform(1, 6);
     x2 ~ Uniform(1, 6);
     s ~ Delta(x1 + x2);

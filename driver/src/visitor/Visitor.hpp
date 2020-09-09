@@ -40,8 +40,6 @@ public:
   virtual void visit(const Slice* o);
   virtual void visit(const Query* o);
   virtual void visit(const Get* o);
-  virtual void visit(const GetReturn* o);
-  virtual void visit(const Spin* o);
   virtual void visit(const LambdaFunction* o);
   virtual void visit(const Index* o);
   virtual void visit(const Span* o);
@@ -62,10 +60,8 @@ public:
   virtual void visit(const MemberVariable* o);
   virtual void visit(const LocalVariable* o);
   virtual void visit(const Function* o);
-  virtual void visit(const Fiber* o);
   virtual void visit(const Program* o);
   virtual void visit(const MemberFunction* o);
-  virtual void visit(const MemberFiber* o);
   virtual void visit(const BinaryOperator* o);
   virtual void visit(const UnaryOperator* o);
   virtual void visit(const AssignmentOperator* o);
@@ -79,10 +75,11 @@ public:
   virtual void visit(const Parallel* o);
   virtual void visit(const While* o);
   virtual void visit(const DoWhile* o);
+  virtual void visit(const With* o);
   virtual void visit(const Block* o);
   virtual void visit(const Assert* o);
   virtual void visit(const Return* o);
-  virtual void visit(const Yield* o);
+  virtual void visit(const Factor* o);
   virtual void visit(const Raw* o);
 
   virtual void visit(const EmptyType* o);
@@ -92,7 +89,6 @@ public:
   virtual void visit(const ArrayType* o);
   virtual void visit(const TupleType* o);
   virtual void visit(const FunctionType* o);
-  virtual void visit(const FiberType* o);
   virtual void visit(const OptionalType* o);
 };
 }

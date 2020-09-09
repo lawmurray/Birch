@@ -25,7 +25,6 @@ void birch::CppPackageGenerator::visit(const Package* o) {
   Gatherer<Class> classes;
   Gatherer<GlobalVariable> globals;
   Gatherer<Function> functions;
-  Gatherer<Fiber> fibers;
   Gatherer<Program> programs;
   Gatherer<BinaryOperator> binaries;
   Gatherer<UnaryOperator> unaries;
@@ -34,7 +33,6 @@ void birch::CppPackageGenerator::visit(const Package* o) {
     file->accept(&classes);
     file->accept(&globals);
     file->accept(&functions);
-    file->accept(&fibers);
     file->accept(&programs);
     file->accept(&binaries);
     file->accept(&unaries);
@@ -134,11 +132,6 @@ void birch::CppPackageGenerator::visit(const Package* o) {
       auxDeclaration << o;
     }
 
-    /* fibers */
-    for (auto o : fibers) {
-      auxDeclaration << o;
-    }
-
     /* binary operators */
     for (auto o : binaries) {
       auxDeclaration << o;
@@ -172,26 +165,11 @@ void birch::CppPackageGenerator::visit(const Package* o) {
             auxMember << o;
           }
         }
-
-        Gatherer<MemberFiber> memberFibers;
-        o->accept(&memberFibers);
-        for (auto o : memberFibers) {
-          if (o->isGeneric()) {
-            auxMember << o;
-          }
-        }
       }
     }
 
     /* generic function definitions */
     for (auto o : functions) {
-      if (o->isGeneric()) {
-        auxDefinition << o;
-      }
-    }
-
-    /* generic fiber definitions */
-    for (auto o : fibers) {
       if (o->isGeneric()) {
         auxDefinition << o;
       }

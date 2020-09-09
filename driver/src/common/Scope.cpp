@@ -9,7 +9,6 @@
 #include "src/statement/MemberVariable.hpp"
 #include "src/statement/LocalVariable.hpp"
 #include "src/statement/Function.hpp"
-#include "src/statement/Fiber.hpp"
 #include "src/statement/Program.hpp"
 #include "src/statement/MemberFunction.hpp"
 #include "src/statement/BinaryOperator.hpp"
@@ -36,8 +35,6 @@ void birch::Scope::lookup(NamedExpression* o) const {
   auto globalVariable = globalVariables.find(name);
   auto memberFunction = memberFunctions.find(name);
   auto function = functions.find(name);
-  auto memberFiber = memberFibers.find(name);
-  auto fiber = fibers.find(name);
   auto binaryOperator = binaryOperators.find(name);
   auto unaryOperator = unaryOperators.find(name);
   auto program = programs.find(name);
@@ -64,12 +61,6 @@ void birch::Scope::lookup(NamedExpression* o) const {
   } else if (function != functions.end()) {
     o->category = GLOBAL_FUNCTION;
     o->number = function->second->number;
-  } else if (memberFiber != memberFibers.end()) {
-    o->category = MEMBER_FIBER;
-    o->number = memberFiber->second->number;
-  } else if (fiber != fibers.end()){
-    o->category = GLOBAL_FIBER;
-    o->number = fiber->second->number;
   } else if (binaryOperator != binaryOperators.end()) {
     o->category = BINARY_OPERATOR;
     o->number = binaryOperator->second->number;
@@ -144,14 +135,6 @@ void birch::Scope::add(Function* o) {
   functions.insert(std::make_pair(o->name->str(), o));
 }
 
-void birch::Scope::add(MemberFiber* o) {
-  memberFibers.insert(std::make_pair(o->name->str(), o));
-}
-
-void birch::Scope::add(Fiber* o) {
-  fibers.insert(std::make_pair(o->name->str(), o));
-}
-
 void birch::Scope::add(Program* o) {
   programs.insert(std::make_pair(o->name->str(), o));
 }
@@ -198,6 +181,5 @@ void birch::Scope::inherit(Class* o) const {
 
 bool birch::Scope::overrides(const std::string& name) const {
   return base && (base->memberFunctions.find(name) != base->memberFunctions.end() ||
-      base->memberFibers.find(name) != base->memberFibers.end() ||
       base->overrides(name));
 }

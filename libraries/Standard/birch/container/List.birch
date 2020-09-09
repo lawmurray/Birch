@@ -204,32 +204,12 @@ final class List<Type> {
   }
 
   /**
-   * Forward iteration.
+   * Obtain an iterator.
    *
-   * Return: a fiber object that yields each element in forward order.
+   * Return: an iterator across elements in forward order.
    */
-  fiber walk() -> Type {
-    node:ListNode<Type>? <- head;
-    while (node?) {
-      yield node!.x;
-      node <- node!.next;
-    }
-  }
-
-  /**
-   * First node, if any. This can be used to maintain a bidirectional
-   * iterator over the container.
-   */
-  function begin() -> ListNode<Type>? {
-    return head;
-  }
-  
-  /**
-   * Last node, if any. This can be used to maintain a bidirectional
-   * iterator over the container.
-   */
-  function end() -> ListNode<Type>? {
-    return tail;
+  function walk() -> Iterator<Type> {
+    return ListIterator<Type>(head);
   }
 
   /**
@@ -263,10 +243,10 @@ final class List<Type> {
   
   function read(buffer:Buffer) {
     auto f <- buffer.walk();
-    while f? {
+    while f.hasNext() {
       /* tricky, but works for both value and class types */
       auto x <- make<Type>();
-      auto y <- f!.get(x);
+      auto y <- f.next().get(x);
       if (y?) {
         x <- Type?(y);  // cast needed for y:Object?
         pushBack(x!);
@@ -277,8 +257,8 @@ final class List<Type> {
   function write(buffer:Buffer) {
     buffer.setArray();
     auto f <- walk();
-    while (f?) {
-      buffer.push().set(f!);
+    while f.hasNext() {
+      buffer.push().set(f.next());
     }
   }
 }

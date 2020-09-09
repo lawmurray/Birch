@@ -15,7 +15,7 @@ class TestNormalInverseGammaGaussian < Model {
     β <- simulate_uniform(0.0, 10.0);
   }
 
-  fiber simulate() -> Event {
+  function simulate() {
     σ2 ~ InverseGamma(α, β);
     μ ~ Gaussian(μ_0, a2, σ2);
     x ~ Gaussian(μ, σ2);

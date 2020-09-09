@@ -12,7 +12,7 @@
 namespace birch {
 /**
  * Name in the context of an expression, referring to a variable, function,
- * fiber, or operator.
+ * or operator.
  *
  * @ingroup expression
  */

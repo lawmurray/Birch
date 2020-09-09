@@ -48,15 +48,6 @@ void birch::Compiler::parse(bool includeHeaders) {
 }
 
 void birch::Compiler::resolve() {
-  Spinner spinner;
-  package->accept(&spinner);
-
-  Transformer transformer;
-  package->accept(&transformer);
-
-  Checker checker;
-  package->accept(&checker);
-
   Scoper scoper;
   package->accept(&scoper);
 

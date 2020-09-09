@@ -9,7 +9,7 @@ class TestBetaGeometric < Model {
     β <- simulate_uniform(1.0, 100.0);
   }
 
-  fiber simulate() -> Event {
+  function simulate() {
     ρ ~ Beta(α, β);
     x ~ Geometric(ρ);
   }

@@ -84,14 +84,6 @@ birch::Expression* birch::Cloner::clone(const Get* o) {
   return new Get(o->single->accept(this), o->loc);
 }
 
-birch::Expression* birch::Cloner::clone(const GetReturn* o) {
-  return new GetReturn(o->single->accept(this), o->loc);
-}
-
-birch::Expression* birch::Cloner::clone(const Spin* o) {
-  return new Spin(o->single->accept(this), o->loc);
-}
-
 birch::Expression* birch::Cloner::clone(const LambdaFunction* o) {
   return new LambdaFunction(o->params->accept(this),
       o->returnType->accept(this), o->braces->accept(this), o->loc);
@@ -184,12 +176,6 @@ birch::Statement* birch::Cloner::clone(const Function* o) {
       o->braces->accept(this), o->loc);
 }
 
-birch::Statement* birch::Cloner::clone(const Fiber* o) {
-  return new Fiber(o->annotation, o->name, o->typeParams->accept(this),
-      o->params->accept(this), o->returnType->accept(this),
-      o->braces->accept(this), o->loc);
-}
-
 birch::Statement* birch::Cloner::clone(const Program* o) {
   return new Program(o->name, o->params->accept(this),
       o->braces->accept(this), o->loc);
@@ -199,12 +185,6 @@ birch::Statement* birch::Cloner::clone(const MemberFunction* o) {
   return new MemberFunction(o->annotation, o->name,
       o->typeParams->accept(this), o->params->accept(this),
       o->returnType->accept(this), o->braces->accept(this), o->loc);
-}
-
-birch::Statement* birch::Cloner::clone(const MemberFiber* o) {
-  return new MemberFiber(o->annotation, o->name, o->typeParams->accept(this),
-      o->params->accept(this), o->returnType->accept(this),
-      o->braces->accept(this), o->loc);
 }
 
 birch::Statement* birch::Cloner::clone(const BinaryOperator* o) {
@@ -268,6 +248,10 @@ birch::Statement* birch::Cloner::clone(const DoWhile* o) {
   return new DoWhile(o->braces->accept(this), o->cond->accept(this), o->loc);
 }
 
+birch::Statement* birch::Cloner::clone(const With* o) {
+  return new With(o->single->accept(this), o->braces->accept(this), o->loc);
+}
+
 birch::Statement* birch::Cloner::clone(const Block* o) {
   return new Block(o->braces->accept(this), o->loc);
 }
@@ -280,8 +264,8 @@ birch::Statement* birch::Cloner::clone(const Return* o) {
   return new Return(o->single->accept(this), o->loc);
 }
 
-birch::Statement* birch::Cloner::clone(const Yield* o) {
-  return new Yield(o->single->accept(this), o->loc);
+birch::Statement* birch::Cloner::clone(const Factor* o) {
+  return new Factor(o->single->accept(this), o->loc);
 }
 
 birch::Statement* birch::Cloner::clone(const Raw* o) {
@@ -316,11 +300,6 @@ birch::Type* birch::Cloner::clone(const TupleType* o) {
 birch::Type* birch::Cloner::clone(const FunctionType* o) {
   return new FunctionType(o->params->accept(this),
       o->returnType->accept(this), o->loc);
-}
-
-birch::Type* birch::Cloner::clone(const FiberType* o) {
-  return new FiberType(o->returnType->accept(this),
-      o->yieldType->accept(this), o->loc);
 }
 
 birch::Type* birch::Cloner::clone(const OptionalType* o) {

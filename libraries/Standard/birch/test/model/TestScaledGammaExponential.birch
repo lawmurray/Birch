@@ -12,7 +12,7 @@ class TestScaledGammaExponential < Model {
     θ <- simulate_uniform(0.0, 10.0);
   }
 
-  fiber simulate() -> Event {
+  function simulate() {
     λ ~ Gamma(k, θ);
     x ~ Exponential(a*λ);
   }

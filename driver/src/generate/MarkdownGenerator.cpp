@@ -143,31 +143,6 @@ void birch::MarkdownGenerator::visit(const Package* o) {
     --depth;
   }
 
-  /* fibers */
-  Gatherer<Fiber> fibers(docsNotEmpty, false);
-  o->accept(&fibers);
-  std::stable_sort(fibers.begin(), fibers.end(), sortByName);
-  if (fibers.size() > 0) {
-    genHead("Fibers");
-    ++depth;
-    std::string name, desc;
-    for (auto o : fibers) {
-      if (o->name->str() != name) {
-        /* heading only for the first overload of this name */
-        genHead(o->name->str());
-        line("<a name=\"" << anchor(o->name->str()) << "\"></a>\n");
-      }
-      name = o->name->str();
-      desc = quote(detailed(o->loc->doc), "    ");
-      *this << o;
-      line("");
-      line(desc);
-      line("");
-    }
-    line("");
-    --depth;
-  }
-
   /* unary operators */
   Gatherer<UnaryOperator> unaries(all, false);
   o->accept(&unaries);
@@ -263,24 +238,6 @@ void birch::MarkdownGenerator::visit(const Function* o) {
   finish("\"");
 }
 
-void birch::MarkdownGenerator::visit(const Fiber* o) {
-  start("!!! abstract \"fiber " << o->name);
-  if (o->isGeneric()) {
-    middle("&lt;" << o->typeParams << "&gt;");
-  }
-  middle('(' << o->params << ')');
-  if (!o->returnType->isEmpty()) {
-    auto type = dynamic_cast<const FiberType*>(o->returnType);
-    assert(type);
-    middle(" -> ");
-    if (!type->returnType->isEmpty()) {
-      middle(type->returnType << '%');
-    }
-    middle(type->yieldType);
-  }
-  finish("\"");
-}
-
 void birch::MarkdownGenerator::visit(const Program* o) {
   start("!!! abstract \"program " << o->name << '(' << o->params << ")\"");
 }
@@ -297,28 +254,6 @@ void birch::MarkdownGenerator::visit(const MemberFunction* o) {
   middle(' ' << o->name << '(' << o->params << ')');
   if (!o->returnType->isEmpty()) {
     middle(" -> " << o->returnType);
-  }
-  finish("\"");
-}
-
-void birch::MarkdownGenerator::visit(const MemberFiber* o) {
-  start("!!! abstract \"");
-  if (o->has(ABSTRACT)) {
-    middle("abstract ");
-  }
-  if (o->has(FINAL)) {
-    middle("final ");
-  }
-  middle("fiber");
-  middle(' ' << o->name << '(' << o->params << ')');
-  if (!o->returnType->isEmpty()) {
-    auto type = dynamic_cast<const FiberType*>(o->returnType);
-    assert(type);
-    middle(" -> ");
-    if (!type->returnType->isEmpty()) {
-      middle(type->returnType << '%');
-    }
-    middle(type->yieldType);
   }
   finish("\"");
 }
@@ -491,24 +426,6 @@ void birch::MarkdownGenerator::visit(const Class* o) {
     --depth;
   }
 
-  /* member fibers */
-  Gatherer<MemberFiber> fibers(docsNotEmpty);
-  o->accept(&fibers);
-  if (fibers.size() > 0) {
-    genHead("Member Fibers");
-    line("| Name | Description |");
-    line("| --- | --- |");
-    ++depth;
-    for (auto o : fibers) {
-      start("| ");
-      middle('[' << o->name->str() << ']');
-      middle("(#" << anchor(o->name->str()) << ')');
-      finish(" | " << brief(o->loc->doc) << " |");
-    }
-    line("");
-    --depth;
-  }
-
   /* factory function details */
   if (factories.size() > 0) {
     genHead("Factory Function Details");
@@ -546,28 +463,6 @@ void birch::MarkdownGenerator::visit(const Class* o) {
     --depth;
   }
 
-  /* member fiber details */
-  std::stable_sort(fibers.begin(), fibers.end(), sortByName);
-  if (fibers.size() > 0) {
-    genHead("Member Fiber Details");
-    ++depth;
-    std::string name, desc;
-    for (auto o : fibers) {
-      if (o->name->str() != name) {
-        /* heading only for the first overload of this name */
-        genHead(o->name->str());
-        line("<a name=\"" << anchor(o->name->str()) << "\"></a>\n");
-      }
-      name = o->name->str();
-      desc = quote(detailed(o->loc->doc), "    ");
-      *this << o;
-      line("");
-      line(desc);
-      line("");
-    }
-    line("");
-    --depth;
-  }
   --depth;
 }
 
@@ -608,16 +503,6 @@ void birch::MarkdownGenerator::visit(const FunctionType* o) {
   if (!o->returnType->isEmpty()) {
     middle(" -> " << o->returnType);
   }
-}
-
-void birch::MarkdownGenerator::visit(const FiberType* o) {
-    if (!o->returnType->isEmpty()) {
-      middle(o->returnType << '%');
-    }
-    if (!o->yieldType->isEmpty()) {
-      middle(o->yieldType);
-    }
-    middle('!');
 }
 
 void birch::MarkdownGenerator::visit(const OptionalType* o) {

@@ -54,40 +54,50 @@ class ConditionalParticleFilter < ParticleFilter {
   }
 
   function ancestorSample(t:Integer) {
-    auto play <- PlayHandler(delayed);
     auto w' <- w;
     dynamic parallel for n in 1..nparticles {
       auto x' <- clone(x[n]);
       auto r' <- clone(r!);
-      w'[n] <- w'[n] + play.handle(r', x'.m.simulate(t));
+      auto handler <- PlayHandler(delayed);
+      handler.input <- r';
+      with (handler) {
+        x'.m.simulate(t);
+        w'[n] <- w'[n] + handler.w;
+      }
       ///@todo Don't assume Markov model here
     }
     b <- global.ancestor(w');
   }
 
   override function start() {
-    auto play <- PlayHandler(delayed);
     if !alreadyInitialized {
       parallel for n in 1..nparticles {
         auto x <- ConditionalParticle?(this.x[n])!;
+        auto handler <- PlayHandler(delayed);
         if r? && n == b {
-          w[n] <- play.handle(r!, x.m.simulate(), x.trace);
-        } else {
-          w[n] <- play.handle(x.m.simulate(), x.trace);
+          handler.input <- r!;
         }
+        handler.output <- x.trace;
+        with (handler) {
+          x.m.simulate();
+        }
+        w[n] <- handler.w;
       }
     }
   }
 
   override function step(t:Integer) {
-    auto play <- PlayHandler(delayed);
     parallel for n in 1..nparticles {
-        auto x <- ConditionalParticle?(this.x[n])!;
+      auto x <- ConditionalParticle?(this.x[n])!;
+      auto handler <- PlayHandler(delayed);
       if r? && n == b {
-        w[n] <- w[n] + play.handle(r!, x.m.simulate(t), x.trace);
-      } else {
-        w[n] <- w[n] + play.handle(x.m.simulate(t), x.trace);
+        handler.input <- r!;
       }
+      handler.output <- x.trace;
+      with (handler) {
+        x.m.simulate(t);
+      }
+      w[n] <- w[n] + handler.w;
     }
   }
 

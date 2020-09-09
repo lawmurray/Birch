@@ -1,34 +1,53 @@
 /**
- * Buffer.
- *
- * When reading and writing objects, defers to the `read()` and `write()`
- * member functions, declared in `Object`.
+ * Buffer in memory.
  */
-abstract class Buffer {
+final class Buffer {
+  /**
+   * Value contained in this buffer.
+   */
+  value:Value <- ObjectValue();
+
   /**
    * Get a child.
    */
-  abstract function getChild(name:String) -> Buffer?;
+  function getChild(name:String) -> Buffer? {
+    return value.getChild(name);
+  }
 
   /**
    * Set child.
    */
-  abstract function setChild(name:String) -> Buffer;
+  function setChild(name:String) -> Buffer {
+    return value.setChild(name);
+  }
 
   /**
    * Push a new element onto the end of an array.
    */
-  abstract function push() -> Buffer;
+  function push() -> Buffer {
+    return value.push();
+  }
 
   /**
    * Get the size of an array.
    */
-  abstract function size() -> Integer;
+  function size() -> Integer {
+    return value.size();
+  }
+  
+  /**
+   * Clear all contents.
+   */
+  function clear() {
+    value <- ObjectValue();
+  }
 
   /**
    * Iterate through the elements of an array.
    */
-  abstract fiber walk() -> Buffer;
+  function walk() -> Iterator<Buffer> {
+    return value.walk();
+  }
 
   /**
    * Get this as an object. This is an identity function, returning `this`,
@@ -42,35 +61,49 @@ abstract class Buffer {
   /**
    * Get this as an array.
    */
-  abstract function getArray() -> Buffer?;
+  function getArray() -> Buffer? {
+    if value.isArray() {
+      return this;
+    } else {
+      return nil;
+    }
+  }
   
   /**
    * Get this as a Boolean.
    *
    * Return: An optional with a value if this is of a compatible type.
    */
-  abstract function getBoolean() -> Boolean?;
+  function getBoolean() -> Boolean? {
+    return value.getBoolean();
+  }
 
   /**
    * Get this as an integer.
    *
    * Return: An optional with a value if this is of a compatible type.
    */
-  abstract function getInteger() -> Integer?;
+  function getInteger() -> Integer? {
+    return value.getInteger();
+  }
 
   /**
    * Get this as a real.
    *
    * Return: An optional with a value if this is of a compatible type.
    */
-  abstract function getReal() -> Real?;
+  function getReal() -> Real? {
+    return value.getReal();
+  }
 
   /**
    * Get this as a string.
    *
    * Return: An optional with a value if this is of a compatible type.
    */
-  abstract function getString() -> String?;
+  function getString() -> String? {
+    return value.getString();
+  }
   
   /**
    * Get this as a vector of Booleans.
@@ -78,7 +111,9 @@ abstract class Buffer {
    * Return: An optional with a value if this is an array with all elements
    * of a compatible type.
    */
-  abstract function getBooleanVector() -> Boolean[_]?;
+  function getBooleanVector() -> Boolean[_]? {
+    return value.getBooleanVector();
+  }
 
   /**
    * Get this as a vector of integers.
@@ -86,7 +121,9 @@ abstract class Buffer {
    * Return: An optional with a value if this is an array with all elements
    * of a compatible type.
    */
-  abstract function getIntegerVector() -> Integer[_]?;
+  function getIntegerVector() -> Integer[_]? {
+    return value.getIntegerVector();
+  }
 
   /**
    * Get this as a vector of reals.
@@ -94,7 +131,9 @@ abstract class Buffer {
    * Return: An optional with a value if this is an array with all elements
    * of a compatible type.
    */
-  abstract function getRealVector() -> Real[_]?;
+  function getRealVector() -> Real[_]? {
+    return value.getRealVector();
+  }
 
   /**
    * Get this as a matrix of Booleans.
@@ -102,7 +141,9 @@ abstract class Buffer {
    * Return: An optional with a value if this is an array where all elements
    * are themselves arrays of the same length and compatible type.
    */
-  abstract function getBooleanMatrix() -> Boolean[_,_]?;
+  function getBooleanMatrix() -> Boolean[_,_]? {
+    return value.getBooleanMatrix();
+  }
 
   /**
    * Get this as a matrix of integers.
@@ -110,7 +151,9 @@ abstract class Buffer {
    * Return: An optional with a value if this is an array where all elements
    * are themselves arrays of the same length and compatible type.
    */
-  abstract function getIntegerMatrix() -> Integer[_,_]?;
+  function getIntegerMatrix() -> Integer[_,_]? {
+    return value.getIntegerMatrix();
+  }
 
   /**
    * Get this as a matrix of reals.
@@ -118,7 +161,9 @@ abstract class Buffer {
    * Return: An optional with a value if this is an array where all elements
    * are themselves arrays of the same length and compatible type.
    */
-  abstract function getRealMatrix() -> Real[_,_]?;
+  function getRealMatrix() -> Real[_,_]? {
+    return value.getRealMatrix();
+  }
 
   /**
    * Get this as a positive definite symmetric matrix of reals.
@@ -144,16 +189,6 @@ abstract class Buffer {
       return array!.size();
     } else {
       return 0;
-    }
-  }
-
-  /**
-   * Iterate through the elements of an array.
-   */
-  fiber walk(name:String) -> Buffer {
-    auto array <- getArray(name);
-    if array? {
-      @array!.walk();
     }
   }
 
@@ -683,94 +718,140 @@ abstract class Buffer {
   /**
    * Set this as an object.
    */
-  abstract function setObject() -> Buffer;
+  function setObject() -> Buffer {
+    v:ObjectValue;
+    this.value <- v;
+    return this;
+  }
   
   /**
    * Set this as an array.
    */
-  abstract function setArray() -> Buffer;
+  function setArray() -> Buffer {
+    v:ArrayValue;
+    this.value <- v;
+    return this;
+  }
 
   /**
    * Set this as nil.
    */
-  abstract function setNil();
+  function setNil() {
+    v:NilValue;
+    this.value <- v;
+  }
 
   /**
    * Set this as a Boolean.
    *
    * - value: Value.
    */
-  abstract function setBoolean(value:Boolean);
+  function setBoolean(value:Boolean) {
+    v:BooleanValue(value);
+    this.value <- v;
+  }
 
   /**
    * Set this as an integer.
    *
    * - value: Value.
    */
-  abstract function setInteger(value:Integer);
+  function setInteger(value:Integer) {
+    v:IntegerValue(value);
+    this.value <- v;
+  }
 
   /**
    * Set this as a real.
    *
    * - value: Value.
    */
-  abstract function setReal(value:Real);
+  function setReal(value:Real) {
+    v:RealValue(value);
+    this.value <- v;
+  }
 
   /**
    * Set this as a string.
    *
    * - value: Value.
    */
-  abstract function setString(value:String);
+  function setString(value:String) {
+    v:StringValue(value);
+    this.value <- v;
+  }
 
   /**
    * Set this as a vector of Booleans.
    *
    * - value: Value.
    */
-  abstract function setBooleanVector(value:Boolean[_]);
+  function setBooleanVector(value:Boolean[_]) {
+    v:BooleanVectorValue(value);
+    this.value <- v;
+  }
 
   /**
    * Set this as a vector of integers.
    *
    * - value: Value.
    */
-  abstract function setIntegerVector(value:Integer[_]);
+  function setIntegerVector(value:Integer[_]) {
+    v:IntegerVectorValue(value);
+    this.value <- v;
+  }
 
   /**
    * Set this as a vector of reals.
    *
    * - value: Value.
    */
-  abstract function setRealVector(value:Real[_]);
+  function setRealVector(value:Real[_]) {
+    v:RealVectorValue(value);
+    this.value <- v;
+  }
 
   /**
    * Set this as a vector of objects.
    *
    * - value: Value.
    */
-  abstract function setObjectVector(value:Object[_]);
+  function setObjectVector(value:Object[_]) {
+    setArray();
+    for n in 1..length(value) {
+      push().set(value[n]);
+    }
+  }
   
   /**
    * Set this as matrix of Booleans.
    *
    * - value: Value.
    */
-  abstract function setBooleanMatrix(value:Boolean[_,_]);
+  function setBooleanMatrix(value:Boolean[_,_]) {
+    v:BooleanMatrixValue(value);
+    this.value <- v;
+  }
 
   /**
    * Set this as a matrix of integers.
    *
    * - value: Value.
    */
-  abstract function setIntegerMatrix(value:Integer[_,_]);
+  function setIntegerMatrix(value:Integer[_,_]) {
+    v:IntegerMatrixValue(value);
+    this.value <- v;
+  }
 
   /**
    * Set this as a matrix of reals.
    *
    * - value: Value.
    */
-  abstract function setRealMatrix(value:Real[_,_]);
+  function setRealMatrix(value:Real[_,_]) {
+    v:RealMatrixValue(value);
+    this.value <- v;
+  }
 
   /**
    * Set this as a symmetric positive definite matrix of reals.
@@ -786,7 +867,15 @@ abstract class Buffer {
    *
    * - value: Value.
    */
-  abstract function setObjectMatrix(value:Object[_,_]);
+  function setObjectMatrix(value:Object[_,_]) {
+    setArray();
+    for i in 1..rows(value) {
+      auto buffer <- push().setArray();
+      for j in 1..columns(value) {
+        buffer.push().set(value[i,j]);
+      }
+    }
+  }
 
   /**
    * Set child as an object.
@@ -1211,4 +1300,23 @@ abstract class Buffer {
   function set(name:String, value:Object[_,_]) {
     setObjectMatrix(name, value);
   }
+}
+
+/**
+ * Create a Buffer.
+ *
+ * - root: Root element.
+ */
+function Buffer(root:Value) -> Buffer {
+  o:Buffer;
+  o.value <- root;
+  return o;
+}
+
+/**
+ * Create a Buffer.
+ */
+function Buffer() -> Buffer {
+  o:Buffer;
+  return o;
 }

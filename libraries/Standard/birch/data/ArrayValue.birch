@@ -6,7 +6,7 @@ class ArrayValue < Value {
    * Elements of the array. This uses Vector rather than List or similar to
    * avoid reaching stack size limits for large data sets.
    */
-  buffers:Vector<MemoryBuffer>;
+  buffers:Vector<Buffer>;
 
   function accept(writer:Writer) {
     writer.visit(this);
@@ -20,12 +20,12 @@ class ArrayValue < Value {
     return buffers.size();
   }
 
-  fiber walk() -> Buffer {
-    @buffers.walk();
+  function walk() -> Iterator<Buffer> {
+    return buffers.walk();
   }
 
   function push() -> Buffer {
-    buffer:MemoryBuffer;
+    buffer:Buffer;
     buffers.pushBack(buffer);
     return buffer;
   }
@@ -34,8 +34,8 @@ class ArrayValue < Value {
     result:Boolean[buffers.size()];
     auto f <- buffers.walk();
     auto i <- 1;
-    while f? {
-      auto value <- f!.getBoolean();
+    while f.hasNext() {
+      auto value <- f.next().getBoolean();
       if value? {
         result[i] <- value!;
         i <- i + 1;
@@ -50,8 +50,8 @@ class ArrayValue < Value {
     result:Integer[buffers.size()];
     auto f <- buffers.walk();
     auto i <- 1;
-    while f? {
-      auto value <- f!.getInteger();
+    while f.hasNext() {
+      auto value <- f.next().getInteger();
       if value? {
         result[i] <- value!;
         i <- i + 1;
@@ -66,10 +66,11 @@ class ArrayValue < Value {
     result:Real[buffers.size()];
     auto f <- buffers.walk();
     auto i <- 1;
-    while f? {
-      auto value <- f!.getReal();
+    while f.hasNext() {
+      auto buffer <- f.next();
+      auto value <- buffer.getReal();
       if !value? {
-        value <- Real?(f!.getInteger());
+        value <- Real?(buffer.getInteger());
       }
       if value? {      
         result[i] <- value!;
@@ -83,12 +84,13 @@ class ArrayValue < Value {
 
   function getBooleanMatrix() -> Boolean[_,_]? {
     auto nrows <- size();
-    auto row <- walk();
-    if row? {
+    auto rows <- walk();
+    if rows.hasNext() {
       /* determine number of columns from first row */
-      auto ncols <- row!.size();
+      auto row <- rows.next();
+      auto ncols <- row.size();
       auto X <- matrix(false, nrows, ncols);
-      auto x <- row!.getBooleanVector();
+      auto x <- row.getBooleanVector();
       if x? {
         X[1,1..ncols] <- x!;
        } else {
@@ -98,10 +100,11 @@ class ArrayValue < Value {
       /* read in remaining rows, requiring that they have the same number of
        * columns as the first */
       auto i <- 1;
-      while row? {
-        ncols <- row!.size();
+      while rows.hasNext() {
+        row <- rows.next();
+        ncols <- row.size();
         if ncols == columns(X) {
-          x <- row!.getBooleanVector();
+          x <- row.getBooleanVector();
           if x? {
             i <- i + 1;
             X[i,1..ncols] <- x!;
@@ -120,12 +123,13 @@ class ArrayValue < Value {
 
   function getIntegerMatrix() -> Integer[_,_]? {
     auto nrows <- size();
-    auto row <- walk();
-    if row? {
+    auto rows <- walk();
+    if rows.hasNext() {
       /* determine number of columns from first row */
-      auto ncols <- row!.size();
+      auto row <- rows.next();
+      auto ncols <- row.size();
       auto X <- matrix(0, nrows, ncols);
-      auto x <- row!.getIntegerVector();
+      auto x <- row.getIntegerVector();
       if x? {
         X[1,1..ncols] <- x!;
        } else {
@@ -135,10 +139,11 @@ class ArrayValue < Value {
       /* read in remaining rows, requiring that they have the same number of
        * columns as the first */
       auto i <- 1;
-      while row? {
-        ncols <- row!.size();
+      while rows.hasNext() {
+        row <- rows.next();
+        ncols <- row.size();
         if ncols == columns(X) {
-          x <- row!.getIntegerVector();
+          x <- row.getIntegerVector();
           if x? {
             i <- i + 1;
             X[i,1..ncols] <- x!;
@@ -157,12 +162,13 @@ class ArrayValue < Value {
 
   function getRealMatrix() -> Real[_,_]? {
     auto nrows <- size();
-    auto row <- walk();
-    if row? {
+    auto rows <- walk();
+    if rows.hasNext() {
       /* determine number of columns from first row */
-      auto ncols <- row!.size();
+      auto row <- rows.next();
+      auto ncols <- row.size();
       auto X <- matrix(0.0, nrows, ncols);
-      auto x <- row!.getRealVector();
+      auto x <- row.getRealVector();
       if x? {
         X[1,1..ncols] <- x!;
        } else {
@@ -172,10 +178,11 @@ class ArrayValue < Value {
       /* read in remaining rows, requiring that they have the same number of
        * columns as the first */
       auto i <- 1;
-      while row? {
-        ncols <- row!.size();
+      while rows.hasNext() {
+        row <- rows.next();
+        ncols <- row.size();
         if ncols == columns(X) {
-          x <- row!.getRealVector();
+          x <- row.getRealVector();
           if x? {
             i <- i + 1;
             X[i,1..ncols] <- x!;

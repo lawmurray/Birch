@@ -4,17 +4,14 @@
 #include "src/visitor/ScopedModifier.hpp"
 
 birch::ScopedModifier::ScopedModifier(Package* currentPackage,
-    Class* currentClass, Fiber* currentFiber) :
-    ContextualModifier(currentPackage, currentClass, currentFiber),
+    Class* currentClass) :
+    ContextualModifier(currentPackage, currentClass),
     inMember(0),
     inGlobal(0) {
   if (currentPackage) {
     scopes.push_back(currentPackage->scope);
     if (currentClass) {
       scopes.push_back(currentClass->scope);
-    }
-    if (currentFiber) {
-      scopes.push_back(currentFiber->scope);
     }
   }
 }
@@ -60,20 +57,6 @@ birch::Statement* birch::ScopedModifier::modify(MemberFunction* o) {
 }
 
 birch::Statement* birch::ScopedModifier::modify(Function* o) {
-  scopes.push_back(o->scope);
-  ContextualModifier::modify(o);
-  scopes.pop_back();
-  return o;
-}
-
-birch::Statement* birch::ScopedModifier::modify(MemberFiber* o) {
-  scopes.push_back(o->scope);
-  ContextualModifier::modify(o);
-  scopes.pop_back();
-  return o;
-}
-
-birch::Statement* birch::ScopedModifier::modify(Fiber* o) {
   scopes.push_back(o->scope);
   ContextualModifier::modify(o);
   scopes.pop_back();
@@ -167,6 +150,13 @@ birch::Statement* birch::ScopedModifier::modify(DoWhile* o) {
   o->braces = o->braces->accept(this);
   scopes.pop_back();
   o->cond = o->cond->accept(this);
+  return o;
+}
+
+birch::Statement* birch::ScopedModifier::modify(With* o) {
+  scopes.push_back(o->scope);
+  ContextualModifier::modify(o);
+  scopes.pop_back();
   return o;
 }
 

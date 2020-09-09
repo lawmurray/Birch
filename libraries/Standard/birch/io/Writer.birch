@@ -42,7 +42,7 @@ abstract class Writer {
    *
    * - buffer: Buffer to write.
    */
-  abstract function print(buffer:MemoryBuffer);
+  abstract function print(buffer:Buffer);
   
   /**
    * Flush accumulated writes to the file.

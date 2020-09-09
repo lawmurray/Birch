@@ -758,7 +758,6 @@ void birch::Driver::docs() {
   fs::create_directories(docs / "variables");
   fs::create_directories(docs / "programs");
   fs::create_directories(docs / "functions");
-  fs::create_directories(docs / "fibers");
   fs::create_directories(docs / "unary_operators");
   fs::create_directories(docs / "binary_operators");
   fs::create_directories(docs / "classes");
@@ -1210,16 +1209,16 @@ void birch::Driver::target(const std::string& cmd) {
     buf << " | grep --line-buffered -v 'note:'";
   }
 
-  /* strip namespaces, which are meant to be internal */
-  buf << " | sed -lE 's/[a-zA-Z0-9_]+:://g'";
+  /* strip namespace and class qualifiers */
+  buf << " | sed -E 's/[a-zA-Z0-9_]+:://g'";
 
   /* replace some operators */
-  buf << " | sed -lE 's/operator->/./g'";
+  buf << " | sed -E 's/operator->/./g'";
 
   /* strip suggestions that reveal internal workings */
-  buf << " | sed -lE \"s/; did you mean '[[:alnum:]_]+_'\\?/./\"";
-  buf << " | sed -lE \"/note: '[[:alnum:]_]+_' declared here/d\"";
-  buf << " | sed -lE \"s/'='/'<-'/\"";
+  buf << " | sed -E \"s/; did you mean '[[:alnum:]_]+_'\\?/./\"";
+  buf << " | sed -E \"/note: '[[:alnum:]_]+_' declared here/d\"";
+  buf << " | sed -E \"s/'='/'<-'/\"";
   buf << " | grep --line-buffered -v 'note: expanded from macro'";
   buf << " 1>&2";
 

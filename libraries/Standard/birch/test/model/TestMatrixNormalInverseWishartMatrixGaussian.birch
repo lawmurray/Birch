@@ -30,7 +30,7 @@ class TestMatrixNormalInverseWishartMatrixGaussian < Model {
     Ψ <- Ψ*transpose(Ψ);
   }
 
-  fiber simulate() -> Event {
+  function simulate() {
     V ~ InverseWishart(Ψ, k);
     X ~ Gaussian(M, U, V);
     Y ~ Gaussian(X, V);

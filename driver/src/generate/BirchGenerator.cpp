@@ -85,14 +85,6 @@ void birch::BirchGenerator::visit(const Get* o) {
   middle(o->single << '!');
 }
 
-void birch::BirchGenerator::visit(const GetReturn* o) {
-  middle(o->single << '%');
-}
-
-void birch::BirchGenerator::visit(const Spin* o) {
-  middle('@' << o->single);
-}
-
 void birch::BirchGenerator::visit(const LambdaFunction* o) {
   middle("\\(" << o->params << ')');
   if (!o->returnType->isEmpty()) {
@@ -256,28 +248,6 @@ void birch::BirchGenerator::visit(const Function* o) {
   }
 }
 
-void birch::BirchGenerator::visit(const Fiber* o) {
-  start("fiber " << o->name);
-  if (!o->typeParams->isEmpty()) {
-    middle('<' << o->typeParams << '>');
-  }
-  middle('(' << o->params << ')');
-  if (!o->returnType->isEmpty()) {
-    auto type = dynamic_cast<const FiberType*>(o->returnType);
-    assert(type);
-    middle(" -> ");
-    if (!type->returnType->isEmpty()) {
-      middle(type->returnType << '%');
-    }
-    middle(type->yieldType);
-  }
-  if (!o->braces->isEmpty() && (!header || o->isGeneric())) {
-    finish(o->braces << "\n");
-  } else {
-    finish(';');
-  }
-}
-
 void birch::BirchGenerator::visit(const Program* o) {
   start("program " << o->name << '(' << o->params << ')');
   if (!header && !o->braces->isEmpty()) {
@@ -304,37 +274,6 @@ void birch::BirchGenerator::visit(const MemberFunction* o) {
   middle('(' << o->params << ')');
   if (!o->returnType->isEmpty()) {
     middle(" -> " << o->returnType);
-  }
-  if (!o->braces->isEmpty() && (!header || (type && type->isGeneric()))) {
-    finish(o->braces << "\n");
-  } else {
-    finish(';');
-  }
-}
-
-void birch::BirchGenerator::visit(const MemberFiber* o) {
-  if (o->has(ABSTRACT)) {
-    middle("abstract ");
-  }
-  if (o->has(FINAL)) {
-    middle("final ");
-  }
-  if (o->has(OVERRIDE)) {
-    middle("override ");
-  }
-  start("fiber " << o->name);
-  if (!o->typeParams->isEmpty()) {
-    middle('<' << o->typeParams << '>');
-  }
-  middle('(' << o->params << ')');
-  if (!o->returnType->isEmpty()) {
-    auto type = dynamic_cast<const FiberType*>(o->returnType);
-    assert(type);
-    middle(" -> ");
-    if (!type->returnType->isEmpty()) {
-      middle(type->returnType << '%');
-    }
-    middle(type->yieldType);
   }
   if (!o->braces->isEmpty() && (!header || (type && type->isGeneric()))) {
     finish(o->braces << "\n");
@@ -470,6 +409,10 @@ void birch::BirchGenerator::visit(const DoWhile* o) {
   line("do " << o->braces << " while " << o->cond << ';');
 }
 
+void birch::BirchGenerator::visit(const With* o) {
+  line("with " << o->single << o->braces);
+}
+
 void birch::BirchGenerator::visit(const Assert* o) {
   line("assert " << o->cond << ';');
 }
@@ -478,8 +421,8 @@ void birch::BirchGenerator::visit(const Return* o) {
   line("return " << o->single << ';');
 }
 
-void birch::BirchGenerator::visit(const Yield* o) {
-  line("yield " << o->single << ';');
+void birch::BirchGenerator::visit(const Factor* o) {
+  line("factor " << o->single << ';');
 }
 
 void birch::BirchGenerator::visit(const Raw* o) {
@@ -523,13 +466,6 @@ void birch::BirchGenerator::visit(const FunctionType* o) {
   if (!o->returnType->isEmpty()) {
     middle(" -> " << o->returnType);
   }
-}
-
-void birch::BirchGenerator::visit(const FiberType* o) {
-  if (!o->returnType->isEmpty()) {
-    middle(o->returnType << '%');
-  }
-  middle(o->yieldType << '!');
 }
 
 void birch::BirchGenerator::visit(const OptionalType* o) {

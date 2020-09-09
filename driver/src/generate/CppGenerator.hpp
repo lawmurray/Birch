@@ -20,7 +20,7 @@ public:
    * @param base Base stream.
    * @param level Indentation level.
    * @param header Output header instead of source?
-   * @param generic Include generic classes, functions and fibers?
+   * @param generic Include generic classes and functions?
    */
   CppGenerator(std::ostream& base, const int level = 0,
       const bool header = false, const bool generic = false);
@@ -44,8 +44,6 @@ public:
   virtual void visit(const Slice* o);
   virtual void visit(const Query* o);
   virtual void visit(const Get* o);
-  virtual void visit(const GetReturn* o);
-  virtual void visit(const Spin* o);
   virtual void visit(const LambdaFunction* o);
   virtual void visit(const Span* o);
   virtual void visit(const Index* o);
@@ -63,9 +61,7 @@ public:
   virtual void visit(const MemberVariable* o);
   virtual void visit(const LocalVariable* o);
   virtual void visit(const Function* o);
-  virtual void visit(const Fiber* o);
   virtual void visit(const MemberFunction* o);
-  virtual void visit(const MemberFiber* o);
   virtual void visit(const Program* o);
   virtual void visit(const BinaryOperator* o);
   virtual void visit(const UnaryOperator* o);
@@ -82,9 +78,10 @@ public:
   virtual void visit(const Parallel* o);
   virtual void visit(const While* o);
   virtual void visit(const DoWhile* o);
+  virtual void visit(const With* o);
   virtual void visit(const Assert* o);
   virtual void visit(const Return* o);
-  virtual void visit(const Yield* o);
+  virtual void visit(const Factor* o);
   virtual void visit(const Raw* o);
   virtual void visit(const StatementList* o);
 
@@ -92,7 +89,6 @@ public:
   virtual void visit(const ArrayType* o);
   virtual void visit(const TupleType* o);
   virtual void visit(const FunctionType* o);
-  virtual void visit(const FiberType* o);
   virtual void visit(const OptionalType* o);
   virtual void visit(const MemberType* o);
   virtual void visit(const NamedType* o);
@@ -146,7 +142,7 @@ protected:
   bool header;
 
   /**
-   * Include generic classes, functions and fibers?
+   * Include generic classes and functions?
    */
   bool generic;
 
@@ -156,9 +152,19 @@ protected:
   int inAssign;
 
   /**
+   * Are we in the declaration of a global variable?
+   */
+  int inGlobal;
+
+  /**
    * Are we inside a constructor?
    */
   int inConstructor;
+
+  /**
+   * Are we inside the body of an operator?
+   */
+  int inOperator;
 
   /**
    * Are we inside the body of a lambda function?

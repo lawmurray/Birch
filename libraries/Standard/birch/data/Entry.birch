@@ -10,5 +10,5 @@ class Entry {
   /**
    * Buffer.
    */
-  buffer:MemoryBuffer;
+  buffer:Buffer;
 }

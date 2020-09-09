@@ -40,10 +40,13 @@ class MoveParticleFilter < ParticleFilter {
 
   override function start() {
     parallel for n in 1..nparticles {
-      auto play <- MoveHandler(delayed);
       auto x <- MoveParticle?(this.x[n])!;
-      w[n] <- w[n] + play.handle(x.m.simulate());
-      w[n] <- w[n] + x.augment(0, play.z);
+      auto handler <- MoveHandler(delayed);
+      with (handler) {
+        x.m.simulate();
+        w[n] <- w[n] + handler.w;
+      }
+      w[n] <- w[n] + x.augment(0, handler.z);
       while x.size() > nlags {
         x.truncate();
       }
@@ -52,10 +55,13 @@ class MoveParticleFilter < ParticleFilter {
 
   override function step(t:Integer) {
     parallel for n in 1..nparticles {
-      auto play <- MoveHandler(delayed);
       auto x <- MoveParticle?(this.x[n])!;
-      w[n] <- w[n] + play.handle(x.m.simulate(t));
-      w[n] <- w[n] + x.augment(t, play.z);
+      auto handler <- MoveHandler(delayed);
+      with (handler) {
+        x.m.simulate(t);
+        w[n] <- w[n] + handler.w;
+      }
+      w[n] <- w[n] + x.augment(t, handler.z);
       while x.size() > nlags {
         x.truncate();
       }

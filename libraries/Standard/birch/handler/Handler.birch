@@ -8,107 +8,52 @@
  */
 abstract class Handler {
   /**
-   * Handle a sequence of events.
-   *
-   * - events: Event sequence.
-   *
-   * Returns: Accumulated log-weight.
+   * Input trace, if any.
    */
-  function handle(events:Event!) -> Real {
-    auto w <- 0.0;
-    while w > -inf && events? {
-      w <- w + handle(events!);
-    }
-    return w;
-  }
+  input:Tape<Record>?;
 
   /**
-   * Handle a sequence of events and record them in an output trace.
-   *
-   * - Container: Type supporting `pushBack(Record)`.
-   *
-   * - events: Event sequence.
-   * - trace: Output trace.
-   *
-   * Returns: Accumulated log-weight.
+   * Output trace, if any.
    */
-  final function handle<Container>(events:Event!, output:Container) -> Real {
-    auto w <- 0.0;
-    while w > -inf && events? {
-      w <- w + handle(events!);
-      output.pushBack(events!.record());
-    }
-    return w;
-  }
+  output:Tape<Record>?;
 
   /**
-   * Handle a single event.
+   * Accumulated weight.
+   */
+  w:Real <- 0.0;
+
+  /**
+   * Handle an event.
    *
    * - event: The event.
    *
-   * Returns: Log-weight.
+   * This calls one of the `doHandle()` member functions according to the
+   * current state.
    */
-  abstract function handle(event:Event) -> Real;
-
-  /**
-   * Handle a sequence of events with an input trace.
-   *
-   * - input: Input trace.
-   * - events: Event sequence.
-   *
-   * Returns: Accumulated log-weight.
-   */
-  function handle(input:Tape<Record>, events:Event!) -> Real {
-    auto w <- 0.0;
-    while w > -inf && events? {
-      w <- w + handle(input.here(), events!);
-      input.next();
+  final function handle(event:Event) {
+    if input? {
+      doHandle(input!.here(), event);
+      input!.next();
+    } else {
+      doHandle(event);
     }
-    return w;
+    if output? {
+      output!.pushBack(event.record());
+    }
   }
 
   /**
-   * Handle a sequence of events with an input trace and record them in an
-   * output trace.
+   * Handle an event.
    *
-   * - Container: Type supporting `pushBack(Record)`.
-   *
-   * - input: Input trace.
-   * - events: Event sequence.
-   * - output: Output trace.
-   *
-   * Returns: Accumulated log-weight.
+   * - event: The event.
    */
-  final function handle<Container>(input:Tape<Record>, events:Event!,
-      output:Container) -> Real {
-    auto w <- 0.0;
-    while w > -inf && events? {
-      w <- w + handle(input.here(), events!);
-      input.next();
-      output.pushBack(events!.record());
-    }
-    return w;
-  }
+  abstract function doHandle(event:Event);
 
   /**
-   * Handle a single event with an input record.
+   * Handle an event with an input.
    *
    * - record: The input record.
    * - event: The event.
-   *
-   * Returns: Log-weight.
    */
-  abstract function handle(record:Record, event:Event) -> Real;
-}
-
-/**
- * Handle a sequence of events using the default event handler. This is a
- * convenience function equivalent to `PlayHandler(true).handle(events)`.
- *
- * - events: Event sequence.
- *
- * Returns: Accumulated log-weight.
- */
-function handle(events:Event!) -> Real {
-  return PlayHandler(true).handle(events);
+  abstract function doHandle(record:Record, event:Event);
 }

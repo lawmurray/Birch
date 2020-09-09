@@ -100,16 +100,6 @@ birch::Expression* birch::Modifier::modify(Get* o) {
   return o;
 }
 
-birch::Expression* birch::Modifier::modify(GetReturn* o) {
-  o->single = o->single->accept(this);
-  return o;
-}
-
-birch::Expression* birch::Modifier::modify(Spin* o) {
-  o->single = o->single->accept(this);
-  return o;
-}
-
 birch::Expression* birch::Modifier::modify(LambdaFunction* o) {
   o->params = o->params->accept(this);
   o->returnType = o->returnType->accept(this);
@@ -225,14 +215,6 @@ birch::Statement* birch::Modifier::modify(Function* o) {
   return o;
 }
 
-birch::Statement* birch::Modifier::modify(Fiber* o) {
-  o->typeParams = o->typeParams->accept(this);
-  o->params = o->params->accept(this);
-  o->returnType = o->returnType->accept(this);
-  o->braces = o->braces->accept(this);
-  return o;
-}
-
 birch::Statement* birch::Modifier::modify(Program* o) {
   o->params = o->params->accept(this);
   o->braces = o->braces->accept(this);
@@ -240,14 +222,6 @@ birch::Statement* birch::Modifier::modify(Program* o) {
 }
 
 birch::Statement* birch::Modifier::modify(MemberFunction* o) {
-  o->typeParams = o->typeParams->accept(this);
-  o->params = o->params->accept(this);
-  o->returnType = o->returnType->accept(this);
-  o->braces = o->braces->accept(this);
-  return o;
-}
-
-birch::Statement* birch::Modifier::modify(MemberFiber* o) {
   o->typeParams = o->typeParams->accept(this);
   o->params = o->params->accept(this);
   o->returnType = o->returnType->accept(this);
@@ -337,6 +311,12 @@ birch::Statement* birch::Modifier::modify(DoWhile* o) {
   return o;
 }
 
+birch::Statement* birch::Modifier::modify(With* o) {
+  o->single = o->single->accept(this);
+  o->braces = o->braces->accept(this);
+  return o;
+}
+
 birch::Statement* birch::Modifier::modify(Block* o) {
   o->braces = o->braces->accept(this);
   return o;
@@ -352,7 +332,7 @@ birch::Statement* birch::Modifier::modify(Return* o) {
   return o;
 }
 
-birch::Statement* birch::Modifier::modify(Yield* o) {
+birch::Statement* birch::Modifier::modify(Factor* o) {
   o->single = o->single->accept(this);
   return o;
 }
@@ -395,12 +375,6 @@ birch::Type* birch::Modifier::modify(TupleType* o) {
 birch::Type* birch::Modifier::modify(FunctionType* o) {
   o->params = o->params->accept(this);
   o->returnType = o->returnType->accept(this);
-  return o;
-}
-
-birch::Type* birch::Modifier::modify(FiberType* o) {
-  o->returnType = o->returnType->accept(this);
-  o->yieldType = o->yieldType->accept(this);
   return o;
 }
 

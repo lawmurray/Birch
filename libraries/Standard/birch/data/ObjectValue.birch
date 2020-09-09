@@ -13,17 +13,18 @@ class ObjectValue < Value {
   }
 
   function getChild(name:String) -> Buffer? {
-    auto entry <- entries.walk();
-    while entry? {
-      if entry!.name == name {
-        return entry!.buffer;
+    auto iter <- entries.walk();
+    while iter.hasNext() {
+      auto entry <- iter.next();
+      if entry.name == name {
+        return entry.buffer;
       }
     }
     return nil;
   }
   
   function setChild(name:String) -> Buffer {
-    buffer:MemoryBuffer;
+    buffer:Buffer;
     entry:Entry;
     entry.name <- name;
     entry.buffer <- buffer;

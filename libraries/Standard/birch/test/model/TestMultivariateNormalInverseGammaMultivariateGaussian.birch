@@ -20,7 +20,7 @@ class TestMultivariateNormalInverseGammaMultivariateGaussian < Model {
     A <- A*transpose(A);
   }
 
-  fiber simulate() -> Event {
+  function simulate() {
     σ2 ~ InverseGamma(α, β);
     μ ~ Gaussian(μ_0, A, σ2);
     x ~ Gaussian(μ, σ2);

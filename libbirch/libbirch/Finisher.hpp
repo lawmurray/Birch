@@ -6,7 +6,6 @@
 #include "libbirch/Tuple.hpp"
 #include "libbirch/Array.hpp"
 #include "libbirch/Optional.hpp"
-#include "libbirch/Fiber.hpp"
 #include "libbirch/Lazy.hpp"
 
 namespace libbirch {
@@ -78,14 +77,6 @@ public:
    */
   template<class T>
   void visit(Optional<T>& o) const {
-    o.accept_(*this);
-  }
-
-  /**
-   * Visit a fiber.
-   */
-  template<class Yield, class Return>
-  void visit(Fiber<Yield,Return>& o) const {
     o.accept_(*this);
   }
 

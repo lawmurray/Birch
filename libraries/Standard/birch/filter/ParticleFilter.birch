@@ -139,9 +139,12 @@ class ParticleFilter {
    * Start particles.
    */
   function start() {
-    auto play <- PlayHandler(delayed);
     parallel for n in 1..nparticles {
-      w[n] <- play.handle(x[n].m.simulate());
+      auto handler <- PlayHandler(delayed);
+      with (handler) {
+        x[n].m.simulate();
+        w[n] <- handler.w;
+      }
     }
   }
 
@@ -149,9 +152,12 @@ class ParticleFilter {
    * Step particles.
    */
   function step(t:Integer) {
-    auto play <- PlayHandler(delayed);
     parallel for n in 1..nparticles {
-      w[n] <- w[n] + play.handle(x[n].m.simulate(t));
+      auto handler <- PlayHandler(delayed);
+      with (handler) {
+        x[n].m.simulate(t);
+        w[n] <- w[n] + handler.w;
+      }
     }
   }
 
@@ -159,9 +165,12 @@ class ParticleFilter {
    * Forecast particles.
    */
   function forecast(t:Integer) {
-    auto play <- PlayHandler(delayed);
     parallel for n in 1..nparticles {
-      w[n] <- w[n] + play.handle(x[n].m.forecast(t));
+      auto handler <- PlayHandler(delayed);
+      with (handler) {
+        x[n].m.forecast(t);
+        w[n] <- w[n] + handler.w;
+      }
     }
   }
 

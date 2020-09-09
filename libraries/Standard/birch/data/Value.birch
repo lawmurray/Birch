@@ -40,7 +40,7 @@ abstract class Value {
    */
   function setChild(name:String) -> Buffer {
     error("not an object");
-    buf:MemoryBuffer;
+    buf:Buffer;
     return buf;
   }
 
@@ -56,7 +56,7 @@ abstract class Value {
   /**
    * Iterate through elements of an array.
    */
-  fiber walk() -> Buffer {
+  function walk() -> Iterator<Buffer> {
     error("not an array");
   }
 
@@ -65,7 +65,7 @@ abstract class Value {
    */
   function push() -> Buffer {
     error("not an array");
-    buf:MemoryBuffer;
+    buf:Buffer;
     return buf;
   }
 

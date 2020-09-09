@@ -48,7 +48,7 @@ function vector<Type>(λ:\(Integer) -> Type, length:Integer) -> Type[_] {
   /* wrap λ in another lambda function to translate 0-based indices into
    * 1-based indices */
   return libbirch::make_array_from_lambda<Type>(libbirch::make_shape(length),
-        [&](int64_t i) { return λ(i + 1); });
+        [&](int64_t i) { return λ(i + 1, handler_); });
   }}
 }
 

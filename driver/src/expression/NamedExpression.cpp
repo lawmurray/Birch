@@ -31,13 +31,12 @@ bool birch::NamedExpression::isAssignable() const {
 
 bool birch::NamedExpression::isGlobal() const {
   return category == GLOBAL_VARIABLE || category == GLOBAL_FUNCTION ||
-      category == GLOBAL_FIBER || category == BINARY_OPERATOR ||
-      category == UNARY_OPERATOR;
+      category == BINARY_OPERATOR || category == UNARY_OPERATOR;
 }
 
 bool birch::NamedExpression::isMember() const {
   return category == MEMBER_VARIABLE || category == MEMBER_FUNCTION ||
-      category == MEMBER_FIBER || category == MEMBER_UNKNOWN;
+      category == MEMBER_UNKNOWN;
 }
 
 bool birch::NamedExpression::isLocal() const {

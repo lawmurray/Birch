@@ -12,8 +12,6 @@ class MemberVariable;
 class LocalVariable;
 class Function;
 class MemberFunction;
-class Fiber;
-class MemberFiber;
 class BinaryOperator;
 class UnaryOperator;
 class Program;
@@ -45,8 +43,6 @@ enum ExpressionCategory {
   GLOBAL_VARIABLE,
   MEMBER_FUNCTION,
   GLOBAL_FUNCTION,
-  MEMBER_FIBER,
-  GLOBAL_FIBER,
   UNARY_OPERATOR,
   BINARY_OPERATOR
 };
@@ -109,8 +105,6 @@ public:
   void add(GlobalVariable* o);
   void add(MemberFunction* o);
   void add(Function* o);
-  void add(MemberFiber* o);
-  void add(Fiber* o);
   void add(BinaryOperator* o);
   void add(UnaryOperator* o);
   void add(Program* o);
@@ -135,7 +129,7 @@ public:
   const ScopeCategory category;
 
   /*
-   * Variables, functions, fibers, operators, etc in this scope.
+   * Variables, functions, operators, etc in this scope.
    */
   std::unordered_multimap<std::string,Parameter*> parameters;
   std::unordered_multimap<std::string,LocalVariable*> localVariables;
@@ -143,8 +137,6 @@ public:
   std::unordered_multimap<std::string,GlobalVariable*> globalVariables;
   std::unordered_multimap<std::string,MemberFunction*> memberFunctions;
   std::unordered_multimap<std::string,Function*> functions;
-  std::unordered_multimap<std::string,MemberFiber*> memberFibers;
-  std::unordered_multimap<std::string,Fiber*> fibers;
   std::unordered_multimap<std::string,BinaryOperator*> binaryOperators;
   std::unordered_multimap<std::string,UnaryOperator*> unaryOperators;
   std::unordered_multimap<std::string,Program*> programs;

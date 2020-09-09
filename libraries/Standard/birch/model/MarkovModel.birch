@@ -12,7 +12,7 @@
  * </center>
  *
  * A model inheriting from `MarkovModel` overrides the `parameter`,
- * `initial` and `transition` member fibers to specify the individual
+ * `initial` and `transition` member functions to specify the individual
  * components of the joint distribution.
  *
  * The Model class hierarchy is as follows:
@@ -35,11 +35,11 @@ class MarkovModel<Parameter,State> < Model {
     return x.size();
   }
 
-  fiber simulate() -> Event {
-    @parameter(θ);
+  function simulate() {
+    parameter(θ);
   }
   
-  fiber simulate(t:Integer) -> Event {
+  function simulate(t:Integer) {
     before:State?;
     here:State?;
     if x.hasBefore() {
@@ -53,11 +53,11 @@ class MarkovModel<Parameter,State> < Model {
     }
     
     if before? {
-      @transition(here!, before!, θ);
+      transition(here!, before!, θ);
       x.pushBefore(before!);
       x.pushBefore(here!);
     } else {
-      @initial(here!, θ);
+      initial(here!, θ);
       x.pushBefore(here!);
     }
   }
@@ -67,7 +67,7 @@ class MarkovModel<Parameter,State> < Model {
    *
    * - θ: The parameters, to be set.
    */
-  fiber parameter(θ:Parameter) -> Event {
+  function parameter(θ:Parameter) {
     //
   }
   
@@ -77,7 +77,7 @@ class MarkovModel<Parameter,State> < Model {
    * - x: The initial state, to be set.
    * - θ: The parameters.
    */
-  fiber initial(x:State, θ:Parameter) -> Event {
+  function initial(x:State, θ:Parameter) {
     //
   }
   
@@ -88,7 +88,7 @@ class MarkovModel<Parameter,State> < Model {
    * - u: The previous state.
    * - θ: The parameters.
    */
-  fiber transition(x:State, u:State, θ:Parameter) -> Event {
+  function transition(x:State, u:State, θ:Parameter) {
     //
   }
 

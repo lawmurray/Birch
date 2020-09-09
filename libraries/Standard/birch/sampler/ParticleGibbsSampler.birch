@@ -21,16 +21,30 @@ class ParticleGibbsSampler < ConditionalParticleSampler {
       r:Tape<Record> <- filter.r!;
       r':Tape<Record>;
 
-      auto play <- PlayHandler(true);
       auto x' <- clone(archetype);
-      auto w' <- play.handle(x'.simulate(), r');
-      play <- PlayHandler(filter.delayed);
-      for t in 1..filter.size() {
-        w' <- w' + play.handle(filter.r!, x'.simulate(t));
+      auto handler <- PlayHandler(true);
+      handler.output <- r';
+      with (handler) {
+        x'.simulate();
       }
+      auto w' <- handler.w;
+
+      handler <- PlayHandler(filter.delayed);
+      handler.input <- filter.r!;
+      with (handler) {
+        for t in 1..filter.size() {
+          x'.simulate(t);
+        }
+      }
+      w' <- w' + handler.w;
 
       x' <- clone(archetype);
-      lnormalize.pushBack(play.handle(r', x'.simulate()));
+      handler <- PlayHandler(filter.delayed);
+      handler.input <- r';
+      with (handler) {
+        x'.simulate();
+      }
+      lnormalize.pushBack(handler.w);
       ess.pushBack(1.0);
       npropagations.pushBack(1);
       filter.r!.rewind();

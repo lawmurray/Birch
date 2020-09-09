@@ -32,20 +32,20 @@ final class ObserveEvent<Value>(x:Value, p:Distribution<Value>) < Event {
     return r!;
   }
 
-  function accept(handler:PlayHandler) -> Real {
-    return handler.handle(this);
+  function accept(handler:PlayHandler) {
+    handler.doHandle(this);
   }
   
-  function accept(handler:MoveHandler) -> Real {
-    return handler.handle(this);
+  function accept(handler:MoveHandler) {
+    handler.doHandle(this);
   }
 
-  function accept(record:Record, handler:PlayHandler) -> Real {
-    return handler.handle(coerce(record), this);
+  function accept(record:Record, handler:PlayHandler) {
+    handler.doHandle(coerce(record), this);
   }
 
-  function accept(record:Record, handler:MoveHandler) -> Real {
-    return handler.handle(coerce(record), this);
+  function accept(record:Record, handler:MoveHandler) {
+    handler.doHandle(coerce(record), this);
   }
 }
 

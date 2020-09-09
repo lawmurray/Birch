@@ -41,10 +41,6 @@ bool birch::Type::isFunction() const {
   return false;
 }
 
-bool birch::Type::isFiber() const {
-  return false;
-}
-
 bool birch::Type::isMembership() const {
   return false;
 }

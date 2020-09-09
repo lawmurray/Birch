@@ -39,8 +39,6 @@ nobase_include_HEADERS = \
   libbirch/Eigen.hpp \
   libbirch/ExitBarrierLock.hpp \
   libbirch/external.hpp \
-  libbirch/Fiber.hpp \
-  libbirch/FiberState.hpp \
   libbirch/Finisher.hpp \
   libbirch/Freezer.hpp \
   libbirch/Index.hpp \

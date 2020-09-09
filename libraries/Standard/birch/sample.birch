@@ -25,7 +25,7 @@ program sample(
     seed:Integer?,
     quiet:Boolean <- false) {
   /* config */
-  configBuffer:MemoryBuffer;
+  configBuffer:Buffer;
   if config? {
     auto reader <- Reader(config!);
     configBuffer <- reader.scan();
@@ -125,7 +125,7 @@ program sample(
     sampler!.sample(filter!, archetype!, n);
 
     if outputWriter? {
-      buffer:MemoryBuffer;
+      buffer:Buffer;
       sampler!.write(buffer, n);
       outputWriter!.print(buffer);
       outputWriter!.flush();

@@ -144,14 +144,12 @@ final class Vector<Type> {
   }
 
   /**
-   * Iterate over the elements.
+   * Obtain an iterator.
    *
-   * Return: a fiber object that yields each element in forward order.
+   * Return: an iterator across elements in forward order.
    */
-  fiber walk() -> Type {
-    for i in 1..size() {
-      yield values[i];
-    }
+  function walk() -> Iterator<Type> {
+    return VectorIterator<Type>(this);
   }
 
   /**
@@ -170,10 +168,10 @@ final class Vector<Type> {
 
   function read(buffer:Buffer) {
     auto f <- buffer.walk();
-    while f? {
+    while f.hasNext() {
       /* tricky, but works for both value and class types */
       auto x <- make<Type>();
-      auto y <- f!.get(x);
+      auto y <- f.next().get(x);
       if y? {
         x <- Type?(y);  // cast needed for y:Object?
         pushBack(x!);
@@ -184,8 +182,8 @@ final class Vector<Type> {
   function write(buffer:Buffer) {
     buffer.setArray();
     auto f <- walk();
-    while f? {
-      buffer.push().set(f!);
+    while f.hasNext() {
+      buffer.push().set(f.next());
     }
   }
 }

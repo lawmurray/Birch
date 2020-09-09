@@ -23,11 +23,9 @@ public:
    * package, provide it for scoping purposes.
    * @param currentClass If the visitor will begin by visiting the members of
    * a class, but not the class itself, provide it for scoping purposes.
-   * @param currentFiber If the visitor will begin by visiting the body of a
-   * fiber or member fiber, provide it for scoping purposes.
    */
   ScopedModifier(Package* currentPackage = nullptr,
-      Class* currentClass = nullptr, Fiber* currentFiber = nullptr);
+      Class* currentClass = nullptr);
 
   /**
    * Destructor.
@@ -42,8 +40,6 @@ public:
   virtual Expression* modify(Global* o);
   virtual Statement* modify(MemberFunction* o);
   virtual Statement* modify(Function* o);
-  virtual Statement* modify(MemberFiber* o);
-  virtual Statement* modify(Fiber* o);
   virtual Statement* modify(BinaryOperator* o);
   virtual Statement* modify(UnaryOperator* o);
   virtual Statement* modify(AssignmentOperator* o);
@@ -55,6 +51,7 @@ public:
   virtual Statement* modify(Parallel* o);
   virtual Statement* modify(While* o);
   virtual Statement* modify(DoWhile* o);
+  virtual Statement* modify(With* o);
   virtual Statement* modify(Block* o);
 
 protected:

@@ -24,10 +24,8 @@ public:
   virtual void visit(const GlobalVariable* o);
   virtual void visit(const MemberVariable* o);
   virtual void visit(const Function* o);
-  virtual void visit(const Fiber* o);
   virtual void visit(const Program* o);
   virtual void visit(const MemberFunction* o);
-  virtual void visit(const MemberFiber* o);
   virtual void visit(const BinaryOperator* o);
   virtual void visit(const UnaryOperator* o);
   virtual void visit(const AssignmentOperator* o);
@@ -40,7 +38,6 @@ public:
   virtual void visit(const ArrayType* o);
   virtual void visit(const TupleType* o);
   virtual void visit(const FunctionType* o);
-  virtual void visit(const FiberType* o);
   virtual void visit(const OptionalType* o);
 
 private:

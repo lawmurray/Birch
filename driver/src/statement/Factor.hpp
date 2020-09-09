@@ -4,18 +4,16 @@
 #pragma once
 
 #include "src/statement/Statement.hpp"
-#include "src/common/Numbered.hpp"
-#include "src/common/Single.hpp"
 #include "src/expression/Expression.hpp"
-#include "src/expression/NamedExpression.hpp"
+#include "src/common/Single.hpp"
 
 namespace birch {
 /**
- * Yield statement.
+ * Factor statement.
  *
  * @ingroup statement
  */
-class Yield: public Statement, public Numbered, public Single<Expression> {
+class Factor: public Statement, public Single<Expression> {
 public:
   /**
    * Constructor.
@@ -23,20 +21,15 @@ public:
    * @param single Expression.
    * @param loc Location.
    */
-  Yield(Expression* single, Location* loc = nullptr);
+  Factor(Expression* single, Location* loc = nullptr);
 
   /**
    * Destructor.
    */
-  virtual ~Yield();
+  virtual ~Factor();
 
   virtual Statement* accept(Cloner* visitor) const;
   virtual Statement* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
-
-  /**
-   * Resume function.
-   */
-  Statement* resume;
 };
 }

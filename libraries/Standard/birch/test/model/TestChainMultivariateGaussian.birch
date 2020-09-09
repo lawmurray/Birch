@@ -13,7 +13,7 @@ class TestChainMultivariateGaussian < Model {
     Σ <- Σ*transpose(Σ);
   }
 
-  fiber simulate() -> Event {
+  function simulate() {
     x[1] ~ Gaussian(μ, Σ);
     x[2] ~ Gaussian(x[1], Σ);
     x[3] ~ Gaussian(x[2], Σ);

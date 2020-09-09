@@ -15,7 +15,7 @@ class TestLinearGaussianGaussian < Model {
     σ2_1 <- simulate_uniform(0.0, 2.0);
   }
 
-  fiber simulate() -> Event {
+  function simulate() {
     μ_1 ~ Gaussian(μ_0, σ2_0);
     x ~ Gaussian(a*μ_1 + c, σ2_1);
   }
