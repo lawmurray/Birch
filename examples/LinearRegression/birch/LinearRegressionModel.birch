@@ -33,7 +33,7 @@ class LinearRegressionModel < Model {
    */
   y:Random<Real[_]>;
   
-  fiber simulate() -> Event {
+  function simulate() {
     N:Integer <- rows(X);
     P:Integer <- columns(X);
     if (N > 0 && P > 0) {
