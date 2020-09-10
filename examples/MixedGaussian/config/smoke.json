@@ -7,7 +7,6 @@
     "nparticles": 64
   },
   "sampler": {
-    "class": "ParticleGibbsSampler",
     "nsamples": 3
   },
   "input": "input/mixed_gaussian.json",
