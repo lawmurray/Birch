@@ -568,6 +568,7 @@ void birch::CppGenerator::visit(const Braces* o) {
 }
 
 void birch::CppGenerator::visit(const Assume* o) {
+  genTraceLine(o->loc);
   if (*o->name == "<-?") {
     line("libbirch::optional_assign(" << o->left << ", " << o->right << ");");
   } else if (*o->name == "<~") {
@@ -585,6 +586,7 @@ void birch::CppGenerator::visit(const Assume* o) {
 }
 
 void birch::CppGenerator::visit(const Factor* o) {
+  genTraceLine(o->loc);
   start("libbirch::factor(birch::FactorEvent(" << o->single);
   finish(", handler_), handler_);");
 }
