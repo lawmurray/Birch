@@ -126,7 +126,7 @@ class ParticleFilter {
    * Filter first step.
    */
   function filter() {
-    start();
+    propagate();
     reduce();
   }
 
@@ -137,14 +137,14 @@ class ParticleFilter {
    */
   function filter(t:Integer) {
     resample(t);
-    step(t);
+    propagate(t);
     reduce();
   }
 
   /**
    * Start particles.
    */
-  function start() {
+  function propagate() {
     parallel for n in 1..nparticles {
       auto handler <- PlayHandler(delayed);
       with (handler) {
@@ -157,7 +157,7 @@ class ParticleFilter {
   /**
    * Step particles.
    */
-  function step(t:Integer) {
+  function propagate(t:Integer) {
     parallel for n in 1..nparticles {
       auto handler <- PlayHandler(delayed);
       with (handler) {

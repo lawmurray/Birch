@@ -3,14 +3,6 @@
  */
 abstract class Model {
   /**
-   * Size. This is the number of steps of `simulate(Integer)` to be performed
-   * after the initial call to `simulate()`.
-   */
-  function size() -> Integer {
-    return 0;
-  }
-
-  /**
    * Simulate.
    */
   function simulate() {
@@ -29,5 +21,13 @@ abstract class Model {
    */
   function forecast(t:Integer) {
     //
+  }
+
+  /**
+   * Size. This is the number of steps of `simulate(Integer)` to be performed
+   * after the initial call to `simulate()`.
+   */
+  function size() -> Integer {
+    return 0;
   }
 }

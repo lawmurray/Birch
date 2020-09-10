@@ -1212,8 +1212,16 @@ void birch::Driver::target(const std::string& cmd) {
   /* strip namespace and class qualifiers */
   buf << " | sed -E 's/[a-zA-Z0-9_]+:://g'";
 
+  /* strip some C++ words */
+  buf << " | sed -E 's/(virtual|void) *//g'";
+
+  /* replace some LibBirch things */
+  buf << " | sed -E 's/(const *)?Lazy<Shared<([a-zA-Z0-9_]+)> *> *&/\\2/g'";
+  buf << " | sed -E 's/(const *)?([a-zA-Z0-9_]+) *&/\\2/g'";
+
   /* replace some operators */
   buf << " | sed -E 's/operator->/./g'";
+  buf << " | sed -E 's/->/./g'";
 
   /* strip suggestions that reveal internal workings */
   buf << " | sed -E \"s/; did you mean '[[:alnum:]_]+_'\\?/./\"";

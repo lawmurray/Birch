@@ -55,7 +55,7 @@ class ConditionalParticleFilter < ParticleFilter {
       ancestorSample(t);
     }
     resample(t);
-    step(t);
+    propagate(t);
     reduce();
   }
 
@@ -75,7 +75,7 @@ class ConditionalParticleFilter < ParticleFilter {
     b <- global.ancestor(w');
   }
 
-  override function start() {
+  override function propagate() {
     if !alreadyInitialized {
       parallel for n in 1..nparticles {
         auto x <- ConditionalParticle?(this.x[n])!;
@@ -92,7 +92,7 @@ class ConditionalParticleFilter < ParticleFilter {
     }
   }
 
-  override function step(t:Integer) {
+  override function propagate(t:Integer) {
     parallel for n in 1..nparticles {
       auto x <- ConditionalParticle?(this.x[n])!;
       auto handler <- PlayHandler(delayed);

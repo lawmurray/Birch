@@ -40,11 +40,11 @@ class MoveParticleFilter < ParticleFilter {
   override function filter(t:Integer) {
     resample(t);
     move(t);
-    step(t);
+    propagate(t);
     reduce();
   }
 
-  override function start() {
+  override function propagate() {
     parallel for n in 1..nparticles {
       auto x <- MoveParticle?(this.x[n])!;
       auto handler <- MoveHandler(delayed);
@@ -59,7 +59,7 @@ class MoveParticleFilter < ParticleFilter {
     }
   }
 
-  override function step(t:Integer) {
+  override function propagate(t:Integer) {
     parallel for n in 1..nparticles {
       auto x <- MoveParticle?(this.x[n])!;
       auto handler <- MoveHandler(delayed);

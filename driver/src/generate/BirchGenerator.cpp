@@ -258,6 +258,7 @@ void birch::BirchGenerator::visit(const Program* o) {
 }
 
 void birch::BirchGenerator::visit(const MemberFunction* o) {
+  start("");
   if (o->has(ABSTRACT)) {
     middle("abstract ");
   }
@@ -267,7 +268,7 @@ void birch::BirchGenerator::visit(const MemberFunction* o) {
   if (o->has(OVERRIDE)) {
     middle("override ");
   }
-  start("function " << o->name);
+  middle("function " << o->name);
   if (!o->typeParams->isEmpty()) {
     middle('<' << o->typeParams << '>');
   }
@@ -326,13 +327,14 @@ void birch::BirchGenerator::visit(const ConversionOperator* o) {
 
 void birch::BirchGenerator::visit(const Class* o) {
   type = o;
+  start("");
   if (o->has(ABSTRACT)) {
     middle("abstract ");
   }
   if (o->has(FINAL)) {
     middle("final ");
   }
-  start("class " << o->name);
+  middle("class " << o->name);
   if (o->isGeneric()) {
     middle('<' << o->typeParams << '>');
   }

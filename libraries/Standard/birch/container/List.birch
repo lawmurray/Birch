@@ -84,7 +84,7 @@ final class List<Type> {
   }
 
   /**
-   * Insert a new element at the start.
+   * Insert an element at the front.
    *
    * - x: Value.
    */
@@ -104,7 +104,20 @@ final class List<Type> {
   }
 
   /**
-   * Insert a new element at the end.
+   * Insert a new default-constructed element at the front and return it.
+   */
+  function pushFront() -> Type {
+    auto x <- make<Type>();
+    if x? {
+      pushFront(x!);
+    } else {
+      error("not default constructible");
+    }
+    return x!;
+  }
+
+  /**
+   * Insert an element at the back.
    *
    * - x: Value.
    */
@@ -122,6 +135,19 @@ final class List<Type> {
     count <- count + 1;
     
     assert this.head? && this.tail?;
+  }
+
+  /**
+   * Insert a new default-constructed element at the back and return it.
+   */
+  function pushBack() -> Type {
+    auto x <- make<Type>();
+    if x? {
+      pushBack(x!);
+    } else {
+      error("not default constructible");
+    }
+    return x!;
   }
 
   /**
@@ -163,7 +189,7 @@ final class List<Type> {
    * - x: Value.
    *
    * Inserts the new element immediately before the current element at
-   * position `i`. To insert at the end of the container, use a position that
+   * position `i`. To insert at the back of the container, use a position that
    * is one more than the current size, or `pushBack()`.
    */
   function insert(i:Integer, x:Type) {
@@ -247,7 +273,7 @@ final class List<Type> {
       /* tricky, but works for both value and class types */
       auto x <- make<Type>();
       auto y <- f.next().get(x);
-      if (y?) {
+      if y? {
         x <- Type?(y);  // cast needed for y:Object?
         pushBack(x!);
       }

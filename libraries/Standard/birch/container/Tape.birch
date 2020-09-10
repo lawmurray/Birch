@@ -1,16 +1,21 @@
 /**
  * Singly-linked tape. Maintains a current position along the tape, and
  * provides $O(1)$ operations at that position, but in the worst case an
- * $O(N)$ seek is required before operations at another position. Beyond its
+ * $O(N)$ seek is required before operations at any other position. Beyond its
  * typical uses, because Tape is a recursive and single-linked data
  * structure, it provides excellent sharing under Birch's lazy deep copy
  * mechanism.
+ *
+ * An [Iterator](../Iterator) may be obtained over a Tape by calling `walk()`,
+ * as per the usual idiom. In addition, a Tape is itself an iterator: its
+ * own `hasNext()` and `next()` functions implement the required semantics for
+ * Iterator. Tape inherits from Iterator for this reason.
  *
  * !!! attention
  *     See note under List for possible stack overflow issues on the
  *     destruction of large Tape objects. 
  */
-final class Tape<Type> {
+final class Tape<Type> < Iterator<Type> {
   forward:TapeNode<Type>?;
   backward:TapeNode<Type>?;
   forwardCount:Integer <- 0;
@@ -41,7 +46,7 @@ final class Tape<Type> {
   }
 
   /**
-   * Get the first element.
+   * Rewind to the first element and return it.
    */
   function front() -> Type {
     rewind();
@@ -49,7 +54,7 @@ final class Tape<Type> {
   }
 
   /**
-   * Get the last element.
+   * Fast-forward to one past the last element and return the last element.
    */
   function back() -> Type {
     fastForward();
@@ -57,7 +62,48 @@ final class Tape<Type> {
   }
 
   /**
+   * Rewind to the first element.
+   */
+  function rewind() {
+    while hasPrevious() {
+      previous();
+    }
+  }
+
+  /**
+   * Fast-forward to one past the last element.
+   */
+  function fastForward() {
+    while hasNext() {
+      next();
+    }
+  }
+
+  /**
    * Is there an element at the current position?
+   *
+   * !!! tip
+   *     This is equivalent to `hasHere()`.
+   */
+  function hasNext() -> Boolean {
+    return forward?;
+  }
+
+  /**
+   * Is there an element before the current position?
+   *
+   * !!! tip
+   *     This is equivalent to `hasBefore()`.
+   */
+  function hasPrevious() -> Boolean {
+    return backward?;
+  }
+
+  /**
+   * Is there an element at the current position?
+   *
+   * !!! tip
+   *     This is equivalent to `hasNext()`.
    */
   function hasHere() -> Boolean {
     return forward?;
@@ -65,13 +111,53 @@ final class Tape<Type> {
 
   /**
    * Is there an element before the current position?
+   *
+   * !!! tip
+   *     This is equivalent to `hasPrevious()`.
    */
   function hasBefore() -> Boolean {
     return backward?;
   }
 
   /**
+   * Move the head forward one, and return the element at the previous
+   * position.
+   *
+   * !!! tip
+   *     This returns the same element as `here()`, but also moves the head.
+   */
+  function next() -> Type {
+    auto node <- forward!;
+    forward <- node.next;
+    node.next <- backward;
+    backward <- node;
+    forwardCount <- forwardCount - 1;
+    backwardCount <- backwardCount + 1;
+    return before();
+  }
+
+  /**
+   * Move the head backward one, and return the element at the new position.
+   *
+   * !!! tip
+   *     This returns the same element as `before()`, but also moves the head.
+   */
+  function previous() -> Type {
+    auto node <- backward!;
+    backward <- node.next;
+    node.next <- forward;
+    forward <- node;
+    forwardCount <- forwardCount + 1;
+    backwardCount <- backwardCount - 1;
+    return here();
+  }
+
+  /**
    * Get the element at the current position.
+   *
+   * !!! tip
+   *     This returns the same element as `next()`, but does not move the
+   *     head.
    */
   function here() -> Type {
     assert forward?;
@@ -80,6 +166,10 @@ final class Tape<Type> {
 
   /**
    * Get the element before the current position.
+   *
+   * !!! tip
+   *     This returns the same element as `previous()`, but does not move the
+   *     head.
    */
   function before() -> Type {
     assert backward?;
@@ -87,7 +177,7 @@ final class Tape<Type> {
   }
 
   /**
-   * Insert a new element at the start.
+   * Insert an element at the front.
    *
    * - x: Value.
    */
@@ -97,13 +187,39 @@ final class Tape<Type> {
   }
 
   /**
-   * Insert a new element at the end.
+   * Insert a new default-constructed element at the front and return it.
+   */
+  function pushFront() -> Type {
+    auto x <- make<Type>();
+    if x? {
+      pushFront(x!);
+    } else {
+      error("not default constructible");
+    }
+    return x!;
+  }
+
+  /**
+   * Insert an element at the back.
    *
    * - x: Value.
    */
   function pushBack(x:Type) {
     fastForward();
     pushBefore(x);
+  }
+
+  /**
+   * Insert a new default-constructed element at the back and return it.
+   */
+  function pushBack() -> Type {
+    auto x <- make<Type>();
+    if x? {
+      pushBack(x!);
+    } else {
+      error("not default constructible");
+    }
+    return x!;
   }
 
   /**
@@ -123,7 +239,7 @@ final class Tape<Type> {
   }
 
   /**
-   * Insert a new element at the current position.
+   * Insert an element at the current position.
    *
    * - x: Value.
    */
@@ -135,7 +251,21 @@ final class Tape<Type> {
   }
 
   /**
-   * Insert a new element before the current position.
+   * Insert a new default-constructed element at the current position and
+   * return it.
+   */
+  function pushHere() -> Type {
+    auto x <- make<Type>();
+    if x? {
+      pushHere(x!);
+    } else {
+      error("not default constructible");
+    }
+    return x!;
+  }
+
+  /**
+   * Insert an element before the current position.
    *
    * - x: Value.
    */
@@ -144,6 +274,20 @@ final class Tape<Type> {
     node.next <- backward;
     backward <- node;
     backwardCount <- backwardCount + 1;
+  }
+
+  /**
+   * Insert a new default-constructed element before the current position and
+   * return it.
+   */
+  function pushBefore() -> Type {
+    auto x <- make<Type>();
+    if x? {
+      pushBefore(x!);
+    } else {
+      error("not default constructible");
+    }
+    return x!;
   }
 
   /**
@@ -166,48 +310,6 @@ final class Tape<Type> {
     return node.x;
   }
   
-  /**
-   * Move the current position forward one.
-   */
-  function next() {
-    auto node <- forward!;
-    forward <- node.next;
-    node.next <- backward;
-    backward <- node;
-    forwardCount <- forwardCount - 1;
-    backwardCount <- backwardCount + 1;
-  }
-  
-  /**
-   * Move the current position back one.
-   */
-  function previous() {
-    auto node <- backward!;
-    backward <- node.next;
-    node.next <- forward;
-    forward <- node;
-    forwardCount <- forwardCount + 1;
-    backwardCount <- backwardCount - 1;
-  }
-  
-  /**
-   * Rewind to the head to the first element.
-   */
-  function rewind() {
-    while hasBefore() {
-      previous();
-    }
-  }
-
-  /**
-   * Fast-forward the head to one past the last element.
-   */
-  function fastForward() {
-    while hasHere() {
-      next();
-    }
-  }
-
   /**
    * Obtain an iterator.
    *

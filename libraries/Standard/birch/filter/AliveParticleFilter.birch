@@ -21,7 +21,7 @@ class AliveParticleFilter < ParticleFilter {
    */
   p:Integer[_];
 
-  override function step(t:Integer) {
+  override function propagate(t:Integer) {
     auto play <- PlayHandler(delayed);
     auto x0 <- x;
     auto w0 <- w;
@@ -68,7 +68,7 @@ class AliveParticleFilter < ParticleFilter {
   
   override function resample(t:Integer) {
     if ess <= trigger*nparticles {
-      /* compute ancestor indices, but don't copy, step() handles this */
+      /* compute ancestor indices, but don't copy, propagate() handles this */
       a <- resample_systematic(w);
       w <- vector(0.0, nparticles);
     } else {

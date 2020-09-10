@@ -54,6 +54,19 @@ final class Stack<Type> {
   }
 
   /**
+   * Push a new default-constructed element onto the top and return it.
+   */
+  function push() {
+    auto x <- make<Type>();
+    if x? {
+      push(x!);
+    } else {
+      error("not default constructible");
+    }
+    return x!;
+  }
+
+  /**
    * Pop an element from the top.
    */
   function pop() {

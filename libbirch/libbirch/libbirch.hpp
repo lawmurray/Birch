@@ -347,8 +347,25 @@ Optional<To> cast(const Optional<From>& from) {
  *
  * If @p from has a value, then assign it to @p to, otherwise do nothing.
  */
-template<class To, class From>
-To& optional_assign(To& to, const Optional<From>& from) {
+template<class To, class From, std::enable_if_t<!is_pointer<To>::value,int> = 0>
+auto optional_assign(To& to, const Optional<From>& from) {
+  if (from.query()) {
+    return to = from.get();
+  } else {
+    return to;
+  }
+}
+
+/**
+ * Optional assign to an object. Corresponds to the `<-?` operator in Birch.
+ *
+ * @param to Target.
+ * @param from Source.
+ *
+ * If @p from has a value, then assign it to @p to, otherwise do nothing.
+ */
+template<class To, class From, std::enable_if_t<is_pointer<To>::value,int> = 0>
+auto optional_assign(const To& to, const Optional<From>& from) {
   if (from.query()) {
     return to = from.get();
   } else {
@@ -364,7 +381,7 @@ To& optional_assign(To& to, const Optional<From>& from) {
  * @param handler Event handler.
  */
 template<class Left, class Event, class Handler>
-Left& simulate(Left& left, const Event& event, const Handler& handler) {
+auto simulate(Left& left, const Event& event, const Handler& handler) {
   handler->handle(event);
   left = event->value();
   return left;

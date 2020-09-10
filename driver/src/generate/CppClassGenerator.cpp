@@ -178,17 +178,19 @@ void birch::CppClassGenerator::visit(const MemberVariable* o) {
 void birch::CppClassGenerator::visit(const MemberFunction* o) {
   if ((generic || !o->isGeneric()) && (!o->braces->isEmpty() ||
       (header && o->has(ABSTRACT)))) {
-    start("");
     if (header) {
       genTemplateParams(o);
       genSourceLine(o->loc);
       if (o->typeParams->isEmpty()) {
-        middle("virtual ");
+        start("virtual ");
+      } else {
+        start("");
       }
     } else {
       genTemplateParams(currentClass);
       genTemplateParams(o);
       genSourceLine(o->loc);
+      start("");
     }
     middle(o->returnType << ' ');
     if (!header) {
