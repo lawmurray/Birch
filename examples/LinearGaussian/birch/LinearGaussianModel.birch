@@ -28,12 +28,12 @@ class LinearGaussianModel < Model {
   }
 
   override function simulate(t:Integer) {
-    auto x <- this.x.here();
-    auto x' <- this.x.pushHere();
-    auto y <- this.y.next();
+    x.next();
+    y.next();
+    x.pushHere();
 
-    x' ~ Gaussian(a*x, σ2_x);
-    y ~ Gaussian(b*x', σ2_y);
+    x.here() ~ Gaussian(a*x.before(), σ2_x);
+    y.here() ~ Gaussian(b*x.here(), σ2_y);
   }
 
   override function size() -> Integer {
