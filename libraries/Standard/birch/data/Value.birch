@@ -58,6 +58,8 @@ abstract class Value {
    */
   function walk() -> Iterator<Buffer> {
     error("not an array");
+    o:Array<Buffer>;
+    return o.walk();
   }
 
   /**
@@ -65,8 +67,8 @@ abstract class Value {
    */
   function push() -> Buffer {
     error("not an array");
-    buf:Buffer;
-    return buf;
+    o:Buffer;
+    return o;
   }
 
   /**
@@ -82,7 +84,7 @@ abstract class Value {
   function getArray() -> ArrayValue? {
     return nil;
   }
-  
+
   /**
    * Get this as a Boolean.
    *
