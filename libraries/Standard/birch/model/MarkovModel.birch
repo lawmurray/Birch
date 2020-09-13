@@ -1,0 +1,95 @@
+/**
+ * Markov model.
+ *
+ * ```mermaid
+ * classDiagram
+ *    Model <|-- MarkovModel
+ *    MarkovModel <|-- HiddenMarkovModel
+ *    HiddenMarkovModel -- StateSpaceModel
+ *    link Model "../Model/"
+ *    link MarkovModel "../MarkovModel/"
+ *    link HiddenMarkovModel "../HiddenMarkovModel/"
+ *    link StateSpaceModel "../StateSpaceModel/"
+ * ```
+ *
+ * The joint distribution is:
+ *
+ * $$\underbrace{p(\mathrm{d}\theta, \mathrm{d}x_{0:T})}_{\text{joint}} =
+ *   \underbrace{p(\mathrm{d}\theta)}_{\text{parameter}}
+ *   \underbrace{p(\mathrm{d}x_0 \mid \theta)}_{\text{initial}}
+ *   \prod_{t=1}^T
+ *   \underbrace{p(\mathrm{d}x_t \mid x_{t-1}, \theta)}_{\text{transition}}.$$
+ *
+ * A model derived from `MarkovModel` overrides the `parameter()`,
+ * `initial()` and `transition()` member functions to specify the individual
+ * components of the joint distribution. The `MarkovModel` class itself
+ * overrides the `simulate()` and `simulate(t)` member functions of
+ * [Model](../Model) to call these more specific functions internally.
+ */
+abstract class MarkovModel<Parameter,State> < Model {
+  /**
+   * Parameter.
+   */
+  θ:Parameter;
+
+  /**
+   * States.
+   */
+  x:Tape<State>;
+
+  override function size() -> Integer {
+    return x.size();
+  }
+
+  override function simulate() {
+    parameter(θ);
+    initial(x.current(), θ);
+  }
+  
+  override function simulate(t:Integer) {
+    x.forward();
+    transition(x.current(), x.previous(), θ);
+  }
+
+  /**
+   * Parameter model.
+   *
+   * - θ: The parameters, to be set.
+   */
+  function parameter(θ:Parameter) {
+    //
+  }
+  
+  /**
+   * Initial model.
+   *
+   * - x: The initial state, to be set.
+   * - θ: The parameters.
+   */
+  function initial(x:State, θ:Parameter) {
+    //
+  }
+  
+  /**
+   * Transition model.
+   *
+   * - x: The current state, to be set.
+   * - u: The previous state.
+   * - θ: The parameters.
+   */
+  function transition(x:State, u:State, θ:Parameter) {
+    //
+  }
+
+  override function read(buffer:Buffer) {
+    super.read(buffer);
+    buffer.get("θ", θ);
+    buffer.get("x", x);
+  }
+  
+  override function write(buffer:Buffer) {
+    super.write(buffer);
+    buffer.set("θ", θ);
+    buffer.set("x", x);
+  }
+}

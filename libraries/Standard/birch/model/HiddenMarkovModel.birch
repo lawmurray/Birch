@@ -1,0 +1,82 @@
+/**
+ * Hidden Markov Model (HMM). Synonymous with
+ * [StateSpaceModel](../StateSpaceModel).
+ *
+ * ```mermaid
+ * classDiagram
+ *    Model <|-- MarkovModel
+ *    MarkovModel <|-- HiddenMarkovModel
+ *    HiddenMarkovModel -- StateSpaceModel
+ *    link Model "../Model/"
+ *    link MarkovModel "../MarkovModel/"
+ *    link HiddenMarkovModel "../HiddenMarkovModel/"
+ *    link StateSpaceModel "../StateSpaceModel/"
+ * ```
+ *
+ * The joint distribution is:
+ *
+ * $$\underbrace{p(\mathrm{d}\theta, \mathrm{d}x_{0:T}, \mathrm{d}y_{0:T})}_{\text{joint}} =
+ *   \underbrace{p(\mathrm{d}\theta)}_{\text{parameter}}
+ *   \underbrace{p(\mathrm{d}x_0 \mid \theta)}_{\text{initial}}
+ *   \left(\prod_{t=1}^T
+ *   \underbrace{p(\mathrm{d}x_t \mid x_{t-1}, \theta)}_{\text{transition}}
+ *   \right)
+ *   \left(\prod_{t=0}^T
+ *   \underbrace{p(\mathrm{d}y_t \mid x_t, \theta)}_{\text{observation}}.
+ *   \right).$$
+ *
+ * Typically the $\theta$ and $x_{0:T}$ are latent, while the $y_{0:T}$ are
+ * observed; this is the classic hidden Markov model (HMM) or state-space
+ * model (SSM). In this implementation, however, any variables may be latent
+ * or observed.
+ *
+ * A model derived from HiddenMarkovModel overrides the `parameter()`,
+ * `initial()`, `transition()` and `observation()` member functions to specify
+ * the individual components of the joint distribution. The
+ * HiddenMarkovModel class itself overrides the `simulate()` and
+ * `simulate(t)` member functions of [Model](../Model) to call these more
+ * specific functions internally.
+ */
+abstract class HiddenMarkovModel<Parameter,State,Observation> <
+    MarkovModel<Parameter,State> {
+  /**
+   * Observations.
+   */
+  y:Tape<Observation>;
+
+  override function size() -> Integer {
+    return max(x.size(), y.size());
+  }
+
+  override function simulate() {
+    super.simulate();
+    observation(y.current(), x.current(), θ);
+  }
+  
+  override function simulate(t:Integer) {
+    super.simulate(t);
+    y.forward();
+    observation(y.current(), x.current(), θ);
+  }
+
+  /**
+   * Observation model.
+   *
+   * - y: The observations, to be set.
+   * - x: The current state.
+   * - θ: The parameters.
+   */
+  function observation(y:Observation, x:State, θ:Parameter) {
+    //
+  }
+
+  override function read(buffer:Buffer) {
+    super.read(buffer);
+    buffer.get("y", y);
+  }
+  
+  override function write(buffer:Buffer) {
+    super.write(buffer);
+    //buffer.set("y", y);
+  }
+}

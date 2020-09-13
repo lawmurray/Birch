@@ -1,0 +1,17 @@
+/**
+ * State-space model (SSM). Synonymous with
+ * [HiddenMarkovModel](../HiddenMarkovModel).
+ *
+ * ```mermaid
+ * classDiagram
+ *    Model <|-- MarkovModel
+ *    MarkovModel <|-- HiddenMarkovModel
+ *    HiddenMarkovModel -- StateSpaceModel
+ *    link Model "../Model/"
+ *    link MarkovModel "../MarkovModel/"
+ *    link HiddenMarkovMode1 "../HiddenMarkovModel/"
+ *    link StateSpaceModel "../StateSpaceModel/"
+ * ```
+ */
+class StateSpaceModel<Parameter,State,Observation> =
+    HiddenMarkovModel<Parameter,State,Observation>;
