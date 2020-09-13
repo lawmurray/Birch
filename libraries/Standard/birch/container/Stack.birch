@@ -1,11 +1,30 @@
 /**
- * Last in, first-out (LIFO) stack. Beyond its typical uses, because Stack is
- * a recursive and single-linked data structure, it provides excellent
- * sharing under Birch's lazy deep copy mechanism.
+ * Last-in first-out (LIFO) stack. Provides constant-time operations at the
+ * top of the stack, and linear-time operations elsewhere.
+ *
+ * - Type: Element type. Must be default-constructible.
+ *
+ * The data structure is arranged as a singly-linked list:
+ * ```mermaid
+ * graph LR
+ *    this --"top()"--> n[n] --> nm1[n-1] --> nm2[n-2] --> nm3(...)
+ * ```
+ * The member function `top()` is used to retrieve the top ($n$th) element,
+ * which can be done in $O(1)$ time. The call `top(-k)` retrieves an element
+ * elsewhere on the stack, in $O(k)$ time.
+ *
+ * !!! tip
+ *     As a recursive and singly-linked data structure, Stack has excellent
+ *     performance properties under Birch's lazy deep copy mechanism.
  *
  * !!! attention
- *     See note under List for possible stack overflow issues on the
- *     destruction of large Stack objects.
+ *     Large recursive data structures can cause an execution stack overflow
+ *     on destruction that usually manifests as a segmentation fault. Possible
+ *     solutions include:
+ *
+ *     1. Use an array (`Type[_]`) or [Array](../Array) instead.
+ *     2. Remove items one-by-one before the object goes out of scope.
+ *     3. Increase the execution stack size with the shell command `ulimit`.
  */
 final class Stack<Type> {
   head:StackNode<Type>?;

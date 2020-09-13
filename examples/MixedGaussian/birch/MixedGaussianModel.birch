@@ -62,33 +62,20 @@ class MixedGaussianModel < Model {
   y_l:Tape<Random<Real>>;
 
   override function simulate() {
-    x_n.pushHere();
-    x_l.pushHere();
-
-    x_n.here() ~ Gaussian(0.0, 1.0);
-    x_l.here() ~ Gaussian(vector(0.0, 3), identity(3));
+    x_n.current() ~ Gaussian(0.0, 1.0);
+    x_l.current() ~ Gaussian(vector(0.0, 3), identity(3));
   }
 
   override function simulate(t:Integer) {
-    x_n.next();
-    x_l.next();
-    x_n.pushHere();
-    x_l.pushHere();
+    x_n.forward();
+    x_l.forward();
+    y_n.forward();
+    y_l.forward();
 
-    if !y_n.hasHere() {
-      y_n.pushHere();
-    }
-    if !y_l.hasHere() {
-      y_l.pushHere();
-    }
-
-    x_n.here() ~ Gaussian(atan(x_n.before()) + dot(b, x_l.before()), σ2_x_n);
-    x_l.here() ~ Gaussian(A*x_l.before(), Σ_x_l);
-    y_n.here() ~ Gaussian(0.1*copysign(pow(x_n.here(), 2.0), x_n.here()), σ2_y_n);
-    y_l.here() ~ Gaussian(dot(c, x_l.here()), σ2_y_l);
-
-    y_n.next();
-    y_l.next();
+    x_n.current() ~ Gaussian(atan(x_n.previous()) + dot(b, x_l.previous()), σ2_x_n);
+    x_l.current() ~ Gaussian(A*x_l.previous(), Σ_x_l);
+    y_n.current() ~ Gaussian(0.1*copysign(pow(x_n.current(), 2.0), x_n.current()), σ2_y_n);
+    y_l.current() ~ Gaussian(dot(c, x_l.current()), σ2_y_l);
   }
 
   override function size() -> Integer {

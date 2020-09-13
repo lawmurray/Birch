@@ -2,7 +2,12 @@
  * Object value.
  */
 class ObjectValue < Value {
-  entries:Vector<Entry>;
+  /**
+   * Entries of the object. This uses Array rather than List or similar to
+   * avoid reaching stack size limits for large data sets, and to keep
+   * entries in the order given.
+   */
+  entries:Array<Entry>;
 
   function accept(writer:Writer) {
     writer.visit(this);

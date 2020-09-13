@@ -22,19 +22,16 @@ class LinearGaussianModel < Model {
   y:Tape<Random<Real>>;
 
   override function simulate() {
-    x.pushHere();
-
-    x.here() ~ Gaussian(0.0, σ2_x);
+    x.current() ~ Gaussian(0.0, σ2_x);
+    y.current() ~ Gaussian(b*x.current(), σ2_y);
   }
 
   override function simulate(t:Integer) {
-    x.next();
-    x.pushHere();
+    x.forward();
+    y.forward();
 
-    x.here() ~ Gaussian(a*x.before(), σ2_x);
-    y.here() ~ Gaussian(b*x.here(), σ2_y);
-
-    y.next();
+    x.current() ~ Gaussian(a*x.previous(), σ2_x);
+    y.current() ~ Gaussian(b*x.current(), σ2_y);
   }
 
   override function size() -> Integer {

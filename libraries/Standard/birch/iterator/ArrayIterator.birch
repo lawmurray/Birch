@@ -1,13 +1,13 @@
 /**
- * Iterator over a Vector.
+ * Iterator over an Array.
  *
  * - o: Container.
  */
-final class VectorIterator<Type>(o:Vector<Type>) < Iterator<Type> {
+final class ArrayIterator<Type>(o:Array<Type>) < Iterator<Type> {
   /**
    * Container.
    */
-  o:Vector<Type> <- o;
+  o:Array<Type> <- o;
   
   /**
    * Current index into the vector.
@@ -31,9 +31,9 @@ final class VectorIterator<Type>(o:Vector<Type>) < Iterator<Type> {
 }
 
 /**
- * Create a VectorIterator.
+ * Create a ArrayIterator.
  */
-function VectorIterator<Type>(o:Vector<Type>) -> VectorIterator<Type> {
-  iter:VectorIterator<Type>(o);
+function ArrayIterator<Type>(o:Array<Type>) -> ArrayIterator<Type> {
+  iter:ArrayIterator<Type>(o);
   return iter;
 }

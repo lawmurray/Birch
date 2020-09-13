@@ -1,6 +1,8 @@
 /**
  * Two-dimensional array where each row has a varying length. Internally, this
- * is stored in one contiguous array for $O(1)$ random access.
+ * is stored in one contiguous array for constant-time random access.
+ *
+ * - Type: Element type. Must be default-constructible.
  */
 final class RaggedArray<Type> {
   /**

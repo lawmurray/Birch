@@ -1,7 +1,9 @@
 /**
- * Resizeable vector with $O(1)$ random access.
+ * Resizeable array with constant-time random access.
+ *
+ * - Type: Element type. Must be default-constructible.
  */
-final class Vector<Type> {
+final class Array<Type> {
   /**
    * Elements.
    */
@@ -175,7 +177,7 @@ final class Vector<Type> {
    * Return: an iterator across elements in forward order.
    */
   function walk() -> Iterator<Type> {
-    return VectorIterator<Type>(this);
+    return ArrayIterator<Type>(this);
   }
 
   /**

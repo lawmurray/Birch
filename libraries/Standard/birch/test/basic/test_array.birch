@@ -1,24 +1,24 @@
 /*
- * Test Vector.
+ * Test Array.
  */
-program test_vector() {
-  o:Vector<Integer>;
+program test_array() {
+  o:Array<Integer>;
   
   o.pushBack(1);
   o.pushBack(2);
   o.pushBack(4);
   o.pushBack(5);
-  if !check_vector(o, [1, 2, 4, 5]) {
+  if !check_array(o, [1, 2, 4, 5]) {
     exit(1);
   }
   
   o.insert(3, 3);
-  if !check_vector(o, [1, 2, 3, 4, 5]) {
+  if !check_array(o, [1, 2, 3, 4, 5]) {
     exit(1);
   }
 
   o.erase(4);
-  if !check_vector(o, [1, 2, 3, 5]) {
+  if !check_array(o, [1, 2, 3, 5]) {
     exit(1);
   }
   
@@ -31,7 +31,7 @@ program test_vector() {
   }
 }
 
-function check_vector(o:Vector<Integer>, values:Integer[_]) -> Boolean {
+function check_array(o:Array<Integer>, values:Integer[_]) -> Boolean {
   auto result <- true;
   
   /* number of rows */

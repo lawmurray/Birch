@@ -1,23 +1,31 @@
 /**
- * Doubly-linked list. Beyond its typical uses, because List is a recursive
- * data structure, it provides good sharing under Birch's lazy deep copy
- * mechanism, although not as good as Stack or Tape, as they are
- * singly-linked.
+ * Doubly-linked list. Provides constant-time operations at the front and back
+ * of the list, and linear-time operations elsewhere.
+ *
+ * - Type: Element type. Must be default-constructible.
+ *
+ * The data structure is a doubly-linked list:
+ * ```mermaid
+ * graph LR
+ *    this --"front()"--> a[1] --> b[2] --> c[3] --> d[4] --> e(...) --> f[n]
+ *    this --"back()"--> f --> e --> d --> c --> b --> a
+ * ```
+ *
+ * !!! tip
+ *     As a recursive data structure, List has good performance properties
+ *     under Birch's lazy deep copy mechanism. It is, however, doubly-linked
+ *     rather than singly-linked. Consider whether a singly-linked data
+ *     structure such as [Stack](../Stack) or [Tape](../Tape) can be used
+ *     instead, as this may improve performance further.
  *
  * !!! attention
- *     Large recursive data structures such as stacks, lists and tapes
- *     (size in the tens of thousands) can cause a stack overflow on
- *     destruction that usually manifests as a segfault. Possible solutions
- *     are:
+ *     Large recursive data structures can cause an execution stack overflow
+ *     on destruction that usually manifests as a segmentation fault. Possible
+ *     solutions include:
  *
- *     1. Use an array or Vector instead.
- *     2. Remove items one-by-one before the object goes out of scope, with
- *        e.g. `popBack()`.
- *     3. Increase the stack size with `ulimit` or similar.
- *
- *     While callable from the object finalizer, the second option is not
- *     used by default as it can currently cause unnecessary copying under
- *     Birch's lazy deep copy mechanism.
+ *     1. Use an array (`Type[_]`) or [Array](../Array) instead.
+ *     2. Remove items one-by-one before the object goes out of scope.
+ *     3. Increase the execution stack size with the shell command `ulimit`.
  */
 final class List<Type> {
   head:ListNode<Type>?;

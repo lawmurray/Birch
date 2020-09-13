@@ -3,10 +3,10 @@
  */
 class ArrayValue < Value {
   /**
-   * Elements of the array. This uses Vector rather than List or similar to
+   * Elements of the array. This uses Array rather than List or similar to
    * avoid reaching stack size limits for large data sets.
    */
-  buffers:Vector<Buffer>;
+  buffers:Array<Buffer>;
 
   function accept(writer:Writer) {
     writer.visit(this);

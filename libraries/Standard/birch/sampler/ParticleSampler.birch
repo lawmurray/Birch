@@ -28,22 +28,22 @@ abstract class ParticleSampler {
   /**
    * Log normalizing constant estimates for each step.
    */
-  lnormalize:Vector<Real>;
+  lnormalize:Array<Real>;
   
   /**
    * Effective sample size estimate for each step.
    */
-  ess:Vector<Real>;
+  ess:Array<Real>;
   
   /**
    * Number of propagations at each step.
    */
-  npropagations:Vector<Real>;
+  npropagations:Array<Real>;
 
   /**
    * Acceptance rate at each step.
    */
-  raccepts:Vector<Real>;
+  raccepts:Array<Real>;
 
   /**
    * Number of samples.

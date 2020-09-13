@@ -17,13 +17,13 @@ class MoveParticle(m:Model) < Particle(m) {
    * Log-likelihoods. Each element is a lazy expression giving a single
    * step's contribution to the log-likelihood.
    */
-  zs:Vector<Expression<Real>>;
+  zs:Array<Expression<Real>>;
   
   /**
    * Log-priors. Each element is a lazy expression giving a single step's
    * contribution to the log-prior.
    */
-  ps:Vector<Expression<Real>>;
+  ps:Array<Expression<Real>>;
   
   /**
    * Log-posterior density.
