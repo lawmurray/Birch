@@ -2,11 +2,30 @@
  * Parameters of an SEIR model.
  */
 final class SEIRParameter {
-  ν:Random<Real>;   // birth probability
-  μ:Random<Real>;   // survival probability
-  λ:Random<Real>;   // exposure probability
-  δ:Random<Real>;   // infection probability
-  γ:Random<Real>;   // recovery probability
+  /**
+   * Birth probability.
+   */
+  ν:Random<Real>;
+
+  /**
+   * Survival probability.
+   */
+  μ:Random<Real>;
+
+  /**
+   * Exposure probability.
+   */
+  λ:Random<Real>;
+
+  /**
+   * Infection probability.
+   */
+  δ:Random<Real>;
+
+  /**
+   * Recovery probability.
+   */
+  γ:Random<Real>;
 
   function write(buffer:Buffer) {
     buffer.set("ν", ν);
