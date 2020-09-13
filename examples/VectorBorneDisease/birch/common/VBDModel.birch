@@ -1,0 +1,37 @@
+/**
+ *
+ */
+final class VBDModel < MarkovModel<VBDParameter,VBDState> {
+  h:SEIRModel;
+  m:SEIRModel;
+
+  function parameter(θ:VBDParameter) {
+    θ.h.ν <- 0.0;
+    θ.h.μ <- 1.0;
+    θ.h.λ ~ Beta(1.0, 1.0);
+    θ.h.δ ~ Beta(1.0, 1.0);
+    θ.h.γ ~ Beta(1.0, 1.0);
+    
+    θ.m.ν <- 1.0/7.0;
+    θ.m.μ <- 6.0/7.0;
+    θ.m.λ ~ Beta(1.0, 1.0);
+    θ.m.δ ~ Beta(1.0, 1.0);
+    θ.m.γ <- 0.0;
+  }
+
+  function initial(x:VBDState, θ:VBDParameter) {
+    h.initial(x.h, θ.h);
+    m.initial(x.m, θ.m);
+  }
+  
+  function transition(x':VBDState, x:VBDState, θ:VBDParameter) {
+    ne_h:Integer;
+    ne_m:Integer;
+    
+    ne_h <~ Binomial(x.h.s, 1.0 - exp(-x.m.i/Real(x.h.n)));
+    ne_m <~ Binomial(x.m.s, 1.0 - exp(-x.h.i/Real(x.h.n)));
+
+    h.transition(x'.h, x.h, θ.h, ne_h, x.h.e, x.h.i);
+    m.transition(x'.m, x.m, θ.m, ne_m, x.m.e, x.m.i);
+  }
+}

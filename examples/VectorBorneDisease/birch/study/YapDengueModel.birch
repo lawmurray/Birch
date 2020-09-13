@@ -1,110 +1,65 @@
 /**
  * Model for Yap case study.
  */
-final class YapDengueModel < Model {
-  /**
-   * Model for human population.
-   */
-  h:SEIRModel;
+final class YapDengueModel < MarkovModel<YapDengueParameter,YapDengueState> {
+  v:VBDModel;
 
-  /**
-   * Model for mosquito population.
-   */
-  m:SEIRModel;
+  function parameter(θ:YapDengueParameter) {
+    θ.h.ν <- 0.0;
+    θ.h.μ <- 1.0;
+    θ.h.λ ~ Beta(1.0, 1.0);
+    θ.h.δ ~ Beta(1.0 + 2.0/4.4, 3.0 - 2.0/4.4);
+    θ.h.γ ~ Beta(1.0 + 2.0/4.5, 3.0 - 2.0/4.5);
 
-  /**
-   * Probability of a case being observed.
-   */
-  ρ:Random<Real>;
+    θ.m.ν <- 1.0/7.0;
+    θ.m.μ <- 6.0/7.0;
+    θ.m.λ ~ Beta(1.0, 1.0);
+    θ.m.δ ~ Beta(1.0 + 2.0/6.5, 3.0 - 2.0/6.5);
+    θ.m.γ <- 0.0;
 
-  /**
-   * Daily observations of the number of new infections.
-   */
-  y:Integer[_];
-
-  function size() -> Integer {
-    return length(y);
+    θ.ρ ~ Beta(1.0, 1.0);
   }
 
-  function simulate() {
-    /* prior for parameters */
-    h.θ.ν <- 0.0;
-    h.θ.μ <- 1.0;
-    h.θ.λ ~ Beta(1.0, 1.0);
-    h.θ.δ ~ Beta(1.0 + 2.0/4.4, 3.0 - 2.0/4.4);
-    h.θ.γ ~ Beta(1.0 + 2.0/4.5, 3.0 - 2.0/4.5);
+  function initial(x:YapDengueState, θ:YapDengueParameter) {
+    x.h.n <- 7370;
+    x.h.i <~ Poisson(5.0);
+    x.h.i <- x.h.i + 1;
+    x.h.e <~ Poisson(5.0);
+    x.h.r <~ Uniform(0, x.h.n - x.h.i - x.h.e);
+    x.h.s <- x.h.n - x.h.e - x.h.i - x.h.r;
 
-    m.θ.ν <- 1.0/7.0;
-    m.θ.μ <- 6.0/7.0;
-    m.θ.λ ~ Beta(1.0, 1.0);
-    m.θ.δ ~ Beta(1.0 + 2.0/6.5, 3.0 - 2.0/6.5);
-    m.θ.γ <- 0.0;
-
-    /* prior for initial state of human population */
-    auto x_h <- h.x.current();
-    x_h.n <- 7370;
-    x_h.i <~ Poisson(5.0);
-    x_h.i <- x_h.i + 1;
-    x_h.e <~ Poisson(5.0);
-    x_h.r <~ Uniform(0, x_h.n - x_h.i - x_h.e);
-    x_h.s <- x_h.n - x_h.e - x_h.i - x_h.r;
-    x_h.Δs <- 0;
-    x_h.Δe <- x_h.e;
-    x_h.Δi <- x_h.i;
-    x_h.Δr <- 0;
+    x.h.Δs <- 0;
+    x.h.Δe <- x.h.e;
+    x.h.Δi <- x.h.i;
+    x.h.Δr <- 0;
     
-    /* prior for initial state of mosquito population */
-    auto x_m <- m.x.current();
     u:Real;
     u <~ Uniform(-1.0, 2.0);
-    x_m.n <- Integer(x_h.n*pow(10.0, u));
-    x_m.r <- 0;
-    x_m.i <- 0;
-    x_m.e <- 0;
-    x_m.s <- x_m.n;
-    x_m.Δs <- 0;
-    x_m.Δe <- 0;
-    x_m.Δi <- 0;
-    x_m.Δr <- 0;
+    x.m.n <- Integer(x.h.n*pow(10.0, u));
+    x.m.r <- 0;
+    x.m.i <- 0;
+    x.m.e <- 0;
+    x.m.s <- x.m.n;
 
-    /* prior for observation model */
-    ρ ~ Beta(1.0, 1.0);
+    x.m.Δs <- 0;
+    x.m.Δe <- 0;
+    x.m.Δi <- 0;
+    x.m.Δr <- 0;
+
+    x.z <- x.h.Δi;
+    if x.y? {
+      x.y! ~> Binomial(x.z, θ.ρ);
+      x.z <- 0;
+    }
   }
   
-  function simulate(t:Integer) {
-    auto x_h <- h.x.current();
-    auto x_m <- m.x.current();
-
-    /* simulate */
-    ne_h:Integer;
-    ni_h:Integer;
-    nr_h:Integer;    
-    ne_h <~ Binomial(x_h.s, 1.0 - exp(-x_m.i/Real(x_h.n)));
-    ni_h <- x_h.e;
-    nr_h <- x_h.i;
-
-    ne_m:Integer;
-    ni_m:Integer;
-    nr_m:Integer;
-    ne_m <~ Binomial(x_m.s, 1.0 - exp(-x_h.i/Real(x_h.n)));
-    ni_m <- x_m.e;
-    nr_m <- x_m.i;
-
-    h.simulate(t, ne_h, ni_h, nr_h);
-    m.simulate(t, ne_m, ni_m, nr_m);
-
-    /* observe */
-    x_h <- h.x.current();  // changed by h.simulate()
-    y[t] ~> Binomial(x_h.Δi, ρ);
+  function transition(x':YapDengueState, x:YapDengueState,
+      θ:YapDengueParameter) {
+    v.transition(x', x, θ);
+    x'.z <- x.z + x'.h.Δi;
+    if x'.y? {
+      x'.y! ~> Binomial(x'.z, θ.ρ);
+      x'.z <- 0;
+    }
   }
-
-  function read(buffer:Buffer) {
-    y <-? buffer.get("y", y);
-  }
-
-  function write(buffer:Buffer) {
-    buffer.set("h", h);
-    buffer.set("m", m);
-    buffer.set("ρ", ρ);
-  }  
 }

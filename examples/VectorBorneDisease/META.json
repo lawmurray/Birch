@@ -6,7 +6,12 @@
       "birch/common/SEIRModel.birch",
       "birch/common/SEIRParameter.birch",
       "birch/common/SEIRState.birch",
-      "birch/study/YapDengueModel.birch"
+      "birch/common/VBDModel.birch",
+      "birch/common/VBDParameter.birch",
+      "birch/common/VBDState.birch",
+      "birch/study/YapDengueModel.birch",
+      "birch/study/YapDengueParameter.birch",
+      "birch/study/YapDengueState.birch"
     ],
     "other": [
       "LICENSE",
