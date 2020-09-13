@@ -50,6 +50,15 @@ final class Buffer {
   }
 
   /**
+   * Iterate through the elements of a child array.
+   *
+   * - name: Name of the child.
+   */
+  function walk(name:String) -> Iterator<Buffer> {
+    return getArray(name)!.walk();
+  }
+
+  /**
    * Get this as an object. This is an identity function, returning `this`,
    * as object of class type use their `read()` and `write()` member
    * functions to read and write to buffers as they please.

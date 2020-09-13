@@ -388,6 +388,20 @@ auto simulate(Left& left, const Event& event, const Handler& handler) {
 }
 
 /**
+ * Simulate. Corresponds to the `<~` operator in Birch.
+ *
+ * @param left Target.
+ * @param event Event.
+ * @param handler Event handler.
+ */
+template<class Left, class Event, class Handler>
+auto simulate(Left&& left, const Event& event, const Handler& handler) {
+  handler->handle(event);
+  left = event->value();
+  return left;
+}
+
+/**
  * Observe. Corresponds to the `<~` operator in Birch.
  *
  * @param event Event.
