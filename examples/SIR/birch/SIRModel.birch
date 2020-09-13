@@ -1,87 +1,4 @@
 /**
- * SIR model parameters.
- */
-class SIRParameter {
-  /**
-   * Interaction rate.
-   */
-  λ:Random<Real>;
-
-  /**
-   * Infection probability.
-   */
-  δ:Random<Real>;
-
-  /**
-   * Recovery probability.
-   */
-  γ:Random<Real>;
-
-  function read(buffer:Buffer) {
-    buffer.get("λ", λ);
-    buffer.get("δ", δ);
-    buffer.get("γ", γ);
-  }
-
-  function write(buffer:Buffer) {
-    buffer.set("λ", λ);
-    buffer.set("δ", δ);
-    buffer.set("γ", γ);
-  }
-}
-
-/**
- * SIR model state.
- */
-class SIRState {
-  /**
-   * Number of susceptible-infectious interactions.
-   */
-  τ:Random<Integer>;
-
-  /**
-   * Newly infected population.
-   */
-  Δi:Random<Integer>;
-
-  /**
-   * Newly recovered population.
-   */
-  Δr:Random<Integer>;
-
-  /**
-   * Susceptible population.
-   */
-  s:Random<Integer>;
-
-  /**
-   * Infectious population.
-   */
-  i:Random<Integer>;
-
-  /**
-   * Recovered population.
-   */
-  r:Random<Integer>;
-
-  function read(buffer:Buffer) {
-    buffer.get("Δi", Δi);
-    buffer.get("Δr", Δr);
-    buffer.get("s", s);
-    buffer.get("i", i);
-    buffer.get("r", r);
-  }
-
-  function write(buffer:Buffer) {
-    buffer.set("Δi", Δi);
-    buffer.set("Δr", Δr);
-    buffer.set("s", s);
-    buffer.set("i", i);
-    buffer.set("r", r);
-  }
-}
-
-/**
  * SIR (susceptible-infectious-recovered) model for infectious disease
  * outbreaks in epidemiology.
  *
@@ -124,17 +41,17 @@ class SIRState {
  * \end{align}$$
  */
 class SIRModel < MarkovModel<SIRParameter,SIRState> {
-  fiber parameter(θ:SIRParameter) -> Event {
+  function parameter(θ:SIRParameter) {
     θ.λ ~ Gamma(2.0, 5.0);
     θ.δ ~ Beta(2.0, 2.0);
     θ.γ ~ Beta(2.0, 2.0);
   }
 
-  fiber initial(x:SIRState, θ:SIRParameter) -> Event {
-    //
+  function initial(x:SIRState, θ:SIRParameter) {
+    // set with input file
   }
 
-  fiber transition(x':SIRState, x:SIRState, θ:SIRParameter) -> Event {
+  function transition(x':SIRState, x:SIRState, θ:SIRParameter) {
     x'.τ ~ Binomial(x.s, 1.0 - exp(-θ.λ*x.i.value()/(x.s + x.i + x.r).value()));
     x'.Δi ~ Binomial(x'.τ, θ.δ);
     x'.Δr ~ Binomial(x.i, θ.γ);
