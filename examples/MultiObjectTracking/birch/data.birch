@@ -15,19 +15,22 @@ program data(input:String <- "output/simulate.json",
   
   /* read in the simulated observations from the track */
   θ:Global;
-  y:Vector<Vector<Random<Real[_]>>>;
+  y:Array<Array<Random<Real[_]>>>;
 
-  auto array <- inputBuffer.walk();
-  if array? {
-    auto sample <- array!.getObject("sample");
+  auto iter <- inputBuffer.walk();
+  if iter.hasNext() {
+    auto array <- iter.next();
+    auto sample <- array.getObject("sample");
     if sample? {
       sample!.get("θ", θ);  
       sample!.get("y", y);
-      auto z <- sample!.walk("z");
-      while z? {
-        auto t <- z!.getInteger("t")!;
-        auto u <- z!.walk("y");
-        while u? {
+      auto iter <- sample!.walk("z");
+      while iter.hasNext() {
+        auto z <- iter.next();
+        auto t <- z.getInteger("t")!;
+        auto iter <- z.walk("y");
+        while iter.hasNext() {
+          auto u <- iter.next();
           auto v <- u!.getRealVector();
           if v? {
             w:Random<Real[_]>;
@@ -41,7 +44,7 @@ program data(input:String <- "output/simulate.json",
   }
   
   /* save the observations to the output file */
-  outputBuffer:MemoryBuffer;
+  outputBuffer:Buffer;
   outputBuffer.set("y", y);
   outputBuffer.set("θ", θ);
 

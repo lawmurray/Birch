@@ -107,8 +107,8 @@ program draw(input:String <- "output/simulate.json",
       iter <- sample!.walk("z");
       while iter.hasNext() {
         auto z <- iter.next();
-        auto t <- z!.getInteger("t");
-        auto x <- z!.getRealMatrix("x");
+        auto t <- z.getInteger("t");
+        auto x <- z.getRealMatrix("x");
     
         if t? && x? {
           cr.setLineWidth(2.0*fat/scale);

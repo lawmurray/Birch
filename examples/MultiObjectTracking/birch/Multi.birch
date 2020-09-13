@@ -1,4 +1,7 @@
-class Multi < StateSpaceModel<Global,Vector<Track>,Vector<Random<Real[_]>>> {
+/**
+ * Multiple object model.
+ */
+class Multi < StateSpaceModel<Global,Array<Track>,Array<Random<Real[_]>>> {
   /**
    * Current time.
    */
@@ -7,22 +10,23 @@ class Multi < StateSpaceModel<Global,Vector<Track>,Vector<Random<Real[_]>>> {
   /**
    * All tracks up to current time.
    */
-  z:Vector<Track>;
+  z:Array<Track>;
   
-  fiber transition(x':Vector<Track>, x:Vector<Track>, θ:Global) -> Event {
+  function transition(x':Array<Track>, x:Array<Track>, θ:Global) {
     /* update time */
     t <- t + 1;
 
     /* move current objects */
-    auto track <- x.walk();
-    while track? {
-      auto ρ <- exp(logpdf_poisson(t - track!.t - 1, θ.τ));
-      auto R <- 1.0 - cdf_poisson(t - track!.t - 1, θ.τ) + ρ;
+    auto iter <- x.walk();
+    while iter.hasNext() {
+      auto track <- iter.next();
+      auto ρ <- exp(logpdf_poisson(t - track.t - 1, θ.τ));
+      auto R <- 1.0 - cdf_poisson(t - track.t - 1, θ.τ) + ρ;
       s:Boolean;
       s <~ Bernoulli(1.0 - ρ/R);  // does the object survive?
       if s {
-        @track!.simulate(t - track!.t + 1);
-        x'.pushBack(track!);
+        track.simulate(t - track.t + 1);
+        x'.pushBack(track);
       }
     }
     
@@ -33,16 +37,16 @@ class Multi < StateSpaceModel<Global,Vector<Track>,Vector<Random<Real[_]>>> {
       track:Track;
       track.t <- t;
       track.θ <- θ;
-      @track.simulate();   // up to parameters
-      @track.simulate(1);  // up to initial time
+      track.simulate();   // up to parameters
+      track.simulate(1);  // up to initial time
       x'.pushBack(track);
       z.pushBack(track);
     }
   }
 
-  fiber observation(y:Vector<Random<Real[_]>>, x:Vector<Track>, θ:Global) -> Event {
+  function observation(y:Array<Random<Real[_]>>, x:Array<Track>, θ:Global) {
     if !y.empty() {
-      @association(y, x, θ);
+      association(y, x, θ);
     } else {
       /* clutter */
       N:Integer;
@@ -55,10 +59,11 @@ class Multi < StateSpaceModel<Global,Vector<Track>,Vector<Random<Real[_]>>> {
     }
   }
 
-  fiber association(y:Vector<Random<Real[_]>>, x:Vector<Track>, θ:Global) -> Event {
-    auto track <- x.walk();
-    while track? {
-      auto o <- track!.y.back();  // observed random variable
+  function association(y:Array<Random<Real[_]>>, x:Array<Track>, θ:Global) {
+    auto iter <- x.walk();
+    while iter.hasNext() {
+      auto track <- iter.next();
+      auto o <- track.y.back();  // observed random variable
       if o.hasDistribution() {
         auto p <- o.distribution()!;
       
@@ -66,8 +71,8 @@ class Multi < StateSpaceModel<Global,Vector<Track>,Vector<Random<Real[_]>>> {
         q:Real[y.size()];
         auto n <- 1;
         auto detection <- y.walk();
-        while detection? {
-          q[n] <- p.pdf(detection!.value());
+        while detection.hasNext() {
+          q[n] <- p.pdf(detection.next().value());
           n <- n + 1;
         }
         auto Q <- sum(q);
@@ -80,9 +85,9 @@ class Multi < StateSpaceModel<Global,Vector<Track>,Vector<Random<Real[_]>>> {
           w <- w - log(Real(y.size()));  // prior correction (uniform prior)
           w <- w - log(q[n]);  // proposal correction
           y.erase(n);  // remove the observation for future associations
-          yield FactorEvent(w);
+          factor w;
         } else {
-          yield FactorEvent(-inf);  // detected, but all likelihoods (numerically) zero
+          factor -inf;  // detected, but all likelihoods (numerically) zero
         }
       }
     }
@@ -90,8 +95,8 @@ class Multi < StateSpaceModel<Global,Vector<Track>,Vector<Random<Real[_]>>> {
     /* clutter */
     y.size() - 1 ~> Poisson(θ.μ);
     auto clutter <- y.walk();
-    while clutter? {
-      clutter!.value() ~> Uniform(θ.l, θ.u);
+    while clutter.hasNext() {
+      clutter.next().value() ~> Uniform(θ.l, θ.u);
     }
   }
     
