@@ -118,12 +118,12 @@ final class RaggedArray<Type> {
     } else {
       auto ncols <- sizes[1];
       cpp{{
-      this_()->offsets.erase(0);
-      this_()->sizes.erase(0);
+      this->offsets.erase(0);
+      this->sizes.erase(0);
       }}
       if ncols > 0 {
         cpp{{
-        this_()->values.erase(0, ncols);
+        this->values.erase(0, ncols);
         }}
         for k in 1..length(offsets) {
           offsets[k] <- offsets[k] - ncols;
@@ -141,7 +141,7 @@ final class RaggedArray<Type> {
     assert size(i) > 0;
     auto j <- offsets[i];
     cpp{{
-    this_()->values.erase(j - 1);
+    this->values.erase(j - 1);
     }}
     for k in (i + 1)..length(offsets) {
       offsets[k] <- offsets[k] - 1;
@@ -156,8 +156,8 @@ final class RaggedArray<Type> {
     auto nrows <- length(offsets);
     auto nvalues <- length(values);
     cpp{{    
-    this_()->offsets.insert(nrows, nvalues + 1);
-    this_()->sizes.insert(nrows, 0);
+    this->offsets.insert(nrows, nvalues + 1);
+    this->sizes.insert(nrows, 0);
     }}
   }
 
@@ -170,7 +170,7 @@ final class RaggedArray<Type> {
   function pushBack(i:Integer, x:Type) {
     auto j <- offsets[i] + sizes[i];
     cpp{{
-    this_()->values.insert(j - 1, x);
+    this->values.insert(j - 1, x);
     }}
     for k in (i + 1)..size() {
       offsets[k] <- offsets[k] + 1;

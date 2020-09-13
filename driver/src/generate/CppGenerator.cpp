@@ -176,33 +176,22 @@ void birch::CppGenerator::visit(const Range* o) {
 }
 
 void birch::CppGenerator::visit(const Member* o) {
-  if (inConstructor && (o->left->isThis() || o->left->isSuper())) {
-    /* don't have access to the `self` variable here, but because we're
-     * constructing, so the object cannot possibly be frozen, `this`
-     * suffices */
-    if (o->left->isThis()) {
-      middle("this->");
-    } else if (o->left->isSuper()) {
-      middle("this->super_type_::");
-    }
+  if (o->left->isThis()) {
+    middle("this->");
+  } else if (o->left->isSuper()) {
+    middle("this->super_type_::");
   } else {
-    if (o->left->isThis()) {
-      middle("this_()->");
-    } else if (o->left->isSuper()) {
-      middle("this_()->super_type_::");
-    } else {
-      middle(o->left);
-      auto named = dynamic_cast<const NamedExpression*>(o->right);
-      assert(named);
-      if (!inAssign && named->category == MEMBER_VARIABLE &&
-          named->type->isValue()) {
-        /* read optimization: just reading a value, no need to copy-on-write
-         * the containing object */
-        middle(".read()");
-      }
-	    inAssign = 0;
-      middle("->");
+    middle(o->left);
+    auto named = dynamic_cast<const NamedExpression*>(o->right);
+    assert(named);
+    if (!inAssign && named->category == MEMBER_VARIABLE &&
+        named->type->isValue()) {
+      /* read optimization: just reading a value, no need to copy-on-write
+        * the containing object */
+      middle(".read()");
     }
+    inAssign = 0;
+    middle("->");
   }
   ++inMember;
   middle(o->right);
@@ -245,7 +234,7 @@ void birch::CppGenerator::visit(const NamedExpression* o) {
     }
   } else if (o->isMember()) {
     if (!inMember && !inConstructor) {
-      middle("this_()->");
+      middle("this->");
     }
     middle(o->name);
   } else {

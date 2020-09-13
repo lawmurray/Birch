@@ -137,7 +137,7 @@ final class Array<Type> {
   function insert(i:Integer, x:Type) {
     assert 1 <= i && i <= size() + 1;
     cpp{{
-    this_()->values.insert(i - 1, x);
+    this->values.insert(i - 1, x);
     }}
   }
 
@@ -151,7 +151,7 @@ final class Array<Type> {
   function erase(i:Integer) {
     assert 1 <= i && i <= size();
     cpp{{
-    this_()->values.erase(i - 1);
+    this->values.erase(i - 1);
     }}
   }
 
@@ -167,7 +167,7 @@ final class Array<Type> {
     assert 1 <= i && i <= size();
     assert 1 <= n && n <= size() - i + 1;
     cpp{{
-    this_()->values.erase(i - 1, n);
+    this->values.erase(i - 1, n);
     }}
   }
 
