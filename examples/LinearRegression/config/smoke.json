@@ -1,0 +1,6 @@
+{
+  "model": {
+    "class": "LinearRegressionModel"
+  },
+  "input": "input/bike_share.json"
+}

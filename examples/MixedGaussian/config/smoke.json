@@ -10,6 +10,5 @@
     "class": "ParticleGibbsSampler",
     "nsamples": 3
   },
-  "input": "input/mixed_gaussian.json",
-  "output": "output/mixed_gaussian.json"
+  "input": "input/mixed_gaussian.json"
 }

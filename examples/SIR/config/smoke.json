@@ -7,6 +7,5 @@
     "nparticles": 64,
     "nsteps": 10
   },
-  "input": "input/influenza.json",
-  "output": "output/sir.json"
+  "input": "input/influenza.json"
 }

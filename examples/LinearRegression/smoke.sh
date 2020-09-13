@@ -1,1 +1,1 @@
-birch sample --config config/linear_regression.json
+birch sample --config config/smoke.json
