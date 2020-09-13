@@ -125,6 +125,7 @@ final class Tape<Type> {
   function forward() {
     if !ahead? {
       ahead <- TapeNode<Type>();
+      aheadCount <- aheadCount + 1;
     }
     auto node <- ahead!;
     ahead <- node.next;
@@ -147,6 +148,7 @@ final class Tape<Type> {
   function backward() {
     if !behind? {
       behind <- TapeNode<Type>();
+      behindCount <- behindCount + 1;
     }
     auto node <- behind!;
     behind <- node.next;
@@ -209,11 +211,13 @@ final class Tape<Type> {
     if k >= 0 {
       if !ahead? {
         ahead <- TapeNode<Type>();
+        aheadCount <- aheadCount + 1;
       }
       return ahead!.down(k).x;
     } else {
       if !behind? {
         behind <- TapeNode<Type>();
+        behindCount <- behindCount + 1;
       }
       return behind!.down(abs(k) - 1).x;
     }
@@ -225,6 +229,7 @@ final class Tape<Type> {
   function current() -> Type {
     if !ahead? {
       ahead <- TapeNode<Type>();
+      aheadCount <- aheadCount + 1;
     }
     return ahead!.x;
   }
@@ -235,6 +240,7 @@ final class Tape<Type> {
   function previous() -> Type {
     if !behind? {
       behind <- TapeNode<Type>();
+      behindCount <- behindCount + 1;
     }
     return behind!.x;
   }
@@ -257,6 +263,7 @@ final class Tape<Type> {
     } else {
       behind <- TapeNode<Type>(x);
     }
+    behindCount <- behindCount + 1;
   }
 
   /**
@@ -268,6 +275,7 @@ final class Tape<Type> {
     } else {
       behind <- TapeNode<Type>();
     }
+    behindCount <- behindCount + 1;
   }
 
   /**

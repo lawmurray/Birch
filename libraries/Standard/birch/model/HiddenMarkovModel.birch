@@ -48,15 +48,12 @@ abstract class HiddenMarkovModel<Parameter,State,Observation> <
   override function size() -> Integer {
     return max(x.size(), y.size());
   }
-
-  override function simulate() {
-    super.simulate();
-    observation(y.current(), x.current(), θ);
-  }
   
   override function simulate(t:Integer) {
     super.simulate(t);
-    y.forward();
+    if t > 1 {
+      y.forward();
+    }
     observation(y.current(), x.current(), θ);
   }
 
