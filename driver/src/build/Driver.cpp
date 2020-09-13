@@ -1215,12 +1215,17 @@ void birch::Driver::target(const std::string& cmd) {
   /* strip some C++ words */
   buf << " | sed -E 's/(virtual|void) *//g'";
 
-  /* replace some LibBirch things */
-  buf << " | sed -E 's/(const *)?Lazy<Shared<([a-zA-Z0-9_]+)> *> *&/\\2/g'";
+  /* replace some LibBirch things; repeat some of these patterns a few times
+   * as a hacky way of handling recursion */
+  for (auto i = 0; i < 3; ++i) {
+    buf << " | sed -E 's/(const )?Lazy<Shared<([a-zA-Z0-9_<>]+)> > */\\2/g'";
+    buf << " | sed -E 's/(const )?Optional<([a-zA-Z0-9_<>]+)> */\\2?/g'";
+  }
   buf << " | sed -E 's/(const *)?([a-zA-Z0-9_]+) *&/\\2/g'";
 
   /* replace some operators */
   buf << " | sed -E 's/operator->/./g'";
+  buf << " | sed -E 's/operator=/<-/g'";
   buf << " | sed -E 's/->/./g'";
 
   /* strip suggestions that reveal internal workings */
