@@ -14,10 +14,10 @@
  *
  * The joint distribution is:
  *
- * $$\underbrace{p(\mathrm{d}\theta, \mathrm{d}x_{0:T})}_{\text{joint}} =
+ * $$\underbrace{p(\mathrm{d}\theta, \mathrm{d}x_{1:T})}_{\text{joint}} =
  *   \underbrace{p(\mathrm{d}\theta)}_{\text{parameter}}
- *   \underbrace{p(\mathrm{d}x_0 \mid \theta)}_{\text{initial}}
- *   \prod_{t=1}^T
+ *   \underbrace{p(\mathrm{d}x_1 \mid \theta)}_{\text{initial}}
+ *   \prod_{t=2}^T
  *   \underbrace{p(\mathrm{d}x_t \mid x_{t-1}, \theta)}_{\text{transition}}.$$
  *
  * A model derived from `MarkovModel` overrides the `parameter()`,
@@ -43,12 +43,15 @@ abstract class MarkovModel<Parameter,State> < Model {
 
   override function simulate() {
     parameter(θ);
-    initial(x.current(), θ);
   }
   
   override function simulate(t:Integer) {
-    x.forward();
-    transition(x.current(), x.previous(), θ);
+    if t == 1 {
+      initial(x.current(), θ);
+    } else {
+      x.forward();
+      transition(x.current(), x.previous(), θ);
+    }
   }
 
   /**

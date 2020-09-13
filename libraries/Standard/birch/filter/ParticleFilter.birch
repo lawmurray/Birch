@@ -149,7 +149,7 @@ class ParticleFilter {
       auto handler <- PlayHandler(delayed);
       with (handler) {
         x[n].m.simulate();
-        w[n] <- handler.w;
+        w[n] <- w[n] + handler.w;
       }
     }
   }

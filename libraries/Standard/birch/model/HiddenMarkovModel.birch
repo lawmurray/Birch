@@ -15,13 +15,14 @@
  *
  * The joint distribution is:
  *
- * $$\underbrace{p(\mathrm{d}\theta, \mathrm{d}x_{0:T}, \mathrm{d}y_{0:T})}_{\text{joint}} =
+ * $$\underbrace{p(\mathrm{d}\theta, \mathrm{d}x_{1:T},
+ *   \mathrm{d}y_{1:T})}_{\text{joint}} =
  *   \underbrace{p(\mathrm{d}\theta)}_{\text{parameter}}
- *   \underbrace{p(\mathrm{d}x_0 \mid \theta)}_{\text{initial}}
- *   \left(\prod_{t=1}^T
+ *   \underbrace{p(\mathrm{d}x_1 \mid \theta)}_{\text{initial}}
+ *   \left(\prod_{t=2}^T
  *   \underbrace{p(\mathrm{d}x_t \mid x_{t-1}, \theta)}_{\text{transition}}
  *   \right)
- *   \left(\prod_{t=0}^T
+ *   \left(\prod_{t=1}^T
  *   \underbrace{p(\mathrm{d}y_t \mid x_t, \theta)}_{\text{observation}}.
  *   \right).$$
  *
