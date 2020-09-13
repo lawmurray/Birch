@@ -404,6 +404,7 @@ final class Tape<Type> {
    * Return: an iterator across elements (that are set) from front to back.
    */
   function walk() -> Iterator<Type> {
+    rewind();
     return TapeIterator<Type>(ahead);
   }
 
