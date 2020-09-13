@@ -6,27 +6,29 @@
  * - Type: Element type. Must be default-constructible.
  *
  * The data structure is arranged as two singly-linked lists about the current
- * position, one recursing backward through the previous elements, the other
- * forward through the current and next elements:
+ * position, one recursing backward through elements behind the current
+ * position, the other recursing forward through elements at and ahead of the
+ * current position:
+ *
  * ```mermaid
  * graph LR
- *    this --"current(-1)"--> nm1[n-1] --> nm2[n-2] --> nm3[n-3] --> nm4(...)
+ *    this --"previous()"--> nm1[n-1] --> nm2[n-2] --> nm3[n-3] --> nm4(...)
  *    this --"current()"--> n[n] --> np1[n+1] --> np2[n+1] --> np3(...)
  * ```
  *
  * The member function `current()` is used to retrieve the current ($n$th)
- * element, which can be done in $O(1)$ time. The call `current(-1)` retrieves
+ * element, which can be done in $O(1)$ time. The call `previous()` retrieves
  * the previous ($n-1$th) element, similarly in $O(1)$ time. The call
- * `current(k)` may be used to retrieve any other elements. Retrieving the
- * $n-k$th element takes $O(k-1)$ time, and the $n+k$th element $O(k)$ time.
- * Because the tape is considered infinite, elements are default-constructed
- * as necessary.
+ * `current(k)` may be used to retrieve any other elements using an offset
+ * relative to the current position. For positive $k$, retrieving the $n-k$th
+ * element takes $O(k-1)$ time, and the $n+k$th element $O(k)$ time. Because
+ * the tape is considered infinite, elements are default-constructed as
+ * necessary.
  *
  * Changing the current position in the list (i.e. seeking) is achieved with
- * the `backward()`, `forward()`, `rewind()` and `fastForward()` member
- * functions.  No other member functions change the current position. It is
- * up to the user to seek as appropriate to ensure efficient operations,
- * according to the use-case.
+ * the `seek()`, `backward()`, `forward()`, `rewind()` and `fastForward()`
+ * member functions. It is up to the user to seek as appropriate to ensure
+ * efficient operations, according to the use-case.
  *
  * !!! tip
  *     As a recursive and singly-linked data structure, Tape has excellent
@@ -296,8 +298,8 @@ final class Tape<Type> {
 
   /**
    * Remove the first element (that is set). If this is at the current
-   * position, then all elements move backward one position (as if `erase()`
-   * was called).
+   * position, then all elements move backward one position, as if `erase()`
+   * was called instead.
    */
   function popFront() {
     assert !empty();
@@ -315,8 +317,8 @@ final class Tape<Type> {
 
   /**
    * Remove the last element (that is set). If this is at the current
-   * position, then all elements move forward one position (as if
-   * `eraseBefore()` was called).
+   * position, then all elements move forward one position, as if
+   * `eraseBefore()` was called instead.
    */
   function popBack() {
     assert !empty();
@@ -397,10 +399,11 @@ final class Tape<Type> {
   }
   
   /**
-   * Rewind the tape and return a forward iterator over it
+   * Rewind and obtain an iterator.
+   *
+   * Return: an iterator across elements (that are set) from front to back.
    */
   function walk() -> Iterator<Type> {
-    rewind();
     return TapeIterator<Type>(ahead);
   }
 

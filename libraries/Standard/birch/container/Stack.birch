@@ -10,8 +10,7 @@
  *    this --"top()"--> n[n] --> nm1[n-1] --> nm2[n-2] --> nm3(...)
  * ```
  * The member function `top()` is used to retrieve the top ($n$th) element,
- * which can be done in $O(1)$ time. The call `top(-k)` retrieves an element
- * elsewhere on the stack, in $O(k)$ time.
+ * which can be done in $O(1)$ time.
  *
  * !!! tip
  *     As a recursive and singly-linked data structure, Stack has excellent
