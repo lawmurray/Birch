@@ -5,100 +5,22 @@
  *
  * The model is detailed in [Lindsten and Schön (2010)](../#references).
  */
-class MixedGaussianModel < Model {
-  /**
-   * Linear-linear state transition matrix_
-   */
-  A:Real[_,_] <- [[1.0, 0.3, 0.0], [0.0, 0.92, -0.3], [0.0, 0.3, 0.92]];
-  
-  /**
-   * Nonlinear-linear state transition matrix_
-   */
-  b:Real[_] <- [1.0, 0.0, 0.0];
-  
-  /**
-   * Linear observation matrix_
-   */
-  c:Real[_] <- [1.0, -1.0, 1.0];
-    
-  /**
-   * Linear state noise covariance.
-   */
-  Σ_x_l:Real[_,_] <- [[0.01, 0.0, 0.0], [0.0, 0.01, 0.0], [0.0, 0.0, 0.01]];
-  
-  /**
-   * Nonlinear state noise covariance.
-   */
-  σ2_x_n:Real <- 0.01;
-  
-  /**
-   * Linear observation noise covariance.
-   */
-  σ2_y_l:Real <- 0.1;
-  
-  /**
-   * Nonlinear observation noise covariance.
-   */
-  σ2_y_n:Real <- 0.1;
-
-  /**
-   * Nonlinear latent states.
-   */
-  x_n:Tape<Random<Real>>;
-  
-  /**
-   * Linear latent states.
-   */
-  x_l:Tape<Random<Real[_]>>;
-
-  /**
-   * Nonlinear observations.
-   */
-  y_n:Tape<Random<Real>>;
-  
-  /**
-   * Linear observations.
-   */
-  y_l:Tape<Random<Real>>;
-
-  override function simulate() {
-    x_n.current() ~ Gaussian(0.0, 1.0);
-    x_l.current() ~ Gaussian(vector(0.0, 3), identity(3));
+class MixedGaussianModel < StateSpaceModel<MixedGaussianParameter,
+    MixedGaussianState,MixedGaussianObservation> {
+  function initial(x:MixedGaussianState, θ:MixedGaussianParameter) {
+    x.n ~ Gaussian(0.0, 1.0);
+    x.l ~ Gaussian(vector(0.0, 3), identity(3));
   }
 
-  override function simulate(t:Integer) {
-    x_n.forward();
-    x_l.forward();
-    y_n.forward();
-    y_l.forward();
-
-    x_n.current() ~ Gaussian(atan(x_n.previous()) + dot(b, x_l.previous()), σ2_x_n);
-    x_l.current() ~ Gaussian(A*x_l.previous(), Σ_x_l);
-    y_n.current() ~ Gaussian(0.1*copysign(pow(x_n.current(), 2.0), x_n.current()), σ2_y_n);
-    y_l.current() ~ Gaussian(dot(c, x_l.current()), σ2_y_l);
+  function transition(x':MixedGaussianState, x:MixedGaussianState,
+      θ:MixedGaussianParameter) {
+    x'.n ~ Gaussian(atan(x.n) + dot(θ.b, x.l), θ.σ2_x_n);
+    x'.l ~ Gaussian(θ.A*x.l, θ.Σ_x_l);
   }
 
-  override function size() -> Integer {
-    return y_n.size();
-  }
-
-  override function read(buffer:Buffer) {
-    A <-? buffer.get("A", A);
-    b <-? buffer.get("b", b);
-    c <-? buffer.get("c", c);
-    Σ_x_l <-? buffer.get("Σ_x_l", Σ_x_l);
-    σ2_x_n <-? buffer.get("σ2_x_n", σ2_x_n);
-    σ2_y_l <-? buffer.get("σ2_y_l", σ2_y_l);
-    σ2_y_n <-? buffer.get("σ2_y_n", σ2_y_n);
-
-    buffer.get("y_n", y_n);
-    buffer.get("y_l", y_l);
-
-    assert y_l.size() == y_n.size();
-  }
-
-  override function write(buffer:Buffer) {
-    buffer.set("x_l", x_l);
-    buffer.set("x_n", x_n);
+  function observation(y:MixedGaussianObservation, x:MixedGaussianState,
+      θ:MixedGaussianParameter) {
+    y.n ~ Gaussian(0.1*copysign(pow(x.n, 2.0), x.n), θ.σ2_y_n);
+    y.l ~ Gaussian(dot(θ.c, x.l), θ.σ2_y_l);
   }
 }

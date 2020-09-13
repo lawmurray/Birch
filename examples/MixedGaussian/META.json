@@ -3,7 +3,10 @@
 
   "manifest": {
     "source": [
-      "birch/MixedGaussianModel.birch"
+      "birch/MixedGaussianModel.birch",
+      "birch/MixedGaussianObservation.birch",
+      "birch/MixedGaussianParameter.birch",
+      "birch/MixedGaussianState.birch"
     ],
     "data": [
 

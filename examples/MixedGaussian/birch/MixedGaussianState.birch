@@ -1,0 +1,24 @@
+/**
+ * State for MixedGaussianModel.
+ */
+class MixedGaussianState {
+  /**
+   * Nonlinear state.
+   */
+  n:Random<Real>;
+
+  /**
+   * Linear state.
+   */
+  l:Random<Real[_]>;
+
+  function read(buffer:Buffer) {
+    buffer.get("l", l);
+    buffer.get("n", n);
+  }
+
+  function write(buffer:Buffer) {
+    buffer.set("l", l);
+    buffer.set("n", n);
+  }
+}

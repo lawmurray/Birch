@@ -32,19 +32,14 @@ class LinearRegressionModel < Model {
    * Observations.
    */
   y:Random<Real[_]>;
-  
+
   function simulate() {
     N:Integer <- rows(X);
     P:Integer <- columns(X);
     if (N > 0 && P > 0) {
       σ2 ~ InverseGamma(3.0, 0.4);
-      assert !σ2.hasValue();
       β ~ Gaussian(vector(0.0, P), identity(P), σ2);
-      assert !σ2.hasValue();
-      assert !β.hasValue();
       y ~ Gaussian(X*β, σ2);
-      assert !σ2.hasValue();
-      assert !β.hasValue();
     }
   }
   
@@ -52,7 +47,7 @@ class LinearRegressionModel < Model {
     X <-? buffer.getRealMatrix("X");
     y <-? buffer.getRealVector("y");
   }
-  
+
   function write(buffer:Buffer) {
     buffer.set("beta", β);
     buffer.set("sigma2", σ2);

@@ -6,6 +6,7 @@
     "nsteps": 10
   },
   "sampler": {
+    "class": "ParticleGibbsSampler",
     "nsamples": 3
   },
   "input": "input/linear_gaussian.json",
