@@ -1239,7 +1239,12 @@ void birch::Driver::target(const std::string& cmd) {
   buf << " 1>&2";
 
   /* handle output */
-  std::string log = cmd + ".log";
+  std::string log;
+  if (cmd == "") {
+    log = "make.log";
+  } else {
+    log = cmd + ".log";
+  }
   if (verbose) {
     std::cerr << buf.str() << std::endl;
   } else {
