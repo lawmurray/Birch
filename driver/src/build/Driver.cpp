@@ -21,7 +21,7 @@ birch::Driver::Driver(int argc, char** argv) :
     sharedLib(true),
     openmp(true),
     warnings(true),
-    notes(true),
+    notes(false),
     verbose(true),
     newBootstrap(false),
     newConfigure(false),
@@ -1209,6 +1209,11 @@ void birch::Driver::target(const std::string& cmd) {
     buf << " | grep --line-buffered -v 'note:'";
   }
 
+  /* strip messages with too much C++ content */
+  buf << " | grep --line-buffered -v 'In file included from'";
+  buf << " | grep --line-buffered -v 'In member function'";
+  buf << " | grep --line-buffered -v '^[[:space:]]*from'";
+
   /* strip namespace and class qualifiers */
   buf << " | sed -E 's/(birch::type::|birch::|libbirch::)//g'";
 
@@ -1226,12 +1231,11 @@ void birch::Driver::target(const std::string& cmd) {
   /* replace some operators */
   buf << " | sed -E 's/operator->/./g'";
   buf << " | sed -E 's/operator=/<-/g'";
+  buf << " | sed -E \"s/'='/'<-'/\"";
 
   /* strip suggestions that reveal internal workings */
-  buf << " | sed -E \"s/; did you mean '[[:alnum:]_]+_'\\?/./\"";
-  buf << " | sed -E \"/note: '[[:alnum:]_]+_' declared here/d\"";
-  buf << " | sed -E \"s/'='/'<-'/\"";
-  buf << " | grep --line-buffered -v 'note: expanded from macro'";
+  buf << " | sed -E 's/(, )?Handler//g'";
+
   buf << " 1>&2";
 
   /* handle output */
