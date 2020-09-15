@@ -30,6 +30,7 @@ commands:
               echo "export MAKE_FLAGS='-j4'" >> $BASH_ENV
               echo "export OMP_NUM_THREADS=2" >> $BASH_ENV
               echo "export BIRCH_FLAGS='--unit=dir --arch=native --jobs=2'" >> $BASH_ENV
+              echo "export BIRCH_MODE=test" >> $BASH_ENV
               echo "export MODE_FLAGS='--disable-debug --enable-test --enable-release'" >> $BASH_ENV
               echo "export FORMAT=', \"real\": %e, \"user\": %U, \"system\": %S, \"memory\": %M, \"involuntary\": %c, \"voluntary\": %w'" >> $BASH_ENV
           # BIRCH_FLAGS uses only two parallel jobs to avoid exhausting memory
@@ -54,6 +55,7 @@ commands:
               echo "export MAKE_FLAGS='-j8'" >> $BASH_ENV
               echo "export OMP_NUM_THREADS=4" >> $BASH_ENV
               echo "export BIRCH_FLAGS='--unit=dir --arch=native --jobs=4'" >> $BASH_ENV
+              echo "export BIRCH_MODE=debug" >> $BASH_ENV
               echo "export MODE_FLAGS='--enable-debug --disable-test --disable-release'" >> $BASH_ENV
               echo "export FORMAT=', \"real\": %e, \"user\": %U, \"system\": %S, \"memory\": %M, \"involuntary\": %c, \"voluntary\": %w'" >> $BASH_ENV
           # BIRCH_FLAGS uses only four parallel jobs to avoid exhausting memory
@@ -179,7 +181,6 @@ commands:
                 name: Run smoke tests
                 command: |
                     cd << parameters.dir >>/<< parameters.package >>
-                    export BIRCH_MODE=test
                     ./smoke.sh
       - when:
           condition: << parameters.unit >>
