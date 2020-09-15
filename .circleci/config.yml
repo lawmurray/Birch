@@ -90,7 +90,7 @@ commands:
           command: |
               cd driver
               ./bootstrap
-              ./configure --prefix="$PREFIX" CXXFLAGS="$CXXFLAGS" || cat config.log
+              ./configure --prefix="$PREFIX" CXXFLAGS="$CXXFLAGS"
               make $MAKE_FLAGS
               make install
       - slack
@@ -114,7 +114,7 @@ commands:
           command: |
               cd << parameters.package >>
               ./bootstrap
-              ./configure --prefix="$PREFIX" $MODE_FLAGS CXXFLAGS="$CXXFLAGS" || cat config.log
+              ./configure --prefix="$PREFIX" $MODE_FLAGS CXXFLAGS="$CXXFLAGS"
               make $MAKE_FLAGS
               make install
       - persist_to_workspace:
@@ -181,7 +181,8 @@ commands:
                 name: Run smoke tests
                 command: |
                     cd << parameters.dir >>/<< parameters.package >>
-                    env BIRCH_MODE=$SMOKE_MODE ./smoke.sh
+                    export BIRCH_MODE=$SMOKE_MODE
+                    ./smoke.sh
       - when:
           condition: << parameters.unit >>
           steps:
@@ -189,8 +190,9 @@ commands:
                 name: Run unit tests
                 command: |
                     cd << parameters.dir >>/<< parameters.package >>
-                    env BIRCH_MODE=release time --format="$FORMAT" --output=/tmp/time.txt ./test.sh
-                  # ^ env time to use GNU time, not Bash built-in time
+                    export BIRCH_MODE=release
+                    env time --format="$FORMAT" --output=/tmp/time.txt ./test.sh
+                # ^ env time to use GNU time, not Bash built-in time
       - when:
           condition: << parameters.mongoimport >>
           steps:
