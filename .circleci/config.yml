@@ -42,13 +42,12 @@ commands:
           description: Install dependencies from Homebrew
           command: |
               brew install autoconf automake libtool flex bison boost eigen libyaml libomp sqlite3 cairo
-              brew link --force flex bison
       - run:
           name: Environment
           description: Set environment variables for builds
           command: |
               echo "export PREFIX=~/project" >> $BASH_ENV
-              echo "export PATH=\$PREFIX/bin:$PATH" >> $BASH_ENV
+              echo "export PATH=\$PREFIX/bin:/usr/local/opt/flex/bin:/usr/local/opt/bison/bin:$PATH" >> $BASH_ENV
               echo "export CPLUS_INCLUDE_PATH=\$PREFIX/include:$CPLUS_INCLUDE_PATH" >> $BASH_ENV
               echo "export LD_LIBRARY_PATH=\$PREFIX/lib:$LD_LIBRARY_PATH" >> $BASH_ENV
               echo "export CXXFLAGS='-Wall -g -Wno-overloaded-virtual'" >> $BASH_ENV
