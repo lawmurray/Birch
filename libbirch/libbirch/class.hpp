@@ -95,6 +95,10 @@
   LIBBIRCH_BASE(Base) \
   LIBBIRCH_COMMON(Name, Base) \
    \
+  auto this_() { \
+    return this->getLabel()->get(this); \
+  } \
+  \
   auto shared_from_this_() { \
     return libbirch::Lazy<libbirch::Shared<Name>>(this); \
   } \
@@ -111,6 +115,10 @@
 #define LIBBIRCH_ABSTRACT_CLASS(Name, Base...) public: \
   LIBBIRCH_BASE(Base) \
    \
+  auto this_() { \
+    return this->getLabel()->get(this); \
+  } \
+  \
   auto shared_from_this_() { \
     return libbirch::Lazy<libbirch::Shared<Name>>(this); \
   } \

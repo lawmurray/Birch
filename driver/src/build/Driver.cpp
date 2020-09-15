@@ -342,8 +342,7 @@ void birch::Driver::bootstrap() {
   setup();
   transpile();
 
-  if (newBootstrap || newConfigure || newMake || !fs::exists("configure") ||
-      !fs::exists("install-sh")) {
+  if (newBootstrap || newConfigure || newMake || !fs::exists("configure")) {
     std::stringstream cmd;
     cmd << (fs::path(".") / "bootstrap");
     if (verbose) {
