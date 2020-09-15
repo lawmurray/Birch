@@ -83,6 +83,7 @@ commands:
           command: |
               cd driver
               ./bootstrap
+              echo ./configure $CONFIGURE_FLAGS
               ./configure $CONFIGURE_FLAGS || cat config.log
               make $MAKE_FLAGS
               make install
