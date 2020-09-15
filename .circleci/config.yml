@@ -26,11 +26,12 @@ commands:
               echo "export PATH=\$PREFIX/bin:$PATH" >> $BASH_ENV
               echo "export CPLUS_INCLUDE_PATH=\$PREFIX/include:$CPLUS_INCLUDE_PATH" >> $BASH_ENV
               echo "export LD_LIBRARY_PATH=\$PREFIX/lib:$LD_LIBRARY_PATH" >> $BASH_ENV
+              echo "export MAKE_JOBS=4" >> $BASH_ENV
               echo "export OMP_NUM_THREADS=2" >> $BASH_ENV
               echo "export BIRCH_FLAGS='--unit=dir --arch=native --jobs=2'" >> $BASH_ENV
               echo "export CONFIGURE_FLAGS='--disable-debug --enable-test --enable-release'" >> $BASH_ENV
               echo "export FORMAT=', \"real\": %e, \"user\": %U, \"system\": %S, \"memory\": %M, \"involuntary\": %c, \"voluntary\": %w'" >> $BASH_ENV
-          # limited to two parallel jobs to avoid exhausting memory
+          # BIRCH_FLAGS uses only two parallel jobs to avoid exhausting memory
 
   mac_environment:
     description: Preparing macOS environment
@@ -43,11 +44,12 @@ commands:
           name: Environment
           description: Set environment variables for builds
           command: |
+              echo "export MAKE_JOBS=8" >> $BASH_ENV
               echo "export OMP_NUM_THREADS=4" >> $BASH_ENV
               echo "export BIRCH_FLAGS='--unit=dir --arch=native --jobs=4'" >> $BASH_ENV
               echo "export CONFIGURE_FLAGS='--enable-debug --disable-test --disable-release'" >> $BASH_ENV
               echo "export FORMAT=', \"real\": %e, \"user\": %U, \"system\": %S, \"memory\": %M, \"involuntary\": %c, \"voluntary\": %w'" >> $BASH_ENV
-          # limited to four parallel jobs to avoid exhausting memory
+          # BIRCH_FLAGS uses only four parallel jobs to avoid exhausting memory
 
   version:
     description: Determine version number
@@ -79,8 +81,8 @@ commands:
           command: |
               cd driver
               ./bootstrap
-              ./configure --prefix=$PREFIX CXXFLAGS="-Wall -Wno-overloaded-virtual -g -O0 -fno-inline -fprofile-abs-path --coverage"
-              make -j 4
+              ./configure --prefix=$PREFIX CXXFLAGS="-Wall -Wno-overloaded-virtual -g -O0 -fno-inline -fprofile-abs-path --coverage" || cat config.log
+              make -j $MAKE_JOBS
               make install
       - slack
       - persist_to_workspace:
@@ -103,8 +105,8 @@ commands:
           command: |
               cd << parameters.package >>
               ./bootstrap
-              ./configure --prefix=$PREFIX $CONFIGURE_FLAGS
-              make -j 4
+              ./configure --prefix=$PREFIX $CONFIGURE_FLAGS || cat config.log
+              make -j $MAKE_JOBS
               make install
       - persist_to_workspace:
           root: .
