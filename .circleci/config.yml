@@ -5,19 +5,19 @@ orbs:
   slack: circleci/slack@3.4.2
 
 executors:
-  test:
+  linux:
     docker:
       - image: lawmurray/birch-circleci:opensuse-tumbleweed
 
+  mac:
+    macos:
+      xcode: "12.0.0"
+
 commands:
-  environment:
-    description: Preparing more environment variables
+
+  linux_environment:
+    description: Preparing Linux environment
     steps:
-      - run:
-          name: Git check
-          description: Fail if not a git repository
-          command: git describe
-            # ensures failure if git describe to find version number fails below
       - run:
           name: Environment
           description: Set environment variables for builds
@@ -29,10 +29,40 @@ commands:
               echo "export OMP_NUM_THREADS=2" >> $BASH_ENV
               echo "export BIRCH_FLAGS='--unit=dir --arch=native --jobs=2'" >> $BASH_ENV
               echo "export CONFIGURE_FLAGS='--disable-debug --enable-test --enable-release'" >> $BASH_ENV
+              echo "export FORMAT=', \"real\": %e, \"user\": %U, \"system\": %S, \"memory\": %M, \"involuntary\": %c, \"voluntary\": %w'" >> $BASH_ENV
+          # limited to two parallel jobs to avoid exhausting memory
+
+  mac_environment:
+    description: Preparing macOS environment
+    steps:
+      - run:
+          name: Dependencies
+          description: Install dependencies from Homebrew
+          command: brew install autoconf automake libtool flex bison boost eigen libyaml libomp sqlite3 cairo
+      - run:
+          name: Environment
+          description: Set environment variables for builds
+          command: |
+              echo "export OMP_NUM_THREADS=4" >> $BASH_ENV
+              echo "export BIRCH_FLAGS='--unit=dir --arch=native --jobs=4'" >> $BASH_ENV
+              echo "export CONFIGURE_FLAGS='--enable-debug --disable-test --disable-release'" >> $BASH_ENV
+              echo "export FORMAT=', \"real\": %e, \"user\": %U, \"system\": %S, \"memory\": %M, \"involuntary\": %c, \"voluntary\": %w'" >> $BASH_ENV
+          # limited to four parallel jobs to avoid exhausting memory
+
+  version:
+    description: Determine version number
+    steps:
+      - run:
+          name: Git check
+          description: Fail if not a git repository
+          command: git describe
+            # ensures failure if git describe to find version number fails below
+      - run:
+          name: Environment
+          description: Set environment variables for builds
+          command: |
               echo "export VERSION=`git describe | sed -E 's/v([0-9]+)-([0-9]+)-g[0-9a-f]+/\1.\2/'`" >> $BASH_ENV
               echo "export VERSION_LONG=`git describe --long`" >> $BASH_ENV
-              echo "export FORMAT=', \"real\": %e, \"user\": %U, \"system\": %S, \"memory\": %M, \"involuntary\": %c, \"voluntary\": %w'" >> $BASH_ENV
-            # limited to two parallel jobs to avoid exhausting memory
 
   slack:
     description: Send Slack message on failure
@@ -44,7 +74,6 @@ commands:
     description: Build the driver
     steps:
       - checkout
-      - environment
       - run:
           name: Build
           command: |
@@ -69,7 +98,6 @@ commands:
     steps:
       - attach_workspace:
           at: .
-      - environment
       - run:
           name: Build C++ library
           command: |
@@ -85,15 +113,15 @@ commands:
             - lib/<< parameters.package >>*
             - include/<< parameters.package >>*
       - slack
-    
+
   package:
     description: Build a Birch package
     parameters:
       dir:
-        description: Directory containing the package (e.g. libraries).
+        description: Directory containing the package (e.g. libraries)
         type: string
       package:
-        description: Name of package (e.g. Standard).
+        description: Name of package (e.g. Standard)
         type: string
       tar:
         description: Tarname of package (e.g. birch-standard)
@@ -121,7 +149,7 @@ commands:
     steps:
       - attach_workspace:
           at: .
-      - environment
+      - version
       - run:
           name: Build
           command: |
@@ -206,11 +234,11 @@ commands:
     description: Update package on Open Build Service
     parameters:
       dir:
-        description: Directory containing the package (e.g. libraries).
+        description: Directory containing the package (e.g. libraries)
         type: string
         default: .
       package:
-        description: Name of package (e.g. Standard).
+        description: Name of package (e.g. Standard)
         type: string
       tar:
         description: Tarname of package (e.g. birch-standard)
@@ -228,7 +256,7 @@ commands:
                 mv ../../<< parameters.tar >>-unversioned.tar.gz .
                 for file in << parameters.tar >>.spec << parameters.tar >>.dsc debian.control PKGBUILD
                 do
-                  cat $file | 
+                  cat $file |
                     sed -E "s/Version: [0-9]+.[0-9]+/Version: $VERSION/g" |
                     sed -E "s/pkgver=[0-9]+.[0-9]+/pkgver=$VERSION/g" |
                     sed -E "s/>=( ?)[0-9]+.[0-9]+/>=\\1$VERSION/g" |
@@ -238,20 +266,23 @@ commands:
               fi
 
 jobs:
-  driver:
-    executor: test
+  linux_driver:
+    executor: linux
     steps:
+      - linux_environment
       - driver
 
-  libbirch:
-    executor: test
+  linux_libbirch:
+    executor: linux
     steps:
+      - linux_environment
       - library:
           package: libbirch
 
-  libraries_Standard:
-    executor: test
+  linux_libraries_Standard:
+    executor: linux
     steps:
+      - linux_environment
       - package:
           dir: libraries
           package: Standard
@@ -260,10 +291,11 @@ jobs:
           smoke: true
           unit: true
           persist: true
-          
-  libraries_Cairo:
-    executor: test
+
+  linux_libraries_Cairo:
+    executor: linux
     steps:
+      - linux_environment
       - package:
           dir: libraries
           package: Cairo
@@ -271,9 +303,10 @@ jobs:
           install: true
           persist: true
 
-  libraries_SQLite:
-    executor: test
+  linux_libraries_SQLite:
+    executor: linux
     steps:
+      - linux_environment
       - package:
           dir: libraries
           package: SQLite
@@ -281,9 +314,10 @@ jobs:
           install: true
           persist: true
 
-  examples_LinearGaussian:
-    executor: test
-    steps: 
+  linux_examples_LinearGaussian:
+    executor: linux
+    steps:
+      - linux_environment
       - package:
           dir: examples
           package: LinearGaussian
@@ -292,9 +326,10 @@ jobs:
           unit: true
           mongoimport: true
 
-  examples_LinearRegression:
-    executor: test
-    steps: 
+  linux_examples_LinearRegression:
+    executor: linux
+    steps:
+      - linux_environment
       - package:
           dir: examples
           package: LinearRegression
@@ -303,9 +338,10 @@ jobs:
           unit: true
           mongoimport: true
 
-  examples_MixedGaussian:
-    executor: test
-    steps: 
+  linux_examples_MixedGaussian:
+    executor: linux
+    steps:
+      - linux_environment
       - package:
           dir: examples
           package: MixedGaussian
@@ -314,9 +350,10 @@ jobs:
           unit: true
           mongoimport: true
 
-  examples_MultiObjectTracking:
-    executor: test
-    steps: 
+  linux_examples_MultiObjectTracking:
+    executor: linux
+    steps:
+      - linux_environment
       - package:
           dir: examples
           package: MultiObjectTracking
@@ -325,9 +362,10 @@ jobs:
           unit: true
           mongoimport: true
 
-  examples_PoissonGaussian:
-    executor: test
-    steps: 
+  linux_examples_PoissonGaussian:
+    executor: linux
+    steps:
+      - linux_environment
       - package:
           dir: examples
           package: PoissonGaussian
@@ -336,9 +374,10 @@ jobs:
           unit: true
           mongoimport: true
 
-  examples_SIR:
-    executor: test
-    steps: 
+  linux_examples_SIR:
+    executor: linux
+    steps:
+      - linux_environment
       - package:
           dir: examples
           package: SIR
@@ -347,9 +386,10 @@ jobs:
           unit: true
           mongoimport: true
 
-  examples_VectorBorneDisease:
-    executor: test
-    steps: 
+  linux_examples_VectorBorneDisease:
+    executor: linux
+    steps:
+      - linux_environment
       - package:
           dir: examples
           package: VectorBorneDisease
@@ -359,11 +399,12 @@ jobs:
           mongoimport: true
 
   deploy_linux:
-    executor: test
+    executor: linux
     steps:
       - attach_workspace:
           at: .
-      - environment
+      - linux_environment
+      - version
       - configure_osc
       - osc:
           package: driver
@@ -385,62 +426,180 @@ jobs:
           tar: birch-sqlite
       - slack
 
-workflows:
-  version: 2
-  test:
-    jobs:
+  mac_driver:
+    executor: mac
+    steps:
+      - mac_environment
       - driver
 
-      - libbirch:
-          requires:
-            - driver
+  mac_libbirch:
+    executor: mac
+    steps:
+      - mac_environment
+      - library:
+          package: libbirch
 
-      - libraries_Standard:
-          requires:
-            - libbirch
+  mac_libraries_Standard:
+    executor: mac
+    steps:
+      - mac_environment
+      - package:
+          dir: libraries
+          package: Standard
+          tar: birch-standard
+          install: true
+          smoke: true
+          persist: true
 
-      - libraries_Cairo:
-          requires:
-            - libraries_Standard
+  mac_libraries_Cairo:
+    executor: mac
+    steps:
+      - mac_environment
+      - package:
+          dir: libraries
+          package: Cairo
+          tar: birch-cairo
+          install: true
+          persist: true
 
-      - libraries_SQLite:
-          requires:
-            - libraries_Standard
-    
-      - examples_LinearGaussian:
-          requires:
-            - libraries_Cairo
-            - libraries_SQLite
+  mac_libraries_SQLite:
+    executor: mac
+    steps:
+      - mac_environment
+      - package:
+          dir: libraries
+          package: SQLite
+          tar: birch-sqlite
+          install: true
+          persist: true
 
-      - examples_LinearRegression:
-          requires:
-            - libraries_Cairo
-            - libraries_SQLite
+  mac_examples_LinearGaussian:
+    executor: mac
+    steps:
+      - mac_environment
+      - package:
+          dir: examples
+          package: LinearGaussian
+          tar: birch-lineargaussian
+          smoke: true
 
-      - examples_MixedGaussian:
-          requires:
-            - libraries_Cairo
-            - libraries_SQLite
+  mac_examples_LinearRegression:
+    executor: mac
+    steps:
+      - mac_environment
+      - package:
+          dir: examples
+          package: LinearRegression
+          tar: birch-linearregression
+          smoke: true
 
-      - examples_PoissonGaussian:
-          requires:
-            - libraries_Cairo
-            - libraries_SQLite
+  mac_examples_MixedGaussian:
+    executor: mac
+    steps:
+      - mac_environment
+      - package:
+          dir: examples
+          package: MixedGaussian
+          tar: birch-mixedgaussian
+          smoke: true
 
-      - examples_SIR:
-          requires:
-            - libraries_Cairo
-            - libraries_SQLite
+  mac_examples_MultiObjectTracking:
+    executor: mac
+    steps:
+      - mac_environment
+      - package:
+          dir: examples
+          package: MultiObjectTracking
+          tar: birch-multiobjecttracking
+          smoke: true
 
-      - examples_MultiObjectTracking:
+  mac_examples_PoissonGaussian:
+    executor: mac
+    steps:
+      - mac_environment
+      - package:
+          dir: examples
+          package: PoissonGaussian
+          tar: birch-poissongaussian
+          smoke: true
+
+  mac_examples_SIR:
+    executor: mac
+    steps:
+      - mac_environment
+      - package:
+          dir: examples
+          package: SIR
+          tar: birch-sir
+          smoke: true
+
+  mac_examples_VectorBorneDisease:
+    executor: mac
+    steps:
+      - mac_environment
+      - package:
+          dir: examples
+          package: VectorBorneDisease
+          tar: birch-vectorbornedisease
+          smoke: true
+
+workflows:
+  version: 2
+
+  linux:
+    jobs:
+      - linux_driver
+
+      - linux_libbirch:
           requires:
-            - libraries_Cairo
-            - libraries_SQLite
-      
-      - examples_VectorBorneDisease:
+            - linux_driver
+
+      - linux_libraries_Standard:
           requires:
-            - libraries_Cairo
-            - libraries_SQLite
+            - linux_libbirch
+
+      - linux_libraries_Cairo:
+          requires:
+            - linux_libraries_Standard
+
+      - linux_libraries_SQLite:
+          requires:
+            - linux_libraries_Standard
+
+      - linux_examples_LinearGaussian:
+          requires:
+            - linux_libraries_Cairo
+            - linux_libraries_SQLite
+
+      - linux_examples_LinearRegression:
+          requires:
+            - linux_libraries_Cairo
+            - linux_libraries_SQLite
+
+      - linux_examples_MixedGaussian:
+          requires:
+            - linux_libraries_Cairo
+            - linux_libraries_SQLite
+
+      - linux_examples_PoissonGaussian:
+          requires:
+            - linux_libraries_Cairo
+            - linux_libraries_SQLite
+
+      - linux_examples_SIR:
+          requires:
+            - linux_libraries_Cairo
+            - linux_libraries_SQLite
+
+      - linux_examples_MultiObjectTracking:
+          requires:
+            - linux_libraries_Cairo
+            - linux_libraries_SQLite
+
+      - linux_examples_VectorBorneDisease:
+          requires:
+            - linux_libraries_Cairo
+            - linux_libraries_SQLite
 
       - deploy_linux:
           filters:
@@ -449,10 +608,65 @@ workflows:
                 - master
                 - monorepo
           requires:
-            - examples_LinearGaussian
-            - examples_LinearRegression
-            - examples_MixedGaussian
-            - examples_PoissonGaussian
-            - examples_SIR
-            - examples_MultiObjectTracking
-            - examples_VectorBorneDisease
+            - linux_examples_LinearGaussian
+            - linux_examples_LinearRegression
+            - linux_examples_MixedGaussian
+            - linux_examples_PoissonGaussian
+            - linux_examples_SIR
+            - linux_examples_MultiObjectTracking
+            - linux_examples_VectorBorneDisease
+
+  mac:
+    jobs:
+      - mac_driver
+
+      - mac_libbirch:
+          requires:
+            - mac_driver
+
+      - mac_libraries_Standard:
+          requires:
+            - mac_libbirch
+
+      - mac_libraries_Cairo:
+          requires:
+            - mac_libraries_Standard
+
+      - mac_libraries_SQLite:
+          requires:
+            - mac_libraries_Standard
+
+      - mac_examples_LinearGaussian:
+          requires:
+            - mac_libraries_Cairo
+            - mac_libraries_SQLite
+
+      - mac_examples_LinearRegression:
+          requires:
+            - mac_libraries_Cairo
+            - mac_libraries_SQLite
+
+      - mac_examples_MixedGaussian:
+          requires:
+            - mac_libraries_Cairo
+            - mac_libraries_SQLite
+
+      - mac_examples_PoissonGaussian:
+          requires:
+            - mac_libraries_Cairo
+            - mac_libraries_SQLite
+
+      - mac_examples_SIR:
+          requires:
+            - mac_libraries_Cairo
+            - mac_libraries_SQLite
+
+      - mac_examples_MultiObjectTracking:
+          requires:
+            - mac_libraries_Cairo
+            - mac_libraries_SQLite
+
+      - mac_examples_VectorBorneDisease:
+          requires:
+            - mac_libraries_Cairo
+            - mac_libraries_SQLite
