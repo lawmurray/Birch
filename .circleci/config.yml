@@ -87,7 +87,7 @@ commands:
           command: |
               cd driver
               ./bootstrap
-              ./configure --prefix=$PREFIX CXXFLAGS=$CXXFLAGS || cat config.log
+              ./configure --prefix="$PREFIX" CXXFLAGS="$CXXFLAGS" || cat config.log
               make $MAKE_FLAGS
               make install
       - slack
@@ -111,7 +111,7 @@ commands:
           command: |
               cd << parameters.package >>
               ./bootstrap
-              ./configure --prefix=$PREFIX $MODE_FLAGS CXXFLAGS=$CXXFLAGS || cat config.log
+              ./configure --prefix="$PREFIX" $MODE_FLAGS CXXFLAGS="$CXXFLAGS" || cat config.log
               make $MAKE_FLAGS
               make install
       - persist_to_workspace:
