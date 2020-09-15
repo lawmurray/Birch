@@ -26,7 +26,7 @@ commands:
               echo "export PATH=\$PREFIX/bin:$PATH" >> $BASH_ENV
               echo "export CPLUS_INCLUDE_PATH=\$PREFIX/include:$CPLUS_INCLUDE_PATH" >> $BASH_ENV
               echo "export LD_LIBRARY_PATH=\$PREFIX/lib:$LD_LIBRARY_PATH" >> $BASH_ENV
-              echo "export CONFIGURE_FLAGS="--prefix=$PREFIX CXXFLAGS=\"-Wall -Wno-overloaded-virtual -g -O0 -fno-inline -fprofile-abs-path --coverage\"" >> $BASH_ENV
+              echo "export CONFIGURE_FLAGS='--prefix=\$PREFIX CXXFLAGS=\"-Wall -Wno-overloaded-virtual -g -O0 -fno-inline -fprofile-abs-path --coverage\"'" >> $BASH_ENV
               echo "export MAKE_FLAGS='-j4'" >> $BASH_ENV
               echo "export OMP_NUM_THREADS=2" >> $BASH_ENV
               echo "export BIRCH_FLAGS='--unit=dir --arch=native --jobs=2'" >> $BASH_ENV
@@ -45,7 +45,7 @@ commands:
           name: Environment
           description: Set environment variables for builds
           command: |
-              echo "export CONFIGURE_FLAGS="CXXFLAGS=\"-Wall -g -Wno-overloaded-virtual\"" >> $BASH_ENV
+              echo "export CONFIGURE_FLAGS='CXXFLAGS=\"-Wall -g -Wno-overloaded-virtual\"'" >> $BASH_ENV
               echo "export MAKE_FLAGS='-j8'" >> $BASH_ENV
               echo "export OMP_NUM_THREADS=4" >> $BASH_ENV
               echo "export BIRCH_FLAGS='--unit=dir --arch=native --jobs=4'" >> $BASH_ENV
