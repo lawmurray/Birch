@@ -189,8 +189,7 @@ commands:
                 name: Run unit tests
                 command: |
                     cd << parameters.dir >>/<< parameters.package >>
-                    export BIRCH_MODE=release
-                    env time --format="$FORMAT" --output=/tmp/time.txt ./test.sh
+                    env BIRCH_MODE=release time --format="$FORMAT" --output=/tmp/time.txt ./test.sh
                   # ^ env time to use GNU time, not Bash built-in time
       - when:
           condition: << parameters.mongoimport >>
