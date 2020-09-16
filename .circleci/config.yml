@@ -86,7 +86,7 @@ commands:
           command: |
               cd driver
               ./bootstrap
-              ./configure --prefix="$PREFIX" CXXFLAGS="-Wall -Wno-overloaded-virtual -g -O0 -fno-inline -fprofile-abs-path --coverage" || cat config.log
+              ./configure --prefix="$PREFIX" CXXFLAGS="-Wall -Wno-overloaded-virtual -g -O0 -fno-inline --coverage" || cat config.log
               make $MAKE_FLAGS
               make install
       - slack
