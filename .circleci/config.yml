@@ -86,7 +86,7 @@ commands:
           command: |
               cd driver
               ./bootstrap
-              ./configure --prefix="$PREFIX" CXXFLAGS="-Wall -Wno-overloaded-virtual -g -O0 -fno-inline -fprofile-abs-path --coverage"
+              ./configure --prefix="$PREFIX" CXXFLAGS="-Wall -Wno-overloaded-virtual -g -O0 -fno-inline -fprofile-abs-path --coverage" || cat config.log
               make $MAKE_FLAGS
               make install
       - slack
@@ -110,7 +110,7 @@ commands:
           command: |
               cd << parameters.package >>
               ./bootstrap
-              ./configure --prefix="$PREFIX" $MODE_FLAGS
+              ./configure --prefix="$PREFIX" $MODE_FLAGS || cat config.log
               make $MAKE_FLAGS
               make install
       - persist_to_workspace:
