@@ -3,28 +3,47 @@
  */
 #pragma once
 
-//#include <atomic>
+/**
+ * @def LIBBIRCH_ATOMIC_OPENMP
+ *
+ * Set to true for libbirch::Atomic to be based on std::atomic, or false to use
+ * OpenMP instead.
+ *
+ * The advantage of the OpenMP implementation is assured memory model
+ * consistency and the organic disabling of atomics when OpenMP, and thus
+ * multithreading, is disabled (this can improve performance significantly for
+ * single threading). The disadvantage is that OpenMP atomics do not support
+ * compare-and-swap/compare-and-exchange, only swap/exchange, which requires
+ * some clunkier client code, especially for read-write locks.
+ *
+ * The alternative implementation use std::atomic.
+ *
+ * Atomic provides the default constructor, copy and move constructors, copy
+ * and move assignment operators, in order to be trivially copyable and so
+ * a mappable type for the purposes of OpenMP. These constructors and
+ * operators *do not* behave atomically, however.
+ */
+#ifndef HAVE_OMP_H
+/* this looks like it's backwards, but when OpenMP is disabled, enabling the
+ * OpenMP implementation has the effect of replacing atomic operations with
+ * regular operations, which is faster */
+ #define LIBBIRCH_ATOMIC_OPENMP 1
+#else
+/* otherwise the default is to disable the OpenMP implementation at this
+ * stage, as unfortunately seeing segfaults in recent versions on macOS;
+ * further review required */
+#define LIBBIRCH_ATOMIC_OPENMP 0
+#endif
+
+#if !LIBBIRCH_ATOMIC_OPENMP
+#include <atomic>
+#endif
 
 namespace libbirch {
 /**
  * Atomic value.
  *
  * @tparam Value type.
- *
- * The implementation uses OpenMP atomics as opposed to std::atomic. The
- * advantage of this is ensured memory model consistency and the organic
- * disabling of atomics when OpenMP, and thus multithreading, is
- * disabled (this can improve performance significantly for single threading).
- * The disadvantage is that OpenMP atomics do not support
- * compare-and-swap/compare-and-exchange, only swap/exchange, which requires
- * some clunkier client code, especially for read-write locks.
- *
- * Atomic provides the default constructor, copy and move constructors, copy
- * and move assignment operators, in order to be trivially copyable and so
- * a mappable type for the purposes of OpenMP. These constructors and
- * operators *do not* behave atomically, however.
- *
- * @internal An alternative implementation, in comments, uses std::atomic.
  */
 template<class T>
 class Atomic {
@@ -49,10 +68,13 @@ public:
    * Load the value, atomically.
    */
   T load() const {
-    //return this->value.load();
     T value;
-    #pragma omp atomic read
+    #if LIBBIRCH_ATOMIC_OPENMP
+    #pragma omp atomic read seq_cst
     value = this->value;
+    #else
+    value = this->value.load();
+    #endif
     return value;
   }
 
@@ -60,9 +82,12 @@ public:
    * Store the value, atomically.
    */
   void store(const T& value) {
-    //return this->value.store(value);
-    #pragma omp atomic write
+    #if LIBBIRCH_ATOMIC_OPENMP
+    #pragma omp atomic write seq_cst
     this->value = value;
+    #else
+    this->value.store(value);
+    #endif
   }
 
   /**
@@ -73,13 +98,16 @@ public:
    * @return Old value.
    */
   T exchange(const T& value) {
-    //return this->value.exchange(value);
     T old;
-    #pragma omp atomic capture
+    #if LIBBIRCH_ATOMIC_OPENMP
+    #pragma omp atomic capture seq_cst
     {
       old = this->value;
       this->value = value;
     }
+    #else
+    old = this->value.exchange(value);
+    #endif
     return old;
   }
 
@@ -92,13 +120,16 @@ public:
    * @return Previous value.
    */
   T exchangeAnd(const T& value) {
-    //return this->value.fetch_and(value);
     T old;
-    #pragma omp atomic capture
+    #if LIBBIRCH_ATOMIC_OPENMP
+    #pragma omp atomic capture seq_cst
     {
       old = this->value;
       this->value &= value;
     }
+    #else
+    old = this->value.fetch_and(value);
+    #endif
     return old;
   }
 
@@ -111,13 +142,16 @@ public:
    * @return Previous value.
    */
   T exchangeOr(const T& value) {
-    //return this->value.fetch_or(value);
     T old;
-    #pragma omp atomic capture
+    #if LIBBIRCH_ATOMIC_OPENMP
+    #pragma omp atomic capture seq_cst
     {
       old = this->value;
       this->value |= value;
     }
+    #else
+    old = this->value.fetch_or(value);
+    #endif
     return old;
   }
 
@@ -127,8 +161,9 @@ public:
    * @param m Mask.
    */
   void maskAnd(const T& value) {
-    //this->value &= value;
-    #pragma omp atomic update
+    #if LIBBIRCH_ATOMIC_OPENMP
+    #pragma omp atomic update seq_cst
+    #endif
     this->value &= value;
   }
 
@@ -138,8 +173,9 @@ public:
    * @param m Mask.
    */
   void maskOr(const T& value) {
-    //this->value |= value;
-    #pragma omp atomic update
+    #if LIBBIRCH_ATOMIC_OPENMP
+    #pragma omp atomic update seq_cst
+    #endif
     this->value |= value;
   }
 
@@ -148,8 +184,9 @@ public:
    * current value.
    */
   void increment() {
-    //++value;
-    #pragma omp atomic update
+    #if LIBBIRCH_ATOMIC_OPENMP
+    #pragma omp atomic update seq_cst
+    #endif
     ++value;
   }
 
@@ -158,8 +195,9 @@ public:
    * current value.
    */
   void decrement() {
-    //--value;
-    #pragma omp atomic update
+    #if LIBBIRCH_ATOMIC_OPENMP
+    #pragma omp atomic update seq_cst
+    #endif
     --value;
   }
 
@@ -168,8 +206,9 @@ public:
    */
   template<class U>
   void add(const U& value) {
-    //this->value += value;
-    #pragma omp atomic update
+    #if LIBBIRCH_ATOMIC_OPENMP
+    #pragma omp atomic update seq_cst
+    #endif
     this->value += value;
   }
 
@@ -179,57 +218,64 @@ public:
    */
   template<class U>
   void subtract(const U& value) {
-    //this->value -= value;
-    #pragma omp atomic update
+    #if LIBBIRCH_ATOMIC_OPENMP
+    #pragma omp atomic update seq_cst
+    #endif
     this->value -= value;
   }
 
   template<class U>
   T operator+=(const U& value) {
-    //return this->value += value;
     T result;
-    #pragma omp atomic capture
+    #if LIBBIRCH_ATOMIC_OPENMP
+    #pragma omp atomic capture seq_cst
+    #endif
     result = this->value += value;
     return result;
   }
 
   template<class U>
   T operator-=(const U& value) {
-    //return this->value -= value;
     T result;
-    #pragma omp atomic capture
+    #if LIBBIRCH_ATOMIC_OPENMP
+    #pragma omp atomic capture seq_cst
+    #endif
     result = this->value -= value;
     return result;
   }
 
   T operator++() {
-    //return ++this->value;
     T value;
-    #pragma omp atomic capture
+    #if LIBBIRCH_ATOMIC_OPENMP
+    #pragma omp atomic capture seq_cst
+    #endif
     value = ++this->value;
     return value;
   }
 
   T operator++(int) {
-    //return this->value++;
     T value;
-    #pragma omp atomic capture
+    #if LIBBIRCH_ATOMIC_OPENMP
+    #pragma omp atomic capture seq_cst
+    #endif
     value = this->value++;
     return value;
   }
 
   T operator--() {
-    //return --this->value;
     T value;
-    #pragma omp atomic capture
+    #if LIBBIRCH_ATOMIC_OPENMP
+    #pragma omp atomic capture seq_cst
+    #endif
     value = --this->value;
     return value;
   }
 
   T operator--(int) {
-    //return this->value--;
     T value;
-    #pragma omp atomic capture
+    #if LIBBIRCH_ATOMIC_OPENMP
+    #pragma omp atomic capture seq_cst
+    #endif
     value = this->value--;
     return value;
   }
@@ -238,7 +284,10 @@ private:
   /**
    * Value.
    */
+  #if LIBBIRCH_ATOMIC_OPENMP
   T value;
-  //std::atomic<T> value;
+  #else
+  std::atomic<T> value;
+  #endif
 };
 }
