@@ -26,11 +26,9 @@ commands:
               echo "export PATH=\$PREFIX/bin:$PATH" >> $BASH_ENV
               echo "export CPLUS_INCLUDE_PATH=\$PREFIX/include:$CPLUS_INCLUDE_PATH" >> $BASH_ENV
               echo "export LD_LIBRARY_PATH=\$PREFIX/lib:$LD_LIBRARY_PATH" >> $BASH_ENV
-              echo "export CXXFLAGS='-Wall -Wno-overloaded-virtual -g -O0 -fno-inline -fprofile-abs-path --coverage'" >> $BASH_ENV
               echo "export MAKE_FLAGS='-j4'" >> $BASH_ENV
               echo "export OMP_NUM_THREADS=2" >> $BASH_ENV
               echo "export BIRCH_FLAGS='--unit=dir --arch=native --jobs=2'" >> $BASH_ENV
-              echo "export SMOKE_MODE=test" >> $BASH_ENV
               echo "export MODE_FLAGS='--disable-debug --enable-test --enable-release'" >> $BASH_ENV
               echo "export FORMAT=', \"real\": %e, \"user\": %U, \"system\": %S, \"memory\": %M, \"involuntary\": %c, \"voluntary\": %w'" >> $BASH_ENV
           # BIRCH_FLAGS uses only two parallel jobs to avoid exhausting memory
@@ -51,12 +49,10 @@ commands:
               echo "export PATH=\$PREFIX/bin:/usr/local/opt/flex/bin:/usr/local/opt/bison/bin:$PATH" >> $BASH_ENV
               echo "export CPLUS_INCLUDE_PATH=\$PREFIX/include:$CPLUS_INCLUDE_PATH" >> $BASH_ENV
               echo "export LD_LIBRARY_PATH=\$PREFIX/lib:$LD_LIBRARY_PATH" >> $BASH_ENV
-              echo "export CXXFLAGS='-Wall -g -Wno-overloaded-virtual'" >> $BASH_ENV
               echo "export MAKE_FLAGS='-j8'" >> $BASH_ENV
               echo "export OMP_NUM_THREADS=4" >> $BASH_ENV
               echo "export BIRCH_FLAGS='--unit=dir --arch=native --jobs=4'" >> $BASH_ENV
-              echo "export SMOKE_MODE=debug" >> $BASH_ENV
-              echo "export MODE_FLAGS='--enable-debug --disable-test --disable-release'" >> $BASH_ENV
+              echo "export MODE_FLAGS='--disable-debug --enable-test --disable-release'" >> $BASH_ENV
               echo "export FORMAT=', \"real\": %e, \"user\": %U, \"system\": %S, \"memory\": %M, \"involuntary\": %c, \"voluntary\": %w'" >> $BASH_ENV
           # BIRCH_FLAGS uses only four parallel jobs to avoid exhausting memory
 
@@ -90,7 +86,7 @@ commands:
           command: |
               cd driver
               ./bootstrap
-              ./configure --prefix="$PREFIX" CXXFLAGS="$CXXFLAGS"
+              ./configure --prefix="$PREFIX" CXXFLAGS="-Wall -Wno-overloaded-virtual -g -O0 -fno-inline -fprofile-abs-path --coverage"
               make $MAKE_FLAGS
               make install
       - slack
@@ -114,7 +110,7 @@ commands:
           command: |
               cd << parameters.package >>
               ./bootstrap
-              ./configure --prefix="$PREFIX" $MODE_FLAGS CXXFLAGS="$CXXFLAGS"
+              ./configure --prefix="$PREFIX" $MODE_FLAGS
               make $MAKE_FLAGS
               make install
       - persist_to_workspace:
@@ -181,8 +177,7 @@ commands:
                 name: Run smoke tests
                 command: |
                     cd << parameters.dir >>/<< parameters.package >>
-                    export BIRCH_MODE=$SMOKE_MODE
-                    ./smoke.sh
+                    env BIRCH_MODE=test ./smoke.sh
       - when:
           condition: << parameters.unit >>
           steps:
@@ -190,8 +185,7 @@ commands:
                 name: Run unit tests
                 command: |
                     cd << parameters.dir >>/<< parameters.package >>
-                    export BIRCH_MODE=release
-                    env time --format="$FORMAT" --output=/tmp/time.txt ./test.sh
+                    env BIRCH_MODE=release time --format="$FORMAT" --output=/tmp/time.txt ./test.sh
                 # ^ env time to use GNU time, not Bash built-in time
       - when:
           condition: << parameters.mongoimport >>
