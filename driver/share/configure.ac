@@ -56,6 +56,7 @@ AX_CHECK_COMPILE_FLAG([-fno-caret-diagnostics], [CXXFLAGS="$CXXFLAGS -fno-caret-
 AX_CHECK_COMPILE_FLAG([-fno-diagnostics-show-caret], [CXXFLAGS="$CXXFLAGS -fno-diagnostics-show-caret"], [], [-Werror])
 AX_CHECK_COMPILE_FLAG([-fno-diagnostics-show-option], [CXXFLAGS="$CXXFLAGS -fno-diagnostics-show-option"], [], [-Werror])
 AX_CHECK_COMPILE_FLAG([-fno-show-column], [CXXFLAGS="$CXXFLAGS -fno-show-column"], [], [-Werror])
+AX_CHECK_COMPILE_FLAG([-fprofile-abs-path], [CXXFLAGS="$CXXFLAGS -fprofile-abs-path"], [], [-Werror])
 AX_CHECK_COMPILE_FLAG([-Wno-overloaded-virtual], [CXXFLAGS="$CXXFLAGS -Wno-overloaded-virtual"], [], [-Werror])
 AX_CHECK_COMPILE_FLAG([-Wno-inconsistent-missing-override], [CXXFLAGS="$CXXFLAGS -Wno-inconsistent-missing-override"], [], [-Werror])
 AX_CHECK_COMPILE_FLAG([-Wno-attributes], [CXXFLAGS="$CXXFLAGS -Wno-attributes"], [], [-Werror])

@@ -22,6 +22,9 @@ AX_CXX_COMPILE_STDCXX(14, [noext], [mandatory])
 AC_HEADER_ASSERT
 AC_HEADER_STDBOOL
 
+# Checks for compiler flags
+AX_CHECK_COMPILE_FLAG([-fprofile-abs-path], [CXXFLAGS="$CXXFLAGS -fprofile-abs-path"], [], [-Werror])
+
 # Checks for headers
 AC_CHECK_HEADERS([ \
     boost/filesystem.hpp \

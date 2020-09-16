@@ -52,6 +52,9 @@ AC_HEADER_STDBOOL
 AC_C_INLINE
 AC_OPENMP
 
+# Checks for compiler flags
+AX_CHECK_COMPILE_FLAG([-fprofile-abs-path], [CXXFLAGS="$CXXFLAGS -fprofile-abs-path"], [], [-Werror])
+
 # Checks for functions
 AX_GCC_BUILTIN([__builtin_clz])
 AX_GCC_BUILTIN([__builtin_clzll])
