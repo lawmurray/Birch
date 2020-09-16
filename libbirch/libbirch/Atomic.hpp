@@ -37,28 +37,12 @@ public:
   /**
    * Constructor.
    *
-   * @param value Initial value. Initializes the value, not necessarily
-   * atomically.
+   * @param value Initial value.
+   *
+   * Initializes the value, atomically.
    */
-  explicit Atomic(const T& value) :
-      value(value) {
-    //
-  }
-
-  /**
-   * Get the value, not necessarily atomically.
-   */
-  T get() const {
-    //return value.load();
-    return value;
-  }
-
-  /**
-   * Get the value, not necessarily atomically.
-   */
-  void set(const T& value) {
-    //return this->value.store(value);
-    this->value = value;
+  explicit Atomic(const T& value) {
+    store(value);
   }
 
   /**

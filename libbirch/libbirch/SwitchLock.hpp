@@ -40,9 +40,9 @@ public:
     lock.bitwiseFix();
     left.bitwiseFix();
     right.bitwiseFix();
-    nleft.set(0u);
-    nright.set(0u);
-    direction.set(NONE);
+    nleft.store(0u);
+    nright.store(0u);
+    direction.store(NONE);
   }
 
   /**

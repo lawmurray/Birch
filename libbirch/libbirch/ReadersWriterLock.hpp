@@ -23,8 +23,8 @@ public:
    * Correctly initialize after a bitwise copy.
    */
   void bitwiseFix() {
-    readers.set(0u);
-    writer.set(false);
+    readers.store(0u);
+    writer.store(false);
   }
 
   /**

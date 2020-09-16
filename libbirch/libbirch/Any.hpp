@@ -131,11 +131,11 @@ public:
   Any* copy(Label* label) {
     auto o = copy_(label);
     new (&o->label) decltype(o->label)(label);
-    o->sharedCount.set(0u);
-    o->memoCount.set(1u);
+    o->sharedCount.store(0u);
+    o->memoCount.store(1u);
     o->size = 0u;
     o->tid = get_thread_num();
-    o->flags.set(0u);
+    o->flags.store(0u);
     return o;
   }
 
@@ -256,7 +256,7 @@ public:
    */
   void decShared() {
     assert(numShared() > 0u);
-    
+
     /* if the count will reduce to nonzero, this is possibly the root of
      * a cycle */
     if (numShared() > 1u &&

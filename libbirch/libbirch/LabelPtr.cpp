@@ -17,11 +17,11 @@ libbirch::LabelPtr::LabelPtr(const LabelPtr& o) {
   if (ptr && ptr != root()) {
     ptr->incShared();
   }
-  this->ptr.set(ptr);
+  this->ptr.store(ptr);
 }
 
 libbirch::LabelPtr::LabelPtr(LabelPtr&& o) {
-  ptr.set(o.ptr.exchange(nullptr));
+  ptr.store(o.ptr.exchange(nullptr));
 }
 
 libbirch::LabelPtr::~LabelPtr() {
@@ -29,7 +29,7 @@ libbirch::LabelPtr::~LabelPtr() {
 }
 
 void libbirch::LabelPtr::bitwiseFix() {
-  auto ptr = this->ptr.get();
+  auto ptr = this->ptr.load();
   if (ptr && ptr != root()) {
     ptr->incShared();
   }

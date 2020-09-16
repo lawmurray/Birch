@@ -41,7 +41,7 @@ public:
     if (ptr) {
       ptr->incShared();
     }
-    this->ptr.set(ptr);
+    this->ptr.store(ptr);
   }
 
   /**
@@ -53,7 +53,7 @@ public:
     if (ptr) {
       ptr->incShared();
     }
-    this->ptr.set(ptr);
+    this->ptr.store(ptr);
   }
 
   /**
@@ -65,14 +65,14 @@ public:
     if (ptr) {
       ptr->incShared();
     }
-    this->ptr.set(ptr);
+    this->ptr.store(ptr);
   }
 
   /**
    * Move constructor.
    */
   Shared(Shared&& o) {
-    ptr.set(o.ptr.exchange(nullptr));
+    ptr.store(o.ptr.exchange(nullptr));
   }
 
   /**
@@ -80,7 +80,7 @@ public:
    */
   template<class U, std::enable_if_t<std::is_base_of<T,U>::value,int> = 0>
   Shared(Shared<U>&& o) {
-    ptr.set(o.ptr.exchange(nullptr));
+    ptr.store(o.ptr.exchange(nullptr));
   }
 
   /**

@@ -139,7 +139,7 @@ private:
   ReadersWriterLock lock;
 
 public:
-  virtual const char* getClassName() const {
+  virtual const char* getClassName() const override {
     return "Label";
   }
 

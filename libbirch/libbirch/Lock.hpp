@@ -35,7 +35,7 @@ public:
    * Correctly initialize after a bitwise copy.
    */
   void bitwiseFix() {
-    lock.set(false);
+    lock.store(false);
   }
 
   /**
