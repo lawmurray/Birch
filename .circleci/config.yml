@@ -575,9 +575,9 @@ jobs:
     executor: linux
     steps:
       - linux_environment
+      - checkout
       - version
       - configure_osc
-      - checkout
       - checkout_brew
       - deploy_package:
           package: driver

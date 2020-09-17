@@ -88,6 +88,8 @@ birch::Driver::Driver(int argc, char** argv) :
 #ifdef INCLUDEDIR
   includeDirs.push_back(STRINGIFY(INCLUDEDIR));
 #endif
+  includeDirs.push_back(fs::path("/") / "usr" / "local" / "include");
+  includeDirs.push_back(fs::path("/") / "usr" / "include");
 
   /* lib dirs */
   fs::path local = fs::path(".libs");
