@@ -40,7 +40,7 @@ commands:
           name: Dependencies
           description: Install dependencies from Homebrew
           command: |
-              HOMEBREW_NO_AUTO_UPDATE=1 brew install autoconf automake libtool flex bison boost eigen libyaml libomp sqlite3 cairo
+              HOMEBREW_NO_AUTO_UPDATE=1 brew install autoconf automake libtool flex bison boost eigen libyaml libomp sqlite cairo
       - run:
           name: Environment
           description: Set environment variables for builds
@@ -277,6 +277,37 @@ commands:
                 osc commit -m "Updated to version $VERSION."
               fi
 
+  brew:
+    description: Update Homebrew formula
+    parameters:
+      dir:
+        description: Directory containing the package (e.g. libraries)
+        type: string
+        default: .
+      package:
+        description: Name of package (e.g. Standard)
+        type: string
+      tar:
+        description: Tarname of package (e.g. birch-standard)
+        type: string
+    steps:
+      - run:
+          name: Update package
+          command: |
+              if [[ -n "$VERSION" ]]
+              then
+                cd << parameters.dir >>/<< parameters.package >>
+                make dist
+                mv << parameters.tar >>-unversioned.tar.gz ../../homebrew-birch
+                cd ../../homebrew-birch
+                SHA256=($(sha256sum << parameters.tar >>-unversioned.tar.gz))
+                cat << parameters.tar >>.rb |
+                  sed -E "s/sha256 \"[0-9a-f]+\"/sha256 \"$SHA256\"/g" |
+                  sed -E "s/version \"[0-9]+.[0-9]+\"/version \"$VERSION\"/g" |
+                  sed -E "s/=> \"[0-9]+.[0-9]+\"/=> \"$VERSION\"/g" |
+                  sponge << parameters.tar >>.rb
+              fi
+
 jobs:
   linux_driver:
     executor: linux
@@ -420,34 +451,6 @@ jobs:
           mongodb: true
           codecov: true
 
-  deploy_linux:
-    executor: linux
-    steps:
-      - attach_workspace:
-          at: .
-      - linux_environment
-      - version
-      - configure_osc
-      - osc:
-          package: driver
-          tar: birch
-      - osc:
-          package: libbirch
-          tar: libbirch
-      - osc:
-          dir: libraries
-          package: Standard
-          tar: birch-standard
-      - osc:
-          dir: libraries
-          package: Cairo
-          tar: birch-cairo
-      - osc:
-          dir: libraries
-          package: SQLite
-          tar: birch-sqlite
-      - slack
-
   mac_driver:
     executor: mac
     steps:
@@ -565,10 +568,62 @@ jobs:
           tar: birch-vectorbornedisease
           smoke: true
 
+  deploy:
+    executor: linux
+    steps:
+      - attach_workspace:
+          at: .
+      - linux_environment
+      - version
+      - configure_osc
+      - osc:
+          package: driver
+          tar: birch
+      - osc:
+          package: libbirch
+          tar: libbirch
+      - osc:
+          dir: libraries
+          package: Standard
+          tar: birch-standard
+      - osc:
+          dir: libraries
+          package: Cairo
+          tar: birch-cairo
+      - osc:
+          dir: libraries
+          package: SQLite
+          tar: birch-sqlite
+      - run:
+          name: Checkout Homebrew tap
+          command: git clone https://github.com/lawmurray/homebrew-birch.git
+      - brew:
+          package: driver
+          tar: birch
+      - brew:
+          package: libbirch
+          tar: libbirch
+      - brew:
+          dir: libraries
+          package: Standard
+          tar: birch-standard
+      - brew:
+          dir: libraries
+          package: Cairo
+          tar: birch-cairo
+      - brew:
+          dir: libraries
+          package: SQLite
+          tar: birch-sqlite
+      - run:
+          name: Commit Homebrew tap
+          command: git commit -m "Updated to version $VERSION."
+      - slack
+
 workflows:
   version: 2
 
-  linux:
+  all:
     jobs:
       - linux_driver
 
@@ -623,23 +678,6 @@ workflows:
             - linux_libraries_Cairo
             - linux_libraries_SQLite
 
-      - deploy_linux:
-          filters:
-            branches:
-              only:
-                - master
-                - monorepo
-          requires:
-            - linux_examples_LinearGaussian
-            - linux_examples_LinearRegression
-            - linux_examples_MixedGaussian
-            - linux_examples_PoissonGaussian
-            - linux_examples_SIR
-            - linux_examples_MultiObjectTracking
-            - linux_examples_VectorBorneDisease
-
-  mac:
-    jobs:
       - mac_driver
 
       - mac_libbirch:
@@ -692,3 +730,25 @@ workflows:
           requires:
             - mac_libraries_Cairo
             - mac_libraries_SQLite
+
+      - deploy:
+          filters:
+            branches:
+              only:
+                - master
+                - monorepo
+          requires:
+            - linux_examples_LinearGaussian
+            - linux_examples_LinearRegression
+            - linux_examples_MixedGaussian
+            - linux_examples_PoissonGaussian
+            - linux_examples_SIR
+            - linux_examples_MultiObjectTracking
+            - linux_examples_VectorBorneDisease
+            - mac_examples_LinearGaussian
+            - mac_examples_LinearRegression
+            - mac_examples_MixedGaussian
+            - mac_examples_PoissonGaussian
+            - mac_examples_SIR
+            - mac_examples_MultiObjectTracking
+            - mac_examples_VectorBorneDisease
