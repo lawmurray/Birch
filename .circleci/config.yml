@@ -242,8 +242,22 @@ commands:
                 echo pass = $OSC_PASSWORD              >> ~/.config/osc/oscrc
               fi
 
-  osc:
-    description: Update package on Open Build Service
+  checkout_brew:
+    description: Clone Homebrew tap
+    steps:
+      - run:
+          name: Clone Homebrew tap
+          command: git clone https://github.com/lawmurray/homebrew-birch.git
+
+  commit_brew:
+    description: Commit Homebrew tap
+    steps:
+      - run:
+          name: Commit Homebrew tap
+          command: git commit -m "Updated to version $VERSION." && git push origin master
+
+  deploy_package:
+    description: Deploy package
     parameters:
       dir:
         description: Directory containing the package (e.g. libraries)
@@ -257,15 +271,21 @@ commands:
         type: string
     steps:
       - run:
-          name: Update package
+          name: Source tarball
+          command: |
+              cd << parameters.dir >>/<< parameters.package >>
+              ./bootstrap
+              ./configure
+              make dist
+      - run:
+          name: Open Build Service package
           command: |
               if [[ -n "$OSC_PROJECT" && -n "$OSC_USERNAME" && -n "$OSC_PASSWORD" && -n "$VERSION" ]]
               then
                 cd << parameters.dir >>/<< parameters.package >>
-                make dist
                 osc checkout $OSC_PROJECT << parameters.tar >>
                 cd $OSC_PROJECT/<< parameters.tar >>
-                mv ../../<< parameters.tar >>-unversioned.tar.gz .
+                cp ../../<< parameters.tar >>-unversioned.tar.gz .
                 for file in << parameters.tar >>.spec << parameters.tar >>.dsc debian.control PKGBUILD
                 do
                   cat $file |
@@ -276,30 +296,13 @@ commands:
                 done
                 osc commit -m "Updated to version $VERSION."
               fi
-
-  brew:
-    description: Update Homebrew formula
-    parameters:
-      dir:
-        description: Directory containing the package (e.g. libraries)
-        type: string
-        default: .
-      package:
-        description: Name of package (e.g. Standard)
-        type: string
-      tar:
-        description: Tarname of package (e.g. birch-standard)
-        type: string
-    steps:
       - run:
-          name: Update package
+          name: Homebrew package
           command: |
               if [[ -n "$VERSION" ]]
               then
-                cd << parameters.dir >>/<< parameters.package >>
-                make dist
-                mv << parameters.tar >>-unversioned.tar.gz ../../homebrew-birch
-                cd ../../homebrew-birch
+                cp << parameters.dir >>/<< parameters.package >>/<< parameters.tar >>-unversioned.tar.gz homebrew-birch/.
+                cd homebrew-birch
                 SHA256=($(sha256sum << parameters.tar >>-unversioned.tar.gz))
                 cat << parameters.tar >>.rb |
                   sed -E "s/sha256 \"[0-9a-f]+\"/sha256 \"$SHA256\"/g" |
@@ -571,53 +574,30 @@ jobs:
   deploy:
     executor: linux
     steps:
-      - attach_workspace:
-          at: .
       - linux_environment
       - version
       - configure_osc
-      - osc:
+      - checkout
+      - checkout_brew
+      - deploy_package:
           package: driver
           tar: birch
-      - osc:
+      - deploy_package:
           package: libbirch
           tar: libbirch
-      - osc:
+      - deploy_package:
           dir: libraries
           package: Standard
           tar: birch-standard
-      - osc:
+      - deploy_package:
           dir: libraries
           package: Cairo
           tar: birch-cairo
-      - osc:
+      - deploy_package:
           dir: libraries
           package: SQLite
           tar: birch-sqlite
-      - run:
-          name: Checkout Homebrew tap
-          command: git clone https://github.com/lawmurray/homebrew-birch.git
-      - brew:
-          package: driver
-          tar: birch
-      - brew:
-          package: libbirch
-          tar: libbirch
-      - brew:
-          dir: libraries
-          package: Standard
-          tar: birch-standard
-      - brew:
-          dir: libraries
-          package: Cairo
-          tar: birch-cairo
-      - brew:
-          dir: libraries
-          package: SQLite
-          tar: birch-sqlite
-      - run:
-          name: Commit Homebrew tap
-          command: git commit -m "Updated to version $VERSION."
+      - commit_brew
       - slack
 
 workflows:
