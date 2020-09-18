@@ -22,6 +22,8 @@ commands:
           name: Environment
           description: Set environment variables for builds
           command: |
+              echo "export VERSION=`(git describe || echo) | sed -E 's/v([0-9]+)-([0-9]+)-g[0-9a-f]+/\1.\2/'`" >> $BASH_ENV
+              echo "export VERSION_LONG=`git describe --long || echo`" >> $BASH_ENV
               echo "export PREFIX=~/project" >> $BASH_ENV
               echo "export PATH=\$PREFIX/bin:$PATH" >> $BASH_ENV
               echo "export CPLUS_INCLUDE_PATH=\$PREFIX/include:$CPLUS_INCLUDE_PATH" >> $BASH_ENV
@@ -45,6 +47,8 @@ commands:
           name: Environment
           description: Set environment variables for builds
           command: |
+              echo "export VERSION=`(git describe || echo) | sed -E 's/v([0-9]+)-([0-9]+)-g[0-9a-f]+/\1.\2/'`" >> $BASH_ENV
+              echo "export VERSION_LONG=`git describe --long || echo`" >> $BASH_ENV
               echo "export PREFIX=~/project" >> $BASH_ENV
               echo "export PATH=\$PREFIX/bin:/usr/local/opt/flex/bin:/usr/local/opt/bison/bin:$PATH" >> $BASH_ENV
               echo "export CPLUS_INCLUDE_PATH=\$PREFIX/include:$CPLUS_INCLUDE_PATH" >> $BASH_ENV
@@ -56,21 +60,6 @@ commands:
               echo "export FORMAT=', \"real\": %e, \"user\": %U, \"system\": %S, \"memory\": %M, \"involuntary\": %c, \"voluntary\": %w'" >> $BASH_ENV
           # BIRCH_FLAGS uses only four parallel jobs to avoid exhausting memory
 
-  version:
-    description: Determine version number
-    steps:
-      - run:
-          name: Git check
-          description: Fail if not a git repository
-          command: git describe
-            # ensures failure if git describe to find version number fails below
-      - run:
-          name: Environment
-          description: Set environment variables for builds
-          command: |
-              echo "export VERSION=`git describe | sed -E 's/v([0-9]+)-([0-9]+)-g[0-9a-f]+/\1.\2/'`" >> $BASH_ENV
-              echo "export VERSION_LONG=`git describe --long`" >> $BASH_ENV
-
   slack:
     description: Send Slack message on failure
     steps:
@@ -78,10 +67,10 @@ commands:
          fail_only: true
 
   driver:
-    description: Build the driver
+    description: Build driver
     steps:
       - run:
-          name: Build
+          name: Build driver
           command: |
               cd driver
               ./bootstrap
@@ -97,7 +86,7 @@ commands:
         type: string
     steps:
       - run:
-          name: Build C++ library
+          name: Build << parameters.package >> C++ library
           command: |
               cd << parameters.package >>
               ./bootstrap
@@ -130,9 +119,8 @@ commands:
         type: boolean
         default: false
     steps:
-      - version
       - run:
-          name: Build
+          name: Build << parameters.package >> package
           command: |
               cd << parameters.dir >>/<< parameters.package >>
               birch build --prefix=$PREFIX $MODE_FLAGS $BIRCH_FLAGS
@@ -141,7 +129,7 @@ commands:
           condition: << parameters.smoke >>
           steps:
             - run:
-                name: Run smoke tests
+                name: Smoke test << parameters.package >> package
                 command: |
                     cd << parameters.dir >>/<< parameters.package >>
                     env BIRCH_MODE=test ./smoke.sh
@@ -149,7 +137,7 @@ commands:
           condition: << parameters.unit >>
           steps:
             - run:
-                name: Run unit tests
+                name: Unit test << parameters.package >> package
                 command: |
                     cd << parameters.dir >>/<< parameters.package >>
                     env BIRCH_MODE=release time --format="$FORMAT" --output=/tmp/time.txt ./test.sh
@@ -158,9 +146,9 @@ commands:
           condition: << parameters.mongodb >>
           steps:
             - run:
-                name: Upload to MongoDB Atlas
+                name: Upload  << parameters.package >> results to MongoDB Atlas
                 command: |
-                    if [[ -n "$MONGODB_HOST" && -n "$MONGODB_USERNAME" && -n "$MONGODB_PASSWORD" ]]
+                    if [[ -n "$MONGODB_HOST" && -n "$MONGODB_USERNAME" && -n "$MONGODB_PASSWORD" && -n "$VERSION_LONG" ]]
                     then
                       cd << parameters.dir >>/<< parameters.package >>
                       echo '{ "output": ' > /tmp/mongodb.json
@@ -223,7 +211,7 @@ commands:
         type: string
     steps:
       - run:
-          name: Open Build Service package
+          name: Open Build Service package for << parameters.package >>
           command: |
               if [[ -n "$OSC_PROJECT" && -n "$OSC_USERNAME" && -n "$OSC_PASSWORD" && -n "$VERSION" ]]
               then
@@ -258,7 +246,7 @@ commands:
         type: string
     steps:
       - run:
-          name: Homebrew package
+          name: Homebrew package for << parameters.package >>
           command: |
               if [[ -n "$VERSION" ]]
               then
@@ -278,8 +266,8 @@ jobs:
   linux:
     executor: linux
     steps:
-      - linux_environment
       - checkout
+      - linux_environment
       - driver
       - library:
           package: libbirch
@@ -423,7 +411,6 @@ jobs:
       - linux_environment
       - attach_workspace:
           at: .
-      - version
       - configure_osc
       - linux_deploy_package:
           package: driver
@@ -448,8 +435,8 @@ jobs:
   mac:
     executor: mac
     steps:
-      - mac_environment
       - checkout
+      - mac_environment
       - driver
       - library:
           package: libbirch
@@ -570,7 +557,6 @@ jobs:
       - mac_environment
       - attach_workspace:
           at: .
-      - version
       - checkout_brew
       - mac_deploy_package:
           package: driver
