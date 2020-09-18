@@ -194,6 +194,8 @@ commands:
           name: Commit Homebrew tap
           command: |
               cd ~/project/homebrew-birch
+              git config --global user.name "$GITHUB_USERNAME"
+              git config --global user.password "$GITHUB_PASSWORD"
               git add -u
               git commit -m "Updated to version $VERSION."
               git push origin master
