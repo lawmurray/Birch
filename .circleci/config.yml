@@ -80,7 +80,6 @@ commands:
   driver:
     description: Build the driver
     steps:
-      - checkout
       - run:
           name: Build
           command: |
@@ -89,12 +88,6 @@ commands:
               ./configure --prefix="$PREFIX" CXXFLAGS="-Wall -Wno-overloaded-virtual -g -O0 -fno-inline --coverage" || cat config.log
               make $MAKE_FLAGS
               make install
-      - slack
-      - persist_to_workspace:
-          root: .
-          paths:
-            - '*'
-            - .*
 
   library:
     description: Build a C++ library
@@ -102,10 +95,6 @@ commands:
       package:
         description: Name of the library
         type: string
-      persist:
-        description: Persist to workspace?
-        type: boolean
-        default: false
     steps:
       - run:
           name: Build C++ library
@@ -115,16 +104,6 @@ commands:
               ./configure --prefix="$PREFIX" $MODE_FLAGS || cat config.log
               make $MAKE_FLAGS
               make install
-      - when:
-          condition: << parameters.persist >>
-          steps:
-            - persist_to_workspace:
-                root: .
-                paths:
-                  - << parameters.package >>
-                  - lib/<< parameters.package >>*
-                  - include/<< parameters.package >>*
-      - slack
 
   package:
     description: Build a Birch package
@@ -150,13 +129,7 @@ commands:
         description: Upload output to MongoDB Atlas?
         type: boolean
         default: false
-      persist:
-        description: Persist to workspace?
-        type: boolean
-        default: false
     steps:
-      - attach_workspace:
-          at: .
       - version
       - run:
           name: Build
@@ -201,16 +174,6 @@ commands:
                       echo '}' >> /tmp/mongodb.json
                       mongoimport --uri mongodb+srv://$MONGODB_USERNAME:$MONGODB_PASSWORD@$MONGODB_HOST/test --collection << parameters.package >> --file /tmp/mongodb.json
                     fi
-      - when:
-          condition: << parameters.persist >>
-          steps:
-            - persist_to_workspace:
-                root: .
-                paths:
-                  - << parameters.dir >>/<< parameters.package >>
-                  - lib/lib<< parameters.tar >>*
-                  - include/<< parameters.tar >>*
-      - slack
 
   configure_osc:
     description: Configure Open Build Service command-line interface
@@ -312,42 +275,42 @@ commands:
               fi
 
 jobs:
-  linux_driver:
+  linux:
     executor: linux
     steps:
       - linux_environment
+      - checkout
       - driver
-
-  linux_libraries:
-    executor: linux
-    steps:
-      - linux_environment
       - library:
           package: libbirch
-          persist: true
       - package:
           dir: libraries
           package: Standard
           tar: birch-standard
           smoke: true
           unit: true
-          persist: true
       - package:
           dir: libraries
           package: Cairo
           tar: birch-cairo
-          persist: true
       - package:
           dir: libraries
           package: SQLite
           tar: birch-sqlite
-          persist: true
+      - persist_to_workspace:
+          root: .
+          paths:
+            - '*'
+            - .*
       - codecov/upload
+      - slack
 
-  linux_examples_LinearGaussian:
+  linux_LinearGaussian:
     executor: linux
     steps:
       - linux_environment
+      - attach_workspace:
+          at: .
       - package:
           dir: examples
           package: LinearGaussian
@@ -356,11 +319,14 @@ jobs:
           unit: true
           mongodb: true
       - codecov/upload
+      - slack
 
-  linux_examples_LinearRegression:
+  linux_LinearRegression:
     executor: linux
     steps:
       - linux_environment
+      - attach_workspace:
+          at: .
       - package:
           dir: examples
           package: LinearRegression
@@ -369,11 +335,14 @@ jobs:
           unit: true
           mongodb: true
       - codecov/upload
+      - slack
 
-  linux_examples_MixedGaussian:
+  linux_MixedGaussian:
     executor: linux
     steps:
       - linux_environment
+      - attach_workspace:
+          at: .
       - package:
           dir: examples
           package: MixedGaussian
@@ -382,11 +351,14 @@ jobs:
           unit: true
           mongodb: true
       - codecov/upload
+      - slack
 
-  linux_examples_MultiObjectTracking:
+  linux_MultiObjectTracking:
     executor: linux
     steps:
       - linux_environment
+      - attach_workspace:
+          at: .
       - package:
           dir: examples
           package: MultiObjectTracking
@@ -395,11 +367,14 @@ jobs:
           unit: true
           mongodb: true
       - codecov/upload
+      - slack
 
-  linux_examples_PoissonGaussian:
+  linux_PoissonGaussian:
     executor: linux
     steps:
       - linux_environment
+      - attach_workspace:
+          at: .
       - package:
           dir: examples
           package: PoissonGaussian
@@ -408,11 +383,14 @@ jobs:
           unit: true
           mongodb: true
       - codecov/upload
+      - slack
 
-  linux_examples_SIR:
+  linux_SIR:
     executor: linux
     steps:
       - linux_environment
+      - attach_workspace:
+          at: .
       - package:
           dir: examples
           package: SIR
@@ -421,11 +399,14 @@ jobs:
           unit: true
           mongodb: true
       - codecov/upload
+      - slack
 
-  linux_examples_VectorBorneDisease:
+  linux_VectorBorneDisease:
     executor: linux
     steps:
       - linux_environment
+      - attach_workspace:
+          at: .
       - package:
           dir: examples
           package: VectorBorneDisease
@@ -434,6 +415,7 @@ jobs:
           unit: true
           mongodb: true
       - codecov/upload
+      - slack
 
   linux_deploy:
     executor: linux
@@ -463,105 +445,124 @@ jobs:
           tar: birch-sqlite
       - slack
 
-  mac_driver:
+  mac:
     executor: mac
     steps:
       - mac_environment
+      - checkout
       - driver
-
-  mac_libraries:
-    executor: mac
-    steps:
-      - mac_environment
       - library:
           package: libbirch
-          persist: true
       - package:
           dir: libraries
           package: Standard
           tar: birch-standard
           smoke: true
-          persist: true
       - package:
           dir: libraries
           package: Cairo
           tar: birch-cairo
-          persist: true
       - package:
           dir: libraries
           package: SQLite
           tar: birch-sqlite
-          persist: true
+      - persist_to_workspace:
+          root: .
+          paths:
+            - '*'
+            - .*
+      - slack
 
-  mac_examples_LinearGaussian:
+  mac_LinearGaussian:
     executor: mac
     steps:
       - mac_environment
+      - attach_workspace:
+          at: .
       - package:
           dir: examples
           package: LinearGaussian
           tar: birch-lineargaussian
           smoke: true
+      - slack
 
-  mac_examples_LinearRegression:
+  mac_LinearRegression:
     executor: mac
     steps:
       - mac_environment
+      - attach_workspace:
+          at: .
       - package:
           dir: examples
           package: LinearRegression
           tar: birch-linearregression
           smoke: true
+      - slack
 
-  mac_examples_MixedGaussian:
+  mac_MixedGaussian:
     executor: mac
     steps:
       - mac_environment
+      - attach_workspace:
+          at: .
       - package:
           dir: examples
           package: MixedGaussian
           tar: birch-mixedgaussian
           smoke: true
+      - slack
 
-  mac_examples_MultiObjectTracking:
+  mac_MultiObjectTracking:
     executor: mac
     steps:
       - mac_environment
+      - attach_workspace:
+          at: .
       - package:
           dir: examples
           package: MultiObjectTracking
           tar: birch-multiobjecttracking
           smoke: true
+      - slack
 
-  mac_examples_PoissonGaussian:
+  mac_PoissonGaussian:
     executor: mac
     steps:
       - mac_environment
+      - attach_workspace:
+          at: .
       - package:
           dir: examples
           package: PoissonGaussian
           tar: birch-poissongaussian
           smoke: true
+      - slack
 
-  mac_examples_SIR:
+  mac_SIR:
     executor: mac
     steps:
       - mac_environment
+      - attach_workspace:
+          at: .
       - package:
           dir: examples
           package: SIR
           tar: birch-sir
           smoke: true
+      - slack
 
-  mac_examples_VectorBorneDisease:
+  mac_VectorBorneDisease:
     executor: mac
     steps:
       - mac_environment
+      - attach_workspace:
+          at: .
       - package:
           dir: examples
           package: VectorBorneDisease
           tar: birch-vectorbornedisease
           smoke: true
+      - slack
 
   mac_deploy:
     executor: mac
@@ -597,39 +598,35 @@ workflows:
 
   linux:
     jobs:
-      - linux_driver
+      - linux
 
-      - linux_libraries:
+      - linux_LinearGaussian:
           requires:
-            - linux_driver
+            - linux
 
-      - linux_examples_LinearGaussian:
+      - linux_LinearRegression:
           requires:
-            - linux_libraries
+            - linux
 
-      - linux_examples_LinearRegression:
+      - linux_MixedGaussian:
           requires:
-            - linux_libraries
+            - linux
 
-      - linux_examples_MixedGaussian:
+      - linux_PoissonGaussian:
           requires:
-            - linux_libraries
+            - linux
 
-      - linux_examples_PoissonGaussian:
+      - linux_SIR:
           requires:
-            - linux_libraries
+            - linux
 
-      - linux_examples_SIR:
+      - linux_MultiObjectTracking:
           requires:
-            - linux_libraries
+            - linux
 
-      - linux_examples_MultiObjectTracking:
+      - linux_VectorBorneDisease:
           requires:
-            - linux_libraries
-
-      - linux_examples_VectorBorneDisease:
-          requires:
-            - linux_libraries
+            - linux
 
       - linux_deploy:
           filters:
@@ -638,49 +635,45 @@ workflows:
                 - master
                 - monorepo
           requires:
-            - linux_examples_LinearGaussian
-            - linux_examples_LinearRegression
-            - linux_examples_MixedGaussian
-            - linux_examples_PoissonGaussian
-            - linux_examples_SIR
-            - linux_examples_MultiObjectTracking
-            - linux_examples_VectorBorneDisease
+            - linux_LinearGaussian
+            - linux_LinearRegression
+            - linux_MixedGaussian
+            - linux_PoissonGaussian
+            - linux_SIR
+            - linux_MultiObjectTracking
+            - linux_VectorBorneDisease
 
   mac:
     jobs:
-      - mac_driver
+      - mac
 
-      - mac_libraries:
+      - mac_LinearGaussian:
           requires:
-            - mac_driver
+            - mac
 
-      - mac_examples_LinearGaussian:
+      - mac_LinearRegression:
           requires:
-            - mac_libraries
+            - mac
 
-      - mac_examples_LinearRegression:
+      - mac_MixedGaussian:
           requires:
-            - mac_libraries
+            - mac
 
-      - mac_examples_MixedGaussian:
+      - mac_PoissonGaussian:
           requires:
-            - mac_libraries
+            - mac
 
-      - mac_examples_PoissonGaussian:
+      - mac_SIR:
           requires:
-            - mac_libraries
+            - mac
 
-      - mac_examples_SIR:
+      - mac_MultiObjectTracking:
           requires:
-            - mac_libraries
+            - mac
 
-      - mac_examples_MultiObjectTracking:
+      - mac_VectorBorneDisease:
           requires:
-            - mac_libraries
-
-      - mac_examples_VectorBorneDisease:
-          requires:
-            - mac_libraries
+            - mac
 
       - mac_deploy:
           filters:
@@ -689,10 +682,10 @@ workflows:
                 - master
                 - monorepo
           requires:
-            - mac_examples_LinearGaussian
-            - mac_examples_LinearRegression
-            - mac_examples_MixedGaussian
-            - mac_examples_PoissonGaussian
-            - mac_examples_SIR
-            - mac_examples_MultiObjectTracking
-            - mac_examples_VectorBorneDisease
+            - mac_LinearGaussian
+            - mac_LinearRegression
+            - mac_MixedGaussian
+            - mac_PoissonGaussian
+            - mac_SIR
+            - mac_MultiObjectTracking
+            - mac_VectorBorneDisease
