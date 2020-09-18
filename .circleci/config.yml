@@ -102,9 +102,11 @@ commands:
       package:
         description: Name of the library
         type: string
+      persist:
+        description: Persist to workspace?
+        type: boolean
+        default: false
     steps:
-      - attach_workspace:
-          at: .
       - run:
           name: Build C++ library
           command: |
@@ -113,12 +115,15 @@ commands:
               ./configure --prefix="$PREFIX" $MODE_FLAGS || cat config.log
               make $MAKE_FLAGS
               make install
-      - persist_to_workspace:
-          root: .
-          paths:
-            - << parameters.package >>
-            - lib/<< parameters.package >>*
-            - include/<< parameters.package >>*
+      - when:
+          condition: << parameters.persist >>
+          steps:
+            - persist_to_workspace:
+                root: .
+                paths:
+                  - << parameters.package >>
+                  - lib/<< parameters.package >>*
+                  - include/<< parameters.package >>*
       - slack
 
   package:
@@ -133,10 +138,6 @@ commands:
       tar:
         description: Tarname of package (e.g. birch-standard)
         type: string
-      install:
-        description: Install the package?
-        type: boolean
-        default: false
       smoke:
         description: Run smoke tests?
         type: boolean
@@ -153,10 +154,6 @@ commands:
         description: Persist to workspace?
         type: boolean
         default: false
-      codecov:
-        description: Upload coverage to Codecov?
-        type: boolean
-        default: false
     steps:
       - attach_workspace:
           at: .
@@ -166,14 +163,7 @@ commands:
           command: |
               cd << parameters.dir >>/<< parameters.package >>
               birch build --prefix=$PREFIX $MODE_FLAGS $BIRCH_FLAGS
-      - when:
-          condition: << parameters.install >>
-          steps:
-            - run:
-                name: Install
-                command: |
-                    cd << parameters.dir >>/<< parameters.package >>
-                    birch install
+              birch install
       - when:
           condition: << parameters.smoke >>
           steps:
@@ -211,10 +201,6 @@ commands:
                       echo '}' >> /tmp/mongodb.json
                       mongoimport --uri mongodb+srv://$MONGODB_USERNAME:$MONGODB_PASSWORD@$MONGODB_HOST/test --collection << parameters.package >> --file /tmp/mongodb.json
                     fi
-      - when:
-          condition: << parameters.codecov >>
-          steps:
-            - codecov/upload
       - when:
           condition: << parameters.persist >>
           steps:
@@ -332,50 +318,31 @@ jobs:
       - linux_environment
       - driver
 
-  linux_libbirch:
+  linux_libraries:
     executor: linux
     steps:
       - linux_environment
       - library:
           package: libbirch
-
-  linux_libraries_Standard:
-    executor: linux
-    steps:
-      - linux_environment
+          persist: true
       - package:
           dir: libraries
           package: Standard
           tar: birch-standard
-          install: true
           smoke: true
           unit: true
-          codecov: true
           persist: true
-
-  linux_libraries_Cairo:
-    executor: linux
-    steps:
-      - linux_environment
       - package:
           dir: libraries
           package: Cairo
           tar: birch-cairo
-          install: true
-          codecov: true
           persist: true
-
-  linux_libraries_SQLite:
-    executor: linux
-    steps:
-      - linux_environment
       - package:
           dir: libraries
           package: SQLite
           tar: birch-sqlite
-          install: true
-          codecov: true
           persist: true
+      - codecov/upload
 
   linux_examples_LinearGaussian:
     executor: linux
@@ -388,7 +355,7 @@ jobs:
           smoke: true
           unit: true
           mongodb: true
-          codecov: true
+      - codecov/upload
 
   linux_examples_LinearRegression:
     executor: linux
@@ -401,7 +368,7 @@ jobs:
           smoke: true
           unit: true
           mongodb: true
-          codecov: true
+      - codecov/upload
 
   linux_examples_MixedGaussian:
     executor: linux
@@ -414,7 +381,7 @@ jobs:
           smoke: true
           unit: true
           mongodb: true
-          codecov: true
+      - codecov/upload
 
   linux_examples_MultiObjectTracking:
     executor: linux
@@ -427,7 +394,7 @@ jobs:
           smoke: true
           unit: true
           mongodb: true
-          codecov: true
+      - codecov/upload
 
   linux_examples_PoissonGaussian:
     executor: linux
@@ -440,7 +407,7 @@ jobs:
           smoke: true
           unit: true
           mongodb: true
-          codecov: true
+      - codecov/upload
 
   linux_examples_SIR:
     executor: linux
@@ -453,7 +420,7 @@ jobs:
           smoke: true
           unit: true
           mongodb: true
-          codecov: true
+      - codecov/upload
 
   linux_examples_VectorBorneDisease:
     executor: linux
@@ -466,7 +433,7 @@ jobs:
           smoke: true
           unit: true
           mongodb: true
-          codecov: true
+      - codecov/upload
 
   linux_deploy:
     executor: linux
@@ -502,45 +469,28 @@ jobs:
       - mac_environment
       - driver
 
-  mac_libbirch:
+  mac_libraries:
     executor: mac
     steps:
       - mac_environment
       - library:
           package: libbirch
-
-  mac_libraries_Standard:
-    executor: mac
-    steps:
-      - mac_environment
+          persist: true
       - package:
           dir: libraries
           package: Standard
           tar: birch-standard
-          install: true
           smoke: true
           persist: true
-
-  mac_libraries_Cairo:
-    executor: mac
-    steps:
-      - mac_environment
       - package:
           dir: libraries
           package: Cairo
           tar: birch-cairo
-          install: true
           persist: true
-
-  mac_libraries_SQLite:
-    executor: mac
-    steps:
-      - mac_environment
       - package:
           dir: libraries
           package: SQLite
           tar: birch-sqlite
-          install: true
           persist: true
 
   mac_examples_LinearGaussian:
@@ -649,56 +599,37 @@ workflows:
     jobs:
       - linux_driver
 
-      - linux_libbirch:
+      - linux_libraries:
           requires:
             - linux_driver
 
-      - linux_libraries_Standard:
-          requires:
-            - linux_libbirch
-
-      - linux_libraries_Cairo:
-          requires:
-            - linux_libraries_Standard
-
-      - linux_libraries_SQLite:
-          requires:
-            - linux_libraries_Standard
-
       - linux_examples_LinearGaussian:
           requires:
-            - linux_libraries_Cairo
-            - linux_libraries_SQLite
+            - linux_libraries
 
       - linux_examples_LinearRegression:
           requires:
-            - linux_libraries_Cairo
-            - linux_libraries_SQLite
+            - linux_libraries
 
       - linux_examples_MixedGaussian:
           requires:
-            - linux_libraries_Cairo
-            - linux_libraries_SQLite
+            - linux_libraries
 
       - linux_examples_PoissonGaussian:
           requires:
-            - linux_libraries_Cairo
-            - linux_libraries_SQLite
+            - linux_libraries
 
       - linux_examples_SIR:
           requires:
-            - linux_libraries_Cairo
-            - linux_libraries_SQLite
+            - linux_libraries
 
       - linux_examples_MultiObjectTracking:
           requires:
-            - linux_libraries_Cairo
-            - linux_libraries_SQLite
+            - linux_libraries
 
       - linux_examples_VectorBorneDisease:
           requires:
-            - linux_libraries_Cairo
-            - linux_libraries_SQLite
+            - linux_libraries
 
       - linux_deploy:
           filters:
@@ -719,56 +650,37 @@ workflows:
     jobs:
       - mac_driver
 
-      - mac_libbirch:
+      - mac_libraries:
           requires:
             - mac_driver
 
-      - mac_libraries_Standard:
-          requires:
-            - mac_libbirch
-
-      - mac_libraries_Cairo:
-          requires:
-            - mac_libraries_Standard
-
-      - mac_libraries_SQLite:
-          requires:
-            - mac_libraries_Standard
-
       - mac_examples_LinearGaussian:
           requires:
-            - mac_libraries_Cairo
-            - mac_libraries_SQLite
+            - mac_libraries
 
       - mac_examples_LinearRegression:
           requires:
-            - mac_libraries_Cairo
-            - mac_libraries_SQLite
+            - mac_libraries
 
       - mac_examples_MixedGaussian:
           requires:
-            - mac_libraries_Cairo
-            - mac_libraries_SQLite
+            - mac_libraries
 
       - mac_examples_PoissonGaussian:
           requires:
-            - mac_libraries_Cairo
-            - mac_libraries_SQLite
+            - mac_libraries
 
       - mac_examples_SIR:
           requires:
-            - mac_libraries_Cairo
-            - mac_libraries_SQLite
+            - mac_libraries
 
       - mac_examples_MultiObjectTracking:
           requires:
-            - mac_libraries_Cairo
-            - mac_libraries_SQLite
+            - mac_libraries
 
       - mac_examples_VectorBorneDisease:
           requires:
-            - mac_libraries_Cairo
-            - mac_libraries_SQLite
+            - mac_libraries
 
       - mac_deploy:
           filters:
