@@ -193,6 +193,9 @@ commands:
           name: Commit Homebrew tap
           command: |
               cd ~/project/homebrew-birch
+              ls -l
+              cat *.rb
+              git status
               git add -u
               git commit -m "Updated to version $VERSION."
               git push origin master
@@ -251,11 +254,13 @@ commands:
           command: |
               if [[ -n "$VERSION" ]]
               then
+                echo Updating package
                 cd << parameters.dir >>/<< parameters.package >>
                 make dist
                 cp << parameters.tar >>-unversioned.tar.gz ~/project/homebrew-birch/.
                 cd ~/project/homebrew-birch
                 SHA256=($(sha256sum << parameters.tar >>-unversioned.tar.gz))
+                echo $SHA256
                 cat << parameters.tar >>.rb |
                   sed -E "s/sha256 \"[0-9a-f]+\"/sha256 \"$SHA256\"/g" |
                   sed -E "s/version \"[0-9]+.[0-9]+\"/version \"$VERSION\"/g" |
