@@ -42,6 +42,7 @@ commands:
           name: Dependencies
           description: Install dependencies from Homebrew
           command: |
+              HOMEBREW_NO_AUTO_UPDATE=1 brew unlink parallel  # conflicts with moreutils
               HOMEBREW_NO_AUTO_UPDATE=1 brew install coreutils moreutils autoconf automake libtool flex bison boost eigen libyaml libomp sqlite cairo
       - run:
           name: Environment
