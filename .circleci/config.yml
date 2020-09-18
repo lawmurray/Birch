@@ -255,7 +255,7 @@ commands:
       - run:
           name: Commit Homebrew tap
           command: |
-              cd ~/homebrew-birch
+              cd ~/project/homebrew-birch
               git commit -m "Updated to version $VERSION."
               git push origin master
 
@@ -281,8 +281,8 @@ commands:
                 osc checkout $OSC_PROJECT << parameters.tar >>
                 cd << parameters.dir >>/<< parameters.package >>
                 make dist
-                cp << parameters.tar >>-unversioned.tar.gz ~/$OSC_PROJECT/<< parameters.tar >>/.
-                cd ~/$OSC_PROJECT/<< parameters.tar >>
+                cp << parameters.tar >>-unversioned.tar.gz ~/project/$OSC_PROJECT/<< parameters.tar >>/.
+                cd ~/project/$OSC_PROJECT/<< parameters.tar >>
                 for file in << parameters.tar >>.spec << parameters.tar >>.dsc debian.control PKGBUILD
                 do
                   cat $file |
@@ -315,8 +315,8 @@ commands:
               then
                 cd << parameters.dir >>/<< parameters.package >>
                 make dist
-                cp << parameters.tar >>-unversioned.tar.gz ~/homebrew-birch/.
-                cd ~/homebrew-birch
+                cp << parameters.tar >>-unversioned.tar.gz ~/project/homebrew-birch/.
+                cd ~/project/homebrew-birch
                 SHA256=($(sha256sum << parameters.tar >>-unversioned.tar.gz))
                 cat << parameters.tar >>.rb |
                   sed -E "s/sha256 \"[0-9a-f]+\"/sha256 \"$SHA256\"/g" |
