@@ -193,6 +193,7 @@ commands:
           name: Commit Homebrew tap
           command: |
               cd ~/project/homebrew-birch
+              git add -u
               git commit -m "Updated to version $VERSION."
               git push origin master
 
