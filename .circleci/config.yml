@@ -193,9 +193,6 @@ commands:
           name: Commit Homebrew tap
           command: |
               cd ~/project/homebrew-birch
-              ls -l
-              cat *.rb
-              git status
               git add -u
               git commit -m "Updated to version $VERSION."
               git push origin master
@@ -254,13 +251,11 @@ commands:
           command: |
               if [[ -n "$VERSION" ]]
               then
-                echo Updating package
                 cd << parameters.dir >>/<< parameters.package >>
                 make dist
                 cp << parameters.tar >>-unversioned.tar.gz ~/project/homebrew-birch/.
                 cd ~/project/homebrew-birch
                 SHA256=($(sha256sum << parameters.tar >>-unversioned.tar.gz))
-                echo $SHA256
                 cat << parameters.tar >>.rb |
                   sed -E "s/sha256 \"[0-9a-f]+\"/sha256 \"$SHA256\"/g" |
                   sed -E "s/version \"[0-9]+.[0-9]+\"/version \"$VERSION\"/g" |
@@ -291,20 +286,20 @@ jobs:
           dir: libraries
           package: SQLite
           tar: birch-sqlite
+      - codecov/upload
+      - slack
       - persist_to_workspace:
           root: .
           paths:
             - '*'
             - .*
-      - codecov/upload
-      - slack
 
   linux_LinearGaussian:
     executor: linux
     steps:
-      - linux_environment
       - attach_workspace:
           at: .
+      - linux_environment
       - package:
           dir: examples
           package: LinearGaussian
@@ -318,9 +313,9 @@ jobs:
   linux_LinearRegression:
     executor: linux
     steps:
-      - linux_environment
       - attach_workspace:
           at: .
+      - linux_environment
       - package:
           dir: examples
           package: LinearRegression
@@ -334,9 +329,9 @@ jobs:
   linux_MixedGaussian:
     executor: linux
     steps:
-      - linux_environment
       - attach_workspace:
           at: .
+      - linux_environment
       - package:
           dir: examples
           package: MixedGaussian
@@ -350,9 +345,9 @@ jobs:
   linux_MultiObjectTracking:
     executor: linux
     steps:
-      - linux_environment
       - attach_workspace:
           at: .
+      - linux_environment
       - package:
           dir: examples
           package: MultiObjectTracking
@@ -366,9 +361,9 @@ jobs:
   linux_PoissonGaussian:
     executor: linux
     steps:
-      - linux_environment
       - attach_workspace:
           at: .
+      - linux_environment
       - package:
           dir: examples
           package: PoissonGaussian
@@ -382,9 +377,9 @@ jobs:
   linux_SIR:
     executor: linux
     steps:
-      - linux_environment
       - attach_workspace:
           at: .
+      - linux_environment
       - package:
           dir: examples
           package: SIR
@@ -398,9 +393,9 @@ jobs:
   linux_VectorBorneDisease:
     executor: linux
     steps:
-      - linux_environment
       - attach_workspace:
           at: .
+      - linux_environment
       - package:
           dir: examples
           package: VectorBorneDisease
@@ -414,9 +409,9 @@ jobs:
   linux_deploy:
     executor: linux
     steps:
-      - linux_environment
       - attach_workspace:
           at: .
+      - linux_environment
       - configure_osc
       - linux_deploy_package:
           package: driver
@@ -459,19 +454,19 @@ jobs:
           dir: libraries
           package: SQLite
           tar: birch-sqlite
+      - slack
       - persist_to_workspace:
           root: .
           paths:
             - '*'
             - .*
-      - slack
 
   mac_LinearGaussian:
     executor: mac
     steps:
-      - mac_environment
       - attach_workspace:
           at: .
+      - mac_environment
       - package:
           dir: examples
           package: LinearGaussian
@@ -482,9 +477,9 @@ jobs:
   mac_LinearRegression:
     executor: mac
     steps:
-      - mac_environment
       - attach_workspace:
           at: .
+      - mac_environment
       - package:
           dir: examples
           package: LinearRegression
@@ -495,9 +490,9 @@ jobs:
   mac_MixedGaussian:
     executor: mac
     steps:
-      - mac_environment
       - attach_workspace:
           at: .
+      - mac_environment
       - package:
           dir: examples
           package: MixedGaussian
@@ -508,9 +503,9 @@ jobs:
   mac_MultiObjectTracking:
     executor: mac
     steps:
-      - mac_environment
       - attach_workspace:
           at: .
+      - mac_environment
       - package:
           dir: examples
           package: MultiObjectTracking
@@ -521,9 +516,9 @@ jobs:
   mac_PoissonGaussian:
     executor: mac
     steps:
-      - mac_environment
       - attach_workspace:
           at: .
+      - mac_environment
       - package:
           dir: examples
           package: PoissonGaussian
@@ -534,9 +529,9 @@ jobs:
   mac_SIR:
     executor: mac
     steps:
-      - mac_environment
       - attach_workspace:
           at: .
+      - mac_environment
       - package:
           dir: examples
           package: SIR
@@ -547,9 +542,9 @@ jobs:
   mac_VectorBorneDisease:
     executor: mac
     steps:
-      - mac_environment
       - attach_workspace:
           at: .
+      - mac_environment
       - package:
           dir: examples
           package: VectorBorneDisease
@@ -560,9 +555,9 @@ jobs:
   mac_deploy:
     executor: mac
     steps:
-      - mac_environment
       - attach_workspace:
           at: .
+      - mac_environment
       - checkout_brew
       - mac_deploy_package:
           package: driver
