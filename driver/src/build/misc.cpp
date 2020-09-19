@@ -5,6 +5,7 @@
 
 #include "src/common/Location.hpp"
 #include "src/statement/File.hpp"
+#include "src/exception/DriverException.hpp"
 
 void birch::warn(const std::string& msg) {
   std::cerr << "warning: " << msg << std::endl;
@@ -124,6 +125,11 @@ void birch::write_all(const fs::path& path, const std::string& contents) {
     fs::create_directories(path.parent_path());
   }
   fs::ofstream out(path);
+  if (out.fail()) {
+    std::stringstream buf;
+    buf << "Could not open " << path.string() << " for writing.";
+    throw DriverException(buf.str());
+  }
   std::stringstream buf(contents);
   out << buf.rdbuf();
 }
@@ -141,6 +147,19 @@ bool birch::write_all_if_different(const fs::path& path,
     return true;
   }
   return false;
+}
+
+void birch::replace_tag(const fs::path& path, const std::string& tag,
+    const std::string& value) {
+  auto contents = read_all(path);
+  boost::replace_all(contents, tag, value);
+  fs::ofstream stream(path);
+  if (stream.fail()) {
+    std::stringstream buf;
+    buf << "Could not open " << path.string() << " for writing.";
+    throw DriverException(buf.str());
+  }
+  stream << contents;
 }
 
 std::string birch::tar(const std::string& name) {

@@ -276,6 +276,7 @@ dist_pkgdata_DATA = \
   share/LICENSE \
   share/Makefile.am \
   share/META.json \
+	share/mkdocs.yml  \
   share/README.md
 
 dist_noinst_DATA = \

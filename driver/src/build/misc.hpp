@@ -87,6 +87,16 @@ bool write_all_if_different(const fs::path& path,
     const std::string& contents);
 
 /**
+ * Replace a tag in a file (e.g. `PACKAGE_NAME` with the name of the package).
+ *
+ * @param path File path.
+ * @param tag Tag to replace.
+ * @param value Value to replace it with.
+ */
+void replace_tag(const fs::path& path, const std::string& tag,
+    const std::string& value);
+
+/**
  * Tar name for a package.
  */
 std::string tar(const std::string& name);

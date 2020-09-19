@@ -23,7 +23,6 @@
 /Makefile.am
 /Makefile.in
 /missing
-/mkdocs.yml
 /DOCS.md
 /.autotools
 /*.birch

@@ -627,30 +627,19 @@ void birch::Driver::init() {
   fs::create_directory("config");
   fs::create_directory("input");
   fs::create_directory("output");
+
   copy_with_prompt(find(shareDirs, "gitignore"), ".gitignore");
   copy_with_prompt(find(shareDirs, "LICENSE"), "LICENSE");
 
-  std::string contents;
-
-  contents = read_all(find(shareDirs, "META.json"));
-  boost::replace_all(contents, "PACKAGE_NAME", packageName);
-  fs::ofstream metaStream("META.json");
-  if (metaStream.fail()) {
-    std::stringstream buf;
-    buf << "Could not open META.json for writing.";
-    throw DriverException(buf.str());
+  if (copy_with_prompt(find(shareDirs, "META.json"), "META.json")) {
+    replace_tag("META.json", "PACKAGE_NAME", packageName);
   }
-  metaStream << contents;
-
-  contents = read_all(find(shareDirs, "README.md"));
-  boost::replace_all(contents, "PACKAGE_NAME", packageName);
-  fs::ofstream readmeStream("README.md");
-  if (readmeStream.fail()) {
-    std::stringstream buf;
-    buf << "Could not open README.md for writing.";
-    throw DriverException(buf.str());
+  if (copy_with_prompt(find(shareDirs, "README.md"), "README.md")) {
+    replace_tag("README.md", "PACKAGE_NAME", packageName);
   }
-  readmeStream << contents;
+  if (copy_with_prompt(find(shareDirs, "mkdocs.yml"), "mkdocs.yml")) {
+    replace_tag("mkdocs.yml", "PACKAGE_NAME", packageName);
+  }
 }
 
 void birch::Driver::check() {
@@ -728,31 +717,6 @@ void birch::Driver::docs() {
   docsStream.close();
 
   /* split that file into multiple files for mkdocs */
-  fs::ofstream mkdocsStream("mkdocs.yml");
-  if (mkdocsStream.fail()) {
-    std::stringstream buf;
-    buf << "Could not open mkdocs.yml for writing.";
-    throw DriverException(buf.str());
-  }
-  mkdocsStream << "site_name: '" << packageName << "'\n";
-  mkdocsStream << "theme:\n";
-  mkdocsStream << "  name: 'material'\n";
-  mkdocsStream << "markdown_extensions:\n";
-  mkdocsStream << "  - admonition\n";
-  mkdocsStream << "  - footnotes\n";
-  mkdocsStream << "  - pymdownx.arithmatex\n";
-  mkdocsStream << "  - pymdownx.superfences:\n";
-  mkdocsStream << "      custom_fences:\n";
-  mkdocsStream << "        - name: mermaid\n";
-  mkdocsStream << "          class: mermaid\n";
-  mkdocsStream << "          format: !!python/name:pymdownx.superfences.fence_div_format\n";
-  mkdocsStream << "extra_css:\n";
-  mkdocsStream << "  - 'https://unpkg.com/mermaid@8.5.1/dist/mermaid.css'\n";
-  mkdocsStream << "extra_javascript:\n";
-  mkdocsStream << "  - 'https://unpkg.com/mermaid@8.5.1/dist/mermaid.min.js'\n";
-  mkdocsStream << "  - 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML'\n";
-  mkdocsStream << "nav:\n";
-
   fs::path docs("docs"), file;
   fs::create_directories(docs);
   fs::create_directories(docs / "types");
@@ -771,7 +735,6 @@ void birch::Driver::docs() {
     docsStream << packageDescription << '\n';
     docsStream.close();
   }
-  mkdocsStream << "  - index.md\n";
 
   std::string str = read_all("DOCS.md");
   std::regex reg("(?:^|\r?\n)(##?) (.*?)(?=\r?\n|$)",
@@ -785,7 +748,6 @@ void birch::Driver::docs() {
     if (match.str(1) == "#") {
       /* first level header */
       h1 = match.str(2);
-      mkdocsStream << "  - '" << h1 << "': ";
 
       /* among first-level headers, only variables and types have their own
        * page, rather than being further split into a page per item */
@@ -793,26 +755,24 @@ void birch::Driver::docs() {
         std::string dir = h1;
         boost::to_lower(dir);
         file = fs::path(dir) / "index.md";
-        mkdocsStream << file.string();
         if (docsStream.is_open()) {
           docsStream.close();
         }
         docsStream.open(docs / file);
         docsStream << "# " << h1 << "\n\n";
       }
-      mkdocsStream << '\n';
       boost::to_lower(h1);
       boost::replace_all(h1, " ", "_");
     } else {
       /* second level header */
       h2 = match.str(2);
-      mkdocsStream << "    - '" << h2 << "': ";
       file = fs::path(nice(h1)) / (nice(h2) + ".md");
-      mkdocsStream << file.string() << "\n";
       if (docsStream.is_open()) {
         docsStream.close();
       }
       docsStream.open(docs / file);
+      docsStream << "title: " << h2 << "\n";
+      docsStream << "---\n\n";
     }
     str1 = match.suffix();
   }
@@ -1052,7 +1012,7 @@ void birch::Driver::setup() {
   copy_if_newer(find(shareDirs, "ax_gcc_builtin.m4"),
       m4_dir / "ax_gcc_builtin.m4");
 
-  /* update configure.ac */
+  /* configure.ac */
   std::string contents = read_all(find(shareDirs, "configure.ac"));
   boost::replace_all(contents, "PACKAGE_NAME", packageName);
   boost::replace_all(contents, "PACKAGE_VERSION", packageVersion);
@@ -1113,7 +1073,7 @@ void birch::Driver::setup() {
   newConfigure = write_all_if_different("configure.ac",
       configureStream.str());
 
-  /* update Makefile.am */
+  /* Makefile.am */
   contents = read_all(find(shareDirs, "Makefile.am"));
   boost::replace_all(contents, "PACKAGE_NAME", packageName);
   boost::replace_all(contents, "PACKAGE_VERSION", packageVersion);
