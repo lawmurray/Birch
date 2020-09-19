@@ -27,4 +27,7 @@ RUN zypper --non-interactive addrepo --no-gpgcheck "https://repo.mongodb.org/zyp
     sqlite3-devel \
     mongodb-database-tools \
     osc \
-    && zypper clean --all
+    doxygen \
+    python3-pip \
+    && pip3 install mkdocs mkdocs-material \
+    && zypper clean --all \
