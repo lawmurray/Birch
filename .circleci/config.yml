@@ -186,8 +186,8 @@ commands:
       - run:
           name: Checkout Homebrew tap
           command: |
-              git config user.name "Birch Machine"
-              git config user.email "birch-machine@indii.org"
+              git config --global user.name "Birch Machine"
+              git config --global user.email "birch-machine@indii.org"
               git clone https://$GITHUB_USERNAME:$GITHUB_PASSWORD@github.com/lawmurray/homebrew-birch.git
 
   commit_brew:
