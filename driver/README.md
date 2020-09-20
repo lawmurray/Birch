@@ -1,8 +1,6 @@
-# Birch Compiler
+# Birch
 
-Birch is a compiled, imperative, object-oriented, and probabilistic programming language. The latter is its primary research concern. The Birch compiler uses C++14 as a target language. It runs on Linux, macOS and Windows.
-
-This is the Birch compiler.
+Birch driver program and source-to-source compiler.
 
 
 ## License
@@ -14,11 +12,9 @@ It is licensed under the Apache License, Version 2.0 (the "License"); you may no
 
 ## Installing
 
-For a complete guide to installing Birch, see <http://www.birch-lang.org>. To install just the compiler, use:
+To build and install, use:
 
-```sh
-./autogen.sh
+./bootstrap
 ./configure
 make
 make install
-```

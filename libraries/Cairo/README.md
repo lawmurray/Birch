@@ -3,19 +3,18 @@
 Birch language wrapper for the [Cairo](https://www.cairographics.org/) 2d graphics library. Currently provides a limited subset of the functionality of the library.
 
 
+## License
+
+Birch is open source software.
+
+It is licensed under the Apache License, Version 2.0 (the "License"); you may not use it except in compliance with the License. You may obtain a copy of the License at <http://www.apache.org/licenses/LICENSE-2.0>.
+
+
 ## Installation
 
 Requires:
 
   * [Cairo](https://www.cairographics.org/)
-    
-To install Cairo on macOS with HomeBrew:
-
-    brew install cairo
-
-or on Ubuntu:
-
-    apt-get install libcairo2-dev
 
 To build and install, use:
 
@@ -25,7 +24,7 @@ To build and install, use:
 
 ## Usage
 
-To use from another Birch package, first add `Birch.Cairo` to the `require.package` item in its `META.json`. This will add checks for package files during the build.
+To use from another Birch package, first add `Cairo` to the `require.package` item in its `META.json`. This will add checks for package files during the build.
 
 Basic usage then looks something like this:
 
@@ -40,7 +39,7 @@ Basic usage then looks something like this:
     cr.setSourceRGB(1.0, 1.0, 1.0);
     cr.rectangle(0.25*width, 0.25*height, 0.5*width, 0.5*height);
     cr.fill();
-  
+
     /* clean up */
     cr.destroy();
     surface.destroy();

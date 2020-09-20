@@ -1,21 +1,22 @@
-# Multiple object tracking
+# Multiple object tracking package
 
-A simple multiple object tracking demonstration in the Birch probabilistic programming language. This demonstrates the use of a universal probabilistic programming language for inference on a model without fixed dimension (the number of objects is unknown). Data is simulated from the model and then filtered using a particle filter, within which the delayed sampling heuristic (Murray *et al.* 2018) automatically yields a Kalman filter for the tracking of each object. It is used as an example in Murray & Schön (2018), in which further details are available.
+A simple multiple object tracking demonstration in the Birch probabilistic programming language. This demonstrates the use of a universal probabilistic programming language for inference on a model without fixed dimension (the number of objects is unknown). Data is simulated from the model and then filtered using a particle filter, within which the delayed sampling heuristic ([Murray *et al.* 2018](#references)) automatically yields a Kalman filter for the tracking of each object. It is used as an example in [Murray & Schön (2018)](#references), in which further details are available.
 
 
 ## License
 
-This package is licensed under the Apache License, Version 2.0 (the "License"); you may not use it except in compliance with the License. You may obtain a copy of the License at <http://www.apache.org/licenses/LICENSE-2.0>.
+This package is open source software.
+
+It is licensed under the Apache License, Version 2.0 (the "License"); you may not use it except in compliance with the License. You may obtain a copy of the License at <http://www.apache.org/licenses/LICENSE-2.0>.
 
 
 ## Getting started
 
 This package requires the [Birch.Cairo](https://github.com/lawmurray/Birch.Cairo) package.
 
-To build and install, use:
+To build, use:
 
     birch build
-    birch install
 
 To run, use:
 

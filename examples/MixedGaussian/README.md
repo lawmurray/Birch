@@ -1,21 +1,25 @@
 # MixedGaussian package
 
-Example models for the Birch probabilistic programming language.
+Mixed linear-nonlinear state-space model. The delayed sampling feature of Birch
+results in a Rao--Blackwellized particle filter with locally-optimal
+proposal being applied to this model.
+
+The model is detailed in [Lindsten and Schön (2010)](#references) and was
+used to demonstrate delayed sampling in [Murray et al. (2018)](#references).
 
 
 ## License
 
-Birch is open source software.
+This package is open source software.
 
 It is licensed under the Apache License, Version 2.0 (the "License"); you may not use it except in compliance with the License. You may obtain a copy of the License at <http://www.apache.org/licenses/LICENSE-2.0>.
 
 
 ## Getting started
 
-To build and install, use:
+To build, use:
 
     birch build
-    birch install
 
 To run, use:
 

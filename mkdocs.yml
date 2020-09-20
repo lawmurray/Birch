@@ -1,10 +1,20 @@
-site_name: 'Birch Docs'
+site_name: 'Birch Documentation'
+site_description: 'An open source probabilistic programming language that combines automatic differentiation, automatic marginalization, automatic conjugacy, and a Sequential Monte Carlo (SMC) inference engine.'
+repo_url: https://github.com/lawmurray/Birch
+repo_name: lawmurray/Birch
+edit_uri: ""
 theme:
   name: 'material'
+  icon:
+    repo: fontawesome/brands/github
+  palette:
+    scheme: default
+    primary: 'white'
+    accent: 'deep orange'
 plugins:
-    - search
-    - awesome-pages:
-        collapse_single_pages: true
+  - search
+  - awesome-pages:
+      collapse_single_pages: true
 markdown_extensions:
   - admonition
   - footnotes
@@ -19,3 +29,7 @@ extra_css:
 extra_javascript:
   - 'https://unpkg.com/mermaid@8.5.1/dist/mermaid.min.js'
   - 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML'
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/lawmurray

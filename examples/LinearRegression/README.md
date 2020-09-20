@@ -1,25 +1,38 @@
 # LinearRegression package
 
-Example model for the Birch probabilistic programming language.
-
+Bayesian linear regression model with conjugate normal-inverse-gamma prior.
 
 ## License
 
-Birch is open source software.
+This package is open source software.
 
 It is licensed under the Apache License, Version 2.0 (the "License"); you may not use it except in compliance with the License. You may obtain a copy of the License at <http://www.apache.org/licenses/LICENSE-2.0>.
 
 
 ## Getting started
 
-To build and install, use:
+To build, use:
 
     birch build
-    birch install
 
 To run, use:
 
     birch sample --config config/linear_regression.json
+
+
+## Details
+
+The model is given by:
+
+$$\begin{align}
+\sigma^2 &\sim \mathrm{Inv\text{-}Gamma}(3, 4/10) \\
+\boldsymbol{\beta} &\sim \mathcal{N}(0, I\sigma^2) \\
+y_n &\sim \mathcal{N}(\mathbf{x}_n^{\top}\boldsymbol{\beta}, \sigma^2)
+\end{align}$$
+
+The parameters are the noise variance $\sigma^2$ and vector of
+coefficients $\boldsymbol{\beta}$. The data consists of observations $y_n$
+and explanatory variables $\mathbf{x}_n$ for $n=1,\ldots,N$.
 
 
 ## Acknowledgements

@@ -16,15 +16,7 @@ To build and install, use:
 
     birch build
     birch install
-    
+
 To test, use:
 
-    birch test
-
-
-## Documentation
-
-Documentation for the standard library is readily accessible at <http://www.birch-lang.org/documentation/library>, or you can build it yourself with:
-
-    birch docs
-    mkdocs serve
+    ./test.sh

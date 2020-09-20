@@ -2,4 +2,4 @@
 
 Initialise the working directory for a new project.
 
-  - `--name` : Name of the project (default `Untitled`).
+  - `--package` : Name of the project (default `Untitled`).

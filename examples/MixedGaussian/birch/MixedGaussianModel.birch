@@ -1,9 +1,5 @@
 /**
- * Linear-nonlinear state-space model. The delayed sampling feature of Birch
- * results in a Rao--Blackwellized particle filter with locally-optimal
- * proposal being applied to this model.
- *
- * The model is detailed in [Lindsten and Schön (2010)](../#references).
+ * Linear-nonlinear state-space model.
  */
 class MixedGaussianModel < StateSpaceModel<MixedGaussianParameter,
     MixedGaussianState,MixedGaussianObservation> {
