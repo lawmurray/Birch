@@ -2,8 +2,8 @@
   "name": "SQLite",
   "manifest": {
     "source": [
-      "birch/SQLite3.birch",
-      "birch/SQLite3Statement.birch"
+      "src/SQLite3.birch",
+      "src/SQLite3Statement.birch"
     ],
     "other": [
       "LICENSE",

@@ -2,8 +2,8 @@
   "name": "LinearGaussian",
   "manifest": {
     "source": [
-      "birch/LinearGaussianModel.birch",
-      "birch/LinearGaussianParameter.birch"
+      "src/LinearGaussianModel.birch",
+      "src/LinearGaussianParameter.birch"
     ],
     "data": [
 

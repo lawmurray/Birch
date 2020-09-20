@@ -2,12 +2,12 @@
   "name": "Cairo",
   "manifest": {
     "source": [
-      "birch/Context.birch",
-      "birch/Pattern.birch",
-      "birch/Surface.birch",
-      "birch/SurfacePDF.birch",
-      "birch/SurfacePNG.birch",
-      "birch/SurfaceSVG.birch"
+      "src/Context.birch",
+      "src/Pattern.birch",
+      "src/Surface.birch",
+      "src/SurfacePDF.birch",
+      "src/SurfacePNG.birch",
+      "src/SurfaceSVG.birch"
     ],
     "other": [
       "LICENSE",

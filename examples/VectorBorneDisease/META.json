@@ -2,15 +2,15 @@
   "name": "VectorBorneDisease",
   "manifest": {
     "source": [
-      "birch/common/SEIRModel.birch",
-      "birch/common/SEIRParameter.birch",
-      "birch/common/SEIRState.birch",
-      "birch/common/VBDModel.birch",
-      "birch/common/VBDParameter.birch",
-      "birch/common/VBDState.birch",
-      "birch/study/YapDengueModel.birch",
-      "birch/study/YapDengueParameter.birch",
-      "birch/study/YapDengueState.birch"
+      "src/common/SEIRModel.birch",
+      "src/common/SEIRParameter.birch",
+      "src/common/SEIRState.birch",
+      "src/common/VBDModel.birch",
+      "src/common/VBDParameter.birch",
+      "src/common/VBDState.birch",
+      "src/study/YapDengueModel.birch",
+      "src/study/YapDengueParameter.birch",
+      "src/study/YapDengueState.birch"
     ],
     "other": [
       "LICENSE",

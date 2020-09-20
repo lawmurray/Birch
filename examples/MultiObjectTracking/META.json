@@ -2,11 +2,11 @@
   "name": "MultiObjectTracking",
   "manifest": {
     "source": [
-      "birch/data.birch",
-      "birch/draw.birch",
-      "birch/Global.birch",
-      "birch/Multi.birch",
-      "birch/Track.birch"
+      "src/data.birch",
+      "src/draw.birch",
+      "src/Global.birch",
+      "src/Multi.birch",
+      "src/Track.birch"
     ],
     "data": [
     

@@ -624,7 +624,7 @@ void birch::Driver::clean() {
 }
 
 void birch::Driver::init() {
-  fs::create_directory("birch");
+  fs::create_directory("src");
   fs::create_directory("config");
   fs::create_directory("input");
   fs::create_directory("output");
@@ -1245,7 +1245,6 @@ void birch::Driver::readFiles(const std::string& key, bool checkExists) {
   for (auto pattern : metaContents[key]) {
     auto paths = glob(pattern);
     for (auto path : paths) {
-      std::cerr << path.string() << std::endl;
       if (checkExists && !exists(path)) {
         warn(path.string() + " in meta file does not exist.");
       }

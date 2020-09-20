@@ -2,9 +2,9 @@
   "name": "SIR",
   "manifest": {
     "source": [
-      "birch/SIRModel.birch",
-      "birch/SIRParameter.birch",
-      "birch/SIRState.birch"
+      "src/SIRModel.birch",
+      "src/SIRParameter.birch",
+      "src/SIRState.birch"
     ],
     "data": [
 

@@ -2,7 +2,7 @@
   "name": "LinearRegression",
   "manifest": {
     "source": [
-      "birch/LinearRegressionModel.birch"
+      "src/LinearRegressionModel.birch"
     ],
     "data": [
 

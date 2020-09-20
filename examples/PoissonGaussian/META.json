@@ -2,8 +2,8 @@
   "name": "PoissonGaussian",
   "manifest": {
     "source": [
-      "birch/PoissonGaussianModel.birch",
-      "birch/PoissonGaussianParameter.birch"
+      "src/PoissonGaussianModel.birch",
+      "src/PoissonGaussianParameter.birch"
     ],
     "data": [
 

@@ -3,11 +3,11 @@
   "description": "",
   "manifest": {
     "source": [
-      "birch/*.birch",
-      "birch/*/*.birch",
-      "birch/*/*/*.birch",
-      "birch/*/*/*/*.birch",
-      "birch/*/*/*/*/*.birch"
+      "src/*.birch",
+      "src/*/*.birch",
+      "src/*/*/*.birch",
+      "src/*/*/*/*.birch",
+      "src/*/*/*/*/*.birch"
     ],
     "data": [
     
