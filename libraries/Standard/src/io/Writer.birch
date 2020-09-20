@@ -5,7 +5,7 @@
  * object of an appropriate derived class based on the file extension of the
  * given path:
  *
- *     auto writer <- Writer(path);
+ *     let writer <- Writer(path);
  *
  * A write of a single buffer can then be performed with:
  *
@@ -100,7 +100,7 @@ abstract class Writer {
  * returned object. Supported file extension are `.json` and `.yml`.
  */
 function Writer(path:String) -> Writer {
-  auto ext <- extension(path);
+  let ext <- extension(path);
   result:Writer?;
   if ext == ".json" {
     writer:JSONWriter;

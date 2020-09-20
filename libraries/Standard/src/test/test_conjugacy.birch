@@ -6,15 +6,15 @@
  * - D: Number of dimensions.
  */
 function test_conjugacy<Conjugate>(m:Conjugate, N:Integer, D:Integer) {  
-  auto forward <- PlayHandler(false);
-  auto backward <- PlayHandler(true);
+  let forward <- PlayHandler(false);
+  let backward <- PlayHandler(true);
 
   m.initialize();
   
   /* simulate forward */
   X1:Real[N,D];
   for n in 1..N {
-    auto m' <- clone(m);
+    let m' <- clone(m);
     with (forward) {
       m'.simulate();
     }
@@ -24,7 +24,7 @@ function test_conjugacy<Conjugate>(m:Conjugate, N:Integer, D:Integer) {
   /* simulate backward */
   X2:Real[N,D];
   for n in 1..N {
-    auto m' <- clone(m);
+    let m' <- clone(m);
     with (backward) {
       m'.simulate();
     }

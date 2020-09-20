@@ -154,7 +154,7 @@ function downdate_scaled_inverse_gamma_weibull(x:Real, k:Real, a:Real, α':Real,
  * Returns: the prior hyperparameters `α`.
  */
 function downdate_dirichlet_categorical(x:Integer, α':Real[_]) -> Real[_] {
-  auto α <- α';
+  let α <- α';
   α[x] <- α[x] - 1.0;
   return α;
 }
@@ -174,7 +174,7 @@ function downdate_dirichlet_multinomial(x:Integer[_], n:Integer,
   assert sum(x) == n;
   /* @todo mixed type vector operations no longer supported, do
    * element-wise for now */
-  auto α <- α';
+  let α <- α';
   for i in 1..length(α') {
     α[i] <- α'[i] - x[i];
   }
@@ -194,10 +194,10 @@ function downdate_dirichlet_multinomial(x:Integer[_], n:Integer,
  */
 function downdate_gaussian_gaussian(x:Real, μ':Real, σ2':Real, s2:Real) ->
     (Real, Real) {
-  auto λ' <- 1.0/σ2';
-  auto l <- 1.0/s2;
-  auto λ <- λ' - l;
-  auto μ <- (λ'*μ' - l*x)/λ;
+  let λ' <- 1.0/σ2';
+  let l <- 1.0/s2;
+  let λ <- λ' - l;
+  let μ <- (λ'*μ' - l*x)/λ;
   return (μ, 1.0/λ);
 }
 
@@ -216,10 +216,10 @@ function downdate_gaussian_gaussian(x:Real, μ':Real, σ2':Real, s2:Real) ->
  */
 function downdate_linear_gaussian_gaussian(x:Real, a:Real, μ':Real, σ2':Real,
     c:Real, s2:Real) -> (Real, Real) {
-  auto λ' <- 1.0/σ2';
-  auto l <- 1.0/s2;
-  auto λ <- λ' - a*a*l;
-  auto μ <- (λ'*μ' - a*l*(x - c))/λ;
+  let λ' <- 1.0/σ2';
+  let l <- 1.0/s2;
+  let λ <- λ' - a*a*l;
+  let μ <- (λ'*μ' - a*l*(x - c))/λ;
   return (μ, 1.0/λ);
 }
 
@@ -316,11 +316,11 @@ function downdate_inverse_gamma_gamma(x:Real, k:Real, α':Real, β':Real) ->
  */
 function downdate_multivariate_gaussian_multivariate_gaussian(x:Real[_],
     μ':Real[_], Σ':LLT, S:LLT) -> (Real[_], LLT) {
-  auto Σ0' <- canonical(Σ');
-  auto S0 <- canonical(S);
-  auto K <- solve(llt(Σ0' - S0), canonical(Σ0'));
-  auto μ <- μ' + K*(x - μ');
-  auto Σ <- llt(Σ0' - K*Σ0');
+  let Σ0' <- canonical(Σ');
+  let S0 <- canonical(S);
+  let K <- solve(llt(Σ0' - S0), canonical(Σ0'));
+  let μ <- μ' + K*(x - μ');
+  let Σ <- llt(Σ0' - K*Σ0');
   return (μ, Σ);
 }
 
@@ -340,11 +340,11 @@ function downdate_multivariate_gaussian_multivariate_gaussian(x:Real[_],
 function downdate_linear_multivariate_gaussian_multivariate_gaussian(
     x:Real[_], A:Real[_,_], μ':Real[_], Σ':LLT, c:Real[_], S:LLT) ->
     (Real[_], LLT) {
-  auto Σ0' <- canonical(Σ');
-  auto S0 <- canonical(S);
-  auto K <- Σ0'*transpose(solve(llt(A*Σ0'*transpose(A) - S0), A));
-  auto μ <- μ' + K*(x - A*μ' - c);
-  auto Σ <- llt(Σ0' - K*A*Σ0');
+  let Σ0' <- canonical(Σ');
+  let S0 <- canonical(S);
+  let K <- Σ0'*transpose(solve(llt(A*Σ0'*transpose(A) - S0), A));
+  let μ <- μ' + K*(x - A*μ' - c);
+  let Σ <- llt(Σ0' - K*A*Σ0');
   return (μ, Σ);
 }
 
@@ -364,10 +364,10 @@ function downdate_linear_multivariate_gaussian_multivariate_gaussian(
  */
 function downdate_linear_multivariate_gaussian_gaussian(x:Real, a:Real[_],
     μ':Real[_], Σ':LLT, c:Real, s2:Real) -> (Real[_], LLT) {
-  auto Σ0' <- canonical(Σ');
-  auto k <- Σ0'*a/(dot(a, Σ0'*a) + s2);
-  auto μ <- μ' - k*(x - dot(a, μ') - c);
-  auto Σ <- llt(Σ0' + outer(k, a)*Σ0');
+  let Σ0' <- canonical(Σ');
+  let k <- Σ0'*a/(dot(a, Σ0'*a) + s2);
+  let μ <- μ' - k*(x - dot(a, μ') - c);
+  let Σ <- llt(Σ0' + outer(k, a)*Σ0');
   return (μ, Σ);
 }
 
@@ -475,10 +475,10 @@ function downdate_linear_multivariate_normal_inverse_gamma_gaussian(
  */
 function downdate_matrix_normal_inverse_gamma(X:Real[_,_], N:Real[_,_],
     Λ:LLT, α':Real, β':Real[_]) -> (Real, Real[_]) {
-  auto D <- rows(X);
-  auto M <- solve(Λ, N);
-  auto α <- α' - 0.5*D;
-  auto β <- β'- 0.5*diagonal(transpose(X - M)*canonical(Λ)*(X - M));
+  let D <- rows(X);
+  let M <- solve(Λ, N);
+  let α <- α' - 0.5*D;
+  let β <- β'- 0.5*diagonal(transpose(X - M)*canonical(Λ)*(X - M));
   return (α, β);
 }
 
@@ -497,11 +497,11 @@ function downdate_matrix_normal_inverse_gamma(X:Real[_,_], N:Real[_,_],
 function downdate_matrix_normal_inverse_gamma_matrix_gaussian(
     X:Real[_,_], N':Real[_,_], Λ':LLT, α':Real, γ':Real[_]) ->
     (Real[_,_], LLT, Real, Real[_]) {
-  auto D <- rows(X);
-  auto Λ <- rank_downdate(Λ', identity(rows(N')));
-  auto N <- N' - X;
-  auto α <- α' - 0.5*D;
-  auto γ <- γ' - 0.5*diagonal(outer(transpose(X)));
+  let D <- rows(X);
+  let Λ <- rank_downdate(Λ', identity(rows(N')));
+  let N <- N' - X;
+  let α <- α' - 0.5*D;
+  let γ <- γ' - 0.5*diagonal(outer(transpose(X)));
   return (N, Λ, α, γ);
 }
 
@@ -522,11 +522,11 @@ function downdate_matrix_normal_inverse_gamma_matrix_gaussian(
 function downdate_linear_matrix_normal_inverse_gamma_matrix_gaussian(
     X:Real[_,_], A:Real[_,_], N':Real[_,_], Λ':LLT, C:Real[_,_], α':Real,
     γ':Real[_]) -> (Real[_,_], LLT, Real, Real[_]) {
-  auto D <- rows(X);
-  auto Λ <- rank_downdate(Λ', transpose(A));
-  auto N <- N' - transpose(A)*(X - C);
-  auto α <- α' - 0.5*D;
-  auto γ <- γ' - 0.5*diagonal(outer(transpose(X - C)));
+  let D <- rows(X);
+  let Λ <- rank_downdate(Λ', transpose(A));
+  let N <- N' - transpose(A)*(X - C);
+  let α <- α' - 0.5*D;
+  let γ <- γ' - 0.5*diagonal(outer(transpose(X - C)));
   return (N, Λ, α, γ);
 }
 
@@ -543,10 +543,10 @@ function downdate_linear_matrix_normal_inverse_gamma_matrix_gaussian(
  */
 function downdate_matrix_normal_inverse_wishart(X:Real[_,_], N:Real[_,_],
     Λ:LLT, V':LLT, k':Real) -> (LLT, Real) {
-  auto D <- rows(X);
-  auto M <- solve(Λ, N);
-  auto V <- rank_downdate(V', transpose(X - M));
-  auto k <- k' - D;
+  let D <- rows(X);
+  let M <- solve(Λ, N);
+  let V <- rank_downdate(V', transpose(X - M));
+  let k <- k' - D;
   return (V, k);
 }
 
@@ -564,14 +564,14 @@ function downdate_matrix_normal_inverse_wishart(X:Real[_,_], N:Real[_,_],
  */
 function downdate_matrix_normal_inverse_wishart_matrix_gaussian(X:Real[_,_],
     N':Real[_,_], Λ':LLT, V':LLT, k':Real) -> (Real[_,_], LLT, LLT, Real) {
-  auto D <- rows(X);
-  auto Λ <- rank_downdate(Λ', identity(rows(N')));
-  auto N <- N' - X;
-  auto M' <- solve(Λ', N');
-  auto M <- solve(Λ, N);
-  auto V <- llt(canonical(V') - transpose(X - M')*(X - M') -
+  let D <- rows(X);
+  let Λ <- rank_downdate(Λ', identity(rows(N')));
+  let N <- N' - X;
+  let M' <- solve(Λ', N');
+  let M <- solve(Λ, N);
+  let V <- llt(canonical(V') - transpose(X - M')*(X - M') -
       transpose(M' - M)*canonical(Λ)*(M' - M));
-  auto k <- k' - D;
+  let k <- k' - D;
   return (N, Λ, V, k);
 }
 
@@ -592,13 +592,13 @@ function downdate_matrix_normal_inverse_wishart_matrix_gaussian(X:Real[_,_],
 function downdate_linear_matrix_normal_inverse_wishart_matrix_gaussian(
     X:Real[_,_], A:Real[_,_], N':Real[_,_], Λ':LLT, C:Real[_,_], V':LLT,
     k':Real) -> (Real[_,_], LLT, LLT, Real) {
-  auto D <- rows(X);
-  auto Λ <- rank_downdate(Λ', transpose(A));
-  auto N <- N' - transpose(A)*(X - C);
-  auto M' <- solve(Λ', N');
-  auto M <- solve(Λ, N);
-  auto V <- llt(canonical(V') - transpose(X - A*M' - C)*(X - A*M' - C) -
+  let D <- rows(X);
+  let Λ <- rank_downdate(Λ', transpose(A));
+  let N <- N' - transpose(A)*(X - C);
+  let M' <- solve(Λ', N');
+  let M <- solve(Λ, N);
+  let V <- llt(canonical(V') - transpose(X - A*M' - C)*(X - A*M' - C) -
       transpose(M' - M)*canonical(Λ)*(M' - M));
-  auto k <- k' - D;
+  let k <- k' - D;
   return (N, Λ, V, k);
 }

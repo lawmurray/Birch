@@ -116,7 +116,7 @@ final class RaggedArray<Type> {
     if size() == 1 {
       clear();
     } else {
-      auto ncols <- sizes[1];
+      let ncols <- sizes[1];
       cpp{{
       this->offsets.erase(0);
       this->sizes.erase(0);
@@ -139,7 +139,7 @@ final class RaggedArray<Type> {
    */
   function popFront(i:Integer) {
     assert size(i) > 0;
-    auto j <- offsets[i];
+    let j <- offsets[i];
     cpp{{
     this->values.erase(j - 1);
     }}
@@ -153,8 +153,8 @@ final class RaggedArray<Type> {
    * Add a new row at the back.
    */
   function pushBack() {
-    auto nrows <- length(offsets);
-    auto nvalues <- length(values);
+    let nrows <- length(offsets);
+    let nvalues <- length(values);
     cpp{{    
     this->offsets.insert(nrows, nvalues + 1);
     this->sizes.insert(nrows, 0);
@@ -168,7 +168,7 @@ final class RaggedArray<Type> {
    * - x: Value.
    */
   function pushBack(i:Integer, x:Type) {
-    auto j <- offsets[i] + sizes[i];
+    let j <- offsets[i] + sizes[i];
     cpp{{
     this->values.insert(j - 1, x);
     }}
@@ -183,7 +183,7 @@ final class RaggedArray<Type> {
    * and return the element.
    */
   function pushBack(i:Integer) -> Type {
-    auto x <- make<Type>();
+    let x <- make<Type>();
     if x? {
       pushBack(i, x!);
     } else {
@@ -248,14 +248,14 @@ final class RaggedArray<Type> {
   }
 
  function read(buffer:Buffer) {
-    auto row <- buffer.walk();
+    let row <- buffer.walk();
     while row.hasNext() {
       pushBack();
-      auto col <- row.next().walk();
+      let col <- row.next().walk();
       while col.hasNext() {
         /* tricky, but works for both value and class types */
-        auto x <- make<Type>();
-        auto y <- col.next().get(x);
+        let x <- make<Type>();
+        let y <- col.next().get(x);
         if y? {
           x <- Type?(y);  // cast needed for y:Object?
           pushBack(size(), x!);
@@ -267,7 +267,7 @@ final class RaggedArray<Type> {
   function write(buffer:Buffer) {
     buffer.setArray();
     for i in 1..size() {
-      auto row <- buffer.push();
+      let row <- buffer.push();
       row.setArray();
       for j in 1..size(i) {
         row.push().set(get(i, j));

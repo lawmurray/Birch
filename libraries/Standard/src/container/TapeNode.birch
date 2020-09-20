@@ -10,7 +10,7 @@ final class TapeNode<Type>(x:Type) {
    * necessary.
    */
   function down(k:Integer) -> TapeNode<Type> {
-    auto node <- this;
+    let node <- this;
     for i in 1..k {
       if !node.next? {
         node.next <- TapeNode<Type>();
@@ -24,7 +24,7 @@ final class TapeNode<Type>(x:Type) {
    * Get the bottommost node.
    */
   function bottom() -> TapeNode<Type> {
-    auto node <- this;
+    let node <- this;
     while node.next? {
       node <- node.next!;
     }
@@ -36,7 +36,7 @@ final class TapeNode<Type>(x:Type) {
    */
   function popBottom() {
     assert next?;
-    auto node <- this;
+    let node <- this;
     while node.next!.next? {
       node <- node.next!;
     }
@@ -56,7 +56,7 @@ function TapeNode<Type>(x:Type) -> TapeNode<Type> {
  * Create a TapeNode with a default-constructed value.
  */
 function TapeNode<Type>() -> TapeNode<Type> {
-  auto x <- make<Type>();
+  let x <- make<Type>();
   if !x? {
     error("element type is not default-constructible");
   }

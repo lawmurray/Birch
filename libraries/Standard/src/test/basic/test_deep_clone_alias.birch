@@ -9,10 +9,10 @@ program test_deep_clone_alias() {
   x.pushBack(2);
   
   /* alias it */
-  auto z <- x;
+  let z <- x;
   
   /* clone it */
-  auto y <- clone(x);
+  let y <- clone(x);
 
   /* modify the original */
   x.set(1, 3);

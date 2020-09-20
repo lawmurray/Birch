@@ -37,8 +37,8 @@ final class DiscreteAdd(y:Expression<Integer>, z:Expression<Integer>) <
   override function graftBoundedDiscrete() -> BoundedDiscrete? {
     r:BoundedDiscrete?;
     if !hasValue() {
-      auto x1 <- y!.graftBoundedDiscrete();
-      auto x2 <- z!.graftBoundedDiscrete();
+      let x1 <- y!.graftBoundedDiscrete();
+      let x2 <- z!.graftBoundedDiscrete();
       if x1? && x2? {
         r <- AddBoundedDiscrete(x1!, x2!);
       } else if x1? {

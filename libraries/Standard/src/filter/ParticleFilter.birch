@@ -146,7 +146,7 @@ class ParticleFilter {
    */
   function propagate() {
     parallel for n in 1..nparticles {
-      auto handler <- PlayHandler(delayed);
+      let handler <- PlayHandler(delayed);
       with (handler) {
         x[n].m.simulate();
         w[n] <- w[n] + handler.w;
@@ -159,7 +159,7 @@ class ParticleFilter {
    */
   function propagate(t:Integer) {
     parallel for n in 1..nparticles {
-      auto handler <- PlayHandler(delayed);
+      let handler <- PlayHandler(delayed);
       with (handler) {
         x[n].m.simulate(t);
         w[n] <- w[n] + handler.w;
@@ -172,7 +172,7 @@ class ParticleFilter {
    */
   function forecast(t:Integer) {
     parallel for n in 1..nparticles {
-      auto handler <- PlayHandler(delayed);
+      let handler <- PlayHandler(delayed);
       with (handler) {
         x[n].m.forecast(t);
         w[n] <- w[n] + handler.w;

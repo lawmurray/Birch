@@ -49,7 +49,7 @@ final class IndependentRowMatrixGaussian(M:Expression<Real[_,_]>,
     r:Distribution<Real[_,_]> <- this;
 
     /* match a template */
-    auto compare <- V.distribution();
+    let compare <- V.distribution();
     if compare? && (m1 <- M.graftLinearMatrixNormalInverseWishart(compare!))? {
       r <- LinearMatrixNormalInverseWishartMatrixGaussian(m1!.A, m1!.X, m1!.C);
     } else if compare? && (m2 <- M.graftMatrixNormalInverseWishart(compare!))? {

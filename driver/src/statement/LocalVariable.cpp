@@ -19,13 +19,13 @@ birch::LocalVariable::LocalVariable(const Annotation annotation, Name* name,
 }
 
 birch::LocalVariable::LocalVariable(Expression* value, Location* loc) :
-    LocalVariable(birch::AUTO, new Name(), new EmptyType(),
+    LocalVariable(birch::LET, new Name(), new EmptyType(),
     new EmptyExpression(), new EmptyExpression(), value, loc) {
   //
 }
 
 birch::LocalVariable::LocalVariable(Name* name, Type* type, Location* loc) :
-    LocalVariable(birch::AUTO, name, type, new EmptyExpression(),
+    LocalVariable(birch::LET, name, type, new EmptyExpression(),
     new EmptyExpression(), new EmptyExpression(), loc) {
   //
 }

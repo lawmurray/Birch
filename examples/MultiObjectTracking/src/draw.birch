@@ -7,13 +7,13 @@ program draw(input:String <- "output/simulate.json",
     width:Integer <- 1024,
     height:Integer <- 1024) {
   /* input file */
-  auto reader <- Reader(input);
-  auto inputBuffer <- reader.scan();
+  let reader <- Reader(input);
+  let inputBuffer <- reader.scan();
   reader.close();
   
   /* output file and drawing surface */
-  auto surface <- createPDF(output, width, height);
-  auto cr <- create(surface);
+  let surface <- createPDF(output, width, height);
+  let cr <- create(surface);
 
   /* background */
   cr.setSourceRGB(0.95, 0.95, 0.95);
@@ -21,22 +21,22 @@ program draw(input:String <- "output/simulate.json",
   cr.fill();
 
   /* config */
-  //auto col <- [0.3373, 0.7059, 0.9137]; // blue
-  auto col <- [0.8353, 0.3686, 0.0000];  // red
+  //let col <- [0.3373, 0.7059, 0.9137]; // blue
+  let col <- [0.8353, 0.3686, 0.0000];  // red
 
-  auto iter <- inputBuffer.walk();
+  let iter <- inputBuffer.walk();
   if iter.hasNext() {
-    auto array <- iter.next();
-    auto sample <- array.getObject("sample");
+    let array <- iter.next();
+    let sample <- array.getObject("sample");
     if sample? {
-      auto θ <- sample!.getChild("θ");
-      auto l <- θ!.getRealVector("l")!;
-      auto u <- θ!.getRealVector("u")!;
+      let θ <- sample!.getChild("θ");
+      let l <- θ!.getRealVector("l")!;
+      let u <- θ!.getRealVector("u")!;
 
-      auto scaleX <- width/(u[1] - l[1]);
-      auto scaleY <- height/(u[2] - l[2]);
-      auto scale <- max(scaleX, scaleY);
-      auto fat <- 2.0;
+      let scaleX <- width/(u[1] - l[1]);
+      let scaleY <- height/(u[2] - l[2]);
+      let scale <- max(scaleX, scaleY);
+      let fat <- 2.0;
   
       /* border */
       cr.setSourceRGB(0.8, 0.8, 0.8);
@@ -48,10 +48,10 @@ program draw(input:String <- "output/simulate.json",
       cr.translate(-l[1], -l[2]);
 
       /* solid points indicating clutter */
-      auto iter <- sample!.walk("y");
+      let iter <- sample!.walk("y");
       while iter.hasNext() {
-        auto y <- iter.next();
-        auto Y <- y.getRealMatrix();
+        let y <- iter.next();
+        let Y <- y.getRealMatrix();
         if Y? {
           cr.setSourceRGB(0.8, 0.8, 0.8);
           for i in 1..rows(Y!) {
@@ -64,12 +64,12 @@ program draw(input:String <- "output/simulate.json",
       /* circle those points indicating associated observations */
       iter <- sample!.walk("z");
       while iter.hasNext() {
-        auto z <- iter.next();
+        let z <- iter.next();
         cr.setLineWidth(2.0*fat/scale);
-        auto iter <- z.walk("y");
+        let iter <- z.walk("y");
         while iter.hasNext() {
-          auto ys <- iter.next();
-          auto y <- ys.getRealVector();
+          let ys <- iter.next();
+          let y <- ys.getRealVector();
           if y? {
             cr.setSourceRGB(0.8, 0.8, 0.8);
             cr.arc(y![1], y![2], 4.0*fat/scale, 0.0, 2.0*π);
@@ -86,8 +86,8 @@ program draw(input:String <- "output/simulate.json",
       cr.setSourceRGB(col[1], col[2], col[3]);
       iter <- sample!.walk("z");
       while iter.hasNext() {
-        auto z <- iter.next();
-        auto x <- z.getRealMatrix("x");
+        let z <- iter.next();
+        let x <- z.getRealMatrix("x");
         if x? {
           cr.setLineWidth(4.0*fat/scale);
           cr.moveTo(x![1,1], x![1,2]);
@@ -106,9 +106,9 @@ program draw(input:String <- "output/simulate.json",
       /* start time labels for latent tracks */
       iter <- sample!.walk("z");
       while iter.hasNext() {
-        auto z <- iter.next();
-        auto t <- z.getInteger("t");
-        auto x <- z.getRealMatrix("x");
+        let z <- iter.next();
+        let t <- z.getInteger("t");
+        let x <- z.getRealMatrix("x");
     
         if t? && x? {
           cr.setLineWidth(2.0*fat/scale);

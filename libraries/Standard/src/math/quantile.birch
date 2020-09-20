@@ -74,8 +74,8 @@ function quantile_uniform_int(P:Real, l:Integer, u:Integer) -> Integer {
  * Return: the quantile.
  */
 function quantile_categorical(P:Real, ρ:Real[_]) -> Integer {
-  auto i <- 1;
-  auto R <- ρ[1];
+  let i <- 1;
+  let R <- ρ[1];
   while R < P && i < length(ρ) {
     i <- i + 1;
     R <- R + ρ[i];
@@ -345,8 +345,8 @@ function quantile_linear_normal_inverse_gamma_gaussian(P:Real, a:Real,
  */
 function quantile_linear_multivariate_normal_inverse_gamma_gaussian(P:Real,
     a:Real[_], ν:Real[_], Λ:LLT, c:Real, α:Real, γ:Real) -> Real {
-  auto μ <- solve(Λ, ν);
-  auto β <- γ - 0.5*dot(μ, ν);
+  let μ <- solve(Λ, ν);
+  let β <- γ - 0.5*dot(μ, ν);
   return quantile_student_t(P, 2.0*α, dot(a, μ) + c,
       (β/α)*(1.0 + dot(a, solve(Λ, a))));
 }

@@ -75,7 +75,7 @@ final class Stack<Type> {
    * Push a new default-constructed element onto the top and return it.
    */
   function push() {
-    auto x <- make<Type>();
+    let x <- make<Type>();
     if x? {
       push(x!);
     } else {

@@ -14,6 +14,6 @@ program test_pdf_multivariate_gaussian(D:Integer <- 4, N:Integer <- 10000,
   }
   Σ <- Σ*transpose(Σ);
 
-  auto π <- Gaussian(μ, Σ);
+  let π <- Gaussian(μ, Σ);
   test_pdf(π, D, N, B, S);
 }

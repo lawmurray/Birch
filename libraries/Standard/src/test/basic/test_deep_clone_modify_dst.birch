@@ -9,7 +9,7 @@ program test_deep_clone_modify_dst() {
   x.pushBack(2);
   
   /* clone the list */
-  auto y <- clone(x);
+  let y <- clone(x);
 
   /* modify the clone */
   y.set(1, 3);

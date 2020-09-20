@@ -62,7 +62,7 @@ class TestMatrixNormalInverseWishartMatrixGaussian < Model {
 
   function vectorize() -> Real[_] {
     y:Real[size()];
-    auto k <- 0;
+    let k <- 0;
     for i in 1..rows(V) {
       y[k + 1 .. k + columns(V)] <- canonical(V.value())[i,1..columns(V)];
       k <- k + columns(V);

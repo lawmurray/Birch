@@ -27,7 +27,7 @@ program filter(
   /* config */
   configBuffer:Buffer;
   if config? {
-    auto reader <- Reader(config!);
+    let reader <- Reader(config!);
     configBuffer <- reader.scan();
     reader.close();
   }
@@ -36,7 +36,7 @@ program filter(
   if seed? {
     global.seed(seed!);
   } else if config? {
-    auto buffer <- configBuffer.getInteger("seed");
+    let buffer <- configBuffer.getInteger("seed");
     if buffer? {
       global.seed(buffer!);
     }
@@ -45,14 +45,14 @@ program filter(
   }
 
   /* model */
-  auto buffer <- configBuffer.getObject("model");
+  let buffer <- configBuffer.getObject("model");
   if !buffer? {
     buffer <- configBuffer.setObject("model");
   }
   if !buffer!.getString("class")? && model? {
     buffer!.setString("class", model!);
   }
-  auto archetype <- Model?(make(buffer));
+  let archetype <- Model?(make(buffer));
   if !archetype? {
     error("could not create model; the model class should be given as " +
         "model.class in the config file, and should derive from Model.");
@@ -66,20 +66,20 @@ program filter(
   if !buffer!.getString("class")? {
     buffer!.setString("class", "ParticleFilter");
   }
-  auto filter <- ParticleFilter?(make(buffer));
+  let filter <- ParticleFilter?(make(buffer));
   if !filter? {
     error("could not create filter; the filter class should be given as " +
         "filter.class in the config file, and should derive from ParticleFilter.");
   }
 
   /* input */
-  auto inputPath <- input;
+  let inputPath <- input;
   if !inputPath? {
     inputPath <-? configBuffer.getString("input");
   }
   if inputPath? && inputPath! != "" {
-    auto reader <- Reader(inputPath!);
-    auto inputBuffer <- reader.scan();
+    let reader <- Reader(inputPath!);
+    let inputBuffer <- reader.scan();
     reader.close();
     inputBuffer.get(archetype!);
   }
@@ -119,23 +119,23 @@ program filter(
     /* forecast */
     if filter!.nforecasts > 0 {
       /* clone filter for forecast purposes */
-      auto filter' <- clone(filter!);
+      let filter' <- clone(filter!);
 
       /* resample current particles, preserve weights */
       filter'.resample(t);
-      auto w' <- filter'.w;
+      let w' <- filter'.w;
 
       /* turn off delayed sampling, as analytical conditioning on obervations
        * may occur otherwise, which would be invalid for a forecast */
       filter'.delayed <- false;
 
       /* with these settings, we just filter ahead as normal */
-      auto forecast <- buffer.setArray("forecast");
+      let forecast <- buffer.setArray("forecast");
       for s in (t + 1)..(t + filter'.nforecasts) {
         filter'.forecast(s);
         filter'.reduce();
         if outputWriter? {
-          auto state <- forecast.push();
+          let state <- forecast.push();
           state.set("sample", filter'.x);
           state.set("lweight", w');
           state.set("lnormalize", filter'.lnormalize);

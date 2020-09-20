@@ -53,7 +53,7 @@ class Gaussian(μ:Expression<Real>, σ2:Expression<Real>) <
     r:Distribution<Real> <- this;
 
     /* match a template */
-    auto compare <- σ2.distribution();
+    let compare <- σ2.distribution();
     if compare? && (m1 <- μ.graftLinearNormalInverseGamma(compare!))? {
       r <- LinearNormalInverseGammaGaussian(m1!.a, m1!.x, m1!.c);
     } else if compare? && (m2 <- μ.graftDotNormalInverseGamma(compare!))? {

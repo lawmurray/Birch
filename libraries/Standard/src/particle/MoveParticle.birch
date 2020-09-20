@@ -47,16 +47,16 @@ class MoveParticle(m:Model) < Particle(m) {
    */
   function augment(t:Integer, z:Expression<Real>?) -> Real {
     /* likelihood */
-    auto z' <- z;
+    let z' <- z;
     if !z'? {
       z' <- box(0.0);
     }
-    auto w <- z'!.pilot(t);
+    let w <- z'!.pilot(t);
     π <- π + w;
     zs.pushBack(z'!);
     
     /* prior */
-    auto p <- z'!.prior();
+    let p <- z'!.prior();
     if !p? {
       p <- box(0.0);
     }
@@ -87,7 +87,7 @@ class MoveParticle(m:Model) < Particle(m) {
    * Compute gradient.
    */
   function grad(gen:Integer) {
-    auto L <- size();    
+    let L <- size();    
     for l in 1..L {
       zs.get(l).grad(gen, 1.0);
       ps.get(l).grad(gen, 1.0);
@@ -101,8 +101,8 @@ class MoveParticle(m:Model) < Particle(m) {
    * - κ: Markov kernel.
    */
   function move(gen:Integer, κ:Kernel) {
-    auto L <- size();    
-    auto π <- 0.0;
+    let L <- size();    
+    let π <- 0.0;
     for l in 1..L {
       π <- π + zs.get(l).move(gen, κ);
       π <- π + ps.get(l).move(gen, κ);
@@ -121,8 +121,8 @@ class MoveParticle(m:Model) < Particle(m) {
    */
   function compare(gen:Integer, x:MoveParticle, κ:Kernel) -> Real {
     assert size() == x.size();
-    auto L <- size();    
-    auto w <- 0.0;
+    let L <- size();    
+    let w <- 0.0;
     for l in 1..L {
       w <- w + zs.get(l).compare(gen, x.zs.get(l), κ);
       w <- w + ps.get(l).compare(gen, x.ps.get(l), κ);

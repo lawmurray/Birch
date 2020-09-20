@@ -11,6 +11,6 @@ program test_pdf_multivariate_uniform(D:Integer <- 4, N:Integer <- 10000,
     u[i] <- simulate_uniform(l[i], l[i] + 20.0);
   }
 
-  auto π <- Uniform(l, u);
+  let π <- Uniform(l, u);
   test_pdf(π, D, N, B, S);
 }

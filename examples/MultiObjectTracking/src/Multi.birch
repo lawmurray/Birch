@@ -17,11 +17,11 @@ class Multi < StateSpaceModel<Global,Array<Track>,Array<Random<Real[_]>>> {
     t <- t + 1;
 
     /* move current objects */
-    auto iter <- x.walk();
+    let iter <- x.walk();
     while iter.hasNext() {
-      auto track <- iter.next();
-      auto ρ <- exp(logpdf_poisson(t - track.t - 1, θ.τ));
-      auto R <- 1.0 - cdf_poisson(t - track.t - 1, θ.τ) + ρ;
+      let track <- iter.next();
+      let ρ <- exp(logpdf_poisson(t - track.t - 1, θ.τ));
+      let R <- 1.0 - cdf_poisson(t - track.t - 1, θ.τ) + ρ;
       s:Boolean;
       s <~ Bernoulli(1.0 - ρ/R);  // does the object survive?
       if s {
@@ -60,28 +60,28 @@ class Multi < StateSpaceModel<Global,Array<Track>,Array<Random<Real[_]>>> {
   }
 
   function association(y:Array<Random<Real[_]>>, x:Array<Track>, θ:Global) {
-    auto iter <- x.walk();
+    let iter <- x.walk();
     while iter.hasNext() {
-      auto track <- iter.next();
-      auto o <- track.y.back();  // observed random variable
+      let track <- iter.next();
+      let o <- track.y.back();  // observed random variable
       if o.hasDistribution() {
-        auto p <- o.distribution()!;
+        let p <- o.distribution()!;
       
         /* object is detected, compute proposal */
         q:Real[y.size()];
-        auto n <- 1;
-        auto detection <- y.walk();
+        let n <- 1;
+        let detection <- y.walk();
         while detection.hasNext() {
           q[n] <- p.pdf(detection.next().value());
           n <- n + 1;
         }
-        auto Q <- sum(q);
+        let Q <- sum(q);
                   
         /* propose an association */
         if Q > 0.0 {
           q <- q/Q;
           n <~ Categorical(q);  // propose an observation to associate with
-          auto w <- p.observe(y.get(n).value());  // likelihood
+          let w <- p.observe(y.get(n).value());  // likelihood
           w <- w - log(Real(y.size()));  // prior correction (uniform prior)
           w <- w - log(q[n]);  // proposal correction
           y.erase(n);  // remove the observation for future associations
@@ -94,7 +94,7 @@ class Multi < StateSpaceModel<Global,Array<Track>,Array<Random<Real[_]>>> {
     
     /* clutter */
     y.size() - 1 ~> Poisson(θ.μ);
-    auto clutter <- y.walk();
+    let clutter <- y.walk();
     while clutter.hasNext() {
       clutter.next().value() ~> Uniform(θ.l, θ.u);
     }

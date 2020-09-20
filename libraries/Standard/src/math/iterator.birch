@@ -7,7 +7,7 @@
  */
 function reduce<Type>(iter:Iterator<Type>, init:Type,
     op:\(Type, Type) -> Type) -> Type {
-  auto result <- init;
+  let result <- init;
   while iter.hasNext() {
     result <- op(result, iter.next());
   }

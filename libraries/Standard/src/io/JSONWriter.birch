@@ -37,7 +37,7 @@ class JSONWriter < YAMLWriter {
   }
   
   function scalar(x:Boolean) {
-    auto value <- String(x);
+    let value <- String(x);
     cpp{{
     yaml_scalar_event_initialize(&this->event, NULL, NULL,
         (yaml_char_t*)value.c_str(), value.length(), 1, 1,
@@ -47,7 +47,7 @@ class JSONWriter < YAMLWriter {
   }
 
   function scalar(x:Integer) {
-    auto value <- String(x);
+    let value <- String(x);
     cpp{{
     yaml_scalar_event_initialize(&this->event, NULL, NULL,
         (yaml_char_t*)value.c_str(), value.length(), 1, 1,

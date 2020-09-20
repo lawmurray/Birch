@@ -18,9 +18,9 @@ class ObjectValue < Value {
   }
 
   function getChild(name:String) -> Buffer? {
-    auto iter <- entries.walk();
+    let iter <- entries.walk();
     while iter.hasNext() {
-      auto entry <- iter.next();
+      let entry <- iter.next();
       if entry.name == name {
         return entry.buffer;
       }

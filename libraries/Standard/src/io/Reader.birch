@@ -5,11 +5,11 @@
  * object of an appropriate derived class based on the file extension of the
  * given path:
  *
- *     auto reader <- Reader(path);
+ *     let reader <- Reader(path);
  *
  * The whole contents of the file can then be read into a buffer with:
  *
- *     auto buffer <- reader.scan();
+ *     let buffer <- reader.scan();
  *
  * Finally, close the file:
  *
@@ -39,7 +39,7 @@ abstract class Reader {
    *
    *     reader.walk();
    *     while reader.hasNext() {
-   *       auto buffer <- reader.next();
+   *       let buffer <- reader.next();
    *       ...
    *     }
    *
@@ -77,7 +77,7 @@ abstract class Reader {
  * returned object. Supported file extension are `.json` and `.yml`.
  */
 function Reader(path:String) -> Reader {
-  auto ext <- extension(path);
+  let ext <- extension(path);
   result:Reader?;
   if ext == ".json" {
     reader:JSONReader;

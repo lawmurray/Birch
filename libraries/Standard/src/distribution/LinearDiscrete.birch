@@ -68,7 +68,7 @@ final class LinearDiscrete(a:Expression<Integer>, μ:Discrete,
   }
 
   function lower() -> Integer? {
-    auto l <- μ.lower();
+    let l <- μ.lower();
     if l? {
       l <- a.value()*l! + c.value();
     }
@@ -76,7 +76,7 @@ final class LinearDiscrete(a:Expression<Integer>, μ:Discrete,
   }
   
   function upper() -> Integer? {
-    auto u <- μ.upper();
+    let u <- μ.upper();
     if u? {
       u <- a.value()*u! + c.value();
     }

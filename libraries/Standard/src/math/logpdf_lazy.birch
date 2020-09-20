@@ -158,7 +158,7 @@ function logpdf_lazy_gaussian(x:Expression<Real>, μ:Expression<Real>, σ2:Expre
  * Returns: the log probability density.
  */
 function logpdf_lazy_student_t(x:Expression<Real>, k:Expression<Real>) -> Expression<Real> {
-   auto a <- 0.5*(k + 1.0);
+   let a <- 0.5*(k + 1.0);
    return lgamma(a) - lgamma(0.5*k) - 0.5*log(π*k) - a*log1p(x*x/k);
 }
 
@@ -198,7 +198,7 @@ function logpdf_lazy_beta(x:Expression<Real>, α:Expression<Real>, β:Expression
  * Return: the log probability density.
  */
 function logpdf_lazy_chi_squared(x:Expression<Real>, ν:Expression<Real>) -> Expression<Real> {
-  auto k <- 0.5*ν;
+  let k <- 0.5*ν;
   return (k - 1.0)*log(x) - 0.5*x - lgamma(k) - k*log(2.0);
 }
 
@@ -225,7 +225,7 @@ function logpdf_lazy_gamma(x:Expression<Real>, k:Expression<Real>, θ:Expression
  * Returns: the log probability density.
  */
 function logpdf_lazy_wishart(X:Expression<LLT>, Ψ:Expression<LLT>, ν:Expression<Real>) -> Expression<Real> {
-  auto p <- rows(Ψ);
+  let p <- rows(Ψ);
   return 0.5*(ν - p - 1.0)*ldet(X) - 0.5*trace(solve(Ψ, canonical(X))) -
       0.5*ν*p*log(2.0) - 0.5*ν*ldet(Ψ) - lgamma(0.5*ν, p);
 }
@@ -253,7 +253,7 @@ function logpdf_lazy_inverse_gamma(x:Expression<Real>, α:Expression<Real>, β:E
  * Returns: the log probability density.
  */
 function logpdf_lazy_inverse_wishart(X:Expression<LLT>, Ψ:Expression<LLT>, ν:Expression<Real>) -> Expression<Real> {
-  auto p <- rows(Ψ);
+  let p <- rows(Ψ);
   return 0.5*ν*ldet(Ψ) - 0.5*(ν + p - 1.0)*ldet(X) -
       0.5*trace(solve(X, canonical(transpose(Ψ)))) - 0.5*ν*p*log(2.0) - lgamma(0.5*ν, p);
 }
@@ -440,7 +440,7 @@ function logpdf_lazy_linear_normal_inverse_gamma_gaussian(x:Expression<Real>, a:
  * Returns: the log probability density.
  */
 function logpdf_lazy_multivariate_gaussian(x:Expression<Real[_]>, μ:Expression<Real[_]>, Σ:Expression<LLT>) -> Expression<Real> {
-  auto n <- length(μ);
+  let n <- length(μ);
   return -0.5*(dot(x - μ, solve(Σ, x - μ)) + n*log(2.0*π) + ldet(Σ));
 }
 
@@ -469,7 +469,7 @@ function logpdf_lazy_multivariate_gaussian(x:Expression<Real[_]>, μ:Expression<
  * Returns: the log probability density.
  */
 function logpdf_lazy_multivariate_gaussian(x:Expression<Real[_]>, μ:Expression<Real[_]>, σ2:Expression<Real>) -> Expression<Real> {
-  auto n <- μ.length();
+  let n <- μ.length();
   return -0.5*(dot(x - μ)/σ2 + n*log(2.0*π*σ2));
 }
 
@@ -504,9 +504,9 @@ function logpdf_lazy_multivariate_normal_inverse_gamma(x:Expression<Real[_]>, ν
  */
 function logpdf_lazy_multivariate_normal_inverse_gamma_multivariate_gaussian(x:Expression<Real[_]>,
     ν:Expression<Real[_]>, Λ:Expression<LLT>, α:Expression<Real>, γ:Expression<Real>) -> Expression<Real> {
-  auto n <- ν.length();
-  auto μ <- solve(Λ, ν);
-  auto β <- γ - 0.5*dot(μ, ν);
+  let n <- ν.length();
+  let μ <- solve(Λ, ν);
+  let β <- γ - 0.5*dot(μ, ν);
   return logpdf_lazy_multivariate_student_t(x, 2.0*α, μ,
       llt((β/α)*(identity(n) + canonical(inv(Λ)))));
 }
@@ -528,9 +528,9 @@ function logpdf_lazy_multivariate_normal_inverse_gamma_multivariate_gaussian(x:E
 function logpdf_lazy_linear_multivariate_normal_inverse_gamma_multivariate_gaussian(
     x:Expression<Real[_]>, A:Expression<Real[_,_]>, ν:Expression<Real[_]>, Λ:Expression<LLT>, c:Expression<Real[_]>, α:Expression<Real>, γ:Expression<Real>) ->
     Expression<Real> {
-  auto n <- rows(A);
-  auto μ <- solve(Λ, ν);
-  auto β <- γ - 0.5*dot(μ, ν);
+  let n <- rows(A);
+  let μ <- solve(Λ, ν);
+  let β <- γ - 0.5*dot(μ, ν);
   return logpdf_lazy_multivariate_student_t(x, 2.0*α, A*μ + c,
       llt((β/α)*(identity(n) + A*solve(Λ, transpose(A)))));
 }
@@ -551,8 +551,8 @@ function logpdf_lazy_linear_multivariate_normal_inverse_gamma_multivariate_gauss
  */
 function logpdf_lazy_linear_multivariate_normal_inverse_gamma_gaussian(x:Expression<Real>,
     a:Expression<Real[_]>, ν:Expression<Real[_]>, Λ:Expression<LLT>, c:Expression<Real>, α:Expression<Real>, γ:Expression<Real>) -> Expression<Real> {
-  auto μ <- solve(Λ, ν);
-  auto β <- γ - 0.5*dot(μ, ν);
+  let μ <- solve(Λ, ν);
+  let β <- γ - 0.5*dot(μ, ν);
   return logpdf_lazy_student_t(x, 2.0*α, dot(a, μ) + c,
       (β/α)*(1.0 + dot(a, solve(Λ, a))));
 }
@@ -569,8 +569,8 @@ function logpdf_lazy_linear_multivariate_normal_inverse_gamma_gaussian(x:Express
  */
 function logpdf_lazy_matrix_gaussian(X:Expression<Real[_,_]>, M:Expression<Real[_,_]>, U:Expression<LLT>, V:Expression<LLT>) ->
     Expression<Real> {
-  auto n <- rows(M);
-  auto p <- columns(M);
+  let n <- rows(M);
+  let p <- columns(M);
   return -0.5*(trace(solve(V, transpose(X - M))*solve(U, X - M)) +
       n*p*log(2.0*π) + n*ldet(V) + p*ldet(U));
 }
@@ -588,8 +588,8 @@ function logpdf_lazy_matrix_gaussian(X:Expression<Real[_,_]>, M:Expression<Real[
 function logpdf_lazy_matrix_gaussian(X:Expression<Real[_,_]>,
     M:Expression<Real[_,_]>, U:Expression<LLT>, σ2:Expression<Real[_]>) ->
     Expression<Real> {
-  auto n <- rows(M);
-  auto p <- columns(M);
+  let n <- rows(M);
+  let p <- columns(M);
   return -0.5*(trace(solve(diagonal(σ2), transpose(X - M))*solve(U, X - M)) +
       n*p*log(2.0*π) + n*ldet(diagonal(σ2)) + p*ldet(U));
 }
@@ -604,8 +604,8 @@ function logpdf_lazy_matrix_gaussian(X:Expression<Real[_,_]>,
  * Returns: the log probability density.
  */
 function logpdf_lazy_matrix_gaussian(X:Expression<Real[_,_]>, M:Expression<Real[_,_]>, V:Expression<LLT>) -> Expression<Real> {
-  auto n <- rows(M);
-  auto p <- columns(M);
+  let n <- rows(M);
+  let p <- columns(M);
   return -0.5*(trace(solve(V, transpose(X - M))*(X - M)) + n*p*log(2.0*π) +
       n*ldet(V));
 }
@@ -621,8 +621,8 @@ function logpdf_lazy_matrix_gaussian(X:Expression<Real[_,_]>, M:Expression<Real[
  */
 function logpdf_lazy_matrix_gaussian(X:Expression<Real[_,_]>, M:Expression<Real[_,_]>, σ2:Expression<Real[_]>) ->
     Expression<Real> {
-  auto n <- rows(M);
-  auto p <- columns(M);
+  let n <- rows(M);
+  let p <- columns(M);
   return -0.5*(trace(solve(diagonal(σ2), transpose(X - M)*(X - M))) +
       n*p*log(2.0*π) + n*ldet(diagonal(σ2)));
 }
@@ -639,8 +639,8 @@ function logpdf_lazy_matrix_gaussian(X:Expression<Real[_,_]>, M:Expression<Real[
  */
 function logpdf_lazy_matrix_gaussian(X:Expression<Real[_,_]>, M:Expression<Real[_,_]>, σ2:Expression<Real>) ->
     Expression<Real> {
-  auto n <- rows(M);
-  auto p <- columns(M);
+  let n <- rows(M);
+  let p <- columns(M);
   return -0.5*(trace(transpose(X - M)*(X - M)/σ2) + n*p*log(2.0*π*σ2));
 }
 
@@ -673,9 +673,9 @@ function logpdf_lazy_matrix_normal_inverse_gamma(X:Expression<Real[_,_]>, N:Expr
  */
 function logpdf_lazy_matrix_normal_inverse_gamma_matrix_gaussian(X:Expression<Real[_,_]>,
     N:Expression<Real[_,_]>, Λ:Expression<LLT>, α:Expression<Real>, γ:Expression<Real[_]>) -> Expression<Real> {
-  auto M <- solve(Λ, N);
-  auto Σ <- llt(identity(rows(M)) + canonical(inv(Λ)));
-  auto β <- γ - 0.5*diagonal(transpose(M)*N);
+  let M <- solve(Λ, N);
+  let Σ <- llt(identity(rows(M)) + canonical(inv(Λ)));
+  let β <- γ - 0.5*diagonal(transpose(M)*N);
   return logpdf_lazy_matrix_student_t(X, 2.0*α, M, Σ, β/α);
 }
 
@@ -695,10 +695,10 @@ function logpdf_lazy_matrix_normal_inverse_gamma_matrix_gaussian(X:Expression<Re
 function logpdf_lazy_linear_matrix_normal_inverse_gamma_matrix_gaussian(
     X:Expression<Real[_,_]>, A:Expression<Real[_,_]>, N:Expression<Real[_,_]>, Λ:Expression<LLT>, C:Expression<Real[_,_]>, α:Expression<Real>,
     γ:Expression<Real[_]>) -> Expression<Real> {
-  auto n <- rows(A);
-  auto M <- solve(Λ, N);
-  auto β <- γ - 0.5*diagonal(transpose(M)*N);
-  auto Σ <- llt(identity(n) + A*solve(Λ, transpose(A)));
+  let n <- rows(A);
+  let M <- solve(Λ, N);
+  let β <- γ - 0.5*diagonal(transpose(M)*N);
+  let Σ <- llt(identity(n) + A*solve(Λ, transpose(A)));
   return logpdf_lazy_matrix_student_t(X, 2.0*α, A*M + C, Σ, β/α);
 }
 
@@ -715,9 +715,9 @@ function logpdf_lazy_linear_matrix_normal_inverse_gamma_matrix_gaussian(
  */
 function logpdf_lazy_matrix_normal_inverse_wishart(X:Expression<Real[_,_]>, N:Expression<Real[_,_]>,
     Λ:Expression<LLT>,  Ψ:Expression<LLT>, k:Expression<Real>) -> Expression<Real> {
-  auto p <- columns(N);
-  auto M <- solve(Λ, N);
-  auto Σ <- llt(canonical(inv(Λ))/(k - p + 1.0));
+  let p <- columns(N);
+  let M <- solve(Λ, N);
+  let Σ <- llt(canonical(inv(Λ))/(k - p + 1.0));
   return logpdf_lazy_matrix_student_t(X, k - p + 1.0, M, Σ, Ψ);
 }
 
@@ -734,10 +734,10 @@ function logpdf_lazy_matrix_normal_inverse_wishart(X:Expression<Real[_,_]>, N:Ex
  */
 function logpdf_lazy_matrix_normal_inverse_wishart_matrix_gaussian(X:Expression<Real[_,_]>,
     N:Expression<Real[_,_]>, Λ:Expression<LLT>, Ψ:Expression<LLT>, k:Expression<Real>) -> Expression<Real> {
-  auto n <- rows(N);
-  auto p <- columns(N);
-  auto M <- solve(Λ, N);
-  auto Σ <- llt((identity(n) + canonical(inv(Λ)))/(k - p + 1.0));
+  let n <- rows(N);
+  let p <- columns(N);
+  let M <- solve(Λ, N);
+  let Σ <- llt((identity(n) + canonical(inv(Λ)))/(k - p + 1.0));
   return logpdf_lazy_matrix_student_t(X, k - p + 1.0, M, Σ, Ψ);
 }
 
@@ -758,10 +758,10 @@ function logpdf_lazy_matrix_normal_inverse_wishart_matrix_gaussian(X:Expression<
 function logpdf_lazy_linear_matrix_normal_inverse_wishart_matrix_gaussian(
     X:Expression<Real[_,_]>, A:Expression<Real[_,_]>, N:Expression<Real[_,_]>, Λ:Expression<LLT>, C:Expression<Real[_,_]>, Ψ:Expression<LLT>,
     k:Expression<Real>) -> Expression<Real> {
-  auto n <- rows(A);
-  auto p <- columns(N);
-  auto M <- solve(Λ, N);
-  auto Σ <- llt((identity(rows(A)) + A*solve(Λ, transpose(A)))/(k - p + 1.0));
+  let n <- rows(A);
+  let p <- columns(N);
+  let M <- solve(Λ, N);
+  let Σ <- llt((identity(rows(A)) + A*solve(Λ, transpose(A)))/(k - p + 1.0));
   return logpdf_lazy_matrix_student_t(X, k - p + 1.0, A*M + C, Σ, Ψ);
 }
 
@@ -778,8 +778,8 @@ function logpdf_lazy_linear_matrix_normal_inverse_wishart_matrix_gaussian(
  */
 function logpdf_lazy_multivariate_student_t(x:Expression<Real[_]>, k:Expression<Real>, μ:Expression<Real[_]>, Σ:Expression<LLT>)
     -> Expression<Real> {
-  auto n <- length(μ);
-  auto a <- 0.5*(k + n);
+  let n <- length(μ);
+  let a <- 0.5*(k + n);
   return lgamma(a) - lgamma(0.5*k) - 0.5*n*log(k*π) - 0.5*ldet(Σ) -
       a*log1p(dot(x - μ, solve(Σ, x - μ))/k) ;
 }
@@ -797,8 +797,8 @@ function logpdf_lazy_multivariate_student_t(x:Expression<Real[_]>, k:Expression<
  */
 function logpdf_lazy_multivariate_student_t(x:Expression<Real[_]>, k:Expression<Real>, μ:Expression<Real[_]>,
     σ2:Expression<Real>) -> Expression<Real> {
-  auto n <- length(μ);
-  auto a <- 0.5*(k + n);
+  let n <- length(μ);
+  let a <- 0.5*(k + n);
   return lgamma(a) - lgamma(0.5*k) - 0.5*n*log(k*π) - 0.5*n*log(σ2) -
       a*log1p(dot(x - μ)/(σ2*k));
 }
@@ -817,11 +817,11 @@ function logpdf_lazy_multivariate_student_t(x:Expression<Real[_]>, k:Expression<
  */
 function logpdf_lazy_matrix_student_t(X:Expression<Real[_,_]>, k:Expression<Real>, M:Expression<Real[_,_]>, U:Expression<LLT>,
     V:Expression<LLT>) -> Expression<Real> {
-  auto n <- rows(M);
-  auto p <- columns(M);
-  auto a <- 0.5*(k + n + p - 1.0);
-  auto b <- 0.5*(k + p - 1.0);
-  auto E <- identity(n) + solve(U, X - M)*solve(V, transpose(X - M));
+  let n <- rows(M);
+  let p <- columns(M);
+  let a <- 0.5*(k + n + p - 1.0);
+  let b <- 0.5*(k + p - 1.0);
+  let E <- identity(n) + solve(U, X - M)*solve(V, transpose(X - M));
   
   return lgamma(a, p) - lgamma(b, p) - 0.5*n*p*log(π) - 0.5*n*ldet(U) -
       0.5*p*ldet(V) - a*ldet(E);
@@ -841,11 +841,11 @@ function logpdf_lazy_matrix_student_t(X:Expression<Real[_,_]>, k:Expression<Real
  */
 function logpdf_lazy_matrix_student_t(X:Expression<Real[_,_]>, k:Expression<Real>, M:Expression<Real[_,_]>, U:Expression<LLT>,
     v:Expression<Real[_]>) -> Expression<Real> {
-  auto n <- rows(M);
-  auto p <- columns(M);
-  auto a <- 0.5*(k + n + p - 1.0);
-  auto b <- 0.5*(k + p - 1.0);
-  auto E <- identity(n) + solve(U, X - M)*solve(diagonal(v), transpose(X - M));
+  let n <- rows(M);
+  let p <- columns(M);
+  let a <- 0.5*(k + n + p - 1.0);
+  let b <- 0.5*(k + p - 1.0);
+  let E <- identity(n) + solve(U, X - M)*solve(diagonal(v), transpose(X - M));
   
   return lgamma(a, p) - lgamma(b, p) - 0.5*n*p*log(π) - 0.5*n*ldet(U) -
       0.5*p*ldet(diagonal(v)) - a*ldet(E);

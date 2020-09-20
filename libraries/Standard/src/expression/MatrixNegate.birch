@@ -30,8 +30,8 @@ final class MatrixNegate(y:Expression<Real[_,_]>) <
       if (r <- y!.graftLinearMatrixGaussian())? {
         r!.negate();
       } else if (x1 <- y!.graftMatrixGaussian())? {
-        auto R <- x1!.rows();
-        auto C <- x1!.columns();
+        let R <- x1!.rows();
+        let C <- x1!.columns();
         r <- TransformLinearMatrix<MatrixGaussian>(diagonal(box(-1.0), R),
             x1!, box(matrix(0.0, R, C)));
       }
@@ -47,8 +47,8 @@ final class MatrixNegate(y:Expression<Real[_,_]>) <
     if (r <- y!.graftLinearMatrixNormalInverseGamma(compare))? {
       r!.negate();
     } else if (x1 <- y!.graftMatrixNormalInverseGamma(compare))? {
-      auto R <- x1!.rows();
-      auto C <- x1!.columns();
+      let R <- x1!.rows();
+      let C <- x1!.columns();
       r <- TransformLinearMatrix<MatrixNormalInverseGamma>(
           diagonal(box(-1.0), R), x1!, box(matrix(0.0, R, C)));
     }
@@ -63,8 +63,8 @@ final class MatrixNegate(y:Expression<Real[_,_]>) <
     if (r <- y!.graftLinearMatrixNormalInverseWishart(compare))? {
       r!.negate();
     } else if (x1 <- y!.graftMatrixNormalInverseWishart(compare))? {
-      auto R <- x1!.rows();
-      auto C <- x1!.columns();
+      let R <- x1!.rows();
+      let C <- x1!.columns();
       r <- TransformLinearMatrix<MatrixNormalInverseWishart>(
           diagonal(box(-1.0), R), x1!, box(matrix(0.0, R, C)));
     }

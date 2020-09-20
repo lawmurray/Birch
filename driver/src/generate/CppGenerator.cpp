@@ -294,7 +294,7 @@ void birch::CppGenerator::visit(const MemberVariable* o) {
 
 void birch::CppGenerator::visit(const LocalVariable* o) {
   genTraceLine(o->loc);
-  if (o->has(AUTO)) {
+  if (o->has(LET)) {
     start("auto " << o->name);
   } else {
     start(o->type << ' ' << o->name);

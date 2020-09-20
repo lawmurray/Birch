@@ -58,8 +58,8 @@ function column<Type>(x:Type[_]) -> Type[_,_] {
  * - X: The matrix.
  */
 function vec<Type>(X:Type[_,_]) -> Type[_] {
-  auto R <- rows(X);
-  auto C <- columns(X);
+  let R <- rows(X);
+  let C <- columns(X);
   return vector(\(i:Integer) -> Type {
         return X[mod(i - 1, R) + 1, (i - 1)/R + 1];
       }, R*C);
@@ -74,8 +74,8 @@ function vec<Type>(X:Type[_,_]) -> Type[_] {
  */
 function mat<Type>(x:Type[_], columns:Integer) -> Type[_,_] {
   assert mod(length(x), columns) == 0;
-  auto R <- length(x)/columns;
-  auto C <- columns;
+  let R <- length(x)/columns;
+  let C <- columns;
   return matrix(\(i:Integer, j:Integer) -> Type {
         return x[(j - 1)*R + i];
       }, R, C);
@@ -88,9 +88,9 @@ function mat<Type>(x:Type[_], columns:Integer) -> Type[_,_] {
 function stack<Type>(X:Type[_,_], Y:Type[_,_]) -> Type[_,_] {
   assert columns(X) == columns(Y);
   
-  auto R1 <- rows(X);
-  auto R2 <- rows(Y);
-  auto C <- columns(X);
+  let R1 <- rows(X);
+  let R2 <- rows(Y);
+  let C <- columns(X);
   
   return matrix(\(i:Integer, j:Integer) -> Type {
         if i <= R1 {
@@ -108,9 +108,9 @@ function stack<Type>(X:Type[_,_], Y:Type[_,_]) -> Type[_,_] {
 function pack<Type>(X:Type[_,_], Y:Type[_,_]) -> Type[_,_] {
   assert rows(X) == rows(Y);
   
-  auto R <- rows(X);
-  auto C1 <- columns(X);
-  auto C2 <- columns(Y);
+  let R <- rows(X);
+  let C1 <- columns(X);
+  let C2 <- columns(Y);
   
   return matrix(\(i:Integer, j:Integer) -> Type {
         if j <= C1 {
@@ -231,7 +231,7 @@ function String(X:Real[_,_]) -> String {
     }
     }}
     for j in 1..columns(X) {
-      auto value <- X[i,j];
+      let value <- X[i,j];
       cpp{{
       if (j > 1) {
         buf << ' ';
@@ -265,7 +265,7 @@ function String(X:Integer[_,_]) -> String {
     }
     }}
     for j in 1..columns(X) {
-      auto value <- X[i,j];
+      let value <- X[i,j];
       cpp{{
       if (j > 1) {
         buf << ' ';
@@ -295,7 +295,7 @@ function String(X:Boolean[_,_]) -> String {
     }
     }}
     for j in 1..columns(X) {
-      auto value <- X[i,j];
+      let value <- X[i,j];
       cpp{{
       if (j > 1) {
         buf << ' ';

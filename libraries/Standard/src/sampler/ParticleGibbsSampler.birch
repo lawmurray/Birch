@@ -29,13 +29,13 @@ class ParticleGibbsSampler < ConditionalParticleSampler {
       r:Tape<Record> <- filter.r!;
       r':Tape<Record>;
 
-      auto x' <- clone(archetype);
-      auto handler <- PlayHandler(true);
+      let x' <- clone(archetype);
+      let handler <- PlayHandler(true);
       handler.output <- r';
       with (handler) {
         x'.simulate();
       }
-      auto w' <- handler.w;
+      let w' <- handler.w;
 
       handler <- PlayHandler(filter.delayed);
       handler.input <- filter.r!;

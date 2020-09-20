@@ -127,7 +127,7 @@ final class Tape<Type> {
       ahead <- TapeNode<Type>();
       aheadCount <- aheadCount + 1;
     }
-    auto node <- ahead!;
+    let node <- ahead!;
     ahead <- node.next;
     node.next <- behind;
     behind <- node;
@@ -150,7 +150,7 @@ final class Tape<Type> {
       behind <- TapeNode<Type>();
       behindCount <- behindCount + 1;
     }
-    auto node <- behind!;
+    let node <- behind!;
     behind <- node.next;
     node.next <- ahead;
     ahead <- node;
@@ -349,7 +349,7 @@ final class Tape<Type> {
    * - x: Value.
    */
   function insert(x:Type) {
-    auto node <- TapeNode<Type>(x);
+    let node <- TapeNode<Type>(x);
     node.next <- ahead;
     ahead <- node;
     aheadCount <- aheadCount + 1;
@@ -360,7 +360,7 @@ final class Tape<Type> {
    * elements ahead of it move forward one position.
    */
   function insert() {
-    auto node <- TapeNode<Type>();
+    let node <- TapeNode<Type>();
     node.next <- ahead;
     ahead <- node;
     aheadCount <- aheadCount + 1;
@@ -373,7 +373,7 @@ final class Tape<Type> {
    * - x: Value.
    */
   function insertBefore(x:Type) {
-    auto node <- TapeNode<Type>(x);
+    let node <- TapeNode<Type>(x);
     node.next <- behind;
     behind <- node;
     behindCount <- behindCount + 1;
@@ -384,7 +384,7 @@ final class Tape<Type> {
    * All elements behind it move backward one position.
    */
   function insertBefore() {
-    auto node <- TapeNode<Type>();
+    let node <- TapeNode<Type>();
     node.next <- behind;
     behind <- node;
     behindCount <- behindCount + 1;
@@ -418,11 +418,11 @@ final class Tape<Type> {
 
   function read(buffer:Buffer) {
     clear();
-    auto f <- buffer.walk();
+    let f <- buffer.walk();
     while f.hasNext() {
       /* tricky, but works for both value and class types */
-      auto x <- make<Type>();
-      auto y <- f.next().get(x);
+      let x <- make<Type>();
+      let y <- f.next().get(x);
       if y? {
         x <- Type?(y);  // cast needed for y:Object?
         pushBack(x!);
@@ -433,7 +433,7 @@ final class Tape<Type> {
 
   function write(buffer:Buffer) {
     buffer.setArray();
-    auto f <- walk();
+    let f <- walk();
     while f.hasNext() {
       buffer.push().set(f.next());
     }

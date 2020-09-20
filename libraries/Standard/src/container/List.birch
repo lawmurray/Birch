@@ -68,7 +68,7 @@ final class List<Type> {
    */
   function back() -> Type {
     assert this.tail?;
-    auto tail <- this.tail!;
+    let tail <- this.tail!;
     return tail.x;
   }
 
@@ -115,7 +115,7 @@ final class List<Type> {
    * Insert a new default-constructed element at the front and return it.
    */
   function pushFront() -> Type {
-    auto x <- make<Type>();
+    let x <- make<Type>();
     if x? {
       pushFront(x!);
     } else {
@@ -135,7 +135,7 @@ final class List<Type> {
       head <- node;
     } else {
       assert this.tail?;
-      auto tail <- this.tail!;
+      let tail <- this.tail!;
       tail.next <- node;
       node.prev <- tail;
     }
@@ -149,7 +149,7 @@ final class List<Type> {
    * Insert a new default-constructed element at the back and return it.
    */
   function pushBack() -> Type {
-    auto x <- make<Type>();
+    let x <- make<Type>();
     if x? {
       pushBack(x!);
     } else {
@@ -276,11 +276,11 @@ final class List<Type> {
   }
   
   function read(buffer:Buffer) {
-    auto f <- buffer.walk();
+    let f <- buffer.walk();
     while f.hasNext() {
       /* tricky, but works for both value and class types */
-      auto x <- make<Type>();
-      auto y <- f.next().get(x);
+      let x <- make<Type>();
+      let y <- f.next().get(x);
       if y? {
         x <- Type?(y);  // cast needed for y:Object?
         pushBack(x!);
@@ -290,7 +290,7 @@ final class List<Type> {
 
   function write(buffer:Buffer) {
     buffer.setArray();
-    auto f <- walk();
+    let f <- walk();
     while f.hasNext() {
       buffer.push().set(f.next());
     }

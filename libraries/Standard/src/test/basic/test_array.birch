@@ -32,7 +32,7 @@ program test_array() {
 }
 
 function check_array(o:Array<Integer>, values:Integer[_]) -> Boolean {
-  auto result <- true;
+  let result <- true;
   
   /* number of rows */
   if o.size() != length(values) {

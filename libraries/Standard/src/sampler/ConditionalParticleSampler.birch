@@ -16,7 +16,7 @@
  */
 abstract class ConditionalParticleSampler < ParticleSampler {
   final function sample(filter:ParticleFilter, archetype:Model) {
-    auto conditionalFilter <- ConditionalParticleFilter?(filter);
+    let conditionalFilter <- ConditionalParticleFilter?(filter);
     if conditionalFilter? {
       sample(conditionalFilter!, archetype);
     } else {
@@ -26,7 +26,7 @@ abstract class ConditionalParticleSampler < ParticleSampler {
 
   final function sample(filter:ParticleFilter, archetype:Model,
       t:Integer) {
-    auto conditionalFilter <- ConditionalParticleFilter?(filter);
+    let conditionalFilter <- ConditionalParticleFilter?(filter);
     if conditionalFilter? {
       sample(conditionalFilter!, archetype, t);
     } else {

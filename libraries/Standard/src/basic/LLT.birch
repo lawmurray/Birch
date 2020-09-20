@@ -46,7 +46,7 @@ function columns(X:LLT) -> Integer64 {
  *     To emphasize, the matrix represented is $S$, not $L$, which is to say,
  *     code such as the following:
  *
- *         auto A <- llt(S);
+ *         let A <- llt(S);
  *         y <- solve(A, x);
  *
  *     computes the matrix-vector product $y = S^{^-1}x$, not $y = L^{-1}x$,
@@ -109,10 +109,10 @@ function rank_update(S:LLT, X:Real[_,_]) -> LLT {
   cpp{{
   A = S;
   }}
-  auto R <- rows(X);
-  auto C <- columns(X);
+  let R <- rows(X);
+  let C <- columns(X);
   for j in 1..C {
-    auto x <- X[1..R,j];
+    let x <- X[1..R,j];
     cpp{{
     A.rankUpdate(x.toEigen(), 1.0);
     }}
@@ -158,10 +158,10 @@ function rank_downdate(S:LLT, X:Real[_,_]) -> LLT {
   cpp{{
   A = S;
   }}
-  auto R <- rows(X);
-  auto C <- columns(X);
+  let R <- rows(X);
+  let C <- columns(X);
   for j in 1..C {
-    auto x <- X[1..R,j];
+    let x <- X[1..R,j];
     cpp{{
     A.rankUpdate(x.toEigen(), -1.0);
     }}

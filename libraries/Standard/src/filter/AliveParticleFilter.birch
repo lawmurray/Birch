@@ -22,14 +22,14 @@ class AliveParticleFilter < ParticleFilter {
   p:Integer[_];
 
   override function propagate(t:Integer) {
-    auto play <- PlayHandler(delayed);
-    auto x0 <- x;
-    auto w0 <- w;
+    let play <- PlayHandler(delayed);
+    let x0 <- x;
+    let w0 <- w;
     p <- vector(0, nparticles + 1);
     parallel for n in 1..nparticles + 1 {
       if n <= nparticles {
         x[n] <- clone(x0[a[n]]);
-        auto handler <- PlayHandler(delayed);
+        let handler <- PlayHandler(delayed);
         with (handler) {
           x[n].m.simulate(t);
           w[n] <- handler.w;
@@ -39,7 +39,7 @@ class AliveParticleFilter < ParticleFilter {
           a[n] <- global.ancestor(w0);
           x[n] <- clone(x0[a[n]]);
           p[n] <- p[n] + 1;
-          auto handler <- PlayHandler(delayed);
+          let handler <- PlayHandler(delayed);
           with (handler) {
             x[n].m.simulate(t);
             w[n] <- handler.w;
@@ -49,13 +49,13 @@ class AliveParticleFilter < ParticleFilter {
         /* propagate and weight until one further acceptance, which is
          * discarded for unbiasedness in the normalizing constant
          * estimate */
-        auto w' <- 0.0;
+        let w' <- 0.0;
         p[n] <- 0;
         do {
-          auto a' <- global.ancestor(w0);
-          auto x' <- clone(x0[a']);
+          let a' <- global.ancestor(w0);
+          let x' <- clone(x0[a']);
           p[n] <- p[n] + 1;
-          auto handler <- PlayHandler(delayed);
+          let handler <- PlayHandler(delayed);
           with (handler) {
             x'.m.simulate(t);
             w' <- handler.w;

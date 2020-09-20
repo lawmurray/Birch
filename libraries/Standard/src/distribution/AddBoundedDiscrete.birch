@@ -44,8 +44,8 @@ final class AddBoundedDiscrete(x1:BoundedDiscrete, x2:BoundedDiscrete) <
 
   function enumerate(x:Integer) {
     if !this.x? || this.x! != x {
-      auto l <- max(x1.lower()!, x - x2.upper()!);
-      auto u <- min(x1.upper()!, x - x2.lower()!);
+      let l <- max(x1.lower()!, x - x2.upper()!);
+      let u <- min(x1.upper()!, x - x2.lower()!);
     
       x0 <- l;
       Z <- 0.0;
@@ -103,7 +103,7 @@ final class AddBoundedDiscrete(x1:BoundedDiscrete, x2:BoundedDiscrete) <
     if !alreadyUpdated {
       /* choose a pair with the given sum and clamp parents */
       enumerate(x);
-      auto n <- simulate_categorical(z, Z) + x0 - 1;
+      let n <- simulate_categorical(z, Z) + x0 - 1;
       x1.clamp(n);
       x2.clamp(x - n);
       alreadyUpdated <- true;
@@ -115,7 +115,7 @@ final class AddBoundedDiscrete(x1:BoundedDiscrete, x2:BoundedDiscrete) <
 //  }
 
   function cdf(x:Integer) -> Real? {
-    auto P <- 0.0;
+    let P <- 0.0;
     for n in lower()!..x {
       P <- P + pdf(n);
     }

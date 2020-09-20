@@ -24,7 +24,7 @@ program test_ragged_array() {
 
 function check_ragged_array(o:RaggedArray<Integer>, sizes:Integer[_],
     values:Integer[_]) -> Boolean {
-  auto result <- true;
+  let result <- true;
   
   /* number of rows */
   if o.size() != length(sizes) {
@@ -41,7 +41,7 @@ function check_ragged_array(o:RaggedArray<Integer>, sizes:Integer[_],
   }
   
   /* contents */
-  auto k <- 1;
+  let k <- 1;
   for i in 1..o.size() {
     for j in 1..o.size(i) {
       if o.get(i, j) != values[k] {

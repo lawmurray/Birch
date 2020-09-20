@@ -44,7 +44,7 @@ class MoveHandler(delayed:Boolean) < Handler {
     if delayed {
       event.p <- event.p.graft();
     }
-    auto v <- event.p.observeLazy(box(event.x));
+    let v <- event.p.observeLazy(box(event.x));
     if v? {
       if z? {
         z <- z! + v!;
@@ -62,7 +62,7 @@ class MoveHandler(delayed:Boolean) < Handler {
       event.p <- event.p.graft();
     }
     if event.x.hasValue() {
-      auto v <- event.p.observeLazy(event.x);
+      let v <- event.p.observeLazy(event.x);
       if v? {
         if z? {
           z <- z! + v!;
@@ -112,7 +112,7 @@ class MoveHandler(delayed:Boolean) < Handler {
        * same way they are played, it's only necessary to check that the
        * observed values actually match */
       assert record.x.hasValue() && record.x.value() == event.x.value();
-      auto v <- event.p.observeLazy(event.x);
+      let v <- event.p.observeLazy(event.x);
       if v? {
         if z? {
           z <- z! + v!;

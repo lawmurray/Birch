@@ -432,8 +432,8 @@ function cdf_linear_normal_inverse_gamma_gaussian(x:Real, a:Real,
  */
 function cdf_linear_multivariate_normal_inverse_gamma_gaussian(x:Real,
     a:Real[_], ν:Real[_], Λ:LLT, c:Real, α:Real, γ:Real) -> Real {
-  auto μ <- solve(Λ, ν);
-  auto β <- γ - 0.5*dot(μ, ν);
+  let μ <- solve(Λ, ν);
+  let β <- γ - 0.5*dot(μ, ν);
   return cdf_student_t(x, 2.0*α, dot(a, μ) + c,
       (β/α)*(1.0 + dot(a, solve(Λ, a))));
 }

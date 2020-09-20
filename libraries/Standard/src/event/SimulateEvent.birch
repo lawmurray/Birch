@@ -36,7 +36,7 @@ final class SimulateEvent<Value>(p:Distribution<Value>) < Event {
   }
   
   function coerce(record:Record) -> SimulateRecord<Value> {
-    auto r <- SimulateRecord<Value>?(record);
+    let r <- SimulateRecord<Value>?(record);
     if !r? {
       error("incompatible trace");
     }

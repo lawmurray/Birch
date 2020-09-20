@@ -254,7 +254,7 @@ abstract class Expression<Value>(x:Value?) < DelayExpression(x?) {
    * `grad()`.
    */
   final function compare(gen:Integer, x:DelayExpression, κ:Kernel) -> Real {
-    auto w <- 0.0;
+    let w <- 0.0;
     if !isConstant() && generation >= gen {
       assert pilotCount > 0;
       if gradCount == 0 {

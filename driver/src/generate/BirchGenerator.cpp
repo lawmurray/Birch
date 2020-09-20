@@ -145,8 +145,8 @@ void birch::BirchGenerator::visit(const Generic* o) {
 }
 
 void birch::BirchGenerator::visit(const GlobalVariable* o) {
-  if (o->has(AUTO)) {
-    start("auto " << o->name);
+  if (o->has(LET)) {
+    start("let " << o->name);
   } else {
     start(o->name << ':');
     if (o->type->isArray() && !o->brackets->isEmpty()) {
@@ -168,8 +168,8 @@ void birch::BirchGenerator::visit(const GlobalVariable* o) {
 }
 
 void birch::BirchGenerator::visit(const MemberVariable* o) {
-  if (o->has(AUTO)) {
-    start("auto " << o->name);
+  if (o->has(LET)) {
+    start("let " << o->name);
   } else {
     start(o->name << ':');
     if (o->type->isArray() && !o->brackets->isEmpty()) {
@@ -191,8 +191,8 @@ void birch::BirchGenerator::visit(const MemberVariable* o) {
 }
 
 void birch::BirchGenerator::visit(const LocalVariable* o) {
-  if (o->has(AUTO)) {
-    start("auto " << o->name);
+  if (o->has(LET)) {
+    start("let " << o->name);
   } else {
     start(o->name << ':');
     if (o->type->isArray() && !o->brackets->isEmpty()) {

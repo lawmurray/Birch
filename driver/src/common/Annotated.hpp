@@ -19,9 +19,9 @@ enum Annotation {
   DYNAMIC = 1,
 
   /**
-   * `auto` annotation on a variable declaration.
+   * `let` annotation on a variable declaration.
    */
-  AUTO = 2,
+  LET = 2,
 
   /**
    * `abstract` annotation on a class or member function.

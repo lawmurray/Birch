@@ -71,8 +71,8 @@ abstract class MultivariateBinaryExpression<Left,Right,LeftValue,RightValue,
   }
   
   final override function doPrior() -> Expression<Real>? {
-    auto l <- y!.prior();
-    auto r <- z!.prior();
+    let l <- y!.prior();
+    let r <- z!.prior();
     if l? && r? {
       return l! + r!;
     } else if l? {
@@ -86,7 +86,7 @@ abstract class MultivariateBinaryExpression<Left,Right,LeftValue,RightValue,
 
   final override function doCompare(gen:Integer, x:DelayExpression,
       κ:Kernel) -> Real {
-    auto o <- MultivariateBinaryExpression<Left,Right,LeftValue,RightValue,
+    let o <- MultivariateBinaryExpression<Left,Right,LeftValue,RightValue,
         LeftGradient,RightGradient,Value>?(x)!;
     return y!.compare(gen, o.y!, κ) + z!.compare(gen, o.z!, κ);
   }

@@ -46,8 +46,8 @@ class MoveParticleFilter < ParticleFilter {
 
   override function propagate() {
     parallel for n in 1..nparticles {
-      auto x <- MoveParticle?(this.x[n])!;
-      auto handler <- MoveHandler(delayed);
+      let x <- MoveParticle?(this.x[n])!;
+      let handler <- MoveHandler(delayed);
       with (handler) {
         x.m.simulate();
         w[n] <- w[n] + handler.w;
@@ -61,8 +61,8 @@ class MoveParticleFilter < ParticleFilter {
 
   override function propagate(t:Integer) {
     parallel for n in 1..nparticles {
-      auto x <- MoveParticle?(this.x[n])!;
-      auto handler <- MoveHandler(delayed);
+      let x <- MoveParticle?(this.x[n])!;
+      let handler <- MoveHandler(delayed);
       with (handler) {
         x.m.simulate(t);
         w[n] <- w[n] + handler.w;
@@ -80,13 +80,13 @@ class MoveParticleFilter < ParticleFilter {
       κ:LangevinKernel;
       κ.scale <- scale/pow(t, 2);
       parallel for n in 1..nparticles {
-        auto x <- MoveParticle?(clone(this.x[n]))!;
+        let x <- MoveParticle?(clone(this.x[n]))!;
         x.grad(t - nlags);
         for m in 1..nmoves {
-          auto x' <- clone(x);
+          let x' <- clone(x);
           x'.move(t - nlags, κ);
           x'.grad(t - nlags);
-          auto α <- x'.π - x.π + x'.compare(t - nlags, x, κ);
+          let α <- x'.π - x.π + x'.compare(t - nlags, x, κ);
           if log(simulate_uniform(0.0, 1.0)) <= α {  // accept?
             x <- x';
             naccepts[n] <- naccepts[n] + 1;

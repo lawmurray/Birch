@@ -9,29 +9,29 @@
 program data(input:String <- "output/simulate.json",
     output:String <- "input/filter.json") {
   /* input */
-  auto reader <- Reader(input);
-  auto inputBuffer <- reader.scan();
+  let reader <- Reader(input);
+  let inputBuffer <- reader.scan();
   reader.close();
   
   /* read in the simulated observations from the track */
   θ:Global;
   y:Array<Array<Random<Real[_]>>>;
 
-  auto iter <- inputBuffer.walk();
+  let iter <- inputBuffer.walk();
   if iter.hasNext() {
-    auto array <- iter.next();
-    auto sample <- array.getObject("sample");
+    let array <- iter.next();
+    let sample <- array.getObject("sample");
     if sample? {
       sample!.get("θ", θ);  
       sample!.get("y", y);
-      auto iter <- sample!.walk("z");
+      let iter <- sample!.walk("z");
       while iter.hasNext() {
-        auto z <- iter.next();
-        auto t <- z.getInteger("t")!;
-        auto iter <- z.walk("y");
+        let z <- iter.next();
+        let t <- z.getInteger("t")!;
+        let iter <- z.walk("y");
         while iter.hasNext() {
-          auto u <- iter.next();
-          auto v <- u!.getRealVector();
+          let u <- iter.next();
+          let v <- u!.getRealVector();
           if v? {
             w:Random<Real[_]>;
             w <- v![1..2];
@@ -48,7 +48,7 @@ program data(input:String <- "output/simulate.json",
   outputBuffer.set("y", y);
   outputBuffer.set("θ", θ);
 
-  auto writer <- Writer(output);
+  let writer <- Writer(output);
   writer.print(outputBuffer);
   writer.close();
 }

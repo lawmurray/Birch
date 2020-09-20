@@ -89,7 +89,7 @@
 // ^ for generic class declaration, opening '<' ambiguous with inheritance,
 //   but closing '>' disambiguates
 
-%token <valString> PROGRAM CLASS TYPE FUNCTION OPERATOR AUTO
+%token <valString> PROGRAM CLASS TYPE FUNCTION OPERATOR AUTO LET
 %token <valString> IF ELSE FOR IN WHILE DO WITH ASSERT RETURN FACTOR
 %token <valString> CPP HPP THIS SUPER GLOBAL PARALLEL DYNAMIC
 %token <valString> ABSTRACT OVERRIDE FINAL
@@ -479,7 +479,8 @@ member_variable_declaration
     ;
 
 local_variable_declaration
-    : AUTO name value ';'                   { push_raw(); $$ = new birch::LocalVariable(birch::AUTO, $2, empty_type(@$), empty_expr(@$), empty_expr(@$), $3, make_doc_loc(@$)); }
+    : AUTO name value ';'                   { yywarn("the auto keyword is deprecated, use let instead"); push_raw(); $$ = new birch::LocalVariable(birch::LET, $2, empty_type(@$), empty_expr(@$), empty_expr(@$), $3, make_doc_loc(@$)); }
+    | LET name value ';'                    { push_raw(); $$ = new birch::LocalVariable(birch::LET, $2, empty_type(@$), empty_expr(@$), empty_expr(@$), $3, make_doc_loc(@$)); }
     | name ':' type ';'                     { push_raw(); $$ = new birch::LocalVariable(birch::NONE, $1, $3, empty_expr(@$), empty_expr(@$), empty_expr(@$), make_doc_loc(@$)); }
     | name ':' type arguments ';'           { push_raw(); $$ = new birch::LocalVariable(birch::NONE, $1, $3, empty_expr(@$), $4, empty_expr(@$), make_doc_loc(@$)); }
     | name ':' type value ';'               { push_raw(); $$ = new birch::LocalVariable(birch::NONE, $1, $3, empty_expr(@$), empty_expr(@$), $4, make_doc_loc(@$)); }

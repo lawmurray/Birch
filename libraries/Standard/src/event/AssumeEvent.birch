@@ -35,7 +35,7 @@ final class AssumeEvent<Value>(x:Random<Value>, p:Distribution<Value>) <
   }
   
   function coerce(record:Record) -> AssumeRecord<Value> {
-    auto r <- AssumeRecord<Value>?(record);
+    let r <- AssumeRecord<Value>?(record);
     if !r? {
       error("incompatible trace");
     }

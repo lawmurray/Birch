@@ -9,12 +9,12 @@ final class MatrixNormalInverseGammaMatrixGaussian(
   M:MatrixNormalInverseGamma <- M;
 
   function rows() -> Integer {
-    auto M <- this.M;
+    let M <- this.M;
     return M.rows();
   }
   
   function columns() -> Integer {
-    auto M <- this.M;
+    let M <- this.M;
     return M.columns();
   }
 

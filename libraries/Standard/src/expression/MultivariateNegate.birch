@@ -26,7 +26,7 @@ final class MultivariateNegate(y:Expression<Real[_]>) <
       if (r <- y!.graftLinearMultivariateGaussian())? {
         r!.negate();
       } else if (x1 <- y!.graftMultivariateGaussian())? {
-        auto R <- x1!.rows();
+        let R <- x1!.rows();
         r <- TransformLinearMultivariate<MultivariateGaussian>(
             box(diagonal(-1.0, R)), x1!, box(vector(0.0, R)));
       }
@@ -43,7 +43,7 @@ final class MultivariateNegate(y:Expression<Real[_]>) <
       if (r <- y!.graftLinearMultivariateNormalInverseGamma(compare))? {
         r!.negate();
       } else if (x1 <- y!.graftMultivariateNormalInverseGamma(compare))? {
-        auto R <- x1!.rows();
+        let R <- x1!.rows();
         r <- TransformLinearMultivariate<MultivariateNormalInverseGamma>(
             box(diagonal(-1.0, R)), x1!, box(vector(0.0, R)));
       }

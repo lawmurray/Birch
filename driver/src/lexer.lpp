@@ -101,6 +101,7 @@ E                                  [Ee][+-]?{D}+
 "type"                              { return TYPE; }
 "operator"                          { return OPERATOR; }
 "auto"                              { return AUTO; }
+"let"                               { return LET; }
 "if"                                { return IF; }
 "else"                              { return ELSE; }
 "for"                               { return FOR; }

@@ -33,7 +33,7 @@ final class ObserveEvent<Value>(x:Value, p:Distribution<Value>) < Event {
   }
 
   function coerce(record:Record) -> ObserveRecord<Value> {
-    auto r <- ObserveRecord<Value>?(record);
+    let r <- ObserveRecord<Value>?(record);
     if !r? {
       error("incompatible trace");
     }

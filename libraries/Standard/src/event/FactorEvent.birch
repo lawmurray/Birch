@@ -27,7 +27,7 @@ final class FactorEvent(w:Expression<Real>) < Event {
   }
 
   function coerce(record:Record) -> FactorRecord {
-    auto r <- FactorRecord?(record);
+    let r <- FactorRecord?(record);
     if !r? {
       error("incompatible trace");
     }

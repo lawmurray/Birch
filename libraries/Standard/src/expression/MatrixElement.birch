@@ -48,7 +48,7 @@ final class MatrixElement<Value>(y:Expression<Value[_,_]>, i:Integer,
 
   override function doCompare(gen:Integer, x:DelayExpression,
       κ:Kernel) -> Real {
-    auto o <- MatrixElement<Value>?(x)!;
+    let o <- MatrixElement<Value>?(x)!;
     return y!.compare(gen, o.y!, κ);
   }
 

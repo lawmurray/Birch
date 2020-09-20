@@ -17,7 +17,7 @@ final class MatrixInv<Argument,ArgumentValue,Value>(y:Argument) <
 
   override function doEvaluateGrad(d:Real[_,_], x:Value, y:ArgumentValue) ->
       Real[_,_] {
-    auto x' <- canonical(transpose(x));
+    let x' <- canonical(transpose(x));
     return -x'*d*x';
   }
 }

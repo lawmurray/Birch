@@ -48,7 +48,7 @@ final class IdenticalGaussian(μ:Expression<Real[_]>, σ2:Expression<Real>) <
     r:Distribution<Real[_]> <- this;
 
     /* match a template */
-    auto compare <- σ2.distribution();
+    let compare <- σ2.distribution();
     if compare? && (m1 <- μ.graftLinearMultivariateNormalInverseGamma(compare!))? {
       r <- LinearMultivariateNormalInverseGammaMultivariateGaussian(m1!.A, m1!.x, m1!.c);
     } else if compare? && (m2 <- μ.graftMultivariateNormalInverseGamma(compare!))? {

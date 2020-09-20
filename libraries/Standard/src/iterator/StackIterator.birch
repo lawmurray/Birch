@@ -20,7 +20,7 @@ final class StackIterator<Type>(head:StackNode<Type>?) < Iterator<Type> {
    * Get the next element.
    */
   function next() -> Type {
-    auto x <- node!.x;
+    let x <- node!.x;
     node <- node!.next;
     return x;
   }

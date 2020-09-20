@@ -57,7 +57,7 @@ abstract class ScalarUnaryExpression<Argument,ArgumentValue,ArgumentGradient,
 
   final override function doCompare(gen:Integer, x:DelayExpression,
       κ:Kernel) -> Real {
-    auto o <- ScalarUnaryExpression<Argument,ArgumentValue,ArgumentGradient,
+    let o <- ScalarUnaryExpression<Argument,ArgumentValue,ArgumentGradient,
         Value>?(x)!;
     return y!.compare(gen, o.y!, κ);
   }

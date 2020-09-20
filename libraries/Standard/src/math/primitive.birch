@@ -223,7 +223,7 @@ function reduce<Type>(x:Type[_], init:Type,
  */
 function transform_reduce<Input,Output>(x:Input[_], init:Output,
     op1:\(Output, Output) -> Output, op2:\(Input) -> Output) -> Output {
-  auto y <- init;
+  let y <- init;
   for n in 1..length(x) {
     y <- op1(y, op2(x[n]));
   }
@@ -243,7 +243,7 @@ function transform_reduce<Input1,Input2,Output>(x:Input1[_], y:Input2[_],
     init:Output, op1:\(Output, Output) -> Output,
     op2:\(Input1, Input2) -> Output) -> Output {
   assert length(x) == length(y);
-  auto z <- init;
+  let z <- init;
   for n in 1..length(x) {
     z <- op1(z, op2(x[n], y[n]));
   }
@@ -265,7 +265,7 @@ function transform_reduce<Input1,Input2,Input3,Output>(x:Input1[_],
     op2:\(Input1, Input2, Input3) -> Output) -> Output {
   assert length(x) == length(y);
   assert length(y) == length(z);
-  auto a <- init;
+  let a <- init;
   for n in 1..length(x) {
     a <- op1(a, op2(x[n], y[n], z[n]));
   }
@@ -339,7 +339,7 @@ function adjacent_difference<Type>(x:Type[_],
  * Returns: A vector giving the elements of `x` in ascending order.
  */
 function sort<Type>(x:Type[_]) -> Type[_] {
-  auto y <- x;
+  let y <- x;
   cpp{{
   y.pinWrite();
   std::sort(y.begin(), y.end());
@@ -357,7 +357,7 @@ function sort<Type>(x:Type[_]) -> Type[_] {
  * order.
  */
 function sort_index<Type>(x:Type[_]) -> Integer[_] {
-  auto a <- iota(1, length(x));
+  let a <- iota(1, length(x));
   cpp{{
   x.pin();
   std::sort(a.begin(), a.end(), [=](birch::type::Integer i, birch::type::Integer j) {
@@ -391,7 +391,7 @@ function gather<Type>(a:Integer[_], x:Type[_]) -> Type[_] {
  * If the same index appears more than once in `a`, the result is undefined.
  */
 function scatter<Type>(a:Integer[_], x:Type[_]) -> Type[_] {
-  auto N <- length(a);
+  let N <- length(a);
   y:Type[N];
   for n in 1..N {
     y[a[n]] <- x[n];

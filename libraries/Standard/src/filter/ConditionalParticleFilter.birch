@@ -60,11 +60,11 @@ class ConditionalParticleFilter < ParticleFilter {
   }
 
   function ancestorSample(t:Integer) {
-    auto w' <- w;
+    let w' <- w;
     dynamic parallel for n in 1..nparticles {
-      auto x' <- clone(x[n]);
-      auto r' <- clone(r!);
-      auto handler <- PlayHandler(delayed);
+      let x' <- clone(x[n]);
+      let r' <- clone(r!);
+      let handler <- PlayHandler(delayed);
       handler.input <- r';
       with (handler) {
         x'.m.simulate(t);
@@ -78,8 +78,8 @@ class ConditionalParticleFilter < ParticleFilter {
   override function propagate() {
     if !alreadyInitialized {
       parallel for n in 1..nparticles {
-        auto x <- ConditionalParticle?(this.x[n])!;
-        auto handler <- PlayHandler(delayed);
+        let x <- ConditionalParticle?(this.x[n])!;
+        let handler <- PlayHandler(delayed);
         if r? && n == b {
           handler.input <- r!;
         }
@@ -94,8 +94,8 @@ class ConditionalParticleFilter < ParticleFilter {
 
   override function propagate(t:Integer) {
     parallel for n in 1..nparticles {
-      auto x <- ConditionalParticle?(this.x[n])!;
-      auto handler <- PlayHandler(delayed);
+      let x <- ConditionalParticle?(this.x[n])!;
+      let handler <- PlayHandler(delayed);
       if r? && n == b {
         handler.input <- r!;
       }

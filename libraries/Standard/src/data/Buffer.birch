@@ -181,7 +181,7 @@ final class Buffer {
    * are themselves arrays of the same length and compatible type.
    */
   function getLLT() -> LLT? {
-    auto x <- getRealMatrix();
+    let x <- getRealMatrix();
     if x? {
       return llt(x!);
     } else {
@@ -193,7 +193,7 @@ final class Buffer {
    * Get the size of an array.
    */
   function size(name:String) -> Integer {
-    auto array <- getArray(name);
+    let array <- getArray(name);
     if array? {
       return array!.size();
     } else {
@@ -210,7 +210,7 @@ final class Buffer {
    * compatible type.
    */
   function getObject(name:String) -> Buffer? {
-    auto buffer <- getChild(name);
+    let buffer <- getChild(name);
     if buffer? {
       return buffer!.getObject();
     } else {
@@ -227,7 +227,7 @@ final class Buffer {
    * compatible type.
    */
   function getArray(name:String) -> Buffer? {
-    auto buffer <- getChild(name);
+    let buffer <- getChild(name);
     if buffer? {
       return buffer!.getArray();
     } else {
@@ -244,7 +244,7 @@ final class Buffer {
    * compatible type.
    */
   function getBoolean(name:String) -> Boolean? {
-    auto buffer <- getChild(name);
+    let buffer <- getChild(name);
     if buffer? {
       return buffer!.getBoolean();
     } else {
@@ -261,7 +261,7 @@ final class Buffer {
    * compatible type.
    */
   function getInteger(name:String) -> Integer? {
-    auto buffer <- getChild(name);
+    let buffer <- getChild(name);
     if buffer? {
       return buffer!.getInteger();
     } else {
@@ -278,7 +278,7 @@ final class Buffer {
    * compatible type.
    */
   function getReal(name:String) -> Real? {
-    auto buffer <- getChild(name);
+    let buffer <- getChild(name);
     if buffer? {
       return buffer!.getReal();
     } else {
@@ -295,7 +295,7 @@ final class Buffer {
    * compatible type.
    */
   function getString(name:String) -> String? {
-    auto buffer <- getChild(name);
+    let buffer <- getChild(name);
     if buffer? {
       return buffer!.getString();
     } else {
@@ -312,7 +312,7 @@ final class Buffer {
    * of a compatible type.
    */
   function getBooleanVector(name:String) -> Boolean[_]? {
-    auto buffer <- getChild(name);
+    let buffer <- getChild(name);
     if buffer? {
       return buffer!.getBooleanVector();
     } else {
@@ -329,7 +329,7 @@ final class Buffer {
    * of a compatible type.
    */
   function getIntegerVector(name:String) -> Integer[_]? {
-    auto buffer <- getChild(name);
+    let buffer <- getChild(name);
     if buffer? {
       return buffer!.getIntegerVector();
     } else {
@@ -346,7 +346,7 @@ final class Buffer {
    * of a compatible type.
    */
   function getRealVector(name:String) -> Real[_]? {
-    auto buffer <- getChild(name);
+    let buffer <- getChild(name);
     if buffer? {
       return buffer!.getRealVector();
     } else {
@@ -363,7 +363,7 @@ final class Buffer {
    * are themselves arrays of the same length and compatible type.
    */
   function getBooleanMatrix(name:String) -> Boolean[_,_]? {
-    auto buffer <- getChild(name);
+    let buffer <- getChild(name);
     if buffer? {
       return buffer!.getBooleanMatrix();
     } else {
@@ -380,7 +380,7 @@ final class Buffer {
    * are themselves arrays of the same length and compatible type.
    */
   function getIntegerMatrix(name:String) -> Integer[_,_]? {
-    auto buffer <- getChild(name);
+    let buffer <- getChild(name);
     if buffer? {
       return buffer!.getIntegerMatrix();
     } else {
@@ -397,7 +397,7 @@ final class Buffer {
    * are themselves arrays of the same length and compatible type.
    */
   function getRealMatrix(name:String) -> Real[_,_]? {
-    auto buffer <- getChild(name);
+    let buffer <- getChild(name);
     if buffer? {
       return buffer!.getRealMatrix();
     } else {
@@ -414,7 +414,7 @@ final class Buffer {
    * are themselves arrays of the same length and compatible type.
    */
   function getLLT(name:String) -> LLT? {
-    auto buffer <- getChild(name);
+    let buffer <- getChild(name);
     if buffer? {
       return buffer!.getLLT();
     } else {
@@ -573,7 +573,7 @@ final class Buffer {
    * Return: The object.
    */
   function get(name:String, value:Object?) -> Object? {
-    auto buffer <- getObject(name);
+    let buffer <- getObject(name);
     if buffer? {
       return buffer!.get(value);
     } else {
@@ -879,7 +879,7 @@ final class Buffer {
   function setObjectMatrix(value:Object[_,_]) {
     setArray();
     for i in 1..rows(value) {
-      auto buffer <- push().setArray();
+      let buffer <- push().setArray();
       for j in 1..columns(value) {
         buffer.push().set(value[i,j]);
       }

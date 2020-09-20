@@ -72,7 +72,7 @@ abstract class Distribution<Value> < DelayDistribution {
    */
   function value() -> Value {
     prune();
-    auto x <- simulate();
+    let x <- simulate();
     update(x);
     unlink();
     return x;
@@ -85,7 +85,7 @@ abstract class Distribution<Value> < DelayDistribution {
    */
   final function observe(x:Value) -> Real {
     prune();
-    auto w <- logpdf(x);
+    let w <- logpdf(x);
     if w > -inf {
       update(x);
     }
@@ -102,7 +102,7 @@ abstract class Distribution<Value> < DelayDistribution {
   final function observeLazy(x:Expression<Value>) -> Expression<Real>? {
     assert supportsLazy();
     prune();
-    auto w <- logpdfLazy(x);
+    let w <- logpdfLazy(x);
     updateLazy(x);
     unlink();
     return w;

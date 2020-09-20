@@ -37,7 +37,7 @@ final class ListNode<Type>(x:Type) {
    * Return: the new front node of the list.
    */
   function popFront() -> ListNode<Type>? {
-    auto node <- this.next;
+    let node <- this.next;
     if node? {
       node!.prev <- nil;
     }
@@ -52,7 +52,7 @@ final class ListNode<Type>(x:Type) {
    * Return: the new back node of the list.
    */
   function popBack() -> ListNode<Type>? {
-    auto node <- this.prev;
+    let node <- this.prev;
     if node? {
       node!.next <- nil;
     }

@@ -8,7 +8,7 @@ class Track < StateSpaceModel<Global,Random<Real[_]>,Random<Real[_]>> {
   t:Integer;
 
   function initial(x:Random<Real[_]>, θ:Global) {
-    auto μ <- vector(0.0, 3*length(θ.l));
+    let μ <- vector(0.0, 3*length(θ.l));
     μ[1..2] <~ Uniform(θ.l, θ.u);
     x ~ Gaussian(μ, θ.M);
   }
