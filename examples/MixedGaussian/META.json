@@ -1,6 +1,5 @@
 {
   "name": "MixedGaussian",
-
   "manifest": {
     "source": [
       "birch/MixedGaussianModel.birch",
@@ -17,6 +16,11 @@
       "README.md",
       "config/mixed_gaussian.json",
       "input/mixed_gaussian.json"
+    ]
+  },
+  "require": {
+    "package": [
+      "Standard"
     ]
   }
 }

@@ -36,14 +36,12 @@ namespace fs = std::filesystem;
 namespace fs = boost::filesystem;
 #endif
 
-#undef line // line() macro in indentable_iostream clashes with property_tree
-#include "boost/property_tree/ptree.hpp"
-#include "boost/property_tree/json_parser.hpp"
 #include "boost/algorithm/string.hpp"
 #include "boost/algorithm/string/trim.hpp"
 
 #include <getopt.h>
 #include <dlfcn.h>
+#include <yaml.h>
 #ifdef HAVE_LIBEXPLAIN_SYSTEM_H
 #include <libexplain/system.h>
 #endif

@@ -1,7 +1,7 @@
 /**
  * @file
  */
-#include "Compiler.hpp"
+#include "src/build/Compiler.hpp"
 
 #include "src/birch.hpp"
 #include "src/lexer.hpp"

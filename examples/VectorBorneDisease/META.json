@@ -1,6 +1,5 @@
 {
   "name": "VectorBorneDisease",
-
   "manifest": {
     "source": [
       "birch/common/SEIRModel.birch",
@@ -22,6 +21,11 @@
       "input/fais_dengue.json",
       "input/yap_dengue.json",
       "input/yap_zika.json"
+    ]
+  },
+  "require": {
+    "package": [
+      "Standard"
     ]
   }
 }

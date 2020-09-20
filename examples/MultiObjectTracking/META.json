@@ -1,12 +1,5 @@
 {
   "name": "MultiObjectTracking",
-  
-  "require": {
-    "package": [
-      "Cairo"
-    ]
-  },
-  
   "manifest": {
     "source": [
       "birch/data.birch",
@@ -27,6 +20,12 @@
       "META.json",
       "README.md",
       "run.sh"
+    ]
+  },
+  "require": {
+    "package": [
+      "Standard",
+      "Cairo"
     ]
   }
 }

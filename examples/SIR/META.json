@@ -1,6 +1,5 @@
 {
   "name": "SIR",
-
   "manifest": {
     "source": [
       "birch/SIRModel.birch",
@@ -16,6 +15,11 @@
       "README.md",
       "config/sir.json",
       "input/influenza.json"
+    ]
+  },
+  "require": {
+    "package": [
+      "Standard"
     ]
   }
 }

@@ -15,6 +15,7 @@ bin_PROGRAMS = birch
 birch_SOURCES = \
   src/build/Compiler.cpp \
   src/build/Driver.cpp \
+  src/build/MetaParser.cpp \
   src/build/misc.cpp \
   src/common/Annotated.cpp \
   src/common/Argumented.cpp \
@@ -138,6 +139,7 @@ birch_CXXFLAGS = $(AM_CXXFLAGS)
 noinst_HEADERS = \
   src/build/Compiler.hpp \
   src/build/Driver.hpp \
+  src/build/MetaParser.hpp \
   src/build/misc.hpp \
   src/common/Annotated.hpp \
   src/common/Argumented.hpp \

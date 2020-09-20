@@ -1,6 +1,5 @@
 {
   "name": "LinearRegression",
-
   "manifest": {
     "source": [
       "birch/LinearRegressionModel.birch"
@@ -14,6 +13,11 @@
       "README.md",
       "config/linear_regression.json",
       "input/bike_share.json"
+    ]
+  },
+  "require": {
+    "package": [
+      "Standard"
     ]
   }
 }

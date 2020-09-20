@@ -124,14 +124,12 @@ private:
   Package* createPackage(bool includeRequires);
 
   /**
-   * Consume a list of files from the meta file.
+   * Consume a list of files from the meta file contents.
    *
-   * @param meta Property tree of the meta file.
    * @param key The key.
    * @param checkExists Check if the files exists?
    */
-  void readFiles(const boost::property_tree::ptree& meta,
-      const std::string& key, const bool checkExists);
+  void readFiles(const std::string& key, const bool checkExists);
 
   /**
    * Package name.
@@ -247,6 +245,7 @@ private:
   /**
    * Lists of files from meta.
    */
+  std::map<std::string,std::list<std::string>> metaContents;
   std::map<std::string,std::list<fs::path>> metaFiles;
   std::set<fs::path> allFiles;
 

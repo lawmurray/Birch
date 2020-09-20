@@ -1,6 +1,5 @@
 {
   "name": "SQLite",
-  
   "manifest": {
     "source": [
       "birch/SQLite3.birch",
@@ -12,8 +11,10 @@
       "README.md"
     ]
   },
-  
   "require": {
+    "package": [
+      "Standard"
+    ],
     "header": [
       "sqlite3.h"
     ],

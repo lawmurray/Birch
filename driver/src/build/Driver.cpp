@@ -1,8 +1,9 @@
 /**
  * @file
  */
-#include "Driver.hpp"
+#include "src/build/Driver.hpp"
 
+#include "src/build/MetaParser.hpp"
 #include "src/build/Compiler.hpp"
 #include "src/build/misc.hpp"
 #include "src/generate/MarkdownGenerator.hpp"
@@ -939,52 +940,30 @@ void birch::Driver::help() {
 
 void birch::Driver::meta() {
   /* clear any previous read */
+  metaContents.clear();
   metaFiles.clear();
   allFiles.clear();
 
-  /* check for META.json */
-  if (!fs::exists("META.json")) {
-    throw DriverException("META.json does not exist.");
-  }
-
   /* parse META.json */
-  boost::property_tree::ptree meta;
-  try {
-    boost::property_tree::read_json("META.json", meta);
-  } catch (boost::exception& e) {
-    throw DriverException("syntax error in META.json.");
-  }
+  MetaParser parser;
+  metaContents = parser.parse();
 
   /* meta */
-  if (auto name = meta.get_optional<std::string>("name")) {
-    packageName = name.get();
-  } else {
-    throw DriverException(
-        "META.json must provide a 'name' entry with the name of this package.");
+  if (!metaContents["name"].empty()) {
+    packageName = metaContents["name"].front();
   }
-  if (auto description = meta.get_optional<std::string>("description")) {
-    packageDescription = description.get();
+  if (!metaContents["description"].empty()) {
+    packageDescription = metaContents["description"].front();
   }
-  if (auto version = meta.get_optional<std::string>("version")) {
-    packageVersion = version.get();
+  if (!metaContents["version"].empty()) {
+    packageVersion = metaContents["version"].front();
   }
 
-  /* external requirements */
-  if (packageName != "Standard") {
-    /* implicitly include the standard library, if this package is not,
-     * itself, the standard library */
-    metaFiles["require.package"].push_front("Standard");
-  }
-  readFiles(meta, "require.package", false);
-  readFiles(meta, "require.header", false);
-  readFiles(meta, "require.library", false);
-  readFiles(meta, "require.program", false);
-
-  /* manifest */
-  readFiles(meta, "manifest.header", true);
-  readFiles(meta, "manifest.source", true);
-  readFiles(meta, "manifest.data", true);
-  readFiles(meta, "manifest.other", true);
+  /* check manifest files */
+  readFiles("manifest.header", true);
+  readFiles("manifest.source", true);
+  readFiles("manifest.data", true);
+  readFiles("manifest.other", true);
 }
 
 void birch::Driver::setup() {
@@ -1022,41 +1001,34 @@ void birch::Driver::setup() {
   configureStream << contents << "\n\n";
 
   /* required headers */
-  if (!metaFiles["require.header"].empty()) {
-    configureStream << "if test x$emscripten = xfalse; then\n";
+  for (auto value : metaContents["require.header"]) {
+    configureStream << "AC_CHECK_HEADERS([" << value << "], [], [AC_MSG_ERROR([required header not found.])], [-])\n";
   }
-  for (auto file : metaFiles["require.header"]) {
-    configureStream << "  AC_CHECK_HEADERS([" << file.string() << "], [], [AC_MSG_ERROR([required header not found.])], [-])\n";
-  }
-  for (auto name : metaFiles["require.package"]) {
-    auto tarName = tar(name.string());
-    configureStream << "  AC_CHECK_HEADERS([" << tarName << ".hpp], [], [AC_MSG_ERROR([required header not found.])], [-])\n";
-  }
-  if (!metaFiles["require.header"].empty()) {
-    configureStream << "fi\n";
+  for (auto value : metaContents["require.package"]) {
+    auto tarName = tar(value);
+    configureStream << "AC_CHECK_HEADERS([" << tarName << ".hpp], [], [AC_MSG_ERROR([required header not found.])], [-])\n";
   }
 
   /* required libraries */
-  for (auto file : metaFiles["require.library"]) {
-    configureStream << "  AC_CHECK_LIB([" << file.string() << "], [main], [], [AC_MSG_ERROR([required library not found.])])\n";
+  for (auto value : metaContents["require.library"]) {
+    configureStream << "AC_CHECK_LIB([" << value << "], [main], [], [AC_MSG_ERROR([required library not found.])])\n";
   }
-  for (auto name : metaFiles["require.package"]) {
-    auto tarName = tar(name.string());
-    configureStream << "  if $debug; then\n";
-    configureStream << "    AC_CHECK_LIB([" << tarName << "-debug], [main], [DEBUG_LIBS=\"$DEBUG_LIBS -l" << tarName << "-debug\"], [AC_MSG_ERROR([required library not found.])], [$DEBUG_LIBS])\n";
-    configureStream << "  fi\n";
-    configureStream << "  if $test; then\n";
-    configureStream << "    AC_CHECK_LIB([" << tarName << "-test], [main], [TEST_LIBS=\"$TEST_LIBS -l" << tarName << "-test\"], [AC_MSG_ERROR([required library not found.])], [$TEST_LIBS])\n";
-    configureStream << "  fi\n";
-    configureStream << "  if $release; then\n";
-    configureStream << "    AC_CHECK_LIB([" << tarName << "], [main], [RELEASE_LIBS=\"$RELEASE_LIBS -l" << tarName << "\"], [AC_MSG_ERROR([required library not found.])], [$RELEASE_LIBS])\n";
-    configureStream << "  fi\n";
+  for (auto value : metaContents["require.package"]) {
+    auto tarName = tar(value);
+    configureStream << "if $debug; then\n";
+    configureStream << "  AC_CHECK_LIB([" << tarName << "-debug], [main], [DEBUG_LIBS=\"$DEBUG_LIBS -l" << tarName << "-debug\"], [AC_MSG_ERROR([required library not found.])], [$DEBUG_LIBS])\n";
+    configureStream << "fi\n";
+    configureStream << "if $test; then\n";
+    configureStream << "  AC_CHECK_LIB([" << tarName << "-test], [main], [TEST_LIBS=\"$TEST_LIBS -l" << tarName << "-test\"], [AC_MSG_ERROR([required library not found.])], [$TEST_LIBS])\n";
+    configureStream << "fi\n";
+    configureStream << "if $release; then\n";
+    configureStream << "  AC_CHECK_LIB([" << tarName << "], [main], [RELEASE_LIBS=\"$RELEASE_LIBS -l" << tarName << "\"], [AC_MSG_ERROR([required library not found.])], [$RELEASE_LIBS])\n";
+    configureStream << "fi\n";
   }
 
   /* required programs */
-  for (auto file : metaFiles["require.program"]) {
-    configureStream << "  AC_PATH_PROG([PROG], [" << file.string() <<
-        "], [])\n";
+  for (auto value : metaContents["require.program"]) {
+    configureStream << "  AC_PATH_PROG([PROG], [" << value << "], [])\n";
     configureStream << "  if test \"$PROG\" = \"\"; then\n";
     configureStream << "    AC_MSG_ERROR([required program not found.])\n";
     configureStream << "  fi\n";
@@ -1252,11 +1224,11 @@ const char* birch::Driver::explain(const std::string& cmd) {
 birch::Package* birch::Driver::createPackage(bool includeRequires) {
   Package* package = new Package(packageName);
   if (includeRequires) {
-    for (auto name : metaFiles["require.package"]) {
-      package->addPackage(name.string());
+    for (auto value : metaContents["require.package"]) {
+      package->addPackage(value);
 
       /* add *.birch dependency */
-      fs::path header = tar(name.string());
+      fs::path header = tar(value);
       header.replace_extension(".birch");
       package->addHeader(find(includeDirs, header).string());
     }
@@ -1269,31 +1241,21 @@ birch::Package* birch::Driver::createPackage(bool includeRequires) {
   return package;
 }
 
-void birch::Driver::readFiles(const boost::property_tree::ptree& meta,
-    const std::string& key, bool checkExists) {
-  auto files = meta.get_child_optional(key);
-  if (files) {
-    for (auto file : files.get()) {
-      if (auto str = file.second.get_value_optional<std::string>()) {
-        if (str) {
-          auto filePath = fs::path(str.get());
-          auto fileStr = filePath.string();
-          if (checkExists && !exists(filePath)) {
-            warn(fileStr + " in META.json does not exist.");
-          }
-          if (std::regex_search(fileStr,
-              std::regex("\\s", std::regex_constants::ECMAScript))) {
-            throw DriverException(
-                std::string("file name ") + fileStr
-                    + " in META.json contains whitespace, which is not supported.");
-          }
-          auto inserted = allFiles.insert(filePath);
-          if (!inserted.second) {
-            warn(fileStr + " repeated in META.json.");
-          }
-          metaFiles[key].push_back(filePath);
-        }
-      }
+void birch::Driver::readFiles(const std::string& key, bool checkExists) {
+  for (auto file : metaContents[key]) {
+    auto path = fs::path(file);
+    if (checkExists && !exists(path)) {
+      warn(file + " in meta file does not exist.");
     }
+    if (std::regex_search(file,
+        std::regex("\\s", std::regex_constants::ECMAScript))) {
+      throw DriverException(std::string("file name ") + file +
+          " in meta file contains whitespace, which is not supported.");
+    }
+    auto inserted = allFiles.insert(path);
+    if (!inserted.second) {
+      warn(file + " repeated in meta file.");
+    }
+    metaFiles[key].push_back(path);
   }
 }

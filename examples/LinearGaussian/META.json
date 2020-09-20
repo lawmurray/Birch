@@ -1,6 +1,5 @@
 {
   "name": "LinearGaussian",
-
   "manifest": {
     "source": [
       "birch/LinearGaussianModel.birch",
@@ -15,6 +14,11 @@
       "README.md",
       "config/linear_gaussian.json",
       "input/linear_gaussian.json"
+    ]
+  },
+  "require": {
+    "package": [
+      "Standard"
     ]
   }
 }

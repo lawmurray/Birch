@@ -1,6 +1,5 @@
 {
   "name": "Cairo",
-  
   "manifest": {
     "source": [
       "birch/Context.birch",
@@ -16,8 +15,10 @@
       "README.md"
     ]
   },
-  
   "require": {
+    "package": [
+      "Standard"
+    ],
     "header": [
       "cairo/cairo.h",
       "cairo/cairo-pdf.h",

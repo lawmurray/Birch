@@ -1,6 +1,5 @@
 {
   "name": "PoissonGaussian",
-
   "manifest": {
     "source": [
       "birch/PoissonGaussianModel.birch",
@@ -15,6 +14,11 @@
       "README.md",
       "config/poisson_gaussian.json",
       "input/poisson_gaussian.json"
+    ]
+  },
+  "require": {
+    "package": [
+      "Standard"
     ]
   }
 }
