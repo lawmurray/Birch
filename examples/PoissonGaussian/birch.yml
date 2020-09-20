@@ -1,0 +1,17 @@
+name: PoissonGaussian
+manifest: 
+  source: 
+    - src/PoissonGaussianModel.birch
+    - src/PoissonGaussianParameter.birch
+  data:
+    - config/poisson_gaussian.json
+    - input/poisson_gaussian.json
+  other:
+    - birch.yml
+    - LICENSE
+    - README.md
+    - smoke.sh
+    - test.sh
+require: 
+  package: 
+    - Standard

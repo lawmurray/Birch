@@ -1,0 +1,24 @@
+name: MultiObjectTracking
+manifest: 
+  source: 
+    - src/data.birch
+    - src/draw.birch
+    - src/Global.birch
+    - src/Multi.birch
+    - src/Track.birch
+  data:
+    - config/filter.json
+    - config/simulate.json
+    - input/filter.json
+    - input/simulate.json
+  other: 
+    - birch.yml
+    - LICENSE
+    - README.md
+    - run.sh
+    - smoke.sh
+    - test.sh
+require: 
+  package: 
+    - Standard
+    - Cairo

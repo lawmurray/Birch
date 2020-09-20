@@ -124,7 +124,7 @@ private:
   Package* createPackage(bool includeRequires);
 
   /**
-   * Consume a list of files from the meta file contents.
+   * Consume a list of files from the build configuration file contents.
    *
    * @param key The key.
    * @param checkExists Check if the files exists?

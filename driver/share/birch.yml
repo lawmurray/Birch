@@ -1,0 +1,16 @@
+name: PACKAGE_NAME
+description: 
+manifest: 
+  source: 
+    - src/*.birch
+    - src/*/*.birch
+    - src/*/*/*.birch
+    - src/*/*/*/*.birch
+    - src/*/*/*/*/*.birch
+  other: 
+    - birch.yml
+    - LICENSE
+    - README.md
+require: 
+  package: 
+    - Standard

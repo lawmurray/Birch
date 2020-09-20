@@ -1,0 +1,16 @@
+name: SQLite
+manifest: 
+  source: 
+    - src/SQLite3.birch
+    - src/SQLite3Statement.birch
+  other: 
+    - birch.yml
+    - LICENSE
+    - README.md
+require: 
+  package: 
+    - Standard
+  header: 
+    - sqlite3.h
+  library: 
+    - sqlite3

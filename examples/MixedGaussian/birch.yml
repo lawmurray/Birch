@@ -1,0 +1,19 @@
+name: MixedGaussian
+manifest: 
+  source: 
+    - src/MixedGaussianModel.birch
+    - src/MixedGaussianObservation.birch
+    - src/MixedGaussianParameter.birch
+    - src/MixedGaussianState.birch
+  data:
+    - config/mixed_gaussian.json
+    - input/mixed_gaussian.json
+  other: 
+    - birch.yml
+    - LICENSE
+    - README.md
+    - smoke.sh
+    - test.sh
+require: 
+  package: 
+    - Standard

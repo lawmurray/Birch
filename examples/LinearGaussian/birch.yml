@@ -1,0 +1,17 @@
+name: LinearGaussian
+manifest: 
+  source: 
+    - src/LinearGaussianModel.birch
+    - src/LinearGaussianParameter.birch
+  data:
+    - config/linear_gaussian.json
+    - input/linear_gaussian.json
+  other: 
+    - birch.yml
+    - LICENSE
+    - README.md
+    - smoke.sh
+    - test.sh
+require: 
+  package: 
+    - Standard

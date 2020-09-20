@@ -4,18 +4,28 @@
 #include "src/build/MetaParser.hpp"
 
 #include "src/exception/DriverException.hpp"
+#include "src/build/misc.hpp"
 
 birch::MetaParser::MetaParser() {
   fs::path path;
-  if (fs::exists("META.yaml")) {
+  if (fs::exists("birch.yaml")) {
+    path = "birch.yaml";
+  } else if (fs::exists("birch.yml")) {
+    path = "birch.yml";
+  } else if (fs::exists("birch.json")) {
+    path = "birch.json";
+  } else if (fs::exists("META.yaml")) {
+    warn("the preferred name for the build configuration file is now birch.yaml");
     path = "META.yaml";
   } else if (fs::exists("META.yml")) {
+    warn("the preferred name for the build configuration file is now birch.yml");
     path = "META.yml";
   } else if (fs::exists("META.json")) {
+    warn("the preferred name for the build configuration file is now birch.json");
     path = "META.json";
   } else {
-    throw DriverException(std::string("no meta file; create a meta file ") +
-        "named META.yaml, META.yml or META.json.");
+    throw DriverException(std::string("no build configuration file; create a file named ") +
+        "birch.yaml, birch.yml or birch.json.");
   }
   file = fopen(path.string().c_str(), "r");
   if (!file) {
@@ -33,7 +43,7 @@ birch::MetaParser::map_type birch::MetaParser::parse() {
   int done = 0;
   while (!done) {
     if (!yaml_parser_parse(&parser, &event)) {
-      throw DriverException("syntax error in meta file");
+      throw DriverException("syntax error in build configuration file.");
     }
     if (event.type == YAML_SEQUENCE_START_EVENT) {
       parseSequence();
@@ -54,7 +64,7 @@ void birch::MetaParser::parseMapping() {
   while (!done) {
     /* read one name/value pair on each iteration */
     if (!yaml_parser_parse(&parser, &event)) {
-      throw DriverException("syntax error in meta file");
+      throw DriverException("syntax error in build configuration file.");
     }
     if (event.type == YAML_SCALAR_EVENT) {
       /* key */
@@ -71,7 +81,7 @@ void birch::MetaParser::parseMapping() {
       
       /* value */
       if (!yaml_parser_parse(&parser, &event)) {
-        throw DriverException("syntax error in meta file");
+        throw DriverException("syntax error in build configuration file.");
       }
       if (event.type == YAML_SCALAR_EVENT) {
         parseScalar();
@@ -96,7 +106,7 @@ void birch::MetaParser::parseSequence() {
   int done = 0;
   while (!done) {
     if (!yaml_parser_parse(&parser, &event)) {
-      throw DriverException("syntax error in meta file");
+      throw DriverException("syntax error in build configuration file.");
     }
     if (event.type == YAML_SCALAR_EVENT) {
       parseScalar();

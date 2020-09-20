@@ -2,7 +2,7 @@
 
 Birch is a probabilistic programming language featuring automatic marginalization, automatic conjugacy, automatic differentiation, and inference algorithms based on Sequential Monte Carlo (SMC). The Birch language transpiles to C++.
 
-See [https://birch.sh](https://birch.sh) for a gentle introduction, and [https://docs.birch.sh](https://docs.birch.sh) for reference documentation.
+See [https://birch.sh](https://birch.sh) for a gentle introduction, and [https://docsbirch.sh](https://docsbirch.sh) for reference documentation.
 
 
 ## License
@@ -43,7 +43,6 @@ All Birch sources are in the same repository. The master branch is considered st
     git clone https://github.com/lawmurray/Birch.git
 
 Install the driver by running, from within the `driver/` directory:
-
 
     ./bootstrap
     ./configure

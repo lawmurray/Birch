@@ -632,8 +632,8 @@ void birch::Driver::init() {
   copy_with_prompt(find(shareDirs, "gitignore"), ".gitignore");
   copy_with_prompt(find(shareDirs, "LICENSE"), "LICENSE");
 
-  if (copy_with_prompt(find(shareDirs, "META.json"), "META.json")) {
-    replace_tag("META.json", "PACKAGE_NAME", packageName);
+  if (copy_with_prompt(find(shareDirs, "birch.yml"), "birch.yml")) {
+    replace_tag("birch.yml", "PACKAGE_NAME", packageName);
   }
   if (copy_with_prompt(find(shareDirs, "README.md"), "README.md")) {
     replace_tag("README.md", "PACKAGE_NAME", packageName);
@@ -644,19 +644,14 @@ void birch::Driver::init() {
 }
 
 void birch::Driver::check() {
-  /* read META.json */
-  if (!fs::exists("META.json")) {
-    warn("no META.json file.");
-  } else {
-    meta();
-  }
+  meta();
 
   /* check LICENSE */
   if (!fs::exists("LICENSE")) {
     warn("no LICENSE file; create a LICENSE file containing the "
         "distribution license (e.g. GPL or BSD) of the package.");
   } else if (allFiles.find("LICENSE") == allFiles.end()) {
-    warn("LICENSE file is not listed in META.json file.");
+    warn("LICENSE file is not listed in build configuration.");
   }
 
   /* check README.md */
@@ -664,16 +659,17 @@ void birch::Driver::check() {
     warn("no README.md file; create a README.md file documenting the "
         "package in Markdown format.");
   } else if (allFiles.find("README.md") == allFiles.end()) {
-    warn("README.md file is not listed in META.json file.");
+    warn("README.md file is not listed in build configuration.");
   }
 
-  /* check for files that might be missing from META.json */
+  /* check for files that might be missing from meta */
   std::unordered_set<std::string> interesting, exclude;
 
   interesting.insert(".birch");
   interesting.insert(".sh");
-  interesting.insert(".json");
+  interesting.insert(".yaml");
   interesting.insert(".yml");
+  interesting.insert(".json");
 
   exclude.insert("bootstrap");
   exclude.insert("ltmain.sh");
@@ -689,9 +685,8 @@ void birch::Driver::check() {
     } else if (interesting.find(ext) != interesting.end()
         && exclude.find(name) == exclude.end()) {
       if (allFiles.find(path.string()) == allFiles.end()) {
-        warn(
-            std::string("is ") + path.string()
-                + " missing from META.json file?");
+        warn(std::string("is ") + path.string()
+                + " missing from build configuration?");
       }
     }
     ++iter;
@@ -804,8 +799,9 @@ void birch::Driver::help() {
       std::cout << "modifications to the package, but will output warnings for possible issues such" << std::endl;
       std::cout << "as:" << std::endl;
       std::cout << std::endl;
-      std::cout << "  * files listed in META.json that do not exist," << std::endl;
-      std::cout << "  * files of recognisable types that exist but are not listed in META.json, and" << std::endl;
+      std::cout << "  * files listed in the build configuration that do not exist," << std::endl;
+      std::cout << "  * files of recognisable types that exist but are not listed in the" << std::endl;
+      std::cout << "    build configuration file, and" << std::endl;
       std::cout << "  * standard meta files that do not exist." << std::endl;
     } else if (command.compare("bootstrap") == 0 ||
         command.compare("configure") == 0 ||
@@ -944,11 +940,9 @@ void birch::Driver::meta() {
   metaFiles.clear();
   allFiles.clear();
 
-  /* parse META.json */
+  /* parse build configuration file */
   MetaParser parser;
   metaContents = parser.parse();
-
-  /* meta */
   if (!metaContents["name"].empty()) {
     packageName = metaContents["name"].front();
   }
@@ -1246,16 +1240,16 @@ void birch::Driver::readFiles(const std::string& key, bool checkExists) {
     auto paths = glob(pattern);
     for (auto path : paths) {
       if (checkExists && !exists(path)) {
-        warn(path.string() + " in meta file does not exist.");
+        warn(path.string() + " in build configuration does not exist.");
       }
       if (std::regex_search(path.string(), std::regex("\\s",
           std::regex_constants::ECMAScript))) {
         throw DriverException(std::string("file name ") + path.string() +
-          " in meta file contains whitespace, which is not supported.");
+          " in build configuration contains whitespace, which is not supported.");
       }
       auto inserted = allFiles.insert(path);
       if (!inserted.second) {
-        warn(path.string() + " repeated in meta file.");
+        warn(path.string() + " repeated in build configuration.");
       }
       metaFiles[key].push_back(path);
     }
