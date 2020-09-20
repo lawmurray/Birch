@@ -24,7 +24,13 @@ void warn(const std::string& msg, Location* loc);
 /**
  * Find a path in a list of possible locations.
  */
-fs::path find(const std::list<fs::path>& paths, const fs::path path);
+fs::path find(const std::list<fs::path>& paths, const fs::path& path);
+
+/**
+ * Glob a string giving a single path, or wildcard pattern, into a list
+ * of matching paths.
+ */
+std::list<fs::path> glob(const std::string& pattern);
 
 /**
  * Copy a source file to a destination file, but only if the destination

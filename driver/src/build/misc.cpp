@@ -21,7 +21,7 @@ void birch::warn(const std::string& msg, Location* loc) {
   std::cerr << "warning: " << msg << std::endl;
 }
 
-fs::path birch::find(const std::list<fs::path>& paths, const fs::path path) {
+fs::path birch::find(const std::list<fs::path>& paths, const fs::path& path) {
   auto iter = paths.begin();
   while (iter != paths.end() && !exists(*iter / path)) {
     ++iter;
@@ -31,6 +31,17 @@ fs::path birch::find(const std::list<fs::path>& paths, const fs::path path) {
   } else {
     return *iter / path;
   }
+}
+
+std::list<fs::path> birch::glob(const std::string& pattern) {
+  std::list<fs::path> results;
+  glob_t matches;
+  glob(pattern.c_str(), GLOB_NOMAGIC, 0, &matches);
+  for (int i = 0; i < matches.gl_pathc; ++i) {
+    results.push_back(matches.gl_pathv[i]);
+  }
+  globfree(&matches);
+  return results;
 }
 
 bool birch::copy_if_newer(fs::path src, fs::path dst) {

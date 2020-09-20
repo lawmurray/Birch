@@ -1242,20 +1242,23 @@ birch::Package* birch::Driver::createPackage(bool includeRequires) {
 }
 
 void birch::Driver::readFiles(const std::string& key, bool checkExists) {
-  for (auto file : metaContents[key]) {
-    auto path = fs::path(file);
-    if (checkExists && !exists(path)) {
-      warn(file + " in meta file does not exist.");
-    }
-    if (std::regex_search(file,
-        std::regex("\\s", std::regex_constants::ECMAScript))) {
-      throw DriverException(std::string("file name ") + file +
+  for (auto pattern : metaContents[key]) {
+    auto paths = glob(pattern);
+    for (auto path : paths) {
+      std::cerr << path.string() << std::endl;
+      if (checkExists && !exists(path)) {
+        warn(path.string() + " in meta file does not exist.");
+      }
+      if (std::regex_search(path.string(), std::regex("\\s",
+          std::regex_constants::ECMAScript))) {
+        throw DriverException(std::string("file name ") + path.string() +
           " in meta file contains whitespace, which is not supported.");
+      }
+      auto inserted = allFiles.insert(path);
+      if (!inserted.second) {
+        warn(path.string() + " repeated in meta file.");
+      }
+      metaFiles[key].push_back(path);
     }
-    auto inserted = allFiles.insert(path);
-    if (!inserted.second) {
-      warn(file + " repeated in meta file.");
-    }
-    metaFiles[key].push_back(path);
   }
 }

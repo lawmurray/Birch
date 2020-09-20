@@ -27,6 +27,7 @@ AX_CHECK_COMPILE_FLAG([-fprofile-abs-path], [CXXFLAGS="$CXXFLAGS -fprofile-abs-p
 
 # Checks for headers
 AC_CHECK_HEADERS([yaml.h], [], [AC_MSG_ERROR([required header not found.])], [-])
+AC_CHECK_HEADERS([glob.h], [], [AC_MSG_ERROR([required header not found.])], [-])
 AC_CHECK_HEADERS([ \
     boost/filesystem.hpp \
     boost/filesystem/fstream.hpp \
