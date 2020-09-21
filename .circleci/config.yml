@@ -608,6 +608,7 @@ jobs:
       - linux_environment
       - git_identity
       - run:
+          name: Commit website
           command: |
               if [[ -n "$GITHUB_USERNAME" && -n "$GITHUB_PASSWORD" ]]
               then
