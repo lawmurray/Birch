@@ -15,6 +15,16 @@ executors:
 
 commands:
 
+  git_identity:
+    description: Setting Git identity
+    steps:
+      - run:
+          name: Git identity
+          description: Set Git identity
+          command: |
+              git config --global user.name "Birch Machine"
+              git config --global user.email "birch-machine@indii.org"
+
   linux_environment:
     description: Preparing Linux environment
     steps:
@@ -183,23 +193,29 @@ commands:
   checkout_brew:
     description: Checkout Homebrew tap
     steps:
+      - git_identity
       - run:
           name: Checkout Homebrew tap
           command: |
-              git config --global user.name "Birch Machine"
-              git config --global user.email "birch-machine@indii.org"
-              git clone https://$GITHUB_USERNAME:$GITHUB_PASSWORD@github.com/lawmurray/homebrew-birch.git
+              if [[ -n "$GITHUB_USERNAME" && -n "$GITHUB_PASSWORD" ]]
+              then
+                git clone https://$GITHUB_USERNAME:$GITHUB_PASSWORD@github.com/lawmurray/homebrew-birch.git
+              fi
 
   commit_brew:
     description: Commit Homebrew tap
     steps:
+      - git_identity
       - run:
           name: Commit Homebrew tap
           command: |
-              cd ~/project/homebrew-birch
-              git add -u
-              git commit -m "Updated to version $VERSION."
-              git push origin master
+              if [[ -n "$GITHUB_USERNAME" && -n "$GITHUB_PASSWORD" && -n "$VERSION" ]]
+              then
+                cd ~/project/homebrew-birch
+                git add -u
+                git commit -m "Updated to version $VERSION."
+                git push origin master
+              fi
 
   linux_deploy_package:
     description: Deploy package
@@ -253,7 +269,7 @@ commands:
       - run:
           name: Homebrew package for << parameters.package >>
           command: |
-              if [[ -n "$VERSION" ]]
+              if [[ -n "$GITHUB_USERNAME" && -n "$GITHUB_PASSWORD" && -n "$VERSION" ]]
               then
                 cd << parameters.dir >>/<< parameters.package >>
                 make dist
@@ -590,10 +606,17 @@ jobs:
       - attach_workspace:
           at: .
       - linux_environment
+      - git_identity
       - run:
           command: |
-              make -f mkdocs.makefile
-              mkdocs gh-deploy
+              if [[ -n "$GITHUB_USERNAME" && -n "$GITHUB_PASSWORD" ]]
+              then
+                git clone https://$GITHUB_USERNAME:$GITHUB_PASSWORD@github.com/lawmurray/docs.birch.sh.git
+                make -f mkdocs.makefile
+                cp -r mkdocs.yml docs docs.birch.sh/.
+                cd docs.birch.sh
+                mkdocs gh-deploy
+              fi
       - slack
 
 workflows:

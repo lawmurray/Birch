@@ -13,8 +13,6 @@ theme:
     accent: 'deep orange'
 plugins:
   - search
-  - awesome-pages:
-      collapse_single_pages: true
 markdown_extensions:
   - admonition
   - footnotes
