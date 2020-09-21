@@ -584,6 +584,18 @@ jobs:
       - commit_brew
       - slack
 
+  website_deploy:
+    executor: linux
+    steps:
+      - attach_workspace:
+          at: .
+      - linux_environment
+      - run:
+          command: |
+              make -f mkdocs.makefile
+              mkdocs gh-deploy
+      - slack
+
 workflows:
   version: 2
 
@@ -633,6 +645,15 @@ workflows:
             - linux_SIR
             - linux_MultiObjectTracking
             - linux_VectorBorneDisease
+
+      - website_deploy:
+          filters:
+            branches:
+              only:
+                - master
+                - monorepo
+          requires:
+            - linux_deploy
 
   mac:
     jobs:

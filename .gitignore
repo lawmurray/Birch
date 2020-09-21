@@ -1,2 +1,5 @@
-/docs
 /.vscode
+/docs/examples/
+/docs/libbirch/
+/docs/libraries/
+/docs/index.md
