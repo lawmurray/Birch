@@ -1,0 +1,6 @@
+/**
+ * Remove all build artifacts from the current package.
+ *
+ *     birch clean
+ */
+program clean();

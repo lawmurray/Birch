@@ -108,7 +108,7 @@ void birch::MarkdownGenerator::visit(const Package* o) {
     for (auto o : programs) {
       genHead(o->name->str());
       line("<a name=\"" << anchor(o->name->str()) << "\"></a>\n");
-      desc = quote(detailed(o->loc->doc), "    ");
+      desc = detailed(o->loc->doc);
       *this << o;
       line("");
       line(desc);
@@ -239,7 +239,7 @@ void birch::MarkdownGenerator::visit(const Function* o) {
 }
 
 void birch::MarkdownGenerator::visit(const Program* o) {
-  start("!!! abstract \"program " << o->name << '(' << o->params << ")\"");
+  line("**program " << o->name << '(' << o->params << ")**\n");
 }
 
 void birch::MarkdownGenerator::visit(const MemberFunction* o) {

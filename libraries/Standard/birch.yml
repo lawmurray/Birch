@@ -1,6 +1,6 @@
 name: Standard
-manifest: 
-  source: 
+manifest:
+  source:
     - src/basic/basic.birch
     - src/basic/Boolean.birch
     - src/basic/File.birch
@@ -406,23 +406,32 @@ manifest:
     - src/utility/error.birch
     - src/utility/make.birch
     - src/utility/ProgressBar.birch
+    - src/audit.birch
+    - src/build.birch
+    - src/clean.birch
+    - src/configure.birch
+    - src/dist.birch
+    - src/docs.birch
+    - src/help.birch
+    - src/init.birch
+    - src/install.birch
     - src/filter.birch
     - src/sample.birch
-  other: 
+    - src/uninstall.birch
+  other:
     - birch.yml
     - LICENSE
     - README.md
     - smoke.sh
     - test.sh
-require: 
-  header: 
+require:
+  header:
     - eigen3/Eigen/Dense
     - boost/filesystem.hpp
     - boost/math/special_functions.hpp
     - boost/math/distributions.hpp
     - yaml.h
-  library: 
+  library:
     - yaml
     - boost_system
     - boost_filesystem
-

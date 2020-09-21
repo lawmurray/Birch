@@ -1,0 +1,8 @@
+/**
+ * Build the package.
+ *
+ *     birch build
+ *
+ * Takes the same options as [configure](../configure), and calls it implicitly.
+ */
+program build();

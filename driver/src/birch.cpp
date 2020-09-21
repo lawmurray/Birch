@@ -30,8 +30,8 @@ int main(int argc, char** argv) {
       driver.clean();
     } else if (prog.compare("init") == 0) {
       driver.init();
-    } else if (prog.compare("check") == 0) {
-      driver.check();
+    } else if (prog.compare("audit") == 0) {
+      driver.audit();
     } else if (prog.compare("docs") == 0) {
       driver.docs();
     } else if (prog.compare("help") == 0) {

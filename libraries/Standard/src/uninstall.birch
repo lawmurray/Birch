@@ -1,0 +1,6 @@
+/**
+ * Uninstall the package.
+ *
+ *     birch uninstall
+ */
+program uninstall();

@@ -1,0 +1,10 @@
+/**
+ * Access the online help system.
+ *
+ *     birch help
+ *     birch help command
+ *
+ * The first form provides general help, the second form provides help for a
+ * particular command.
+ */
+program help();

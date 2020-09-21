@@ -18,3 +18,12 @@ To build and install, use:
 ./configure
 make
 make install
+
+
+## Documentation
+
+Brief online help is available by running:
+
+    birch help
+
+The available commands are documented as part of the Birch standard library.

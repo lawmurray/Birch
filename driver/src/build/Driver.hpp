@@ -68,9 +68,9 @@ public:
   void init();
 
   /**
-   * Validate an existing package.
+   * Audit an existing package for possible issues.
    */
-  void check();
+  void audit();
 
   /**
    * Produce documentation.

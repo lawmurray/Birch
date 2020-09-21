@@ -1,0 +1,175 @@
+/**
+ * Configure the package.
+ *
+ *     birch configure
+ *
+ * !!! tip
+ *     Usually one just calls [build](../build), which calls `configure`
+ *     implicitly.
+ *
+ * The configuration of the package is influenced by command-line options,
+ * environment variables, and a *build configuration file*.
+ *
+ * ### Command-line options
+ *
+ * #### Basic options
+ *
+ *   - `--enable-debug` / `--disable-debug` (default enabled):
+ *     Enable/disable debug mode build. In debug mode, assertion checking is
+ *     enabled for e.g. array bounds, and most compiler optimizations are
+ *     disabled. This is recommended when developing code.
+ *   - `--enable-test` / `--disable-test` (default disabled):
+ *     Enable/disable test mode build. Test mode is similar to debug mode, but
+ *     additionally tracks code coverage.
+ *   - `--enable-release` / `--disable-release` (default disabled):
+ *     Enable/disable release mode build. In release mode, all assertion
+ *     checking is disabled and all compiler optimizations are enabled. This is
+ *     recommended for running tested code when performance is critical. It
+ *     offers substantial performance gains, usually several times faster than
+ *     debug or test mode.
+ *   - `--enable-warnings` / `--disable-warnings` (default enabled):
+ *     Enable/disable compiler warnings.
+ *   - `--enable-notes` / `--disable-notes` (default disabled):
+ *     Enable/disable compiler notes.
+ *   - `--enable-verbose` / `--disable-verbose` (default enabled):
+ *     Show compiler output on the terminal rather than in log files.
+ *   - `--prefix` (default prefix):
+ *     Installation prefix. Defaults to the same prefix used when installing
+ *     the `birch` driver program.
+ *
+ * #### Advanced options
+ *
+ *   - `--enable-openmp` / `--disable-openmp` (default enabled):
+ *     Enable/disable OpenMP. OpenMP is used for multi-threading. When running
+ *     single-threaded, disabling OpenMP can have significant performance
+ *     advantages, as it also disables the atomic operations used for thread
+ *     synchronization.
+ *   - `--enable-static` / `--disable-static` (default disabled):
+ *     Enable/disable building of a static library.
+ *   - `--enable-shared` / `--disable-shared` (default enabled):
+ *     Enable/disable building of a shared library.
+ *
+ * !!! attention
+ *     Building a static library is not well tested, and at any rate should only
+ *     be tried for library packages, not end-user packages, which must be built
+ *     into a shared library in order to be dynamically loaded by `birch`.
+ *
+ *   - `--arch` (default empty, valid values `native`, `wasm`, `js`):
+ *     Target architecture for the build. If empty, then default settings are
+ *     used. If `native`, additional optimizations for the current architecture
+ *     can be applied (e.g. SIMD instructions), if `wasm` (WebAssembly) or `js`
+ *     (JavaScript), the Emscipten compiler can be used to compiler for the web.
+ *
+ * !!! attention
+ *     Compiling to WebAssembly or JavaScript with Emscripten may currently be
+ *     broken.
+ *
+ *  - `--unit` (default `dir`, valid values `unity`, `dir`, `file`):
+ *    Set the compile unit when transpiling Birch to C++. This can
+ *    significantly influence build times. If `unity`, a single C++ source file
+ *    is generated for all Birch source files. If `dir`, a single C++ source
+ *    file is generated for each directory of Birch source files. If `file`, a
+ *    C++ source file is generated for each Birch source file. Typically,
+ *    `unity` builds can provide the fastest build times from scratch but
+ *    cannot be parallelized; `file` builds can provide the fastest build times
+ *    incrementally and can be parallelized, but for large projects can be very
+ *    slow due to the overhead for each compile unit; `dir` offers a good
+ *    balance, and can be parallelized.
+ *  - `--jobs` (default imputed):
+ *    Number of parallel jobs when building. Defaults to twice the number of
+ *    hardware threads.
+ *
+ * ### Environment variables
+ *
+ * The following environment variables influence the build:
+ *
+ * - `$BIRCH_MODE` (valid values `debug`, `test`, `release`):
+ *   Overrides the default build mode (which is otherwise `debug`).
+ * - `$BIRCH_PREFIX`:
+ *   Overrides the default installation prefix (which is otherwise the prefix
+ *   used when installing the `birch` driver program).
+ * - `$BIRCH_SHARE_PATH`:
+ *   Additional paths to search for shared files (those that typically install
+ *   to `share` directories).
+ * - `$BIRCH_INCLUDE_PATH`:
+ *   Additional paths to search for header files (those that typically install
+ *   to `include` directories).
+ * - `$BIRCH_LIBRARY_PATH`:
+ *   Additional path to search for libraries (those that typically install to
+ *   `lib` or `lib64` directories).
+ *
+ * Birch will search for shared files in the following directories, in order,
+ * where `$PREFIX` is the prefix used when installing the `birch` driver
+ * program:
+ *
+ * 1. paths given in `$BIRCH_SHARE_PATH`, then
+ * 2. `$PREFIX/share`.
+ *
+ * For header files:
+ *
+ * 1. paths given in `$BIRCH_INCLUDE_PATH`,
+ * 2. `$PREFIX/include`,
+ * 3. `/usr/local/include`, then
+ * 4. `/usr/include`.
+ *
+ * For libraries:
+ *
+ * 1. `.libs` in the current directory,
+ * 2. paths given in `$BIRCH_LIBRARY_PATH`,
+ * 3. `$PREFIX/lib64`, then
+ * 4. `$PREFIX/lib`.
+ *
+ * ### Build configuration file
+ *
+ * The build configuration file is a file named `birch.yml` in the root
+ * directory of the package. Alternative names that are supported include
+ * `birch.yaml` and `birch.json`.
+ *
+ * The file is a YAML or JSON file with the following keys:
+ *
+ *   - `name`
+ *     : The name of the package.
+ *
+ *   - `version`
+ *     : The version of the package.
+ *
+ *   - `description`
+ *     : A short description of the package.
+ *
+ *   - `manifest`
+ *     : An object containing the following keys, listing the files to be
+ *       included in the package.
+ *
+ *     - `source`
+ *       : A list of patterns identifying the Birch source files to be compiled.
+ *         Each pattern is either the name of a file with a file extension of
+ *         `.birch`, or a glob pattern that expands to a list of such files. The
+ *         glob patterns supported are as for C `glob` function (see
+ *         `man 3 glob`).
+ *
+ *     - `data`
+ *       : A list of data files to be installed. These are typically config and
+ *         input files provided by the package.
+ *
+ *     - `other`
+ *       : A list of other files to be distributed but not installed. These are
+ *         typically meta files, such as `README.md`, `LICENSE`, and the build
+ *         configuration file itself.
+ *
+ *   - `require`
+ *       : An object containing the following keys, describing the dependencies
+ *         of the package. These dependencies are checked by `configure`.
+ *
+ *     - `package`
+ *       : A list of other Birch packages.
+ *
+ *     - `header`
+ *       : A list of external C/C++ header files.
+ *
+ *     - `library`
+ *       : A list of external libraries.
+ *
+ *     - `program`
+ *       : A list of external programs.
+ */
+program configure();

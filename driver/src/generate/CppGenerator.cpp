@@ -334,149 +334,151 @@ void birch::CppGenerator::visit(const MemberFunction* o) {
 }
 
 void birch::CppGenerator::visit(const Program* o) {
-  genSourceLine(o->loc);
-  if (header) {
-    line("extern \"C\" int " << o->name << "(int, char**);");
-  } else {
-    line("int birch::" << o->name << "(int argc_, char** argv_) {");
-    in();
-    genTraceFunction(o->name->str(), o->loc);
+  if (!o->braces->isEmpty()) {
+    genSourceLine(o->loc);
+    if (header) {
+      line("extern \"C\" int " << o->name << "(int, char**);");
+    } else {
+      line("int birch::" << o->name << "(int argc_, char** argv_) {");
+      in();
+      genTraceFunction(o->name->str(), o->loc);
 
-    /* handle program options */
-    if (o->params->width() > 0) {
-      /* option variables */
-      for (auto iter = o->params->begin(); iter != o->params->end(); ++iter) {
-        auto param = dynamic_cast<const Parameter*>(*iter);
-        assert(param);
-        genSourceLine(o->loc);
-        start(param->type << ' ' << param->name);
-        if (!param->value->isEmpty()) {
-          middle(" = " << param->value);
-        } else if (param->type->isClass()) {
-          middle(" = libbirch::make_pointer<" << param->type << ">()");
+      /* handle program options */
+      if (o->params->width() > 0) {
+        /* option variables */
+        for (auto iter = o->params->begin(); iter != o->params->end(); ++iter) {
+          auto param = dynamic_cast<const Parameter*>(*iter);
+          assert(param);
+          genSourceLine(o->loc);
+          start(param->type << ' ' << param->name);
+          if (!param->value->isEmpty()) {
+            middle(" = " << param->value);
+          } else if (param->type->isClass()) {
+            middle(" = libbirch::make_pointer<" << param->type << ">()");
+          }
+          finish(';');
         }
-        finish(';');
-      }
-      line("");
+        line("");
 
-      /* option flags */
-      line("enum {");
-      in();
-      for (auto param : *o->params) {
-        auto name = dynamic_cast<const Parameter*>(param)->name;
-        std::string flag = internalise(name->str()) + "FLAG_";
-        line(flag << ',');
-      }
-      out();
-      line("};");
-
-      /* long options */
-      genSourceLine(o->loc);
-      line("int c_, option_index_;");
-      genSourceLine(o->loc);
-      line("option long_options_[] = {");
-      in();
-      for (auto param : *o->params) {
-        auto name = dynamic_cast<const Parameter*>(param)->name;
-        std::string flag = internalise(name->str()) + "FLAG_";
-
-        std::string option = name->str();
-        boost::replace_all(option, "_", "-");
-
-        genSourceLine(o->loc);
-        start("{\"");
-        middle(option << "\", required_argument, 0, " << flag);
-        finish(" },");
-      }
-      genSourceLine(o->loc);
-      line("{0, 0, 0, 0}");
-      out();
-      genSourceLine(o->loc);
-      line("};");
-
-      /* short options */
-      genSourceLine(o->loc);
-      line("const char* short_options_ = \":\";");
-
-      /* handle error reporting ourselves (worth commenting this out if
-       * debugging issues with command-line parsing) */
-      genSourceLine(o->loc);
-      line("::opterr = 0;");
-
-      /* read in options with getopt_long */
-      genSourceLine(o->loc);
-      start("c_ = ::getopt_long_only(argc_, argv_, short_options_, ");
-      finish("long_options_, &option_index_);");
-      genSourceLine(o->loc);
-      line("while (c_ != -1) {");
-      in();
-      genSourceLine(o->loc);
-      line("switch (c_) {");
-      in();
-
-      for (auto param : *o->params) {
-        auto p = dynamic_cast<const Parameter*>(param);
-        auto name = p->name;
-        std::string flag = internalise(name->str()) + "FLAG_";
-
-        genSourceLine(p->loc);
-        line("case " << flag << ':');
+        /* option flags */
+        line("enum {");
         in();
-        genSourceLine(p->loc);
-        line("libbirch_error_msg_(::optarg, \"option --\" << long_options_[::optopt].name << \" requires a value.\");");
-        genSourceLine(p->loc);
-        if (p->type->unwrap()->isBasic()) {
-          auto type = dynamic_cast<Named*>(p->type->unwrap());
-          assert(type);
-          start(name << " = birch::" << type->name);
-          finish("(std::string(::optarg));");
-        } else {
-          line(name << " = std::string(::optarg);");
+        for (auto param : *o->params) {
+          auto name = dynamic_cast<const Parameter*>(param)->name;
+          std::string flag = internalise(name->str()) + "FLAG_";
+          line(flag << ',');
         }
-        line("break;");
         out();
+        line("};");
+
+        /* long options */
+        genSourceLine(o->loc);
+        line("int c_, option_index_;");
+        genSourceLine(o->loc);
+        line("option long_options_[] = {");
+        in();
+        for (auto param : *o->params) {
+          auto name = dynamic_cast<const Parameter*>(param)->name;
+          std::string flag = internalise(name->str()) + "FLAG_";
+
+          std::string option = name->str();
+          boost::replace_all(option, "_", "-");
+
+          genSourceLine(o->loc);
+          start("{\"");
+          middle(option << "\", required_argument, 0, " << flag);
+          finish(" },");
+        }
+        genSourceLine(o->loc);
+        line("{0, 0, 0, 0}");
+        out();
+        genSourceLine(o->loc);
+        line("};");
+
+        /* short options */
+        genSourceLine(o->loc);
+        line("const char* short_options_ = \":\";");
+
+        /* handle error reporting ourselves (worth commenting this out if
+        * debugging issues with command-line parsing) */
+        genSourceLine(o->loc);
+        line("::opterr = 0;");
+
+        /* read in options with getopt_long */
+        genSourceLine(o->loc);
+        start("c_ = ::getopt_long_only(argc_, argv_, short_options_, ");
+        finish("long_options_, &option_index_);");
+        genSourceLine(o->loc);
+        line("while (c_ != -1) {");
+        in();
+        genSourceLine(o->loc);
+        line("switch (c_) {");
+        in();
+
+        for (auto param : *o->params) {
+          auto p = dynamic_cast<const Parameter*>(param);
+          auto name = p->name;
+          std::string flag = internalise(name->str()) + "FLAG_";
+
+          genSourceLine(p->loc);
+          line("case " << flag << ':');
+          in();
+          genSourceLine(p->loc);
+          line("libbirch_error_msg_(::optarg, \"option --\" << long_options_[::optopt].name << \" requires a value.\");");
+          genSourceLine(p->loc);
+          if (p->type->unwrap()->isBasic()) {
+            auto type = dynamic_cast<Named*>(p->type->unwrap());
+            assert(type);
+            start(name << " = birch::" << type->name);
+            finish("(std::string(::optarg));");
+          } else {
+            line(name << " = std::string(::optarg);");
+          }
+          line("break;");
+          out();
+        }
+
+        genSourceLine(o->loc);
+        line("case '?':");
+        in();
+        genSourceLine(o->loc);
+        line("libbirch_error_msg_(false, \"option \" << argv_[::optind - 1] << \" unrecognized.\");");
+        out();
+
+        genSourceLine(o->loc);
+        line("case ':':");
+        in();
+        genSourceLine(o->loc);
+        line("libbirch_error_msg_(false, \"option --\" << long_options_[::optopt].name << \" requires a value.\");");
+        out();
+
+        genSourceLine(o->loc);
+        line("default:");
+        in();
+        genSourceLine(o->loc);
+        line("libbirch_error_msg_(false, std::string(\"unknown error parsing command-line options.\"));");
+        out();
+
+        out();
+        line('}');
+        genSourceLine(o->loc);
+        start("c_ = ::getopt_long_only(argc_, argv_, short_options_, ");
+        finish("long_options_, &option_index_);");
+        out();
+        line("}\n");
       }
 
-      genSourceLine(o->loc);
-      line("case '?':");
-      in();
-      genSourceLine(o->loc);
-      line("libbirch_error_msg_(false, \"option \" << argv_[::optind - 1] << \" unrecognized.\");");
-      out();
+      /* default handler */
+      line("libbirch::Lazy<libbirch::Shared<birch::type::PlayHandler>> handler_(true);\n");
 
-      genSourceLine(o->loc);
-      line("case ':':");
-      in();
-      genSourceLine(o->loc);
-      line("libbirch_error_msg_(false, \"option --\" << long_options_[::optopt].name << \" requires a value.\");");
-      out();
+      /* body of program */
+      *this << o->braces->strip();
 
-      genSourceLine(o->loc);
-      line("default:");
-      in();
-      genSourceLine(o->loc);
-      line("libbirch_error_msg_(false, std::string(\"unknown error parsing command-line options.\"));");
-      out();
-
-      out();
-      line('}');
-      genSourceLine(o->loc);
-      start("c_ = ::getopt_long_only(argc_, argv_, short_options_, ");
-      finish("long_options_, &option_index_);");
+      genTraceLine(o->loc);
+      line("return 0;");
       out();
       line("}\n");
     }
-
-    /* default handler */
-    line("libbirch::Lazy<libbirch::Shared<birch::type::PlayHandler>> handler_(true);\n");
-
-    /* body of program */
-    *this << o->braces->strip();
-
-    genTraceLine(o->loc);
-    line("return 0;");
-    out();
-    line("}\n");
   }
 }
 

@@ -1,0 +1,14 @@
+/**
+ * Audit the package for possible issues.
+ *
+ *     birch audit
+ *
+ * This audits the package for possible issues and will output warnings if it
+ * finds any. Possible issues may include:
+ *
+ * - files listed in the build configuration file that do not exist,
+ * - files of recognizable types that exist but are not listed in the build
+ *   configuration file, and
+ * - standard meta files such as `README.md` and `LICENSE` that do not exist.
+ */
+program audit();

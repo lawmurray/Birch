@@ -148,7 +148,6 @@ birch::Driver::Driver(int argc, char** argv) :
       { "package", required_argument, 0, PACKAGE_ARG },
       { "prefix", required_argument, 0, PREFIX_ARG },
       { "arch", required_argument, 0, ARCH_ARG },
-      { "mode", required_argument, 0, MODE_ARG },
       { "unit", required_argument, 0, UNIT_ARG },
       { "jobs", required_argument, 0, JOBS_ARG },
       { "enable-debug", no_argument, 0, ENABLE_DEBUG_ARG },
@@ -643,7 +642,7 @@ void birch::Driver::init() {
   }
 }
 
-void birch::Driver::check() {
+void birch::Driver::audit() {
   meta();
 
   /* check LICENSE */

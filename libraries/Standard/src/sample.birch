@@ -1,6 +1,8 @@
 /**
  * Sample a model.
  *
+ *     birch sample [options...]
+ *
  * - `--config`: Name of the configuration file, if any.
  *
  * - `--input`: Name of the input file, if any. Alternatively, provide this
@@ -18,9 +20,9 @@
  * - `--quiet`: Don't display a progress bar.
  */
 program sample(
+    config:String?,
     input:String?,
     output:String?,
-    config:String?,
     model:String?,
     seed:Integer?,
     quiet:Boolean <- false) {

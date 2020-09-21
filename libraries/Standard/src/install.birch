@@ -1,0 +1,17 @@
+/**
+ * Install the package.
+ *
+ *     birch install
+ *
+ * Takes the same options as [configure](../configure) and
+ * [build](../build), and calls them both implicitly.
+ *
+ * This installs the package's shared files, header files, and libraries into
+ * the location that was specified by the `$BIRCH_PREFIX` environment variable
+ * or `--prefix` command-line option, or the default if these were not
+ * specified. It may need to be called with `sudo` if root permissions are
+ * needed to install to this location:
+ *
+ *     sudo birch install
+ */
+program install();

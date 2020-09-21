@@ -10,18 +10,13 @@ PACKAGES := \
 	examples/SIR \
 	examples/VectorBorneDisease
 
-docs: $(PACKAGES) driver libbirch
+docs: $(PACKAGES) libbirch
 	cp README.md docs/index.md
 
 .PHONY: $(PACKAGES)
 $(PACKAGES):
 	mkdir -p docs/$@
 	cd $@ && birch docs
-	cp -R $@/docs/* docs/$@/.
-
-.PHONY: driver
-driver:
-	mkdir -p docs/$@
 	cp -R $@/docs/* docs/$@/.
 
 .PHONY: libbirch

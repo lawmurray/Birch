@@ -1,0 +1,69 @@
+/**
+ * Build package documentation.
+ *
+ *     birch docs
+ *
+ * This creates a file `DOCS.md` containing the full documentation, which may
+ * converted to other formats. It also constructs a `docs/` directory for use
+ * with [MkDocs](https://www.mkdocs.org) and
+ * [MkDocs Material](https://squidfunk.github.io/mkdocs-material/). If the
+ * package was created with [init](../init) it will already have a `mkdocs.yml`
+ * file that can be used for this purpose. It is only necessary to install
+ * MkDocs and MkDocs Material, then use:
+ *
+ *     mkdocs serve
+ *
+ * to build the documentation, and point your browser to the URL given (usually
+ * `http://localhost:8000`). If you are using a repository hosted on
+ * [GitHub](https://github.com), you can also easily publish the documentation
+ * as a website using GitHub Pages, with:
+ *
+ *     mkdocs gh-deploy
+ *
+ * The documentation is gathered from documentation comments in the source code.
+ * These are comments that precede declarations and use the double-star syntax
+ * in the tradition of tools such as JavaDoc and
+ * [Doxygen](https://www.doxygen.nl/):
+ *
+ *     /**
+ *      * Documentation comment.
+ *      * /
+ *     class A {
+ *       // ...
+ *     }
+ *
+ *     /**
+ *      * Documentation comment.
+ *      * /
+ *     function f(a:A, b:B) {
+ *       // ...
+ *     }
+ *
+ *     /**
+ *      * Documentation comment.
+ *      * /
+ *     a:A;
+ *
+ * !!! attention
+ *     There should be no space between the `*` and `/` at the end of the
+ *     comment, it is written with a space above to work around a rendering
+ *     issue.
+ *
+ * While the content of these documentation comments is not prescribed, the
+ * format should be Markdown, as they are copied verbatim. It is suggested that
+ * the first sentence of each comment is a brief one-sentence description, and
+ * that parameters are documented using a bulleted list as follows:
+ *
+ *     /**
+ *      * Do something.
+ *      *
+ *      * - a: The first parameter.
+ *      * - b: The second parameter.
+ *      *
+ *      * Return: The return value.
+ *      * /
+ *     function f(a:A, b:B) -> C {
+ *       // ...
+ *     }
+ */
+program docs();

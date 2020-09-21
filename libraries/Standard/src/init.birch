@@ -1,0 +1,9 @@
+/**
+ * Initialize a new package.
+ *
+ *     birch init --package Name
+ *
+ * - `--package` (default `Untitled`):
+ *   Name to give the package.
+ */
+program init();

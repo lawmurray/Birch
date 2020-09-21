@@ -1,0 +1,8 @@
+/**
+ * Build a source tarball for the package, for distribution.
+ *
+ *     birch dist
+ *
+ * This creates a source tarball `Name-version.tar.gz` in the package directory.
+ */
+program dist();
