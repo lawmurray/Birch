@@ -276,6 +276,7 @@ dist_pkgdata_DATA = \
   share/birch.yml \
   share/bootstrap \
   share/configure.ac \
+  share/hello.birch \
   share/LICENSE \
   share/Makefile.am \
 	share/mkdocs.yml  \

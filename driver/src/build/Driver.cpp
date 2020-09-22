@@ -630,6 +630,7 @@ void birch::Driver::init() {
 
   copy_with_prompt(find(shareDirs, "gitignore"), ".gitignore");
   copy_with_prompt(find(shareDirs, "LICENSE"), "LICENSE");
+  copy_with_prompt(find(shareDirs, "hello.birch"), fs::path("src") / "hello.birch");
 
   if (copy_with_prompt(find(shareDirs, "birch.yml"), "birch.yml")) {
     replace_tag("birch.yml", "PACKAGE_NAME", packageName);
