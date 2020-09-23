@@ -56,6 +56,13 @@ final class Random<Value> < Expression<Value>(nil) {
   }
 
   /**
+   * Get the distribution.
+   */
+  function getDistribution() -> Distribution<Value> {
+    return p!;
+  }
+
+  /**
    * Assume the distribution for the random variate. When a value for the
    * random variate is required, it will be simulated from this distribution
    * and trigger an *update* on the delayed sampling graph.
