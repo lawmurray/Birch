@@ -1,4 +1,4 @@
-AC_INIT([Birch], [unversioned], [], [birch], [https://birch-lang.org])
+AC_INIT([Birch], [unversioned], [], [birch], [https://birch.sh])
 AC_PREREQ([2.62])
 AC_LANG([C++])
 AM_INIT_AUTOMAKE([1.10 no-define foreign])

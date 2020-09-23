@@ -24,9 +24,9 @@ class LinearRegressionModel < Model {
   y:Random<Real[_]>;
 
   function simulate() {
-    N:Integer <- rows(X);
-    P:Integer <- columns(X);
-    if (N > 0 && P > 0) {
+    let N <- rows(X);
+    let P <- columns(X);
+    if N > 0 && P > 0 {
       σ2 ~ InverseGamma(3.0, 0.4);
       β ~ Gaussian(vector(0.0, P), identity(P), σ2);
       y ~ Gaussian(X*β, σ2);
@@ -39,7 +39,7 @@ class LinearRegressionModel < Model {
   }
 
   function write(buffer:Buffer) {
-    buffer.set("beta", β);
-    buffer.set("sigma2", σ2);
+    buffer.set("β", β);
+    buffer.set("σ2", σ2);
   }
 }
