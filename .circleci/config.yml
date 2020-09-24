@@ -660,7 +660,6 @@ workflows:
             branches:
               only:
                 - master
-                - monorepo
           requires:
             - linux_LinearGaussian
             - linux_LinearRegression
@@ -675,7 +674,6 @@ workflows:
             branches:
               only:
                 - master
-                - monorepo
           requires:
             - linux_deploy
 
@@ -716,7 +714,6 @@ workflows:
             branches:
               only:
                 - master
-                - monorepo
           requires:
             - mac_LinearGaussian
             - mac_LinearRegression
