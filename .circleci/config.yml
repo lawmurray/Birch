@@ -32,7 +32,7 @@ commands:
           name: Environment
           description: Set environment variables for builds
           command: |
-              echo "export VERSION=`(git describe || echo) | sed -E 's/v([0-9]+)-([0-9]+)-g[0-9a-f]+/\1.\2/'`" >> $BASH_ENV
+              echo "export VERSION=`(git describe --long || echo) | sed -E 's/v([0-9]+)-([0-9]+)-g[0-9a-f]+/\1.\2/'`" >> $BASH_ENV
               echo "export VERSION_LONG=`git describe --long || echo`" >> $BASH_ENV
               echo "export PREFIX=~/project" >> $BASH_ENV
               echo "export PATH=\$PREFIX/bin:$PATH" >> $BASH_ENV
@@ -58,7 +58,7 @@ commands:
           name: Environment
           description: Set environment variables for builds
           command: |
-              echo "export VERSION=`(git describe || echo) | sed -E 's/v([0-9]+)-([0-9]+)-g[0-9a-f]+/\1.\2/'`" >> $BASH_ENV
+              echo "export VERSION=`(git describe --long || echo) | sed -E 's/v([0-9]+)-([0-9]+)-g[0-9a-f]+/\1.\2/'`" >> $BASH_ENV
               echo "export VERSION_LONG=`git describe --long || echo`" >> $BASH_ENV
               echo "export PREFIX=~/project" >> $BASH_ENV
               echo "export PATH=\$PREFIX/bin:/usr/local/opt/flex/bin:/usr/local/opt/bison/bin:$PATH" >> $BASH_ENV
@@ -244,9 +244,9 @@ commands:
                 for file in << parameters.tar >>.spec << parameters.tar >>.dsc debian.control PKGBUILD
                 do
                   cat $file |
-                    sed -E "s/Version: [0-9]+.[0-9]+/Version: $VERSION/g" |
-                    sed -E "s/pkgver=[0-9]+.[0-9]+/pkgver=$VERSION/g" |
-                    sed -E "s/>=( ?)[0-9]+.[0-9]+/>=\\1$VERSION/g" |
+                    sed -E "s/Version: v?[0-9]+(.[0-9]+)?/Version: $VERSION/g" |
+                    sed -E "s/pkgver=v?[0-9]+(.[0-9]+)?/pkgver=$VERSION/g" |
+                    sed -E "s/>=( ?)v?[0-9]+(.[0-9]+)?/>=\\1$VERSION/g" |
                     sponge $file
                 done
                 osc commit -m "Updated to version $VERSION."
@@ -278,8 +278,8 @@ commands:
                 SHA256=($(sha256sum << parameters.tar >>-unversioned.tar.gz))
                 cat << parameters.tar >>.rb |
                   sed -E "s/sha256 \"[0-9a-f]+\"/sha256 \"$SHA256\"/g" |
-                  sed -E "s/version \"[0-9]+.[0-9]+\"/version \"$VERSION\"/g" |
-                  sed -E "s/=> \"[0-9]+.[0-9]+\"/=> \"$VERSION\"/g" |
+                  sed -E "s/version \"v?[0-9]+(.[0-9]+)?\"/version \"$VERSION\"/g" |
+                  sed -E "s/=> \"v?[0-9]+(.[0-9]+)?\"/=> \"$VERSION\"/g" |
                   sponge << parameters.tar >>.rb
               fi
 
