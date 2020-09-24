@@ -618,6 +618,7 @@ jobs:
                 cd docs.birch.sh
                 mkdocs gh-deploy
               fi
+      - codecov/upload
       - slack
 
 workflows:
