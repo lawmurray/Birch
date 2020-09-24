@@ -4,7 +4,7 @@ Birch is a probabilistic programming language featuring automatic marginalizatio
 
 See [https://birch.sh](https://birch.sh) for a gentle introduction, and [https://docs.birch.sh](https://docs.birch.sh) for reference documentation.
 
-[![lawmurray](https://circleci.com/gh/lawmurray/Birch.svg?style=shield)](https://circleci.com/gh/lawmurray/Birch) [![codecov](https://codecov.io/gh/lawmurray/Birch/branch/master/graph/badge.svg)](https://codecov.io/gh/lawmurray/Birch)
+[![lawmurray](https://circleci.com/gh/lawmurray/Birch.svg?style=shield)](https://circleci.com/gh/lawmurray/Birch) [![codecov](https://codecov.io/gh/lawmurray/Birch/graph/badge.svg)](https://codecov.io/gh/lawmurray/Birch)
 
 
 
