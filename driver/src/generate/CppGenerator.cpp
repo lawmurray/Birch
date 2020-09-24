@@ -678,7 +678,7 @@ void birch::CppGenerator::visit(const With* o) {
 
 void birch::CppGenerator::visit(const Assert* o) {
   genTraceLine(o->loc);
-  line("libbirch_assert_(" << o->cond->strip() << ");");
+  line("libbirch_assert_(" << o->cond->strip() << ");  // GCOV_EXCL_LINE");
 }
 
 void birch::CppGenerator::visit(const Return* o) {
