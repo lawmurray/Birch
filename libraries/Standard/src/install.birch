@@ -1,5 +1,5 @@
 /**
- * Install the package.
+ * Bootstrap, configure, build and install the package.
  *
  *     birch install
  *

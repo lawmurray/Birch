@@ -1,5 +1,5 @@
 /**
- * Build the package.
+ * Bootstrap, configure and build the package.
  *
  *     birch build
  *

@@ -407,6 +407,7 @@ manifest:
     - src/utility/make.birch
     - src/utility/ProgressBar.birch
     - src/audit.birch
+    - src/bootstrap.birch
     - src/build.birch
     - src/clean.birch
     - src/configure.birch

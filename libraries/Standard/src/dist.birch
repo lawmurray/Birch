@@ -4,5 +4,8 @@
  *     birch dist
  *
  * This creates a source tarball `Name-version.tar.gz` in the package directory.
+ *
+ * If you would prefer to create a source tarball of the C++ sources, use
+ * [configure](../programs/configure) followed by `make dist` instead.
  */
 program dist();

@@ -1,0 +1,8 @@
+/**
+ * Bootstrap the package.
+ *
+ *     birch bootstrap
+ *
+ * Creates the build system for the package.
+ */
+program bootstrap();

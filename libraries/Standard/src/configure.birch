@@ -1,5 +1,5 @@
 /**
- * Configure the package.
+ * Bootstrap and configure the package.
  *
  *     birch configure
  *
@@ -33,7 +33,7 @@
  *     Enable/disable compiler notes.
  *   - `--enable-verbose` / `--disable-verbose` (default enabled):
  *     Show compiler output on the terminal rather than in log files.
- *   - `--prefix` (default prefix):
+ *   - `--prefix` (default imputed):
  *     Installation prefix. Defaults to the same prefix used when installing
  *     the `birch` driver program.
  *

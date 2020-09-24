@@ -785,52 +785,49 @@ void birch::Driver::help() {
     if (command.compare("init") == 0) {
       std::cout << "Usage:" << std::endl;
       std::cout << std::endl;
-      std::cout << "  birch init [options]" << std::endl;
+      std::cout << "  birch init --package Name" << std::endl;
       std::cout << std::endl;
-      std::cout << "Initialise the working directory for a new package." << std::endl;
+      std::cout << "Initialize the working directory for a new package." << std::endl;
       std::cout << std::endl;
       std::cout << "  --package (default Untitled): Name of the package." << std::endl;
-    } else if (command.compare("check") == 0) {
+      std::cout << std::endl;
+      std::cout << "More information is available at:" << std::endl;
+      std::cout << std::endl;
+      std::cout << "  https://docs.birch.sh/libraries/Standard/programs/init/" << std::endl;
+    } else if (command.compare("audit") == 0) {
       std::cout << "Usage:" << std::endl;
       std::cout << std::endl;
-      std::cout << "  birch check" << std::endl;
+      std::cout << "  birch audit" << std::endl;
       std::cout << std::endl;
-      std::cout << "Check the file structure of the package for possible issues. This makes no" << std::endl;
-      std::cout << "modifications to the package, but will output warnings for possible issues such" << std::endl;
-      std::cout << "as:" << std::endl;
+      std::cout << "Audit the package for possible issues." << std::endl;
       std::cout << std::endl;
-      std::cout << "  * files listed in the build configuration that do not exist," << std::endl;
-      std::cout << "  * files of recognisable types that exist but are not listed in the" << std::endl;
-      std::cout << "    build configuration file, and" << std::endl;
-      std::cout << "  * standard meta files that do not exist." << std::endl;
+      std::cout << "More information is available at:" << std::endl;
+      std::cout << std::endl;
+      std::cout << "  https://docs.birch.sh/libraries/Standard/programs/audit/" << std::endl;
     } else if (command.compare("bootstrap") == 0 ||
         command.compare("configure") == 0 ||
         command.compare("build") == 0 ||
         command.compare("install") == 0) {
       std::cout << "Usage:" << std::endl;
       std::cout << std::endl;
-      std::cout << "  birch bootstrap [options]" << std::endl;
-      std::cout << "  birch configure [options]" << std::endl;
-      std::cout << "  birch build [options]" << std::endl;
-      std::cout << "  birch install [options]" << std::endl;
+      std::cout << "  birch bootstrap" << std::endl;
+      std::cout << "  birch configure [options...]" << std::endl;
+      std::cout << "  birch build [options...]" << std::endl;
+      std::cout << "  birch install [options...]" << std::endl;
       std::cout << std::endl;
       std::cout << "Build the package up to the given stage (in order: bootstrap, configure, build," << std::endl;
       std::cout << "install)." << std::endl;
       std::cout << std::endl;
       std::cout << "Basic options:" << std::endl;
       std::cout << std::endl;
-      std::cout << "  --jobs (default imputed):" << std::endl;
-      std::cout << "  Number of jobs for a parallel build. By default, a reasonable value is" << std::endl;
-      std::cout << "  determined from the environment." << std::endl;
-      std::cout << std::endl;
       std::cout << "  --enable-debug / --disable-debug (default enabled):" << std::endl;
-      std::cout << "  Enable/disable debug build." << std::endl;
+      std::cout << "  Enable/disable debug mode build." << std::endl;
       std::cout << std::endl;
       std::cout << "  --enable-test / --disable-test (default disabled):" << std::endl;
-      std::cout << "  Enable/disable test build." << std::endl;
+      std::cout << "  Enable/disable test mode build." << std::endl;
       std::cout << std::endl;
       std::cout << "  --enable-release / --disable-release (default enabled):" << std::endl;
-      std::cout << "  Enable/disable release build." << std::endl;
+      std::cout << "  Enable/disable release mode build." << std::endl;
       std::cout << std::endl;
       std::cout << "  --enable-warnings / --disable-warnings (default enabled):" << std::endl;
       std::cout << "  Enable/disable compiler warnings." << std::endl;
@@ -841,95 +838,95 @@ void birch::Driver::help() {
       std::cout << "  --enable-verbose / --disable-verbose (default enabled):" << std::endl;
       std::cout << "  Show all compiler output." << std::endl;
       std::cout << std::endl;
-      std::cout << "Documentation for the advanced options can be found at:" << std::endl;
+      std::cout << "  --prefix (default imputed): Installation prefix. Defaults to the same prefix" << std::endl;
+      std::cout << "  used when installing the birch driver program." << std::endl;
       std::cout << std::endl;
-      std::cout << "  https://birch.sh/documentation/driver/commands/build/" << std::endl;
-    } else if (command.compare("install") == 0) {
-      std::cout << "Usage:" << std::endl;
+      std::cout << "More information is available at:" << std::endl;
       std::cout << std::endl;
-      std::cout << "  birch install [options]" << std::endl;
-      std::cout << std::endl;
-      std::cout << "Install the package after building. Accepts the same options as birch build," << std::endl;
-      std::cout << "and indeed should be used with the same options as the preceding build." << std::endl;
-      std::cout << std::endl;
-      std::cout << "This installs all header, library and data files needed by the package into" << std::endl;
-      std::cout << "the directory specified by --prefix (or the default if this was not specified)." << std::endl;
+      std::cout << "  https://docs.birch.sh/libraries/Standard/programs/bootstrap/" << std::endl;
+      std::cout << "  https://docs.birch.sh/libraries/Standard/programs/configure/" << std::endl;
+      std::cout << "  https://docs.birch.sh/libraries/Standard/programs/build/" << std::endl;
+      std::cout << "  https://docs.birch.sh/libraries/Standard/programs/install/" << std::endl;
     } else if (command.compare("uninstall") == 0) {
       std::cout << "Usage:" << std::endl;
       std::cout << std::endl;
       std::cout << "  birch uninstall" << std::endl;
       std::cout << std::endl;
-      std::cout << "Uninstall the package. This uninstalls all header, library and data files from" << std::endl;
-      std::cout << "the directory specified by --prefix (or the system default if this was not" << std::endl;
-      std::cout << "specified)." << std::endl;
+      std::cout << "Uninstall the package." << std::endl;
+      std::cout << std::endl;
+      std::cout << "More information is available at:" << std::endl;
+      std::cout << std::endl;
+      std::cout << "  https://docs.birch.sh/libraries/Standard/programs/uninstall/" << std::endl;
     } else if (command.compare("dist") == 0) {
       std::cout << "Usage:" << std::endl;
       std::cout << std::endl;
       std::cout << "  birch dist" << std::endl;
       std::cout << std::endl;
-      std::cout << "Build a distributable archive for the package." << std::endl;
+      std::cout << "Build the package source tarball." << std::endl;
       std::cout << std::endl;
-      std::cout << "More information can be found at:" << std::endl;
+      std::cout << "More information is available at:" << std::endl;
       std::cout << std::endl;
-      std::cout << "  https://birch.sh/documentation/driver/commands/dist/" << std::endl;
+      std::cout << "  https://docs.birch.sh/libraries/Standard/programs/dist/" << std::endl;
     } else if (command.compare("docs") == 0) {
       std::cout << "Usage:" << std::endl;
       std::cout << std::endl;
       std::cout << "  birch docs" << std::endl;
       std::cout << std::endl;
-      std::cout << "Build the reference documentation for the package. This creates a Markdown file" << std::endl;
-      std::cout << "DOCS.md in the current working directory." << std::endl;
+      std::cout << "Build the package documentation." << std::endl;
       std::cout << std::endl;
-      std::cout << "It will be overwritten if it already exists, and may be readily converted to" << std::endl;
-      std::cout << "other formats using a utility such as pandoc." << std::endl;
+      std::cout << "More information is available at:" << std::endl;
       std::cout << std::endl;
-      std::cout << "More information can be found at:" << std::endl;
-      std::cout << std::endl;
-      std::cout << "  https://birch.sh/documentation/driver/commands/docs/" << std::endl;
+      std::cout << "  https://docs.birch.sh/libraries/Standard/programs/docs/" << std::endl;
     } else if (command.compare("clean") == 0) {
       std::cout << "Usage:" << std::endl;
       std::cout << std::endl;
       std::cout << "  birch clean" << std::endl;
       std::cout << std::endl;
-      std::cout << "Clean the package directory of all build files." << std::endl;
+      std::cout << "Remove build files." << std::endl;
+      std::cout << std::endl;
+      std::cout << "More information is available at:" << std::endl;
+      std::cout << std::endl;
+      std::cout << "  https://docs.birch.sh/libraries/Standard/programs/clean/" << std::endl;
     } else if (command.compare("help") == 0) {
       std::cout << "Usage:" << std::endl;
       std::cout << std::endl;
-      std::cout << "  birch help [command]" << std::endl;
+      std::cout << "  birch help" << std::endl;
+      std::cout << "  birch help <command>" << std::endl;
       std::cout << std::endl;
-      std::cout << "Print the help message." << std::endl;
+      std::cout << "Print the general help message, or the help message for <command>." << std::endl;
     } else {
-      std::cout << "Command " << largv.at(1) << " is not a valid command."  << std::endl;
+      std::cout << "Command " << largv.at(1) << " is not a recognized command."  << std::endl;
     }
   } else {
     std::cout << "Usage:" << std::endl;
     std::cout << std::endl;
-    std::cout << "  birch <command> [options]" << std::endl;
+    std::cout << "  birch <command> [options...]" << std::endl;
     std::cout << std::endl;
-    std::cout << "Available commands:" << std::endl;
+    std::cout << "where <command> is one of:" << std::endl;
     std::cout << std::endl;
     std::cout << "  init          Initialize the working directory for a new package." << std::endl;
-    std::cout << "  check         Check the file structure of the package for possible issues." << std::endl;
-    std::cout << "  build         Build the package." << std::endl;
-    std::cout << "  install       Install the package after building." << std::endl;
+    std::cout << "  audit         Audit the package for common issues." << std::endl;
+    std::cout << "  bootstrap     Bootstrap the package, creating build files." << std::endl;
+    std::cout << "  configure     Bootstrap and configure the package." << std::endl;
+    std::cout << "  build         Bootstrap, configure and build the package." << std::endl;
+    std::cout << "  install       Bootstrap, configure, build and install the package." << std::endl;
     std::cout << "  uninstall     Uninstall the package." << std::endl;
-    std::cout << "  dist          Build a distributable archive for the package." << std::endl;
-    std::cout << "  docs          Build the reference documentation for the package." << std::endl;
-    std::cout << "  clean         Clean the package directory of all build files." << std::endl;
+    std::cout << "  dist          Build the package source tarball." << std::endl;
+    std::cout << "  docs          Build the package documentation." << std::endl;
+    std::cout << "  clean         Remove build files." << std::endl;
     std::cout << "  help          Print this help message." << std::endl;
     std::cout << std::endl;
-    std::cout << "To print more detailed description of a command, including available options," << std::endl;
-    std::cout << "use:" << std::endl;
+    std::cout << "and available [options...] for <command> can be found with:" << std::endl;
     std::cout << std::endl;
     std::cout << "  birch help <command>" << std::endl;
     std::cout << std::endl;
     std::cout << "To call a program defined in the package use:" << std::endl;
     std::cout << std::endl;
-    std::cout << "  birch <program name> [program options]" << std::endl;
+    std::cout << "  birch <program> [options...]" << std::endl;
     std::cout << std::endl;
-    std::cout << "More information can be found at:" << std::endl;
+    std::cout << "More information is available at:" << std::endl;
     std::cout << std::endl;
-    std::cout << "  https://birch.sh/" << std::endl;
+    std::cout << "  https://docs.birch.sh/" << std::endl;
   }
   std::cout << std::endl;
 }
