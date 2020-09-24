@@ -88,6 +88,16 @@ commands:
               ./configure --prefix="$PREFIX" CXXFLAGS="-Wall -Wno-overloaded-virtual -g -O0 -fno-inline --coverage" || cat config.log
               make $MAKE_FLAGS
               make install
+      - run:
+          name: Test driver
+          command: |
+              mkdir hello
+              cd hello
+              birch help
+              birch init
+              birch audit
+              birch dist
+              birch clean
 
   library:
     description: Build a C++ library
