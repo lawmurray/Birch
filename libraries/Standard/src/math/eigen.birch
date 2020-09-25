@@ -490,42 +490,6 @@ function cholesky(S:LLT) -> Real[_,_] {
 }
 
 /**
- * Kronecker vector-vector product.
- */
-function kronecker(x:Real[_], y:Real[_]) -> Real[_] {
-  cpp{{
-  return Eigen::kroneckerProduct(x.toEigen(), y.toEigen());
-  }}
-}
-
-/**
- * Kronecker matrix-vector product.
- */
-function kronecker(X:Real[_,_], y:Real[_]) -> Real[_,_] {
-  cpp{{
-  return Eigen::kroneckerProduct(X.toEigen(), y.toEigen());
-  }}
-}
-
-/**
- * Kronecker vector-matrix product.
- */
-function kronecker(x:Real[_], Y:Real[_,_]) -> Real[_,_] {
-  cpp{{
-  return Eigen::kroneckerProduct(x.toEigen(), Y.toEigen());
-  }}
-}
-
-/**
- * Kronecker matrix-matrix product.
- */
-function kronecker(X:Real[_,_], Y:Real[_,_]) -> Real[_,_] {
-  cpp{{
-  return Eigen::kroneckerProduct(X.toEigen(), Y.toEigen());
-  }}
-}
-
-/**
  * Hadamard (element-wise) vector product.
  */
 function hadamard(x:Real[_], y:Real[_]) -> Real[_] {

@@ -28,7 +28,6 @@
 
 #include <eigen3/Eigen/Dense>
 #include <eigen3/Eigen/Sparse>
-#include <eigen3/unsupported/Eigen/KroneckerProduct>
 
 #ifdef HAVE_OMP_H
 #include <omp.h>
