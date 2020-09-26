@@ -6,5 +6,6 @@
     "nparticles": 256,
     "nsteps": 10
   },
-  "input": "input/filter.json"
+  "input": "input/filter.json",
+  "output": "output/smoke.json"
 }

@@ -6,5 +6,6 @@
     "nsteps": 10,
     "nparticles": 64
   },
-  "input": "input/poisson_gaussian.json"
+  "input": "input/poisson_gaussian.json",
+  "output": "output/smoke.json"
 }
