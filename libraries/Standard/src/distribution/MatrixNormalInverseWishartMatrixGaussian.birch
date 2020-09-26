@@ -50,11 +50,6 @@ final class MatrixNormalInverseWishartMatrixGaussian(
         X, M.N, M.Λ, M.V.Ψ, M.V.k);
   }
 
-  function downdate(X:Real[_,_]) {
-    (M.N, M.Λ, M.V.Ψ, M.V.k) <- box(downdate_matrix_normal_inverse_wishart_matrix_gaussian(
-        X, M.N.value(), M.Λ.value(), M.V.Ψ.value(), M.V.k.value()));
-  }
-
   function link() {
     M.setChild(this);
   }

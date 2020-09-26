@@ -42,11 +42,6 @@ final class NormalInverseGammaGaussian(μ:NormalInverseGamma) <
         x, μ.μ, μ.λ, μ.σ2.α, μ.σ2.β);
   }
 
-  function downdate(x:Real) {
-    (μ.μ, μ.λ, μ.σ2.α, μ.σ2.β) <- box(downdate_normal_inverse_gamma_gaussian(
-        x, μ.μ.value(), μ.λ.value(), μ.σ2.α.value(), μ.σ2.β.value()));
-  }
-
   function cdf(x:Real) -> Real? {
     return cdf_normal_inverse_gamma_gaussian(x, μ.μ.value(),
         1.0/μ.λ.value(), μ.σ2.α.value(), μ.σ2.β.value());

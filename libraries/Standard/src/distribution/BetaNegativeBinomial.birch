@@ -47,10 +47,6 @@ final class BetaNegativeBinomial(k:Expression<Integer>, ρ:Beta) < Discrete {
   function updateLazy(x:Expression<Integer>) {
     (ρ.α, ρ.β) <- update_lazy_beta_negative_binomial(x, k, ρ.α, ρ.β);
   }
-
-  function downdate(x:Integer) {
-    (ρ.α, ρ.β) <- box(downdate_beta_negative_binomial(x, k.value(), ρ.α.value(), ρ.β.value()));
-  }
   
   function lower() -> Integer? {
     return 0;

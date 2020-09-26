@@ -48,10 +48,6 @@ final class BetaBinomial(n:Expression<Integer>, ρ:Beta) < BoundedDiscrete {
     (ρ.α, ρ.β) <- update_lazy_beta_binomial(x, n, ρ.α, ρ.β);
   }
 
-  function downdate(x:Integer) {
-    (ρ.α, ρ.β) <- box(downdate_beta_binomial(x, n.value(), ρ.α.value(), ρ.β.value()));
-  }
-
   function cdf(x:Integer) -> Real? {
     return cdf_beta_binomial(x, n.value(), ρ.α.value(), ρ.β.value());
   }

@@ -72,12 +72,6 @@ final class MatrixNormalInverseGamma(M:Expression<Real[_,_]>,
         Λ, α, gamma_to_beta(γ, N, Λ));
   }
 
-  function downdate(X:Real[_,_]) {
-    (σ2.α, σ2.β) <- box(downdate_matrix_normal_inverse_gamma(X, N.value(),
-        Λ.value(), α.value(), gamma_to_beta(γ.value(), N.value(),
-        Λ.value())));
-  }
-
   function graftMatrixNormalInverseGamma(compare:Distribution<Real[_]>) ->
       MatrixNormalInverseGamma? {
     prune();

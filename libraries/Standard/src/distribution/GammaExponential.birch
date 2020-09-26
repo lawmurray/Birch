@@ -35,10 +35,6 @@ final class GammaExponential(λ:Gamma) < Distribution<Real> {
     (λ.k, λ.θ) <- update_lazy_gamma_exponential(x, λ.k, λ.θ);
   }
 
-  function downdate(x:Real) {
-    (λ.k, λ.θ) <- box(downdate_gamma_exponential(x, λ.k.value(), λ.θ.value()));
-  }
-
   function cdf(x:Real) -> Real? {
     return cdf_lomax(x, 1.0/λ.θ.value(), λ.k.value());
   }

@@ -91,11 +91,6 @@ final class MultivariateNormalInverseGamma(μ:Expression<Real[_]>,
         Λ, α, gamma_to_beta(γ, ν, Λ));
   }
 
-  function downdate(x:Real[_]) {
-    (σ2.α, σ2.β) <- box(downdate_multivariate_normal_inverse_gamma(x, ν.value(),
-        Λ.value(), α.value(), gamma_to_beta(γ.value(), ν.value(), Λ.value())));
-  }
-
   function graftMultivariateNormalInverseGamma(compare:Distribution<Real>) ->
       MultivariateNormalInverseGamma? {
     prune();

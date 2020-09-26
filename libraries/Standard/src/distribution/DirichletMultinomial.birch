@@ -41,10 +41,6 @@ final class DirichletMultinomial(n:Expression<Integer>, ρ:Dirichlet) <
 //    ρ.α <- update_lazy_dirichlet_multinomial(x, n, ρ.α);
 //  }
 
-  function downdate(x:Integer[_]) {
-    ρ.α <- box(downdate_dirichlet_multinomial(x, n.value(), ρ.α.value()));
-  }
-
   function link() {
     ρ.setChild(this);
   }

@@ -43,10 +43,6 @@ final class GammaPoisson(λ:Gamma) < Discrete {
     (λ.k, λ.θ) <- update_lazy_gamma_poisson(x, λ.k, λ.θ);
   }
 
-  function downdate(x:Integer) {
-    (λ.k, λ.θ) <- box(downdate_gamma_poisson(x, λ.k.value(), λ.θ.value()));
-  }
-
   function cdf(x:Integer) -> Real? {
     return cdf_gamma_poisson(x, λ.k.value(), λ.θ.value());
   }

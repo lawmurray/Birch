@@ -35,10 +35,6 @@ final class DirichletCategorical(ρ:Dirichlet) < Distribution<Integer> {
 //    ρ.α <- update_lazy_dirichlet_categorical(x, ρ.α);
 //  }
 
-  function downdate(x:Integer) {
-    ρ.α <- box(downdate_dirichlet_categorical(x, ρ.α.value()));
-  }
-
   function lower() -> Integer? {
     return 1;
   }

@@ -46,11 +46,6 @@ final class MultivariateNormalInverseGammaMultivariateGaussian(
         x, μ.ν, μ.Λ, μ.α, μ.γ);
   }
 
-  function downdate(x:Real[_]) {
-    (μ.ν, μ.Λ, μ.α, μ.γ) <- box(downdate_multivariate_normal_inverse_gamma_multivariate_gaussian(
-        x, μ.ν.value(), μ.Λ.value(), μ.α.value(), μ.γ.value()));
-  }
-
   function link() {
     μ.setChild(this);
   }

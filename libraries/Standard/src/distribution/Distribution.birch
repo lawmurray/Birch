@@ -163,15 +163,6 @@ abstract class Distribution<Value> < DelayDistribution {
   }
 
   /**
-   * Downdate the parent node on the $M$-path given the value of this node.
-   *
-   * - x: The value.
-   */
-  function downdate(x:Value) {
-    //
-  }
-  
-  /**
    * Evaluate the probability density (or mass) function.
    *
    * - x: The value.

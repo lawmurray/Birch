@@ -42,11 +42,6 @@ class ScaledGammaExponential(a:Expression<Real>, λ:Gamma) <
     (λ.k, λ.θ) <- update_lazy_scaled_gamma_exponential(x, a, λ.k, λ.θ);
   }
   
-  function downdate(x:Real) {
-    (λ.k, λ.θ) <- box(downdate_scaled_gamma_exponential(x, a.value(),
-        λ.k.value(), λ.θ.value()));
-  }
-
   function cdf(x:Real) -> Real? {
     return cdf_lomax(x, 1.0/(a.value()*λ.θ.value()), λ.k.value());
   }
