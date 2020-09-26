@@ -1,4 +1,4 @@
-N=100
+N=10
 
 ls src/test/basic     | grep '\.birch' | sed "s/.birch$/ -N $N/g" | xargs -t -L 1 birch
 ls src/test/cdf       | grep '\.birch' | sed "s/.birch$/ -N $N/g" | xargs -t -L 1 birch
