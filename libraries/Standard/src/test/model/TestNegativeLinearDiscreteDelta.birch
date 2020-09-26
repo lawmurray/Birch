@@ -41,6 +41,24 @@ class TestNegativeLinearDiscreteDelta < Model {
     return z;
   }
 
+  function forwardLazy() -> Real[_] {
+    z:Real[2];
+    assert !ρ.hasValue();
+    z[1] <- ρ.get();
+    assert !x.hasValue();
+    z[2] <- x.get();
+    return z;
+  }
+
+  function backwardLazy() -> Real[_] {
+    z:Real[2];
+    assert !x.hasValue();
+    z[2] <- x.get();
+    assert !ρ.hasValue();
+    z[1] <- ρ.get();
+    return z;
+  }
+
   function marginal() -> Distribution<Integer> {
     return y.distribution()!;
   }

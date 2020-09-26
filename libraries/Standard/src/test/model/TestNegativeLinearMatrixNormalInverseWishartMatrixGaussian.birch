@@ -59,6 +59,26 @@ class TestNegativeLinearMatrixNormalInverseWishartMatrixGaussian < Model {
     return vectorize();
   }
 
+  function forwardLazy() -> Real[_] {
+    assert !V.hasValue();
+    V.get();
+    assert !X.hasValue();
+    X.get();
+    assert !Y.hasValue();
+    Y.get();
+    return vectorize();
+  }
+
+  function backwardLazy() -> Real[_] {
+    assert !Y.hasValue();
+    Y.get();
+    assert !X.hasValue();
+    X.get();
+    assert !V.hasValue();
+    V.get();
+    return vectorize();
+  }
+
   function marginal() -> Distribution<Real[_,_]> {
     return Y.distribution()!;
   }

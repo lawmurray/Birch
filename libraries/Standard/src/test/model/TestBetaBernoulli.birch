@@ -39,6 +39,32 @@ class TestBetaBernoulli < Model {
     return y;
   }
 
+  function forwardLazy() -> Real[_] {
+    y:Real[2];
+    y[1] <- ρ.get();
+    assert !x.hasValue();
+    if (x.get()) {
+      y[2] <- 1.0;
+    } else {
+      y[2] <- 0.0;
+    }
+
+    return y;
+  }
+
+  function backwardLazy() -> Real[_] {
+    y:Real[2];
+    if (x.get()) {
+      y[2] <- 1.0;
+    } else {
+      y[2] <- 0.0;
+    }
+    assert !ρ.hasValue();
+    y[1] <- ρ.get();
+
+    return y;
+  }
+
   function marginal() -> Distribution<Boolean> {
     return x.distribution()!.graft();
   }

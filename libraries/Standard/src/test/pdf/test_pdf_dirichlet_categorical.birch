@@ -5,5 +5,8 @@ program test_pdf_dirichlet_categorical(N:Integer <- 10000, lazy:Boolean <- false
   m:TestDirichletCategorical;
   m.initialize();
   m.simulate();
-  test_pdf(m.marginal(), N, lazy);
+  if lazy {
+    warn("lazy not support, reverting to eager.");
+  }
+  test_pdf(m.marginal(), N, false);
 }

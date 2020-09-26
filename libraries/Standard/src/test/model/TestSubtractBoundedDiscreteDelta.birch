@@ -29,4 +29,21 @@ class TestSubtractBoundedDiscreteDelta < Model {
     y[1] <- x1.value();
     return y;
   }
+
+  function forwardLazy() -> Real[_] {
+    y:Real[2];
+    assert !x1.hasValue();
+    y[1] <- x1.get();
+    assert !x2.hasValue();
+    y[2] <- x2.get();
+    return y;
+  }
+
+  function backwardLazy() -> Real[_] {
+    y:Real[2];
+    s.get();
+    y[2] <- x2.get();
+    y[1] <- x1.get();
+    return y;
+  }
 }

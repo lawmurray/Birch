@@ -54,6 +54,26 @@ class TestNegativeLinearMultivariateNormalInverseGammaMultivariateGaussian < Mod
     return y;
   }
 
+  function forwardLazy() -> Real[_] {
+    y:Real[16];
+    y[1] <- σ2.get();
+    assert !μ.hasValue();
+    y[2..11] <- μ.get();
+    assert !x.hasValue();
+    y[12..16] <- x.get();
+    return y;
+  }
+
+  function backwardLazy() -> Real[_] {
+    y:Real[16];
+    y[12..16] <- x.get();
+    assert !μ.hasValue();
+    y[2..11] <- μ.get();
+    assert !σ2.hasValue();
+    y[1] <- σ2.get();
+    return y;
+  }
+
   function marginal() -> Distribution<Real[_]> {
     return x.distribution()!.graft();
   }

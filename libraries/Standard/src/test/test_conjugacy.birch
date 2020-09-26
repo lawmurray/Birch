@@ -7,22 +7,22 @@
  * - lazy: Use lazy version?
  */
 function test_conjugacy<Conjugate>(m:Conjugate, N:Integer, D:Integer, lazy:Boolean) {  
-  forward:Handler <- PlayHandler(false);
-  backward:Handler <- PlayHandler(true);
-  if lazy {
-    forward <- MoveHandler(false);
-    backward <- MoveHandler(true);
-  }
+  let forward <- PlayHandler(false);
+  let backward <- PlayHandler(true);
   m.initialize();
   
   /* simulate forward */
   X1:Real[N,D];
   for n in 1..N {
     let m' <- clone(m);
-    with (forward) {
+    with forward {
       m'.simulate();
     }
-    X1[n,1..D] <- m'.forward();
+    if lazy {
+      X1[n,1..D] <- m'.forwardLazy();
+    } else {
+      X1[n,1..D] <- m'.forward();
+    }
     if mod(n, 10000) == 0 {
       collect();
     }
@@ -32,10 +32,14 @@ function test_conjugacy<Conjugate>(m:Conjugate, N:Integer, D:Integer, lazy:Boole
   X2:Real[N,D];
   for n in 1..N {
     let m' <- clone(m);
-    with (backward) {
+    with backward {
       m'.simulate();
     }
-    X2[n,1..D] <- m'.backward();
+    if lazy {
+      X2[n,1..D] <- m'.backwardLazy();
+    } else {
+      X2[n,1..D] <- m'.backward();
+    }
     if mod(n, 10000) == 0 {
       collect();
     }

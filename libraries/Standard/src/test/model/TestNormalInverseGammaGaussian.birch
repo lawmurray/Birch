@@ -41,6 +41,26 @@ class TestNormalInverseGammaGaussian < Model {
     return y;
   }
 
+  function forwardLazy() -> Real[_] {
+    y:Real[3];
+    y[1] <- σ2.get();
+    assert !μ.hasValue();
+    y[2] <- μ.get();
+    assert !x.hasValue();
+    y[3] <- x.get();
+    return y;
+  }
+
+  function backwardLazy() -> Real[_] {
+    y:Real[3];
+    y[3] <- x.get();
+    assert !μ.hasValue();
+    y[2] <- μ.get();
+    assert !σ2.hasValue();
+    y[1] <- σ2.get();
+    return y;
+  }
+
   function marginal() -> Distribution<Real> {
     return x.distribution()!.graft();
   }

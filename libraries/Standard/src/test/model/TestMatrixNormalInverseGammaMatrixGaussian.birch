@@ -52,6 +52,26 @@ class TestMatrixNormalInverseGammaMatrixGaussian < Model {
     return vectorize();
   }
 
+  function forwardLazy() -> Real[_] {
+    assert !σ2.hasValue();
+    σ2.get();
+    assert !X.hasValue();
+    X.get();
+    assert !Y.hasValue();
+    Y.get();
+    return vectorize();
+  }
+
+  function backwardLazy() -> Real[_] {
+    assert !Y.hasValue();
+    Y.get();
+    assert !X.hasValue();
+    X.get();
+    assert !σ2.hasValue();
+    σ2.get();
+    return vectorize();
+  }
+
   function marginal() -> Distribution<Real[_,_]> {
     return Y.distribution()!;
   }

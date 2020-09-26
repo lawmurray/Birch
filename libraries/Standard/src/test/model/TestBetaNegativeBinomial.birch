@@ -32,6 +32,22 @@ class TestBetaNegativeBinomial < Model {
     return y;
   }
 
+  function forwardLazy() -> Real[_] {
+    y:Real[2];
+    y[1] <- ρ.get();
+    assert !x.hasValue();
+    y[2] <- x.get();
+    return y;
+  }
+
+  function backwardLazy() -> Real[_] {
+    y:Real[2];
+    y[2] <- x.get();
+    assert !ρ.hasValue();
+    y[1] <- ρ.get();
+    return y;
+  }
+
   function marginal() -> Distribution<Integer> {
     return x.distribution()!.graft();
   }
