@@ -59,6 +59,9 @@ function test_cdf(q:Distribution<Real>, N:Integer) {
     if failed {
       exit(1);
     }
+    if mod(n, 10000) == 0 {
+      collect();
+    }
   }
 }
 

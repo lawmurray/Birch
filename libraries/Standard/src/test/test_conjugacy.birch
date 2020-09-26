@@ -23,6 +23,9 @@ function test_conjugacy<Conjugate>(m:Conjugate, N:Integer, D:Integer, lazy:Boole
       m'.simulate();
     }
     X1[n,1..D] <- m'.forward();
+    if mod(n, 10000) == 0 {
+      collect();
+    }
   }
 
   /* simulate backward */
@@ -33,6 +36,9 @@ function test_conjugacy<Conjugate>(m:Conjugate, N:Integer, D:Integer, lazy:Boole
       m'.simulate();
     }
     X2[n,1..D] <- m'.backward();
+    if mod(n, 10000) == 0 {
+      collect();
+    }
   }
   
   /* test result */
