@@ -6,14 +6,12 @@ class TestBetaNegativeBinomial < Model {
   x:Random<Integer>;
 
   function initialize() {
-    //
-  }
-
-  function simulate() {
     k <- simulate_uniform_int(1, 100);
     α <- simulate_uniform(1.0, 100.0);
     β <- simulate_uniform(1.0, 100.0);
+  }
 
+  function simulate() {
     ρ ~ Beta(α, β);
     x ~ NegativeBinomial(k, ρ);
   }
