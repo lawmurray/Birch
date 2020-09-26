@@ -1,9 +1,9 @@
 /*
  * Test uniform integer pmf.
  */
-program test_pdf_uniform_int(N:Integer <- 10000) {
+program test_pdf_uniform_int(N:Integer <- 10000, lazy:Boolean <- false) {
   let l <- simulate_uniform_int(-10, 10);
   let u <- simulate_uniform_int(l, l + 20);
   let π <- Uniform(l, u);
-  test_pdf(π, N);
+  test_pdf(π, N, lazy);
 }

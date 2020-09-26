@@ -2,7 +2,7 @@
  * Test multivariate Gaussian pdf evaluations.
  */
 program test_pdf_multivariate_gaussian(D:Integer <- 4, N:Integer <- 10000,
-    B:Integer <- 500, S:Integer <- 20) {
+    B:Integer <- 500, S:Integer <- 20, lazy:Boolean <- false) {
   μ:Real[D];
   Σ:Real[D,D];
 
@@ -15,5 +15,5 @@ program test_pdf_multivariate_gaussian(D:Integer <- 4, N:Integer <- 10000,
   Σ <- Σ*transpose(Σ);
 
   let π <- Gaussian(μ, Σ);
-  test_pdf(π, D, N, B, S);
+  test_pdf(π, D, N, B, S, lazy);
 }

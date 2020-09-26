@@ -107,8 +107,8 @@ function join<Value>(y:Expression<Value>[_]) -> MultivariateJoin<Value> {
  * expressions.
  */
 function split<Value>(y:Expression<Value[_]>) -> Expression<Value>[_] {
-  let z <- vector(y);
-  // ^ vector(y) above is an identity function for all but Random objects;
+  let z <- canonical(y);
+  // ^ canonical(y) above is an identity function for all but Random objects;
   //   for these it wraps the Random in an additional expression that can
   //   accumulate gradients by element (which a Random cannot) before passing
   //   the whole vector of accumulated gradients onto the Random

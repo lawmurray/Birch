@@ -1,9 +1,9 @@
 /*
  * Test beta-Bernoulli pdf evaluations.
  */
-program test_pdf_beta_bernoulli(N:Integer <- 10000) {
+program test_pdf_beta_bernoulli(N:Integer <- 10000, lazy:Boolean <- false) {
   m:TestBetaBernoulli;
   m.initialize();
   m.simulate();
-  test_pdf(m.marginal(), N);
+  test_pdf(m.marginal(), N, lazy);
 }

@@ -1,9 +1,9 @@
 /*
  * Test Dirichlet-categorical pmf.
  */
-program test_pdf_dirichlet_categorical(N:Integer <- 10000) {
+program test_pdf_dirichlet_categorical(N:Integer <- 10000, lazy:Boolean <- false) {
   m:TestDirichletCategorical;
   m.initialize();
   m.simulate();
-  test_pdf(m.marginal(), N);
+  test_pdf(m.marginal(), N, lazy);
 }

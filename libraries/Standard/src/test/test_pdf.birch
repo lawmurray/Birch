@@ -3,8 +3,9 @@
  *
  * - π: The target distribution. 
  * - N: Number of samples.
+ * - lazy: Use lazy version?
  */
-function test_pdf(π:Distribution<Boolean>, N:Integer) {
+function test_pdf(π:Distribution<Boolean>, N:Integer, lazy:Boolean) {
   /* simulate, counting the occurrence of each value */
   let k <- 0;
   for n in 1..N {
@@ -17,12 +18,21 @@ function test_pdf(π:Distribution<Boolean>, N:Integer) {
   let failed <- false;
   let ε <- 5.0/sqrt(Real(N));
   
-  let δ <- abs(π.pdf(true) - Real(k)/N);
+  p:Real;
+  q:Real;
+  if lazy && π.supportsLazy() {
+    p <- exp(π.logpdfLazy(box(true))!.value());
+    q <- exp(π.logpdfLazy(box(false))!.value());
+  } else {
+    p <- π.pdf(true);
+    q <- π.pdf(false);
+  }
+  let δ <- abs(p - Real(k)/N);
   if δ > ε {
     failed <- true;
     stderr.print("failed on true, " + δ + " > " + ε + "\n");
   }
-  δ <- abs(π.pdf(false) - Real(N - k)/N);
+  δ <- abs(q - Real(N - k)/N);
   if δ > ε {
     failed <- true;
     stderr.print("failed on false, " + δ + " > " + ε + "\n");
@@ -37,8 +47,9 @@ function test_pdf(π:Distribution<Boolean>, N:Integer) {
  *
  * - π: The target distribution. 
  * - N: Number of samples.
+ * - lazy: Use lazy version?
  */
-function test_pdf(π:Distribution<Integer>, N:Integer) {  
+function test_pdf(π:Distribution<Integer>, N:Integer, lazy:Boolean) {  
   /* lower bound on interval */
   let from <- π.lower();
   if !from? {
@@ -92,9 +103,10 @@ function test_pdf(π:Distribution<Integer>, N:Integer) {
  * - N: Number of samples.
  * - B: Number of samples in each batch for tuning Metropolis sampler.
  * - S: Metropolis sampler skip.
+ * - lazy: Use lazy version?
  */
 function test_pdf(π:Distribution<Real[_]>, D:Integer, N:Integer, B:Integer,
-    S:Integer) {  
+    S:Integer, lazy:Boolean) {  
   X1:Real[N,D];
   X2:Real[N,D];
   
@@ -119,11 +131,21 @@ function test_pdf(π:Distribution<Real[_]>, D:Integer, N:Integer, B:Integer,
   do {
     let a <- 0.0;
     let x <- π.simulate();
-    let l <- π.logpdf(x);
+    l:Real;
+    if lazy && π.supportsLazy() {
+      l <- π.logpdfLazy(box(x))!.value();
+    } else {
+      l <- π.logpdf(x);
+    }
 
     for n in 1..B {
       let x' <- simulate_multivariate_gaussian(x, llt(Σ));
-      let l' <- π.logpdf(x');
+      l':Real;
+      if lazy && π.supportsLazy() {
+        l' <- π.logpdfLazy(box(x'))!.value();
+      } else {
+        l' <- π.logpdf(x');
+      }
       if log(simulate_uniform(0.0, 1.0)) <= l' - l {
         /* accept */
         x <- x';
@@ -144,11 +166,21 @@ function test_pdf(π:Distribution<Real[_]>, D:Integer, N:Integer, B:Integer,
   /* apply the Metropolis sampler */
   let a <- 0.0;
   let x <- π.simulate();
-  let l <- π.logpdf(x);
+  l:Real;
+  if lazy && π.supportsLazy() {
+    l <- π.logpdfLazy(box(x))!.value();
+  } else {
+    l <- π.logpdf(x);
+  }
   for n in 1..N {
     for s in 1..S {
       let x' <- simulate_multivariate_gaussian(x, llt(Σ));
-      let l' <- π.logpdf(x');
+      l':Real;
+      if lazy && π.supportsLazy() {
+        l' <- π.logpdfLazy(box(x'))!.value();
+      } else {
+        l' <- π.logpdf(x');
+      }
       if log(simulate_uniform(0.0, 1.0)) <= l' - l {
         /* accept */
         x <- x';
@@ -175,9 +207,10 @@ function test_pdf(π:Distribution<Real[_]>, D:Integer, N:Integer, B:Integer,
  * - N: Number of samples.
  * - B: Number of samples in each batch for tuning Metropolis sampler.
  * - S: Metropolis sampler skip.
+ * - lazy: Use lazy version?
  */
 function test_pdf(π:Distribution<Real[_,_]>, R:Integer, C:Integer, N:Integer,
-    B:Integer, S:Integer) {
+    B:Integer, S:Integer, lazy:Boolean) {
   X1:Real[N,R*C];
   X2:Real[N,R*C];
   
@@ -202,11 +235,20 @@ function test_pdf(π:Distribution<Real[_,_]>, R:Integer, C:Integer, N:Integer,
   do {
     let a <- 0.0;
     let x <- π.simulate();
-    let l <- π.logpdf(x);
-
+    l:Real;
+    if lazy && π.supportsLazy() {
+      l <- π.logpdfLazy(box(x))!.value();
+    } else {
+      l <- π.logpdf(x);
+    }
     for n in 1..B {
       let x' <- mat(simulate_multivariate_gaussian(vec(x), llt(Σ)), C);
-      let l' <- π.logpdf(x');
+      l':Real;
+      if lazy && π.supportsLazy() {
+        l' <- π.logpdfLazy(box(x'))!.value();
+      } else {
+        l' <- π.logpdf(x');
+      }
       if log(simulate_uniform(0.0, 1.0)) <= l' - l {
         /* accept */
         x <- x';
@@ -227,11 +269,21 @@ function test_pdf(π:Distribution<Real[_,_]>, R:Integer, C:Integer, N:Integer,
   /* apply the Metropolis sampler */
   let a <- 0.0;
   let x <- π.simulate();
-  let l <- π.logpdf(x);
+  l:Real;
+  if lazy && π.supportsLazy() {
+    l <- π.logpdfLazy(box(x))!.value();
+  } else {
+    l <- π.logpdf(x);
+  }
   for n in 1..N {
     for s in 1..S {
       let x' <- mat(simulate_multivariate_gaussian(vec(x), llt(Σ)), C);
-      let l' <- π.logpdf(x');
+      l':Real;
+      if lazy && π.supportsLazy() {
+        l' <- π.logpdfLazy(box(x'))!.value();
+      } else {
+        l' <- π.logpdf(x');
+      }
       if log(simulate_uniform(0.0, 1.0)) <= l' - l {
         /* accept */
         x <- x';
