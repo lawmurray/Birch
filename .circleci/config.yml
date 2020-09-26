@@ -484,6 +484,7 @@ jobs:
           dir: libraries
           package: SQLite
           tar: birch-sqlite
+      - codecov/upload
       - slack
       - persist_to_workspace:
           root: .
@@ -502,6 +503,7 @@ jobs:
           package: LinearGaussian
           tar: birch-lineargaussian
           smoke: true
+      - codecov/upload
       - slack
 
   mac_LinearRegression:
@@ -515,6 +517,7 @@ jobs:
           package: LinearRegression
           tar: birch-linearregression
           smoke: true
+      - codecov/upload
       - slack
 
   mac_MixedGaussian:
@@ -528,6 +531,7 @@ jobs:
           package: MixedGaussian
           tar: birch-mixedgaussian
           smoke: true
+      - codecov/upload
       - slack
 
   mac_MultiObjectTracking:
@@ -541,6 +545,7 @@ jobs:
           package: MultiObjectTracking
           tar: birch-multiobjecttracking
           smoke: true
+      - codecov/upload
       - slack
 
   mac_PoissonGaussian:
@@ -554,6 +559,7 @@ jobs:
           package: PoissonGaussian
           tar: birch-poissongaussian
           smoke: true
+      - codecov/upload
       - slack
 
   mac_SIR:
@@ -567,6 +573,7 @@ jobs:
           package: SIR
           tar: birch-sir
           smoke: true
+      - codecov/upload
       - slack
 
   mac_VectorBorneDisease:
@@ -580,6 +587,7 @@ jobs:
           package: VectorBorneDisease
           tar: birch-vectorbornedisease
           smoke: true
+      - codecov/upload
       - slack
 
   mac_deploy:
