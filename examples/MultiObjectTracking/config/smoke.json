@@ -4,7 +4,7 @@
   },
   "filter": {
     "nparticles": 1024,
-    "nsteps": 10
+    "nsteps": 5
   },
   "input": "input/filter.json"
 }
