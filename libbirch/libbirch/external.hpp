@@ -27,7 +27,6 @@
 #include <dlfcn.h>
 
 #include <eigen3/Eigen/Dense>
-#include <eigen3/Eigen/Sparse>
 
 #ifdef HAVE_OMP_H
 #include <omp.h>
