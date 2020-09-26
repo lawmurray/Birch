@@ -1,7 +1,7 @@
 /*
  * Test linear-discrete-delta conjugacy.
  */
-program test_negative_linear_discrete_delta(N:Integer <- 10000) {
+program test_negative_linear_discrete_delta(N:Integer <- 10000, lazy:Boolean <- false) {
   m:TestNegativeLinearDiscreteDelta;
-  test_conjugacy(m, N, 2);
+  test_conjugacy(m, N, 2, lazy);
 }

@@ -2,7 +2,7 @@
  * Test multivariate linear Gaussian-Gaussian conjugacy.
  */
 program test_linear_multivariate_gaussian_multivariate_gaussian(
-    N:Integer <- 10000) {
+    N:Integer <- 10000, lazy:Boolean <- false) {
   m:TestLinearMultivariateGaussianMultivariateGaussian;
-  test_conjugacy(m, N, 10);
+  test_conjugacy(m, N, 10, lazy);
 }

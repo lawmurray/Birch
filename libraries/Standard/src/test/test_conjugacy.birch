@@ -4,11 +4,15 @@
  * - m: Model.
  * - N: Number of samples.
  * - D: Number of dimensions.
+ * - lazy: Use lazy version?
  */
-function test_conjugacy<Conjugate>(m:Conjugate, N:Integer, D:Integer) {  
-  let forward <- PlayHandler(false);
-  let backward <- PlayHandler(true);
-
+function test_conjugacy<Conjugate>(m:Conjugate, N:Integer, D:Integer, lazy:Boolean) {  
+  forward:Handler <- PlayHandler(false);
+  backward:Handler <- PlayHandler(true);
+  if lazy {
+    forward <- MoveHandler(false);
+    backward <- MoveHandler(true);
+  }
   m.initialize();
   
   /* simulate forward */

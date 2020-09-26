@@ -1,7 +1,7 @@
 /*
  * Test inverse-gamma-gamma conjugacy.
  */
-program test_inverse_gamma_gamma(N:Integer <- 10000) {
+program test_inverse_gamma_gamma(N:Integer <- 10000, lazy:Boolean <- false) {
   m:TestInverseGammaGamma;
-  test_conjugacy(m, N, 2);
+  test_conjugacy(m, N, 2, lazy);
 }

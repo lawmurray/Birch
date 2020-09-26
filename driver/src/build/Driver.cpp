@@ -1158,7 +1158,7 @@ void birch::Driver::target(const std::string& cmd) {
   buf << " | sed -E \"s/'='/'<-'/\"";
 
   /* strip suggestions that reveal internal workings */
-  buf << " | sed -E 's/(, )?Handler//g'";
+  buf << " | sed -E 's/(, )?Handler\\)/)/g'";
 
   buf << " 1>&2";
 
