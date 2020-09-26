@@ -3,7 +3,7 @@
     "class": "Multi"
   },
   "filter": {
-    "nparticles": 256,
+    "nparticles": 4096,
     "nsteps": 5
   },
   "input": "input/filter.json"
