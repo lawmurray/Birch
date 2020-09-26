@@ -10,6 +10,5 @@
     "class": "MarginalizedParticleGibbsSampler",
     "nsamples": 3
   },
-  "input": "input/yap_dengue.json",
-  "output": "output/smoke.json"
+  "input": "input/yap_dengue.json"
 }

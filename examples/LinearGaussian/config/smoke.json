@@ -8,6 +8,5 @@
   "sampler": {
     "nsamples": 3
   },
-  "input": "input/linear_gaussian.json",
-  "output": "output/smoke.json"
+  "input": "input/linear_gaussian.json"
 }

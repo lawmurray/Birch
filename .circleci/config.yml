@@ -173,7 +173,7 @@ commands:
                     then
                       cd << parameters.dir >>/<< parameters.package >>
                       echo '{ "output": ' > /tmp/mongodb.json
-                      cat output/*.json >> /tmp/mongodb.json
+                      cat output/test.json >> /tmp/mongodb.json
                       if [[ -e /tmp/time.txt ]]
                       then
                         cat /tmp/time.txt >> /tmp/mongodb.json

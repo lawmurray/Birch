@@ -1,1 +1,1 @@
-birch sample --config config/mixed_gaussian.json --seed 0
+birch sample --config config/mixed_gaussian.json --output output/test.json --seed 0

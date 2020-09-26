@@ -1,1 +1,1 @@
-birch sample --config config/sir.json --seed 0
+birch sample --config config/sir.json --output output/test.json --seed 0

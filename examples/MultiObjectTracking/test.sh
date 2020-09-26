@@ -1,1 +1,1 @@
-birch sample --config config/filter.json --seed 0
+birch sample --config config/filter.json --output output/test.json --seed 0
