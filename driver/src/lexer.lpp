@@ -114,16 +114,17 @@ E                                  [Ee][+-]?{D}+
 "factor"                            { return FACTOR; }
 "cpp"                               { return CPP; }
 "hpp"                               { return HPP; }
-"this"                              { return THIS; }
-"super"                             { return SUPER; }
-"global"                            { return GLOBAL; }
 "parallel"                          { return PARALLEL; }
 "dynamic"                           { return DYNAMIC; }
 "abstract"                          { return ABSTRACT; }
 "override"                          { return OVERRIDE; }
 "final"                             { return FINAL; }
-"nil"                               { return NIL; }
 
+"this"                              { return THIS; }
+"super"                             { return SUPER; }
+"global"                            { return GLOBAL; }
+
+"nil"                               { yylval.valString = "nil"; return NIL; }
 "true"                              { yylval.valString = "true"; return BOOL_LITERAL; }
 "false"                             { yylval.valString = "false"; return BOOL_LITERAL; }
 
@@ -171,8 +172,6 @@ E                                  [Ee][+-]?{D}+
 "]"                                 { return ']'; }
 "."                                 { return '.'; }
 "_"                                 { return '_'; }
-"@"                                 { return '@'; }
-"%"                                 { return '%'; }
 .                                   { yyerror("syntax error"); }
 
 %%
