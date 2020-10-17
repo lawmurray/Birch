@@ -17,7 +17,6 @@ RUN zypper --non-interactive addrepo --no-gpgcheck "https://repo.mongodb.org/zyp
     flex \
     bison \
     libtool \
-    libexplain-devel \
     libyaml-devel \
     boost-devel \
     libboost_filesystem-devel \
