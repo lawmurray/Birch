@@ -33,11 +33,9 @@ AC_CHECK_HEADERS([ \
     boost/filesystem/fstream.hpp \
     boost/algorithm/string.hpp \
     ], [], AC_MSG_ERROR([required header not found]), [-])
-AC_CHECK_HEADERS([libexplain/system.h], [], [], [-])
 
 # Checks for libraries
 AC_SEARCH_LIBS([dlopen], [dl], [], [])
-AC_CHECK_LIB([explain], [explain_system])
 AC_CHECK_LIB([yaml], [main], [], [AC_MSG_ERROR([required library not found.])])
 AC_CHECK_LIB([boost_filesystem], [main], [], [AC_CHECK_LIB([boost_filesystem-mt], [main], [], [AC_MSG_ERROR([required library not found])])])
 AC_CHECK_LIB([boost_system], [main], [], [AC_CHECK_LIB([boost_system-mt], [main], [], [AC_MSG_ERROR([required library not found])])])

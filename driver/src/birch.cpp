@@ -40,8 +40,8 @@ int main(int argc, char** argv) {
       driver.run(prog);
     }
     return 0;
-  } catch (Exception& e) {
+  } catch (const Exception& e) {
     std::cerr << e.msg << std::endl;
-    return -1;
+    return 1;
   }
 }

@@ -43,6 +43,3 @@ namespace fs = boost::filesystem;
 #include <dlfcn.h>
 #include <yaml.h>
 #include <glob.h>
-#ifdef HAVE_LIBEXPLAIN_SYSTEM_H
-#include <libexplain/system.h>
-#endif

@@ -112,11 +112,6 @@ private:
   void ldconfig();
 
   /**
-   * When a command fails to execute, get an explanation.
-   */
-  const char* explain(const std::string& cmd);
-
-  /**
    * Create the package.r
    *
    * @param includeRequires Include checks for required packages?

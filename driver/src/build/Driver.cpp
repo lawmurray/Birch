@@ -353,16 +353,10 @@ void birch::Driver::bootstrap() {
       cmd << " > bootstrap.log 2>&1";
     }
 
-    int ret = std::system(cmd.str().c_str());
-    if (ret == -1) {
-      if (verbose) {
-        std::cerr << explain(cmd.str()) << std::endl;
-      }
-      throw DriverException("bootstrap failed to execute.");
-    } else if (ret != 0) {
+    int status = std::system(cmd.str().c_str());
+    if (!WIFEXITED(status) || WEXITSTATUS(status) != 0) {
       std::stringstream buf;
-      buf << "bootstrap died with signal " << ret
-          << "; make sure autoconf, automake and libtool are installed";
+      buf << "bootstrap failed";
       if (!verbose) {
         buf << ", see bootstrap.log for details";
       }
@@ -464,16 +458,10 @@ void birch::Driver::configure() {
       cmd << " > configure.log 2>&1";
     }
 
-    int ret = std::system(cmd.str().c_str());
-    if (ret == -1) {
-      if (verbose) {
-        std::cerr << explain(cmd.str()) << std::endl;
-      }
-      throw DriverException("configure failed to execute.");
-    } else if (ret != 0) {
+    int status = std::system(cmd.str().c_str());
+    if (!WIFEXITED(status) || WEXITSTATUS(status) != 0) {
       std::stringstream buf;
-      buf << "configure died with signal " << ret
-          << "; make sure all dependencies are installed";
+      buf << "configure failed";
       if (!verbose) {
         buf << ", see configure.log and config.log for details";
       }
@@ -519,11 +507,22 @@ void birch::Driver::dist() {
       cmd << ' ' << file;
     }
   }
+  if (verbose) {
+    std::cerr << cmd.str() << std::endl;
+  } else {
+    cmd << " > tar.log 2>&1";
+  }
 
   /* run command */
-  int ret = std::system(cmd.str().c_str());
-  if (ret == -1) {
-    throw DriverException(explain(cmd.str()));
+  int status = std::system(cmd.str().c_str());
+  if (!WIFEXITED(status) || WEXITSTATUS(status) != 0) {
+    std::stringstream buf;
+    buf << "tar failed";
+    if (!verbose) {
+      buf << ", see tar.log for details";
+    }
+    buf << '.';
+    throw DriverException(buf.str());
   }
 }
 
@@ -1122,76 +1121,93 @@ void birch::Driver::target(const std::string& cmd) {
   }
 
   /* target */
-  buf << ' ' << cmd;
+  buf << ' ' << cmd << " 2>&1";  // stderr to stdout so pipe has both
 
-  /* strip warnings/notes? */
-  buf << " 2>&1";
-  if (!warnings) {
-    buf << " | grep --line-buffered -v 'warning:'";
-  }
-  if (!notes) {
-    buf << " | grep --line-buffered -v 'note:'";
-  }
-
-  /* strip messages with too much C++ content */
-  buf << " | grep --line-buffered -v 'In file included from'";
-  buf << " | grep --line-buffered -v 'In member function'";
-  buf << " | grep --line-buffered -v '^[[:space:]]*from'";
-
-  /* strip namespace and class qualifiers */
-  buf << " | sed -E 's/(birch::type::|birch::|libbirch::)//g'";
-
-  /* strip some C++ words */
-  buf << " | sed -E 's/(virtual|void) *//g'";
-
-  /* replace some LibBirch things; repeat some of these patterns a few times
-   * as a hacky way of handling recursion */
-  for (auto i = 0; i < 3; ++i) {
-    buf << " | sed -E 's/(const )?Lazy<Shared<([a-zA-Z0-9_<>]+)> >/\\2/g'";
-    buf << " | sed -E 's/(const )?Optional<([a-zA-Z0-9_<>]+)>/\\2?/g'";
-  }
-  buf << " | sed -E 's/(const *)?([a-zA-Z0-9_]+) *&/\\2/g'";
-
-  /* replace some operators */
-  buf << " | sed -E 's/operator->/./g'";
-  buf << " | sed -E 's/operator=/<-/g'";
-  buf << " | sed -E \"s/'='/'<-'/\"";
-
-  /* strip suggestions that reveal internal workings */
-  buf << " | sed -E 's/(, )?Handler\\)/)/g'";
-
-  buf << " 1>&2";
-
-  /* handle output */
-  std::string log;
-  if (cmd == "") {
-    log = "make.log";
-  } else {
-    log = cmd + ".log";
-  }
   if (verbose) {
     std::cerr << buf.str() << std::endl;
-  } else {
-    buf << " > " << log << " 2>&1";
   }
 
-  int ret = std::system(buf.str().c_str());
-  if (ret == -1) {
-    if (verbose) {
-      std::cerr << explain(buf.str()) << std::endl;
-    }
-    buf.str("make ");
-    buf << cmd;
-    if (ret == -1) {
-      buf << " failed to execute";
-    } else {
-      buf << " died with signal " << ret;
+  /* create a filter for the output of make to make it digestable; while we
+   * can use pipes to grep and sed within the shell command, this is less
+   * portable, and means the command always returns success, even on fail
+   * (consider pipefail); instead we use popen instead of system, and process
+   * the output with regexes */
+  std::regex rxWarnings("warning:");
+  std::regex rxNotes("note:");
+  std::regex rxSkipLine("In file included from|In member function|^\\s*from");
+  std::regex rxNamespace("birch::type::|birch::|libbirch::");
+  std::regex rxCxxWords("(virtual|void) *");
+  std::regex rxLazy("(const )?Lazy<Shared<([a-zA-Z0-9_<>\\[\\],]+) *> *>");
+  std::regex rxOptional("(const )?Optional<([a-zA-Z0-9_<>\\[\\],]+) *>");
+  std::regex rxVector("Array<(\\w+), *Shape<Dimension<>, *EmptyShape *> *>");
+  std::regex rxMatrix("Array<(\\w+), *Shape<Dimension<>, Shape<Dimension<>, *EmptyShape *> *> *>");
+  std::regex rxConstRef("(const *)?([a-zA-Z0-9_<>\\[\\],]+) *&");
+  std::regex rxDeref("operator->");
+  std::regex rxAssign("operator=");
+  std::regex rxAssignExpr("'='");
+  std::regex rxHandler("(, )?(Handler|\\* *& *handler_)\\)");
+
+  std::ofstream log;
+  if (!verbose) {
+    log.open("make.log", std::ios_base::out);
+  }
+  FILE* pipe = popen(buf.str().c_str(), "r");
+  if (pipe) {
+    char* line = NULL;
+    size_t n = 0;
+    while (getline(&line, &n, pipe) > 0) {
+      std::string str(line);
+      free(line);
+      line = NULL;
+      n = 0;
+
+      if ((warnings || !std::regex_search(str, rxWarnings)) &&
+          (notes || !std::regex_search(str, rxNotes)) &&
+          !std::regex_search(str, rxSkipLine)) {
+        /* strip namespace and class qualifiers */
+        str = std::regex_replace(str, rxNamespace, "");
+
+        /* strip some C++ words */
+        str = std::regex_replace(str, rxCxxWords, "");
+
+        /* replace some types; repeat some of these patterns a few times
+         * as a hacky way of handling recursion */
+        for (auto i = 0; i < 3; ++i) {
+          str = std::regex_replace(str, rxVector, "$1[_]");
+          str = std::regex_replace(str, rxMatrix, "$1[_,_]");
+          str = std::regex_replace(str, rxLazy, "$2");
+          str = std::regex_replace(str, rxOptional, "$2");
+        }
+        str = std::regex_replace(str, rxConstRef, "$2");
+
+        /* replace some operators */
+        str = std::regex_replace(str, rxDeref, ".");
+        str = std::regex_replace(str, rxAssign, "<-");
+        str = std::regex_replace(str, rxAssignExpr, "'<-'");
+
+        /* strip suggestions that reveal internal workings */
+        str = std::regex_replace(str, rxHandler, ")");
+
+        if (verbose) {
+         std::cerr << str;
+        } else {
+         log << str;
+        }
+      }
     }
     if (!verbose) {
-      buf << ", see " << log << " for details.";
+      log.close();
     }
-    buf << '.';
-    throw DriverException(buf.str());
+    int status = pclose(pipe);
+    if (!WIFEXITED(status) || WEXITSTATUS(status) != 0) {
+      std::stringstream buf;
+      buf << "make failed";
+      if (!verbose) {
+        buf << ", see make.log for details";
+      }
+      buf << '.';
+      throw DriverException(buf.str());
+    }
   }
 }
 
@@ -1201,14 +1217,6 @@ void birch::Driver::ldconfig() {
   if (euid == 0) {
     [[maybe_unused]] int result = std::system("ldconfig");
   }
-  #endif
-}
-
-const char* birch::Driver::explain(const std::string& cmd) {
-  #ifdef HAVE_LIBEXPLAIN_SYSTEM_H
-  return explain_system(cmd.c_str());
-  #else
-  return "";
   #endif
 }
 
