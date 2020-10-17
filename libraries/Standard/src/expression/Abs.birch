@@ -1,0 +1,24 @@
+/**
+ * Lazy `abs`.
+ */
+final class Abs(y:Expression<Real>) <
+    ScalarUnaryExpression<Expression<Real>,Real,Real,Real>(y) {
+  override function doEvaluate(y:Real) -> Real {
+    return abs(y);
+  }
+
+  override function doEvaluateGrad(d:Real, x:Real, y:Real) -> Real {
+    if x >= 0.0 {
+      return d;
+    } else {
+      return -d;
+    }
+  }
+}
+
+/**
+ * Lazy `abs`.
+ */
+function abs(y:Expression<Real>) -> Abs {
+  return construct<Abs>(y);
+}
