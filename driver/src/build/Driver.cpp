@@ -1089,7 +1089,7 @@ void birch::Driver::setup() {
   makeStream << '\n';
 
   /* data files to distribute */
-  makeStream << "dist_pkgdata_DATA = ";
+  makeStream << "nobase_dist_pkgdata_DATA = ";
   for (auto file : metaFiles["manifest.data"]) {
     makeStream << " \\\n  " << file.string();
   }
