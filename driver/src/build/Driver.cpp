@@ -496,8 +496,13 @@ void birch::Driver::dist() {
 
   /* archiving command */
   std::stringstream cmd;
-  cmd << "tar czf " << archive << ".tar.gz ";
-  cmd << "--transform=\"s/^/" << archive << "\\//\"";
+  #ifdef __APPLE__
+  /* BSD tar */
+  cmd << "tar -s '#^#" << archive << "/#' -czf " << archive << ".tar.gz";
+  #else
+  /* assume GNU tar */
+  cmd << "tar -czf " << archive << ".tar.gz --transform='s/^/" << archive << "\\//'";
+  #endif
   for (auto key : {
       "manifest.header",
       "manifest.source",
