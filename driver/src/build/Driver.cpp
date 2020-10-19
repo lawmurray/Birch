@@ -1141,7 +1141,7 @@ void birch::Driver::target(const std::string& cmd) {
   std::regex rxNotes("note:");
   std::regex rxSkipLine("In file included from|In member function|^\\s*from");
   std::regex rxNamespace("birch::type::|birch::|libbirch::");
-  std::regex rxCxxWords("(virtual|void) *");
+  std::regex rxCxxWords("virtual *");
   std::regex rxLazy("(const )?Lazy<Shared<([a-zA-Z0-9_<>\\[\\],]+) *> *>");
   std::regex rxOptional("(const )?Optional<([a-zA-Z0-9_<>\\[\\],]+) *>");
   std::regex rxVector("Array<(\\w+), *Shape<Dimension<>, *EmptyShape *> *>");
@@ -1151,6 +1151,7 @@ void birch::Driver::target(const std::string& cmd) {
   std::regex rxAssign("operator=");
   std::regex rxAssignExpr("'='");
   std::regex rxHandler("(, )?(Handler|\\* *& *handler_)\\)");
+  std::regex rxTooFewArguments("invalid initialization of reference of type ‘[a-zA-Z0-9_<>\\[\\],]+’( \\{aka ‘[a-zA-Z0-9_<>\\[\\],]+’\\})? from expression of type ‘Handler’");
 
   std::ofstream log;
   if (!verbose) {
@@ -1192,6 +1193,7 @@ void birch::Driver::target(const std::string& cmd) {
 
         /* strip suggestions that reveal internal workings */
         str = std::regex_replace(str, rxHandler, ")");
+        str = std::regex_replace(str, rxTooFewArguments, "too few arguments to function call");
 
         if (verbose) {
          std::cerr << str;
