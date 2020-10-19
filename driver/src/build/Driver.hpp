@@ -122,9 +122,8 @@ private:
    * Consume a list of files from the build configuration file contents.
    *
    * @param key The key.
-   * @param checkExists Check if the files exists?
    */
-  void readFiles(const std::string& key, const bool checkExists);
+  void readFiles(const std::string& key);
 
   /**
    * Package name.

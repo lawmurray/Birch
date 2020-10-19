@@ -955,10 +955,10 @@ void birch::Driver::meta() {
   }
 
   /* check manifest files */
-  readFiles("manifest.header", true);
-  readFiles("manifest.source", true);
-  readFiles("manifest.data", true);
-  readFiles("manifest.other", true);
+  readFiles("manifest.header");
+  readFiles("manifest.source");
+  readFiles("manifest.data");
+  readFiles("manifest.other");
 }
 
 void birch::Driver::setup() {
@@ -1245,23 +1245,24 @@ birch::Package* birch::Driver::createPackage(bool includeRequires) {
   return package;
 }
 
-void birch::Driver::readFiles(const std::string& key, bool checkExists) {
+void birch::Driver::readFiles(const std::string& key) {
   for (auto pattern : metaContents[key]) {
     auto paths = glob(pattern);
-    for (auto path : paths) {
-      if (checkExists && !exists(path)) {
-        warn(path.string() + " in build configuration does not exist.");
+    if (paths.empty()) {
+        warn("no file matching '" + pattern + "' in build configuration.");
+    } else {
+      for (auto path : paths) {
+        if (std::regex_search(path.string(), std::regex("\\s",
+            std::regex_constants::ECMAScript))) {
+          throw DriverException(std::string("file name ") + path.string() +
+            " in build configuration contains whitespace, which is not supported.");
+        }
+        auto inserted = allFiles.insert(path);
+        if (!inserted.second) {
+          warn(path.string() + " repeated in build configuration.");
+        }
+        metaFiles[key].push_back(path);
       }
-      if (std::regex_search(path.string(), std::regex("\\s",
-          std::regex_constants::ECMAScript))) {
-        throw DriverException(std::string("file name ") + path.string() +
-          " in build configuration contains whitespace, which is not supported.");
-      }
-      auto inserted = allFiles.insert(path);
-      if (!inserted.second) {
-        warn(path.string() + " repeated in build configuration.");
-      }
-      metaFiles[key].push_back(path);
     }
   }
 }
