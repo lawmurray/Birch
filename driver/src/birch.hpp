@@ -3,6 +3,11 @@
  */
 #pragma once
 
+#ifdef __FreeBSD__
+#define _WITH_GETLINE /* For getline */
+#include <sys/wait.h>  /* For WIF.. */
+#endif
+
 #include <vector>
 #include <stack>
 #include <list>
