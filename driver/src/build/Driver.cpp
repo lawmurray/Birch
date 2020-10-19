@@ -1249,7 +1249,7 @@ void birch::Driver::readFiles(const std::string& key) {
   for (auto pattern : metaContents[key]) {
     auto paths = glob(pattern);
     if (paths.empty()) {
-        warn("no file matching '" + pattern + "' in build configuration.");
+      warn("no file matching '" + pattern + "' in build configuration.");
     } else {
       for (auto path : paths) {
         if (std::regex_search(path.string(), std::regex("\\s",
