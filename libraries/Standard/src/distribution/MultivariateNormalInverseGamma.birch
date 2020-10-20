@@ -3,12 +3,18 @@
  *
  * This represents the joint distribution:
  *
- * $$\sigma^2 \sim \mathrm{Inverse-Gamma}(\alpha, \beta)$$
- * $$x \mid \sigma^2 \sim \mathrm{N}(\mu, Σ\sigma^2),$$
+ * $$
+ * \begin{align*}
+ * \sigma^2 & \sim \mathrm{Inverse-Gamma}(\alpha, \beta) \\
+ * x \mid \sigma^2 & \sim \mathrm{N}(\mu, \Sigma\sigma^2),
+ * \end{align*}
+ * $$
  *
  * which may be denoted:
  *
- * $$(x, \sigma^2) \sim \mathrm{Normal-Inverse-Gamma(\mu, Σ, \alpha, \beta),$$
+ * $$
+ * (x, \sigma^2) \sim \mathrm{Normal-Inverse-Gamma}(\mu, \Sigma, \alpha, \beta),
+ * $$
  *
  * and is a conjugate prior of a Gaussian distribution with both unknown mean
  * and variance. The variance scaling is independent and identical in the
