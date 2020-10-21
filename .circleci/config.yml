@@ -71,11 +71,21 @@ commands:
               echo "export FORMAT=', \"real\": %e, \"user\": %U, \"system\": %S, \"memory\": %M, \"involuntary\": %c, \"voluntary\": %w'" >> $BASH_ENV
           # BIRCH_FLAGS uses only four parallel jobs to avoid exhausting memory
 
+  end_if_pull_request:
+    description: End early with success if a pull request
+    steps:
+      - run:
+          name: End early with success if a pull request
+          command: |
+            if [ -n "$CIRCLE_PR_NUMBER" ]; then
+              circleci step halt
+            fi
+
   slack:
     description: Send Slack message on failure
     steps:
       - slack/status:
-         fail_only: true
+          fail_only: true
 
   driver:
     description: Build driver
@@ -316,13 +326,14 @@ jobs:
           dir: libraries
           package: SQLite
           tar: birch-sqlite
-      - codecov/upload
-      - slack
       - persist_to_workspace:
           root: .
           paths:
             - '*'
             - .*
+      - end_if_pull_request
+      - codecov/upload
+      - slack
 
   linux_LinearGaussian:
     executor: linux
@@ -337,6 +348,7 @@ jobs:
           smoke: true
           unit: true
           mongodb: true
+      - end_if_pull_request
       - codecov/upload
       - slack
 
@@ -353,6 +365,7 @@ jobs:
           smoke: true
           unit: true
           mongodb: true
+      - end_if_pull_request
       - codecov/upload
       - slack
 
@@ -369,6 +382,7 @@ jobs:
           smoke: true
           unit: true
           mongodb: true
+      - end_if_pull_request
       - codecov/upload
       - slack
 
@@ -385,6 +399,7 @@ jobs:
           smoke: true
           unit: true
           mongodb: true
+      - end_if_pull_request
       - codecov/upload
       - slack
 
@@ -401,6 +416,7 @@ jobs:
           smoke: true
           unit: true
           mongodb: true
+      - end_if_pull_request
       - codecov/upload
       - slack
 
@@ -417,6 +433,7 @@ jobs:
           smoke: true
           unit: true
           mongodb: true
+      - end_if_pull_request
       - codecov/upload
       - slack
 
@@ -433,12 +450,14 @@ jobs:
           smoke: true
           unit: true
           mongodb: true
+      - end_if_pull_request
       - codecov/upload
       - slack
 
   linux_deploy:
     executor: linux
     steps:
+      - end_if_pull_request
       - attach_workspace:
           at: .
       - linux_environment
@@ -484,13 +503,14 @@ jobs:
           dir: libraries
           package: SQLite
           tar: birch-sqlite
-      - codecov/upload
-      - slack
       - persist_to_workspace:
           root: .
           paths:
             - '*'
             - .*
+      - end_if_pull_request
+      - codecov/upload
+      - slack
 
   mac_LinearGaussian:
     executor: mac
@@ -503,6 +523,7 @@ jobs:
           package: LinearGaussian
           tar: birch-lineargaussian
           smoke: true
+      - end_if_pull_request
       - codecov/upload
       - slack
 
@@ -517,6 +538,7 @@ jobs:
           package: LinearRegression
           tar: birch-linearregression
           smoke: true
+      - end_if_pull_request
       - codecov/upload
       - slack
 
@@ -531,6 +553,7 @@ jobs:
           package: MixedGaussian
           tar: birch-mixedgaussian
           smoke: true
+      - end_if_pull_request
       - codecov/upload
       - slack
 
@@ -545,6 +568,7 @@ jobs:
           package: MultiObjectTracking
           tar: birch-multiobjecttracking
           smoke: true
+      - end_if_pull_request
       - codecov/upload
       - slack
 
@@ -559,6 +583,7 @@ jobs:
           package: PoissonGaussian
           tar: birch-poissongaussian
           smoke: true
+      - end_if_pull_request
       - codecov/upload
       - slack
 
@@ -573,6 +598,7 @@ jobs:
           package: SIR
           tar: birch-sir
           smoke: true
+      - end_if_pull_request
       - codecov/upload
       - slack
 
@@ -587,12 +613,14 @@ jobs:
           package: VectorBorneDisease
           tar: birch-vectorbornedisease
           smoke: true
+      - end_if_pull_request
       - codecov/upload
       - slack
 
   mac_deploy:
     executor: mac
     steps:
+      - end_if_pull_request
       - attach_workspace:
           at: .
       - mac_environment
@@ -621,6 +649,7 @@ jobs:
   website_deploy:
     executor: linux
     steps:
+      - end_if_pull_request
       - attach_workspace:
           at: .
       - linux_environment
