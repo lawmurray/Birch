@@ -14,7 +14,7 @@ cpp{{
 function cdf_binomial(x:Integer, n:Integer, ρ:Real) -> Real {
   assert 0 <= n;
   assert 0.0 <= ρ && ρ <= 1.0;
-  
+
   if x < 0 {
     return 0.0;
   } else if x > n {
@@ -23,7 +23,7 @@ function cdf_binomial(x:Integer, n:Integer, ρ:Real) -> Real {
     cpp{{
     return boost::math::cdf(boost::math::binomial_distribution<>(n, ρ), x);
     }}
-  } 
+  }
 }
 
 /**
@@ -38,7 +38,7 @@ function cdf_binomial(x:Integer, n:Integer, ρ:Real) -> Real {
 function cdf_negative_binomial(x:Integer, k:Integer, ρ:Real) -> Real {
   assert 0 < k;
   assert 0.0 <= ρ && ρ <= 1.0;
-  
+
   if x < 0 {
     return 0.0;
   } else {
@@ -58,7 +58,7 @@ function cdf_negative_binomial(x:Integer, k:Integer, ρ:Real) -> Real {
  */
 function cdf_poisson(x:Integer, λ:Real) -> Real {
   assert 0.0 <= λ;
-  
+
   if x < 0 {
     return 0.0;
   } else {
@@ -114,7 +114,7 @@ function cdf_categorical(x:Integer, ρ:Real[_]) -> Real {
  */
 function cdf_uniform(x:Real, l:Real, u:Real) -> Real {
   assert l <= u;
-  
+
   if x <= l {
     return 0.0;
   } else if x > u {
@@ -152,7 +152,7 @@ function cdf_inverse_gamma_gamma(x:Real, k:Real, α:Real, β:Real) -> Real {
  */
 function cdf_exponential(x:Real, λ:Real) -> Real {
   assert 0.0 < λ;
-  
+
   if x <= 0.0 {
     return 0.0;
   } else {
@@ -237,7 +237,7 @@ function cdf_student_t(x:Real, ν:Real, μ:Real, σ2:Real) -> Real {
 function cdf_beta(x:Real, α:Real, β:Real) -> Real {
   assert 0.0 < α;
   assert 0.0 < β;
-  
+
   if x < 0.0 {
     return 0.0;
   } else if x > 1.0 {
@@ -276,7 +276,7 @@ function cdf_chi_squared(x:Real, ν:Real) -> Real {
 function cdf_gamma(x:Real, k:Real, θ:Real) -> Real {
   assert 0.0 < k;
   assert 0.0 < θ;
-  
+
   if x <= 0.0 {
     return 0.0;
   } else {
@@ -298,7 +298,7 @@ function cdf_gamma(x:Real, k:Real, θ:Real) -> Real {
 function cdf_inverse_gamma(x:Real, α:Real, β:Real) -> Real {
   assert 0.0 < α;
   assert 0.0 < β;
-  
+
   if x <= 0.0 {
     return 0.0;
   } else {
@@ -375,9 +375,7 @@ function cdf_lomax(x:Real, λ:Real, α:Real) -> Real {
   if x <= 0.0 {
     return 0.0;
   } else {
-    cpp{{
-    return boost::math::cdf(boost::math::pareto_distribution<>(λ, α), x + λ);
-    }}
+    return 1.0 - pow((1.0 + x / λ), -α);
   }
 }
 

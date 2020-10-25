@@ -1,0 +1,10 @@
+/*
+    Testing lower_inc_gamma
+*/
+
+program test_lower_inc_gamma(a:Real64, x:Real64) {
+    a <- 2.0;
+    x <- 3.0;
+    let temp <- lower_inc_gamma(a, x);
+    stdout.print(temp);
+}

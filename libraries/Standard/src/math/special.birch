@@ -392,7 +392,7 @@ function lower_inc_gamma(a:Real64, x:Real64) -> Real64 {
   }
 
   // technically we have to check whether a, x are inf
-  // TODO: How to do this in birch
+  // TODO(pranavs): check whether a value is inf (something like isinf in numpy)
 
   absxma_a <- abs(x - a) / a;
       if ((a > SMALL) && (a < LARGE) && (absxma_a < SMALLRATIO)) {
@@ -420,9 +420,7 @@ function upper_inc_gamma(a:Real64, x:Real64) -> Real64 {
     if (x > 0) {
       return 0;
     } else {
-      // technically this should be a NaN
-      // TODO(pranavs): What is the appropriate return value for a NaN
-      return inf;
+      return nan;
     }
 
   } else if (x == 0) {
