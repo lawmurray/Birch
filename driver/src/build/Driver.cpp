@@ -1118,7 +1118,7 @@ void birch::Driver::target(const std::string& cmd) {
   if (arch == "js" || arch == "wasm") {
     buf << "emmake";
   }
-  buf << "make";
+  buf << "make -s LIBTOOLFLAGS=--silent";
 
   /* concurrency */
   if (jobs > 1) {
@@ -1145,7 +1145,7 @@ void birch::Driver::target(const std::string& cmd) {
 
   std::regex rxWarnings("warning:");
   std::regex rxNotes("note:");
-  std::regex rxSkipLine("In file included from|In member function|^\\s*from|std::enable_if");
+  std::regex rxSkipLine("In file included from|In member function|^\\s*from|std::enable_if|At global scope:");
   std::regex rxNamespace("birch::type::|birch::|libbirch::");
   std::regex rxCxxWords("virtual *");
   std::regex rxLazy("(?:const )?Lazy<Shared<(" + type + ") *> *> *");
