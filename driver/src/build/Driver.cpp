@@ -1145,7 +1145,7 @@ void birch::Driver::target(const std::string& cmd) {
 
   std::regex rxWarnings("warning:");
   std::regex rxNotes("note:");
-  std::regex rxSkipLine("In file included from|In member function|^\\s*from");
+  std::regex rxSkipLine("In file included from|In member function|^\\s*from|std::enable_if");
   std::regex rxNamespace("birch::type::|birch::|libbirch::");
   std::regex rxCxxWords("virtual *");
   std::regex rxLazy("(?:const )?Lazy<Shared<(" + type + ") *> *>");
@@ -1162,8 +1162,8 @@ void birch::Driver::target(const std::string& cmd) {
   std::regex rxDerefExpr("‘->’");
   std::regex rxAssign("operator=");
   std::regex rxAssignExpr("‘=’");
-  std::regex rxHandler("(, )?(Handler\\* *& *handler_)\\)");
-  std::regex rxTooFewArguments("invalid initialization of reference of type ‘" + type4 + "’ from expression of type ‘Handler’");
+  std::regex rxHandler("(?:, *)?Handler\\* *& *handler_");
+  std::regex rxTooFewArguments("(?:invalid initialization of reference of type ‘" + type4 + "’ from expression of type ‘Handler’|cannot convert ‘Handler’ to ‘" + type4 + "’)");
 
   std::ofstream log;
   if (!verbose) {
@@ -1204,13 +1204,13 @@ void birch::Driver::target(const std::string& cmd) {
         str = std::regex_replace(str, rxDouble, "Real");
 
         /* replace some operators */
-        str = std::regex_replace(str, rxDeref, "‘.’");
+        str = std::regex_replace(str, rxDeref, ".");
         str = std::regex_replace(str, rxDerefExpr, "‘.’");
-        str = std::regex_replace(str, rxAssign, "‘<-’");
+        str = std::regex_replace(str, rxAssign, "<-");
         str = std::regex_replace(str, rxAssignExpr, "‘<-’");
 
         /* strip suggestions that reveal internal workings */
-        str = std::regex_replace(str, rxHandler, ")");
+        str = std::regex_replace(str, rxHandler, "");
         str = std::regex_replace(str, rxTooFewArguments, "too few arguments to function call");
 
         if (verbose) {
