@@ -1137,21 +1137,33 @@ void birch::Driver::target(const std::string& cmd) {
    * portable, and means the command always returns success, even on fail
    * (consider pipefail); instead we use popen instead of system, and process
    * the output with regexes */
+  std::string type1 = "[a-zA-Z0-9_\\[\\]\\?,]+";
+  std::string type2 = type1 + "(?:<" + type1 + " *>)?";
+  std::string type3 = type1 + "(?:<" + type2 + " *>)?";
+  std::string type4 = type1 + "(?:<" + type3 + " *>)?";
+  std::string type = type4;
+
   std::regex rxWarnings("warning:");
   std::regex rxNotes("note:");
   std::regex rxSkipLine("In file included from|In member function|^\\s*from");
   std::regex rxNamespace("birch::type::|birch::|libbirch::");
   std::regex rxCxxWords("virtual *");
-  std::regex rxLazy("(const )?Lazy<Shared<([a-zA-Z0-9_<>\\[\\],]+) *> *>");
-  std::regex rxOptional("(const )?Optional<([a-zA-Z0-9_<>\\[\\],]+) *>");
-  std::regex rxVector("Array<(\\w+), *Shape<Dimension<>, *EmptyShape *> *>");
-  std::regex rxMatrix("Array<(\\w+), *Shape<Dimension<>, Shape<Dimension<>, *EmptyShape *> *> *>");
-  std::regex rxConstRef("(const *)?([a-zA-Z0-9_<>\\[\\],]+) *&");
+  std::regex rxLazy("(?:const )?Lazy<Shared<(" + type + ") *> *>");
+  std::regex rxOptional("(?:const )?Optional<(" + type + ") *>");
+  std::regex rxVector("Array<(" + type + "), *Shape<Dimension<(?:0, *0)?>, *EmptyShape *> *>");
+  std::regex rxVector2("DefaultArray<(" + type + "), *1>");
+  std::regex rxMatrix("Array<(" + type + "), *Shape<Dimension<(?:0, *0)?>, Shape<Dimension<(?:0, *0)?>, *EmptyShape *> *> *>");
+  std::regex rxMatrix2("DefaultArray<(" + type + "), *2>");
+  std::regex rxLLT("Eigen::LLT<Eigen::Matrix<double, *-1, *-1, *1, *-1, *-1> *>");
+  std::regex rxAka("\\{aka ‘?(class|const)? ?" + type + "’?\\} *");
+  std::regex rxDouble("double");
+  std::regex rxConstRef("(?:const *)?(" + type + ") *&");
   std::regex rxDeref("operator->");
+  std::regex rxDerefExpr("‘->’");
   std::regex rxAssign("operator=");
-  std::regex rxAssignExpr("'='");
-  std::regex rxHandler("(, )?(Handler|\\* *& *handler_)\\)");
-  std::regex rxTooFewArguments("invalid initialization of reference of type ‘[a-zA-Z0-9_<>\\[\\],]+’( \\{aka ‘[a-zA-Z0-9_<>\\[\\],]+’\\})? from expression of type ‘Handler’");
+  std::regex rxAssignExpr("‘=’");
+  std::regex rxHandler("(, )?(Handler\\* *& *handler_)\\)");
+  std::regex rxTooFewArguments("invalid initialization of reference of type ‘" + type4 + "’ from expression of type ‘Handler’");
 
   std::ofstream log;
   if (!verbose) {
@@ -1180,16 +1192,22 @@ void birch::Driver::target(const std::string& cmd) {
          * as a hacky way of handling recursion */
         for (auto i = 0; i < 3; ++i) {
           str = std::regex_replace(str, rxVector, "$1[_]");
+          str = std::regex_replace(str, rxVector2, "$1[_]");
           str = std::regex_replace(str, rxMatrix, "$1[_,_]");
-          str = std::regex_replace(str, rxLazy, "$2");
-          str = std::regex_replace(str, rxOptional, "$2");
+          str = std::regex_replace(str, rxMatrix2, "$1[_,_]");
+          str = std::regex_replace(str, rxLLT, "LLT");
+          str = std::regex_replace(str, rxLazy, "$1");
+          str = std::regex_replace(str, rxOptional, "$1?");
         }
-        str = std::regex_replace(str, rxConstRef, "$2");
+        str = std::regex_replace(str, rxConstRef, "$1");
+        str = std::regex_replace(str, rxAka, "");
+        str = std::regex_replace(str, rxDouble, "Real");
 
         /* replace some operators */
-        str = std::regex_replace(str, rxDeref, ".");
-        str = std::regex_replace(str, rxAssign, "<-");
-        str = std::regex_replace(str, rxAssignExpr, "'<-'");
+        str = std::regex_replace(str, rxDeref, "‘.’");
+        str = std::regex_replace(str, rxDerefExpr, "‘.’");
+        str = std::regex_replace(str, rxAssign, "‘<-’");
+        str = std::regex_replace(str, rxAssignExpr, "‘<-’");
 
         /* strip suggestions that reveal internal workings */
         str = std::regex_replace(str, rxHandler, ")");
