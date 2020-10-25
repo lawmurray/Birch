@@ -210,15 +210,6 @@ final class Random<Value> < Expression<Value>(nil) {
     return nil;
   } 
 
-  override function graftIndependentInverseGamma() -> IndependentInverseGamma? {
-    if !hasValue() {
-      let q <- p!.graftIndependentInverseGamma();
-      p <-? Distribution<Value>?(q);
-      return q;
-    }
-    return nil;
-  } 
-
   override function graftInverseWishart() -> InverseWishart? {
     if !hasValue() {
       let q <- p!.graftInverseWishart();
@@ -277,16 +268,6 @@ final class Random<Value> < Expression<Value>(nil) {
   override function graftMatrixGaussian() -> MatrixGaussian? {
     if !hasValue() {
       let q <- p!.graftMatrixGaussian();
-      p <-? Distribution<Value>?(q);
-      return q;
-    }
-    return nil;
-  }
-
-  override function graftMatrixNormalInverseGamma(compare:Distribution<Real[_]>) ->
-      MatrixNormalInverseGamma? {
-    if !hasValue() {
-      let q <- p!.graftMatrixNormalInverseGamma(compare);
       p <-? Distribution<Value>?(q);
       return q;
     }

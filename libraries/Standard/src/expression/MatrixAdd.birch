@@ -42,25 +42,6 @@ final class MatrixAdd(y:Expression<Real[_,_]>, z:Expression<Real[_,_]>) <
     }
     return r;
   }
-  
-  override function graftLinearMatrixNormalInverseGamma(compare:Distribution<Real[_]>) ->
-      TransformLinearMatrix<MatrixNormalInverseGamma>? {
-    r:TransformLinearMatrix<MatrixNormalInverseGamma>?;
-    if !hasValue() {
-      x1:MatrixNormalInverseGamma?;
-      
-      if (r <- y!.graftLinearMatrixNormalInverseGamma(compare))? {
-        r!.add(z!);
-      } else if (r <- z!.graftLinearMatrixNormalInverseGamma(compare))? {
-        r!.add(y!);
-      } else if (x1 <- y!.graftMatrixNormalInverseGamma(compare))? {
-        r <- TransformLinearMatrix<MatrixNormalInverseGamma>(box(identity(z!.rows())), x1!, z!);
-      } else if (x1 <- z!.graftMatrixNormalInverseGamma(compare))? {
-        r <- TransformLinearMatrix<MatrixNormalInverseGamma>(box(identity(z!.rows())), x1!, y!);
-      }
-    }
-    return r;
-  }
 
   override function graftLinearMatrixNormalInverseWishart(compare:Distribution<LLT>) ->
       TransformLinearMatrix<MatrixNormalInverseWishart>? {

@@ -38,22 +38,6 @@ final class MatrixNegate(y:Expression<Real[_,_]>) <
     }
     return r;
   }
-  
-  override function graftLinearMatrixNormalInverseGamma(compare:Distribution<Real[_]>) ->
-      TransformLinearMatrix<MatrixNormalInverseGamma>? {
-    r:TransformLinearMatrix<MatrixNormalInverseGamma>?;
-    x1:MatrixNormalInverseGamma?;
-
-    if (r <- y!.graftLinearMatrixNormalInverseGamma(compare))? {
-      r!.negate();
-    } else if (x1 <- y!.graftMatrixNormalInverseGamma(compare))? {
-      let R <- x1!.rows();
-      let C <- x1!.columns();
-      r <- TransformLinearMatrix<MatrixNormalInverseGamma>(
-          diagonal(box(-1.0), R), x1!, box(matrix(0.0, R, C)));
-    }
-    return r;
-  }
 
   override function graftLinearMatrixNormalInverseWishart(compare:Distribution<LLT>) ->
       TransformLinearMatrix<MatrixNormalInverseWishart>? {

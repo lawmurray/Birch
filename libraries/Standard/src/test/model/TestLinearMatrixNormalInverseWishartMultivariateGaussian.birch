@@ -1,42 +1,48 @@
-class TestNegativeLinearMatrixNormalInverseWishartMatrixGaussian < Model {
+class TestLinearMatrixNormalInverseWishartMultivariateGaussian < Model {
   V:Random<LLT>;
   X:Random<Real[_,_]>;
-  Y:Random<Real[_,_]>;
+  y:Random<Real[_]>;
 
   n:Integer <- 5;
   p:Integer <- 2;
-  A:Real[n,n];
+  a:Real[n];
   M:Real[n,p];
   U:Real[n,n];
-  C:Real[n,p];
+  c:Real[p];
   k:Real;
   Ψ:Real[p,p];
+  neg:Boolean;
 
   function initialize() {
     k <- simulate_uniform(p - 1.0, p + 9.0);
     for i in 1..n {
+      a[i] <- simulate_uniform(-2.0, 2.0);
       for j in 1..n {
-        A[i,j] <- simulate_uniform(-2.0, 2.0);
         U[i,j] <- simulate_uniform(-2.0, 2.0);
       }
       for j in 1..p {
         M[i,j] <- simulate_uniform(-10.0, 10.0);
-        C[i,j] <- simulate_uniform(-10.0, 10.0);
       }
     }
     for i in 1..p {
+      c[i] <- simulate_uniform(-10.0, 10.0);
       for j in 1..p {
         Ψ[i,j] <- simulate_uniform(-10.0, 10.0);
       }
     }
     U <- U*transpose(U);
     Ψ <- Ψ*transpose(Ψ);
+    neg <- simulate_bernoulli(0.5);
   }
 
   function simulate() {
     V ~ InverseWishart(Ψ, k);
     X ~ Gaussian(M, U, V);
-    Y ~ Gaussian(A*X - C, V);
+    if neg {
+      y ~ Gaussian(dot(a, X) - c, V);
+    } else {
+      y ~ Gaussian(dot(a, X) + c, V);
+    }
   }
 
   function forward() -> Real[_] {
@@ -44,14 +50,14 @@ class TestNegativeLinearMatrixNormalInverseWishartMatrixGaussian < Model {
     V.value();
     assert !X.hasValue();
     X.value();
-    assert !Y.hasValue();
-    Y.value();
+    assert !y.hasValue();
+    y.value();
     return vectorize();
   }
 
   function backward() -> Real[_] {
-    assert !Y.hasValue();
-    Y.value();
+    assert !y.hasValue();
+    y.value();
     assert !X.hasValue();
     X.value();
     assert !V.hasValue();
@@ -64,14 +70,14 @@ class TestNegativeLinearMatrixNormalInverseWishartMatrixGaussian < Model {
     V.get();
     assert !X.hasValue();
     X.get();
-    assert !Y.hasValue();
-    Y.get();
+    assert !y.hasValue();
+    y.get();
     return vectorize();
   }
 
   function backwardLazy() -> Real[_] {
-    assert !Y.hasValue();
-    Y.get();
+    assert !y.hasValue();
+    y.get();
     assert !X.hasValue();
     X.get();
     assert !V.hasValue();
@@ -79,29 +85,22 @@ class TestNegativeLinearMatrixNormalInverseWishartMatrixGaussian < Model {
     return vectorize();
   }
 
-  function marginal() -> Distribution<Real[_,_]> {
-    return Y.distribution()!;
+  function marginal() -> Distribution<Real[_]> {
+    return y.distribution()!;
   }
 
   function vectorize() -> Real[_] {
-    y:Real[size()];
+    z:Real[size()];
     let k <- 0;
-    for i in 1..rows(V) {
-      y[k + 1 .. k + columns(V)] <- canonical(V.value())[i,1..columns(V)];
-      k <- k + columns(V);
-    }
-    for i in 1..rows(X) {
-      y[k + 1 .. k + columns(X)] <- X.value()[i,1..columns(X)];
-      k <- k + columns(X);
-    }
-    for i in 1..rows(Y) {
-      y[k + 1 .. k + columns(Y)] <- Y.value()[i,1..columns(Y)];
-      k <- k + columns(Y);
-    }
-    return y;
+    z[k + 1.. k + p*p] <- vec(canonical(V.value()));
+    k <- k + p*p;
+    z[k + 1.. k + n*p] <- vec(X.value());
+    k <- k + n*p;
+    z[k + 1.. k + p] <- y.value();
+    return z;
   }
 
   function size() -> Integer {
-    return p*p + 2*n*p;
+    return p*p + n*p + p;
   }
 }

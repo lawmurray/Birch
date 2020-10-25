@@ -456,74 +456,6 @@ function update_linear_multivariate_normal_inverse_gamma_gaussian(
 }
 
 /**
- * Update the parameters of a matrix normal-inverse-gamma variate.
- *
- * - X: The variate.
- * - N: Precision times mean.
- * - Λ: Precision.
- * - α: Prior variance shape.
- * - β: Prior variance scales.
- *
- * Returns: the posterior hyperparameters `α'` and `β'`.
- */
-function update_matrix_normal_inverse_gamma(X:Real[_,_], N:Real[_,_], Λ:LLT,
-    α:Real, β:Real[_]) -> (Real, Real[_]) {
-  let D <- rows(X);
-  let M <- solve(Λ, N);
-  let α' <- α + 0.5*D;
-  let β' <- β + 0.5*diagonal(transpose(X - M)*canonical(Λ)*(X - M));
-  return (α', β');
-}
-
-/**
- * Update the parameters of a Gaussian variate with
- * matrix-normal-inverse-gamma prior.
- *
- * - x: The variate.
- * - N: Prior precision times mean matrix.
- * - Λ: Prior precision.
- * - α: Prior variance shape.
- * - γ: Prior variance scale accumulators.
- *
- * Returns: the posterior hyperparameters `N'`, `Λ'`, `α'` and `γ'`.
- */
-function update_matrix_normal_inverse_gamma_matrix_gaussian(
-    X:Real[_,_], N:Real[_,_], Λ:LLT, α:Real, γ:Real[_]) ->
-    (Real[_,_], LLT, Real, Real[_]) {
-  let D <- rows(X);
-  let Λ' <- rank_update(Λ, identity(rows(N)));
-  let N' <- N + X;
-  let α' <- α + 0.5*D;
-  let γ' <- γ + 0.5*diagonal(transpose(X)*X);
-  return (N', Λ', α', γ');
-}
-
-/**
- * Update the parameters of a Gaussian variate with linear transformation
- * of matrix-normal-inverse-gamma prior.
- *
- * - x: The variate.
- * - A: Scale.
- * - N: Prior precision times mean matrix.
- * - Λ: Prior precision.
- * - C: Offset.
- * - α: Prior variance shape.
- * - γ: Prior variance scale accumulators.
- *
- * Returns: the posterior hyperparameters `N'`, `Λ'`, `α'` and `γ'`.
- */
-function update_linear_matrix_normal_inverse_gamma_matrix_gaussian(
-    X:Real[_,_], A:Real[_,_], N:Real[_,_], Λ:LLT, C:Real[_,_], α:Real,
-    γ:Real[_]) -> (Real[_,_], LLT, Real, Real[_]) {
-  let D <- rows(X);
-  let Λ' <- rank_update(Λ, transpose(A));
-  let N' <- N + transpose(A)*(X - C);
-  let α' <- α + 0.5*D;
-  let γ' <- γ + 0.5*diagonal(transpose(X - C)*(X - C));
-  return (N', Λ', α', γ');
-}
-
-/**
  * Update the parameters of a matrix normal-inverse-Wishart variate.
  *
  * - X: The variate.
@@ -572,7 +504,7 @@ function update_matrix_normal_inverse_wishart_matrix_gaussian(X:Real[_,_],
  * Update the parameters of a Gaussian variate with linear transformation
  * of matrix-normal-inverse-Wishart prior.
  *
- * - x: The variate.
+ * - X: The variate.
  * - A: Scale.
  * - N: Prior precision times mean matrix.
  * - Λ: Prior precision.
@@ -593,5 +525,32 @@ function update_linear_matrix_normal_inverse_wishart_matrix_gaussian(
   let V' <- llt(canonical(V) + transpose(X - A*M' - C)*(X - A*M' - C) +
       transpose(M' - M)*canonical(Λ)*(M' - M));
   let k' <- k + D;
+  return (N', Λ', V', k');
+}
+
+/**
+ * Update the parameters of a Gaussian variate with linear transformation
+ * of matrix-normal-inverse-Wishart prior.
+ *
+ * - x: The variate.
+ * - N: Prior precision times mean matrix.
+ * - Λ: Prior precision.
+ * - a: Scale.
+ * - c: Offset.
+ * - V: Prior variance shape.
+ * - k: Prior degrees of freedom.
+ *
+ * Returns: the posterior hyperparameters `N'`, `Λ'`, `V'` and `k'`.
+ */
+function update_linear_matrix_normal_inverse_wishart_multivariate_gaussian(
+    x:Real[_], a:Real[_], N:Real[_,_], Λ:LLT, c:Real[_], V:LLT, k:Real) ->
+    (Real[_,_], LLT, LLT, Real) {
+  let Λ' <- rank_update(Λ, a);
+  let N' <- N + a*transpose(x - c);
+  let M <- solve(Λ, N);
+  let M' <- solve(Λ', N');
+  let V' <- llt(canonical(V) + outer(x - dot(a, M') - c) +
+      transpose(M' - M)*canonical(Λ)*(M' - M));
+  let k' <- k + 1;
   return (N', Λ', V', k');
 }

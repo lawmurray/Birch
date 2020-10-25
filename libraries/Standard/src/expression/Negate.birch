@@ -24,10 +24,11 @@ final class Negate(y:Expression<Real>) <
     return r;
   }
 
-  override function graftDotGaussian() -> TransformDot<MultivariateGaussian>? {
+  override function graftDotMultivariateGaussian() ->
+      TransformDot<MultivariateGaussian>? {
     r:TransformDot<MultivariateGaussian>?;
     if !hasValue() {
-      if (r <- y!.graftDotGaussian())? {
+      if (r <- y!.graftDotMultivariateGaussian())? {
         r!.negate();
       }
     }
@@ -48,11 +49,11 @@ final class Negate(y:Expression<Real>) <
     return r;
   }
 
-  override function graftDotNormalInverseGamma(compare:Distribution<Real>) ->
+  override function graftDotMultivariateNormalInverseGamma(compare:Distribution<Real>) ->
       TransformDot<MultivariateNormalInverseGamma>? {
     r:TransformDot<MultivariateNormalInverseGamma>?;
     if !hasValue() {
-      if (r <- y!.graftDotNormalInverseGamma(compare))? {
+      if (r <- y!.graftDotMultivariateNormalInverseGamma(compare))? {
         r!.negate();
       }
     }

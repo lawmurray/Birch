@@ -117,6 +117,12 @@ operator (X:Real[_,_]*y:Real[_]) -> Real[_] {
   }}
 }
 
+operator (X:Real[_]*y:Real[_,_]) -> Real[_,_] {
+  cpp{{
+  return X.toEigen()*y.toEigen();
+  }}
+}
+
 operator (X:Real[_,_]*Y:Real[_,_]) -> Real[_,_] {
   cpp{{
   return X.toEigen()*Y.toEigen();
@@ -245,6 +251,12 @@ operator (X:Integer[_,_]*y:Integer[_]) -> Integer[_] {
   }}
 }
 
+operator (X:Integer[_]*y:Integer[_,_]) -> Integer[_,_] {
+  cpp{{
+  return X.toEigen()*y.toEigen();
+  }}
+}
+
 operator (X:Integer[_,_]*Y:Integer[_,_]) -> Integer[_,_] {
   cpp{{
   return X.toEigen()*Y.toEigen();
@@ -266,6 +278,16 @@ function dot(x:Real[_]) -> Real {
 function dot(x:Real[_], y:Real[_]) -> Real {
   cpp{{
   return x.toEigen().dot(y.toEigen());
+  }}
+}
+
+/**
+ * Dot product of vector with columns of a matrix. The expression `dot(x, Y)`
+ * is equivalent to `transpose(Y)*x`.
+ */
+function dot(x:Real[_], Y:Real[_,_]) -> Real[_] {
+  cpp{{
+  return Y.toEigen().transpose()*x.toEigen();
   }}
 }
 

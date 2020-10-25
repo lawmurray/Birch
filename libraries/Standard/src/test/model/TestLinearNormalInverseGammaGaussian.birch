@@ -9,6 +9,7 @@ class TestLinearNormalInverseGammaGaussian < Model {
   c:Real;
   α:Real;
   β:Real;
+  neg:Boolean;
 
   function initialize() {
     a <- simulate_uniform(-2.0, 2.0);
@@ -17,12 +18,17 @@ class TestLinearNormalInverseGammaGaussian < Model {
     c <- simulate_uniform(-10.0, 10.0);
     α <- simulate_uniform(2.0, 10.0);
     β <- simulate_uniform(0.1, 10.0);
+    neg <- simulate_bernoulli(0.5);
   }
 
   function simulate() {
     σ2 ~ InverseGamma(α, β);
     μ ~ Gaussian(μ_0, a2, σ2);
-    x ~ Gaussian(a*μ + c, σ2);
+    if neg {
+      x ~ Gaussian(μ/a - c, σ2);
+    } else {
+      x ~ Gaussian(a*μ + c, σ2);
+    }
   }
 
   function forward() -> Real[_] {

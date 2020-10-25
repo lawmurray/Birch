@@ -18,7 +18,8 @@ final class Dot(y:Expression<Real[_]>, z:Expression<Real[_]>) <
     return d*y;
   }
 
-  override function graftDotGaussian() -> TransformDot<MultivariateGaussian>? {
+  override function graftDotMultivariateGaussian() ->
+      TransformDot<MultivariateGaussian>? {
     if !hasValue() {
       x1:TransformLinearMultivariate<MultivariateGaussian>?;
       x2:MultivariateGaussian?;
@@ -36,7 +37,8 @@ final class Dot(y:Expression<Real[_]>, z:Expression<Real[_]>) <
     return nil;
   }
 
-  override function graftDotNormalInverseGamma(compare:Distribution<Real>) ->
+  override function graftDotMultivariateNormalInverseGamma(
+      compare:Distribution<Real>) ->
       TransformDot<MultivariateNormalInverseGamma>? {
     if !hasValue() {
       x1:TransformLinearMultivariate<MultivariateNormalInverseGamma>?;

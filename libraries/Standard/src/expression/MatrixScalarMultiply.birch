@@ -39,21 +39,6 @@ final class MatrixScalarMultiply(y:Expression<Real>,
     }
     return r;
   }
-  
-  override function graftLinearMatrixNormalInverseGamma(compare:Distribution<Real[_]>) ->
-      TransformLinearMatrix<MatrixNormalInverseGamma>? {
-    r:TransformLinearMatrix<MatrixNormalInverseGamma>?;
-    if !hasValue() {
-      x1:MatrixNormalInverseGamma?;
-
-      if (r <- z!.graftLinearMatrixNormalInverseGamma(compare))? {
-        r!.multiply(y!);
-      } else if (x1 <- z!.graftMatrixNormalInverseGamma(compare))? {
-        r <- TransformLinearMatrix<MatrixNormalInverseGamma>(diagonal(y!, z!.rows()), x1!);
-      }
-    }
-    return r;
-  }
 
   override function graftLinearMatrixNormalInverseWishart(compare:Distribution<LLT>) ->
       TransformLinearMatrix<MatrixNormalInverseWishart>? {

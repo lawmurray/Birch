@@ -56,13 +56,13 @@ class Gaussian(μ:Expression<Real>, σ2:Expression<Real>) <
     let compare <- σ2.distribution();
     if compare? && (m1 <- μ.graftLinearNormalInverseGamma(compare!))? {
       r <- LinearNormalInverseGammaGaussian(m1!.a, m1!.x, m1!.c);
-    } else if compare? && (m2 <- μ.graftDotNormalInverseGamma(compare!))? {
+    } else if compare? && (m2 <- μ.graftDotMultivariateNormalInverseGamma(compare!))? {
       r <- LinearMultivariateNormalInverseGammaGaussian(m2!.a, m2!.x, m2!.c);
     } else if compare? && (m3 <- μ.graftNormalInverseGamma(compare!))? {
       r <- NormalInverseGammaGaussian(m3!);
     } else if (m4 <- μ.graftLinearGaussian())? {
       r <- LinearGaussianGaussian(m4!.a, m4!.x, m4!.c, σ2);
-    } else if (m5 <- μ.graftDotGaussian())? {
+    } else if (m5 <- μ.graftDotMultivariateGaussian())? {
       r <- LinearMultivariateGaussianGaussian(m5!.a, m5!.x, m5!.c, σ2);
     } else if (m6 <- μ.graftGaussian())? {
       r <- GaussianGaussian(m6!, σ2);
@@ -83,7 +83,7 @@ class Gaussian(μ:Expression<Real>, σ2:Expression<Real>) <
     /* match a template */
     if (m1 <- μ.graftLinearGaussian())? {
       r <- LinearGaussianGaussian(m1!.a, m1!.x, m1!.c, σ2);
-    } else if (m2 <- μ.graftDotGaussian())? {
+    } else if (m2 <- μ.graftDotMultivariateGaussian())? {
       r <- LinearMultivariateGaussianGaussian(m2!.a, m2!.x, m2!.c, σ2);
     } else if (m3 <- μ.graftGaussian())? {
       r <- GaussianGaussian(m3!, σ2);

@@ -9,6 +9,7 @@ class TestLinearMultivariateNormalInverseGammaMultivariateGaussian < Model {
   c:Real[5];
   α:Real;
   β:Real;
+  neg:Boolean;
 
   function initialize() {
     α <- simulate_uniform(2.0, 10.0);
@@ -26,12 +27,17 @@ class TestLinearMultivariateNormalInverseGammaMultivariateGaussian < Model {
       }
     }
     Σ <- Σ*transpose(Σ);
+    neg <- simulate_bernoulli(0.5);
   }
 
   function simulate() {
     σ2 ~ InverseGamma(α, β);
     μ ~ Gaussian(μ_0, Σ, σ2);
-    x ~ Gaussian(A*μ + c, σ2);
+    if neg {
+      x ~ Gaussian(A*μ - c, σ2);
+    } else {
+      x ~ Gaussian(A*μ + c, σ2);
+    }
   }
 
   function forward() -> Real[_] {
