@@ -479,7 +479,7 @@ function update_matrix_normal_inverse_wishart(X:Real[_,_], N:Real[_,_],
  * Update the parameters of a Gaussian variate with
  * matrix-normal-inverse-Wishart prior.
  *
- * - x: The variate.
+ * - X: The variate.
  * - N: Prior precision times mean matrix.
  * - Λ: Prior precision.
  * - V: Prior variance shape.

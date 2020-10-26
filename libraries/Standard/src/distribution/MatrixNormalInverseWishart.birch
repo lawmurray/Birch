@@ -4,12 +4,12 @@
 final class MatrixNormalInverseWishart(M:Expression<Real[_,_]>,
     U:Expression<LLT>, V:InverseWishart) < Distribution<Real[_,_]> {
   /**
-   * Precision.
+   * Among-row precision.
    */
   Λ:Expression<LLT> <- inv(U);
 
   /**
-   * Precision times mean.
+   * Among-row precision times mean.
    */
   N:Expression<Real[_,_]> <- canonical(Λ)*M;
   
