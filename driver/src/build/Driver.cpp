@@ -737,8 +737,7 @@ void birch::Driver::docs() {
   }
 
   std::string str = read_all("DOCS.md");
-  std::regex reg("(?:^|\r?\n)(##?) (.*?)(?=\r?\n|$)",
-      std::regex_constants::ECMAScript);
+  std::regex reg("(?:^|\r?\n)(##?) (.*?)(?=\r?\n|$)");
   std::smatch match;
   std::string str1 = str, h1, h2;
   while (std::regex_search(str1, match, reg)) {
@@ -1138,9 +1137,9 @@ void birch::Driver::target(const std::string& cmd) {
    * (consider pipefail); instead we use popen instead of system, and process
    * the output with regexes */
   std::string type1 = "[a-zA-Z0-9_\\[\\]\\?,]+";
-  std::string type2 = type1 + "(?:<" + type1 + " *>)?";
-  std::string type3 = type1 + "(?:<" + type2 + " *>)?";
-  std::string type4 = type1 + "(?:<" + type3 + " *>)?";
+  std::string type2 = type1 + "(?:<" + type1 + " *>)?(?:\\[[_,]+\\])?";
+  std::string type3 = type1 + "(?:<" + type2 + " *>)?(?:\\[[_,]+\\])?";
+  std::string type4 = type1 + "(?:<" + type3 + " *>)?(?:\\[[_,]+\\])?";
   std::string type = type4;
 
   std::regex rxWarnings("warning:");
@@ -1148,21 +1147,25 @@ void birch::Driver::target(const std::string& cmd) {
   std::regex rxSkipLine("In file included from|In member function|^\\s*from|std::enable_if|At global scope:");
   std::regex rxNamespace("birch::type::|birch::|libbirch::");
   std::regex rxCxxWords("virtual *");
-  std::regex rxLazy("(?:const )?Lazy<Shared<(" + type + ") *> *> *");
-  std::regex rxOptional("(?:const )?Optional<(" + type + ") *> *");
+  std::regex rxWith("\\[with.*?\\]");
+  std::regex rxReal("double");
+  std::regex rxInteger("long int");
+  std::regex rxLazy("Lazy<Shared<(" + type + ") *> *> *");
+  std::regex rxOptional("Optional<(" + type + ") *> *");
   std::regex rxVector("Array<(" + type + "), *Shape<Dimension<(?:0, *0)?>, *EmptyShape *> *> *");
   std::regex rxVector2("DefaultArray<(" + type + "), *1> *");
   std::regex rxMatrix("Array<(" + type + "), *Shape<Dimension<(?:0, *0)?>, Shape<Dimension<(?:0, *0)?>, *EmptyShape *> *> *> *");
   std::regex rxMatrix2("DefaultArray<(" + type + "), *2> *");
-  std::regex rxLLT("Eigen::LLT<Eigen::Matrix<double, *-1, *-1, *1, *-1, *-1> *> *");
-  std::regex rxAka("\\{aka ‘?(class|const)? ?" + type + "’?\\} *");
-  std::regex rxDouble("double");
   std::regex rxConstRef("(?:const *)?(" + type + ") *&");
+  std::regex rxLLT("Eigen::LLT<Eigen::Matrix<double, *-1, *-1, *1, *-1, *-1> *> *");
+  std::regex rxThis("\\(\\(" + type + "\\*\\)this\\)->" + type + "::this_\\(\\)->" + type + "::");
+  std::regex rxAka("\\{aka *‘?(class |const )?" + type + "’?\\} *");
   std::regex rxDeref("operator->");
   std::regex rxDerefExpr("‘->’");
   std::regex rxAssign("operator=");
   std::regex rxAssignExpr("‘=’");
-  std::regex rxHandler("(?:, *)?Handler\\* *& *handler_");
+  std::regex rxHandler("(?:, *)?Handler *(?:\\* *& *handler_)?");
+  std::regex rxHandler2("(?:, *)?\\(\\* *& *handler_\\)");
   std::regex rxTooFewArguments("(?:invalid initialization of reference of type ‘" + type4 + "’ from expression of type ‘Handler’|cannot convert ‘Handler’ to ‘" + type4 + "’)");
 
   std::ofstream log;
@@ -1185,8 +1188,15 @@ void birch::Driver::target(const std::string& cmd) {
         /* strip namespace and class qualifiers */
         str = std::regex_replace(str, rxNamespace, "");
 
+        /* strip "with" type hints */
+        str = std::regex_replace(str, rxWith, "");
+
         /* strip some C++ words */
         str = std::regex_replace(str, rxCxxWords, "");
+
+        /* convert back some types */
+        str = std::regex_replace(str, rxReal, "Real");
+        str = std::regex_replace(str, rxInteger, "Integer");
 
         /* replace some types; repeat some of these patterns a few times
          * as a hacky way of handling recursion */
@@ -1198,10 +1208,10 @@ void birch::Driver::target(const std::string& cmd) {
           str = std::regex_replace(str, rxLLT, "LLT");
           str = std::regex_replace(str, rxLazy, "$1");
           str = std::regex_replace(str, rxOptional, "$1?");
+          str = std::regex_replace(str, rxConstRef, "$1");
         }
-        str = std::regex_replace(str, rxConstRef, "$1");
         str = std::regex_replace(str, rxAka, "");
-        str = std::regex_replace(str, rxDouble, "Real");
+        str = std::regex_replace(str, rxThis, "");
 
         /* replace some operators */
         str = std::regex_replace(str, rxDeref, ".");
@@ -1211,6 +1221,7 @@ void birch::Driver::target(const std::string& cmd) {
 
         /* strip suggestions that reveal internal workings */
         str = std::regex_replace(str, rxHandler, "");
+        str = std::regex_replace(str, rxHandler2, "");
         str = std::regex_replace(str, rxTooFewArguments, "too few arguments to function call");
 
         if (verbose) {
