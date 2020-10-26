@@ -180,7 +180,6 @@ function ibeta(a:Real64, b:Real64, x:Real64) -> Real64 {
 
 }
 
-
 /**
  * The incomplete beta function.
  */
@@ -733,5 +732,10 @@ function ratevl(x:Real64, num:Real64[_], M:Integer, denom:Real64[_], N:Integer) 
     } else {
       return num_ans / denom_ans;
     }
+}
+
+function regularized_incomplete_beta_function(a:Real64, b:Real64, x:Real64) -> Real64 {
+  // implementation taken from: https://en.wikipedia.org/wiki/Beta_function
+  return ibeta(a, b, x) / beta(a, b);
 }
 

@@ -20,9 +20,9 @@ function cdf_binomial(x:Integer, n:Integer, ρ:Real) -> Real {
   } else if x > n {
     return 1.0;
   } else {
-    cpp{{
-    return boost::math::cdf(boost::math::binomial_distribution<>(n, ρ), x);
-    }}
+    // the relation between binomial and the regularized incomplete beta function
+    // cdf_binomial = I_{1 - p} (n - x, x + 1)
+    return regularized_incomplete_beta_function(n - x, x + 1.0, 1.0 - ρ);
   }
 }
 
