@@ -104,14 +104,14 @@ function lgamma(x:Real32, p:Integer) -> Real32 {
  * The beta function.
  */
 function beta(x:Real64, y:Real64) -> Real64 {
-  return gamma(x) * gamma(y) / (gamma(x + y));
+  return (gamma(x) * gamma(y)) / (gamma(x + y));
 }
 
 /**
  * The beta function.
  */
 function beta(x:Real32, y:Real32) -> Real32 {
-  return gamma(x) * gamma(y) / (gamma(x + y));
+  return (gamma(x) * gamma(y)) / (gamma(x + y));
 }
 
 
@@ -143,7 +143,7 @@ function ibeta(a:Real64, b:Real64, x:Real64) -> Real64 {
   auto d <- 0.0;
   auto numerator <- 0.0;
 
-  for i in 0..2000 {
+  for i in 0..200 {
     auto m <- i/2;
 
     if (i == 0) {
@@ -206,7 +206,7 @@ function ibeta(a:Real32, b:Real32, x:Real32) -> Real32 {
   auto c <- 1.0;
   auto d <- 0.0;
 
-  for i in 0..2000 {
+  for i in 0..200 {
     auto m <- i/2;
 
     auto numerator <- 1.0;
@@ -734,8 +734,12 @@ function ratevl(x:Real64, num:Real64[_], M:Integer, denom:Real64[_], N:Integer) 
 }
 
 
+function regularized_incomplete_beta(a:Real64, b:Real64, x:Real64) -> Real64 {
+  // implementation taken from: https://en.wikipedia.org/wiki/Beta_function
+  return ibeta(a, b, x) / beta(a, b);
+}
 
-function regularized_incomplete_beta(a:Real, b:Real, x:Real) -> Real64 {
+function regularized_incomplete_beta(a:Real32, b:Real32, x:Real32) -> Real32 {
   // implementation taken from: https://en.wikipedia.org/wiki/Beta_function
   return ibeta(a, b, x) / beta(a, b);
 }

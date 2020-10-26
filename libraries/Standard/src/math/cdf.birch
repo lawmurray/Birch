@@ -22,6 +22,8 @@ function cdf_binomial(x:Integer, n:Integer, ρ:Real) -> Real {
   } else {
     // the relation between binomial and the regularized incomplete beta function
     // cdf_binomial = I_{1 - p} (n - x, x + 1)
+    // TODO(pranavs): The type casting here appears to be somewhat strange, look into this
+    // ibeta implementation and beta implementation are both fine.
     return regularized_incomplete_beta(n - x, x + 1.0, 1.0 - ρ);
   }
 }
@@ -154,9 +156,7 @@ function cdf_exponential(x:Real, λ:Real) -> Real {
   if x <= 0.0 {
     return 0.0;
   } else {
-    cpp{{
-    return boost::math::cdf(boost::math::exponential_distribution<>(λ), x);
-    }}
+    return 1.0 - exp(- λ * x);
   }
 }
 
@@ -172,9 +172,11 @@ function cdf_exponential(x:Real, λ:Real) -> Real {
 function cdf_weibull(x:Real, k:Real, λ:Real) -> Real {
   assert 0.0 < k;
   assert 0.0 < λ;
-  cpp{{
-  return boost::math::cdf(boost::math::weibull_distribution<>(k, λ), x);
-  }}
+  if (x >= 0) {
+    return 1.0 - exp(-pow(x / λ, k));
+  } else {
+    return 0;
+  }
 }
 
 /**
@@ -188,9 +190,7 @@ function cdf_weibull(x:Real, k:Real, λ:Real) -> Real {
  */
 function cdf_gaussian(x:Real, μ:Real, σ2:Real) -> Real {
   assert 0.0 < σ2;
-  cpp{{
-  return boost::math::cdf(boost::math::normal_distribution<>(μ, ::sqrt(σ2)), x);
-  }}
+  return 0.5 * (1.0 + erf((x - μ) / sqrt(σ2 * 2.0)));
 }
 
 /**
@@ -202,10 +202,11 @@ function cdf_gaussian(x:Real, μ:Real, σ2:Real) -> Real {
  * Return: the cumulative probability.
  */
 function cdf_student_t(x:Real, ν:Real) -> Real {
+  // implementation taken from: https://github.com/codeplea/incbeta
   assert 0.0 < ν;
-  cpp{{
-  return boost::math::cdf(boost::math::students_t_distribution<>(ν), x);
-  }}
+  auto t <- (x + sqrt(x * x + ν)) / (2.0 * sqrt(x * x + ν));
+  auto prob <- ibeta(ν/2.0, ν/2.0, t);
+  return prob;
 }
 
 /**
@@ -232,7 +233,7 @@ function cdf_student_t(x:Real, ν:Real, μ:Real, σ2:Real) -> Real {
  *
  * Return: the cumulative probability.
  */
-function cdf_beta(x:Real, α:Real, β:Real) -> Real {
+function cdf_beta(x:Real64, α:Real64, β:Real64) -> Real64 {
   assert 0.0 < α;
   assert 0.0 < β;
 
@@ -241,9 +242,8 @@ function cdf_beta(x:Real, α:Real, β:Real) -> Real {
   } else if x > 1.0 {
     return 1.0;
   } else {
-    cpp{{
-    return boost::math::cdf(boost::math::beta_distribution<>(α, β), x);
-    }}
+    // TODO(pranavs): Check why this breaks
+    return regularized_incomplete_beta(Real64(α), Real64(β), Real64(x));
   }
 }
 
@@ -257,9 +257,7 @@ function cdf_beta(x:Real, α:Real, β:Real) -> Real {
  */
 function cdf_chi_squared(x:Real, ν:Real) -> Real {
   assert 0.0 < ν;
-  cpp{{
-  return boost::math::cdf(boost::math::chi_squared_distribution<>(ν), x);
-  }}
+  return lower_inc_gamma(ν/2.0, x/2.0) / gamma(ν / 2.0);
 }
 
 /**
@@ -278,9 +276,8 @@ function cdf_gamma(x:Real, k:Real, θ:Real) -> Real {
   if x <= 0.0 {
     return 0.0;
   } else {
-    cpp{{
-    return boost::math::cdf(boost::math::gamma_distribution<>(k, θ), x);
-    }}
+    // TODO(pranavs): broken, needs fixing
+    return (1.0 / gamma(k)) * (lower_inc_gamma(Real64(k), Real64(x) / Real64(θ)));
   }
 }
 
