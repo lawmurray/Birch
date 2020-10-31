@@ -179,12 +179,19 @@ function ibeta(a:Real64, b:Real64, x:Real64) -> Real64 {
   return inf; // did not converge
 }
 
+/*
+function ibeta<Value>(a:Value, b:Value, x:Value) -> Value {
+
+}
+*/
+
 /**
  * The incomplete beta function.
  */
 function ibeta(a:Real32, b:Real32, x:Real32) -> Real32 {
   // TODO: There's got to be a way to not rewrite the whole thing using upcasting or downcasting.
-  if x < 0.0 || x > 1.0 {
+  // TODO(pranavs): Remember to cast literals to 32 bit.
+  if x < Real32(0.0) || x > 1.0 {
     return Real32(inf); // inf has type Real64 so we can't return it
   }
   // whenever x < (a + 1) / (a + b + 2) -- CF converges
@@ -391,6 +398,7 @@ function lower_inc_gamma(a:Real64, x:Real64) -> Real64 {
 
   // technically we have to check whether a, x are inf
   // TODO(pranavs): check whether a value is inf (something like isinf in numpy)
+  // yes
 
   absxma_a <- abs(x - a) / a;
       if ((a > SMALL) && (a < LARGE) && (absxma_a < SMALLRATIO)) {
@@ -512,9 +520,6 @@ function igamc_continued_fraction(a:Real64, x:Real64) -> Real64 {
   auto qkm1 <- z * x;
   auto ans <- pkm1 / qkm1;
 
-  // run the algorithm for 2000 iterations (till convergence is better, but 2000 should be enough for most cases)
-  // Instead of a loop, we can wrap this around a while loop that iterates only while a flag is true
-  // this can be refactored into while (i <= 2000 || flag)
   auto flag <- true;
   auto i <- 0;
   while(i <= 2000 && flag) {
@@ -592,7 +597,7 @@ function igamc_series(a:Real64, x:Real64) -> Real64 {
       logx <- log(x);
       // actual implementation is:
       // term <- -expm1(a * logx - lgam1p(a));
-      term <- -expm1(a * logx - lgamma(1 + a));
+      term <- -expm1(a * logx - lgamma(1.0 + a));
       return term - exp(a * logx - lgamma(a)) * sum;
     }
   }
@@ -674,7 +679,7 @@ function asymptotic_series(a:Real64, x:Real64, func:Integer) -> Real64 {
 
 
 function lanczos_sum_expg_scaled(x:Real64) -> Real64 {
-  return ratevl(x, lanczos_sum_expg_scaled_num, length(lanczos_sum_expg_scaled_num) - 1, lanczos_sum_expg_scaled_denom, length(lanczos_sum_expg_scaled_denom) - 1);
+  return ratevl(x, lanczos_sum_expg_scaled_num, length(lanczos_sum_expg_scaled_num), lanczos_sum_expg_scaled_denom, length(lanczos_sum_expg_scaled_denom));
 }
 
 
@@ -683,7 +688,7 @@ function ratevl(x:Real64, num:Real64[_], M:Integer, denom:Real64[_], N:Integer) 
 
     y:Real64;
     auto absx <- abs(x);
-    auto pind <- 0;
+    auto pind <- 1;
     auto pval <- 0.0;
 
     if (absx > 1) {
@@ -694,7 +699,7 @@ function ratevl(x:Real64, num:Real64[_], M:Integer, denom:Real64[_], N:Integer) 
       y <- 1.0 / x;
     } else {
       dir <- 1;
-      pind <- 0;
+      pind <- 1;
       pval <- num[pind];
       y <- x;
     }
@@ -702,7 +707,7 @@ function ratevl(x:Real64, num:Real64[_], M:Integer, denom:Real64[_], N:Integer) 
     /* Evaluate the numerator */
     auto num_ans <- pval;
     pind <- pind + dir;
-    for i in 1..M {
+    for i in 2..M {
       num_ans <- num_ans * y + pval;
       pind <- pind + dir;
       pval <- num[pind];
@@ -713,13 +718,13 @@ function ratevl(x:Real64, num:Real64[_], M:Integer, denom:Real64[_], N:Integer) 
       pind <- N;
       pval <- denom[N];
     } else {
-      pind <- 0;
-      pval <- denom[0];
+      pind <- 1;
+      pval <- denom[1];
     }
 
     auto denom_ans <- pval;
     pind <- pind + dir;
-    for i in 1..N {
+    for i in 2..N {
       denom_ans <- denom_ans * y + pval;
       pind <- pind + dir;
       pval <- denom[pind];
@@ -734,13 +739,20 @@ function ratevl(x:Real64, num:Real64[_], M:Integer, denom:Real64[_], N:Integer) 
 }
 
 
-function regularized_incomplete_beta(a:Real64, b:Real64, x:Real64) -> Real64 {
-  // implementation taken from: https://en.wikipedia.org/wiki/Beta_function
-  return ibeta(a, b, x) / beta(a, b);
+function stable_regularized_ibeta(α:Real64, β:Real64, x:Real64) -> Real64 {
+  return exp(libeta(α, β, x) + lbeta(α,β));
 }
 
-function regularized_incomplete_beta(a:Real32, b:Real32, x:Real32) -> Real32 {
+
+function regularized_ibeta(α:Real64, β:Real64, x:Real64) -> Real64 {
   // implementation taken from: https://en.wikipedia.org/wiki/Beta_function
-  return ibeta(a, b, x) / beta(a, b);
+  return ibeta(α, β, x) / beta(α, β);
+}
+
+function libeta(α:Real64, β:Real64, x:Real64) -> Real64 {
+  assert 0.0 < α;
+  assert 0.0 < β;
+  assert 0.0 < x && x <= 1.0;
+  return (α - 1.0)*log(x) + (β - 1.0)*log1p(-x);
 }
 

@@ -22,9 +22,10 @@ function cdf_binomial(x:Integer, n:Integer, ρ:Real) -> Real {
   } else {
     // the relation between binomial and the regularized incomplete beta function
     // cdf_binomial = I_{1 - p} (n - x, x + 1)
-    // TODO(pranavs): The type casting here appears to be somewhat strange, look into this
     // ibeta implementation and beta implementation are both fine.
-    return regularized_incomplete_beta(n - x, x + 1.0, 1.0 - ρ);
+    // stderr.print(stable_regularized_ibeta(Real64(n - x), x + 1.0, 1.0 - ρ));
+    // stderr.print("\n");
+    return stable_regularized_ibeta(Real64(n - x), Real64(x) + 1.0, 1.0 - ρ);
   }
 }
 
@@ -233,7 +234,7 @@ function cdf_student_t(x:Real, ν:Real, μ:Real, σ2:Real) -> Real {
  *
  * Return: the cumulative probability.
  */
-function cdf_beta(x:Real64, α:Real64, β:Real64) -> Real64 {
+function cdf_beta(x:Real, α:Real, β:Real) -> Real {
   assert 0.0 < α;
   assert 0.0 < β;
 
@@ -243,7 +244,9 @@ function cdf_beta(x:Real64, α:Real64, β:Real64) -> Real64 {
     return 1.0;
   } else {
     // TODO(pranavs): Check why this breaks
-    return regularized_incomplete_beta(Real64(α), Real64(β), Real64(x));
+    // stderr.print(stable_regularized_ibeta(α, β, x));
+    // stderr.print("\n");
+    return stable_regularized_ibeta(α, β, x);
   }
 }
 
@@ -277,7 +280,8 @@ function cdf_gamma(x:Real, k:Real, θ:Real) -> Real {
     return 0.0;
   } else {
     // TODO(pranavs): broken, needs fixing
-    return (1.0 / gamma(k)) * (lower_inc_gamma(Real64(k), Real64(x) / Real64(θ)));
+    return exp(-lgamma(k) + lower_inc_gamma(Real64(k), Real64(x) / Real64(θ)));
+    // return (1.0 / gamma(k)) * (lower_inc_gamma(Real64(k), Real64(x) / Real64(θ)));
   }
 }
 
