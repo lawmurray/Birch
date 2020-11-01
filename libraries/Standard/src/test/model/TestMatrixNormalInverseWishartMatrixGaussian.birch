@@ -12,7 +12,7 @@ class TestMatrixNormalInverseWishartMatrixGaussian < Model {
   Ψ:Real[p,p];
 
   function initialize() {
-    k <- simulate_uniform(p - 1.0, p + 9.0);
+    k <- simulate_uniform(p - 0.9, p + 9.0);
     for i in 1..n {
       for j in 1..n {
         U[i,j] <- simulate_uniform(-2.0, 2.0);
