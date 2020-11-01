@@ -20,7 +20,7 @@ function String(x:Boolean) -> String {
 function String(x:Real64) -> String {
   cpp{{
   std::stringstream buf;
-  if (x == floor(x)) {
+  if (isfinite(x) && x == floor(x)) {
     buf << (int64_t)x << ".0";
   } else {
     buf << std::scientific << std::setprecision(14) << x;
@@ -35,7 +35,7 @@ function String(x:Real64) -> String {
 function String(x:Real32) -> String {
   cpp{{
   std::stringstream buf;
-  if (x == floor(x)) {
+  if (isfinite(x) && x == floor(x)) {
     buf << (int64_t)x << ".0";
   } else {
     buf << std::scientific << std::setprecision(6) << x;
