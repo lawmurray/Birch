@@ -1,0 +1,9 @@
+/*
+ * Test inverse-gamma-gamma grad evaluations.
+ */
+program test_grad_inverse_gamma_gamma(N:Integer <- 1000) {
+  m:TestInverseGammaGamma;
+  m.initialize();
+  m.simulate();
+  test_grad(m.marginal(), N);
+}

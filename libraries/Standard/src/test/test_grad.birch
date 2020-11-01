@@ -1,0 +1,40 @@
+/*
+ * Test the gradient of a pdf.
+ *
+ * - π: The target distribution. 
+ * - N: Number of samples.
+ */
+function test_grad(π:Distribution<Real>, N:Integer) {
+  assert π.supportsLazy();
+  let failed <- 0;  // number of failed tests
+  let Δ <- 1.0e-6;  // interval width for finite difference estimate
+  let ε <- 1.0e-3;  // error threshold for fail
+
+  for n in 1..N {
+    /* variate */
+    x:Random<Real>;
+    x.setPilot(1, π.simulate());
+
+    /* gradient */    
+    let p <- π.logpdfLazy(x)!;
+    p.pilot(1);
+    p.grad(1, 1.0);
+    let d <- x.getGradient();
+
+    /* finite difference estimate of gradient */
+    let y <- box(x.get() + Δ);
+    let q <- π.logpdfLazy(y)!;
+    q.pilot(1);
+    let fd <- (q.get() - p.get())/Δ;
+
+    /* evaluate */
+    let δ <- abs(d - fd);
+    if !(δ <= ε) {
+      stderr.print("failed at " + x.value() + ", d=" + p.get() + ", fd=" + q.get() + ", "  + δ + " > " + ε + "\n");
+      failed <- failed + 1;
+    }
+  }
+  if failed > 0 {
+    exit(1);
+  }
+}

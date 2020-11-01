@@ -1,0 +1,9 @@
+/*
+ * Test gamma-exponential grad evaluations.
+ */
+program test_grad_gamma_exponential(N:Integer <- 1000) {
+  m:TestGammaExponential;
+  m.initialize();
+  m.simulate();
+  test_grad(m.marginal(), N);
+}
