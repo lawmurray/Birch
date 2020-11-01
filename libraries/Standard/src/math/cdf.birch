@@ -23,9 +23,8 @@ function cdf_binomial(x:Integer, n:Integer, ρ:Real) -> Real {
     // the relation between binomial and the regularized incomplete beta function
     // cdf_binomial = I_{1 - p} (n - x, x + 1)
     // ibeta implementation and beta implementation are both fine.
-    // stderr.print(stable_regularized_ibeta(Real64(n - x), x + 1.0, 1.0 - ρ));
-    // stderr.print("\n");
-    return stable_regularized_ibeta(Real64(n - x), Real64(x) + 1.0, 1.0 - ρ);
+    auto k <- floor(Real64(x));
+    return ibeta(Real64(n - k), Real64(k) + 1.0, 1.0 - ρ);
   }
 }
 
@@ -246,7 +245,7 @@ function cdf_beta(x:Real, α:Real, β:Real) -> Real {
     // TODO(pranavs): Check why this breaks
     // stderr.print(stable_regularized_ibeta(α, β, x));
     // stderr.print("\n");
-    return stable_regularized_ibeta(α, β, x);
+    return ibeta(α, β, x);
   }
 }
 
