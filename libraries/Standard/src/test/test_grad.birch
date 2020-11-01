@@ -7,7 +7,7 @@
 function test_grad(π:Distribution<Real>, N:Integer) {
   assert π.supportsLazy();
   let failed <- 0;  // number of failed tests
-  let Δ <- 1.0e-9;  // interval width for finite difference estimate
+  let Δ <- 1.0e-8;  // interval width for finite difference estimate
   let ε <- 1.0e-3;  // error threshold for fail
 
   for n in 1..N {
@@ -48,7 +48,7 @@ function test_grad(π:Distribution<Real>, N:Integer) {
 function test_grad(π:Distribution<Real[_]>, N:Integer) {
   assert π.supportsLazy();
   let failed <- 0;  // number of failed tests
-  let Δ <- 1.0e-9;  // interval width for finite difference estimate
+  let Δ <- 1.0e-8;  // interval width for finite difference estimate
   let ε <- 1.0e-3;  // error threshold for fail
   let D <- π.rows();
 
@@ -94,7 +94,7 @@ function test_grad(π:Distribution<Real[_]>, N:Integer) {
 function test_grad(π:Distribution<Real[_,_]>, N:Integer) {
   assert π.supportsLazy();
   let failed <- 0;  // number of failed tests
-  let Δ <- 1.0e-9;  // interval width for finite difference estimate
+  let Δ <- 1.0e-8;  // interval width for finite difference estimate
   let ε <- 1.0e-3;  // error threshold for fail
   let R <- π.rows();
   let C <- π.columns();

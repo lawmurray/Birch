@@ -12,7 +12,7 @@ class TestLinearMultivariateNormalInverseGammaGaussian < Model {
 
   function initialize() {
     α <- simulate_uniform(2.0, 10.0);
-    β <- simulate_uniform(0.0, 10.0);
+    β <- simulate_uniform(0.1, 10.0);
     for i in 1..10 {
       a[i] <- simulate_uniform(-2.0, 2.0);
       μ_0[i] <- simulate_uniform(-10.0, 10.0);
