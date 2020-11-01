@@ -7,7 +7,7 @@
 function test_grad(π:Distribution<Real>, N:Integer) {
   assert π.supportsLazy();
   let failed <- 0;  // number of failed tests
-  let Δ <- 1.0e-6;  // interval width for finite difference estimate
+  let Δ <- 1.0e-9;  // interval width for finite difference estimate
   let ε <- 1.0e-3;  // error threshold for fail
 
   for n in 1..N {
@@ -30,8 +30,54 @@ function test_grad(π:Distribution<Real>, N:Integer) {
     /* evaluate */
     let δ <- abs(d - fd);
     if !(δ <= ε) {
-      stderr.print("failed at " + x.value() + ", d=" + p.get() + ", fd=" + q.get() + ", "  + δ + " > " + ε + "\n");
+      stderr.print("failed at " + x.value() + ", d=" + d + ", fd=" + fd + ", "  + δ + " > " + ε + "\n");
       failed <- failed + 1;
+    }
+  }
+  if failed > 0 {
+    exit(1);
+  }
+}
+
+/*
+ * Test the gradient of a pdf.
+ *
+ * - π: The target distribution. 
+ * - N: Number of samples.
+ */
+function test_grad(π:Distribution<Real[_]>, N:Integer) {
+  assert π.supportsLazy();
+  let failed <- 0;  // number of failed tests
+  let Δ <- 1.0e-9;  // interval width for finite difference estimate
+  let ε <- 1.0e-3;  // error threshold for fail
+  let D <- π.rows();
+
+  for n in 1..N {
+    /* variate */
+    x:Random<Real[_]>;
+    x.setPilot(1, π.simulate());
+
+    /* gradient */    
+    let p <- π.logpdfLazy(x)!;
+    p.pilot(1);
+    p.grad(1, 1.0);
+    let d <- x.getGradient();
+
+    /* finite difference estimate of gradient */
+    for i in 1..D {
+      let z <- x.get();
+      z[i] <- z[i] + Δ;
+      let y <- box(z);
+      let q <- π.logpdfLazy(y)!;
+      q.pilot(1);
+      let fd <- (q.get() - p.get())/Δ;
+
+      /* evaluate */
+      let δ <- abs(d[i] - fd);
+      if !(δ <= ε) {
+        stderr.print("failed on component " + i + ", d=" + d[i] + ", fd=" + fd + ", "  + δ + " > " + ε + "\n");
+        failed <- failed + 1;
+      }
     }
   }
   if failed > 0 {
