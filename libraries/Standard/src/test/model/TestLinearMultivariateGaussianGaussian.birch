@@ -18,7 +18,7 @@ class TestLinearMultivariateGaussianGaussian < Model {
       }
     }
     Σ_0 <- Σ_0*transpose(Σ_0);
-    σ2_1 <- pow(simulate_uniform(-2.0, 2.0), 2.0);
+    σ2_1 <- simulate_uniform(0.1, 10.0);
   }
 
   function simulate() {

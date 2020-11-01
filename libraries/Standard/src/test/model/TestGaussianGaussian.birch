@@ -7,8 +7,8 @@ class TestGaussianGaussian < Model {
 
   function initialize() {
     μ_0 <- simulate_uniform(-10.0, 10.0);
-    σ2_0 <- simulate_uniform(0.0, 10.0);
-    σ2_1 <- simulate_uniform(0.0, 10.0);
+    σ2_0 <- simulate_uniform(0.1, 10.0);
+    σ2_1 <- simulate_uniform(0.1, 10.0);
   }
 
   function simulate() {

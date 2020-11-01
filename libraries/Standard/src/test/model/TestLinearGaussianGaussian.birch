@@ -12,8 +12,8 @@ class TestLinearGaussianGaussian < Model {
     a <- simulate_uniform(-2.0, 2.0);
     c <- simulate_uniform(-10.0, 10.0);
     μ_0 <- simulate_uniform(-10.0, 10.0);
-    σ2_0 <- simulate_uniform(0.0, 2.0);
-    σ2_1 <- simulate_uniform(0.0, 2.0);
+    σ2_0 <- simulate_uniform(0.1, 2.0);
+    σ2_1 <- simulate_uniform(0.1, 2.0);
     neg <- simulate_bernoulli(0.5);
   }
 
