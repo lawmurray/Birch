@@ -14,7 +14,7 @@ final class MultivariateDot(y:Expression<Real[_]>, z:Expression<Real[_,_]>) <
 
   override function doEvaluateGradLeft(d:Real[_], x:Real[_], y:Real[_],
       z:Real[_,_]) -> Real[_] {
-    return transpose(z)*d;
+    return z*d;
   }
 
   override function doEvaluateGradRight(d:Real[_], x:Real[_], y:Real[_],
