@@ -6,7 +6,7 @@ class TestGammaPoisson < Model {
 
   function initialize() {
     k <- simulate_uniform_int(1, 10);
-    θ <- simulate_uniform(0.0, 10.0);
+    θ <- simulate_uniform(0.1, 10.0);
   }
 
   function simulate() {

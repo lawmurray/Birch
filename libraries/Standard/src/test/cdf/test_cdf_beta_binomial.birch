@@ -1,7 +1,7 @@
 /*
  * Test beta-binomial cdf evaluations.
  */
-program test_cdf_beta_binomial(N:Integer <- 10000) {
+program test_cdf_beta_binomial() {
   m:TestBetaBinomial;
   m.initialize();
   m.simulate();

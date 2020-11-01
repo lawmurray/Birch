@@ -1,7 +1,7 @@
 /*
  * Test categorical cdf evaluations.
  */
-program test_cdf_categorical(N:Integer <- 10000) {
+program test_cdf_categorical() {
   let n <- simulate_uniform_int(10, 50);
   let ρ <- simulate_independent_uniform(vector(0.0, n), vector(1.0, n));
   ρ <- ρ/sum(ρ);

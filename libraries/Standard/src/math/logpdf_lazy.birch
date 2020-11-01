@@ -120,7 +120,7 @@ function logpdf_lazy_poisson(x:Expression<Integer>, λ:Expression<Real>) -> Expr
  * Returns: the log probability density.
  */
 function logpdf_lazy_exponential(x:Expression<Real>, λ:Expression<Real>) -> Expression<Real> {
-  return log(λ) - λ*x;
+  return if_then_else(x < 0.0, -inf, log(λ) - λ*x);
 }
 
 /**
@@ -133,7 +133,8 @@ function logpdf_lazy_exponential(x:Expression<Real>, λ:Expression<Real>) -> Exp
  * Returns: the log probability density.
  */
 function logpdf_lazy_weibull(x:Expression<Real>, k:Expression<Real>, λ:Expression<Real>) -> Expression<Real> {
-  return log(k) + (k - 1.0)*log(x) - k*log(λ) - pow(x/λ, k);
+  return if_then_else(x < 0.0, -inf, log(k) + (k - 1.0)*log(x) - k*log(λ) -
+      pow(x/λ, k));
 }
 
 /**
@@ -212,7 +213,8 @@ function logpdf_lazy_chi_squared(x:Expression<Real>, ν:Expression<Real>) -> Exp
  * Returns: the log probability density.
  */
 function logpdf_lazy_gamma(x:Expression<Real>, k:Expression<Real>, θ:Expression<Real>) -> Expression<Real> {
-  return (k - 1.0)*log(x) - x/θ - lgamma(k) - k*log(θ);
+  return if_then_else(x < 0.0, -inf, (k - 1.0)*log(x) - x/θ - lgamma(k) -
+      k*log(θ));
 }
 
 /**
@@ -240,7 +242,8 @@ function logpdf_lazy_wishart(X:Expression<LLT>, Ψ:Expression<LLT>, ν:Expressio
  * Returns: the log probability density.
  */
 function logpdf_lazy_inverse_gamma(x:Expression<Real>, α:Expression<Real>, β:Expression<Real>) -> Expression<Real> {
-  return α*log(β) - (α + 1.0)*log(x) - β/x - lgamma(α);
+  return if_then_else(x < 0.0, -inf, α*log(β) - (α + 1.0)*log(x) - β/x -
+      lgamma(α));
 }
 
 /**
@@ -352,7 +355,7 @@ function logpdf_lazy_gamma_poisson(x:Expression<Integer>, k:Expression<Real>, θ
  * Return: the log probability density.
  */
 function logpdf_lazy_lomax(x:Expression<Real>, λ:Expression<Real>, α:Expression<Real>) -> Expression<Real> {
-  return log(α) - log(λ) - (α + 1.0)*log1p(x/λ);
+  return if_then_else(x < 0.0, -inf, log(α) - log(λ) - (α + 1.0)*log1p(x/λ));
 }
 
 /**

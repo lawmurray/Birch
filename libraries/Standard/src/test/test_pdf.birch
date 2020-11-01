@@ -120,6 +120,117 @@ function test_pdf(π:Distribution<Integer>, N:Integer, lazy:Boolean) {
 }
 
 /*
+ * Test a pdf.
+ *
+ * - π: The target distribution. 
+ * - N: Number of samples.
+ * - B: Number of samples in each batch for tuning Metropolis sampler.
+ * - S: Metropolis sampler skip.
+ * - lazy: Use lazy version?
+ */
+function test_pdf(π:Distribution<Real>, N:Integer, B:Integer, S:Integer,
+    lazy:Boolean) {
+  x1:Real[N];
+  x2:Real[N];
+  
+  /* iid samples */
+  for n in 1..N {
+    x1[n] <- canonical(π.simulate());
+    if mod(n, 10000) == 0 {
+      collect();
+    }
+  }
+  
+  /* compute the shape for a Gaussian proposal using the iid samples */
+  let μ <- sum(x1)/N;
+  let σ2 <- dot(x1)/N - μ*μ;
+  
+  /* scale this proposal to get a reasonable acceptance rate */
+  let done <- false;
+  do {
+    let a <- 0.0;
+    x:Real;
+    if lazy && π.supportsLazy() {
+      x <- π.simulateLazy()!;
+    } else {
+      x <- π.simulate();
+    }
+    l:Real;
+    if lazy && π.supportsLazy() {
+      l <- π.logpdfLazy(box(x))!.value();
+    } else {
+      l <- π.logpdf(x);
+    }
+
+    for n in 1..B {
+      let x' <- simulate_gaussian(x, σ2);
+      l':Real;
+      if lazy && π.supportsLazy() {
+        l' <- π.logpdfLazy(box(x'))!.value();
+      } else {
+        l' <- π.logpdf(x');
+      }
+      if log(simulate_uniform(0.0, 1.0)) <= l' - l {
+        /* accept */
+        x <- x';
+        l <- l';
+        a <- a + 1.0/B;
+      }
+    }
+    //stderr.print("trial acceptance rate: " + a + "\n");
+    if a < 0.4 {
+      σ2 <- 0.5*σ2;
+    } else if a > 0.6 {
+      σ2 <- 1.5*σ2;
+    } else {
+      done <- true;
+    }
+  } while !done;
+
+  /* apply the Metropolis sampler */
+  let a <- 0.0;
+  x:Real;
+  if lazy && π.supportsLazy() {
+    x <- π.simulateLazy()!;
+  } else {
+    x <- π.simulate();
+  }
+  l:Real;
+  if lazy && π.supportsLazy() {
+    l <- π.logpdfLazy(box(x))!.value();
+  } else {
+    l <- π.logpdf(x);
+  }
+  for n in 1..N {
+    for s in 1..S {
+      let x' <- simulate_gaussian(x, σ2);
+      l':Real;
+      if lazy && π.supportsLazy() {
+        l' <- π.logpdfLazy(box(x'))!.value();
+      } else {
+        l' <- π.logpdf(x');
+      }
+      if log(simulate_uniform(0.0, 1.0)) <= l' - l {
+        /* accept */
+        x <- x';
+        l <- l';
+        a <- a + 1.0/(N*S);
+      }
+      if mod((n - 1)*S + s, 10000) == 0 {
+        collect();
+      }
+    }
+    x2[n] <- x;
+  }
+  //stderr.print("final acceptance rate: " + a + "\n");
+  
+  /* test distance between the iid and Metropolis samples */
+  if !pass(x1, x2) {
+    exit(1);
+  }
+}
+
+/*
  * Test a multivariate pdf.
  *
  * - π: The target distribution. 

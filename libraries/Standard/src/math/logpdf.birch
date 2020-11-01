@@ -216,12 +216,7 @@ function logpdf_uniform(x:Real, l:Real, u:Real) -> Real {
  */
 function logpdf_exponential(x:Real, λ:Real) -> Real {
   assert 0.0 < λ;
-
-  if (x >= 0.0) {
-    return log(λ) - λ*x;
-  } else {
-    return -inf;
-  }
+  return if_then_else(x < 0.0, -inf, log(λ) - λ*x);
 }
 
 /**
@@ -235,12 +230,8 @@ function logpdf_exponential(x:Real, λ:Real) -> Real {
  */
 function logpdf_weibull(x:Real, k:Real, λ:Real) -> Real {
   assert 0.0 < λ;
-
-  if (x >= 0.0) {
-    return log(k) + (k - 1.0)*log(x) - k*log(λ) - pow(x/λ, k);
-  } else {
-    return -inf;
-  }
+  return if_then_else(x < 0.0, -inf, log(k) + (k - 1.0)*log(x) -
+      k*log(λ) - pow(x/λ, k));
 }
 
 /**
@@ -254,16 +245,7 @@ function logpdf_weibull(x:Real, k:Real, λ:Real) -> Real {
  */
 function logpdf_gaussian(x:Real, μ:Real, σ2:Real) -> Real {
   assert 0.0 <= σ2;
-  
-  if (σ2 == 0.0) {
-    if (x == μ) {
-      return inf;
-    } else {
-      return -inf;
-    }
-  } else {
-    return -0.5*(pow(x - μ, 2.0)/σ2 + log(2.0*π*σ2));
-  }
+  return -0.5*(pow(x - μ, 2.0)/σ2 + log(2.0*π*σ2));
 }
 
 /**
@@ -346,12 +328,7 @@ function logpdf_chi_squared(x:Real, ν:Real) -> Real {
 function logpdf_gamma(x:Real, k:Real, θ:Real) -> Real {
   assert 0.0 < k;
   assert 0.0 < θ;
-  
-  if (x > 0.0) {
-    return (k - 1.0)*log(x) - x/θ - lgamma(k) - k*log(θ);
-  } else {
-    return -inf;
-  }
+  return if_then_else(x < 0.0, -inf, (k - 1.0)*log(x) - x/θ - lgamma(k) - k*log(θ));
 }
 
 /**
@@ -382,12 +359,8 @@ function logpdf_wishart(X:LLT, Ψ:LLT, ν:Real) -> Real {
 function logpdf_inverse_gamma(x:Real, α:Real, β:Real) -> Real {
   assert 0.0 < α;
   assert 0.0 < β;
-  
-  if (x > 0.0) {
-    return α*log(β) - (α + 1.0)*log(x) - β/x - lgamma(α);
-  } else {
-    return -inf;
-  }
+  return if_then_else(x < 0.0, -inf, α*log(β) - (α + 1.0)*log(x) - β/x -
+      lgamma(α));
 }
 
 /**
@@ -421,12 +394,8 @@ function logpdf_inverse_gamma_gamma(x:Real, k:Real, α:Real, β:Real) -> Real {
   assert 0.0 < k;
   assert 0.0 < α;
   assert 0.0 < β;
-
-  if x > 0.0 {
-    return (k - 1)*log(x) + α*log(β) - (α + k)*log(β + x) - lbeta(α, k);
-  } else {
-    return -inf;
-  }
+  return if_then_else(x < 0.0, -inf, (k - 1)*log(x) + α*log(β) -
+      (α + k)*log(β + x) - lbeta(α, k));
 }
 
 /**
@@ -537,11 +506,8 @@ function logpdf_gamma_poisson(x:Integer, k:Real, θ:Real) -> Real {
 function logpdf_lomax(x:Real, λ:Real, α:Real) -> Real {
   assert 0.0 < λ;
   assert 0.0 < α;
-  if x >= 0.0 {
-    return log(α) - log(λ) - (α + 1.0)*log1p(x/λ);
-  } else {
-    return -inf;
-  }
+  return if_then_else(x < 0.0, -inf, log(α) - log(λ) -
+      (α + 1.0)*log1p(x/λ));
 }
 
 /**

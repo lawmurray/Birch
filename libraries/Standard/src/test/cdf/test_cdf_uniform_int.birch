@@ -1,7 +1,7 @@
 /*
  * Test uniform integer cdf evaluations.
  */
-program test_cdf_uniform_int(N:Integer <- 10000) {
+program test_cdf_uniform_int() {
   let l <- simulate_uniform_int(-100, 100);
   let u <- simulate_uniform_int(l, l + 200);
   let q <- Uniform(l, u);  

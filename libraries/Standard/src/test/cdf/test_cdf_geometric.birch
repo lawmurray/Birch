@@ -1,7 +1,7 @@
 /*
  * Test geometric cdf evaluations.
  */
-program test_cdf_geometric(N:Integer <- 10000) {
+program test_cdf_geometric() {
   let ρ <- simulate_uniform(0.0, 1.0);
   let q <- Geometric(ρ);  
   test_cdf(q);

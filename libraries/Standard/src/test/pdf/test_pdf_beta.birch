@@ -1,0 +1,10 @@
+/*
+ * Test beta pdf evaluations.
+ */
+program test_pdf_beta(N:Integer <- 10000, B:Integer <- 100, S:Integer <- 5,
+    lazy:Boolean <- false) {
+  let α <- simulate_uniform(1.0, 10.0);
+  let β <- simulate_uniform(1.0, 10.0);
+  let q <- Beta(α, β);  
+  test_pdf(q, N, B, S, lazy);
+}
