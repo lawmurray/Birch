@@ -72,8 +72,8 @@ function test_grad(π:Distribution<Real[_]>, N:Integer) {
       let z <- x.get();
       y[i] <- y[i] - 0.5*h;
       z[i] <- z[i] + 0.5*h;
-      let q <- π.logpdfLazy(box(y))!.value();
-      let r <- π.logpdfLazy(box(z))!.value();
+      let q <- π.logpdf(y);
+      let r <- π.logpdf(z);
       let fd <- (r - q)/h;
 
       /* evaluate */
