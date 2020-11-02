@@ -9,8 +9,8 @@ class TestScaledGammaExponential < Model {
 
   function initialize() {
     a <- simulate_uniform(0.0, 10.0);
-    k <- simulate_uniform(1.0, 10.0);
-    θ <- simulate_uniform(0.0, 10.0);
+    k <- simulate_uniform(2.1, 10.0);
+    θ <- simulate_uniform(0.1, 10.0);
     neg <- simulate_bernoulli(0.5);
   }
 
