@@ -54,7 +54,7 @@ function test_cdf(q:Distribution<Real>, N:Integer) {
     let ε <- 10.0/sqrt(Real(N));
     if δ > ε {
       failed <- true;
-      stderr.print("failed on step " + n + ", " + δ + " > " + ε + "\n");
+      stderr.print("***failed*** on step " + n + ", " + δ + " > " + ε + "\n");
     }
     if failed {
       exit(1);
@@ -111,7 +111,7 @@ function test_cdf(q:Distribution<Integer>) {
     let ε <- 10.0/sqrt(x - from! + 1.0);
     if δ > ε {
       failed <- true;
-      stderr.print("failed on value " + x + ", " + δ + " > " + ε + "\n");
+      stderr.print("***failed*** on value " + x + ", " + δ + " > " + ε + "\n");
     }
     if failed {
       exit(1);

@@ -7,13 +7,13 @@
 function test_grad(π:Distribution<Real>, N:Integer) {
   assert π.supportsLazy();
   let failed <- 0;  // number of failed tests
-  let Δ <- 1.0e-8;  // interval width for finite difference estimate
+  let h <- 1.0e-9;  // interval width for finite difference estimate
   let ε <- 1.0e-3;  // error threshold for fail
 
   for n in 1..N {
     /* variate */
     x:Random<Real>;
-    x.setPilot(1, π.simulate());
+    x.setPilot(1, π.simulate() + 0.5*h);
 
     /* gradient */    
     let p <- π.logpdfLazy(x)!;
@@ -22,15 +22,18 @@ function test_grad(π:Distribution<Real>, N:Integer) {
     let d <- x.getGradient();
 
     /* finite difference estimate of gradient */
-    let y <- box(x.get() + Δ);
-    let q <- π.logpdfLazy(y)!;
-    q.pilot(1);
-    let fd <- (q.get() - p.get())/Δ;
+    let y <- x.get();
+    let z <- x.get();
+    y <- y - 0.5*h;
+    z <- z + 0.5*h;
+    let q <- π.logpdf(y);
+    let r <- π.logpdf(z);
+    let fd <- (r - q)/h;
 
     /* evaluate */
     let δ <- abs(d - fd);
     if !(δ <= ε) {
-      stderr.print("failed at " + x.value() + ", d=" + d + ", fd=" + fd + ", "  + δ + " > " + ε + "\n");
+      stderr.print("***failed*** at " + x.value() + ", d=" + d + ", fd=" + fd + ", "  + δ + " > " + ε + "\n");
       failed <- failed + 1;
     }
   }
@@ -48,14 +51,14 @@ function test_grad(π:Distribution<Real>, N:Integer) {
 function test_grad(π:Distribution<Real[_]>, N:Integer) {
   assert π.supportsLazy();
   let failed <- 0;  // number of failed tests
-  let Δ <- 1.0e-8;  // interval width for finite difference estimate
+  let h <- 1.0e-9;  // interval width for finite difference estimate
   let ε <- 1.0e-3;  // error threshold for fail
   let D <- π.rows();
 
   for n in 1..N {
     /* variate */
     x:Random<Real[_]>;
-    x.setPilot(1, π.simulate());
+    x.setPilot(1, π.simulate() + vector(0.5*h, D));
 
     /* gradient */    
     let p <- π.logpdfLazy(x)!;
@@ -63,19 +66,20 @@ function test_grad(π:Distribution<Real[_]>, N:Integer) {
     p.grad(1, 1.0);
     let d <- x.getGradient();
 
-    /* finite difference estimate of gradient */
     for i in 1..D {
+      /* finite difference estimate of gradient */
+      let y <- x.get();
       let z <- x.get();
-      z[i] <- z[i] + Δ;
-      let y <- box(z);
-      let q <- π.logpdfLazy(y)!;
-      q.pilot(1);
-      let fd <- (q.get() - p.get())/Δ;
+      y[i] <- y[i] - 0.5*h;
+      z[i] <- z[i] + 0.5*h;
+      let q <- π.logpdfLazy(box(y))!.value();
+      let r <- π.logpdfLazy(box(z))!.value();
+      let fd <- (r - q)/h;
 
       /* evaluate */
       let δ <- abs(d[i] - fd);
       if !(δ <= ε) {
-        stderr.print("failed on component, d=" + d[i] + ", fd=" + fd + ", "  + δ + " > " + ε + "\n");
+        stderr.print("***failed*** on component, d=" + d[i] + ", fd=" + fd + ", "  + δ + " > " + ε + "\n");
         failed <- failed + 1;
       }
     }
@@ -94,7 +98,7 @@ function test_grad(π:Distribution<Real[_]>, N:Integer) {
 function test_grad(π:Distribution<Real[_,_]>, N:Integer) {
   assert π.supportsLazy();
   let failed <- 0;  // number of failed tests
-  let Δ <- 1.0e-8;  // interval width for finite difference estimate
+  let h <- 1.0e-9;  // interval width for finite difference estimate
   let ε <- 1.0e-3;  // error threshold for fail
   let R <- π.rows();
   let C <- π.columns();
@@ -102,7 +106,7 @@ function test_grad(π:Distribution<Real[_,_]>, N:Integer) {
   for n in 1..N {
     /* variate */
     x:Random<Real[_,_]>;
-    x.setPilot(1, π.simulate());
+    x.setPilot(1, π.simulate() + matrix(0.5*h, R, C));
 
     /* gradient */    
     let p <- π.logpdfLazy(x)!;
@@ -110,20 +114,21 @@ function test_grad(π:Distribution<Real[_,_]>, N:Integer) {
     p.grad(1, 1.0);
     let d <- x.getGradient();
 
-    /* finite difference estimate of gradient */
     for i in 1..R {
       for j in 1..C {
+        /* finite difference estimate of gradient */
+        let y <- x.get();
         let z <- x.get();
-        z[i,j] <- z[i,j] + Δ;
-        let y <- box(z);
-        let q <- π.logpdfLazy(y)!;
-        q.pilot(1);
-        let fd <- (q.get() - p.get())/Δ;
+        y[i,j] <- y[i,j] - 0.5*h;
+        z[i,j] <- z[i,j] + 0.5*h;
+        let q <- π.logpdf(y);
+        let r <- π.logpdf(z);
+        let fd <- (r - q)/h;
 
         /* evaluate */
         let δ <- abs(d[i,j] - fd);
         if !(δ <= ε) {
-          stderr.print("failed on component, d=" + d[i,j] + ", fd=" + fd + ", "  + δ + " > " + ε + "\n");
+          stderr.print("***failed*** on component, d=" + d[i,j] + ", fd=" + fd + ", "  + δ + " > " + ε + "\n");
           failed <- failed + 1;
         }
       }

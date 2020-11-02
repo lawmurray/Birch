@@ -33,12 +33,12 @@ function test_pdf(π:Distribution<Boolean>, N:Integer, lazy:Boolean) {
   let δ <- abs(p - Real(k)/N);
   if δ > ε {
     failed <- true;
-    stderr.print("failed on true, " + δ + " > " + ε + "\n");
+    stderr.print("***failed*** on true, " + δ + " > " + ε + "\n");
   }
   δ <- abs(q - Real(N - k)/N);
   if δ > ε {
     failed <- true;
-    stderr.print("failed on false, " + δ + " > " + ε + "\n");
+    stderr.print("***failed*** on false, " + δ + " > " + ε + "\n");
   }
   if failed {
     exit(1);
@@ -111,7 +111,7 @@ function test_pdf(π:Distribution<Integer>, N:Integer, lazy:Boolean) {
     let ε <- 5.0/sqrt(Real(N));
     if δ > ε {
       failed <- true;
-      stderr.print("failed on value " + x + ", " + δ + " > " + ε + "\n");
+      stderr.print("***failed*** on value " + x + ", " + δ + " > " + ε + "\n");
     }
   }
   if failed {

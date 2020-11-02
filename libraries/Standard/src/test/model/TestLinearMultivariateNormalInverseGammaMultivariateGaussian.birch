@@ -26,7 +26,7 @@ class TestLinearMultivariateNormalInverseGammaMultivariateGaussian < Model {
         A[i,j] <- simulate_uniform(-2.0, 2.0);
       }
     }
-    Σ <- Σ*transpose(Σ);
+    Σ <- Σ*transpose(Σ) + diagonal(1.0e-2, 10);
     neg <- simulate_bernoulli(0.5);
   }
 

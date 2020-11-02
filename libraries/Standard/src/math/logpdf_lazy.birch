@@ -730,7 +730,7 @@ function logpdf_lazy_linear_matrix_normal_inverse_wishart_multivariate_gaussian(
     k:Expression<Real>) -> Expression<Real> {
   let p <- columns(N);
   let M <- solve(Λ, N);
-  let σ2 <- 1.0 + dot(a, solve(Λ, a))/(k - p + 1.0);
+  let σ2 <- (1.0 + dot(a, solve(Λ, a)))/(k - p + 1.0);
   return logpdf_lazy_multivariate_student_t(x, k - p + 1.0, dot(a, M) + c,
       llt(σ2*canonical(Ψ)));
 }

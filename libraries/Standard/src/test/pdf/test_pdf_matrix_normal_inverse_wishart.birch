@@ -18,7 +18,7 @@ program test_pdf_matrix_normal_inverse_wishart(R:Integer <- 3, C:Integer <- 2,
       U[i,j] <- simulate_uniform(-2.0, 2.0);
     }
   }
-  k <- simulate_uniform(C - 1.0, C + 9.0);
+  k <- C + 1.0 + simulate_uniform(0.0, 10.0);
   for i in 1..C {
     for j in 1..C {
       Ψ[i,j] <- simulate_uniform(-2.0, 2.0);
