@@ -36,9 +36,9 @@ function test_grad(π:Distribution<Real>, N:Integer) {
       stderr.print("***failed*** at " + x.value() + ", d=" + d + ", fd=" + fd + ", "  + δ + " > " + ε + "\n");
       failed <- failed + 1;
     }
-  }
-  if failed > 0 {
-    exit(1);
+    if failed > 0 {
+      exit(1);
+    }
   }
 }
 
@@ -83,9 +83,9 @@ function test_grad(π:Distribution<Real[_]>, N:Integer) {
         failed <- failed + 1;
       }
     }
-  }
-  if failed > 0 {
-    exit(1);
+    if failed > 0 {
+      exit(1);
+    }
   }
 }
 
@@ -133,8 +133,8 @@ function test_grad(π:Distribution<Real[_,_]>, N:Integer) {
         }
       }
     }
-  }
-  if failed > 0 {
-    exit(1);
+    if failed > 0 {
+      exit(1);
+    }
   }
 }
