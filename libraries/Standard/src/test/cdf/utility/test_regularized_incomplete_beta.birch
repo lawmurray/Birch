@@ -6,6 +6,6 @@ program test_regularized_incomplete_beta(a:Real64, b:Real64, x:Real64) {
     a <- 2.0;
     b <- 2.0;
     x <- 0.5;
-    let temp <- stable_regularized_ibeta(a, b, x);
+    let temp <- ibeta(a, b, x);
     stdout.print(temp);
 }

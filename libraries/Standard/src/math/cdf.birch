@@ -62,9 +62,8 @@ function cdf_poisson(x:Integer, λ:Real) -> Real {
   if x < 0 {
     return 0.0;
   } else {
-    cpp{{
-    return boost::math::cdf(boost::math::poisson_distribution<>(λ), x);
-    }}
+    auto k <- floor(Real64(x)) + 1;
+    return upper_inc_gamma(k, λ);
   }
 }
 
@@ -242,9 +241,6 @@ function cdf_beta(x:Real, α:Real, β:Real) -> Real {
   } else if x > 1.0 {
     return 1.0;
   } else {
-    // TODO(pranavs): Check why this breaks
-    // stderr.print(stable_regularized_ibeta(α, β, x));
-    // stderr.print("\n");
     return ibeta(α, β, x);
   }
 }
@@ -278,9 +274,7 @@ function cdf_gamma(x:Real, k:Real, θ:Real) -> Real {
   if x <= 0.0 {
     return 0.0;
   } else {
-    // TODO(pranavs): broken, needs fixing
-    return exp(-lgamma(k) + lower_inc_gamma(Real64(k), Real64(x) / Real64(θ)));
-    // return (1.0 / gamma(k)) * (lower_inc_gamma(Real64(k), Real64(x) / Real64(θ)));
+    return lower_inc_gamma(Real64(k), Real64(x) / Real64(θ));
   }
 }
 
@@ -300,9 +294,7 @@ function cdf_inverse_gamma(x:Real, α:Real, β:Real) -> Real {
   if x <= 0.0 {
     return 0.0;
   } else {
-    cpp{{
-    return boost::math::cdf(boost::math::inverse_gamma_distribution<>(α, β), x);
-    }}
+    return upper_inc_gamma(α, β/x);
   }
 }
 
