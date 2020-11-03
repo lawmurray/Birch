@@ -628,10 +628,9 @@ function asymptotic_series(a:Real64, x:Real64, func:Integer) -> Real64 {
     absterm:Real64;
     auto absoldterm <- inf;
     etapow:Real64[N];
-    etapow[0] <- 1;
+    etapow[1] <- 1;
     auto tot <- 0.0;
     auto afac <- 1.0;
-    stderr.print("Asymptotic Series Called\n");
 
   if (func == 1) {
     sgn <- -1;
@@ -648,11 +647,11 @@ function asymptotic_series(a:Real64, x:Real64, func:Integer) -> Real64 {
   }
   res <- 0.5 * erfc(sgn * η * sqrt(a / 2.0));
   auto flag1 <- true;
-  auto k <- 0;
+  auto k <- 1;
   while (k <= K && flag1) {
-    ck <- asymptotic_series_d[k,0];
+    ck <- asymptotic_series_d[k,1];
     auto flag2 <- true;
-    auto n <- 1;
+    auto n <- 2;
     while (n <= N && flag2) {
       if (n > maxpow) {
         etapow[n] <- η * etapow[n-1];
@@ -690,7 +689,6 @@ function lanczos_sum_expg_scaled(x:Real64) -> Real64 {
 
 
 function ratevl(x:Real64, num:Real64[_], M:Integer, denom:Real64[_], N:Integer) -> Real64 {
-  // TODO(pranavs): This function needs fixing
   dir:Integer;
 
   y:Real64;
