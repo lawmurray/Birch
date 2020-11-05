@@ -23,7 +23,7 @@ function cdf_binomial(x:Integer, n:Integer, ρ:Real) -> Real {
     // the relation between binomial and the regularized incomplete beta function
     // cdf_binomial = I_{1 - p} (n - x, x + 1)
     // ibeta implementation and beta implementation are both fine.
-    auto k <- floor(Real64(x));
+    let k <- floor(Real64(x));
     return ibeta(Real64(n - k), Real64(k) + 1.0, 1.0 - ρ);
   }
 }
@@ -62,7 +62,7 @@ function cdf_poisson(x:Integer, λ:Real) -> Real {
   if x < 0 {
     return 0.0;
   } else {
-    auto k <- floor(Real64(x)) + 1;
+    let k <- floor(Real64(x)) + 1;
     return upper_inc_gamma(k, λ);
   }
 }
@@ -203,8 +203,8 @@ function cdf_gaussian(x:Real, μ:Real, σ2:Real) -> Real {
 function cdf_student_t(x:Real, ν:Real) -> Real {
   // implementation taken from: https://github.com/codeplea/incbeta
   assert 0.0 < ν;
-  auto t <- (x + sqrt(x * x + ν)) / (2.0 * sqrt(x * x + ν));
-  auto prob <- ibeta(ν/2.0, ν/2.0, t);
+  let t <- (x + sqrt(x * x + ν)) / (2.0 * sqrt(x * x + ν));
+  let prob <- ibeta(ν/2.0, ν/2.0, t);
   return prob;
 }
 
