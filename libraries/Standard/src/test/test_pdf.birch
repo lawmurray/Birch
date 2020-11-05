@@ -218,7 +218,7 @@ function test_pdf(π:Distribution<Real>, N:Integer, B:Integer, S:Integer,
       }
     }
     x2[n] <- x;
-    if mod(n, 10000) == 0 {
+    if mod(n, 1000) == 0 {
       collect();
     }
   }
@@ -340,7 +340,7 @@ function test_pdf(π:Distribution<Real[_]>, D:Integer, N:Integer, B:Integer,
       }
     }
     X2[n,1..D] <- x;
-    if mod(n, 10000) == 0 {
+    if mod(n, 1000) == 0 {
       collect();
     }
   }
@@ -456,7 +456,7 @@ function test_pdf(π:Distribution<Real[_,_]>, R:Integer, C:Integer, N:Integer,
       }
     }
     X2[n,1..R*C] <- vec(x);
-    if mod(n, 10000) == 0 {
+    if mod(n, 1000) == 0 {
       collect();
     }
   }
