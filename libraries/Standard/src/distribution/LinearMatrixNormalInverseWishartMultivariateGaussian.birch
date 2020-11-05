@@ -6,14 +6,13 @@ final class LinearMatrixNormalInverseWishartMultivariateGaussian(
     a:Expression<Real[_]>, M:MatrixNormalInverseWishart, 
     c:Expression<Real[_]>) < Distribution<Real[_]> {
   /**
-   * Mean.
-   */
-  M:MatrixNormalInverseWishart <- M;
-
-  /**
    * Scale.
    */
   a:Expression<Real[_]> <- a;
+  /**
+   * Mean.
+   */
+  M:MatrixNormalInverseWishart <- M;
 
   /**
    * Offset.

@@ -468,10 +468,10 @@ function update_linear_multivariate_normal_inverse_gamma_gaussian(
  */
 function update_matrix_normal_inverse_wishart(X:Real[_,_], N:Real[_,_],
     Λ:LLT, V:LLT, k:Real) -> (LLT, Real) {
-  let D <- rows(X);
+  let n <- rows(X);
   let M <- solve(Λ, N);
-  let V' <- rank_update(V, transpose(X - M));
-  let k' <- k + D;
+  let V' <- llt(canonical(V) + transpose(X - M)*canonical(Λ)*(X - M));
+  let k' <- k + n;
   return (V', k');
 }
 
@@ -494,8 +494,8 @@ function update_matrix_normal_inverse_wishart_matrix_gaussian(X:Real[_,_],
   let N' <- N + X;
   let M <- solve(Λ, N);
   let M' <- solve(Λ', N');
-  let V' <- llt(canonical(V) + transpose(X - M')*(X - M') +
-      transpose(M' - M)*canonical(Λ)*(M' - M));
+  let V' <- llt(canonical(V) + transpose(X)*X + transpose(M)*N -
+      transpose(M')*N');
   let k' <- k + D;
   return (N', Λ', V', k');
 }
@@ -522,8 +522,8 @@ function update_linear_matrix_normal_inverse_wishart_matrix_gaussian(
   let N' <- N + transpose(A)*(X - C);
   let M <- solve(Λ, N);
   let M' <- solve(Λ', N');
-  let V' <- llt(canonical(V) + transpose(X - A*M' - C)*(X - A*M' - C) +
-      transpose(M' - M)*canonical(Λ)*(M' - M));
+  let V' <- llt(canonical(V) + transpose(X - C)*(X - C) + transpose(M)*N -
+      transpose(M')*N');
   let k' <- k + D;
   return (N', Λ', V', k');
 }
@@ -546,7 +546,7 @@ function update_linear_matrix_normal_inverse_wishart_multivariate_gaussian(
     x:Real[_], a:Real[_], N:Real[_,_], Λ:LLT, c:Real[_], V:LLT, k:Real) ->
     (Real[_,_], LLT, LLT, Real) {
   let Λ' <- rank_update(Λ, a);
-  let N' <- N + a*transpose(x - c);
+  let N' <- N + outer(a, x - c);
   let M <- solve(Λ, N);
   let M' <- solve(Λ', N');
   let V' <- llt(canonical(V) + outer(x - dot(a, M') - c) +

@@ -2,7 +2,7 @@
  * Test matrix normal-inverse-Wishart pdf evaluations.
  */
 program test_pdf_matrix_normal_inverse_wishart(R:Integer <- 3, C:Integer <- 2,
-    N:Integer <- 10000, B:Integer <- 500, S:Integer <- 30, lazy:Boolean <- false) {
+    N:Integer <- 10000, B:Integer <- 1000, S:Integer <- 20, lazy:Boolean <- false) {
   M:Real[R,C];
   U:Real[R,R];
   k:Real;

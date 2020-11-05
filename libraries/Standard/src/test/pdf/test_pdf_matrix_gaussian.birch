@@ -2,7 +2,7 @@
  * Test matrix Gaussian pdf evaluations.
  */
 program test_pdf_matrix_gaussian(R:Integer <- 4, C:Integer <- 3,
-    N:Integer <- 10000, B:Integer <- 500, S:Integer <- 30, lazy:Boolean <- false) {
+    N:Integer <- 10000, B:Integer <- 1000, S:Integer <- 20, lazy:Boolean <- false) {
   M:Real[R,C];
   U:Real[R,R];
   V:Real[C,C];

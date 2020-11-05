@@ -180,7 +180,7 @@ function test_pdf(π:Distribution<Real>, N:Integer, B:Integer, S:Integer,
     //stderr.print("trial acceptance rate: " + a + "\n");
     if a < 0.4 {
       σ2 <- 0.5*σ2;
-    } else if a > 0.6 {
+    } else if a > 0.5 {
       σ2 <- 1.5*σ2;
     } else {
       done <- true;
@@ -216,11 +216,11 @@ function test_pdf(π:Distribution<Real>, N:Integer, B:Integer, S:Integer,
         l <- l';
         a <- a + 1.0/(N*S);
       }
-      if mod((n - 1)*S + s, 10000) == 0 {
-        collect();
-      }
     }
     x2[n] <- x;
+    if mod(n, 10000) == 0 {
+      collect();
+    }
   }
   //stderr.print("final acceptance rate: " + a + "\n");
   
@@ -247,7 +247,7 @@ function test_pdf(π:Distribution<Real[_]>, D:Integer, N:Integer, B:Integer,
   
   /* iid samples */
   for n in 1..N {
-    X1[n,1..D] <- canonical(π.simulate());
+    X1[n,1..D] <- π.simulate();
     if mod(n, 10000) == 0 {
       collect();
     }
@@ -263,6 +263,7 @@ function test_pdf(π:Distribution<Real[_]>, D:Integer, N:Integer, B:Integer,
   }
   μ <- μ/Real(N);
   Σ <- Σ/Real(N) - outer(μ);
+  let T <- llt(Σ);
   
   /* scale this proposal to get a reasonable acceptance rate */
   let done <- false;
@@ -282,7 +283,7 @@ function test_pdf(π:Distribution<Real[_]>, D:Integer, N:Integer, B:Integer,
     }
 
     for n in 1..B {
-      let x' <- simulate_multivariate_gaussian(x, llt(Σ));
+      let x' <- simulate_multivariate_gaussian(x, T);
       l':Real;
       if lazy && π.supportsLazy() {
         l' <- π.logpdfLazy(box(x'))!.value();
@@ -299,8 +300,10 @@ function test_pdf(π:Distribution<Real[_]>, D:Integer, N:Integer, B:Integer,
     //stderr.print("trial acceptance rate: " + a + "\n");
     if a < 0.2 {
       Σ <- 0.5*Σ;
-    } else if a > 0.4 {
+      T <- llt(Σ);
+    } else if a > 0.25 {
       Σ <- 1.5*Σ;
+      T <- llt(Σ);
     } else {
       done <- true;
     }
@@ -322,7 +325,7 @@ function test_pdf(π:Distribution<Real[_]>, D:Integer, N:Integer, B:Integer,
   }
   for n in 1..N {
     for s in 1..S {
-      let x' <- simulate_multivariate_gaussian(x, llt(Σ));
+      let x' <- simulate_multivariate_gaussian(x, T);
       l':Real;
       if lazy && π.supportsLazy() {
         l' <- π.logpdfLazy(box(x'))!.value();
@@ -335,11 +338,11 @@ function test_pdf(π:Distribution<Real[_]>, D:Integer, N:Integer, B:Integer,
         l <- l';
         a <- a + 1.0/(N*S);
       }
-      if mod((n - 1)*S + s, 10000) == 0 {
-        collect();
-      }
     }
     X2[n,1..D] <- x;
+    if mod(n, 10000) == 0 {
+      collect();
+    }
   }
   //stderr.print("final acceptance rate: " + a + "\n");
   
@@ -383,6 +386,7 @@ function test_pdf(π:Distribution<Real[_,_]>, R:Integer, C:Integer, N:Integer,
   }
   μ <- μ/Real(N);
   Σ <- Σ/Real(N) - outer(μ);
+  let T <- llt(Σ);
   
   /* scale this proposal to get a reasonable acceptance rate */
   let done <- false;
@@ -398,7 +402,7 @@ function test_pdf(π:Distribution<Real[_,_]>, R:Integer, C:Integer, N:Integer,
       l <- π.logpdf(x);
     }
     for n in 1..B {
-      let x' <- mat(simulate_multivariate_gaussian(vec(x), llt(Σ)), C);
+      let x' <- mat(simulate_multivariate_gaussian(vec(x), T), C);
       l':Real;
       if lazy && π.supportsLazy() {
         l' <- π.logpdfLazy(box(x'))!.value();
@@ -415,8 +419,10 @@ function test_pdf(π:Distribution<Real[_,_]>, R:Integer, C:Integer, N:Integer,
     //stderr.print("trial acceptance rate: " + a + "\n");
     if a < 0.2 {
       Σ <- 0.5*Σ;
-    } else if a > 0.4 {
+      T <- llt(Σ);
+    } else if a > 0.25 {
       Σ <- 1.5*Σ;
+      T <- llt(Σ);
     } else {
       done <- true;
     }
@@ -435,7 +441,7 @@ function test_pdf(π:Distribution<Real[_,_]>, R:Integer, C:Integer, N:Integer,
   }
   for n in 1..N {
     for s in 1..S {
-      let x' <- mat(simulate_multivariate_gaussian(vec(x), llt(Σ)), C);
+      let x' <- mat(simulate_multivariate_gaussian(vec(x), T), C);
       l':Real;
       if lazy && π.supportsLazy() {
         l' <- π.logpdfLazy(box(x'))!.value();
@@ -448,11 +454,11 @@ function test_pdf(π:Distribution<Real[_,_]>, R:Integer, C:Integer, N:Integer,
         l <- l';
         a <- a + 1.0/(N*S);
       }
-      if mod((n - 1)*S + s, 10000) == 0 {
-        collect();
-      }
     }
     X2[n,1..R*C] <- vec(x);
+    if mod(n, 10000) == 0 {
+      collect();
+    }
   }
   //stderr.print("final acceptance rate: " + a + "\n");
   

@@ -2,7 +2,7 @@
  * Test multivariate normal-inverse-gamma Gaussian pdf evaluations.
  */
 program test_pdf_multivariate_normal_inverse_gamma_multivariate_gaussian(
-    N:Integer <- 10000, B:Integer <- 500, S:Integer <- 20, lazy:Boolean <- false) {
+    N:Integer <- 10000, B:Integer <- 1000, S:Integer <- 20, lazy:Boolean <- false) {
   m:TestMultivariateNormalInverseGammaMultivariateGaussian;
   m.initialize();
   m.simulate();
