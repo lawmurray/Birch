@@ -316,7 +316,6 @@ function if_then_else<Type>(cond:Boolean, x:Type, y:Type) -> Type {
     return y;
   }
 }
-
 function lower_inc_gamma(a:Real, x:Real) -> Real {
 
   // this implementation is taken from https://github.com/scipy/scipy/blob/3af8448114dd4a2755d513edb5a2272a338dc483/scipy/special/cephes/igam.c
@@ -376,7 +375,6 @@ function upper_inc_gamma(a:Real, x:Real) -> Real {
 
   } else if (x == Real(0.0)) {
     return Real(1.0);
-    // is this the correct way to check Nan?
   } else if (isinf(a)) {
     if (isinf(x)) {
       return nan;
@@ -385,10 +383,7 @@ function upper_inc_gamma(a:Real, x:Real) -> Real {
   } else if (isinf(x)) {
     return Real(0.0);
   }
-
     /* Asymptotic regime where a ~ x; Maddock et. al., "Incomplete Gamma Functions", https://www.boost.org/doc/libs/1_61_0/libs/math/doc/html/math_toolkit/sf_gamma/igamma.html */
-
-
 
   absxma_a <- abs(x - a) / a;
 
@@ -399,22 +394,22 @@ function upper_inc_gamma(a:Real, x:Real) -> Real {
     return asymptotic_series(a, x, 0);
   }
 
-  if (x > Real(1.1)) {
+  if (x > 1.1) {
     if (x < a) {
-      return Real(1.0) - igam_series(a, x);
+      return 1.0 - igam_series(a, x);
     } else {
       return igamc_continued_fraction(a, x);
     }
 
-  } else if (x <= Real(0.5)) {
-    if (-Real(0.4) / log(x) < a) {
-      return Real(1.0) - igam_series(a, x);
+  } else if (x <= 0.5) {
+    if (-0.4 / log(x) < a) {
+      return 1.0 - igam_series(a, x);
     } else {
       return igamc_series(a, x);
     }
   } else {
-    if (x * Real(1.1) < a) {
-      return Real(1.0) - igam_series(a, x);
+    if (x * 1.1 < a) {
+      return 1.0 - igam_series(a, x);
     } else {
       return igamc_series(a, x);
     }
@@ -464,7 +459,8 @@ function igamc_continued_fraction(a:Real, x:Real) -> Real {
 
   let flag <- true;
   let i <- 0;
-  let t <- 0;
+  let t <- Real(0.0);
+  let r <- Real(0.0);
   while(i <= 2000 && flag) {
     c <- c + Real(1.0);
     y <- y + Real(1.0);
@@ -472,8 +468,8 @@ function igamc_continued_fraction(a:Real, x:Real) -> Real {
     let yc <- y * c;
     let pk <- pkm1 * z - pkm2 * yc;
     let qk <- qkm1 * z - qkm2 * yc;
-    if (qk != 0) {
-      let r <- pk / qk;
+    if (qk != Real(0.0)) {
+      r <- pk / qk;
       t <- abs((ans - r) / r);
       ans <- r;
     } else {
@@ -565,8 +561,8 @@ function asymptotic_series(a:Real, x:Real, func:Integer) -> Real {
     let absoldterm <- inf;
     etapow:Real[N];
     etapow[1] <- 1;
-    let tot <- 0.0;
-    let afac <- 1.0;
+    let tot <- Real(0.0);
+    let afac <- Real(1.0);
 
   if (func == 1) {
     sgn <- -1;
@@ -575,9 +571,9 @@ function asymptotic_series(a:Real, x:Real, func:Integer) -> Real {
   }
 
   if (λ > Real(1.0)) {
-    η <- sqrt(-Real(2.0) * (log1p(σ) - σ));
-  } else if (λ < Real(1.0)) {
-    η <- -sqrt(-Real(2.0) * (log1p(σ) - σ));
+    η <- sqrt(Real(-2.0) * (log1p(σ) - σ));
+  } else if (λ < 1) {
+    η <- -sqrt(Real(-2.0) * (log1p(σ) - σ));
   } else {
     η <- Real(0.0);
   }
@@ -613,7 +609,7 @@ function asymptotic_series(a:Real, x:Real, func:Integer) -> Real {
     afac <- afac / a;
     ++k;
   }
-  res <- res + sgn * exp(-Real(0.5) * a * η * η) * tot / sqrt(2 * π * a);
+  res <- res + sgn * exp(Real(-0.5) * a * η * η) * tot / sqrt(Real(2.0) * π * a);
 
   return res;
 }
@@ -622,6 +618,7 @@ function asymptotic_series(a:Real, x:Real, func:Integer) -> Real {
 function lanczos_sum_expg_scaled(x:Real) -> Real {
   return ratevl(x, lanczos_sum_expg_scaled_num, length(lanczos_sum_expg_scaled_num) - 1, lanczos_sum_expg_scaled_denom, length(lanczos_sum_expg_scaled_denom) - 1);
 }
+
 
 
 function ratevl(x:Real, num:Real[_], M:Integer, denom:Real[_], N:Integer) -> Real {
@@ -638,7 +635,7 @@ function ratevl(x:Real, num:Real[_], M:Integer, denom:Real[_], N:Integer) -> Rea
     dir <- -1;
     // point at the last element
     pind <- M + 1;
-    y <- 1.0 / x;
+    y <- Real(1.0) / x;
   } else {
 
     // point at the first element
@@ -679,4 +676,3 @@ function ratevl(x:Real, num:Real[_], M:Integer, denom:Real[_], N:Integer) -> Rea
     return num_ans / denom_ans;
   }
 }
-
