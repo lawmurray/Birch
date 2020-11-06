@@ -88,6 +88,12 @@ commands:
       - slack/status:
           fail_only: true
 
+  codecov:
+    description: Upload test coverage to Codecov
+    steps:
+      - codecov/upload:
+          when: on_success
+
   driver:
     description: Build driver
     steps:
@@ -333,7 +339,7 @@ jobs:
             - '*'
             - .*
       - end_if_pull_request
-      - codecov/upload
+      - codecov
       - slack
 
   linux_LinearGaussian:
@@ -350,7 +356,7 @@ jobs:
           unit: true
           mongodb: true
       - end_if_pull_request
-      - codecov/upload
+      - codecov
       - slack
 
   linux_LinearRegression:
@@ -367,7 +373,7 @@ jobs:
           unit: true
           mongodb: true
       - end_if_pull_request
-      - codecov/upload
+      - codecov
       - slack
 
   linux_MixedGaussian:
@@ -384,7 +390,7 @@ jobs:
           unit: true
           mongodb: true
       - end_if_pull_request
-      - codecov/upload
+      - codecov
       - slack
 
   linux_MultiObjectTracking:
@@ -401,7 +407,7 @@ jobs:
           unit: true
           mongodb: true
       - end_if_pull_request
-      - codecov/upload
+      - codecov
       - slack
 
   linux_PoissonGaussian:
@@ -418,7 +424,7 @@ jobs:
           unit: true
           mongodb: true
       - end_if_pull_request
-      - codecov/upload
+      - codecov
       - slack
 
   linux_SIR:
@@ -435,7 +441,7 @@ jobs:
           unit: true
           mongodb: true
       - end_if_pull_request
-      - codecov/upload
+      - codecov
       - slack
 
   linux_VectorBorneDisease:
@@ -452,7 +458,7 @@ jobs:
           unit: true
           mongodb: true
       - end_if_pull_request
-      - codecov/upload
+      - codecov
       - slack
 
   linux_deploy:
@@ -510,7 +516,7 @@ jobs:
             - '*'
             - .*
       - end_if_pull_request
-      - codecov/upload
+      - codecov
       - slack
 
   mac_LinearGaussian:
@@ -525,7 +531,7 @@ jobs:
           tar: birch-lineargaussian
           smoke: true
       - end_if_pull_request
-      - codecov/upload
+      - codecov
       - slack
 
   mac_LinearRegression:
@@ -540,7 +546,7 @@ jobs:
           tar: birch-linearregression
           smoke: true
       - end_if_pull_request
-      - codecov/upload
+      - codecov
       - slack
 
   mac_MixedGaussian:
@@ -555,7 +561,7 @@ jobs:
           tar: birch-mixedgaussian
           smoke: true
       - end_if_pull_request
-      - codecov/upload
+      - codecov
       - slack
 
   mac_MultiObjectTracking:
@@ -570,7 +576,7 @@ jobs:
           tar: birch-multiobjecttracking
           smoke: true
       - end_if_pull_request
-      - codecov/upload
+      - codecov
       - slack
 
   mac_PoissonGaussian:
@@ -585,7 +591,7 @@ jobs:
           tar: birch-poissongaussian
           smoke: true
       - end_if_pull_request
-      - codecov/upload
+      - codecov
       - slack
 
   mac_SIR:
@@ -600,7 +606,7 @@ jobs:
           tar: birch-sir
           smoke: true
       - end_if_pull_request
-      - codecov/upload
+      - codecov
       - slack
 
   mac_VectorBorneDisease:
@@ -615,7 +621,7 @@ jobs:
           tar: birch-vectorbornedisease
           smoke: true
       - end_if_pull_request
-      - codecov/upload
+      - codecov
       - slack
 
   mac_deploy:
@@ -666,7 +672,7 @@ jobs:
                 cd docs.birch.sh
                 mkdocs gh-deploy
               fi
-      - codecov/upload
+      - codecov
       - slack
 
 workflows:
