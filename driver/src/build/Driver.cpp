@@ -496,7 +496,7 @@ void birch::Driver::dist() {
 
   /* archiving command */
   std::stringstream cmd;
-  #ifdef __APPLE__
+  #if defined(__APPLE__) || defined(__FreeBSD__)
   /* BSD tar */
   cmd << "tar -s '#^#" << archive << "/#' -czf " << archive << ".tar.gz";
   #else
