@@ -76,6 +76,7 @@ commands:
     steps:
       - run:
           name: End early with success if a pull request
+          when: always
           command: |
             if [ -n "$CIRCLE_PR_NUMBER" ]; then
               circleci step halt
