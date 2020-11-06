@@ -307,6 +307,16 @@ function lchoose(x:Real32, y:Real32) -> Real32 {
   }
 }
 
+/**
+ * If-then-else: if `cond` is true then return `x`, else return `y`.
+ */
+function if_then_else<Type>(cond:Boolean, x:Type, y:Type) -> Type {
+  if cond {
+    return x;
+  } else {
+    return y;
+  }
+}
 
 function lower_inc_gamma(a:Real, x:Real) -> Real {
 

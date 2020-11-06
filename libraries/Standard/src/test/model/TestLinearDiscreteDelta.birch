@@ -7,6 +7,7 @@ class TestLinearDiscreteDelta < Model {
   α:Real;
   β:Real;
   c:Integer;
+  neg:Boolean;
 
   function initialize() {
     a <- 2*simulate_uniform_int(0, 1) - 1;
@@ -14,12 +15,17 @@ class TestLinearDiscreteDelta < Model {
     α <- simulate_uniform(0.0, 10.0);
     β <- simulate_uniform(0.0, 10.0);
     c <- simulate_uniform_int(0, 100);
+    neg <- simulate_bernoulli(0.5);
   }
 
   function simulate() {
     ρ ~ Beta(α, β);
     x ~ Binomial(n, ρ);
-    y ~ Delta(a*x + c);
+    if neg {
+      y ~ Delta(a*x - c);
+    } else {
+      y ~ Delta(a*x + c);
+    }
   }
 
   function forward() -> Real[_] {

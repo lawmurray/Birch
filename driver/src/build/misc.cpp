@@ -36,9 +36,11 @@ fs::path birch::find(const std::list<fs::path>& paths, const fs::path& path) {
 std::list<fs::path> birch::glob(const std::string& pattern) {
   std::list<fs::path> results;
   glob_t matches;
-  glob(pattern.c_str(), GLOB_NOMAGIC, 0, &matches);
-  for (int i = 0; i < matches.gl_pathc; ++i) {
-    results.push_back(matches.gl_pathv[i]);
+  int rescode = glob(pattern.c_str(), 0, 0, &matches);
+  if (rescode == 0) {
+    for (int i = 0; i < matches.gl_pathc; ++i) {
+      results.push_back(matches.gl_pathv[i]);
+    }
   }
   globfree(&matches);
   return results;

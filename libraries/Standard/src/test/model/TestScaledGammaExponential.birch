@@ -5,16 +5,22 @@ class TestScaledGammaExponential < Model {
   a:Real;
   k:Real;
   θ:Real;
+  neg:Boolean;
 
   function initialize() {
     a <- simulate_uniform(0.0, 10.0);
-    k <- simulate_uniform(1.0, 10.0);
-    θ <- simulate_uniform(0.0, 10.0);
+    k <- simulate_uniform(2.1, 10.0);
+    θ <- simulate_uniform(0.1, 10.0);
+    neg <- simulate_bernoulli(0.5);
   }
 
   function simulate() {
     λ ~ Gamma(k, θ);
-    x ~ Exponential(a*λ);
+    if neg {
+      x ~ Exponential(λ/a);
+    } else {
+      x ~ Exponential(a*λ);
+    }
   }
 
   function forward() -> Real[_] {

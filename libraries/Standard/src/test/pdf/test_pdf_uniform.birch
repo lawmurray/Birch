@@ -1,0 +1,10 @@
+/*
+ * Test uniform pdf evaluations.
+ */
+program test_pdf_uniform(N:Integer <- 10000, B:Integer <- 100,
+    S:Integer <- 5, lazy:Boolean <- false) {
+  let l <- simulate_uniform(-10.0, 10.0);
+  let u <- simulate_uniform(l, l + 20.0);
+  let q <- Uniform(l, u);  
+  test_pdf(q, N, B, S, lazy);
+}

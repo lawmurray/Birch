@@ -52,12 +52,13 @@ final class Multiply(y:Expression<Real>, z:Expression<Real>) <
     return r;
   }
 
-  override function graftDotGaussian() -> TransformDot<MultivariateGaussian>? {
+  override function graftDotMultivariateGaussian() ->
+      TransformDot<MultivariateGaussian>? {
     r:TransformDot<MultivariateGaussian>?;
     if !hasValue() {
-      if (r <- y!.graftDotGaussian())? {
+      if (r <- y!.graftDotMultivariateGaussian())? {
         r!.multiply(z!);
-      } else if (r <- z!.graftDotGaussian())? {
+      } else if (r <- z!.graftDotMultivariateGaussian())? {
         r!.multiply(y!);
       }
     }
@@ -83,13 +84,13 @@ final class Multiply(y:Expression<Real>, z:Expression<Real>) <
     return r;
   }
 
-  override function graftDotNormalInverseGamma(compare:Distribution<Real>) ->
+  override function graftDotMultivariateNormalInverseGamma(compare:Distribution<Real>) ->
       TransformDot<MultivariateNormalInverseGamma>? {
     r:TransformDot<MultivariateNormalInverseGamma>?;
     if !hasValue() {
-      if (r <- y!.graftDotNormalInverseGamma(compare))? {
+      if (r <- y!.graftDotMultivariateNormalInverseGamma(compare))? {
         r!.multiply(z!);
-      } else if (r <- z!.graftDotNormalInverseGamma(compare))? {
+      } else if (r <- z!.graftDotMultivariateNormalInverseGamma(compare))? {
         r!.multiply(y!);
       }
     }

@@ -1,0 +1,29 @@
+/**
+ * Lazy `transpose`.
+ */
+final class MultivariateTranspose(x:Expression<Real[_]>) <
+    MatrixUnaryExpression<Expression<Real[_]>,Real[_],Real[_],Real[_,_]>(x) {
+  override function doRows() -> Integer {
+    return y!.columns();
+  }
+  
+  override function doColumns() -> Integer {
+    return y!.rows();
+  }
+
+  override function doEvaluate(y:Real[_]) -> Real[_,_] {
+    return transpose(y);
+  }
+
+  override function doEvaluateGrad(d:Real[_,_], x:Real[_,_], y:Real[_]) ->
+      Real[_] {
+    return vec(d);
+  }
+}
+
+/**
+ * Lazy `transpose`.
+ */
+function transpose(y:Expression<Real[_]>) -> MultivariateTranspose {
+  return construct<MultivariateTranspose>(y);
+}

@@ -5,8 +5,8 @@ class TestBetaGeometric < Model {
   β:Real;
 
   function initialize() {
-    α <- simulate_uniform(1.0, 100.0);
-    β <- simulate_uniform(1.0, 100.0);
+    α <- simulate_uniform(1.0, 20.0);
+    β <- simulate_uniform(1.0, 20.0);
   }
 
   function simulate() {

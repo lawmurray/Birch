@@ -28,19 +28,19 @@ final class ScalarMultivariateGaussian(μ:Expression<Real[_]>,
   }
 
   function simulate() -> Real[_] {
-    return simulate_multivariate_gaussian(μ.value(), σ2.value());
+    return simulate_multivariate_gaussian(μ.value(), llt(canonical(Σ.value())*σ2.value()));
   }
 
   function simulateLazy() -> Real[_]? {
-    return simulate_multivariate_gaussian(μ.get(), σ2.get());
+    return simulate_multivariate_gaussian(μ.get(), llt(canonical(Σ.get())*σ2.get()));
   }
   
   function logpdf(x:Real[_]) -> Real {
-    return logpdf_multivariate_gaussian(x, μ.value(), σ2.value());
+    return logpdf_multivariate_gaussian(x, μ.value(), llt(canonical(Σ.value())*σ2.value()));
   }
 
   function logpdfLazy(x:Expression<Real[_]>) -> Expression<Real>? {
-    return logpdf_lazy_multivariate_gaussian(x, μ, σ2);
+    return logpdf_lazy_multivariate_gaussian(x, μ, llt(canonical(Σ)*σ2));
   }
 
   function graft() -> Distribution<Real[_]> {

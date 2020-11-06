@@ -1,0 +1,46 @@
+/**
+ * Lazy vector stack.
+ */
+final class MultivariateStack(y:Expression<Real[_]>, z:Expression<Real[_]>) <
+    MultivariateBinaryExpression<Expression<Real[_]>,Expression<Real[_]>,
+    Real[_],Real[_],Real[_],Real[_],Real[_]>(y, z) {  
+  override function doRows() -> Integer {
+    return y!.rows() + z!.rows();
+  }
+
+  override function doEvaluate(y:Real[_], z:Real[_]) -> Real[_] {
+    return stack(y, z);
+  }
+
+  override function doEvaluateGradLeft(d:Real[_], x:Real[_], y:Real[_],
+      z:Real[_]) -> Real[_] {
+    return d[1..global.rows(y)];
+  }
+
+  override function doEvaluateGradRight(d:Real[_], x:Real[_], y:Real[_],
+      z:Real[_]) -> Real[_] {
+    return d[(global.rows(y) + 1)..global.rows(x)];
+  }
+}
+
+/**
+ * Lazy vector stack.
+ */
+function stack(y:Expression<Real[_]>, z:Expression<Real[_]>) ->
+    MultivariateStack {
+  return construct<MultivariateStack>(y, z);
+}
+
+/**
+ * Lazy matrix stack.
+ */
+function stack(y:Real[_], z:Expression<Real[_]>) -> MultivariateStack {
+  return stack(box(y), z);
+}
+
+/**
+ * Lazy matrix stack.
+ */
+function stack(y:Expression<Real[_]>, z:Real[_]) -> MultivariateStack {
+  return stack(y, box(z));
+}

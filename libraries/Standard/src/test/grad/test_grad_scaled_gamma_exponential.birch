@@ -1,0 +1,9 @@
+/*
+ * Test scaled-gamma-exponential grad evaluations.
+ */
+program test_grad_scaled_gamma_exponential(N:Integer <- 1000) {
+  m:TestScaledGammaExponential;
+  m.initialize();
+  m.simulate();
+  test_grad(m.marginal(), N);
+}

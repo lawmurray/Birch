@@ -63,6 +63,21 @@ final class Random<Value> < Expression<Value>(nil) {
   }
 
   /**
+   * Does this have a gradient?
+   */
+  function hasGradient() -> Boolean {
+    return d?;
+  }
+
+  /**
+   * Get the gradient of an evaluated function with respect to this random
+   * variable at its current value.
+   */
+  function getGradient() -> Value {
+    return d!;
+  }
+
+  /**
    * Assume the distribution for the random variate. When a value for the
    * random variate is required, it will be simulated from this distribution
    * and trigger an *update* on the delayed sampling graph.
@@ -74,6 +89,20 @@ final class Random<Value> < Expression<Value>(nil) {
     assert !this.x?;
     p.setRandom(this);
     this.p <- p;
+  }
+
+  /**
+   * Set a pilot value.
+   *
+   * - x: Pilot value.
+   */
+  function setPilot(gen:Integer, x:Value) {
+    assert !this.p?;
+    assert !this.x?;
+    assert this.pilotCount == 0;
+
+    this.x <- x;
+    this.generation <- gen;
   }
 
   override function doDepth() -> Integer {
@@ -103,17 +132,23 @@ final class Random<Value> < Expression<Value>(nil) {
   }
 
   override function doGet() -> Value {
-    assert p?;
-    if p!.supportsLazy() {
-      p!.prune();
-      let x <- p!.simulateLazy();
-      assert x?;
-      p!.updateLazy(this);
-      p!.unlink();
-      p!.unsetRandom(this);
+    if x? {
+      /* pilot value already set */
       return x!;
     } else {
-      return doValue();
+      /* simulate a pilot value */
+      assert p?;
+      if p!.supportsLazy() {
+        p!.prune();
+        let x <- p!.simulateLazy();
+        assert x?;
+        p!.updateLazy(this);
+        p!.unlink();
+        p!.unsetRandom(this);
+        return x!;
+      } else {
+        return doValue();
+      }
     }
   }
 
@@ -210,15 +245,6 @@ final class Random<Value> < Expression<Value>(nil) {
     return nil;
   } 
 
-  override function graftIndependentInverseGamma() -> IndependentInverseGamma? {
-    if !hasValue() {
-      let q <- p!.graftIndependentInverseGamma();
-      p <-? Distribution<Value>?(q);
-      return q;
-    }
-    return nil;
-  } 
-
   override function graftInverseWishart() -> InverseWishart? {
     if !hasValue() {
       let q <- p!.graftInverseWishart();
@@ -283,16 +309,6 @@ final class Random<Value> < Expression<Value>(nil) {
     return nil;
   }
 
-  override function graftMatrixNormalInverseGamma(compare:Distribution<Real[_]>) ->
-      MatrixNormalInverseGamma? {
-    if !hasValue() {
-      let q <- p!.graftMatrixNormalInverseGamma(compare);
-      p <-? Distribution<Value>?(q);
-      return q;
-    }
-    return nil;
-  }
-
   override function graftMatrixNormalInverseWishart(compare:Distribution<LLT>) ->
       MatrixNormalInverseWishart? {
     if !hasValue() {
@@ -332,4 +348,12 @@ final class Random<Value> < Expression<Value>(nil) {
       buffer.setNil();
     }
   }
+}
+
+/**
+ * Create a Random.
+ */
+function Random<Value>() -> Random<Value> {
+  o:Random<Value>;
+  return o;
 }

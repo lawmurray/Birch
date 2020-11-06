@@ -1,7 +1,7 @@
 /*
  * Test negative binomial cdf evaluations.
  */
-program test_cdf_negative_binomial(N:Integer <- 10000) {
+program test_cdf_negative_binomial() {
   let k <- simulate_uniform_int(1, 20);
   let ρ <- simulate_uniform(0.0, 1.0);
   let q <- NegativeBinomial(k, ρ);

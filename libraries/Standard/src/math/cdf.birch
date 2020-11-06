@@ -195,7 +195,7 @@ function cdf_gaussian(x:Real, μ:Real, σ2:Real) -> Real {
  * CDF of a Student's $t$ variate.
  *
  * - x: The variate.
- * - ν: Degrees of freedom.
+ * - k: Degrees of freedom.
  *
  * Return: the cumulative probability.
  */
@@ -211,15 +211,15 @@ function cdf_student_t(x:Real, ν:Real) -> Real {
  * CDF of a Student's $t$ variate with location and scale.
  *
  * - x: The variate.
- * - ν: Degrees of freedom.
+ * - k: Degrees of freedom.
  * - μ: Location.
  * - σ2: Squared scale.
  *
  * Return: the cumulative probability.
  */
-function cdf_student_t(x:Real, ν:Real, μ:Real, σ2:Real) -> Real {
+function cdf_student_t(x:Real, k:Real, μ:Real, σ2:Real) -> Real {
   assert 0.0 < σ2;
-  return cdf_student_t((x - μ)/sqrt(σ2), ν);
+  return cdf_student_t((x - μ)/sqrt(σ2/k), k);
 }
 
 /**
@@ -310,7 +310,7 @@ function cdf_inverse_gamma(x:Real, α:Real, β:Real) -> Real {
  */
 function cdf_normal_inverse_gamma(x:Real, μ:Real, σ2:Real, α:Real,
     β:Real) -> Real {
-  return cdf_student_t(x, 2.0*α, μ, σ2*β/α);
+  return cdf_student_t(x, 2.0*α, μ, σ2*2.0*β);
 }
 
 /**
@@ -381,7 +381,7 @@ function cdf_lomax(x:Real, λ:Real, α:Real) -> Real {
  */
 function cdf_normal_inverse_gamma_gaussian(x:Real, μ:Real, a2:Real,
     α:Real, β:Real) -> Real {
-  return cdf_student_t(x, 2.0*α, μ, (β/α)*(1.0 + a2));
+  return cdf_student_t(x, 2.0*α, μ, 2.0*β*(1.0 + a2));
 }
 
 /**
@@ -400,7 +400,7 @@ function cdf_normal_inverse_gamma_gaussian(x:Real, μ:Real, a2:Real,
  */
 function cdf_linear_normal_inverse_gamma_gaussian(x:Real, a:Real,
     μ:Real, a2:Real, c:Real, α:Real, β:Real) -> Real {
-  return cdf_student_t(x, 2.0*α, a*μ + c, (β/α)*(1.0 + a*a*a2));
+  return cdf_student_t(x, 2.0*α, a*μ + c, 2.0*β*(1.0 + a*a*a2));
 }
 
 /**
@@ -422,5 +422,5 @@ function cdf_linear_multivariate_normal_inverse_gamma_gaussian(x:Real,
   let μ <- solve(Λ, ν);
   let β <- γ - 0.5*dot(μ, ν);
   return cdf_student_t(x, 2.0*α, dot(a, μ) + c,
-      (β/α)*(1.0 + dot(a, solve(Λ, a))));
+      2.0*β*(1.0 + dot(a, solve(Λ, a))));
 }

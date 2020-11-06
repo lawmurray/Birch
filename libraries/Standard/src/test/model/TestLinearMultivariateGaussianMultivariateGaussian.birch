@@ -7,6 +7,7 @@ class TestLinearMultivariateGaussianMultivariateGaussian < Model {
   Σ_0:Real[5,5];
   c:Real[5];
   Σ_1:Real[5,5];
+  neg:Boolean;
 
   function initialize() {
     for i in 1..5 {
@@ -18,13 +19,18 @@ class TestLinearMultivariateGaussianMultivariateGaussian < Model {
         A[i,j] <- simulate_uniform(-2.0, 2.0);
       }
     }
-    Σ_0 <- Σ_0*transpose(Σ_0);
-    Σ_1 <- Σ_1*transpose(Σ_1);
+    Σ_0 <- Σ_0*transpose(Σ_0) + diagonal(1.0e-2, 5);
+    Σ_1 <- Σ_1*transpose(Σ_1) + diagonal(1.0e-2, 5);
+    neg <- simulate_bernoulli(0.5);
   }
 
   function simulate() {
     μ ~ Gaussian(μ_0, Σ_0);
-    x ~ Gaussian(A*μ + c, Σ_1);
+    if neg {
+      x ~ Gaussian(A*μ - c, Σ_1);
+    } else {
+      x ~ Gaussian(A*μ + c, Σ_1);
+    }
   }
 
   function forward() -> Real[_] {

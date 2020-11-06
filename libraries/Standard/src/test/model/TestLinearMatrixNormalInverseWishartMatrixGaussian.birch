@@ -11,9 +11,10 @@ class TestLinearMatrixNormalInverseWishartMatrixGaussian < Model {
   C:Real[n,p];
   k:Real;
   Ψ:Real[p,p];
+  neg:Boolean;
 
   function initialize() {
-    k <- simulate_uniform(p - 1.0, p + 9.0);
+    k <- p + 1.0 + simulate_uniform(0.0, 10.0);
     for i in 1..n {
       for j in 1..n {
         A[i,j] <- simulate_uniform(-2.0, 2.0);
@@ -29,14 +30,19 @@ class TestLinearMatrixNormalInverseWishartMatrixGaussian < Model {
         Ψ[i,j] <- simulate_uniform(-10.0, 10.0);
       }
     }
-    U <- U*transpose(U);
-    Ψ <- Ψ*transpose(Ψ);
+    U <- U*transpose(U) + diagonal(1.0e-2, n);
+    Ψ <- Ψ*transpose(Ψ) + diagonal(1.0e-2, p);
+    neg <- simulate_bernoulli(0.5);
   }
 
   function simulate() {
     V ~ InverseWishart(Ψ, k);
     X ~ Gaussian(M, U, V);
-    Y ~ Gaussian(A*X + C, V);
+    if neg {
+      Y ~ Gaussian(A*X - C, V);
+    } else {
+      Y ~ Gaussian(A*X + C, V);
+    }
   }
 
   function forward() -> Real[_] {

@@ -1,0 +1,10 @@
+/*
+ * Test inverse-gamma-gamma pdf evaluations.
+ */
+program test_pdf_inverse_gamma_gamma(N:Integer <- 10000, B:Integer <- 1000,
+    S:Integer <- 20, lazy:Boolean <- false) {
+  m:TestInverseGammaGamma;
+  m.initialize();
+  m.simulate();
+  test_pdf(m.marginal(), N, B, S, lazy);
+}

@@ -216,12 +216,7 @@ function logpdf_uniform(x:Real, l:Real, u:Real) -> Real {
  */
 function logpdf_exponential(x:Real, λ:Real) -> Real {
   assert 0.0 < λ;
-
-  if (x >= 0.0) {
-    return log(λ) - λ*x;
-  } else {
-    return -inf;
-  }
+  return if_then_else(x < 0.0, -inf, log(λ) - λ*x);
 }
 
 /**
@@ -235,12 +230,8 @@ function logpdf_exponential(x:Real, λ:Real) -> Real {
  */
 function logpdf_weibull(x:Real, k:Real, λ:Real) -> Real {
   assert 0.0 < λ;
-
-  if (x >= 0.0) {
-    return log(k) + (k - 1.0)*log(x) - k*log(λ) - pow(x/λ, k);
-  } else {
-    return -inf;
-  }
+  return if_then_else(x < 0.0, -inf, log(k) + (k - 1.0)*log(x) -
+      k*log(λ) - pow(x/λ, k));
 }
 
 /**
@@ -254,16 +245,7 @@ function logpdf_weibull(x:Real, k:Real, λ:Real) -> Real {
  */
 function logpdf_gaussian(x:Real, μ:Real, σ2:Real) -> Real {
   assert 0.0 <= σ2;
-  
-  if (σ2 == 0.0) {
-    if (x == μ) {
-      return inf;
-    } else {
-      return -inf;
-    }
-  } else {
-    return -0.5*(pow(x - μ, 2.0)/σ2 + log(2.0*π*σ2));
-  }
+  return -0.5*(pow(x - μ, 2.0)/σ2 + log(2.0*π*σ2));
 }
 
 /**
@@ -277,7 +259,8 @@ function logpdf_gaussian(x:Real, μ:Real, σ2:Real) -> Real {
 function logpdf_student_t(x:Real, k:Real) -> Real {
   assert 0.0 < k;
   let a <- 0.5*(k + 1.0);
-  return lgamma(a) - lgamma(0.5*k) - 0.5*log(π*k) - a*log1p(x*x/k);
+  let b <- 0.5*k;
+  return lgamma(a) - lgamma(b) - 0.5*log(π*k) - a*log1p(x*x/k);
 }
 
 /**
@@ -286,14 +269,17 @@ function logpdf_student_t(x:Real, k:Real) -> Real {
  * - x: The variate.
  * - k: Degrees of freedom.
  * - μ: Location.
- * - σ2: Squared scale.
+ * - v: Scale.
  *
  * Returns: the log probability density.
  */
-function logpdf_student_t(x:Real, k:Real, μ:Real, σ2:Real) -> Real {
+function logpdf_student_t(x:Real, k:Real, μ:Real, v:Real) -> Real {
   assert 0.0 < k;
-  assert 0.0 < σ2;
-  return logpdf_student_t((x - μ)/sqrt(σ2), k) - 0.5*log(σ2);
+  assert 0.0 < v;
+  let a <- 0.5*(k + 1.0);
+  let b <- 0.5*k;
+  let z <- x - μ;
+  return lgamma(a) - lgamma(b) - 0.5*log(π*v) - a*log1p(z*z/v);
 }
 
 /**
@@ -346,12 +332,8 @@ function logpdf_chi_squared(x:Real, ν:Real) -> Real {
 function logpdf_gamma(x:Real, k:Real, θ:Real) -> Real {
   assert 0.0 < k;
   assert 0.0 < θ;
-  
-  if (x > 0.0) {
-    return (k - 1.0)*log(x) - x/θ - lgamma(k) - k*log(θ);
-  } else {
-    return -inf;
-  }
+  return if_then_else(x < 0.0, -inf, (k - 1.0)*log(x) - x/θ - lgamma(k) -
+      k*log(θ));
 }
 
 /**
@@ -364,10 +346,10 @@ function logpdf_gamma(x:Real, k:Real, θ:Real) -> Real {
  * Returns: the log probability density.
  */
 function logpdf_wishart(X:LLT, Ψ:LLT, ν:Real) -> Real {
-  assert ν > rows(Ψ) - 1;
-  let p <- rows(Ψ);
+  let p <- columns(Ψ);
+  assert ν > p - 1;
   return 0.5*(ν - p - 1.0)*ldet(X) - 0.5*trace(solve(Ψ, canonical(X))) -
-      0.5*ν*p*log(2.0) - 0.5*ν*ldet(Ψ) - lgamma(0.5*ν, p);
+      0.5*ν*(p*log(2.0) + ldet(Ψ)) - lgamma(0.5*ν, p);
 }
 
 /**
@@ -382,12 +364,8 @@ function logpdf_wishart(X:LLT, Ψ:LLT, ν:Real) -> Real {
 function logpdf_inverse_gamma(x:Real, α:Real, β:Real) -> Real {
   assert 0.0 < α;
   assert 0.0 < β;
-  
-  if (x > 0.0) {
-    return α*log(β) - (α + 1.0)*log(x) - β/x - lgamma(α);
-  } else {
-    return -inf;
-  }
+  return if_then_else(x < 0.0, -inf, α*log(β) - (α + 1.0)*log(x) - β/x -
+      lgamma(α));
 }
 
 /**
@@ -400,11 +378,10 @@ function logpdf_inverse_gamma(x:Real, α:Real, β:Real) -> Real {
  * Returns: the log probability density.
  */
 function logpdf_inverse_wishart(X:LLT, Ψ:LLT, ν:Real) -> Real {
-  assert ν > rows(Ψ) - 1;
   let p <- rows(Ψ);
-  return 0.5*ν*ldet(Ψ) - 0.5*(ν + p - 1.0)*ldet(X) -
-      0.5*trace(solve(X, canonical(transpose(Ψ)))) - 0.5*ν*p*log(2.0) -
-      lgamma(0.5*ν, p);
+  assert ν > p - 1;
+  return -0.5*(ν + p - 1.0)*ldet(X) - 0.5*trace(solve(X, canonical(Ψ))) -
+      0.5*ν*(p*log(2.0) - ldet(Ψ)) - lgamma(0.5*ν, p);
 }
 
 /**
@@ -421,12 +398,8 @@ function logpdf_inverse_gamma_gamma(x:Real, k:Real, α:Real, β:Real) -> Real {
   assert 0.0 < k;
   assert 0.0 < α;
   assert 0.0 < β;
-
-  if x > 0.0 {
-    return (k - 1)*log(x) + α*log(β) - (α + k)*log(β + x) - lbeta(α, k);
-  } else {
-    return -inf;
-  }
+  return if_then_else(x < 0.0, -inf, (k - 1)*log(x) + α*log(β) -
+      (α + k)*log(β + x) - lbeta(α, k));
 }
 
 /**
@@ -442,7 +415,7 @@ function logpdf_inverse_gamma_gamma(x:Real, k:Real, α:Real, β:Real) -> Real {
  */
 function logpdf_normal_inverse_gamma(x:Real, μ:Real, a2:Real, α:Real,
     β:Real) -> Real {
-  return logpdf_student_t(x, 2.0*α, μ, a2*β/α);
+  return logpdf_student_t(x, 2.0*α, μ, a2*2.0*β);
 }
 
 /**
@@ -537,11 +510,8 @@ function logpdf_gamma_poisson(x:Integer, k:Real, θ:Real) -> Real {
 function logpdf_lomax(x:Real, λ:Real, α:Real) -> Real {
   assert 0.0 < λ;
   assert 0.0 < α;
-  if x >= 0.0 {
-    return log(α) - log(λ) - (α + 1.0)*log1p(x/λ);
-  } else {
-    return -inf;
-  }
+  return if_then_else(x < 0.0, -inf, log(α) - log(λ) -
+      (α + 1.0)*log1p(x/λ));
 }
 
 /**
@@ -623,7 +593,7 @@ function logpdf_crp_categorical(k:Integer, α:Real, θ:Real,
  */
 function logpdf_normal_inverse_gamma_gaussian(x:Real, μ:Real, a2:Real,
     α:Real, β:Real) -> Real {
-  return logpdf_student_t(x, 2.0*α, μ, (β/α)*(1.0 + a2));
+  return logpdf_student_t(x, 2.0*α, μ, 2.0*β*(1.0 + a2));
 }
 
 /**
@@ -642,7 +612,7 @@ function logpdf_normal_inverse_gamma_gaussian(x:Real, μ:Real, a2:Real,
  */
 function logpdf_linear_normal_inverse_gamma_gaussian(x:Real, a:Real,
     μ:Real, a2:Real, c:Real, α:Real, β:Real) -> Real {
-  return logpdf_student_t(x, 2.0*α, a*μ + c, (β/α)*(1.0 + a*a*a2));
+  return logpdf_student_t(x, 2.0*α, a*μ + c, 2.0*β*(1.0 + a*a*a2));
 }
 
 /**
@@ -705,8 +675,7 @@ function logpdf_multivariate_gaussian(x:Real[_], μ:Real[_], σ2:Real) -> Real {
  */
 function logpdf_multivariate_normal_inverse_gamma(x:Real[_], ν:Real[_],
     Λ:LLT, α:Real, β:Real) -> Real {
-  return logpdf_multivariate_student_t(x, 2.0*α, solve(Λ, ν),
-      llt((β/α)*canonical(inv(Λ))));
+  return logpdf_multivariate_student_t(x, 2.0*α, solve(Λ, ν), inv(Λ), 2.0*β);
 }
 
 /**
@@ -727,7 +696,7 @@ function logpdf_multivariate_normal_inverse_gamma_multivariate_gaussian(x:Real[_
   let μ <- solve(Λ, ν);
   let β <- γ - 0.5*dot(μ, ν);
   return logpdf_multivariate_student_t(x, 2.0*α, μ,
-      llt((β/α)*(identity(n) + canonical(inv(Λ)))));
+      llt(identity(n) + canonical(inv(Λ))), 2.0*β);
 }
 
 /**
@@ -751,7 +720,7 @@ function logpdf_linear_multivariate_normal_inverse_gamma_multivariate_gaussian(
   let μ <- solve(Λ, ν);
   let β <- γ - 0.5*dot(μ, ν);
   return logpdf_multivariate_student_t(x, 2.0*α, A*μ + c,
-      llt((β/α)*(identity(n) + A*solve(Λ, transpose(A)))));
+      llt(identity(n) + A*solve(Λ, transpose(A))), 2.0*β);
 }
 
 /**
@@ -773,7 +742,7 @@ function logpdf_linear_multivariate_normal_inverse_gamma_gaussian(x:Real,
   let μ <- solve(Λ, ν);
   let β <- γ - 0.5*dot(μ, ν);
   return logpdf_student_t(x, 2.0*α, dot(a, μ) + c,
-      (β/α)*(1.0 + dot(a, solve(Λ, a))));
+      2.0*β*(1.0 + dot(a, solve(Λ, a))));
 }
 
 /**
@@ -863,64 +832,6 @@ function logpdf_matrix_gaussian(X:Real[_,_], M:Real[_,_], σ2:Real) ->
 }
 
 /**
- * Observe a matrix normal-inverse-gamma variate.
- *
- * - X: The variate.
- * - N: Precision times mean matrix.
- * - Λ: Precision.
- * - α: Variance shape.
- * - β: Variance scales.
- *
- * Returns: the log probability density.
- */
-function logpdf_matrix_normal_inverse_gamma(X:Real[_,_], N:Real[_,_], Λ:LLT,
-    α:Real, β:Real[_]) -> Real {
-  return logpdf_matrix_student_t(X, 2.0*α, solve(Λ, N), inv(Λ), β/α);
-}
-
-/**
- * Observe a Gaussian variate with matrix normal inverse-gamma prior.
- *
- * - X: The variate.
- * - N: Precision times mean matrix.
- * - Λ: Precision.
- * - α: Variance shape.
- * - γ: Variance scale accumulators.
- *
- * Returns: the log probability density.
- */
-function logpdf_matrix_normal_inverse_gamma_matrix_gaussian(X:Real[_,_],
-    N:Real[_,_], Λ:LLT, α:Real, γ:Real[_]) -> Real {
-  let M <- solve(Λ, N);
-  let Σ <- llt(identity(rows(M)) + canonical(inv(Λ)));
-  let β <- γ - 0.5*diagonal(transpose(M)*N);
-  return logpdf_matrix_student_t(X, 2.0*α, M, Σ, β/α);
-}
-
-/**
- * Observe a Gaussian variate with matrix normal inverse-gamma prior.
- *
- * - X: The variate.
- * - A: Scale.
- * - N: Precision times mean matrix.
- * - Λ: Precision.
- * - C: Offset.
- * - α: Variance shape.
- * - γ: Variance scale accumulators.
- *
- * Returns: the log probability density.
- */
-function logpdf_linear_matrix_normal_inverse_gamma_matrix_gaussian(
-    X:Real[_,_], A:Real[_,_], N:Real[_,_], Λ:LLT, C:Real[_,_], α:Real,
-    γ:Real[_]) -> Real {
-  let n <- rows(A);
-  let M <- solve(Λ, N);
-  let β <- γ - 0.5*diagonal(transpose(M)*N);
-  let Σ <- llt(identity(n) + A*solve(Λ, transpose(A)));
-  return logpdf_matrix_student_t(X, 2.0*α, A*M + C, Σ, β/α);
-}
-
-/**
  * Observe a matrix normal-inverse-Wishart variate.
  *
  * - X: The variate.
@@ -933,9 +844,10 @@ function logpdf_linear_matrix_normal_inverse_gamma_matrix_gaussian(
  */
 function logpdf_matrix_normal_inverse_wishart(X:Real[_,_], N:Real[_,_],
     Λ:LLT,  Ψ:LLT, k:Real) -> Real {
+  let n <- rows(N);
   let p <- columns(N);
   let M <- solve(Λ, N);
-  let Σ <- llt(canonical(inv(Λ))/(k - p + 1.0));
+  let Σ <- inv(Λ);
   return logpdf_matrix_student_t(X, k - p + 1.0, M, Σ, Ψ);
 }
 
@@ -955,7 +867,7 @@ function logpdf_matrix_normal_inverse_wishart_matrix_gaussian(X:Real[_,_],
   let n <- rows(N);
   let p <- columns(N);
   let M <- solve(Λ, N);
-  let Σ <- llt((identity(n) + canonical(inv(Λ)))/(k - p + 1.0));
+  let Σ <- llt(identity(n) + canonical(inv(Λ)));
   return logpdf_matrix_student_t(X, k - p + 1.0, M, Σ, Ψ);
 }
 
@@ -979,8 +891,31 @@ function logpdf_linear_matrix_normal_inverse_wishart_matrix_gaussian(
   let n <- rows(A);
   let p <- columns(N);
   let M <- solve(Λ, N);
-  let Σ <- llt((identity(rows(A)) + A*solve(Λ, transpose(A)))/(k - p + 1.0));
+  let Σ <- llt(identity(n) + A*solve(Λ, transpose(A)));
   return logpdf_matrix_student_t(X, k - p + 1.0, A*M + C, Σ, Ψ);
+}
+
+/**
+ * Observe a Gaussian variate with linear transformation of a
+ * matrix-normal-inverse-Wishart prior.
+ *
+ * - x: The variate.
+ * - a: Scale.
+ * - N: Prior precision times mean matrix.
+ * - Λ: Prior precision.
+ * - c: Offset.
+ * - Ψ: Prior variance shape.
+ * - k: Prior degrees of freedom.
+ *
+ * Returns: the log probability density.
+ */
+function logpdf_linear_matrix_normal_inverse_wishart_multivariate_gaussian(
+    x:Real[_], a:Real[_], N:Real[_,_], Λ:LLT, c:Real[_], Ψ:LLT, k:Real) ->
+    Real {
+  let p <- columns(N);
+  let M <- solve(Λ, N);
+  let σ2 <- 1.0 + dot(a, solve(Λ, a));
+  return logpdf_multivariate_student_t(x, k - p + 1.0, dot(a, M) + c, σ2, Ψ);
 }
 
 /**
@@ -990,35 +925,36 @@ function logpdf_linear_matrix_normal_inverse_wishart_matrix_gaussian(
  * - x: The variate.
  * - k: Degrees of freedom.
  * - m: Mean.
- * - Σ: Covariance.
+ * - U: Spread.
+ * - v: Scale.
  *
  * Returns: the log probability density.
  */
-function logpdf_multivariate_student_t(x:Real[_], k:Real, μ:Real[_], Σ:LLT)
-    -> Real {
-  let n <- length(μ);
-  let a <- 0.5*(k + n);
-  return lgamma(a) - lgamma(0.5*k) - 0.5*n*log(k*π) - 0.5*ldet(Σ) -
-      a*log1p(dot(x - μ, solve(Σ, x - μ))/k) ;
+function logpdf_multivariate_student_t(x:Real[_], k:Real, μ:Real[_], U:LLT,
+    v:Real) -> Real {
+  return logpdf_multivariate_student_t(x, k, μ, v, U);
 }
 
 /**
  * Observe a multivariate Student's $t$-distribution variate with location
- * and diagonal scale.
+ * and scale.
  *
  * - x: The variate.
  * - k: Degrees of freedom.
- * - μ: Mean.
- * - σ2: Variance.
+ * - m: Mean.
+ * - u: Scale.
+ * - V: Spread.
  *
  * Returns: the log probability density.
  */
-function logpdf_multivariate_student_t(x:Real[_], k:Real, μ:Real[_],
-    σ2:Real) -> Real {
-  let n <- length(μ);
-  let a <- 0.5*(k + n);
-  return lgamma(a) - lgamma(0.5*k) - 0.5*n*log(k*π) - 0.5*n*log(σ2) -
-      a*log1p(dot(x - μ)/(σ2*k));
+function logpdf_multivariate_student_t(x:Real[_], k:Real, μ:Real[_], u:Real,
+    V:LLT) -> Real {
+  let p <- length(μ);
+  let a <- 0.5*(k + p);
+  let b <- 0.5*k;
+  let z <- x - μ;
+  return lgamma(a) - 0.5*p*log(π) - lgamma(b) - 0.5*p*log(u) -
+      0.5*ldet(V) - a*log1p(dot(z, solve(V, z))/u);
 }
 
 /**
@@ -1037,36 +973,12 @@ function logpdf_matrix_student_t(X:Real[_,_], k:Real, M:Real[_,_], U:LLT,
     V:LLT) -> Real {
   let n <- rows(M);
   let p <- columns(M);
-  let a <- 0.5*(k + n + p - 1.0);
-  let b <- 0.5*(k + p - 1.0);
-  let E <- identity(n) + solve(U, X - M)*solve(V, transpose(X - M));
+  let a <- 0.5*(k + p + n - 1.0);
+  let b <- 0.5*(k + n - 1.0);
+  let Z <- X - M;
   
-  return lgamma(a, p) - lgamma(b, p) - 0.5*n*p*log(π) - 0.5*n*ldet(U) -
-      0.5*p*ldet(V) - a*ldet(E);
-}
-
-/**
- * Observe a matrix Student's $t$-distribution variate with location
- * and diagonal scale.
- *
- * - X: The variate.
- * - k: Degrees of freedom.
- * - M: Mean.
- * - U: Among-row covariance.
- * - v: Independent within-column covariance.
- *
- * Returns: the log probability density.
- */
-function logpdf_matrix_student_t(X:Real[_,_], k:Real, M:Real[_,_], U:LLT,
-    v:Real[_]) -> Real {
-  let n <- rows(M);
-  let p <- columns(M);
-  let a <- 0.5*(k + n + p - 1.0);
-  let b <- 0.5*(k + p - 1.0);
-  let E <- identity(n) + solve(U, X - M)*solve(diagonal(v), transpose(X - M));
-  
-  return lgamma(a, p) - lgamma(b, p) - 0.5*n*p*log(π) - 0.5*n*ldet(U) -
-      0.5*p*ldet(diagonal(v)) - a*ldet(E);
+  return lgamma(a, n) - 0.5*p*n*log(π) - lgamma(b, n) - 0.5*p*ldet(U) -
+      0.5*n*ldet(V) - a*ldet(identity(n) + solve(U, Z)*solve(V, transpose(Z)));
 }
 
 /**

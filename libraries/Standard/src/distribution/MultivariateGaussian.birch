@@ -43,15 +43,20 @@ class MultivariateGaussian(μ:Expression<Real[_]>, Σ:Expression<LLT>) <
 
   function graft() -> Distribution<Real[_]> {
     prune();
-    m1:TransformLinearMultivariate<MultivariateGaussian>?;
-    m2:MultivariateGaussian?;
+    s1:InverseWishart?;
+    m1:TransformDotMultivariate<MatrixNormalInverseWishart>?;
+    m2:TransformLinearMultivariate<MultivariateGaussian>?;
+    m3:MultivariateGaussian?;
     r:Distribution<Real[_]> <- this;
     
     /* match a template */
-    if (m1 <- μ.graftLinearMultivariateGaussian())? {
-      r <- LinearMultivariateGaussianMultivariateGaussian(m1!.A, m1!.x, m1!.c, Σ);
-    } else if (m2 <- μ.graftMultivariateGaussian())? {
-      r <- MultivariateGaussianMultivariateGaussian(m2!, Σ);
+    let compare <- Σ.distribution();
+    if compare? && (m1 <- μ.graftDotMatrixNormalInverseWishart(compare!))? {
+      r <- LinearMatrixNormalInverseWishartMultivariateGaussian(m1!.a, m1!.X, m1!.c);
+    } else if (m2 <- μ.graftLinearMultivariateGaussian())? {
+      r <- LinearMultivariateGaussianMultivariateGaussian(m2!.A, m2!.x, m2!.c, Σ);
+    } else if (m3 <- μ.graftMultivariateGaussian())? {
+      r <- MultivariateGaussianMultivariateGaussian(m3!, Σ);
     }
 
     return r;
@@ -60,14 +65,14 @@ class MultivariateGaussian(μ:Expression<Real[_]>, Σ:Expression<LLT>) <
   function graftMultivariateGaussian() -> MultivariateGaussian? {
     prune();
     m1:TransformLinearMultivariate<MultivariateGaussian>?;
-    m2:MultivariateGaussian?;
+    m3:MultivariateGaussian?;
     r:MultivariateGaussian <- this;
     
     /* match a template */
     if (m1 <- μ.graftLinearMultivariateGaussian())? {
       r <- LinearMultivariateGaussianMultivariateGaussian(m1!.A, m1!.x, m1!.c, Σ);
-    } else if (m2 <- μ.graftMultivariateGaussian())? {
-      r <- MultivariateGaussianMultivariateGaussian(m2!, Σ);
+    } else if (m3 <- μ.graftMultivariateGaussian())? {
+      r <- MultivariateGaussianMultivariateGaussian(m3!, Σ);
     }
 
     return r;

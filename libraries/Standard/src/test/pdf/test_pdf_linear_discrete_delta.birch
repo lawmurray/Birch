@@ -6,7 +6,7 @@ program test_pdf_linear_discrete_delta(N:Integer <- 10000, lazy:Boolean <- false
   m.initialize();
   m.simulate();
   if lazy {
-    warn("lazy not support, reverting to eager.");
+    warn("lazy not supported, reverting to eager.");
   }
   test_pdf(m.marginal(), N, false);
 }

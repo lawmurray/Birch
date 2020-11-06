@@ -6,18 +6,24 @@ class TestLinearGaussianGaussian < Model {
   μ_0:Real;
   σ2_0:Real;
   σ2_1:Real;
+  neg:Boolean;
 
   function initialize() {
     a <- simulate_uniform(-2.0, 2.0);
     c <- simulate_uniform(-10.0, 10.0);
     μ_0 <- simulate_uniform(-10.0, 10.0);
-    σ2_0 <- simulate_uniform(0.0, 2.0);
-    σ2_1 <- simulate_uniform(0.0, 2.0);
+    σ2_0 <- simulate_uniform(0.1, 2.0);
+    σ2_1 <- simulate_uniform(0.1, 2.0);
+    neg <- simulate_bernoulli(0.5);
   }
 
   function simulate() {
     μ_1 ~ Gaussian(μ_0, σ2_0);
-    x ~ Gaussian(a*μ_1 + c, σ2_1);
+    if neg {
+      x ~ Gaussian(μ_1/a - c, σ2_1);
+    } else {
+      x ~ Gaussian(a*μ_1 + c, σ2_1);
+    }
   }
 
   function forward() -> Real[_] {

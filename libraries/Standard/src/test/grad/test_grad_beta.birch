@@ -1,0 +1,9 @@
+/*
+ * Test beta grad evaluations.
+ */
+program test_grad_beta(N:Integer <- 1000) {
+  let α <- simulate_uniform(1.0, 10.0);
+  let β <- simulate_uniform(1.0, 10.0);
+  let q <- Beta(α, β);  
+  test_grad(q, N);
+}

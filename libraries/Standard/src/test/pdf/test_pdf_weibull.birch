@@ -1,0 +1,10 @@
+/*
+ * Test Weibull pdf evaluations.
+ */
+program test_pdf_weibull(N:Integer <- 10000, B:Integer <- 100,
+    S:Integer <- 5, lazy:Boolean <- false) {
+  let k <- simulate_uniform(1.0, 10.0);
+  let λ <- simulate_uniform(0.1, 10.0);
+  let q <- Weibull(k, λ);  
+  test_pdf(q, N, B, S, lazy);
+}

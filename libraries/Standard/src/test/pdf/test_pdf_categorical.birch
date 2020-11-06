@@ -1,11 +1,12 @@
 /*
  * Test categorical pmf.
  */
-program test_pdf_categorical(D:Integer <- 10, N:Integer <- 10000, lazy:Boolean <- false) {
+program test_pdf_categorical(D:Integer <- 10, N:Integer <- 10000,
+    lazy:Boolean <- false) {
   let ρ <- simulate_dirichlet(simulate_uniform(1.0, 10.0), D);
   let π <- Categorical(ρ);
   if lazy {
-    warn("lazy not support, reverting to eager.");
+    warn("lazy not supported, reverting to eager.");
   }
   test_pdf(π, N, false);
 }

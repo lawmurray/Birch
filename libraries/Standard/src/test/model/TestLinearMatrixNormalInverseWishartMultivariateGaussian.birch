@@ -1,0 +1,106 @@
+class TestLinearMatrixNormalInverseWishartMultivariateGaussian < Model {
+  V:Random<LLT>;
+  X:Random<Real[_,_]>;
+  y:Random<Real[_]>;
+
+  n:Integer <- 5;
+  p:Integer <- 2;
+  a:Real[n];
+  M:Real[n,p];
+  U:Real[n,n];
+  c:Real[p];
+  k:Real;
+  Ψ:Real[p,p];
+  neg:Boolean;
+
+  function initialize() {
+    k <- p + 1.0 + simulate_uniform(0.0, 10.0);
+    for i in 1..n {
+      a[i] <- simulate_uniform(-2.0, 2.0);
+      for j in 1..n {
+        U[i,j] <- simulate_uniform(-2.0, 2.0);
+      }
+      for j in 1..p {
+        M[i,j] <- simulate_uniform(-10.0, 10.0);
+      }
+    }
+    for i in 1..p {
+      c[i] <- simulate_uniform(-10.0, 10.0);
+      for j in 1..p {
+        Ψ[i,j] <- simulate_uniform(-10.0, 10.0);
+      }
+    }
+    U <- U*transpose(U) + diagonal(1.0e-2, n);
+    Ψ <- Ψ*transpose(Ψ) + diagonal(1.0e-2, p);
+    neg <- simulate_bernoulli(0.5);
+  }
+
+  function simulate() {
+    V ~ InverseWishart(Ψ, k);
+    X ~ Gaussian(M, U, V);
+    if neg {
+      y ~ Gaussian(dot(a, X) - c, V);
+    } else {
+      y ~ Gaussian(dot(a, X) + c, V);
+    }
+  }
+
+  function forward() -> Real[_] {
+    assert !V.hasValue();
+    V.value();
+    assert !X.hasValue();
+    X.value();
+    assert !y.hasValue();
+    y.value();
+    return vectorize();
+  }
+
+  function backward() -> Real[_] {
+    assert !y.hasValue();
+    y.value();
+    assert !X.hasValue();
+    X.value();
+    assert !V.hasValue();
+    V.value();
+    return vectorize();
+  }
+
+  function forwardLazy() -> Real[_] {
+    assert !V.hasValue();
+    V.get();
+    assert !X.hasValue();
+    X.get();
+    assert !y.hasValue();
+    y.get();
+    return vectorize();
+  }
+
+  function backwardLazy() -> Real[_] {
+    assert !y.hasValue();
+    y.get();
+    assert !X.hasValue();
+    X.get();
+    assert !V.hasValue();
+    V.get();
+    return vectorize();
+  }
+
+  function marginal() -> Distribution<Real[_]> {
+    return y.distribution()!;
+  }
+
+  function vectorize() -> Real[_] {
+    z:Real[size()];
+    let k <- 0;
+    z[k + 1.. k + p*p] <- vec(canonical(V.value()));
+    k <- k + p*p;
+    z[k + 1.. k + n*p] <- vec(X.value());
+    k <- k + n*p;
+    z[k + 1.. k + p] <- y.value();
+    return z;
+  }
+
+  function size() -> Integer {
+    return p*p + n*p + p;
+  }
+}

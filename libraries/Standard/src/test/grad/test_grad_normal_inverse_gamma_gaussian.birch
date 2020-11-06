@@ -1,0 +1,9 @@
+/*
+ * Test normal-inverse-gamma Gaussian grad evaluations.
+ */
+program test_grad_normal_inverse_gamma_gaussian(N:Integer <- 1000) {
+  m:TestNormalInverseGammaGaussian;
+  m.initialize();
+  m.simulate();
+  test_grad(m.marginal(), N);
+}

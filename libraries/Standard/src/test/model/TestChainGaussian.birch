@@ -6,11 +6,11 @@ class TestChainGaussian < Model {
   function initialize() {
     μ <- simulate_uniform(-10.0, 10.0);
     σ2 <- [
-      simulate_uniform(0.0, 10.0),
-      simulate_uniform(0.0, 10.0),
-      simulate_uniform(0.0, 10.0),
-      simulate_uniform(0.0, 10.0),
-      simulate_uniform(0.0, 10.0)
+      simulate_uniform(0.1, 10.0),
+      simulate_uniform(0.1, 10.0),
+      simulate_uniform(0.1, 10.0),
+      simulate_uniform(0.1, 10.0),
+      simulate_uniform(0.1, 10.0)
     ];
   }
 

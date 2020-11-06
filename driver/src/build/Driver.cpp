@@ -737,8 +737,7 @@ void birch::Driver::docs() {
   }
 
   std::string str = read_all("DOCS.md");
-  std::regex reg("(?:^|\r?\n)(##?) (.*?)(?=\r?\n|$)",
-      std::regex_constants::ECMAScript);
+  std::regex reg("(?:^|\r?\n)(##?) (.*?)(?=\r?\n|$)");
   std::smatch match;
   std::string str1 = str, h1, h2;
   while (std::regex_search(str1, match, reg)) {
@@ -955,10 +954,10 @@ void birch::Driver::meta() {
   }
 
   /* check manifest files */
-  readFiles("manifest.header", true);
-  readFiles("manifest.source", true);
-  readFiles("manifest.data", true);
-  readFiles("manifest.other", true);
+  readFiles("manifest.header");
+  readFiles("manifest.source");
+  readFiles("manifest.data");
+  readFiles("manifest.other");
 }
 
 void birch::Driver::setup() {
@@ -1118,7 +1117,7 @@ void birch::Driver::target(const std::string& cmd) {
   if (arch == "js" || arch == "wasm") {
     buf << "emmake";
   }
-  buf << "make";
+  buf << "make -s LIBTOOLFLAGS=--silent";
 
   /* concurrency */
   if (jobs > 1) {
@@ -1137,21 +1136,37 @@ void birch::Driver::target(const std::string& cmd) {
    * portable, and means the command always returns success, even on fail
    * (consider pipefail); instead we use popen instead of system, and process
    * the output with regexes */
+  std::string type1 = "[a-zA-Z0-9_\\[\\]\\?,]+";
+  std::string type2 = type1 + "(?:<" + type1 + " *>)?(?:\\[[_,]+\\])?";
+  std::string type3 = type1 + "(?:<" + type2 + " *>)?(?:\\[[_,]+\\])?";
+  std::string type4 = type1 + "(?:<" + type3 + " *>)?(?:\\[[_,]+\\])?";
+  std::string type = type4;
+
   std::regex rxWarnings("warning:");
   std::regex rxNotes("note:");
-  std::regex rxSkipLine("In file included from|In member function|^\\s*from");
+  std::regex rxSkipLine("In file included from|In member function|^\\s*from|std::enable_if|At global scope:");
   std::regex rxNamespace("birch::type::|birch::|libbirch::");
   std::regex rxCxxWords("virtual *");
-  std::regex rxLazy("(const )?Lazy<Shared<([a-zA-Z0-9_<>\\[\\],]+) *> *>");
-  std::regex rxOptional("(const )?Optional<([a-zA-Z0-9_<>\\[\\],]+) *>");
-  std::regex rxVector("Array<(\\w+), *Shape<Dimension<>, *EmptyShape *> *>");
-  std::regex rxMatrix("Array<(\\w+), *Shape<Dimension<>, Shape<Dimension<>, *EmptyShape *> *> *>");
-  std::regex rxConstRef("(const *)?([a-zA-Z0-9_<>\\[\\],]+) *&");
+  std::regex rxWith("\\[with.*?\\]");
+  std::regex rxReal("double");
+  std::regex rxInteger("long int");
+  std::regex rxLazy("Lazy<Shared<(" + type + ") *> *> *");
+  std::regex rxOptional("Optional<(" + type + ") *> *");
+  std::regex rxVector("Array<(" + type + "), *Shape<Dimension<(?:0, *0)?>, *EmptyShape *> *> *");
+  std::regex rxVector2("DefaultArray<(" + type + "), *1> *");
+  std::regex rxMatrix("Array<(" + type + "), *Shape<Dimension<(?:0, *0)?>, Shape<Dimension<(?:0, *0)?>, *EmptyShape *> *> *> *");
+  std::regex rxMatrix2("DefaultArray<(" + type + "), *2> *");
+  std::regex rxConstRef("(?:const *)?(" + type + ") *&");
+  std::regex rxLLT("Eigen::LLT<Eigen::Matrix<double, *-1, *-1, *1, *-1, *-1> *> *");
+  std::regex rxThis("\\(\\(" + type + "\\*\\)this\\)->" + type + "::this_\\(\\)->" + type + "::");
+  std::regex rxAka("\\{aka *‘?(class |const )?" + type + "’?\\} *");
   std::regex rxDeref("operator->");
+  std::regex rxDerefExpr("‘->’");
   std::regex rxAssign("operator=");
-  std::regex rxAssignExpr("'='");
-  std::regex rxHandler("(, )?(Handler|\\* *& *handler_)\\)");
-  std::regex rxTooFewArguments("invalid initialization of reference of type ‘[a-zA-Z0-9_<>\\[\\],]+’( \\{aka ‘[a-zA-Z0-9_<>\\[\\],]+’\\})? from expression of type ‘Handler’");
+  std::regex rxAssignExpr("‘=’");
+  std::regex rxHandler("(?:, *)?[A-Za-z0-9]*Handler *(?:\\* *& *handler_)?");
+  std::regex rxHandler2("(?:, *)?\\(\\* *& *handler_\\)");
+  std::regex rxTooFewArguments("(?:invalid initialization of reference of type ‘" + type4 + "’ from expression of type ‘Handler’|cannot convert ‘Handler’ to ‘" + type4 + "’)");
 
   std::ofstream log;
   if (!verbose) {
@@ -1173,26 +1188,40 @@ void birch::Driver::target(const std::string& cmd) {
         /* strip namespace and class qualifiers */
         str = std::regex_replace(str, rxNamespace, "");
 
+        /* strip "with" type hints */
+        str = std::regex_replace(str, rxWith, "");
+
         /* strip some C++ words */
         str = std::regex_replace(str, rxCxxWords, "");
+
+        /* convert back some types */
+        str = std::regex_replace(str, rxReal, "Real");
+        str = std::regex_replace(str, rxInteger, "Integer");
 
         /* replace some types; repeat some of these patterns a few times
          * as a hacky way of handling recursion */
         for (auto i = 0; i < 3; ++i) {
           str = std::regex_replace(str, rxVector, "$1[_]");
+          str = std::regex_replace(str, rxVector2, "$1[_]");
           str = std::regex_replace(str, rxMatrix, "$1[_,_]");
-          str = std::regex_replace(str, rxLazy, "$2");
-          str = std::regex_replace(str, rxOptional, "$2");
+          str = std::regex_replace(str, rxMatrix2, "$1[_,_]");
+          str = std::regex_replace(str, rxLLT, "LLT");
+          str = std::regex_replace(str, rxLazy, "$1");
+          str = std::regex_replace(str, rxOptional, "$1?");
+          str = std::regex_replace(str, rxConstRef, "$1");
         }
-        str = std::regex_replace(str, rxConstRef, "$2");
+        str = std::regex_replace(str, rxAka, "");
+        str = std::regex_replace(str, rxThis, "");
 
         /* replace some operators */
         str = std::regex_replace(str, rxDeref, ".");
+        str = std::regex_replace(str, rxDerefExpr, "‘.’");
         str = std::regex_replace(str, rxAssign, "<-");
-        str = std::regex_replace(str, rxAssignExpr, "'<-'");
+        str = std::regex_replace(str, rxAssignExpr, "‘<-’");
 
         /* strip suggestions that reveal internal workings */
-        str = std::regex_replace(str, rxHandler, ")");
+        str = std::regex_replace(str, rxHandler, "");
+        str = std::regex_replace(str, rxHandler2, "");
         str = std::regex_replace(str, rxTooFewArguments, "too few arguments to function call");
 
         if (verbose) {
@@ -1247,23 +1276,27 @@ birch::Package* birch::Driver::createPackage(bool includeRequires) {
   return package;
 }
 
-void birch::Driver::readFiles(const std::string& key, bool checkExists) {
+void birch::Driver::readFiles(const std::string& key) {
   for (auto pattern : metaContents[key]) {
     auto paths = glob(pattern);
-    for (auto path : paths) {
-      if (checkExists && !exists(path)) {
-        warn(path.string() + " in build configuration does not exist.");
+    if (paths.empty()) {
+      /* print warning if pattern does not contain a wildcard '*' */
+      if (pattern.find('*') == std::string::npos) {
+        warn("no file matching '" + pattern + "' in build configuration.");
       }
-      if (std::regex_search(path.string(), std::regex("\\s",
-          std::regex_constants::ECMAScript))) {
-        throw DriverException(std::string("file name ") + path.string() +
-          " in build configuration contains whitespace, which is not supported.");
+    } else {
+      for (auto path : paths) {
+        if (std::regex_search(path.string(), std::regex("\\s",
+            std::regex_constants::ECMAScript))) {
+          throw DriverException(std::string("file name ") + path.string() +
+            " in build configuration contains whitespace, which is not supported.");
+        }
+        auto inserted = allFiles.insert(path);
+        if (!inserted.second) {
+          warn(path.string() + " repeated in build configuration.");
+        }
+        metaFiles[key].push_back(path);
       }
-      auto inserted = allFiles.insert(path);
-      if (!inserted.second) {
-        warn(path.string() + " repeated in build configuration.");
-      }
-      metaFiles[key].push_back(path);
     }
   }
 }

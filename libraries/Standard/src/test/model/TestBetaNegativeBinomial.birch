@@ -7,8 +7,8 @@ class TestBetaNegativeBinomial < Model {
 
   function initialize() {
     k <- simulate_uniform_int(1, 100);
-    α <- simulate_uniform(1.0, 100.0);
-    β <- simulate_uniform(1.0, 100.0);
+    α <- simulate_uniform(1.0, 20.0);
+    β <- simulate_uniform(1.0, 20.0);
   }
 
   function simulate() {

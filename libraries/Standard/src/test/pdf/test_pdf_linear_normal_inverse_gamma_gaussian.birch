@@ -1,0 +1,10 @@
+/*
+ * Test linear normal-inverse-gamma Gaussian pdf evaluations.
+ */
+program test_pdf_linear_normal_inverse_gamma_gaussian(N:Integer <- 10000,
+    B:Integer <- 100, S:Integer <- 5, lazy:Boolean <- false) {
+  m:TestLinearNormalInverseGammaGaussian;
+  m.initialize();
+  m.simulate();
+  test_pdf(m.marginal(), N, B, S, lazy);
+}

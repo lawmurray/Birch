@@ -1,0 +1,9 @@
+/*
+ * Test gamma grad evaluations.
+ */
+program test_grad_gamma(N:Integer <- 1000) {
+  let k <- simulate_uniform(1.0, 10.0);
+  let θ <- simulate_uniform(0.0, 10.0);
+  let q <- Gamma(k, θ);  
+  test_grad(q, N);
+}

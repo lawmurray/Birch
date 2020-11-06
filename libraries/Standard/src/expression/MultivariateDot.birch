@@ -1,0 +1,77 @@
+/**
+ * Lazy `dot`.
+ */
+final class MultivariateDot(y:Expression<Real[_]>, z:Expression<Real[_,_]>) <
+    MultivariateBinaryExpression<Expression<Real[_]>,Expression<Real[_,_]>,Real[_],
+    Real[_,_],Real[_],Real[_,_],Real[_]>(y, z) {
+  override function doRows() -> Integer {
+    return z!.columns();
+  }
+
+  override function doEvaluate(y:Real[_], z:Real[_,_]) -> Real[_] {
+    return dot(y, z);
+  }
+
+  override function doEvaluateGradLeft(d:Real[_], x:Real[_], y:Real[_],
+      z:Real[_,_]) -> Real[_] {
+    return z*d;
+  }
+
+  override function doEvaluateGradRight(d:Real[_], x:Real[_], y:Real[_],
+      z:Real[_,_]) -> Real[_,_] {
+    return outer(y, d);
+  }
+
+  override function graftDotMatrixGaussian() ->
+      TransformDotMultivariate<MatrixGaussian>? {
+    if !hasValue() {
+      x1:TransformLinearMatrix<MatrixGaussian>?;
+      x2:MatrixGaussian?;
+      
+      if (x1 <- z!.graftLinearMatrixGaussian())? {
+        return TransformDotMultivariate<MatrixGaussian>(dot(y!, x1!.A), x1!.X, dot(y!, x1!.C));
+      } else if (x2 <- z!.graftMatrixGaussian())? {
+        return TransformDotMultivariate<MatrixGaussian>(y!, x2!);
+      }
+    }
+    return nil;
+  }
+
+  override function graftDotMatrixNormalInverseWishart(compare:Distribution<LLT>) ->
+      TransformDotMultivariate<MatrixNormalInverseWishart>? {
+    if !hasValue() {
+      x1:TransformLinearMatrix<MatrixNormalInverseWishart>?;
+      x2:MatrixNormalInverseWishart?;
+    
+      if (x1 <- z!.graftLinearMatrixNormalInverseWishart(compare))? {
+        return TransformDotMultivariate<MatrixNormalInverseWishart>(dot(y!, x1!.A), x1!.X, dot(y!, x1!.C));
+      } else if (x2 <- z!.graftMatrixNormalInverseWishart(compare))? {
+        return TransformDotMultivariate<MatrixNormalInverseWishart>(y!, x2!);
+      }
+    }
+    return nil;
+  }
+}
+
+/**
+ * Lazy `dot`.
+ */
+function dot(y:Expression<Real[_]>, z:Expression<Real[_,_]>) ->
+    MultivariateDot {
+  assert y!.rows() == z!.rows();
+  return construct<MultivariateDot>(y, z);
+}
+
+/**
+ * Lazy `dot`.
+ */
+function dot(y:Real[_], z:Expression<Real[_,_]>) -> MultivariateDot {
+  return dot(box(y), z);
+}
+
+/**
+ * Lazy `dot`.
+ */
+function dot(y:Expression<Real[_]>, z:Real[_,_]) -> MultivariateDot {
+  return dot(y, box(z));
+}

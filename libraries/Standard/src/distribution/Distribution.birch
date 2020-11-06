@@ -252,13 +252,6 @@ abstract class Distribution<Value> < DelayDistribution {
   /**
    * Graft this onto the delayed sampling graph.
    */
-  function graftIndependentInverseGamma() -> IndependentInverseGamma? {
-    return nil;
-  } 
-
-  /**
-   * Graft this onto the delayed sampling graph.
-   */
   function graftInverseWishart() -> InverseWishart? {
     return nil;
   } 
@@ -303,14 +296,6 @@ abstract class Distribution<Value> < DelayDistribution {
    * Graft this onto the delayed sampling graph.
    */
   function graftMatrixGaussian() -> MatrixGaussian? {
-    return nil;
-  }
-
-  /**
-   * Graft this onto the delayed sampling graph.
-   */
-  function graftMatrixNormalInverseGamma(compare:Distribution<Real[_]>) ->
-      MatrixNormalInverseGamma? {
     return nil;
   }
 

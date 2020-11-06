@@ -1,0 +1,10 @@
+/*
+ * Test multivariate Gaussian-Gaussian grad evaluations.
+ */
+program test_grad_multivariate_gaussian_multivariate_gaussian(
+    N:Integer <- 1000) {
+  m:TestMultivariateGaussianMultivariateGaussian;
+  m.initialize();
+  m.simulate();
+  test_grad(m.marginal(), N);
+}

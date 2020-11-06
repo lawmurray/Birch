@@ -1,0 +1,79 @@
+/**
+ * Multivariate Gaussian distribution with linear transformation of
+ * matrix-normal-inverse-Wishart prior.
+ */
+final class LinearMatrixNormalInverseWishartMultivariateGaussian(
+    a:Expression<Real[_]>, M:MatrixNormalInverseWishart, 
+    c:Expression<Real[_]>) < Distribution<Real[_]> {
+  /**
+   * Scale.
+   */
+  a:Expression<Real[_]> <- a;
+  /**
+   * Mean.
+   */
+  M:MatrixNormalInverseWishart <- M;
+
+  /**
+   * Offset.
+   */
+  c:Expression<Real[_]> <- c;
+
+  function rows() -> Integer {
+    return c.rows();
+  }
+
+  function supportsLazy() -> Boolean {
+    return true;
+  }
+
+  function simulate() -> Real[_] {
+    return simulate_linear_matrix_normal_inverse_wishart_multivariate_gaussian(
+        a.value(), M.N.value(), M.Λ.value(), c.value(), M.V.Ψ.value(),
+        M.V.k.value());
+  }
+
+  function simulateLazy() -> Real[_]? {
+    return simulate_linear_matrix_normal_inverse_wishart_multivariate_gaussian(
+        a.get(), M.N.get(), M.Λ.get(), c.get(), M.V.Ψ.get(), M.V.k.get());
+  }
+  
+  function logpdf(x:Real[_]) -> Real {
+    return logpdf_linear_matrix_normal_inverse_wishart_multivariate_gaussian(
+        x, a.value(), M.N.value(), M.Λ.value(), c.value(), M.V.Ψ.value(),
+        M.V.k.value());
+  }
+
+  function logpdfLazy(x:Expression<Real[_]>) -> Expression<Real>? {
+    return logpdf_lazy_linear_matrix_normal_inverse_wishart_multivariate_gaussian(
+        x, a, M.N, M.Λ, c, M.V.Ψ, M.V.k);
+  }
+
+  function update(x:Real[_]) {
+    (M.N, M.Λ, M.V.Ψ, M.V.k) <- box(update_linear_matrix_normal_inverse_wishart_multivariate_gaussian(
+        x, a.value(), M.N.value(), M.Λ.value(), c.value(), M.V.Ψ.value(),
+        M.V.k.value()));
+  }
+
+  function updateLazy(x:Expression<Real[_]>) {
+    (M.N, M.Λ, M.V.Ψ, M.V.k) <- update_lazy_linear_matrix_normal_inverse_wishart_multivariate_gaussian(
+        x, a, M.N, M.Λ, c, M.V.Ψ, M.V.k);
+  }
+
+  function link() {
+    M.setChild(this);
+  }
+  
+  function unlink() {
+    M.releaseChild(this);
+  }
+}
+
+function LinearMatrixNormalInverseWishartMultivariateGaussian(
+    a:Expression<Real[_]>, M:MatrixNormalInverseWishart,
+    c:Expression<Real[_]>) ->
+    LinearMatrixNormalInverseWishartMultivariateGaussian {
+  m:LinearMatrixNormalInverseWishartMultivariateGaussian(a, M, c);
+  m.link();
+  return m;
+}

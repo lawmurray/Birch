@@ -62,6 +62,22 @@ function vector<Type>(x:Type, length:Integer) -> Type[_] {
 }
 
 /**
+ * Stack two vectors atop one another (i.e. append them) to create a
+ * new vector.
+ */
+function stack<Type>(x:Type[_], y:Type[_]) -> Type[_] {
+  let l1 <- length(x);
+  let l2 <- length(y);
+  return vector(\(i:Integer) -> Type {
+        if i <= l1 {
+          return x[i];
+        } else {
+          return y[i];
+        }
+      }, l1 + l2);
+}
+
+/**
  * Create vector filled with a sequentially incrementing values.
  *
  * - x: Initial value.

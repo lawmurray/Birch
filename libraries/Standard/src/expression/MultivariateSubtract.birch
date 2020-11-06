@@ -60,6 +60,19 @@ final class MultivariateSubtract(y:Expression<Real[_]>,
     }
     return r;
   }
+
+  override function graftDotMatrixNormalInverseWishart(compare:Distribution<LLT>) ->
+      TransformDotMultivariate<MatrixNormalInverseWishart>? {
+    r:TransformDotMultivariate<MatrixNormalInverseWishart>?;
+    if !hasValue() {
+      if (r <- y!.graftDotMatrixNormalInverseWishart(compare))? {
+        r!.subtract(z!);
+      } else if (r <- z!.graftDotMatrixNormalInverseWishart(compare))? {
+        r!.negateAndAdd(y!);
+      }
+    }
+    return r;
+  }
 }
 
 /**
