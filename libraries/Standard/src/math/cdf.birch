@@ -22,9 +22,8 @@ function cdf_binomial(x:Integer, n:Integer, ρ:Real) -> Real {
   } else {
     // the relation between binomial and the regularized incomplete beta function
     // cdf_binomial = I_{1 - p} (n - x, x + 1)
-    // ibeta implementation and beta implementation are both fine.
-    let k <- floor(Real64(x));
-    return ibeta(Real64(n - k), Real64(k) + 1.0, 1.0 - ρ);
+    let k <- floor(Real(x));
+    return ibeta(Real(n - k), Real(k) + Real(1.0), Real(1.0) - ρ);
   }
 }
 
@@ -62,7 +61,7 @@ function cdf_poisson(x:Integer, λ:Real) -> Real {
   if x < 0 {
     return 0.0;
   } else {
-    let k <- floor(Real64(x)) + 1;
+    let k <- floor(Real(x)) + 1;
     return upper_inc_gamma(k, λ);
   }
 }
@@ -203,8 +202,8 @@ function cdf_gaussian(x:Real, μ:Real, σ2:Real) -> Real {
 function cdf_student_t(x:Real, ν:Real) -> Real {
   // implementation taken from: https://github.com/codeplea/incbeta
   assert 0.0 < ν;
-  let t <- (x + sqrt(x * x + ν)) / (2.0 * sqrt(x * x + ν));
-  let prob <- ibeta(ν/2.0, ν/2.0, t);
+  let t <- (x + sqrt(x * x + ν)) / (Real(2.0) * sqrt(x * x + ν));
+  let prob <- ibeta(ν/Real(2.0), ν/Real(2.0), t);
   return prob;
 }
 
@@ -236,10 +235,10 @@ function cdf_beta(x:Real, α:Real, β:Real) -> Real {
   assert 0.0 < α;
   assert 0.0 < β;
 
-  if x < 0.0 {
-    return 0.0;
-  } else if x > 1.0 {
-    return 1.0;
+  if x < Real(0.0) {
+    return Real(0.0);
+  } else if x > Real(1.0) {
+    return Real(1.0);
   } else {
     return ibeta(α, β, x);
   }
@@ -255,7 +254,7 @@ function cdf_beta(x:Real, α:Real, β:Real) -> Real {
  */
 function cdf_chi_squared(x:Real, ν:Real) -> Real {
   assert 0.0 < ν;
-  return lower_inc_gamma(ν/2.0, x/2.0) / gamma(ν / 2.0);
+  return lower_inc_gamma(ν/Real(2.0), x/Real(2.0)) / gamma(ν / Real(2.0));
 }
 
 /**
@@ -274,7 +273,7 @@ function cdf_gamma(x:Real, k:Real, θ:Real) -> Real {
   if x <= 0.0 {
     return 0.0;
   } else {
-    return lower_inc_gamma(Real64(k), Real64(x) / Real64(θ));
+    return lower_inc_gamma(Real(k), Real(x) / Real(θ));
   }
 }
 
