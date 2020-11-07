@@ -43,7 +43,7 @@ function cdf_negative_binomial(x:Integer, k:Integer, ρ:Real) -> Real {
   if x < 0 {
     return 0.0;
   } else {
-    return cdf_binomial(x, k + x, ρ);
+    return ibeta(Real(k), Real(x) + Real(1.0),  ρ);
   }
 }
 
