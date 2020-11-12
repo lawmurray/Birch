@@ -43,12 +43,26 @@ function row<Type>(x:Type[_]) -> Type[_,_] {
 }
 
 /**
+ * Obtain the `i`th row of a matrix.
+ */
+function row<Type>(X:Type[_,_], i:Integer) -> Type[_] {
+  return X[i,1..columns(X)];
+}
+
+/**
  * Convert vector to matrix with single column.
  */
 function column<Type>(x:Type[_]) -> Type[_,_] {
   return matrix(\(i:Integer, j:Integer) -> Type {
         return x[i];
       }, 1, length(x));
+}
+
+/**
+ * Obtain the `j`th column of a matrix.
+ */
+function column<Type>(X:Type[_,_], j:Integer) -> Type[_] {
+  return X[1..rows(X),j];
 }
 
 /**
@@ -214,6 +228,33 @@ function matrix<Type>(x:Type, rows:Integer, columns:Integer) -> Type[_,_] {
   cpp{{
   return libbirch::make_array<Type>(libbirch::make_shape(rows, columns), x);
   }}
+}
+
+/**
+ * Convert matrix to Boolean matrix.
+ */
+function Boolean<Type>(X:Type[_,_]) -> Boolean[_,_] {
+  return matrix(\(i:Integer, j:Integer) -> Boolean {
+        return Boolean(X[i,j]);
+      }, rows(X), columns(X));
+}
+
+/**
+ * Convert matrix to integer matrix.
+ */
+function Integer<Type>(X:Type[_,_]) -> Integer[_,_] {
+  return matrix(\(i:Integer, j:Integer) -> Integer {
+        return Integer(X[i,j]);
+      }, rows(X), columns(X));
+}
+
+/**
+ * Convert matrix to real matrix.
+ */
+function Real<Type>(X:Type[_,_]) -> Real[_,_] {
+  return matrix(\(i:Integer, j:Integer) -> Real {
+        return Real(X[i,j]);
+      }, rows(X), columns(X));
 }
 
 /**

@@ -163,6 +163,33 @@ function exclusive_scan_sum<Type>(x:Type[_]) -> Type[_] {
 }
 
 /**
+ * Convert vector to Boolean vector.
+ */
+function Boolean<Type>(x:Type[_]) -> Boolean[_] {
+  return vector(\(i:Integer) -> Boolean {
+        return Boolean(x[i]);
+      }, length(x));
+}
+
+/**
+ * Convert vector to integer vector.
+ */
+function Integer<Type>(x:Type[_]) -> Integer[_] {
+  return vector(\(i:Integer) -> Integer {
+        return Integer(x[i]);
+      }, length(x));
+}
+
+/**
+ * Convert vector to real vector.
+ */
+function Real<Type>(x:Type[_]) -> Real[_] {
+  return vector(\(i:Integer) -> Real {
+        return Real(x[i]);
+      }, length(x));
+}
+
+/**
  * Convert vector to String.
  */
 function String(x:Real[_]) -> String {

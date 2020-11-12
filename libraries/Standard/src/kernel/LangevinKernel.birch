@@ -45,6 +45,6 @@ class LangevinKernel < Kernel {
   
   override function write(buffer:Buffer) {
     super.write(buffer);
-    buffer.setReal("scale", scale);
+    buffer.set("scale", scale);
   }
 }

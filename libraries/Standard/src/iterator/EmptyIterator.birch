@@ -1,0 +1,26 @@
+/**
+ * Iterator over an arbitrary empty container.
+ */
+final class EmptyIterator<Type> < Iterator<Type> {
+  /**
+   * Is there a next element?
+   */
+  function hasNext() -> Boolean {
+    return false;
+  }
+
+  /**
+   * Get the next element.
+   */
+  function next() -> Type {
+    assert(false);
+    return construct<Type>();
+  }
+}
+
+/**
+ * Create an EmptyIterator.
+ */
+function EmptyIterator<Type>() -> EmptyIterator<Type> {
+  return construct<EmptyIterator<Type>>();
+}

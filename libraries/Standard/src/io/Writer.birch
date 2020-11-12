@@ -84,9 +84,6 @@ abstract class Writer {
   abstract function visit(value:BooleanVectorValue);
   abstract function visit(value:IntegerVectorValue);
   abstract function visit(value:RealVectorValue);
-  abstract function visit(value:BooleanMatrixValue);
-  abstract function visit(value:IntegerMatrixValue);
-  abstract function visit(value:RealMatrixValue);
 }
 
 /**

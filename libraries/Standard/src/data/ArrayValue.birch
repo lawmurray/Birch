@@ -1,95 +1,85 @@
 /**
  * Array value.
  */
-class ArrayValue < Value {
+final class ArrayValue < Value {
   /**
    * Elements of the array. This uses Array rather than List or similar to
    * avoid reaching stack size limits for large data sets.
    */
-  buffers:Array<Buffer>;
+  elements:Array<Buffer>;
 
-  function accept(writer:Writer) {
+  override function accept(writer:Writer) {
     writer.visit(this);
   }
-  
-  function isArray() -> Boolean {
-    return true;
+
+  override function size() -> Integer {
+    return elements.size();
   }
 
-  function size() -> Integer {
-    return buffers.size();
+  override function walk() -> Iterator<Buffer> {
+    return elements.walk();
   }
 
-  function walk() -> Iterator<Buffer> {
-    return buffers.walk();
+  override function insert(value:Buffer) {
+    elements.pushBack(value);
   }
 
-  function push() -> Buffer {
-    buffer:Buffer;
-    buffers.pushBack(buffer);
-    return buffer;
+  override function pushNil() -> Value {
+    let buffer <- Buffer();
+    buffer.setNil();
+    insert(buffer);
+    return this;
   }
 
-  function getBooleanVector() -> Boolean[_]? {
-    result:Boolean[buffers.size()];
-    let f <- buffers.walk();
-    let i <- 1;
-    while f.hasNext() {
-      let value <- f.next().getBoolean();
-      if value? {
-        result[i] <- value!;
-        i <- i + 1;
-      } else {
-        return nil;
-      }
-    }
-    return result;
+  override function push(x:Boolean) -> Value {
+    insert(Buffer(x));
+    return this;
   }
 
-  function getIntegerVector() -> Integer[_]? {
-    result:Integer[buffers.size()];
-    let f <- buffers.walk();
-    let i <- 1;
-    while f.hasNext() {
-      let value <- f.next().getInteger();
-      if value? {
-        result[i] <- value!;
-        i <- i + 1;
-      } else {
-        return nil;
-      }
-    }
-    return result;
+  override function push(x:Integer) -> Value {
+    insert(Buffer(x));
+    return this;
   }
 
-  function getRealVector() -> Real[_]? {
-    result:Real[buffers.size()];
-    let f <- buffers.walk();
-    let i <- 1;
-    while f.hasNext() {
-      let buffer <- f.next();
-      let value <- buffer.getReal();
-      if !value? {
-        value <- Real?(buffer.getInteger());
-      }
-      if value? {      
-        result[i] <- value!;
-        i <- i + 1;
-      } else {
-        return nil;
-      }
-    }
-    return result;
+  override function push(x:Real) -> Value {
+    insert(Buffer(x));
+    return this;
   }
 
-  function getBooleanMatrix() -> Boolean[_,_]? {
+  override function push(x:String) -> Value {
+    insert(Buffer(x));
+    return this;
+  }
+
+  override function push(x:Object) -> Value {
+    insert(Buffer(x));
+    return this;
+  }
+
+  override function push(x:Boolean[_]) -> Value {
+    insert(Buffer(x));
+    return this;
+  }
+
+  override function push(x:Integer[_]) -> Value {
+    insert(Buffer(x));
+    return this;
+  }
+
+  override function push(x:Real[_]) -> Value {
+    insert(Buffer(x));
+    return this;
+  }
+
+  override function getBooleanMatrix() -> Boolean[_,_]? {
     let nrows <- size();
     let rows <- walk();
     if rows.hasNext() {
       /* determine number of columns from first row */
       let row <- rows.next();
       let ncols <- row.size();
-      let X <- matrix(false, nrows, ncols);
+      X:Boolean[nrows,ncols];
+
       let x <- row.getBooleanVector();
       if x? {
         X[1,1..ncols] <- x!;
@@ -121,14 +111,15 @@ class ArrayValue < Value {
     return nil;
   }
 
-  function getIntegerMatrix() -> Integer[_,_]? {
+  override function getIntegerMatrix() -> Integer[_,_]? {
     let nrows <- size();
     let rows <- walk();
     if rows.hasNext() {
       /* determine number of columns from first row */
       let row <- rows.next();
       let ncols <- row.size();
-      let X <- matrix(0, nrows, ncols);
+      X:Integer[nrows,ncols];
+
       let x <- row.getIntegerVector();
       if x? {
         X[1,1..ncols] <- x!;
@@ -160,14 +151,15 @@ class ArrayValue < Value {
     return nil;
   }
 
-  function getRealMatrix() -> Real[_,_]? {
+  override function getRealMatrix() -> Real[_,_]? {
     let nrows <- size();
     let rows <- walk();
     if rows.hasNext() {
       /* determine number of columns from first row */
       let row <- rows.next();
       let ncols <- row.size();
-      let X <- matrix(0.0, nrows, ncols);
+      X:Real[nrows,ncols];
+
       let x <- row.getRealVector();
       if x? {
         X[1,1..ncols] <- x!;
@@ -198,4 +190,11 @@ class ArrayValue < Value {
     }
     return nil;
   }
+}
+
+/**
+ * Create an ArrayValue.
+ */
+function ArrayValue() -> ArrayValue {
+  return construct<ArrayValue>();
 }

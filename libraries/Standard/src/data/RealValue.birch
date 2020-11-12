@@ -1,29 +1,86 @@
 /**
  * Real value.
  */
-class RealValue(value:Real) < Value {
+final class RealValue(value:Real) < Value {
   /**
    * The value.
    */
   value:Real <- value;
 
-  function accept(writer:Writer) {
+  override function accept(writer:Writer) {
     writer.visit(this);
   }
 
-  function isScalar() -> Boolean {
-    return true;
-  }
-
-  function getReal() -> Real? {
+  override function getReal() -> Real? {
     return value;
   }
   
-  function getRealVector() -> Real[_]? {
+  override function getRealVector() -> Real[_]? {
     return vector(value, 1);
   }
 
-  function getRealMatrix() -> Real[_,_]? {
+  override function getRealMatrix() -> Real[_,_]? {
     return matrix(value, 1, 1);
   }
+
+  override function pushNil() -> Value {
+    let o <- ArrayValue();
+    o.push(value);
+    o.pushNil();
+    return o;
+  }
+
+  override function push(x:Boolean) -> Value {
+    return RealVectorValue([value, Real(x)]);
+  }
+
+  override function push(x:Integer) -> Value {
+    return RealVectorValue([value, Real(x)]);
+  }
+
+  override function push(x:Real) -> Value {
+    return RealVectorValue([value, x]);
+  }
+
+  override function push(x:String) -> Value {
+    let o <- ArrayValue();
+    o.push(value);
+    o.push(x);
+    return o;
+  }
+
+  override function push(x:Object) -> Value {
+    let o <- ArrayValue();
+    o.push(value);
+    o.push(x);
+    return o;
+  }
+
+  override function push(x:Boolean[_]) -> Value {
+    let o <- ArrayValue();
+    o.push(value);
+    o.push(x);
+    return o;
+  }
+
+  override function push(x:Integer[_]) -> Value {
+    let o <- ArrayValue();
+    o.push(value);
+    o.push(x);
+    return o;
+  }
+
+  override function push(x:Real[_]) -> Value {
+    let o <- ArrayValue();
+    o.push(value);
+    o.push(x);
+    return o;
+  }
+}
+
+/**
+ * Create a RealValue.
+ */
+function RealValue(value:Real) -> RealValue {
+  return construct<RealValue>(value);
 }

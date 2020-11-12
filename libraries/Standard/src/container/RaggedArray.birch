@@ -265,13 +265,8 @@ final class RaggedArray<Type> {
   }
 
   function write(buffer:Buffer) {
-    buffer.setArray();
     for i in 1..size() {
-      let row <- buffer.push();
-      row.setArray();
-      for j in 1..size(i) {
-        row.push().set(get(i, j));
-      }
+      buffer.push(get(i));
     }
   }
 }

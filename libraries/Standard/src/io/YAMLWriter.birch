@@ -30,7 +30,7 @@ class YAMLWriter < Writer {
   }
   
   function print(buffer:Buffer) {
-    buffer.value.accept(this);
+    buffer.accept(this);
   }
   
   function flush() {
@@ -53,20 +53,20 @@ class YAMLWriter < Writer {
 
   function visit(value:ObjectValue) {
     startMapping();
-    let entry <- value.entries.walk();
-    while entry.hasNext() {
-      let e <- entry.next();
-      scalar(e.name);
-      e.buffer.value.accept(this);
+    let iter <- value.entries.walk();
+    while iter.hasNext() {
+      let entry <- iter.next();
+      scalar(entry.key);
+      entry.value.accept(this);
     }
     endMapping();
   }
   
   function visit(value:ArrayValue) {
     startSequence();
-    let element <- value.buffers.walk();
-    while element.hasNext() {
-      element.next().value.accept(this);
+    let iter <- value.walk();
+    while iter.hasNext() {
+      iter.next().accept(this);
     }
     endSequence();
   }
@@ -117,70 +117,7 @@ class YAMLWriter < Writer {
     }
     endSequence();
   }
-  
-  function visit(value:BooleanMatrixValue) {
-    let v <- value.value;
-    let m <- rows(v);
-    let n <- columns(v);
-    if m > 0 {
-      startSequence();
-      for i in 1..m {
-        if n > 0 {
-          startSequence();
-          for j in 1..n {
-            scalar(v[i,j]);
-          }
-          endSequence();
-        }
-      }
-      endSequence();
-    } else {
-      null();
-    }
-  }
-  
-  function visit(value:IntegerMatrixValue) {
-    let v <- value.value;
-    let m <- rows(v);
-    let n <- columns(v);
-    if m > 0 {
-      startSequence();
-      for i in 1..m {
-        if n > 0 {
-          startSequence();
-          for j in 1..n {
-            scalar(v[i,j]);
-          }
-          endSequence();
-        }
-      }
-      endSequence();
-    } else {
-      null();
-    }
-  }
-  
-  function visit(value:RealMatrixValue) {
-    let v <- value.value;
-    let m <- rows(v);
-    let n <- columns(v);
-    if m > 0 {
-      startSequence();
-      for i in 1..m {
-        if n > 0 {
-          startSequence();
-          for j in 1..n {
-            scalar(v[i,j]);
-          }
-          endSequence();
-        }
-      }
-      endSequence();
-    } else {
-      null();
-    }
-  }
-  
+    
   function startMapping() {
     cpp{{
     yaml_mapping_start_event_initialize(&this->event, NULL, NULL, 1,

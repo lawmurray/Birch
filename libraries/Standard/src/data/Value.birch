@@ -8,46 +8,28 @@ abstract class Value {
   abstract function accept(writer:Writer);
 
   /**
-   * Is this an object?
+   * Find an entry in an object.
    */
-  function isObject() -> Boolean {
-    return false;
-  }
-
-  /**
-   * Is this an array?
-   */
-  function isArray() -> Boolean {
-    return false;
-  }
-
-  /**
-   * Is this neither an object or an array?
-   */
-  function isScalar() -> Boolean {
-    return false;
-  }
-
-  /**
-   * Get a child in an object.
-   */
-  function getChild(name:String) -> Buffer? {
+  function find(key:String) -> Buffer? {
     return nil;
   }
 
   /**
-   * Set a child in an object.
+   * Insert an entry in an object.
    */
-  function setChild(name:String) -> Buffer {
+  function insert(key:String, value:Buffer) {
     error("not an object");
-    buf:Buffer;
-    return buf;
   }
 
   /**
-   * If this is an array, get its size.
-   *
-   * Return: An optional with a value giving the length if this is an array.
+   * Insert an element at the end of an array.
+   */
+  function insert(value:Buffer) {
+    error("not an array");
+  }
+
+  /**
+   * Get the size of the array. Returns 1 for a non-array value.
    */
   function size() -> Integer {
     return 1;
@@ -57,33 +39,96 @@ abstract class Value {
    * Iterate through elements of an array.
    */
   function walk() -> Iterator<Buffer> {
-    error("not an array");
-    o:Array<Buffer>;
-    return o.walk();
+    return EmptyIterator<Buffer>();
   }
 
   /**
-   * Push a value onto the end of an array.
+   * Push a nil element onto the end of an array.
+   *
+   * Returns: A new `Value` to replace `this` if a type conversion was
+   * necessary to perform the update, otherwise `this`.
    */
-  function push() -> Buffer {
-    error("not an array");
-    o:Buffer;
-    return o;
-  }
+  abstract function pushNil() -> Value;
 
   /**
-   * Get this as an object.
+   * Push an element onto the end of an array.
+   *
+   * - value: The element.
+   *
+   * Returns: A new `Value` to replace `this` if a type conversion was
+   * necessary to perform the update, otherwise `this`.
    */
-  function getObject() -> ObjectValue? {
-    return nil;
-  }
+  abstract function push(value:Boolean) -> Value;
 
   /**
-   * Get this as an array.
+   * Push an element onto the end of an array.
+   *
+   * - value: The element.
+   *
+   * Returns: A new `Value` to replace `this` if a type conversion was
+   * necessary to perform the update, otherwise `this`.
    */
-  function getArray() -> ArrayValue? {
-    return nil;
-  }
+  abstract function push(value:Integer) -> Value;
+
+  /**
+   * Push an element onto the end of an array.
+   *
+   * - value: The element.
+   *
+   * Returns: A new `Value` to replace `this` if a type conversion was
+   * necessary to perform the update, otherwise `this`.
+   */
+  abstract function push(value:Real) -> Value;
+
+  /**
+   * Push an element onto the end of an array.
+   *
+   * - value: The element.
+   *
+   * Returns: A new `Value` to replace `this` if a type conversion was
+   * necessary to perform the update, otherwise `this`.
+   */
+  abstract function push(value:String) -> Value;
+
+  /**
+   * Push an element onto the end of an array.
+   *
+   * - value: The element.
+   *
+   * Returns: A new `Value` to replace `this` if a type conversion was
+   * necessary to perform the update, otherwise `this`.
+   */
+  abstract function push(value:Object) -> Value;
+
+  /**
+   * Push an element onto the end of an array.
+   *
+   * - value: The element.
+   *
+   * Returns: A new `Value` to replace `this` if a type conversion was
+   * necessary to perform the update, otherwise `this`.
+   */
+  abstract function push(value:Boolean[_]) -> Value;
+
+  /**
+   * Push an element onto the end of an array.
+   *
+   * - value: The element.
+   *
+   * Returns: A new `Value` to replace `this` if a type conversion was
+   * necessary to perform the update, otherwise `this`.
+   */
+  abstract function push(value:Integer[_]) -> Value;
+
+  /**
+   * Push an element onto the end of an array.
+   *
+   * - value: The element.
+   *
+   * Returns: A new `Value` to replace `this` if a type conversion was
+   * necessary to perform the update, otherwise `this`.
+   */
+  abstract function push(value:Real[_]) -> Value;
 
   /**
    * Get this as a Boolean.

@@ -418,11 +418,11 @@ final class Tape<Type> {
 
   function read(buffer:Buffer) {
     clear();
-    let f <- buffer.walk();
-    while f.hasNext() {
+    let iter <- buffer.walk();
+    while iter.hasNext() {
       /* tricky, but works for both value and class types */
       let x <- make<Type>();
-      let y <- f.next().get(x);
+      let y <- iter.next().get(x);
       if y? {
         x <- Type?(y);  // cast needed for y:Object?
         pushBack(x!);
@@ -432,10 +432,9 @@ final class Tape<Type> {
   }
 
   function write(buffer:Buffer) {
-    buffer.setArray();
-    let f <- walk();
-    while f.hasNext() {
-      buffer.push().set(f.next());
+    let iter <- walk();
+    while iter.hasNext() {
+      buffer.push(iter.next());
     }
   }
 }

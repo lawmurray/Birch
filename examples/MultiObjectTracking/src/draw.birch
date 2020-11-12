@@ -27,9 +27,9 @@ program draw(input:String <- "output/simulate.json",
   let iter <- inputBuffer.walk();
   if iter.hasNext() {
     let array <- iter.next();
-    let sample <- array.getObject("sample");
+    let sample <- array.find("sample");
     if sample? {
-      let θ <- sample!.getChild("θ");
+      let θ <- sample!.find("θ");
       let l <- θ!.getRealVector("l")!;
       let u <- θ!.getRealVector("u")!;
 

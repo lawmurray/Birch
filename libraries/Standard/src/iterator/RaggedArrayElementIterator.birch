@@ -42,6 +42,5 @@ final class RaggedArrayElementIterator<Type>(o:RaggedArray<Type>, i:Integer) <
  */
 function RaggedArrayElementIterator<Type>(o:RaggedArray<Type>, i:Integer) ->
     RaggedArrayElementIterator<Type> {
-  iter:RaggedArrayElementIterator<Type>(o, i);
-  return iter;
+  return construct<RaggedArrayElementIterator<Type>>(o, i);
 }

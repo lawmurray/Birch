@@ -47,12 +47,12 @@ program filter(
   }
 
   /* model */
-  let buffer <- configBuffer.getObject("model");
+  let buffer <- configBuffer.find("model");
   if !buffer? {
-    buffer <- configBuffer.setObject("model");
+    buffer <- Buffer();
   }
   if !buffer!.getString("class")? && model? {
-    buffer!.setString("class", model!);
+    buffer!.set("class", model!);
   }
   let archetype <- Model?(make(buffer));
   if !archetype? {
@@ -61,12 +61,12 @@ program filter(
   }
 
   /* filter */
-  buffer <- configBuffer.getObject("filter");
+  buffer <- configBuffer.find("filter");
   if !buffer? {
-    buffer <- configBuffer.setObject("filter");
+    buffer <- Buffer();
   }
   if !buffer!.getString("class")? {
-    buffer!.setString("class", "ParticleFilter");
+    buffer!.set("class", "ParticleFilter");
   }
   let filter <- ParticleFilter?(make(buffer));
   if !filter? {
@@ -132,15 +132,17 @@ program filter(
       filter'.delayed <- false;
 
       /* with these settings, we just filter ahead as normal */
-      let forecast <- buffer.setArray("forecast");
+      let forecast <- Buffer();
+      buffer.set("forecast", forecast);
       for s in (t + 1)..(t + filter'.nforecasts) {
         filter'.forecast(s);
         filter'.reduce();
         if outputWriter? {
-          let state <- forecast.push();
+          let state <- Buffer();
           state.set("sample", filter'.x);
           state.set("lweight", w');
           state.set("lnormalize", filter'.lnormalize);
+          forecast.push(state);
         }
       }
       collect();

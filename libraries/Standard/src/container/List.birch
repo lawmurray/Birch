@@ -289,10 +289,9 @@ final class List<Type> {
   }
 
   function write(buffer:Buffer) {
-    buffer.setArray();
     let f <- walk();
     while f.hasNext() {
-      buffer.push().set(f.next());
+      buffer.push(f.next());
     }
   }
 }

@@ -20,7 +20,7 @@ program data(input:String <- "output/simulate.json",
   let iter <- inputBuffer.walk();
   if iter.hasNext() {
     let array <- iter.next();
-    let sample <- array.getObject("sample");
+    let sample <- array.find("sample");
     if sample? {
       sample!.get("θ", θ);  
       sample!.get("y", y);

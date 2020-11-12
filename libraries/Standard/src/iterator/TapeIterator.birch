@@ -30,6 +30,5 @@ final class TapeIterator<Type>(head:TapeNode<Type>?) < Iterator<Type> {
  * Create a TapeIterator.
  */
 function TapeIterator<Type>(head:TapeNode<Type>?) -> TapeIterator<Type> {
-  iter:TapeIterator<Type>(head);
-  return iter;
+  return construct<TapeIterator<Type>>(head);
 }

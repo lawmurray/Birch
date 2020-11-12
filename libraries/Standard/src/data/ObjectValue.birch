@@ -1,7 +1,7 @@
 /**
  * Object value.
  */
-class ObjectValue < Value {
+final class ObjectValue < Value {
   /**
    * Entries of the object. This uses Array rather than List or similar to
    * avoid reaching stack size limits for large data sets, and to keep
@@ -9,35 +9,110 @@ class ObjectValue < Value {
    */
   entries:Array<Entry>;
 
-  function accept(writer:Writer) {
+  override function accept(writer:Writer) {
     writer.visit(this);
   }
 
-  function isObject() -> Boolean {
-    return true;
-  }
-
-  function getChild(name:String) -> Buffer? {
+  override function find(key:String) -> Buffer? {
     let iter <- entries.walk();
     while iter.hasNext() {
       let entry <- iter.next();
-      if entry.name == name {
-        return entry.buffer;
+      if entry.key == key {
+        return entry.value;
       }
     }
     return nil;
   }
   
-  function setChild(name:String) -> Buffer {
-    buffer:Buffer;
-    entry:Entry;
-    entry.name <- name;
-    entry.buffer <- buffer;
-    entries.pushBack(entry);
-    return buffer;    
+  override function insert(key:String, value:Buffer) {
+    entries.pushBack(Entry(key, value));
+  }
+
+  override function pushNil() -> Value {
+    let b <- Buffer();
+    b.content <- this;
+    let o <- ArrayValue();
+    o.push(b);
+    o.pushNil();
+    return o;
+  }
+
+  override function push(x:Boolean) -> Value {
+    let b <- Buffer();
+    b.content <- this;
+    let o <- ArrayValue();
+    o.push(b);
+    o.push(x);
+    return o;
+  }
+
+  override function push(x:Integer) -> Value {
+    let b <- Buffer();
+    b.content <- this;
+    let o <- ArrayValue();
+    o.push(b);
+    o.push(x);
+    return o;
+  }
+
+  override function push(x:Real) -> Value {
+    let b <- Buffer();
+    b.content <- this;
+    let o <- ArrayValue();
+    o.push(b);
+    o.push(x);
+    return o;
+  }
+
+  override function push(x:String) -> Value {
+    let b <- Buffer();
+    b.content <- this;
+    let o <- ArrayValue();
+    o.push(b);
+    o.push(x);
+    return o;
+  }
+
+  override function push(x:Object) -> Value {
+    let b <- Buffer();
+    b.content <- this;
+    let o <- ArrayValue();
+    o.push(b);
+    o.push(x);
+    return o;
+  }
+
+  override function push(x:Boolean[_]) -> Value {
+    let b <- Buffer();
+    b.content <- this;
+    let o <- ArrayValue();
+    o.push(b);
+    o.push(x);
+    return o;
+  }
+
+  override function push(x:Integer[_]) -> Value {
+    let b <- Buffer();
+    b.content <- this;
+    let o <- ArrayValue();
+    o.push(b);
+    o.push(x);
+    return o;
+  }
+
+  override function push(x:Real[_]) -> Value {
+    let b <- Buffer();
+    b.content <- this;
+    let o <- ArrayValue();
+    o.push(b);
+    o.push(x);
+    return o;
   }
 }
 
+/**
+ * Create an ObjectValue,
+ */
 function ObjectValue() -> ObjectValue {
   return construct<ObjectValue>();
 }

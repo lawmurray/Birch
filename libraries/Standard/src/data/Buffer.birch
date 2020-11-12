@@ -1,90 +1,90 @@
 /**
  * Buffer in memory.
+ *
+ * `Buffer` is used to temporarily store data in memory before writing to a
+ * file, or after reading from a file. It follows the
+ * [JSON](https://www.json.org) data model, where data is arranged
+ * hierachically in *objects* (dictionaries) of key-value members, and
+ * *arrays* of elements. Keys are strings. Values and elements may be strings,
+ * reals, integers, Booleans or nulls. Special provisions are made for
+ * efficient representation of numerical vectors and matrices. The
+ * representation is schemaless and all types variant.
+ *
+ * Objects (in the JSON sense) are created using `set()`. Arrays (in the
+ * JSON sense) are created using the various `push()` member functions. When
+ * `push()` is called on a `Buffer` it may invoke a type conversion for the
+ * values stored in that `Buffer`. Transitively, a scalar `Boolean` can be
+ * converted to an `Integer`, can be converted to a `Real`. Similarly, a
+ * scalar can be converted to a vector of the same basic type. So, for
+ * example, calling `push(Real)` on a `Buffer` holding an `Integer` will
+ * convert it to holding a `Real[_]` (`Integer` converts to `Real`, scalar
+ * converts to vector).
  */
 final class Buffer {
   /**
-   * Value contained in this buffer.
+   * Contents of the buffer.
    */
-  value:Value <- ObjectValue();
+  content:Value?;
 
   /**
-   * Get a child.
+   * Accept a generator.
    */
-  function getChild(name:String) -> Buffer? {
-    return value.getChild(name);
+  function accept(writer:Writer) {
+    if !content? {
+      content <- NilValue();
+    }
+    content!.accept(writer);
   }
 
   /**
-   * Set child.
-   */
-  function setChild(name:String) -> Buffer {
-    return value.setChild(name);
-  }
-
-  /**
-   * Push a new element onto the end of an array.
-   */
-  function push() -> Buffer {
-    return value.push();
-  }
-
-  /**
-   * Get the size of an array.
-   */
-  function size() -> Integer {
-    return value.size();
-  }
-  
-  /**
-   * Clear all contents.
+   * Remove all entries from an object.
    */
   function clear() {
-    value <- ObjectValue();
+    content <- nil;
   }
 
   /**
-   * Iterate through the elements of an array.
+   * Find an entry in an object.
    */
-  function walk() -> Iterator<Buffer> {
-    return value.walk();
-  }
-
-  /**
-   * Iterate through the elements of a child array.
-   *
-   * - name: Name of the child.
-   */
-  function walk(name:String) -> Iterator<Buffer> {
-    return getArray(name)!.walk();
-  }
-
-  /**
-   * Get this as an object. This is an identity function, returning `this`,
-   * as object of class type use their `read()` and `write()` member
-   * functions to read and write to buffers as they please.
-   */
-  function getObject() -> Buffer? {
-    return this;
-  }
-
-  /**
-   * Get this as an array.
-   */
-  function getArray() -> Buffer? {
-    if value.isArray() {
-      return this;
+  function find(key:String) -> Buffer? {
+    if content? {
+      return content!.find(key);
     } else {
       return nil;
     }
   }
-  
+
+  /**
+   * Insert an entry in an object.
+   */
+  function insert(key:String, value:Buffer) {
+    if !content? {
+      content <- ObjectValue();
+    }
+    content!.insert(key, value);
+  }
+
+  /**
+   * Insert an entry in an array.
+   */
+  function insert(value:Buffer) {
+    if !content? {
+      content <- ArrayValue();
+    }
+    content!.insert(value);
+  }
+
   /**
    * Get this as a Boolean.
    *
    * Return: An optional with a value if this is of a compatible type.
    */
   function getBoolean() -> Boolean? {
-    return value.getBoolean();
+    if content? {
+      return content!.getBoolean();
+    } else {
+      return nil;
+    }
   }
 
   /**
@@ -93,7 +93,11 @@ final class Buffer {
    * Return: An optional with a value if this is of a compatible type.
    */
   function getInteger() -> Integer? {
-    return value.getInteger();
+    if content? {
+      return content!.getInteger();
+    } else {
+      return nil;
+    }
   }
 
   /**
@@ -102,7 +106,11 @@ final class Buffer {
    * Return: An optional with a value if this is of a compatible type.
    */
   function getReal() -> Real? {
-    return value.getReal();
+    if content? {
+      return content!.getReal();
+    } else {
+      return nil;
+    }
   }
 
   /**
@@ -111,9 +119,13 @@ final class Buffer {
    * Return: An optional with a value if this is of a compatible type.
    */
   function getString() -> String? {
-    return value.getString();
+    if content? {
+      return content!.getString();
+    } else {
+      return nil;
+    }
   }
-  
+
   /**
    * Get this as a vector of Booleans.
    *
@@ -121,7 +133,11 @@ final class Buffer {
    * of a compatible type.
    */
   function getBooleanVector() -> Boolean[_]? {
-    return value.getBooleanVector();
+    if content? {
+      return content!.getBooleanVector();
+    } else {
+      return nil;
+    }
   }
 
   /**
@@ -131,7 +147,11 @@ final class Buffer {
    * of a compatible type.
    */
   function getIntegerVector() -> Integer[_]? {
-    return value.getIntegerVector();
+    if content? {
+      return content!.getIntegerVector();
+    } else {
+      return nil;
+    }
   }
 
   /**
@@ -141,7 +161,11 @@ final class Buffer {
    * of a compatible type.
    */
   function getRealVector() -> Real[_]? {
-    return value.getRealVector();
+    if content? {
+      return content!.getRealVector();
+    } else {
+      return nil;
+    }
   }
 
   /**
@@ -151,7 +175,11 @@ final class Buffer {
    * are themselves arrays of the same length and compatible type.
    */
   function getBooleanMatrix() -> Boolean[_,_]? {
-    return value.getBooleanMatrix();
+    if content? {
+      return content!.getBooleanMatrix();
+    } else {
+      return nil;
+    }
   }
 
   /**
@@ -161,7 +189,11 @@ final class Buffer {
    * are themselves arrays of the same length and compatible type.
    */
   function getIntegerMatrix() -> Integer[_,_]? {
-    return value.getIntegerMatrix();
+    if content? {
+      return content!.getIntegerMatrix();
+    } else {
+      return nil;
+    }
   }
 
   /**
@@ -171,269 +203,27 @@ final class Buffer {
    * are themselves arrays of the same length and compatible type.
    */
   function getRealMatrix() -> Real[_,_]? {
-    return value.getRealMatrix();
+    if content? {
+      return content!.getRealMatrix();
+    } else {
+      return nil;
+    }
   }
 
   /**
-   * Get this as a positive definite symmetric matrix of reals.
+   * Get this as a factorized matrix.
    *
    * Return: An optional with a value if this is an array where all elements
    * are themselves arrays of the same length and compatible type.
    */
   function getLLT() -> LLT? {
-    let x <- getRealMatrix();
-    if x? {
-      return llt(x!);
-    } else {
-      return nil;
+    if content? {
+      let X <- content!.getRealMatrix();
+      if X? {
+        return llt(X!);
+      }
     }
-  }
-
-  /**
-   * Get the size of an array.
-   */
-  function size(name:String) -> Integer {
-    let array <- getArray(name);
-    if array? {
-      return array!.size();
-    } else {
-      return 0;
-    }
-  }
-
-  /**
-   * Get a child as an object.
-   *
-   * - name: Name of the child.
-   *
-   * Return: An optional with a value if the given entry exists and is of a
-   * compatible type.
-   */
-  function getObject(name:String) -> Buffer? {
-    let buffer <- getChild(name);
-    if buffer? {
-      return buffer!.getObject();
-    } else {
-      return nil;
-    }
-  }
-
-  /**
-   * Get a child as an array.
-   *
-   * - name: Name of the child.
-   *
-   * Return: An optional with a value if the given entry exists and is of a
-   * compatible type.
-   */
-  function getArray(name:String) -> Buffer? {
-    let buffer <- getChild(name);
-    if buffer? {
-      return buffer!.getArray();
-    } else {
-      return nil;
-    }
-  }
-
-  /**
-   * Get a child as a Boolean.
-   *
-   * - name: Name of the child.
-   *
-   * Return: An optional with a value if the given entry exists and is of a
-   * compatible type.
-   */
-  function getBoolean(name:String) -> Boolean? {
-    let buffer <- getChild(name);
-    if buffer? {
-      return buffer!.getBoolean();
-    } else {
-      return nil;
-    }
-  }
-
-  /**
-   * Get a child as an integer.
-   *
-   * - name: Name of the child.
-   *
-   * Return: An optional with a value if the given entry exists and is of a
-   * compatible type.
-   */
-  function getInteger(name:String) -> Integer? {
-    let buffer <- getChild(name);
-    if buffer? {
-      return buffer!.getInteger();
-    } else {
-      return nil;
-    }
-  }
-
-  /**
-   * Get a child as a real.
-   *
-   * - name: Name of the child.
-   *
-   * Return: An optional with a value if the given entry exists and is of a
-   * compatible type.
-   */
-  function getReal(name:String) -> Real? {
-    let buffer <- getChild(name);
-    if buffer? {
-      return buffer!.getReal();
-    } else {
-      return nil;
-    }
-  }
-
-  /**
-   * Get a child as a string.
-   *
-   * - name: Name of the child.
-   *
-   * Return: An optional with a value if the given entry exists and is of a
-   * compatible type.
-   */
-  function getString(name:String) -> String? {
-    let buffer <- getChild(name);
-    if buffer? {
-      return buffer!.getString();
-    } else {
-      return nil;
-    }
-  }
-
-  /**
-   * Get a child as a vector of Booleans.
-   *
-   * - name: Name of the child.
-   *
-   * Return: An optional with a value if this is an array with all elements
-   * of a compatible type.
-   */
-  function getBooleanVector(name:String) -> Boolean[_]? {
-    let buffer <- getChild(name);
-    if buffer? {
-      return buffer!.getBooleanVector();
-    } else {
-      return nil;
-    }
-  }
-
-  /**
-   * Get a child as a vector of integers.
-   *
-   * - name: Name of the child.
-   *
-   * Return: An optional with a value if this is an array with all elements
-   * of a compatible type.
-   */
-  function getIntegerVector(name:String) -> Integer[_]? {
-    let buffer <- getChild(name);
-    if buffer? {
-      return buffer!.getIntegerVector();
-    } else {
-      return nil;
-    }
-  }
-
-  /**
-   * Get a child as a vector of reals.
-   *
-   * - name: Name of the child.
-   *
-   * Return: An optional with a value if this is an array with all elements
-   * of a compatible type.
-   */
-  function getRealVector(name:String) -> Real[_]? {
-    let buffer <- getChild(name);
-    if buffer? {
-      return buffer!.getRealVector();
-    } else {
-      return nil;
-    }
-  }
-
-  /**
-   * Get a child as a matrix of Booleans.
-   *
-   * - name: Name of the child.
-   *
-   * Return: An optional with a value if this is an array where all elements
-   * are themselves arrays of the same length and compatible type.
-   */
-  function getBooleanMatrix(name:String) -> Boolean[_,_]? {
-    let buffer <- getChild(name);
-    if buffer? {
-      return buffer!.getBooleanMatrix();
-    } else {
-      return nil;
-    }
-  }
-
-  /**
-   * Get a child as a matrix of integers.
-   *
-   * - name: Name of the child.
-   *
-   * Return: An optional with a value if this is an array where all elements
-   * are themselves arrays of the same length and compatible type.
-   */
-  function getIntegerMatrix(name:String) -> Integer[_,_]? {
-    let buffer <- getChild(name);
-    if buffer? {
-      return buffer!.getIntegerMatrix();
-    } else {
-      return nil;
-    }
-  }
-
-  /**
-   * Get a child as a matrix of reals.
-   *
-   * - name: Name of the child.
-   *
-   * Return: An optional with a value if this is an array where all elements
-   * are themselves arrays of the same length and compatible type.
-   */
-  function getRealMatrix(name:String) -> Real[_,_]? {
-    let buffer <- getChild(name);
-    if buffer? {
-      return buffer!.getRealMatrix();
-    } else {
-      return nil;
-    }
-  }
-
-  /**
-   * Get a child as a symmetric positive definite matrix.
-   *
-   * - name: Name of the child.
-   *
-   * Return: An optional with a value if this is an array where all elements
-   * are themselves arrays of the same length and compatible type.
-   */
-  function getLLT(name:String) -> LLT? {
-    let buffer <- getChild(name);
-    if buffer? {
-      return buffer!.getLLT();
-    } else {
-      return nil;
-    }
-  }
-
-  /**
-   * Get this as an object.
-   *
-   * - value: The object.
-   *
-   * Return: The object.
-   */
-  function get(value:Object?) -> Object? {
-    if value? {
-      value!.read(this);
-    }
-    return value;
+    return nil;
   }
 
   /**
@@ -478,6 +268,20 @@ final class Buffer {
    */
   function get(value:String?) -> String? {
     return getString();
+  }
+
+  /**
+   * Get this as an object.
+   *
+   * - value: The object.
+   *
+   * Return: The object.
+   */
+  function get(value:Object?) -> Object? {
+    if value? {
+      value!.read(this);
+    }
+    return value;
   }
 
   /**
@@ -553,7 +357,7 @@ final class Buffer {
   }
 
   /**
-   * Get this as a symmetric positive definite matrix of reals.
+   * Get this as a factorized matrix.
    *
    * - value: Unused, but necessary for overload resolution.
    *
@@ -565,15 +369,374 @@ final class Buffer {
   }
 
   /**
-   * Get an object.
+   * Set this as nil.
+   */
+  function setNil() {
+    content <- NilValue();
+  }
+  
+  /**
+   * Set this.
+   */
+  function set(value:Boolean) {
+    content <- BooleanValue(value);
+  }
+
+  /**
+   * Set this.
+   */
+  function set(value:Integer) {
+    content <- IntegerValue(value);
+  }
+
+  /**
+   * Set this.
+   */
+  function set(value:Real) {
+    content <- RealValue(value);
+  }
+
+  /**
+   * Set this.
+   */
+  function set(value:String) {
+    content <- StringValue(value);
+  }
+  
+  /**
+   * Set this.
+   */
+  function set(value:Object) {
+    value.write(this);
+  }
+  
+  /**
+   * Set this.
+   */
+  function set(value:Boolean[_]) {
+    content <- BooleanVectorValue(value);
+  }
+
+  /**
+   * Set this.
+   */
+  function set(value:Integer[_]) {
+    content <- IntegerVectorValue(value);
+  }
+
+  /**
+   * Set this.
+   */
+  function set(value:Real[_]) {
+    content <- RealVectorValue(value);
+  }
+
+  /**
+   * Set this.
+   */
+  function set(value:String[_]) {
+    content <- ArrayValue();
+    for i in 1..rows(value) {
+      push(value[i]);
+    }
+  }
+
+  /**
+   * Set this.
+   */
+  function set(value:Object[_]) {
+    content <- ArrayValue();
+    for i in 1..rows(value) {
+      push(value[i]);
+    }
+  }
+
+  /**
+   * Set this.
+   */
+  function set(value:Boolean[_,_]) {
+    content <- ArrayValue();
+    for i in 1..rows(value) {
+      push(row(value, i));
+    }
+  }
+
+  /**
+   * Set this.
+   */
+  function set(value:Integer[_,_]) {
+    content <- ArrayValue();
+    for i in 1..rows(value) {
+      push(row(value, i));
+    }
+  }
+
+  /**
+   * Set this.
+   */
+  function set(value:Real[_,_]) {
+    content <- ArrayValue();
+    for i in 1..rows(value) {
+      push(row(value, i));
+    }
+  }
+
+  /**
+   * Set this.
+   */
+  function set(value:LLT) {
+    set(canonical(value));
+  }
+
+  /**
+   * Get an entry in an object as a Boolean.
    *
-   * - name: Name of the child.
+   * - key: Key of the entry.
+   *
+   * Return: An optional with a value if the given entry exists and is of a
+   * compatible type.
+   */
+  function getBoolean(key:String) -> Boolean? {
+    let buffer <- find(key);
+    if buffer? {
+      return buffer!.getBoolean();
+    } else {
+      return nil;
+    }
+  }
+
+  /**
+   * Get an entry in an object as an integer.
+   *
+   * - key: Key of the entry.
+   *
+   * Return: An optional with a value if the given entry exists and is of a
+   * compatible type.
+   */
+  function getInteger(key:String) -> Integer? {
+    let buffer <- find(key);
+    if buffer? {
+      return buffer!.getInteger();
+    } else {
+      return nil;
+    }
+  }
+
+  /**
+   * Get an entry in an object as a real.
+   *
+   * - key: Key of the entry.
+   *
+   * Return: An optional with a value if the given entry exists and is of a
+   * compatible type.
+   */
+  function getReal(key:String) -> Real? {
+    let buffer <- find(key);
+    if buffer? {
+      return buffer!.getReal();
+    } else {
+      return nil;
+    }
+  }
+
+  /**
+   * Get an entry in an object as a string.
+   *
+   * - key: Key of the entry.
+   *
+   * Return: An optional with a value if the given entry exists and is of a
+   * compatible type.
+   */
+  function getString(key:String) -> String? {
+    let buffer <- find(key);
+    if buffer? {
+      return buffer!.getString();
+    } else {
+      return nil;
+    }
+  }
+
+  /**
+   * Get an entry in an object as a vector of Booleans.
+   *
+   * - key: Key of the entry.
+   *
+   * Return: An optional with a value if this is an array with all elements
+   * of a compatible type.
+   */
+  function getBooleanVector(key:String) -> Boolean[_]? {
+    let buffer <- find(key);
+    if buffer? {
+      return buffer!.getBooleanVector();
+    } else {
+      return nil;
+    }
+  }
+
+  /**
+   * Get an entry in an object as a vector of integers.
+   *
+   * - key: Key of the entry.
+   *
+   * Return: An optional with a value if this is an array with all elements
+   * of a compatible type.
+   */
+  function getIntegerVector(key:String) -> Integer[_]? {
+    let buffer <- find(key);
+    if buffer? {
+      return buffer!.getIntegerVector();
+    } else {
+      return nil;
+    }
+  }
+
+  /**
+   * Get an entry in an object as a vector of reals.
+   *
+   * - key: Key of the entry.
+   *
+   * Return: An optional with a value if this is an array with all elements
+   * of a compatible type.
+   */
+  function getRealVector(key:String) -> Real[_]? {
+    let buffer <- find(key);
+    if buffer? {
+      return buffer!.getRealVector();
+    } else {
+      return nil;
+    }
+  }
+
+  /**
+   * Get an entry in an object as a matrix of Booleans.
+   *
+   * - key: Key of the entry.
+   *
+   * Return: An optional with a value if this is an array where all elements
+   * are themselves arrays of the same length and compatible type.
+   */
+  function getBooleanMatrix(key:String) -> Boolean[_,_]? {
+    let buffer <- find(key);
+    if buffer? {
+      return buffer!.getBooleanMatrix();
+    } else {
+      return nil;
+    }
+  }
+
+  /**
+   * Get an entry in an object as a matrix of integers.
+   *
+   * - key: Key of the entry.
+   *
+   * Return: An optional with a value if this is an array where all elements
+   * are themselves arrays of the same length and compatible type.
+   */
+  function getIntegerMatrix(key:String) -> Integer[_,_]? {
+    let buffer <- find(key);
+    if buffer? {
+      return buffer!.getIntegerMatrix();
+    } else {
+      return nil;
+    }
+  }
+
+  /**
+   * Get an entry in an object as a matrix of reals.
+   *
+   * - key: Key of the entry.
+   *
+   * Return: An optional with a value if this is an array where all elements
+   * are themselves arrays of the same length and compatible type.
+   */
+  function getRealMatrix(key:String) -> Real[_,_]? {
+    let buffer <- find(key);
+    if buffer? {
+      return buffer!.getRealMatrix();
+    } else {
+      return nil;
+    }
+  }
+
+  /**
+   * Get an entry in an object as a factorized matrix.
+   *
+   * - key: Key of the entry.
+   *
+   * Return: An optional with a value if this is an array where all elements
+   * are themselves arrays of the same length and compatible type.
+   */
+  function getLLT(key:String) -> LLT? {
+    let buffer <- find(key);
+    if buffer? {
+      return buffer!.getLLT();
+    } else {
+      return nil;
+    }
+  }
+
+  /**
+   * Get an entry in an object as a Boolean.
+   *
+   * - key: Key of the entry.
+   * - value: Unused, but necessary for overload resolution.
+   *
+   * Return: An optional with a value if the given entry exists and is of a
+   * compatible type.
+   */
+  function get(key:String, value:Boolean?) -> Boolean? {
+    return getBoolean(key);
+  }
+
+  /**
+   * Get an entry in an object as an integer.
+   *
+   * - key: Key of the entry.
+   * - value: Unused, but necessary for overload resolution.
+   *
+   * Return: An optional with a value if the given entry exists and is of a
+   * compatible type.
+   */
+  function get(key:String, value:Integer?) -> Integer? {
+    return getInteger(key);
+  }
+
+  /**
+   * Get an entry in an object as a real.
+   *
+   * - key: Key of the entry.
+   * - value: Unused, but necessary for overload resolution.
+   *
+   * Return: An optional with a value if the given entry exists and is of a
+   * compatible type.
+   */
+  function get(key:String, value:Real?) -> Real? {
+    return getReal(key);
+  }
+
+  /**
+   * Get an entry in an object as a string.
+   *
+   * - key: Key of the entry.
+   * - value: Unused, but necessary for overload resolution.
+   *
+   * Return: An optional with a value if the given entry exists and is of a
+   * compatible type.
+   */
+  function get(key:String, value:String?) -> String? {
+    return getString(key);
+  }
+
+  /**
+   * Get an entry in an object as an object.
+   *
+   * - key: Key of the entry.
    * - value: The object.
    *
    * Return: The object.
    */
-  function get(name:String, value:Object?) -> Object? {
-    let buffer <- getObject(name);
+  function get(key:String, value:Object?) -> Object? {
+    let buffer <- find(key);
     if buffer? {
       return buffer!.get(value);
     } else {
@@ -582,743 +745,411 @@ final class Buffer {
   }
 
   /**
-   * Get a Boolean.
+   * Get an entry in an object as a vector of Booleans.
    *
-   * - name: Name of the child.
-   * - value: Unused, but necessary for overload resolution.
-   *
-   * Return: An optional with a value if the given entry exists and is of a
-   * compatible type.
-   */
-  function get(name:String, value:Boolean?) -> Boolean? {
-    return getBoolean(name);
-  }
-
-  /**
-   * Get an integer.
-   *
-   * - name: Name of the child.
-   * - value: Unused, but necessary for overload resolution.
-   *
-   * Return: An optional with a value if the given entry exists and is of a
-   * compatible type.
-   */
-  function get(name:String, value:Integer?) -> Integer? {
-    return getInteger(name);
-  }
-
-  /**
-   * Get a real.
-   *
-   * - name: Name of the child.
-   * - value: Unused, but necessary for overload resolution.
-   *
-   * Return: An optional with a value if the given entry exists and is of a
-   * compatible type.
-   */
-  function get(name:String, value:Real?) -> Real? {
-    return getReal(name);
-  }
-
-  /**
-   * Get a string.
-   *
-   * - name: Name of the child.
-   * - value: Unused, but necessary for overload resolution.
-   *
-   * Return: An optional with a value if the given entry exists and is of a
-   * compatible type.
-   */
-  function get(name:String, value:String?) -> String? {
-    return getString(name);
-  }
-
-  /**
-   * Get a vector of Booleans.
-   *
-   * - name: Name of the child.
+   * - key: Key of the entry.
    * - value: Unused, but necessary for overload resolution.
    *
    * Return: An optional with a value if this is an array with all elements
    * of a compatible type.
    */
-  function get(name:String, value:Boolean[_]?) -> Boolean[_]? {
-    return getBooleanVector(name);
+  function get(key:String, value:Boolean[_]?) -> Boolean[_]? {
+    return getBooleanVector(key);
   }
 
   /**
-   * Get a vector of integers.
+   * Get an entry in an object as a vector of integers.
    *
-   * - name: Name of the child.
+   * - key: Key of the entry.
    * - value: Unused, but necessary for overload resolution.
    *
    * Return: An optional with a value if this is an array with all elements
    * of a compatible type.
    */
-  function get(name:String, value:Integer[_]?) -> Integer[_]? {
-    return getIntegerVector(name);
+  function get(key:String, value:Integer[_]?) -> Integer[_]? {
+    return getIntegerVector(key);
   }
 
   /**
-   * Get a vector of reals.
+   * Get an entry in an object as a vector of reals.
    *
-   * - name: Name of the child.
+   * - key: Key of the entry.
    * - value: Unused, but necessary for overload resolution.
    *
    * Return: An optional with a value if this is an array with all elements
    * of a compatible type.
    */
-  function get(name:String, value:Real[_]?) -> Real[_]? {
-    return getRealVector(name);
+  function get(key:String, value:Real[_]?) -> Real[_]? {
+    return getRealVector(key);
   }
 
   /**
-   * Get a matrix of Booleans.
+   * Get an entry in an object as a matrix of Booleans.
    *
-   * - name: Name of the child.
+   * - key: Key of the entry.
    * - value: Unused, but necessary for overload resolution.
    *
    * Return: An optional with a value if this is an array where all elements
    * are themselves arrays of the same length and compatible type.
    */
-  function get(name:String, value:Boolean[_,_]?) -> Boolean[_,_]? {
-    return getBooleanMatrix(name);
+  function get(key:String, value:Boolean[_,_]?) -> Boolean[_,_]? {
+    return getBooleanMatrix(key);
   }
 
   /**
-   * Get a matrix of integers.
+   * Get an entry in an object as a matrix of integers.
    *
-   * - name: Name of the child.
+   * - key: Key of the entry.
    * - value: Unused, but necessary for overload resolution.
    *
    * Return: An optional with a value if this is an array where all elements
    * are themselves arrays of the same length and compatible type.
    */
-  function get(name:String, value:Integer[_,_]?) -> Integer[_,_]? {
-    return getIntegerMatrix(name);
+  function get(key:String, value:Integer[_,_]?) -> Integer[_,_]? {
+    return getIntegerMatrix(key);
   }
 
   /**
-   * Get a matrix of reals.
+   * Get an entry in an object as a matrix of reals.
    *
-   * - name: Name of the child.
+   * - key: Key of the entry.
    * - value: Unused, but necessary for overload resolution.
    *
    * Return: An optional with a value if this is an array where all elements
    * are themselves arrays of the same length and compatible type.
    */
-  function get(name:String, value:Real[_,_]?) -> Real[_,_]? {
-    return getRealMatrix(name);
+  function get(key:String, value:Real[_,_]?) -> Real[_,_]? {
+    return getRealMatrix(key);
   }
 
   /**
-   * Get a symmetric positive definite matrix of reals.
+   * Get an entry in an object as a factorized matrix.
    *
-   * - name: Name of the child.
+   * - key: Key of the entry.
    * - value: Unused, but necessary for overload resolution.
    *
    * Return: An optional with a value if this is an array where all elements
    * are themselves arrays of the same length and compatible type.
    */
-  function get(name:String, value:LLT?) -> LLT? {
-    return getLLT(name);
+  function get(key:String, value:LLT?) -> LLT? {
+    return getLLT(key);
+  }
+
+  /**
+   * Set entry in an object as nil.
+   *
+   * - key: Key of the entry.
+   */
+  function setNil(key:String) {
+    insert(key, Buffer());
+  }
+
+  /**
+   * Set an entry in an object.
+   *
+   * - key: Key of the entry.
+   * - value: Value of the entry.
+   */
+  function set(key:String, value:Boolean) {
+    insert(key, Buffer(value));
+  }
+
+  /**
+   * Set an entry in an object.
+   *
+   * - key: Key of the entry.
+   * - value: Value of the entry.
+   */
+  function set(key:String, value:Integer) {
+    insert(key, Buffer(value));
+  }
+
+  /**
+   * Set an entry in an object.
+   *
+   * - key: Key of the entry.
+   * - value: Value of the entry.
+   */
+  function set(key:String, value:Real) {
+    insert(key, Buffer(value));
+  }
+
+  /**
+   * Set an entry in an object.
+   *
+   * - key: Key of the entry.
+   * - value: Value of the entry.
+   */
+  function set(key:String, value:String) {
+    insert(key, Buffer(value));
+  }
+
+  /**
+   * Set an entry in an object.
+   *
+   * - key: Key of the entry.
+   * - value: Value of the entry.
+   */
+  function set(key:String, value:Object) {
+    let buffer <- Buffer();
+    value.write(buffer);
+    insert(key, buffer);
   }
   
   /**
-   * Set this as an object.
+   * Set an entry in an object.
+   *
+   * - key: Key of the entry.
+   * - value: Value of the entry.
    */
-  function setObject() -> Buffer {
-    v:ObjectValue;
-    this.value <- v;
-    return this;
-  }
-  
-  /**
-   * Set this as an array.
-   */
-  function setArray() -> Buffer {
-    v:ArrayValue;
-    this.value <- v;
-    return this;
+  function set(key:String, value:Boolean[_]) {
+    insert(key, Buffer(value));
   }
 
   /**
-   * Set this as nil.
+   * Set an entry in an object.
+   *
+   * - key: Key of the entry.
+   * - value: Value of the entry.
    */
-  function setNil() {
-    v:NilValue;
-    this.value <- v;
+  function set(key:String, value:Integer[_]) {
+    insert(key, Buffer(value));
   }
 
   /**
-   * Set this as a Boolean.
+   * Set an entry in an object.
    *
-   * - value: Value.
+   * - key: Key of the entry.
+   * - value: Value of the entry.
    */
-  function setBoolean(value:Boolean) {
-    v:BooleanValue(value);
-    this.value <- v;
+  function set(key:String, value:Real[_]) {
+    insert(key, Buffer(value));
   }
 
   /**
-   * Set this as an integer.
+   * Set an entry in an object.
    *
-   * - value: Value.
+   * - key: Key of the entry.
+   * - value: Value of the entry.
    */
-  function setInteger(value:Integer) {
-    v:IntegerValue(value);
-    this.value <- v;
+  function set(key:String, value:String[_]) {
+    insert(key, Buffer(value));
   }
 
   /**
-   * Set this as a real.
+   * Set an entry in an object.
    *
-   * - value: Value.
+   * - key: Key of the entry.
+   * - value: Value of the entry.
    */
-  function setReal(value:Real) {
-    v:RealValue(value);
-    this.value <- v;
+  function set(key:String, value:Object[_]) {
+    insert(key, Buffer(value));
   }
 
   /**
-   * Set this as a string.
+   * Set an entry in an object.
    *
-   * - value: Value.
+   * - key: Key of the entry.
+   * - value: Value of the entry.
    */
-  function setString(value:String) {
-    v:StringValue(value);
-    this.value <- v;
+  function set(key:String, value:Boolean[_,_]) {
+    insert(key, Buffer(value));
   }
 
   /**
-   * Set this as a vector of Booleans.
+   * Set an entry in an object.
    *
-   * - value: Value.
+   * - key: Key of the entry.
+   * - value: Value of the entry.
    */
-  function setBooleanVector(value:Boolean[_]) {
-    v:BooleanVectorValue(value);
-    this.value <- v;
+  function set(key:String, value:Integer[_,_]) {
+    insert(key, Buffer(value));
   }
 
   /**
-   * Set this as a vector of integers.
+   * Set an entry in an object.
    *
-   * - value: Value.
+   * - key: Key of the entry.
+   * - value: Value of the entry.
    */
-  function setIntegerVector(value:Integer[_]) {
-    v:IntegerVectorValue(value);
-    this.value <- v;
+  function set(key:String, value:Real[_,_]) {
+    insert(key, Buffer(value));
   }
 
   /**
-   * Set this as a vector of reals.
+   * Set an entry in an object.
    *
-   * - value: Value.
+   * - key: Key of the entry.
+   * - value: Value of the entry.
    */
-  function setRealVector(value:Real[_]) {
-    v:RealVectorValue(value);
-    this.value <- v;
+  function set(key:String, value:LLT) {
+    insert(key, Buffer(canonical(value)));
   }
 
   /**
-   * Set this as a vector of objects.
-   *
-   * - value: Value.
+   * Get the size of the buffer. For an uninitialized buffer this is zero,
+   * for an array it is the array length, for anything else it is one.
    */
-  function setObjectVector(value:Object[_]) {
-    setArray();
-    for n in 1..length(value) {
-      push().set(value[n]);
-    }
-  }
-  
-  /**
-   * Set this as matrix of Booleans.
-   *
-   * - value: Value.
-   */
-  function setBooleanMatrix(value:Boolean[_,_]) {
-    v:BooleanMatrixValue(value);
-    this.value <- v;
-  }
-
-  /**
-   * Set this as a matrix of integers.
-   *
-   * - value: Value.
-   */
-  function setIntegerMatrix(value:Integer[_,_]) {
-    v:IntegerMatrixValue(value);
-    this.value <- v;
-  }
-
-  /**
-   * Set this as a matrix of reals.
-   *
-   * - value: Value.
-   */
-  function setRealMatrix(value:Real[_,_]) {
-    v:RealMatrixValue(value);
-    this.value <- v;
-  }
-
-  /**
-   * Set this as a symmetric positive definite matrix of reals.
-   *
-   * - value: Value.
-   */
-  function setLLT(value:LLT) {
-    setRealMatrix(canonical(value));
-  }
-
-  /**
-   * Set this as a matrix of objects.
-   *
-   * - value: Value.
-   */
-  function setObjectMatrix(value:Object[_,_]) {
-    setArray();
-    for i in 1..rows(value) {
-      let buffer <- push().setArray();
-      for j in 1..columns(value) {
-        buffer.push().set(value[i,j]);
-      }
+  function size() -> Integer {
+    if content? {
+      return content!.size();
+    } else {
+      return 0;
     }
   }
 
   /**
-   * Set child as an object.
+   * Get the size of an entry. For an uninitialized buffer this is zero,
+   * for an array it is the array length, for anything else it is one.
    *
-   * - name: Name of the child.
+   * - key: Key of the entry.
    */
-  function setObject(name:String) -> Buffer {
-    return setChild(name).setObject();
-  }
-  
-  /**
-   * Set child as an array.
-   *
-   * - name: Name of the child.
-   */
-  function setArray(name:String) -> Buffer {
-    return setChild(name).setArray();
+  function size(key:String) -> Integer {
+    let buffer <- find(key);
+    if buffer? {
+      return buffer!.size();
+    } else {
+      return 0;
+    }
   }
 
   /**
-   * Set child as nil.
-   *
-   * - name: Name of the child.
+   * Iterate through the elements of an array.
    */
-  function setNil(name:String) {
-    setChild(name).setNil();
+  function walk() -> Iterator<Buffer> {
+    if content? {
+      return content!.walk();
+    } else {
+      return EmptyIterator<Buffer>();
+    }
   }
 
   /**
-   * Set child as a Boolean.
+   * Iterate through the elements of an array entry.
    *
-   * - name: Name of the child.
-   * - value: Value.
+   * - key: Key of the entry.
    */
-  function setBoolean(name:String, value:Boolean) {
-    setChild(name).setBoolean(value);
+  function walk(key:String) -> Iterator<Buffer> {
+    let buffer <- find(key);
+    if buffer? {
+      return buffer!.walk();
+    } else {
+      return EmptyIterator<Buffer>();
+    }
   }
 
   /**
-   * Set child as an integer.
-   *
-   * - name: Name of the child.
-   * - value: Value.
+   * Push a nil element onto the end of an array.
    */
-  function setInteger(name:String, value:Integer) {
-    setChild(name).setInteger(value);
+  function pushNil() {
+    if content? {
+      content <- content!.pushNil();
+    } else {
+      content <- ArrayValue();
+      content!.pushNil();
+    }
   }
 
   /**
-   * Set child as a real.
-   *
-   * - name: Name of the child.
-   * - value: Value.
+   * Push an element onto the end of an array.
    */
-  function setReal(name:String, value:Real) {
-    setChild(name).setReal(value);
+  function push(value:Boolean) {
+    if content? {
+      content <- content!.push(value);
+    } else {
+      set([value]);
+    }
   }
 
   /**
-   * Set child as a string.
-   *
-   * - name: Name of the child.
-   * - value: Value.
+   * Push an element onto the end of an array.
    */
-  function setString(name:String, value:String) {
-    setChild(name).setString(value);
+  function push(value:Integer) {
+    if content? {
+      content <- content!.push(value);
+    } else {
+      set([value]);
+    }
   }
 
   /**
-   * Set child as a vector of Booleans.
-   *
-   * - name: Name of the child.
-   * - value: Value.
+   * Push an element onto the end of an array.
    */
-  function setBooleanVector(name:String, value:Boolean[_]) {
-    setChild(name).setBooleanVector(value);
+  function push(value:Real) {
+    if content? {
+      content <- content!.push(value);
+    } else {
+      set([value]);
+    }
   }
 
   /**
-   * Set child as a vector of integers.
-   *
-   * - name: Name of the child.
-   * - value: Value.
+   * Push an element onto the end of an array.
    */
-  function setIntegerVector(name:String, value:Integer[_]) {
-    setChild(name).setIntegerVector(value);
+  function push(value:String) {
+    if content? {
+      content <- content!.push(value);
+    } else {
+      set([value]);
+    }
   }
 
   /**
-   * Set child as a vector of reals.
-   *
-   * - name: Name of the child.
-   * - value: Value.
+   * Push an element onto the end of an array.
    */
-  function setRealVector(name:String, value:Real[_]) {
-    setChild(name).setRealVector(value);  
+  function push(value:Object) {
+    if content? {
+      content <- content!.push(value);
+    } else {
+      set([value]);
+    }
   }
 
   /**
-   * Set child as a vector of objects.
-   *
-   * - name: Name of the child.
-   * - value: Value.
+   * Push an element onto the end of an array.
    */
-  function setObjectVector(name:String, value:Object[_]) {
-    setChild(name).setObjectVector(value);  
+  function push(value:Boolean[_]) {
+    if content? {
+      content <- content!.push(value);
+    } else {
+      content <- ArrayValue();
+      content!.push(value);
+    }
   }
 
   /**
-   * Set child as a matrix of Booleans.
-   *
-   * - name: Name of the child.
-   * - value: Value.
+   * Push an element onto the end of an array.
    */
-  function setBooleanMatrix(name:String, value:Boolean[_,_]) {
-    setChild(name).setBooleanMatrix(value);  
+  function push(value:Integer[_]) {
+    if content? {
+      content <- content!.push(value);
+    } else {
+      content <- ArrayValue();
+      content!.push(value);
+    }
   }
 
   /**
-   * Set child as a matrix of integers.
-   *
-   * - name: Name of the child.
-   * - value: Value.
+   * Push an element onto the end of an array.
    */
-  function setIntegerMatrix(name:String, value:Integer[_,_]) {
-    setChild(name).setIntegerMatrix(value);  
-  }
-
-  /**
-   * Set child as a matrix of reals.
-   *
-   * - name: Name of the child.
-   * - value: Value.
-   */
-  function setRealMatrix(name:String, value:Real[_,_]) {
-    setChild(name).setRealMatrix(value);  
-  }
-
-  /**
-   * Set child as a symmetric positive definite matrix of reals.
-   *
-   * - name: Name of the child.
-   * - value: Value.
-   */
-  function setLLT(name:String, value:LLT) {
-    setChild(name).setLLT(value);  
-  }
-
-  /**
-   * Set child as a matrix of objects.
-   *
-   * - name: Name of the child.
-   * - value: Value.
-   */
-  function setObjectMatrix(name:String, value:Object[_,_]) {
-    setChild(name).setObjectMatrix(value);  
-  }
-  
-  /**
-   * Set this as a Boolean.
-   *
-   * - value: Value.
-   */
-  function set(value:Boolean) {
-    setBoolean(value);
-  }
-
-  /**
-   * Set this as an integer.
-   *
-   * - value: Value.
-   */
-  function set(value:Integer) {
-    setInteger(value);
-  }
-
-  /**
-   * Set this as a real.
-   *
-   * - value: Value.
-   */
-  function set(value:Real) {
-    setReal(value);
-  }
-
-  /**
-   * Set this as a string.
-   *
-   * - value: Value.
-   */
-  function set(value:String) {
-    setString(value);
-  }
-  
-  /**
-   * Set this as an object.
-   *
-   * - value: Value.
-   */
-  function set(value:Object) {
-    setObject();
-    value.write(this);
-  }
-  
-  /**
-   * Set this as a vector of Booleans.
-   *
-   * - value: Value.
-   */
-  function set(value:Boolean[_]) {
-    setBooleanVector(value);
-  }
-
-  /**
-   * Set this as a vector of integers.
-   *
-   * - value: Value.
-   */
-  function set(value:Integer[_]) {
-    setIntegerVector(value);
-  }
-
-  /**
-   * Set this as a vector of reals.
-   *
-   * - value: Value.
-   */
-  function set(value:Real[_]) {
-    setRealVector(value);
-  }
-
-  /**
-   * Set this as a vector of objects.
-   *
-   * - value: Value.
-   */
-  function set(value:Object[_]) {
-    setObjectVector(value);
-  }
-
-  /**
-   * Set this as matrix of Booleans.
-   *
-   * - value: Value.
-   */
-  function set(value:Boolean[_,_]) {
-    setBooleanMatrix(value);
-  }
-
-  /**
-   * Set this as a matrix of integers.
-   *
-   * - value: Value.
-   */
-  function set(value:Integer[_,_]) {
-    setIntegerMatrix(value);
-  }
-
-  /**
-   * Set this as a matrix of reals.
-   *
-   * - value: Value.
-   */
-  function set(value:Real[_,_]) {
-    setRealMatrix(value);
-  }
-
-  /**
-   * Set this as a symmetric positive definite matrix of reals.
-   *
-   * - value: Value.
-   */
-  function set(value:LLT) {
-    setLLT(value);
-  }
-
-  /**
-   * Set this as a matrix of objects.
-   *
-   * - value: Value.
-   */
-  function set(value:Object[_,_]) {
-    setObjectMatrix(value);
-  }
-
-  /**
-   * Set a Boolean.
-   *
-   * - name: Name of the child.
-   * - value: Value.
-   */
-  function set(name:String, value:Boolean) {
-    setBoolean(name, value);
-  }
-
-  /**
-   * Set an integer.
-   *
-   * - name: Name of the child.
-   * - value: Value.
-   */
-  function set(name:String, value:Integer) {
-    setInteger(name, value);
-  }
-
-  /**
-   * Set a real.
-   *
-   * - name: Name of the child.
-   * - value: Value.
-   */
-  function set(name:String, value:Real) {
-    setReal(name, value);
-  }
-
-  /**
-   * Set a string.
-   *
-   * - name: Name of the child.
-   * - value: Value.
-   */
-  function set(name:String, value:String) {
-    setString(name, value);
-  }
-
-  /**
-   * Set an object.
-   *
-   * - name: Name of the child.
-   * - value: Value.
-   */
-  function set(name:String, value:Object) {
-    setChild(name).set(value);
-  }
-  
-  /**
-   * Set a vector of Booleans.
-   *
-   * - name: Name of the child.
-   * - value: Value.
-   */
-  function set(name:String, value:Boolean[_]) {
-    setBooleanVector(name, value);
-  }
-
-  /**
-   * Set a vector of integers.
-   *
-   * - name: Name of the child.
-   * - value: Value.
-   */
-  function set(name:String, value:Integer[_]) {
-    setIntegerVector(name, value);
-  }
-
-  /**
-   * Set a vector of reals.
-   *
-   * - name: Name of the child.
-   * - value: Value.
-   */
-  function set(name:String, value:Real[_]) {
-    setRealVector(name, value);
-  }
-
-  /**
-   * Set a vector of objects.
-   *
-   * - name: Name of the child.
-   * - value: Value.
-   */
-  function set(name:String, value:Object[_]) {
-    setObjectVector(name, value);
-  }
-
-  /**
-   * Set a matrix of Booleans.
-   *
-   * - name: Name of the child.
-   * - value: Value.
-   */
-  function set(name:String, value:Boolean[_,_]) {
-    setBooleanMatrix(name, value);
-  }
-
-  /**
-   * Set a matrix of integers.
-   *
-   * - name: Name of the child.
-   * - value: Value.
-   */
-  function set(name:String, value:Integer[_,_]) {
-    setIntegerMatrix(name, value);
-  }
-
-  /**
-   * Set a matrix of reals.
-   *
-   * - name: Name of the child.
-   * - value: Value.
-   */
-  function set(name:String, value:Real[_,_]) {
-    setRealMatrix(name, value);
-  }
-
-  /**
-   * Set a symmetric positive definite matrix of reals.
-   *
-   * - name: Name of the child.
-   * - value: Value.
-   */
-  function set(name:String, value:LLT) {
-    setLLT(name, value);
-  }
-  
-  /**
-   * Set a matrix of objects.
-   *
-   * - name: Name of the child.
-   * - value: Value.
-   */
-  function set(name:String, value:Object[_,_]) {
-    setObjectMatrix(name, value);
+  function push(value:Real[_]) {
+    if content? {
+      content <- content!.push(value);
+    } else {
+      content <- ArrayValue();
+      content!.push(value);
+    }
   }
 }
 
 /**
  * Create a Buffer.
  *
- * - root: Root element.
+ * - root: Root value.
  */
-function Buffer(root:Value) -> Buffer {
+function Buffer<Type>(root:Type) -> Buffer {
   o:Buffer;
-  o.value <- root;
+  o.set(root);
   return o;
 }
 
@@ -1326,6 +1157,5 @@ function Buffer(root:Value) -> Buffer {
  * Create a Buffer.
  */
 function Buffer() -> Buffer {
-  o:Buffer;
-  return o;
+  return construct<Buffer>();
 }

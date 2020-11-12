@@ -82,7 +82,7 @@ class YAMLReader < Reader {
     cpp{{
     switch (this->event.type) {
       case YAML_SCALAR_EVENT:
-        this->parseScalar(buffer);
+        this->parseValue(buffer);
         break;
       case YAML_SEQUENCE_START_EVENT:
         this->parseSequence(buffer);
@@ -103,7 +103,6 @@ class YAMLReader < Reader {
   }
   
   function parseMapping(buffer:Buffer) {
-    buffer.setObject();
     cpp{{
     yaml_event_delete(&this->event);
     int done = 0;
@@ -113,24 +112,25 @@ class YAMLReader < Reader {
         error("parse error");
       }
       if (this->event.type == YAML_SCALAR_EVENT) {
-        /* name */
+        /* key */
         char* data = (char*)this->event.data.scalar.value;
         size_t length = this->event.data.scalar.length;
-        std::string name(data, length);
+        std::string key(data, length);
         yaml_event_delete(&this->event);
         
         /* value */
         if (!yaml_parser_parse(&this->parser, &this->event)) {
           error("parse error");
         }
+        auto value = birch::Buffer();
+        buffer->insert(key, value);
         if (this->event.type == YAML_SCALAR_EVENT) {
-          this->parseScalar(buffer->setChild(name));
+          this->parseValue(value);
         } else if (this->event.type == YAML_SEQUENCE_START_EVENT) {
-          this->parseSequence(buffer->setChild(name));
+          this->parseSequence(value);
         } else if (this->event.type == YAML_MAPPING_START_EVENT) {
-          this->parseMapping(buffer->setChild(name));
+          this->parseMapping(value);
         } else {
-          buffer->setChild(name);
           yaml_event_delete(&this->event);
         }
       } else {
@@ -142,7 +142,6 @@ class YAMLReader < Reader {
   }
   
   function parseSequence(buffer:Buffer) {
-    buffer.setArray();
     cpp{{
     yaml_event_delete(&this->event);
     int done = 0;
@@ -151,11 +150,15 @@ class YAMLReader < Reader {
         error("parse error");
       }
       if (this->event.type == YAML_SCALAR_EVENT) {
-        this->parseScalar(buffer->push());
+        this->parseElement(buffer);
       } else if (this->event.type == YAML_SEQUENCE_START_EVENT) {
-        this->parseSequence(buffer->push());
+        auto element = birch::Buffer();
+        buffer->insert(element);
+        this->parseSequence(element);
       } else if (this->event.type == YAML_MAPPING_START_EVENT) {
-        this->parseMapping(buffer->push());
+        auto element = birch::Buffer();
+        buffer->insert(element);
+        this->parseMapping(element);
       } else {
         done = this->event.type == YAML_SEQUENCE_END_EVENT;
         yaml_event_delete(&this->event);
@@ -164,33 +167,64 @@ class YAMLReader < Reader {
     }}
   }
   
-  function parseScalar(buffer:Buffer) {
+  function parseValue(buffer:Buffer) {
     cpp{{
     auto data = (char*)this->event.data.scalar.value;
     auto length = this->event.data.scalar.length;
     auto endptr = data;
-    
-    auto intValue = std::strtoll(data, &endptr, 10);
+    auto intValue = int64_t(std::strtoll(data, &endptr, 10));
     if (endptr == data + length) {
-      buffer->setInteger(intValue);
+      buffer->set(intValue);
     } else {
       auto realValue = std::strtod(data, &endptr);
       if (endptr == data + length) {
-        buffer->setReal(realValue);
+        buffer->set(realValue);
       } else if (std::strcmp(data, "true") == 0) {
-        buffer->setBoolean(true);
+        buffer->set(true);
       } else if (std::strcmp(data, "false") == 0) {
-        buffer->setBoolean(false);
+        buffer->set(false);
       } else if (std::strcmp(data, "null") == 0) {
         buffer->setNil();
       } else if (std::strcmp(data, "Infinity") == 0) {
-        buffer->setReal(std::numeric_limits<Real>::infinity());
+        buffer->set(std::numeric_limits<Real>::infinity());
       } else if (std::strcmp(data, "-Infinity") == 0) {
-        buffer->setReal(-std::numeric_limits<Real>::infinity());
+        buffer->set(-std::numeric_limits<Real>::infinity());
       } else if (std::strcmp(data, "NaN") == 0) {
-        buffer->setReal(std::numeric_limits<Real>::quiet_NaN());
+        buffer->set(std::numeric_limits<Real>::quiet_NaN());
       } else {
-        buffer->setString(std::string(data, length));
+        buffer->set(std::string(data, length));
+      }
+    }
+    yaml_event_delete(&this->event);
+    }}
+  }
+
+  function parseElement(buffer:Buffer) {
+    cpp{{
+    auto data = (char*)this->event.data.scalar.value;
+    auto length = this->event.data.scalar.length;
+    auto endptr = data;
+    auto intValue = int64_t(std::strtoll(data, &endptr, 10));
+    if (endptr == data + length) {
+      buffer->push(intValue);
+    } else {
+      auto realValue = std::strtod(data, &endptr);
+      if (endptr == data + length) {
+        buffer->push(realValue);
+      } else if (std::strcmp(data, "true") == 0) {
+        buffer->push(true);
+      } else if (std::strcmp(data, "false") == 0) {
+        buffer->push(false);
+      } else if (std::strcmp(data, "null") == 0) {
+        buffer->pushNil();
+      } else if (std::strcmp(data, "Infinity") == 0) {
+        buffer->push(std::numeric_limits<Real>::infinity());
+      } else if (std::strcmp(data, "-Infinity") == 0) {
+        buffer->push(-std::numeric_limits<Real>::infinity());
+      } else if (std::strcmp(data, "NaN") == 0) {
+        buffer->push(std::numeric_limits<Real>::quiet_NaN());
+      } else {
+        buffer->push(std::string(data, length));
       }
     }
     yaml_event_delete(&this->event);

@@ -47,12 +47,12 @@ program sample(
   }
 
   /* model */
-  let buffer <- configBuffer.getObject("model");
+  let buffer <- configBuffer.find("model");
   if !buffer? {
-    buffer <- configBuffer.setObject("model");
+    buffer <- Buffer();
   }
   if !buffer!.getString("class")? && model? {
-    buffer!.setString("class", model!);
+    buffer!.set("class", model!);
   }
   let archetype <- Model?(make(buffer));
   if !archetype? {
@@ -61,12 +61,12 @@ program sample(
   }
 
   /* sampler */
-  buffer <- configBuffer.getObject("sampler");
+  buffer <- configBuffer.find("sampler");
   if !buffer? {
-    buffer <- configBuffer.setObject("sampler");
+    buffer <- Buffer();
   }
   if !buffer!.getString("class")? {
-    buffer!.setString("class", "MarginalizedParticleImportanceSampler");
+    buffer!.set("class", "MarginalizedParticleImportanceSampler");
   }
   let sampler <- ParticleSampler?(make(buffer));
   if !sampler? {
@@ -75,15 +75,15 @@ program sample(
   }
 
   /* filter */
-  buffer <- configBuffer.getObject("filter");
+  buffer <- configBuffer.find("filter");
   if !buffer? {
-    buffer <- configBuffer.setObject("filter");
+    buffer <- Buffer();
   }
   if !buffer!.getString("class")? {
     if ConditionalParticleSampler?(sampler)? {
-      buffer!.setString("class", "ConditionalParticleFilter");
+      buffer!.set("class", "ConditionalParticleFilter");
     } else {
-      buffer!.setString("class", "ParticleFilter");
+      buffer!.set("class", "ParticleFilter");
     }
   }
   let filter <- ParticleFilter?(make(buffer));

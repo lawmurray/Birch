@@ -1,14 +1,21 @@
 /**
  * Entry in an object.
  */
-class Entry {
+final class Entry(key:String, value:Buffer) {
   /**
-   * Name.
+   * Key.
    */
-  name:String;
+  key:String <- key;
   
   /**
-   * Buffer.
+   * Value.
    */
-  buffer:Buffer;
+  value:Buffer <- value;
+}
+
+/**
+ * Create an Entry.
+ */
+function Entry(key:String, value:Buffer) -> Entry {
+  return construct<Entry>(key, value);
 }

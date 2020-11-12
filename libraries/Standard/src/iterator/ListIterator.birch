@@ -30,6 +30,5 @@ final class ListIterator<Type>(head:ListNode<Type>?) < Iterator<Type> {
  * Create a ListIterator.
  */
 function ListIterator<Type>(head:ListNode<Type>?) -> ListIterator<Type> {
-  iter:ListIterator<Type>(head);
-  return iter;
+  return construct<ListIterator<Type>>(head);
 }
