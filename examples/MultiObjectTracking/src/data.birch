@@ -10,7 +10,7 @@ program data(input:String <- "output/simulate.json",
     output:String <- "input/filter.json") {
   /* input */
   let reader <- Reader(input);
-  let inputBuffer <- reader.scan();
+  let inputBuffer <- reader.slurp();
   reader.close();
   
   /* read in the simulated observations from the track */
@@ -49,6 +49,6 @@ program data(input:String <- "output/simulate.json",
   outputBuffer.set("θ", θ);
 
   let writer <- Writer(output);
-  writer.print(outputBuffer);
+  writer.dump(outputBuffer);
   writer.close();
 }

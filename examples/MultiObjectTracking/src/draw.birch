@@ -8,7 +8,7 @@ program draw(input:String <- "output/simulate.json",
     height:Integer <- 1024) {
   /* input file */
   let reader <- Reader(input);
-  let inputBuffer <- reader.scan();
+  let inputBuffer <- reader.slurp();
   reader.close();
   
   /* output file and drawing surface */
