@@ -4,6 +4,22 @@ hpp{{
 
 /**
  * Reader for YAML files.
+ *
+ * ```mermaid
+ * classDiagram
+ *   class Iterator~Buffer~ {
+ *     hasNext() Boolean
+ *     next() Buffer
+ *   }
+ *   Iterator~Buffer~ <|-- Reader
+ *   Reader <|-- YAMLReader
+ *   Reader <|-- JSONReader
+ *   YAMLReader -- JSONReader
+ *   link Iterator "../Iterator/"
+ *   link Reader "../Reader/"
+ *   link YAMLReader "../YAMLReader/"
+ *   link JSONReader "../JSONReader/"
+ * ```
  */
 class YAMLReader < Reader {
   /**
@@ -16,15 +32,17 @@ class YAMLReader < Reader {
   yaml_event_t event;
   }}
 
-  function open(path:String) {
+  override function open(path:String) {
     file <- fopen(path, READ);
-  }
-
-  function scan() -> Buffer {
-    buffer:Buffer;
     cpp{{
     yaml_parser_initialize(&this->parser);
     yaml_parser_set_input_file(&this->parser, this->file);
+    }}
+  }
+
+  override function slurp() -> Buffer {
+    buffer:Buffer;
+    cpp{{
     int done = 0;
     while (!done) {
       if (!yaml_parser_parse(&this->parser, &this->event)) {
@@ -44,15 +62,7 @@ class YAMLReader < Reader {
     return buffer;
   }
 
-  function walk() {
-    cpp{{
-    bool done = false;
-    yaml_parser_initialize(&this->parser);
-    yaml_parser_set_input_file(&this->parser, this->file);
-    }}
-  }
-
-  function hasNext() -> Boolean {
+  override function hasNext() -> Boolean {
     cpp{{
     bool repeat = false, eof = false;
     do {
@@ -77,7 +87,7 @@ class YAMLReader < Reader {
     }}
   }
 
-  function next() -> Buffer {
+  override function next() -> Buffer {
     buffer:Buffer;
     cpp{{
     switch (this->event.type) {
@@ -98,7 +108,7 @@ class YAMLReader < Reader {
     return buffer;
   }
 
-  function close() {
+  override function close() {
     fclose(file);
   }
   

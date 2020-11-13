@@ -1,5 +1,21 @@
 /**
- * Reader.
+ * Read data from a file.
+ *
+ * ```mermaid
+ * classDiagram
+ *   class Iterator~Buffer~ {
+ *     hasNext() Boolean
+ *     next() Buffer
+ *   }
+ *   Iterator~Buffer~ <|-- Reader
+ *   Reader <|-- YAMLReader
+ *   Reader <|-- JSONReader
+ *   YAMLReader -- JSONReader
+ *   link Iterator "../Iterator/"
+ *   link Reader "../Reader/"
+ *   link YAMLReader "../YAMLReader/"
+ *   link JSONReader "../JSONReader/"
+ * ```
  *
  * Typical use is to use the `Reader` factory function to instantiate an
  * object of an appropriate derived class based on the file extension of the
@@ -7,15 +23,19 @@
  *
  *     let reader <- Reader(path);
  *
- * The whole contents of the file can then be read into a buffer with:
+ * The whole contents of the file can be read at once with:
  *
- *     let buffer <- reader.scan();
+ *     let buffer <- reader.slurp();
+ *
+ * Alternatively, where the root element of the file is an array, the contents
+ * may be read sequentially, one element at a time, using the
+ * [Iterator](../Iterator/) interface, from which `Reader` derives.
  *
  * Finally, close the file:
  *
  *     reader.close();
  */
-abstract class Reader {  
+abstract class Reader < Iterator<Buffer> {
   /**
    * Open a file.
    *
@@ -24,42 +44,12 @@ abstract class Reader {
   abstract function open(path:String);
   
   /**
-   * Read the entire contents of the file.
+   * Read the whole contents of the file into a buffer.
    *
-   * - buffer: Buffer into which to read.
+   * Returns: Buffer with the file contents.
    */
-  abstract function scan() -> Buffer;
-
-  /**
-   * Start reading the contents of the file sequentially, if the root element
-   * is a sequence. This avoids reading the entire file into memory at once.
-   *
-   * The call should be followed by alternating calls to `hasNext()` and
-   * `next()` to read each element of the sequence, e.g.:
-   *
-   *     reader.walk();
-   *     while reader.hasNext() {
-   *       let buffer <- reader.next();
-   *       ...
-   *     }
-   *
-   * See also: `hasNext()`, `next()`.
-   */
-  abstract function walk();
-
-  /**
-   * When reading the contents of the file sequentially, is there another
-   * element?
-   *
-   * See also: `walk()`, `next()`.
-   */
-  abstract function hasNext() -> Boolean;
-
-  /**
-   * When reading the contents of the file sequentially, get the next element.
-   */
-  abstract function next() -> Buffer;
-  
+  abstract function slurp() -> Buffer;
+ 
   /**
    * Close the file.
    */
@@ -74,7 +64,7 @@ abstract class Reader {
  * Returns: the reader.
  *
  * The file extension of `path` is used to determine the precise type of the
- * returned object. Supported file extension are `.json` and `.yml`.
+ * returned object. Supported file extension are `.json`, `.yml`, and `.yaml`.
  */
 function Reader(path:String) -> Reader {
   let ext <- extension(path);
@@ -83,14 +73,14 @@ function Reader(path:String) -> Reader {
     reader:JSONReader;
     reader.open(path);
     result <- reader;
-  } else if ext == ".yml" {
+  } else if ext == ".yml" || ext == ".yaml" {
     reader:YAMLReader;
     reader.open(path);
     result <- reader;
   }
   if !result? {
     error("unrecognized file extension '" + ext + "' in path '" + path +
-        "'; supported extensions are '.json' and '.yml'.");
+        "'; supported extensions are '.json', '.yml' and '.yaml'.");
   }
   return result!;
 }

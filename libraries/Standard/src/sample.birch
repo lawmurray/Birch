@@ -30,7 +30,7 @@ program sample(
   configBuffer:Buffer;
   if config? {
     let reader <- Reader(config!);
-    configBuffer <- reader.scan();
+    configBuffer <- reader.slurp();
     reader.close();
   }
 
@@ -99,7 +99,7 @@ program sample(
   }
   if inputPath? && inputPath! != "" {
     let reader <- Reader(inputPath!);
-    let inputBuffer <- reader.scan();
+    let inputBuffer <- reader.slurp();
     reader.close();
     inputBuffer.get(archetype!);
   }
@@ -112,7 +112,6 @@ program sample(
   }
   if outputPath? && outputPath! != "" {
     outputWriter <- Writer(outputPath!);
-    outputWriter!.startSequence();
   }
 
   /* progress bar */
@@ -129,7 +128,7 @@ program sample(
     if outputWriter? {
       buffer:Buffer;
       sampler!.write(buffer, n);
-      outputWriter!.print(buffer);
+      outputWriter!.push(buffer);
       outputWriter!.flush();
     }
     if !quiet {
@@ -139,7 +138,6 @@ program sample(
 
   /* finalize output */
   if outputWriter? {
-    outputWriter!.endSequence();
     outputWriter!.close();
   }
 }

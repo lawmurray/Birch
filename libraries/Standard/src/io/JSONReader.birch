@@ -1,4 +1,20 @@
 /**
  * Reader for JSON files.
+ *
+ * ```mermaid
+ * classDiagram
+ *   class Iterator~Buffer~ {
+ *     hasNext() Boolean
+ *     next() Buffer
+ *   }
+ *   Iterator~Buffer~ <|-- Reader
+ *   Reader <|-- YAMLReader
+ *   Reader <|-- JSONReader
+ *   YAMLReader -- JSONReader
+ *   link Iterator "../Iterator/"
+ *   link Reader "../Reader/"
+ *   link YAMLReader "../YAMLReader/"
+ *   link JSONReader "../JSONReader/"
+ * ```
  */
 class JSONReader = YAMLReader;

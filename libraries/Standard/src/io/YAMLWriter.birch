@@ -4,6 +4,15 @@ hpp{{
 
 /**
  * Writer for YAML files.
+ *
+ * ```mermaid
+ * classDiagram
+ *    Writer <|-- YAMLWriter
+ *    YAMLWriter <|-- JSONWriter
+ *    link Writer "../Writer/"
+ *    link YAMLWriter "../YAMLWriter/"
+ *    link JSONWriter "../JSONWriter/"
+ * ```
  */
 class YAMLWriter < Writer {
   /**
@@ -11,12 +20,17 @@ class YAMLWriter < Writer {
    */
   file:File;
 
+  /*
+   * Is the file being written sequentially?
+   */
+  sequential:Boolean <- false;
+
   hpp{{
   yaml_emitter_t emitter;
   yaml_event_t event;
   }}
   
-  function open(path:String) {
+  override function open(path:String) {
     file <- fopen(path, WRITE);
     cpp{{
     yaml_emitter_initialize(&this->emitter);
@@ -29,18 +43,29 @@ class YAMLWriter < Writer {
     }}
   }
   
-  function print(buffer:Buffer) {
+  override function dump(buffer:Buffer) {
     buffer.accept(this);
   }
-  
-  function flush() {
+
+  override function push(buffer:Buffer) {
+    if !sequential {
+      startSequence();
+      sequential <- true;
+    }
+    buffer.accept(this);
+  }
+
+  override function flush() {
     cpp{{
     yaml_emitter_flush(&this->emitter);
     }}
     fflush(file);
   }
 
-  function close() {
+  override function close() {
+    if sequential {
+      endSequence();
+    }
     cpp{{
     yaml_document_end_event_initialize(&this->event, 1);
     yaml_emitter_emit(&this->emitter, &this->event);
@@ -51,7 +76,7 @@ class YAMLWriter < Writer {
     fclose(file);
   }
 
-  function visit(value:ObjectValue) {
+  override function visit(value:ObjectValue) {
     startMapping();
     let iter <- value.entries.walk();
     while iter.hasNext() {
@@ -62,7 +87,7 @@ class YAMLWriter < Writer {
     endMapping();
   }
   
-  function visit(value:ArrayValue) {
+  override function visit(value:ArrayValue) {
     startSequence();
     let iter <- value.walk();
     while iter.hasNext() {
@@ -71,27 +96,27 @@ class YAMLWriter < Writer {
     endSequence();
   }
 
-  function visit(value:StringValue) {
+  override function visit(value:StringValue) {
     scalar(value.value);
   }
 
-  function visit(value:RealValue) {
+  override function visit(value:RealValue) {
     scalar(value.value);
   }
 
-  function visit(value:IntegerValue) {
+  override function visit(value:IntegerValue) {
     scalar(value.value);
   }
 
-  function visit(value:BooleanValue) {
+  override function visit(value:BooleanValue) {
     scalar(value.value);
   }
 
-  function visit(value:NilValue) {
+  override function visit(value:NilValue) {
     null();
   }
   
-  function visit(value:BooleanVectorValue) {
+  override function visit(value:BooleanVectorValue) {
     startSequence();
     let v <- value.value;
     for i in 1..length(v) {
@@ -100,7 +125,7 @@ class YAMLWriter < Writer {
     endSequence();
   }
 
-  function visit(value:IntegerVectorValue) {
+  override function visit(value:IntegerVectorValue) {
     startSequence();
     let v <- value.value;
     for i in 1..length(v) {
@@ -109,7 +134,7 @@ class YAMLWriter < Writer {
     endSequence();
   }
   
-  function visit(value:RealVectorValue) {
+  override function visit(value:RealVectorValue) {
     startSequence();
     let v <- value.value;
     for i in 1..length(v) {
@@ -169,11 +194,23 @@ class YAMLWriter < Writer {
   }
 
   function scalar(x:Real) {
-    let value <- String(x);
+    /* the literals NaN, Infinity and -Infinity are not correct JSON, but are
+     * fine for YAML, are correct JavaScript, and are supported by Python's
+     * JSON module (also based on libyaml); so we encode to this */
+    value:String;
+    if x == inf {
+      value <- "Infinity";
+    } else if x == -inf {
+      value <- "-Infinity";
+    } else if isnan(x) {
+      value <- "NaN";
+    } else {
+      value <- String(x);
+    }
     cpp{{
     yaml_scalar_event_initialize(&this->event, NULL, NULL,
         (yaml_char_t*)value.c_str(), value.length(), 1, 1,
-        YAML_ANY_SCALAR_STYLE);
+        YAML_PLAIN_SCALAR_STYLE);
     yaml_emitter_emit(&this->emitter, &this->event);
     }}
   }

@@ -1,5 +1,14 @@
 /**
- * Writer.
+ * Write data to a file.
+ *
+ * ```mermaid
+ * classDiagram
+ *    Writer <|-- YAMLWriter
+ *    YAMLWriter <|-- JSONWriter
+ *    link Writer "../Writer/"
+ *    link YAMLWriter "../YAMLWriter/"
+ *    link JSONWriter "../JSONWriter/"
+ * ```
  *
  * Typical use is to use the `Writer` factory function to instantiate an
  * object of an appropriate derived class based on the file extension of the
@@ -7,27 +16,23 @@
  *
  *     let writer <- Writer(path);
  *
- * A write of a single buffer can then be performed with:
+ * The whole contents of the file can be written at once with:
  *
- *     writer.print(buffer);
+ *     writer.dump(buffer);
  *
- * A write of a sequence of buffers can be performed with:
+ * Alternatively, where the root element of the file is an array, the contents
+ * may be written sequentially, one element at a time:
  *
- *     writer.startSequence();
- *     writer.print(buffer1);
- *     writer.print(buffer2);
- *     writer.print(buffer3);
- *     writer.endSequence();
- *
- * which is useful for not keeping the entire contents of the file, to be
- * written, in memory.
+ *     writer.push(buffer1);
+ *     writer.push(buffer2);
+ *     writer.push(buffer3);
  *
  * Finally, close the file:
  *
  *     writer.close();
  *
- * A file may not be valid until the writer is closed, depending on the file
- * format.
+ * A file may not be valid for reading until the writer is closed, depending
+ * on the file format.
  */
 abstract class Writer {
   /**
@@ -38,12 +43,21 @@ abstract class Writer {
   abstract function open(path:String);
   
   /**
-   * Write the contents of a buffer into the file.
+   * Write the whole contents of a buffer into the file.
    *
    * - buffer: Buffer to write.
    */
-  abstract function print(buffer:Buffer);
-  
+  abstract function dump(buffer:Buffer);
+
+  /**
+   * Write a buffer to the file. This allows for sequential writing of the
+   * file, where the root element is an array. It avoids holding the entire
+   * file in memory at once.
+   *
+   * - buffer: Buffer to write.
+   */
+  abstract function push(buffer:Buffer);
+
   /**
    * Flush accumulated writes to the file.
    */
@@ -53,26 +67,6 @@ abstract class Writer {
    * Close the file.
    */
   abstract function close();
-
-  /**
-   * Start a mapping.
-   */
-  abstract function startMapping();
-  
-  /**
-   * End a mapping.
-   */
-  abstract function endMapping();
-  
-  /**
-   * Start a sequence.
-   */
-  abstract function startSequence();
-  
-  /**
-   * End a sequence.
-   */
-  abstract function endSequence();
 
   abstract function visit(value:ObjectValue);
   abstract function visit(value:ArrayValue);
