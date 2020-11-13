@@ -54,7 +54,11 @@ final class IntegerVectorValue(value:Integer[_]) < Value {
   override function push(x:Real) -> Value {
     let n <- length(value);
     return RealVectorValue(vector(\(i:Integer) -> Integer {
-          return if_then_else(i == n + 1, x, Real(value[i]));
+          if i == n + 1 {
+            return x;
+          } else {
+            return Real(value[i]);
+          }
         }, n + 1));
   }
 
