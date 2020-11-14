@@ -4,7 +4,7 @@ env:
   PREFIX: ${CIRRUS_WORKING_DIR}/project
   PATH: ${PREFIX}/bin:${PATH}
   BIRCH_FLAGS: '--unit=dir --arch=native --jobs=2'
-  MODE_FLAGS: '--disable-debug --enable-test --enable-release'
+  MODE_FLAGS: '--enable-debug --disable-test --disable-release'
   OMP_NUM_THREADS: 2
 
 task:
@@ -41,7 +41,7 @@ task:
     - birch install
   birch-standard_smoke_script:
     - cd libraries/Standard
-    - env BIRCH_MODE=test bash ./smoke.sh
+    - env BIRCH_MODE=debug bash ./smoke.sh
   birch-cairo_build_script:
     - cd libraries/Cairo
     - birch build --prefix="${PREFIX}" ${MODE_FLAGS} ${BIRCH_FLAGS}
@@ -73,7 +73,7 @@ example_task_template: &EXAMPLE_TASK_TEMPLATE
     - birch install
   smoke_script:
     - cd "examples/${EXAMPLE}"
-    - env BIRCH_MODE=test bash ./smoke.sh
+    - env BIRCH_MODE=debug bash ./smoke.sh
 
 task:
   name: FreeBSD LinearGaussian
