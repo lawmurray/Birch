@@ -202,6 +202,11 @@ private:
   bool notes;
 
   /**
+   * Enable translation of C++ compiler messages?
+   */
+  bool translate;
+
+  /**
    * Enable verbose reporting?
    */
   bool verbose;

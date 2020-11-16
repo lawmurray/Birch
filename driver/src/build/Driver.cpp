@@ -23,6 +23,7 @@ birch::Driver::Driver(int argc, char** argv) :
     openmp(true),
     warnings(true),
     notes(false),
+    translate(true),
     verbose(true),
     newBootstrap(false),
     newConfigure(false),
@@ -139,6 +140,8 @@ birch::Driver::Driver(int argc, char** argv) :
     DISABLE_WARNINGS_ARG,
     ENABLE_NOTES_ARG,
     DISABLE_NOTES_ARG,
+    ENABLE_TRANSLATE_ARG,
+    DISABLE_TRANSLATE_ARG,
     ENABLE_VERBOSE_ARG,
     DISABLE_VERBOSE_ARG
   };
@@ -166,6 +169,8 @@ birch::Driver::Driver(int argc, char** argv) :
       { "disable-warnings", no_argument, 0, DISABLE_WARNINGS_ARG },
       { "enable-notes", no_argument, 0, ENABLE_NOTES_ARG },
       { "disable-notes", no_argument, 0, DISABLE_NOTES_ARG },
+      { "enable-translate", no_argument, 0, ENABLE_TRANSLATE_ARG },
+      { "disable-translate", no_argument, 0, DISABLE_TRANSLATE_ARG },
       { "enable-verbose", no_argument, 0, ENABLE_VERBOSE_ARG },
       { "disable-verbose", no_argument, 0, DISABLE_VERBOSE_ARG },
       { 0, 0, 0, 0 }
@@ -243,6 +248,12 @@ birch::Driver::Driver(int argc, char** argv) :
       break;
     case DISABLE_NOTES_ARG:
       notes = false;
+      break;
+    case ENABLE_TRANSLATE_ARG:
+      translate = true;
+      break;
+    case DISABLE_TRANSLATE_ARG:
+      translate = false;
       break;
     case ENABLE_VERBOSE_ARG:
       verbose = true;
@@ -838,6 +849,9 @@ void birch::Driver::help() {
       std::cout << "  --enable-notes / --disable-notes (default disabled):" << std::endl;
       std::cout << "  Enable/disable compiler notes." << std::endl;
       std::cout << std::endl;
+      std::cout << "  --enable-translate / --disable-translate (default enabled):" << std::endl;
+      std::cout << "  Enable/disable translation of C++ compiler messages." << std::endl;
+      std::cout << std::endl;
       std::cout << "  --enable-verbose / --disable-verbose (default enabled):" << std::endl;
       std::cout << "  Show all compiler output." << std::endl;
       std::cout << std::endl;
@@ -1131,7 +1145,7 @@ void birch::Driver::target(const std::string& cmd) {
     std::cerr << buf.str() << std::endl;
   }
 
-  /* create a filter for the output of make to make it digestable; while we
+  /* translate the output of make to make it digestable; while we
    * can use pipes to grep and sed within the shell command, this is less
    * portable, and means the command always returns success, even on fail
    * (consider pipefail); instead we use popen instead of system, and process
@@ -1186,9 +1200,7 @@ void birch::Driver::target(const std::string& cmd) {
       line = NULL;
       n = 0;
 
-      if ((warnings || !std::regex_search(str, rxWarnings)) &&
-          (notes || !std::regex_search(str, rxNotes)) &&
-          !std::regex_search(str, rxSkipLine)) {
+      if (translate) {
         /* strip namespace and class qualifiers */
         str = std::regex_replace(str, rxNamespace, "");
 
@@ -1231,7 +1243,10 @@ void birch::Driver::target(const std::string& cmd) {
         str = std::regex_replace(str, rxHandler2, "");
         str = std::regex_replace(str, rxTooFewArguments, "too few arguments to function call");
         str = std::regex_replace(str, rxProgram, "In program ‘$1’");
-
+      }
+      if ((warnings || !std::regex_search(str, rxWarnings)) &&
+          (notes || !std::regex_search(str, rxNotes)) &&
+          (!translate || !std::regex_search(str, rxSkipLine))) {
         if (verbose) {
          std::cerr << str;
         } else {

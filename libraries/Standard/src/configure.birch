@@ -31,6 +31,8 @@
  *     Enable/disable compiler warnings.
  *   - `--enable-notes` / `--disable-notes` (default disabled):
  *     Enable/disable compiler notes.
+ *   - `--enable-translate` / `--disable-translate` (default enabled):
+ *     Enable/disable translation of C++ compiler messages.
  *   - `--enable-verbose` / `--disable-verbose` (default enabled):
  *     Show compiler output on the terminal rather than in log files.
  *   - `--prefix` (default imputed):
