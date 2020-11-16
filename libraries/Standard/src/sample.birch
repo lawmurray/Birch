@@ -5,111 +5,168 @@
  *
  * - `--config`: Name of the configuration file, if any.
  *
- * - `--input`: Name of the input file, if any. Alternatively, provide this
- *   as `input` in the configuration file.
+ * - `--seed`: Random number seed. If used, overrides `seed` in the config
+ *   file, which in turns overrides random entropy.
  *
- * - `--output`: Name of the output file, if any. Alternatively, provide this
- *   as `output` in the configuration file.
+ * - `--model`: Name of the model class. If used, overrides `model.class` in
+ *   the config file.
  *
- * - `--model`: Name of the model class, if any. Alternatively, provide this
- *   as `model.class` in the configuration file.
+ * - `--sampler`: Name of the sampler class. If used, overrides
+ *   `sampler.class` in the config file, which in turn overrides the default
+ *   of [ParticleSampler](../ParticleSampler).
  *
- * - `--seed`: Random number seed. Alternatively, provide this as `seed` in
- *   the configuration file. If not provided, random entropy is used.
+ * - `--filter`: Name of the filter class. If used, overrides
+ *   `filter.class` in the config file, which in turn overrides the default
+ *   of [ParticleFilter](../ParticleFilter) or
+ *   [ConditionalParticleFilter](../ConditionalParticleFilter), according to
+ *   the chosen sampler.
  *
- * - `--quiet`: Don't display a progress bar.
+ * - `--nsamples`: Number of samples to draw. If used, this overrides
+ *   `nsamples` in the config file, which in turn overrides `sampler.nsamples`
+ *   (deprecated) in the config file, which in turn overrides the default of
+ *   1.
+ *
+ * - `--nsteps`: Number of steps to take. If used, this overrides `nsteps` in
+ *   the config file, which in turn overrides `filter.nsteps` (deprecated) in
+ *   the config file, which in turn overrides the number of steps derived from
+ *   the input file, which in turn overrides the default of 0.
+ *
+ * - `--input`: Name of the input file, if any. If used, overrides `input` in
+ *   the config file.
+ *
+ * - `--output`: Name of the output file, if any. If used, overrides `output`
+ *   in the config file.
+ *
+ * - `--quiet true`: Don't display a progress bar.
  */
 program sample(
     config:String?,
+    seed:Integer?,
+    model:String?,
+    sampler:String?,
+    filter:String?,
+    nsamples:Integer?,
+    nsteps:Integer?,
     input:String?,
     output:String?,
-    model:String?,
-    seed:Integer?,
     quiet:Boolean <- false) {
   /* config */
   configBuffer:Buffer;
   if config? {
-    let reader <- Reader(config!);
-    configBuffer <- reader.slurp();
-    reader.close();
+    configBuffer <- slurp(config!);
   }
 
   /* random number generator */
+  if !seed? {
+    seed <-? configBuffer.getInteger("seed");
+  }
   if seed? {
     global.seed(seed!);
-  } else if config? {
-    let buffer <- configBuffer.getInteger("seed");
-    if buffer? {
-      global.seed(buffer!);
-    }
   } else {
     global.seed();
   }
 
   /* model */
-  let buffer <- configBuffer.find("model");
-  if !buffer? {
-    buffer <- Buffer();
+  modelBuffer:Buffer;
+  modelBuffer <-? configBuffer.find("model");
+  if model? {
+    modelBuffer.set("class", model!);
   }
-  if !buffer!.getString("class")? && model? {
-    buffer!.set("class", model!);
-  }
-  let archetype <- Model?(make(buffer));
-  if !archetype? {
+  let theModel <- Model?(make(modelBuffer));
+  if !theModel? {
     error("could not create model; the model class should be given as " +
-        "model.class in the config file, and should derive from Model.");
+        "model.class in the config file, or `--model` on the command " +
+        "line, and should derive from Model.");
   }
 
   /* sampler */
-  buffer <- configBuffer.find("sampler");
-  if !buffer? {
-    buffer <- Buffer();
+  samplerBuffer:Buffer;
+  samplerBuffer <-? configBuffer.find("sampler");
+  if sampler? {
+    samplerBuffer.set("class", sampler!);
+  } else if !samplerBuffer.find("class")? {
+    samplerBuffer.set("class", "ParticleSampler");
   }
-  if !buffer!.getString("class")? {
-    buffer!.set("class", "MarginalizedParticleImportanceSampler");
-  }
-  let sampler <- ParticleSampler?(make(buffer));
-  if !sampler? {
+  let theSampler <- ParticleSampler?(make(samplerBuffer));
+  if !theSampler? {
     error("could not create sampler; the sampler class should be given as " +
-        "sampler.class in the config file, and should derive from ParticleSampler.");
+        "sampler.class in the config file, or --sampler on the command " +
+        "line, and should derive from ParticleSampler.");
   }
 
   /* filter */
-  buffer <- configBuffer.find("filter");
-  if !buffer? {
-    buffer <- Buffer();
-  }
-  if !buffer!.getString("class")? {
-    if ConditionalParticleSampler?(sampler)? {
-      buffer!.set("class", "ConditionalParticleFilter");
+  filterBuffer:Buffer;
+  filterBuffer <-? configBuffer.find("filter");
+  if filter? {
+    filterBuffer.set("class", filter!);
+  } else if !filterBuffer.find("class")? {
+    if ConditionalParticleSampler?(theSampler)? {
+      filterBuffer.set("class", "ConditionalParticleFilter");
     } else {
-      buffer!.set("class", "ParticleFilter");
+      filterBuffer.set("class", "ParticleFilter");
     }
   }
-  let filter <- ParticleFilter?(make(buffer));
-  if !filter? {
+  let theFilter <- ParticleFilter?(make(filterBuffer));
+  if !theFilter? {
     error("could not create filter; the filter class should be given as " +
-        "filter.class in the config file, and should derive from ParticleFilter.");
+        "filter.class in the config file, or --filter on the command " +
+        "line, and should derive from ParticleFilter.");
+  }
+
+  /* number of samples */
+  if !nsamples? {
+    nsamples <-? configBuffer.getInteger("nsamples");
+    if !nsamples? {
+      nsamples <-? samplerBuffer.getInteger("nsamples");
+      if nsamples? {
+        warn("sampler.nsamples in the config file is deprecated, replace " +
+            "with nsamples in the config file, or --nsamples on the " +
+            "command line.");
+      } else {
+        nsamples <- 1;
+      }
+    }
+  }
+
+  /* number of steps */
+  if !nsteps? {
+    nsteps <-? configBuffer.getInteger("nsteps");
+    if !nsteps? {
+      nsteps <-? filterBuffer.getInteger("nsteps");
+      if nsteps? {
+        warn("filter.nsteps in the config file is deprecated, replace " +
+            "with nsteps in the config file, or --nsteps on the " +
+            "command line.");
+      }
+    }
   }
 
   /* input */
-  let inputPath <- input;
-  if !inputPath? {
-    inputPath <-? configBuffer.getString("input");
-  }
+  let inputPath <- configBuffer.getString("input");
+  inputPath <-? input;
+  inputBuffer:Buffer?;
   if inputPath? && inputPath! != "" {
-    let reader <- Reader(inputPath!);
-    let inputBuffer <- reader.slurp();
-    reader.close();
-    inputBuffer.get(archetype!);
+    let inputReader <- Reader(inputPath!);
+    if !nsteps? {
+      inputBuffer <- inputReader.slurp();
+      nsteps <- inputBuffer!.size() - 1;
+    } else {
+      let t <- 0;
+      while t <= nsteps! && inputReader.hasNext() {
+        inputBuffer!.push(inputReader.next());
+        t <- t + 1;
+      }
+    }
+    inputReader.close();
+  }
+  if !nsteps? {
+    nsteps <- 0;
   }
 
   /* output */
+  let outputPath <- configBuffer.getString("output");
+  outputPath <-? output;
   outputWriter:Writer?;
-  outputPath:String? <- output;
-  if !outputPath? {
-    outputPath <-? configBuffer.getString("output");
-  }
   if outputPath? && outputPath! != "" {
     outputWriter <- Writer(outputPath!);
   }
@@ -121,22 +178,75 @@ program sample(
   }
 
   /* sample */
-  sampler!.sample(filter!, archetype!);
-  for n in 1..sampler!.size() {
-    sampler!.sample(filter!, archetype!, n);
+  buffer:Buffer?;
+  outputBuffer:Buffer;
+  for n in 1..nsamples! {
+    /* start */
+    let inputIter <- inputBuffer!.walk();
+    if inputIter.hasNext() {
+      buffer <- inputIter.next();
+    } else {
+      buffer <- nil;
+    }
+    theSampler!.sample(theFilter!, theModel!, buffer);
 
+    /* preserve diagnostics */
     if outputWriter? {
-      buffer:Buffer;
-      sampler!.write(buffer, n);
-      outputWriter!.push(buffer);
+      outputBuffer.push("ess", theFilter!.ess);
+      outputBuffer.push("lnormalize", theFilter!.lnormalize);
+      outputBuffer.push("npropagations", theFilter!.npropagations);
+      outputBuffer.push("raccepts", theFilter!.raccepts);
+    }
+
+    /* progress bar */
+    if !quiet {
+      bar.update((n - 1.0)/nsamples! + 1.0/(nsamples!*(nsteps! + 1.0)));
+    }
+
+    /* step */
+    for t in 1..nsteps! {
+      if inputIter.hasNext() {
+        buffer <- inputIter.next();
+      } else {
+        buffer <- nil;
+      }
+      theSampler!.sample(theFilter!, t, buffer);
+
+      /* preserve diagnostics */
+      if outputWriter? {
+        outputBuffer.push("ess", theFilter!.ess);
+        outputBuffer.push("lnormalize", theFilter!.lnormalize);
+        outputBuffer.push("npropagations", theFilter!.npropagations);
+        outputBuffer.push("raccepts", theFilter!.raccepts);
+      }
+
+      /* progress bar */
+      if !quiet {
+        bar.update((n - 1.0)/nsamples! + (t + 1.0)/(nsamples!*(nsteps! + 1.0)));
+      }
+    }
+
+    /* output */
+    if outputWriter? {
+      x:Model?;
+      w:Real;
+      (x, w) <- theSampler!.draw(theFilter!);
+
+      outputBuffer.set("sample", x!);
+      outputBuffer.set("lweight", w);
+
+      outputWriter!.push(outputBuffer);
+      outputBuffer.clear();
       outputWriter!.flush();
     }
+
+    /* progress bar */
     if !quiet {
-      bar.update(Real(n)/sampler!.nsamples);
+      bar.update(Real(n)/nsamples!);
     }
   }
 
-  /* finalize output */
+  /* finalize */
   if outputWriter? {
     outputWriter!.close();
   }

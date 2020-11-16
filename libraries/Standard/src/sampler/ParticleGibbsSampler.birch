@@ -3,36 +3,33 @@
  *
  * ```mermaid
  * classDiagram
- *    ParticleSampler <|-- MarginalizedParticleImportanceSampler
  *    ParticleSampler <|-- ConditionalParticleSampler
  *    ConditionalParticleSampler <|-- ParticleGibbsSampler
- *    ConditionalParticleSampler <|-- MarginalizedParticleGibbsSampler
  *    link ParticleSampler "../ParticleSampler/"
- *    link MarginalizedParticleImportanceSampler "../MarginalizedParticleImportanceSampler/"
  *    link ConditionalParticleSampler "../ConditionalParticleSampler/"
  *    link ParticleGibbsSampler "../ParticleGibbsSampler/"
- *    link MarginalizedParticleGibbsSampler "../MarginalizedParticleGibbsSampler/"
  * ```
  */
 class ParticleGibbsSampler < ConditionalParticleSampler {
-  override function sample(filter:ConditionalParticleFilter,
-      archetype:Model) {
-    filter.alreadyInitialized <- true;
-  }
+  /**
+   * Should ancestor sampling be used?
+   */
+  ancestor:Boolean <- false;
 
-  override function sample(filter:ConditionalParticleFilter, archetype:Model,
-      n:Integer) {
-    clearDiagnostics();
-
+  override function sample(filter:ConditionalParticleFilter, model:Model,
+      input:Buffer?) {
     if filter.r? {
       /* Gibbs update of parameters */
       r:Tape<Record> <- filter.r!;
       r':Tape<Record>;
 
-      let x' <- clone(archetype);
+      let x' <- clone(model);
       let handler <- PlayHandler(true);
       handler.output <- r';
       with (handler) {
+        if input? {
+          x'.read(input!);
+        }
         x'.simulate();
       }
       let w' <- handler.w;
@@ -40,40 +37,48 @@ class ParticleGibbsSampler < ConditionalParticleSampler {
       handler <- PlayHandler(filter.delayed);
       handler.input <- filter.r!;
       with (handler) {
-        for t in 1..filter.size() {
+        for t in 1..filter.r!.size() {
+          // no input needed here, already in the replay trace
           x'.simulate(t);
         }
       }
       w' <- w' + handler.w;
 
-      x' <- clone(archetype);
+      x' <- clone(model);
       handler <- PlayHandler(filter.delayed);
       handler.input <- r';
       with (handler) {
+        // no input needed here, already in the replay trace
         x'.simulate();
       }
-      lnormalize.pushBack(handler.w);
-      ess.pushBack(1.0);
-      npropagations.pushBack(1);
       filter.r!.rewind();
     }
+  }
 
-    filter.initialize(archetype);
-    filter.filter();
-    pushDiagnostics(filter);
-    for t in 1..filter.size() {
-      filter.filter(t);
-      pushDiagnostics(filter);
+  override function sample(filter:ConditionalParticleFilter, t:Integer,
+      input:Buffer?) {
+    if filter.r? && ancestor {
+      let w' <- filter.w;
+      dynamic parallel for n in 1..filter.nparticles {
+        let x' <- clone(filter.x[n]);
+        let r' <- clone(filter.r!);
+        let handler <- PlayHandler(filter.delayed);
+        handler.input <- r';
+        with (handler) {
+          if input? {
+            x'.m.read(t, input!);
+          }
+          x'.m.simulate(t);
+          w'[n] <- w'[n] + handler.w;
+        }
+      }
+      filter.b <- global.ancestor(w');
     }
+    super.sample(filter, t, input);
+  }
 
-    /* draw a single sample and weight with normalizing constant estimate */
-    filter.b <- ancestor(filter.w);
-    if filter.b == 0 {
-      error("particle filter degenerated");
-    }
-    x <- filter.x[filter.b].m;
-    w <- 0.0;
-
-    collect();
+  override function read(buffer:Buffer) {
+    super.read(buffer);
+    ancestor <-? buffer.get("ancestor", ancestor);
   }
 }

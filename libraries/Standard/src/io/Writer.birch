@@ -108,3 +108,15 @@ function Writer(path:String) -> Writer {
   }
   return result!;
 }
+
+/**
+ * Write the whole contents of a buffer into a file.
+ *
+ * - path: Path of the file.
+ * - buffer: The contents.
+ */
+function dump(path:String, buffer:Buffer) {
+  let writer <- Writer(path);
+  writer.dump(buffer);
+  writer.close();
+}

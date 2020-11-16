@@ -1,48 +1,68 @@
 /**
- * Particle sampler that requires a conditional particle filter.
+ * Conditional particle sampler. 
  *
  * ```mermaid
  * classDiagram
- *    ParticleSampler <|-- MarginalizedParticleImportanceSampler
  *    ParticleSampler <|-- ConditionalParticleSampler
  *    ConditionalParticleSampler <|-- ParticleGibbsSampler
- *    ConditionalParticleSampler <|-- MarginalizedParticleGibbsSampler
  *    link ParticleSampler "../ParticleSampler/"
- *    link MarginalizedParticleImportanceSampler "../MarginalizedParticleImportanceSampler/"
  *    link ConditionalParticleSampler "../ConditionalParticleSampler/"
  *    link ParticleGibbsSampler "../ParticleGibbsSampler/"
- *    link MarginalizedParticleGibbsSampler "../MarginalizedParticleGibbsSampler/"
  * ```
  */
-abstract class ConditionalParticleSampler < ParticleSampler {
-  final function sample(filter:ParticleFilter, archetype:Model) {
-    let conditionalFilter <- ConditionalParticleFilter?(filter);
-    if conditionalFilter? {
-      sample(conditionalFilter!, archetype);
-    } else {
+class ConditionalParticleSampler < ParticleSampler {
+  final override function sample(filter:ParticleFilter, model:Model,
+      input:Buffer?) {
+    let c <- ConditionalParticleFilter?(filter);
+    if !c? {
       error("A ConditionalParticleSampler requires a ConditionalParticleFilter.");
     }
+    return sample(c!, model, input);
   }
 
-  final function sample(filter:ParticleFilter, archetype:Model,
-      t:Integer) {
-    let conditionalFilter <- ConditionalParticleFilter?(filter);
-    if conditionalFilter? {
-      sample(conditionalFilter!, archetype, t);
-    } else {
+  final override function sample(filter:ParticleFilter, t:Integer,
+      input:Buffer?) {
+    let c <- ConditionalParticleFilter?(filter);
+    if !c? {
       error("A ConditionalParticleSampler requires a ConditionalParticleFilter.");
     }
+    return sample(c!, t, input);
   }
-  
-  /**
-   * Conditional version of `sample(...)`.
-   */
-  abstract function sample(filter:ConditionalParticleFilter,
-      archetype:Model);
+
+  final override function draw(filter:ParticleFilter) -> (Model, Real) {
+    let c <- ConditionalParticleFilter?(filter);
+    if !c? {
+      error("A ConditionalParticleSampler requires a ConditionalParticleFilter.");
+    }
+    return draw(c!);
+  }
 
   /**
-   * Conditional version of `sample(...)`.
+   * Start a sample.
+   *
+   * - filter: Conditional particle filter.
+   * - model: Model.
+   * - input: Input buffer.
    */
-  abstract function sample(filter:ConditionalParticleFilter,
-      archetype:Model, t:Integer);
+  function sample(filter:ConditionalParticleFilter, model:Model, input:Buffer?) {
+    filter.filter(model, input);
+  }
+
+  /**
+   * Step a sample.
+   *
+   * - filter: Conditional particle filter.
+   * - input: Input buffer.
+   * - t: The step number, beginning at 1.
+   */
+  function sample(filter:ConditionalParticleFilter, t:Integer, input:Buffer?) {
+    filter.filter(t, input);
+  }
+
+  /**
+   * Draw a sample.
+   */
+  function draw(filter:ConditionalParticleFilter) -> (Model, Real) {
+    return (filter.x[filter.b].m, 0.0);
+  }
 }

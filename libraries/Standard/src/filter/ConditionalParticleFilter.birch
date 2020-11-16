@@ -14,85 +14,18 @@
  */
 class ConditionalParticleFilter < ParticleFilter {
   /**
-   * Tape<Record> of the reference particle. This will have no value for the first
+   * Trace of the reference particle. This will have no value for the first
    * iteration of the filter. Subsequent iterations will draw a particle from
    * the previous iteration to condition the new iteration, setting this
    * variable.
    */
   r:Tape<Record>?;
 
-  /**
-   * Chosen particle index. This is the index, at the final step, of the
-   * particle chosen as a weighted sample from the target distribution,
-   * used as the reference particle for the next iteration of the conditional
-   * particle filter.
-   */
-  b:Integer <- 0;
-
-  /**
-   * Should ancestor sampling be used?
-   */
-  ancestor:Boolean <- false;
-
-  /**
-   * Will the enclosing sampler initialize the initial state of the reference
-   * particle? This is set by ParticleGibbs, which initializes `x` externally
-   * after the first iteration.
-   */
-  alreadyInitialized:Boolean <- false;
-
-  function particle(archetype:Model) -> Particle {
-    return ConditionalParticle(archetype);
+  function particle(model:Model) -> Particle {
+    return ConditionalParticle(model);
   }
 
-  override function initialize(archetype:Model) {
-    super.initialize(archetype);
-    b <- 1;
-  }
-
-  override function filter(t:Integer) {
-    if r? && ancestor {
-      ancestorSample(t);
-    }
-    resample(t);
-    propagate(t);
-    reduce();
-  }
-
-  function ancestorSample(t:Integer) {
-    let w' <- w;
-    dynamic parallel for n in 1..nparticles {
-      let x' <- clone(x[n]);
-      let r' <- clone(r!);
-      let handler <- PlayHandler(delayed);
-      handler.input <- r';
-      with (handler) {
-        x'.m.simulate(t);
-        w'[n] <- w'[n] + handler.w;
-      }
-      ///@todo Don't assume Markov model here
-    }
-    b <- global.ancestor(w');
-  }
-
-  override function propagate() {
-    if !alreadyInitialized {
-      parallel for n in 1..nparticles {
-        let x <- ConditionalParticle?(this.x[n])!;
-        let handler <- PlayHandler(delayed);
-        if r? && n == b {
-          handler.input <- r!;
-        }
-        handler.output <- x.trace;
-        with (handler) {
-          x.m.simulate();
-        }
-        w[n] <- handler.w;
-      }
-    }
-  }
-
-  override function propagate(t:Integer) {
+  override function simulate(input:Buffer?) {
     parallel for n in 1..nparticles {
       let x <- ConditionalParticle?(this.x[n])!;
       let handler <- PlayHandler(delayed);
@@ -101,13 +34,35 @@ class ConditionalParticleFilter < ParticleFilter {
       }
       handler.output <- x.trace;
       with (handler) {
+        if input? {
+          x.m.read(input!);
+        }
+        x.m.simulate();
+      }
+      w[n] <- handler.w;
+    }
+  }
+
+  override function simulate(t:Integer, input:Buffer?) {
+    parallel for n in 1..nparticles {
+      let x <- ConditionalParticle?(this.x[n])!;
+      let handler <- PlayHandler(delayed);
+      if r? && n == b {
+        handler.input <- r!;
+      }
+      handler.output <- x.trace;
+      with (handler) {
+        if input? {
+          x.m.read(t, input!);
+        }
         x.m.simulate(t);
       }
       w[n] <- w[n] + handler.w;
     }
   }
 
-  override function resample(t:Integer) {
+
+  override function resample() {
     if ess <= trigger*nparticles {
       if r? {
         (a, b) <- conditional_resample_multinomial(w, b);
@@ -125,15 +80,5 @@ class ConditionalParticleFilter < ParticleFilter {
       /* normalize weights to sum to nparticles */
       w <- w - vector(lsum - log(Real(nparticles)), nparticles);
     }
-  }
-
-  override function read(buffer:Buffer) {
-    super.read(buffer);
-    ancestor <-? buffer.get("ancestor", ancestor);
-  }
-
-  override function write(buffer:Buffer) {
-    super.write(buffer);
-    buffer.set("ancestor", ancestor);
   }
 }

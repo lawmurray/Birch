@@ -33,22 +33,25 @@ class MoveParticleFilter < ParticleFilter {
    */
   nlags:Integer <- 1;
 
-  function particle(archetype:Model) -> Particle {
-    return MoveParticle(archetype);
+  function particle(model:Model) -> Particle {
+    return MoveParticle(model);
   }
 
-  override function filter(t:Integer) {
-    resample(t);
+  override function filter(t:Integer, input:Buffer?) {
+    resample();
     move(t);
-    propagate(t);
+    simulate(t, input);
     reduce();
   }
 
-  override function propagate() {
+  override function simulate(input:Buffer?) {
     parallel for n in 1..nparticles {
       let x <- MoveParticle?(this.x[n])!;
       let handler <- MoveHandler(delayed);
       with (handler) {
+        if input? {
+          x.m.read(input!);
+        }
         x.m.simulate();
         w[n] <- w[n] + handler.w;
       }
@@ -59,11 +62,14 @@ class MoveParticleFilter < ParticleFilter {
     }
   }
 
-  override function propagate(t:Integer) {
+  override function simulate(t:Integer, input:Buffer?) {
     parallel for n in 1..nparticles {
       let x <- MoveParticle?(this.x[n])!;
       let handler <- MoveHandler(delayed);
       with (handler) {
+        if input? {
+          x.m.read(t, input!);
+        }
         x.m.simulate(t);
         w[n] <- w[n] + handler.w;
       }
@@ -100,7 +106,7 @@ class MoveParticleFilter < ParticleFilter {
 
   override function reduce() {
     super.reduce();
-    raccept <- Real(sum(naccepts))/(nparticles*nmoves);
+    raccepts <- Real(sum(naccepts))/(nparticles*nmoves);
   }
 
   override function read(buffer:Buffer) {
@@ -108,12 +114,5 @@ class MoveParticleFilter < ParticleFilter {
     scale <-? buffer.get("scale", scale);
     nmoves <-? buffer.get("nmoves", nmoves);
     nlags <-? buffer.get("nlags", nlags);
-  }
-
-  override function write(buffer:Buffer) {
-    super.write(buffer);
-    buffer.set("scale", scale);
-    buffer.set("nmoves", nmoves);
-    buffer.set("nlags", nlags);
   }
 }

@@ -227,268 +227,6 @@ final class Buffer {
   }
 
   /**
-   * Get this as a Boolean.
-   *
-   * - value: Unused, but necessary for overload resolution.
-   *
-   * Return: An optional with a value if this is of a compatible type.
-   */
-  function get(value:Boolean?) -> Boolean? {
-    return getBoolean();
-  }
-
-  /**
-   * Get this as an integer.
-   *
-   * - value: Unused, but necessary for overload resolution.
-   *
-   * Return: An optional with a value if this is of a compatible type.
-   */
-  function get(value:Integer?) -> Integer? {
-    return getInteger();
-  }
-  
-  /**
-   * Get this as a real.
-   *
-   * - value: Unused, but necessary for overload resolution.
-   *
-   * Return: An optional with a value if this is of a compatible type.
-   */
-  function get(value:Real?) -> Real? {
-    return getReal();
-  }
-
-  /**
-   * Get this as a string.
-   *
-   * - value: Unused, but necessary for overload resolution.
-   *
-   * Return: An optional with a value if this is of a compatible type.
-   */
-  function get(value:String?) -> String? {
-    return getString();
-  }
-
-  /**
-   * Get this as an object.
-   *
-   * - value: The object.
-   *
-   * Return: The object.
-   */
-  function get(value:Object?) -> Object? {
-    if value? {
-      value!.read(this);
-    }
-    return value;
-  }
-
-  /**
-   * Get this as a vector of Booleans.
-   *
-   * - value: Unused, but necessary for overload resolution.
-   *
-   * Return: An optional with a value if this is an array with all elements
-   * of a compatible type.
-   */
-  function get(value:Boolean[_]?) -> Boolean[_]? {
-    return getBooleanVector();
-  }
-
-  /**
-   * Get this as a vector of integers.
-   *
-   * - value: Unused, but necessary for overload resolution.
-   *
-   * Return: An optional with a value if this is an array with all elements
-   * of a compatible type.
-   */
-  function get(value:Integer[_]?) -> Integer[_]? {
-    return getIntegerVector();
-  }
-
-  /**
-   * Get this as a vector of reals.
-   *
-   * - value: Unused, but necessary for overload resolution.
-   *
-   * Return: An optional with a value if this is an array with all elements
-   * of a compatible type.
-   */
-  function get(value:Real[_]?) -> Real[_]? {
-    return getRealVector();
-  }
-
-  /**
-   * Get this as a matrix of Booleans.
-   *
-   * - value: Unused, but necessary for overload resolution.
-   *
-   * Return: An optional with a value if this is an array where all elements
-   * are themselves arrays of the same length and compatible type.
-   */
-  function get(value:Boolean[_,_]?) -> Boolean[_,_]? {
-    return getBooleanMatrix();
-  }
-
-  /**
-   * Get this as a matrix of integers.
-   *
-   * - value: Unused, but necessary for overload resolution.
-   *
-   * Return: An optional with a value if this is an array where all elements
-   * are themselves arrays of the same length and compatible type.
-   */
-  function get(value:Integer[_,_]?) -> Integer[_,_]? {
-    return getIntegerMatrix();
-  }
-
-  /**
-   * Get this as a matrix of reals.
-   *
-   * - value: Unused, but necessary for overload resolution.
-   *
-   * Return: An optional with a value if this is an array where all elements
-   * are themselves arrays of the same length and compatible type.
-   */
-  function get(value:Real[_,_]?) -> Real[_,_]? {
-    return getRealMatrix();
-  }
-
-  /**
-   * Get this as a factorized matrix.
-   *
-   * - value: Unused, but necessary for overload resolution.
-   *
-   * Return: An optional with a value if this is an array where all elements
-   * are themselves arrays of the same length and compatible type.
-   */
-  function get(value:LLT?) -> LLT? {
-    return getLLT();
-  }
-
-  /**
-   * Set this as nil.
-   */
-  function setNil() {
-    content <- NilValue();
-  }
-  
-  /**
-   * Set this.
-   */
-  function set(value:Boolean) {
-    content <- BooleanValue(value);
-  }
-
-  /**
-   * Set this.
-   */
-  function set(value:Integer) {
-    content <- IntegerValue(value);
-  }
-
-  /**
-   * Set this.
-   */
-  function set(value:Real) {
-    content <- RealValue(value);
-  }
-
-  /**
-   * Set this.
-   */
-  function set(value:String) {
-    content <- StringValue(value);
-  }
-  
-  /**
-   * Set this.
-   */
-  function set(value:Object) {
-    value.write(this);
-  }
-  
-  /**
-   * Set this.
-   */
-  function set(value:Boolean[_]) {
-    content <- BooleanVectorValue(value);
-  }
-
-  /**
-   * Set this.
-   */
-  function set(value:Integer[_]) {
-    content <- IntegerVectorValue(value);
-  }
-
-  /**
-   * Set this.
-   */
-  function set(value:Real[_]) {
-    content <- RealVectorValue(value);
-  }
-
-  /**
-   * Set this.
-   */
-  function set(value:String[_]) {
-    content <- ArrayValue();
-    for i in 1..rows(value) {
-      push(value[i]);
-    }
-  }
-
-  /**
-   * Set this.
-   */
-  function set(value:Object[_]) {
-    content <- ArrayValue();
-    for i in 1..rows(value) {
-      push(value[i]);
-    }
-  }
-
-  /**
-   * Set this.
-   */
-  function set(value:Boolean[_,_]) {
-    content <- ArrayValue();
-    for i in 1..rows(value) {
-      push(row(value, i));
-    }
-  }
-
-  /**
-   * Set this.
-   */
-  function set(value:Integer[_,_]) {
-    content <- ArrayValue();
-    for i in 1..rows(value) {
-      push(row(value, i));
-    }
-  }
-
-  /**
-   * Set this.
-   */
-  function set(value:Real[_,_]) {
-    content <- ArrayValue();
-    for i in 1..rows(value) {
-      push(row(value, i));
-    }
-  }
-
-  /**
-   * Set this.
-   */
-  function set(value:LLT) {
-    set(canonical(value));
-  }
-
-  /**
    * Get an entry in an object as a Boolean.
    *
    * - key: Key of the entry.
@@ -676,6 +414,148 @@ final class Buffer {
   }
 
   /**
+   * Get this as a Boolean.
+   *
+   * - value: Unused, but necessary for overload resolution.
+   *
+   * Return: An optional with a value if this is of a compatible type.
+   */
+  function get(value:Boolean?) -> Boolean? {
+    return getBoolean();
+  }
+
+  /**
+   * Get this as an integer.
+   *
+   * - value: Unused, but necessary for overload resolution.
+   *
+   * Return: An optional with a value if this is of a compatible type.
+   */
+  function get(value:Integer?) -> Integer? {
+    return getInteger();
+  }
+  
+  /**
+   * Get this as a real.
+   *
+   * - value: Unused, but necessary for overload resolution.
+   *
+   * Return: An optional with a value if this is of a compatible type.
+   */
+  function get(value:Real?) -> Real? {
+    return getReal();
+  }
+
+  /**
+   * Get this as a string.
+   *
+   * - value: Unused, but necessary for overload resolution.
+   *
+   * Return: An optional with a value if this is of a compatible type.
+   */
+  function get(value:String?) -> String? {
+    return getString();
+  }
+
+  /**
+   * Get this as an object.
+   *
+   * - value: The object.
+   *
+   * Return: The object.
+   */
+  function get(value:Object?) -> Object? {
+    if value? {
+      value!.read(this);
+    }
+    return value;
+  }
+
+  /**
+   * Get this as a vector of Booleans.
+   *
+   * - value: Unused, but necessary for overload resolution.
+   *
+   * Return: An optional with a value if this is an array with all elements
+   * of a compatible type.
+   */
+  function get(value:Boolean[_]?) -> Boolean[_]? {
+    return getBooleanVector();
+  }
+
+  /**
+   * Get this as a vector of integers.
+   *
+   * - value: Unused, but necessary for overload resolution.
+   *
+   * Return: An optional with a value if this is an array with all elements
+   * of a compatible type.
+   */
+  function get(value:Integer[_]?) -> Integer[_]? {
+    return getIntegerVector();
+  }
+
+  /**
+   * Get this as a vector of reals.
+   *
+   * - value: Unused, but necessary for overload resolution.
+   *
+   * Return: An optional with a value if this is an array with all elements
+   * of a compatible type.
+   */
+  function get(value:Real[_]?) -> Real[_]? {
+    return getRealVector();
+  }
+
+  /**
+   * Get this as a matrix of Booleans.
+   *
+   * - value: Unused, but necessary for overload resolution.
+   *
+   * Return: An optional with a value if this is an array where all elements
+   * are themselves arrays of the same length and compatible type.
+   */
+  function get(value:Boolean[_,_]?) -> Boolean[_,_]? {
+    return getBooleanMatrix();
+  }
+
+  /**
+   * Get this as a matrix of integers.
+   *
+   * - value: Unused, but necessary for overload resolution.
+   *
+   * Return: An optional with a value if this is an array where all elements
+   * are themselves arrays of the same length and compatible type.
+   */
+  function get(value:Integer[_,_]?) -> Integer[_,_]? {
+    return getIntegerMatrix();
+  }
+
+  /**
+   * Get this as a matrix of reals.
+   *
+   * - value: Unused, but necessary for overload resolution.
+   *
+   * Return: An optional with a value if this is an array where all elements
+   * are themselves arrays of the same length and compatible type.
+   */
+  function get(value:Real[_,_]?) -> Real[_,_]? {
+    return getRealMatrix();
+  }
+
+  /**
+   * Get this as a factorized matrix.
+   *
+   * - value: Unused, but necessary for overload resolution.
+   *
+   * Return: An optional with a value if this is an array where all elements
+   * are themselves arrays of the same length and compatible type.
+   */
+  function get(value:LLT?) -> LLT? {
+    return getLLT();
+  }
+
+  /**
    * Get an entry in an object as a Boolean.
    *
    * - key: Key of the entry.
@@ -833,6 +713,126 @@ final class Buffer {
    */
   function get(key:String, value:LLT?) -> LLT? {
     return getLLT(key);
+  }
+
+  /**
+   * Set this as nil.
+   */
+  function setNil() {
+    content <- NilValue();
+  }
+  
+  /**
+   * Set this.
+   */
+  function set(value:Boolean) {
+    content <- BooleanValue(value);
+  }
+
+  /**
+   * Set this.
+   */
+  function set(value:Integer) {
+    content <- IntegerValue(value);
+  }
+
+  /**
+   * Set this.
+   */
+  function set(value:Real) {
+    content <- RealValue(value);
+  }
+
+  /**
+   * Set this.
+   */
+  function set(value:String) {
+    content <- StringValue(value);
+  }
+  
+  /**
+   * Set this.
+   */
+  function set(value:Object) {
+    value.write(this);
+  }
+  
+  /**
+   * Set this.
+   */
+  function set(value:Boolean[_]) {
+    content <- BooleanVectorValue(value);
+  }
+
+  /**
+   * Set this.
+   */
+  function set(value:Integer[_]) {
+    content <- IntegerVectorValue(value);
+  }
+
+  /**
+   * Set this.
+   */
+  function set(value:Real[_]) {
+    content <- RealVectorValue(value);
+  }
+
+  /**
+   * Set this.
+   */
+  function set(value:String[_]) {
+    content <- ArrayValue();
+    for i in 1..rows(value) {
+      push(value[i]);
+    }
+  }
+
+  /**
+   * Set this.
+   */
+  function set(value:Object[_]) {
+    content <- ArrayValue();
+    for i in 1..rows(value) {
+      push(value[i]);
+    }
+  }
+
+  /**
+   * Set this.
+   */
+  function set(value:Boolean[_,_]) {
+    content <- ArrayValue();
+    for i in 1..rows(value) {
+      push(row(value, i));
+    }
+  }
+
+  /**
+   * Set this.
+   */
+  function set(value:Integer[_,_]) {
+    content <- ArrayValue();
+    for i in 1..rows(value) {
+      push(row(value, i));
+    }
+  }
+
+  /**
+   * Set this.
+   */
+  function set(value:Real[_,_]) {
+    content <- ArrayValue();
+    for i in 1..rows(value) {
+      push(row(value, i));
+    }
+  }
+
+  /**
+   * Set this.
+   */
+  function set(value:LLT) {
+    set(canonical(value));
   }
 
   /**
@@ -1138,6 +1138,114 @@ final class Buffer {
     } else {
       content <- ArrayValue();
       content!.push(value);
+    }
+  }
+
+  /**
+   * Push a nil element onto the end of an array.
+   */
+  function pushNil(key:String) {
+    let buffer <- find(key);
+    if buffer? {
+      buffer!.pushNil();
+    } else {
+      setNil(key);
+    }
+  }
+
+  /**
+   * Push an element onto the end of an array.
+   */
+  function push(key:String, value:Boolean) {
+    let buffer <- find(key);
+    if buffer? {
+      buffer!.push(value);
+    } else {
+      set(key, value);
+    }
+  }
+
+  /**
+   * Push an element onto the end of an array.
+   */
+  function push(key:String, value:Integer) {
+    let buffer <- find(key);
+    if buffer? {
+      buffer!.push(value);
+    } else {
+      set(key, value);
+    }
+  }
+
+  /**
+   * Push an element onto the end of an array.
+   */
+  function push(key:String, value:Real) {
+    let buffer <- find(key);
+    if buffer? {
+      buffer!.push(value);
+    } else {
+      set(key, value);
+    }
+  }
+
+  /**
+   * Push an element onto the end of an array.
+   */
+  function push(key:String, value:String) {
+    let buffer <- find(key);
+    if buffer? {
+      buffer!.push(value);
+    } else {
+      set(key, value);
+    }
+  }
+
+  /**
+   * Push an element onto the end of an array.
+   */
+  function push(key:String, value:Object) {
+    let buffer <- find(key);
+    if buffer? {
+      buffer!.push(value);
+    } else {
+      set(key, value);
+    }
+  }
+
+  /**
+   * Push an element onto the end of an array.
+   */
+  function push(key:String, value:Boolean[_]) {
+    let buffer <- find(key);
+    if buffer? {
+      buffer!.push(value);
+    } else {
+      set(key, value);
+    }
+  }
+
+  /**
+   * Push an element onto the end of an array.
+   */
+  function push(key:String, value:Integer[_]) {
+    let buffer <- find(key);
+    if buffer? {
+      buffer!.push(value);
+    } else {
+      set(key, value);
+    }
+  }
+
+  /**
+   * Push an element onto the end of an array.
+   */
+  function push(key:String, value:Real[_]) {
+    let buffer <- find(key);
+    if buffer? {
+      buffer!.push(value);
+    } else {
+      set(key, value);
     }
   }
 }

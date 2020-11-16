@@ -21,7 +21,7 @@ class AliveParticleFilter < ParticleFilter {
    */
   p:Integer[_];
 
-  override function propagate(t:Integer) {
+  override function simulate(t:Integer, input:Buffer?) {
     let play <- PlayHandler(delayed);
     let x0 <- x;
     let w0 <- w;
@@ -31,6 +31,9 @@ class AliveParticleFilter < ParticleFilter {
         x[n] <- clone(x0[a[n]]);
         let handler <- PlayHandler(delayed);
         with (handler) {
+          if input? {
+            x[n].m.read(t, input!);
+          }
           x[n].m.simulate(t);
           w[n] <- handler.w;
         }
@@ -41,6 +44,9 @@ class AliveParticleFilter < ParticleFilter {
           p[n] <- p[n] + 1;
           let handler <- PlayHandler(delayed);
           with (handler) {
+            if input? {
+              x[n].m.read(t, input!);
+            }
             x[n].m.simulate(t);
             w[n] <- handler.w;
           }
@@ -57,6 +63,9 @@ class AliveParticleFilter < ParticleFilter {
           p[n] <- p[n] + 1;
           let handler <- PlayHandler(delayed);
           with (handler) {
+            if input? {
+              x'.m.read(t, input!);
+            }
             x'.m.simulate(t);
             w' <- handler.w;
           }
@@ -66,7 +75,7 @@ class AliveParticleFilter < ParticleFilter {
     collect();
   }
   
-  override function resample(t:Integer) {
+  override function resample() {
     if ess <= trigger*nparticles {
       /* compute ancestor indices, but don't copy, propagate() handles this */
       a <- resample_systematic(w);

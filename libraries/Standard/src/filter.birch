@@ -2,96 +2,130 @@
  * Filter a model.
  *
  *     birch filter [options...]
- *
+
  * - `--config`: Name of the configuration file, if any.
  *
- * - `--input`: Name of the input file, if any. Alternatively, provide this
- *   as `input` in the configuration file.
+ * - `--seed`: Random number seed. If used, overrides `seed` in the config
+ *   file, which in turns overrides random entropy.
  *
- * - `--output`: Name of the output file, if any. Alternatively, provide this
- *   as `output` in the configuration file.
+ * - `--model`: Name of the model class. If used, overrides `model.class` in
+ *   the config file.
  *
- * - `--model`: Name of the model class, if any. Alternatively, provide this
- *   as `model.class` in the configuration file.
+ * - `--filter`: Name of the filter class. If used, overrides
+ *   `filter.class` in the config file, which in turn overrides the default
+ *   of [ParticleFilter](../ParticleFilter).
  *
- * - `--seed`: Random number seed. Alternatively, provide this as `seed` in
- *   the configuration file. If not provided, random entropy is used.
+ * - `--nsteps`: Number of steps to take. If used, this overrides `nsteps` in
+ *   the config file, which in turn overrides `filter.nsteps` (deprecated) in
+ *   the config file, which in turn overrides the number of steps derived from
+ *   the input file, which in turn overrides the default of 0.
  *
- * - `--quiet`: Don't display a progress bar.
+ * - `--nforecasts`: Number of forecasts at each step. If used, this overrides
+ *   `nforecasts` in the config file, which in turn overrides
+ *   `filter.nforecasts` (deprecated) in the config file, which in turn
+ *   overrides the number of forecasts derived from the input file, which in
+ *   turn overrides the default of 0.
+ *
+ * - `--input`: Name of the input file, if any. If used, overrides `input` in
+ *   the config file.
+ *
+ * - `--output`: Name of the output file, if any. If used, overrides `output`
+ *   in the config file.
+ *
+ * - `--quiet true`: Don't display a progress bar.
  */
 program filter(
     config:String?,
+    seed:Integer?,
+    model:String?,
+    filter:String?,
+    nsteps:Integer?,
+    nforecasts:Integer?,
     input:String?,
     output:String?,
-    model:String?,
-    seed:Integer?,
     quiet:Boolean <- false) {
   /* config */
   configBuffer:Buffer;
   if config? {
-    let reader <- Reader(config!);
-    configBuffer <- reader.slurp();
-    reader.close();
+    configBuffer <- slurp(config!);
   }
 
   /* random number generator */
+  if !seed? {
+    seed <-? configBuffer.getInteger("seed");
+  }
   if seed? {
     global.seed(seed!);
-  } else if config? {
-    let buffer <- configBuffer.getInteger("seed");
-    if buffer? {
-      global.seed(buffer!);
-    }
   } else {
     global.seed();
   }
 
   /* model */
-  let buffer <- configBuffer.find("model");
-  if !buffer? {
-    buffer <- Buffer();
+  modelBuffer:Buffer;
+  modelBuffer <-? configBuffer.find("model");
+  if model? {
+    modelBuffer.set("class", model!);
   }
-  if !buffer!.getString("class")? && model? {
-    buffer!.set("class", model!);
-  }
-  let archetype <- Model?(make(buffer));
-  if !archetype? {
+  let theModel <- Model?(make(modelBuffer));
+  if !theModel? {
     error("could not create model; the model class should be given as " +
-        "model.class in the config file, and should derive from Model.");
+        "model.class in the config file, or `--model` on the command " +
+        "line, and should derive from Model.");
   }
 
   /* filter */
-  buffer <- configBuffer.find("filter");
-  if !buffer? {
-    buffer <- Buffer();
+  filterBuffer:Buffer;
+  filterBuffer <-? configBuffer.find("filter");
+  if filter? {
+    filterBuffer.set("class", filter!);
+  } else if !filterBuffer.find("class")? {
+    filterBuffer.set("class", "ParticleFilter");
   }
-  if !buffer!.getString("class")? {
-    buffer!.set("class", "ParticleFilter");
-  }
-  let filter <- ParticleFilter?(make(buffer));
-  if !filter? {
+  let theFilter <- ParticleFilter?(make(filterBuffer));
+  if !theFilter? {
     error("could not create filter; the filter class should be given as " +
-        "filter.class in the config file, and should derive from ParticleFilter.");
+        "filter.class in the config file, or --filter on the command " +
+        "line, and should derive from ParticleFilter.");
+  }
+
+  /* number of steps */
+  if !nsteps? {
+    nsteps <-? configBuffer.getInteger("nsteps");
+    if !nsteps? {
+      nsteps <-? filterBuffer.getInteger("nsteps");
+      if nsteps? {
+        warn("filter.nsteps in the config file is deprecated, replace " +
+            "with nsteps in the config file, or --nsteps on the " +
+            "command line.");
+      }
+    }
+  }
+
+  /* number of forecasts */
+  if !nforecasts? {
+    nforecasts <-? configBuffer.getInteger("nforecasts");
+    if !nforecasts? {
+      nforecasts <-? filterBuffer.getInteger("nforecasts");
+      if nforecasts? {
+        warn("filter.nforecasts in the config file is deprecated, replace " +
+            "with nforecasts in the config file, or --nforecasts on the " +
+            "command line.");
+      }
+    }
   }
 
   /* input */
-  let inputPath <- input;
-  if !inputPath? {
-    inputPath <-? configBuffer.getString("input");
-  }
+  let inputPath <- configBuffer.getString("input");
+  inputPath <-? input;
+  inputReader:Reader?;
   if inputPath? && inputPath! != "" {
-    let reader <- Reader(inputPath!);
-    let inputBuffer <- reader.slurp();
-    reader.close();
-    inputBuffer.get(archetype!);
+    inputReader <- Reader(inputPath!);
   }
 
   /* output */
+  let outputPath <- configBuffer.getString("output");
+  outputPath <-? output;
   outputWriter:Writer?;
-  outputPath:String? <- output;
-  if !outputPath? {
-    outputPath <-? configBuffer.getString("output");
-  }
   if outputPath? && outputPath! != "" {
     outputWriter <- Writer(outputPath!);
   }
@@ -103,59 +137,73 @@ program filter(
   }
 
   /* filter */
-  filter!.initialize(archetype!);
-  for t in 0..filter!.size() {
-    if t == 0 {
-      filter!.filter();
-    } else {
-      filter!.filter(t);
-    }
-
-    /* output current state */
-    buffer:Buffer;
-    if outputWriter? {
-      filter!.write(buffer, t);
-    }
-
-    /* forecast */
-    if filter!.nforecasts > 0 {
-      /* clone filter for forecast purposes */
-      let filter' <- clone(filter!);
-
-      /* resample current particles, preserve weights */
-      filter'.resample(t);
-      let w' <- filter'.w;
-
-      /* turn off delayed sampling, as analytical conditioning on obervations
-       * may occur otherwise, which would be invalid for a forecast */
-      filter'.delayed <- false;
-
-      /* with these settings, we just filter ahead as normal */
-      let forecast <- Buffer();
-      buffer.set("forecast", forecast);
-      for s in (t + 1)..(t + filter'.nforecasts) {
-        filter'.forecast(s);
-        filter'.reduce();
-        if outputWriter? {
-          let state <- Buffer();
-          state.set("sample", filter'.x);
-          state.set("lweight", w');
-          state.set("lnormalize", filter'.lnormalize);
-          forecast.push(state);
-        }
-      }
-      collect();
-    }
-    if outputWriter? {
-      outputWriter!.push(buffer);
-      outputWriter!.flush();
-    }
-    if !quiet {
-      bar.update((t + 1.0)/(filter!.size() + 1.0));
-    }
+  inputBuffer:Buffer?;
+  if inputReader? && inputReader!.hasNext() {
+    inputBuffer <- inputReader!.next();
+  } else {
+    inputBuffer <- nil;
+  }
+  theFilter!.filter(theModel!, inputBuffer);
+  if outputWriter? {
+    let outputBuffer <- Buffer();
+    outputBuffer.set("sample", theFilter!.x);
+    outputBuffer.set("lweight", theFilter!.w);
+    outputBuffer.set("ess", theFilter!.ess);
+    outputBuffer.set("lnormalize", theFilter!.lnormalize);
+    outputBuffer.set("npropagations", theFilter!.npropagations);
+    outputBuffer.set("raccepts", theFilter!.raccepts);
+    outputWriter!.push(outputBuffer);
+  }
+  if !quiet {
+    bar.update(1.0/(nsteps! + 1.0));
   }
 
-  /* finalize output */
+  /* step */
+  let t <- 1;
+  while (nsteps? && t <= nsteps!) || (!nsteps? && inputReader!.hasNext()) {
+    if inputReader? && inputReader!.hasNext() {
+      inputBuffer <- inputReader!.next();
+    } else {
+      inputBuffer <- nil;
+    }
+    theFilter!.filter(t, inputBuffer);
+    if outputWriter? {
+      let outputBuffer <- Buffer();
+      outputBuffer.set("sample", theFilter!.x);
+      outputBuffer.set("lweight", theFilter!.w);
+      outputBuffer.set("ess", theFilter!.ess);
+      outputBuffer.set("lnormalize", theFilter!.lnormalize);
+      outputBuffer.set("npropagations", theFilter!.npropagations);
+      outputBuffer.set("raccepts", theFilter!.raccepts);
+
+      /* forecast */
+      if nforecasts! > 0 {
+        let theFilter' <- clone(theFilter!);
+        theFilter'.resample();
+
+        let forecastBuffer <- Buffer();
+        let s <- t + 1;
+        while s <= t + nforecasts! {
+          theFilter'.filter(s, inputBuffer);
+          let stateBuffer <- Buffer();
+          stateBuffer.set("sample", theFilter'!.x);
+          stateBuffer.set("lweight", theFilter'!.w);
+          forecastBuffer.insert(stateBuffer);
+        }
+        outputBuffer.set("forecast", forecastBuffer);
+        outputWriter!.push(outputBuffer);
+      }
+    }
+    if !quiet {
+      bar.update((t + 1.0)/(nsteps! + 1.0));
+    }    
+    t <- t + 1;
+  }
+
+  /* finalize */
+  if inputReader? {
+    inputReader!.close();
+  }
   if outputWriter? {
     outputWriter!.close();
   }

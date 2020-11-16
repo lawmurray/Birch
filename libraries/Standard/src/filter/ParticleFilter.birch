@@ -29,14 +29,22 @@ class ParticleFilter {
   a:Integer[_];
 
   /**
-   * Effective sample size.
+   * Chosen particle index. This is used for drawing a single particle from
+   * the filter in e.g. [ParticleSampler](../ParticleSampler), and for the
+   * reference particle in e.g.
+   * [ConditionalParticleFilter](../ConditionalParticleFilter).
    */
-  ess:Real <- 0.0;
+  b:Integer <- 0;
 
   /**
    * Logarithm of sum of weights.
    */
   lsum:Real <- 0.0;
+
+  /**
+   * Effective sample size.
+   */
+  ess:Real <- 0.0;
 
   /**
    * Log normalizing constant.
@@ -54,18 +62,7 @@ class ParticleFilter {
   /**
    * Accept rate of moves.
    */
-  raccept:Real <- 0.0;
-
-  /**
-   * Number of steps. If this has no value, the model will be required to
-   * suggest an appropriate value.
-   */
-  nsteps:Integer?;
-
-  /**
-   * Number of additional forecast steps per step.
-   */
-  nforecasts:Integer <- 0;
+  raccepts:Real <- 0.0;
 
   /**
    * Number of particles.
@@ -85,69 +82,53 @@ class ParticleFilter {
   delayed:Boolean <- true;
 
   /**
-   * Size. This is the number of steps of `filter(Model, Integer)` to be
-   * performed after the initial call to `filter(Model)`. Note that
-   * `initialize()` must be called before `size()`.
-   */
-  function size() -> Integer {
-    assert nsteps?;
-    return nsteps!;
-  }
-
-  /**
    * Create a particle of the type required for this filter.
    */
-  function particle(archetype:Model) -> Particle {
-    return Particle(archetype);
+  function particle(model:Model) -> Particle {
+    return Particle(model);
   }
 
   /**
-   * Initialize filter.
+   * Start filter.
    *
-   * - archetype: Archetype. This is an instance of the appropriate model
-   *   class that may have one more random variables fixed to known values,
-   *   representing the inference problem (or target distribution).
+   * - model: Model.
+   * - input: Optional input buffer.
    */
-  function initialize(archetype:Model) {
-    x <- clone(particle(archetype), nparticles);
+  function filter(model:Model, input:Buffer?) {
+    x <- clone(particle(model), nparticles);
     w <- vector(0.0, nparticles);
     a <- iota(1, nparticles);
+    b <- 1;
     ess <- nparticles;
     lsum <- 0.0;
     lnormalize <- 0.0;
     npropagations <- nparticles;
-
-    if !nsteps? {
-      nsteps <- archetype.size();
-    }
-  }
-
-  /**
-   * Filter first step.
-   */
-  function filter() {
-    propagate();
+    simulate(input);
     reduce();
   }
 
   /**
-   * Filter one step.
+   * Step filter.
    *
    * - t: The step number, beginning at 1.
+   * - input: Optional input buffer.
    */
-  function filter(t:Integer) {
-    resample(t);
-    propagate(t);
+  function filter(t:Integer, input:Buffer?) {
+    resample();
+    simulate(t, input);
     reduce();
   }
 
   /**
    * Start particles.
    */
-  function propagate() {
+  function simulate(input:Buffer?) {
     parallel for n in 1..nparticles {
       let handler <- PlayHandler(delayed);
       with (handler) {
+        if input? {
+          x[n].m.read(input!);
+        }
         x[n].m.simulate();
         w[n] <- w[n] + handler.w;
       }
@@ -157,24 +138,14 @@ class ParticleFilter {
   /**
    * Step particles.
    */
-  function propagate(t:Integer) {
+  function simulate(t:Integer, input:Buffer?) {
     parallel for n in 1..nparticles {
       let handler <- PlayHandler(delayed);
       with (handler) {
+        if input? {
+          x[n].m.read(t, input!);
+        }
         x[n].m.simulate(t);
-        w[n] <- w[n] + handler.w;
-      }
-    }
-  }
-
-  /**
-   * Forecast particles.
-   */
-  function forecast(t:Integer) {
-    parallel for n in 1..nparticles {
-      let handler <- PlayHandler(delayed);
-      with (handler) {
-        x[n].m.forecast(t);
         w[n] <- w[n] + handler.w;
       }
     }
@@ -187,12 +158,16 @@ class ParticleFilter {
   function reduce() {
     (ess, lsum) <- resample_reduce(w);
     lnormalize <- lnormalize + lsum - log(Real(nparticles));
+    b <- ancestor(w);
+    if b == 0 {
+      error("particle filter degenerated");
+    }
   }
 
   /**
    * Resample particles.
    */
-  function resample(t:Integer) {
+  function resample() {
     if ess <= trigger*nparticles {
       a <- resample_systematic(w);
       w <- vector(0.0, nparticles);
@@ -208,33 +183,9 @@ class ParticleFilter {
     }
   }
 
-  /**
-   * Write only the current state to a buffer.
-   */
-  function write(buffer:Buffer, t:Integer) {
-    buffer.set("sample", clone(x));
-    buffer.set("lweight", w);
-    buffer.set("lnormalize", lnormalize);
-    buffer.set("ess", ess);
-    buffer.set("npropagations", npropagations);
-    buffer.set("raccept", raccept);
-  }
-
   override function read(buffer:Buffer) {
-    super.read(buffer);
-    nsteps <-? buffer.get("nsteps", nsteps);
-    nforecasts <-? buffer.get("nforecasts", nforecasts);
     nparticles <-? buffer.get("nparticles", nparticles);
     trigger <-? buffer.get("trigger", trigger);
     delayed <-? buffer.get("delayed", delayed);
-  }
-
-  override function write(buffer:Buffer) {
-    super.write(buffer);
-    buffer.set("nsteps", nsteps!);
-    buffer.set("nforecasts", nforecasts);
-    buffer.set("nparticles", nparticles);
-    buffer.set("trigger", trigger);
-    buffer.set("delayed", delayed);
   }
 }

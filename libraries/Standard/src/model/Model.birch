@@ -14,31 +14,46 @@
  */
 abstract class Model {
   /**
-   * Simulate.
+   * Start execution.
    */
   function simulate() {
     //
   }
 
   /**
-   * Simulate the `t`th step.
+   * Step execution.
+   *
+   * - t: The step number, beginning at 1.
    */
   function simulate(t:Integer) {
     //
   }
 
   /**
-   * Forecast the `t`th step.
+   * Read at start.
    */
-  function forecast(t:Integer) {
+  override function read(buffer:Buffer) {
     //
   }
 
   /**
-   * Size. This is the number of steps of `simulate(Integer)` to be performed
-   * after the initial call to `simulate()`.
+   * Read before step `t`.
    */
-  function size() -> Integer {
-    return 0;
+  function read(t:Integer, buffer:Buffer) {
+    //
+  }
+
+  /**
+   * Write after step `t`.
+   */
+  function write(t:Integer, buffer:Buffer) {
+    //
+  }
+
+  /**
+   * Write at end.
+   */
+  override function write(buffer:Buffer) {
+    //
   }
 }

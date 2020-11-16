@@ -84,3 +84,17 @@ function Reader(path:String) -> Reader {
   }
   return result!;
 }
+
+/**
+ * Read the whole contents of a file into a buffer.
+ *
+ * - path: Path of the file.
+ *
+ * Returns: the contents.
+ */
+function slurp(path:String) -> Buffer {
+  let reader <- Reader(path);
+  let buffer <- reader.slurp();
+  reader.close();
+  return buffer;
+}

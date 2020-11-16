@@ -37,20 +37,15 @@ abstract class MarkovModel<Parameter,State> < Model {
    */
   x:Tape<State>;
 
-  override function size() -> Integer {
-    return x.size();
-  }
-
   override function simulate() {
     parameter(θ);
   }
   
   override function simulate(t:Integer) {
     if t == 1 {
-      initial(x.current(), θ);
+      initial(x.get(t), θ);
     } else {
-      x.forward();
-      transition(x.current(), x.previous(), θ);
+      transition(x.get(t), x.get(t - 1), θ);
     }
   }
 
@@ -85,14 +80,18 @@ abstract class MarkovModel<Parameter,State> < Model {
   }
 
   override function read(buffer:Buffer) {
-    super.read(buffer);
     buffer.get("θ", θ);
-    buffer.get("x", x);
+  }
+
+  override function read(t:Integer, buffer:Buffer) {
+    buffer.get("x", x.get(t));
+  }
+
+  override function write(t:Integer, buffer:Buffer) {
+    buffer.set("x", x.get(t));
   }
   
   override function write(buffer:Buffer) {
-    super.write(buffer);
     buffer.set("θ", θ);
-    buffer.set("x", x);
   }
 }
