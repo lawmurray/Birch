@@ -1,6 +1,8 @@
 site_name: 'MultiObjectTracking'
 theme:
-  name: 'material'
+  name: material
+  palette:
+    scheme: preference
 markdown_extensions:
   - admonition
   - footnotes

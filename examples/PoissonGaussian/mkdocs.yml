@@ -1,6 +1,8 @@
 site_name: 'PoissonGaussian'
 theme:
-  name: 'material'
+  name: material
+  palette:
+    scheme: preference
 markdown_extensions:
   - admonition
   - footnotes
