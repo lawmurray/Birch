@@ -1133,7 +1133,7 @@ void birch::Driver::target(const std::string& cmd) {
   }
   buf << "make";
   if (!verbose) {
-    buf << "-s LIBTOOLFLAGS=--silent";
+    buf << " -s LIBTOOLFLAGS=--silent";
   }
 
   /* concurrency */
