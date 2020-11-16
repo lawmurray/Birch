@@ -24,7 +24,7 @@ birch::Driver::Driver(int argc, char** argv) :
     warnings(true),
     notes(false),
     translate(true),
-    verbose(true),
+    verbose(false),
     newBootstrap(false),
     newConfigure(false),
     newMake(false) {
@@ -852,7 +852,7 @@ void birch::Driver::help() {
       std::cout << "  --enable-translate / --disable-translate (default enabled):" << std::endl;
       std::cout << "  Enable/disable translation of C++ compiler messages." << std::endl;
       std::cout << std::endl;
-      std::cout << "  --enable-verbose / --disable-verbose (default enabled):" << std::endl;
+      std::cout << "  --enable-verbose / --disable-verbose (default disabled):" << std::endl;
       std::cout << "  Show all compiler output." << std::endl;
       std::cout << std::endl;
       std::cout << "  --prefix (default imputed): Installation prefix. Defaults to the same prefix" << std::endl;
@@ -1131,7 +1131,10 @@ void birch::Driver::target(const std::string& cmd) {
   if (arch == "js" || arch == "wasm") {
     buf << "emmake";
   }
-  buf << "make -s LIBTOOLFLAGS=--silent";
+  buf << "make";
+  if (!verbose) {
+    buf << "-s LIBTOOLFLAGS=--silent";
+  }
 
   /* concurrency */
   if (jobs > 1) {
@@ -1186,10 +1189,6 @@ void birch::Driver::target(const std::string& cmd) {
   std::regex rxTooFewArguments("(?:invalid initialization of reference of type ‘" + type4 + "’ from expression of type ‘Handler’|cannot convert ‘Handler’ to ‘" + type4 + "’)");
   std::regex rxProgram("In function ‘int ([A-Za-z0-9_]+)\\(int, char\\*\\*\\)’");
 
-  std::ofstream log;
-  if (!verbose) {
-    log.open("make.log", std::ios_base::out);
-  }
   FILE* pipe = popen(buf.str().c_str(), "r");
   if (pipe) {
     char* line = NULL;
@@ -1247,25 +1246,12 @@ void birch::Driver::target(const std::string& cmd) {
       if ((warnings || !std::regex_search(str, rxWarnings)) &&
           (notes || !std::regex_search(str, rxNotes)) &&
           (!translate || !std::regex_search(str, rxSkipLine))) {
-        if (verbose) {
-         std::cerr << str;
-        } else {
-         log << str;
-        }
+        std::cerr << str;
       }
-    }
-    if (!verbose) {
-      log.close();
     }
     int status = pclose(pipe);
     if (!WIFEXITED(status) || WEXITSTATUS(status) != 0) {
-      std::stringstream buf;
-      buf << "make failed";
-      if (!verbose) {
-        buf << ", see make.log for details";
-      }
-      buf << '.';
-      throw DriverException(buf.str());
+      throw DriverException("make failed.");
     }
   }
 }
