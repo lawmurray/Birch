@@ -344,9 +344,9 @@ function lower_inc_gamma(a:Real, x:Real) -> Real {
   }
 
   absxma_a <- abs(x - a) / a;
-  if ((a > SMALL) && (a < LARGE) && (absxma_a < SMALLRATIO)) {
+  if ((a > IGAM_SMALL) && (a < IGAM_LARGE) && (absxma_a < IGAM_SMALLRATIO)) {
     return asymptotic_series(a, x, 1);
-  } else if ((a > LARGE) && (absxma_a < LARGERATIO / sqrt(a))) {
+  } else if ((a > IGAM_LARGE) && (absxma_a < IGAM_LARGERATIO / sqrt(a))) {
     return asymptotic_series(a, x, 1);
   }
 
@@ -387,10 +387,10 @@ function upper_inc_gamma(a:Real, x:Real) -> Real {
 
   absxma_a <- abs(x - a) / a;
 
-  if ((a > SMALL) && (a < LARGE) && (absxma_a < SMALLRATIO)) {
+  if ((a > IGAM_SMALL) && (a < IGAM_LARGE) && (absxma_a < IGAM_SMALLRATIO)) {
     // the last parameter is a boolean term whether it's LINVGAM or UPPINVGAM
     return asymptotic_series(a, x, 0);
-  } else if ((a > LARGE) && (absxma_a < LARGERATIO / sqrt(a))) {
+  } else if ((a > IGAM_LARGE) && (absxma_a < IGAM_LARGERATIO / sqrt(a))) {
     return asymptotic_series(a, x, 0);
   }
 
@@ -420,21 +420,21 @@ function upper_inc_gamma(a:Real, x:Real) -> Real {
 function igam_fac(a:Real, x:Real) -> Real {
   if (abs(a - x) > Real(0.4) * abs(a)) {
     let ax <- a * log(x) - x - lgamma(a);
-    if (ax < -MAXLOG) {
+    if (ax < -IGAM_MAXLOG) {
       return Real(0.0);
     }
     return exp(ax);
   }
 
-  let fac <- a + LANCZOS_G - Real(0.5);
+  let fac <- a + IGAM_LANCZOS_G - Real(0.5);
   let res <- sqrt(fac / exp(Real(1.0))) / lanczos_sum_expg_scaled(a);
 
   if ((a < Real(200.0)) && (x < Real(200.0))) {
     res <- res * exp(a - x) * pow(x / fac, a);
   } else {
-    let num <- x - a - LANCZOS_G + Real(0.5);
+    let num <- x - a - IGAM_LANCZOS_G + Real(0.5);
     // changed log1pmx to this
-    res <- res * exp(a * (log1p(num / fac) - x) + x * (Real(0.5) - LANCZOS_G) / fac);
+    res <- res * exp(a * (log1p(num / fac) - x) + x * (Real(0.5) - IGAM_LANCZOS_G) / fac);
   }
   return res;
 }
@@ -480,11 +480,11 @@ function igamc_continued_fraction(a:Real, x:Real) -> Real {
     pkm1 <- pk;
     qkm2 <- qkm1;
     qkm1 <- qk;
-    if (abs(pk) > big) {
-      pkm2 <- pkm2 * biginv;
-      pkm1 <- pkm1 * biginv;
-      qkm2 <- qkm2 * biginv;
-      qkm1 <- qkm1 * biginv;
+    if (abs(pk) > IGAM_BIG) {
+      pkm2 <- pkm2 * IGAM_BIGINV;
+      pkm1 <- pkm1 * IGAM_BIGINV;
+      qkm2 <- qkm2 * IGAM_BIGINV;
+      qkm1 <- qkm1 * IGAM_BIGINV;
     }
     if (t <= MACHEP) {
       flag <- false;
@@ -581,7 +581,7 @@ function asymptotic_series(a:Real, x:Real, func:Integer) -> Real {
   let flag1 <- true;
   let k <- 1;
   while (k <= K && flag1) {
-    ck <- asymptotic_series_d[k,1];
+    ck <- IGAM_ASYMPTOTIC_SERIES_D[k,1];
     let flag2 <- true;
     let n <- 2;
     while (n <= N && flag2) {
@@ -589,7 +589,7 @@ function asymptotic_series(a:Real, x:Real, func:Integer) -> Real {
         etapow[n] <- η * etapow[n-1];
         maxpow <- maxpow + 1;
       }
-      ckterm <- asymptotic_series_d[k, n] * etapow[n];
+      ckterm <- IGAM_ASYMPTOTIC_SERIES_D[k, n] * etapow[n];
       ck <- ck + ckterm;
       if (abs(ckterm) < MACHEP * abs(ck)) {
         flag2 <- false;
