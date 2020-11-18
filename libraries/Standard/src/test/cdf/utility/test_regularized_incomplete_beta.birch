@@ -1,6 +1,6 @@
 /*
-    Testing regularized incomplete beta function
-*/
+ * Testing `ibeta`
+ */
 
 program test_regularized_incomplete_beta(a:Real64, b:Real64, x:Real64) {
     a <- 2.0;

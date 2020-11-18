@@ -1,6 +1,6 @@
 /*
-    Testing upper incomplete gamma
-*/
+ * Testing `upper_inc_gamma`
+ */
 
 program test_upper_inc_gamma(a:Real64, x:Real64) {
     a <- 1.0;
