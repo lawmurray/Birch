@@ -1,6 +1,3 @@
-/*
- File storing all of the constants present in Birch
-*/
 
 /**
  * $\pi$
@@ -17,7 +14,7 @@ inf:Real64 <- 1.0/0.0;
  */
 nan:Real64 <- 0.0/0.0;
 
-// constants from scipy
+// Constants for CDF calculations taken from scipy
 SMALL:Real64 <- 20;
 LARGE:Real64 <- 200;
 SMALLRATIO:Real64 <- 0.3;

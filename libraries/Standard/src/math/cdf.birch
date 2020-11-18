@@ -20,10 +20,7 @@ function cdf_binomial(x:Integer, n:Integer, ρ:Real) -> Real {
   } else if x > n {
     return 1.0;
   } else {
-    // the relation between binomial and the regularized incomplete beta function
-    // cdf_binomial = I_{1 - p} (n - x, x + 1)
-    let k <- floor(Real(x));
-    return ibeta(Real(n - k), Real(k) + Real(1.0), Real(1.0) - ρ);
+    return ibeta(n - x, x + 1.0, 1.0 - ρ);
   }
 }
 
@@ -43,7 +40,7 @@ function cdf_negative_binomial(x:Integer, k:Integer, ρ:Real) -> Real {
   if x < 0 {
     return 0.0;
   } else {
-    return ibeta(Real(k), Real(x) + Real(1.0),  ρ);
+    return ibeta(k, x + 1.0,  ρ);
   }
 }
 
@@ -61,7 +58,7 @@ function cdf_poisson(x:Integer, λ:Real) -> Real {
   if x < 0 {
     return 0.0;
   } else {
-    let k <- floor(Real(x)) + 1.0;
+    let k <- x + 1.0;
     return upper_inc_gamma(k, λ);
   }
 }
@@ -154,7 +151,7 @@ function cdf_exponential(x:Real, λ:Real) -> Real {
   if x <= 0.0 {
     return 0.0;
   } else {
-    return 1.0 - exp(- λ * x);
+    return -expm1(-λ*x);
   }
 }
 
@@ -171,7 +168,7 @@ function cdf_weibull(x:Real, k:Real, λ:Real) -> Real {
   assert 0.0 < k;
   assert 0.0 < λ;
   if (x >= 0) {
-    return 1.0 - exp(-pow(x / λ, k));
+    return -expm1(-pow(x/λ, k));
   } else {
     return 0;
   }
@@ -188,7 +185,7 @@ function cdf_weibull(x:Real, k:Real, λ:Real) -> Real {
  */
 function cdf_gaussian(x:Real, μ:Real, σ2:Real) -> Real {
   assert 0.0 < σ2;
-  return 0.5 * (1.0 + erf((x - μ) / sqrt(σ2 * 2.0)));
+  return 0.5*(1.0 + erf((x - μ)/sqrt(σ2*2.0)));
 }
 
 /**
@@ -202,8 +199,8 @@ function cdf_gaussian(x:Real, μ:Real, σ2:Real) -> Real {
 function cdf_student_t(x:Real, ν:Real) -> Real {
   // implementation taken from: https://github.com/codeplea/incbeta
   assert 0.0 < ν;
-  let t <- (x + sqrt(x * x + ν)) / (Real(2.0) * sqrt(x * x + ν));
-  let prob <- ibeta(ν/Real(2.0), ν/Real(2.0), t);
+  let t <- 0.5*(x + sqrt(x * x + ν)) /  sqrt(x * x + ν);
+  let prob <- ibeta(0.5*ν, 0.5*ν, t);
   return prob;
 }
 
@@ -254,7 +251,7 @@ function cdf_beta(x:Real, α:Real, β:Real) -> Real {
  */
 function cdf_chi_squared(x:Real, ν:Real) -> Real {
   assert 0.0 < ν;
-  return lower_inc_gamma(ν/Real(2.0), x/Real(2.0)) / gamma(ν / Real(2.0));
+  return lower_inc_gamma(0.5*ν, 0.5*x) / gamma(0.5*ν);
 }
 
 /**
@@ -273,7 +270,7 @@ function cdf_gamma(x:Real, k:Real, θ:Real) -> Real {
   if x <= 0.0 {
     return 0.0;
   } else {
-    return lower_inc_gamma(Real(k), Real(x) / Real(θ));
+    return lower_inc_gamma(k, x/θ);
   }
 }
 
@@ -364,7 +361,7 @@ function cdf_lomax(x:Real, λ:Real, α:Real) -> Real {
   if x <= 0.0 {
     return 0.0;
   } else {
-    return 1.0 - pow((1.0 + x / λ), -α);
+    return 1.0 - pow((1.0 + x/λ), -α);
   }
 }
 
