@@ -322,6 +322,10 @@ function lower_inc_gamma(a:Real, x:Real) -> Real {
 
   assert x >= Real(0.0);
   assert a >= Real(0.0);
+  IGAM_SMALL:Real64 <- 20;
+  IGAM_LARGE:Real64 <- 200;
+  IGAM_SMALLRATIO:Real64 <- 0.3;
+  IGAM_LARGERATIO:Real64 <- 4.5;
 
   absxma_a:Real;
 
@@ -362,6 +366,10 @@ function upper_inc_gamma(a:Real, x:Real) -> Real {
 
   assert x >= Real(0.0);
   assert a >= Real(0.0);
+  IGAM_SMALL:Real64 <- 20;
+  IGAM_LARGE:Real64 <- 200;
+  IGAM_SMALLRATIO:Real64 <- 0.3;
+  IGAM_LARGERATIO:Real64 <- 4.5;
 
   absxma_a:Real;
 
@@ -417,6 +425,9 @@ function upper_inc_gamma(a:Real, x:Real) -> Real {
 
 
 function igam_fac(a:Real, x:Real) -> Real {
+  IGAM_MAXLOG:Real64 <- 709.782712893383996732;
+  IGAM_LANCZOS_G:Real64 <- 6.024680040776729583740234375;
+
   if (abs(a - x) > Real(0.4) * abs(a)) {
     let ax <- a * log(x) - x - lgamma(a);
     if (ax < -IGAM_MAXLOG) {
@@ -440,7 +451,8 @@ function igam_fac(a:Real, x:Real) -> Real {
 
 
 function igamc_continued_fraction(a:Real, x:Real) -> Real {
-
+  IGAM_BIG:Real64 <- 4.503599627370496e15;
+  IGAM_BIGINV:Real64 <- 2.22044604925031308085e-16;
   let ax <- igam_fac(a, x);
   if (ax == Real(0.0)) {
     return Real(0.0);
