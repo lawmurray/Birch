@@ -1184,7 +1184,7 @@ void birch::Driver::target(const std::string& cmd) {
   std::regex rxAssign("operator=");
   std::regex rxAssignExpr("‘=’");
   std::regex rxAuto("‘auto’");
-  std::regex rxHandler("(?:, *)?[A-Za-z0-9]*Handler *(?:\\* *& *handler_)?");
+  std::regex rxHandler("(?:, *)?[A-Za-z0-9]*Handler *(?:\\* *& *handler_)?(?=\\))");
   std::regex rxHandler2("(?:, *)?\\(\\* *& *handler_\\)");
   std::regex rxTooFewArguments("(?:invalid initialization of reference of type ‘" + type4 + "’ from expression of type ‘Handler’|cannot convert ‘Handler’ to ‘" + type4 + "’)");
   std::regex rxProgram("In function ‘int ([A-Za-z0-9_]+)\\(int, char\\*\\*\\)’");

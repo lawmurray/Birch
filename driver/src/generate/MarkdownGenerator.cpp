@@ -250,8 +250,11 @@ void birch::MarkdownGenerator::visit(const MemberFunction* o) {
   if (o->has(FINAL)) {
     middle("final ");
   }
-  middle("function");
-  middle(' ' << o->name << '(' << o->params << ')');
+  middle("function " << o->name);
+    if (o->isGeneric()) {
+    middle("&lt;" << o->typeParams << "&gt;");
+  }
+  middle('(' << o->params << ')');
   if (!o->returnType->isEmpty()) {
     middle(" -> " << o->returnType);
   }
