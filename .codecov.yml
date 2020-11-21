@@ -1,4 +1,13 @@
 coverage:
   precision: 2
-  round: down
-  range: "20...80"
+  round: nearest
+  range: "40...80"
+status:
+  project:
+    default:
+      target: auto
+      threshold: 3%
+      if_not_found: success
+      if_ci_failed: error
+      informational: true
+      only_pulls: false
