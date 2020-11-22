@@ -41,9 +41,7 @@ class InputStream {
    */
   function eof() -> Boolean {
     assert file?;
-    cpp{{
-    return ::feof(this->file.get());
-    }}
+    return feof(file!);
   }
 
   /**
