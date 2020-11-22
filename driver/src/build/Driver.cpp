@@ -1168,14 +1168,16 @@ void birch::Driver::target(const std::string& cmd) {
   std::regex rxReal("\\bdouble\\b");
   std::regex rxInteger("\\blong int\\b");
   std::regex rxBoolean("\\bbool\\b");
-  std::regex rxLazy("Lazy<Shared<(" + type + ") *> *> *");
-  std::regex rxOptional("Optional<(" + type + ") *> *");
-  std::regex rxVector("Array<(" + type + "), *Shape<Dimension<(?:0, *0)?>, *EmptyShape *> *> *");
-  std::regex rxVector2("DefaultArray<(" + type + "), *1> *");
-  std::regex rxMatrix("Array<(" + type + "), *Shape<Dimension<(?:0, *0)?>, Shape<Dimension<(?:0, *0)?>, *EmptyShape *> *> *> *");
-  std::regex rxMatrix2("DefaultArray<(" + type + "), *2> *");
+  std::regex rxString("(?:const *)?std::(?:__cxx11::)?basic_string<char>");
+  std::regex rxLLT("Eigen::LLT<Eigen::Matrix<Real, -1, -1, 1, -1, -1> >");
+  std::regex rxLazy("Lazy<Shared<(" + type + ") *> *>");
+  std::regex rxOptional("Optional<(" + type + ") *>");
+  std::regex rxVector("Array<(" + type + "), *Shape<Dimension<(?:0, *0)?>, *EmptyShape *> *>");
+  std::regex rxVector2("DefaultArray<(" + type + "), *1>");
+  std::regex rxMatrix("Array<(" + type + "), *Shape<Dimension<(?:0, *0)?>, Shape<Dimension<(?:0, *0)?>, *EmptyShape *> *> *>");
+  std::regex rxMatrix2("DefaultArray<(" + type + "), *2>");
   std::regex rxConstRef("(?:const *)?(" + type + ") *&");
-  std::regex rxLLT("Eigen::LLT<Eigen::Matrix<double, *-1, *-1, *1, *-1, *-1> *> *");
+  std::regex rxLLT("Eigen::LLT<Eigen::Matrix<double, *-1, *-1, *1, *-1, *-1> *>");
   std::regex rxThis("\\(\\(" + type + "\\*\\)this\\)->" + type + "::this_\\(\\)->" + type + "::");
   std::regex rxAka("\\{aka *‘?(class |const )?" + type + "’?\\} *");
   std::regex rxValueType("using value_type = ");
@@ -1183,6 +1185,7 @@ void birch::Driver::target(const std::string& cmd) {
   std::regex rxDerefExpr("‘->’");
   std::regex rxAssign("operator=");
   std::regex rxAssignExpr("‘=’");
+  std::regex rxNamespaceSep("::");
   std::regex rxAuto("‘auto’");
   std::regex rxHandler("(?:, *)?[A-Za-z0-9]*Handler *(?:\\* *& *handler_)?(?=\\))");
   std::regex rxHandler2("(?:, *)?\\(\\* *& *handler_\\)");
@@ -1213,6 +1216,8 @@ void birch::Driver::target(const std::string& cmd) {
         str = std::regex_replace(str, rxReal, "Real");
         str = std::regex_replace(str, rxInteger, "Integer");
         str = std::regex_replace(str, rxBoolean, "Boolean");
+        str = std::regex_replace(str, rxString, "String");
+        str = std::regex_replace(str, rxLLT, "LLT");
 
         /* replace some types; repeat some of these patterns a few times
          * as a hacky way of handling recursion */
@@ -1235,6 +1240,7 @@ void birch::Driver::target(const std::string& cmd) {
         str = std::regex_replace(str, rxDerefExpr, "‘.’");
         str = std::regex_replace(str, rxAssign, "<-");
         str = std::regex_replace(str, rxAssignExpr, "‘<-’");
+        str = std::regex_replace(str, rxNamespaceSep, ".");
         str = std::regex_replace(str, rxAuto, "‘let’");
 
         /* strip suggestions that reveal internal workings */
