@@ -79,7 +79,7 @@ function Integer16(x:String) -> Integer16 {
  * Convert to Integer16.
  */
 function Integer16(x:Real64?) -> Integer16? {
-  if (x?) {
+  if x? {
     return Integer16(x!);
   } else {
     return nil;
@@ -90,7 +90,7 @@ function Integer16(x:Real64?) -> Integer16? {
  * Convert to Integer16.
  */
 function Integer16(x:Real32?) -> Integer16? {
-  if (x?) {
+  if x? {
     return Integer16(x!);
   } else {
     return nil;
@@ -101,7 +101,7 @@ function Integer16(x:Real32?) -> Integer16? {
  * Convert to Integer16.
  */
 function Integer16(x:Integer64?) -> Integer16? {
-  if (x?) {
+  if x? {
     return Integer16(x!);
   } else {
     return nil;
@@ -112,7 +112,7 @@ function Integer16(x:Integer64?) -> Integer16? {
  * Convert to Integer16.
  */
 function Integer16(x:Integer32?) -> Integer16? {
-  if (x?) {
+  if x? {
     return Integer16(x!);
   } else {
     return nil;
@@ -130,7 +130,7 @@ function Integer16(x:Integer16?) -> Integer16? {
  * Convert to Integer16.
  */
 function Integer16(x:Integer8?) -> Integer16? {
-  if (x?) {
+  if x? {
     return Integer16(x!);
   } else {
     return nil;
@@ -141,7 +141,7 @@ function Integer16(x:Integer8?) -> Integer16? {
  * Convert to Integer16.
  */
 function Integer16(x:String?) -> Integer16? {
-  if (x?) {
+  if x? {
     return Integer16(x!);
   } else {
     return nil;

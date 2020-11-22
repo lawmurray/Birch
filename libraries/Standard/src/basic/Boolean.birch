@@ -6,6 +6,60 @@ type Boolean;
 /**
  * Convert to Boolean.
  */
+function Boolean(x:Integer64) -> Boolean {
+  cpp{{
+  return static_cast<birch::type::Boolean>(x);
+  }}
+}
+
+/**
+ * Convert to Boolean.
+ */
+function Boolean(x:Real64) -> Boolean {
+  cpp{{
+  return static_cast<birch::type::Boolean>(x);
+  }}
+}
+
+/**
+ * Convert to Boolean.
+ */
+function Boolean(x:Real32) -> Boolean {
+  cpp{{
+  return static_cast<birch::type::Boolean>(x);
+  }}
+}
+
+/**
+ * Convert to Boolean.
+ */
+function Boolean(x:Integer32) -> Boolean {
+  cpp{{
+  return static_cast<birch::type::Boolean>(x);
+  }}
+}
+
+/**
+ * Convert to Boolean.
+ */
+function Boolean(x:Integer16) -> Boolean {
+  cpp{{
+  return static_cast<birch::type::Boolean>(x);
+  }}
+}
+
+/**
+ * Convert to Boolean.
+ */
+function Boolean(x:Integer8) -> Boolean {
+  cpp{{
+  return static_cast<birch::type::Boolean>(x);
+  }}
+}
+
+/**
+ * Convert to Boolean.
+ */
 function Boolean(x:Boolean) -> Boolean {
   return x;
 }
@@ -20,15 +74,74 @@ function Boolean(x:String) -> Boolean {
 /**
  * Convert to Boolean.
  */
-function Boolean(x:Boolean?) -> Boolean? {
-  return x;
+function Boolean(x:Integer64?) -> Boolean? {
+  if x? {
+    return Boolean(x!);
+  } else {
+    return nil;
+  }
+}
+
+/**
+ * Convert to Boolean.
+ */
+function Boolean(x:Real64?) -> Boolean? {
+  if x? {
+    return Boolean(x!);
+  } else {
+    return nil;
+  }
+}
+
+/**
+ * Convert to Boolean.
+ */
+function Boolean(x:Real32?) -> Boolean? {
+  if x? {
+    return Boolean(x!);
+  } else {
+    return nil;
+  }
+}
+
+/**
+ * Convert to Boolean.
+ */
+function Boolean(x:Integer32?) -> Boolean? {
+  if x? {
+    return Boolean(x!);
+  } else {
+    return nil;
+  }
+}
+
+/**
+ * Convert to Boolean.
+ */
+function Boolean(x:Integer16?) -> Boolean? {
+  if x? {
+    return Boolean(x!);
+  } else {
+    return nil;
+  }
+}
+
+/**
+ * Convert to Boolean.
+ */
+function Boolean(x:Integer8?) -> Boolean? {
+  if x? {
+    return Boolean(x!);
+  } else {
+    return nil;
+  }
 }
 
 /**
  * Convert to Boolean.
  */
 function Boolean(x:String?) -> Boolean? {
-  if (x?) {
+  if x? {
     return Boolean(x!);
   } else {
     return nil;

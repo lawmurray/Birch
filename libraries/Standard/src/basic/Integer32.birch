@@ -79,7 +79,7 @@ function Integer32(x:String) -> Integer32 {
  * Convert to Integer32.
  */
 function Integer32(x:Real64?) -> Integer32? {
-  if (x?) {
+  if x? {
     return Integer32(x!);
   } else {
     return nil;
@@ -90,7 +90,7 @@ function Integer32(x:Real64?) -> Integer32? {
  * Convert to Integer32.
  */
 function Integer32(x:Real32?) -> Integer32? {
-  if (x?) {
+  if x? {
     return Integer32(x!);
   } else {
     return nil;
@@ -101,7 +101,7 @@ function Integer32(x:Real32?) -> Integer32? {
  * Convert to Integer32.
  */
 function Integer32(x:Integer64?) -> Integer32? {
-  if (x?) {
+  if x? {
     return Integer32(x!);
   } else {
     return nil;
@@ -119,7 +119,7 @@ function Integer32(x:Integer32?) -> Integer32? {
  * Convert to Integer32.
  */
 function Integer32(x:Integer16?) -> Integer32? {
-  if (x?) {
+  if x? {
     return Integer32(x!);
   } else {
     return nil;
@@ -130,7 +130,7 @@ function Integer32(x:Integer16?) -> Integer32? {
  * Convert to Integer32.
  */
 function Integer32(x:Integer8?) -> Integer32? {
-  if (x?) {
+  if x? {
     return Integer32(x!);
   } else {
     return nil;
@@ -141,7 +141,7 @@ function Integer32(x:Integer8?) -> Integer32? {
  * Convert to Integer32.
  */
 function Integer32(x:String?) -> Integer32? {
-  if (x?) {
+  if x? {
     return Integer32(x!);
   } else {
     return nil;

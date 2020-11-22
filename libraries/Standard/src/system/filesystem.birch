@@ -83,6 +83,15 @@ function fflush(file:File) {
 }
 
 /**
+ * Check for end of file.
+ */
+function feof(file:File) -> Boolean {
+  cpp{{
+  return ::feof(file);
+  }}
+}
+
+/**
  * Close a file.
  */
 function fclose(file:File) {

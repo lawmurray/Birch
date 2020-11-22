@@ -1,5 +1,5 @@
 /**
- * Cholesky decomposition of a symmetric positive definite matrix, $S = LL^T$.
+ * Cholesky factorization of a symmetric positive definite matrix, $S = LL^T$.
  */
 type LLT;
 
@@ -22,7 +22,7 @@ function columns(X:LLT) -> Integer64 {
 }
 
 /**
- * Cholesky decomposition of the symmetric positive definite matrix $S$.
+ * Cholesky factorization of the symmetric positive definite matrix $S$.
  *
  * - S: The symmetric positive definite matrix $S$.
  *
@@ -30,7 +30,7 @@ function columns(X:LLT) -> Integer64 {
  * in its decomposed form.
  *
  * This differs from `chol` in that `chol` returns the lower-triangular
- * Cholesky factor, while this returns the original matrix, but decomposed.
+ * Cholesky factor, while this returns the original matrix, but factorized.
  *
  * The object acts as the matrix $S$, defines conversion to and assignment
  * from `Real[_,_]`, and is intended as more or less a drop-in replacement

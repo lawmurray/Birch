@@ -79,7 +79,7 @@ function Integer8(x:String) -> Integer8 {
  * Convert to Integer8.
  */
 function Integer8(x:Real64?) -> Integer8? {
-  if (x?) {
+  if x? {
     return Integer8(x!);
   } else {
     return nil;
@@ -90,7 +90,7 @@ function Integer8(x:Real64?) -> Integer8? {
  * Convert to Integer8.
  */
 function Integer8(x:Real32?) -> Integer8? {
-  if (x?) {
+  if x? {
     return Integer8(x!);
   } else {
     return nil;
@@ -101,7 +101,7 @@ function Integer8(x:Real32?) -> Integer8? {
  * Convert to Integer8.
  */
 function Integer8(x:Integer64?) -> Integer8? {
-  if (x?) {
+  if x? {
     return Integer8(x!);
   } else {
     return nil;
@@ -112,7 +112,7 @@ function Integer8(x:Integer64?) -> Integer8? {
  * Convert to Integer8.
  */
 function Integer8(x:Integer32?) -> Integer8? {
-  if (x?) {
+  if x? {
     return Integer8(x!);
   } else {
     return nil;
@@ -123,7 +123,7 @@ function Integer8(x:Integer32?) -> Integer8? {
  * Convert to Integer8.
  */
 function Integer8(x:Integer16?) -> Integer8? {
-  if (x?) {
+  if x? {
     return Integer8(x!);
   } else {
     return nil;
@@ -141,7 +141,7 @@ function Integer8(x:Integer8?) -> Integer8? {
  * Convert to Integer8.
  */
 function Integer8(x:String?) -> Integer8? {
-  if (x?) {
+  if x? {
     return Integer8(x!);
   } else {
     return nil;

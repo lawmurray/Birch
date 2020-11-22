@@ -91,7 +91,7 @@ function String(x:String) -> String {
  * Convert to string.
  */
 function String(x:Boolean?) -> String? {
-  if (x?) {
+  if x? {
     return String(x!);
   } else {
     return nil;
@@ -102,7 +102,7 @@ function String(x:Boolean?) -> String? {
  * Convert to string.
  */
 function String(x:Real64?) -> String? {
-  if (x?) {
+  if x? {
     return String(x!);
   } else {
     return nil;
@@ -113,7 +113,7 @@ function String(x:Real64?) -> String? {
  * Convert to string.
  */
 function String(x:Real32?) -> String? {
-  if (x?) {
+  if x? {
     return String(x!);
   } else {
     return nil;
@@ -124,7 +124,7 @@ function String(x:Real32?) -> String? {
  * Convert to string.
  */
 function String(x:Integer64?) -> String? {
-  if (x?) {
+  if x? {
     return String(x!);
   } else {
     return nil;
@@ -135,7 +135,7 @@ function String(x:Integer64?) -> String? {
  * Convert to string.
  */
 function String(x:Integer32?) -> String? {
-  if (x?) {
+  if x? {
     return String(x!);
   } else {
     return nil;
@@ -146,7 +146,7 @@ function String(x:Integer32?) -> String? {
  * Convert to string.
  */
 function String(x:Integer16?) -> String? {
-  if (x?) {
+  if x? {
     return String(x!);
   } else {
     return nil;
@@ -157,7 +157,7 @@ function String(x:Integer16?) -> String? {
  * Convert to string.
  */
 function String(x:Integer8?) -> String? {
-  if (x?) {
+  if x? {
     return String(x!);
   } else {
     return nil;

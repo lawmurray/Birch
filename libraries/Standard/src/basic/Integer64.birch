@@ -86,7 +86,7 @@ function Integer64(x:Integer64?) -> Integer64? {
  * Convert to Integer64.
  */
 function Integer64(x:Real64?) -> Integer64? {
-  if (x?) {
+  if x? {
     return Integer64(x!);
   } else {
     return nil;
@@ -97,7 +97,7 @@ function Integer64(x:Real64?) -> Integer64? {
  * Convert to Integer64.
  */
 function Integer64(x:Real32?) -> Integer64? {
-  if (x?) {
+  if x? {
     return Integer64(x!);
   } else {
     return nil;
@@ -108,7 +108,7 @@ function Integer64(x:Real32?) -> Integer64? {
  * Convert to Integer64.
  */
 function Integer64(x:Integer32?) -> Integer64? {
-  if (x?) {
+  if x? {
     return Integer64(x!);
   } else {
     return nil;
@@ -119,7 +119,7 @@ function Integer64(x:Integer32?) -> Integer64? {
  * Convert to Integer64.
  */
 function Integer64(x:Integer16?) -> Integer64? {
-  if (x?) {
+  if x? {
     return Integer64(x!);
   } else {
     return nil;
@@ -130,7 +130,7 @@ function Integer64(x:Integer16?) -> Integer64? {
  * Convert to Integer64.
  */
 function Integer64(x:Integer8?) -> Integer64? {
-  if (x?) {
+  if x? {
     return Integer64(x!);
   } else {
     return nil;
@@ -141,7 +141,7 @@ function Integer64(x:Integer8?) -> Integer64? {
  * Convert to Integer64.
  */
 function Integer64(x:String?) -> Integer64? {
-  if (x?) {
+  if x? {
     return Integer64(x!);
   } else {
     return nil;

@@ -86,7 +86,7 @@ function Real64(x:Real64?) -> Real64? {
  * Convert to Real64.
  */
 function Real64(x:Real32?) -> Real64? {
-  if (x?) {
+  if x? {
     return Real64(x!);
   } else {
     return nil;
@@ -97,7 +97,7 @@ function Real64(x:Real32?) -> Real64? {
  * Convert to Real64.
  */
 function Real64(x:Integer64?) -> Real64? {
-  if (x?) {
+  if x? {
     return Real64(x!);
   } else {
     return nil;
@@ -108,7 +108,7 @@ function Real64(x:Integer64?) -> Real64? {
  * Convert to Real64.
  */
 function Real64(x:Integer32?) -> Real64? {
-  if (x?) {
+  if x? {
     return Real64(x!);
   } else {
     return nil;
@@ -119,7 +119,7 @@ function Real64(x:Integer32?) -> Real64? {
  * Convert to Real64.
  */
 function Real64(x:Integer16?) -> Real64? {
-  if (x?) {
+  if x? {
     return Real64(x!);
   } else {
     return nil;
@@ -130,7 +130,7 @@ function Real64(x:Integer16?) -> Real64? {
  * Convert to Real64.
  */
 function Real64(x:Integer8?) -> Real64? {
-  if (x?) {
+  if x? {
     return Real64(x!);
   } else {
     return nil;
@@ -141,7 +141,7 @@ function Real64(x:Integer8?) -> Real64? {
  * Convert to Real64.
  */
 function Real64(x:String?) -> Real64? {
-  if (x?) {
+  if x? {
     return Real64(x!);
   } else {
     return nil;
