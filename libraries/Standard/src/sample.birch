@@ -58,7 +58,7 @@ program sample(
 
   /* random number generator */
   if !seed? {
-    seed <-? configBuffer.getInteger("seed");
+    seed <-? configBuffer.get<Integer>("seed");
   }
   if seed? {
     global.seed(seed!);
@@ -68,7 +68,7 @@ program sample(
 
   /* model */
   modelBuffer:Buffer;
-  modelBuffer <-? configBuffer.find("model");
+  modelBuffer <-? configBuffer.getBuffer("model");
   if model? {
     modelBuffer.set("class", model!);
   }
@@ -81,10 +81,10 @@ program sample(
 
   /* sampler */
   samplerBuffer:Buffer;
-  samplerBuffer <-? configBuffer.find("sampler");
+  samplerBuffer <-? configBuffer.getBuffer("sampler");
   if sampler? {
     samplerBuffer.set("class", sampler!);
-  } else if !samplerBuffer.find("class")? {
+  } else if !samplerBuffer.getBuffer("class")? {
     samplerBuffer.set("class", "ParticleSampler");
   }
   let theSampler <- ParticleSampler?(make(samplerBuffer));
@@ -96,10 +96,10 @@ program sample(
 
   /* filter */
   filterBuffer:Buffer;
-  filterBuffer <-? configBuffer.find("filter");
+  filterBuffer <-? configBuffer.getBuffer("filter");
   if filter? {
     filterBuffer.set("class", filter!);
-  } else if !filterBuffer.find("class")? {
+  } else if !filterBuffer.getBuffer("class")? {
     if ConditionalParticleSampler?(theSampler)? {
       filterBuffer.set("class", "ConditionalParticleFilter");
     } else {
@@ -115,9 +115,9 @@ program sample(
 
   /* number of samples */
   if !nsamples? {
-    nsamples <-? configBuffer.getInteger("nsamples");
+    nsamples <-? configBuffer.get<Integer>("nsamples");
     if !nsamples? {
-      nsamples <-? samplerBuffer.getInteger("nsamples");
+      nsamples <-? samplerBuffer.get<Integer>("nsamples");
       if nsamples? {
         warn("sampler.nsamples in the config file is deprecated, replace " +
             "with nsamples in the config file, or --nsamples on the " +
@@ -130,9 +130,9 @@ program sample(
 
   /* number of steps */
   if !nsteps? {
-    nsteps <-? configBuffer.getInteger("nsteps");
+    nsteps <-? configBuffer.get<Integer>("nsteps");
     if !nsteps? {
-      nsteps <-? filterBuffer.getInteger("nsteps");
+      nsteps <-? filterBuffer.get<Integer>("nsteps");
       if nsteps? {
         warn("filter.nsteps in the config file is deprecated, replace " +
             "with nsteps in the config file, or --nsteps on the " +
@@ -142,7 +142,7 @@ program sample(
   }
 
   /* input */
-  let inputPath <- configBuffer.getString("input");
+  let inputPath <- configBuffer.get<String>("input");
   inputPath <-? input;
   inputBuffer:Buffer?;
   if inputPath? && inputPath! != "" {
@@ -164,7 +164,7 @@ program sample(
   }
 
   /* output */
-  let outputPath <- configBuffer.getString("output");
+  let outputPath <- configBuffer.get<String>("output");
   outputPath <-? output;
   outputWriter:Writer?;
   if outputPath? && outputPath! != "" {

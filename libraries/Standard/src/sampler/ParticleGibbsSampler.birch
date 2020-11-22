@@ -79,6 +79,6 @@ class ParticleGibbsSampler < ConditionalParticleSampler {
 
   override function read(buffer:Buffer) {
     super.read(buffer);
-    ancestor <-? buffer.get("ancestor", ancestor);
+    ancestor <-? buffer.get<Boolean>("ancestor");
   }
 }

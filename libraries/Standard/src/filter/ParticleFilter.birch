@@ -184,8 +184,8 @@ class ParticleFilter {
   }
 
   override function read(buffer:Buffer) {
-    nparticles <-? buffer.get("nparticles", nparticles);
-    trigger <-? buffer.get("trigger", trigger);
-    delayed <-? buffer.get("delayed", delayed);
+    nparticles <-? buffer.get<Integer>("nparticles");
+    trigger <-? buffer.get<Real>("trigger");
+    delayed <-? buffer.get<Boolean>("delayed");
   }
 }

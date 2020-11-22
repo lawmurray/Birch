@@ -111,8 +111,8 @@ class MoveParticleFilter < ParticleFilter {
 
   override function read(buffer:Buffer) {
     super.read(buffer);
-    scale <-? buffer.get("scale", scale);
-    nmoves <-? buffer.get("nmoves", nmoves);
-    nlags <-? buffer.get("nlags", nlags);
+    scale <-? buffer.get<Real>("scale");
+    nmoves <-? buffer.get<Integer>("nmoves");
+    nlags <-? buffer.get<Integer>("nlags");
   }
 }

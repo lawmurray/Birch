@@ -74,7 +74,7 @@ function make(name:String?) -> Object? {
  */
 function make(buffer:Buffer) -> Object? {
   result:Object?;
-  let className <- buffer.getString("class");
+  let className <- buffer.get<String>("class");
   if className? {
     result <- make(className!);
   }
@@ -95,6 +95,55 @@ function make(buffer:Buffer) -> Object? {
 function make(buffer:Buffer?) -> Object? {
   if buffer? {
     return make(buffer!);
+  } else {
+    return nil;
+  }
+}
+
+/**
+ * Make an object, with the class given in a buffer, otherwise by a generic
+ * type.
+ *
+ * - Type: Class if not given in buffer.
+ *
+ * - buffer: The buffer.
+ *
+ * Returns: An optional with a value if successful, or no value if not
+ * successful.
+ *
+ * If the buffer contains a key `class`, an object of that class is 
+ * constructed. Otherwise, an object of class `Type` is constructed, if
+ * possible. The buffer is then passed to the `read()` function of the new
+ * object.
+ *
+ * The make will not succeed if the class has initialization parameters.
+ */
+function make<Type>(buffer:Buffer) -> Type? {
+  result:Type?;
+  let className <- buffer.get<String>("class");
+  if className? {
+    result <- Type?(make(className!));
+  } else {
+    result <- make<Type>();
+  }
+  if result? {
+    result!.read(buffer);
+  }
+  return result;
+}
+
+/**
+ * Make an object, with the class given in a buffer, otherwise by a generic
+ * type.
+ *
+ * - Type: Class if not given in buffer.
+ *
+ * Returns: An optional with a value if successful, or no value if not
+ * successful.
+ */
+function make<Type>(buffer:Buffer?) -> Type? {
+  if buffer? {
+    return make<Type>(buffer!);
   } else {
     return nil;
   }

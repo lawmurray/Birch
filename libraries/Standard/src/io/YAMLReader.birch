@@ -133,7 +133,7 @@ class YAMLReader < Reader {
           error("parse error");
         }
         auto value = birch::Buffer();
-        buffer->insert(key, value);
+        buffer->setBuffer(key, value);
         if (this->event.type == YAML_SCALAR_EVENT) {
           this->parseValue(value);
         } else if (this->event.type == YAML_SEQUENCE_START_EVENT) {
@@ -163,11 +163,11 @@ class YAMLReader < Reader {
         this->parseElement(buffer);
       } else if (this->event.type == YAML_SEQUENCE_START_EVENT) {
         auto element = birch::Buffer();
-        buffer->insert(element);
+        buffer->pushBuffer(element);
         this->parseSequence(element);
       } else if (this->event.type == YAML_MAPPING_START_EVENT) {
         auto element = birch::Buffer();
-        buffer->insert(element);
+        buffer->pushBuffer(element);
         this->parseMapping(element);
       } else {
         done = this->event.type == YAML_SEQUENCE_END_EVENT;

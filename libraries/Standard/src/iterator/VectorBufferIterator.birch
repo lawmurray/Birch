@@ -1,0 +1,40 @@
+/**
+ * Iterator over the elements of a vector, that wraps each element in a
+ * [Buffer](../Buffer) object.
+ *
+ * - values: Values.
+ */
+final class VectorBufferIterator<Type>(values:Type[_]) < Iterator<Buffer> {
+  /**
+   * Values.
+   */
+  values:Type[_] <- values;
+  
+  /**
+   * Current index into the vector.
+   */
+  i:Integer <- 0;
+
+  /**
+   * Is there a next element?
+   */
+  function hasNext() -> Boolean {
+    return i < length(values);
+  }
+
+  /**
+   * Get the next element.
+   */
+  function next() -> Buffer {
+    i <- i + 1;
+    return Buffer(values[i]);
+  }
+}
+
+/**
+ * Create a VectorBufferIterator.
+ */
+function VectorBufferIterator<Type>(values:Type[_]) ->
+    VectorBufferIterator<Type> {
+  return construct<VectorBufferIterator<Type>>(values);
+}

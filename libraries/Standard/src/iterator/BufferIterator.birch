@@ -1,0 +1,40 @@
+/**
+ * Iterator over the contents of a [Buffer](../Buffer) that represents an
+ * array (in the JSON sense).
+ *
+ * - buffer: Buffer.
+ */
+final class BufferIterator(buffer:Buffer) < Iterator<Buffer> {
+  /**
+   * Buffer.
+   */
+  buffer:Buffer <- buffer;
+  
+  /**
+   * Current index into the elements of the buffer.
+   */
+  i:Integer <- 0;
+
+  /**
+   * Is there a next element?
+   */
+  function hasNext() -> Boolean {
+    return i < buffer.size();
+  }
+
+  /**
+   * Get the next element.
+   */
+  function next() -> Buffer {
+    i <- i + 1;
+    return buffer.values![i];
+  }
+}
+
+/**
+ * Create a BufferIterator.
+ */
+function BufferIterator(buffer:Buffer) -> BufferIterator {
+  assert !buffer.keys? && buffer.values?;  // is an array buffer
+  return construct<BufferIterator>(buffer);
+}

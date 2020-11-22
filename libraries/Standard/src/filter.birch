@@ -52,7 +52,7 @@ program filter(
 
   /* random number generator */
   if !seed? {
-    seed <-? configBuffer.getInteger("seed");
+    seed <-? configBuffer.get<Integer>("seed");
   }
   if seed? {
     global.seed(seed!);
@@ -62,7 +62,7 @@ program filter(
 
   /* model */
   modelBuffer:Buffer;
-  modelBuffer <-? configBuffer.find("model");
+  modelBuffer <-? configBuffer.getBuffer("model");
   if model? {
     modelBuffer.set("class", model!);
   }
@@ -75,10 +75,10 @@ program filter(
 
   /* filter */
   filterBuffer:Buffer;
-  filterBuffer <-? configBuffer.find("filter");
+  filterBuffer <-? configBuffer.getBuffer("filter");
   if filter? {
     filterBuffer.set("class", filter!);
-  } else if !filterBuffer.find("class")? {
+  } else if !filterBuffer.getBuffer("class")? {
     filterBuffer.set("class", "ParticleFilter");
   }
   let theFilter <- ParticleFilter?(make(filterBuffer));
@@ -90,9 +90,9 @@ program filter(
 
   /* number of steps */
   if !nsteps? {
-    nsteps <-? configBuffer.getInteger("nsteps");
+    nsteps <-? configBuffer.get<Integer>("nsteps");
     if !nsteps? {
-      nsteps <-? filterBuffer.getInteger("nsteps");
+      nsteps <-? filterBuffer.get<Integer>("nsteps");
       if nsteps? {
         warn("filter.nsteps in the config file is deprecated, replace " +
             "with nsteps in the config file, or --nsteps on the " +
@@ -103,9 +103,9 @@ program filter(
 
   /* number of forecasts */
   if !nforecasts? {
-    nforecasts <-? configBuffer.getInteger("nforecasts");
+    nforecasts <-? configBuffer.get<Integer>("nforecasts");
     if !nforecasts? {
-      nforecasts <-? filterBuffer.getInteger("nforecasts");
+      nforecasts <-? filterBuffer.get<Integer>("nforecasts");
       if nforecasts? {
         warn("filter.nforecasts in the config file is deprecated, replace " +
             "with nforecasts in the config file, or --nforecasts on the " +
@@ -115,7 +115,7 @@ program filter(
   }
 
   /* input */
-  let inputPath <- configBuffer.getString("input");
+  let inputPath <- configBuffer.get<String>("input");
   inputPath <-? input;
   inputReader:Reader?;
   if inputPath? && inputPath! != "" {
@@ -123,7 +123,7 @@ program filter(
   }
 
   /* output */
-  let outputPath <- configBuffer.getString("output");
+  let outputPath <- configBuffer.get<String>("output");
   outputPath <-? output;
   outputWriter:Writer?;
   if outputPath? && outputPath! != "" {
@@ -145,8 +145,12 @@ program filter(
   }
   theFilter!.filter(theModel!, inputBuffer);
   if outputWriter? {
+    let sampleBuffer <- Buffer();
+    for n in 1..theFilter!.nparticles {
+      sampleBuffer.push(theFilter!.x[n]);
+    }
     let outputBuffer <- Buffer();
-    outputBuffer.set("sample", theFilter!.x);
+    outputBuffer.set("sample", sampleBuffer);
     outputBuffer.set("lweight", theFilter!.w);
     outputBuffer.set("ess", theFilter!.ess);
     outputBuffer.set("lnormalize", theFilter!.lnormalize);
@@ -168,8 +172,12 @@ program filter(
     }
     theFilter!.filter(t, inputBuffer);
     if outputWriter? {
+      let sampleBuffer <- Buffer();
+      for n in 1..theFilter!.nparticles {
+        sampleBuffer.push(theFilter!.x[n]);
+      }
       let outputBuffer <- Buffer();
-      outputBuffer.set("sample", theFilter!.x);
+      outputBuffer.set("sample", sampleBuffer);
       outputBuffer.set("lweight", theFilter!.w);
       outputBuffer.set("ess", theFilter!.ess);
       outputBuffer.set("lnormalize", theFilter!.lnormalize);
@@ -185,10 +193,14 @@ program filter(
         let s <- t + 1;
         while s <= t + nforecasts! {
           theFilter'.filter(s, inputBuffer);
+          let sampleBuffer <- Buffer();
+          for n in 1..theFilter'!.nparticles {
+            sampleBuffer.push(theFilter'!.x[n]);
+          }
           let stateBuffer <- Buffer();
-          stateBuffer.set("sample", theFilter'!.x);
+          stateBuffer.set("sample", sampleBuffer);
           stateBuffer.set("lweight", theFilter'!.w);
-          forecastBuffer.insert(stateBuffer);
+          forecastBuffer.pushBuffer(stateBuffer);
         }
         outputBuffer.set("forecast", forecastBuffer);
         outputWriter!.push(outputBuffer);

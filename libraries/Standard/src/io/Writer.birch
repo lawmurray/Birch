@@ -68,16 +68,21 @@ abstract class Writer {
    */
   abstract function close();
 
-  abstract function visit(value:ObjectValue);
-  abstract function visit(value:ArrayValue);
-  abstract function visit(value:NilValue);
-  abstract function visit(value:BooleanValue);
-  abstract function visit(value:IntegerValue);
-  abstract function visit(value:RealValue);
-  abstract function visit(value:StringValue);
-  abstract function visit(value:BooleanVectorValue);
-  abstract function visit(value:IntegerVectorValue);
-  abstract function visit(value:RealVectorValue);
+  abstract function visit(keys:String[_], values:Buffer[_]);
+  abstract function visit(values:Buffer[_]);
+  abstract function visit(value:String);
+  abstract function visit(value:Real);
+  abstract function visit(value:Integer);
+  abstract function visit(value:Boolean);
+  abstract function visit(value:String[_]);
+  abstract function visit(value:Real[_]);
+  abstract function visit(value:Integer[_]);
+  abstract function visit(value:Boolean[_]);
+  abstract function visit(value:String[_,_]);
+  abstract function visit(value:Real[_,_]);
+  abstract function visit(value:Integer[_,_]);
+  abstract function visit(value:Boolean[_,_]);
+  abstract function visitNil();
 }
 
 /**

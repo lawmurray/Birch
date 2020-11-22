@@ -338,7 +338,7 @@ final class Random<Value> < Expression<Value>(nil) {
   }
 
   function read(buffer:Buffer) {
-    this <- buffer.get(x);
+    this <- buffer.get<Value>();
   }
 
   function write(buffer:Buffer) {

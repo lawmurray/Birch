@@ -76,73 +76,148 @@ class YAMLWriter < Writer {
     fclose(file);
   }
 
-  override function visit(value:ObjectValue) {
+  override function visit(keys:String[_], values:Buffer[_]) {
+    assert length(keys) == length(values);
     startMapping();
-    let iter <- value.entries.walk();
-    while iter.hasNext() {
-      let entry <- iter.next();
-      scalar(entry.key);
-      entry.value.accept(this);
+    for i in 1..length(keys) {
+      visit(keys[i]);
+      values[i].accept(this);
     }
     endMapping();
   }
   
-  override function visit(value:ArrayValue) {
+  override function visit(values:Buffer[_]) {
     startSequence();
-    let iter <- value.walk();
-    while iter.hasNext() {
-      iter.next().accept(this);
+    for i in 1..length(values) {
+      values[i].accept(this);
     }
     endSequence();
   }
 
-  override function visit(value:StringValue) {
-    scalar(value.value);
+  override function visit(value:Boolean) {
+    let str <- String(value);
+    cpp{{
+    yaml_scalar_event_initialize(&this->event, NULL, NULL,
+        (yaml_char_t*)str.c_str(), str.length(), 1, 1,
+        YAML_ANY_SCALAR_STYLE);
+    yaml_emitter_emit(&this->emitter, &this->event);
+    }}
   }
 
-  override function visit(value:RealValue) {
-    scalar(value.value);
+  override function visit(value:Integer) {
+    let str <- String(value);
+    cpp{{
+    yaml_scalar_event_initialize(&this->event, NULL, NULL,
+        (yaml_char_t*)str.c_str(), str.length(), 1, 1,
+        YAML_ANY_SCALAR_STYLE);
+    yaml_emitter_emit(&this->emitter, &this->event);
+    }}
   }
 
-  override function visit(value:IntegerValue) {
-    scalar(value.value);
+  override function visit(value:Real) {
+    /* the literals NaN, Infinity and -Infinity are not correct JSON, but are
+     * fine for YAML, are correct JavaScript, and are supported by Python's
+     * JSON module (also based on libyaml); so we encode to this */
+    str:String;
+    if value == inf {
+      str <- "Infinity";
+    } else if value == -inf {
+      str <- "-Infinity";
+    } else if isnan(value) {
+      str <- "NaN";
+    } else {
+      str <- String(value);
+    }
+    cpp{{
+    yaml_scalar_event_initialize(&this->event, NULL, NULL,
+        (yaml_char_t*)str.c_str(), str.length(), 1, 1,
+        YAML_PLAIN_SCALAR_STYLE);
+    yaml_emitter_emit(&this->emitter, &this->event);
+    }}
   }
 
-  override function visit(value:BooleanValue) {
-    scalar(value.value);
-  }
-
-  override function visit(value:NilValue) {
-    null();
+  override function visit(value:String) {
+    cpp{{
+    yaml_scalar_event_initialize(&this->event, NULL, NULL,
+        (yaml_char_t*)value.c_str(), value.length(), 1, 1,
+        YAML_ANY_SCALAR_STYLE);
+    yaml_emitter_emit(&this->emitter, &this->event);
+    }}
   }
   
-  override function visit(value:BooleanVectorValue) {
+  override function visit(value:Boolean[_]) {
     startSequence();
-    let v <- value.value;
-    for i in 1..length(v) {
-      scalar(v[i]);
+    for i in 1..length(value) {
+      visit(value[i]);
     }
     endSequence();
   }
 
-  override function visit(value:IntegerVectorValue) {
+  override function visit(value:Integer[_]) {
     startSequence();
-    let v <- value.value;
-    for i in 1..length(v) {
-      scalar(v[i]);
+    for i in 1..length(value) {
+      visit(value[i]);
     }
     endSequence();
   }
   
-  override function visit(value:RealVectorValue) {
+  override function visit(value:Real[_]) {
     startSequence();
-    let v <- value.value;
-    for i in 1..length(v) {
-      scalar(v[i]);
+    for i in 1..length(value) {
+      visit(value[i]);
     }
     endSequence();
   }
-    
+
+  override function visit(value:String[_]) {
+    startSequence();
+    for i in 1..length(value) {
+      visit(value[i]);
+    }
+    endSequence();
+  }
+
+  override function visit(value:Boolean[_,_]) {
+    startSequence();
+    for i in 1..rows(value) {
+      visit(row(value, i));
+    }
+    endSequence();
+  }
+
+  override function visit(value:Integer[_,_]) {
+    startSequence();
+    for i in 1..rows(value) {
+      visit(row(value, i));
+    }
+    endSequence();
+  }
+  
+  override function visit(value:Real[_,_]) {
+    startSequence();
+    for i in 1..rows(value) {
+      visit(row(value, i));
+    }
+    endSequence();
+  }
+
+  override function visit(value:String[_,_]) {
+    startSequence();
+    for i in 1..rows(value) {
+      visit(row(value, i));
+    }
+    endSequence();
+  }
+
+  override function visitNil() {
+    cpp{{
+    yaml_scalar_event_initialize(&this->event, NULL, NULL,
+        (yaml_char_t*)"null", 4, 1, 1,
+        YAML_ANY_SCALAR_STYLE);
+    yaml_emitter_emit(&this->emitter, &this->event);
+    }}
+  }
+
   function startMapping() {
     cpp{{
     yaml_mapping_start_event_initialize(&this->event, NULL, NULL, 1,
@@ -171,65 +246,5 @@ class YAMLWriter < Writer {
     yaml_sequence_end_event_initialize(&this->event);
     yaml_emitter_emit(&this->emitter, &this->event);
     }}    
-  }
-  
-  function scalar(x:Boolean) {
-    let value <- String(x);
-    cpp{{
-    yaml_scalar_event_initialize(&this->event, NULL, NULL,
-        (yaml_char_t*)value.c_str(), value.length(), 1, 1,
-        YAML_ANY_SCALAR_STYLE);
-    yaml_emitter_emit(&this->emitter, &this->event);
-    }}
-  }
-
-  function scalar(x:Integer) {
-    let value <- String(x);
-    cpp{{
-    yaml_scalar_event_initialize(&this->event, NULL, NULL,
-        (yaml_char_t*)value.c_str(), value.length(), 1, 1,
-        YAML_ANY_SCALAR_STYLE);
-    yaml_emitter_emit(&this->emitter, &this->event);
-    }}
-  }
-
-  function scalar(x:Real) {
-    /* the literals NaN, Infinity and -Infinity are not correct JSON, but are
-     * fine for YAML, are correct JavaScript, and are supported by Python's
-     * JSON module (also based on libyaml); so we encode to this */
-    value:String;
-    if x == inf {
-      value <- "Infinity";
-    } else if x == -inf {
-      value <- "-Infinity";
-    } else if isnan(x) {
-      value <- "NaN";
-    } else {
-      value <- String(x);
-    }
-    cpp{{
-    yaml_scalar_event_initialize(&this->event, NULL, NULL,
-        (yaml_char_t*)value.c_str(), value.length(), 1, 1,
-        YAML_PLAIN_SCALAR_STYLE);
-    yaml_emitter_emit(&this->emitter, &this->event);
-    }}
-  }
-
-  function scalar(value:String) {
-    cpp{{
-    yaml_scalar_event_initialize(&this->event, NULL, NULL,
-        (yaml_char_t*)value.c_str(), value.length(), 1, 1,
-        YAML_ANY_SCALAR_STYLE);
-    yaml_emitter_emit(&this->emitter, &this->event);
-    }}
-  }
-
-  function null() {
-    cpp{{
-    yaml_scalar_event_initialize(&this->event, NULL, NULL,
-        (yaml_char_t*)"null", 4, 1, 1,
-        YAML_ANY_SCALAR_STYLE);
-    yaml_emitter_emit(&this->emitter, &this->event);
-    }}
   }
 }

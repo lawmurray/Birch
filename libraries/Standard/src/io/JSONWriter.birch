@@ -11,6 +11,15 @@
  * ```
  */
 class JSONWriter < YAMLWriter {  
+  override function visit(value:String) {
+    cpp{{
+    yaml_scalar_event_initialize(&this->event, NULL, NULL,
+        (yaml_char_t*)value.c_str(), value.length(), 1, 1,
+        YAML_DOUBLE_QUOTED_SCALAR_STYLE);
+    yaml_emitter_emit(&this->emitter, &this->event);
+    }}
+  }  
+
   override function startMapping() {
     cpp{{
     yaml_mapping_start_event_initialize(&this->event, NULL, NULL, 1,
@@ -26,13 +35,4 @@ class JSONWriter < YAMLWriter {
     yaml_emitter_emit(&this->emitter, &this->event);
     }}
   }
-
-  override function scalar(value:String) {
-    cpp{{
-    yaml_scalar_event_initialize(&this->event, NULL, NULL,
-        (yaml_char_t*)value.c_str(), value.length(), 1, 1,
-        YAML_DOUBLE_QUOTED_SCALAR_STYLE);
-    yaml_emitter_emit(&this->emitter, &this->event);
-    }}
-  }  
 }

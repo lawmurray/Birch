@@ -40,7 +40,7 @@ class LangevinKernel < Kernel {
   
   override function read(buffer:Buffer) {
     super.read(buffer);
-    scale <-? buffer.getReal("scale");
+    scale <-? buffer.get<Real>("scale");
   }
   
   override function write(buffer:Buffer) {
