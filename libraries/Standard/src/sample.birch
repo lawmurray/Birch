@@ -68,7 +68,7 @@ program sample(
 
   /* model */
   modelBuffer:Buffer;
-  modelBuffer <-? configBuffer.getBuffer("model");
+  modelBuffer <-? configBuffer.get("model");
   if model? {
     modelBuffer.set("class", model!);
   }
@@ -81,10 +81,10 @@ program sample(
 
   /* sampler */
   samplerBuffer:Buffer;
-  samplerBuffer <-? configBuffer.getBuffer("sampler");
+  samplerBuffer <-? configBuffer.get("sampler");
   if sampler? {
     samplerBuffer.set("class", sampler!);
-  } else if !samplerBuffer.getBuffer("class")? {
+  } else if !samplerBuffer.get("class")? {
     samplerBuffer.set("class", "ParticleSampler");
   }
   let theSampler <- ParticleSampler?(make(samplerBuffer));
@@ -96,10 +96,10 @@ program sample(
 
   /* filter */
   filterBuffer:Buffer;
-  filterBuffer <-? configBuffer.getBuffer("filter");
+  filterBuffer <-? configBuffer.get("filter");
   if filter? {
     filterBuffer.set("class", filter!);
-  } else if !filterBuffer.getBuffer("class")? {
+  } else if !filterBuffer.get("class")? {
     if ConditionalParticleSampler?(theSampler)? {
       filterBuffer.set("class", "ConditionalParticleFilter");
     } else {

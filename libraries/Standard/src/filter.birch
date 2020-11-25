@@ -62,7 +62,7 @@ program filter(
 
   /* model */
   modelBuffer:Buffer;
-  modelBuffer <-? configBuffer.getBuffer("model");
+  modelBuffer <-? configBuffer.get("model");
   if model? {
     modelBuffer.set("class", model!);
   }
@@ -75,10 +75,10 @@ program filter(
 
   /* filter */
   filterBuffer:Buffer;
-  filterBuffer <-? configBuffer.getBuffer("filter");
+  filterBuffer <-? configBuffer.get("filter");
   if filter? {
     filterBuffer.set("class", filter!);
-  } else if !filterBuffer.getBuffer("class")? {
+  } else if !filterBuffer.get("class")? {
     filterBuffer.set("class", "ParticleFilter");
   }
   let theFilter <- ParticleFilter?(make(filterBuffer));
@@ -200,7 +200,7 @@ program filter(
           let stateBuffer <- Buffer();
           stateBuffer.set("sample", sampleBuffer);
           stateBuffer.set("lweight", theFilter'!.w);
-          forecastBuffer.pushBuffer(stateBuffer);
+          forecastBuffer.push(stateBuffer);
         }
         outputBuffer.set("forecast", forecastBuffer);
         outputWriter!.push(outputBuffer);

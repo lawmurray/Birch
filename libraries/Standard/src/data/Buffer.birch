@@ -134,7 +134,7 @@ final class Buffer {
    * - key: Key of the entry.
    */
   function size(key:String) -> Integer {
-    let buffer <- getBuffer(key);
+    let buffer <- get(key);
     if buffer? {
       return buffer!.size();
     } else {
@@ -166,11 +166,45 @@ final class Buffer {
    * coerced to the desired type, otherwise with no value.
    */
   function get<Type>(key:String) -> Type? {
-    let buffer <- getBuffer(key);
+    let buffer <- get(key);
     if buffer? {
       return buffer!.get<Type>();
     } else {
       return nil;
+    }
+  }
+
+  /**
+   * Get the value.
+   *
+   * - Type: The desired type.
+   *
+   * - o: Existing object.
+   *
+   * This version is used when reading objects of class type, where instead of
+   * constructing a new object then calling its `read()` function, an existing
+   * object is provided, calling its `read()` function directly.
+   */
+  function get<Type>(o:Type) {
+    o.read(this);
+  }
+
+  /**
+   * Get the value of an entry.
+   *
+   * - Type: The desired type.
+   *
+   * - key: Key of the entry.
+   * - o: Existing object.
+   *
+   * This version is used when reading objects of class type, where instead of
+   * constructing a new object then calling its `read()` function, an existing
+   * object is provided, calling its `read()` function directly.
+   */
+  function get<Type>(key:String, o:Type) {
+    let buffer <- get(key);
+    if buffer? {
+      buffer!.get(o);
     }
   }
 
@@ -181,7 +215,7 @@ final class Buffer {
    *
    * Return: An optional with a value if the entry exists, otherwise no value.
    */
-  function getBuffer(key:String) -> Buffer? {
+  function get(key:String) -> Buffer? {
     if keys? {
       for i in 1..length(keys!) {
         if keys![i] == key {
@@ -220,7 +254,7 @@ final class Buffer {
    * - key: Key of the entry.
    * - x: Content of the entry.
    */
-  function setBuffer(key:String, x:Buffer) {
+  function set(key:String, x:Buffer) {
     if !keys? {
       clear();
       keys:String[_];
@@ -280,7 +314,7 @@ final class Buffer {
    * - key: Key of the entry.
    */
   function walk(key:String) -> Iterator<Buffer> {
-    let buffer <- getBuffer(key);
+    let buffer <- get(key);
     if buffer? {
       return buffer!.walk();
     } else {
@@ -309,7 +343,7 @@ final class Buffer {
    *
    * - x: Value.
    */
-  function pushBuffer(x:Buffer) {
+  function push(x:Buffer) {
     if keys? {
       y:Buffer;
       y.keys <- x.keys;
@@ -337,7 +371,7 @@ final class Buffer {
    * - x: Value.
    */
   function push<Type>(key:String, x:Type) {
-    let buffer <- getBuffer(key);
+    let buffer <- get(key);
     if buffer? {
       buffer!.push(x);
     } else {
@@ -353,7 +387,7 @@ final class Buffer {
    * - x: Value.
    */
   function push(key:String, x:Buffer) {
-    let buffer <- getBuffer(key);
+    let buffer <- get(key);
     if !buffer? {
       buffer <- Buffer();
       set(key, buffer!);
