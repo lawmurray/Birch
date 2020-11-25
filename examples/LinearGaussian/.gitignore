@@ -10,7 +10,6 @@
 /compile
 /config.cache
 /config.guess
-/config.log
 /config.status
 /config.sub
 /configure
@@ -26,6 +25,7 @@
 /DOCS.md
 /.autotools
 /*.birch
+/*.log
 .libs
 .deps
 .dirstamp
