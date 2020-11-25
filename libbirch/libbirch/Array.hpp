@@ -422,6 +422,16 @@ public:
    */
   ///@{
   /**
+   * For a one-dimensional array, push an element onto the end. This increases
+   * the array size by one.
+   * 
+   * @param x Value.
+   */
+  void push(const T& x) {
+    insert(size(), x);
+  }
+
+  /**
    * For a one-dimensional array, insert an element at a given position. This
    * increases the array size by one.
    *

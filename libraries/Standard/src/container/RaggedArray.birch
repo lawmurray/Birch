@@ -156,8 +156,8 @@ final class RaggedArray<Type> {
     let nrows <- length(offsets);
     let nvalues <- length(values);
     cpp{{    
-    this->offsets.insert(nrows, nvalues + 1);
-    this->sizes.insert(nrows, 0);
+    this->offsets.push(nvalues + 1);
+    this->sizes.push(0);
     }}
   }
 

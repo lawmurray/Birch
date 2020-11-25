@@ -509,7 +509,7 @@ final class Buffer {
     } else if vectorReal? {
       return Boolean(vectorReal!);
     } else {
-      return nil;
+      return doGet<Boolean>(x);
     }
   }
 
@@ -521,7 +521,7 @@ final class Buffer {
     } else if vectorReal? {
       return Integer(vectorReal!);
     } else {
-      return nil;
+      return doGet<Integer>(x);
     }
   }
 
@@ -533,8 +533,24 @@ final class Buffer {
     } else if vectorReal? {
       return Real(vectorReal!);
     } else {
-      return nil;
+      return doGet<Real>(x);
     }
+  }
+
+  function doGet<Type>(x:Type[_]?) -> Type[_]? {
+    y:Type[_];
+    let iter <- walk();
+    while iter.hasNext() {
+      let z <- iter.next().get<Type>();
+      if z? {
+        cpp{{
+        y.push(z.get());
+        }}
+      } else {
+        return nil;
+      }
+    }
+    return y;
   }
 
   function doGet(x:Boolean[_,_]?) -> Boolean[_,_]? {
@@ -573,6 +589,31 @@ final class Buffer {
     }
   }
 
+  function doGet<Type>(x:Type[_,_]?) -> Type[_,_]? {
+    y:Type[_];
+    let nrows <- 0;
+    let ncols <- 0;
+    let iter <- walk();
+    while iter.hasNext() {
+      let z <- iter.next().get<Type[_]>();
+      if z? && (nrows == 0 || ncols == columns(z!)) {
+        nrows <- nrows + 1;
+        ncols <- columns(z!);
+        for i in 1..ncols {
+          let element <- z![i];
+          cpp{{
+          y.push(element);
+          }}
+        }
+      } else {
+        return nil;
+      }
+    }
+    return matrix(\(i:Integer, j:Integer) -> Type {
+          return y[(i - 1)*ncols + j];
+        }, nrows, ncols);
+  }
+
   function doGet(x:LLT?) -> LLT? {
     let y <- get<Real[_,_]>();
     if y? {
@@ -602,7 +643,7 @@ final class Buffer {
     scalarString <- x;
   }
 
-  function doSet(x:Object) {
+  function doSet<Type>(x:Type) {
     clear();
     x.write(this);
   }
@@ -651,7 +692,7 @@ final class Buffer {
       set([scalarReal!, Real(x)]);
     } else if vectorBoolean? {
       cpp{{
-      vectorBoolean.get().insert(vectorBoolean.get().size(), x);
+      vectorBoolean.get().push(x);
       }}
     } else if vectorInteger? {
       push(Integer(x));
@@ -673,7 +714,7 @@ final class Buffer {
       vectorInteger <- stack(Integer(vectorBoolean!), x);
     } else if vectorInteger? {
       cpp{{
-      vectorInteger.get().insert(vectorInteger.get().size(), x);
+      vectorInteger.get().push(x);
       }}
     } else if vectorReal? {
       push(Real(x));
@@ -695,7 +736,7 @@ final class Buffer {
       vectorReal <- stack(Real(vectorInteger!), x);
     } else if vectorReal? {
       cpp{{
-      vectorReal.get().insert(vectorReal.get().size(), x);
+      vectorReal.get().push(x);
       }}
     } else {
       push(Buffer(x));
@@ -706,7 +747,7 @@ final class Buffer {
     push(Buffer(x));
   }
 
-  function doPush(x:Object) {
+  function doPush<Type>(x:Type) {
     push(Buffer(x));
   }
 
