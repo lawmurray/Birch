@@ -45,21 +45,6 @@ public:
    *
    * @param shape Shape.
    */
-  template<class U = T, std::enable_if_t<is_value<U>::value,int> = 0>
-  Array(const F& shape) :
-      shape(shape),
-      buffer(nullptr),
-      offset(0),
-      isView(false) {
-    allocate();
-  }
-
-  /**
-   * Constructor.
-   *
-   * @param shape Shape.
-   */
-  template<class U = T, std::enable_if_t<!is_value<U>::value,int> = 0>
   Array(const F& shape) :
       shape(shape),
       buffer(nullptr),
@@ -506,18 +491,18 @@ public:
    * @name Eigen integration
    */
   ///@{
-  template<IS_VALUE(T)>
+  template<class Check = T, std::enable_if_t<is_value<Check>::value,int> = 0>
   operator eigen_type() const {
     return toEigen();
   }
 
-  template<IS_VALUE(T)>
+  template<class Check = T, std::enable_if_t<is_value<Check>::value,int> = 0>
   auto toEigen() {
     return eigen_type(buf(), rows(), cols(), eigen_stride_type(rowStride(),
         colStride()));
   }
 
-  template<IS_VALUE(T)>
+  template<class Check = T, std::enable_if_t<is_value<Check>::value,int> = 0>
   auto toEigen() const {
     return eigen_type(buf(), rows(), cols(), eigen_stride_type(rowStride(),
         colStride()));
@@ -526,7 +511,7 @@ public:
   /**
    * Construct from Eigen Matrix expression.
    */
-  template<IS_VALUE(T), class EigenType, std::enable_if_t<is_eigen_compatible<this_type,EigenType>::value,int> = 0>
+  template<class EigenType, std::enable_if_t<is_eigen_compatible<this_type,EigenType>::value,int> = 0>
   Array(const Eigen::MatrixBase<EigenType>& o) :
       shape(o.rows(), o.cols()),
       buffer(nullptr),
@@ -539,7 +524,7 @@ public:
   /**
    * Construct from Eigen DiagonalWrapper expression.
    */
-  template<IS_VALUE(T), class EigenType, std::enable_if_t<is_diagonal_compatible<this_type,EigenType>::value,int> = 0>
+  template<class EigenType, std::enable_if_t<is_diagonal_compatible<this_type,EigenType>::value,int> = 0>
   Array(const Eigen::DiagonalWrapper<EigenType>& o) :
       shape(o.rows(), o.cols()),
       buffer(nullptr),
@@ -552,7 +537,7 @@ public:
   /**
    * Construct from Eigen TriangularWrapper expression.
    */
-  template<IS_VALUE(T), class EigenType, unsigned Mode, std::enable_if_t<is_triangle_compatible<this_type,EigenType>::value,int> = 0>
+  template<class EigenType, unsigned Mode, std::enable_if_t<is_triangle_compatible<this_type,EigenType>::value,int> = 0>
   Array(const Eigen::TriangularView<EigenType,Mode>& o)  :
       shape(o.rows(), o.cols()),
       buffer(nullptr),

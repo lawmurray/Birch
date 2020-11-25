@@ -277,7 +277,7 @@ function String(X:Real[_,_]) -> String {
       if (j > 1) {
         buf << ' ';
       }
-      if (value == floor(value)) {
+      if (value == floor(value, handler_)) {
         buf << (int64_t)value << ".0";
       } else {
         buf << std::scientific << std::setprecision(14) << value;

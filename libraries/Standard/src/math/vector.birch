@@ -233,7 +233,7 @@ function String(x:Real[_]) -> String {
     if (i > 1) {
       buf << ' ';
     }
-    if (value == floor(value)) {
+    if (value == floor(value, handler_)) {
       buf << (int64_t)value << ".0";
     } else {
       buf << std::scientific << std::setprecision(6) << value;

@@ -79,30 +79,28 @@ void birch::CppClassGenerator::visit(const Class* o) {
     if (!o->params->isEmpty()) {
       middle(", ");
     }
-    middle("const libbirch::Lazy<libbirch::Shared<birch::type::Handler>>& handler_");
+    middle("const libbirch::Lazy<libbirch::Shared<birch::type::Handler>>& handler_)");
     if (header) {
-      finish(" = nullptr);\n");
+      finish(";\n");
     } else {
-      finish(") :");
+      finish(" :");
       in();
       in();
       genSourceLine(o->loc);
-      start("super_type_(" << o->args << ')');
+      start("super_type_(");
+      if (o->name->str() != "Object") {  // Any does not take handler_
+        if (!o->args->isEmpty()) {
+          middle(o->args << ", ");
+        }
+        middle("handler_");
+      }
+      middle(')');
       ++inConstructor;
       for (auto o : memberVariables) {
 	      finish(',');
         genSourceLine(o->loc);
         start(o->name << '(');
-        if (!o->value->isEmpty()) {
-          middle(o->value);
-        } else if (!o->brackets->isEmpty()) {
-          middle("libbirch::make_shape(" << o->brackets << ')');
-          if (!o->args->isEmpty()) {
-            middle(", " << o->args);
-          }
-        } else if (!o->args->isEmpty()) {
-          middle(o->args);
-				}
+        genInit(o);
         middle(')');
       }
       --inConstructor;
@@ -153,13 +151,13 @@ void birch::CppClassGenerator::visit(const Class* o) {
       genSourceLine(o->loc);
       if (header) {
         start("extern \"C\" birch::type::" << o->name << "* ");
-        finish("make_" << o->name << "_();");
+        finish("make_" << o->name << "_(const libbirch::Lazy<libbirch::Shared<birch::type::Handler>>& handler_);");
       } else {
         start("birch::type::" << o->name << "* ");
-        finish("birch::type::make_" << o->name << "_() {");
+        finish("birch::type::make_" << o->name << "_(const libbirch::Lazy<libbirch::Shared<birch::type::Handler>>& handler_) {");
         in();
         genSourceLine(o->loc);
-        line("return new birch::type::" << o->name << "();");
+        line("return new birch::type::" << o->name << "(handler_);");
         genSourceLine(o->loc);
         out();
         line("}");
@@ -202,11 +200,7 @@ void birch::CppClassGenerator::visit(const MemberFunction* o) {
     if (!o->params->isEmpty()) {
       middle(", ");
     }
-    middle("const libbirch::Lazy<libbirch::Shared<birch::type::Handler>>& handler_");
-    if (header) {
-      middle(" = nullptr");
-    }
-    middle(')');
+    middle("const libbirch::Lazy<libbirch::Shared<birch::type::Handler>>& handler_)");
     if (header) {
       if (o->has(FINAL) && !o->isGeneric()) {
         middle(" final");

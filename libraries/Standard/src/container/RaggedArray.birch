@@ -253,11 +253,8 @@ final class RaggedArray<Type> {
       pushBack();
       let col <- row.next().walk();
       while col.hasNext() {
-        /* tricky, but works for both value and class types */
-        let x <- make<Type>();
-        let y <- col.next().get(x);
-        if y? {
-          x <- Type?(y);  // cast needed for y:Object?
+        let x <- col.next().get<Type>();
+        if x? {
           pushBack(size(), x!);
         }
       }

@@ -420,11 +420,8 @@ final class Tape<Type> {
     clear();
     let iter <- buffer.walk();
     while iter.hasNext() {
-      /* tricky, but works for both value and class types */
-      let x <- make<Type>();
-      let y <- iter.next().get(x);
-      if y? {
-        x <- Type?(y);  // cast needed for y:Object?
+      let x <- iter.next().get<Type>();
+      if x? {
         pushBack(x!);
       }
     }

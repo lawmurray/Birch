@@ -5,17 +5,6 @@
 
 #include "libbirch/external.hpp"
 
-/**
- * @def IS_VALUE
- *
- * @ingroup libbirch
- *
- * Macro that can be added to the template arguments of a function template
- * specialization to enable it only if a specific type is a value type, using
- * SFINAE.
- */
-#define IS_VALUE(Type) class CheckType1 = Type, std::enable_if_t<is_value<CheckType1>::value,int> = 0
-
 namespace libbirch {
 /**
  * Is `T` a value type?

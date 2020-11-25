@@ -1177,7 +1177,6 @@ void birch::Driver::target(const std::string& cmd) {
   std::regex rxMatrix("Array<(" + type + "), *Shape<Dimension<(?:0, *0)?>, Shape<Dimension<(?:0, *0)?>, *EmptyShape *> *> *>");
   std::regex rxMatrix2("DefaultArray<(" + type + "), *2>");
   std::regex rxConstRef("(?:const *)?(" + type + ") *&");
-  std::regex rxLLT("Eigen::LLT<Eigen::Matrix<double, *-1, *-1, *1, *-1, *-1> *>");
   std::regex rxThis("\\(\\(" + type + "\\*\\)this\\)->" + type + "::this_\\(\\)->" + type + "::");
   std::regex rxAka("\\{aka *‘?(class |const )?" + type + "’?\\} *");
   std::regex rxValueType("using value_type = ");

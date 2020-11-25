@@ -81,11 +81,13 @@ void birch::CppGenerator::visit(const Cast* o) {
 
 void birch::CppGenerator::visit(const Call* o) {
   middle(o->single << '(' << o->args);
-  if (!inOperator && !inGlobal) {
-    // ^ within some contexts, there is no handler_ to pass on
-    if (!o->args->isEmpty()) {
-      middle(", ");
-    }
+  if (!o->args->isEmpty()) {
+    middle(", ");
+  }
+  if (inOperator || inGlobal) {
+    /* in these contexts, there is no handler to pass on, provide nullptr */
+    middle("nullptr");
+  } else {
     middle("handler_");
   }
   middle(')');
@@ -150,7 +152,7 @@ void birch::CppGenerator::visit(const LambdaFunction* o) {
   if (!o->params->isEmpty()) {
     middle(", ");
   }
-  finish("const libbirch::Lazy<libbirch::Shared<birch::type::Handler>>& handler_ = nullptr) {");
+  finish("const libbirch::Lazy<libbirch::Shared<birch::type::Handler>>& handler_) {");
   in();
   ++inLambda;
   *this << o->braces->strip();
@@ -277,7 +279,7 @@ void birch::CppGenerator::visit(const GlobalVariable* o) {
     finish(" {");
     in();
     genSourceLine(o->loc);
-    start("static " << o->type << " result");
+    start("static " << o->type << " result = ");
     genInit(o);
     finish(';');
     genSourceLine(o->loc);
@@ -299,6 +301,7 @@ void birch::CppGenerator::visit(const LocalVariable* o) {
   } else {
     start(o->type << ' ' << o->name);
   }
+  middle(" = ");
   genInit(o);
   finish(';');
 }
@@ -315,11 +318,11 @@ void birch::CppGenerator::visit(const Function* o) {
     if (!o->params->isEmpty()) {
       middle(", ");
     }
-    middle("const libbirch::Lazy<libbirch::Shared<birch::type::Handler>>& handler_");
+    middle("const libbirch::Lazy<libbirch::Shared<birch::type::Handler>>& handler_)");
     if (header) {
-      finish(" = nullptr);");
+      finish(";");
     } else {
-      finish(") {");
+      finish(" {");
       in();
       genTraceFunction(o->name->str(), o->loc);
       *this << o->braces->strip();
@@ -343,7 +346,10 @@ void birch::CppGenerator::visit(const Program* o) {
       in();
       genTraceFunction(o->name->str(), o->loc);
 
-      /* handle program options */
+      /* default handler */
+      line("libbirch::Lazy<libbirch::Shared<birch::type::PlayHandler>> handler_(true, nullptr);\n");
+
+      /* program options */
       if (o->params->width() > 0) {
         /* option variables */
         for (auto iter = o->params->begin(); iter != o->params->end(); ++iter) {
@@ -354,7 +360,7 @@ void birch::CppGenerator::visit(const Program* o) {
           if (!param->value->isEmpty()) {
             middle(" = " << param->value);
           } else if (param->type->isClass()) {
-            middle(" = libbirch::make_pointer<" << param->type << ">()");
+            middle(" = libbirch::make<" << param->type << ">(handler_)");
           }
           finish(';');
         }
@@ -365,7 +371,7 @@ void birch::CppGenerator::visit(const Program* o) {
         in();
         for (auto param : *o->params) {
           auto name = dynamic_cast<const Parameter*>(param)->name;
-          std::string flag = internalise(name->str()) + "FLAG_";
+          auto flag = internalise(name->str()) + "FLAG_";
           line(flag << ',');
         }
         out();
@@ -379,9 +385,8 @@ void birch::CppGenerator::visit(const Program* o) {
         in();
         for (auto param : *o->params) {
           auto name = dynamic_cast<const Parameter*>(param)->name;
-          std::string flag = internalise(name->str()) + "FLAG_";
-
-          std::string option = name->str();
+          auto flag = internalise(name->str()) + "FLAG_";
+          auto option = name->str();
           boost::replace_all(option, "_", "-");
 
           genSourceLine(o->loc);
@@ -418,7 +423,7 @@ void birch::CppGenerator::visit(const Program* o) {
         for (auto param : *o->params) {
           auto p = dynamic_cast<const Parameter*>(param);
           auto name = p->name;
-          std::string flag = internalise(name->str()) + "FLAG_";
+          auto flag = internalise(name->str()) + "FLAG_";
 
           genSourceLine(p->loc);
           line("case " << flag << ':');
@@ -430,9 +435,9 @@ void birch::CppGenerator::visit(const Program* o) {
             auto type = dynamic_cast<Named*>(p->type->unwrap());
             assert(type);
             start(name << " = birch::" << type->name);
-            finish("(std::string(::optarg));");
+            finish("(::optarg, handler_);");
           } else {
-            line(name << " = std::string(::optarg);");
+            line(name << " = ::optarg;");
           }
           line("break;");
           out();
@@ -467,9 +472,6 @@ void birch::CppGenerator::visit(const Program* o) {
         out();
         line("}\n");
       }
-
-      /* default handler */
-      line("libbirch::Lazy<libbirch::Shared<birch::type::PlayHandler>> handler_(true);\n");
 
       /* body of program */
       *this << o->braces->strip();
@@ -575,13 +577,13 @@ void birch::CppGenerator::visit(const Assume* o) {
     line("libbirch::optional_assign(" << o->left << ", " << o->right << ");");
   } else if (*o->name == "<~") {
     start("libbirch::simulate(" << o->left << ", birch::SimulateEvent(");
-    finish('(' << o->right << ")->distribution(), handler_), handler_);");
+    finish('(' << o->right << ")->distribution(handler_), handler_), handler_);");
   } else if (*o->name == "~>") {
     start("libbirch::observe(birch::ObserveEvent(" << o->left << ", ");
-    finish('(' << o->right << ")->distribution(), handler_), handler_);");
+    finish('(' << o->right << ")->distribution(handler_), handler_), handler_);");
   } else if (*o->name == "~") {
     start("libbirch::assume(birch::AssumeEvent(" << o->left << ", ");
-    finish('(' << o->right << ")->distribution(), handler_), handler_);");
+    finish('(' << o->right << ")->distribution(handler_), handler_), handler_);");
   } else {
     assert(false);
   }
@@ -781,5 +783,5 @@ void birch::CppGenerator::genTraceLine(const Location* loc) {
 void birch::CppGenerator::genSourceLine(const Location* loc) {
   auto line = loc->firstLine;
   auto file = loc->file->path;
-  line("#line " << line << " \"" << file << "\"");
+  line("//#line " << line << " \"" << file << "\"");
 }

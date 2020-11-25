@@ -101,8 +101,9 @@ final class Buffer {
   }
 
   /**
-   * Size of the buffer. For an uninitialized buffer this is zero,
-   * for an array it is the array length, for anything else it is one.
+   * Size. For a nil buffer this is zero, for an object or scalar it is one,
+   * for an array or vector it is the length, for a matrix it is the number
+   * of rows.
    */
   function size() -> Integer {
     if keys? || scalarString? || scalarReal? || scalarInteger? ||
@@ -128,539 +129,127 @@ final class Buffer {
   }
 
   /**
-   * Set the contents.
+   * Size of an entry.
    *
-   * - x: Value.
+   * - key: Key of the entry.
    */
-  function set(x:Boolean) {
-    clear();
-    scalarBoolean <- x;
+  function size(key:String) -> Integer {
+    let buffer <- getBuffer(key);
+    if buffer? {
+      return buffer!.size();
+    } else {
+      return 0;
+    }
   }
 
   /**
-   * Set the contents.
+   * Get the value.
    *
-   * - x: Value.
+   * - Type: The desired type.
+   *
+   * Returns: An optional with a value if the contents of the entry can be
+   * coerced to the desired type, otherwise with no value.
    */
-  function set(x:Integer) {
-    clear();
-    scalarInteger <- x;
+  function get<Type>() -> Type? {
+    x:Type?;
+    return Type?(doGet(x));
   }
 
   /**
-   * Set the contents.
+   * Get the value of an entry.
    *
-   * - x: Value.
+   * - Type: The desired type.
+   *
+   * - key: Key of the entry.
+   *
+   * Returns: An optional with a value if the contents of the entry can be
+   * coerced to the desired type, otherwise with no value.
    */
-  function set(x:Real) {
-    clear();
-    scalarReal <- x;
+  function get<Type>(key:String) -> Type? {
+    let buffer <- getBuffer(key);
+    if buffer? {
+      return buffer!.get<Type>();
+    } else {
+      return nil;
+    }
   }
 
   /**
-   * Set the contents.
+   * Get the value of an entry as a buffer.
    *
-   * - x: Value.
+   * - key: Key of the entry.
+   *
+   * Return: An optional with a value if the entry exists, otherwise no value.
    */
-  function set(x:String) {
-    clear();
-    scalarString <- x;
+  function getBuffer(key:String) -> Buffer? {
+    if keys? {
+      for i in 1..length(keys!) {
+        if keys![i] == key {
+          return values![i];
+        }
+      }
+    }
+    return nil;
   }
 
   /**
-   * Set the contents.
+   * Set the value.
    *
    * - x: Value.
    */
   function set<Type>(x:Type) {
+    doSet(x);
+  }
+
+  /**
+   * Set the value of an entry.
+   *
+   * - key: Key of the entry.
+   * - x: Value of the entry.
+   *
+   * If the buffer value is not already an object (in the JSON sense), it
+   * is cleared before setting the new entry.
+   */
+  function set<Type>(key:String, x:Type) {
+    set(key, Buffer(x));
+  }
+
+  /**
+   * Set the value of an entry as a buffer.
+   *
+   * - key: Key of the entry.
+   * - x: Content of the entry.
+   */
+  function setBuffer(key:String, x:Buffer) {
+    if !keys? {
+      clear();
+      keys:String[_];
+      values:Buffer[_];
+      this.keys <- keys;
+      this.values <- values;
+    }
+    keys <- stack(keys!, key);
+    values <- stack(values!, x);
+  }
+
+  /**
+   * Set the value to nil. This is equivalent to `clear()`.
+   */
+  function setNil() {
     clear();
-    x.write(this);
   }
 
   /**
-   * Set the contents.
-   *
-   * - x: Value.
+   * Set the value of an entry to nil.
    */
-  function set(x:Boolean[_]) {
-    clear();
-    vectorBoolean <- x;
+  function setNil(key:String) {
+    set(key, Buffer());
   }
 
   /**
-   * Set the contents.
-   *
-   * - x: Value.
-   */
-  function set(x:Integer[_]) {
-    clear();
-    vectorInteger <- x;
-  }
-
-  /**
-   * Set the contents.
-   *
-   * - x: Value.
-   */
-  function set(x:Real[_]) {
-    clear();
-    vectorReal <- x;
-  }
-
-  /**
-   * Set the contents.
-   *
-   * - x: Value.   *
-   * Use this version to write objects using their `write(Integer, Buffer)`
-   * member function rather than `write(Buffer)`.
-
-   */
-  function set(x:Boolean[_,_]) {
-    clear();
-    matrixBoolean <- x;
-  }
-
-  /**
-   * Set the contents.
-   *
-   * - x: Value.
-   */
-  function set(x:Integer[_,_]) {
-    clear();
-    matrixInteger <- x;
-  }
-
-  /**
-   * Set the contents.
-   *
-   * - x: Value.
-   */
-  function set(x:Real[_,_]) {
-    clear();
-    matrixReal <- x;
-  }
-
-  /**
-   * Set the contents.
-   *
-   * - x: Value.
-   */
-  function set(x:LLT) {
-    set(canonical(x));
-  }
-
-  /**
-   * Push an element onto the end of an array.
-   *
-   * - x: The element.
-   */
-  function push(x:Boolean) {
-    if scalarBoolean? {
-      set([scalarBoolean!, x]);
-    } else if scalarInteger? {
-      set([scalarInteger!, Integer(x)]);
-    } else if scalarReal? {
-      set([scalarReal!, Real(x)]);
-    } else if vectorBoolean? {
-      cpp{{
-      vectorBoolean.get().insert(vectorBoolean.get().size(), x);
-      }}
-    } else if vectorInteger? {
-      push(Integer(x));
-    } else if vectorReal? {
-      push(Real(x));
-    } else {
-      pushBuffer(Buffer(x));
-    }
-  }
-
-  /**
-   * Push an element onto the end of an array.
-   *
-   * - x: The element.
-   */
-  function push(x:Integer) {
-    if scalarBoolean? {
-      set([Integer(scalarBoolean!), x]);
-    } else if scalarInteger? {
-      set([scalarInteger!, x]);
-    } else if scalarReal? {
-      set([scalarReal!, Real(x)]);
-    } else if vectorBoolean? {
-      vectorInteger <- stack(Integer(vectorBoolean!), x);
-    } else if vectorInteger? {
-      cpp{{
-      vectorInteger.get().insert(vectorInteger.get().size(), x);
-      }}
-    } else if vectorReal? {
-      push(Real(x));
-    } else {
-      pushBuffer(Buffer(x));
-    }
-  }
-
-  /**
-   * Push an element onto the end of an array.
-   *
-   * - x: The element.
-   */
-  function push(x:Real) {
-    if scalarBoolean? {
-      set([Real(scalarBoolean!), x]);
-    } else if scalarInteger? {
-      set([Real(scalarInteger!), x]);
-    } else if scalarReal? {
-      set([scalarReal!, x]);
-    } else if vectorBoolean? {
-      vectorReal <- stack(Real(vectorBoolean!), x);
-    } else if vectorInteger? {
-      vectorReal <- stack(Real(vectorInteger!), x);
-    } else if vectorReal? {
-      cpp{{
-      vectorReal.get().insert(vectorReal.get().size(), x);
-      }}
-    } else {
-      pushBuffer(Buffer(x));
-    }
-  }
-
-  /**
-   * Push an element onto the end of an array.
-   *
-   * - x: The element.
-   */
-  function push(x:String) {
-    pushBuffer(Buffer(x));
-  }
-
-  /**
-   * Push an element onto the end of an array.
-   *
-   * - x: The element.
-   */
-  function push<Type>(x:Type) {
-    pushBuffer(Buffer(x));
-  }
-
-  /**
-   * Push an element onto the end of an array.
-   *
-   * - x: The element.
-   */
-  function push(x:Boolean[_]) {
-    if matrixBoolean? {
-      matrixBoolean <- stack(matrixBoolean!, row(x));
-    } else if matrixInteger? {
-      matrixInteger <- stack(matrixInteger!, Integer(row(x)));
-    } else if matrixReal? {
-      matrixReal <- stack(matrixReal!, Real(row(x)));
-    } else {
-      pushBuffer(Buffer(x));
-    }
-  }
-
-  /**
-   * Push an element onto the end of an array.
-   *
-   * - x: The element.
-   */
-  function push(x:Integer[_]) {
-    if matrixBoolean? {
-      matrixInteger <- stack(Integer(matrixBoolean!), row(x));
-      matrixBoolean <- nil;
-    } else if matrixInteger? {
-      matrixInteger <- stack(matrixInteger!, row(x));
-    } else if matrixReal? {
-      matrixReal <- stack(matrixReal!, Real(row(x)));
-    } else {
-      pushBuffer(Buffer(x));
-    }
-  }
-
-  /**
-   * Push an element onto the end of an array.
-   *
-   * - x: The element.
-   */
-  function push(x:Real[_]) {
-    if matrixBoolean? {
-      matrixReal <- stack(Real(matrixBoolean!), row(x));
-      matrixBoolean <- nil;
-    } else if matrixInteger? {
-      matrixReal <- stack(Real(matrixInteger!), row(x));
-      matrixInteger <- nil;
-    } else if matrixReal? {
-      matrixReal <- stack(matrixReal!, row(x));
-    } else {
-      pushBuffer(Buffer(x));
-    }
-  }
-
-  /**
-   * Get the contents.
-   *
-   * - x: Placeholder, used to indicate desired type.
-   *
-   * Returns: If the contents of the buffer can be coerced to the desired
-   * type, then an optional with that value; otherwise an optional with no
-   * value.
-   */
-  function get(x:Boolean?) -> Boolean? {
-    if scalarBoolean? {
-      return Boolean(scalarBoolean!);
-    } else if scalarInteger? {
-      return Boolean(scalarInteger!);
-    } else if scalarReal? {
-      return Boolean(scalarReal!);
-    } else if scalarString? {
-      return Boolean(scalarString!);
-    } else {
-      return nil;
-    }
-  }
-
-  /**
-   * Get the contents.
-   *
-   * - x: Placeholder, used to indicate desired type.
-   *
-   * Returns: If the contents of the buffer can be coerced to the desired
-   * type, then an optional with that value; otherwise an optional with no
-   * value.
-   */
-  function get(x:Integer?) -> Integer? {
-    if scalarBoolean? {
-      return Integer(scalarBoolean!);
-    } else if scalarInteger? {
-      return Integer(scalarInteger!);
-    } else if scalarReal? {
-      return Integer(scalarReal!);
-    } else if scalarString? {
-      return Integer(scalarString!);
-    } else {
-      return nil;
-    }
-  }
-
-  /**
-   * Get the contents.
-   *
-   * - x: Placeholder, used to indicate desired type.
-   *
-   * Returns: If the contents of the buffer can be coerced to the desired
-   * type, then an optional with that value; otherwise an optional with no
-   * value.
-   */
-  function get(x:Real?) -> Real? {
-    if scalarBoolean? {
-      return Real(scalarBoolean!);
-    } else if scalarInteger? {
-      return Real(scalarInteger!);
-    } else if scalarReal? {
-      return Real(scalarReal!);
-    } else if scalarString? {
-      return Real(scalarString!);
-    } else {
-      return nil;
-    }
-  }
-
-  /**
-   * Get the contents.
-   *
-   * - x: Placeholder, used to indicate desired type.
-   *
-   * Returns: If the contents of the buffer can be coerced to the desired
-   * type, then an optional with that value; otherwise an optional with no
-   * value.
-   */
-  function get(x:String?) -> String? {
-    if scalarBoolean? {
-      return String(scalarBoolean!);
-    } else if scalarInteger? {
-      return String(scalarInteger!);
-    } else if scalarReal? {
-      return String(scalarReal!);
-    } else if scalarString? {
-      return String(scalarString!);
-    } else {
-      return nil;
-    }
-  }
-
-  /**
-   * Get the contents.
-   *
-   * - x: Placeholder, used to indicate desired type.
-   *
-   * Returns: If the contents of the buffer can be coerced to the desired
-   * type, then an optional with that value; otherwise an optional with no
-   * value.
-   */
-  function get<Type>(x:Type?) -> Type? {
-    return make<Type>(this);
-  }
-
-  /**
-   * Get the contents.
-   *
-   * - x: Placeholder, used to indicate desired type.
-   *
-   * Returns: If the contents of the buffer can be coerced to the desired
-   * type, then an optional with that value; otherwise an optional with no
-   * value.
-   */
-  function get(x:Boolean[_]?) -> Boolean[_]? {
-    if vectorBoolean? {
-      return Boolean(vectorBoolean!);
-    } else if vectorInteger? {
-      return Boolean(vectorInteger!);
-    } else if vectorReal? {
-      return Boolean(vectorReal!);
-    } else {
-      return nil;
-    }
-  }
-
-  /**
-   * Get the contents.
-   *
-   * - x: Placeholder, used to indicate desired type.
-   *
-   * Returns: If the contents of the buffer can be coerced to the desired
-   * type, then an optional with that value; otherwise an optional with no
-   * value.
-   */
-  function get(x:Integer[_]?) -> Integer[_]? {
-    if vectorBoolean? {
-      return Integer(vectorBoolean!);
-    } else if vectorInteger? {
-      return Integer(vectorInteger!);
-    } else if vectorReal? {
-      return Integer(vectorReal!);
-    } else {
-      return nil;
-    }
-  }
-
-  /**
-   * Get the contents.
-   *
-   * - x: Placeholder, used to indicate desired type.
-   *
-   * Returns: If the contents of the buffer can be coerced to the desired
-   * type, then an optional with that value; otherwise an optional with no
-   * value.
-   */
-  function get(x:Real[_]?) -> Real[_]? {
-    if vectorBoolean? {
-      return Real(vectorBoolean!);
-    } else if vectorInteger? {
-      return Real(vectorInteger!);
-    } else if vectorReal? {
-      return Real(vectorReal!);
-    } else {
-      return nil;
-    }
-  }
-
-  /**
-   * Get the contents.
-   *
-   * - x: Placeholder, used to indicate desired type.
-   *
-   * Returns: If the contents of the buffer can be coerced to the desired
-   * type, then an optional with that value; otherwise an optional with no
-   * value.
-   */
-  function get(x:Boolean[_,_]?) -> Boolean[_,_]? {
-    if matrixBoolean? {
-      return Boolean(matrixBoolean!);
-    } else if matrixInteger? {
-      return Boolean(matrixInteger!);
-    } else if matrixReal? {
-      return Boolean(matrixReal!);
-    } else {
-      return nil;
-    }
-  }
-
-  /**
-   * Get the contents.
-   *
-   * - x: Placeholder, used to indicate desired type.
-   *
-   * Returns: If the contents of the buffer can be coerced to the desired
-   * type, then an optional with that value; otherwise an optional with no
-   * value.
-   */
-  function get(x:Integer[_,_]?) -> Integer[_,_]? {
-    if matrixBoolean? {
-      return Integer(matrixBoolean!);
-    } else if matrixInteger? {
-      return Integer(matrixInteger!);
-    } else if matrixReal? {
-      return Integer(matrixReal!);
-    } else {
-      return nil;
-    }
-  }
-
-  /**
-   * Get the contents.
-   *
-   * - x: Placeholder, used to indicate desired type.
-   *
-   * Returns: If the contents of the buffer can be coerced to the desired
-   * type, then an optional with that value; otherwise an optional with no
-   * value.
-   */
-  function get(x:Real[_,_]?) -> Real[_,_]? {
-    if matrixBoolean? {
-      return Real(matrixBoolean!);
-    } else if matrixInteger? {
-      return Real(matrixInteger!);
-    } else if matrixReal? {
-      return Real(matrixReal!);
-    } else {
-      return nil;
-    }
-  }
-
-  /**
-   * Get the contents.
-   *
-   * - x: Placeholder, used to indicate desired type.
-   *
-   * Returns: If the contents of the buffer can be coerced to the desired
-   * type, then an optional with that value; otherwise an optional with no
-   * value.
-   */
-  function get(x:LLT?) -> LLT? {
-    let y <- get<Real[_,_]>();
-    if y? {
-      return llt(y!);
-    } else {
-      return nil;
-    }
-  }
-
-  /**
-   * Get the contents.
-   *
-   * - Type: The desired type.
-   *
-   * Returns: If the contents of the buffer can be coerced to the desired
-   * type, then an optional with that value; otherwise an optional with no
-   * value.
-   */
-  function get<Type>() -> Type? {
-    x:Type?;
-    return Type?(get(x));
-  }
-
-  /**
-   * Iterate through the elements of an array.
+   * Obtain an iterator. For a nil buffer this is an empty iterator, for an
+   * object or scalar it is a singleton iterator, for an array or vector it is
+   * over the elements, for a matrix it is over the rows.
    */
   function walk() -> Iterator<Buffer> {
     if keys? || scalarString? || scalarReal? || scalarInteger? ||
@@ -686,86 +275,7 @@ final class Buffer {
   }
 
   /**
-   * Size of an entry. For an uninitialized buffer this is zero,
-   * for an array it is the array length, for anything else it is one.
-   *
-   * - key: Key of the entry.
-   */
-  function size(key:String) -> Integer {
-    let buffer <- getBuffer(key);
-    if buffer? {
-      return buffer!.size();
-    } else {
-      return 0;
-    }
-  }
-
-  /**
-   * Set the contents of an entry.
-   *
-   * - key: Key of the entry.
-   * - x: Value of the entry.
-   */
-  function set<Type>(key:String, x:Type) {
-    set(key, Buffer(x));
-  }
-
-  /**
-   * Push an element onto the end of an entry.
-   *
-   * - key: Key of the entry.
-   * - x: The element.
-   */
-  function push<Type>(key:String, x:Type) {
-    let buffer <- getBuffer(key);
-    if buffer? {
-      buffer!.push(x);
-    } else {
-      set(key, [x]);
-    }
-  }
-
-  /**
-   * Get the contents of an entry.
-   *
-   * - Type: The desired type.
-   *
-   * - key: Key of the entry.
-   *
-   * Returns: If the contents of the entry can be coerced to the desired
-   * type, then an optional with that value; otherwise an optional with no
-   * value.
-   */
-  function get<Type>(key:String) -> Type? {
-    let buffer <- getBuffer(key);
-    if buffer? {
-      return buffer!.get<Type>();
-    } else {
-      return nil;
-    }
-  }
-
-  /**
-   * Get the contents of an entry.
-   *
-   * - key: Key of the entry.
-   * - x: Placeholder, used to indicate desired type.
-   *
-   * Returns: If the contents of the entry can be coerced to the desired
-   * type, then an optional with that value; otherwise an optional with no
-   * value.
-   */
-  function get<Type>(key:String, x:Type?) -> Type? {
-    let buffer <- getBuffer(key);
-    if buffer? {
-      return buffer!.get(x);
-    } else {
-      return nil;
-    }
-  }
-
-  /**
-   * Iterate through the elements of an array entry.
+   * Obtain an iterator over an entry.
    *
    * - key: Key of the entry.
    */
@@ -779,64 +289,25 @@ final class Buffer {
   }
 
   /**
-   * Get this as a buffer.
+   * Push a value.
    *
-   * Return: An optional with a value.
+   * - x: Value.
+   *
+   * If the buffer value is not already an array (in the JSON sense), it is
+   * converted to such before pushing the new element onto the end.
+   *
+   * If the buffer value is a matrix and the new element of incompatible type
+   * or incompatible size to form a new row, its rows are split into separate
+   * vector elements of an array before pushing the new element onto the end.
    */
-  function getBuffer() -> Buffer? {
-    return this;
+  function push<Type>(x:Type) {
+    doPush(x);
   }
 
   /**
-   * Get an entry as a buffer.
+   * Push a value as a buffer.
    *
-   * - key: Key of the entry.
-   *
-   * Return: An optional with a value if the entry exists .
-   */
-  function getBuffer(key:String) -> Buffer? {
-    if keys? {
-      for i in 1..length(keys!) {
-        if keys![i] == key {
-          return values![i];
-        }
-      }
-    }
-    return nil;
-  }
-
-  /**
-   * Set an entry as a buffer.
-   *
-   * - key: Key of the entry.
-   * - x: Content of the entry.
-   *
-   * If the buffer contents is not already an object (in the JSON sense), it
-   * is cleared before setting the new entry.
-   */
-  function setBuffer(key:String, x:Buffer) {
-    if !keys? {
-      clear();
-      keys:String[_];
-      values:Buffer[_];
-      this.keys <- keys;
-      this.values <- values;
-    }
-    keys <- stack(keys!, key);
-    values <- stack(values!, x);
-  }
-
-  /**
-   * Set contents to nil. This is equivalent to `clear()`.
-   */
-  function setNil() {
-    clear();
-  }
-
-  /**
-   * Push a buffer onto the end of an array.
-   *
-   * - x: The element.
+   * - x: Value.
    */
   function pushBuffer(x:Buffer) {
     if keys? {
@@ -860,37 +331,52 @@ final class Buffer {
   }
 
   /**
-   * Push a buffer onto the end of an array entry.
+   * Push a value to an entry.
    *
    * - key: Key of the entry.
-   * - x: The element.
+   * - x: Value.
    */
-  function pushBuffer(key:String, x:Buffer) {
+  function push<Type>(key:String, x:Type) {
+    let buffer <- getBuffer(key);
+    if buffer? {
+      buffer!.push(x);
+    } else {
+      set(key, [x]);
+    }
+  }
+
+
+  /**
+   * Push a value to an entry as a buffer.
+   *
+   * - key: Key of the entry.
+   * - x: Value.
+   */
+  function push(key:String, x:Buffer) {
     let buffer <- getBuffer(key);
     if !buffer? {
       buffer <- Buffer();
-      setBuffer(key, buffer!);
+      set(key, buffer!);
     }
-    buffer!.pushBuffer(x);
+    buffer!.push(x);
   }
 
   /**
-   * Push a nil element onto the end of an array.
+   * Push a nil value.
    */
   function pushNil() {
-    pushBuffer(Buffer());
+    push(Buffer());
   }
 
   /**
-   * Push a nil element onto the end of an array.
+   * Push a nil value to an entry.
+   *
+   * - key: Key of the entry.
    */
   function pushNil(key:String) {
-    pushBuffer(key, Buffer());
+    push(key, Buffer());
   }
 
-  /**
-   * Accept a writer.
-   */
   function accept(writer:Writer) {
     if keys? {
       writer.visit(keys!, values!);
@@ -918,6 +404,314 @@ final class Buffer {
       writer.visit(matrixBoolean!);
     } else {
       writer.visitNil();
+    }
+  }
+
+  function doGet(x:Boolean?) -> Boolean? {
+    if scalarBoolean? {
+      return Boolean(scalarBoolean!);
+    } else if scalarInteger? {
+      return Boolean(scalarInteger!);
+    } else if scalarReal? {
+      return Boolean(scalarReal!);
+    } else if scalarString? {
+      return Boolean(scalarString!);
+    } else {
+      return nil;
+    }
+  }
+
+  function doGet(x:Integer?) -> Integer? {
+    if scalarBoolean? {
+      return Integer(scalarBoolean!);
+    } else if scalarInteger? {
+      return Integer(scalarInteger!);
+    } else if scalarReal? {
+      return Integer(scalarReal!);
+    } else if scalarString? {
+      return Integer(scalarString!);
+    } else {
+      return nil;
+    }
+  }
+
+  function doGet(x:Real?) -> Real? {
+    if scalarBoolean? {
+      return Real(scalarBoolean!);
+    } else if scalarInteger? {
+      return Real(scalarInteger!);
+    } else if scalarReal? {
+      return Real(scalarReal!);
+    } else if scalarString? {
+      return Real(scalarString!);
+    } else {
+      return nil;
+    }
+  }
+
+  function doGet(x:String?) -> String? {
+    if scalarBoolean? {
+      return String(scalarBoolean!);
+    } else if scalarInteger? {
+      return String(scalarInteger!);
+    } else if scalarReal? {
+      return String(scalarReal!);
+    } else if scalarString? {
+      return String(scalarString!);
+    } else {
+      return nil;
+    }
+  }
+
+  function doGet<Type>(x:Type?) -> Type? {
+    return make<Type>(this);
+  }
+
+  function doGet(x:Boolean[_]?) -> Boolean[_]? {
+    if vectorBoolean? {
+      return Boolean(vectorBoolean!);
+    } else if vectorInteger? {
+      return Boolean(vectorInteger!);
+    } else if vectorReal? {
+      return Boolean(vectorReal!);
+    } else {
+      return nil;
+    }
+  }
+
+  function doGet(x:Integer[_]?) -> Integer[_]? {
+    if vectorBoolean? {
+      return Integer(vectorBoolean!);
+    } else if vectorInteger? {
+      return Integer(vectorInteger!);
+    } else if vectorReal? {
+      return Integer(vectorReal!);
+    } else {
+      return nil;
+    }
+  }
+
+  function doGet(x:Real[_]?) -> Real[_]? {
+    if vectorBoolean? {
+      return Real(vectorBoolean!);
+    } else if vectorInteger? {
+      return Real(vectorInteger!);
+    } else if vectorReal? {
+      return Real(vectorReal!);
+    } else {
+      return nil;
+    }
+  }
+
+  function doGet(x:Boolean[_,_]?) -> Boolean[_,_]? {
+    if matrixBoolean? {
+      return Boolean(matrixBoolean!);
+    } else if matrixInteger? {
+      return Boolean(matrixInteger!);
+    } else if matrixReal? {
+      return Boolean(matrixReal!);
+    } else {
+      return nil;
+    }
+  }
+
+  function doGet(x:Integer[_,_]?) -> Integer[_,_]? {
+    if matrixBoolean? {
+      return Integer(matrixBoolean!);
+    } else if matrixInteger? {
+      return Integer(matrixInteger!);
+    } else if matrixReal? {
+      return Integer(matrixReal!);
+    } else {
+      return nil;
+    }
+  }
+
+  function doGet(x:Real[_,_]?) -> Real[_,_]? {
+    if matrixBoolean? {
+      return Real(matrixBoolean!);
+    } else if matrixInteger? {
+      return Real(matrixInteger!);
+    } else if matrixReal? {
+      return Real(matrixReal!);
+    } else {
+      return nil;
+    }
+  }
+
+  function doGet(x:LLT?) -> LLT? {
+    let y <- get<Real[_,_]>();
+    if y? {
+      return llt(y!);
+    } else {
+      return nil;
+    }
+  }
+
+  function doSet(x:Boolean) {
+    clear();
+    scalarBoolean <- x;
+  }
+
+  function doSet(x:Integer) {
+    clear();
+    scalarInteger <- x;
+  }
+
+  function doSet(x:Real) {
+    clear();
+    scalarReal <- x;
+  }
+
+  function doSet(x:String) {
+    clear();
+    scalarString <- x;
+  }
+
+  function doSet(x:Object) {
+    clear();
+    x.write(this);
+  }
+
+  function doSet(x:Boolean[_]) {
+    clear();
+    vectorBoolean <- x;
+  }
+
+  function doSet(x:Integer[_]) {
+    clear();
+    vectorInteger <- x;
+  }
+
+  function doSet(x:Real[_]) {
+    clear();
+    vectorReal <- x;
+  }
+
+  function doSet(x:Boolean[_,_]) {
+    clear();
+    matrixBoolean <- x;
+  }
+
+  function doSet(x:Integer[_,_]) {
+    clear();
+    matrixInteger <- x;
+  }
+
+  function doSet(x:Real[_,_]) {
+    clear();
+    matrixReal <- x;
+  }
+
+  function doSet(x:LLT) {
+    clear();
+    matrixReal <- canonical(x);
+  }
+
+  function doPush(x:Boolean) {
+    if scalarBoolean? {
+      set([scalarBoolean!, x]);
+    } else if scalarInteger? {
+      set([scalarInteger!, Integer(x)]);
+    } else if scalarReal? {
+      set([scalarReal!, Real(x)]);
+    } else if vectorBoolean? {
+      cpp{{
+      vectorBoolean.get().insert(vectorBoolean.get().size(), x);
+      }}
+    } else if vectorInteger? {
+      push(Integer(x));
+    } else if vectorReal? {
+      push(Real(x));
+    } else {
+      push(Buffer(x));
+    }
+  }
+
+  function doPush(x:Integer) {
+    if scalarBoolean? {
+      set([Integer(scalarBoolean!), x]);
+    } else if scalarInteger? {
+      set([scalarInteger!, x]);
+    } else if scalarReal? {
+      set([scalarReal!, Real(x)]);
+    } else if vectorBoolean? {
+      vectorInteger <- stack(Integer(vectorBoolean!), x);
+    } else if vectorInteger? {
+      cpp{{
+      vectorInteger.get().insert(vectorInteger.get().size(), x);
+      }}
+    } else if vectorReal? {
+      push(Real(x));
+    } else {
+      push(Buffer(x));
+    }
+  }
+
+  function doPush(x:Real) {
+    if scalarBoolean? {
+      set([Real(scalarBoolean!), x]);
+    } else if scalarInteger? {
+      set([Real(scalarInteger!), x]);
+    } else if scalarReal? {
+      set([scalarReal!, x]);
+    } else if vectorBoolean? {
+      vectorReal <- stack(Real(vectorBoolean!), x);
+    } else if vectorInteger? {
+      vectorReal <- stack(Real(vectorInteger!), x);
+    } else if vectorReal? {
+      cpp{{
+      vectorReal.get().insert(vectorReal.get().size(), x);
+      }}
+    } else {
+      push(Buffer(x));
+    }
+  }
+
+  function doPush(x:String) {
+    push(Buffer(x));
+  }
+
+  function doPush(x:Object) {
+    push(Buffer(x));
+  }
+
+  function doPush(x:Boolean[_]) {
+    if matrixBoolean? {
+      matrixBoolean <- stack(matrixBoolean!, row(x));
+    } else if matrixInteger? {
+      matrixInteger <- stack(matrixInteger!, Integer(row(x)));
+    } else if matrixReal? {
+      matrixReal <- stack(matrixReal!, Real(row(x)));
+    } else {
+      push(Buffer(x));
+    }
+  }
+
+  function doPush(x:Integer[_]) {
+    if matrixBoolean? {
+      matrixInteger <- stack(Integer(matrixBoolean!), row(x));
+      matrixBoolean <- nil;
+    } else if matrixInteger? {
+      matrixInteger <- stack(matrixInteger!, row(x));
+    } else if matrixReal? {
+      matrixReal <- stack(matrixReal!, Real(row(x)));
+    } else {
+      push(Buffer(x));
+    }
+  }
+
+  function doPush(x:Real[_]) {
+    if matrixBoolean? {
+      matrixReal <- stack(Real(matrixBoolean!), row(x));
+      matrixBoolean <- nil;
+    } else if matrixInteger? {
+      matrixReal <- stack(Real(matrixInteger!), row(x));
+      matrixInteger <- nil;
+    } else if matrixReal? {
+      matrixReal <- stack(matrixReal!, row(x));
+    } else {
+      push(Buffer(x));
     }
   }
 }

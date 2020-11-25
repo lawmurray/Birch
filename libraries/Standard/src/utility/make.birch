@@ -11,7 +11,7 @@
  */
 function make<Type>() -> Type? {
   cpp{{
-  return libbirch::make<Type>();
+  return libbirch::make_optional<Type>(handler_);
   }}
 }
 
@@ -29,10 +29,10 @@ function make(name:String) -> Object? {
   result:Object?;
   symbol:String <- "make_" + name + "_";
   cpp{{
-  using make_t = birch::type::Object*();
+  using make_t = birch::type::Object*(const libbirch::Lazy<libbirch::Shared<birch::type::Handler>>&);
   void* addr = dlsym(RTLD_DEFAULT, symbol.c_str());
   if (addr) {
-    result = libbirch::Lazy<libbirch::Shared<birch::type::Object>>(reinterpret_cast<make_t*>(addr)());
+    result = libbirch::Lazy<libbirch::Shared<birch::type::Object>>(reinterpret_cast<make_t*>(addr)(handler_));
   }
   }}
   if !result? {
@@ -40,22 +40,6 @@ function make(name:String) -> Object? {
         "; class may not exist or may require initialization arguments.");
   }
   return result;
-}
-
-/**
- * Make an object, with the class possibly given as a string.
- *
- *   - name: Name of the class.
- *
- * Returns: An optional with a value if successful, or no value if not
- * successful or `name` has no value.
- */
-function make(name:String?) -> Object? {
-  if name? {
-    return make(name!);
-  } else {
-    return nil;
-  }
 }
 
 /**
@@ -82,22 +66,6 @@ function make(buffer:Buffer) -> Object? {
     result!.read(buffer);
   }
   return result;
-}
-
-/**
- * Make an object, with the class possibly given in a buffer.
- *
- *   - buffer: The buffer.
- *
- * Returns: An optional with a value if successful, or no value if not
- * successful.
- */
-function make(buffer:Buffer?) -> Object? {
-  if buffer? {
-    return make(buffer!);
-  } else {
-    return nil;
-  }
 }
 
 /**
@@ -130,21 +98,4 @@ function make<Type>(buffer:Buffer) -> Type? {
     result!.read(buffer);
   }
   return result;
-}
-
-/**
- * Make an object, with the class given in a buffer, otherwise by a generic
- * type.
- *
- * - Type: Class if not given in buffer.
- *
- * Returns: An optional with a value if successful, or no value if not
- * successful.
- */
-function make<Type>(buffer:Buffer?) -> Type? {
-  if buffer? {
-    return make<Type>(buffer!);
-  } else {
-    return nil;
-  }
 }

@@ -278,11 +278,8 @@ final class List<Type> {
   function read(buffer:Buffer) {
     let f <- buffer.walk();
     while f.hasNext() {
-      /* tricky, but works for both value and class types */
-      let x <- make<Type>();
-      let y <- f.next().get(x);
-      if y? {
-        x <- Type?(y);  // cast needed for y:Object?
+      let x <- f.next().get<Type>();
+      if x? {
         pushBack(x!);
       }
     }
