@@ -783,5 +783,5 @@ void birch::CppGenerator::genTraceLine(const Location* loc) {
 void birch::CppGenerator::genSourceLine(const Location* loc) {
   auto line = loc->firstLine;
   auto file = loc->file->path;
-  line("//#line " << line << " \"" << file << "\"");
+  line("#line " << line << " \"" << file << "\"");
 }
