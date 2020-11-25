@@ -36,8 +36,8 @@ abstract class Handler {
    */
   final function handle(event:Event) {
     if input? {
-      doHandle(input!.current(), event);
-      input!.next();
+      doHandle(input!.front(), event);
+      input!.popFront();
     } else {
       doHandle(event);
     }

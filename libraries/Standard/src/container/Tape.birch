@@ -1,7 +1,7 @@
 /**
- * Stateful tape container. Maintains a current position along a tape that is
- * infinite in both directions. Provides constant-time operations at that
- * position, and linear-time operations elsewhere.
+ * Tape container. The container is stateful, maintaining a current position
+ * along a tape, providing constant-time operations at that and the previous
+ * position, but linear-time operations elsewhere (which require a seek).
  *
  * - Type: Element type. Must be default-constructible.
  *
@@ -12,23 +12,17 @@
  *
  * ```mermaid
  * graph LR
- *    this --"previous()"--> nm1[n-1] --> nm2[n-2] --> nm3[n-3] --> nm4(...)
- *    this --"current()"--> n[n] --> np1[n+1] --> np2[n+1] --> np3(...)
+ *    this --> nm1[n-1] --> nm2[n-2] --> nm3[n-3] --> nm4(...)
+ *    this --> n[n] --> np1[n+1] --> np2[n+1] --> np3(...)
  * ```
  *
- * The member function `current()` is used to retrieve the current ($n$th)
- * element, which can be done in $O(1)$ time. The call `previous()` retrieves
- * the previous ($n-1$th) element, similarly in $O(1)$ time. The call
- * `current(k)` may be used to retrieve any other elements using an offset
- * relative to the current position. For positive $k$, retrieving the $n-k$th
- * element takes $O(k-1)$ time, and the $n+k$th element $O(k)$ time. Because
- * the tape is considered infinite, elements are default-constructed as
- * necessary.
+ * The call `get(i)` may be used to retrieve any element, with complexity
+ * linear in the offset from the current position.
  *
  * Changing the current position in the list (i.e. seeking) is achieved with
  * the `seek()`, `backward()`, `forward()`, `rewind()` and `fastForward()`
- * member functions. It is up to the user to seek as appropriate to ensure
- * efficient operations, according to the use-case.
+ * member functions. It is not usually necessary to call these directly,
+ * however, as the container seeks as necessary.
  *
  * !!! tip
  *     As a recursive and singly-linked data structure, Tape has excellent
@@ -50,36 +44,37 @@ final class Tape<Type> {
   ahead:TapeNode<Type>?;
 
   /**
-   * Number of elements at and ahead of the current position.
-   */
-  aheadCount:Integer <- 0;
-
-  /**
    * Elements behind the current position.
    */
   behind:TapeNode<Type>?;
 
   /**
-   * Number of elements behind the current position.
+   * Number of elements at and ahead of the current position.
+   */
+  aheadCount:Integer <- 0;
+
+  /**
+   * Number of elements behind the current positionl equivalent to current
+   * position minus 1.
    */
   behindCount:Integer <- 0;
 
   /**
-   * Number of elements (that are set).
+   * Number of elements.
    */
   function size() -> Integer {
     return aheadCount + behindCount;
   }
 
   /**
-   * Is this empty (no elements are set)?
+   * Is this empty?
    */
   function empty() -> Boolean {
     return aheadCount == 0 && behindCount == 0;
   }
 
   /**
-   * Clear all elements (unset all elements).
+   * Clear all elements.
    */
   function clear() {
     ahead <- nil;
@@ -89,44 +84,179 @@ final class Tape<Type> {
   }
 
   /**
-   * Get the first element (that is set).
+   * Get the first element.
    */
   function front() -> Type {
-    assert !empty();
-    if behind? {
-      return behind!.bottom().x;
+    if empty() {
+      pushFront();
+    }
+    rewind();
+    return ahead!.x;
+  }
+
+  /**
+   * Get the last element.
+   */
+  function back() -> Type {
+    if empty() {
+      pushBack();
+    }
+    fastForward();
+    return behind!.x;
+  }
+
+  /**
+   * Get an element.
+   *
+   * - i: Position.
+   */
+  function get(i:Integer) -> Type {
+    assert 0 < i;
+    while i > size() {
+      pushBack();
+    }
+    if i <= behindCount {
+      seek(i + 1);
+      return behind!.x;
     } else {
+      seek(i);
       return ahead!.x;
     }
   }
 
   /**
-   * Get the last element (that is set).
+   * Set an element.
+   *
+   * - i: Position.
+   * - x: Value.
    */
-  function back() -> Type {
-    assert !empty();
-    if ahead? {
-      return ahead!.bottom().x;
+  function set(i:Integer, x:Type) {
+    assert 0 < i;
+    while i > size() {
+      pushBack();
+    }
+    if i <= behindCount {
+      seek(i + 1);
+      behind!.x <- x;
     } else {
-      return behind!.x;
+      seek(i);
+      ahead!.x <- x;
     }
   }
 
   /**
-   * Move the current position forward one. This performs the following
-   * sequence:
+   * Insert an element at the front.
    *
-   *   1. If the element at the current position is not initialized, it is
-   *      default-constructed.
-   *   2. The current position is moved forward one.
-   *   3. If the element at the new position is not initialized, it remains
-   *      uninitialized.
+   * - x: Value.
+   */
+  function pushFront(x:Type) {
+    rewind();
+    behind <- TapeNode<Type>(x);
+    behindCount <- behindCount + 1;
+  }
+
+  /**
+   * Insert a new default-constructed element at the front and return it.
+   */
+  function pushFront() -> Type {
+    rewind();
+    behind <- TapeNode<Type>();
+    behindCount <- behindCount + 1;
+    return behind!.x;
+  }
+
+  /**
+   * Insert an element at the back.
+   *
+   * - x: Value.
+   */
+  function pushBack(x:Type) {
+    fastForward();
+    ahead <- TapeNode<Type>(x);
+    aheadCount <- aheadCount + 1;
+  }
+
+  /**
+   * Insert a new default-constructed element at the back and return it.
+   */
+  function pushBack() -> Type {
+    fastForward();
+    ahead <- TapeNode<Type>();
+    aheadCount <- aheadCount + 1;
+    return ahead!.x;
+  }
+
+  /**
+   * Remove the first element.
+   */
+  function popFront() {
+    assert !empty();
+    rewind();
+    ahead <- ahead!.next;
+    aheadCount <- aheadCount - 1;
+  }
+
+  /**
+   * Remove the last element.
+   */
+  function popBack() {
+    assert !empty();
+    fastForward();
+    behind <- behind!.next;
+    behindCount <- behindCount - 1;
+  }
+
+  /**
+   * Insert a new element.
+   *
+   * - i: Position.
+   * - x: Value.
+   *
+   * Inserts the new element immediately before the current element at
+   * position `i`. To insert at the back of the container, use a position that
+   * is one more than the current size, or `pushBack()`.
+   */
+  function insert(i:Integer, x:Type) {
+    assert 0 < i;
+    while i > size() {
+      pushBack();
+    }
+    seek(i);
+    let node <- TapeNode<Type>(x);
+    node.next <- ahead;
+    ahead <- node;
+    aheadCount <- aheadCount + 1;
+  }
+
+  /**
+   * Erase an element.
+   *
+   * - i: Position.
+   */
+  function erase(i:Integer) {
+    assert 0 < i;
+    while i > size() {
+      pushBack();
+    }
+    seek(i);
+    ahead <- ahead!.next;
+    aheadCount <- aheadCount - 1;
+  }
+
+  /**
+   * Rewind and obtain an iterator.
+   *
+   * Return: an iterator across elements (that are set) from front to back.
+   */
+  function walk() -> Iterator<Type> {
+    rewind();
+    return TapeIterator<Type>(ahead);
+  }
+
+  /**
+   * Move the current position forward one.
    */
   function forward() {
-    if !ahead? {
-      ahead <- TapeNode<Type>();
-      aheadCount <- aheadCount + 1;
-    }
     let node <- ahead!;
     ahead <- node.next;
     node.next <- behind;
@@ -136,20 +266,9 @@ final class Tape<Type> {
   }
 
   /**
-   * Move the current position backward one. This performs the following
-   * sequence:
-   *
-   *   1. If the element at the current position is not initialized, it is
-   *      default-constructed.
-   *   2. The current position is moved backward one.
-   *   3. If the element at the new position is not initialized, it remains
-   *      uninitialized.
+   * Move the current position backward one.
    */
   function backward() {
-    if !behind? {
-      behind <- TapeNode<Type>();
-      behindCount <- behindCount + 1;
-    }
     let node <- behind!;
     behind <- node.next;
     node.next <- ahead;
@@ -177,255 +296,32 @@ final class Tape<Type> {
   }
 
   /**
-   * Seek to a new position, offset from the current position.
+   * Seek to a new position.
    *
-   * - k: Offset from the current position. May be positive, negative or zero.
-   *      In the case of zero, this is a null operation.
+   * - k: New position.
    *
    * Elements are default-constructed as necessary between the current
-   * position and the requested position.
+   * position and the new position.
    */
   function seek(k:Integer) {
-    if k > 0 {
-      for i in 1..k {
-        forward();
-      }
-    } else if k < 0 {
-      for i in 1..abs(k) {
-        backward();
-      }
+    assert k > 0;
+    while behindCount < k - 1 {
+      backward();
     }
-  }
-
-  /**
-   * Get an element, offset from the current position.
-   *
-   * - k: Offset from the current position. May be positive, negative or zero.
-   *      In the case of zero, this is equivalent to `current()` without
-   *      arguments.
-   *
-   * Elements are default-constructed as necessary between the current
-   * position and the requested position.
-   */
-  function current(k:Integer) -> Type {
-    if k >= 0 {
-      if !ahead? {
-        ahead <- TapeNode<Type>();
-        aheadCount <- aheadCount + 1;
-      }
-      return ahead!.down(k).x;
-    } else {
-      if !behind? {
-        behind <- TapeNode<Type>();
-        behindCount <- behindCount + 1;
-      }
-      return behind!.down(abs(k) - 1).x;
+    while behindCount > k - 1 {
+      forward();
     }
-  }
-
-  /**
-   * Get the element at the current position.
-   */
-  function current() -> Type {
-    if !ahead? {
-      ahead <- TapeNode<Type>();
-      aheadCount <- aheadCount + 1;
-    }
-    return ahead!.x;
-  }
-
-  /**
-   * Get the element one before the current position.
-   */
-  function previous() -> Type {
-    if !behind? {
-      behind <- TapeNode<Type>();
-      behindCount <- behindCount + 1;
-    }
-    return behind!.x;
-  }
-
-  /**
-   * Get the element one after the current position.
-   */
-  function next() -> Type {
-    return current(+1);
-  }
-
-  /**
-   * Insert an element before the first (that is set).
-   *
-   * - x: Value.
-   */
-  function pushFront(x:Type) {
-    if behind? {
-      behind!.bottom().next <- TapeNode<Type>(x);
-    } else {
-      behind <- TapeNode<Type>(x);
-    }
-    behindCount <- behindCount + 1;
-  }
-
-  /**
-   * Insert a new default-constructed element before the first (that is set).
-   */
-  function pushFront() {
-    if behind? {
-      behind!.bottom().next <- TapeNode<Type>();
-    } else {
-      behind <- TapeNode<Type>();
-    }
-    behindCount <- behindCount + 1;
-  }
-
-  /**
-   * Insert an element after the last (that is set).
-   *
-   * - x: Value.
-   */
-  function pushBack(x:Type) {
-    if ahead? {
-      ahead!.bottom().next <- TapeNode<Type>(x);
-    } else {
-      ahead <- TapeNode<Type>(x);
-    }
-    aheadCount <- aheadCount + 1;
-  }
-
-  /**
-   * Insert a new default-constructed element after the last (that is set).
-   */
-  function pushBack() {
-    if ahead? {
-      ahead!.bottom().next <- TapeNode<Type>();
-    } else {
-      ahead <- TapeNode<Type>();
-    }
-    aheadCount <- aheadCount + 1;
-  }
-
-  /**
-   * Remove the first element (that is set). If this is at the current
-   * position, then all elements move backward one position, as if `erase()`
-   * was called instead.
-   */
-  function popFront() {
-    assert !empty();
-    if behind? {
-      if behind!.next? {
-        behind!.popBottom();
-      } else {
-        behind <- nil;
-      }
-      behindCount <- behindCount - 1;
-    } else {
-      erase();
-    }
-  }
-
-  /**
-   * Remove the last element (that is set). If this is at the current
-   * position, then all elements move forward one position, as if
-   * `eraseBefore()` was called instead.
-   */
-  function popBack() {
-    assert !empty();
-    if ahead? {
-      if ahead!.next? {
-        ahead!.popBottom();
-      } else {
-        ahead <- nil;
-      }
-      aheadCount <- aheadCount - 1;
-    } else {
-      eraseBefore();
-    }
-  }
-
-  /**
-   * Insert an element at the current position. All elements ahead of it move
-   * backward one position.
-   *
-   * - x: Value.
-   */
-  function insert(x:Type) {
-    let node <- TapeNode<Type>(x);
-    node.next <- ahead;
-    ahead <- node;
-    aheadCount <- aheadCount + 1;
-  }
-
-  /**
-   * Insert a new default-constructed element at the current position. All
-   * elements ahead of it move forward one position.
-   */
-  function insert() {
-    let node <- TapeNode<Type>();
-    node.next <- ahead;
-    ahead <- node;
-    aheadCount <- aheadCount + 1;
-  }
-
-  /**
-   * Insert an element before the current position. All elements behind it
-   * move backward one position.
-   *
-   * - x: Value.
-   */
-  function insertBefore(x:Type) {
-    let node <- TapeNode<Type>(x);
-    node.next <- behind;
-    behind <- node;
-    behindCount <- behindCount + 1;
-  }
-
-  /**
-   * Insert a new default-constructed element before the current position.
-   * All elements behind it move backward one position.
-   */
-  function insertBefore() {
-    let node <- TapeNode<Type>();
-    node.next <- behind;
-    behind <- node;
-    behindCount <- behindCount + 1;
-  }
-
-  /**
-   * Remove an element at the current position. All elements ahead of it move
-   * backward one position.
-   */
-  function erase() {
-    ahead <- ahead!.next;
-  }
-
-  /**
-   * Remove an element before the current position. All elements behind it
-   * move forward one position.
-   */
-  function eraseBefore() {
-    behind <- behind!.next;
-  }
-  
-  /**
-   * Rewind and obtain an iterator.
-   *
-   * Return: an iterator across elements (that are set) from front to back.
-   */
-  function walk() -> Iterator<Type> {
-    rewind();
-    return TapeIterator<Type>(ahead);
   }
 
   function read(buffer:Buffer) {
     clear();
-    let iter <- buffer.walk();
-    while iter.hasNext() {
-      let x <- iter.next().get<Type>();
+    let f <- buffer.walk();
+    while f.hasNext() {
+      let x <- f.next().get<Type>();
       if x? {
         pushBack(x!);
       }
     }
-    rewind();
   }
 
   function write(buffer:Buffer) {

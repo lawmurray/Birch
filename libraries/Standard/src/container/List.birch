@@ -276,6 +276,7 @@ final class List<Type> {
   }
   
   function read(buffer:Buffer) {
+    clear();
     let f <- buffer.walk();
     while f.hasNext() {
       let x <- f.next().get<Type>();

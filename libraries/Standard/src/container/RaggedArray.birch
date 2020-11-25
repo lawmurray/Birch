@@ -248,6 +248,7 @@ final class RaggedArray<Type> {
   }
 
  function read(buffer:Buffer) {
+    clear();
     let row <- buffer.walk();
     while row.hasNext() {
       pushBack();

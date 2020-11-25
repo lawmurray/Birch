@@ -195,13 +195,8 @@ final class Array<Type> {
   }
 
   function read(buffer:Buffer) {
-    let f <- buffer.walk();
-    while f.hasNext() {
-      let x <- f.next().get<Type>();
-      if x? {
-        pushBack(x!);
-      }
-    }
+    clear();
+    values <-? buffer.get<Type[_]>();
   }
 
   function write(buffer:Buffer) {
