@@ -1,5 +1,7 @@
 hpp{{
 #include <yaml.h>
+
+#include <iostream>
 }}
 
 /**
@@ -27,6 +29,11 @@ class YAMLReader < Reader {
    */
   file:File;
 
+  /**
+   * Is the file being read sequentially, with a sequence at the root?
+   */
+  sequential:Boolean <- false;
+
   hpp{{
   yaml_parser_t parser;
   yaml_event_t event;
@@ -35,152 +42,146 @@ class YAMLReader < Reader {
   override function open(path:String) {
     file <- fopen(path, READ);
     cpp{{
-    yaml_parser_initialize(&this->parser);
-    yaml_parser_set_input_file(&this->parser, this->file);
+    yaml_parser_initialize(&parser);
+    yaml_parser_set_input_file(&parser, file);
+    if (!yaml_parser_parse(&parser, &event)) {
+      error("parse error", handler_);
+    }
     }}
   }
 
+  override function close() {
+    cpp{{
+    yaml_event_delete(&event);
+    yaml_parser_delete(&parser);
+    }}
+    fclose(file);
+  }
+
   override function slurp() -> Buffer {
+    assert !sequential;
     buffer:Buffer;
     cpp{{
-    int done = 0;
-    while (!done) {
-      if (!yaml_parser_parse(&this->parser, &this->event)) {
-        error("parse error", handler_);
+    while (event.type != YAML_STREAM_END_EVENT) {
+      if (event.type == YAML_SEQUENCE_START_EVENT) {
+        parseSequence(buffer, handler_);
+      } else if (event.type == YAML_MAPPING_START_EVENT) {
+        parseMapping(buffer, handler_);
+      } else if (event.type == YAML_SCALAR_EVENT) {
+        parseValue(buffer, handler_);
       }
-      if (this->event.type == YAML_SEQUENCE_START_EVENT) {
-        this->parseSequence(buffer, handler_);
-      } else if (this->event.type == YAML_MAPPING_START_EVENT) {
-        this->parseMapping(buffer, handler_);
-      } else {
-        done = this->event.type == YAML_STREAM_END_EVENT;
-        yaml_event_delete(&this->event);
-      }
+      nextEvent(handler_);
     }
-    yaml_parser_delete(&this->parser);
     }}
     return buffer;
   }
 
   override function hasNext() -> Boolean {
     cpp{{
-    bool repeat = false, eof = false;
-    do {
-      if (!yaml_parser_parse(&this->parser, &this->event)) {
-        error("parse error", handler_);
+    while (event.type != YAML_MAPPING_START_EVENT &&
+        event.type != YAML_SEQUENCE_START_EVENT &&
+        event.type != YAML_SCALAR_EVENT &&
+        event.type != YAML_STREAM_END_EVENT) {
+      nextEvent(handler_);
+    }
+    if (!sequential && event.type == YAML_SEQUENCE_START_EVENT) {
+      /* root is a sequence to iterate through, go one level deeper to find
+       * its first element, if any */
+      nextEvent(handler_);
+      while (event.type != YAML_MAPPING_START_EVENT &&
+          event.type != YAML_SEQUENCE_START_EVENT &&
+          event.type != YAML_SCALAR_EVENT &&
+          event.type != YAML_STREAM_END_EVENT) {
+        nextEvent(handler_);
       }
-      switch (this->event.type) {
-        case YAML_SCALAR_EVENT:
-        case YAML_SEQUENCE_START_EVENT:
-        case YAML_MAPPING_START_EVENT:
-          break;
-        case YAML_STREAM_END_EVENT:
-          eof = true;
-          break;
-        default:
-          yaml_event_delete(&this->event);
-          repeat = true;
-          break;
-      }
-    } while (repeat);
-    return !eof;
+    }
+    sequential = true;
+    return event.type != YAML_STREAM_END_EVENT;
     }}
+    return false;
   }
 
   override function next() -> Buffer {
+    assert sequential;
     buffer:Buffer;
     cpp{{
-    switch (this->event.type) {
-      case YAML_SCALAR_EVENT:
-        this->parseValue(buffer, handler_);
-        break;
-      case YAML_SEQUENCE_START_EVENT:
-        this->parseSequence(buffer, handler_);
-        break;
-      case YAML_MAPPING_START_EVENT:
-        this->parseMapping(buffer, handler_);
-        break;
-      default:
-        /* hasNext() should have dealt with all other events */
-        assert(false);
+    if (event.type == YAML_SCALAR_EVENT) {
+      parseValue(buffer, handler_);
+    } else if (event.type == YAML_SEQUENCE_START_EVENT) {
+      parseSequence(buffer, handler_);
+    } else if (event.type == YAML_MAPPING_START_EVENT) {
+      parseMapping(buffer, handler_);
+    } else {
+      /* shouldn't get here if hasNext() was called before next() */
+      assert(false);
     }
+    nextEvent(handler_);
     }}
     return buffer;
   }
 
-  override function close() {
-    fclose(file);
-  }
-  
+  /*
+   * Parse a mapping (object).
+   */  
   function parseMapping(buffer:Buffer) {
     cpp{{
-    yaml_event_delete(&this->event);
-    int done = 0;
-    while (!done) {
-      /* read one name/value pair on each iteration */
-      if (!yaml_parser_parse(&this->parser, &this->event)) {
-        error("parse error", handler_);
-      }
-      if (this->event.type == YAML_SCALAR_EVENT) {
+    nextEvent(handler_);
+    while (event.type != YAML_MAPPING_END_EVENT) {
+      if (event.type == YAML_SCALAR_EVENT) {
         /* key */
-        char* data = (char*)this->event.data.scalar.value;
-        size_t length = this->event.data.scalar.length;
+        char* data = (char*)event.data.scalar.value;
+        size_t length = event.data.scalar.length;
         std::string key(data, length);
-        yaml_event_delete(&this->event);
-        
+      
         /* value */
-        if (!yaml_parser_parse(&this->parser, &this->event)) {
-          error("parse error", handler_);
+        nextEvent(handler_);
+        auto value = birch::Buffer(handler_);        
+        if (event.type == YAML_SCALAR_EVENT) {
+          parseValue(value, handler_);
+        } else if (event.type == YAML_SEQUENCE_START_EVENT) {
+          parseSequence(value, handler_);
+        } else if (event.type == YAML_MAPPING_START_EVENT) {
+          parseMapping(value, handler_);
         }
-        auto value = birch::Buffer(handler_);
+
+        /* set key/value entry */
         buffer->set(key, value, handler_);
-        if (this->event.type == YAML_SCALAR_EVENT) {
-          this->parseValue(value, handler_);
-        } else if (this->event.type == YAML_SEQUENCE_START_EVENT) {
-          this->parseSequence(value, handler_);
-        } else if (this->event.type == YAML_MAPPING_START_EVENT) {
-          this->parseMapping(value, handler_);
-        } else {
-          yaml_event_delete(&this->event);
-        }
-      } else {
-        done = this->event.type == YAML_MAPPING_END_EVENT;
-        yaml_event_delete(&this->event);
       }
+      nextEvent(handler_);
     }
     }}
   }
-  
+
+  /*
+   * Parse a sequence (array).
+   */
   function parseSequence(buffer:Buffer) {
     cpp{{
-    yaml_event_delete(&this->event);
-    int done = 0;
-    while (!done) {
-      if (!yaml_parser_parse(&this->parser, &this->event)) {
-        error("parse error", handler_);
-      }
-      if (this->event.type == YAML_SCALAR_EVENT) {
-        this->parseElement(buffer, handler_);
-      } else if (this->event.type == YAML_SEQUENCE_START_EVENT) {
+    nextEvent(handler_);
+    while (event.type != YAML_SEQUENCE_END_EVENT) {
+      if (event.type == YAML_SCALAR_EVENT) {
+        parseElement(buffer, handler_);
+      } else if (event.type == YAML_SEQUENCE_START_EVENT) {
         auto element = birch::Buffer(handler_);
         buffer->push(element, handler_);
-        this->parseSequence(element, handler_);
-      } else if (this->event.type == YAML_MAPPING_START_EVENT) {
+        parseSequence(element, handler_);
+      } else if (event.type == YAML_MAPPING_START_EVENT) {
         auto element = birch::Buffer(handler_);
         buffer->push(element, handler_);
-        this->parseMapping(element, handler_);
-      } else {
-        done = this->event.type == YAML_SEQUENCE_END_EVENT;
-        yaml_event_delete(&this->event);
+        parseMapping(element, handler_);
       }
+      nextEvent(handler_);
     }
     }}
   }
-  
+
+  /*
+   * Parse value of an entry in an object.
+   */  
   function parseValue(buffer:Buffer) {
     cpp{{
-    auto data = (char*)this->event.data.scalar.value;
-    auto length = this->event.data.scalar.length;
+    auto data = (char*)event.data.scalar.value;
+    auto length = event.data.scalar.length;
     auto endptr = data;
     auto intValue = int64_t(std::strtoll(data, &endptr, 10));
     if (endptr == data + length) {
@@ -205,14 +206,16 @@ class YAMLReader < Reader {
         buffer->set(std::string(data, length), handler_);
       }
     }
-    yaml_event_delete(&this->event);
     }}
   }
 
+  /*
+   * Parse element of a sequence.
+   */
   function parseElement(buffer:Buffer) {
     cpp{{
-    auto data = (char*)this->event.data.scalar.value;
-    auto length = this->event.data.scalar.length;
+    auto data = (char*)event.data.scalar.value;
+    auto length = event.data.scalar.length;
     auto endptr = data;
     auto intValue = int64_t(std::strtoll(data, &endptr, 10));
     if (endptr == data + length) {
@@ -237,7 +240,18 @@ class YAMLReader < Reader {
         buffer->push(std::string(data, length), handler_);
       }
     }
-    yaml_event_delete(&this->event);
+    }}
+  }
+
+  /*
+   * Parse the next event.
+   */
+  function nextEvent() {
+    cpp{{
+    yaml_event_delete(&event);
+    if (!yaml_parser_parse(&parser, &event)) {
+      error("parse error", handler_);
+    }
     }}
   }
 }

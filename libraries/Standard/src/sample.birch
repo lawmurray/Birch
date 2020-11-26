@@ -72,7 +72,7 @@ program sample(
   if model? {
     modelBuffer.set("class", model!);
   }
-  let theModel <- Model?(make(modelBuffer));
+  let theModel <- make<Model>(modelBuffer);
   if !theModel? {
     error("could not create model; the model class should be given as " +
         "model.class in the config file, or `--model` on the command " +
@@ -87,7 +87,7 @@ program sample(
   } else if !samplerBuffer.get("class")? {
     samplerBuffer.set("class", "ParticleSampler");
   }
-  let theSampler <- ParticleSampler?(make(samplerBuffer));
+  let theSampler <- make<ParticleSampler>(samplerBuffer);
   if !theSampler? {
     error("could not create sampler; the sampler class should be given as " +
         "sampler.class in the config file, or --sampler on the command " +
@@ -106,7 +106,7 @@ program sample(
       filterBuffer.set("class", "ParticleFilter");
     }
   }
-  let theFilter <- ParticleFilter?(make(filterBuffer));
+  let theFilter <- make<ParticleFilter>(filterBuffer);
   if !theFilter? {
     error("could not create filter; the filter class should be given as " +
         "filter.class in the config file, or --filter on the command " +
@@ -144,16 +144,16 @@ program sample(
   /* input */
   let inputPath <- configBuffer.get<String>("input");
   inputPath <-? input;
-  inputBuffer:Buffer?;
+  inputBuffer:Buffer;
   if inputPath? && inputPath! != "" {
     let inputReader <- Reader(inputPath!);
     if !nsteps? {
       inputBuffer <- inputReader.slurp();
-      nsteps <- inputBuffer!.size() - 1;
+      nsteps <- inputBuffer.size() - 1;
     } else {
       let t <- 0;
       while t <= nsteps! && inputReader.hasNext() {
-        inputBuffer!.push(inputReader.next());
+        inputBuffer.push(inputReader.next());
         t <- t + 1;
       }
     }
@@ -182,7 +182,7 @@ program sample(
   outputBuffer:Buffer;
   for n in 1..nsamples! {
     /* start */
-    let inputIter <- inputBuffer!.walk();
+    let inputIter <- inputBuffer.walk();
     if inputIter.hasNext() {
       buffer <- inputIter.next();
     } else {

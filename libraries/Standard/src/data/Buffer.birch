@@ -610,7 +610,7 @@ final class Buffer {
       }
     }
     return matrix(\(i:Integer, j:Integer) -> Type {
-          return y[(i - 1)*ncols + j];
+          return y[(i - 1)*ncols + j - 1];
         }, nrows, ncols);
   }
 

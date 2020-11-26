@@ -435,9 +435,9 @@ void birch::CppGenerator::visit(const Program* o) {
             auto type = dynamic_cast<Named*>(p->type->unwrap());
             assert(type);
             start(name << " = birch::" << type->name);
-            finish("(::optarg, handler_);");
+            finish("(birch::type::String(::optarg), handler_);");
           } else {
-            line(name << " = ::optarg;");
+            line(name << " = birch::type::String(::optarg);");
           }
           line("break;");
           out();
