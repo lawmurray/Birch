@@ -1,0 +1,119 @@
+env:
+  CPPFLAGS: -I/usr/local/include
+  LDFLAGS: -L/usr/local/lib
+  PREFIX: ${CIRRUS_WORKING_DIR}/project
+  PATH: ${PREFIX}/bin:${PATH}
+  BIRCH_FLAGS: '--unit=dir --arch=native --jobs=2'
+  MODE_FLAGS: '--enable-debug --disable-test --disable-release'
+  OMP_NUM_THREADS: 2
+
+task:
+  name: FreeBSD
+  freebsd_instance:
+    image_family: freebsd-12-1
+    cpu: 2
+    memory: 4G
+  install_script:
+    - pkg install -y automake bash bison boost-libs cairo eigen libtool libyaml sqlite3
+  driver_build_script:
+    - cd driver
+    - ./bootstrap
+    - ./configure --prefix="${PREFIX}" CXXFLAGS="-Wall -Wno-overloaded-virtual -g -O0 -fno-inline --coverage" || cat config.log
+    - make -j4
+    - make install
+  driver_test_script:
+    - mkdir hello
+    - cd hello
+    - birch help
+    - birch init
+    - birch audit
+    - birch dist
+    - birch clean
+  libbirch_build_script:
+    - cd libbirch
+    - ./bootstrap
+    - ./configure --prefix="${PREFIX}" ${MODE_FLAGS} || cat config.log
+    - make -j4
+    - make install
+  birch-standard_build_script:
+    - cd libraries/Standard
+    - birch build --prefix="${PREFIX}" ${MODE_FLAGS} ${BIRCH_FLAGS}
+    - birch install
+  birch-standard_smoke_script:
+    - cd libraries/Standard
+    - env BIRCH_MODE=debug bash ./smoke.sh
+  birch-cairo_build_script:
+    - cd libraries/Cairo
+    - birch build --prefix="${PREFIX}" ${MODE_FLAGS} ${BIRCH_FLAGS}
+    - birch install
+  birch-sqlite_build_script:
+    - cd libraries/SQLite
+    - birch build --prefix="${PREFIX}" ${MODE_FLAGS} ${BIRCH_FLAGS}
+    - birch install
+  upload_cache_script:
+    - tar -czvf cache.tar.gz -C "$PREFIX" .
+    - curl -s -X POST --data-binary @cache.tar.gz http://${CIRRUS_HTTP_CACHE_HOST}/birch-${CIRRUS_OS}-${CIRRUS_CHANGE_IN_REPO}
+
+# https://cirrus-ci.org/guide/tips-and-tricks/#sharing-configuration-between-tasks
+example_task_template: &EXAMPLE_TASK_TEMPLATE
+  depends_on: FreeBSD
+  freebsd_instance:
+    image_family: freebsd-12-1
+    cpu: 1
+    memory: 2G
+  download_cache_script:
+    - curl http://${CIRRUS_HTTP_CACHE_HOST}/birch-${CIRRUS_OS}-${CIRRUS_CHANGE_IN_REPO} -o cache.tar.gz
+    - mkdir -p "${PREFIX}"
+    - tar -xzvf cache.tar.gz -C "${PREFIX}"
+  install_script:
+    - pkg install -y automake bash bison boost-libs eigen libtool libyaml ${PACKAGES}
+  build_script:
+    - cd "examples/${EXAMPLE}"
+    - birch build --prefix="${PREFIX}" ${MODE_FLAGS} ${BIRCH_FLAGS} || cat config.log
+    - birch install
+  smoke_script:
+    - cd "examples/${EXAMPLE}"
+    - env BIRCH_MODE=debug bash ./smoke.sh
+
+task:
+  name: FreeBSD LinearGaussian
+  env:
+    EXAMPLE: LinearGaussian
+  << : *EXAMPLE_TASK_TEMPLATE
+
+task:
+  name: FreeBSD LinearRegression
+  env:
+    EXAMPLE: LinearRegression
+  << : *EXAMPLE_TASK_TEMPLATE
+
+task:
+  name: FreeBSD MixedGaussian
+  env:
+    EXAMPLE: MixedGaussian
+  << : *EXAMPLE_TASK_TEMPLATE
+
+task:
+  name: FreeBSD MultiObjectTracking
+  env:
+    EXAMPLE: MultiObjectTracking
+    PACKAGES: cairo
+  << : *EXAMPLE_TASK_TEMPLATE
+
+task:
+  name: FreeBSD PoissonGaussian
+  env:
+    EXAMPLE: PoissonGaussian
+  << : *EXAMPLE_TASK_TEMPLATE
+
+task:
+  name: FreeBSD SIR
+  env:
+    EXAMPLE: SIR
+  << : *EXAMPLE_TASK_TEMPLATE
+
+task:
+  name: FreeBSD VectorBorneDisease
+  env:
+    EXAMPLE: VectorBorneDisease
+  << : *EXAMPLE_TASK_TEMPLATE

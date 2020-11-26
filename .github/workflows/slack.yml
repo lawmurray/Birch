@@ -1,0 +1,48 @@
+name: Slack message
+
+on:
+  check_suite:
+    types: ['completed']
+
+jobs:
+  message:
+    name: After check suite failure
+    if: github.event.check_suite.conclusion != 'success'
+    runs-on: ubuntu-latest
+    steps:
+      # Documentation: https://docs.github.com/en/free-pro-team@latest/rest/reference/checks#get-a-check-suite
+      - name: Obtain failed check run
+        uses: octokit/request-action@v2.x
+        id: get_failed_check_run
+        with:
+          route: GET /repos/${{ github.repository }}/check-suites/${{ github.event.check_suite.id }}/check-runs?status=completed
+          mediaType: '{"previews": ["antiope"]}'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # Documentation: https://api.slack.com/methods/chat.postMessage
+      - name: Post message in Slack channel
+        run: |
+          curl -X POST -H 'Authorization: Bearer ${{ secrets.SLACK_BOT_TOKEN }}' -H 'Content-type: application/json' --data '${{ env.DATA }}' https://slack.com/api/chat.postMessage
+        env:
+          DATA: '{
+                    "channel": "${{ secrets.SLACK_CHANNEL }}",
+                    "attachments": [{
+                        "fallback": ":red_circle: Check run ${{ fromJson(steps.get_failed_check_run.outputs.data).check_runs[0].name }} has failed!\n<${{ fromJson(steps.get_failed_check_run.outputs.data).check_runs[0].html_url }}|Visit run>",
+                        "pretext": ":red_circle: Check run ${{ fromJson(steps.get_failed_check_run.outputs.data).check_runs[0].name }} has failed!",
+                        "color": "#FF0000",
+                        "title": "Visit run",
+                        "title_link": "${{ fromJson(steps.get_failed_check_run.outputs.data).check_runs[0].html_url }}",
+                        "fields": [
+                            {
+                                "title": "Repository",
+                                "value": "${{ github.repository }}",
+                                "short": true
+                            },
+                            {
+                                "title": "Run",
+                                "value": "${{ fromJson(steps.get_failed_check_run.outputs.data).check_runs[0].id }}",
+                                "short": true
+                            }
+                        ]
+                    }]
+                 }'
