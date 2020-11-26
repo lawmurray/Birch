@@ -61,13 +61,13 @@ abstract class HiddenMarkovModel<Parameter,State,Observation> <
     //
   }
 
-  override function read(t:Integer, buffer:Buffer) {
-    super.read(t, buffer);
-    buffer.get("y", y.get(t));
+  override function read(buffer:Buffer) {
+    super.read(buffer);
+    buffer.get("y", y);
   }
 
-  override function write(t:Integer, buffer:Buffer) {
-    super.write(t, buffer);
-    buffer.set("y", y.get(t));
+  override function write(buffer:Buffer) {
+    super.write(buffer);
+    //buffer.set("y", y);
   }
 }

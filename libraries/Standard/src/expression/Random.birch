@@ -31,15 +31,6 @@ final class Random<Value> < Expression<Value>(nil) {
     constant();
   }
 
-  /**
-   * Optional assignment.
-   */
-  operator <- x:Value? {
-    if x? {
-      this <- x!;
-    }
-  }
-
   override function distribution() -> Distribution<Value>? {
     return p;
   }
@@ -338,7 +329,7 @@ final class Random<Value> < Expression<Value>(nil) {
   }
 
   function read(buffer:Buffer) {
-    this <- buffer.get<Value>();
+    this <-? buffer.get<Value>();
   }
 
   function write(buffer:Buffer) {

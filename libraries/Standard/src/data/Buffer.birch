@@ -204,7 +204,7 @@ final class Buffer {
   function get<Type>(key:String, o:Type) {
     let buffer <- get(key);
     if buffer? {
-      buffer!.get(o);
+      buffer!.get<Type>(o);
     }
   }
 

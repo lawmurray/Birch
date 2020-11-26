@@ -112,9 +112,6 @@ final class Tape<Type> {
    */
   function get(i:Integer) -> Type {
     assert 0 < i;
-    while i > size() {
-      pushBack();
-    }
     if i <= behindCount {
       seek(i + 1);
       return behind!.x;
@@ -132,9 +129,6 @@ final class Tape<Type> {
    */
   function set(i:Integer, x:Type) {
     assert 0 < i;
-    while i > size() {
-      pushBack();
-    }
     if i <= behindCount {
       seek(i + 1);
       behind!.x <- x;
@@ -218,9 +212,6 @@ final class Tape<Type> {
    */
   function insert(i:Integer, x:Type) {
     assert 0 < i;
-    while i > size() {
-      pushBack();
-    }
     seek(i);
     let node <- TapeNode<Type>(x);
     node.next <- ahead;
@@ -235,9 +226,6 @@ final class Tape<Type> {
    */
   function erase(i:Integer) {
     assert 0 < i;
-    while i > size() {
-      pushBack();
-    }
     seek(i);
     ahead <- ahead!.next;
     aheadCount <- aheadCount - 1;
@@ -305,11 +293,14 @@ final class Tape<Type> {
    */
   function seek(k:Integer) {
     assert k > 0;
+    while k > size() {
+      pushBack();
+    }
     while behindCount < k - 1 {
-      backward();
+      forward();
     }
     while behindCount > k - 1 {
-      forward();
+      backward();
     }
   }
 
