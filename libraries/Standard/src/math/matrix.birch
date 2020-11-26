@@ -226,7 +226,8 @@ function matrix<Type>(λ:\(Integer, Integer) -> Type, rows:Integer,
  */
 function matrix<Type>(x:Type, rows:Integer, columns:Integer) -> Type[_,_] {
   cpp{{
-  return libbirch::make_array<Type>(libbirch::make_shape(rows, columns), x);
+  return libbirch::make_array<Type>(libbirch::make_shape(rows, columns),
+      handler_, x);
   }}
 }
 

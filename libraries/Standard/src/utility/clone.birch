@@ -22,7 +22,7 @@ function clone<Type>(o:Type[_]) -> Type[_] {
       return libbirch::clone(o.get(libbirch::make_slice(n)));
     };
   return libbirch::make_array_from_lambda<Type>(
-      libbirch::make_shape(length(o)), l);
+      libbirch::make_shape(length(o)), l, handler_);
   }}
 }
 
@@ -41,7 +41,7 @@ function clone<Type>(o:Type, length:Integer) -> Type[_] {
   auto l = [&](int64_t n) {
       return libbirch::clone(o);
     };
-  return libbirch::make_array_from_lambda<Type>(
-      libbirch::make_shape(length), l);
+  return libbirch::make_array_from_lambda<Type>(libbirch::make_shape(length),
+      l);
   }}
 }
