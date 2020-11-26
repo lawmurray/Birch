@@ -335,7 +335,11 @@ final class Buffer {
    * vector elements of an array before pushing the new element onto the end.
    */
   function push<Type>(x:Type) {
-    doPush(x);
+    if size() == 0 {
+      set([x]);
+    } else {
+      doPush(x);
+    }
   }
 
   /**
@@ -663,6 +667,13 @@ final class Buffer {
     vectorReal <- x;
   }
 
+  function doSet<Type>(x:Type[_]) {
+    clear();
+    for i in 1..length(x) {
+      push(Buffer(x[i]));
+    }
+  }
+
   function doSet(x:Boolean[_,_]) {
     clear();
     matrixBoolean <- x;
@@ -711,7 +722,7 @@ final class Buffer {
     } else if scalarReal? {
       set([scalarReal!, Real(x)]);
     } else if vectorBoolean? {
-      vectorInteger <- stack(Integer(vectorBoolean!), x);
+      set(stack(Integer(vectorBoolean!), x));
     } else if vectorInteger? {
       cpp{{
       vectorInteger.get().push(x);
@@ -731,9 +742,9 @@ final class Buffer {
     } else if scalarReal? {
       set([scalarReal!, x]);
     } else if vectorBoolean? {
-      vectorReal <- stack(Real(vectorBoolean!), x);
+      set(stack(Real(vectorBoolean!), x));
     } else if vectorInteger? {
-      vectorReal <- stack(Real(vectorInteger!), x);
+      set(stack(Real(vectorInteger!), x));
     } else if vectorReal? {
       cpp{{
       vectorReal.get().push(x);
@@ -753,11 +764,11 @@ final class Buffer {
 
   function doPush(x:Boolean[_]) {
     if matrixBoolean? {
-      matrixBoolean <- stack(matrixBoolean!, row(x));
+      set(stack(matrixBoolean!, row(x)));
     } else if matrixInteger? {
-      matrixInteger <- stack(matrixInteger!, Integer(row(x)));
+      set(stack(matrixInteger!, Integer(row(x))));
     } else if matrixReal? {
-      matrixReal <- stack(matrixReal!, Real(row(x)));
+      set(stack(matrixReal!, Real(row(x))));
     } else {
       push(Buffer(x));
     }
@@ -765,12 +776,11 @@ final class Buffer {
 
   function doPush(x:Integer[_]) {
     if matrixBoolean? {
-      matrixInteger <- stack(Integer(matrixBoolean!), row(x));
-      matrixBoolean <- nil;
+      set(stack(Integer(matrixBoolean!), row(x)));
     } else if matrixInteger? {
-      matrixInteger <- stack(matrixInteger!, row(x));
+      set(stack(matrixInteger!, row(x)));
     } else if matrixReal? {
-      matrixReal <- stack(matrixReal!, Real(row(x)));
+      set(stack(matrixReal!, Real(row(x))));
     } else {
       push(Buffer(x));
     }
@@ -778,13 +788,11 @@ final class Buffer {
 
   function doPush(x:Real[_]) {
     if matrixBoolean? {
-      matrixReal <- stack(Real(matrixBoolean!), row(x));
-      matrixBoolean <- nil;
+      set(stack(Real(matrixBoolean!), row(x)));
     } else if matrixInteger? {
-      matrixReal <- stack(Real(matrixInteger!), row(x));
-      matrixInteger <- nil;
+      set(stack(Real(matrixInteger!), row(x)));
     } else if matrixReal? {
-      matrixReal <- stack(matrixReal!, row(x));
+      set(stack(matrixReal!, row(x)));
     } else {
       push(Buffer(x));
     }

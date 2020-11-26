@@ -1,7 +1,5 @@
 hpp{{
 #include <yaml.h>
-
-#include <iostream>
 }}
 
 /**
