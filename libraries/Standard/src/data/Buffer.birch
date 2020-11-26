@@ -565,7 +565,7 @@ final class Buffer {
     } else if matrixReal? {
       return Boolean(matrixReal!);
     } else {
-      return nil;
+      return doGetMatrix<Boolean>();
     }
   }
 
@@ -577,7 +577,7 @@ final class Buffer {
     } else if matrixReal? {
       return Integer(matrixReal!);
     } else {
-      return nil;
+      return doGetMatrix<Integer>();
     }
   }
 
@@ -589,20 +589,33 @@ final class Buffer {
     } else if matrixReal? {
       return Real(matrixReal!);
     } else {
-      return nil;
+      return doGetMatrix<Real>();
     }
   }
 
   function doGet<Type>(x:Type[_,_]?) -> Type[_,_]? {
+    return doGetMatrix<Type>();
+  }
+
+  function doGet(x:LLT?) -> LLT? {
+    let y <- doGetMatrix<Real>();
+    if y? {
+      return llt(y!);
+    } else {
+      return nil;
+    }
+  }
+
+  function doGetMatrix<Type>() -> Type[_,_]? {
     y:Type[_];
     let nrows <- 0;
     let ncols <- 0;
     let iter <- walk();
     while iter.hasNext() {
       let z <- iter.next().get<Type[_]>();
-      if z? && (nrows == 0 || ncols == columns(z!)) {
+      if z? && (nrows == 0 || ncols == length(z!)) {
         nrows <- nrows + 1;
-        ncols <- columns(z!);
+        ncols <- length(z!);
         for i in 1..ncols {
           let element <- z![i];
           cpp{{
@@ -614,17 +627,8 @@ final class Buffer {
       }
     }
     return matrix(\(i:Integer, j:Integer) -> Type {
-          return y[(i - 1)*ncols + j - 1];
+          return y[(i - 1)*ncols + j];
         }, nrows, ncols);
-  }
-
-  function doGet(x:LLT?) -> LLT? {
-    let y <- get<Real[_,_]>();
-    if y? {
-      return llt(y!);
-    } else {
-      return nil;
-    }
   }
 
   function doSet(x:Boolean) {
