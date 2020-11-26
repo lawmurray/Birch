@@ -38,13 +38,13 @@ class MixedGaussianParameter {
   σ2_y_n:Real <- 0.1;
 
   function read(buffer:Buffer) {
-    A <-? buffer.get("A", A);
-    b <-? buffer.get("b", b);
-    c <-? buffer.get("c", c);
-    Σ_x_l <-? buffer.get("Σ_x_l", Σ_x_l);
-    σ2_x_n <-? buffer.get("σ2_x_n", σ2_x_n);
-    σ2_y_l <-? buffer.get("σ2_y_l", σ2_y_l);
-    σ2_y_n <-? buffer.get("σ2_y_n", σ2_y_n);
+    A <-? buffer.get<Real[_,_]>("A");
+    b <-? buffer.get<Real[_]>("b");
+    c <-? buffer.get<Real[_]>("c");
+    Σ_x_l <-? buffer.get<Real[_,_]>("Σ_x_l");
+    σ2_x_n <-? buffer.get<Real>("σ2_x_n");
+    σ2_y_l <-? buffer.get<Real>("σ2_y_l");
+    σ2_y_n <-? buffer.get<Real>("σ2_y_n");
   }
 
   function write(buffer:Buffer) {

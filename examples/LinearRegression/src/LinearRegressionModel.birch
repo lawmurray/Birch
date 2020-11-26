@@ -34,8 +34,8 @@ class LinearRegressionModel < Model {
   }
 
   function read(buffer:Buffer) {
-    X <-? buffer.getRealMatrix("X");
-    y <-? buffer.getRealVector("y");
+    X <-? buffer.get<Real[_,_]>("X");
+    y <-? buffer.get<Real[_]>("y");
   }
 
   function write(buffer:Buffer) {

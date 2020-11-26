@@ -27,11 +27,11 @@ program draw(input:String <- "output/simulate.json",
   let iter <- inputBuffer.walk();
   if iter.hasNext() {
     let array <- iter.next();
-    let sample <- array.find("sample");
+    let sample <- array.get("sample");
     if sample? {
-      let θ <- sample!.find("θ");
-      let l <- θ!.getRealVector("l")!;
-      let u <- θ!.getRealVector("u")!;
+      let θ <- sample!.get("θ");
+      let l <- θ!.get<Real[_]>("l")!;
+      let u <- θ!.get<Real[_]>("u")!;
 
       let scaleX <- width/(u[1] - l[1]);
       let scaleY <- height/(u[2] - l[2]);
@@ -51,7 +51,7 @@ program draw(input:String <- "output/simulate.json",
       let iter <- sample!.walk("y");
       while iter.hasNext() {
         let y <- iter.next();
-        let Y <- y.getRealMatrix();
+        let Y <- y.get<Real[_,_]>();
         if Y? {
           cr.setSourceRGB(0.8, 0.8, 0.8);
           for i in 1..rows(Y!) {
@@ -69,7 +69,7 @@ program draw(input:String <- "output/simulate.json",
         let iter <- z.walk("y");
         while iter.hasNext() {
           let ys <- iter.next();
-          let y <- ys.getRealVector();
+          let y <- ys.get<Real[_]>();
           if y? {
             cr.setSourceRGB(0.8, 0.8, 0.8);
             cr.arc(y![1], y![2], 4.0*fat/scale, 0.0, 2.0*π);
@@ -87,7 +87,7 @@ program draw(input:String <- "output/simulate.json",
       iter <- sample!.walk("z");
       while iter.hasNext() {
         let z <- iter.next();
-        let x <- z.getRealMatrix("x");
+        let x <- z.get<Real[_,_]>("x");
         if x? {
           cr.setLineWidth(4.0*fat/scale);
           cr.moveTo(x![1,1], x![1,2]);
@@ -107,8 +107,8 @@ program draw(input:String <- "output/simulate.json",
       iter <- sample!.walk("z");
       while iter.hasNext() {
         let z <- iter.next();
-        let t <- z.getInteger("t");
-        let x <- z.getRealMatrix("x");
+        let t <- z.get<Integer>("t");
+        let x <- z.get<Real[_,_]>("x");
     
         if t? && x? {
           cr.setLineWidth(2.0*fat/scale);

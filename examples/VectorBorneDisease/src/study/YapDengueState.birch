@@ -6,6 +6,6 @@ final class YapDengueState < VBDState {
   y:Integer?;  // observed number of cases since last observation
   
   function read(buffer:Buffer) {
-    y <- buffer.getInteger();
+    y <- buffer.get<Integer>();
   }
 }

@@ -463,8 +463,8 @@ auto optional_assign(const To& to, const Optional<From>& from) {
  */
 template<class Left, class Event, class Handler>
 auto simulate(Left& left, const Event& event, const Handler& handler) {
-  handler->handle(event);
-  left = event->value();
+  handler->handle(event, handler);
+  left = event->value(handler);
   return left;
 }
 
@@ -477,8 +477,8 @@ auto simulate(Left& left, const Event& event, const Handler& handler) {
  */
 template<class Left, class Event, class Handler>
 auto simulate(Left&& left, const Event& event, const Handler& handler) {
-  handler->handle(event);
-  left = event->value();
+  handler->handle(event, handler);
+  left = event->value(handler);
   return left;
 }
 

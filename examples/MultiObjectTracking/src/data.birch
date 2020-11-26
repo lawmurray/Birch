@@ -20,18 +20,18 @@ program data(input:String <- "output/simulate.json",
   let iter <- inputBuffer.walk();
   if iter.hasNext() {
     let array <- iter.next();
-    let sample <- array.find("sample");
+    let sample <- array.get("sample");
     if sample? {
       sample!.get("θ", θ);  
       sample!.get("y", y);
       let iter <- sample!.walk("z");
       while iter.hasNext() {
         let z <- iter.next();
-        let t <- z.getInteger("t")!;
+        let t <- z.get<Integer>("t")!;
         let iter <- z.walk("y");
         while iter.hasNext() {
           let u <- iter.next();
-          let v <- u!.getRealVector();
+          let v <- u!.get<Real[_]>();
           if v? {
             w:Random<Real[_]>;
             w <- v![1..2];

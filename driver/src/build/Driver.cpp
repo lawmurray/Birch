@@ -369,7 +369,7 @@ void birch::Driver::bootstrap() {
       std::stringstream buf;
       buf << "bootstrap failed";
       if (!verbose) {
-        buf << ", see bootstrap.log for details";
+        buf << ", see bootstrap.log for details, perhaps run `birch clean` and try again";
       }
       buf << '.';
       throw DriverException(buf.str());
@@ -474,7 +474,7 @@ void birch::Driver::configure() {
       std::stringstream buf;
       buf << "configure failed";
       if (!verbose) {
-        buf << ", see configure.log and config.log for details";
+        buf << ", see configure.log and config.log for details, perhaps run `birch clean` and try again";
       }
       buf << '.';
       throw DriverException(buf.str());
@@ -535,7 +535,7 @@ void birch::Driver::dist() {
     std::stringstream buf;
     buf << "tar failed";
     if (!verbose) {
-      buf << ", see tar.log for details";
+      buf << ", see tar.log for details, perhaps run `birch clean` and try again";
     }
     buf << '.';
     throw DriverException(buf.str());

@@ -8,10 +8,10 @@ class LinearGaussianParameter {
   σ2_y:Real <- 0.01;
 
   function read(buffer:Buffer) {
-    a <-? buffer.get("a", a);
-    b <-? buffer.get("b", b);
-    σ2_x <-? buffer.get("σ2_x", σ2_x);
-    σ2_y <-? buffer.get("σ2_y", σ2_y);
+    a <-? buffer.get<Real>("a");
+    b <-? buffer.get<Real>("b");
+    σ2_x <-? buffer.get<Real>("σ2_x");
+    σ2_y <-? buffer.get<Real>("σ2_y");
   }
 
   function write(buffer:Buffer) {
