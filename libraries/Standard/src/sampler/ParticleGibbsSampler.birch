@@ -53,6 +53,7 @@ class ParticleGibbsSampler < ConditionalParticleSampler {
       }
       filter.r!.rewind();
     }
+    super.sample(filter, model, input);
   }
 
   override function sample(filter:ConditionalParticleFilter, t:Integer,
