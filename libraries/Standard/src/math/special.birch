@@ -120,47 +120,47 @@ function beta(x:Real32, y:Real32) -> Real32 {
  * The incomplete beta function.
  */
 function ibeta(a:Real, b:Real, x:Real) -> Real {
-  if (x < Real(0.0) || x > Real(1.0)) {
+  if (x < 0.0 || x > 1.0) {
     return inf;
   }
   // whenever x < (a + 1) / (a + b + 2) -- CF converges
-  if (x > ((a + Real(1.0))/(a + b + Real(2.0)))) {
-    return Real(1.0) - ibeta(b, a, Real(1.0) - x);
+  if (x > ((a + 1.0)/(a + b + 2.0))) {
+    return 1.0 - ibeta(b, a, 1.0 - x);
   }
 
   // stop represents the value when Lentz's algorithm has converged
-  let STOP <- Real(1.0e-8);
+  let STOP <- 1.0e-8;
 
   // TINY is to represent a very small floating point number
-  let TINY <- Real(1.0e-30);
+  let TINY <- 1.0e-30;
 
   let lbeta_ab <- lgamma(a) + lgamma(b) - lgamma(a + b);
-  let front <- exp(log(x)*a + log(Real(1.0) - x)*b - lbeta_ab) / a;
+  let front <- exp(log(x)*a + log(1.0 - x)*b - lbeta_ab) / a;
 
   // setup for Lentz's algorithm
-  let f <- Real(1.0);
-  let c <- Real(1.0);
-  let d <- Real(0.0);
-  let numerator <- Real(0.0);
+  let f <- 1.0;
+  let c <- 1.0;
+  let d <- 0.0;
+  let numerator <- 0.0;
 
   for i in 0..200 {
     let m <- i/2;
 
     if (i == 0) {
-      numerator <- Real(1.0);
+      numerator <- 1.0;
     } else if (mod(i, 2) == 0) {
-      numerator <- (m * (b - m)*x) / ((a + Real(2.0)*m - 1.0) * (a + Real(2.0)*m));
+      numerator <- (m * (b - m)*x) / ((a + 2.0*m - 1.0) * (a + 2.0*m));
     } else {
-      numerator <- -((a + m) * (a + b + m) * x)/((a + Real(2.0)*m)*(a + Real(2.0)*m + Real(1.0)));
+      numerator <- -((a + m) * (a + b + m) * x)/((a + 2.0*m)*(a + 2.0*m + 1.0));
     }
 
-    d <- Real(1.0) + numerator * d;
+    d <- 1.0 + numerator * d;
     if abs(d) < TINY {
       d <- TINY;
     }
-    d <- Real(1.0) / d;
+    d <- 1.0 / d;
 
-    c <- Real(1.0) + numerator / c;
+    c <- 1.0 + numerator / c;
 
     if abs(c) < TINY {
       c <- TINY;
@@ -171,8 +171,8 @@ function ibeta(a:Real, b:Real, x:Real) -> Real {
     // NOTE: Does *= work?
     f <- f * cd;
 
-    if abs(Real(1.0) - cd) < STOP {
-      return front * (f - Real(1.0));
+    if abs(1.0 - cd) < STOP {
+      return front * (f - 1.0);
     }
   }
 
@@ -320,8 +320,8 @@ function lower_inc_gamma(a:Real, x:Real) -> Real {
 
   // this implementation is taken from https://github.com/scipy/scipy/blob/3af8448114dd4a2755d513edb5a2272a338dc483/scipy/special/cephes/igam.c
 
-  assert x >= Real(0.0);
-  assert a >= Real(0.0);
+  assert x >= 0.0;
+  assert a >= 0.0;
   IGAM_SMALL:Real64 <- 20;
   IGAM_LARGE:Real64 <- 200;
   IGAM_SMALLRATIO:Real64 <- 0.3;
@@ -329,22 +329,22 @@ function lower_inc_gamma(a:Real, x:Real) -> Real {
 
   absxma_a:Real;
 
-  if (a == Real(0.0)) {
-    return Real(1.0);
-    if (x > Real(0.0)) {
-      return Real(1.0);
+  if (a == 0.0) {
+    return 1.0;
+    if (x > 0.0) {
+      return 1.0;
     } else {
       return nan;
     }
-  } else if (x == Real(0.0)) {
-    return Real(0.0);
+  } else if (x == 0.0) {
+    return 0.0;
   } else if (isinf(a)) {
     if (isinf(x)) {
       return nan;
     }
-    return Real(0.0);
+    return 0.0;
   } else if (isinf(x)) {
-    return Real(1.0);
+    return 1.0;
   }
 
   absxma_a <- abs(x - a) / a;
@@ -354,8 +354,8 @@ function lower_inc_gamma(a:Real, x:Real) -> Real {
     return asymptotic_series(a, x, 1);
   }
 
-  if ((x > Real(1.0)) && (x > a)) {
-    return (Real(1.0) - upper_inc_gamma(a, x));
+  if ((x > 1.0) && (x > a)) {
+    return (1.0 - upper_inc_gamma(a, x));
   }
 
   return igam_series(a, x);
@@ -364,8 +364,8 @@ function lower_inc_gamma(a:Real, x:Real) -> Real {
 
 function upper_inc_gamma(a:Real, x:Real) -> Real {
 
-  assert x >= Real(0.0);
-  assert a >= Real(0.0);
+  assert x >= 0.0;
+  assert a >= 0.0;
   IGAM_SMALL:Real64 <- 20;
   IGAM_LARGE:Real64 <- 200;
   IGAM_SMALLRATIO:Real64 <- 0.3;
@@ -373,22 +373,22 @@ function upper_inc_gamma(a:Real, x:Real) -> Real {
 
   absxma_a:Real;
 
-  if (a == Real(0.0)) {
-    if (x > Real(0.0)) {
-      return Real(0.0);
+  if (a == 0.0) {
+    if (x > 0.0) {
+      return 0.0;
     } else {
       return nan;
     }
 
-  } else if (x == Real(0.0)) {
-    return Real(1.0);
+  } else if (x == 0.0) {
+    return 1.0;
   } else if (isinf(a)) {
     if (isinf(x)) {
       return nan;
     }
-    return Real(1.0);
+    return 1.0;
   } else if (isinf(x)) {
-    return Real(0.0);
+    return 0.0;
   }
     /* Asymptotic regime where a ~ x; Maddock et. al., "Incomplete Gamma Functions", https://www.boost.org/doc/libs/1_61_0/libs/math/doc/html/math_toolkit/sf_gamma/igamma.html */
 
@@ -428,23 +428,23 @@ function igam_fac(a:Real, x:Real) -> Real {
   IGAM_MAXLOG:Real64 <- 709.782712893383996732;
   IGAM_LANCZOS_G:Real64 <- 6.024680040776729583740234375;
 
-  if (abs(a - x) > Real(0.4) * abs(a)) {
+  if (abs(a - x) > 0.4 * abs(a)) {
     let ax <- a * log(x) - x - lgamma(a);
     if (ax < -IGAM_MAXLOG) {
-      return Real(0.0);
+      return 0.0;
     }
     return exp(ax);
   }
 
-  let fac <- a + IGAM_LANCZOS_G - Real(0.5);
-  let res <- sqrt(fac / exp(Real(1.0))) / lanczos_sum_expg_scaled(a);
+  let fac <- a + IGAM_LANCZOS_G - 0.5;
+  let res <- sqrt(fac / exp(1.0)) / lanczos_sum_expg_scaled(a);
 
-  if ((a < Real(200.0)) && (x < Real(200.0))) {
+  if ((a < 200.0) && (x < 200.0)) {
     res <- res * exp(a - x) * pow(x / fac, a);
   } else {
-    let num <- x - a - IGAM_LANCZOS_G + Real(0.5);
+    let num <- x - a - IGAM_LANCZOS_G + 0.5;
     // changed log1pmx to this
-    res <- res * exp(a * (log1p(num / fac) - x) + x * (Real(0.5) - IGAM_LANCZOS_G) / fac);
+    res <- res * exp(a * (log1p(num / fac) - x) + x * (0.5 - IGAM_LANCZOS_G) / fac);
   }
   return res;
 }
@@ -454,37 +454,37 @@ function igamc_continued_fraction(a:Real, x:Real) -> Real {
   IGAM_BIG:Real64 <- 4.503599627370496e15;
   IGAM_BIGINV:Real64 <- 2.22044604925031308085e-16;
   let ax <- igam_fac(a, x);
-  if (ax == Real(0.0)) {
-    return Real(0.0);
+  if (ax == 0.0) {
+    return 0.0;
   }
 
   /* continued fraction */
-  let y <- Real(1.0) - a;
-  let z <- x + y + Real(1.0);
-  let c <- Real(0.0);
-  let pkm2 <- Real(1.0);
+  let y <- 1.0 - a;
+  let z <- x + y + 1.0;
+  let c <- 0.0;
+  let pkm2 <- 1.0;
   let qkm2 <- x;
-  let pkm1 <- x + Real(1.0);
+  let pkm1 <- x + 1.0;
   let qkm1 <- z * x;
   let ans <- pkm1 / qkm1;
 
   let flag <- true;
   let i <- 0;
-  let t <- Real(0.0);
-  let r <- Real(0.0);
+  let t <- 0.0;
+  let r <- 0.0;
   while(i <= 2000 && flag) {
-    c <- c + Real(1.0);
-    y <- y + Real(1.0);
-    z <- z + Real(2.0);
+    c <- c + 1.0;
+    y <- y + 1.0;
+    z <- z + 2.0;
     let yc <- y * c;
     let pk <- pkm1 * z - pkm2 * yc;
     let qk <- qkm1 * z - qkm2 * yc;
-    if (qk != Real(0.0)) {
+    if (qk != 0.0) {
       r <- pk / qk;
       t <- abs((ans - r) / r);
       ans <- r;
     } else {
-      t <- Real(1.0);
+      t <- 1.0;
     }
 
     pkm2 <- pkm1;
@@ -510,18 +510,18 @@ function igamc_continued_fraction(a:Real, x:Real) -> Real {
 function igam_series(a:Real, x:Real) -> Real {
 
   let ax <- igam_fac(a, x);
-  if (ax == Real(0.0)) {
-    return Real(0.0);
+  if (ax == 0.0) {
+    return 0.0;
   }
 
   /* power series */
   let r <- a;
-  let c <- Real(1.0);
-  let ans <- Real(1.0);
+  let c <- 1.0;
+  let ans <- 1.0;
   let flag <- true;
   let i <- 0;
   while (i <= 2000 && flag) {
-    r <-  r + Real(1.0);
+    r <-  r + 1.0;
     c <- c * (x / r);
     ans <- ans + c;
     if (c <= MACHEP * ans) {
@@ -533,8 +533,8 @@ function igam_series(a:Real, x:Real) -> Real {
 }
 
 function igamc_series(a:Real, x:Real) -> Real {
-  let fac <- Real(1.0);
-  let sum <- Real(0.0);
+  let fac <- 1.0;
+  let sum <- 0.0;
   term:Real;
   logx:Real;
 
@@ -551,7 +551,7 @@ function igamc_series(a:Real, x:Real) -> Real {
   }
 
   logx <- log(x);
-  term <- -expm1(a * logx - lgamma(a + Real(1.0)));
+  term <- -expm1(a * logx - lgamma(a + 1.0));
   return term - exp(a * logx - lgamma(a)) * sum;
 }
 
@@ -572,8 +572,8 @@ function asymptotic_series(a:Real, x:Real, func:Integer) -> Real {
     let absoldterm <- inf;
     etapow:Real[N];
     etapow[1] <- 1;
-    let tot <- Real(0.0);
-    let afac <- Real(1.0);
+    let tot <- 0.0;
+    let afac <-1.0;
 
   if (func == 1) {
     sgn <- -1;
@@ -581,14 +581,14 @@ function asymptotic_series(a:Real, x:Real, func:Integer) -> Real {
     sgn <- 1;
   }
 
-  if (λ > Real(1.0)) {
-    η <- sqrt(Real(-2.0) * (log1p(σ) - σ));
+  if (λ > 1.0) {
+    η <- sqrt(-2.0 * (log1p(σ) - σ));
   } else if (λ < 1) {
-    η <- -sqrt(Real(-2.0) * (log1p(σ) - σ));
+    η <- -sqrt(-2.0 * (log1p(σ) - σ));
   } else {
-    η <- Real(0.0);
+    η <- 0.0;
   }
-  res <- Real(0.5) * erfc(sgn * η * sqrt(a / Real(2.0)));
+  res <- 0.5 * erfc(sgn * η * sqrt(a / 2.0));
   let flag1 <- true;
   let k <- 1;
   while (k <= K && flag1) {
@@ -605,7 +605,7 @@ function asymptotic_series(a:Real, x:Real, func:Integer) -> Real {
       if (abs(ckterm) < MACHEP * abs(ck)) {
         flag2 <- false;
       }
-      ++n;
+      n <- n + 1;
     }
     term <- ck * afac;
     absterm <- abs(term);
@@ -620,7 +620,7 @@ function asymptotic_series(a:Real, x:Real, func:Integer) -> Real {
     afac <- afac / a;
     ++k;
   }
-  res <- res + sgn * exp(Real(-0.5) * a * η * η) * tot / sqrt(Real(2.0) * π * a);
+  res <- res + sgn * exp(-0.5 * a * η * η) * tot / sqrt(2.0 * π * a);
 
   return res;
 }
@@ -638,15 +638,15 @@ function ratevl(x:Real, num:Real[_], M:Integer, denom:Real[_], N:Integer) -> Rea
   y:Real;
   let absx <- abs(x);
   let pind <- 1;
-  let pval <- Real(0.0);
+  let pval <- 0.0;
 
-  if (absx > Real(1.0)) {
+  if (absx > 1.0) {
 
     /* Evaluate as a polynomial in 1/x. */
     dir <- -1;
     // point at the last element
     pind <- M + 1;
-    y <- Real(1.0) / x;
+    y <- 1.0 / x;
   } else {
 
     // point at the first element
@@ -667,7 +667,7 @@ function ratevl(x:Real, num:Real[_], M:Integer, denom:Real[_], N:Integer) -> Rea
   }
 
   /* Evaluate the denominator */
-  if (absx > Real(1.0)) {
+  if (absx > 1.0) {
     pind <- N + 1;
   } else {
     pind <- 1;
@@ -680,7 +680,7 @@ function ratevl(x:Real, num:Real[_], M:Integer, denom:Real[_], N:Integer) -> Rea
     pind <- pind + dir;
   }
 
-  if (absx > Real(1.0)) {
+  if (absx > 1.0) {
     let i <- N - M;
     return pow(x, Real(i)) * num_ans / denom_ans;
   } else {
