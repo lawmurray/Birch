@@ -100,6 +100,27 @@ final class Buffer {
   }
 
   /**
+   * Is the value empty? A value is empty if it is nil, or an empty object, or
+   * an empty array.
+   */
+  function isEmpty() -> Boolean {
+    return isNil() || (values? && length(values!) == 0);
+  }
+
+  /**
+   * Is the value of an entry empty? If the given key does not exist, returns
+   * true.
+   */
+  function isEmpty(key:String) -> Boolean {
+    let buffer <- get(key);
+    if buffer? {
+      return buffer!.isEmpty();
+    } else {
+      return true;
+    }
+  }
+
+  /**
    * Set to an empty object.
    */
   function setEmptyObject() {
@@ -401,10 +422,10 @@ final class Buffer {
    *
    * - x: Value.
    *
-   * If the buffer value is nil, the result is an array with the single
-   * element `x`. If the buffer value is an object or scalar, the result is an
-   * array with two elements: that value followed by `x`. If the buffer value
-   * is an array then `x` is appended to the end.
+   * If the buffer is empty, the result is an array with the single element
+   * `x`. If the buffer is a non-empty object or scalar, the result is an
+   * array with two elements: that value followed by `x`. If the buffer is a
+   * non-empty array then `x` is appended to the end.
    */
   function push<Type>(x:Type) {
     doPush(x);
@@ -416,7 +437,7 @@ final class Buffer {
    * - x: Value.
    */
   function push(x:Buffer) {
-    if isNil() {
+    if isEmpty() {
       values <- [x];
     } else if !keys? && values? {
       values <- stack(values!, x);
@@ -770,7 +791,9 @@ final class Buffer {
   }
 
   function doPush(x:Boolean) {
-    if scalarBoolean? {
+    if isEmpty() {
+      set(x);
+    } else if scalarBoolean? {
       set([scalarBoolean!, x]);
     } else if scalarInteger? {
       set([scalarInteger!, Integer(x)]);
@@ -790,7 +813,9 @@ final class Buffer {
   }
 
   function doPush(x:Integer) {
-    if scalarBoolean? {
+    if isEmpty() {
+      set(x);
+    } else if scalarBoolean? {
       set([Integer(scalarBoolean!), x]);
     } else if scalarInteger? {
       set([scalarInteger!, x]);
@@ -810,7 +835,9 @@ final class Buffer {
   }
 
   function doPush(x:Real) {
-    if scalarBoolean? {
+    if isEmpty() {
+      set(x);
+    } else if scalarBoolean? {
       set([Real(scalarBoolean!), x]);
     } else if scalarInteger? {
       set([Real(scalarInteger!), x]);
@@ -838,34 +865,52 @@ final class Buffer {
   }
 
   function doPush(x:Boolean[_]) {
-    if matrixBoolean? {
+    if isEmpty() {
+      set(row(x));
+    } else if vectorBoolean? {
+      set(stack(row(vectorBoolean!), row(x)));
+    } else if matrixBoolean? {
       set(stack(matrixBoolean!, row(x)));
-    } else if matrixInteger? {
-      set(stack(matrixInteger!, Integer(row(x))));
-    } else if matrixReal? {
-      set(stack(matrixReal!, Real(row(x))));
+    } else if vectorInteger? || matrixInteger? {
+      push(Integer(x));
+    } else if vectorReal? || matrixReal? {
+      push(Real(x));
     } else {
       push(Buffer(x));
     }
   }
 
   function doPush(x:Integer[_]) {
-    if matrixBoolean? {
+    if isEmpty() {
+      set(row(x));
+    } else if vectorBoolean? {
+      set(stack(Integer(row(vectorBoolean!)), row(x)));
+    } else if matrixBoolean? {
       set(stack(Integer(matrixBoolean!), row(x)));
+    } else if vectorInteger? {
+      set(stack(row(vectorInteger!), row(x)));
     } else if matrixInteger? {
       set(stack(matrixInteger!, row(x)));
-    } else if matrixReal? {
-      set(stack(matrixReal!, Real(row(x))));
+    } else if vectorReal? || matrixReal? {
+      push(Real(x));
     } else {
       push(Buffer(x));
     }
   }
 
   function doPush(x:Real[_]) {
-    if matrixBoolean? {
+    if isEmpty() {
+      set(row(x));
+    } else if vectorBoolean? {
+      set(stack(Real(row(vectorBoolean!)), row(x)));
+    } else if matrixBoolean? {
       set(stack(Real(matrixBoolean!), row(x)));
+    } else if vectorInteger? {
+      set(stack(Real(row(vectorInteger!)), row(x)));
     } else if matrixInteger? {
       set(stack(Real(matrixInteger!), row(x)));
+    } else if vectorReal? {
+      set(stack(row(vectorReal!), row(x)));
     } else if matrixReal? {
       set(stack(matrixReal!, row(x)));
     } else {

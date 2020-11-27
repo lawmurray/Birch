@@ -163,12 +163,22 @@ class YAMLReader < Reader {
         parseElement(buffer, handler_);
       } else if (event.type == YAML_SEQUENCE_START_EVENT) {
         auto element = birch::Buffer(handler_);
-        buffer->push(element, handler_);
         parseSequence(element, handler_);
+
+        /* attempt to merge sequences into numerical matrices */
+        if (element->vectorReal.query()) {
+          buffer->push(element->vectorReal.get(), handler_);
+        } else if (element->vectorInteger.query()) {
+          buffer->push(element->vectorInteger.get(), handler_);
+        } else if (element->vectorBoolean.query()) {
+          buffer->push(element->vectorBoolean.get(), handler_);
+        } else {
+          buffer->push(element, handler_);
+        }
       } else if (event.type == YAML_MAPPING_START_EVENT) {
         auto element = birch::Buffer(handler_);
-        buffer->push(element, handler_);
         parseMapping(element, handler_);
+        buffer->push(element, handler_);
       }
       nextEvent(handler_);
     }
