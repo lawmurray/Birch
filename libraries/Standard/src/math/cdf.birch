@@ -232,10 +232,10 @@ function cdf_beta(x:Real, α:Real, β:Real) -> Real {
   assert 0.0 < α;
   assert 0.0 < β;
 
-  if x < Real(0.0) {
-    return Real(0.0);
-  } else if x > Real(1.0) {
-    return Real(1.0);
+  if x < 0.0 {
+    return 0.0;
+  } else if x > 1.0 {
+    return 1.0;
   } else {
     return ibeta(α, β, x);
   }
