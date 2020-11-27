@@ -191,15 +191,18 @@ protected:
 template<class T>
 void birch::CppGenerator::genInit(const T* o) {
   if (!o->brackets->isEmpty()) {
-    middle("libbirch::make_array<" << o->type->element() << ">(");
-    middle("libbirch::make_shape(" << o->brackets << ')');
-    middle(", handler_");
-    if (!o->args->isEmpty()) {
-      middle(", " << o->args);
-    } else if (!o->value->isEmpty()) {
-      middle(", " << o->value);
+    if (!o->value->isEmpty()) {
+      middle("libbirch::make_array_from_value<" << o->type->element() << ">(");
+      middle("libbirch::make_shape(" << o->brackets << ')');
+      middle(", " << o->value << ')');
+    } else if (!o->args->isEmpty()) {
+      middle("libbirch::make_array<" << o->type->element() << ">(");
+      middle("libbirch::make_shape(" << o->brackets << ')');
+      middle(", handler_, " << o->args << ')');
+    } else {
+      middle("libbirch::make_array<" << o->type->element() << ">(");
+      middle("libbirch::make_shape(" << o->brackets << "), handler_)");
     }
-    middle(')');
   } else if (!o->value->isEmpty()) {
     middle(o->value);
   } else if (!o->args->isEmpty()) {

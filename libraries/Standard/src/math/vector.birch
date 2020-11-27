@@ -57,7 +57,7 @@ function vector<Type>(λ:\(Integer) -> Type, length:Integer) -> Type[_] {
  */
 function vector<Type>(x:Type, length:Integer) -> Type[_] {
   cpp{{
-  return libbirch::make_array<Type>(libbirch::make_shape(length), handler_,
+  return libbirch::make_array_from_value<Type>(libbirch::make_shape(length),
       x);
   }}
 }

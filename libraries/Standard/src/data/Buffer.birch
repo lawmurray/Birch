@@ -4,88 +4,78 @@
  * `Buffer` is used to temporarily store data in memory before writing to a
  * file, or after reading from a file. It follows the
  * [JSON](https://www.json.org) data model, where data is arranged
- * hierachically in *objects* (dictionaries) of key-value members, and
- * *arrays* of elements. Keys are strings. Values and elements may be strings,
- * reals, integers, Booleans or nulls. Special provisions are made for
- * efficient representation of numerical vectors and matrices. The
- * representation is schemaless and all types variant.
+ * hierachically into *objects* (*dictionaries*, *mappings*) of *key*-*value*
+ * *entries*, and *arrays* (*lists*, *sequences*) of *elements*. The
+ * representation is schemaless.
  *
- * Objects (in the JSON sense) are created using `set()`. Arrays (in the
- * JSON sense) are created using the various `push()` member functions. When
- * `push()` is called on a `Buffer` it may invoke a type conversion for the
- * values stored in that `Buffer`. Transitively, a scalar `Boolean` can be
- * converted to an `Integer`, can be converted to a `Real`. Similarly, a
- * scalar can be converted to a vector of the same basic type. So, for
- * example, calling `push(Real)` on a `Buffer` holding an `Integer` will
- * convert it to holding a `Real[_]` (`Integer` converts to `Real`, scalar
- * converts to vector).
+ * Keys are strings. Values and elements may be strings, reals, integers,
+ * Booleans or nulls---or, recursively, other `Buffer` objects. Special
+ * provisions are made for efficient storage of numerical vectors and
+ * matrices.
+ *
+ * Set and retrieve entries from objects (in the JSON sense) using the `set()`
+ * and `get()` member functions. Construct and iterate through arrays (in the
+ * JSON sense) using the `push()` and `walk()` member functions.
  */
 final class Buffer {
-  /**
-   * If this is an object (in the JSON sense), the keys of its entries.
+  /*
+   * The various values a buffer may take. These work as follows:
+   *
+   * - If `keys` is defined, then `values` is also defined, and the buffer
+   *   represents an object (in the JSON sense). If `keys` and `values` are
+   *   defined but empty, it represents an empty object.
+   * - If `keys` is not defined, but `values` is defined, the buffer
+   *   represents an array (in the JSON sense). If `values` is defined but
+   *   empty, it represents an empty array.
+   * - If one or more of the other values are defined, the buffer represents
+   *   a scalar---or, if the value is one of the vector or matrix values,
+   *   an array (in the JSON sense) but stored compactly for faster reading
+   *   and writing.
+   * - If none of the values are defined, the buffer represents nil. In JSON
+   *   files, this is rendered as `null`.
+   *
+   * With the excepton of objects (in the JSON sense), where both `keys` and
+   * `values` are defined, at most one of these values should be defined.
    */
   keys:String[_]?;
-
-  /**
-   * If this is an object or array (in the JSON sense), the values of its
-   * entries or the elements of the array, respectively.
-   */
   values:Buffer[_]?;
-
-  /**
-   * If a string scalar, then the value.
-   */
   scalarString:String?;
-
-  /**
-   * If a real scalar, then the value.
-   */
   scalarReal:Real?;
-
-  /**
-   * If an integer scalar, then the value.
-   */
   scalarInteger:Integer?;
-
-  /**
-   * If a Boolean scalar, then the value.
-   */
   scalarBoolean:Boolean?;
-
-  /**
-   * If a real vector, then the value.
-   */
   vectorReal:Real[_]?;
-
-  /**
-   * If an integer vector, then the value.
-   */
   vectorInteger:Integer[_]?;
-
-  /**
-   * If a Boolean vector, then the value.
-   */
   vectorBoolean:Boolean[_]?;
-
-  /**
-   * If a real matrix, then the value.
-   */
   matrixReal:Real[_,_]?;
-
-  /**
-   * If an integer matrix, then the value.
-   */
   matrixInteger:Integer[_,_]?;
-
-  /**
-   * If a Boolean matrix, then the value.
-   */
   matrixBoolean:Boolean[_,_]?;
 
   /**
-   * Clear the contents. This resets the buffer contents to nil;
+   * Is the value nil?
    */
-  function clear() {
+  function isNil() -> Boolean {
+    return !(keys? || values? || scalarString? || scalarReal? ||
+        scalarInteger? || scalarBoolean? || vectorReal? || vectorInteger? ||
+        vectorBoolean? || matrixReal? || matrixInteger? || matrixBoolean?);
+  }
+
+  /**
+   * Is the value of an entry nil? If the given key does not exist, returns
+   * true.
+   */
+  function isNil(key:String) -> Boolean {
+    let buffer <- get(key);
+    if buffer? {
+      return buffer!.isNil();
+    } else {
+      return true;
+    }
+  }
+
+  /**
+   * Set to nil.
+   */
+  function setNil() {
     keys <- nil;
     values <- nil;
     scalarString <- nil;
@@ -101,9 +91,98 @@ final class Buffer {
   }
 
   /**
-   * Size. For a nil buffer this is zero, for an object or scalar it is one,
-   * for an array or vector it is the length, for a matrix it is the number
-   * of rows.
+   * Set the value of an entry to nil.
+   */
+  function setNil(key:String) {
+    let value <- Buffer();
+    value.setNil();
+    set(key, value);
+  }
+
+  /**
+   * Set to an empty object.
+   */
+  function setEmptyObject() {
+    setNil();
+    keys:String[_];
+    values:Buffer[_];
+    this.keys <- keys;
+    this.values <- values;
+  }
+
+  /**
+   * Set the value of an entry to an empty object.
+   */
+  function setEmptyObject(key:String) {
+    let value <- Buffer();
+    value.setEmptyObject();
+    set(key, value);
+  }
+
+  /**
+   * Set to an empty array.
+   */
+  function setEmptyArray() {
+    setNil();
+    values:Buffer[_];
+    this.values <- values;
+  }
+
+  /**
+   * Set the value of an entry to an empty array.
+   */
+  function setEmptyArray(key:String) {
+    let value <- Buffer();
+    value.setEmptyArray();
+    set(key, value);
+  }
+
+  /**
+   * Move the contents of this buffer into a new one and return it, leaving
+   * this buffer as nil.
+   */
+  function move() -> Buffer {
+    let buffer <- Buffer();
+    buffer.keys <- keys;
+    buffer.values <- values;
+    buffer.scalarString <- scalarString;
+    buffer.scalarReal <- scalarReal;
+    buffer.scalarInteger <- scalarInteger;
+    buffer.scalarBoolean <- scalarBoolean;
+    buffer.vectorReal <- vectorReal;
+    buffer.vectorInteger <- vectorInteger;
+    buffer.vectorBoolean <- vectorBoolean;
+    buffer.matrixReal <- matrixReal;
+    buffer.matrixInteger <- matrixInteger;
+    buffer.matrixBoolean <- matrixBoolean;
+    setNil();
+    return buffer;
+  }
+
+  /**
+   * Move the contents of an entry into a new one and return it, leaving the
+   * entry value as nil.
+   *
+   * - key: Key of the entry.
+   *
+   * Returns: A new buffer. In the case that the key does not exist, returns
+   * a nil buffer.
+   */
+  function move(key:String) -> Buffer {
+    let buffer <- get(key);
+    if buffer? {
+      return buffer!.move();
+    } else {
+      return Buffer();
+    }
+  }
+
+  /**
+   * Size. For a nil buffer the size is zero, for an object or scalar it is
+   * one, for an array it is the length. For an array, if it represents a
+   * numerical vector, its length is the same as the length of that vector;
+   * if it represents a numerical matrix, its length is the same as the number
+   * of rows in that matrix.
    */
   function size() -> Integer {
     if keys? || scalarString? || scalarReal? || scalarInteger? ||
@@ -132,6 +211,8 @@ final class Buffer {
    * Size of an entry.
    *
    * - key: Key of the entry.
+   *
+   * Returns: The size. In the case that the key does not exist, returns 0.
    */
   function size(key:String) -> Integer {
     let buffer <- get(key);
@@ -241,49 +322,39 @@ final class Buffer {
    * - key: Key of the entry.
    * - x: Value of the entry.
    *
-   * If the buffer value is not already an object (in the JSON sense), it
-   * is cleared before setting the new entry.
+   * If the buffer value is not already an object, it is cleared before
+   * setting the new entry.
    */
   function set<Type>(key:String, x:Type) {
     set(key, Buffer(x));
   }
 
   /**
-   * Set the value of an entry as a buffer.
+   * Set the value of an entry.
    *
    * - key: Key of the entry.
-   * - x: Content of the entry.
+   * - x: Value of the entry.
+   *
+   * If the buffer value is not already an object, it is cleared before
+   * setting the new entry.
    */
   function set(key:String, x:Buffer) {
     if !keys? {
-      clear();
-      keys:String[_];
-      values:Buffer[_];
-      this.keys <- keys;
-      this.values <- values;
+      setNil();
+      keys <- [key];
+      values <- [x];
+    } else {
+      keys <- stack(keys!, key);
+      values <- stack(values!, x);
     }
-    keys <- stack(keys!, key);
-    values <- stack(values!, x);
-  }
-
-  /**
-   * Set the value to nil. This is equivalent to `clear()`.
-   */
-  function setNil() {
-    clear();
-  }
-
-  /**
-   * Set the value of an entry to nil.
-   */
-  function setNil(key:String) {
-    set(key, Buffer());
   }
 
   /**
    * Obtain an iterator. For a nil buffer this is an empty iterator, for an
-   * object or scalar it is a singleton iterator, for an array or vector it is
-   * over the elements, for a matrix it is over the rows.
+   * object or scalar it is a singleton iterator, for an array it is over the
+   * elements. Where the array represents a numerical vector the iterator is
+   * similarly over the elements of that vector; where it represents a
+   * numerical matrix it is over the rows of that matrix.
    */
   function walk() -> Iterator<Buffer> {
     if keys? || scalarString? || scalarReal? || scalarInteger? ||
@@ -312,6 +383,9 @@ final class Buffer {
    * Obtain an iterator over an entry.
    *
    * - key: Key of the entry.
+   *
+   * Returns: The iterator. In the case that the key does not exist, returns
+   * the empty iterator.
    */
   function walk(key:String) -> Iterator<Buffer> {
     let buffer <- get(key);
@@ -327,44 +401,27 @@ final class Buffer {
    *
    * - x: Value.
    *
-   * If the buffer value is not already an array (in the JSON sense), it is
-   * converted to such before pushing the new element onto the end.
-   *
-   * If the buffer value is a matrix and the new element of incompatible type
-   * or incompatible size to form a new row, its rows are split into separate
-   * vector elements of an array before pushing the new element onto the end.
+   * If the buffer value is nil, the result is an array with the single
+   * element `x`. If the buffer value is an object or scalar, the result is an
+   * array with two elements: that value followed by `x`. If the buffer value
+   * is an array then `x` is appended to the end.
    */
   function push<Type>(x:Type) {
-    if size() == 0 {
-      set([x]);
-    } else {
-      doPush(x);
-    }
+    doPush(x);
   }
 
   /**
-   * Push a value as a buffer.
+   * Push a value.
    *
    * - x: Value.
    */
   function push(x:Buffer) {
-    if keys? {
-      y:Buffer;
-      y.keys <- x.keys;
-      y.values <- x.values;
-      clear();
-      values <- [y, x];
-    } else if values? {
+    if isNil() {
+      values <- [x];
+    } else if !keys? && values? {
       values <- stack(values!, x);
     } else {
-      a:Array<Buffer>;
-      let iter <- walk();
-      while iter.hasNext() {
-        a.pushBack(iter.next());
-      }
-      a.pushBack(x);
-      clear();
-      values <- a.toArray();
+      values <- [move(), x];
     }
   }
 
@@ -373,19 +430,21 @@ final class Buffer {
    *
    * - key: Key of the entry.
    * - x: Value.
+   *
+   * If the entry does not exists then it is created, its value an array
+   * containing the single element `x`.
    */
   function push<Type>(key:String, x:Type) {
     let buffer <- get(key);
-    if buffer? {
-      buffer!.push(x);
-    } else {
-      set(key, [x]);
+    if !buffer? {
+      buffer <- Buffer();
+      set(key, buffer!);
     }
+    buffer!.push(x);
   }
 
-
   /**
-   * Push a value to an entry as a buffer.
+   * Push a value to an entry .
    *
    * - key: Key of the entry.
    * - x: Value.
@@ -513,7 +572,7 @@ final class Buffer {
     } else if vectorReal? {
       return Boolean(vectorReal!);
     } else {
-      return doGet<Boolean>(x);
+      return doGetVector<Boolean>();
     }
   }
 
@@ -525,7 +584,7 @@ final class Buffer {
     } else if vectorReal? {
       return Integer(vectorReal!);
     } else {
-      return doGet<Integer>(x);
+      return doGetVector<Integer>();
     }
   }
 
@@ -537,24 +596,32 @@ final class Buffer {
     } else if vectorReal? {
       return Real(vectorReal!);
     } else {
-      return doGet<Real>(x);
+      return doGetVector<Real>();
     }
   }
 
   function doGet<Type>(x:Type[_]?) -> Type[_]? {
-    y:Type[_];
-    let iter <- walk();
-    while iter.hasNext() {
-      let z <- iter.next().get<Type>();
-      if z? {
-        cpp{{
-        y.push(z.get());
-        }}
-      } else {
-        return nil;
+    return doGetVector<Type>();
+  }
+
+  function doGetVector<Type>() -> Type[_]? {
+    if isNil() {
+      return nil;
+    } else {
+      y:Type[_];
+      let iter <- walk();
+      while iter.hasNext() {
+        let z <- iter.next().get<Type>();
+        if z? {
+          cpp{{
+          y.push(z.get());
+          }}
+        } else {
+          return nil;
+        }
       }
+      return y;
     }
-    return y;
   }
 
   function doGet(x:Boolean[_,_]?) -> Boolean[_,_]? {
@@ -607,94 +674,98 @@ final class Buffer {
   }
 
   function doGetMatrix<Type>() -> Type[_,_]? {
-    y:Type[_];
-    let nrows <- 0;
-    let ncols <- 0;
-    let iter <- walk();
-    while iter.hasNext() {
-      let z <- iter.next().get<Type[_]>();
-      if z? && (nrows == 0 || ncols == length(z!)) {
-        nrows <- nrows + 1;
-        ncols <- length(z!);
-        for i in 1..ncols {
-          let element <- z![i];
-          cpp{{
-          y.push(element);
-          }}
+    if isNil() {
+      return nil;
+    } else {
+      y:Type[_];
+      let nrows <- 0;
+      let ncols <- 0;
+      let iter <- walk();
+      while iter.hasNext() {
+        let z <- iter.next().get<Type[_]>();
+        if z? && (nrows == 0 || ncols == length(z!)) {
+          nrows <- nrows + 1;
+          ncols <- length(z!);
+          for i in 1..ncols {
+            let element <- z![i];
+            cpp{{
+            y.push(element);
+            }}
+          }
+        } else {
+          return nil;
         }
-      } else {
-        return nil;
       }
+      return matrix(\(i:Integer, j:Integer) -> Type {
+            return y[(i - 1)*ncols + j];
+          }, nrows, ncols);
     }
-    return matrix(\(i:Integer, j:Integer) -> Type {
-          return y[(i - 1)*ncols + j];
-        }, nrows, ncols);
   }
 
   function doSet(x:Boolean) {
-    clear();
+    setNil();
     scalarBoolean <- x;
   }
 
   function doSet(x:Integer) {
-    clear();
+    setNil();
     scalarInteger <- x;
   }
 
   function doSet(x:Real) {
-    clear();
+    setNil();
     scalarReal <- x;
   }
 
   function doSet(x:String) {
-    clear();
+    setNil();
     scalarString <- x;
   }
 
   function doSet<Type>(x:Type) {
-    clear();
+    setNil();
     x.write(this);
   }
 
   function doSet(x:Boolean[_]) {
-    clear();
+    setNil();
     vectorBoolean <- x;
   }
 
   function doSet(x:Integer[_]) {
-    clear();
+    setNil();
     vectorInteger <- x;
   }
 
   function doSet(x:Real[_]) {
-    clear();
+    setNil();
     vectorReal <- x;
   }
 
   function doSet<Type>(x:Type[_]) {
-    clear();
+    setEmptyArray();
     for i in 1..length(x) {
       push(Buffer(x[i]));
     }
   }
 
   function doSet(x:Boolean[_,_]) {
-    clear();
+    setNil();
     matrixBoolean <- x;
   }
 
   function doSet(x:Integer[_,_]) {
-    clear();
+    setNil();
     matrixInteger <- x;
   }
 
   function doSet(x:Real[_,_]) {
-    clear();
+    setNil();
     matrixReal <- x;
   }
 
   function doSet(x:LLT) {
-    clear();
+    setNil();
     matrixReal <- canonical(x);
   }
 

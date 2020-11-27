@@ -145,6 +145,7 @@ program sample(
   let inputPath <- configBuffer.get<String>("input");
   inputPath <-? input;
   inputBuffer:Buffer;
+  inputBuffer.setEmptyArray();
   if inputPath? && inputPath! != "" {
     let inputReader <- Reader(inputPath!);
     if !nsteps? {
@@ -179,7 +180,6 @@ program sample(
 
   /* sample */
   buffer:Buffer?;
-  outputBuffer:Buffer;
   for n in 1..nsamples! {
     /* start */
     let inputIter <- inputBuffer.walk();
@@ -191,11 +191,12 @@ program sample(
     theSampler!.sample(theFilter!, theModel!, buffer);
 
     /* preserve diagnostics */
+    outputBuffer:Buffer;
     if outputWriter? {
-      outputBuffer.push("ess", theFilter!.ess);
-      outputBuffer.push("lnormalize", theFilter!.lnormalize);
-      outputBuffer.push("npropagations", theFilter!.npropagations);
-      outputBuffer.push("raccepts", theFilter!.raccepts);
+      outputBuffer.set("ess", theFilter!.ess);
+      outputBuffer.set("lnormalize", theFilter!.lnormalize);
+      outputBuffer.set("npropagations", theFilter!.npropagations);
+      outputBuffer.set("raccepts", theFilter!.raccepts);
     }
 
     /* progress bar */
@@ -236,7 +237,6 @@ program sample(
       outputBuffer.set("lweight", w);
 
       outputWriter!.push(outputBuffer);
-      outputBuffer.clear();
       outputWriter!.flush();
     }
 

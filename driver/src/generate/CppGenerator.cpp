@@ -65,7 +65,7 @@ void birch::CppGenerator::visit(const Sequence* o) {
   if (o->single->isEmpty()) {
     middle("libbirch::nil");
   } else if (!inSequence) {
-    middle("libbirch::make_array(");
+    middle("libbirch::make_array_from_sequence(");
     ++inSequence;
     middle("{ " << o->single << " }");
     --inSequence;

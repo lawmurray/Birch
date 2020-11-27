@@ -151,32 +151,13 @@ auto make_slice(const int64_t arg, Args ... args) {
  * @ingroup libbirch
  *
  * @tparam T Value type.
- * @tparam F Shape type.
- * @tparam Args Constructor parameter types.
- *
- * @param shape Shape.
- * @param args Constructor arguments.
- *
- * @return The array.
- */
-template<class T, class F, class ... Args>
-auto make_array(const F& shape, Args... args) {
-  return Array<T,F>(shape, args...);
-}
-
-/**
- * Make an array.
- *
- * @ingroup libbirch
- *
- * @tparam T Value type.
  *
  * @param values Values.
  *
  * @return The array.
  */
 template<class T>
-auto make_array(const std::initializer_list<T>& values) {
+auto make_array_from_sequence(const std::initializer_list<T>& values) {
   return Array<T,typename DefaultShape<1>::type>(values);
 }
 
@@ -192,7 +173,8 @@ auto make_array(const std::initializer_list<T>& values) {
  * @return The array.
  */
 template<class T>
-auto make_array(const std::initializer_list<std::initializer_list<T>>& values) {
+auto make_array_from_sequence(
+      const std::initializer_list<std::initializer_list<T>>& values) {
   return Array<T,typename DefaultShape<2>::type>(values);
 }
 
@@ -230,10 +212,8 @@ auto make_array_from_lambda(const F& shape, const L& l) {
  * @return The array.
  */
 template<class T, class F, class Value>
-auto make_array_and_assign(const F& shape, const Value& value) {
-  Array<T,F> result;
-  result.enlarge(shape, value);
-  return result;
+auto make_array_from_value(const F& shape, const Value& value) {
+  return Array<T,F>(shape, value);
 }
 
 /**
