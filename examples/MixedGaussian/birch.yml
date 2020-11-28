@@ -1,10 +1,9 @@
 name: MixedGaussian
 manifest: 
   source: 
-    - src/MixedGaussianModel.birch
-    - src/MixedGaussianObservation.birch
-    - src/MixedGaussianParameter.birch
-    - src/MixedGaussianState.birch
+    - src/*.birch
+    - src/*/*.birch
+    - src/*/*/*.birch
   data:
     - config/mixed_gaussian.json
     - input/mixed_gaussian.json
