@@ -316,9 +316,10 @@ final class Tape<Type> {
   }
 
   function write(buffer:Buffer) {
-    let iter <- walk();
-    while iter.hasNext() {
-      buffer.push(iter.next());
+    buffer.setEmptyArray();
+    let f <- walk();
+    while f.hasNext() {
+      buffer.push(f.next());
     }
   }
 }

@@ -47,37 +47,29 @@ program draw(input:String <- "output/simulate.json",
       cr.scale(scaleX, scaleY);
       cr.translate(-l[1], -l[2]);
 
-      /* solid points indicating clutter */
-      let iter <- sample!.walk("y");
+      /* solid points marking clutter */
+      cr.setSourceRGB(0.8, 0.8, 0.8);
+      iter <- sample!.walk("y");
       while iter.hasNext() {
-        let y <- iter.next();
-        let Y <- y.get<Real[_,_]>();
-        if Y? {
-          cr.setSourceRGB(0.8, 0.8, 0.8);
-          for i in 1..rows(Y!) {
-            cr.arc(Y![i,1], Y![i,2], 4.0*fat/scale, 0.0, 2.0*π);
-            cr.fill();
-          }
+        let y <- iter.next().get<Real[_,_]>()!;
+        for i in 1..rows(y) {
+          cr.arc(y[i,1], y[i,2], 4.0*fat/scale, 0.0, 2.0*π);
+          cr.fill();
         }
       }
 
-      /* circle those points indicating associated observations */
+      /* solid points marking associated observations */
+      cr.setLineWidth(2.0*fat/scale);
+      cr.setSourceRGB(col[1], col[2], col[3]);
       iter <- sample!.walk("z");
       while iter.hasNext() {
-        let z <- iter.next();
-        cr.setLineWidth(2.0*fat/scale);
-        let iter <- z.walk("y");
-        while iter.hasNext() {
-          let ys <- iter.next();
-          let y <- ys.get<Real[_]>();
+        let iter2 <- iter.next().walk("y");
+        while iter2.hasNext() {
+          let ys <- iter2.next();
+          let y <- ys.get<Real[_]>();  // may be null
           if y? {
-            cr.setSourceRGB(0.8, 0.8, 0.8);
             cr.arc(y![1], y![2], 4.0*fat/scale, 0.0, 2.0*π);
             cr.fill();
-
-            cr.setSourceRGB(col[1], col[2], col[3]);
-            cr.arc(y![1], y![2], 4.0*fat/scale, 0.0, 2.0*π);
-            cr.stroke();
           }
         }
       }
@@ -107,10 +99,10 @@ program draw(input:String <- "output/simulate.json",
       iter <- sample!.walk("z");
       while iter.hasNext() {
         let z <- iter.next();
-        let t <- z.get<Integer>("t");
+        let s <- z.get<Integer>("s");
         let x <- z.get<Real[_,_]>("x");
     
-        if t? && x? {
+        if s? && x? {
           cr.setLineWidth(2.0*fat/scale);
           cr.setSourceRGB(col[1], col[2], col[3]);
           cr.arc(x![1,1], x![1,2], 10.0*fat/scale, 0.0, 2.0*π);
@@ -119,7 +111,7 @@ program draw(input:String <- "output/simulate.json",
           cr.setSourceRGB(1.0, 1.0, 1.0);
           cr.setFontSize(0.5);
           cr.moveTo(x![1,1] - 0.26, x![1,2] + 0.15);
-          cr.showText(String(t!));
+          cr.showText(String(s!));
         }
       }
     }

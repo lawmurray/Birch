@@ -58,17 +58,17 @@ class Global {
   τ:Real;
   
   function read(buffer:Buffer) {
-    l <- buffer.get<Real[_]>("l")!;
-    u <- buffer.get<Real[_]>("u")!;
-    d <- buffer.get<Real>("d")!;
-    M <- buffer.get<Real[_,_]>("M")!;
-    A <- buffer.get<Real[_,_]>("A")!;
-    Q <- buffer.get<Real[_,_]>("Q")!;
-    B <- buffer.get<Real[_,_]>("B")!;
-    R <- buffer.get<Real[_,_]>("R")!;
-    λ <- buffer.get<Real>("λ")!;
-    μ <- buffer.get<Real>("μ")!;
-    τ <- buffer.get<Real>("τ")!;
+    l <-? buffer.get<Real[_]>("l");
+    u <-? buffer.get<Real[_]>("u");
+    d <-? buffer.get<Real>("d");
+    M <-? buffer.get<Real[_,_]>("M");
+    A <-? buffer.get<Real[_,_]>("A");
+    Q <-? buffer.get<Real[_,_]>("Q");
+    B <-? buffer.get<Real[_,_]>("B");
+    R <-? buffer.get<Real[_,_]>("R");
+    λ <-? buffer.get<Real>("λ");
+    μ <-? buffer.get<Real>("μ");
+    τ <-? buffer.get<Real>("τ");
   }
   
   function write(buffer:Buffer) {

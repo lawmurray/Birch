@@ -25,7 +25,7 @@ class ConditionalParticleFilter < ParticleFilter {
     return ConditionalParticle(model);
   }
 
-  override function simulate(input:Buffer?) {
+  override function simulate(input:Buffer) {
     parallel for n in 1..nparticles {
       let x <- ConditionalParticle?(this.x[n])!;
       let handler <- PlayHandler(delayed);
@@ -34,16 +34,14 @@ class ConditionalParticleFilter < ParticleFilter {
       }
       handler.output <- x.trace;
       with (handler) {
-        if input? {
-          x.m.read(input!);
-        }
+        x.m.read(input);
         x.m.simulate();
       }
       w[n] <- handler.w;
     }
   }
 
-  override function simulate(t:Integer, input:Buffer?) {
+  override function simulate(t:Integer, input:Buffer) {
     parallel for n in 1..nparticles {
       let x <- ConditionalParticle?(this.x[n])!;
       let handler <- PlayHandler(delayed);
@@ -52,9 +50,7 @@ class ConditionalParticleFilter < ParticleFilter {
       }
       handler.output <- x.trace;
       with (handler) {
-        if input? {
-          x.m.read(t, input!);
-        }
+        x.m.read(t, input);
         x.m.simulate(t);
       }
       w[n] <- w[n] + handler.w;

@@ -18,7 +18,7 @@ class ParticleSampler {
    * - model: Model.
    * - input: Input buffer.
    */
-  function sample(filter:ParticleFilter, model:Model, input:Buffer?) {
+  function sample(filter:ParticleFilter, model:Model, input:Buffer) {
     filter.filter(model, input);
   }
 
@@ -29,7 +29,7 @@ class ParticleSampler {
    * - input: Input buffer.
    * - t: The step number, beginning at 1.
    */
-  function sample(filter:ParticleFilter, t:Integer, input:Buffer?) {
+  function sample(filter:ParticleFilter, t:Integer, input:Buffer) {
     filter.filter(t, input);
   }
 

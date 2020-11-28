@@ -200,6 +200,7 @@ final class Array<Type> {
   }
 
   function write(buffer:Buffer) {
+    buffer.setEmptyArray();
     let f <- walk();
     while f.hasNext() {
       buffer.push(f.next());

@@ -37,21 +37,19 @@ class MoveParticleFilter < ParticleFilter {
     return MoveParticle(model);
   }
 
-  override function filter(t:Integer, input:Buffer?) {
+  override function filter(t:Integer, input:Buffer) {
     resample();
     move(t);
     simulate(t, input);
     reduce();
   }
 
-  override function simulate(input:Buffer?) {
+  override function simulate(input:Buffer) {
     parallel for n in 1..nparticles {
       let x <- MoveParticle?(this.x[n])!;
       let handler <- MoveHandler(delayed);
       with (handler) {
-        if input? {
-          x.m.read(input!);
-        }
+        x.m.read(input);
         x.m.simulate();
         w[n] <- w[n] + handler.w;
       }
@@ -62,14 +60,12 @@ class MoveParticleFilter < ParticleFilter {
     }
   }
 
-  override function simulate(t:Integer, input:Buffer?) {
+  override function simulate(t:Integer, input:Buffer) {
     parallel for n in 1..nparticles {
       let x <- MoveParticle?(this.x[n])!;
       let handler <- MoveHandler(delayed);
       with (handler) {
-        if input? {
-          x.m.read(t, input!);
-        }
+        x.m.read(t, input);
         x.m.simulate(t);
         w[n] <- w[n] + handler.w;
       }

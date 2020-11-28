@@ -119,9 +119,9 @@ program sample(
     if !nsamples? {
       nsamples <-? samplerBuffer.get<Integer>("nsamples");
       if nsamples? {
-        warn("sampler.nsamples in the config file is deprecated, replace " +
-            "with nsamples in the config file, or --nsamples on the " +
-            "command line.");
+        //warn("sampler.nsamples in the config file is deprecated, replace " +
+        //    "with nsamples in the config file, or --nsamples on the " +
+        //    "command line.");
       } else {
         nsamples <- 1;
       }
@@ -134,9 +134,9 @@ program sample(
     if !nsteps? {
       nsteps <-? filterBuffer.get<Integer>("nsteps");
       if nsteps? {
-        warn("filter.nsteps in the config file is deprecated, replace " +
-            "with nsteps in the config file, or --nsteps on the " +
-            "command line.");
+        //warn("filter.nsteps in the config file is deprecated, replace " +
+        //    "with nsteps in the config file, or --nsteps on the " +
+        //    "command line.");
       }
     }
   }
@@ -179,14 +179,14 @@ program sample(
   }
 
   /* sample */
-  buffer:Buffer?;
+  buffer:Buffer;
   for n in 1..nsamples! {
     /* start */
     let inputIter <- inputBuffer.walk();
     if inputIter.hasNext() {
       buffer <- inputIter.next();
     } else {
-      buffer <- nil;
+      buffer <- Buffer();
     }
     theSampler!.sample(theFilter!, theModel!, buffer);
 
@@ -209,7 +209,7 @@ program sample(
       if inputIter.hasNext() {
         buffer <- inputIter.next();
       } else {
-        buffer <- nil;
+        buffer <- Buffer();
       }
       theSampler!.sample(theFilter!, t, buffer);
 

@@ -17,7 +17,7 @@ class ParticleGibbsSampler < ConditionalParticleSampler {
   ancestor:Boolean <- false;
 
   override function sample(filter:ConditionalParticleFilter, model:Model,
-      input:Buffer?) {
+      input:Buffer) {
     if filter.r? {
       /* Gibbs update of parameters */
       r:Tape<Record> <- filter.r!;
@@ -27,9 +27,7 @@ class ParticleGibbsSampler < ConditionalParticleSampler {
       let handler <- PlayHandler(true);
       handler.output <- r';
       with (handler) {
-        if input? {
-          x'.read(input!);
-        }
+        x'.read(input);
         x'.simulate();
       }
       let w' <- handler.w;
@@ -57,7 +55,7 @@ class ParticleGibbsSampler < ConditionalParticleSampler {
   }
 
   override function sample(filter:ConditionalParticleFilter, t:Integer,
-      input:Buffer?) {
+      input:Buffer) {
     if filter.r? && ancestor {
       let w' <- filter.w;
       dynamic parallel for n in 1..filter.nparticles {
@@ -66,9 +64,7 @@ class ParticleGibbsSampler < ConditionalParticleSampler {
         let handler <- PlayHandler(filter.delayed);
         handler.input <- r';
         with (handler) {
-          if input? {
-            x'.m.read(t, input!);
-          }
+          x'.m.read(t, input);
           x'.m.simulate(t);
           w'[n] <- w'[n] + handler.w;
         }

@@ -94,7 +94,7 @@ class ParticleFilter {
    * - model: Model.
    * - input: Optional input buffer.
    */
-  function filter(model:Model, input:Buffer?) {
+  function filter(model:Model, input:Buffer) {
     x <- clone(particle(model), nparticles);
     w <- vector(0.0, nparticles);
     a <- iota(1, nparticles);
@@ -113,7 +113,7 @@ class ParticleFilter {
    * - t: The step number, beginning at 1.
    * - input: Optional input buffer.
    */
-  function filter(t:Integer, input:Buffer?) {
+  function filter(t:Integer, input:Buffer) {
     resample();
     simulate(t, input);
     reduce();
@@ -122,13 +122,11 @@ class ParticleFilter {
   /**
    * Start particles.
    */
-  function simulate(input:Buffer?) {
+  function simulate(input:Buffer) {
     parallel for n in 1..nparticles {
       let handler <- PlayHandler(delayed);
       with (handler) {
-        if input? {
-          x[n].m.read(input!);
-        }
+        x[n].m.read(input);
         x[n].m.simulate();
         w[n] <- w[n] + handler.w;
       }
@@ -138,13 +136,11 @@ class ParticleFilter {
   /**
    * Step particles.
    */
-  function simulate(t:Integer, input:Buffer?) {
+  function simulate(t:Integer, input:Buffer) {
     parallel for n in 1..nparticles {
       let handler <- PlayHandler(delayed);
       with (handler) {
-        if input? {
-          x[n].m.read(t, input!);
-        }
+        x[n].m.read(t, input!);
         x[n].m.simulate(t);
         w[n] <- w[n] + handler.w;
       }

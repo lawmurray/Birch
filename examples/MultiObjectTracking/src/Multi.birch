@@ -1,31 +1,45 @@
 /**
  * Multiple object model.
  */
-class Multi < StateSpaceModel<Global,Array<Track>,Array<Random<Real[_]>>> {
+class Multi < Model {
   /**
-   * Current time.
+   * Global parameters.
    */
-  t:Integer <- 0;
+  θ:Global;
+
+  /**
+   * Current tracks.
+   */
+  x:Array<Track>;
+
+  /**
+   * Current observations.
+   */
+  y:Array<Real[_]>;
 
   /**
    * All tracks up to current time.
    */
-  z:Array<Track>;
-  
-  function transition(x':Array<Track>, x:Array<Track>, θ:Global) {
-    /* update time */
-    t <- t + 1;
+  xAll:Array<Track>;
+
+  /**
+   * All clutter observations.
+   */
+  yAll:RaggedArray<Real[_]>;
+
+  override function simulate(t:Integer) {
+    x':Array<Track>;  // new current set of tracks
 
     /* move current objects */
     let iter <- x.walk();
     while iter.hasNext() {
       let track <- iter.next();
-      let ρ <- exp(logpdf_poisson(t - track.t - 1, θ.τ));
-      let R <- 1.0 - cdf_poisson(t - track.t - 1, θ.τ) + ρ;
+      let ρ <- exp(logpdf_poisson(t - track.s - 1, θ.τ));
+      let R <- 1.0 - cdf_poisson(t - track.s - 1, θ.τ) + ρ;
       s:Boolean;
       s <~ Bernoulli(1.0 - ρ/R);  // does the object survive?
       if s {
-        track.simulate(t - track.t + 1);
+        track.simulate(t - track.s + 1);
         x'.pushBack(track);
       }
     }
@@ -34,54 +48,44 @@ class Multi < StateSpaceModel<Global,Array<Track>,Array<Random<Real[_]>>> {
     N:Integer;
     N <~ Poisson(θ.λ);
     for n in 1..N {
-      track:Track;
-      track.t <- t;
-      track.θ <- θ;
+      track:Track(t, θ);
       track.simulate();   // up to parameters
       track.simulate(1);  // up to initial time
       x'.pushBack(track);
-      z.pushBack(track);
+      xAll.pushBack(track);
     }
-  }
 
-  function observation(y:Array<Random<Real[_]>>, x:Array<Track>, θ:Global) {
+    /* new current set of tracks */
+    x <- x';
+
     if !y.empty() {
-      association(y, x, θ);
+      /* associate observations */
+      associate(t);
     } else {
-      /* clutter */
-      N:Integer;
-      N <~ Poisson(θ.μ);
-      for n in 1..(N + 1) {
-        clutter:Random<Real[_]>;
-        clutter <~ Uniform(θ.l, θ.u);
-        y.pushBack(clutter);
-      }
+      /* generate observations */
+      generate(t);
     }
   }
 
-  function association(y:Array<Random<Real[_]>>, x:Array<Track>, θ:Global) {
+  function associate(t:Integer) {
     let iter <- x.walk();
     while iter.hasNext() {
       let track <- iter.next();
-      let o <- track.y.back();  // observed random variable
+      let o <- track.y.get(t - track.s + 1);  // observation random variable
       if o.hasDistribution() {
-        let p <- o.distribution()!;
+        let p <- o.getDistribution();
       
-        /* object is detected, compute proposal */
+        /* propose an association */
         q:Real[y.size()];
-        let n <- 1;
-        let detection <- y.walk();
-        while detection.hasNext() {
-          q[n] <- p.pdf(detection.next().value());
-          n <- n + 1;
+        for n in 1..y.size() {
+          q[n] <- p.pdf(y.get(n));
         }
         let Q <- sum(q);
-                  
-        /* propose an association */
         if Q > 0.0 {
           q <- q/Q;
+          n:Integer;
           n <~ Categorical(q);  // propose an observation to associate with
-          let w <- p.observe(y.get(n).value());  // likelihood
+          let w <- p.observe(y.get(n));  // likelihood
           w <- w - log(Real(y.size()));  // prior correction (uniform prior)
           w <- w - log(q[n]);  // proposal correction
           y.erase(n);  // remove the observation for future associations
@@ -92,17 +96,39 @@ class Multi < StateSpaceModel<Global,Array<Track>,Array<Random<Real[_]>>> {
       }
     }
     
-    /* clutter */
+    /* remaining observations are clutter */
+    yAll.pushBack();
     y.size() - 1 ~> Poisson(θ.μ);
     let clutter <- y.walk();
     while clutter.hasNext() {
-      clutter.next().value() ~> Uniform(θ.l, θ.u);
+      let y' <- clutter.next();
+      y' ~> Uniform(θ.l, θ.u);
+      yAll.pushBack(t, y');
     }
   }
-    
-  function write(buffer:Buffer) {
+
+  function generate(t:Integer) {
+    yAll.pushBack();
+    N:Integer;
+    N <~ Poisson(θ.μ);
+    for n in 1..(N + 1) {
+      y':Real[_];
+      y' <~ Uniform(θ.l, θ.u);
+      yAll.pushBack(t, y');
+    }
+  }
+
+  override function read(t:Integer, buffer:Buffer) {
+    buffer.get(y);
+  }
+
+  override function read(buffer:Buffer) {
+    buffer.get(θ);
+  }
+
+  override function write(buffer:Buffer) {
     buffer.set("θ", θ);
-    buffer.set("z", z);
-    buffer.set("y", y);
+    buffer.set("z", xAll);
+    buffer.set("y", yAll);
   }
 }

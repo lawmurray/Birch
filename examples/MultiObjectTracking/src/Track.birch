@@ -1,32 +1,50 @@
 /**
  * Single object model.
+ *
+ * - s: The starting time of the track.
+ * - θ: The global parameters.
  */
-class Track < StateSpaceModel<Global,Random<Real[_]>,Random<Real[_]>> {
+class Track(s:Integer, θ:Global) < Model {
   /**
    * Starting time of this track.
    */
-  t:Integer;
+  s:Integer <- s;
 
-  function initial(x:Random<Real[_]>, θ:Global) {
-    let μ <- vector(0.0, 3*length(θ.l));
-    μ[1..2] <~ Uniform(θ.l, θ.u);
-    x ~ Gaussian(μ, θ.M);
-  }
+  /**
+   * Parameters.
+   */
+  θ:Global <- θ;
+
+  /**
+   * Hidden states.
+   */
+  x:Tape<Random<Real[_]>>;
+
+  /**
+   * Observations.
+   */
+  y:Tape<Random<Real[_]>>;
   
-  function transition(x':Random<Real[_]>, x:Random<Real[_]>, θ:Global) {
-    x' ~ Gaussian(θ.A*x, θ.Q);
-  }
+  function simulate(t:Integer) {
+    if t == 1 {
+      /* start */
+      let μ <- vector(0.0, 3*length(θ.l));
+      μ[1..2] <~ Uniform(θ.l, θ.u);
+      x.get(t) ~ Gaussian(μ, θ.M);
+    } else {
+      /* step */
+      x.get(t) ~ Gaussian(θ.A*x.get(t - 1), θ.Q);
+    }
 
-  function observation(y:Random<Real[_]>, x:Random<Real[_]>, θ:Global) {
-    d:Boolean;
-    d <~ Bernoulli(θ.d);  // is the track detected?
+    d:Boolean;  // is the track detected?
+    d <~ Bernoulli(θ.d);
     if d {
-      y ~ Gaussian(θ.B*x, θ.R);
+      y.get(t) ~ Gaussian(θ.B*x.get(t), θ.R);
     }
   }
   
   function write(buffer:Buffer) {
-    buffer.set("t", t);
+    buffer.set("s", s);
     buffer.set("x", x);
     buffer.set("y", y);
   }
