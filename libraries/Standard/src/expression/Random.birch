@@ -348,3 +348,25 @@ function Random<Value>() -> Random<Value> {
   o:Random<Value>;
   return o;
 }
+
+/**
+ * Create a Random.
+ *
+ * - x: Value to assign.
+ */
+function Random<Value>(x:Value) -> Random<Value> {
+  o:Random<Value>;
+  o <- x;
+  return o;
+}
+
+/**
+ * Create a Random.
+ *
+ * - x: Optional value to assign.
+ */
+function Random<Value>(x:Value?) -> Random<Value> {
+  o:Random<Value>;
+  o <- x;
+  return o;
+}

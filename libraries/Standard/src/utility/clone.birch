@@ -22,7 +22,7 @@ function clone<Type>(o:Type[_]) -> Type[_] {
       return libbirch::clone(o.get(libbirch::make_slice(n)));
     };
   return libbirch::make_array_from_lambda<Type>(
-      libbirch::make_shape(length(o)), l, handler_);
+      libbirch::make_shape(length(o)), l);
   }}
 }
 

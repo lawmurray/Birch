@@ -137,72 +137,54 @@ program filter(
   }
 
   /* filter */
-  inputBuffer:Buffer;
-  if inputReader? && inputReader!.hasNext() {
-    inputBuffer <- inputReader!.next();
-  }
-  theFilter!.filter(theModel!, inputBuffer);
-  if outputWriter? {
-    let sampleBuffer <- Buffer();
-    for n in 1..theFilter!.nparticles {
-      sampleBuffer.push(theFilter!.x[n]);
-    }
-    let outputBuffer <- Buffer();
-    outputBuffer.set("sample", sampleBuffer);
-    outputBuffer.set("lweight", theFilter!.w);
-    outputBuffer.set("ess", theFilter!.ess);
-    outputBuffer.set("lnormalize", theFilter!.lnormalize);
-    outputBuffer.set("npropagations", theFilter!.npropagations);
-    outputBuffer.set("raccepts", theFilter!.raccepts);
-    outputWriter!.push(outputBuffer);
-  }
-  if !quiet {
-    bar.update(1.0/(nsteps! + 1.0));
-  }
-
-  /* step */
-  let t <- 1;
+  let t <- 0;
   while (nsteps? && t <= nsteps!) || (!nsteps? && inputReader!.hasNext()) {
+    /* input */
+    inputBuffer:Buffer;
+    filterBuffer:Buffer?;
+    forecastIterator:Iterator<Buffer>?;
     if inputReader? && inputReader!.hasNext() {
       inputBuffer <- inputReader!.next();
+      filterBuffer <- inputBuffer.get("filter");
+      forecastIterator <- inputBuffer.walk("forecast");
     } else {
       inputBuffer <- Buffer();
     }
-    theFilter!.filter(t, inputBuffer);
-    if outputWriter? {
-      let sampleBuffer <- Buffer();
-      for n in 1..theFilter!.nparticles {
-        sampleBuffer.push(theFilter!.x[n]);
+    if filterBuffer? {
+      inputBuffer <- filterBuffer!;
+    }
+
+    /* start or step filter */
+    if t == 0 {
+      theFilter!.filter(theModel!, inputBuffer);
+    } else {
+      theFilter!.filter(t, inputBuffer);
+    }
+
+    /* forecast */
+    let forecastBuffer <- Buffer();
+    if nforecasts! > 0 || forecastBuffer? {
+      let theFilter' <- clone(theFilter!);
+      for s in (t + 1)..(t + nforecasts!) {
+        if forecastIterator? && forecastIterator!.hasNext() {
+          inputBuffer <- forecastIterator!.next();
+        }
+        theFilter'.filter(s, inputBuffer);
+        forecastBuffer.push(theFilter'!.x);
       }
+    }
+
+    /* output */
+    if outputWriter? {
       let outputBuffer <- Buffer();
-      outputBuffer.set("sample", sampleBuffer);
+      outputBuffer.set("filter", theFilter!.x);
       outputBuffer.set("lweight", theFilter!.w);
       outputBuffer.set("ess", theFilter!.ess);
       outputBuffer.set("lnormalize", theFilter!.lnormalize);
       outputBuffer.set("npropagations", theFilter!.npropagations);
       outputBuffer.set("raccepts", theFilter!.raccepts);
-
-      /* forecast */
-      if nforecasts! > 0 {
-        let theFilter' <- clone(theFilter!);
-        theFilter'.resample();
-
-        let forecastBuffer <- Buffer();
-        let s <- t + 1;
-        while s <= t + nforecasts! {
-          theFilter'.filter(s, inputBuffer);
-          let sampleBuffer <- Buffer();
-          for n in 1..theFilter'!.nparticles {
-            sampleBuffer.push(theFilter'!.x[n]);
-          }
-          let stateBuffer <- Buffer();
-          stateBuffer.set("sample", sampleBuffer);
-          stateBuffer.set("lweight", theFilter'!.w);
-          forecastBuffer.push(stateBuffer);
-        }
-        outputBuffer.set("forecast", forecastBuffer);
-        outputWriter!.push(outputBuffer);
-      }
+      outputBuffer.set("forecast", forecastBuffer);
+      outputWriter!.push(outputBuffer);
     }
     if !quiet {
       bar.update((t + 1.0)/(nsteps! + 1.0));

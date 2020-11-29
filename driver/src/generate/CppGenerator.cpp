@@ -147,7 +147,7 @@ void birch::CppGenerator::visit(const LambdaFunction* o) {
   if (!o->params->isEmpty()) {
     middle(',');
   }
-  finish("const libbirch::Lazy<libbirch::Shared<birch::type::Handler>>& handler_");
+  finish("const libbirch::Lazy<libbirch::Shared<birch::type::Handler>>&");
   middle(")>([=](" << o->params);
   if (!o->params->isEmpty()) {
     middle(", ");
