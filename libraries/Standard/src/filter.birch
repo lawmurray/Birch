@@ -141,36 +141,38 @@ program filter(
   while (nsteps? && t <= nsteps!) || (!nsteps? && inputReader!.hasNext()) {
     /* input */
     inputBuffer:Buffer;
-    filterBuffer:Buffer?;
-    forecastIterator:Iterator<Buffer>?;
+    filterBuffer:Buffer <- inputBuffer;
     if inputReader? && inputReader!.hasNext() {
       inputBuffer <- inputReader!.next();
-      filterBuffer <- inputBuffer.get("filter");
-      forecastIterator <- inputBuffer.walk("forecast");
-    } else {
-      inputBuffer <- Buffer();
-    }
-    if filterBuffer? {
-      inputBuffer <- filterBuffer!;
+      filterBuffer <- inputBuffer;
+      filterBuffer <-? inputBuffer.get("filter");
     }
 
     /* start or step filter */
     if t == 0 {
-      theFilter!.filter(theModel!, inputBuffer);
+      theFilter!.filter(theModel!, filterBuffer!);
     } else {
-      theFilter!.filter(t, inputBuffer);
+      theFilter!.filter(t, filterBuffer!);
     }
 
     /* forecast */
+    let forecastSize <- inputBuffer.size("forecast");
+    let forecastIterator <- inputBuffer.walk("forecast");
     let forecastBuffer <- Buffer();
-    if nforecasts! > 0 || forecastBuffer? {
+    if nforecasts? {
+      forecastSize <- nforecasts!;
+    }
+    if forecastSize > 0 {
       let theFilter' <- clone(theFilter!);
-      for s in (t + 1)..(t + nforecasts!) {
-        if forecastIterator? && forecastIterator!.hasNext() {
-          inputBuffer <- forecastIterator!.next();
+      for t' in (t + 1)..(t + forecastSize) {
+        if forecastIterator.hasNext() {
+          theFilter'.filter(t', forecastIterator.next());
+        } else {
+          theFilter'.filter(t', Buffer());
         }
-        theFilter'.filter(s, inputBuffer);
-        forecastBuffer.push(theFilter'!.x);
+        if outputWriter? {
+          forecastBuffer.push(theFilter'!.x);
+        }
       }
     }
 

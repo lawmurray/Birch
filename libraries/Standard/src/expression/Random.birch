@@ -367,6 +367,8 @@ function Random<Value>(x:Value) -> Random<Value> {
  */
 function Random<Value>(x:Value?) -> Random<Value> {
   o:Random<Value>;
-  o <- x;
+  if x? {
+    o <- x!;
+  }
   return o;
 }
