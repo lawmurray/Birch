@@ -344,4 +344,18 @@ Tuple<Head&,Tail&...> tie(Head& head, Tail&... tail) {
   return Tuple<Head&,Tail&...>(head, tail...);
 }
 
+/**
+ * Tie a tuple.
+ *
+ * @tparam Head First element type.
+ * @tparam Tail Remaining element types.
+ *
+ * @param head First element.
+ * @param tail Remaining elements.
+ */
+template<class Head, class ... Tail>
+Tuple<Head,Tail...> tie(Head&& head, Tail&&... tail) {
+  return Tuple<Head,Tail...>(std::move(head), std::move(tail)...);
+}
+
 }
