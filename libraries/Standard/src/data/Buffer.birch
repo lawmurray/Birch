@@ -338,6 +338,16 @@ final class Buffer {
   }
 
   /**
+   * Set the value.
+   *
+   * - t: Step number.
+   * - x: Value.
+   */
+  function set<Type>(t:Integer, x:Type) {
+    doSet(t, x);
+  }
+
+  /**
    * Set the value of an entry.
    *
    * - key: Key of the entry.
@@ -348,6 +358,20 @@ final class Buffer {
    */
   function set<Type>(key:String, x:Type) {
     set(key, Buffer(x));
+  }
+
+  /**
+   * Set the value of an entry.
+   *
+   * - key: Key of the entry.
+   * - t: Step number.
+   * - x: Value of the entry.
+   *
+   * If the buffer value is not already an object, it is cleared before
+   * setting the new entry.
+   */
+  function set<Type>(key:String, t:Integer, x:Type) {
+    set(key, Buffer(t, x));
   }
 
   /**
@@ -434,6 +458,16 @@ final class Buffer {
   /**
    * Push a value.
    *
+   * - t: Step number.
+   * - x: Value.
+   */
+  function push<Type>(t:Integer, x:Type) {
+    doPush(t, x);
+  }
+
+  /**
+   * Push a value.
+   *
    * - x: Value.
    */
   function push(x:Buffer) {
@@ -463,6 +497,22 @@ final class Buffer {
       set(key, buffer!);
     }
     buffer!.push(x);
+  }
+
+  /**
+   * Push a value to an entry.
+   *
+   * - key: Key of the entry.
+   * - t: Step number.
+   * - x: Value.
+   */
+  function push<Type>(key:String, t:Integer, x:Type) {
+    let buffer <- get(key);
+    if !buffer? {
+      buffer <- Buffer();
+      set(key, buffer!);
+    }
+    buffer!.push(t, x);
   }
 
   /**
@@ -749,6 +799,11 @@ final class Buffer {
     x.write(this);
   }
 
+  function doSet<Type>(t:Integer, x:Type) {
+    setNil();
+    x.write(t, this);
+  }
+
   function doSet(x:Boolean[_]) {
     setNil();
     vectorBoolean <- x;
@@ -768,6 +823,13 @@ final class Buffer {
     setEmptyArray();
     for i in 1..length(x) {
       push(Buffer(x[i]));
+    }
+  }
+
+  function doSet<Type>(t:Integer, x:Type[_]) {
+    setEmptyArray();
+    for i in 1..length(x) {
+      push(Buffer(t, x[i]));
     }
   }
 
@@ -865,6 +927,10 @@ final class Buffer {
     push(Buffer(x));
   }
 
+  function doPush<Type>(t:Integer, x:Type) {
+    push(Buffer(t, x));
+  }
+
   function doPush(x:Boolean[_]) {
     if isEmpty() {
       set(row(x));
@@ -935,5 +1001,17 @@ function Buffer() -> Buffer {
 function Buffer<Type>(root:Type) -> Buffer {
   o:Buffer;
   o.set(root);
+  return o;
+}
+
+/**
+ * Create a Buffer.
+ *
+ * - t: Step number.
+ * - root: Root value.
+ */
+function Buffer<Type>(t:Integer, root:Type) -> Buffer {
+  o:Buffer;
+  o.set(t, root);
   return o;
 }

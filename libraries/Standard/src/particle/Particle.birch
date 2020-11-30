@@ -17,6 +17,22 @@ class Particle(m:Model) {
    * State.
    */
   m:Model <- m;
+
+  override function read(buffer:Buffer) {
+    m.read(buffer);
+  }
+
+  override function write(buffer:Buffer) {
+    m.write(buffer);
+  }
+
+  override function read(t:Integer, buffer:Buffer) {
+    m.read(t, buffer);
+  }
+
+  override function write(t:Integer, buffer:Buffer) {
+    m.write(t, buffer);
+  }
 }
 
 /**

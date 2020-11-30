@@ -23,20 +23,20 @@ abstract class Object {
   /**
    * Sequential read.
    *
-   * - buffer: Input buffer.
    * - t: Step number.
+   * - buffer: Input buffer.
    */
-  function read(buffer:Buffer, t:Integer) {
+  function read(t:Integer, buffer:Buffer) {
     //
   }
 
   /**
    * Sequential write.
    *
-   * - buffer: Output buffer.
    * - t: Step number.
+   * - buffer: Output buffer.
    */
-  function write(buffer:Buffer, t:Integer) {
+  function write(t:Integer, buffer:Buffer) {
     //
   }
 }

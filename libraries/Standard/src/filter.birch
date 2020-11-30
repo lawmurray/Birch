@@ -171,7 +171,7 @@ program filter(
           theFilter'.filter(t', Buffer());
         }
         if outputWriter? {
-          forecastBuffer.push(theFilter'!.x);
+          forecastBuffer.push(t, theFilter'!.x);
         }
       }
     }
@@ -179,7 +179,9 @@ program filter(
     /* output */
     if outputWriter? {
       let outputBuffer <- Buffer();
-      outputBuffer.set("filter", theFilter!.x);
+      if t > 0 {
+        outputBuffer.set("filter", t, theFilter!.x);
+      }
       outputBuffer.set("lweight", theFilter!.w);
       outputBuffer.set("ess", theFilter!.ess);
       outputBuffer.set("lnormalize", theFilter!.lnormalize);
