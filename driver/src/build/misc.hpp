@@ -33,6 +33,15 @@ fs::path find(const std::list<fs::path>& paths, const fs::path& path);
 std::list<fs::path> glob(const std::string& pattern);
 
 /**
+ * Copy a source file to a destination file, and ensure that the
+ * destination file is writeable.
+ *
+ * @param src Source file.
+ * @param dst Destination file.
+ */
+void copy_file_writeable(fs::path src, fs::path dst);
+
+/**
  * Copy a source file to a destination file, but only if the destination
  * file does not exist, or the source file is newer.
  *

@@ -46,6 +46,13 @@ std::list<fs::path> birch::glob(const std::string& pattern) {
   return results;
 }
 
+void birch::copy_file_writeable(fs::path src, fs::path dst) {
+  using namespace fs;
+
+  copy_file(src, dst);
+  permissions(dst, perms::add_perms | perms::owner_write);
+}
+
 bool birch::copy_if_newer(fs::path src, fs::path dst) {
   using namespace fs;
 
@@ -53,11 +60,11 @@ bool birch::copy_if_newer(fs::path src, fs::path dst) {
    * workaround... */
   bool result = false;
   if (!exists(dst)) {
-    copy_file(src, dst);
+    copy_file_writeable(src, dst);
     result = true;
   } else if (last_write_time(src) > last_write_time(dst)) {
     remove(dst);
-    copy_file(src, dst);
+    copy_file_writeable(src, dst);
     result = true;
   }
   return result;
@@ -74,24 +81,22 @@ bool birch::copy_with_prompt(fs::path src, fs::path dst) {
     std::getline(std::cin, ans);
     if (ans.length() > 0 && (ans[0] == 'y' || ans[0] == 'Y')) {
       remove(dst);
-      copy_file(src, dst);
+      copy_file_writeable(src, dst);
       result = true;
     }
   } else {
-    copy_file(src, dst);
+    copy_file_writeable(src, dst);
     result = true;
   }
   return result;
 }
 
 void birch::copy_with_force(fs::path src, fs::path dst) {
-  using namespace fs;
-
-  if (exists(dst)) {
-    remove(dst);
-    copy_file(src, dst);
+  if (fs::exists(dst)) {
+    fs::remove(dst);
+    copy_file_writeable(src, dst);
   } else {
-    copy_file(src, dst);
+    copy_file_writeable(src, dst);
   }
 }
 
