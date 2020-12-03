@@ -100,7 +100,9 @@ class YAMLReader < Reader {
   }
 
   override function next() -> Buffer {
-    assert sequential;
+    if !sequential {
+      hasNext();
+    }
     buffer:Buffer;
     cpp{{
     if (event.type == YAML_SCALAR_EVENT) {

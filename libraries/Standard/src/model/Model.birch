@@ -30,23 +30,23 @@ abstract class Model {
   }
 
   /**
-   * Read at start.
-   */
-  override function read(buffer:Buffer) {
-    //
-  }
-
-  /**
    * Read before step `t`.
    */
-  override function read(t:Integer, buffer:Buffer) {
+  function read(t:Integer, buffer:Buffer) {
     //
   }
 
   /**
    * Write after step `t`.
    */
-  override function write(t:Integer, buffer:Buffer) {
+  function write(t:Integer, buffer:Buffer) {
+    //
+  }
+
+  /**
+   * Read at start.
+   */
+  override function read(buffer:Buffer) {
     //
   }
 

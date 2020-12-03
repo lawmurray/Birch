@@ -79,13 +79,19 @@ abstract class MarkovModel<Parameter,State> < Model {
     //
   }
 
+  override function read(t:Integer, buffer:Buffer) {
+    buffer.get("x", x.get(t));
+  }
+  
+  override function write(t:Integer, buffer:Buffer) {
+    buffer.set("x", x.get(t));
+  }
+
   override function read(buffer:Buffer) {
     buffer.get("θ", θ);
-    buffer.get("x", x);
   }
   
   override function write(buffer:Buffer) {
     buffer.set("θ", θ);
-    buffer.set("x", x);
   }
 }
