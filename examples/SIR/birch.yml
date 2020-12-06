@@ -1,9 +1,9 @@
 name: SIR
 manifest: 
   source: 
-    - src/SIRModel.birch
-    - src/SIRParameter.birch
-    - src/SIRState.birch
+    - src/*.birch
+    - src/*/*.birch
+    - src/*/*/*.birch
   data:
     - config/sir.json
     - input/influenza.json
