@@ -96,9 +96,9 @@ abstract class Distribution<Value> < DelayDistribution {
   /**
    * Realize a value for the associated random variate, lazily.
    */
-  final function get() {
+  final function get() -> Value {
     if !supportsLazy() {
-      value();
+      return value();
     } else {
       prune();
       x:Value?;
@@ -115,13 +115,14 @@ abstract class Distribution<Value> < DelayDistribution {
         update(x!);
       }
       unlink();
+      return x!;
     }
   }
 
   /**
    * Realize a value for the associated random variate, eagerly.
    */
-  final function value() {
+  final function value() -> Value {
     prune();
     x:Value?;
     if clamped? {
@@ -140,6 +141,7 @@ abstract class Distribution<Value> < DelayDistribution {
     }
     update(x!);
     unlink();
+    return x!;
   }
 
   /**
