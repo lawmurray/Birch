@@ -12,19 +12,11 @@ class Poisson(λ:Expression<Real>) < Discrete {
   }
 
   function simulate() -> Integer {
-    if value? {
-      return value!;
-    } else {
-      return simulate_poisson(λ.value());
-    }
+    return simulate_poisson(λ.value());
   }
 
   function simulateLazy() -> Integer? {
-    if value? {
-      return value!;
-    } else {
-      return simulate_poisson(λ.get());
-    }
+    return simulate_poisson(λ.get());
   }
 
   function logpdf(x:Integer) -> Real {
@@ -61,6 +53,10 @@ class Poisson(λ:Expression<Real>) < Discrete {
     }
     
     return r;
+  }
+
+  function graftDiscrete() -> Discrete? {
+    return Discrete?(graft());
   }
 
   function write(buffer:Buffer) {

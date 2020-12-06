@@ -18,19 +18,11 @@ class NegativeBinomial(k:Expression<Integer>, ρ:Expression<Real>) <
   }
 
   function simulate() -> Integer {
-    if value? {
-      return value!;
-    } else {
-      return simulate_negative_binomial(k.value(), ρ.value());
-    }
+    return simulate_negative_binomial(k.value(), ρ.value());
   }
 
   function simulateLazy() -> Integer? {
-    if value? {
-      return value!;
-    } else {
-      return simulate_negative_binomial(k.get(), ρ.get());
-    }
+    return simulate_negative_binomial(k.get(), ρ.get());
   }
   
   function logpdf(x:Integer) -> Real {

@@ -34,14 +34,6 @@ final class SubtractBoundedDiscrete(x1:BoundedDiscrete, x2:BoundedDiscrete) <
    */
   Z:Real;
 
-  /**
-   * Has this node already updated its parents? Nodes of this type have two
-   * parent nodes, and because of this, their update() member function is
-   * called twice. This flag is a hack to ensure that the actual update is
-   * performed only once.
-   */
-  alreadyUpdated:Boolean <- false;
-
   function enumerate(x:Integer) {
     if !this.x? || this.x! != x {
       let l <- max(x1.lower()!, x2.lower()! + x);
@@ -66,48 +58,29 @@ final class SubtractBoundedDiscrete(x1:BoundedDiscrete, x2:BoundedDiscrete) <
   }
 
   function simulate() -> Integer {
-    if value? {
-      return simulate_delta(value!);
-    } else {
-      return simulate_delta(x1.simulate() - x2.simulate());
-    }
+    return simulate_delta(x1.simulate() - x2.simulate());
   }
   
 //  function simulateLazy() -> Integer? {
-//    if value? {
-//      return simulate_delta(value!);
-//    } else {
-//      return simulate_delta(x1.simulateLazy()! - x2.simulateLazy()!);
-//    }
+//    return simulate_delta(x1.simulateLazy()! - x2.simulateLazy()!);
 //  }
 
   function logpdf(x:Integer) -> Real {
-    if value? {
-      return logpdf_delta(x, value!);
-    } else {
-      enumerate(x);
-      return log(Z);
-    }
+    enumerate(x);
+    return log(Z);
   }
 
 //  function logpdfLazy(x:Expression<Integer>) -> Expression<Real>? {
-//    if value? {
-//      return logpdf_lazy_delta(x, value!);
-//    } else {
-//      enumerate(x);
-//      return log(Z);
-//    }
+//    enumerate(x);
+//    return log(Z);
 //  }
 
   function update(x:Integer) {
-    if !alreadyUpdated {
-      /* choose a pair with the given difference and clamp parents */
-      enumerate(x);
-      let n <- simulate_categorical(z, Z) + x0 - 1;
-      x1.clamp(n);
-      x2.clamp(n - x);
-      alreadyUpdated <- true;
-    }
+    /* choose a pair with the given difference and clamp parents */
+    enumerate(x);
+    let n <- simulate_categorical(z, Z) + x0 - 1;
+    x1.clamp(n);
+    x2.clamp(n - x);
   }
 
 //  function updateLazy(x:Expression<Integer>) {
@@ -131,15 +104,13 @@ final class SubtractBoundedDiscrete(x1:BoundedDiscrete, x2:BoundedDiscrete) <
   }
 
   function link() {
-    // clamp() used instead for discrete enumerations
-    //x1.setChild(this);
-    //x2.setChild(this);
+    x1.setChild(this);
+    x2.setChild(this);
   }
   
   function unlink() {
-    // clamp() used instead for discrete enumerations
-    //x1.releaseChild(this);
-    //x2.releaseChild(this);
+    x1.releaseChild(this);
+    x2.releaseChild(this);
   }
 }
 

@@ -17,19 +17,11 @@ final class BetaNegativeBinomial(k:Expression<Integer>, ρ:Beta) < Discrete {
   }
 
   function simulate() -> Integer {
-    if value? {
-      return value!;
-    } else {
-      return simulate_beta_negative_binomial(k.value(), ρ.α.value(), ρ.β.value());
-    }
+    return simulate_beta_negative_binomial(k.value(), ρ.α.value(), ρ.β.value());
   }
 
   function simulateLazy() -> Integer? {
-    if value? {
-      return value!;
-    } else {
-      return simulate_beta_negative_binomial(k.get(), ρ.α.get(), ρ.β.get());
-    }
+    return simulate_beta_negative_binomial(k.get(), ρ.α.get(), ρ.β.get());
   }
 
   function logpdf(x:Integer) -> Real {

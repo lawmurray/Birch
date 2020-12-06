@@ -25,10 +25,8 @@ final class Random<Value> < Expression<Value>(nil) {
    * Value assignment.
    */
   operator <- x:Value {
-    assert !this.x?;
     assert !this.p?;
-    this.x <- x;
-    constant();
+    setValue(x);
   }
 
   override function distribution() -> Distribution<Value>? {
@@ -82,18 +80,25 @@ final class Random<Value> < Expression<Value>(nil) {
     this.p <- p;
   }
 
-  /**
+  /*
+   * Set a value.
+   *
+   * - x: Value.
+   */
+  function setValue(x:Value) {
+    assert !this.x?;
+    this.x <- x;
+    constant();
+  }
+
+  /*
    * Set a pilot value.
    *
    * - x: Pilot value.
    */
-  function setPilot(gen:Integer, x:Value) {
-    assert !this.p?;
+  function setPilot(x:Value) {
     assert !this.x?;
-    assert this.pilotCount == 0;
-
     this.x <- x;
-    this.generation <- gen;
   }
 
   override function doDepth() -> Integer {
@@ -109,38 +114,24 @@ final class Random<Value> < Expression<Value>(nil) {
   }
 
   override function doValue() -> Value {
-    assert p?;
-    p!.prune();
-    let x <- p!.simulate();
-    p!.update(x);
-    p!.unlink();
-    p!.unsetRandom(this);
-    return x;
-  }
-
-  override function doPilot(gen:Integer) -> Value {
-    return doGet();
+    if !x? {
+      p!.value();
+    }
+    return x!;
   }
 
   override function doGet() -> Value {
-    if x? {
-      /* pilot value already set */
-      return x!;
-    } else {
-      /* simulate a pilot value */
-      assert p?;
-      if p!.supportsLazy() {
-        p!.prune();
-        let x <- p!.simulateLazy();
-        assert x?;
-        p!.updateLazy(this);
-        p!.unlink();
-        p!.unsetRandom(this);
-        return x!;
-      } else {
-        return doValue();
-      }
+    if !x? {
+      p!.get();
     }
+    return x!;
+  }
+
+  override function doPilot(gen:Integer) -> Value {
+    if !x? {
+      p!.get();
+    }
+    return x!;
   }
 
   override function doMove(gen:Integer, κ:Kernel) -> Value {
@@ -201,7 +192,7 @@ final class Random<Value> < Expression<Value>(nil) {
   }
 
   override function graftGaussian() -> Gaussian? {
-    if !hasValue() {
+    if !(hasValue() || p!.hasClamp()) {
       let q <- p!.graftGaussian();
       p <-? Distribution<Value>?(q);
       return q;
@@ -210,7 +201,7 @@ final class Random<Value> < Expression<Value>(nil) {
   }
     
   override function graftBeta() -> Beta? {
-    if !hasValue() {
+    if !(hasValue() || p!.hasClamp()) {
       let q <- p!.graftBeta();
       p <-? Distribution<Value>?(q);
       return q;
@@ -219,7 +210,7 @@ final class Random<Value> < Expression<Value>(nil) {
   }
   
   override function graftGamma() -> Gamma? {
-    if !hasValue() {
+    if !(hasValue() || p!.hasClamp()) {
       let q <- p!.graftGamma();
       p <-? Distribution<Value>?(q);
       return q;
@@ -228,7 +219,7 @@ final class Random<Value> < Expression<Value>(nil) {
   }
   
   override function graftInverseGamma() -> InverseGamma? {
-    if !hasValue() {
+    if !(hasValue() || p!.hasClamp()) {
       let q <- p!.graftInverseGamma();
       p <-? Distribution<Value>?(q);
       return q;
@@ -237,7 +228,7 @@ final class Random<Value> < Expression<Value>(nil) {
   } 
 
   override function graftInverseWishart() -> InverseWishart? {
-    if !hasValue() {
+    if !(hasValue() || p!.hasClamp()) {
       let q <- p!.graftInverseWishart();
       p <-? Distribution<Value>?(q);
       return q;
@@ -246,7 +237,7 @@ final class Random<Value> < Expression<Value>(nil) {
   } 
   
   override function graftNormalInverseGamma(compare:Distribution<Real>) -> NormalInverseGamma? {
-    if !hasValue() {
+    if !(hasValue() || p!.hasClamp()) {
       let q <- p!.graftNormalInverseGamma(compare);
       p <-? Distribution<Value>?(q);
       return q;
@@ -255,7 +246,7 @@ final class Random<Value> < Expression<Value>(nil) {
   }
   
   override function graftDirichlet() -> Dirichlet? {
-    if !hasValue() {
+    if !(hasValue() || p!.hasClamp()) {
       let q <- p!.graftDirichlet();
       p <-? Distribution<Value>?(q);
       return q;
@@ -264,7 +255,7 @@ final class Random<Value> < Expression<Value>(nil) {
   }
 
   override function graftRestaurant() -> Restaurant? {
-    if !hasValue() {
+    if !(hasValue() || p!.hasClamp()) {
       let q <- p!.graftRestaurant();
       p <-? Distribution<Value>?(q);
       return q;
@@ -273,7 +264,7 @@ final class Random<Value> < Expression<Value>(nil) {
   }
 
   override function graftMultivariateGaussian() -> MultivariateGaussian? {
-    if !hasValue() {
+    if !(hasValue() || p!.hasClamp()) {
       let q <- p!.graftMultivariateGaussian();
       p <-? Distribution<Value>?(q);
       return q;
@@ -283,7 +274,7 @@ final class Random<Value> < Expression<Value>(nil) {
 
   override function graftMultivariateNormalInverseGamma(compare:Distribution<Real>) ->
       MultivariateNormalInverseGamma? {
-    if !hasValue() {
+    if !(hasValue() || p!.hasClamp()) {
       let q <- p!.graftMultivariateNormalInverseGamma(compare);
       p <-? Distribution<Value>?(q);
       return q;
@@ -292,7 +283,7 @@ final class Random<Value> < Expression<Value>(nil) {
   }
 
   override function graftMatrixGaussian() -> MatrixGaussian? {
-    if !hasValue() {
+    if !(hasValue() || p!.hasClamp()) {
       let q <- p!.graftMatrixGaussian();
       p <-? Distribution<Value>?(q);
       return q;
@@ -302,7 +293,7 @@ final class Random<Value> < Expression<Value>(nil) {
 
   override function graftMatrixNormalInverseWishart(compare:Distribution<LLT>) ->
       MatrixNormalInverseWishart? {
-    if !hasValue() {
+    if !(hasValue() || p!.hasClamp()) {
       let q <- p!.graftMatrixNormalInverseWishart(compare);
       p <-? Distribution<Value>?(q);
       return q;
@@ -311,7 +302,7 @@ final class Random<Value> < Expression<Value>(nil) {
   }
 
   override function graftDiscrete() -> Discrete? {
-    if !hasValue() {
+    if !(hasValue() || p!.hasClamp()) {
       let q <- p!.graftDiscrete();
       p <-? Distribution<Value>?(q);
       return q;
@@ -320,7 +311,7 @@ final class Random<Value> < Expression<Value>(nil) {
   }
 
   override function graftBoundedDiscrete() -> BoundedDiscrete? {
-    if !hasValue() {
+    if !(hasValue() || p!.hasClamp()) {
       let q <- p!.graftBoundedDiscrete();
       p <-? Distribution<Value>?(q);
       return q;

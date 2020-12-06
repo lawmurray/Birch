@@ -4,8 +4,7 @@
   },
   "filter": {
     "class": "AliveParticleFilter",
-    "nparticles": 64,
-    "nsteps": 10
+    "nparticles": 64
   },
   "input": "input/influenza.json"
 }

@@ -17,19 +17,11 @@ final class ScaledGammaPoisson(a:Expression<Real>, λ:Gamma) < Discrete {
   }
 
   function simulate() -> Integer {
-    if value? {
-      return value!;
-    } else {
-      return simulate_gamma_poisson(λ.k.value(), a.value()*λ.θ.value());
-    }
+    return simulate_gamma_poisson(λ.k.value(), a.value()*λ.θ.value());
   }
 
   function simulateLazy() -> Integer? {
-    if value? {
-      return value!;
-    } else {
-      return simulate_gamma_poisson(λ.k.get(), a.get()*λ.θ.get());
-    }
+    return simulate_gamma_poisson(λ.k.get(), a.get()*λ.θ.get());
   }
   
   function logpdf(x:Integer) -> Real {

@@ -12,19 +12,11 @@ final class GammaPoisson(λ:Gamma) < Discrete {
   }
 
   function simulate() -> Integer {
-    if value? {
-      return value!;
-    } else {
-      return simulate_gamma_poisson(λ.k.value(), λ.θ.value());
-    }
+    return simulate_gamma_poisson(λ.k.value(), λ.θ.value());
   }
 
   function simulateLazy() -> Integer? {
-    if value? {
-      return value!;
-    } else {
-      return simulate_gamma_poisson(λ.k.get(), λ.θ.get());
-    }
+    return simulate_gamma_poisson(λ.k.get(), λ.θ.get());
   }
   
   function logpdf(x:Integer) -> Real {

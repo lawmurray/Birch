@@ -17,19 +17,11 @@ class Binomial(n:Expression<Integer>, ρ:Expression<Real>) < BoundedDiscrete {
   }
 
   function simulate() -> Integer {
-    if value? {
-      return value!;
-    } else {
-      return simulate_binomial(n.value(), ρ.value());
-    }
+    return simulate_binomial(n.value(), ρ.value());
   }
   
   function simulateLazy() -> Integer? {
-    if value? {
-      return value!;
-    } else {
-      return simulate_binomial(n.get(), ρ.get());
-    }
+    return simulate_binomial(n.get(), ρ.get());
   }
 
   function logpdf(x:Integer) -> Real {
@@ -67,14 +59,6 @@ class Binomial(n:Expression<Integer>, ρ:Expression<Real>) < BoundedDiscrete {
     }
     
     return r;
-  }
-  
-  function graftDiscrete() -> Discrete? {
-    return Discrete?(graft());
-  }
-
-  function graftBoundedDiscrete() -> BoundedDiscrete? {
-    return BoundedDiscrete?(graft());
   }
 
   function write(buffer:Buffer) {

@@ -18,19 +18,11 @@ final class UniformInteger(l:Expression<Integer>, u:Expression<Integer>) <
   }
 
   function simulate() -> Integer {
-    if value? {
-      return value!;
-    } else {
-      return simulate_uniform_int(l.value(), u.value());
-    }
+    return simulate_uniform_int(l.value(), u.value());
   }
 
 //  function simulateLazy() -> Integer? {
-//    if value? {
-//      return value!;
-//    } else {
-//      return simulate_uniform_int(l.get(), u.get());
-//    }
+//    return simulate_uniform_int(l.get(), u.get());
 //  }
 
   function logpdf(x:Integer) -> Real {

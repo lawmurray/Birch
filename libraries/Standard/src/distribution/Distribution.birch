@@ -5,10 +5,16 @@
  */
 abstract class Distribution<Value> < DelayDistribution {
   /**
-   * Random variate associated with the distibution, if it is on the delayed
-   * sampling $M$-path.
+   * Random variate associated with the distibution, if any.
    */
-  x:Random<Value>?;
+  v:Random<Value>?;
+
+  /**
+   * Clamped value, if any.
+   *
+   * See also: `clamp()`.
+   */
+  clamped:Value?;
 
   /**
    * Number of rows, when interpreted as a matrix.
@@ -41,49 +47,110 @@ abstract class Distribution<Value> < DelayDistribution {
   /**
    * Set a random variate associated with the distribution.
    */
-  final function setRandom(x:Random<Value>) {
-    assert !this.x?;
-    this.x <- x;
+  final function setRandom(v:Random<Value>) {
+    assert !this.v?;
+    this.v <- v;
   }
 
   /**
    * Unset the random variate associated with the distribution.
    */
-  final function unsetRandom(x:Random<Value>) {
-    assert this.x? && this.x! == x;
-    this.x <- nil;
+  final function unsetRandom(v:Random<Value>) {
+    assert this.v? && this.v! == v;
+    this.v <- nil;
   }
 
   /**
-   * Realize the random variate associated with the distribution.
+   * Clamp value.
+   *
+   * - x: The value.
+   *
+   * In the context of delayed sampling, this is used by a node to fix the
+   * value of its parent nodes during a call of `update()`. When those parent
+   * nodes are eventually realized, this value will be used.
+   *
+   * The typical use case for this is enumerations of random variables, e.g.
+   * when a node that represents the sum of two random variables is realized,
+   * it fixes the values of two random variables also (its parents).
+   */
+  function clamp(x:Value) {
+    assert !clamped? || clamped! == x;
+    clamped <- x;
+  }
+
+  /**
+   * Is the value clamped?
+   */
+  function hasClamp() -> Boolean {
+    return clamped?;
+  }
+
+  /**
+   * Realize a value for the associated random variate. If `supportsLazy()`
+   * returns true this defers to `get()`, otherwise to `value()`.
    */
   final function realize() {
-    if supportsLazy() {
-      x!.get();
+    get();  // reverts to value() if unsupported
+  }
+
+  /**
+   * Realize a value for the associated random variate, lazily.
+   */
+  final function get() {
+    if !supportsLazy() {
+      value();
     } else {
-      x!.value();
+      prune();
+      x:Value?;
+      if clamped? {
+        x <- clamped!;
+        clamped <- nil;
+      } else {
+        x <- simulateLazy();
+      }
+      if v? {
+        v!.setPilot(x!);
+        updateLazy(v!);
+      } else {
+        update(x!);
+      }
+      unlink();
     }
   }
 
   /**
-   * Simulate a value for a random variate associated with this node,
-   * updating the delayed sampling graph accordingly, and returning the
-   * value.
+   * Realize a value for the associated random variate, eagerly.
    */
-  function value() -> Value {
+  final function value() {
     prune();
-    let x <- simulate();
-    update(x);
+    x:Value?;
+    if clamped? {
+      x <- clamped!;
+      clamped <- nil;
+    } else {
+      x <- simulate();
+    }
+
+    /// @todo Workaround for now, either v!.setValue() or unlink() may
+    /// remove the last reference to this, create an additional on the stack
+    tmp:Distribution<Value> <- this;
+
+    if v? {
+      v!.setValue(x!);
+    }
+    update(x!);
     unlink();
-    return x;
   }
-  
+
   /**
-   * Observe a value for a random variate associated with this node,
-   * updating the delayed sampling graph accordingly, and returning a weight
-   * giving the log pdf (or pmf) of that variate under the distribution.
+   * Observe a value for the associated random variate.
+   *
+   * - x: The value.
+   *
+   * Returns: weight giving the log pdf (or pmf) evaluated at the value.
    */
   final function observe(x:Value) -> Real {
+    assert !clamped?;
     prune();
     let w <- logpdf(x);
     if w > -inf {
@@ -94,12 +161,15 @@ abstract class Distribution<Value> < DelayDistribution {
   }
   
   /**
-   * Observe a value for a random variate associated with this node,
-   * updating the delayed sampling graph accordingly, and returning a lazy
-   * expression giving the log pdf (or pmf) of that variate under the
-   * distribution.
+   * Observe a value for the associated random variate, lazily.
+   *
+   * - x: The value.
+   *
+   * Returns: expression giving the log probability density (or mass), if
+   * supported.
    */
   final function observeLazy(x:Expression<Value>) -> Expression<Real>? {
+    assert !clamped?;
     assert supportsLazy();
     prune();
     let w <- logpdfLazy(x);
@@ -138,7 +208,8 @@ abstract class Distribution<Value> < DelayDistribution {
    *
    * - x: The value.
    *
-   * Return: the log probability density (or mass), if supported.
+   * Return: expression giving the log probability density (or mass), if
+   * supported.
    */
   function logpdfLazy(x:Expression<Value>) -> Expression<Real>? {
     return nil;

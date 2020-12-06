@@ -7,6 +7,10 @@ abstract class BoundedDiscrete < Discrete {
 
   function graftBoundedDiscrete() -> BoundedDiscrete? {
     prune();
-    return this;
+    if hasClamp() {
+      return nil;
+    } else {
+      return this;
+    }
   }
 }

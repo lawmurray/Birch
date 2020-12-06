@@ -13,19 +13,11 @@ class Delta(μ:Expression<Integer>) < Discrete {
   }
 
   function simulate() -> Integer {
-    if value? {
-      return value!;
-    } else {
-      return simulate_delta(μ.value());
-    }
+    return simulate_delta(μ.value());
   }
   
 //  function simulateLazy() -> Integer? {
-//    if value? {
-//      return value!;
-//    } else {
-//      return simulate_delta(μ.get());
-//    }
+//    return simulate_delta(μ.get());
 //  }
   
   function logpdf(x:Integer) -> Real {

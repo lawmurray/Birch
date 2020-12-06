@@ -24,35 +24,19 @@ final class LinearDiscrete(a:Expression<Integer>, μ:Discrete,
   }
 
   function simulate() -> Integer {
-    if value? {
-      return simulate_delta(value!);
-    } else {
-      return simulate_delta(a.value()*μ.simulate() + c.value());
-    }
+    return simulate_delta(a.value()*μ.simulate() + c.value());
   }
 
 //  function simulateLazy() -> Integer? {
-//    if value? {
-//      return simulate_delta(value!);
-//    } else {
-//      return simulate_delta(a.get()*μ.simulateLazy()! + c.get());
-//    }
+//    return simulate_delta(a.get()*μ.simulateLazy()! + c.get());
 //  }
   
   function logpdf(x:Integer) -> Real {
-    if value? {
-      return logpdf_delta(x, value!);
-    } else {
-      return μ.logpdf((x - c.value())/a.value()) - log(abs(Real(a.value())));
-    }
+    return μ.logpdf((x - c.value())/a.value()) - log(abs(Real(a.value())));
   }
 
 //  function logpdfLazy(x:Expression<Integer>) -> Expression<Real>? {
-//    if value? {
-//      return logpdf_lazy_delta(x, value!);
-//    } else {
-//      return μ.logpdfLazy((x - c)/a) - log(abs(Real(a)));
-//    }
+//    return μ.logpdfLazy((x - c)/a) - log(abs(Real(a)));
 //  }
   
   function update(x:Integer) {
@@ -84,13 +68,11 @@ final class LinearDiscrete(a:Expression<Integer>, μ:Discrete,
   }
 
   function link() {
-    // clamp() used instead for discrete enumerations
-    //μ.setChild(this);
+    μ.setChild(this);
   }
   
   function unlink() {
-    // clamp() used instead for discrete enumerations
-    //μ.releaseChild(this);
+    μ.releaseChild(this);
   }
 }
 

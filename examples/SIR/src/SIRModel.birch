@@ -1,24 +1,78 @@
 /**
  * SIR (susceptible-infectious-recovered) model.
  */
-class SIRModel < MarkovModel<SIRParameter,SIRState> {
-  function parameter(θ:SIRParameter) {
-    θ.λ ~ Gamma(2.0, 5.0);
-    θ.δ ~ Beta(2.0, 2.0);
-    θ.γ ~ Beta(2.0, 2.0);
+class SIRModel < Model {
+  /**
+   * Susceptible population at each time.
+   */
+  s:Tape<Random<Integer>>;
+
+  /**
+   * Infectious population at each time.
+   */
+  i:Tape<Random<Integer>>;
+
+  /**
+   * Recovered population at each time.
+   */
+  r:Tape<Random<Integer>>;
+
+  /**
+   * Interaction rate.
+   */
+  λ:Random<Real>;
+
+  /**
+   * Infection probability.
+   */
+  δ:Random<Real>;
+
+  /**
+   * Recovery probability.
+   */
+  γ:Random<Real>;
+
+  override function simulate() {
+    λ ~ Gamma(2.0, 5.0);
+    δ ~ Beta(2.0, 2.0);
+    γ ~ Beta(2.0, 2.0);
   }
 
-  function initial(x:SIRState, θ:SIRParameter) {
-    // set with input file
+  override function simulate(t:Integer) {
+    if t > 1 {
+      τ:Random<Integer>;
+      Δi:Random<Integer>;
+      Δr:Random<Integer>;
+
+      let n <- s.get(t - 1) + i.get(t - 1) + r.get(t - 1);
+      τ ~ Binomial(s.get(t - 1), 1.0 - exp(-λ*Real(i.get(t - 1))/Real(n)));
+      Δi ~ Binomial(τ, δ);
+      Δr ~ Binomial(i.get(t - 1), γ);
+
+      s.get(t) ~ Delta(s.get(t - 1) - Δi);
+      i.get(t) ~ Delta(i.get(t - 1) + Δi - Δr);
+      r.get(t) ~ Delta(r.get(t - 1) + Δr);
+    }
   }
 
-  function transition(x':SIRState, x:SIRState, θ:SIRParameter) {
-    x'.τ ~ Binomial(x.s, 1.0 - exp(-θ.λ*x.i.value()/(x.s + x.i + x.r).value()));
-    x'.Δi ~ Binomial(x'.τ, θ.δ);
-    x'.Δr ~ Binomial(x.i, θ.γ);
+  override function read(buffer:Buffer) {
+    λ <-? buffer.get<Real>("λ");
+    δ <-? buffer.get<Real>("δ");
+    γ <-? buffer.get<Real>("γ");
+  }
 
-    x'.s ~ Delta(x.s - x'.Δi);
-    x'.i ~ Delta(x.i + x'.Δi - x'.Δr);
-    x'.r ~ Delta(x.r + x'.Δr);
+  override function write(buffer:Buffer) {
+    buffer.set("λ", λ);
+    buffer.set("δ", δ);
+    buffer.set("γ", γ);
+    buffer.set("s", s);
+    buffer.set("i", i);
+    buffer.set("r", r);
+  }
+
+  override function read(t:Integer, buffer:Buffer) {
+    s.get(t) <-? buffer.get<Integer>("s");
+    i.get(t) <-? buffer.get<Integer>("i");
+    r.get(t) <-? buffer.get<Integer>("r");
   }
 }
