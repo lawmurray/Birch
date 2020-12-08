@@ -300,4 +300,48 @@ template<>
 struct DefaultShape<0> {
   typedef EmptyShape type;
 };
+
+/**
+ * Make a shape, no arguments.
+ *
+ * @ingroup libbirch
+ */
+inline EmptyShape make_shape() {
+  return EmptyShape();
+}
+
+/**
+ * Make a shape, single argument.
+ *
+ * @ingroup libbirch
+ */
+inline Shape<Dimension<>,EmptyShape> make_shape(const int64_t arg) {
+  auto tail = EmptyShape();
+  auto head = Dimension<>(arg, tail.volume());
+  return Shape<Dimension<>,EmptyShape>(head, tail);
+}
+
+/**
+ * Make a shape, multiple arguments.
+ *
+ * @ingroup libbirch
+ */
+template<class ... Args>
+auto make_shape(const int64_t arg, Args ... args) {
+  auto tail = make_shape(args...);
+  auto head = Dimension<>(arg, tail.volume());
+  return Shape<decltype(head),decltype(tail)>(head, tail);
+}
+
+/**
+ * Make a shape, recursively.
+ *
+ * @ingroup libbirch
+ */
+template<class ... Args>
+auto make_shape(const int64_t arg, const Shape<Args...>& tail) {
+  auto head = Dimension<>(arg, tail.volume());
+  return Shape<decltype(head),decltype(tail)>(head, tail);
+}
+
 }

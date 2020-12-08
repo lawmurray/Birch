@@ -121,4 +121,61 @@ template<>
 struct DefaultSlice<0> {
   typedef EmptySlice type;
 };
+
+/**
+ * Make a slice, no arguments.
+ *
+ * @ingroup libbirch
+ */
+inline auto make_slice() {
+  return EmptySlice();
+}
+
+/**
+ * Make a slice, single argument.
+ *
+ * @ingroup libbirch
+ */
+template<int64_t offset_value, int64_t length_value>
+auto make_slice(const Range<offset_value,length_value>& arg) {
+  auto head = arg;
+  auto tail = make_slice();
+  return Slice<decltype(head),decltype(tail)>(head, tail);
+}
+
+/**
+ * Make a slice, single argument.
+ *
+ * @ingroup libbirch
+ */
+inline auto make_slice(const int64_t arg) {
+  auto head = Index<>(arg);
+  auto tail = EmptySlice();
+  return Slice<Index<>,EmptySlice>(head, tail);
+}
+
+/**
+ * Make a slice, multiple arguments.
+ *
+ * @ingroup libbirch
+ */
+template<int64_t offset_value, int64_t length_value, class ... Args>
+auto make_slice(const Range<offset_value,length_value>& arg, Args ... args) {
+  auto head = arg;
+  auto tail = make_slice(args...);
+  return Slice<decltype(head),decltype(tail)>(head, tail);
+}
+
+/**
+ * Make a slice, multiple arguments.
+ *
+ * @ingroup libbirch
+ */
+template<class ... Args>
+auto make_slice(const int64_t arg, Args ... args) {
+  auto head = Index<mutable_value>(arg);
+  auto tail = make_slice(args...);
+  return Slice<decltype(head),decltype(tail)>(head, tail);
+}
+
 }

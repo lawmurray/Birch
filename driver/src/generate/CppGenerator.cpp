@@ -110,21 +110,14 @@ void birch::CppGenerator::visit(const UnaryCall* o) {
 }
 
 void birch::CppGenerator::visit(const Assign* o) {
-  if (o->left->isSlice()) {
-    auto slice = dynamic_cast<const Slice*>(o->left);
-    middle(slice->single << ".set");
-    middle("(libbirch::make_slice(" << slice->brackets << "), " << o->right << ')');
-  } else {
-    if (o->left->isMembership()) {
-      ++inAssign;
-    }
-    middle(o->left << " = " << o->right);
+  if (o->left->isMembership()) {
+    ++inAssign;
   }
+  middle(o->left << " = " << o->right);
 }
 
 void birch::CppGenerator::visit(const Slice* o) {
-  middle(o->single << ".get");
-  middle("(libbirch::make_slice(" << o->brackets << "))");
+  middle(o->single << '(' << o->brackets << ')');
 }
 
 void birch::CppGenerator::visit(const Query* o) {

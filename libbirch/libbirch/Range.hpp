@@ -76,4 +76,18 @@ struct Range: public Offset<offset_value>, public Length<length_value> {
     return 1;
   }
 };
+
+/**
+ * Make a range.
+ *
+ * @ingroup libbirch
+ *
+ * @param start First index.
+ * @param end Last index.
+ */
+inline Range<> make_range(const int64_t start, const int64_t end) {
+  int64_t length = std::max(int64_t(0), end - start + 1);
+  return Range<>(start, length);
+}
+
 }

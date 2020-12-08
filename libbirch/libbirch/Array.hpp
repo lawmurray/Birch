@@ -250,50 +250,7 @@ public:
   }
 
   /**
-   * @name Element access, caller not responsible for thread safety
-   */
-  ///@{
-  /**
-   * Slice.
-   *
-   * @tparam V Slice type.
-   *
-   * @param slice Slice.
-   *
-   * @return The resulting view or element.
-   */
-  template<class V, class U, std::enable_if_t<V::rangeCount() != 0,int> = 0>
-  auto set(const V& slice, const U& value) {
-    pinWrite();
-    Array<T,decltype(shape(slice))> o(shape(slice), buffer, offset +
-        shape.serial(slice));
-    o = value;
-    unpin();
-    return o;
-  }
-
-  template<class V, class U, std::enable_if_t<V::rangeCount() == 0,int> = 0>
-  T& set(const V& slice, const U& value) {
-    pinWrite();
-    auto& o = (*(buf() + shape.serial(slice)) = value);
-    unpin();
-    return o;
-  }
-
-  template<class V, std::enable_if_t<V::rangeCount() != 0,int> = 0>
-  auto get(const V& slice) const {
-    return Array<T,decltype(shape(slice))>(shape(slice), buffer, offset +
-        shape.serial(slice));
-  }
-
-  template<class V, std::enable_if_t<V::rangeCount() == 0,int> = 0>
-  const T& get(const V& slice) const {
-    return *(buf() + shape.serial(slice));
-  }
-  ///@}
-
-  /**
-   * @name Element access, caller responsible for thread safety
+   * @name Element access.
    */
   ///@{
   /**
@@ -329,24 +286,46 @@ public:
    * @return The resulting view or element.
    */
   template<class V, std::enable_if_t<V::rangeCount() != 0,int> = 0>
-  auto operator()(const V& slice) {
-    assert(!isShared());
-    return Array<T,decltype(shape(slice))>(shape(slice),
+  auto slice(const V& slice) {
+    pinWrite();
+    auto result = Array<T,decltype(shape(slice))>(shape(slice),
         buffer, offset + shape.serial(slice));
+    unpin();
+    return result;
   }
   template<class V, std::enable_if_t<V::rangeCount() != 0,int> = 0>
-  auto operator()(const V& slice) const {
+  auto slice(const V& slice) const {
     return Array<T,decltype(shape(slice))>(shape(slice),
         buffer, offset + shape.serial(slice));
   }
   template<class V, std::enable_if_t<V::rangeCount() == 0,int> = 0>
-  value_type& operator()(const V& slice) {
-    assert(!isShared());
-    return *(buf() + shape.serial(slice));
+  value_type& slice(const V& slice) {
+    pinWrite();
+    auto& result = *(buf() + shape.serial(slice));
+    unpin();
+    return result;
   }
   template<class V, std::enable_if_t<V::rangeCount() == 0,int> = 0>
-  value_type operator()(const V& slice) const {
+  value_type slice(const V& slice) const {
     return *(buf() + shape.serial(slice));
+  }
+
+  /**
+   * Slice.
+   *
+   * @tparam ...Args Slice argument types.
+   *
+   * @param args... Slice arguments.
+   *
+   * @return The resulting view or element.
+   */
+  template<class... Args>
+  decltype(auto) operator()(Args... args) {
+    return slice(make_slice(args...));
+  }
+  template<class... Args>
+  decltype(auto) operator()(Args... args) const {
+    return slice(make_slice(args...));
   }
 
   /**
