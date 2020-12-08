@@ -11,7 +11,7 @@ executors:
 
   mac:
     macos:
-      xcode: "12.0.0"
+      xcode: 12.2.0
 
 commands:
 
