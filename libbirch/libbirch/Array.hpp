@@ -288,10 +288,9 @@ public:
   template<class V, std::enable_if_t<V::rangeCount() != 0,int> = 0>
   auto slice(const V& slice) {
     pinWrite();
-    auto result = Array<T,decltype(shape(slice))>(shape(slice),
-        buffer, offset + shape.serial(slice));
     unpin();
-    return result;
+    return Array<T,decltype(shape(slice))>(shape(slice), buffer, offset +
+        shape.serial(slice));
   }
   template<class V, std::enable_if_t<V::rangeCount() != 0,int> = 0>
   auto slice(const V& slice) const {
@@ -299,14 +298,13 @@ public:
         buffer, offset + shape.serial(slice));
   }
   template<class V, std::enable_if_t<V::rangeCount() == 0,int> = 0>
-  value_type& slice(const V& slice) {
+  auto& slice(const V& slice) {
     pinWrite();
-    auto& result = *(buf() + shape.serial(slice));
     unpin();
-    return result;
+    return *(buf() + shape.serial(slice));
   }
   template<class V, std::enable_if_t<V::rangeCount() == 0,int> = 0>
-  value_type slice(const V& slice) const {
+  auto slice(const V& slice) const {
     return *(buf() + shape.serial(slice));
   }
 
@@ -403,7 +401,7 @@ public:
   /**
    * For a one-dimensional array, push an element onto the end. This increases
    * the array size by one.
-   * 
+   *
    * @param x Value.
    */
   void push(const T& x) {
