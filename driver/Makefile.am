@@ -104,6 +104,7 @@ birch_SOURCES = \
   src/statement/Program.cpp \
   src/statement/Raw.cpp \
   src/statement/Return.cpp \
+  src/statement/SliceOperator.cpp \
   src/statement/Statement.cpp \
   src/statement/StatementIterator.cpp \
   src/statement/StatementList.cpp \
@@ -235,6 +236,7 @@ noinst_HEADERS = \
   src/statement/Program.hpp \
   src/statement/Raw.hpp \
   src/statement/Return.hpp \
+  src/statement/SliceOperator.hpp \
   src/statement/Statement.hpp \
   src/statement/StatementIterator.hpp \
   src/statement/StatementList.hpp \

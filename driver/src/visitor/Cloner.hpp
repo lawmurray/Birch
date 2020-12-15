@@ -66,6 +66,7 @@ public:
   virtual Statement* clone(const UnaryOperator* o);
   virtual Statement* clone(const AssignmentOperator* o);
   virtual Statement* clone(const ConversionOperator* o);
+  virtual Statement* clone(const SliceOperator* o);
   virtual Statement* clone(const Class* o);
   virtual Statement* clone(const Basic* o);
   virtual Statement* clone(const ExpressionStatement* o);

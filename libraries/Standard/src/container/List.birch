@@ -33,6 +33,13 @@ final class List<Type> {
   count:Integer <- 0;
 
   /**
+   * Reference to an element.
+   */
+  operator [i:Integer] -> Type {
+    return getNode(i).x;
+  }
+
+  /**
    * Number of elements.
    */
   function size() -> Integer {

@@ -13,8 +13,6 @@
 #include "src/statement/MemberFunction.hpp"
 #include "src/statement/BinaryOperator.hpp"
 #include "src/statement/UnaryOperator.hpp"
-#include "src/statement/AssignmentOperator.hpp"
-#include "src/statement/ConversionOperator.hpp"
 #include "src/statement/Basic.hpp"
 #include "src/statement/Class.hpp"
 #include "src/exception/all.hpp"

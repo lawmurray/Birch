@@ -66,6 +66,7 @@ public:
   virtual Statement* modify(UnaryOperator* o);
   virtual Statement* modify(AssignmentOperator* o);
   virtual Statement* modify(ConversionOperator* o);
+  virtual Statement* modify(SliceOperator* o);
   virtual Statement* modify(Class* o);
   virtual Statement* modify(Basic* o);
   virtual Statement* modify(ExpressionStatement* o);

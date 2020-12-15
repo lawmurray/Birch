@@ -28,6 +28,7 @@
 #include "src/statement/Program.hpp"
 #include "src/statement/Raw.hpp"
 #include "src/statement/Return.hpp"
+#include "src/statement/SliceOperator.hpp"
 #include "src/statement/StatementIterator.hpp"
 #include "src/statement/StatementList.hpp"
 #include "src/statement/UnaryOperator.hpp"

@@ -221,6 +221,12 @@ void birch::Visitor::visit(const ConversionOperator* o) {
   o->braces->accept(this);
 }
 
+void birch::Visitor::visit(const SliceOperator* o) {
+  o->params->accept(this);
+  o->returnType->accept(this);
+  o->braces->accept(this);
+}
+
 void birch::Visitor::visit(const Class* o) {
   o->typeParams->accept(this);
   o->params->accept(this);

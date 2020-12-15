@@ -325,6 +325,15 @@ void birch::BirchGenerator::visit(const ConversionOperator* o) {
   }
 }
 
+void birch::BirchGenerator::visit(const SliceOperator* o) {
+  start("operator [" << o->params << "] -> " << o->returnType);
+  if (!o->braces->isEmpty() && (!header || (type && type->isGeneric()))) {
+    finish(o->braces << "\n");
+  } else {
+    finish(';');
+  }
+}
+
 void birch::BirchGenerator::visit(const Class* o) {
   type = o;
   start("");

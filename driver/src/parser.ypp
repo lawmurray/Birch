@@ -129,7 +129,8 @@
 %type <valStatement> program_declaration
 %type <valStatement> member_variable_declaration member_function_declaration
 %type <valStatement> binary_operator_declaration unary_operator_declaration
-%type <valStatement> conversion_operator_declaration assignment_operator_declaration
+%type <valStatement> assignment_operator_declaration conversion_operator_declaration
+%type <valStatement> slice_operator_declaration
 %type <valStatement> class_declaration basic_declaration
 %type <valStatement> cpp hpp expression_statement assume_statement if for parallel
 %type <valStatement> while do_while with block assertion return factor
@@ -539,6 +540,10 @@ conversion_operator_declaration
     : OPERATOR return_type { push_raw(); } optional_braces  { $$ = new birch::ConversionOperator($2, $4, make_doc_loc(@$)); }
     ;
 
+slice_operator_declaration
+    : OPERATOR '[' parameter_list ']' return_type { push_raw(); } optional_braces  { $$ = new birch::SliceOperator($3, $5, $7, make_doc_loc(@$)); }
+    ;
+
 class_annotation
     : FINAL     { $$ = birch::FINAL; }
     | ABSTRACT  { $$ = birch::ABSTRACT; }
@@ -665,6 +670,7 @@ class_statement
     | member_function_declaration
     | assignment_operator_declaration
     | conversion_operator_declaration
+    | slice_operator_declaration
     | hpp
     ;
     

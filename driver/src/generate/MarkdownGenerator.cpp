@@ -289,6 +289,14 @@ void birch::MarkdownGenerator::visit(const ConversionOperator* o) {
   middle(o->returnType);
 }
 
+void birch::MarkdownGenerator::visit(const SliceOperator* o) {
+  start("!!! abstract \"operator [" << o->params << ']');
+  if (!o->returnType->isEmpty()) {
+    middle(" -> " << o->returnType);
+  }
+  finish("\"");
+}
+
 void birch::MarkdownGenerator::visit(const Basic* o) {
   middle(o->name);
   if (!o->base->isEmpty()) {
@@ -411,6 +419,21 @@ void birch::MarkdownGenerator::visit(const Class* o) {
     --depth;
   }
 
+  /* slice operators */
+  Gatherer<SliceOperator> slices(docsNotEmpty);
+  o->accept(&slices);
+  if (slices.size() > 0) {
+    genHead("Member Slices");
+    line("| Name | Description |");
+    line("| --- | --- |");
+    ++depth;
+    for (auto o : slices) {
+      start("| [[...]](#slice) | " << brief(o->loc->doc) << " |");
+    }
+    line("");
+    --depth;
+  }
+
   /* member functions */
   Gatherer<MemberFunction> functions(docsNotEmpty);
   o->accept(&functions);
@@ -437,6 +460,22 @@ void birch::MarkdownGenerator::visit(const Class* o) {
       *this << o;
       line("");
       line(quote(detailed(o->loc->doc), "    "));
+      line("");
+    }
+    line("");
+    --depth;
+  }
+
+  /* slice operator details */
+  if (slices.size() > 0) {
+    line("<a name=\"slice\"></a>\n");
+    genHead("Member Slice Details");
+    ++depth;
+    for (auto o : slices) {
+      auto desc = quote(detailed(o->loc->doc), "    ");
+      *this << o;
+      line("");
+      line(desc);
       line("");
     }
     line("");

@@ -10,6 +10,13 @@ final class Array<Type> {
   values:Type[_];
 
   /**
+   * Reference to an element.
+   */
+  operator [i:Integer] -> Type {
+    return values[i];
+  }
+
+  /**
    * Number of elements.
    */
   function size() -> Integer {

@@ -65,8 +65,6 @@ public:
   virtual void visit(const Program* o);
   virtual void visit(const BinaryOperator* o);
   virtual void visit(const UnaryOperator* o);
-  virtual void visit(const AssignmentOperator* o);
-  virtual void visit(const ConversionOperator* o);
   virtual void visit(const Basic* o);
   virtual void visit(const Class* o);
   virtual void visit(const Generic* o);

@@ -60,6 +60,20 @@ final class Tape<Type> {
   behindCount:Integer <- 0;
 
   /**
+   * Reference to an element.
+   */
+  operator [i:Integer] -> Type {
+    assert 0 < i;
+    if i <= behindCount {
+      seek(i + 1);
+      return behind!.x;
+    } else {
+      seek(i);
+      return ahead!.x;
+    }
+  }
+
+  /**
    * Number of elements.
    */
   function size() -> Integer {

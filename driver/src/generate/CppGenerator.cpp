@@ -533,14 +533,6 @@ void birch::CppGenerator::visit(const UnaryOperator* o) {
   }
 }
 
-void birch::CppGenerator::visit(const AssignmentOperator* o) {
-  assert(false);  // should be in CppClassGenerator
-}
-
-void birch::CppGenerator::visit(const ConversionOperator* o) {
-  assert(false);  // should be in CppClassGenerator
-}
-
 void birch::CppGenerator::visit(const Basic* o) {
   //
 }

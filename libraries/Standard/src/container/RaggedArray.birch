@@ -19,7 +19,17 @@ final class RaggedArray<Type> {
    * Number of columns in each row.
    */
   sizes:Integer[_];
-  
+
+  /**
+   * Reference to an element.
+   *
+   * - i: Row.
+   * - j: Column.
+   */
+  operator [i:Integer, j:Integer] -> Type {
+    return values[serial(i, j)];
+  }
+
   /**
    * Is this empty? A RaggedArray is considered empty if it has no rows. A
    * RaggedArray with one or more rows is not considered empty, even if those

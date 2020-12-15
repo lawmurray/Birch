@@ -285,6 +285,43 @@ void birch::CppClassGenerator::visit(const ConversionOperator* o) {
   }
 }
 
+void birch::CppClassGenerator::visit(const SliceOperator* o) {
+  if (!o->braces->isEmpty()) {
+    if (header) {
+      genSourceLine(o->loc);
+      start("virtual ");
+    } else {
+      genTemplateParams(currentClass);
+      genSourceLine(o->loc);
+    }
+    middle(o->returnType);
+    if (!o->returnType->isEmpty()) {
+      middle("& ");
+    } else {
+      middle(' ');
+    }
+    if (!header) {
+      middle("birch::type::" << currentClass->name);
+      genTemplateArgs(currentClass);
+      middle("::");
+    }
+    middle("operator()(" << o->params << ')');
+    if (header) {
+      finish(';');
+    } else {
+      finish(" {");
+      in();
+      genTraceFunction("<slice>", o->loc);
+      ++inOperator;
+      *this << o->braces->strip();
+      genSourceLine(o->loc);
+      --inOperator;
+      out();
+      finish("}\n");
+    }
+  }
+}
+
 void birch::CppClassGenerator::genBase(const Class* o) {
   auto base = dynamic_cast<const NamedType*>(o->base);
   if (base) {

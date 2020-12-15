@@ -256,6 +256,13 @@ birch::Statement* birch::Modifier::modify(ConversionOperator* o) {
   return o;
 }
 
+birch::Statement* birch::Modifier::modify(SliceOperator* o) {
+  o->params = o->params->accept(this);
+  o->returnType = o->returnType->accept(this);
+  o->braces = o->braces->accept(this);
+  return o;
+}
+
 birch::Statement* birch::Modifier::modify(Class* o) {
   o->typeParams = o->typeParams->accept(this);
   o->params = o->params->accept(this);

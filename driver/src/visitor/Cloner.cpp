@@ -208,6 +208,11 @@ birch::Statement* birch::Cloner::clone(const ConversionOperator* o) {
       o->braces->accept(this), o->loc);
 }
 
+birch::Statement* birch::Cloner::clone(const SliceOperator* o) {
+  return new SliceOperator(o->params->accept(this),
+      o->returnType->accept(this), o->braces->accept(this), o->loc);
+}
+
 birch::Statement* birch::Cloner::clone(const Class* o) {
   return new Class(o->annotation, o->name, o->typeParams->accept(this),
       o->params->accept(this), o->base->accept(this), o->alias,

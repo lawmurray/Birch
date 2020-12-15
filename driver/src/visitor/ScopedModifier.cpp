@@ -98,6 +98,13 @@ birch::Statement* birch::ScopedModifier::modify(ConversionOperator* o) {
   return o;
 }
 
+birch::Statement* birch::ScopedModifier::modify(SliceOperator* o) {
+  scopes.push_back(o->scope);
+  ContextualModifier::modify(o);
+  scopes.pop_back();
+  return o;
+}
+
 birch::Statement* birch::ScopedModifier::modify(Class* o) {
   this->currentClass = o;
   scopes.push_back(o->scope);
