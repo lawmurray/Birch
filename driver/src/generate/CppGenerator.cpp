@@ -162,12 +162,8 @@ void birch::CppGenerator::visit(const Span* o) {
   }
 }
 
-void birch::CppGenerator::visit(const Index* o) {
-  middle(o->single << " - 1");
-}
-
 void birch::CppGenerator::visit(const Range* o) {
-  middle("libbirch::make_range(" << o->left << " - 1, " << o->right << " - 1)");
+  middle("libbirch::make_range(" << o->left << ", " << o->right <<')');
 }
 
 void birch::CppGenerator::visit(const Member* o) {

@@ -222,6 +222,14 @@ public:
   }
 
   /**
+   * Call operator.
+   */
+  template<class... Args>
+  auto& operator()(Args... args) {
+    return get()->operator()(args...);
+  }
+
+  /**
    * Is the pointer not null?
    */
   bool query() const {

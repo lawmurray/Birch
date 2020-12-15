@@ -101,10 +101,6 @@ void birch::BirchGenerator::visit(const Span* o) {
   }
 }
 
-void birch::BirchGenerator::visit(const Index* o) {
-  middle(o->single);
-}
-
 void birch::BirchGenerator::visit(const Range* o) {
   middle(o->left << ".." << o->right);
 }

@@ -1,0 +1,130 @@
+/**
+ * SEIR (susceptible-exposed-infectious-recovered) reusable component. Two
+ * such components are assembled into a vector-borne-disease model, one to
+ * represent the human population, and one for the mosquito population.
+ */
+final class SEIRComponent {
+  /**
+   * Newly susceptible population at each time.
+   */
+  Δs:Tape<Integer>;
+
+  /**
+   * Newly exposed (incubating) population at each time.
+   */
+  Δe:Tape<Integer>;
+
+  /**
+   * Newly infectious population at each time.
+   */
+  Δi:Tape<Integer>;
+
+  /**
+   * Newly recovered population at each time.
+   */
+  Δr:Tape<Integer>;
+
+  /**
+   * Susceptible population at each time.
+   */
+  s:Tape<Integer>;
+
+  /**
+   * Exposed (incubating) population at each time.
+   */
+  e:Tape<Integer>;
+
+  /**
+   * Infectious population at each time.
+   */
+  i:Tape<Integer>;
+
+  /**
+   * Recovered population at each time.
+   */
+  r:Tape<Integer>;
+
+  /**
+   * Total population at each time.
+   */
+  n:Tape<Integer>;
+
+  /**
+   * Birth probability.
+   */
+  ν:Random<Real>;
+
+  /**
+   * Survival probability.
+   */
+  μ:Random<Real>;
+
+  /**
+   * Exposure probability.
+   */
+  λ:Random<Real>;
+
+  /**
+   * Infection probability.
+   */
+  δ:Random<Real>;
+
+  /**
+   * Recovery probability.
+   */
+  γ:Random<Real>;
+
+  /**
+   * Transfer between compartments.
+   *
+   * - t: Step number.
+   * - τ: Number of trials that may result in exposure.
+   *
+   * `τ` is computed externally according to the interaction between two
+   * populations, then `transfer()` called to update the state of the
+   * population.
+   */  
+  function transfer(t:Integer, τ:Integer) {
+    /* transfers */
+    Δe[t] <~ Binomial(τ, λ);
+    Δi[t] <~ Binomial(e[t - 1], δ);
+    Δr[t] <~ Binomial(i[t - 1], γ);
+
+    s[t] <- s[t - 1] - Δe[t];
+    e[t] <- e[t - 1] + Δe[t] - Δi[t];
+    i[t] <- i[t - 1] + Δi[t] - Δr[t];
+    r[t] <- r[t - 1] + Δr[t];
+    
+    /* survival; we assume that if the survival rate is set to one, what is
+     * meant is "all survive" regardless of the population size, and so do
+     * not evaluate these, ensuring we don't get -inf weights for mismatching
+     * numbers of trials (population sizes) */
+    if !μ.hasValue() || μ.value() != 1.0 {
+      s[t] <~ Binomial(s[t], μ);
+      e[t] <~ Binomial(e[t], μ);
+      i[t] <~ Binomial(i[t], μ);
+      r[t] <~ Binomial(r[t], μ);
+    }
+
+    /* births */
+    if !ν.hasValue() || ν.value() != 0.0 {
+      Δs[t] <~ Binomial(n[t], ν);
+      s[t] <- s[t] + Δs[t];
+    }
+    
+    /* update population */
+    n[t] <- s[t] + e[t] + i[t] + r[t];
+  }
+
+  function write(buffer:Buffer) {
+    buffer.set("s", s);
+    buffer.set("e", e);
+    buffer.set("i", i);
+    buffer.set("r", r);
+    buffer.set("ν", ν);
+    buffer.set("μ", μ);
+    buffer.set("λ", λ);
+    buffer.set("δ", δ);
+    buffer.set("γ", γ);
+  }
+}

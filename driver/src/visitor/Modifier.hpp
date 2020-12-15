@@ -41,7 +41,6 @@ public:
   virtual Expression* modify(Get* o);
   virtual Expression* modify(LambdaFunction* o);
   virtual Expression* modify(Span* o);
-  virtual Expression* modify(Index* o);
   virtual Expression* modify(Range* o);
   virtual Expression* modify(Member* o);
   virtual Expression* modify(Global* o);

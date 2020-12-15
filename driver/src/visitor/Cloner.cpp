@@ -93,10 +93,6 @@ birch::Expression* birch::Cloner::clone(const Span* o) {
   return new Span(o->single->accept(this), o->loc);
 }
 
-birch::Expression* birch::Cloner::clone(const Index* o) {
-  return new Index(o->single->accept(this), o->loc);
-}
-
 birch::Expression* birch::Cloner::clone(const Range* o) {
   return new Range(o->left->accept(this), o->right->accept(this), o->loc);
 }

@@ -60,16 +60,16 @@ class MixedGaussianModel < Model {
   override function simulate(t:Integer) {
     /* hidden state */
     if t == 1 {
-      x_n.get(t) ~ Gaussian(0.0, 1.0);
-      x_l.get(t) ~ Gaussian(vector(0.0, 3), identity(3));
+      x_n[t] ~ Gaussian(0.0, 1.0);
+      x_l[t] ~ Gaussian(vector(0.0, 3), identity(3));
     } else {
-      x_n.get(t) ~ Gaussian(atan(x_n.get(t - 1)) + dot(b, x_l.get(t - 1)), σ2_x_n);
-      x_l.get(t) ~ Gaussian(A*x_l.get(t - 1), Σ_x_l);
+      x_n[t] ~ Gaussian(atan(x_n[t - 1]) + dot(b, x_l[t - 1]), σ2_x_n);
+      x_l[t] ~ Gaussian(A*x_l[t - 1], Σ_x_l);
     }
 
     /* observation */
-    y_n.get(t) ~ Gaussian(0.1*copysign(pow(x_n.get(t), 2.0), x_n.get(t)), σ2_y_n);
-    y_l.get(t) ~ Gaussian(dot(c, x_l.get(t)), σ2_y_l);
+    y_n[t] ~ Gaussian(0.1*copysign(pow(x_n[t], 2.0), x_n[t]), σ2_y_n);
+    y_l[t] ~ Gaussian(dot(c, x_l[t]), σ2_y_l);
   }
 
   override function read(buffer:Buffer) {
@@ -83,8 +83,8 @@ class MixedGaussianModel < Model {
   }
 
   override function read(t:Integer, buffer:Buffer) {
-    buffer.get("y_l", y_l.get(t));
-    buffer.get("y_n", y_n.get(t));
+    buffer.get("y_l", y_l[t]);
+    buffer.get("y_n", y_n[t]);
   }
 
   override function write(buffer:Buffer) {
@@ -93,7 +93,7 @@ class MixedGaussianModel < Model {
   }
 
   override function write(t:Integer, buffer:Buffer) {
-    buffer.set("x_l", x_l.get(t));
-    buffer.set("x_n", x_n.get(t));
+    buffer.set("x_l", x_l[t]);
+    buffer.set("x_n", x_n[t]);
   }
 }

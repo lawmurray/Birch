@@ -101,10 +101,6 @@ void birch::Visitor::visit(const Span* o) {
   o->single->accept(this);
 }
 
-void birch::Visitor::visit(const Index* o) {
-  o->single->accept(this);
-}
-
 void birch::Visitor::visit(const Range* o) {
   o->left->accept(this);
   o->right->accept(this);

@@ -30,16 +30,16 @@ class Track(s:Integer, θ:Global) < Model {
       /* start */
       let μ <- vector(0.0, 3*length(θ.l));
       μ[1..2] <~ Uniform(θ.l, θ.u);
-      x.get(t) ~ Gaussian(μ, θ.M);
+      x[t] ~ Gaussian(μ, θ.M);
     } else {
       /* step */
-      x.get(t) ~ Gaussian(θ.A*x.get(t - 1), θ.Q);
+      x[t] ~ Gaussian(θ.A*x[t - 1], θ.Q);
     }
 
     d:Boolean;  // is the track detected?
     d <~ Bernoulli(θ.d);
     if d {
-      y.get(t) ~ Gaussian(θ.B*x.get(t), θ.R);
+      y[t] ~ Gaussian(θ.B*x[t], θ.R);
     }
   }
   

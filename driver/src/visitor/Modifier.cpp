@@ -112,11 +112,6 @@ birch::Expression* birch::Modifier::modify(Span* o) {
   return o;
 }
 
-birch::Expression* birch::Modifier::modify(Index* o) {
-  o->single = o->single->accept(this);
-  return o;
-}
-
 birch::Expression* birch::Modifier::modify(Range* o) {
   o->left = o->left->accept(this);
   o->right = o->right->accept(this);

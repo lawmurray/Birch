@@ -149,9 +149,9 @@ auto make_slice(const Range<offset_value,length_value>& arg) {
  * @ingroup libbirch
  */
 inline auto make_slice(const int64_t arg) {
-  auto head = Index<>(arg);
-  auto tail = EmptySlice();
-  return Slice<Index<>,EmptySlice>(head, tail);
+  auto head = make_index(arg);
+  auto tail = make_slice();
+  return Slice<decltype(head),decltype(tail)>(head, tail);
 }
 
 /**
@@ -173,7 +173,7 @@ auto make_slice(const Range<offset_value,length_value>& arg, Args ... args) {
  */
 template<class ... Args>
 auto make_slice(const int64_t arg, Args ... args) {
-  auto head = Index<mutable_value>(arg);
+  auto head = make_index(arg);
   auto tail = make_slice(args...);
   return Slice<decltype(head),decltype(tail)>(head, tail);
 }

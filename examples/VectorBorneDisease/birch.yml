@@ -1,15 +1,9 @@
 name: VectorBorneDisease
 manifest: 
   source: 
-    - src/common/SEIRModel.birch
-    - src/common/SEIRParameter.birch
-    - src/common/SEIRState.birch
-    - src/common/VBDModel.birch
-    - src/common/VBDParameter.birch
-    - src/common/VBDState.birch
-    - src/study/YapDengueModel.birch
-    - src/study/YapDengueParameter.birch
-    - src/study/YapDengueState.birch
+    - src/*.birch
+    - src/*/*.birch
+    - src/*/*/*.birch
   data:
     - config/yap_dengue.json
     - input/fais_dengue.json

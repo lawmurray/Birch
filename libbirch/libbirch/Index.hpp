@@ -72,4 +72,16 @@ struct Index: public Offset<offset_value>, public Length<1> {
     return 0;
   }
 };
+
+/**
+ * Make an index.
+ *
+ * @ingroup libbirch
+ *
+ * @param offset Index, 1-based.
+ */
+inline Index<> make_index(const int64_t offset) {
+  return Index<>(offset - 1);
+}
+
 }

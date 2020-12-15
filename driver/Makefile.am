@@ -55,7 +55,6 @@ birch_SOURCES = \
   src/expression/Generic.cpp \
   src/expression/Get.cpp \
   src/expression/Global.cpp \
-  src/expression/Index.cpp \
   src/expression/LambdaFunction.cpp \
   src/expression/Literal.cpp \
   src/expression/Member.cpp \
@@ -184,7 +183,6 @@ noinst_HEADERS = \
   src/expression/Generic.hpp \
   src/expression/Get.hpp \
   src/expression/Global.hpp \
-  src/expression/Index.hpp \
   src/expression/LambdaFunction.hpp \
   src/expression/Literal.hpp \
   src/expression/Member.hpp \

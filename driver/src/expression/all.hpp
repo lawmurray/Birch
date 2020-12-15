@@ -13,7 +13,6 @@
 #include "src/expression/Generic.hpp"
 #include "src/expression/Get.hpp"
 #include "src/expression/Global.hpp"
-#include "src/expression/Index.hpp"
 #include "src/expression/LambdaFunction.hpp"
 #include "src/expression/NamedExpression.hpp"
 #include "src/expression/Literal.hpp"

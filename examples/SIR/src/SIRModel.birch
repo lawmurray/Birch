@@ -44,14 +44,14 @@ class SIRModel < Model {
       Δi:Random<Integer>;
       Δr:Random<Integer>;
 
-      let n <- s.get(t - 1) + i.get(t - 1) + r.get(t - 1);
-      τ ~ Binomial(s.get(t - 1), 1.0 - exp(-λ*Real(i.get(t - 1))/Real(n)));
+      let n <- s[t - 1] + i[t - 1] + r[t - 1];
+      τ ~ Binomial(s[t - 1], 1.0 - exp(-λ*Real(i[t - 1])/Real(n)));
       Δi ~ Binomial(τ, δ);
-      Δr ~ Binomial(i.get(t - 1), γ);
+      Δr ~ Binomial(i[t - 1], γ);
 
-      s.get(t) ~ Delta(s.get(t - 1) - Δi);
-      i.get(t) ~ Delta(i.get(t - 1) + Δi - Δr);
-      r.get(t) ~ Delta(r.get(t - 1) + Δr);
+      s[t] ~ Delta(s[t - 1] - Δi);
+      i[t] ~ Delta(i[t - 1] + Δi - Δr);
+      r[t] ~ Delta(r[t - 1] + Δr);
     }
   }
 
@@ -71,8 +71,8 @@ class SIRModel < Model {
   }
 
   override function read(t:Integer, buffer:Buffer) {
-    s.get(t) <-? buffer.get<Integer>("s");
-    i.get(t) <-? buffer.get<Integer>("i");
-    r.get(t) <-? buffer.get<Integer>("r");
+    s[t] <-? buffer.get<Integer>("s");
+    i[t] <-? buffer.get<Integer>("i");
+    r[t] <-? buffer.get<Integer>("r");
   }
 }
