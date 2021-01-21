@@ -50,7 +50,7 @@ void birch::copy_file_writeable(fs::path src, fs::path dst) {
   using namespace fs;
 
   copy_file(src, dst);
-  permissions(dst, perms::add_perms | perms::owner_write);
+  permissions(dst, status(dst).permissions()|perms::owner_write);
 }
 
 bool birch::copy_if_newer(fs::path src, fs::path dst) {
@@ -132,7 +132,7 @@ fs::path birch::remove_common_prefix(const fs::path& base, const fs::path& path)
 }
 
 std::string birch::read_all(const fs::path& path) {
-  fs::ifstream in(path);
+  fs_stream::ifstream in(path);
   std::stringstream buf;
   buf << in.rdbuf();
   return buf.str();
@@ -142,7 +142,7 @@ void birch::write_all(const fs::path& path, const std::string& contents) {
   if (!path.parent_path().empty()) {
     fs::create_directories(path.parent_path());
   }
-  fs::ofstream out(path);
+  fs_stream::ofstream out(path);
   if (out.fail()) {
     std::stringstream buf;
     buf << "Could not open " << path.string() << " for writing.";
@@ -171,7 +171,7 @@ void birch::replace_tag(const fs::path& path, const std::string& tag,
     const std::string& value) {
   auto contents = read_all(path);
   boost::replace_all(contents, tag, value);
-  fs::ofstream stream(path);
+  fs_stream::ofstream stream(path);
   if (stream.fail()) {
     std::stringstream buf;
     buf << "Could not open " << path.string() << " for writing.";

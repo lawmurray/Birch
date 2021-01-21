@@ -33,12 +33,19 @@
 #include <cassert>
 
 #if __cplusplus > 201402L
+/* for C++17 and above, use the STL filesystem library */
 #include <filesystem>
+#include <fstream>
 namespace fs = std::filesystem;
+namespace fs_stream = std;
+#define FS_OWNER_EXE fs::perms::owner_exec
 #else
+/* otherwise use the boost file system library */
 #include "boost/filesystem.hpp"
 #include "boost/filesystem/fstream.hpp"
 namespace fs = boost::filesystem;
+namespace fs_stream = boost::filesystem;
+#define FS_OWNER_EXE fs::perms::owner_exe
 #endif
 
 #include "boost/algorithm/string.hpp"

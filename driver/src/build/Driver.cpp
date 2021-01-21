@@ -696,7 +696,7 @@ void birch::Driver::audit() {
     auto ext = path.extension().string();
     if (path.string() == "build" || path.string() == "output"
         || path.string() == "site") {
-      iter.no_push();
+      iter.disable_recursion_pending();
     } else if (interesting.find(ext) != interesting.end()
         && exclude.find(name) == exclude.end()) {
       if (allFiles.find(path.string()) == allFiles.end()) {
@@ -717,7 +717,7 @@ void birch::Driver::docs() {
   compiler.parse(false);
 
   /* output everything into single file */
-  fs::ofstream docsStream("DOCS.md");
+  fs_stream::ofstream docsStream("DOCS.md");
   if (docsStream.fail()) {
     std::stringstream buf;
     buf << "Could not open DOCS.md for writing.";
@@ -980,7 +980,8 @@ void birch::Driver::setup() {
 
   /* copy build files */
   newBootstrap = copy_if_newer(find(shareDirs, "bootstrap"), "bootstrap");
-  fs::permissions("bootstrap", fs::add_perms|fs::owner_exe);
+  fs::permissions("bootstrap", fs::status("bootstrap").permissions()|
+      FS_OWNER_EXE);
 
   auto m4_dir = fs::path("m4");
   if (!fs::exists(m4_dir)) {
