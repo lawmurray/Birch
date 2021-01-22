@@ -106,12 +106,6 @@ private:
   void target(const std::string& cmd = "");
 
   /**
-   * Run `ldconfig`, if on a platform where this is necessary, and running
-   * under a user account where this is possible.
-   */
-  void ldconfig();
-
-  /**
    * Create the package.r
    *
    * @param includeRequires Include checks for required packages?

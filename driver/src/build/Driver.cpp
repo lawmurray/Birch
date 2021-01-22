@@ -490,13 +490,11 @@ void birch::Driver::build() {
 void birch::Driver::install() {
   configure();
   target("install");
-  ldconfig();
 }
 
 void birch::Driver::uninstall() {
   configure();
   target("uninstall");
-  ldconfig();
 }
 
 void birch::Driver::dist() {
@@ -1254,15 +1252,6 @@ void birch::Driver::target(const std::string& cmd) {
       throw DriverException("make failed.");
     }
   }
-}
-
-void birch::Driver::ldconfig() {
-  #ifndef __APPLE__
-  auto euid = geteuid();
-  if (euid == 0) {
-    [[maybe_unused]] int result = std::system("ldconfig");
-  }
-  #endif
 }
 
 birch::Package* birch::Driver::createPackage(bool includeRequires) {
