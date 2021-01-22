@@ -696,7 +696,7 @@ void birch::Driver::audit() {
     auto ext = path.extension().string();
     if (path.string() == "build" || path.string() == "output"
         || path.string() == "site") {
-      iter.disable_recursion_pending();
+      iter.FS_DISABLE_RECURSION_PENDING();
     } else if (interesting.find(ext) != interesting.end()
         && exclude.find(name) == exclude.end()) {
       if (allFiles.find(path.string()) == allFiles.end()) {

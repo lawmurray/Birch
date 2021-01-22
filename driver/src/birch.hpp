@@ -39,6 +39,7 @@
 namespace fs = std::filesystem;
 namespace fs_stream = std;
 #define FS_OWNER_EXE fs::perms::owner_exec
+#define FS_DISABLE_RECURSION_PENDING disable_recursion_pending
 #else
 /* otherwise use the boost file system library */
 #include "boost/filesystem.hpp"
@@ -46,6 +47,7 @@ namespace fs_stream = std;
 namespace fs = boost::filesystem;
 namespace fs_stream = boost::filesystem;
 #define FS_OWNER_EXE fs::perms::owner_exe
+#define FS_DISABLE_RECURSION_PENDING no_push
 #endif
 
 #include <getopt.h>
