@@ -16,7 +16,6 @@ birch_SOURCES = \
   src/build/Compiler.cpp \
   src/build/Driver.cpp \
   src/build/MetaParser.cpp \
-  src/build/misc.cpp \
   src/common/Annotated.cpp \
   src/common/Argumented.cpp \
   src/common/Based.cpp \
@@ -77,7 +76,8 @@ birch_SOURCES = \
   src/generate/CppPackageGenerator.cpp \
   src/generate/IndentableGenerator.cpp \
   src/generate/MarkdownGenerator.cpp \
-  src/primitive/encode.cpp \
+  src/primitive/string.cpp \
+  src/primitive/system.cpp \
   src/statement/Assert.cpp \
   src/statement/AssignmentOperator.cpp \
   src/statement/Assume.cpp \
@@ -140,7 +140,6 @@ noinst_HEADERS = \
   src/build/Compiler.hpp \
   src/build/Driver.hpp \
   src/build/MetaParser.hpp \
-  src/build/misc.hpp \
   src/common/Annotated.hpp \
   src/common/Argumented.hpp \
   src/common/Based.hpp \
@@ -205,9 +204,10 @@ noinst_HEADERS = \
   src/generate/CppPackageGenerator.hpp \
   src/generate/IndentableGenerator.hpp \
   src/generate/MarkdownGenerator.hpp \
-  src/primitive/encode.hpp \
   src/primitive/inherits.hpp \
   src/primitive/poset.hpp \
+  src/primitive/string.hpp \
+  src/primitive/system.hpp \
   src/statement/all.hpp \
   src/statement/AssignmentOperator.hpp \
   src/statement/Assert.hpp \

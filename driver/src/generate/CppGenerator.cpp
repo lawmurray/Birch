@@ -4,7 +4,7 @@
 #include "src/generate/CppGenerator.hpp"
 
 #include "src/generate/CppClassGenerator.hpp"
-#include "src/primitive/encode.hpp"
+#include "src/primitive/string.hpp"
 
 birch::CppGenerator::CppGenerator(std::ostream& base, const int level,
     const bool header, const bool generic) :
@@ -380,9 +380,7 @@ void birch::CppGenerator::visit(const Program* o) {
         for (auto param : *o->params) {
           auto name = dynamic_cast<const Parameter*>(param)->name;
           std::string flag = internalise(name->str()) + "FLAG_";
-
-          std::string option = name->str();
-          boost::replace_all(option, "_", "-");
+          std::string option = std::regex_replace(name->str(), std::regex("_"), "-");
 
           genSourceLine(o->loc);
           start("{\"");

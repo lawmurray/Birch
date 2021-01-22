@@ -1,7 +1,7 @@
 /**
  * @file
  */
-#include "src/build/misc.hpp"
+#include "src/primitive/system.hpp"
 
 #include "src/common/Location.hpp"
 #include "src/statement/File.hpp"
@@ -170,7 +170,7 @@ bool birch::write_all_if_different(const fs::path& path,
 void birch::replace_tag(const fs::path& path, const std::string& tag,
     const std::string& value) {
   auto contents = read_all(path);
-  boost::replace_all(contents, tag, value);
+  contents = std::regex_replace(contents, std::regex(tag), value);
   fs_stream::ofstream stream(path);
   if (stream.fail()) {
     std::stringstream buf;
@@ -178,19 +178,4 @@ void birch::replace_tag(const fs::path& path, const std::string& tag,
     throw DriverException(buf.str());
   }
   stream << contents;
-}
-
-std::string birch::tar(const std::string& name) {
-  std::string result = name;
-  boost::to_lower(result);
-  return "birch-" + result;
-}
-
-std::string birch::canonical(const std::string& name) {
-  std::string result = tar(name);
-  boost::replace_all(result, "-", "_");
-  return result;
-}
-bool birch::isPower2(const int x) {
-  return x > 0 && !(x & (x - 1));
 }

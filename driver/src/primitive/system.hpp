@@ -111,37 +111,4 @@ bool write_all_if_different(const fs::path& path,
 void replace_tag(const fs::path& path, const std::string& tag,
     const std::string& value);
 
-/**
- * Tar name for a package.
- */
-std::string tar(const std::string& name);
-
-/**
- * Canonical name for a package. This is the same as the tar name, with
- * hyphens replaced with underscores.
- */
-std::string canonical(const std::string& name);
-
-/**
- * Is an integer a positive power of two?
- */
-bool isPower2(const int x);
-
-/**
- * Change the working directory and restore it on destruction.
- */
-class CWD {
-public:
-  CWD(const fs::path& path) : previous(fs::absolute(fs::current_path())) {
-    fs::current_path(path);
-  }
-
-  ~CWD() {
-    fs::current_path(previous);
-  }
-
-private:
-  fs::path previous;
-};
-
 }

@@ -7,7 +7,8 @@
 #include "src/visitor/Gatherer.hpp"
 #include "src/primitive/poset.hpp"
 #include "src/primitive/inherits.hpp"
-#include "src/build/misc.hpp"
+#include "src/primitive/string.hpp"
+#include "src/primitive/system.hpp"
 
 birch::CppPackageGenerator::CppPackageGenerator(std::ostream& base,
     const int level, const bool header) :
@@ -48,8 +49,7 @@ void birch::CppPackageGenerator::visit(const Package* o) {
   if (header) {
     /* don't use #pragma once here, use a macro guard instead, as the header
      * may be used as a source file to create a pre-compiled header */
-    std::string name = canonical(o->name);
-    boost::to_upper(name);
+    std::string name = upper(canonical(o->name));
     line("#ifndef BI_" << name << "_HPP");
     line("#define BI_" << name << "_HPP\n");
     line("#include \"libbirch.hpp\"\n");

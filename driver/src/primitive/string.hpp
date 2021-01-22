@@ -75,4 +75,25 @@ std::string anchor(const std::string& str);
  */
 std::string quote(const std::string& str, const std::string& indent);
 
+/**
+ * Convert a string to lower case.
+ */
+std::string lower(const std::string& str);
+
+/**
+ * Convert a string to upper case.
+ */
+std::string upper(const std::string& str);
+
+/**
+ * Tar name for a package.
+ */
+std::string tar(const std::string& name);
+
+/**
+ * Canonical name for a package. This is the same as the tar name, with
+ * hyphens replaced with underscores.
+ */
+std::string canonical(const std::string& name);
+
 }

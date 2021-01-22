@@ -48,9 +48,6 @@ namespace fs_stream = boost::filesystem;
 #define FS_OWNER_EXE fs::perms::owner_exe
 #endif
 
-#include "boost/algorithm/string.hpp"
-#include "boost/algorithm/string/trim.hpp"
-
 #include <getopt.h>
 #include <dlfcn.h>
 #include <yaml.h>

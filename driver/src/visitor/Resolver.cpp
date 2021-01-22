@@ -5,7 +5,7 @@
 
 #include "src/exception/all.hpp"
 #include "src/visitor/all.hpp"
-#include "src/build/misc.hpp"
+#include "src/primitive/system.hpp"
 
 birch::Resolver::Resolver(Package* currentPackage, Class* currentClass) :
     ScopedModifier(currentPackage, currentClass) {

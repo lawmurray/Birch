@@ -10,7 +10,7 @@ birch::Raw::Raw(Name* name, const std::string& raw,
     Statement(loc),
     Named(name),
     raw(raw) {
-  boost::algorithm::trim_left(this->raw);
+  //
 }
 
 birch::Raw::~Raw() {
