@@ -33,16 +33,22 @@
 #include <cassert>
 
 #if __cplusplus > 201402L
+/* for C++17 and above, use the STL filesystem library */
 #include <filesystem>
+#include <fstream>
 namespace fs = std::filesystem;
+namespace fs_stream = std;
+#define FS_OWNER_EXE fs::perms::owner_exec
+#define FS_DISABLE_RECURSION_PENDING disable_recursion_pending
 #else
+/* otherwise use the boost file system library */
 #include "boost/filesystem.hpp"
 #include "boost/filesystem/fstream.hpp"
 namespace fs = boost::filesystem;
+namespace fs_stream = boost::filesystem;
+#define FS_OWNER_EXE fs::perms::owner_exe
+#define FS_DISABLE_RECURSION_PENDING no_push
 #endif
-
-#include "boost/algorithm/string.hpp"
-#include "boost/algorithm/string/trim.hpp"
 
 #include <getopt.h>
 #include <dlfcn.h>

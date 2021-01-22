@@ -4,7 +4,7 @@
 #include "src/generate/CppClassGenerator.hpp"
 
 #include "src/visitor/Gatherer.hpp"
-#include "src/primitive/encode.hpp"
+#include "src/primitive/string.hpp"
 
 birch::CppClassGenerator::CppClassGenerator(std::ostream& base,
     const int level, const bool header, const bool generic,

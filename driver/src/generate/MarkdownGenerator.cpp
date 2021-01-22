@@ -4,7 +4,7 @@
 #include "src/generate/MarkdownGenerator.hpp"
 
 #include "src/visitor/Gatherer.hpp"
-#include "src/primitive/encode.hpp"
+#include "src/primitive/string.hpp"
 
 birch::MarkdownGenerator::MarkdownGenerator(std::ostream& base) :
     BirchGenerator(base, 0, true),

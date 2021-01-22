@@ -4,6 +4,6 @@
 program test_cdf_beta(N:Integer <- 10000) {
   let α <- simulate_uniform(1.0, 10.0);
   let β <- simulate_uniform(1.0, 10.0);
-  let q <- Beta(α, β);  
+  let q <- Beta(α, β);
   test_cdf(q, N);
 }

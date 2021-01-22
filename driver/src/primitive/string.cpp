@@ -1,7 +1,7 @@
 /**
  * @file
  */
-#include "src/primitive/encode.hpp"
+#include "src/primitive/string.hpp"
 
 std::string birch::encode32(const std::string& in) {
   std::string out;
@@ -127,7 +127,7 @@ std::string birch::nice(const std::string& name) {
   }
 
   /* translate prime (apostrophe at end of name) */
-  boost::replace_all(str, "'", "_prime_");
+  str = std::regex_replace(str, std::regex("'"), "_prime_");
 
   return str;
 }
@@ -164,10 +164,7 @@ std::string birch::detailed(const std::string& str) {
     str1 = match.suffix();
   }
   buf << str1;
-  str1 = buf.str();
-  boost::trim(str1);
-
-  return str1;
+  return buf.str();
 }
 
 std::string birch::brief(const std::string& str) {
@@ -183,21 +180,33 @@ std::string birch::brief(const std::string& str) {
 }
 
 std::string birch::one_line(const std::string& str) {
-  std::string str1 = detailed(str);
-  boost::replace_all(str1, "\n", " ");
-  return str1;
+  return std::regex_replace(detailed(str), std::regex("\\n"), " ");
 }
 
 std::string birch::anchor(const std::string& name) {
-  std::string str = name;
-  boost::to_lower(str);
-  boost::replace_all(str, " ", "-");
-  boost::replace_all(str, "_", "-");
-  return str;
+  return std::regex_replace(lower(name), std::regex(" |_"), "-");
 }
 
 std::string birch::quote(const std::string& str, const std::string& indent) {
-  std::string result = indent + str;
-  boost::replace_all(result, "\n", std::string("\n") + indent);
-  return result;
+  return std::regex_replace(indent + str, std::regex("\\n"), std::string("\n") + indent);
+}
+
+std::string birch::lower(const std::string& str) {
+  auto res = str;
+  transform(res.begin(), res.end(), res.begin(), ::tolower);
+  return res;
+}
+
+std::string birch::upper(const std::string& str) {
+  auto res = str;
+  transform(res.begin(), res.end(), res.begin(), ::toupper);
+  return res;
+}
+
+std::string birch::tar(const std::string& name) {
+  return "birch-" + lower(name);
+}
+
+std::string birch::canonical(const std::string& name) {
+  return std::regex_replace(tar(name), std::regex("-"), "_");
 }

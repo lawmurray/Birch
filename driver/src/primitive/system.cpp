@@ -1,7 +1,7 @@
 /**
  * @file
  */
-#include "src/build/misc.hpp"
+#include "src/primitive/system.hpp"
 
 #include "src/common/Location.hpp"
 #include "src/statement/File.hpp"
@@ -46,6 +46,13 @@ std::list<fs::path> birch::glob(const std::string& pattern) {
   return results;
 }
 
+void birch::copy_file_writeable(fs::path src, fs::path dst) {
+  using namespace fs;
+
+  copy_file(src, dst);
+  permissions(dst, status(dst).permissions()|perms::owner_write);
+}
+
 bool birch::copy_if_newer(fs::path src, fs::path dst) {
   using namespace fs;
 
@@ -53,11 +60,11 @@ bool birch::copy_if_newer(fs::path src, fs::path dst) {
    * workaround... */
   bool result = false;
   if (!exists(dst)) {
-    copy_file(src, dst);
+    copy_file_writeable(src, dst);
     result = true;
   } else if (last_write_time(src) > last_write_time(dst)) {
     remove(dst);
-    copy_file(src, dst);
+    copy_file_writeable(src, dst);
     result = true;
   }
   return result;
@@ -74,24 +81,22 @@ bool birch::copy_with_prompt(fs::path src, fs::path dst) {
     std::getline(std::cin, ans);
     if (ans.length() > 0 && (ans[0] == 'y' || ans[0] == 'Y')) {
       remove(dst);
-      copy_file(src, dst);
+      copy_file_writeable(src, dst);
       result = true;
     }
   } else {
-    copy_file(src, dst);
+    copy_file_writeable(src, dst);
     result = true;
   }
   return result;
 }
 
 void birch::copy_with_force(fs::path src, fs::path dst) {
-  using namespace fs;
-
-  if (exists(dst)) {
-    remove(dst);
-    copy_file(src, dst);
+  if (fs::exists(dst)) {
+    fs::remove(dst);
+    copy_file_writeable(src, dst);
   } else {
-    copy_file(src, dst);
+    copy_file_writeable(src, dst);
   }
 }
 
@@ -127,7 +132,7 @@ fs::path birch::remove_common_prefix(const fs::path& base, const fs::path& path)
 }
 
 std::string birch::read_all(const fs::path& path) {
-  fs::ifstream in(path);
+  fs_stream::ifstream in(path);
   std::stringstream buf;
   buf << in.rdbuf();
   return buf.str();
@@ -137,7 +142,7 @@ void birch::write_all(const fs::path& path, const std::string& contents) {
   if (!path.parent_path().empty()) {
     fs::create_directories(path.parent_path());
   }
-  fs::ofstream out(path);
+  fs_stream::ofstream out(path);
   if (out.fail()) {
     std::stringstream buf;
     buf << "Could not open " << path.string() << " for writing.";
@@ -165,27 +170,12 @@ bool birch::write_all_if_different(const fs::path& path,
 void birch::replace_tag(const fs::path& path, const std::string& tag,
     const std::string& value) {
   auto contents = read_all(path);
-  boost::replace_all(contents, tag, value);
-  fs::ofstream stream(path);
+  contents = std::regex_replace(contents, std::regex(tag), value);
+  fs_stream::ofstream stream(path);
   if (stream.fail()) {
     std::stringstream buf;
     buf << "Could not open " << path.string() << " for writing.";
     throw DriverException(buf.str());
   }
   stream << contents;
-}
-
-std::string birch::tar(const std::string& name) {
-  std::string result = name;
-  boost::to_lower(result);
-  return "birch-" + result;
-}
-
-std::string birch::canonical(const std::string& name) {
-  std::string result = tar(name);
-  boost::replace_all(result, "-", "_");
-  return result;
-}
-bool birch::isPower2(const int x) {
-  return x > 0 && !(x & (x - 1));
 }

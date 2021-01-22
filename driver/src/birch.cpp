@@ -4,7 +4,7 @@
  * The driver program.
  */
 #include "src/build/Driver.hpp"
-#include "src/build/misc.hpp"
+#include "src/primitive/system.hpp"
 
 int main(int argc, char** argv) {
   using namespace birch;

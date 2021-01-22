@@ -30,8 +30,7 @@ AC_CHECK_HEADERS([yaml.h], [], [AC_MSG_ERROR([required header not found.])], [-]
 AC_CHECK_HEADERS([glob.h], [], [AC_MSG_ERROR([required header not found.])], [-])
 AC_CHECK_HEADERS([ \
     boost/filesystem.hpp \
-    boost/filesystem/fstream.hpp \
-    boost/algorithm/string.hpp \
+    boost/filesystem/fstream.hpp
     ], [], AC_MSG_ERROR([required header not found]), [-])
 
 # Checks for libraries

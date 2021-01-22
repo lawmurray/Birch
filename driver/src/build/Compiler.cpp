@@ -9,6 +9,7 @@
 #include "src/generate/BirchGenerator.hpp"
 #include "src/generate/CppGenerator.hpp"
 #include "src/generate/CppPackageGenerator.hpp"
+#include "src/primitive/string.hpp"
 
 birch::Compiler* compiler = nullptr;
 std::stringstream raw;

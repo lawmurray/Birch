@@ -5,9 +5,9 @@
 
 #include "src/build/MetaParser.hpp"
 #include "src/build/Compiler.hpp"
-#include "src/build/misc.hpp"
+#include "src/primitive/system.hpp"
 #include "src/generate/MarkdownGenerator.hpp"
-#include "src/primitive/encode.hpp"
+#include "src/primitive/string.hpp"
 #include "src/exception/DriverException.hpp"
 
 birch::Driver::Driver(int argc, char** argv) :
@@ -490,13 +490,11 @@ void birch::Driver::build() {
 void birch::Driver::install() {
   configure();
   target("install");
-  ldconfig();
 }
 
 void birch::Driver::uninstall() {
   configure();
   target("uninstall");
-  ldconfig();
 }
 
 void birch::Driver::dist() {
@@ -696,7 +694,7 @@ void birch::Driver::audit() {
     auto ext = path.extension().string();
     if (path.string() == "build" || path.string() == "output"
         || path.string() == "site") {
-      iter.no_push();
+      iter.FS_DISABLE_RECURSION_PENDING();
     } else if (interesting.find(ext) != interesting.end()
         && exclude.find(name) == exclude.end()) {
       if (allFiles.find(path.string()) == allFiles.end()) {
@@ -717,7 +715,7 @@ void birch::Driver::docs() {
   compiler.parse(false);
 
   /* output everything into single file */
-  fs::ofstream docsStream("DOCS.md");
+  fs_stream::ofstream docsStream("DOCS.md");
   if (docsStream.fail()) {
     std::stringstream buf;
     buf << "Could not open DOCS.md for writing.";
@@ -762,8 +760,7 @@ void birch::Driver::docs() {
       /* among first-level headers, only variables and types have their own
        * page, rather than being further split into a page per item */
       if (h1 == "Variables" || h1 == "Types") {
-        std::string dir = h1;
-        boost::to_lower(dir);
+        std::string dir = lower(h1);
         file = fs::path(dir) / "index.md";
         if (docsStream.is_open()) {
           docsStream.close();
@@ -771,8 +768,8 @@ void birch::Driver::docs() {
         docsStream.open(docs / file);
         docsStream << "# " << h1 << "\n\n";
       }
-      boost::to_lower(h1);
-      boost::replace_all(h1, " ", "_");
+      h1 = lower(h1);
+      h1 = std::regex_replace(h1, std::regex(" "), "_");
     } else {
       /* second level header */
       h2 = match.str(2);
@@ -980,7 +977,8 @@ void birch::Driver::setup() {
 
   /* copy build files */
   newBootstrap = copy_if_newer(find(shareDirs, "bootstrap"), "bootstrap");
-  fs::permissions("bootstrap", fs::add_perms|fs::owner_exe);
+  fs::permissions("bootstrap", fs::status("bootstrap").permissions()|
+      FS_OWNER_EXE);
 
   auto m4_dir = fs::path("m4");
   if (!fs::exists(m4_dir)) {
@@ -1001,10 +999,10 @@ void birch::Driver::setup() {
 
   /* configure.ac */
   std::string contents = read_all(find(shareDirs, "configure.ac"));
-  boost::replace_all(contents, "PACKAGE_NAME", packageName);
-  boost::replace_all(contents, "PACKAGE_VERSION", packageVersion);
-  boost::replace_all(contents, "PACKAGE_TARNAME", tarName);
-  boost::replace_all(contents, "PACKAGE_CANONICAL_NAME", canonicalName);
+  contents = std::regex_replace(contents, std::regex("PACKAGE_NAME"), packageName);
+  contents = std::regex_replace(contents, std::regex("PACKAGE_VERSION"), packageVersion);
+  contents = std::regex_replace(contents, std::regex("PACKAGE_TARNAME"), tarName);
+  contents = std::regex_replace(contents, std::regex("PACKAGE_CANONICAL_NAME"), canonicalName);
   std::stringstream configureStream;
   configureStream << contents << "\n\n";
 
@@ -1055,10 +1053,10 @@ void birch::Driver::setup() {
 
   /* Makefile.am */
   contents = read_all(find(shareDirs, "Makefile.am"));
-  boost::replace_all(contents, "PACKAGE_NAME", packageName);
-  boost::replace_all(contents, "PACKAGE_VERSION", packageVersion);
-  boost::replace_all(contents, "PACKAGE_TARNAME", tarName);
-  boost::replace_all(contents, "PACKAGE_CANONICAL_NAME", canonicalName);
+  contents = std::regex_replace(contents, std::regex("PACKAGE_NAME"), packageName);
+  contents = std::regex_replace(contents, std::regex("PACKAGE_VERSION"), packageVersion);
+  contents = std::regex_replace(contents, std::regex("PACKAGE_TARNAME"), tarName);
+  contents = std::regex_replace(contents, std::regex("PACKAGE_CANONICAL_NAME"), canonicalName);
 
   std::stringstream makeStream;
   makeStream << contents << "\n\n";
@@ -1259,15 +1257,6 @@ void birch::Driver::target(const std::string& cmd) {
       throw DriverException("make failed.");
     }
   }
-}
-
-void birch::Driver::ldconfig() {
-  #ifndef __APPLE__
-  auto euid = geteuid();
-  if (euid == 0) {
-    [[maybe_unused]] int result = std::system("ldconfig");
-  }
-  #endif
 }
 
 birch::Package* birch::Driver::createPackage(bool includeRequires) {
