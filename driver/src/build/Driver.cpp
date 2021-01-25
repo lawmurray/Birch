@@ -1168,14 +1168,13 @@ void birch::Driver::target(const std::string& cmd) {
   std::regex rxBoolean("\\bbool\\b");
   std::regex rxString("(?:const *)?std::(?:__cxx11::)?basic_string<char>");
   std::regex rxLLT("Eigen::LLT<Eigen::Matrix<Real, -1, -1, 1, -1, -1> >");
-  std::regex rxLazy("Lazy<Shared<(" + type + ") *> *>");
-  std::regex rxOptional("Optional<(" + type + ") *>");
+  std::regex rxShared("Shared<(" + type + ") *>");
+  std::regex rxOptional("std::optional<(" + type + ") *>");
   std::regex rxVector("Array<(" + type + "), *Shape<Dimension<(?:0, *0)?>, *EmptyShape *> *>");
   std::regex rxVector2("DefaultArray<(" + type + "), *1>");
   std::regex rxMatrix("Array<(" + type + "), *Shape<Dimension<(?:0, *0)?>, Shape<Dimension<(?:0, *0)?>, *EmptyShape *> *> *>");
   std::regex rxMatrix2("DefaultArray<(" + type + "), *2>");
   std::regex rxConstRef("(?:const *)?(" + type + ") *&");
-  std::regex rxThis("\\(\\(" + type + "\\*\\)this\\)->" + type + "::this_\\(\\)->" + type + "::");
   std::regex rxAka("\\{aka *‘?(class |const )?" + type + "’?\\} *");
   std::regex rxValueType("using value_type = ");
   std::regex rxDeref("operator->");
@@ -1184,9 +1183,6 @@ void birch::Driver::target(const std::string& cmd) {
   std::regex rxAssignExpr("‘=’");
   std::regex rxNamespaceSep("::");
   std::regex rxAuto("‘auto’");
-  std::regex rxHandler("(?:, *)?[A-Za-z0-9]*Handler *(?:\\* *& *handler_)?(?=\\))");
-  std::regex rxHandler2("(?:, *)?\\(\\* *& *handler_\\)");
-  std::regex rxTooFewArguments("(?:invalid initialization of reference of type ‘" + type4 + "’ from expression of type ‘Handler’|cannot convert ‘Handler’ to ‘" + type4 + "’)");
   std::regex rxProgram("In function ‘int ([A-Za-z0-9_]+)\\(int, char\\*\\*\\)’");
 
   FILE* pipe = popen(buf.str().c_str(), "r");
@@ -1223,13 +1219,12 @@ void birch::Driver::target(const std::string& cmd) {
           str = std::regex_replace(str, rxVector2, "$1[_]");
           str = std::regex_replace(str, rxMatrix, "$1[_,_]");
           str = std::regex_replace(str, rxMatrix2, "$1[_,_]");
-          str = std::regex_replace(str, rxLazy, "$1");
+          str = std::regex_replace(str, rxShared, "$1");
           str = std::regex_replace(str, rxOptional, "$1?");
           str = std::regex_replace(str, rxConstRef, "$1");
           str = std::regex_replace(str, rxLLT, "LLT");
         }
         str = std::regex_replace(str, rxAka, "");
-        str = std::regex_replace(str, rxThis, "");
         str = std::regex_replace(str, rxValueType, "");
 
         /* replace some operators */
@@ -1241,9 +1236,6 @@ void birch::Driver::target(const std::string& cmd) {
         str = std::regex_replace(str, rxAuto, "‘let’");
 
         /* strip suggestions that reveal internal workings */
-        str = std::regex_replace(str, rxHandler, "");
-        str = std::regex_replace(str, rxHandler2, "");
-        str = std::regex_replace(str, rxTooFewArguments, "too few arguments to function call");
         str = std::regex_replace(str, rxProgram, "In program ‘$1’");
       }
       if ((warnings || !std::regex_search(str, rxWarnings)) &&

@@ -11,27 +11,14 @@
 #include "libbirch/thread.hpp"
 #include "libbirch/memory.hpp"
 #include "libbirch/stacktrace.hpp"
-#include "libbirch/class.hpp"
+#include "libbirch/macro.hpp"
 #include "libbirch/type.hpp"
 
-#include "libbirch/Shared.hpp"
-#include "libbirch/Init.hpp"
-#include "libbirch/Lazy.hpp"
-#include "libbirch/Dimension.hpp"
-#include "libbirch/Index.hpp"
-#include "libbirch/Range.hpp"
-#include "libbirch/Shape.hpp"
-#include "libbirch/Slice.hpp"
 #include "libbirch/Array.hpp"
-#include "libbirch/Tuple.hpp"
+#include "libbirch/Shared.hpp"
 #include "libbirch/Any.hpp"
-#include "libbirch/Nil.hpp"
-#include "libbirch/Optional.hpp"
 #include "libbirch/Eigen.hpp"
 
-/**
- * LibBirch.
- */
 namespace libbirch {
 /**
  * Make an array.
@@ -105,141 +92,109 @@ auto make_array_from_value(const F& shape, const Value& value) {
 }
 
 /**
- * Make an array of non-pointer type.
+ * Make an array.
  *
  * @ingroup libbirch
  *
  * @tparam T Element type.
  * @tparam F Shape type.
- * @tparam Handler Event handler type.
- * @tparam Args Constructor parameter types.
+ * @tparam Args Constructor argument types.
  *
  * @param shape Shape.
- * @param handler Event handler.
  * @param args Constructor arguments.
  *
  * @return The array.
  */
-template<class T, class F, class Handler, class ... Args, std::enable_if_t<
-    !is_pointer<T>::value,int> = 0>
-auto make_array(const F& shape, const Handler& handler, Args... args) {
+template<class T, class F, class ... Args>
+auto make_array(const F& shape, const Args&... args) {
   return Array<T,F>(shape, args...);
 }
 
 /**
- * Make an array of pointer type, with in-place object construction.
+ * Make a value or object.
  *
- * @ingroup libbirch
- *
- * @tparam T Element type.
- * @tparam F Shape type.
+ * @tparam T Type.
  * @tparam Args Constructor parameter types.
  *
- * @param shape Shape.
- * @param handler Event handler.
- * @param args Constructor arguments.
- *
- * @return The array.
- */
-template<class T, class F, class Handler, class ... Args, std::enable_if_t<
-    is_pointer<T>::value &&
-    std::is_constructible<typename T::value_type,Args...,Handler>::value,int> = 0>
-auto make_array(const F& shape, const Handler& handler, Args... args) {
-  return Array<T,F>(shape, args..., handler);
-}
-
-/**
- * Make a value of non-pointer type.
- *
- * @tparam T Value type.
- * @tparam Handler Event handler type.
- * @tparam Args Constructor parameter types.
- * 
- * @param handler Event handler.
  * @param args Constructor arguments.
  *
  * @return A default-constructed value of the given type.
  */
-template<class T, class Handler, class... Args, std::enable_if_t<
-    !is_pointer<T>::value,int> = 0>
-T make(const Handler&, Args... args) {
+template<class T, class... Args>
+T make(const Args&... args) {
   return T(args...);
 }
 
 /**
- * Make a value of pointer type, to an object of concrete class type that is
- * default-constructible.
+ * Make a value or object.
  *
- * @tparam T Pointer type.
- * @tparam Handler Event handler type.
- * @tparam Args Constructor parameter types.
+ * @tparam T Type.
+ * @tparam Args Argument types.
+ * 
+ * @param args Arguments.
  *
- * @param handler Event handler.
- * @param args Constructor arguments.
- *
- * @return A default-constructed value of the given type.
+ * @return If the type is constructible with the given arguments, then an
+ * optional with a so-constructed value, otherwise an optional with no value.
  */
-template<class T, class Handler, class... Args, std::enable_if_t<
-    is_pointer<T>::value &&
-    std::is_constructible<typename T::value_type,Args...,Handler>::value,int> = 0>
-T make(const Handler& handler, Args... args) {
-  return T(args..., handler);
+template<class T, class... Args, std::enable_if_t<
+    !is_pointer<T>::value &&
+    std::is_constructible<T,Args...>::value,int> = 0>
+std::optional<T> make_optional(const Args&... args) {
+  return T(args...);
 }
 
 /**
- * Make a value of non-pointer type.
+ * Make a value or object.
  *
- * @tparam T Value type.
- * @tparam Handler Event handler type.
+ * @tparam T Type.
+ * @tparam Args Argument types.
+ * 
+ * @param args Arguments.
  *
- * @param handler Event handler.
- *
- * @return An optional with a default-constructed value of the given type.
+ * @return If the type is constructible with the given arguments, then an
+ * optional with a so-constructed value, otherwise an optional with no value.
  */
-template<class T, class Handler, std::enable_if_t<
-    !is_pointer<T>::value,int> = 0>
-Optional<T> make_optional(const Handler&) {
-  return T();
+template<class T, class... Args, std::enable_if_t<
+    !is_pointer<T>::value &&
+    !std::is_constructible<T,Args...>::value,int> = 0>
+std::optional<T> make_optional(const Args&... args) {
+  return std::nullopt;
 }
 
 /**
- * Make a value of pointer type, to an object of a class type that is
- * default-constructible.
+ * Make a value or object.
  *
- * @tparam T Pointer type.
- * @tparam Handler Event handler type.
+ * @tparam T Type.
+ * @tparam Args Argument types.
+ * 
+ * @param args Arguments.
  *
- * @param handler Event handler.
- *
- * @return An optional with a default-constructed value of the given type.
- * If the class type is abstract or not default-constructible, the optional
- * has no value.
+ * @return If the type is constructible with the given arguments, then an
+ * optional with a so-constructed value, otherwise an optional with no value.
  */
-template<class T, class Handler, std::enable_if_t<
+template<class T, class... Args, std::enable_if_t<
     is_pointer<T>::value &&
-    std::is_constructible<typename T::value_type,Handler>::value,int> = 0>
-Optional<T> make_optional(const Handler& handler) {
-  return T(handler);
+    std::is_constructible<typename T::value_type,Args...>::value,int> = 0>
+std::optional<T> make_optional(const Args&... args) {
+  return T(args...);
 }
 
 /**
- * Make a value of pointer type, to an object of a class type that is
- * default-constructible.
+ * Make a value or object.
  *
- * @tparam T Pointer type.
- * @tparam Handler Event handler type.
+ * @tparam T Type.
+ * @tparam Args Argument types.
+ * 
+ * @param args Arguments.
  *
- * @param handler Event handler.
- *
- * @return An optional with a default-constructed value of the given type.
- * If the class type is abstract or not default-constructible, the optional
- * has no value.
+ * @return If the type is constructible with the given arguments, then an
+ * optional with a so-constructed value, otherwise an optional with no value.
  */
-template<class T, class Handler, std::enable_if_t<
+template<class T, class... Args, std::enable_if_t<
     is_pointer<T>::value &&
-    !std::is_constructible<typename T::value_type,Handler>::value,int> = 0>
-Optional<T> make_optional(const Handler&) {
-  return nil;
+    !std::is_constructible<typename T::value_type,Args...>::value,int> = 0>
+std::optional<T> make_optional(const Args&... args) {
+  return std::nullopt;
 }
 
 /**
@@ -247,7 +202,7 @@ Optional<T> make_optional(const Handler&) {
  */
 template<class To, class From,
     std::enable_if_t<std::is_same<To,From>::value,int> = 0>
-Optional<To> cast(const From& from) {
+std::optional<To> cast(const From& from) {
   return from;
 }
 
@@ -257,12 +212,12 @@ Optional<To> cast(const From& from) {
 template<class To, class From,
     std::enable_if_t<!std::is_same<To,From>::value &&
     is_pointer<To>::value && is_pointer<From>::value,int> = 0>
-Optional<To> cast(const From& from) {
+std::optional<To> cast(const From& from) {
   auto ptr = dynamic_cast<typename To::value_type*>(from.get());
   if (ptr) {
-    return To(ptr, from.getLabel());
+    return To(ptr);
   } else {
-    return nil;
+    return std::nullopt;
   }
 }
 
@@ -272,7 +227,7 @@ Optional<To> cast(const From& from) {
 template<class To, class From,
     std::enable_if_t<!std::is_same<To,From>::value &&
     (!is_pointer<To>::value || !is_pointer<From>::value),int> = 0>
-Optional<To> cast(const From& from) {
+std::optional<To> cast(const From& from) {
   return static_cast<To>(from);
 }
 
@@ -280,11 +235,11 @@ Optional<To> cast(const From& from) {
  * Cast of an optional of anything.
  */
 template<class To, class From>
-Optional<To> cast(const Optional<From>& from) {
-  if (from.query()) {
-    return cast<To>(from.get());
+std::optional<To> cast(const std::optional<From>& from) {
+  if (from.has_value()) {
+    return cast<To>(from.value());
   } else {
-    return nil;
+    return std::nullopt;
   }
 }
 
@@ -297,9 +252,9 @@ Optional<To> cast(const Optional<From>& from) {
  * If @p from has a value, then assign it to @p to, otherwise do nothing.
  */
 template<class To, class From>
-auto optional_assign(To& to, const Optional<From>& from) {
-  if (from.query()) {
-    return to = from.get();
+auto optional_assign(To& to, const std::optional<From>& from) {
+  if (from.has_value()) {
+    return to = from.value();
   } else {
     return to;
   }
@@ -314,9 +269,9 @@ auto optional_assign(To& to, const Optional<From>& from) {
  * If @p from has a value, then assign it to @p to, otherwise do nothing.
  */
 template<class To, class From, std::enable_if_t<is_value<From>::value,int> = 0>
-auto optional_assign(const To& to, const Optional<From>& from) {
-  if (from.query()) {
-    return to = from.get();
+auto optional_assign(const To& to, const std::optional<From>& from) {
+  if (from.has_value()) {
+    return to = from.value();
   } else {
     return to;
   }
@@ -327,12 +282,11 @@ auto optional_assign(const To& to, const Optional<From>& from) {
  *
  * @param left Target.
  * @param event Event.
- * @param handler Event handler.
  */
-template<class Left, class Event, class Handler>
-auto simulate(Left& left, const Event& event, const Handler& handler) {
-  handler->handle(event, handler);
-  left = event->value(handler);
+template<class Left, class Event>
+auto simulate(Left& left, const Event& event) {
+  //handler->handle(event);
+  //left = event->value();
   return left;
 }
 
@@ -341,12 +295,11 @@ auto simulate(Left& left, const Event& event, const Handler& handler) {
  *
  * @param left Target.
  * @param event Event.
- * @param handler Event handler.
  */
-template<class Left, class Event, class Handler>
-auto simulate(Left&& left, const Event& event, const Handler& handler) {
-  handler->handle(event, handler);
-  left = event->value(handler);
+template<class Left, class Event>
+auto simulate(Left&& left, const Event& event) {
+  //handler->handle(event);
+  //left = event->value();
   return left;
 }
 
@@ -354,33 +307,30 @@ auto simulate(Left&& left, const Event& event, const Handler& handler) {
  * Observe. Corresponds to the `<~` operator in Birch.
  *
  * @param event Event.
- * @param handler Event handler.
  */
-template<class Event, class Handler>
-void observe(const Event& event, const Handler& handler) {
-  handler->handle(event, handler);
+template<class Event>
+void observe(const Event& event) {
+  //handler->handle(event);
 }
 
 /**
  * Assume. Corresponds to the `~` operator in Birch.
  *
  * @param event Event.
- * @param handler Event handler.
  */
-template<class Event, class Handler>
-void assume(const Event& event, const Handler& handler) {
-  handler->handle(event, handler);
+template<class Event>
+void assume(const Event& event) {
+  //handler->handle(event);
 }
 
 /**
  * Factor. Corresponds to the `factor` statement in Birch.
  *
  * @param event Event.
- * @param handler Event handler.
  */
-template<class Event, class Handler>
-void factor(const Event& event, const Handler& handler) {
-  handler->handle(event, handler);
+template<class Event>
+void factor(const Event& event) {
+  //handler->handle(event);
 }
 
 }

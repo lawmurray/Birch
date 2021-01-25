@@ -212,8 +212,7 @@ function matrix<Type>(λ:\(Integer, Integer) -> Type, rows:Integer,
   /* wrap λ in another lambda function to translate 0-based serial (row-wise)
    * indices into 1-based row/column indices */
   return libbirch::make_array_from_lambda<Type>(libbirch::make_shape(rows,
-      columns), [&](int64_t i) { return λ(i/columns + 1, i%columns + 1,
-      handler_); });
+      columns), [&](int64_t i) { return λ(i/columns + 1, i%columns + 1); });
   }}
 }
 
@@ -278,7 +277,7 @@ function String(X:Real[_,_]) -> String {
       if (j > 1) {
         buf << ' ';
       }
-      if (value == floor(value, handler_)) {
+      if (value == floor(value)) {
         buf << (int64_t)value << ".0";
       } else {
         buf << std::scientific << std::setprecision(14) << value;

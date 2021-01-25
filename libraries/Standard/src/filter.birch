@@ -150,9 +150,9 @@ program filter(
 
     /* start or step filter */
     if t == 0 {
-      theFilter!.filter(theModel!, filterBuffer!);
+      theFilter!.filter(theModel!, filterBuffer);
     } else {
-      theFilter!.filter(t, filterBuffer!);
+      theFilter!.filter(t, filterBuffer);
     }
 
     /* forecast */
@@ -173,7 +173,7 @@ program filter(
           theFilter'.filter(t', Buffer());
         }
         if outputWriter? {
-          forecastBuffer.push(t, theFilter'!.x);
+          forecastBuffer.push(t, theFilter'.x);
         }
       }
     }

@@ -195,17 +195,17 @@ void birch::CppGenerator::genInit(const T* o) {
     } else if (!o->args->isEmpty()) {
       middle("libbirch::make_array<" << o->type->element() << ">(");
       middle("libbirch::make_shape(" << o->brackets << ')');
-      middle(", handler_, " << o->args << ')');
+      middle(", std::in_place," << o->args << ')');
     } else {
       middle("libbirch::make_array<" << o->type->element() << ">(");
-      middle("libbirch::make_shape(" << o->brackets << "), handler_)");
+      middle("libbirch::make_shape(" << o->brackets << "))");
     }
   } else if (!o->value->isEmpty()) {
     middle(o->value);
   } else if (!o->args->isEmpty()) {
-    middle("libbirch::make<" << o->type << ">(handler_, " << o->args << ')');
+    middle("libbirch::make<" << o->type << ">(std::in_place, " << o->args << ')');
   } else {
-    middle("libbirch::make<" << o->type << ">(handler_)");
+    middle("libbirch::make<" << o->type << ">()");
   }
 }
 

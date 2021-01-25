@@ -140,7 +140,7 @@ class ParticleFilter {
     parallel for n in 1..nparticles {
       let handler <- PlayHandler(delayed);
       with (handler) {
-        x[n].m.read(t, input!);
+        x[n].m.read(t, input);
         x[n].m.simulate(t);
         w[n] <- w[n] + handler.w;
       }

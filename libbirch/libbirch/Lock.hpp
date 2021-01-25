@@ -32,13 +32,6 @@ public:
   Lock& operator=(const Lock&) = delete;
 
   /**
-   * Correctly initialize after a bitwise copy.
-   */
-  void bitwiseFix() {
-    lock.store(false);
-  }
-
-  /**
    * Obtain exclusive use.
    */
   void set() {

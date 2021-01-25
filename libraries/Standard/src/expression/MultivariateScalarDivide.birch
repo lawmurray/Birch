@@ -3,7 +3,7 @@
  */
 operator (y:Expression<Real[_]>/z:Expression<Real>) ->
     Expression<Real[_]> {
-  return diagonal(1.0/z, y!.rows())*y;
+  return diagonal(1.0/z, y.rows())*y;
 }
 
 /**

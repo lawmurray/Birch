@@ -20,12 +20,9 @@ public:
   ReadersWriterLock();
 
   /**
-   * Correctly initialize after a bitwise copy.
+   * Copy constructor.
    */
-  void bitwiseFix() {
-    readers.store(0u);
-    writer.store(false);
-  }
+  ReadersWriterLock(const ReadersWriterLock&);
 
   /**
    * Obtain read use.
@@ -57,7 +54,7 @@ private:
   /**
    * Number of readers in critical region.
    */
-  Atomic<unsigned> readers;
+  Atomic<int> readers;
 
   /**
    * Is there a writer in the critical region?
@@ -69,6 +66,11 @@ private:
 inline libbirch::ReadersWriterLock::ReadersWriterLock() :
     readers(0),
     writer(false) {
+  //
+}
+
+inline libbirch::ReadersWriterLock::ReadersWriterLock(
+    const ReadersWriterLock&) : ReadersWriterLock() {
   //
 }
 

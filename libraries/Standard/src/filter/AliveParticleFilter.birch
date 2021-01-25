@@ -59,7 +59,7 @@ class AliveParticleFilter < ParticleFilter {
           p[n] <- p[n] + 1;
           let handler <- PlayHandler(delayed);
           with (handler) {
-            x'.m.read(t, input!);
+            x'.m.read(t, input);
             x'.m.simulate(t);
             w' <- handler.w;
           }

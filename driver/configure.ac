@@ -18,7 +18,7 @@ if test "x$YACC" = "xyacc"; then
 fi
 
 # Checks for basic things
-AX_CXX_COMPILE_STDCXX(14, [noext], [mandatory])
+AX_CXX_COMPILE_STDCXX(17, [noext], [mandatory])
 AC_HEADER_ASSERT
 AC_HEADER_STDBOOL
 

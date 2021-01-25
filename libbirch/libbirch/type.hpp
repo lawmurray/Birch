@@ -24,11 +24,6 @@ struct is_value<T&&> {
   static const bool value = is_value<T>::value;
 };
 
-template<>
-struct is_value<void> {
-  static const bool value = false;
-};
-
 /**
  * Is `T` a pointer type?
  */
@@ -37,17 +32,14 @@ struct is_pointer {
   static const bool value = false;
 };
 
-/**
- * Raw pointer type corresponding to a smart pointer type `P`.
- */
-template<class P>
-struct raw {
-  using type = void;
+template<class T>
+struct is_pointer<T&> {
+  static const bool value = is_pointer<T>::value;
 };
 
 template<class T>
-struct raw<T*> {
-  using type = T*;
+struct is_pointer<T&&> {
+  static const bool value = is_pointer<T>::value;
 };
 
 /**
@@ -68,22 +60,22 @@ struct raw<T*> {
  * garbage collector---such a misclassification affects performance, but not
  * correctness.
  */
-template<class T, unsigned N = 5>
+template<class T, int N = 5>
 struct is_acyclic {
   static const bool value = true;
 };
 
-template<class T, unsigned N>
+template<class T, int N>
 struct is_acyclic<T&,N> {
   static const bool value = is_acyclic<T,N>::value;
 };
 
-template<class T, unsigned N>
+template<class T, int N>
 struct is_acyclic<T&&,N> {
   static const bool value = is_acyclic<T,N>::value;
 };
 
-template<unsigned N>
+template<int N>
 struct is_acyclic<void,N> {
   static const bool value = true;
 };
@@ -95,7 +87,7 @@ struct is_acyclic<void,N> {
  *
  * @seealso is_acyclic
  */
-template<class T, unsigned N = 5>
+template<class T, int N = 5>
 struct is_acyclic_class {
   static const bool value = is_acyclic<typename T::member_type_,N>::value;
 };

@@ -207,7 +207,7 @@ function reduce<Type>(x:Type[_], init:Type,
   // result = return std::reduce(x.begin(), x.end(), init, op);
   // ^ C++17
   result = std::accumulate(x.begin(), x.end(), init,
-      [&](auto x, auto y) { return op(x, y, handler_); });
+      [&](auto x, auto y) { return op(x, y); });
   x.unpin();
   return result;
   }}
@@ -285,7 +285,7 @@ function inclusive_scan<Type>(x:Type[_], op:\(Type, Type) -> Type) -> Type[_] {
   // std::inclusive_scan(x.begin(), x.end(), y.begin(), op);
   // ^ C++17
   std::partial_sum(x.begin(), x.end(), y.begin(),
-      [&](auto x, auto y) { op(x, y, handler_); });
+      [&](auto x, auto y) { op(x, y); });
   x.unpin();
   }}
   return y;
@@ -325,7 +325,7 @@ function adjacent_difference<Type>(x:Type[_],
   cpp{{
   x.pin();
   std::adjacent_difference(x.begin(), x.end(), y.begin(),
-      [&](auto x, auto y) { return op(x, y, handler_); });
+      [&](auto x, auto y) { return op(x, y); });
   x.unpin();
   }}
   return y;

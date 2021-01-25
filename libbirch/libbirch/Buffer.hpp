@@ -9,6 +9,8 @@
 
 namespace libbirch {
 /**
+ * @internal
+ * 
  * Buffer for storing the contents of an array. Buffer objects are shared
  * between arrays with copy-on-write semantics, and overallocated to contain
  * bookkeeping variables, as well as the contents of the buffer itself, in
@@ -40,12 +42,12 @@ public:
    *
    * @return Use count.
    */
-  unsigned decUsage();
+  int decUsage();
 
   /**
    * Usage count.
    */
-  unsigned numUsage() const;
+  int numUsage() const;
 
   /**
    * Get the start of the buffer.
@@ -72,7 +74,7 @@ private:
   /**
    * Use count (the number of arrays sharing this buffer).
    */
-  Atomic<unsigned> useCount;
+  Atomic<int> useCount;
 
   /**
    * First element in the buffer. Taking the address of this gives a pointer
@@ -95,13 +97,13 @@ void libbirch::Buffer<T>::incUsage() {
 }
 
 template<class T>
-unsigned libbirch::Buffer<T>::decUsage() {
+int libbirch::Buffer<T>::decUsage() {
   assert(useCount.load() > 0);
   return --useCount;
 }
 
 template<class T>
-unsigned libbirch::Buffer<T>::numUsage() const {
+int libbirch::Buffer<T>::numUsage() const {
   return useCount.load();
 }
 

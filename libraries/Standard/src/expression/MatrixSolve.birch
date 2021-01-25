@@ -32,7 +32,7 @@ final class MatrixSolve<Left,LeftValue>(y:Left, z:Expression<Real[_,_]>) <
  */
 function solve(y:Expression<Real[_,_]>, z:Expression<Real[_,_]>) ->
     MatrixSolve<Expression<Real[_,_]>,Real[_,_]> {
-  assert y!.columns() == z!.rows();
+  assert y.columns() == z.rows();
   return construct<MatrixSolve<Expression<Real[_,_]>,Real[_,_]>>(y, z);
 }
 
@@ -57,7 +57,7 @@ function solve(y:Expression<Real[_,_]>, z:Real[_,_]) ->
  */
 function solve(y:Expression<LLT>, z:Expression<Real[_,_]>) ->
     MatrixSolve<Expression<LLT>,LLT> {
-  assert y!.columns() == z!.rows();
+  assert y.columns() == z.rows();
   return construct<MatrixSolve<Expression<LLT>,LLT>>(y, z);
 }
 

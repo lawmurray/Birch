@@ -28,7 +28,7 @@ final class MultivariateSolve<Left,LeftValue>(y:Left,
  */
 function solve(y:Expression<Real[_,_]>, z:Expression<Real[_]>) ->
     MultivariateSolve<Expression<Real[_,_]>,Real[_,_]> {
-  assert y!.columns() == z!.rows();
+  assert y.columns() == z.rows();
   return construct<MultivariateSolve<Expression<Real[_,_]>,Real[_,_]>>(y, z);
 }
 
@@ -53,7 +53,7 @@ function solve(y:Expression<Real[_,_]>, z:Real[_]) ->
  */
 function solve(y:Expression<LLT>, z:Expression<Real[_]>) ->
     MultivariateSolve<Expression<LLT>,LLT> {
-  assert y!.columns() == z!.rows();
+  assert y.columns() == z.rows();
   return construct<MultivariateSolve<Expression<LLT>,LLT>>(y, z);
 }
 

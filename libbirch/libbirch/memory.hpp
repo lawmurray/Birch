@@ -5,31 +5,11 @@
 
 #include "libbirch/external.hpp"
 #include "libbirch/thread.hpp"
-#include "libbirch/ExitBarrierLock.hpp"
 
 namespace libbirch {
 class Any;
-class Label;
-
-/**
- * Lock for sharing finish operations. Finish operations may intersect on the
- * graph of reachable objects, and so workshare. This lock creates a barrier
- * on exit to ensure that all reachable objects are visited despite this
- * sharing.
- */
-extern ExitBarrierLock finish_lock;
-
-/**
- * Lock for sharing freeze operations.
- *
- * @seealso finish_lock
- */
-extern ExitBarrierLock freeze_lock;
-
-/**
- * Get the root label.
- */
-Label*& root();
+template<class T, class F> class Array;
+template<class T> class Shared;
 
 /**
  * Allocate memory from heap.
@@ -94,5 +74,10 @@ void collect();
  * a destroyed in the reverse order in which they are created.
  */
 void trim(Any* o);
+
+/**
+ * Deep copy an object.
+ */
+Any* copy(Any* o);
 
 }

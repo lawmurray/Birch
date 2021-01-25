@@ -32,7 +32,7 @@ final class MatrixRankDowndate<Right,RightValue,RightGradient>(y:Expression<LLT>
  */
 function rank_downdate(y:Expression<LLT>, z:Expression<Real[_]>) ->
     MatrixRankDowndate<Expression<Real[_]>,Real[_],Real[_]> {
-  assert y!.columns() == z!.rows();
+  assert y.columns() == z.rows();
   return construct<MatrixRankDowndate<Expression<Real[_]>,Real[_],Real[_]>>(y, z);
 }
 
@@ -57,7 +57,7 @@ function rank_downdate(y:Expression<LLT>, z:Real[_]) ->
  */
 function rank_downdate(y:Expression<LLT>, z:Expression<Real[_,_]>) ->
     MatrixRankDowndate<Expression<Real[_,_]>,Real[_,_],Real[_,_]> {
-  assert y!.columns() == z!.rows();
+  assert y.columns() == z.rows();
   return construct<MatrixRankDowndate<Expression<Real[_,_]>,Real[_,_],Real[_,_]>>(y, z);
 }
 

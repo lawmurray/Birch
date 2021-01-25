@@ -686,7 +686,7 @@ final class Buffer {
         let z <- iter.next().get<Type>();
         if z? {
           cpp{{
-          y.push(z.get());
+          y.push(z.value());
           }}
         } else {
           return nil;
@@ -864,7 +864,7 @@ final class Buffer {
       set([scalarReal!, Real(x)]);
     } else if vectorBoolean? {
       cpp{{
-      vectorBoolean.get().push(x);
+      vectorBoolean.value().push(x);
       }}
     } else if vectorInteger? {
       push(Integer(x));
@@ -888,7 +888,7 @@ final class Buffer {
       set(stack(Integer(vectorBoolean!), x));
     } else if vectorInteger? {
       cpp{{
-      vectorInteger.get().push(x);
+      vectorInteger.value().push(x);
       }}
     } else if vectorReal? {
       push(Real(x));
@@ -912,7 +912,7 @@ final class Buffer {
       set(stack(Real(vectorInteger!), x));
     } else if vectorReal? {
       cpp{{
-      vectorReal.get().push(x);
+      vectorReal.value().push(x);
       }}
     } else {
       push(Buffer(x));

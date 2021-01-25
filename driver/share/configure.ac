@@ -43,7 +43,7 @@ AC_PROG_INSTALL
 
 AC_DISABLE_STATIC
 AC_ENABLE_SHARED
-AX_CXX_COMPILE_STDCXX(14, [noext], [mandatory])
+AX_CXX_COMPILE_STDCXX(17, [noext], [mandatory])
 LT_INIT([dlopen,pic-only])
 
 # Checks for basic things

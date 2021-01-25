@@ -58,7 +58,7 @@ final class MultivariateDot(y:Expression<Real[_]>, z:Expression<Real[_,_]>) <
  */
 function dot(y:Expression<Real[_]>, z:Expression<Real[_,_]>) ->
     MultivariateDot {
-  assert y!.rows() == z!.rows();
+  assert y.rows() == z.rows();
   return construct<MultivariateDot>(y, z);
 }
 

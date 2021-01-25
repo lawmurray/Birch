@@ -62,7 +62,7 @@ final class Dot(y:Expression<Real[_]>, z:Expression<Real[_]>) <
  * Lazy `dot`.
  */
 function dot(y:Expression<Real[_]>, z:Expression<Real[_]>) -> Dot {
-  assert y!.rows() == z!.rows();
+  assert y.rows() == z.rows();
   return construct<Dot>(y, z);
 }
 

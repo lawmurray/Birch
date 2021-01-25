@@ -33,7 +33,7 @@ final class MatrixStack(y:Expression<Real[_,_]>, z:Expression<Real[_,_]>) <
  */
 function stack(y:Expression<Real[_,_]>, z:Expression<Real[_,_]>) ->
     MatrixStack {
-  assert y!.columns() == z!.columns();
+  assert y.columns() == z.columns();
   return construct<MatrixStack>(y, z);
 }
 

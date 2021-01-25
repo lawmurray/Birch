@@ -7,11 +7,50 @@
 #include "libbirch/assert.hpp"
 #include "libbirch/memory.hpp"
 #include "libbirch/Atomic.hpp"
-#include "libbirch/Init.hpp"
-#include "libbirch/LabelPtr.hpp"
 
 namespace libbirch {
-class Label;
+class Marker;
+class Scanner;
+class Reacher;
+class Collector;
+class MarkClaimToucher;
+class BridgeRankRestorer;
+class Copier;
+
+/**
+ * Flags used for cycle collection as in @ref Bacon2001
+ * "Bacon & Rajan (2001)", replacing the colors described there. The reason
+ * is to ensure that both the bookkeeping required during normal execution
+ * can be multithreaded, and likewise that the operations required during
+ * cycle collection can be multithreaded. The basic principle to ensure this
+ * is that flags can be safely set during normal execution (with atomic
+ * operations), but should only be unset with careful consideration of
+ * thread safety.
+ *
+ * Notwithstanding, the flags do map to colors in @ref Bacon2001
+ * "Bacon & Rajan (2001)":
+ *
+ *   - *possible root* maps to *purple*,
+ *   - *marked* maps to *gray*,
+ *   - *scanned* and *reachable* together map to *black* (both on) or
+ *     *white* (first on, second off),
+ *   - *collected* is set once a white object has been destroyed.
+ *
+ * The use of these flags also resolves some thread safety issues that can
+ * otherwise exist during the scan operation, when coloring an object white
+ * (eligible for collection) then later recoloring it black (reachable); the
+ * sequencing of this coloring can become problematic with multiple threads.
+ */
+enum Flag : int16_t {
+  POSSIBLE_ROOT = (1 << 0),
+  BUFFERED = (1 << 1),
+  MARKED = (1 << 2),
+  SCANNED = (1 << 3),
+  REACHED = (1 << 4),
+  COLLECTED = (1 << 5),
+  DESTROYED = (1 << 6),
+  CLAIMED = (1 << 7)
+};
 
 /**
  * Base class providing reference counting, cycle breaking, and lazy deep
@@ -25,33 +64,25 @@ class Label;
  * correctly with multiple inheritance, Any must be the *first* base class.
  */
 class Any {
+  friend class Marker;
+  friend class Scanner;
+  friend class Reacher;
+  friend class Collector;
+  friend class MarkClaimToucher;
+  friend class BridgeRankRestorer;
+  friend class Copier;
 public:
-  using class_type_ = Any;
   using this_type_ = Any;
 
   /**
    * Constructor.
    */
   Any() :
-      label(root()),
-      sharedCount(0u),
-      memoCount(1u),
-      size(0u),
-      tid(get_thread_num()),
-      flags(0u) {
-    //
-  }
-
-  /**
-   * Special constructor for the root label.
-   */
-  Any(int) :
-      label(nullptr),
-      sharedCount(0u),
-      memoCount(1u),
-      size(0u),
-      tid(0),
-      flags(0u) {
+      r(0),
+      n(0),
+      claimTid(0),
+      allocTid(get_thread_num()),
+      flags(0) {
     //
   }
 
@@ -66,7 +97,7 @@ public:
    * Destructor.
    */
   virtual ~Any() {
-    assert(sharedCount.load() == 0u);
+    assert(r.load() == 0);
   }
 
   /**
@@ -80,8 +111,7 @@ public:
    * Delete operator.
    */
   void operator delete(void* ptr) {
-    auto o = static_cast<Any*>(ptr);
-    o->deallocate();
+    assert(false);
   }
 
   /**
@@ -92,152 +122,25 @@ public:
   }
 
   /**
-   * Finish the object.
-   */
-  void finish(Label* label) {
-    if (!(flags.exchangeOr(FINISHED) & FINISHED)) {
-      finish_(label);
-    }
-  }
-
-  /**
-   * Freeze the object.
-   */
-  void freeze() {
-    libbirch_assert_(isFinished());
-    if (!(flags.exchangeOr(FROZEN) & FROZEN)) {
-      if (sharedCount.load() == 1u) {
-        // ^ small optimization: isUnique() makes sense, but unnecessarily
-        //   loads memoCount as well, which is unnecessary for a objects
-        //   that are not frozen
-        flags.maskOr(FROZEN_UNIQUE);
-      }
-      freeze_();
-    }
-  }
-
-  /**
-   * Thaw the object.
-   */
-  void thaw() {
-    flags.maskAnd(~BUFFERED);
-  }
-
-  /**
-   * Copy the object.
-   *
-   * @param label The new label.
-   */
-  Any* copy(Label* label) {
-    auto o = copy_(label);
-    new (&o->label) decltype(o->label)(label);
-    o->sharedCount.store(0u);
-    o->memoCount.store(1u);
-    o->size = 0u;
-    o->tid = get_thread_num();
-    o->flags.store(0u);
-    return o;
-  }
-
-  /**
-   * Recycle the object. This can be used as an optimization in place of
-   * copy(), where only one pointer remains to the source object, and it would
-   * otherwise be copied and then destroyed; instead, the source object is
-   * modified for reuse.
-   *
-   * @param label The new label.
-   */
-  void recycle(Label* label) {
-    this->label.replace(label);
-    this->flags.maskAnd(~(FINISHED|FROZEN|FROZEN_UNIQUE));
-    recycle_(label);
-  }
-
-  /**
-   * Mark the object.
-   *
-   * This performs the `MarkGray()` operation of @ref Bacon2001
-   * "Bacon & Rajan (2001)".
-   */
-  void mark() {
-    if (!(flags.exchangeOr(MARKED) & MARKED)) {
-      flags.maskAnd(~(POSSIBLE_ROOT|BUFFERED|SCANNED|REACHED|COLLECTED));
-      label.mark();
-      mark_();
-    }
-  }
-
-  /**
-   * Scan the object.
-   *
-   * This performs the `Scan()` operation of @ref Bacon2001
-   * "Bacon & Rajan (2001)".
-   */
-  void scan() {
-    if (!(flags.exchangeOr(SCANNED) & SCANNED)) {
-      flags.maskAnd(~MARKED);  // unset for next time
-      if (numShared() > 0u) {
-        if (!(flags.exchangeOr(REACHED) & REACHED)) {
-          label.reach();
-          reach_();
-        }
-      } else {
-        label.scan();
-        scan_();
-      }
-    }
-  }
-
-  /**
-   * Reach the object.
-   *
-   * This performs the `ScanBlack()` operation of @ref Bacon2001
-   * "Bacon & Rajan (2001)".
-   */
-  void reach() {
-    if (!(flags.exchangeOr(SCANNED) & SCANNED)) {
-      flags.maskAnd(~MARKED);  // unset for next time
-    }
-    if (!(flags.exchangeOr(REACHED) & REACHED)) {
-      label.reach();
-      reach_();
-    }
-  }
-
-  /**
-   * Collect the object.
-   *
-   * This performs the `CollectWhite()` operation of @ref Bacon2001
-   * "Bacon & Rajan (2001)".
-   */
-  void collect() {
-    auto old = flags.exchangeOr(COLLECTED);
-    if (!(old & COLLECTED) && !(old & REACHED)) {
-      register_unreachable(this);
-      label.collect();
-      collect_();
-    }
-  }
-
-  /**
    * Destroy, but do not deallocate, the object.
    */
   void destroy() {
-    assert(sharedCount.load() == 0u);
-    this->flags.maskOr(DESTROYED);
-    this->size = size_();
+    assert(r.load() == 0);
+    auto size = this->size_();
+    auto tid = this->allocTid;
     this->~Any();
+    libbirch::deallocate(this, size, tid);
   }
 
   /**
-   * Shared count.
+   * Shared r.
    */
-  unsigned numShared() const {
-    return sharedCount.load();
+  int numShared() const {
+    return r.load();
   }
 
   /**
-   * Increment the shared count.
+   * Increment the shared r.
    */
   void incShared() {
     //flags.maskAnd(~POSSIBLE_ROOT);
@@ -246,28 +149,27 @@ public:
     //   a performance issue, and as long as one thread can reach the object
     //   it is fine to be off
     // ^ disabling this option improves performance on several examples
-    sharedCount.increment();
+    r.increment();
   }
 
   /**
-   * Decrement the shared count. This decrements the count; if the new count
+   * Decrement the shared r. This decrements the count; if the new count
    * is nonzero, it registers the object as a possible root for cycle
    * collection, or if the new count is zero, it destroys the object.
    */
   void decShared() {
-    assert(numShared() > 0u);
+    assert(numShared() > 0);
 
     /* if the count will reduce to nonzero, this is possibly the root of
      * a cycle */
-    if (numShared() > 1u &&
+    if (numShared() > 1 &&
         !(flags.exchangeOr(BUFFERED|POSSIBLE_ROOT) & BUFFERED)) {
       register_possible_root(this);
     }
 
     /* decrement */
-    if (--sharedCount == 0u) {
+    if (--r == 0) {
       destroy();
-      decMemo();
     }
   }
 
@@ -282,10 +184,9 @@ public:
    * they are colored *green*.
    */
   void decSharedAcyclic() {
-    assert(numShared() > 0u);
-    if (--sharedCount == 0u) {
+    assert(numShared() > 0);
+    if (--r == 0) {
       destroy();
-      decMemo();
     }
   }
 
@@ -296,40 +197,8 @@ public:
    * possible root for cycle collection.
    */
   void decSharedReachable() {
-    assert(numShared() > 0u);
-    sharedCount.decrement();
-  }
-
-  /**
-   * Memo count.
-   */
-  unsigned numMemo() const {
-    return memoCount.load();
-  }
-
-  /**
-   * Increment the memo count.
-   */
-  void incMemo() {
-    memoCount.increment();
-  }
-
-  /**
-   * Decrement the memo count.
-   */
-  void decMemo() {
-    assert(memoCount.load() > 0u);
-    if (--memoCount == 0u) {
-      assert(numShared() == 0u);
-      deallocate();
-    }
-  }
-
-  /**
-   * Get the label assigned to the object.
-   */
-  Label* getLabel() const {
-    return label.get();
+    assert(numShared() > 0);
+    r.decrement();
   }
 
   /**
@@ -351,131 +220,9 @@ public:
    * Is there only one pointer (of any type) to this object?
    */
   bool isUnique() const {
-    return numShared() == 1u && numMemo() == 1u;
+    return numShared() == 1;
   }
 
-  /**
-   * Is the object finished?
-   */
-  bool isFinished() const {
-    return flags.load() & FINISHED;
-  }
-
-  /**
-   * Is the object frozen?
-   */
-  bool isFrozen() const {
-    return flags.load() & FROZEN;
-  }
-
-  /**
-   * Is the object frozen, and at the time of freezing, was there only one
-   * shared pointer to it?
-   */
-  bool isFrozenUnique() const {
-    return flags.load() & FROZEN_UNIQUE;
-  }
-
-private:
-  /**
-   * Deallocate the object. It should have previously been destroyed.
-   */
-  void deallocate() {
-    assert(sharedCount.load() == 0u);
-    assert(memoCount.load() == 0u);
-    libbirch::deallocate(this, size, tid);
-  }
-
-  /**
-   * Label of the object.
-   */
-  LabelPtr label;
-
-  /**
-   * Shared count.
-   */
-  Atomic<unsigned> sharedCount;
-
-  /**
-   * Memo count, or, if the shared count is nonzero, one plus the memo count.
-   */
-  Atomic<unsigned> memoCount;
-
-  /**
-   * Size of the object. This is initially set to zero. Upon destruction, it
-   * is set to the correct size with a virtual function call.
-   */
-  unsigned size;
-
-  /**
-   * Id of the thread associated with the object. This is set immediately
-   * after allocation. It is used to return the allocation to the correct
-   * pool after use, even when returned by a different thread.
-   */
-  int16_t tid;
-
-  /**
-   * Bitfield containing flags. These are, from least to most significant
-   * bits:
-   *
-   *   - *finished*,
-   *   - *frozen*,
-   *   - *single reference when frozen*---
-   *
-   * ---these used for lazy deep copy operations as in @ref Murray2020
-   * "Murray (2020)"---then
-   *
-   *   - *possible root*,
-   *   - *buffered*,
-   *   - *marked*,
-   *   - *scanned*,
-   *   - *reached*,
-   *   - *collected*---
-   *
-   * ---these used for cycle collection as in @ref Bacon2001
-   * "Bacon & Rajan (2001)".
-   *
-   * The second group of flags take the place of the colors described in
-   * @ref Bacon2001 "Bacon & Rajan (2001)". The reason is to ensure that both
-   * the bookkeeping required during normal execution can be multithreaded,
-   * and likewise that the operations required during cycle collection can be
-   * multithreaded. The basic principle to ensure this is that flags can be
-   * safely set during normal execution (with atomic operations), but should
-   * only be unset with careful consideration of thread safety.
-   *
-   * Notwithstanding, the flags do map to colors in @ref Bacon2001
-   * "Bacon & Rajan (2001)":
-   *
-   *   - *possible root* maps to *purple*,
-   *   - *marked* maps to *gray*,
-   *   - *scanned* and *reachable* together map to *black* (both on) or
-   *     *white* (first on, second off),
-   *   - *collected* is set once a white object has been destroyed.
-   *
-   * The use of these flags also resolves some thread safety issues that can
-   * otherwise exist during the scan operation, when coloring an object white
-   * (eligible for collection) then later recoloring it black (reachable); the
-   * sequencing of this coloring can become problematic with multiple threads.
-   */
-  Atomic<uint16_t> flags;
-
-  /**
-   * Flags.
-   */
-  enum Flag : uint16_t {
-    FINISHED = (1u << 0u),
-    FROZEN = (1u << 1u),
-    FROZEN_UNIQUE = (1u << 2u),
-    POSSIBLE_ROOT = (1u << 3u),
-    BUFFERED = (1u << 4u),
-    MARKED = (1u << 5u),
-    SCANNED = (1u << 6u),
-    REACHED = (1u << 7u),
-    COLLECTED = (1u << 8u),
-    DESTROYED = (1u << 9u)
-  };
-
-public:
   /**
    * Get the class name.
    */
@@ -484,64 +231,61 @@ public:
   }
 
   /**
+   * Rank of the object in its biconnected component, 1-based. Only valid
+   * after conclusion of bridge-finding.
+   */
+  int rank() const {
+    return n.load();  ///@todo Needn't be atomic
+  }
+
+  /**
    * Size of the object.
    */
-  virtual unsigned size_() const {
-    return sizeof(*this);
+  int size() const {
+    return size_();
   }
+  virtual int size_() const = 0;
 
   /**
-   * Called internally by finish() to recurse into member variables.
+   * Shallow copy the object.
    */
-  virtual void finish_(Label* label) = 0;
-
-  /**
-   * Called internally by freeze() to recurse into member variables.
-   */
-  virtual void freeze_() = 0;
-
-  /**
-   * Called internally by copy() to ensure the most derived type is copied.
-   */
-  virtual Any* copy_(Label* label) const = 0;
-
-  /**
-   * Called internally by recycle() to ensure the most derived type is
-   * recycled.
-   */
-  virtual void recycle_(Label* label) = 0;
-
-  /**
-   * Called internally by mark() to recurse into member variables.
-   */
-  virtual void mark_() = 0;
-
-  /**
-   * Called internally by scan() to recurse into member variables.
-   */
-  virtual void scan_() = 0;
-
-  /**
-   * Called internally by reach() to recurse into member variables.
-   */
-  virtual void reach_() = 0;
-
-  /**
-   * Called internally by collect() to recurse into member variables.
-   */
-  virtual void collect_() = 0;
-
-  /**
-   * Accept a visitor across member variables.
-   */
-  template<class Visitor>
-  void accept_(const Visitor& v) {
-    //
+  Any* copy() const {
+    return copy_();
   }
+  virtual Any* copy_() const = 0;
+
+  virtual void accept_(Marker& visitor) = 0;
+  virtual void accept_(Scanner& visitor) = 0;
+  virtual void accept_(Reacher& visitor) = 0;
+  virtual void accept_(Collector& visitor) = 0;
+  virtual int accept_(MarkClaimToucher& visitor, const int i, const int j);
+  virtual std::pair<int,int> accept_(BridgeRankRestorer& visitor, const int j);
+  virtual void accept_(Copier& visitor) = 0;
+
+private:
+  /**
+   * Reference r.
+   */
+  Atomic<int> r;
 
   /**
-   * Type of members.
+   * Integer label, used for bridge finding.
    */
-  using member_type_ = decltype(label);
+  Atomic<int> n;
+
+  /**
+   * Id of the thread that claimed the object, used for bridge finding.
+   */
+  int16_t claimTid;
+
+  /**
+   * Id of the thread that allocated the object, used by the memory pool.
+   */
+  int16_t allocTid;
+
+  /**
+   * Bitfield containing flags used for bridge finding and cycle collection.
+   */
+  Atomic<int16_t> flags;
 };
 }

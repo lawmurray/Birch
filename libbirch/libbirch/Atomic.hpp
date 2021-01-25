@@ -6,8 +6,8 @@
 /**
  * @def LIBBIRCH_ATOMIC_OPENMP
  *
- * Set to true for libbirch::Atomic to be based on std::atomic, or false to use
- * OpenMP instead.
+ * Set to true for libbirch::Atomic to be based on std::atomic, or false to
+ * use OpenMP instead.
  *
  * The advantage of the OpenMP implementation is assured memory model
  * consistency and the organic disabling of atomics when OpenMP, and thus
@@ -177,6 +177,52 @@ public:
     #pragma omp atomic update seq_cst
     #endif
     this->value |= value;
+  }
+
+  /**
+   * Set to the minimum of the current value and the given value.
+   * 
+   * @attention The OpenMP implementation is thread-safe for multiple threads
+   * calling min() simultaneously, but not for interleaving of other
+   * operations, for which external synchronization is required.
+   */
+  void min(const T& value) {
+    #if LIBBIRCH_ATOMIC_OPENMP
+    T x = value;
+    T y = load();
+    while (x < y) {
+      y = exchange(x);
+      std::swap(x, y);
+    }
+    #else
+    T expected = std::numeric_limits<T>::max();
+    while (value < expected) {
+      this->value.compare_exchange_weak(expected, value);
+    }
+    #endif
+  }
+
+  /**
+   * Set to the maximum of the current value and the given value.
+   * 
+   * @attention The OpenMP implementation is thread-safe for multiple threads
+   * calling max() simultaneously, but not for interleaving of other
+   * operations, for which external synchronization is required.
+   */
+  void max(const T& value) {
+    #if LIBBIRCH_ATOMIC_OPENMP
+    T x = value;
+    T y = load();
+    while (x > y) {
+      y = exchange(x);
+      std::swap(x, y);
+    }
+    #else
+    T expected = std::numeric_limits<T>::min();
+    while (value > expected) {
+      this->value.compare_exchange_weak(expected, value);
+    }
+    #endif
   }
 
   /**

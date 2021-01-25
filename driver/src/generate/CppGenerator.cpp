@@ -53,9 +53,9 @@ void birch::CppGenerator::visit(const Parentheses* o) {
   auto stripped = o->strip();
   if (stripped->isTuple()) {
     if (inReturn) {
-      middle("libbirch::make_tuple");
+      middle("std::make_tuple");
     } else {
-      middle("libbirch::tie");
+      middle("std::tie");
     }
   }
   middle('(' << stripped << ')');
@@ -63,7 +63,7 @@ void birch::CppGenerator::visit(const Parentheses* o) {
 
 void birch::CppGenerator::visit(const Sequence* o) {
   if (o->single->isEmpty()) {
-    middle("libbirch::nil");
+    middle("std::nullopt");
   } else if (!inSequence) {
     middle("libbirch::make_array_from_sequence(");
     ++inSequence;
@@ -80,17 +80,7 @@ void birch::CppGenerator::visit(const Cast* o) {
 }
 
 void birch::CppGenerator::visit(const Call* o) {
-  middle(o->single << '(' << o->args);
-  if (!o->args->isEmpty()) {
-    middle(", ");
-  }
-  if (inOperator || inGlobal) {
-    /* in these contexts, there is no handler to pass on, provide nullptr */
-    middle("nullptr");
-  } else {
-    middle("handler_");
-  }
-  middle(')');
+  middle(o->single << '(' << o->args << ')');
 }
 
 void birch::CppGenerator::visit(const BinaryCall* o) {
@@ -121,11 +111,11 @@ void birch::CppGenerator::visit(const Slice* o) {
 }
 
 void birch::CppGenerator::visit(const Query* o) {
-  middle(o->single << ".query()");
+  middle(o->single << ".has_value()");
 }
 
 void birch::CppGenerator::visit(const Get* o) {
-  middle(o->single << ".get()");
+  middle(o->single << ".value()");
 }
 
 void birch::CppGenerator::visit(const LambdaFunction* o) {
@@ -137,15 +127,7 @@ void birch::CppGenerator::visit(const LambdaFunction* o) {
     }
     middle(param->type);
   }
-  if (!o->params->isEmpty()) {
-    middle(',');
-  }
-  finish("const libbirch::Lazy<libbirch::Shared<birch::type::Handler>>&");
-  middle(")>([=](" << o->params);
-  if (!o->params->isEmpty()) {
-    middle(", ");
-  }
-  finish("const libbirch::Lazy<libbirch::Shared<birch::type::Handler>>& handler_) {");
+  finish(")>([=](" << o->params << ") {");
   in();
   ++inLambda;
   *this << o->braces->strip();
@@ -174,13 +156,13 @@ void birch::CppGenerator::visit(const Member* o) {
     if (o->left->isThis()) {
       middle("this->");
     } else if (o->left->isSuper()) {
-      middle("this->super_type_::");
+      middle("this->base_type_::");
     }
   } else {
     if (o->left->isThis()) {
-      middle("this_()->");
+      middle("this->");
     } else if (o->left->isSuper()) {
-      middle("this_()->super_type_::");
+      middle("this->base_type_::");
     } else {
       middle(o->left);
       auto named = dynamic_cast<const NamedExpression*>(o->right);
@@ -201,15 +183,11 @@ void birch::CppGenerator::visit(const Member* o) {
 }
 
 void birch::CppGenerator::visit(const This* o) {
-  if (inConstructor) {
-    middle("this_()");
-  } else {
-    middle("shared_from_this_()");
-  }
+  middle("this->shared_from_this_()");
 }
 
 void birch::CppGenerator::visit(const Super* o) {
-  assert(false);  // should be handled by visit(Member*)
+  middle("this->shared_from_base_()");
 }
 
 void birch::CppGenerator::visit(const Global* o) {
@@ -217,7 +195,7 @@ void birch::CppGenerator::visit(const Global* o) {
 }
 
 void birch::CppGenerator::visit(const Nil* o) {
-  middle("libbirch::nil");
+  middle("std::nullopt");
 }
 
 void birch::CppGenerator::visit(const Parameter* o) {
@@ -231,12 +209,11 @@ void birch::CppGenerator::visit(const NamedExpression* o) {
   if (o->isGlobal()) {
     middle("birch::" << o->name);
     if (o->category == GLOBAL_VARIABLE) {
-      /* global variables generated as functions */
-      middle("()");
+      middle("()");  // global variables generated as functions
     }
   } else if (o->isMember()) {
     if (!inMember && !inConstructor) {
-      middle("this_()->");
+      middle("this->");  // may be required for generic classes
     }
     middle(o->name);
   } else {
@@ -303,11 +280,7 @@ void birch::CppGenerator::visit(const Function* o) {
     if (!header) {
       middle("birch::");
     }
-    middle(o->name << '(' << o->params);
-    if (!o->params->isEmpty()) {
-      middle(", ");
-    }
-    middle("const libbirch::Lazy<libbirch::Shared<birch::type::Handler>>& handler_)");
+    middle(o->name << '(' << o->params << ')');
     if (header) {
       finish(";");
     } else {
@@ -335,9 +308,6 @@ void birch::CppGenerator::visit(const Program* o) {
       in();
       genTraceFunction(o->name->str(), o->loc);
 
-      /* default handler */
-      line("libbirch::Lazy<libbirch::Shared<birch::type::PlayHandler>> handler_(true, nullptr);\n");
-
       /* program options */
       if (o->params->width() > 0) {
         /* option variables */
@@ -349,7 +319,7 @@ void birch::CppGenerator::visit(const Program* o) {
           if (!param->value->isEmpty()) {
             middle(" = " << param->value);
           } else if (param->type->isClass()) {
-            middle(" = libbirch::make<" << param->type << ">(handler_)");
+            middle(" = libbirch::make<" << param->type << ">()");
           }
           finish(';');
         }
@@ -423,7 +393,7 @@ void birch::CppGenerator::visit(const Program* o) {
             auto type = dynamic_cast<Named*>(p->type->unwrap());
             assert(type);
             start(name << " = birch::" << type->name);
-            finish("(birch::type::String(::optarg), handler_);");
+            finish("(birch::type::String(::optarg));");
           } else {
             line(name << " = birch::type::String(::optarg);");
           }
@@ -557,13 +527,13 @@ void birch::CppGenerator::visit(const Assume* o) {
     line("libbirch::optional_assign(" << o->left << ", " << o->right << ");");
   } else if (*o->name == "<~") {
     start("libbirch::simulate(" << o->left << ", birch::SimulateEvent(");
-    finish('(' << o->right << ")->distribution(handler_), handler_), handler_);");
+    finish('(' << o->right << ")->distribution()));");
   } else if (*o->name == "~>") {
     start("libbirch::observe(birch::ObserveEvent(" << o->left << ", ");
-    finish('(' << o->right << ")->distribution(handler_), handler_), handler_);");
+    finish('(' << o->right << ")->distribution()));");
   } else if (*o->name == "~") {
     start("libbirch::assume(birch::AssumeEvent(" << o->left << ", ");
-    finish('(' << o->right << ")->distribution(handler_), handler_), handler_);");
+    finish('(' << o->right << ")->distribution()));");
   } else {
     assert(false);
   }
@@ -571,8 +541,7 @@ void birch::CppGenerator::visit(const Assume* o) {
 
 void birch::CppGenerator::visit(const Factor* o) {
   genTraceLine(o->loc);
-  start("libbirch::factor(birch::FactorEvent(" << o->single);
-  finish(", handler_), handler_);");
+  line("libbirch::factor(birch::FactorEvent(" << o->single << "));");
 }
 
 void birch::CppGenerator::visit(const ExpressionStatement* o) {
@@ -652,7 +621,7 @@ void birch::CppGenerator::visit(const With* o) {
   genTraceLine(o->loc);
   line("{");
   in();
-  line("auto handler_ = " << o->single << ';');
+  //line("auto handler_ = " << o->single << ';');
   *this << o->braces->strip();
   out();
   line("}");
@@ -695,19 +664,15 @@ void birch::CppGenerator::visit(const ArrayType* o) {
 }
 
 void birch::CppGenerator::visit(const TupleType* o) {
-  middle("libbirch::Tuple<" << o->single << '>');
+  middle("std::tuple<" << o->single << '>');
 }
 
 void birch::CppGenerator::visit(const FunctionType* o) {
-  middle("std::function<" << o->returnType << '(' << o->params);
-  if (!o->params->isEmpty()) {
-    middle(", ");
-  }
-  middle("const libbirch::Lazy<libbirch::Shared<birch::type::Handler>>&)>");
+  middle("std::function<" << o->returnType << '(' << o->params << ")>");
 }
 
 void birch::CppGenerator::visit(const OptionalType* o) {
-  middle("libbirch::Optional<" << o->single << '>');
+  middle("std::optional<" << o->single << '>');
 }
 
 void birch::CppGenerator::visit(const MemberType* o) {
@@ -716,12 +681,11 @@ void birch::CppGenerator::visit(const MemberType* o) {
 
 void birch::CppGenerator::visit(const NamedType* o) {
   if (o->isClass()) {
-    middle("libbirch::Lazy<libbirch::Shared<");
-    middle("birch::type::" << o->name);
+    middle("libbirch::Shared<birch::type::" << o->name);
     if (!o->typeArgs->isEmpty()) {
       middle('<' << o->typeArgs << '>');
     }
-    middle(">>");
+    middle(">");
   } else if (o->isBasic()) {
     middle("birch::type::" << o->name);
     if (!o->typeArgs->isEmpty()) {

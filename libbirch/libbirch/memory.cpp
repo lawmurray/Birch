@@ -6,8 +6,13 @@
 #include "libbirch/Atomic.hpp"
 #include "libbirch/Pool.hpp"
 #include "libbirch/Any.hpp"
-#include "libbirch/Label.hpp"
 #include "libbirch/Shared.hpp"
+#include "libbirch/Marker.hpp"
+#include "libbirch/Scanner.hpp"
+#include "libbirch/Collector.hpp"
+#include "libbirch/MarkClaimToucher.hpp"
+#include "libbirch/BridgeRankRestorer.hpp"
+#include "libbirch/Copier.hpp"
 
 /**
  * Type for object lists in cycle collection.
@@ -59,16 +64,6 @@ static char* make_heap() {
 }
 
 /**
- * Make the root label.
- */
-static libbirch::Label* make_root() {
-  return new libbirch::Label();
-}
-
-libbirch::ExitBarrierLock libbirch::finish_lock;
-libbirch::ExitBarrierLock libbirch::freeze_lock;
-
-/**
  * Get the heap.
  */
 inline libbirch::Atomic<char*>& heap() {
@@ -118,11 +113,6 @@ inline int bin(const size_t n) {
  */
 inline size_t unbin(const int i) {
   return 64ull << i;
-}
-
-libbirch::Label*& libbirch::root() {
-  static Label* root(make_root());
-  return root;
 }
 
 void* libbirch::allocate(const size_t n) {
@@ -183,16 +173,13 @@ void* libbirch::reallocate(void* ptr1, const size_t n1, const int tid1,
 
 void libbirch::register_possible_root(Any* o) {
   assert(o);
-  o->incMemo();
+  o->incShared();
   get_thread_possible_roots().emplace_back(o);
 }
 
 void libbirch::register_unreachable(Any* o) {
   assert(o);
-  //o->incMemo();
-  // ^ no need to increment the memo count here; any object in this list has
-  //   had its shared count decremented to zero, but no the additional memo
-  //   count removed, just yet
+  o->incShared();
   get_thread_unreachable().emplace_back(o);
 }
 
@@ -204,9 +191,10 @@ void libbirch::collect() {
     for (auto& o : possible_roots) {
       if (o) {
         if (o->isPossibleRoot()) {
-          o->mark();
+          Marker visitor;
+          visitor.visit(o);
         } else {
-          o->decMemo();
+          o->decShared();
           o = nullptr;
         }
       }
@@ -216,7 +204,8 @@ void libbirch::collect() {
     /* scan */
     for (auto& o : possible_roots) {
       if (o) {
-        o->scan();
+        Scanner visitor;
+        visitor.visit(o);
       }
     }
     #pragma omp barrier
@@ -224,8 +213,9 @@ void libbirch::collect() {
     /* collect */
     for (auto& o : possible_roots) {
       if (o) {
-        o->collect();
-        o->decMemo();
+        Collector visitor;
+        visitor.visit(o);
+        o->decShared();
         o = nullptr;
       }
     }
@@ -236,7 +226,7 @@ void libbirch::collect() {
     auto& unreachable = get_thread_unreachable();
     for (auto& o : unreachable) {
       o->destroy();
-      o->decMemo();  // removes last memo count
+      o->decShared();  // removes last memo count, causing deallocate()
     }
 
     unreachable.clear();
@@ -249,9 +239,16 @@ void libbirch::trim(Any* o) {
     auto ptr = possible_roots.back();
     if (ptr == o || !ptr->isPossibleRoot()) {
       possible_roots.pop_back();
-      ptr->decMemo();
+      ptr->decShared();
     } else {
       return;
     }
   }
+}
+
+libbirch::Any* libbirch::copy(Any* o) {
+  Any* o1 = o->copy();
+  Copier visitor(o1);
+  visitor.visit(o1);
+  return o1;
 }

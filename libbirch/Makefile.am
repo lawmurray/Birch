@@ -30,53 +30,38 @@ nobase_include_HEADERS = \
   libbirch/Array.hpp \
   libbirch/Atomic.hpp \
   libbirch/assert.hpp \
+  libbirch/BridgeRankRestorer.hpp \
   libbirch/Buffer.hpp \
-  libbirch/class.hpp \
   libbirch/Collector.hpp \
   libbirch/Copier.hpp \
   libbirch/docs.hpp \
   libbirch/Dimension.hpp \
   libbirch/Eigen.hpp \
-  libbirch/ExitBarrierLock.hpp \
   libbirch/external.hpp \
-  libbirch/Finisher.hpp \
-  libbirch/Freezer.hpp \
   libbirch/Index.hpp \
-  libbirch/Init.hpp \
   libbirch/Iterator.hpp \
-  libbirch/Label.hpp \
-  libbirch/LabelPtr.hpp \
-  libbirch/Lazy.hpp \
   libbirch/Length.hpp \
   libbirch/Lock.hpp \
+  libbirch/MarkClaimToucher.hpp \
   libbirch/Marker.hpp \
-  libbirch/Memo.hpp \
+  libbirch/macro.hpp \
   libbirch/memory.hpp \
   libbirch/mutable.hpp \
-  libbirch/Nil.hpp \
   libbirch/Offset.hpp \
-  libbirch/Optional.hpp \
   libbirch/Pool.hpp \
   libbirch/Range.hpp \
   libbirch/Reacher.hpp \
   libbirch/ReadersWriterLock.hpp \
-  libbirch/Recycler.hpp \
   libbirch/Scanner.hpp \
-  libbirch/Semaphore.hpp \
   libbirch/Shape.hpp \
   libbirch/Shared.hpp \
   libbirch/Slice.hpp \
   libbirch/stacktrace.hpp \
   libbirch/Stride.hpp \
-  libbirch/SwitchLock.hpp \
   libbirch/thread.hpp \
-  libbirch/Tuple.hpp \
   libbirch/type.hpp
 
 COMMON_SOURCES =  \
-  libbirch/Label.cpp \
-  libbirch/LabelPtr.cpp \
-  libbirch/Memo.cpp \
   libbirch/memory.cpp \
   libbirch/stacktrace.cpp
 

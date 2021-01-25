@@ -172,45 +172,10 @@ public:
   }
 
   /**
-   * Fix after a bitwise copy.
-   */
-  void bitwiseFix() {
-    assert(!isView);
-    bufferLock.bitwiseFix();
-    if (buffer) {
-      if (is_value<T>::value) {
-        buffer->incUsage();
-      } else {
-        auto bytes = Buffer<T>::size(volume());
-        assert(bytes > 0u);
-	      void* src = buf();
-        buffer = new (libbirch::allocate(bytes)) Buffer<T>();
-        offset = 0;
-        void* dst = buf();
-        std::memcpy(dst, src, sizeof(T)*volume());
-      }
-    }
-  }
-
-  /**
    * Copy assignment operator.
    */
   Array<T,F>& operator=(const Array<T,F>& o) {
     return assign(o);
-  }
-
-  /**
-   * Accept visitor.
-   */
-  template<class Visitor>
-  void accept_(const Visitor& v) {
-    if (!is_value<T>::value) {
-      auto iter = begin();
-      auto last = end();
-      for (; iter != last; ++iter) {
-        v.visit(*iter);
-      }
-    }
   }
 
   /**
@@ -522,10 +487,10 @@ public:
   }
 
   /**
-   * Construct from Eigen TriangularWrapper expression.
+   * Construct from Eigen TriangularView expression.
    */
   template<class EigenType, unsigned Mode, std::enable_if_t<is_triangle_compatible<this_type,EigenType>::value,int> = 0>
-  Array(const Eigen::TriangularView<EigenType,Mode>& o)  :
+  Array(const Eigen::TriangularView<EigenType,Mode>& o) :
       shape(o.rows(), o.cols()),
       buffer(nullptr),
       offset(0),
@@ -603,7 +568,7 @@ private:
    * Is the buffer shared with one or more other arrays?
    */
   bool isShared() const {
-    return buffer && buffer->numUsage() > 1u;
+    return buffer && buffer->numUsage() > 1;
   }
 
   /**
@@ -729,7 +694,7 @@ struct is_value<Array<T,F>> {
   static const bool value = is_value<T>::value;
 };
 
-template<class T, class F, unsigned N>
+template<class T, class F, int N>
 struct is_acyclic<Array<T,F>,N> {
   static const bool value = is_acyclic<T,N>::value;
 };

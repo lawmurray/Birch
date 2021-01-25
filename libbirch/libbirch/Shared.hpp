@@ -6,81 +6,117 @@
 #include "libbirch/Any.hpp"
 #include "libbirch/Atomic.hpp"
 #include "libbirch/type.hpp"
+#include "libbirch/memory.hpp"
 
 namespace libbirch {
 /**
- * Shared pointer.
+ * Shared object.
  *
  * @ingroup libbirch
  *
  * @tparam T Type, must derive from Any.
+ * 
+ * Supports reference counted garbage collection. Cycles are collected by
+ * periodically calling collect(); currently this must be done manually at
+ * opportune times.
+ * 
+ * @attention While Shared maintains a pointer to a referent object, it likes
+ * to pretend it's not a pointer. This behavior differs from
+ * [`std::shared_ptr`](https://en.cppreference.com/w/cpp/memory/shared_ptr).
+ * In particular, its default constructor does not initialize the pointer to
+ * `nullptr`, but rather default-constructs an object of type `T` and sets the
+ * pointer to that. Consider using a [`std::optional`](https://en.cppreference.com/w/cpp/utility/optional/optional)
+ * with a Shared value instead of `nullptr`.
  */
 template<class T>
 class Shared {
   template<class U> friend class Shared;
-  template<class U> friend class Init;
-  template<class U> friend class Lazy;
+  friend class Marker;
+  friend class Scanner;
+  friend class Reacher;
+  friend class Collector;
+  friend class MarkClaimToucher;
+  friend class BridgeRankRestorer;
+  friend class Copier;
 public:
   using value_type = T;
 
   /**
-   * Constructor.
+   * Default constructor. Constructs a new referent using the default
+   * constructor.
    */
-  explicit Shared(value_type* ptr = nullptr) :
-      ptr(ptr) {
+  Shared() :
+      ptr(new T()),
+      b(false),
+      c(false) {
+    //
+  }
+
+  /**
+   * Constructor. Constructs a new referent with the given arguments. The
+   * first is a placeholder (pass [`std::in_place`](https://en.cppreference.com/w/cpp/utility/in_place))
+   * to distinguish this constructor from copy and move constructors.
+   * 
+   * @note [`std::optional`](https://en.cppreference.com/w/cpp/utility/optional/)
+   * behaves similarly with regard to [`std::in_place`](https://en.cppreference.com/w/cpp/utility/in_place).
+   */
+  template<class... Args>
+  Shared(std::in_place_t, const Args&... args) :
+      ptr(new T(args...)),
+      b(false),
+      c(false) {
+    //
+  }
+
+  /**
+   * Constructor.
+   * 
+   * @param ptr Raw pointer.
+   */
+  Shared(T* ptr, const bool b = false, const bool c = false) :
+      ptr(ptr),
+      b(b),
+      c(c) {
     if (ptr) {
       ptr->incShared();
     }
   }
+
 
   /**
    * Copy constructor.
    */
-  Shared(const Shared& o) {
-    auto ptr = o.ptr.load();
-    if (ptr) {
-      ptr->incShared();
-    }
-    this->ptr.store(ptr);
+  Shared(const Shared& o) :
+      Shared(o.get(), o.c, false) {
+    //
   }
 
   /**
-   * Generic shared pointer copy constructor.
+   * Generic copy constructor.
    */
   template<class U, std::enable_if_t<std::is_base_of<T,U>::value,int> = 0>
-  Shared(const Shared<U>& o) {
-    auto ptr = o.ptr.load();
-    if (ptr) {
-      ptr->incShared();
-    }
-    this->ptr.store(ptr);
-  }
-
-  /**
-   * Generic other pointer copy constructor.
-   */
-  template<class Q, std::enable_if_t<std::is_base_of<T,typename Q::value_type>::value,int> = 0>
-  Shared(const Q& o) {
-    auto ptr = o.ptr.load();
-    if (ptr) {
-      ptr->incShared();
-    }
-    this->ptr.store(ptr);
+  Shared(const Shared<U>& o) :
+      Shared(static_cast<T*>(o.get()), o.c, false) {
+    //
   }
 
   /**
    * Move constructor.
    */
-  Shared(Shared&& o) {
-    ptr.store(o.ptr.exchange(nullptr));
+  Shared(Shared&& o) :
+      ptr(o.ptr.exchange(nullptr)), b(o.b), c(o.c) {
+    o.b = false;
+    o.c = false;
   }
 
   /**
    * Generic move constructor.
    */
   template<class U, std::enable_if_t<std::is_base_of<T,U>::value,int> = 0>
-  Shared(Shared<U>&& o) {
-    ptr.store(o.ptr.exchange(nullptr));
+  Shared(Shared<U>&& o) :
+      ptr(o.ptr.exchange(nullptr)), b(o.b), c(o.c) {
+    o.b = false;
+    o.c = false;
   }
 
   /**
@@ -91,38 +127,23 @@ public:
   }
 
   /**
-   * Fix after a bitwise copy.
-   */
-  void bitwiseFix() {
-    auto ptr = this->ptr.get();
-    if (ptr) {
-      ptr->incShared();
-    }
-  }
-
-  /**
    * Copy assignment.
    */
   Shared& operator=(const Shared& o) {
     replace(o.get());
+    b = false;
+    c = false;
     return *this;
   }
 
   /**
-   * Generic shared pointer copy assignment.
+   * Generic copy assignment.
    */
   template<class U, std::enable_if_t<std::is_base_of<T,U>::value,int> = 0>
   Shared& operator=(const Shared<U>& o) {
     replace(o.get());
-    return *this;
-  }
-
-  /**
-   * Generic other pointer copy assignment.
-   */
-  template<class Q, std::enable_if_t<std::is_base_of<T,typename Q::value_type>::value,int> = 0>
-  Shared& operator=(const Q& o) {
-    replace(o.get());
+    b = false;
+    c = false;
     return *this;
   }
 
@@ -135,12 +156,14 @@ public:
     if (old) {
       if (ptr == old) {
         old->decSharedReachable();
-      } else if (is_acyclic<Shared<T>>::value) {
+      } else if (is_acyclic<T>::value) {
         old->decSharedAcyclic();
       } else {
         old->decShared();
       }
     }
+    std::swap(b, o.b);
+    std::swap(c, o.c);
     return *this;
   }
 
@@ -154,12 +177,32 @@ public:
     if (old) {
       if (ptr == old) {
         old->decSharedReachable();
-      } else if (is_acyclic<Shared<T>>::value) {
+      } else if (is_acyclic<T>::value) {
         old->decSharedAcyclic();
       } else {
         old->decShared();
       }
     }
+    std::swap(b, o.b);
+    std::swap(c, o.c);
+    return *this;
+  }
+
+  /**
+   * Value assignment.
+   */
+  template<class U, std::enable_if_t<is_value<U>::value,int> = 0>
+  Shared<T>& operator=(const U& o) {
+    *get() = o;
+    return *this;
+  }
+
+  /**
+   * Value assignment.
+   */
+  template<class U, std::enable_if_t<is_value<U>::value,int> = 0>
+  const Shared<T>& operator=(const U& o) const {
+    *get() = o;
     return *this;
   }
 
@@ -176,14 +219,35 @@ public:
   /**
    * Get the raw pointer.
    */
-  T* get() const {
-    return ptr.load();
+  T* get() {
+    auto v = ptr.load();
+    if (b && !c) {
+      b = false;
+      v = static_cast<T*>(copy(v));
+      ptr.store(v);
+    }
+    return v;
   }
 
   /**
-   * Replace.
+   * Get the raw pointer.
    */
-  void replace(T* ptr) {
+  T* get() const {
+    return const_cast<decltype(this)>(this)->get();
+  }
+
+  /**
+   * Get the raw pointer as const.
+   */
+  const T* read() const {
+    return get();
+  }
+
+  /**
+   * Replace. Sets the raw pointer to a new value and returns the previous
+   * value.
+   */
+  T* replace(T* ptr) {
     if (ptr) {
       ptr->incShared();
     }
@@ -191,26 +255,32 @@ public:
     if (old) {
       if (ptr == old) {
         old->decSharedReachable();
-      } else if (is_acyclic<Shared<T>>::value) {
+      } else if (is_acyclic<T>::value) {
         old->decSharedAcyclic();
       } else {
         old->decShared();
       }
     }
+    b = false;
+    c = false;
+    return old;
   }
 
   /**
-   * Release.
+   * Release. Sets the raw pointer to null and returns the previous value.
    */
-  void release() {
+  T* release() {
     auto old = ptr.exchange(nullptr);
     if (old) {
-      if (is_acyclic<Shared<T>>::value) {
+      if (is_acyclic<T>::value) {
         old->decSharedAcyclic();
       } else {
         old->decShared();
       }
     }
+    b = false;
+    c = false;
+    return old;
   }
 
   /**
@@ -228,53 +298,11 @@ public:
   }
 
   /**
-   * Mark.
+   * Call on referent.
    */
-  void mark() {
-    if (!is_acyclic<Shared<T>>::value) {
-      auto o = ptr.load();
-      if (o) {
-        o->decSharedReachable();  // break the reference
-        o->Any::mark();
-      }
-    }
-  }
-
-  /**
-   * Scan.
-   */
-  void scan() {
-    if (!is_acyclic<Shared<T>>::value) {
-      auto o = ptr.load();
-      if (o) {
-        o->Any::scan();
-      }
-    }
-  }
-
-  /**
-   * Reach.
-   */
-  void reach() {
-    if (!is_acyclic<Shared<T>>::value) {
-      auto o = ptr.load();
-      if (o) {
-        o->incShared();  // restore the broken reference
-        o->Any::reach();
-      }
-    }
-  }
-
-  /**
-   * Collect.
-   */
-  void collect() {
-    if (!is_acyclic<Shared<T>>::value) {
-      auto o = ptr.exchange(nullptr);  // reference still broken, just set null
-      if (o) {
-        o->Any::collect();
-      }
-    }
+  template<class... Args>
+  auto& operator()(Args... args) {
+    return (*get())(args...);
   }
 
 private:
@@ -282,6 +310,16 @@ private:
    * Raw pointer.
    */
   Atomic<T*> ptr;
+
+  /**
+   * Is this a bridge?
+   */
+  bool b;
+
+  /**
+   * If this is a bridge, is it the original, not a copy?
+   */
+  bool c;
 };
 
 template<class T>
@@ -294,7 +332,7 @@ struct is_pointer<Shared<T>> {
   static const bool value = true;
 };
 
-template<class T, unsigned N>
+template<class T, int N>
 struct is_acyclic<Shared<T>,N> {
   // because pointers are polymorphic, the class must be both final and
   // acyclic for the pointer to be considered acyclic
@@ -304,10 +342,5 @@ struct is_acyclic<Shared<T>,N> {
 template<class T>
 struct is_acyclic<Shared<T>,0> {
   static const bool value = false;
-};
-
-template<class T>
-struct raw<Shared<T>> {
-  using type = T*;
 };
 }

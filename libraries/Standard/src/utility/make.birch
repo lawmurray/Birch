@@ -11,7 +11,7 @@
  */
 function make<Type>() -> Type? {
   cpp{{
-  return libbirch::make_optional<Type>(handler_);
+  return libbirch::make_optional<Type>();
   }}
 }
 
@@ -29,10 +29,10 @@ function make(name:String) -> Object? {
   result:Object?;
   symbol:String <- "make_" + name + "_";
   cpp{{
-  using make_t = birch::type::Object*(const libbirch::Lazy<libbirch::Shared<birch::type::Handler>>&);
+  using make_t = birch::type::Object*();
   void* addr = dlsym(RTLD_DEFAULT, symbol.c_str());
   if (addr) {
-    result = libbirch::Lazy<libbirch::Shared<birch::type::Object>>(reinterpret_cast<make_t*>(addr)(handler_));
+    result = libbirch::Shared<birch::type::Object>(reinterpret_cast<make_t*>(addr)());
   }
   }}
   if !result? {

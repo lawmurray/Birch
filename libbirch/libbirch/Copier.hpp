@@ -3,14 +3,15 @@
  */
 #pragma once
 
-#include "libbirch/Tuple.hpp"
+#include "libbirch/external.hpp"
 #include "libbirch/Array.hpp"
-#include "libbirch/Optional.hpp"
-#include "libbirch/Lazy.hpp"
+#include "libbirch/Shared.hpp"
 
 namespace libbirch {
 /**
- * Visitor for relabelling members of a newly copied object.
+ * @internal
+ * 
+ * Visitor copying a two-connected component (island).
  *
  * @ingroup libbirch
  */
@@ -18,121 +19,81 @@ class Copier {
 public:
   /**
    * Constructor.
+   * 
+   * @param n Size of the memo.
    */
-  Copier(Label* label) :
-      label(label) {
+  template<class T>
+  Copier(T* o) : m(o->rank(), nullptr) {
+    m.back() = o;
+  }
+
+  void visit() {
     //
   }
 
-  /**
-   * Visit empty list of variables (base case).
-   */
-  void visit() const {
+  template<class Arg, std::enable_if_t<!std::is_base_of<Any,Arg>::value,int> = 0>
+  void visit(Arg& arg) {
     //
   }
 
-  /**
-   * Visit list of variables.
-   *
-   * @param arg First variable.
-   * @param args... Remaining variables.
-   */
   template<class Arg, class... Args>
-  void visit(Arg& arg, Args&... args) const {
+  void visit(Arg& arg, Args&... args) {
     visit(arg);
     visit(args...);
   }
 
-  /**
-   * Visit a value.
-   */
-  template<class T, std::enable_if_t<is_value<T>::value &&
-      std::is_trivially_copy_constructible<T>::value,int> = 0>
-  void visit(T& arg) const {
-    //
+  template<class... Args>
+  void visit(std::tuple<Args...>& o) {
+    return std::apply(visit, o);
   }
 
-  /**
-   * Visit a value.
-   */
-  template<class T, std::enable_if_t<is_value<T>::value &&
-      !std::is_trivially_copy_constructible<T>::value,int> = 0>
-  void visit(T& arg) const {
-    /* for types that do not support trivial copy, the bitwise copy is
-     * invalid; we correct for this now by first performing a proper copy,
-     * then emplacing the result over the bitwise copy */
-    T proper(arg);
-    new (&arg) T(std::move(proper));
-  }
-
-  /**
-   * Visit a tuple.
-   */
-  template<class Head, class... Tail>
-  void visit(Tuple<Head,Tail...>& o) const {
-    o.accept_(*this);
-  }
-
-  /**
-   * Visit an array of non-value type.
-   */
-  template<class T, class F>
-  void visit(Array<T,F>& o) const {
-    o.bitwiseFix();
-    o.accept_(*this);
-  }
-
-  /**
-   * Visit an optional of non-value type.
-   */
   template<class T>
-  void visit(Optional<T>& o) const {
-    o.accept_(*this);
+  void visit(std::optional<T>& o) {
+    if (o.has_value()) {
+      visit(o.value());
+    }
   }
 
-  /**
-   * Visit a lazy pointer.
-   */
-  template<class P>
-  void visit(Lazy<P>& o) const {
-    o.bitwiseFix(label);
+  template<class T, class F>
+  void visit(Array<T,F>& o) {
+    auto iter = o.begin();
+    auto last = o.end();
+    for (; iter != last; ++iter) {
+      visit(*iter);
+    }
   }
+
+  template<class T>
+  void visit(Shared<T>& o);
+
+  template<class T, std::enable_if_t<std::is_base_of<Any,T>::value,int> = 0>
+  void visit(T* o);
 
 private:
   /**
-   * Label associated with the clone.
+   * Memo.
    */
-  Label* label;
+  std::vector<libbirch::Any*,libbirch::Allocator<libbirch::Any*>> m;
 };
-
-/**
- * Clone an object via a pointer.
- *
- * @ingroup libbirch
- *
- * @param o The pointer.
- */
-template<class P>
-auto clone(const Lazy<P>& o) {
-  auto ptr = o.pull();
-  auto label = o.getLabel();
-
-  finish_lock.enter();
-  ptr->finish(label);
-  label->finish(label);
-  finish_lock.exit();
-
-  freeze_lock.enter();
-  ptr->freeze();
-  label->freeze();
-  freeze_lock.exit();
-
-  /* shared counts on labels are handled by Any, not Lazy; consequently we
-   * need to complete the first copy in order to create a shared pointer to
-   * the new label */
-  auto newLabel = new Label(*label);
-  auto newPtr = newLabel->copy(ptr);
-  return Lazy<P>(newPtr, newLabel);
 }
 
+template<class T>
+void libbirch::Copier::visit(Shared<T>& o) {
+  if (!o.b) {
+    T* ptr = o.ptr.load();  ///@todo Needn't be atomic
+    int n = ptr->rank() - 1;  ///@todo Needn't be atomic
+    if (m[n]) {
+      ptr = static_cast<T*>(m[n]);
+    } else {
+      ptr = static_cast<T*>(ptr->copy());
+      m[n] = ptr;
+      visit(ptr);
+    }
+    o.replace(ptr);
+  }
+}
+
+template<class T, std::enable_if_t<std::is_base_of<libbirch::Any,T>::value,int>>
+void libbirch::Copier::visit(T* o) {
+  o->accept_(*this);
 }
