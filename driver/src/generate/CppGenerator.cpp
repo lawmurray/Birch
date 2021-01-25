@@ -526,14 +526,11 @@ void birch::CppGenerator::visit(const Assume* o) {
   if (*o->name == "<-?") {
     line("libbirch::optional_assign(" << o->left << ", " << o->right << ");");
   } else if (*o->name == "<~") {
-    start("libbirch::simulate(" << o->left << ", birch::SimulateEvent(");
-    finish('(' << o->right << ")->distribution()));");
+    line(o->left << "= birch::handle_simulate(" << o->right << ");");
   } else if (*o->name == "~>") {
-    start("libbirch::observe(birch::ObserveEvent(" << o->left << ", ");
-    finish('(' << o->right << ")->distribution()));");
+    line("birch::handle_observe(" << o->left << ", " << o->right << ");");
   } else if (*o->name == "~") {
-    start("libbirch::assume(birch::AssumeEvent(" << o->left << ", ");
-    finish('(' << o->right << ")->distribution()));");
+    line("birch::handle_assume(" << o->left << ", " << o->right << ");");
   } else {
     assert(false);
   }
@@ -541,7 +538,7 @@ void birch::CppGenerator::visit(const Assume* o) {
 
 void birch::CppGenerator::visit(const Factor* o) {
   genTraceLine(o->loc);
-  line("libbirch::factor(birch::FactorEvent(" << o->single << "));");
+  line("birch::handle_factor(" << o->single << ");");
 }
 
 void birch::CppGenerator::visit(const ExpressionStatement* o) {
