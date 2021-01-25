@@ -61,8 +61,8 @@ public:
    * behaves similarly with regard to [`std::in_place`](https://en.cppreference.com/w/cpp/utility/in_place).
    */
   template<class... Args>
-  Shared(std::in_place_t, const Args&... args) :
-      ptr(new T(args...)),
+  Shared(std::in_place_t, Args&&... args) :
+      ptr(new T(std::forward<Args>(args)...)),
       b(false),
       c(false) {
     //
@@ -301,8 +301,8 @@ public:
    * Call on referent.
    */
   template<class... Args>
-  auto& operator()(Args... args) {
-    return (*get())(args...);
+  auto& operator()(Args&&... args) {
+    return (*get())(std::forward<Args>(args)...);
   }
 
 private:

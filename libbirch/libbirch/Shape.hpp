@@ -327,8 +327,8 @@ inline Shape<Dimension<>,EmptyShape> make_shape(const int64_t arg) {
  * @ingroup libbirch
  */
 template<class ... Args>
-auto make_shape(const int64_t arg, Args ... args) {
-  auto tail = make_shape(args...);
+auto make_shape(const int64_t arg, Args&&... args) {
+  auto tail = make_shape(std::forward<Args>(args)...);
   auto head = Dimension<>(arg, tail.volume());
   return Shape<decltype(head),decltype(tail)>(head, tail);
 }

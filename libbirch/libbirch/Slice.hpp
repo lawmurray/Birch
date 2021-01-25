@@ -160,9 +160,9 @@ inline auto make_slice(const int64_t arg) {
  * @ingroup libbirch
  */
 template<int64_t offset_value, int64_t length_value, class ... Args>
-auto make_slice(const Range<offset_value,length_value>& arg, Args ... args) {
+auto make_slice(const Range<offset_value,length_value>& arg, Args&&... args) {
   auto head = arg;
-  auto tail = make_slice(args...);
+  auto tail = make_slice(std::forward<Args>(args)...);
   return Slice<decltype(head),decltype(tail)>(head, tail);
 }
 
@@ -172,9 +172,9 @@ auto make_slice(const Range<offset_value,length_value>& arg, Args ... args) {
  * @ingroup libbirch
  */
 template<class ... Args>
-auto make_slice(const int64_t arg, Args ... args) {
+auto make_slice(const int64_t arg, Args&&... args) {
   auto head = make_index(arg);
-  auto tail = make_slice(args...);
+  auto tail = make_slice(std::forward<Args>(args)...);
   return Slice<decltype(head),decltype(tail)>(head, tail);
 }
 

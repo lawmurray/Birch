@@ -62,14 +62,14 @@ public:
    * @param shape Shape.
    * @param args Constructor arguments.
    */
-  template<class... Args>
-  Array(const F& shape, Args ... args) :
+  template<class... Args, std::enable_if_t<std::is_constructible<T,Args...>::value,int> = 0>
+  Array(const F& shape, Args&&... args) :
       shape(shape),
       buffer(nullptr),
       offset(0),
       isView(false) {
     allocate();
-    initialize(args...);
+    initialize(std::forward<Args>(args)...);
   }
 
   /**
@@ -283,12 +283,12 @@ public:
    * @return The resulting view or element.
    */
   template<class... Args>
-  decltype(auto) operator()(Args... args) {
-    return slice(make_slice(args...));
+  decltype(auto) operator()(Args&&... args) {
+    return slice(make_slice(std::forward<Args>(args)...));
   }
   template<class... Args>
-  decltype(auto) operator()(Args... args) const {
-    return slice(make_slice(args...));
+  decltype(auto) operator()(Args&&... args) const {
+    return slice(make_slice(std::forward<Args>(args)...));
   }
 
   /**
@@ -619,12 +619,12 @@ private:
    *
    * @param args Constructor arguments.
    */
-  template<class ... Args>
-  void initialize(Args ... args) {
+  template<class ... Args, std::enable_if_t<std::is_constructible<T,Args...>::value,int> = 0>
+  void initialize(Args&&... args) {
     auto iter = begin();
     auto last = end();
     for (; iter != last; ++iter) {
-      new (&*iter) T(args...);
+      new (&*iter) T(std::forward<Args>(args)...);
     }
   }
 

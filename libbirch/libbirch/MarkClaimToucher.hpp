@@ -36,7 +36,7 @@ public:
 
   template<class... Args>
   int visit(const int i, const int j, std::tuple<Args...>& o) {
-    return std::apply([&](Args... args) { return visit(i, j, args...); }, o);
+    return std::apply([&](Args&... args) { return visit(i, j, args...); }, o);
   }
 
   template<class T>

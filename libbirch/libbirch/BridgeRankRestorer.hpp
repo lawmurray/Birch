@@ -40,7 +40,7 @@ public:
 
   template<class... Args>
   std::pair<int,int> visit(const int j, std::tuple<Args...>& o) {
-    return std::apply([&](Args... args) { return visit(j, args...); }, o);
+    return std::apply([&](Args&... args) { return visit(j, args...); }, o);
   }
 
   template<class T>

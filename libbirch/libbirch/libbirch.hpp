@@ -105,9 +105,9 @@ auto make_array_from_value(const F& shape, const Value& value) {
  *
  * @return The array.
  */
-template<class T, class F, class ... Args>
-auto make_array(const F& shape, const Args&... args) {
-  return Array<T,F>(shape, args...);
+template<class T, class F, class... Args>
+auto make_array(const F& shape, Args&&... args) {
+  return Array<T,F>(shape, std::forward<Args>(args)...);
 }
 
 /**
@@ -121,8 +121,8 @@ auto make_array(const F& shape, const Args&... args) {
  * @return A default-constructed value of the given type.
  */
 template<class T, class... Args>
-T make(const Args&... args) {
-  return T(args...);
+T make(Args&&... args) {
+  return T(std::forward<Args>(args)...);
 }
 
 /**
@@ -139,8 +139,8 @@ T make(const Args&... args) {
 template<class T, class... Args, std::enable_if_t<
     !is_pointer<T>::value &&
     std::is_constructible<T,Args...>::value,int> = 0>
-std::optional<T> make_optional(const Args&... args) {
-  return T(args...);
+std::optional<T> make_optional(Args&&... args) {
+  return T(std::forward<Args>(args)...);
 }
 
 /**
@@ -157,7 +157,7 @@ std::optional<T> make_optional(const Args&... args) {
 template<class T, class... Args, std::enable_if_t<
     !is_pointer<T>::value &&
     !std::is_constructible<T,Args...>::value,int> = 0>
-std::optional<T> make_optional(const Args&... args) {
+std::optional<T> make_optional(Args&&... args) {
   return std::nullopt;
 }
 
@@ -175,8 +175,8 @@ std::optional<T> make_optional(const Args&... args) {
 template<class T, class... Args, std::enable_if_t<
     is_pointer<T>::value &&
     std::is_constructible<typename T::value_type,Args...>::value,int> = 0>
-std::optional<T> make_optional(const Args&... args) {
-  return T(args...);
+std::optional<T> make_optional(Args&&... args) {
+  return T(std::forward<Args>(args)...);
 }
 
 /**
@@ -193,7 +193,7 @@ std::optional<T> make_optional(const Args&... args) {
 template<class T, class... Args, std::enable_if_t<
     is_pointer<T>::value &&
     !std::is_constructible<typename T::value_type,Args...>::value,int> = 0>
-std::optional<T> make_optional(const Args&... args) {
+std::optional<T> make_optional(Args&&... args) {
   return std::nullopt;
 }
 
