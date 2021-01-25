@@ -621,8 +621,9 @@ void birch::CppGenerator::visit(const With* o) {
   genTraceLine(o->loc);
   line("{");
   in();
-  //line("auto handler_ = " << o->single << ';');
+  line("auto handler_ = birch::swap_handler(" << o->single << ");");
   *this << o->braces->strip();
+  line("birch::set_handler(handler_);");
   out();
   line("}");
 }

@@ -12,8 +12,7 @@ static auto make_rngs() {
 }
 
 static auto& get_rng() {
-  static std::vector<std::mt19937_64,libbirch::Allocator<std::mt19937_64>> rngs(
-      make_rngs());
+  static auto rngs = make_rngs();
   return rngs[libbirch::get_thread_num()];
 }
 }}

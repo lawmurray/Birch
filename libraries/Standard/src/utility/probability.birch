@@ -1,0 +1,57 @@
+cpp{{
+static auto make_handlers() {
+  std::vector<libbirch::Shared<birch::type::Handler>> handlers(libbirch::get_max_threads(), nullptr);
+  #pragma omp parallel num_threads(libbirch::get_max_threads())
+  {
+    handlers[libbirch::get_thread_num()] = birch::PlayHandler(true);
+  }
+  return handlers;
+}
+
+static auto& get_handler() {
+  static auto handlers = make_handlers();
+  return handlers[libbirch::get_thread_num()];
+}
+}}
+
+/**
+ * Get the event handler.
+ */
+function get_handler() -> Handler {
+  cpp{{
+  return ::get_handler();
+  }}
+}
+
+/**
+ * Set the event handler.
+ *
+ * !!! attention
+ * Typically one does not call this directly, but rather uses the
+ * [`with`](https://www.birch.sh/language/probability/) statement.
+ */
+function set_handler(handler:Handler) {
+  cpp{{
+  ::get_handler() = handler;
+  }}
+}
+
+/**
+ * Swap the event handler with another.
+ *
+ * - handler: The new handler.
+ *
+ * Returns: The previous handler.
+ *
+ * !!! attention
+ * Typically one does not call this directly, but rather uses the
+ * [`with`](https://www.birch.sh/language/probability/) statement.
+ */
+function swap_handler(handler:Handler) -> Handler {
+  cpp{{
+  auto& current = ::get_handler();
+  auto previous = handler;
+  std::swap(current, previous);
+  return previous;
+  }}
+}
