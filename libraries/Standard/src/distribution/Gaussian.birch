@@ -109,8 +109,8 @@ class Gaussian(μ:Expression<Real>, σ2:Expression<Real>) <
   function write(buffer:Buffer) {
     prune();
     buffer.set("class", "Gaussian");
-    buffer.set("μ", μ.value());
-    buffer.set("σ2", σ2.value());
+    buffer.set("μ", μ);
+    buffer.set("σ2", σ2);
   }
 }
 

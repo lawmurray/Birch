@@ -66,7 +66,7 @@ class Poisson(λ:Expression<Real>) < Discrete {
   function write(buffer:Buffer) {
     prune();
     buffer.set("class", "Poisson");
-    buffer.set("λ", λ.value());
+    buffer.set("λ", λ);
   }
 }
 
