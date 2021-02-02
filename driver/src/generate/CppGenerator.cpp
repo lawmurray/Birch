@@ -432,8 +432,10 @@ void birch::CppGenerator::visit(const Program* o) {
       }
 
       /* body of program */
-      *this << o->braces->strip();
+      *this << o->braces;
 
+      genTraceLine(o->loc);
+      line("libbirch::collect();");
       genTraceLine(o->loc);
       line("return 0;");
       out();

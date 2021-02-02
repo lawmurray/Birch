@@ -57,19 +57,4 @@ void register_unreachable(Any* o);
  */
 void collect();
 
-/**
- * Performs some maintenance operations on the current thread's set of
- * registered possible roots.
- *
- * @param o The object that called this operation, and that is not a possible
- * root.
- *
- * Specifically, from the back of the vector of possible roots, this removes
- * any pointers to objects that are (no longer) possible roots, either because
- * they are flagged as such, or because they match `o`. Working from the back
- * is a reasonable heuristic, especially for pointers on the stack, which
- * a destroyed in the reverse order in which they are created.
- */
-void trim(Any* o);
-
 }

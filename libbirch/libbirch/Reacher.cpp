@@ -4,7 +4,6 @@
 #include "libbirch/Reacher.hpp"
 
 void libbirch::Reacher::visit(Any* o) {
-  o->incShared();
   if (!(o->f.exchangeOr(SCANNED) & SCANNED)) {
     o->f.maskAnd(~MARKED);  // unset for next time
   }

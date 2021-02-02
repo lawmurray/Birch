@@ -74,8 +74,8 @@ void libbirch::Scanner::visit(Array<T,F>& o) {
 template<class T>
 void libbirch::Scanner::visit(Shared<T>& o) {
   if (!is_acyclic<T>::value) {
-    Any* o1 = o.ptr.load();  ///@todo Needn't be atomic
-    if (o1) {
+    Any* o1 = o.ptr.load();
+    if (o1 && !o1->isAcyclic()) {
       visit(o1);
     }
   }

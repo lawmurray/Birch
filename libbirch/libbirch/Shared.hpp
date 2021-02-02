@@ -152,8 +152,6 @@ public:
     if (old) {
       if (ptr == old) {
         old->decSharedReachable();
-      } else if (is_acyclic<T>::value) {
-        old->decSharedAcyclic();
       } else {
         old->decShared();
       }
@@ -173,8 +171,6 @@ public:
     if (old) {
       if (ptr == old) {
         old->decSharedReachable();
-      } else if (is_acyclic<T>::value) {
-        old->decSharedAcyclic();
       } else {
         old->decShared();
       }
@@ -255,8 +251,6 @@ public:
     if (old) {
       if (ptr == old) {
         old->decSharedReachable();
-      } else if (is_acyclic<T>::value) {
-        old->decSharedAcyclic();
       } else {
         old->decShared();
       }
@@ -272,11 +266,7 @@ public:
   T* release() {
     auto old = ptr.exchange(nullptr);
     if (old) {
-      if (is_acyclic<T>::value) {
-        old->decSharedAcyclic();
-      } else {
-        old->decShared();
-      }
+      old->decShared();
     }
     b = false;
     c = false;

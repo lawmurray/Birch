@@ -4,19 +4,12 @@
 #pragma once
 
 #include "libbirch/external.hpp"
+#include "libbirch/internal.hpp"
 #include "libbirch/assert.hpp"
 #include "libbirch/memory.hpp"
 #include "libbirch/Atomic.hpp"
 
 namespace libbirch {
-class Marker;
-class Scanner;
-class Reacher;
-class Collector;
-class Spanner;
-class Bridger;
-class Copier;
-
 /**
  * Flags used for cycle collection as in @ref Bacon2001
  * "Bacon & Rajan (2001)", replacing the colors described there. The reason
@@ -30,7 +23,8 @@ class Copier;
  * Notwithstanding, the flags do map to colors in @ref Bacon2001
  * "Bacon & Rajan (2001)":
  *
- *   - *possible root* maps to *purple*,
+ *   - *acyclic* maps to *green*,
+ *   - *buffered* maps to *purple*,
  *   - *marked* maps to *gray*,
  *   - *scanned* and *reachable* together map to *black* (both on) or
  *     *white* (first on, second off),
@@ -42,7 +36,7 @@ class Copier;
  * sequencing of this coloring can become problematic with multiple threads.
  */
 enum Flag : uint8_t {
-  POSSIBLE_ROOT = (1 << 0),
+  ACYCLIC = (1 << 0),
   BUFFERED = (1 << 1),
   MARKED = (1 << 2),
   SCANNED = (1 << 3),
@@ -125,10 +119,9 @@ public:
   }
 
   /**
-   * Destroy, but do not deallocate, the object.
+   * Destroy and deallocate.
    */
   void destroy() {
-    assert(r.load() == 0);
     auto size = this->size_();
     auto tid = this->allocTid;
     this->~Any();
@@ -136,7 +129,7 @@ public:
   }
 
   /**
-   * Shared r.
+   * Reference count.
    */
   int numShared() const {
     return r.load();
@@ -146,50 +139,30 @@ public:
    * Increment the shared r.
    */
   void incShared() {
-    //f.maskAnd(~POSSIBLE_ROOT);
-    // ^ any interleaving with decShared() switching on POSSIBLE_ROOT should
-    //   not be problematic; having it on is never a correctness issue, only
-    //   a performance issue, and as long as one thread can reach the object
-    //   it is fine to be off
-    // ^ disabling this option improves performance on several examples
     r.increment();
   }
 
   /**
-   * Decrement the shared r. This decrements the count; if the new count
-   * is nonzero, it registers the object as a possible root for cycle
-   * collection, or if the new count is zero, it destroys the object.
+   * Decrement the shared reference count.
    */
   void decShared() {
     assert(numShared() > 0);
 
-    /* if the count will reduce to nonzero, this is possibly the root of
-     * a cycle */
-    if (numShared() > 1 &&
-        !(f.exchangeOr(BUFFERED|POSSIBLE_ROOT) & BUFFERED)) {
+    /* first set the BUFFERED flag so that this call is uniquely responsible
+     * for registering this object as a possible root */
+    auto old = f.exchangeOr(BUFFERED);
+
+    if (--r == 0) {
+      if ((old & ACYCLIC) || !(old & BUFFERED)) {
+        /* either this object is acyclic and so doesn't need to be registered
+         * as a possible root, or this call is uniquely responsible for
+         * registering it as a possible root, but it cannot be; can just
+         * destroy */
+        destroy();
+      }
+    } else if (!(old & ACYCLIC) && !(old & BUFFERED)) {
+      /* register as a possible root, but only if it's not acyclic */
       register_possible_root(this);
-    }
-
-    /* decrement */
-    if (--r == 0) {
-      destroy();
-    }
-  }
-
-  /**
-   * Decrement the shared count with a known acyclic referent. This decrements
-   * the count, and if the new count is zero, it destroys the object. The
-   * caller asserts that the object is of acyclic type (@see is_acyclic), so
-   * that there is no need to register the object as a possible root for cycle
-   * collection.
-   *
-   * Acyclic objects occur in @ref Bacon2001 "Bacon & Rajan (2001)", where
-   * they are colored *green*.
-   */
-  void decSharedAcyclic() {
-    assert(numShared() > 0);
-    if (--r == 0) {
-      destroy();
     }
   }
 
@@ -205,25 +178,17 @@ public:
   }
 
   /**
-   * Has the object been destroyed?
-   */
-  bool isDestroyed() const {
-    return f.load() & DESTROYED;
-  }
-
-  /**
-   * Is this object the possible root of a cycle?
-   */
-  bool isPossibleRoot() const {
-    auto f = this->f.load();
-    return (f & POSSIBLE_ROOT) && !(f & DESTROYED);
-  }
-
-  /**
    * Is there only one pointer (of any type) to this object?
    */
   bool isUnique() const {
     return numShared() == 1;
+  }
+
+  /**
+   * Is this object of an acyclic type?
+   */
+  bool isAcyclic() const {
+    return f.load() & ACYCLIC;
   }
 
   /**

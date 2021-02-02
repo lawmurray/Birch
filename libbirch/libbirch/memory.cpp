@@ -41,7 +41,7 @@ static object_list& get_thread_unreachable() {
  * Make the heap.
  */
 static char* make_heap() {
-  #ifdef DISABLE_MEMORY_POOL
+  #ifndef ENABLE_MEMORY_POOL
   return nullptr;
   #else
   /* determine a preferred size of the heap based on total physical memory */
@@ -118,7 +118,7 @@ inline size_t unbin(const int i) {
 void* libbirch::allocate(const size_t n) {
   assert(n > 0u);
 
-  #ifdef DISABLE_MEMORY_POOL
+  #ifndef ENABLE_MEMORY_POOL
   return std::malloc(n);
   #else
   int tid = get_thread_num();
@@ -138,7 +138,7 @@ void libbirch::deallocate(void* ptr, const size_t n, const int tid) {
   assert(n > 0u);
   assert(tid < get_max_threads());
 
-  #ifdef DISABLE_MEMORY_POOL
+  #ifndef ENABLE_MEMORY_POOL
   std::free(ptr);
   #else
   int i = bin(n);
@@ -153,7 +153,7 @@ void* libbirch::reallocate(void* ptr1, const size_t n1, const int tid1,
   assert(tid1 < get_max_threads());
   assert(n2 > 0u);
 
-  #ifdef DISABLE_MEMORY_POOL
+  #ifndef ENABLE_MEMORY_POOL
   return std::realloc(ptr1, n2);
   #else
   int i1 = bin(n1);
@@ -172,15 +172,11 @@ void* libbirch::reallocate(void* ptr1, const size_t n1, const int tid1,
 }
 
 void libbirch::register_possible_root(Any* o) {
-  assert(o);
-  o->incShared();
-  get_thread_possible_roots().emplace_back(o);
+  get_thread_possible_roots().push_back(o);
 }
 
 void libbirch::register_unreachable(Any* o) {
-  assert(o);
-  o->incShared();
-  get_thread_unreachable().emplace_back(o);
+  get_thread_unreachable().push_back(o);
 }
 
 void libbirch::collect() {
@@ -190,13 +186,8 @@ void libbirch::collect() {
     auto& possible_roots = get_thread_possible_roots();
     for (auto& o : possible_roots) {
       if (o) {
-        if (o->isPossibleRoot()) {
-          Marker visitor;
-          visitor.visit(o);
-        } else {
-          o->decShared();
-          o = nullptr;
-        }
+        Marker visitor;
+        visitor.visit(o);
       }
     }
     #pragma omp barrier
@@ -215,33 +206,19 @@ void libbirch::collect() {
       if (o) {
         Collector visitor;
         visitor.visit(o);
-        o->decShared();
         o = nullptr;
       }
     }
     possible_roots.clear();
     #pragma omp barrier
 
-    /* destroy the objects indicated during collect */
+    /* destroy unreachable */
     auto& unreachable = get_thread_unreachable();
     for (auto& o : unreachable) {
       o->destroy();
-      o->decShared();  // removes last memo count, causing deallocate()
+      o = nullptr;
     }
 
     unreachable.clear();
-  }
-}
-
-void libbirch::trim(Any* o) {
-  auto& possible_roots = get_thread_possible_roots();
-  while (!possible_roots.empty()) {
-    auto ptr = possible_roots.back();
-    if (ptr == o || !ptr->isPossibleRoot()) {
-      possible_roots.pop_back();
-      ptr->decShared();
-    } else {
-      return;
-    }
   }
 }

@@ -36,6 +36,15 @@ AC_ARG_ENABLE([release],
 esac],[release=false])
 AM_CONDITIONAL([RELEASE], [test x$release = xtrue])
 
+AC_ARG_ENABLE([memory-pool],
+[AS_HELP_STRING[--enable-memory-pool], [Enable memory pool]],
+[case "${enableval}" in
+  yes) pool=true ;;
+  no)  pool=false ;;
+  *) AC_MSG_ERROR([bad value ${enableval} for --enable-memory-pool]) ;;
+esac],[pool=true])
+AM_CONDITIONAL([MEMORY_POOL], [test x$pool = xtrue])
+
 # Programs
 AC_PROG_CXXCPP
 AC_PROG_CXX
