@@ -694,11 +694,6 @@ struct is_value<Array<T,F>> {
   static const bool value = is_value<T>::value;
 };
 
-template<class T, class F, int N>
-struct is_acyclic<Array<T,F>,N> {
-  static const bool value = is_acyclic<T,N>::value;
-};
-
 /**
  * Default array for `D` dimensions.
  */

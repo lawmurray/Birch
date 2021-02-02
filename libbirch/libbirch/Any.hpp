@@ -153,15 +153,13 @@ public:
     auto old = f.exchangeOr(BUFFERED);
 
     if (--r == 0) {
-      if ((old & ACYCLIC) || !(old & BUFFERED)) {
-        /* either this object is acyclic and so doesn't need to be registered
-         * as a possible root, or this call is uniquely responsible for
-         * registering it as a possible root, but it cannot be; can just
-         * destroy */
+      if (!(old & BUFFERED)) {
+        /* reduced to zero reference count, and this call is responsible for
+         * registering as a possible root... so no need, just destroy */
         destroy();
       }
-    } else if (!(old & ACYCLIC) && !(old & BUFFERED)) {
-      /* register as a possible root, but only if it's not acyclic */
+    } else if (!(old & BUFFERED)) {
+      /* register as a possible root, as not already */
       register_possible_root(this);
     }
   }

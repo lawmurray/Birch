@@ -321,18 +321,6 @@ template<class T>
 struct is_pointer<Shared<T>> {
   static const bool value = true;
 };
-
-template<class T, int N>
-struct is_acyclic<Shared<T>,N> {
-  // because pointers are polymorphic, the class must be both final and
-  // acyclic for the pointer to be considered acyclic
-  static const bool value = std::is_final<T>::value && is_acyclic_class<T,N-1>::value;
-};
-
-template<class T>
-struct is_acyclic<Shared<T>,0> {
-  static const bool value = false;
-};
 }
 
 #include "libbirch/Spanner.hpp"
