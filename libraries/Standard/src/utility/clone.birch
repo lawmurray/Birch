@@ -3,7 +3,7 @@
  */
 function clone<Type>(o:Type) -> Type {
   cpp{{
-  return static_cast<typename Type::value_type*>(libbirch::copy(o.get()));
+  return o.copy();
   }}
 }
 

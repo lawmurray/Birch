@@ -4,13 +4,10 @@
 #pragma once
 
 #include "libbirch/external.hpp"
+#include "libbirch/internal.hpp"
 #include "libbirch/thread.hpp"
 
 namespace libbirch {
-class Any;
-template<class T, class F> class Array;
-template<class T> class Shared;
-
 /**
  * Allocate memory from heap.
  *
@@ -74,10 +71,5 @@ void collect();
  * a destroyed in the reverse order in which they are created.
  */
 void trim(Any* o);
-
-/**
- * Deep copy an object.
- */
-Any* copy(Any* o);
 
 }

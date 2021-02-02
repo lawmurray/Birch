@@ -4,8 +4,7 @@
 #pragma once
 
 #include "libbirch/external.hpp"
-#include "libbirch/Array.hpp"
-#include "libbirch/Shared.hpp"
+#include "libbirch/internal.hpp"
 
 namespace libbirch {
 /**
@@ -24,7 +23,7 @@ public:
     //
   }
 
-  template<class Arg, std::enable_if_t<!std::is_base_of<Any,Arg>::value,int> = 0>
+  template<class Arg>
   void visit(Arg& arg) {
     //
   }
@@ -48,39 +47,36 @@ public:
   }
 
   template<class T, class F>
-  void visit(Array<T,F>& o) {
+  void visit(Array<T,F>& o);
+
+  template<class T>
+  void visit(Shared<T>& o);
+
+  void visit(Any* o);
+};
+}
+
+#include "libbirch/Array.hpp"
+#include "libbirch/Shared.hpp"
+#include "libbirch/Any.hpp"
+
+template<class T, class F>
+void libbirch::Collector::visit(Array<T,F>& o) {
+  if (!is_value<T>::value) {
     auto iter = o.begin();
     auto last = o.end();
     for (; iter != last; ++iter) {
       visit(*iter);
     }
   }
-
-  template<class T>
-  void visit(Shared<T>& o);
-
-  template<class T, std::enable_if_t<std::is_base_of<Any,T>::value,int> = 0>
-  void visit(T* o);
-};
 }
-
-#include "libbirch/Any.hpp"
 
 template<class T>
 void libbirch::Collector::visit(Shared<T>& o) {
   if (!is_acyclic<T>::value) {
-    T* ptr = o.ptr.exchange(nullptr);
-    if (ptr) {
-      visit(*ptr);
+    Any* o1 = o.ptr.exchange(nullptr);
+    if (o1) {
+      visit(o1);
     }
-  }
-}
-
-template<class T, std::enable_if_t<std::is_base_of<libbirch::Any,T>::value,int>>
-void libbirch::Collector::visit(T* o) {
-  auto old = o->flags.exchangeOr(COLLECTED);
-  if (!(old & COLLECTED) && !(old & REACHED)) {
-    register_unreachable(o);
-    o->accept_(*this);
   }
 }

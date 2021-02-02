@@ -13,8 +13,8 @@ class Marker;
 class Scanner;
 class Reacher;
 class Collector;
-class MarkClaimToucher;
-class BridgeRankRestorer;
+class Spanner;
+class Bridger;
 class Copier;
 
 /**
@@ -41,7 +41,7 @@ class Copier;
  * (eligible for collection) then later recoloring it black (reachable); the
  * sequencing of this coloring can become problematic with multiple threads.
  */
-enum Flag : int16_t {
+enum Flag : uint8_t {
   POSSIBLE_ROOT = (1 << 0),
   BUFFERED = (1 << 1),
   MARKED = (1 << 2),
@@ -68,8 +68,8 @@ class Any {
   friend class Scanner;
   friend class Reacher;
   friend class Collector;
-  friend class MarkClaimToucher;
-  friend class BridgeRankRestorer;
+  friend class Spanner;
+  friend class Bridger;
   friend class Copier;
 public:
   using this_type_ = Any;
@@ -79,10 +79,13 @@ public:
    */
   Any() :
       r(0),
+      f(0),
+      a(0),
       n(0),
-      claimTid(0),
-      allocTid(get_thread_num()),
-      flags(0) {
+      l(0),
+      h(0),
+      p(-1),
+      allocTid(get_thread_num()) {
     //
   }
 
@@ -143,7 +146,7 @@ public:
    * Increment the shared r.
    */
   void incShared() {
-    //flags.maskAnd(~POSSIBLE_ROOT);
+    //f.maskAnd(~POSSIBLE_ROOT);
     // ^ any interleaving with decShared() switching on POSSIBLE_ROOT should
     //   not be problematic; having it on is never a correctness issue, only
     //   a performance issue, and as long as one thread can reach the object
@@ -163,7 +166,7 @@ public:
     /* if the count will reduce to nonzero, this is possibly the root of
      * a cycle */
     if (numShared() > 1 &&
-        !(flags.exchangeOr(BUFFERED|POSSIBLE_ROOT) & BUFFERED)) {
+        !(f.exchangeOr(BUFFERED|POSSIBLE_ROOT) & BUFFERED)) {
       register_possible_root(this);
     }
 
@@ -205,15 +208,15 @@ public:
    * Has the object been destroyed?
    */
   bool isDestroyed() const {
-    return flags.load() & DESTROYED;
+    return f.load() & DESTROYED;
   }
 
   /**
    * Is this object the possible root of a cycle?
    */
   bool isPossibleRoot() const {
-    auto flags = this->flags.load();
-    return (flags & POSSIBLE_ROOT) && !(flags & DESTROYED);
+    auto f = this->f.load();
+    return (f & POSSIBLE_ROOT) && !(f & DESTROYED);
   }
 
   /**
@@ -228,14 +231,6 @@ public:
    */
   virtual const char* getClassName() const {
     return "Any";
-  }
-
-  /**
-   * Rank of the object in its biconnected component, 1-based. Only valid
-   * after conclusion of bridge-finding.
-   */
-  int rank() const {
-    return n.load();  ///@todo Needn't be atomic
   }
 
   /**
@@ -254,38 +249,75 @@ public:
   }
   virtual Any* copy_() const = 0;
 
-  virtual void accept_(Marker& visitor) = 0;
-  virtual void accept_(Scanner& visitor) = 0;
-  virtual void accept_(Reacher& visitor) = 0;
-  virtual void accept_(Collector& visitor) = 0;
-  virtual int accept_(MarkClaimToucher& visitor, const int i, const int j);
-  virtual std::pair<int,int> accept_(BridgeRankRestorer& visitor, const int j);
-  virtual void accept_(Copier& visitor) = 0;
+  virtual void accept_(Marker& visitor) {
+    //
+  }
+
+  virtual void accept_(Scanner& visitor) {
+    //
+  }
+
+  virtual void accept_(Reacher& visitor) {
+    //
+  }
+
+  virtual void accept_(Collector& visitor) {
+    //
+  }
+
+  virtual std::tuple<int,int,int> accept_(Spanner& visitor, const int i,
+      const int j) {
+    return std::make_tuple(i, i, 0);
+  }
+
+  virtual std::tuple<int,int,int,int> accept_(Bridger& visitor, const int j,
+      const int k) {
+    return std::make_tuple(std::numeric_limits<int>::max(), 0, 0, 0);
+  }
+
+  virtual void accept_(Copier& visitor) {
+    //
+  }
 
 private:
   /**
-   * Reference r.
+   * Reference count.
    */
   Atomic<int> r;
 
   /**
-   * Integer label, used for bridge finding.
+   * Bitfield containing flags, used for bridge finding and cycle collection.
    */
-  Atomic<int> n;
+  Atomic<uint8_t> f;
+
+  /**
+   * Account of references, used for bridge finding and cycle collection.
+   */
+  int a:30;
+
+  /**
+   * Rank, used for bridge finding.
+   */
+  int n:30;
+
+  /**
+   * Lowest reachable rank, used for bridge finding.
+   */
+  int l:30;
+
+  /**
+   * Highest reachable rank, used for bridge finding.
+   */
+  int h:30;
 
   /**
    * Id of the thread that claimed the object, used for bridge finding.
    */
-  int16_t claimTid;
+  int16_t p;
 
   /**
    * Id of the thread that allocated the object, used by the memory pool.
    */
   int16_t allocTid;
-
-  /**
-   * Bitfield containing flags used for bridge finding and cycle collection.
-   */
-  Atomic<int16_t> flags;
 };
 }

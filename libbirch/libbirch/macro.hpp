@@ -131,27 +131,25 @@
     visitor_.visit(__VA_ARGS__); \
   } \
   \
-  int accept_(libbirch::MarkClaimToucher& visitor_, const int i, const int j) override { \
-    int k = 0; \
-    k += base_type_::accept_(visitor_, i, j + k); \
-    k += visitor_.visit(i, j + k __VA_OPT__(,) __VA_ARGS__); \
-    return k; \
+  std::tuple<int,int,int> accept_(libbirch::Spanner& visitor_, const int i, const int j) override { \
+    int l, h, m, l1, h1, m1; \
+    std::tie(l, h, m) = base_type_::accept_(visitor_, i, j); \
+    std::tie(l1, h1, m1) = visitor_.visit(i, j + m __VA_OPT__(,) __VA_ARGS__); \
+    l = std::min(l, l1); \
+    h = std::max(h, h1); \
+    m += m1; \
+    return std::make_tuple(l, h, m); \
   } \
   \
-  std::pair<int,int> accept_(libbirch::BridgeRankRestorer& visitor_, const int j) override { \
-    std::pair<int,int> ret; \
-    int k = 0; \
-    int h = 0; \
-    \
-    ret = base_type_::accept_(visitor_, j + k); \
-    k += std::get<0>(ret); \
-    h = std::max(std::get<1>(ret), h); \
-    \
-    ret = visitor_.visit(j + k __VA_OPT__(,) __VA_ARGS__); \
-    k += std::get<0>(ret); \
-    h = std::max(std::get<1>(ret), h); \
-    \
-    return std::make_pair(k, h); \
+  std::tuple<int,int,int,int> accept_(libbirch::Bridger& visitor_, const int j, const int k) override { \
+    int l, h, m, n, l1, h1, m1, n1; \
+    std::tie(l, h, m, n) = base_type_::accept_(visitor_, j, k); \
+    std::tie(l1, h1, m1, n1) = visitor_.visit(j + m, k + n __VA_OPT__(,) __VA_ARGS__); \
+    l = std::min(l, l1); \
+    h = std::max(h, h1); \
+    m += m1; \
+    n += n1; \
+    return std::make_tuple(l, h, m, n); \
   } \
   \
   void accept_(libbirch::Copier& visitor_) override { \
@@ -163,6 +161,6 @@
 #include "libbirch/Scanner.hpp"
 #include "libbirch/Reacher.hpp"
 #include "libbirch/Collector.hpp"
-#include "libbirch/MarkClaimToucher.hpp"
-#include "libbirch/BridgeRankRestorer.hpp"
+#include "libbirch/Spanner.hpp"
+#include "libbirch/Bridger.hpp"
 #include "libbirch/Copier.hpp"

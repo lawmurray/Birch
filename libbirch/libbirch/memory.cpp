@@ -10,8 +10,8 @@
 #include "libbirch/Marker.hpp"
 #include "libbirch/Scanner.hpp"
 #include "libbirch/Collector.hpp"
-#include "libbirch/MarkClaimToucher.hpp"
-#include "libbirch/BridgeRankRestorer.hpp"
+#include "libbirch/Spanner.hpp"
+#include "libbirch/Bridger.hpp"
 #include "libbirch/Copier.hpp"
 
 /**
@@ -244,11 +244,4 @@ void libbirch::trim(Any* o) {
       return;
     }
   }
-}
-
-libbirch::Any* libbirch::copy(Any* o) {
-  Any* o1 = o->copy();
-  Copier visitor(o1);
-  visitor.visit(o1);
-  return o1;
 }

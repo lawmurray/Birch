@@ -30,7 +30,7 @@ nobase_include_HEADERS = \
   libbirch/Array.hpp \
   libbirch/Atomic.hpp \
   libbirch/assert.hpp \
-  libbirch/BridgeRankRestorer.hpp \
+  libbirch/Bridger.hpp \
   libbirch/Buffer.hpp \
   libbirch/Collector.hpp \
   libbirch/Copier.hpp \
@@ -39,10 +39,10 @@ nobase_include_HEADERS = \
   libbirch/Eigen.hpp \
   libbirch/external.hpp \
   libbirch/Index.hpp \
+  libbirch/internal.hpp \
   libbirch/Iterator.hpp \
   libbirch/Length.hpp \
   libbirch/Lock.hpp \
-  libbirch/MarkClaimToucher.hpp \
   libbirch/Marker.hpp \
   libbirch/macro.hpp \
   libbirch/memory.hpp \
@@ -56,12 +56,20 @@ nobase_include_HEADERS = \
   libbirch/Shape.hpp \
   libbirch/Shared.hpp \
   libbirch/Slice.hpp \
+  libbirch/Spanner.hpp \
   libbirch/stacktrace.hpp \
   libbirch/Stride.hpp \
   libbirch/thread.hpp \
   libbirch/type.hpp
 
 COMMON_SOURCES =  \
+  libbirch/Bridger.cpp \
+  libbirch/Copier.cpp \
+  libbirch/Collector.cpp \
+  libbirch/Marker.cpp \
+  libbirch/Reacher.cpp \
+  libbirch/Scanner.cpp \
+  libbirch/Spanner.cpp \
   libbirch/memory.cpp \
   libbirch/stacktrace.cpp
 

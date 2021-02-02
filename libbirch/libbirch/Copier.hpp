@@ -4,8 +4,8 @@
 #pragma once
 
 #include "libbirch/external.hpp"
-#include "libbirch/Array.hpp"
-#include "libbirch/Shared.hpp"
+#include "libbirch/internal.hpp"
+#include "libbirch/Allocator.hpp"
 
 namespace libbirch {
 /**
@@ -17,21 +17,11 @@ namespace libbirch {
  */
 class Copier {
 public:
-  /**
-   * Constructor.
-   * 
-   * @param n Size of the memo.
-   */
-  template<class T>
-  Copier(T* o) : m(o->rank(), nullptr) {
-    m.back() = o;
-  }
-
   void visit() {
     //
   }
 
-  template<class Arg, std::enable_if_t<!std::is_base_of<Any,Arg>::value,int> = 0>
+  template<class Arg>
   void visit(Arg& arg) {
     //
   }
@@ -55,19 +45,12 @@ public:
   }
 
   template<class T, class F>
-  void visit(Array<T,F>& o) {
-    auto iter = o.begin();
-    auto last = o.end();
-    for (; iter != last; ++iter) {
-      visit(*iter);
-    }
-  }
+  void visit(Array<T,F>& o);
 
   template<class T>
   void visit(Shared<T>& o);
 
-  template<class T, std::enable_if_t<std::is_base_of<Any,T>::value,int> = 0>
-  void visit(T* o);
+  Any* visit(Any* o);
 
 private:
   /**
@@ -77,23 +60,24 @@ private:
 };
 }
 
-template<class T>
-void libbirch::Copier::visit(Shared<T>& o) {
-  if (!o.b) {
-    T* ptr = o.ptr.load();  ///@todo Needn't be atomic
-    int n = ptr->rank() - 1;  ///@todo Needn't be atomic
-    if (m[n]) {
-      ptr = static_cast<T*>(m[n]);
-    } else {
-      ptr = static_cast<T*>(ptr->copy());
-      m[n] = ptr;
-      visit(ptr);
+#include "libbirch/Array.hpp"
+#include "libbirch/Shared.hpp"
+#include "libbirch/Any.hpp"
+
+template<class T, class F>
+void libbirch::Copier::visit(Array<T,F>& o) {
+  if (!is_value<T>::value) {
+    auto iter = o.begin();
+    auto last = o.end();
+    for (; iter != last; ++iter) {
+      visit(*iter);
     }
-    o.replace(ptr);
   }
 }
 
-template<class T, std::enable_if_t<std::is_base_of<libbirch::Any,T>::value,int>>
-void libbirch::Copier::visit(T* o) {
-  o->accept_(*this);
+template<class T>
+void libbirch::Copier::visit(Shared<T>& o) {
+  if (!o.b) {
+    o.replace(static_cast<T*>(visit(o.ptr.load())));
+  }
 }
