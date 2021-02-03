@@ -133,7 +133,7 @@ std::string birch::nice(const std::string& name) {
 }
 
 std::string birch::internalise(const std::string& name) {
-  return escape_unicode(nice(name));
+  return nice(name);
 }
 
 std::string birch::escape_unicode(const std::string& str) {
