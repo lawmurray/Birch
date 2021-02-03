@@ -41,7 +41,7 @@ bool birch::Type::isFunction() const {
   return false;
 }
 
-bool birch::Type::isMembership() const {
+bool birch::Type::isMember() const {
   return false;
 }
 

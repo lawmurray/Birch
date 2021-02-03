@@ -89,7 +89,7 @@ public:
   /**
    * Is this a member type?
    */
-  virtual bool isMembership() const;
+  virtual bool isMember() const;
 
   /**
    * Is this an optional type?

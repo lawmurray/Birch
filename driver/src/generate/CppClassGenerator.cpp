@@ -35,6 +35,12 @@ void birch::CppClassGenerator::visit(const Class* o) {
       line("public:");
       in();
 
+      /* generic types */
+      for (auto typeParam : *o->typeParams) {
+        genSourceLine(o->loc);
+        line("using " << typeParam << "_ = " << typeParam << ';');
+      }
+
       /* boilerplate */
       genSourceLine(o->loc);
       if (o->has(ABSTRACT)) {

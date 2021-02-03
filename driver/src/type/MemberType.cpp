@@ -31,7 +31,7 @@ int birch::MemberType::depth() const {
   return right->depth();
 }
 
-bool birch::MemberType::isMembership() const {
+bool birch::MemberType::isMember() const {
   return true;
 }
 

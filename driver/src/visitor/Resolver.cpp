@@ -66,7 +66,7 @@ birch::Type* birch::Resolver::modify(NamedType* o) {
     (*iter)->lookup(o);
   }
   if (!o->category) {
-    throw UndefinedException(o);
+    o->category = GENERIC_TYPE;
   }
   return o;
 }

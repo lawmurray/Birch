@@ -676,7 +676,7 @@ void birch::CppGenerator::visit(const OptionalType* o) {
 }
 
 void birch::CppGenerator::visit(const MemberType* o) {
-  middle(o->right);
+  middle("typename " << o->left << "::value_type::" << o->right << "_");
 }
 
 void birch::CppGenerator::visit(const NamedType* o) {

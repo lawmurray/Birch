@@ -68,8 +68,8 @@ function swap_handler(handler:Handler) -> Handler {
  * [`<~`](https://www.birch.sh/language/probability/) operator, which is
  * hard-wired to call this internally.
  */
-function handle_simulate<Value>(p:Distribution<Value>) -> Value {
-  let event <- SimulateEvent(p);
+function handle_simulate<Right>(p:Right) -> Right.Value {
+  let event <- SimulateEvent(p.distribution());
   get_handler().handle(event);
   return event.value();
 }
