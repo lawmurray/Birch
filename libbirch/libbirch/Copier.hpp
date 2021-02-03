@@ -78,6 +78,9 @@ void libbirch::Copier::visit(Array<T,F>& o) {
 template<class T>
 void libbirch::Copier::visit(Shared<T>& o) {
   if (!o.b) {
-    o.replace(static_cast<T*>(visit(o.ptr.load())));
+    Any* w = o.ptr.load();
+    Any* v = visit(w);
+    T* u = static_cast<T*>(v);
+    o.replace(u);
   }
 }

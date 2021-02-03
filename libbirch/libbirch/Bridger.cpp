@@ -25,8 +25,7 @@ std::tuple<int,int,int,int> libbirch::Bridger::visit(const int j, const int k,
     o->l = 0;
     o->h = 0;
     o->a = 0;
-    o->f.maskAnd(static_cast<decltype(CLAIMED)>(~CLAIMED));
-    // ^ ~ unary operator seems to convert uint8_t to int
+    o->f.maskAnd(~CLAIMED);
     return std::make_tuple(l, h, m, n);
   } else {
     return std::make_tuple(MAX, 0, 0, 0);

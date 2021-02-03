@@ -131,25 +131,25 @@
     visitor_.visit(__VA_ARGS__); \
   } \
   \
-  std::tuple<int,int,int> accept_(libbirch::Spanner& visitor_, const int i, const int j) override { \
-    int l, h, m, l1, h1, m1; \
-    std::tie(l, h, m) = base_type_::accept_(visitor_, i, j); \
-    std::tie(l1, h1, m1) = visitor_.visit(i, j + m __VA_OPT__(,) __VA_ARGS__); \
-    l = std::min(l, l1); \
-    h = std::max(h, h1); \
-    m += m1; \
-    return std::make_tuple(l, h, m); \
+  std::tuple<int,int,int> accept_(libbirch::Spanner& visitor_, const int i_, const int j_) override { \
+    int l_, h_, m_, l1_, h1_, m1_; \
+    std::tie(l_, h_, m_) = base_type_::accept_(visitor_, i_, j_); \
+    std::tie(l1_, h1_, m1_) = visitor_.visit(i_, j_ + m_ __VA_OPT__(,) __VA_ARGS__); \
+    l_ = std::min(l_, l1_); \
+    h_ = std::max(h_, h1_); \
+    m_ += m1_; \
+    return std::make_tuple(l_, h_, m_); \
   } \
   \
-  std::tuple<int,int,int,int> accept_(libbirch::Bridger& visitor_, const int j, const int k) override { \
-    int l, h, m, n, l1, h1, m1, n1; \
-    std::tie(l, h, m, n) = base_type_::accept_(visitor_, j, k); \
-    std::tie(l1, h1, m1, n1) = visitor_.visit(j + m, k + n __VA_OPT__(,) __VA_ARGS__); \
-    l = std::min(l, l1); \
-    h = std::max(h, h1); \
-    m += m1; \
-    n += n1; \
-    return std::make_tuple(l, h, m, n); \
+  std::tuple<int,int,int,int> accept_(libbirch::Bridger& visitor_, const int j_, const int k_) override { \
+    int l_, h_, m_, n_, l1_, h1_, m1_, n1_; \
+    std::tie(l_, h_, m_, n_) = base_type_::accept_(visitor_, j_, k_); \
+    std::tie(l1_, h1_, m1_, n1_) = visitor_.visit(j_ + m_, k_ + n_ __VA_OPT__(,) __VA_ARGS__); \
+    l_ = std::min(l_, l1_); \
+    h_ = std::max(h_, h1_); \
+    m_ += m1_; \
+    n_ += n1_; \
+    return std::make_tuple(l_, h_, m_, n_); \
   } \
   \
   void accept_(libbirch::Copier& visitor_) override { \

@@ -11,7 +11,7 @@ void libbirch::Scanner::visit(Any* o) {
     if (o->numShared() > 0) {
       if (!(o->f.exchangeOr(REACHED) & REACHED)) {
         Reacher visitor;
-        visitor.visit(o);
+        o->accept_(visitor);
       }
     } else {
       o->accept_(*this);

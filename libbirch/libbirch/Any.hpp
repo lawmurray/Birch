@@ -42,8 +42,7 @@ enum Flag : uint8_t {
   SCANNED = (1 << 3),
   REACHED = (1 << 4),
   COLLECTED = (1 << 5),
-  DESTROYED = (1 << 6),
-  CLAIMED = (1 << 7)
+  CLAIMED = (1 << 6)
 };
 
 /**
@@ -186,7 +185,8 @@ public:
    * Is this object of an acyclic type?
    */
   bool isAcyclic() const {
-    return f.load() & ACYCLIC;
+    return false;
+    //return f.load() & ACYCLIC;
   }
 
   /**
