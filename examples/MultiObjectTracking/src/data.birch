@@ -30,7 +30,7 @@ program data(input:String <- "output/simulate.json",
         let iter3 <- z.walk("y");
         while iter3.hasNext() {
           let u <- iter3.next();
-          let v <- u!.get<Real[_]>();
+          let v <- u.get<Real[_]>();
           if v? {
             y.pushBack(s, v![1..2]);
           }
