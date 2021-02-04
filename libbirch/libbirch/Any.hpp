@@ -64,7 +64,6 @@ class Any {
   friend class Spanner;
   friend class Bridger;
   friend class Copier;
-  friend class Recycler;
 public:
   using this_type_ = Any;
 
@@ -75,9 +74,11 @@ public:
       r(0),
       f(0),
       a(0),
-      n(-1),
-      l(-1),
-      h(-1),
+      j(0),
+      l(std::numeric_limits<int>::max()),
+      h(0),
+      k(0),
+      n(0),
       p(-1),
       allocTid(get_thread_num()) {
     //
@@ -243,10 +244,6 @@ public:
     //
   }
 
-  virtual void accept_(Recycler& visitor) {
-    //
-  }
-
 private:
   /**
    * Reference count.
@@ -261,22 +258,32 @@ private:
   /**
    * Account of references, used for bridge finding and cycle collection.
    */
-  int a:30;
+  int a;
 
   /**
    * Rank, used for bridge finding.
    */
-  int n:30;
+  int j;
 
   /**
    * Lowest reachable rank, used for bridge finding.
    */
-  int l:30;
+  int l;
 
   /**
    * Highest reachable rank, used for bridge finding.
    */
-  int h:30;
+  int h;
+
+  /**
+   * Index base in biconnected component, used for copying.
+   */
+  int k;
+
+  /**
+   * Size of biconnnected component, used for copying.
+   */
+  int n;
 
   /**
    * Id of the thread that claimed the object, used for bridge finding.

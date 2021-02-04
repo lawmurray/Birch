@@ -16,5 +16,4 @@ class Collector;
 class Spanner;
 class Bridger;
 class Copier;
-class Recycler;
 }

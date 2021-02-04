@@ -220,3 +220,15 @@ void libbirch::collect() {
     unreachable.clear();
   }
 }
+
+bool libbirch::biconnected_copy(const bool toggle) {
+  /* don't use std::vector<bool> here, as it is often specialized as a bitset,
+   * which is not thread safe */
+  static std::vector<int8_t,libbirch::Allocator<int8_t>> flags(
+      libbirch::get_max_threads(), 0);
+  auto tid = libbirch::get_thread_num();
+  if (toggle) {
+    flags[tid] = !flags[tid];
+  }
+  return flags[tid];
+}

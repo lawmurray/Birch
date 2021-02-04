@@ -16,7 +16,7 @@ namespace libbirch {
  */
 class Bridger {
 public:
-  static constexpr int MAX = (1 << 30);
+  static constexpr int MAX = std::numeric_limits<int>::max();
 
   std::tuple<int,int,int,int> visit(const int j, const int k) {
     return std::make_tuple(MAX, 0, 0, 0);
@@ -94,12 +94,10 @@ std::tuple<int,int,int,int> libbirch::Bridger::visit(const int j, const int k,
     if (l == j && h < j + m) {
       /* is a bridge */
       o.b = true;
-      o.c = true;
       n = 0;  // base case for post-order rank in biconnected component
     }
     return std::make_tuple(l, h, m, n);
   } else {
-    o.c = true;  // convert to far bridge
     return std::make_tuple(MAX, 0, 0, 0);
   }
 }

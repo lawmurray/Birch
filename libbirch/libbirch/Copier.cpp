@@ -15,8 +15,8 @@ libbirch::Copier::~Copier() {
 }
 
 libbirch::Any* libbirch::Copier::visit(Any* o) {
-  int k = o->l;
-  int n = o->h;
+  int k = o->k;
+  int n = o->n;
   if (m.empty()) {
     /* initialize */
     this->offset = k;
@@ -26,7 +26,12 @@ libbirch::Any* libbirch::Copier::visit(Any* o) {
 
   assert(0 <= k && k < m.size());
   if (!m[k]) {
+    assert(!biconnected_copy());
+    biconnected_copy(true);
+    assert(biconnected_copy());
     m[k] = o->copy();
+    biconnected_copy(true);
+    assert(!biconnected_copy());
     m[k]->accept_(*this);
   }
   return m[k];

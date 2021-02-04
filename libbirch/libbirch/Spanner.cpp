@@ -9,10 +9,9 @@ std::tuple<int,int,int> libbirch::Spanner::visit(const int i, const int j,
     /* just claimed by this thread */
     assert(o->a == 0);
     assert(o->p == -1);
-
-    ++o->a;
+    o->a = 1;
     o->p = get_thread_num();
-    o->n = j;
+    o->j = j;
     o->l = j;
     o->h = j;
     int l, h, k;
@@ -25,8 +24,7 @@ std::tuple<int,int,int> libbirch::Spanner::visit(const int i, const int j,
     ++o->a;
     o->l = std::min(o->l, i);
     o->h = std::max(o->h, i);
-    int n = o->n;  // avoids compile error when o->n encoded as bitfield
-    return std::make_tuple(n, n, 0);
+    return std::make_tuple(o->j, o->j, 0);
   } else {
     /* claimed by a different thread */
     return std::make_tuple(i, i, 0);

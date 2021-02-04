@@ -20,10 +20,13 @@ std::tuple<int,int,int,int> libbirch::Bridger::visit(const int j, const int k,
     h = std::max(h, h1);
     m = m1 + 1;
     n = n1 + 1;
-
-    o->l = k;
-    o->h = n;
+    
     o->a = 0;
+    o->j = 0;
+    o->l = std::numeric_limits<int>::max();
+    o->h = 0;
+    o->k = k;
+    o->n = n;
     o->f.maskAnd(~CLAIMED);
     return std::make_tuple(l, h, m, n);
   } else {

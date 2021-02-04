@@ -155,11 +155,6 @@
   void accept_(libbirch::Copier& visitor_) override { \
     base_type_::accept_(visitor_); \
     visitor_.visit(__VA_ARGS__); \
-  } \
-  \
-  void accept_(libbirch::Recycler& visitor_) override { \
-    base_type_::accept_(visitor_); \
-    visitor_.visit(__VA_ARGS__); \
   }
 
 #include "libbirch/Marker.hpp"
@@ -169,4 +164,3 @@
 #include "libbirch/Spanner.hpp"
 #include "libbirch/Bridger.hpp"
 #include "libbirch/Copier.hpp"
-#include "libbirch/Recycler.hpp"

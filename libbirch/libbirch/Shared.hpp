@@ -38,7 +38,6 @@ class Shared {
   friend class Spanner;
   friend class Bridger;
   friend class Copier;
-  friend class Recycler;
 public:
   using value_type = T;
 
@@ -47,7 +46,7 @@ public:
    * constructor.
    */
   Shared() :
-      Shared(new T(), false, false) {
+      Shared(new T(), false) {
     //
   }
 
@@ -61,7 +60,7 @@ public:
    */
   template<class... Args>
   Shared(std::in_place_t, Args&&... args) :
-      Shared(new T(std::forward<Args>(args)...), false, false) {
+      Shared(new T(std::forward<Args>(args)...), false) {
     //
   }
 
@@ -69,11 +68,11 @@ public:
    * Constructor.
    * 
    * @param ptr Raw pointer.
+   * @param b Is this a bridge?
    */
-  Shared(T* ptr, const bool b = false, const bool c = false) :
+  Shared(T* ptr, const bool b = false) :
       ptr(ptr),
-      b(b),
-      c(c) {
+      b(b) {
     if (ptr) {
       ptr->incShared();
     }
@@ -83,9 +82,14 @@ public:
   /**
    * Copy constructor.
    */
-  Shared(const Shared& o) :
-      Shared(o.get(), o.c, false) {
-    //
+  Shared(const Shared& o) : ptr(nullptr), b(false) {
+    if (o.b && biconnected_copy()) {
+      replace(o.load());
+      b = true;
+    } else {
+      replace(o.get());
+      b = false;
+    }
   }
 
   /**
@@ -93,7 +97,7 @@ public:
    */
   template<class U, std::enable_if_t<std::is_base_of<T,U>::value,int> = 0>
   Shared(const Shared<U>& o) :
-      Shared(o.get(), o.c, false) {
+      Shared(o.get(), false) {
     //
   }
 
@@ -101,9 +105,8 @@ public:
    * Move constructor.
    */
   Shared(Shared&& o) :
-      ptr(o.ptr.exchange(nullptr)), b(o.b), c(o.c) {
+      ptr(o.ptr.exchange(nullptr)), b(o.b) {
     o.b = false;
-    o.c = false;
   }
 
   /**
@@ -111,9 +114,8 @@ public:
    */
   template<class U, std::enable_if_t<std::is_base_of<T,U>::value,int> = 0>
   Shared(Shared<U>&& o) :
-      ptr(o.ptr.exchange(nullptr)), b(o.b), c(o.c) {
+      ptr(o.ptr.exchange(nullptr)), b(o.b) {
     o.b = false;
-    o.c = false;
   }
 
   /**
@@ -127,9 +129,13 @@ public:
    * Copy assignment.
    */
   Shared& operator=(const Shared& o) {
-    replace(o.get());
-    b = false;
-    c = false;
+    if (o.b && biconnected_copy()) {
+      replace(o.load());
+      b = true;
+    } else {
+      replace(o.get());
+      b = false;
+    }
     return *this;
   }
 
@@ -140,7 +146,6 @@ public:
   Shared& operator=(const Shared<U>& o) {
     replace(o.get());
     b = false;
-    c = false;
     return *this;
   }
 
@@ -158,7 +163,6 @@ public:
       }
     }
     std::swap(b, o.b);
-    std::swap(c, o.c);
     return *this;
   }
 
@@ -177,7 +181,6 @@ public:
       }
     }
     std::swap(b, o.b);
-    std::swap(c, o.c);
     return *this;
   }
 
@@ -257,7 +260,6 @@ public:
       }
     }
     b = false;
-    c = false;
     return old;
   }
 
@@ -270,7 +272,6 @@ public:
       old->decShared();
     }
     b = false;
-    c = false;
     return old;
   }
 
@@ -278,7 +279,6 @@ public:
    * Dereference.
    */
   T& operator*() const {
-    assert(!c);
     return *get();
   }
 
@@ -286,7 +286,6 @@ public:
    * Member access.
    */
   T* operator->() const {
-    assert(!c);
     return get();
   }
 
@@ -322,11 +321,6 @@ private:
    * Is this a bridge?
    */
   bool b;
-
-  /**
-   * If this is a bridge, is it a far bridge?
-   */
-  bool c;
 };
 
 template<class T>
@@ -343,12 +337,11 @@ struct is_pointer<Shared<T>> {
 #include "libbirch/Spanner.hpp"
 #include "libbirch/Bridger.hpp"
 #include "libbirch/Copier.hpp"
-#include "libbirch/Recycler.hpp"
 
 template<class T>
 T* libbirch::Shared<T>::get() {
   T* v = load();
-  if (b && !c) {
+  if (b) {
     b = false;
     v = static_cast<T*>(Copier().visit(static_cast<Any*>(v)));
     replace(v);
@@ -363,7 +356,9 @@ libbirch::Shared<T> libbirch::Shared<T>::copy() {
   Bridger().visit(1, 0, *this);
 
   Any* u = load();
-  Shared<T> v(static_cast<T*>(Copier().visit(u)), false, false);
-  Recycler().visit(*this);
-  return v;
+  if (b) {
+    return Shared<T>(static_cast<T*>(u), true);
+  } else {
+    return Shared<T>(static_cast<T*>(Copier().visit(u)), false);
+  }
 }

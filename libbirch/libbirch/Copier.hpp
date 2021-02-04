@@ -90,7 +90,5 @@ void libbirch::Copier::visit(Shared<T>& o) {
     Any* u = visit(w);
     T* v = static_cast<T*>(u);
     o.replace(v);
-  } else {
-    assert(!o.c);
   }
 }
