@@ -64,6 +64,7 @@ class Any {
   friend class Spanner;
   friend class Bridger;
   friend class Copier;
+  friend class Recycler;
 public:
   using this_type_ = Any;
 
@@ -74,9 +75,9 @@ public:
       r(0),
       f(0),
       a(0),
-      n(0),
-      l(0),
-      h(0),
+      n(-1),
+      l(-1),
+      h(-1),
       p(-1),
       allocTid(get_thread_num()) {
     //
@@ -239,6 +240,10 @@ public:
   }
 
   virtual void accept_(Copier& visitor) {
+    //
+  }
+
+  virtual void accept_(Recycler& visitor) {
     //
   }
 

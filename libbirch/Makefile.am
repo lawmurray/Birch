@@ -55,6 +55,7 @@ nobase_include_HEADERS = \
   libbirch/Range.hpp \
   libbirch/Reacher.hpp \
   libbirch/ReadersWriterLock.hpp \
+  libbirch/Recycler.hpp \
   libbirch/Scanner.hpp \
   libbirch/Shape.hpp \
   libbirch/Shared.hpp \

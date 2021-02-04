@@ -84,7 +84,7 @@ std::tuple<int,int,int> libbirch::Spanner::visit(const int i, const int j,
 template<class T>
 std::tuple<int,int,int> libbirch::Spanner::visit(const int i, const int j,
     Shared<T>& o) {
-    Any* o1 = o.ptr.load();
+    Any* o1 = o.load();
   if (!o.b) {
     return visit(i, j, o1);
   } else {

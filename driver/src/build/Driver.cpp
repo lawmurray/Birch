@@ -387,6 +387,11 @@ void birch::Driver::configure() {
       cflags << " -march=native";
       cxxflags << " -march=native";
     }
+    if (warnings) {
+      cppflags << " -Wall";
+      cflags << " -Wall";
+      cxxflags << " -Wall";
+    }
 
     /* include path */
     for (auto iter = includeDirs.begin(); iter != includeDirs.end();

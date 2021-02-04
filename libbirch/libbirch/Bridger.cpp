@@ -21,9 +21,8 @@ std::tuple<int,int,int,int> libbirch::Bridger::visit(const int j, const int k,
     m = m1 + 1;
     n = n1 + 1;
 
-    o->n = k + n;  // post-order rank in biconnected component
-    o->l = 0;
-    o->h = 0;
+    o->l = k;
+    o->h = n;
     o->a = 0;
     o->f.maskAnd(~CLAIMED);
     return std::make_tuple(l, h, m, n);

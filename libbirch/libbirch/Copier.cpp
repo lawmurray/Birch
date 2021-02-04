@@ -3,15 +3,31 @@
  */
 #include "libbirch/Copier.hpp"
 
+libbirch::Copier::Copier() : offset(0) {
+  //
+}
+
+libbirch::Copier::~Copier() {
+  /* all elements of the memo should have been used */
+  assert(std::all_of(m.begin(), m.end(), [](Any* o) {
+        return o != nullptr;
+      }));
+}
+
 libbirch::Any* libbirch::Copier::visit(Any* o) {
-  int n = o->n;
+  int k = o->l;
+  int n = o->h;
   if (m.empty()) {
-    m.resize(n, nullptr);
+    /* initialize */
+    this->offset = k;
+    this->m.resize(n, nullptr);
   }
-  assert(n <= m.size());
-  if (!m[n - 1]) {
-    m[n - 1] = o->copy();
-    m[n - 1]->accept_(*this);
+  k = k + n - offset - 1;  // rank in biconnected component
+
+  assert(0 <= k && k < m.size());
+  if (!m[k]) {
+    m[k] = o->copy();
+    m[k]->accept_(*this);
   }
-  return m[n - 1];
+  return m[k];
 }

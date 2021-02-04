@@ -73,9 +73,9 @@ void libbirch::Collector::visit(Array<T,F>& o) {
 
 template<class T>
 void libbirch::Collector::visit(Shared<T>& o) {
-  Any* o1 = o.ptr.load();
+  Any* o1 = o.load();
   if (o1 && !o1->isAcyclic()) {
-    o.ptr.store(nullptr);
+    o.store(nullptr);
     visit(o1);
   }
 }

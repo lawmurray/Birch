@@ -11,12 +11,15 @@ namespace libbirch {
 /**
  * @internal
  * 
- * Visitor copying a two-connected component (island).
+ * Copy a biconnected component.
  *
  * @ingroup libbirch
  */
 class Copier {
 public:
+  Copier();
+  ~Copier();
+
   void visit() {
     //
   }
@@ -54,6 +57,11 @@ public:
 
 private:
   /**
+   * Biconnected component rank offset.
+   */
+  int offset;
+
+  /**
    * Memo.
    */
   std::vector<libbirch::Any*,libbirch::Allocator<libbirch::Any*>> m;
@@ -78,9 +86,11 @@ void libbirch::Copier::visit(Array<T,F>& o) {
 template<class T>
 void libbirch::Copier::visit(Shared<T>& o) {
   if (!o.b) {
-    Any* w = o.ptr.load();
-    Any* v = visit(w);
-    T* u = static_cast<T*>(v);
-    o.replace(u);
+    Any* w = o.load();
+    Any* u = visit(w);
+    T* v = static_cast<T*>(u);
+    o.replace(v);
+  } else {
+    assert(!o.c);
   }
 }

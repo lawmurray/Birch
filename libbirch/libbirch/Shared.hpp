@@ -38,6 +38,7 @@ class Shared {
   friend class Spanner;
   friend class Bridger;
   friend class Copier;
+  friend class Recycler;
 public:
   using value_type = T;
 
@@ -92,7 +93,7 @@ public:
    */
   template<class U, std::enable_if_t<std::is_base_of<T,U>::value,int> = 0>
   Shared(const Shared<U>& o) :
-      Shared(static_cast<T*>(o.get()), o.c, false) {
+      Shared(o.get(), o.c, false) {
     //
   }
 
@@ -205,7 +206,7 @@ public:
    * conversion operators in the referent type.
    */
   bool query() const {
-    return ptr.load() != nullptr;
+    return load() != nullptr;
   }
 
   /**
@@ -277,6 +278,7 @@ public:
    * Dereference.
    */
   T& operator*() const {
+    assert(!c);
     return *get();
   }
 
@@ -284,6 +286,7 @@ public:
    * Member access.
    */
   T* operator->() const {
+    assert(!c);
     return get();
   }
 
@@ -296,6 +299,20 @@ public:
   }
 
 private:
+  /**
+   * Load the raw pointer as-is. Does not trigger copy-on-write.
+   */
+  T* load() const {
+    return ptr.load();
+  }
+
+  /**
+   * Store the raw pointer as-is. Does not update reference counts.
+   */
+  void store(T* o) {
+    ptr.store(o);
+  }
+
   /**
    * Raw pointer.
    */
@@ -326,10 +343,11 @@ struct is_pointer<Shared<T>> {
 #include "libbirch/Spanner.hpp"
 #include "libbirch/Bridger.hpp"
 #include "libbirch/Copier.hpp"
+#include "libbirch/Recycler.hpp"
 
 template<class T>
 T* libbirch::Shared<T>::get() {
-  T* v = ptr.load();
+  T* v = load();
   if (b && !c) {
     b = false;
     v = static_cast<T*>(Copier().visit(static_cast<Any*>(v)));
@@ -344,13 +362,8 @@ libbirch::Shared<T> libbirch::Shared<T>::copy() {
   Spanner().visit(0, 1, *this);
   Bridger().visit(1, 0, *this);
 
-  Any* v = ptr.load();
-  if (b) {
-    /* if a bridge, then both source and copy can be bridges */
-    c = false;
-    return Shared<T>(static_cast<T*>(v), true, false);
-  } else {
-    /* otherwise copy up to the next bridges */
-    return Shared<T>(static_cast<T*>(Copier().visit(v)), false, false);
-  }
+  Any* u = load();
+  Shared<T> v(static_cast<T*>(Copier().visit(u)), false, false);
+  Recycler().visit(*this);
+  return v;
 }

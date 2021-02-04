@@ -10,14 +10,11 @@ namespace libbirch {
 /**
  * @internal
  * 
- * Visitor for recursively flagging reachable objects for cycle collection.
+ * Recycle a biconnected component.
  *
  * @ingroup libbirch
- * 
- * This performs the `ScanBlack()` operation of @ref Bacon2001
- * "Bacon & Rajan (2001)".
  */
-class Reacher {
+class Recycler {
 public:
   void visit() {
     //
@@ -61,7 +58,7 @@ public:
 #include "libbirch/Any.hpp"
 
 template<class T, class F>
-void libbirch::Reacher::visit(Array<T,F>& o) {
+void libbirch::Recycler::visit(Array<T,F>& o) {
   if (!is_value<T>::value) {
     auto iter = o.begin();
     auto last = o.end();
@@ -72,10 +69,20 @@ void libbirch::Reacher::visit(Array<T,F>& o) {
 }
 
 template<class T>
-void libbirch::Reacher::visit(Shared<T>& o) {
-  Any* o1 = o.load();
-  if (o1 && !o1->isAcyclic()) {
-    o1->incShared();
-    visit(o1);
+void libbirch::Recycler::visit(Shared<T>& o) {
+  if (o.b) {
+    o.c = false;  // far bridges become near bridges
+  } else {
+    Any* v = o.load();
+    visit(v);
+  }
+}
+
+inline void libbirch::Recycler::visit(Any* o) {
+  if (o && o->l != -1) {
+    o->n = -1;
+    o->l = -1;
+    o->h = -1;
+    o->accept_(*this);
   }
 }

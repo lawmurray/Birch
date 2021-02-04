@@ -85,9 +85,10 @@ std::tuple<int,int,int,int> libbirch::Bridger::visit(const int j, const int k, A
 }
 
 template<class T>
-std::tuple<int,int,int,int> libbirch::Bridger::visit(const int j, const int k, Shared<T>& o) {
+std::tuple<int,int,int,int> libbirch::Bridger::visit(const int j, const int k,
+    Shared<T>& o) {
   if (!o.b) {
-    Any* o1 = o.ptr.load();  ///@todo Needn't be atomic
+    Any* o1 = o.load();
     int l, h, m, n;
     std::tie(l, h, m, n) = visit(j, k, o1);
     if (l == j && h < j + m) {
@@ -98,6 +99,7 @@ std::tuple<int,int,int,int> libbirch::Bridger::visit(const int j, const int k, S
     }
     return std::make_tuple(l, h, m, n);
   } else {
+    o.c = true;  // convert to far bridge
     return std::make_tuple(MAX, 0, 0, 0);
   }
 }

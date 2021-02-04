@@ -11,8 +11,6 @@
 #include "libbirch/Scanner.hpp"
 #include "libbirch/Collector.hpp"
 #include "libbirch/Spanner.hpp"
-#include "libbirch/Bridger.hpp"
-#include "libbirch/Copier.hpp"
 
 /**
  * Type for object lists in cycle collection.
