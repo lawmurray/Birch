@@ -343,8 +343,10 @@ T* libbirch::Shared<T>::get() {
   T* v = load();
   if (b) {
     b = false;
-    v = static_cast<T*>(Copier().visit(static_cast<Any*>(v)));
-    replace(v);
+    if (v->numShared() > 1) {  // no need to copy for last reference
+      v = static_cast<T*>(Copier().visit(static_cast<Any*>(v)));
+      replace(v);
+    }
   }
   return v;
 }
