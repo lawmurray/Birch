@@ -14,14 +14,14 @@ if MEMORY_POOL
 AM_CPPFLAGS += -DENABLE_MEMORY_POOL=1
 endif
 
-libbirch_debug_la_CXXFLAGS = $(OPENMP_CXXFLAGS) -O0 -g -fno-inline
+libbirch_debug_la_CXXFLAGS = $(AM_CXXFLAGS) $(OPENMP_CXXFLAGS) -O0 -g -fno-inline
 libbirch_debug_la_SOURCES = $(COMMON_SOURCES)
 
-libbirch_test_la_CXXFLAGS = $(OPENMP_CXXFLAGS) -O0 -g -fno-inline --coverage
+libbirch_test_la_CXXFLAGS = $(AM_CXXFLAGS) $(OPENMP_CXXFLAGS) -O0 -g -fno-inline --coverage
 libbirch_test_la_SOURCES = $(COMMON_SOURCES)
 
-libbirch_la_CPPFLAGS = -DNDEBUG
-libbirch_la_CXXFLAGS = $(OPENMP_CXXFLAGS) -O3
+libbirch_la_CPPFLAGS = $(AM_CPPFLAGS) -DNDEBUG
+libbirch_la_CXXFLAGS = $(AM_CXXFLAGS) $(OPENMP_CXXFLAGS) -O3
 libbirch_la_SOURCES = $(COMMON_SOURCES)
 
 include_HEADERS = \
