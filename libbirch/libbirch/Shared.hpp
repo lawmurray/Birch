@@ -38,6 +38,7 @@ class Shared {
   friend class Spanner;
   friend class Bridger;
   friend class Copier;
+  friend class BiconnectedCopier;
 public:
   using value_type = T;
 

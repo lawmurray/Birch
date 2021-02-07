@@ -66,7 +66,7 @@ class ConditionalParticleFilter < ParticleFilter {
         a <- resample_multinomial(w);
       }
       w <- vector(0.0, nparticles);
-      for n in 1..nparticles {
+      parallel for n in 1..nparticles {
         if a[n] != n {
           x[n] <- clone(x[a[n]]);
         }

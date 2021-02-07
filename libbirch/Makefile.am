@@ -33,6 +33,8 @@ nobase_include_HEADERS = \
   libbirch/Array.hpp \
   libbirch/Atomic.hpp \
   libbirch/assert.hpp \
+  libbirch/BiconnectedCopier.hpp \
+  libbirch/BiconnectedMemo.hpp \
   libbirch/Bridger.hpp \
   libbirch/Buffer.hpp \
   libbirch/Collector.hpp \
@@ -48,6 +50,7 @@ nobase_include_HEADERS = \
   libbirch/Lock.hpp \
   libbirch/Marker.hpp \
   libbirch/macro.hpp \
+  libbirch/Memo.hpp \
   libbirch/memory.hpp \
   libbirch/mutable.hpp \
   libbirch/Offset.hpp \
@@ -66,10 +69,13 @@ nobase_include_HEADERS = \
   libbirch/type.hpp
 
 COMMON_SOURCES =  \
+  libbirch/BiconnectedCopier.cpp \
+  libbirch/BiconnectedMemo.cpp \
   libbirch/Bridger.cpp \
   libbirch/Copier.cpp \
   libbirch/Collector.cpp \
   libbirch/Marker.cpp \
+  libbirch/Memo.cpp \
   libbirch/Reacher.cpp \
   libbirch/Scanner.cpp \
   libbirch/Spanner.cpp \

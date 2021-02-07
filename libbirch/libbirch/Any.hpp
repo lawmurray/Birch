@@ -64,6 +64,9 @@ class Any {
   friend class Spanner;
   friend class Bridger;
   friend class Copier;
+  friend class Memo;
+  friend class BiconnectedCopier;
+  friend class BiconnectedMemo;
 public:
   using this_type_ = Any;
 
@@ -241,6 +244,10 @@ public:
   }
 
   virtual void accept_(Copier& visitor) {
+    //
+  }
+
+  virtual void accept_(BiconnectedCopier& visitor) {
     //
   }
 

@@ -16,4 +16,7 @@ class Collector;
 class Spanner;
 class Bridger;
 class Copier;
+class Memo;
+class BiconnectedCopier;
+class BiconnectedMemo;
 }

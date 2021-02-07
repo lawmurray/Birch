@@ -5,18 +5,25 @@
 
 #include "libbirch/external.hpp"
 #include "libbirch/internal.hpp"
-#include "libbirch/Memo.hpp"
+#include "libbirch/BiconnectedMemo.hpp"
 
 namespace libbirch {
 /**
  * @internal
  * 
- * Copy a graph of unknown size.
+ * Copy a graph of known size, such as a biconnected component.
  *
  * @ingroup libbirch
  */
-class Copier {
+class BiconnectedCopier {
 public:
+  /**
+   * Constructor.
+   * 
+   * @param o The bridge head.
+   */
+  BiconnectedCopier(Any* o);
+
   void visit() {
     //
   }
@@ -56,7 +63,7 @@ private:
   /**
    * Memo.
    */
-  Memo m;
+  BiconnectedMemo m;
 };
 }
 
@@ -65,7 +72,7 @@ private:
 #include "libbirch/Any.hpp"
 
 template<class T, class F>
-void libbirch::Copier::visit(Array<T,F>& o) {
+void libbirch::BiconnectedCopier::visit(Array<T,F>& o) {
   if (!is_value<T>::value) {
     auto iter = o.begin();
     auto last = o.end();
@@ -76,7 +83,7 @@ void libbirch::Copier::visit(Array<T,F>& o) {
 }
 
 template<class T>
-void libbirch::Copier::visit(Shared<T>& o) {
+void libbirch::BiconnectedCopier::visit(Shared<T>& o) {
   if (!o.b) {
     Any* w = o.load();
     Any* u = visit(w);

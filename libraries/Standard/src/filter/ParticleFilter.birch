@@ -167,7 +167,7 @@ class ParticleFilter {
     if ess <= trigger*nparticles {
       a <- resample_systematic(w);
       w <- vector(0.0, nparticles);
-      for n in 1..nparticles {
+      parallel for n in 1..nparticles {
         if a[n] != n {
           x[n] <- clone(x[a[n]]);
         }
