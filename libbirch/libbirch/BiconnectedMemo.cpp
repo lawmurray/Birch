@@ -11,7 +11,7 @@ libbirch::BiconnectedMemo::BiconnectedMemo(Any* o) :
     values((Any**)allocate(o->n*sizeof(Any*))),
     offset(o->k),
     nentries(o->n) {
-  //
+  std::memset(values, 0, nentries*sizeof(Any*));
 }
 
 libbirch::BiconnectedMemo::~BiconnectedMemo() {

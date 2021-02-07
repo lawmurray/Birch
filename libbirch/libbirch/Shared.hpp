@@ -338,6 +338,7 @@ struct is_pointer<Shared<T>> {
 #include "libbirch/Spanner.hpp"
 #include "libbirch/Bridger.hpp"
 #include "libbirch/Copier.hpp"
+#include "libbirch/BiconnectedCopier.hpp"
 
 template<class T>
 T* libbirch::Shared<T>::get() {
@@ -345,7 +346,9 @@ T* libbirch::Shared<T>::get() {
   if (b) {
     b = false;
     if (v->numShared() > 1) {  // no need to copy for last reference
-      v = static_cast<T*>(Copier().visit(static_cast<Any*>(v)));
+      /* the copy is of a biconnected component here, used the optimized
+       * BiconnectedCopier for this */
+      v = static_cast<T*>(BiconnectedCopier(v).visit(static_cast<Any*>(v)));
       replace(v);
     }
   }
@@ -362,6 +365,8 @@ libbirch::Shared<T> libbirch::Shared<T>::copy() {
   if (b) {
     return Shared<T>(static_cast<T*>(u), true);
   } else {
+    /* the copy is *not* of a biconnected component here, used the
+     * general-purpose Copier for this */
     return Shared<T>(static_cast<T*>(Copier().visit(u)), false);
   }
 }

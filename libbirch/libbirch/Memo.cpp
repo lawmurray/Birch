@@ -38,6 +38,7 @@ libbirch::Any*& libbirch::Memo::get(Any* key) {
     --noccupied;  // unreserve the slot, wasn't needed
   } else {
     keys[i] = key;
+    values[i] = nullptr;
   }
   return values[i];
 }
@@ -55,7 +56,9 @@ void libbirch::Memo::rehash() {
   keys = (Any**)allocate(nentries*sizeof(Any*));
   values = (Any**)allocate(nentries*sizeof(Any*));
   std::memset(keys, 0, nentries*sizeof(Any*));
-  std::memset(values, 0, nentries*sizeof(Any*));
+  //std::memset(values, 0, nentries*sizeof(Any*));
+  // ^ nullptr keys are used to indicate empty slots, while individual values
+  //   are set to nullptr on first access in get(), so need not be here */
 
   /* copy entries from previous table */
   for (int i = 0; i < nentries1; ++i) {
