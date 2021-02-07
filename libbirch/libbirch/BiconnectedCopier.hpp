@@ -73,13 +73,13 @@ private:
 
 template<class T, class F>
 void libbirch::BiconnectedCopier::visit(Array<T,F>& o) {
-  if (!is_value<T>::value) {
+  //if (!is_value<T>::value) {
     auto iter = o.begin();
     auto last = o.end();
     for (; iter != last; ++iter) {
       visit(*iter);
     }
-  }
+  //}
 }
 
 template<class T>

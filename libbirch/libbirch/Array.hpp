@@ -142,6 +142,7 @@ public:
         buffer->incUsage();
       } else {
         /* immediate copy for others */
+        shape = o.shape.compact();
         buffer = nullptr;
         offset = 0;
         allocate();
@@ -599,14 +600,7 @@ private:
    */
   void release() {
     if (!isView && buffer && buffer->decUsage() == 0u) {
-      if (!is_value<T>::value) {
-        ///@todo in C++17 can use std::destroy()
-        auto iter = begin();
-        auto last = end();
-        for (; iter != last; ++iter) {
-          iter->~T();
-        }
-      }
+      std::destroy(begin(), end());
       size_t bytes = Buffer<T>::size(volume());
       libbirch::deallocate(buffer, bytes, buffer->tid);
     }

@@ -35,14 +35,15 @@ namespace libbirch {
  * (eligible for collection) then later recoloring it black (reachable); the
  * sequencing of this coloring can become problematic with multiple threads.
  */
-enum Flag : uint8_t {
+enum Flag : uint16_t {
   ACYCLIC = (1 << 0),
-  BUFFERED = (1 << 1),
-  MARKED = (1 << 2),
-  SCANNED = (1 << 3),
-  REACHED = (1 << 4),
-  COLLECTED = (1 << 5),
-  CLAIMED = (1 << 6)
+  POSSIBLE_ROOT = (1 << 1),
+  BUFFERED = (1 << 2),
+  MARKED = (1 << 3),
+  SCANNED = (1 << 4),
+  REACHED = (1 << 5),
+  COLLECTED = (1 << 6),
+  CLAIMED = (1 << 7)
 };
 
 /**
@@ -83,7 +84,8 @@ public:
       k(0),
       n(0),
       p(-1),
-      allocTid(get_thread_num()) {
+      allocTid(get_thread_num()),
+      allocSize(0) {
     //
   }
 
@@ -123,13 +125,21 @@ public:
   }
 
   /**
-   * Destroy and deallocate.
+   * Destroy.
    */
   void destroy() {
-    auto size = this->size_();
     auto tid = this->allocTid;
+    auto size = this->size_();
     this->~Any();
-    libbirch::deallocate(this, size, tid);
+    this->allocTid = tid;
+    this->allocSize = size;
+  }
+
+  /**
+   * Deallocate.
+   */
+  void deallocate() {
+    libbirch::deallocate(this, this->allocSize, this->allocTid);
   }
 
   /**
@@ -154,13 +164,20 @@ public:
 
     /* first set the BUFFERED flag so that this call is uniquely responsible
      * for registering this object as a possible root */
-    auto old = f.exchangeOr(BUFFERED);
+    auto old = f.exchangeOr(BUFFERED|POSSIBLE_ROOT);
 
     if (--r == 0) {
+      /* destroy, and as long as haven't been previously buffered, can
+       * deallocate too */
+      destroy();
       if (!(old & BUFFERED)) {
-        /* reduced to zero reference count, and this call is responsible for
-         * registering as a possible root... so no need, just destroy */
-        destroy();
+        /* hasn't been previously buffered, so can immediately deallocate */
+        deallocate();
+      } else {
+        /* has been previously buffered, so deallocation must be deferred
+         * until collection, but certainly not a possible root, as has just
+         * been destroyed */
+        f.maskAnd(~POSSIBLE_ROOT);
       }
     } else if (!(old & BUFFERED)) {
       /* register as a possible root, as not already */
@@ -187,11 +204,25 @@ public:
   }
 
   /**
-   * Is this object of an acyclic type?
+   * Is this object acyclic?
    */
   bool isAcyclic() const {
     return false;
     //return f.load() & ACYCLIC;
+  }
+
+  /**
+   * Is this object the possible root of a cycle?
+   */
+  bool isPossibleRoot() const {
+    return f.load() & POSSIBLE_ROOT;
+  }
+
+  /**
+   * Unset buffer flag.
+   */
+  void unbuffer() {
+    f.maskAnd(~(BUFFERED|POSSIBLE_ROOT));
   }
 
   /**
@@ -207,7 +238,9 @@ public:
   int size() const {
     return size_();
   }
-  virtual int size_() const = 0;
+  virtual int size_() const {
+    return sizeof(Any);
+  }
 
   /**
    * Shallow copy the object.
@@ -260,7 +293,7 @@ private:
   /**
    * Bitfield containing flags, used for bridge finding and cycle collection.
    */
-  Atomic<uint8_t> f;
+  Atomic<uint16_t> f;
 
   /**
    * Account of references, used for bridge finding and cycle collection.
@@ -301,5 +334,10 @@ private:
    * Id of the thread that allocated the object, used by the memory pool.
    */
   int16_t allocTid;
+
+  /**
+   * Size of the allocation.
+   */
+  int allocSize;
 };
 }

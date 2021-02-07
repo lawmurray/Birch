@@ -158,7 +158,7 @@ public:
     auto old = this->ptr.exchange(ptr);
     if (old) {
       if (ptr == old) {
-        old->decSharedReachable();
+        old->decShared();
       } else {
         old->decShared();
       }
@@ -176,7 +176,7 @@ public:
     auto old = this->ptr.exchange(ptr);
     if (old) {
       if (ptr == old) {
-        old->decSharedReachable();
+        old->decShared();
       } else {
         old->decShared();
       }
@@ -255,7 +255,7 @@ public:
     auto old = this->ptr.exchange(ptr);
     if (old) {
       if (ptr == old) {
-        old->decSharedReachable();
+        old->decShared();
       } else {
         old->decShared();
       }

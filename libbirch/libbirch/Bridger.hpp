@@ -70,7 +70,7 @@ public:
 template<class T, class F>
 std::tuple<int,int,int,int> libbirch::Bridger::visit(const int j, const int k, Array<T,F>& o) {
   int l = MAX, h = 0, m = 0, n = 0, l1, h1, m1, n1;
-  if (!is_value<T>::value) {
+  //if (!is_value<T>::value) {
     auto iter = o.begin();
     auto last = o.end();
     for (; iter != last; ++iter) {
@@ -80,7 +80,7 @@ std::tuple<int,int,int,int> libbirch::Bridger::visit(const int j, const int k, A
       m += m1;
       n += n1;
     }
-  }
+  //}
   return std::make_tuple(l, h, m, n);
 }
 

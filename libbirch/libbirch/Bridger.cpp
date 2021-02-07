@@ -27,7 +27,8 @@ std::tuple<int,int,int,int> libbirch::Bridger::visit(const int j, const int k,
     o->h = 0;
     o->k = k;
     o->n = n;
-    o->f.maskAnd(~CLAIMED);
+    o->f.maskAnd(~(CLAIMED|POSSIBLE_ROOT));
+    // ^ while we're here, object is definitely reachable, so not a root
     return std::make_tuple(l, h, m, n);
   } else {
     return std::make_tuple(MAX, 0, 0, 0);

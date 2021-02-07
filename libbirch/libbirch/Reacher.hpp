@@ -62,20 +62,22 @@ public:
 
 template<class T, class F>
 void libbirch::Reacher::visit(Array<T,F>& o) {
-  if (!is_value<T>::value) {
+  //if (!is_value<T>::value) {
     auto iter = o.begin();
     auto last = o.end();
     for (; iter != last; ++iter) {
       visit(*iter);
     }
-  }
+  //}
 }
 
 template<class T>
 void libbirch::Reacher::visit(Shared<T>& o) {
-  Any* o1 = o.load();
-  if (o1 && !o1->isAcyclic()) {
-    o1->incShared();
-    visit(o1);
+  if (!o.b) {
+    Any* o1 = o.load();
+    if (o1 && !o1->isAcyclic()) {
+      o1->incShared();
+      visit(o1);
+    }
   }
 }

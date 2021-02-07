@@ -177,35 +177,47 @@ void libbirch::register_unreachable(Any* o) {
   get_thread_unreachable().push_back(o);
 }
 
+#include <iostream>
+
 void libbirch::collect() {
   #pragma omp parallel num_threads(get_max_threads())
   {
-    /* mark */
     auto& possible_roots = get_thread_possible_roots();
-    for (auto& o : possible_roots) {
-      if (o) {
-        Marker visitor;
-        visitor.visit(o);
+
+    /* initial pass, remove any objects that were buffered, but later
+     * designated as not a possible root */
+    int i = 0, j = 0;
+    for (i = 0; i < (int)possible_roots.size(); ++i) {
+      auto o = possible_roots[i];
+      if (o->isPossibleRoot()) {
+        possible_roots[j++] = o;
+      } else if (o->numShared() == 0) {
+        o->deallocate();  // deallocation was deferred until now
+      } else {
+        o->unbuffer();
       }
+    }
+    possible_roots.resize(j);
+    #pragma omp barrier
+
+    /* mark */
+    for (auto& o : possible_roots) {
+      Marker visitor;
+      visitor.visit(o);
     }
     #pragma omp barrier
 
     /* scan */
     for (auto& o : possible_roots) {
-      if (o) {
-        Scanner visitor;
-        visitor.visit(o);
-      }
+      Scanner visitor;
+      visitor.visit(o);
     }
     #pragma omp barrier
 
     /* collect */
     for (auto& o : possible_roots) {
-      if (o) {
-        Collector visitor;
-        visitor.visit(o);
-        o = nullptr;
-      }
+      Collector visitor;
+      visitor.visit(o);
     }
     possible_roots.clear();
     #pragma omp barrier
@@ -214,9 +226,8 @@ void libbirch::collect() {
     auto& unreachable = get_thread_unreachable();
     for (auto& o : unreachable) {
       o->destroy();
-      o = nullptr;
+      o->deallocate();
     }
-
     unreachable.clear();
   }
 }
