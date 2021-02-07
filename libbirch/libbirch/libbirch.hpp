@@ -254,10 +254,9 @@ std::optional<To> cast(const std::optional<From>& from) {
 template<class To, class From>
 auto optional_assign(To& to, const std::optional<From>& from) {
   if (from.has_value()) {
-    return to = from.value();
-  } else {
-    return to;
+    to = from.value();
   }
+  return to;
 }
 
 /**
@@ -271,10 +270,9 @@ auto optional_assign(To& to, const std::optional<From>& from) {
 template<class To, class From, std::enable_if_t<is_value<From>::value,int> = 0>
 auto optional_assign(const To& to, const std::optional<From>& from) {
   if (from.has_value()) {
-    return to = from.value();
-  } else {
-    return to;
+    to = from.value();
   }
+  return to;
 }
 
 }

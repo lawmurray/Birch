@@ -46,11 +46,11 @@ private:
   /**
    * Offset of ranks in the biconnected component.
    */
-  int offset;
+  const int offset;
 
   /**
    * Number of entries in the table.
    */
-  int nentries;
+  const int nentries;
 };
 }

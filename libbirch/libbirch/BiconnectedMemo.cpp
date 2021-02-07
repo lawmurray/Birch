@@ -8,10 +8,13 @@
 #include "libbirch/Any.hpp"
 
 libbirch::BiconnectedMemo::BiconnectedMemo(Any* o) :
-    values((Any**)allocate(o->n*sizeof(Any*))),
+    values(nullptr),
     offset(o->k),
     nentries(o->n) {
-  std::memset(values, 0, nentries*sizeof(Any*));
+  if (nentries > 0) {
+    values = (Any**)allocate(nentries*sizeof(Any*));
+    std::memset(values, 0, nentries*sizeof(Any*));
+  }
 }
 
 libbirch::BiconnectedMemo::~BiconnectedMemo() {
@@ -19,7 +22,9 @@ libbirch::BiconnectedMemo::~BiconnectedMemo() {
   assert(std::all_of(values, values + nentries, [](Any* o) {
         return o != nullptr;
       }));
-  deallocate(values, nentries*sizeof(Any*), get_thread_num());
+  if (nentries > 0) {
+    deallocate(values, nentries*sizeof(Any*), get_thread_num());
+  }
 }
 
 libbirch::Any*& libbirch::BiconnectedMemo::get(Any* key) {
