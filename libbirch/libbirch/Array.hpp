@@ -228,14 +228,12 @@ public:
    * "row major" order).
    */
   Iterator<T,F> begin() {
-    assert(!isShared());
     return Iterator<T,F>(buf(), shape);
   }
   Iterator<T,F> begin() const {
     return Iterator<T,F>(buf(), shape);
   }
   Iterator<T,F> end() {
-    assert(!isShared());
     return begin() + size();
   }
   Iterator<T,F> end() const {
