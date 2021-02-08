@@ -84,12 +84,16 @@ public:
    * Copy constructor.
    */
   Shared(const Shared& o) : ptr(nullptr), b(false) {
-    if (o.b && biconnected_copy()) {
-      replace(o.load());
-      b = true;
+    if (o.b) {
+      if (biconnected_copy()) {
+        replace(o.load());
+        b = true;
+      } else {
+        replace(o.get());
+        b = false;
+      }
     } else {
-      replace(o.get());
-      b = false;
+      replace(o.load());
     }
   }
 
@@ -130,13 +134,8 @@ public:
    * Copy assignment.
    */
   Shared& operator=(const Shared& o) {
-    if (o.b && biconnected_copy()) {
-      replace(o.load());
-      b = true;
-    } else {
-      replace(o.get());
-      b = false;
-    }
+    replace(o.get());
+    b = false;
     return *this;
   }
 
