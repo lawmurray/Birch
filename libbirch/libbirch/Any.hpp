@@ -78,8 +78,6 @@ public:
       a(0),
       l(std::numeric_limits<int>::max()),
       h(0),
-      k(0),
-      n(0),
       p(-1),
       allocTid(get_thread_num()),
       f(0) {
@@ -284,25 +282,29 @@ private:
    */
   int a;
 
-  /**
-   * Lowest reachable rank, used for bridge finding.
-   */
-  int l;
+  union {
+    /**
+     * Lowest reachable rank, used for bridge finding.
+     */
+    int l;
 
-  /**
-   * Highest reachable rank, used for bridge finding.
-   */
-  int h;
+    /**
+     * Index base in biconnected component, used for copying.
+     */
+    int k;
+  };
 
-  /**
-   * Index base in biconnected component, used for copying.
-   */
-  int k;
+  union {
+    /**
+     * Highest reachable rank, used for bridge finding.
+     */
+    int h;
 
-  /**
-   * Size of biconnnected component, used for copying.
-   */
-  int n;
+    /**
+     * Size of biconnnected component, used for copying.
+     */
+    int n;
+  };
 
   /**
    * Id of the thread that claimed the object, used for bridge finding.
