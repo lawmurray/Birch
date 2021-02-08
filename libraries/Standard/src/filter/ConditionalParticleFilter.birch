@@ -66,11 +66,7 @@ class ConditionalParticleFilter < ParticleFilter {
         a <- resample_multinomial(w);
       }
       w <- vector(0.0, nparticles);
-      dynamic parallel for n in 1..nparticles {
-        if a[n] != n {
-          x[n] <- clone(x[a[n]]);
-        }
-      }
+      copy();
       collect();
     } else {
       /* normalize weights to sum to nparticles */

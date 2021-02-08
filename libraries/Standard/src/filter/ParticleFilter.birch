@@ -95,7 +95,7 @@ class ParticleFilter {
    * - input: Optional input buffer.
    */
   function filter(model:Model, input:Buffer) {
-    x <- clone(particle(model), nparticles);
+    x <- global.copy(particle(model), nparticles);
     w <- vector(0.0, nparticles);
     a <- iota(1, nparticles);
     b <- 1;
@@ -167,15 +167,29 @@ class ParticleFilter {
     if ess <= trigger*nparticles {
       a <- resample_systematic(w);
       w <- vector(0.0, nparticles);
-      dynamic parallel for n in 1..nparticles {
-        if a[n] != n {
-          x[n] <- clone(x[a[n]]);
-        }
-      }
+      copy();
       collect();
     } else {
       /* normalize weights to sum to nparticles */
       w <- w - vector(lsum - log(Real(nparticles)), nparticles);
+    }
+  }
+
+  /**
+   * Copy particles during resampling.
+   */
+  function copy() {
+    let i <- vector(false, nparticles);
+    dynamic parallel for n in 1..nparticles {
+      let m <- a[n];
+      if m != n {
+        if !i[m] {
+          x[n] <- global.copy(x[m]);
+          i[m] <- true;
+        } else {
+          x[n] <- global.copy2(x[m]);
+        }
+      }
     }
   }
 

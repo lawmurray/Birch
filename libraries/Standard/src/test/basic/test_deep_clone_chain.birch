@@ -6,11 +6,11 @@ program test_deep_clone_chain() {
   x.a <- 1;
   
   /* clone, modify */
-  let y <- clone(x);
+  let y <- copy(x);
   y.a <- 2;
   
   /* clone the clone */
-  let z <- clone(y);
+  let z <- copy(y);
   
   /* erase the history of the chain */
   x <- z;

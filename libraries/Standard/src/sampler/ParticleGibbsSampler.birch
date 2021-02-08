@@ -23,7 +23,7 @@ class ParticleGibbsSampler < ConditionalParticleSampler {
       r:Tape<Record> <- filter.r!;
       r':Tape<Record>;
 
-      let x' <- clone(model);
+      let x' <- copy(model);
       let handler <- PlayHandler(true);
       handler.output <- r';
       with (handler) {
@@ -42,7 +42,7 @@ class ParticleGibbsSampler < ConditionalParticleSampler {
       }
       w' <- w' + handler.w;
 
-      x' <- clone(model);
+      x' <- copy(model);
       handler <- PlayHandler(filter.delayed);
       handler.input <- r';
       with (handler) {
@@ -59,8 +59,8 @@ class ParticleGibbsSampler < ConditionalParticleSampler {
     if filter.r? && ancestor {
       let w' <- filter.w;
       dynamic parallel for n in 1..filter.nparticles {
-        let x' <- clone(filter.x[n]);
-        let r' <- clone(filter.r!);
+        let x' <- copy(filter.x[n]);
+        let r' <- copy(filter.r!);
         let handler <- PlayHandler(filter.delayed);
         handler.input <- r';
         with (handler) {

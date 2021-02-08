@@ -12,7 +12,7 @@ program test_deep_clone_alias() {
   let z <- x;
   
   /* clone it */
-  let y <- clone(x);
+  let y <- copy(x);
 
   /* modify the original */
   x.set(1, 3);

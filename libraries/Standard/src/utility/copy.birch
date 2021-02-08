@@ -1,0 +1,33 @@
+/**
+ * Deep copy an object with bridge-finding.
+ */
+function copy<Type>(o:Type) -> Type {
+  cpp{{
+  return o.copy();
+  }}
+}
+
+/**
+ * Deep copy an object without further bridge-finding.
+ */
+function copy2<Type>(o:Type) -> Type {
+  cpp{{
+  return o.copy2();
+  }}
+}
+
+/**
+ * Deep copy an object multiple times to construct an array.
+ *
+ * - o: Source object.
+ * - length: Length of vector.
+ */
+function copy<Type>(o:Type, length:Integer) -> Type[_] {
+  return vector(\(i:Integer) -> Type {
+        if i == 1 {
+          return copy(o);
+        } else {
+          return copy2(o);
+        }
+      }, length);
+}

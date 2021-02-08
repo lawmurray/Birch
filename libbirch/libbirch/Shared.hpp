@@ -232,7 +232,9 @@ public:
   }
 
   /**
-   * Deep copy.
+   * Deep copy. Finds bridges in the reachable graph then immediately copies
+   * the subgraph up to the nearest reachable bridges, the remainder deferred
+   * until needed.
    */
   Shared<T> copy();
 
@@ -241,6 +243,24 @@ public:
    */
   Shared<T> copy() const {
     return const_cast<Shared<T>*>(this)->copy();
+  }
+
+  /**
+   * Deep copy. Copies the subgraph up to the nearest reachable bridges, the
+   * remainder deferred until needed. Unlike #copy(), does not attempt to find
+   * new bridges, but does use existing bridges. This is suitable if eager
+   * copying, rather than lazy copying, is preferred, or for the second and
+   * subsequent copies when replicating a graph multiple times, when the
+   * bridge finding has already been completed by the first copy (using
+   * #copy()).
+   */
+  Shared<T> copy2();
+
+  /**
+   * Deep copy.
+   */
+  Shared<T> copy2() const {
+    return const_cast<Shared<T>*>(this)->copy2();
   }
 
   /**
@@ -360,11 +380,17 @@ libbirch::Shared<T> libbirch::Shared<T>::copy() {
   Spanner().visit(0, 1, *this);
   Bridger().visit(1, 0, *this);
 
+  /* copy */
+  return copy2();
+}
+
+template<class T>
+libbirch::Shared<T> libbirch::Shared<T>::copy2() {
   Any* u = load();
   if (b) {
     return Shared<T>(static_cast<T*>(u), true);
   } else {
-    /* the copy is *not* of a biconnected component here, used the
+    /* the copy is *not* of a biconnected component here, use the
      * general-purpose Copier for this */
     return Shared<T>(static_cast<T*>(Copier().visit(u)), false);
   }

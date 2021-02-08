@@ -82,10 +82,10 @@ class MoveParticleFilter < ParticleFilter {
       κ:LangevinKernel;
       κ.scale <- scale/pow(min(t, nlags), 3);
       parallel for n in 1..nparticles {
-        let x <- MoveParticle?(clone(this.x[n]))!;
+        let x <- MoveParticle?(global.copy(this.x[n]))!;
         x.grad(t - nlags);
         for m in 1..nmoves {
-          let x' <- clone(x);
+          let x' <- global.copy(x);
           x'.move(t - nlags, κ);
           x'.grad(t - nlags);
           let α <- x'.π - x.π + x'.compare(t - nlags, x, κ);

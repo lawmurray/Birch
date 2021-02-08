@@ -14,7 +14,7 @@ function test_conjugacy<Conjugate>(m:Conjugate, N:Integer, D:Integer, lazy:Boole
   /* simulate forward */
   X1:Real[N,D];
   for n in 1..N {
-    let m' <- clone(m);
+    let m' <- copy(m);
     with forward {
       m'.simulate();
     }
@@ -31,7 +31,7 @@ function test_conjugacy<Conjugate>(m:Conjugate, N:Integer, D:Integer, lazy:Boole
   /* simulate backward */
   X2:Real[N,D];
   for n in 1..N {
-    let m' <- clone(m);
+    let m' <- copy(m);
     with backward {
       m'.simulate();
     }

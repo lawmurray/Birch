@@ -28,7 +28,7 @@ class AliveParticleFilter < ParticleFilter {
     p <- vector(0, nparticles + 1);
     parallel for n in 1..nparticles + 1 {
       if n <= nparticles {
-        x[n] <- clone(x0[a[n]]);
+        x[n] <- global.copy(x0[a[n]]);
         let handler <- PlayHandler(delayed);
         with (handler) {
           x[n].m.read(t, input);
@@ -38,7 +38,7 @@ class AliveParticleFilter < ParticleFilter {
         p[n] <- 1;
         while w[n] == -inf {  // repeat until weight is positive
           a[n] <- global.ancestor(w0);
-          x[n] <- clone(x0[a[n]]);
+          x[n] <- global.copy(x0[a[n]]);
           p[n] <- p[n] + 1;
           let handler <- PlayHandler(delayed);
           with (handler) {
@@ -55,7 +55,7 @@ class AliveParticleFilter < ParticleFilter {
         p[n] <- 0;
         do {
           let a' <- global.ancestor(w0);
-          let x' <- clone(x0[a']);
+          let x' <- global.copy(x0[a']);
           p[n] <- p[n] + 1;
           let handler <- PlayHandler(delayed);
           with (handler) {
