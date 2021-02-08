@@ -35,15 +35,14 @@ namespace libbirch {
  * (eligible for collection) then later recoloring it black (reachable); the
  * sequencing of this coloring can become problematic with multiple threads.
  */
-enum Flag : uint16_t {
-  ACYCLIC = (1 << 0),
-  POSSIBLE_ROOT = (1 << 1),
-  BUFFERED = (1 << 2),
-  MARKED = (1 << 3),
-  SCANNED = (1 << 4),
-  REACHED = (1 << 5),
-  COLLECTED = (1 << 6),
-  CLAIMED = (1 << 7)
+enum Flag : uint8_t {
+  POSSIBLE_ROOT = (1 << 0),
+  BUFFERED = (1 << 1),
+  MARKED = (1 << 2),
+  SCANNED = (1 << 3),
+  REACHED = (1 << 4),
+  COLLECTED = (1 << 5),
+  CLAIMED = (1 << 6)
 };
 
 /**
@@ -76,16 +75,14 @@ public:
    */
   Any() :
       r(0),
-      f(0),
       a(0),
-      j(0),
       l(std::numeric_limits<int>::max()),
       h(0),
       k(0),
       n(0),
       p(-1),
       allocTid(get_thread_num()),
-      allocSize(0) {
+      f(0) {
     //
   }
 
@@ -132,14 +129,14 @@ public:
     auto size = this->size_();
     this->~Any();
     this->allocTid = tid;
-    this->allocSize = size;
+    this->n = size;
   }
 
   /**
    * Deallocate.
    */
   void deallocate() {
-    libbirch::deallocate(this, this->allocSize, this->allocTid);
+    libbirch::deallocate(this, this->n, this->allocTid);
   }
 
   /**
@@ -201,14 +198,6 @@ public:
    */
   bool isUnique() const {
     return numShared() == 1;
-  }
-
-  /**
-   * Is this object acyclic?
-   */
-  bool isAcyclic() const {
-    return false;
-    //return f.load() & ACYCLIC;
   }
 
   /**
@@ -291,19 +280,9 @@ private:
   Atomic<int> r;
 
   /**
-   * Bitfield containing flags, used for bridge finding and cycle collection.
-   */
-  Atomic<uint16_t> f;
-
-  /**
    * Account of references, used for bridge finding and cycle collection.
    */
   int a;
-
-  /**
-   * Rank, used for bridge finding.
-   */
-  int j;
 
   /**
    * Lowest reachable rank, used for bridge finding.
@@ -336,8 +315,8 @@ private:
   int16_t allocTid;
 
   /**
-   * Size of the allocation.
+   * Bitfield containing flags, used for bridge finding and cycle collection.
    */
-  int allocSize;
+  Atomic<uint8_t> f;
 };
 }

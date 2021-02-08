@@ -11,7 +11,6 @@ std::tuple<int,int,int> libbirch::Spanner::visit(const int i, const int j,
     assert(o->p == -1);
     o->a = 1;
     o->p = get_thread_num();
-    o->j = j;
     o->l = j;
     o->h = j;
     int l, h, k;
@@ -24,7 +23,7 @@ std::tuple<int,int,int> libbirch::Spanner::visit(const int i, const int j,
     ++o->a;
     o->l = std::min(o->l, i);
     o->h = std::max(o->h, i);
-    return std::make_tuple(o->j, o->j, 0);
+    return std::make_tuple(o->l, o->h, 0);
   } else {
     /* claimed by a different thread */
     return std::make_tuple(i, i, 0);

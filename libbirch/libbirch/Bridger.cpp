@@ -22,7 +22,6 @@ std::tuple<int,int,int,int> libbirch::Bridger::visit(const int j, const int k,
     n = n1 + 1;
     
     o->a = 0;
-    o->j = 0;
     o->l = std::numeric_limits<int>::max();
     o->h = 0;
     o->k = k;
