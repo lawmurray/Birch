@@ -3,6 +3,7 @@
  */
 #include "libbirch/memory.hpp"
 
+#include "libbirch/thread.hpp"
 #include "libbirch/Atomic.hpp"
 #include "libbirch/Pool.hpp"
 #include "libbirch/Any.hpp"
@@ -18,30 +19,33 @@
 using object_list = std::vector<libbirch::Any*,libbirch::Allocator<libbirch::Any*>>;
 
 /**
- * Get the possible roots list for the current thread.
+ * Type for size lists in cycle collection.
  */
-static object_list& get_thread_possible_roots() {
+using size_list = std::vector<int,libbirch::Allocator<int>>;
+
+/**
+ * Get the `i`th possible roots list for the current thread.
+ */
+static object_list& get_possible_roots(const int i) {
   static std::vector<object_list,libbirch::Allocator<object_list>> objects(
       libbirch::get_max_threads());
-  return objects[libbirch::get_thread_num()];
+  return objects[i];
 }
 
 /**
- * Get the unreachable list for the current thread.
+ * Get the `i`th unreachable list.
  */
-static object_list& get_thread_unreachable() {
+static object_list& get_unreachable(const int i) {
   static std::vector<object_list,libbirch::Allocator<object_list>> objects(
       libbirch::get_max_threads());
-  return objects[libbirch::get_thread_num()];
+  return objects[i];
 }
 
+#ifdef ENABLE_MEMORY_POOL
 /**
  * Make the heap.
  */
 static char* make_heap() {
-  #ifndef ENABLE_MEMORY_POOL
-  return nullptr;
-  #else
   /* determine a preferred size of the heap based on total physical memory */
   size_t size = sysconf(_SC_PAGE_SIZE);
   size_t npages = sysconf(_SC_PHYS_PAGES);
@@ -58,25 +62,29 @@ static char* make_heap() {
   assert(ptr);
 
   return (char*)ptr;
-  #endif
 }
+#endif
 
+#ifdef ENABLE_MEMORY_POOL
 /**
  * Get the heap.
  */
-inline libbirch::Atomic<char*>& heap() {
+static libbirch::Atomic<char*>& get_heap() {
   static libbirch::Atomic<char*> heap(make_heap());
   return heap;
 }
+#endif
 
+#ifdef ENABLE_MEMORY_POOL
 /**
  * Get the `i`th pool.
  */
-inline libbirch::Pool& pool(const int i) {
+static libbirch::Pool& get_pool(const int i) {
   static libbirch::Pool* pools =
       new libbirch::Pool[64*libbirch::get_max_threads()];
   return pools[i];
 }
+#endif
 
 /**
  * For an allocation size, determine the index of the pool to which it
@@ -116,18 +124,18 @@ inline size_t unbin(const int i) {
 void* libbirch::allocate(const size_t n) {
   assert(n > 0u);
 
-  #ifndef ENABLE_MEMORY_POOL
-  return std::malloc(n);
-  #else
+  #ifdef ENABLE_MEMORY_POOL
   int tid = get_thread_num();
   int i = bin(n);       // determine which pool
-  auto ptr = pool(64*tid + i).pop();  // attempt to reuse from this pool
+  auto ptr = get_pool(64*tid + i).pop();  // attempt to reuse from this pool
   if (!ptr) {           // otherwise allocate new
     size_t m = unbin(i);
-    ptr = (heap() += m) - m;
+    ptr = (get_heap() += m) - m;
   }
   assert(ptr);
   return ptr;
+  #else
+  return std::malloc(n);
   #endif
 }
 
@@ -136,11 +144,11 @@ void libbirch::deallocate(void* ptr, const size_t n, const int tid) {
   assert(n > 0u);
   assert(tid < get_max_threads());
 
-  #ifndef ENABLE_MEMORY_POOL
-  std::free(ptr);
-  #else
+  #ifdef ENABLE_MEMORY_POOL
   int i = bin(n);
-  pool(64*tid + i).push(ptr);
+  get_pool(64*tid + i).push(ptr);
+  #else
+  std::free(ptr);
   #endif
 }
 
@@ -151,9 +159,7 @@ void* libbirch::reallocate(void* ptr1, const size_t n1, const int tid1,
   assert(tid1 < get_max_threads());
   assert(n2 > 0u);
 
-  #ifndef ENABLE_MEMORY_POOL
-  return std::realloc(ptr1, n2);
-  #else
+  #ifdef ENABLE_MEMORY_POOL
   int i1 = bin(n1);
   int i2 = bin(n2);
   void* ptr2 = ptr1;
@@ -166,65 +172,92 @@ void* libbirch::reallocate(void* ptr1, const size_t n1, const int tid1,
     deallocate(ptr1, n1, tid1);
   }
   return ptr2;
+  #else
+  return std::realloc(ptr1, n2);
   #endif
 }
 
 void libbirch::register_possible_root(Any* o) {
-  get_thread_possible_roots().push_back(o);
+  get_possible_roots(get_thread_num()).push_back(o);
 }
 
 void libbirch::register_unreachable(Any* o) {
-  get_thread_unreachable().push_back(o);
+  get_unreachable(get_thread_num()).push_back(o);
 }
 
-#include <iostream>
-
 void libbirch::collect() {
-  #pragma omp parallel num_threads(get_max_threads())
-  {
-    auto& possible_roots = get_thread_possible_roots();
+  /* concatenates the possible roots list of each thread into a single list,
+   * then distributes the passes over this list between all threads; this
+   * improves load balancing over each thread operating only on its original
+   * list */
 
-    /* initial pass, remove any objects that were buffered, but later
-     * designated as not a possible root */
-    int i = 0, j = 0;
-    for (i = 0; i < (int)possible_roots.size(); ++i) {
-      auto o = possible_roots[i];
+  auto nthreads = get_max_threads();
+  object_list all_possible_roots;  // concatenated list of possible roots
+  size_list starts(nthreads), sizes(nthreads);  // ranges in concatenated list
+
+  #pragma omp parallel
+  {
+    auto tid = get_thread_num();
+    auto& possible_roots = get_possible_roots(tid);
+
+    /* objects can be added to the possible roots list during normal
+     * execution, but not removed, although they may be flagged as no longer
+     * being a possible root; remove such objects first */
+    int size = 0;
+    for (auto o: possible_roots) {
       if (o->isPossibleRoot()) {
-        possible_roots[j++] = o;
+        possible_roots[size++] = o;
       } else if (o->numShared() == 0) {
         o->deallocate();  // deallocation was deferred until now
       } else {
-        o->unbuffer();
+        o->unbuffer();  // not a root, mark as no longer in the buffer
       }
     }
-    possible_roots.resize(j);
+    possible_roots.resize(size);
+    sizes[tid] = size;
     #pragma omp barrier
 
-    /* mark */
-    for (auto& o : possible_roots) {
+    /* a single thread now sets up the concatenated list of possible roots */
+    #pragma omp single
+    {
+      std::exclusive_scan(sizes.begin(), sizes.end(), starts.begin(), 0);
+      all_possible_roots.resize(starts.back() + sizes.back());
+    }
+    #pragma omp barrier
+
+    /* all threads copy into the concatenated list of possible roots */
+    std::copy(possible_roots.begin(), possible_roots.end(),
+        all_possible_roots.begin() + starts[tid]);
+    possible_roots.clear();
+    #pragma omp barrier
+
+    /* mark pass */
+    #pragma omp for schedule(guided)
+    for (auto o : all_possible_roots) {
       Marker visitor;
       visitor.visit(o);
     }
     #pragma omp barrier
 
-    /* scan */
-    for (auto& o : possible_roots) {
+    /* scan/reach pass */
+    #pragma omp for schedule(guided)
+    for (auto o : all_possible_roots) {
       Scanner visitor;
       visitor.visit(o);
     }
     #pragma omp barrier
 
-    /* collect */
-    for (auto& o : possible_roots) {
+    /* collect pass */
+    #pragma omp for schedule(guided)
+    for (auto o : all_possible_roots) {
       Collector visitor;
       visitor.visit(o);
     }
-    possible_roots.clear();
     #pragma omp barrier
 
-    /* destroy unreachable */
-    auto& unreachable = get_thread_unreachable();
-    for (auto& o : unreachable) {
+    /* finally, destroy objects determined unreachable */
+    auto& unreachable = get_unreachable(tid);
+    for (auto o : unreachable) {
       o->destroy();
       o->deallocate();
     }
