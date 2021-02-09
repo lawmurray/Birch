@@ -1,7 +1,7 @@
 /**
  * Multinomial distribution.
  */
-class Multinomial(n:Expression<Integer>, ρ:Expression<Real[_]>) <
+final class Multinomial(n:Expression<Integer>, ρ:Expression<Real[_]>) <
     Distribution<Integer[_]> {
   /**
    * Number of trials.

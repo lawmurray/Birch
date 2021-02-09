@@ -1,7 +1,8 @@
 /**
  * Binomial distribution.
  */
-class Binomial(n:Expression<Integer>, ρ:Expression<Real>) < BoundedDiscrete {
+final class Binomial(n:Expression<Integer>, ρ:Expression<Real>) <
+    BoundedDiscrete {
   /**
    * Number of trials.
    */

@@ -1,7 +1,7 @@
 /**
  * Exponential distribution.
  */
-class Exponential(λ:Expression<Real>) < Distribution<Real> {
+final class Exponential(λ:Expression<Real>) < Distribution<Real> {
   /**
    * Rate.
    */

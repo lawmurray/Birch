@@ -1,8 +1,7 @@
 /**
  * Gaussian distribution.
  */
-class Gaussian(μ:Expression<Real>, σ2:Expression<Real>) <
-    Distribution<Real> {
+class Gaussian(μ:Expression<Real>, σ2:Expression<Real>) < Distribution<Real> {
   /**
    * Mean.
    */

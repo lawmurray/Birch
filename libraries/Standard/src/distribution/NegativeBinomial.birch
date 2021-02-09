@@ -1,7 +1,7 @@
 /**
  * Negative binomial distribution.
  */
-class NegativeBinomial(k:Expression<Integer>, ρ:Expression<Real>) <
+final class NegativeBinomial(k:Expression<Integer>, ρ:Expression<Real>) <
     Discrete {
   /**
    * Number of successes before the experiment is stopped.
