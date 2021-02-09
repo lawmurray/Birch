@@ -49,6 +49,13 @@ birch::Expression* birch::ScopedModifier::modify(Global* o) {
   return o;
 }
 
+birch::Statement* birch::ScopedModifier::modify(MemberVariable* o) {
+  scopes.push_back(currentClass->initScope);
+  ContextualModifier::modify(o);
+  scopes.pop_back();
+  return o;
+}
+
 birch::Statement* birch::ScopedModifier::modify(MemberFunction* o) {
   scopes.push_back(o->scope);
   ContextualModifier::modify(o);

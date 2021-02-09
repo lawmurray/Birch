@@ -38,6 +38,7 @@ public:
   virtual Expression* modify(LambdaFunction* o);
   virtual Expression* modify(Member* o);
   virtual Expression* modify(Global* o);
+  virtual Statement* modify(MemberVariable* o);
   virtual Statement* modify(MemberFunction* o);
   virtual Statement* modify(Function* o);
   virtual Statement* modify(BinaryOperator* o);

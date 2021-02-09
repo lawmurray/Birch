@@ -15,5 +15,5 @@ birch::Baser::~Baser() {
 
 birch::Statement* birch::Baser::modify(Class* o) {
   scopes.back()->inherit(o);
-  return Modifier::modify(o);
+  return ScopedModifier::modify(o);
 }
