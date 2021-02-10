@@ -110,7 +110,8 @@ public:
    * Move constructor.
    */
   Shared(Shared&& o) :
-      ptr(o.ptr.exchange(nullptr)), b(o.b) {
+      ptr(o.ptr), b(o.b) {
+    o.ptr = nullptr;
     o.b = false;
   }
 
@@ -119,7 +120,8 @@ public:
    */
   template<class U, std::enable_if_t<std::is_base_of<T,U>::value,int> = 0>
   Shared(Shared<U>&& o) :
-      ptr(o.ptr.exchange(nullptr)), b(o.b) {
+      ptr(o.ptr), b(o.b) {
+    o.ptr = nullptr;
     o.b = false;
   }
 
@@ -153,8 +155,11 @@ public:
    * Move assignment.
    */
   Shared& operator=(Shared&& o) {
-    auto ptr = o.ptr.exchange(nullptr);
-    auto old = this->ptr.exchange(ptr);
+    auto old = ptr;
+    ptr = o.ptr;
+    b = o.b;
+    o.ptr = nullptr;
+    o.b = false;
     if (old) {
       if (ptr == old) {
         old->decSharedReachable();
@@ -162,7 +167,6 @@ public:
         old->decShared();
       }
     }
-    std::swap(b, o.b);
     return *this;
   }
 
@@ -171,8 +175,11 @@ public:
    */
   template<class U, std::enable_if_t<std::is_base_of<T,U>::value,int> = 0>
   Shared& operator=(Shared<U>&& o) {
-    auto ptr = o.ptr.exchange(nullptr);
-    auto old = this->ptr.exchange(ptr);
+    auto old = ptr;
+    ptr = o.ptr;
+    b = o.b;
+    o.ptr = nullptr;
+    o.b = false;
     if (old) {
       if (ptr == old) {
         old->decSharedReachable();
@@ -180,7 +187,6 @@ public:
         old->decShared();
       }
     }
-    std::swap(b, o.b);
     return *this;
   }
 
@@ -271,7 +277,9 @@ public:
     if (ptr) {
       ptr->incShared();
     }
-    auto old = this->ptr.exchange(ptr);
+    auto old = this->ptr;
+    this->ptr = ptr;
+    this->b = false;
     if (old) {
       if (ptr == old) {
         old->decSharedReachable();
@@ -279,7 +287,6 @@ public:
         old->decShared();
       }
     }
-    b = false;
     return old;
   }
 
@@ -287,11 +294,12 @@ public:
    * Release. Sets the raw pointer to null and returns the previous value.
    */
   T* release() {
-    auto old = ptr.exchange(nullptr);
+    auto old = ptr;
+    ptr = nullptr;
+    b = false;
     if (old) {
       old->decShared();
     }
-    b = false;
     return old;
   }
 
@@ -322,20 +330,20 @@ private:
    * Load the raw pointer as-is. Does not trigger copy-on-write.
    */
   T* load() const {
-    return ptr.load();
+    return ptr;
   }
 
   /**
    * Store the raw pointer as-is. Does not update reference counts.
    */
   void store(T* o) {
-    ptr.store(o);
+    ptr = o;
   }
 
   /**
    * Raw pointer.
    */
-  Atomic<T*> ptr;
+  T* ptr;
 
   /**
    * Is this a bridge?
