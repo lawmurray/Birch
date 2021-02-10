@@ -37,6 +37,7 @@ birch_SOURCES = \
   src/common/Typed.cpp \
   src/common/TypeArgumented.cpp \
   src/common/TypeParameterised.cpp \
+  src/common/Used.cpp \
   src/common/Valued.cpp \
   src/exception/DriverException.cpp \
   src/exception/Exception.cpp \
@@ -161,6 +162,7 @@ noinst_HEADERS = \
   src/common/Typed.hpp \
   src/common/TypeArgumented.hpp \
   src/common/TypeParameterised.hpp \
+  src/common/Used.hpp \
   src/common/Valued.hpp \
   src/exception/all.hpp \
   src/exception/DriverException.hpp \

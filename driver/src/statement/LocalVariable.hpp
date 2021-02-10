@@ -11,6 +11,7 @@
 #include "src/common/Bracketed.hpp"
 #include "src/common/Argumented.hpp"
 #include "src/common/Valued.hpp"
+#include "src/common/Used.hpp"
 
 namespace birch {
 /**
@@ -25,7 +26,8 @@ class LocalVariable: public Statement,
     public Typed,
     public Bracketed,
     public Argumented,
-    public Valued {
+    public Valued,
+    public Used {
 public:
   /**
    * Constructor.

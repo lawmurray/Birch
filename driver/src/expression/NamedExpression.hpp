@@ -8,6 +8,7 @@
 #include "src/common/Typed.hpp"
 #include "src/common/TypeArgumented.hpp"
 #include "src/common/Scope.hpp"
+#include "src/common/Used.hpp"
 
 namespace birch {
 /**
@@ -55,13 +56,24 @@ public:
   virtual void accept(Visitor* visitor) const;
 
   /**
-   * The category of the identifier.
+   * Once resolved, the associated variable or function declaration.
    */
-  ExpressionCategory category;
+  Used* uses;
+
+  /**
+   * Once resolved, the rank of this use among all uses of the associated
+   * varibale or function declaration.
+   */
+  int rank;
 
   /**
    * Once resolved, the unique number of the referent.
    */
   int number;
+
+  /**
+   * The category of the identifier.
+   */
+  ExpressionCategory category;
 };
 }

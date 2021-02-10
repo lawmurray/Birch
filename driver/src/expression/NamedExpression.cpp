@@ -11,8 +11,10 @@ birch::NamedExpression::NamedExpression(Name* name, Type* typeArgs,
     Named(name),
     Typed(new EmptyType()),
     TypeArgumented(typeArgs),
-    category(UNKNOWN),
-    number(0) {
+    uses(nullptr),
+    rank(0),
+    number(0),
+    category(UNKNOWN) {
   //
 }
 
