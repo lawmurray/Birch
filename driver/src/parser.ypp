@@ -92,7 +92,7 @@
 %token <valString> PROGRAM CLASS TYPE FUNCTION OPERATOR AUTO LET
 %token <valString> IF ELSE FOR IN WHILE DO WITH ASSERT RETURN FACTOR
 %token <valString> CPP HPP THIS SUPER GLOBAL PARALLEL DYNAMIC
-%token <valString> ABSTRACT OVERRIDE FINAL
+%token <valString> ABSTRACT OVERRIDE FINAL ACYCLIC
 %token <valString> NIL DOUBLE_BRACE_OPEN DOUBLE_BRACE_CLOSE NAME
 %token <valString> BOOL_LITERAL INT_LITERAL REAL_LITERAL STRING_LITERAL
 %token <valString> LEFT_OP RIGHT_OP LEFT_TILDE_OP RIGHT_TILDE_OP LEFT_QUERY_OP
@@ -545,8 +545,9 @@ slice_operator_declaration
     ;
 
 class_annotation
-    : FINAL     { $$ = birch::FINAL; }
-    | ABSTRACT  { $$ = birch::ABSTRACT; }
+    : ABSTRACT  { $$ = birch::ABSTRACT; }
+    | FINAL     { $$ = birch::FINAL; }
+    | ACYCLIC   { $$ = birch::ACYCLIC; }
     |           { $$ = birch::NONE; }
     ;
 

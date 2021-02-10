@@ -116,7 +116,11 @@ void birch::CppClassGenerator::visit(const Class* o) {
       out();
       finish(" {");
       in();
-      line("//");
+      if (o->has(ACYCLIC)) {
+        line("this->libbirch::Any::acyclic();");
+      } else {
+        line("//");
+      }
       out();
       line("}\n");
     }

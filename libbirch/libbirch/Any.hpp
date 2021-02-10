@@ -36,13 +36,14 @@ namespace libbirch {
  * sequencing of this coloring can become problematic with multiple threads.
  */
 enum Flag : uint8_t {
-  POSSIBLE_ROOT = (1 << 0),
+  ACYCLIC = (1 << 0),
   BUFFERED = (1 << 1),
   MARKED = (1 << 2),
   SCANNED = (1 << 3),
   REACHED = (1 << 4),
   COLLECTED = (1 << 5),
-  CLAIMED = (1 << 6)
+  POSSIBLE_ROOT = (1 << 6),
+  CLAIMED = (1 << 7)
 };
 
 /**
@@ -87,7 +88,14 @@ public:
   /**
    * Copy constructor.
    */
-  Any(const Any& o) : Any() {
+  Any(const Any& o) :
+      r(0),
+      a(0),
+      l(std::numeric_limits<int>::max()),
+      h(0),
+      p(-1),
+      allocTid(get_thread_num()),
+      f(o.f.load() & ACYCLIC) {
     //
   }
 
@@ -165,8 +173,9 @@ public:
       /* destroy, and as long as haven't been previously buffered, can
        * deallocate too */
       destroy();
-      if (!(old & BUFFERED)) {
-        /* hasn't been previously buffered, so can immediately deallocate */
+      if (!(old & BUFFERED) || old & ACYCLIC) {
+        /* hasn't been previously buffered, or is acyclic, so can immediately
+         * deallocate */
         deallocate();
       } else {
         /* has been previously buffered, so deallocation must be deferred
@@ -174,8 +183,8 @@ public:
          * been destroyed */
         f.maskAnd(~POSSIBLE_ROOT);
       }
-    } else if (!(old & BUFFERED)) {
-      /* register as a possible root, as not already */
+    } else if (!(old & BUFFERED) && !(old & ACYCLIC)) {
+      /* not already registered as a possible root, and not acyclic */
       register_possible_root(this);
     }
   }
@@ -199,10 +208,24 @@ public:
   }
 
   /**
+   * Is this object of an acyclic class?
+   */
+  bool isAcyclic() const {
+    return f.load() & ACYCLIC;
+  }
+
+  /**
    * Is this object the possible root of a cycle?
    */
   bool isPossibleRoot() const {
     return f.load() & POSSIBLE_ROOT;
+  }
+
+  /**
+   * Set the acyclic flag.
+   */
+  void acyclic() {
+    f.maskOr(ACYCLIC);
   }
 
   /**

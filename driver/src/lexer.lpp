@@ -119,6 +119,7 @@ E                                  [Ee][+-]?{D}+
 "abstract"                          { return ABSTRACT; }
 "override"                          { return OVERRIDE; }
 "final"                             { return FINAL; }
+"acyclic"                           { return ACYCLIC; }
 
 "this"                              { return THIS; }
 "super"                             { return SUPER; }

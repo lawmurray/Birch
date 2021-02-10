@@ -13,9 +13,9 @@ birch::Annotated::~Annotated() {
 }
 
 bool birch::Annotated::has(const Annotation a) const {
-  return annotation & a;
+  return (annotation & a) == a;
 }
 
 void birch::Annotated::set(const Annotation a) {
-  annotation = (Annotation)(annotation | a);
+  annotation = static_cast<Annotation>(annotation | a);
 }

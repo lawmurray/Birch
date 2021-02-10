@@ -39,15 +39,9 @@ enum Annotation {
   FINAL = 16,
 
   /**
-   * Is this a resume function, or local variable to be restored in a resume
-   * function?
+   * `acyclic` annotation on a class (implies FINAL).
    */
-  RESUME = 32,
-
-  /**
-   * Is this a start function?
-   */
-  START = 64,
+  ACYCLIC = 32|16
 };
 
 /**

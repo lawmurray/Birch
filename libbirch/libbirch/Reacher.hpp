@@ -75,7 +75,7 @@ template<class T>
 void libbirch::Reacher::visit(Shared<T>& o) {
   if (!o.b) {
     Any* o1 = o.load();
-    if (o1) {
+    if (o1 && !o->isAcyclic()) {
       o1->incShared();
       visit(o1);
     }
