@@ -35,7 +35,7 @@ namespace libbirch {
  * (eligible for collection) then later recoloring it black (reachable); the
  * sequencing of this coloring can become problematic with multiple threads.
  */
-enum Flag : uint8_t {
+enum Flag : int16_t {
   ACYCLIC = (1 << 0),
   BUFFERED = (1 << 1),
   MARKED = (1 << 2),
@@ -342,6 +342,6 @@ private:
   /**
    * Bitfield containing flags, used for bridge finding and cycle collection.
    */
-  Atomic<uint8_t> f;
+  Atomic<int16_t> f;
 };
 }
