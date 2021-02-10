@@ -199,7 +199,11 @@ void birch::CppGenerator::visit(const Nil* o) {
 }
 
 void birch::CppGenerator::visit(const Parameter* o) {
-  middle("const " << o->type << "& " << o->name);
+  if (inConstructor) {
+    middle(o->type << ' ' << o->name);
+  } else {
+    middle("const " << o->type << "& " << o->name);
+  }
   if (!o->value->isEmpty()) {
     middle(" = " << o->value);
   }
@@ -216,6 +220,8 @@ void birch::CppGenerator::visit(const NamedExpression* o) {
       middle("this->");  // may be required for generic classes
     }
     middle(o->name);
+  } else if (inConstructor && o->uses->useCount == 1) {
+    middle("std::move(" << o->name << ')');
   } else {
     middle(o->name);
   }
