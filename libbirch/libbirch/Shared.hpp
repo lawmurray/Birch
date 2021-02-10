@@ -368,7 +368,12 @@ T* libbirch::Shared<T>::get() {
     if (o->numShared() > 1) {  // no need to copy for last reference
       /* the copy is of a biconnected component here, used the optimized
        * BiconnectedCopier for this */
+      assert(!biconnected_copy());
+      biconnected_copy(true);
+      assert(biconnected_copy());
       o = static_cast<T*>(BiconnectedCopier(o).visit(static_cast<Any*>(o)));
+      biconnected_copy(true);
+      assert(!biconnected_copy());
       replace(o);
     }
     b = false;
@@ -389,11 +394,15 @@ libbirch::Shared<T> libbirch::Shared<T>::copy() {
 template<class T>
 libbirch::Shared<T> libbirch::Shared<T>::copy2() {
   T* o = unpack(ptr);
-  if (b) {
-    return Shared<T>(o, true);
-  } else {
+  if (!b) {
     /* the copy is *not* of a biconnected component here, use the
      * general-purpose Copier for this */
-    return Shared<T>(static_cast<T*>(Copier().visit(static_cast<Any*>(o))), false);
+    assert(!biconnected_copy());
+    biconnected_copy(true);
+    assert(biconnected_copy());
+    o = static_cast<T*>(Copier().visit(static_cast<Any*>(o)));
+    biconnected_copy(true);
+    assert(!biconnected_copy());
   }
+  return Shared<T>(o, b);
 }
