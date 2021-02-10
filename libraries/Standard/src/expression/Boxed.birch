@@ -1,7 +1,7 @@
 /**
  * Boxed value.
  */
-final class Boxed<Value>(x:Value) < Expression<Value>(x) {  
+acyclic class Boxed<Value>(x:Value) < Expression<Value>(x) {  
   override function doRows() -> Integer {
     return global.rows(x!);
   }

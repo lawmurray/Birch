@@ -17,7 +17,7 @@
  * and `get()` member functions. Construct and iterate through arrays (in the
  * JSON sense) using the `push()` and `walk()` member functions.
  */
-final class Buffer {
+acyclic class Buffer {
   /*
    * The various values a buffer may take. These work as follows:
    *
