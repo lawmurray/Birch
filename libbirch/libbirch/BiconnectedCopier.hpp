@@ -88,6 +88,7 @@ void libbirch::BiconnectedCopier::visit(Shared<T>& o) {
     Any* w = o.load();
     Any* u = visit(w);
     T* v = static_cast<T*>(u);
-    o.replace(v);
+    v->incShared();
+    o.store(v);
   }
 }

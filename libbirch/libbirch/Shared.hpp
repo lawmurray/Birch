@@ -84,12 +84,20 @@ public:
    * Copy constructor.
    */
   Shared(const Shared& o) : ptr(o.ptr), b(o.b) {
-    if (o.b && !biconnected_copy()) {
-      ptr = pack(o.get());
-      b = false;
-    }
     if (ptr) {
-      unpack(ptr)->incShared();
+      if (biconnected_copy()) {
+        if (b) {
+          unpack(ptr)->incShared();
+        } else {
+          // deferred until Copier or BiconnectedCopier visits and updates
+        }
+      } else {
+        if (b) {
+          store(o.get());  // copy next biconnected component
+          b = false;
+        }
+        unpack(ptr)->incShared();
+      }
     }
   }
 
