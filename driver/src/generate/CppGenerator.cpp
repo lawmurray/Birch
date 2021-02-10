@@ -171,7 +171,7 @@ void birch::CppGenerator::visit(const Member* o) {
           named->type->isValue()) {
         /* read optimization: just reading a value, no need to copy-on-write
          * the containing object */
-        middle(".read()");
+        middle(".load()");
       }
 	    inAssign = 0;
       middle("->");

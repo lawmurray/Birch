@@ -72,7 +72,7 @@ public:
    * @param b Is this a bridge?
    */
   Shared(T* ptr, const bool b = false) :
-      ptr(ptr),
+      ptr(pack(ptr)),
       b(b) {
     if (ptr) {
       ptr->incShared();
@@ -83,17 +83,13 @@ public:
   /**
    * Copy constructor.
    */
-  Shared(const Shared& o) : ptr(nullptr), b(false) {
-    if (o.b) {
-      if (biconnected_copy()) {
-        replace(o.load());
-        b = true;
-      } else {
-        replace(o.get());
-        b = false;
-      }
-    } else {
-      replace(o.load());
+  Shared(const Shared& o) : ptr(o.ptr), b(o.b) {
+    if (o.b && !biconnected_copy()) {
+      ptr = pack(o.get());
+      b = false;
+    }
+    if (ptr) {
+      unpack(ptr)->incShared();
     }
   }
 
@@ -109,9 +105,8 @@ public:
   /**
    * Move constructor.
    */
-  Shared(Shared&& o) :
-      ptr(o.ptr), b(o.b) {
-    o.ptr = nullptr;
+  Shared(Shared&& o) : ptr(o.ptr), b(o.b) {
+    o.ptr = pack(nullptr);
     o.b = false;
   }
 
@@ -119,9 +114,8 @@ public:
    * Generic move constructor.
    */
   template<class U, std::enable_if_t<std::is_base_of<T,U>::value,int> = 0>
-  Shared(Shared<U>&& o) :
-      ptr(o.ptr), b(o.b) {
-    o.ptr = nullptr;
+  Shared(Shared<U>&& o) : ptr(o.ptr), b(o.b) {
+    o.ptr = pack(nullptr);
     o.b = false;
   }
 
@@ -137,7 +131,6 @@ public:
    */
   Shared& operator=(const Shared& o) {
     replace(o.get());
-    b = false;
     return *this;
   }
 
@@ -147,7 +140,6 @@ public:
   template<class U, std::enable_if_t<std::is_base_of<T,U>::value,int> = 0>
   Shared& operator=(const Shared<U>& o) {
     replace(o.get());
-    b = false;
     return *this;
   }
 
@@ -155,18 +147,7 @@ public:
    * Move assignment.
    */
   Shared& operator=(Shared&& o) {
-    auto old = ptr;
-    ptr = o.ptr;
-    b = o.b;
-    o.ptr = nullptr;
-    o.b = false;
-    if (old) {
-      if (ptr == old) {
-        old->decSharedReachable();
-      } else {
-        old->decShared();
-      }
-    }
+    exchange(std::move(o));
     return *this;
   }
 
@@ -175,18 +156,7 @@ public:
    */
   template<class U, std::enable_if_t<std::is_base_of<T,U>::value,int> = 0>
   Shared& operator=(Shared<U>&& o) {
-    auto old = ptr;
-    ptr = o.ptr;
-    b = o.b;
-    o.ptr = nullptr;
-    o.b = false;
-    if (old) {
-      if (ptr == old) {
-        old->decSharedReachable();
-      } else {
-        old->decShared();
-      }
-    }
+    exchange(std::move(o));
     return *this;
   }
 
@@ -215,7 +185,7 @@ public:
    * conversion operators in the referent type.
    */
   bool query() const {
-    return load() != nullptr;
+    return unpack(ptr) != nullptr;
   }
 
   /**
@@ -231,10 +201,10 @@ public:
   }
 
   /**
-   * Get the raw pointer as const.
+   * Get the raw pointer without copy-on-use.
    */
-  const T* read() const {
-    return get();
+  T* load() const {
+    return unpack(ptr);
   }
 
   /**
@@ -270,15 +240,34 @@ public:
   }
 
   /**
+   * Exchange with another.
+   */
+  template<class U>
+  void exchange(Shared<U>&& o) {
+    auto old = ptr;
+    ptr = o.ptr;
+    b = o.b;
+    o.ptr = pack(nullptr);
+    o.b = false;
+    if (old) {
+      if (ptr == old) {
+        unpack(old)->decSharedReachable();
+      } else {
+        unpack(old)->decShared();
+      }
+    }
+  }
+
+  /**
    * Replace. Sets the raw pointer to a new value and returns the previous
    * value.
    */
-  T* replace(T* ptr) {
+  void replace(T* ptr) {
     if (ptr) {
       ptr->incShared();
     }
-    auto old = this->ptr;
-    this->ptr = ptr;
+    auto old = unpack(this->ptr);
+    this->ptr = pack(ptr);
     this->b = false;
     if (old) {
       if (ptr == old) {
@@ -287,20 +276,18 @@ public:
         old->decShared();
       }
     }
-    return old;
   }
 
   /**
    * Release. Sets the raw pointer to null and returns the previous value.
    */
-  T* release() {
+  void release() {
     auto old = ptr;
-    ptr = nullptr;
+    ptr = pack(nullptr);
     b = false;
     if (old) {
-      old->decShared();
+      unpack(old)->decShared();
     }
-    return old;
   }
 
   /**
@@ -327,28 +314,35 @@ public:
 
 private:
   /**
-   * Load the raw pointer as-is. Does not trigger copy-on-write.
+   * Store the raw pointer without reference count updates.
    */
-  T* load() const {
-    return ptr;
+  void store(T* ptr) {
+    this->ptr = pack(ptr);
   }
 
   /**
-   * Store the raw pointer as-is. Does not update reference counts.
+   * Unpack a raw pointer after loading.
    */
-  void store(T* o) {
-    ptr = o;
+  static T* unpack(intptr_t ptr) {
+    return reinterpret_cast<T*>(ptr);
+  }
+
+  /**
+   * Pack a raw pointer before storing.
+   */
+  static intptr_t pack(T* ptr) {
+    return reinterpret_cast<intptr_t>(ptr);
   }
 
   /**
    * Raw pointer.
    */
-  T* ptr;
+  intptr_t ptr:(8*sizeof(intptr_t) - 1);
 
   /**
    * Is this a bridge?
    */
-  bool b;
+  bool b:1;
 };
 
 template<class T>
@@ -369,17 +363,17 @@ struct is_pointer<Shared<T>> {
 
 template<class T>
 T* libbirch::Shared<T>::get() {
-  T* v = load();
+  T* o = unpack(ptr);
   if (b) {
-    b = false;
-    if (v->numShared() > 1) {  // no need to copy for last reference
+    if (o->numShared() > 1) {  // no need to copy for last reference
       /* the copy is of a biconnected component here, used the optimized
        * BiconnectedCopier for this */
-      v = static_cast<T*>(BiconnectedCopier(v).visit(static_cast<Any*>(v)));
-      replace(v);
+      o = static_cast<T*>(BiconnectedCopier(o).visit(static_cast<Any*>(o)));
+      replace(o);
     }
+    b = false;
   }
-  return v;
+  return o;
 }
 
 template<class T>
@@ -394,12 +388,12 @@ libbirch::Shared<T> libbirch::Shared<T>::copy() {
 
 template<class T>
 libbirch::Shared<T> libbirch::Shared<T>::copy2() {
-  Any* u = load();
+  T* o = unpack(ptr);
   if (b) {
-    return Shared<T>(static_cast<T*>(u), true);
+    return Shared<T>(o, true);
   } else {
     /* the copy is *not* of a biconnected component here, use the
      * general-purpose Copier for this */
-    return Shared<T>(static_cast<T*>(Copier().visit(u)), false);
+    return Shared<T>(static_cast<T*>(Copier().visit(static_cast<Any*>(o))), false);
   }
 }
