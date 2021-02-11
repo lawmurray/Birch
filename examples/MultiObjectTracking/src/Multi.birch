@@ -10,27 +10,26 @@ class Multi < Model {
   /**
    * Current tracks.
    */
-  x:Array<Track>;
+  x:Tape<Track>;
 
   /**
    * Current observations.
    */
-  y:Array<Real[_]>;
+  y:Tape<Real[_]>;
 
   /**
    * All tracks up to current time.
    */
-  xAll:Array<Track>;
+  xAll:Tape<Track>;
 
   /**
-   * All clutter observations.
+   * All clutter observations up to current time.
    */
-  yAll:RaggedArray<Real[_]>;
+  yAll:Tape<Tape<Real[_]>>;
 
   override function simulate(t:Integer) {
-    x':Array<Track>;  // new current set of tracks
-
     /* move current objects */
+    x':Tape<Track>;  // new current set of tracks
     let iter <- x.walk();
     while iter.hasNext() {
       let track <- iter.next();
@@ -65,27 +64,28 @@ class Multi < Model {
       /* generate observations */
       generate(t);
     }
+    yAll.pushBack(y);
   }
 
   function associate(t:Integer) {
     let iter <- x.walk();
     while iter.hasNext() {
       let track <- iter.next();
-      let o <- track.y.get(t - track.s + 1);  // observation random variable
+      let o <- track.y[t - track.s + 1];  // observation random variable
       if o.hasDistribution() {
         let p <- o.getDistribution();
       
         /* propose an association */
         q:Real[y.size()];
         for n in 1..y.size() {
-          q[n] <- p.pdf(y.get(n));
+          q[n] <- p.pdf(y[n]);
         }
         let Q <- sum(q);
         if Q > 0.0 {
           q <- q/Q;
           n:Integer;
           n <~ Categorical(q);  // propose an observation to associate with
-          let w <- p.observe(y.get(n));  // likelihood
+          let w <- p.observe(y[n]);  // likelihood
           w <- w - log(Real(y.size()));  // prior correction (uniform prior)
           w <- w - log(q[n]);  // proposal correction
           y.erase(n);  // remove the observation for future associations
@@ -97,24 +97,18 @@ class Multi < Model {
     }
     
     /* remaining observations are clutter */
-    yAll.pushBack();
-    y.size() - 1 ~> Poisson(θ.μ);
-    let clutter <- y.walk();
-    while clutter.hasNext() {
-      let y' <- clutter.next();
-      y' ~> Uniform(θ.l, θ.u);
-      yAll.pushBack(t, y');
+    N:Integer <- y.size() - 1;
+    N ~> Poisson(θ.μ);
+    for n in 1..(N + 1) {
+      y[n] ~> Uniform(θ.l, θ.u);
     }
   }
 
   function generate(t:Integer) {
-    yAll.pushBack();
     N:Integer;
     N <~ Poisson(θ.μ);
     for n in 1..(N + 1) {
-      y':Real[_];
-      y' <~ Uniform(θ.l, θ.u);
-      yAll.pushBack(t, y');
+      y[n] <~ Uniform(θ.l, θ.u);
     }
   }
 
