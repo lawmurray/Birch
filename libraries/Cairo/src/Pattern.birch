@@ -6,12 +6,18 @@ class Pattern {
   cairo_pattern_t* pattern;
   }}
 
+  /**
+   *
+   */
   function addColorStopRGB(offset:Real, red:Real, green:Real, blue:Real) {
     cpp{{
     cairo_pattern_add_color_stop_rgb(this->pattern, offset, red, green, blue);
     }}
   }
 
+  /**
+   *
+   */
   function addColorStopRGBA(offset:Real, red:Real, green:Real, blue:Real,
       alpha:Real) {
     cpp{{
@@ -20,6 +26,9 @@ class Pattern {
     }}
   }
   
+  /**
+   *
+   */
   function destroy() {
     cpp{{
     cairo_pattern_destroy(this->pattern);
@@ -27,6 +36,9 @@ class Pattern {
   }
 }
 
+/**
+ *
+ */
 function createRGB(red:Real, green:Real, blue:Real) -> Pattern {
   result:Pattern;
   cpp{{
@@ -35,6 +47,9 @@ function createRGB(red:Real, green:Real, blue:Real) -> Pattern {
   return result;
 }
 
+/**
+ *
+ */
 function createRGBA(red:Real, green:Real, blue:Real, alpha:Real) -> Pattern {
   result:Pattern;
   cpp{{
@@ -43,6 +58,9 @@ function createRGBA(red:Real, green:Real, blue:Real, alpha:Real) -> Pattern {
   return result;
 }
 
+/**
+ *
+ */
 function createLinear(x0:Real, y0:Real, x1:Real, y1:Real) -> Pattern {
   result:Pattern;
   cpp{{
@@ -51,6 +69,9 @@ function createLinear(x0:Real, y0:Real, x1:Real, y1:Real) -> Pattern {
   return result;
 }
 
+/**
+ *
+ */
 function createRadial(cx0:Real, cy0:Real, radius0:Real, cx1:Real, cy1:Real,
     radius1:Real) -> Pattern {
   result:Pattern;
