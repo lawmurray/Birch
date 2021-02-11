@@ -58,9 +58,8 @@ program draw(input:String <- "output/simulate.json",
         }
       }
 
-      /* solid points marking associated observations */
+      /* circled points marking associated observations */
       cr.setLineWidth(2.0*fat/scale);
-      cr.setSourceRGB(col[1], col[2], col[3]);
       iter <- sample!.walk("z");
       while iter.hasNext() {
         let iter2 <- iter.next().walk("y");
@@ -69,12 +68,15 @@ program draw(input:String <- "output/simulate.json",
           let y <- ys.get<Real[_]>();  // may be null
           if y? {
             cr.arc(y![1], y![2], 4.0*fat/scale, 0.0, 2.0*π);
-            cr.fill();
+            cr.setSourceRGB(0.8, 0.8, 0.8);
+            cr.fillPreserve();
+            cr.setSourceRGB(col[1], col[2], col[3]);
+            cr.stroke();
           }
         }
       }
     
-      /* lines and points marking latent tracks */
+      /* lines marking latent tracks */
       cr.setSourceRGB(col[1], col[2], col[3]);
       iter <- sample!.walk("z");
       while iter.hasNext() {
@@ -87,11 +89,6 @@ program draw(input:String <- "output/simulate.json",
             cr.lineTo(x![i,1], x![i,2]);
           }
           cr.stroke();
-
-          for i in 2..rows(x!) {
-            cr.arc(x![i,1], x![i,2], 4.0*fat/scale, 0.0, 2.0*π);
-            cr.fill();
-          }
         }
       }
     
