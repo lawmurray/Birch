@@ -113,6 +113,7 @@ class Multi < Model {
   }
 
   override function read(t:Integer, buffer:Buffer) {
+    y <- construct<Tape<Real[_]>>();
     buffer.get(y);
   }
 
