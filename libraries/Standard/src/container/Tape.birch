@@ -64,13 +64,8 @@ final class Tape<Type> {
    */
   operator [i:Integer] -> Type {
     assert 0 < i;
-    if i <= behindCount {
-      seek(i + 1);
-      return behind!.x;
-    } else {
-      seek(i);
-      return ahead!.x;
-    }
+    seek(i);
+    return ahead!.x;
   }
 
   /**
@@ -126,13 +121,8 @@ final class Tape<Type> {
    */
   function get(i:Integer) -> Type {
     assert 0 < i;
-    if i <= behindCount {
-      seek(i + 1);
-      return behind!.x;
-    } else {
-      seek(i);
-      return ahead!.x;
-    }
+    seek(i);
+    return ahead!.x;
   }
 
   /**
@@ -143,13 +133,8 @@ final class Tape<Type> {
    */
   function set(i:Integer, x:Type) {
     assert 0 < i;
-    if i <= behindCount {
-      seek(i + 1);
-      behind!.x <- x;
-    } else {
-      seek(i);
-      ahead!.x <- x;
-    }
+    seek(i);
+    ahead!.x <- x;
   }
 
   /**
