@@ -24,6 +24,11 @@ struct is_value<T&&> {
   static const bool value = is_value<T>::value;
 };
 
+template<class T>
+struct is_value<std::optional<T>> {
+  static const bool value = is_value<T>::value;
+};
+
 /**
  * Is `T` a pointer type?
  */

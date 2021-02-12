@@ -68,7 +68,7 @@ template<class T, class F>
 std::tuple<int,int,int> libbirch::Spanner::visit(const int i, const int j,
     Array<T,F>& o) {
   int l = i, h = i, m = 0, l1, h1, m1;
-  //if (!is_value<T>::value) {
+  if (!is_value<T>::value) {
     auto iter = o.begin();
     auto last = o.end();
     for (; iter != last; ++iter) {
@@ -77,7 +77,7 @@ std::tuple<int,int,int> libbirch::Spanner::visit(const int i, const int j,
       h = std::max(h, h1);
       m += m1;
     }
-  //}
+  }
   return std::make_tuple(l, h, m);
 }
 
