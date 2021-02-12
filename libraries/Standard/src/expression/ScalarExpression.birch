@@ -3,7 +3,7 @@
  *
  * - `Value`: Scalar type.
  */
-abstract class ScalarExpression<Value> < Expression<Value>(nil) {  
+abstract class ScalarExpression<Value> < Expression<Value> {  
   /**
    * Accumulated upstream gradient.
    */

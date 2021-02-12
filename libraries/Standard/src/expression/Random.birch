@@ -10,7 +10,7 @@
  * to update their value. Random objects in the value state are considered
  * *constants*.
  */
-final class Random<Value> < Expression<Value>(nil) {  
+final class Random<Value> < Expression<Value> {  
   /**
    * Associated distribution.
    */
@@ -78,27 +78,6 @@ final class Random<Value> < Expression<Value>(nil) {
     assert !this.x?;
     p.setRandom(this);
     this.p <- p;
-  }
-
-  /*
-   * Set a value.
-   *
-   * - x: Value.
-   */
-  function setValue(x:Value) {
-    assert !this.x?;
-    this.x <- x;
-    constant();
-  }
-
-  /*
-   * Set a pilot value.
-   *
-   * - x: Pilot value.
-   */
-  function setPilot(x:Value) {
-    assert !this.x?;
-    this.x <- x;
   }
 
   override function doDepth() -> Integer {
@@ -319,11 +298,11 @@ final class Random<Value> < Expression<Value>(nil) {
     return nil;
   }
 
-  function read(buffer:Buffer) {
+  override function read(buffer:Buffer) {
     this <-? buffer.get<Value>();
   }
 
-  function write(buffer:Buffer) {
+  override function write(buffer:Buffer) {
     if hasValue() || hasDistribution() {
       buffer.set(value());
     } else {

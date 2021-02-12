@@ -3,7 +3,7 @@
  *
  * - Value: Vector type.
  */
-abstract class MultivariateExpression<Value> < Expression<Value>(nil) {  
+abstract class MultivariateExpression<Value> < Expression<Value> {  
   /**
    * Accumulated upstream gradient.
    */

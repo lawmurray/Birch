@@ -5,52 +5,52 @@ class Global {
   /**
    * Lower corner of domain of interest.
    */
-  l:Real[_];
+  l:Boxed<Real[_]>;
 
   /**
    * Upper corner of domain of interest.
    */
-  u:Real[_];
+  u:Boxed<Real[_]>;
 
   /**
    * Probability of detection.
    */
-  d:Real;
+  d:Boxed<Real>;
 
   /**
    * Initial value covariance.
    */
-  M:Real[_,_];
+  M:Boxed<Real[_,_]>;
   
   /**
    * Transition matrix.
    */
-  A:Real[_,_];
+  A:Boxed<Real[_,_]>;
 
   /**
    * State noise covariance matrix.
    */
-  Q:Real[_,_];
+  Q:Boxed<Real[_,_]>;
 
   /**
    * Observation matrix.
    */
-  B:Real[_,_];
+  B:Boxed<Real[_,_]>;
 
   /**
    * Observation noise covariance matrix.
    */
-  R:Real[_,_];
+  R:Boxed<Real[_,_]>;
 
   /**
    * Birth rate.
    */
-  λ:Real;
+  λ:Boxed<Real>;
 
   /**
    * Clutter rate.
    */
-  μ:Real;
+  μ:Boxed<Real>;
 
   /**
    * Track length rate.

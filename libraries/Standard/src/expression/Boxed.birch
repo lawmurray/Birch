@@ -1,7 +1,7 @@
 /**
  * Boxed value.
  */
-acyclic class Boxed<Value>(x:Value) < Expression<Value>(x) {  
+acyclic class Boxed<Value> < Expression<Value> {  
   override function doRows() -> Integer {
     return global.rows(x!);
   }
@@ -64,7 +64,9 @@ acyclic class Boxed<Value>(x:Value) < Expression<Value>(x) {
  * Create a Boxed value.
  */
 function Boxed<Value>(x:Value) -> Expression<Value> {
-  return construct<Boxed<Value>>(x);
+  let boxed <- construct<Boxed<Value>>();
+  boxed <- x;
+  return boxed;
 }
 
 /**

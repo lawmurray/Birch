@@ -3,7 +3,7 @@
  *
  * - isConstant: Is this a constant expression?
  */
-abstract class DelayExpression(isConstant:Boolean) {
+abstract class DelayExpression {
   /**
    * Generation in which the expression was evaluated. This is zero unless
    * `pilot()` has been called with a given generation provided, and the
@@ -30,7 +30,7 @@ abstract class DelayExpression(isConstant:Boolean) {
    * Has `value()` been called? This is used as a short-circuit for shared
    * subexpressions.
    */
-  flagConstant:Boolean <- isConstant;
+  flagConstant:Boolean <- false;
 
   /**
    * Has `prior()` been called? This is used as a short-circuit for shared

@@ -63,11 +63,18 @@
  *     expression is not being used in the world of lazy expressions here:
  *     the `if` statement is not lazily evaluated.
  */
-abstract class Expression<Value>(x:Value?) < DelayExpression(x?) {
+abstract class Expression<Value> < DelayExpression {
   /**
    * Memoized value.
    */
-  x:Value? <- x;
+  x:Value?;
+
+  /**
+   * Value assignment.
+   */
+  operator <- x:Value {
+    setValue(x);
+  }
 
   /**
    * Does this have a value?
@@ -80,6 +87,27 @@ abstract class Expression<Value>(x:Value?) < DelayExpression(x?) {
    */
   function hasValue() -> Boolean {
     return x?;
+  }
+
+  /**
+   * Set the value.
+   *
+   * - x: Value.
+   */
+  function setValue(x:Value) {
+    assert !this.x?;
+    this.x <- x;
+    constant();
+  }
+
+  /**
+   * Set the pilot value.
+   *
+   * - x: Pilot value.
+   */
+  function setPilot(x:Value) {
+    assert !this.x?;
+    this.x <- x;
   }
 
   /**
@@ -712,6 +740,10 @@ abstract class Expression<Value>(x:Value?) < DelayExpression(x?) {
    */
   function graftBoundedDiscrete() -> BoundedDiscrete? {
     return nil;
+  }
+
+  override function read(buffer:Buffer) {
+    this <-? buffer.get<Value>();
   }
 
   override function write(buffer:Buffer) {
