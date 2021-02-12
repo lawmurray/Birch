@@ -6,9 +6,12 @@ hpp{{
  * An SVG surface. This extends the usual Cairo interface.
  */
 class SurfaceSVG < Surface {
-
+  //
 }
 
+/**
+ *
+ */
 function createSVG(filename:String, widthInPoints:Real, heightInPoints:Real)
       -> Surface {
   mkdir(filename);

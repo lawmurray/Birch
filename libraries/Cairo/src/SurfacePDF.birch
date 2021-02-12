@@ -6,9 +6,12 @@ hpp{{
  * A PDF surface. This extends the usual Cairo interface.
  */
 class SurfacePDF < Surface {
-
+  //
 }
 
+/**
+ *
+ */
 function createPDF(filename:String, widthInPoints:Real, heightInPoints:Real)
     -> Surface {
   mkdir(filename);

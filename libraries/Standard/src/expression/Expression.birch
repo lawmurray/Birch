@@ -713,4 +713,8 @@ abstract class Expression<Value>(x:Value?) < DelayExpression(x?) {
   function graftBoundedDiscrete() -> BoundedDiscrete? {
     return nil;
   }
+
+  override function write(buffer:Buffer) {
+    buffer.set(value());
+  }
 }

@@ -10,15 +10,17 @@ class Context {
   cairo_t* cr;
   }}
 
+  /**
+   *
+   */
   function destroy() {
     cpp{{
     cairo_destroy(this->cr);
     }}
   }
   
-  /*
-   * Paths
-   * -----
+  /**
+   *
    */
   function newPath() {
     cpp{{
@@ -26,99 +28,143 @@ class Context {
     }}
   }
   
+  /**
+   *
+   */
   function closePath() {
     cpp{{
     cairo_close_path(this->cr);
     }}
   }
 
+  /**
+   *
+   */
   function arc(xc:Real, yc:Real, radius:Real, angle1:Real, angle2:Real) {
     cpp{{
     cairo_arc(this->cr, xc, yc, radius, angle1, angle2);
     }}
   }
 
+  /**
+   *
+   */
   function arcNegative(xc:Real, yc:Real, radius:Real, angle1:Real, angle2:Real) {
     cpp{{
     cairo_arc_negative(this->cr, xc, yc, radius, angle1, angle2);
     }}
   }
 
+  /**
+   *
+   */
   function curveTo(x1:Real, y1:Real, x2:Real, y2:Real, x3:Real, y3:Real) {
     cpp{{
     cairo_curve_to(this->cr, x1, y1, x2, y2, x3, y3);
     }}
   }
 
+  /**
+   *
+   */
   function lineTo(x:Real, y:Real) {
     cpp{{
     cairo_line_to(this->cr, x, y);
     }}
   }
 
+  /**
+   *
+   */
   function moveTo(x:Real, y:Real) {
     cpp{{
     cairo_move_to(this->cr, x, y);
     }}
   }
 
+  /**
+   *
+   */
   function rectangle(x:Real, y:Real, width:Real, height:Real) {
     cpp{{
     cairo_rectangle(this->cr, x, y, width, height);
     }}
   }
 
+  /**
+   *
+   */
   function relCurveTo(dx1:Real, dy1:Real, dx2:Real, dy2:Real, dx3:Real, dy3:Real) {
     cpp{{
     cairo_curve_to(this->cr, dx1, dy1, dx2, dy2, dx3, dy3);
     }}
   }
 
+  /**
+   *
+   */
   function relLineTo(dx:Real, dy:Real) {
     cpp{{
     cairo_line_to(this->cr, dx, dy);
     }}
   }
 
+  /**
+   *
+   */
   function relMoveTo(dx:Real, dy:Real) {
     cpp{{
     cairo_move_to(this->cr, dx, dy);
     }}
   }
   
+  /**
+   *
+   */
   function stroke() {
     cpp{{
     cairo_stroke(this->cr);
     }}
   }
 
+  /**
+   *
+   */
   function strokePreserve() {
     cpp{{
     cairo_stroke_preserve(this->cr);
     }}
   }
 
+  /**
+   *
+   */
   function fill() {
     cpp{{
     cairo_fill(this->cr);
     }}
   }
 
+  /**
+   *
+   */
   function fillPreserve() {
     cpp{{
     cairo_fill_preserve(this->cr);
     }}
   }
 
+  /**
+   *
+   */
   function paint() {
     cpp{{
     cairo_paint(this->cr);
     }}
   }
   
-  /*
-   * Transformations
-   * ---------------
+  /**
+   *
    */
   function translate(tx:Real, ty:Real) {
     cpp{{
@@ -126,18 +172,27 @@ class Context {
     }}
   }
 
+  /**
+   *
+   */
   function scale(sx:Real, sy:Real) {
     cpp{{
     cairo_scale(this->cr, sx, sy);
     }}
   }
   
+  /**
+   *
+   */
   function rotate(angle:Real) {
     cpp{{
     cairo_rotate(this->cr, angle);
     }}
   }
   
+  /**
+   *
+   */
   function deviceToUserDistance(ux:Real, uy:Real) -> (Real, Real) {
     ux1:Real <- ux;
     uy1:Real <- uy;
@@ -147,9 +202,8 @@ class Context {
     return (ux1, uy1);
   }
   
-  /*
-   * Sources
-   * -------
+  /**
+   *
    */
   function setSourceRGB(red:Real, green:Real, blue:Real) {
     cpp{{
@@ -157,27 +211,35 @@ class Context {
     }}
   }
 
+  /**
+   *
+   */
   function setSourceRGBA(red:Real, green:Real, blue:Real, alpha:Real) {
     cpp{{
     cairo_set_source_rgba(this->cr, red, green, blue, alpha);
     }}
   }
   
+  /**
+   *
+   */
   function setSource(pattern:Pattern) {
     cpp{{
     cairo_set_source(this->cr, pattern->pattern);
     }}
   }
   
+  /**
+   *
+   */
   function setLineWidth(width:Real) {
     cpp{{
     cairo_set_line_width(this->cr, width);
     }}
   }
 
-  /*
-   * Text
-   * ----
+  /**
+   *
    */
   function showText(utf8:String) {
     cpp{{
@@ -185,15 +247,17 @@ class Context {
     }}
   }
 
+  /**
+   *
+   */
   function setFontSize(size:Real) {
     cpp{{
     cairo_set_font_size(this->cr, size);
     }}
   }
   
-  /*
-   * Groups
-   * ------
+  /**
+   *
    */
   function pushGroup() {
     cpp{{
@@ -201,6 +265,9 @@ class Context {
     }}
   }
   
+  /**
+   *
+   */
   function popGroupToSource() {
     cpp{{
     cairo_pop_group_to_source(this->cr);
@@ -208,6 +275,9 @@ class Context {
   }
 }
 
+/**
+ *
+ */
 function create(surface:Surface) -> Context {
   cr:Context;
   cpp{{

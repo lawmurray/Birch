@@ -4,6 +4,9 @@
 class SurfacePNG < Surface {
   filename:String;
   
+  /**
+   *
+   */
   function destroy() {
     /* write the file on destruction */
     mkdir(filename);
@@ -14,6 +17,9 @@ class SurfacePNG < Surface {
   }
 }
 
+/**
+ *
+ */
 function createPNG(filename:String, width:Integer, height:Integer)
     -> Surface {
   surface:SurfacePNG;
