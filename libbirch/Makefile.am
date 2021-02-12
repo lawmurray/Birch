@@ -36,7 +36,6 @@ nobase_include_HEADERS = \
   libbirch/BiconnectedCopier.hpp \
   libbirch/BiconnectedMemo.hpp \
   libbirch/Bridger.hpp \
-  libbirch/Buffer.hpp \
   libbirch/Collector.hpp \
   libbirch/Copier.hpp \
   libbirch/docs.hpp \

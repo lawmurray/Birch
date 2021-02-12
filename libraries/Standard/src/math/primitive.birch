@@ -203,13 +203,7 @@ function reduce<Type>(x:Type[_], init:Type,
     op:\(Type, Type) -> Type) -> Type {
   result:Type;
   cpp{{
-  x.pin();
-  // result = return std::reduce(x.begin(), x.end(), init, op);
-  // ^ C++17
-  result = std::accumulate(x.begin(), x.end(), init,
-      [&](auto x, auto y) { return op(x, y); });
-  x.unpin();
-  return result;
+  return std::reduce(x.begin(), x.end(), init, op);
   }}
 }
 
@@ -281,12 +275,7 @@ function transform_reduce<Input1,Input2,Input3,Output>(x:Input1[_],
 function inclusive_scan<Type>(x:Type[_], op:\(Type, Type) -> Type) -> Type[_] {
   y:Type[length(x)];
   cpp{{
-  x.pin();
-  // std::inclusive_scan(x.begin(), x.end(), y.begin(), op);
-  // ^ C++17
-  std::partial_sum(x.begin(), x.end(), y.begin(),
-      [&](auto x, auto y) { op(x, y); });
-  x.unpin();
+  std::inclusive_scan(x.begin(), x.end(), y.begin(), op);
   }}
   return y;
 }
@@ -302,14 +291,9 @@ function exclusive_scan<Type>(x:Type[_], init:Type,
     op:\(Type, Type) -> Type) -> Type[_] {
   assert length(x) > 0;
   y:Type[length(x)];
-  //cpp{{
-  // std::exclusive_scan(x.begin(), x.end(), y.begin(), init, op);
-  // ^ C++17
-  //}}
-  y[1] <- init;
-  for i in 2..length(x) {
-    y[i] <- op(y[i - 1], x[i - 1]);
-  }
+  cpp{{
+  std::exclusive_scan(x.begin(), x.end(), y.begin(), init, op);
+  }}
   return y;
 }
 
@@ -323,10 +307,8 @@ function adjacent_difference<Type>(x:Type[_],
     op:\(Type, Type) -> Type) -> Type[_] {
   y:Type[length(x)];
   cpp{{
-  x.pin();
   std::adjacent_difference(x.begin(), x.end(), y.begin(),
       [&](auto x, auto y) { return op(x, y); });
-  x.unpin();
   }}
   return y;
 }
@@ -341,9 +323,7 @@ function adjacent_difference<Type>(x:Type[_],
 function sort<Type>(x:Type[_]) -> Type[_] {
   let y <- x;
   cpp{{
-  y.pinWrite();
   std::sort(y.begin(), y.end());
-  y.unpin();
   }}
   return y;
 }
@@ -359,11 +339,9 @@ function sort<Type>(x:Type[_]) -> Type[_] {
 function sort_index<Type>(x:Type[_]) -> Integer[_] {
   let a <- iota(1, length(x));
   cpp{{
-  x.pin();
   std::sort(a.begin(), a.end(), [=](birch::type::Integer i, birch::type::Integer j) {
       return x(libbirch::make_slice(i - 1)) < x(libbirch::make_slice(j - 1));
     });
-  x.unpin();
   }}
   return a;
 }

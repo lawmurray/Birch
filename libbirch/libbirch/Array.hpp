@@ -7,7 +7,6 @@
 #include "libbirch/memory.hpp"
 #include "libbirch/type.hpp"
 #include "libbirch/Shape.hpp"
-#include "libbirch/Buffer.hpp"
 #include "libbirch/Iterator.hpp"
 #include "libbirch/Eigen.hpp"
 #include "libbirch/ReadersWriterLock.hpp"
@@ -35,7 +34,7 @@ public:
   Array() :
       shape(),
       buffer(nullptr),
-      offset(0),
+      tid(0),
       isView(false) {
     assert(shape.volume() == 0);
   }
@@ -48,7 +47,7 @@ public:
   Array(const F& shape) :
       shape(shape),
       buffer(nullptr),
-      offset(0),
+      tid(0),
       isView(false) {
     allocate();
     initialize();
@@ -66,7 +65,7 @@ public:
   Array(const F& shape, Args&&... args) :
       shape(shape),
       buffer(nullptr),
-      offset(0),
+      tid(0),
       isView(false) {
     allocate();
     initialize(std::forward<Args>(args)...);
@@ -82,7 +81,7 @@ public:
   Array(const std::initializer_list<T>& values) :
       shape(values.size()),
       buffer(nullptr),
-      offset(0),
+      tid(0),
       isView(false) {
     allocate();
     std::uninitialized_copy(values.begin(), values.end(), begin());
@@ -98,7 +97,7 @@ public:
   Array(const std::initializer_list<std::initializer_list<T>>& values) :
       shape(values.size(), values.begin()->size()),
       buffer(nullptr),
-      offset(0),
+      tid(0),
       isView(false) {
     allocate();
     auto ptr = buf();
@@ -119,7 +118,7 @@ public:
   Array(const L& l, const F& shape) :
       shape(shape),
       buffer(nullptr),
-      offset(0),
+      tid(0),
       isView(false) {
     allocate();
     int64_t n = 0;
@@ -129,26 +128,15 @@ public:
   }
 
   /**
-   * Copy constructor. For value types, this uses a copy-on-write facility.
+   * Copy constructor.
    */
-  Array(const Array<T,F>& o) :
-      shape(o.shape),
-      buffer(o.buffer),
-      offset(o.offset),
+  Array(const Array& o) :
+      shape(o.shape.compact()),
+      buffer(nullptr),
+      tid(0),
       isView(false) {
-    if (o.buffer) {
-      if (!o.isView && is_value<T>::value) {
-        /* copy on write for non-views of value types */
-        buffer->incUsage();
-      } else {
-        /* immediate copy for others */
-        shape = o.shape.compact();
-        buffer = nullptr;
-        offset = 0;
-        allocate();
-        uninitialized_copy(o);
-      }
-    }
+    allocate();
+    uninitialized_copy(o);
   }
 
   /**
@@ -159,10 +147,23 @@ public:
   Array(const Array<U,G>& o) :
       shape(o.shape.compact()),
       buffer(nullptr),
-      offset(0),
+      tid(0),
       isView(false) {
     allocate();
     uninitialized_copy(o);
+  }
+
+  /**
+   * Move constructor.
+   */
+  Array(Array&& o) : Array() {
+    if (!o.isView) {
+      swap(o);
+    } else {
+      shape = o.shape.compact();
+      allocate();
+      uninitialized_copy(o);
+    }
   }
 
   /**
@@ -173,32 +174,37 @@ public:
   }
 
   /**
-   * Copy assignment operator.
+   * Copy assignment.
    */
-  Array<T,F>& operator=(const Array<T,F>& o) {
-    return assign(o);
+  Array& operator=(const Array& o) {
+    assign(o);
+    return *this;
+  }
+
+  /**
+   * Move assignment.
+   */
+  Array& operator=(Array&& o) {
+    if (!isView && !o.isView) {
+      swap(o);
+    } else {
+      assign(o);
+    }
+    return *this;
   }
 
   /**
    * Copy assignment. For a view the shapes of the two arrays must
    * conform, otherwise a resize is permitted.
    */
-  Array<T,F>& assign(const Array<T,F>& o) {
+  void assign(const Array<T,F>& o) {
     if (isView) {
       libbirch_assert_msg_(o.shape.conforms(shape), "array sizes are different");
       copy(o);
     } else {
-      lock();
-      if (o.isView) {
-        Array<T,F> tmp(o.shape, o);
-        swap(tmp);
-      } else {
-        Array<T,F> tmp(o);
-        swap(tmp);
-      }
-      unlock();
+      Array<T,F> tmp(o);
+      swap(tmp);
     }
-    return *this;
   }
 
   /**
@@ -251,20 +257,16 @@ public:
    */
   template<class V, std::enable_if_t<V::rangeCount() != 0,int> = 0>
   auto slice(const V& slice) {
-    pinWrite();
-    unpin();
-    return Array<T,decltype(shape(slice))>(shape(slice), buffer, offset +
+    return Array<T,decltype(shape(slice))>(shape(slice), buffer,
         shape.serial(slice));
   }
   template<class V, std::enable_if_t<V::rangeCount() != 0,int> = 0>
   auto slice(const V& slice) const {
-    return Array<T,decltype(shape(slice))>(shape(slice),
-        buffer, offset + shape.serial(slice));
+    return Array<T,decltype(shape(slice))>(shape(slice), buffer,
+        shape.serial(slice));
   }
   template<class V, std::enable_if_t<V::rangeCount() == 0,int> = 0>
   auto& slice(const V& slice) {
-    pinWrite();
-    unpin();
     return *(buf() + shape.serial(slice));
   }
   template<class V, std::enable_if_t<V::rangeCount() == 0,int> = 0>
@@ -289,18 +291,14 @@ public:
   decltype(auto) operator()(Args&&... args) const {
     return slice(make_slice(std::forward<Args>(args)...));
   }
+  ///@}
 
   /**
    * Compare.
    */
   template<class U, class G>
   bool operator==(const Array<U,G>& o) const {
-    pin();
-    o.pin();
-    auto result = std::equal(begin(), end(), o.begin());
-    o.unpin();
-    unpin();
-    return result;
+    return std::equal(begin(), end(), o.begin());
   }
   template<class U, class G>
   bool operator!=(const Array<U,G>& o) const {
@@ -308,58 +306,7 @@ public:
   }
 
   /**
-   * Pin the buffer. This prevents substitution of the buffer by
-   * copy-on-write operations until unpinned.
-   */
-  void pin() const {
-    const_cast<Array*>(this)->bufferLock.setRead();
-  }
-
-  /**
-   * As pin(), but furthermore ensures that the buffer is not shared, and
-   * thus its contents eligible for writing. If shared, a copy is performed.
-   * This is used to perform copy-on-write (if necessary) before writing the
-   * contents of the buffer.
-   */
-  void pinWrite() {
-    assert(!isView);
-    if (isShared()) {
-      bufferLock.setWrite();
-      if (isShared()) {
-        Array<T,F> tmp(shape, *this);
-        swap(tmp);
-      }
-      bufferLock.downgrade();
-    } else {
-      bufferLock.setRead();
-    }
-  }
-
-  /**
-   * Unpin the buffer.
-   */
-  void unpin() const {
-    const_cast<Array*>(this)->bufferLock.unsetRead();
-  }
-
-  /**
-   * Lock the buffer. This is used before substitution of the buffer by a
-   * copy-on-write operation.
-   */
-  void lock() {
-    bufferLock.setWrite();
-  }
-
-  /**
-   * Unlock the buffer.
-   */
-  void unlock() {
-    bufferLock.unsetWrite();
-  }
-  ///@}
-
-  /**
-   * @name Thread-safe resize
+   * @name Resize
    */
   ///@{
   /**
@@ -383,22 +330,19 @@ public:
     static_assert(F::count() == 1, "can only enlarge one-dimensional arrays");
     assert(!isView);
 
-    lock();
     auto n = size();
     auto s = F(n + 1);
-    if (!buffer || isShared()) {
-      Array<T,F> tmp(s, *this);
+    if (!buffer) {
+      Array<T,F> tmp(s, x);
       swap(tmp);
     } else {
-      auto oldBytes = Buffer<T>::size(shape.volume());
-      auto newBytes = Buffer<T>::size(s.volume());
-      buffer = (Buffer<T>*)libbirch::reallocate(buffer, oldBytes,
-          buffer->tid, newBytes);
+      size_t oldBytes = shape.volume()*sizeof(T);
+      size_t newBytes = s.volume()*sizeof(T);
+      buffer = (T*)libbirch::reallocate(buffer, oldBytes, tid, newBytes);
+      std::memmove((void*)(buf() + i + 1), (void*)(buf() + i), (n - i)*sizeof(T));
+      new (buf() + i) T(x);
+      shape = s;
     }
-    std::memmove((void*)(buf() + i + 1), (void*)(buf() + i), (n - i)*sizeof(T));
-    new (buf() + i) T(x);
-    shape = s;
-    unlock();
   }
 
   /**
@@ -414,27 +358,20 @@ public:
     assert(len > 0);
     assert(size() >= len);
 
-    lock();
     auto n = size();
     auto s = F(n - len);
     if (s.size() == 0) {
       release();
     } else {
-      if (isShared()) {
-        Array<T,F> tmp(shape, *this);
-        swap(tmp);
-      }
       for (int j = i; j < i + len; ++j) {
         buf()[j].~T();
       }
       std::memmove((void*)(buf() + i), (void*)(buf() + i + len), (n - len - i)*sizeof(T));
-      auto oldBytes = Buffer<T>::size(shape.volume());
-      auto newBytes = Buffer<T>::size(s.volume());
-      buffer = (Buffer<T>*)libbirch::reallocate(buffer, oldBytes,
-          buffer->tid, newBytes);
+      size_t oldBytes = shape.volume()*sizeof(T);
+      size_t newBytes = s.volume()*sizeof(T);
+      buffer = (T*)libbirch::reallocate(buffer, oldBytes, tid, newBytes);
     }
     shape = s;
-    unlock();
   }
   ///@}
 
@@ -466,7 +403,7 @@ public:
   Array(const Eigen::MatrixBase<EigenType>& o) :
       shape(o.rows(), o.cols()),
       buffer(nullptr),
-      offset(0),
+      tid(0),
       isView(false) {
     allocate();
     toEigen() = o;
@@ -479,7 +416,7 @@ public:
   Array(const Eigen::DiagonalWrapper<EigenType>& o) :
       shape(o.rows(), o.cols()),
       buffer(nullptr),
-      offset(0),
+      tid(0),
       isView(false) {
     allocate();
     toEigen() = o;
@@ -492,7 +429,7 @@ public:
   Array(const Eigen::TriangularView<EigenType,Mode>& o) :
       shape(o.rows(), o.cols()),
       buffer(nullptr),
-      offset(0),
+      tid(0),
       isView(false) {
     allocate();
     toEigen() = o;
@@ -533,25 +470,12 @@ public:
 
 private:
   /**
-   * Constructor for forced copy.
-   */
-  template<class U, class G>
-  Array(const F& shape, const Array<U,G>& o) :
-      shape(shape.compact()),
-      buffer(nullptr),
-      offset(0),
-      isView(false) {
-    allocate();
-    uninitialized_copy(o);
-  }
-
-  /**
    * Constructor for views.
    */
-  Array(const F& shape, Buffer<T>* buffer, int64_t offset) :
+  Array(const F& shape, T* buffer, int64_t offset) :
       shape(shape),
-      buffer(buffer),
-      offset(offset),
+      buffer(buffer + offset),
+      tid(0),
       isView(true) {
     //
   }
@@ -560,14 +484,7 @@ private:
    * Raw pointer to underlying buffer.
    */
   T* buf() const {
-    return buffer->buf() + offset;
-  }
-
-  /**
-   * Is the buffer shared with one or more other arrays?
-   */
-  bool isShared() const {
-    return buffer && buffer->numUsage() > 1;
+    return buffer;
   }
 
   /**
@@ -576,9 +493,9 @@ private:
   void swap(Array<T,F>& o) {
     assert(!isView);
     assert(!o.isView);
-    std::swap(buffer, o.buffer);
     std::swap(shape, o.shape);
-    std::swap(offset, o.offset);
+    std::swap(buffer, o.buffer);
+    std::swap(tid, o.tid);
   }
 
   /**
@@ -586,10 +503,10 @@ private:
    */
   void allocate() {
     assert(!buffer);
-    auto bytes = Buffer<T>::size(volume());
-    if (bytes > 0u) {
-      buffer = new (libbirch::allocate(bytes)) Buffer<T>();
-      offset = 0;
+    size_t bytes = volume()*sizeof(T);
+    if (bytes > 0) {
+      buffer = (T*)libbirch::allocate(bytes);
+      tid = get_thread_num();
     }
   }
 
@@ -597,13 +514,14 @@ private:
    * Deallocate memory of array.
    */
   void release() {
-    if (!isView && buffer && buffer->decUsage() == 0u) {
-      std::destroy(begin(), end());
-      size_t bytes = Buffer<T>::size(volume());
-      libbirch::deallocate(buffer, bytes, buffer->tid);
+    if (!isView) {
+      size_t bytes = volume()*sizeof(T);
+      if (bytes > 0) {
+        std::destroy(begin(), end());
+        libbirch::deallocate(buffer, bytes, tid);
+        buffer = nullptr;
+      }
     }
-    buffer = nullptr;
-    offset = 0;
   }
 
   /**
@@ -642,7 +560,6 @@ private:
    */
   template<class U>
   void uninitialized_copy(const U& o) {
-    assert(!isShared());
     auto n = std::min(size(), o.size());
     auto begin1 = o.begin();
     auto end1 = begin1 + n;
@@ -660,25 +577,18 @@ private:
   /**
    * Buffer.
    */
-  Buffer<T>* buffer;
+  T* buffer;
 
   /**
-   * Offset into the buffer. This should be zero when isView is false.
+   * Id of the thread that allocated the buffer.
    */
-  int64_t offset;
+  int16_t tid;
 
   /**
    * Is this a view of another array? A view has stricter assignment
    * semantics, as it cannot be resized or moved.
    */
   bool isView;
-
-  /**
-   * Lock used for copy-on-write. Read use is obtained when the current
-   * buffer must be preserved for either read or write operations. Write use
-   * is obtained to substitute the current buffer with another.
-   */
-  ReadersWriterLock bufferLock;
 };
 
 template<class T, class F>
