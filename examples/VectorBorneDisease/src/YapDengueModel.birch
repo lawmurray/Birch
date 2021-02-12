@@ -41,17 +41,19 @@ final class YapDengueModel < Model {
     m.γ <- 0.0;
 
     ρ ~ Beta(1.0, 1.0);
+    z <- 0;
+    y <- nil;
   }
 
   function simulate(t:Integer) {
     if t == 1 {
       /* initial state */
-      h.n[t] <- 7370;
+      let n <- 7370;
       h.i[t] <~ Poisson(5.0);
       h.i[t] <- h.i[t] + 1;
       h.e[t] <~ Poisson(5.0);
-      h.r[t] <~ Uniform(0, h.n[t] - h.i[t] - h.e[t]);
-      h.s[t] <- h.n[t] - h.e[t] - h.i[t] - h.r[t];
+      h.r[t] <~ Uniform(0, n - h.i[t] - h.e[t]);
+      h.s[t] <- n - h.e[t] - h.i[t] - h.r[t];
 
       h.Δs[t] <- 0;
       h.Δe[t] <- h.e[t];
@@ -60,30 +62,31 @@ final class YapDengueModel < Model {
       
       u:Real;
       u <~ Uniform(-1.0, 2.0);
-      m.n[t] <- Integer(h.n[t]*pow(10.0, u));
-      m.r[t] <- 0;
-      m.i[t] <- 0;
+      m.s[t] <- Integer(n*pow(10.0, u));
       m.e[t] <- 0;
-      m.s[t] <- m.n[t];
+      m.i[t] <- 0;
+      m.r[t] <- 0;
 
       m.Δs[t] <- 0;
       m.Δe[t] <- 0;
       m.Δi[t] <- 0;
       m.Δr[t] <- 0;
     } else {
+      n:Real <- h.s[t - 1] + h.e[t - 1] + h.i[t - 1] + h.r[t - 1];
+
       /* transition of human population */
       τ_h:Integer;
-      τ_h <~ Binomial(h.s[t - 1], 1.0 - exp(-m.i[t - 1]/Real(h.n[t - 1])));
+      τ_h <~ Binomial(h.s[t - 1], 1.0 - exp(-m.i[t - 1]/n));
       h.transfer(t, τ_h);
 
       /* transition of mosquito population */
       τ_m:Integer;
-      τ_m <~ Binomial(m.s[t - 1], 1.0 - exp(-h.i[t - 1]/Real(h.n[t - 1])));
+      τ_m <~ Binomial(m.s[t - 1], 1.0 - exp(-h.i[t - 1]/n));
       m.transfer(t, τ_m);
     }
 
     /* observation */
-    z <- h.Δi[t];
+    z <- z + h.Δi[t];
     if y? {
       y! ~> Binomial(z, ρ);
       z <- 0;

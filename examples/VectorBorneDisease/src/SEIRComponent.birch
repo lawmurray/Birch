@@ -45,11 +45,6 @@ final class SEIRComponent {
   r:Tape<Integer>;
 
   /**
-   * Total population at each time.
-   */
-  n:Tape<Integer>;
-
-  /**
    * Birth probability.
    */
   ν:Random<Real>;
@@ -85,6 +80,9 @@ final class SEIRComponent {
    * population.
    */  
   function transfer(t:Integer, τ:Integer) {
+    /* total population */
+    let n <- s[t - 1] + e[t - 1] + i[t - 1] + r[t - 1];
+
     /* transfers */
     Δe[t] <~ Binomial(τ, λ);
     Δi[t] <~ Binomial(e[t - 1], δ);
@@ -108,12 +106,9 @@ final class SEIRComponent {
 
     /* births */
     if !ν.hasValue() || ν.value() != 0.0 {
-      Δs[t] <~ Binomial(n[t], ν);
+      Δs[t] <~ Binomial(n, ν);
       s[t] <- s[t] + Δs[t];
     }
-    
-    /* update population */
-    n[t] <- s[t] + e[t] + i[t] + r[t];
   }
 
   function write(buffer:Buffer) {

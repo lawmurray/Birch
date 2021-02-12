@@ -171,6 +171,7 @@ class ParticleFilter {
       collect();
     } else {
       /* normalize weights to sum to nparticles */
+      a <- iota(1, nparticles);
       w <- w - vector(lsum - log(Real(nparticles)), nparticles);
     }
   }

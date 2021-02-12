@@ -1,7 +1,8 @@
 /**
  * Alive particle filter. When propagating and weighting particles, the
- * alive particle filter maintains $N$ particles with non-zero weight, rather
- * than $N$ particles in total as with the standard particle filter.
+ * alive particle filter continues until it obtains $N$ particles with
+ * non-zero weight, rather than $N$ particles in total, as with the standard
+ * particle filter.
  *
  * ```mermaid
  * classDiagram
@@ -22,62 +23,38 @@ class AliveParticleFilter < ParticleFilter {
   p:Integer[_];
 
   override function simulate(t:Integer, input:Buffer) {
-    let play <- PlayHandler(delayed);
+    a <- resample_systematic(w);  // normal resample intialize first attempt
+    p <- vector(0, nparticles);
+
     let x0 <- x;
     let w0 <- w;
-    p <- vector(0, nparticles + 1);
-    parallel for n in 1..nparticles + 1 {
-      if n <= nparticles {
+    parallel for n in 1..nparticles {
+      do {
         x[n] <- global.copy(x0[a[n]]);
+        p[n] <- p[n] + 1;
         let handler <- PlayHandler(delayed);
         with (handler) {
           x[n].m.read(t, input);
           x[n].m.simulate(t);
           w[n] <- handler.w;
         }
-        p[n] <- 1;
-        while w[n] == -inf {  // repeat until weight is positive
-          a[n] <- global.ancestor(w0);
-          x[n] <- global.copy(x0[a[n]]);
-          p[n] <- p[n] + 1;
-          let handler <- PlayHandler(delayed);
-          with (handler) {
-            x[n].m.read(t, input);
-            x[n].m.simulate(t);
-            w[n] <- handler.w;
-          }
+        if w[n] == -inf {
+          a[n] <- global.ancestor(w0);  // try again
         }
-      } else {
-        /* propagate and weight until one further acceptance, which is
-         * discarded for unbiasedness in the normalizing constant
-         * estimate */
-        let w' <- 0.0;
-        p[n] <- 0;
-        do {
-          let a' <- global.ancestor(w0);
-          let x' <- global.copy(x0[a']);
-          p[n] <- p[n] + 1;
-          let handler <- PlayHandler(delayed);
-          with (handler) {
-            x'.m.read(t, input);
-            x'.m.simulate(t);
-            w' <- handler.w;
-          }
-        } while w' == -inf;  // repeat until weight is positive
-      }
+      } while w[n] == -inf;
     }
     collect();
+
+    /* discard a random particle to debias (random, rather than last, as
+     * particles are not exchangeable for all resamplers) */
+    w[simulate_uniform_int(1, nparticles)] <- -inf;
   }
   
   override function resample() {
-    if ess <= trigger*nparticles {
-      /* compute ancestor indices, but don't copy, propagate() handles this */
-      a <- resample_systematic(w);
-      w <- vector(0.0, nparticles);
-    } else {
-      /* normalize weights to sum to nparticles */
-      w <- w - vector(lsum - log(Real(nparticles)), nparticles);
-    }
+    /* proceed as though no resample, so just normalize weights, and let
+     * propagate handle the rest */
+    a <- iota(1, nparticles);
+    w <- w - vector(lsum - log(Real(nparticles)), nparticles);
   }
   
   override function reduce() {
