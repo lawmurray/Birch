@@ -131,6 +131,11 @@
     visitor_.visit(__VA_ARGS__); \
   } \
   \
+  void accept_(libbirch::BiconnectedCollector& visitor_) override { \
+    base_type_::accept_(visitor_); \
+    visitor_.visit(__VA_ARGS__); \
+  } \
+  \
   std::tuple<int,int,int> accept_(libbirch::Spanner& visitor_, const int i_, const int j_) override { \
     int l_, h_, m_, l1_, h1_, m1_; \
     std::tie(l_, h_, m_) = base_type_::accept_(visitor_, i_, j_); \
@@ -166,6 +171,7 @@
 #include "libbirch/Scanner.hpp"
 #include "libbirch/Reacher.hpp"
 #include "libbirch/Collector.hpp"
+#include "libbirch/BiconnectedCollector.hpp"
 #include "libbirch/Spanner.hpp"
 #include "libbirch/Bridger.hpp"
 #include "libbirch/Copier.hpp"

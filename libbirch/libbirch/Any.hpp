@@ -62,6 +62,7 @@ class Any {
   friend class Scanner;
   friend class Reacher;
   friend class Collector;
+  friend class BiconnectedCollector;
   friend class Spanner;
   friend class Bridger;
   friend class Copier;
@@ -201,6 +202,15 @@ public:
   }
 
   /**
+   * Decrement the shared count for an object while collecting a biconnected
+   * component.
+   */
+  int decSharedBiconnected() {
+    assert(numShared() > 0);
+    return --r;
+  }
+
+  /**
    * Is there only one pointer (of any type) to this object?
    */
   bool isUnique() const {
@@ -273,6 +283,10 @@ public:
   }
 
   virtual void accept_(Collector& visitor) {
+    //
+  }
+
+  virtual void accept_(BiconnectedCollector& visitor) {
     //
   }
 

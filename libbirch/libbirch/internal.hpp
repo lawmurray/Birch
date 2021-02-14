@@ -13,6 +13,7 @@ class Marker;
 class Scanner;
 class Reacher;
 class Collector;
+class BiconnectedCollector;
 class Spanner;
 class Bridger;
 class Copier;

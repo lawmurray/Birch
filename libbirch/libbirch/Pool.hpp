@@ -35,7 +35,6 @@ public:
    * empty.
    */
   void* take() {
-    void* block;
     if (!freeList) {
       /* free list is empty, swap in the pend list instead */
       lock.set();
@@ -43,7 +42,7 @@ public:
       pendList = nullptr;
       lock.unset();
     }
-    block = freeList;
+    void* block = freeList;
     freeList = getNext(block);
     return block;
   }

@@ -10,14 +10,12 @@ namespace libbirch {
 /**
  * @internal
  * 
- * Visitor for recursively collecting objects in unreachable reference cycles.
+ * Visitor for recursively collecting objects in a biconnected component that
+ * is determined unreachable during cycle collection.
  *
  * @ingroup libbirch
- * 
- * This performs the `CollectWhite()` operation of @ref Bacon2001
- * "Bacon & Rajan (2001)".
  */
-class Collector {
+class BiconnectedCollector {
 public:
   void visit() {
     //
@@ -59,10 +57,9 @@ public:
 #include "libbirch/Array.hpp"
 #include "libbirch/Shared.hpp"
 #include "libbirch/Any.hpp"
-#include "libbirch/BiconnectedCollector.hpp"
 
 template<class T, class F>
-void libbirch::Collector::visit(Array<T,F>& o) {
+void libbirch::BiconnectedCollector::visit(Array<T,F>& o) {
   if (!is_value<T>::value) {
     auto iter = o.begin();
     auto last = o.end();
@@ -73,14 +70,15 @@ void libbirch::Collector::visit(Array<T,F>& o) {
 }
 
 template<class T>
-void libbirch::Collector::visit(Shared<T>& o) {
+void libbirch::BiconnectedCollector::visit(Shared<T>& o) {
+  Any* o1 = o.load();
+  o.store(nullptr);
   if (o.b) {
-    BiconnectedCollector().visit(o);
-  } else {
-    Any* o1 = o.load();
-    if (o1 && !o1->isAcyclic()) {
-      o.store(nullptr);
+    if (o1->decSharedBiconnected() == 0) {
       visit(o1);
     }
+  } else {
+    o1->decSharedReachable();
+    visit(o1);
   }
 }

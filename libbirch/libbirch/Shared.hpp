@@ -35,6 +35,7 @@ class Shared {
   friend class Scanner;
   friend class Reacher;
   friend class Collector;
+  friend class BiconnectedCollector;
   friend class Spanner;
   friend class Bridger;
   friend class Copier;
