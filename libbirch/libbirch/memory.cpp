@@ -127,7 +127,7 @@ void* libbirch::allocate(const size_t n) {
   #ifdef ENABLE_MEMORY_POOL
   int tid = get_thread_num();
   int i = bin(n);       // determine which pool
-  auto ptr = get_pool(64*tid + i).pop();  // attempt to reuse from this pool
+  auto ptr = get_pool(64*tid + i).take();  // attempt to reuse from this pool
   if (!ptr) {           // otherwise allocate new
     size_t m = unbin(i);
     ptr = (get_heap() += m) - m;
@@ -146,7 +146,16 @@ void libbirch::deallocate(void* ptr, const size_t n, const int tid) {
 
   #ifdef ENABLE_MEMORY_POOL
   int i = bin(n);
-  get_pool(64*tid + i).push(ptr);
+  auto& pool = get_pool(64*tid + i);
+  if (tid == get_thread_num()) {
+    /* this thread owns the associated pool, return the allocation to the free
+     * list */
+    pool.free(ptr);
+  } else {
+    /* this thread does not own the associated pool, return the allocation to
+     * the pend list */
+    pool.pend(ptr);
+  }
   #else
   std::free(ptr);
   #endif

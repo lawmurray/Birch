@@ -8,15 +8,16 @@
 
 namespace libbirch {
 /**
- * Thread-safe stack of memory allocations.
+ * Pool of memory blocks.
  *
  * @ingroup libbirch
- *
- * The pool is kept as a stack, with blocks removed from the pool by popping
- * the stack, and returned to the pool by pushing the stack. As each
- * block is at least 8 bytes in size, when in the pool (and therefore
- * not in use), its first 8 bytes are used to store a pointer to the next
- * block on the stack. The implementation is lock-free.
+ * 
+ * The pool is intended to manage allocations of the same size. It maintains
+ * a free list of memory blocks returned to the pool that it may later reuse.
+ * The pool is considered to be owned by a particular thread, managed
+ * externally. This owning thread takes blocks from the pool, and returns them
+ * to the pool, lock free. Other threads cannot take blocks from the pool, but
+ * may return them; a lock is required internally when this occurs.
  */
 class Pool {
 public:
@@ -24,36 +25,46 @@ public:
    * Constructor.
    */
   Pool() :
-      top(nullptr) {
+      freeList(nullptr),
+      pendList(nullptr) {
     //
   }
 
   /**
-   * Is the pool empty?
-   */
-  bool empty() const {
-    return !top;
-  }
-
-  /**
-   * Pop an allocation from the pool. Returns `nullptr` if the pool is
+   * Take an allocation from the pool. Returns `nullptr` if the pool is
    * empty.
    */
-  void* pop() {
-    lock.set();
-    auto result = top;
-    top = getNext(result);
-    lock.unset();
-    return result;
+  void* take() {
+    void* block;
+    if (!freeList) {
+      /* free list is empty, swap in the pend list instead */
+      lock.set();
+      freeList = pendList;
+      pendList = nullptr;
+      lock.unset();
+    }
+    block = freeList;
+    freeList = getNext(block);
+    return block;
   }
 
   /**
-   * Push an allocation to the pool.
+   * Return an allocation to the free list. This is used by the thread that
+   * owns the pool.
    */
-  void push(void* block) {
+  void free(void* block) {
+    setNext(block, freeList);
+    freeList = block;
+  }
+
+  /**
+   * Return an allocation to the pend list. This is used by a thread that does
+   * not own the pool.
+   */
+  void pend(void* block) {
     lock.set();
-    setNext(block, top);
-    top = block;
+    setNext(block, pendList);
+    pendList = block;
     lock.unset();
   }
 
@@ -74,9 +85,16 @@ private:
   }
 
   /**
-   * Stack of allocations.
+   * Free list.
    */
-  void* top;
+  void* freeList;
+
+  /**
+   * Pend list. Blocks returned to the pool by threads that do not own the
+   * pool are enqueued here first, and later returned to the free list by the
+   * owning thread.
+   */
+  void* pendList;
 
   /**
    * Mutex.
