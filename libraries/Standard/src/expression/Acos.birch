@@ -1,7 +1,7 @@
 /**
  * Lazy `acos`.
  */
-final class Acos(y:Expression<Real>) <
+acyclic class Acos(y:Expression<Real>) <
     ScalarUnaryExpression<Expression<Real>,Real,Real,Real>(y) {
   override function doEvaluate(y:Real) -> Real {
     return acos(y);

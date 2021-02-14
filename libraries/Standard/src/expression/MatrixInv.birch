@@ -1,7 +1,7 @@
 /**
  * Lazy `inv`.
  */
-final class MatrixInv<Argument,ArgumentValue,Value>(y:Argument) <
+acyclic class MatrixInv<Argument,ArgumentValue,Value>(y:Argument) <
     MatrixUnaryExpression<Argument,ArgumentValue,Real[_,_],Value>(y) {
   override function doRows() -> Integer {
     return y!.rows();

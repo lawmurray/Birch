@@ -1,7 +1,7 @@
 /**
  * Lazy negation.
  */
-final class DiscreteNegate(y:Expression<Integer>) <
+acyclic class DiscreteNegate(y:Expression<Integer>) <
     ScalarUnaryExpression<Expression<Integer>,Integer,Real,Integer>(y) {
   override function doEvaluate(y:Integer) -> Integer {
     return -y;

@@ -1,7 +1,7 @@
 /**
  * Lazy `join`.
  */
-final class MultivariateJoin<Value>(x:Expression<Value>[_]) <
+acyclic class MultivariateJoin<Value>(x:Expression<Value>[_]) <
     MultivariateExpression<Value[_]> {
   /**
    * Arguments.

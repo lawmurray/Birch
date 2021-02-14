@@ -1,7 +1,7 @@
 /**
  * Lazy rank update.
  */
-final class MatrixRankUpdate<Right,RightValue,RightGradient>(y:Expression<LLT>,
+acyclic class MatrixRankUpdate<Right,RightValue,RightGradient>(y:Expression<LLT>,
     z:Right) < MatrixBinaryExpression<Expression<LLT>,Right,LLT,RightValue,
     Real[_,_],RightGradient,LLT>(y, z) {  
   override function doRows() -> Integer {

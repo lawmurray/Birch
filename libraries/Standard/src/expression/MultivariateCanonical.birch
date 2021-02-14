@@ -1,7 +1,7 @@
 /**
  * Lazy `canonical`.
  */
-final class MultivariateCanonical(y:Expression<Real[_]>) <
+acyclic class MultivariateCanonical(y:Expression<Real[_]>) <
     MultivariateUnaryExpression<Expression<Real[_]>,Real[_],Real[_],
     Real[_]>(y) {
   override function doRows() -> Integer {

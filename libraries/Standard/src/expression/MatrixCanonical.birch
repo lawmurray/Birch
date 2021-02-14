@@ -1,7 +1,7 @@
 /**
  * Lazy `canonical`.
  */
-final class MatrixCanonical<Argument,ArgumentValue>(y:Argument) <
+acyclic class MatrixCanonical<Argument,ArgumentValue>(y:Argument) <
     MatrixUnaryExpression<Argument,ArgumentValue,Real[_,_],Real[_,_]>(y) {
   override function doRows() -> Integer {
     return y!.rows();

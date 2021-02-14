@@ -1,7 +1,7 @@
 /**
  * Lazy `cosh`.
  */
-final class Cosh(y:Expression<Real>) <
+acyclic class Cosh(y:Expression<Real>) <
     ScalarUnaryExpression<Expression<Real>,Real,Real,Real>(y) {
   override function doEvaluate(y:Real) -> Real {
     return cosh(y);

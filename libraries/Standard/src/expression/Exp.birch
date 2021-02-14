@@ -1,7 +1,7 @@
 /**
  * Lazy `exp`.
  */
-final class Exp(y:Expression<Real>) <
+acyclic class Exp(y:Expression<Real>) <
     ScalarUnaryExpression<Expression<Real>,Real,Real,Real>(y) {
   override function doEvaluate(y:Real) -> Real {
     return exp(y);

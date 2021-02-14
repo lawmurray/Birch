@@ -1,7 +1,7 @@
 /**
  * Lazy matrix multiply.
  */
-final class MatrixMultiply(y:Expression<Real[_,_]>,
+acyclic class MatrixMultiply(y:Expression<Real[_,_]>,
     z:Expression<Real[_,_]>) < MatrixBinaryExpression<Expression<Real[_,_]>,
     Expression<Real[_,_]>,Real[_,_],Real[_,_],Real[_,_],Real[_,_],
     Real[_,_]>(y, z) {  

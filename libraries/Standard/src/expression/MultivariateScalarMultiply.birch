@@ -1,7 +1,7 @@
 /**
  * Lazy multivariate multiply.
  */
-final class MultivariateScalarMultiply(y:Expression<Real>,
+acyclic class MultivariateScalarMultiply(y:Expression<Real>,
     z:Expression<Real[_]>) < MultivariateBinaryExpression<Expression<Real>,
     Expression<Real[_]>,Real,Real[_],Real,Real[_],Real[_]>(y, z) {  
   override function doRows() -> Integer {

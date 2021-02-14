@@ -1,7 +1,7 @@
 /**
  * Lazy `abs`.
  */
-final class MatrixAbs(y:Expression<Real[_,_]>) <
+acyclic class MatrixAbs(y:Expression<Real[_,_]>) <
     MatrixUnaryExpression<Expression<Real[_,_]>,Real[_,_],Real[_,_],
     Real[_,_]>(y) {
   override function doRows() -> Integer {

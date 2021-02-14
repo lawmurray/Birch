@@ -1,7 +1,7 @@
 /**
  * Lazy `trace`.
  */
-final class Trace<Argument,ArgumentValue>(y:Argument) <
+acyclic class Trace<Argument,ArgumentValue>(y:Argument) <
     ScalarUnaryExpression<Argument,ArgumentValue,Real[_,_],Real>(y) {
   override function doEvaluate(y:ArgumentValue) -> Real {
     return trace(y);

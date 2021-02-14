@@ -1,7 +1,7 @@
 /**
  * Lazy negation.
  */
-final class MatrixNegate(y:Expression<Real[_,_]>) <
+acyclic class MatrixNegate(y:Expression<Real[_,_]>) <
     MatrixUnaryExpression<Expression<Real[_,_]>,Real[_,_],Real[_,_],
     Real[_,_]>(y) {
   override function doRows() -> Integer {

@@ -1,7 +1,7 @@
 /**
  * Lazy `diagonal`.
  */
-final class Diagonal(y:Expression<Real>, z:Integer) <
+acyclic class Diagonal(y:Expression<Real>, z:Integer) <
     MatrixUnaryExpression<Expression<Real>,Real,Real,Real[_,_]>(y) {
   /**
    * Size of matrix.

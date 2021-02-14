@@ -1,7 +1,7 @@
 /**
  * Lazy multivariate add.
  */
-final class MultivariateAdd(y:Expression<Real[_]>, z:Expression<Real[_]>) <
+acyclic class MultivariateAdd(y:Expression<Real[_]>, z:Expression<Real[_]>) <
     MultivariateBinaryExpression<Expression<Real[_]>,Expression<Real[_]>,
     Real[_],Real[_],Real[_],Real[_],Real[_]>(y, z) {  
   override function doRows() -> Integer {

@@ -1,7 +1,7 @@
 /**
  * Lazy `tanh`.
  */
-final class Tanh(y:Expression<Real>) <
+acyclic class Tanh(y:Expression<Real>) <
     ScalarUnaryExpression<Expression<Real>,Real,Real,Real>(y) {
   override function doEvaluate(y:Real) -> Real {
     return tanh(y);

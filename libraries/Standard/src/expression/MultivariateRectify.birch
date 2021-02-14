@@ -1,7 +1,7 @@
 /**
  * Lazy `rectify`.
  */
-final class MultivariateRectify(y:Expression<Real[_]>) <
+acyclic class MultivariateRectify(y:Expression<Real[_]>) <
     MultivariateUnaryExpression<Expression<Real[_]>,Real[_],Real[_],
     Real[_]>(y) {
   override function doRows() -> Integer {

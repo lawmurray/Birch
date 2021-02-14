@@ -1,7 +1,7 @@
 /**
  * Lazy `lbeta`.
  */
-final class LogBeta(y:Expression<Real>, z:Expression<Real>) <
+acyclic class LogBeta(y:Expression<Real>, z:Expression<Real>) <
     ScalarBinaryExpression<Expression<Real>,Expression<Real>,Real,Real,Real,
     Real,Real>(y, z) {  
   override function doEvaluate(y:Real, z:Real) -> Real {
