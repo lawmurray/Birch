@@ -36,19 +36,6 @@ final class Delta(μ:Expression<Integer>) < Discrete {
     return μ.value();
   }
 
-  function graft() -> Distribution<Integer> {
-    prune();
-    m:Discrete?;
-    r:Distribution<Integer> <- this;
-    
-    /* match a template */
-    if (m <- μ.graftDiscrete())? {
-      r <- DiscreteDelta(m!);
-    }
-
-    return r;
-  }
-
   function write(buffer:Buffer) {
     prune();
     buffer.set("class", "Delta");
@@ -61,8 +48,13 @@ final class Delta(μ:Expression<Integer>) < Discrete {
  *
  * - μ: Location.
  */
-function Delta(μ:Expression<Integer>) -> Delta {
-  return construct<Delta>(μ);
+function Delta(μ:Expression<Integer>) -> Distribution<Integer> {
+  m:Discrete?;
+  if (m <- μ.graftDiscrete())? {
+    return DiscreteDelta(m!);
+  } else {
+    return construct<Delta>(μ);
+  }
 }
 
 /**
@@ -70,6 +62,6 @@ function Delta(μ:Expression<Integer>) -> Delta {
  *
  * - μ: Location.
  */
-function Delta(μ:Integer) -> Delta {
+function Delta(μ:Integer) -> Distribution<Integer> {
   return Delta(box(μ));
 }

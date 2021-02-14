@@ -34,16 +34,10 @@ class MoveHandler(delayed:Boolean) < Handler {
   }
 
   function doHandle<Value>(event:SimulateEvent<Value>) {
-    if delayed {
-      event.p <- event.p.graft();
-    }
     event.x <- event.p.value();
   }
 
   function doHandle<Value>(event:ObserveEvent<Value>) {
-    if delayed {
-      event.p <- event.p.graft();
-    }
     let v <- event.p.observeLazy(box(event.x));
     if v? {
       if z? {
@@ -58,9 +52,6 @@ class MoveHandler(delayed:Boolean) < Handler {
   }
 
   function doHandle<Value>(event:AssumeEvent<Value>) {
-    if delayed {
-      event.p <- event.p.graft();
-    }
     if event.x.hasValue() {
       let v <- event.p.observeLazy(event.x);
       if v? {
@@ -88,9 +79,6 @@ class MoveHandler(delayed:Boolean) < Handler {
 
   function doHandle<Value>(record:SimulateRecord<Value>,
       event:SimulateEvent<Value>) {
-    if delayed {
-      event.p <- event.p.graft();
-    }
     event.x <- record.x;
   }
 
@@ -104,9 +92,6 @@ class MoveHandler(delayed:Boolean) < Handler {
 
   function doHandle<Value>(record:AssumeRecord<Value>,
       event:AssumeEvent<Value>) {
-    if delayed {
-      event.p <- event.p.graft();
-    }
     if event.x.hasValue() {
       /* assume events with a value already assigned are replayed in the
        * same way they are played, it's only necessary to check that the

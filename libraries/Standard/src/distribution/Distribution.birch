@@ -284,20 +284,9 @@ abstract class Distribution<Value> < DelayDistribution {
 
   /**
    * Graft this onto the delayed sampling graph.
-   *
-   * Returns: The object to attach to the delayed sampling graph. This may
-   * be this object, or a substitute based on variable elimination rules.
-   * Call `attach()` on the object to finalize the graft.
-   */
-  function graft() -> Distribution<Value> {
-    prune();
-    return this;
-  }
-
-  /**
-   * Graft this onto the delayed sampling graph.
    */
   function graftGaussian() -> Gaussian? {
+    prune();
     return nil;
   }
     
@@ -305,6 +294,7 @@ abstract class Distribution<Value> < DelayDistribution {
    * Graft this onto the delayed sampling graph.
    */
   function graftBeta() -> Beta? {
+    prune();
     return nil;
   }
   
@@ -312,6 +302,7 @@ abstract class Distribution<Value> < DelayDistribution {
    * Graft this onto the delayed sampling graph.
    */
   function graftGamma() -> Gamma? {
+    prune();
     return nil;
   }
   
@@ -319,6 +310,7 @@ abstract class Distribution<Value> < DelayDistribution {
    * Graft this onto the delayed sampling graph.
    */
   function graftInverseGamma() -> InverseGamma? {
+    prune();
     return nil;
   } 
 
@@ -326,6 +318,7 @@ abstract class Distribution<Value> < DelayDistribution {
    * Graft this onto the delayed sampling graph.
    */
   function graftInverseWishart() -> InverseWishart? {
+    prune();
     return nil;
   } 
   
@@ -333,6 +326,7 @@ abstract class Distribution<Value> < DelayDistribution {
    * Graft this onto the delayed sampling graph.
    */
   function graftNormalInverseGamma(compare:Distribution<Real>) -> NormalInverseGamma? {
+    prune();
     return nil;
   }
   
@@ -340,6 +334,7 @@ abstract class Distribution<Value> < DelayDistribution {
    * Graft this onto the delayed sampling graph.
    */
   function graftDirichlet() -> Dirichlet? {
+    prune();
     return nil;
   }
 
@@ -347,6 +342,7 @@ abstract class Distribution<Value> < DelayDistribution {
    * Graft this onto the delayed sampling graph.
    */
   function graftRestaurant() -> Restaurant? {
+    prune();
     return nil;
   }
 
@@ -354,6 +350,7 @@ abstract class Distribution<Value> < DelayDistribution {
    * Graft this onto the delayed sampling graph.
    */
   function graftMultivariateGaussian() -> MultivariateGaussian? {
+    prune();
     return nil;
   }
 
@@ -362,6 +359,7 @@ abstract class Distribution<Value> < DelayDistribution {
    */
   function graftMultivariateNormalInverseGamma(compare:Distribution<Real>) ->
       MultivariateNormalInverseGamma? {
+    prune();
     return nil;
   }
 
@@ -369,6 +367,7 @@ abstract class Distribution<Value> < DelayDistribution {
    * Graft this onto the delayed sampling graph.
    */
   function graftMatrixGaussian() -> MatrixGaussian? {
+    prune();
     return nil;
   }
 
@@ -377,6 +376,7 @@ abstract class Distribution<Value> < DelayDistribution {
    */
   function graftMatrixNormalInverseWishart(compare:Distribution<LLT>) ->
       MatrixNormalInverseWishart? {
+    prune();
     return nil;
   }
 
@@ -384,6 +384,7 @@ abstract class Distribution<Value> < DelayDistribution {
    * Graft this onto the delayed sampling graph.
    */
   function graftDiscrete() -> Discrete? {
+    prune();
     return nil;
   }
 
@@ -391,6 +392,7 @@ abstract class Distribution<Value> < DelayDistribution {
    * Graft this onto the delayed sampling graph.
    */
   function graftBoundedDiscrete() -> BoundedDiscrete? {
+    prune();
     return nil;
   }
 }

@@ -30,9 +30,7 @@ class TestLinearDiscreteDelta < Model {
 
   function forward() -> Real[_] {
     z:Real[2];
-    assert !ρ.hasValue();
     z[1] <- ρ.value();
-    assert !x.hasValue();
     z[2] <- x.value();
     return z;
   }
@@ -48,9 +46,7 @@ class TestLinearDiscreteDelta < Model {
 
   function forwardLazy() -> Real[_] {
     z:Real[2];
-    assert !ρ.hasValue();
     z[1] <- ρ.get();
-    assert !x.hasValue();
     z[2] <- x.get();
     return z;
   }

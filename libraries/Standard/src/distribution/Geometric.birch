@@ -1,13 +1,13 @@
 /**
  * Create a Geometric distribution
  */
-function Geometric(ρ:Expression<Real>) -> NegativeBinomial {
+function Geometric(ρ:Expression<Real>) -> Distribution<Integer> {
   return NegativeBinomial(box(1), ρ);
 }
 
 /**
  * Create a Geometric distribution
  */
-function Geometric(ρ:Real) -> NegativeBinomial {
+function Geometric(ρ:Real) -> Distribution<Integer> {
   return Geometric(box(ρ));
 }

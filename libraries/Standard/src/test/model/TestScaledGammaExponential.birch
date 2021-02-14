@@ -26,13 +26,13 @@ class TestScaledGammaExponential < Model {
   function forward() -> Real[_] {
     y:Real[2];
     y[1] <- λ.value();
-    assert !x.hasValue();
     y[2] <- x.value();
     return y;
   }
 
   function backward() -> Real[_] {
     y:Real[2];
+    assert !x.hasValue();
     y[2] <- x.value();
     assert !λ.hasValue();
     y[1] <- λ.value();
@@ -42,13 +42,13 @@ class TestScaledGammaExponential < Model {
   function forwardLazy() -> Real[_] {
     y:Real[2];
     y[1] <- λ.get();
-    assert !x.hasValue();
     y[2] <- x.get();
     return y;
   }
 
   function backwardLazy() -> Real[_] {
     y:Real[2];
+    assert !x.hasValue();
     y[2] <- x.get();
     assert !λ.hasValue();
     y[1] <- λ.get();
@@ -56,6 +56,6 @@ class TestScaledGammaExponential < Model {
   }
 
   function marginal() -> Distribution<Real> {
-    return x.distribution()!.graft();
+    return x.distribution()!;
   }
 }

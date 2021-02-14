@@ -20,7 +20,6 @@ class TestDirichletMultinomial < Model {
     D:Integer <- length(α);
     y:Real[2*D];
     y[1..D] <- ρ.value();
-    assert !x.hasValue();
     y[D+1..2*D] <- x.value();
     return y;
   }
@@ -28,6 +27,7 @@ class TestDirichletMultinomial < Model {
   function backward() -> Real[_] {
     D:Integer <- length(α);
     y:Real[2*D];
+    assert !x.hasValue();
     y[D+1..2*D] <- x.value();
     assert !ρ.hasValue();
     y[1..D] <- ρ.value();
@@ -38,7 +38,6 @@ class TestDirichletMultinomial < Model {
     D:Integer <- length(α);
     y:Real[2*D];
     y[1..D] <- ρ.get();
-    assert !x.hasValue();
     y[D+1..2*D] <- x.get();
     return y;
   }
@@ -46,6 +45,7 @@ class TestDirichletMultinomial < Model {
   function backwardLazy() -> Real[_] {
     D:Integer <- length(α);
     y:Real[2*D];
+    assert !x.hasValue();
     y[D+1..2*D] <- x.get();
     assert !ρ.hasValue();
     y[1..D] <- ρ.get();

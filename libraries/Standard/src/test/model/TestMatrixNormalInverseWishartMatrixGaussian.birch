@@ -37,11 +37,8 @@ class TestMatrixNormalInverseWishartMatrixGaussian < Model {
   }
 
   function forward() -> Real[_] {
-    assert !V.hasValue();
     V.value();
-    assert !X.hasValue();
     X.value();
-    assert !Y.hasValue();
     Y.value();
     return vectorize();
   }
@@ -57,11 +54,8 @@ class TestMatrixNormalInverseWishartMatrixGaussian < Model {
   }
 
   function forwardLazy() -> Real[_] {
-    assert !V.hasValue();
     V.get();
-    assert !X.hasValue();
     X.get();
-    assert !Y.hasValue();
     Y.get();
     return vectorize();
   }

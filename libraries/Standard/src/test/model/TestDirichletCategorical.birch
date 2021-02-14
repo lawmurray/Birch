@@ -17,13 +17,13 @@ class TestDirichletCategorical < Model {
   function forward() -> Real[_] {
     y:Real[6];
     y[1..5] <- ρ.value();
-    assert !x.hasValue();
     y[6] <- x.value();
     return y;
   }
 
   function backward() -> Real[_] {
     y:Real[6];
+    assert !x.hasValue();
     y[6] <- x.value();
     assert !ρ.hasValue();
     y[1..5] <- ρ.value();
@@ -33,13 +33,13 @@ class TestDirichletCategorical < Model {
   function forwardLazy() -> Real[_] {
     y:Real[6];
     y[1..5] <- ρ.get();
-    assert !x.hasValue();
     y[6] <- x.get();
     return y;
   }
 
   function backwardLazy() -> Real[_] {
     y:Real[6];
+    assert !x.hasValue();
     y[6] <- x.get();
     assert !ρ.hasValue();
     y[1..5] <- ρ.get();
@@ -47,6 +47,6 @@ class TestDirichletCategorical < Model {
   }
 
   function marginal() -> Distribution<Integer> {
-    return x.distribution()!.graft();
+    return x.distribution()!;
   }
 }

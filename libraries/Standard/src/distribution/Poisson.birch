@@ -39,26 +39,6 @@ final class Poisson(λ:Expression<Real>) < Discrete {
     return 0;
   }
 
-  function graft() -> Distribution<Integer> {
-    prune();
-    m1:TransformLinear<Gamma>?;
-    m2:Gamma?;
-    r:Distribution<Integer> <- this;
-
-    /* match a template */      
-    if (m1 <- λ.graftScaledGamma())? {
-      r <- ScaledGammaPoisson(m1!.a, m1!.x);
-    } else if (m2 <- λ.graftGamma())? {
-      r <- GammaPoisson(m2!);
-    }
-    
-    return r;
-  }
-
-  function graftDiscrete() -> Discrete? {
-    return Discrete?(graft());
-  }
-
   function write(buffer:Buffer) {
     prune();
     buffer.set("class", "Poisson");
@@ -69,13 +49,21 @@ final class Poisson(λ:Expression<Real>) < Discrete {
 /**
  * Create Poisson distribution.
  */
-function Poisson(λ:Expression<Real>) -> Poisson {
-  return construct<Poisson>(λ);
+function Poisson(λ:Expression<Real>) -> Distribution<Integer> {
+  m1:TransformLinear<Gamma>?;
+  m2:Gamma?;
+  if (m1 <- λ.graftScaledGamma())? {
+    return ScaledGammaPoisson(m1!.a, m1!.x);
+  } else if (m2 <- λ.graftGamma())? {
+    return GammaPoisson(m2!);
+  } else {
+    return construct<Poisson>(λ);
+  }
 }
 
 /**
  * Create Poisson distribution.
  */
-function Poisson(λ:Real) -> Poisson {
+function Poisson(λ:Real) -> Distribution<Integer> {
   return Poisson(box(λ));
 }

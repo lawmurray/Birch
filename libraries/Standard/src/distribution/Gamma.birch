@@ -45,19 +45,6 @@ final class Gamma(k:Expression<Real>, θ:Expression<Real>) <
     return 0.0;
   }
 
-  function graft() -> Distribution<Real> {
-    prune();
-    θ1:InverseGamma?;
-    r:Distribution<Real> <- this;
-    
-    /* match a template */
-    if (θ1 <- θ.graftInverseGamma())? {
-      r <- InverseGammaGamma(k, θ1!);
-    }
-
-    return r;
-  }
-
   function graftGamma() -> Gamma? {
     prune();
     return this;
@@ -74,27 +61,32 @@ final class Gamma(k:Expression<Real>, θ:Expression<Real>) <
 /**
  * Create gamma distribution.
  */
-function Gamma(k:Expression<Real>, θ:Expression<Real>) -> Gamma {
-  return construct<Gamma>(k, θ);
+function Gamma(k:Expression<Real>, θ:Expression<Real>) -> Distribution<Real> {
+  θ1:InverseGamma?;
+  if (θ1 <- θ.graftInverseGamma())? {
+    return InverseGammaGamma(k, θ1!);
+  } else {
+    return construct<Gamma>(k, θ);
+  }
 }
 
 /**
  * Create gamma distribution.
  */
-function Gamma(k:Expression<Real>, θ:Real) -> Gamma {
+function Gamma(k:Expression<Real>, θ:Real) -> Distribution<Real> {
   return Gamma(k, box(θ));
 }
 
 /**
  * Create gamma distribution.
  */
-function Gamma(k:Real, θ:Expression<Real>) -> Gamma {
+function Gamma(k:Real, θ:Expression<Real>) -> Distribution<Real> {
   return Gamma(box(k), θ);
 }
 
 /**
  * Create gamma distribution.
  */
-function Gamma(k:Real, θ:Real) -> Gamma {
+function Gamma(k:Real, θ:Real) -> Distribution<Real> {
   return Gamma(box(k), box(θ));
 }

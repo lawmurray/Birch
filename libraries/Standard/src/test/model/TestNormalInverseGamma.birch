@@ -21,9 +21,7 @@ class TestNormalInverseGamma < Model {
 
   function forward() -> Real[_] {
     y:Real[2];
-    assert !σ2.hasValue();
     y[1] <- σ2.value();
-    assert !x.hasValue();
     y[2] <- x.value();
     return y;
   }
@@ -39,9 +37,7 @@ class TestNormalInverseGamma < Model {
 
   function forwardLazy() -> Real[_] {
     y:Real[2];
-    assert !σ2.hasValue();
     y[1] <- σ2.get();
-    assert !x.hasValue();
     y[2] <- x.get();
     return y;
   }
@@ -56,6 +52,6 @@ class TestNormalInverseGamma < Model {
   }
 
   function marginal() -> Distribution<Real> {
-    return x.distribution()!.graft();
+    return x.distribution()!;
   }
 }

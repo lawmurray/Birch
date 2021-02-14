@@ -50,36 +50,9 @@ class MatrixGaussian(M:Expression<Real[_,_]>, U:Expression<LLT>,
     return logpdf_lazy_matrix_gaussian(X, M, U, V);
   }
 
-  function graft() -> Distribution<Real[_,_]> {
-    prune();
-    s1:InverseWishart?;
-    r:Distribution<Real[_,_]> <- this;
-    
-    /* match a template */
-    if (s1 <- V.graftInverseWishart())? {
-      r <- MatrixNormalInverseWishart(M, U, s1!);
-    }
-    
-    return r;
-  }
-
   function graftMatrixGaussian() -> MatrixGaussian? {
     prune();
     return this;
-  }
-
-  function graftMatrixNormalInverseWishart(compare:Distribution<LLT>) ->
-      MatrixNormalInverseWishart? {
-    prune();
-    s1:InverseWishart?;
-    r:MatrixNormalInverseWishart?;
-    
-    /* match a template */
-    if (s1 <- V.graftInverseWishart())? && s1! == compare {
-      r <- MatrixNormalInverseWishart(M, U, s1!);
-    }
-
-    return r;
   }
 
   function write(buffer:Buffer) {
@@ -95,15 +68,20 @@ class MatrixGaussian(M:Expression<Real[_,_]>, U:Expression<LLT>,
  * Create matrix Gaussian distribution.
  */
 function Gaussian(M:Expression<Real[_,_]>, U:Expression<LLT>,
-    V:Expression<LLT>) -> MatrixGaussian {
-  return construct<MatrixGaussian>(M, U, V);
+    V:Expression<LLT>) -> Distribution<Real[_,_]> {
+  s1:InverseWishart?;
+  if (s1 <- V.graftInverseWishart())? {
+    return MatrixNormalInverseWishart(M, U, s1!);
+  } else {
+    return construct<MatrixGaussian>(M, U, V);
+  }
 }
 
 /**
  * Create matrix Gaussian distribution.
  */
 function Gaussian(M:Expression<Real[_,_]>, U:Expression<LLT>,
-    V:LLT) -> MatrixGaussian {
+    V:LLT) -> Distribution<Real[_,_]> {
   return Gaussian(M, U, box(V));
 }
 
@@ -111,7 +89,7 @@ function Gaussian(M:Expression<Real[_,_]>, U:Expression<LLT>,
  * Create matrix Gaussian distribution.
  */
 function Gaussian(M:Expression<Real[_,_]>, U:LLT, V:Expression<LLT>) ->
-    MatrixGaussian {
+    Distribution<Real[_,_]> {
   return Gaussian(M, box(U), V);
 }
 
@@ -119,7 +97,7 @@ function Gaussian(M:Expression<Real[_,_]>, U:LLT, V:Expression<LLT>) ->
  * Create matrix Gaussian distribution.
  */
 function Gaussian(M:Expression<Real[_,_]>, U:LLT, V:LLT) ->
-      MatrixGaussian {
+      Distribution<Real[_,_]> {
   return Gaussian(M, box(U), box(V));
 }
 
@@ -127,28 +105,30 @@ function Gaussian(M:Expression<Real[_,_]>, U:LLT, V:LLT) ->
  * Create matrix Gaussian distribution.
  */
 function Gaussian(M:Real[_,_], U:Expression<LLT>, V:Expression<LLT>) ->
-    MatrixGaussian {
+    Distribution<Real[_,_]> {
   return Gaussian(box(M), U, V);
 }
 
 /**
  * Create matrix Gaussian distribution.
  */
-function Gaussian(M:Real[_,_], U:Expression<LLT>, V:LLT) -> MatrixGaussian {
+function Gaussian(M:Real[_,_], U:Expression<LLT>, V:LLT) ->
+    Distribution<Real[_,_]> {
   return Gaussian(box(M), U, box(V));
 }
 
 /**
  * Create matrix Gaussian distribution.
  */
-function Gaussian(M:Real[_,_], U:LLT, V:Expression<LLT>) -> MatrixGaussian {
+function Gaussian(M:Real[_,_], U:LLT, V:Expression<LLT>) ->
+    Distribution<Real[_,_]> {
   return Gaussian(box(M), box(U), V);
 }
 
 /**
  * Create matrix Gaussian distribution.
  */
-function Gaussian(M:Real[_,_], U:LLT, V:LLT) -> MatrixGaussian {
+function Gaussian(M:Real[_,_], U:LLT, V:LLT) -> Distribution<Real[_,_]> {
   return Gaussian(box(M), box(U), box(V));
 }
 
@@ -156,7 +136,7 @@ function Gaussian(M:Real[_,_], U:LLT, V:LLT) -> MatrixGaussian {
  * Create matrix Gaussian distribution.
  */
 function Gaussian(M:Expression<Real[_,_]>, U:Expression<Real[_,_]>,
-    V:Expression<LLT>) -> MatrixGaussian {
+    V:Expression<LLT>) -> Distribution<Real[_,_]> {
   return Gaussian(M, llt(U), V);
 }
 
@@ -164,7 +144,7 @@ function Gaussian(M:Expression<Real[_,_]>, U:Expression<Real[_,_]>,
  * Create matrix Gaussian distribution.
  */
 function Gaussian(M:Expression<Real[_,_]>, U:Expression<Real[_,_]>,
-    V:LLT) -> MatrixGaussian {
+    V:LLT) -> Distribution<Real[_,_]> {
   return Gaussian(M, llt(U), V);
 }
 
@@ -172,7 +152,7 @@ function Gaussian(M:Expression<Real[_,_]>, U:Expression<Real[_,_]>,
  * Create matrix Gaussian distribution.
  */
 function Gaussian(M:Expression<Real[_,_]>, U:Real[_,_], V:Expression<LLT>) ->
-    MatrixGaussian {
+    Distribution<Real[_,_]> {
   return Gaussian(M, llt(U), V);
 }
 
@@ -180,7 +160,7 @@ function Gaussian(M:Expression<Real[_,_]>, U:Real[_,_], V:Expression<LLT>) ->
  * Create matrix Gaussian distribution.
  */
 function Gaussian(M:Expression<Real[_,_]>, U:Real[_,_], V:LLT) ->
-      MatrixGaussian {
+      Distribution<Real[_,_]> {
   return Gaussian(M, llt(U), V);
 }
 
@@ -188,28 +168,30 @@ function Gaussian(M:Expression<Real[_,_]>, U:Real[_,_], V:LLT) ->
  * Create matrix Gaussian distribution.
  */
 function Gaussian(M:Real[_,_], U:Expression<Real[_,_]>, V:Expression<LLT>) ->
-    MatrixGaussian {
+    Distribution<Real[_,_]> {
   return Gaussian(M, llt(U), V);
 }
 
 /**
  * Create matrix Gaussian distribution.
  */
-function Gaussian(M:Real[_,_], U:Expression<Real[_,_]>, V:LLT) -> MatrixGaussian {
+function Gaussian(M:Real[_,_], U:Expression<Real[_,_]>, V:LLT) ->
+    Distribution<Real[_,_]> {
   return Gaussian(M, llt(U), V);
 }
 
 /**
  * Create matrix Gaussian distribution.
  */
-function Gaussian(M:Real[_,_], U:Real[_,_], V:Expression<LLT>) -> MatrixGaussian {
+function Gaussian(M:Real[_,_], U:Real[_,_], V:Expression<LLT>) ->
+    Distribution<Real[_,_]> {
   return Gaussian(M, llt(U), V);
 }
 
 /**
  * Create matrix Gaussian distribution.
  */
-function Gaussian(M:Real[_,_], U:Real[_,_], V:LLT) -> MatrixGaussian {
+function Gaussian(M:Real[_,_], U:Real[_,_], V:LLT) -> Distribution<Real[_,_]> {
   return Gaussian(M, llt(U), V);
 }
 
@@ -217,7 +199,7 @@ function Gaussian(M:Real[_,_], U:Real[_,_], V:LLT) -> MatrixGaussian {
  * Create matrix Gaussian distribution.
  */
 function Gaussian(M:Expression<Real[_,_]>, U:Expression<LLT>,
-    V:Expression<Real[_,_]>) -> MatrixGaussian {
+    V:Expression<Real[_,_]>) -> Distribution<Real[_,_]> {
   return Gaussian(M, U, llt(V));
 }
 
@@ -225,7 +207,7 @@ function Gaussian(M:Expression<Real[_,_]>, U:Expression<LLT>,
  * Create matrix Gaussian distribution.
  */
 function Gaussian(M:Expression<Real[_,_]>, U:Expression<LLT>,
-    V:Real[_,_]) -> MatrixGaussian {
+    V:Real[_,_]) -> Distribution<Real[_,_]> {
   return Gaussian(M, U, llt(V));
 }
 
@@ -233,7 +215,7 @@ function Gaussian(M:Expression<Real[_,_]>, U:Expression<LLT>,
  * Create matrix Gaussian distribution.
  */
 function Gaussian(M:Expression<Real[_,_]>, U:LLT, V:Expression<Real[_,_]>) ->
-    MatrixGaussian {
+    Distribution<Real[_,_]> {
   return Gaussian(M, U, llt(V));
 }
 
@@ -241,7 +223,7 @@ function Gaussian(M:Expression<Real[_,_]>, U:LLT, V:Expression<Real[_,_]>) ->
  * Create matrix Gaussian distribution.
  */
 function Gaussian(M:Expression<Real[_,_]>, U:LLT, V:Real[_,_]) ->
-      MatrixGaussian {
+      Distribution<Real[_,_]> {
   return Gaussian(M, U, llt(V));
 }
 
@@ -249,7 +231,7 @@ function Gaussian(M:Expression<Real[_,_]>, U:LLT, V:Real[_,_]) ->
  * Create matrix Gaussian distribution.
  */
 function Gaussian(M:Real[_,_], U:Expression<LLT>, V:Expression<Real[_,_]>) ->
-    MatrixGaussian {
+    Distribution<Real[_,_]> {
   return Gaussian(M, U, llt(V));
 }
 
@@ -257,7 +239,7 @@ function Gaussian(M:Real[_,_], U:Expression<LLT>, V:Expression<Real[_,_]>) ->
  * Create matrix Gaussian distribution.
  */
 function Gaussian(M:Real[_,_], U:Expression<LLT>, V:Real[_,_]) ->
-    MatrixGaussian {
+    Distribution<Real[_,_]> {
   return Gaussian(M, U, llt(V));
 }
 
@@ -265,14 +247,15 @@ function Gaussian(M:Real[_,_], U:Expression<LLT>, V:Real[_,_]) ->
  * Create matrix Gaussian distribution.
  */
 function Gaussian(M:Real[_,_], U:LLT, V:Expression<Real[_,_]>) ->
-    MatrixGaussian {
+    Distribution<Real[_,_]> {
   return Gaussian(M, U, llt(V));
 }
 
 /**
  * Create matrix Gaussian distribution.
  */
-function Gaussian(M:Real[_,_], U:LLT, V:Real[_,_]) -> MatrixGaussian {
+function Gaussian(M:Real[_,_], U:LLT, V:Real[_,_]) ->
+    Distribution<Real[_,_]> {
   return Gaussian(M, U, llt(V));
 }
 
@@ -280,7 +263,7 @@ function Gaussian(M:Real[_,_], U:LLT, V:Real[_,_]) -> MatrixGaussian {
  * Create matrix Gaussian distribution.
  */
 function Gaussian(M:Expression<Real[_,_]>, U:Expression<Real[_,_]>,
-    V:Expression<Real[_,_]>) -> MatrixGaussian {
+    V:Expression<Real[_,_]>) -> Distribution<Real[_,_]> {
   return Gaussian(M, llt(U), llt(V));
 }
 
@@ -288,7 +271,7 @@ function Gaussian(M:Expression<Real[_,_]>, U:Expression<Real[_,_]>,
  * Create matrix Gaussian distribution.
  */
 function Gaussian(M:Expression<Real[_,_]>, U:Expression<Real[_,_]>,
-    V:Real[_,_]) -> MatrixGaussian {
+    V:Real[_,_]) -> Distribution<Real[_,_]> {
   return Gaussian(M, llt(U), llt(V));
 }
 
@@ -296,7 +279,7 @@ function Gaussian(M:Expression<Real[_,_]>, U:Expression<Real[_,_]>,
  * Create matrix Gaussian distribution.
  */
 function Gaussian(M:Expression<Real[_,_]>, U:Real[_,_],
-    V:Expression<Real[_,_]>) -> MatrixGaussian {
+    V:Expression<Real[_,_]>) -> Distribution<Real[_,_]> {
   return Gaussian(M, llt(U), llt(V));
 }
 
@@ -304,7 +287,7 @@ function Gaussian(M:Expression<Real[_,_]>, U:Real[_,_],
  * Create matrix Gaussian distribution.
  */
 function Gaussian(M:Expression<Real[_,_]>, U:Real[_,_], V:Real[_,_]) ->
-      MatrixGaussian {
+      Distribution<Real[_,_]> {
   return Gaussian(M, llt(U), llt(V));
 }
 
@@ -312,7 +295,7 @@ function Gaussian(M:Expression<Real[_,_]>, U:Real[_,_], V:Real[_,_]) ->
  * Create matrix Gaussian distribution.
  */
 function Gaussian(M:Real[_,_], U:Expression<Real[_,_]>,
-    V:Expression<Real[_,_]>) -> MatrixGaussian {
+    V:Expression<Real[_,_]>) -> Distribution<Real[_,_]> {
   return Gaussian(M, llt(U), llt(V));
 }
 
@@ -320,7 +303,7 @@ function Gaussian(M:Real[_,_], U:Expression<Real[_,_]>,
  * Create matrix Gaussian distribution.
  */
 function Gaussian(M:Real[_,_], U:Expression<Real[_,_]>, V:Real[_,_]) ->
-    MatrixGaussian {
+    Distribution<Real[_,_]> {
   return Gaussian(M, llt(U), llt(V));
 }
 
@@ -328,13 +311,72 @@ function Gaussian(M:Real[_,_], U:Expression<Real[_,_]>, V:Real[_,_]) ->
  * Create matrix Gaussian distribution.
  */
 function Gaussian(M:Real[_,_], U:Real[_,_], V:Expression<Real[_,_]>) ->
-    MatrixGaussian {
+    Distribution<Real[_,_]> {
   return Gaussian(M, llt(U), llt(V));
 }
 
 /**
  * Create matrix Gaussian distribution.
  */
-function Gaussian(M:Real[_,_], U:Real[_,_], V:Real[_,_]) -> MatrixGaussian {
+function Gaussian(M:Real[_,_], U:Real[_,_], V:Real[_,_]) ->
+    Distribution<Real[_,_]> {
   return Gaussian(M, llt(U), llt(V));
+}
+
+/**
+ * Create matrix Gaussian distribution where each row is independent.
+ */
+function Gaussian(M:Expression<Real[_,_]>, V:Expression<LLT>) ->
+    Distribution<Real[_,_]> {
+  s1:InverseWishart?;
+  m1:TransformLinearMatrix<MatrixNormalInverseWishart>?;
+  m2:MatrixNormalInverseWishart?;
+  let compare <- V.distribution();
+  if compare? && (m1 <- M.graftLinearMatrixNormalInverseWishart(compare!))? {
+    return LinearMatrixNormalInverseWishartMatrixGaussian(m1!.A, m1!.X, m1!.C);
+  } else if compare? && (m2 <- M.graftMatrixNormalInverseWishart(compare!))? {
+    return MatrixNormalInverseWishartMatrixGaussian(m2!);
+  } else if (s1 <- V.graftInverseWishart())? {
+    return MatrixNormalInverseWishart(M, box(llt(identity(M.rows()))), s1!);
+  } else {
+    return construct<MatrixGaussian>(M, box(llt(identity(M.rows()))), V);
+  }
+}
+
+/**
+ * Create matrix Gaussian distribution where each row is independent.
+ */
+function Gaussian(M:Expression<Real[_,_]>, V:LLT) -> Distribution<Real[_,_]> {
+  return Gaussian(M, box(V));
+}
+
+/**
+ * Create matrix Gaussian distribution where each row is independent.
+ */
+function Gaussian(M:Real[_,_], V:Expression<LLT>) -> Distribution<Real[_,_]> {
+  return Gaussian(box(M), V);
+}
+
+/**
+ * Create matrix Gaussian distribution where each row is independent.
+ */
+function Gaussian(M:Expression<Real[_,_]>, V:Expression<Real[_,_]>) ->
+    Distribution<Real[_,_]> {
+  return Gaussian(M, llt(V));
+}
+
+/**
+ * Create matrix Gaussian distribution where each row is independent.
+ */
+function Gaussian(M:Expression<Real[_,_]>, V:Real[_,_]) ->
+    Distribution<Real[_,_]> {
+  return Gaussian(M, llt(V));
+}
+
+/**
+ * Create matrix Gaussian distribution where each row is independent.
+ */
+function Gaussian(M:Real[_,_], V:Expression<Real[_,_]>) ->
+    Distribution<Real[_,_]> {
+  return Gaussian(M, llt(V));
 }

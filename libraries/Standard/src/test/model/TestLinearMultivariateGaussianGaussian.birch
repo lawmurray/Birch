@@ -29,13 +29,13 @@ class TestLinearMultivariateGaussianGaussian < Model {
   function forward() -> Real[_] {
     y:Real[6];
     y[1..5] <- μ.value();
-    assert !x.hasValue();
     y[6] <- x.value();
     return y;
   }
 
   function backward() -> Real[_] {
     y:Real[6];
+    assert !x.hasValue();
     y[6] <- x.value();
     assert !μ.hasValue();
     y[1..5] <- μ.value();
@@ -45,13 +45,13 @@ class TestLinearMultivariateGaussianGaussian < Model {
   function forwardLazy() -> Real[_] {
     y:Real[6];
     y[1..5] <- μ.get();
-    assert !x.hasValue();
     y[6] <- x.get();
     return y;
   }
 
   function backwardLazy() -> Real[_] {
     y:Real[6];
+    assert !x.hasValue();
     y[6] <- x.get();
     assert !μ.hasValue();
     y[1..5] <- μ.get();
@@ -59,6 +59,6 @@ class TestLinearMultivariateGaussianGaussian < Model {
   }
 
   function marginal() -> Distribution<Real> {
-    return x.distribution()!.graft();
+    return x.distribution()!;
   }
 }

@@ -27,19 +27,6 @@ final class Bernoulli(ρ:Expression<Real>) < Distribution<Boolean> {
     return logpdf_lazy_bernoulli(x, ρ);
   }
 
-  function graft() -> Distribution<Boolean> {
-    prune();
-    m:Beta?;
-    r:Distribution<Boolean> <- this;
-    
-    /* match a template */
-    if (m <- ρ.graftBeta())? {
-      r <- BetaBernoulli(m!);
-    }
-
-    return r;
-  }
-
   function write(buffer:Buffer) {
     prune();
     buffer.set("class", "Bernoulli");
@@ -50,13 +37,18 @@ final class Bernoulli(ρ:Expression<Real>) < Distribution<Boolean> {
 /**
  * Create Bernoulli distribution.
  */
-function Bernoulli(ρ:Expression<Real>) -> Bernoulli {
-  return construct<Bernoulli>(ρ);
+function Bernoulli(ρ:Expression<Real>) -> Distribution<Boolean> {
+  m:Beta?;
+  if (m <- ρ.graftBeta())? {
+    return BetaBernoulli(m!);
+  } else {
+    return construct<Bernoulli>(ρ);
+  }
 }
 
 /**
  * Create Bernoulli distribution.
  */
-function Bernoulli(ρ:Real) -> Bernoulli {
+function Bernoulli(ρ:Real) -> Distribution<Boolean> {
   return Bernoulli(box(ρ));
 }
