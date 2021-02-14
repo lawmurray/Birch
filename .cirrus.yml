@@ -6,6 +6,7 @@ env:
   BIRCH_FLAGS: '--unit=dir --arch=native --jobs=2'
   MODE_FLAGS: '--enable-debug --disable-test --disable-release'
   OMP_NUM_THREADS: 2
+  M4: /usr/local/bin/m4
 
 task:
   name: FreeBSD
