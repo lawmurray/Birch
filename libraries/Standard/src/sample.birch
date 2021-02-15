@@ -232,10 +232,11 @@ program sample(
       x:Model?;
       w:Real;
       (x, w) <- theSampler!.draw(theFilter!);
-
-      outputBuffer.set("sample", x!);
       outputBuffer.set("lweight", w);
-
+      outputBuffer.push("sample", x!);
+      for t in 1..nsteps! {
+        outputBuffer.push("sample", t, x!);
+      }
       outputWriter!.push(outputBuffer);
       outputWriter!.flush();
     }
