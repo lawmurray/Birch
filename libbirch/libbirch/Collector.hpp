@@ -78,7 +78,7 @@ void libbirch::Collector::visit(Shared<T>& o) {
     BiconnectedCollector().visit(o);
   } else {
     Any* o1 = o.load();
-    if (o1 && !o1->isAcyclic()) {
+    if (o1 && !o1->isAcyclic_()) {
       o.store(nullptr);
       visit(o1);
     }

@@ -214,12 +214,12 @@ void libbirch::collect() {
      * being a possible root; remove such objects first */
     int size = 0;
     for (auto o: possible_roots) {
-      if (o->isPossibleRoot()) {
+      if (o->isPossibleRoot_()) {
         possible_roots[size++] = o;
-      } else if (o->numShared() == 0) {
-        o->deallocate();  // deallocation was deferred until now
+      } else if (o->numShared_() == 0) {
+        o->deallocate_();  // deallocation was deferred until now
       } else {
-        o->unbuffer();  // not a root, mark as no longer in the buffer
+        o->unbuffer_();  // not a root, mark as no longer in the buffer
       }
     }
     possible_roots.resize(size);
@@ -267,8 +267,8 @@ void libbirch::collect() {
     /* finally, destroy objects determined unreachable */
     auto& unreachable = get_unreachable(tid);
     for (auto o : unreachable) {
-      o->destroy();
-      o->deallocate();
+      o->destroy_();
+      o->deallocate_();
     }
     unreachable.clear();
   }

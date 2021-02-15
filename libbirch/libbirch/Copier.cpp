@@ -8,7 +8,7 @@
 libbirch::Any* libbirch::Copier::visit(Any* o) {
   auto& value = m.get(o);
   if (!value) {
-    value = o->copy();
+    value = o->copy_();
 
     /* copy the value into a non-reference, as the reference may be
      * invalidated if m is resized during the call to accept_() below */

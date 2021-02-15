@@ -75,8 +75,8 @@ template<class T>
 void libbirch::Marker::visit(Shared<T>& o) {
   if (!o.b) {
     Any* o1 = o.load();
-    if (o1 && !o->isAcyclic()) {
-      o1->decSharedReachable();
+    if (o1 && !o1->isAcyclic_()) {
+      o1->decSharedReachable_();
       visit(o1);
     }
   }

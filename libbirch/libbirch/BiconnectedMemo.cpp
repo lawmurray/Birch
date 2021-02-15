@@ -9,8 +9,8 @@
 
 libbirch::BiconnectedMemo::BiconnectedMemo(Any* o) :
     values(nullptr),
-    offset(o->k),
-    nentries(o->n) {
+    offset(o->k_),
+    nentries(o->n_) {
   if (nentries > 0) {
     values = (Any**)allocate(nentries*sizeof(Any*));
     std::memset(values, 0, nentries*sizeof(Any*));
@@ -29,7 +29,7 @@ libbirch::BiconnectedMemo::~BiconnectedMemo() {
 
 libbirch::Any*& libbirch::BiconnectedMemo::get(Any* key) {
   assert(key);
-  int k = key->k + key->n - offset - 1;  // rank in biconnected component
+  int k = key->k_ + key->n_ - offset - 1;  // rank in biconnected component
   assert(0 <= k && k < nentries);
   return values[k];
 }

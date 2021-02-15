@@ -12,7 +12,7 @@ libbirch::BiconnectedCopier::BiconnectedCopier(Any* o) : m(o) {
 libbirch::Any* libbirch::BiconnectedCopier::visit(Any* o) {
   auto& value = m.get(o);
   if (!value) {
-    value = o->copy();
+    value = o->copy_();
     value->accept_(*this);
   }
   return value;

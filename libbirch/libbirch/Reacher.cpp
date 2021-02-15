@@ -4,10 +4,10 @@
 #include "libbirch/Reacher.hpp"
 
 void libbirch::Reacher::visit(Any* o) {
-  if (!(o->f.exchangeOr(SCANNED) & SCANNED)) {
-    o->f.maskAnd(~MARKED);  // unset for next time
+  if (!(o->f_.exchangeOr(SCANNED) & SCANNED)) {
+    o->f_.maskAnd(~MARKED);  // unset for next time
   }
-  if (!(o->f.exchangeOr(REACHED) & REACHED)) {
+  if (!(o->f_.exchangeOr(REACHED) & REACHED)) {
     o->accept_(*this);
   }
 }

@@ -51,11 +51,9 @@ enum Flag : int16_t {
  * copy support.
  *
  * @ingroup libbirch
- *
- * @attention A newly created object of type Any, or of a type derived from
- * it, must be assigned to at least one Shared pointer in its lifetime to
- * be correctly destroyed and deallocated. Furthermore, in order to work
- * correctly with multiple inheritance, Any must be the *first* base class.
+ * 
+ * Members of Any use an underscore suffix (e.g. `n_` instead of `n`) in order
+ * to avoid naming collisions with derived classes.
  */
 class Any {
   friend class Marker;
@@ -76,13 +74,13 @@ public:
    * Constructor.
    */
   Any() :
-      r(0),
-      a(0),
-      l(std::numeric_limits<int>::max()),
-      h(0),
-      p(-1),
-      allocTid(get_thread_num()),
-      f(0) {
+      r_(0),
+      a_(0),
+      l_(std::numeric_limits<int>::max()),
+      h_(0),
+      p_(-1),
+      t_(get_thread_num()),
+      f_(0) {
     //
   }
 
@@ -90,13 +88,13 @@ public:
    * Copy constructor.
    */
   Any(const Any& o) :
-      r(0),
-      a(0),
-      l(std::numeric_limits<int>::max()),
-      h(0),
-      p(-1),
-      allocTid(get_thread_num()),
-      f(o.f.load() & ACYCLIC) {
+      r_(0),
+      a_(0),
+      l_(std::numeric_limits<int>::max()),
+      h_(0),
+      p_(-1),
+      t_(get_thread_num()),
+      f_(o.f_.load() & ACYCLIC) {
     //
   }
 
@@ -104,7 +102,7 @@ public:
    * Destructor.
    */
   virtual ~Any() {
-    assert(r.load() == 0);
+    assert(r_.load() == 0);
   }
 
   /**
@@ -131,58 +129,58 @@ public:
   /**
    * Destroy.
    */
-  void destroy() {
-    auto tid = this->allocTid;
+  void destroy_() {
+    auto tid = this->t_;
     auto size = this->size_();
     this->~Any();
-    this->allocTid = tid;
-    this->n = size;
+    this->t_ = tid;
+    this->n_ = size;
   }
 
   /**
    * Deallocate.
    */
-  void deallocate() {
-    libbirch::deallocate(this, this->n, this->allocTid);
+  void deallocate_() {
+    libbirch::deallocate(this, this->n_, this->t_);
   }
 
   /**
    * Reference count.
    */
-  int numShared() const {
-    return r.load();
+  int numShared_() const {
+    return r_.load();
   }
 
   /**
    * Increment the shared r.
    */
-  void incShared() {
-    r.increment();
+  void incShared_() {
+    r_.increment();
   }
 
   /**
    * Decrement the shared reference count.
    */
-  void decShared() {
-    assert(numShared() > 0);
+  void decShared_() {
+    assert(numShared_() > 0);
 
     /* first set the BUFFERED flag so that this call is uniquely responsible
      * for registering this object as a possible root */
-    auto old = f.exchangeOr(BUFFERED|POSSIBLE_ROOT);
+    auto old = f_.exchangeOr(BUFFERED|POSSIBLE_ROOT);
 
-    if (--r == 0) {
+    if (--r_ == 0) {
       /* destroy, and as long as haven't been previously buffered, can
        * deallocate too */
-      destroy();
+      destroy_();
       if (!(old & BUFFERED) || old & ACYCLIC) {
         /* hasn't been previously buffered, or is acyclic, so can immediately
          * deallocate */
-        deallocate();
+        deallocate_();
       } else {
         /* has been previously buffered, so deallocation must be deferred
          * until collection, but certainly not a possible root, as has just
          * been destroyed */
-        f.maskAnd(~POSSIBLE_ROOT);
+        f_.maskAnd(~POSSIBLE_ROOT);
       }
     } else if (!(old & BUFFERED) && !(old & ACYCLIC)) {
       /* not already registered as a possible root, and not acyclic */
@@ -196,68 +194,65 @@ public:
    * The object will not be destroyed, and will not be registered as a
    * possible root for cycle collection.
    */
-  void decSharedReachable() {
-    assert(numShared() > 0);
-    r.decrement();
+  void decSharedReachable_() {
+    assert(numShared_() > 0);
+    r_.decrement();
   }
 
   /**
    * Decrement the shared count for an object while collecting a biconnected
    * component.
    */
-  int decSharedBiconnected() {
-    assert(numShared() > 0);
-    return --r;
+  int decSharedBiconnected_() {
+    assert(numShared_() > 0);
+    return --r_;
   }
 
   /**
    * Is there only one pointer (of any type) to this object?
    */
-  bool isUnique() const {
-    return numShared() == 1;
+  bool isUnique_() const {
+    return numShared_() == 1;
   }
 
   /**
    * Is this object of an acyclic class?
    */
-  bool isAcyclic() const {
-    return f.load() & ACYCLIC;
+  bool isAcyclic_() const {
+    return f_.load() & ACYCLIC;
   }
 
   /**
    * Is this object the possible root of a cycle?
    */
-  bool isPossibleRoot() const {
-    return f.load() & POSSIBLE_ROOT;
+  bool isPossibleRoot_() const {
+    return f_.load() & POSSIBLE_ROOT;
   }
 
   /**
    * Set the acyclic flag.
    */
-  void acyclic() {
-    f.maskOr(ACYCLIC);
+  void acyclic_() {
+    f_.maskOr(ACYCLIC);
   }
 
   /**
    * Unset buffer flag.
    */
-  void unbuffer() {
-    f.maskAnd(~(BUFFERED|POSSIBLE_ROOT));
+  void unbuffer_() {
+    f_.maskAnd(~(BUFFERED|POSSIBLE_ROOT));
   }
 
   /**
    * Get the class name.
    */
-  virtual const char* getClassName() const {
+  virtual const char* getClassName_() const {
     return "Any";
   }
 
   /**
    * Size of the object.
    */
-  int size() const {
-    return size_();
-  }
   virtual int size_() const {
     return sizeof(Any);
   }
@@ -265,9 +260,6 @@ public:
   /**
    * Shallow copy the object.
    */
-  Any* copy() const {
-    return copy_();
-  }
   virtual Any* copy_() const = 0;
 
   virtual void accept_(Marker& visitor) {
@@ -312,50 +304,50 @@ private:
   /**
    * Reference count.
    */
-  Atomic<int> r;
+  Atomic<int> r_;
 
   /**
    * Account of references, used for bridge finding and cycle collection.
    */
-  int a;
+  int a_;
 
   union {
     /**
      * Lowest reachable rank, used for bridge finding.
      */
-    int l;
+    int l_;
 
     /**
      * Index base in biconnected component, used for copying.
      */
-    int k;
+    int k_;
   };
 
   union {
     /**
      * Highest reachable rank, used for bridge finding.
      */
-    int h;
+    int h_;
 
     /**
      * Size of biconnnected component, used for copying.
      */
-    int n;
+    int n_;
   };
 
   /**
    * Id of the thread that claimed the object, used for bridge finding.
    */
-  int16_t p;
+  int16_t p_;
 
   /**
    * Id of the thread that allocated the object, used by the memory pool.
    */
-  int16_t allocTid;
+  int16_t t_;
 
   /**
    * Bitfield containing flags, used for bridge finding and cycle collection.
    */
-  Atomic<int16_t> f;
+  Atomic<int16_t> f_;
 };
 }
