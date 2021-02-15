@@ -56,22 +56,22 @@ A consistent code style is important for readability and maintainability. A good
 
   ```
   /**
-   * Do the thing (one sentence description).
+   * Do something (i.e. a brief one sentence description).
    *
-   * - x: The thing to do.
+   * - x: The something to do.
    *
-   * Return: Did we do the thing?
+   * Return: Did we actually do the something?
    *
-   * Further details of the function can be provided here.
+   * Further details of the function can be provided here. Any Markdown can
+   * be used, including math, e.g. $p(x)$, or
+   * [Mermaid](https://mermaid-js.github.io) diagrams. Wrap documentation like
+   * this at 78 characters.
    */
-  function do_the_thing(x:TheThing) -> Boolean {
+  function do_something(x:Something) -> Boolean {
     // ...
   }
   ```
 
-  You can use any Markdown in the comment too, including [Mermaid](https://mermaid-js.github.io) diagrams.
-
 ### For C++ code (e.g. in LibBirch)
 
-Much the same as for Birch code, adapted accordingly.
-
+Much the same as for Birch code, adapted accordingly. Documentation comments are formatted slightly differently, for use with [Doxygen](https://www.doxygen.nl) instead.
