@@ -1,8 +1,9 @@
 name: LinearGaussian
 manifest: 
   source: 
-    - src/LinearGaussianModel.birch
-    - src/LinearGaussianParameter.birch
+    - src/*.birch
+    - src/*/*.birch
+    - src/*/*/*.birch
   data:
     - config/linear_gaussian.json
     - input/linear_gaussian.json

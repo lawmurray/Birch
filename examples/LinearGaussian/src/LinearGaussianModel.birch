@@ -2,19 +2,53 @@
  * Linear-Gaussian state-space model. The delayed sampling feature of Birch
  * results in a Kalman filter being applied to this model.
  */
-class LinearGaussianModel < StateSpaceModel<LinearGaussianParameter,
-    Random<Real>,Random<Real>> {
-  function initial(x:Random<Real>, θ:LinearGaussianParameter) {
-    x ~ Gaussian(0.0, θ.σ2_x);
+class LinearGaussianModel < Model {
+  a:Real <- 0.8;
+  b:Real <- 10.0;
+  σ2_x:Real <- 1.0;
+  σ2_y:Real <- 0.01;
+
+  /**
+   * Hidden states.
+   */
+  x:Tape<Random<Real>>;
+
+  /**
+   * Observations.
+   */
+  y:Tape<Random<Real>>;
+
+  override function simulate(t:Integer) {
+    /* hidden state */
+    if t == 1 {
+      x[t] ~ Gaussian(0.0, σ2_x);
+    } else {
+      x[t] ~ Gaussian(a*x[t - 1], σ2_x);
+    }
+
+    /* observation */
+    y[t] ~ Gaussian(b*x[t], σ2_y);
   }
 
-  function transition(x':Random<Real>, x:Random<Real>,
-      θ:LinearGaussianParameter) {
-    x' ~ Gaussian(θ.a*x, θ.σ2_x);
+  override function read(buffer:Buffer) {
+    a <-? buffer.get<Real>("a");
+    b <-? buffer.get<Real>("b");
+    σ2_x <-? buffer.get<Real>("σ2_x");
+    σ2_y <-? buffer.get<Real>("σ2_y");
   }
 
-  function observation(y:Random<Real>, x:Random<Real>,
-      θ:LinearGaussianParameter) {
-    y ~ Gaussian(θ.b*x, θ.σ2_y);
+  override function read(t:Integer, buffer:Buffer) {
+    y[t] <-? buffer.get<Real>();
+  }
+
+  override function write(buffer:Buffer) {
+    buffer.set("a", a);
+    buffer.set("b", b);
+    buffer.set("σ2_x", σ2_x);
+    buffer.set("σ2_y", σ2_y);
+  }
+
+  override function write(t:Integer, buffer:Buffer) {
+    buffer.set(x[t]);
   }
 }
