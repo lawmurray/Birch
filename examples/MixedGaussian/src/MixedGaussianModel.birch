@@ -25,37 +25,37 @@ class MixedGaussianModel < Model {
   /**
    * Linear-linear state transition matrix.
    */
-  A:Real[_,_] <- [[1.0, 0.3, 0.0], [0.0, 0.92, -0.3], [0.0, 0.3, 0.92]];
+  A:Boxed<Real[_,_]>;
 
   /**
    * Nonlinear-linear state transition matrix.
    */
-  b:Real[_] <- [1.0, 0.0, 0.0];
+  b:Boxed<Real[_]>;
 
   /**
    * Linear observation matrix.
    */
-  c:Real[_] <- [1.0, -1.0, 1.0];
+  c:Boxed<Real[_]>;
 
   /**
    * Linear state noise covariance.
    */
-  Σ_x_l:Real[_,_] <- [[0.01, 0.0, 0.0], [0.0, 0.01, 0.0], [0.0, 0.0, 0.01]];
+  Σ_x_l:Boxed<Real[_,_]>;
 
   /**
    * Nonlinear state noise covariance.
    */
-  σ2_x_n:Real <- 0.01;
+  σ2_x_n:Boxed<Real>;
 
   /**
    * Linear observation noise covariance.
    */
-  σ2_y_l:Real <- 0.1;
+  σ2_y_l:Boxed<Real>;
 
   /**
    * Nonlinear observation noise covariance.
    */
-  σ2_y_n:Real <- 0.1;
+  σ2_y_n:Boxed<Real>;
 
   override function simulate(t:Integer) {
     /* hidden state */
