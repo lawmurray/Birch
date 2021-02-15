@@ -1,21 +1,57 @@
 /**
  * State-space model with linear-Gaussian dynamics and Poisson observation.
  */
-class PoissonGaussianModel < StateSpaceModel<PoissonGaussianParameter,
-    Random<Real>,Random<Integer>> {
-  function initial(x:Random<Real>, θ:PoissonGaussianParameter) {
-    x ~ Gaussian(0.0, θ.σ2_x);
+class PoissonGaussianModel < Model {
+  a:Real <- 0.8;
+  b:Real <- 10.0;
+  σ2_x:Real <- 1.0;
+  σ2_y:Real <- 0.01;
+
+  /**
+   * Hidden states.
+   */
+  x:Tape<Random<Real>>;
+
+  /**
+   * Further hidden states.
+   */
+  y:Tape<Random<Real>>;
+
+  /**
+   * Count observations.
+   */
+  z:Tape<Random<Integer>>;
+
+  override function simulate(t:Integer) {
+    if t == 1 {
+      x[t] ~ Gaussian(0.0, σ2_x);
+    } else {
+      x[t] ~ Gaussian(a*x[t - 1], σ2_x);
+    }
+    y[t] ~ Gaussian(b*x[t], σ2_y);
+    z[t] ~ Poisson(exp(0.1*y[t]));
   }
 
-  function transition(x':Random<Real>, x:Random<Real>,
-      θ:PoissonGaussianParameter) {
-    x' ~ Gaussian(θ.a*x, θ.σ2_x);
+  override function read(buffer:Buffer) {
+    a <-? buffer.get<Real>("a");
+    b <-? buffer.get<Real>("b");
+    σ2_x <-? buffer.get<Real>("σ2_x");
+    σ2_y <-? buffer.get<Real>("σ2_y");
   }
 
-  function observation(y:Random<Integer>, x:Random<Real>,
-      θ:PoissonGaussianParameter) {
-    z:Random<Real>;
-    z ~ Gaussian(θ.b*x, θ.σ2_y);
-    y ~ Poisson(exp(0.1*z));
+  override function read(t:Integer, buffer:Buffer) {
+    z[t] <-? buffer.get<Integer>();
+  }
+
+  override function write(buffer:Buffer) {
+    buffer.set("a", a);
+    buffer.set("b", b);
+    buffer.set("σ2_x", σ2_x);
+    buffer.set("σ2_y", σ2_y);
+  }
+
+  override function write(t:Integer, buffer:Buffer) {
+    buffer.set("x", x[t]);
+    buffer.set("y", y[t]);
   }
 }

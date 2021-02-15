@@ -1,8 +1,9 @@
 name: PoissonGaussian
 manifest: 
   source: 
-    - src/PoissonGaussianModel.birch
-    - src/PoissonGaussianParameter.birch
+    - src/*.birch
+    - src/*/*.birch
+    - src/*/*/*.birch
   data:
     - config/poisson_gaussian.json
     - input/poisson_gaussian.json
