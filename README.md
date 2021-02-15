@@ -4,15 +4,18 @@ Birch is a probabilistic programming language featuring automatic marginalizatio
 
 See [https://birch.sh](https://birch.sh) for a gentle introduction, and [https://docs.birch.sh](https://docs.birch.sh) for reference documentation.
 
-[![lawmurray](https://circleci.com/gh/lawmurray/Birch.svg?style=shield)](https://circleci.com/gh/lawmurray/Birch) [![codecov](https://codecov.io/gh/lawmurray/Birch/graph/badge.svg)](https://codecov.io/gh/lawmurray/Birch)
+[![lawmurray](https://circleci.com/gh/lawmurray/Birch.svg?style=shield)](https://circleci.com/gh/lawmurray/Birch) [![codecov](https://codecov.io/gh/lawmurray/Birch/graph/badge.svg)](https://codecov.io/gh/lawmurray/Birch) [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg)](CODE_OF_CONDUCT.md) 
 
 
 
 ## License
 
-Birch is open source software.
+Birch is open source software. It is licensed under the Apache License, Version 2.0 (the "License"); you may not use it except in compliance with the License. You may obtain a copy of the License at <http://www.apache.org/licenses/LICENSE-2.0>.
 
-It is licensed under the Apache License, Version 2.0 (the "License"); you may not use it except in compliance with the License. You may obtain a copy of the License at <http://www.apache.org/licenses/LICENSE-2.0>.
+
+## Code of conduct
+
+
 
 
 ## Getting started
