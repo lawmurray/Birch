@@ -83,8 +83,8 @@ class MixedGaussianModel < Model {
   }
 
   override function read(t:Integer, buffer:Buffer) {
-    buffer.get("y_l", y_l[t]);
-    buffer.get("y_n", y_n[t]);
+    y_l[t] <-? buffer.get<Real>("y_l");
+    y_n[t] <-? buffer.get<Real>("y_n");
   }
 
   override function write(buffer:Buffer) {
