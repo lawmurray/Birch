@@ -40,17 +40,19 @@ A consistent code style is important for readability and maintainability. A good
 
 * Global function names use `snake_case()`.
 
-* Global variable names also use `snake_case`, but avoid those anyway.
+* Global variable names also use `snake_case`, but avoid those anyway. If they are meant to be constants, use `SNAKE_CASE`.
 
-* Local variable names `snake_case`, too.
+* Function parameters and local variables use `snake_case`, too.
 
-* For variable names that correspond to a mathematical description---from a paper, say---prefer matching variable names in the paper over these rules. For example, a variable representing a matrix may use an uppercase letter, `A`. Use an underscore for subscripts, e.g. `A_x`.
+* There is no such thing as a `Camel_Snake`.
+
+* For variable names that correspond to a mathematical description---from a paper, say---prefer matching names to that mathematical description over these rules. For example, a variable representing a matrix may use an uppercase letter, `A`, regardless of whether it's a global, member or local variable, or a parameter. Use an underscore for subscripts, e.g. `A_x`.
 
 * Birch supports Greek letters, so use them. Write `α` not `alpha`. Some exceptions to this: standard math functions like `gamma` and `beta` are spelled out, as the precedent is inherited, and distribution names like `Gamma` and `Beta`. The easiest way to write Greek letters is to install a Greek keyboard that you can switch to with a keyboard shortcut, or just copy-and-paste from a character map. It's not the most efficient, but it's not the bottleneck in your productivity either, and makes for easy reading later.
 
 * Birch also supports `'`  (i.e. prime) at the end of variable names, e.g. `x'`. Useful for temporary variables, but don't overdo it.
 
-* To improve readability, put spaces around low precedence operators, and not around high precedence operators, e.g. write `a*b + c`, or `a/b - c`, not `a * b + c` or `a/b-c`.
+* To improve readability, put spaces around low precedence operators, and not around high precedence operators. For example, write `a*b + c`, or `a/b - c`, not `a * b + c` or `a/b-c`.
 
 * If a class or function should show up in the [documentation](https://docs.birch.sh), use a documentation comment (`/** ... */`) with the following template:
 
@@ -72,6 +74,6 @@ A consistent code style is important for readability and maintainability. A good
   }
   ```
 
-### For C++ code (e.g. in LibBirch)
+### For C++ code (e.g. in driver program and LibBirch)
 
-Much the same as for Birch code, adapted accordingly. Documentation comments are formatted slightly differently, for use with [Doxygen](https://www.doxygen.nl) instead.
+Much the same as for Birch code, adapted accordingly. Documentation comments are formatted for [Doxygen](https://www.doxygen.nl) instead.

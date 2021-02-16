@@ -1,6 +1,6 @@
 # Birch
 
-Birch is a probabilistic programming language featuring automatic marginalization, automatic conjugacy, automatic differentiation, and inference algorithms based on Sequential Monte Carlo (SMC). The Birch language transpiles to C++.
+Birch is a probabilistic programming language featuring automatic marginalization, automatic conditioning, automatic differentiation, and inference algorithms based on Sequential Monte Carlo (SMC). The Birch language transpiles to C++.
 
 See [https://birch.sh](https://birch.sh) for a gentle introduction, and [https://docs.birch.sh](https://docs.birch.sh) for reference documentation.
 
