@@ -17,23 +17,17 @@
 /**
  * Possible roots list for the thread.
  */
-extern std::vector<libbirch::Any*> possible_roots;
-#pragma omp threadprivate(possible_roots)
-std::vector<libbirch::Any*> possible_roots;
+static thread_local std::vector<libbirch::Any*> possible_roots;
 
 /**
  * Unreachable list for the thread.
  */
-extern std::vector<libbirch::Any*> unreachable;
-#pragma omp threadprivate(unreachable)
-std::vector<libbirch::Any*> unreachable;
+static thread_local std::vector<libbirch::Any*> unreachable;
 
 /**
  * Biconnected flag for the thread.
  */
-extern bool biconnected_flag;
-#pragma omp threadprivate(biconnected_flag)
-bool biconnected_flag = false;
+static thread_local bool biconnected_flag = false;
 
 #ifdef ENABLE_MEMORY_POOL
 /**
