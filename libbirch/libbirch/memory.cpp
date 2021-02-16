@@ -6,6 +6,7 @@
 #include "libbirch/thread.hpp"
 #include "libbirch/Atomic.hpp"
 #include "libbirch/Pool.hpp"
+#include "libbirch/Allocator.hpp"
 #include "libbirch/Any.hpp"
 #include "libbirch/Shared.hpp"
 #include "libbirch/Marker.hpp"
@@ -16,7 +17,7 @@
 /**
  * Type for object lists in cycle collection.
  */
-using object_list = std::vector<libbirch::Any*,libbirch::Allocator<libbirch::Any*>>;
+using object_list = std::vector<libbirch::Any*>;
 
 /**
  * Type for size lists in cycle collection.
@@ -27,8 +28,7 @@ using size_list = std::vector<int,libbirch::Allocator<int>>;
  * Get the `i`th possible roots list for the current thread.
  */
 static object_list& get_possible_roots(const int i) {
-  static std::vector<object_list,libbirch::Allocator<object_list>> objects(
-      libbirch::get_max_threads());
+  static std::vector<object_list> objects(libbirch::get_max_threads());
   return objects[i];
 }
 
@@ -36,8 +36,7 @@ static object_list& get_possible_roots(const int i) {
  * Get the `i`th unreachable list.
  */
 static object_list& get_unreachable(const int i) {
-  static std::vector<object_list,libbirch::Allocator<object_list>> objects(
-      libbirch::get_max_threads());
+  static std::vector<object_list> objects(libbirch::get_max_threads());
   return objects[i];
 }
 
@@ -277,8 +276,7 @@ void libbirch::collect() {
 bool libbirch::biconnected_copy(const bool toggle) {
   /* don't use std::vector<bool> here, as it is often specialized as a bitset,
    * which is not thread safe */
-  static std::vector<int8_t,libbirch::Allocator<int8_t>> flags(
-      libbirch::get_max_threads(), 0);
+  static std::vector<int8_t> flags(libbirch::get_max_threads(), 0);
   auto tid = libbirch::get_thread_num();
   if (toggle) {
     flags[tid] = !flags[tid];

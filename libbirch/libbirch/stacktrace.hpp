@@ -4,7 +4,6 @@
 #pragma once
 
 #include "libbirch/external.hpp"
-#include "libbirch/Allocator.hpp"
 
 /**
  * @def libbirch_function_

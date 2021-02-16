@@ -2,8 +2,7 @@ cpp{{
 #include <random>
 
 static auto make_rngs() {
-  std::vector<std::mt19937_64,libbirch::Allocator<std::mt19937_64>> rngs(
-      libbirch::get_max_threads());
+  std::vector<std::mt19937_64> rngs(libbirch::get_max_threads());
   std::random_device rd;
   for (unsigned i = 0; i < rngs.size(); ++i) {
     rngs[i].seed(rd());

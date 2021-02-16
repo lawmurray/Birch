@@ -1,6 +1,7 @@
 cpp{{
 static auto make_handlers() {
-  std::vector<libbirch::Shared<birch::type::Handler>> handlers(libbirch::get_max_threads(), nullptr);
+  std::vector<libbirch::Shared<birch::type::Handler>> handlers(
+        libbirch::get_max_threads(), nullptr);
   #pragma omp parallel num_threads(libbirch::get_max_threads())
   {
     handlers[libbirch::get_thread_num()] = birch::PlayHandler(true);
