@@ -20,15 +20,10 @@
 using object_list = std::vector<libbirch::Any*>;
 
 /**
- * Type for size lists in cycle collection.
- */
-using size_list = std::vector<int,libbirch::Allocator<int>>;
-
-/**
  * Get the `i`th possible roots list for the current thread.
  */
 static object_list& get_possible_roots(const int i) {
-  static std::vector<object_list> objects(libbirch::get_max_threads());
+  static object_list objects[LIBBIRCH_MAX_THREADS];
   return objects[i];
 }
 
@@ -36,7 +31,7 @@ static object_list& get_possible_roots(const int i) {
  * Get the `i`th unreachable list.
  */
 static object_list& get_unreachable(const int i) {
-  static std::vector<object_list> objects(libbirch::get_max_threads());
+  static object_list objects[LIBBIRCH_MAX_THREADS];
   return objects[i];
 }
 
@@ -200,8 +195,9 @@ void libbirch::collect() {
    * list */
 
   auto nthreads = get_max_threads();
-  object_list all_possible_roots;  // concatenated list of possible roots
-  size_list starts(nthreads), sizes(nthreads);  // ranges in concatenated list
+  object_list all_possible_roots;   // concatenated list of possible roots
+  int starts[LIBBIRCH_MAX_THREADS]; // start indices in concatenated list
+  int sizes[LIBBIRCH_MAX_THREADS];  // sizes in concatenated list
 
   #pragma omp parallel
   {
@@ -228,8 +224,8 @@ void libbirch::collect() {
     /* a single thread now sets up the concatenated list of possible roots */
     #pragma omp single
     {
-      std::exclusive_scan(sizes.begin(), sizes.end(), starts.begin(), 0);
-      all_possible_roots.resize(starts.back() + sizes.back());
+      std::exclusive_scan(sizes, sizes + nthreads, starts, 0);
+      all_possible_roots.resize(starts[nthreads - 1] + sizes[nthreads - 1]);
     }
     #pragma omp barrier
 
@@ -276,7 +272,7 @@ void libbirch::collect() {
 bool libbirch::biconnected_copy(const bool toggle) {
   /* don't use std::vector<bool> here, as it is often specialized as a bitset,
    * which is not thread safe */
-  static std::vector<int8_t> flags(libbirch::get_max_threads(), 0);
+  static bool flags[LIBBIRCH_MAX_THREADS] = { false };
   auto tid = libbirch::get_thread_num();
   if (toggle) {
     flags[tid] = !flags[tid];

@@ -11,6 +11,7 @@ RUN zypper --non-interactive addrepo --no-gpgcheck "https://repo.mongodb.org/zyp
     moreutils \
     time \
     gcc-c++ \
+    gdb \
     make \
     autoconf \
     automake \
