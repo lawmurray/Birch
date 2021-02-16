@@ -10,8 +10,6 @@ To make a contribution, create a pull request on the [GitHub repository](https:/
 
 We take code quality seriously, and are happy to help you improve yours. We will review your pull request and provide constructive feedback. We only ask that you're receptive to that. We're kind, really.
 
-## Code of conduct
-
 All contributors should familiarize themselves with the [Contributor Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## Code style
