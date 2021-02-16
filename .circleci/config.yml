@@ -7,7 +7,7 @@ orbs:
 executors:
   linux:
     docker:
-      - image: lawmurray/birch-circleci:opensuse-tumbleweed
+      - image: lawmurray/birch-circleci:opensuse-leap
 
   mac:
     macos:
