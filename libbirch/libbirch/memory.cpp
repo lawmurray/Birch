@@ -15,25 +15,25 @@
 #include "libbirch/Spanner.hpp"
 
 /**
- * Type for object lists in cycle collection.
+ * Possible roots list for the thread.
  */
-using object_list = std::vector<libbirch::Any*>;
+extern std::vector<libbirch::Any*> possible_roots;
+#pragma omp threadprivate(possible_roots)
+std::vector<libbirch::Any*> possible_roots;
 
 /**
- * Get the `i`th possible roots list for the current thread.
+ * Unreachable list for the thread.
  */
-static object_list& get_possible_roots(const int i) {
-  static object_list objects[LIBBIRCH_MAX_THREADS];
-  return objects[i];
-}
+extern std::vector<libbirch::Any*> unreachable;
+#pragma omp threadprivate(unreachable)
+std::vector<libbirch::Any*> unreachable;
 
 /**
- * Get the `i`th unreachable list.
+ * Biconnected flag for the thread.
  */
-static object_list& get_unreachable(const int i) {
-  static object_list objects[LIBBIRCH_MAX_THREADS];
-  return objects[i];
-}
+extern bool biconnected_flag;
+#pragma omp threadprivate(biconnected_flag)
+bool biconnected_flag = false;
 
 #ifdef ENABLE_MEMORY_POOL
 /**
@@ -181,11 +181,11 @@ void* libbirch::reallocate(void* ptr1, const size_t n1, const int tid1,
 }
 
 void libbirch::register_possible_root(Any* o) {
-  get_possible_roots(get_thread_num()).push_back(o);
+  possible_roots.push_back(o);
 }
 
 void libbirch::register_unreachable(Any* o) {
-  get_unreachable(get_thread_num()).push_back(o);
+  unreachable.push_back(o);
 }
 
 void libbirch::collect() {
@@ -195,14 +195,13 @@ void libbirch::collect() {
    * list */
 
   auto nthreads = get_max_threads();
-  object_list all_possible_roots;   // concatenated list of possible roots
-  int starts[LIBBIRCH_MAX_THREADS]; // start indices in concatenated list
-  int sizes[LIBBIRCH_MAX_THREADS];  // sizes in concatenated list
+  std::vector<libbirch::Any*> all_possible_roots;   // concatenated list of possible roots
+  std::vector<int> starts(nthreads); // start indices in concatenated list
+  std::vector<int> sizes(nthreads);  // sizes in concatenated list
 
   #pragma omp parallel
   {
     auto tid = get_thread_num();
-    auto& possible_roots = get_possible_roots(tid);
 
     /* objects can be added to the possible roots list during normal
      * execution, but not removed, although they may be flagged as no longer
@@ -224,8 +223,8 @@ void libbirch::collect() {
     /* a single thread now sets up the concatenated list of possible roots */
     #pragma omp single
     {
-      std::exclusive_scan(sizes, sizes + nthreads, starts, 0);
-      all_possible_roots.resize(starts[nthreads - 1] + sizes[nthreads - 1]);
+      std::exclusive_scan(sizes.begin(), sizes.end(), starts.begin(), 0);
+      all_possible_roots.resize(starts.back() + sizes.back());
     }
     #pragma omp barrier
 
@@ -260,7 +259,6 @@ void libbirch::collect() {
     #pragma omp barrier
 
     /* finally, destroy objects determined unreachable */
-    auto& unreachable = get_unreachable(tid);
     for (auto o : unreachable) {
       o->destroy_();
       o->deallocate_();
@@ -270,12 +268,8 @@ void libbirch::collect() {
 }
 
 bool libbirch::biconnected_copy(const bool toggle) {
-  /* don't use std::vector<bool> here, as it is often specialized as a bitset,
-   * which is not thread safe */
-  static bool flags[LIBBIRCH_MAX_THREADS] = { false };
-  auto tid = libbirch::get_thread_num();
   if (toggle) {
-    flags[tid] = !flags[tid];
+    biconnected_flag = !biconnected_flag;
   }
-  return flags[tid];
+  return biconnected_flag;
 }
