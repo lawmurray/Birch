@@ -39,15 +39,13 @@ class SIRModel < Model {
   }
 
   override function simulate(t:Integer) {
-    if t > 1 {
-      τ:Random<Integer>;
-      Δi:Random<Integer>;
-      Δr:Random<Integer>;
-
-      let n <- s[t - 1] + i[t - 1] + r[t - 1];
-      τ ~ Binomial(s[t - 1], 1.0 - exp(-λ*Real(i[t - 1])/Real(n)));
-      Δi ~ Binomial(τ, δ);
-      Δr ~ Binomial(i[t - 1], γ);
+    if t == 1 {
+      // the initial state is set in the input file
+    } else {
+      let n <- s[t - 1] + i[t - 1] + r[t - 1];  // total population
+      let τ ~ Binomial(s[t - 1], 1.0 - exp(-λ*Real(i[t - 1])/Real(n)));
+      let Δi ~ Binomial(τ, δ);
+      let Δr ~ Binomial(i[t - 1], γ);
 
       s[t] ~ Delta(s[t - 1] - Δi);
       i[t] ~ Delta(i[t - 1] + Δi - Δr);
@@ -61,18 +59,21 @@ class SIRModel < Model {
     γ <-? buffer.get<Real>("γ");
   }
 
-  override function write(buffer:Buffer) {
-    buffer.set("λ", λ);
-    buffer.set("δ", δ);
-    buffer.set("γ", γ);
-    buffer.set("s", s);
-    buffer.set("i", i);
-    buffer.set("r", r);
-  }
-
   override function read(t:Integer, buffer:Buffer) {
     s[t] <-? buffer.get<Integer>("s");
     i[t] <-? buffer.get<Integer>("i");
     r[t] <-? buffer.get<Integer>("r");
+  }
+
+  override function write(buffer:Buffer) {
+    buffer.set("λ", λ);
+    buffer.set("δ", δ);
+    buffer.set("γ", γ);
+  }
+
+  override function write(t:Integer, buffer:Buffer) {
+    buffer.set("s", s);
+    buffer.set("i", i);
+    buffer.set("r", r);
   }
 }
