@@ -32,16 +32,21 @@
 #include <cstring>
 #include <cassert>
 
-#if __cplusplus > 201402L
-/* for C++17 and above, use the STL filesystem library */
+#if defined(HAVE_FILESYSTEM)
 #include <filesystem>
 #include <fstream>
 namespace fs = std::filesystem;
 namespace fs_stream = std;
 #define FS_OWNER_EXE fs::perms::owner_exec
 #define FS_DISABLE_RECURSION_PENDING disable_recursion_pending
+#elif defined(HAVE_EXPERIMENTAL_FILESYSTEM)
+#include <experimental/filesystem>
+#include <fstream>
+namespace fs = std::experimental::filesystem;
+namespace fs_stream = std;
+#define FS_OWNER_EXE fs::perms::owner_exec
+#define FS_DISABLE_RECURSION_PENDING disable_recursion_pending
 #else
-/* otherwise use the boost file system library */
 #include "boost/filesystem.hpp"
 #include "boost/filesystem/fstream.hpp"
 namespace fs = boost::filesystem;

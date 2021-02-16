@@ -85,3 +85,5 @@ fi
 # Checks for headers
 AC_CHECK_HEADERS([omp.h], [], [], [-])
 AC_CHECK_HEADERS([libbirch.hpp], [], [AC_MSG_ERROR([required header not found])], [-])
+AC_CHECK_HEADERS([filesystem], [], [], [-])
+AC_CHECK_HEADERS([experimental/filesystem], [], [], [-])
