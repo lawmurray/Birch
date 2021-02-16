@@ -8,9 +8,9 @@ theme:
   icon:
     repo: fontawesome/brands/github
   palette:
-    scheme: preference
+    scheme: default
     primary: white
-    accent: blue
+    accent: deep orange
 plugins:
   - search
 markdown_extensions:
