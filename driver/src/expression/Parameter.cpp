@@ -5,13 +5,13 @@
 
 #include "src/visitor/all.hpp"
 
-birch::Parameter::Parameter(const Annotation annotation, Name* name, Type* type,
-    Expression* value, Location* loc) :
+birch::Parameter::Parameter(const Annotation annotation, Name* name,
+    Type* type, Name* op, Expression* value, Location* loc) :
     Expression(loc),
     Annotated(annotation),
     Named(name),
     Typed(type),
-    Valued(value) {
+    Valued(op, value) {
   //
 }
 

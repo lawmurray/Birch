@@ -31,10 +31,11 @@ public:
    * @param annotation Annotation.
    * @param name Name.
    * @param type Type.
+   * @param op Initialization operator.
    * @param value Default value.
    * @param loc Location.
    */
-  Parameter(const Annotation annotation, Name* name, Type* type,
+  Parameter(const Annotation annotation, Name* name, Type* type, Name* op,
       Expression* value, Location* loc = nullptr);
 
   /**

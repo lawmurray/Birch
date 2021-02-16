@@ -47,6 +47,13 @@
   }
 
   /**
+   * Make an empty name.
+   */
+  birch::Name* empty_name(YYLTYPE& loc) {
+    return new birch::Name();
+  }
+
+  /**
    * Make an empty expression.
    */
   birch::Expression* empty_expr(YYLTYPE& loc) {
@@ -98,8 +105,8 @@
 %token <valString> LEFT_OP RIGHT_OP LEFT_TILDE_OP RIGHT_TILDE_OP LEFT_QUERY_OP
 %token <valString> AND_OP OR_OP LE_OP GE_OP EQ_OP NE_OP RANGE_OP
 
-%type <valName> name binary_operator unary_operator assume_operator
-%type <valName> assign_operator prefix_operator
+%type <valName> name binary_operator unary_operator
+%type <valName> assign_operator prefix_operator init_operator
 %type <valName> multiplicative_operator additive_operator relational_operator
 %type <valName> equality_operator logical_and_operator logical_or_operator
 
@@ -121,7 +128,6 @@
 %type <valExpression> parameter parameter_list parameters optional_parameters
 %type <valExpression> span_expression span_list brackets option option_list options
 %type <valExpression> arguments optional_arguments
-%type <valExpression> value optional_value
 %type <valExpression> generic generic_list generics optional_generics
 
 %type <valStatement> global_variable_declaration local_variable_declaration
@@ -132,7 +138,7 @@
 %type <valStatement> assignment_operator_declaration conversion_operator_declaration
 %type <valStatement> slice_operator_declaration
 %type <valStatement> class_declaration basic_declaration
-%type <valStatement> cpp hpp expression_statement assume_statement if for parallel
+%type <valStatement> cpp hpp expression_statement if for parallel
 %type <valStatement> while do_while with block assertion return factor
 %type <valStatement> statement statements optional_statements
 %type <valStatement> class_statement class_statements optional_class_statements
@@ -337,7 +343,11 @@ logical_or_expression
     ;
 
 assign_operator
-    : LEFT_OP    { $$ = new birch::Name("<-"); }
+    : LEFT_OP         { $$ = new birch::Name("<-"); }
+    | LEFT_QUERY_OP   { $$ = new birch::Name("<-?"); }
+    | LEFT_TILDE_OP   { $$ = new birch::Name("<~"); }
+    | RIGHT_TILDE_OP  { $$ = new birch::Name("~>"); }
+    | '~'             { $$ = new birch::Name("~"); }
     ;
 
 assign_expression
@@ -388,7 +398,7 @@ parameter_list
     ;
 
 parameter
-    : name ':' type  { $$ = new birch::Parameter(birch::NONE, $1, $3, empty_expr(@$), make_loc(@$)); }
+    : name ':' type  { $$ = new birch::Parameter(birch::NONE, $1, $3, empty_name(@$), empty_expr(@$), make_loc(@$)); }
     ;
 
 options
@@ -402,7 +412,8 @@ option_list
     ;
 
 option
-    : name ':' type optional_value  { $$ = new birch::Parameter(birch::NONE, $1, $3, $4, make_loc(@$)); }
+    : name ':' type                     { $$ = new birch::Parameter(birch::NONE, $1, $3, empty_name(@$), empty_expr(@$), make_loc(@$)); }
+    | name ':' type LEFT_OP expression  { $$ = new birch::Parameter(birch::NONE, $1, $3, new birch::Name($4), $5, make_loc(@$)); }
     ;
 
 arguments
@@ -463,30 +474,36 @@ optional_generic_arguments
  * Statements                                                              *
  ***************************************************************************/
 
+init_operator
+    : LEFT_OP         { $$ = new birch::Name("<-"); }
+    | LEFT_TILDE_OP   { $$ = new birch::Name("<~"); }
+    | '~'             { $$ = new birch::Name("~"); }
+    ;
+
 global_variable_declaration
-    : name ':' type ';'                     { push_raw(); $$ = new birch::GlobalVariable(birch::NONE, $1, $3, empty_expr(@$), empty_expr(@$), empty_expr(@$), make_doc_loc(@$)); }
-    | name ':' type arguments ';'           { push_raw(); $$ = new birch::GlobalVariable(birch::NONE, $1, $3, empty_expr(@$), $4, empty_expr(@$), make_doc_loc(@$)); }
-    | name ':' type value ';'               { push_raw(); $$ = new birch::GlobalVariable(birch::NONE, $1, $3, empty_expr(@$), empty_expr(@$), $4, make_doc_loc(@$)); }
-    | name ':' type brackets ';'            { push_raw(); $$ = new birch::GlobalVariable(birch::NONE, $1, new birch::ArrayType($3, $4->width(), make_loc(@$)), $4, empty_expr(@$), empty_expr(@$), make_doc_loc(@$)); }
-    | name ':' type brackets arguments ';'  { push_raw(); $$ = new birch::GlobalVariable(birch::NONE, $1, new birch::ArrayType($3, $4->width(), make_loc(@$)), $4, $5, empty_expr(@$), make_doc_loc(@$)); }
+    : name ':' type ';'                           { push_raw(); $$ = new birch::GlobalVariable(birch::NONE, $1, $3, empty_expr(@$), empty_expr(@$), empty_name(@$), empty_expr(@$), make_doc_loc(@$)); }
+    | name ':' type arguments ';'                 { push_raw(); $$ = new birch::GlobalVariable(birch::NONE, $1, $3, empty_expr(@$), $4, empty_name(@$), empty_expr(@$), make_doc_loc(@$)); }
+    | name ':' type init_operator expression ';'  { push_raw(); $$ = new birch::GlobalVariable(birch::NONE, $1, $3, empty_expr(@$), empty_expr(@$), $4, $5, make_doc_loc(@$)); }
+    | name ':' type brackets ';'                  { push_raw(); $$ = new birch::GlobalVariable(birch::NONE, $1, new birch::ArrayType($3, $4->width(), make_loc(@$)), $4, empty_expr(@$), empty_name(@$), empty_expr(@$), make_doc_loc(@$)); }
+    | name ':' type brackets arguments ';'        { push_raw(); $$ = new birch::GlobalVariable(birch::NONE, $1, new birch::ArrayType($3, $4->width(), make_loc(@$)), $4, $5, empty_name(@$), empty_expr(@$), make_doc_loc(@$)); }
     ;
 
 member_variable_declaration
-    : name ':' type ';'                     { push_raw(); $$ = new birch::MemberVariable(birch::NONE, $1, $3, empty_expr(@$), empty_expr(@$), empty_expr(@$), make_doc_loc(@$)); }
-    | name ':' type arguments ';'           { push_raw(); $$ = new birch::MemberVariable(birch::NONE, $1, $3, empty_expr(@$), $4, empty_expr(@$), make_doc_loc(@$)); }
-    | name ':' type value ';'               { push_raw(); $$ = new birch::MemberVariable(birch::NONE, $1, $3, empty_expr(@$), empty_expr(@$), $4, make_doc_loc(@$)); }
-    | name ':' type brackets ';'            { push_raw(); $$ = new birch::MemberVariable(birch::NONE, $1, new birch::ArrayType($3, $4->width(), make_loc(@$)), $4, empty_expr(@$), empty_expr(@$), make_doc_loc(@$)); }
-    | name ':' type brackets arguments ';'  { push_raw(); $$ = new birch::MemberVariable(birch::NONE, $1, new birch::ArrayType($3, $4->width(), make_loc(@$)), $4, $5, empty_expr(@$), make_doc_loc(@$)); }
+    : name ':' type ';'                           { push_raw(); $$ = new birch::MemberVariable(birch::NONE, $1, $3, empty_expr(@$), empty_expr(@$), empty_name(@$), empty_expr(@$), make_doc_loc(@$)); }
+    | name ':' type arguments ';'                 { push_raw(); $$ = new birch::MemberVariable(birch::NONE, $1, $3, empty_expr(@$), $4, empty_name(@$), empty_expr(@$), make_doc_loc(@$)); }
+    | name ':' type init_operator expression ';'  { push_raw(); $$ = new birch::MemberVariable(birch::NONE, $1, $3, empty_expr(@$), empty_expr(@$), $4, $5, make_doc_loc(@$)); }
+    | name ':' type brackets ';'                  { push_raw(); $$ = new birch::MemberVariable(birch::NONE, $1, new birch::ArrayType($3, $4->width(), make_loc(@$)), $4, empty_expr(@$), empty_name(@$), empty_expr(@$), make_doc_loc(@$)); }
+    | name ':' type brackets arguments ';'        { push_raw(); $$ = new birch::MemberVariable(birch::NONE, $1, new birch::ArrayType($3, $4->width(), make_loc(@$)), $4, $5, empty_name(@$), empty_expr(@$), make_doc_loc(@$)); }
     ;
 
 local_variable_declaration
-    : AUTO name value ';'                   { yywarn("the auto keyword is deprecated, use let instead"); push_raw(); $$ = new birch::LocalVariable(birch::LET, $2, empty_type(@$), empty_expr(@$), empty_expr(@$), $3, make_doc_loc(@$)); }
-    | LET name value ';'                    { push_raw(); $$ = new birch::LocalVariable(birch::LET, $2, empty_type(@$), empty_expr(@$), empty_expr(@$), $3, make_doc_loc(@$)); }
-    | name ':' type ';'                     { push_raw(); $$ = new birch::LocalVariable(birch::NONE, $1, $3, empty_expr(@$), empty_expr(@$), empty_expr(@$), make_doc_loc(@$)); }
-    | name ':' type arguments ';'           { push_raw(); $$ = new birch::LocalVariable(birch::NONE, $1, $3, empty_expr(@$), $4, empty_expr(@$), make_doc_loc(@$)); }
-    | name ':' type value ';'               { push_raw(); $$ = new birch::LocalVariable(birch::NONE, $1, $3, empty_expr(@$), empty_expr(@$), $4, make_doc_loc(@$)); }
-    | name ':' type brackets ';'            { push_raw(); $$ = new birch::LocalVariable(birch::NONE, $1, new birch::ArrayType($3, $4->width(), make_loc(@$)), $4, empty_expr(@$), empty_expr(@$), make_doc_loc(@$)); }
-    | name ':' type brackets arguments ';'  { push_raw(); $$ = new birch::LocalVariable(birch::NONE, $1, new birch::ArrayType($3, $4->width(), make_loc(@$)), $4, $5, empty_expr(@$), make_doc_loc(@$)); }
+    : AUTO name init_operator expression ';'      { yywarn("the auto keyword is deprecated, use let instead"); push_raw(); $$ = new birch::LocalVariable(birch::LET, $2, empty_type(@$), empty_expr(@$), empty_expr(@$), $3, $4, make_doc_loc(@$)); }
+    | LET name init_operator expression ';'       { push_raw(); $$ = new birch::LocalVariable(birch::LET, $2, empty_type(@$), empty_expr(@$), empty_expr(@$), $3, $4, make_doc_loc(@$)); }
+    | name ':' type ';'                           { push_raw(); $$ = new birch::LocalVariable(birch::NONE, $1, $3, empty_expr(@$), empty_expr(@$), empty_name(@$), empty_expr(@$), make_doc_loc(@$)); }
+    | name ':' type arguments ';'                 { push_raw(); $$ = new birch::LocalVariable(birch::NONE, $1, $3, empty_expr(@$), $4, empty_name(@$), empty_expr(@$), make_doc_loc(@$)); }
+    | name ':' type init_operator expression ';'  { push_raw(); $$ = new birch::LocalVariable(birch::NONE, $1, $3, empty_expr(@$), empty_expr(@$), $4, $5, make_doc_loc(@$)); }
+    | name ':' type brackets ';'                  { push_raw(); $$ = new birch::LocalVariable(birch::NONE, $1, new birch::ArrayType($3, $4->width(), make_loc(@$)), $4, empty_expr(@$), empty_name(@$), empty_expr(@$), make_doc_loc(@$)); }
+    | name ':' type brackets arguments ';'        { push_raw(); $$ = new birch::LocalVariable(birch::NONE, $1, new birch::ArrayType($3, $4->width(), make_loc(@$)), $4, $5, empty_name(@$), empty_expr(@$), make_doc_loc(@$)); }
     ;
 
 function_declaration
@@ -571,17 +588,6 @@ hpp
     : HPP double_braces  { push_raw(); $$ = new birch::Raw(new birch::Name("hpp"), pop_raw(), make_loc(@$)); }
     ;
 
-assume_operator
-    : '~'             { $$ = new birch::Name("~"); }
-    | LEFT_TILDE_OP   { $$ = new birch::Name("<~"); }
-    | RIGHT_TILDE_OP  { $$ = new birch::Name("~>"); }
-    | LEFT_QUERY_OP   { $$ = new birch::Name("<-?"); }
-    ;
-
-assume_statement
-    : expression assume_operator expression ';'  { $$ = new birch::Assume($1, $2, $3, make_loc(@$)); }
-    ;
-
 expression_statement
     : expression ';'  { $$ = new birch::ExpressionStatement($1, make_loc(@$)); }
     ;
@@ -642,7 +648,6 @@ factor
 statement
     : local_variable_declaration
     | expression_statement
-    | assume_statement
     | if
     | for
     | parallel
@@ -718,15 +723,6 @@ return_type
 optional_return_type
     : return_type
     |              { $$ = empty_type(@$); }
-    ;
-
-value
-    : LEFT_OP expression  { $$ = $2; }
-    ;
-    
-optional_value
-    : value
-    |        { $$ = empty_expr(@$); }
     ;
 
 braces

@@ -54,7 +54,6 @@ public:
   virtual Statement* modify(EmptyStatement* o);
   virtual Statement* modify(Braces* o);
   virtual Statement* modify(StatementList* o);
-  virtual Statement* modify(Assume* o);
   virtual Statement* modify(GlobalVariable* o);
   virtual Statement* modify(MemberVariable* o);
   virtual Statement* modify(LocalVariable* o);

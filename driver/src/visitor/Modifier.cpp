@@ -157,12 +157,6 @@ birch::Expression* birch::Modifier::modify(NamedExpression* o) {
   return o;
 }
 
-birch::Statement* birch::Modifier::modify(Assume* o) {
-  o->left = o->left->accept(this);
-  o->right = o->right->accept(this);
-  return o;
-}
-
 birch::Statement* birch::Modifier::modify(EmptyStatement* o) {
   return o;
 }

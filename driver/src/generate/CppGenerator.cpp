@@ -103,7 +103,17 @@ void birch::CppGenerator::visit(const Assign* o) {
   if (o->left->isMembership()) {
     ++inAssign;
   }
-  middle(o->left << " = " << o->right);
+  if (*o->name == "<-?") {
+    line("libbirch::optional_assign(" << o->left << ", " << o->right << ");");
+  } else if (*o->name == "<~") {
+    line(o->left << "= birch::handle_simulate(" << o->right << ");");
+  } else if (*o->name == "~>") {
+    line("birch::handle_observe(" << o->left << ", " << o->right << ");");
+  } else if (*o->name == "~") {
+    line("birch::handle_assume(" << o->left << ", " << o->right << ");");
+  } else {
+    middle(o->left << " = " << o->right);
+  }
 }
 
 void birch::CppGenerator::visit(const Slice* o) {
@@ -527,21 +537,6 @@ void birch::CppGenerator::visit(const Braces* o) {
   *this << o->single;
   out();
   line('}');
-}
-
-void birch::CppGenerator::visit(const Assume* o) {
-  genTraceLine(o->loc);
-  if (*o->name == "<-?") {
-    line("libbirch::optional_assign(" << o->left << ", " << o->right << ");");
-  } else if (*o->name == "<~") {
-    line(o->left << "= birch::handle_simulate(" << o->right << ");");
-  } else if (*o->name == "~>") {
-    line("birch::handle_observe(" << o->left << ", " << o->right << ");");
-  } else if (*o->name == "~") {
-    line("birch::handle_assume(" << o->left << ", " << o->right << ");");
-  } else {
-    assert(false);
-  }
 }
 
 void birch::CppGenerator::visit(const Factor* o) {

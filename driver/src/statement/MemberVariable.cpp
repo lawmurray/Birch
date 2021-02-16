@@ -6,15 +6,15 @@
 #include "src/visitor/all.hpp"
 
 birch::MemberVariable::MemberVariable(const Annotation annotation, Name* name,
-    Type* type, Expression* brackets, Expression* args, Expression* value,
-    Location* loc) :
+    Type* type, Expression* brackets, Expression* args, Name* op,
+    Expression* value, Location* loc) :
     Statement(loc),
     Annotated(annotation),
     Named(name),
     Typed(type),
     Bracketed(brackets),
     Argumented(args),
-    Valued(value) {
+    Valued(op, value) {
   assert(value->isEmpty() || args->isEmpty());
 }
 

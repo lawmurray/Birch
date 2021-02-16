@@ -224,10 +224,6 @@ void birch::BirchGenerator::visit(const Braces* o) {
   start('}');
 }
 
-void birch::BirchGenerator::visit(const Assume* o) {
-  line(o->left << ' ' << o->name << ' ' << o->right << ';');
-}
-
 void birch::BirchGenerator::visit(const Function* o) {
   start("function " << o->name);
   if (!o->typeParams->isEmpty()) {

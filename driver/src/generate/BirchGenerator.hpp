@@ -52,7 +52,6 @@ public:
   virtual void visit(const NamedExpression* o);
 
   virtual void visit(const Braces* o);
-  virtual void visit(const Assume* o);
   virtual void visit(const Function* o);
   virtual void visit(const Program* o);
   virtual void visit(const MemberFunction* o);

@@ -118,7 +118,7 @@ birch::Expression* birch::Cloner::clone(const Nil* o) {
 }
 
 birch::Expression* birch::Cloner::clone(const Parameter* o) {
-  return new Parameter(o->annotation, o->name, o->type->accept(this),
+  return new Parameter(o->annotation, o->name, o->type->accept(this), o->op,
       o->value->accept(this), o->loc);
 }
 
@@ -143,26 +143,21 @@ birch::Statement* birch::Cloner::clone(const StatementList* o) {
       o->loc);
 }
 
-birch::Statement* birch::Cloner::clone(const Assume* o) {
-  return new Assume(o->left->accept(this), o->name, o->right->accept(this),
-      o->loc);
-}
-
 birch::Statement* birch::Cloner::clone(const GlobalVariable* o) {
   return new GlobalVariable(o->annotation, o->name, o->type->accept(this),
-      o->brackets->accept(this), o->args->accept(this),
+      o->brackets->accept(this), o->args->accept(this), o->op,
       o->value->accept(this), o->loc);
 }
 
 birch::Statement* birch::Cloner::clone(const MemberVariable* o) {
   return new MemberVariable(o->annotation, o->name, o->type->accept(this),
-      o->brackets->accept(this), o->args->accept(this),
+      o->brackets->accept(this), o->args->accept(this), o->op,
       o->value->accept(this), o->loc);
 }
 
 birch::Statement* birch::Cloner::clone(const LocalVariable* o) {
   return new LocalVariable(o->annotation, o->name, o->type->accept(this),
-      o->brackets->accept(this), o->args->accept(this),
+      o->brackets->accept(this), o->args->accept(this), o->op,
       o->value->accept(this), o->loc);
 }
 

@@ -149,11 +149,6 @@ void birch::Visitor::visit(const StatementList* o) {
   o->tail->accept(this);
 }
 
-void birch::Visitor::visit(const Assume* o) {
-  o->left->accept(this);
-  o->right->accept(this);
-}
-
 void birch::Visitor::visit(const GlobalVariable* o) {
   o->type->accept(this);
   o->brackets->accept(this);

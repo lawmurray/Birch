@@ -37,11 +37,12 @@ public:
    * @param type Type.
    * @param brackets Array size.
    * @param args Constructor arguments.
+   * @param op Initialization operator.
    * @param value Initial value.
    * @param loc Location.
    */
   LocalVariable(const Annotation annotation, Name* name, Type* type,
-      Expression* brackets, Expression* args, Expression* value,
+      Expression* brackets, Expression* args, Name* op, Expression* value,
       Location* loc = nullptr);
 
   /**

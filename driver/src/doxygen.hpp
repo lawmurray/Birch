@@ -1,11 +1,13 @@
 /**
- * @mainpage Birch Driver and Compiler
+ * @mainpage Birch Driver
  *
- * Birch is a compiled, imperative, object-oriented, and probabilistic
- * programming language. The latter is its primary research concern. This
- * documentation is for the Birch compiler and is only of interest to its
- * developers. Users will be more interested in the standard library,
- * documented separately.
+ * Birch is a probabilistic programming language featuring automatic
+ * marginalization, automatic conditioning, automatic differentiation, and
+ * inference algorithms based on Sequential Monte Carlo (SMC). The Birch
+ * language transpiles to C++.
+ * 
+ * This is the driver program, which manages Birch projects, including the
+ * build system, packaging system, and transpile to C++.
  *
  * The @em Modules page is a good place to start.
  *

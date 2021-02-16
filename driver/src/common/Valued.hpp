@@ -3,6 +3,7 @@
  */
 #pragma once
 
+#include "src/common/Name.hpp"
 #include "src/expression/Expression.hpp"
 #include "src/expression/EmptyExpression.hpp"
 
@@ -17,9 +18,10 @@ public:
   /**
    * Constructor.
    *
+   * @param op Initialization operator.
    * @param value Value.
    */
-  Valued(Expression* value);
+  Valued(Name* op, Expression* value);
 
   /**
    * Destructor.
@@ -27,7 +29,12 @@ public:
   virtual ~Valued() = 0;
 
   /**
-   * Condition.
+   * Initialization operator.
+   */
+  Name* op;
+
+  /**
+   * Initial value.
    */
   Expression* value;
 };

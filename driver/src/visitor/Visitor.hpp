@@ -54,7 +54,6 @@ public:
   virtual void visit(const EmptyStatement* o);
   virtual void visit(const Braces* o);
   virtual void visit(const StatementList* o);
-  virtual void visit(const Assume* o);
   virtual void visit(const GlobalVariable* o);
   virtual void visit(const MemberVariable* o);
   virtual void visit(const LocalVariable* o);

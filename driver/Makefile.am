@@ -80,7 +80,6 @@ birch_SOURCES = \
   src/primitive/system.cpp \
   src/statement/Assert.cpp \
   src/statement/AssignmentOperator.cpp \
-  src/statement/Assume.cpp \
   src/statement/Basic.cpp \
   src/statement/BinaryOperator.cpp \
   src/statement/Block.cpp \
@@ -212,7 +211,6 @@ noinst_HEADERS = \
   src/statement/all.hpp \
   src/statement/AssignmentOperator.hpp \
   src/statement/Assert.hpp \
-  src/statement/Assume.hpp \
   src/statement/Basic.hpp \
   src/statement/BinaryOperator.hpp \
   src/statement/Block.hpp \

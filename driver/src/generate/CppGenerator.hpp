@@ -68,7 +68,6 @@ public:
   virtual void visit(const Class* o);
   virtual void visit(const Generic* o);
   virtual void visit(const Braces* o);
-  virtual void visit(const Assume* o);
   virtual void visit(const ExpressionStatement* o);
   virtual void visit(const If* o);
   virtual void visit(const For* o);
@@ -201,7 +200,13 @@ void birch::CppGenerator::genInit(const T* o) {
       middle("libbirch::make_shape(" << o->brackets << "))");
     }
   } else if (!o->value->isEmpty()) {
-    middle(o->value);
+    if (*o->op == "<~") {
+      middle("birch::handle_simulate(" << o->value << ')');
+    } else if (*o->op == "~") {
+      middle("birch::handle_assume(" << o->value << ')');
+    } else {
+      middle(o->value);
+    }
   } else if (!o->args->isEmpty()) {
     middle("libbirch::make<" << o->type << ">(std::in_place, " << o->args << ')');
   } else {

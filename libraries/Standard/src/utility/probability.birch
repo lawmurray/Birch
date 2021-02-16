@@ -27,9 +27,9 @@ function get_handler() -> Handler {
  * Set the event handler.
  *
  * !!! attention
- * Typically one does not call this directly, but rather uses the
- * [`with`](https://www.birch.sh/language/probability/) statement, which is
- * hard-wired to call this on exit to restore the previous handler.
+ *     Typically one does not call this directly, but rather uses the
+ *     [`with`](https://www.birch.sh/language/probability/) statement, which
+ *     is hard-wired to call this on exit to restore the previous handler.
  */
 function set_handler(handler:Handler) {
   cpp{{
@@ -45,9 +45,9 @@ function set_handler(handler:Handler) {
  * Returns: The previous handler.
  *
  * !!! attention
- * Typically one does not call this directly, but rather uses the
- * [`with`](https://www.birch.sh/language/probability/) statement, which is
- * hard-wired to call this on entry to set the new handler.
+ *     Typically one does not call this directly, but rather uses the
+ *     [`with`](https://www.birch.sh/language/probability/) statement, which
+ *     is hard-wired to call this on entry to set the new handler.
  */
 function swap_handler(handler:Handler) -> Handler {
   cpp{{
@@ -63,10 +63,12 @@ function swap_handler(handler:Handler) -> Handler {
  *
  * - p: Distribution.
  *
+ * Returns: Value simulated from the distribution.
+ *
  * !!! attention
- * Typically one does not call this directly, but rather uses the
- * [`<~`](https://www.birch.sh/language/probability/) operator, which is
- * hard-wired to call this internally.
+ *     Typically one does not call this directly, but rather uses the
+ *     [`<~`](https://www.birch.sh/language/probability/) operator, which is
+ *     hard-wired to call this internally.
  */
 function handle_simulate<Right>(p:Right) -> Right.Value {
   let event <- SimulateEvent(p.distribution());
@@ -77,31 +79,56 @@ function handle_simulate<Right>(p:Right) -> Right.Value {
 /**
  * Handle observe event.
  *
- * - left: Variate.
+ * - x: Variate.
  * - p: Distribution.
  *
+ * Returns: `x`.
+ *
  * !!! attention
- * Typically one does not call this directly, but rather uses the
- * [`~>`](https://www.birch.sh/language/probability/) operator, which is
- * hard-wired to call this internally.
+ *     Typically one does not call this directly, but rather uses the
+ *     [`~>`](https://www.birch.sh/language/probability/) operator, which is
+ *     hard-wired to call this internally.
  */
-function handle_observe<Left,Right>(left:Left, p:Right) {
-  get_handler().handle(ObserveEvent(left, p.distribution()));
+function handle_observe<Left,Right>(x:Left, p:Right) -> Left {
+  get_handler().handle(ObserveEvent(x, p.distribution()));
+  return x;
 }
 
 /**
  * Handle assume event.
  *
- * - left: Random.
+ * - x: Random.
  * - p: Distribution.
  *
+ * Returns: `x`.
+ *
  * !!! attention
- * Typically one does not call this directly, but rather uses the
- * [`~`](https://www.birch.sh/language/probability/) operator, which is
- * hard-wired to call this internally.
+ *     Typically one does not call this directly, but rather uses the
+ *     [`~`](https://www.birch.sh/language/probability/) operator, which is
+ *     hard-wired to call this internally.
  */
-function handle_assume<Left,Right>(left:Left, p:Right) {
-  get_handler().handle(AssumeEvent(left, p.distribution()));
+function handle_assume<Left,Right>(x:Left, p:Right) -> Left {
+  get_handler().handle(AssumeEvent(x, p.distribution()));
+  return x;
+}
+
+/**
+ * Handle assume event.
+ *
+ * - p: Distribution.
+ *
+ * Returns: A newly construct [Random](../classes/Random) with value type the
+ * same as `p`.
+ *
+ * !!! attention
+ *     Typically one does not call this directly, but rather uses the
+ *     [`~`](https://www.birch.sh/language/probability/) operator, which is
+ *     hard-wired to call this internally. This particular version is used
+ *     when a newly declared variable is initialized with the `~` operator.
+ */
+function handle_assume<Right>(p:Right) -> Random<Right.Value> {
+  x:Random<Right.Value>;
+  return handle_assume(x, p);
 }
 
 /**
@@ -110,9 +137,9 @@ function handle_assume<Left,Right>(left:Left, p:Right) {
  * - w: Log-weight.
  *
  * !!! attention
- * Typically one does not call this directly, but rather uses the
- * [`factor`](https://www.birch.sh/language/probability/) statement, which is
- * hard-wired to call this internally.
+ *     Typically one does not call this directly, but rather uses the
+ *     [`factor`](https://www.birch.sh/language/probability/) statement, which
+ *     is hard-wired to call this internally.
  */
 function handle_factor(w:Real) {
   get_handler().handle(FactorEvent(w));
