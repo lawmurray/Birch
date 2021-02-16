@@ -70,6 +70,7 @@ AX_CHECK_COMPILE_FLAG([-Wno-unknown-pragmas], [CXXFLAGS="$CXXFLAGS -Wno-unknown-
 # Checks for libraries
 AC_SEARCH_LIBS([dlopen], [dl], [], [])
 AC_CHECK_LIB([atomic], [main], [], [], [])
+AC_CHECK_LIB([stdc++fs], [main], [], [], [])
 AC_CHECK_LIB([omp], [main], [], [], [])
 if $debug; then
   AC_CHECK_LIB([birch-debug], [main], [DEBUG_LIBS="$DEBUG_LIBS -lbirch-debug"], [AC_MSG_ERROR([required library not found])])

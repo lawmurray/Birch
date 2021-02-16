@@ -28,16 +28,11 @@ AX_CHECK_COMPILE_FLAG([-fprofile-abs-path], [CXXFLAGS="$CXXFLAGS -fprofile-abs-p
 # Checks for headers
 AC_CHECK_HEADERS([yaml.h], [], [AC_MSG_ERROR([required header not found.])], [-])
 AC_CHECK_HEADERS([glob.h], [], [AC_MSG_ERROR([required header not found.])], [-])
-AC_CHECK_HEADERS([ \
-    boost/filesystem.hpp \
-    boost/filesystem/fstream.hpp
-    ], [], AC_MSG_ERROR([required header not found]), [-])
 
 # Checks for libraries
 AC_SEARCH_LIBS([dlopen], [dl], [], [])
+AC_CHECK_LIB([stdc++fs], [main], [], [], [])
 AC_CHECK_LIB([yaml], [main], [], [AC_MSG_ERROR([required library not found.])])
-AC_CHECK_LIB([boost_filesystem], [main], [], [AC_CHECK_LIB([boost_filesystem-mt], [main], [], [AC_MSG_ERROR([required library not found])])])
-AC_CHECK_LIB([boost_system], [main], [], [AC_CHECK_LIB([boost_system-mt], [main], [], [AC_MSG_ERROR([required library not found])])])
 
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT

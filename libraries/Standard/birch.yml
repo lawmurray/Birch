@@ -16,11 +16,8 @@ manifest:
 require:
   header:
     - eigen3/Eigen/Dense
-    - boost/filesystem.hpp
     - boost/math/special_functions.hpp
     - boost/math/distributions.hpp
     - yaml.h
   library:
     - yaml
-    - boost_system
-    - boost_filesystem

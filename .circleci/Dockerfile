@@ -19,8 +19,6 @@ RUN zypper --non-interactive addrepo --no-gpgcheck "https://repo.mongodb.org/zyp
     libtool \
     libyaml-devel \
     boost-devel \
-    libboost_filesystem-devel \
-    libboost_system-devel \
     eigen3-devel \
     cairo-devel \
     sqlite3-devel \
