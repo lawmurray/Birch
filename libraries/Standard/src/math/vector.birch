@@ -181,16 +181,14 @@ function min<Type>(x:Type[_]) -> Type {
  * Inclusive prefix sum.
  */
 function inclusive_scan_sum<Type>(x:Type[_]) -> Type[_] {
-  return inclusive_scan(x, \(x:Type, y:Type) -> Type { return x + y; });
+  return inclusive_scan(x, 0.0, \(x:Type, y:Type) -> Type { return x + y; });
 }
 
 /**
  * Exclusive prefix sum.
  */
 function exclusive_scan_sum<Type>(x:Type[_]) -> Type[_] {
-  return exclusive_scan(x, 0.0, \(x:Type, y:Type) -> Type {
-      return x + y;
-    });
+  return exclusive_scan(x, 0.0, \(x:Type, y:Type) -> Type { return x + y; });
 }
 
 /**

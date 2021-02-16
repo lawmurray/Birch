@@ -203,7 +203,13 @@ function reduce<Type>(x:Type[_], init:Type,
     op:\(Type, Type) -> Type) -> Type {
   result:Type;
   cpp{{
+  #ifdef __cpp_lib_parallel_algorithm
   return std::reduce(x.begin(), x.end(), init, op);
+  #else
+  return std::accumulate(x.begin(), x.end(), init, [&](auto x, auto y) {
+        return op(x, y);
+      });
+  #endif
   }}
 }
 
@@ -272,11 +278,23 @@ function transform_reduce<Input1,Input2,Input3,Output>(x:Input1[_],
  * - x: Vector.
  * - op: Operator.
  */
-function inclusive_scan<Type>(x:Type[_], op:\(Type, Type) -> Type) -> Type[_] {
+function inclusive_scan<Type>(x:Type[_], init:Type,
+    op:\(Type, Type) -> Type) -> Type[_] {
   y:Type[length(x)];
-  cpp{{
-  std::inclusive_scan(x.begin(), x.end(), y.begin(), op);
-  }}
+  if length(x) > 0 {
+    cpp{{
+    #ifdef __cpp_lib_parallel_algorithm
+    std::inclusive_scan(x.begin(), x.end(), y.begin(), init, op);
+    #else
+    }}
+    y[1] <- op(init, x[1]);
+    for i in 2..length(x) {
+      y[i] <- op(y[i - 1], x[i - 1]);
+    }
+    cpp{{
+    #endif
+    }}
+  }
   return y;
 }
 
@@ -289,11 +307,21 @@ function inclusive_scan<Type>(x:Type[_], op:\(Type, Type) -> Type) -> Type[_] {
  */
 function exclusive_scan<Type>(x:Type[_], init:Type,
     op:\(Type, Type) -> Type) -> Type[_] {
-  assert length(x) > 0;
   y:Type[length(x)];
-  cpp{{
-  std::exclusive_scan(x.begin(), x.end(), y.begin(), init, op);
-  }}
+  if length(x) > 0 {
+    cpp{{
+    #ifdef __cpp_lib_parallel_algorithm
+    std::exclusive_scan(x.begin(), x.end(), y.begin(), init, op);
+    #else
+    }}
+    y[1] <- init;
+    for i in 2..length(x) {
+      y[i] <- op(y[i - 1], x[i - 1]);
+    }
+    cpp{{
+    #endif
+    }}
+  }
   return y;
 }
 

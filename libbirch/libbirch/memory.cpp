@@ -201,7 +201,8 @@ void libbirch::collect() {
      * execution, but not removed, although they may be flagged as no longer
      * being a possible root; remove such objects first */
     int size = 0;
-    for (auto o: possible_roots) {
+    for (int i = 0; i < (int)possible_roots.size(); ++i) {
+      auto o = possible_roots[i];
       if (o->isPossibleRoot_()) {
         possible_roots[size++] = o;
       } else if (o->numShared_() == 0) {
@@ -217,7 +218,14 @@ void libbirch::collect() {
     /* a single thread now sets up the concatenated list of possible roots */
     #pragma omp single
     {
+      #ifdef __cpp_lib_parallel_algorithm
       std::exclusive_scan(sizes.begin(), sizes.end(), starts.begin(), 0);
+      #else
+      starts[0] = 0;
+      for (int i = 1; i < nthreads; ++i) {
+        starts[i] = starts[i - 1] + sizes[i - 1];
+      }
+      #endif
       all_possible_roots.resize(starts.back() + sizes.back());
     }
     #pragma omp barrier
@@ -230,7 +238,8 @@ void libbirch::collect() {
 
     /* mark pass */
     #pragma omp for schedule(guided)
-    for (auto o : all_possible_roots) {
+    for (int i = 0; i < (int)all_possible_roots.size(); ++i) {
+      auto o = all_possible_roots[i];
       Marker visitor;
       visitor.visit(o);
     }
@@ -238,7 +247,8 @@ void libbirch::collect() {
 
     /* scan/reach pass */
     #pragma omp for schedule(guided)
-    for (auto o : all_possible_roots) {
+    for (int i = 0; i < (int)all_possible_roots.size(); ++i) {
+      auto o = all_possible_roots[i];
       Scanner visitor;
       visitor.visit(o);
     }
@@ -246,14 +256,16 @@ void libbirch::collect() {
 
     /* collect pass */
     #pragma omp for schedule(guided)
-    for (auto o : all_possible_roots) {
+    for (int i = 0; i < (int)all_possible_roots.size(); ++i) {
+      auto o = all_possible_roots[i];
       Collector visitor;
       visitor.visit(o);
     }
     #pragma omp barrier
 
     /* finally, destroy objects determined unreachable */
-    for (auto o : unreachable) {
+    for (int i = 0; i < (int)unreachable.size(); ++i) {
+      auto o = unreachable[i];
       o->destroy_();
       o->deallocate_();
     }
