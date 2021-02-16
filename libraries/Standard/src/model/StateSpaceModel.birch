@@ -2,6 +2,11 @@
  * State-space model (SSM). Synonymous with
  * [HiddenMarkovModel](../HiddenMarkovModel).
  *
+ * !!! attention
+ *     `StateSpaceModel` is deprecated. The preferred design now is to
+ *     inherit directly from `Model` and override the `simulate()` and
+ *     `simulate(Integer)` functions to define a state-space model.
+ *
  * ```mermaid
  * classDiagram
  *    Model <|-- MarkovModel

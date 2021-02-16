@@ -1,6 +1,11 @@
 /**
  * Markov model.
  *
+ * !!! attention
+ *     `MarkovModel` is deprecated. The preferred design now is to inherit
+ *     directly from `Model` and override the `simulate()` and
+ *     `simulate(Integer)` functions to define a Markov model.
+ *
  * ```mermaid
  * classDiagram
  *    Model <|-- MarkovModel
