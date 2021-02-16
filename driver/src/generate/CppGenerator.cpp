@@ -93,7 +93,9 @@ void birch::CppGenerator::visit(const BinaryCall* o) {
 
 void birch::CppGenerator::visit(const UnaryCall* o) {
   if (isTranslatable(o->name->str())) {
-    middle(o->name->str() << o->single);
+    /* always include the parentheses here, consider that in Birch, ++x is the
+     * equivalent of +(+(x)), whereas in C++ it means increment */
+    middle(o->name->str() << '(' << o->single << ')');
   } else {
     middle(o->name << '(' << o->single << ')');
   }
