@@ -72,8 +72,8 @@ class SIRModel < Model {
   }
 
   override function write(t:Integer, buffer:Buffer) {
-    buffer.set("s", s);
-    buffer.set("i", i);
-    buffer.set("r", r);
+    buffer.set("s", s[t]);
+    buffer.set("i", i[t]);
+    buffer.set("r", r[t]);
   }
 }
