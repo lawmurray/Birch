@@ -1,18 +1,9 @@
 cpp{{
-static auto make_handlers() {
-  std::vector<libbirch::Shared<birch::type::Handler>> handlers(
-        libbirch::get_max_threads(), nullptr);
-  #pragma omp parallel num_threads(libbirch::get_max_threads())
-  {
-    handlers[libbirch::get_thread_num()] = birch::PlayHandler(true);
-  }
-  return handlers;
-}
-
-static auto& get_handler() {
-  static auto handlers = make_handlers();
-  return handlers[libbirch::get_thread_num()];
-}
+/**
+ * Event handler for each thread.
+ */
+static thread_local libbirch::Shared<birch::type::Handler> handler =
+    birch::PlayHandler(true);
 }}
 
 /**
@@ -20,7 +11,7 @@ static auto& get_handler() {
  */
 function get_handler() -> Handler {
   cpp{{
-  return ::get_handler();
+  return ::handler;
   }}
 }
 
@@ -34,7 +25,7 @@ function get_handler() -> Handler {
  */
 function set_handler(handler:Handler) {
   cpp{{
-  ::get_handler() = handler;
+  ::handler = handler;
   }}
 }
 
@@ -52,7 +43,7 @@ function set_handler(handler:Handler) {
  */
 function swap_handler(handler:Handler) -> Handler {
   cpp{{
-  auto& current = ::get_handler();
+  auto& current = ::handler;
   auto previous = handler;
   std::swap(current, previous);
   return previous;

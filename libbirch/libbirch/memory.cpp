@@ -15,17 +15,17 @@
 #include "libbirch/Spanner.hpp"
 
 /**
- * Possible roots list for the thread.
+ * Possible roots list for each thread.
  */
 static thread_local std::vector<libbirch::Any*> possible_roots;
 
 /**
- * Unreachable list for the thread.
+ * Unreachable list for each thread.
  */
 static thread_local std::vector<libbirch::Any*> unreachable;
 
 /**
- * Biconnected flag for the thread.
+ * Biconnected flag for each thread.
  */
 static thread_local bool biconnected_flag = false;
 
