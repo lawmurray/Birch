@@ -647,7 +647,7 @@ void birch::CppGenerator::visit(const Raw* o) {
     if (!header) {
       genSourceLine(o->loc);
     }
-    *this << o->raw;
+    *this << escape_unicode(o->raw);
     if (!std::isspace(o->raw.back())) {
       *this << ' ';
     }

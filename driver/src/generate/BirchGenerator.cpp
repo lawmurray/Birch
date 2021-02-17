@@ -429,9 +429,11 @@ void birch::BirchGenerator::visit(const Factor* o) {
 }
 
 void birch::BirchGenerator::visit(const Raw* o) {
-  line(o->name << "{{");
-  start(o->raw);
-  finish("}}");
+  if ((header && *o->name == "hpp") || (!header && *o->name == "cpp")) {
+    line(o->name << "{{");
+    start(o->raw);
+    finish("}}");
+  }
 }
 
 void birch::BirchGenerator::visit(const StatementList* o) {
