@@ -38,7 +38,7 @@ std::list<fs::path> birch::glob(const std::string& pattern) {
   glob_t matches;
   int rescode = glob(pattern.c_str(), 0, 0, &matches);
   if (rescode == 0) {
-    for (int i = 0; i < matches.gl_pathc; ++i) {
+    for (int i = 0; i < (int)matches.gl_pathc; ++i) {
       results.push_back(matches.gl_pathv[i]);
     }
   }
