@@ -449,6 +449,12 @@ void birch::CppGenerator::visit(const Program* o) {
         line("}\n");
       }
 
+      /* older compiler versions that do not support thread-safe static local
+       * variable initialization require Eigen to initialize such variables
+       * before entering a parallel region (LibBirch and the standard library
+       * currently use thread_local to avoid doing similar) */
+      line("Eigen::initParallel();\n");
+
       /* body of program */
       *this << o->braces;
 
