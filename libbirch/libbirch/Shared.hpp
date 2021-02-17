@@ -332,21 +332,21 @@ private:
   /**
    * Unpack a raw pointer after loading.
    */
-  static T* unpack(intptr_t ptr) {
+  static T* unpack(int64_t ptr) {
     return reinterpret_cast<T*>(ptr);
   }
 
   /**
    * Pack a raw pointer before storing.
    */
-  static intptr_t pack(T* ptr) {
-    return reinterpret_cast<intptr_t>(ptr);
+  static int64_t pack(T* ptr) {
+    return reinterpret_cast<int64_t>(ptr);
   }
 
   /**
    * Raw pointer.
    */
-  intptr_t ptr:(8*sizeof(intptr_t) - 1);
+  int64_t ptr:(8*sizeof(int64_t) - 1);
 
   /**
    * Is this a bridge?
