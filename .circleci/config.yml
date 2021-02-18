@@ -43,7 +43,7 @@ commands:
           name: Environment
           description: Set environment variables for builds
           command: |
-              if [[ -v HOMEBREW ]]; then
+              if [[ ! -z "$HOMEBREW" ]]; then
                 HOMEBREW_NO_AUTO_UPDATE=1 brew unlink parallel  # conflicts with moreutils
                 HOMEBREW_NO_AUTO_UPDATE=1 brew install coreutils moreutils autoconf automake libtool flex bison boost eigen libyaml libomp sqlite cairo
                 echo "export PATH=/usr/local/opt/flex/bin:/usr/local/opt/bison/bin:$PATH" >> $BASH_ENV
