@@ -31,40 +31,6 @@ static thread_local bool biconnected_flag = false;
 
 #ifdef ENABLE_MEMORY_POOL
 /**
- * Make the heap.
- */
-static char* make_heap() {
-  /* determine a preferred size of the heap based on total physical memory */
-  size_t size = sysconf(_SC_PAGE_SIZE);
-  size_t npages = sysconf(_SC_PHYS_PAGES);
-  size_t n = 8u*npages*size;
-
-  /* attempt to allocate this amount, successively halving until
-   * successful */
-  void* ptr = nullptr;
-  int res = 0;
-  do {
-    res = posix_memalign(&ptr, 64ull, n);
-    n >>= 1;
-  } while (res > 0 && n > 0u);
-  assert(ptr);
-
-  return (char*)ptr;
-}
-#endif
-
-#ifdef ENABLE_MEMORY_POOL
-/**
- * Get the heap.
- */
-static libbirch::Atomic<char*>& get_heap() {
-  static libbirch::Atomic<char*> heap(make_heap());
-  return heap;
-}
-#endif
-
-#ifdef ENABLE_MEMORY_POOL
-/**
  * Get the `i`th pool.
  */
 static libbirch::Pool& get_pool(const int i) {
@@ -118,7 +84,7 @@ void* libbirch::allocate(const size_t n) {
   auto ptr = get_pool(64*tid + i).take();  // attempt to reuse from this pool
   if (!ptr) {           // otherwise allocate new
     size_t m = unbin(i);
-    ptr = (get_heap() += m) - m;
+    ptr = std::malloc(m);
   }
   assert(ptr);
   return ptr;

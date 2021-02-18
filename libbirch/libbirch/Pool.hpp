@@ -31,6 +31,17 @@ public:
   }
 
   /**
+   * Destructor.
+   */
+  ~Pool() {
+    void* block = take();
+    while (block) {
+      std::free(block);
+      block = take();
+    }
+  }
+
+  /**
    * Take an allocation from the pool. Returns `nullptr` if the pool is
    * empty.
    */
