@@ -216,6 +216,8 @@ commands:
               if [[ -n "$GITHUB_USERNAME" && -n "$GITHUB_PASSWORD" ]]
               then
                 git clone https://$GITHUB_USERNAME:$GITHUB_PASSWORD@github.com/lawmurray/homebrew-birch.git
+                cd ~/project/homebrew-birch
+                git rm *.tar.gz
               fi
 
   commit_brew:
@@ -228,6 +230,7 @@ commands:
               if [[ -n "$GITHUB_USERNAME" && -n "$GITHUB_PASSWORD" && -n "$VERSION" ]]
               then
                 cd ~/project/homebrew-birch
+                git add *.tar.gz
                 git add -u
                 git commit -m "Updated to version $VERSION."
                 git push origin master
@@ -297,8 +300,6 @@ commands:
                 make dist
                 cp << parameters.tar >>-$VERSION.tar.gz ~/project/homebrew-birch/.
                 cd ~/project/homebrew-birch
-                git rm << parameters.tar >>-!($VERSION).tar.gz
-                git add << parameters.tar >>-$VERSION.tar.gz
                 SHA256=($(sha256sum << parameters.tar >>-$VERSION.tar.gz))
                 cat << parameters.tar >>.rb |
                   sed -E "s/unversioned/$VERSION/g" |
