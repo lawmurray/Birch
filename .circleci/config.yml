@@ -43,7 +43,8 @@ commands:
           name: Environment
           description: Set environment variables for builds
           command: |
-              if [[ ! -z "$HOMEBREW" ]]; then
+              if [[ -n "$HOMEBREW" ]]
+              then
                 HOMEBREW_NO_AUTO_UPDATE=1 brew unlink parallel  # conflicts with moreutils
                 HOMEBREW_NO_AUTO_UPDATE=1 brew install coreutils moreutils autoconf automake libtool flex bison boost eigen libyaml libomp sqlite cairo
                 echo "export PATH=/usr/local/opt/flex/bin:/usr/local/opt/bison/bin:\$PATH" >> $BASH_ENV
@@ -249,6 +250,7 @@ commands:
       - run:
           name: Open Build Service package for << parameters.package >>
           command: |
+              shopt -s extglob
               if [[ -n "$OSC_PROJECT" && -n "$OSC_USERNAME" && -n "$OSC_PASSWORD" && -n "$VERSION" ]]
               then
                 osc checkout $OSC_PROJECT << parameters.tar >>
@@ -288,6 +290,7 @@ commands:
       - run:
           name: Homebrew package for << parameters.package >>
           command: |
+              shopt -s extglob
               if [[ -n "$GITHUB_USERNAME" && -n "$GITHUB_PASSWORD" && -n "$VERSION" ]]
               then
                 cd << parameters.dir >>/<< parameters.package >>
