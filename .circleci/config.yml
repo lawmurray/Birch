@@ -137,7 +137,7 @@ commands:
       smoke:
         description: Run smoke tests?
         type: boolean
-        default: false
+        default: true
       unit:
         description: Run unit tests?
         type: boolean
@@ -301,8 +301,19 @@ commands:
               fi
 
 jobs:
-  linux:
-    executor: linux
+  main:
+    parameters: 
+      os:
+        type: executor
+      smoke:
+        description: Run smoke tests?
+        type: boolean
+        default: true
+      unit:
+        description: Run unit tests?
+        type: boolean
+        default: false
+    executor: << parameters.os >>
     steps:
       - checkout
       - environment
@@ -313,8 +324,8 @@ jobs:
           dir: libraries
           package: Standard
           tar: birch-standard
-          smoke: true
-          unit: true
+          smoke: << parameters.smoke >>
+          unit: << parameters.unit >>
       - package:
           dir: libraries
           package: Cairo
@@ -332,121 +343,40 @@ jobs:
       - codecov
       - slack
 
-  linux_LinearGaussian:
-    executor: linux
+  example:
+    parameters: 
+      os:
+        type: executor
+      package:
+        description: Name of package (e.g. Standard)
+        type: string
+      tar:
+        description: Tarname of package (e.g. birch-standard)
+        type: string
+      smoke:
+        description: Run smoke tests?
+        type: boolean
+        default: true
+      unit:
+        description: Run unit tests?
+        type: boolean
+        default: false
+      mongodb:
+        description: Upload output to MongoDB Atlas?
+        type: boolean
+        default: false
+    executor: << parameters.os >>
     steps:
       - attach_workspace:
           at: .
       - environment
       - package:
           dir: examples
-          package: LinearGaussian
-          tar: birch-lineargaussian
-          smoke: true
-          unit: true
-          mongodb: true
-      - end_if_pull_request
-      - codecov
-      - slack
-
-  linux_LinearRegression:
-    executor: linux
-    steps:
-      - attach_workspace:
-          at: .
-      - environment
-      - package:
-          dir: examples
-          package: LinearRegression
-          tar: birch-linearregression
-          smoke: true
-          unit: true
-          mongodb: true
-      - end_if_pull_request
-      - codecov
-      - slack
-
-  linux_MixedGaussian:
-    executor: linux
-    steps:
-      - attach_workspace:
-          at: .
-      - environment
-      - package:
-          dir: examples
-          package: MixedGaussian
-          tar: birch-mixedgaussian
-          smoke: true
-          unit: true
-          mongodb: true
-      - end_if_pull_request
-      - codecov
-      - slack
-
-  linux_MultiObjectTracking:
-    executor: linux
-    steps:
-      - attach_workspace:
-          at: .
-      - environment
-      - package:
-          dir: examples
-          package: MultiObjectTracking
-          tar: birch-multiobjecttracking
-          smoke: true
-          unit: true
-          mongodb: true
-      - end_if_pull_request
-      - codecov
-      - slack
-
-  linux_PoissonGaussian:
-    executor: linux
-    steps:
-      - attach_workspace:
-          at: .
-      - environment
-      - package:
-          dir: examples
-          package: PoissonGaussian
-          tar: birch-poissongaussian
-          smoke: true
-          unit: true
-          mongodb: true
-      - end_if_pull_request
-      - codecov
-      - slack
-
-  linux_SIR:
-    executor: linux
-    steps:
-      - attach_workspace:
-          at: .
-      - environment
-      - package:
-          dir: examples
-          package: SIR
-          tar: birch-sir
-          smoke: true
-          unit: true
-          mongodb: true
-      - end_if_pull_request
-      - codecov
-      - slack
-
-  linux_VectorBorneDisease:
-    executor: linux
-    steps:
-      - attach_workspace:
-          at: .
-      - environment
-      - package:
-          dir: examples
-          package: VectorBorneDisease
-          tar: birch-vectorbornedisease
-          smoke: true
-          unit: true
-          mongodb: true
+          package: << parameters.package >>
+          tar: << parameters.tar >>
+          smoke: << parameters.smoke >>
+          unit: << parameters.unit >>
+          mongodb: << parameters.mongodb >>
       - end_if_pull_request
       - codecov
       - slack
@@ -477,141 +407,6 @@ jobs:
           dir: libraries
           package: SQLite
           tar: birch-sqlite
-      - slack
-
-  mac:
-    executor: mac
-    steps:
-      - checkout
-      - environment
-      - driver
-      - library:
-          package: libbirch
-      - package:
-          dir: libraries
-          package: Standard
-          tar: birch-standard
-          smoke: true
-      - package:
-          dir: libraries
-          package: Cairo
-          tar: birch-cairo
-      - package:
-          dir: libraries
-          package: SQLite
-          tar: birch-sqlite
-      - persist_to_workspace:
-          root: .
-          paths:
-            - '*'
-            - .*
-      - end_if_pull_request
-      - codecov
-      - slack
-
-  mac_LinearGaussian:
-    executor: mac
-    steps:
-      - attach_workspace:
-          at: .
-      - environment
-      - package:
-          dir: examples
-          package: LinearGaussian
-          tar: birch-lineargaussian
-          smoke: true
-      - end_if_pull_request
-      - codecov
-      - slack
-
-  mac_LinearRegression:
-    executor: mac
-    steps:
-      - attach_workspace:
-          at: .
-      - environment
-      - package:
-          dir: examples
-          package: LinearRegression
-          tar: birch-linearregression
-          smoke: true
-      - end_if_pull_request
-      - codecov
-      - slack
-
-  mac_MixedGaussian:
-    executor: mac
-    steps:
-      - attach_workspace:
-          at: .
-      - environment
-      - package:
-          dir: examples
-          package: MixedGaussian
-          tar: birch-mixedgaussian
-          smoke: true
-      - end_if_pull_request
-      - codecov
-      - slack
-
-  mac_MultiObjectTracking:
-    executor: mac
-    steps:
-      - attach_workspace:
-          at: .
-      - environment
-      - package:
-          dir: examples
-          package: MultiObjectTracking
-          tar: birch-multiobjecttracking
-          smoke: true
-      - end_if_pull_request
-      - codecov
-      - slack
-
-  mac_PoissonGaussian:
-    executor: mac
-    steps:
-      - attach_workspace:
-          at: .
-      - environment
-      - package:
-          dir: examples
-          package: PoissonGaussian
-          tar: birch-poissongaussian
-          smoke: true
-      - end_if_pull_request
-      - codecov
-      - slack
-
-  mac_SIR:
-    executor: mac
-    steps:
-      - attach_workspace:
-          at: .
-      - environment
-      - package:
-          dir: examples
-          package: SIR
-          tar: birch-sir
-          smoke: true
-      - end_if_pull_request
-      - codecov
-      - slack
-
-  mac_VectorBorneDisease:
-    executor: mac
-    steps:
-      - attach_workspace:
-          at: .
-      - environment
-      - package:
-          dir: examples
-          package: VectorBorneDisease
-          tar: birch-vectorbornedisease
-          smoke: true
-      - end_if_pull_request
-      - codecov
       - slack
 
   mac_deploy:
@@ -670,35 +465,79 @@ workflows:
 
   linux:
     jobs:
-      - linux
+      - main:
+          os: linux
+          unit: true
 
-      - linux_LinearGaussian:
+      - example:
+          os: linux
+          name: LinearGaussian
+          package: LinearGaussian
+          tar: birch-lineargaussian
+          unit: true
+          mongodb: true
           requires:
-            - linux
+            - main
 
-      - linux_LinearRegression:
+      - example:
+          os: linux
+          name: LinearRegression
+          package: LinearRegression
+          tar: birch-linearregression
+          unit: true
+          mongodb: true
           requires:
-            - linux
+            - main
 
-      - linux_MixedGaussian:
+      - example:
+          os: linux
+          name: MixedGaussian
+          package: MixedGaussian
+          tar: birch-mixedgaussian
+          unit: true
+          mongodb: true
           requires:
-            - linux
+            - main
 
-      - linux_PoissonGaussian:
+      - example:
+          os: linux
+          name: PoissonGaussian
+          package: PoissonGaussian
+          tar: birch-poissongaussian
+          unit: true
+          mongodb: true
           requires:
-            - linux
+            - main
 
-      - linux_SIR:
+      - example:
+          os: linux
+          name: SIR
+          package: SIR
+          tar: birch-sir
+          unit: true
+          mongodb: true
           requires:
-            - linux
+            - main
 
-      - linux_MultiObjectTracking:
+      - example:
+          os: linux
+          name: MultiObjectTracking
+          package: MultiObjectTracking
+          tar: birch-multiobjecttracking
+          unit: true
+          mongodb: true
           requires:
-            - linux
+            - main
 
-      - linux_VectorBorneDisease:
+      - example:
+          os: linux
+          name: VectorBorneDisease
+          package: VectorBorneDisease
+          tar: birch-vectorbornedisease
+          unit: true
+          mongodb: true
           requires:
-            - linux
+            - main
 
       - linux_deploy:
           filters:
@@ -706,13 +545,13 @@ workflows:
               only:
                 - master
           requires:
-            - linux_LinearGaussian
-            - linux_LinearRegression
-            - linux_MixedGaussian
-            - linux_PoissonGaussian
-            - linux_SIR
-            - linux_MultiObjectTracking
-            - linux_VectorBorneDisease
+            - LinearGaussian
+            - LinearRegression
+            - MixedGaussian
+            - PoissonGaussian
+            - SIR
+            - MultiObjectTracking
+            - VectorBorneDisease
 
       - website_deploy:
           filters:
@@ -724,51 +563,80 @@ workflows:
 
   mac:
     jobs:
-      - mac:
+      - main:
+          os: mac
           pre-steps:
             - homebrew
 
-      - mac_LinearGaussian:
+      - example:
+          os: linux
+          name: LinearGaussian
+          package: LinearGaussian
+          tar: birch-lineargaussian
           pre-steps:
             - homebrew
           requires:
-            - mac
+            - main
 
-      - mac_LinearRegression:
+      - example:
+          os: linux
+          name: LinearRegression
+          package: LinearRegression
+          tar: birch-linearregression
           pre-steps:
             - homebrew
           requires:
-            - mac
+            - main
 
-      - mac_MixedGaussian:
+      - example:
+          os: linux
+          name: MixedGaussian
+          package: MixedGaussian
+          tar: birch-mixedgaussian
           pre-steps:
             - homebrew
           requires:
-            - mac
+            - main
 
-      - mac_PoissonGaussian:
+      - example:
+          os: linux
+          name: PoissonGaussian
+          package: PoissonGaussian
+          tar: birch-poissongaussian
           pre-steps:
             - homebrew
           requires:
-            - mac
+            - main
 
-      - mac_SIR:
+      - example:
+          os: linux
+          name: SIR
+          package: SIR
+          tar: birch-sir
           pre-steps:
             - homebrew
           requires:
-            - mac
+            - main
 
-      - mac_MultiObjectTracking:
+      - example:
+          os: linux
+          name: MultiObjectTracking
+          package: MultiObjectTracking
+          tar: birch-multiobjecttracking
           pre-steps:
             - homebrew
           requires:
-            - mac
+            - main
 
-      - mac_VectorBorneDisease:
+      - example:
+          os: linux
+          name: VectorBorneDisease
+          package: VectorBorneDisease
+          tar: birch-vectorbornedisease
           pre-steps:
             - homebrew
           requires:
-            - mac
+            - main
 
       - mac_deploy:
           pre-steps:
@@ -778,10 +646,10 @@ workflows:
               only:
                 - master
           requires:
-            - mac_LinearGaussian
-            - mac_LinearRegression
-            - mac_MixedGaussian
-            - mac_PoissonGaussian
-            - mac_SIR
-            - mac_MultiObjectTracking
-            - mac_VectorBorneDisease
+            - LinearGaussian
+            - LinearRegression
+            - MixedGaussian
+            - PoissonGaussian
+            - SIR
+            - MultiObjectTracking
+            - VectorBorneDisease
