@@ -467,77 +467,78 @@ workflows:
     jobs:
       - main:
           os: linux
+          name: linux
           unit: true
 
       - example:
           os: linux
-          name: LinearGaussian
+          name: linux_LinearGaussian
           package: LinearGaussian
           tar: birch-lineargaussian
           unit: true
           mongodb: true
           requires:
-            - main
+            - linux
 
       - example:
           os: linux
-          name: LinearRegression
+          name: linux_LinearRegression
           package: LinearRegression
           tar: birch-linearregression
           unit: true
           mongodb: true
           requires:
-            - main
+            - linux
 
       - example:
           os: linux
-          name: MixedGaussian
+          name: linux_MixedGaussian
           package: MixedGaussian
           tar: birch-mixedgaussian
           unit: true
           mongodb: true
           requires:
-            - main
+            - linux
 
       - example:
           os: linux
-          name: PoissonGaussian
+          name: linux_PoissonGaussian
           package: PoissonGaussian
           tar: birch-poissongaussian
           unit: true
           mongodb: true
           requires:
-            - main
+            - linux
 
       - example:
           os: linux
-          name: SIR
+          name: linux_SIR
           package: SIR
           tar: birch-sir
           unit: true
           mongodb: true
           requires:
-            - main
+            - linux
 
       - example:
           os: linux
-          name: MultiObjectTracking
+          name: linux_MultiObjectTracking
           package: MultiObjectTracking
           tar: birch-multiobjecttracking
           unit: true
           mongodb: true
           requires:
-            - main
+            - linux
 
       - example:
           os: linux
-          name: VectorBorneDisease
+          name: linux_VectorBorneDisease
           package: VectorBorneDisease
           tar: birch-vectorbornedisease
           unit: true
           mongodb: true
           requires:
-            - main
+            - linux
 
       - linux_deploy:
           filters:
@@ -545,13 +546,13 @@ workflows:
               only:
                 - master
           requires:
-            - LinearGaussian
-            - LinearRegression
-            - MixedGaussian
-            - PoissonGaussian
-            - SIR
-            - MultiObjectTracking
-            - VectorBorneDisease
+            - linux_LinearGaussian
+            - linux_LinearRegression
+            - linux_MixedGaussian
+            - linux_PoissonGaussian
+            - linux_SIR
+            - linux_MultiObjectTracking
+            - linux_VectorBorneDisease
 
       - website_deploy:
           filters:
@@ -565,78 +566,79 @@ workflows:
     jobs:
       - main:
           os: mac
+          name: mac
           pre-steps:
             - homebrew
 
       - example:
-          os: linux
-          name: LinearGaussian
+          os: mac
+          name: mac_LinearGaussian
           package: LinearGaussian
           tar: birch-lineargaussian
           pre-steps:
             - homebrew
           requires:
-            - main
+            - mac
 
       - example:
-          os: linux
-          name: LinearRegression
+          os: mac
+          name: mac_LinearRegression
           package: LinearRegression
           tar: birch-linearregression
           pre-steps:
             - homebrew
           requires:
-            - main
+            - mac
 
       - example:
-          os: linux
-          name: MixedGaussian
+          os: mac
+          name: mac_MixedGaussian
           package: MixedGaussian
           tar: birch-mixedgaussian
           pre-steps:
             - homebrew
           requires:
-            - main
+            - mac
 
       - example:
-          os: linux
-          name: PoissonGaussian
+          os: mac
+          name: mac_PoissonGaussian
           package: PoissonGaussian
           tar: birch-poissongaussian
           pre-steps:
             - homebrew
           requires:
-            - main
+            - mac
 
       - example:
-          os: linux
-          name: SIR
+          os: mac
+          name: mac_SIR
           package: SIR
           tar: birch-sir
           pre-steps:
             - homebrew
           requires:
-            - main
+            - mac
 
       - example:
-          os: linux
-          name: MultiObjectTracking
+          os: mac
+          name: mac_MultiObjectTracking
           package: MultiObjectTracking
           tar: birch-multiobjecttracking
           pre-steps:
             - homebrew
           requires:
-            - main
+            - mac
 
       - example:
-          os: linux
-          name: VectorBorneDisease
+          os: mac
+          name: mac_VectorBorneDisease
           package: VectorBorneDisease
           tar: birch-vectorbornedisease
           pre-steps:
             - homebrew
           requires:
-            - main
+            - mac
 
       - mac_deploy:
           pre-steps:
@@ -646,10 +648,10 @@ workflows:
               only:
                 - master
           requires:
-            - LinearGaussian
-            - LinearRegression
-            - MixedGaussian
-            - PoissonGaussian
-            - SIR
-            - MultiObjectTracking
-            - VectorBorneDisease
+            - mac_LinearGaussian
+            - mac_LinearRegression
+            - mac_MixedGaussian
+            - mac_PoissonGaussian
+            - mac_SIR
+            - mac_MultiObjectTracking
+            - mac_VectorBorneDisease
