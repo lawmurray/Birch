@@ -22,6 +22,7 @@ executors:
       MAKE_FLAGS: "-j8"
       BIRCH_FLAGS: "--unit=dir --arch=native --jobs=8 --enable-verbose"
       MODE_FLAGS: "--disable-debug --enable-test --disable-release"
+      HOMEBREW: 1
 
 commands:
 
@@ -35,17 +36,6 @@ commands:
               git config --global user.name "Birch Machine"
               git config --global user.email "birch-machine@indii.org"
 
-  homebrew:
-    description: Installing dependencies
-    steps:
-      - run:
-          name: Dependencies
-          description: Install dependencies from Homebrew
-          command: |
-              HOMEBREW_NO_AUTO_UPDATE=1 brew unlink parallel  # conflicts with moreutils
-              HOMEBREW_NO_AUTO_UPDATE=1 brew install coreutils moreutils autoconf automake libtool flex bison boost eigen libyaml libomp sqlite cairo
-              echo "export PATH=/usr/local/opt/flex/bin:/usr/local/opt/bison/bin:$PATH" >> $BASH_ENV
-
   environment:
     description: Preparing environment
     steps:
@@ -53,6 +43,11 @@ commands:
           name: Environment
           description: Set environment variables for builds
           command: |
+              if [[ -v HOMEBREW ]]; then
+                HOMEBREW_NO_AUTO_UPDATE=1 brew unlink parallel  # conflicts with moreutils
+                HOMEBREW_NO_AUTO_UPDATE=1 brew install coreutils moreutils autoconf automake libtool flex bison boost eigen libyaml libomp sqlite cairo
+                echo "export PATH=/usr/local/opt/flex/bin:/usr/local/opt/bison/bin:$PATH" >> $BASH_ENV
+              fi
               echo "export VERSION=`(git describe --long || echo) | sed -E 's/v([0-9]+)-([0-9]+)-g[0-9a-f]+/\1.\2/'`" >> $BASH_ENV
               echo "export VERSION_LONG=`git describe --long || echo`" >> $BASH_ENV
               echo "export PREFIX=~/project" >> $BASH_ENV
@@ -313,6 +308,10 @@ jobs:
         description: Run unit tests?
         type: boolean
         default: false
+      mongodb:
+        description: Upload output to MongoDB Atlas?
+        type: boolean
+        default: false
     executor: << parameters.os >>
     steps:
       - checkout
@@ -326,6 +325,7 @@ jobs:
           tar: birch-standard
           smoke: << parameters.smoke >>
           unit: << parameters.unit >>
+          mongodb: << parameters.mongodb >>
       - package:
           dir: libraries
           package: Cairo
@@ -356,7 +356,7 @@ jobs:
       smoke:
         description: Run smoke tests?
         type: boolean
-        default: true
+        default: false
       unit:
         description: Run unit tests?
         type: boolean
@@ -567,16 +567,12 @@ workflows:
       - main:
           os: mac
           name: mac
-          pre-steps:
-            - homebrew
 
       - example:
           os: mac
           name: mac_LinearGaussian
           package: LinearGaussian
           tar: birch-lineargaussian
-          pre-steps:
-            - homebrew
           requires:
             - mac
 
@@ -585,8 +581,6 @@ workflows:
           name: mac_LinearRegression
           package: LinearRegression
           tar: birch-linearregression
-          pre-steps:
-            - homebrew
           requires:
             - mac
 
@@ -595,8 +589,6 @@ workflows:
           name: mac_MixedGaussian
           package: MixedGaussian
           tar: birch-mixedgaussian
-          pre-steps:
-            - homebrew
           requires:
             - mac
 
@@ -605,8 +597,6 @@ workflows:
           name: mac_PoissonGaussian
           package: PoissonGaussian
           tar: birch-poissongaussian
-          pre-steps:
-            - homebrew
           requires:
             - mac
 
@@ -615,8 +605,6 @@ workflows:
           name: mac_SIR
           package: SIR
           tar: birch-sir
-          pre-steps:
-            - homebrew
           requires:
             - mac
 
@@ -625,8 +613,6 @@ workflows:
           name: mac_MultiObjectTracking
           package: MultiObjectTracking
           tar: birch-multiobjecttracking
-          pre-steps:
-            - homebrew
           requires:
             - mac
 
@@ -635,14 +621,10 @@ workflows:
           name: mac_VectorBorneDisease
           package: VectorBorneDisease
           tar: birch-vectorbornedisease
-          pre-steps:
-            - homebrew
           requires:
             - mac
 
       - mac_deploy:
-          pre-steps:
-            - homebrew
           filters:
             branches:
               only:
