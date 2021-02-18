@@ -46,14 +46,14 @@ commands:
               if [[ ! -z "$HOMEBREW" ]]; then
                 HOMEBREW_NO_AUTO_UPDATE=1 brew unlink parallel  # conflicts with moreutils
                 HOMEBREW_NO_AUTO_UPDATE=1 brew install coreutils moreutils autoconf automake libtool flex bison boost eigen libyaml libomp sqlite cairo
-                echo "export PATH=/usr/local/opt/flex/bin:/usr/local/opt/bison/bin:$PATH" >> $BASH_ENV
+                echo "export PATH=/usr/local/opt/flex/bin:/usr/local/opt/bison/bin:\$PATH" >> $BASH_ENV
               fi
               echo "export VERSION=`(git describe --long || echo) | sed -E 's/v([0-9]+)-([0-9]+)-g[0-9a-f]+/\1.\2/'`" >> $BASH_ENV
               echo "export VERSION_LONG=`git describe --long || echo`" >> $BASH_ENV
               echo "export PREFIX=~/project" >> $BASH_ENV
-              echo "export PATH=\$PREFIX/bin:$PATH" >> $BASH_ENV
-              echo "export CPLUS_INCLUDE_PATH=\$PREFIX/include:$CPLUS_INCLUDE_PATH" >> $BASH_ENV
-              echo "export LD_LIBRARY_PATH=\$PREFIX/lib:$LD_LIBRARY_PATH" >> $BASH_ENV
+              echo "export PATH=\$PREFIX/bin:\$PATH" >> $BASH_ENV
+              echo "export CPLUS_INCLUDE_PATH=\$PREFIX/include:\$CPLUS_INCLUDE_PATH" >> $BASH_ENV
+              echo "export LD_LIBRARY_PATH=\$PREFIX/lib:\$LD_LIBRARY_PATH" >> $BASH_ENV
               echo "export FORMAT=', \"real\": %e, \"user\": %U, \"system\": %S, \"memory\": %M, \"involuntary\": %c, \"voluntary\": %w'" >> $BASH_ENV
 
   end_if_pull_request:
@@ -330,10 +330,12 @@ jobs:
           dir: libraries
           package: Cairo
           tar: birch-cairo
+          smoke: false
       - package:
           dir: libraries
           package: SQLite
           tar: birch-sqlite
+          smoke: false
       - persist_to_workspace:
           root: .
           paths:
