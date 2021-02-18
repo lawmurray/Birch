@@ -266,11 +266,11 @@ commands:
                 for file in << parameters.tar >>.spec << parameters.tar >>.dsc debian.control PKGBUILD
                 do
                   cat $file |
-                    sed -E "s/unversioned/$VERSION/g" |
                     sed -E "s/-[0-9]+\.[0-9]+\.tar\.gz/-$VERSION.tar.gz/g" |
                     sed -E "s/\%\{name\}-[0-9]+\.[0-9]+/\%\{name\}-$VERSION/g" |
                     sed -E "s/Version: [0-9]+\.[0-9]+/Version: $VERSION/g" |
                     sed -E "s/pkgver=[0-9]+\.[0-9]+/pkgver=$VERSION/g" |
+                    sed -E "s/pkgname-[0-9]+\.[0-9]+/pkgname-$VERSION/g" |
                     sed -E "s/>=( ?)[0-9]+\.[0-9]+/>=\\1$VERSION/g" |
                     sponge $file
                 done
@@ -303,7 +303,6 @@ commands:
                 cd ~/project/homebrew-birch
                 SHA256=($(sha256sum << parameters.tar >>-$VERSION.tar.gz))
                 cat << parameters.tar >>.rb |
-                  sed -E "s/unversioned/$VERSION/g" |
                   sed -E "s/-[0-9]+\.[0-9]+\.tar\.gz/-$VERSION.tar.gz/g" |
                   sed -E "s/sha256 \"[0-9a-f]+\"/sha256 \"$SHA256\"/g" |
                   sed -E "s/version \"[0-9]+\.[0-9]+\"/version \"$VERSION\"/g" |
