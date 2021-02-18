@@ -86,6 +86,7 @@ commands:
           name: Build driver
           command: |
               cd driver
+              cat configure.ac | sed -E "s/unversioned/$VERSION/" | sponge configure.ac
               ./bootstrap
               ./configure --prefix="$PREFIX" CXXFLAGS="-Wall -Wno-overloaded-virtual -g -O0 -fno-inline --coverage" || cat config.log
               make $MAKE_FLAGS
@@ -109,9 +110,10 @@ commands:
         type: string
     steps:
       - run:
-          name: Build << parameters.package >> C++ library
+          name: Build << parameters.package >>
           command: |
               cd << parameters.package >>
+              cat configure.ac | sed -E "s/unversioned/$VERSION/" | sponge configure.ac
               ./bootstrap
               ./configure --prefix="$PREFIX" $MODE_FLAGS || cat config.log
               make $MAKE_FLAGS
@@ -146,6 +148,7 @@ commands:
           name: Build << parameters.package >> package
           command: |
               cd << parameters.dir >>/<< parameters.package >>
+              echo "version: $VERSION" | cat - birch.yml | sponge birch.yml
               birch build --prefix=$PREFIX $MODE_FLAGS $BIRCH_FLAGS
               birch install
       - when:
@@ -251,14 +254,18 @@ commands:
                 osc checkout $OSC_PROJECT << parameters.tar >>
                 cd << parameters.dir >>/<< parameters.package >>
                 make dist
-                cp << parameters.tar >>-unversioned.tar.gz ~/project/$OSC_PROJECT/<< parameters.tar >>/.
+                cp << parameters.tar >>-$VERSION.tar.gz ~/project/$OSC_PROJECT/<< parameters.tar >>/.
                 cd ~/project/$OSC_PROJECT/<< parameters.tar >>
+                osc delete << parameters.tar >>-!($VERSION).tar.gz
+                osc add << parameters.tar >>-$VERSION.tar.gz
                 for file in << parameters.tar >>.spec << parameters.tar >>.dsc debian.control PKGBUILD
                 do
                   cat $file |
-                    sed -E "s/Version: v?[0-9]+(.[0-9]+)?/Version: $VERSION/g" |
-                    sed -E "s/pkgver=v?[0-9]+(.[0-9]+)?/pkgver=$VERSION/g" |
-                    sed -E "s/>=( ?)v?[0-9]+(.[0-9]+)?/>=\\1$VERSION/g" |
+                    sed -E "s/unversioned/$VERSION/g" |
+                    sed -E "s/-[0-9]+\.[0-9]+\.tar\.gz/-$VERSION.tar.gz/g" |
+                    sed -E "s/Version: [0-9]+\.[0-9]+/Version: $VERSION/g" |
+                    sed -E "s/pkgver=[0-9]+\.[0-9]+/pkgver=$VERSION/g" |
+                    sed -E "s/>=( ?)[0-9]+\.[0-9]+/>=\\1$VERSION/g" |
                     sponge $file
                 done
                 osc commit -m "Updated to version $VERSION."
@@ -285,13 +292,17 @@ commands:
               then
                 cd << parameters.dir >>/<< parameters.package >>
                 make dist
-                cp << parameters.tar >>-unversioned.tar.gz ~/project/homebrew-birch/.
+                cp << parameters.tar >>-$VERSION.tar.gz ~/project/homebrew-birch/.
                 cd ~/project/homebrew-birch
-                SHA256=($(sha256sum << parameters.tar >>-unversioned.tar.gz))
+                git rm << parameters.tar >>-!($VERSION).tar.gz
+                git add << parameters.tar >>-$VERSION.tar.gz
+                SHA256=($(sha256sum << parameters.tar >>-$VERSION.tar.gz))
                 cat << parameters.tar >>.rb |
+                  sed -E "s/unversioned/$VERSION/g" |
+                  sed -E "s/-[0-9]+\.[0-9]+\.tar\.gz/-$VERSION.tar.gz/g" |
                   sed -E "s/sha256 \"[0-9a-f]+\"/sha256 \"$SHA256\"/g" |
-                  sed -E "s/version \"v?[0-9]+(.[0-9]+)?\"/version \"$VERSION\"/g" |
-                  sed -E "s/=> \"v?[0-9]+(.[0-9]+)?\"/=> \"$VERSION\"/g" |
+                  sed -E "s/version \"[0-9]+\.[0-9]+\"/version \"$VERSION\"/g" |
+                  sed -E "s/=> \"[0-9]+\.[0-9]+\"/=> \"$VERSION\"/g" |
                   sponge << parameters.tar >>.rb
               fi
 
