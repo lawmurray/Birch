@@ -8,10 +8,20 @@ executors:
   linux:
     docker:
       - image: lawmurray/birch-circleci:opensuse-leap
+    environment:
+      OMP_NUM_THREADS: 2
+      MAKE_FLAGS: "-j4"
+      BIRCH_FLAGS: "--unit=dir --arch=native --jobs=4 --enable-verbose"
+      MODE_FLAGS: "--disable-debug --enable-test --enable-release"
 
   mac:
     macos:
       xcode: 12.2.0
+    environment:
+      OMP_NUM_THREADS: 4
+      MAKE_FLAGS: "-j8"
+      BIRCH_FLAGS: "--unit=dir --arch=native --jobs=8 --enable-verbose"
+      MODE_FLAGS: "--disable-debug --enable-test --disable-release"
 
 commands:
 
@@ -25,35 +35,20 @@ commands:
               git config --global user.name "Birch Machine"
               git config --global user.email "birch-machine@indii.org"
 
-  linux_environment:
-    description: Preparing Linux environment
-    steps:
-      - run:
-          name: Environment
-          description: Set environment variables for builds
-          command: |
-              echo "export VERSION=`(git describe --long || echo) | sed -E 's/v([0-9]+)-([0-9]+)-g[0-9a-f]+/\1.\2/'`" >> $BASH_ENV
-              echo "export VERSION_LONG=`git describe --long || echo`" >> $BASH_ENV
-              echo "export PREFIX=~/project" >> $BASH_ENV
-              echo "export PATH=\$PREFIX/bin:$PATH" >> $BASH_ENV
-              echo "export CPLUS_INCLUDE_PATH=\$PREFIX/include:$CPLUS_INCLUDE_PATH" >> $BASH_ENV
-              echo "export LD_LIBRARY_PATH=\$PREFIX/lib:$LD_LIBRARY_PATH" >> $BASH_ENV
-              echo "export MAKE_FLAGS='-j4'" >> $BASH_ENV
-              echo "export OMP_NUM_THREADS=2" >> $BASH_ENV
-              echo "export BIRCH_FLAGS='--unit=dir --arch=native --jobs=4 --enable-verbose'" >> $BASH_ENV
-              echo "export MODE_FLAGS='--disable-debug --enable-test --enable-release'" >> $BASH_ENV
-              echo "export FORMAT=', \"real\": %e, \"user\": %U, \"system\": %S, \"memory\": %M, \"involuntary\": %c, \"voluntary\": %w'" >> $BASH_ENV
-          # BIRCH_FLAGS uses only two parallel jobs to avoid exhausting memory
-
-  mac_environment:
-    description: Preparing macOS environment
+  homebrew:
+    description: Installing dependencies
     steps:
       - run:
           name: Dependencies
           description: Install dependencies from Homebrew
           command: |
-              HOMEBREW_NO_AUTO_UPDATE=1 brew unlink parallel  # conflicts with moreutils
-              HOMEBREW_NO_AUTO_UPDATE=1 brew install coreutils moreutils autoconf automake libtool flex bison boost eigen libyaml libomp sqlite cairo
+              brew unlink parallel  # conflicts with moreutils
+              brew install coreutils moreutils autoconf automake libtool flex bison boost eigen libyaml libomp sqlite cairo
+              echo "export PATH=\$PREFIX/bin:/usr/local/opt/flex/bin:/usr/local/opt/bison/bin:$PATH" >> $BASH_ENV
+
+  environment:
+    description: Preparing environment
+    steps:
       - run:
           name: Environment
           description: Set environment variables for builds
@@ -61,15 +56,9 @@ commands:
               echo "export VERSION=`(git describe --long || echo) | sed -E 's/v([0-9]+)-([0-9]+)-g[0-9a-f]+/\1.\2/'`" >> $BASH_ENV
               echo "export VERSION_LONG=`git describe --long || echo`" >> $BASH_ENV
               echo "export PREFIX=~/project" >> $BASH_ENV
-              echo "export PATH=\$PREFIX/bin:/usr/local/opt/flex/bin:/usr/local/opt/bison/bin:$PATH" >> $BASH_ENV
               echo "export CPLUS_INCLUDE_PATH=\$PREFIX/include:$CPLUS_INCLUDE_PATH" >> $BASH_ENV
               echo "export LD_LIBRARY_PATH=\$PREFIX/lib:$LD_LIBRARY_PATH" >> $BASH_ENV
-              echo "export MAKE_FLAGS='-j8'" >> $BASH_ENV
-              echo "export OMP_NUM_THREADS=4" >> $BASH_ENV
-              echo "export BIRCH_FLAGS='--unit=dir --arch=native --jobs=8 --enable-verbose'" >> $BASH_ENV
-              echo "export MODE_FLAGS='--disable-debug --enable-test --disable-release'" >> $BASH_ENV
               echo "export FORMAT=', \"real\": %e, \"user\": %U, \"system\": %S, \"memory\": %M, \"involuntary\": %c, \"voluntary\": %w'" >> $BASH_ENV
-          # BIRCH_FLAGS uses only four parallel jobs to avoid exhausting memory
 
   end_if_pull_request:
     description: End early with success if a pull request
@@ -315,7 +304,7 @@ jobs:
     executor: linux
     steps:
       - checkout
-      - linux_environment
+      - environment
       - driver
       - library:
           package: libbirch
@@ -347,7 +336,7 @@ jobs:
     steps:
       - attach_workspace:
           at: .
-      - linux_environment
+      - environment
       - package:
           dir: examples
           package: LinearGaussian
@@ -364,7 +353,7 @@ jobs:
     steps:
       - attach_workspace:
           at: .
-      - linux_environment
+      - environment
       - package:
           dir: examples
           package: LinearRegression
@@ -381,7 +370,7 @@ jobs:
     steps:
       - attach_workspace:
           at: .
-      - linux_environment
+      - environment
       - package:
           dir: examples
           package: MixedGaussian
@@ -398,7 +387,7 @@ jobs:
     steps:
       - attach_workspace:
           at: .
-      - linux_environment
+      - environment
       - package:
           dir: examples
           package: MultiObjectTracking
@@ -415,7 +404,7 @@ jobs:
     steps:
       - attach_workspace:
           at: .
-      - linux_environment
+      - environment
       - package:
           dir: examples
           package: PoissonGaussian
@@ -432,7 +421,7 @@ jobs:
     steps:
       - attach_workspace:
           at: .
-      - linux_environment
+      - environment
       - package:
           dir: examples
           package: SIR
@@ -449,7 +438,7 @@ jobs:
     steps:
       - attach_workspace:
           at: .
-      - linux_environment
+      - environment
       - package:
           dir: examples
           package: VectorBorneDisease
@@ -467,7 +456,7 @@ jobs:
       - end_if_pull_request
       - attach_workspace:
           at: .
-      - linux_environment
+      - environment
       - configure_osc
       - linux_deploy_package:
           package: driver
@@ -493,7 +482,7 @@ jobs:
     executor: mac
     steps:
       - checkout
-      - mac_environment
+      - environment
       - driver
       - library:
           package: libbirch
@@ -524,7 +513,7 @@ jobs:
     steps:
       - attach_workspace:
           at: .
-      - mac_environment
+      - environment
       - package:
           dir: examples
           package: LinearGaussian
@@ -539,7 +528,7 @@ jobs:
     steps:
       - attach_workspace:
           at: .
-      - mac_environment
+      - environment
       - package:
           dir: examples
           package: LinearRegression
@@ -554,7 +543,7 @@ jobs:
     steps:
       - attach_workspace:
           at: .
-      - mac_environment
+      - environment
       - package:
           dir: examples
           package: MixedGaussian
@@ -569,7 +558,7 @@ jobs:
     steps:
       - attach_workspace:
           at: .
-      - mac_environment
+      - environment
       - package:
           dir: examples
           package: MultiObjectTracking
@@ -584,7 +573,7 @@ jobs:
     steps:
       - attach_workspace:
           at: .
-      - mac_environment
+      - environment
       - package:
           dir: examples
           package: PoissonGaussian
@@ -599,7 +588,7 @@ jobs:
     steps:
       - attach_workspace:
           at: .
-      - mac_environment
+      - environment
       - package:
           dir: examples
           package: SIR
@@ -614,7 +603,7 @@ jobs:
     steps:
       - attach_workspace:
           at: .
-      - mac_environment
+      - environment
       - package:
           dir: examples
           package: VectorBorneDisease
@@ -630,7 +619,7 @@ jobs:
       - end_if_pull_request
       - attach_workspace:
           at: .
-      - mac_environment
+      - environment
       - checkout_brew
       - mac_deploy_package:
           package: driver
@@ -659,7 +648,7 @@ jobs:
       - end_if_pull_request
       - attach_workspace:
           at: .
-      - linux_environment
+      - environment
       - git_identity
       - run:
           name: Commit website
@@ -734,37 +723,55 @@ workflows:
 
   mac:
     jobs:
-      - mac
+      - mac:
+          pre-steps:
+            - homebrew
 
       - mac_LinearGaussian:
+          pre-steps:
+            - homebrew
           requires:
             - mac
 
       - mac_LinearRegression:
+          pre-steps:
+            - homebrew
           requires:
             - mac
 
       - mac_MixedGaussian:
+          pre-steps:
+            - homebrew
           requires:
             - mac
 
       - mac_PoissonGaussian:
+          pre-steps:
+            - homebrew
           requires:
             - mac
 
       - mac_SIR:
+          pre-steps:
+            - homebrew
           requires:
             - mac
 
       - mac_MultiObjectTracking:
+          pre-steps:
+            - homebrew
           requires:
             - mac
 
       - mac_VectorBorneDisease:
+          pre-steps:
+            - homebrew
           requires:
             - mac
 
       - mac_deploy:
+          pre-steps:
+            - homebrew
           filters:
             branches:
               only:
