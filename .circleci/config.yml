@@ -56,7 +56,6 @@ commands:
     steps:
       - run:
           name: Environment
-          description: Set environment variables for builds
           command: |
               if [[ -n "$HOMEBREW" ]]
               then
