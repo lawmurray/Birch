@@ -14,26 +14,19 @@ struct stack_frame {
   int line;
 };
 
-/**
- * Get the stack trace for the current thread.
- */
-static auto& get_thread_stack_trace() {
-  using stack_trace = std::vector<stack_frame>;
-  static std::vector<stack_trace> stack_traces(libbirch::get_max_threads());
-  return stack_traces[libbirch::get_thread_num()];
-}
+static thread_local std::vector<stack_frame> stack_trace;
 
 libbirch::StackFunction::StackFunction(const char* func, const char* file,
     const int line) {
-  get_thread_stack_trace().push_back({ func, file, line });
+  stack_trace.push_back({ func, file, line });
 }
 
 libbirch::StackFunction::~StackFunction() {
-  get_thread_stack_trace().pop_back();
+  stack_trace.pop_back();
 }
 
 void libbirch::line(const int n) {
-  get_thread_stack_trace().back().line = n;
+  stack_trace.back().line = n;
 }
 
 void libbirch::abort() {
@@ -44,7 +37,7 @@ void libbirch::abort(const std::string& msg, const int skip) {
   printf("error: %s\n", msg.c_str());
   #ifndef NDEBUG
   printf("stack trace:\n");
-  auto& trace = get_thread_stack_trace();
+  auto& trace = stack_trace;
   int i = 0;
   for (auto iter = trace.rbegin() + skip; (i < 20 + skip) &&
       iter != trace.rend(); ++iter) {
