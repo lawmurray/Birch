@@ -476,75 +476,35 @@ jobs:
 workflows:
   version: 2
 
-  opensuse:
+  all:
     jobs:
       - main:
           os: opensuse
-          name: opensuse
+          name: main-opensuse
           unit: true
 
+      - main:
+          matrix:
+            parameters:
+              os: [debian,fedora,mac]
+
       - example:
-          os: opensuse
-          name: opensuse_LinearGaussian
-          package: LinearGaussian
+          matrix:
+            parameters:
+              os: [opensuse]
+              package: [LinearGaussian,LinearRegression,MixedGaussian,PoissonGaussian,SIR,MultiObjectTracking,VectorBorneDisease]
           unit: true
           mongodb: true
           requires:
-            - opensuse
+            - main-opensuse
 
       - example:
-          os: opensuse
-          name: opensuse_LinearRegression
-          package: LinearRegression
-          unit: true
-          mongodb: true
+          matrix:
+            parameters:
+              os: [debian,fedora,mac]
+              package: [LinearGaussian,LinearRegression,MixedGaussian,PoissonGaussian,SIR,MultiObjectTracking,VectorBorneDisease]
           requires:
-            - opensuse
-
-      - example:
-          os: opensuse
-          name: opensuse_MixedGaussian
-          package: MixedGaussian
-          unit: true
-          mongodb: true
-          requires:
-            - opensuse
-
-      - example:
-          os: opensuse
-          name: opensuse_PoissonGaussian
-          package: PoissonGaussian
-          unit: true
-          mongodb: true
-          requires:
-            - opensuse
-
-      - example:
-          os: opensuse
-          name: opensuse_SIR
-          package: SIR
-          unit: true
-          mongodb: true
-          requires:
-            - opensuse
-
-      - example:
-          os: opensuse
-          name: opensuse_MultiObjectTracking
-          package: MultiObjectTracking
-          unit: true
-          mongodb: true
-          requires:
-            - opensuse
-
-      - example:
-          os: opensuse
-          name: opensuse_VectorBorneDisease
-          package: VectorBorneDisease
-          unit: true
-          mongodb: true
-          requires:
-            - opensuse
+            - main-<< matrix.os >>
 
       - deploy_obs:
           filters:
@@ -552,13 +512,13 @@ workflows:
               only:
                 - master
           requires:
-            - opensuse_LinearGaussian
-            - opensuse_LinearRegression
-            - opensuse_MixedGaussian
-            - opensuse_PoissonGaussian
-            - opensuse_SIR
-            - opensuse_MultiObjectTracking
-            - opensuse_VectorBorneDisease
+            - example-opensuse-LinearGaussian
+            - example-opensuse-LinearRegression
+            - example-opensuse-MixedGaussian
+            - example-opensuse-PoissonGaussian
+            - example-opensuse-SIR
+            - example-opensuse-MultiObjectTracking
+            - example-opensuse-VectorBorneDisease
 
       - deploy_website:
           filters:
@@ -566,68 +526,13 @@ workflows:
               only:
                 - master
           requires:
-            - opensuse_LinearGaussian
-            - opensuse_LinearRegression
-            - opensuse_MixedGaussian
-            - opensuse_PoissonGaussian
-            - opensuse_SIR
-            - opensuse_MultiObjectTracking
-            - opensuse_VectorBorneDisease
-
-  mac:
-    jobs:
-      - main:
-          os: mac
-          name: mac
-
-      - example:
-          os: mac
-          name: mac_LinearGaussian
-          package: LinearGaussian
-          requires:
-            - mac
-
-      - example:
-          os: mac
-          name: mac_LinearRegression
-          package: LinearRegression
-          requires:
-            - mac
-
-      - example:
-          os: mac
-          name: mac_MixedGaussian
-          package: MixedGaussian
-          requires:
-            - mac
-
-      - example:
-          os: mac
-          name: mac_PoissonGaussian
-          package: PoissonGaussian
-          requires:
-            - mac
-
-      - example:
-          os: mac
-          name: mac_SIR
-          package: SIR
-          requires:
-            - mac
-
-      - example:
-          os: mac
-          name: mac_MultiObjectTracking
-          package: MultiObjectTracking
-          requires:
-            - mac
-
-      - example:
-          os: mac
-          name: mac_VectorBorneDisease
-          package: VectorBorneDisease
-          requires:
-            - mac
+            - example-opensuse-LinearGaussian
+            - example-opensuse-LinearRegression
+            - example-opensuse-MixedGaussian
+            - example-opensuse-PoissonGaussian
+            - example-opensuse-SIR
+            - example-opensuse-MultiObjectTracking
+            - example-opensuse-VectorBorneDisease
 
       - deploy_brew:
           filters:
@@ -635,120 +540,10 @@ workflows:
               only:
                 - master
           requires:
-            - mac_LinearGaussian
-            - mac_LinearRegression
-            - mac_MixedGaussian
-            - mac_PoissonGaussian
-            - mac_SIR
-            - mac_MultiObjectTracking
-            - mac_VectorBorneDisease
-
-  debian:
-    jobs:
-      - main:
-          os: debian
-          name: debian
-
-      - example:
-          os: debian
-          name: debian_LinearGaussian
-          package: LinearGaussian
-          requires:
-            - debian
-
-      - example:
-          os: debian
-          name: debian_LinearRegression
-          package: LinearRegression
-          requires:
-            - debian
-
-      - example:
-          os: debian
-          name: debian_MixedGaussian
-          package: MixedGaussian
-          requires:
-            - debian
-
-      - example:
-          os: debian
-          name: debian_PoissonGaussian
-          package: PoissonGaussian
-          requires:
-            - debian
-
-      - example:
-          os: debian
-          name: debian_SIR
-          package: SIR
-          requires:
-            - debian
-
-      - example:
-          os: debian
-          name: debian_MultiObjectTracking
-          package: MultiObjectTracking
-          requires:
-            - debian
-
-      - example:
-          os: debian
-          name: debian_VectorBorneDisease
-          package: VectorBorneDisease
-          requires:
-            - debian
-
-  fedora:
-    jobs:
-      - main:
-          os: fedora
-          name: fedora
-
-      - example:
-          os: fedora
-          name: fedora_LinearGaussian
-          package: LinearGaussian
-          requires:
-            - fedora
-
-      - example:
-          os: fedora
-          name: fedora_LinearRegression
-          package: LinearRegression
-          requires:
-            - fedora
-
-      - example:
-          os: fedora
-          name: fedora_MixedGaussian
-          package: MixedGaussian
-          requires:
-            - fedora
-
-      - example:
-          os: fedora
-          name: fedora_PoissonGaussian
-          package: PoissonGaussian
-          requires:
-            - fedora
-
-      - example:
-          os: fedora
-          name: fedora_SIR
-          package: SIR
-          requires:
-            - fedora
-
-      - example:
-          os: fedora
-          name: fedora_MultiObjectTracking
-          package: MultiObjectTracking
-          requires:
-            - fedora
-
-      - example:
-          os: fedora
-          name: fedora_VectorBorneDisease
-          package: VectorBorneDisease
-          requires:
-            - fedora
+            - example-mac-LinearGaussian
+            - example-mac-LinearRegression
+            - example-mac-MixedGaussian
+            - example-mac-PoissonGaussian
+            - example-mac-SIR
+            - example-mac-MultiObjectTracking
+            - example-mac-VectorBorneDisease
