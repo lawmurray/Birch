@@ -16,7 +16,7 @@ executors:
       TEST: release  # BIRCH_MODE for running test.sh scripts
       MONGODB: 1  # upload test results to MongoDB atlas
       CODECOV: 1  # upload coverage results to Codecov
-    working_directory: ~/opensuse
+    working_directory: ~/project/opensuse
 
   debian:
     docker:
@@ -26,7 +26,7 @@ executors:
       MAKE_FLAGS: "-j4"
       BIRCH_FLAGS: "--unit=dir --arch=native --jobs=4 --enable-verbose"
       SMOKE: debug
-    working_directory: ~/debian
+    working_directory: ~/project/debian
 
   fedora:
     docker:
@@ -36,7 +36,7 @@ executors:
       MAKE_FLAGS: "-j4"
       BIRCH_FLAGS: "--unit=dir --arch=native --jobs=4 --enable-verbose"
       SMOKE: debug
-    working_directory: ~/fedora
+    working_directory: ~/project/fedora
 
   mac:
     macos:
@@ -47,7 +47,7 @@ executors:
       BIRCH_FLAGS: "--unit=dir --arch=native --jobs=8 --enable-verbose"
       SMOKE: debug
       HOMEBREW: 1
-    working_directory: ~/mac
+    working_directory: ~/project/mac
 
 commands:
 
@@ -375,10 +375,9 @@ jobs:
           dir: libraries
           package: SQLite
       - persist_to_workspace:
-          root: .
+          root: ~/project
           paths:
-            - '*'
-            - .*
+            - << parameters.os >>
       - end_if_pull_request
       - slack
       - codecov
@@ -393,7 +392,7 @@ jobs:
     executor: << parameters.os >>
     steps:
       - attach_workspace:
-          at: .
+          at: ~/project
       - environment
       - package:
           dir: examples
@@ -407,7 +406,7 @@ jobs:
     steps:
       - end_if_pull_request
       - attach_workspace:
-          at: .
+          at: ~/project
       - environment
       - git_identity
       - osc_identity
