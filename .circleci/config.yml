@@ -12,10 +12,10 @@ executors:
       MAKE_FLAGS: "-j4"
       BIRCH_FLAGS: "--unit=dir --arch=native --jobs=4 --enable-verbose"
       MODE_FLAGS: "--disable-debug --enable-test --enable-release"
-      SMOKE: 1
-      TEST: 1
-      MONGODB: 1
-      CODECOV: 1
+      SMOKE: test  # BIRCH_MODE for running smoke.sh scripts
+      TEST: release  # BIRCH_MODE for running test.sh scripts
+      MONGODB: 1  # upload test results to MongoDB atlas
+      CODECOV: 1  # upload coverage results to Codecov
     working_directory: ~/opensuse
 
   debian:
@@ -25,7 +25,7 @@ executors:
       OMP_NUM_THREADS: 2
       MAKE_FLAGS: "-j4"
       BIRCH_FLAGS: "--unit=dir --arch=native --jobs=4 --enable-verbose"
-      SMOKE: 1
+      SMOKE: debug
     working_directory: ~/debian
 
   fedora:
@@ -35,7 +35,7 @@ executors:
       OMP_NUM_THREADS: 2
       MAKE_FLAGS: "-j4"
       BIRCH_FLAGS: "--unit=dir --arch=native --jobs=4 --enable-verbose"
-      SMOKE: 1
+      SMOKE: debug
     working_directory: ~/fedora
 
   mac:
@@ -45,7 +45,7 @@ executors:
       OMP_NUM_THREADS: 4
       MAKE_FLAGS: "-j8"
       BIRCH_FLAGS: "--unit=dir --arch=native --jobs=8 --enable-verbose"
-      SMOKE: 1
+      SMOKE: debug
       HOMEBREW: 1
     working_directory: ~/mac
 
@@ -169,7 +169,7 @@ commands:
               cd << parameters.dir >>/<< parameters.package >>
               if [[ -n "$SMOKE" && -e smoke.sh ]]
               then
-                ./smoke.sh
+                env BIRCH_MODE=$SMOKE ./smoke.sh
               fi
       - run:
           name: Unit test << parameters.package >> package
@@ -177,7 +177,7 @@ commands:
               cd << parameters.dir >>/<< parameters.package >>
               if [[ -n "$TEST" && -e test.sh ]]
               then
-                env BIRCH_MODE=release time --format="$FORMAT" --output=/tmp/time.txt ./test.sh
+                env BIRCH_MODE=$TEST time --format="$FORMAT" --output=/tmp/time.txt ./test.sh
                 # ^ env time to use GNU time, not Bash built-in time
               fi
       - run:
