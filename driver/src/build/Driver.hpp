@@ -156,14 +156,14 @@ private:
   int jobs;
 
   /**
-   * Enable debug build?
-   */
-  bool debug;
-
-  /**
    * Enable test build?
    */
   bool test;
+
+  /**
+   * Enable debug build?
+   */
+  bool debug;
 
   /**
    * Enable release build?

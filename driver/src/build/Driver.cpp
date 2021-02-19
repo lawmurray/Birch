@@ -15,8 +15,8 @@ birch::Driver::Driver(int argc, char** argv) :
     packageVersion("unversioned"),
     unit("dir"),
     jobs(std::thread::hardware_concurrency()),
-    debug(true),
     test(false),
+    debug(true),
     release(false),
     staticLib(false),
     sharedLib(true),
@@ -38,17 +38,17 @@ birch::Driver::Driver(int argc, char** argv) :
 
   /* mode */
   if (BIRCH_MODE) {
-    if (strcmp(BIRCH_MODE, "debug") == 0) {
-      debug = true;
-      test = false;
-      release = false;
-    } else if (strcmp(BIRCH_MODE, "test") == 0) {
-      debug = false;
+    if (strcmp(BIRCH_MODE, "test") == 0) {
       test = true;
+      debug = false;
+      release = false;
+    } else if (strcmp(BIRCH_MODE, "debug") == 0) {
+      test = false;
+      debug = true;
       release = false;
     } else if (strcmp(BIRCH_MODE, "release") == 0) {
-      debug = false;
       test = false;
+      debug = false;
       release = true;
     }
   }
@@ -153,10 +153,10 @@ birch::Driver::Driver(int argc, char** argv) :
       { "arch", required_argument, 0, ARCH_ARG },
       { "unit", required_argument, 0, UNIT_ARG },
       { "jobs", required_argument, 0, JOBS_ARG },
-      { "enable-debug", no_argument, 0, ENABLE_DEBUG_ARG },
-      { "disable-debug", no_argument, 0, DISABLE_DEBUG_ARG },
       { "enable-test", no_argument, 0, ENABLE_TEST_ARG },
       { "disable-test", no_argument, 0, DISABLE_TEST_ARG },
+      { "enable-debug", no_argument, 0, ENABLE_DEBUG_ARG },
+      { "disable-debug", no_argument, 0, DISABLE_DEBUG_ARG },
       { "enable-release", no_argument, 0, ENABLE_RELEASE_ARG },
       { "disable-release", no_argument, 0, DISABLE_RELEASE_ARG },
       { "enable-static", no_argument, 0, ENABLE_STATIC_ARG },
@@ -201,17 +201,17 @@ birch::Driver::Driver(int argc, char** argv) :
     case JOBS_ARG:
       jobs = atoi(optarg);
       break;
-    case ENABLE_DEBUG_ARG:
-      debug = true;
-      break;
-    case DISABLE_DEBUG_ARG:
-      debug = false;
-      break;
     case ENABLE_TEST_ARG:
       test = true;
       break;
     case DISABLE_TEST_ARG:
       test = false;
+      break;
+    case ENABLE_DEBUG_ARG:
+      debug = true;
+      break;
+    case DISABLE_DEBUG_ARG:
+      debug = false;
       break;
     case ENABLE_RELEASE_ARG:
       release = true;
@@ -299,12 +299,12 @@ void birch::Driver::run(const std::string& prog,
 
   /* name of the shared library file we expect to find */
   auto name = "lib" + tar(packageName);
-  if (release) {
-    // no suffix
-  } else if (test) {
-    name += "-test";
+  if (test) {
+    name += "-test";  
   } else if (debug) {
     name += "-debug";
+  } else if (release) {
+    // no suffix
   }
   fs::path so = name;
   #ifdef __APPLE__
@@ -413,15 +413,15 @@ void birch::Driver::configure() {
     } else {
       options << " --disable-release";
     }
-    if (debug) {
-      options << " --enable-debug";
-    } else {
-      options << " --disable-debug";
-    }
     if (test) {
       options << " --enable-test";
     } else {
       options << " --disable-test";
+    }
+    if (debug) {
+      options << " --enable-debug";
+    } else {
+      options << " --disable-debug";
     }
     if (staticLib) {
       options << " --enable-static";
@@ -574,8 +574,8 @@ void birch::Driver::clean() {
   fs::remove("Makefile.am");
   fs::remove("Makefile.in");
   fs::remove("missing");
-  fs::remove("lib" + tarName + "-debug.la");
   fs::remove("lib" + tarName + "-test.la");
+  fs::remove("lib" + tarName + "-debug.la");
   fs::remove("lib" + tarName + ".la");
   fs::remove(tarName + ".birch");
   fs::remove(tarName + ".hpp");
@@ -588,9 +588,9 @@ void birch::Driver::clean() {
     source.replace_extension(".lo");
 
     fs::path object;
-    object = source.parent_path() / ("lib" + canonicalName + "_debug_la-" + source.filename().string());
-    fs::remove(object);
     object = source.parent_path() / ("lib" + canonicalName + "_test_la-" + source.filename().string());
+    fs::remove(object);
+    object = source.parent_path() / ("lib" + canonicalName + "_debug_la-" + source.filename().string());
     fs::remove(object);
     object = source.parent_path() / ("lib" + canonicalName + "_la-" + source.filename().string());
     fs::remove(object);
@@ -607,9 +607,9 @@ void birch::Driver::clean() {
         source.replace_extension(".lo");
 
         fs::path object;
-        object = source.parent_path() / ("lib" + canonicalName + "_debug_la-" + source.filename().string());
-        fs::remove(object);
         object = source.parent_path() / ("lib" + canonicalName + "_test_la-" + source.filename().string());
+        fs::remove(object);
+        object = source.parent_path() / ("lib" + canonicalName + "_debug_la-" + source.filename().string());
         fs::remove(object);
         object = source.parent_path() / ("lib" + canonicalName + "_la-" + source.filename().string());
         fs::remove(object);
@@ -629,9 +629,9 @@ void birch::Driver::clean() {
         source.replace_extension(".lo");
 
         fs::path object;
-        object = source.parent_path() / ("lib" + canonicalName + "_debug_la-" + source.filename().string());
-        fs::remove(object);
         object = source.parent_path() / ("lib" + canonicalName + "_test_la-" + source.filename().string());
+        fs::remove(object);
+        object = source.parent_path() / ("lib" + canonicalName + "_debug_la-" + source.filename().string());
         fs::remove(object);
         object = source.parent_path() / ("lib" + canonicalName + "_la-" + source.filename().string());
         fs::remove(object);
@@ -1026,11 +1026,11 @@ void birch::Driver::setup() {
   }
   for (auto value : metaContents["require.package"]) {
     auto tarName = tar(value);
-    configureStream << "if $debug; then\n";
-    configureStream << "  AC_CHECK_LIB([" << tarName << "-debug], [main], [DEBUG_LIBS=\"$DEBUG_LIBS -l" << tarName << "-debug\"], [AC_MSG_ERROR([required library not found.])], [$DEBUG_LIBS])\n";
-    configureStream << "fi\n";
     configureStream << "if $test; then\n";
     configureStream << "  AC_CHECK_LIB([" << tarName << "-test], [main], [TEST_LIBS=\"$TEST_LIBS -l" << tarName << "-test\"], [AC_MSG_ERROR([required library not found.])], [$TEST_LIBS])\n";
+    configureStream << "fi\n";
+    configureStream << "if $debug; then\n";
+    configureStream << "  AC_CHECK_LIB([" << tarName << "-debug], [main], [DEBUG_LIBS=\"$DEBUG_LIBS -l" << tarName << "-debug\"], [AC_MSG_ERROR([required library not found.])], [$DEBUG_LIBS])\n";
     configureStream << "fi\n";
     configureStream << "if $release; then\n";
     configureStream << "  AC_CHECK_LIB([" << tarName << "], [main], [RELEASE_LIBS=\"$RELEASE_LIBS -l" << tarName << "\"], [AC_MSG_ERROR([required library not found.])], [$RELEASE_LIBS])\n";
