@@ -117,6 +117,7 @@ commands:
           name: Smoke test driver
           command: |
             if [[ -n "$SMOKE" ]]
+            then
               mkdir hello
               cd hello
               birch help
