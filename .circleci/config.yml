@@ -377,7 +377,7 @@ jobs:
       - persist_to_workspace:
           root: ~/project
           paths:
-            - << parameters.os >>
+            - '*'
       - end_if_pull_request
       - slack
       - codecov
