@@ -26,10 +26,10 @@ AC_HEADER_STDBOOL
 AX_CHECK_COMPILE_FLAG([-fprofile-abs-path], [CXXFLAGS="$CXXFLAGS -fprofile-abs-path"], [], [-Werror])
 
 # Checks for headers
-AC_CHECK_HEADERS([yaml.h], [], [AC_MSG_ERROR([required header not found.])], [-])
-AC_CHECK_HEADERS([glob.h], [], [AC_MSG_ERROR([required header not found.])], [-])
-AC_CHECK_HEADERS([filesystem], [], [], [-])
-AC_CHECK_HEADERS([experimental/filesystem], [], [], [-])
+AC_CHECK_HEADERS([yaml.h], [], [AC_MSG_ERROR([required header not found.])], [AC_INCLUDES_DEFAULT])
+AC_CHECK_HEADERS([glob.h], [], [AC_MSG_ERROR([required header not found.])], [AC_INCLUDES_DEFAULT])
+AC_CHECK_HEADERS([filesystem], [], [], [AC_INCLUDES_DEFAULT])
+AC_CHECK_HEADERS([experimental/filesystem], [], [], [AC_INCLUDES_DEFAULT])
 
 # Checks for libraries
 AC_SEARCH_LIBS([dlopen], [dl], [], [])

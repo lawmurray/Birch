@@ -1013,11 +1013,11 @@ void birch::Driver::setup() {
 
   /* required headers */
   for (auto value : metaContents["require.header"]) {
-    configureStream << "AC_CHECK_HEADERS([" << value << "], [], [AC_MSG_ERROR([required header not found.])], [-])\n";
+    configureStream << "AC_CHECK_HEADERS([" << value << "], [], [AC_MSG_ERROR([required header not found.])], [AC_INCLUDES_DEFAULT])\n";
   }
   for (auto value : metaContents["require.package"]) {
     auto tarName = tar(value);
-    configureStream << "AC_CHECK_HEADERS([" << tarName << ".hpp], [], [AC_MSG_ERROR([required header not found.])], [-])\n";
+    configureStream << "AC_CHECK_HEADERS([" << tarName << ".hpp], [], [AC_MSG_ERROR([required header not found.])], [AC_INCLUDES_DEFAULT])\n";
   }
 
   /* required libraries */
