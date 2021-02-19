@@ -442,6 +442,7 @@ jobs:
       - environment
       - git_identity
       - osc_identity
+      - driver
       - deploy_obs_package:
           package: driver
       - deploy_obs_package:
@@ -470,7 +471,6 @@ jobs:
           dir: libraries
           package: SQLite
       - brew_commit
-      - driver  # needed to build docs
       - deploy_website
       - codecov
       - slack
