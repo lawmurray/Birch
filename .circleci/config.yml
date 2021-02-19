@@ -5,14 +5,32 @@ orbs:
   slack: circleci/slack@3.4.2
 
 executors:
-  linux:
+  opensuse:
     docker:
-      - image: lawmurray/birch-circleci:opensuse-leap
+      - image: lawmurray/birch-circleci:opensuse
     environment:
       OMP_NUM_THREADS: 2
       MAKE_FLAGS: "-j4"
       BIRCH_FLAGS: "--unit=dir --arch=native --jobs=4 --enable-verbose"
       MODE_FLAGS: "--disable-debug --enable-test --enable-release"
+
+  debian:
+    docker:
+      - image: lawmurray/birch-circleci:debian
+    environment:
+      OMP_NUM_THREADS: 2
+      MAKE_FLAGS: "-j4"
+      BIRCH_FLAGS: "--unit=dir --arch=native --jobs=4 --enable-verbose"
+      MODE_FLAGS: "--disable-debug --enable-test --disable-release"
+
+  fedora:
+    docker:
+      - image: lawmurray/birch-circleci:fedora
+    environment:
+      OMP_NUM_THREADS: 2
+      MAKE_FLAGS: "-j4"
+      BIRCH_FLAGS: "--unit=dir --arch=native --jobs=4 --enable-verbose"
+      MODE_FLAGS: "--disable-debug --enable-test --disable-release"
 
   mac:
     macos:
@@ -206,7 +224,7 @@ commands:
                 echo pass = $OSC_PASSWORD              >> ~/.config/osc/oscrc
               fi
 
-  checkout_brew:
+  brew_checkout:
     description: Checkout Homebrew tap
     steps:
       - git_identity
@@ -220,7 +238,7 @@ commands:
                 git rm *.tar.gz
               fi
 
-  commit_brew:
+  brew_commit:
     description: Commit Homebrew tap
     steps:
       - git_identity
@@ -236,7 +254,7 @@ commands:
                 git push origin master
               fi
 
-  linux_deploy_package:
+  deploy_obs_package:
     description: Deploy package
     parameters:
       dir:
@@ -277,7 +295,7 @@ commands:
                 osc commit -m "Updated to version $VERSION."
               fi
 
-  mac_deploy_package:
+  deploy_brew_package:
     description: Deploy package
     parameters:
       dir:
@@ -398,65 +416,65 @@ jobs:
       - codecov
       - slack
 
-  linux_deploy:
-    executor: linux
+  deploy_obs:
+    executor: opensuse
     steps:
       - end_if_pull_request
       - attach_workspace:
           at: .
       - environment
       - configure_osc
-      - linux_deploy_package:
+      - deploy_obs_package:
           package: driver
           tar: birch
-      - linux_deploy_package:
+      - deploy_obs_package:
           package: libbirch
           tar: libbirch
-      - linux_deploy_package:
+      - deploy_obs_package:
           dir: libraries
           package: Standard
           tar: birch-standard
-      - linux_deploy_package:
+      - deploy_obs_package:
           dir: libraries
           package: Cairo
           tar: birch-cairo
-      - linux_deploy_package:
+      - deploy_obs_package:
           dir: libraries
           package: SQLite
           tar: birch-sqlite
       - slack
 
-  mac_deploy:
+  deploy_brew:
     executor: mac
     steps:
       - end_if_pull_request
       - attach_workspace:
           at: .
       - environment
-      - checkout_brew
-      - mac_deploy_package:
+      - brew_checkout
+      - deploy_brew_package:
           package: driver
           tar: birch
-      - mac_deploy_package:
+      - deploy_brew_package:
           package: libbirch
           tar: libbirch
-      - mac_deploy_package:
+      - deploy_brew_package:
           dir: libraries
           package: Standard
           tar: birch-standard
-      - mac_deploy_package:
+      - deploy_brew_package:
           dir: libraries
           package: Cairo
           tar: birch-cairo
-      - mac_deploy_package:
+      - deploy_brew_package:
           dir: libraries
           package: SQLite
           tar: birch-sqlite
-      - commit_brew
+      - brew_commit
       - slack
 
-  website_deploy:
-    executor: linux
+  deploy_website:
+    executor: opensuse
     steps:
       - end_if_pull_request
       - attach_workspace:
@@ -480,104 +498,110 @@ jobs:
 workflows:
   version: 2
 
-  linux:
+  opensuse:
     jobs:
       - main:
-          os: linux
-          name: linux
+          os: opensuse
+          name: opensuse
           unit: true
 
       - example:
-          os: linux
-          name: linux_LinearGaussian
+          os: opensuse
+          name: opensuse_LinearGaussian
           package: LinearGaussian
           tar: birch-lineargaussian
           unit: true
           mongodb: true
           requires:
-            - linux
+            - opensuse
 
       - example:
-          os: linux
-          name: linux_LinearRegression
+          os: opensuse
+          name: opensuse_LinearRegression
           package: LinearRegression
           tar: birch-linearregression
           unit: true
           mongodb: true
           requires:
-            - linux
+            - opensuse
 
       - example:
-          os: linux
-          name: linux_MixedGaussian
+          os: opensuse
+          name: opensuse_MixedGaussian
           package: MixedGaussian
           tar: birch-mixedgaussian
           unit: true
           mongodb: true
           requires:
-            - linux
+            - opensuse
 
       - example:
-          os: linux
-          name: linux_PoissonGaussian
+          os: opensuse
+          name: opensuse_PoissonGaussian
           package: PoissonGaussian
           tar: birch-poissongaussian
           unit: true
           mongodb: true
           requires:
-            - linux
+            - opensuse
 
       - example:
-          os: linux
-          name: linux_SIR
+          os: opensuse
+          name: opensuse_SIR
           package: SIR
           tar: birch-sir
           unit: true
           mongodb: true
           requires:
-            - linux
+            - opensuse
 
       - example:
-          os: linux
-          name: linux_MultiObjectTracking
+          os: opensuse
+          name: opensuse_MultiObjectTracking
           package: MultiObjectTracking
           tar: birch-multiobjecttracking
           unit: true
           mongodb: true
           requires:
-            - linux
+            - opensuse
 
       - example:
-          os: linux
-          name: linux_VectorBorneDisease
+          os: opensuse
+          name: opensuse_VectorBorneDisease
           package: VectorBorneDisease
           tar: birch-vectorbornedisease
           unit: true
           mongodb: true
           requires:
-            - linux
+            - opensuse
 
-      - linux_deploy:
+      - deploy_obs:
           filters:
             branches:
               only:
                 - master
           requires:
-            - linux_LinearGaussian
-            - linux_LinearRegression
-            - linux_MixedGaussian
-            - linux_PoissonGaussian
-            - linux_SIR
-            - linux_MultiObjectTracking
-            - linux_VectorBorneDisease
+            - opensuse_LinearGaussian
+            - opensuse_LinearRegression
+            - opensuse_MixedGaussian
+            - opensuse_PoissonGaussian
+            - opensuse_SIR
+            - opensuse_MultiObjectTracking
+            - opensuse_VectorBorneDisease
 
-      - website_deploy:
+      - deploy_website:
           filters:
             branches:
               only:
                 - master
           requires:
-            - linux_deploy
+            - opensuse_LinearGaussian
+            - opensuse_LinearRegression
+            - opensuse_MixedGaussian
+            - opensuse_PoissonGaussian
+            - opensuse_SIR
+            - opensuse_MultiObjectTracking
+            - opensuse_VectorBorneDisease
 
   mac:
     jobs:
@@ -641,7 +665,7 @@ workflows:
           requires:
             - mac
 
-      - mac_deploy:
+      - deploy_brew:
           filters:
             branches:
               only:
@@ -654,3 +678,127 @@ workflows:
             - mac_SIR
             - mac_MultiObjectTracking
             - mac_VectorBorneDisease
+
+  debian:
+    jobs:
+      - main:
+          os: debian
+          name: debian
+
+      - example:
+          os: debian
+          name: debian_LinearGaussian
+          package: LinearGaussian
+          tar: birch-lineargaussian
+          requires:
+            - debian
+
+      - example:
+          os: debian
+          name: debian_LinearRegression
+          package: LinearRegression
+          tar: birch-linearregression
+          requires:
+            - debian
+
+      - example:
+          os: debian
+          name: debian_MixedGaussian
+          package: MixedGaussian
+          tar: birch-mixedgaussian
+          requires:
+            - debian
+
+      - example:
+          os: debian
+          name: debian_PoissonGaussian
+          package: PoissonGaussian
+          tar: birch-poissongaussian
+          requires:
+            - debian
+
+      - example:
+          os: debian
+          name: debian_SIR
+          package: SIR
+          tar: birch-sir
+          requires:
+            - debian
+
+      - example:
+          os: debian
+          name: debian_MultiObjectTracking
+          package: MultiObjectTracking
+          tar: birch-multiobjecttracking
+          requires:
+            - debian
+
+      - example:
+          os: debian
+          name: debian_VectorBorneDisease
+          package: VectorBorneDisease
+          tar: birch-vectorbornedisease
+          requires:
+            - debian
+
+  fedora:
+    jobs:
+      - main:
+          os: fedora
+          name: fedora
+
+      - example:
+          os: fedora
+          name: fedora_LinearGaussian
+          package: LinearGaussian
+          tar: birch-lineargaussian
+          requires:
+            - fedora
+
+      - example:
+          os: fedora
+          name: fedora_LinearRegression
+          package: LinearRegression
+          tar: birch-linearregression
+          requires:
+            - fedora
+
+      - example:
+          os: fedora
+          name: fedora_MixedGaussian
+          package: MixedGaussian
+          tar: birch-mixedgaussian
+          requires:
+            - fedora
+
+      - example:
+          os: fedora
+          name: fedora_PoissonGaussian
+          package: PoissonGaussian
+          tar: birch-poissongaussian
+          requires:
+            - fedora
+
+      - example:
+          os: fedora
+          name: fedora_SIR
+          package: SIR
+          tar: birch-sir
+          requires:
+            - fedora
+
+      - example:
+          os: fedora
+          name: fedora_MultiObjectTracking
+          package: MultiObjectTracking
+          tar: birch-multiobjecttracking
+          requires:
+            - fedora
+
+      - example:
+          os: fedora
+          name: fedora_VectorBorneDisease
+          package: VectorBorneDisease
+          tar: birch-vectorbornedisease
+          requires:
+            - fedora
