@@ -1,7 +1,6 @@
 version: 2.1
 
 orbs:
-  codecov: codecov/codecov@1.1.1
   slack: circleci/slack@3.4.2
 
 executors:
@@ -13,6 +12,10 @@ executors:
       MAKE_FLAGS: "-j4"
       BIRCH_FLAGS: "--unit=dir --arch=native --jobs=4 --enable-verbose"
       MODE_FLAGS: "--disable-debug --enable-test --enable-release"
+      SMOKE: 1
+      TEST: 1
+      MONGODB: 1
+      CODECOV: 1
     working_directory: ~/opensuse
 
   debian:
@@ -22,7 +25,7 @@ executors:
       OMP_NUM_THREADS: 2
       MAKE_FLAGS: "-j4"
       BIRCH_FLAGS: "--unit=dir --arch=native --jobs=4 --enable-verbose"
-      MODE_FLAGS: "--disable-debug --enable-test --disable-release"
+      SMOKE: 1
     working_directory: ~/debian
 
   fedora:
@@ -32,7 +35,7 @@ executors:
       OMP_NUM_THREADS: 2
       MAKE_FLAGS: "-j4"
       BIRCH_FLAGS: "--unit=dir --arch=native --jobs=4 --enable-verbose"
-      MODE_FLAGS: "--disable-debug --enable-test --disable-release"
+      SMOKE: 1
     working_directory: ~/fedora
 
   mac:
@@ -42,7 +45,7 @@ executors:
       OMP_NUM_THREADS: 4
       MAKE_FLAGS: "-j8"
       BIRCH_FLAGS: "--unit=dir --arch=native --jobs=8 --enable-verbose"
-      MODE_FLAGS: "--disable-debug --enable-test --disable-release"
+      SMOKE: 1
       HOMEBREW: 1
     working_directory: ~/mac
 
@@ -89,8 +92,14 @@ commands:
   codecov:
     description: Upload test coverage to Codecov
     steps:
-      - codecov/upload:
+      - run:
+          name: Upload test coverage to Codecov
           when: on_success
+          command: |
+            if [[ -n "$CODECOV" ]]
+            then
+              bash <(curl -s https://codecov.io/bash)
+            end
 
   driver:
     description: Build driver
@@ -105,8 +114,9 @@ commands:
               make $MAKE_FLAGS
               make install
       - run:
-          name: Test driver
+          name: Smoke test driver
           command: |
+            if [[ -n "$SMOKE" ]]
               mkdir hello
               cd hello
               birch help
@@ -114,6 +124,9 @@ commands:
               birch audit
               birch dist
               birch clean
+              cd ..
+              rm -rf hello
+            fi
 
   library:
     description: Build a C++ library
@@ -141,18 +154,6 @@ commands:
       package:
         description: Name of package (e.g. Standard)
         type: string
-      smoke:
-        description: Run smoke tests?
-        type: boolean
-        default: true
-      unit:
-        description: Run unit tests?
-        type: boolean
-        default: false
-      mongodb:
-        description: Upload output to MongoDB Atlas?
-        type: boolean
-        default: false
     steps:
       - run:
           name: Build << parameters.package >> package
@@ -161,43 +162,40 @@ commands:
               echo "version: $VERSION" | cat - birch.yml | sponge birch.yml
               birch build --prefix=$PREFIX $MODE_FLAGS $BIRCH_FLAGS
               birch install
-      - when:
-          condition: << parameters.smoke >>
-          steps:
-            - run:
-                name: Smoke test << parameters.package >> package
-                command: |
-                    cd << parameters.dir >>/<< parameters.package >>
-                    env BIRCH_MODE=test ./smoke.sh
-      - when:
-          condition: << parameters.unit >>
-          steps:
-            - run:
-                name: Unit test << parameters.package >> package
-                command: |
-                    cd << parameters.dir >>/<< parameters.package >>
-                    env BIRCH_MODE=release time --format="$FORMAT" --output=/tmp/time.txt ./test.sh
+      - run:
+          name: Smoke test << parameters.package >> package
+          command: |
+              cd << parameters.dir >>/<< parameters.package >>
+              if [[ -n "$SMOKE" && -e smoke.sh ]]
+              then
+                ./smoke.sh
+              end
+      - run:
+          name: Unit test << parameters.package >> package
+          command: |
+              cd << parameters.dir >>/<< parameters.package >>
+              if [[ -n "$TEST" && -e test.sh ]]
+              then
+                env BIRCH_MODE=release time --format="$FORMAT" --output=/tmp/time.txt ./test.sh
                 # ^ env time to use GNU time, not Bash built-in time
-      - when:
-          condition: << parameters.mongodb >>
-          steps:
-            - run:
-                name: Upload  << parameters.package >> results to MongoDB Atlas
-                command: |
-                    if [[ -n "$MONGODB_HOST" && -n "$MONGODB_USERNAME" && -n "$MONGODB_PASSWORD" && -n "$VERSION_LONG" ]]
-                    then
-                      cd << parameters.dir >>/<< parameters.package >>
-                      echo '{ "output": ' > /tmp/mongodb.json
-                      cat output/test.json >> /tmp/mongodb.json
-                      if [[ -e /tmp/time.txt ]]
-                      then
-                        cat /tmp/time.txt >> /tmp/mongodb.json
-                      fi
-                      echo ", \"branch\": \"$CIRCLE_BRANCH\"" >> /tmp/mongodb.json
-                      echo ", \"version\": \"$VERSION_LONG\"" >> /tmp/mongodb.json
-                      echo '}' >> /tmp/mongodb.json
-                      mongoimport --uri mongodb+srv://$MONGODB_USERNAME:$MONGODB_PASSWORD@$MONGODB_HOST/test --collection << parameters.package >> --file /tmp/mongodb.json
-                    fi
+              end
+      - run:
+          name: Upload  << parameters.package >> results to MongoDB Atlas
+          command: |
+              if [[ -n "MONGODB" && -n "$MONGODB_HOST" && -n "$MONGODB_USERNAME" && -n "$MONGODB_PASSWORD" && -n "$VERSION_LONG" ]]
+              then
+                cd << parameters.dir >>/<< parameters.package >>
+                echo '{ "output": ' > /tmp/mongodb.json
+                cat output/test.json >> /tmp/mongodb.json
+                if [[ -e /tmp/time.txt ]]
+                then
+                  cat /tmp/time.txt >> /tmp/mongodb.json
+                fi
+                echo ", \"branch\": \"$CIRCLE_BRANCH\"" >> /tmp/mongodb.json
+                echo ", \"version\": \"$VERSION_LONG\"" >> /tmp/mongodb.json
+                echo '}' >> /tmp/mongodb.json
+                mongoimport --uri mongodb+srv://$MONGODB_USERNAME:$MONGODB_PASSWORD@$MONGODB_HOST/test --collection << parameters.package >> --file /tmp/mongodb.json
+              fi
 
   osc_identity:
     description: Configure OSC
@@ -213,44 +211,6 @@ commands:
                 echo [https://api.opensuse.org]        >> ~/.config/osc/oscrc
                 echo user = $OSC_USERNAME              >> ~/.config/osc/oscrc
                 echo pass = $OSC_PASSWORD              >> ~/.config/osc/oscrc
-              fi
-
-  git_identity:
-    description: Configure Git
-    steps:
-      - run:
-          name: Configure Git
-          command: |
-              git config --global user.name "Birch Machine"
-              git config --global user.email "birch-machine@indii.org"
-
-  brew_checkout:
-    description: Checkout Homebrew tap
-    steps:
-      - run:
-          name: Checkout Homebrew tap
-          command: |
-              if [[ -n "$GITHUB_USERNAME" && -n "$GITHUB_PASSWORD" ]]
-              then
-                git clone https://$GITHUB_USERNAME:$GITHUB_PASSWORD@github.com/lawmurray/homebrew-birch.git
-                cd $CIRCLE_WORKING_DIRECTORY/homebrew-birch
-                git rm *.tar.gz
-              fi
-
-  brew_commit:
-    description: Commit Homebrew tap
-    steps:
-      - git_identity
-      - run:
-          name: Commit Homebrew tap
-          command: |
-              if [[ -n "$GITHUB_USERNAME" && -n "$GITHUB_PASSWORD" && -n "$VERSION" ]]
-              then
-                cd $CIRCLE_WORKING_DIRECTORY/homebrew-birch
-                git add *.tar.gz
-                git add -u
-                git commit -m "Updated to version $VERSION."
-                git push origin master
               fi
 
   deploy_obs_package:
@@ -299,6 +259,28 @@ commands:
                 osc commit -m "Updated to version $VERSION."
               fi
 
+  git_identity:
+    description: Configure Git
+    steps:
+      - run:
+          name: Configure Git
+          command: |
+              git config --global user.name "Birch Machine"
+              git config --global user.email "birch-machine@indii.org"
+
+  brew_checkout:
+    description: Checkout Homebrew tap
+    steps:
+      - run:
+          name: Checkout Homebrew tap
+          command: |
+              if [[ -n "$GITHUB_USERNAME" && -n "$GITHUB_PASSWORD" ]]
+              then
+                git clone https://$GITHUB_USERNAME:$GITHUB_PASSWORD@github.com/lawmurray/homebrew-birch.git
+                cd homebrew-birch
+                git rm *.tar.gz
+              fi
+
   deploy_brew_package:
     description: Deploy package
     parameters:
@@ -337,6 +319,22 @@ commands:
                   sponge $TARNAME.rb
               fi
 
+  brew_commit:
+    description: Commit Homebrew tap
+    steps:
+      - git_identity
+      - run:
+          name: Commit Homebrew tap
+          command: |
+              if [[ -n "$GITHUB_USERNAME" && -n "$GITHUB_PASSWORD" && -n "$VERSION" ]]
+              then
+                cd homebrew-birch
+                git add *.tar.gz
+                git add -u
+                git commit -m "Updated to version $VERSION."
+                git push origin master
+              fi
+
   deploy_website:
     description: Deploy website
     steps:
@@ -357,22 +355,6 @@ jobs:
     parameters: 
       os:
         type: executor
-      smoke:
-        description: Run smoke tests?
-        type: boolean
-        default: true
-      unit:
-        description: Run unit tests?
-        type: boolean
-        default: false
-      mongodb:
-        description: Upload output to MongoDB Atlas?
-        type: boolean
-        default: false
-      codecov:
-        description: Upload code coverage results to Codecov?
-        type: boolean
-        default: false
     executor: << parameters.os >>
     steps:
       - checkout
@@ -383,17 +365,12 @@ jobs:
       - package:
           dir: libraries
           package: Standard
-          smoke: << parameters.smoke >>
-          unit: << parameters.unit >>
-          mongodb: << parameters.mongodb >>
       - package:
           dir: libraries
           package: Cairo
-          smoke: false
       - package:
           dir: libraries
           package: SQLite
-          smoke: false
       - persist_to_workspace:
           root: .
           paths:
@@ -401,10 +378,7 @@ jobs:
             - .*
       - end_if_pull_request
       - slack
-      - when:
-          condition: << parameters.codecov >>
-          steps:
-            - codecov
+      - codecov
 
   example:
     parameters: 
@@ -413,22 +387,6 @@ jobs:
       package:
         description: Name of package (e.g. Standard)
         type: string
-      smoke:
-        description: Run smoke tests?
-        type: boolean
-        default: false
-      unit:
-        description: Run unit tests?
-        type: boolean
-        default: false
-      mongodb:
-        description: Upload output to MongoDB Atlas?
-        type: boolean
-        default: false
-      codecov:
-        description: Upload code coverage results to Codecov?
-        type: boolean
-        default: false
     executor: << parameters.os >>
     steps:
       - attach_workspace:
@@ -437,20 +395,16 @@ jobs:
       - package:
           dir: examples
           package: << parameters.package >>
-          smoke: << parameters.smoke >>
-          unit: << parameters.unit >>
-          mongodb: << parameters.mongodb >>
       - end_if_pull_request
       - slack
-      - when:
-          condition: << parameters.codecov >>
-          steps:
-            - codecov
+      - codecov
 
   deploy:
     executor: opensuse
     steps:
       - end_if_pull_request
+      - attach_workspace:
+          at: .
       - environment
       - git_identity
       - osc_identity
@@ -483,8 +437,8 @@ jobs:
           package: SQLite
       - brew_commit
       - deploy_website
-      - codecov
       - slack
+      - codecov
 
 workflows:
   version: 2
@@ -493,8 +447,6 @@ workflows:
       - main:
           os: opensuse
           name: main-opensuse
-          unit: true
-          codecov: true
 
       - main:
           matrix:
@@ -506,9 +458,6 @@ workflows:
             parameters:
               os: [opensuse]
               package: [LinearGaussian,LinearRegression,MixedGaussian,PoissonGaussian,SIR,MultiObjectTracking,VectorBorneDisease]
-          unit: true
-          mongodb: true
-          codecov: true
           requires:
             - main-opensuse
 
