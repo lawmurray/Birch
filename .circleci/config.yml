@@ -99,7 +99,7 @@ commands:
             if [[ -n "$CODECOV" ]]
             then
               bash <(curl -s https://codecov.io/bash)
-            end
+            fi
 
   driver:
     description: Build driver
@@ -170,7 +170,7 @@ commands:
               if [[ -n "$SMOKE" && -e smoke.sh ]]
               then
                 ./smoke.sh
-              end
+              fi
       - run:
           name: Unit test << parameters.package >> package
           command: |
@@ -179,7 +179,7 @@ commands:
               then
                 env BIRCH_MODE=release time --format="$FORMAT" --output=/tmp/time.txt ./test.sh
                 # ^ env time to use GNU time, not Bash built-in time
-              end
+              fi
       - run:
           name: Upload  << parameters.package >> results to MongoDB Atlas
           command: |
