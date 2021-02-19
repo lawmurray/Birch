@@ -496,8 +496,8 @@ workflows:
             - example-fedora-SIR
             - example-fedora-MultiObjectTracking
             - example-fedora-VectorBorneDisease
-            - example-mac-LinearRegression
-            - example-mac-MixedGaussian
-            - example-mac-SIR
-            - example-mac-MultiObjectTracking
-            - example-mac-VectorBorneDisease
+            #- example-mac-LinearRegression
+            #- example-mac-MixedGaussian
+            #- example-mac-SIR
+            #- example-mac-MultiObjectTracking
+            #- example-mac-VectorBorneDisease
