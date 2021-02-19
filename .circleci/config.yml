@@ -16,7 +16,7 @@ executors:
       TEST: release  # BIRCH_MODE for running test.sh scripts
       MONGODB: 1  # upload test results to MongoDB atlas
       CODECOV: 1  # upload coverage results to Codecov
-    working_directory: ~/project/opensuse
+    working_directory: $HOME/project/opensuse
 
   debian:
     docker:
@@ -26,7 +26,7 @@ executors:
       MAKE_FLAGS: "-j4"
       BIRCH_FLAGS: "--unit=dir --arch=native --jobs=4 --enable-verbose"
       SMOKE: debug
-    working_directory: ~/project/debian
+    working_directory: $HOME/project/debian
 
   fedora:
     docker:
@@ -36,7 +36,7 @@ executors:
       MAKE_FLAGS: "-j4"
       BIRCH_FLAGS: "--unit=dir --arch=native --jobs=4 --enable-verbose"
       SMOKE: debug
-    working_directory: ~/project/fedora
+    working_directory: $HOME/project/fedora
 
   mac:
     macos:
@@ -47,7 +47,7 @@ executors:
       BIRCH_FLAGS: "--unit=dir --arch=native --jobs=8 --enable-verbose"
       SMOKE: debug
       HOMEBREW: 1
-    working_directory: ~/project/mac
+    working_directory: $HOME/project/mac
 
 commands:
 
@@ -208,12 +208,12 @@ commands:
           command: |
               if [[ -n "$OSC_USERNAME" && -n "$OSC_PASSWORD" ]]
               then
-                mkdir -p ~/.config/osc
-                echo [general]                          > ~/.config/osc/oscrc
-                echo apiurl = https://api.opensuse.org >> ~/.config/osc/oscrc
-                echo [https://api.opensuse.org]        >> ~/.config/osc/oscrc
-                echo user = $OSC_USERNAME              >> ~/.config/osc/oscrc
-                echo pass = $OSC_PASSWORD              >> ~/.config/osc/oscrc
+                mkdir -p $HOME/.config/osc
+                echo [general]                          > $HOME/.config/osc/oscrc
+                echo apiurl = https://api.opensuse.org >> $HOME/.config/osc/oscrc
+                echo [https://api.opensuse.org]        >> $HOME/.config/osc/oscrc
+                echo user = $OSC_USERNAME              >> $HOME/.config/osc/oscrc
+                echo pass = $OSC_PASSWORD              >> $HOME/.config/osc/oscrc
               fi
 
   deploy_obs_package:
@@ -375,7 +375,7 @@ jobs:
           dir: libraries
           package: SQLite
       - persist_to_workspace:
-          root: ~/project
+          root: $HOME/project
           paths:
             - '*'
       - end_if_pull_request
@@ -392,7 +392,7 @@ jobs:
     executor: << parameters.os >>
     steps:
       - attach_workspace:
-          at: ~/project
+          at: $HOME/project
       - environment
       - package:
           dir: examples
@@ -406,7 +406,7 @@ jobs:
     steps:
       - end_if_pull_request
       - attach_workspace:
-          at: ~/project
+          at: $HOME/project
       - environment
       - git_identity
       - osc_identity
