@@ -16,11 +16,8 @@ executors:
       TEST: release  # BIRCH_MODE for running test.sh scripts
       MONGODB: 1  # upload test results to MongoDB atlas
       CODECOV: 1  # upload coverage results to Codecov
-    working_directory: project/opensuse
-    # ^ can't use ~/ or $HOME here, won't expand in $CIRCLE_WORKING_DIRECTORY,
-    #   and can't assume home directory as different in containers and VMs, so
-    #   we set this relative to home and use ~/$CIRCLE_WORKING_DIRECTORY
-    #   throughout
+    working_directory: /root/project/opensuse
+    # ^ can't use ~/ or $HOME here, won't expand in $CIRCLE_WORKING_DIRECTORY
 
   debian:
     docker:
@@ -30,7 +27,7 @@ executors:
       MAKE_FLAGS: "-j4"
       BIRCH_FLAGS: "--unit=dir --arch=native --jobs=4 --enable-verbose"
       SMOKE: debug
-    working_directory: project/debian
+    working_directory: /root/project/debian
 
   fedora:
     docker:
@@ -40,7 +37,7 @@ executors:
       MAKE_FLAGS: "-j4"
       BIRCH_FLAGS: "--unit=dir --arch=native --jobs=4 --enable-verbose"
       SMOKE: debug
-    working_directory: project/fedora
+    working_directory: /root/project/fedora
 
   mac:
     macos:
@@ -51,7 +48,8 @@ executors:
       BIRCH_FLAGS: "--unit=dir --arch=native --jobs=8 --enable-verbose"
       SMOKE: debug
       HOMEBREW: 1
-    working_directory: project/mac
+    working_directory: /Users/distiller/project/mac
+    # ^ hard-coding different home directory for Mac here, discovered with SSH
 
 commands:
 
@@ -69,7 +67,7 @@ commands:
               fi
               echo "export VERSION=`(git describe --long || echo) | sed -E 's/v([0-9]+)-([0-9]+)-g[0-9a-f]+/\1.\2/'`" >> $BASH_ENV
               echo "export VERSION_LONG=`git describe --long || echo`" >> $BASH_ENV
-              echo "export PREFIX=~/$CIRCLE_WORKING_DIRECTORY" >> $BASH_ENV
+              echo "export PREFIX=$CIRCLE_WORKING_DIRECTORY" >> $BASH_ENV
               echo "export PATH=\$PREFIX/bin:\$PATH" >> $BASH_ENV
               echo "export CPLUS_INCLUDE_PATH=\$PREFIX/include:\$CPLUS_INCLUDE_PATH" >> $BASH_ENV
               echo "export LD_LIBRARY_PATH=\$PREFIX/lib:\$LD_LIBRARY_PATH" >> $BASH_ENV
@@ -248,8 +246,8 @@ commands:
                 osc checkout $OSC_PROJECT $TARNAME
                 cd << parameters.dir >>/<< parameters.package >>
                 make dist
-                cp $TARNAME-$VERSION.tar.gz ~/$CIRCLE_WORKING_DIRECTORY/$OSC_PROJECT/$TARNAME/.
-                cd ~/$CIRCLE_WORKING_DIRECTORY/$OSC_PROJECT/$TARNAME
+                cp $TARNAME-$VERSION.tar.gz $CIRCLE_WORKING_DIRECTORY/$OSC_PROJECT/$TARNAME/.
+                cd $CIRCLE_WORKING_DIRECTORY/$OSC_PROJECT/$TARNAME
                 osc delete $TARNAME-!($VERSION).tar.gz
                 osc add $TARNAME-$VERSION.tar.gz
                 for file in $TARNAME.spec $TARNAME.dsc debian.control PKGBUILD
@@ -315,8 +313,8 @@ commands:
                 fi
                 cd << parameters.dir >>/<< parameters.package >>
                 make dist
-                cp $TARNAME-$VERSION.tar.gz ~/$CIRCLE_WORKING_DIRECTORY/homebrew-birch/.
-                cd ~/$CIRCLE_WORKING_DIRECTORY/homebrew-birch
+                cp $TARNAME-$VERSION.tar.gz $CIRCLE_WORKING_DIRECTORY/homebrew-birch/.
+                cd $CIRCLE_WORKING_DIRECTORY/homebrew-birch
                 SHA256=($(sha256sum $TARNAME-$VERSION.tar.gz))
                 cat $TARNAME.rb |
                   sed -E "s/-[0-9]+\.[0-9]+\.tar\.gz/-$VERSION.tar.gz/g" |
