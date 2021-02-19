@@ -183,7 +183,7 @@ commands:
       - run:
           name: Upload  << parameters.package >> results to MongoDB Atlas
           command: |
-              if [[ -n "MONGODB" && -n "$MONGODB_HOST" && -n "$MONGODB_USERNAME" && -n "$MONGODB_PASSWORD" && -n "$VERSION_LONG" ]]
+              if [[ -n "$MONGODB" && -n "$MONGODB_HOST" && -n "$MONGODB_USERNAME" && -n "$MONGODB_PASSWORD" && -n "$VERSION_LONG" ]]
               then
                 cd << parameters.dir >>/<< parameters.package >>
                 echo '{ "output": ' > /tmp/mongodb.json
