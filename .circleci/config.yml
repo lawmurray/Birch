@@ -44,16 +44,6 @@ executors:
 
 commands:
 
-  git_identity:
-    description: Setting Git identity
-    steps:
-      - run:
-          name: Git identity
-          description: Set Git identity
-          command: |
-              git config --global user.name "Birch Machine"
-              git config --global user.email "birch-machine@indii.org"
-
   environment:
     description: Preparing environment
     steps:
@@ -105,7 +95,6 @@ commands:
           name: Build driver
           command: |
               cd driver
-              cat configure.ac | sed -E "s/unversioned/$VERSION/" | sponge configure.ac
               ./bootstrap
               ./configure --prefix="$PREFIX" CXXFLAGS="-Wall -Wno-overloaded-virtual -g -O0 -fno-inline --coverage" || cat config.log
               make $MAKE_FLAGS
@@ -132,7 +121,6 @@ commands:
           name: Build << parameters.package >>
           command: |
               cd << parameters.package >>
-              cat configure.ac | sed -E "s/unversioned/$VERSION/" | sponge configure.ac
               ./bootstrap
               ./configure --prefix="$PREFIX" $MODE_FLAGS || cat config.log
               make $MAKE_FLAGS
@@ -164,7 +152,6 @@ commands:
           name: Build << parameters.package >> package
           command: |
               cd << parameters.dir >>/<< parameters.package >>
-              echo "version: $VERSION" | cat - birch.yml | sponge birch.yml
               birch build --prefix=$PREFIX $MODE_FLAGS $BIRCH_FLAGS
               birch install
       - when:
@@ -205,8 +192,8 @@ commands:
                       mongoimport --uri mongodb+srv://$MONGODB_USERNAME:$MONGODB_PASSWORD@$MONGODB_HOST/test --collection << parameters.package >> --file /tmp/mongodb.json
                     fi
 
-  configure_osc:
-    description: Configure Open Build Service command-line interface
+  osc_identity:
+    description: Configure OSC
     steps:
       - run:
           name: Configure OSC
@@ -221,10 +208,18 @@ commands:
                 echo pass = $OSC_PASSWORD              >> ~/.config/osc/oscrc
               fi
 
+  git_identity:
+    description: Configure Git
+    steps:
+      - run:
+          name: Configure Git
+          command: |
+              git config --global user.name "Birch Machine"
+              git config --global user.email "birch-machine@indii.org"
+
   brew_checkout:
     description: Checkout Homebrew tap
     steps:
-      - git_identity
       - run:
           name: Checkout Homebrew tap
           command: |
@@ -268,10 +263,14 @@ commands:
               shopt -s extglob
               if [[ -n "$OSC_PROJECT" && -n "$OSC_USERNAME" && -n "$OSC_PASSWORD" && -n "$VERSION" ]]
               then
-                TARNAME=$TARNAME
+                TARNAME=<< parameters.package >>
                 TARNAME=birch-${TARNAME,,}
                 osc checkout $OSC_PROJECT $TARNAME
                 cd << parameters.dir >>/<< parameters.package >>
+                birch bootstrap 2> /dev/null || echo  # in case a birch package
+                cat configure.ac | sed -E "s/unversioned/$VERSION/" | sponge configure.ac
+                ./bootstrap
+                ./configure
                 make dist
                 cp $TARNAME-$VERSION.tar.gz ~/project/$OSC_PROJECT/$TARNAME/.
                 cd ~/project/$OSC_PROJECT/$TARNAME
@@ -308,9 +307,13 @@ commands:
               shopt -s extglob
               if [[ -n "$GITHUB_USERNAME" && -n "$GITHUB_PASSWORD" && -n "$VERSION" ]]
               then
-                TARNAME=$TARNAME
+                TARNAME=<< parameters.package >>
                 TARNAME=birch-${TARNAME,,}
                 cd << parameters.dir >>/<< parameters.package >>
+                birch bootstrap 2> /dev/null || echo  # in case a birch package
+                cat configure.ac | sed -E "s/unversioned/$VERSION/" | sponge configure.ac
+                ./bootstrap
+                ./configure
                 make dist
                 cp $TARNAME-$VERSION.tar.gz ~/project/homebrew-birch/.
                 cd ~/project/homebrew-birch
@@ -321,6 +324,21 @@ commands:
                   sed -E "s/version \"[0-9]+\.[0-9]+\"/version \"$VERSION\"/g" |
                   sed -E "s/=> \"[0-9]+\.[0-9]+\"/=> \"$VERSION\"/g" |
                   sponge $TARNAME.rb
+              fi
+
+  deploy_website:
+    description: Deploy website
+    steps:
+      - run:
+          name: Deploy website
+          command: |
+              if [[ -n "$GITHUB_USERNAME" && -n "$GITHUB_PASSWORD" ]]
+              then
+                git clone https://$GITHUB_USERNAME:$GITHUB_PASSWORD@github.com/lawmurray/docs.birch.sh.git
+                make -f mkdocs.makefile
+                cp -r mkdocs.yml docs docs.birch.sh/.
+                cd docs.birch.sh
+                mkdocs gh-deploy
               fi
 
 jobs:
@@ -404,14 +422,14 @@ jobs:
       - codecov
       - slack
 
-  deploy_obs:
+  deploy:
     executor: opensuse
     steps:
       - end_if_pull_request
-      - attach_workspace:
-          at: .
+      - checkout
       - environment
-      - configure_osc
+      - git_identity
+      - osc_identity
       - deploy_obs_package:
           package: driver
       - deploy_obs_package:
@@ -425,15 +443,6 @@ jobs:
       - deploy_obs_package:
           dir: libraries
           package: SQLite
-      - slack
-
-  deploy_brew:
-    executor: mac
-    steps:
-      - end_if_pull_request
-      - attach_workspace:
-          at: .
-      - environment
       - brew_checkout
       - deploy_brew_package:
           package: driver
@@ -449,33 +458,12 @@ jobs:
           dir: libraries
           package: SQLite
       - brew_commit
-      - slack
-
-  deploy_website:
-    executor: opensuse
-    steps:
-      - end_if_pull_request
-      - attach_workspace:
-          at: .
-      - environment
-      - git_identity
-      - run:
-          name: Commit website
-          command: |
-              if [[ -n "$GITHUB_USERNAME" && -n "$GITHUB_PASSWORD" ]]
-              then
-                git clone https://$GITHUB_USERNAME:$GITHUB_PASSWORD@github.com/lawmurray/docs.birch.sh.git
-                make -f mkdocs.makefile
-                cp -r mkdocs.yml docs docs.birch.sh/.
-                cd docs.birch.sh
-                mkdocs gh-deploy
-              fi
+      - deploy_website
       - codecov
       - slack
 
 workflows:
   version: 2
-
   all:
     jobs:
       - main:
@@ -506,7 +494,7 @@ workflows:
           requires:
             - main-<< matrix.os >>
 
-      - deploy_obs:
+      - deploy:
           filters:
             branches:
               only:
@@ -519,27 +507,20 @@ workflows:
             - example-opensuse-SIR
             - example-opensuse-MultiObjectTracking
             - example-opensuse-VectorBorneDisease
-
-      - deploy_website:
-          filters:
-            branches:
-              only:
-                - master
-          requires:
-            - example-opensuse-LinearGaussian
-            - example-opensuse-LinearRegression
-            - example-opensuse-MixedGaussian
-            - example-opensuse-PoissonGaussian
-            - example-opensuse-SIR
-            - example-opensuse-MultiObjectTracking
-            - example-opensuse-VectorBorneDisease
-
-      - deploy_brew:
-          filters:
-            branches:
-              only:
-                - master
-          requires:
+            - example-debian-LinearGaussian
+            - example-debian-LinearRegression
+            - example-debian-MixedGaussian
+            - example-debian-PoissonGaussian
+            - example-debian-SIR
+            - example-debian-MultiObjectTracking
+            - example-debian-VectorBorneDisease
+            - example-fedora-LinearGaussian
+            - example-fedora-LinearRegression
+            - example-fedora-MixedGaussian
+            - example-fedora-PoissonGaussian
+            - example-fedora-SIR
+            - example-fedora-MultiObjectTracking
+            - example-fedora-VectorBorneDisease
             - example-mac-LinearGaussian
             - example-mac-LinearRegression
             - example-mac-MixedGaussian
