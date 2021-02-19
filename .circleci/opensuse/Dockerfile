@@ -1,4 +1,4 @@
-FROM opensuse/leap:15.2
+FROM opensuse/leap:latest
 RUN zypper --non-interactive addrepo --no-gpgcheck "https://repo.mongodb.org/zypper/suse/15/mongodb-org/4.4/x86_64/" mongodb \
     && zypper --non-interactive refresh \
     && zypper --non-interactive install --no-recommends \
@@ -7,16 +7,16 @@ RUN zypper --non-interactive addrepo --no-gpgcheck "https://repo.mongodb.org/zyp
     tar \
     gzip \
     curl \
-    ca-certificates \
     moreutils \
     time \
-    gcc-c++ \
-    gdb \
+    ca-certificates \
     make \
     autoconf \
     automake \
     flex \
     bison \
+    gcc-c++ \
+    gdb \
     libtool \
     libyaml-devel \
     boost-devel \
