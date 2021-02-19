@@ -13,6 +13,7 @@ executors:
       MAKE_FLAGS: "-j4"
       BIRCH_FLAGS: "--unit=dir --arch=native --jobs=4 --enable-verbose"
       MODE_FLAGS: "--disable-debug --enable-test --enable-release"
+    working_directory: ~/opensuse
 
   debian:
     docker:
@@ -22,6 +23,7 @@ executors:
       MAKE_FLAGS: "-j4"
       BIRCH_FLAGS: "--unit=dir --arch=native --jobs=4 --enable-verbose"
       MODE_FLAGS: "--disable-debug --enable-test --disable-release"
+    working_directory: ~/debian
 
   fedora:
     docker:
@@ -31,6 +33,7 @@ executors:
       MAKE_FLAGS: "-j4"
       BIRCH_FLAGS: "--unit=dir --arch=native --jobs=4 --enable-verbose"
       MODE_FLAGS: "--disable-debug --enable-test --disable-release"
+    working_directory: ~/fedora
 
   mac:
     macos:
@@ -41,6 +44,7 @@ executors:
       BIRCH_FLAGS: "--unit=dir --arch=native --jobs=8 --enable-verbose"
       MODE_FLAGS: "--disable-debug --enable-test --disable-release"
       HOMEBREW: 1
+    working_directory: ~/mac
 
 commands:
 
@@ -59,7 +63,7 @@ commands:
               fi
               echo "export VERSION=`(git describe --long || echo) | sed -E 's/v([0-9]+)-([0-9]+)-g[0-9a-f]+/\1.\2/'`" >> $BASH_ENV
               echo "export VERSION_LONG=`git describe --long || echo`" >> $BASH_ENV
-              echo "export PREFIX=~/project" >> $BASH_ENV
+              echo "export PREFIX=$CIRCLE_WORKING_DIRECTORY" >> $BASH_ENV
               echo "export PATH=\$PREFIX/bin:\$PATH" >> $BASH_ENV
               echo "export CPLUS_INCLUDE_PATH=\$PREFIX/include:\$CPLUS_INCLUDE_PATH" >> $BASH_ENV
               echo "export LD_LIBRARY_PATH=\$PREFIX/lib:\$LD_LIBRARY_PATH" >> $BASH_ENV
@@ -95,6 +99,7 @@ commands:
           name: Build driver
           command: |
               cd driver
+              cat configure.ac | sed -E "s/unversioned/$VERSION/" | sponge configure.ac
               ./bootstrap
               ./configure --prefix="$PREFIX" CXXFLAGS="-Wall -Wno-overloaded-virtual -g -O0 -fno-inline --coverage" || cat config.log
               make $MAKE_FLAGS
@@ -121,6 +126,7 @@ commands:
           name: Build << parameters.package >>
           command: |
               cd << parameters.package >>
+              cat configure.ac | sed -E "s/unversioned/$VERSION/" | sponge configure.ac
               ./bootstrap
               ./configure --prefix="$PREFIX" $MODE_FLAGS || cat config.log
               make $MAKE_FLAGS
@@ -152,6 +158,7 @@ commands:
           name: Build << parameters.package >> package
           command: |
               cd << parameters.dir >>/<< parameters.package >>
+              echo "version: $VERSION" | cat - birch.yml | sponge birch.yml
               birch build --prefix=$PREFIX $MODE_FLAGS $BIRCH_FLAGS
               birch install
       - when:
@@ -226,7 +233,7 @@ commands:
               if [[ -n "$GITHUB_USERNAME" && -n "$GITHUB_PASSWORD" ]]
               then
                 git clone https://$GITHUB_USERNAME:$GITHUB_PASSWORD@github.com/lawmurray/homebrew-birch.git
-                cd ~/project/homebrew-birch
+                cd $CIRCLE_WORKING_DIRECTORY/homebrew-birch
                 git rm *.tar.gz
               fi
 
@@ -239,7 +246,7 @@ commands:
           command: |
               if [[ -n "$GITHUB_USERNAME" && -n "$GITHUB_PASSWORD" && -n "$VERSION" ]]
               then
-                cd ~/project/homebrew-birch
+                cd $CIRCLE_WORKING_DIRECTORY/homebrew-birch
                 git add *.tar.gz
                 git add -u
                 git commit -m "Updated to version $VERSION."
@@ -273,13 +280,9 @@ commands:
                 fi
                 osc checkout $OSC_PROJECT $TARNAME
                 cd << parameters.dir >>/<< parameters.package >>
-                birch bootstrap 2> /dev/null || echo  # in case a birch package
-                cat configure.ac | sed -E "s/unversioned/$VERSION/" | sponge configure.ac
-                ./bootstrap
-                ./configure
                 make dist
-                cp $TARNAME-$VERSION.tar.gz ~/project/$OSC_PROJECT/$TARNAME/.
-                cd ~/project/$OSC_PROJECT/$TARNAME
+                cp $TARNAME-$VERSION.tar.gz $CIRCLE_WORKING_DIRECTORY/$OSC_PROJECT/$TARNAME/.
+                cd $CIRCLE_WORKING_DIRECTORY/$OSC_PROJECT/$TARNAME
                 osc delete $TARNAME-!($VERSION).tar.gz
                 osc add $TARNAME-$VERSION.tar.gz
                 for file in $TARNAME.spec $TARNAME.dsc debian.control PKGBUILD
@@ -322,13 +325,9 @@ commands:
                   TARNAME=birch-${TARNAME,,}
                 fi
                 cd << parameters.dir >>/<< parameters.package >>
-                birch bootstrap 2> /dev/null || echo  # in case a birch package
-                cat configure.ac | sed -E "s/unversioned/$VERSION/" | sponge configure.ac
-                ./bootstrap
-                ./configure
                 make dist
-                cp $TARNAME-$VERSION.tar.gz ~/project/homebrew-birch/.
-                cd ~/project/homebrew-birch
+                cp $TARNAME-$VERSION.tar.gz $CIRCLE_WORKING_DIRECTORY/homebrew-birch/.
+                cd $CIRCLE_WORKING_DIRECTORY/homebrew-birch
                 SHA256=($(sha256sum $TARNAME-$VERSION.tar.gz))
                 cat $TARNAME.rb |
                   sed -E "s/-[0-9]+\.[0-9]+\.tar\.gz/-$VERSION.tar.gz/g" |
@@ -452,11 +451,9 @@ jobs:
     executor: opensuse
     steps:
       - end_if_pull_request
-      - checkout
       - environment
       - git_identity
       - osc_identity
-      - driver
       - deploy_obs_package:
           package: driver
       - deploy_obs_package:
