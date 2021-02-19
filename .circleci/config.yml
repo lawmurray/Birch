@@ -264,7 +264,12 @@ commands:
               if [[ -n "$OSC_PROJECT" && -n "$OSC_USERNAME" && -n "$OSC_PASSWORD" && -n "$VERSION" ]]
               then
                 TARNAME=<< parameters.package >>
-                TARNAME=birch-${TARNAME,,}
+                if [[ "$TARNAME" = "driver" ]]
+                then
+                  TARNAME=birch
+                else
+                  TARNAME=birch-${TARNAME,,}
+                fi
                 osc checkout $OSC_PROJECT $TARNAME
                 cd << parameters.dir >>/<< parameters.package >>
                 birch bootstrap 2> /dev/null || echo  # in case a birch package
@@ -308,7 +313,12 @@ commands:
               if [[ -n "$GITHUB_USERNAME" && -n "$GITHUB_PASSWORD" && -n "$VERSION" ]]
               then
                 TARNAME=<< parameters.package >>
-                TARNAME=birch-${TARNAME,,}
+                if [[ "$TARNAME" = "driver" ]]
+                then
+                  TARNAME=birch
+                else
+                  TARNAME=birch-${TARNAME,,}
+                fi
                 cd << parameters.dir >>/<< parameters.package >>
                 birch bootstrap 2> /dev/null || echo  # in case a birch package
                 cat configure.ac | sed -E "s/unversioned/$VERSION/" | sponge configure.ac
@@ -458,6 +468,7 @@ jobs:
           dir: libraries
           package: SQLite
       - brew_commit
+      - driver  # needed to build docs
       - deploy_website
       - codecov
       - slack
