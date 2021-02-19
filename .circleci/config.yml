@@ -370,6 +370,10 @@ jobs:
         description: Upload output to MongoDB Atlas?
         type: boolean
         default: false
+      codecov:
+        description: Upload code coverage results to Codecov?
+        type: boolean
+        default: false
     executor: << parameters.os >>
     steps:
       - checkout
@@ -397,8 +401,11 @@ jobs:
             - '*'
             - .*
       - end_if_pull_request
-      - codecov
       - slack
+      - when:
+          condition: << parameters.codecov >>
+          steps:
+            - codecov
 
   example:
     parameters: 
@@ -419,6 +426,10 @@ jobs:
         description: Upload output to MongoDB Atlas?
         type: boolean
         default: false
+      codecov:
+        description: Upload code coverage results to Codecov?
+        type: boolean
+        default: false
     executor: << parameters.os >>
     steps:
       - attach_workspace:
@@ -431,8 +442,11 @@ jobs:
           unit: << parameters.unit >>
           mongodb: << parameters.mongodb >>
       - end_if_pull_request
-      - codecov
       - slack
+      - when:
+          condition: << parameters.codecov >>
+          steps:
+            - codecov
 
   deploy:
     executor: opensuse
@@ -483,6 +497,7 @@ workflows:
           os: opensuse
           name: main-opensuse
           unit: true
+          codecov: true
 
       - main:
           matrix:
@@ -496,6 +511,7 @@ workflows:
               package: [LinearGaussian,LinearRegression,MixedGaussian,PoissonGaussian,SIR,MultiObjectTracking,VectorBorneDisease]
           unit: true
           mongodb: true
+          codecov: true
           requires:
             - main-opensuse
 
