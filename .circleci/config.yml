@@ -185,16 +185,19 @@ commands:
               if [[ -n "$MONGODB" && -n "$MONGODB_HOST" && -n "$MONGODB_USERNAME" && -n "$MONGODB_PASSWORD" && -n "$VERSION_LONG" ]]
               then
                 cd << parameters.dir >>/<< parameters.package >>
-                echo '{ "output": ' > /tmp/mongodb.json
-                cat output/test.json >> /tmp/mongodb.json
-                if [[ -e /tmp/time.txt ]]
+                if [[ -e output/test.json ]]
                 then
-                  cat /tmp/time.txt >> /tmp/mongodb.json
+                  echo '{ "output": ' > /tmp/mongodb.json
+                  cat output/test.json >> /tmp/mongodb.json
+                  if [[ -e /tmp/time.txt ]]
+                  then
+                    cat /tmp/time.txt >> /tmp/mongodb.json
+                  fi
+                  echo ", \"branch\": \"$CIRCLE_BRANCH\"" >> /tmp/mongodb.json
+                  echo ", \"version\": \"$VERSION_LONG\"" >> /tmp/mongodb.json
+                  echo '}' >> /tmp/mongodb.json
+                  mongoimport --uri mongodb+srv://$MONGODB_USERNAME:$MONGODB_PASSWORD@$MONGODB_HOST/test --collection << parameters.package >> --file /tmp/mongodb.json
                 fi
-                echo ", \"branch\": \"$CIRCLE_BRANCH\"" >> /tmp/mongodb.json
-                echo ", \"version\": \"$VERSION_LONG\"" >> /tmp/mongodb.json
-                echo '}' >> /tmp/mongodb.json
-                mongoimport --uri mongodb+srv://$MONGODB_USERNAME:$MONGODB_PASSWORD@$MONGODB_HOST/test --collection << parameters.package >> --file /tmp/mongodb.json
               fi
 
   osc_identity:
