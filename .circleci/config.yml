@@ -267,7 +267,8 @@ commands:
                 if [[ "$TARNAME" = "driver" ]]
                 then
                   TARNAME=birch
-                else
+                elif [[ "$TARNAME" != "libbirch" ]]
+                then
                   TARNAME=birch-${TARNAME,,}
                 fi
                 osc checkout $OSC_PROJECT $TARNAME
@@ -316,7 +317,8 @@ commands:
                 if [[ "$TARNAME" = "driver" ]]
                 then
                   TARNAME=birch
-                else
+                elif [[ "$TARNAME" != "libbirch" ]]
+                then
                   TARNAME=birch-${TARNAME,,}
                 fi
                 cd << parameters.dir >>/<< parameters.package >>
