@@ -147,9 +147,6 @@ commands:
       package:
         description: Name of package (e.g. Standard)
         type: string
-      tar:
-        description: Tarname of package (e.g. birch-standard)
-        type: string
       smoke:
         description: Run smoke tests?
         type: boolean
@@ -264,9 +261,6 @@ commands:
       package:
         description: Name of package (e.g. Standard)
         type: string
-      tar:
-        description: Tarname of package (e.g. birch-standard)
-        type: string
     steps:
       - run:
           name: Open Build Service package for << parameters.package >>
@@ -274,14 +268,16 @@ commands:
               shopt -s extglob
               if [[ -n "$OSC_PROJECT" && -n "$OSC_USERNAME" && -n "$OSC_PASSWORD" && -n "$VERSION" ]]
               then
-                osc checkout $OSC_PROJECT << parameters.tar >>
+                TARNAME=$TARNAME
+                TARNAME=birch-${TARNAME,,}
+                osc checkout $OSC_PROJECT $TARNAME
                 cd << parameters.dir >>/<< parameters.package >>
                 make dist
-                cp << parameters.tar >>-$VERSION.tar.gz ~/project/$OSC_PROJECT/<< parameters.tar >>/.
-                cd ~/project/$OSC_PROJECT/<< parameters.tar >>
-                osc delete << parameters.tar >>-!($VERSION).tar.gz
-                osc add << parameters.tar >>-$VERSION.tar.gz
-                for file in << parameters.tar >>.spec << parameters.tar >>.dsc debian.control PKGBUILD
+                cp $TARNAME-$VERSION.tar.gz ~/project/$OSC_PROJECT/$TARNAME/.
+                cd ~/project/$OSC_PROJECT/$TARNAME
+                osc delete $TARNAME-!($VERSION).tar.gz
+                osc add $TARNAME-$VERSION.tar.gz
+                for file in $TARNAME.spec $TARNAME.dsc debian.control PKGBUILD
                 do
                   cat $file |
                     sed -E "s/-[0-9]+\.[0-9]+\.tar\.gz/-$VERSION.tar.gz/g" |
@@ -305,9 +301,6 @@ commands:
       package:
         description: Name of package (e.g. Standard)
         type: string
-      tar:
-        description: Tarname of package (e.g. birch-standard)
-        type: string
     steps:
       - run:
           name: Homebrew package for << parameters.package >>
@@ -315,17 +308,19 @@ commands:
               shopt -s extglob
               if [[ -n "$GITHUB_USERNAME" && -n "$GITHUB_PASSWORD" && -n "$VERSION" ]]
               then
+                TARNAME=$TARNAME
+                TARNAME=birch-${TARNAME,,}
                 cd << parameters.dir >>/<< parameters.package >>
                 make dist
-                cp << parameters.tar >>-$VERSION.tar.gz ~/project/homebrew-birch/.
+                cp $TARNAME-$VERSION.tar.gz ~/project/homebrew-birch/.
                 cd ~/project/homebrew-birch
-                SHA256=($(sha256sum << parameters.tar >>-$VERSION.tar.gz))
-                cat << parameters.tar >>.rb |
+                SHA256=($(sha256sum $TARNAME-$VERSION.tar.gz))
+                cat $TARNAME.rb |
                   sed -E "s/-[0-9]+\.[0-9]+\.tar\.gz/-$VERSION.tar.gz/g" |
                   sed -E "s/sha256 \"[0-9a-f]+\"/sha256 \"$SHA256\"/g" |
                   sed -E "s/version \"[0-9]+\.[0-9]+\"/version \"$VERSION\"/g" |
                   sed -E "s/=> \"[0-9]+\.[0-9]+\"/=> \"$VERSION\"/g" |
-                  sponge << parameters.tar >>.rb
+                  sponge $TARNAME.rb
               fi
 
 jobs:
@@ -355,19 +350,16 @@ jobs:
       - package:
           dir: libraries
           package: Standard
-          tar: birch-standard
           smoke: << parameters.smoke >>
           unit: << parameters.unit >>
           mongodb: << parameters.mongodb >>
       - package:
           dir: libraries
           package: Cairo
-          tar: birch-cairo
           smoke: false
       - package:
           dir: libraries
           package: SQLite
-          tar: birch-sqlite
           smoke: false
       - persist_to_workspace:
           root: .
@@ -384,9 +376,6 @@ jobs:
         type: executor
       package:
         description: Name of package (e.g. Standard)
-        type: string
-      tar:
-        description: Tarname of package (e.g. birch-standard)
         type: string
       smoke:
         description: Run smoke tests?
@@ -408,7 +397,6 @@ jobs:
       - package:
           dir: examples
           package: << parameters.package >>
-          tar: << parameters.tar >>
           smoke: << parameters.smoke >>
           unit: << parameters.unit >>
           mongodb: << parameters.mongodb >>
@@ -426,22 +414,17 @@ jobs:
       - configure_osc
       - deploy_obs_package:
           package: driver
-          tar: birch
       - deploy_obs_package:
           package: libbirch
-          tar: libbirch
       - deploy_obs_package:
           dir: libraries
           package: Standard
-          tar: birch-standard
       - deploy_obs_package:
           dir: libraries
           package: Cairo
-          tar: birch-cairo
       - deploy_obs_package:
           dir: libraries
           package: SQLite
-          tar: birch-sqlite
       - slack
 
   deploy_brew:
@@ -454,22 +437,17 @@ jobs:
       - brew_checkout
       - deploy_brew_package:
           package: driver
-          tar: birch
       - deploy_brew_package:
           package: libbirch
-          tar: libbirch
       - deploy_brew_package:
           dir: libraries
           package: Standard
-          tar: birch-standard
       - deploy_brew_package:
           dir: libraries
           package: Cairo
-          tar: birch-cairo
       - deploy_brew_package:
           dir: libraries
           package: SQLite
-          tar: birch-sqlite
       - brew_commit
       - slack
 
@@ -509,7 +487,6 @@ workflows:
           os: opensuse
           name: opensuse_LinearGaussian
           package: LinearGaussian
-          tar: birch-lineargaussian
           unit: true
           mongodb: true
           requires:
@@ -519,7 +496,6 @@ workflows:
           os: opensuse
           name: opensuse_LinearRegression
           package: LinearRegression
-          tar: birch-linearregression
           unit: true
           mongodb: true
           requires:
@@ -529,7 +505,6 @@ workflows:
           os: opensuse
           name: opensuse_MixedGaussian
           package: MixedGaussian
-          tar: birch-mixedgaussian
           unit: true
           mongodb: true
           requires:
@@ -539,7 +514,6 @@ workflows:
           os: opensuse
           name: opensuse_PoissonGaussian
           package: PoissonGaussian
-          tar: birch-poissongaussian
           unit: true
           mongodb: true
           requires:
@@ -549,7 +523,6 @@ workflows:
           os: opensuse
           name: opensuse_SIR
           package: SIR
-          tar: birch-sir
           unit: true
           mongodb: true
           requires:
@@ -559,7 +532,6 @@ workflows:
           os: opensuse
           name: opensuse_MultiObjectTracking
           package: MultiObjectTracking
-          tar: birch-multiobjecttracking
           unit: true
           mongodb: true
           requires:
@@ -569,7 +541,6 @@ workflows:
           os: opensuse
           name: opensuse_VectorBorneDisease
           package: VectorBorneDisease
-          tar: birch-vectorbornedisease
           unit: true
           mongodb: true
           requires:
@@ -613,7 +584,6 @@ workflows:
           os: mac
           name: mac_LinearGaussian
           package: LinearGaussian
-          tar: birch-lineargaussian
           requires:
             - mac
 
@@ -621,7 +591,6 @@ workflows:
           os: mac
           name: mac_LinearRegression
           package: LinearRegression
-          tar: birch-linearregression
           requires:
             - mac
 
@@ -629,7 +598,6 @@ workflows:
           os: mac
           name: mac_MixedGaussian
           package: MixedGaussian
-          tar: birch-mixedgaussian
           requires:
             - mac
 
@@ -637,7 +605,6 @@ workflows:
           os: mac
           name: mac_PoissonGaussian
           package: PoissonGaussian
-          tar: birch-poissongaussian
           requires:
             - mac
 
@@ -645,7 +612,6 @@ workflows:
           os: mac
           name: mac_SIR
           package: SIR
-          tar: birch-sir
           requires:
             - mac
 
@@ -653,7 +619,6 @@ workflows:
           os: mac
           name: mac_MultiObjectTracking
           package: MultiObjectTracking
-          tar: birch-multiobjecttracking
           requires:
             - mac
 
@@ -661,7 +626,6 @@ workflows:
           os: mac
           name: mac_VectorBorneDisease
           package: VectorBorneDisease
-          tar: birch-vectorbornedisease
           requires:
             - mac
 
@@ -689,7 +653,6 @@ workflows:
           os: debian
           name: debian_LinearGaussian
           package: LinearGaussian
-          tar: birch-lineargaussian
           requires:
             - debian
 
@@ -697,7 +660,6 @@ workflows:
           os: debian
           name: debian_LinearRegression
           package: LinearRegression
-          tar: birch-linearregression
           requires:
             - debian
 
@@ -705,7 +667,6 @@ workflows:
           os: debian
           name: debian_MixedGaussian
           package: MixedGaussian
-          tar: birch-mixedgaussian
           requires:
             - debian
 
@@ -713,7 +674,6 @@ workflows:
           os: debian
           name: debian_PoissonGaussian
           package: PoissonGaussian
-          tar: birch-poissongaussian
           requires:
             - debian
 
@@ -721,7 +681,6 @@ workflows:
           os: debian
           name: debian_SIR
           package: SIR
-          tar: birch-sir
           requires:
             - debian
 
@@ -729,7 +688,6 @@ workflows:
           os: debian
           name: debian_MultiObjectTracking
           package: MultiObjectTracking
-          tar: birch-multiobjecttracking
           requires:
             - debian
 
@@ -737,7 +695,6 @@ workflows:
           os: debian
           name: debian_VectorBorneDisease
           package: VectorBorneDisease
-          tar: birch-vectorbornedisease
           requires:
             - debian
 
@@ -751,7 +708,6 @@ workflows:
           os: fedora
           name: fedora_LinearGaussian
           package: LinearGaussian
-          tar: birch-lineargaussian
           requires:
             - fedora
 
@@ -759,7 +715,6 @@ workflows:
           os: fedora
           name: fedora_LinearRegression
           package: LinearRegression
-          tar: birch-linearregression
           requires:
             - fedora
 
@@ -767,7 +722,6 @@ workflows:
           os: fedora
           name: fedora_MixedGaussian
           package: MixedGaussian
-          tar: birch-mixedgaussian
           requires:
             - fedora
 
@@ -775,7 +729,6 @@ workflows:
           os: fedora
           name: fedora_PoissonGaussian
           package: PoissonGaussian
-          tar: birch-poissongaussian
           requires:
             - fedora
 
@@ -783,7 +736,6 @@ workflows:
           os: fedora
           name: fedora_SIR
           package: SIR
-          tar: birch-sir
           requires:
             - fedora
 
@@ -791,7 +743,6 @@ workflows:
           os: fedora
           name: fedora_MultiObjectTracking
           package: MultiObjectTracking
-          tar: birch-multiobjecttracking
           requires:
             - fedora
 
@@ -799,6 +750,5 @@ workflows:
           os: fedora
           name: fedora_VectorBorneDisease
           package: VectorBorneDisease
-          tar: birch-vectorbornedisease
           requires:
             - fedora
