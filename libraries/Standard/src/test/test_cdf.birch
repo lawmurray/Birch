@@ -51,7 +51,7 @@ function test_cdf(q:Distribution<Real>, N:Integer) {
     P <- P + q.pdf(x)*(to! - from!)/N;
 
     let δ <- abs(C - P);
-    let ε <- 1.0/sqrt(Real(N));
+    let ε <- 2.0/sqrt(Real(N));
     if !(δ <= ε) {  // careful of nans
       failed <- true;
       stderr.print("***failed*** on step " + n + ", " + δ + " > " + ε + "\n");
