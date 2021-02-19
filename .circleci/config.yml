@@ -503,7 +503,7 @@ workflows:
           matrix:
             parameters:
               os: [debian,fedora,mac]
-              package: [LinearGaussian,LinearRegression,MixedGaussian,PoissonGaussian,SIR,MultiObjectTracking,VectorBorneDisease]
+              package: [LinearRegression,MixedGaussian,SIR,MultiObjectTracking,VectorBorneDisease]
           requires:
             - main-<< matrix.os >>
 
@@ -520,24 +520,18 @@ workflows:
             - example-opensuse-SIR
             - example-opensuse-MultiObjectTracking
             - example-opensuse-VectorBorneDisease
-            - example-debian-LinearGaussian
             - example-debian-LinearRegression
             - example-debian-MixedGaussian
-            - example-debian-PoissonGaussian
             - example-debian-SIR
             - example-debian-MultiObjectTracking
             - example-debian-VectorBorneDisease
-            - example-fedora-LinearGaussian
             - example-fedora-LinearRegression
             - example-fedora-MixedGaussian
-            - example-fedora-PoissonGaussian
             - example-fedora-SIR
             - example-fedora-MultiObjectTracking
             - example-fedora-VectorBorneDisease
-            - example-mac-LinearGaussian
             - example-mac-LinearRegression
             - example-mac-MixedGaussian
-            - example-mac-PoissonGaussian
             - example-mac-SIR
             - example-mac-MultiObjectTracking
             - example-mac-VectorBorneDisease
