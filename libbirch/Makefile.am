@@ -21,7 +21,7 @@ libbirch_test_la_CXXFLAGS = $(AM_CXXFLAGS) $(OPENMP_CXXFLAGS) -O0 -g -fno-inline
 libbirch_test_la_SOURCES = $(COMMON_SOURCES)
 
 libbirch_la_CPPFLAGS = $(AM_CPPFLAGS) -DNDEBUG
-libbirch_la_CXXFLAGS = $(AM_CXXFLAGS) $(OPENMP_CXXFLAGS) -O3
+libbirch_la_CXXFLAGS = $(AM_CXXFLAGS) $(OPENMP_CXXFLAGS) -O3 -flto
 libbirch_la_SOURCES = $(COMMON_SOURCES)
 
 include_HEADERS = \
