@@ -49,6 +49,23 @@ function logpdf_lazy_poisson(x:Expression<Integer>, λ:Expression<Real>) -> Expr
 }
 
 /**
+ * Observe a Conway-Maxwell-Poisson variate.
+ *
+ * - x: The variate.
+ * - λ: Rate.
+ * - ν: Dispersion.
+ * - n: Truncation point.
+ *
+ * Returns: the log probability mass.
+ */
+function logpdf_lazy_conway_maxwell_poisson(x:Expression<Integer>,
+    λ:Expression<Real>, ν:Expression<Real>, n:Expression<Integer>) ->
+    Expression<Real> {
+  return Real(x)*log(λ) - ν*lgamma(Real(x) + 1.0) -
+      log(normalize_conway_maxwell_poisson(λ, ν, n));
+}
+
+/**
  * Observe an integer uniform variate.
  *
  * - x: The variate.

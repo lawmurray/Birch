@@ -104,6 +104,25 @@ function logpdf_poisson(x:Integer, λ:Real) -> Real {
 }
 
 /**
+ * Observe a Conway-Maxwell-Poisson variate.
+ *
+ * - x: The variate.
+ * - λ: Rate.
+ * - ν: Dispersion.
+ * - n: Truncation point.
+ *
+ * Returns: the log probability mass.
+ */
+function logpdf_conway_maxwell_poisson(x:Integer, λ:Real, ν:Real,
+    n:Integer) -> Real {
+  assert 0.0 <= λ;
+  assert 0.0 <= ν;
+  assert 0 <= n;
+  return x*log(λ) - ν*lgamma(x + 1.0) -
+      log(normalize_conway_maxwell_poisson(λ, ν, n));
+}
+
+/**
  * Observe an integer uniform variate.
  *
  * - x: The variate.

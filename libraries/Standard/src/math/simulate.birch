@@ -104,6 +104,18 @@ function simulate_poisson(λ:Real) -> Integer {
 }
 
 /**
+ * Simulate a Conway-Maxwell-Poisson distribution.
+ *
+ * - λ: Rate.
+ * - ν: Dispersion.
+ * - n: Truncation point.
+ */
+function simulate_conway_maxwell_poisson(λ:Real, ν:Real, n:Integer) ->
+    Integer {
+  return quantile_conway_maxwell_poisson(simulate_uniform(0.0, 1.0), λ, ν, n);
+}
+
+/**
  * Simulate a categorical distribution.
  *
  * - ρ: Category probabilities. These should sum to one.

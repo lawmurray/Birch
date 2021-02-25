@@ -52,6 +52,34 @@ function quantile_poisson(P:Real, λ:Real) -> Integer {
 }
 
 /**
+ * Quantile of a Conway-Maxwell-Poisson distribution.
+ *
+ * - P: The cumulative probability.
+ * - λ: Rate.
+ * - ν: Dispersion.
+ * - n: Truncation point.
+ *
+ * Return: the quantile.
+ */
+function quantile_conway_maxwell_poisson(P:Real, λ:Real, ν:Real,
+    n:Integer) -> Integer {
+  assert 0.0 <= λ;
+  assert 0.0 <= ν;
+  assert 0 <= n;
+
+  let Q <- P*normalize_conway_maxwell_poisson(λ, ν, n);
+  let x <- 0;
+  let z <- 1.0;
+  let Z <- z;
+  while Z <= Q && x < n {
+    x <- x + 1;
+    z <- z*λ/pow(Real(x), ν);
+    Z <- Z + z;
+  }
+  return x;
+}
+
+/**
  * Quantile of a uniform integer distribution.
  *
  * - P: The cumulative probability.
