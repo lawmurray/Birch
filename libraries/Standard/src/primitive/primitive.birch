@@ -368,7 +368,7 @@ function sort_index<Type>(x:Type[_]) -> Integer[_] {
   let a <- iota(1, length(x));
   cpp{{
   std::sort(a.begin(), a.end(), [=](birch::type::Integer i, birch::type::Integer j) {
-      return x(libbirch::make_slice(i - 1)) < x(libbirch::make_slice(j - 1));
+      return x(i - 1) < x(j - 1);
     });
   }}
   return a;
