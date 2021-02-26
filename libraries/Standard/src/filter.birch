@@ -94,9 +94,9 @@ program filter(
     if !nsteps? {
       nsteps <-? filterBuffer.get<Integer>("nsteps");
       if nsteps? {
-        //warn("filter.nsteps in the config file is deprecated, replace " +
-        //    "with nsteps in the config file, or --nsteps on the " +
-        //    "command line.");
+        warn("filter.nsteps in the config file is deprecated, replace " +
+           "with nsteps in the config file, or --nsteps on the " +
+           "command line.");
       }
     }
   }
@@ -107,9 +107,9 @@ program filter(
     if !nforecasts? {
       nforecasts <-? filterBuffer.get<Integer>("nforecasts");
       if nforecasts? {
-        //warn("filter.nforecasts in the config file is deprecated, replace " +
-        //    "with nforecasts in the config file, or --nforecasts on the " +
-        //    "command line.");
+        warn("filter.nforecasts in the config file is deprecated, replace " +
+           "with nforecasts in the config file, or --nforecasts on the " +
+           "command line.");
       }
     }
   }

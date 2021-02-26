@@ -1,0 +1,138 @@
+/**
+ * Conway-Maxwell-Poisson distribution.
+ *
+ * - λ: Rate.
+ * - ν: Dispersion.
+ * - n: Truncation point.
+ *
+ * The distribution is always truncated on $[0,n]$ because of an intractable
+ * normalizing constant that can only be expressed as an infinite series on
+ * the support of the non-truncated distribution, $[0,\infty)$. The larger
+ * $n$, the closer the approximation to the non-truncated distribution---if
+ * that is desired---but the more expensive operations: most are $O(n)$.
+ */
+class ConwayMaxwellPoisson(λ:Expression<Real>, ν:Expression<Real>,
+    n:Expression<Integer>) < BoundedDiscrete {
+  /**
+   * Rate.
+   */
+  λ:Expression<Real> <- λ;
+
+  /**
+   * Dispersion.
+   */
+  ν:Expression<Real> <- ν;
+
+  /**
+   * Truncation point.
+   */
+  n:Expression<Integer> <- n;
+
+  function supportsLazy() -> Boolean {
+    return true;
+  }
+
+  function simulate() -> Integer {
+    return simulate_conway_maxwell_poisson(λ.value(), ν.value(), n.value());
+  }
+
+  function simulateLazy() -> Integer? {
+    return simulate_conway_maxwell_poisson(λ.get(), ν.get(), n.get());
+  }
+
+  function logpdf(x:Integer) -> Real {
+    return logpdf_conway_maxwell_poisson(x, λ.value(), ν.value(), n.value());
+  }
+
+  function logpdfLazy(x:Expression<Integer>) -> Expression<Real>? {
+    return logpdf_lazy_conway_maxwell_poisson(x, λ, ν, n);
+  }
+
+  function cdf(x:Integer) -> Real? {
+    return cdf_conway_maxwell_poisson(x, λ.value(), ν.value(), n.value());
+  }
+
+  function quantile(P:Real) -> Integer? {
+    return quantile_conway_maxwell_poisson(P, λ.value(), ν.value(), n.value());
+  }
+
+  function lower() -> Integer? {
+    return 0;
+  }
+
+  function upper() -> Integer? {
+    return n.value();
+  }
+
+  function write(buffer:Buffer) {
+    prune();
+    buffer.set("class", "ConwayMaxwellPoisson");
+    buffer.set("λ", λ);
+    buffer.set("ν", ν);
+    buffer.set("n", n);
+  }
+}
+
+/**
+ * Create Conway-Maxwell-Poisson distribution.
+ */
+function ConwayMaxwellPoisson(λ:Expression<Real>, ν:Expression<Real>,
+    n:Expression<Integer>) -> ConwayMaxwellPoisson {
+  return construct<ConwayMaxwellPoisson>(λ, ν, n);
+}
+
+/**
+ * Create Conway-Maxwell-Poisson distribution.
+ */
+function ConwayMaxwellPoisson(λ:Real, ν:Expression<Real>,
+    n:Expression<Integer>) -> ConwayMaxwellPoisson {
+  return ConwayMaxwellPoisson(box(λ), ν, n);
+}
+
+/**
+ * Create Conway-Maxwell-Poisson distribution.
+ */
+function ConwayMaxwellPoisson(λ:Expression<Real>, ν:Real,
+    n:Expression<Integer>) -> ConwayMaxwellPoisson {
+  return ConwayMaxwellPoisson(λ, box(ν), n);
+}
+
+/**
+ * Create Conway-Maxwell-Poisson distribution.
+ */
+function ConwayMaxwellPoisson(λ:Expression<Real>, ν:Expression<Real>,
+    n:Integer) -> ConwayMaxwellPoisson {
+  return ConwayMaxwellPoisson(λ, ν, box(n));
+}
+
+/**
+ * Create Conway-Maxwell-Poisson distribution.
+ */
+function ConwayMaxwellPoisson(λ:Expression<Real>, ν:Real, n:Integer) ->
+    ConwayMaxwellPoisson {
+  return ConwayMaxwellPoisson(λ, box(ν), box(n));
+}
+
+/**
+ * Create Conway-Maxwell-Poisson distribution.
+ */
+function ConwayMaxwellPoisson(λ:Real, ν:Expression<Real>, n:Integer) ->
+    ConwayMaxwellPoisson {
+  return ConwayMaxwellPoisson(box(λ), ν, box(n));
+}
+
+/**
+ * Create Conway-Maxwell-Poisson distribution.
+ */
+function ConwayMaxwellPoisson(λ:Real, ν:Real, n:Expression<Integer>) ->
+    ConwayMaxwellPoisson {
+  return ConwayMaxwellPoisson(box(λ), box(ν), n);
+}
+
+/**
+ * Create Conway-Maxwell-Poisson distribution.
+ */
+function ConwayMaxwellPoisson(λ:Real, ν:Real, n:Integer) ->
+    ConwayMaxwellPoisson {
+  return ConwayMaxwellPoisson(box(λ), box(ν), box(n));
+}

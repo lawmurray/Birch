@@ -1,0 +1,10 @@
+/*
+ * Test Conway-Maxwell-Poisson pdf evaluations.
+ */
+program test_pdf_conway_maxwell_poisson(N:Integer <- 10000, lazy:Boolean <- false) {
+  let λ <- simulate_uniform(0.1, 100.0);
+  let ν <- simulate_uniform(0.1, 20.0);
+  let n <- simulate_uniform_int(Integer(10*λ), Integer(20*λ));
+  let q <- ConwayMaxwellPoisson(λ, ν, n);
+  test_pdf(q, N, lazy);
+}

@@ -1,0 +1,119 @@
+/**
+ * Lazy `normalize_conway_maxwell_poisson`.
+ */
+final class NormalizeConwayMaxwellPoisson(λ:Expression<Real>,
+    ν:Expression<Real>, n:Expression<Integer>) < ScalarTernaryExpression<
+    Expression<Real>,Expression<Real>,Expression<Integer>,Real,Real,Integer,
+    Real,Real,Real,Real>(λ, ν, n) {
+  override function doEvaluate(λ:Real, ν:Real, n:Integer) -> Real {
+    return normalize_conway_maxwell_poisson(λ, ν, n);
+  }
+
+  override function doEvaluateGradLeft(d:Real, x:Real, λ:Real, ν:Real,
+      n:Integer) -> Real {
+    let dz <- 0.0;
+    let dZ <- 0.0;
+    let z <- 1.0;
+    if n >= 1 {
+      dz <- 1.0;
+      dZ <- 1.0;
+      z <- λ;
+      if n >= 2 {
+        dz <- λ*pow(2.0, 1.0 - ν);
+        dZ <- dZ + dz;
+        z <- z*λ*pow(2.0, -ν);
+        for j in 3..n {
+          dz <- (dz*λ + z)*pow(Real(j), -ν);
+          dZ <- dZ + dz;
+          z <- z*λ*pow(Real(j), -ν);
+        }
+      }
+    }
+    return d*dZ;
+  }
+
+  override function doEvaluateGradMiddle(d:Real, x:Real, λ:Real, ν:Real,
+      n:Integer) -> Real {
+    let dz <- 0.0;
+    let dZ <- 0.0;
+    let z <- 1.0;
+    if n >= 1 {
+      dz <- 0.0;
+      dZ <- 0.0;
+      z <- λ;
+      if n >= 2 {
+        dz <- -pow(λ, 2.0)*pow(2.0, -ν)*log(2.0);
+        dZ <- dZ + dz;
+        z <- z*λ*pow(2.0, -ν);
+        for j in 3..n {
+          dz <- (dz*λ - z*λ*log(Real(j)))*pow(Real(j), -ν);
+          dZ <- dZ + dz;
+          z <- z*λ*pow(Real(j), -ν);
+        }
+      }
+    }
+    return d*dZ;
+  }
+
+  override function doEvaluateGradRight(d:Real, x:Real, λ:Real, ν:Real,
+      n:Integer) -> Real {
+    return 0.0;
+  }
+}
+
+/**
+ * Lazy `normalize_conway_maxwell_poisson`.
+ */
+function normalize_conway_maxwell_poisson(λ:Expression<Real>,
+    ν:Expression<Real>, n:Expression<Integer>) ->
+    NormalizeConwayMaxwellPoisson {
+  return construct<NormalizeConwayMaxwellPoisson>(λ, ν, n);
+}
+
+/**
+ * Lazy `normalize_conway_maxwell_poisson`.
+ */
+function normalize_conway_maxwell_poisson(λ:Expression<Real>,
+    ν:Expression<Real>, n:Integer) -> NormalizeConwayMaxwellPoisson {
+  return normalize_conway_maxwell_poisson(λ, ν, box(n));
+}
+
+/**
+ * Lazy `normalize_conway_maxwell_poisson`.
+ */
+function normalize_conway_maxwell_poisson(λ:Expression<Real>, ν:Real,
+    n:Expression<Integer>) -> NormalizeConwayMaxwellPoisson {
+  return normalize_conway_maxwell_poisson(λ, box(ν), n);
+}
+
+/**
+ * Lazy `normalize_conway_maxwell_poisson`.
+ */
+function normalize_conway_maxwell_poisson(λ:Expression<Real>, ν:Real,
+    n:Integer) -> NormalizeConwayMaxwellPoisson {
+  return normalize_conway_maxwell_poisson(λ, box(ν), box(n));
+}
+
+/**
+ * Lazy `normalize_conway_maxwell_poisson`.
+ */
+function normalize_conway_maxwell_poisson(λ:Real, ν:Expression<Real>,
+    n:Expression<Integer>) -> NormalizeConwayMaxwellPoisson {
+  return normalize_conway_maxwell_poisson(box(λ), ν, n);
+}
+
+/**
+ * Lazy `normalize_conway_maxwell_poisson`.
+ */
+function normalize_conway_maxwell_poisson(λ:Real, ν:Expression<Real>,
+    n:Integer) -> NormalizeConwayMaxwellPoisson {
+  return normalize_conway_maxwell_poisson(box(λ), ν, box(n));
+}
+
+/**
+ * Lazy `normalize_conway_maxwell_poisson`.
+ */
+function normalize_conway_maxwell_poisson(λ:Real, ν:Real,
+    n:Expression<Integer>) -> NormalizeConwayMaxwellPoisson {
+  return normalize_conway_maxwell_poisson(box(λ), box(ν), n);
+}
