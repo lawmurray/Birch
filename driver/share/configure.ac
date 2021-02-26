@@ -72,6 +72,12 @@ AC_SEARCH_LIBS([dlopen], [dl], [], [])
 AC_CHECK_LIB([atomic], [main], [], [], [])
 AC_CHECK_LIB([stdc++fs], [main], [], [], [])
 AC_CHECK_LIB([omp], [main], [], [], [])
+
+# pthread may be necessary with some older gcc to avoid the following error on
+# initialization of static local variables: terminate called after throwing
+# an instance of '__gnu_cxx::recursive_init_error'
+AC_CHECK_LIB([pthread], [main], [], [], [])
+
 if $debug; then
   AC_CHECK_LIB([birch-debug], [main], [DEBUG_LIBS="$DEBUG_LIBS -lbirch-debug"], [AC_MSG_ERROR([required library not found])])
 fi
