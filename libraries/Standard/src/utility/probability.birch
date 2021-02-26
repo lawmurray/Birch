@@ -109,7 +109,7 @@ function handle_assume<Left,Right>(x:Left, p:Right) -> Left {
  *
  * - p: Distribution.
  *
- * Returns: A newly construct [Random](../classes/Random) with value type the
+ * Returns: A newly construct [Random](../../classes/Random) with value type the
  * same as `p`.
  *
  * !!! attention

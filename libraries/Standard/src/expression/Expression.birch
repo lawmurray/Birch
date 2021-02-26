@@ -39,10 +39,10 @@
  * This particularly affects the `grad()` and `move()` operations:
  *
  * - `grad()` will compute gradients with respect to any variable
- *   [Random](../classes/Random/) objects but not constant objects, and
+ *   [Random](../../classes/Random/) objects but not constant objects, and
  *   similarly,
  * - `move()` will apply a Markov kernel to any variable
- *   [Random](../classes/Random/) objects but not constant objects.
+ *   [Random](../../classes/Random/) objects but not constant objects.
  *
  * !!! attention
  *     Unless you are working on something like a Markov kernel, or other
