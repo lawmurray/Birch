@@ -47,17 +47,9 @@ abstract class Distribution<Value> < DelayDistribution {
   /**
    * Set a random variate associated with the distribution.
    */
-  final function setRandom(v:Random<Value>) {
+  final function assume(v:Random<Value>) {
     assert !this.v?;
     this.v <- v;
-  }
-
-  /**
-   * Unset the random variate associated with the distribution.
-   */
-  final function unsetRandom(v:Random<Value>) {
-    assert this.v? && this.v! == v;
-    this.v <- nil;
   }
 
   /**
@@ -73,7 +65,7 @@ abstract class Distribution<Value> < DelayDistribution {
    * when a node that represents the sum of two random variables is realized,
    * it fixes the values of two random variables also (its parents).
    */
-  function clamp(x:Value) {
+  final function clamp(x:Value) {
     assert !clamped? || clamped! == x;
     clamped <- x;
   }
@@ -81,48 +73,14 @@ abstract class Distribution<Value> < DelayDistribution {
   /**
    * Is the value clamped?
    */
-  function hasClamp() -> Boolean {
+  final function hasClamp() -> Boolean {
     return clamped?;
   }
 
   /**
-   * Realize a value for the associated random variate. If `supportsLazy()`
-   * returns true this defers to `get()`, otherwise to `value()`.
+   * Realize a value for the associated random variate.
    */
-  final function realize() {
-    get();  // reverts to value() if unsupported
-  }
-
-  /**
-   * Realize a value for the associated random variate, lazily.
-   */
-  final function get() -> Value {
-    if !supportsLazy() {
-      return value();
-    } else {
-      prune();
-      x:Value?;
-      if clamped? {
-        x <- clamped!;
-        clamped <- nil;
-      } else {
-        x <- simulateLazy();
-      }
-      if v? {
-        v!.setPilot(x!);
-        updateLazy(v!);
-      } else {
-        update(x!);
-      }
-      unlink();
-      return x!;
-    }
-  }
-
-  /**
-   * Realize a value for the associated random variate, eagerly.
-   */
-  final function value() -> Value {
+  final function realize() -> Value {
     prune();
     x:Value?;
     if clamped? {
@@ -142,6 +100,32 @@ abstract class Distribution<Value> < DelayDistribution {
     update(x!);
     unlink();
     return x!;
+  }
+
+  /**
+   * Realize a value for the associated random variate, lazily.
+   */
+  final function realizeLazy() -> Value {
+    if !supportsLazy() {
+      return realize();
+    } else {
+      prune();
+      x:Value?;
+      if clamped? {
+        x <- clamped!;
+        clamped <- nil;
+      } else {
+        x <- simulateLazy();
+      }
+      if v? {
+        v!.setPilot(x!);
+        updateLazy(v!);
+      } else {
+        update(x!);
+      }
+      unlink();
+      return x!;
+    }
   }
 
   /**
@@ -394,5 +378,9 @@ abstract class Distribution<Value> < DelayDistribution {
   function graftBoundedDiscrete() -> BoundedDiscrete? {
     prune();
     return nil;
+  }
+
+  final override function triggerRealize() {
+    handle_realize(this);
   }
 }

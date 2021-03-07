@@ -2,8 +2,8 @@ cpp{{
 /**
  * Event handler for each thread.
  */
-static thread_local libbirch::Shared<birch::type::Handler> handler =
-    birch::PlayHandler(true);
+static thread_local libbirch::Shared<birch::type::Handler> handler(
+    std::in_place, true, false);
 }}
 
 /**
@@ -63,9 +63,7 @@ function swap_handler(handler:Handler) -> Handler {
  *     hard-wired to call this internally.
  */
 function handle_simulate<Right>(p:Right) -> Right.Value {
-  let event <- SimulateEvent(p.distribution());
-  get_handler().handle(event);
-  return event.value();
+  return get_handler().handleSimulate<Right.Value>(p);
 }
 
 /**
@@ -82,8 +80,7 @@ function handle_simulate<Right>(p:Right) -> Right.Value {
  *     hard-wired to call this internally.
  */
 function handle_observe<Left,Right>(x:Left, p:Right) -> Left {
-  get_handler().handle(ObserveEvent(x, p.distribution()));
-  return x;
+  return get_handler().handleObserve<Right.Value>(x, p);
 }
 
 /**
@@ -100,8 +97,7 @@ function handle_observe<Left,Right>(x:Left, p:Right) -> Left {
  *     hard-wired to call this internally.
  */
 function handle_assume<Left,Right>(x:Left, p:Right) -> Left {
-  get_handler().handle(AssumeEvent(x, p.distribution()));
-  return x;
+  return get_handler().handleAssume<Right.Value>(x, p);
 }
 
 /**
@@ -109,8 +105,8 @@ function handle_assume<Left,Right>(x:Left, p:Right) -> Left {
  *
  * - p: Distribution.
  *
- * Returns: A newly construct [Random](../../classes/Random) with value type the
- * same as `p`.
+ * Returns: A newly construct [Random](../Random/) with value type
+ * the same as `p`.
  *
  * !!! attention
  *     Typically one does not call this directly, but rather uses the
@@ -124,6 +120,23 @@ function handle_assume<Right>(p:Right) -> Random<Right.Value> {
 }
 
 /**
+ * Handle realize event.
+ *
+ * - p: Distribution.
+ *
+ * Returns: A newly construct [Random](../Random/) with value type
+ * the same as `p`.
+ *
+ * !!! attention
+ *     Typically one does not call this directly, but rather it is triggered
+ *     when a random variate must be simulated as part of the delayed sampling
+ *     heuristic.
+ */
+function handle_realize<Right>(p:Right) -> Right.Value {
+  return get_handler().handleRealize<Right.Value>(p);
+}
+
+/**
  * Handle factor event.
  *
  * - w: Log-weight.
@@ -134,5 +147,19 @@ function handle_assume<Right>(p:Right) -> Random<Right.Value> {
  *     is hard-wired to call this internally.
  */
 function handle_factor(w:Real) {
-  get_handler().handle(FactorEvent(w));
+  get_handler().handleFactor(w);
+}
+
+/**
+ * Handle factor event.
+ *
+ * - w: Log-weight.
+ *
+ * !!! attention
+ *     Typically one does not call this directly, but rather uses the
+ *     [`factor`](https://www.birch.sh/language/probability/) statement, which
+ *     is hard-wired to call this internally.
+ */
+function handle_factor(w:Expression<Real>) {
+  get_handler().handleFactor(w);
 }

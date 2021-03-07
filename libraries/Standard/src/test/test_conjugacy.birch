@@ -7,8 +7,8 @@
  * - lazy: Use lazy version?
  */
 function test_conjugacy<Conjugate>(m:Conjugate, N:Integer, D:Integer, lazy:Boolean) {  
-  let forward <- PlayHandler(false);
-  let backward <- PlayHandler(true);
+  let forward <- construct<Handler>(false, false);
+  let backward <- construct<Handler>(true, false);
   m.initialize();
   
   /* simulate forward */

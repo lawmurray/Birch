@@ -47,13 +47,13 @@ class MoveParticleFilter < ParticleFilter {
   override function simulate(input:Buffer) {
     parallel for n in 1..nparticles {
       let x <- MoveParticle?(this.x[n])!;
-      let handler <- MoveHandler(delayed);
+      let handler <- construct<Handler>(delayed, true);
       with (handler) {
         x.m.read(input);
         x.m.simulate();
         w[n] <- w[n] + handler.w;
       }
-      w[n] <- w[n] + x.augment(0, handler.z);
+      w[n] <- w[n] + x.augment(0, handler.l);
       while x.size() > nlags {
         x.truncate();
       }
@@ -63,13 +63,13 @@ class MoveParticleFilter < ParticleFilter {
   override function simulate(t:Integer, input:Buffer) {
     parallel for n in 1..nparticles {
       let x <- MoveParticle?(this.x[n])!;
-      let handler <- MoveHandler(delayed);
+      let handler <- construct<Handler>(delayed, true);
       with (handler) {
         x.m.read(t, input);
         x.m.simulate(t);
         w[n] <- w[n] + handler.w;
       }
-      w[n] <- w[n] + x.augment(t, handler.z);
+      w[n] <- w[n] + x.augment(t, handler.l);
       while x.size() > nlags {
         x.truncate();
       }

@@ -76,7 +76,7 @@ final class Random<Value> < Expression<Value> {
   function assume(p:Distribution<Value>) {
     assert !this.p?;
     assert !this.x?;
-    p.setRandom(this);
+    p.assume(this);
     this.p <- p;
   }
 
@@ -93,24 +93,15 @@ final class Random<Value> < Expression<Value> {
   }
 
   override function doValue() -> Value {
-    if !x? {
-      p!.value();
-    }
-    return x!;
+    return handle_realize(p!);
   }
 
   override function doGet() -> Value {
-    if !x? {
-      p!.get();
-    }
-    return x!;
+    return handle_realize(p!);
   }
 
   override function doPilot(gen:Integer) -> Value {
-    if !x? {
-      p!.get();
-    }
-    return x!;
+    return handle_realize(p!);
   }
 
   override function doMove(gen:Integer, κ:Kernel) -> Value {

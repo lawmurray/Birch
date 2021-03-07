@@ -1,0 +1,6 @@
+/**
+ * Record of a simulated value for replaying event traces.
+ */
+abstract class Record {
+  //
+}

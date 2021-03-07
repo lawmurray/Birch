@@ -1,0 +1,163 @@
+/**
+ * Event handler.
+ *
+ * - delaySampling: Enable delayed sampling.
+ * - delayExpressions: Enable delayed expressions.
+ */
+final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
+  /**
+   * Input trace, if any.
+   */
+  input:Tape<Record>?;
+
+  /**
+   * Output trace, if any.
+   */
+  output:Tape<Record>?;
+
+  /**
+   * Delayed log-likelihood, if delayed expressions are enabled.
+   */
+  l:Expression<Real>?;
+
+  /**
+   * Accumulated weight.
+   */
+  w:Real <- 0.0;
+
+  /**
+   * Is delayed sampling enabled?
+   */
+  delaySampling:Boolean <- delaySampling;
+
+  /**
+   * Are delayed expressions enabled?
+   */
+  delayExpressions:Boolean <- delayExpressions;
+
+  /**
+   * Handle a simulate event.
+   *
+   * - p: The distribution from which to simulate.
+   */
+  final function handleSimulate<Value>(p:Distribution<Value>) -> Value {
+    if input? {
+      p.clamp(coerce<Value>());
+    }
+    let x <- p.realize();
+    if output? {
+      output!.pushBack(construct<ValueRecord<Value>>(x));
+    }
+    return x;
+  }
+
+  /**
+   * Handle an observe event.
+   *
+   * - x: The observation.
+   * - p: The distribution from which to observe.
+   */
+  final function handleObserve<Value>(x:Value, p:Distribution<Value>) ->
+      Value {
+    if delayExpressions && p.supportsLazy() {
+      let v <- p.observeLazy(box(x));
+      assert v?;
+      if l? {
+        l <- l! + v!;
+      } else {
+        l <- v;
+      }
+    } else {
+      w <- w + p.observe(x);
+    }
+    return x;
+  }
+
+  /**
+   * Handle an assume event.
+   *
+   * - x: The random variate.
+   * - p: The distribution from which to observe.
+   */
+  final function handleAssume<Value>(x:Random<Value>,
+      p:Distribution<Value>) -> Random<Value> {
+    if x.hasValue() {
+      if delayExpressions && p.supportsLazy() {
+        let v <- p.observeLazy(x);
+        assert v?;
+        if l? {
+          l <- l! + v!;
+        } else {
+          l <- v!;
+        }
+      } else {
+        w <- w + p.observe(x.value());
+      }
+    } else if delaySampling {
+      x.assume(p);
+    } else if delayExpressions && p.supportsLazy() {
+      x.assume(p);
+      p.realizeLazy();
+    } else {
+      x.assume(p);
+      p.realize();
+    }
+    return x;
+  }
+
+  /**
+   * Handle a realize event.
+   *
+   * - p: Distribution.
+   */
+  final function handleRealize<Value>(p:Distribution<Value>) -> Value {
+    if input? {
+      p.clamp(coerce<Value>());
+    }
+    x:Value;
+    if delayExpressions && p.supportsLazy() {
+      x <- p.realizeLazy();
+    } else {
+      x <- p.realize();
+    }
+    if output? {
+      output!.pushBack(construct<ValueRecord<Value>>(x));
+    }
+    return x;
+  }
+
+  /**
+   * Handle a factor event.
+   */
+  final function handleFactor(w:Expression<Real>) {
+    if delayExpressions {
+      if l? {
+        l <- l! + w;
+      } else {
+        l <- w;
+      }
+    } else {
+      this.w <- this.w + w.value();
+    }
+  }
+
+  /**
+   * Handle a factor event.
+   */
+  final function handleFactor(w:Real) {
+    this.w <- this.w + w;
+  }
+
+  /**
+   * Coerce a value of the given type out of a record.
+   */
+  final function coerce<Value>() -> Value {
+    assert input?;
+    let r <- ValueRecord<Value>?(input!.front());
+    if !r? {
+      error("incompatible trace");
+    }
+    input!.popFront();
+    return r!.x;
+  }
+}

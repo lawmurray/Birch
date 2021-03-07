@@ -124,7 +124,7 @@ class ParticleFilter {
    */
   function simulate(input:Buffer) {
     parallel for n in 1..nparticles {
-      let handler <- PlayHandler(delayed);
+      let handler <- construct<Handler>(delayed, false);
       with (handler) {
         x[n].m.read(input);
         x[n].m.simulate();
@@ -138,7 +138,7 @@ class ParticleFilter {
    */
   function simulate(t:Integer, input:Buffer) {
     parallel for n in 1..nparticles {
-      let handler <- PlayHandler(delayed);
+      let handler <- construct<Handler>(delayed, false);
       with (handler) {
         x[n].m.read(t, input);
         x[n].m.simulate(t);

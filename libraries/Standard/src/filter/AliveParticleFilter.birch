@@ -32,7 +32,7 @@ class AliveParticleFilter < ParticleFilter {
       do {
         x[n] <- global.copy(x0[a[n]]);
         p[n] <- p[n] + 1;
-        let handler <- PlayHandler(delayed);
+        let handler <- construct<Handler>(delayed, false);
         with (handler) {
           x[n].m.read(t, input);
           x[n].m.simulate(t);

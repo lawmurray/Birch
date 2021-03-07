@@ -24,7 +24,7 @@ class ParticleGibbsSampler < ConditionalParticleSampler {
       r':Tape<Record>;
 
       let x' <- copy(model);
-      let handler <- PlayHandler(true);
+      let handler <- construct<Handler>(true, false);
       handler.output <- r';
       with (handler) {
         x'.read(input);
@@ -32,7 +32,7 @@ class ParticleGibbsSampler < ConditionalParticleSampler {
       }
       let w' <- handler.w;
 
-      handler <- PlayHandler(filter.delayed);
+      handler <- construct<Handler>(filter.delayed, false);
       handler.input <- filter.r!;
       with (handler) {
         for t in 1..filter.r!.size() {
@@ -43,7 +43,7 @@ class ParticleGibbsSampler < ConditionalParticleSampler {
       w' <- w' + handler.w;
 
       x' <- copy(model);
-      handler <- PlayHandler(filter.delayed);
+      handler <- construct<Handler>(filter.delayed, false);
       handler.input <- r';
       with (handler) {
         // no input needed here, already in the replay trace
@@ -61,7 +61,7 @@ class ParticleGibbsSampler < ConditionalParticleSampler {
       dynamic parallel for n in 1..filter.nparticles {
         let x' <- copy(filter.x[n]);
         let r' <- copy(filter.r!);
-        let handler <- PlayHandler(filter.delayed);
+        let handler <- construct<Handler>(filter.delayed, false);
         handler.input <- r';
         with (handler) {
           x'.m.read(t, input);
