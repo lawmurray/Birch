@@ -130,6 +130,7 @@ class ParticleFilter {
       let m <- x[n].m;
       let h <- x[n].h;
       with h {
+        h.w <- 0.0;
         m.read(input);
         m.simulate();
         w[n] <- w[n] + h.w;
@@ -145,6 +146,7 @@ class ParticleFilter {
       let m <- x[n].m;
       let h <- x[n].h;
       with h {
+        h.w <- 0.0;
         m.read(t, input);
         m.simulate(t);
         w[n] <- w[n] + h.w;

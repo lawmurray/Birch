@@ -84,8 +84,7 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
    *
    * A simulate event is triggered by the `~>` operator.
    */
-  function handleObserve<Value>(x:Value, p:Distribution<Value>) ->
-      Value {
+  function handleObserve<Value>(x:Value, p:Distribution<Value>) -> Value {
     if delayExpressions && p.supportsLazy() {
       let v <- p.observeLazy(box(x));
       assert v?;

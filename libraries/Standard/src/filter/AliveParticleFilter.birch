@@ -30,11 +30,14 @@ class AliveParticleFilter < ParticleFilter {
       do {
         x[n] <- global.copy(x0[a[n]]);
         p[n] <- p[n] + 1;
-        let handler <- construct<Handler>(delayed, false);
-        with (handler) {
+
+        let m <- x[n].m;
+        let h <- x[n].h;
+        with h {
+          h.w <- 0.0;
           x[n].m.read(t, input);
           x[n].m.simulate(t);
-          w[n] <- handler.w;
+          w[n] <- h.w;
         }
         if w[n] == -inf {
           a[n] <- global.ancestor(w0);  // try again

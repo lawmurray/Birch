@@ -45,18 +45,26 @@ class Particle(m:Model, delaySampling:Boolean, delayExpressions:Boolean) {
   }
 
   override function read(buffer:Buffer) {
-    m.read(buffer);
+    with h {
+      m.read(buffer);
+    }
   }
 
   override function write(buffer:Buffer) {
-    m.write(buffer);
+    with h {
+      m.write(buffer);
+    }
   }
 
   override function read(t:Integer, buffer:Buffer) {
-    m.read(t, buffer);
+    with h {
+      m.read(t, buffer);
+    }
   }
 
   override function write(t:Integer, buffer:Buffer) {
-    m.write(t, buffer);
+    with h {
+      m.write(t, buffer);
+    }
   }
 }
