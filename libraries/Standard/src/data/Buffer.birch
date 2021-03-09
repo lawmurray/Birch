@@ -159,43 +159,16 @@ acyclic class Buffer {
   }
 
   /**
-   * Move the contents of this buffer into a new one and return it, leaving
-   * this buffer as nil.
+   * Split a vector into an array of single elements, or a matrix into an
+   * array of vectors.
    */
-  function move() -> Buffer {
-    let buffer <- Buffer();
-    buffer.keys <- keys;
-    buffer.values <- values;
-    buffer.scalarString <- scalarString;
-    buffer.scalarReal <- scalarReal;
-    buffer.scalarInteger <- scalarInteger;
-    buffer.scalarBoolean <- scalarBoolean;
-    buffer.vectorReal <- vectorReal;
-    buffer.vectorInteger <- vectorInteger;
-    buffer.vectorBoolean <- vectorBoolean;
-    buffer.matrixReal <- matrixReal;
-    buffer.matrixInteger <- matrixInteger;
-    buffer.matrixBoolean <- matrixBoolean;
+  function split() {
+    let iter <- walk();
     setNil();
-    return buffer;
-  }
-
-  /**
-   * Move the contents of an entry into a new one and return it, leaving the
-   * entry value as nil.
-   *
-   * - key: Key of the entry.
-   *
-   * Returns: A new buffer. In the case that the key does not exist, returns
-   * a nil buffer.
-   */
-  function move(key:String) -> Buffer {
-    let buffer <- get(key);
-    if buffer? {
-      return buffer!.move();
-    } else {
-      return Buffer();
+    while iter.hasNext() {
+      push(iter.next());
     }
+    assert isEmpty() || (!keys? && values?);
   }
 
   /**
@@ -329,6 +302,19 @@ acyclic class Buffer {
   }
 
   /**
+   * Set as an object (in the JSON sense).
+   *
+   * - keys: Keys.
+   * - values: Values.
+   */
+  function set(keys:String[_], values:Buffer[_]) {
+    assert length(keys) == length(values);
+    setNil();
+    this.keys <- keys;
+    this.values <- values;
+  }
+
+  /**
    * Set the value.
    *
    * - x: Value.
@@ -345,6 +331,20 @@ acyclic class Buffer {
    */
   function set<Type>(t:Integer, x:Type) {
     doSet(t, x);
+  }
+
+  /**
+   * Set an entry as an object (in the JSON sense).
+   *
+   * - key: Key of the entry.
+   * - keys: Keys.
+   * - values: Values.
+   *
+   * If the buffer value is not already an object, it is cleared before
+   * setting the new entry.
+   */
+  function set(key:String, keys:String[_], values:Buffer[_]) {
+    set(key, Buffer(keys, values));
   }
 
   /**
@@ -402,23 +402,30 @@ acyclic class Buffer {
    * numerical matrix it is over the rows of that matrix.
    */
   function walk() -> Iterator<Buffer> {
-    if keys? || scalarString? || scalarReal? || scalarInteger? ||
-        scalarBoolean? {
-      return SingletonIterator(this);
+    if keys? {
+      return construct<ObjectBufferIterator>(keys!, values!);
     } else if values? {
-      return BufferIterator(this);
+      return construct<ArrayBufferIterator>(values!);
+    } else if scalarString? {
+      return construct<ScalarBufferIterator<String>>(scalarString!);
+    } else if scalarReal? {
+      return construct<ScalarBufferIterator<Real>>(scalarReal!);
+    } else if scalarInteger? {
+      return construct<ScalarBufferIterator<Integer>>(scalarInteger!);
+    } else if scalarBoolean? {
+      return construct<ScalarBufferIterator<Boolean>>(scalarBoolean!);
     } else if vectorReal? {
-      return VectorBufferIterator(vectorReal!);
+      return construct<VectorBufferIterator<Real>>(vectorReal!);
     } else if vectorInteger? {
-      return VectorBufferIterator(vectorInteger!);
+      return construct<VectorBufferIterator<Integer>>(vectorInteger!);
     } else if vectorBoolean? {
-      return VectorBufferIterator(vectorBoolean!);
+      return construct<VectorBufferIterator<Boolean>>(vectorBoolean!);
     } else if matrixReal? {
-      return MatrixBufferIterator(matrixReal!);
+      return construct<MatrixBufferIterator<Real>>(matrixReal!);
     } else if matrixInteger? {
-      return MatrixBufferIterator(matrixInteger!);
+      return construct<MatrixBufferIterator<Integer>>(matrixInteger!);
     } else if matrixBoolean? {
-      return MatrixBufferIterator(matrixBoolean!);
+      return construct<MatrixBufferIterator<Boolean>>(matrixBoolean!);
     } else {
       return EmptyIterator<Buffer>();
     }
@@ -477,7 +484,8 @@ acyclic class Buffer {
     } else if !keys? && values? {
       values <- stack(values!, x);
     } else {
-      values <- [move(), x];
+      split();
+      push(x);
     }
   }
 
@@ -936,7 +944,7 @@ acyclic class Buffer {
       set(row(x));
     } else if vectorBoolean? {
       set(stack(row(vectorBoolean!), row(x)));
-    } else if matrixBoolean? {
+    } else if matrixBoolean? && columns(matrixBoolean!) == length(x) {
       set(stack(matrixBoolean!, row(x)));
     } else if vectorInteger? || matrixInteger? {
       push(Integer(x));
@@ -952,11 +960,11 @@ acyclic class Buffer {
       set(row(x));
     } else if vectorBoolean? {
       set(stack(Integer(row(vectorBoolean!)), row(x)));
-    } else if matrixBoolean? {
+    } else if matrixBoolean? && columns(matrixBoolean!) == length(x) {
       set(stack(Integer(matrixBoolean!), row(x)));
     } else if vectorInteger? {
       set(stack(row(vectorInteger!), row(x)));
-    } else if matrixInteger? {
+    } else if matrixInteger? && columns(matrixInteger!) == length(x) {
       set(stack(matrixInteger!, row(x)));
     } else if vectorReal? || matrixReal? {
       push(Real(x));
@@ -970,15 +978,15 @@ acyclic class Buffer {
       set(row(x));
     } else if vectorBoolean? {
       set(stack(Real(row(vectorBoolean!)), row(x)));
-    } else if matrixBoolean? {
+    } else if matrixBoolean? && columns(matrixBoolean!) == length(x) {
       set(stack(Real(matrixBoolean!), row(x)));
     } else if vectorInteger? {
       set(stack(Real(row(vectorInteger!)), row(x)));
-    } else if matrixInteger? {
+    } else if matrixInteger? && columns(matrixInteger!) == length(x) {
       set(stack(Real(matrixInteger!), row(x)));
     } else if vectorReal? {
       set(stack(row(vectorReal!), row(x)));
-    } else if matrixReal? {
+    } else if matrixReal? && columns(matrixReal!) == length(x) {
       set(stack(matrixReal!, row(x)));
     } else {
       push(Buffer(x));
@@ -1013,5 +1021,17 @@ function Buffer<Type>(root:Type) -> Buffer {
 function Buffer<Type>(t:Integer, root:Type) -> Buffer {
   o:Buffer;
   o.set(t, root);
+  return o;
+}
+
+/**
+ * Create a Buffer representing an object (in the JSON sense).
+ *
+ * - keys: Keys.
+ * - values: Values.
+ */
+function Buffer(keys:String[_], values:Buffer[_]) -> Buffer {
+  o:Buffer;
+  o.set(keys, values);
   return o;
 }

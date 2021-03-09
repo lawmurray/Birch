@@ -1,14 +1,14 @@
 /**
- * Iterator over the elements of a vector, that wraps each element in a
- * [Buffer](../Buffer) object.
+ * Iterator over the contents of a [Buffer](../Buffer) that represents an
+ * array (in the JSON sense).
  *
  * - values: Values.
  */
-final class VectorBufferIterator<Type>(values:Type[_]) < Iterator<Buffer> {
+final class ArrayBufferIterator(values:Buffer[_]) < Iterator<Buffer> {
   /**
    * Values.
    */
-  values:Type[_] <- values;
+  values:Buffer[_] <- values;
   
   /**
    * Current index into the vector.
@@ -27,6 +27,6 @@ final class VectorBufferIterator<Type>(values:Type[_]) < Iterator<Buffer> {
    */
   function next() -> Buffer {
     i <- i + 1;
-    return Buffer(values[i]);
+    return values[i];
   }
 }
