@@ -30,11 +30,3 @@ final class MatrixBufferIterator<Type>(values:Type[_,_]) < Iterator<Buffer> {
     return Buffer(row(values, i));
   }
 }
-
-/**
- * Create a MatrixBufferIterator.
- */
-function MatrixBufferIterator<Type>(values:Type[_,_]) ->
-    MatrixBufferIterator<Type> {
-  return construct<MatrixBufferIterator<Type>>(values);
-}
