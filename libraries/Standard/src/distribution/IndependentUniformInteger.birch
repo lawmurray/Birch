@@ -27,7 +27,7 @@ final class IndependentUniformInteger(l:Expression<Integer[_]>,
   }
 
 //  function simulateLazy() -> Integer[_]? {
-//    return simulate_independent_uniform_int(l.get(), u.get());
+//    return simulate_independent_uniform_int(l.eval(), u.eval());
 //  }
   
   function logpdf(x:Integer[_]) -> Real {

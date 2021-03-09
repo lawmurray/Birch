@@ -29,10 +29,6 @@ final class Random<Value> < Expression<Value> {
     setValue(x);
   }
 
-  override function distribution() -> Distribution<Value>? {
-    return p;
-  }
-
   override function isRandom() -> Boolean {
     return true;
   }
@@ -96,44 +92,21 @@ final class Random<Value> < Expression<Value> {
     return handle_realize(p!);
   }
 
-  override function doGet() -> Value {
+  override function doEval(gen:Integer) -> Value {
     return handle_realize(p!);
   }
 
-  override function doPilot(gen:Integer) -> Value {
-    return handle_realize(p!);
-  }
-
-  override function doMove(gen:Integer, κ:Kernel) -> Value {
-    return κ.move(this);
-  }
-
-  override function doPrior() -> Expression<Real>? {
-    if p? {
-      let p1 <- p!.logpdfLazy(this);
-      p <- nil;
-      if p1? {
-        let p2 <- p1!.prior();
-        if p2? {
-          return p1! + p2!;
-        } else {
-          return p1!;
-        }
-      }
-    }
-    return nil;
-  }
-
-  override function doCompare(gen:Integer, x:DelayExpression, κ:Kernel) ->
-      Real {
-    let y <- Random<Value>?(x)!;
-    return κ.logpdf(y, this) - κ.logpdf(this, y);
+  override function doReval(gen:Integer) -> Value {
+    /* the point of reval() is to re-evaluate an expression after the value of
+     * Random objects, such as this, are modified; so just need to return that
+     * (potentially) modified value here */
+    return x!;
   }
 
   function doAccumulateGrad(d:Value) {
-    // ^ override is committed from the declaration as Value is not
-    //   necessarily one of the supported gradient types in Expression (and
-    //   need not be for this to work correctly)
+    // ^ override is omitted from the declaration as Value is not necessarily
+    //   one of the supported gradient types in Expression (and need not be
+    //   for this to work correctly)
     if this.d? {
       this.d <- this.d! + d;
     } else {
@@ -148,16 +121,8 @@ final class Random<Value> < Expression<Value> {
   override function doClearGrad() {
     d <- nil;
   }
-
-  override function doCount(gen:Integer) {
-    //
-  }
   
   override function doConstant() {
-    //
-  }
-
-  override function doDetach() {
     p <- nil;
   }
 

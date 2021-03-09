@@ -28,7 +28,7 @@ final class LinearDiscrete(a:Expression<Integer>, μ:Discrete,
   }
 
 //  function simulateLazy() -> Integer? {
-//    return simulate_delta(a.get()*μ.simulateLazy()! + c.get());
+//    return simulate_delta(a.eval()*μ.simulateLazy()! + c.eval());
 //  }
   
   function logpdf(x:Integer) -> Real {

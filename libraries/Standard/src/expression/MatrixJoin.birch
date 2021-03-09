@@ -32,73 +32,26 @@ acyclic class MatrixJoin<Value>(y:Expression<Value>[_,_]) <
       });
   }
   
-  override function doPilot(gen:Integer) -> Value[_,_] {
+  override function doEval(gen:Integer) -> Value[_,_] {
     return transform(y!, \(x:Expression<Value>) -> Value {
-        return x.pilot(gen);
+        return x.countEval(gen);
       });
   }
 
-  override function doGet() -> Value[_,_] {
+  override function doReval(gen:Integer) -> Value[_,_] {
     return transform(y!, \(x:Expression<Value>) -> Value {
-        return x.get();
-      });
-  }
-
-  override function doMove(gen:Integer, κ:Kernel) -> Value[_,_] {
-    return transform(y!, \(x:Expression<Value>) -> Value {
-        return x.move(gen, κ);
+        return x.countReval(gen);
       });
   }
   
   override function doGrad(gen:Integer) {
-    for_each(y!, d!, \(x:Expression<Value>, d:Value) { x.grad(gen, d); });
-  }
-
-  override function doPrior() -> Expression<Real>? {
-    p:Expression<Real>?;
-    let R <- rows();
-    let C <- columns();
-    for i in 1..R {
-      for j in 1..C {
-        let q <- y![i,j].prior();
-        if q? {
-          if p? {
-            p <- p! + q!;
-          } else {
-            p <- q;
-          }
-        }
-      }
-    }
-    return p;
-  }
-
-  override function doCompare(gen:Integer, x:DelayExpression,
-      κ:Kernel) -> Real {
-    assert rows() == x.rows();
-    assert columns() == x.columns();
-    
-    let o <- MatrixJoin<Value>?(x)!;
-    let w <- 0.0;
-    let R <- rows();
-    let C <- columns();
-    for i in 1..R {
-      for j in 1..C {
-        w <- w + y![i,j].compare(gen, o.y![i,j], κ);
-      }
-    }
-    return w;
-  }
-
-  override function doCount(gen:Integer) {
-    for_each(y!, \(x:Expression<Value>) { x.count(gen); });
+    for_each(y!, d!, \(x:Expression<Value>, d:Value) {
+        x.countGrad(gen, d);
+      });
   }
 
   override function doConstant() {
-    for_each(y!, \(x:Expression<Value>) { x.constant(); });
-  }
-
-  override function doDetach() {
+    for_each(y!, \(x:Expression<Value>) { x.value(); });
     y <- nil;
   }
 }

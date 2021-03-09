@@ -16,7 +16,7 @@ final class BetaBernoulli(ρ:Beta) < Distribution<Boolean> {
   }
   
   function simulateLazy() -> Boolean? {
-    return simulate_beta_bernoulli(ρ.α.get(), ρ.β.get());
+    return simulate_beta_bernoulli(ρ.α.eval(), ρ.β.eval());
   }
   
   function logpdf(x:Boolean) -> Real {

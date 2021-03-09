@@ -54,40 +54,40 @@ class TestMatrixNormalInverseWishartMatrixGaussian < Model {
   }
 
   function forwardLazy() -> Real[_] {
-    V.get();
-    X.get();
-    Y.get();
+    V.eval();
+    X.eval();
+    Y.eval();
     return vectorize();
   }
 
   function backwardLazy() -> Real[_] {
     assert !Y.hasValue();
-    Y.get();
+    Y.eval();
     assert !X.hasValue();
-    X.get();
+    X.eval();
     assert !V.hasValue();
-    V.get();
+    V.eval();
     return vectorize();
   }
 
   function marginal() -> Distribution<Real[_,_]> {
-    return Y.distribution()!;
+    return Y.getDistribution();
   }
 
   function vectorize() -> Real[_] {
     y:Real[size()];
     let k <- 0;
-    for i in 1..rows(V) {
-      y[k + 1 .. k + columns(V)] <- canonical(V.value())[i,1..columns(V)];
-      k <- k + columns(V);
+    for i in 1..V.rows() {
+      y[k + 1 .. k + V.columns()] <- canonical(V.value())[i,1..V.columns()];
+      k <- k + V.columns();
     }
-    for i in 1..rows(X) {
-      y[k + 1 .. k + columns(X)] <- X.value()[i,1..columns(X)];
-      k <- k + columns(X);
+    for i in 1..X.rows() {
+      y[k + 1 .. k + X.columns()] <- X.value()[i,1..X.columns()];
+      k <- k + X.columns();
     }
-    for i in 1..rows(Y) {
-      y[k + 1 .. k + columns(Y)] <- Y.value()[i,1..columns(Y)];
-      k <- k + columns(Y);
+    for i in 1..Y.rows() {
+      y[k + 1 .. k + Y.columns()] <- Y.value()[i,1..Y.columns()];
+      k <- k + Y.columns();
     }
     return y;
   }

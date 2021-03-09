@@ -4,11 +4,9 @@
  * ```mermaid
  * classDiagram
  *    ParticleFilter <|-- AliveParticleFilter
- *    ParticleFilter <|-- MoveParticleFilter
  *    ParticleFilter <|-- ConditionalParticleFilter
  *    link ParticleFilter "../ParticleFilter/"
  *    link AliveParticleFilter "../AliveParticleFilter/"
- *    link MoveParticleFilter "../MoveParticleFilter/"
  *    link ConditionalParticleFilter "../ConditionalParticleFilter/"
  * ```
  */
@@ -21,44 +19,38 @@ class ConditionalParticleFilter < ParticleFilter {
    */
   r:Tape<Record>?;
 
-  function particle(model:Model) -> Particle {
-    return ConditionalParticle(model);
-  }
-
   override function simulate(input:Buffer) {
     parallel for n in 1..nparticles {
-      let x <- ConditionalParticle?(this.x[n])!;
-      let handler <- construct<Handler>(delayed, false);
+      let m <- x[n].m;
+      let h <- x[n].h;
       if r? && n == b {
-        handler.input <- r!;
+        h.input <- r!;
       }
-      handler.output <- x.trace;
-      with (handler) {
-        x.m.read(input);
-        x.m.simulate();
+      with h {
+        m.read(input);
+        m.simulate();
+        w[n] <- w[n] + h.w;
       }
-      w[n] <- handler.w;
     }
   }
 
   override function simulate(t:Integer, input:Buffer) {
     parallel for n in 1..nparticles {
-      let x <- ConditionalParticle?(this.x[n])!;
-      let handler <- construct<Handler>(delayed, false);
+      let m <- x[n].m;
+      let h <- x[n].h;
       if r? && n == b {
-        handler.input <- r!;
+        h.input <- r!;
       }
-      handler.output <- x.trace;
-      with (handler) {
-        x.m.read(t, input);
-        x.m.simulate(t);
+      with h {
+        m.read(t, input);
+        m.simulate(t);
+        w[n] <- w[n] + h.w;
       }
-      w[n] <- w[n] + handler.w;
     }
   }
 
 
-  override function resample() {
+  override function resample(t:Integer) {
     if ess <= trigger*nparticles {
       if r? {
         (a, b) <- conditional_resample_multinomial(w, b);

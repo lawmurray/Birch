@@ -72,68 +72,24 @@ abstract class ScalarTernaryExpression<Left,Middle,Right,LeftValue,
     return doEvaluate(a!.value(), b!.value(), c!.value());
   }
 
-  final override function doPilot(gen:Integer) -> Value {
-    return doEvaluate(a!.pilot(gen), b!.pilot(gen), c!.pilot(gen));
+  final override function doEval(gen:Integer) -> Value {
+    return doEvaluate(a!.countEval(gen), b!.countEval(gen), c!.countEval(gen));
   }
 
-  final override function doGet() -> Value {
-    return doEvaluate(a!.get(), b!.get(), c!.get());
-  }
-
-  final override function doMove(gen:Integer, κ:Kernel) -> Value {
-    return doEvaluate(a!.move(gen, κ), b!.move(gen, κ), c!.move(gen, κ));
+  final override function doReval(gen:Integer) -> Value {
+    return doEvaluate(a!.countReval(gen), b!.countReval(gen), c!.countReval(gen));
   }
   
   final override function doGrad(gen:Integer) {
-    a!.grad(gen, doEvaluateGradLeft(d!, x!, a!.get(), b!.get(), c!.get()));
-    b!.grad(gen, doEvaluateGradMiddle(d!, x!, a!.get(), b!.get(), c!.get()));
-    c!.grad(gen, doEvaluateGradRight(d!, x!, a!.get(), b!.get(), c!.get()));
-  }
-  
-  final override function doPrior() -> Expression<Real>? {
-    let l <- a!.prior();
-    let m <- b!.prior();
-    let r <- c!.prior();
-    if l? && m? && r? {
-      return l! + m! + r!;
-    } else if l? && m? {
-      return l! + m!;
-    } else if l? && r? {
-      return l! + r!;
-    } else if l? {
-      return l!;
-    } else if m? && r? {
-      return m! + r!;
-    } else if m? {
-      return m!;
-    } else if r? {
-      return r!;
-    } else {
-      return nil;
-    }
-  }
-
-  final override function doCompare(gen:Integer, x:DelayExpression,
-      κ:Kernel) -> Real {
-    let o <- ScalarTernaryExpression<Left,Middle,Right,LeftValue,MiddleValue,
-        RightValue,LeftGradient,MiddleGradient,RightGradient,Value>?(x)!;
-    return a!.compare(gen, o.a!, κ) + b!.compare(gen, o.b!, κ) +
-        c!.compare(gen, o.c!, κ);
+    a!.countGrad(gen, doEvaluateGradLeft(d!, x!, a!.eval(), b!.eval(), c!.eval()));
+    b!.countGrad(gen, doEvaluateGradMiddle(d!, x!, a!.eval(), b!.eval(), c!.eval()));
+    c!.countGrad(gen, doEvaluateGradRight(d!, x!, a!.eval(), b!.eval(), c!.eval()));
   }
 
   final override function doConstant() {
-    a!.constant();
-    b!.constant();
-    c!.constant();
-  }
-
-  final override function doCount(gen:Integer) {
-    a!.count(gen);
-    b!.count(gen);
-    c!.count(gen);
-  }
-  
-  final override function doDetach() {
+    a!.value();
+    b!.value();
+    c!.value();
     a <- nil;
     b <- nil;
     c <- nil;

@@ -30,7 +30,7 @@ final class Wishart(Ψ:Expression<LLT>, k:Expression<Real>) <
   }
 
   function simulateLazy() -> LLT? {
-    return simulate_wishart(Ψ.get(), k.get());
+    return simulate_wishart(Ψ.eval(), k.eval());
   }
   
   function logpdf(X:LLT) -> Real {

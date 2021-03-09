@@ -1,14 +1,14 @@
 cpp{{
 #include <random>
 
-/**
+/*
  * Pseudorandom number generator for each thread.
  */
 static thread_local std::mt19937_64 rng =
     std::mt19937_64(std::random_device()());
 }}
 
-/**
+/*
  * Seed the pseudorandom number generator.
  *
  * - seed: Seed value.
@@ -22,7 +22,7 @@ function seed(s:Integer) {
   }}
 }
 
-/**
+/*
  * Seed the pseudorandom number generator with entropy.
  */
 function seed() {
@@ -36,7 +36,7 @@ function seed() {
   }}
 }
 
-/**
+/*
  * Simulate a Bernoulli distribution.
  *
  * - ρ: Probability of a true result.
@@ -48,7 +48,7 @@ function simulate_bernoulli(ρ:Real) -> Boolean {
   }}
 }
 
-/**
+/*
  * Simulate a delta distribution.
  *
  * - μ: Location.
@@ -57,7 +57,7 @@ function simulate_delta(μ:Integer) -> Integer {
   return μ;
 }
 
-/**
+/*
  * Simulate a binomial distribution.
  *
  * - n: Number of trials.
@@ -71,7 +71,7 @@ function simulate_binomial(n:Integer, ρ:Real) -> Integer {
   }}
 }
 
-/**
+/*
  * Simulate a negative binomial distribution.
  *
  * - k: Number of successes before the experiment is stopped.
@@ -87,7 +87,7 @@ function simulate_negative_binomial(k:Integer, ρ:Real) -> Integer {
   }}
 }
 
-/**
+/*
  * Simulate a Poisson distribution.
  *
  * - λ: Rate.
@@ -103,7 +103,7 @@ function simulate_poisson(λ:Real) -> Integer {
   }
 }
 
-/**
+/*
  * Simulate a Conway-Maxwell-Poisson distribution.
  *
  * - λ: Rate.
@@ -115,7 +115,7 @@ function simulate_conway_maxwell_poisson(λ:Real, ν:Real, n:Integer) ->
   return quantile_conway_maxwell_poisson(simulate_uniform(0.0, 1.0), λ, ν, n);
 }
 
-/**
+/*
  * Simulate a categorical distribution.
  *
  * - ρ: Category probabilities. These should sum to one.
@@ -124,7 +124,7 @@ function simulate_categorical(ρ:Real[_]) -> Integer {
   return simulate_categorical(ρ, 1.0);
 }
 
-/**
+/*
  * Simulate a categorical distribution.
  *
  * - ρ: Unnormalized category probabilities.
@@ -147,7 +147,7 @@ function simulate_categorical(ρ:Real[_], Z:Real) -> Integer {
   return x;
 }
 
-/**
+/*
  * Simulate a multinomial distribution.
  *
  * - n: Number of trials.
@@ -163,7 +163,7 @@ function simulate_multinomial(n:Integer, ρ:Real[_]) -> Integer[_] {
   return simulate_multinomial(n, ρ, 1.0);
 }
 
-/**
+/*
  * Simulate a compound-gamma distribution.
  *
  * - k: Shape.
@@ -175,7 +175,7 @@ function simulate_multinomial(n:Integer, ρ:Real[_]) -> Integer[_] {
     return simulate_gamma(k, simulate_inverse_gamma(α, β));
  }
 
-/**
+/*
  * Simulate a multinomial distribution.
  *
  * - n: Number of trials.
@@ -218,7 +218,7 @@ function simulate_multinomial(n:Integer, ρ:Real[_], Z:Real) -> Integer[_] {
   return x;
 }
 
-/**
+/*
  * Simulate a Dirichlet distribution.
  *
  * - α: Concentrations.
@@ -239,7 +239,7 @@ function simulate_dirichlet(α:Real[_]) -> Real[_] {
   return x;
 }
 
-/**
+/*
  * Simulate a Dirichlet distribution.
  *
  * - α: Concentration.
@@ -261,7 +261,7 @@ function simulate_dirichlet(α:Real, D:Integer) -> Real[_] {
   return x;
 }
 
-/**
+/*
  * Simulate a uniform distribution.
  *
  * - l: Lower bound of interval.
@@ -274,7 +274,7 @@ function simulate_uniform(l:Real, u:Real) -> Real {
   }}
 }
 
-/**
+/*
  * Simulate a uniform distribution on an integer range.
  *
  * - l: Lower bound of range.
@@ -287,7 +287,7 @@ function simulate_uniform_int(l:Integer, u:Integer) -> Integer {
   }}
 }
 
-/**
+/*
  * Simulate a uniform distribution on unit vectors.
  *
  * - D: Number of dimensions.
@@ -300,7 +300,7 @@ function simulate_uniform_unit_vector(D:Integer) -> Real[_] {
   return u/dot(u);
 }
 
-/**
+/*
  * Simulate an exponential distribution.
  *
  * - λ: Rate.
@@ -312,7 +312,7 @@ function simulate_exponential(λ:Real) -> Real {
   }}
 }
 
-/**
+/*
  * Simulate an Weibull distribution.
  *
  * - k: Shape.
@@ -326,7 +326,7 @@ function simulate_weibull(k:Real, λ:Real) -> Real {
   }}
 }
 
-/**
+/*
  * Simulate a Gaussian distribution.
  *
  * - μ: Mean.
@@ -343,7 +343,7 @@ function simulate_gaussian(μ:Real, σ2:Real) -> Real {
   }
 }
 
-/**
+/*
  * Simulate a Student's $t$-distribution.
  *
  * - k: Degrees of freedom.
@@ -355,7 +355,7 @@ function simulate_student_t(k:Real) -> Real {
   }}
 }
 
-/**
+/*
  * Simulate a Student's $t$-distribution with location and scale.
  *
  * - k: Degrees of freedom.
@@ -370,7 +370,7 @@ function simulate_student_t(k:Real, μ:Real, v:Real) -> Real {
   return μ + y/sqrt(z/k);
 }
 
-/**
+/*
  * Simulate a multivariate Student's $t$-distribution variate with
  * location and scale.
  *
@@ -391,7 +391,7 @@ function simulate_multivariate_student_t(k:Real, μ:Real[_], U:LLT, v:Real) ->
   return μ + cholesky(U)*y/sqrt(z/k);
 }
 
-/**
+/*
  * Simulate a multivariate Student's $t$-distribution variate with
  * location and scale.
  *
@@ -407,7 +407,7 @@ function simulate_multivariate_student_t(k:Real, μ:Real[_], u:Real, V:LLT) ->
   return simulate_multivariate_gaussian(μ, llt(u*canonical(Σ)));
 }
 
-/**
+/*
  * Simulate a matrix Student's $t$-distribution variate.
  *
  * - k: Degrees of freedom.
@@ -422,7 +422,7 @@ function simulate_matrix_student_t(k:Real, M:Real[_,_], U:LLT, Ψ:LLT) ->
   return simulate_matrix_gaussian(M, U, V);
 }
 
-/**
+/*
  * Simulate a beta distribution.
  *
  * - α: Shape.
@@ -438,7 +438,7 @@ function simulate_beta(α:Real, β:Real) -> Real {
   return u/(u + v);
 }
 
-/**
+/*
  * Simulate $\chi^2$ distribution.
  *
  * - ν: Degrees of freedom.
@@ -450,7 +450,7 @@ function simulate_chi_squared(ν:Real) -> Real {
   }}
 }
 
-/**
+/*
  * Simulate a gamma distribution.
  *
  * - k: Shape.
@@ -464,7 +464,7 @@ function simulate_gamma(k:Real, θ:Real) -> Real {
   }}
 }
 
-/**
+/*
  * Simulate a Wishart distribution.
  *
  * - Ψ: Scale.
@@ -494,7 +494,7 @@ function simulate_wishart(Ψ:LLT, k:Real) -> LLT {
   return llt(L*transpose(L));
 }
 
-/**
+/*
  * Simulate an inverse-gamma distribution.
  *
  * - α: Shape.
@@ -504,7 +504,7 @@ function simulate_inverse_gamma(α:Real, β:Real) -> Real {
   return 1.0/simulate_gamma(α, 1.0/β);
 }
 
-/**
+/*
  * Simulate an inverse-Wishart distribution.
  *
  * - Ψ: Scale.
@@ -514,7 +514,7 @@ function simulate_inverse_wishart(Ψ:LLT, k:Real) -> LLT {
   return inv(simulate_wishart(inv(Ψ), k));
 }
 
-/**
+/*
  * Simulate a normal inverse-gamma distribution.
  *
  * - μ: Mean.
@@ -527,7 +527,7 @@ function simulate_normal_inverse_gamma(μ:Real, a2:Real, α:Real,
   return simulate_student_t(2.0*α, μ, a2*2.0*β);
 }
 
-/**
+/*
  * Simulate a beta-bernoulli distribution.
  *
  * - α: Shape.
@@ -540,7 +540,7 @@ function simulate_beta_bernoulli(α:Real, β:Real) -> Boolean {
   return simulate_bernoulli(simulate_beta(α, β));
 }
 
-/**
+/*
  * Simulate a beta-binomial distribution.
  *
  * - n: Number of trials.
@@ -555,7 +555,7 @@ function simulate_beta_binomial(n:Integer, α:Real, β:Real) -> Integer {
   return simulate_binomial(n, simulate_beta(α, β));
 }
 
-/**
+/*
  * Simulate a beta-negative-binomial distribution.
  *
  * - k: Number of successes.
@@ -571,7 +571,7 @@ function simulate_beta_negative_binomial(k:Integer, α:Real, β:Real) -> Integer
 }
 
 
-/**
+/*
  * Simulate a gamma-Poisson distribution.
  *
  * - k: Shape.
@@ -585,7 +585,7 @@ function simulate_gamma_poisson(k:Real, θ:Real) -> Integer {
   return simulate_negative_binomial(Integer(k), 1.0/(θ + 1.0));
 }
 
-/**
+/*
  * Simulate a Lomax distribution.
  *
  * - λ: Scale.
@@ -599,7 +599,7 @@ function simulate_lomax(λ:Real, α:Real) -> Real {
   return λ*(pow(u, -1.0/α)-1.0);
 }
 
-/**
+/*
  * Simulate a Dirichlet-categorical distribution.
  *
  * - α: Concentrations.
@@ -608,7 +608,7 @@ function simulate_dirichlet_categorical(α:Real[_]) -> Integer {
   return simulate_categorical(simulate_dirichlet(α));
 }
 
-/**
+/*
  * Simulate a Dirichlet-multinomial distribution.
  *
  * - n: Number of trials.
@@ -618,7 +618,7 @@ function simulate_dirichlet_multinomial(n:Integer, α:Real[_]) -> Integer[_] {
   return simulate_multinomial(n, simulate_dirichlet(α));
 }
 
-/**
+/*
  * Simulate a categorical distribution with Chinese restaurant process
  * prior.
  *
@@ -654,7 +654,7 @@ function simulate_crp_categorical(α:Real, θ:Real, n:Integer[_],
   return k;
 }
 
-/**
+/*
  * Simulate a Gaussian distribution with a normal inverse-gamma prior.
  *
  * - μ: Mean.
@@ -667,7 +667,7 @@ function simulate_normal_inverse_gamma_gaussian(μ:Real, a2:Real,
   return simulate_student_t(2.0*α, μ, 2.0*β*(1.0 + a2));
 }
 
-/**
+/*
  * Simulate a Gaussian distribution with a normal inverse-gamma prior.
  *
  * - a: Scale.
@@ -682,7 +682,7 @@ function simulate_linear_normal_inverse_gamma_gaussian(a:Real, μ:Real,
   return simulate_student_t(2.0*α, a*μ + c, 2.0*β*(1.0 + a*a*a2));
 }
 
-/**
+/*
  * Simulate a multivariate Gaussian distribution.
  *
  * - μ: Mean.
@@ -697,7 +697,7 @@ function simulate_multivariate_gaussian(μ:Real[_], Σ:LLT) -> Real[_] {
   return μ + cholesky(Σ)*z;
 }
 
-/**
+/*
  * Simulate a multivariate Gaussian distribution with independent elements.
  *
  * - μ: Mean.
@@ -712,7 +712,7 @@ function simulate_multivariate_gaussian(μ:Real[_], σ2:Real[_]) -> Real[_] {
   return z;
 }
 
-/**
+/*
  * Simulate a multivariate Gaussian distribution with independent elements of
  * identical variance.
  *
@@ -729,7 +729,7 @@ function simulate_multivariate_gaussian(μ:Real[_], σ2:Real) -> Real[_] {
   return z;
 }
 
-/**
+/*
  * Simulate a multivariate normal inverse-gamma distribution.
  *
  * - ν: Precision times mean.
@@ -742,7 +742,7 @@ function simulate_multivariate_normal_inverse_gamma(ν:Real[_], Λ:LLT,
   return simulate_multivariate_student_t(2.0*α, solve(Λ, ν), inv(Λ), 2.0*β);
 }
 
-/**
+/*
  * Simulate a multivariate Gaussian distribution with a multivariate normal
  * inverse-gamma prior.
  *
@@ -762,7 +762,7 @@ function simulate_multivariate_normal_inverse_gamma_multivariate_gaussian(
       llt(identity(n) + canonical(inv(Λ))), 2.0*β);
 }
 
-/**
+/*
  * Simulate a multivariate Gaussian distribution with a linear transformation
  * of a multivariate linear normal inverse-gamma prior.
  *
@@ -782,7 +782,7 @@ function simulate_linear_multivariate_normal_inverse_gamma_multivariate_gaussian
       llt(identity(n) + A*solve(Λ, transpose(A))), 2.0*β);
 }
 
-/**
+/*
  * Simulate a Gaussian distribution with a linear transformation of a
  * multivariate linear normal inverse-gamma prior.
  *
@@ -801,7 +801,7 @@ function simulate_linear_multivariate_normal_inverse_gamma_gaussian(
       2.0*β*(1.0 + dot(a, solve(Λ, a))));
 }
 
-/**
+/*
  * Simulate a matrix Gaussian distribution.
  *
  * - M: Mean.
@@ -825,7 +825,7 @@ function simulate_matrix_gaussian(M:Real[_,_], U:LLT, V:LLT) -> Real[_,_] {
   return M + cholesky(U)*Z*transpose(cholesky(V));
 }
 
-/**
+/*
  * Simulate a matrix Gaussian distribution with independent columns.
  *
  * - M: Mean.
@@ -849,7 +849,7 @@ function simulate_matrix_gaussian(M:Real[_,_], U:LLT, σ2:Real[_]) ->
   return M + cholesky(U)*Z*diagonal(sqrt(σ2));
 }
 
-/**
+/*
  * Simulate a matrix Gaussian distribution with independent rows.
  *
  * - M: Mean.
@@ -870,7 +870,7 @@ function simulate_matrix_gaussian(M:Real[_,_], V:LLT) -> Real[_,_] {
   return M + Z*transpose(cholesky(V));
 }
 
-/**
+/*
  * Simulate a matrix Gaussian distribution with independent elements.
  *
  * - M: Mean.
@@ -890,7 +890,7 @@ function simulate_matrix_gaussian(M:Real[_,_], σ2:Real[_]) -> Real[_,_] {
   return X;
 }
 
-/**
+/*
  * Simulate a matrix Gaussian distribution with independent elements of
  * identical variance.
  *
@@ -909,7 +909,7 @@ function simulate_matrix_gaussian(M:Real[_,_], σ2:Real) -> Real[_,_] {
   return X;
 }
 
-/**
+/*
  * Simulate a matrix normal-inverse-Wishart distribution.
  *
  * - N: Precision times mean matrix.
@@ -924,7 +924,7 @@ function simulate_matrix_normal_inverse_wishart(N:Real[_,_], Λ:LLT, Ψ:LLT,
   return simulate_matrix_student_t(k - p + 1.0, M, inv(Λ), Ψ);
 }
 
-/**
+/*
  * Simulate a Gaussian distribution with matrix-normal-inverse-Wishart prior.
  *
  * - N: Precision times mean matrix.
@@ -941,7 +941,7 @@ function simulate_matrix_normal_inverse_wishart_matrix_gaussian(N:Real[_,_],
   return simulate_matrix_student_t(k - p + 1.0, M, Σ, Ψ);
 }
 
-/**
+/*
  * Simulate a Gaussian distribution with linear transformation of a
  * matrix-normal-inverse-Wishart prior.
  *
@@ -962,7 +962,7 @@ function simulate_linear_matrix_normal_inverse_wishart_matrix_gaussian(
   return simulate_matrix_student_t(k - p + 1.0, A*M + C, Σ, Ψ);
 }
 
-/**
+/*
  * Simulate a Gaussian distribution with linear transformation of a
  * matrix-normal-inverse-Wishart prior.
  *
@@ -981,7 +981,7 @@ function simulate_linear_matrix_normal_inverse_wishart_multivariate_gaussian(
   return simulate_multivariate_student_t(k - p + 1.0, dot(a, M) + c, σ2, Ψ);
 }
 
-/**
+/*
  * Simulate a multivariate uniform distribution.
  *
  * - l: Lower bound of hyperrectangle.
@@ -997,7 +997,7 @@ function simulate_independent_uniform(l:Real[_], u:Real[_]) -> Real[_] {
   return z;
 }
 
-/**
+/*
  * Simulate a multivariate uniform distribution over integers.
  *
  * - l: Lower bound of hyperrectangle.

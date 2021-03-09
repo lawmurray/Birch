@@ -32,18 +32,18 @@ class TestAddBoundedDiscreteDelta < Model {
 
   function forwardLazy() -> Real[_] {
     y:Real[2];
-    y[1] <- x1.get();
-    y[2] <- x2.get();
+    y[1] <- x1.eval();
+    y[2] <- x2.eval();
     return y;
   }
 
   function backwardLazy() -> Real[_] {
     y:Real[2];
-    s.get();
+    s.eval();
     assert !x1.hasValue();
     assert !x2.hasValue();
-    y[2] <- x2.get();
-    y[1] <- x1.get();
+    y[2] <- x2.eval();
+    y[1] <- x1.eval();
     return y;
   }
 }

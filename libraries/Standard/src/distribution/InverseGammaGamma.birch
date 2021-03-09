@@ -22,7 +22,7 @@ final class InverseGammaGamma(k:Expression<Real>, θ:InverseGamma) <
   }
 
   function simulateLazy() -> Real? {
-    return simulate_inverse_gamma_gamma(k.get(), θ.α.get(), θ.β.get());
+    return simulate_inverse_gamma_gamma(k.eval(), θ.α.eval(), θ.β.eval());
   }
 
   function logpdf(x:Real) -> Real {

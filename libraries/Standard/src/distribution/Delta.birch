@@ -17,7 +17,7 @@ final class Delta(μ:Expression<Integer>) < Discrete {
   }
   
 //  function simulateLazy() -> Integer? {
-//    return simulate_delta(μ.get());
+//    return simulate_delta(μ.eval());
 //  }
   
   function logpdf(x:Integer) -> Real {

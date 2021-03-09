@@ -34,21 +34,21 @@ class TestInverseGammaGamma < Model {
 
   function forwardLazy() -> Real[_] {
     y:Real[2];
-    y[1] <- θ.get();
-    y[2] <- x.get();
+    y[1] <- θ.eval();
+    y[2] <- x.eval();
     return y;
   }
 
   function backwardLazy() -> Real[_] {
     y:Real[2];
     assert !x.hasValue();
-    y[2] <- x.get();
+    y[2] <- x.eval();
     assert !θ.hasValue();
-    y[1] <- θ.get();
+    y[1] <- θ.eval();
     return y;
   }
 
   function marginal() -> Distribution<Real> {
-    return x.distribution()!;
+    return x.getDistribution();
   }
 }

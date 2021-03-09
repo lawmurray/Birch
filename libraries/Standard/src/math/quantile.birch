@@ -2,7 +2,7 @@ cpp{{
 #include <boost/math/distributions.hpp>
 }}
 
-/**
+/*
  * Quantile of a binomial distribution.
  *
  * - P: The cumulative probability.
@@ -19,7 +19,7 @@ function quantile_binomial(P:Real, n:Integer, ρ:Real) -> Integer {
   }}
 }
 
-/**
+/*
  * Quantile of a negative binomial distribution.
  *
  * - P: The cumulative probability.
@@ -36,7 +36,7 @@ function quantile_negative_binomial(P:Real, k:Integer, ρ:Real) -> Integer {
   }}
 }
 
-/**
+/*
  * Quantile of a Poisson distribution.
  *
  * - P: The cumulative probability.
@@ -51,7 +51,7 @@ function quantile_poisson(P:Real, λ:Real) -> Integer {
   }}
 }
 
-/**
+/*
  * Quantile of a Conway-Maxwell-Poisson distribution.
  *
  * - P: The cumulative probability.
@@ -79,7 +79,7 @@ function quantile_conway_maxwell_poisson(P:Real, λ:Real, ν:Real,
   return x;
 }
 
-/**
+/*
  * Quantile of a uniform integer distribution.
  *
  * - P: The cumulative probability.
@@ -93,7 +93,7 @@ function quantile_uniform_int(P:Real, l:Integer, u:Integer) -> Integer {
   return l + Integer(P*(u - l));
 }
 
-/**
+/*
  * Quantile of a categorical variate.
  *
  * - P: The cumulative probability.
@@ -111,7 +111,7 @@ function quantile_categorical(P:Real, ρ:Real[_]) -> Integer {
   return i;
 }
 
-/**
+/*
  * Quantile of a uniform distribution.
  *
  * - P: The cumulative probability.
@@ -125,7 +125,7 @@ function quantile_uniform(P:Real, l:Real, u:Real) -> Real {
   return l + P*(u - l);
 }
 
-/**
+/*
  * Quantile of an exponential distribution.
  *
  * - P: The cumulative probability.
@@ -140,7 +140,7 @@ function quantile_exponential(P:Real, λ:Real) -> Real {
   }}
 }
 
-/**
+/*
  * Quantile of a Weibull distribution.
  *
  * - P: The cumulative probability.
@@ -157,7 +157,7 @@ function quantile_weibull(P:Real, k:Real, λ:Real) -> Real {
   }}
 }
 
-/**
+/*
  * Quantile of a Gaussian distribution.
  *
  * - P: The cumulative probability.
@@ -173,7 +173,7 @@ function quantile_gaussian(P:Real, μ:Real, σ2:Real) -> Real {
   }}
 }
 
-/**
+/*
  * Quantile of a Student's $t$ distribution.
  *
  * - P: The cumulative probability.
@@ -188,7 +188,7 @@ function quantile_student_t(P:Real, ν:Real) -> Real {
   }}
 }
 
-/**
+/*
  * Quantile of a Student's $t$ distribution with location and scale.
  *
  * - P: The cumulative probability.
@@ -203,7 +203,7 @@ function quantile_student_t(P:Real, ν:Real, μ:Real, σ2:Real) -> Real {
   return quantile_student_t(P, ν)*sqrt(σ2) + μ;
 }
 
-/**
+/*
  * Quantile of a beta distribution.
  *
  * - P: The cumulative probability.
@@ -220,7 +220,7 @@ function quantile_beta(P:Real, α:Real, β:Real) -> Real {
   }}
 }
 
-/**
+/*
  * CDF of $\chi^2$ distribution.
  *
  * - P: The cumulative probability.
@@ -235,7 +235,7 @@ function quantile_chi_squared(P:Real, ν:Real) -> Real {
   }}
 }
 
-/**
+/*
  * Quantile of a gamma distribution.
  *
  * - P: The cumulative probability.
@@ -252,7 +252,7 @@ function quantile_gamma(P:Real, k:Real, θ:Real) -> Real {
   }}
 }
 
-/**
+/*
  * Quantile of an inverse-gamma distribution.
  *
  * - P: The cumulative probability.
@@ -273,7 +273,7 @@ function quantile_inverse_gamma(P:Real, α:Real, β:Real) -> Real {
   }
 }
 
-/**
+/*
  * Quantile of a normal inverse-gamma distribution.
  *
  * - P: The cumulative probability.
@@ -289,7 +289,7 @@ function quantile_normal_inverse_gamma(P:Real, μ:Real, a2:Real, α:Real,
   return quantile_student_t(P, 2.0*α, μ, a2*β/α);
 }
 
-/**
+/*
  * Quantile of a gamma-Poisson distribution.
  *
  * - P: The cumulative probability.
@@ -305,7 +305,7 @@ function quantile_gamma_poisson(P:Real, k:Real, θ:Real) -> Integer {
   return quantile_negative_binomial(P, Integer(k), 1.0/(θ + 1.0));
 }
 
-/**
+/*
  * Quantile of a Lomax distribution.
  *
  * - P: The cumulative probability.
@@ -322,7 +322,7 @@ function quantile_lomax(P:Real, λ:Real, α:Real) -> Real {
   }}
 }
 
-/**
+/*
  * Quantile of a Gaussian distribution with a normal inverse-gamma prior.
  *
  * - P: The cumulative probability.
@@ -338,7 +338,7 @@ function quantile_normal_inverse_gamma_gaussian(P:Real, μ:Real, a2:Real,
   return quantile_student_t(P, 2.0*α, μ, (β/α)*(1.0 + a2));
 }
 
-/**
+/*
  * Quantile of a Gaussian distribution with a normal inverse-gamma prior with
  * linear transformation.
  *
@@ -357,7 +357,7 @@ function quantile_linear_normal_inverse_gamma_gaussian(P:Real, a:Real,
   return quantile_student_t(P, 2.0*α, a*μ + c, (β/α)*(1.0 + a*a*a2));
 }
 
-/**
+/*
  * Quantile of a Gaussian distribution with a multivariate linear normal
  * inverse-gamma prior with linear transformation.
  *

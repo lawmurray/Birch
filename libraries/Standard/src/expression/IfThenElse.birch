@@ -26,72 +26,29 @@ acyclic class IfThenElse(cond:Expression<Boolean>, y:Expression<Real>,
     return if_then_else(cond!.value(), y!.value(), z!.value());
   }
 
-  override function doPilot(gen:Integer) -> Real {
-    return if_then_else(cond!.pilot(gen), y!.pilot(gen), z!.pilot(gen));
+  override function doEval(gen:Integer) -> Real {
+    return if_then_else(cond!.countEval(gen), y!.countEval(gen), z!.countEval(gen));
   }
 
-  override function doGet() -> Real {
-    return if_then_else(cond!.get(), y!.get(), z!.get());
-  }
-
-  override function doMove(gen:Integer, κ:Kernel) -> Real {
-    return if_then_else(cond!.move(gen, κ), y!.move(gen, κ), z!.move(gen, κ));
+  override function doReval(gen:Integer) -> Real {
+    return if_then_else(cond!.countReval(gen), y!.countReval(gen), z!.countReval(gen));
   }
   
   override function doGrad(gen:Integer) {
-    cond!.grad(gen, 0.0);
-    if cond!.get() {
-      y!.grad(gen, d!);
-      z!.grad(gen, 0.0);
+    cond!.countGrad(gen, 0.0);
+    if cond!.eval() {
+      y!.countGrad(gen, d!);
+      z!.countGrad(gen, 0.0);
     } else {
-      y!.grad(gen, 0.0);
-      z!.grad(gen, d!);
+      y!.countGrad(gen, 0.0);
+      z!.countGrad(gen, d!);
     }
-  }
-  
-  override function doPrior() -> Expression<Real>? {
-    let c <- cond!.prior();
-    let l <- y!.prior();
-    let r <- z!.prior();
-    if c? && l? && r? {
-      return c! + l! + r!;
-    } else if c? && l? {
-      return c! + l!;
-    } else if c? && r? {
-      return c! + r!;
-    } else if c? {
-      return c!;
-    } else if l? && r? {
-      return l! + r!;
-    } else if l? {
-      return l!;
-    } else if r? {
-      return r!;
-    } else {
-      return nil;
-    }
-  }
-
-  final override function doCompare(gen:Integer, x:DelayExpression,
-      κ:Kernel) -> Real {
-    let o <- IfThenElse?(x)!;
-    return cond!.compare(gen, o.cond!, κ) + y!.compare(gen, o.y!, κ) +
-        z!.compare(gen, o.z!, κ);
   }
 
   final override function doConstant() {
-    cond!.constant();
-    y!.constant();
-    z!.constant();
-  }
-
-  final override function doCount(gen:Integer) {
-    cond!.count(gen);
-    y!.count(gen);
-    z!.count(gen);
-  }
-  
-  final override function doDetach() {
+    cond!.value();
+    y!.value();
+    z!.value();
     cond <- nil;
     y <- nil;
     z <- nil;

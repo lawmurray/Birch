@@ -35,7 +35,7 @@ final class MatrixNormalInverseWishart(M:Expression<Real[_,_]>,
   }
 
   function simulateLazy() -> Real[_,_]? {
-    return simulate_matrix_normal_inverse_wishart(N.get(), Λ.get(), V.Ψ.get(), V.k.get());
+    return simulate_matrix_normal_inverse_wishart(N.eval(), Λ.eval(), V.Ψ.eval(), V.k.eval());
   }
   
   function logpdf(X:Real[_,_]) -> Real {   

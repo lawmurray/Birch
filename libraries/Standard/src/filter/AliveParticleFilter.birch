@@ -7,11 +7,9 @@
  * ```mermaid
  * classDiagram
  *    ParticleFilter <|-- AliveParticleFilter
- *    ParticleFilter <|-- MoveParticleFilter
  *    ParticleFilter <|-- ConditionalParticleFilter
  *    link ParticleFilter "../ParticleFilter/"
  *    link AliveParticleFilter "../AliveParticleFilter/"
- *    link MoveParticleFilter "../MoveParticleFilter/"
  *    link ConditionalParticleFilter "../ConditionalParticleFilter/"
  * ```
  */
@@ -50,7 +48,7 @@ class AliveParticleFilter < ParticleFilter {
     w[simulate_uniform_int(1, nparticles)] <- -inf;
   }
   
-  override function resample() {
+  override function resample(t:Integer) {
     /* proceed as though no resample, so just normalize weights, and let
      * propagate handle the rest */
     a <- iota(1, nparticles);

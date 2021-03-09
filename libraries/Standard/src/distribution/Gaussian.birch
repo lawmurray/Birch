@@ -21,7 +21,7 @@ class Gaussian(μ:Expression<Real>, σ2:Expression<Real>) < Distribution<Real> {
   }
 
   function simulateLazy() -> Real? {
-    return simulate_gaussian(μ.get(), σ2.get());
+    return simulate_gaussian(μ.eval(), σ2.eval());
   }
   
   function logpdf(x:Real) -> Real {
@@ -64,14 +64,21 @@ function Gaussian(μ:Expression<Real>, σ2:Expression<Real>) -> Distribution<Rea
   m5:TransformDot<MultivariateGaussian>?;
   m6:Gaussian?;
   s2:InverseGamma?;
-  let compare <- σ2.distribution();
-  if compare? && (m1 <- μ.graftLinearNormalInverseGamma(compare!))? {
-    return LinearNormalInverseGammaGaussian(m1!.a, m1!.x, m1!.c);
-  } else if compare? && (m2 <- μ.graftDotMultivariateNormalInverseGamma(compare!))? {
-    return LinearMultivariateNormalInverseGammaGaussian(m2!.a, m2!.x, m2!.c);
-  } else if compare? && (m3 <- μ.graftNormalInverseGamma(compare!))? {
-    return NormalInverseGammaGaussian(m3!);
-  } else if (m4 <- μ.graftLinearGaussian())? {
+
+  let compare <- Random<Real>?(σ2);
+  if compare? && compare!.hasDistribution() {
+    /* for normal-inverse-gamma relationships, the same inverse gamma
+     * distribution must occur in the prior and likelihood */
+    let p <- compare!.getDistribution();
+    if (m1 <- μ.graftLinearNormalInverseGamma(p))? {
+      return LinearNormalInverseGammaGaussian(m1!.a, m1!.x, m1!.c);
+    } else if (m2 <- μ.graftDotMultivariateNormalInverseGamma(p))? {
+      return LinearMultivariateNormalInverseGammaGaussian(m2!.a, m2!.x, m2!.c);
+    } else if (m3 <- μ.graftNormalInverseGamma(p))? {
+      return NormalInverseGammaGaussian(m3!);
+    }
+  }
+  if (m4 <- μ.graftLinearGaussian())? {
     return LinearGaussianGaussian(m4!.a, m4!.x, m4!.c, σ2);
   } else if (m5 <- μ.graftDotMultivariateGaussian())? {
     return LinearMultivariateGaussianGaussian(m5!.a, m5!.x, m5!.c, σ2);

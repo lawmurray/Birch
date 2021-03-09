@@ -41,21 +41,21 @@ class TestMultivariateGaussianMultivariateGaussian < Model {
 
   function forwardLazy() -> Real[_] {
     y:Real[10];
-    y[1..5] <- μ_1.get();
-    y[6..10] <- x.get();
+    y[1..5] <- μ_1.eval();
+    y[6..10] <- x.eval();
     return y;
   }
 
   function backwardLazy() -> Real[_] {
     y:Real[10];
     assert !x.hasValue();
-    y[6..10] <- x.get();
+    y[6..10] <- x.eval();
     assert !μ_1.hasValue();
-    y[1..5] <- μ_1.get();
+    y[1..5] <- μ_1.eval();
     return y;
   }
 
   function marginal() -> Distribution<Real[_]> {
-    return x.distribution()!;
+    return x.getDistribution();
   }
 }

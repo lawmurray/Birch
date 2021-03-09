@@ -21,41 +21,20 @@ acyclic class MultivariateElement<Value>(y:Expression<Value[_]>, i:Integer) <
     return y!.value()[i];
   }
 
-  override function doPilot(gen:Integer) -> Value {
-    return y!.pilot(gen)[i];
+  override function doEval(gen:Integer) -> Value {
+    return y!.countEval(gen)[i];
   }
 
-  override function doGet() -> Value {
-    return y!.get()[i];
-  }
-
-  override function doMove(gen:Integer, κ:Kernel) -> Value {
-    return y!.move(gen, κ)[i];
+  override function doReval(gen:Integer) -> Value {
+    return y!.countReval(gen)[i];
   }
 
   override function doGrad(gen:Integer) {
-    y!.grad(gen, d!, i);
-  }
-
-  override function doPrior() -> Expression<Real>? {
-    return y!.prior();
-  }
-
-  override function doCompare(gen:Integer, x:DelayExpression,
-      κ:Kernel) -> Real {
-    let o <- MultivariateElement<Value>?(x)!;
-    return y!.compare(gen, o.y!, κ);
+    y!.countGrad(gen, d!, i);
   }
 
   override function doConstant() {
-    y!.constant();
-  }
-
-  override function doCount(gen:Integer) {
-    y!.count(gen);
-  }
-
-  override function doDetach() {
+    y!.value();
     y <- nil;
   }
 }

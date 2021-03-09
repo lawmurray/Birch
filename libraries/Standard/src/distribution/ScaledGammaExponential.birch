@@ -22,7 +22,7 @@ final class ScaledGammaExponential(a:Expression<Real>, λ:Gamma) <
   }
 
   function simulateLazy() -> Real? {
-    return simulate_lomax(1.0/(a.get()*λ.θ.get()), λ.k.get());
+    return simulate_lomax(1.0/(a.eval()*λ.θ.eval()), λ.k.eval());
   }
 
   function logpdf(x:Real) -> Real {

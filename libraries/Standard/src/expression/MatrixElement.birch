@@ -26,41 +26,20 @@ acyclic class MatrixElement<Value>(y:Expression<Value[_,_]>, i:Integer,
     return y!.value()[i,j];
   }
 
-  override function doPilot(gen:Integer) -> Value {
-    return y!.pilot(gen)[i,j];
+  override function doEval(gen:Integer) -> Value {
+    return y!.countEval(gen)[i,j];
   }
 
-  override function doGet() -> Value {
-    return y!.get()[i,j];
-  }
-
-  override function doMove(gen:Integer, κ:Kernel) -> Value {
-    return y!.move(gen, κ)[i,j];
+  override function doReval(gen:Integer) -> Value {
+    return y!.countReval(gen)[i,j];
   }
 
   override function doGrad(gen:Integer) {
-    y!.grad(gen, d!, i, j);
-  }
-
-  override function doPrior() -> Expression<Real>? {
-    return y!.prior();
-  }
-
-  override function doCompare(gen:Integer, x:DelayExpression,
-      κ:Kernel) -> Real {
-    let o <- MatrixElement<Value>?(x)!;
-    return y!.compare(gen, o.y!, κ);
+    y!.countGrad(gen, d!, i, j);
   }
 
   override function doConstant() {
-    y!.constant();
-  }
-
-  override function doCount(gen:Integer) {
-    y!.count(gen);
-  }
-
-  override function doDetach() {
+    y!.value();
     y <- nil;
   }
 }

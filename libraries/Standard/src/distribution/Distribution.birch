@@ -38,13 +38,6 @@ abstract class Distribution<Value> < DelayDistribution {
   }
 
   /**
-   * Returns `this`; a convenience for code generation within the compiler.
-   */
-  final function distribution() -> Distribution<Value> {
-    return this;
-  }
-
-  /**
    * Set a random variate associated with the distribution.
    */
   final function assume(v:Random<Value>) {
@@ -118,7 +111,7 @@ abstract class Distribution<Value> < DelayDistribution {
         x <- simulateLazy();
       }
       if v? {
-        v!.setPilot(x!);
+        v!.setEval(x!);
         updateLazy(v!);
       } else {
         update(x!);

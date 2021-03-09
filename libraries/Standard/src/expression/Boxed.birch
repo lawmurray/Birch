@@ -18,27 +18,14 @@ acyclic class Boxed<Value> < Expression<Value> {
     return x!;
   }
 
-  override function doPilot(gen:Integer) -> Value {
+  override function doEval(gen:Integer) -> Value {
     return x!;
   }
 
-  override function doGet() -> Value {
-    return x!;
-  }
-
-  override function doMove(gen:Integer, κ:Kernel) -> Value {
+  override function doReval(gen:Integer) -> Value {
     return x!;
   }
   
-  override function doPrior() -> Expression<Real>? {
-    return nil;
-  }
-
-  override function doCompare(gen:Integer, x:DelayExpression, κ:Kernel) ->
-      Real {
-    return 0.0;
-  }
-
   override function doGrad(gen:Integer) {
     //
   }
@@ -48,14 +35,6 @@ acyclic class Boxed<Value> < Expression<Value> {
   }
 
   override function doConstant() {
-    //
-  }
-
-  override function doCount(gen:Integer) {
-    //
-  }
-
-  override function doDetach() {
     //
   }
 }

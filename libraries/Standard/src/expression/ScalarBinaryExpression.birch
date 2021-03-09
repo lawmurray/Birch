@@ -54,55 +54,22 @@ abstract class ScalarBinaryExpression<Left,Right,LeftValue,RightValue,
     return doEvaluate(y!.value(), z!.value());
   }
 
-  final override function doPilot(gen:Integer) -> Value {
-    return doEvaluate(y!.pilot(gen), z!.pilot(gen));
+  final override function doEval(gen:Integer) -> Value {
+    return doEvaluate(y!.countEval(gen), z!.countEval(gen));
   }
 
-  final override function doGet() -> Value {
-    return doEvaluate(y!.get(), z!.get());
-  }
-
-  final override function doMove(gen:Integer, κ:Kernel) -> Value {
-    return doEvaluate(y!.move(gen, κ), z!.move(gen, κ));
+  final override function doReval(gen:Integer) -> Value {
+    return doEvaluate(y!.countReval(gen), z!.countReval(gen));
   }
   
   final override function doGrad(gen:Integer) {
-    y!.grad(gen, doEvaluateGradLeft(d!, x!, y!.get(), z!.get()));
-    z!.grad(gen, doEvaluateGradRight(d!, x!, y!.get(), z!.get()));
-  }
-  
-  final override function doPrior() -> Expression<Real>? {
-    let l <- y!.prior();
-    let r <- z!.prior();
-    if l? && r? {
-      return l! + r!;
-    } else if l? {
-      return l!;
-    } else if r? {
-      return r!;
-    } else {
-      return nil;
-    }
-  }
-
-  final override function doCompare(gen:Integer, x:DelayExpression,
-      κ:Kernel) -> Real {
-    let o <- ScalarBinaryExpression<Left,Right,LeftValue,RightValue,
-        LeftGradient,RightGradient,Value>?(x)!;
-    return y!.compare(gen, o.y!, κ) + z!.compare(gen, o.z!, κ);
+    y!.countGrad(gen, doEvaluateGradLeft(d!, x!, y!.eval(), z!.eval()));
+    z!.countGrad(gen, doEvaluateGradRight(d!, x!, y!.eval(), z!.eval()));
   }
 
   final override function doConstant() {
-    y!.constant();
-    z!.constant();
-  }
-
-  final override function doCount(gen:Integer) {
-    y!.count(gen);
-    z!.count(gen);
-  }
-  
-  final override function doDetach() {
+    y!.value();
+    z!.value();
     y <- nil;
     z <- nil;
   }

@@ -27,7 +27,7 @@ final class MatrixNormalInverseWishartMatrixGaussian(
 
   function simulateLazy() -> Real[_,_]? {
     return simulate_matrix_normal_inverse_wishart_matrix_gaussian(
-        M.N.get(), M.Λ.get(), M.V.Ψ.get(), M.V.k.get());
+        M.N.eval(), M.Λ.eval(), M.V.Ψ.eval(), M.V.k.eval());
   }
   
   function logpdf(X:Real[_,_]) -> Real {

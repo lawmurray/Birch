@@ -165,7 +165,7 @@ program filter(
     if forecastSize > 0 {
       let theFilter' <- copy(theFilter!);
       theFilter'.trigger <- 1.0;  // force resample
-      theFilter'.resample();
+      theFilter'.resample(t);
       for t' in (t + 1)..(t + forecastSize) {
         if forecastIterator.hasNext() {
           theFilter'.filter(t', forecastIterator.next());

@@ -1,4 +1,4 @@
-/**
+/*
  * Update the parameters of a Beta distribution with a Bernoulli likelihood.
  *
  * - x: The variate.
@@ -13,7 +13,7 @@ function update_lazy_beta_bernoulli(x:Expression<Boolean>,
   return (α + Real(x), β + (1.0 - Real(x)));
 }
 
-/**
+/*
  * Update the parameters of a Beta distribution with a Binomial likelihood.
  *
  * - x: The variate.
@@ -29,7 +29,7 @@ function update_lazy_beta_binomial(x:Expression<Integer>,
   return (α + Real(x), β + Real(n - x));
 }
 
-/**
+/*
  * Update the parameters of a Beta distribution with a Negative Binomial likelihood.
  *
  * - x: The variate.
@@ -45,7 +45,7 @@ function update_lazy_beta_negative_binomial(x:Expression<Integer>,
   return (α + Real(k), β + Real(x));
 }
 
-/**
+/*
  * Update the parameters of a Gamma distribution with a Poisson likelihood.
  *
  * - x: The variate.
@@ -59,7 +59,7 @@ function update_lazy_gamma_poisson(x:Expression<Integer>, k:Expression<Real>,
   return (k + Real(x), θ/(θ + 1.0));
 }
 
-/**
+/*
  * Update the parameters of a scaled Gamma distribution with a Poisson
  * likelihood.
  *
@@ -76,7 +76,7 @@ function update_lazy_scaled_gamma_poisson(x:Expression<Integer>,
   return (k + Real(x), θ/(a*θ + 1.0));
 }
 
-/**
+/*
  * Update the parameters of a Gamma distribution with an exponential
  * likelihood.
  *
@@ -92,7 +92,7 @@ function update_lazy_gamma_exponential(x:Expression<Real>,
   return (k + 1.0, θ/(1.0 + x*θ));
 }
 
-/**
+/*
  * Update the parameters of a scaled Gamma distribution with an exponential
  * likelihood.
  *
@@ -109,7 +109,7 @@ function update_lazy_scaled_gamma_exponential(x:Expression<Real>,
   return (k + 1.0, θ/(1.0 + x*a*θ));
 }
 
-/**
+/*
  * Update the parameters of an inverse-gamma distribution with a Weibull
  * likelihood with known shape.
  *
@@ -126,7 +126,7 @@ function update_lazy_inverse_gamma_weibull(x:Expression<Real>,
   return (α + 1.0, β + pow(x, k));
 }
 
-/**
+/*
  * Update the parameters of a scaled inverse-gamma distribution with a
  * Weibull likelihood with known shape.
  *
@@ -144,7 +144,7 @@ function update_lazy_scaled_inverse_gamma_weibull(x:Expression<Real>,
   return (α + 1.0, β + pow(x, k)/a);
 }
 
-/**
+/*
  * Update the parameters of a Dirichlet distribution with a categorical
  * likelihood.
  *
@@ -158,7 +158,7 @@ function update_lazy_scaled_inverse_gamma_weibull(x:Expression<Real>,
   ///@todo
 //}
 
-/**
+/*
  * Update the parameters of a Dirichlet distribution with a multinomial
  * likelihood.
  *
@@ -173,7 +173,7 @@ function update_lazy_scaled_inverse_gamma_weibull(x:Expression<Real>,
   ///@todo
 //}
 
-/**
+/*
  * Update the parameters of a Gaussian distribution with a Gaussian
  * likelihood.
  *
@@ -194,7 +194,7 @@ function update_lazy_gaussian_gaussian(x:Expression<Real>,
   return (μ', 1.0/λ');
 }
 
-/**
+/*
  * Update the parameters of a Gaussian distribution with a Gaussian
  * likelihood and scaling.
  *
@@ -217,7 +217,7 @@ function update_lazy_linear_gaussian_gaussian(x:Expression<Real>,
   return (μ', 1.0/λ');
 }
 
-/**
+/*
  * Update the parameters of an inverse-gamma distribution that is part
  * of a normal inverse-gamma joint distribution.
  *
@@ -235,7 +235,7 @@ function update_lazy_normal_inverse_gamma(x:Expression<Real>,
   return (α + 0.5, β + 0.5*pow(x - μ, 2.0)*λ);
 }
 
-/**
+/*
  * Update the parameters of a normal inverse-gamma distribution with a
  * Gaussian likelihood.
  *
@@ -258,7 +258,7 @@ function update_lazy_normal_inverse_gamma_gaussian(x:Expression<Real>,
   return (μ', λ', α', β');
 }
 
-/**
+/*
  * Update the parameters of a normal inverse-gamma distribution with a
  * Gaussian likelihood.
  *
@@ -284,7 +284,7 @@ function update_lazy_linear_normal_inverse_gamma_gaussian(x:Expression<Real>,
   return (μ', λ', α', β');
 }
 
-/**
+/*
  * Update the parameters of an inverse-gamma distribution with a
  * gamma likelihood.
  *
@@ -301,7 +301,7 @@ function update_lazy_inverse_gamma_gamma(x:Expression<Real>,
   return (α + k, β + x);
 }
 
-/**
+/*
  * Update the parameters of a multivariate Gaussian distribution with a
  * multivariate Gaussian likelihood.
  *
@@ -323,7 +323,7 @@ function update_lazy_multivariate_gaussian_multivariate_gaussian(x:Expression<Re
   return (μ', Σ');
 }
 
-/**
+/*
  * Update the parameters of a multivariate Gaussian distribution with a 
  * linear transformation and multivariate Gaussian likelihood.
  *
@@ -348,7 +348,7 @@ function update_lazy_linear_multivariate_gaussian_multivariate_gaussian(
   return (μ', Σ');
 }
 
-/**
+/*
  * Update the parameters of a multivariate Gaussian distribution with a 
  * linear transformation involving a dot product, and a multivariate Gaussian
  * likelihood.
@@ -373,7 +373,7 @@ function update_lazy_linear_multivariate_gaussian_gaussian(
   return (μ', Σ');
 }
 
-/**
+/*
  * Update the parameters of an inverse-gamma distribution with a linear
  * scaling and Gaussian likelihood.
  *
@@ -393,7 +393,7 @@ function update_lazy_multivariate_normal_inverse_gamma(x:Expression<Real[_]>,
   return (α + 0.5*D, β + 0.5*dot(x - μ, canonical(Λ)*(x - μ)));
 }
 
-/**
+/*
  * Update the parameters of a normal inverse-gamma distribution with a
  * multivariate Gaussian likelihood.
  *
@@ -417,7 +417,7 @@ function update_lazy_multivariate_normal_inverse_gamma_multivariate_gaussian(
   return (ν', Λ', α', γ');
 }
 
-/**
+/*
  * Update the parameters of a normal inverse-gamma distribution with a
  * linear transformation and multivariate Gaussian likelihood.
  *
@@ -444,7 +444,7 @@ function update_lazy_linear_multivariate_normal_inverse_gamma_multivariate_gauss
   return (ν', Λ', α', γ');
 }
 
-/**
+/*
  * Update the parameters of a normal inverse-gamma distribution with a
  * linear transformation involving a dot product, and Gaussian likelihood.
  *
@@ -470,7 +470,7 @@ function update_lazy_linear_multivariate_normal_inverse_gamma_gaussian(
   return (ν', Λ', α', γ');
 }
 
-/**
+/*
  * Update the parameters of a matrix normal-inverse-Wishart variate.
  *
  * - X: The variate.
@@ -491,7 +491,7 @@ function update_lazy_matrix_normal_inverse_wishart(X:Expression<Real[_,_]>,
   return (V', k');
 }
 
-/**
+/*
  * Update the parameters of a Gaussian variate with
  * matrix-normal-inverse-Wishart prior.
  *
@@ -518,7 +518,7 @@ function update_lazy_matrix_normal_inverse_wishart_matrix_gaussian(
   return (N', Λ', V', k');
 }
 
-/**
+/*
  * Update the parameters of a Gaussian variate with linear transformation
  * of matrix-normal-inverse-Wishart prior.
  *
@@ -548,7 +548,7 @@ function update_lazy_linear_matrix_normal_inverse_wishart_matrix_gaussian(
   return (N', Λ', V', k');
 }
 
-/**
+/*
  * Update the parameters of a Gaussian variate with linear transformation
  * of matrix-normal-inverse-Wishart prior.
  *

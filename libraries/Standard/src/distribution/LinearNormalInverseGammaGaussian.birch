@@ -29,8 +29,8 @@ final class LinearNormalInverseGammaGaussian(a:Expression<Real>,
   }
 
   function simulateLazy() -> Real? {
-    return simulate_linear_normal_inverse_gamma_gaussian(a.get(),
-        μ.μ.get(), 1.0/μ.λ.get(), c.get(), μ.σ2.α.get(), μ.σ2.β.get());
+    return simulate_linear_normal_inverse_gamma_gaussian(a.eval(),
+        μ.μ.eval(), 1.0/μ.λ.eval(), c.eval(), μ.σ2.α.eval(), μ.σ2.β.eval());
   }
   
   function logpdf(x:Real) -> Real {

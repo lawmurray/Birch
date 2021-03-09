@@ -1,5 +1,5 @@
 /**
- * (Metropolis-adjusted) Langevin Markov kernel.
+ * Langevin Markov kernel, with Metropolis adjustment.
  *
  * ```mermaid
  * classDiagram
@@ -10,34 +10,51 @@
  */
 class LangevinKernel < Kernel {
   /**
-   * Scale of the move.
+   * Scale of each move.
    */
   scale:Real <- 1.0;
 
-  override function move(x:Random<Real>) -> Real {
-    return simulate_gaussian(x.x! + scale*x.d!, 2.0*scale);
+  function apply(t:Integer, π:Particle) -> Real {
+    let δ <- scale/pow(min(t, nlags), 3);
+    let σ2 <- 2.0*δ;
+    let s <- t - nlags;
+
+    /* initial state */
+    let x <- π.args(s);
+    let p <- π.eval(s);
+    let d <- π.grad(s);
+    let μ <- x + d*δ;
+
+    /* moves */
+    let naccepts <- 0;
+    let accept <- false;
+    for n in 1..nmoves {
+      /* proposed state */
+      let x' <- simulate_multivariate_gaussian(μ, σ2);
+      let p' <- π.move(s, x');
+      let d' <- π.grad(s);
+      let μ' <- x' + d'*δ;
+
+      /* accept/reject */
+      let q <- logpdf_multivariate_gaussian(x, μ', σ2);
+      let q' <- logpdf_multivariate_gaussian(x', μ, σ2);      
+      accept <- simulate_uniform(0.0, 1.0) <= p' - p + q - q';
+      if accept {
+        naccepts <- naccepts + 1;
+        x <- x';
+        p <- p';
+        d <- d';
+        μ <- μ';
+      }
+    }
+    if !accept {
+      /* if last proposal was not accepted, restore correct arguments,
+       * otherwise already correct */
+      π.move(s, x);
+    }
+    return Real(naccepts)/nmoves;
   }
 
-  override function move(x:Random<Real[_]>) -> Real[_] {
-    return simulate_multivariate_gaussian(x.x! + scale*x.d!, 2.0*scale);
-  }
-
-  override function move(x:Random<Real[_,_]>) -> Real[_,_] {
-    return simulate_matrix_gaussian(x.x! + scale*x.d!, 2.0*scale);
-  }
-
-  override function logpdf(x':Random<Real>, x:Random<Real>) -> Real {
-    return logpdf_gaussian(x'.x!, x.x! + scale*x.d!, 2.0*scale);
-  }
-
-  override function logpdf(x':Random<Real[_]>, x:Random<Real[_]>) -> Real {
-    return logpdf_multivariate_gaussian(x'.x!, x.x! + scale*x.d!, 2.0*scale);
-  }
-
-  override function logpdf(x':Random<Real[_,_]>, x:Random<Real[_,_]>) -> Real {
-    return logpdf_matrix_gaussian(x'.x!, x.x! + scale*x.d!, 2.0*scale);
-  }
-  
   override function read(buffer:Buffer) {
     super.read(buffer);
     scale <-? buffer.get<Real>("scale");

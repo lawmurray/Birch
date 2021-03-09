@@ -22,7 +22,7 @@ final class Binomial(n:Expression<Integer>, ρ:Expression<Real>) <
   }
   
   function simulateLazy() -> Integer? {
-    return simulate_binomial(n.get(), ρ.get());
+    return simulate_binomial(n.eval(), ρ.eval());
   }
 
   function logpdf(x:Integer) -> Real {

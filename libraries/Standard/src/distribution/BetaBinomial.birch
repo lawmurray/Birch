@@ -21,7 +21,7 @@ final class BetaBinomial(n:Expression<Integer>, ρ:Beta) < BoundedDiscrete {
   }
   
   function simulateLazy() -> Integer? {
-    return simulate_beta_binomial(n.get(), ρ.α.get(), ρ.β.get());
+    return simulate_beta_binomial(n.eval(), ρ.α.eval(), ρ.β.eval());
   }
   
   function logpdf(x:Integer) -> Real {

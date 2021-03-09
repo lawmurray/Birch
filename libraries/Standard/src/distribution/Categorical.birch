@@ -16,7 +16,7 @@ final class Categorical(ρ:Expression<Real[_]>) < Distribution<Integer> {
   }
 
 //  function simulateLazy() -> Integer? {
-//    return simulate_categorical(ρ.get());
+//    return simulate_categorical(ρ.eval());
 //  }
   
   function logpdf(x:Integer) -> Real {

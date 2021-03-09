@@ -35,42 +35,20 @@ abstract class MultivariateUnaryExpression<Argument,ArgumentValue,
     return doEvaluate(y!.value());
   }
 
-  final override function doPilot(gen:Integer) -> Value {
-    return doEvaluate(y!.pilot(gen));
+  final override function doEval(gen:Integer) -> Value {
+    return doEvaluate(y!.countEval(gen));
   }
 
-  final override function doGet() -> Value {
-    return doEvaluate(y!.get());
-  }
-
-  final override function doMove(gen:Integer, κ:Kernel) -> Value {
-    return doEvaluate(y!.move(gen, κ));
+  final override function doReval(gen:Integer) -> Value {
+    return doEvaluate(y!.countReval(gen));
   }
   
   final override function doGrad(gen:Integer) {
-    y!.grad(gen, doEvaluateGrad(d!, x!, y!.get()));
-  }
-
-  final override function doPrior() -> Expression<Real>? {
-    return y!.prior();
-  }
-
-  final override function doCompare(gen:Integer, x:DelayExpression,
-      κ:Kernel) -> Real {
-    let o <- MultivariateUnaryExpression<Argument,ArgumentValue,
-        ArgumentGradient,Value>?(x)!;
-    return y!.compare(gen, o.y!, κ);
+    y!.countGrad(gen, doEvaluateGrad(d!, x!, y!.eval()));
   }
 
   final override function doConstant() {
-    y!.constant();
-  }
-
-  final override function doCount(gen:Integer) {
-    y!.count(gen);
-  }
-
-  final override function doDetach() {
+    y!.value();
     y <- nil;
   }
 }

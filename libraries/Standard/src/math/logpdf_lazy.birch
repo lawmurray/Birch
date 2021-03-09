@@ -1,4 +1,4 @@
-/**
+/*
  * Observe a Bernoulli variate.
  *
  * - x: The variate.
@@ -10,7 +10,7 @@ function logpdf_lazy_bernoulli(x:Expression<Boolean>, ρ:Expression<Real>) -> Ex
   return Real(x)*log(ρ) + (1.0 - Real(x))*log1p(-ρ);
 }
 
-/**
+/*
  * Observe a binomial variate.
  *
  * - x: The variate.
@@ -23,7 +23,7 @@ function logpdf_lazy_binomial(x:Expression<Integer>, n:Expression<Integer>, ρ:E
   return Real(x)*log(ρ) + Real(n - x)*log1p(-ρ) + lchoose(n, x);
 }
 
-/**
+/*
  * Observe a negative binomial variate.
  *
  * - x: The variate (number of failures).
@@ -36,7 +36,7 @@ function logpdf_lazy_negative_binomial(x:Expression<Integer>, k:Expression<Integ
   return Real(k)*log(ρ) + Real(x)*log1p(-ρ) + lchoose(x + k - 1, x);
 }
 
-/**
+/*
  * Observe a Poisson variate.
  *
  * - x: The variate.
@@ -48,7 +48,7 @@ function logpdf_lazy_poisson(x:Expression<Integer>, λ:Expression<Real>) -> Expr
   return Real(x)*log(λ) - λ - lgamma(Real(x + 1));
 }
 
-/**
+/*
  * Observe a Conway-Maxwell-Poisson variate.
  *
  * - x: The variate.
@@ -65,7 +65,7 @@ function logpdf_lazy_conway_maxwell_poisson(x:Expression<Integer>,
       log(normalize_conway_maxwell_poisson(λ, ν, n));
 }
 
-/**
+/*
  * Observe an integer uniform variate.
  *
  * - x: The variate.
@@ -78,7 +78,7 @@ function logpdf_lazy_conway_maxwell_poisson(x:Expression<Integer>,
   ///@todo
 //}
 
-/**
+/*
  * Observe a categorical variate.
  *
  * - x: The variate.
@@ -90,7 +90,7 @@ function logpdf_lazy_conway_maxwell_poisson(x:Expression<Integer>,
   ///@todo
 //}
 
-/**
+/*
  * Observe a multinomial variate.
  *
  * - x: The variate.
@@ -103,7 +103,7 @@ function logpdf_lazy_conway_maxwell_poisson(x:Expression<Integer>,
    ///@todo
 //}
 
-/**
+/*
  * Observe a Dirichlet variate.
  *
  * - x: The variate.
@@ -115,7 +115,7 @@ function logpdf_lazy_conway_maxwell_poisson(x:Expression<Integer>,
   ///@todo
 //}
 
-/**
+/*
  * Observe a uniform variate.
  *
  * - x: The variate.
@@ -128,7 +128,7 @@ function logpdf_lazy_conway_maxwell_poisson(x:Expression<Integer>,
   ///@todo
 //}
 
-/**
+/*
  * Observe an exponential variate.
  *
  * - x: The variate.
@@ -140,7 +140,7 @@ function logpdf_lazy_exponential(x:Expression<Real>, λ:Expression<Real>) -> Exp
   return if_then_else(x < 0.0, -inf, log(λ) - λ*x);
 }
 
-/**
+/*
  * Observe a Weibull variate.
  *
  * - x: The variate.
@@ -154,7 +154,7 @@ function logpdf_lazy_weibull(x:Expression<Real>, k:Expression<Real>, λ:Expressi
       pow(x/λ, k));
 }
 
-/**
+/*
  * Observe a Gaussian variate.
  *
  * - x: The variate.
@@ -167,7 +167,7 @@ function logpdf_lazy_gaussian(x:Expression<Real>, μ:Expression<Real>, σ2:Expre
   return -0.5*(pow(x - μ, 2.0)/σ2 + log(2.0*π*σ2));
 }
 
-/**
+/*
  * Observe a Student's $t$ variate.
  *
  * - x: The variate.
@@ -181,7 +181,7 @@ function logpdf_lazy_student_t(x:Expression<Real>, k:Expression<Real>) -> Expres
   return lgamma(a) - lgamma(b) - 0.5*log(π*k) - a*log1p(x*x/k);
 }
 
-/**
+/*
  * Observe a Student's $t$ variate with location and scale.
  *
  * - x: The variate.
@@ -198,7 +198,7 @@ function logpdf_lazy_student_t(x:Expression<Real>, k:Expression<Real>, μ:Expres
   return lgamma(a) - lgamma(b) - 0.5*log(π*v) - a*log1p(z*z/v);
 }
 
-/**
+/*
  * Observe a beta variate.
  *
  * - x: The variate.
@@ -211,7 +211,7 @@ function logpdf_lazy_beta(x:Expression<Real>, α:Expression<Real>, β:Expression
   return (α - 1.0)*log(x) + (β - 1.0)*log1p(-x) - lbeta(α, β);
 }
 
-/**
+/*
  * Observe a $\chi^2$ variate.
  *
  * - x: The variate.
@@ -224,7 +224,7 @@ function logpdf_lazy_chi_squared(x:Expression<Real>, ν:Expression<Real>) -> Exp
   return (k - 1.0)*log(x) - 0.5*x - lgamma(k) - k*log(2.0);
 }
 
-/**
+/*
  * Observe a gamma variate.
  *
  * - x: The variate.
@@ -238,7 +238,7 @@ function logpdf_lazy_gamma(x:Expression<Real>, k:Expression<Real>, θ:Expression
       k*log(θ));
 }
 
-/**
+/*
  * Observe a Wishart variate.
  *
  * - X: The variate.
@@ -253,7 +253,7 @@ function logpdf_lazy_wishart(X:Expression<LLT>, Ψ:Expression<LLT>, ν:Expressio
       0.5*ν*(p*log(2.0) + ldet(Ψ)) - lgamma(0.5*ν, p);
 }
 
-/**
+/*
  * Observe an inverse-gamma variate.
  *
  * - x: The variate.
@@ -267,7 +267,7 @@ function logpdf_lazy_inverse_gamma(x:Expression<Real>, α:Expression<Real>, β:E
       lgamma(α));
 }
 
-/**
+/*
  * Observe an inverse Wishart variate.
  *
  * - X: The variate.
@@ -282,7 +282,7 @@ function logpdf_lazy_inverse_wishart(X:Expression<LLT>, Ψ:Expression<LLT>, ν:E
       0.5*ν*(p*log(2.0) - ldet(Ψ)) - lgamma(0.5*ν, p);
 }
 
-/**
+/*
  * Observe a compound-gamma variate.
  *
  * - x: The variate.
@@ -296,7 +296,7 @@ function logpdf_lazy_inverse_gamma_gamma(x:Expression<Real>, k:Expression<Real>,
   return (k - 1)*log(x) + α*log(β) - (α + k)*log(β + x) - lbeta(α, k);
 }
 
-/**
+/*
  * Observe a normal inverse-gamma variate.
  *
  * - x: The variate.
@@ -312,7 +312,7 @@ function logpdf_lazy_normal_inverse_gamma(x:Expression<Real>, μ:Expression<Real
   return logpdf_lazy_student_t(x, 2.0*α, μ, a2*2.0*β);
 }
 
-/**
+/*
  * Observe a beta-bernoulli variate.
  *
  * - x: The variate.
@@ -325,7 +325,7 @@ function logpdf_lazy_beta_bernoulli(x:Expression<Boolean>, α:Expression<Real>, 
   return Real(x)*log(α) + (1.0 - Real(x))*log(β) - log(α + β);
 }
 
-/**
+/*
  * Observe a beta-binomial variate.
  *
  * - x: The variate.
@@ -339,7 +339,7 @@ function logpdf_lazy_beta_binomial(x:Expression<Integer>, n:Expression<Integer>,
   return lbeta(Real(x) + α, Real(n - x) + β) - lbeta(α, β) + lchoose(n, x);
 }
 
-/**
+/*
  * Observe a beta-negative-binomial variate
  *
  * - x: The variate.
@@ -353,7 +353,7 @@ function logpdf_lazy_beta_negative_binomial(x:Expression<Integer>, k:Expression<
   return lbeta(α + Real(k), β + Real(x)) - lbeta(α, β) + lchoose(x + k - 1, x);
 }
 
-/**
+/*
  * Observe a gamma-Poisson variate.
  *
  * - x: The variate.
@@ -366,7 +366,7 @@ function logpdf_lazy_gamma_poisson(x:Expression<Integer>, k:Expression<Real>, θ
   return logpdf_lazy_negative_binomial(x, Integer(k), 1.0/(θ + 1.0));
 }
 
-/**
+/*
  * Observe of a Lomax variate.
  *
  * - x: The variate.
@@ -379,7 +379,7 @@ function logpdf_lazy_lomax(x:Expression<Real>, λ:Expression<Real>, α:Expressio
   return if_then_else(x < 0.0, -inf, log(α) - log(λ) - (α + 1.0)*log1p(x/λ));
 }
 
-/**
+/*
  * Observe a Dirichlet-categorical variate.
  *
  * - x: The variate.
@@ -391,7 +391,7 @@ function logpdf_lazy_lomax(x:Expression<Real>, λ:Expression<Real>, α:Expressio
   ///@todo
 //}
 
-/**
+/*
  * Observe a Dirichlet-multinomial variate.
  *
  * - x: The variate.
@@ -404,7 +404,7 @@ function logpdf_lazy_lomax(x:Expression<Real>, λ:Expression<Real>, α:Expressio
   ///@todo
 //}
 
-/**
+/*
  * Observe a categorical variate with Chinese restaurant process
  * prior.
  *
@@ -419,7 +419,7 @@ function logpdf_lazy_lomax(x:Expression<Real>, λ:Expression<Real>, α:Expressio
   ///@todo
 //}
 
-/**
+/*
  * Observe a Gaussian variate with a normal inverse-gamma prior.
  *
  * - x: The variate.
@@ -435,7 +435,7 @@ function logpdf_lazy_normal_inverse_gamma_gaussian(x:Expression<Real>, μ:Expres
   return logpdf_lazy_student_t(x, 2.0*α, μ, 2.0*β*(1.0 + a2));
 }
 
-/**
+/*
  * Observe a Gaussian variate with a normal inverse-gamma prior with linear
  * transformation.
  *
@@ -454,7 +454,7 @@ function logpdf_lazy_linear_normal_inverse_gamma_gaussian(x:Expression<Real>, a:
   return logpdf_lazy_student_t(x, 2.0*α, a*μ + c, 2.0*β*(1.0 + a*a*a2));
 }
 
-/**
+/*
  * Observe a multivariate Gaussian variate.
  *
  * - x: The variate.
@@ -468,7 +468,7 @@ function logpdf_lazy_multivariate_gaussian(x:Expression<Real[_]>, μ:Expression<
   return -0.5*(dot(x - μ, solve(Σ, x - μ)) + n*log(2.0*π) + ldet(Σ));
 }
 
-/**
+/*
  * Observe a multivariate Gaussian distribution with independent elements.
  *
  * - x: The variate.
@@ -482,7 +482,7 @@ function logpdf_lazy_multivariate_gaussian(x:Expression<Real[_]>, μ:Expression<
   return logpdf_lazy_multivariate_gaussian(x, μ, llt(diagonal(σ2)));
 }
 
-/**
+/*
  * Observe a multivariate Gaussian distribution with independent elements of
  * identical variance.
  *
@@ -497,7 +497,7 @@ function logpdf_lazy_multivariate_gaussian(x:Expression<Real[_]>, μ:Expression<
   return -0.5*(dot(x - μ)/σ2 + n*log(2.0*π*σ2));
 }
 
-/**
+/*
  * Observe a multivariate normal inverse-gamma variate.
  *
  * - x: The variate.
@@ -513,7 +513,7 @@ function logpdf_lazy_multivariate_normal_inverse_gamma(x:Expression<Real[_]>, ν
   return logpdf_lazy_multivariate_student_t(x, 2.0*α, solve(Λ, ν), inv(Λ), 2.0*β);
 }
 
-/**
+/*
  * Observe a multivariate Gaussian variate with a multivariate normal
  * inverse-gamma prior.
  *
@@ -534,7 +534,7 @@ function logpdf_lazy_multivariate_normal_inverse_gamma_multivariate_gaussian(x:E
       llt(identity(n) + canonical(inv(Λ))), 2.0*β);
 }
 
-/**
+/*
  * Observe a multivariate Gaussian variate with a multivariate linear normal
  * inverse-gamma prior with linear transformation.
  *
@@ -558,7 +558,7 @@ function logpdf_lazy_linear_multivariate_normal_inverse_gamma_multivariate_gauss
       llt(identity(n) + A*solve(Λ, transpose(A))), 2.0*β);
 }
 
-/**
+/*
  * Observe a Gaussian variate with a multivariate linear normal inverse-gamma
  * prior with linear transformation.
  *
@@ -580,7 +580,7 @@ function logpdf_lazy_linear_multivariate_normal_inverse_gamma_gaussian(x:Express
       2.0*β*(1.0 + dot(a, solve(Λ, a))));
 }
 
-/**
+/*
  * Observe a matrix Gaussian distribution.
  *
  * - X: The variate.
@@ -598,7 +598,7 @@ function logpdf_lazy_matrix_gaussian(X:Expression<Real[_,_]>, M:Expression<Real[
       n*p*log(2.0*π) + n*ldet(V) + p*ldet(U));
 }
 
-/**
+/*
  * Observe a matrix Gaussian distribution with independent columns.
  *
  * - X: The variate.
@@ -617,7 +617,7 @@ function logpdf_lazy_matrix_gaussian(X:Expression<Real[_,_]>,
       n*p*log(2.0*π) + n*ldet(diagonal(σ2)) + p*ldet(U));
 }
 
-/**
+/*
  * Observe a matrix Gaussian distribution with independent rows.
  *
  * - X: The variate.
@@ -633,7 +633,7 @@ function logpdf_lazy_matrix_gaussian(X:Expression<Real[_,_]>, M:Expression<Real[
       n*ldet(V));
 }
 
-/**
+/*
  * Observe a matrix Gaussian distribution with independent elements.
  *
  * - X: The variate.
@@ -650,7 +650,7 @@ function logpdf_lazy_matrix_gaussian(X:Expression<Real[_,_]>, M:Expression<Real[
       n*p*log(2.0*π) + n*ldet(diagonal(σ2)));
 }
 
-/**
+/*
  * Observe a matrix Gaussian distribution with independent elements
  * of identical variance.
  *
@@ -667,7 +667,7 @@ function logpdf_lazy_matrix_gaussian(X:Expression<Real[_,_]>, M:Expression<Real[
   return -0.5*(trace(transpose(X - M)*(X - M)/σ2) + n*p*log(2.0*π*σ2));
 }
 
-/**
+/*
  * Observe a matrix normal-inverse-Wishart variate.
  *
  * - X: The variate.
@@ -686,7 +686,7 @@ function logpdf_lazy_matrix_normal_inverse_wishart(X:Expression<Real[_,_]>, N:Ex
   return logpdf_lazy_matrix_student_t(X, k - p + 1.0, M, Σ, Ψ);
 }
 
-/**
+/*
  * Observe a Gaussian variate with matrix-normal-inverse-Wishart prior.
  *
  * - X: The variate.
@@ -706,7 +706,7 @@ function logpdf_lazy_matrix_normal_inverse_wishart_matrix_gaussian(X:Expression<
   return logpdf_lazy_matrix_student_t(X, k - p + 1.0, M, Σ, Ψ);
 }
 
-/**
+/*
  * Observe a Gaussian variate with linear transformation of a
  * matrix-normal-inverse-Wishart prior.
  *
@@ -730,7 +730,7 @@ function logpdf_lazy_linear_matrix_normal_inverse_wishart_matrix_gaussian(
   return logpdf_lazy_matrix_student_t(X, k - p + 1.0, A*M + C, Σ, Ψ);
 }
 
-/**
+/*
  * Observe a Gaussian variate with linear transformation of a
  * matrix-normal-inverse-Wishart prior.
  *
@@ -754,7 +754,7 @@ function logpdf_lazy_linear_matrix_normal_inverse_wishart_multivariate_gaussian(
   return logpdf_lazy_multivariate_student_t(x, k - p + 1.0, dot(a, M) + c, σ2, Ψ);
 }
 
-/**
+/*
  * Observe a multivariate Student's $t$-distribution variate with location
  * and scale.
  *
@@ -772,7 +772,7 @@ function logpdf_lazy_multivariate_student_t(x:Expression<Real[_]>,
   return logpdf_lazy_multivariate_student_t(x, k, μ, v, U);
 }
 
-/**
+/*
  * Observe a multivariate Student's $t$-distribution variate with location
  * and scale.
  *
@@ -795,7 +795,7 @@ function logpdf_lazy_multivariate_student_t(x:Expression<Real[_]>,
       0.5*ldet(V) - a*log1p(dot(z, solve(V, z))/u);
 }
 
-/**
+/*
  * Observe a matrix Student's $t$-distribution variate with location
  * and scale.
  *
@@ -819,7 +819,7 @@ function logpdf_lazy_matrix_student_t(X:Expression<Real[_,_]>, k:Expression<Real
       0.5*n*ldet(V) - a*ldet(identity(n) + solve(U, Z)*solve(V, transpose(Z)));
 }
 
-/**
+/*
  * Observe a multivariate uniform distribution.
  *
  * - x: The variate.
@@ -832,7 +832,7 @@ function logpdf_lazy_matrix_student_t(X:Expression<Real[_,_]>, k:Expression<Real
   ///@todo
 //}
 
-/**
+/*
  * Observe a multivariate uniform distribution over integers.
  *
  * - x: The variate.

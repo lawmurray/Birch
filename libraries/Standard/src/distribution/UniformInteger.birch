@@ -22,7 +22,7 @@ final class UniformInteger(l:Expression<Integer>, u:Expression<Integer>) <
   }
 
 //  function simulateLazy() -> Integer? {
-//    return simulate_uniform_int(l.get(), u.get());
+//    return simulate_uniform_int(l.eval(), u.eval());
 //  }
 
   function logpdf(x:Integer) -> Real {

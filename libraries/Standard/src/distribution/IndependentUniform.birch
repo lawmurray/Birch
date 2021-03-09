@@ -26,7 +26,7 @@ final class IndependentUniform(l:Expression<Real[_]>,
   }
   
   //function simulateLazy() -> Real[_]? {
-  //  return simulate_independent_uniform(l.get(), u.get());
+  //  return simulate_independent_uniform(l.eval(), u.eval());
   //}
 
   function logpdf(x:Real[_]) -> Real {

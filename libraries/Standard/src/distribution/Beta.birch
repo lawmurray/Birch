@@ -22,7 +22,7 @@ final class Beta(α:Expression<Real>, β:Expression<Real>) <
   }
 
   function simulateLazy() -> Real? {
-    return simulate_beta(α.get(), β.get());
+    return simulate_beta(α.eval(), β.eval());
   }
   
   function logpdf(x:Real) -> Real {

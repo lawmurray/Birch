@@ -16,7 +16,7 @@ final class RestaurantCategorical(ρ:Restaurant) < Distribution<Integer> {
   }
 
 //  function simulateLazy() -> Integer? {
-//    return simulate_crp_categorical(ρ.α.get(), ρ.θ.get(), ρ.n, ρ.N);
+//    return simulate_crp_categorical(ρ.α.eval(), ρ.θ.eval(), ρ.n, ρ.N);
 //  }
   
   function logpdf(x:Integer) -> Real {

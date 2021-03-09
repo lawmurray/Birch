@@ -30,7 +30,7 @@ class MultivariateGaussian(μ:Expression<Real[_]>, Σ:Expression<LLT>) <
   }
 
   function simulateLazy() -> Real[_]? {
-    return simulate_multivariate_gaussian(μ.get(), Σ.get());
+    return simulate_multivariate_gaussian(μ.eval(), Σ.eval());
   }
   
   function logpdf(x:Real[_]) -> Real {
@@ -63,10 +63,17 @@ function Gaussian(μ:Expression<Real[_]>, Σ:Expression<LLT>) ->
   m1:TransformDotMultivariate<MatrixNormalInverseWishart>?;
   m2:TransformLinearMultivariate<MultivariateGaussian>?;
   m3:MultivariateGaussian?;
-  let compare <- Σ.distribution();
-  if compare? && (m1 <- μ.graftDotMatrixNormalInverseWishart(compare!))? {
-    return LinearMatrixNormalInverseWishartMultivariateGaussian(m1!.a, m1!.X, m1!.c);
-  } else if (m2 <- μ.graftLinearMultivariateGaussian())? {
+
+  let compare <- Random<LLT>?(Σ);
+  if compare? && compare!.hasDistribution() {
+    /* for normal-inverse-Wishart relationships, the same inverse Wishart
+     * distribution must occur in the prior and likelihood */
+    let p <- compare!.getDistribution();
+    if (m1 <- μ.graftDotMatrixNormalInverseWishart(p))? {
+      return LinearMatrixNormalInverseWishartMultivariateGaussian(m1!.a, m1!.X, m1!.c);
+    }
+  }
+  if (m2 <- μ.graftLinearMultivariateGaussian())? {
     return LinearMultivariateGaussianMultivariateGaussian(m2!.A, m2!.x, m2!.c, Σ);
   } else if (m3 <- μ.graftMultivariateGaussian())? {
     return MultivariateGaussianMultivariateGaussian(m3!, Σ);
@@ -138,12 +145,19 @@ function Gaussian(μ:Expression<Real[_]>, σ2:Expression<Real>) ->
   m2:MultivariateNormalInverseGamma?;
   m3:TransformLinearMultivariate<MultivariateGaussian>?;
   m4:MultivariateGaussian?;
-  let compare <- σ2.distribution();
-  if compare? && (m1 <- μ.graftLinearMultivariateNormalInverseGamma(compare!))? {
-    return LinearMultivariateNormalInverseGammaMultivariateGaussian(m1!.A, m1!.x, m1!.c);
-  } else if compare? && (m2 <- μ.graftMultivariateNormalInverseGamma(compare!))? {
-    return MultivariateNormalInverseGammaMultivariateGaussian(m2!);
-  } else if (m3 <- μ.graftLinearMultivariateGaussian())? {
+
+  let compare <- Random<Real>?(σ2);
+  if compare? && compare!.hasDistribution() {
+    /* for normal-inverse-gamma relationships, the same inverse gamma
+     * distribution must occur in the prior and likelihood */
+    let p <- compare!.getDistribution();
+    if (m1 <- μ.graftLinearMultivariateNormalInverseGamma(p))? {
+      return LinearMultivariateNormalInverseGammaMultivariateGaussian(m1!.A, m1!.x, m1!.c);
+    } else if (m2 <- μ.graftMultivariateNormalInverseGamma(p))? {
+      return MultivariateNormalInverseGammaMultivariateGaussian(m2!);
+    }
+  }
+  if (m3 <- μ.graftLinearMultivariateGaussian())? {
     return LinearMultivariateGaussianMultivariateGaussian(m3!.A, m3!.x, m3!.c, llt(diagonal(σ2, m3!.rows())));
   } else if (m4 <- μ.graftMultivariateGaussian())? {
     return MultivariateGaussianMultivariateGaussian(m4!, llt(diagonal(σ2, m4!.rows())));

@@ -3,27 +3,45 @@
  *
  * - delaySampling: Enable delayed sampling.
  * - delayExpressions: Enable delayed expressions.
+ *
+ * ```mermaid
+ * classDiagram
+ *    Handler <|-- ModelHandler
+ *    link Handler "../Handler/"
+ *    link ModelHandler "../ModelHandler/"
+ * ```
  */
 final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
   /**
-   * Input trace, if any.
+   * Input trace.
    */
   input:Tape<Record>?;
 
   /**
-   * Output trace, if any.
+   * Output trace.
    */
   output:Tape<Record>?;
 
   /**
-   * Delayed log-likelihood, if delayed expressions are enabled.
+   * Log-posterior, if delayed expressions are enabled.
    */
-  l:Expression<Real>?;
+  π:Expression<Real>?;
+
+  /*
+   * Arguments.
+   */
+  b1:Tape<Random<Boolean>>?;
+  i1:Tape<Random<Integer>>?;
+  i2:Tape<Random<Integer[_]>>?;
+  r1:Tape<Random<Real>>?;
+  r2:Tape<Random<Real[_]>>?;
+  r3:Tape<Random<Real[_,_]>>?;
+  l1:Tape<Random<LLT>>?;
 
   /**
-   * Delayed log-prior, if delayed expressions are enabled.
+   * Number of arguments.
    */
-  p:Expression<Real>?;
+  n:Integer <- 0;
 
   /**
    * Accumulated weight.
@@ -47,7 +65,7 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
    *
    * A simulate event is triggered by the `<~` operator.
    */
-  final function handleSimulate<Value>(p:Distribution<Value>) -> Value {
+  function handleSimulate<Value>(p:Distribution<Value>) -> Value {
     if input? {
       p.clamp(coerce<Value>());
     }
@@ -66,15 +84,16 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
    *
    * A simulate event is triggered by the `~>` operator.
    */
-  final function handleObserve<Value>(x:Value, p:Distribution<Value>) ->
+  function handleObserve<Value>(x:Value, p:Distribution<Value>) ->
       Value {
     if delayExpressions && p.supportsLazy() {
       let v <- p.observeLazy(box(x));
       assert v?;
-      if l? {
-        l <- l! + v!;
+      w <- w + v!.eval();
+      if π? {
+        π <- π! + v!;
       } else {
-        l <- v;
+        π <- π;
       }
     } else {
       w <- w + p.observe(x);
@@ -90,7 +109,7 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
    *
    * An assume event is triggered by the `~` operator.
    */
-  final function handleAssume<Value>(x:Random<Value>,
+  function handleAssume<Value>(x:Random<Value>,
       p:Distribution<Value>) -> Random<Value> {
     if x.hasValue() {
       handleObserve(x.value(), p);
@@ -112,7 +131,7 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
    * the realization of a random variate that was previously associated with
    * a distribution using the `~` operator.
    */
-  final function handleRealize<Value>(p:Distribution<Value>) -> Value {
+  function handleRealize<Value>(p:Distribution<Value>) -> Value {
     if input? {
       p.clamp(coerce<Value>());
     }
@@ -126,21 +145,24 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
       /* record the prior log-density */
       let p1 <- p.logpdfLazy(p.v!);
       assert p1?;
-      if this.p? {
-        this.p <- this.p! + p1!;
+      if π? {
+        π <- π! + p1!;
       } else {
-        this.p <- p1!;
+        π <- p1!;
       }
+
+      /* record the argument */
+      arg(p.v!);
     } else {
       x <- p.realize();
     }
     if output? {
       output!.pushBack(construct<ValueRecord<Value>>(x));
     }
-    if this.p? {
+    if π? {
       /* evaluate the prior log-density, as it may required that further
        * Random objects are realized */
-      this.p!.get();
+      π!.eval();
     }
     return x;
   }
@@ -152,12 +174,13 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
    *
    * A factor event is triggered by the `factor` statement.
    */
-  final function handleFactor(w:Expression<Real>) {
+  function handleFactor(w:Expression<Real>) {
     if delayExpressions {
-      if l? {
-        l <- l! + w;
+      this.w <- this.w + w.eval();
+      if π? {
+        π <- π! + w;
       } else {
-        l <- w;
+        π <- w;
       }
     } else {
       this.w <- this.w + w.value();
@@ -171,14 +194,156 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
    *
    * A factor event is triggered by the `factor` statement.
    */
-  final function handleFactor(w:Real) {
+  function handleFactor(w:Real) {
     this.w <- this.w + w;
   }
 
   /**
-   * Coerce a value of the given type out of a record.
+   * Evaluate the log-posterior.
    */
-  final function coerce<Value>() -> Value {
+  function eval(gen:Integer) -> Real {
+    if π? {
+      return π!.eval(gen);
+    } else {
+      return 0.0;
+    }
+  }
+
+  /**
+   * Get value of real arguments.
+   */
+  function args(gen:Integer) -> Real[_] {
+    /* determine size */
+    n <- 0;
+    if r1? {
+      n <- n + argSize(gen, r1!);
+    }
+    if r2? {
+      n <- n + argSize(gen, r2!);
+    }
+    if r3? {
+      n <- n + argSize(gen, r3!);
+    }
+    assert π? || n == 0;
+
+    /* get argument values */
+    x:Real[n];
+    let i <- 1;
+    if r1? {
+      let iter1 <- r1!.walk();
+      while iter1.hasNext() {
+        let v <- iter1.next();
+        x[i] <- v.eval();
+        i <- i + 1;
+      }
+    }
+    if r2? {
+      let iter2 <- r2!.walk();
+      while iter2.hasNext() {
+        let v <- iter2.next();
+        let m <- i + v.size() - 1;
+        x[i..m] <- v.eval();
+        i <- m + 1;
+      }
+    }
+    if r3? {
+      let iter3 <- r3!.walk();
+      while iter3.hasNext() {
+        let v <- iter3.next();
+        let m <- i + v.size() - 1;
+        x[i..m] <- vec(v.eval());
+        i <- m + 1;
+      }
+    }
+    assert n == length(x) + 1;
+    return x;
+  }
+
+  /**
+   * Compute the gradient.
+   */
+  function grad(gen:Integer) -> Real[_] {
+    d:Real[n];
+    if π? {
+      /* compute gradient */
+      π!.grad(1.0, gen);
+
+      /* get argument gradients */
+      let i <- 1;
+      if r1? {
+        let iter1 <- r1!.walk();
+        while iter1.hasNext() {
+          let v <- iter1.next();
+          d[i] <- v.d!;
+          i <- i + 1;
+        }
+      }
+      if r2? {
+        let iter2 <- r2!.walk();
+        while iter2.hasNext() {
+          let v <- iter2.next();
+          let j <- i + v.size() - 1;
+          d[i..j] <- v.d!;
+          i <- j + 1;
+        }
+      }
+      if r3? {
+        let iter3 <- r3!.walk();
+        while iter3.hasNext() {
+          let v <- iter3.next();
+          let j <- i + v.size() - 1;
+          d[i..j] <- vec(v.d!);
+          i <- j + 1;
+        }
+      }
+      assert i == n + 1;
+    }
+    return d;
+  }
+
+  /**
+   * Move the expression.
+   */
+  function move(gen:Integer, x:Real[_]) -> Real {
+    let p <- 0.0;
+    if π? {
+      /* set argument values */
+      let i <- 1;
+      if r1? {
+        let iter1 <- r1!.walk();
+        while iter1.hasNext() {
+          let v <- iter1.next();
+          v.setEval(x[i]);
+          i <- i + 1;
+        }
+      }
+      if r2? {
+        let iter2 <- r2!.walk();
+        while iter2.hasNext() {
+          let v <- iter2.next();
+          let j <- i + v.size() - 1;
+          v.setEval(x[i..j]);
+          i <- j + 1;
+        }
+      }
+      if r3? {
+        let iter3 <- r3!.walk();
+        while iter3.hasNext() {
+          let v <- iter3.next();
+          let j <- i + v.size() - 1;
+          v.setEval(mat(x[i..j], v.columns()));
+          i <- j + 1;
+        }
+      }
+      assert i == n + 1;
+
+      /* re-evaluate */
+      p <- π!.reval(gen);
+    }
+    return p;
+  }
+
+  function coerce<Value>() -> Value {
     assert input?;
     let r <- ValueRecord<Value>?(input!.front());
     if !r? {
@@ -187,4 +352,95 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
     input!.popFront();
     return r!.x;
   }
+
+  function arg(x:Random<Boolean>) {
+    if !b1? {
+      b1 <- construct<Tape<Random<Boolean>>>();
+    }
+    b1!.pushBack(x);
+  }
+
+  function arg(x:Random<Integer>) {
+    if !i1? {
+      i1 <- construct<Tape<Random<Integer>>>();
+    }
+    i1!.pushBack(x);
+  }
+
+  function arg(x:Random<Integer[_]>) {
+    if !i2? {
+      i2 <- construct<Tape<Random<Integer[_]>>>();
+    }
+    i2!.pushBack(x);
+  }
+
+  function arg(x:Random<Real>) {
+    if !r1? {
+      r1 <- construct<Tape<Random<Real>>>();
+    }
+    r1!.pushBack(x);
+  }
+
+  function arg(x:Random<Real[_]>) {
+    if !r2? {
+      r2 <- construct<Tape<Random<Real[_]>>>();
+    }
+    r2!.pushBack(x);
+  }
+
+  function arg(x:Random<Real[_,_]>) {
+    if !r3? {
+      r3 <- construct<Tape<Random<Real[_,_]>>>();
+    }
+    r3!.pushBack(x);
+  }
+
+  function arg(x:Random<LLT>) {
+    if !l1? {
+      l1 <- construct<Tape<Random<LLT>>>();
+    }
+    l1!.pushBack(x);
+  }
+}
+
+/*
+ * Determine the total size of all arguments in a [Tape](../Tape/),
+ * simultaneously removing all constants.
+ *
+ * - gen: Generation limit.
+ * - o: The tape.
+ *
+ * Random objects older than `gen` are considered constant.
+ */
+function argSize<Value>(gen:Integer, o:Tape<Random<Value>>) -> Integer {
+  let n <- 0;
+  let i <- 1;
+  while i <= o.size() {
+    if !o[i].isConstant() && o[i].generation >= gen {
+      n <- n + o[i].size();
+      i <- i + 1;
+    } else {
+      o.erase(i);
+    }
+  }
+  return n;
+}
+
+/*
+ * As `argSize()`, but traverses the `Tape` in reverse, which may be more
+ * efficient if its current position is closer to the back than the front.
+ */
+function argSizeReverse<Value>(gen:Integer, o:Tape<Random<Value>>) ->
+    Integer {
+  let n <- 0;
+  let i <- o.size();
+  while i >= 1 {
+    if !o[i].isConstant() && o[i].generation >= gen {
+      n <- n + o[i].size();
+    } else {
+      o.erase(i);
+    }
+    i <- i - 1;
+  }
+  return n;
 }

@@ -46,21 +46,21 @@ class TestLinearDiscreteDelta < Model {
 
   function forwardLazy() -> Real[_] {
     z:Real[2];
-    z[1] <- ρ.get();
-    z[2] <- x.get();
+    z[1] <- ρ.eval();
+    z[2] <- x.eval();
     return z;
   }
 
   function backwardLazy() -> Real[_] {
     z:Real[2];
     assert !x.hasValue();
-    z[2] <- x.get();
+    z[2] <- x.eval();
     assert !ρ.hasValue();
-    z[1] <- ρ.get();
+    z[1] <- ρ.eval();
     return z;
   }
 
   function marginal() -> Distribution<Integer> {
-    return y.distribution()!;
+    return y.getDistribution();
   }
 }

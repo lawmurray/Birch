@@ -32,21 +32,21 @@ class TestDirichletCategorical < Model {
 
   function forwardLazy() -> Real[_] {
     y:Real[6];
-    y[1..5] <- ρ.get();
-    y[6] <- x.get();
+    y[1..5] <- ρ.eval();
+    y[6] <- x.eval();
     return y;
   }
 
   function backwardLazy() -> Real[_] {
     y:Real[6];
     assert !x.hasValue();
-    y[6] <- x.get();
+    y[6] <- x.eval();
     assert !ρ.hasValue();
-    y[1..5] <- ρ.get();
+    y[1..5] <- ρ.eval();
     return y;
   }
 
   function marginal() -> Distribution<Integer> {
-    return x.distribution()!;
+    return x.getDistribution();
   }
 }

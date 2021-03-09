@@ -73,8 +73,8 @@ final class MultivariateNormalInverseGamma(μ:Expression<Real[_]>,
   }
 
   function simulateLazy() -> Real[_]? {
-    return simulate_multivariate_normal_inverse_gamma(ν.get(), Λ.get(),
-        α.get(), gamma_to_beta(γ.get(), ν.get(), Λ.get()));
+    return simulate_multivariate_normal_inverse_gamma(ν.eval(), Λ.eval(),
+        α.eval(), gamma_to_beta(γ.eval(), ν.eval(), Λ.eval()));
   }
   
   function logpdf(x:Real[_]) -> Real {

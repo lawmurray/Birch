@@ -2,7 +2,7 @@ cpp{{
 #include <boost/math/distributions.hpp>
 }}
 
-/**
+/*
  * CDF of a binomial variate.
  *
  * - x: The variate.
@@ -24,7 +24,7 @@ function cdf_binomial(x:Integer, n:Integer, ρ:Real) -> Real {
   }
 }
 
-/**
+/*
  * CDF of a negative binomial variate.
  *
  * - x: The variate (number of failures).
@@ -44,7 +44,7 @@ function cdf_negative_binomial(x:Integer, k:Integer, ρ:Real) -> Real {
   }
 }
 
-/**
+/*
  * CDF of a Poisson variate.
  *
  * - x: The variate.
@@ -63,7 +63,7 @@ function cdf_poisson(x:Integer, λ:Real) -> Real {
   }
 }
 
-/**
+/*
  * CDF of a Conway-Maxwell-Poisson variate.
  *
  * - x: The variate.
@@ -100,7 +100,7 @@ function cdf_conway_maxwell_poisson(x:Integer, λ:Real, ν:Real, n:Integer) ->
   }
 }
 
-/**
+/*
  * CDF of a uniform integer variate.
  *
  * - x: The variate.
@@ -119,7 +119,7 @@ function cdf_uniform_int(x:Integer, l:Integer, u:Integer) -> Real {
   }
 }
 
-/**
+/*
  * CDF of a categorical variate.
  *
  * - x: The variate.
@@ -135,7 +135,7 @@ function cdf_categorical(x:Integer, ρ:Real[_]) -> Real {
   }
 }
 
-/**
+/*
  * CDF of a uniform variate.
  *
  * - x: The variate.
@@ -156,7 +156,7 @@ function cdf_uniform(x:Real, l:Real, u:Real) -> Real {
   }
 }
 
-/**
+/*
  * CDF of a compound-gamma variate.
  *
  * - x: The variate.
@@ -174,7 +174,7 @@ function cdf_inverse_gamma_gamma(x:Real, k:Real, α:Real, β:Real) -> Real {
   }
 }
 
-/**
+/*
  * CDF of an exponential variate.
  *
  * - x: The variate.
@@ -192,7 +192,7 @@ function cdf_exponential(x:Real, λ:Real) -> Real {
   }
 }
 
-/**
+/*
  * CDF of a Weibull variate.
  *
  * - x: The variate.
@@ -211,7 +211,7 @@ function cdf_weibull(x:Real, k:Real, λ:Real) -> Real {
   }
 }
 
-/**
+/*
  * CDF of a Gaussian variate.
  *
  * - x: The variate.
@@ -225,7 +225,7 @@ function cdf_gaussian(x:Real, μ:Real, σ2:Real) -> Real {
   return 0.5*(1.0 + erf((x - μ)/sqrt(σ2*2.0)));
 }
 
-/**
+/*
  * CDF of a Student's $t$ variate.
  *
  * - x: The variate.
@@ -241,7 +241,7 @@ function cdf_student_t(x:Real, ν:Real) -> Real {
   return prob;
 }
 
-/**
+/*
  * CDF of a Student's $t$ variate with location and scale.
  *
  * - x: The variate.
@@ -256,7 +256,7 @@ function cdf_student_t(x:Real, k:Real, μ:Real, σ2:Real) -> Real {
   return cdf_student_t((x - μ)/sqrt(σ2/k), k);
 }
 
-/**
+/*
  * CDF of a beta variate.
  *
  * - x: The variate.
@@ -278,7 +278,7 @@ function cdf_beta(x:Real, α:Real, β:Real) -> Real {
   }
 }
 
-/**
+/*
  * CDF of $\chi^2$ variate.
  *
  * - x: The variate.
@@ -291,7 +291,7 @@ function cdf_chi_squared(x:Real, ν:Real) -> Real {
   return lower_inc_gamma(0.5*ν, 0.5*x) / gamma(0.5*ν);
 }
 
-/**
+/*
  * CDF of a gamma variate.
  *
  * - x: The variate.
@@ -311,7 +311,7 @@ function cdf_gamma(x:Real, k:Real, θ:Real) -> Real {
   }
 }
 
-/**
+/*
  * CDF of an inverse-gamma variate.
  *
  * - x: The variate.
@@ -331,7 +331,7 @@ function cdf_inverse_gamma(x:Real, α:Real, β:Real) -> Real {
   }
 }
 
-/**
+/*
  * CDF of a normal inverse-gamma variate.
  *
  * - x: The variate.
@@ -347,7 +347,7 @@ function cdf_normal_inverse_gamma(x:Real, μ:Real, σ2:Real, α:Real,
   return cdf_student_t(x, 2.0*α, μ, σ2*2.0*β);
 }
 
-/**
+/*
  * CDF of a beta-binomial variate.
  *
  * - x: The variate.
@@ -365,7 +365,7 @@ function cdf_beta_binomial(x:Integer, n:Integer, α:Real, β:Real) -> Real {
   return P;
 }
 
-/**
+/*
  * CDF of a gamma-Poisson variate.
  *
  * - x: The variate.
@@ -382,7 +382,7 @@ function cdf_gamma_poisson(x:Integer, k:Real, θ:Real) -> Real {
   return cdf_negative_binomial(x, Integer(k), 1.0/(θ + 1.0));
 }
 
-/**
+/*
  * CDF of a Lomax variate.
  *
  * - x: The variate.
@@ -402,7 +402,7 @@ function cdf_lomax(x:Real, λ:Real, α:Real) -> Real {
   }
 }
 
-/**
+/*
  * CDF of a Gaussian variate with a normal inverse-gamma prior.
  *
  * - x: The variate.
@@ -418,7 +418,7 @@ function cdf_normal_inverse_gamma_gaussian(x:Real, μ:Real, a2:Real,
   return cdf_student_t(x, 2.0*α, μ, 2.0*β*(1.0 + a2));
 }
 
-/**
+/*
  * CDF of a Gaussian variate with a normal inverse-gamma prior with linear
  * transformation.
  *
@@ -437,7 +437,7 @@ function cdf_linear_normal_inverse_gamma_gaussian(x:Real, a:Real,
   return cdf_student_t(x, 2.0*α, a*μ + c, 2.0*β*(1.0 + a*a*a2));
 }
 
-/**
+/*
  * CDF of a Gaussian variate with a multivariate linear normal inverse-gamma
  * prior with linear transformation.
  *

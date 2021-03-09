@@ -1,4 +1,4 @@
-/**
+/*
  * Observe a Bernoulli variate.
  *
  * - x: The variate.
@@ -15,7 +15,7 @@ function logpdf_bernoulli(x:Boolean, ρ:Real) -> Real {
   }
 }
 
-/**
+/*
  * Observe a delta variate.
  *
  * - x: The variate.
@@ -31,7 +31,7 @@ function logpdf_delta(x:Integer, μ:Integer) -> Real {
   }
 }
 
-/**
+/*
  * Observe a binomial variate.
  *
  * - x: The variate.
@@ -57,7 +57,7 @@ function logpdf_binomial(x:Integer, n:Integer, ρ:Real) -> Real {
   }
 }
 
-/**
+/*
  * Observe a negative binomial variate.
  *
  * - x: The variate (number of failures).
@@ -77,7 +77,7 @@ function logpdf_negative_binomial(x:Integer, k:Integer, ρ:Real) -> Real {
   }
 }
 
-/**
+/*
  * Observe a Poisson variate.
  *
  * - x: The variate.
@@ -103,7 +103,7 @@ function logpdf_poisson(x:Integer, λ:Real) -> Real {
   }
 }
 
-/**
+/*
  * Observe a Conway-Maxwell-Poisson variate.
  *
  * - x: The variate.
@@ -122,7 +122,7 @@ function logpdf_conway_maxwell_poisson(x:Integer, λ:Real, ν:Real,
       log(normalize_conway_maxwell_poisson(λ, ν, n));
 }
 
-/**
+/*
  * Observe an integer uniform variate.
  *
  * - x: The variate.
@@ -139,7 +139,7 @@ function logpdf_uniform_int(x:Integer, l:Integer, u:Integer) -> Real {
   }
 }
 
-/**
+/*
  * Observe a categorical variate.
  *
  * - x: The variate.
@@ -156,7 +156,7 @@ function logpdf_categorical(x:Integer, ρ:Real[_]) -> Real {
   }
 }
 
-/**
+/*
  * Observe a multinomial variate.
  *
  * - x: The variate.
@@ -183,7 +183,7 @@ function logpdf_multinomial(x:Integer[_], n:Integer, ρ:Real[_]) -> Real {
   }
 }
 
-/**
+/*
  * Observe a Dirichlet variate.
  *
  * - x: The variate.
@@ -206,7 +206,7 @@ function logpdf_dirichlet(x:Real[_], α:Real[_]) -> Real {
   return w;
 }
 
-/**
+/*
  * Observe a uniform variate.
  *
  * - x: The variate.
@@ -225,7 +225,7 @@ function logpdf_uniform(x:Real, l:Real, u:Real) -> Real {
   }
 }
 
-/**
+/*
  * Observe an exponential variate.
  *
  * - x: The variate.
@@ -238,7 +238,7 @@ function logpdf_exponential(x:Real, λ:Real) -> Real {
   return if_then_else(x < 0.0, -inf, log(λ) - λ*x);
 }
 
-/**
+/*
  * Observe a Weibull variate.
  *
  * - x: The variate.
@@ -253,7 +253,7 @@ function logpdf_weibull(x:Real, k:Real, λ:Real) -> Real {
       k*log(λ) - pow(x/λ, k));
 }
 
-/**
+/*
  * Observe a Gaussian variate.
  *
  * - x: The variate.
@@ -267,7 +267,7 @@ function logpdf_gaussian(x:Real, μ:Real, σ2:Real) -> Real {
   return -0.5*(pow(x - μ, 2.0)/σ2 + log(2.0*π*σ2));
 }
 
-/**
+/*
  * Observe a Student's $t$ variate.
  *
  * - x: The variate.
@@ -282,7 +282,7 @@ function logpdf_student_t(x:Real, k:Real) -> Real {
   return lgamma(a) - lgamma(b) - 0.5*log(π*k) - a*log1p(x*x/k);
 }
 
-/**
+/*
  * Observe a Student's $t$ variate with location and scale.
  *
  * - x: The variate.
@@ -301,7 +301,7 @@ function logpdf_student_t(x:Real, k:Real, μ:Real, v:Real) -> Real {
   return lgamma(a) - lgamma(b) - 0.5*log(π*v) - a*log1p(z*z/v);
 }
 
-/**
+/*
  * Observe a beta variate.
  *
  * - x: The variate.
@@ -321,7 +321,7 @@ function logpdf_beta(x:Real, α:Real, β:Real) -> Real {
   }
 }
 
-/**
+/*
  * Observe a $\chi^2$ variate.
  *
  * - x: The variate.
@@ -339,7 +339,7 @@ function logpdf_chi_squared(x:Real, ν:Real) -> Real {
   }
 }
 
-/**
+/*
  * Observe a gamma variate.
  *
  * - x: The variate.
@@ -355,7 +355,7 @@ function logpdf_gamma(x:Real, k:Real, θ:Real) -> Real {
       k*log(θ));
 }
 
-/**
+/*
  * Observe a Wishart variate.
  *
  * - X: The variate.
@@ -371,7 +371,7 @@ function logpdf_wishart(X:LLT, Ψ:LLT, ν:Real) -> Real {
       0.5*ν*(p*log(2.0) + ldet(Ψ)) - lgamma(0.5*ν, p);
 }
 
-/**
+/*
  * Observe an inverse-gamma variate.
  *
  * - x: The variate.
@@ -387,7 +387,7 @@ function logpdf_inverse_gamma(x:Real, α:Real, β:Real) -> Real {
       lgamma(α));
 }
 
-/**
+/*
  * Observe an inverse Wishart variate.
  *
  * - X: The variate.
@@ -403,7 +403,7 @@ function logpdf_inverse_wishart(X:LLT, Ψ:LLT, ν:Real) -> Real {
       0.5*ν*(p*log(2.0) - ldet(Ψ)) - lgamma(0.5*ν, p);
 }
 
-/**
+/*
  * Observe a compound-gamma variate.
  *
  * - x: The variate.
@@ -421,7 +421,7 @@ function logpdf_inverse_gamma_gamma(x:Real, k:Real, α:Real, β:Real) -> Real {
       (α + k)*log(β + x) - lbeta(α, k));
 }
 
-/**
+/*
  * Observe a normal inverse-gamma variate.
  *
  * - x: The variate.
@@ -437,7 +437,7 @@ function logpdf_normal_inverse_gamma(x:Real, μ:Real, a2:Real, α:Real,
   return logpdf_student_t(x, 2.0*α, μ, a2*2.0*β);
 }
 
-/**
+/*
  * Observe a beta-bernoulli variate.
  *
  * - x: The variate.
@@ -457,7 +457,7 @@ function logpdf_beta_bernoulli(x:Boolean, α:Real, β:Real) -> Real {
   }
 }
 
-/**
+/*
  * Observe a beta-binomial variate.
  *
  * - x: The variate.
@@ -479,7 +479,7 @@ function logpdf_beta_binomial(x:Integer, n:Integer, α:Real, β:Real) -> Real {
   }
 }
 
-/**
+/*
  * Observe a beta-negative-binomial variate
  *
  * - x: The variate.
@@ -500,7 +500,7 @@ function logpdf_beta_negative_binomial(x:Integer, k:Integer, α:Real, β:Real) -
   }
 }
 
-/**
+/*
  * Observe a gamma-Poisson variate.
  *
  * - x: The variate.
@@ -517,7 +517,7 @@ function logpdf_gamma_poisson(x:Integer, k:Real, θ:Real) -> Real {
   return logpdf_negative_binomial(x, Integer(k), 1.0/(θ + 1.0));
 }
 
-/**
+/*
  * Observe of a Lomax variate.
  *
  * - x: The variate.
@@ -533,7 +533,7 @@ function logpdf_lomax(x:Real, λ:Real, α:Real) -> Real {
       (α + 1.0)*log1p(x/λ));
 }
 
-/**
+/*
  * Observe a Dirichlet-categorical variate.
  *
  * - x: The variate.
@@ -550,7 +550,7 @@ function logpdf_dirichlet_categorical(x:Integer, α:Real[_]) -> Real {
   }
 }
 
-/**
+/*
  * Observe a Dirichlet-multinomial variate.
  *
  * - x: The variate.
@@ -577,7 +577,7 @@ function logpdf_dirichlet_multinomial(x:Integer[_], n:Integer, α:Real[_]) -> Re
   }
 }
 
-/**
+/*
  * Observe a categorical variate with Chinese restaurant process
  * prior.
  *
@@ -599,7 +599,7 @@ function logpdf_crp_categorical(k:Integer, α:Real, θ:Real,
   }
 }
 
-/**
+/*
  * Observe a Gaussian variate with a normal inverse-gamma prior.
  *
  * - x: The variate.
@@ -615,7 +615,7 @@ function logpdf_normal_inverse_gamma_gaussian(x:Real, μ:Real, a2:Real,
   return logpdf_student_t(x, 2.0*α, μ, 2.0*β*(1.0 + a2));
 }
 
-/**
+/*
  * Observe a Gaussian variate with a normal inverse-gamma prior with linear
  * transformation.
  *
@@ -634,7 +634,7 @@ function logpdf_linear_normal_inverse_gamma_gaussian(x:Real, a:Real,
   return logpdf_student_t(x, 2.0*α, a*μ + c, 2.0*β*(1.0 + a*a*a2));
 }
 
-/**
+/*
  * Observe a multivariate Gaussian variate.
  *
  * - x: The variate.
@@ -648,7 +648,7 @@ function logpdf_multivariate_gaussian(x:Real[_], μ:Real[_], Σ:LLT) -> Real {
   return -0.5*(dot(x - μ, solve(Σ, x - μ)) + n*log(2.0*π) + ldet(Σ));
 }
 
-/**
+/*
  * Observe a multivariate Gaussian distribution with independent elements.
  *
  * - x: The variate.
@@ -666,7 +666,7 @@ function logpdf_multivariate_gaussian(x:Real[_], μ:Real[_], σ2:Real[_]) -> Rea
   return w;
 }
 
-/**
+/*
  * Observe a multivariate Gaussian distribution with independent elements of
  * identical variance.
  *
@@ -681,7 +681,7 @@ function logpdf_multivariate_gaussian(x:Real[_], μ:Real[_], σ2:Real) -> Real {
   return -0.5*(dot(x - μ)/σ2 + n*log(2.0*π*σ2));
 }
 
-/**
+/*
  * Observe a multivariate normal inverse-gamma variate.
  *
  * - x: The variate.
@@ -697,7 +697,7 @@ function logpdf_multivariate_normal_inverse_gamma(x:Real[_], ν:Real[_],
   return logpdf_multivariate_student_t(x, 2.0*α, solve(Λ, ν), inv(Λ), 2.0*β);
 }
 
-/**
+/*
  * Observe a multivariate Gaussian variate with a multivariate normal
  * inverse-gamma prior.
  *
@@ -718,7 +718,7 @@ function logpdf_multivariate_normal_inverse_gamma_multivariate_gaussian(x:Real[_
       llt(identity(n) + canonical(inv(Λ))), 2.0*β);
 }
 
-/**
+/*
  * Observe a multivariate Gaussian variate with a multivariate linear normal
  * inverse-gamma prior with linear transformation.
  *
@@ -742,7 +742,7 @@ function logpdf_linear_multivariate_normal_inverse_gamma_multivariate_gaussian(
       llt(identity(n) + A*solve(Λ, transpose(A))), 2.0*β);
 }
 
-/**
+/*
  * Observe a Gaussian variate with a multivariate linear normal inverse-gamma
  * prior with linear transformation.
  *
@@ -764,7 +764,7 @@ function logpdf_linear_multivariate_normal_inverse_gamma_gaussian(x:Real,
       2.0*β*(1.0 + dot(a, solve(Λ, a))));
 }
 
-/**
+/*
  * Observe a matrix Gaussian distribution.
  *
  * - X: The variate.
@@ -782,7 +782,7 @@ function logpdf_matrix_gaussian(X:Real[_,_], M:Real[_,_], U:LLT, V:LLT) ->
       n*p*log(2.0*π) + n*ldet(V) + p*ldet(U));
 }
 
-/**
+/*
  * Observe a matrix Gaussian distribution with independent columns.
  *
  * - X: The variate.
@@ -800,7 +800,7 @@ function logpdf_matrix_gaussian(X:Real[_,_], M:Real[_,_], U:LLT, σ2:Real[_])
       n*p*log(2.0*π) + n*ldet(diagonal(σ2)) + p*ldet(U));
 }
 
-/**
+/*
  * Observe a matrix Gaussian distribution with independent rows.
  *
  * - X: The variate.
@@ -816,7 +816,7 @@ function logpdf_matrix_gaussian(X:Real[_,_], M:Real[_,_], V:LLT) -> Real {
       n*ldet(V));
 }
 
-/**
+/*
  * Observe a matrix Gaussian distribution with independent elements.
  *
  * - X: The variate.
@@ -833,7 +833,7 @@ function logpdf_matrix_gaussian(X:Real[_,_], M:Real[_,_], σ2:Real[_]) ->
       n*p*log(2.0*π) + n*ldet(diagonal(σ2)));
 }
 
-/**
+/*
  * Observe a matrix Gaussian distribution with independent elements
  * of identical variance.
  *
@@ -850,7 +850,7 @@ function logpdf_matrix_gaussian(X:Real[_,_], M:Real[_,_], σ2:Real) ->
   return -0.5*(trace(outer(transpose(X - M))/σ2) + n*p*log(2.0*π*σ2));
 }
 
-/**
+/*
  * Observe a matrix normal-inverse-Wishart variate.
  *
  * - X: The variate.
@@ -870,7 +870,7 @@ function logpdf_matrix_normal_inverse_wishart(X:Real[_,_], N:Real[_,_],
   return logpdf_matrix_student_t(X, k - p + 1.0, M, Σ, Ψ);
 }
 
-/**
+/*
  * Observe a Gaussian variate with matrix-normal-inverse-Wishart prior.
  *
  * - X: The variate.
@@ -890,7 +890,7 @@ function logpdf_matrix_normal_inverse_wishart_matrix_gaussian(X:Real[_,_],
   return logpdf_matrix_student_t(X, k - p + 1.0, M, Σ, Ψ);
 }
 
-/**
+/*
  * Observe a Gaussian variate with linear transformation of a
  * matrix-normal-inverse-Wishart prior.
  *
@@ -914,7 +914,7 @@ function logpdf_linear_matrix_normal_inverse_wishart_matrix_gaussian(
   return logpdf_matrix_student_t(X, k - p + 1.0, A*M + C, Σ, Ψ);
 }
 
-/**
+/*
  * Observe a Gaussian variate with linear transformation of a
  * matrix-normal-inverse-Wishart prior.
  *
@@ -937,7 +937,7 @@ function logpdf_linear_matrix_normal_inverse_wishart_multivariate_gaussian(
   return logpdf_multivariate_student_t(x, k - p + 1.0, dot(a, M) + c, σ2, Ψ);
 }
 
-/**
+/*
  * Observe a multivariate Student's $t$-distribution variate with location
  * and scale.
  *
@@ -954,7 +954,7 @@ function logpdf_multivariate_student_t(x:Real[_], k:Real, μ:Real[_], U:LLT,
   return logpdf_multivariate_student_t(x, k, μ, v, U);
 }
 
-/**
+/*
  * Observe a multivariate Student's $t$-distribution variate with location
  * and scale.
  *
@@ -976,7 +976,7 @@ function logpdf_multivariate_student_t(x:Real[_], k:Real, μ:Real[_], u:Real,
       0.5*ldet(V) - a*log1p(dot(z, solve(V, z))/u);
 }
 
-/**
+/*
  * Observe a matrix Student's $t$-distribution variate with location
  * and scale.
  *
@@ -1000,7 +1000,7 @@ function logpdf_matrix_student_t(X:Real[_,_], k:Real, M:Real[_,_], U:LLT,
       0.5*n*ldet(V) - a*ldet(identity(n) + solve(U, Z)*solve(V, transpose(Z)));
 }
 
-/**
+/*
  * Observe a multivariate uniform distribution.
  *
  * - x: The variate.
@@ -1022,7 +1022,7 @@ function logpdf_independent_uniform(x:Real[_], l:Real[_], u:Real[_]) -> Real {
   return w;
 }
 
-/**
+/*
  * Observe a multivariate uniform distribution over integers.
  *
  * - x: The variate.

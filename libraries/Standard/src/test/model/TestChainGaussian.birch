@@ -42,7 +42,7 @@ class TestChainGaussian < Model {
   function forwardLazy() -> Real[_] {
     y:Real[5];
     for i in 1..5 {
-      y[i] <- x[i].get();
+      y[i] <- x[i].eval();
     }
     return y;
   }
@@ -51,7 +51,7 @@ class TestChainGaussian < Model {
     y:Real[5];
     for i in 0..4 {
       assert !x[5 - i].hasValue();
-      y[5 - i] <- x[5 - i].get();
+      y[5 - i] <- x[5 - i].eval();
     }
     return y;
   }

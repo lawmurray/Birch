@@ -51,24 +51,24 @@ class TestLinearMultivariateNormalInverseGammaGaussian < Model {
 
   function forwardLazy() -> Real[_] {
     y:Real[12];
-    y[1] <- σ2.get();
-    y[2..11] <- μ.get();
-    y[12] <- x.get();
+    y[1] <- σ2.eval();
+    y[2..11] <- μ.eval();
+    y[12] <- x.eval();
     return y;
   }
 
   function backwardLazy() -> Real[_] {
     y:Real[12];
     assert !x.hasValue();
-    y[12] <- x.get();
+    y[12] <- x.eval();
     assert !μ.hasValue();
-    y[2..11] <- μ.get();
+    y[2..11] <- μ.eval();
     assert !σ2.hasValue();
-    y[1] <- σ2.get();
+    y[1] <- σ2.eval();
     return y;
   }
 
   function marginal() -> Distribution<Real> {
-    return x.distribution()!;
+    return x.getDistribution();
   }
 }

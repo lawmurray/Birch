@@ -1,73 +1,115 @@
 /**
- * Lazy expression.
+ * Delayed expression.
  *
  * - Value: Value type.
  *
- * - x: Fixed value, or nil to evaluate.
+ * Delayed expressions (alternatively: lazy expressions, compute graphs,
+ * expression templates) encode mathematical expressions that can be
+ * evaluated, differentiated, and moved (using Markov kernels). They are
+ * assembled using mathematical operators and functions much like ordinary
+ * expressions, but where one or more operands or arguments are
+ * [Random](../Random/) objects. Where an ordinary expression is evaluated
+ * immediately into a result, delayed expressions evaluate to further
+ * `Expression` objects.
  *
- * The simplest use case of lazy expressions is to simply construct them and
- * then call `value()` to evaluate them. Evaluations are memoized, so that
- * subsequent calls to `value()` do not require re-evaluation of the
- * expression, they simply return the memoized value. Objects may be reused
- * in multiple expressions, e.g. two expressions with a common subexpression
- * can share that subexpression.
+ * Simple delayed expressions are trees of subexpressions with `Random` or
+ * [Boxed](../Boxed) objects at the leaves. In general, however, a delayed
+ * expression can be a directed acyclic graph, as subexpressions may be reused
+ * during assembly.
  *
+ * ### Simple use
+ *
+ * !!! tip
+ *     Call `value()` on an `Expression` to evaluate it.
+
+ * The simplest use case of a delayed expression is to assemble it and then
+ * evaluate it by calling `value()`. Evaluations are memoized, so further
+ * calls `value()` do not require re-evaluation, they simply return the
+ * memoized value.
+ *
+ * Once `value()` is called on an `Expression`, it and all subexpressions that
+ * constitute it are considered *constant*. This particularly affects any
+ * `Random` objects in the expression, the value of which can no longer be
+ * alterated.
+ *
+ * ### Advanced use
+ *
+ * !!! tip
+ *     Consider calling `helper()` on an `Expression` to obtain an
+ *     [ExpressionHelper](../ExpressionHelper/) wrapper around it---this
+ *     provides a simpler interface if needing to differentiate or apply a
+ *     Markov kernel.
+ * 
  * More elaborate use cases include computing gradients and applying Markov
- * kernels. For this purpose operations are separated into *closed world*
- * and *open world* operations. The world is that of lazy expressions.
+ * kernels. Call `eval()` to evaluate the expression in the same way as for
+ * `value()`, but without rendering it constant. Any `Random` objects in the
+ * expression that have not previously been rendered constant by a call to
+ * `value()` are then considered *arguments* eligible for moving.
  *
- * 1. The quintessential **open world** operation is `value()`. The evaluated
- *    value may be used in any context, including eager-mode expressions and
- *    I/O operations. Consequently, the evaluated value of the expression
- *    must be made *constant* to avoid the inconsistency (and possibly
- *    incorrectness) of different evaluated values being used in different
- *    contexts.
+ * After updating the value of arguments, use `reval()` to re-evaluate
+ * the expression with those new values.
  *
- * 2. **Closed world** operations include `get()`, `pilot()`, `grad()`, and
- *    `move()`. The caller of such member functions guarantees that the value
- *    is only used in the world of lazy expressions. The evaluated value of
- *    the expression can remain *variable* and still produce consistent
- *    results---it may, for example, be moved with a Markov kernel.
+ * At any time, use `grad()` to compute the gradient of an expression with
+ * respect to its arguments. The gradient is accumulated into those arguments
+ * (the `Random` objects).
  *
- * To keep track of whether an evaluated value is open world (constant) or
- * closed world (variable), expressions are stateful:
+ * !!! tip
+ *     `ExpressionHelper` makes it easy to update the value of arguments and
+ *     collect gradients from them.
  *
- * - An Expression is initially considered *variable*.
- * - Once an open world operation is performed on the Expression, it and any
- *   subexpressions are considered *constant*.
+ * Use `value()`, not `eval()`, unless you are taking responsibility for
+ * correctness (e.g. moving arguments in a manner invariant to some
+ * target distribution, using a Markov kernel). Otherwise, program
+ * behavior may lack self-consistency. Consider, for example:
  *
- * This particularly affects the `grad()` and `move()` operations:
+ *     if x.value() >= 0.0 {
+ *       doThis();
+ *     } else {
+ *       doThat();
+ *     }
  *
- * - `grad()` will compute gradients with respect to any variable
- *   [Random](../../classes/Random/) objects but not constant objects, and
- *   similarly,
- * - `move()` will apply a Markov kernel to any variable
- *   [Random](../../classes/Random/) objects but not constant objects.
+ * This is correct usage. Using `eval()` instead of `value()` here allows
+ * some other part of the code to later change the value of the random
+ * variable `x` to a negative value, and the program lacks
+ * self-consistency: it executed `doThis()` instead of `doThat()` based
+ * on a previous value of `x`.
  *
  * !!! attention
- *     Unless you are working on something like a Markov kernel, or other
- *     closed-world feature, you want to use `value()`, not `get()` or
- *     `pilot()`. Doing otherwise may risk correctness. Consider:
- *
- *         if x.value() >= 0.0 {
- *           doThis();
- *         } else {
- *           doThat();
- *         }
- *
- *     This is correct usage. Using `get()` or `pilot()` instead of `value()`
- *     here may result in a subsequent move on the value of `x` (by e.g.
- *     `MoveParticleFilter`) that switches the sign of the evaluated value,
- *     but does not change the branch taken, resulting in an invalid trace
- *     and incorrect results. This is because the evaluated value of the
- *     expression is not being used in the world of lazy expressions here:
- *     the `if` statement is not lazily evaluated.
+ *     Correctness is the programmer's responsibility when using the advanced
+ *     interface.
  */
-abstract class Expression<Value> < DelayExpression {
+abstract class Expression<Value> {
   /**
    * Memoized value.
    */
   x:Value?;
+
+  /**
+   * Generation in which the expression was evaluated. This is zero unless
+   * `eval()` has been called with a given generation provided, and the
+   * expression has not subsequently been made constant (in which case it
+   * reverts to zero).
+   */
+  generation:Integer <- 0;
+
+  /**
+   * Number of times this appears as a subexpression during an evaluation.
+   */
+  evalCount:Integer16 <- 0;
+
+  /**
+   * Number of times this has been visited during computation of gradients,
+   * collecting arguments, moving, etc. Used by visitors for pre- and post-
+   * visit operations, such as collecting upstream gradients before
+   * post-visit, etc.
+   */
+  visitCount:Integer16 <- 0;
+
+  /**
+   * Has `value()` been called? This is used as a short-circuit for shared
+   * subexpressions.
+   */
+  flagConstant:Boolean <- false;   ///@todo Replace with virtual function
 
   /**
    * Value assignment.
@@ -77,15 +119,79 @@ abstract class Expression<Value> < DelayExpression {
   }
 
   /**
+   * Length of result. This is synonymous with `rows()`.
+   */
+  final function length() -> Integer {
+    return rows();
+  }
+
+  /**
+   * Size of result. This is equal to `rows()*columns()`.
+   */
+  final function size() -> Integer {
+    return rows()*columns();
+  }
+
+  /**
+   * Number of rows in result.
+   */
+  final function rows() -> Integer {
+    if x? {
+      return global.rows(x!);
+    } else {
+      return doRows();
+    }
+  }
+  abstract function doRows() -> Integer;
+  
+  /**
+   * Number of columns in result.
+   */
+  final function columns() -> Integer {
+    if x? {
+      return global.columns(x!);
+    } else {
+      return doColumns();
+    }
+  }
+  abstract function doColumns() -> Integer;
+
+  /**
+   * Depth of the expression tree.
+   */
+  final function depth() -> Integer {
+    if isConstant() {
+      return 1;
+    } else {
+      return doDepth();
+    }
+  }
+  abstract function doDepth() -> Integer;
+
+  /**
+   * Is this a Random expression?
+   */
+  function isRandom() -> Boolean {
+    return false;
+  }
+  
+  /**
+   * Is this a constant expression?
+   */
+  final function isConstant() -> Boolean {
+    return flagConstant;
+  }
+
+  /**
    * Does this have a value?
    *
-   * Returns: true if a value has been evaluated with `value()`, `pilot()`
-   * or `get()`, false otherwise.
+   * Returns: true if a value has been evaluated with `value()` or `eval()`,
+   * false otherwise.
    *
    * Note that this differs from `isConstant()`, which will only return true
    * for a value that has been evaluated with `value()`.
    */
-  function hasValue() -> Boolean {
+  final function hasValue() -> Boolean {
     return x?;
   }
 
@@ -94,417 +200,288 @@ abstract class Expression<Value> < DelayExpression {
    *
    * - x: Value.
    */
-  function setValue(x:Value) {
+  final function setValue(x:Value) {
     assert !this.x?;
     this.x <- x;
-    constant();
+    value();
   }
 
   /**
-   * Set the pilot value.
+   * Set the evaluated value.
    *
-   * - x: Pilot value.
+   * - x: Evaluated value.
    */
-  function setPilot(x:Value) {
+  final function setEval(x:Value) {
     assert !this.x?;
     this.x <- x;
   }
 
   /**
-   * If this is a Random, get the distribution associated with it, if any,
-   * otherwise nil.
-   */
-  function distribution() -> Distribution<Value>? {
-    return nil;
-  }
-
-  function rows() -> Integer {
-    if x? {
-      return global.rows(x!);
-    } else {
-      return doRows();
-    }
-  }
-  
-  abstract function doRows() -> Integer;
-  
-  function columns() -> Integer {
-    if x? {
-      return global.columns(x!);
-    } else {
-      return doColumns();
-    }
-  }
-
-  abstract function doColumns() -> Integer;
-
-  function depth() -> Integer {
-    if isConstant() {
-      return 1;
-    } else {
-      return doDepth();
-    }
-  }
-  
-  abstract function doDepth() -> Integer;
-
-  /**
-   * Evaluate, open world.
+   * Evaluate and make constant.
    *
    * Returns: The evaluated value of the expression.
    *
    * An expression is considered constant once `value()` has been called on
    * it. All subexpressions are necessarily also then constant, including any
-   * Random objects that occur, which are no longer considered variables for
-   * the purpose of `grad()` and `move()`.
-   *
-   * If this is not the intended behavior, consider `get()` or `pilot()`.
+   * `Random` objects that occur, which are no longer considered arguments for
+   * the purpose of `grad()`.
    */
   final function value() -> Value {
     if !isConstant() {
       if !hasValue() {
         x <- doValue();
-      } else {
-        doConstant();
       }
-      doClearGrad();
-      doDetach();
-      generation <- 0;
-      pilotCount <- 0;
-      gradCount <- 0;
-      flagConstant <- true;
-      flagPrior <- true;
-    }
-    return x!;
-  }
-  
-  abstract function doValue() -> Value;
-
-  /**
-   * Evaluate, closed world, before a call to `grad()`.
-   *
-   * - gen: Generation number.
-   *
-   * Returns: The evaluated value of the expression.
-   *
-   * If the expression has not yet been evaluated (excepting a previous call
-   * to `get()`), the generation number `gen` is assigned to it for future
-   * use.
-   *
-   * `pilot()` may be called multiple times, which accumulates a count. If
-   * the intent is to compute gradients, `grad()` must subsequently be called
-   * the same number of times. This is because subexpressions may be shared.
-   * The calls to `pilot()` are used to determine how many times the object
-   * occurs as a subexpression. The subsequent calls to `grad()` accumulate
-   * upstream gradients this number of times before recursing. This is an
-   * important optimization for many use cases, such as computing gradients
-   * through Bayesian updates.
-   */
-  final function pilot(gen:Integer) -> Value {
-    if !isConstant() {
-      if pilotCount == 0 {
-        if !hasValue() {
-          x <- doPilot(gen);
-        } else {
-          /* occurs when get() called previously, must update counts */
-          doCount(gen);
-        }
-        generation <- gen;
-      }
-      pilotCount <- pilotCount + 1;
-    }
-    return x!;
-  }
-  
-  abstract function doPilot(gen:Integer) -> Value;
-
-  /**
-   * Evaluate, closed world.
-   *
-   * Returns: The evaluated value of the expression.
-   *
-   * `get()` is similar to `pilot()` except that it does not update counts
-   * in anticipation of a following call too `grad()`. It can be used at any
-   * time to retrieve the evaluated value of the expression, evaluating it if
-   * necessary, without disrupting the state.
-   */
-  final function get() -> Value {
-    if !x? {
-      x <- doGet();
-    }
-    return x!;
-  }
-
-  abstract function doGet() -> Value;
-
-  /**
-   * Move and re-evaluate. Variables are updated with a Markov kernel,
-   * possibly using gradient information, and the expression re-evaluated
-   * with these new values.
-   *
-   * - gen: Generation limit.
-   * - κ: Markov kernel, $\kappa(\mathrm{d}x^\prime \mid x)$.
-   *
-   * Returns: The evaluated value of the expression.
-   *
-   * The generation limit `gen` works to truncate the recursion, as for
-   * `grad()`.
-   */
-  final function move(gen:Integer, κ:Kernel) -> Value {
-    if !isConstant() && generation >= gen {
-      assert pilotCount > 0;
-      if gradCount == 0 {
-        x <- doMove(gen, κ);
-        doClearGrad();
-      }
-      gradCount <- gradCount + 1;
-      if gradCount == pilotCount {
-        gradCount <- 0;
-      }
-    }
-    return x!;
-  }
-
-  abstract function doMove(gen:Integer, κ:Kernel) -> Value;
-
-  /**
-   * Evaluate log-ratio of proposal probability densities after move.
-   *
-   * - gen: Generation limit.
-   * - x: Starting state, $x$.
-   * - κ: Markov kernel, $\kappa(\mathrm{d}x^\prime \mid x)$.
-   *
-   * Returns: The log-ratio of proposal probability densities after move,
-   * $\log q(x \mid x^\prime) - \log q(x^\prime \mid x)$. This object is
-   * considered to represent the proposed state $x^\prime$.
-   *
-   * The generation limit `gen` works to truncate the recursion, as for
-   * `grad()`.
-   */
-  final function compare(gen:Integer, x:DelayExpression, κ:Kernel) -> Real {
-    let w <- 0.0;
-    if !isConstant() && generation >= gen {
-      assert pilotCount > 0;
-      if gradCount == 0 {
-        w <- doCompare(gen, x, κ);
-      }
-      gradCount <- gradCount + 1;
-      if gradCount == pilotCount {
-        gradCount <- 0;
-      }
-    }
-    return w;
-  }
-
-  abstract function doCompare(gen:Integer, x:DelayExpression,
-      κ:Kernel) -> Real;
-
-  /**
-   * Make constant, as though calling `value()`, but without re-evaluating
-   * the expression.
-   */
-  function count(gen:Integer) {
-    if !isConstant() {
-      if pilotCount == 0 {
-        assert hasValue();
-        doCount(gen);
-        generation <- gen;
-      }
-      pilotCount <- pilotCount + 1;
-    }
-  }
-  
-  abstract function doCount(gen:Integer);
-  
-  /**
-   * Update counts, as though calling `pilot()`, but without re-evaluating
-   * the expression.
-   */
-  function constant() {
-    if !isConstant() {
-      assert hasValue();
       doConstant();
       doClearGrad();
-      doDetach();
       generation <- 0;
-      pilotCount <- 0;
-      gradCount <- 0;
+      evalCount <- 0;
+      visitCount <- 0;
       flagConstant <- true;
-      flagPrior <- true;
     }
+    return x!;
   }
-  
+  abstract function doValue() -> Value;
   abstract function doConstant();
-  
-  /*
-   * Detach any children.
-   */
-  abstract function doDetach();
 
   /**
-   * Evaluate gradients. Gradients are computed with respect to all
-   * variables (Random objects in the pilot or gradient state).
+   * Evaluate and keep variable.
    *
-   * - Gradient: Gradient type. Must be one of `Real`, `Real[_]` or
-   *   `Real[_,_]`.
+   * Returns: The evaluated value of the expression.
+   */
+  final function eval() -> Value {
+    return eval(1);
+  }
+
+  /**
+   * Evaluate and keep variable.
+   *
+   * - gen: Generation.
+   *
+   * Returns: The evaluated value of the expression.
+   *
+   * If the object has not previously be assigned a generation, it is assigned
+   * to `gen`.
+   */
+  final function eval(gen:Integer) -> Value {
+    if !isConstant() {
+      if !hasValue() {
+        x <- doEval(gen);
+      }
+      if generation == 0 {
+        generation <- gen;
+      }
+    }
+    return x!;
+  }
+  final function countEval(gen:Integer) -> Value {
+    if !isConstant() {
+      if !hasValue() {
+        x <- doEval(gen);
+      }
+      if generation == 0 {
+        generation <- gen;
+      }
+      evalCount <- evalCount + 1;
+    }
+    return x!;
+  }
+  abstract function doEval(gen:Integer) -> Value;
+
+  /**
+   * Re-evaluate and keep variable.
+   *
+   * Returns: The evaluated value of the expression.
+   */
+  final function reval() -> Value {
+    return reval(1);
+  }
+
+  /**
+   * Re-evaluate and keep variable.
    *
    * - gen: Generation limit.
-   * - d: Upstream gradient. For an initial call, this should be the unit for
-   *      the given type, e.g. 1.0, a vector of ones, or the identity matrix.
+   *
+   * Returns: The evaluated value of the expression.
+   *
+   * The generation limit `gen` works to truncate the recursion, as for
+   * `grad()`.
+   */
+  final function reval(gen:Integer) -> Value {
+    assert hasValue();
+    if !isConstant() && generation >= gen {
+      assert evalCount == 0;
+      x <- doReval(gen);
+    }
+    return x!;
+  }
+  final function countReval(gen:Integer) -> Value {
+    assert hasValue();
+    if !isConstant() && generation >= gen {
+      if visitCount == 0 {
+        x <- doReval(gen);
+      }
+      visitCount <- visitCount + 1;
+      if visitCount == evalCount {
+        visitCount <- 0;  // reset for next time
+      }
+    }
+    return x!;
+  }
+  abstract function doReval(gen:Integer) -> Value;
+
+  /**
+   * Evaluate the gradient of the expression with respect to its arguments.
+   *
+   * - d: Upstream gradient.
+   */
+  final function grad<Gradient>(d:Gradient) {
+    return grad(1, d);
+  }
+
+  /**
+   * Evaluate the gradient of the expression with respect to its arguments.
+   *
+   * - gen: Generation limit.
+   * - d: Upstream gradient.
+   *
+   * `eval()` must have been called before calling `grad()`.
+   *
+   * The expression is treated as a function, and the arguments defined
+   * as those `Random` objects in the expression that are not constant.
    *
    * The generation limit `gen` is used to truncate the recursion. Any
-   * expressions that have been assigned a generation number less of than
-   * `gen` (usually at the time they are evaluated with `pilot()`), are
-   * considered constant for the purposes of gradient evaluation. As the
-   * default generation is zero, a value of less than or equal to zero here
-   * will not truncate the recursion.
+   * expressions that have been assigned a generation number less than
+   * `gen` (usually at the time they are evaluated with `eval()`), are
+   * considered constant for the purposes of differentiation. A value of
+   * less than or equal to zero will not truncate the recursion.
    *
-   * `grad()` must be called as many times as `pilot()` was previously
-   * called. This is because subexpressions may be shared. The calls to
-   * `pilot()` are used to determine how many times the object occurs as a
-   * subexpression. The subsequent calls to `grad()` accumulate upstream
-   * gradients this number of times before recursing. This is an important
-   * optimization for many use cases, such as computing gradients through
-   * Bayesian updates.
-   *
-   * Reverse-mode automatic differentiation is used. The previous calls to
-   * `pilot()` constitute the forward pass, the subsequent calls to `grad()`
-   * constitute the backward pass. If the expression tree encodes
+   * If the expression encodes
    *
    * $$x_n = f(x_0) = (f_n \circ \cdots \circ f_1)(x_0),$$
    *
-   * and this particular node encodes one of those functions
-   * $x_i = f_i(x_{i-1})$, the argument to the function is
+   * and this particular object encodes one of those functions
+   * $x_i = f_i(x_{i-1})$, the upstream gradient `d` is
    *
    * $$\frac{\partial (f_n \circ \cdots \circ f_{i+1})}
-   * {\partial x_i}\left(x_i\right),$$
+   * {\partial x_i}\left(x_i\right).$$
    *
-   * it computes
+   * `grad()` then computes:
    *
    * $$\frac{\partial (f_n \circ \cdots \circ f_{i})}
    * {\partial x_{i-1}}\left(x_{i-1}\right),$$
    *
-   * and passes the result to its child, which encodes $f_{i-1}$, to continue
-   * the computation. The variable (Random object) that encodes $x_0$ keeps
-   * the final result.
+   * and passes the result to the next step in the chain, which encodes
+   * $f_{i-1}$. The argument that encodes $x_0$ keeps the final result---it
+   * is a `Random` object.
+   *
+   * Reverse-mode automatic differentiation is used. The previous call to
+   * `eval()` constitutes the forward pass, and the call to `grad()` the
+   * backward pass.
+   *
+   * Because expressions are, in general, directed acyclic graphs, a counting
+   * mechanism is used to accumulate upstream gradients into any shared
+   * subexpressions before visiting them. This ensures that each subexpression
+   * is visited only once, not as many times as it is used. Mathematically,
+   * this is equivalent to factorizing out the subexpression as a common
+   * factor in the application of the chain rule. It turns out to be
+   * particularly important when expressions include posterior parameters
+   * after multiple Bayesian updates applied by automatic conditioning. Such
+   * expressions can have many common subexpressions, and the counting
+   * mechanism results in automatic differentiation of complexity $O(N)$ in
+   * the number of updates, as opposed to $O(N^2)$ otherwise.
    */
   final function grad<Gradient>(gen:Integer, d:Gradient) {
+    assert visitCount == 0;
     if generation < gen {
-      constant();
+      value();  // make constant
     } else if !isConstant() {
-      assert pilotCount > 0;
-      
-      if gradCount == 0 {
-        doClearGrad();
+      assert evalCount == 0;
+      doClearGrad();  // start accumulation
+      doAccumulateGrad(d);
+      doGrad(gen);
+      if !isRandom() {
+          doClearGrad();  // clear intermediate gradients to save memory
+      }
+    }
+  }
+  final function countGrad<Gradient>(gen:Integer, d:Gradient) {
+    if generation < gen {
+      value();  // make constant
+    } else if !isConstant() {
+      assert evalCount > 0;
+      if visitCount == 0 {
+        doClearGrad();  // start accumulation
       }
       doAccumulateGrad(d);
-      
-      gradCount <- gradCount + 1;
-      if gradCount == pilotCount {
-        /* all upstream gradients accumulated, continue recursion and reset
-         * count for next time */
+      visitCount <- visitCount + 1;
+      if visitCount == evalCount {
+        /* upstream gradients accumulated */
         doGrad(gen);
-        gradCount <- 0;
         if !isRandom() {
-          doClearGrad();
+          doClearGrad();  // clear intermediate gradients to save memory
         }
+        visitCount <- 0;  // reset for next time
       }
     }
   }
-
-  /**
-   * Evaluate gradient for an element of a vector.
-   *
-   * - gen: Generation limit.
-   * - d: Upstream gradient.
-   * - i: Element index.
-   */
-  final function grad(gen:Integer, d:Real, i:Integer) {
+  final function countGrad(gen:Integer, d:Real, i:Integer) {
     if generation < gen {
-      constant();
+      value();  // make constant
     } else if !isConstant() {
-      assert pilotCount > 0;
-      
-      if gradCount == 0 {
-        doClearGrad();
+      assert evalCount > 0;
+      if visitCount == 0 {
+        doClearGrad();  // start accumulation
       }
       doAccumulateGrad(d, i);
-      
-      gradCount <- gradCount + 1;
-      if gradCount == pilotCount {
-        /* all upstream gradients accumulated, continue recursion and reset
-         * count for next time */
+      visitCount <- visitCount + 1;
+      if visitCount == evalCount {
+        /* upstream gradients accumulated */
         doGrad(gen);
-        gradCount <- 0;
         if !isRandom() {
-          doClearGrad();
+          doClearGrad();  // clear intermediate gradients to save memory
         }
+        visitCount <- 0;  // reset for next time
       }
     }
   }
-
-  /**
-   * Evaluate gradient for an element of a matrix.
-   *
-   * - gen: Generation limit.
-   * - d: Upstream gradient.
-   * - i: Row index.
-   * - j: Column index.
-   */
-  final function grad(gen:Integer, d:Real, i:Integer, j:Integer) {
+  final function countGrad(gen:Integer, d:Real, i:Integer, j:Integer) {
     if generation < gen {
-      constant();
+      value();  // make constant
     } else if !isConstant() {
-      assert pilotCount > 0;
-      
-      if gradCount == 0 {
-        doClearGrad();
+      assert evalCount > 0;
+      if visitCount == 0 {
+        doClearGrad();  // start accumulation
       }
       doAccumulateGrad(d, i, j);
-      
-      gradCount <- gradCount + 1;
-      if gradCount == pilotCount {
-        /* all upstream gradients accumulated, continue recursion and reset
-         * count for next time */
+      visitCount <- visitCount + 1;
+      if visitCount == evalCount {
+        /* upstream gradients accumulated */
         doGrad(gen);
-        gradCount <- 0;
         if !isRandom() {
-          doClearGrad();
+          doClearGrad();  // clear intermediate gradients to save memory
         }
+        visitCount <- 0;  // reset for next time
       }
     }
   }
-  
   function doAccumulateGrad(d:Real) {
     assert false;
   }
-  
   function doAccumulateGrad(d:Real[_]) {
     assert false;
   }
-  
   function doAccumulateGrad(d:Real[_,_]) {
     assert false;
   }
-
   function doAccumulateGrad(d:Real, i:Integer) {
     assert false;
   }
-
   function doAccumulateGrad(d:Real, i:Integer, j:Integer) {
     assert false;
   }
-
-  /*
-   * Clear accumulated gradient.
-   */
-  abstract function doClearGrad();
-  
-  /*
-   * Evaluate gradient.
-   */
   abstract function doGrad(gen:Integer);
-
+  abstract function doClearGrad();  // clear accumulated gradient
+  
   /*
    * Attempt to graft this expression onto the delayed sampling graph.
    *
@@ -749,4 +726,32 @@ abstract class Expression<Value> < DelayExpression {
   override function write(buffer:Buffer) {
     buffer.set(value());
   }
+}
+
+/**
+ * Length of an Expression.
+ */
+function length<Value>(x:Expression<Value>) -> Integer {
+  return x.length();
+}
+
+/**
+ * Size of an Expression.
+ */
+function size<Value>(x:Expression<Value>) -> Integer {
+  return x.size();
+}
+
+/**
+ * Number of rows of an Expression.
+ */
+function rows<Value>(x:Expression<Value>) -> Integer {
+  return x.rows();
+}
+
+/**
+ * Number of columns of an Expression.
+ */
+function columns<Value>(x:Expression<Value>) -> Integer {
+  return x.columns();
 }

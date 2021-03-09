@@ -35,7 +35,7 @@ final class LinearMultivariateNormalInverseGammaMultivariateGaussian(
 
   function simulateLazy() -> Real[_]? {
     return simulate_linear_multivariate_normal_inverse_gamma_multivariate_gaussian(
-        A.get(), μ.ν.get(), μ.Λ.get(), c.get(), μ.α.get(), μ.γ.get());
+        A.eval(), μ.ν.eval(), μ.Λ.eval(), c.eval(), μ.α.eval(), μ.γ.eval());
   }
   
   function logpdf(x:Real[_]) -> Real {

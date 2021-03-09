@@ -4,15 +4,18 @@
  * ```mermaid
  * classDiagram
  *    ParticleFilter <|-- AliveParticleFilter
- *    ParticleFilter <|-- MoveParticleFilter
  *    ParticleFilter <|-- ConditionalParticleFilter
  *    link ParticleFilter "../ParticleFilter/"
  *    link AliveParticleFilter "../AliveParticleFilter/"
- *    link MoveParticleFilter "../MoveParticleFilter/"
  *    link ConditionalParticleFilter "../ConditionalParticleFilter/"
  * ```
  */
 class ParticleFilter {
+  /**
+   * Kernel for move steps.
+   */
+  κ:Kernel?;
+
   /**
    * Particles.
    */
@@ -85,7 +88,7 @@ class ParticleFilter {
    * Create a particle of the type required for this filter.
    */
   function particle(model:Model) -> Particle {
-    return Particle(model);
+    return construct<Particle>(model, delayed, κ?);
   }
 
   /**
@@ -114,7 +117,7 @@ class ParticleFilter {
    * - input: Optional input buffer.
    */
   function filter(t:Integer, input:Buffer) {
-    resample();
+    resample(t);
     simulate(t, input);
     reduce();
   }
@@ -124,11 +127,12 @@ class ParticleFilter {
    */
   function simulate(input:Buffer) {
     parallel for n in 1..nparticles {
-      let handler <- construct<Handler>(delayed, false);
-      with (handler) {
-        x[n].m.read(input);
-        x[n].m.simulate();
-        w[n] <- w[n] + handler.w;
+      let m <- x[n].m;
+      let h <- x[n].h;
+      with h {
+        m.read(input);
+        m.simulate();
+        w[n] <- w[n] + h.w;
       }
     }
   }
@@ -138,11 +142,12 @@ class ParticleFilter {
    */
   function simulate(t:Integer, input:Buffer) {
     parallel for n in 1..nparticles {
-      let handler <- construct<Handler>(delayed, false);
-      with (handler) {
-        x[n].m.read(t, input);
-        x[n].m.simulate(t);
-        w[n] <- w[n] + handler.w;
+      let m <- x[n].m;
+      let h <- x[n].h;
+      with h {
+        m.read(t, input);
+        m.simulate(t);
+        w[n] <- w[n] + h.w;
       }
     }
   }
@@ -162,13 +167,16 @@ class ParticleFilter {
 
   /**
    * Resample particles.
+   *
+   * - t: The step number.
    */
-  function resample() {
+  function resample(t:Integer) {
     if ess <= trigger*nparticles {
       a <- resample_systematic(w);
       w <- vector(0.0, nparticles);
       copy();
       collect();
+      move(t);
     } else {
       /* normalize weights to sum to nparticles */
       a <- iota(1, nparticles);
@@ -191,6 +199,21 @@ class ParticleFilter {
           x[n] <- global.copy2(x[m]);
         }
       }
+    }
+  }
+
+  /**
+   * Move particles during resampling.
+   *
+   * - t: The step number.
+   */
+  function move(t:Integer) {
+    if κ? {
+      let α <- vector(0.0, nparticles);  // acceptance rates for each particle
+      parallel for n in 1..nparticles {
+        α[n] <- κ!.apply(t, x[n]);
+      }
+      raccepts <- sum(α)/nparticles;  // average acceptance rate
     }
   }
 

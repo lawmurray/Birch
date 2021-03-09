@@ -39,7 +39,7 @@ class MatrixGaussian(M:Expression<Real[_,_]>, U:Expression<LLT>,
   }
 
   function simulateLazy() -> Real[_,_]? {
-    return simulate_matrix_gaussian(M.get(), U.get(), V.get());
+    return simulate_matrix_gaussian(M.eval(), U.eval(), V.eval());
   }
   
   function logpdf(X:Real[_,_]) -> Real {
@@ -331,12 +331,19 @@ function Gaussian(M:Expression<Real[_,_]>, V:Expression<LLT>) ->
   s1:InverseWishart?;
   m1:TransformLinearMatrix<MatrixNormalInverseWishart>?;
   m2:MatrixNormalInverseWishart?;
-  let compare <- V.distribution();
-  if compare? && (m1 <- M.graftLinearMatrixNormalInverseWishart(compare!))? {
-    return LinearMatrixNormalInverseWishartMatrixGaussian(m1!.A, m1!.X, m1!.C);
-  } else if compare? && (m2 <- M.graftMatrixNormalInverseWishart(compare!))? {
-    return MatrixNormalInverseWishartMatrixGaussian(m2!);
-  } else if (s1 <- V.graftInverseWishart())? {
+
+  let compare <- Random<LLT>?(V);
+  if compare? && compare!.hasDistribution() {
+    /* for normal-inverse-Wishart relationships, the same inverse Wishart
+     * distribution must occur in the prior and likelihood */
+    let p <- compare!.getDistribution();
+    if (m1 <- M.graftLinearMatrixNormalInverseWishart(p))? {
+      return LinearMatrixNormalInverseWishartMatrixGaussian(m1!.A, m1!.X, m1!.C);
+    } else if (m2 <- M.graftMatrixNormalInverseWishart(p))? {
+      return MatrixNormalInverseWishartMatrixGaussian(m2!);
+    }
+  }
+  if (s1 <- V.graftInverseWishart())? {
     return MatrixNormalInverseWishart(M, box(llt(identity(M.rows()))), s1!);
   } else {
     return construct<MatrixGaussian>(M, box(llt(identity(M.rows()))), V);

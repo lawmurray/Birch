@@ -21,7 +21,7 @@ final class BetaNegativeBinomial(k:Expression<Integer>, ρ:Beta) < Discrete {
   }
 
   function simulateLazy() -> Integer? {
-    return simulate_beta_negative_binomial(k.get(), ρ.α.get(), ρ.β.get());
+    return simulate_beta_negative_binomial(k.eval(), ρ.α.eval(), ρ.β.eval());
   }
 
   function logpdf(x:Integer) -> Real {

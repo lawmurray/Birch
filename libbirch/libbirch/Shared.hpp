@@ -321,6 +321,14 @@ public:
     return (*get())(std::forward<Args>(args)...);
   }
 
+  /**
+   * Call on referent.
+   */
+  template<class... Args>
+  auto& operator()(Args&&... args) const {
+    return const_cast<Shared<T>*>(this)->operator()(std::forward<Args>(args)...);
+  }
+
 private:
   /**
    * Store the raw pointer without reference count updates.
