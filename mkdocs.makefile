@@ -2,6 +2,7 @@ PACKAGES := \
 	libraries/Cairo \
 	libraries/SQLite \
 	libraries/Standard \
+        examples/Ecology \
 	examples/LinearGaussian \
 	examples/LinearRegression \
 	examples/MixedGaussian \

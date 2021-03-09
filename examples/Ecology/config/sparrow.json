@@ -1,0 +1,13 @@
+{
+  "model": {
+    "class": "EcologyModel"
+  },
+  "filter": {
+    "nparticles": 64
+  },
+  "sampler": {
+    "nsamples": 3
+  },
+  "input": "input/sparrow.json",
+  "output": "output/sparrow.json"
+}
