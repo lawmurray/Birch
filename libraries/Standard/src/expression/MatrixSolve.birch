@@ -1,7 +1,7 @@
 /**
  * Lazy matrix solve.
  */
-acyclic class MatrixSolve<Left,LeftValue>(y:Left, z:Expression<Real[_,_]>) <
+class MatrixSolve<Left,LeftValue>(y:Left, z:Expression<Real[_,_]>) <
     MatrixBinaryExpression<Left,Expression<Real[_,_]>,LeftValue,Real[_,_],
     Real[_,_],Real[_,_],Real[_,_]>(y, z) {  
   override function doRows() -> Integer {

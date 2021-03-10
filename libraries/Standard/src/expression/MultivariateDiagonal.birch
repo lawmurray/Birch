@@ -1,7 +1,7 @@
 /**
  * Lazy `diagonal`.
  */
-acyclic class MultivariateDiagonal(y:Expression<Real[_,_]>) <
+class MultivariateDiagonal(y:Expression<Real[_,_]>) <
     MultivariateUnaryExpression<Expression<Real[_,_]>,Real[_,_],Real[_,_],
     Real[_]>(y) {
   override function doRows() -> Integer {

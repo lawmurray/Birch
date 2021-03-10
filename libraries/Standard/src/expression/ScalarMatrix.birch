@@ -1,7 +1,7 @@
 /**
  * Lazy `scalar`.
  */
-acyclic class ScalarMatrix<Value>(y:Expression<Value[_,_]>) <
+class ScalarMatrix<Value>(y:Expression<Value[_,_]>) <
     ScalarUnaryExpression<Expression<Value[_,_]>,Value[_,_],Real[_,_],
     Value>(y) {
   override function doEvaluate(y:Value[_,_]) -> Value {

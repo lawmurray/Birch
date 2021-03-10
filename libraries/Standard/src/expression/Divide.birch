@@ -1,7 +1,7 @@
 /**
  * Lazy divide.
  */
-acyclic class Divide(y:Expression<Real>, z:Expression<Real>) <
+class Divide(y:Expression<Real>, z:Expression<Real>) <
     ScalarBinaryExpression<Expression<Real>,Expression<Real>,Real,Real,Real,
     Real,Real>(y, z) {  
   override function doEvaluate(y:Real, z:Real) -> Real {

@@ -1,7 +1,7 @@
 /**
  * Lazy `abs`.
  */
-acyclic class Abs(y:Expression<Real>) <
+class Abs(y:Expression<Real>) <
     ScalarUnaryExpression<Expression<Real>,Real,Real,Real>(y) {
   override function doEvaluate(y:Real) -> Real {
     return abs(y);

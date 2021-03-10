@@ -1,7 +1,7 @@
 /**
  * Lazy multivariate multiply.
  */
-acyclic class MultivariateMultiply(y:Expression<Real[_,_]>,
+class MultivariateMultiply(y:Expression<Real[_,_]>,
     z:Expression<Real[_]>) < MultivariateBinaryExpression<
     Expression<Real[_,_]>,Expression<Real[_]>,Real[_,_],Real[_],Real[_,_],
     Real[_],Real[_]>(y, z) {  

@@ -1,7 +1,7 @@
 /**
  * Lazy subtract.
  */
-acyclic class DiscreteSubtract(y:Expression<Integer>, z:Expression<Integer>) <
+class DiscreteSubtract(y:Expression<Integer>, z:Expression<Integer>) <
     ScalarBinaryExpression<Expression<Integer>,Expression<Integer>,Integer,
     Integer,Real,Real,Integer>(y, z) {  
   override function doEvaluate(y:Integer, z:Integer) -> Integer {

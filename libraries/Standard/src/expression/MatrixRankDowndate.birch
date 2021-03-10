@@ -1,7 +1,7 @@
 /**
  * Lazy rank downdate.
  */
-acyclic class MatrixRankDowndate<Right,RightValue,RightGradient>(y:Expression<LLT>,
+class MatrixRankDowndate<Right,RightValue,RightGradient>(y:Expression<LLT>,
     z:Right) < MatrixBinaryExpression<Expression<LLT>,Right,LLT,RightValue,
     Real[_,_],RightGradient,LLT>(y, z) {  
   override function doRows() -> Integer {

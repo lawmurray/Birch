@@ -1,7 +1,7 @@
 /**
  * Lazy `sinh`.
  */
-acyclic class Sinh(y:Expression<Real>) <
+class Sinh(y:Expression<Real>) <
     ScalarUnaryExpression<Expression<Real>,Real,Real,Real>(y) {
   override function doEvaluate(y:Real) -> Real {
     return sinh(y);

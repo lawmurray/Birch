@@ -1,7 +1,7 @@
 /**
  * Lazy access of a matrix element.
  */
-acyclic class MatrixElement<Value>(y:Expression<Value[_,_]>, i:Integer,
+class MatrixElement<Value>(y:Expression<Value[_,_]>, i:Integer,
     j:Integer) < ScalarExpression<Value> {
   /**
    * Argument.

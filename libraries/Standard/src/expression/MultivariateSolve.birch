@@ -1,7 +1,7 @@
 /**
  * Lazy multivariate solve.
  */
-acyclic class MultivariateSolve<Left,LeftValue>(y:Left,
+class MultivariateSolve<Left,LeftValue>(y:Left,
     z:Expression<Real[_]>) < MultivariateBinaryExpression<Left,
     Expression<Real[_]>,LeftValue,Real[_],Real[_,_],Real[_],Real[_]>(y, z) {  
   override function doRows() -> Integer {

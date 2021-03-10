@@ -1,7 +1,7 @@
 /**
  * Lazy `transpose`.
  */
-acyclic class MultivariateTranspose(x:Expression<Real[_]>) <
+class MultivariateTranspose(x:Expression<Real[_]>) <
     MatrixUnaryExpression<Expression<Real[_]>,Real[_],Real[_],Real[_,_]>(x) {
   override function doRows() -> Integer {
     return y!.columns();

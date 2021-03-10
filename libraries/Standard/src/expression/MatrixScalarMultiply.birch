@@ -1,7 +1,7 @@
 /**
  * Lazy matrix multiply.
  */
-acyclic class MatrixScalarMultiply(y:Expression<Real>,
+class MatrixScalarMultiply(y:Expression<Real>,
     z:Expression<Real[_,_]>) < MatrixBinaryExpression<Expression<Real>,
     Expression<Real[_,_]>,Real,Real[_,_],Real,Real[_,_],Real[_,_]>(y, z) {  
   override function doRows() -> Integer {

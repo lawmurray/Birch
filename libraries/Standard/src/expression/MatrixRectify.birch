@@ -1,7 +1,7 @@
 /**
  * Lazy `rectify`.
  */
-acyclic class MatrixRectify(y:Expression<Real[_,_]>) <
+class MatrixRectify(y:Expression<Real[_,_]>) <
     MatrixUnaryExpression<Expression<Real[_,_]>,Real[_,_],Real[_,_],
     Real[_,_]>(y) {
   override function doRows() -> Integer {

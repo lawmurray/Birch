@@ -1,7 +1,7 @@
 /**
  * Lazy `join`.
  */
-acyclic class MatrixJoin<Value>(y:Expression<Value>[_,_]) <
+class MatrixJoin<Value>(y:Expression<Value>[_,_]) <
     MatrixExpression<Value[_,_]> {
   /**
    * Arguments.

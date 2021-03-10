@@ -1,7 +1,7 @@
 /**
  * Lazy `dot`.
  */
-acyclic class MultivariateDot(y:Expression<Real[_]>, z:Expression<Real[_,_]>) <
+class MultivariateDot(y:Expression<Real[_]>, z:Expression<Real[_,_]>) <
     MultivariateBinaryExpression<Expression<Real[_]>,Expression<Real[_,_]>,Real[_],
     Real[_,_],Real[_],Real[_,_],Real[_]>(y, z) {
   override function doRows() -> Integer {

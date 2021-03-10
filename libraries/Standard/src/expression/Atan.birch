@@ -1,7 +1,7 @@
 /**
  * Lazy `atan`.
  */
-acyclic class Atan(y:Expression<Real>) <
+class Atan(y:Expression<Real>) <
     ScalarUnaryExpression<Expression<Real>,Real,Real,Real>(y) {
   override function doEvaluate(y:Real) -> Real {
     return atan(y);

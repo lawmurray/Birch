@@ -1,7 +1,7 @@
 /**
  * Lazy add.
  */
-acyclic class Add(y:Expression<Real>, z:Expression<Real>) <
+class Add(y:Expression<Real>, z:Expression<Real>) <
     ScalarBinaryExpression<Expression<Real>,Expression<Real>,Real,Real,Real,
     Real,Real>(y, z) {  
   override function doEvaluate(y:Real, z:Real) -> Real {
