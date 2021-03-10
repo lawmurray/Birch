@@ -3,10 +3,12 @@
  *
  * - w: Log weights.
  *
- * Return: the vector of ancestor indices.
+ * Return: the vector of ancestor indices, in non-descending order.
+ *
+ *
  */
 function resample_systematic(w:Real[_]) -> Integer[_] {
-  return cumulative_offspring_to_ancestors_permute(
+  return cumulative_offspring_to_ancestors(
       systematic_cumulative_offspring(cumulative_weights(w)));
 }
 
@@ -15,11 +17,11 @@ function resample_systematic(w:Real[_]) -> Integer[_] {
  *
  * - w: Log weights.
  *
- * Return: the vector of ancestor indices.
+ * Return: the vector of ancestor indices, in non-descending order.
  */
 function resample_multinomial(w:Real[_]) -> Integer[_] {
-  return offspring_to_ancestors_permute(simulate_multinomial(
-      length(w), norm_exp(w)));
+  return offspring_to_ancestors(simulate_multinomial(length(w),
+      norm_exp(w)));
 }
 
 /**
@@ -36,9 +38,7 @@ function conditional_resample_multinomial(w:Real[_], b:Integer) ->
   let N <- length(w);
   let o <- simulate_multinomial(N - 1, norm_exp(w));
   o[b] <- o[b] + 1;
-  let a <- offspring_to_ancestors_permute(o);
-  assert a[b] == b;
-  return (a, b);
+  return (offspring_to_ancestors(o), b);
 }
 
 /**
@@ -146,36 +146,7 @@ function offspring_to_ancestors(o:Integer[_]) -> Integer[_] {
     }
   }
   assert i == N + 1;
-  return a;
-}
-
-/**
- * Convert an offspring vector into an ancestry vector, with permutation.
- */
-function offspring_to_ancestors_permute(o:Integer[_]) -> Integer[_] {
-  let N <- length(o);
-  let i <- 1;
-  a:Integer[N];
-  for n in 1..N {
-    for j in 1..o[n] {
-      a[i] <- n;
-      i <- i + 1;
-    }
-  }
-  assert i == N + 1;
-  
-  /* permute in-place */
-  let n <- 1;
-  while n <= N {
-    let c <- a[n];
-    if c != n && a[c] != c {
-      a[n] <- a[c];
-      a[c] <- c;
-    } else {
-      n <- n + 1;
-    }
-  }  
-  
+  assert is_sorted(a);
   return a;
 }
 
@@ -186,30 +157,7 @@ function cumulative_offspring_to_ancestors(O:Integer[_]) -> Integer[_] {
   let N <- length(O);
   a:Integer[N];
   for n in 1..N {
-    start:Integer;
-    if n == 1 {
-      start <- 0;
-    } else {
-      start <- O[n - 1];
-    }
-    let o <- O[n] - start;
-    for j in 1..o {
-      a[start + j] <- n;
-    }
-  }
-  return a;
-}
-
-/**
- * Convert a cumulative offspring vector into an ancestry vector, with
- * permutation.
- */
-function cumulative_offspring_to_ancestors_permute(O:Integer[_]) ->
-    Integer[_] {
-  a:Integer[O[length(O)]];
-  let N <- length(a);
-  for n in 1..N {
-    let start <- 0;
+    start:Integer <- 0;
     if n > 1 {
       start <- O[n - 1];
     }
@@ -218,19 +166,7 @@ function cumulative_offspring_to_ancestors_permute(O:Integer[_]) ->
       a[start + j] <- n;
     }
   }
-
-  /* permute in-place */
-  let n <- 1;
-  while n <= N {
-    let c <- a[n];
-    if c != n && a[c] != c {
-      a[n] <- a[c];
-      a[c] <- c;
-    } else {
-      n <- n + 1;
-    }
-  }  
-
+  assert is_sorted(a);
   return a;
 }
 
@@ -238,8 +174,9 @@ function cumulative_offspring_to_ancestors_permute(O:Integer[_]) ->
  * Convert a cumulative offspring vector into an offspring vector.
  */
 function cumulative_offspring_to_offspring(O:Integer[_]) -> Integer[_] {
-  return adjacent_difference<Integer>(O, \(x:Integer, y:Integer) -> Integer {
-      return x - y; });
+  return adjacent_difference(O, \(x:Integer, y:Integer) -> Integer {
+        return x - y;
+      });
 }
 
 /**

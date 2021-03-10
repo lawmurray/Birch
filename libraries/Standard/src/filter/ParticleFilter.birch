@@ -88,7 +88,7 @@ class ParticleFilter {
    * Create a particle of the type required for this filter.
    */
   function particle(model:Model) -> Particle {
-    return construct<Particle>(model, delayed, κ?);
+    return construct<Particle>(model, delayed, false);
   }
 
   /**
@@ -190,16 +190,31 @@ class ParticleFilter {
    * Copy particles during resampling.
    */
   function copy() {
-    let i <- vector(false, nparticles);
+    /* the ancestry vector is in non-descending order; the first offspring of
+     * each particle is maintained, the second is copied with copy() to apply
+     * bridge finding, the subsequent are copied with copy2() after bridge
+     * finding is complete; this is achieved in two passes to ensure that all
+     * finish before any copy2() begins */
+    let x' <- x;
+    dynamic parallel for n in 2..nparticles {
+      if n == 1 || a[n] != a[n - 1] {
+        // first offspring, nothing to do in this pass
+      } else if a[n] == a[n - 1] && (n <= 2 || a[n] != a[n - 2]) {
+        /* second offspring */
+        x[n] <- global.copy(x'[a[n]]);
+      } else {
+        // subsequent offspring, nothing to do in this pass
+      }
+    }
     dynamic parallel for n in 1..nparticles {
-      let m <- a[n];
-      if m != n {
-        if !i[m] {
-          x[n] <- global.copy(x[m]);
-          i[m] <- true;
-        } else {
-          x[n] <- global.copy2(x[m]);
-        }
+      if n == 1 || a[n] != a[n - 1] {
+        /* first offspring */
+        x[n] <- x'[a[n]];
+      } else if a[n] == a[n - 1] && (n <= 2 || a[n] != a[n - 2]) {
+        // second offspring, nothing to do in this pass
+      } else {
+        /* subsequent offspring */
+        x[n] <- global.copy2(x'[a[n]]);
       }
     }
   }

@@ -342,6 +342,15 @@ function adjacent_difference<Type>(x:Type[_],
 }
 
 /**
+ * Is a vector sorted (in ascending order)?
+ */
+function is_sorted<Type>(x:Type[_]) -> Boolean {
+  cpp{{
+  return std::is_sorted(x.begin(), x.end());
+  }}
+}
+
+/**
  * Sort a vector.
  *
  * - x: Vector.
