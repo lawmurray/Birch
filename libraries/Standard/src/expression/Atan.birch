@@ -1,20 +1,20 @@
 /**
  * Lazy `atan`.
  */
-class Atan(y:Expression<Real>) <
-    ScalarUnaryExpression<Expression<Real>,Real,Real,Real>(y) {
-  override function doEvaluate(y:Real) -> Real {
-    return atan(y);
+final class Atan(m:Expression<Real>) <
+    ScalarUnaryExpression<Expression<Real>,Real>(m) {
+  override function doCompute() {
+    x <- atan(m!.eval());
   }
 
-  override function doEvaluateGrad(d:Real, x:Real, y:Real) -> Real {
-    return d/(1.0 + y*y);
+  override function doGrad(gen:Integer) {
+    m!.countGrad(gen, d!/(1.0 + pow(m!.eval(), 2.0)));
   }
 }
 
 /**
  * Lazy `atan`.
  */
-function atan(y:Expression<Real>) -> Atan {
-  return construct<Atan>(y);
+function atan(m:Expression<Real>) -> Atan {
+  return construct<Atan>(m);
 }

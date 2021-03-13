@@ -1,20 +1,20 @@
 /**
  * Lazy `cos`.
  */
-class Cos(y:Expression<Real>) <
-    ScalarUnaryExpression<Expression<Real>,Real,Real,Real>(y) {
-  override function doEvaluate(y:Real) -> Real {
-    return cos(y);
+final class Cos(m:Expression<Real>) <
+    ScalarUnaryExpression<Expression<Real>,Real>(m) {
+  override function doCompute() {
+    x <- cos(m!.eval());
   }
 
-  override function doEvaluateGrad(d:Real, x:Real, y:Real) -> Real {
-    return -d*sin(y);
+  override function doGrad(gen:Integer) {
+    m!.countGrad(gen, -d!*sin(m!.eval()));
   }
 }
 
 /**
  * Lazy `cos`.
  */
-function cos(y:Expression<Real>) -> Cos {
-  return construct<Cos>(y);
+function cos(m:Expression<Real>) -> Cos {
+  return construct<Cos>(m);
 }

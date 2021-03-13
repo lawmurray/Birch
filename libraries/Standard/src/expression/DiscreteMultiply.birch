@@ -1,71 +1,65 @@
 /**
  * Lazy multiply.
  */
-class DiscreteMultiply(y:Expression<Integer>, z:Expression<Integer>) <
-    ScalarBinaryExpression<Expression<Integer>,Expression<Integer>,Integer,
-    Integer,Real,Real,Integer>(y, z) {  
-  override function doEvaluate(y:Integer, z:Integer) -> Integer {
-    return y*z;
+final class DiscreteMultiply(l:Expression<Integer>, r:Expression<Integer>) <
+    ScalarBinaryExpression<Expression<Integer>,Expression<Integer>,Integer>(l, r) {  
+  override function doCompute() {
+    x <- l!.eval()*r!.eval();
   }
 
-  override function doEvaluateGradLeft(d:Real, x:Integer, y:Integer,
-      z:Integer) -> Real {
-    return d*z;
-  }
-
-  override function doEvaluateGradRight(d:Real, x:Integer, y:Integer,
-      z:Integer) -> Real {
-    return d*y;
+  override function doGrad(gen:Integer) {
+    l!.countGrad(gen, d!*r!.eval());
+    r!.countGrad(gen, d!*l!.eval());
   }
 
   override function graftDiscrete() -> Discrete? {
-    r:Discrete?;
+    t:Discrete?;
     if !hasValue() {
-      r <- graftBoundedDiscrete();
-      if !r? {
+      t <- graftBoundedDiscrete();
+      if !t? {
         x1:Discrete?;
-        if (x1 <- y!.graftDiscrete())? {
-          r <- LinearDiscrete(z!, x1!, box(0));
-        } else if (x1 <- z!.graftDiscrete())? {
-          r <- LinearDiscrete(y!, x1!, box(0));
+        if (x1 <- l!.graftDiscrete())? {
+          t <- LinearDiscrete(r!, x1!, box(0));
+        } else if (x1 <- r!.graftDiscrete())? {
+          t <- LinearDiscrete(l!, x1!, box(0));
         }
       }
     }
-    return r;
+    return t;
   }
 
   override function graftBoundedDiscrete() -> BoundedDiscrete? {
-    r:BoundedDiscrete?;
+    t:BoundedDiscrete?;
     if !hasValue() {
-      let x1 <- y!.graftBoundedDiscrete();
-      let x2 <- z!.graftBoundedDiscrete();
-      if x1? {
-        r <- LinearBoundedDiscrete(z!, x1!, box(0));
-      } else if x2? {
-        r <- LinearBoundedDiscrete(y!, x2!, box(0));
+      let l1 <- l!.graftBoundedDiscrete();
+      let r1 <- r!.graftBoundedDiscrete();
+      if l1? {
+        t <- LinearBoundedDiscrete(r!, l1!, box(0));
+      } else if r1? {
+        t <- LinearBoundedDiscrete(l!, r1!, box(0));
       }
     }
-    return r;
+    return t;
   }
 }
 
 /**
  * Lazy multiply.
  */
-operator (y:Expression<Integer>*z:Expression<Integer>) -> DiscreteMultiply {
-  return construct<DiscreteMultiply>(y, z);
+operator (l:Expression<Integer>*r:Expression<Integer>) -> DiscreteMultiply {
+  return construct<DiscreteMultiply>(l, r);
 }
 
 /**
  * Lazy multiply.
  */
-operator (y:Integer*z:Expression<Integer>) -> DiscreteMultiply {
-  return box(y)*z;
+operator (l:Integer*r:Expression<Integer>) -> DiscreteMultiply {
+  return box(l)*r;
 }
 
 /**
  * Lazy multiply.
  */
-operator (y:Expression<Integer>*z:Integer) -> DiscreteMultiply {
-  return y*box(z);
+operator (l:Expression<Integer>*r:Integer) -> DiscreteMultiply {
+  return l*box(r);
 }

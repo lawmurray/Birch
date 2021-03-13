@@ -1,26 +1,24 @@
 /**
  * Lazy `abs`.
  */
-class MultivariateAbs(y:Expression<Real[_]>) <
-    MultivariateUnaryExpression<Expression<Real[_]>,Real[_],Real[_],
-    Real[_]>(y) {
+final class MultivariateAbs(m:Expression<Real[_]>) <
+    MultivariateUnaryExpression<Expression<Real[_]>,Real[_]>(m) {
   override function doRows() -> Integer {
-    return y!.rows();
+    return m!.rows();
   }
     
-  override function doEvaluate(y:Real[_]) -> Real[_] {
-    return transform(y, \(y:Real) -> Real { return abs(y); });
+  override function doCompute() {
+    x <- transform(m!.eval(), \(m:Real) -> Real { return abs(m); });
   }
 
-  override function doEvaluateGrad(d:Real[_], x:Real[_], y:Real[_]) ->
-      Real[_] {
-    return transform(d, x, \(d:Real, x:Real) -> Real {
-        if x >= 0.0 {
+  override function doGrad(gen:Integer) {
+    m!.countGrad(gen, transform(d!, m!.eval(), \(d:Real, m:Real) -> Real {
+        if m >= 0.0 {
           return d;
         } else {
           return -d;
         }
-      });
+      }));
   }
 }
 

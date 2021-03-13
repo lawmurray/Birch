@@ -1,7 +1,7 @@
 /**
  * Delayed expression.
  *
- * - Value: Value type.
+ * - Value: Result type.
  *
  * Delayed expressions (alternatively: lazy expressions, compute graphs,
  * expression templates) encode mathematical expressions that can be
@@ -228,8 +228,9 @@ abstract class Expression<Value> {
    */
   final function value() -> Value {
     if !isConstant() {
+      doValue();
       if !hasValue() {
-        x <- doValue();
+        doCompute();
       }
       doConstant();
       doClearGrad();
@@ -240,8 +241,6 @@ abstract class Expression<Value> {
     }
     return x!;
   }
-  abstract function doValue() -> Value;
-  abstract function doConstant();
 
   /**
    * Evaluate and keep variable.
@@ -265,7 +264,8 @@ abstract class Expression<Value> {
   final function eval(gen:Integer) -> Value {
     if !isConstant() {
       if !hasValue() {
-        x <- doEval(gen);
+        doEval(gen);
+        doCompute();
       }
       if generation == 0 {
         generation <- gen;
@@ -273,10 +273,15 @@ abstract class Expression<Value> {
     }
     return x!;
   }
+
+  /*
+   * Evaluate with count; used internally.
+   */
   final function countEval(gen:Integer) -> Value {
     if !isConstant() {
       if !hasValue() {
-        x <- doEval(gen);
+        doEval(gen);
+        doCompute();
       }
       if generation == 0 {
         generation <- gen;
@@ -285,7 +290,6 @@ abstract class Expression<Value> {
     }
     return x!;
   }
-  abstract function doEval(gen:Integer) -> Value;
 
   /**
    * Re-evaluate and keep variable.
@@ -310,15 +314,21 @@ abstract class Expression<Value> {
     assert hasValue();
     if !isConstant() && generation >= gen {
       assert evalCount == 0;
-      x <- doReval(gen);
+      doReval(gen);
+      doCompute();
     }
     return x!;
   }
+
+  /*
+   * Re-evaluate with count; used internally.
+   */
   final function countReval(gen:Integer) -> Value {
     assert hasValue();
     if !isConstant() && generation >= gen {
       if visitCount == 0 {
-        x <- doReval(gen);
+        doReval(gen);
+        doCompute();
       }
       visitCount <- visitCount + 1;
       if visitCount == evalCount {
@@ -327,10 +337,9 @@ abstract class Expression<Value> {
     }
     return x!;
   }
-  abstract function doReval(gen:Integer) -> Value;
 
   /**
-   * Evaluate the gradient of the expression with respect to its arguments.
+   * Evaluate gradient of the expression with respect to its arguments.
    *
    * - d: Upstream gradient.
    */
@@ -339,7 +348,7 @@ abstract class Expression<Value> {
   }
 
   /**
-   * Evaluate the gradient of the expression with respect to its arguments.
+   * Evaluate gradient of the expression with respect to its arguments.
    *
    * - gen: Generation limit.
    * - d: Upstream gradient.
@@ -400,10 +409,14 @@ abstract class Expression<Value> {
       doAccumulateGrad(d);
       doGrad(gen);
       if !isRandom() {
-          doClearGrad();  // clear intermediate gradients to save memory
+        doClearGrad();  // clear intermediate gradients to save memory
       }
     }
   }
+
+  /*
+   * Evaluate gradient with count; used internally.
+   */
   final function countGrad<Gradient>(gen:Integer, d:Gradient) {
     if generation < gen {
       value();  // make constant
@@ -424,6 +437,10 @@ abstract class Expression<Value> {
       }
     }
   }
+
+  /*
+   * Evaluate gradient with count; used internally.
+   */
   final function countGrad(gen:Integer, d:Real, i:Integer) {
     if generation < gen {
       value();  // make constant
@@ -444,6 +461,10 @@ abstract class Expression<Value> {
       }
     }
   }
+
+  /*
+   * Evaluate gradient with count; used internally.
+   */
   final function countGrad(gen:Integer, d:Real, i:Integer, j:Integer) {
     if generation < gen {
       value();  // make constant
@@ -464,24 +485,77 @@ abstract class Expression<Value> {
       }
     }
   }
+
+  /*
+   * Evaluate arguments for value(); used internally.
+   */
+  abstract function doValue();
+
+  /*
+   * Evaluate arguments for eval() and countEval(); used internally.
+   */
+  abstract function doEval(gen:Integer);
+
+  /*
+   * Evaluate arguments for reval() and countReval(); used internally.
+   */
+  abstract function doReval(gen:Integer);
+
+  /*
+   * Make arguments constant; used internally.
+   */
+  abstract function doConstant();
+
+  /*
+   * Evaluate expression for value(), eval(), or reval(); used internally.
+   */
+  abstract function doCompute();
+
+  /*
+   * Accumulate gradient for grad(); used internally.
+   */
   function doAccumulateGrad(d:Real) {
     assert false;
   }
+
+  /*
+   * Accumulate gradient for grad(); used internally.
+   */
   function doAccumulateGrad(d:Real[_]) {
     assert false;
   }
+
+  /*
+   * Accumulate gradient for grad(); used internally.
+   */
   function doAccumulateGrad(d:Real[_,_]) {
     assert false;
   }
+
+  /*
+   * Accumulate gradient for grad(); used internally.
+   */
   function doAccumulateGrad(d:Real, i:Integer) {
     assert false;
   }
+
+  /*
+   * Accumulate gradient for grad(); used internally.
+   */
   function doAccumulateGrad(d:Real, i:Integer, j:Integer) {
     assert false;
   }
+
+  /*
+   * Compute gradient for grad(); used internally.
+   */
   abstract function doGrad(gen:Integer);
-  abstract function doClearGrad();  // clear accumulated gradient
-  
+
+  /*
+   * Clear accumulated gradient; used internally.
+   */
+  abstract function doClearGrad();
+
   /*
    * Attempt to graft this expression onto the delayed sampling graph.
    *

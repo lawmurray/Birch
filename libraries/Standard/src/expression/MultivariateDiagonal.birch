@@ -1,26 +1,24 @@
 /**
  * Lazy `diagonal`.
  */
-class MultivariateDiagonal(y:Expression<Real[_,_]>) <
-    MultivariateUnaryExpression<Expression<Real[_,_]>,Real[_,_],Real[_,_],
-    Real[_]>(y) {
+final class MultivariateDiagonal(m:Expression<Real[_,_]>) <
+    MultivariateUnaryExpression<Expression<Real[_,_]>,Real[_]>(m) {
   override function doRows() -> Integer {
-    return min(y!.rows(), y!.columns());
+    return min(m!.rows(), m!.columns());
   }
 
-  override function doEvaluate(y:Real[_,_]) -> Real[_] {
-    return diagonal(y);
+  override function doCompute() {
+    x <- diagonal(m!.eval());
   }
 
-  override function doEvaluateGrad(d:Real[_], x:Real[_], y:Real[_,_]) ->
-      Real[_,_] {
-    return diagonal(d);
+  override function doGrad(gen:Integer) {
+    m!.countGrad(gen, diagonal(d!));
   }
 }
 
 /**
  * Lazy `diagonal`.
  */
-function diagonal(y:Expression<Real[_,_]>) -> MultivariateDiagonal {
-  return construct<MultivariateDiagonal>(y);
+function diagonal(m:Expression<Real[_,_]>) -> MultivariateDiagonal {
+  return construct<MultivariateDiagonal>(m);
 }

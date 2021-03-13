@@ -1,97 +1,53 @@
 /**
  * Scalar ternary expression.
  *
- * - `Left`: Left argument type. Should derive from `Expression<...>`.
- * - `Middle`: Middle argument type. Should derive from `Expression<...>`.
- * - `Right`: Right argument type. Should derive from `Expression<...>`.
- * - `LeftValue`: Left value type. This is the type to which the left
- *    argument evaluates.
- * - `MiddleValue`: Middle value type. This is the type to which the middle
- *    argument evaluates.
- * - `RightValue`: Right value type. This is the type to which the right
- *   argument evaluates.
- * - `LeftGradient`: Left upstream gradient type. This is the type of the
- *   upstream gradient that the left argument accepts. It should be `Real`,
- *   `Real[_]`, or `Real[_,_]`.
- * - `MiddleGradient`: Middle upstream gradient type. This is the type of the
- *   upstream gradient that the middle argument accepts. It should be `Real`,
- *   `Real[_]`, or `Real[_,_]`.
- * - `RightGradient`: Right upstrem gradient type. This is the type of the
- *   upstream gradient that the right argument accepts. It should be `Real`,
- *   `Real[_]`, or `Real[_,_]`.
- * - `Value`: The type to which the expression evaluates.
+ * - Left: Left argument type.
+ * - Middle: Middle argument type.
+ * - Right: Right argument type.
+ * - Value: Result type.
  */
-abstract class ScalarTernaryExpression<Left,Middle,Right,LeftValue,
-    MiddleValue,RightValue,LeftGradient,MiddleGradient,RightGradient,Value>(
-    a:Left, b:Middle, c:Right) < ScalarExpression<Value> {  
+abstract class ScalarTernaryExpression<Left,Middle,Right,Value>(
+    l:Left, m:Middle, r:Right) < ScalarExpression<Value> {  
   /**
    * Left argument.
    */
-  a:Left? <- a;
+  l:Left? <- l;
 
   /**
    * Middle argument.
    */
-  b:Middle? <- b;
+  m:Middle? <- m;
   
   /**
    * Right argument.
    */
-  c:Right? <- c;
-
-  /*
-   * Evaluate.
-   */
-  abstract function doEvaluate(a:LeftValue, b:MiddleValue, c:RightValue) ->
-      Value;
-  
-  /*
-   * Evaluate the gradient for the left argument.
-   */
-  abstract function doEvaluateGradLeft(d:Real, x:Value, a:LeftValue,
-      b:MiddleValue, c:RightValue) -> LeftGradient;
-
-  /*
-   * Evaluate the gradient for the middle argument.
-   */
-  abstract function doEvaluateGradMiddle(d:Real, x:Value, a:LeftValue,
-      b:MiddleValue, c:RightValue) -> MiddleGradient;
-
-  /*
-   * Evaluate the gradient for the right argument.
-   */
-  abstract function doEvaluateGradRight(d:Real, x:Value, a:LeftValue,
-      b:MiddleValue, c:RightValue) -> RightGradient;
-
+  r:Right? <- r;
 
   final override function doDepth() -> Integer {
-    return max(a!.depth(), max(b!.depth(), c!.depth())) + 1;
+    return max(l!.depth(), max(m!.depth(), r!.depth())) + 1;
   }
 
-  final override function doValue() -> Value {
-    return doEvaluate(a!.value(), b!.value(), c!.value());
+  final override function doValue() {
+    l!.value();
+    m!.value();
+    r!.value();
   }
 
-  final override function doEval(gen:Integer) -> Value {
-    return doEvaluate(a!.countEval(gen), b!.countEval(gen), c!.countEval(gen));
+  final override function doEval(gen:Integer) {
+    l!.countEval(gen);
+    m!.countEval(gen);
+    r!.countEval(gen);
   }
 
-  final override function doReval(gen:Integer) -> Value {
-    return doEvaluate(a!.countReval(gen), b!.countReval(gen), c!.countReval(gen));
-  }
-  
-  final override function doGrad(gen:Integer) {
-    a!.countGrad(gen, doEvaluateGradLeft(d!, x!, a!.eval(), b!.eval(), c!.eval()));
-    b!.countGrad(gen, doEvaluateGradMiddle(d!, x!, a!.eval(), b!.eval(), c!.eval()));
-    c!.countGrad(gen, doEvaluateGradRight(d!, x!, a!.eval(), b!.eval(), c!.eval()));
+  final override function doReval(gen:Integer) {
+    l!.countReval(gen);
+    m!.countReval(gen);
+    r!.countReval(gen);
   }
 
   final override function doConstant() {
-    a!.value();
-    b!.value();
-    c!.value();
-    a <- nil;
-    b <- nil;
-    c <- nil;
+    l <- nil;
+    m <- nil;
+    r <- nil;
   }
 }

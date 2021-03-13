@@ -1,79 +1,72 @@
 /**
  * Lazy rank update.
  */
-class MatrixRankUpdate<Right,RightValue,RightGradient>(y:Expression<LLT>,
-    z:Right) < MatrixBinaryExpression<Expression<LLT>,Right,LLT,RightValue,
-    Real[_,_],RightGradient,LLT>(y, z) {  
+final class MatrixRankUpdate<Right>(l:Expression<LLT>, r:Right) <
+    MatrixBinaryExpression<Expression<LLT>,Right,LLT>(l, r) {  
   override function doRows() -> Integer {
-    return y!.rows();
+    return l!.rows();
   }
   
   override function doColumns() -> Integer {
-    return y!.columns();
+    return r!.columns();
   }
 
-  override function doEvaluate(y:LLT, z:RightValue) -> LLT {
-    return rank_update(y, z);
+  override function doCompute() {
+    x <- rank_update(l!.eval(), r!.eval());
   }
 
-  override function doEvaluateGradLeft(d:Real[_,_], x:LLT, y:LLT,
-      z:RightValue) -> Real[_,_] {
-    return d;
-  }
-  
-  override function doEvaluateGradRight(d:Real[_,_], x:LLT, y:LLT,
-      z:RightValue) -> RightGradient {
-    return (d + transpose(d))*z;
+  override function doGrad(gen:Integer) {
+    l!.countGrad(gen, d!);
+    r!.countGrad(gen, (d! + transpose(d!))*r!.eval());
   }
 }
 
 /**
  * Lazy rank 1 update.
  */
-function rank_update(y:Expression<LLT>, z:Expression<Real[_]>) ->
-    MatrixRankUpdate<Expression<Real[_]>,Real[_],Real[_]> {
-  assert y.columns() == z.rows();
-  return construct<MatrixRankUpdate<Expression<Real[_]>,Real[_],Real[_]>>(y, z);
+function rank_update(l:Expression<LLT>, r:Expression<Real[_]>) ->
+    MatrixRankUpdate<Expression<Real[_]>> {
+  assert l.columns() == r.rows();
+  return construct<MatrixRankUpdate<Expression<Real[_]>>>(l, r);
 }
 
 /**
  * Lazy rank 1 update.
  */
-function rank_update(y:LLT, z:Expression<Real[_]>) ->
-    MatrixRankUpdate<Expression<Real[_]>,Real[_],Real[_]> {
-  return rank_update(box(y), z);
+function rank_update(l:LLT, r:Expression<Real[_]>) ->
+    MatrixRankUpdate<Expression<Real[_]>> {
+  return rank_update(box(l), r);
 }
 
 /**
  * Lazy rank 1 update.
  */
-function rank_update(y:Expression<LLT>, z:Real[_]) ->
-    MatrixRankUpdate<Expression<Real[_]>,Real[_],Real[_]> {
-  return rank_update(y, box(z));
+function rank_update(l:Expression<LLT>, r:Real[_]) ->
+    MatrixRankUpdate<Expression<Real[_]>> {
+  return rank_update(l, box(r));
 }
 
 /**
  * Lazy rank $k$ update.
  */
-function rank_update(y:Expression<LLT>, z:Expression<Real[_,_]>) ->
-    MatrixRankUpdate<Expression<Real[_,_]>,Real[_,_],Real[_,_]> {
-  assert y.columns() == z.rows();
-  return construct<MatrixRankUpdate<Expression<Real[_,_]>,Real[_,_],
-      Real[_,_]>>(y, z);
+function rank_update(l:Expression<LLT>, r:Expression<Real[_,_]>) ->
+    MatrixRankUpdate<Expression<Real[_,_]>> {
+  assert l.columns() == r.rows();
+  return construct<MatrixRankUpdate<Expression<Real[_,_]>>>(l, r);
 }
 
 /**
  * Lazy rank $k$ update.
  */
-function rank_update(y:LLT, z:Expression<Real[_,_]>) ->
-    MatrixRankUpdate<Expression<Real[_,_]>,Real[_,_],Real[_,_]> {
-  return rank_update(box(y), z);
+function rank_update(l:LLT, r:Expression<Real[_,_]>) ->
+    MatrixRankUpdate<Expression<Real[_,_]>> {
+  return rank_update(box(l), r);
 }
 
 /**
  * Lazy rank $k$ update.
  */
-function rank_update(y:Expression<LLT>, z:Real[_,_]) ->
-    MatrixRankUpdate<Expression<Real[_,_]>,Real[_,_],Real[_,_]> {
-  return rank_update(y, box(z));
+function rank_update(l:Expression<LLT>, r:Real[_,_]) ->
+    MatrixRankUpdate<Expression<Real[_,_]>> {
+  return rank_update(l, box(r));
 }

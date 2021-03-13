@@ -1,52 +1,51 @@
 /**
  * Lazy `join`.
  */
-class MultivariateJoin<Value>(x:Expression<Value>[_]) <
+final class MultivariateJoin<Value>(m:Expression<Value>[_]) <
     MultivariateExpression<Value[_]> {
   /**
    * Arguments.
    */
-  y:Expression<Value>[_]? <- x;
+  m:Expression<Value>[_]? <- m;
 
   override function doDepth() -> Integer {
     let depth <- 0;
     for i in 1..length() {
-      depth <- max(depth, y![i].depth());
+      depth <- max(depth, m![i].depth());
     }
     return depth + 1;
   }
 
   override function doRows() -> Integer {
-    return global.length(y!);
+    return global.length(m!);
   }
 
   override function doValue() -> Value[_] {
-    return transform(y!, \(x:Expression<Value>) -> Value {
+    return transform(m!, \(x:Expression<Value>) -> Value {
         return x.value();
       });
   }
   
   override function doEval(gen:Integer) -> Value[_] {
-    return transform(y!, \(x:Expression<Value>) -> Value {
+    return transform(m!, \(x:Expression<Value>) -> Value {
         return x.countEval(gen);
       });
   }
 
   override function doReval(gen:Integer) -> Value[_] {
-    return transform(y!, \(x:Expression<Value>) -> Value {
+    return transform(m!, \(x:Expression<Value>) -> Value {
         return x.countReval(gen);
       });
   }
   
   override function doGrad(gen:Integer) {
-    for_each(y!, d!, \(x:Expression<Value>, d:Value) {
-        x.countGrad(gen, d);
+    for_each(m!, d!, \(x:Expression<Value>, d:Value) {
+        x.countGrad(gen, d!);
       });
   }
 
   override function doConstant() {
-    for_each(y!, \(x:Expression<Value>) { x.value(); });
-    y <- nil;
+    m <- nil;
   }
 }
 
@@ -54,17 +53,17 @@ class MultivariateJoin<Value>(x:Expression<Value>[_]) <
  * Lazy `join`. Converts a vector of scalar expressions into a vector
  * expression.
  */
-function join<Value>(y:Expression<Value>[_]) -> MultivariateJoin<Value> {
-  return construct<MultivariateJoin<Value>>(y);
+function join<Value>(m:Expression<Value>[_]) -> MultivariateJoin<Value> {
+  return construct<MultivariateJoin<Value>>(m);
 }
 
 /**
  * Lazy `split`. Converts a vector expression into a vector of scalar
  * expressions.
  */
-function split<Value>(y:Expression<Value[_]>) -> Expression<Value>[_] {
-  let z <- canonical(y);
-  // ^ canonical(y) above is an identity function for all but Random objects;
+function split<Value>(m:Expression<Value[_]>) -> Expression<Value>[_] {
+  let z <- canonical(m);
+  // ^ canonical(m) above is an identity function for all but Random objects;
   //   for these it wraps the Random in an additional expression that can
   //   accumulate gradients by element (which a Random cannot) before passing
   //   the whole vector of accumulated gradients onto the Random

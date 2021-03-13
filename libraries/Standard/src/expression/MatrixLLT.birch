@@ -1,29 +1,28 @@
 /**
  * Lazy `llt`.
  */
-class MatrixLLT(y:Expression<Real[_,_]>) <
-    MatrixUnaryExpression<Expression<Real[_,_]>,Real[_,_],Real[_,_],LLT>(y) {
+final class MatrixLLT(m:Expression<Real[_,_]>) <
+    MatrixUnaryExpression<Expression<Real[_,_]>,LLT>(m) {
   override function doRows() -> Integer {
-    return y!.rows();
+    return m!.rows();
   }
   
   override function doColumns() -> Integer {
-    return y!.columns();
+    return m!.columns();
   }
 
-  override function doEvaluate(y:Real[_,_]) -> LLT {
-    return llt(y);
+  override function doCompute() {
+    x <- llt(m!.eval());
   }
 
-  override function doEvaluateGrad(d:Real[_,_], x:LLT, y:Real[_,_]) ->
-      Real[_,_] {
-    return d;  // just a factorization, so pass along
+  override function doGrad(gen:Integer) {
+    m!.countGrad(gen, d!);  // just a factorization, so pass along
   }
 }
 
 /**
  * Lazy `inv`.
  */
-function llt(y:Expression<Real[_,_]>) -> MatrixLLT {
-  return construct<MatrixLLT>(y);
+function llt(m:Expression<Real[_,_]>) -> MatrixLLT {
+  return construct<MatrixLLT>(m);
 }

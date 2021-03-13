@@ -14,16 +14,20 @@ acyclic class Boxed<Value> < Expression<Value> {
     return 1;
   }
 
-  override function doValue() -> Value {
-    return x!;
+  override function doValue() {
+    //
   }
 
-  override function doEval(gen:Integer) -> Value {
-    return x!;
+  override function doEval(gen:Integer) {
+    //
   }
 
-  override function doReval(gen:Integer) -> Value {
-    return x!;
+  override function doReval(gen:Integer) {
+    //
+  }
+
+  override function doCompute() {
+    //
   }
   
   override function doGrad(gen:Integer) {

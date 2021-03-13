@@ -1,74 +1,71 @@
 /**
  * Lazy multivariate solve.
  */
-class MultivariateSolve<Left,LeftValue>(y:Left,
-    z:Expression<Real[_]>) < MultivariateBinaryExpression<Left,
-    Expression<Real[_]>,LeftValue,Real[_],Real[_,_],Real[_],Real[_]>(y, z) {  
+final class MultivariateSolve<Left,LeftValue>(l:Left, r:Expression<Real[_]>) <
+    MultivariateBinaryExpression<Left,Expression<Real[_]>,Real[_]>(l, r) {  
   override function doRows() -> Integer {
-    return z!.rows();
+    return r!.rows();
   }
   
-  override function doEvaluate(y:LeftValue, z:Real[_]) -> Real[_] {
-    return solve(y, z);
+  override function doCompute() {
+    x <- solve(l!.eval(), r!.eval());
   }
 
-  override function doEvaluateGradLeft(d:Real[_], x:Real[_], y:LeftValue,
-      z:Real[_]) -> Real[_,_] {
-    return outer(-solve(transpose(y), d), solve(y, z));
-  }
-
-  override function doEvaluateGradRight(d:Real[_], x:Real[_], y:LeftValue,
-      z:Real[_]) -> Real[_] {
-    return solve(transpose(y), d);
+  override function doGrad(gen:Integer) {
+    let l1 <- l!.eval();
+    let r1 <- r!.eval();
+    let z <- solve(transpose(l1), d!);
+    l!.countGrad(gen, outer(-z, solve(l1, r1)));
+    r!.countGrad(gen, z);
   }
 }
 
 /**
  * Lazy solve.
  */
-function solve(y:Expression<Real[_,_]>, z:Expression<Real[_]>) ->
+function solve(l:Expression<Real[_,_]>, r:Expression<Real[_]>) ->
     MultivariateSolve<Expression<Real[_,_]>,Real[_,_]> {
-  assert y.columns() == z.rows();
-  return construct<MultivariateSolve<Expression<Real[_,_]>,Real[_,_]>>(y, z);
+  assert l.columns() == r.rows();
+  return construct<MultivariateSolve<Expression<Real[_,_]>,Real[_,_]>>(l, r);
 }
 
 /**
  * Lazy solve.
  */
-function solve(y:Real[_,_], z:Expression<Real[_]>) ->
+function solve(l:Real[_,_], r:Expression<Real[_]>) ->
     MultivariateSolve<Expression<Real[_,_]>,Real[_,_]> {
-  return solve(box(y), z);
+  return solve(box(l), r);
 }
 
 /**
  * Lazy solve.
  */
-function solve(y:Expression<Real[_,_]>, z:Real[_]) ->
+function solve(l:Expression<Real[_,_]>, r:Real[_]) ->
     MultivariateSolve<Expression<Real[_,_]>,Real[_,_]> {
-  return solve(y, box(z));
+  return solve(l, box(r));
 }
 
 /**
  * Lazy solve.
  */
-function solve(y:Expression<LLT>, z:Expression<Real[_]>) ->
+function solve(l:Expression<LLT>, r:Expression<Real[_]>) ->
     MultivariateSolve<Expression<LLT>,LLT> {
-  assert y.columns() == z.rows();
-  return construct<MultivariateSolve<Expression<LLT>,LLT>>(y, z);
+  assert l.columns() == r.rows();
+  return construct<MultivariateSolve<Expression<LLT>,LLT>>(l, r);
 }
 
 /**
  * Lazy solve.
  */
-function solve(y:LLT, z:Expression<Real[_]>) ->
+function solve(l:LLT, r:Expression<Real[_]>) ->
     MultivariateSolve<Expression<LLT>,LLT> {
-  return solve(box(y), z);
+  return solve(box(l), r);
 }
 
 /**
  * Lazy solve.
  */
-function solve(y:Expression<LLT>, z:Real[_]) ->
+function solve(l:Expression<LLT>, r:Real[_]) ->
     MultivariateSolve<Expression<LLT>,LLT> {
-  return solve(y, box(z));
+  return solve(l, box(r));
 }

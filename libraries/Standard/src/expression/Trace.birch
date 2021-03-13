@@ -1,29 +1,27 @@
 /**
  * Lazy `trace`.
  */
-class Trace<Argument,ArgumentValue>(y:Argument) <
-    ScalarUnaryExpression<Argument,ArgumentValue,Real[_,_],Real>(y) {
-  override function doEvaluate(y:ArgumentValue) -> Real {
-    return trace(y);
+final class Trace<Argument>(m:Argument) <
+    ScalarUnaryExpression<Argument,Real>(m) {
+  override function doCompute() {
+    x <- trace(m!.eval());
   }
 
-  override function doEvaluateGrad(d:Real, x:Real, y:ArgumentValue) ->
-      Real[_,_] {
-    return diagonal(d, global.rows(y));
+  override function doGrad(gen:Integer) {
+    m!.countGrad(gen, diagonal(d!, m!.rows()));
   }
 }
 
 /**
  * Lazy `trace`.
  */
-function trace(y:Expression<LLT>) -> Trace<Expression<LLT>,LLT> {
-  return construct<Trace<Expression<LLT>,LLT>>(y);
+function trace(m:Expression<LLT>) -> Trace<Expression<LLT>> {
+  return construct<Trace<Expression<LLT>>>(m);
 }
 
 /**
  * Lazy `trace`.
  */
-function trace(y:Expression<Real[_,_]>) ->
-    Trace<Expression<Real[_,_]>,Real[_,_]> {
-  return construct<Trace<Expression<Real[_,_]>,Real[_,_]>>(y);
+function trace(m:Expression<Real[_,_]>) -> Trace<Expression<Real[_,_]>> {
+  return construct<Trace<Expression<Real[_,_]>>>(m);
 }

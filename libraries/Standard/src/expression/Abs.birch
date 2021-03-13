@@ -1,17 +1,17 @@
 /**
  * Lazy `abs`.
  */
-class Abs(y:Expression<Real>) <
-    ScalarUnaryExpression<Expression<Real>,Real,Real,Real>(y) {
-  override function doEvaluate(y:Real) -> Real {
-    return abs(y);
+final class Abs(m:Expression<Real>) <
+    ScalarUnaryExpression<Expression<Real>,Real>(m) {
+  override function doCompute() {
+    x <- abs(m!.eval());
   }
 
-  override function doEvaluateGrad(d:Real, x:Real, y:Real) -> Real {
-    if x >= 0.0 {
-      return d;
+  override function doGrad(gen:Integer) {
+    if eval() >= 0.0 {
+      m!.countGrad(gen, d!);
     } else {
-      return -d;
+      m!.countGrad(gen, -d!);
     }
   }
 }
@@ -19,6 +19,6 @@ class Abs(y:Expression<Real>) <
 /**
  * Lazy `abs`.
  */
-function abs(y:Expression<Real>) -> Abs {
-  return construct<Abs>(y);
+function abs(m:Expression<Real>) -> Abs {
+  return construct<Abs>(m);
 }

@@ -1,20 +1,20 @@
 /**
  * Lazy `tan`.
  */
-class Tan(y:Expression<Real>) <
-    ScalarUnaryExpression<Expression<Real>,Real,Real,Real>(y) {
-  override function doEvaluate(y:Real) -> Real {
-    return tan(y);
+final class Tan(m:Expression<Real>) <
+    ScalarUnaryExpression<Expression<Real>,Real>(m) {
+  override function doCompute() {
+    x <- tan(m!.eval());
   }
 
-  override function doEvaluateGrad(d:Real, x:Real, y:Real) -> Real {
-    return d*(1.0 + pow(tan(y), 2.0));
+  override function doGrad(gen:Integer) {
+    m!.countGrad(gen, d!*(1.0 + pow(tan(m!.eval()), 2.0)));
   }
 }
 
 /**
  * Lazy `tan`.
  */
-function tan(y:Expression<Real>) -> Tan {
-  return construct<Tan>(y);
+function tan(m:Expression<Real>) -> Tan {
+  return construct<Tan>(m);
 }

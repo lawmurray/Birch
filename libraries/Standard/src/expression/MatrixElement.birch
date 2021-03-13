@@ -1,13 +1,8 @@
 /**
  * Lazy access of a matrix element.
  */
-class MatrixElement<Value>(y:Expression<Value[_,_]>, i:Integer,
-    j:Integer) < ScalarExpression<Value> {
-  /**
-   * Argument.
-   */
-  y:Expression<Value[_,_]>? <- y;
-
+final class MatrixElement<Value>(m:Expression<Value[_,_]>, i:Integer,
+    j:Integer) < ScalarUnaryExpression<Expression<Value[_,_]>,Value>(m) {
   /**
    * Row.
    */
@@ -18,52 +13,35 @@ class MatrixElement<Value>(y:Expression<Value[_,_]>, i:Integer,
    */
   j:Integer <- j;
   
-  override function doDepth() -> Integer {
-    return y!.depth() + 1;
-  }
-
-  override function doValue() -> Value {
-    return y!.value()[i,j];
-  }
-
-  override function doEval(gen:Integer) -> Value {
-    return y!.countEval(gen)[i,j];
-  }
-
-  override function doReval(gen:Integer) -> Value {
-    return y!.countReval(gen)[i,j];
+  override function doCompute() {
+    x <- m!.eval()[i,j];
   }
 
   override function doGrad(gen:Integer) {
-    y!.countGrad(gen, d!, i, j);
-  }
-
-  override function doConstant() {
-    y!.value();
-    y <- nil;
+    m!.countGrad(gen, d!, i, j);
   }
 }
 
 /**
  * Lazy access of a matrix element.
  */
-function MatrixElement(y:Expression<Real[_,_]>, i:Integer, j:Integer) ->
+function MatrixElement(m:Expression<Real[_,_]>, i:Integer, j:Integer) ->
     MatrixElement<Real> {
-  return construct<MatrixElement<Real>>(y, i, j);
+  return construct<MatrixElement<Real>>(m, i, j);
 }
 
 /**
  * Lazy access of a matrix element.
  */
-function MatrixElement(y:Expression<Integer[_,_]>, i:Integer, j:Integer) ->
+function MatrixElement(m:Expression<Integer[_,_]>, i:Integer, j:Integer) ->
     MatrixElement<Integer> {
-  return construct<MatrixElement<Integer>>(y, i, j);
+  return construct<MatrixElement<Integer>>(m, i, j);
 }
 
 /**
  * Lazy access of a matrix element.
  */
-function MatrixElement(y:Expression<Boolean[_,_]>, i:Integer, j:Integer) ->
+function MatrixElement(m:Expression<Boolean[_,_]>, i:Integer, j:Integer) ->
     MatrixElement<Boolean> {
-  return construct<MatrixElement<Boolean>>(y, i, j);
+  return construct<MatrixElement<Boolean>>(m, i, j);
 }

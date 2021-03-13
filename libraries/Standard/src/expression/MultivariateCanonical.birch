@@ -1,33 +1,31 @@
 /**
  * Lazy `canonical`.
  */
-class MultivariateCanonical(y:Expression<Real[_]>) <
-    MultivariateUnaryExpression<Expression<Real[_]>,Real[_],Real[_],
-    Real[_]>(y) {
+final class MultivariateCanonical(m:Expression<Real[_]>) <
+    MultivariateUnaryExpression<Expression<Real[_]>,Real[_]>(m) {
   override function doRows() -> Integer {
-    return y!.rows();
+    return m!.rows();
   }
 
-  override function doEvaluate(y:Real[_]) -> Real[_] {
-    return y;
+  override function doCompute() {
+    x <- m!.eval();
   }
 
-  override function doEvaluateGrad(d:Real[_], x:Real[_], y:Real[_]) ->
-      Real[_] {
-    return d;
+  override function doGrad(gen:Integer) {
+    m!.countGrad(gen, d!);
   }
 }
 
 /**
  * Lazy `canonical`.
  */
-function canonical(y:Expression<Real[_]>) -> Expression<Real[_]> {
-  if !y.isRandom() {
+function canonical(m:Expression<Real[_]>) -> Expression<Real[_]> {
+  if !m.isRandom() {
     /* just an identity function */
-    return y;
+    return m;
   } else {  
     /* Random objects should be wrapped to allow the accumulation of
      * gradients by element if necessary; see note in split() also */
-    return construct<MultivariateCanonical>(y);
+    return construct<MultivariateCanonical>(m);
   }
 }

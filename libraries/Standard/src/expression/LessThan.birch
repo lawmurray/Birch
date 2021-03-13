@@ -1,41 +1,34 @@
 /**
  * Lazy less-than.
  */
-class LessThan(y:Expression<Real>, z:Expression<Real>) <
-    ScalarBinaryExpression<Expression<Real>,Expression<Real>,Real,Real,Real,
-    Real,Boolean>(y, z) {  
-  override function doEvaluate(y:Real, z:Real) -> Boolean {
-    return y < z;
+final class LessThan(l:Expression<Real>, r:Expression<Real>) <
+    ScalarBinaryExpression<Expression<Real>,Expression<Real>,Boolean>(l, r) {  
+  override function doCompute() {
+    x <- l!.eval() < r!.eval();
   }
   
-  override function doEvaluateGradLeft(d:Real, x:Boolean, y:Real,
-      z:Real) -> Real {
-    return 0.0;
-  }
-
-  override function doEvaluateGradRight(d:Real, x:Boolean, y:Real, z:Real) ->
-      Real {
-    return 0.0;
+  override function doGrad(gen:Integer) {
+    //
   }
 }
 
 /**
  * Lazy less-than.
  */
-operator (y:Expression<Real> < z:Expression<Real>) -> LessThan {
-  return construct<LessThan>(y, z);
+operator (l:Expression<Real> < r:Expression<Real>) -> LessThan {
+  return construct<LessThan>(l, r);
 }
 
 /**
  * Lazy less-than.
  */
-operator (y:Real < z:Expression<Real>) -> LessThan {
-  return box(y) < z;
+operator (l:Real < r:Expression<Real>) -> LessThan {
+  return box(l) < r;
 }
 
 /**
  * Lazy less-than.
  */
-operator (y:Expression<Real> < z:Real) -> LessThan {
-  return y < box(z);
+operator (l:Expression<Real> < r:Real) -> LessThan {
+  return l < box(r);
 }

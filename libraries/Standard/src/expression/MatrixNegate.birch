@@ -1,64 +1,62 @@
 /**
  * Lazy negation.
  */
-class MatrixNegate(y:Expression<Real[_,_]>) <
-    MatrixUnaryExpression<Expression<Real[_,_]>,Real[_,_],Real[_,_],
-    Real[_,_]>(y) {
+final class MatrixNegate(m:Expression<Real[_,_]>) <
+    MatrixUnaryExpression<Expression<Real[_,_]>,Real[_,_]>(m) {
   override function doRows() -> Integer {
-    return y!.rows();
+    return m!.rows();
   }
   
   override function doColumns() -> Integer {
-    return y!.columns();
+    return m!.columns();
   }
 
-  override function doEvaluate(y:Real[_,_]) -> Real[_,_] {
-    return -y;
+  override function doCompute() {
+    x <- -m!.eval();
   }
 
-  override function doEvaluateGrad(d:Real[_,_], x:Real[_,_], y:Real[_,_]) ->
-      Real[_,_] {
-    return -d;
+  override function doGrad(gen:Integer) {
+    m!.countGrad(gen, -d!);
   }
 
   override function graftLinearMatrixGaussian() ->
       TransformLinearMatrix<MatrixGaussian>? {
-    r:TransformLinearMatrix<MatrixGaussian>?;
+    t:TransformLinearMatrix<MatrixGaussian>?;
     if !hasValue() {
       x1:MatrixGaussian?;
 
-      if (r <- y!.graftLinearMatrixGaussian())? {
-        r!.negate();
-      } else if (x1 <- y!.graftMatrixGaussian())? {
+      if (t <- m!.graftLinearMatrixGaussian())? {
+        t!.negate();
+      } else if (x1 <- m!.graftMatrixGaussian())? {
         let R <- x1!.rows();
         let C <- x1!.columns();
-        r <- TransformLinearMatrix<MatrixGaussian>(diagonal(box(-1.0), R),
+        t <- TransformLinearMatrix<MatrixGaussian>(diagonal(box(-1.0), R),
             x1!, box(matrix(0.0, R, C)));
       }
     }
-    return r;
+    return t;
   }
 
   override function graftLinearMatrixNormalInverseWishart(compare:Distribution<LLT>) ->
       TransformLinearMatrix<MatrixNormalInverseWishart>? {
-    r:TransformLinearMatrix<MatrixNormalInverseWishart>?;
+    t:TransformLinearMatrix<MatrixNormalInverseWishart>?;
     x1:MatrixNormalInverseWishart?;
 
-    if (r <- y!.graftLinearMatrixNormalInverseWishart(compare))? {
-      r!.negate();
-    } else if (x1 <- y!.graftMatrixNormalInverseWishart(compare))? {
+    if (t <- m!.graftLinearMatrixNormalInverseWishart(compare))? {
+      t!.negate();
+    } else if (x1 <- m!.graftMatrixNormalInverseWishart(compare))? {
       let R <- x1!.rows();
       let C <- x1!.columns();
-      r <- TransformLinearMatrix<MatrixNormalInverseWishart>(
+      t <- TransformLinearMatrix<MatrixNormalInverseWishart>(
           diagonal(box(-1.0), R), x1!, box(matrix(0.0, R, C)));
     }
-    return r;
+    return t;
   }
 }
 
 /**
  * Lazy negation.
  */
-operator (-y:Expression<Real[_,_]>) -> MatrixNegate {
-  return construct<MatrixNegate>(y);
+operator (-m:Expression<Real[_,_]>) -> MatrixNegate {
+  return construct<MatrixNegate>(m);
 }

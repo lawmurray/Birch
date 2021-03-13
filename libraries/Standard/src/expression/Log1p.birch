@@ -1,20 +1,20 @@
 /**
  * Lazy `log1p`.
  */
-class Log1p(y:Expression<Real>) <
-    ScalarUnaryExpression<Expression<Real>,Real,Real,Real>(y) {
-  override function doEvaluate(y:Real) -> Real {
-    return log1p(y);
+final class Log1p(m:Expression<Real>) <
+    ScalarUnaryExpression<Expression<Real>,Real>(m) {
+  override function doCompute() {
+    x <- log1p(m!.eval());
   }
 
-  override function doEvaluateGrad(d:Real, x:Real, y:Real) -> Real {
-    return d/(1.0 + y);
+  override function doGrad(gen:Integer) {
+    m!.countGrad(gen, d!/(1.0 + m!.eval()));
   }
 }
 
 /**
  * Lazy `log1p`.
  */
-function log1p(y:Expression<Real>) -> Log1p {
-  return construct<Log1p>(y);
+function log1p(m:Expression<Real>) -> Log1p {
+  return construct<Log1p>(m);
 }

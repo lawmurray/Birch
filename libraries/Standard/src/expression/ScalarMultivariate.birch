@@ -1,20 +1,20 @@
 /**
  * Lazy `scalar`.
  */
-class ScalarMultivariate<Value>(y:Expression<Value[_]>) <
-    ScalarUnaryExpression<Expression<Value[_]>,Value[_],Real[_],Value>(y) {
-  override function doEvaluate(y:Value[_]) -> Value {
-    return scalar(y);
+final class ScalarMultivariate<Value>(m:Expression<Value[_]>) <
+    ScalarUnaryExpression<Expression<Value[_]>,Value>(m) {
+  override function doCompute() {
+    x <- scalar(m!.eval());
   }
 
-  override function doEvaluateGrad(d:Real, x:Value, y:Value[_]) -> Value[_] {
-    return [d];
+  override function doGrad(gen:Integer) {
+    m!.countGrad(gen, [d]);
   }
 }
 
 /**
  * Lazy `scalar`.
  */
-function scalar<Value>(y:Expression<Value[_]>) -> ScalarMultivariate<Value> {
-  return construct<ScalarMultivariate<Value>>(y);
+function scalar<Value>(m:Expression<Value[_]>) -> ScalarMultivariate<Value> {
+  return construct<ScalarMultivariate<Value>>(m);
 }

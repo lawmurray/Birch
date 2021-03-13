@@ -1,29 +1,28 @@
 /**
  * Lazy `transpose`.
  */
-class MultivariateTranspose(x:Expression<Real[_]>) <
-    MatrixUnaryExpression<Expression<Real[_]>,Real[_],Real[_],Real[_,_]>(x) {
+final class MultivariateTranspose(m:Expression<Real[_]>) <
+    MatrixUnaryExpression<Expression<Real[_]>,Real[_,_]>(m) {
   override function doRows() -> Integer {
-    return y!.columns();
+    return m!.columns();
   }
   
   override function doColumns() -> Integer {
-    return y!.rows();
+    return m!.rows();
   }
 
-  override function doEvaluate(y:Real[_]) -> Real[_,_] {
-    return transpose(y);
+  override function doCompute() {
+    x <- transpose(m!.eval());
   }
 
-  override function doEvaluateGrad(d:Real[_,_], x:Real[_,_], y:Real[_]) ->
-      Real[_] {
-    return vec(d);
+  override function doGrad(gen:Integer) {
+    m!.countGrad(gen, vec(d!));
   }
 }
 
 /**
  * Lazy `transpose`.
  */
-function transpose(y:Expression<Real[_]>) -> MultivariateTranspose {
-  return construct<MultivariateTranspose>(y);
+function transpose(m:Expression<Real[_]>) -> MultivariateTranspose {
+  return construct<MultivariateTranspose>(m);
 }

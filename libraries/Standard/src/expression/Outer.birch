@@ -1,57 +1,51 @@
 /**
  * Lazy `outer`.
  */
-class Outer(y:Expression<Real[_]>, z:Expression<Real[_]>) <
-    MatrixBinaryExpression<Expression<Real[_]>,Expression<Real[_]>,Real[_],
-    Real[_],Real[_],Real[_],Real[_,_]>(y, z) {
+final class Outer(l:Expression<Real[_]>, r:Expression<Real[_]>) <
+    MatrixBinaryExpression<Expression<Real[_]>,Expression<Real[_]>,
+    Real[_,_]>(l, r) {
   override function doRows() -> Integer {
-    return y!.rows();
+    return l!.rows();
   }
   
   override function doColumns() -> Integer {
-    return z!.rows();
+    return r!.rows();
   }
   
-  override function doEvaluate(y:Real[_], z:Real[_]) -> Real[_,_] {
-    return outer(y, z);
+  override function doCompute() {
+    x <- outer(l!.eval(), r!.eval());
   }
 
-  override function doEvaluateGradLeft(d:Real[_,_], x:Real[_,_], y:Real[_],
-      z:Real[_]) -> Real[_] {
-    return d*z;
-  }
-
-  override function doEvaluateGradRight(d:Real[_,_], x:Real[_,_], y:Real[_],
-  
-      z:Real[_]) -> Real[_] {
-    return transpose(d)*y;
+  override function doGrad(gen:Integer) {
+    l!.countGrad(gen, d!*r!.eval());
+    r!.countGrad(gen, transpose(d!)*l!.eval());
   }
 }
 
 /**
  * Lazy `outer`.
  */
-function outer(y:Expression<Real[_]>, z:Expression<Real[_]>) -> Outer {
-  return construct<Outer>(y, z);
+function outer(l:Expression<Real[_]>, r:Expression<Real[_]>) -> Outer {
+  return construct<Outer>(l, r);
 }
 
 /**
  * Lazy `outer`.
  */
-function outer(y:Real[_], z:Expression<Real[_]>) -> Outer {
-  return outer(box(y), z);
+function outer(l:Real[_], r:Expression<Real[_]>) -> Outer {
+  return outer(box(l), r);
 }
 
 /**
  * Lazy `outer`.
  */
-function outer(y:Expression<Real[_]>, z:Real[_]) -> Outer {
-  return outer(y, box(z));
+function outer(l:Expression<Real[_]>, r:Real[_]) -> Outer {
+  return outer(l, box(r));
 }
 
 /**
  * Lazy `outer`.
  */
-function outer(y:Expression<Real[_]>) -> Outer {
-  return outer(y, y);
+function outer(l:Expression<Real[_]>) -> Outer {
+  return outer(l, l);
 }

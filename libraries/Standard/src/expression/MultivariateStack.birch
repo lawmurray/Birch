@@ -1,46 +1,43 @@
 /**
  * Lazy vector stack.
  */
-class MultivariateStack(y:Expression<Real[_]>, z:Expression<Real[_]>) <
+final class MultivariateStack(l:Expression<Real[_]>, r:Expression<Real[_]>) <
     MultivariateBinaryExpression<Expression<Real[_]>,Expression<Real[_]>,
-    Real[_],Real[_],Real[_],Real[_],Real[_]>(y, z) {  
+    Real[_]>(l, r) {  
   override function doRows() -> Integer {
-    return y!.rows() + z!.rows();
+    return l!.rows() + r!.rows();
   }
 
-  override function doEvaluate(y:Real[_], z:Real[_]) -> Real[_] {
-    return stack(y, z);
+  override function doCompute() {
+    x <- stack(l!.eval(), r!.eval());
   }
 
-  override function doEvaluateGradLeft(d:Real[_], x:Real[_], y:Real[_],
-      z:Real[_]) -> Real[_] {
-    return d[1..global.rows(y)];
-  }
-
-  override function doEvaluateGradRight(d:Real[_], x:Real[_], y:Real[_],
-      z:Real[_]) -> Real[_] {
-    return d[(global.rows(y) + 1)..global.rows(x)];
+  override function doGrad(gen:Integer) {
+    let l1 <- global.length(l!.eval());
+    let l2 <- global.length(r!.eval());
+    l!.countGrad(gen, d![1..l1]);
+    r!.countGrad(gen, d![(l1 + 1)..(l1 + l2)]);
   }
 }
 
 /**
  * Lazy vector stack.
  */
-function stack(y:Expression<Real[_]>, z:Expression<Real[_]>) ->
+function stack(l:Expression<Real[_]>, r:Expression<Real[_]>) ->
     MultivariateStack {
-  return construct<MultivariateStack>(y, z);
+  return construct<MultivariateStack>(l, r);
 }
 
 /**
  * Lazy matrix stack.
  */
-function stack(y:Real[_], z:Expression<Real[_]>) -> MultivariateStack {
-  return stack(box(y), z);
+function stack(l:Real[_], r:Expression<Real[_]>) -> MultivariateStack {
+  return stack(box(l), r);
 }
 
 /**
  * Lazy matrix stack.
  */
-function stack(y:Expression<Real[_]>, z:Real[_]) -> MultivariateStack {
-  return stack(y, box(z));
+function stack(l:Expression<Real[_]>, r:Real[_]) -> MultivariateStack {
+  return stack(l, box(r));
 }

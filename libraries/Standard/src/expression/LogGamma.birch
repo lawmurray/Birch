@@ -1,20 +1,20 @@
 /**
  * Lazy `lgamma`.
  */
-class LogGamma(x:Expression<Real>) <
-    ScalarUnaryExpression<Expression<Real>,Real,Real,Real>(x) {
-  override function doEvaluate(y:Real) -> Real {
-    return lgamma(y);
+final class LogGamma(m:Expression<Real>) <
+    ScalarUnaryExpression<Expression<Real>,Real>(m) {
+  override function doCompute() {
+    x <- lgamma(m!.eval());
   }
 
-  override function doEvaluateGrad(d:Real, x:Real, y:Real) -> Real {
-    return d*digamma(y);
+  override function doGrad(gen:Integer) {
+    m!.countGrad(gen, d!*digamma(m!.eval()));
   }
 }
 
 /**
  * Lazy `lgamma`.
  */
-function lgamma(x:Expression<Real>) -> LogGamma {
-  return construct<LogGamma>(x);
+function lgamma(m:Expression<Real>) -> LogGamma {
+  return construct<LogGamma>(m);
 }

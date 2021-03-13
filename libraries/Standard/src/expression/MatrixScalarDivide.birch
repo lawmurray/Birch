@@ -1,21 +1,21 @@
 /**
  * Lazy matrix divide.
  */
-operator (y:Expression<Real[_,_]>/z:Expression<Real>) ->
+operator (l:Expression<Real[_,_]>/r:Expression<Real>) ->
     Expression<Real[_,_]> {
-  return (1.0/z)*y;
+  return (1.0/r)*l;
 }
 
 /**
  * Lazy matrix divide.
  */
-operator (y:Real[_,_]/z:Expression<Real>) -> Expression<Real[_,_]> {
-  return (1.0/z)*box(y);
+operator (l:Real[_,_]/r:Expression<Real>) -> Expression<Real[_,_]> {
+  return (1.0/r)*box(l);
 }
 
 /**
  * Lazy matrix divide.
  */
-operator (y:Expression<Real[_,_]>/z:Real) -> Expression<Real[_,_]> {
-  return box(1.0/z)*y;
+operator (l:Expression<Real[_,_]>/r:Real) -> Expression<Real[_,_]> {
+  return box(1.0/r)*l;
 }

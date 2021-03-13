@@ -1,22 +1,20 @@
 /**
  * Lazy `pow`.
  */
-class Pow(y:Expression<Real>, z:Expression<Real>) <
-    ScalarBinaryExpression<Expression<Real>,Expression<Real>,Real,Real,Real,
-    Real,Real>(y, z) {  
-  override function doEvaluate(y:Real, z:Real) -> Real {
-    return pow(y, z);
+final class Pow(l:Expression<Real>, r:Expression<Real>) <
+    ScalarBinaryExpression<Expression<Real>,Expression<Real>,Real>(l, r) {  
+  override function doCompute() {
+    x <- pow(l!.eval(), r!.eval());
   }
 
-  override function doEvaluateGradLeft(d:Real, x:Real, y:Real, z:Real) -> Real {
-    return d*z*pow(y, z - 1.0);
-  }
-
-  override function doEvaluateGradRight(d:Real, x:Real, y:Real, z:Real) -> Real {
-    if y > 0.0 {
-      return d*pow(y, z)*log(y);
+  override function doGrad(gen:Integer) {
+    let l1 <- l!.eval();
+    let r1 <- r!.eval();
+    l!.countGrad(gen, d!*r1*pow(l1, r1 - 1.0));
+    if l1 > 0.0 {
+      r!.countGrad(gen, d!*pow(l1, r1)*log(l1));
     } else {
-      return 0.0;
+      r!.countGrad(gen, 0.0);
     }
   }
 }
@@ -24,20 +22,20 @@ class Pow(y:Expression<Real>, z:Expression<Real>) <
 /**
  * Lazy `pow`.
  */
-function pow(y:Expression<Real>, z:Expression<Real>) -> Pow {
-  return construct<Pow>(y, z);
+function pow(l:Expression<Real>, r:Expression<Real>) -> Pow {
+  return construct<Pow>(l, r);
 }
 
 /**
  * Lazy `pow`.
  */
-function pow(y:Real, z:Expression<Real>) -> Pow {
-  return pow(box(y), z);
+function pow(l:Real, r:Expression<Real>) -> Pow {
+  return pow(box(l), r);
 }
 
 /**
  * Lazy `pow`.
  */
-function pow(y:Expression<Real>, z:Real) -> Pow {
-  return pow(y, box(z));
+function pow(l:Expression<Real>, r:Real) -> Pow {
+  return pow(l, box(r));
 }

@@ -1,33 +1,33 @@
 /**
  * Lazy `diagonal`.
  */
-class Diagonal(y:Expression<Real>, z:Integer) <
-    MatrixUnaryExpression<Expression<Real>,Real,Real,Real[_,_]>(y) {
+final class Diagonal(m:Expression<Real>, r:Integer) <
+    MatrixUnaryExpression<Expression<Real>,Real[_,_]>(m) {
   /**
    * Size of matrix.
    */
-  z:Integer <- z;
+  r:Integer <- r;
 
   override function doRows() -> Integer {
-    return z;
+    return r;
   }
   
   override function doColumns() -> Integer {
-    return z;
+    return r;
   }
 
-  override function doEvaluate(y:Real) -> Real[_,_] {
-    return diagonal(y, z);
+  override function doCompute() {
+    x <- diagonal(m!.eval(), r);
   }
 
-  override function doEvaluateGrad(d:Real[_,_], x:Real[_,_], y:Real) -> Real {
-    return trace(d);
+  override function doGrad(gen:Integer) {
+    m!.countGrad(gen, trace(d!));
   }
 }
 
 /**
  * Lazy `diagonal`.
  */
-function diagonal(y:Expression<Real>, z:Integer) -> Diagonal {
-  return construct<Diagonal>(y, z);
+function diagonal(l:Expression<Real>, r:Integer) -> Diagonal {
+  return construct<Diagonal>(l, r);
 }

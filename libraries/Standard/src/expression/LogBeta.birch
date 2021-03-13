@@ -1,39 +1,38 @@
 /**
  * Lazy `lbeta`.
  */
-class LogBeta(y:Expression<Real>, z:Expression<Real>) <
-    ScalarBinaryExpression<Expression<Real>,Expression<Real>,Real,Real,Real,
-    Real,Real>(y, z) {  
-  override function doEvaluate(y:Real, z:Real) -> Real {
-    return lbeta(y, z);
+final class LogBeta(l:Expression<Real>, r:Expression<Real>) <
+    ScalarBinaryExpression<Expression<Real>,Expression<Real>,Real>(l, r) {  
+  override function doCompute() {
+    x <- lbeta(l!.eval(), r!.eval());
   }
   
-  override function doEvaluateGradLeft(d:Real, x:Real, y:Real, z:Real) -> Real {
-    return d*(digamma(y) + digamma(y + z));
+  override function doGrad(gen:Integer) {
+    let l <- this.l!.eval();
+    let r <- this.r!.eval();
+    let lr <- digamma(l + r);
+    this.l!.countGrad(gen, d!*(digamma(l) + lr));
+    this.r!.countGrad(gen, d!*(digamma(r) + lr));
   }
-
-  override function doEvaluateGradRight(d:Real, x:Real, y:Real, z:Real) -> Real {
-    return d*(digamma(z) + digamma(y + z));
-  }
 }
 
 /**
  * Lazy `lbeta`.
  */
-function lbeta(x:Expression<Real>, y:Expression<Real>) -> LogBeta {
-  return construct<LogBeta>(x, y);
+function lbeta(x:Expression<Real>, l:Expression<Real>) -> LogBeta {
+  return construct<LogBeta>(x, l);
 }
 
 /**
  * Lazy `lbeta`.
  */
-function lbeta(x:Real, y:Expression<Real>) -> LogBeta {
-  return lbeta(box(x), y);
+function lbeta(x:Real, l:Expression<Real>) -> LogBeta {
+  return lbeta(box(x), l);
 }
 
 /**
  * Lazy `lbeta`.
  */
-function lbeta(x:Expression<Real>, y:Real) -> LogBeta {
-  return lbeta(x, box(y));
+function lbeta(x:Expression<Real>, l:Real) -> LogBeta {
+  return lbeta(x, box(l));
 }

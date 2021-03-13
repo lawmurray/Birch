@@ -1,36 +1,34 @@
 /**
  * Lazy `rectify`.
  */
-class MatrixRectify(y:Expression<Real[_,_]>) <
-    MatrixUnaryExpression<Expression<Real[_,_]>,Real[_,_],Real[_,_],
-    Real[_,_]>(y) {
+final class MatrixRectify(m:Expression<Real[_,_]>) <
+    MatrixUnaryExpression<Expression<Real[_,_]>,Real[_,_]>(m) {
   override function doRows() -> Integer {
-    return y!.rows();
+    return m!.rows();
   }
 
   override function doColumns() -> Integer {
-    return y!.columns();
+    return m!.columns();
   }
 
-  override function doEvaluate(y:Real[_,_]) -> Real[_,_] {
-    return transform(y, \(y:Real) -> Real { return rectify(y); });
+  override function doCompute() {
+    x <- transform(m!.eval(), \(m:Real) -> Real { return rectify(m); });
   }
 
-  override function doEvaluateGrad(d:Real[_,_], x:Real[_,_], y:Real[_,_]) ->
-      Real[_,_] {
-    return transform(d, x, \(d:Real, x:Real) -> Real {
+  override function doGrad(gen:Integer) {
+    m!.countGrad(gen, transform(d!, x!, \(d:Real, x:Real) -> Real {
         if x > 0.0 {
           return d;
         } else {
           return 0.0;
         }
-      });
+      }));
   }
 }
 
 /**
  * Lazy `rectify`.
  */
-function rectify(y:Expression<Real[_,_]>) -> MatrixRectify {
-  return construct<MatrixRectify>(y);
+function rectify(m:Expression<Real[_,_]>) -> MatrixRectify {
+  return construct<MatrixRectify>(m);
 }

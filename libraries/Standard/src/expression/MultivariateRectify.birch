@@ -1,26 +1,24 @@
 /**
  * Lazy `rectify`.
  */
-class MultivariateRectify(y:Expression<Real[_]>) <
-    MultivariateUnaryExpression<Expression<Real[_]>,Real[_],Real[_],
-    Real[_]>(y) {
+final class MultivariateRectify(m:Expression<Real[_]>) <
+    MultivariateUnaryExpression<Expression<Real[_]>,Real[_]>(m) {
   override function doRows() -> Integer {
-    return y!.rows();
+    return m!.rows();
   }
     
-  override function doEvaluate(y:Real[_]) -> Real[_] {
-    return transform(y, \(y:Real) -> Real { return rectify(y); });
+  override function doCompute() {
+    x <- transform(m!.eval(), \(m:Real) -> Real { return rectify(m); });
   }
 
-  override function doEvaluateGrad(d:Real[_], x:Real[_], y:Real[_]) ->
-      Real[_] {
-    return transform(d, x, \(d:Real, x:Real) -> Real {
+  override function doGrad(gen:Integer) {
+    m!.countGrad(gen, transform(d!, x!, \(d:Real, x:Real) -> Real {
         if x > 0.0 {
           return d;
         } else {
           return 0.0;
         }
-      });
+      }));
   }
 }
 

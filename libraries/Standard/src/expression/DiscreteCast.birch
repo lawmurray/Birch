@@ -1,55 +1,55 @@
 /**
  * Lazy cast.
  */
-class DiscreteCast<From,To>(y:Expression<From>) <
-    ScalarUnaryExpression<Expression<From>,From,Real,To>(y) {
-  override function doEvaluate(y:From) -> To {
-    return To?(y)!;
+final class DiscreteCast<From,To>(m:Expression<From>) <
+    ScalarUnaryExpression<Expression<From>,To>(m) {
+  override function doCompute() {
+    x <- To?(m!.eval())!;
   }
 
-  override function doEvaluateGrad(d:Real, x:To, y:From) -> Real {
-    return d;
+  override function doGrad(gen:Integer) {
+    m!.countGrad(gen, d!);
   }
 }
 
 /**
  * Lazy cast.
  */
-function Integer(y:Expression<Real>) -> DiscreteCast<Real,Integer> {
-  return construct<DiscreteCast<Real,Integer>>(y);
+function Integer(m:Expression<Real>) -> DiscreteCast<Real,Integer> {
+  return construct<DiscreteCast<Real,Integer>>(m);
 }
 
 /**
  * Lazy cast, identity function.
  */
-function Integer(y:Expression<Integer>) -> Expression<Integer> {
-  return y;
+function Integer(m:Expression<Integer>) -> Expression<Integer> {
+  return m;
 }
 
 /**
  * Lazy cast.
  */
-function Integer(y:Expression<Boolean>) -> DiscreteCast<Boolean,Integer> {
-  return construct<DiscreteCast<Boolean,Integer>>(y);
+function Integer(m:Expression<Boolean>) -> DiscreteCast<Boolean,Integer> {
+  return construct<DiscreteCast<Boolean,Integer>>(m);
 }
 
 /**
  * Lazy cast.
  */
-function Boolean(y:Expression<Real>) -> DiscreteCast<Real,Boolean> {
-  return construct<DiscreteCast<Real,Boolean>>(y);
+function Boolean(m:Expression<Real>) -> DiscreteCast<Real,Boolean> {
+  return construct<DiscreteCast<Real,Boolean>>(m);
 }
 
 /**
  * Lazy cast.
  */
-function Boolean(y:Expression<Integer>) -> DiscreteCast<Integer,Boolean> {
-  return construct<DiscreteCast<Integer,Boolean>>(y);
+function Boolean(m:Expression<Integer>) -> DiscreteCast<Integer,Boolean> {
+  return construct<DiscreteCast<Integer,Boolean>>(m);
 }
 
 /**
  * Lazy cast, identity function.
  */
-function Boolean(y:Expression<Boolean>) -> Expression<Boolean> {
-  return y;
+function Boolean(m:Expression<Boolean>) -> Expression<Boolean> {
+  return m;
 }

@@ -1,50 +1,48 @@
 /**
  * Lazy matrix pack.
  */
-class MatrixPack(y:Expression<Real[_,_]>, z:Expression<Real[_,_]>) <
+final class MatrixPack(l:Expression<Real[_,_]>, r:Expression<Real[_,_]>) <
     MatrixBinaryExpression<Expression<Real[_,_]>,Expression<Real[_,_]>,
-    Real[_,_],Real[_,_],Real[_,_],Real[_,_],Real[_,_]>(y, z) {  
+    Real[_,_]>(l, r) {  
   override function doRows() -> Integer {
-    return y!.rows();
+    return l!.rows();
   }
   
   override function doColumns() -> Integer {
-    return y!.columns() + z!.columns();
+    return l!.columns() + r!.columns();
   }
 
-  override function doEvaluate(y:Real[_,_], z:Real[_,_]) -> Real[_,_] {
-    return pack(y, z);
+  override function doCompute() {
+    x <- pack(l!.eval(), r!.eval());
   }
 
-  override function doEvaluateGradLeft(d:Real[_,_], x:Real[_,_], y:Real[_,_],
-      z:Real[_,_]) -> Real[_,_] {
-    return d[1..global.rows(y), 1..global.columns(y)];
-  }
-
-  override function doEvaluateGradRight(d:Real[_,_], x:Real[_,_], y:Real[_,_],
-      z:Real[_,_]) -> Real[_,_] {
-    return d[1..global.rows(y), (global.columns(y) + 1)..global.columns(x)];
+  override function doGrad(gen:Integer) {
+    let r1 <- global.rows(l!.eval());
+    let c1 <- global.columns(l!.eval());
+    let c2 <- global.columns(r!.eval());
+    l!.countGrad(gen, d![1..r1, 1..c1]);
+    r!.countGrad(gen, d![1..r1, (c1 + 1)..(c1 + c2)]);
   }
 }
 
 /**
  * Lazy matrix pack.
  */
-function pack(y:Expression<Real[_,_]>, z:Expression<Real[_,_]>) ->
+function pack(l:Expression<Real[_,_]>, r:Expression<Real[_,_]>) ->
     MatrixPack {
-  return construct<MatrixPack>(y, z);
+  return construct<MatrixPack>(l, r);
 }
 
 /**
  * Lazy matrix pack.
  */
-function pack(y:Real[_,_], z:Expression<Real[_,_]>) -> MatrixPack {
-  return pack(box(y), z);
+function pack(l:Real[_,_], r:Expression<Real[_,_]>) -> MatrixPack {
+  return pack(box(l), r);
 }
 
 /**
  * Lazy matrix pack.
  */
-function pack(y:Expression<Real[_,_]>, z:Real[_,_]) -> MatrixPack {
-  return pack(y, box(z));
+function pack(l:Expression<Real[_,_]>, r:Real[_,_]) -> MatrixPack {
+  return pack(l, box(r));
 }

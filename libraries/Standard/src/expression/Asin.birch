@@ -1,20 +1,20 @@
 /**
  * Lazy `asin`.
  */
-class Asin(y:Expression<Real>) <
-    ScalarUnaryExpression<Expression<Real>,Real,Real,Real>(y) {
-  override function doEvaluate(y:Real) -> Real {
-    return asin(y);
+final class Asin(m:Expression<Real>) <
+    ScalarUnaryExpression<Expression<Real>,Real>(m) {
+  override function doCompute() {
+    x <- asin(m!.eval());
   }
 
-  override function doEvaluateGrad(d:Real, x:Real, y:Real) -> Real {
-    return d/sqrt(1.0 - y*y);
+  override function doGrad(gen:Integer) {
+    m!.countGrad(gen, d!/sqrt(1.0 - pow(m!.eval(), 2.0)));
   }
 }
 
 /**
  * Lazy `asin`.
  */
-function asin(y:Expression<Real>) -> Asin {
-  return construct<Asin>(y);
+function asin(m:Expression<Real>) -> Asin {
+  return construct<Asin>(m);
 }

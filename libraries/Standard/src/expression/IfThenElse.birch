@@ -1,112 +1,77 @@
 /**
  * Lazy `if_then_else`.
  */
-class IfThenElse(cond:Expression<Boolean>, y:Expression<Real>,
-    z:Expression<Real>) < ScalarExpression<Real> {  
-  /**
-   * Condition.
-   */
-  cond:Expression<Boolean>? <- cond;
-
-  /**
-   * Value if true.
-   */
-  y:Expression<Real>? <- y;
-  
-  /**
-   * Value if false.
-   */
-  z:Expression<Real>? <- z;
-
-  override function doDepth() -> Integer {
-    return max(cond!.depth(), max(y!.depth(), z!.depth())) + 1;
+final class IfThenElse(l:Expression<Boolean>, m:Expression<Real>,
+    r:Expression<Real>) < ScalarTernaryExpression<Expression<Boolean>,
+    Expression<Real>,Expression<Real>,Real>(l, m, r) {  
+  override function doCompute() {
+    x <- if_then_else(l!.eval(), m!.eval(), r!.eval());
   }
 
-  override function doValue() -> Real {
-    return if_then_else(cond!.value(), y!.value(), z!.value());
-  }
-
-  override function doEval(gen:Integer) -> Real {
-    return if_then_else(cond!.countEval(gen), y!.countEval(gen), z!.countEval(gen));
-  }
-
-  override function doReval(gen:Integer) -> Real {
-    return if_then_else(cond!.countReval(gen), y!.countReval(gen), z!.countReval(gen));
-  }
-  
   override function doGrad(gen:Integer) {
-    cond!.countGrad(gen, 0.0);
-    if cond!.eval() {
-      y!.countGrad(gen, d!);
-      z!.countGrad(gen, 0.0);
+    l!.countGrad(gen, 0.0);
+    if l!.eval() {
+      m!.countGrad(gen, d!);
+      r!.countGrad(gen, 0.0);
     } else {
-      y!.countGrad(gen, 0.0);
-      z!.countGrad(gen, d!);
+      m!.countGrad(gen, 0.0);
+      r!.countGrad(gen, d!);
     }
   }
-
-  final override function doConstant() {
-    cond!.value();
-    y!.value();
-    z!.value();
-    cond <- nil;
-    y <- nil;
-    z <- nil;
-  }
 }
 
 /**
  * Lazy `if_then_else`.
  */
- function if_then_else(cond:Expression<Boolean>, y:Expression<Real>,
-     z:Expression<Real>) -> IfThenElse {
-  return construct<IfThenElse>(cond, y, z);
+ function if_then_else(l:Expression<Boolean>, m:Expression<Real>,
+     r:Expression<Real>) -> IfThenElse {
+  return construct<IfThenElse>(l, m, r);
 }
 
 /**
  * Lazy `if_then_else`.
  */
- function if_then_else(cond:Expression<Boolean>, y:Expression<Real>,
-    z:Real) -> IfThenElse {
-  return if_then_else(cond, y, box(z));
+ function if_then_else(l:Expression<Boolean>, m:Expression<Real>,
+    r:Real) -> IfThenElse {
+  return if_then_else(l, m, box(r));
 }
 
 /**
  * Lazy `if_then_else`.
  */
- function if_then_else(cond:Expression<Boolean>, y:Real,
-     z:Expression<Real>) -> IfThenElse {
-  return if_then_else(cond, box(y), z);
+ function if_then_else(l:Expression<Boolean>, m:Real,
+     r:Expression<Real>) -> IfThenElse {
+  return if_then_else(l, box(m), r);
 }
 
 /**
  * Lazy `if_then_else`.
  */
- function if_then_else(cond:Expression<Boolean>, y:Real, z:Real) ->
+ function if_then_else(l:Expression<Boolean>, m:Real, r:Real) ->
      IfThenElse {
-  return if_then_else(cond, box(y), box(z));
+  return if_then_else(l, box(m), box(r));
 }
 
 /**
  * Lazy `if_then_else`.
  */
- function if_then_else(cond:Boolean, y:Expression<Real>,
-     z:Expression<Real>) -> IfThenElse {
-  return if_then_else(box(cond), y, z);
+ function if_then_else(l:Boolean, m:Expression<Real>,
+     r:Expression<Real>) -> IfThenElse {
+  return if_then_else(box(l), m, r);
 }
 
 /**
  * Lazy `if_then_else`.
  */
- function if_then_else(cond:Boolean, y:Expression<Real>, z:Real) ->
+ function if_then_else(l:Boolean, m:Expression<Real>, r:Real) ->
      IfThenElse {
-  return if_then_else(box(cond), y, box(z));
+  return if_then_else(box(l), m, box(r));
 }
 
 /**
  * Lazy `if_then_else`.
  */
- function if_then_else(cond:Boolean, y:Real, z:Expression<Real>) ->
+ function if_then_else(l:Boolean, m:Real, r:Expression<Real>) ->
      IfThenElse {
-  return if_then_else(box(cond), box(y), z);
+  return if_then_else(box(l), box(m), r);
 }

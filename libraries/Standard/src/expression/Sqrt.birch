@@ -1,14 +1,14 @@
 /**
  * Lazy `sqrt`.
  */
-class Sqrt(y:Expression<Real>) <
-    ScalarUnaryExpression<Expression<Real>,Real,Real,Real>(y) {
-  override function doEvaluate(y:Real) -> Real {
-    return sqrt(y);
+final class Sqrt(m:Expression<Real>) <
+    ScalarUnaryExpression<Expression<Real>,Real>(m) {
+  override function doCompute() {
+    x <- sqrt(m!.eval());
   }
 
-  override function doEvaluateGrad(d:Real, x:Real, y:Real) -> Real {
-    return d*0.5/sqrt(y);
+  override function doGrad(gen:Integer) {
+    m!.countGrad(gen, d!*0.5/sqrt(m!.eval()));
   }
 }
 

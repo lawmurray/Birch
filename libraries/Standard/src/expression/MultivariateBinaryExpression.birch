@@ -1,75 +1,43 @@
 /**
  * Multivariate binary expression.
  *
- * - `Left`: Left argument type. Should derive from `Expression<...>`.
- * - `Right`: Right argument type. Should derive from `Expression<...>`.
- * - `LeftValue`: Left value type. This is the type to which the left
- *    argument evaluates.
- * - `RightValue`: Right value type. This is the type to which the right
- *   argument evaluates.
- * - `LeftGradient`: Left upstream gradient type. This is the type of the
- *   upstream gradient that the left argument accepts. It should be `Real`,
- *   `Real[_]`, or `Real[_,_]`.
- * - `RightGradient`: Right upstrem gradient type. This is the type of the
- *   upstream gradient that the right argument accepts. It should be `Real`,
- *   `Real[_]`, or `Real[_,_]`.
- * - `Value`: The type to which the expression evaluates.
+ * - Left: Left argument type.
+ * - Right: Right argument type.
+ * - Value: Result type.
  */
-abstract class MultivariateBinaryExpression<Left,Right,LeftValue,RightValue,
-    LeftGradient,RightGradient,Value>(y:Left, z:Right) <
-    MultivariateExpression<Value> {  
+abstract class MultivariateBinaryExpression<Left,Right,Value>(l:Left,
+    r:Right) < MultivariateExpression<Value> {  
   /**
    * Left argument.
    */
-  y:Left? <- y;
+  l:Left? <- l;
   
   /**
    * Right argument.
    */
-  z:Right? <- z;
-
-  /*
-   * Evaluate.
-   */
-  abstract function doEvaluate(y:LeftValue, z:RightValue) -> Value;
-  
-  /*
-   * Evaluate the gradient for the left argument.
-   */
-  abstract function doEvaluateGradLeft(d:Real[_], x:Value, y:LeftValue,
-      z:RightValue) -> LeftGradient;
-
-  /*
-   * Evaluate the gradient for the right argument.
-   */
-  abstract function doEvaluateGradRight(d:Real[_], x:Value, y:LeftValue,
-      z:RightValue) -> RightGradient;
+  r:Right? <- r;
 
   final override function doDepth() -> Integer {
-    return max(y!.depth(), z!.depth()) + 1;
+    return max(l!.depth(), r!.depth()) + 1;
   }
 
-  final override function doValue() -> Value {
-    return doEvaluate(y!.value(), z!.value());
+  final override function doValue() {
+    l!.value();
+    r!.value();
   }
 
-  final override function doEval(gen:Integer) -> Value {
-    return doEvaluate(y!.countEval(gen), z!.countEval(gen));
+  final override function doEval(gen:Integer) {
+    l!.countEval(gen);
+    r!.countEval(gen);
   }
 
-  final override function doReval(gen:Integer) -> Value {
-    return doEvaluate(y!.countReval(gen), z!.countReval(gen));
-  }
-  
-  final override function doGrad(gen:Integer) {
-    y!.countGrad(gen, doEvaluateGradLeft(d!, x!, y!.eval(), z!.eval()));
-    z!.countGrad(gen, doEvaluateGradRight(d!, x!, y!.eval(), z!.eval()));
+  final override function doReval(gen:Integer) {
+    l!.countReval(gen);
+    r!.countReval(gen);
   }
   
   final override function doConstant() {
-    y!.value();
-    z!.value();
-    y <- nil;
-    z <- nil;
+    l <- nil;
+    r <- nil;
   }
 }

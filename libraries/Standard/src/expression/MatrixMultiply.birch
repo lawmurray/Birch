@@ -1,80 +1,74 @@
 /**
  * Lazy matrix multiply.
  */
-class MatrixMultiply(y:Expression<Real[_,_]>,
-    z:Expression<Real[_,_]>) < MatrixBinaryExpression<Expression<Real[_,_]>,
-    Expression<Real[_,_]>,Real[_,_],Real[_,_],Real[_,_],Real[_,_],
-    Real[_,_]>(y, z) {  
+final class MatrixMultiply(l:Expression<Real[_,_]>,
+    r:Expression<Real[_,_]>) < MatrixBinaryExpression<Expression<Real[_,_]>,
+    Expression<Real[_,_]>,Real[_,_]>(l, r) {  
   override function doRows() -> Integer {
-    return y!.rows();
+    return l!.rows();
   }
   
   override function doColumns() -> Integer {
-    return z!.columns();
+    return r!.columns();
   }
 
-  override function doEvaluate(y:Real[_,_], z:Real[_,_]) -> Real[_,_] {
-    return y*z;
+  override function doCompute() {
+    x <- l!.eval()*r!.eval();
   }
 
-  override function doEvaluateGradLeft(d:Real[_,_], x:Real[_,_], y:Real[_,_],
-      z:Real[_,_]) -> Real[_,_] {
-    return d*transpose(z);
-  }
-
-  override function doEvaluateGradRight(d:Real[_,_], x:Real[_,_], y:Real[_,_],
-      z:Real[_,_]) -> Real[_,_] {
-    return transpose(y)*d;
+  override function doGrad(gen:Integer) {
+    l!.countGrad(gen, d!*transpose(r!.eval()));
+    r!.countGrad(gen, transpose(l!.eval())*d!);
   }
 
   override function graftLinearMatrixGaussian() -> TransformLinearMatrix<MatrixGaussian>? {
-    r:TransformLinearMatrix<MatrixGaussian>?;
+    t:TransformLinearMatrix<MatrixGaussian>?;
     if !hasValue() {
       x1:MatrixGaussian?;
     
-      if (r <- z!.graftLinearMatrixGaussian())? {
-        r!.leftMultiply(y!);
-      } else if (x1 <- z!.graftMatrixGaussian())? {
-        r <- TransformLinearMatrix<MatrixGaussian>(y!, x1!);
+      if (t <- r!.graftLinearMatrixGaussian())? {
+        t!.leftMultiply(l!);
+      } else if (x1 <- r!.graftMatrixGaussian())? {
+        t <- TransformLinearMatrix<MatrixGaussian>(l!, x1!);
       }
     }
-    return r;
+    return t;
   }
   
   override function graftLinearMatrixNormalInverseWishart(compare:Distribution<LLT>) ->
       TransformLinearMatrix<MatrixNormalInverseWishart>? {
-    r:TransformLinearMatrix<MatrixNormalInverseWishart>?;
+    t:TransformLinearMatrix<MatrixNormalInverseWishart>?;
     if !hasValue() {
       x1:MatrixNormalInverseWishart?;
 
-      if (r <- z!.graftLinearMatrixNormalInverseWishart(compare))? {
-        r!.leftMultiply(y!);
-      } else if (x1 <- z!.graftMatrixNormalInverseWishart(compare))? {
-        r <- TransformLinearMatrix<MatrixNormalInverseWishart>(y!, x1!);
+      if (t <- r!.graftLinearMatrixNormalInverseWishart(compare))? {
+        t!.leftMultiply(l!);
+      } else if (x1 <- r!.graftMatrixNormalInverseWishart(compare))? {
+        t <- TransformLinearMatrix<MatrixNormalInverseWishart>(l!, x1!);
       }
     }
-    return r;
+    return t;
   }
 }
 
 /**
  * Lazy matrix multiply.
  */
-operator (y:Expression<Real[_,_]>*z:Expression<Real[_,_]>) ->
+operator (l:Expression<Real[_,_]>*r:Expression<Real[_,_]>) ->
     MatrixMultiply {
-  return construct<MatrixMultiply>(y, z);
+  return construct<MatrixMultiply>(l, r);
 }
 
 /**
  * Lazy matrix multiply.
  */
-operator (y:Real[_,_]*z:Expression<Real[_,_]>) -> MatrixMultiply {
-  return box(y)*z;
+operator (l:Real[_,_]*r:Expression<Real[_,_]>) -> MatrixMultiply {
+  return box(l)*r;
 }
 
 /**
  * Lazy matrix multiply.
  */
-operator (y:Expression<Real[_,_]>*z:Real[_,_]) -> MatrixMultiply {
-  return y*box(z);
+operator (l:Expression<Real[_,_]>*r:Real[_,_]) -> MatrixMultiply {
+  return l*box(r);
 }

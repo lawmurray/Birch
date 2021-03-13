@@ -1,34 +1,34 @@
 /**
  * Lazy cast.
  */
-class Cast<From,To>(y:Expression<From>) <
-    ScalarUnaryExpression<Expression<From>,From,Real,To>(y) {
-  override function doEvaluate(y:From) -> To {
-    return To?(y)!;
+final class Cast<From,To>(m:Expression<From>) <
+    ScalarUnaryExpression<Expression<From>,To>(m) {
+  override function doCompute() {
+    x <- To?(m!.eval())!;
   }
 
-  override function doEvaluateGrad(d:Real, x:To, y:From) -> Real {
-    return d;
+  override function doGrad(gen:Integer) {
+    m!.countGrad(gen, d!);
   }
 }
 
 /**
  * Lazy cast, identity function.
  */
-function Real(y:Expression<Real>) -> Expression<Real> {
-  return y;
+function Real(m:Expression<Real>) -> Expression<Real> {
+  return m;
 }
 
 /**
  * Lazy cast.
  */
-function Real(y:Expression<Integer>) -> Cast<Integer,Real> {
-  return construct<Cast<Integer,Real>>(y);
+function Real(m:Expression<Integer>) -> Cast<Integer,Real> {
+  return construct<Cast<Integer,Real>>(m);
 }
 
 /**
  * Lazy cast.
  */
-function Real(y:Expression<Boolean>) -> Cast<Boolean,Real> {
-  return construct<Cast<Boolean,Real>>(y);
+function Real(m:Expression<Boolean>) -> Cast<Boolean,Real> {
+  return construct<Cast<Boolean,Real>>(m);
 }

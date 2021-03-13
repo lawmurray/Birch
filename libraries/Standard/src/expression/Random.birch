@@ -88,19 +88,22 @@ final class Random<Value> < Expression<Value> {
     return p!.columns();
   }
 
-  override function doValue() -> Value {
-    return handle_realize(p!);
+  override function doValue() {
+    //
   }
 
-  override function doEval(gen:Integer) -> Value {
-    return handle_realize(p!);
+  override function doEval(gen:Integer) {
+    //
   }
 
-  override function doReval(gen:Integer) -> Value {
-    /* the point of reval() is to re-evaluate an expression after the value of
-     * Random objects, such as this, are modified; so just need to return that
-     * (potentially) modified value here */
-    return x!;
+  override function doReval(gen:Integer) {
+    //
+  }
+
+  override function doCompute() {
+    if !hasValue() {
+      x <- handle_realize(p!);
+    }
   }
 
   function doAccumulateGrad(d:Value) {

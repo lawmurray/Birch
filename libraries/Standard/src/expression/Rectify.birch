@@ -1,17 +1,17 @@
 /**
  * Lazy `rectify`.
  */
-class Rectify(y:Expression<Real>) <
-    ScalarUnaryExpression<Expression<Real>,Real,Real,Real>(y) {
-  override function doEvaluate(y:Real) -> Real {
-    return rectify(y);
+final class Rectify(m:Expression<Real>) <
+    ScalarUnaryExpression<Expression<Real>,Real>(m) {
+  override function doCompute() {
+    x <- rectify(m!.eval());
   }
 
-  override function doEvaluateGrad(d:Real, x:Real, y:Real) -> Real {
+  override function doGrad(gen:Integer) {
     if x > 0.0 {
-      return d;
+      m!.countGrad(gen, d!);
     } else {
-      return 0.0;
+      m!.countGrad(gen, 0.0);
     }
   }
 }
@@ -19,6 +19,6 @@ class Rectify(y:Expression<Real>) <
 /**
  * Lazy `rectify`.
  */
-function rectify(y:Expression<Real>) -> Rectify {
-  return construct<Rectify>(y);
+function rectify(m:Expression<Real>) -> Rectify {
+  return construct<Rectify>(m);
 }

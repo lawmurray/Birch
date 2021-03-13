@@ -1,52 +1,50 @@
 /**
  * Lazy matrix stack.
  */
-class MatrixStack(y:Expression<Real[_,_]>, z:Expression<Real[_,_]>) <
+final class MatrixStack(l:Expression<Real[_,_]>, r:Expression<Real[_,_]>) <
     MatrixBinaryExpression<Expression<Real[_,_]>,Expression<Real[_,_]>,
-    Real[_,_],Real[_,_],Real[_,_],Real[_,_],Real[_,_]>(y, z) {  
+    Real[_,_]>(l, r) {  
   override function doRows() -> Integer {
-    return y!.rows() + z!.rows();
+    return l!.rows() + r!.rows();
   }
   
   override function doColumns() -> Integer {
-    assert y!.columns() == z!.columns();
-    return y!.columns();
+    assert l!.columns() == r!.columns();
+    return l!.columns();
   }
 
-  override function doEvaluate(y:Real[_,_], z:Real[_,_]) -> Real[_,_] {
-    return stack(y, z);
+  override function doCompute() {
+    x <- stack(l!.eval(), r!.eval());
   }
 
-  override function doEvaluateGradLeft(d:Real[_,_], x:Real[_,_], y:Real[_,_],
-      z:Real[_,_]) -> Real[_,_] {
-    return d[1..global.rows(y), 1..global.columns(y)];
-  }
-
-  override function doEvaluateGradRight(d:Real[_,_], x:Real[_,_], y:Real[_,_],
-      z:Real[_,_]) -> Real[_,_] {
-    return d[(global.rows(y) + 1)..global.rows(x), 1..global.columns(z)];
+  override function doGrad(gen:Integer) {
+    let r1 <- global.rows(l!.eval());
+    let r2 <- global.rows(r!.eval());
+    let c1 <- global.columns(l!.eval());
+    l!.countGrad(gen, d![1..r1, 1..c1]);
+    r!.countGrad(gen, d![(r1 + 1)..(r1 + r2), 1..c1]);
   }
 }
 
 /**
  * Lazy matrix stack.
  */
-function stack(y:Expression<Real[_,_]>, z:Expression<Real[_,_]>) ->
+function stack(l:Expression<Real[_,_]>, r:Expression<Real[_,_]>) ->
     MatrixStack {
-  assert y.columns() == z.columns();
-  return construct<MatrixStack>(y, z);
+  assert l.columns() == r.columns();
+  return construct<MatrixStack>(l, r);
 }
 
 /**
  * Lazy matrix stack.
  */
-function stack(y:Real[_,_], z:Expression<Real[_,_]>) -> MatrixStack {
-  return stack(box(y), z);
+function stack(l:Real[_,_], r:Expression<Real[_,_]>) -> MatrixStack {
+  return stack(box(l), r);
 }
 
 /**
  * Lazy matrix stack.
  */
-function stack(y:Expression<Real[_,_]>, z:Real[_,_]) -> MatrixStack {
-  return stack(y, box(z));
+function stack(l:Expression<Real[_,_]>, r:Real[_,_]) -> MatrixStack {
+  return stack(l, box(r));
 }

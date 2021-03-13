@@ -1,77 +1,71 @@
 /**
  * Lazy multivariate multiply.
  */
-class MultivariateMultiply(y:Expression<Real[_,_]>,
-    z:Expression<Real[_]>) < MultivariateBinaryExpression<
-    Expression<Real[_,_]>,Expression<Real[_]>,Real[_,_],Real[_],Real[_,_],
-    Real[_],Real[_]>(y, z) {  
+final class MultivariateMultiply(l:Expression<Real[_,_]>,
+    r:Expression<Real[_]>) < MultivariateBinaryExpression<
+    Expression<Real[_,_]>,Expression<Real[_]>,Real[_]>(l, r) {  
   override function doRows() -> Integer {
-    return y!.rows();
+    return l!.rows();
   }
 
-  override function doEvaluate(y:Real[_,_], z:Real[_]) -> Real[_] {
-    return y*z;
+  override function doCompute() {
+    x <- l!.eval()*r!.eval();
   }
 
-  override function doEvaluateGradLeft(d:Real[_], x:Real[_], y:Real[_,_],
-      z:Real[_]) -> Real[_,_] {
-    return outer(d, z);
-  }
-
-  override function doEvaluateGradRight(d:Real[_], x:Real[_], y:Real[_,_],
-      z:Real[_]) -> Real[_] {
-    return transpose(y)*d;
+  override function doGrad(gen:Integer) {
+    l!.countGrad(gen, outer(d!, r!.eval()));
+    r!.countGrad(gen, transpose(l!.eval())*d!);
   }
 
   override function graftLinearMultivariateGaussian() ->
       TransformLinearMultivariate<MultivariateGaussian>? {
-    r:TransformLinearMultivariate<MultivariateGaussian>?;
+    t:TransformLinearMultivariate<MultivariateGaussian>?;
     if !hasValue() {
       x1:MultivariateGaussian?;
-      if (r <- z!.graftLinearMultivariateGaussian())? {
-        r!.leftMultiply(y!);
-      } else if (x1 <- z!.graftMultivariateGaussian())? {
-        r <- TransformLinearMultivariate<MultivariateGaussian>(y!, x1!);
+      if (t <- r!.graftLinearMultivariateGaussian())? {
+        t!.leftMultiply(l!);
+      } else if (x1 <- r!.graftMultivariateGaussian())? {
+        t <- TransformLinearMultivariate<MultivariateGaussian>(l!, x1!);
       }
     }
-    return r;
+    return t;
   }
   
   override function graftLinearMultivariateNormalInverseGamma(compare:Distribution<Real>) ->
       TransformLinearMultivariate<MultivariateNormalInverseGamma>? {
-    r:TransformLinearMultivariate<MultivariateNormalInverseGamma>?;
+    t:TransformLinearMultivariate<MultivariateNormalInverseGamma>?;
     if !hasValue() {
       x1:MultivariateNormalInverseGamma?;
 
-      if (r <- z!.graftLinearMultivariateNormalInverseGamma(compare))? {
-        r!.leftMultiply(y!);
-      } else if (x1 <- z!.graftMultivariateNormalInverseGamma(compare))? {
-        r <- TransformLinearMultivariate<MultivariateNormalInverseGamma>(y!, x1!);
+      if (t <- r!.graftLinearMultivariateNormalInverseGamma(compare))? {
+        t!.leftMultiply(l!);
+      } else if (x1 <- r!.graftMultivariateNormalInverseGamma(compare))? {
+        t <- TransformLinearMultivariate<MultivariateNormalInverseGamma>(l!, x1!);
       }
     }
-    return r;
+    return t;
   }
 }
 
 /**
  * Lazy multivariate multiply.
  */
-operator (y:Expression<Real[_,_]>*z:Expression<Real[_]>) ->
+operator (l:Expression<Real[_,_]>*r:Expression<Real[_]>) ->
     MultivariateMultiply {
-  assert y.columns() == z.rows();
-  return construct<MultivariateMultiply>(y, z);
+  assert l.columns() == r.rows();
+  return construct<MultivariateMultiply>(l, r);
 }
 
 /**
  * Lazy multivariate multiply.
  */
-operator (y:Real[_,_]*z:Expression<Real[_]>) -> MultivariateMultiply {
-  return box(y)*z;
+operator (l:Real[_,_]*r:Expression<Real[_]>) -> MultivariateMultiply {
+  return box(l)*r;
 }
 
 /**
  * Lazy multivariate multiply.
  */
-operator (y:Expression<Real[_,_]>*z:Real[_]) -> MultivariateMultiply {
-  return y*box(z);
+operator (l:Expression<Real[_,_]>*r:Real[_]) -> MultivariateMultiply {
+  return l*box(r);
 }

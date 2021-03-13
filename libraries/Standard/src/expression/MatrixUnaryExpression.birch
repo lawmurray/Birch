@@ -1,54 +1,33 @@
 /**
  * Matrix unary expression.
  *
- * - `Argument`: Argument type. Should derive from `Expression<...>`.
- * - `ArgumentValue`: Argument value type. This is the type to which the left
- *   argument evaluates.
- * - `ArgumentGradient`: Argument upstream gradient type. This is the type of
- *   the upstream gradient that the argument accepts. It should be `Real`,
- *   `Real[_]`, or `Real[_,_]`.
- * - `Value`: The type to which the expression evaluates.
+ * - Argument: Argument type.
+ * - Value: Result type.
  */
-abstract class MatrixUnaryExpression<Argument,ArgumentValue,
-    ArgumentGradient,Value>(y:Argument) < MatrixExpression<Value> {  
+abstract class MatrixUnaryExpression<Argument,Value>(m:Argument) <
+    MatrixExpression<Value> {  
   /**
    * Argument.
    */
-  y:Argument? <- y;
-
-  /*
-   * Evaluate.
-   */
-  abstract function doEvaluate(y:ArgumentValue) -> Value;
-  
-  /*
-   * Evaluate the gradient.
-   */
-  abstract function doEvaluateGrad(d:Real[_,_], x:Value, y:ArgumentValue) ->
-      ArgumentGradient;
+  m:Argument? <- m;
 
   final override function doDepth() -> Integer {
-    return y!.depth() + 1;
+    return m!.depth() + 1;
   }
 
-  final override function doValue() -> Value {
-    return doEvaluate(y!.value());
+  final override function doValue() {
+    m!.value();
   }
 
-  final override function doEval(gen:Integer) -> Value {
-    return doEvaluate(y!.countEval(gen));
+  final override function doEval(gen:Integer) {
+    m!.countEval(gen);
   }
 
-  final override function doReval(gen:Integer) -> Value {
-    return doEvaluate(y!.countReval(gen));
-  }
-  
-  final override function doGrad(gen:Integer) {
-    y!.countGrad(gen, doEvaluateGrad(d!, x!, y!.eval()));
+  final override function doReval(gen:Integer) {
+    m!.countReval(gen);
   }
 
   final override function doConstant() {
-    y!.value();
-    y <- nil;
+    m <- nil;
   }
 }

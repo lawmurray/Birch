@@ -1,43 +1,42 @@
 /**
  * Lazy `canonical`.
  */
-class MatrixCanonical<Argument,ArgumentValue>(y:Argument) <
-    MatrixUnaryExpression<Argument,ArgumentValue,Real[_,_],Real[_,_]>(y) {
+final class MatrixCanonical<Argument>(m:Argument) <
+    MatrixUnaryExpression<Argument,Real[_,_]>(m) {
   override function doRows() -> Integer {
-    return y!.rows();
+    return m!.rows();
   }
   
   override function doColumns() -> Integer {
-    return y!.columns();
+    return m!.columns();
   }
 
-  override function doEvaluate(y:ArgumentValue) -> Real[_,_] {
-    return canonical(y);
+  override function doCompute() {
+    x <- canonical(m!.eval());
   }
 
-  override function doEvaluateGrad(d:Real[_,_], x:Real[_,_],
-      y:ArgumentValue) -> Real[_,_] {
-    return d;
+  override function doGrad(gen:Integer) {
+    m!.countGrad(gen, d!);
   }
 }
 
 /**
  * Lazy `canonical`.
  */
-function canonical(y:Expression<LLT>) -> Expression<Real[_,_]> {
-  return construct<MatrixCanonical<Expression<LLT>,LLT>>(y);
+function canonical(m:Expression<LLT>) -> Expression<Real[_,_]> {
+  return construct<MatrixCanonical<Expression<LLT>>>(m);
 }
 
 /**
  * Lazy `canonical`.
  */
-function canonical(y:Expression<Real[_,_]>) -> Expression<Real[_,_]> {
-  if !y.isRandom() {
+function canonical(m:Expression<Real[_,_]>) -> Expression<Real[_,_]> {
+  if !m.isRandom() {
     /* just an identity function */
-    return y;
+    return m;
   } else {  
     /* Random objects should be wrapped to allow the accumulation of
      * gradients by element if necessary; see note in split() also */
-    return construct<MatrixCanonical<Expression<Real[_,_]>,Real[_,_]>>(y);
+    return construct<MatrixCanonical<Expression<Real[_,_]>>>(m);
   }
 }
