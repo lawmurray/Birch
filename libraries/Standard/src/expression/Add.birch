@@ -1,8 +1,8 @@
 /**
  * Lazy add.
  */
-final class Add(l:Expression<Real>, r:Expression<Real>) <
-    ScalarBinaryExpression<Expression<Real>,Expression<Real>,Real>(l, r) {  
+final class Add<Left,Right,Value>(l:Left, r:Right) <
+    ScalarBinaryExpression<Left,Right,Value>(l, r) {  
   override function doCompute() {
     x <- l!.eval() + r!.eval();
   }
@@ -17,13 +17,13 @@ final class Add(l:Expression<Real>, r:Expression<Real>) <
     if !hasValue() {
       x1:Gaussian?;
       if (t <- l!.graftLinearGaussian())? {
-        t!.add(r!);
+        t!.add(Real(r!));
       } else if (t <- r!.graftLinearGaussian())? {
-        t!.add(l!);
+        t!.add(Real(l!));
       } else if (x1 <- l!.graftGaussian())? {
-        t <- TransformLinear<Gaussian>(box(1.0), x1!, r!);
+        t <- TransformLinear<Gaussian>(box(1.0), x1!, Real(r!));
       } else if (x1 <- r!.graftGaussian())? {
-        t <- TransformLinear<Gaussian>(box(1.0), x1!, l!);
+        t <- TransformLinear<Gaussian>(box(1.0), x1!, Real(l!));
       }
     }
     return t;
@@ -34,9 +34,9 @@ final class Add(l:Expression<Real>, r:Expression<Real>) <
     t:TransformDot<MultivariateGaussian>?;
     if !hasValue() {
       if (t <- l!.graftDotMultivariateGaussian())? {
-        t!.add(r!);
+        t!.add(Real(r!));
       } else if (t <- r!.graftDotMultivariateGaussian())? {
-        t!.add(l!);
+        t!.add(Real(l!));
       }
     }
     return t;
@@ -48,13 +48,13 @@ final class Add(l:Expression<Real>, r:Expression<Real>) <
     x1:NormalInverseGamma?;
     if !hasValue() {
       if (t <- l!.graftLinearNormalInverseGamma(compare))? {
-        t!.add(r!);
+        t!.add(Real(r!));
       } else if (t <- r!.graftLinearNormalInverseGamma(compare))? {
-        t!.add(l!);
+        t!.add(Real(l!));
       } else if (x1 <- l!.graftNormalInverseGamma(compare))? {
-        t <- TransformLinear<NormalInverseGamma>(box(1.0), x1!, r!);
+        t <- TransformLinear<NormalInverseGamma>(box(1.0), x1!, Real(r!));
       } else if (x1 <- r!.graftNormalInverseGamma(compare))? {
-        t <- TransformLinear<NormalInverseGamma>(box(1.0), x1!, l!);
+        t <- TransformLinear<NormalInverseGamma>(box(1.0), x1!, Real(l!));
       }
     }
     return t;
@@ -65,9 +65,41 @@ final class Add(l:Expression<Real>, r:Expression<Real>) <
     t:TransformDot<MultivariateNormalInverseGamma>?;
     if !hasValue() {
       if (t <- l!.graftDotMultivariateNormalInverseGamma(compare))? {
-        t!.add(r!);
+        t!.add(Real(r!));
       } else if (t <- r!.graftDotMultivariateNormalInverseGamma(compare))? {
-        t!.add(l!);
+        t!.add(Real(l!));
+      }
+    }
+    return t;
+  }
+
+  override function graftDiscrete() -> Discrete? {
+    t:Discrete?;
+    if !hasValue() {
+      t <- graftBoundedDiscrete();
+      if !t? {
+        x1:Discrete?;
+        if (x1 <- l!.graftDiscrete())? {
+          t <- LinearDiscrete(box(1), x1!, Integer(r!));
+        } else if (x1 <- r!.graftDiscrete())? {
+          t <- LinearDiscrete(box(1), x1!, Integer(l!));
+        }
+      }
+    }
+    return t;
+  }
+
+  override function graftBoundedDiscrete() -> BoundedDiscrete? {
+    t:BoundedDiscrete?;
+    if !hasValue() {
+      let l1 <- l!.graftBoundedDiscrete();
+      let r1 <- r!.graftBoundedDiscrete();
+      if l1? && r1? {
+        t <- AddBoundedDiscrete(l1!, r1!);
+      } else if l1? {
+        t <- LinearBoundedDiscrete(box(1), l1!, Integer(r!));
+      } else if r1? {
+        t <- LinearBoundedDiscrete(box(1), r1!, Integer(l!));
       }
     }
     return t;
@@ -77,20 +109,47 @@ final class Add(l:Expression<Real>, r:Expression<Real>) <
 /**
  * Lazy add.
  */
-operator (l:Expression<Real> + r:Expression<Real>) -> Add {
-  return construct<Add>(l, r);
+operator (l:Expression<Real> + r:Expression<Real>) ->
+    Add<Expression<Real>,Expression<Real>,Real> {
+  return construct<Add<Expression<Real>,Expression<Real>,Real>>(l, r);
 }
 
 /**
  * Lazy add.
  */
-operator (l:Real + r:Expression<Real>) -> Add {
+operator (l:Real + r:Expression<Real>) ->
+    Add<Expression<Real>,Expression<Real>,Real> {
   return box(l) + r;
 }
 
 /**
  * Lazy add.
  */
-operator (l:Expression<Real> + r:Real) -> Add {
+operator (l:Expression<Real> + r:Real) ->
+    Add<Expression<Real>,Expression<Real>,Real> {
+  return l + box(r);
+}
+
+/**
+ * Lazy add.
+ */
+operator (l:Expression<Integer> + r:Expression<Integer>) ->
+    Add<Expression<Integer>,Expression<Integer>,Integer> {
+  return construct<Add<Expression<Integer>,Expression<Integer>,Integer>>(l, r);
+}
+
+/**
+ * Lazy add.
+ */
+operator (l:Integer + r:Expression<Integer>) ->
+    Add<Expression<Integer>,Expression<Integer>,Integer> {
+  return box(l) + r;
+}
+
+/**
+ * Lazy add.
+ */
+operator (l:Expression<Integer> + r:Integer) ->
+    Add<Expression<Integer>,Expression<Integer>,Integer> {
   return l + box(r);
 }

@@ -1,8 +1,8 @@
 /**
  * Lazy negation.
  */
-final class Negate(m:Expression<Real>) <
-    ScalarUnaryExpression<Expression<Real>,Real>(m) {
+final class Negate<Middle,Value>(m:Middle) <
+    ScalarUnaryExpression<Middle,Value>(m) {
   override function doCompute() {
     x <- -m!.eval();
   }
@@ -59,11 +59,43 @@ final class Negate(m:Expression<Real>) <
     }
     return t;
   }
+
+  override function graftDiscrete() -> Discrete? {
+    t:Discrete?;
+    if !hasValue() {
+      t <- graftBoundedDiscrete();
+      if !t? {
+        m1:Discrete?;
+        if (m1 <- m!.graftDiscrete())? {
+          t <- LinearDiscrete(box(-1), m1!, box(0));
+        }
+      }
+    }
+    return t;
+  }
+
+  override function graftBoundedDiscrete() -> BoundedDiscrete? {
+    t:BoundedDiscrete?;
+    if !hasValue() {
+      m1:BoundedDiscrete?;
+      if (m1 <- m!.graftBoundedDiscrete())? {
+        t <- LinearBoundedDiscrete(box(-1), m1!, box(0));
+      }
+    }
+    return t;
+  }
 }
 
 /**
  * Lazy negation.
  */
-operator (-m:Expression<Real>) -> Negate {
-  return construct<Negate>(m);
+operator (-m:Expression<Real>) -> Negate<Expression<Real>,Real> {
+  return construct<Negate<Expression<Real>,Real>>(m);
+}
+
+/**
+ * Lazy negation.
+ */
+operator (-x:Expression<Integer>) -> Negate<Expression<Integer>,Integer> {
+  return construct<Negate<Expression<Integer>,Integer>>(x);
 }

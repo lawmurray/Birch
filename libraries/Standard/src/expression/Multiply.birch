@@ -1,8 +1,8 @@
 /**
  * Lazy multiply.
  */
-final class Multiply(l:Expression<Real>, r:Expression<Real>) <
-    ScalarBinaryExpression<Expression<Real>,Expression<Real>,Real>(l, r) {  
+final class Multiply<Left,Right,Value>(l:Left, r:Right) <
+    ScalarBinaryExpression<Left,Right,Value>(l, r) {  
   override function doCompute() {
     x <- l!.eval()*r!.eval();
   }
@@ -18,13 +18,13 @@ final class Multiply(l:Expression<Real>, r:Expression<Real>) <
       x1:Gamma?;
     
       if (t <- l!.graftScaledGamma())? {
-        t!.multiply(r!);
+        t!.multiply(Real(r!));
       } else if (t <- r!.graftScaledGamma())? {
-        t!.multiply(l!);
+        t!.multiply(Real(l!));
       } else if (x1 <- l!.graftGamma())? {
-        t <- TransformLinear<Gamma>(r!, x1!);
+        t <- TransformLinear<Gamma>(Real(r!), x1!);
       } else if (x1 <- r!.graftGamma())? {
-        t <- TransformLinear<Gamma>(l!, x1!);
+        t <- TransformLinear<Gamma>(Real(l!), x1!);
       }
     }
     return t;
@@ -36,13 +36,13 @@ final class Multiply(l:Expression<Real>, r:Expression<Real>) <
       x1:Gaussian?;
     
       if (t <- l!.graftLinearGaussian())? {
-        t!.multiply(r!);
+        t!.multiply(Real(r!));
       } else if (t <- r!.graftLinearGaussian())? {
-        t!.multiply(l!);
+        t!.multiply(Real(l!));
       } else if (x1 <- l!.graftGaussian())? {
-        t <- TransformLinear<Gaussian>(r!, x1!);
+        t <- TransformLinear<Gaussian>(Real(r!), x1!);
       } else if (x1 <- r!.graftGaussian())? {
-        t <- TransformLinear<Gaussian>(l!, x1!);
+        t <- TransformLinear<Gaussian>(Real(l!), x1!);
       }
     }
     return t;
@@ -53,9 +53,9 @@ final class Multiply(l:Expression<Real>, r:Expression<Real>) <
     t:TransformDot<MultivariateGaussian>?;
     if !hasValue() {
       if (t <- l!.graftDotMultivariateGaussian())? {
-        t!.multiply(r!);
+        t!.multiply(Real(r!));
       } else if (t <- r!.graftDotMultivariateGaussian())? {
-        t!.multiply(l!);
+        t!.multiply(Real(l!));
       }
     }
     return t;
@@ -68,13 +68,13 @@ final class Multiply(l:Expression<Real>, r:Expression<Real>) <
       x1:NormalInverseGamma?;
     
       if (t <- l!.graftLinearNormalInverseGamma(compare))? {
-        t!.multiply(r!);
+        t!.multiply(Real(r!));
       } else if (t <- r!.graftLinearNormalInverseGamma(compare))? {
-        t!.multiply(l!);
+        t!.multiply(Real(l!));
       } else if (x1 <- l!.graftNormalInverseGamma(compare))? {
-        t <- TransformLinear<NormalInverseGamma>(r!, x1!);
+        t <- TransformLinear<NormalInverseGamma>(Real(r!), x1!);
       } else if (x1 <- r!.graftNormalInverseGamma(compare))? {
-        t <- TransformLinear<NormalInverseGamma>(l!, x1!);
+        t <- TransformLinear<NormalInverseGamma>(Real(l!), x1!);
       }
     }
     return t;
@@ -85,9 +85,39 @@ final class Multiply(l:Expression<Real>, r:Expression<Real>) <
     t:TransformDot<MultivariateNormalInverseGamma>?;
     if !hasValue() {
       if (t <- l!.graftDotMultivariateNormalInverseGamma(compare))? {
-        t!.multiply(r!);
+        t!.multiply(Real(r!));
       } else if (t <- r!.graftDotMultivariateNormalInverseGamma(compare))? {
-        t!.multiply(l!);
+        t!.multiply(Real(l!));
+      }
+    }
+    return t;
+  }
+
+  override function graftDiscrete() -> Discrete? {
+    t:Discrete?;
+    if !hasValue() {
+      t <- graftBoundedDiscrete();
+      if !t? {
+        x1:Discrete?;
+        if (x1 <- l!.graftDiscrete())? {
+          t <- LinearDiscrete(Integer(r!), x1!, box(0));
+        } else if (x1 <- r!.graftDiscrete())? {
+          t <- LinearDiscrete(Integer(l!), x1!, box(0));
+        }
+      }
+    }
+    return t;
+  }
+
+  override function graftBoundedDiscrete() -> BoundedDiscrete? {
+    t:BoundedDiscrete?;
+    if !hasValue() {
+      let l1 <- l!.graftBoundedDiscrete();
+      let r1 <- r!.graftBoundedDiscrete();
+      if l1? {
+        t <- LinearBoundedDiscrete(Integer(r!), l1!, box(0));
+      } else if r1? {
+        t <- LinearBoundedDiscrete(Integer(l!), r1!, box(0));
       }
     }
     return t;
@@ -97,20 +127,47 @@ final class Multiply(l:Expression<Real>, r:Expression<Real>) <
 /**
  * Lazy multiply.
  */
-operator (l:Expression<Real>*r:Expression<Real>) -> Multiply {
-  return construct<Multiply>(l, r);
+operator (l:Expression<Real>*r:Expression<Real>) ->
+    Multiply<Expression<Real>,Expression<Real>,Real> {
+  return construct<Multiply<Expression<Real>,Expression<Real>,Real>>(l, r);
 }
 
 /**
  * Lazy multiply.
  */
-operator (l:Real*r:Expression<Real>) -> Multiply {
+operator (l:Real*r:Expression<Real>) ->
+    Multiply<Expression<Real>,Expression<Real>,Real> {
   return box(l)*r;
 }
 
 /**
  * Lazy multiply.
  */
-operator (l:Expression<Real>*r:Real) -> Multiply {
+operator (l:Expression<Real>*r:Real) ->
+    Multiply<Expression<Real>,Expression<Real>,Real> {
+  return l*box(r);
+}
+
+/**
+ * Lazy multiply.
+ */
+operator (l:Expression<Integer>*r:Expression<Integer>) ->
+    Multiply<Expression<Integer>,Expression<Integer>,Integer> {
+  return construct<Multiply<Expression<Integer>,Expression<Integer>,Integer>>(l, r);
+}
+
+/**
+ * Lazy multiply.
+ */
+operator (l:Integer*r:Expression<Integer>) ->
+    Multiply<Expression<Integer>,Expression<Integer>,Integer> {
+  return box(l)*r;
+}
+
+/**
+ * Lazy multiply.
+ */
+operator (l:Expression<Integer>*r:Integer) ->
+    Multiply<Expression<Integer>,Expression<Integer>,Integer> {
   return l*box(r);
 }

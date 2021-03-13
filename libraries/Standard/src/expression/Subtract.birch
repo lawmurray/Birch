@@ -1,8 +1,8 @@
 /**
  * Lazy subtract.
  */
-final class Subtract(l:Expression<Real>, r:Expression<Real>) <
-    ScalarBinaryExpression<Expression<Real>,Expression<Real>,Real>(l, r) {
+final class Subtract<Left,Right,Value>(l:Left, r:Right) <
+    ScalarBinaryExpression<Left,Right,Value>(l, r) {
   override function doCompute() {
     x <- l!.eval() - r!.eval();
   }
@@ -18,13 +18,13 @@ final class Subtract(l:Expression<Real>, r:Expression<Real>) <
       x1:Gaussian?;
     
       if (t <- l!.graftLinearGaussian())? {
-        t!.add(-r!);
+        t!.add(Real(-r!));
       } else if (t <- r!.graftLinearGaussian())? {
-        t!.negateAndAdd(l!);
+        t!.negateAndAdd(Real(l!));
       } else if (x1 <- l!.graftGaussian())? {
-        t <- TransformLinear<Gaussian>(box(1.0), x1!, -r!);
+        t <- TransformLinear<Gaussian>(box(1.0), x1!, Real(-r!));
       } else if (x1 <- r!.graftGaussian())? {
-        t <- TransformLinear<Gaussian>(box(-1.0), x1!, l!);
+        t <- TransformLinear<Gaussian>(box(-1.0), x1!, Real(l!));
       }
     }
     return t;
@@ -35,9 +35,9 @@ final class Subtract(l:Expression<Real>, r:Expression<Real>) <
     t:TransformDot<MultivariateGaussian>?;
     if !hasValue() {
       if (t <- l!.graftDotMultivariateGaussian())? {
-        t!.add(-r!);
+        t!.add(Real(-r!));
       } else if (t <- r!.graftDotMultivariateGaussian())? {
-        t!.negateAndAdd(l!);
+        t!.negateAndAdd(Real(l!));
       }
     }
     return t;
@@ -51,13 +51,13 @@ final class Subtract(l:Expression<Real>, r:Expression<Real>) <
       x1:NormalInverseGamma?;
 
       if (t <- l!.graftLinearNormalInverseGamma(compare))? {
-        t!.subtract(r!);
+        t!.subtract(Real(r!));
       } else if (t <- r!.graftLinearNormalInverseGamma(compare))? {
-        t!.negateAndAdd(l!);
+        t!.negateAndAdd(Real(l!));
       } else if (x1 <- l!.graftNormalInverseGamma(compare))? {
-        t <- TransformLinear<NormalInverseGamma>(box(1.0), x1!, -r!);
+        t <- TransformLinear<NormalInverseGamma>(box(1.0), x1!, Real(-r!));
       } else if (x1 <- r!.graftNormalInverseGamma(compare))? {
-        t <- TransformLinear<NormalInverseGamma>(box(-1.0), x1!, l!);
+        t <- TransformLinear<NormalInverseGamma>(box(-1.0), x1!, Real(l!));
       }
     }
     return t;
@@ -69,9 +69,41 @@ final class Subtract(l:Expression<Real>, r:Expression<Real>) <
     t:TransformDot<MultivariateNormalInverseGamma>?;
     if !hasValue() {
       if (t <- l!.graftDotMultivariateNormalInverseGamma(compare))? {
-        t!.subtract(r!);
+        t!.subtract(Real(r!));
       } else if (t <- r!.graftDotMultivariateNormalInverseGamma(compare))? {
-        t!.negateAndAdd(l!);
+        t!.negateAndAdd(Real(l!));
+      }
+    }
+    return t;
+  }
+
+  override function graftDiscrete() -> Discrete? {
+    t:Discrete?;
+    if !hasValue() {
+      t <- graftBoundedDiscrete();
+      if !t? {
+        m:Discrete?;
+        if (m <- l!.graftDiscrete())? {
+          t <- LinearDiscrete(box(1), m!, Integer(-r!));
+        } else if (m <- r!.graftDiscrete())? {
+          t <- LinearDiscrete(box(-1), m!, Integer(l!));
+        }
+      }
+    }
+    return t;
+  }
+
+  override function graftBoundedDiscrete() -> BoundedDiscrete? {
+    t:BoundedDiscrete?;
+    if !hasValue() {
+      let l1 <- l!.graftBoundedDiscrete();
+      let r1 <- r!.graftBoundedDiscrete();
+      if l1? && r1? {
+        t <- SubtractBoundedDiscrete(l1!, r1!);
+      } else if l1? {
+        t <- LinearBoundedDiscrete(box(1), l1!, Integer(-r!));
+      } else if r1? {
+        t <- LinearBoundedDiscrete(box(-1), r1!, Integer(l!));
       }
     }
     return t;
@@ -81,20 +113,47 @@ final class Subtract(l:Expression<Real>, r:Expression<Real>) <
 /**
  * Lazy subtract.
  */
-operator (l:Expression<Real> - r:Expression<Real>) -> Subtract {
-  return construct<Subtract>(l, r);
+operator (l:Expression<Real> - r:Expression<Real>) ->
+    Subtract<Expression<Real>,Expression<Real>,Real> {
+  return construct<Subtract<Expression<Real>,Expression<Real>,Real>>(l, r);
 }
 
 /**
  * Lazy subtract.
  */
-operator (l:Real - r:Expression<Real>) -> Subtract {
+operator (l:Real - r:Expression<Real>) ->
+    Subtract<Expression<Real>,Expression<Real>,Real> {
   return box(l) - r;
 }
 
 /**
  * Lazy subtract.
  */
-operator (l:Expression<Real> - r:Real) -> Subtract {
+operator (l:Expression<Real> - r:Real) ->
+    Subtract<Expression<Real>,Expression<Real>,Real> {
+  return l - box(r);
+}
+
+/**
+ * Lazy subtract.
+ */
+operator (l:Expression<Integer> - r:Expression<Integer>) ->
+    Subtract<Expression<Integer>,Expression<Integer>,Integer> {
+  return construct<Subtract<Expression<Integer>,Expression<Integer>,Integer>>(l, r);
+}
+
+/**
+ * Lazy subtract.
+ */
+operator (l:Integer - r:Expression<Integer>) ->
+    Subtract<Expression<Integer>,Expression<Integer>,Integer> {
+  return box(l) - r;
+}
+
+/**
+ * Lazy subtract.
+ */
+operator (l:Expression<Integer> - r:Integer) ->
+    Subtract<Expression<Integer>,Expression<Integer>,Integer> {
   return l - box(r);
 }

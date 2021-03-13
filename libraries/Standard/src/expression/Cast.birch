@@ -1,8 +1,7 @@
 /**
  * Lazy cast.
  */
-final class Cast<From,To>(m:Expression<From>) <
-    ScalarUnaryExpression<Expression<From>,To>(m) {
+final class Cast<From,To>(m:From) < ScalarUnaryExpression<From,To>(m) {
   override function doCompute() {
     x <- To?(m!.eval())!;
   }
@@ -13,7 +12,7 @@ final class Cast<From,To>(m:Expression<From>) <
 }
 
 /**
- * Lazy cast, identity function.
+ * Lazy cast.
  */
 function Real(m:Expression<Real>) -> Expression<Real> {
   return m;
@@ -22,13 +21,55 @@ function Real(m:Expression<Real>) -> Expression<Real> {
 /**
  * Lazy cast.
  */
-function Real(m:Expression<Integer>) -> Cast<Integer,Real> {
-  return construct<Cast<Integer,Real>>(m);
+function Real(m:Expression<Integer>) -> Cast<Expression<Integer>,Real> {
+  return construct<Cast<Expression<Integer>,Real>>(m);
 }
 
 /**
  * Lazy cast.
  */
-function Real(m:Expression<Boolean>) -> Cast<Boolean,Real> {
-  return construct<Cast<Boolean,Real>>(m);
+function Real(m:Expression<Boolean>) -> Cast<Expression<Boolean>,Real> {
+  return construct<Cast<Expression<Boolean>,Real>>(m);
+}
+
+/**
+ * Lazy cast.
+ */
+function Integer(m:Expression<Real>) -> Cast<Expression<Real>,Integer> {
+  return construct<Cast<Expression<Real>,Integer>>(m);
+}
+
+/**
+ * Lazy cast.
+ */
+function Integer(m:Expression<Integer>) -> Expression<Integer> {
+  return m;
+}
+
+/**
+ * Lazy cast.
+ */
+function Integer(m:Expression<Boolean>) -> Cast<Expression<Boolean>,Integer> {
+  return construct<Cast<Expression<Boolean>,Integer>>(m);
+}
+
+/**
+ * Lazy cast.
+ */
+function Boolean(m:Expression<Real>) -> Cast<Expression<Real>,Boolean> {
+  return construct<Cast<Expression<Real>,Boolean>>(m);
+}
+
+/**
+ * Lazy cast.
+ */
+function Boolean(m:Expression<Integer>) -> Cast<Expression<Integer>,Boolean> {
+  return construct<Cast<Expression<Integer>,Boolean>>(m);
+}
+
+/**
+ * Lazy cast.
+ */
+function Boolean(m:Expression<Boolean>) -> Expression<Boolean> {
+  return m;
 }
