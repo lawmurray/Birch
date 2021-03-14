@@ -88,5 +88,6 @@ public:
   virtual Type* modify(TupleType* o);
   virtual Type* modify(FunctionType* o);
   virtual Type* modify(OptionalType* o);
+  virtual Type* modify(TypeOf* o);
 };
 }

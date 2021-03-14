@@ -121,6 +121,7 @@ birch_SOURCES = \
   src/type/TypeConstIterator.cpp \
   src/type/TypeIterator.cpp \
   src/type/TypeList.cpp \
+  src/type/TypeOf.cpp \
   src/visitor/Baser.cpp \
   src/visitor/Cloner.cpp \
   src/visitor/ContextualModifier.cpp \
@@ -253,6 +254,7 @@ noinst_HEADERS = \
   src/type/TypeConstIterator.hpp \
   src/type/TypeIterator.hpp \
   src/type/TypeList.hpp \
+  src/type/TypeOf.hpp \
   src/visitor/all.hpp \
   src/visitor/Baser.hpp \
   src/visitor/Cloner.hpp \

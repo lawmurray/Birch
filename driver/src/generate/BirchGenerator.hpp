@@ -82,6 +82,7 @@ public:
   virtual void visit(const FunctionType* o);
   virtual void visit(const OptionalType* o);
   virtual void visit(const TypeList* o);
+  virtual void visit(const TypeOf* o);
 
 private:
   /**

@@ -301,3 +301,7 @@ birch::Type* birch::Cloner::clone(const FunctionType* o) {
 birch::Type* birch::Cloner::clone(const OptionalType* o) {
   return new OptionalType(o->single->accept(this), o->loc);
 }
+
+birch::Type* birch::Cloner::clone(const TypeOf* o) {
+  return new TypeOf(o->single->accept(this), o->loc);
+}

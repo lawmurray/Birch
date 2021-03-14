@@ -714,6 +714,10 @@ void birch::CppGenerator::visit(const TypeList* o) {
   middle(o->head << ", " << o->tail);
 }
 
+void birch::CppGenerator::visit(const TypeOf* o) {
+  middle("decltype(" << o->single << ')');
+}
+
 std::string birch::CppGenerator::getIndex(const Statement* o) {
   auto index = dynamic_cast<const LocalVariable*>(o);
   assert(index);

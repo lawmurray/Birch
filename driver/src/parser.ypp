@@ -98,7 +98,7 @@
 
 %token <valString> PROGRAM CLASS TYPE FUNCTION OPERATOR AUTO LET
 %token <valString> IF ELSE FOR IN WHILE DO WITH ASSERT RETURN FACTOR
-%token <valString> CPP HPP THIS SUPER GLOBAL PARALLEL DYNAMIC
+%token <valString> CPP HPP THIS SUPER GLOBAL TYPEOF PARALLEL DYNAMIC
 %token <valString> ABSTRACT OVERRIDE FINAL ACYCLIC
 %token <valString> NIL DOUBLE_BRACE_OPEN DOUBLE_BRACE_CLOSE NAME
 %token <valString> BOOL_LITERAL INT_LITERAL REAL_LITERAL STRING_LITERAL
@@ -147,7 +147,7 @@
 %type <valStatement> class_braces optional_class_braces
 
 %type <valType> named_type primary_type type type_list optional_type_list
-%type <valType> return_type optional_return_type
+%type <valType> return_type optional_return_type type_of
 %type <valType> generic_argument generic_argument_list generic_arguments optional_generic_arguments
 
 %locations
@@ -757,8 +757,13 @@ named_type
     | name optional_generic_arguments '&'  { yywarn("using weak pointers is no longer necessary"); $$ = new birch::NamedType($1, $2, make_loc(@$)); }
     ;
 
+type_of
+    : TYPEOF '(' expression ')'  { $$ = new birch::TypeOf($3, make_loc(@$)); }
+    ;
+
 primary_type
     : named_type
+    | type_of
     | '(' type_list ')'  { $$ = new birch::TupleType($2, make_loc(@$)); }
     ;
 

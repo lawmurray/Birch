@@ -328,3 +328,7 @@ void birch::Visitor::visit(const FunctionType* o) {
 void birch::Visitor::visit(const OptionalType* o) {
   o->single->accept(this);
 }
+
+void birch::Visitor::visit(const TypeOf* o) {
+  o->single->accept(this);
+}

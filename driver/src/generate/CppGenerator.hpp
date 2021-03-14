@@ -89,6 +89,7 @@ public:
   virtual void visit(const MemberType* o);
   virtual void visit(const NamedType* o);
   virtual void visit(const TypeList* o);
+  virtual void visit(const TypeOf* o);
 
 protected:
   /**

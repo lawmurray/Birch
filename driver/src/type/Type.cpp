@@ -53,6 +53,10 @@ bool birch::Type::isGeneric() const {
   return false;
 }
 
+bool birch::Type::isValue() const {
+  return false;
+}
+
 int birch::Type::width() const {
   int result = 0;
   for (auto iter = begin(); iter != end(); ++iter) {

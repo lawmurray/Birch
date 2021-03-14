@@ -107,7 +107,7 @@ public:
    * types that resolve to value types would be included, but their handling
    * is left to the C++ compiler.
    */
-  virtual bool isValue() const = 0;
+  virtual bool isValue() const;
 
   /**
    * Number of elements in a type list.

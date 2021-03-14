@@ -129,6 +129,8 @@ E                                  [Ee][+-]?{D}+
 "true"                              { yylval.valString = "true"; return BOOL_LITERAL; }
 "false"                             { yylval.valString = "false"; return BOOL_LITERAL; }
 
+"TypeOf"                            { return TYPEOF; }
+
 ({L}|{G})({L}|{G}|{U}|{D})*'*       { yylval.valString = strdup(yytext); return NAME; }
 
 {D}+{E}                             { yylval.valString = strdup(yytext); return REAL_LITERAL; }

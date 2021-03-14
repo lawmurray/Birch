@@ -88,5 +88,6 @@ public:
   virtual Type* clone(const TupleType* o);
   virtual Type* clone(const FunctionType* o);
   virtual Type* clone(const OptionalType* o);
+  virtual Type* clone(const TypeOf* o);
 };
 }

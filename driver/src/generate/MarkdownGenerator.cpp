@@ -551,6 +551,10 @@ void birch::MarkdownGenerator::visit(const OptionalType* o) {
   middle(o->single << '?');
 }
 
+void birch::MarkdownGenerator::visit(const TypeOf* o) {
+  middle("TypeOf(" << o->single << ')');
+}
+
 void birch::MarkdownGenerator::genHead(const std::string& name) {
   finish("");
   for (int i = 0; i < depth; ++i) {

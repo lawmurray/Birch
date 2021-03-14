@@ -480,3 +480,7 @@ void birch::BirchGenerator::visit(const OptionalType* o) {
 void birch::BirchGenerator::visit(const TypeList* o) {
   middle(o->head << ", " << o->tail);
 }
+
+void birch::BirchGenerator::visit(const TypeOf* o) {
+  middle("TypeOf(" << o->single << ')');
+}

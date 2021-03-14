@@ -11,3 +11,4 @@
 #include "src/type/OptionalType.hpp"
 #include "src/type/TupleType.hpp"
 #include "src/type/TypeList.hpp"
+#include "src/type/TypeOf.hpp"
