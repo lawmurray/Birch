@@ -92,7 +92,7 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
       if π? {
         π <- π! + v!;
       } else {
-        π <- π;
+        π <- v!;
       }
     } else {
       w <- w + p.observe(x);
