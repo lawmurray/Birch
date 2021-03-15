@@ -208,3 +208,187 @@ function min(x:Integer64, y:Integer64) -> Integer64 {
   return std::min(x, y);
   }}
 }
+
+function canonical(x:Integer64) -> Integer64 {
+  return x;
+}
+
+function length(x:Integer64) -> Integer {
+  return 1;
+}
+
+function size(x:Integer64) -> Integer {
+  return 1;
+}
+
+function rows(x:Integer64) -> Integer {
+  return 1;
+}
+
+function columns(x:Integer64) -> Integer {
+  return 1;
+}
+
+function depth(x:Integer64) -> Integer {
+  return 0;
+}
+
+function value(x:Integer64) -> Integer64 {
+  return x;
+}
+
+function eval(x:Integer64) -> Integer64 {
+  return x;
+}
+
+function eval(x:Integer64, gen:Integer) -> Integer64 {
+  return x;
+}
+
+function count_eval(x:Integer64, gen:Integer) -> Integer64 {
+  return x;
+}
+
+function reval(x:Integer64) -> Integer64 {
+  return x;
+}
+
+function reval(x:Integer64, gen:Integer) -> Integer64 {
+  return x;
+}
+
+function count_reval(x:Integer64, gen:Integer) -> Integer64 {
+  return x;
+}
+
+function grad<Gradient>(x:Integer64, d:Gradient) {
+  //
+}
+
+function grad<Gradient>(x:Integer64, gen:Integer, d:Gradient) {
+  //
+}
+
+function count_grad<Gradient>(x:Integer64, gen:Integer, d:Gradient) {
+  //
+}
+
+function count_grad(x:Integer64, gen:Integer, d:Real, i:Integer) {
+  //
+}
+
+function count_grad(x:Integer64, gen:Integer, d:Real, i:Integer, j:Integer) {
+  //
+}
+
+function graft_beta(x:Integer64) -> Beta? {
+  return nil;
+}
+
+function graft_dirichlet(x:Integer64) -> Dirichlet? {
+  return nil;
+}
+
+function graft_restaurant(x:Integer64) -> Restaurant? {
+  return nil;
+}
+
+function graft_gamma(x:Integer64) -> Gamma? {
+  return nil;
+}
+
+function graft_scaled_gamma(x:Integer64) ->  TransformLinear<Gamma>? {
+  return nil;
+}
+
+function graft_inverse_gamma(x:Integer64) -> InverseGamma? {
+  return nil;
+}
+
+function graft_inverse_wishart(x:Integer64) -> InverseWishart? {
+  return nil;
+}
+
+function graft_gaussian(x:Integer64) -> Gaussian? {
+  return nil;
+}
+
+function graft_linear_gaussian(x:Integer64) -> TransformLinear<Gaussian>? {
+  return nil;
+}
+
+function graft_normal_inverse_gamma(x:Integer64, compare:Distribution<Real>) ->
+    NormalInverseGamma? {
+  return nil;
+}
+
+function graft_linear_normal_inverse_gamma(x:Integer64, compare:Distribution<Real>) ->
+    TransformLinear<NormalInverseGamma>? {
+  return nil;
+}
+
+function graft_multivariate_gaussian(x:Integer64) -> MultivariateGaussian? {
+  return nil;
+}
+
+function graft_linear_multivariate_gaussian(x:Integer64) ->
+    TransformLinearMultivariate<MultivariateGaussian>? {
+  return nil;
+}
+
+function graft_dot_multivariate_gaussian(x:Integer64) ->
+    TransformDot<MultivariateGaussian>? {
+  return nil;
+}
+
+function graft_multivariate_normal_inverse_gamma(x:Integer64, compare:Distribution<Real>) ->
+    MultivariateNormalInverseGamma? {
+  return nil;
+}
+
+function graft_linear_multivariate_normal_inverse_gamma(x:Integer64, compare:Distribution<Real>) ->
+    TransformLinearMultivariate<MultivariateNormalInverseGamma>? {
+  return nil;
+}
+
+function graft_dot_multivariate_normal_inverse_gamma(x:Integer64, compare:Distribution<Real>) ->
+    TransformDot<MultivariateNormalInverseGamma>? {
+  return nil;
+}
+
+function graft_matrix_gaussian(x:Integer64) -> MatrixGaussian? {
+  return nil;
+}
+
+function graft_linear_matrix_gaussian(x:Integer64) ->
+    TransformLinearMatrix<MatrixGaussian>? {
+  return nil;
+}
+
+function graft_dot_matrix_gaussian(x:Integer64) ->
+    TransformDotMultivariate<MatrixGaussian>? {
+  return nil;
+}
+
+function graft_matrix_normal_inverse_wishart(x:Integer64, compare:Distribution<LLT>) ->
+    MatrixNormalInverseWishart? {
+  return nil;
+}
+
+function graft_linear_matrix_normal_inverse_wishart(x:Integer64, compare:Distribution<LLT>) ->
+    TransformLinearMatrix<MatrixNormalInverseWishart>? {
+  return nil;
+}
+
+function graft_dot_matrix_normal_inverse_wishart(x:Integer64, compare:Distribution<LLT>) ->
+    TransformDotMultivariate<MatrixNormalInverseWishart>? {
+  return nil;
+}
+
+function graft_discrete(x:Integer64) -> Discrete? {
+  return nil;
+}
+
+function graft_bounded_discrete(x:Integer64) -> BoundedDiscrete? {
+  return nil;
+}

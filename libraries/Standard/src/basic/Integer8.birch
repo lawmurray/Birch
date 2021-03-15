@@ -208,3 +208,187 @@ function min(x:Integer8, y:Integer8) -> Integer8 {
   return std::min(x, y);
   }}
 }
+
+function canonical(x:Integer8) -> Integer8 {
+  return x;
+}
+
+function length(x:Integer8) -> Integer {
+  return 1;
+}
+
+function size(x:Integer8) -> Integer {
+  return 1;
+}
+
+function rows(x:Integer8) -> Integer {
+  return 1;
+}
+
+function columns(x:Integer8) -> Integer {
+  return 1;
+}
+
+function depth(x:Integer8) -> Integer {
+  return 0;
+}
+
+function value(x:Integer8) -> Integer8 {
+  return x;
+}
+
+function eval(x:Integer8) -> Integer8 {
+  return x;
+}
+
+function eval(x:Integer8, gen:Integer) -> Integer8 {
+  return x;
+}
+
+function count_eval(x:Integer8, gen:Integer) -> Integer8 {
+  return x;
+}
+
+function reval(x:Integer8) -> Integer8 {
+  return x;
+}
+
+function reval(x:Integer8, gen:Integer) -> Integer8 {
+  return x;
+}
+
+function count_reval(x:Integer8, gen:Integer) -> Integer8 {
+  return x;
+}
+
+function grad<Gradient>(x:Integer8, d:Gradient) {
+  //
+}
+
+function grad<Gradient>(x:Integer8, gen:Integer, d:Gradient) {
+  //
+}
+
+function count_grad<Gradient>(x:Integer8, gen:Integer, d:Gradient) {
+  //
+}
+
+function count_grad(x:Integer8, gen:Integer, d:Real, i:Integer) {
+  //
+}
+
+function count_grad(x:Integer8, gen:Integer, d:Real, i:Integer, j:Integer) {
+  //
+}
+
+function graft_beta(x:Integer8) -> Beta? {
+  return nil;
+}
+
+function graft_dirichlet(x:Integer8) -> Dirichlet? {
+  return nil;
+}
+
+function graft_restaurant(x:Integer8) -> Restaurant? {
+  return nil;
+}
+
+function graft_gamma(x:Integer8) -> Gamma? {
+  return nil;
+}
+
+function graft_scaled_gamma(x:Integer8) ->  TransformLinear<Gamma>? {
+  return nil;
+}
+
+function graft_inverse_gamma(x:Integer8) -> InverseGamma? {
+  return nil;
+}
+
+function graft_inverse_wishart(x:Integer8) -> InverseWishart? {
+  return nil;
+}
+
+function graft_gaussian(x:Integer8) -> Gaussian? {
+  return nil;
+}
+
+function graft_linear_gaussian(x:Integer8) -> TransformLinear<Gaussian>? {
+  return nil;
+}
+
+function graft_normal_inverse_gamma(x:Integer8, compare:Distribution<Real>) ->
+    NormalInverseGamma? {
+  return nil;
+}
+
+function graft_linear_normal_inverse_gamma(x:Integer8, compare:Distribution<Real>) ->
+    TransformLinear<NormalInverseGamma>? {
+  return nil;
+}
+
+function graft_multivariate_gaussian(x:Integer8) -> MultivariateGaussian? {
+  return nil;
+}
+
+function graft_linear_multivariate_gaussian(x:Integer8) ->
+    TransformLinearMultivariate<MultivariateGaussian>? {
+  return nil;
+}
+
+function graft_dot_multivariate_gaussian(x:Integer8) ->
+    TransformDot<MultivariateGaussian>? {
+  return nil;
+}
+
+function graft_multivariate_normal_inverse_gamma(x:Integer8, compare:Distribution<Real>) ->
+    MultivariateNormalInverseGamma? {
+  return nil;
+}
+
+function graft_linear_multivariate_normal_inverse_gamma(x:Integer8, compare:Distribution<Real>) ->
+    TransformLinearMultivariate<MultivariateNormalInverseGamma>? {
+  return nil;
+}
+
+function graft_dot_multivariate_normal_inverse_gamma(x:Integer8, compare:Distribution<Real>) ->
+    TransformDot<MultivariateNormalInverseGamma>? {
+  return nil;
+}
+
+function graft_matrix_gaussian(x:Integer8) -> MatrixGaussian? {
+  return nil;
+}
+
+function graft_linear_matrix_gaussian(x:Integer8) ->
+    TransformLinearMatrix<MatrixGaussian>? {
+  return nil;
+}
+
+function graft_dot_matrix_gaussian(x:Integer8) ->
+    TransformDotMultivariate<MatrixGaussian>? {
+  return nil;
+}
+
+function graft_matrix_normal_inverse_wishart(x:Integer8, compare:Distribution<LLT>) ->
+    MatrixNormalInverseWishart? {
+  return nil;
+}
+
+function graft_linear_matrix_normal_inverse_wishart(x:Integer8, compare:Distribution<LLT>) ->
+    TransformLinearMatrix<MatrixNormalInverseWishart>? {
+  return nil;
+}
+
+function graft_dot_matrix_normal_inverse_wishart(x:Integer8, compare:Distribution<LLT>) ->
+    TransformDotMultivariate<MatrixNormalInverseWishart>? {
+  return nil;
+}
+
+function graft_discrete(x:Integer8) -> Discrete? {
+  return nil;
+}
+
+function graft_bounded_discrete(x:Integer8) -> BoundedDiscrete? {
+  return nil;
+}

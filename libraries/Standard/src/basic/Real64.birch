@@ -235,3 +235,187 @@ function isfinite(x:Real64) -> Boolean {
   return std::isfinite(x);
   }}
 }
+
+function canonical(x:Real64) -> Real64 {
+  return x;
+}
+
+function length(x:Real64) -> Integer {
+  return 1;
+}
+
+function size(x:Real64) -> Integer {
+  return 1;
+}
+
+function rows(x:Real64) -> Integer {
+  return 1;
+}
+
+function columns(x:Real64) -> Integer {
+  return 1;
+}
+
+function depth(x:Real64) -> Integer {
+  return 0;
+}
+
+function value(x:Real64) -> Real64 {
+  return x;
+}
+
+function eval(x:Real64) -> Real64 {
+  return x;
+}
+
+function eval(x:Real64, gen:Integer) -> Real64 {
+  return x;
+}
+
+function count_eval(x:Real64, gen:Integer) -> Real64 {
+  return x;
+}
+
+function reval(x:Real64) -> Real64 {
+  return x;
+}
+
+function reval(x:Real64, gen:Integer) -> Real64 {
+  return x;
+}
+
+function count_reval(x:Real64, gen:Integer) -> Real64 {
+  return x;
+}
+
+function grad<Gradient>(x:Real64, d:Gradient) {
+  //
+}
+
+function grad<Gradient>(x:Real64, gen:Integer, d:Gradient) {
+  //
+}
+
+function count_grad<Gradient>(x:Real64, gen:Integer, d:Gradient) {
+  //
+}
+
+function count_grad(x:Real64, gen:Integer, d:Real, i:Integer) {
+  //
+}
+
+function count_grad(x:Real64, gen:Integer, d:Real, i:Integer, j:Integer) {
+  //
+}
+
+function graft_beta(x:Real64) -> Beta? {
+  return nil;
+}
+
+function graft_dirichlet(x:Real64) -> Dirichlet? {
+  return nil;
+}
+
+function graft_restaurant(x:Real64) -> Restaurant? {
+  return nil;
+}
+
+function graft_gamma(x:Real64) -> Gamma? {
+  return nil;
+}
+
+function graft_scaled_gamma(x:Real64) ->  TransformLinear<Gamma>? {
+  return nil;
+}
+
+function graft_inverse_gamma(x:Real64) -> InverseGamma? {
+  return nil;
+}
+
+function graft_inverse_wishart(x:Real64) -> InverseWishart? {
+  return nil;
+}
+
+function graft_gaussian(x:Real64) -> Gaussian? {
+  return nil;
+}
+
+function graft_linear_gaussian(x:Real64) -> TransformLinear<Gaussian>? {
+  return nil;
+}
+
+function graft_normal_inverse_gamma(x:Real64, compare:Distribution<Real>) ->
+    NormalInverseGamma? {
+  return nil;
+}
+
+function graft_linear_normal_inverse_gamma(x:Real64, compare:Distribution<Real>) ->
+    TransformLinear<NormalInverseGamma>? {
+  return nil;
+}
+
+function graft_multivariate_gaussian(x:Real64) -> MultivariateGaussian? {
+  return nil;
+}
+
+function graft_linear_multivariate_gaussian(x:Real64) ->
+    TransformLinearMultivariate<MultivariateGaussian>? {
+  return nil;
+}
+
+function graft_dot_multivariate_gaussian(x:Real64) ->
+    TransformDot<MultivariateGaussian>? {
+  return nil;
+}
+
+function graft_multivariate_normal_inverse_gamma(x:Real64, compare:Distribution<Real>) ->
+    MultivariateNormalInverseGamma? {
+  return nil;
+}
+
+function graft_linear_multivariate_normal_inverse_gamma(x:Real64, compare:Distribution<Real>) ->
+    TransformLinearMultivariate<MultivariateNormalInverseGamma>? {
+  return nil;
+}
+
+function graft_dot_multivariate_normal_inverse_gamma(x:Real64, compare:Distribution<Real>) ->
+    TransformDot<MultivariateNormalInverseGamma>? {
+  return nil;
+}
+
+function graft_matrix_gaussian(x:Real64) -> MatrixGaussian? {
+  return nil;
+}
+
+function graft_linear_matrix_gaussian(x:Real64) ->
+    TransformLinearMatrix<MatrixGaussian>? {
+  return nil;
+}
+
+function graft_dot_matrix_gaussian(x:Real64) ->
+    TransformDotMultivariate<MatrixGaussian>? {
+  return nil;
+}
+
+function graft_matrix_normal_inverse_wishart(x:Real64, compare:Distribution<LLT>) ->
+    MatrixNormalInverseWishart? {
+  return nil;
+}
+
+function graft_linear_matrix_normal_inverse_wishart(x:Real64, compare:Distribution<LLT>) ->
+    TransformLinearMatrix<MatrixNormalInverseWishart>? {
+  return nil;
+}
+
+function graft_dot_matrix_normal_inverse_wishart(x:Real64, compare:Distribution<LLT>) ->
+    TransformDotMultivariate<MatrixNormalInverseWishart>? {
+  return nil;
+}
+
+function graft_discrete(x:Real64) -> Discrete? {
+  return nil;
+}
+
+function graft_bounded_discrete(x:Real64) -> BoundedDiscrete? {
+  return nil;
+}

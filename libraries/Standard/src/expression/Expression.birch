@@ -157,7 +157,7 @@ abstract class Expression<Value> {
   abstract function doColumns() -> Integer;
 
   /**
-   * Depth of the expression tree.
+   * Depth of the expression graph.
    */
   final function depth() -> Integer {
     if isConstant() {
@@ -802,30 +802,182 @@ abstract class Expression<Value> {
   }
 }
 
-/**
- * Length of an Expression.
- */
-function length<Value>(x:Expression<Value>) -> Integer {
-  return x.length();
-}
-
-/**
- * Size of an Expression.
- */
-function size<Value>(x:Expression<Value>) -> Integer {
-  return x.size();
-}
-
-/**
- * Number of rows of an Expression.
- */
-function rows<Value>(x:Expression<Value>) -> Integer {
+function length<Type>(x:Type) -> Integer {
   return x.rows();
 }
 
-/**
- * Number of columns of an Expression.
- */
-function columns<Value>(x:Expression<Value>) -> Integer {
+function size<Type>(x:Type) -> Integer {
+  return x.size();
+}
+
+function rows<Type>(x:Type) -> Integer {
+  return x.rows();
+}
+
+function columns<Type>(x:Type) -> Integer {
   return x.columns();
+}
+
+function depth<Type>(x:Type) -> Integer {
+  return x.depth();
+}
+
+function value<Type>(x:Type) -> TypeOf(_) {
+  return x.value();
+}
+
+function eval<Type>(x:Type) -> TypeOf(_) {
+  return x.eval();
+}
+
+function eval<Type>(x:Type, gen:Integer) -> TypeOf(_) {
+  return x.eval(gen);
+}
+
+function count_eval<Type>(x:Type, gen:Integer) -> TypeOf(_) {
+  return x.countEval(gen);
+}
+
+function reval<Type>(x:Type) -> TypeOf(_) {
+  return x.reval();
+}
+
+function reval<Type>(x:Type, gen:Integer) -> TypeOf(_) {
+  return x.reval(gen);
+}
+
+function count_reval<Type>(x:Type, gen:Integer) -> TypeOf(_) {
+  return x.countReval(gen);
+}
+
+function grad<Type,Gradient>(x:Type, d:Gradient) {
+  x.grad(d);
+}
+
+function grad<Type,Gradient>(x:Type, gen:Integer, d:Gradient) {
+  x.grad(gen, d);
+}
+
+function count_grad<Type,Gradient>(x:Type, gen:Integer, d:Gradient) {
+  x.countGrad(gen, d);
+}
+
+function count_grad<Type>(x:Type, gen:Integer, d:Real, i:Integer) {
+  x.countGrad(gen, d, i);
+}
+
+function count_grad<Type>(x:Type, gen:Integer, d:Real, i:Integer, j:Integer) {
+  x.countGrad(gen, d, i, j);
+}
+
+function graft_beta<Type>(x:Type) -> Beta? {
+  return x.graftBeta();
+}
+
+function graft_dirichlet<Type>(x:Type) -> Dirichlet? {
+  return x.graftDirichlet();
+}
+
+function graft_restaurant<Type>(x:Type) -> Restaurant? {
+  return x.graftRestaurant();
+}
+
+function graft_gamma<Type>(x:Type) -> Gamma? {
+  return x.graftGamma();
+}
+
+function graft_scaled_gamma<Type>(x:Type) ->  TransformLinear<Gamma>? {
+  return x.graftScaledGamma();
+}
+
+function graft_inverse_gamma<Type>(x:Type) -> InverseGamma? {
+  return x.graftInverseGamma();
+}
+
+function graft_inverse_wishart<Type>(x:Type) -> InverseWishart? {
+  return x.graftInverseWishart();
+}
+
+function graft_gaussian<Type>(x:Type) -> Gaussian? {
+  return x.graftGaussian();
+}
+
+function graft_linear_gaussian<Type>(x:Type) -> TransformLinear<Gaussian>? {
+  return x.graftLinearGaussian();
+}
+
+function graft_normal_inverse_gamma<Type>(x:Type, compare:Distribution<Real>) ->
+    NormalInverseGamma? {
+  return x.graftNormalInverseGamma();
+}
+
+function graft_linear_normal_inverse_gamma<Type>(x:Type, compare:Distribution<Real>) ->
+    TransformLinear<NormalInverseGamma>? {
+  return x.graftLinearNormalInverseGamma();
+}
+
+function graft_multivariate_gaussian<Type>(x:Type) -> MultivariateGaussian? {
+  return x.graftMultivariateGaussian();
+}
+
+function graft_linear_multivariate_gaussian<Type>(x:Type) ->
+    TransformLinearMultivariate<MultivariateGaussian>? {
+  return x.graftLinearMultivariateGaussian();
+}
+
+function graft_dot_multivariate_gaussian<Type>(x:Type) ->
+    TransformDot<MultivariateGaussian>? {
+  return x.graftDotMultivariateGaussian();
+}
+
+function graft_multivariate_normal_inverse_gamma<Type>(x:Type, compare:Distribution<Real>) ->
+    MultivariateNormalInverseGamma? {
+  return x.graftMultivariateNormalInverseGamma(compare);
+}
+
+function graft_linear_multivariate_normal_inverse_gamma<Type>(x:Type, compare:Distribution<Real>) ->
+    TransformLinearMultivariate<MultivariateNormalInverseGamma>? {
+  return x.graftLinearMultivariateNormalInverseGamma(compare);
+}
+
+function graft_dot_multivariate_normal_inverse_gamma<Type>(x:Type, compare:Distribution<Real>) ->
+    TransformDot<MultivariateNormalInverseGamma>? {
+  return x.graftDotMultivariateNormalInverseGamma(compare);
+}
+
+function graft_matrix_gaussian<Type>(x:Type) -> MatrixGaussian? {
+  return x.graftMatrixGaussian();
+}
+
+function graft_linear_matrix_gaussian<Type>(x:Type) ->
+    TransformLinearMatrix<MatrixGaussian>? {
+  return x.graftLinearMatrixGaussian();
+}
+
+function graft_dot_matrix_gaussian<Type>(x:Type) ->
+    TransformDotMultivariate<MatrixGaussian>? {
+  return x.graftDotMatrixGaussian();
+}
+
+function graft_matrix_normal_inverse_wishart<Type>(x:Type, compare:Distribution<LLT>) ->
+    MatrixNormalInverseWishart? {
+  return x.graftMatrixNormalInverseWishart(compare);
+}
+
+function graft_linear_matrix_normal_inverse_wishart<Type>(x:Type, compare:Distribution<LLT>) ->
+    TransformLinearMatrix<MatrixNormalInverseWishart>? {
+  return x.graftLinearMatrixNormalInverseWishart(compare);
+}
+
+function graft_dot_matrix_normal_inverse_wishart<Type>(x:Type, compare:Distribution<LLT>) ->
+    TransformDotMultivariate<MatrixNormalInverseWishart>? {
+  return x.graftDotMatrixNormalInverseWishart(compare);
+}
+
+function graft_discrete<Type>(x:Type) -> Discrete? {
+  return x.graftDiscrete();
+}
+
+function graft_bounded_discrete<Type>(x:Type) -> BoundedDiscrete? {
+  return x.graftBoundedDiscrete();
 }

@@ -1,31 +1,4 @@
 /**
- * Length of a matrix; equals `rows()`.
- */
-function length<Value>(X:Value[_,_]) -> Integer {
-  cpp{{
-  return X.rows();
-  }}
-}
-
-/**
- * Number of rows of a matrix.
- */
-function rows<Value>(X:Value[_,_]) -> Integer {
-  cpp{{
-  return X.rows();
-  }}
-}
-
-/**
- * Number of columns of a matrix.
- */
-function columns<Value>(X:Value[_,_]) -> Integer {
-  cpp{{
-  return X.cols();
-  }}
-}
-
-/**
  * Convert single-element matrix to scalar value.
  */
 function scalar<Type>(X:Type[_,_]) -> Type {
@@ -257,107 +230,190 @@ function Real<Type>(X:Type[_,_]) -> Real[_,_] {
       }, rows(X), columns(X));
 }
 
-/**
- * Convert matrix to String.
- */
-function String(X:Real[_,_]) -> String {
-  result:String;
-  cpp{{
-  std::stringstream buf;
-  }}
-  for i in 1..rows(X) {
-    cpp{{
-    if (i > 1) {
-      buf << '\n';
-    }
-    }}
-    for j in 1..columns(X) {
-      let value <- X[i,j];
-      cpp{{
-      if (j > 1) {
-        buf << ' ';
-      }
-      if (value == floor(value)) {
-        buf << (int64_t)value << ".0";
-      } else {
-        buf << std::scientific << std::setprecision(14) << value;
-      }
-      }}
-    }
-  }
-  cpp{{
-  result = buf.str();
-  }}
-  return result;
+function canonical<Type>(x:Type[_,_]) -> Type[_,_] {
+  return x;
 }
 
-/**
- * Convert matrix to String.
- */
-function String(X:Integer[_,_]) -> String {
-  result:String;
-  cpp{{
-  std::stringstream buf;
-  }}
-  for i in 1..rows(X) {
-    cpp{{
-    if (i > 1) {
-      buf << '\n';
-    }
-    }}
-    for j in 1..columns(X) {
-      let value <- X[i,j];
-      cpp{{
-      if (j > 1) {
-        buf << ' ';
-      }
-      buf << value;
-      }}
-    }
-  }
-  cpp{{
-  result = buf.str();
-  }}
-  return result;
+function length<Type>(x:Type[_,_]) -> Integer {
+  return rows(x);
 }
 
-/**
- * Convert matrix to String.
- */
-function String(X:Boolean[_,_]) -> String {
-  result:String;
-  cpp{{
-  std::stringstream buf;
-  }}
-  for i in 1..rows(X) {
-    cpp{{
-    if (i > 1) {
-      buf << '\n';
-    }
-    }}
-    for j in 1..columns(X) {
-      let value <- X[i,j];
-      cpp{{
-      if (j > 1) {
-        buf << ' ';
-      }
-      if (value) {
-        buf << "true";
-      } else {
-        buf << "false";
-      }
-      }}
-    }
-  }
-  cpp{{
-  result = buf.str();
-  }}
-  return result;
+function size<Type>(x:Type[_,_]) -> Integer {
+  return rows(x)*columns(x);
 }
 
-/**
- * Convert matrix to String.
- */
-function String(X:LLT) -> String {
-  return String(canonical(X));
+function rows<Type>(x:Type[_,_]) -> Integer {
+  cpp{{
+  return x.rows();
+  }}
+}
+
+function columns<Type>(x:Type[_,_]) -> Integer {
+  cpp{{
+  return x.cols();
+  }}
+}
+
+function depth<Type>(x:Type[_,_]) -> Integer {
+  return 0;
+}
+
+function value<Type>(x:Type[_,_]) -> Type[_,_] {
+  return x;
+}
+
+function eval<Type>(x:Type[_,_]) -> Type[_,_] {
+  return x;
+}
+
+function eval<Type>(x:Type[_,_], gen:Integer) -> Type[_,_] {
+  return x;
+}
+
+function count_eval<Type>(x:Type[_,_], gen:Integer) -> Type[_,_] {
+  return x;
+}
+
+function reval<Type>(x:Type[_,_]) -> Type[_,_] {
+  return x;
+}
+
+function reval<Type>(x:Type[_,_], gen:Integer) -> Type[_,_] {
+  return x;
+}
+
+function count_reval<Type>(x:Type[_,_], gen:Integer) -> Type[_,_] {
+  return x;
+}
+
+function grad<Type,Gradient>(x:Type[_,_], d:Gradient) {
+  //
+}
+
+function grad<Type,Gradient>(x:Type[_,_], gen:Integer, d:Gradient) {
+  //
+}
+
+function count_grad<Type,Gradient>(x:Type[_,_], gen:Integer, d:Gradient) {
+  //
+}
+
+function count_grad<Type>(x:Type[_,_], gen:Integer, d:Real, i:Integer) {
+  //
+}
+
+function count_grad<Type>(x:Type[_,_], gen:Integer, d:Real, i:Integer, j:Integer) {
+  //
+}
+
+function graft_beta<Type>(x:Type[_,_]) -> Beta? {
+  return nil;
+}
+
+function graft_dirichlet<Type>(x:Type[_,_]) -> Dirichlet? {
+  return nil;
+}
+
+function graft_restaurant<Type>(x:Type[_,_]) -> Restaurant? {
+  return nil;
+}
+
+function graft_gamma<Type>(x:Type[_,_]) -> Gamma? {
+  return nil;
+}
+
+function graft_scaled_gamma<Type>(x:Type[_,_]) ->  TransformLinear<Gamma>? {
+  return nil;
+}
+
+function graft_inverse_gamma<Type>(x:Type[_,_]) -> InverseGamma? {
+  return nil;
+}
+
+function graft_inverse_wishart<Type>(x:Type[_,_]) -> InverseWishart? {
+  return nil;
+}
+
+function graft_gaussian<Type>(x:Type[_,_]) -> Gaussian? {
+  return nil;
+}
+
+function graft_linear_gaussian<Type>(x:Type[_,_]) -> TransformLinear<Gaussian>? {
+  return nil;
+}
+
+function graft_normal_inverse_gamma<Type>(x:Type[_,_], compare:Distribution<Real>) ->
+    NormalInverseGamma? {
+  return nil;
+}
+
+function graft_linear_normal_inverse_gamma<Type>(x:Type[_,_], compare:Distribution<Real>) ->
+    TransformLinear<NormalInverseGamma>? {
+  return nil;
+}
+
+function graft_multivariate_gaussian<Type>(x:Type[_,_]) -> MultivariateGaussian? {
+  return nil;
+}
+
+function graft_linear_multivariate_gaussian<Type>(x:Type[_,_]) ->
+    TransformLinearMultivariate<MultivariateGaussian>? {
+  return nil;
+}
+
+function graft_dot_multivariate_gaussian<Type>(x:Type[_,_]) ->
+    TransformDot<MultivariateGaussian>? {
+  return nil;
+}
+
+function graft_multivariate_normal_inverse_gamma<Type>(x:Type[_,_], compare:Distribution<Real>) ->
+    MultivariateNormalInverseGamma? {
+  return nil;
+}
+
+function graft_linear_multivariate_normal_inverse_gamma<Type>(x:Type[_,_], compare:Distribution<Real>) ->
+    TransformLinearMultivariate<MultivariateNormalInverseGamma>? {
+  return nil;
+}
+
+function graft_dot_multivariate_normal_inverse_gamma<Type>(x:Type[_,_], compare:Distribution<Real>) ->
+    TransformDot<MultivariateNormalInverseGamma>? {
+  return nil;
+}
+
+function graft_matrix_gaussian<Type>(x:Type[_,_]) -> MatrixGaussian? {
+  return nil;
+}
+
+function graft_linear_matrix_gaussian<Type>(x:Type[_,_]) ->
+    TransformLinearMatrix<MatrixGaussian>? {
+  return nil;
+}
+
+function graft_dot_matrix_gaussian<Type>(x:Type[_,_]) ->
+    TransformDotMultivariate<MatrixGaussian>? {
+  return nil;
+}
+
+function graft_matrix_normal_inverse_wishart<Type>(x:Type[_,_], compare:Distribution<LLT>) ->
+    MatrixNormalInverseWishart? {
+  return nil;
+}
+
+function graft_linear_matrix_normal_inverse_wishart<Type>(x:Type[_,_], compare:Distribution<LLT>) ->
+    TransformLinearMatrix<MatrixNormalInverseWishart>? {
+  return nil;
+}
+
+function graft_dot_matrix_normal_inverse_wishart<Type>(x:Type[_,_], compare:Distribution<LLT>) ->
+    TransformDotMultivariate<MatrixNormalInverseWishart>? {
+  return nil;
+}
+
+function graft_discrete<Type>(x:Type[_,_]) -> Discrete? {
+  return nil;
+}
+
+function graft_bounded_discrete<Type>(x:Type[_,_]) -> BoundedDiscrete? {
+  return nil;
 }

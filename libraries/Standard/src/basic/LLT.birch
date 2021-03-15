@@ -4,24 +4,6 @@
 type LLT;
 
 /**
- * Number of rows of a symmetric positive definite matrix.
- */
-function rows(X:LLT) -> Integer64 {
-  cpp{{
-  return X.rows();
-  }}
-}
-
-/**
- * Number of columns of a symmetric positive definite matrix.
- */
-function columns(X:LLT) -> Integer64 {
-  cpp{{
-  return X.cols();
-  }}
-}
-
-/**
  * Cholesky factorization of the symmetric positive definite matrix $S$.
  *
  * - S: The symmetric positive definite matrix $S$.
@@ -169,11 +151,192 @@ function rank_downdate(S:LLT, X:Real[_,_]) -> LLT {
   return A;
 }
 
-/**
- * Sum of two positive definite matrices.
- */
-operator (x:LLT + y:LLT) -> LLT {
+function canonical(x:LLT) -> Real[_,_] {
   cpp{{
-  return (x.reconstructedMatrix() + y.reconstructedMatrix()).llt();
+  return x.reconstructedMatrix();
   }}
+}
+
+function length(x:LLT) -> Integer {
+  return rows(x);
+}
+
+function size(x:LLT) -> Integer {
+  return rows(x)*columns(x);
+}
+
+function rows(x:LLT) -> Integer {
+  cpp{{
+  return x.rows();
+  }}
+}
+
+function columns(x:LLT) -> Integer {
+  cpp{{
+  return x.cols();
+  }}
+}
+
+function depth(x:LLT) -> Integer {
+  return 0;
+}
+
+function value(x:LLT) -> LLT {
+  return x;
+}
+
+function eval(x:LLT) -> LLT {
+  return x;
+}
+
+function eval(x:LLT, gen:Integer) -> LLT {
+  return x;
+}
+
+function count_eval(x:LLT, gen:Integer) -> LLT {
+  return x;
+}
+
+function reval(x:LLT) -> LLT {
+  return x;
+}
+
+function reval(x:LLT, gen:Integer) -> LLT {
+  return x;
+}
+
+function count_reval(x:LLT, gen:Integer) -> LLT {
+  return x;
+}
+
+function grad<Gradient>(x:LLT, d:Gradient) {
+  //
+}
+
+function grad<Gradient>(x:LLT, gen:Integer, d:Gradient) {
+  //
+}
+
+function count_grad<Gradient>(x:LLT, gen:Integer, d:Gradient) {
+  //
+}
+
+function count_grad(x:LLT, gen:Integer, d:Real, i:Integer) {
+  //
+}
+
+function count_grad(x:LLT, gen:Integer, d:Real, i:Integer, j:Integer) {
+  //
+}
+
+function graft_beta(x:LLT) -> Beta? {
+  return nil;
+}
+
+function graft_dirichlet(x:LLT) -> Dirichlet? {
+  return nil;
+}
+
+function graft_restaurant(x:LLT) -> Restaurant? {
+  return nil;
+}
+
+function graft_gamma(x:LLT) -> Gamma? {
+  return nil;
+}
+
+function graft_scaled_gamma(x:LLT) ->  TransformLinear<Gamma>? {
+  return nil;
+}
+
+function graft_inverse_gamma(x:LLT) -> InverseGamma? {
+  return nil;
+}
+
+function graft_inverse_wishart(x:LLT) -> InverseWishart? {
+  return nil;
+}
+
+function graft_gaussian(x:LLT) -> Gaussian? {
+  return nil;
+}
+
+function graft_linear_gaussian(x:LLT) -> TransformLinear<Gaussian>? {
+  return nil;
+}
+
+function graft_normal_inverse_gamma(x:LLT, compare:Distribution<Real>) ->
+    NormalInverseGamma? {
+  return nil;
+}
+
+function graft_linear_normal_inverse_gamma(x:LLT, compare:Distribution<Real>) ->
+    TransformLinear<NormalInverseGamma>? {
+  return nil;
+}
+
+function graft_multivariate_gaussian(x:LLT) -> MultivariateGaussian? {
+  return nil;
+}
+
+function graft_linear_multivariate_gaussian(x:LLT) ->
+    TransformLinearMultivariate<MultivariateGaussian>? {
+  return nil;
+}
+
+function graft_dot_multivariate_gaussian(x:LLT) ->
+    TransformDot<MultivariateGaussian>? {
+  return nil;
+}
+
+function graft_multivariate_normal_inverse_gamma(x:LLT, compare:Distribution<Real>) ->
+    MultivariateNormalInverseGamma? {
+  return nil;
+}
+
+function graft_linear_multivariate_normal_inverse_gamma(x:LLT, compare:Distribution<Real>) ->
+    TransformLinearMultivariate<MultivariateNormalInverseGamma>? {
+  return nil;
+}
+
+function graft_dot_multivariate_normal_inverse_gamma(x:LLT, compare:Distribution<Real>) ->
+    TransformDot<MultivariateNormalInverseGamma>? {
+  return nil;
+}
+
+function graft_matrix_gaussian(x:LLT) -> MatrixGaussian? {
+  return nil;
+}
+
+function graft_linear_matrix_gaussian(x:LLT) ->
+    TransformLinearMatrix<MatrixGaussian>? {
+  return nil;
+}
+
+function graft_dot_matrix_gaussian(x:LLT) ->
+    TransformDotMultivariate<MatrixGaussian>? {
+  return nil;
+}
+
+function graft_matrix_normal_inverse_wishart(x:LLT, compare:Distribution<LLT>) ->
+    MatrixNormalInverseWishart? {
+  return nil;
+}
+
+function graft_linear_matrix_normal_inverse_wishart(x:LLT, compare:Distribution<LLT>) ->
+    TransformLinearMatrix<MatrixNormalInverseWishart>? {
+  return nil;
+}
+
+function graft_dot_matrix_normal_inverse_wishart(x:LLT, compare:Distribution<LLT>) ->
+    TransformDotMultivariate<MatrixNormalInverseWishart>? {
+  return nil;
+}
+
+function graft_discrete(x:LLT) -> Discrete? {
+  return nil;
+}
+
+function graft_bounded_discrete(x:LLT) -> BoundedDiscrete? {
+  return nil;
 }

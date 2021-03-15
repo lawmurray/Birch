@@ -299,6 +299,13 @@ function inclusive_scan<Type>(x:Type[_], init:Type,
 }
 
 /**
+ * Inclusive scan sum.
+ */
+function inclusive_scan<Type>(x:Type[_]) -> Type[_] {
+  return inclusive_scan(x, 0.0, \(x:Type, y:Type) -> Type { return x + y; });
+}
+
+/**
  * Exclusive scan.
  *
  * - x: Vector.
@@ -323,6 +330,13 @@ function exclusive_scan<Type>(x:Type[_], init:Type,
     }}
   }
   return y;
+}
+
+/**
+ * Exclusive scan sum.
+ */
+function exclusive_scan<Type>(x:Type[_]) -> Type[_] {
+  return exclusive_scan(x, 0.0, \(x:Type, y:Type) -> Type { return x + y; });
 }
 
 /**
@@ -412,4 +426,73 @@ function scatter<Type>(a:Integer[_], x:Type[_]) -> Type[_] {
     y[a[n]] <- x[n];
   }
   return y;
+}
+
+/**
+ * Create vector filled with a sequentially incrementing values.
+ *
+ * - x: Initial value.
+ * - length: Length.
+ */
+function iota<Type>(x:Type, length:Integer) -> Real[_] {
+  return vector(\(i:Integer) -> Type {
+    return x + (i - 1);
+  }, length);
+}
+
+/**
+ * Sum reduction.
+ */
+function sum<Type>(x:Type[_]) -> Type {
+  if length(x) == 0 {
+    return 0.0;
+  } else if length(x) == 1 {
+    return x[1];
+  } else {
+    return reduce(x[2..length(x)], x[1], \(x:Type, y:Type) -> Type {
+        return x + y;
+      });
+  }
+}
+
+/**
+ * Product reduction.
+ */
+function product<Type>(x:Type[_]) -> Type {
+  assert length(x) > 0;
+  if length(x) == 1 {
+    return x[1];
+  } else {
+    return reduce(x[2..length(x)], x[1], \(x:Type, y:Type) -> Type {
+        return x*y;
+      });
+   }
+}
+
+/**
+ * Maximum reduction.
+ */
+function max<Type>(x:Type[_]) -> Type {
+  assert length(x) > 0;
+  if length(x) == 1 {
+    return x[1];
+  } else {
+    return reduce(x[2..length(x)], x[1], \(x:Type, y:Type) -> Type {
+        return max(x, y);
+      });
+  }
+}
+
+/**
+ * Minimum reduction.
+ */
+function min<Type>(x:Type[_]) -> Type {
+  assert length(x) > 0;
+  if length(x) == 1 {
+    return x[1];
+  } else {
+    return reduce(x[2..length(x)], x[1], \(x:Type, y:Type) -> Type {
+        return min(x, y);
+      });
+  }
 }
