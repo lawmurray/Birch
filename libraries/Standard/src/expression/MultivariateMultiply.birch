@@ -5,16 +5,16 @@ final class MultivariateMultiply(l:Expression<Real[_,_]>,
     r:Expression<Real[_]>) < MultivariateBinaryExpression<
     Expression<Real[_,_]>,Expression<Real[_]>,Real[_]>(l, r) {  
   override function doRows() -> Integer {
-    return l!.rows();
+    return global.rows(l!);
   }
 
   override function doCompute() {
-    x <- l!.eval()*r!.eval();
+    x <- global.eval(l!)*global.eval(r!);
   }
 
   override function doGrad(gen:Integer) {
-    l!.countGrad(gen, outer(d!, r!.eval()));
-    r!.countGrad(gen, transpose(l!.eval())*d!);
+    count_grad(l!, gen, outer(d!, global.eval(r!)));
+    count_grad(r!, gen, transpose(global.eval(l!))*d!);
   }
 
   override function graftLinearMultivariateGaussian() ->
@@ -22,9 +22,9 @@ final class MultivariateMultiply(l:Expression<Real[_,_]>,
     t:TransformLinearMultivariate<MultivariateGaussian>?;
     if !hasValue() {
       x1:MultivariateGaussian?;
-      if (t <- r!.graftLinearMultivariateGaussian())? {
+      if (t <- graft_linear_multivariate_gaussian(r!))? {
         t!.leftMultiply(l!);
-      } else if (x1 <- r!.graftMultivariateGaussian())? {
+      } else if (x1 <- graft_multivariate_gaussian(r!))? {
         t <- TransformLinearMultivariate<MultivariateGaussian>(l!, x1!);
       }
     }
@@ -37,9 +37,9 @@ final class MultivariateMultiply(l:Expression<Real[_,_]>,
     if !hasValue() {
       x1:MultivariateNormalInverseGamma?;
 
-      if (t <- r!.graftLinearMultivariateNormalInverseGamma(compare))? {
+      if (t <- graft_linear_multivariate_normal_inverse_gamma(r!, compare))? {
         t!.leftMultiply(l!);
-      } else if (x1 <- r!.graftMultivariateNormalInverseGamma(compare))? {
+      } else if (x1 <- graft_multivariate_normal_inverse_gamma(r!, compare))? {
         t <- TransformLinearMultivariate<MultivariateNormalInverseGamma>(l!, x1!);
       }
     }
@@ -52,7 +52,7 @@ final class MultivariateMultiply(l:Expression<Real[_,_]>,
  */
 operator (l:Expression<Real[_,_]>*r:Expression<Real[_]>) ->
     MultivariateMultiply {
-  assert l.columns() == r.rows();
+  assert global.columns(l) == global.rows(r);
   return construct<MultivariateMultiply>(l, r);
 }
 

@@ -12,19 +12,19 @@ abstract class ScalarUnaryExpression<Argument,Value>(m:Argument) <
   m:Argument? <- m;
 
   final override function doDepth() -> Integer {
-    return m!.depth() + 1;
+    return global.depth(m!) + 1;
   }
 
   final override function doValue() {
-    m!.value();
+    global.value(m!);
   }
 
   final override function doEval(gen:Integer) {
-    m!.countEval(gen);
+    count_eval(m!, gen);
   }
 
   final override function doReval(gen:Integer) {
-    m!.countReval(gen);
+    count_reval(m!, gen);
   }
 
   final override function doConstant() {

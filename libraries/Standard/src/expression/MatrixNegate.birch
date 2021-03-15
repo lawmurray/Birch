@@ -4,19 +4,19 @@
 final class MatrixNegate(m:Expression<Real[_,_]>) <
     MatrixUnaryExpression<Expression<Real[_,_]>,Real[_,_]>(m) {
   override function doRows() -> Integer {
-    return m!.rows();
+    return global.rows(m!);
   }
   
   override function doColumns() -> Integer {
-    return m!.columns();
+    return global.columns(m!);
   }
 
   override function doCompute() {
-    x <- -m!.eval();
+    x <- -global.eval(m!);
   }
 
   override function doGrad(gen:Integer) {
-    m!.countGrad(gen, -d!);
+    count_grad(m!, gen, -d!);
   }
 
   override function graftLinearMatrixGaussian() ->
@@ -25,11 +25,11 @@ final class MatrixNegate(m:Expression<Real[_,_]>) <
     if !hasValue() {
       x1:MatrixGaussian?;
 
-      if (t <- m!.graftLinearMatrixGaussian())? {
+      if (t <- graft_linear_matrix_gaussian(m!))? {
         t!.negate();
-      } else if (x1 <- m!.graftMatrixGaussian())? {
-        let R <- x1!.rows();
-        let C <- x1!.columns();
+      } else if (x1 <- graft_matrix_gaussian(m!))? {
+        let R <- global.rows(x1!);
+        let C <- global.columns(x1!);
         t <- TransformLinearMatrix<MatrixGaussian>(diagonal(box(-1.0), R),
             x1!, box(matrix(0.0, R, C)));
       }
@@ -42,11 +42,11 @@ final class MatrixNegate(m:Expression<Real[_,_]>) <
     t:TransformLinearMatrix<MatrixNormalInverseWishart>?;
     x1:MatrixNormalInverseWishart?;
 
-    if (t <- m!.graftLinearMatrixNormalInverseWishart(compare))? {
+    if (t <- graft_linear_matrix_normal_inverse_wishart(m!, compare))? {
       t!.negate();
-    } else if (x1 <- m!.graftMatrixNormalInverseWishart(compare))? {
-      let R <- x1!.rows();
-      let C <- x1!.columns();
+    } else if (x1 <- graft_matrix_normal_inverse_wishart(m!, compare))? {
+      let R <- global.rows(x1!);
+      let C <- global.columns(x1!);
       t <- TransformLinearMatrix<MatrixNormalInverseWishart>(
           diagonal(box(-1.0), R), x1!, box(matrix(0.0, R, C)));
     }

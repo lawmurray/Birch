@@ -4,11 +4,11 @@
 final class Tanh(m:Expression<Real>) <
     ScalarUnaryExpression<Expression<Real>,Real>(m) {
   override function doCompute() {
-    x <- tanh(m!.eval());
+    x <- tanh(global.eval(m!));
   }
 
   override function doGrad(gen:Integer) {
-    m!.countGrad(gen, d!*(1.0 + pow(tanh(m!.eval()), 2.0)));
+    count_grad(m!, gen, d!*(1.0 + pow(tanh(global.eval(m!)), 2.0)));
   }
 }
 

@@ -4,19 +4,19 @@
 final class MatrixAbs(m:Expression<Real[_,_]>) <
     MatrixUnaryExpression<Expression<Real[_,_]>,Real[_,_]>(m) {
   override function doRows() -> Integer {
-    return m!.rows();
+    return global.rows(m!);
   }
 
   override function doColumns() -> Integer {
-    return m!.columns();
+    return global.columns(m!);
   }
 
   override function doCompute() {
-    x <- transform(m!.eval(), \(m:Real) -> Real { return abs(m); });
+    x <- transform(global.eval(m!), \(m:Real) -> Real { return abs(m); });
   }
 
   override function doGrad(gen:Integer) {
-    m!.countGrad(gen, transform(d!, x!, \(d:Real, x:Real) -> Real {
+    count_grad(m!, gen, transform(d!, x!, \(d:Real, x:Real) -> Real {
         if x >= 0.0 {
           return d;
         } else {

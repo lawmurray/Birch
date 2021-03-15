@@ -4,20 +4,20 @@
 final class Negate<Middle,Value>(m:Middle) <
     ScalarUnaryExpression<Middle,Value>(m) {
   override function doCompute() {
-    x <- -m!.eval();
+    x <- -global.eval(m!);
   }
 
   override function doGrad(gen:Integer) {
-    m!.countGrad(gen, -d!);
+    count_grad(m!, gen, -d!);
   }
 
   override function graftLinearGaussian() -> TransformLinear<Gaussian>? {
     t:TransformLinear<Gaussian>?;
     if !hasValue() {
       x1:Gaussian?;
-      if (t <- m!.graftLinearGaussian())? {
+      if (t <- graft_linear_gaussian(m!))? {
         t!.negate();
-      } else if (x1 <- m!.graftGaussian())? {
+      } else if (x1 <- graft_gaussian(m!))? {
         t <- TransformLinear<Gaussian>(box(-1.0), x1!, box(0.0));
       }
     }
@@ -28,7 +28,7 @@ final class Negate<Middle,Value>(m:Middle) <
       TransformDot<MultivariateGaussian>? {
     t:TransformDot<MultivariateGaussian>?;
     if !hasValue() {
-      if (t <- m!.graftDotMultivariateGaussian())? {
+      if (t <- graft_dot_multivariate_gaussian(m!))? {
         t!.negate();
       }
     }
@@ -40,9 +40,9 @@ final class Negate<Middle,Value>(m:Middle) <
     t:TransformLinear<NormalInverseGamma>?;
     if !hasValue() {
       x1:NormalInverseGamma?;
-      if (t <- m!.graftLinearNormalInverseGamma(compare))? {
+      if (t <- graft_linear_normal_inverse_gamma(m!, compare))? {
         t!.negate();
-      } else if (x1 <- m!.graftNormalInverseGamma(compare))? {
+      } else if (x1 <- graft_normal_inverse_gamma(m!, compare))? {
         t <- TransformLinear<NormalInverseGamma>(box(-1.0), x1!, box(0.0));
       }
     }
@@ -53,7 +53,7 @@ final class Negate<Middle,Value>(m:Middle) <
       TransformDot<MultivariateNormalInverseGamma>? {
     t:TransformDot<MultivariateNormalInverseGamma>?;
     if !hasValue() {
-      if (t <- m!.graftDotMultivariateNormalInverseGamma(compare))? {
+      if (t <- graft_dot_multivariate_normal_inverse_gamma(m!, compare))? {
         t!.negate();
       }
     }
@@ -66,7 +66,7 @@ final class Negate<Middle,Value>(m:Middle) <
       t <- graftBoundedDiscrete();
       if !t? {
         m1:Discrete?;
-        if (m1 <- m!.graftDiscrete())? {
+        if (m1 <- graft_discrete(m!))? {
           t <- LinearDiscrete(box(-1), m1!, box(0));
         }
       }
@@ -78,7 +78,7 @@ final class Negate<Middle,Value>(m:Middle) <
     t:BoundedDiscrete?;
     if !hasValue() {
       m1:BoundedDiscrete?;
-      if (m1 <- m!.graftBoundedDiscrete())? {
+      if (m1 <- graft_bounded_discrete(m!))? {
         t <- LinearBoundedDiscrete(box(-1), m1!, box(0));
       }
     }

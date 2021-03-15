@@ -9,11 +9,11 @@ final class MultivariateElement<Value>(m:Expression<Value[_]>, i:Integer) <
   i:Integer <- i;
 
   override function doCompute() {
-    x <- m!.eval()[i];
+    x <- global.eval(m!)[i];
   }
 
   override function doGrad(gen:Integer) {
-    m!.countGrad(gen, d!, i);
+    count_grad(m!, gen, d!, i);
   }
 }
 

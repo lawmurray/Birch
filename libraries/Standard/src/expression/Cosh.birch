@@ -4,11 +4,11 @@
 final class Cosh(m:Expression<Real>) <
     ScalarUnaryExpression<Expression<Real>,Real>(m) {
   override function doCompute() {
-    x <- cosh(m!.eval());
+    x <- cosh(global.eval(m!));
   }
 
   override function doGrad(gen:Integer) {
-    m!.countGrad(gen, -d!*sinh(m!.eval()));
+    count_grad(m!, gen, -d!*sinh(global.eval(m!)));
   }
 }
 

@@ -4,14 +4,14 @@
 final class Abs(m:Expression<Real>) <
     ScalarUnaryExpression<Expression<Real>,Real>(m) {
   override function doCompute() {
-    x <- abs(m!.eval());
+    x <- abs(global.eval(m!));
   }
 
   override function doGrad(gen:Integer) {
     if eval() >= 0.0 {
-      m!.countGrad(gen, d!);
+      count_grad(m!, gen, d!);
     } else {
-      m!.countGrad(gen, -d!);
+      count_grad(m!, gen, -d!);
     }
   }
 }

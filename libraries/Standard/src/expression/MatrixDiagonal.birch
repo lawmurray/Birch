@@ -4,19 +4,19 @@
 final class MatrixDiagonal(m:Expression<Real[_]>) <
     MatrixUnaryExpression<Expression<Real[_]>,Real[_,_]>(m) {
   override function doRows() -> Integer {
-    return m!.rows();
+    return global.rows(m!);
   }
   
   override function doColumns() -> Integer {
-    return m!.rows();
+    return global.rows(m!);
   }
 
   override function doCompute() {
-    x <- diagonal(m!.eval());
+    x <- diagonal(global.eval(m!));
   }
 
   override function doGrad(gen:Integer) {
-    m!.countGrad(gen, d!);
+    count_grad(m!, gen, d!);
   }
 }
 

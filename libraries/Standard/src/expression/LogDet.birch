@@ -4,11 +4,11 @@
 final class LogDet<Argument>(m:Argument) <
     ScalarUnaryExpression<Argument,Real>(m) {
   override function doCompute() {
-    x <- ldet(m!.eval());
+    x <- ldet(global.eval(m!));
   }
 
   override function doGrad(gen:Integer) {
-    m!.countGrad(gen, d!*canonical(inv(transpose(m!.eval()))));
+    count_grad(m!, gen, d!*canonical(inv(transpose(global.eval(m!)))));
   }
 }
 

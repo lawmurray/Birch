@@ -24,25 +24,25 @@ abstract class ScalarTernaryExpression<Left,Middle,Right,Value>(
   r:Right? <- r;
 
   final override function doDepth() -> Integer {
-    return max(l!.depth(), max(m!.depth(), r!.depth())) + 1;
+    return max(global.depth(l!), max(global.depth(m!), global.depth(r!))) + 1;
   }
 
   final override function doValue() {
-    l!.value();
-    m!.value();
-    r!.value();
+    global.value(l!);
+    global.value(m!);
+    global.value(r!);
   }
 
   final override function doEval(gen:Integer) {
-    l!.countEval(gen);
-    m!.countEval(gen);
-    r!.countEval(gen);
+    count_eval(l!, gen);
+    count_eval(m!, gen);
+    count_eval(r!, gen);
   }
 
   final override function doReval(gen:Integer) {
-    l!.countReval(gen);
-    m!.countReval(gen);
-    r!.countReval(gen);
+    count_reval(l!, gen);
+    count_reval(m!, gen);
+    count_reval(r!, gen);
   }
 
   final override function doConstant() {

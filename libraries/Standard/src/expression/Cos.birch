@@ -4,11 +4,11 @@
 final class Cos(m:Expression<Real>) <
     ScalarUnaryExpression<Expression<Real>,Real>(m) {
   override function doCompute() {
-    x <- cos(m!.eval());
+    x <- cos(global.eval(m!));
   }
 
   override function doGrad(gen:Integer) {
-    m!.countGrad(gen, -d!*sin(m!.eval()));
+    count_grad(m!, gen, -d!*sin(global.eval(m!)));
   }
 }
 

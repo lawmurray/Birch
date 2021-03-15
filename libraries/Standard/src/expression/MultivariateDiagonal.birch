@@ -4,15 +4,15 @@
 final class MultivariateDiagonal(m:Expression<Real[_,_]>) <
     MultivariateUnaryExpression<Expression<Real[_,_]>,Real[_]>(m) {
   override function doRows() -> Integer {
-    return min(m!.rows(), m!.columns());
+    return min(global.rows(m!), global.columns(m!));
   }
 
   override function doCompute() {
-    x <- diagonal(m!.eval());
+    x <- diagonal(global.eval(m!));
   }
 
   override function doGrad(gen:Integer) {
-    m!.countGrad(gen, diagonal(d!));
+    count_grad(m!, gen, diagonal(d!));
   }
 }
 

@@ -5,24 +5,24 @@ final class MatrixStack(l:Expression<Real[_,_]>, r:Expression<Real[_,_]>) <
     MatrixBinaryExpression<Expression<Real[_,_]>,Expression<Real[_,_]>,
     Real[_,_]>(l, r) {  
   override function doRows() -> Integer {
-    return l!.rows() + r!.rows();
+    return global.rows(l!) + global.rows(r!);
   }
   
   override function doColumns() -> Integer {
-    assert l!.columns() == r!.columns();
-    return l!.columns();
+    assert global.columns(l!) == global.columns(r!);
+    return global.columns(l!);
   }
 
   override function doCompute() {
-    x <- stack(l!.eval(), r!.eval());
+    x <- stack(global.eval(l!), global.eval(r!));
   }
 
   override function doGrad(gen:Integer) {
-    let r1 <- global.rows(l!.eval());
-    let r2 <- global.rows(r!.eval());
-    let c1 <- global.columns(l!.eval());
-    l!.countGrad(gen, d![1..r1, 1..c1]);
-    r!.countGrad(gen, d![(r1 + 1)..(r1 + r2), 1..c1]);
+    let r1 <- global.rows(global.eval(l!));
+    let r2 <- global.rows(global.eval(r!));
+    let c1 <- global.columns(global.eval(l!));
+    count_grad(l!, gen, d![1..r1, 1..c1]);
+    count_grad(r!, gen, d![(r1 + 1)..(r1 + r2), 1..c1]);
   }
 }
 
@@ -31,7 +31,7 @@ final class MatrixStack(l:Expression<Real[_,_]>, r:Expression<Real[_,_]>) <
  */
 function stack(l:Expression<Real[_,_]>, r:Expression<Real[_,_]>) ->
     MatrixStack {
-  assert l.columns() == r.columns();
+  assert global.columns(l) == global.columns(r);
   return construct<MatrixStack>(l, r);
 }
 

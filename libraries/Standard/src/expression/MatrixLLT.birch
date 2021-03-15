@@ -4,19 +4,19 @@
 final class MatrixLLT(m:Expression<Real[_,_]>) <
     MatrixUnaryExpression<Expression<Real[_,_]>,LLT>(m) {
   override function doRows() -> Integer {
-    return m!.rows();
+    return global.rows(m!);
   }
   
   override function doColumns() -> Integer {
-    return m!.columns();
+    return global.columns(m!);
   }
 
   override function doCompute() {
-    x <- llt(m!.eval());
+    x <- llt(global.eval(m!));
   }
 
   override function doGrad(gen:Integer) {
-    m!.countGrad(gen, d!);  // just a factorization, so pass along
+    count_grad(m!, gen, d!);  // just a factorization, so pass along
   }
 }
 

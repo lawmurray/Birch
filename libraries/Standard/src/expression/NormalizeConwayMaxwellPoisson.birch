@@ -5,13 +5,13 @@ final class NormalizeConwayMaxwellPoisson(l:Expression<Real>,
     m:Expression<Real>, r:Expression<Integer>) < ScalarTernaryExpression<
     Expression<Real>,Expression<Real>,Expression<Integer>,Real>(l, m, r) {
   override function doCompute() {
-    x <- normalize_conway_maxwell_poisson(l!.eval(), m!.eval(), r!.eval());
+    x <- normalize_conway_maxwell_poisson(global.eval(l!), global.eval(m!), global.eval(r!));
   }
 
   override function doGrad(gen:Integer) {
-    let l1 <- this.l!.eval();
-    let m1 <- this.m!.eval();
-    let r1 <- this.r!.eval();
+    let l1 <- global.eval(l!);
+    let m1 <- global.eval(m!);
+    let r1 <- global.eval(r!);
     let dz1 <- 0.0;
     let dz2 <- 0.0;
     let dZ1 <- 0.0;
@@ -38,9 +38,9 @@ final class NormalizeConwayMaxwellPoisson(l:Expression<Real>,
         }
       }
     }
-    l!.countGrad(gen, d!*dZ1);
-    m!.countGrad(gen, d!*dZ2);
-    r!.countGrad(gen, 0.0);
+    count_grad(l!, gen, d!*dZ1);
+    count_grad(m!, gen, d!*dZ2);
+    count_grad(r!, gen, 0.0);
   }
 }
 

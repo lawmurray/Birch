@@ -4,17 +4,17 @@
 final class Pow(l:Expression<Real>, r:Expression<Real>) <
     ScalarBinaryExpression<Expression<Real>,Expression<Real>,Real>(l, r) {  
   override function doCompute() {
-    x <- pow(l!.eval(), r!.eval());
+    x <- pow(global.eval(l!), global.eval(r!));
   }
 
   override function doGrad(gen:Integer) {
-    let l1 <- l!.eval();
-    let r1 <- r!.eval();
-    l!.countGrad(gen, d!*r1*pow(l1, r1 - 1.0));
+    let l1 <- global.eval(l!);
+    let r1 <- global.eval(r!);
+    count_grad(l!, gen, d!*r1*pow(l1, r1 - 1.0));
     if l1 > 0.0 {
-      r!.countGrad(gen, d!*pow(l1, r1)*log(l1));
+      count_grad(r!, gen, d!*pow(l1, r1)*log(l1));
     } else {
-      r!.countGrad(gen, 0.0);
+      count_grad(r!, gen, 0.0);
     }
   }
 }

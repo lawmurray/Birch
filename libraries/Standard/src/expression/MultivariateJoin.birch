@@ -22,25 +22,25 @@ final class MultivariateJoin<Value>(m:Expression<Value>[_]) <
 
   override function doValue() -> Value[_] {
     return transform(m!, \(x:Expression<Value>) -> Value {
-        return x.value();
+        return global.value(x);
       });
   }
   
   override function doEval(gen:Integer) -> Value[_] {
     return transform(m!, \(x:Expression<Value>) -> Value {
-        return x.countEval(gen);
+        return count_eval(x, gen);
       });
   }
 
   override function doReval(gen:Integer) -> Value[_] {
     return transform(m!, \(x:Expression<Value>) -> Value {
-        return x.countReval(gen);
+        return count_reval(x, gen);
       });
   }
   
   override function doGrad(gen:Integer) {
     for_each(m!, d!, \(x:Expression<Value>, d:Value) {
-        x.countGrad(gen, d!);
+        count_grad(x, gen, d!);
       });
   }
 
@@ -70,5 +70,5 @@ function split<Value>(m:Expression<Value[_]>) -> Expression<Value>[_] {
 
   return vector(\(i:Integer) -> Expression<Value> {
         return construct<MultivariateElement<Value>>(z, i);
-      }, z.length());
+      }, global.length(z));
 }

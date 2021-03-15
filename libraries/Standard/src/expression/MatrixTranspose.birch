@@ -4,19 +4,19 @@
 final class MatrixTranspose(m:Expression<Real[_,_]>) <
     MatrixUnaryExpression<Expression<Real[_,_]>,Real[_,_]>(m) {
   override function doRows() -> Integer {
-    return m!.columns();
+    return global.columns(m!);
   }
   
   override function doColumns() -> Integer {
-    return m!.rows();
+    return global.rows(m!);
   }
 
   override function doCompute() {
-    x <- transpose(m!.eval());
+    x <- transpose(global.eval(m!));
   }
 
   override function doGrad(gen:Integer) {
-    m!.countGrad(gen, transpose(d!));
+    count_grad(m!, gen, transpose(d!));
   }
 }
 

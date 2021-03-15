@@ -4,7 +4,7 @@
 final class LogChoose(l:Expression<Integer>, r:Expression<Integer>) <
     ScalarBinaryExpression<Expression<Integer>,Expression<Integer>,Real>(l, r) {  
   override function doCompute() {
-    x <- lchoose(l!.eval(), r!.eval());
+    x <- lchoose(global.eval(l!), global.eval(r!));
   }
   
   override function doGrad(gen:Integer) {

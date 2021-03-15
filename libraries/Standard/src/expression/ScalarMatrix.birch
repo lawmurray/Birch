@@ -4,11 +4,11 @@
 final class ScalarMatrix<Value>(m:Expression<Value[_,_]>) <
     ScalarUnaryExpression<Expression<Value[_,_]>,Value>(m) {
   override function doCompute() {
-    x <- scalar(m!.eval());
+    x <- scalar(global.eval(m!));
   }
 
   override function doGrad(gen:Integer) {
-    m!.countGrad(gen, [[d]]);
+    count_grad(m!, gen, [[d]]);
   }
 }
 

@@ -18,22 +18,22 @@ abstract class MatrixBinaryExpression<Left,Right,Value>(l:Left, r:Right) <
   r:Right? <- r;
 
   final override function doDepth() -> Integer {
-    return max(l!.depth(), r!.depth()) + 1;
+    return max(global.depth(l!), global.depth(r!)) + 1;
   }
 
   final override function doValue() {
-    l!.value();
-    r!.value();
+    global.value(l!);
+    global.value(r!);
   }
 
   final override function doEval(gen:Integer) {
-    l!.countEval(gen);
-    r!.countEval(gen);
+    count_eval(l!, gen);
+    count_eval(r!, gen);
   }
 
   final override function doReval(gen:Integer) {
-    l!.countReval(gen);
-    r!.countReval(gen);
+    count_reval(l!, gen);
+    count_reval(r!, gen);
   }
 
   final override function doConstant() {

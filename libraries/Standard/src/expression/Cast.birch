@@ -3,11 +3,11 @@
  */
 final class Cast<From,To>(m:From) < ScalarUnaryExpression<From,To>(m) {
   override function doCompute() {
-    x <- To?(m!.eval())!;
+    x <- To?(global.eval(m!))!;
   }
 
   override function doGrad(gen:Integer) {
-    m!.countGrad(gen, d!);
+    count_grad(m!, gen, d!);
   }
 }
 

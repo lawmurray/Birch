@@ -4,16 +4,16 @@
 final class CopySign(l:Expression<Real>, r:Expression<Real>) <
     ScalarBinaryExpression<Expression<Real>,Expression<Real>,Real>(l, r) {  
   override function doCompute() {
-    x <- copysign(l!.eval(), r!.eval());
+    x <- copysign(global.eval(l!), global.eval(r!));
   }
   
   override function doGrad(gen:Integer) {
-    if eval() == l!.eval() {
-      l!.countGrad(gen, d!);
+    if eval() == global.eval(l!) {
+      count_grad(l!, gen, d!);
     } else {
-      l!.countGrad(gen, -d!);
+      count_grad(l!, gen, -d!);
     }
-    r!.countGrad(gen, 0.0);
+    count_grad(r!, gen, 0.0);
   }
 }
 

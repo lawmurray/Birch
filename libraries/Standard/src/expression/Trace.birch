@@ -4,11 +4,11 @@
 final class Trace<Argument>(m:Argument) <
     ScalarUnaryExpression<Argument,Real>(m) {
   override function doCompute() {
-    x <- trace(m!.eval());
+    x <- trace(global.eval(m!));
   }
 
   override function doGrad(gen:Integer) {
-    m!.countGrad(gen, diagonal(d!, m!.rows()));
+    count_grad(m!, gen, diagonal(d!, global.rows(m!)));
   }
 }
 

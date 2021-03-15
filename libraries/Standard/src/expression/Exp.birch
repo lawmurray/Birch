@@ -4,11 +4,11 @@
 final class Exp(m:Expression<Real>) <
     ScalarUnaryExpression<Expression<Real>,Real>(m) {
   override function doCompute() {
-    x <- exp(m!.eval());
+    x <- exp(global.eval(m!));
   }
 
   override function doGrad(gen:Integer) {
-    m!.countGrad(gen, d!*eval());
+    count_grad(m!, gen, d!*eval());
   }
 }
 

@@ -4,11 +4,11 @@
 final class Log1p(m:Expression<Real>) <
     ScalarUnaryExpression<Expression<Real>,Real>(m) {
   override function doCompute() {
-    x <- log1p(m!.eval());
+    x <- log1p(global.eval(m!));
   }
 
   override function doGrad(gen:Integer) {
-    m!.countGrad(gen, d!/(1.0 + m!.eval()));
+    count_grad(m!, gen, d!/(1.0 + global.eval(m!)));
   }
 }
 

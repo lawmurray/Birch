@@ -5,23 +5,23 @@ final class MatrixPack(l:Expression<Real[_,_]>, r:Expression<Real[_,_]>) <
     MatrixBinaryExpression<Expression<Real[_,_]>,Expression<Real[_,_]>,
     Real[_,_]>(l, r) {  
   override function doRows() -> Integer {
-    return l!.rows();
+    return global.rows(l!);
   }
   
   override function doColumns() -> Integer {
-    return l!.columns() + r!.columns();
+    return global.columns(l!) + global.columns(r!);
   }
 
   override function doCompute() {
-    x <- pack(l!.eval(), r!.eval());
+    x <- pack(global.eval(l!), global.eval(r!));
   }
 
   override function doGrad(gen:Integer) {
-    let r1 <- global.rows(l!.eval());
-    let c1 <- global.columns(l!.eval());
-    let c2 <- global.columns(r!.eval());
-    l!.countGrad(gen, d![1..r1, 1..c1]);
-    r!.countGrad(gen, d![1..r1, (c1 + 1)..(c1 + c2)]);
+    let r1 <- global.rows(global.eval(l!));
+    let c1 <- global.columns(global.eval(l!));
+    let c2 <- global.columns(global.eval(r!));
+    count_grad(l!, gen, d![1..r1, 1..c1]);
+    count_grad(r!, gen, d![1..r1, (c1 + 1)..(c1 + c2)]);
   }
 }
 

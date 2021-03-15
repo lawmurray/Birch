@@ -4,20 +4,20 @@
 final class MatrixRankUpdate<Right>(l:Expression<LLT>, r:Right) <
     MatrixBinaryExpression<Expression<LLT>,Right,LLT>(l, r) {  
   override function doRows() -> Integer {
-    return l!.rows();
+    return global.rows(l!);
   }
   
   override function doColumns() -> Integer {
-    return r!.columns();
+    return global.columns(r!);
   }
 
   override function doCompute() {
-    x <- rank_update(l!.eval(), r!.eval());
+    x <- rank_update(global.eval(l!), global.eval(r!));
   }
 
   override function doGrad(gen:Integer) {
-    l!.countGrad(gen, d!);
-    r!.countGrad(gen, (d! + transpose(d!))*r!.eval());
+    count_grad(l!, gen, d!);
+    count_grad(r!, gen, (d! + transpose(d!))*global.eval(r!));
   }
 }
 
@@ -26,7 +26,7 @@ final class MatrixRankUpdate<Right>(l:Expression<LLT>, r:Right) <
  */
 function rank_update(l:Expression<LLT>, r:Expression<Real[_]>) ->
     MatrixRankUpdate<Expression<Real[_]>> {
-  assert l.columns() == r.rows();
+  assert global.columns(l) == global.rows(r);
   return construct<MatrixRankUpdate<Expression<Real[_]>>>(l, r);
 }
 
@@ -51,7 +51,7 @@ function rank_update(l:Expression<LLT>, r:Real[_]) ->
  */
 function rank_update(l:Expression<LLT>, r:Expression<Real[_,_]>) ->
     MatrixRankUpdate<Expression<Real[_,_]>> {
-  assert l.columns() == r.rows();
+  assert global.columns(l) == global.rows(r);
   return construct<MatrixRankUpdate<Expression<Real[_,_]>>>(l, r);
 }
 

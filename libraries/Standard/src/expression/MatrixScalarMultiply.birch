@@ -5,20 +5,20 @@ final class MatrixScalarMultiply(l:Expression<Real>,
     r:Expression<Real[_,_]>) < MatrixBinaryExpression<Expression<Real>,
     Expression<Real[_,_]>,Real[_,_]>(l, r) {  
   override function doRows() -> Integer {
-    return r!.rows();
+    return global.rows(r!);
   }
   
   override function doColumns() -> Integer {
-    return r!.columns();
+    return global.columns(r!);
   }
 
   override function doCompute() {
-    x <- l!.eval()*r!.eval();
+    x <- global.eval(l!)*global.eval(r!);
   }
 
   override function doGrad(gen:Integer) {
-    l!.countGrad(gen, trace(d!*transpose(r!.eval())));
-    r!.countGrad(gen, l!.eval()*d!);
+    count_grad(l!, gen, trace(d!*transpose(global.eval(r!))));
+    count_grad(r!, gen, global.eval(l!)*d!);
   }
 
   override function graftLinearMatrixGaussian() -> TransformLinearMatrix<MatrixGaussian>? {
@@ -26,10 +26,10 @@ final class MatrixScalarMultiply(l:Expression<Real>,
     if !hasValue() {
       x1:MatrixGaussian?;
     
-      if (t <- r!.graftLinearMatrixGaussian())? {
+      if (t <- graft_linear_matrix_gaussian(r!))? {
         t!.multiply(l!);
-      } else if (x1 <- r!.graftMatrixGaussian())? {
-        t <- TransformLinearMatrix<MatrixGaussian>(diagonal(l!, r!.rows()), x1!);
+      } else if (x1 <- graft_matrix_gaussian(r!))? {
+        t <- TransformLinearMatrix<MatrixGaussian>(diagonal(l!, global.rows(r!)), x1!);
       }
     }
     return t;
@@ -41,10 +41,10 @@ final class MatrixScalarMultiply(l:Expression<Real>,
     if !hasValue() {
       x1:MatrixNormalInverseWishart?;
 
-      if (t <- r!.graftLinearMatrixNormalInverseWishart(compare))? {
+      if (t <- graft_linear_matrix_normal_inverse_wishart(r!, compare))? {
         t!.multiply(l!);
-      } else if (x1 <- r!.graftMatrixNormalInverseWishart(compare))? {
-        t <- TransformLinearMatrix<MatrixNormalInverseWishart>(diagonal(l!, r!.rows()), x1!);
+      } else if (x1 <- graft_matrix_normal_inverse_wishart(r!, compare))? {
+        t <- TransformLinearMatrix<MatrixNormalInverseWishart>(diagonal(l!, global.rows(r!)), x1!);
       }
     }
     return t;

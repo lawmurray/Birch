@@ -4,12 +4,12 @@
 final class Multiply<Left,Right,Value>(l:Left, r:Right) <
     ScalarBinaryExpression<Left,Right,Value>(l, r) {  
   override function doCompute() {
-    x <- l!.eval()*r!.eval();
+    x <- global.eval(l!)*global.eval(r!);
   }
 
   override function doGrad(gen:Integer) {
-    l!.countGrad(gen, d!*r!.eval());
-    r!.countGrad(gen, d!*l!.eval());
+    count_grad(l!, gen, d!*global.eval(r!));
+    count_grad(r!, gen, d!*global.eval(l!));
   }
 
   override function graftScaledGamma() -> TransformLinear<Gamma>? {
@@ -17,13 +17,13 @@ final class Multiply<Left,Right,Value>(l:Left, r:Right) <
     if !hasValue() {
       x1:Gamma?;
     
-      if (t <- l!.graftScaledGamma())? {
+      if (t <- graft_scaled_gamma(l!))? {
         t!.multiply(Real(r!));
-      } else if (t <- r!.graftScaledGamma())? {
+      } else if (t <- graft_scaled_gamma(r!))? {
         t!.multiply(Real(l!));
-      } else if (x1 <- l!.graftGamma())? {
+      } else if (x1 <- graft_gamma(l!))? {
         t <- TransformLinear<Gamma>(Real(r!), x1!);
-      } else if (x1 <- r!.graftGamma())? {
+      } else if (x1 <- graft_gamma(r!))? {
         t <- TransformLinear<Gamma>(Real(l!), x1!);
       }
     }
@@ -35,13 +35,13 @@ final class Multiply<Left,Right,Value>(l:Left, r:Right) <
     if !hasValue() {
       x1:Gaussian?;
     
-      if (t <- l!.graftLinearGaussian())? {
+      if (t <- graft_linear_gaussian(l!))? {
         t!.multiply(Real(r!));
-      } else if (t <- r!.graftLinearGaussian())? {
+      } else if (t <- graft_linear_gaussian(r!))? {
         t!.multiply(Real(l!));
-      } else if (x1 <- l!.graftGaussian())? {
+      } else if (x1 <- graft_gaussian(l!))? {
         t <- TransformLinear<Gaussian>(Real(r!), x1!);
-      } else if (x1 <- r!.graftGaussian())? {
+      } else if (x1 <- graft_gaussian(r!))? {
         t <- TransformLinear<Gaussian>(Real(l!), x1!);
       }
     }
@@ -52,9 +52,9 @@ final class Multiply<Left,Right,Value>(l:Left, r:Right) <
       TransformDot<MultivariateGaussian>? {
     t:TransformDot<MultivariateGaussian>?;
     if !hasValue() {
-      if (t <- l!.graftDotMultivariateGaussian())? {
+      if (t <- graft_dot_multivariate_gaussian(l!))? {
         t!.multiply(Real(r!));
-      } else if (t <- r!.graftDotMultivariateGaussian())? {
+      } else if (t <- graft_dot_multivariate_gaussian(r!))? {
         t!.multiply(Real(l!));
       }
     }
@@ -67,13 +67,13 @@ final class Multiply<Left,Right,Value>(l:Left, r:Right) <
     if !hasValue() {
       x1:NormalInverseGamma?;
     
-      if (t <- l!.graftLinearNormalInverseGamma(compare))? {
+      if (t <- graft_linear_normal_inverse_gamma(l!, compare))? {
         t!.multiply(Real(r!));
-      } else if (t <- r!.graftLinearNormalInverseGamma(compare))? {
+      } else if (t <- graft_linear_normal_inverse_gamma(r!, compare))? {
         t!.multiply(Real(l!));
-      } else if (x1 <- l!.graftNormalInverseGamma(compare))? {
+      } else if (x1 <- graft_normal_inverse_gamma(l!, compare))? {
         t <- TransformLinear<NormalInverseGamma>(Real(r!), x1!);
-      } else if (x1 <- r!.graftNormalInverseGamma(compare))? {
+      } else if (x1 <- graft_normal_inverse_gamma(r!, compare))? {
         t <- TransformLinear<NormalInverseGamma>(Real(l!), x1!);
       }
     }
@@ -84,9 +84,9 @@ final class Multiply<Left,Right,Value>(l:Left, r:Right) <
       TransformDot<MultivariateNormalInverseGamma>? {
     t:TransformDot<MultivariateNormalInverseGamma>?;
     if !hasValue() {
-      if (t <- l!.graftDotMultivariateNormalInverseGamma(compare))? {
+      if (t <- graft_dot_multivariate_normal_inverse_gamma(l!, compare))? {
         t!.multiply(Real(r!));
-      } else if (t <- r!.graftDotMultivariateNormalInverseGamma(compare))? {
+      } else if (t <- graft_dot_multivariate_normal_inverse_gamma(r!, compare))? {
         t!.multiply(Real(l!));
       }
     }
@@ -99,9 +99,9 @@ final class Multiply<Left,Right,Value>(l:Left, r:Right) <
       t <- graftBoundedDiscrete();
       if !t? {
         x1:Discrete?;
-        if (x1 <- l!.graftDiscrete())? {
+        if (x1 <- graft_discrete(l!))? {
           t <- LinearDiscrete(Integer(r!), x1!, box(0));
-        } else if (x1 <- r!.graftDiscrete())? {
+        } else if (x1 <- graft_discrete(r!))? {
           t <- LinearDiscrete(Integer(l!), x1!, box(0));
         }
       }
@@ -112,8 +112,8 @@ final class Multiply<Left,Right,Value>(l:Left, r:Right) <
   override function graftBoundedDiscrete() -> BoundedDiscrete? {
     t:BoundedDiscrete?;
     if !hasValue() {
-      let l1 <- l!.graftBoundedDiscrete();
-      let r1 <- r!.graftBoundedDiscrete();
+      let l1 <- graft_bounded_discrete(l!);
+      let r1 <- graft_bounded_discrete(r!);
       if l1? {
         t <- LinearBoundedDiscrete(Integer(r!), l1!, box(0));
       } else if r1? {

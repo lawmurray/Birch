@@ -9,16 +9,16 @@ final class LogGammaP(m:Expression<Real>, r:Integer) <
   r:Integer <- r;
     
   override function doCompute() {
-    x <- lgamma(m!.eval(), r);
+    x <- lgamma(global.eval(m!), r);
   }
 
   override function doGrad(gen:Integer) {
-    let x <- m!.eval();
+    let x <- global.eval(m!);
     let y <- 0.0;
     for i in 1..r {
       y <- y + digamma(x + 0.5*(1 - i));
     }
-    m!.countGrad(gen, d!*y);
+    count_grad(m!, gen, d!*y);
   }
 }
 

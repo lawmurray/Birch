@@ -4,15 +4,15 @@
 final class LogBeta(l:Expression<Real>, r:Expression<Real>) <
     ScalarBinaryExpression<Expression<Real>,Expression<Real>,Real>(l, r) {  
   override function doCompute() {
-    x <- lbeta(l!.eval(), r!.eval());
+    x <- lbeta(global.eval(l!), global.eval(r!));
   }
   
   override function doGrad(gen:Integer) {
-    let l <- this.l!.eval();
-    let r <- this.r!.eval();
+    let l <- global.eval(this.l!);
+    let r <- global.eval(this.r!);
     let lr <- digamma(l + r);
-    this.l!.countGrad(gen, d!*(digamma(l) + lr));
-    this.r!.countGrad(gen, d!*(digamma(r) + lr));
+    count_grad(this.l!, gen, d!*(digamma(l) + lr));
+    count_grad(this.r!, gen, d!*(digamma(r) + lr));
   }
 }
 

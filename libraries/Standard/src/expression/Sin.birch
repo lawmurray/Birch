@@ -4,11 +4,11 @@
 final class Sin(m:Expression<Real>) <
     ScalarUnaryExpression<Expression<Real>,Real>(m) {
   override function doCompute() {
-    x <- sin(m!.eval());
+    x <- sin(global.eval(m!));
   }
 
   override function doGrad(gen:Integer) {
-    m!.countGrad(gen, d!*cos(m!.eval()));
+    count_grad(m!, gen, d!*cos(global.eval(m!)));
   }
 }
 

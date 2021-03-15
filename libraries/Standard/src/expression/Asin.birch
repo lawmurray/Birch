@@ -4,11 +4,11 @@
 final class Asin(m:Expression<Real>) <
     ScalarUnaryExpression<Expression<Real>,Real>(m) {
   override function doCompute() {
-    x <- asin(m!.eval());
+    x <- asin(global.eval(m!));
   }
 
   override function doGrad(gen:Integer) {
-    m!.countGrad(gen, d!/sqrt(1.0 - pow(m!.eval(), 2.0)));
+    count_grad(m!, gen, d!/sqrt(1.0 - pow(global.eval(m!), 2.0)));
   }
 }
 

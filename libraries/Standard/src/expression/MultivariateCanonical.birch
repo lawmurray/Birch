@@ -4,15 +4,15 @@
 final class MultivariateCanonical(m:Expression<Real[_]>) <
     MultivariateUnaryExpression<Expression<Real[_]>,Real[_]>(m) {
   override function doRows() -> Integer {
-    return m!.rows();
+    return global.rows(m!);
   }
 
   override function doCompute() {
-    x <- m!.eval();
+    x <- global.eval(m!);
   }
 
   override function doGrad(gen:Integer) {
-    m!.countGrad(gen, d!);
+    count_grad(m!, gen, d!);
   }
 }
 

@@ -5,16 +5,16 @@ final class MultivariateScalarMultiply(l:Expression<Real>,
     r:Expression<Real[_]>) < MultivariateBinaryExpression<Expression<Real>,
     Expression<Real[_]>,Real[_]>(l, r) {  
   override function doRows() -> Integer {
-    return r!.rows();
+    return global.rows(r!);
   }
 
   override function doCompute() {
-    x <- l!.eval()*r!.eval();
+    x <- global.eval(l!)*global.eval(r!);
   }
 
   override function doGrad(gen:Integer) {
-    l!.countGrad(gen, dot(d!, r!.eval()));
-    r!.countGrad(gen, l!.eval()*d!);
+    count_grad(l!, gen, dot(d!, global.eval(r!)));
+    count_grad(r!, gen, global.eval(l!)*d!);
   }
 
   override function graftLinearMultivariateGaussian() ->
@@ -23,10 +23,10 @@ final class MultivariateScalarMultiply(l:Expression<Real>,
     if !hasValue() {
       x1:MultivariateGaussian?;
     
-      if (t <- r!.graftLinearMultivariateGaussian())? {
+      if (t <- graft_linear_multivariate_gaussian(r!))? {
         t!.multiply(l!);
-      } else if (x1 <- r!.graftMultivariateGaussian())? {
-        t <- TransformLinearMultivariate<MultivariateGaussian>(diagonal(l!, r!.rows()), x1!);
+      } else if (x1 <- graft_multivariate_gaussian(r!))? {
+        t <- TransformLinearMultivariate<MultivariateGaussian>(diagonal(l!, global.rows(r!)), x1!);
       }
     }
     return t;
@@ -38,10 +38,10 @@ final class MultivariateScalarMultiply(l:Expression<Real>,
     if !hasValue() {
       x1:MultivariateNormalInverseGamma?;
 
-      if (t <- r!.graftLinearMultivariateNormalInverseGamma(compare))? {
+      if (t <- graft_linear_multivariate_normal_inverse_gamma(r!, compare))? {
         t!.multiply(l!);
-      } else if (x1 <- r!.graftMultivariateNormalInverseGamma(compare))? {
-        t <- TransformLinearMultivariate<MultivariateNormalInverseGamma>(diagonal(l!, r!.rows()), x1!);
+      } else if (x1 <- graft_multivariate_normal_inverse_gamma(r!, compare))? {
+        t <- TransformLinearMultivariate<MultivariateNormalInverseGamma>(diagonal(l!, global.rows(r!)), x1!);
       }
     }
     return t;

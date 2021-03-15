@@ -803,7 +803,7 @@ abstract class Expression<Value> {
 }
 
 function length<Type>(x:Type) -> Integer {
-  return x.rows();
+  return x.length();
 }
 
 function size<Type>(x:Type) -> Integer {
@@ -908,12 +908,12 @@ function graft_linear_gaussian<Type>(x:Type) -> TransformLinear<Gaussian>? {
 
 function graft_normal_inverse_gamma<Type>(x:Type, compare:Distribution<Real>) ->
     NormalInverseGamma? {
-  return x.graftNormalInverseGamma();
+  return x.graftNormalInverseGamma(compare);
 }
 
 function graft_linear_normal_inverse_gamma<Type>(x:Type, compare:Distribution<Real>) ->
     TransformLinear<NormalInverseGamma>? {
-  return x.graftLinearNormalInverseGamma();
+  return x.graftLinearNormalInverseGamma(compare);
 }
 
 function graft_multivariate_gaussian<Type>(x:Type) -> MultivariateGaussian? {

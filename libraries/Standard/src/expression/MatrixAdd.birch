@@ -5,20 +5,20 @@ final class MatrixAdd(l:Expression<Real[_,_]>, r:Expression<Real[_,_]>) <
     MatrixBinaryExpression<Expression<Real[_,_]>,Expression<Real[_,_]>,
     Real[_,_]>(l, r) {  
   override function doRows() -> Integer {
-    return l!.rows();
+    return global.rows(l!);
   }
   
   override function doColumns() -> Integer {
-    return l!.columns();
+    return global.columns(l!);
   }
   
   override function doCompute() {
-    x <- l!.eval() + r!.eval();
+    x <- global.eval(l!) + global.eval(r!);
   }
 
   override function doGrad(gen:Integer) {
-    l!.countGrad(gen, d!);
-    r!.countGrad(gen, d!);
+    count_grad(l!, gen, d!);
+    count_grad(r!, gen, d!);
   }
 
   override function graftLinearMatrixGaussian() ->
@@ -27,14 +27,14 @@ final class MatrixAdd(l:Expression<Real[_,_]>, r:Expression<Real[_,_]>) <
     if !hasValue() {
       x1:MatrixGaussian?;
 
-      if (t <- l!.graftLinearMatrixGaussian())? {
+      if (t <- graft_linear_matrix_gaussian(l!))? {
         t!.add(r!);
-      } else if (t <- r!.graftLinearMatrixGaussian())? {
+      } else if (t <- graft_linear_matrix_gaussian(r!))? {
         t!.add(l!);
-      } else if (x1 <- l!.graftMatrixGaussian())? {
-        t <- TransformLinearMatrix<MatrixGaussian>(box(identity(r!.rows())), x1!, r!);
-      } else if (x1 <- r!.graftMatrixGaussian())? {
-        t <- TransformLinearMatrix<MatrixGaussian>(box(identity(r!.rows())), x1!, l!);
+      } else if (x1 <- graft_matrix_gaussian(l!))? {
+        t <- TransformLinearMatrix<MatrixGaussian>(box(identity(global.rows(r!))), x1!, r!);
+      } else if (x1 <- graft_matrix_gaussian(r!))? {
+        t <- TransformLinearMatrix<MatrixGaussian>(box(identity(global.rows(r!))), x1!, l!);
       }
     }
     return t;
@@ -46,14 +46,14 @@ final class MatrixAdd(l:Expression<Real[_,_]>, r:Expression<Real[_,_]>) <
     if !hasValue() {
       x1:MatrixNormalInverseWishart?;
 
-      if (t <- l!.graftLinearMatrixNormalInverseWishart(compare))? {
+      if (t <- graft_linear_matrix_normal_inverse_wishart(l!, compare))? {
         t!.add(r!);
-      } else if (t <- r!.graftLinearMatrixNormalInverseWishart(compare))? {
+      } else if (t <- graft_linear_matrix_normal_inverse_wishart(r!, compare))? {
         t!.add(l!);
-      } else if (x1 <- l!.graftMatrixNormalInverseWishart(compare))? {
-        t <- TransformLinearMatrix<MatrixNormalInverseWishart>(box(identity(l!.rows())), x1!, r!);
-      } else if (x1 <- r!.graftMatrixNormalInverseWishart(compare))? {
-        t <- TransformLinearMatrix<MatrixNormalInverseWishart>(box(identity(r!.rows())), x1!, l!);
+      } else if (x1 <- graft_matrix_normal_inverse_wishart(l!, compare))? {
+        t <- TransformLinearMatrix<MatrixNormalInverseWishart>(box(identity(global.rows(l!))), x1!, r!);
+      } else if (x1 <- graft_matrix_normal_inverse_wishart(r!, compare))? {
+        t <- TransformLinearMatrix<MatrixNormalInverseWishart>(box(identity(global.rows(r!))), x1!, l!);
       }
     }
     return t;
@@ -64,8 +64,8 @@ final class MatrixAdd(l:Expression<Real[_,_]>, r:Expression<Real[_,_]>) <
  * Lazy matrix addition.
  */
 operator (l:Expression<Real[_,_]> + r:Expression<Real[_,_]>) -> MatrixAdd {
-  assert l.rows() == r.rows();
-  assert l.columns() == r.columns();
+  assert global.rows(l) == global.rows(r);
+  assert global.columns(l) == global.columns(r);
   return construct<MatrixAdd>(l, r);
 }
 

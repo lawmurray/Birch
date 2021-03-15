@@ -14,11 +14,11 @@ final class MatrixElement<Value>(m:Expression<Value[_,_]>, i:Integer,
   j:Integer <- j;
   
   override function doCompute() {
-    x <- m!.eval()[i,j];
+    x <- global.eval(m!)[i,j];
   }
 
   override function doGrad(gen:Integer) {
-    m!.countGrad(gen, d!, i, j);
+    count_grad(m!, gen, d!, i, j);
   }
 }
 

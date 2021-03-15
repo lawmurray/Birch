@@ -5,16 +5,16 @@ final class MultivariateAdd(l:Expression<Real[_]>, r:Expression<Real[_]>) <
     MultivariateBinaryExpression<Expression<Real[_]>,Expression<Real[_]>,
     Real[_]>(l, r) {  
   override function doRows() -> Integer {
-    return l!.rows();
+    return global.rows(l!);
   }
 
   override function doCompute() {
-    x <- l!.eval() + r!.eval();
+    x <- global.eval(l!) + global.eval(r!);
   }
 
   override function doGrad(gen:Integer) {
-    l!.countGrad(gen, d!);
-    r!.countGrad(gen, d!);
+    count_grad(l!, gen, d!);
+    count_grad(r!, gen, d!);
   }
 
   override function graftLinearMultivariateGaussian() ->
@@ -23,16 +23,16 @@ final class MultivariateAdd(l:Expression<Real[_]>, r:Expression<Real[_]>) <
     if !hasValue() {
       x1:MultivariateGaussian?;
 
-      if (t <- l!.graftLinearMultivariateGaussian())? {
+      if (t <- graft_linear_multivariate_gaussian(l!))? {
         t!.add(r!);
-      } else if (t <- r!.graftLinearMultivariateGaussian())? {
+      } else if (t <- graft_linear_multivariate_gaussian(r!))? {
         t!.add(l!);
-      } else if (x1 <- l!.graftMultivariateGaussian())? {
+      } else if (x1 <- graft_multivariate_gaussian(l!))? {
         t <- TransformLinearMultivariate<MultivariateGaussian>(
-            box(identity(r!.rows())), x1!, r!);
-      } else if (x1 <- r!.graftMultivariateGaussian())? {
+            box(identity(global.rows(r!))), x1!, r!);
+      } else if (x1 <- graft_multivariate_gaussian(r!))? {
         t <- TransformLinearMultivariate<MultivariateGaussian>(
-            box(identity(r!.rows())), x1!, l!);
+            box(identity(global.rows(r!))), x1!, l!);
       }
     }
     return t;
@@ -44,16 +44,16 @@ final class MultivariateAdd(l:Expression<Real[_]>, r:Expression<Real[_]>) <
     if !hasValue() {
       x1:MultivariateNormalInverseGamma?;
 
-      if (t <- l!.graftLinearMultivariateNormalInverseGamma(compare))? {
+      if (t <- graft_linear_multivariate_normal_inverse_gamma(l!, compare))? {
         t!.add(r!);
-      } else if (t <- r!.graftLinearMultivariateNormalInverseGamma(compare))? {
+      } else if (t <- graft_linear_multivariate_normal_inverse_gamma(r!, compare))? {
         t!.add(l!);
-      } else if (x1 <- l!.graftMultivariateNormalInverseGamma(compare))? {
+      } else if (x1 <- graft_multivariate_normal_inverse_gamma(l!, compare))? {
         t <- TransformLinearMultivariate<MultivariateNormalInverseGamma>(
-            box(identity(r!.rows())), x1!, r!);
-      } else if (x1 <- r!.graftMultivariateNormalInverseGamma(compare))? {
+            box(identity(global.rows(r!))), x1!, r!);
+      } else if (x1 <- graft_multivariate_normal_inverse_gamma(r!, compare))? {
         t <- TransformLinearMultivariate<MultivariateNormalInverseGamma>(
-            box(identity(r!.rows())), x1!, l!);
+            box(identity(global.rows(r!))), x1!, l!);
       }
     }
     return t;
@@ -63,9 +63,9 @@ final class MultivariateAdd(l:Expression<Real[_]>, r:Expression<Real[_]>) <
       TransformDotMultivariate<MatrixNormalInverseWishart>? {
     t:TransformDotMultivariate<MatrixNormalInverseWishart>?;
     if !hasValue() {
-      if (t <- l!.graftDotMatrixNormalInverseWishart(compare))? {
+      if (t <- graft_dot_matrix_normal_inverse_wishart(l!, compare))? {
         t!.add(r!);
-      } else if (t <- r!.graftDotMatrixNormalInverseWishart(compare))? {
+      } else if (t <- graft_dot_matrix_normal_inverse_wishart(r!, compare))? {
         t!.add(l!);
       }
     }
@@ -77,7 +77,7 @@ final class MultivariateAdd(l:Expression<Real[_]>, r:Expression<Real[_]>) <
  * Lazy multivariate add.
  */
 operator (l:Expression<Real[_]> + r:Expression<Real[_]>) -> MultivariateAdd {
-  assert l.rows() == r.rows();
+  assert global.rows(l) == global.rows(r);
   return construct<MultivariateAdd>(l, r);
 }
 

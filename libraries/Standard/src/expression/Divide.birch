@@ -4,21 +4,21 @@
 final class Divide(l:Expression<Real>, r:Expression<Real>) <
     ScalarBinaryExpression<Expression<Real>,Expression<Real>,Real>(l, r) {  
   override function doCompute() {
-    x <- l!.eval()/r!.eval();
+    x <- global.eval(l!)/global.eval(r!);
   }
 
   override function doGrad(gen:Integer) {
-    l!.countGrad(gen, d!/r!.eval());
-    r!.countGrad(gen, -d!*l!.eval()/pow(r!.eval(), 2.0));
+    count_grad(l!, gen, d!/global.eval(r!));
+    count_grad(r!, gen, -d!*global.eval(l!)/pow(global.eval(r!), 2.0));
   }
 
   override function graftLinearGaussian() -> TransformLinear<Gaussian>? {
     t:TransformLinear<Gaussian>?;
     if !hasValue() {
       l1:Gaussian?;
-      if (t <- l!.graftLinearGaussian())? {
+      if (t <- graft_linear_gaussian(l!))? {
         t!.divide(r!);
-      } else if (l1 <- l!.graftGaussian())? {
+      } else if (l1 <- graft_gaussian(l!))? {
         t <- TransformLinear<Gaussian>(1.0/r!, l1!);
       }
     }
@@ -29,7 +29,7 @@ final class Divide(l:Expression<Real>, r:Expression<Real>) <
       TransformDot<MultivariateGaussian>? {
     t:TransformDot<MultivariateGaussian>?;
     if !hasValue() {
-      if (t <- l!.graftDotMultivariateGaussian())? {
+      if (t <- graft_dot_multivariate_gaussian(l!))? {
         t!.divide(r!);
       }
     }
@@ -41,9 +41,9 @@ final class Divide(l:Expression<Real>, r:Expression<Real>) <
     t:TransformLinear<NormalInverseGamma>?;
     if !hasValue() {
       l1:NormalInverseGamma?;
-      if (t <- l!.graftLinearNormalInverseGamma(compare))? {
+      if (t <- graft_linear_normal_inverse_gamma(l!, compare))? {
         t!.divide(r!);
-      } else if (l1 <- l!.graftNormalInverseGamma(compare))? {
+      } else if (l1 <- graft_normal_inverse_gamma(l!, compare))? {
         t <- TransformLinear<NormalInverseGamma>(1.0/r!, l1!);
       }
     }
@@ -54,7 +54,7 @@ final class Divide(l:Expression<Real>, r:Expression<Real>) <
       TransformDot<MultivariateNormalInverseGamma>? {
     t:TransformDot<MultivariateNormalInverseGamma>?;
     if !hasValue() {
-      if (t <- l!.graftDotMultivariateNormalInverseGamma(compare))? {
+      if (t <- graft_dot_multivariate_normal_inverse_gamma(l!, compare))? {
         t!.divide(r!);
       }
     }
@@ -65,9 +65,9 @@ final class Divide(l:Expression<Real>, r:Expression<Real>) <
     t:TransformLinear<Gamma>?;
     if !hasValue() {
       l1:Gamma?;
-      if (t <- l!.graftScaledGamma())? {
+      if (t <- graft_scaled_gamma(l!))? {
         t!.divide(r!);
-      } else if (l1 <- l!.graftGamma())? {
+      } else if (l1 <- graft_gamma(l!))? {
         t <- TransformLinear<Gamma>(1.0/r!, l1!);
       }
     }

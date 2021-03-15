@@ -4,19 +4,19 @@
 final class MultivariateSolve<Left,LeftValue>(l:Left, r:Expression<Real[_]>) <
     MultivariateBinaryExpression<Left,Expression<Real[_]>,Real[_]>(l, r) {  
   override function doRows() -> Integer {
-    return r!.rows();
+    return global.rows(r!);
   }
   
   override function doCompute() {
-    x <- solve(l!.eval(), r!.eval());
+    x <- solve(global.eval(l!), global.eval(r!));
   }
 
   override function doGrad(gen:Integer) {
-    let l1 <- l!.eval();
-    let r1 <- r!.eval();
+    let l1 <- global.eval(l!);
+    let r1 <- global.eval(r!);
     let z <- solve(transpose(l1), d!);
-    l!.countGrad(gen, outer(-z, solve(l1, r1)));
-    r!.countGrad(gen, z);
+    count_grad(l!, gen, outer(-z, solve(l1, r1)));
+    count_grad(r!, gen, z);
   }
 }
 
@@ -25,7 +25,7 @@ final class MultivariateSolve<Left,LeftValue>(l:Left, r:Expression<Real[_]>) <
  */
 function solve(l:Expression<Real[_,_]>, r:Expression<Real[_]>) ->
     MultivariateSolve<Expression<Real[_,_]>,Real[_,_]> {
-  assert l.columns() == r.rows();
+  assert global.columns(l) == global.rows(r);
   return construct<MultivariateSolve<Expression<Real[_,_]>,Real[_,_]>>(l, r);
 }
 
@@ -50,7 +50,7 @@ function solve(l:Expression<Real[_,_]>, r:Real[_]) ->
  */
 function solve(l:Expression<LLT>, r:Expression<Real[_]>) ->
     MultivariateSolve<Expression<LLT>,LLT> {
-  assert l.columns() == r.rows();
+  assert global.columns(l) == global.rows(r);
   return construct<MultivariateSolve<Expression<LLT>,LLT>>(l, r);
 }
 

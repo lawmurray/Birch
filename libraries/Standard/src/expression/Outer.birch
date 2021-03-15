@@ -5,20 +5,20 @@ final class Outer(l:Expression<Real[_]>, r:Expression<Real[_]>) <
     MatrixBinaryExpression<Expression<Real[_]>,Expression<Real[_]>,
     Real[_,_]>(l, r) {
   override function doRows() -> Integer {
-    return l!.rows();
+    return global.rows(l!);
   }
   
   override function doColumns() -> Integer {
-    return r!.rows();
+    return global.rows(r!);
   }
   
   override function doCompute() {
-    x <- outer(l!.eval(), r!.eval());
+    x <- outer(global.eval(l!), global.eval(r!));
   }
 
   override function doGrad(gen:Integer) {
-    l!.countGrad(gen, d!*r!.eval());
-    r!.countGrad(gen, transpose(d!)*l!.eval());
+    count_grad(l!, gen, d!*global.eval(r!));
+    count_grad(r!, gen, transpose(d!)*global.eval(l!));
   }
 }
 

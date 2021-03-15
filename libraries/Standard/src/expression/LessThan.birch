@@ -4,7 +4,7 @@
 final class LessThan(l:Expression<Real>, r:Expression<Real>) <
     ScalarBinaryExpression<Expression<Real>,Expression<Real>,Boolean>(l, r) {  
   override function doCompute() {
-    x <- l!.eval() < r!.eval();
+    x <- global.eval(l!) < global.eval(r!);
   }
   
   override function doGrad(gen:Integer) {

@@ -5,20 +5,20 @@ final class MatrixMultiply(l:Expression<Real[_,_]>,
     r:Expression<Real[_,_]>) < MatrixBinaryExpression<Expression<Real[_,_]>,
     Expression<Real[_,_]>,Real[_,_]>(l, r) {  
   override function doRows() -> Integer {
-    return l!.rows();
+    return global.rows(l!);
   }
   
   override function doColumns() -> Integer {
-    return r!.columns();
+    return global.columns(r!);
   }
 
   override function doCompute() {
-    x <- l!.eval()*r!.eval();
+    x <- global.eval(l!)*global.eval(r!);
   }
 
   override function doGrad(gen:Integer) {
-    l!.countGrad(gen, d!*transpose(r!.eval()));
-    r!.countGrad(gen, transpose(l!.eval())*d!);
+    count_grad(l!, gen, d!*transpose(global.eval(r!)));
+    count_grad(r!, gen, transpose(global.eval(l!))*d!);
   }
 
   override function graftLinearMatrixGaussian() -> TransformLinearMatrix<MatrixGaussian>? {
@@ -26,9 +26,9 @@ final class MatrixMultiply(l:Expression<Real[_,_]>,
     if !hasValue() {
       x1:MatrixGaussian?;
     
-      if (t <- r!.graftLinearMatrixGaussian())? {
+      if (t <- graft_linear_matrix_gaussian(r!))? {
         t!.leftMultiply(l!);
-      } else if (x1 <- r!.graftMatrixGaussian())? {
+      } else if (x1 <- graft_matrix_gaussian(r!))? {
         t <- TransformLinearMatrix<MatrixGaussian>(l!, x1!);
       }
     }
@@ -41,9 +41,9 @@ final class MatrixMultiply(l:Expression<Real[_,_]>,
     if !hasValue() {
       x1:MatrixNormalInverseWishart?;
 
-      if (t <- r!.graftLinearMatrixNormalInverseWishart(compare))? {
+      if (t <- graft_linear_matrix_normal_inverse_wishart(r!, compare))? {
         t!.leftMultiply(l!);
-      } else if (x1 <- r!.graftMatrixNormalInverseWishart(compare))? {
+      } else if (x1 <- graft_matrix_normal_inverse_wishart(r!, compare))? {
         t <- TransformLinearMatrix<MatrixNormalInverseWishart>(l!, x1!);
       }
     }

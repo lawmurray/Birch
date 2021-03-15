@@ -5,20 +5,20 @@ final class MatrixSubtract(l:Expression<Real[_,_]>, r:Expression<Real[_,_]>) <
     MatrixBinaryExpression<Expression<Real[_,_]>,Expression<Real[_,_]>,
     Real[_,_]>(l, r) {  
   override function doRows() -> Integer {
-    return l!.rows();
+    return global.rows(l!);
   }
   
   override function doColumns() -> Integer {
-    return l!.columns();
+    return global.columns(l!);
   }
 
   override function doCompute() {
-    x <- l!.eval() - r!.eval();
+    x <- global.eval(l!) - global.eval(r!);
   }
 
   override function doGrad(gen:Integer) {
-    l!.countGrad(gen, d!);
-    r!.countGrad(gen, -d!);
+    count_grad(l!, gen, d!);
+    count_grad(r!, gen, -d!);
   }
 
   override function graftLinearMatrixGaussian() ->
@@ -27,14 +27,14 @@ final class MatrixSubtract(l:Expression<Real[_,_]>, r:Expression<Real[_,_]>) <
     if !hasValue() {
       x1:MatrixGaussian?;
 
-      if (t <- l!.graftLinearMatrixGaussian())? {
+      if (t <- graft_linear_matrix_gaussian(l!))? {
         t!.subtract(r!);
-      } else if (t <- r!.graftLinearMatrixGaussian())? {
+      } else if (t <- graft_linear_matrix_gaussian(r!))? {
         t!.negateAndAdd(l!);
-      } else if (x1 <- l!.graftMatrixGaussian())? {
-        t <- TransformLinearMatrix<MatrixGaussian>(box(identity(x1!.rows())), x1!, -r!);
-      } else if (x1 <- r!.graftMatrixGaussian())? {
-        t <- TransformLinearMatrix<MatrixGaussian>(box(diagonal(-1.0, x1!.rows())), x1!, l!);
+      } else if (x1 <- graft_matrix_gaussian(l!))? {
+        t <- TransformLinearMatrix<MatrixGaussian>(box(identity(global.rows(x1!))), x1!, -r!);
+      } else if (x1 <- graft_matrix_gaussian(r!))? {
+        t <- TransformLinearMatrix<MatrixGaussian>(box(diagonal(-1.0, global.rows(x1!))), x1!, l!);
       }
     }
     return t;
@@ -46,14 +46,14 @@ final class MatrixSubtract(l:Expression<Real[_,_]>, r:Expression<Real[_,_]>) <
     if !hasValue() {
       x1:MatrixNormalInverseWishart?;
 
-      if (t <- l!.graftLinearMatrixNormalInverseWishart(compare))? {
+      if (t <- graft_linear_matrix_normal_inverse_wishart(l!, compare))? {
         t!.subtract(r!);
-      } else if (t <- r!.graftLinearMatrixNormalInverseWishart(compare))? {
+      } else if (t <- graft_linear_matrix_normal_inverse_wishart(r!, compare))? {
         t!.negateAndAdd(l!);
-      } else if (x1 <- l!.graftMatrixNormalInverseWishart(compare))? {
-        t <- TransformLinearMatrix<MatrixNormalInverseWishart>(box(identity(x1!.rows())), x1!, -r!);
-      } else if (x1 <- r!.graftMatrixNormalInverseWishart(compare))? {
-        t <- TransformLinearMatrix<MatrixNormalInverseWishart>(box(diagonal(-1.0, x1!.rows())), x1!, l!);
+      } else if (x1 <- graft_matrix_normal_inverse_wishart(l!, compare))? {
+        t <- TransformLinearMatrix<MatrixNormalInverseWishart>(box(identity(global.rows(x1!))), x1!, -r!);
+      } else if (x1 <- graft_matrix_normal_inverse_wishart(r!, compare))? {
+        t <- TransformLinearMatrix<MatrixNormalInverseWishart>(box(diagonal(-1.0, global.rows(x1!))), x1!, l!);
       }
     }
     return t;
@@ -65,8 +65,8 @@ final class MatrixSubtract(l:Expression<Real[_,_]>, r:Expression<Real[_,_]>) <
  */
 operator (l:Expression<Real[_,_]> - r:Expression<Real[_,_]>) ->
     MatrixSubtract {
-  assert l.rows() == r.rows();
-  assert l.columns() == r.columns();
+  assert global.rows(l) == global.rows(r);
+  assert global.columns(l) == global.columns(r);
   return construct<MatrixSubtract>(l, r);
 }
 

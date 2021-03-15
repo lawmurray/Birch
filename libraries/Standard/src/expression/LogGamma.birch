@@ -4,11 +4,11 @@
 final class LogGamma(m:Expression<Real>) <
     ScalarUnaryExpression<Expression<Real>,Real>(m) {
   override function doCompute() {
-    x <- lgamma(m!.eval());
+    x <- lgamma(global.eval(m!));
   }
 
   override function doGrad(gen:Integer) {
-    m!.countGrad(gen, d!*digamma(m!.eval()));
+    count_grad(m!, gen, d!*digamma(global.eval(m!)));
   }
 }
 

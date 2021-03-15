@@ -4,14 +4,14 @@
 final class Rectify(m:Expression<Real>) <
     ScalarUnaryExpression<Expression<Real>,Real>(m) {
   override function doCompute() {
-    x <- rectify(m!.eval());
+    x <- rectify(global.eval(m!));
   }
 
   override function doGrad(gen:Integer) {
     if x > 0.0 {
-      m!.countGrad(gen, d!);
+      count_grad(m!, gen, d!);
     } else {
-      m!.countGrad(gen, 0.0);
+      count_grad(m!, gen, 0.0);
     }
   }
 }

@@ -81,11 +81,11 @@ final class Random<Value> < Expression<Value> {
   }
   
   override function doRows() -> Integer {
-    return p!.rows();
+    return global.rows(p!);
   }
 
   override function doColumns() -> Integer {
-    return p!.columns();
+    return global.columns(p!);
   }
 
   override function doValue() {
@@ -131,7 +131,7 @@ final class Random<Value> < Expression<Value> {
 
   override function graftGaussian() -> Gaussian? {
     if !(hasValue() || p!.hasClamp()) {
-      let q <- p!.graftGaussian();
+      let q <- graft_gaussian(p!);
       p <-? Distribution<Value>?(q);
       return q;
     }
@@ -140,7 +140,7 @@ final class Random<Value> < Expression<Value> {
     
   override function graftBeta() -> Beta? {
     if !(hasValue() || p!.hasClamp()) {
-      let q <- p!.graftBeta();
+      let q <- graft_beta(p!);
       p <-? Distribution<Value>?(q);
       return q;
     }
@@ -149,7 +149,7 @@ final class Random<Value> < Expression<Value> {
   
   override function graftGamma() -> Gamma? {
     if !(hasValue() || p!.hasClamp()) {
-      let q <- p!.graftGamma();
+      let q <- graft_gamma(p!);
       p <-? Distribution<Value>?(q);
       return q;
     }
@@ -158,7 +158,7 @@ final class Random<Value> < Expression<Value> {
   
   override function graftInverseGamma() -> InverseGamma? {
     if !(hasValue() || p!.hasClamp()) {
-      let q <- p!.graftInverseGamma();
+      let q <- graft_inverse_gamma(p!);
       p <-? Distribution<Value>?(q);
       return q;
     }
@@ -167,7 +167,7 @@ final class Random<Value> < Expression<Value> {
 
   override function graftInverseWishart() -> InverseWishart? {
     if !(hasValue() || p!.hasClamp()) {
-      let q <- p!.graftInverseWishart();
+      let q <- graft_inverse_wishart(p!);
       p <-? Distribution<Value>?(q);
       return q;
     }
@@ -176,7 +176,7 @@ final class Random<Value> < Expression<Value> {
   
   override function graftNormalInverseGamma(compare:Distribution<Real>) -> NormalInverseGamma? {
     if !(hasValue() || p!.hasClamp()) {
-      let q <- p!.graftNormalInverseGamma(compare);
+      let q <- graft_normal_inverse_gamma(p!, compare);
       p <-? Distribution<Value>?(q);
       return q;
     }
@@ -185,7 +185,7 @@ final class Random<Value> < Expression<Value> {
   
   override function graftDirichlet() -> Dirichlet? {
     if !(hasValue() || p!.hasClamp()) {
-      let q <- p!.graftDirichlet();
+      let q <- graft_dirichlet(p!);
       p <-? Distribution<Value>?(q);
       return q;
     }
@@ -194,7 +194,7 @@ final class Random<Value> < Expression<Value> {
 
   override function graftRestaurant() -> Restaurant? {
     if !(hasValue() || p!.hasClamp()) {
-      let q <- p!.graftRestaurant();
+      let q <- graft_restaurant(p!);
       p <-? Distribution<Value>?(q);
       return q;
     }
@@ -203,7 +203,7 @@ final class Random<Value> < Expression<Value> {
 
   override function graftMultivariateGaussian() -> MultivariateGaussian? {
     if !(hasValue() || p!.hasClamp()) {
-      let q <- p!.graftMultivariateGaussian();
+      let q <- graft_multivariate_gaussian(p!);
       p <-? Distribution<Value>?(q);
       return q;
     }
@@ -213,7 +213,7 @@ final class Random<Value> < Expression<Value> {
   override function graftMultivariateNormalInverseGamma(compare:Distribution<Real>) ->
       MultivariateNormalInverseGamma? {
     if !(hasValue() || p!.hasClamp()) {
-      let q <- p!.graftMultivariateNormalInverseGamma(compare);
+      let q <- graft_multivariate_normal_inverse_gamma(p!, compare);
       p <-? Distribution<Value>?(q);
       return q;
     }
@@ -222,7 +222,7 @@ final class Random<Value> < Expression<Value> {
 
   override function graftMatrixGaussian() -> MatrixGaussian? {
     if !(hasValue() || p!.hasClamp()) {
-      let q <- p!.graftMatrixGaussian();
+      let q <- graft_matrix_gaussian(p!);
       p <-? Distribution<Value>?(q);
       return q;
     }
@@ -232,7 +232,7 @@ final class Random<Value> < Expression<Value> {
   override function graftMatrixNormalInverseWishart(compare:Distribution<LLT>) ->
       MatrixNormalInverseWishart? {
     if !(hasValue() || p!.hasClamp()) {
-      let q <- p!.graftMatrixNormalInverseWishart(compare);
+      let q <- graft_matrix_normal_inverse_wishart(p!, compare);
       p <-? Distribution<Value>?(q);
       return q;
     }
@@ -241,7 +241,7 @@ final class Random<Value> < Expression<Value> {
 
   override function graftDiscrete() -> Discrete? {
     if !(hasValue() || p!.hasClamp()) {
-      let q <- p!.graftDiscrete();
+      let q <- graft_discrete(p!);
       p <-? Distribution<Value>?(q);
       return q;
     }
@@ -250,7 +250,7 @@ final class Random<Value> < Expression<Value> {
 
   override function graftBoundedDiscrete() -> BoundedDiscrete? {
     if !(hasValue() || p!.hasClamp()) {
-      let q <- p!.graftBoundedDiscrete();
+      let q <- graft_bounded_discrete(p!);
       p <-? Distribution<Value>?(q);
       return q;
     }

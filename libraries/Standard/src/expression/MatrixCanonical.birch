@@ -4,19 +4,19 @@
 final class MatrixCanonical<Argument>(m:Argument) <
     MatrixUnaryExpression<Argument,Real[_,_]>(m) {
   override function doRows() -> Integer {
-    return m!.rows();
+    return global.rows(m!);
   }
   
   override function doColumns() -> Integer {
-    return m!.columns();
+    return global.columns(m!);
   }
 
   override function doCompute() {
-    x <- canonical(m!.eval());
+    x <- canonical(global.eval(m!));
   }
 
   override function doGrad(gen:Integer) {
-    m!.countGrad(gen, d!);
+    count_grad(m!, gen, d!);
   }
 }
 

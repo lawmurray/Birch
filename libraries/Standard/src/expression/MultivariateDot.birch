@@ -5,16 +5,16 @@ final class MultivariateDot(l:Expression<Real[_]>, r:Expression<Real[_,_]>) <
     MultivariateBinaryExpression<Expression<Real[_]>,Expression<Real[_,_]>,
     Real[_]>(l, r) {
   override function doRows() -> Integer {
-    return r!.columns();
+    return global.columns(r!);
   }
 
   override function doCompute() {
-    x <- dot(l!.eval(), r!.eval());
+    x <- dot(global.eval(l!), global.eval(r!));
   }
 
   override function doGrad(gen:Integer) {
-    l!.countGrad(gen, r!.eval()*d!);
-    r!.countGrad(gen, outer(l!.eval(), d!));
+    count_grad(l!, gen, global.eval(r!)*d!);
+    count_grad(r!, gen, outer(global.eval(l!), d!));
   }
 
   override function graftDotMatrixGaussian() ->
@@ -23,9 +23,9 @@ final class MultivariateDot(l:Expression<Real[_]>, r:Expression<Real[_,_]>) <
       x1:TransformLinearMatrix<MatrixGaussian>?;
       x2:MatrixGaussian?;
       
-      if (x1 <- r!.graftLinearMatrixGaussian())? {
+      if (x1 <- graft_linear_matrix_gaussian(r!))? {
         return TransformDotMultivariate<MatrixGaussian>(dot(l!, x1!.A), x1!.X, dot(l!, x1!.C));
-      } else if (x2 <- r!.graftMatrixGaussian())? {
+      } else if (x2 <- graft_matrix_gaussian(r!))? {
         return TransformDotMultivariate<MatrixGaussian>(l!, x2!);
       }
     }
@@ -38,9 +38,9 @@ final class MultivariateDot(l:Expression<Real[_]>, r:Expression<Real[_,_]>) <
       x1:TransformLinearMatrix<MatrixNormalInverseWishart>?;
       x2:MatrixNormalInverseWishart?;
     
-      if (x1 <- r!.graftLinearMatrixNormalInverseWishart(compare))? {
+      if (x1 <- graft_linear_matrix_normal_inverse_wishart(r!, compare))? {
         return TransformDotMultivariate<MatrixNormalInverseWishart>(dot(l!, x1!.A), x1!.X, dot(l!, x1!.C));
-      } else if (x2 <- r!.graftMatrixNormalInverseWishart(compare))? {
+      } else if (x2 <- graft_matrix_normal_inverse_wishart(r!, compare))? {
         return TransformDotMultivariate<MatrixNormalInverseWishart>(l!, x2!);
       }
     }
@@ -53,7 +53,7 @@ final class MultivariateDot(l:Expression<Real[_]>, r:Expression<Real[_,_]>) <
  */
 function dot(l:Expression<Real[_]>, r:Expression<Real[_,_]>) ->
     MultivariateDot {
-  assert l.rows() == r.rows();
+  assert global.rows(l) == global.rows(r);
   return construct<MultivariateDot>(l, r);
 }
 
