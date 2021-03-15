@@ -219,6 +219,7 @@ birch::Statement* birch::Modifier::modify(MemberFunction* o) {
 }
 
 birch::Statement* birch::Modifier::modify(BinaryOperator* o) {
+  o->typeParams = o->typeParams->accept(this);
   o->left = o->left->accept(this);
   o->right = o->right->accept(this);
   o->returnType = o->returnType->accept(this);
@@ -227,6 +228,7 @@ birch::Statement* birch::Modifier::modify(BinaryOperator* o) {
 }
 
 birch::Statement* birch::Modifier::modify(UnaryOperator* o) {
+  o->typeParams = o->typeParams->accept(this);
   o->single = o->single->accept(this);
   o->returnType = o->returnType->accept(this);
   o->braces = o->braces->accept(this);

@@ -179,14 +179,15 @@ birch::Statement* birch::Cloner::clone(const MemberFunction* o) {
 }
 
 birch::Statement* birch::Cloner::clone(const BinaryOperator* o) {
-  return new BinaryOperator(o->annotation, o->left->accept(this), o->name,
-      o->right->accept(this), o->returnType->accept(this),
-      o->braces->accept(this), o->loc);
+  return new BinaryOperator(o->annotation, o->typeParams->accept(this),
+      o->left->accept(this), o->name, o->right->accept(this),
+      o->returnType->accept(this), o->braces->accept(this), o->loc);
 }
 
 birch::Statement* birch::Cloner::clone(const UnaryOperator* o) {
-  return new UnaryOperator(o->annotation, o->name, o->single->accept(this),
-      o->returnType->accept(this), o->braces->accept(this), o->loc);
+  return new UnaryOperator(o->annotation, o->typeParams->accept(this),
+      o->name, o->single->accept(this), o->returnType->accept(this),
+      o->braces->accept(this), o->loc);
 }
 
 birch::Statement* birch::Cloner::clone(const AssignmentOperator* o) {

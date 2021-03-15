@@ -469,7 +469,8 @@ void birch::CppGenerator::visit(const Program* o) {
 }
 
 void birch::CppGenerator::visit(const BinaryOperator* o) {
-  if (!o->braces->isEmpty()) {
+  if ((generic || !o->isGeneric()) && !o->braces->isEmpty()) {
+    genTemplateParams(o);
     genSourceLine(o->loc);
     start(o->returnType << ' ');
     if (!header) {
@@ -497,7 +498,8 @@ void birch::CppGenerator::visit(const BinaryOperator* o) {
 }
 
 void birch::CppGenerator::visit(const UnaryOperator* o) {
-  if (!o->braces->isEmpty()) {
+  if ((generic || !o->isGeneric()) && !o->braces->isEmpty()) {
+    genTemplateParams(o);
     genSourceLine(o->loc);
     start(o->returnType << ' ');
     if (!header) {
@@ -715,7 +717,11 @@ void birch::CppGenerator::visit(const TypeList* o) {
 }
 
 void birch::CppGenerator::visit(const TypeOf* o) {
-  middle("decltype(" << o->single << ')');
+  if (o->single->isEmpty()) {
+    middle("auto");
+  } else {
+    middle("decltype(" << o->single << ')');
+  }
 }
 
 std::string birch::CppGenerator::getIndex(const Statement* o) {

@@ -542,11 +542,11 @@ unary_operator
     ;    
 
 binary_operator_declaration
-    : OPERATOR '(' parameter binary_operator parameter ')' optional_return_type { push_raw(); } optional_braces  { $$ = new birch::BinaryOperator(birch::NONE, $3, $4, $5, $7, $9, make_doc_loc(@$)); }
+    : OPERATOR optional_generics '(' parameter binary_operator parameter ')' optional_return_type { push_raw(); } optional_braces  { $$ = new birch::BinaryOperator(birch::NONE, $2, $4, $5, $6, $8, $10, make_doc_loc(@$)); }
     ;
     
 unary_operator_declaration
-    : OPERATOR '(' unary_operator parameter ')' optional_return_type { push_raw(); } optional_braces  { $$ = new birch::UnaryOperator(birch::NONE, $3, $4, $6, $8, make_doc_loc(@$)); }
+    : OPERATOR optional_generics '(' unary_operator parameter ')' optional_return_type { push_raw(); } optional_braces  { $$ = new birch::UnaryOperator(birch::NONE, $2, $4, $5, $7, $9, make_doc_loc(@$)); }
     ;
 
 assignment_operator_declaration
@@ -717,7 +717,8 @@ file
     ;
 
 return_type 
-    : RIGHT_OP type  { $$ = $2; }
+    : RIGHT_OP type                { $$ = $2; }
+    | RIGHT_OP TYPEOF '(' '_' ')'  { $$ = new birch::TypeOf(empty_expr(@$), make_loc(@$)); }
     ;
     
 optional_return_type

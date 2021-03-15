@@ -190,6 +190,7 @@ void birch::Visitor::visit(const MemberFunction* o) {
 }
 
 void birch::Visitor::visit(const BinaryOperator* o) {
+  o->typeParams->accept(this);
   o->left->accept(this);
   o->right->accept(this);
   o->returnType->accept(this);
@@ -197,6 +198,7 @@ void birch::Visitor::visit(const BinaryOperator* o) {
 }
 
 void birch::Visitor::visit(const UnaryOperator* o) {
+  o->typeParams->accept(this);
   o->single->accept(this);
   o->returnType->accept(this);
   o->braces->accept(this);

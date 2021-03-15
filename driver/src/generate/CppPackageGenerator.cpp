@@ -168,8 +168,18 @@ void birch::CppPackageGenerator::visit(const Package* o) {
       }
     }
 
-    /* generic function definitions */
+    /* generic function and operator definitions */
     for (auto o : functions) {
+      if (o->isGeneric()) {
+        auxDefinition << o;
+      }
+    }
+    for (auto o : binaries) {
+      if (o->isGeneric()) {
+        auxDefinition << o;
+      }
+    }
+    for (auto o : unaries) {
       if (o->isGeneric()) {
         auxDefinition << o;
       }

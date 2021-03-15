@@ -276,7 +276,11 @@ void birch::BirchGenerator::visit(const MemberFunction* o) {
 }
 
 void birch::BirchGenerator::visit(const BinaryOperator* o) {
-  start("operator (" << o->left << ' ' << o->name << ' ' << o->right << ')');
+  start("operator");
+  if (!o->typeParams->isEmpty()) {
+    middle('<' << o->typeParams << '>');
+  }
+  middle(" (" << o->left << ' ' << o->name << ' ' << o->right << ')');
   if (!o->returnType->isEmpty()) {
     middle(" -> " << o->returnType);
   }
@@ -288,7 +292,11 @@ void birch::BirchGenerator::visit(const BinaryOperator* o) {
 }
 
 void birch::BirchGenerator::visit(const UnaryOperator* o) {
-  start("operator (" << o->name << o->single << ')');
+  start("operator");
+  if (!o->typeParams->isEmpty()) {
+    middle('<' << o->typeParams << '>');
+  }
+  start(" (" << o->name << o->single << ')');
   if (!o->returnType->isEmpty()) {
     middle(" -> " << o->returnType);
   }
@@ -482,5 +490,9 @@ void birch::BirchGenerator::visit(const TypeList* o) {
 }
 
 void birch::BirchGenerator::visit(const TypeOf* o) {
-  middle("TypeOf(" << o->single << ')');
+  if (o->single->isEmpty()) {
+    middle("TypeOf(_)");
+  } else {
+    middle("TypeOf(" << o->single << ')');
+  }
 }

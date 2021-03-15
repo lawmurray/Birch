@@ -262,8 +262,11 @@ void birch::MarkdownGenerator::visit(const MemberFunction* o) {
 }
 
 void birch::MarkdownGenerator::visit(const BinaryOperator* o) {
-  start("!!! abstract \"operator (");
-  middle(o->left << ' ' << o->name << ' ' << o->right << ')');
+  start("!!! abstract \"operator");
+  if (!o->typeParams->isEmpty()) {
+    middle('<' << o->typeParams << '>');
+  }
+  middle(" (" << o->left << ' ' << o->name << ' ' << o->right << ')');
   if (!o->returnType->isEmpty()) {
     middle(" -> " << o->returnType);
   }
@@ -271,8 +274,11 @@ void birch::MarkdownGenerator::visit(const BinaryOperator* o) {
 }
 
 void birch::MarkdownGenerator::visit(const UnaryOperator* o) {
-  start("!!! abstract \"operator (");
-  middle(o->name << ' ' << o->single << ')');
+  start("!!! abstract \"operator");
+  if (!o->typeParams->isEmpty()) {
+    middle('<' << o->typeParams << '>');
+  }
+  middle(" (" << o->name << ' ' << o->single << ')');
   if (!o->returnType->isEmpty()) {
     middle(" -> " << o->returnType);
   }
@@ -552,7 +558,11 @@ void birch::MarkdownGenerator::visit(const OptionalType* o) {
 }
 
 void birch::MarkdownGenerator::visit(const TypeOf* o) {
-  middle("TypeOf(" << o->single << ')');
+  if (o->single->isEmpty()) {
+    middle("TypeOf(_)");
+  } else {
+    middle("TypeOf(" << o->single << ')');
+  }
 }
 
 void birch::MarkdownGenerator::genHead(const std::string& name) {
