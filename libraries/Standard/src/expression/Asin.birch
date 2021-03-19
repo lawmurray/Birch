@@ -1,7 +1,7 @@
 /**
  * Lazy `asin`.
  */
-acyclic class Asin(y:Expression<Real>) <
+final class Asin(y:Expression<Real>) <
     ScalarUnaryExpression<Expression<Real>,Real,Real,Real>(y) {
   override function doEvaluate(y:Real) -> Real {
     return asin(y);

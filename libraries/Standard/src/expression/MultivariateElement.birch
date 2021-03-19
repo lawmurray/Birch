@@ -1,7 +1,7 @@
 /**
  * Lazy access of a vector element.
  */
-acyclic class MultivariateElement<Value>(y:Expression<Value[_]>, i:Integer) <
+final class MultivariateElement<Value>(y:Expression<Value[_]>, i:Integer) <
     ScalarExpression<Value> {
   /**
    * Argument.

@@ -1,7 +1,7 @@
 /**
  * Lazy `dot`.
  */
-acyclic class Dot(y:Expression<Real[_]>, z:Expression<Real[_]>) <
+final class Dot(y:Expression<Real[_]>, z:Expression<Real[_]>) <
     ScalarBinaryExpression<Expression<Real[_]>,Expression<Real[_]>,Real[_],
     Real[_],Real[_],Real[_],Real>(y, z) {
   override function doEvaluate(y:Real[_], z:Real[_]) -> Real {

@@ -1,7 +1,7 @@
 /**
  * Lazy `llt`.
  */
-acyclic class MatrixLLT(y:Expression<Real[_,_]>) <
+final class MatrixLLT(y:Expression<Real[_,_]>) <
     MatrixUnaryExpression<Expression<Real[_,_]>,Real[_,_],Real[_,_],LLT>(y) {
   override function doRows() -> Integer {
     return y!.rows();

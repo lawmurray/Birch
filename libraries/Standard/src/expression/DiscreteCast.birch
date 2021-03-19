@@ -1,7 +1,7 @@
 /**
  * Lazy cast.
  */
-acyclic class DiscreteCast<From,To>(y:Expression<From>) <
+final class DiscreteCast<From,To>(y:Expression<From>) <
     ScalarUnaryExpression<Expression<From>,From,Real,To>(y) {
   override function doEvaluate(y:From) -> To {
     return To?(y)!;

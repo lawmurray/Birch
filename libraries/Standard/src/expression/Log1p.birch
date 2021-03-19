@@ -1,7 +1,7 @@
 /**
  * Lazy `log1p`.
  */
-acyclic class Log1p(y:Expression<Real>) <
+final class Log1p(y:Expression<Real>) <
     ScalarUnaryExpression<Expression<Real>,Real,Real,Real>(y) {
   override function doEvaluate(y:Real) -> Real {
     return log1p(y);

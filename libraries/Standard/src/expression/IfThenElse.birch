@@ -1,7 +1,7 @@
 /**
  * Lazy `if_then_else`.
  */
-acyclic class IfThenElse(cond:Expression<Boolean>, y:Expression<Real>,
+final class IfThenElse(cond:Expression<Boolean>, y:Expression<Real>,
     z:Expression<Real>) < ScalarExpression<Real> {  
   /**
    * Condition.

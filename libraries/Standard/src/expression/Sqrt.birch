@@ -1,7 +1,7 @@
 /**
  * Lazy `sqrt`.
  */
-acyclic class Sqrt(y:Expression<Real>) <
+final class Sqrt(y:Expression<Real>) <
     ScalarUnaryExpression<Expression<Real>,Real,Real,Real>(y) {
   override function doEvaluate(y:Real) -> Real {
     return sqrt(y);

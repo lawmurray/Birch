@@ -1,7 +1,7 @@
 /**
  * Lazy `lchoose`.
  */
-acyclic class LogChoose(y:Expression<Integer>, z:Expression<Integer>) <
+final class LogChoose(y:Expression<Integer>, z:Expression<Integer>) <
     ScalarBinaryExpression<Expression<Integer>,Expression<Integer>,Integer,
     Integer,Real,Real,Real>(y, z) {  
   override function doEvaluate(y:Integer, z:Integer) -> Real {

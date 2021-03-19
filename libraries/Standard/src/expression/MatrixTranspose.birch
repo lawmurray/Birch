@@ -1,7 +1,7 @@
 /**
  * Lazy `transpose`.
  */
-acyclic class MatrixTranspose(x:Expression<Real[_,_]>) <
+final class MatrixTranspose(x:Expression<Real[_,_]>) <
     MatrixUnaryExpression<Expression<Real[_,_]>,Real[_,_],Real[_,_],
     Real[_,_]>(x) {
   override function doRows() -> Integer {

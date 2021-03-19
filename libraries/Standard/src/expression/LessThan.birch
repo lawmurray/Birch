@@ -1,7 +1,7 @@
 /**
  * Lazy less-than.
  */
-acyclic class LessThan(y:Expression<Real>, z:Expression<Real>) <
+final class LessThan(y:Expression<Real>, z:Expression<Real>) <
     ScalarBinaryExpression<Expression<Real>,Expression<Real>,Real,Real,Real,
     Real,Boolean>(y, z) {  
   override function doEvaluate(y:Real, z:Real) -> Boolean {

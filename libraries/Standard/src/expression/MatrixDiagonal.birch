@@ -1,7 +1,7 @@
 /**
  * Lazy `diagonal`.
  */
-acyclic class MatrixDiagonal(y:Expression<Real[_]>) <
+final class MatrixDiagonal(y:Expression<Real[_]>) <
     MatrixUnaryExpression<Expression<Real[_]>,Real[_],Real[_],Real[_,_]>(y) {
   override function doRows() -> Integer {
     return y!.rows();

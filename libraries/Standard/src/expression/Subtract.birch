@@ -1,7 +1,7 @@
 /**
  * Lazy subtract.
  */
-acyclic class Subtract(y:Expression<Real>, z:Expression<Real>) <
+final class Subtract(y:Expression<Real>, z:Expression<Real>) <
     ScalarBinaryExpression<Expression<Real>,Expression<Real>,Real,Real,Real,
     Real,Real>(y, z) {
   override function doEvaluate(y:Real, z:Real) -> Real {

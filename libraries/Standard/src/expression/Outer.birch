@@ -1,7 +1,7 @@
 /**
  * Lazy `outer`.
  */
-acyclic class Outer(y:Expression<Real[_]>, z:Expression<Real[_]>) <
+final class Outer(y:Expression<Real[_]>, z:Expression<Real[_]>) <
     MatrixBinaryExpression<Expression<Real[_]>,Expression<Real[_]>,Real[_],
     Real[_],Real[_],Real[_],Real[_,_]>(y, z) {
   override function doRows() -> Integer {

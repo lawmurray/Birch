@@ -1,7 +1,7 @@
 /**
  * Lazy `ldet`.
  */
-acyclic class LogDet<Argument,ArgumentValue>(y:Argument) <
+final class LogDet<Argument,ArgumentValue>(y:Argument) <
     ScalarUnaryExpression<Argument,ArgumentValue,Real[_,_],Real>(y) {
   override function doEvaluate(y:ArgumentValue) -> Real {
     return ldet(y);
