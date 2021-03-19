@@ -34,23 +34,23 @@ void libbirch::abort() {
 }
 
 void libbirch::abort(const std::string& msg, const int skip) {
-  printf("error: %s\n", msg.c_str());
+  fprintf(stderr, "error: %s\n", msg.c_str());
   #ifndef NDEBUG
-  printf("stack trace:\n");
+  fprintf(stderr, "stack trace:\n");
   auto& trace = stack_trace;
   int i = 0;
   for (auto iter = trace.rbegin() + skip; (i < 20 + skip) &&
       iter != trace.rend(); ++iter) {
     if (iter->file) {
-      printf("    %-24s @ %s:%d\n", iter->func, iter->file, iter->line);
+      fprintf(stderr, "    %-24s @ %s:%d\n", iter->func, iter->file, iter->line);
     } else {
-      printf("    %-24s\n", iter->func);
+      fprintf(stderr, "    %-24s\n", iter->func);
     }
     ++i;
   }
   if (i < (int)trace.size() - skip) {
     int rem = (int)trace.size() - skip - i;
-    printf("  + %d more\n", rem);
+    fprintf(stderr, "  + %d more\n", rem);
   }
   assert(false);
   #else
