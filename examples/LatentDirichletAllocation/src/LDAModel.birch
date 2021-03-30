@@ -1,0 +1,113 @@
+/**
+ * Latent Dirichlet Allocation model with conjugate Multinomial-Dirichlet
+ * prior.
+ */
+class LDAModel < Model {
+
+      /**
+      * fixed parameters
+      * alpha:= hyperparameter for theta
+      * beta:= hyperparameter for phi
+      * K:= the number of topics
+      * V:= vocabulary size
+      * D:= the number of documents
+      * doc_ids:= document id for each word
+      * N:= total collection size (\sum_d the number of words per document)
+      */
+
+      alpha:Real;
+      beta:Real;
+      K:Integer;
+      V:Integer;
+      D:Integer;
+      doc_ids:Tape<Integer>; 
+      N:Integer;
+
+      /**
+      * Latent random variables
+      * theta:= topic distributions for corpus: [D, K] 
+      * phi:= word distributions for topics (for each topic): [K, V] 
+      * z:= topic assignments for each word in each document
+      */
+
+      theta:Array<Random<Real[_]>>;
+      phi:Array<Random<Real[_]>>;
+      z:Array<Random<Integer>>;
+
+      /**
+      * Observed random variables
+      * w:= word assignments for each word in each document
+      */
+
+      w:Tape<Integer>;
+
+      function simulate() {
+            // each word distribution is Dirichlet(beta) distributed
+            for k in 1..K {
+                  phi.get(k) ~ Dirichlet(vector(beta, V));
+            }
+            
+            // each topic distribution is Dirichlet(alpha) distributed
+            for d in 1..D {
+                  theta.get(d) ~ Dirichlet(vector(alpha, K));
+            }
+      }
+
+      function simulate(t:Integer) {
+            // each topic assignment is Categorical(theta_{t}) distributed
+            z.get(t) ~ Categorical(theta.get(doc_ids[t]));
+            
+            // each word (observed) is Categorical(phi_{topic assignment for word_no}) distributed.
+            w[t] ~> Categorical(phi.get(z.get(t).value())); // observe the word
+      }
+
+      override function read(buffer:Buffer) {
+            alpha <-? buffer.get<Real>("alpha");
+            beta <-? buffer.get<Real>("beta");
+            D <-? buffer.get<Integer>("D");
+            K <-? buffer.get<Integer>("K");
+            V <-? buffer.get<Integer>("V");
+            N <-? buffer.get<Integer>("N");
+            for i in 1..N {
+                  tmp:Random<Integer>;
+                  z.pushBack(tmp);
+            }
+            for i in 1..D {
+                  tmp:Random<Real[_]>;
+                  theta.pushBack(tmp);
+            }
+            for i in 1..K {
+                  tmp:Random<Real[_]>;
+                  phi.pushBack(tmp);
+            }
+
+      }
+
+      override function read(t:Integer, buffer:Buffer) {
+            doc_ids[t] <-? buffer.get<Integer>("doc_id");
+            w[t] <-? buffer.get<Integer>("w_n");
+      }
+
+      override function write(buffer:Buffer) {
+            for i in 1..theta.size() {
+                  if theta.get(i).hasDistribution() {
+                        buffer.set("theta_"+i, theta.get(i).getDistribution());
+                  }
+                  else {
+                        buffer.set("theta_"+i, theta.get(i));
+                  }
+            }
+            for i in 1..phi.size() {
+                  if phi.get(i).hasDistribution() {
+                        buffer.set("phi_"+i, phi.get(i).getDistribution());
+                  }
+                  else {
+                        buffer.set("phi_"+i, phi.get(i));
+                  }
+            }
+      }
+
+      override function write(t:Integer, buffer:Buffer) {
+            buffer.set("z_" + t, z.get(t));
+      }
+}

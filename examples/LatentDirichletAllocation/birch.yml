@@ -1,0 +1,21 @@
+name: LatentDirichletAllocation
+manifest: 
+  source: 
+    - src/*.birch
+    - src/*/*.birch
+    - src/*/*/*.birch
+  data:
+    - config/latent_dirichlet_allocation.json
+    - config/toy_example.json
+    - input/latent_dirichlet_allocation.json
+    - input/toy_example.json
+  other: 
+    - birch.yml
+    - LICENSE
+    - README.md
+    - test.sh
+    - run.sh
+    - toy.sh
+require: 
+  package: 
+    - Standard
