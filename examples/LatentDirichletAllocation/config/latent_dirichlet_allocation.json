@@ -10,6 +10,5 @@
         "nsamples": 3
     },
     "input": "input/latent_dirichlet_allocation.json",
-    "output": "output/lda.json",
-    
+    "output": "output/lda.json"
 }
