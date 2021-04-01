@@ -73,7 +73,7 @@ function quantile_conway_maxwell_poisson(P:Real, λ:Real, ν:Real,
   let Z <- z;
   while Z <= Q && x < n {
     x <- x + 1;
-    z <- z*λ/pow(Real(x), ν);
+    z <- z*λ/pow(x, ν);
     Z <- Z + z;
   }
   return x;
@@ -90,7 +90,7 @@ function quantile_conway_maxwell_poisson(P:Real, λ:Real, ν:Real,
  */
 function quantile_uniform_int(P:Real, l:Integer, u:Integer) -> Integer {
   assert l <= u;
-  return l + Integer(P*(u - l));
+  return l + scalar<Integer>(P*(u - l));
 }
 
 /*
@@ -302,7 +302,7 @@ function quantile_gamma_poisson(P:Real, k:Real, θ:Real) -> Integer {
   assert 0.0 < k;
   assert 0.0 < θ;
   assert k == floor(k);
-  return quantile_negative_binomial(P, Integer(k), 1.0/(θ + 1.0));
+  return quantile_negative_binomial(P, scalar<Integer>(k), 1.0/(θ + 1.0));
 }
 
 /*
@@ -372,7 +372,7 @@ function quantile_linear_normal_inverse_gamma_gaussian(P:Real, a:Real,
  * Return: the quantile.
  */
 function quantile_linear_multivariate_normal_inverse_gamma_gaussian(P:Real,
-    a:Real[_], ν:Real[_], Λ:LLT, c:Real, α:Real, γ:Real) -> Real {
+    a:Real[_], ν:Real[_], Λ:Real[_,_], c:Real, α:Real, γ:Real) -> Real {
   let μ <- solve(Λ, ν);
   let β <- γ - 0.5*dot(μ, ν);
   return quantile_student_t(P, 2.0*α, dot(a, μ) + c,

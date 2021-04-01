@@ -1,0 +1,35 @@
+final class TraceFunction {
+function compute<Value>(m:Value) -> {
+    return trace(m);
+  }
+
+function grad<Gradient,Value>(d:Gradient, m:Value) -> {
+    return diagonal(d, global.rows(m));
+  }
+}
+class Trace<Middle> = Unary<TraceFunction,Middle>;
+
+/**
+ * Trace of a matrix.
+ */
+function trace<Middle>(m:Middle) -> {
+  return construct<Trace<Middle>>(m);
+}
+
+/**
+ * Trace of a matrix.
+ */
+function trace(m:Integer[_,_]) -> Integer {
+  cpp{{
+  return m.toEigen().trace();
+  }}
+}
+
+/**
+ * Trace of a matrix.
+ */
+function trace(m:Real[_,_]) -> Real {
+  cpp{{
+  return m.toEigen().trace();
+  }}
+}

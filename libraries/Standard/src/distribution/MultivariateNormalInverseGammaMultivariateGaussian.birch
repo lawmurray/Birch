@@ -55,9 +55,7 @@ final class MultivariateNormalInverseGammaMultivariateGaussian(
   }
 }
 
-function MultivariateNormalInverseGammaMultivariateGaussian(
-    μ:MultivariateNormalInverseGamma) ->
-    MultivariateNormalInverseGammaMultivariateGaussian {
+function MultivariateNormalInverseGammaMultivariateGaussian(μ:MultivariateNormalInverseGamma) -> MultivariateNormalInverseGammaMultivariateGaussian {
   m:MultivariateNormalInverseGammaMultivariateGaussian(μ);
   m.link();
   return m;

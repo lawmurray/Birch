@@ -65,27 +65,6 @@ final class Beta(α:Expression<Real>, β:Expression<Real>) <
 /**
  * Create beta distribution.
  */
-function Beta(α:Expression<Real>, β:Expression<Real>) -> Beta {
-  return construct<Beta>(α, β);
-}
-
-/**
- * Create beta distribution.
- */
-function Beta(α:Expression<Real>, β:Real) -> Beta {
-  return Beta(α, box(β));
-}
-
-/**
- * Create beta distribution.
- */
-function Beta(α:Real, β:Expression<Real>) -> Beta {
-  return Beta(box(α), β);
-}
-
-/**
- * Create beta distribution.
- */
-function Beta(α:Real, β:Real) -> Beta {
-  return Beta(box(α), box(β));
+function Beta<Left,Right>(α:Left, β:Right) -> {
+  return construct<Beta>(box(α), box(β));
 }

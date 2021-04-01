@@ -3,159 +3,12 @@
  */
 type Boolean;
 
-/**
- * Convert to Boolean.
- */
-function Boolean(x:Integer64) -> Boolean {
-  cpp{{
-  return static_cast<birch::type::Boolean>(x);
-  }}
-}
-
-/**
- * Convert to Boolean.
- */
-function Boolean(x:Real64) -> Boolean {
-  cpp{{
-  return static_cast<birch::type::Boolean>(x);
-  }}
-}
-
-/**
- * Convert to Boolean.
- */
-function Boolean(x:Real32) -> Boolean {
-  cpp{{
-  return static_cast<birch::type::Boolean>(x);
-  }}
-}
-
-/**
- * Convert to Boolean.
- */
-function Boolean(x:Integer32) -> Boolean {
-  cpp{{
-  return static_cast<birch::type::Boolean>(x);
-  }}
-}
-
-/**
- * Convert to Boolean.
- */
-function Boolean(x:Integer16) -> Boolean {
-  cpp{{
-  return static_cast<birch::type::Boolean>(x);
-  }}
-}
-
-/**
- * Convert to Boolean.
- */
-function Boolean(x:Integer8) -> Boolean {
-  cpp{{
-  return static_cast<birch::type::Boolean>(x);
-  }}
-}
-
-/**
- * Convert to Boolean.
- */
-function Boolean(x:Boolean) -> Boolean {
-  return x;
-}
-
-/**
- * Convert to Boolean.
- */
-function Boolean(x:String) -> Boolean {
-  return x == "true";
-}
-
-/**
- * Convert to Boolean.
- */
-function Boolean(x:Integer64?) -> Boolean? {
-  if x? {
-    return Boolean(x!);
-  } else {
-    return nil;
-  }
-}
-
-/**
- * Convert to Boolean.
- */
-function Boolean(x:Real64?) -> Boolean? {
-  if x? {
-    return Boolean(x!);
-  } else {
-    return nil;
-  }
-}
-
-/**
- * Convert to Boolean.
- */
-function Boolean(x:Real32?) -> Boolean? {
-  if x? {
-    return Boolean(x!);
-  } else {
-    return nil;
-  }
-}
-
-/**
- * Convert to Boolean.
- */
-function Boolean(x:Integer32?) -> Boolean? {
-  if x? {
-    return Boolean(x!);
-  } else {
-    return nil;
-  }
-}
-
-/**
- * Convert to Boolean.
- */
-function Boolean(x:Integer16?) -> Boolean? {
-  if x? {
-    return Boolean(x!);
-  } else {
-    return nil;
-  }
-}
-
-/**
- * Convert to Boolean.
- */
-function Boolean(x:Integer8?) -> Boolean? {
-  if x? {
-    return Boolean(x!);
-  } else {
-    return nil;
-  }
-}
-
-/**
- * Convert to Boolean.
- */
-function Boolean(x:String?) -> Boolean? {
-  if x? {
-    return Boolean(x!);
-  } else {
-    return nil;
-  }
-}
-
 /*
  * Operators
  */
-operator (x:Boolean && y:Boolean) -> Boolean;
-operator (x:Boolean * y:Boolean) -> Boolean;
-operator (x:Boolean || y:Boolean) -> Boolean;
-operator (x:Boolean + y:Boolean) -> Boolean;
 operator (!x:Boolean) -> Boolean;
+operator (x:Boolean && y:Boolean) -> Boolean;
+operator (x:Boolean || y:Boolean) -> Boolean;
 operator (x:Boolean == y:Boolean) -> Boolean;
 operator (x:Boolean != y:Boolean) -> Boolean;
 
@@ -173,8 +26,12 @@ function min(x:Boolean, y:Boolean) -> Boolean {
   return x && y;
 }
 
-function canonical(x:Boolean) -> Boolean {
-  return x;
+function rows(x:Boolean) -> Integer {
+  return 1;
+}
+
+function columns(x:Boolean) -> Integer {
+  return 1;
 }
 
 function length(x:Boolean) -> Integer {
@@ -185,19 +42,11 @@ function size(x:Boolean) -> Integer {
   return 1;
 }
 
-function rows(x:Boolean) -> Integer {
-  return 1;
-}
-
-function columns(x:Boolean) -> Integer {
-  return 1;
-}
-
-function depth(x:Boolean) -> Integer {
-  return 0;
-}
-
 function value(x:Boolean) -> Boolean {
+  return x;
+}
+
+function peak(x:Boolean) -> Boolean {
   return x;
 }
 
@@ -205,23 +54,7 @@ function eval(x:Boolean) -> Boolean {
   return x;
 }
 
-function eval(x:Boolean, gen:Integer) -> Boolean {
-  return x;
-}
-
-function count_eval(x:Boolean, gen:Integer) -> Boolean {
-  return x;
-}
-
 function reval(x:Boolean) -> Boolean {
-  return x;
-}
-
-function reval(x:Boolean, gen:Integer) -> Boolean {
-  return x;
-}
-
-function count_reval(x:Boolean, gen:Integer) -> Boolean {
   return x;
 }
 
@@ -229,130 +62,14 @@ function grad<Gradient>(x:Boolean, d:Gradient) {
   //
 }
 
-function grad<Gradient>(x:Boolean, gen:Integer, d:Gradient) {
+function label(x:Boolean, gen:Integer) {
   //
 }
 
-function count_grad<Gradient>(x:Boolean, gen:Integer, d:Gradient) {
+function prune(x:Boolean, gen:Integer) {
   //
 }
 
-function count_grad(x:Boolean, gen:Integer, d:Real, i:Integer) {
+function constant(x:Boolean) {
   //
-}
-
-function count_grad(x:Boolean, gen:Integer, d:Real, i:Integer, j:Integer) {
-  //
-}
-
-function graft_beta(x:Boolean) -> Beta? {
-  return nil;
-}
-
-function graft_dirichlet(x:Boolean) -> Dirichlet? {
-  return nil;
-}
-
-function graft_restaurant(x:Boolean) -> Restaurant? {
-  return nil;
-}
-
-function graft_gamma(x:Boolean) -> Gamma? {
-  return nil;
-}
-
-function graft_scaled_gamma(x:Boolean) ->  TransformLinear<Gamma>? {
-  return nil;
-}
-
-function graft_inverse_gamma(x:Boolean) -> InverseGamma? {
-  return nil;
-}
-
-function graft_inverse_wishart(x:Boolean) -> InverseWishart? {
-  return nil;
-}
-
-function graft_gaussian(x:Boolean) -> Gaussian? {
-  return nil;
-}
-
-function graft_linear_gaussian(x:Boolean) -> TransformLinear<Gaussian>? {
-  return nil;
-}
-
-function graft_normal_inverse_gamma(x:Boolean, compare:Distribution<Real>) ->
-    NormalInverseGamma? {
-  return nil;
-}
-
-function graft_linear_normal_inverse_gamma(x:Boolean, compare:Distribution<Real>) ->
-    TransformLinear<NormalInverseGamma>? {
-  return nil;
-}
-
-function graft_multivariate_gaussian(x:Boolean) -> MultivariateGaussian? {
-  return nil;
-}
-
-function graft_linear_multivariate_gaussian(x:Boolean) ->
-    TransformLinearMultivariate<MultivariateGaussian>? {
-  return nil;
-}
-
-function graft_dot_multivariate_gaussian(x:Boolean) ->
-    TransformDot<MultivariateGaussian>? {
-  return nil;
-}
-
-function graft_multivariate_normal_inverse_gamma(x:Boolean, compare:Distribution<Real>) ->
-    MultivariateNormalInverseGamma? {
-  return nil;
-}
-
-function graft_linear_multivariate_normal_inverse_gamma(x:Boolean, compare:Distribution<Real>) ->
-    TransformLinearMultivariate<MultivariateNormalInverseGamma>? {
-  return nil;
-}
-
-function graft_dot_multivariate_normal_inverse_gamma(x:Boolean, compare:Distribution<Real>) ->
-    TransformDot<MultivariateNormalInverseGamma>? {
-  return nil;
-}
-
-function graft_matrix_gaussian(x:Boolean) -> MatrixGaussian? {
-  return nil;
-}
-
-function graft_linear_matrix_gaussian(x:Boolean) ->
-    TransformLinearMatrix<MatrixGaussian>? {
-  return nil;
-}
-
-function graft_dot_matrix_gaussian(x:Boolean) ->
-    TransformDotMultivariate<MatrixGaussian>? {
-  return nil;
-}
-
-function graft_matrix_normal_inverse_wishart(x:Boolean, compare:Distribution<LLT>) ->
-    MatrixNormalInverseWishart? {
-  return nil;
-}
-
-function graft_linear_matrix_normal_inverse_wishart(x:Boolean, compare:Distribution<LLT>) ->
-    TransformLinearMatrix<MatrixNormalInverseWishart>? {
-  return nil;
-}
-
-function graft_dot_matrix_normal_inverse_wishart(x:Boolean, compare:Distribution<LLT>) ->
-    TransformDotMultivariate<MatrixNormalInverseWishart>? {
-  return nil;
-}
-
-function graft_discrete(x:Boolean) -> Discrete? {
-  return nil;
-}
-
-function graft_bounded_discrete(x:Boolean) -> BoundedDiscrete? {
-  return nil;
 }

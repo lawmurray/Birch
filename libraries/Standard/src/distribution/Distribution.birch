@@ -88,7 +88,7 @@ abstract class Distribution<Value> < DelayDistribution {
     tmp:Distribution<Value> <- this;
 
     if v? {
-      v!.setValue(x!);
+      v!.move(x!);
     }
     update(x!);
     unlink();
@@ -111,7 +111,7 @@ abstract class Distribution<Value> < DelayDistribution {
         x <- simulateLazy();
       }
       if v? {
-        v!.setEval(x!);
+        v!.move(x!);
         updateLazy(v!);
       } else {
         update(x!);
@@ -351,7 +351,7 @@ abstract class Distribution<Value> < DelayDistribution {
   /**
    * Graft this onto the delayed sampling graph.
    */
-  function graftMatrixNormalInverseWishart(compare:Distribution<LLT>) ->
+  function graftMatrixNormalInverseWishart(compare:Distribution<Real[_,_]>) ->
       MatrixNormalInverseWishart? {
     prune();
     return nil;

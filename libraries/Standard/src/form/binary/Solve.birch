@@ -1,0 +1,39 @@
+final class SolveFunction {  
+function compute<LeftValue,RightValue>(l:LeftValue, r:RightValue) -> {
+    return solve(l, r);
+  }
+
+function gradLeft<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue, r:RightValue) -> {
+    return outer(-solve(transpose(l), d), solve(l, r));
+  }
+
+function gradRight<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue, r:RightValue) -> {
+    return solve(transpose(l), d);
+  }
+}
+class Solve<Left,Right> = Binary<SolveFunction,Left,Right>;
+
+/**
+ * Solve a system of equations.
+ */
+function solve<Left,Right>(l:Left, r:Right) -> {
+  return construct<Solve<Left,Right>>(l, r);
+}
+
+/**
+ * Solve a system of equations.
+ */
+function solve(l:Real[_,_], r:Real[_]) -> Real[_] {
+  cpp{{
+  return l.toEigen().householderQr().solve(r.toEigen()).eval();
+  }}
+}
+
+/**
+ * Solve a system of equations.
+ */
+function solve(l:Real[_,_], r:Real[_,_]) -> Real[_,_] {
+  cpp{{
+  return l.toEigen().householderQr().solve(r.toEigen()).eval();
+  }}
+}

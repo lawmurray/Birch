@@ -1,0 +1,145 @@
+final class SubtractFunction {
+  function compute<LeftValue,RightValue>(l:LeftValue, r:RightValue) -> {
+    return l - r;
+  }
+  
+  function gradLeft<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue, r:RightValue) -> {
+    return d;
+  }
+
+  function gradRight<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue, r:RightValue) -> {
+    return -d;
+  }
+
+  // function graftDiscrete() -> Discrete? {
+  //   t:Discrete?;
+  //   if !hasValue() {
+  //     t <- graftBoundedDiscrete();
+  //     if !t? {
+  //       m:Discrete?;
+  //       if (m <- graft_discrete(l!))? {
+  //         t <- LinearDiscrete(box(1), m!, scalar<Integer>(-r!));
+  //       } else if (m <- graft_discrete(r!))? {
+  //         t <- LinearDiscrete(box(-1), m!, scalar<Integer>(l!));
+  //       }
+  //     }
+  //   }
+  //   return t;
+  // }
+
+  // function graftBoundedDiscrete() -> BoundedDiscrete? {
+  //   t:BoundedDiscrete?;
+  //   if !hasValue() {
+  //     let l1 <- graft_bounded_discrete(l!);
+  //     let r1 <- graft_bounded_discrete(r!);
+  //     if l1? && r1? {
+  //       t <- SubtractBoundedDiscrete(l1!, r1!);
+  //     } else if l1? {
+  //       t <- LinearBoundedDiscrete(box(1), l1!, scalar<Integer>(-r!));
+  //     } else if r1? {
+  //       t <- LinearBoundedDiscrete(box(-1), r1!, scalar<Integer>(l!));
+  //     }
+  //   }
+  //   return t;
+  // }
+}
+class Subtract<Left,Right> = Binary<SubtractFunction,Left,Right>;
+
+/**
+ * Subtraction.
+ */
+operator<Left,Right> (l:Left - r:Right) -> {
+  return construct<Subtract<Left,Right>>(l, r);
+}
+
+/**
+ * Subtraction.
+ */
+operator (x:Integer - y:Integer) -> Integer;
+
+/**
+ * Subtraction.
+ */
+operator (x:Real - y:Real) -> Real;
+
+/**
+ * Subtraction.
+ */
+operator (x:Integer - y:Real) -> Real;
+
+/**
+ * Subtraction.
+ */
+operator (x:Real - y:Integer) -> Real;
+
+/**
+ * Subtraction.
+ */
+operator (x:Integer[_] - y:Integer[_]) -> Integer[_] {
+  cpp{{
+  return x.toEigen().operator-(y.toEigen());
+  }}
+}
+
+/**
+ * Subtraction.
+ */
+operator (x:Integer[_] - y:Real[_]) -> Real[_] {
+  cpp{{
+  return x.toEigen().cast<birch::type::Real>().operator-(y.toEigen());
+  }}
+}
+
+/**
+ * Subtraction.
+ */
+operator (x:Real[_] - y:Integer[_]) -> Real[_] {
+  cpp{{
+  return x.toEigen().operator-(y.toEigen().cast<birch::type::Real>());
+  }}
+}
+
+/**
+ * Subtraction.
+ */
+operator (x:Real[_] - y:Real[_]) -> Real[_] {
+  cpp{{
+  return x.toEigen().operator-(y.toEigen());
+  }}
+}
+
+/**
+ * Subtraction.
+ */
+operator (x:Integer[_,_] - y:Integer[_,_]) -> Integer[_,_] {
+  cpp{{
+  return x.toEigen().operator-(y.toEigen());
+  }}
+}
+
+/**
+ * Subtraction.
+ */
+operator (x:Integer[_,_] - y:Real[_,_]) -> Real[_,_] {
+  cpp{{
+  return x.toEigen().cast<birch::type::Real>().operator-(y.toEigen());
+  }}
+}
+
+/**
+ * Subtraction.
+ */
+operator (x:Real[_,_] - y:Integer[_,_]) -> Real[_,_] {
+  cpp{{
+  return x.toEigen().operator-(y.toEigen().cast<birch::type::Real>());
+  }}
+}
+
+/**
+ * Subtraction.
+ */
+operator (x:Real[_,_] - y:Real[_,_]) -> Real[_,_] {
+  cpp{{
+  return x.toEigen().operator-(y.toEigen());
+  }}
+}

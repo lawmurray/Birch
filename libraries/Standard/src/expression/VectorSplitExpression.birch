@@ -1,0 +1,48 @@
+/**
+ * Boxed and split vector expression.
+ *
+ * - Value: Result type.
+ * - Form: Expression type.
+ */
+final class VectorSplitExpression<Value,Form>(x:Value, f:Form) <
+    BoxedExpression<Value,Form> {
+  function grad(d:Value, i:Integer) {
+    if !flagConstant {
+      if visitCount == 0 {
+        this.d <- vector<Value>(0, length());
+      }
+      this.d[i] <- this.d[i] + d;
+      visitCount <- visitCount + 1;
+      if visitCount >= evalCount {
+        assert visitCount == evalCount || evalCount == 0;
+        // ^ can have visitCount > evalCount = 0 if eval() has never been
+        //   called on this object, typically because it is root expression
+        //   used from client code, rather than a subexpression used from
+        //   other expressions
+        f.grad(d!);       // upstream gradients all accumulated, propagate
+        d <- nil;         // clear intermediate gradients to save memory
+        visitCount <- 0;  // reset for next time
+      }
+    }
+  }
+}
+
+/**
+ * Box and split a vector expression into a vector of expressions.
+ *
+ * - f: Form of the expression.
+ */
+function vector_split<Value,Form>(f:Form) -> {
+  return vector_split(f.eval(), f);
+}
+
+/**
+ * Box and split a vector expression into a vector of expressions.
+ *
+ * - x: Result of the expression.
+ * - f: Form of the expression.
+ */
+function vector_split<Value,Form>(x:Value, f:Form) -> {
+  let y <- construct<VectorSplitExpression<Value,Form>>(x, f);
+  return vector(\(i:Integer) -> { return element(y, i); }, length(x));
+}

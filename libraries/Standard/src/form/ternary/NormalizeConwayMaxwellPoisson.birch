@@ -1,0 +1,84 @@
+final class NormalizeConwayMaxwellPoissonFunction {
+function compute<LeftValue,MiddleValue,RightValue>(l:LeftValue, m:MiddleValue, r:RightValue) -> {
+    return normalize_conway_maxwell_poisson(l, m, r);
+  }
+
+function gradLeft<Gradient,LeftValue,MiddleValue,RightValue>(d:Gradient, l:LeftValue, m:MiddleValue, r:RightValue) -> {
+    let dz <- 0.0;
+    let dZ <- 0.0;
+    let z <- 1.0;
+    if r >= 1 {
+      dz <- 1.0;
+      dZ <- 1.0;
+      z <- l;
+      if r >= 2 {
+        dz <- l*pow(2.0, 1.0 - m);
+        dZ <- dZ + dz;
+        z <- z*l*pow(2.0, -m);
+        for j in 3..r {
+          dz <- (dz*l + z)*pow(scalar<Real>(j), -m);
+          dZ <- dZ + dz;
+          z <- z*l*pow(scalar<Real>(j), -m);
+        }
+      }
+    }
+    return d*dZ;
+  }
+
+function gradMiddle<Gradient,LeftValue,MiddleValue,RightValue>(d:Gradient, l:LeftValue, m:MiddleValue, r:RightValue) -> {
+    let dz <- 0.0;
+    let dZ <- 0.0;
+    let z <- 1.0;
+    if r >= 1 {
+      dz <- 1.0;
+      dZ <- 1.0;
+      z <- l;
+      if r >= 2 {
+        dz <- -pow(l, 2.0)*pow(2.0, -m)*log(2.0);
+        dZ <- dZ + dz;
+        z <- z*l*pow(2.0, -m);
+        for j in 3..r {
+          dz <- (dz*l - z*l*log(j))*pow(j, -m);
+          dZ <- dZ + dz;
+          z <- z*l*pow(j, -m);
+        }
+      }
+    }
+    return d*dZ;
+  }
+
+function gradRight<Gradient,LeftValue,MiddleValue,RightValue>(d:Gradient, l:LeftValue, m:MiddleValue, r:RightValue) -> {
+    return 0.0;
+  }
+}
+class NormalizeConwayMaxwellPoisson<Left,Middle,Right> = Ternary<NormalizeConwayMaxwellPoissonFunction,Left,Middle,Right>;
+
+/**
+ * Normalizing constant of a Conway-Maxwell-Poisson distribution.
+ */
+function normalize_conway_maxwell_poisson<Left,Middle,Right>(l:Left, m:Middle, r:Right) -> {
+  return construct<NormalizeConwayMaxwellPoisson<Left,Middle,Right>>(l, m, r);
+}
+
+/**
+ * Computes the normalizing constant of a Conway-Maxwell-Poisson distribution
+ * truncated on a finite interval $[0,n]$.
+ *
+ * - λ: Rate parameter.
+ * - ν: Dispersion parameter.
+ * - n: Truncation point.
+ *
+ * Returns: Value of the normalizing constant for the given interval.
+ */
+function normalize_conway_maxwell_poisson(λ:Real, ν:Real, n:Integer) -> Real {
+  assert 0.0 <= λ;
+  assert 0.0 <= ν;
+  assert 0 <= n;
+  let z <- 1.0;
+  let Z <- z;
+  for x in 1..n {
+    z <- z*λ/pow(scalar<Real>(x), ν);
+    Z <- Z + z;
+  }
+  return Z;
+}

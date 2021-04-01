@@ -48,35 +48,19 @@ final class Multinomial(n:Expression<Integer>, ρ:Expression<Real[_]>) <
 /**
  * Create multinomial distribution.
  */
-function Multinomial(n:Expression<Integer>, ρ:Expression<Real[_]>) ->
+function Multinomial<Left,Right>(n:Left, ρ:Right) -> {
+  return construct<Multinomial>(box(n), box(ρ));
+}
+
+/**
+ * Create multinomial distribution.
+ */
+function Multinomial<Left,Right>(n:Left, ρ:Random<Real[_]>) ->
     Distribution<Integer[_]> {
   m:Dirichlet?;
   if (m <- ρ.graftDirichlet())? {
     return DirichletMultinomial(n, m!);
   } else {
-    return construct<Multinomial>(n, ρ);
+    return construct<Multinomial>(box(n), ρ);
   }
-}
-
-/**
- * Create multinomial distribution.
- */
-function Multinomial(n:Expression<Integer>, ρ:Real[_]) ->
-    Distribution<Integer[_]> {
-  return Multinomial(n, box(ρ));
-}
-
-/**
- * Create multinomial distribution.
- */
-function Multinomial(n:Integer, ρ:Expression<Real[_]>) ->
-    Distribution<Integer[_]> {
-  return Multinomial(box(n), ρ);
-}
-
-/**
- * Create multinomial distribution.
- */
-function Multinomial(n:Integer, ρ:Real[_]) -> Distribution<Integer[_]> {
-  return Multinomial(box(n), box(ρ));
 }

@@ -30,7 +30,7 @@ final class ScaledGammaExponential(a:Expression<Real>, λ:Gamma) <
   }
 
   function logpdfLazy(x:Expression<Real>) -> Expression<Real>? {
-    return logpdf_lazy_lomax(x, 1.0/(a*λ.θ), λ.k);
+    return logpdf_lazy_lomax(x, box(1.0/(a*λ.θ)), λ.k);
   }
 
   function update(x:Real) {
@@ -63,9 +63,8 @@ final class ScaledGammaExponential(a:Expression<Real>, λ:Gamma) <
   }
 }
 
-function ScaledGammaExponential(a:Expression<Real>, λ:Gamma) ->
-    ScaledGammaExponential {
-  m:ScaledGammaExponential(a, λ);
+function ScaledGammaExponential<Left>(a:Left, λ:Gamma) -> {
+  m:ScaledGammaExponential(box(a), λ);
   m.link();
   return m;
 }

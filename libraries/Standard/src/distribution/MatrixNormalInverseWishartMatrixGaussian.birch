@@ -59,9 +59,7 @@ final class MatrixNormalInverseWishartMatrixGaussian(
   }
 }
 
-function MatrixNormalInverseWishartMatrixGaussian(
-    M:MatrixNormalInverseWishart) ->
-    MatrixNormalInverseWishartMatrixGaussian {
+function MatrixNormalInverseWishartMatrixGaussian(M:MatrixNormalInverseWishart) -> MatrixNormalInverseWishartMatrixGaussian {
   m:MatrixNormalInverseWishartMatrixGaussian(M);
   m.link();
   return m;

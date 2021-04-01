@@ -55,7 +55,7 @@ class AliveParticleFilter < ParticleFilter {
     /* proceed as though no resample, so just normalize weights, and let
      * propagate handle the rest */
     a <- iota(1, nparticles);
-    w <- w - vector(lsum - log(Real(nparticles)), nparticles);
+    w <- w - vector(lsum - log(nparticles), nparticles);
   }
   
   override function reduce() {

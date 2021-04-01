@@ -1,0 +1,57 @@
+final class LogChooseFunction {  
+function compute<LeftValue,RightValue>(l:LeftValue, r:RightValue) -> {
+    return lchoose(l, r);
+  }
+
+function gradLeft<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue, r:RightValue) -> {
+    return 0.0;
+  }
+
+function gradRight<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue, r:RightValue) -> {
+    return 0.0;
+  }
+}
+class LogChoose<Left,Right> = Binary<LogChooseFunction,Left,Right>;
+
+/**
+ * Logarithm of the binomial coefficient.
+ */
+function lchoose<Left,Right>(l:Left, r:Right) -> {
+  return construct<LogChoose<Left,Right>>(l, r);
+}
+
+/**
+ * Logarithm of the binomial coefficient.
+ */
+function lchoose(x:Integer, y:Integer) -> Real {
+  return lchoose(scalar<Real>(x), scalar<Real>(y));
+}
+
+/**
+ * Logarithm of the binomial coefficient.
+ */
+function lchoose(x:Real, y:Real) -> Real {
+  assert 0.0 <= x;
+  assert 0.0 <= y;
+  assert x >= y;
+  if (y == 0.0) {
+    return 0.0;
+  } else {
+    // see Boost binomial_coefficient function for this implementation
+    return -log(y) - lbeta(y, x - y + 1.0);
+  }
+}
+
+/**
+ * Logarithm of the binomial coefficient.
+ */
+function lchoose(x:Integer, y:Real) -> Real {
+  return lchoose(scalar<Real>(x), y);
+}
+
+/**
+ * Logarithm of the binomial coefficient.
+ */
+function lchoose(x:Real, y:Integer) -> Real {
+  return lchoose(x, scalar<Real>(y));
+}

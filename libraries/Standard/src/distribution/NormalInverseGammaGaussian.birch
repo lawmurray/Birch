@@ -29,7 +29,7 @@ final class NormalInverseGammaGaussian(μ:NormalInverseGamma) <
 
   function logpdfLazy(x:Expression<Real>) -> Expression<Real>? {
     return logpdf_lazy_normal_inverse_gamma_gaussian(x, μ.μ,
-        1.0/μ.λ, μ.σ2.α, μ.σ2.β);
+        box(1.0/μ.λ), μ.σ2.α, μ.σ2.β);
   }
 
   function update(x:Real) {
@@ -61,8 +61,7 @@ final class NormalInverseGammaGaussian(μ:NormalInverseGamma) <
   }
 }
 
-function NormalInverseGammaGaussian(μ:NormalInverseGamma) ->
-    NormalInverseGammaGaussian {
+function NormalInverseGammaGaussian(μ:NormalInverseGamma) -> NormalInverseGammaGaussian {
   m:NormalInverseGammaGaussian(μ);
   m.link();
   return m;

@@ -82,10 +82,8 @@ final class LinearMultivariateNormalInverseGammaGaussian(
   }
 }
 
-function LinearMultivariateNormalInverseGammaGaussian(a:Expression<Real[_]>,
-    μ:MultivariateNormalInverseGamma, c:Expression<Real>) ->
-    LinearMultivariateNormalInverseGammaGaussian {
-  m:LinearMultivariateNormalInverseGammaGaussian(a, μ, c);
+function LinearMultivariateNormalInverseGammaGaussian<Left,Right>(a:Left, μ:MultivariateNormalInverseGamma, c:Right) -> {
+  m:LinearMultivariateNormalInverseGammaGaussian(box(a), μ, box(c));
   m.link();
   return m;
 }

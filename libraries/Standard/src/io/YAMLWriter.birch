@@ -95,7 +95,7 @@ class YAMLWriter < Writer {
   }
 
   override function visit(value:Boolean) {
-    let str <- String(value);
+    let str <- to_string(value);
     cpp{{
     yaml_scalar_event_initialize(&this->event, NULL, NULL,
         (yaml_char_t*)str.c_str(), str.length(), 1, 1,
@@ -105,7 +105,7 @@ class YAMLWriter < Writer {
   }
 
   override function visit(value:Integer) {
-    let str <- String(value);
+    let str <- to_string(value);
     cpp{{
     yaml_scalar_event_initialize(&this->event, NULL, NULL,
         (yaml_char_t*)str.c_str(), str.length(), 1, 1,
@@ -126,7 +126,7 @@ class YAMLWriter < Writer {
     } else if isnan(value) {
       str <- "NaN";
     } else {
-      str <- String(value);
+      str <- to_string(value);
     }
     cpp{{
     yaml_scalar_event_initialize(&this->event, NULL, NULL,

@@ -1,10 +1,10 @@
 class TestMatrixNormalInverseWishartMatrixGaussian < Model {
-  V:Random<LLT>;
+  V:Random<Real[_,_]>;
   X:Random<Real[_,_]>;
   Y:Random<Real[_,_]>;
 
-  n:Real <- 5;
-  p:Real <- 2;
+  n:Integer <- 5;
+  p:Integer <- 2;
 
   M:Real[n,p];
   U:Real[n,n];
@@ -32,8 +32,8 @@ class TestMatrixNormalInverseWishartMatrixGaussian < Model {
 
   function simulate() {
     V ~ InverseWishart(Ψ, k);
-    X ~ Gaussian(M, U, V);
-    Y ~ Gaussian(X, V);
+    X ~ MatrixGaussian(M, U, V);
+    Y ~ MatrixGaussian(X, identity(rows(M)), V);
   }
 
   function forward() -> Real[_] {
@@ -78,7 +78,7 @@ class TestMatrixNormalInverseWishartMatrixGaussian < Model {
     y:Real[size()];
     let k <- 0;
     for i in 1..V.rows() {
-      y[k + 1 .. k + V.columns()] <- canonical(V.value())[i,1..V.columns()];
+      y[k + 1 .. k + V.columns()] <- matrix<Real>(V.value())[i,1..V.columns()];
       k <- k + V.columns();
     }
     for i in 1..X.rows() {

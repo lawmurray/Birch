@@ -5,7 +5,7 @@
  *     See Gaussian for associated factory functions for the creation of
  *     MultivariateGaussian objects.
  */
-class MultivariateGaussian(μ:Expression<Real[_]>, Σ:Expression<LLT>) <
+class MultivariateGaussian(μ:Expression<Real[_]>, Σ:Expression<Real[_,_]>) <
     Distribution<Real[_]> {
   /**
    * Mean.
@@ -15,7 +15,7 @@ class MultivariateGaussian(μ:Expression<Real[_]>, Σ:Expression<LLT>) <
   /**
    * Covariance.
    */
-  Σ:Expression<LLT> <- Σ;
+  Σ:Expression<Real[_,_]> <- Σ;
 
   function rows() -> Integer {
     return μ.rows();
@@ -57,316 +57,148 @@ class MultivariateGaussian(μ:Expression<Real[_]>, Σ:Expression<LLT>) <
 /**
  * Create multivariate Gaussian distribution.
  */
-function Gaussian(μ:Expression<Real[_]>, Σ:Expression<LLT>) ->
-    Distribution<Real[_]> {
-  s1:InverseWishart?;
-  m1:TransformDotMultivariate<MatrixNormalInverseWishart>?;
-  m2:TransformLinearMultivariate<MultivariateGaussian>?;
-  m3:MultivariateGaussian?;
+function MultivariateGaussian<Left,Right>(μ:Left, Σ:Right) -> {
+  return construct<MultivariateGaussian>(box(μ), box(Σ));
+}
 
-  let compare <- Random<LLT>?(Σ);
-  if compare? && compare!.hasDistribution() {
-    /* for normal-inverse-Wishart relationships, the same inverse Wishart
-     * distribution must occur in the prior and likelihood */
-    let p <- compare!.getDistribution();
-    if (m1 <- μ.graftDotMatrixNormalInverseWishart(p))? {
-      return LinearMatrixNormalInverseWishartMultivariateGaussian(m1!.a, m1!.X, m1!.c);
+/**
+ * Create multivariate Gaussian distribution.
+ */
+function MultivariateGaussian<Left,Middle,Right>(μ:Random<Real[_]>, Σ:Right) -> Distribution<Real[_]> {
+  let p <- μ.graftMultivariateGaussian();
+  if p? {
+    return MultivariateGaussianMultivariateGaussian(p!, Σ);
+  } else {
+    return construct<MultivariateGaussian>(μ, box(Σ));
+  }
+}
+
+/**
+ * Create multivariate Gaussian distribution.
+ */
+function MultivariateGaussian<Left,Middle,Right>(μ:MultiplyAdd<Left,Random<Real[_]>,Middle>, Σ:Right) -> Distribution<Real[_]> {
+  let p <- μ.m!.graftMultivariateGaussian();
+  if p? {
+    return LinearMultivariateGaussianMultivariateGaussian(μ.l!, p!, μ.r!, Σ);
+  } else {
+    return construct<MultivariateGaussian>(box(μ), box(Σ));
+  }
+}
+
+/**
+ * Create multivariate Gaussian distribution.
+ */
+function MultivariateGaussian<Left,Middle,Right>(μ:DotAdd<Left,Random<Real[_]>,Middle>, σ2:Right) -> Distribution<Real> {
+  let p <- μ.m!.graftMultivariateGaussian();
+  if p? {
+    return LinearMultivariateGaussianGaussian(μ.l!, p!, μ.r!, σ2);
+  } else {
+    return construct<Gaussian>(box(μ), box(σ2));
+  }
+}
+
+/**
+ * Create multivariate Gaussian distribution.
+ */
+function MultivariateGaussian<Left,Right>(μ:Left, Σ:Multiply<Right,Random<Real>>) -> Distribution<Real[_]> {
+  s2:InverseGamma?;
+  if (s2 <- Σ.r!.graftInverseGamma())? {
+    return MultivariateNormalInverseGamma(μ, Σ.l!, s2!);
+  } else {
+    return construct<MultivariateGaussian>(box(μ), box(Σ));
+  }
+}
+
+/**
+ * Create multivariate Gaussian distribution.
+ */
+function MultivariateGaussian<Left,Right>(μ:Left, Σ:Multiply<Random<Real>,Right>) -> Distribution<Real[_]> {
+  s2:InverseGamma?;
+  if (s2 <- Σ.l!.graftInverseGamma())? {
+    return MultivariateNormalInverseGamma(μ, Σ.r!, s2!);
+  } else {
+    return construct<MultivariateGaussian>(box(μ), box(Σ));
+  }
+}
+
+/**
+ * Create multivariate Gaussian distribution.
+ */
+function MultivariateGaussian<Right>(μ:Random<Real[_]>, Σ:Multiply<Right,Random<Real>>) -> Distribution<Real[_]> {
+  let p <- Σ.r!.graftInverseGamma();
+  if p? {
+    let q <- μ.graftMultivariateNormalInverseGamma(p!);
+    if q? {
+      return MultivariateNormalInverseGammaMultivariateGaussian(q!);
+    } else {
+      return MultivariateNormalInverseGamma(μ, Σ.l!, p!);
+    }
+  } else {
+    return construct<MultivariateGaussian>(box(μ), box(Σ));
+  }
+}
+
+/**
+ * Create multivariate Gaussian distribution.
+ */
+function MultivariateGaussian<Right>(μ:Random<Real[_]>, Σ:Multiply<Random<Real>,Right>) -> Distribution<Real[_]> {
+  let p <- Σ.r!.graftInverseGamma();
+  if p? {
+    let q <- μ.graftMultivariateNormalInverseGamma(p!);
+    if q? {
+      return MultivariateNormalInverseGammaMultivariateGaussian(q!);
+    } else {
+      return MultivariateNormalInverseGamma(μ, Σ.r!, p!);
+    }
+  } else {
+    return construct<MultivariateGaussian>(box(μ), box(Σ));
+  }
+}
+
+/**
+ * Create multivariate Gaussian distribution.
+ */
+function MultivariateGaussian<Left,Middle,Right>(μ:MultiplyAdd<Left,Random<Real[_]>,Middle>, Σ:Multiply<Right,Random<Real>>) -> Distribution<Real[_]> {
+  let p <- Σ.r!.graftInverseGamma();
+  if p? {
+    let q <- μ.m!.graftMultivariateNormalInverseGamma(p!);
+    if q? {
+      return LinearMultivariateNormalInverseGammaMultivariateGaussian(μ.l!, q!, μ.r!);
+    } else {
+      return MultivariateNormalInverseGamma(μ, Σ.l!, p!);
+    }
+  } else {
+    return construct<MultivariateGaussian>(box(μ), box(Σ));
+  }
+}
+
+/**
+ * Create multivariate Gaussian distribution.
+ */
+function MultivariateGaussian<Left,Middle,Right>(μ:MultiplyAdd<Left,Random<Real[_]>,Middle>, Σ:Multiply<Random<Real>,Right>) -> Distribution<Real[_]> {
+  let p <- Σ.l!.graftInverseGamma();
+  if p? {
+    let q <- μ.m!.graftMultivariateNormalInverseGamma(p!);
+    if q? {
+      return LinearMultivariateNormalInverseGammaMultivariateGaussian(μ.l!, q!, μ.r!);
+    } else {
+      return MultivariateNormalInverseGamma(μ, Σ.r!, p!);
+    }
+  } else {
+    return construct<MultivariateGaussian>(box(μ), box(Σ));
+  }
+}
+
+/**
+ * Create multivariate Gaussian distribution.
+ */
+function MultivariateGaussian<Left,Middle>(μ:DotAdd<Left,Random<Real[_,_]>,Middle>, Σ:Random<Real[_,_]>) -> Distribution<Real[_]> {
+  let p <- Σ.graftInverseWishart();
+  if p? {
+    let q <- μ.m!.graftMatrixNormalInverseWishart(p!);
+    if q? {
+      return LinearMatrixNormalInverseWishartMultivariateGaussian(μ.l!, q!, μ.r!);
     }
   }
-  if (m2 <- μ.graftLinearMultivariateGaussian())? {
-    return LinearMultivariateGaussianMultivariateGaussian(m2!.A, m2!.x, m2!.c, Σ);
-  } else if (m3 <- μ.graftMultivariateGaussian())? {
-    return MultivariateGaussianMultivariateGaussian(m3!, Σ);
-  } else {
-    return construct<MultivariateGaussian>(μ, Σ);
-  }
-}
-
-/**
- * Create multivariate Gaussian distribution.
- */
-function Gaussian(μ:Expression<Real[_]>, Σ:LLT) -> Distribution<Real[_]> {
-  return Gaussian(μ, box(Σ));
-}
-
-/**
- * Create multivariate Gaussian distribution.
- */
-function Gaussian(μ:Real[_], Σ:Expression<LLT>) -> Distribution<Real[_]> {
-  return Gaussian(box(μ), Σ);
-}
-
-/**
- * Create multivariate Gaussian distribution.
- */
-function Gaussian(μ:Real[_], Σ:LLT) -> Distribution<Real[_]> {
-  return Gaussian(box(μ), box(Σ));
-}
-
-/**
- * Create multivariate Gaussian distribution.
- */
-function Gaussian(μ:Expression<Real[_]>, Σ:Expression<Real[_,_]>) ->
-    Distribution<Real[_]> {
-  return Gaussian(μ, llt(Σ));
-}
-
-/**
- * Create multivariate Gaussian distribution.
- */
-function Gaussian(μ:Expression<Real[_]>, Σ:Real[_,_]) ->
-    Distribution<Real[_]> {
-  return Gaussian(μ, llt(Σ));
-}
-
-/**
- * Create multivariate Gaussian distribution.
- */
-function Gaussian(μ:Real[_], Σ:Expression<Real[_,_]>) ->
-    Distribution<Real[_]> {
-  return Gaussian(μ, llt(Σ));
-}
-
-/**
- * Create multivariate Gaussian distribution.
- */
-function Gaussian(μ:Real[_], Σ:Real[_,_]) -> Distribution<Real[_]> {
-  return Gaussian(μ, llt(Σ));
-}
-
-/**
- * Create multivariate Gaussian distribution with independent and identical
- * variance.
- */
-function Gaussian(μ:Expression<Real[_]>, σ2:Expression<Real>) ->
-    Distribution<Real[_]> {
-  s1:InverseGamma?;
-  m1:TransformLinearMultivariate<MultivariateNormalInverseGamma>?;
-  m2:MultivariateNormalInverseGamma?;
-  m3:TransformLinearMultivariate<MultivariateGaussian>?;
-  m4:MultivariateGaussian?;
-
-  let compare <- Random<Real>?(σ2);
-  if compare? && compare!.hasDistribution() {
-    /* for normal-inverse-gamma relationships, the same inverse gamma
-     * distribution must occur in the prior and likelihood */
-    let p <- compare!.getDistribution();
-    if (m1 <- μ.graftLinearMultivariateNormalInverseGamma(p))? {
-      return LinearMultivariateNormalInverseGammaMultivariateGaussian(m1!.A, m1!.x, m1!.c);
-    } else if (m2 <- μ.graftMultivariateNormalInverseGamma(p))? {
-      return MultivariateNormalInverseGammaMultivariateGaussian(m2!);
-    }
-  }
-  if (m3 <- μ.graftLinearMultivariateGaussian())? {
-    return LinearMultivariateGaussianMultivariateGaussian(m3!.A, m3!.x, m3!.c, llt(diagonal(σ2, m3!.rows())));
-  } else if (m4 <- μ.graftMultivariateGaussian())? {
-    return MultivariateGaussianMultivariateGaussian(m4!, llt(diagonal(σ2, m4!.rows())));
-  } else if (s1 <- σ2.graftInverseGamma())? {
-    return MultivariateNormalInverseGamma(μ, box(llt(identity(μ.rows()))), s1!);
-  } else {
-    return construct<MultivariateGaussian>(μ, llt(diagonal(σ2, μ.rows())));
-  }
-}
-
-/**
- * Create multivariate Gaussian distribution with independent and identical
- * variance.
- */
-function Gaussian(μ:Expression<Real[_]>, σ2:Real) -> Distribution<Real[_]> {
-  return Gaussian(μ, box(σ2));
-}
-
-/**
- * Create multivariate Gaussian distribution with independent and identical
- * variance.
- */
-function Gaussian(μ:Real[_], σ2:Expression<Real>) -> Distribution<Real[_]> {
-  return Gaussian(box(μ), σ2);
-}
-
-/**
- * Create multivariate Gaussian distribution with independent and identical
- * variance.
- */
-function Gaussian(μ:Real[_], σ2:Real) -> Distribution<Real[_]> {
-  return Gaussian(box(μ), box(σ2));
-}
-
-/**
- * Create multivariate Gaussian distribution where the covariance is given
- * as a matrix multiplied by a scalar. This is usually used for establishing
- * a multivariate normal-inverse-gamma, where the final argument is
- * inverse-gamma distributed.
- */
-function Gaussian(μ:Expression<Real[_]>, Σ:Expression<LLT>,
-    σ2:Expression<Real>) -> Distribution<Real[_]> {
-  s1:InverseGamma?;
-  if (s1 <- σ2.graftInverseGamma())? {
-    return MultivariateNormalInverseGamma(μ, Σ, s1!);
-  } else {
-    return construct<MultivariateGaussian>(μ, llt(canonical(Σ)*σ2));
-  }
-}
-
-/**
- * Create multivariate Gaussian distribution where the covariance is given
- * as a matrix multiplied by a scalar. This is usually used for establishing
- * a multivariate normal-inverse-gamma, where the final argument is
- * inverse-gamma distributed.
- */
-function Gaussian(μ:Expression<Real[_]>, Σ:Expression<LLT>, σ2:Real) ->
-    Distribution<Real[_]> {
-  return Gaussian(μ, Σ, box(σ2));
-}
-
-/**
- * Create multivariate Gaussian distribution where the covariance is given
- * as a matrix multiplied by a scalar. This is usually used for establishing
- * a multivariate normal-inverse-gamma, where the final argument is
- * inverse-gamma distributed.
- */
-function Gaussian(μ:Expression<Real[_]>, Σ:LLT, σ2:Expression<Real>) ->
-    Distribution<Real[_]> {
-  return Gaussian(μ, box(Σ), σ2);
-}
-
-/**
- * Create multivariate Gaussian distribution where the covariance is given
- * as a matrix multiplied by a scalar. This is usually used for establishing
- * a multivariate normal-inverse-gamma, where the final argument is
- * inverse-gamma distributed.
- */
-function Gaussian(μ:Expression<Real[_]>, Σ:LLT, σ2:Real) ->
-    Distribution<Real[_]> {
-  return Gaussian(μ, box(Σ), box(σ2));
-}
-
-/**
- * Create multivariate Gaussian distribution where the covariance is given
- * as a matrix multiplied by a scalar. This is usually used for establishing
- * a multivariate normal-inverse-gamma, where the final argument is
- * inverse-gamma distributed.
- */
-function Gaussian(μ:Real[_], Σ:Expression<LLT>, σ2:Expression<Real>) ->
-    Distribution<Real[_]> {
-  return Gaussian(box(μ), Σ, σ2);
-}
-
-/**
- * Create multivariate Gaussian distribution where the covariance is given
- * as a matrix multiplied by a scalar. This is usually used for establishing
- * a multivariate normal-inverse-gamma, where the final argument is
- * inverse-gamma distributed.
- */
-function Gaussian(μ:Real[_], Σ:Expression<LLT>, σ2:Real) ->
-    Distribution<Real[_]> {
-  return Gaussian(box(μ), Σ, box(σ2));
-}
-
-/**
- * Create multivariate Gaussian distribution where the covariance is given
- * as a matrix multiplied by a scalar. This is usually used for establishing
- * a multivariate normal-inverse-gamma, where the final argument is
- * inverse-gamma distributed.
- */
-function Gaussian(μ:Real[_], Σ:LLT, σ2:Expression<Real>) ->
-    Distribution<Real[_]> {
-  return Gaussian(box(μ), box(Σ), σ2);
-}
-
-/**
- * Create multivariate Gaussian distribution where the covariance is given
- * as a matrix multiplied by a scalar. This is usually used for establishing
- * a multivariate normal-inverse-gamma, where the final argument is
- * inverse-gamma distributed.
- */
-function Gaussian(μ:Real[_], Σ:LLT, σ2:Real) -> Distribution<Real[_]> {
-  return Gaussian(box(μ), box(Σ), box(σ2));
-}
-
-/**
- * Create multivariate Gaussian distribution where the covariance is given
- * as a matrix multiplied by a scalar. This is usually used for establishing
- * a multivariate normal-inverse-gamma, where the final argument is
- * inverse-gamma distributed.
- */
-function Gaussian(μ:Expression<Real[_]>, Σ:Expression<Real[_,_]>,
-    σ2:Expression<Real>) -> Distribution<Real[_]> {
-  return Gaussian(μ, llt(Σ), σ2);
-}
-
-/**
- * Create multivariate Gaussian distribution where the covariance is given
- * as a matrix multiplied by a scalar. This is usually used for establishing
- * a multivariate normal-inverse-gamma, where the final argument is
- * inverse-gamma distributed.
- */
-function Gaussian(μ:Expression<Real[_]>, Σ:Expression<Real[_,_]>, σ2:Real) ->
-    Distribution<Real[_]> {
-  return Gaussian(μ, llt(Σ), σ2);
-}
-
-/**
- * Create multivariate Gaussian distribution where the covariance is given
- * as a matrix multiplied by a scalar. This is usually used for establishing
- * a multivariate normal-inverse-gamma, where the final argument is
- * inverse-gamma distributed.
- */
-function Gaussian(μ:Expression<Real[_]>, Σ:Real[_,_], σ2:Expression<Real>) ->
-    Distribution<Real[_]> {
-  return Gaussian(μ, llt(Σ), σ2);
-}
-
-/**
- * Create multivariate Gaussian distribution where the covariance is given
- * as a matrix multiplied by a scalar. This is usually used for establishing
- * a multivariate normal-inverse-gamma, where the final argument is
- * inverse-gamma distributed.
- */
-function Gaussian(μ:Expression<Real[_]>, Σ:Real[_,_], σ2:Real) ->
-      Distribution<Real[_]> {
-  return Gaussian(μ, llt(Σ), σ2);
-}
-
-/**
- * Create multivariate Gaussian distribution where the covariance is given
- * as a matrix multiplied by a scalar. This is usually used for establishing
- * a multivariate normal-inverse-gamma, where the final argument is
- * inverse-gamma distributed.
- */
-function Gaussian(μ:Real[_], Σ:Expression<Real[_,_]>, σ2:Expression<Real>) ->
-    Distribution<Real[_]> {
-  return Gaussian(μ, llt(Σ), σ2);
-}
-
-/**
- * Create multivariate Gaussian distribution where the covariance is given
- * as a matrix multiplied by a scalar. This is usually used for establishing
- * a multivariate normal-inverse-gamma, where the final argument is
- * inverse-gamma distributed.
- */
-function Gaussian(μ:Real[_], Σ:Expression<Real[_,_]>, σ2:Real) ->
-    Distribution<Real[_]> {
-  return Gaussian(μ, llt(Σ), σ2);
-}
-
-/**
- * Create multivariate Gaussian distribution where the covariance is given
- * as a matrix multiplied by a scalar. This is usually used for establishing
- * a multivariate normal-inverse-gamma, where the final argument is
- * inverse-gamma distributed.
- */
-function Gaussian(μ:Real[_], Σ:Real[_,_], σ2:Expression<Real>) ->
-    Distribution<Real[_]> {
-  return Gaussian(μ, llt(Σ), σ2);
-}
-
-/**
- * Create multivariate Gaussian distribution where the covariance is given
- * as a matrix multiplied by a scalar. This is usually used for establishing
- * a multivariate normal-inverse-gamma, where the final argument is
- * inverse-gamma distributed.
- */
-function Gaussian(μ:Real[_], Σ:Real[_,_], σ2:Real) -> Distribution<Real[_]> {
-  return Gaussian(μ, llt(Σ), σ2);
+  return construct<MultivariateGaussian>(box(μ), Σ);
 }

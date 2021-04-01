@@ -1,6 +1,8 @@
 /**
  * Delta distribution, representing a distribution on a discrete space with
  * all probability mass at one location.
+ *
+ * - μ: Location.
  */
 final class Delta(μ:Expression<Integer>) < Discrete {
   /**
@@ -45,23 +47,12 @@ final class Delta(μ:Expression<Integer>) < Discrete {
 
 /**
  * Create delta distribution.
- *
- * - μ: Location.
  */
-function Delta(μ:Expression<Integer>) -> Distribution<Integer> {
+function Delta<Middle>(μ:Middle) -> Distribution<Integer> {
   m:Discrete?;
-  if (m <- μ.graftDiscrete())? {
-    return DiscreteDelta(m!);
-  } else {
-    return construct<Delta>(μ);
-  }
-}
-
-/**
- * Create delta distribution.
- *
- * - μ: Location.
- */
-function Delta(μ:Integer) -> Distribution<Integer> {
-  return Delta(box(μ));
+  //if (m <- μ.graftDiscrete())? {
+  //  return DiscreteDelta(m!);
+  //} else {
+    return construct<Delta>(box(μ));
+  //}
 }

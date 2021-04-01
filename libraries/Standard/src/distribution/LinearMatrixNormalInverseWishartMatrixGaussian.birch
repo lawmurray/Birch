@@ -71,10 +71,8 @@ final class LinearMatrixNormalInverseWishartMatrixGaussian(
   }
 }
 
-function LinearMatrixNormalInverseWishartMatrixGaussian(
-    A:Expression<Real[_,_]>, M:MatrixNormalInverseWishart,
-    C:Expression<Real[_,_]>) -> LinearMatrixNormalInverseWishartMatrixGaussian {
-  m:LinearMatrixNormalInverseWishartMatrixGaussian(A, M, C);
+function LinearMatrixNormalInverseWishartMatrixGaussian<Left,Right>(A:Left, M:MatrixNormalInverseWishart, C:Right) -> {
+  m:LinearMatrixNormalInverseWishartMatrixGaussian(box(A), M, box(C));
   m.link();
   return m;
 }

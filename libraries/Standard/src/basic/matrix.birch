@@ -1,17 +1,8 @@
 /**
- * Convert single-element matrix to scalar value.
- */
-function scalar<Type>(X:Type[_,_]) -> Type {
-  assert rows(X) == 1;  
-  assert columns(X) == 1;  
-  return X[1,1];
-}
-
-/**
  * Convert vector to matrix with single row.
  */
 function row<Type>(x:Type[_]) -> Type[_,_] {
-  return matrix(\(i:Integer, j:Integer) -> Type { return x[j]; }, 1,
+  return matrix<Real>(\(i:Integer, j:Integer) -> Type { return x[j]; }, 1,
       length(x));
 }
 
@@ -69,95 +60,6 @@ function mat<Type>(x:Type[_], columns:Integer) -> Type[_,_] {
 }
 
 /**
- * Stack two matrices atop one another (i.e. append columns) to create a
- * new matrix.
- */
-function stack<Type>(X:Type[_,_], Y:Type[_,_]) -> Type[_,_] {
-  assert columns(X) == columns(Y);
-  
-  let R1 <- rows(X);
-  let R2 <- rows(Y);
-  let C <- columns(X);
-  
-  return matrix(\(i:Integer, j:Integer) -> Type {
-        if i <= R1 {
-          return X[i,j];
-        } else {
-          return Y[i - R1,j];
-        }
-      }, R1 + R2, C);
-}
-
-/**
- * Pack two matrices next to one another (i.e. append rows) to create a
- * new matrix.
- */
-function pack<Type>(X:Type[_,_], Y:Type[_,_]) -> Type[_,_] {
-  assert rows(X) == rows(Y);
-  
-  let R <- rows(X);
-  let C1 <- columns(X);
-  let C2 <- columns(Y);
-  
-  return matrix(\(i:Integer, j:Integer) -> Type {
-        if j <= C1 {
-          return X[i,j];
-        } else {
-          return Y[i,j - C1];
-        }
-      }, R, C1 + C2);
-}
-
-/**
- * Create diagonal matrix, filling the diagonal with a given scalar value.
- *
- * - x: The value.
- * - length: Number of rows/columns.
- */
-function diagonal(x:Real, length:Integer) -> Real[_,_] {
-  return matrix(\(i:Integer, j:Integer) -> Real {
-        if i == j {
-          return x;
-        } else {
-          return 0.0;
-        }
-      }, length, length);
-}
-
-/**
- * Create diagonal matrix, filling the diagonal with a given scalar value.
- *
- * - x: The value.
- * - length: Number of rows/columns.
- */
-function diagonal(x:Integer, length:Integer) -> Integer[_,_] {
-  return matrix(\(i:Integer, j:Integer) -> Integer {
-        if i == j {
-          return x;
-        } else {
-          return 0;
-        }
-      }, length, length);
-}
-
-/**
- * Create diagonal matrix, filling the diagonal with a given scalar value.
- *
- * - x: The value.
- * - length: Number of rows/columns.
- */
-function diagonal(x:Boolean, length:Integer) -> Boolean[_,_] {
-  return matrix(\(i:Integer, j:Integer) -> Boolean {
-        if i == j {
-          return x;
-        } else {
-          return false;
-        }
-      }, length, length);
-}
-
-
-/**
  * Create identity matrix.
  *
  * - length: Number of rows/columns.
@@ -203,45 +105,6 @@ function matrix<Type>(x:Type, rows:Integer, columns:Integer) -> Type[_,_] {
   }}
 }
 
-/**
- * Convert matrix to Boolean matrix.
- */
-function Boolean<Type>(X:Type[_,_]) -> Boolean[_,_] {
-  return matrix(\(i:Integer, j:Integer) -> Boolean {
-        return Boolean(X[i,j]);
-      }, rows(X), columns(X));
-}
-
-/**
- * Convert matrix to integer matrix.
- */
-function Integer<Type>(X:Type[_,_]) -> Integer[_,_] {
-  return matrix(\(i:Integer, j:Integer) -> Integer {
-        return Integer(X[i,j]);
-      }, rows(X), columns(X));
-}
-
-/**
- * Convert matrix to real matrix.
- */
-function Real<Type>(X:Type[_,_]) -> Real[_,_] {
-  return matrix(\(i:Integer, j:Integer) -> Real {
-        return Real(X[i,j]);
-      }, rows(X), columns(X));
-}
-
-function canonical<Type>(x:Type[_,_]) -> Type[_,_] {
-  return x;
-}
-
-function length<Type>(x:Type[_,_]) -> Integer {
-  return rows(x);
-}
-
-function size<Type>(x:Type[_,_]) -> Integer {
-  return rows(x)*columns(x);
-}
-
 function rows<Type>(x:Type[_,_]) -> Integer {
   cpp{{
   return x.rows();
@@ -254,11 +117,19 @@ function columns<Type>(x:Type[_,_]) -> Integer {
   }}
 }
 
-function depth<Type>(x:Type[_,_]) -> Integer {
-  return 0;
+function length<Type>(x:Type[_,_]) -> Integer {
+  return rows(x);
+}
+
+function size<Type>(x:Type[_,_]) -> Integer {
+  return rows(x)*columns(x);
 }
 
 function value<Type>(x:Type[_,_]) -> Type[_,_] {
+  return x;
+}
+
+function peak<Type>(x:Type[_,_]) -> Type[_,_] {
   return x;
 }
 
@@ -266,23 +137,7 @@ function eval<Type>(x:Type[_,_]) -> Type[_,_] {
   return x;
 }
 
-function eval<Type>(x:Type[_,_], gen:Integer) -> Type[_,_] {
-  return x;
-}
-
-function count_eval<Type>(x:Type[_,_], gen:Integer) -> Type[_,_] {
-  return x;
-}
-
 function reval<Type>(x:Type[_,_]) -> Type[_,_] {
-  return x;
-}
-
-function reval<Type>(x:Type[_,_], gen:Integer) -> Type[_,_] {
-  return x;
-}
-
-function count_reval<Type>(x:Type[_,_], gen:Integer) -> Type[_,_] {
   return x;
 }
 
@@ -290,130 +145,14 @@ function grad<Type,Gradient>(x:Type[_,_], d:Gradient) {
   //
 }
 
-function grad<Type,Gradient>(x:Type[_,_], gen:Integer, d:Gradient) {
+function label<Type>(x:Type[_,_], gen:Integer) {
   //
 }
 
-function count_grad<Type,Gradient>(x:Type[_,_], gen:Integer, d:Gradient) {
+function prune<Type>(x:Type[_,_], gen:Integer) {
   //
 }
 
-function count_grad<Type>(x:Type[_,_], gen:Integer, d:Real, i:Integer) {
+function constant<Type>(x:Type[_,_]) {
   //
-}
-
-function count_grad<Type>(x:Type[_,_], gen:Integer, d:Real, i:Integer, j:Integer) {
-  //
-}
-
-function graft_beta<Type>(x:Type[_,_]) -> Beta? {
-  return nil;
-}
-
-function graft_dirichlet<Type>(x:Type[_,_]) -> Dirichlet? {
-  return nil;
-}
-
-function graft_restaurant<Type>(x:Type[_,_]) -> Restaurant? {
-  return nil;
-}
-
-function graft_gamma<Type>(x:Type[_,_]) -> Gamma? {
-  return nil;
-}
-
-function graft_scaled_gamma<Type>(x:Type[_,_]) ->  TransformLinear<Gamma>? {
-  return nil;
-}
-
-function graft_inverse_gamma<Type>(x:Type[_,_]) -> InverseGamma? {
-  return nil;
-}
-
-function graft_inverse_wishart<Type>(x:Type[_,_]) -> InverseWishart? {
-  return nil;
-}
-
-function graft_gaussian<Type>(x:Type[_,_]) -> Gaussian? {
-  return nil;
-}
-
-function graft_linear_gaussian<Type>(x:Type[_,_]) -> TransformLinear<Gaussian>? {
-  return nil;
-}
-
-function graft_normal_inverse_gamma<Type>(x:Type[_,_], compare:Distribution<Real>) ->
-    NormalInverseGamma? {
-  return nil;
-}
-
-function graft_linear_normal_inverse_gamma<Type>(x:Type[_,_], compare:Distribution<Real>) ->
-    TransformLinear<NormalInverseGamma>? {
-  return nil;
-}
-
-function graft_multivariate_gaussian<Type>(x:Type[_,_]) -> MultivariateGaussian? {
-  return nil;
-}
-
-function graft_linear_multivariate_gaussian<Type>(x:Type[_,_]) ->
-    TransformLinearMultivariate<MultivariateGaussian>? {
-  return nil;
-}
-
-function graft_dot_multivariate_gaussian<Type>(x:Type[_,_]) ->
-    TransformDot<MultivariateGaussian>? {
-  return nil;
-}
-
-function graft_multivariate_normal_inverse_gamma<Type>(x:Type[_,_], compare:Distribution<Real>) ->
-    MultivariateNormalInverseGamma? {
-  return nil;
-}
-
-function graft_linear_multivariate_normal_inverse_gamma<Type>(x:Type[_,_], compare:Distribution<Real>) ->
-    TransformLinearMultivariate<MultivariateNormalInverseGamma>? {
-  return nil;
-}
-
-function graft_dot_multivariate_normal_inverse_gamma<Type>(x:Type[_,_], compare:Distribution<Real>) ->
-    TransformDot<MultivariateNormalInverseGamma>? {
-  return nil;
-}
-
-function graft_matrix_gaussian<Type>(x:Type[_,_]) -> MatrixGaussian? {
-  return nil;
-}
-
-function graft_linear_matrix_gaussian<Type>(x:Type[_,_]) ->
-    TransformLinearMatrix<MatrixGaussian>? {
-  return nil;
-}
-
-function graft_dot_matrix_gaussian<Type>(x:Type[_,_]) ->
-    TransformDotMultivariate<MatrixGaussian>? {
-  return nil;
-}
-
-function graft_matrix_normal_inverse_wishart<Type>(x:Type[_,_], compare:Distribution<LLT>) ->
-    MatrixNormalInverseWishart? {
-  return nil;
-}
-
-function graft_linear_matrix_normal_inverse_wishart<Type>(x:Type[_,_], compare:Distribution<LLT>) ->
-    TransformLinearMatrix<MatrixNormalInverseWishart>? {
-  return nil;
-}
-
-function graft_dot_matrix_normal_inverse_wishart<Type>(x:Type[_,_], compare:Distribution<LLT>) ->
-    TransformDotMultivariate<MatrixNormalInverseWishart>? {
-  return nil;
-}
-
-function graft_discrete<Type>(x:Type[_,_]) -> Discrete? {
-  return nil;
-}
-
-function graft_bounded_discrete<Type>(x:Type[_,_]) -> BoundedDiscrete? {
-  return nil;
 }

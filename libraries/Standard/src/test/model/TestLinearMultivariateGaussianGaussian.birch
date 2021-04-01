@@ -22,7 +22,7 @@ class TestLinearMultivariateGaussianGaussian < Model {
   }
 
   function simulate() {
-    μ ~ Gaussian(μ_0, Σ_0);
+    μ ~ MultivariateGaussian(μ_0, Σ_0);
     x ~ Gaussian(dot(a, μ) + c, σ2_1);
   }
 

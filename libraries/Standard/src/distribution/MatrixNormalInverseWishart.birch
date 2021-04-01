@@ -2,16 +2,16 @@
  * Matrix normal-inverse-Wishart distribution.
  */
 final class MatrixNormalInverseWishart(M:Expression<Real[_,_]>,
-    U:Expression<LLT>, V:InverseWishart) < Distribution<Real[_,_]> {
+    U:Expression<Real[_,_]>, V:InverseWishart) < Distribution<Real[_,_]> {
   /**
    * Among-row precision.
    */
-  Λ:Expression<LLT> <- inv(U);
+  Λ:Expression<Real[_,_]> <- box(inv(U));
 
   /**
    * Among-row precision times mean.
    */
-  N:Expression<Real[_,_]> <- canonical(Λ)*M;
+  N:Expression<Real[_,_]> <- box(matrix<Real>(Λ)*M);
   
   /**
    * Among-column covariance.
@@ -54,7 +54,7 @@ final class MatrixNormalInverseWishart(M:Expression<Real[_,_]>,
     (V.Ψ, V.k) <- update_lazy_matrix_normal_inverse_wishart(X, N, Λ, V.Ψ, V.k);
   }
 
-  function graftMatrixNormalInverseWishart(compare:Distribution<LLT>) ->
+  function graftMatrixNormalInverseWishart(compare:Distribution<Real[_,_]>) ->
       MatrixNormalInverseWishart? {
     prune();
     if V == compare {
@@ -82,9 +82,8 @@ final class MatrixNormalInverseWishart(M:Expression<Real[_,_]>,
   }
 }
 
-function MatrixNormalInverseWishart(M:Expression<Real[_,_]>,
-    U:Expression<LLT>, V:InverseWishart) -> MatrixNormalInverseWishart {
-  m:MatrixNormalInverseWishart(M, U, V);
+function MatrixNormalInverseWishart<Left,Middle>(M:Left, U:Middle, V:InverseWishart) -> {
+  m:MatrixNormalInverseWishart(M, box(U), V);
   m.link();
   return m;
 }

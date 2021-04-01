@@ -35,7 +35,7 @@ final class NormalInverseGamma(μ:Expression<Real>, a2:Expression<Real>,
   /**
    * Precision scale.
    */
-  λ:Expression<Real> <- 1.0/a2;
+  λ:Expression<Real> <- box(1.0/a2);
   
   /**
    * Variance.
@@ -59,7 +59,7 @@ final class NormalInverseGamma(μ:Expression<Real>, a2:Expression<Real>,
   }
 
   function logpdfLazy(x:Expression<Real>) -> Expression<Real>? {
-    return logpdf_lazy_normal_inverse_gamma(x, μ, 1.0/λ, σ2.α, σ2.β);
+    return logpdf_lazy_normal_inverse_gamma(x, μ, box(1.0/λ), σ2.α, σ2.β);
   }
 
   function update(x:Real) {
@@ -106,9 +106,8 @@ final class NormalInverseGamma(μ:Expression<Real>, a2:Expression<Real>,
   }
 }
 
-function NormalInverseGamma(μ:Expression<Real>, a2:Expression<Real>,
-    σ2:InverseGamma) -> NormalInverseGamma {
-  m:NormalInverseGamma(μ, a2, σ2);
+function NormalInverseGamma<Left,Middle>(μ:Left, a2:Middle, σ2:InverseGamma) -> {
+  m:NormalInverseGamma(box(μ), box(a2), σ2);
   m.link();
   return m;
 }

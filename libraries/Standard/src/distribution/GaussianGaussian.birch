@@ -2,7 +2,7 @@
  * Gaussian-Gaussian distribution.
  */
 final class GaussianGaussian(m:Gaussian, s2:Expression<Real>) <
-    Gaussian(m.μ, m.σ2 + s2) {
+    Gaussian(m.μ, box(m.σ2 + s2)) {
   /**
    * Mean.
    */
@@ -30,8 +30,8 @@ final class GaussianGaussian(m:Gaussian, s2:Expression<Real>) <
   }
 }
 
-function GaussianGaussian(μ:Gaussian, σ2:Expression<Real>) -> GaussianGaussian {
-  m:GaussianGaussian(μ, σ2);
+function GaussianGaussian<Right>(μ:Gaussian, σ2:Right) -> {
+  m:GaussianGaussian(μ, box(σ2));
   m.link();
   return m;
 }

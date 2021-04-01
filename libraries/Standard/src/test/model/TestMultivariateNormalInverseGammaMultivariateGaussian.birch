@@ -22,8 +22,8 @@ class TestMultivariateNormalInverseGammaMultivariateGaussian < Model {
 
   function simulate() {
     σ2 ~ InverseGamma(α, β);
-    μ ~ Gaussian(μ_0, A, σ2);
-    x ~ Gaussian(μ, σ2);
+    μ ~ MultivariateGaussian(μ_0, A*σ2);
+    x ~ MultivariateGaussian(μ, identity(length(μ))*σ2);
   }
 
   function forward() -> Real[_] {

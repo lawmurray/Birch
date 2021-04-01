@@ -27,7 +27,7 @@ program test_pdf_matrix_normal_inverse_wishart(R:Integer <- 3, C:Integer <- 2,
   U <- U*transpose(U);
   Ψ <- Ψ*transpose(Ψ);
 
-  V:InverseWishart(box(llt(Ψ)), box(k));
-  π:MatrixNormalInverseWishart(box(M), box(llt(U)), V);
+  V:InverseWishart(box(Ψ), box(k));
+  π:MatrixNormalInverseWishart(box(M), box(U), V);
   test_pdf(π, R, C, N, B, S, lazy);
 }

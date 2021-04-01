@@ -76,63 +76,6 @@ class ConwayMaxwellPoisson(λ:Expression<Real>, ν:Expression<Real>,
 /**
  * Create Conway-Maxwell-Poisson distribution.
  */
-function ConwayMaxwellPoisson(λ:Expression<Real>, ν:Expression<Real>,
-    n:Expression<Integer>) -> ConwayMaxwellPoisson {
-  return construct<ConwayMaxwellPoisson>(λ, ν, n);
-}
-
-/**
- * Create Conway-Maxwell-Poisson distribution.
- */
-function ConwayMaxwellPoisson(λ:Real, ν:Expression<Real>,
-    n:Expression<Integer>) -> ConwayMaxwellPoisson {
-  return ConwayMaxwellPoisson(box(λ), ν, n);
-}
-
-/**
- * Create Conway-Maxwell-Poisson distribution.
- */
-function ConwayMaxwellPoisson(λ:Expression<Real>, ν:Real,
-    n:Expression<Integer>) -> ConwayMaxwellPoisson {
-  return ConwayMaxwellPoisson(λ, box(ν), n);
-}
-
-/**
- * Create Conway-Maxwell-Poisson distribution.
- */
-function ConwayMaxwellPoisson(λ:Expression<Real>, ν:Expression<Real>,
-    n:Integer) -> ConwayMaxwellPoisson {
-  return ConwayMaxwellPoisson(λ, ν, box(n));
-}
-
-/**
- * Create Conway-Maxwell-Poisson distribution.
- */
-function ConwayMaxwellPoisson(λ:Expression<Real>, ν:Real, n:Integer) ->
-    ConwayMaxwellPoisson {
-  return ConwayMaxwellPoisson(λ, box(ν), box(n));
-}
-
-/**
- * Create Conway-Maxwell-Poisson distribution.
- */
-function ConwayMaxwellPoisson(λ:Real, ν:Expression<Real>, n:Integer) ->
-    ConwayMaxwellPoisson {
-  return ConwayMaxwellPoisson(box(λ), ν, box(n));
-}
-
-/**
- * Create Conway-Maxwell-Poisson distribution.
- */
-function ConwayMaxwellPoisson(λ:Real, ν:Real, n:Expression<Integer>) ->
-    ConwayMaxwellPoisson {
-  return ConwayMaxwellPoisson(box(λ), box(ν), n);
-}
-
-/**
- * Create Conway-Maxwell-Poisson distribution.
- */
-function ConwayMaxwellPoisson(λ:Real, ν:Real, n:Integer) ->
-    ConwayMaxwellPoisson {
-  return ConwayMaxwellPoisson(box(λ), box(ν), box(n));
+function ConwayMaxwellPoisson<Left,Middle,Right>(λ:Left, ν:Middle, n:Right) -> {
+  return construct<ConwayMaxwellPoisson>(box(λ), box(ν), box(n));
 }

@@ -1,113 +1,89 @@
 /**
- * Default integer.
+ * 64-bit signed integer.
  */
-type Integer = Integer64;
+type Integer;
+
+/*
+ * Operators
+ */
+operator (+x:Integer) -> Integer;
+operator (x:Integer > y:Integer) -> Boolean;
+operator (x:Integer >= y:Integer) -> Boolean;
+operator (x:Integer <= y:Integer) -> Boolean;
+operator (x:Integer == y:Integer) -> Boolean;
+operator (x:Integer != y:Integer) -> Boolean;
 
 /**
- * Convert to Integer.
+ * Modulus.
  */
-function Integer(x:Real64) -> Integer {
-  return Integer64(x);
+function mod(x:Integer, y:Integer) -> Integer {
+  cpp {{
+  return x % y;
+  }}
 }
 
 /**
- * Convert to Integer.
+ * Maximum of two values.
  */
-function Integer(x:Real32) -> Integer {
-  return Integer64(x);
+function max(x:Integer, y:Integer) -> Integer {
+  cpp {{
+  return std::max(x, y);
+  }}
 }
 
 /**
- * Convert to Integer.
+ * Minimum of two values.
  */
-function Integer(x:Integer64) -> Integer {
-  return Integer64(x);
+function min(x:Integer, y:Integer) -> Integer {
+  cpp {{
+  return std::min(x, y);
+  }}
 }
 
-/**
- * Convert to Integer.
- */
-function Integer(x:Integer32) -> Integer {
-  return Integer64(x);
+function rows(x:Integer) -> Integer {
+  return 1;
 }
 
-/**
- * Convert to Integer.
- */
-function Integer(x:Integer16) -> Integer {
-  return Integer64(x);
+function columns(x:Integer) -> Integer {
+  return 1;
 }
 
-/**
- * Convert to Integer.
- */
-function Integer(x:Integer8) -> Integer {
-  return Integer64(x);
+function length(x:Integer) -> Integer {
+  return 1;
 }
 
-/**
- * Convert to Integer.
- */
-function Integer(x:Boolean) -> Integer {
-  if x {
-    return Integer(1);
-  } else {
-    return Integer(0);
-  }
+function size(x:Integer) -> Integer {
+  return 1;
 }
 
-/**
- * Convert to Integer.
- */
-function Integer(x:String) -> Integer {
-  return Integer64(x);
+function value(x:Integer) -> Integer {
+  return x;
 }
 
-/**
- * Convert to Integer.
- */
-function Integer(x:Real64?) -> Integer? {
-  return Integer64(x);
+function peak(x:Integer) -> Integer {
+  return x;
 }
 
-/**
- * Convert to Integer.
- */
-function Integer(x:Real32?) -> Integer? {
-  return Integer64(x);
+function eval(x:Integer) -> Integer {
+  return x;
 }
 
-/**
- * Convert to Integer.
- */
-function Integer(x:Integer64?) -> Integer? {
-  return Integer64(x);
+function reval(x:Integer) -> Integer {
+  return x;
 }
 
-/**
- * Convert to Integer.
- */
-function Integer(x:Integer32?) -> Integer? {
-  return Integer64(x);
+function grad<Gradient>(x:Integer, d:Gradient) {
+  //
 }
 
-/**
- * Convert to Integer.
- */
-function Integer(x:Integer16?) -> Integer? {
-  return Integer64(x);
+function label(x:Integer, gen:Integer) {
+  //
 }
 
-/**
- * Convert to Integer.
- */
-function Integer(x:Integer8?) -> Integer? {
-  return Integer64(x);
+function prune(x:Integer, gen:Integer) {
+  //
 }
 
-/**
- * Convert to Integer.
- */
-function Integer(x:String?) -> Integer? {
-  return Integer64(x);
+function constant(x:Integer) {
+  //
 }

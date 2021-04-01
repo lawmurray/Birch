@@ -23,7 +23,7 @@ class TestLinearNormalInverseGammaGaussian < Model {
 
   function simulate() {
     σ2 ~ InverseGamma(α, β);
-    μ ~ Gaussian(μ_0, a2, σ2);
+    μ ~ Gaussian(μ_0, a2*σ2);
     if neg {
       x ~ Gaussian(μ/a - c, σ2);
     } else {

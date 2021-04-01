@@ -49,13 +49,17 @@ final class Exponential(λ:Expression<Real>) < Distribution<Real> {
 /**
  * Create Exponential distribution.
  */
-function Exponential(λ:Expression<Real>) -> Distribution<Real> {
-  m1:TransformLinear<Gamma>?;
-  m2:Gamma?;
-  if (m1 <- λ.graftScaledGamma())? {
-    return ScaledGammaExponential(m1!.a, m1!.x);
-  } else if (m2 <- λ.graftGamma())? {
-    return GammaExponential(m2!);
+function Exponential<Middle>(λ:Middle) -> {
+  return construct<Exponential>(box(λ));
+}
+
+/**
+ * Create Exponential distribution.
+ */
+function Exponential(λ:Random<Real>) -> Distribution<Real> {
+  m:Gamma?;
+  if (m <- λ.graftGamma())? {
+    return GammaExponential(m!);
   } else {
     return construct<Exponential>(λ);
   }
@@ -64,6 +68,25 @@ function Exponential(λ:Expression<Real>) -> Distribution<Real> {
 /**
  * Create Exponential distribution.
  */
-function Exponential(λ:Real) -> Distribution<Real> {
-  return Exponential(box(λ));
+function Exponential<Left>(λ:Multiply<Left,Random<Real>>) ->
+    Distribution<Real> {
+  m:Gamma?;
+  if (m <- λ.r!.graftGamma())? {
+    return ScaledGammaExponential(λ.l!, m!);
+  } else {
+    return construct<Exponential>(box(λ));
+  }
+}
+
+/**
+ * Create Exponential distribution.
+ */
+function Exponential<Right>(λ:Multiply<Random<Real>,Right>) ->
+    Distribution<Real> {
+  m:Gamma?;
+  if (m <- λ.l!.graftGamma())? {
+    return ScaledGammaExponential(λ.r!, m!);
+  } else {
+    return construct<Exponential>(box(λ));
+  }
 }

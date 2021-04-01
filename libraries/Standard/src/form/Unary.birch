@@ -1,0 +1,47 @@
+/*
+ * Function form with one argument.
+ */
+final class Unary<Function,Middle>(m:Middle) {
+  /**
+   * Function.
+   */
+  f:Function;
+
+  /**
+   * Argument.
+   */
+  m:Middle? <- m;
+
+  function value() -> {
+    return f.compute(global.value(m!));
+  }
+
+  function peak() -> {
+    return f.compute(global.peak(m!));
+  }
+
+  function eval() -> {
+    return f.compute(global.eval(m!));
+  }
+
+  function reval() -> {
+    return f.compute(global.reval(m!));
+  }
+
+  function grad<Gradient>(d:Gradient) {
+    global.grad(m!, f.grad(d, global.peak(m!)));
+  }
+
+  function label(gen:Integer) {
+    global.label(m!, gen);
+  }
+
+  function prune(gen:Integer) {
+    global.prune(m!, gen);
+  }
+
+  function constant() {
+    global.constant(m!);
+    m <- nil;
+  }
+}

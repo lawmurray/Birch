@@ -42,13 +42,6 @@ final class Dirichlet(α:Expression<Real[_]>) < Distribution<Real[_]> {
 /**
  * Create Dirichlet distribution.
  */
-function Dirichlet(α:Expression<Real[_]>) -> Dirichlet {
-  return construct<Dirichlet>(α);
-}
-
-/**
- * Create Dirichlet distribution.
- */
-function Dirichlet(α:Real[_]) -> Dirichlet {
-  return Dirichlet(box(α));
+function Dirichlet<Middle>(α:Middle) -> {
+  return construct<Dirichlet>(box(α));
 }

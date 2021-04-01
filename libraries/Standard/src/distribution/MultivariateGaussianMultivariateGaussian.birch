@@ -2,8 +2,7 @@
  * Multivariate Gaussian-Gaussian distribution.
  */
 final class MultivariateGaussianMultivariateGaussian(m:MultivariateGaussian,
-    S:Expression<LLT>) < MultivariateGaussian(m.μ,
-    llt(canonical(m.Σ) + canonical(S))) {
+    S:Expression<Real[_,_]>) < MultivariateGaussian(m.μ, box(m.Σ + S)) {
   /**
    * Mean.
    */
@@ -12,7 +11,7 @@ final class MultivariateGaussianMultivariateGaussian(m:MultivariateGaussian,
   /**
    * Likelihood covariance.
    */
-  S:Expression<LLT> <- S;
+  S:Expression<Real[_,_]> <- S;
 
   function update(x:Real[_]) {
     (m.μ, m.Σ) <- box(update_multivariate_gaussian_multivariate_gaussian(x, m.μ.value(), m.Σ.value(), S.value()));
@@ -31,8 +30,7 @@ final class MultivariateGaussianMultivariateGaussian(m:MultivariateGaussian,
   }
 }
 
-function MultivariateGaussianMultivariateGaussian(μ:MultivariateGaussian,
-    Σ:Expression<LLT>) -> MultivariateGaussianMultivariateGaussian {
+function MultivariateGaussianMultivariateGaussian<Right>(μ:MultivariateGaussian, Σ:Right) -> {
   m:MultivariateGaussianMultivariateGaussian(μ, Σ);
   m.link();
   return m;

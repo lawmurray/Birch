@@ -17,7 +17,7 @@ class TestNormalInverseGammaGaussian < Model {
 
   function simulate() {
     σ2 ~ InverseGamma(α, β);
-    μ ~ Gaussian(μ_0, a2, σ2);
+    μ ~ Gaussian(μ_0, a2*σ2);
     x ~ Gaussian(μ, σ2);
   }
 

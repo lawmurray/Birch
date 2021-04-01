@@ -5,43 +5,16 @@ cpp{{
 /**
  * The gamma function.
  */
-function gamma(x:Real64) -> Real64 {
+function gamma(x:Real) -> Real {
   cpp {{
   return ::tgamma(x);
   }}
 }
 
 /**
- * The gamma function.
- */
-function gamma(x:Real32) -> Real32 {
-  cpp {{
-  return ::tgammaf(x);
-  }}
-}
-
-/**
- * Logarithm of the gamma function.
- */
-function lgamma(x:Real64) -> Real64 {
-  cpp {{
-  return ::lgamma(x);
-  }}
-}
-
-/**
- * Logarithm of the gamma function.
- */
-function lgamma(x:Real32) -> Real32 {
-  cpp {{
-  return ::lgammaf(x);
-  }}
-}
-
-/**
  * The multivariate gamma function.
  */
-function gamma(x:Real64, p:Integer) -> Real64 {
+function gamma(x:Real, p:Integer) -> Real {
   assert p > 0;
   let y <- 0.25*(p*(p - 1))*log(π);
   for i in 1..p {
@@ -50,71 +23,18 @@ function gamma(x:Real64, p:Integer) -> Real64 {
   return y;
 }
 
-
-function expm1(x:Real64) -> Real64 {
+function expm1(x:Real) -> Real {
   cpp {{
     return ::expm1(x);
     }}
 }
 
-function expm1(x:Real32) -> Real32 {
-  cpp {{
-    return ::expm1f(x);
-    }}
-}
-
-
-/**
- * The multivariate gamma function.
- */
-function gamma(x:Real32, p:Integer) -> Real32 {
-  assert p > 0;
-  let y <- Real32(0.25)*Real32(p*(p - 1))*log(Real32(π));
-  for i in 1..p {
-    y <- y*gamma(x + Real32(0.5)*Real32(1 - i));
-  }
-  return y;
-}
-
-/**
- * Logarithm of the multivariate gamma function.
- */
-function lgamma(x:Real64, p:Integer) -> Real64 {
-  assert p > 0;
-  let y <- 0.25*(p*(p - 1))*log(π);
-  for i in 1..p {
-    y <- y + lgamma(x + 0.5*(1 - i));
-  }
-  return y;
-}
-
-/**
- * Logarithm of the multivariate gamma function.
- */
-function lgamma(x:Real32, p:Integer) -> Real32 {
-  assert p > 0;
-  let y <- Real32(0.25)*Real32(p*(p - 1))*log(Real32(π));
-  for i in 1..p {
-    y <- y + lgamma(x + Real32(0.5)*Real32(1 - i));
-  }
-  return y;
-}
-
 /**
  * The beta function.
  */
-function beta(x:Real64, y:Real64) -> Real64 {
+function beta(x:Real, y:Real) -> Real {
   return (gamma(x) * gamma(y)) / (gamma(x + y));
 }
-
-/**
- * The beta function.
- */
-function beta(x:Real32, y:Real32) -> Real32 {
-  return (gamma(x) * gamma(y)) / (gamma(x + y));
-}
-
-
 
 /**
  * The incomplete beta function.
@@ -180,32 +100,9 @@ function ibeta(a:Real, b:Real, x:Real) -> Real {
 }
 
 /**
- * Logarithm of the beta function.
- */
-function lbeta(x:Real64, y:Real64) -> Real64 {
-  return lgamma(x) + lgamma(y) - lgamma(x + y);
-}
-
-/**
- * Logarithm of the beta function.
- */
-function lbeta(x:Real32, y:Real32) -> Real32 {
-  return lgamma(x) + lgamma(y) - lgamma(x + y);
-}
-
-/**
  * The digamma function (derivative of `lgamma`).
  */
-function digamma(x:Real64) -> Real64 {
-  cpp {{
-  return boost::math::digamma(x);
-  }}
-}
-
-/**
- * The digamma function (derivative of `lgamma`).
- */
-function digamma(x:Real32) -> Real32 {
+function digamma(x:Real) -> Real {
   cpp {{
   return boost::math::digamma(x);
   }}
@@ -214,7 +111,7 @@ function digamma(x:Real32) -> Real32 {
 /**
  * The binomial coefficient.
  */
-function choose(x:Integer, y:Integer) -> Real64 {
+function choose(x:Integer, y:Integer) -> Real {
   assert 0 <= x;
   assert 0 <= y;
   assert x >= y;
@@ -223,14 +120,14 @@ function choose(x:Integer, y:Integer) -> Real64 {
     return 1.0;
   } else {
     // see Boost binomial_coefficient function for this implementation
-    return 1.0/(Real(y)*beta(Real(y), Real(x - y + 1)));
+    return 1.0/(y*beta(y, x - y + 1));
   }
 }
 
 /**
  * The binomial coefficient.
  */
-function choose(x:Real64, y:Real64) -> Real64 {
+function choose(x:Real, y:Real) -> Real {
   assert 0.0 <= x;
   assert 0.0 <= y;
   assert x >= y;
@@ -243,91 +140,14 @@ function choose(x:Real64, y:Real64) -> Real64 {
   }
 }
 
-/**
- * The binomial coefficient.
- */
-function choose(x:Real32, y:Real32) -> Real32 {
-  assert Real32(0.0) <= x;
-  assert Real32(0.0) <= y;
-  assert x >= y;
-
-  if (y == Real32(0.0)) {
-    return Real32(1.0);
-  } else {
-    // see Boost binomial_coefficient function for this implementation
-    return Real32(1.0)/(y*beta(y, x - y + Real32(1.0)));
-  }
-}
-
-/**
- * Logarithm of the binomial coefficient.
- */
-function lchoose(x:Integer, y:Integer) -> Real64 {
-  assert 0 <= x;
-  assert 0 <= y;
-  assert x >= y;
-
-  if (y == 0) {
-    return 0.0;
-  } else {
-    // see Boost binomial_coefficient function for this implementation
-    return -log(Real(y)) - lbeta(Real(y), Real(x - y + 1));
-  }
-}
-
-/**
- * Logarithm of the binomial coefficient.
- */
-function lchoose(x:Real64, y:Real64) -> Real64 {
-  assert 0.0 <= x;
-  assert 0.0 <= y;
-  assert x >= y;
-
-  if (y == 0.0) {
-    return 0.0;
-  } else {
-    // see Boost binomial_coefficient function for this implementation
-    return -log(y) - lbeta(y, x - y + 1.0);
-  }
-}
-
-/**
- * Logarithm of the binomial coefficient.
- */
-function lchoose(x:Real32, y:Real32) -> Real32 {
-  assert Real32(0.0) <= x;
-  assert Real32(0.0) <= y;
-  assert x >= y;
-
-  if (y == Real32(0.0)) {
-    return log(Real32(1.0));
-  } else {
-    // see Boost binomial_coefficient function for this implementation
-    return -log(y) - lbeta(y, x - y + Real32(1.0));
-  }
-}
-
-/**
- * If-then-else: if `cond` is true then return `x`, else return `y`.
- */
-function if_then_else<Type>(cond:Boolean, x:Type, y:Type) -> Type {
-  if cond {
-    return x;
-  } else {
-    return y;
-  }
-}
-
 function lower_inc_gamma(a:Real, x:Real) -> Real {
-
   // this implementation is taken from https://github.com/scipy/scipy/blob/3af8448114dd4a2755d513edb5a2272a338dc483/scipy/special/cephes/igam.c
-
   assert x >= 0.0;
   assert a >= 0.0;
-  IGAM_SMALL:Real64 <- 20;
-  IGAM_LARGE:Real64 <- 200;
-  IGAM_SMALLRATIO:Real64 <- 0.3;
-  IGAM_LARGERATIO:Real64 <- 4.5;
+  IGAM_SMALL:Real <- 20;
+  IGAM_LARGE:Real <- 200;
+  IGAM_SMALLRATIO:Real <- 0.3;
+  IGAM_LARGERATIO:Real <- 4.5;
 
   absxma_a:Real;
 
@@ -366,10 +186,10 @@ function lower_inc_gamma(a:Real, x:Real) -> Real {
 function upper_inc_gamma(a:Real, x:Real) -> Real {
   assert x >= 0.0;
   assert a >= 0.0;
-  IGAM_SMALL:Real64 <- 20;
-  IGAM_LARGE:Real64 <- 200;
-  IGAM_SMALLRATIO:Real64 <- 0.3;
-  IGAM_LARGERATIO:Real64 <- 4.5;
+  IGAM_SMALL:Real <- 20;
+  IGAM_LARGE:Real <- 200;
+  IGAM_SMALLRATIO:Real <- 0.3;
+  IGAM_LARGERATIO:Real <- 4.5;
 
   absxma_a:Real;
 
@@ -424,8 +244,8 @@ function upper_inc_gamma(a:Real, x:Real) -> Real {
 }
 
 function igam_fac(a:Real, x:Real) -> Real {
-  IGAM_MAXLOG:Real64 <- 709.782712893383996732;
-  IGAM_LANCZOS_G:Real64 <- 6.024680040776729583740234375;
+  IGAM_MAXLOG:Real <- 709.782712893383996732;
+  IGAM_LANCZOS_G:Real <- 6.024680040776729583740234375;
 
   if (abs(a - x) > 0.4 * abs(a)) {
     let ax <- a * log(x) - x - lgamma(a);
@@ -449,8 +269,8 @@ function igam_fac(a:Real, x:Real) -> Real {
 }
 
 function igamc_continued_fraction(a:Real, x:Real) -> Real {
-  IGAM_BIG:Real64 <- 4.503599627370496e15;
-  IGAM_BIGINV:Real64 <- 2.22044604925031308085e-16;
+  IGAM_BIG:Real <- 4.503599627370496e15;
+  IGAM_BIGINV:Real <- 2.22044604925031308085e-16;
   let ax <- igam_fac(a, x);
   if (ax == 0.0) {
     return 0.0;
@@ -503,7 +323,6 @@ function igamc_continued_fraction(a:Real, x:Real) -> Real {
 
   return (ans * ax);
 }
-
 
 function igam_series(a:Real, x:Real) -> Real {
   let ax <- igam_fac(a, x);
@@ -675,32 +494,8 @@ function ratevl(x:Real, num:Real[_], M:Integer, denom:Real[_], N:Integer) -> Rea
 
   if (absx > 1.0) {
     let i <- N - M;
-    return pow(x, Real(i)) * num_ans / denom_ans;
+    return pow(x, i) * num_ans / denom_ans;
   } else {
     return num_ans / denom_ans;
   }
-}
-
-/**
- * Computes the normalizing constant of a Conway-Maxwell-Poisson distribution
- * truncated on a finite interval $[0,n]$.
- *
- * - λ: Rate parameter.
- * - ν: Dispersion parameter.
- * - n: Truncation point.
- *
- * Returns: Value of the normalizing constant for the given interval.
- */
-function normalize_conway_maxwell_poisson(λ:Real, ν:Real, n:Integer) -> Real {
-  assert 0.0 <= λ;
-  assert 0.0 <= ν;
-  assert 0 <= n;
-
-  let z <- 1.0;
-  let Z <- z;
-  for x in 1..n {
-    z <- z*λ/pow(Real(x), ν);
-    Z <- Z + z;
-  }
-  return Z;
 }

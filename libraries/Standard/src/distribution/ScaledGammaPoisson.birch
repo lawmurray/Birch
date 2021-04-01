@@ -29,7 +29,7 @@ final class ScaledGammaPoisson(a:Expression<Real>, λ:Gamma) < Discrete {
   }
 
   function logpdfLazy(x:Expression<Integer>) -> Expression<Real>? {
-    return logpdf_lazy_gamma_poisson(x, λ.k, a*λ.θ);
+    return logpdf_lazy_gamma_poisson(x, λ.k, box(a*λ.θ));
   }
 
   function update(x:Integer) {
@@ -62,9 +62,8 @@ final class ScaledGammaPoisson(a:Expression<Real>, λ:Gamma) < Discrete {
   }
 }
 
-function ScaledGammaPoisson(a:Expression<Real>, λ:Gamma) ->
-    ScaledGammaPoisson {
-  m:ScaledGammaPoisson(a, λ);
+function ScaledGammaPoisson<Left>(a:Left, λ:Gamma) -> {
+  m:ScaledGammaPoisson(box(a), λ);
   m.link();
   return m;
 }

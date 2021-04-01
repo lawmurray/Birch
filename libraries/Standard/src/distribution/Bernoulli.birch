@@ -37,18 +37,18 @@ final class Bernoulli(ρ:Expression<Real>) < Distribution<Boolean> {
 /**
  * Create Bernoulli distribution.
  */
-function Bernoulli(ρ:Expression<Real>) -> Distribution<Boolean> {
+function Bernoulli<Middle>(ρ:Middle) -> {
+  return construct<Bernoulli>(box(ρ));
+}
+
+/**
+ * Create Bernoulli distribution.
+ */
+function Bernoulli(ρ:Random<Real>) -> Distribution<Boolean> {
   m:Beta?;
   if (m <- ρ.graftBeta())? {
     return BetaBernoulli(m!);
   } else {
     return construct<Bernoulli>(ρ);
   }
-}
-
-/**
- * Create Bernoulli distribution.
- */
-function Bernoulli(ρ:Real) -> Distribution<Boolean> {
-  return Bernoulli(box(ρ));
 }

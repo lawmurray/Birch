@@ -309,12 +309,10 @@ function update_inverse_gamma_gamma(x:Real, k:Real, α:Real, β:Real) ->
  * Returns: the posterior hyperparameters `μ'` and `Σ'`.
  */
 function update_multivariate_gaussian_multivariate_gaussian(x:Real[_],
-    μ:Real[_], Σ:LLT, S:LLT) -> (Real[_], LLT) {
-  let Σ0 <- canonical(Σ);
-  let S0 <- canonical(S);
-  let K' <- transpose(solve(llt(Σ0 + S0), Σ0));
+    μ:Real[_], Σ:Real[_,_], S:Real[_,_]) -> (Real[_], Real[_,_]) {
+  let K' <- transpose(solve(Σ + S, Σ));
   let μ' <- μ + K'*(x - μ);
-  let Σ' <- llt(Σ0 - K'*Σ0);
+  let Σ' <- Σ - K'*Σ;
   return (μ', Σ');
 }
 
@@ -332,12 +330,10 @@ function update_multivariate_gaussian_multivariate_gaussian(x:Real[_],
  * Returns: the posterior hyperparameters `μ'` and `Σ'`.
  */
 function update_linear_multivariate_gaussian_multivariate_gaussian(x:Real[_],
-    A:Real[_,_], μ:Real[_], Σ:LLT, c:Real[_], S:LLT) -> (Real[_], LLT) {
-  let Σ0 <- canonical(Σ);
-  let S0 <- canonical(S);
-  let K' <- Σ0*transpose(solve(llt(A*Σ0*transpose(A) + S0), A));
+    A:Real[_,_], μ:Real[_], Σ:Real[_,_], c:Real[_], S:Real[_,_]) -> (Real[_], Real[_,_]) {
+  let K' <- Σ*transpose(solve(A*Σ*transpose(A) + S, A));
   let μ' <- μ + K'*(x - A*μ - c);
-  let Σ' <- llt(Σ0 - K'*A*Σ0);
+  let Σ' <- Σ - K'*A*Σ;
   return (μ', Σ');
 }
 
@@ -356,11 +352,10 @@ function update_linear_multivariate_gaussian_multivariate_gaussian(x:Real[_],
  * Returns: the posterior hyperparameters `μ'` and `Σ'`.
  */
 function update_linear_multivariate_gaussian_gaussian(x:Real, a:Real[_],
-    μ:Real[_], Σ:LLT, c:Real, s2:Real) -> (Real[_], LLT) {
-  let Σ0 <- canonical(Σ);
-  let k' <- Σ0*a/(dot(a, Σ0*a) + s2);
+    μ:Real[_], Σ:Real[_,_], c:Real, s2:Real) -> (Real[_], Real[_,_]) {
+  let k' <- Σ*a/(dot(a, Σ*a) + s2);
   let μ' <- μ + k'*(x - dot(a, μ) - c);
-  let Σ' <- llt(Σ0 - outer(k', a)*Σ0);
+  let Σ' <- Σ - outer(k', a)*Σ;
   return (μ', Σ');
 }
 
@@ -377,10 +372,10 @@ function update_linear_multivariate_gaussian_gaussian(x:Real, a:Real[_],
  * Returns: the posterior hyperparameters `α'` and `β'`.
  */
 function update_multivariate_normal_inverse_gamma(x:Real[_], ν:Real[_],
-    Λ:LLT, α:Real, β:Real) -> (Real, Real) {
+    Λ:Real[_,_], α:Real, β:Real) -> (Real, Real) {
   let D <- length(x);
   let μ <- solve(Λ, ν);
-  return (α + 0.5*D, β + 0.5*dot(x - μ, canonical(Λ)*(x - μ)));
+  return (α + 0.5*D, β + 0.5*dot(x - μ, matrix<Real>(Λ)*(x - μ)));
 }
 
 /*
@@ -396,7 +391,7 @@ function update_multivariate_normal_inverse_gamma(x:Real[_], ν:Real[_],
  * Returns: the posterior hyperparameters `μ'`, `Λ'`, `α'` and `γ'`.
  */
 function update_multivariate_normal_inverse_gamma_multivariate_gaussian(
-    x:Real[_], ν:Real[_], Λ:LLT, α:Real, γ:Real) -> (Real[_], LLT, Real,
+    x:Real[_], ν:Real[_], Λ:Real[_,_], α:Real, γ:Real) -> (Real[_], Real[_,_], Real,
     Real) {
   let D <- length(x);
   let Λ' <- rank_update(Λ, identity(rows(Λ)));
@@ -421,8 +416,8 @@ function update_multivariate_normal_inverse_gamma_multivariate_gaussian(
  * Returns: the posterior hyperparameters `μ'`, `Λ'`, `γ'`, `α'` and `β'`.
  */
 function update_linear_multivariate_normal_inverse_gamma_multivariate_gaussian(
-    x:Real[_], A:Real[_,_], ν:Real[_], Λ:LLT, c:Real[_], α:Real, γ:Real) ->
-    (Real[_], LLT, Real, Real) {
+    x:Real[_], A:Real[_,_], ν:Real[_], Λ:Real[_,_], c:Real[_], α:Real, γ:Real) ->
+    (Real[_], Real[_,_], Real, Real) {
   let D <- length(x);
   let Λ' <- rank_update(Λ, transpose(A));
   let ν' <- ν + transpose(A)*(x - c);
@@ -446,8 +441,8 @@ function update_linear_multivariate_normal_inverse_gamma_multivariate_gaussian(
  * Returns: the posterior hyperparameters `μ'`, `Λ'`, `γ'`, `α'` and `β'`.
  */
 function update_linear_multivariate_normal_inverse_gamma_gaussian(
-    x:Real, a:Real[_], ν:Real[_], Λ:LLT, c:Real, α:Real, γ:Real) ->
-    (Real[_], LLT, Real, Real) {
+    x:Real, a:Real[_], ν:Real[_], Λ:Real[_,_], c:Real, α:Real, γ:Real) ->
+    (Real[_], Real[_,_], Real, Real) {
   let Λ' <- rank_update(Λ, a);
   let ν' <- ν + a*(x - c);
   let α' <- α + 0.5;
@@ -467,10 +462,10 @@ function update_linear_multivariate_normal_inverse_gamma_gaussian(
  * Returns: the posterior hyperparameters `V'` and `k'`.
  */
 function update_matrix_normal_inverse_wishart(X:Real[_,_], N:Real[_,_],
-    Λ:LLT, V:LLT, k:Real) -> (LLT, Real) {
+    Λ:Real[_,_], V:Real[_,_], k:Real) -> (Real[_,_], Real) {
   let n <- rows(X);
   let M <- solve(Λ, N);
-  let V' <- llt(canonical(V) + transpose(X - M)*canonical(Λ)*(X - M));
+  let V' <- V + transpose(X - M)*Λ*(X - M);
   let k' <- k + n;
   return (V', k');
 }
@@ -488,14 +483,13 @@ function update_matrix_normal_inverse_wishart(X:Real[_,_], N:Real[_,_],
  * Returns: the posterior hyperparameters `N'`, `Λ'`, `V'` and `k'`.
  */
 function update_matrix_normal_inverse_wishart_matrix_gaussian(X:Real[_,_],
-    N:Real[_,_], Λ:LLT, V:LLT, k:Real) -> (Real[_,_], LLT, LLT, Real) {
+    N:Real[_,_], Λ:Real[_,_], V:Real[_,_], k:Real) -> (Real[_,_], Real[_,_], Real[_,_], Real) {
   let D <- rows(X);
   let Λ' <- rank_update(Λ, identity(rows(N)));
   let N' <- N + X;
   let M <- solve(Λ, N);
   let M' <- solve(Λ', N');
-  let V' <- llt(canonical(V) + transpose(X)*X + transpose(M)*N -
-      transpose(M')*N');
+  let V' <- V + transpose(X)*X + transpose(M)*N - transpose(M')*N';
   let k' <- k + D;
   return (N', Λ', V', k');
 }
@@ -515,15 +509,14 @@ function update_matrix_normal_inverse_wishart_matrix_gaussian(X:Real[_,_],
  * Returns: the posterior hyperparameters `N'`, `Λ'`, `V'` and `k'`.
  */
 function update_linear_matrix_normal_inverse_wishart_matrix_gaussian(
-    X:Real[_,_], A:Real[_,_], N:Real[_,_], Λ:LLT, C:Real[_,_], V:LLT,
-    k:Real) -> (Real[_,_], LLT, LLT, Real) {
+    X:Real[_,_], A:Real[_,_], N:Real[_,_], Λ:Real[_,_], C:Real[_,_], V:Real[_,_],
+    k:Real) -> (Real[_,_], Real[_,_], Real[_,_], Real) {
   let D <- rows(X);
   let Λ' <- rank_update(Λ, transpose(A));
   let N' <- N + transpose(A)*(X - C);
   let M <- solve(Λ, N);
   let M' <- solve(Λ', N');
-  let V' <- llt(canonical(V) + transpose(X - C)*(X - C) + transpose(M)*N -
-      transpose(M')*N');
+  let V' <- V + transpose(X - C)*(X - C) + transpose(M)*N - transpose(M')*N';
   let k' <- k + D;
   return (N', Λ', V', k');
 }
@@ -543,14 +536,13 @@ function update_linear_matrix_normal_inverse_wishart_matrix_gaussian(
  * Returns: the posterior hyperparameters `N'`, `Λ'`, `V'` and `k'`.
  */
 function update_linear_matrix_normal_inverse_wishart_multivariate_gaussian(
-    x:Real[_], a:Real[_], N:Real[_,_], Λ:LLT, c:Real[_], V:LLT, k:Real) ->
-    (Real[_,_], LLT, LLT, Real) {
+    x:Real[_], a:Real[_], N:Real[_,_], Λ:Real[_,_], c:Real[_], V:Real[_,_], k:Real) ->
+    (Real[_,_], Real[_,_], Real[_,_], Real) {
   let Λ' <- rank_update(Λ, a);
   let N' <- N + outer(a, x - c);
   let M <- solve(Λ, N);
   let M' <- solve(Λ', N');
-  let V' <- llt(canonical(V) + outer(x - dot(a, M') - c) +
-      transpose(M' - M)*canonical(Λ)*(M' - M));
+  let V' <- V + outer(x - dot(a, M') - c) + transpose(M' - M)*Λ*(M' - M);
   let k' <- k + 1;
   return (N', Λ', V', k');
 }

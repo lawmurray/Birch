@@ -1,0 +1,37 @@
+final class InvFunction {
+function compute<Value>(m:Value) -> {
+    return inv(m);
+  }
+
+function grad<Gradient,Value>(d:Gradient, m:Value) -> {
+    let m1 <- transpose(m);
+    return -m1*d*m1;
+  }
+}
+class Inv<Middle> = Unary<InvFunction,Middle>;
+
+/**
+ * Inverse of a matrix.
+ */
+function inv<Middle>(m:Middle) -> {
+  return construct<Inv<Middle>>(m);
+}
+
+/**
+ * Inverse of a matrix.
+ */
+function inv(X:Real[_,_]) -> Real[_,_] {
+  cpp{{
+  return X.toEigen().inverse();
+  }}
+}
+
+/**
+ * Inverse of a symmetric positive definite matrix.
+ */
+// function inv(S:LLT<Real[_,_]>) -> Real[_,_] {
+//   cpp{{
+//   return S->f->llt.solve(libbirch::EigenMatrix<birch::type::Real>::Identity(
+//       S->f->llt.rows(), S->f->llt.cols()));
+//   }}
+// }

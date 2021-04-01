@@ -1,0 +1,55 @@
+/**
+ * Boxed and joined matrix expression.
+ *
+ * - Value: Element type.
+ */
+final class MatrixJoinExpression<Value>(x:Value[_,_]) < Expression<Value[_,_]> {
+  /**
+   * Arguments.
+   */
+  x:Value[_,_] <- x;
+
+  override function isRandom() -> Boolean {
+    return false;
+  }
+
+  override function isConstant() -> Boolean {
+    return transform_reduce(x, true, \(a:Boolean, b:Boolean) -> {
+        return a && b; }, \(x':Value) -> { return constant(x'); });
+  }
+
+  override function rows() -> Integer {
+    return global.rows(x);
+  }
+
+  override function columns() -> Integer {
+    return global.columns(x);
+  }
+
+  override function value() -> Value[_,_] {
+    return transform(x, \(x':Value) -> { return global.value(x'); });
+  }
+  
+  override function eval() -> Value[_,_] {
+    return transform(x, \(x':Value) -> { return global.eval(x'); });
+  }
+
+  override function reval() -> Value[_,_] {
+    return transform(x, \(x':Value) -> { return global.reval(x'); });
+  }
+  
+  override function grad(d:Value[_,_]) {
+    for_each(x, d, \(x':Value, d':Value) { grad(x', d'); });
+  }
+
+  override function constant() {
+    for_each(x, \(x':Value) { constant(x'); });
+  }
+}
+
+/**
+ * Convert a matrix of expressions into a matrix expression.
+ */
+function join<Value>(x:Value[_,_]) -> {
+  return construct<MatrixJoinExpression<Value>>(x);
+}

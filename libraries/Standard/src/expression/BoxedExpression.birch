@@ -1,0 +1,140 @@
+/**
+ * Boxed expression.
+ *
+ * - Value: Result type.
+ * - Form: Expression type.
+ */
+class BoxedExpression<Value,Form>(x:Value, f:Form) < Expression<Value> {
+  /**
+   * Memoized result.
+   */
+  x:Value <- x;
+
+  /**
+   * Expression form.
+   */
+  f:Form <- f;
+
+  /**
+   * Accumulated upstream gradient.
+   */
+  d:Value?;
+
+  /**
+   * Generation label.
+   */
+  gen:Integer <- 0;
+
+  /**
+   * Number of times `eval()` has been called.
+   */
+  evalCount:Integer <- 0;
+
+  /**
+   * Number of times `reval()` or `grad()` has been called. Used to obtain
+   * pre- and post-order traversals of the expression graph.
+   */
+  visitCount:Integer <- 0;
+
+  /**
+   * Is this a constant?
+   */
+  flagConstant:Boolean <- false;
+
+  final override function isRandom() -> Boolean {
+    return false;
+  }
+
+  final override function isConstant() -> Boolean {
+    return flagConstant;
+  }
+
+  final override function rows() -> Integer {
+    return global.rows(x);
+  }
+  
+  final override function columns() -> Integer {
+    return global.columns(x);
+  }
+
+  final override function value() -> Value {
+    constant();
+    return x;
+  }
+
+  final override function peak() -> Value {
+    return x;
+  }
+
+  final override function eval() -> Value {
+    if !flagConstant {
+      evalCount <- evalCount + 1;
+    }
+    return x;
+  }
+
+  final override function reval() -> Value {
+    if !flagConstant {
+      if visitCount == 0 {
+        x <- f.reval();
+      }
+      visitCount <- visitCount + 1;
+      if visitCount >= evalCount {
+        assert visitCount == evalCount || evalCount == 0;
+        // ^ can have visitCount > evalCount = 0 if eval() has never been
+        //   called on this object, typically because it is root expression
+        //   used from client code, rather than a subexpression used from
+        //   other expressions
+        visitCount <- 0;  // reset for next time
+      }
+    }
+    return x;
+  }
+
+  final override function grad(d:Value) {
+    if !flagConstant {
+      if visitCount == 0 {
+        this.d <- d;  // start accumulation
+      } else {
+        this.d <- this.d! + d;
+      }
+      visitCount <- visitCount + 1;
+      if visitCount >= evalCount {
+        assert visitCount == evalCount || evalCount == 0;
+        // ^ can have visitCount > evalCount = 0 if eval() has never been
+        //   called on this object, typically because it is root expression
+        //   used from client code, rather than a subexpression used from
+        //   other expressions
+        f.grad(d);       // upstream gradients all accumulated, propagate
+        this.d <- nil;         // clear intermediate gradients to save memory
+        visitCount <- 0;  // reset for next time
+      }
+    }
+  }
+
+  final override function label(gen:Integer) {
+    if !flagConstant && this.gen == 0 {
+      this.gen <- gen;
+      f.label(gen);
+    }
+  }
+
+  final override function prune(gen:Integer) {
+    if !flagConstant && this.gen < gen {
+      constant();
+    } else {
+      f.prune(gen);
+    }
+  }
+
+  final override function constant() {
+    if !flagConstant {
+      flagConstant <- true;
+      f.constant();
+      d <- nil;
+      gen <- 0;
+      evalCount <- 0;
+      visitCount <- 0;
+    }
+  }
+}

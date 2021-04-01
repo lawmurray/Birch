@@ -1,0 +1,99 @@
+final class TransposeFunction {
+function compute<Value>(m:Value) -> {
+    return transpose(m);
+  }
+
+function grad<Gradient,Value>(d:Gradient, m:Value) -> {
+    return transpose(d);
+  }
+}
+class Transpose<Middle> = Unary<TransposeFunction,Middle>;
+
+/**
+ * Matrix transpose.
+ */
+function transpose<Middle>(m:Middle) -> {
+  return construct<Transpose<Middle>>(m);
+}
+
+/**
+ * Transpose of a scalar (identity operation).
+ */
+function transpose(m:Boolean) -> Boolean {
+  return m;
+}
+
+/**
+ * Transpose of a scalar (identity operation).
+ */
+function transpose(m:Integer) -> Integer {
+  return m;
+}
+
+/**
+ * Transpose of a scalar (identity operation).
+ */
+function transpose(m:Real) -> Real {
+  return m;
+}
+
+/**
+ * Transpose of a vector into a matrix.
+ */
+function transpose(x:Boolean[_]) -> Boolean[_,_] {
+  cpp{{
+  return x.toEigen().transpose();
+  }}
+}
+
+/**
+ * Transpose of a vector into a matrix.
+ */
+function transpose(x:Integer[_]) -> Integer[_,_] {
+  cpp{{
+  return x.toEigen().transpose();
+  }}
+}
+
+/**
+ * Transpose of a vector into a matrix.
+ */
+function transpose(x:Real[_]) -> Real[_,_] {
+  cpp{{
+  return x.toEigen().transpose();
+  }}
+}
+
+/**
+ * Transpose of a matrix.
+ */
+function transpose(X:Boolean[_,_]) -> Boolean[_,_] {
+  cpp{{
+  return X.toEigen().transpose();
+  }}
+}
+
+/**
+ * Transpose of a matrix.
+ */
+function transpose(X:Integer[_,_]) -> Integer[_,_] {
+  cpp{{
+  return X.toEigen().transpose();
+  }}
+}
+
+/**
+ * Transpose of a matrix.
+ */
+function transpose(X:Real[_,_]) -> Real[_,_] {
+  cpp{{
+  return X.toEigen().transpose();
+  }}
+}
+
+/**
+ * Transpose of a symmetric positive definite matrix.
+ */
+function transpose<Middle>(S:LLT<Middle>) -> LLT<Middle> {
+  return S;
+}

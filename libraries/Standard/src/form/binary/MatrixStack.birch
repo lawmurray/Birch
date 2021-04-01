@@ -1,0 +1,93 @@
+final class MatrixStackFunction {  
+function compute<LeftValue,RightValue>(l:LeftValue, r:RightValue) -> {
+    return stack(l, r);
+  }
+
+function gradLeft<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue, r:RightValue) -> {
+    let r1 <- rows(l);
+    let c1 <- columns(l);
+    return d[1..r1, 1..c1];
+  }
+
+function gradRight<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue, r:RightValue) -> {
+    let r1 <- rows(l);
+    let r2 <- rows(r);
+    let c1 <- columns(l);
+    return d[(r1 + 1)..(r1 + r2), 1..c1];
+  }
+}
+class MatrixStack<Left,Right> = Binary<MatrixStackFunction,Left,Right>;
+
+/**
+ * Stack two matrices atop one another (i.e. append columns) to create a
+ * new matrix.
+ */
+function stack<Left,Right>(l:Left, r:Right) -> {
+  return construct<MatrixStack<Left,Right>>(l, r);
+}
+
+/**
+ * Stack two vectors atop one another (i.e. append them) to create a
+ * new vector.
+ */
+function stack<Type>(x:Type[_], y:Type[_]) -> Type[_] {
+  let l1 <- length(x);
+  let l2 <- length(y);
+  return vector(\(i:Integer) -> Type {
+        if i <= l1 {
+          return x[i];
+        } else {
+          return y[i - l1];
+        }
+      }, l1 + l2);
+}
+
+/**
+ * Stack a vector and scalar atop one another (i.e. append them) to create a
+ * new vector.
+ */
+function stack<Type>(x:Type[_], y:Type) -> Type[_] {
+  let l1 <- length(x);
+  return vector(\(i:Integer) -> Type {
+        if i <= l1 {
+          return x[i];
+        } else {
+          return y;
+        }
+      }, l1 + 1);
+}
+
+/**
+ * Stack a scalar and vector atop one another (i.e. append them) to create a
+ * new vector.
+ */
+function stack<Type>(x:Type, y:Type[_]) -> Type[_] {
+  let l2 <- length(y);
+  return vector(\(i:Integer) -> Type {
+        if i <= 1 {
+          return x;
+        } else {
+          return y[i - 1];
+        }
+      }, 1 + l2);
+}
+
+/**
+ * Stack two matrices atop one another (i.e. append columns) to create a
+ * new matrix.
+ */
+function stack<Type>(X:Type[_,_], Y:Type[_,_]) -> Type[_,_] {
+  assert columns(X) == columns(Y);
+  
+  let R1 <- rows(X);
+  let R2 <- rows(Y);
+  let C <- columns(X);
+  
+  return matrix(\(i:Integer, j:Integer) -> Type {
+        if i <= R1 {
+          return X[i,j];
+        } else {
+          return Y[i - R1,j];
+        }
+      }, R1 + R2, C);
+}

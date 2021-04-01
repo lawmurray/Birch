@@ -15,26 +15,6 @@ function reduce<Type>(iter:Iterator<Type>, init:Type,
 }
 
 /**
- * Sum reduction.
- */
-function sum<Type>(iter:Iterator<Type>) -> Type {
-  assert iter.hasNext();
-  return reduce(iter, iter.next(), \(x:Real, y:Real) -> Real {
-        return x + y;
-      });
-}
-
-/**
- * Product reduction.
- */
-function product<Type>(iter:Iterator<Type>) -> Type {
-  assert iter.hasNext();
-  return reduce(iter, iter.next(), \(x:Real, y:Real) -> Real {
-        return x*y;
-      });
-}
-
-/**
  * Maximum reduction.
  */
 function max<Type>(iter:Iterator<Type>) -> Type {

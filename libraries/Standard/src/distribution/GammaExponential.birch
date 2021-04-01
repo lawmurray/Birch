@@ -24,7 +24,7 @@ final class GammaExponential(λ:Gamma) < Distribution<Real> {
   }
 
   function logpdfLazy(x:Expression<Real>) -> Expression<Real>? {
-    return logpdf_lazy_lomax(x, 1.0/λ.θ, λ.k);
+    return logpdf_lazy_lomax(x, box(1.0/λ.θ), λ.k);
   }
 
   function update(x:Real) {

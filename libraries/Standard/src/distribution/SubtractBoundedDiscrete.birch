@@ -114,8 +114,7 @@ final class SubtractBoundedDiscrete(x1:BoundedDiscrete, x2:BoundedDiscrete) <
   }
 }
 
-function SubtractBoundedDiscrete(x1:BoundedDiscrete, x2:BoundedDiscrete) ->
-    SubtractBoundedDiscrete {
+function SubtractBoundedDiscrete(x1:BoundedDiscrete, x2:BoundedDiscrete) -> SubtractBoundedDiscrete {
   m:SubtractBoundedDiscrete(x1, x2);
   m.link();
   return m;

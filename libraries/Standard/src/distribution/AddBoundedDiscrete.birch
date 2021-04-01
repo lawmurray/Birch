@@ -114,8 +114,7 @@ final class AddBoundedDiscrete(x1:BoundedDiscrete, x2:BoundedDiscrete) <
   }
 }
 
-function AddBoundedDiscrete(x1:BoundedDiscrete, x2:BoundedDiscrete) ->
-    AddBoundedDiscrete {
+function AddBoundedDiscrete(x1:BoundedDiscrete, x2:BoundedDiscrete) -> AddBoundedDiscrete {
   m:AddBoundedDiscrete(x1, x2);
   m.link();
   return m;

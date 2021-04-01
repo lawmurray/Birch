@@ -33,16 +33,16 @@
  * right.
  */
 final class MultivariateNormalInverseGamma(μ:Expression<Real[_]>,
-    Σ:Expression<LLT>, σ2:InverseGamma) < Distribution<Real[_]> {
+    Σ:Expression<Real[_,_]>, σ2:InverseGamma) < Distribution<Real[_]> {
   /**
    * Precision.
    */
-  Λ:Expression<LLT> <- inv(Σ);
+  Λ:Expression<Real[_,_]> <- box(inv(Σ));
 
   /**
    * Precision times mean.
    */
-  ν:Expression<Real[_]> <- canonical(Λ)*μ;
+  ν:Expression<Real[_]> <- box(matrix<Real>(Λ)*μ);
 
   /**
    * Variance shape.
@@ -52,7 +52,7 @@ final class MultivariateNormalInverseGamma(μ:Expression<Real[_]>,
   /**
    * Variance scale accumulator.
    */
-  γ:Expression<Real> <- σ2.β + 0.5*dot(μ, ν);
+  γ:Expression<Real> <- box(σ2.β + 0.5*dot(μ, ν));
 
   /**
    * Variance scale.
@@ -125,9 +125,8 @@ final class MultivariateNormalInverseGamma(μ:Expression<Real[_]>,
   }
 }
 
-function MultivariateNormalInverseGamma(μ:Expression<Real[_]>,
-    Σ:Expression<LLT>, σ2:InverseGamma) -> MultivariateNormalInverseGamma {
-  m:MultivariateNormalInverseGamma(μ, Σ, σ2);
+function MultivariateNormalInverseGamma<Left,Middle>(μ:Left, Σ:Middle, σ2:InverseGamma) -> {
+  m:MultivariateNormalInverseGamma(box(μ), box(Σ), σ2);
   m.link();
   return m;
 }
@@ -136,7 +135,7 @@ function MultivariateNormalInverseGamma(μ:Expression<Real[_]>,
  * Compute the variance scale from the variance scale accumulator and other
  * parameters.
  */
-function gamma_to_beta(γ:Real, ν:Real[_], Λ:LLT) -> Real {
+function gamma_to_beta(γ:Real, ν:Real[_], Λ:Real[_,_]) -> Real {
   return γ - 0.5*dot(ν, solve(Λ, ν));
 }
 
@@ -145,6 +144,6 @@ function gamma_to_beta(γ:Real, ν:Real[_], Λ:LLT) -> Real {
  * parameters.
  */
 function gamma_to_beta(γ:Expression<Real>, ν:Expression<Real[_]>,
-    Λ:Expression<LLT>) -> Expression<Real> {
-  return γ - 0.5*dot(ν, solve(Λ, ν));
+    Λ:Expression<Real[_,_]>) -> Expression<Real> {
+  return box(γ - 0.5*dot(ν, solve(Λ, ν)));
 }

@@ -25,11 +25,11 @@ class TestLinearMultivariateGaussianMultivariateGaussian < Model {
   }
 
   function simulate() {
-    μ ~ Gaussian(μ_0, Σ_0);
+    μ ~ MultivariateGaussian(μ_0, Σ_0);
     if neg {
-      x ~ Gaussian(A*μ - c, Σ_1);
+      x ~ MultivariateGaussian(A*μ - c, Σ_1);
     } else {
-      x ~ Gaussian(A*μ + c, Σ_1);
+      x ~ MultivariateGaussian(A*μ + c, Σ_1);
     }
   }
 

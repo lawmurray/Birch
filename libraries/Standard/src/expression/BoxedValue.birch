@@ -1,0 +1,57 @@
+/**
+ * Boxed value.
+ */
+class BoxedValue<Value>(x:Value) < Expression<Value> {  
+  /**
+   * Constant value.
+   */
+  x:Value <- x;
+
+  override function isRandom() -> Boolean {
+    return false;
+  }
+
+  override function isConstant() -> Boolean {
+    return true;
+  }
+
+  override function rows() -> Integer {
+    return global.rows(x);
+  }
+
+  override function columns() -> Integer {
+    return global.columns(x);
+  }
+
+  override function value() -> Value {
+    return x;
+  }
+
+  override function peak() -> Value {
+    return x;
+  }
+
+  override function eval() -> Value {
+    return x;
+  }
+
+  override function reval() -> Value {
+    return x;
+  }
+
+  override function grad(d:Value) {
+    //
+  }
+
+  override function label(gen:Integer) {
+    //
+  }
+
+  override function prune(gen:Integer) {
+    //
+  }
+
+  override function constant() {
+    //
+  }
+}

@@ -19,29 +19,47 @@ class Particle(m:Model, delaySampling:Boolean, delayExpressions:Boolean) {
   /**
    * Evaluate the log-posterior.
    */
-  function eval(gen:Integer) -> Real {
-    return h.eval(gen);
+  function eval() -> Real {
+    return h.eval();
   }
 
   /**
    * Get value of real arguments.
    */
-  function args(gen:Integer) -> Real[_] {
-    return h.args(gen);
+  function args() -> Real[_] {
+    return h.args();
   }
 
   /**
    * Compute the gradient with respect to real arguments.
    */
-  function grad(gen:Integer) -> Real[_] {
-    return h.grad(gen);
+  function grad() -> Real[_] {
+    return h.grad();
   }
 
   /**
    * Move the particle.
    */
-  function move(gen:Integer, x:Real[_]) -> Real {
-    return h.move(gen, x);
+  function move(x:Real[_]) -> Real {
+    return h.move(x);
+  }
+
+  /**
+   * Label generations.
+   *
+   * See also: [Expression](../Expression/)
+   */
+  function label(gen:Integer) {
+    h.label(gen);
+  }
+
+  /**
+   * Prune generations.
+   *
+   * See also: [Expression](../Expression/)
+   */
+  function prune(gen:Integer) {
+    h.prune(gen);
   }
 
   override function read(buffer:Buffer) {

@@ -1,0 +1,60 @@
+final class DiagonalFunction {
+function compute<LeftValue,RightValue>(l:LeftValue, r:RightValue) -> {
+    return diagonal(l, r);
+  }
+
+function gradLeft<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue, r:RightValue) -> {
+    return trace(d);
+  }
+
+function gradRight<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue, r:RightValue) -> {
+    return 0.0;
+  }
+}
+class Diagonal<Left,Right> = Binary<DiagonalFunction,Left,Right>;
+
+/**
+ * Create diagonal matrix, filling the diagonal with a given scalar value.
+ *
+ * - x: The value.
+ * - length: Number of rows/columns.
+ */
+function diagonal<Left,Right>(l:Left, r:Right) -> {
+  return construct<Diagonal<Left,Right>>(l, r);
+}
+
+/**
+ * Create diagonal matrix, filling the diagonal with a given scalar value.
+ *
+ * - x: The value.
+ * - length: Number of rows/columns.
+ */
+function diagonal(x:Boolean, length:Integer) -> Boolean[_,_] {
+  return matrix<Boolean>(\(i:Integer, j:Integer) -> {
+        return if_then_else(i == j, x, false);
+      }, length, length);
+}
+
+/**
+ * Create diagonal matrix, filling the diagonal with a given scalar value.
+ *
+ * - x: The value.
+ * - length: Number of rows/columns.
+ */
+function diagonal(x:Integer, length:Integer) -> Integer[_,_] {
+  return matrix<Integer>(\(i:Integer, j:Integer) -> {
+        return if_then_else(i == j, x, 0);
+      }, length, length);
+}
+
+/**
+ * Create diagonal matrix, filling the diagonal with a given scalar value.
+ *
+ * - x: The value.
+ * - length: Number of rows/columns.
+ */
+function diagonal(x:Real, length:Integer) -> Real[_,_] {
+  return matrix<Real>(\(i:Integer, j:Integer) -> {
+        return if_then_else(i == j, x, 0.0);
+      }, length, length);
+}

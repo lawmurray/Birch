@@ -214,6 +214,27 @@ function reduce<Type>(x:Type[_], init:Type,
 }
 
 /**
+ * Reduction.
+ *
+ * - X: Matrix.
+ * - init: Initial value.
+ * - op: Operator.
+ */
+function reduce<Type>(X:Type[_,_], init:Type,
+    op:\(Type, Type) -> Type) -> Type {
+  result:Type;
+  cpp{{
+  #ifdef __cpp_lib_parallel_algorithm
+  return std::reduce(X.begin(), X.end(), init, op);
+  #else
+  return std::accumulate(X.begin(), X.end(), init, [&](auto x, auto y) {
+        return op(x, y);
+      });
+  #endif
+  }}
+}
+
+/**
  * Unary transformation and reduction.
  *
  * - x: First operand.
@@ -223,11 +244,30 @@ function reduce<Type>(x:Type[_], init:Type,
  */
 function transform_reduce<Input,Output>(x:Input[_], init:Output,
     op1:\(Output, Output) -> Output, op2:\(Input) -> Output) -> Output {
-  let y <- init;
+  let r <- init;
   for n in 1..length(x) {
-    y <- op1(y, op2(x[n]));
+    r <- op1(r, op2(x[n]));
   }
-  return y;
+  return r;
+}
+
+/**
+ * Unary transformation and reduction.
+ *
+ * - X: First operand.
+ * - init: Initial value.
+ * - op1: Reduction operator.
+ * - op2: Transformation operator.
+ */
+function transform_reduce<Input,Output>(X:Input[_,_], init:Output,
+    op1:\(Output, Output) -> Output, op2:\(Input) -> Output) -> Output {
+  let r <- init;
+  for i in 1..rows(X) {
+    for j in 1..columns(X) {
+      r <- op1(r, op2(X[i,j]));
+    }
+  }
+  return r;
 }
 
 /**
@@ -243,11 +283,34 @@ function transform_reduce<Input1,Input2,Output>(x:Input1[_], y:Input2[_],
     init:Output, op1:\(Output, Output) -> Output,
     op2:\(Input1, Input2) -> Output) -> Output {
   assert length(x) == length(y);
-  let z <- init;
+  let r <- init;
   for n in 1..length(x) {
-    z <- op1(z, op2(x[n], y[n]));
+    r <- op1(r, op2(x[n], y[n]));
   }
-  return z;
+  return r;
+}
+
+/**
+ * Binary transformation and reduction.
+ *
+ * - X: First operand.
+ * - Y: Second operand.
+ * - init: Initial value.
+ * - op1: Reduction operator.
+ * - op2: Transformation operator.
+ */
+function transform_reduce<Input1,Input2,Output>(X:Input1[_,_], Y:Input2[_,_],
+    init:Output, op1:\(Output, Output) -> Output,
+    op2:\(Input1, Input2) -> Output) -> Output {
+  assert rows(X) == rows(Y);
+  assert columns(X) == columns(Y);
+  let r <- init;
+  for i in 1..rows(X) {
+    for j in 1..columns(X) {
+      r <- op1(r, op2(X[i,j], Y[i,j]));
+    }
+  }
+  return r;
 }
 
 /**
@@ -264,12 +327,39 @@ function transform_reduce<Input1,Input2,Input3,Output>(x:Input1[_],
     y:Input2[_], z:Input3[_], init:Output, op1:\(Output, Output) -> Output,
     op2:\(Input1, Input2, Input3) -> Output) -> Output {
   assert length(x) == length(y);
-  assert length(y) == length(z);
-  let a <- init;
+  assert length(x) == length(z);
+  let r <- init;
   for n in 1..length(x) {
-    a <- op1(a, op2(x[n], y[n], z[n]));
+    r <- op1(r, op2(x[n], y[n], z[n]));
   }
-  return a;
+  return r;
+}
+
+/**
+ * Ternary transformation and reduction.
+ *
+ * - X: First operand.
+ * - Y: Second operand.
+ * - Z: Third operand.
+ * - init: Initial value.
+ * - op1: Reduction operator.
+ * - op2: Transformation operator.
+ */
+function transform_reduce<Input1,Input2,Input3,Output>(X:Input1[_,_],
+    Y:Input2[_,_], Z:Input3[_,_], init:Output,
+    op1:\(Output, Output) -> Output,
+    op2:\(Input1, Input2, Input3) -> Output) -> Output {
+  assert rows(X) == rows(Y);
+  assert columns(X) == columns(Y);
+  assert rows(X) == rows(Z);
+  assert columns(X) == columns(Z);
+  let r <- init;
+  for i in 1..rows(X) {
+    for j in 1..columns(X) {
+      r <- op1(r, op2(X[i,j], Y[i,j], Z[i,j]));
+    }
+  }
+  return r;
 }
 
 /**
@@ -438,35 +528,6 @@ function iota<Type>(x:Type, length:Integer) -> Real[_] {
   return vector(\(i:Integer) -> Type {
     return x + (i - 1);
   }, length);
-}
-
-/**
- * Sum reduction.
- */
-function sum<Type>(x:Type[_]) -> Type {
-  if length(x) == 0 {
-    return 0.0;
-  } else if length(x) == 1 {
-    return x[1];
-  } else {
-    return reduce(x[2..length(x)], x[1], \(x:Type, y:Type) -> Type {
-        return x + y;
-      });
-  }
-}
-
-/**
- * Product reduction.
- */
-function product<Type>(x:Type[_]) -> Type {
-  assert length(x) > 0;
-  if length(x) == 1 {
-    return x[1];
-  } else {
-    return reduce(x[2..length(x)], x[1], \(x:Type, y:Type) -> Type {
-        return x*y;
-      });
-   }
 }
 
 /**

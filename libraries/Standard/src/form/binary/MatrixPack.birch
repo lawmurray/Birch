@@ -1,0 +1,45 @@
+final class MatrixPackFunction {
+function compute<LeftValue,RightValue>(l:LeftValue, r:RightValue) -> {
+    return pack(l, r);
+  }
+
+function gradLeft<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue, r:RightValue) -> {
+    let r1 <- rows(l);
+    let c1 <- columns(l);
+    return d[1..r1, 1..c1];
+  }
+
+function gradRight<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue, r:RightValue) -> {
+    let r1 <- rows(l);
+    let c1 <- columns(l);
+    let c2 <- columns(r);
+    return d[1..r1, (c1 + 1)..(c1 + c2)];
+  }
+}
+class MatrixPack<Left,Right> = Binary<MatrixPackFunction,Left,Right>;
+
+/**
+ * Pack two matrices next to one another (i.e. append rows) to create a
+ * new matrix.
+ */
+function pack<Left,Right>(l:Left, r:Right) -> {
+  return construct<MatrixPack<Left,Right>>(l, r);
+}
+
+/**
+ * Pack two matrices next to one another (i.e. append rows) to create a
+ * new matrix.
+ */
+function pack<Type>(l:Type[_,_], r:Type[_,_]) -> Type[_,_] {
+  assert rows(l) == rows(r);
+  let R <- rows(l);
+  let C1 <- columns(l);
+  let C2 <- columns(r);
+  return matrix(\(i:Integer, j:Integer) -> Type {
+        if j <= C1 {
+          return l[i,j];
+        } else {
+          return r[i,j - C1];
+        }
+      }, R, C1 + C2);
+}

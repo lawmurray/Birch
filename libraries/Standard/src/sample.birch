@@ -243,7 +243,7 @@ program sample(
 
     /* progress bar */
     if !quiet {
-      bar.update(Real(n)/nsamples!);
+      bar.update(scalar<Real>(n)/nsamples!);
     }
   }
 

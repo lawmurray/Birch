@@ -160,7 +160,7 @@ class ParticleFilter {
    */
   function reduce() {
     (ess, lsum) <- resample_reduce(w);
-    lnormalize <- lnormalize + lsum - log(Real(nparticles));
+    lnormalize <- lnormalize + lsum - log(nparticles);
     b <- ancestor(w);
     if b == 0 {
       error("particle filter degenerated");
@@ -182,7 +182,7 @@ class ParticleFilter {
     } else {
       /* normalize weights to sum to nparticles */
       a <- iota(1, nparticles);
-      w <- w - vector(lsum - log(Real(nparticles)), nparticles);
+      w <- w - vector(lsum - log(nparticles), nparticles);
     }
   }
 

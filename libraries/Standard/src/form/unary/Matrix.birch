@@ -1,0 +1,73 @@
+final class MatrixFunction<Value> {
+  function compute<MiddleValue>(m:MiddleValue) -> {
+    return matrix<Value>(m);
+  }
+
+  function grad<Gradient,MiddleValue>(d:Gradient, m:MiddleValue) -> {
+    return grad_matrix<Value>(d, m);
+  }
+}
+class Matrix<Value,Middle> = Unary<MatrixFunction<Value>,Middle>;
+
+/**
+ * Convert to matrix.
+ */
+function matrix<Value,Middle>(m:Middle) -> {
+  return construct<Matrix<Value,Middle>>(m);
+}
+
+/**
+ * Convert to matrix.
+ */
+function matrix<Value,Type>(m:Type[_]) -> Value[_,_] {
+  return matrix<Value>(mat(m, 1));
+}
+
+/**
+ * Convert to matrix.
+ */
+function matrix<Value,Type>(m:Type[_,_]) -> Value[_,_] {
+  return transform(m, \(x:Type) -> Value { return scalar<Value>(x); });
+}
+
+/**
+ * Convert to matrix.
+ */
+function matrix<Value>(m:Boolean) -> Value[_,_] {
+  return [[scalar<Value>(m)]];
+}
+
+/**
+ * Convert to matrix.
+ */
+function matrix<Value>(m:Integer) -> Value[_,_] {
+  return [[scalar<Value>(m)]];
+}
+
+/**
+ * Convert to matrix.
+ */
+function matrix<Value>(m:Real) -> Value[_,_] {
+  return [[scalar<Value>(m)]];
+}
+
+/**
+ * Gradient of `matrix<Value>()`.
+ */
+function grad_matrix<Gradient,Value>(d:Gradient[_,_], m:Value) -> {
+  return scalar<Value>(d);
+}
+
+/**
+ * Gradient of `matrix<Value>()`.
+ */
+function grad_matrix<Gradient,Value>(d:Gradient[_,_], m:Value[_]) -> {
+  return vector<Value>(d);
+}
+
+/**
+ * Gradient of `matrix<Value>()`.
+ */
+function grad_matrix<Gradient,Value>(d:Gradient[_,_], m:Value[_,_]) -> {
+  return matrix<Value>(d);
+}

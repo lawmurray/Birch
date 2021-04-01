@@ -1,13 +1,6 @@
 /**
  * Create a Geometric distribution
  */
-function Geometric(ρ:Expression<Real>) -> Distribution<Integer> {
-  return NegativeBinomial(box(1), ρ);
-}
-
-/**
- * Create a Geometric distribution
- */
-function Geometric(ρ:Real) -> Distribution<Integer> {
-  return Geometric(box(ρ));
+function Geometric<Middle>(ρ:Middle) -> {
+  return NegativeBinomial(box(1), box(ρ));
 }

@@ -19,7 +19,7 @@ function test_pdf(π:Distribution<Boolean>, N:Integer, lazy:Boolean) {
 
   /* compare pdf to count */
   let failed <- false;
-  let ε <- 5.0/sqrt(Real(N));
+  let ε <- 5.0/sqrt(N);
   
   p:Real;
   q:Real;
@@ -30,12 +30,12 @@ function test_pdf(π:Distribution<Boolean>, N:Integer, lazy:Boolean) {
     p <- π.pdf(true);
     q <- π.pdf(false);
   }
-  let δ <- abs(p - Real(k)/N);
+  let δ <- abs(p - scalar<Real>(k)/N);
   if !(δ <= ε) {  // careful of nans
     failed <- true;
     stderr.print("***failed*** on true, " + δ + " > " + ε + "\n");
   }
-  δ <- abs(q - Real(N - k)/N);
+  δ <- abs(q - scalar<Real>(N - k)/N);
   if !(δ <= ε) {  // careful of nans
     failed <- true;
     stderr.print("***failed*** on false, " + δ + " > " + ε + "\n");
@@ -107,8 +107,8 @@ function test_pdf(π:Distribution<Integer>, N:Integer, lazy:Boolean) {
     } else {
       p <- π.pdf(x);
     }
-    let δ <- abs(p - Real(count[x - from! + 1])/N);
-    let ε <- 5.0/sqrt(Real(N));
+    let δ <- abs(p - scalar<Real>(count[x - from! + 1])/N);
+    let ε <- 5.0/sqrt(N);
     if !(δ <= ε) {  // careful of nans
       failed <- true;
       stderr.print("***failed*** on value " + x + ", " + δ + " > " + ε + "\n");
@@ -135,7 +135,7 @@ function test_pdf(π:Distribution<Real>, N:Integer, B:Integer, S:Integer,
   
   /* iid samples */
   for n in 1..N {
-    x1[n] <- canonical(π.simulate());
+    x1[n] <- π.simulate();
     if mod(n, 10000) == 0 {
       collect();
     }
@@ -255,15 +255,14 @@ function test_pdf(π:Distribution<Real[_]>, D:Integer, N:Integer, B:Integer,
   
   /* compute the shape for a Gaussian proposal using the iid samples */
   let μ <- vector(0.0, D);
-  let Σ <- matrix(0.0, D, D);
+  let Σ <- matrix<Real>(0.0, D, D);
   for n in 1..N {
     let x <- X1[n,1..D];
     μ <- μ + x;
     Σ <- Σ + outer(x);
   }
-  μ <- μ/Real(N);
-  Σ <- Σ/Real(N) - outer(μ);
-  let T <- llt(Σ);
+  μ <- μ/N;
+  Σ <- Σ/N - outer(μ);
   
   /* scale this proposal to get a reasonable acceptance rate */
   let done <- false;
@@ -283,7 +282,7 @@ function test_pdf(π:Distribution<Real[_]>, D:Integer, N:Integer, B:Integer,
     }
 
     for n in 1..B {
-      let x' <- simulate_multivariate_gaussian(x, T);
+      let x' <- simulate_multivariate_gaussian(x, Σ);
       l':Real;
       if lazy && π.supportsLazy() {
         l' <- π.logpdfLazy(box(x'))!.value();
@@ -300,10 +299,8 @@ function test_pdf(π:Distribution<Real[_]>, D:Integer, N:Integer, B:Integer,
     //stderr.print("trial acceptance rate: " + a + "\n");
     if a < 0.2 {
       Σ <- 0.5*Σ;
-      T <- llt(Σ);
     } else if a > 0.25 {
       Σ <- 1.5*Σ;
-      T <- llt(Σ);
     } else {
       done <- true;
     }
@@ -325,7 +322,7 @@ function test_pdf(π:Distribution<Real[_]>, D:Integer, N:Integer, B:Integer,
   }
   for n in 1..N {
     for s in 1..S {
-      let x' <- simulate_multivariate_gaussian(x, T);
+      let x' <- simulate_multivariate_gaussian(x, Σ);
       l':Real;
       if lazy && π.supportsLazy() {
         l' <- π.logpdfLazy(box(x'))!.value();
@@ -378,15 +375,14 @@ function test_pdf(π:Distribution<Real[_,_]>, R:Integer, C:Integer, N:Integer,
   
   /* compute the shape for a Gaussian proposal using the iid samples */
   let μ <- vector(0.0, R*C);
-  let Σ <- matrix(0.0, R*C, R*C);
+  let Σ <- matrix<Real>(0.0, R*C, R*C);
   for n in 1..N {
     let x <- X1[n,1..R*C];
     μ <- μ + x;
     Σ <- Σ + outer(x);
   }
-  μ <- μ/Real(N);
-  Σ <- Σ/Real(N) - outer(μ);
-  let T <- llt(Σ);
+  μ <- μ/N;
+  Σ <- Σ/N - outer(μ);
   
   /* scale this proposal to get a reasonable acceptance rate */
   let done <- false;
@@ -402,7 +398,7 @@ function test_pdf(π:Distribution<Real[_,_]>, R:Integer, C:Integer, N:Integer,
       l <- π.logpdf(x);
     }
     for n in 1..B {
-      let x' <- mat(simulate_multivariate_gaussian(vec(x), T), C);
+      let x' <- mat(simulate_multivariate_gaussian(vec(x), Σ), C);
       l':Real;
       if lazy && π.supportsLazy() {
         l' <- π.logpdfLazy(box(x'))!.value();
@@ -419,10 +415,8 @@ function test_pdf(π:Distribution<Real[_,_]>, R:Integer, C:Integer, N:Integer,
     //stderr.print("trial acceptance rate: " + a + "\n");
     if a < 0.2 {
       Σ <- 0.5*Σ;
-      T <- llt(Σ);
     } else if a > 0.25 {
       Σ <- 1.5*Σ;
-      T <- llt(Σ);
     } else {
       done <- true;
     }
@@ -441,7 +435,7 @@ function test_pdf(π:Distribution<Real[_,_]>, R:Integer, C:Integer, N:Integer,
   }
   for n in 1..N {
     for s in 1..S {
-      let x' <- mat(simulate_multivariate_gaussian(vec(x), T), C);
+      let x' <- mat(simulate_multivariate_gaussian(vec(x), Σ), C);
       l':Real;
       if lazy && π.supportsLazy() {
         l' <- π.logpdfLazy(box(x'))!.value();

@@ -12,25 +12,48 @@
  */
 final class Random<Value> < Expression<Value> {  
   /**
+   * Variate value, once realized.
+   */
+  x:Value?;
+
+  /**
    * Associated distribution.
    */
   p:Distribution<Value>?;
-  
+
   /**
-   * Accumulated gradient.
+   * Accumulated upstream gradient.
    */
   d:Value?;
+
+  /**
+   * Is this a constant?
+   */
+  flagConstant:Boolean <- false;
 
   /**
    * Value assignment.
    */
   operator <- x:Value {
     assert !this.p?;
-    setValue(x);
+    assert !this.x?;
+    this.x <- x;
+    constant();
   }
 
   override function isRandom() -> Boolean {
     return true;
+  }
+
+  override function isConstant() -> Boolean {
+    return flagConstant;
+  }
+
+  /**
+   * Does this have a value?
+   */
+  function hasValue() -> Boolean {
+    return x?;
   }
 
   /**
@@ -63,6 +86,13 @@ final class Random<Value> < Expression<Value> {
   }
 
   /**
+   * Set the value, during a move step.
+   */
+  function move(x:Value) {
+    this.x <- x;
+  }
+
+  /**
    * Assume the distribution for the random variate. When a value for the
    * random variate is required, it will be simulated from this distribution
    * and trigger an *update* on the delayed sampling graph.
@@ -75,182 +105,198 @@ final class Random<Value> < Expression<Value> {
     p.assume(this);
     this.p <- p;
   }
-
-  override function doDepth() -> Integer {
-    return 1;
-  }
   
-  override function doRows() -> Integer {
-    return global.rows(p!);
-  }
-
-  override function doColumns() -> Integer {
-    return global.columns(p!);
-  }
-
-  override function doValue() {
-    //
-  }
-
-  override function doEval(gen:Integer) {
-    //
-  }
-
-  override function doReval(gen:Integer) {
-    //
-  }
-
-  override function doCompute() {
-    if !hasValue() {
-      x <- handle_realize(p!);
-    }
-  }
-
-  function doAccumulateGrad(d:Value) {
-    // ^ override is omitted from the declaration as Value is not necessarily
-    //   one of the supported gradient types in Expression (and need not be
-    //   for this to work correctly)
-    if this.d? {
-      this.d <- this.d! + d;
+  override function rows() -> Integer {
+    assert this.x? || this.p?;
+    if x? {
+      return global.rows(x!);
+    } else if p? {
+      return p!.rows();
     } else {
-      this.d <- d;
+      return 0;
     }
   }
 
-  override function doGrad(gen:Integer) {
-    //  
+  override function columns() -> Integer {
+    assert this.x? || this.p?;
+    if x? {
+      return global.columns(x!);
+    } else if p? {
+      return p!.columns();
+    } else {
+      return 0;
+    }
   }
 
-  override function doClearGrad() {
-    d <- nil;
+  override function value() -> Value {
+    eval();
+    constant();
+    return x!;
+  }
+
+  override function peak() -> Value {
+    return eval();
+  }
+
+  override function eval() -> Value {
+    if !x? {
+      handle_realize(p!);
+    }
+    return x!;
+  }
+
+  override function reval() -> Value {
+    /* values of Random objects are set externally before a call to reval()---
+     * that is its point---so the current value is that set, and is correct */
+    return x!;
+  }
+
+  override function grad(d:Value) {
+    if this.d? {
+      this.d <- this.d! + d;  // accumulate
+    } else {
+      this.d <- d;  // start accumulation
+    }
   }
   
-  override function doConstant() {
-    p <- nil;
+  override function label(gen:Integer) {
+    //
   }
 
-  override function graftGaussian() -> Gaussian? {
+  override function prune(gen:Integer) {
+    //
+  }
+
+  override function constant() {
+    if !flagConstant {
+      p <- nil;
+      d <- nil;
+      flagConstant <- true;
+    }
+  }
+
+  function graftGaussian() -> Gaussian? {
     if !(hasValue() || p!.hasClamp()) {
-      let q <- graft_gaussian(p!);
+      let q <- p!.graftGaussian();
       p <-? Distribution<Value>?(q);
       return q;
     }
     return nil;
   }
     
-  override function graftBeta() -> Beta? {
+  function graftBeta() -> Beta? {
     if !(hasValue() || p!.hasClamp()) {
-      let q <- graft_beta(p!);
+      let q <- p!.graftBeta();
       p <-? Distribution<Value>?(q);
       return q;
     }
     return nil;
   }
   
-  override function graftGamma() -> Gamma? {
+  function graftGamma() -> Gamma? {
     if !(hasValue() || p!.hasClamp()) {
-      let q <- graft_gamma(p!);
+      let q <- p!.graftGamma();
       p <-? Distribution<Value>?(q);
       return q;
     }
     return nil;
   }
   
-  override function graftInverseGamma() -> InverseGamma? {
+  function graftInverseGamma() -> InverseGamma? {
     if !(hasValue() || p!.hasClamp()) {
-      let q <- graft_inverse_gamma(p!);
+      let q <- p!.graftInverseGamma();
       p <-? Distribution<Value>?(q);
       return q;
     }
     return nil;
   } 
 
-  override function graftInverseWishart() -> InverseWishart? {
+  function graftInverseWishart() -> InverseWishart? {
     if !(hasValue() || p!.hasClamp()) {
-      let q <- graft_inverse_wishart(p!);
+      let q <- p!.graftInverseWishart();
       p <-? Distribution<Value>?(q);
       return q;
     }
     return nil;
   } 
   
-  override function graftNormalInverseGamma(compare:Distribution<Real>) -> NormalInverseGamma? {
+  function graftNormalInverseGamma(compare:Distribution<Real>) -> NormalInverseGamma? {
     if !(hasValue() || p!.hasClamp()) {
-      let q <- graft_normal_inverse_gamma(p!, compare);
+      let q <- p!.graftNormalInverseGamma(compare);
       p <-? Distribution<Value>?(q);
       return q;
     }
     return nil;
   }
   
-  override function graftDirichlet() -> Dirichlet? {
+  function graftDirichlet() -> Dirichlet? {
     if !(hasValue() || p!.hasClamp()) {
-      let q <- graft_dirichlet(p!);
+      let q <- p!.graftDirichlet();
       p <-? Distribution<Value>?(q);
       return q;
     }
     return nil;
   }
 
-  override function graftRestaurant() -> Restaurant? {
+  function graftRestaurant() -> Restaurant? {
     if !(hasValue() || p!.hasClamp()) {
-      let q <- graft_restaurant(p!);
+      let q <- p!.graftRestaurant();
       p <-? Distribution<Value>?(q);
       return q;
     }
     return nil;
   }
 
-  override function graftMultivariateGaussian() -> MultivariateGaussian? {
+  function graftMultivariateGaussian() -> MultivariateGaussian? {
     if !(hasValue() || p!.hasClamp()) {
-      let q <- graft_multivariate_gaussian(p!);
+      let q <- p!.graftMultivariateGaussian();
       p <-? Distribution<Value>?(q);
       return q;
     }
     return nil;
   }
 
-  override function graftMultivariateNormalInverseGamma(compare:Distribution<Real>) ->
+  function graftMultivariateNormalInverseGamma(compare:Distribution<Real>) ->
       MultivariateNormalInverseGamma? {
     if !(hasValue() || p!.hasClamp()) {
-      let q <- graft_multivariate_normal_inverse_gamma(p!, compare);
+      let q <- p!.graftMultivariateNormalInverseGamma(compare);
       p <-? Distribution<Value>?(q);
       return q;
     }
     return nil;
   }
 
-  override function graftMatrixGaussian() -> MatrixGaussian? {
+  function graftMatrixGaussian() -> MatrixGaussian? {
     if !(hasValue() || p!.hasClamp()) {
-      let q <- graft_matrix_gaussian(p!);
+      let q <- p!.graftMatrixGaussian();
       p <-? Distribution<Value>?(q);
       return q;
     }
     return nil;
   }
 
-  override function graftMatrixNormalInverseWishart(compare:Distribution<LLT>) ->
+  function graftMatrixNormalInverseWishart(compare:Distribution<Real[_,_]>) ->
       MatrixNormalInverseWishart? {
     if !(hasValue() || p!.hasClamp()) {
-      let q <- graft_matrix_normal_inverse_wishart(p!, compare);
+      let q <- p!.graftMatrixNormalInverseWishart(compare);
       p <-? Distribution<Value>?(q);
       return q;
     }
     return nil;
   }
 
-  override function graftDiscrete() -> Discrete? {
+  function graftDiscrete() -> Discrete? {
     if !(hasValue() || p!.hasClamp()) {
-      let q <- graft_discrete(p!);
+      let q <- p!.graftDiscrete();
       p <-? Distribution<Value>?(q);
       return q;
     }
     return nil;
   }
 
-  override function graftBoundedDiscrete() -> BoundedDiscrete? {
+  function graftBoundedDiscrete() -> BoundedDiscrete? {
     if !(hasValue() || p!.hasClamp()) {
-      let q <- graft_bounded_discrete(p!);
+      let q <- p!.graftBoundedDiscrete();
       p <-? Distribution<Value>?(q);
       return q;
     }

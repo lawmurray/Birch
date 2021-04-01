@@ -58,9 +58,8 @@ final class InverseGammaGamma(k:Expression<Real>, θ:InverseGamma) <
   }
 }
 
-function InverseGammaGamma(k:Expression<Real>, θ:InverseGamma) ->
-    InverseGammaGamma {
-  m:InverseGammaGamma(k, θ);
+function InverseGammaGamma<Left>(k:Left, θ:InverseGamma) -> {
+  m:InverseGammaGamma(box(k), θ);
   m.link();
   return m;
 }

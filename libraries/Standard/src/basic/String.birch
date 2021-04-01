@@ -6,7 +6,7 @@ type String;
 /**
  * Convert to string.
  */
-function String(x:Boolean) -> String {
+function to_string(x:Boolean) -> String {
   if x {
     return "true";
   } else {
@@ -17,7 +17,7 @@ function String(x:Boolean) -> String {
 /**
  * Convert double-precision floating point number to string.
  */
-function String(x:Real64) -> String {
+function to_string(x:Real) -> String {
   cpp{{
   std::stringstream buf;
   if (isfinite(x) && x == floor(x)) {
@@ -30,24 +30,9 @@ function String(x:Real64) -> String {
 }
 
 /**
- * Convert single-precision floating point number to string.
- */
-function String(x:Real32) -> String {
-  cpp{{
-  std::stringstream buf;
-  if (isfinite(x) && x == floor(x)) {
-    buf << (int64_t)x << ".0";
-  } else {
-    buf << std::scientific << std::setprecision(6) << x;
-  }
-  return buf.str();
-  }}
-}
-
-/**
  * Convert to string.
  */
-function String(x:Integer64) -> String {
+function to_string(x:Integer) -> String {
   cpp{{
   return std::to_string(x);
   }}
@@ -56,43 +41,16 @@ function String(x:Integer64) -> String {
 /**
  * Convert to string.
  */
-function String(x:Integer32) -> String {
-  cpp{{
-  return std::to_string(x);
-  }}
-}
-
-/**
- * Convert to string.
- */
-function String(x:Integer16) -> String {
-  cpp{{
-  return std::to_string(x);
-  }}
-}
-
-/**
- * Convert to string.
- */
-function String(x:Integer8) -> String {
-  cpp{{
-  return std::to_string(x);
-  }}
-}
-
-/**
- * Convert to string.
- */
-function String(x:String) -> String {
+function to_string(x:String) -> String {
   return x;
 }
 
 /**
  * Convert to string.
  */
-function String(x:Boolean?) -> String? {
+function to_string(x:Boolean?) -> String? {
   if x? {
-    return String(x!);
+    return to_string(x!);
   } else {
     return nil;
   }
@@ -101,9 +59,9 @@ function String(x:Boolean?) -> String? {
 /**
  * Convert to string.
  */
-function String(x:Real64?) -> String? {
+function to_string(x:Real?) -> String? {
   if x? {
-    return String(x!);
+    return to_string(x!);
   } else {
     return nil;
   }
@@ -112,9 +70,9 @@ function String(x:Real64?) -> String? {
 /**
  * Convert to string.
  */
-function String(x:Real32?) -> String? {
+function to_string(x:Integer?) -> String? {
   if x? {
-    return String(x!);
+    return to_string(x!);
   } else {
     return nil;
   }
@@ -123,58 +81,14 @@ function String(x:Real32?) -> String? {
 /**
  * Convert to string.
  */
-function String(x:Integer64?) -> String? {
-  if x? {
-    return String(x!);
-  } else {
-    return nil;
-  }
-}
-
-/**
- * Convert to string.
- */
-function String(x:Integer32?) -> String? {
-  if x? {
-    return String(x!);
-  } else {
-    return nil;
-  }
-}
-
-/**
- * Convert to string.
- */
-function String(x:Integer16?) -> String? {
-  if x? {
-    return String(x!);
-  } else {
-    return nil;
-  }
-}
-
-/**
- * Convert to string.
- */
-function String(x:Integer8?) -> String? {
-  if x? {
-    return String(x!);
-  } else {
-    return nil;
-  }
-}
-
-/**
- * Convert to string.
- */
-function String(x:String?) -> String? {
+function to_string(x:String?) -> String? {
   return x;
 }
 
 /**
  * Convert vector to String.
  */
-function String(x:Real[_]) -> String {
+function to_string(x:Real[_]) -> String {
   result:String;
   cpp{{
   std::stringstream buf;
@@ -201,7 +115,7 @@ function String(x:Real[_]) -> String {
 /**
  * Convert vector to String.
  */
-function String(x:Integer[_]) -> String {
+function to_string(x:Integer[_]) -> String {
   result:String;
   cpp{{
   std::stringstream buf;
@@ -224,7 +138,7 @@ function String(x:Integer[_]) -> String {
 /**
  * Convert vector to String.
  */
-function String(x:Boolean[_]) -> String {
+function to_string(x:Boolean[_]) -> String {
   result:String;
   cpp{{
   std::stringstream buf;
@@ -251,7 +165,7 @@ function String(x:Boolean[_]) -> String {
 /**
  * Convert matrix to String.
  */
-function String(X:Real[_,_]) -> String {
+function to_string(X:Real[_,_]) -> String {
   result:String;
   cpp{{
   std::stringstream buf;
@@ -285,7 +199,7 @@ function String(X:Real[_,_]) -> String {
 /**
  * Convert matrix to String.
  */
-function String(X:Integer[_,_]) -> String {
+function to_string(X:Integer[_,_]) -> String {
   result:String;
   cpp{{
   std::stringstream buf;
@@ -315,7 +229,7 @@ function String(X:Integer[_,_]) -> String {
 /**
  * Convert matrix to String.
  */
-function String(X:Boolean[_,_]) -> String {
+function to_string(X:Boolean[_,_]) -> String {
   result:String;
   cpp{{
   std::stringstream buf;
@@ -347,10 +261,22 @@ function String(X:Boolean[_,_]) -> String {
 }
 
 /**
- * Convert matrix to String.
+ * Convert string to numerical scalar.
+ *
+ * - Value: Numerical type.
  */
-function String(X:LLT) -> String {
-  return String(canonical(X));
+function from_string<Value>(s:String) -> Value {
+  cpp{{
+  if (std::is_same<Value,birch::type::Real>::value) {
+    return static_cast<Value>(std::stod(s));
+  } else if (std::is_same<Value,birch::type::Integer>::value) {
+    return static_cast<Value>(std::stoll(s));
+  } else if (s == "true" || s == "True") {
+    return true;
+  } else {
+    return false;
+  }
+  }}
 }
 
 /**
@@ -416,126 +342,126 @@ operator (x:String + y:String) -> String;
  * String concatenation.
  */
 operator (x:String + y:Boolean) -> String {
-  return x + String(y);
+  return x + to_string(y);
 }
 
 /**
  * String concatenation.
  */
 operator (x:String + y:Real) -> String {
-  return x + String(y);
+  return x + to_string(y);
 }
 
 /**
  * String concatenation.
  */
 operator (x:String + y:Integer) -> String {
-  return x + String(y);
+  return x + to_string(y);
 }
 
 /**
  * String concatenation.
  */
 operator (x:String + y:Boolean[_]) -> String {
-  return x + String(y);
+  return x + to_string(y);
 }
 
 /**
  * String concatenation.
  */
 operator (x:String + y:Real[_]) -> String {
-  return x + String(y);
+  return x + to_string(y);
 }
 
 /**
  * String concatenation.
  */
 operator (x:String + y:Integer[_]) -> String {
-  return x + String(y);
+  return x + to_string(y);
 }
 
 /**
  * String concatenation.
  */
 operator (x:String + y:Boolean[_,_]) -> String {
-  return x + String(y);
+  return x + to_string(y);
 }
 
 /**
  * String concatenation.
  */
 operator (x:String + y:Real[_,_]) -> String {
-  return x + String(y);
+  return x + to_string(y);
 }
 
 /**
  * String concatenation.
  */
 operator (x:String + y:Integer[_,_]) -> String {
-  return x + String(y);
+  return x + to_string(y);
 }
 
 /**
  * String concatenation.
  */
 operator (x:Boolean + y:String) -> String {
-  return String(x) + y;
+  return to_string(x) + y;
 }
 
 /**
  * String concatenation.
  */
 operator (x:Real + y:String) -> String {
-  return String(x) + y;
+  return to_string(x) + y;
 }
 
 /**
  * String concatenation.
  */
 operator (x:Integer + y:String) -> String {
-  return String(x) + y;
+  return to_string(x) + y;
 }
 
 /**
  * String concatenation.
  */
 operator (x:Boolean[_] + y:String) -> String {
-  return String(x) + y;
+  return to_string(x) + y;
 }
 
 /**
  * String concatenation.
  */
 operator (x:Real[_] + y:String) -> String {
-  return String(x) + y;
+  return to_string(x) + y;
 }
 
 /**
  * String concatenation.
  */
 operator (x:Integer[_] + y:String) -> String {
-  return String(x) + y;
+  return to_string(x) + y;
 }
 
 /**
  * String concatenation.
  */
 operator (x:Boolean[_,_] + y:String) -> String {
-  return String(x) + y;
+  return to_string(x) + y;
 }
 
 /**
  * String concatenation.
  */
 operator (x:Real[_,_] + y:String) -> String {
-  return String(x) + y;
+  return to_string(x) + y;
 }
 
 /**
  * String concatenation.
  */
 operator (x:Integer[_,_] + y:String) -> String {
-  return String(x) + y;
+  return to_string(x) + y;
 }
 
 /**

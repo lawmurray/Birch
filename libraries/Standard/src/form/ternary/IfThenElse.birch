@@ -1,0 +1,36 @@
+final class IfThenElseFunction {  
+function compute<LeftValue,MiddleValue,RightValue>(l:LeftValue, m:MiddleValue, r:RightValue) -> {
+    return if_then_else(l, m, r);
+  }
+
+function gradLeft<Gradient,LeftValue,MiddleValue,RightValue>(d:Gradient, l:LeftValue, m:MiddleValue, r:RightValue) -> {
+    return 0.0;
+  }
+
+function gradMiddle<Gradient,LeftValue,MiddleValue,RightValue>(d:Gradient, l:LeftValue, m:MiddleValue, r:RightValue) -> {
+    return if_then_else(l, d, 0.0);
+  }
+
+function gradRight<Gradient,LeftValue,MiddleValue,RightValue>(d:Gradient, l:LeftValue, m:MiddleValue, r:RightValue) -> {
+    return if_then_else(l, 0.0, d);
+  }
+}
+class IfThenElse<Left,Middle,Right> = Ternary<IfThenElseFunction,Left,Middle,Right>;
+
+/**
+ * If `cond` is true then return `x`, else return `y`.
+ */
+ function if_then_else<Left,Middle,Right>(l:Left, m:Middle, r:Right) -> {
+  return construct<IfThenElse<Left,Middle,Right>>(l, m, r);
+}
+
+/**
+ * If `cond` is true then return `x`, else return `y`.
+ */
+function if_then_else<Type>(cond:Boolean, x:Type, y:Type) -> Type {
+  if cond {
+    return x;
+  } else {
+    return y;
+  }
+}

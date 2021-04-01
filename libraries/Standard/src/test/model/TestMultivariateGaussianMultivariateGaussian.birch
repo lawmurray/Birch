@@ -19,8 +19,8 @@ class TestMultivariateGaussianMultivariateGaussian < Model {
   }
 
   function simulate() {
-    μ_1 ~ Gaussian(μ_0, Σ_0);
-    x ~ Gaussian(μ_1, Σ_1);
+    μ_1 ~ MultivariateGaussian(μ_0, Σ_0);
+    x ~ MultivariateGaussian(μ_1, Σ_1);
   }
 
   function forward() -> Real[_] {

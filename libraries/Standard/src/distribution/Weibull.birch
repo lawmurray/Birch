@@ -56,27 +56,6 @@ final class Weibull(k:Expression<Real>, λ:Expression<Real>) <
 /**
  * Create Weibull distribution.
  */
-function Weibull(k:Expression<Real>, λ:Expression<Real>) -> Weibull {
-  return construct<Weibull>(k, λ);
-}
-
-/**
- * Create Weibull distribution.
- */
-function Weibull(k:Expression<Real>, λ:Real) -> Weibull {
-  return Weibull(k, box(λ));
-}
-
-/**
- * Create Weibull distribution.
- */
-function Weibull(k:Real, λ:Expression<Real>) -> Weibull {
-  return Weibull(box(k), λ);
-}
-
-/**
- * Create Weibull distribution.
- */
-function Weibull(k:Real, λ:Real) -> Weibull {
-  return Weibull(box(k), box(λ));
+function Weibull<Left,Right>(k:Left, λ:Right) -> {
+  return construct<Weibull>(box(k), box(λ));
 }

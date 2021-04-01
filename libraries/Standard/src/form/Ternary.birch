@@ -1,0 +1,67 @@
+/*
+ * Function form with three arguments.
+ */
+final class Ternary<Function,Left,Middle,Right>(l:Left, m:Middle, r:Right) {
+  /**
+   * Function.
+   */
+  f:Function;
+
+  /**
+   * Left argument.
+   */
+  l:Left? <- l;
+
+  /**
+   * Middle argument.
+   */
+  m:Middle? <- m;
+  
+  /**
+   * Right argument.
+   */
+  r:Right? <- r;
+
+  function value() -> {
+    return f.compute(global.value(l!), global.value(m!), global.value(r!));
+  }
+
+  function peak() -> {
+    return f.compute(global.peak(l!), global.peak(m!), global.peak(r!));
+  }
+
+  function eval() -> {
+    return f.compute(global.eval(l!), global.eval(m!), global.eval(r!));
+  }
+
+  function reval() -> {
+    return f.compute(global.reval(l!), global.reval(m!), global.reval(r!));
+  }
+
+  function grad<Gradient>(d:Gradient) {
+    global.grad(l!, f.gradLeft(d, global.peak(l!), global.peak(m!), global.peak(r!)));
+    global.grad(m!, f.gradMiddle(d, global.peak(l!), global.peak(m!), global.peak(r!)));
+    global.grad(r!, f.gradRight(d, global.peak(l!), global.peak(m!), global.peak(r!)));
+  }
+
+  function label(gen:Integer) {
+    global.label(l!, gen);
+    global.label(m!, gen);
+    global.label(r!, gen);
+  }
+
+  function prune(gen:Integer) {
+    global.prune(l!, gen);
+    global.prune(m!, gen);
+    global.prune(r!, gen);
+  }
+
+  function constant() {
+    global.constant(l!);
+    l <- nil;
+    global.constant(m!);
+    m <- nil;
+    global.constant(r!);
+    r <- nil;
+  }
+}

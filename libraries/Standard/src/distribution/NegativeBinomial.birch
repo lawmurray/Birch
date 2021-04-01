@@ -56,35 +56,18 @@ final class NegativeBinomial(k:Expression<Integer>, ρ:Expression<Real>) <
 /**
  * Create negative binomial distribution.
  */
-function NegativeBinomial(k:Expression<Integer>, ρ:Expression<Real>) ->
-    Distribution<Integer> {
+function NegativeBinomial<Left,Right>(k:Left, ρ:Right) -> {
+  return construct<NegativeBinomial>(box(k), box(ρ));
+}
+
+/**
+ * Create negative binomial distribution.
+ */
+function NegativeBinomial<Left,Right>(k:Left, ρ:Random<Real>) -> Distribution<Integer> {
   ρ1:Beta?;
   if (ρ1 <- ρ.graftBeta())? {
-    return BetaNegativeBinomial(k, ρ1!);
+    return BetaNegativeBinomial(box(k), ρ1!);
   } else {
-    return construct<NegativeBinomial>(k, ρ);
+    return construct<NegativeBinomial>(box(k), ρ);
   }
-}
-
-/**
- * Create negative binomial distribution.
- */
-function NegativeBinomial(k:Expression<Integer>, ρ:Real) ->
-    Distribution<Integer> {
-  return NegativeBinomial(k, box(ρ));
-}
-
-/**
- * Create negative binomial distribution.
- */
-function NegativeBinomial(k:Integer, ρ:Expression<Real>) ->
-    Distribution<Integer> {
-  return NegativeBinomial(box(k), ρ);
-}
-
-/**
- * Create negative binomial distribution.
- */
-function NegativeBinomial(k:Integer, ρ:Real) -> Distribution<Integer> {
-  return NegativeBinomial(box(k), box(ρ));
 }

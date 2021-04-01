@@ -36,7 +36,6 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
   r1:Tape<Random<Real>>?;
   r2:Tape<Random<Real[_]>>?;
   r3:Tape<Random<Real[_,_]>>?;
-  l1:Tape<Random<LLT>>?;
 
   /**
    * Number of arguments.
@@ -90,7 +89,7 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
       assert v?;
       w <- w + v!.eval();
       if π? {
-        π <- π! + v!;
+        π <- box(π! + v!);
       } else {
         π <- v!;
       }
@@ -145,7 +144,7 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
       let p1 <- p.logpdfLazy(p.v!);
       assert p1?;
       if π? {
-        π <- π! + p1!;
+        π <- box(π! + p1!);
       } else {
         π <- p1!;
       }
@@ -177,7 +176,7 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
     if delayExpressions {
       this.w <- this.w + w.eval();
       if π? {
-        π <- π! + w;
+        π <- box(π! + w);
       } else {
         π <- w;
       }
@@ -200,9 +199,9 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
   /**
    * Evaluate the log-posterior.
    */
-  function eval(gen:Integer) -> Real {
+  function eval() -> Real {
     if π? {
-      return π!.eval(gen);
+      return π!.eval();
     } else {
       return 0.0;
     }
@@ -211,17 +210,17 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
   /**
    * Get value of real arguments.
    */
-  function args(gen:Integer) -> Real[_] {
+  function args() -> Real[_] {
     /* determine size */
     n <- 0;
     if r1? {
-      n <- n + argSize(gen, r1!);
+      n <- n + argSize(r1!);
     }
     if r2? {
-      n <- n + argSize(gen, r2!);
+      n <- n + argSize(r2!);
     }
     if r3? {
-      n <- n + argSize(gen, r3!);
+      n <- n + argSize(r3!);
     }
     assert π? || n == 0;
 
@@ -261,11 +260,11 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
   /**
    * Compute the gradient.
    */
-  function grad(gen:Integer) -> Real[_] {
+  function grad() -> Real[_] {
     d:Real[n];
     if π? {
       /* compute gradient */
-      π!.grad(1.0, gen);
+      π!.grad(1.0);
 
       /* get argument gradients */
       let i <- 1;
@@ -303,7 +302,7 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
   /**
    * Move the expression.
    */
-  function move(gen:Integer, x:Real[_]) -> Real {
+  function move(x:Real[_]) -> Real {
     let p <- 0.0;
     if π? {
       /* set argument values */
@@ -312,7 +311,7 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
         let iter1 <- r1!.walk();
         while iter1.hasNext() {
           let v <- iter1.next();
-          v.setEval(x[i]);
+          v.move(x[i]);
           i <- i + 1;
         }
       }
@@ -321,7 +320,7 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
         while iter2.hasNext() {
           let v <- iter2.next();
           let j <- i + v.size() - 1;
-          v.setEval(x[i..j]);
+          v.move(x[i..j]);
           i <- j + 1;
         }
       }
@@ -330,16 +329,34 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
         while iter3.hasNext() {
           let v <- iter3.next();
           let j <- i + v.size() - 1;
-          v.setEval(mat(x[i..j], v.columns()));
+          v.move(mat(x[i..j], v.columns()));
           i <- j + 1;
         }
       }
       assert i == n + 1;
 
       /* re-evaluate */
-      p <- π!.reval(gen);
+      p <- π!.reval();
     }
     return p;
+  }
+
+  /**
+   * Label generations.
+   *
+   * See also: [Expression](../Expression/)
+   */
+  function label(gen:Integer) {
+    π!.label(gen);
+  }
+
+  /**
+   * Prune generations.
+   *
+   * See also: [Expression](../Expression/)
+   */
+  function prune(gen:Integer) {
+    π!.prune(gen);
   }
 
   function coerce<Value>() -> Value {
@@ -393,29 +410,19 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
     }
     r3!.pushBack(x);
   }
-
-  function arg(x:Random<LLT>) {
-    if !l1? {
-      l1 <- construct<Tape<Random<LLT>>>();
-    }
-    l1!.pushBack(x);
-  }
 }
 
 /*
  * Determine the total size of all arguments in a [Tape](../Tape/),
  * simultaneously removing all constants.
  *
- * - gen: Generation limit.
  * - o: The tape.
- *
- * Random objects older than `gen` are considered constant.
  */
-function argSize<Value>(gen:Integer, o:Tape<Random<Value>>) -> Integer {
+function argSize<Value>(o:Tape<Random<Value>>) -> Integer {
   let n <- 0;
   let i <- 1;
   while i <= o.size() {
-    if !o[i].isConstant() && o[i].generation >= gen {
+    if !o[i].isConstant() {
       n <- n + o[i].size();
       i <- i + 1;
     } else {
@@ -429,12 +436,12 @@ function argSize<Value>(gen:Integer, o:Tape<Random<Value>>) -> Integer {
  * As `argSize()`, but traverses the `Tape` in reverse, which may be more
  * efficient if its current position is closer to the back than the front.
  */
-function argSizeReverse<Value>(gen:Integer, o:Tape<Random<Value>>) ->
+function argSizeReverse<Value>(o:Tape<Random<Value>>) ->
     Integer {
   let n <- 0;
   let i <- o.size();
   while i >= 1 {
-    if !o[i].isConstant() && o[i].generation >= gen {
+    if !o[i].isConstant() {
       n <- n + o[i].size();
     } else {
       o.erase(i);

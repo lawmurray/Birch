@@ -1,0 +1,33 @@
+final class TanhFunction {
+function compute<Value>(m:Value) -> {
+    return tanh(m);
+  }
+
+function grad<Gradient,Value>(d:Gradient, m:Value) -> {
+    return d*(1.0 + pow(tanh(m), 2.0));
+  }
+}
+class Tanh<Middle> = Unary<TanhFunction,Middle>;
+
+/**
+ * Hyperbolic tangent.
+ */
+function tanh<Middle>(m:Middle) -> {
+  return construct<Tanh<Middle>>(m);
+}
+
+/**
+ * Hyperbolic tangent.
+ */
+function tanh(m:Integer) -> Real {
+  return tanh(scalar<Real>(m));
+}
+
+/**
+ * Hyperbolic tangent.
+ */
+function tanh(m:Real) -> Real {
+  cpp {{
+  return std::tanh(m);
+  }}
+}

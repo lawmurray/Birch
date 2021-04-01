@@ -1,0 +1,62 @@
+final class LLTFunction {
+  hpp{{
+  Eigen::LLT<libbirch::EigenMatrix<Real>> llt;
+  }}
+
+  function compute<Value>(m:Value) -> {
+    cpp{{
+    llt.compute(m);
+    }}
+    return m;
+  }
+
+  function grad<Gradient,Value>(d:Gradient, m:Value) -> {
+    return d;  // just a factorization, so pass along
+  }
+}
+class LLT<Middle> = Unary<LLTFunction,Middle>;
+
+/**
+ * Cholesky factorization of the symmetric positive definite matrix $S$.
+ *
+ * - S: The symmetric positive definite matrix $S$.
+ *
+ * Returns: an object representing the symmetric positive definite matrix $S$
+ * in its decomposed form.
+ *
+ * This differs from `chol` in that `chol` returns the lower-triangular
+ * Cholesky factor, while this returns the original matrix, but factorized.
+ *
+ * The object acts as the matrix $S$, defines conversion to and assignment
+ * from `Real[_,_]`, and is intended as more or less a drop-in replacement
+ * for that type, albeit sharing, as usual for objects (i.e. copy-by-reference
+ * rather than copy-by-value semantics). That sharing permits, for example,
+ * multiple multivariate Gaussian distributions to share the same covariance
+ * or precision matrix with common posterior updates performed only once.
+ *
+ * Various functions, such as `solve`, have overloads that make use of `LLT`
+ * objects for more efficient computation.
+ *
+ * !!! attention
+ *     To emphasize, the matrix represented is $S$, not $L$, which is to say,
+ *     code such as the following:
+ *
+ *         let A <- llt(S);
+ *         y <- solve(A, x);
+ *
+ *     computes the matrix-vector product $y = S^{^-1}x$, not $y = L^{-1}x$,
+ *     however the Cholesky decomposition will be used to solve this more
+ *     efficiently than a general matrix solve. The point of an `LLT` object
+ *     is to maintain the original matrix in a decomposed form for more
+ *     efficient computation. 
+ */
+function llt<Middle>(m:Middle) -> {
+  return construct<LLT<Middle>>(m);
+}
+
+/**
+ * Cholesky factorization.
+ */
+function llt<Middle>(m:LLT<Middle>) -> {
+  return m;
+}

@@ -1,0 +1,55 @@
+/**
+ * Boxed and joined vector expression.
+ *
+ * - Value: Element type.
+ */
+final class VectorJoinExpression<Value>(x:Value[_]) < Expression<Value[_]> {
+  /**
+   * Arguments.
+   */
+  x:Value[_] <- x;
+
+  override function isRandom() -> Boolean {
+    return false;
+  }
+
+  override function isConstant() -> Boolean {
+    return transform_reduce(x, true, \(a:Boolean, b:Boolean) -> {
+        return a && b; }, \(x':Value) -> { return constant(x'); });
+  }
+
+  override function rows() -> Integer {
+    return global.rows(x);
+  }
+
+  override function columns() -> Integer {
+    return 1;
+  }
+
+  override function value() -> Value[_] {
+    return transform(x, \(x':Value) -> { return global.value(x'); });
+  }
+  
+  override function eval() -> Value[_] {
+    return transform(x, \(x':Value) -> { return global.eval(x'); });
+  }
+
+  override function reval() -> Value[_] {
+    return transform(x, \(x':Value) -> { return global.reval(x'); });
+  }
+  
+  override function grad(d:Value[_]) {
+    for_each(x, d, \(x':Value, d':Value) { grad(x', d'); });
+  }
+
+  override function constant() {
+    for_each(x, \(x':Value) { constant(x'); });
+  }
+}
+
+/**
+ * Convert a vector of expressions into a vector expression.
+ */
+function join<Value>(x:Value[_]) -> {
+  return construct<VectorJoinExpression<Value>>(x);
+}

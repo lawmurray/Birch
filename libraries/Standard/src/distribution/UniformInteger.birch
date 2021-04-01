@@ -60,28 +60,6 @@ final class UniformInteger(l:Expression<Integer>, u:Expression<Integer>) <
 /**
  * Create uniform distribution over integers.
  */
-function Uniform(l:Expression<Integer>, u:Expression<Integer>) ->
-    UniformInteger {
-  return construct<UniformInteger>(l, u);
-}
-
-/**
- * Create uniform distribution over integers.
- */
-function Uniform(l:Expression<Integer>, u:Integer) -> UniformInteger {
-  return Uniform(l, box(u));
-}
-
-/**
- * Create uniform distribution over integers.
- */
-function Uniform(l:Integer, u:Expression<Integer>) -> UniformInteger {
-  return Uniform(box(l), u);
-}
-
-/**
- * Create uniform distribution over integers.
- */
-function Uniform(l:Integer, u:Integer) -> UniformInteger {
-  return Uniform(box(l), box(u));
+function UniformInteger<Left,Right>(l:Left, u:Right) -> {
+  return construct<UniformInteger>(box(l), box(u));
 }

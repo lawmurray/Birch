@@ -17,12 +17,15 @@ class LangevinKernel < Kernel {
   function apply(t:Integer, π:Particle) -> Real {
     let δ <- scale/pow(min(t, nlags), 3);
     let σ2 <- 2.0*δ;
-    let s <- t - nlags;
+
+    /* apply lag */
+    π.label(t);
+    π.prune(t - nlags);
 
     /* initial state */
-    let x <- π.args(s);
-    let p <- π.eval(s);
-    let d <- π.grad(s);
+    let x <- π.args();
+    let p <- π.eval();
+    let d <- π.grad();
     let μ <- x + d*δ;
 
     /* moves */
@@ -31,8 +34,8 @@ class LangevinKernel < Kernel {
     for n in 1..nmoves {
       /* proposed state */
       let x' <- simulate_multivariate_gaussian(μ, σ2);
-      let p' <- π.move(s, x');
-      let d' <- π.grad(s);
+      let p' <- π.move(x');
+      let d' <- π.grad();
       let μ' <- x' + d'*δ;
 
       /* accept/reject */
@@ -50,9 +53,9 @@ class LangevinKernel < Kernel {
     if !accept {
       /* if last proposal was not accepted, restore correct arguments,
        * otherwise already correct */
-      π.move(s, x);
+      π.move(x);
     }
-    return Real(naccepts)/nmoves;
+    return scalar<Real>(naccepts)/nmoves;
   }
 
   override function read(buffer:Buffer) {

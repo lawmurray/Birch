@@ -32,11 +32,11 @@ final class LinearBoundedDiscrete(a:Expression<Integer>, μ:BoundedDiscrete,
 //  }
 
   function logpdf(x:Integer) -> Real {
-    return μ.logpdf((x - c.value())/a.value()) - log(abs(Real(a.value())));
+    return μ.logpdf((x - c.value())/a.value()) - log(abs(a.value()));
   }
 
 //  function logpdfLazy(x:Expression<Integer>) -> Expression<Real>? {
-//    return μ.logpdfLazy((x - c)/a) - log(abs(Real(a)));
+//    return μ.logpdfLazy((x - c)/a) - log(abs(a));
 //  }
 
   function update(x:Integer) {
@@ -78,9 +78,8 @@ final class LinearBoundedDiscrete(a:Expression<Integer>, μ:BoundedDiscrete,
   }
 }
 
-function LinearBoundedDiscrete(a:Expression<Integer>, μ:BoundedDiscrete,
-    c:Expression<Integer>) -> LinearBoundedDiscrete {
-  m:LinearBoundedDiscrete(a, μ, c);
+function LinearBoundedDiscrete<Left,Right>(a:Left, μ:BoundedDiscrete, c:Right) -> LinearBoundedDiscrete {
+  m:LinearBoundedDiscrete(box(a), μ, box(c));
   m.link();
   return m;
 }

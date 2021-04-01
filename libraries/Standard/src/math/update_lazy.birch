@@ -10,7 +10,7 @@
 function update_lazy_beta_bernoulli(x:Expression<Boolean>,
     α:Expression<Real>, β:Expression<Real>) ->
     (Expression<Real>, Expression<Real>) {
-  return (α + Real(x), β + (1.0 - Real(x)));
+  return (box(α + x), box(β + (1.0 - x)));
 }
 
 /*
@@ -26,7 +26,7 @@ function update_lazy_beta_bernoulli(x:Expression<Boolean>,
 function update_lazy_beta_binomial(x:Expression<Integer>,
     n:Expression<Integer>, α:Expression<Real>, β:Expression<Real>) ->
     (Expression<Real>, Expression<Real>) {
-  return (α + Real(x), β + Real(n - x));
+  return (box(α + x), box(β + n - x));
 }
 
 /*
@@ -42,7 +42,7 @@ function update_lazy_beta_binomial(x:Expression<Integer>,
 function update_lazy_beta_negative_binomial(x:Expression<Integer>,
     k:Expression<Integer>, α:Expression<Real>,
     β:Expression<Real>) -> (Expression<Real>, Expression<Real>) {
-  return (α + Real(k), β + Real(x));
+  return (box(α + k), box(β + x));
 }
 
 /*
@@ -56,7 +56,7 @@ function update_lazy_beta_negative_binomial(x:Expression<Integer>,
  */
 function update_lazy_gamma_poisson(x:Expression<Integer>, k:Expression<Real>,
     θ:Expression<Real>) -> (Expression<Real>, Expression<Real>) {
-  return (k + Real(x), θ/(θ + 1.0));
+  return (box(k + x), box(θ/(θ + 1.0)));
 }
 
 /*
@@ -73,7 +73,7 @@ function update_lazy_gamma_poisson(x:Expression<Integer>, k:Expression<Real>,
 function update_lazy_scaled_gamma_poisson(x:Expression<Integer>,
     a:Expression<Real>, k:Expression<Real>, θ:Expression<Real>) ->
     (Expression<Real>, Expression<Real>) {
-  return (k + Real(x), θ/(a*θ + 1.0));
+  return (box(k + x), box(θ/(a*θ + 1.0)));
 }
 
 /*
@@ -89,7 +89,7 @@ function update_lazy_scaled_gamma_poisson(x:Expression<Integer>,
 function update_lazy_gamma_exponential(x:Expression<Real>,
     k:Expression<Real>, θ:Expression<Real>) ->
     (Expression<Real>, Expression<Real>) {
-  return (k + 1.0, θ/(1.0 + x*θ));
+  return (box(k + 1.0), box(θ/(1.0 + x*θ)));
 }
 
 /*
@@ -106,7 +106,7 @@ function update_lazy_gamma_exponential(x:Expression<Real>,
 function update_lazy_scaled_gamma_exponential(x:Expression<Real>,
     a:Expression<Real>, k:Expression<Real>, θ:Expression<Real>) ->
     (Expression<Real>, Expression<Real>) {
-  return (k + 1.0, θ/(1.0 + x*a*θ));
+  return (box(k + 1.0), box(θ/(1.0 + x*a*θ)));
 }
 
 /*
@@ -123,7 +123,7 @@ function update_lazy_scaled_gamma_exponential(x:Expression<Real>,
 function update_lazy_inverse_gamma_weibull(x:Expression<Real>,
     k:Expression<Real>, α:Expression<Real>, β:Expression<Real>) ->
     (Expression<Real>, Expression<Real>) {
-  return (α + 1.0, β + pow(x, k));
+  return (box(α + 1.0), box(β + pow(x, k)));
 }
 
 /*
@@ -141,7 +141,7 @@ function update_lazy_inverse_gamma_weibull(x:Expression<Real>,
 function update_lazy_scaled_inverse_gamma_weibull(x:Expression<Real>,
     k:Expression<Real>, a:Expression<Real>, α:Expression<Real>,
     β:Expression<Real>) -> (Expression<Real>, Expression<Real>) {
-  return (α + 1.0, β + pow(x, k)/a);
+  return (box(α + 1.0), box(β + pow(x, k)/a));
 }
 
 /*
@@ -191,7 +191,7 @@ function update_lazy_gaussian_gaussian(x:Expression<Real>,
   let l <- 1.0/s2;
   let λ' <- λ + l;
   let μ' <- (λ*μ + l*x)/λ';
-  return (μ', 1.0/λ');
+  return (box(μ'), box(1.0/λ'));
 }
 
 /*
@@ -214,7 +214,7 @@ function update_lazy_linear_gaussian_gaussian(x:Expression<Real>,
   let l <- 1.0/s2;
   let λ' <- λ + a*a*l;
   let μ' <- (λ*μ + a*l*(x - c))/λ';
-  return (μ', 1.0/λ');
+  return (box(μ'), box(1.0/λ'));
 }
 
 /*
@@ -232,7 +232,7 @@ function update_lazy_linear_gaussian_gaussian(x:Expression<Real>,
 function update_lazy_normal_inverse_gamma(x:Expression<Real>,
     μ:Expression<Real>, λ:Expression<Real>, α:Expression<Real>,
     β:Expression<Real>) -> (Expression<Real>, Expression<Real>) {
-  return (α + 0.5, β + 0.5*pow(x - μ, 2.0)*λ);
+  return (box(α + 0.5), box(β + 0.5*pow(x - μ, 2.0)*λ));
 }
 
 /*
@@ -255,7 +255,7 @@ function update_lazy_normal_inverse_gamma_gaussian(x:Expression<Real>,
   let μ' <- (λ*μ + x)/λ';
   let α' <- α + 0.5;
   let β' <- β + 0.5*(λ/λ')*pow(x - μ, 2.0);
-  return (μ', λ', α', β');
+  return (box(μ'), box(λ'), box(α'), box(β'));
 }
 
 /*
@@ -281,7 +281,7 @@ function update_lazy_linear_normal_inverse_gamma_gaussian(x:Expression<Real>,
   let μ' <- (λ*μ + a*y)/λ';
   let α' <- α + 0.5;
   let β' <- β + 0.5*(y*y + μ*μ*λ - μ'*μ'*λ');
-  return (μ', λ', α', β');
+  return (box(μ'), box(λ'), box(α'), box(β'));
 }
 
 /*
@@ -298,7 +298,7 @@ function update_lazy_linear_normal_inverse_gamma_gaussian(x:Expression<Real>,
 function update_lazy_inverse_gamma_gamma(x:Expression<Real>,
     k:Expression<Real>, α:Expression<Real>, β:Expression<Real>) ->
     (Expression<Real>, Expression<Real>) {
-  return (α + k, β + x);
+  return (box(α + k), box(β + x));
 }
 
 /*
@@ -313,14 +313,12 @@ function update_lazy_inverse_gamma_gamma(x:Expression<Real>,
  * Returns: the posterior hyperparameters `μ'` and `Σ'`.
  */
 function update_lazy_multivariate_gaussian_multivariate_gaussian(x:Expression<Real[_]>,
-    μ:Expression<Real[_]>, Σ:Expression<LLT>, S:Expression<LLT>) ->
-    (Expression<Real[_]>, Expression<LLT>) {
-  let Σ0 <- canonical(Σ);
-  let S0 <- canonical(S);
-  let K' <- transpose(solve(llt(Σ0 + S0), Σ0));
+    μ:Expression<Real[_]>, Σ:Expression<Real[_,_]>, S:Expression<Real[_,_]>) ->
+    (Expression<Real[_]>, Expression<Real[_,_]>) {
+  let K' <- transpose(solve(Σ + S, Σ));
   let μ' <- μ + K'*(x - μ);
-  let Σ' <- llt(Σ0 - K'*Σ0);
-  return (μ', Σ');
+  let Σ' <- Σ - K'*Σ;
+  return (box(μ'), box(Σ'));
 }
 
 /*
@@ -338,14 +336,12 @@ function update_lazy_multivariate_gaussian_multivariate_gaussian(x:Expression<Re
  */
 function update_lazy_linear_multivariate_gaussian_multivariate_gaussian(
     x:Expression<Real[_]>, A:Expression<Real[_,_]>, μ:Expression<Real[_]>,
-    Σ:Expression<LLT>, c:Expression<Real[_]>, S:Expression<LLT>) ->
-    (Expression<Real[_]>, Expression<LLT>) {
-  let Σ0 <- canonical(Σ);
-  let S0 <- canonical(S);
-  let K' <- Σ0*transpose(solve(llt(A*Σ0*transpose(A) + S0), A));
+    Σ:Expression<Real[_,_]>, c:Expression<Real[_]>, S:Expression<Real[_,_]>) ->
+    (Expression<Real[_]>, Expression<Real[_,_]>) {
+  let K' <- Σ*transpose(solve(A*Σ*transpose(A) + S, A));
   let μ' <- μ + K'*(x - A*μ - c);
-  let Σ' <- llt(Σ0 - K'*A*Σ0);
-  return (μ', Σ');
+  let Σ' <- Σ - K'*A*Σ;
+  return (box(μ'), box(Σ'));
 }
 
 /*
@@ -364,13 +360,12 @@ function update_lazy_linear_multivariate_gaussian_multivariate_gaussian(
  */
 function update_lazy_linear_multivariate_gaussian_gaussian(
     x:Expression<Real>, a:Expression<Real[_]>, μ:Expression<Real[_]>,
-    Σ:Expression<LLT>, c:Expression<Real>, s2:Expression<Real>) ->
-    (Expression<Real[_]>, Expression<LLT>) {
-  let Σ0 <- canonical(Σ);
-  let k' <- Σ0*a/(dot(a, Σ0*a) + s2);
+    Σ:Expression<Real[_,_]>, c:Expression<Real>, s2:Expression<Real>) ->
+    (Expression<Real[_]>, Expression<Real[_,_]>) {
+  let k' <- Σ*a/(dot(a, Σ*a) + s2);
   let μ' <- μ + k'*(x - dot(a, μ) - c);
-  let Σ' <- llt(Σ0 - outer(k', a)*Σ0);
-  return (μ', Σ');
+  let Σ' <- Σ - outer(k', a)*Σ;
+  return (box(μ'), box(Σ'));
 }
 
 /*
@@ -386,11 +381,11 @@ function update_lazy_linear_multivariate_gaussian_gaussian(
  * Returns: the posterior hyperparameters `α'` and `β'`.
  */
 function update_lazy_multivariate_normal_inverse_gamma(x:Expression<Real[_]>,
-    ν:Expression<Real[_]>, Λ:Expression<LLT>, α:Expression<Real>,
+    ν:Expression<Real[_]>, Λ:Expression<Real[_,_]>, α:Expression<Real>,
     β:Expression<Real>) -> (Expression<Real>, Expression<Real>) {
   let D <- x.length();
   let μ <- solve(Λ, ν);
-  return (α + 0.5*D, β + 0.5*dot(x - μ, canonical(Λ)*(x - μ)));
+  return (box(α + 0.5*D), box(β + 0.5*dot(x - μ, matrix<Real>(Λ)*(x - μ))));
 }
 
 /*
@@ -406,15 +401,15 @@ function update_lazy_multivariate_normal_inverse_gamma(x:Expression<Real[_]>,
  * Returns: the posterior hyperparameters `μ'`, `Λ'`, `α'` and `γ'`.
  */
 function update_lazy_multivariate_normal_inverse_gamma_multivariate_gaussian(
-    x:Expression<Real[_]>, ν:Expression<Real[_]>, Λ:Expression<LLT>,
+    x:Expression<Real[_]>, ν:Expression<Real[_]>, Λ:Expression<Real[_,_]>,
     α:Expression<Real>, γ:Expression<Real>) -> (Expression<Real[_]>,
-    Expression<LLT>, Expression<Real>, Expression<Real>) {
+    Expression<Real[_,_]>, Expression<Real>, Expression<Real>) {
   let D <- x.length();
   let Λ' <- rank_update(Λ, identity(rows(Λ)));
   let ν' <- ν + x;
   let α' <- α + 0.5*D;
   let γ' <- γ + 0.5*dot(x);
-  return (ν', Λ', α', γ');
+  return (box(ν'), box(Λ'), box(α'), box(γ'));
 }
 
 /*
@@ -433,15 +428,15 @@ function update_lazy_multivariate_normal_inverse_gamma_multivariate_gaussian(
  */
 function update_lazy_linear_multivariate_normal_inverse_gamma_multivariate_gaussian(
     x:Expression<Real[_]>, A:Expression<Real[_,_]>, ν:Expression<Real[_]>,
-    Λ:Expression<LLT>, c:Expression<Real[_]>, α:Expression<Real>,
-    γ:Expression<Real>) -> (Expression<Real[_]>, Expression<LLT>,
+    Λ:Expression<Real[_,_]>, c:Expression<Real[_]>, α:Expression<Real>,
+    γ:Expression<Real>) -> (Expression<Real[_]>, Expression<Real[_,_]>,
     Expression<Real>, Expression<Real>) {
   let D <- length(x);
   let Λ' <- rank_update(Λ, transpose(A));
   let ν' <- ν + transpose(A)*(x - c);
   let α' <- α + 0.5*D;
   let γ' <- γ + 0.5*dot(x - c);
-  return (ν', Λ', α', γ');
+  return (box(ν'), box(Λ'), box(α'), box(γ'));
 }
 
 /*
@@ -460,14 +455,14 @@ function update_lazy_linear_multivariate_normal_inverse_gamma_multivariate_gauss
  */
 function update_lazy_linear_multivariate_normal_inverse_gamma_gaussian(
     x:Expression<Real>, a:Expression<Real[_]>, ν:Expression<Real[_]>,
-    Λ:Expression<LLT>, c:Expression<Real>, α:Expression<Real>,
-    γ:Expression<Real>) -> (Expression<Real[_]>, Expression<LLT>,
+    Λ:Expression<Real[_,_]>, c:Expression<Real>, α:Expression<Real>,
+    γ:Expression<Real>) -> (Expression<Real[_]>, Expression<Real[_,_]>,
     Expression<Real>, Expression<Real>) {
   let Λ' <- rank_update(Λ, a);
   let ν' <- ν + a*(x - c);
   let α' <- α + 0.5;
   let γ' <- γ + 0.5*pow(x - c, 2.0);
-  return (ν', Λ', α', γ');
+  return (box(ν'), box(Λ'), box(α'), box(γ'));
 }
 
 /*
@@ -482,13 +477,13 @@ function update_lazy_linear_multivariate_normal_inverse_gamma_gaussian(
  * Returns: the posterior hyperparameters `V'` and `k'`.
  */
 function update_lazy_matrix_normal_inverse_wishart(X:Expression<Real[_,_]>,
-    N:Expression<Real[_,_]>, Λ:Expression<LLT>, V:Expression<LLT>,
-    k:Expression<Real>) -> (Expression<LLT>, Expression<Real>) {
+    N:Expression<Real[_,_]>, Λ:Expression<Real[_,_]>, V:Expression<Real[_,_]>,
+    k:Expression<Real>) -> (Expression<Real[_,_]>, Expression<Real>) {
   let n <- rows(X);
   let M <- solve(Λ, N);
-  let V' <- llt(canonical(V) + transpose(X - M)*canonical(Λ)*(X - M));
+  let V' <- V + transpose(X - M)*Λ*(X - M);
   let k' <- k + n;
-  return (V', k');
+  return (box(V'), box(k'));
 }
 
 /*
@@ -504,18 +499,17 @@ function update_lazy_matrix_normal_inverse_wishart(X:Expression<Real[_,_]>,
  * Returns: the posterior hyperparameters `N'`, `Λ'`, `V'` and `k'`.
  */
 function update_lazy_matrix_normal_inverse_wishart_matrix_gaussian(
-    X:Expression<Real[_,_]>, N:Expression<Real[_,_]>, Λ:Expression<LLT>,
-    V:Expression<LLT>, k:Expression<Real>) -> (Expression<Real[_,_]>,
-    Expression<LLT>, Expression<LLT>, Expression<Real>) {
+    X:Expression<Real[_,_]>, N:Expression<Real[_,_]>, Λ:Expression<Real[_,_]>,
+    V:Expression<Real[_,_]>, k:Expression<Real>) -> (Expression<Real[_,_]>,
+    Expression<Real[_,_]>, Expression<Real[_,_]>, Expression<Real>) {
   let D <- rows(X);
   let Λ' <- rank_update(Λ, identity(rows(N)));
   let N' <- N + X;
   let M <- solve(Λ, N);
   let M' <- solve(Λ', N');
-  let V' <- llt(canonical(V) + transpose(X)*X + transpose(M)*N -
-      transpose(M')*N');
+  let V' <- V + transpose(X)*X + transpose(M)*N - transpose(M')*N';
   let k' <- k + D;
-  return (N', Λ', V', k');
+  return (box(N'), box(Λ'), box(V'), box(k'));
 }
 
 /*
@@ -534,18 +528,17 @@ function update_lazy_matrix_normal_inverse_wishart_matrix_gaussian(
  */
 function update_lazy_linear_matrix_normal_inverse_wishart_matrix_gaussian(
     X:Expression<Real[_,_]>, A:Expression<Real[_,_]>,
-    N:Expression<Real[_,_]>, Λ:Expression<LLT>, C:Expression<Real[_,_]>,
-    V:Expression<LLT>, k:Expression<Real>) -> (Expression<Real[_,_]>,
-    Expression<LLT>, Expression<LLT>, Expression<Real>) {
+    N:Expression<Real[_,_]>, Λ:Expression<Real[_,_]>, C:Expression<Real[_,_]>,
+    V:Expression<Real[_,_]>, k:Expression<Real>) -> (Expression<Real[_,_]>,
+    Expression<Real[_,_]>, Expression<Real[_,_]>, Expression<Real>) {
   let D <- rows(X);
   let Λ' <- rank_update(Λ, transpose(A));
   let N' <- N + transpose(A)*(X - C);
   let M <- solve(Λ, N);
   let M' <- solve(Λ', N');
-  let V' <- llt(canonical(V) + transpose(X - C)*(X - C) + transpose(M)*N -
-      transpose(M')*N');
+  let V' <- V + transpose(X - C)*(X - C) + transpose(M)*N - transpose(M')*N';
   let k' <- k + D;
-  return (N', Λ', V', k');
+  return (box(N'), box(Λ'), box(V'), box(k'));
 }
 
 /*
@@ -564,15 +557,14 @@ function update_lazy_linear_matrix_normal_inverse_wishart_matrix_gaussian(
  */
 function update_lazy_linear_matrix_normal_inverse_wishart_multivariate_gaussian(
     x:Expression<Real[_]>, a:Expression<Real[_]>, N:Expression<Real[_,_]>,
-    Λ:Expression<LLT>, c:Expression<Real[_]>, V:Expression<LLT>,
-    k:Expression<Real>) -> (Expression<Real[_,_]>, Expression<LLT>,
-    Expression<LLT>, Expression<Real>) {
+    Λ:Expression<Real[_,_]>, c:Expression<Real[_]>, V:Expression<Real[_,_]>,
+    k:Expression<Real>) -> (Expression<Real[_,_]>, Expression<Real[_,_]>,
+    Expression<Real[_,_]>, Expression<Real>) {
   let Λ' <- rank_update(Λ, a);
   let N' <- N + outer(a, x - c);
   let M <- solve(Λ, N);
   let M' <- solve(Λ', N');
-  let V' <- llt(canonical(V) + outer(x - c) + transpose(M)*N -
-      transpose(M')*N');
+  let V' <- V + outer(x - c) + transpose(M)*N - transpose(M')*N';
   let k' <- k + 1.0;
-  return (N', Λ', V', k');
+  return (box(N'), box(Λ'), box(V'), box(k'));
 }

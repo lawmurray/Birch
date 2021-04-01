@@ -26,7 +26,7 @@ class TestLinearMultivariateNormalInverseGammaGaussian < Model {
 
   function simulate() {
     σ2 ~ InverseGamma(α, β);
-    μ ~ Gaussian(μ_0, Σ, σ2);
+    μ ~ MultivariateGaussian(μ_0, Σ*σ2);
     x ~ Gaussian(dot(a, μ) + c, σ2);
   }
 

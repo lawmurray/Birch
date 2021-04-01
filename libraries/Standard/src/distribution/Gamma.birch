@@ -61,32 +61,18 @@ final class Gamma(k:Expression<Real>, θ:Expression<Real>) <
 /**
  * Create gamma distribution.
  */
-function Gamma(k:Expression<Real>, θ:Expression<Real>) -> Distribution<Real> {
+function Gamma<Left,Right>(k:Left, θ:Right) -> {
+  return construct<Gamma>(box(k), box(θ));
+}
+
+/**
+ * Create gamma distribution.
+ */
+function Gamma<Left>(k:Left, θ:Random<Real>) -> Distribution<Real> {
   θ1:InverseGamma?;
   if (θ1 <- θ.graftInverseGamma())? {
     return InverseGammaGamma(k, θ1!);
   } else {
-    return construct<Gamma>(k, θ);
+    return construct<Gamma>(box(k), θ);
   }
-}
-
-/**
- * Create gamma distribution.
- */
-function Gamma(k:Expression<Real>, θ:Real) -> Distribution<Real> {
-  return Gamma(k, box(θ));
-}
-
-/**
- * Create gamma distribution.
- */
-function Gamma(k:Real, θ:Expression<Real>) -> Distribution<Real> {
-  return Gamma(box(k), θ);
-}
-
-/**
- * Create gamma distribution.
- */
-function Gamma(k:Real, θ:Real) -> Distribution<Real> {
-  return Gamma(box(k), box(θ));
 }

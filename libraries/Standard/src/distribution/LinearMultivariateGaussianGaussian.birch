@@ -3,7 +3,7 @@
  */
 final class LinearMultivariateGaussianGaussian(a:Expression<Real[_]>,
     m:MultivariateGaussian, c:Expression<Real>, s2:Expression<Real>) <
-    Gaussian(dot(a, m.μ) + c, dot(a, canonical(m.Σ)*a) + s2) {
+    Gaussian(box(dot(a, m.μ) + c), box(dot(a, matrix<Real>(m.Σ)*a) + s2)) {
   /**
    * Scale.
    */
@@ -25,13 +25,11 @@ final class LinearMultivariateGaussianGaussian(a:Expression<Real[_]>,
   s2:Expression<Real> <- s2;
 
   function update(x:Real) {
-    (m.μ, m.Σ) <- box(update_linear_multivariate_gaussian_gaussian(
-        x, a.value(), m.μ.value(), m.Σ.value(), c.value(), s2.value()));
+    (m.μ, m.Σ) <- box(update_linear_multivariate_gaussian_gaussian(x, a.value(), m.μ.value(), m.Σ.value(), c.value(), s2.value()));
   }
 
   function updateLazy(x:Expression<Real>) {
-    (m.μ, m.Σ) <- update_lazy_linear_multivariate_gaussian_gaussian(
-        x, a, m.μ, m.Σ, c, s2);
+    (m.μ, m.Σ) <- update_lazy_linear_multivariate_gaussian_gaussian(x, a, m.μ, m.Σ, c, s2);
   }
 
   function link() {
@@ -43,10 +41,8 @@ final class LinearMultivariateGaussianGaussian(a:Expression<Real[_]>,
   }
 }
 
-function LinearMultivariateGaussianGaussian(a:Expression<Real[_]>,
-    μ:MultivariateGaussian, c:Expression<Real>, σ2:Expression<Real>) ->
-    LinearMultivariateGaussianGaussian {
-  m:LinearMultivariateGaussianGaussian(a, μ, c, σ2);
+function LinearMultivariateGaussianGaussian<Arg1,Arg3,Arg4>(a:Arg1, μ:MultivariateGaussian, c:Arg3, σ2:Arg4) -> {
+  m:LinearMultivariateGaussianGaussian(box(a), μ, box(c), box(σ2));
   m.link();
   return m;
 }

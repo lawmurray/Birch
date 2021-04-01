@@ -61,8 +61,8 @@ final class BetaBinomial(n:Expression<Integer>, ρ:Beta) < BoundedDiscrete {
   }
 }
 
-function BetaBinomial(n:Expression<Integer>, ρ:Beta) -> BetaBinomial {
-  m:BetaBinomial(n, ρ);
+function BetaBinomial<Left>(n:Left, ρ:Beta) -> {
+  m:BetaBinomial(box(n), ρ);
   m.link();
   return m;
 }

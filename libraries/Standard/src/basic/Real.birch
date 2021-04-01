@@ -1,109 +1,116 @@
 /**
- * Default floating point.
+ * 64-bit (double precision) floating point.
  */
-type Real = Real64;
+type Real;
+
+/*
+ * Operators
+ */
+operator (+x:Real) -> Real;
+operator (x:Real > y:Real) -> Boolean;
+operator (x:Real >= y:Real) -> Boolean;
+operator (x:Real <= y:Real) -> Boolean;
+operator (x:Real == y:Real) -> Boolean;
+operator (x:Real != y:Real) -> Boolean;
 
 /**
- * Convert to Real.
+ * Modulus.
  */
-function Real(x:Real64) -> Real {
-  return Real64(x);
+function mod(x:Real, y:Real) -> Real {
+  cpp {{
+  return ::fmod(x, y);
+  }}
 }
 
 /**
- * Convert to Real.
+ * Maximum of two values.
  */
-function Real(x:Real32) -> Real {
-  return Real64(x);
+function max(x:Real, y:Real) -> Real {
+  cpp {{
+  return std::max(x, y);
+  }}
 }
 
 /**
- * Convert to Real.
+ * Minimum of two values.
  */
-function Real(x:Integer64) -> Real {
-  return Real64(x);
+function min(x:Real, y:Real) -> Real {
+  cpp {{
+  return std::min(x, y);
+  }}
 }
 
 /**
- * Convert to Real.
+ * Is the value `inf`?
  */
-function Real(x:Integer32) -> Real {
-  return Real64(x);
+function isinf(x:Real) -> Boolean {
+  cpp{{
+  return std::isinf(x);
+  }}
 }
 
 /**
- * Convert to Real.
+ * Is the value `nan`?
  */
-function Real(x:Integer16) -> Real {
-  return Real64(x);
+function isnan(x:Real) -> Boolean {
+  cpp{{
+  return std::isnan(x);
+  }}
 }
 
 /**
- * Convert to Real.
+ * Is the value finite (i.e. not `inf` or `nan`)?
  */
-function Real(x:Integer8) -> Real {
-  return Real64(x);
+function isfinite(x:Real) -> Boolean {
+  cpp{{
+  return std::isfinite(x);
+  }}
 }
 
-/**
- * Convert to Real.
- */
-function Real(x:Boolean) -> Real {
-  return Real64(x);
+function rows(x:Real) -> Integer {
+  return 1;
 }
 
-/**
- * Convert to Real.
- */
-function Real(x:String) -> Real {
-  return Real64(x);
+function columns(x:Real) -> Integer {
+  return 1;
 }
 
-/**
- * Convert to Real.
- */
-function Real(x:Real64?) -> Real? {
-  return Real64(x);
+function length(x:Real) -> Integer {
+  return 1;
 }
 
-/**
- * Convert to Real.
- */
-function Real(x:Real32?) -> Real? {
-  return Real64(x);
+function size(x:Real) -> Integer {
+  return 1;
 }
 
-/**
- * Convert to Real.
- */
-function Real(x:Integer64?) -> Real? {
-  return Real64(x);
+function value(x:Real) -> Real {
+  return x;
 }
 
-/**
- * Convert to Real.
- */
-function Real(x:Integer32?) -> Real? {
-  return Real64(x);
+function peak(x:Real) -> Real {
+  return x;
 }
 
-/**
- * Convert to Real.
- */
-function Real(x:Integer16?) -> Real? {
-  return Real64(x);
+function eval(x:Real) -> Real {
+  return x;
 }
 
-/**
- * Convert to Real.
- */
-function Real(x:Integer8?) -> Real? {
-  return Real64(x);
+function reval(x:Real) -> Real {
+  return x;
 }
 
-/**
- * Convert to Real.
- */
-function Real(x:String?) -> Real? {
-  return Real64(x);
+function grad<Gradient>(x:Real, d:Gradient) {
+  //
+}
+
+function label(x:Real, gen:Integer) {
+  //
+}
+
+function prune(x:Real, gen:Integer) {
+  //
+}
+
+function constant(x:Real) {
+  //
 }

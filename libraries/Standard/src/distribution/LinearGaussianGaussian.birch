@@ -2,8 +2,8 @@
  * Linear-Gaussian-Gaussian distribution.
  */
 final class LinearGaussianGaussian(a:Expression<Real>, m:Gaussian,
-    c:Expression<Real>, s2:Expression<Real>) < Gaussian(a*m.μ + c,
-    a*a*m.σ2 + s2) {
+    c:Expression<Real>, s2:Expression<Real>) < Gaussian(box(a*m.μ + c),
+    box(a*a*m.σ2 + s2)) {
   /**
    * Scale.
    */
@@ -41,9 +41,8 @@ final class LinearGaussianGaussian(a:Expression<Real>, m:Gaussian,
   }
 }
 
-function LinearGaussianGaussian(a:Expression<Real>, μ:Gaussian,
-    c:Expression<Real>, σ2:Expression<Real>) -> LinearGaussianGaussian {
-  m:LinearGaussianGaussian(a, μ, c, σ2);
+function LinearGaussianGaussian<Arg1,Arg3,Arg4>(a:Arg1, μ:Gaussian, c:Arg3, σ2:Arg4) -> {
+  m:LinearGaussianGaussian(box(a), μ, box(c), box(σ2));
   m.link();
   return m;
 }

@@ -1,5 +1,5 @@
 class TestLinearMatrixNormalInverseWishartMultivariateGaussian < Model {
-  V:Random<LLT>;
+  V:Random<Real[_,_]>;
   X:Random<Real[_,_]>;
   y:Random<Real[_]>;
 
@@ -37,11 +37,11 @@ class TestLinearMatrixNormalInverseWishartMultivariateGaussian < Model {
 
   function simulate() {
     V ~ InverseWishart(Ψ, k);
-    X ~ Gaussian(M, U, V);
+    X ~ MatrixGaussian(M, U, V);
     if neg {
-      y ~ Gaussian(dot(a, X) - c, V);
+      y ~ MultivariateGaussian(dot(a, X) - c, V);
     } else {
-      y ~ Gaussian(dot(a, X) + c, V);
+      y ~ MultivariateGaussian(dot(a, X) + c, V);
     }
   }
 
@@ -86,7 +86,7 @@ class TestLinearMatrixNormalInverseWishartMultivariateGaussian < Model {
   function vectorize() -> Real[_] {
     z:Real[size()];
     let k <- 0;
-    z[k + 1.. k + p*p] <- vec(canonical(V.value()));
+    z[k + 1.. k + p*p] <- vec(matrix<Real>(V.value()));
     k <- k + p*p;
     z[k + 1.. k + n*p] <- vec(X.value());
     k <- k + n*p;

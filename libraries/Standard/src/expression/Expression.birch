@@ -1,7 +1,29 @@
 /**
- * Delayed expression.
+ * Abstract interface for evaluating and differentiating expressions.
  *
  * - Value: Result type.
+ *
+ * ```mermaid
+ * classDiagram
+ *    Expression <|-- Random
+ *    Expression <|-- BoxedValue
+ *    Expression <|-- BoxedExpression
+ *
+ *    link Expression "../Expression/"
+ *    link Random "../Random/"
+ *    link BoxedValue "../BoxedValue/"
+ *    link BoxedExpression "../BoxedExpression/"
+ *
+ *    class Random {
+ *      random argument
+ *    }
+ *    class BoxedValue {
+ *      constant value
+ *    }
+ *    class BoxedExpression {
+ *      expression
+ *    }
+ * ```
  *
  * Delayed expressions (alternatively: lazy expressions, compute graphs,
  * expression templates) encode mathematical expressions that can be
@@ -21,7 +43,7 @@
  *
  * !!! tip
  *     Call `value()` on an `Expression` to evaluate it.
-
+ *
  * The simplest use case of a delayed expression is to assemble it and then
  * evaluate it by calling `value()`. Evaluations are memoized, so further
  * calls `value()` do not require re-evaluation, they simply return the
@@ -33,12 +55,6 @@
  * alterated.
  *
  * ### Advanced use
- *
- * !!! tip
- *     Consider calling `helper()` on an `Expression` to obtain an
- *     [ExpressionHelper](../ExpressionHelper/) wrapper around it---this
- *     provides a simpler interface if needing to differentiate or apply a
- *     Markov kernel.
  * 
  * More elaborate use cases include computing gradients and applying Markov
  * kernels. Call `eval()` to evaluate the expression in the same way as for
@@ -52,10 +68,6 @@
  * At any time, use `grad()` to compute the gradient of an expression with
  * respect to its arguments. The gradient is accumulated into those arguments
  * (the `Random` objects).
- *
- * !!! tip
- *     `ExpressionHelper` makes it easy to update the value of arguments and
- *     collect gradients from them.
  *
  * Use `value()`, not `eval()`, unless you are taking responsibility for
  * correctness (e.g. moving arguments in a manner invariant to some
@@ -80,43 +92,24 @@
  */
 abstract class Expression<Value> {
   /**
-   * Memoized value.
+   * Is this a Random expression?
    */
-  x:Value?;
+  abstract function isRandom() -> Boolean;
+  
+  /**
+   * Is this a constant expression?
+   */
+  abstract function isConstant() -> Boolean;
 
   /**
-   * Generation in which the expression was evaluated. This is zero unless
-   * `eval()` has been called with a given generation provided, and the
-   * expression has not subsequently been made constant (in which case it
-   * reverts to zero).
+   * Number of rows in result.
    */
-  generation:Integer <- 0;
-
+  abstract function rows() -> Integer;
+  
   /**
-   * Number of times this appears as a subexpression during an evaluation.
+   * Number of columns in result.
    */
-  evalCount:Integer16 <- 0;
-
-  /**
-   * Number of times this has been visited during computation of gradients,
-   * collecting arguments, moving, etc. Used by visitors for pre- and post-
-   * visit operations, such as collecting upstream gradients before
-   * post-visit, etc.
-   */
-  visitCount:Integer16 <- 0;
-
-  /**
-   * Has `value()` been called? This is used as a short-circuit for shared
-   * subexpressions.
-   */
-  flagConstant:Boolean <- false;   ///@todo Replace with virtual function
-
-  /**
-   * Value assignment.
-   */
-  operator <- x:Value {
-    setValue(x);
-  }
+  abstract function columns() -> Integer;
 
   /**
    * Length of result. This is synonymous with `rows()`.
@@ -133,236 +126,38 @@ abstract class Expression<Value> {
   }
 
   /**
-   * Number of rows in result.
+   * Get result and render constant.
+   *
+   * Returns: The result.
    */
-  final function rows() -> Integer {
-    if x? {
-      return global.rows(x!);
-    } else {
-      return doRows();
-    }
-  }
-  abstract function doRows() -> Integer;
-  
-  /**
-   * Number of columns in result.
-   */
-  final function columns() -> Integer {
-    if x? {
-      return global.columns(x!);
-    } else {
-      return doColumns();
-    }
-  }
-  abstract function doColumns() -> Integer;
+  abstract function value() -> Value;
 
   /**
-   * Depth of the expression graph.
+   * Get result.
+   *
+   * Returns: The result.
    */
-  final function depth() -> Integer {
-    if isConstant() {
-      return 1;
-    } else {
-      return doDepth();
-    }
-  }
-  abstract function doDepth() -> Integer;
+  abstract function peak() -> Value;
 
   /**
-   * Is this a Random expression?
+   * Evaluate.
    */
-  function isRandom() -> Boolean {
-    return false;
-  }
-  
-  /**
-   * Is this a constant expression?
-   */
-  final function isConstant() -> Boolean {
-    return flagConstant;
-  }
+  abstract function eval() -> Value;
 
   /**
-   * Does this have a value?
-   *
-   * Returns: true if a value has been evaluated with `value()` or `eval()`,
-   * false otherwise.
-   *
-   * Note that this differs from `isConstant()`, which will only return true
-   * for a value that has been evaluated with `value()`.
+   * Re-evaluate.
    */
-  final function hasValue() -> Boolean {
-    return x?;
-  }
-
-  /**
-   * Set the value.
-   *
-   * - x: Value.
-   */
-  final function setValue(x:Value) {
-    assert !this.x?;
-    this.x <- x;
-    value();
-  }
-
-  /**
-   * Set the evaluated value.
-   *
-   * - x: Evaluated value.
-   */
-  final function setEval(x:Value) {
-    assert !this.x?;
-    this.x <- x;
-  }
-
-  /**
-   * Evaluate and make constant.
-   *
-   * Returns: The evaluated value of the expression.
-   *
-   * An expression is considered constant once `value()` has been called on
-   * it. All subexpressions are necessarily also then constant, including any
-   * `Random` objects that occur, which are no longer considered arguments for
-   * the purpose of `grad()`.
-   */
-  final function value() -> Value {
-    if !isConstant() {
-      doValue();
-      if !hasValue() {
-        doCompute();
-      }
-      doConstant();
-      doClearGrad();
-      generation <- 0;
-      evalCount <- 0;
-      visitCount <- 0;
-      flagConstant <- true;
-    }
-    return x!;
-  }
-
-  /**
-   * Evaluate and keep variable.
-   *
-   * Returns: The evaluated value of the expression.
-   */
-  final function eval() -> Value {
-    return eval(1);
-  }
-
-  /**
-   * Evaluate and keep variable.
-   *
-   * - gen: Generation.
-   *
-   * Returns: The evaluated value of the expression.
-   *
-   * If the object has not previously be assigned a generation, it is assigned
-   * to `gen`.
-   */
-  final function eval(gen:Integer) -> Value {
-    if !isConstant() {
-      if !hasValue() {
-        doEval(gen);
-        doCompute();
-      }
-      if generation == 0 {
-        generation <- gen;
-      }
-    }
-    return x!;
-  }
-
-  /*
-   * Evaluate with count; used internally.
-   */
-  final function countEval(gen:Integer) -> Value {
-    if !isConstant() {
-      if !hasValue() {
-        doEval(gen);
-        doCompute();
-      }
-      if generation == 0 {
-        generation <- gen;
-      }
-      evalCount <- evalCount + 1;
-    }
-    return x!;
-  }
-
-  /**
-   * Re-evaluate and keep variable.
-   *
-   * Returns: The evaluated value of the expression.
-   */
-  final function reval() -> Value {
-    return reval(1);
-  }
-
-  /**
-   * Re-evaluate and keep variable.
-   *
-   * - gen: Generation limit.
-   *
-   * Returns: The evaluated value of the expression.
-   *
-   * The generation limit `gen` works to truncate the recursion, as for
-   * `grad()`.
-   */
-  final function reval(gen:Integer) -> Value {
-    assert hasValue();
-    if !isConstant() && generation >= gen {
-      assert evalCount == 0;
-      doReval(gen);
-      doCompute();
-    }
-    return x!;
-  }
-
-  /*
-   * Re-evaluate with count; used internally.
-   */
-  final function countReval(gen:Integer) -> Value {
-    assert hasValue();
-    if !isConstant() && generation >= gen {
-      if visitCount == 0 {
-        doReval(gen);
-        doCompute();
-      }
-      visitCount <- visitCount + 1;
-      if visitCount == evalCount {
-        visitCount <- 0;  // reset for next time
-      }
-    }
-    return x!;
-  }
+  abstract function reval() -> Value;
 
   /**
    * Evaluate gradient of the expression with respect to its arguments.
    *
-   * - d: Upstream gradient.
-   */
-  final function grad<Gradient>(d:Gradient) {
-    return grad(1, d);
-  }
-
-  /**
-   * Evaluate gradient of the expression with respect to its arguments.
-   *
-   * - gen: Generation limit.
    * - d: Upstream gradient.
    *
    * `eval()` must have been called before calling `grad()`.
    *
    * The expression is treated as a function, and the arguments defined
    * as those `Random` objects in the expression that are not constant.
-   *
-   * The generation limit `gen` is used to truncate the recursion. Any
-   * expressions that have been assigned a generation number less than
-   * `gen` (usually at the time they are evaluated with `eval()`), are
-   * considered constant for the purposes of differentiation. A value of
-   * less than or equal to zero will not truncate the recursion.
    *
    * If the expression encodes
    *
@@ -399,406 +194,35 @@ abstract class Expression<Value> {
    * mechanism results in automatic differentiation of complexity $O(N)$ in
    * the number of updates, as opposed to $O(N^2)$ otherwise.
    */
-  final function grad<Gradient>(gen:Integer, d:Gradient) {
-    assert visitCount == 0;
-    if generation < gen {
-      value();  // make constant
-    } else if !isConstant() {
-      assert evalCount == 0;
-      doClearGrad();  // start accumulation
-      doAccumulateGrad(d);
-      doGrad(gen);
-      if !isRandom() {
-        doClearGrad();  // clear intermediate gradients to save memory
-      }
-    }
-  }
+  abstract function grad(d:Value);
 
-  /*
-   * Evaluate gradient with count; used internally.
-   */
-  final function countGrad<Gradient>(gen:Integer, d:Gradient) {
-    if generation < gen {
-      value();  // make constant
-    } else if !isConstant() {
-      assert evalCount > 0;
-      if visitCount == 0 {
-        doClearGrad();  // start accumulation
-      }
-      doAccumulateGrad(d);
-      visitCount <- visitCount + 1;
-      if visitCount == evalCount {
-        /* upstream gradients accumulated */
-        doGrad(gen);
-        if !isRandom() {
-          doClearGrad();  // clear intermediate gradients to save memory
-        }
-        visitCount <- 0;  // reset for next time
-      }
-    }
-  }
-
-  /*
-   * Evaluate gradient with count; used internally.
-   */
-  final function countGrad(gen:Integer, d:Real, i:Integer) {
-    if generation < gen {
-      value();  // make constant
-    } else if !isConstant() {
-      assert evalCount > 0;
-      if visitCount == 0 {
-        doClearGrad();  // start accumulation
-      }
-      doAccumulateGrad(d, i);
-      visitCount <- visitCount + 1;
-      if visitCount == evalCount {
-        /* upstream gradients accumulated */
-        doGrad(gen);
-        if !isRandom() {
-          doClearGrad();  // clear intermediate gradients to save memory
-        }
-        visitCount <- 0;  // reset for next time
-      }
-    }
-  }
-
-  /*
-   * Evaluate gradient with count; used internally.
-   */
-  final function countGrad(gen:Integer, d:Real, i:Integer, j:Integer) {
-    if generation < gen {
-      value();  // make constant
-    } else if !isConstant() {
-      assert evalCount > 0;
-      if visitCount == 0 {
-        doClearGrad();  // start accumulation
-      }
-      doAccumulateGrad(d, i, j);
-      visitCount <- visitCount + 1;
-      if visitCount == evalCount {
-        /* upstream gradients accumulated */
-        doGrad(gen);
-        if !isRandom() {
-          doClearGrad();  // clear intermediate gradients to save memory
-        }
-        visitCount <- 0;  // reset for next time
-      }
-    }
-  }
-
-  /*
-   * Evaluate arguments for value(); used internally.
-   */
-  abstract function doValue();
-
-  /*
-   * Evaluate arguments for eval() and countEval(); used internally.
-   */
-  abstract function doEval(gen:Integer);
-
-  /*
-   * Evaluate arguments for reval() and countReval(); used internally.
-   */
-  abstract function doReval(gen:Integer);
-
-  /*
-   * Make arguments constant; used internally.
-   */
-  abstract function doConstant();
-
-  /*
-   * Evaluate expression for value(), eval(), or reval(); used internally.
-   */
-  abstract function doCompute();
-
-  /*
-   * Accumulate gradient for grad(); used internally.
-   */
-  function doAccumulateGrad(d:Real) {
-    assert false;
-  }
-
-  /*
-   * Accumulate gradient for grad(); used internally.
-   */
-  function doAccumulateGrad(d:Real[_]) {
-    assert false;
-  }
-
-  /*
-   * Accumulate gradient for grad(); used internally.
-   */
-  function doAccumulateGrad(d:Real[_,_]) {
-    assert false;
-  }
-
-  /*
-   * Accumulate gradient for grad(); used internally.
-   */
-  function doAccumulateGrad(d:Real, i:Integer) {
-    assert false;
-  }
-
-  /*
-   * Accumulate gradient for grad(); used internally.
-   */
-  function doAccumulateGrad(d:Real, i:Integer, j:Integer) {
-    assert false;
-  }
-
-  /*
-   * Compute gradient for grad(); used internally.
-   */
-  abstract function doGrad(gen:Integer);
-
-  /*
-   * Clear accumulated gradient; used internally.
-   */
-  abstract function doClearGrad();
-
-  /*
-   * Attempt to graft this expression onto the delayed sampling graph.
+  /**
+   * Label generations.
    *
-   * Return: The node if successful, nil if not.
+   * - gen: Generation.
+   *
+   * Recursively labels all subexpressions with the given generation,
+   * terminating on subexpressions that are already labeled.
    */
-  function graftBeta() -> Beta? {
-    return nil;
-  }
+  abstract function label(gen:Integer);
 
-  /*
-   * Attempt to graft this expression onto the delayed sampling graph.
+  /**
+   * Prune generations.
    *
-   * Return: The node if successful, nil if not.
+   * - gen: Generation limit.
+   *
+   * Prunes subexpressions that are labeled with a generation less than `gen`.
+   * Equivalent to `constant()` if `gen` is greater than all labels.
    */
-  function graftDirichlet() -> Dirichlet? {
-    return nil;
-  }
+  abstract function prune(gen:Integer);
 
-  /*
-   * Attempt to graft this expression onto the delayed sampling graph.
-   *
-   * Return: The node if successful, nil if not.
+  /**
+   * Render the entire expression constant.
    */
-  function graftRestaurant() -> Restaurant? {
-    return nil;
-  }
-  
-  /*
-   * Attempt to graft this expression onto the delayed sampling graph.
-   *
-   * Return: The node if successful, nil if not.
-   */
-  function graftGamma() -> Gamma? {
-    return nil;
-  }
-
-  /*
-   * Attempt to graft this expression onto the delayed sampling graph.
-   *
-   * Return: The node if successful, nil if not.
-   */
-  function graftScaledGamma() ->  TransformLinear<Gamma>? {
-    return nil;
-  }
-  
-  /*
-   * Attempt to graft this expression onto the delayed sampling graph.
-   *
-   * Return: The node if successful, nil if not.
-   */
-  function graftInverseGamma() -> InverseGamma? {
-    return nil;
-  }
-
-  /*
-   * Attempt to graft this expression onto the delayed sampling graph.
-   *
-   * Return: The node if successful, nil if not.
-   */
-  function graftInverseWishart() -> InverseWishart? {
-    return nil;
-  }
-
-  /*
-   * Attempt to graft this expression onto the delayed sampling graph.
-   *
-   * Return: The node if successful, nil if not.
-   */
-  function graftGaussian() -> Gaussian? {
-    return nil;
-  }
-  
-  /*
-   * Attempt to graft this expression onto the delayed sampling graph.
-   *
-   * Return: The node if successful, nil if not.
-   */
-  function graftLinearGaussian() -> TransformLinear<Gaussian>? {
-    return nil;
-  }
-  
-  /*
-   * Attempt to graft this expression onto the delayed sampling graph.
-   *
-   * Return: The node if successful, nil if not.
-   */
-  function graftNormalInverseGamma(compare:Distribution<Real>) ->
-      NormalInverseGamma? {
-    return nil;
-  }
-
-  /*
-   * Attempt to graft this expression onto the delayed sampling graph.
-   *
-   * Return: The node if successful, nil if not.
-   */
-  function graftLinearNormalInverseGamma(compare:Distribution<Real>) ->
-      TransformLinear<NormalInverseGamma>? {
-    return nil;
-  }
-
-  /*
-   * Attempt to graft this expression onto the delayed sampling graph.
-   *
-   * Return: The node if successful, nil if not.
-   */
-  function graftMultivariateGaussian() -> MultivariateGaussian? {
-    return nil;
-  }
-
-  /*
-   * Attempt to graft this expression onto the delayed sampling graph.
-   *
-   * Return: The node if successful, nil if not.
-   */
-  function graftLinearMultivariateGaussian() ->
-      TransformLinearMultivariate<MultivariateGaussian>? {
-    return nil;
-  }
-
-  /*
-   * Attempt to graft this expression onto the delayed sampling graph.
-   *
-   * Return: The node if successful, nil if not.
-   */
-  function graftDotMultivariateGaussian() ->
-      TransformDot<MultivariateGaussian>? {
-    return nil;
-  }
-
-  /*
-   * Attempt to graft this expression onto the delayed sampling graph.
-   *
-   * Return: The node if successful, nil if not.
-   */
-  function graftMultivariateNormalInverseGamma(compare:Distribution<Real>) ->
-      MultivariateNormalInverseGamma? {
-    return nil;
-  }
-
-  /*
-   * Attempt to graft this expression onto the delayed sampling graph.
-   *
-   * Return: The node if successful, nil if not.
-   */
-  function graftLinearMultivariateNormalInverseGamma(compare:Distribution<Real>) ->
-      TransformLinearMultivariate<MultivariateNormalInverseGamma>? {
-    return nil;
-  }
-
-  /*
-   * Attempt to graft this expression onto the delayed sampling graph.
-   *
-   * Return: The node if successful, nil if not.
-   */
-  function graftDotMultivariateNormalInverseGamma(compare:Distribution<Real>) ->
-      TransformDot<MultivariateNormalInverseGamma>? {
-    return nil;
-  }
-
-  /*
-   * Attempt to graft this expression onto the delayed sampling graph.
-   *
-   * Return: The node if successful, nil if not.
-   */
-  function graftMatrixGaussian() -> MatrixGaussian? {
-    return nil;
-  }
-
-  /*
-   * Attempt to graft this expression onto the delayed sampling graph.
-   *
-   * Return: The node if successful, nil if not.
-   */
-  function graftLinearMatrixGaussian() ->
-      TransformLinearMatrix<MatrixGaussian>? {
-    return nil;
-  }
-
-  /*
-   * Attempt to graft this expression onto the delayed sampling graph.
-   *
-   * Return: The node if successful, nil if not.
-   */
-  function graftDotMatrixGaussian() ->
-      TransformDotMultivariate<MatrixGaussian>? {
-    return nil;
-  }
-
-  /*
-   * Attempt to graft this expression onto the delayed sampling graph.
-   *
-   * Return: The node if successful, nil if not.
-   */
-  function graftMatrixNormalInverseWishart(compare:Distribution<LLT>) ->
-      MatrixNormalInverseWishart? {
-    return nil;
-  }
-
-  /*
-   * Attempt to graft this expression onto the delayed sampling graph.
-   *
-   * Return: The node if successful, nil if not.
-   */
-  function graftLinearMatrixNormalInverseWishart(compare:Distribution<LLT>) ->
-      TransformLinearMatrix<MatrixNormalInverseWishart>? {
-    return nil;
-  }
-
-  /*
-   * Attempt to graft this expression onto the delayed sampling graph.
-   *
-   * Return: The node if successful, nil if not.
-   */
-  function graftDotMatrixNormalInverseWishart(compare:Distribution<LLT>) ->
-      TransformDotMultivariate<MatrixNormalInverseWishart>? {
-    return nil;
-  }
-
-  /*
-   * Attempt to graft this expression onto the delayed sampling graph.
-   *
-   * Return: The node if successful, nil if not.
-   */
-  function graftDiscrete() -> Discrete? {
-    return nil;
-  }
-
-  /*
-   * Attempt to graft this expression onto the delayed sampling graph.
-   *
-   * Return: The node if successful, nil if not.
-   */
-  function graftBoundedDiscrete() -> BoundedDiscrete? {
-    return nil;
-  }
-
-  override function read(buffer:Buffer) {
-    this <-? buffer.get<Value>();
-  }
+  abstract function constant();
 
   override function write(buffer:Buffer) {
-    buffer.set(value());
+    //buffer.set(value());
   }
 }
 
@@ -818,166 +242,34 @@ function columns<Type>(x:Type) -> Integer {
   return x.columns();
 }
 
-function depth<Type>(x:Type) -> Integer {
-  return x.depth();
-}
-
-function value<Type>(x:Type) -> TypeOf(_) {
+function value<Type>(x:Type) -> {
   return x.value();
 }
 
-function eval<Type>(x:Type) -> TypeOf(_) {
+function peak<Type>(x:Type) -> {
+  return x.peak();
+}
+
+function eval<Type>(x:Type) -> {
   return x.eval();
 }
 
-function eval<Type>(x:Type, gen:Integer) -> TypeOf(_) {
-  return x.eval(gen);
-}
-
-function count_eval<Type>(x:Type, gen:Integer) -> TypeOf(_) {
-  return x.countEval(gen);
-}
-
-function reval<Type>(x:Type) -> TypeOf(_) {
+function reval<Type>(x:Type) -> {
   return x.reval();
-}
-
-function reval<Type>(x:Type, gen:Integer) -> TypeOf(_) {
-  return x.reval(gen);
-}
-
-function count_reval<Type>(x:Type, gen:Integer) -> TypeOf(_) {
-  return x.countReval(gen);
 }
 
 function grad<Type,Gradient>(x:Type, d:Gradient) {
   x.grad(d);
 }
 
-function grad<Type,Gradient>(x:Type, gen:Integer, d:Gradient) {
-  x.grad(gen, d);
+function label<Type>(x:Type, gen:Integer) {
+  x.label(gen);
 }
 
-function count_grad<Type,Gradient>(x:Type, gen:Integer, d:Gradient) {
-  x.countGrad(gen, d);
+function prune<Type>(x:Type, gen:Integer) {
+  x.prune(gen);
 }
 
-function count_grad<Type>(x:Type, gen:Integer, d:Real, i:Integer) {
-  x.countGrad(gen, d, i);
-}
-
-function count_grad<Type>(x:Type, gen:Integer, d:Real, i:Integer, j:Integer) {
-  x.countGrad(gen, d, i, j);
-}
-
-function graft_beta<Type>(x:Type) -> Beta? {
-  return x.graftBeta();
-}
-
-function graft_dirichlet<Type>(x:Type) -> Dirichlet? {
-  return x.graftDirichlet();
-}
-
-function graft_restaurant<Type>(x:Type) -> Restaurant? {
-  return x.graftRestaurant();
-}
-
-function graft_gamma<Type>(x:Type) -> Gamma? {
-  return x.graftGamma();
-}
-
-function graft_scaled_gamma<Type>(x:Type) ->  TransformLinear<Gamma>? {
-  return x.graftScaledGamma();
-}
-
-function graft_inverse_gamma<Type>(x:Type) -> InverseGamma? {
-  return x.graftInverseGamma();
-}
-
-function graft_inverse_wishart<Type>(x:Type) -> InverseWishart? {
-  return x.graftInverseWishart();
-}
-
-function graft_gaussian<Type>(x:Type) -> Gaussian? {
-  return x.graftGaussian();
-}
-
-function graft_linear_gaussian<Type>(x:Type) -> TransformLinear<Gaussian>? {
-  return x.graftLinearGaussian();
-}
-
-function graft_normal_inverse_gamma<Type>(x:Type, compare:Distribution<Real>) ->
-    NormalInverseGamma? {
-  return x.graftNormalInverseGamma(compare);
-}
-
-function graft_linear_normal_inverse_gamma<Type>(x:Type, compare:Distribution<Real>) ->
-    TransformLinear<NormalInverseGamma>? {
-  return x.graftLinearNormalInverseGamma(compare);
-}
-
-function graft_multivariate_gaussian<Type>(x:Type) -> MultivariateGaussian? {
-  return x.graftMultivariateGaussian();
-}
-
-function graft_linear_multivariate_gaussian<Type>(x:Type) ->
-    TransformLinearMultivariate<MultivariateGaussian>? {
-  return x.graftLinearMultivariateGaussian();
-}
-
-function graft_dot_multivariate_gaussian<Type>(x:Type) ->
-    TransformDot<MultivariateGaussian>? {
-  return x.graftDotMultivariateGaussian();
-}
-
-function graft_multivariate_normal_inverse_gamma<Type>(x:Type, compare:Distribution<Real>) ->
-    MultivariateNormalInverseGamma? {
-  return x.graftMultivariateNormalInverseGamma(compare);
-}
-
-function graft_linear_multivariate_normal_inverse_gamma<Type>(x:Type, compare:Distribution<Real>) ->
-    TransformLinearMultivariate<MultivariateNormalInverseGamma>? {
-  return x.graftLinearMultivariateNormalInverseGamma(compare);
-}
-
-function graft_dot_multivariate_normal_inverse_gamma<Type>(x:Type, compare:Distribution<Real>) ->
-    TransformDot<MultivariateNormalInverseGamma>? {
-  return x.graftDotMultivariateNormalInverseGamma(compare);
-}
-
-function graft_matrix_gaussian<Type>(x:Type) -> MatrixGaussian? {
-  return x.graftMatrixGaussian();
-}
-
-function graft_linear_matrix_gaussian<Type>(x:Type) ->
-    TransformLinearMatrix<MatrixGaussian>? {
-  return x.graftLinearMatrixGaussian();
-}
-
-function graft_dot_matrix_gaussian<Type>(x:Type) ->
-    TransformDotMultivariate<MatrixGaussian>? {
-  return x.graftDotMatrixGaussian();
-}
-
-function graft_matrix_normal_inverse_wishart<Type>(x:Type, compare:Distribution<LLT>) ->
-    MatrixNormalInverseWishart? {
-  return x.graftMatrixNormalInverseWishart(compare);
-}
-
-function graft_linear_matrix_normal_inverse_wishart<Type>(x:Type, compare:Distribution<LLT>) ->
-    TransformLinearMatrix<MatrixNormalInverseWishart>? {
-  return x.graftLinearMatrixNormalInverseWishart(compare);
-}
-
-function graft_dot_matrix_normal_inverse_wishart<Type>(x:Type, compare:Distribution<LLT>) ->
-    TransformDotMultivariate<MatrixNormalInverseWishart>? {
-  return x.graftDotMatrixNormalInverseWishart(compare);
-}
-
-function graft_discrete<Type>(x:Type) -> Discrete? {
-  return x.graftDiscrete();
-}
-
-function graft_bounded_discrete<Type>(x:Type) -> BoundedDiscrete? {
-  return x.graftBoundedDiscrete();
+function constant<Type>(x:Type) {
+  x.constant();
 }

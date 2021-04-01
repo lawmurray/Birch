@@ -8,8 +8,8 @@ class TestAddBoundedDiscreteDelta < Model {
   }
 
   function simulate() {
-    x1 ~ Uniform(1, 6);
-    x2 ~ Uniform(1, 6);
+    x1 ~ UniformInteger(1, 6);
+    x2 ~ UniformInteger(1, 6);
     s ~ Delta(x1 + x2);
   }
 

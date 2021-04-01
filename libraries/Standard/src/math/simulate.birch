@@ -379,14 +379,14 @@ function simulate_student_t(k:Real, μ:Real, v:Real) -> Real {
  * - U: Spread.
  * - v: Scale.
  */
-function simulate_multivariate_student_t(k:Real, μ:Real[_], U:LLT, v:Real) ->
+function simulate_multivariate_student_t(k:Real, μ:Real[_], U:Real[_,_], v:Real) ->
     Real[_] {
   assert 0.0 < k;
   assert 0.0 < v;
   let n <- length(μ);
   let y <- vector(\(i:Integer) -> Real {
-      return simulate_gaussian(0.0, v/k);
-    }, n);
+        return simulate_gaussian(0.0, v/k);
+      }, n);
   let z <- simulate_chi_squared(k);
   return μ + cholesky(U)*y/sqrt(z/k);
 }
@@ -400,11 +400,11 @@ function simulate_multivariate_student_t(k:Real, μ:Real[_], U:LLT, v:Real) ->
  * - u: Scale.
  * - V: Spread.
  */
-function simulate_multivariate_student_t(k:Real, μ:Real[_], u:Real, V:LLT) ->
+function simulate_multivariate_student_t(k:Real, μ:Real[_], u:Real, V:Real[_,_]) ->
     Real[_] {
   let p <- length(μ);
   let Σ <- simulate_inverse_wishart(V, k + p - 1.0);
-  return simulate_multivariate_gaussian(μ, llt(u*canonical(Σ)));
+  return simulate_multivariate_gaussian(μ, u*Σ);
 }
 
 /*
@@ -415,7 +415,7 @@ function simulate_multivariate_student_t(k:Real, μ:Real[_], u:Real, V:LLT) ->
  * - U: Spread.
  * - Ψ: Spread.
  */
-function simulate_matrix_student_t(k:Real, M:Real[_,_], U:LLT, Ψ:LLT) ->
+function simulate_matrix_student_t(k:Real, M:Real[_,_], U:Real[_,_], Ψ:Real[_,_]) ->
     Real[_,_] {
   let p <- columns(M);
   let V <- simulate_inverse_wishart(Ψ, k + p - 1.0);
@@ -470,7 +470,7 @@ function simulate_gamma(k:Real, θ:Real) -> Real {
  * - Ψ: Scale.
  * - k: Degrees of freedeom.
  */
-function simulate_wishart(Ψ:LLT, k:Real) -> LLT {
+function simulate_wishart(Ψ:Real[_,_], k:Real) -> Real[_,_] {
   assert rows(Ψ) == columns(Ψ);
   assert k > rows(Ψ) - 1.0;
   let p <- rows(Ψ);
@@ -490,8 +490,7 @@ function simulate_wishart(Ψ:LLT, k:Real) -> LLT {
       }
     }
   }
-  let L <- cholesky(Ψ)*A;
-  return llt(L*transpose(L));
+  return outer(cholesky(Ψ)*A);
 }
 
 /*
@@ -510,7 +509,7 @@ function simulate_inverse_gamma(α:Real, β:Real) -> Real {
  * - Ψ: Scale.
  * - k: Degrees of freedeom.
  */
-function simulate_inverse_wishart(Ψ:LLT, k:Real) -> LLT {
+function simulate_inverse_wishart(Ψ:Real[_,_], k:Real) -> Real[_,_] {
   return inv(simulate_wishart(inv(Ψ), k));
 }
 
@@ -582,7 +581,7 @@ function simulate_gamma_poisson(k:Real, θ:Real) -> Integer {
   assert 0.0 < θ;
   assert k == floor(k);
   
-  return simulate_negative_binomial(Integer(k), 1.0/(θ + 1.0));
+  return simulate_negative_binomial(scalar<Integer>(k), 1.0/(θ + 1.0));
 }
 
 /*
@@ -688,7 +687,7 @@ function simulate_linear_normal_inverse_gamma_gaussian(a:Real, μ:Real,
  * - μ: Mean.
  * - Σ: Covariance.
  */
-function simulate_multivariate_gaussian(μ:Real[_], Σ:LLT) -> Real[_] {
+function simulate_multivariate_gaussian(μ:Real[_], Σ:Real[_,_]) -> Real[_] {
   let D <- length(μ);
   z:Real[D];
   for d in 1..D {
@@ -737,7 +736,7 @@ function simulate_multivariate_gaussian(μ:Real[_], σ2:Real) -> Real[_] {
  * - α: Shape of inverse-gamma on scale.
  * - β: Scale of inverse-gamma on scale.
  */
-function simulate_multivariate_normal_inverse_gamma(ν:Real[_], Λ:LLT,
+function simulate_multivariate_normal_inverse_gamma(ν:Real[_], Λ:Real[_,_],
     α:Real, β:Real) -> Real[_] {
   return simulate_multivariate_student_t(2.0*α, solve(Λ, ν), inv(Λ), 2.0*β);
 }
@@ -753,13 +752,11 @@ function simulate_multivariate_normal_inverse_gamma(ν:Real[_], Λ:LLT,
  * - γ: Scale accumulator of the inverse-gamma.
  */
 function simulate_multivariate_normal_inverse_gamma_multivariate_gaussian(
-    ν:Real[_], Λ:LLT, α:Real, γ:Real) -> Real[_] {
+    ν:Real[_], Λ:Real[_,_], α:Real, γ:Real) -> Real[_] {
   let n <- length(ν);
   let μ <- solve(Λ, ν);
   let β <- γ - 0.5*dot(μ, ν);
-
-  return simulate_multivariate_student_t(2.0*α, μ,
-      llt(identity(n) + canonical(inv(Λ))), 2.0*β);
+  return simulate_multivariate_student_t(2.0*α, μ, identity(n) + inv(Λ), 2.0*β);
 }
 
 /*
@@ -774,12 +771,12 @@ function simulate_multivariate_normal_inverse_gamma_multivariate_gaussian(
  * - γ: Scale accumulator of the inverse-gamma.
  */
 function simulate_linear_multivariate_normal_inverse_gamma_multivariate_gaussian(
-    A:Real[_,_], ν:Real[_], Λ:LLT, c:Real[_], α:Real, γ:Real) -> Real[_] {
+    A:Real[_,_], ν:Real[_], Λ:Real[_,_], c:Real[_], α:Real, γ:Real) -> Real[_] {
   let n <- rows(A);
   let μ <- solve(Λ, ν);
   let β <- γ - 0.5*dot(μ, ν);
   return simulate_multivariate_student_t(2.0*α, A*μ + c,
-      llt(identity(n) + A*solve(Λ, transpose(A))), 2.0*β);
+      identity(n) + A*solve(Λ, transpose(A)), 2.0*β);
 }
 
 /*
@@ -794,7 +791,7 @@ function simulate_linear_multivariate_normal_inverse_gamma_multivariate_gaussian
  * - γ: Scale accumulator of the inverse-gamma.
  */
 function simulate_linear_multivariate_normal_inverse_gamma_gaussian(
-    a:Real[_], ν:Real[_], Λ:LLT, c:Real, α:Real, γ:Real) -> Real {
+    a:Real[_], ν:Real[_], Λ:Real[_,_], c:Real, α:Real, γ:Real) -> Real {
   let μ <- solve(Λ, ν);
   let β <- γ - 0.5*dot(μ, ν);
   return simulate_student_t(2.0*α, dot(a, μ) + c,
@@ -808,7 +805,7 @@ function simulate_linear_multivariate_normal_inverse_gamma_gaussian(
  * - U: Among-row covariance.
  * - V: Among-column covariance.
  */
-function simulate_matrix_gaussian(M:Real[_,_], U:LLT, V:LLT) -> Real[_,_] {
+function simulate_matrix_gaussian(M:Real[_,_], U:Real[_,_], V:Real[_,_]) -> Real[_,_] {
   assert rows(M) == rows(U);
   assert rows(M) == columns(U);
   assert columns(M) == rows(V);
@@ -826,36 +823,12 @@ function simulate_matrix_gaussian(M:Real[_,_], U:LLT, V:LLT) -> Real[_,_] {
 }
 
 /*
- * Simulate a matrix Gaussian distribution with independent columns.
- *
- * - M: Mean.
- * - U: Among-row covariance.
- * - σ2: Among-column variances.
- */
-function simulate_matrix_gaussian(M:Real[_,_], U:LLT, σ2:Real[_]) ->
-    Real[_,_] {
-  assert rows(M) == rows(U);
-  assert rows(M) == columns(U);
-  assert columns(M) == length(σ2);
-  
-  let N <- rows(M);
-  let P <- columns(M);
-  Z:Real[N,P];
-  for n in 1..N {
-    for p in 1..P {
-      Z[n,p] <- simulate_gaussian(0.0, 1.0);
-    }
-  }
-  return M + cholesky(U)*Z*diagonal(sqrt(σ2));
-}
-
-/*
  * Simulate a matrix Gaussian distribution with independent rows.
  *
  * - M: Mean.
  * - V: Among-column variances.
  */
-function simulate_matrix_gaussian(M:Real[_,_], V:LLT) -> Real[_,_] {
+function simulate_matrix_gaussian(M:Real[_,_], V:Real[_,_]) -> Real[_,_] {
   assert columns(M) == rows(V);
   assert columns(M) == columns(V);
   
@@ -871,45 +844,6 @@ function simulate_matrix_gaussian(M:Real[_,_], V:LLT) -> Real[_,_] {
 }
 
 /*
- * Simulate a matrix Gaussian distribution with independent elements.
- *
- * - M: Mean.
- * - σ2: Variances.
- */
-function simulate_matrix_gaussian(M:Real[_,_], σ2:Real[_]) -> Real[_,_] {
-  assert columns(M) == length(σ2);
-  
-  let N <- rows(M);
-  let P <- columns(M);
-  X:Real[N,P];
-  for n in 1..N {
-    for p in 1..P {
-      X[n,p] <- simulate_gaussian(M[n,p], σ2[p]);
-    }
-  }
-  return X;
-}
-
-/*
- * Simulate a matrix Gaussian distribution with independent elements of
- * identical variance.
- *
- * - M: Mean.
- * - σ2: Variance.
- */
-function simulate_matrix_gaussian(M:Real[_,_], σ2:Real) -> Real[_,_] {
-  let N <- rows(M);
-  let P <- columns(M);
-  X:Real[N,P];
-  for n in 1..N {
-    for p in 1..P {
-      X[n,p] <- simulate_gaussian(M[n,p], σ2);
-    }
-  }
-  return X;
-}
-
-/*
  * Simulate a matrix normal-inverse-Wishart distribution.
  *
  * - N: Precision times mean matrix.
@@ -917,7 +851,7 @@ function simulate_matrix_gaussian(M:Real[_,_], σ2:Real) -> Real[_,_] {
  * - Ψ: Variance shape.
  * - k: Degrees of freedom.
  */
-function simulate_matrix_normal_inverse_wishart(N:Real[_,_], Λ:LLT, Ψ:LLT,
+function simulate_matrix_normal_inverse_wishart(N:Real[_,_], Λ:Real[_,_], Ψ:Real[_,_],
     k:Real) -> Real[_,_] {
   let p <- columns(N);
   let M <- solve(Λ, N);
@@ -933,11 +867,11 @@ function simulate_matrix_normal_inverse_wishart(N:Real[_,_], Λ:LLT, Ψ:LLT,
  * - k: Degrees of freedom.
  */
 function simulate_matrix_normal_inverse_wishart_matrix_gaussian(N:Real[_,_],
-    Λ:LLT, Ψ:LLT, k:Real) -> Real[_,_] {
+    Λ:Real[_,_], Ψ:Real[_,_], k:Real) -> Real[_,_] {
   let n <- rows(N);
   let p <- columns(N);
   let M <- solve(Λ, N);
-  let Σ <- llt(identity(n) + canonical(inv(Λ)));
+  let Σ <- identity(n) + inv(Λ);
   return simulate_matrix_student_t(k - p + 1.0, M, Σ, Ψ);
 }
 
@@ -953,12 +887,12 @@ function simulate_matrix_normal_inverse_wishart_matrix_gaussian(N:Real[_,_],
  * - k: Degrees of freedom.
  */
 function simulate_linear_matrix_normal_inverse_wishart_matrix_gaussian(
-    A:Real[_,_], N:Real[_,_], Λ:LLT, C:Real[_,_], Ψ:LLT, k:Real) ->
+    A:Real[_,_], N:Real[_,_], Λ:Real[_,_], C:Real[_,_], Ψ:Real[_,_], k:Real) ->
     Real[_,_] {
   let n <- rows(A);
   let p <- columns(N);
   let M <- solve(Λ, N);
-  let Σ <- llt(identity(n) + A*solve(Λ, transpose(A)));
+  let Σ <- identity(n) + A*solve(Λ, transpose(A));
   return simulate_matrix_student_t(k - p + 1.0, A*M + C, Σ, Ψ);
 }
 
@@ -974,42 +908,9 @@ function simulate_linear_matrix_normal_inverse_wishart_matrix_gaussian(
  * - k: Degrees of freedom.
  */
 function simulate_linear_matrix_normal_inverse_wishart_multivariate_gaussian(
-    a:Real[_], N:Real[_,_], Λ:LLT, c:Real[_], Ψ:LLT, k:Real) -> Real[_] {
+    a:Real[_], N:Real[_,_], Λ:Real[_,_], c:Real[_], Ψ:Real[_,_], k:Real) -> Real[_] {
   let p <- columns(N);
   let M <- solve(Λ, N);
   let σ2 <- 1.0 + dot(a, solve(Λ, a));
   return simulate_multivariate_student_t(k - p + 1.0, dot(a, M) + c, σ2, Ψ);
-}
-
-/*
- * Simulate a multivariate uniform distribution.
- *
- * - l: Lower bound of hyperrectangle.
- * - u: Upper bound of hyperrectangle.
- */
-function simulate_independent_uniform(l:Real[_], u:Real[_]) -> Real[_] {
-  assert length(l) == length(u);
-  D:Integer <- length(l);
-  z:Real[D];
-  for d in 1..D {
-    z[d] <- simulate_uniform(l[d], u[d]);
-  }
-  return z;
-}
-
-/*
- * Simulate a multivariate uniform distribution over integers.
- *
- * - l: Lower bound of hyperrectangle.
- * - u: Upper bound of hyperrectangle.
- */
-function simulate_independent_uniform_int(l:Integer[_], u:Integer[_]) ->
-    Integer[_] {
-  assert length(l) == length(u);
-  D:Integer <- length(l);
-  z:Integer[D];
-  for d in 1..D {
-    z[d] <- simulate_uniform_int(l[d], u[d]);
-  }
-  return z;
 }

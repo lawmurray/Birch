@@ -1,12 +1,12 @@
 /**
  * Wishart distribution.
  */
-final class Wishart(Ψ:Expression<LLT>, k:Expression<Real>) <
-    Distribution<LLT> {
+final class Wishart(Ψ:Expression<Real[_,_]>, k:Expression<Real>) <
+    Distribution<Real[_,_]> {
   /**
    * Scale.
    */
-  Ψ:Expression<LLT> <- Ψ;
+  Ψ:Expression<Real[_,_]> <- Ψ;
   
   /**
    * Degrees of freedom.
@@ -25,19 +25,19 @@ final class Wishart(Ψ:Expression<LLT>, k:Expression<Real>) <
     return true;
   }
 
-  function simulate() -> LLT {
+  function simulate() -> Real[_,_] {
     return simulate_wishart(Ψ.value(), k.value());
   }
 
-  function simulateLazy() -> LLT? {
+  function simulateLazy() -> Real[_,_]? {
     return simulate_wishart(Ψ.eval(), k.eval());
   }
   
-  function logpdf(X:LLT) -> Real {
+  function logpdf(X:Real[_,_]) -> Real {
     return logpdf_wishart(X, Ψ.value(), k.value());
   }
 
-  function logpdfLazy(X:Expression<LLT>) -> Expression<Real>? {
+  function logpdfLazy(X:Expression<Real[_,_]>) -> Expression<Real>? {
     return logpdf_lazy_wishart(X, Ψ, k);
   }
 
@@ -57,55 +57,6 @@ final class Wishart(Ψ:Expression<LLT>, k:Expression<Real>) <
 /**
  * Create Wishart distribution.
  */
-function Wishart(Ψ:Expression<LLT>, k:Expression<Real>) -> Wishart {
-  return construct<Wishart>(Ψ, k);
-}
-
-/**
- * Create Wishart distribution.
- */
-function Wishart(Ψ:Expression<LLT>, k:Real) -> Wishart {
-  return Wishart(Ψ, box(k));
-}
-
-/**
- * Create Wishart distribution.
- */
-function Wishart(Ψ:LLT, k:Expression<Real>) -> Wishart {
-  return Wishart(box(Ψ), k);
-}
-
-/**
- * Create Wishart distribution.
- */
-function Wishart(Ψ:LLT, k:Real) -> Wishart {
-  return Wishart(box(Ψ), box(k));
-}
-
-/**
- * Create Wishart distribution.
- */
-function Wishart(Ψ:Expression<Real[_,_]>, k:Expression<Real>) -> Wishart {
-  return Wishart(llt(Ψ), k);
-}
-
-/**
- * Create Wishart distribution.
- */
-function Wishart(Ψ:Expression<Real[_,_]>, k:Real) -> Wishart {
-  return Wishart(llt(Ψ), k);
-}
-
-/**
- * Create Wishart distribution.
- */
-function Wishart(Ψ:Real[_,_], k:Expression<Real>) -> Wishart {
-  return Wishart(llt(Ψ), k);
-}
-
-/**
- * Create Wishart distribution.
- */
-function Wishart(Ψ:Real[_,_], k:Real) -> Wishart {
-  return Wishart(llt(Ψ), k);
+function Wishart<Left,Right>(Ψ:Left, k:Right) -> {
+  return construct<Wishart>(box(Ψ), box(k));
 }

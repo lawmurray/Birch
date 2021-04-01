@@ -58,70 +58,13 @@ final class Student(ν:Expression<Real>, μ:Expression<Real>,
 /**
  * Create Student's $t$-distribution.
  */
-function Student(ν:Expression<Real>, μ:Expression<Real>,
-    σ2:Expression<Real>) -> Student {
-  return construct<Student>(ν, μ, σ2);
+function Student<Left,Middle,Right>(ν:Left, μ:Middle, σ2:Right) -> {
+  return construct<Student>(box(ν), box(μ), box(σ2));
 }
 
 /**
  * Create Student's $t$-distribution.
  */
-function Student(ν:Expression<Real>) -> Student {
-  return Student(ν, box(0.0), box(1.0));
-}
-
-/**
- * Create Student's $t$-distribution.
- */
-function Student(ν:Real) -> Student {
+function Student<Middle>(ν:Middle) -> {
   return Student(box(ν), box(0.0), box(1.0));
-}
-
-/**
- * Create Student's $t$-distribution.
- */
-function Student(ν:Real, μ:Expression<Real>, σ2:Expression<Real> ) -> Student {
-  return Student(box(ν), μ, σ2);
-}
-
-/**
- * Create Student's $t$-distribution.
- */
-function Student(ν:Expression<Real>, μ:Real, σ2:Expression<Real> ) -> Student {
-  return Student(ν, box(μ), σ2);
-}
-
-/**
- * Create Student's $t$-distribution.
- */
-function Student(ν:Expression<Real>, μ:Expression<Real>, σ2:Real ) -> Student {
-  return Student(ν, μ, box(σ2));
-}
-
-/**
- * Create Student's $t$-distribution.
- */
-function Student(ν:Real, μ:Real, σ2:Expression<Real> ) -> Student {
-  return Student(box(ν), box(μ), σ2);
-}
-
-/**
- * Create Student's $t$-distribution.
- */
-function Student(ν:Real, μ:Expression<Real>, σ2:Real ) -> Student {
-  return Student(box(ν), μ, box(σ2));
-}
-
-/**
- * Create Student's $t$-distribution.
- */
-function Student(ν:Expression<Real>, μ:Real, σ2:Real ) -> Student {
-  return Student(ν, box(μ), box(σ2));
-}
-
-/**
- * Create Student's $t$-distribution.
- */
-function Student(ν:Real, μ:Real, σ2:Real ) -> Student {
-  return Student(box(ν), box(μ), box(σ2));
 }

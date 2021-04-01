@@ -14,11 +14,11 @@ class TestChainMultivariateGaussian < Model {
   }
 
   function simulate() {
-    x[1] ~ Gaussian(μ, Σ);
-    x[2] ~ Gaussian(x[1], Σ);
-    x[3] ~ Gaussian(x[2], Σ);
-    x[4] ~ Gaussian(x[3], Σ);
-    x[5] ~ Gaussian(x[4], Σ);
+    x[1] ~ MultivariateGaussian(μ, Σ);
+    x[2] ~ MultivariateGaussian(x[1], Σ);
+    x[3] ~ MultivariateGaussian(x[2], Σ);
+    x[4] ~ MultivariateGaussian(x[3], Σ);
+    x[5] ~ MultivariateGaussian(x[4], Σ);
   }
 
   function forward() -> Real[_] {

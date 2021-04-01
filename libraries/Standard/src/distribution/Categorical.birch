@@ -1,5 +1,7 @@
 /**
  * Categorical distribution.
+ *
+ * - ρ: Probabilities.
  */
 final class Categorical(ρ:Expression<Real[_]>) < Distribution<Integer> {
   /**
@@ -53,7 +55,14 @@ final class Categorical(ρ:Expression<Real[_]>) < Distribution<Integer> {
 /**
  * Create categorical distribution.
  */
-function Categorical(ρ:Expression<Real[_]>) -> Distribution<Integer> {
+function Categorical<Middle>(ρ:Middle) -> {
+  return construct<Categorical>(box(ρ));
+}
+
+/**
+ * Create categorical distribution.
+ */
+function Categorical(ρ:Random<Real[_]>) -> Distribution<Integer> {
   m1:Dirichlet?;
   m2:Restaurant?;
   if (m1 <- ρ.graftDirichlet())? {
@@ -63,11 +72,4 @@ function Categorical(ρ:Expression<Real[_]>) -> Distribution<Integer> {
   } else {
     return construct<Categorical>(ρ);
   }    
-}
-
-/**
- * Create categorical distribution.
- */
-function Categorical(ρ:Real[_]) -> Distribution<Integer> {
-  return Categorical(box(ρ));
 }

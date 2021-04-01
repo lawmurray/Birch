@@ -1,0 +1,34 @@
+final class CosFunction {
+function compute<Value>(m:Value) -> {
+    return cos(m);
+  }
+
+function grad<Gradient,Value>(d:Gradient, m:Value) -> {
+    return -d*sin(m);
+  }
+}
+class Cos<Middle> = Unary<CosFunction,Middle>;
+
+
+/**
+ * Cosine.
+ */
+function cos<Middle>(m:Middle) -> {
+  return construct<Cos<Middle>>(m);
+}
+
+/**
+ * Cosine.
+ */
+function cos(m:Integer) -> Real {
+  return cos(scalar<Real>(m));
+}
+
+/**
+ * Cosine.
+ */
+function cos(m:Real) -> Real {
+  cpp {{
+  return std::cos(m);
+  }}
+}

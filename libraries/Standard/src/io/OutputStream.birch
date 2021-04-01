@@ -57,70 +57,63 @@ class OutputStream {
    * Print value.
    */
   function print(value:Boolean) {
-    print(String(value));
+    print(to_string(value));
   }
 
   /**
    * Print value.
    */
   function print(value:Integer) {
-    print(String(value));
+    print(to_string(value));
   }
 
   /**
    * Print value.
    */
   function print(value:Real) {
-    print(String(value));
+    print(to_string(value));
   }
 
   /**
    * Print vector.
    */
   function print(value:Boolean[_]) {
-    print(String(value));
+    print(to_string(value));
   }
 
   /**
    * Print vector.
    */
   function print(value:Integer[_]) {
-    print(String(value));
+    print(to_string(value));
   }
 
   /**
    * Print vector.
    */
   function print(value:Real[_]) {
-    print(String(value));
+    print(to_string(value));
   }
 
   /**
    * Print matrix.
    */
   function print(value:Boolean[_,_]) {
-    print(String(value));
+    print(to_string(value));
   }
 
   /**
    * Print matrix.
    */
   function print(value:Integer[_,_]) {
-    print(String(value));
+    print(to_string(value));
   }
 
   /**
    * Print matrix.
    */
   function print(value:Real[_,_]) {
-    print(String(value));
-  }
-
-  /**
-   * Print symmetric positive definite matrix.
-   */
-  function print(value:LLT) {
-    print(String(value));
+    print(to_string(value));
   }
 }
 

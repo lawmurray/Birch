@@ -50,9 +50,8 @@ final class DirichletMultinomial(n:Expression<Integer>, ρ:Dirichlet) <
   }
 }
 
-function DirichletMultinomial(n:Expression<Integer>, ρ:Dirichlet) ->
-    DirichletMultinomial {
-  m:DirichletMultinomial(n, ρ);
+function DirichletMultinomial<Left>(n:Left, ρ:Dirichlet) -> {
+  m:DirichletMultinomial(box(n), ρ);
   m.link();
   return m;
 }

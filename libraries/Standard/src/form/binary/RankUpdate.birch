@@ -1,0 +1,70 @@
+final class RankUpdateFunction {
+function compute<LeftValue,RightValue>(l:LeftValue, r:RightValue) -> {
+    return rank_update(l, r);
+  }
+
+function gradLeft<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue, r:RightValue) -> {
+    return d;
+  }
+
+function gradRight<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue, r:RightValue) -> {
+    return (d + transpose(d))*r;
+  }
+}
+class RankUpdate<Left,Right> = Binary<RankUpdateFunction,Left,Right>;
+
+/**
+ * Rank update of a Cholesky factorization.
+ */
+function rank_update<Left,Right>(l:Left, r:Right) -> {
+  return construct<RankUpdate<Left,Right>>(l, r);
+}
+
+/**
+ * Rank one update of a Cholesky factorization.
+ *
+ * - S: Existing Cholesky factorization of the symmetric positive definite
+ *      matrix $S$.
+ * - x: Vector $x$.
+ *
+ * Returns: A new Cholesky factorization of the symmetric positive definite
+ * matrix $S + xx^\top$.
+ */
+function rank_update(S:Real[_,_], x:Real[_]) -> Real[_,_] {
+  assert rows(S) == length(x);
+  cpp{{
+  auto A = S.toEigen().llt();
+  A.rankUpdate(x.toEigen(), 1.0);
+  return A.reconstructedMatrix();
+  }}
+}
+
+/**
+ * Rank $k$ update of a Cholesky factorization.
+ *
+ * - S: Existing Cholesky factorization of the symmetric positive definite
+ *      matrix $S$.
+ * - X: Matrix $X$.
+ *
+ * Returns: A new Cholesky factorization of the symmetric positive definite
+ * matrix $S + XX^\top$.
+ *
+ * The computation is performed as $k$ separate rank-1 updates using the
+ * columns of `X
+ */
+function rank_update(S:Real[_,_], X:Real[_,_]) -> Real[_,_] {
+  assert rows(S) == rows(X);
+  cpp{{
+  auto A = S.toEigen().llt();
+  }}
+  let R <- rows(X);
+  let C <- columns(X);
+  for j in 1..C {
+    cpp{{
+    A.rankUpdate(X.toEigen().col(j - 1), 1.0);
+    }}
+  }
+  cpp{{
+  return A.reconstructedMatrix();
+  }}
+}

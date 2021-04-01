@@ -1,0 +1,79 @@
+/*
+ * Element of a vector.
+ */
+final class VectorElement<Left,Right>(x:Left, r:Right)  {
+  /**
+   * Vector.
+   */
+  l:Left? <- l;
+
+  /**
+   * Index.
+   */
+  r:Right? <- r;
+
+  function value() -> {
+    return global.value(l!)[global.value(r!)];
+  }
+
+  function peak() -> {
+    return global.peak(l!)[global.peak(r!)];
+  }
+
+  function eval() -> {
+    return global.eval(l!)[global.eval(r!)];
+  }
+
+  function reval() -> {
+    return global.reval(l!)[global.reval(r!)];
+  }
+
+  function grad<Gradient>(d:Gradient) {
+    global.grad(l!, d, global.peak(r!));
+  }
+
+  function label(gen:Integer) {
+    global.label(l!, gen);
+    global.label(r!, gen);
+  }
+
+  function prune(gen:Integer) {
+    global.prune(l!, gen);
+    global.prune(r!, gen);
+  }
+
+  function constant() {
+    global.constant(l!);
+    x <- nil;
+    global.constant(r!);
+    i <- nil;
+  }
+}
+
+/**
+ * Element of a vector.
+ */
+function element<Value,Form,Right>(x:VectorSplitExpression<Value,Form>, i:Right) -> {
+  return construct<VectorElement<VectorSplitExpression<Value,Form>,Right>>(x, i);
+}
+
+/**
+ * Element of a vector.
+ */
+function element(x:Boolean[_], i:Integer) -> Boolean {
+  return x[i];
+}
+
+/**
+ * Element of a vector.
+ */
+function element(x:Integer[_], i:Integer) -> Integer {
+  return x[i];
+}
+
+/**
+ * Element of a vector.
+ */
+function element(x:Real[_], i:Integer) -> Real {
+  return x[i];
+}
