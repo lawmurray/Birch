@@ -302,8 +302,22 @@ public:
   /**
    * Dereference.
    */
+  T& operator*() {
+    return *get();
+  }
+
+  /**
+   * Dereference.
+   */
   T& operator*() const {
     return *get();
+  }
+
+  /**
+   * Member access.
+   */
+  T* operator->() {
+    return get();
   }
 
   /**
