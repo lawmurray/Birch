@@ -1163,9 +1163,9 @@ void birch::Driver::target(const std::string& cmd) {
   }
 
   std::regex rxWarnings("warning:");
-  std::regex rxNotes("note:|required by|required from||\\[with.*?\\]");
+  std::regex rxNotes("note:|required by|required from|\\[with.*?\\]");
 
-  std::regex rxSkipLine("In file included from|In function|In member function|In instantiation|instantiation contexts|^\\s*from|std::enable_if|At global scope:|type_traits|-Wno-inconsistent-missing-override");
+  std::regex rxSkipLine("In file included from|In function|In member function|In instantiation|instantiation contexts|^\\s*from|std::enable_if|At global scope:|type_traits");
   std::regex rxNamespace("birch::type::|birch::|libbirch::");
   std::regex rxCxxWords("\\b(?:virtual|auto|class|const|template(?= *<))\\b *");
   std::regex rxTemplateParameter("template parameter");
