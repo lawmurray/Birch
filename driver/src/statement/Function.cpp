@@ -23,10 +23,6 @@ birch::Function::~Function() {
   //
 }
 
-bool birch::Function::isDeclaration() const {
-  return true;
-}
-
 bool birch::Function::isMember() const {
   return false;
 }

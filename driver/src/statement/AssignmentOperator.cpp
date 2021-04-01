@@ -5,9 +5,10 @@
 
 #include "src/visitor/all.hpp"
 
-birch::AssignmentOperator::AssignmentOperator(Expression* single,
-    Statement* braces, Location* loc) :
+birch::AssignmentOperator::AssignmentOperator(const Annotation annotation,
+    Expression* single, Statement* braces, Location* loc) :
     Statement(loc),
+    Annotated(annotation),
     Single(single),
     Scoped(LOCAL_SCOPE),
     Braced(braces) {
@@ -16,10 +17,6 @@ birch::AssignmentOperator::AssignmentOperator(Expression* single,
 
 birch::AssignmentOperator::~AssignmentOperator() {
   //
-}
-
-bool birch::AssignmentOperator::isDeclaration() const {
-  return true;
 }
 
 birch::Statement* birch::AssignmentOperator::accept(Cloner* visitor) const {

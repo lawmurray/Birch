@@ -71,11 +71,6 @@ public:
   virtual bool isEmpty() const;
 
   /**
-   * Is this a declaration?
-   */
-  virtual bool isDeclaration() const;
-
-  /**
    * Iterator to first element if this is a list, to one-past-the-last if
    * this is empty, otherwise to this.
    */

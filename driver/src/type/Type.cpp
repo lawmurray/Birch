@@ -53,6 +53,10 @@ bool birch::Type::isGeneric() const {
   return false;
 }
 
+bool birch::Type::isTypeOf() const {
+  return false;
+}
+
 bool birch::Type::isValue() const {
   return false;
 }

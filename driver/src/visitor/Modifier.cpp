@@ -382,6 +382,5 @@ birch::Type* birch::Modifier::modify(OptionalType* o) {
 }
 
 birch::Type* birch::Modifier::modify(TypeOf* o) {
-  o->single = o->single->accept(this);
   return o;
 }

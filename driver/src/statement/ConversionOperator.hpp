@@ -4,6 +4,7 @@
 #pragma once
 
 #include "src/statement/Statement.hpp"
+#include "src/common/Annotated.hpp"
 #include "src/common/ReturnTyped.hpp"
 #include "src/common/Scoped.hpp"
 #include "src/common/Braced.hpp"
@@ -15,6 +16,7 @@ namespace birch {
  * @ingroup statement
  */
 class ConversionOperator: public Statement,
+    public Annotated,
     public ReturnTyped,
     public Scoped,
     public Braced {
@@ -22,19 +24,18 @@ public:
   /**
    * Constructor.
    *
+   * @param annotation Annotation.
    * @param returnType Return type.
    * @param braces Body.
    * @param loc Location.
    */
-  ConversionOperator(Type* returnType, Statement* braces,
-      Location* loc = nullptr);
+  ConversionOperator(const Annotation annotation, Type* returnType,
+      Statement* braces, Location* loc = nullptr);
 
   /**
    * Destructor.
    */
   virtual ~ConversionOperator();
-
-  virtual bool isDeclaration() const;
 
   virtual Statement* accept(Cloner* visitor) const;
   virtual Statement* accept(Modifier* visitor);

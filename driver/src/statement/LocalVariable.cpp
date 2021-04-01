@@ -35,10 +35,6 @@ birch::LocalVariable::~LocalVariable() {
   //
 }
 
-bool birch::LocalVariable::isDeclaration() const {
-  return true;
-}
-
 birch::Statement* birch::LocalVariable::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }

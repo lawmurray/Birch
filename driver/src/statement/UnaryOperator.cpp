@@ -23,10 +23,6 @@ birch::UnaryOperator::~UnaryOperator() {
   //
 }
 
-bool birch::UnaryOperator::isDeclaration() const {
-  return true;
-}
-
 birch::Statement* birch::UnaryOperator::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }

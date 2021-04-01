@@ -22,10 +22,6 @@ birch::MemberVariable::~MemberVariable() {
   //
 }
 
-bool birch::MemberVariable::isDeclaration() const {
-  return true;
-}
-
 birch::Statement* birch::MemberVariable::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }

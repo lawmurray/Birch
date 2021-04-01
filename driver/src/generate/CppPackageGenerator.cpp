@@ -89,6 +89,7 @@ void birch::CppPackageGenerator::visit(const Package* o) {
         auto base = dynamic_cast<const NamedType*>(o->base);
         assert(base);
         genTemplateParams(o);
+        genSourceLine(o->loc);
         start("using " << o->name << " = " << base->name);
         if (!base->typeArgs->isEmpty()) {
           middle('<' << base->typeArgs << '>');
@@ -104,6 +105,7 @@ void birch::CppPackageGenerator::visit(const Package* o) {
         auto base = dynamic_cast<const NamedType*>(o->base);
         assert(base);
         genTemplateParams(o);
+        genSourceLine(o->loc);
         start("using " << o->name << " = " << base->name);
         if (!base->typeArgs->isEmpty()) {
           middle('<' << base->typeArgs << '>');

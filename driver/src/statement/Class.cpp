@@ -26,10 +26,6 @@ birch::Class::~Class() {
   //
 }
 
-bool birch::Class::isDeclaration() const {
-  return true;
-}
-
 birch::Statement* birch::Class::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }

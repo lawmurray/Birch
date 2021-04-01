@@ -7,7 +7,7 @@
 
 namespace birch {
 /**
- * Populate local scopes, and resolve identifiers.
+ * Populate local scopes, resolve identifiers, perform some basic checks.
  *
  * @ingroup visitor
  */
@@ -35,5 +35,7 @@ public:
   virtual Expression* modify(NamedExpression* o);
   virtual Type* modify(NamedType* o);
   virtual Statement* modify(Class* o);
+  virtual Statement* modify(Function* o);
+  virtual Statement* modify(MemberFunction* o);
 };
 }

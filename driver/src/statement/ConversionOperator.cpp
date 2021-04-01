@@ -5,9 +5,10 @@
 
 #include "src/visitor/all.hpp"
 
-birch::ConversionOperator::ConversionOperator(Type* returnType, Statement* braces,
-    Location* loc) :
+birch::ConversionOperator::ConversionOperator(const Annotation annotation,
+    Type* returnType, Statement* braces, Location* loc) :
     Statement(loc),
+    Annotated(annotation),
     ReturnTyped(returnType),
     Scoped(LOCAL_SCOPE),
     Braced(braces) {
@@ -16,10 +17,6 @@ birch::ConversionOperator::ConversionOperator(Type* returnType, Statement* brace
 
 birch::ConversionOperator::~ConversionOperator() {
   //
-}
-
-bool birch::ConversionOperator::isDeclaration() const {
-  return true;
 }
 
 birch::Statement* birch::ConversionOperator::accept(Cloner* visitor) const {

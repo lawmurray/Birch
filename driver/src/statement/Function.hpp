@@ -49,7 +49,6 @@ public:
    */
   virtual ~Function();
 
-  virtual bool isDeclaration() const;
   virtual bool isMember() const;
 
   virtual Statement* accept(Cloner* visitor) const;

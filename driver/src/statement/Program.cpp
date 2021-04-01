@@ -19,10 +19,6 @@ birch::Program::~Program() {
   //
 }
 
-bool birch::Program::isDeclaration() const {
-  return true;
-}
-
 birch::Statement* birch::Program::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }

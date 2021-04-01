@@ -5,9 +5,10 @@
 
 #include "src/visitor/all.hpp"
 
-birch::SliceOperator::SliceOperator(Expression* params, Type* returnType,
-    Statement* braces, Location* loc) :
+birch::SliceOperator::SliceOperator(const Annotation annotation,
+    Expression* params, Type* returnType, Statement* braces, Location* loc) :
     Statement(loc),
+    Annotated(annotation),
     Parameterised(params),
     ReturnTyped(returnType),
     Scoped(LOCAL_SCOPE),
@@ -17,10 +18,6 @@ birch::SliceOperator::SliceOperator(Expression* params, Type* returnType,
 
 birch::SliceOperator::~SliceOperator() {
   //
-}
-
-bool birch::SliceOperator::isDeclaration() const {
-  return true;
 }
 
 birch::Statement* birch::SliceOperator::accept(Cloner* visitor) const {

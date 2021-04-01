@@ -23,10 +23,6 @@ birch::BinaryOperator::~BinaryOperator() {
   //
 }
 
-bool birch::BinaryOperator::isDeclaration() const {
-  return true;
-}
-
 birch::Statement* birch::BinaryOperator::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }

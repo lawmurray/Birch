@@ -27,10 +27,6 @@ bool birch::Statement::isEmpty() const {
   return false;
 }
 
-bool birch::Statement::isDeclaration() const {
-  return false;
-}
-
 birch::StatementIterator birch::Statement::begin() const {
   if (isEmpty()) {
     return end();

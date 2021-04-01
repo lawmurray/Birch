@@ -227,7 +227,8 @@ void birch::MarkdownGenerator::visit(const MemberVariable* o) {
 }
 
 void birch::MarkdownGenerator::visit(const Function* o) {
-  start("!!! abstract \"function " << o->name);
+  start("!!! abstract \"");
+  middle("function " << o->name);
   if (o->isGeneric()) {
     middle("&lt;" << o->typeParams << "&gt;");
   }
@@ -250,6 +251,9 @@ void birch::MarkdownGenerator::visit(const MemberFunction* o) {
   if (o->has(FINAL)) {
     middle("final ");
   }
+  if (o->has(OVERRIDE)) {
+    middle("override ");
+  }
   middle("function " << o->name);
     if (o->isGeneric()) {
     middle("&lt;" << o->typeParams << "&gt;");
@@ -262,7 +266,8 @@ void birch::MarkdownGenerator::visit(const MemberFunction* o) {
 }
 
 void birch::MarkdownGenerator::visit(const BinaryOperator* o) {
-  start("!!! abstract \"operator");
+  start("!!! abstract \"");
+  middle("operator");
   if (!o->typeParams->isEmpty()) {
     middle('<' << o->typeParams << '>');
   }
@@ -274,7 +279,8 @@ void birch::MarkdownGenerator::visit(const BinaryOperator* o) {
 }
 
 void birch::MarkdownGenerator::visit(const UnaryOperator* o) {
-  start("!!! abstract \"operator");
+  start("!!! abstract \"");
+  middle("operator");
   if (!o->typeParams->isEmpty()) {
     middle('<' << o->typeParams << '>');
   }
@@ -296,7 +302,7 @@ void birch::MarkdownGenerator::visit(const ConversionOperator* o) {
 }
 
 void birch::MarkdownGenerator::visit(const SliceOperator* o) {
-  start("!!! abstract \"operator [" << o->params << ']');
+  start("!!! abstract \"[" << o->params << ']');
   if (!o->returnType->isEmpty()) {
     middle(" -> " << o->returnType);
   }
@@ -558,11 +564,7 @@ void birch::MarkdownGenerator::visit(const OptionalType* o) {
 }
 
 void birch::MarkdownGenerator::visit(const TypeOf* o) {
-  if (o->single->isEmpty()) {
-    middle("TypeOf(_)");
-  } else {
-    middle("TypeOf(" << o->single << ')');
-  }
+  //
 }
 
 void birch::MarkdownGenerator::genHead(const std::string& name) {

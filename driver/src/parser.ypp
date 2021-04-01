@@ -88,6 +88,7 @@
 }
 
 %glr-parser
+
 %expect-rr 0
 %expect 8
 // ^ Type?(...) vs x?
@@ -98,8 +99,8 @@
 
 %token <valString> PROGRAM CLASS TYPE FUNCTION OPERATOR AUTO LET
 %token <valString> IF ELSE FOR IN WHILE DO WITH ASSERT RETURN FACTOR
-%token <valString> CPP HPP THIS SUPER GLOBAL TYPEOF PARALLEL DYNAMIC
-%token <valString> ABSTRACT OVERRIDE FINAL ACYCLIC
+%token <valString> CPP HPP THIS SUPER GLOBAL PARALLEL DYNAMIC
+%token <valString> ABSTRACT OVERRIDE FINAL
 %token <valString> NIL DOUBLE_BRACE_OPEN DOUBLE_BRACE_CLOSE NAME
 %token <valString> BOOL_LITERAL INT_LITERAL REAL_LITERAL STRING_LITERAL
 %token <valString> LEFT_OP RIGHT_OP LEFT_TILDE_OP RIGHT_TILDE_OP LEFT_QUERY_OP
@@ -112,7 +113,8 @@
 
 %type <valInt> shape
 
-%type <valAnnotation> parallel_annotation class_annotation member_function_annotation
+%type <valAnnotation> parallel_annotation class_annotation
+%type <valAnnotation> member_function_annotation
 
 %type <valExpression> bool_literal int_literal real_literal string_literal
 %type <valExpression> literal identifier
@@ -147,7 +149,7 @@
 %type <valStatement> class_braces optional_class_braces
 
 %type <valType> named_type primary_type type type_list optional_type_list
-%type <valType> return_type optional_return_type type_of
+%type <valType> return_type optional_return_type optional_auto_return_type
 %type <valType> generic_argument generic_argument_list generic_arguments optional_generic_arguments
 
 %locations
@@ -209,7 +211,7 @@ cast_expression
     ;
 
 function_expression
-    : '\\' parameters optional_return_type optional_braces  { $$ = new birch::LambdaFunction($2, $3, $4, make_loc(@$)); }
+    : '\\' parameters optional_auto_return_type optional_braces  { $$ = new birch::LambdaFunction($2, $3, $4, make_loc(@$)); }
     ;
 
 this_expression
@@ -507,7 +509,7 @@ local_variable_declaration
     ;
 
 function_declaration
-    : FUNCTION name optional_generics parameters optional_return_type { push_raw(); } optional_braces  { $$ = new birch::Function(birch::NONE, $2, $3, $4, $5, $7, make_doc_loc(@$)); }
+    : FUNCTION name optional_generics parameters optional_auto_return_type { push_raw(); } optional_braces  { $$ = new birch::Function(birch::NONE, $2, $3, $4, $5, $7, make_doc_loc(@$)); }
     ;
 
 member_function_annotation
@@ -520,14 +522,14 @@ member_function_annotation
     ;
 
 member_function_declaration
-    : member_function_annotation FUNCTION name optional_generics parameters optional_return_type { push_raw(); } optional_braces  { $$ = new birch::MemberFunction($1, $3, $4, $5, $6, $8, make_doc_loc(@$)); }
-    | FUNCTION name optional_generics parameters optional_return_type { push_raw(); } optional_braces                             { $$ = new birch::MemberFunction(birch::NONE, $2, $3, $4, $5, $7, make_doc_loc(@$)); }
+    : member_function_annotation FUNCTION name optional_generics parameters optional_auto_return_type { push_raw(); } optional_braces  { $$ = new birch::MemberFunction($1, $3, $4, $5, $6, $8, make_doc_loc(@$)); }
+    | FUNCTION name optional_generics parameters optional_auto_return_type { push_raw(); } optional_braces  { $$ = new birch::MemberFunction(birch::NONE, $2, $3, $4, $5, $7, make_doc_loc(@$)); }
     ;
 
 program_declaration
     : PROGRAM name options { push_raw(); } optional_braces  { $$ = new birch::Program($2, $3, $5, make_doc_loc(@$)); }
     ;
-    
+
 binary_operator
     : multiplicative_operator
     | additive_operator
@@ -537,34 +539,33 @@ binary_operator
     | logical_or_operator
     ;    
 
+binary_operator_declaration
+    : OPERATOR optional_generics '(' parameter binary_operator parameter ')' optional_auto_return_type { push_raw(); } optional_braces  { $$ = new birch::BinaryOperator(birch::NONE, $2, $4, $5, $6, $8, $10, make_doc_loc(@$)); }
+    ;
+
 unary_operator
     : prefix_operator
     ;    
 
-binary_operator_declaration
-    : OPERATOR optional_generics '(' parameter binary_operator parameter ')' optional_return_type { push_raw(); } optional_braces  { $$ = new birch::BinaryOperator(birch::NONE, $2, $4, $5, $6, $8, $10, make_doc_loc(@$)); }
-    ;
-    
 unary_operator_declaration
-    : OPERATOR optional_generics '(' unary_operator parameter ')' optional_return_type { push_raw(); } optional_braces  { $$ = new birch::UnaryOperator(birch::NONE, $2, $4, $5, $7, $9, make_doc_loc(@$)); }
+    : OPERATOR optional_generics '(' unary_operator parameter ')' optional_auto_return_type { push_raw(); } optional_braces  { $$ = new birch::UnaryOperator(birch::NONE, $2, $4, $5, $7, $9, make_doc_loc(@$)); }
     ;
 
 assignment_operator_declaration
-    : OPERATOR LEFT_OP parameter { push_raw(); } optional_braces  { $$ = new birch::AssignmentOperator($3, $5, make_doc_loc(@$)); }
+    : OPERATOR LEFT_OP parameter { push_raw(); } optional_braces  { $$ = new birch::AssignmentOperator(birch::NONE, $3, $5, make_doc_loc(@$)); }
     ;
 
 conversion_operator_declaration
-    : OPERATOR return_type { push_raw(); } optional_braces  { $$ = new birch::ConversionOperator($2, $4, make_doc_loc(@$)); }
+    : OPERATOR return_type { push_raw(); } optional_braces  { $$ = new birch::ConversionOperator(birch::NONE, $2, $4, make_doc_loc(@$)); }
     ;
 
 slice_operator_declaration
-    : OPERATOR '[' parameter_list ']' return_type { push_raw(); } optional_braces  { $$ = new birch::SliceOperator($3, $5, $7, make_doc_loc(@$)); }
+    : OPERATOR '[' parameter_list ']' return_type { push_raw(); } optional_braces  { $$ = new birch::SliceOperator(birch::NONE, $3, $5, $7, make_doc_loc(@$)); }
     ;
 
 class_annotation
     : ABSTRACT  { $$ = birch::ABSTRACT; }
     | FINAL     { $$ = birch::FINAL; }
-    | ACYCLIC   { $$ = birch::ACYCLIC; }
     |           { $$ = birch::NONE; }
     ;
 
@@ -717,13 +718,17 @@ file
     ;
 
 return_type 
-    : RIGHT_OP type                { $$ = $2; }
-    | RIGHT_OP TYPEOF '(' '_' ')'  { $$ = new birch::TypeOf(empty_expr(@$), make_loc(@$)); }
+    : RIGHT_OP type  { $$ = $2; }
     ;
-    
+
 optional_return_type
     : return_type
     |              { $$ = empty_type(@$); }
+    ;
+
+optional_auto_return_type
+    : optional_return_type
+    | RIGHT_OP              { $$ = new birch::TypeOf(make_loc(@$)); }
     ;
 
 braces
@@ -758,13 +763,8 @@ named_type
     | name optional_generic_arguments '&'  { yywarn("using weak pointers is no longer necessary"); $$ = new birch::NamedType($1, $2, make_loc(@$)); }
     ;
 
-type_of
-    : TYPEOF '(' expression ')'  { $$ = new birch::TypeOf($3, make_loc(@$)); }
-    ;
-
 primary_type
     : named_type
-    | type_of
     | '(' type_list ')'  { $$ = new birch::TupleType($2, make_loc(@$)); }
     ;
 

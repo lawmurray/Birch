@@ -102,6 +102,11 @@ public:
   virtual bool isGeneric() const;
 
   /**
+   * Is this a deduced type?
+   */
+  virtual bool isTypeOf() const;
+
+  /**
    * Is this a value type? A value type is either a basic type, or a compound
    * type that does not include any class, function, or generic types. Generic
    * types that resolve to value types would be included, but their handling

@@ -170,6 +170,7 @@ noinst_HEADERS = \
   src/exception/FileNotFoundException.hpp \
   src/exception/InheritanceLoopException.hpp \
   src/exception/RedefinedException.hpp \
+  src/exception/ReturnTypeDeductionException.hpp \
   src/exception/UndefinedException.hpp \
   src/expression/all.hpp \
   src/expression/Assign.hpp \

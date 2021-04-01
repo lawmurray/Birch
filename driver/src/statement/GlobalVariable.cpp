@@ -22,10 +22,6 @@ birch::GlobalVariable::~GlobalVariable() {
   //
 }
 
-bool birch::GlobalVariable::isDeclaration() const {
-  return true;
-}
-
 birch::Statement* birch::GlobalVariable::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }

@@ -119,7 +119,6 @@ E                                  [Ee][+-]?{D}+
 "abstract"                          { return ABSTRACT; }
 "override"                          { return OVERRIDE; }
 "final"                             { return FINAL; }
-"acyclic"                           { return ACYCLIC; }
 
 "this"                              { return THIS; }
 "super"                             { return SUPER; }
@@ -128,8 +127,6 @@ E                                  [Ee][+-]?{D}+
 "nil"                               { yylval.valString = "nil"; return NIL; }
 "true"                              { yylval.valString = "true"; return BOOL_LITERAL; }
 "false"                             { yylval.valString = "false"; return BOOL_LITERAL; }
-
-"TypeOf"                            { return TYPEOF; }
 
 ({L}|{G})({L}|{G}|{U}|{D})*'*       { yylval.valString = strdup(yytext); return NAME; }
 

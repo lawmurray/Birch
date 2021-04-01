@@ -34,10 +34,6 @@ bool birch::StatementList::isEmpty() const {
   return head->isEmpty() && tail->isEmpty();
 }
 
-bool birch::StatementList::isDeclaration() const {
-  return head->isDeclaration() && tail->isDeclaration();
-}
-
 birch::Statement* birch::StatementList::accept(Cloner* visitor) const {
   return visitor->clone(this);
 }

@@ -5,14 +5,17 @@
 
 #include "src/visitor/all.hpp"
 
-birch::TypeOf::TypeOf(Expression* single, Location* loc) :
-    Type(loc),
-    Single<Expression>(single) {
+birch::TypeOf::TypeOf(Location* loc) :
+    Type(loc) {
   //
 }
 
 birch::TypeOf::~TypeOf() {
   //
+}
+
+bool birch::TypeOf::isTypeOf() const {
+  return true;
 }
 
 birch::Type* birch::TypeOf::accept(Cloner* visitor) const {

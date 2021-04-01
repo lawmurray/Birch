@@ -268,7 +268,7 @@ void birch::BirchGenerator::visit(const MemberFunction* o) {
   if (!o->returnType->isEmpty()) {
     middle(" -> " << o->returnType);
   }
-  if (!o->braces->isEmpty() && (!header || (type && type->isGeneric()))) {
+  if (!o->braces->isEmpty() && (!header || o->isGeneric() || (type && type->isGeneric()))) {
     finish(o->braces << "\n");
   } else {
     finish(';');
@@ -308,7 +308,8 @@ void birch::BirchGenerator::visit(const UnaryOperator* o) {
 }
 
 void birch::BirchGenerator::visit(const AssignmentOperator* o) {
-  start("operator <- " << o->single);
+  start("");
+  middle("operator <- " << o->single);
   if (!o->braces->isEmpty() && (!header || (type && type->isGeneric()))) {
     finish(o->braces << "\n");
   } else {
@@ -317,7 +318,8 @@ void birch::BirchGenerator::visit(const AssignmentOperator* o) {
 }
 
 void birch::BirchGenerator::visit(const ConversionOperator* o) {
-  start("operator -> " << o->returnType);
+  start("");
+  middle("operator -> " << o->returnType);
   if (!o->braces->isEmpty() && (!header || (type && type->isGeneric()))) {
     finish(o->braces << "\n");
   } else {
@@ -326,7 +328,8 @@ void birch::BirchGenerator::visit(const ConversionOperator* o) {
 }
 
 void birch::BirchGenerator::visit(const SliceOperator* o) {
-  start("operator [" << o->params << "] -> " << o->returnType);
+  start("");
+  middle("operator [" << o->params << "] -> " << o->returnType);
   if (!o->braces->isEmpty() && (!header || (type && type->isGeneric()))) {
     finish(o->braces << "\n");
   } else {
@@ -490,9 +493,5 @@ void birch::BirchGenerator::visit(const TypeList* o) {
 }
 
 void birch::BirchGenerator::visit(const TypeOf* o) {
-  if (o->single->isEmpty()) {
-    middle("TypeOf(_)");
-  } else {
-    middle("TypeOf(" << o->single << ')');
-  }
+  //
 }

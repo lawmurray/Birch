@@ -20,10 +20,10 @@ public:
    * @param base Base stream.
    * @param level Indentation level.
    * @param header Output header instead of source?
-   * @param generic Include generic classes and functions?
+   * @param includeInline Include inline classes and functions?
    */
   CppGenerator(std::ostream& base, const int level = 0,
-      const bool header = false, const bool generic = false);
+      const bool header = false, const bool includeInline = false);
 
   using IndentableGenerator::visit;
 
@@ -139,9 +139,9 @@ protected:
   bool header;
 
   /**
-   * Include generic classes and functions?
+   * Include inline classes and functions?
    */
-  bool generic;
+  bool includeInline;
 
   /**
    * Are we on the left side of an assignment statement?

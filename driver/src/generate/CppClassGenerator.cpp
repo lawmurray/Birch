@@ -7,9 +7,9 @@
 #include "src/primitive/string.hpp"
 
 birch::CppClassGenerator::CppClassGenerator(std::ostream& base,
-    const int level, const bool header, const bool generic,
+    const int level, const bool header, const bool includeInline,
     const Class* currentClass) :
-    CppGenerator(base, level, header, generic),
+    CppGenerator(base, level, header, includeInline),
     currentClass(currentClass) {
   //
 }
@@ -162,15 +162,14 @@ void birch::CppClassGenerator::visit(const MemberVariable* o) {
 }
 
 void birch::CppClassGenerator::visit(const MemberFunction* o) {
-  if ((generic || !o->isGeneric()) && (!o->braces->isEmpty() ||
+  if ((includeInline || !o->isGeneric()) && (!o->braces->isEmpty() ||
       (header && o->has(ABSTRACT)))) {
     if (header) {
       genTemplateParams(o);
       genSourceLine(o->loc);
-      if (o->typeParams->isEmpty()) {
-        start("virtual ");
-      } else {
-        start("");
+      start("");
+      if (o->typeParams->isEmpty() && !currentClass->has(FINAL)) {
+        middle("virtual ");
       }
     } else {
       genTemplateParams(currentClass);
@@ -208,8 +207,11 @@ void birch::CppClassGenerator::visit(const MemberFunction* o) {
 void birch::CppClassGenerator::visit(const AssignmentOperator* o) {
   if (!o->braces->isEmpty()) {
     if (header) {
-      genSourceLine(o->loc);
-      start("virtual ");
+      start("");
+      if (!currentClass->has(FINAL)) {
+        genSourceLine(o->loc);
+        middle("virtual ");
+      }
     } else {
       genTemplateParams(currentClass);
       genSourceLine(o->loc);
@@ -245,7 +247,10 @@ void birch::CppClassGenerator::visit(const ConversionOperator* o) {
   if (!o->braces->isEmpty()) {
     if (header) {
       genSourceLine(o->loc);
-      start("virtual ");
+      start("");
+      if (!currentClass->has(FINAL)) {
+        middle("virtual ");
+      }
     } else {
       genTemplateParams(currentClass);
       genSourceLine(o->loc);
@@ -273,10 +278,14 @@ void birch::CppClassGenerator::visit(const SliceOperator* o) {
   if (!o->braces->isEmpty()) {
     if (header) {
       genSourceLine(o->loc);
-      start("virtual ");
+      start("");
+      if (!currentClass->has(FINAL)) {
+        middle("virtual ");
+      }
     } else {
       genTemplateParams(currentClass);
       genSourceLine(o->loc);
+      start("");
     }
     middle(o->returnType);
     if (!o->returnType->isEmpty()) {

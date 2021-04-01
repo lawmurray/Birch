@@ -7,10 +7,10 @@
 #include "src/primitive/string.hpp"
 
 birch::CppGenerator::CppGenerator(std::ostream& base, const int level,
-    const bool header, const bool generic) :
+    const bool header, const bool includeInline) :
     IndentableGenerator(base, level),
     header(header),
-    generic(generic),
+    includeInline(includeInline),
     inAssign(0),
     inGlobal(0),
     inConstructor(0),
@@ -131,21 +131,34 @@ void birch::CppGenerator::visit(const Get* o) {
 }
 
 void birch::CppGenerator::visit(const LambdaFunction* o) {
-  middle("std::function<" << o->returnType << '(');
-  for (auto iter = o->params->begin(); iter != o->params->end(); ++iter) {
-    auto param = dynamic_cast<const Parameter*>(*iter);
-    if (iter != o->params->begin()) {
-      middle(',');
+  if (!o->returnType->isTypeOf()) {
+    /* wrapping the lambda in std::function can avoid having to explicitly
+     * specify generic type arguments for some common calls, but can't do
+     * this if its return type is to be deduced */
+    middle("std::function<" << o->returnType << '(');
+    for (auto iter = o->params->begin(); iter != o->params->end(); ++iter) {
+      auto param = dynamic_cast<const Parameter*>(*iter);
+      if (iter != o->params->begin()) {
+        middle(',');
+      }
+      middle(param->type);
     }
-    middle(param->type);
+    middle(")>(");
   }
-  finish(")>([=](" << o->params << ") {");
+  middle("[=](" << o->params << ')');
+  if (!o->returnType->isEmpty() && !o->returnType->isTypeOf()) {
+    middle(" -> " << o->returnType);
+  }
+  finish(" {");
   in();
   ++inLambda;
   *this << o->braces->strip();
   --inLambda;
   out();
-  start("})");
+  start("}");
+  if (!o->returnType->isTypeOf()) {
+    middle(')');
+  }
 }
 
 void birch::CppGenerator::visit(const Span* o) {
@@ -291,10 +304,14 @@ void birch::CppGenerator::visit(const LocalVariable* o) {
 }
 
 void birch::CppGenerator::visit(const Function* o) {
-  if ((generic || !o->isGeneric()) && !o->braces->isEmpty()) {
+  if ((includeInline || !o->isGeneric()) && !o->braces->isEmpty()) {
     genTemplateParams(o);
     genSourceLine(o->loc);
-    start(o->returnType << ' ');
+    start("");
+    if (!header && o->isGeneric()) {
+      middle("inline ");
+    }
+    middle(o->returnType << ' ');
     if (!header) {
       middle("birch::");
     }
@@ -407,10 +424,9 @@ void birch::CppGenerator::visit(const Program* o) {
           genSourceLine(p->loc);
           line("libbirch_error_msg_(::optarg, \"option --\" << long_options_[::optopt].name << \" requires a value.\");");
           genSourceLine(p->loc);
-          if (p->type->unwrap()->isBasic()) {
-            auto type = dynamic_cast<Named*>(p->type->unwrap());
-            assert(type);
-            start(name << " = birch::" << type->name);
+          auto type = dynamic_cast<Named*>(p->type->unwrap());
+          if (type && type->name->str() != "String") {
+            start(name << " = birch::from_string<birch::type::" << type->name << '>');
             finish("(birch::type::String(::optarg));");
           } else {
             line(name << " = birch::type::String(::optarg);");
@@ -469,10 +485,14 @@ void birch::CppGenerator::visit(const Program* o) {
 }
 
 void birch::CppGenerator::visit(const BinaryOperator* o) {
-  if ((generic || !o->isGeneric()) && !o->braces->isEmpty()) {
+  if ((includeInline || !o->isGeneric()) && !o->braces->isEmpty()) {
     genTemplateParams(o);
     genSourceLine(o->loc);
-    start(o->returnType << ' ');
+    start("");
+    if (!header && o->isGeneric()) {
+      middle("inline ");
+    }
+    middle(o->returnType << ' ');
     if (!header) {
       middle("birch::");
     }
@@ -498,7 +518,7 @@ void birch::CppGenerator::visit(const BinaryOperator* o) {
 }
 
 void birch::CppGenerator::visit(const UnaryOperator* o) {
-  if ((generic || !o->isGeneric()) && !o->braces->isEmpty()) {
+  if ((includeInline || !o->isGeneric()) && !o->braces->isEmpty()) {
     genTemplateParams(o);
     genSourceLine(o->loc);
     start(o->returnType << ' ');
@@ -531,8 +551,8 @@ void birch::CppGenerator::visit(const Basic* o) {
 }
 
 void birch::CppGenerator::visit(const Class* o) {
-  if (generic || !o->isGeneric()) {
-    CppClassGenerator auxClass(base, level, header, generic);
+  if (includeInline || !o->isGeneric()) {
+    CppClassGenerator auxClass(base, level, header, includeInline);
     auxClass << o;
   }
 }
@@ -717,11 +737,7 @@ void birch::CppGenerator::visit(const TypeList* o) {
 }
 
 void birch::CppGenerator::visit(const TypeOf* o) {
-  if (o->single->isEmpty()) {
-    middle("auto");
-  } else {
-    middle("decltype(" << o->single << ')');
-  }
+  middle("auto");
 }
 
 std::string birch::CppGenerator::getIndex(const Statement* o) {

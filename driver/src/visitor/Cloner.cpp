@@ -191,17 +191,17 @@ birch::Statement* birch::Cloner::clone(const UnaryOperator* o) {
 }
 
 birch::Statement* birch::Cloner::clone(const AssignmentOperator* o) {
-  return new AssignmentOperator(o->single->accept(this),
+  return new AssignmentOperator(o->annotation, o->single->accept(this),
       o->braces->accept(this), o->loc);
 }
 
 birch::Statement* birch::Cloner::clone(const ConversionOperator* o) {
-  return new ConversionOperator(o->returnType->accept(this),
+  return new ConversionOperator(o->annotation, o->returnType->accept(this),
       o->braces->accept(this), o->loc);
 }
 
 birch::Statement* birch::Cloner::clone(const SliceOperator* o) {
-  return new SliceOperator(o->params->accept(this),
+  return new SliceOperator(o->annotation, o->params->accept(this),
       o->returnType->accept(this), o->braces->accept(this), o->loc);
 }
 
@@ -304,5 +304,5 @@ birch::Type* birch::Cloner::clone(const OptionalType* o) {
 }
 
 birch::Type* birch::Cloner::clone(const TypeOf* o) {
-  return new TypeOf(o->single->accept(this), o->loc);
+  return new TypeOf(o->loc);
 }

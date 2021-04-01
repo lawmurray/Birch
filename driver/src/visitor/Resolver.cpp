@@ -75,3 +75,19 @@ birch::Statement* birch::Resolver::modify(Class* o) {
   scopes.back()->inherit(o);
   return ScopedModifier::modify(o);
 }
+
+birch::Statement* birch::Resolver::modify(Function* o) {
+  if (o->returnType->isTypeOf() && !o->isGeneric() &&
+      (currentClass && !currentClass->isGeneric())) {
+    throw ReturnTypeDeductionException(o);
+  }
+  return ScopedModifier::modify(o);
+}
+
+birch::Statement* birch::Resolver::modify(MemberFunction* o) {
+  if (o->returnType->isTypeOf() && !o->isGeneric() &&
+      (currentClass && !currentClass->isGeneric())) {
+    throw ReturnTypeDeductionException(o);
+  }
+  return ScopedModifier::modify(o);
+}

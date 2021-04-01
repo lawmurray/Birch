@@ -4,6 +4,7 @@
 #pragma once
 
 #include "src/statement/Statement.hpp"
+#include "src/common/Annotated.hpp"
 #include "src/common/Numbered.hpp"
 #include "src/common/Parameterised.hpp"
 #include "src/common/ReturnTyped.hpp"
@@ -16,8 +17,8 @@ namespace birch {
  *
  * @ingroup statement
  */
-class SliceOperator:
-    public Statement,
+class SliceOperator: public Statement,
+    public Annotated,
     public Numbered,
     public Parameterised,
     public ReturnTyped,
@@ -27,19 +28,18 @@ public:
   /**
    * Constructor.
    *
+   * @param annotation Annotation.
    * @param params Parameters.
    * @param braces Body.
    * @param loc Location.
    */
-  SliceOperator(Expression* params, Type* returnType, Statement* braces,
-      Location* loc = nullptr);
+  SliceOperator(const Annotation annotation, Expression* params,
+      Type* returnType, Statement* braces, Location* loc = nullptr);
 
   /**
    * Destructor.
    */
   virtual ~SliceOperator();
-
-  virtual bool isDeclaration() const;
 
   virtual Statement* accept(Cloner* visitor) const;
   virtual Statement* accept(Modifier* visitor);
