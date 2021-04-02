@@ -26,36 +26,6 @@ final class MultiplyFunction {
   function gradRight<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue, r:RightValue[_,_]) -> {
     return transpose(l)*d;
   }
-
-  // function graftDiscrete() -> Discrete? {
-  //   t:Discrete?;
-  //   if !hasValue() {
-  //     t <- graftBoundedDiscrete();
-  //     if !t? {
-  //       x1:Discrete?;
-  //       if (x1 <- graft_discrete(l!))? {
-  //         t <- LinearDiscrete(scalar<Integer>(r!), x1!, box(0));
-  //       } else if (x1 <- graft_discrete(r!))? {
-  //         t <- LinearDiscrete(scalar<Integer>(l!), x1!, box(0));
-  //       }
-  //     }
-  //   }
-  //   return t;
-  // }
-
-  // function graftBoundedDiscrete() -> BoundedDiscrete? {
-  //   t:BoundedDiscrete?;
-  //   if !hasValue() {
-  //     let l1 <- graft_bounded_discrete(l!);
-  //     let r1 <- graft_bounded_discrete(r!);
-  //     if l1? {
-  //       t <- LinearBoundedDiscrete(Integer(r!), l1!, box(0));
-  //     } else if r1? {
-  //       t <- LinearBoundedDiscrete(Integer(l!), r1!, box(0));
-  //     }
-  //   }
-  //   return t;
-  // }
 }
 class Multiply<Left,Right> = Binary<MultiplyFunction,Left,Right>;
 

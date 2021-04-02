@@ -57,11 +57,17 @@ final class Ternary<Function,Left,Middle,Right>(l:Left, m:Middle, r:Right) {
   }
 
   function constant() {
-    global.constant(l!);
-    l <- nil;
-    global.constant(m!);
-    m <- nil;
-    global.constant(r!);
-    r <- nil;
+    if l? {
+      global.constant(l!);
+      l <- nil;
+    }
+    if m? {
+      global.constant(m!);
+      m <- nil;
+    }
+    if r? {
+      global.constant(r!);
+      r <- nil;
+    }
   }
 }

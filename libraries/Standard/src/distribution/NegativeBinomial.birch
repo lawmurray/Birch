@@ -63,7 +63,7 @@ function NegativeBinomial<Left,Right>(k:Left, ρ:Right) -> {
 /**
  * Create negative binomial distribution.
  */
-function NegativeBinomial<Left,Right>(k:Left, ρ:Random<Real>) -> Distribution<Integer> {
+function NegativeBinomial<Left>(k:Left, ρ:Random<Real>) -> Distribution<Integer> {
   ρ1:Beta?;
   if (ρ1 <- ρ.graftBeta())? {
     return BetaNegativeBinomial(box(k), ρ1!);

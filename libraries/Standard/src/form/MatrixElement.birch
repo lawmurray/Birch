@@ -50,12 +50,18 @@ final class MatrixElement<Left,Middle,Right>(l:Left, i:Middle, j:Right) {
   }
 
   function constant() {
-    global.constant(l!);
-    x <- nil;
-    global.constant(m!);
-    i <- nil;
-    global.constant(r!);
-    j <- nil;
+    if l? {
+      global.constant(l!);
+      l <- nil;
+    }
+    if m? {
+      global.constant(m!);
+      m <- nil;
+    }
+    if r? {
+      global.constant(r!);
+      r <- nil;
+    }
   }
 }
 

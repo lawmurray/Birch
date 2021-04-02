@@ -198,17 +198,3 @@ function multiply_add(l:Real[_,_], m:Real[_,_], r:Integer[_,_]) -> Real[_,_] {
 function multiply_add(l:Real[_,_], m:Real[_,_], r:Real[_,_]) -> Real[_,_] {
   return l*m + r;
 }
-
-/**
- * Add.
- */
-operator<Left,Middle,Right> (l:Multiply<Left,Middle> + r:Right) -> {
-  return multiply_add(l.l!, l.r!, r);
-}
-
-/**
- * Subtract.
- */
-operator<Left,Middle,Right> (l:Multiply<Left,Middle> - r:Right) -> {
-  return multiply_add(l.l!, l.r!, -r);
-}

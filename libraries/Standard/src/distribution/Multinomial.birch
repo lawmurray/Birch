@@ -55,7 +55,7 @@ function Multinomial<Left,Right>(n:Left, ρ:Right) -> {
 /**
  * Create multinomial distribution.
  */
-function Multinomial<Left,Right>(n:Left, ρ:Random<Real[_]>) ->
+function Multinomial<Left>(n:Left, ρ:Random<Real[_]>) ->
     Distribution<Integer[_]> {
   m:Dirichlet?;
   if (m <- ρ.graftDirichlet())? {

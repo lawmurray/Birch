@@ -49,9 +49,13 @@ final class Binary<Function,Left,Right>(l:Left, r:Right) {
   }
 
   function constant() {
-    global.constant(l!);
-    l <- nil;
-    global.constant(r!);
-    r <- nil;
+    if l? {
+      global.constant(l!);
+      l <- nil;
+    }
+    if r? {
+      global.constant(r!);
+      r <- nil;
+    }
   }
 }

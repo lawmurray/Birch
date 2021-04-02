@@ -177,130 +177,116 @@ final class Random<Value> < Expression<Value> {
 
   function graftGaussian() -> Gaussian? {
     if !(hasValue() || p!.hasClamp()) {
-      let q <- p!.graftGaussian();
-      p <-? Distribution<Value>?(q);
-      return q;
+      return p!.graftGaussian();
+    } else {
+      return nil;
     }
-    return nil;
   }
     
   function graftBeta() -> Beta? {
     if !(hasValue() || p!.hasClamp()) {
-      let q <- p!.graftBeta();
-      p <-? Distribution<Value>?(q);
-      return q;
+      return p!.graftBeta();
+    } else {
+      return nil;
     }
-    return nil;
   }
   
   function graftGamma() -> Gamma? {
     if !(hasValue() || p!.hasClamp()) {
-      let q <- p!.graftGamma();
-      p <-? Distribution<Value>?(q);
-      return q;
+      return p!.graftGamma();
+    } else {
+      return nil;
     }
-    return nil;
   }
   
   function graftInverseGamma() -> InverseGamma? {
     if !(hasValue() || p!.hasClamp()) {
-      let q <- p!.graftInverseGamma();
-      p <-? Distribution<Value>?(q);
-      return q;
+      return p!.graftInverseGamma();
+    } else {
+      return nil;
     }
-    return nil;
   } 
 
   function graftInverseWishart() -> InverseWishart? {
     if !(hasValue() || p!.hasClamp()) {
-      let q <- p!.graftInverseWishart();
-      p <-? Distribution<Value>?(q);
-      return q;
+      return p!.graftInverseWishart();
+    } else {
+      return nil;
     }
-    return nil;
   } 
   
   function graftNormalInverseGamma(compare:Distribution<Real>) -> NormalInverseGamma? {
     if !(hasValue() || p!.hasClamp()) {
-      let q <- p!.graftNormalInverseGamma(compare);
-      p <-? Distribution<Value>?(q);
-      return q;
+      return p!.graftNormalInverseGamma(compare);
+    } else {
+      return nil;
     }
-    return nil;
   }
   
   function graftDirichlet() -> Dirichlet? {
     if !(hasValue() || p!.hasClamp()) {
-      let q <- p!.graftDirichlet();
-      p <-? Distribution<Value>?(q);
-      return q;
+      return p!.graftDirichlet();
+    } else {
+      return nil;
     }
-    return nil;
   }
 
   function graftRestaurant() -> Restaurant? {
     if !(hasValue() || p!.hasClamp()) {
-      let q <- p!.graftRestaurant();
-      p <-? Distribution<Value>?(q);
-      return q;
+      return p!.graftRestaurant();
+    } else {
+      return nil;
     }
-    return nil;
   }
 
   function graftMultivariateGaussian() -> MultivariateGaussian? {
     if !(hasValue() || p!.hasClamp()) {
-      let q <- p!.graftMultivariateGaussian();
-      p <-? Distribution<Value>?(q);
-      return q;
+      return p!.graftMultivariateGaussian();
+    } else {
+      return nil;
     }
-    return nil;
   }
 
   function graftMultivariateNormalInverseGamma(compare:Distribution<Real>) ->
       MultivariateNormalInverseGamma? {
     if !(hasValue() || p!.hasClamp()) {
-      let q <- p!.graftMultivariateNormalInverseGamma(compare);
-      p <-? Distribution<Value>?(q);
-      return q;
+      return p!.graftMultivariateNormalInverseGamma(compare);
+    } else {
+      return nil;
     }
-    return nil;
   }
 
   function graftMatrixGaussian() -> MatrixGaussian? {
     if !(hasValue() || p!.hasClamp()) {
-      let q <- p!.graftMatrixGaussian();
-      p <-? Distribution<Value>?(q);
-      return q;
+      return p!.graftMatrixGaussian();
+    } else {
+      return nil;
     }
-    return nil;
   }
 
   function graftMatrixNormalInverseWishart(compare:Distribution<Real[_,_]>) ->
       MatrixNormalInverseWishart? {
     if !(hasValue() || p!.hasClamp()) {
-      let q <- p!.graftMatrixNormalInverseWishart(compare);
-      p <-? Distribution<Value>?(q);
-      return q;
+      return p!.graftMatrixNormalInverseWishart(compare);
+    } else {
+      return nil;
     }
-    return nil;
   }
 
   function graftDiscrete() -> Discrete? {
     if !(hasValue() || p!.hasClamp()) {
-      let q <- p!.graftDiscrete();
-      p <-? Distribution<Value>?(q);
-      return q;
+      return p!.graftDiscrete();
+    } else {
+      return nil;
     }
-    return nil;
   }
 
   function graftBoundedDiscrete() -> BoundedDiscrete? {
     if !(hasValue() || p!.hasClamp()) {
-      let q <- p!.graftBoundedDiscrete();
-      p <-? Distribution<Value>?(q);
-      return q;
+      return p!.graftBoundedDiscrete();
+    } else {
+      return nil;
     }
-    return nil;
   }
 
   override function read(buffer:Buffer) {

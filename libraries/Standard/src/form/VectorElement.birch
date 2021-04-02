@@ -43,10 +43,14 @@ final class VectorElement<Left,Right>(x:Left, r:Right)  {
   }
 
   function constant() {
-    global.constant(l!);
-    x <- nil;
-    global.constant(r!);
-    i <- nil;
+    if l? {
+      global.constant(l!);
+      l <- nil;
+    }
+    if r? {
+      global.constant(r!);
+      r <- nil;
+    }
   }
 }
 

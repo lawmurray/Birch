@@ -10,38 +10,6 @@ final class SubtractFunction {
   function gradRight<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue, r:RightValue) -> {
     return -d;
   }
-
-  // function graftDiscrete() -> Discrete? {
-  //   t:Discrete?;
-  //   if !hasValue() {
-  //     t <- graftBoundedDiscrete();
-  //     if !t? {
-  //       m:Discrete?;
-  //       if (m <- graft_discrete(l!))? {
-  //         t <- LinearDiscrete(box(1), m!, scalar<Integer>(-r!));
-  //       } else if (m <- graft_discrete(r!))? {
-  //         t <- LinearDiscrete(box(-1), m!, scalar<Integer>(l!));
-  //       }
-  //     }
-  //   }
-  //   return t;
-  // }
-
-  // function graftBoundedDiscrete() -> BoundedDiscrete? {
-  //   t:BoundedDiscrete?;
-  //   if !hasValue() {
-  //     let l1 <- graft_bounded_discrete(l!);
-  //     let r1 <- graft_bounded_discrete(r!);
-  //     if l1? && r1? {
-  //       t <- SubtractBoundedDiscrete(l1!, r1!);
-  //     } else if l1? {
-  //       t <- LinearBoundedDiscrete(box(1), l1!, scalar<Integer>(-r!));
-  //     } else if r1? {
-  //       t <- LinearBoundedDiscrete(box(-1), r1!, scalar<Integer>(l!));
-  //     }
-  //   }
-  //   return t;
-  // }
 }
 class Subtract<Left,Right> = Binary<SubtractFunction,Left,Right>;
 
@@ -142,4 +110,18 @@ operator (x:Real[_,_] - y:Real[_,_]) -> Real[_,_] {
   cpp{{
   return x.toEigen().operator-(y.toEigen());
   }}
+}
+
+/**
+ * Subtraction.
+ */
+operator<Left,Middle,Right> (l:Multiply<Left,Middle> - r:Right) -> {
+  return multiply_add(l.l!, l.r!, -r);
+}
+
+/**
+ * Subtraction.
+ */
+operator<Left,Middle,Right> (l:Dot<Left,Middle> - r:Right) -> {
+  return dot_add(l.l!, l.r!, -r);
 }

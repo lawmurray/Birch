@@ -64,10 +64,10 @@ function MultivariateGaussian<Left,Right>(μ:Left, Σ:Right) -> {
 /**
  * Create multivariate Gaussian distribution.
  */
-function MultivariateGaussian<Left,Middle,Right>(μ:Random<Real[_]>, Σ:Right) -> Distribution<Real[_]> {
+function MultivariateGaussian<Right>(μ:Random<Real[_]>, Σ:Right) -> Distribution<Real[_]> {
   let p <- μ.graftMultivariateGaussian();
   if p? {
-    return MultivariateGaussianMultivariateGaussian(p!, Σ);
+    return MultivariateGaussianMultivariateGaussian(p!, box(Σ));
   } else {
     return construct<MultivariateGaussian>(μ, box(Σ));
   }
@@ -125,7 +125,7 @@ function MultivariateGaussian<Left,Right>(μ:Left, Σ:Multiply<Random<Real>,Righ
  * Create multivariate Gaussian distribution.
  */
 function MultivariateGaussian<Right>(μ:Random<Real[_]>, Σ:Multiply<Right,Random<Real>>) -> Distribution<Real[_]> {
-  let p <- Σ.r!.graftInverseGamma();
+  let p <- InverseGamma?(Σ.r!.p);
   if p? {
     let q <- μ.graftMultivariateNormalInverseGamma(p!);
     if q? {
@@ -142,7 +142,7 @@ function MultivariateGaussian<Right>(μ:Random<Real[_]>, Σ:Multiply<Right,Rando
  * Create multivariate Gaussian distribution.
  */
 function MultivariateGaussian<Right>(μ:Random<Real[_]>, Σ:Multiply<Random<Real>,Right>) -> Distribution<Real[_]> {
-  let p <- Σ.r!.graftInverseGamma();
+  let p <- InverseGamma?(Σ.l!.p);
   if p? {
     let q <- μ.graftMultivariateNormalInverseGamma(p!);
     if q? {
@@ -159,7 +159,7 @@ function MultivariateGaussian<Right>(μ:Random<Real[_]>, Σ:Multiply<Random<Real
  * Create multivariate Gaussian distribution.
  */
 function MultivariateGaussian<Left,Middle,Right>(μ:MultiplyAdd<Left,Random<Real[_]>,Middle>, Σ:Multiply<Right,Random<Real>>) -> Distribution<Real[_]> {
-  let p <- Σ.r!.graftInverseGamma();
+  let p <- InverseGamma?(Σ.r!.p);
   if p? {
     let q <- μ.m!.graftMultivariateNormalInverseGamma(p!);
     if q? {
@@ -176,7 +176,7 @@ function MultivariateGaussian<Left,Middle,Right>(μ:MultiplyAdd<Left,Random<Real
  * Create multivariate Gaussian distribution.
  */
 function MultivariateGaussian<Left,Middle,Right>(μ:MultiplyAdd<Left,Random<Real[_]>,Middle>, Σ:Multiply<Random<Real>,Right>) -> Distribution<Real[_]> {
-  let p <- Σ.l!.graftInverseGamma();
+  let p <- InverseGamma?(Σ.l!.p);
   if p? {
     let q <- μ.m!.graftMultivariateNormalInverseGamma(p!);
     if q? {
@@ -193,7 +193,7 @@ function MultivariateGaussian<Left,Middle,Right>(μ:MultiplyAdd<Left,Random<Real
  * Create multivariate Gaussian distribution.
  */
 function MultivariateGaussian<Left,Middle>(μ:DotAdd<Left,Random<Real[_,_]>,Middle>, Σ:Random<Real[_,_]>) -> Distribution<Real[_]> {
-  let p <- Σ.graftInverseWishart();
+  let p <- InverseWishart?(Σ.p);
   if p? {
     let q <- μ.m!.graftMatrixNormalInverseWishart(p!);
     if q? {

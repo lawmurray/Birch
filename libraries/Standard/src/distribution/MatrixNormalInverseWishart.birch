@@ -83,7 +83,7 @@ final class MatrixNormalInverseWishart(M:Expression<Real[_,_]>,
 }
 
 function MatrixNormalInverseWishart<Left,Middle>(M:Left, U:Middle, V:InverseWishart) -> {
-  m:MatrixNormalInverseWishart(M, box(U), V);
+  m:MatrixNormalInverseWishart(box(M), box(U), V);
   m.link();
   return m;
 }

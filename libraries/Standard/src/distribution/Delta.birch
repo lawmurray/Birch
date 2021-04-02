@@ -49,10 +49,31 @@ final class Delta(μ:Expression<Integer>) < Discrete {
  * Create delta distribution.
  */
 function Delta<Middle>(μ:Middle) -> Distribution<Integer> {
-  m:Discrete?;
-  //if (m <- μ.graftDiscrete())? {
-  //  return DiscreteDelta(m!);
-  //} else {
+  return construct<Delta>(box(μ));
+}
+
+/**
+ * Create delta distribution.
+ */
+function Delta(μ:Add<Random<Integer>,Random<Integer>>) -> Distribution<Integer> {
+  let l1 <- μ.l!.graftBoundedDiscrete();
+  let r1 <- μ.r!.graftBoundedDiscrete();
+  if l1? && r1? {
+    return AddBoundedDiscrete(l1!, r1!);
+  } else {
     return construct<Delta>(box(μ));
-  //}
+  }
+}
+
+/**
+ * Create delta distribution.
+ */
+function Delta(μ:Subtract<Random<Integer>,Random<Integer>>) -> Distribution<Integer> {
+  let l1 <- μ.l!.graftBoundedDiscrete();
+  let r1 <- μ.r!.graftBoundedDiscrete();
+  if l1? && r1? {
+    return SubtractBoundedDiscrete(l1!, r1!);
+  } else {
+    return construct<Delta>(box(μ));
+  }
 }

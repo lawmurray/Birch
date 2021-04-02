@@ -41,7 +41,9 @@ final class Unary<Function,Middle>(m:Middle) {
   }
 
   function constant() {
-    global.constant(m!);
-    m <- nil;
+    if m? {
+      global.constant(m!);
+      m <- nil;
+    }
   }
 }

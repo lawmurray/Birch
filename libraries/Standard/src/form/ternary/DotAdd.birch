@@ -135,17 +135,3 @@ function dot_add(l:Real[_], m:Real[_,_], r:Integer[_]) -> Real[_] {
 function dot_add(l:Real[_], m:Real[_,_], r:Real[_]) -> Real[_] {
   return dot(l, m) + r;
 }
-
-/**
- * Add.
- */
-operator<Left,Middle,Right> (l:Dot<Left,Middle> + r:Right) -> {
-  return dot_add(l.l!, l.r!, r);
-}
-
-/**
- * Subtract.
- */
-operator<Left,Middle,Right> (l:Dot<Left,Middle> - r:Right) -> {
-  return dot_add(l.l!, l.r!, -r);
-}

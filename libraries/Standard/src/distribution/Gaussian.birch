@@ -136,7 +136,7 @@ function Gaussian<Left>(μ:Left, σ2:Random<Real>) -> Distribution<Real> {
  * Create Gaussian distribution.
  */
 function Gaussian<Left,Middle>(μ:MultiplyAdd<Left,Random<Real>,Middle>, σ2:Random<Real>) -> Distribution<Real> {
-  let p <- σ2.graftInverseGamma();
+  let p <- InverseGamma?(σ2.p);
   if p? {
     let q <- μ.m!.graftNormalInverseGamma(p!);
     if q? {
@@ -153,7 +153,7 @@ function Gaussian<Left,Middle>(μ:MultiplyAdd<Left,Random<Real>,Middle>, σ2:Ran
  * Create Gaussian distribution.
  */
 function Gaussian<Left,Middle>(μ:DotAdd<Left,Random<Real[_]>,Middle>, σ2:Random<Real>) -> Distribution<Real> {
-  let p <- σ2.graftInverseGamma();
+  let p <- InverseGamma?(σ2.p);
   if p? {
     let q <- μ.m!.graftMultivariateNormalInverseGamma(p!);
     if q? {
@@ -170,7 +170,7 @@ function Gaussian<Left,Middle>(μ:DotAdd<Left,Random<Real[_]>,Middle>, σ2:Rando
  * Create Gaussian distribution.
  */
 function Gaussian(μ:Random<Real>, σ2:Random<Real>) -> Distribution<Real> {
-  let p <- σ2.graftInverseGamma();
+  let p <- InverseGamma?(σ2.p);
   if p? {
     let q <- μ.graftNormalInverseGamma(p!);
     if q? {

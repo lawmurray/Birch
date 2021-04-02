@@ -2,5 +2,5 @@
  * Create a Geometric distribution
  */
 function Geometric<Middle>(ρ:Middle) -> {
-  return NegativeBinomial(box(1), box(ρ));
+  return NegativeBinomial(1, ρ);
 }
