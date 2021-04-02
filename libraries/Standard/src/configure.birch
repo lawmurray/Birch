@@ -29,7 +29,7 @@
  *     debug or test mode.
  *   - `--enable-warnings` / `--disable-warnings` (default enabled):
  *     Enable/disable compiler warnings.
- *   - `--enable-notes` / `--disable-notes` (default disabled):
+ *   - `--enable-notes` / `--disable-notes` (default enabled):
  *     Enable/disable compiler notes.
  *   - `--enable-translate` / `--disable-translate` (default enabled):
  *     Enable/disable translation of C++ compiler messages.

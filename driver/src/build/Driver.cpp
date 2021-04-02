@@ -22,7 +22,7 @@ birch::Driver::Driver(int argc, char** argv) :
     sharedLib(true),
     openmp(true),
     warnings(true),
-    notes(false),
+    notes(true),
     translate(true),
     verbose(false),
     newBootstrap(false),
@@ -848,7 +848,7 @@ void birch::Driver::help() {
       std::cout << "  --enable-warnings / --disable-warnings (default enabled):" << std::endl;
       std::cout << "  Enable/disable compiler warnings." << std::endl;
       std::cout << std::endl;
-      std::cout << "  --enable-notes / --disable-notes (default disabled):" << std::endl;
+      std::cout << "  --enable-notes / --disable-notes (default enabled):" << std::endl;
       std::cout << "  Enable/disable compiler notes." << std::endl;
       std::cout << std::endl;
       std::cout << "  --enable-translate / --disable-translate (default enabled):" << std::endl;
