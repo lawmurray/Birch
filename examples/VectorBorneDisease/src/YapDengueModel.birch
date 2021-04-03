@@ -52,7 +52,7 @@ final class YapDengueModel < Model {
       h.i[t] <~ Poisson(5.0);
       h.i[t] <- h.i[t] + 1;
       h.e[t] <~ Poisson(5.0);
-      h.r[t] <~ Uniform(0, n - h.i[t] - h.e[t]);
+      h.r[t] <~ UniformInteger(0, n - h.i[t] - h.e[t]);
       h.s[t] <- n - h.e[t] - h.i[t] - h.r[t];
 
       h.Δs[t] <- 0;
@@ -62,7 +62,7 @@ final class YapDengueModel < Model {
       
       u:Real;
       u <~ Uniform(-1.0, 2.0);
-      m.s[t] <- Integer(n*pow(10.0, u));
+      m.s[t] <- scalar<Integer>(n*pow(10.0, u));
       m.e[t] <- 0;
       m.i[t] <- 0;
       m.r[t] <- 0;

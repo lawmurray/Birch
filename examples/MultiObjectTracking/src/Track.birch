@@ -28,18 +28,19 @@ class Track(s:Integer, θ:Global) < Model {
   function simulate(t:Integer) {
     if t == 1 {
       /* start */
-      let μ <- vector(0.0, 3*θ.l.length());
-      μ[1..2] <~ Uniform(θ.l, θ.u);
-      x[t] ~ Gaussian(μ, θ.M);
+      let μ <- vector(0.0, 3*length(θ.l));
+      μ[1] <~ Uniform(θ.l, θ.u);
+      μ[2] <~ Uniform(θ.l, θ.u);
+      x[t] ~ MultivariateGaussian(μ, θ.M);
     } else {
       /* step */
-      x[t] ~ Gaussian(θ.A*x[t - 1], θ.Q);
+      x[t] ~ MultivariateGaussian(θ.A*x[t - 1], θ.Q);
     }
 
     d:Boolean;  // is the track detected?
     d <~ Bernoulli(θ.d);
     if d {
-      y[t] ~ Gaussian(θ.B*x[t], θ.R);
+      y[t] ~ MultivariateGaussian(θ.B*x[t], θ.R);
     }
   }
   

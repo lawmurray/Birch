@@ -86,7 +86,7 @@ class Multi < Model {
           n:Integer;
           n <~ Categorical(q);  // propose an observation to associate with
           let w <- p.observe(y[n]);  // likelihood
-          w <- w - log(Real(y.size()));  // prior correction (uniform prior)
+          w <- w - log(y.size());  // prior correction (uniform prior)
           w <- w - log(q[n]);  // proposal correction
           y.erase(n);  // remove the observation for future associations
           factor w;
@@ -100,7 +100,8 @@ class Multi < Model {
     N:Integer <- y.size() - 1;
     N ~> Poisson(θ.μ);
     for n in 1..(N + 1) {
-      y[n] ~> Uniform(θ.l, θ.u);
+      y[n][1] ~> Uniform(θ.l, θ.u);
+      y[n][2] ~> Uniform(θ.l, θ.u);
     }
   }
 
@@ -108,7 +109,9 @@ class Multi < Model {
     N:Integer;
     N <~ Poisson(θ.μ);
     for n in 1..(N + 1) {
-      y[n] <~ Uniform(θ.l, θ.u);
+      y[n] <- vector(0.0, 2);
+      y[n][1] <~ Uniform(θ.l, θ.u);
+      y[n][2] <~ Uniform(θ.l, θ.u);
     }
   }
 

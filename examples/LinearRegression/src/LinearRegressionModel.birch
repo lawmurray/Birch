@@ -28,8 +28,8 @@ class LinearRegressionModel < Model {
     let P <- columns(X);
     if N > 0 && P > 0 {
       σ2 ~ InverseGamma(3.0, 0.4);
-      β ~ Gaussian(vector(0.0, P), identity(P), σ2);
-      y ~ Gaussian(X*β, σ2);
+      β ~ MultivariateGaussian(vector(0.0, P), identity(P)*σ2);
+      y ~ MultivariateGaussian(X*β, identity(N)*σ2);
     }
   }
 

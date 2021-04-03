@@ -25,46 +25,46 @@ class MixedGaussianModel < Model {
   /**
    * Linear-linear state transition matrix.
    */
-  A:Boxed<Real[_,_]>;
+  A:Real[_,_];
 
   /**
    * Nonlinear-linear state transition matrix.
    */
-  b:Boxed<Real[_]>;
+  b:Real[_];
 
   /**
    * Linear observation matrix.
    */
-  c:Boxed<Real[_]>;
+  c:Real[_];
 
   /**
    * Linear state noise covariance.
    */
-  Σ_x_l:Boxed<Real[_,_]>;
+  Σ_x_l:Real[_,_];
 
   /**
    * Nonlinear state noise covariance.
    */
-  σ2_x_n:Boxed<Real>;
+  σ2_x_n:Real;
 
   /**
    * Linear observation noise covariance.
    */
-  σ2_y_l:Boxed<Real>;
+  σ2_y_l:Real;
 
   /**
    * Nonlinear observation noise covariance.
    */
-  σ2_y_n:Boxed<Real>;
+  σ2_y_n:Real;
 
   override function simulate(t:Integer) {
     /* hidden state */
     if t == 1 {
       x_n[t] ~ Gaussian(0.0, 1.0);
-      x_l[t] ~ Gaussian(vector(0.0, 3), identity(3));
+      x_l[t] ~ MultivariateGaussian(vector(0.0, 3), identity(3));
     } else {
       x_n[t] ~ Gaussian(atan(x_n[t - 1]) + dot(b, x_l[t - 1]), σ2_x_n);
-      x_l[t] ~ Gaussian(A*x_l[t - 1], Σ_x_l);
+      x_l[t] ~ MultivariateGaussian(A*x_l[t - 1], Σ_x_l);
     }
 
     /* observation */

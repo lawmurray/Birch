@@ -30,11 +30,11 @@ program draw(input:String <- "output/simulate.json",
     let sample <- array.get("sample");
     if sample? {
       let θ <- sample!.get("θ")!;
-      let l <- θ.get<Real[_]>("l")!;
-      let u <- θ.get<Real[_]>("u")!;
+      let l <- θ.get<Real>("l")!;
+      let u <- θ.get<Real>("u")!;
 
-      let scaleX <- width/(u[1] - l[1]);
-      let scaleY <- height/(u[2] - l[2]);
+      let scaleX <- width/(u - l);
+      let scaleY <- height/(u - l);
       let scale <- max(scaleX, scaleY);
       let fat <- 2.0;
   
@@ -45,7 +45,7 @@ program draw(input:String <- "output/simulate.json",
 
       /* set scale for tracking domain */
       cr.scale(scaleX, scaleY);
-      cr.translate(-l[1], -l[2]);
+      cr.translate(-l, -l);
 
       /* solid points marking clutter */
       cr.setSourceRGB(0.8, 0.8, 0.8);
@@ -108,7 +108,7 @@ program draw(input:String <- "output/simulate.json",
           cr.setSourceRGB(1.0, 1.0, 1.0);
           cr.setFontSize(0.5);
           cr.moveTo(x![1,1] - 0.26, x![1,2] + 0.15);
-          cr.showText(String(s!));
+          cr.showText(to_string(s!));
         }
       }
     }

@@ -3,54 +3,54 @@
  */
 class Global {
   /**
-   * Lower corner of domain of interest.
+   * Lower bound of domain of interest.
    */
-  l:Boxed<Real[_]>;
+  l:Real;
 
   /**
-   * Upper corner of domain of interest.
+   * Upper bound of domain of interest.
    */
-  u:Boxed<Real[_]>;
+  u:Real;
 
   /**
    * Probability of detection.
    */
-  d:Boxed<Real>;
+  d:Real;
 
   /**
    * Initial value covariance.
    */
-  M:Boxed<Real[_,_]>;
+  M:Real[_,_];
   
   /**
    * Transition matrix.
    */
-  A:Boxed<Real[_,_]>;
+  A:Real[_,_];
 
   /**
    * State noise covariance matrix.
    */
-  Q:Boxed<Real[_,_]>;
+  Q:Real[_,_];
 
   /**
    * Observation matrix.
    */
-  B:Boxed<Real[_,_]>;
+  B:Real[_,_];
 
   /**
    * Observation noise covariance matrix.
    */
-  R:Boxed<Real[_,_]>;
+  R:Real[_,_];
 
   /**
    * Birth rate.
    */
-  λ:Boxed<Real>;
+  λ:Real;
 
   /**
    * Clutter rate.
    */
-  μ:Boxed<Real>;
+  μ:Real;
 
   /**
    * Track length rate.
@@ -58,8 +58,8 @@ class Global {
   τ:Real;
   
   function read(buffer:Buffer) {
-    l <-? buffer.get<Real[_]>("l");
-    u <-? buffer.get<Real[_]>("u");
+    l <-? buffer.get<Real>("l");
+    u <-? buffer.get<Real>("u");
     d <-? buffer.get<Real>("d");
     M <-? buffer.get<Real[_,_]>("M");
     A <-? buffer.get<Real[_,_]>("A");

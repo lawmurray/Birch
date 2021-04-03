@@ -43,7 +43,7 @@ class SIRModel < Model {
       // the initial state is set in the input file
     } else {
       let n <- s[t - 1] + i[t - 1] + r[t - 1];  // total population
-      let τ ~ Binomial(s[t - 1], 1.0 - exp(-λ*Real(i[t - 1])/Real(n)));
+      let τ ~ Binomial(s[t - 1], 1.0 - exp(-λ*i[t - 1]/n));
       let Δi ~ Binomial(τ, δ);
       let Δr ~ Binomial(i[t - 1], γ);
 
