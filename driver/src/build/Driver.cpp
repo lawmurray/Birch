@@ -1156,44 +1156,48 @@ void birch::Driver::target(const std::string& cmd) {
    * portable, and means the command always returns success, even on fail
    * (consider pipefail); instead we use popen instead of system, and process
    * the output with regexes */
+  auto options = std::regex_constants::optimize;
   std::string name = "[αβγδεζηθικλμνξπρστυφχψωΓΔΘΛΞΠΣΥΦΨΩA-Za-z0-9_]+";
   std::string type = name;
   for (auto i = 0; i < 10; ++i) {
     type = name + "(?:<" + type + "(?:, *" + type + ")* *>)?(?:\\[[_,]+\\])?\\??";
   }
+  std::string generic = "<" + name + "(?:, *" + name + ")* *>";
 
-  std::regex rxWarnings("warning:");
-  std::regex rxNotes("note:|required by|required from|\\[with.*?\\]");
+  std::regex rxWarnings("warning:", options);
+  std::regex rxNotes("note:|required by|required from|\\[with.*?\\]", options);
 
-  std::regex rxSkipLine("In file included from|In function|In member function|In instantiation|instantiation contexts|^\\s*from|std::enable_if|At global scope:|type_traits");
-  std::regex rxNamespace("birch::type::|birch::|libbirch::");
-  std::regex rxCxxWords("\\b(?:virtual|auto|class|const|template(?= *<))\\b *");
-  std::regex rxTemplateParameter("template parameter");
-  std::regex rxTemplateArgument("template argument");
-  std::regex rxTypeDeduction("before deduction of ‘’");
-  std::regex rxReal("\\bdouble\\b");
-  std::regex rxInteger("\\blong int\\b");
-  std::regex rxBoolean("\\bbool\\b");
-  std::regex rxString("(?:const *)?std::(?:__cxx11::)?basic_string<char>");
-  std::regex rxVector("Array<(" + type + "), *Shape<Dimension<(?:0, *0)?>, *EmptyShape *> *> *");
-  std::regex rxVector2("DefaultArray<(" + type + "), *1> *");
-  std::regex rxMatrix("Array<(" + type + "), *Shape<Dimension<(?:0, *0)?>, Shape<Dimension<(?:0, *0)?>, *EmptyShape *> *> *> *");
-  std::regex rxMatrix2("DefaultArray<(" + type + "), *2> *");
-  std::regex rxShared("Shared<(" + type + ") *> *");
-  std::regex rxOptional("std::optional<(" + type + ") *>");
-  std::regex rxConstRef("(?:const *)?(" + type + ") *&");
-  std::regex rxThis("\\(\\(" + type + "\\*\\)this\\)->" + type + "::");
-  std::regex rxAka("\\{aka *‘?(class |const )?" + type + "’?\\} *");
-  std::regex rxValueType("using value_type = ");
-  std::regex rxDeref("(?:operator)?->");
-  std::regex rxAssign("‘(?:operator)?=‘");
-  std::regex rxNamespaceSep("::");
-  std::regex rxAuto("‘auto’");
-  std::regex rxProgram("In function ‘int ([A-Za-z0-9_]+)\\(int, char\\*\\*\\)’");
-  std::regex rxVoidFunction("void +(" + name + ")\\((.*?)\\)");
-  std::regex rxVoidMemberFunction("void +(" + type + ")\\.(" + name + ")\\((.*?)\\)");
-  std::regex rxFunction("(" + type + ") +(" + name + ")\\((.*?)\\)");
-  std::regex rxMemberFunction("(" + type + ") +(" + type + ")\\.(" + name + ")\\((.*?)\\)");
+  std::regex rxSkipLine("In file included from|In function|In member function|In instantiation|instantiation contexts|^\\s*from|std::enable_if|At global scope:|type_traits|\\.hpp", options);
+  std::regex rxNamespace("birch::type::|birch::|libbirch::", options);
+  std::regex rxCxxWords("\\b(?:virtual|class|const|template(?= *<))\\b *", options);
+  std::regex rxTemplateParameter("template parameter", options);
+  std::regex rxTemplateArgument("template argument", options);
+  std::regex rxTypeDeduction("before deduction of ‘’", options);
+  std::regex rxReal("\\bdouble\\b", options);
+  std::regex rxInteger("\\blong int\\b, options");
+  std::regex rxBoolean("\\bbool\\b", options);
+  std::regex rxString("(?:const *)?std::(?:__cxx11::)?basic_string<char>", options);
+  std::regex rxVector("Array<(" + type + "), *Shape<Dimension<(?:0, *0)?>, *EmptyShape *> *>", options);
+  std::regex rxVector2("DefaultArray<(" + type + "), *1>", options);
+  std::regex rxMatrix("Array<(" + type + "), *Shape<Dimension<(?:0, *0)?>, Shape<Dimension<(?:0, *0)?>, *EmptyShape *> *> *>", options);
+  std::regex rxMatrix2("DefaultArray<(" + type + "), *2>", options);
+  std::regex rxShared("Shared<(" + type + ") *>", options);
+  std::regex rxOptional("std::optional<(" + type + ") *>", options);
+  std::regex rxConstRef("(?:const *)?(" + type + ") *&", options);
+  std::regex rxThis("\\(\\(" + type + "\\*\\)this\\)->" + type + "::", options);
+  std::regex rxAka("\\{aka *‘?(class |const )?" + type + "’?\\}", options);
+  std::regex rxValueType("using value_type *= *", options);
+  std::regex rxDeref("(?:operator)?->", options);
+  std::regex rxAssign("‘(?:operator)?=‘", options);
+  std::regex rxNamespaceSep("::", options);
+  std::regex rxAuto("‘auto’", options);
+  std::regex rxProgram("In function ‘int ([A-Za-z0-9_]+)\\(int, *char\\*\\*\\)’", options);
+  std::regex rxVoidFunction("‘((?:" + generic + ")?) *void +(" + name + ")\\((.*?)\\)( *\\[with.+\\])?’", options);
+  std::regex rxVoidMemberFunction("‘((?:" + generic + ")?) *void +(" + type + ")\\.(" + name + ")\\((.*?)\\)( *\\[with.+\\])?’", options);
+  std::regex rxAutoFunction("‘((?:" + generic + ")?) *auto +(" + name + ")\\((.*?)\\)( *\\[with.+\\])?’", options);
+  std::regex rxAutoMemberFunction("‘((?:" + generic + ")?) *auto +(" + type + ")\\.(" + name + ")\\((.*?)\\)( *\\[with.+\\])?’", options);
+  std::regex rxFunction("‘((?:" + generic + ")?) *(" + type + ") +(" + name + ")\\((.*?)\\)( *\\[with.+\\])?’", options);
+  std::regex rxMemberFunction("‘((?:" + generic + ")?) *(" + type + ") +(" + type + ")\\.(" + name + ")\\((.*?)\\)( *\\[with.+\\])?’", options);
 
   FILE* pipe = popen(buf.str().c_str(), "r");
   if (pipe) {
@@ -1247,10 +1251,12 @@ void birch::Driver::target(const std::string& cmd) {
         str = std::regex_replace(str, rxProgram, "In program ‘$1’");
 
         /* function return type syntax */
-        str = std::regex_replace(str, rxVoidFunction, "$1($2)");
-        str = std::regex_replace(str, rxVoidMemberFunction, "$1.$2($3)");
-        str = std::regex_replace(str, rxFunction, "$2($3) -> $1");
-        str = std::regex_replace(str, rxMemberFunction, "$2.$3($4) -> $1");
+        str = std::regex_replace(str, rxVoidFunction, "‘$2$1($3)$4’");
+        str = std::regex_replace(str, rxVoidMemberFunction, "‘$2.$3$1($4)$5’");
+        str = std::regex_replace(str, rxAutoFunction, "‘$2$1($3) -> $4’");
+        str = std::regex_replace(str, rxAutoMemberFunction, "‘$2.$3$1($4) -> $5’");
+        str = std::regex_replace(str, rxFunction, "‘$3$1($4) -> $2$5’");
+        str = std::regex_replace(str, rxMemberFunction, "‘$3.$4$1($5) -> $2$6’");
       }
       if ((warnings || !std::regex_search(str, rxWarnings)) &&
           (notes || !std::regex_search(str, rxNotes)) &&
