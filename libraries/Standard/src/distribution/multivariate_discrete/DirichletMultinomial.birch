@@ -106,11 +106,5 @@ function logpdf_dirichlet_multinomial(x:Integer[_], n:Integer, α:Real[_]) -> Re
 function update_dirichlet_multinomial(x:Integer[_], n:Integer, α:Real[_]) ->
     Real[_] {
   assert sum(x) == n;
-  /* @todo mixed type vector operations no longer supported, do
-   * element-wise for now */
-  let α' <- α;
-  for i in 1..length(α) {
-    α'[i] <- α[i] + x[i];
-  }
-  return α';
+  return vector(\(i:Integer) -> Real { return α[i] + x[i]; }, length(α));
 }

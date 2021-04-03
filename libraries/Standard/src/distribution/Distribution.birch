@@ -82,11 +82,6 @@ abstract class Distribution<Value> < DelayDistribution {
     } else {
       x <- simulate();
     }
-
-    /// @todo Workaround for now, either v!.setValue() or unlink() may
-    /// remove the last reference to this, create an additional on the stack
-    tmp:Distribution<Value> <- this;
-
     if v? {
       v!.move(x!);
     }

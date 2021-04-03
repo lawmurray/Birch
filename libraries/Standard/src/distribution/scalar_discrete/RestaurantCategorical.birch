@@ -30,7 +30,6 @@ final class RestaurantCategorical(ρ:Restaurant) < Distribution<Integer> {
   function update(x:Integer) {
     assert x <= ρ.K + 1;
     if (x == ρ.K + 1) {
-      ///@todo use realloc on array
       n1:Integer[ρ.K + 1];
       n1[1..ρ.K] <- ρ.n;
       n1[x] <- 1;
