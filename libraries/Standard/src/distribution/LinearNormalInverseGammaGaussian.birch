@@ -81,3 +81,161 @@ function LinearNormalInverseGammaGaussian<Left,Right>(a:Left, μ:NormalInverseGa
   m.link();
   return m;
 }
+
+/*
+ * Simulate a Gaussian distribution with a normal inverse-gamma prior.
+ *
+ * - a: Scale.
+ * - μ: Mean.
+ * - a2: Variance.
+ * - c: Offset.
+ * - α: Shape of the inverse-gamma.
+ * - β: Scale of the inverse-gamma.
+ */
+function simulate_linear_normal_inverse_gamma_gaussian(a:Real, μ:Real,
+    a2:Real, c:Real, α:Real, β:Real) -> Real {
+  return simulate_student_t(2.0*α, a*μ + c, 2.0*β*(1.0 + a*a*a2));
+}
+
+/*
+ * Observe a Gaussian variate with a normal inverse-gamma prior with linear
+ * transformation.
+ *
+ * - x: The variate.
+ * - a: Scale.
+ * - μ: Mean.
+ * - a2: Variance.
+ * - c: Offset.
+ * - α: Shape of the inverse-gamma.
+ * - β: Scale of the inverse-gamma.
+ *
+ * Returns: the log probability density.
+ */
+function logpdf_linear_normal_inverse_gamma_gaussian(x:Real, a:Real,
+    μ:Real, a2:Real, c:Real, α:Real, β:Real) -> Real {
+  return logpdf_student_t(x, 2.0*α, a*μ + c, 2.0*β*(1.0 + a*a*a2));
+}
+
+/*
+ * Observe a Gaussian variate with a normal inverse-gamma prior with linear
+ * transformation.
+ *
+ * - x: The variate.
+ * - a: Scale.
+ * - μ: Mean.
+ * - a2: Variance.
+ * - c: Offset.
+ * - α: Shape of the inverse-gamma.
+ * - β: Scale of the inverse-gamma.
+ *
+ * Returns: the log probability density.
+ */
+function logpdf_lazy_linear_normal_inverse_gamma_gaussian(x:Expression<Real>, a:Expression<Real>,
+    μ:Expression<Real>, a2:Expression<Real>, c:Expression<Real>, α:Expression<Real>, β:Expression<Real>) -> Expression<Real> {
+  return logpdf_lazy_student_t(x, box(2.0*α), box(a*μ + c), box(2.0*β*(1.0 + a*a*a2)));
+}
+
+/*
+ * Update the parameters of a normal inverse-gamma distribution with a
+ * Gaussian likelihood.
+ *
+ * - x: The variate.
+ * - a: Scale.
+ * - μ: Prior mean.
+ * - λ: Prior precision.
+ * - c: Offset.
+ * - α: Prior shape of the inverse-gamma.
+ * - β: Prior scale of the inverse-gamma.
+ *
+ * Returns: the posterior hyperparameters `μ'`, `λ'`, `α'` and `β'`.
+ */
+function update_linear_normal_inverse_gamma_gaussian(x:Real, a:Real,
+    μ:Real, λ:Real, c:Real, α:Real, β:Real) -> (Real, Real, Real, Real) {
+  let y <- x - c;
+  let λ' <- λ + a*a;
+  let μ' <- (λ*μ + a*y)/λ';
+  let α' <- α + 0.5;
+  let β' <- β + 0.5*(y*y + μ*μ*λ - μ'*μ'*λ');
+  
+  return (μ', λ', α', β');
+}
+
+/*
+ * Update the parameters of a normal inverse-gamma distribution with a
+ * Gaussian likelihood.
+ *
+ * - x: The variate.
+ * - a: Scale.
+ * - μ: Prior mean.
+ * - λ: Prior precision.
+ * - c: Offset.
+ * - α: Prior shape of the inverse-gamma.
+ * - β: Prior scale of the inverse-gamma.
+ *
+ * Returns: the posterior hyperparameters `μ'`, `λ'`, `α'` and `β'`.
+ */
+function update_lazy_linear_normal_inverse_gamma_gaussian(x:Expression<Real>,
+    a:Expression<Real>, μ:Expression<Real>, λ:Expression<Real>,
+    c:Expression<Real>, α:Expression<Real>, β:Expression<Real>) ->
+    (Expression<Real>, Expression<Real>, Expression<Real>, Expression<Real>) {
+  let y <- x - c;
+  let λ' <- λ + a*a;
+  let μ' <- (λ*μ + a*y)/λ';
+  let α' <- α + 0.5;
+  let β' <- β + 0.5*(y*y + μ*μ*λ - μ'*μ'*λ');
+  return (box(μ'), box(λ'), box(α'), box(β'));
+}
+
+/*
+ * CDF of a Gaussian variate with a normal inverse-gamma prior with linear
+ * transformation.
+ *
+ * - x: The variate.
+ * - a: Scale.
+ * - μ: Mean.
+ * - a2: Variance.
+ * - c: Offset.
+ * - α: Shape of the inverse-gamma.
+ * - β: Scale of the inverse-gamma.
+ *
+ * Return: the cumulative probability.
+ */
+function cdf_linear_normal_inverse_gamma_gaussian(x:Real, a:Real,
+    μ:Real, a2:Real, c:Real, α:Real, β:Real) -> Real {
+  return cdf_student_t(x, 2.0*α, a*μ + c, 2.0*β*(1.0 + a*a*a2));
+}
+
+/*
+ * Quantile of a Gaussian distribution with a normal inverse-gamma prior.
+ *
+ * - P: The cumulative probability.
+ * - μ: Mean.
+ * - a2: Variance.
+ * - α: Shape of the inverse-gamma.
+ * - β: Scale of the inverse-gamma.
+ *
+ * Return: the quantile.
+ */
+function quantile_normal_inverse_gamma_gaussian(P:Real, μ:Real, a2:Real,
+    α:Real, β:Real) -> Real {
+  return quantile_student_t(P, 2.0*α, μ, (β/α)*(1.0 + a2));
+}
+
+/*
+ * Quantile of a Gaussian distribution with a normal inverse-gamma prior with
+ * linear transformation.
+ *
+ * - P: The cumulative probability.
+ * - a: Scale.
+ * - μ: Mean.
+ * - a2: Variance.
+ * - c: Offset.
+ * - α: Shape of the inverse-gamma.
+ * - β: Scale of the inverse-gamma.
+ *
+ * Return: the quantile.
+ */
+function quantile_linear_normal_inverse_gamma_gaussian(P:Real, a:Real,
+    μ:Real, a2:Real, c:Real, α:Real, β:Real) -> Real {
+  return quantile_student_t(P, 2.0*α, a*μ + c, (β/α)*(1.0 + a*a*a2));
+}

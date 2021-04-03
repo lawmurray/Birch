@@ -61,3 +61,107 @@ function GammaPoisson(λ:Gamma) -> GammaPoisson {
   m.link();
   return m;
 }
+
+/*
+ * Simulate a gamma-Poisson distribution.
+ *
+ * - k: Shape.
+ * - θ: Scale.
+ */
+function simulate_gamma_poisson(k:Real, θ:Real) -> Integer {
+  assert 0.0 < k;
+  assert 0.0 < θ;
+  assert k == floor(k);
+  
+  return simulate_negative_binomial(scalar<Integer>(k), 1.0/(θ + 1.0));
+}
+
+/*
+ * Observe a gamma-Poisson variate.
+ *
+ * - x: The variate.
+ * - k: Shape.
+ * - θ: Scale.
+ *
+ * Returns: the log probability mass.
+ */
+function logpdf_gamma_poisson(x:Integer, k:Real, θ:Real) -> Real {
+  assert 0.0 < k;
+  assert 0.0 < θ;
+  assert k == floor(k);
+
+  return logpdf_negative_binomial(x, scalar<Integer>(k), 1.0/(θ + 1.0));
+}
+
+/*
+ * Observe a gamma-Poisson variate.
+ *
+ * - x: The variate.
+ * - k: Shape.
+ * - θ: Scale.
+ *
+ * Returns: the log probability mass.
+ */
+function logpdf_lazy_gamma_poisson(x:Expression<Integer>, k:Expression<Real>, θ:Expression<Real>) -> Expression<Real> {
+  return logpdf_lazy_negative_binomial(x, box(scalar<Integer>(k)), box(1.0/(θ + 1.0)));
+}
+
+/*
+ * Update the parameters of a Gamma distribution with a Poisson likelihood.
+ *
+ * - x: The variate.
+ * - k: Prior shape.
+ * - θ: Prior scale.
+ *
+ * Returns: the posterior hyperparameters `k'` and `θ'`.
+ */
+function update_gamma_poisson(x:Integer, k:Real, θ:Real) -> (Real, Real) {
+  return (k + x, θ/(θ + 1.0));
+}
+
+/*
+ * Update the parameters of a Gamma distribution with a Poisson likelihood.
+ *
+ * - x: The variate.
+ * - k: Prior shape.
+ * - θ: Prior scale.
+ *
+ * Returns: the posterior hyperparameters `k'` and `θ'`.
+ */
+function update_lazy_gamma_poisson(x:Expression<Integer>, k:Expression<Real>,
+    θ:Expression<Real>) -> (Expression<Real>, Expression<Real>) {
+  return (box(k + x), box(θ/(θ + 1.0)));
+}
+
+/*
+ * CDF of a gamma-Poisson variate.
+ *
+ * - x: The variate.
+ * - k: Shape.
+ * - θ: Scale.
+ *
+ * Return: the cumulative probability.
+ */
+function cdf_gamma_poisson(x:Integer, k:Real, θ:Real) -> Real {
+  assert 0.0 < k;
+  assert 0.0 < θ;
+  assert k == floor(k);
+
+  return cdf_negative_binomial(x, scalar<Integer>(k), 1.0/(θ + 1.0));
+}
+
+/*
+ * Quantile of a gamma-Poisson distribution.
+ *
+ * - P: The cumulative probability.
+ * - k: Shape.
+ * - θ: Scale.
+ *
+ * Return: the quantile.
+ */
+function quantile_gamma_poisson(P:Real, k:Real, θ:Real) -> Integer {
+  assert 0.0 < k;
+  assert 0.0 < θ;
+  assert k == floor(k);
+  return quantile_negative_binomial(P, scalar<Integer>(k), 1.0/(θ + 1.0));
+}

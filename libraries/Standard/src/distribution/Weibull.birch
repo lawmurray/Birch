@@ -59,3 +59,82 @@ final class Weibull(k:Expression<Real>, λ:Expression<Real>) <
 function Weibull<Left,Right>(k:Left, λ:Right) -> {
   return construct<Weibull>(box(k), box(λ));
 }
+
+/*
+ * Simulate an Weibull distribution.
+ *
+ * - k: Shape.
+ * - λ: Scale.
+ */
+function simulate_weibull(k:Real, λ:Real) -> Real {
+  assert 0.0 < k;
+  assert 0.0 < λ;
+  cpp{{
+  return std::weibull_distribution<birch::type::Real>(k, λ)(rng);
+  }}
+}
+
+/*
+ * Observe a Weibull variate.
+ *
+ * - x: The variate.
+ * - k: Shape.
+ * - λ: Scale.
+ *
+ * Returns: the log probability density.
+ */
+function logpdf_weibull(x:Real, k:Real, λ:Real) -> Real {
+  assert 0.0 < λ;
+  return if_then_else(x < 0.0, -inf, log(k) + (k - 1.0)*log(x) -
+      k*log(λ) - pow(x/λ, k));
+}
+
+/*
+ * Observe a Weibull variate.
+ *
+ * - x: The variate.
+ * - k: Shape.
+ * - λ: Scale.
+ *
+ * Returns: the log probability density.
+ */
+function logpdf_lazy_weibull(x:Expression<Real>, k:Expression<Real>, λ:Expression<Real>) -> Expression<Real> {
+  return box(if_then_else(x < 0.0, -inf, log(k) + (k - 1.0)*log(x) - k*log(λ) -
+      pow(x/λ, k)));
+}
+
+/*
+ * CDF of a Weibull variate.
+ *
+ * - x: The variate.
+ * - k: Shape.
+ * - λ: Scale.
+ *
+ * Return: the cumulative probability.
+ */
+function cdf_weibull(x:Real, k:Real, λ:Real) -> Real {
+  assert 0.0 < k;
+  assert 0.0 < λ;
+  if (x >= 0) {
+    return -expm1(-pow(x/λ, k));
+  } else {
+    return 0;
+  }
+}
+
+/*
+ * Quantile of a Weibull distribution.
+ *
+ * - P: The cumulative probability.
+ * - k: Shape.
+ * - λ: Scale.
+ *
+ * Return: the quantile.
+ */
+function quantile_weibull(P:Real, k:Real, λ:Real) -> Real {
+  assert 0.0 < k;
+  assert 0.0 < λ;
+  cpp{{
+  return boost::math::quantile(boost::math::weibull_distribution<>(k, λ), P);
+  }}
+}

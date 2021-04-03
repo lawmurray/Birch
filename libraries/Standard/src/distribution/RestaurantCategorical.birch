@@ -60,3 +60,61 @@ function RestaurantCategorical(ρ:Restaurant) -> RestaurantCategorical {
   m.link();
   return m;
 }
+
+/*
+ * Simulate a categorical distribution with Chinese restaurant process
+ * prior.
+ *
+ * - α: Concentration.
+ * - θ: Discount.
+ * - n: Enumerated items.
+ * - N: Total number of items.
+ */
+function simulate_crp_categorical(α:Real, θ:Real, n:Integer[_],
+    N:Integer) -> Integer {
+  assert N >= 0;
+  assert sum(n) == N;
+
+  k:Integer <- 0;
+  K:Integer <- length(n);
+  if (N == 0) {
+    /* first component */
+    k <- 1;
+  } else {
+    u:Real <- simulate_uniform(0.0, N + θ);
+    U:Real <- K*α + θ;
+    if (u < U) {
+      /* new component */
+      k <- K + 1;
+    } else {
+      /* existing component */
+      while (k < K && u > U) {
+        k <- k + 1;
+        U <- U + n[k] - α;
+      }
+    }
+  }
+  return k;
+}
+
+/*
+ * Observe a categorical variate with Chinese restaurant process
+ * prior.
+ *
+ * - x: The variate.
+ * - α: Concentration.
+ * - θ: Discount.
+ * - n: Enumerated items.
+ * - N: Total number of items.
+ */
+function logpdf_crp_categorical(k:Integer, α:Real, θ:Real,
+    n:Integer[_], N:Integer) -> Real {
+  K:Integer <- length(n);
+  if (k > K + 1) {
+    return -inf;
+  } else if (k == K + 1) {
+    return log(K*α + θ) - log(N + θ);
+  } else {
+    return log(n[k] - α) - log(N + θ);
+  }
+}

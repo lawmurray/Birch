@@ -63,3 +63,70 @@ final class Uniform(l:Expression<Real>, u:Expression<Real>) <
 function Uniform<Left,Right>(l:Left, u:Right) -> {
   return construct<Uniform>(box(l), box(u));
 }
+
+/*
+ * Simulate a uniform distribution.
+ *
+ * - l: Lower bound of interval.
+ * - u: Upper bound of interval.
+ */
+function simulate_uniform(l:Real, u:Real) -> Real {
+  assert l <= u;
+  cpp{{
+  return std::uniform_real_distribution<birch::type::Real>(l, u)(rng);
+  }}
+}
+
+/*
+ * Observe a uniform variate.
+ *
+ * - x: The variate.
+ * - l: Lower bound of interval.
+ * - u: Upper bound of interval.
+ *
+ * Returns: the log probability density.
+ */
+function logpdf_uniform(x:Real, l:Real, u:Real) -> Real {
+  assert l <= u;
+
+  if (x >= l && x <= u) {
+    return -log(u - l);
+  } else {
+    return -inf;
+  }
+}
+
+/*
+ * CDF of a uniform variate.
+ *
+ * - x: The variate.
+ * - l: Lower bound of interval.
+ * - u: Upper bound of interval.
+ *
+ * Return: the cumulative probability.
+ */
+function cdf_uniform(x:Real, l:Real, u:Real) -> Real {
+  assert l <= u;
+
+  if x <= l {
+    return 0.0;
+  } else if x > u {
+    return 1.0;
+  } else {
+    return (x - l)/(u - l);
+  }
+}
+
+/*
+ * Quantile of a uniform distribution.
+ *
+ * - P: The cumulative probability.
+ * - l: Lower bound of interval.
+ * - u: Upper bound of interval.
+ *
+ * Return: the quantile.
+ */
+function quantile_uniform(P:Real, l:Real, u:Real) -> Real {
+  assert l <= u;
+  return l + P*(u - l);
+}

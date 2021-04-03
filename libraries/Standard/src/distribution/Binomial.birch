@@ -75,3 +75,95 @@ function Binomial<Left>(n:Left, ρ:Random<Real>) -> Distribution<Integer> {
     return construct<Binomial>(box(n), ρ);
   }
 }
+
+/*
+ * Simulate a binomial distribution.
+ *
+ * - n: Number of trials.
+ * - ρ: Probability of a true result.
+ */
+function simulate_binomial(n:Integer, ρ:Real) -> Integer {
+  assert 0 <= n;
+  assert 0.0 <= ρ && ρ <= 1.0;
+  cpp{{
+  return std::binomial_distribution<birch::type::Integer>(n, ρ)(rng);
+  }}
+}
+
+/*
+ * Observe a binomial variate.
+ *
+ * - x: The variate.
+ * - n: Number of trials.
+ * - ρ: Probability of a true result.
+ *
+ * Returns: the log probability mass.
+ */
+function logpdf_binomial(x:Integer, n:Integer, ρ:Real) -> Real {
+  assert 0 <= n;
+  assert 0.0 <= ρ && ρ <= 1.0;
+
+  if ρ == 0.0 || ρ == 1.0 {
+    if x == n*ρ {
+      return 0.0;
+    } else {
+      return -inf;
+    }
+  } else if 0 <= x && x <= n {
+    return x*log(ρ) + (n - x)*log1p(-ρ) + lchoose(n, x);
+  } else {
+    return -inf;
+  }
+}
+
+/*
+ * Observe a binomial variate.
+ *
+ * - x: The variate.
+ * - n: Number of trials.
+ * - ρ: Probability of a true result.
+ *
+ * Returns: the log probability mass.
+ */
+function logpdf_lazy_binomial(x:Expression<Integer>, n:Expression<Integer>, ρ:Expression<Real>) -> Expression<Real> {
+  return box(x*log(ρ) + (n - x)*log1p(-ρ) + lchoose(n, x));
+}
+
+/*
+ * CDF of a binomial variate.
+ *
+ * - x: The variate.
+ * - n: Number of trials.
+ * - ρ: Probability of a true result.
+ *
+ * Return: the cumulative probability.
+ */
+function cdf_binomial(x:Integer, n:Integer, ρ:Real) -> Real {
+  assert 0 <= n;
+  assert 0.0 <= ρ && ρ <= 1.0;
+
+  if x < 0 {
+    return 0.0;
+  } else if x > n {
+    return 1.0;
+  } else {
+    return ibeta(n - x, x + 1.0, 1.0 - ρ);
+  }
+}
+
+/*
+ * Quantile of a binomial distribution.
+ *
+ * - P: The cumulative probability.
+ * - n: Number of trials.
+ * - ρ: Probability of a true result.
+ *
+ * Return: the quantile.
+ */
+function quantile_binomial(P:Real, n:Integer, ρ:Real) -> Integer {
+  assert 0 <= n;
+  assert 0.0 <= ρ && ρ <= 1.0;
+  cpp{{
+  return boost::math::quantile(boost::math::binomial_distribution<>(n, ρ), P);
+  }}
+}

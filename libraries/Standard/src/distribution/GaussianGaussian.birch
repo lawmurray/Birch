@@ -35,3 +35,44 @@ function GaussianGaussian<Right>(μ:Gaussian, σ2:Right) -> {
   m.link();
   return m;
 }
+
+/*
+ * Update the parameters of a Gaussian distribution with a Gaussian
+ * likelihood.
+ *
+ * - x: The variate.
+ * - μ: Prior mean.
+ * - σ2: Prior variance.
+ * - s2: Likelihood variance.
+ *
+ * Returns: the posterior hyperparameters `μ'` and `σ2'`.
+ */
+function update_gaussian_gaussian(x:Real, μ:Real, σ2:Real, s2:Real) ->
+    (Real, Real) {
+  let λ <- 1.0/σ2;
+  let l <- 1.0/s2;
+  let λ' <- λ + l;
+  let μ' <- (λ*μ + l*x)/λ';
+  return (μ', 1.0/λ');
+}
+
+/*
+ * Update the parameters of a Gaussian distribution with a Gaussian
+ * likelihood.
+ *
+ * - x: The variate.
+ * - μ: Prior mean.
+ * - σ2: Prior variance.
+ * - s2: Likelihood variance.
+ *
+ * Returns: the posterior hyperparameters `μ'` and `σ2'`.
+ */
+function update_lazy_gaussian_gaussian(x:Expression<Real>,
+    μ:Expression<Real>, σ2:Expression<Real>, s2:Expression<Real>) ->
+    (Expression<Real>, Expression<Real>) {
+  let λ <- 1.0/σ2;
+  let l <- 1.0/s2;
+  let λ' <- λ + l;
+  let μ' <- (λ*μ + l*x)/λ';
+  return (box(μ'), box(1.0/λ'));
+}

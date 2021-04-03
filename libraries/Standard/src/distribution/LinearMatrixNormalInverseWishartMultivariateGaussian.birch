@@ -74,3 +74,123 @@ function LinearMatrixNormalInverseWishartMultivariateGaussian<Left,Right>(a:Left
   m.link();
   return m;
 }
+
+/*
+ * Simulate a Gaussian distribution with linear transformation of a
+ * matrix-normal-inverse-Wishart prior.
+ *
+ * - a: Scale.
+ * - N: Precision times mean matrix.
+ * - Λ: Precision.
+ * - c: Offset.
+ * - Ψ: Variance shape.
+ * - k: Degrees of freedom.
+ */
+function simulate_linear_matrix_normal_inverse_wishart_multivariate_gaussian(
+    a:Real[_], N:Real[_,_], Λ:Real[_,_], c:Real[_], Ψ:Real[_,_], k:Real) -> Real[_] {
+  let p <- columns(N);
+  let M <- solve(Λ, N);
+  let σ2 <- 1.0 + dot(a, solve(Λ, a));
+  return simulate_multivariate_student_t(k - p + 1.0, dot(a, M) + c, σ2, Ψ);
+}
+
+/*
+ * Observe a Gaussian variate with linear transformation of a
+ * matrix-normal-inverse-Wishart prior.
+ *
+ * - x: The variate.
+ * - a: Scale.
+ * - N: Prior precision times mean matrix.
+ * - Λ: Prior precision.
+ * - c: Offset.
+ * - Ψ: Prior variance shape.
+ * - k: Prior degrees of freedom.
+ *
+ * Returns: the log probability density.
+ */
+function logpdf_linear_matrix_normal_inverse_wishart_multivariate_gaussian(
+    x:Real[_], a:Real[_], N:Real[_,_], Λ:Real[_,_], c:Real[_], Ψ:Real[_,_], k:Real) ->
+    Real {
+  let p <- columns(N);
+  let M <- solve(Λ, N);
+  let σ2 <- 1.0 + dot(a, solve(Λ, a));
+  return logpdf_multivariate_student_t(x, k - p + 1.0, dot(a, M) + c, σ2, Ψ);
+}
+
+/*
+ * Observe a Gaussian variate with linear transformation of a
+ * matrix-normal-inverse-Wishart prior.
+ *
+ * - x: The variate.
+ * - a: Scale.
+ * - N: Prior precision times mean matrix.
+ * - Λ: Prior precision.
+ * - c: Offset.
+ * - Ψ: Prior variance shape.
+ * - k: Prior degrees of freedom.
+ *
+ * Returns: the log probability density.
+ */
+function logpdf_lazy_linear_matrix_normal_inverse_wishart_multivariate_gaussian(
+    x:Expression<Real[_]>, a:Expression<Real[_]>, N:Expression<Real[_,_]>,
+    Λ:Expression<Real[_,_]>, c:Expression<Real[_]>, Ψ:Expression<Real[_,_]>,
+    k:Expression<Real>) -> Expression<Real> {
+  let p <- columns(N);
+  let M <- solve(Λ, N);
+  let σ2 <- 1.0 + dot(a, solve(Λ, a));
+  return logpdf_lazy_multivariate_student_t(x, box(k - p + 1.0), box(dot(a, M) + c), box(σ2), Ψ);
+}
+
+/*
+ * Update the parameters of a Gaussian variate with linear transformation
+ * of matrix-normal-inverse-Wishart prior.
+ *
+ * - x: The variate.
+ * - N: Prior precision times mean matrix.
+ * - Λ: Prior precision.
+ * - a: Scale.
+ * - c: Offset.
+ * - V: Prior variance shape.
+ * - k: Prior degrees of freedom.
+ *
+ * Returns: the posterior hyperparameters `N'`, `Λ'`, `V'` and `k'`.
+ */
+function update_linear_matrix_normal_inverse_wishart_multivariate_gaussian(
+    x:Real[_], a:Real[_], N:Real[_,_], Λ:Real[_,_], c:Real[_], V:Real[_,_], k:Real) ->
+    (Real[_,_], Real[_,_], Real[_,_], Real) {
+  let Λ' <- rank_update(Λ, a);
+  let N' <- N + outer(a, x - c);
+  let M <- solve(Λ, N);
+  let M' <- solve(Λ', N');
+  let V' <- V + outer(x - dot(a, M') - c) + transpose(M' - M)*Λ*(M' - M);
+  let k' <- k + 1;
+  return (N', Λ', V', k');
+}
+
+/*
+ * Update the parameters of a Gaussian variate with linear transformation
+ * of matrix-normal-inverse-Wishart prior.
+ *
+ * - x: The variate.
+ * - a: Scale.
+ * - N: Prior precision times mean matrix.
+ * - Λ: Prior precision.
+ * - c: Offset.
+ * - V: Prior variance shape.
+ * - k: Prior degrees of freedom.
+ *
+ * Returns: the posterior hyperparameters `N'`, `Λ'`, `V'` and `k'`.
+ */
+function update_lazy_linear_matrix_normal_inverse_wishart_multivariate_gaussian(
+    x:Expression<Real[_]>, a:Expression<Real[_]>, N:Expression<Real[_,_]>,
+    Λ:Expression<Real[_,_]>, c:Expression<Real[_]>, V:Expression<Real[_,_]>,
+    k:Expression<Real>) -> (Expression<Real[_,_]>, Expression<Real[_,_]>,
+    Expression<Real[_,_]>, Expression<Real>) {
+  let Λ' <- rank_update(Λ, a);
+  let N' <- N + outer(a, x - c);
+  let M <- solve(Λ, N);
+  let M' <- solve(Λ', N');
+  let V' <- V + outer(x - c) + transpose(M)*N - transpose(M')*N';
+  let k' <- k + 1.0;
+  return (box(N'), box(Λ'), box(V'), box(k'));
+}

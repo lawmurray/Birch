@@ -64,3 +64,85 @@ final class InverseGamma(α:Expression<Real>, β:Expression<Real>) <
 function InverseGamma<Left,Right>(α:Left, β:Right) -> {
   return construct<InverseGamma>(box(α), box(β));
 }
+
+/*
+ * Simulate an inverse-gamma distribution.
+ *
+ * - α: Shape.
+ * - β: Scale.
+ */
+function simulate_inverse_gamma(α:Real, β:Real) -> Real {
+  return 1.0/simulate_gamma(α, 1.0/β);
+}
+
+/*
+ * Observe an inverse-gamma variate.
+ *
+ * - x: The variate.
+ * - α: Shape.
+ * - β: Scale.
+ *
+ * Returns: the log probability density.
+ */
+function logpdf_inverse_gamma(x:Real, α:Real, β:Real) -> Real {
+  assert 0.0 < α;
+  assert 0.0 < β;
+  return if_then_else(x < 0.0, -inf, α*log(β) - (α + 1.0)*log(x) - β/x -
+      lgamma(α));
+}
+
+
+/*
+ * Observe an inverse-gamma variate.
+ *
+ * - x: The variate.
+ * - α: Shape.
+ * - β: Scale.
+ *
+ * Returns: the log probability density.
+ */
+function logpdf_lazy_inverse_gamma(x:Expression<Real>, α:Expression<Real>, β:Expression<Real>) -> Expression<Real> {
+  return box(if_then_else(x < 0.0, -inf, α*log(β) - (α + 1.0)*log(x) - β/x -
+      lgamma(α)));
+}
+
+/*
+ * CDF of an inverse-gamma variate.
+ *
+ * - x: The variate.
+ * - α: Shape.
+ * - β: Scale.
+ *
+ * Return: the cumulative probability.
+ */
+function cdf_inverse_gamma(x:Real, α:Real, β:Real) -> Real {
+  assert 0.0 < α;
+  assert 0.0 < β;
+
+  if x <= 0.0 {
+    return 0.0;
+  } else {
+    return upper_inc_gamma(α, β/x);
+  }
+}
+
+/*
+ * Quantile of an inverse-gamma distribution.
+ *
+ * - P: The cumulative probability.
+ * - α: Shape.
+ * - β: Scale.
+ *
+ * Return: the quantile.
+ */
+function quantile_inverse_gamma(P:Real, α:Real, β:Real) -> Real {
+  assert 0.0 < α;
+  assert 0.0 < β;
+  if P == 0.0 {
+    return 0.0;
+  } else {
+    cpp{{
+    return boost::math::quantile(boost::math::inverse_gamma_distribution<>(α, β), P);
+    }}
+  }
+}

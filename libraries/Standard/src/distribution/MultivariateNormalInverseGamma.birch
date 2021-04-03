@@ -147,3 +147,87 @@ function gamma_to_beta(γ:Expression<Real>, ν:Expression<Real[_]>,
     Λ:Expression<Real[_,_]>) -> Expression<Real> {
   return box(γ - 0.5*dot(ν, solve(Λ, ν)));
 }
+
+/*
+ * Simulate a multivariate normal inverse-gamma distribution.
+ *
+ * - ν: Precision times mean.
+ * - Λ: Precision.
+ * - α: Shape of inverse-gamma on scale.
+ * - β: Scale of inverse-gamma on scale.
+ */
+function simulate_multivariate_normal_inverse_gamma(ν:Real[_], Λ:Real[_,_],
+    α:Real, β:Real) -> Real[_] {
+  return simulate_multivariate_student_t(2.0*α, solve(Λ, ν), inv(Λ), 2.0*β);
+}
+
+/*
+ * Observe a multivariate normal inverse-gamma variate.
+ *
+ * - x: The variate.
+ * - ν: Precision times mean.
+ * - Λ: Precision.
+ * - α: Shape of inverse-gamma on scale.
+ * - β: Scale of inverse-gamma on scale.
+ *
+ * Returns: the log probability density.
+ */
+function logpdf_multivariate_normal_inverse_gamma(x:Real[_], ν:Real[_],
+    Λ:Real[_,_], α:Real, β:Real) -> Real {
+  return logpdf_multivariate_student_t(x, 2.0*α, solve(Λ, ν), inv(Λ), 2.0*β);
+}
+
+/*
+ * Observe a multivariate normal inverse-gamma variate.
+ *
+ * - x: The variate.
+ * - ν: Precision times mean.
+ * - Λ: Precision.
+ * - α: Shape of inverse-gamma on scale.
+ * - β: Scale of inverse-gamma on scale.
+ *
+ * Returns: the log probability density.
+ */
+function logpdf_lazy_multivariate_normal_inverse_gamma(x:Expression<Real[_]>, ν:Expression<Real[_]>,
+    Λ:Expression<Real[_,_]>, α:Expression<Real>, β:Expression<Real>) -> Expression<Real> {
+  return logpdf_lazy_multivariate_student_t(x, box(2.0*α), box(solve(Λ, ν)), box(inv(Λ)), box(2.0*β));
+}
+
+/*
+ * Update the parameters of an inverse-gamma distribution with a linear
+ * scaling and Gaussian likelihood.
+ *
+ * - x: The variate.
+ * - ν: Precision times mean.
+ * - Λ: Precision.
+ * - α: Prior shape of the inverse-gamma.
+ * - β: Prior scale of the inverse-gamma.
+ *
+ * Returns: the posterior hyperparameters `α'` and `β'`.
+ */
+function update_multivariate_normal_inverse_gamma(x:Real[_], ν:Real[_],
+    Λ:Real[_,_], α:Real, β:Real) -> (Real, Real) {
+  let D <- length(x);
+  let μ <- solve(Λ, ν);
+  return (α + 0.5*D, β + 0.5*dot(x - μ, matrix<Real>(Λ)*(x - μ)));
+}
+
+/*
+ * Update the parameters of an inverse-gamma distribution with a linear
+ * scaling and Gaussian likelihood.
+ *
+ * - x: The variate.
+ * - ν: Precision times mean.
+ * - Λ: Precision.
+ * - α: Prior shape of the inverse-gamma.
+ * - β: Prior scale of the inverse-gamma.
+ *
+ * Returns: the posterior hyperparameters `α'` and `β'`.
+ */
+function update_lazy_multivariate_normal_inverse_gamma(x:Expression<Real[_]>,
+    ν:Expression<Real[_]>, Λ:Expression<Real[_,_]>, α:Expression<Real>,
+    β:Expression<Real>) -> (Expression<Real>, Expression<Real>) {
+  let D <- x.length();
+  let μ <- solve(Λ, ν);
+  return (box(α + 0.5*D), box(β + 0.5*dot(x - μ, matrix<Real>(Λ)*(x - μ))));
+}

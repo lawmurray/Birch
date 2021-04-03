@@ -49,3 +49,76 @@ function BetaBernoulli(ρ:Beta) -> BetaBernoulli {
   m.link();
   return m;
 }
+
+/*
+ * Simulate a beta-bernoulli distribution.
+ *
+ * - α: Shape.
+ * - β: Shape.
+ */
+function simulate_beta_bernoulli(α:Real, β:Real) -> Boolean {
+  assert 0.0 < α;
+  assert 0.0 < β;
+  
+  return simulate_bernoulli(simulate_beta(α, β));
+}
+
+/*
+ * Observe a beta-bernoulli variate.
+ *
+ * - x: The variate.
+ * - α: Shape.
+ * - β: Shape.
+ *
+ * Returns: the log probability mass.
+ */
+function logpdf_beta_bernoulli(x:Boolean, α:Real, β:Real) -> Real {
+  assert 0.0 < α;
+  assert 0.0 < β;
+  return if_then_else(x, log(α), log(β)) - log(α + β);
+}
+
+/*
+ * Observe a beta-bernoulli variate.
+ *
+ * - x: The variate.
+ * - α: Shape.
+ * - β: Shape.
+ *
+ * Returns: the log probability mass.
+ */
+function logpdf_lazy_beta_bernoulli(x:Expression<Boolean>, α:Expression<Real>, β:Expression<Real>) -> Expression<Real> {
+  return box(if_then_else(x, log(α), log(β)) - log(α + β));
+}
+
+/*
+ * Update the parameters of a Beta distribution with a Bernoulli likelihood.
+ *
+ * - x: The variate.
+ * - α: Prior first shape.
+ * - β: Prior second shape.
+ *
+ * Returns: the posterior hyperparameters `α'` and `β'`.
+ */
+function update_beta_bernoulli(x:Boolean, α:Real, β:Real) -> (Real, Real) {
+  if x {
+    return (α + 1.0, β);
+  } else {
+    return (α, β + 1.0);
+  }
+}
+
+/*
+ * Update the parameters of a Beta distribution with a Bernoulli likelihood.
+ *
+ * - x: The variate.
+ * - α: Prior first shape.
+ * - β: Prior second shape.
+ *
+ * Returns: the posterior hyperparameters `α'` and `β'`.
+ */
+function update_lazy_beta_bernoulli(x:Expression<Boolean>,
+    α:Expression<Real>, β:Expression<Real>) ->
+    (Expression<Real>, Expression<Real>) {
+  return (box(α + x), box(β + (1.0 - x)));
+}

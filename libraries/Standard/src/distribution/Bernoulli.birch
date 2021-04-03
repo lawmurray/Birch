@@ -52,3 +52,40 @@ function Bernoulli(ρ:Random<Real>) -> Distribution<Boolean> {
     return construct<Bernoulli>(ρ);
   }
 }
+
+/*
+ * Simulate a Bernoulli distribution.
+ *
+ * - ρ: Probability of a true result.
+ */
+function simulate_bernoulli(ρ:Real) -> Boolean {
+  assert 0.0 <= ρ && ρ <= 1.0;
+  cpp{{
+  return std::bernoulli_distribution(ρ)(rng);
+  }}
+}
+
+/*
+ * Observe a Bernoulli variate.
+ *
+ * - x: The variate.
+ * - ρ: Probability of a true result.
+ *
+ * Returns: the log probability mass.
+ */
+function logpdf_bernoulli(x:Boolean, ρ:Real) -> Real {
+  assert 0.0 <= ρ && ρ <= 1.0;
+  return if_then_else(x, log(ρ), log1p(-ρ));
+}
+
+/*
+ * Observe a Bernoulli variate.
+ *
+ * - x: The variate.
+ * - ρ: Probability of a true result.
+ *
+ * Returns: the log probability mass.
+ */
+function logpdf_lazy_bernoulli(x:Expression<Boolean>, ρ:Expression<Real>) -> Expression<Real> {
+  return box(if_then_else(x, log(ρ), log1p(-ρ)));
+}

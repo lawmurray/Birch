@@ -57,3 +57,44 @@ function DirichletCategorical(ρ:Dirichlet) -> DirichletCategorical {
   m.link();
   return m;
 }
+
+/*
+ * Simulate a Dirichlet-categorical distribution.
+ *
+ * - α: Concentrations.
+ */
+function simulate_dirichlet_categorical(α:Real[_]) -> Integer {
+  return simulate_categorical(simulate_dirichlet(α));
+}
+
+/*
+ * Observe a Dirichlet-categorical variate.
+ *
+ * - x: The variate.
+ * - α: Concentrations.
+ *
+ * Returns: the log probability mass.
+ */
+function logpdf_dirichlet_categorical(x:Integer, α:Real[_]) -> Real {
+  if (1 <= x && x <= length(α)) {
+    A:Real <- sum(α);
+    return lgamma(1.0 + α[x]) - lgamma(α[x]) + lgamma(A) - lgamma(1.0 + A);
+  } else {
+    return -inf;
+  }
+}
+
+/*
+ * Update the parameters of a Dirichlet distribution with a categorical
+ * likelihood.
+ *
+ * - x: The variate.
+ * - α: Prior concentrations.
+ *
+ * Returns: the posterior hyperparameters `α'`.
+ */
+function update_dirichlet_categorical(x:Integer, α:Real[_]) -> Real[_] {
+  let α' <- α;
+  α'[x] <- α'[x] + 1.0;
+  return α';
+}

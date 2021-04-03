@@ -61,3 +61,113 @@ function GammaExponential(λ:Gamma) -> GammaExponential {
   m.link();
   return m;
 }
+
+/*
+ * Simulate a Lomax distribution.
+ *
+ * - λ: Scale.
+ * - α: Shape.
+ */
+function simulate_lomax(λ:Real, α:Real) -> Real {
+  assert 0.0 < λ;
+  assert 0.0 < α;
+
+  u:Real <- simulate_uniform(0.0, 1.0);
+  return λ*(pow(u, -1.0/α)-1.0);
+}
+
+/*
+ * Observe of a Lomax variate.
+ *
+ * - x: The variate.
+ * - λ: Scale.
+ * - α: Shape.
+ *
+ * Return: the log probability density.
+ */
+function logpdf_lomax(x:Real, λ:Real, α:Real) -> Real {
+  assert 0.0 < λ;
+  assert 0.0 < α;
+  return if_then_else(x < 0.0, -inf, log(α) - log(λ) -
+      (α + 1.0)*log1p(x/λ));
+}
+
+/*
+ * Observe of a Lomax variate.
+ *
+ * - x: The variate.
+ * - λ: Scale.
+ * - α: Shape.
+ *
+ * Return: the log probability density.
+ */
+function logpdf_lazy_lomax(x:Expression<Real>, λ:Expression<Real>, α:Expression<Real>) -> Expression<Real> {
+  return box(if_then_else(x < 0.0, -inf, log(α) - log(λ) - (α + 1.0)*log1p(x/λ)));
+}
+
+/*
+ * Update the parameters of a Gamma distribution with an exponential
+ * likelihood.
+ *
+ * - x: The variate.
+ * - k: Prior shape.
+ * - θ: Prior scale.
+ *
+ * Returns: the posterior hyperparameters `k'` and `θ'`.
+ */
+function update_gamma_exponential(x:Real, k:Real, θ:Real) -> (Real, Real) {
+  return (k + 1.0, θ/(1.0 + x*θ));
+}
+
+/*
+ * Update the parameters of a Gamma distribution with an exponential
+ * likelihood.
+ *
+ * - x: The variate.
+ * - k: Prior shape.
+ * - θ: Prior scale.
+ *
+ * Returns: the posterior hyperparameters `k'` and `θ'`.
+ */
+function update_lazy_gamma_exponential(x:Expression<Real>,
+    k:Expression<Real>, θ:Expression<Real>) ->
+    (Expression<Real>, Expression<Real>) {
+  return (box(k + 1.0), box(θ/(1.0 + x*θ)));
+}
+
+/*
+ * CDF of a Lomax variate.
+ *
+ * - x: The variate.
+ * - λ: Scale.
+ * - α: Shape.
+ *
+ * Return: the cumulative probability.
+ */
+function cdf_lomax(x:Real, λ:Real, α:Real) -> Real {
+  assert 0.0 < λ;
+  assert 0.0 < α;
+
+  if x <= 0.0 {
+    return 0.0;
+  } else {
+    return 1.0 - pow((1.0 + x/λ), -α);
+  }
+}
+
+/*
+ * Quantile of a Lomax distribution.
+ *
+ * - P: The cumulative probability.
+ * - λ: Scale.
+ * - α: Shape.
+ *
+ * Return: the quantile.
+ */
+function quantile_lomax(P:Real, λ:Real, α:Real) -> Real {
+  assert 0.0 < λ;
+  assert 0.0 < α;
+  cpp{{
+  return boost::math::quantile(boost::math::pareto_distribution<>(λ, α), P) - λ;
+  }}
+}

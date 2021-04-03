@@ -1,0 +1,114 @@
+/*
+ * Simulate a multivariate $t$-distribution variate with location and scale.
+ *
+ * - k: Degrees of freedom.
+ * - μ: Mean.
+ * - U: Spread.
+ * - v: Scale.
+ */
+function simulate_multivariate_student_t(k:Real, μ:Real[_], U:Real[_,_], v:Real) ->
+    Real[_] {
+  assert 0.0 < k;
+  assert 0.0 < v;
+  let n <- length(μ);
+  let y <- vector(\(i:Integer) -> Real {
+        return simulate_gaussian(0.0, v/k);
+      }, n);
+  let z <- simulate_chi_squared(k);
+  return μ + cholesky(U)*y/sqrt(z/k);
+}
+
+/*
+ * Simulate a multivariate $t$-distribution variate with location and scale.
+ *
+ * - k: Degrees of freedom.
+ * - μ: Mean.
+ * - u: Scale.
+ * - V: Spread.
+ */
+function simulate_multivariate_student_t(k:Real, μ:Real[_], u:Real, V:Real[_,_]) ->
+    Real[_] {
+  let p <- length(μ);
+  let Σ <- simulate_inverse_wishart(V, k + p - 1.0);
+  return simulate_multivariate_gaussian(μ, u*Σ);
+}
+
+/*
+ * Observe a multivariate Student's $t$-distribution variate with location
+ * and scale.
+ *
+ * - x: The variate.
+ * - k: Degrees of freedom.
+ * - m: Mean.
+ * - U: Spread.
+ * - v: Scale.
+ *
+ * Returns: the log probability density.
+ */
+function logpdf_multivariate_student_t(x:Real[_], k:Real, μ:Real[_], U:Real[_,_],
+    v:Real) -> Real {
+  return logpdf_multivariate_student_t(x, k, μ, v, U);
+}
+
+/*
+ * Observe a multivariate Student's $t$-distribution variate with location
+ * and scale.
+ *
+ * - x: The variate.
+ * - k: Degrees of freedom.
+ * - m: Mean.
+ * - u: Scale.
+ * - V: Spread.
+ *
+ * Returns: the log probability density.
+ */
+function logpdf_multivariate_student_t(x:Real[_], k:Real, μ:Real[_], u:Real,
+    V:Real[_,_]) -> Real {
+  let p <- length(μ);
+  let a <- 0.5*(k + p);
+  let b <- 0.5*k;
+  let z <- x - μ;
+  return lgamma(a) - 0.5*p*log(π) - lgamma(b) - 0.5*p*log(u) -
+      0.5*ldet(V) - a*log1p(dot(z, solve(V, z))/u);
+}
+
+/*
+ * Observe a multivariate Student's $t$-distribution variate with location
+ * and scale.
+ *
+ * - x: The variate.
+ * - k: Degrees of freedom.
+ * - m: Mean.
+ * - U: Spread.
+ * - v: Scale.
+ *
+ * Returns: the log probability density.
+ */
+function logpdf_lazy_multivariate_student_t(x:Expression<Real[_]>,
+    k:Expression<Real>, μ:Expression<Real[_]>, U:Expression<Real[_,_]>,
+    v:Expression<Real>) -> Expression<Real> {
+  return logpdf_lazy_multivariate_student_t(x, k, μ, v, U);
+}
+
+/*
+ * Observe a multivariate Student's $t$-distribution variate with location
+ * and scale.
+ *
+ * - x: The variate.
+ * - k: Degrees of freedom.
+ * - m: Mean.
+ * - u: Scale.
+ * - V: Spread.
+ *
+ * Returns: the log probability density.
+ */
+function logpdf_lazy_multivariate_student_t(x:Expression<Real[_]>,
+    k:Expression<Real>, μ:Expression<Real[_]>, u:Expression<Real>,
+    V:Expression<Real[_,_]>) -> Expression<Real> {
+  let p <- length(μ);
+  let a <- 0.5*(k + p);
+  let b <- 0.5*k;
+  let z <- x - μ;
+  return box(lgamma(a) - 0.5*p*log(π) - lgamma(b) - 0.5*p*log(u) -
+      0.5*ldet(V) - a*log1p(dot(z, solve(V, z))/u));
+}

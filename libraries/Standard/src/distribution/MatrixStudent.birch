@@ -1,0 +1,62 @@
+/*
+ * Simulate a matrix $t$-distribution variate.
+ *
+ * - k: Degrees of freedom.
+ * - M: Mean.
+ * - U: Spread.
+ * - Ψ: Spread.
+ */
+function simulate_matrix_student_t(k:Real, M:Real[_,_], U:Real[_,_], Ψ:Real[_,_]) ->
+    Real[_,_] {
+  let p <- columns(M);
+  let V <- simulate_inverse_wishart(Ψ, k + p - 1.0);
+  return simulate_matrix_gaussian(M, U, V);
+}
+
+/*
+ * Observe a matrix Student's $t$-distribution variate with location
+ * and scale.
+ *
+ * - X: The variate.
+ * - k: Degrees of freedom.
+ * - M: Mean.
+ * - U: Among-row covariance.
+ * - V: Among-column covariance.
+ *
+ * Returns: the log probability density.
+ */
+function logpdf_matrix_student_t(X:Real[_,_], k:Real, M:Real[_,_], U:Real[_,_],
+    V:Real[_,_]) -> Real {
+  let n <- rows(M);
+  let p <- columns(M);
+  let a <- 0.5*(k + p + n - 1.0);
+  let b <- 0.5*(k + n - 1.0);
+  let Z <- X - M;
+  
+  return lgamma(a, n) - 0.5*p*n*log(π) - lgamma(b, n) - 0.5*p*ldet(U) -
+      0.5*n*ldet(V) - a*ldet(identity(n) + solve(U, Z)*solve(V, transpose(Z)));
+}
+
+/*
+ * Observe a matrix Student's $t$-distribution variate with location
+ * and scale.
+ *
+ * - X: The variate.
+ * - k: Degrees of freedom.
+ * - M: Mean.
+ * - U: Among-row covariance.
+ * - V: Among-column covariance.
+ *
+ * Returns: the log probability density.
+ */
+function logpdf_lazy_matrix_student_t(X:Expression<Real[_,_]>, k:Expression<Real>, M:Expression<Real[_,_]>, U:Expression<Real[_,_]>,
+    V:Expression<Real[_,_]>) -> Expression<Real> {
+  let n <- rows(M);
+  let p <- columns(M);
+  let a <- 0.5*(k + p + n - 1.0);
+  let b <- 0.5*(k + n - 1.0);
+  let Z <- X - M;
+  
+  return box(lgamma(a, n) - 0.5*p*n*log(π) - lgamma(b, n) - 0.5*p*ldet(U) -
+      0.5*n*ldet(V) - a*ldet(identity(n) + solve(U, Z)*solve(V, transpose(Z))));
+}

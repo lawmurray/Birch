@@ -45,3 +45,69 @@ final class Dirichlet(α:Expression<Real[_]>) < Distribution<Real[_]> {
 function Dirichlet<Middle>(α:Middle) -> {
   return construct<Dirichlet>(box(α));
 }
+
+/*
+ * Simulate a Dirichlet distribution.
+ *
+ * - α: Concentrations.
+ */
+function simulate_dirichlet(α:Real[_]) -> Real[_] {
+  D:Integer <- length(α);
+  x:Real[D];
+  z:Real <- 0.0;
+
+  for i in 1..D {
+    x[i] <- simulate_gamma(α[i], 1.0);
+    z <- z + x[i];
+  }
+  z <- 1.0/z;
+  for i in 1..D {
+    x[i] <- z*x[i];
+  }  
+  return x;
+}
+
+/*
+ * Simulate a Dirichlet distribution.
+ *
+ * - α: Concentration.
+ * - D: Number of dimensions.
+ */
+function simulate_dirichlet(α:Real, D:Integer) -> Real[_] {
+  assert D > 0;
+  x:Real[D];
+  z:Real <- 0.0;
+
+  for i in 1..D {
+    x[i] <- simulate_gamma(α, 1.0);
+    z <- z + x[i];
+  }
+  z <- 1.0/z;
+  for i in 1..D {
+    x[i] <- z*x[i];
+  }
+  return x;
+}
+
+/*
+ * Observe a Dirichlet variate.
+ *
+ * - x: The variate.
+ * - α: Concentrations.
+ *
+ * Returns: the log probability density.
+ */
+function logpdf_dirichlet(x:Real[_], α:Real[_]) -> Real {
+  assert length(x) == length(α);
+
+  D:Integer <- length(x);
+  w:Real <- 0.0;
+  for i in 1..D {
+    if x[i] < 0.0 {
+      return -inf;
+    }
+    w <- w + (α[i] - 1.0)*log(x[i]) - lgamma(α[i]);
+  }
+  w <- w + lgamma(sum(α)); 
+  return w;
+}

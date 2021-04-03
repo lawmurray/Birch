@@ -68,3 +68,91 @@ final class Beta(α:Expression<Real>, β:Expression<Real>) <
 function Beta<Left,Right>(α:Left, β:Right) -> {
   return construct<Beta>(box(α), box(β));
 }
+
+/*
+ * Simulate a beta distribution.
+ *
+ * - α: Shape.
+ * - β: Shape.
+ */
+function simulate_beta(α:Real, β:Real) -> Real {
+  assert 0.0 < α;
+  assert 0.0 < β;
+  
+  u:Real <- simulate_gamma(α, 1.0);
+  v:Real <- simulate_gamma(β, 1.0);
+  
+  return u/(u + v);
+}
+
+/*
+ * Observe a beta variate.
+ *
+ * - x: The variate.
+ * - α: Shape.
+ * - β: Shape.
+ *
+ * Returns: the log probability density.
+ */
+function logpdf_beta(x:Real, α:Real, β:Real) -> Real {
+  assert 0.0 < α;
+  assert 0.0 < β;
+
+  if (0.0 < x && x < 1.0) {
+    return (α - 1.0)*log(x) + (β - 1.0)*log1p(-x) - lbeta(α, β);
+  } else {
+    return -inf;
+  }
+}
+
+/*
+ * Observe a beta variate.
+ *
+ * - x: The variate.
+ * - α: Shape.
+ * - β: Shape.
+ *
+ * Returns: the log probability density.
+ */
+function logpdf_lazy_beta(x:Expression<Real>, α:Expression<Real>, β:Expression<Real>) -> Expression<Real> {
+  return box((α - 1.0)*log(x) + (β - 1.0)*log1p(-x) - lbeta(α, β));
+}
+
+/*
+ * CDF of a beta variate.
+ *
+ * - x: The variate.
+ * - α: Shape.
+ * - β: Shape.
+ *
+ * Return: the cumulative probability.
+ */
+function cdf_beta(x:Real, α:Real, β:Real) -> Real {
+  assert 0.0 < α;
+  assert 0.0 < β;
+
+  if x < 0.0 {
+    return 0.0;
+  } else if x > 1.0 {
+    return 1.0;
+  } else {
+    return ibeta(α, β, x);
+  }
+}
+
+/*
+ * Quantile of a beta distribution.
+ *
+ * - P: The cumulative probability.
+ * - α: Shape.
+ * - β: Shape.
+ *
+ * Return: the quantile.
+ */
+function quantile_beta(P:Real, α:Real, β:Real) -> Real {
+  assert 0.0 < α;
+  assert 0.0 < β;  
+  cpp{{
+  return boost::math::quantile(boost::math::beta_distribution<>(α, β), P);
+  }}
+}

@@ -77,3 +77,28 @@ function Delta(μ:Subtract<Random<Integer>,Random<Integer>>) -> Distribution<Int
     return construct<Delta>(box(μ));
   }
 }
+
+/*
+ * Simulate a delta distribution.
+ *
+ * - μ: Location.
+ */
+function simulate_delta(μ:Integer) -> Integer {
+  return μ;
+}
+
+/*
+ * Observe a delta variate.
+ *
+ * - x: The variate.
+ * - μ: Location.
+ *
+ * Returns: the log probability mass.
+ */
+function logpdf_delta(x:Integer, μ:Integer) -> Real {
+  if x == μ {
+    return 0.0;
+  } else {
+    return -inf;
+  }
+}

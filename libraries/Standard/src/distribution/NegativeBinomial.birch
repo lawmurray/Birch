@@ -71,3 +71,89 @@ function NegativeBinomial<Left>(k:Left, ρ:Random<Real>) -> Distribution<Integer
     return construct<NegativeBinomial>(box(k), ρ);
   }
 }
+
+/*
+ * Simulate a negative binomial distribution.
+ *
+ * - k: Number of successes before the experiment is stopped.
+ * - ρ: Probability of success.
+ *
+ * Returns the number of failures.
+ */
+function simulate_negative_binomial(k:Integer, ρ:Real) -> Integer {
+  assert 0 < k;
+  assert 0.0 <= ρ && ρ <= 1.0;
+  cpp{{
+  return std::negative_binomial_distribution<birch::type::Integer>(k, ρ)(rng);
+  }}
+}
+
+/*
+ * Observe a negative binomial variate.
+ *
+ * - x: The variate (number of failures).
+ * - k: Number of successes before the experiment is stopped.
+ * - ρ: Probability of success.
+ *
+ * Returns: the log probability mass.
+ */
+function logpdf_negative_binomial(x:Integer, k:Integer, ρ:Real) -> Real {
+  assert 0 < k;
+  assert 0.0 <= ρ && ρ <= 1.0;
+
+  if (x >= 0) {
+    return k*log(ρ) + x*log1p(-ρ) + lchoose(x + k - 1, x);
+  } else {
+    return -inf;
+  }
+}
+
+/*
+ * Observe a negative binomial variate.
+ *
+ * - x: The variate (number of failures).
+ * - k: Number of successes before the experiment is stopped.
+ * - ρ: Probability of success.
+ *
+ * Returns: the log probability mass.
+ */
+function logpdf_lazy_negative_binomial(x:Expression<Integer>, k:Expression<Integer>, ρ:Expression<Real>) -> Expression<Real> {
+  return box(k*log(ρ) + x*log1p(-ρ) + lchoose(x + k - 1, x));
+}
+
+/*
+ * CDF of a negative binomial variate.
+ *
+ * - x: The variate (number of failures).
+ * - k: Number of successes before the experiment is stopped.
+ * - ρ: Probability of success.
+ *
+ * Return: the cumulative probability.
+ */
+function cdf_negative_binomial(x:Integer, k:Integer, ρ:Real) -> Real {
+  assert 0 < k;
+  assert 0.0 <= ρ && ρ <= 1.0;
+
+  if x < 0 {
+    return 0.0;
+  } else {
+    return ibeta(k, x + 1.0,  ρ);
+  }
+}
+
+/*
+ * Quantile of a negative binomial distribution.
+ *
+ * - P: The cumulative probability.
+ * - k: Number of successes before the experiment is stopped.
+ * - ρ: Probability of success.
+ *
+ * Return: the quantile.
+ */
+function quantile_negative_binomial(P:Real, k:Integer, ρ:Real) -> Integer {
+  assert 0 < k;
+  assert 0.0 <= ρ && ρ <= 1.0;
+  cpp{{
+  return boost::math::quantile(boost::math::negative_binomial_distribution<>(k, ρ), P);
+  }}
+}

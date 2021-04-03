@@ -88,3 +88,91 @@ function Poisson<Right>(λ:Multiply<Random<Real>,Right>) -> Distribution<Integer
     return construct<Poisson>(box(λ));
   }
 }
+
+/*
+ * Simulate a Poisson distribution.
+ *
+ * - λ: Rate.
+ */
+function simulate_poisson(λ:Real) -> Integer {
+  assert 0.0 <= λ;
+  if (λ > 0.0) {
+    cpp{{
+    return std::poisson_distribution<birch::type::Integer>(λ)(rng);
+    }}
+  } else {
+    return 0;
+  }
+}
+
+/*
+ * Observe a Poisson variate.
+ *
+ * - x: The variate.
+ * - λ: Rate.
+ *
+ * Returns: the log probability mass.
+ */
+function logpdf_poisson(x:Integer, λ:Real) -> Real {
+  assert 0.0 <= λ;
+
+  if (λ > 0.0) {
+    if (x >= 0) {
+      return x*log(λ) - λ - lgamma(x + 1.0);
+    } else {
+      return -inf;
+    }
+  } else {
+    if (x == 0) {
+      return inf;
+    } else {
+      return -inf;
+    }
+  }
+}
+
+/*
+ * Observe a Poisson variate.
+ *
+ * - x: The variate.
+ * - λ: Rate.
+ *
+ * Returns: the log probability mass.
+ */
+function logpdf_lazy_poisson(x:Expression<Integer>, λ:Expression<Real>) -> Expression<Real> {
+  return box(x*log(λ) - λ - lgamma(x + 1));
+}
+
+/*
+ * CDF of a Poisson variate.
+ *
+ * - x: The variate.
+ * - λ: Rate.
+ *
+ * Return: the cumulative probability.
+ */
+function cdf_poisson(x:Integer, λ:Real) -> Real {
+  assert 0.0 <= λ;
+
+  if x < 0 {
+    return 0.0;
+  } else {
+    let k <- x + 1.0;
+    return upper_inc_gamma(k, λ);
+  }
+}
+
+/*
+ * Quantile of a Poisson distribution.
+ *
+ * - P: The cumulative probability.
+ * - λ: Rate.
+ *
+ * Return: the quantile.
+ */
+function quantile_poisson(P:Real, λ:Real) -> Integer {
+  assert 0.0 <= λ;
+  cpp{{
+  return boost::math::quantile(boost::math::poisson_distribution<>(λ), P);
+  }}
+}

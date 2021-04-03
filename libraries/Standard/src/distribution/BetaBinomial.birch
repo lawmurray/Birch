@@ -66,3 +66,107 @@ function BetaBinomial<Left>(n:Left, ρ:Beta) -> {
   m.link();
   return m;
 }
+
+/*
+ * Simulate a beta-binomial distribution.
+ *
+ * - n: Number of trials.
+ * - α: Shape.
+ * - β: Shape.
+ */
+function simulate_beta_binomial(n:Integer, α:Real, β:Real) -> Integer {
+  assert 0 <= n;
+  assert 0.0 < α;
+  assert 0.0 < β;
+  
+  return simulate_binomial(n, simulate_beta(α, β));
+}
+
+/*
+ * Observe a beta-binomial variate.
+ *
+ * - x: The variate.
+ * - n: Number of trials.
+ * - α: Shape.
+ * - β: Shape.
+ *
+ * Returns: the log probability mass.
+ */
+function logpdf_beta_binomial(x:Integer, n:Integer, α:Real, β:Real) -> Real {
+  assert 0 <= n;
+  assert 0.0 < α;
+  assert 0.0 < β;
+
+  if (0 <= x && x <= n) {
+    return lbeta(x + α, n - x + β) - lbeta(α, β) + lchoose(n, x);
+  } else {
+    return -inf;
+  }
+}
+
+/*
+ * Observe a beta-binomial variate.
+ *
+ * - x: The variate.
+ * - n: Number of trials.
+ * - α: Shape.
+ * - β: Shape.
+ *
+ * Returns: the log probability mass.
+ */
+function logpdf_lazy_beta_binomial(x:Expression<Integer>, n:Expression<Integer>, α:Expression<Real>, β:Expression<Real>) -> Expression<Real> {
+  return box(lbeta(x + α, n - x + β) - lbeta(α, β) + lchoose(n, x));
+}
+
+/*
+ * Update the parameters of a Beta distribution with a Binomial likelihood.
+ *
+ * - x: The variate.
+ * - n: Number of trials.
+ * - α: Prior first shape.
+ * - β: Prior second shape.
+ *
+ * Returns: the posterior hyperparameters `α'` and `β'`.
+ */
+function update_beta_binomial(x:Integer, n:Integer, α:Real, β:Real) ->
+    (Real, Real) {
+  assert 0 <= x && x <= n;
+  assert 0 <= n;
+  assert 0.0 < α;
+  assert 0.0 < β;
+  return (α + x, β + n - x);
+}
+
+/*
+ * Update the parameters of a Beta distribution with a Binomial likelihood.
+ *
+ * - x: The variate.
+ * - n: Number of trials.
+ * - α: Prior first shape.
+ * - β: Prior second shape.
+ *
+ * Returns: the posterior hyperparameters `α'` and `β'`.
+ */
+function update_lazy_beta_binomial(x:Expression<Integer>,
+    n:Expression<Integer>, α:Expression<Real>, β:Expression<Real>) ->
+    (Expression<Real>, Expression<Real>) {
+  return (box(α + x), box(β + n - x));
+}
+
+/*
+ * CDF of a beta-binomial variate.
+ *
+ * - x: The variate.
+ * - n: Number of trials.
+ * - α: Shape.
+ * - β: Shape.
+ *
+ * Return: the cumulative probability.
+ */
+function cdf_beta_binomial(x:Integer, n:Integer, α:Real, β:Real) -> Real {
+  P:Real <- 0.0;
+  for i in 0..min(n, x) {
+    P <- P + exp(logpdf_beta_binomial(i, n, α, β));
+  }
+  return P;
+}

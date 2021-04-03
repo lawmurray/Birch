@@ -90,3 +90,73 @@ function Exponential<Right>(λ:Multiply<Random<Real>,Right>) ->
     return construct<Exponential>(box(λ));
   }
 }
+
+/*
+ * Simulate an exponential distribution.
+ *
+ * - λ: Rate.
+ */
+function simulate_exponential(λ:Real) -> Real {
+  assert 0.0 < λ;
+  cpp{{
+  return std::exponential_distribution<birch::type::Real>(λ)(rng);
+  }}
+}
+
+/*
+ * Observe an exponential variate.
+ *
+ * - x: The variate.
+ * - λ: Rate.
+ *
+ * Returns: the log probability density.
+ */
+function logpdf_exponential(x:Real, λ:Real) -> Real {
+  assert 0.0 < λ;
+  return if_then_else(x < 0.0, -inf, log(λ) - λ*x);
+}
+
+/*
+ * Observe an exponential variate.
+ *
+ * - x: The variate.
+ * - λ: Rate.
+ *
+ * Returns: the log probability density.
+ */
+function logpdf_lazy_exponential(x:Expression<Real>, λ:Expression<Real>) -> Expression<Real> {
+  return box(if_then_else(x < 0.0, -inf, log(λ) - λ*x));
+}
+
+/*
+ * CDF of an exponential variate.
+ *
+ * - x: The variate.
+ * - λ: Rate.
+ *
+ * Return: the cumulative probability.
+ */
+function cdf_exponential(x:Real, λ:Real) -> Real {
+  assert 0.0 < λ;
+
+  if x <= 0.0 {
+    return 0.0;
+  } else {
+    return -expm1(-λ*x);
+  }
+}
+
+/*
+ * Quantile of an exponential distribution.
+ *
+ * - P: The cumulative probability.
+ * - λ: Rate.
+ *
+ * Return: the quantile.
+ */
+function quantile_exponential(P:Real, λ:Real) -> Real {
+  assert 0.0 < λ;
+  cpp{{
+  return boost::math::quantile(boost::math::exponential_distribution<>(λ), P);
+  }}
+}

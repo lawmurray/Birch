@@ -68,3 +68,35 @@ function ScaledGammaExponential<Left>(a:Left, λ:Gamma) -> {
   m.link();
   return m;
 }
+
+/*
+ * Update the parameters of a scaled Gamma distribution with an exponential
+ * likelihood.
+ *
+ * - x: The variate.
+ * - a: Constant scale.
+ * - k: Prior shape.
+ * - θ: Prior scale.
+ *
+ * Returns: the posterior hyperparameters `k'` and `θ'`.
+ */
+function update_scaled_gamma_exponential(x:Real, a:Real, k:Real, θ:Real) -> (Real, Real) {
+  return (k + 1.0, θ/(1.0 + x*a*θ));
+}
+
+/*
+ * Update the parameters of a scaled Gamma distribution with an exponential
+ * likelihood.
+ *
+ * - x: The variate.
+ * - a: Constant scale.
+ * - k: Prior shape.
+ * - θ: Prior scale.
+ *
+ * Returns: the posterior hyperparameters `k'` and `θ'`.
+ */
+function update_lazy_scaled_gamma_exponential(x:Expression<Real>,
+    a:Expression<Real>, k:Expression<Real>, θ:Expression<Real>) ->
+    (Expression<Real>, Expression<Real>) {
+  return (box(k + 1.0), box(θ/(1.0 + x*a*θ)));
+}

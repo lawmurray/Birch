@@ -63,3 +63,66 @@ final class UniformInteger(l:Expression<Integer>, u:Expression<Integer>) <
 function UniformInteger<Left,Right>(l:Left, u:Right) -> {
   return construct<UniformInteger>(box(l), box(u));
 }
+
+/*
+ * Simulate a uniform distribution on an integer range.
+ *
+ * - l: Lower bound of range.
+ * - u: Upper bound of range.
+ */
+function simulate_uniform_int(l:Integer, u:Integer) -> Integer {
+  assert l <= u;
+  cpp{{
+  return std::uniform_int_distribution<birch::type::Integer>(l, u)(rng);
+  }}
+}
+
+/*
+ * Observe an integer uniform variate.
+ *
+ * - x: The variate.
+ * - l: Lower bound of interval.
+ * - u: Upper bound of interval.
+ *
+ * Returns: the log probability mass.
+ */
+function logpdf_uniform_int(x:Integer, l:Integer, u:Integer) -> Real {
+  if (x >= l && x <= u) {
+    return -log1p(u - l);
+  } else {
+    return -inf;
+  }
+}
+
+/*
+ * CDF of a uniform integer variate.
+ *
+ * - x: The variate.
+ * - l: Lower bound of interval.
+ * - u: Upper bound of interval.
+ *
+ * Return: the cumulative probability.
+ */
+function cdf_uniform_int(x:Integer, l:Integer, u:Integer) -> Real {
+  if x < l {
+    return 0.0;
+  } else if x > u {
+    return 1.0;
+  } else {
+    return (x - l + 1.0)/(u - l + 1.0);
+  }
+}
+
+/*
+ * Quantile of a uniform integer distribution.
+ *
+ * - P: The cumulative probability.
+ * - l: Lower bound of interval.
+ * - u: Upper bound of interval.
+ *
+ * Return: the quantile.
+ */
+function quantile_uniform_int(P:Real, l:Integer, u:Integer) -> Integer {
+  assert l <= u;
+  return l + scalar<Integer>(P*(u - l));
+}

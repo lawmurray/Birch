@@ -47,3 +47,47 @@ function LinearMultivariateGaussianMultivariateGaussian<Arg1,Arg3,Arg4>(A:Arg1, 
   m.link();
   return m;
 }
+
+/*
+ * Update the parameters of a multivariate Gaussian distribution with a 
+ * linear transformation and multivariate Gaussian likelihood.
+ *
+ * - x: The variate.
+ * - A: Scale.
+ * - μ: Prior mean.
+ * - Σ: Prior covariance.
+ * - c: Offset.
+ * - S: Likelihood covariance.
+ *
+ * Returns: the posterior hyperparameters `μ'` and `Σ'`.
+ */
+function update_linear_multivariate_gaussian_multivariate_gaussian(x:Real[_],
+    A:Real[_,_], μ:Real[_], Σ:Real[_,_], c:Real[_], S:Real[_,_]) -> (Real[_], Real[_,_]) {
+  let K' <- Σ*transpose(solve(A*Σ*transpose(A) + S, A));
+  let μ' <- μ + K'*(x - A*μ - c);
+  let Σ' <- Σ - K'*A*Σ;
+  return (μ', Σ');
+}
+
+/*
+ * Update the parameters of a multivariate Gaussian distribution with a 
+ * linear transformation and multivariate Gaussian likelihood.
+ *
+ * - x: The variate.
+ * - A: Scale.
+ * - μ: Prior mean.
+ * - Σ: Prior covariance.
+ * - c: Offset.
+ * - S: Likelihood covariance.
+ *
+ * Returns: the posterior hyperparameters `μ'` and `Σ'`.
+ */
+function update_lazy_linear_multivariate_gaussian_multivariate_gaussian(
+    x:Expression<Real[_]>, A:Expression<Real[_,_]>, μ:Expression<Real[_]>,
+    Σ:Expression<Real[_,_]>, c:Expression<Real[_]>, S:Expression<Real[_,_]>) ->
+    (Expression<Real[_]>, Expression<Real[_,_]>) {
+  let K' <- Σ*transpose(solve(A*Σ*transpose(A) + S, A));
+  let μ' <- μ + K'*(x - A*μ - c);
+  let Σ' <- Σ - K'*A*Σ;
+  return (box(μ'), box(Σ'));
+}

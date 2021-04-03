@@ -72,3 +72,122 @@ function LinearMultivariateNormalInverseGammaMultivariateGaussian<Left,Right>(A:
   m.link();
   return m;
 }
+
+/*
+ * Simulate a multivariate Gaussian distribution with a linear transformation
+ * of a multivariate linear normal inverse-gamma prior.
+ *
+ * - A: Scale.
+ * - ν: Precision times mean.
+ * - Λ: Precision.
+ * - c: Offset.
+ * - α: Shape of the inverse-gamma.
+ * - γ: Scale accumulator of the inverse-gamma.
+ */
+function simulate_linear_multivariate_normal_inverse_gamma_multivariate_gaussian(
+    A:Real[_,_], ν:Real[_], Λ:Real[_,_], c:Real[_], α:Real, γ:Real) -> Real[_] {
+  let n <- rows(A);
+  let μ <- solve(Λ, ν);
+  let β <- γ - 0.5*dot(μ, ν);
+  return simulate_multivariate_student_t(2.0*α, A*μ + c,
+      identity(n) + A*solve(Λ, transpose(A)), 2.0*β);
+}
+
+/*
+ * Observe a multivariate Gaussian variate with a multivariate linear normal
+ * inverse-gamma prior with linear transformation.
+ *
+ * - x: The variate.
+ * - A: Scale.
+ * - ν: Precision times mean.
+ * - Λ: Precision.
+ * - c: Offset.
+ * - α: Shape of the inverse-gamma.
+ * - γ: Scale accumulator of the inverse-gamma.
+ *
+ * Returns: the log probability density.
+ */
+function logpdf_linear_multivariate_normal_inverse_gamma_multivariate_gaussian(
+    x:Real[_], A:Real[_,_], ν:Real[_], Λ:Real[_,_], c:Real[_], α:Real, γ:Real) ->
+    Real {
+  let n <- rows(A);
+  let μ <- solve(Λ, ν);
+  let β <- γ - 0.5*dot(μ, ν);
+  return logpdf_multivariate_student_t(x, 2.0*α, A*μ + c,
+      identity(n) + A*solve(Λ, transpose(A)), 2.0*β);
+}
+
+/*
+ * Observe a multivariate Gaussian variate with a multivariate linear normal
+ * inverse-gamma prior with linear transformation.
+ *
+ * - x: The variate.
+ * - A: Scale.
+ * - ν: Precision times mean.
+ * - Λ: Precision.
+ * - c: Offset.
+ * - α: Shape of the inverse-gamma.
+ * - γ: Scale accumulator of the inverse-gamma.
+ *
+ * Returns: the log probability density.
+ */
+function logpdf_lazy_linear_multivariate_normal_inverse_gamma_multivariate_gaussian(
+    x:Expression<Real[_]>, A:Expression<Real[_,_]>, ν:Expression<Real[_]>, Λ:Expression<Real[_,_]>, c:Expression<Real[_]>, α:Expression<Real>, γ:Expression<Real>) ->
+    Expression<Real> {
+  let n <- rows(A);
+  let μ <- solve(Λ, ν);
+  let β <- γ - 0.5*dot(μ, ν);
+  return logpdf_lazy_multivariate_student_t(x, box(2.0*α), box(A*μ + c), box(identity(n) + A*solve(Λ, transpose(A))), box(2.0*β));
+}
+
+/*
+ * Update the parameters of a normal inverse-gamma distribution with a
+ * linear transformation and multivariate Gaussian likelihood.
+ *
+ * - x: The variate.
+ * - A: Scale.
+ * - ν: Prior precision times mean.
+ * - Λ: Prior precision.
+ * - c: Offset.
+ * - α: Prior shape of the inverse-gamma.
+ * - γ: Prior scale accumulator.
+ *
+ * Returns: the posterior hyperparameters `μ'`, `Λ'`, `γ'`, `α'` and `β'`.
+ */
+function update_linear_multivariate_normal_inverse_gamma_multivariate_gaussian(
+    x:Real[_], A:Real[_,_], ν:Real[_], Λ:Real[_,_], c:Real[_], α:Real, γ:Real) ->
+    (Real[_], Real[_,_], Real, Real) {
+  let D <- length(x);
+  let Λ' <- rank_update(Λ, transpose(A));
+  let ν' <- ν + transpose(A)*(x - c);
+  let α' <- α + 0.5*D;
+  let γ' <- γ + 0.5*dot(x - c);
+  return (ν', Λ', α', γ');
+}
+
+/*
+ * Update the parameters of a normal inverse-gamma distribution with a
+ * linear transformation and multivariate Gaussian likelihood.
+ *
+ * - x: The variate.
+ * - A: Scale.
+ * - ν: Prior precision times mean.
+ * - Λ: Prior precision.
+ * - c: Offset.
+ * - α: Prior shape of the inverse-gamma.
+ * - γ: Prior scale accumulator.
+ *
+ * Returns: the posterior hyperparameters `μ'`, `Λ'`, `γ'`, `α'` and `β'`.
+ */
+function update_lazy_linear_multivariate_normal_inverse_gamma_multivariate_gaussian(
+    x:Expression<Real[_]>, A:Expression<Real[_,_]>, ν:Expression<Real[_]>,
+    Λ:Expression<Real[_,_]>, c:Expression<Real[_]>, α:Expression<Real>,
+    γ:Expression<Real>) -> (Expression<Real[_]>, Expression<Real[_,_]>,
+    Expression<Real>, Expression<Real>) {
+  let D <- length(x);
+  let Λ' <- rank_update(Λ, transpose(A));
+  let ν' <- ν + transpose(A)*(x - c);
+  let α' <- α + 0.5*D;
+  let γ' <- γ + 0.5*dot(x - c);
+  return (box(ν'), box(Λ'), box(α'), box(γ'));
+}

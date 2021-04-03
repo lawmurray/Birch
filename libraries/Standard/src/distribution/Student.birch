@@ -68,3 +68,156 @@ function Student<Left,Middle,Right>(ν:Left, μ:Middle, σ2:Right) -> {
 function Student<Middle>(ν:Middle) -> {
   return Student(box(ν), box(0.0), box(1.0));
 }
+
+/*
+ * Simulate a Student's $t$-distribution.
+ *
+ * - k: Degrees of freedom.
+ */
+function simulate_student_t(k:Real) -> Real {
+  assert 0.0 < k;
+  cpp{{
+  return std::student_t_distribution<birch::type::Real>(k)(rng);
+  }}
+}
+
+/*
+ * Simulate a Student's $t$-distribution with location and scale.
+ *
+ * - k: Degrees of freedom.
+ * - μ: Location.
+ * - v: Scale.
+ */
+function simulate_student_t(k:Real, μ:Real, v:Real) -> Real {
+  assert 0.0 < k;
+  assert 0.0 < v;
+  let y <- simulate_gaussian(0.0, v/k);
+  let z <- simulate_chi_squared(k);
+  return μ + y/sqrt(z/k);
+}
+
+/*
+ * Observe a Student's $t$ variate.
+ *
+ * - x: The variate.
+ * - k: Degrees of freedom.
+ *
+ * Returns: the log probability density.
+ */
+function logpdf_student_t(x:Real, k:Real) -> Real {
+  assert 0.0 < k;
+  let a <- 0.5*(k + 1.0);
+  let b <- 0.5*k;
+  return lgamma(a) - lgamma(b) - 0.5*log(π*k) - a*log1p(x*x/k);
+}
+
+/*
+ * Observe a Student's $t$ variate with location and scale.
+ *
+ * - x: The variate.
+ * - k: Degrees of freedom.
+ * - μ: Location.
+ * - v: Scale.
+ *
+ * Returns: the log probability density.
+ */
+function logpdf_student_t(x:Real, k:Real, μ:Real, v:Real) -> Real {
+  assert 0.0 < k;
+  assert 0.0 < v;
+  let a <- 0.5*(k + 1.0);
+  let b <- 0.5*k;
+  let z <- x - μ;
+  return lgamma(a) - lgamma(b) - 0.5*log(π*v) - a*log1p(z*z/v);
+}
+
+/*
+ * Observe a Student's $t$ variate.
+ *
+ * - x: The variate.
+ * - k: Degrees of freedom.
+ *
+ * Returns: the log probability density.
+ */
+function logpdf_lazy_student_t(x:Expression<Real>, k:Expression<Real>) -> Expression<Real> {
+  let a <- 0.5*(k + 1.0);
+  let b <- 0.5*k;
+  return box(lgamma(a) - lgamma(b) - 0.5*log(π*k) - a*log1p(x*x/k));
+}
+
+/*
+ * Observe a Student's $t$ variate with location and scale.
+ *
+ * - x: The variate.
+ * - k: Degrees of freedom.
+ * - μ: Location.
+ * - v: Scale.
+ *
+ * Returns: the log probability density.
+ */
+function logpdf_lazy_student_t(x:Expression<Real>, k:Expression<Real>, μ:Expression<Real>, v:Expression<Real>) -> Expression<Real> {
+  let a <- 0.5*(k + 1.0);
+  let b <- 0.5*k;
+  let z <- x - μ;
+  return box(lgamma(a) - lgamma(b) - 0.5*log(π*v) - a*log1p(z*z/v));
+}
+
+/*
+ * CDF of a Student's $t$ variate.
+ *
+ * - x: The variate.
+ * - k: Degrees of freedom.
+ *
+ * Return: the cumulative probability.
+ */
+function cdf_student_t(x:Real, ν:Real) -> Real {
+  // implementation taken from: https://github.com/codeplea/incbeta
+  assert 0.0 < ν;
+  let t <- 0.5*(x + sqrt(x * x + ν)) /  sqrt(x * x + ν);
+  let prob <- ibeta(0.5*ν, 0.5*ν, t);
+  return prob;
+}
+
+/*
+ * CDF of a Student's $t$ variate with location and scale.
+ *
+ * - x: The variate.
+ * - k: Degrees of freedom.
+ * - μ: Location.
+ * - σ2: Squared scale.
+ *
+ * Return: the cumulative probability.
+ */
+function cdf_student_t(x:Real, k:Real, μ:Real, σ2:Real) -> Real {
+  assert 0.0 < σ2;
+  return cdf_student_t((x - μ)/sqrt(σ2/k), k);
+}
+
+/*
+ * Quantile of a Student's $t$ distribution.
+ *
+ * - P: The cumulative probability.
+ * - ν: Degrees of freedom.
+ *
+ * Return: the quantile.
+ */
+function quantile_student_t(P:Real, ν:Real) -> Real {
+  assert 0.0 < ν;
+  cpp{{
+  return boost::math::quantile(boost::math::students_t_distribution<>(ν), P);
+  }}
+}
+
+/*
+ * Quantile of a Student's $t$ distribution with location and scale.
+ *
+ * - P: The cumulative probability.
+ * - ν: Degrees of freedom.
+ * - μ: Location.
+ * - σ2: Squared scale.
+ *
+ * Return: the quantile.
+ */
+function quantile_student_t(P:Real, ν:Real, μ:Real, σ2:Real) -> Real {
+  assert 0.0 < σ2;
+  return quantile_student_t(P, ν)*sqrt(σ2) + μ;
+}

@@ -55,3 +55,62 @@ function DirichletMultinomial<Left>(n:Left, ρ:Dirichlet) -> {
   m.link();
   return m;
 }
+
+/*
+ * Simulate a Dirichlet-multinomial distribution.
+ *
+ * - n: Number of trials.
+ * - α: Concentrations.
+ */
+function simulate_dirichlet_multinomial(n:Integer, α:Real[_]) -> Integer[_] {
+  return simulate_multinomial(n, simulate_dirichlet(α));
+}
+
+/*
+ * Observe a Dirichlet-multinomial variate.
+ *
+ * - x: The variate.
+ * - n: Number of trials.
+ * - α: Concentrations.
+ *
+ * Returns: the log probability mass.
+ */
+function logpdf_dirichlet_multinomial(x:Integer[_], n:Integer, α:Real[_]) -> Real {
+  assert length(x) == length(α);
+
+  A:Real <- sum(α);
+  m:Integer <- 0;
+  w:Real <- lgamma(n + 1.0) + lgamma(A) - lgamma(n + A);
+  for i in 1..length(α) {
+    assert x[i] >= 0;
+    m <- m + x[i];
+    w <- w + lgamma(x[i] + α[i]) - lgamma(x[i] + 1.0) - lgamma(α[i]);
+  }
+  if (m == n) {
+    return w;
+  } else {
+    return -inf;
+  }
+}
+
+/*
+ * Update the parameters of a Dirichlet distribution with a multinomial
+ * likelihood.
+ *
+ * - x: The variate.
+ * - n: Number of trials.
+ * - α': Prior concentrations.
+ *
+ * Returns: the posterior hyperparameters `α'`.
+ */
+function update_dirichlet_multinomial(x:Integer[_], n:Integer, α:Real[_]) ->
+    Real[_] {
+  assert sum(x) == n;
+  /* @todo mixed type vector operations no longer supported, do
+   * element-wise for now */
+  let α' <- α;
+  for i in 1..length(α) {
+    α'[i] <- α[i] + x[i];
+  }
+  return α';
+}

@@ -46,3 +46,48 @@ function LinearGaussianGaussian<Arg1,Arg3,Arg4>(a:Arg1, μ:Gaussian, c:Arg3, σ2
   m.link();
   return m;
 }
+
+/*
+ * Update the parameters of a Gaussian distribution with a Gaussian
+ * likelihood and scaling.
+ *
+ * - x: The variate.
+ * - a: Scale.
+ * - μ: Prior mean.
+ * - σ2: Prior variance.
+ * - c: Offset.
+ * - s2: Likelihood variance.
+ *
+ * Returns: the posterior hyperparameters `μ'` and `λ'`.
+ */
+function update_linear_gaussian_gaussian(x:Real, a:Real, μ:Real, σ2:Real,
+    c:Real, s2:Real) -> (Real, Real) {
+  let λ <- 1.0/σ2;
+  let l <- 1.0/s2;
+  let λ' <- λ + a*a*l;
+  let μ' <- (λ*μ + a*l*(x - c))/λ';
+  return (μ', 1.0/λ');
+}
+
+/*
+ * Update the parameters of a Gaussian distribution with a Gaussian
+ * likelihood and scaling.
+ *
+ * - x: The variate.
+ * - a: Scale.
+ * - μ: Prior mean.
+ * - σ2: Prior variance.
+ * - c: Offset.
+ * - s2: Likelihood variance.
+ *
+ * Returns: the posterior hyperparameters `μ'` and `λ'`.
+ */
+function update_lazy_linear_gaussian_gaussian(x:Expression<Real>,
+    a:Expression<Real>, μ:Expression<Real>, σ2:Expression<Real>,
+    c:Expression<Real>, s2:Expression<Real>) -> (Expression<Real>, Expression<Real>) {
+  let λ <- 1.0/σ2;
+  let l <- 1.0/s2;
+  let λ' <- λ + a*a*l;
+  let μ' <- (λ*μ + a*l*(x - c))/λ';
+  return (box(μ'), box(1.0/λ'));
+}

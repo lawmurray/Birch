@@ -86,3 +86,44 @@ final class InverseWishart(Ψ:Expression<Real[_,_]>, k:Expression<Real>) <
 function InverseWishart<Left,Right>(Ψ:Left, k:Right) -> {
   return construct<InverseWishart>(box(Ψ), box(k));
 }
+
+/*
+ * Simulate an inverse-Wishart distribution.
+ *
+ * - Ψ: Scale.
+ * - k: Degrees of freedeom.
+ */
+function simulate_inverse_wishart(Ψ:Real[_,_], k:Real) -> Real[_,_] {
+  return inv(simulate_wishart(inv(Ψ), k));
+}
+
+/*
+ * Observe an inverse Wishart variate.
+ *
+ * - X: The variate.
+ * - Ψ: Scale.
+ * - ν: Degrees of freedom.
+ *
+ * Returns: the log probability density.
+ */
+function logpdf_inverse_wishart(X:Real[_,_], Ψ:Real[_,_], ν:Real) -> Real {
+  let p <- rows(Ψ);
+  assert ν > p - 1;
+  return -0.5*(ν + p - 1.0)*ldet(X) - 0.5*trace(solve(X, matrix<Real>(Ψ))) -
+      0.5*ν*(p*log(2.0) - ldet(Ψ)) - lgamma(0.5*ν, p);
+}
+
+/*
+ * Observe an inverse Wishart variate.
+ *
+ * - X: The variate.
+ * - Ψ: Scale.
+ * - ν: Degrees of freedom.
+ *
+ * Returns: the log probability density.
+ */
+function logpdf_lazy_inverse_wishart(X:Expression<Real[_,_]>, Ψ:Expression<Real[_,_]>, ν:Expression<Real>) -> Expression<Real> {
+  let p <- rows(Ψ);
+  return box(-0.5*(ν + p - 1.0)*ldet(X) - 0.5*trace(solve(X, matrix<Real>(Ψ))) -
+      0.5*ν*(p*log(2.0) - ldet(Ψ)) - lgamma(0.5*ν, p));
+}

@@ -87,3 +87,98 @@ function MatrixNormalInverseWishart<Left,Middle>(M:Left, U:Middle, V:InverseWish
   m.link();
   return m;
 }
+
+/*
+ * Simulate a matrix normal-inverse-Wishart distribution.
+ *
+ * - N: Precision times mean matrix.
+ * - Λ: Precision.
+ * - Ψ: Variance shape.
+ * - k: Degrees of freedom.
+ */
+function simulate_matrix_normal_inverse_wishart(N:Real[_,_], Λ:Real[_,_], Ψ:Real[_,_],
+    k:Real) -> Real[_,_] {
+  let p <- columns(N);
+  let M <- solve(Λ, N);
+  return simulate_matrix_student_t(k - p + 1.0, M, inv(Λ), Ψ);
+}
+
+/*
+ * Observe a matrix normal-inverse-Wishart variate.
+ *
+ * - X: The variate.
+ * - N: Precision times mean matrix.
+ * - Λ: Precision.
+ * - Ψ: Prior variance shape.
+ * - k: Prior degrees of freedom.
+ *
+ * Returns: the log probability density.
+ */
+function logpdf_matrix_normal_inverse_wishart(X:Real[_,_], N:Real[_,_],
+    Λ:Real[_,_],  Ψ:Real[_,_], k:Real) -> Real {
+  let n <- rows(N);
+  let p <- columns(N);
+  let M <- solve(Λ, N);
+  let Σ <- inv(Λ);
+  return logpdf_matrix_student_t(X, k - p + 1.0, M, Σ, Ψ);
+}
+
+/*
+ * Observe a matrix normal-inverse-Wishart variate.
+ *
+ * - X: The variate.
+ * - N: Precision times mean matrix.
+ * - Λ: Precision.
+ * - Ψ: Prior variance shape.
+ * - k: Prior degrees of freedom.
+ *
+ * Returns: the log probability density.
+ */
+function logpdf_lazy_matrix_normal_inverse_wishart(X:Expression<Real[_,_]>, N:Expression<Real[_,_]>,
+    Λ:Expression<Real[_,_]>,  Ψ:Expression<Real[_,_]>, k:Expression<Real>) -> Expression<Real> {
+  let p <- columns(N);
+  let M <- solve(Λ, N);
+  let Σ <- inv(Λ);
+  return logpdf_lazy_matrix_student_t(X, box(k - scalar<Integer>(p) + 1.0), box(M), box(Σ), Ψ);
+}
+
+/*
+ * Update the parameters of a matrix normal-inverse-Wishart variate.
+ *
+ * - X: The variate.
+ * - N: Precision times mean.
+ * - Λ: Precision.
+ * - V: Prior variance shape.
+ * - k: Prior degrees of freedom.
+ *
+ * Returns: the posterior hyperparameters `V'` and `k'`.
+ */
+function update_matrix_normal_inverse_wishart(X:Real[_,_], N:Real[_,_],
+    Λ:Real[_,_], V:Real[_,_], k:Real) -> (Real[_,_], Real) {
+  let n <- rows(X);
+  let M <- solve(Λ, N);
+  let V' <- V + transpose(X - M)*Λ*(X - M);
+  let k' <- k + n;
+  return (V', k');
+}
+
+/*
+ * Update the parameters of a matrix normal-inverse-Wishart variate.
+ *
+ * - X: The variate.
+ * - N: Precision times mean.
+ * - Λ: Precision.
+ * - V: Prior variance shape.
+ * - k: Prior degrees of freedom.
+ *
+ * Returns: the posterior hyperparameters `V'` and `k'`.
+ */
+function update_lazy_matrix_normal_inverse_wishart(X:Expression<Real[_,_]>,
+    N:Expression<Real[_,_]>, Λ:Expression<Real[_,_]>, V:Expression<Real[_,_]>,
+    k:Expression<Real>) -> (Expression<Real[_,_]>, Expression<Real>) {
+  let n <- rows(X);
+  let M <- solve(Λ, N);
+  let V' <- V + transpose(X - M)*Λ*(X - M);
+  let k' <- k + n;
+  return (box(V'), box(k'));
+}
