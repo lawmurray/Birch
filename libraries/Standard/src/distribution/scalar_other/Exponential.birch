@@ -53,44 +53,6 @@ function Exponential<Middle>(λ:Middle) -> {
   return construct<Exponential>(box(λ));
 }
 
-/**
- * Create Exponential distribution.
- */
-function Exponential(λ:Random<Real>) -> Distribution<Real> {
-  m:Gamma?;
-  if (m <- λ.graftGamma())? {
-    return GammaExponential(m!);
-  } else {
-    return construct<Exponential>(λ);
-  }
-}
-
-/**
- * Create Exponential distribution.
- */
-function Exponential<Left>(λ:Multiply<Left,Random<Real>>) ->
-    Distribution<Real> {
-  m:Gamma?;
-  if (m <- λ.r!.graftGamma())? {
-    return ScaledGammaExponential(λ.l!, m!);
-  } else {
-    return construct<Exponential>(box(λ));
-  }
-}
-
-/**
- * Create Exponential distribution.
- */
-function Exponential<Right>(λ:Multiply<Random<Real>,Right>) ->
-    Distribution<Real> {
-  m:Gamma?;
-  if (m <- λ.l!.graftGamma())? {
-    return ScaledGammaExponential(λ.r!, m!);
-  } else {
-    return construct<Exponential>(box(λ));
-  }
-}
-
 /*
  * Simulate an exponential distribution.
  *

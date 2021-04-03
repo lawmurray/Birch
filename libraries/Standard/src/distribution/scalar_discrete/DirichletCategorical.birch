@@ -58,6 +58,21 @@ function DirichletCategorical(ρ:Dirichlet) -> DirichletCategorical {
   return m;
 }
 
+/**
+ * Create categorical distribution.
+ */
+function Categorical(ρ:Random<Real[_]>) -> Distribution<Integer> {
+  m1:Dirichlet?;
+  m2:Restaurant?;
+  if (m1 <- ρ.graftDirichlet())? {
+    return DirichletCategorical(m1!);
+  } else if (m2 <- ρ.graftRestaurant())? {
+    return RestaurantCategorical(m2!);
+  } else {
+    return construct<Categorical>(ρ);
+  }    
+}
+
 /*
  * Simulate a Dirichlet-categorical distribution.
  *

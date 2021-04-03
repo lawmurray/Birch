@@ -112,6 +112,42 @@ function NormalInverseGamma<Left,Middle>(μ:Left, a2:Middle, σ2:InverseGamma) -
   return m;
 }
 
+/**
+ * Create Gaussian distribution.
+ */
+function Gaussian<Left>(μ:Left, σ2:Random<Real>) -> Distribution<Real> {
+  s2:InverseGamma?;
+  if (s2 <- σ2.graftInverseGamma())? {
+    return NormalInverseGamma(μ, box(1.0), s2!);
+  } else {
+    return construct<Gaussian>(box(μ), σ2);
+  }
+}
+
+/**
+ * Create Gaussian distribution.
+ */
+function Gaussian<Left,Right>(μ:Left, σ2:Multiply<Right,Random<Real>>) -> Distribution<Real> {
+  s2:InverseGamma?;
+  if (s2 <- σ2.r!.graftInverseGamma())? {
+    return NormalInverseGamma(μ, σ2.l!, s2!);
+  } else {
+    return construct<Gaussian>(box(μ), box(σ2));
+  }
+}
+
+/**
+ * Create Gaussian distribution.
+ */
+function Gaussian<Left,Right>(μ:Left, σ2:Multiply<Random<Real>,Right>) -> Distribution<Real> {
+  s2:InverseGamma?;
+  if (s2 <- σ2.l!.graftInverseGamma())? {
+    return NormalInverseGamma(μ, σ2.r!, s2!);
+  } else {
+    return construct<Gaussian>(box(μ), box(σ2));
+  }
+}
+
 /*
  * Simulate a normal inverse-gamma distribution.
  *

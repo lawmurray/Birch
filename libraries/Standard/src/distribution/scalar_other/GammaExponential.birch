@@ -62,6 +62,18 @@ function GammaExponential(λ:Gamma) -> GammaExponential {
   return m;
 }
 
+/**
+ * Create Exponential distribution.
+ */
+function Exponential(λ:Random<Real>) -> Distribution<Real> {
+  m:Gamma?;
+  if (m <- λ.graftGamma())? {
+    return GammaExponential(m!);
+  } else {
+    return construct<Exponential>(λ);
+  }
+}
+
 /*
  * Simulate a Lomax distribution.
  *

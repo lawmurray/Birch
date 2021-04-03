@@ -47,6 +47,18 @@ function LinearGaussianGaussian<Arg1,Arg3,Arg4>(a:Arg1, μ:Gaussian, c:Arg3, σ2
   return m;
 }
 
+/**
+ * Create Gaussian distribution.
+ */
+function Gaussian<Left,Middle,Right>(μ:MultiplyAdd<Left,Random<Real>,Middle>, σ2:Right) -> Distribution<Real> {
+  let p <- μ.m!.graftGaussian();
+  if p? {
+    return LinearGaussianGaussian(μ.l!, p!, μ.r!, σ2);
+  } else {
+    return construct<Gaussian>(box(μ), box(σ2));
+  }
+}
+
 /*
  * Update the parameters of a Gaussian distribution with a Gaussian
  * likelihood and scaling.

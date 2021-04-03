@@ -131,6 +131,30 @@ function MultivariateNormalInverseGamma<Left,Middle>(μ:Left, Σ:Middle, σ2:Inv
   return m;
 }
 
+/**
+ * Create multivariate Gaussian distribution.
+ */
+function MultivariateGaussian<Left,Right>(μ:Left, Σ:Multiply<Right,Random<Real>>) -> Distribution<Real[_]> {
+  s2:InverseGamma?;
+  if (s2 <- Σ.r!.graftInverseGamma())? {
+    return MultivariateNormalInverseGamma(μ, Σ.l!, s2!);
+  } else {
+    return construct<MultivariateGaussian>(box(μ), box(Σ));
+  }
+}
+
+/**
+ * Create multivariate Gaussian distribution.
+ */
+function MultivariateGaussian<Left,Right>(μ:Left, Σ:Multiply<Random<Real>,Right>) -> Distribution<Real[_]> {
+  s2:InverseGamma?;
+  if (s2 <- Σ.l!.graftInverseGamma())? {
+    return MultivariateNormalInverseGamma(μ, Σ.r!, s2!);
+  } else {
+    return construct<MultivariateGaussian>(box(μ), box(Σ));
+  }
+}
+
 /*
  * Compute the variance scale from the variance scale accumulator and other
  * parameters.

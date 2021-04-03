@@ -61,6 +61,40 @@ function MultivariateNormalInverseGammaMultivariateGaussian(μ:MultivariateNorma
   return m;
 }
 
+/**
+ * Create multivariate Gaussian distribution.
+ */
+function MultivariateGaussian<Right>(μ:Random<Real[_]>, Σ:Multiply<Right,Random<Real>>) -> Distribution<Real[_]> {
+  let p <- InverseGamma?(Σ.r!.p);
+  if p? {
+    let q <- μ.graftMultivariateNormalInverseGamma(p!);
+    if q? {
+      return MultivariateNormalInverseGammaMultivariateGaussian(q!);
+    } else {
+      return MultivariateNormalInverseGamma(μ, Σ.l!, p!);
+    }
+  } else {
+    return construct<MultivariateGaussian>(box(μ), box(Σ));
+  }
+}
+
+/**
+ * Create multivariate Gaussian distribution.
+ */
+function MultivariateGaussian<Right>(μ:Random<Real[_]>, Σ:Multiply<Random<Real>,Right>) -> Distribution<Real[_]> {
+  let p <- InverseGamma?(Σ.l!.p);
+  if p? {
+    let q <- μ.graftMultivariateNormalInverseGamma(p!);
+    if q? {
+      return MultivariateNormalInverseGammaMultivariateGaussian(q!);
+    } else {
+      return MultivariateNormalInverseGamma(μ, Σ.r!, p!);
+    }
+  } else {
+    return construct<MultivariateGaussian>(box(μ), box(Σ));
+  }
+}
+
 /*
  * Simulate a multivariate Gaussian distribution with a multivariate normal
  * inverse-gamma prior.

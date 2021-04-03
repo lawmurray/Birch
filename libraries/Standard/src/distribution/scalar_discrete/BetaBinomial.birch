@@ -67,6 +67,18 @@ function BetaBinomial<Left>(n:Left, ρ:Beta) -> {
   return m;
 }
 
+/**
+ * Create binomial distribution.
+ */
+function Binomial<Left>(n:Left, ρ:Random<Real>) -> Distribution<Integer> {
+  m:Beta?;
+  if (m <- ρ.graftBeta())? {
+    return BetaBinomial(n, m!);
+  } else {
+    return construct<Binomial>(box(n), ρ);
+  }
+}
+
 /*
  * Simulate a beta-binomial distribution.
  *

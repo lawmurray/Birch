@@ -41,18 +41,6 @@ function Bernoulli<Middle>(ρ:Middle) -> {
   return construct<Bernoulli>(box(ρ));
 }
 
-/**
- * Create Bernoulli distribution.
- */
-function Bernoulli(ρ:Random<Real>) -> Distribution<Boolean> {
-  m:Beta?;
-  if (m <- ρ.graftBeta())? {
-    return BetaBernoulli(m!);
-  } else {
-    return construct<Bernoulli>(ρ);
-  }
-}
-
 /*
  * Simulate a Bernoulli distribution.
  *

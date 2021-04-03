@@ -71,52 +71,6 @@ function MatrixGaussian<Left,Middle,Right>(M:Left, U:Middle, V:Right) -> Distrib
   return construct<MatrixGaussian>(box(M), box(U), box(V));
 }
 
-/**
- * Create matrix Gaussian distribution.
- */
-function MatrixGaussian<Left,Middle>(M:Left, U:Middle, V:Random<Real[_,_]>) -> Distribution<Real[_,_]> {
-  p:InverseWishart?;
-  if (p <- V.graftInverseWishart())? {
-    return MatrixNormalInverseWishart(M, U, p!);
-  } else {
-    return construct<MatrixGaussian>(box(M), box(U), box(V));
-  }
-}
-
-/**
- * Create matrix Gaussian distribution.
- */
-function MatrixGaussian<Middle>(M:Random<Real[_,_]>, U:Middle, V:Random<Real[_,_]>) -> Distribution<Real[_,_]> {
-  let p <- InverseWishart?(V.p);
-  if p? {
-    let q <- M.graftMatrixNormalInverseWishart(p!);
-    if q? {
-      return MatrixNormalInverseWishartMatrixGaussian(q!);
-    } else {
-      return MatrixNormalInverseWishart(M, U, p!);
-    }
-  } else {
-    return construct<MatrixGaussian>(box(M), box(U), V);
-  }
-}
-
-/**
- * Create matrix Gaussian distribution.
- */
-function MatrixGaussian<Left,Middle,Right>(M:MultiplyAdd<Left,Random<Real[_,_]>,Middle>, U:Right, V:Random<Real[_,_]>) -> Distribution<Real[_,_]> {
-  let p <- InverseWishart?(V.p);
-  if p? {
-    let q <- M.m!.graftMatrixNormalInverseWishart(p!);
-    if q? {
-      return LinearMatrixNormalInverseWishartMatrixGaussian(M.l!, q!, M.r!);
-    } else {
-      return MatrixNormalInverseWishart(M, U, p!);
-    }
-  } else {
-    return construct<MatrixGaussian>(box(M), box(U), V);
-  }
-}
-
 /*
  * Simulate a matrix Gaussian distribution.
  *

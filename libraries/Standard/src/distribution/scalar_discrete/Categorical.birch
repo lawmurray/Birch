@@ -59,21 +59,6 @@ function Categorical<Middle>(ρ:Middle) -> {
   return construct<Categorical>(box(ρ));
 }
 
-/**
- * Create categorical distribution.
- */
-function Categorical(ρ:Random<Real[_]>) -> Distribution<Integer> {
-  m1:Dirichlet?;
-  m2:Restaurant?;
-  if (m1 <- ρ.graftDirichlet())? {
-    return DirichletCategorical(m1!);
-  } else if (m2 <- ρ.graftRestaurant())? {
-    return RestaurantCategorical(m2!);
-  } else {
-    return construct<Categorical>(ρ);
-  }    
-}
-
 /*
  * Simulate a categorical distribution.
  *

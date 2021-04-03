@@ -88,6 +88,18 @@ function MatrixNormalInverseWishart<Left,Middle>(M:Left, U:Middle, V:InverseWish
   return m;
 }
 
+/**
+ * Create matrix Gaussian distribution.
+ */
+function MatrixGaussian<Left,Middle>(M:Left, U:Middle, V:Random<Real[_,_]>) -> Distribution<Real[_,_]> {
+  p:InverseWishart?;
+  if (p <- V.graftInverseWishart())? {
+    return MatrixNormalInverseWishart(M, U, p!);
+  } else {
+    return construct<MatrixGaussian>(box(M), box(U), box(V));
+  }
+}
+
 /*
  * Simulate a matrix normal-inverse-Wishart distribution.
  *

@@ -119,3 +119,16 @@ function SubtractBoundedDiscrete(x1:BoundedDiscrete, x2:BoundedDiscrete) -> Subt
   m.link();
   return m;
 }
+
+/**
+ * Create delta distribution.
+ */
+function Delta(μ:Subtract<Random<Integer>,Random<Integer>>) -> Distribution<Integer> {
+  let l1 <- μ.l!.graftBoundedDiscrete();
+  let r1 <- μ.r!.graftBoundedDiscrete();
+  if l1? && r1? {
+    return SubtractBoundedDiscrete(l1!, r1!);
+  } else {
+    return construct<Delta>(box(μ));
+  }
+}

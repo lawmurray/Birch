@@ -64,6 +64,18 @@ function InverseGammaGamma<Left>(k:Left, θ:InverseGamma) -> {
   return m;
 }
 
+/**
+ * Create gamma distribution.
+ */
+function Gamma<Left>(k:Left, θ:Random<Real>) -> Distribution<Real> {
+  θ1:InverseGamma?;
+  if (θ1 <- θ.graftInverseGamma())? {
+    return InverseGammaGamma(k, θ1!);
+  } else {
+    return construct<Gamma>(box(k), θ);
+  }
+}
+
 /*
  * Simulate a compound-gamma distribution.
  *

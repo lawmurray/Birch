@@ -56,6 +56,19 @@ function DirichletMultinomial<Left>(n:Left, ρ:Dirichlet) -> {
   return m;
 }
 
+/**
+ * Create multinomial distribution.
+ */
+function Multinomial<Left>(n:Left, ρ:Random<Real[_]>) ->
+    Distribution<Integer[_]> {
+  m:Dirichlet?;
+  if (m <- ρ.graftDirichlet())? {
+    return DirichletMultinomial(n, m!);
+  } else {
+    return construct<Multinomial>(box(n), ρ);
+  }
+}
+
 /*
  * Simulate a Dirichlet-multinomial distribution.
  *

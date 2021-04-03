@@ -67,6 +67,23 @@ function NormalInverseGammaGaussian(μ:NormalInverseGamma) -> NormalInverseGamma
   return m;
 }
 
+/**
+ * Create Gaussian distribution.
+ */
+function Gaussian(μ:Random<Real>, σ2:Random<Real>) -> Distribution<Real> {
+  let p <- InverseGamma?(σ2.p);
+  if p? {
+    let q <- μ.graftNormalInverseGamma(p!);
+    if q? {
+      return NormalInverseGammaGaussian(q!);
+    } else {
+      return NormalInverseGamma(μ, box(1.0), p!);
+    }
+  } else {
+    return construct<Gaussian>(μ, σ2);
+  }
+}
+
 /*
  * Simulate a Gaussian distribution with a normal inverse-gamma prior.
  *

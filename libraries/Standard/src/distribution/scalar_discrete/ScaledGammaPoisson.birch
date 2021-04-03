@@ -68,6 +68,30 @@ function ScaledGammaPoisson<Left>(a:Left, λ:Gamma) -> {
   return m;
 }
 
+/**
+ * Create Poisson distribution.
+ */
+function Poisson<Left>(λ:Multiply<Left,Random<Real>>) -> Distribution<Integer> {
+  m:Gamma?;
+  if (m <- λ.r!.graftGamma())? {
+    return ScaledGammaPoisson(box(λ.l!), m!);
+  } else {
+    return construct<Poisson>(box(λ));
+  }
+}
+
+/**
+ * Create Poisson distribution.
+ */
+function Poisson<Right>(λ:Multiply<Random<Real>,Right>) -> Distribution<Integer> {
+  m:Gamma?;
+  if (m <- λ.l!.graftGamma())? {
+    return ScaledGammaPoisson(box(λ.r!), m!);
+  } else {
+    return construct<Poisson>(box(λ));
+  }
+}
+
 /*
  * Update the parameters of a scaled Gamma distribution with a Poisson
  * likelihood.

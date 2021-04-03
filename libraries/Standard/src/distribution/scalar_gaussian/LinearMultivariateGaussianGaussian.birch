@@ -47,6 +47,18 @@ function LinearMultivariateGaussianGaussian<Arg1,Arg3,Arg4>(a:Arg1, μ:Multivari
   return m;
 }
 
+/**
+ * Create Gaussian distribution.
+ */
+function Gaussian<Left,Middle,Right>(μ:DotAdd<Left,Random<Real[_]>,Middle>, σ2:Right) -> Distribution<Real> {
+  let p <- μ.m!.graftMultivariateGaussian();
+  if p? {
+    return LinearMultivariateGaussianGaussian(μ.l!, p!, μ.r!, σ2);
+  } else {
+    return construct<Gaussian>(box(μ), box(σ2));
+  }
+}
+
 /*
  * Update the parameters of a multivariate Gaussian distribution with a 
  * linear transformation involving a dot product, and a multivariate Gaussian

@@ -53,42 +53,6 @@ function Poisson<Middle>(λ:Middle) -> Distribution<Integer> {
   return construct<Poisson>(box(λ));
 }
 
-/**
- * Create Poisson distribution.
- */
-function Poisson(λ:Random<Real>) -> Distribution<Integer> {
-  m:Gamma?;
-  if (m <- λ.graftGamma())? {
-    return GammaPoisson(m!);
-  } else {
-    return construct<Poisson>(λ);
-  }
-}
-
-/**
- * Create Poisson distribution.
- */
-function Poisson<Left>(λ:Multiply<Left,Random<Real>>) -> Distribution<Integer> {
-  m:Gamma?;
-  if (m <- λ.r!.graftGamma())? {
-    return ScaledGammaPoisson(box(λ.l!), m!);
-  } else {
-    return construct<Poisson>(box(λ));
-  }
-}
-
-/**
- * Create Poisson distribution.
- */
-function Poisson<Right>(λ:Multiply<Random<Real>,Right>) -> Distribution<Integer> {
-  m:Gamma?;
-  if (m <- λ.l!.graftGamma())? {
-    return ScaledGammaPoisson(box(λ.r!), m!);
-  } else {
-    return construct<Poisson>(box(λ));
-  }
-}
-
 /*
  * Simulate a Poisson distribution.
  *

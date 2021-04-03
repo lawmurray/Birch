@@ -73,6 +73,40 @@ function LinearMultivariateNormalInverseGammaMultivariateGaussian<Left,Right>(A:
   return m;
 }
 
+/**
+ * Create multivariate Gaussian distribution.
+ */
+function MultivariateGaussian<Left,Middle,Right>(μ:MultiplyAdd<Left,Random<Real[_]>,Middle>, Σ:Multiply<Right,Random<Real>>) -> Distribution<Real[_]> {
+  let p <- InverseGamma?(Σ.r!.p);
+  if p? {
+    let q <- μ.m!.graftMultivariateNormalInverseGamma(p!);
+    if q? {
+      return LinearMultivariateNormalInverseGammaMultivariateGaussian(μ.l!, q!, μ.r!);
+    } else {
+      return MultivariateNormalInverseGamma(μ, Σ.l!, p!);
+    }
+  } else {
+    return construct<MultivariateGaussian>(box(μ), box(Σ));
+  }
+}
+
+/**
+ * Create multivariate Gaussian distribution.
+ */
+function MultivariateGaussian<Left,Middle,Right>(μ:MultiplyAdd<Left,Random<Real[_]>,Middle>, Σ:Multiply<Random<Real>,Right>) -> Distribution<Real[_]> {
+  let p <- InverseGamma?(Σ.l!.p);
+  if p? {
+    let q <- μ.m!.graftMultivariateNormalInverseGamma(p!);
+    if q? {
+      return LinearMultivariateNormalInverseGammaMultivariateGaussian(μ.l!, q!, μ.r!);
+    } else {
+      return MultivariateNormalInverseGamma(μ, Σ.r!, p!);
+    }
+  } else {
+    return construct<MultivariateGaussian>(box(μ), box(Σ));
+  }
+}
+
 /*
  * Simulate a multivariate Gaussian distribution with a linear transformation
  * of a multivariate linear normal inverse-gamma prior.

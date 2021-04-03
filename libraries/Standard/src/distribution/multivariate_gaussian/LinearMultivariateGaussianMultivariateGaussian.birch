@@ -48,6 +48,18 @@ function LinearMultivariateGaussianMultivariateGaussian<Arg1,Arg3,Arg4>(A:Arg1, 
   return m;
 }
 
+/**
+ * Create multivariate Gaussian distribution.
+ */
+function MultivariateGaussian<Left,Middle,Right>(μ:MultiplyAdd<Left,Random<Real[_]>,Middle>, Σ:Right) -> Distribution<Real[_]> {
+  let p <- μ.m!.graftMultivariateGaussian();
+  if p? {
+    return LinearMultivariateGaussianMultivariateGaussian(μ.l!, p!, μ.r!, Σ);
+  } else {
+    return construct<MultivariateGaussian>(box(μ), box(Σ));
+  }
+}
+
 /*
  * Update the parameters of a multivariate Gaussian distribution with a 
  * linear transformation and multivariate Gaussian likelihood.

@@ -36,6 +36,18 @@ function GaussianGaussian<Right>(μ:Gaussian, σ2:Right) -> {
   return m;
 }
 
+/**
+ * Create Gaussian distribution.
+ */
+function Gaussian<Right>(μ:Random<Real>, σ2:Right) -> Distribution<Real> {
+  let p <- μ.graftGaussian();
+  if p? {
+    return GaussianGaussian(p!, σ2);
+  } else {
+    return construct<Gaussian>(μ, box(σ2));
+  }
+}
+
 /*
  * Update the parameters of a Gaussian distribution with a Gaussian
  * likelihood.

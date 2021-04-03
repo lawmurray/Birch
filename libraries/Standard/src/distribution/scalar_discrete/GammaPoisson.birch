@@ -62,6 +62,18 @@ function GammaPoisson(λ:Gamma) -> GammaPoisson {
   return m;
 }
 
+/**
+ * Create Poisson distribution.
+ */
+function Poisson(λ:Random<Real>) -> Distribution<Integer> {
+  m:Gamma?;
+  if (m <- λ.graftGamma())? {
+    return GammaPoisson(m!);
+  } else {
+    return construct<Poisson>(λ);
+  }
+}
+
 /*
  * Simulate a gamma-Poisson distribution.
  *
