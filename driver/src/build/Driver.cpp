@@ -1167,7 +1167,7 @@ void birch::Driver::target(const std::string& cmd) {
   std::regex rxWarnings("warning:", options);
   std::regex rxNotes("note:|required by|required from|\\[with.*?\\]", options);
 
-  std::regex rxSkipLine("In file included from|In function|In member function|In instantiation|instantiation contexts|^\\s*from|std::enable_if|At global scope:|type_traits|\\.hpp", options);
+  std::regex rxSkipLine("In file included from|In function|In member function|In instantiation|instantiation contexts|unrecognized command-line option|^\\s*from|std::enable_if|At global scope:|type_traits|\\.hpp", options);
   std::regex rxNamespace("birch::type::|birch::|libbirch::", options);
   std::regex rxCxxWords("\\b(?:virtual|class|const|template(?= *<))\\b *", options);
   std::regex rxTemplateParameter("template parameter", options);
@@ -1188,7 +1188,7 @@ void birch::Driver::target(const std::string& cmd) {
   std::regex rxAka("\\{aka *‘?(class |const )?" + type + "’?\\}", options);
   std::regex rxValueType("using value_type *= *", options);
   std::regex rxDeref("(?:operator)?->", options);
-  std::regex rxAssign("‘(?:operator)?=‘", options);
+  std::regex rxAssign("‘(?:operator)?=’", options);
   std::regex rxNamespaceSep("::", options);
   std::regex rxAuto("‘auto’", options);
   std::regex rxProgram("In function ‘int ([A-Za-z0-9_]+)\\(int, *char\\*\\*\\)’", options);
