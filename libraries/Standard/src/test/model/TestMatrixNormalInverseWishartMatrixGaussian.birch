@@ -1,43 +1,37 @@
 class TestMatrixNormalInverseWishartMatrixGaussian < Model {
-  V:Random<Real[_,_]>;
+  Σ:Random<Real[_,_]>;
   X:Random<Real[_,_]>;
   Y:Random<Real[_,_]>;
 
   n:Integer <- 5;
   p:Integer <- 2;
 
-  M:Real[n,p];
-  U:Real[n,n];
   k:Real;
   Ψ:Real[p,p];
+  M:Real[n,p];
+  U:Real[n,n];
+  V:Real[n,n];
 
   function initialize() {
     k <- p + 1.0 + simulate_uniform(0.0, 10.0);
-    for i in 1..n {
-      for j in 1..n {
-        U[i,j] <- simulate_uniform(-2.0, 2.0);
-      }
-      for j in 1..p {
-        M[i,j] <- simulate_uniform(-10.0, 10.0);
-      }
-    }
-    for i in 1..p {
-      for j in 1..p {
-        Ψ[i,j] <- simulate_uniform(-10.0, 10.0);
-      }
-    }
-    U <- U*transpose(U) + diagonal(1.0e-2, n);
-    Ψ <- Ψ*transpose(Ψ) + diagonal(1.0e-2, p);
+    Ψ <- matrix(\(i:Integer, j:Integer) -> Real { return simulate_uniform(-2.0, 2.0); }, p, p);
+    M <- matrix(\(i:Integer, j:Integer) -> Real { return simulate_uniform(-10.0, 10.0); }, n, p);
+    U <- matrix(\(i:Integer, j:Integer) -> Real { return simulate_uniform(-2.0, 2.0); }, n, n);
+    V <- matrix(\(i:Integer, j:Integer) -> Real { return simulate_uniform(-2.0, 2.0); }, n, n);
+
+    Ψ <- outer(Ψ) + diagonal(1.0e-2, p);
+    U <- outer(U) + diagonal(1.0e-2, n);
+    V <- outer(V) + diagonal(1.0e-2, n);
   }
 
   function simulate() {
-    V ~ InverseWishart(Ψ, k);
-    X ~ MatrixGaussian(M, U, V);
-    Y ~ MatrixGaussian(X, identity(rows(M)), V);
+    Σ ~ InverseWishart(Ψ, k);
+    X ~ MatrixGaussian(M, U, Σ);
+    Y ~ MatrixGaussian(X, V, Σ);
   }
 
   function forward() -> Real[_] {
-    V.value();
+    Σ.value();
     X.value();
     Y.value();
     return vectorize();
@@ -48,13 +42,13 @@ class TestMatrixNormalInverseWishartMatrixGaussian < Model {
     Y.value();
     assert !X.hasValue();
     X.value();
-    assert !V.hasValue();
-    V.value();
+    assert !Σ.hasValue();
+    Σ.value();
     return vectorize();
   }
 
   function forwardLazy() -> Real[_] {
-    V.eval();
+    Σ.eval();
     X.eval();
     Y.eval();
     return vectorize();
@@ -65,8 +59,8 @@ class TestMatrixNormalInverseWishartMatrixGaussian < Model {
     Y.eval();
     assert !X.hasValue();
     X.eval();
-    assert !V.hasValue();
-    V.eval();
+    assert !Σ.hasValue();
+    Σ.eval();
     return vectorize();
   }
 
@@ -75,21 +69,14 @@ class TestMatrixNormalInverseWishartMatrixGaussian < Model {
   }
 
   function vectorize() -> Real[_] {
-    y:Real[size()];
+    z:Real[size()];
     let k <- 0;
-    for i in 1..V.rows() {
-      y[k + 1 .. k + V.columns()] <- matrix<Real>(V.value())[i,1..V.columns()];
-      k <- k + V.columns();
-    }
-    for i in 1..X.rows() {
-      y[k + 1 .. k + X.columns()] <- X.value()[i,1..X.columns()];
-      k <- k + X.columns();
-    }
-    for i in 1..Y.rows() {
-      y[k + 1 .. k + Y.columns()] <- Y.value()[i,1..Y.columns()];
-      k <- k + Y.columns();
-    }
-    return y;
+    z[k + 1.. k + p*p] <- vec(Σ.value());
+    k <- k + p*p;
+    z[k + 1.. k + n*p] <- vec(X.value());
+    k <- k + n*p;
+    z[k + 1.. k + n*p] <- vec(Y.value());
+    return z;
   }
 
   function size() -> Integer {

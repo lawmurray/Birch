@@ -30,8 +30,8 @@ class TestLinearMatrixNormalInverseWishartMultivariateGaussian < Model {
         Ψ[i,j] <- simulate_uniform(-10.0, 10.0);
       }
     }
-    U <- U*transpose(U) + diagonal(1.0e-2, n);
-    Ψ <- Ψ*transpose(Ψ) + diagonal(1.0e-2, p);
+    U <- outer(U) + diagonal(1.0e-2, n);
+    Ψ <- outer(Ψ) + diagonal(1.0e-2, p);
     neg <- simulate_bernoulli(0.5);
   }
 
@@ -86,7 +86,7 @@ class TestLinearMatrixNormalInverseWishartMultivariateGaussian < Model {
   function vectorize() -> Real[_] {
     z:Real[size()];
     let k <- 0;
-    z[k + 1.. k + p*p] <- vec(matrix<Real>(V.value()));
+    z[k + 1.. k + p*p] <- vec(V.value());
     k <- k + p*p;
     z[k + 1.. k + n*p] <- vec(X.value());
     k <- k + n*p;

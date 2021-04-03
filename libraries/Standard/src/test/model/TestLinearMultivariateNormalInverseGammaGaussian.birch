@@ -21,7 +21,7 @@ class TestLinearMultivariateNormalInverseGammaGaussian < Model {
       }
     }
     c <- simulate_uniform(-10.0, 10.0);
-    Σ <- Σ*transpose(Σ) + diagonal(1.0e-2, 10);
+    Σ <- outer(Σ) + diagonal(1.0e-2, 10);
   }
 
   function simulate() {

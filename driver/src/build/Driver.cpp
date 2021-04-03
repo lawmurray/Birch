@@ -1192,6 +1192,8 @@ void birch::Driver::target(const std::string& cmd) {
   std::regex rxNamespaceSep("::", options);
   std::regex rxAuto("‘auto’", options);
   std::regex rxProgram("In function ‘int ([A-Za-z0-9_]+)\\(int, *char\\*\\*\\)’", options);
+  std::regex rxVariable("‘(" + type + ") +(" + name + ")’", options);
+  std::regex rxMemberVariable("‘(" + type + ") +(" + type + ")\\.(" + name + ")’", options);
   std::regex rxVoidFunction("‘((?:" + generic + ")?) *void +(" + name + ")\\((.*?)\\)( *\\[with.+\\])?’", options);
   std::regex rxVoidMemberFunction("‘((?:" + generic + ")?) *void +(" + type + ")\\.(" + name + ")\\((.*?)\\)( *\\[with.+\\])?’", options);
   std::regex rxAutoFunction("‘((?:" + generic + ")?) *auto +(" + name + ")\\((.*?)\\)( *\\[with.+\\])?’", options);
@@ -1250,7 +1252,9 @@ void birch::Driver::target(const std::string& cmd) {
         /* strip suggestions that reveal internal workings */
         str = std::regex_replace(str, rxProgram, "In program ‘$1’");
 
-        /* function return type syntax */
+        /* function and variable declaration syntax */
+        str = std::regex_replace(str, rxVariable, "‘$2:$1’");
+        str = std::regex_replace(str, rxMemberVariable, "‘$2.$3:$1’");
         str = std::regex_replace(str, rxVoidFunction, "‘$2$1($3)$4’");
         str = std::regex_replace(str, rxVoidMemberFunction, "‘$2.$3$1($4)$5’");
         str = std::regex_replace(str, rxAutoFunction, "‘$2$1($3) -> $4’");

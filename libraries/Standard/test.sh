@@ -1,7 +1,7 @@
 #!/bin/bash
 set -eo pipefail
 
-P=4
+P=1
 M=1000    # for gradient tests
 N=100000  # for sampling tests
 
