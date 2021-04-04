@@ -879,7 +879,7 @@ class Buffer {
     } else if scalarReal? {
       set([scalarReal!, scalar<Real>(x)]);
     } else if vectorBoolean? {
-      set(stack(scalar<Integer>(vectorBoolean!), x));
+      set(stack(vector<Integer>(vectorBoolean!), x));
     } else if vectorInteger? {
       cpp{{
       vectorInteger.value().push(x);
@@ -901,9 +901,9 @@ class Buffer {
     } else if scalarReal? {
       set([scalarReal!, x]);
     } else if vectorBoolean? {
-      set(stack(scalar<Real>(vectorBoolean!), x));
+      set(stack(vector<Real>(vectorBoolean!), x));
     } else if vectorInteger? {
-      set(stack(scalar<Real>(vectorInteger!), x));
+      set(stack(vector<Real>(vectorInteger!), x));
     } else if vectorReal? {
       cpp{{
       vectorReal.value().push(x);
