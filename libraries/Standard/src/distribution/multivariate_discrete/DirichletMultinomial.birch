@@ -22,7 +22,7 @@ final class DirichletMultinomial(n:Expression<Integer>, ρ:Dirichlet) <
   }
 
 //  function simulateLazy() -> Integer[_]? {
-//    return simulate_dirichlet_multinomial(n.eval(), ρ.α.eval());
+//    return simulate_dirichlet_multinomial(n.peak(), ρ.α.peak());
 //  }
   
   function logpdf(x:Integer[_]) -> Real {

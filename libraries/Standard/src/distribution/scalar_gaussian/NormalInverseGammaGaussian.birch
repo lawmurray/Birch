@@ -18,8 +18,8 @@ final class NormalInverseGammaGaussian(μ:NormalInverseGamma) <
   }
 
   function simulateLazy() -> Real? {
-    return simulate_normal_inverse_gamma_gaussian(μ.μ.eval(),
-        1.0/μ.λ.eval(), μ.σ2.α.eval(), μ.σ2.β.eval());
+    return simulate_normal_inverse_gamma_gaussian(μ.μ.peak(),
+        1.0/μ.λ.peak(), μ.σ2.α.peak(), μ.σ2.β.peak());
   }
   
   function logpdf(x:Real) -> Real {

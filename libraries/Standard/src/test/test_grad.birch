@@ -13,7 +13,7 @@ function test_grad(π:Distribution<Real>, N:Integer) {
   for n in 1..N {
     /* variate */
     x:Random<Real>;
-    x.move(π.simulate() + 0.5*h);
+    x.move(π.simulate());
 
     /* gradient */    
     let p <- π.logpdfLazy(x)!;
@@ -22,10 +22,8 @@ function test_grad(π:Distribution<Real>, N:Integer) {
     let d <- x.getGradient();
 
     /* finite difference estimate of gradient */
-    let y <- x.eval();
-    let z <- x.eval();
-    y <- y - 0.5*h;
-    z <- z + 0.5*h;
+    let y <- x.eval() - 0.5*h;
+    let z <- x.eval() + 0.5*h;
     let q <- π.logpdf(y);
     let r <- π.logpdf(z);
     let fd <- (r - q)/h;
@@ -58,7 +56,7 @@ function test_grad(π:Distribution<Real[_]>, N:Integer) {
   for n in 1..N {
     /* variate */
     x:Random<Real[_]>;
-    x.move(π.simulate() + vector(0.5*h, D));
+    x.move(π.simulate());
 
     /* gradient */    
     let p <- π.logpdfLazy(x)!;
@@ -106,7 +104,7 @@ function test_grad(π:Distribution<Real[_,_]>, N:Integer) {
   for n in 1..N {
     /* variate */
     x:Random<Real[_,_]>;
-    x.move(π.simulate() + matrix(0.5*h, R, C));
+    x.move(π.simulate());
 
     /* gradient */    
     let p <- π.logpdfLazy(x)!;

@@ -1,0 +1,102 @@
+/**
+ * Multivariate linear-Gaussian-Gaussian distribution.
+ */
+final class ScaledMultivariateGaussianMultivariateGaussian(
+    A:Expression<Real[_,_]>, m:MultivariateGaussian,
+    S:Expression<Real[_,_]>) < MultivariateGaussian(box(A*m.μ),
+    box(A*m.Σ*transpose(A) + S)) {
+  /**
+   * Scale.
+   */
+  A:Expression<Real[_,_]> <- A;
+    
+  /**
+   * Mean.
+   */
+  m:MultivariateGaussian <- m;
+  
+  /**
+   * Likelihood covariance.
+   */
+  S:Expression<Real[_,_]> <- S;
+
+  function update(x:Real[_]) {
+    (m.μ, m.Σ) <- box(update_scaled_multivariate_gaussian_multivariate_gaussian(
+        x, A.value(), m.μ.value(), m.Σ.value(), S.value()));
+  }
+
+  function updateLazy(x:Expression<Real[_]>) {
+    (m.μ, m.Σ) <- update_lazy_scaled_multivariate_gaussian_multivariate_gaussian(
+        x, A, m.μ, m.Σ, S);
+  }
+
+  function link() {
+    m.setChild(this);
+  }
+  
+  function unlink() {
+    m.releaseChild(this);
+  }
+}
+
+function ScaledMultivariateGaussianMultivariateGaussian<Left,Right>(A:Left,
+    μ:MultivariateGaussian, Σ:Right) -> {
+  m:ScaledMultivariateGaussianMultivariateGaussian(box(A), μ, box(Σ));
+  m.link();
+  return m;
+}
+
+/**
+ * Create multivariate Gaussian distribution.
+ */
+function MultivariateGaussian<Left,Right>(
+    μ:Multiply<Left,Random<Real[_]>>, Σ:Right) -> Distribution<Real[_]> {
+  let p <- μ.r!.graftMultivariateGaussian();
+  if p? {
+    return ScaledMultivariateGaussianMultivariateGaussian(μ.l!, p!, Σ);
+  } else {
+    return construct<MultivariateGaussian>(box(μ), box(Σ));
+  }
+}
+
+/*
+ * Update the parameters of a multivariate Gaussian distribution with a 
+ * linear transformation and multivariate Gaussian likelihood.
+ *
+ * - x: The variate.
+ * - A: Scale.
+ * - μ: Prior mean.
+ * - Σ: Prior covariance.
+ * - S: Likelihood covariance.
+ *
+ * Returns: the posterior hyperparameters `μ'` and `Σ'`.
+ */
+function update_scaled_multivariate_gaussian_multivariate_gaussian(x:Real[_],
+    A:Real[_,_], μ:Real[_], Σ:Real[_,_], S:Real[_,_]) -> (Real[_], Real[_,_]) {
+  let K' <- Σ*transpose(solve(A*Σ*transpose(A) + S, A));
+  let μ' <- μ + K'*(x - A*μ);
+  let Σ' <- Σ - K'*A*Σ;
+  return (μ', Σ');
+}
+
+/*
+ * Update the parameters of a multivariate Gaussian distribution with a 
+ * linear transformation and multivariate Gaussian likelihood.
+ *
+ * - x: The variate.
+ * - A: Scale.
+ * - μ: Prior mean.
+ * - Σ: Prior covariance.
+ * - S: Likelihood covariance.
+ *
+ * Returns: the posterior hyperparameters `μ'` and `Σ'`.
+ */
+function update_lazy_scaled_multivariate_gaussian_multivariate_gaussian(
+    x:Expression<Real[_]>, A:Expression<Real[_,_]>, μ:Expression<Real[_]>,
+    Σ:Expression<Real[_,_]>, S:Expression<Real[_,_]>) ->
+    (Expression<Real[_]>, Expression<Real[_,_]>) {
+  let K' <- Σ*transpose(solve(A*Σ*transpose(A) + S, A));
+  let μ' <- μ + K'*(x - A*μ);
+  let Σ' <- Σ - K'*A*Σ;
+  return (box(μ'), box(Σ'));
+}

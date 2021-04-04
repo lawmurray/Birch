@@ -16,7 +16,7 @@ final class GammaExponential(λ:Gamma) < Distribution<Real> {
   }
 
   function simulateLazy() -> Real? {
-    return simulate_lomax(1.0/λ.θ.eval(), λ.k.eval());
+    return simulate_lomax(1.0/λ.θ.peak(), λ.k.peak());
   }
 
   function logpdf(x:Real) -> Real {

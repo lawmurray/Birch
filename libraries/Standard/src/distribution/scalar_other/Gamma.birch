@@ -22,7 +22,7 @@ final class Gamma(k:Expression<Real>, θ:Expression<Real>) <
   }
 
   function simulateLazy() -> Real? {
-    return simulate_gamma(k.eval(), θ.eval());
+    return simulate_gamma(k.peak(), θ.peak());
   }
   
   function logpdf(x:Real) -> Real {

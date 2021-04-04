@@ -22,7 +22,7 @@ final class Weibull(k:Expression<Real>, λ:Expression<Real>) <
   }
 
   function simulateLazy() -> Real? {
-    return simulate_weibull(k.eval(), λ.eval());
+    return simulate_weibull(k.peak(), λ.peak());
   }
   
   function logpdf(x:Real) -> Real {

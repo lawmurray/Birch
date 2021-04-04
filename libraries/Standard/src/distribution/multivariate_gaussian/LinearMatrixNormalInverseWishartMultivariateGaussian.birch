@@ -9,6 +9,7 @@ final class LinearMatrixNormalInverseWishartMultivariateGaussian(
    * Scale.
    */
   a:Expression<Real[_]> <- a;
+
   /**
    * Mean.
    */
@@ -28,36 +29,37 @@ final class LinearMatrixNormalInverseWishartMultivariateGaussian(
   }
 
   function simulate() -> Real[_] {
-    return simulate_linear_matrix_normal_inverse_wishart_multivariate_gaussian(
-        a.value(), M.N.value(), M.Λ.value(), c.value(), M.V.Ψ.value(),
-        M.V.k.value());
+    return simulate_scaled_matrix_normal_inverse_wishart_multivariate_gaussian(
+        a.value(), M.N.value(), M.Λ.value(), M.V.Ψ.value(), M.V.k.value()) +
+        c.value();
   }
 
   function simulateLazy() -> Real[_]? {
-    return simulate_linear_matrix_normal_inverse_wishart_multivariate_gaussian(
-        a.eval(), M.N.eval(), M.Λ.eval(), c.eval(), M.V.Ψ.eval(), M.V.k.eval());
+    return simulate_scaled_matrix_normal_inverse_wishart_multivariate_gaussian(
+        a.peak(), M.N.peak(), M.Λ.peak(), M.V.Ψ.peak(), M.V.k.peak()) +
+        c.peak();
   }
   
   function logpdf(x:Real[_]) -> Real {
-    return logpdf_linear_matrix_normal_inverse_wishart_multivariate_gaussian(
-        x, a.value(), M.N.value(), M.Λ.value(), c.value(), M.V.Ψ.value(),
+    return logpdf_scaled_matrix_normal_inverse_wishart_multivariate_gaussian(
+        x - c.value(), a.value(), M.N.value(), M.Λ.value(), M.V.Ψ.value(),
         M.V.k.value());
   }
 
   function logpdfLazy(x:Expression<Real[_]>) -> Expression<Real>? {
-    return logpdf_lazy_linear_matrix_normal_inverse_wishart_multivariate_gaussian(
-        x, a, M.N, M.Λ, c, M.V.Ψ, M.V.k);
+    return logpdf_lazy_scaled_matrix_normal_inverse_wishart_multivariate_gaussian(
+        box(x - c), a, M.N, M.Λ, M.V.Ψ, M.V.k);
   }
 
   function update(x:Real[_]) {
-    (M.N, M.Λ, M.V.Ψ, M.V.k) <- box(update_linear_matrix_normal_inverse_wishart_multivariate_gaussian(
-        x, a.value(), M.N.value(), M.Λ.value(), c.value(), M.V.Ψ.value(),
+    (M.N, M.Λ, M.V.Ψ, M.V.k) <- box(update_scaled_matrix_normal_inverse_wishart_multivariate_gaussian(
+        x - c.value(), a.value(), M.N.value(), M.Λ.value(), M.V.Ψ.value(),
         M.V.k.value()));
   }
 
   function updateLazy(x:Expression<Real[_]>) {
-    (M.N, M.Λ, M.V.Ψ, M.V.k) <- update_lazy_linear_matrix_normal_inverse_wishart_multivariate_gaussian(
-        x, a, M.N, M.Λ, c, M.V.Ψ, M.V.k);
+    (M.N, M.Λ, M.V.Ψ, M.V.k) <- update_lazy_scaled_matrix_normal_inverse_wishart_multivariate_gaussian(
+        box(x - c), a, M.N, M.Λ, M.V.Ψ, M.V.k);
   }
 
   function link() {
@@ -93,124 +95,4 @@ function MultivariateGaussian<Left,Middle>(
   } else {
     return construct<MultivariateGaussian>(box(μ), Σ);
   }
-}
-
-/*
- * Simulate a Gaussian distribution with linear transformation of a
- * matrix-normal-inverse-Wishart prior.
- *
- * - a: Scale.
- * - N: Precision times mean matrix.
- * - Λ: Precision.
- * - c: Offset.
- * - Ψ: Variance shape.
- * - k: Degrees of freedom.
- */
-function simulate_linear_matrix_normal_inverse_wishart_multivariate_gaussian(
-    a:Real[_], N:Real[_,_], Λ:Real[_,_], c:Real[_], Ψ:Real[_,_], k:Real) -> Real[_] {
-  let p <- columns(N);
-  let M <- solve(Λ, N);
-  let σ2 <- 1.0 + dot(a, solve(Λ, a));
-  return simulate_multivariate_student_t(k - p + 1.0, dot(a, M) + c, σ2*Ψ);
-}
-
-/*
- * Observe a Gaussian variate with linear transformation of a
- * matrix-normal-inverse-Wishart prior.
- *
- * - x: The variate.
- * - a: Scale.
- * - N: Prior precision times mean matrix.
- * - Λ: Prior precision.
- * - c: Offset.
- * - Ψ: Prior variance shape.
- * - k: Prior degrees of freedom.
- *
- * Returns: the log probability density.
- */
-function logpdf_linear_matrix_normal_inverse_wishart_multivariate_gaussian(
-    x:Real[_], a:Real[_], N:Real[_,_], Λ:Real[_,_], c:Real[_], Ψ:Real[_,_], k:Real) ->
-    Real {
-  let p <- columns(N);
-  let M <- solve(Λ, N);
-  let σ2 <- 1.0 + dot(a, solve(Λ, a));
-  return logpdf_multivariate_student_t(x, k - p + 1.0, dot(a, M) + c, σ2*Ψ);
-}
-
-/*
- * Observe a Gaussian variate with linear transformation of a
- * matrix-normal-inverse-Wishart prior.
- *
- * - x: The variate.
- * - a: Scale.
- * - N: Prior precision times mean matrix.
- * - Λ: Prior precision.
- * - c: Offset.
- * - Ψ: Prior variance shape.
- * - k: Prior degrees of freedom.
- *
- * Returns: the log probability density.
- */
-function logpdf_lazy_linear_matrix_normal_inverse_wishart_multivariate_gaussian(
-    x:Expression<Real[_]>, a:Expression<Real[_]>, N:Expression<Real[_,_]>,
-    Λ:Expression<Real[_,_]>, c:Expression<Real[_]>, Ψ:Expression<Real[_,_]>,
-    k:Expression<Real>) -> Expression<Real> {
-  let p <- columns(N);
-  let M <- solve(Λ, N);
-  let σ2 <- 1.0 + dot(a, solve(Λ, a));
-  return logpdf_lazy_multivariate_student_t(x, box(k - p + 1.0), box(dot(a, M) + c), box(σ2*Ψ));
-}
-
-/*
- * Update the parameters of a Gaussian variate with linear transformation
- * of matrix-normal-inverse-Wishart prior.
- *
- * - x: The variate.
- * - N: Prior precision times mean matrix.
- * - Λ: Prior precision.
- * - a: Scale.
- * - c: Offset.
- * - V: Prior variance shape.
- * - k: Prior degrees of freedom.
- *
- * Returns: the posterior hyperparameters `N'`, `Λ'`, `V'` and `k'`.
- */
-function update_linear_matrix_normal_inverse_wishart_multivariate_gaussian(
-    x:Real[_], a:Real[_], N:Real[_,_], Λ:Real[_,_], c:Real[_], V:Real[_,_], k:Real) ->
-    (Real[_,_], Real[_,_], Real[_,_], Real) {
-  let Λ' <- rank_update(Λ, a);
-  let N' <- N + outer(a, x - c);
-  let M <- solve(Λ, N);
-  let M' <- solve(Λ', N');
-  let V' <- V + outer(x - dot(a, M') - c) + transpose(M' - M)*Λ*(M' - M);
-  let k' <- k + 1;
-  return (N', Λ', V', k');
-}
-
-/*
- * Update the parameters of a Gaussian variate with linear transformation
- * of matrix-normal-inverse-Wishart prior.
- *
- * - x: The variate.
- * - a: Scale.
- * - N: Prior precision times mean matrix.
- * - Λ: Prior precision.
- * - c: Offset.
- * - V: Prior variance shape.
- * - k: Prior degrees of freedom.
- *
- * Returns: the posterior hyperparameters `N'`, `Λ'`, `V'` and `k'`.
- */
-function update_lazy_linear_matrix_normal_inverse_wishart_multivariate_gaussian(
-    x:Expression<Real[_]>, a:Expression<Real[_]>, N:Expression<Real[_,_]>,
-    Λ:Expression<Real[_,_]>, c:Expression<Real[_]>, V:Expression<Real[_,_]>,
-    k:Expression<Real>) -> (Expression<Real[_,_]>, Expression<Real[_,_]>,
-    Expression<Real[_,_]>, Expression<Real>) {
-  let Λ' <- rank_update(Λ, a);
-  let N' <- N + outer(a, x - c);
-  let M <- solve(Λ, N);
-  let M' <- solve(Λ', N');
-  let V' <- V + outer(x - c) + transpose(M)*N - transpose(M')*N';
-  let k' <- k + 1.0;
-  return (box(N'), box(Λ'), box(V'), box(k'));
 }

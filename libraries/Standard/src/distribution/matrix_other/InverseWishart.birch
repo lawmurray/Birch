@@ -56,7 +56,7 @@ final class InverseWishart(Ψ:Expression<Real[_,_]>, k:Expression<Real>) <
   }
 
   function simulateLazy() -> Real[_,_]? {
-    return simulate_inverse_wishart(Ψ.eval(), k.eval());
+    return simulate_inverse_wishart(Ψ.peak(), k.peak());
   }
   
   function logpdf(X:Real[_,_]) -> Real {

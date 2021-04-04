@@ -16,7 +16,7 @@ final class Bernoulli(ρ:Expression<Real>) < Distribution<Boolean> {
   }
   
   function simulateLazy() -> Boolean? {
-    return simulate_bernoulli(ρ.eval());
+    return simulate_bernoulli(ρ.peak());
   }
   
   function logpdf(x:Boolean) -> Real {

@@ -1,0 +1,204 @@
+/**
+ * Multivariate Gaussian distribution with linear transformation of
+ * matrix-normal-inverse-Wishart prior.
+ */
+final class ScaledMatrixNormalInverseWishartMultivariateGaussian(
+    a:Expression<Real[_]>, M:MatrixNormalInverseWishart) <
+    Distribution<Real[_]> {
+  /**
+   * Scale.
+   */
+  a:Expression<Real[_]> <- a;
+
+  /**
+   * Mean.
+   */
+  M:MatrixNormalInverseWishart <- M;
+
+  function rows() -> Integer {
+    return global.columns(M);
+  }
+
+  function supportsLazy() -> Boolean {
+    return true;
+  }
+
+  function simulate() -> Real[_] {
+    return simulate_scaled_matrix_normal_inverse_wishart_multivariate_gaussian(
+        a.value(), M.N.value(), M.Λ.value(), M.V.Ψ.value(), M.V.k.value());
+  }
+
+  function simulateLazy() -> Real[_]? {
+    return simulate_scaled_matrix_normal_inverse_wishart_multivariate_gaussian(
+        a.peak(), M.N.peak(), M.Λ.peak(), M.V.Ψ.peak(), M.V.k.peak());
+  }
+  
+  function logpdf(x:Real[_]) -> Real {
+    return logpdf_scaled_matrix_normal_inverse_wishart_multivariate_gaussian(
+        x, a.value(), M.N.value(), M.Λ.value(), M.V.Ψ.value(), M.V.k.value());
+  }
+
+  function logpdfLazy(x:Expression<Real[_]>) -> Expression<Real>? {
+    return logpdf_lazy_scaled_matrix_normal_inverse_wishart_multivariate_gaussian(
+        x, a, M.N, M.Λ, M.V.Ψ, M.V.k);
+  }
+
+  function update(x:Real[_]) {
+    (M.N, M.Λ, M.V.Ψ, M.V.k) <- box(update_scaled_matrix_normal_inverse_wishart_multivariate_gaussian(
+        x, a.value(), M.N.value(), M.Λ.value(), M.V.Ψ.value(), M.V.k.value()));
+  }
+
+  function updateLazy(x:Expression<Real[_]>) {
+    (M.N, M.Λ, M.V.Ψ, M.V.k) <- update_lazy_scaled_matrix_normal_inverse_wishart_multivariate_gaussian(
+        x, a, M.N, M.Λ, M.V.Ψ, M.V.k);
+  }
+
+  function link() {
+    M.setChild(this);
+  }
+  
+  function unlink() {
+    M.releaseChild(this);
+  }
+}
+
+function ScaledMatrixNormalInverseWishartMultivariateGaussian<Left>(
+  a:Left, M:MatrixNormalInverseWishart) -> {
+  m:ScaledMatrixNormalInverseWishartMultivariateGaussian(box(a), M);
+  m.link();
+  return m;
+}
+
+/**
+ * Create multivariate Gaussian distribution.
+ */
+function MultivariateGaussian<Left>(μ:Dot<Left,Random<Real[_,_]>>,
+    Σ:Random<Real[_,_]>) -> Distribution<Real[_]> {
+  let p <- InverseWishart?(Σ.p);
+  if p? {
+    let q <- μ.r!.graftMatrixNormalInverseWishart(p!);
+    if q? {
+      return ScaledMatrixNormalInverseWishartMultivariateGaussian(μ.l!, q!);
+    } else {
+      return construct<MultivariateGaussian>(box(μ), Σ);
+    }
+  } else {
+    return construct<MultivariateGaussian>(box(μ), Σ);
+  }
+}
+
+/*
+ * Simulate a Gaussian distribution with linear transformation of a
+ * matrix-normal-inverse-Wishart prior.
+ *
+ * - a: Scale.
+ * - N: Precision times mean matrix.
+ * - Λ: Precision.
+ * - Ψ: Variance shape.
+ * - k: Degrees of freedom.
+ */
+function simulate_scaled_matrix_normal_inverse_wishart_multivariate_gaussian(
+    a:Real[_], N:Real[_,_], Λ:Real[_,_], Ψ:Real[_,_], k:Real) -> Real[_] {
+  let p <- columns(N);
+  let M <- solve(Λ, N);
+  let σ2 <- 1.0 + dot(a, solve(Λ, a));
+  return simulate_multivariate_student_t(k - p + 1.0, dot(a, M), σ2*Ψ);
+}
+
+/*
+ * Observe a Gaussian variate with linear transformation of a
+ * matrix-normal-inverse-Wishart prior.
+ *
+ * - x: The variate.
+ * - a: Scale.
+ * - N: Prior precision times mean matrix.
+ * - Λ: Prior precision.
+ * - Ψ: Prior variance shape.
+ * - k: Prior degrees of freedom.
+ *
+ * Returns: the log probability density.
+ */
+function logpdf_scaled_matrix_normal_inverse_wishart_multivariate_gaussian(
+    x:Real[_], a:Real[_], N:Real[_,_], Λ:Real[_,_], Ψ:Real[_,_], k:Real) ->
+    Real {
+  let p <- columns(N);
+  let M <- solve(Λ, N);
+  let σ2 <- 1.0 + dot(a, solve(Λ, a));
+  return logpdf_multivariate_student_t(x, k - p + 1.0, dot(a, M), σ2*Ψ);
+}
+
+/*
+ * Observe a Gaussian variate with linear transformation of a
+ * matrix-normal-inverse-Wishart prior.
+ *
+ * - x: The variate.
+ * - a: Scale.
+ * - N: Prior precision times mean matrix.
+ * - Λ: Prior precision.
+ * - Ψ: Prior variance shape.
+ * - k: Prior degrees of freedom.
+ *
+ * Returns: the log probability density.
+ */
+function logpdf_lazy_scaled_matrix_normal_inverse_wishart_multivariate_gaussian(
+    x:Expression<Real[_]>, a:Expression<Real[_]>, N:Expression<Real[_,_]>,
+    Λ:Expression<Real[_,_]>, Ψ:Expression<Real[_,_]>, k:Expression<Real>) ->
+    Expression<Real> {
+  let p <- columns(N);
+  let M <- solve(Λ, N);
+  let σ2 <- 1.0 + dot(a, solve(Λ, a));
+  return logpdf_lazy_multivariate_student_t(x, box(k - p + 1.0),
+      box(dot(a, M)), box(σ2*Ψ));
+}
+
+/*
+ * Update the parameters of a Gaussian variate with linear transformation
+ * of matrix-normal-inverse-Wishart prior.
+ *
+ * - x: The variate.
+ * - N: Prior precision times mean matrix.
+ * - Λ: Prior precision.
+ * - a: Scale.
+ * - V: Prior variance shape.
+ * - k: Prior degrees of freedom.
+ *
+ * Returns: the posterior hyperparameters `N'`, `Λ'`, `V'` and `k'`.
+ */
+function update_scaled_matrix_normal_inverse_wishart_multivariate_gaussian(
+    x:Real[_], a:Real[_], N:Real[_,_], Λ:Real[_,_], V:Real[_,_], k:Real) ->
+    (Real[_,_], Real[_,_], Real[_,_], Real) {
+  let Λ' <- rank_update(Λ, a);
+  let N' <- N + outer(a, x);
+  let M <- solve(Λ, N);
+  let M' <- solve(Λ', N');
+  let V' <- V + outer(x - dot(a, M')) + transpose(M' - M)*Λ*(M' - M);
+  let k' <- k + 1;
+  return (N', Λ', V', k');
+}
+
+/*
+ * Update the parameters of a Gaussian variate with linear transformation
+ * of matrix-normal-inverse-Wishart prior.
+ *
+ * - x: The variate.
+ * - a: Scale.
+ * - N: Prior precision times mean matrix.
+ * - Λ: Prior precision.
+ * - V: Prior variance shape.
+ * - k: Prior degrees of freedom.
+ *
+ * Returns: the posterior hyperparameters `N'`, `Λ'`, `V'` and `k'`.
+ */
+function update_lazy_scaled_matrix_normal_inverse_wishart_multivariate_gaussian(
+    x:Expression<Real[_]>, a:Expression<Real[_]>, N:Expression<Real[_,_]>,
+    Λ:Expression<Real[_,_]>, V:Expression<Real[_,_]>, k:Expression<Real>) ->
+    (Expression<Real[_,_]>, Expression<Real[_,_]>, Expression<Real[_,_]>,
+    Expression<Real>) {
+  let Λ' <- rank_update(Λ, a);
+  let N' <- N + outer(a, x);
+  let M <- solve(Λ, N);
+  let M' <- solve(Λ', N');
+  let V' <- V + outer(x) + transpose(M)*N - transpose(M')*N';
+  let k' <- k + 1.0;
+  return (box(N'), box(Λ'), box(V'), box(k'));
+}

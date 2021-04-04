@@ -21,7 +21,7 @@ class Gaussian(μ:Expression<Real>, σ2:Expression<Real>) < Distribution<Real> {
   }
 
   function simulateLazy() -> Real? {
-    return simulate_gaussian(μ.eval(), σ2.eval());
+    return simulate_gaussian(μ.peak(), σ2.peak());
   }
   
   function logpdf(x:Real) -> Real {

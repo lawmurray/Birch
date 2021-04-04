@@ -35,7 +35,7 @@ final class LinearMultivariateNormalInverseGammaGaussian(
 
   function simulateLazy() -> Real? {
     return simulate_linear_multivariate_normal_inverse_gamma_gaussian(
-        a.eval(), μ.ν.eval(), μ.Λ.eval(), c.eval(), μ.α.eval(), μ.γ.eval());
+        a.peak(), μ.ν.peak(), μ.Λ.peak(), c.peak(), μ.α.peak(), μ.γ.peak());
         
   }
   
@@ -82,7 +82,8 @@ final class LinearMultivariateNormalInverseGammaGaussian(
   }
 }
 
-function LinearMultivariateNormalInverseGammaGaussian<Left,Right>(a:Left, μ:MultivariateNormalInverseGamma, c:Right) -> {
+function LinearMultivariateNormalInverseGammaGaussian<Left,Right>(a:Left,
+    μ:MultivariateNormalInverseGamma, c:Right) -> {
   m:LinearMultivariateNormalInverseGammaGaussian(box(a), μ, box(c));
   m.link();
   return m;
@@ -91,14 +92,33 @@ function LinearMultivariateNormalInverseGammaGaussian<Left,Right>(a:Left, μ:Mul
 /**
  * Create Gaussian distribution.
  */
-function Gaussian<Left,Middle>(μ:DotAdd<Left,Random<Real[_]>,Middle>, σ2:Random<Real>) -> Distribution<Real> {
+function Gaussian<Left,Middle>(μ:DotAdd<Left,Random<Real[_]>,Middle>,
+    σ2:Random<Real>) -> Distribution<Real> {
   let p <- InverseGamma?(σ2.p);
   if p? {
     let q <- μ.m!.graftMultivariateNormalInverseGamma(p!);
     if q? {
       return LinearMultivariateNormalInverseGammaGaussian(μ.l!, q!, μ.r!);
     } else {
-      return NormalInverseGamma(μ, box(1.0), p!);
+      return NormalInverseGamma(μ, 1.0, p!);
+    }
+  } else {
+    return construct<Gaussian>(box(μ), σ2);
+  }
+}
+
+/**
+ * Create Gaussian distribution.
+ */
+function Gaussian<Left>(μ:Dot<Left,Random<Real[_]>>, σ2:Random<Real>) ->
+    Distribution<Real> {
+  let p <- InverseGamma?(σ2.p);
+  if p? {
+    let q <- μ.m!.graftMultivariateNormalInverseGamma(p!);
+    if q? {
+      return LinearMultivariateNormalInverseGammaGaussian(μ.l!, q!, 0.0);
+    } else {
+      return NormalInverseGamma(μ, 1.0, p!);
     }
   } else {
     return construct<Gaussian>(box(μ), σ2);

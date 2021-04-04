@@ -27,7 +27,7 @@ final class Student(ν:Expression<Real>, μ:Expression<Real>,
   }
 
   function simulateLazy() -> Real? {
-    return simulate_student_t(ν.eval(), μ.eval(), σ2.eval());
+    return simulate_student_t(ν.peak(), μ.peak(), σ2.peak());
   }
   
   function logpdf(x:Real) -> Real {

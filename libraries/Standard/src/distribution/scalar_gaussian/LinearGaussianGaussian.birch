@@ -25,7 +25,8 @@ final class LinearGaussianGaussian(a:Expression<Real>, m:Gaussian,
   s2:Expression<Real> <- s2;
 
   function update(x:Real) {
-    (m.μ, m.σ2) <- box(update_linear_gaussian_gaussian(x, a.value(), m.μ.value(), m.σ2.value(), c.value(), s2.value()));
+    (m.μ, m.σ2) <- box(update_linear_gaussian_gaussian(x, a.value(),
+        m.μ.value(), m.σ2.value(), c.value(), s2.value()));
   }
 
   function updateLazy(x:Expression<Real>) {
@@ -41,7 +42,8 @@ final class LinearGaussianGaussian(a:Expression<Real>, m:Gaussian,
   }
 }
 
-function LinearGaussianGaussian<Arg1,Arg3,Arg4>(a:Arg1, μ:Gaussian, c:Arg3, σ2:Arg4) -> {
+function LinearGaussianGaussian<Left,Middle,Right>(a:Left, μ:Gaussian,
+    c:Middle, σ2:Right) -> {
   m:LinearGaussianGaussian(box(a), μ, box(c), box(σ2));
   m.link();
   return m;
@@ -50,10 +52,24 @@ function LinearGaussianGaussian<Arg1,Arg3,Arg4>(a:Arg1, μ:Gaussian, c:Arg3, σ2
 /**
  * Create Gaussian distribution.
  */
-function Gaussian<Left,Middle,Right>(μ:MultiplyAdd<Left,Random<Real>,Middle>, σ2:Right) -> Distribution<Real> {
+function Gaussian<Left,Middle,Right>(μ:MultiplyAdd<Left,Random<Real>,Middle>,
+    σ2:Right) -> Distribution<Real> {
   let p <- μ.m!.graftGaussian();
   if p? {
     return LinearGaussianGaussian(μ.l!, p!, μ.r!, σ2);
+  } else {
+    return construct<Gaussian>(box(μ), box(σ2));
+  }
+}
+
+/**
+ * Create Gaussian distribution.
+ */
+function Gaussian<Left,Right>(μ:Multiply<Left,Random<Real>>, σ2:Right) ->
+    Distribution<Real> {
+  let p <- μ.r!.graftGaussian();
+  if p? {
+    return LinearGaussianGaussian(μ.l!, p!, 0.0, σ2);
   } else {
     return construct<Gaussian>(box(μ), box(σ2));
   }

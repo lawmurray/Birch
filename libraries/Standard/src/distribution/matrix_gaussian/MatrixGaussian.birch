@@ -39,7 +39,7 @@ class MatrixGaussian(M:Expression<Real[_,_]>, U:Expression<Real[_,_]>,
   }
 
   function simulateLazy() -> Real[_,_]? {
-    return simulate_matrix_gaussian(M.eval(), U.eval(), V.eval());
+    return simulate_matrix_gaussian(M.peak(), U.peak(), V.peak());
   }
   
   function logpdf(X:Real[_,_]) -> Real {

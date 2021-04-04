@@ -16,7 +16,7 @@ final class DirichletCategorical(ρ:Dirichlet) < Distribution<Integer> {
   }
 
 //  function simulateLazy() -> Integer? {
-//    return simulate_dirichlet_categorical(ρ.α.eval());
+//    return simulate_dirichlet_categorical(ρ.α.peak());
 //  }
   
   function logpdf(x:Integer) -> Real {

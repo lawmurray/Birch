@@ -105,8 +105,8 @@ class BoxedExpression<Value,Form>(x:Value, f:Form) < Expression<Value> {
         //   called on this object, typically because it is root expression
         //   used from client code, rather than a subexpression used from
         //   other expressions
-        f.grad(d);       // upstream gradients all accumulated, propagate
-        this.d <- nil;         // clear intermediate gradients to save memory
+        f.grad(this.d!);  // upstream gradients all accumulated, propagate
+        this.d <- nil;    // clear intermediate gradients to save memory
         visitCount <- 0;  // reset for next time
       }
     }

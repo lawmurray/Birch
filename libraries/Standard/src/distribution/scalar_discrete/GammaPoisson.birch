@@ -16,7 +16,7 @@ final class GammaPoisson(λ:Gamma) < Discrete {
   }
 
   function simulateLazy() -> Integer? {
-    return simulate_gamma_poisson(λ.k.eval(), λ.θ.eval());
+    return simulate_gamma_poisson(λ.k.peak(), λ.θ.peak());
   }
   
   function logpdf(x:Integer) -> Real {

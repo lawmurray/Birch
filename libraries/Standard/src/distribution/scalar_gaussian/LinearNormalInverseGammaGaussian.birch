@@ -29,8 +29,8 @@ final class LinearNormalInverseGammaGaussian(a:Expression<Real>,
   }
 
   function simulateLazy() -> Real? {
-    return simulate_linear_normal_inverse_gamma_gaussian(a.eval(),
-        μ.μ.eval(), 1.0/μ.λ.eval(), c.eval(), μ.σ2.α.eval(), μ.σ2.β.eval());
+    return simulate_linear_normal_inverse_gamma_gaussian(a.peak(),
+        μ.μ.peak(), 1.0/μ.λ.peak(), c.peak(), μ.σ2.α.peak(), μ.σ2.β.peak());
   }
   
   function logpdf(x:Real) -> Real {
@@ -76,7 +76,8 @@ final class LinearNormalInverseGammaGaussian(a:Expression<Real>,
   }
 }
 
-function LinearNormalInverseGammaGaussian<Left,Right>(a:Left, μ:NormalInverseGamma, c:Right) -> {
+function LinearNormalInverseGammaGaussian<Left,Right>(a:Left,
+    μ:NormalInverseGamma, c:Right) -> {
   m:LinearNormalInverseGammaGaussian(box(a), μ, box(c));
   m.link();
   return m;
@@ -85,7 +86,8 @@ function LinearNormalInverseGammaGaussian<Left,Right>(a:Left, μ:NormalInverseGa
 /**
  * Create Gaussian distribution.
  */
-function Gaussian<Left,Middle>(μ:MultiplyAdd<Left,Random<Real>,Middle>, σ2:Random<Real>) -> Distribution<Real> {
+function Gaussian<Left,Middle>(μ:MultiplyAdd<Left,Random<Real>,Middle>,
+    σ2:Random<Real>) -> Distribution<Real> {
   let p <- InverseGamma?(σ2.p);
   if p? {
     let q <- μ.m!.graftNormalInverseGamma(p!);
@@ -93,6 +95,24 @@ function Gaussian<Left,Middle>(μ:MultiplyAdd<Left,Random<Real>,Middle>, σ2:Ran
       return LinearNormalInverseGammaGaussian(μ.l!, q!, μ.r!);
     } else {
       return NormalInverseGamma(μ, box(1.0), p!);
+    }
+  } else {
+    return construct<Gaussian>(box(μ), σ2);
+  }
+}
+
+/**
+ * Create Gaussian distribution.
+ */
+function Gaussian<Left>(μ:Multiply<Left,Random<Real>>, σ2:Random<Real>) ->
+    Distribution<Real> {
+  let p <- InverseGamma?(σ2.p);
+  if p? {
+    let q <- μ.m!.graftNormalInverseGamma(p!);
+    if q? {
+      return LinearNormalInverseGammaGaussian(μ.l!, q!, 0.0);
+    } else {
+      return NormalInverseGamma(μ, 1.0, p!);
     }
   } else {
     return construct<Gaussian>(box(μ), σ2);

@@ -22,7 +22,7 @@ final class Uniform(l:Expression<Real>, u:Expression<Real>) <
   }
 
 //  function simulateLazy() -> Real? {
-//    return simulate_uniform(l.eval(), u.eval());
+//    return simulate_uniform(l.peak(), u.peak());
 //  }
   
   function logpdf(x:Real) -> Real {

@@ -37,7 +37,7 @@ class ConwayMaxwellPoisson(λ:Expression<Real>, ν:Expression<Real>,
   }
 
   function simulateLazy() -> Integer? {
-    return simulate_conway_maxwell_poisson(λ.eval(), ν.eval(), n.eval());
+    return simulate_conway_maxwell_poisson(λ.peak(), ν.peak(), n.peak());
   }
 
   function logpdf(x:Integer) -> Real {

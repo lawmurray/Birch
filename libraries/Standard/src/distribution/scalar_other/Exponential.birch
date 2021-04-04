@@ -16,7 +16,7 @@ final class Exponential(λ:Expression<Real>) < Distribution<Real> {
   }
 
   function simulateLazy() -> Real? {
-    return simulate_exponential(λ.eval());
+    return simulate_exponential(λ.peak());
   }
 
   function logpdf(x:Real) -> Real {
