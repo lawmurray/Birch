@@ -76,6 +76,25 @@ function LinearMatrixNormalInverseWishartMultivariateGaussian<Left,Right>(
   return m;
 }
 
+/**
+ * Create multivariate Gaussian distribution.
+ */
+function MultivariateGaussian<Left,Middle>(
+    μ:DotAdd<Left,Random<Real[_,_]>,Middle>, Σ:Random<Real[_,_]>) ->
+    Distribution<Real[_]> {
+  let p <- InverseWishart?(Σ.p);
+  if p? {
+    let q <- μ.m!.graftMatrixNormalInverseWishart(p!);
+    if q? {
+      return LinearMatrixNormalInverseWishartMultivariateGaussian(μ.l!, q!, μ.r!);
+    } else {
+      return construct<MultivariateGaussian>(box(μ), Σ);
+    }
+  } else {
+    return construct<MultivariateGaussian>(box(μ), Σ);
+  }
+}
+
 /*
  * Simulate a Gaussian distribution with linear transformation of a
  * matrix-normal-inverse-Wishart prior.

@@ -3,5 +3,5 @@
  */
 program test_chain_multivariate_gaussian(N:Integer <- 10000, lazy:Boolean <- false) {
   m:TestChainMultivariateGaussian;
-  test_conjugacy(m, N, 15, lazy);
+  test_conjugacy(m, N, lazy);
 }

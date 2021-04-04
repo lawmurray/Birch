@@ -47,4 +47,8 @@ class TestGaussianGaussian < Model {
     y[1] <- μ_1.eval();
     return y;
   }
+
+  function size() -> Integer {
+    return 2;
+  }
 }

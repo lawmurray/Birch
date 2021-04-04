@@ -49,4 +49,8 @@ class TestDirichletCategorical < Model {
   function marginal() -> Distribution<Integer> {
     return x.getDistribution();
   }
+
+  function size() -> Integer {
+    return 6;
+  }
 }

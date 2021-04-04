@@ -1,8 +1,8 @@
 #!/bin/bash
 set -eo pipefail
 
-M=1000    # for gradient tests
-N=100000  # for sampling tests
+M=100   # for gradient tests
+N=10000  # for sampling tests
 
 ls src/test/basic     | grep '\.birch' | sed "s/.birch$/ -N $N/g"              | xargs -t -L 1 birch
 ls src/test/cdf       | grep '\.birch' | sed "s/.birch$/ -N $N/g"              | xargs -t -L 1 birch

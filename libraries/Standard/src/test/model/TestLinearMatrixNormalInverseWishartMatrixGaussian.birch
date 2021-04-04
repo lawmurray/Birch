@@ -3,7 +3,7 @@ class TestLinearMatrixNormalInverseWishartMatrixGaussian < Model {
   X:Random<Real[_,_]>;
   Y:Random<Real[_,_]>;
 
-  n:Integer <- 5;
+  n:Integer <- 3;
   p:Integer <- 2;
 
   k:Real;

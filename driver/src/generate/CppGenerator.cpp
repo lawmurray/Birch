@@ -350,7 +350,7 @@ void birch::CppGenerator::visit(const Program* o) {
           auto param = dynamic_cast<const Parameter*>(*iter);
           assert(param);
           genSourceLine(o->loc);
-          start(param->type << ' ' << param->name);
+          start("[[maybe_unused]] " << param->type << ' ' << param->name);
           if (!param->value->isEmpty()) {
             middle(" = " << param->value);
           } else if (param->type->isClass()) {

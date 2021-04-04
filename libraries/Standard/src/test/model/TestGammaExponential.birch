@@ -49,4 +49,8 @@ class TestGammaExponential < Model {
   function marginal() -> Distribution<Real> {
     return x.getDistribution();
   }
+
+  function size() -> Integer {
+    return 2;
+  }
 }

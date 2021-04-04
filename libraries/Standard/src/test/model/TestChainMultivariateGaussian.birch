@@ -54,4 +54,8 @@ class TestChainMultivariateGaussian < Model {
     }
     return y;
   }
+
+  function size() -> Integer {
+    return 15;
+  }
 }

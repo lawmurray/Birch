@@ -1,7 +1,8 @@
 /*
  * Test gamma-Poisson pdf evaluations.
  */
-program test_pdf_gamma_poisson(N:Integer <- 10000, lazy:Boolean <- false) {
+program test_pdf_gamma_poisson(N:Integer <- 10000, B:Integer <- 0,
+    S:Integer <- 0, lazy:Boolean <- false) {
   m:TestGammaPoisson;
   m.initialize();
   m.simulate();

@@ -3,21 +3,23 @@ class TestMultivariateNormalInverseGammaMultivariateGaussian < Model {
   μ:Random<Real[_]>;
   x:Random<Real[_]>;
 
+  n:Integer <- 4;
+
   α:Real;
   β:Real;
-  μ_0:Real[5];
-  Σ:Real[5,5];
-  Ψ:Real[5,5];
+  μ_0:Real[n];
+  Σ:Real[n,n];
+  Ψ:Real[n,n];
 
   function initialize() {
     α <- simulate_uniform(2.0, 10.0);
     β <- simulate_uniform(0.1, 10.0);
-    μ_0 <- vector(\(i:Integer) -> Real { return simulate_uniform(-10.0, 10.0); }, 5);
-    Σ <- matrix(\(i:Integer, j:Integer) -> Real { return simulate_uniform(-2.0, 2.0); }, 5, 5);
-    Ψ <- matrix(\(i:Integer, j:Integer) -> Real { return simulate_uniform(-2.0, 2.0); }, 5, 5);
+    μ_0 <- vector(\(i:Integer) -> Real { return simulate_uniform(-10.0, 10.0); }, n);
+    Σ <- matrix(\(i:Integer, j:Integer) -> Real { return simulate_uniform(-2.0, 2.0); }, n, n);
+    Ψ <- matrix(\(i:Integer, j:Integer) -> Real { return simulate_uniform(-2.0, 2.0); }, n, n);
     
-    Σ <- outer(Σ) + diagonal(1.0e-2, 5);
-    Ψ <- outer(Ψ) + diagonal(1.0e-2, 5);
+    Σ <- outer(Σ) + diagonal(1.0e-2, n);
+    Ψ <- outer(Ψ) + diagonal(1.0e-2, n);
   }
 
   function simulate() {
@@ -27,38 +29,38 @@ class TestMultivariateNormalInverseGammaMultivariateGaussian < Model {
   }
 
   function forward() -> Real[_] {
-    y:Real[11];
+    y:Real[2*n + 1];
     y[1] <- σ2.value();
-    y[2..6] <- μ.value();
-    y[7..11] <- x.value();
+    y[2..(n + 1)] <- μ.value();
+    y[(n + 2)..(2*n + 1)] <- x.value();
     return y;
   }
 
   function backward() -> Real[_] {
-    y:Real[11];
+    y:Real[2*n + 1];
     assert !x.hasValue();
-    y[7..11] <- x.value();
+    y[(n + 2)..(2*n + 1)] <- x.value();
     assert !μ.hasValue();
-    y[2..6] <- μ.value();
+    y[2..(n + 1)] <- μ.value();
     assert !σ2.hasValue();
     y[1] <- σ2.value();
     return y;
   }
 
   function forwardLazy() -> Real[_] {
-    y:Real[11];
+    y:Real[2*n + 1];
     y[1] <- σ2.eval();
-    y[2..6] <- μ.eval();
-    y[7..11] <- x.eval();
+    y[2..(n + 1)] <- μ.eval();
+    y[(n + 2)..(2*n + 1)] <- x.eval();
     return y;
   }
 
   function backwardLazy() -> Real[_] {
-    y:Real[11];
+    y:Real[2*n + 1];
     assert !x.hasValue();
-    y[7..11] <- x.eval();
+    y[(n + 2)..(2*n + 1)] <- x.eval();
     assert !μ.hasValue();
-    y[2..6] <- μ.eval();
+    y[2..(n + 1)] <- μ.eval();
     assert !σ2.hasValue();
     y[1] <- σ2.eval();
     return y;
@@ -66,5 +68,9 @@ class TestMultivariateNormalInverseGammaMultivariateGaussian < Model {
 
   function marginal() -> Distribution<Real[_]> {
     return x.getDistribution();
+  }
+
+  function size() -> Integer {
+    return 2*n + 1;
   }
 }

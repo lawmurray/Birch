@@ -6,5 +6,5 @@ program test_pdf_linear_multivariate_normal_inverse_gamma_multivariate_gaussian(
   m:TestLinearMultivariateNormalInverseGammaMultivariateGaussian;
   m.initialize();
   m.simulate();
-  test_pdf(m.marginal(), 5, N, B, S, lazy);
+  test_pdf(m.marginal(), N, B, S, lazy);
 }

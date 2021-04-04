@@ -26,5 +26,5 @@ program test_pdf_matrix_gaussian(R:Integer <- 4, C:Integer <- 3,
   V <- V*transpose(V);
 
   let π <- MatrixGaussian(M, U, V);
-  test_pdf(π, R, C, N, B, S, lazy);
+  test_pdf(π, N, B, S, lazy);
 }

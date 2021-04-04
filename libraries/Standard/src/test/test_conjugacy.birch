@@ -3,12 +3,12 @@
  *
  * - m: Model.
  * - N: Number of samples.
- * - D: Number of dimensions.
  * - lazy: Use lazy version?
  */
-function test_conjugacy<Conjugate>(m:Conjugate, N:Integer, D:Integer, lazy:Boolean) {  
+function test_conjugacy<Conjugate>(m:Conjugate, N:Integer, lazy:Boolean) {  
   let forward <- construct<Handler>(false, false);
   let backward <- construct<Handler>(true, false);
+  let D <- m.size();
   m.initialize();
   
   /* simulate forward */

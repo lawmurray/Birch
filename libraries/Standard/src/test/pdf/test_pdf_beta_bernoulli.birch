@@ -1,7 +1,8 @@
 /*
  * Test beta-Bernoulli pdf evaluations.
  */
-program test_pdf_beta_bernoulli(N:Integer <- 10000, lazy:Boolean <- false) {
+program test_pdf_beta_bernoulli(N:Integer <- 10000, B:Integer <- 0,
+    S:Integer <- 0, lazy:Boolean <- false) {
   m:TestBetaBernoulli;
   m.initialize();
   m.simulate();

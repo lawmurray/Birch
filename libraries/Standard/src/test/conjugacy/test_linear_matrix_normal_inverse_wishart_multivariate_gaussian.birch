@@ -4,5 +4,5 @@
 program test_linear_matrix_normal_inverse_wishart_multivariate_gaussian(
     N:Integer <- 10000, lazy:Boolean <- false) {
   m:TestLinearMatrixNormalInverseWishartMultivariateGaussian;
-  test_conjugacy(m, N, m.size(), lazy);
+  test_conjugacy(m, N, lazy);
 }

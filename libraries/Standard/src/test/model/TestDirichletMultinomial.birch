@@ -51,4 +51,8 @@ class TestDirichletMultinomial < Model {
     y[1..D] <- ρ.eval();
     return y;
   }
+
+  function size() -> Integer {
+    return 2*length(α);
+  }
 }

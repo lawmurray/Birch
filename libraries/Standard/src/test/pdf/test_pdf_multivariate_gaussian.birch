@@ -15,5 +15,5 @@ program test_pdf_multivariate_gaussian(D:Integer <- 4, N:Integer <- 10000,
   Σ <- Σ*transpose(Σ);
 
   let π <- MultivariateGaussian(μ, Σ);
-  test_pdf(π, D, N, B, S, lazy);
+  test_pdf(π, N, B, S, lazy);
 }

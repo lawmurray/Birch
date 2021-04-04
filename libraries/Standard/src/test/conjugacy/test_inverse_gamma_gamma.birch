@@ -3,5 +3,5 @@
  */
 program test_inverse_gamma_gamma(N:Integer <- 10000, lazy:Boolean <- false) {
   m:TestInverseGammaGamma;
-  test_conjugacy(m, N, 2, lazy);
+  test_conjugacy(m, N, lazy);
 }

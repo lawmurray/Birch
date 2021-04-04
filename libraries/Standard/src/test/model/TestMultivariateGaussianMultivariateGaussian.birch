@@ -2,20 +2,22 @@ class TestMultivariateGaussianMultivariateGaussian < Model {
   μ_1:Random<Real[_]>;
   x:Random<Real[_]>;
 
-  μ_0:Real[5];
-  Σ_0:Real[5,5];
-  Σ_1:Real[5,5];
+  n:Integer <- 4;
+
+  μ_0:Real[n];
+  Σ_0:Real[n,n];
+  Σ_1:Real[n,n];
 
   function initialize() {
-    for i in 1..5 {
+    for i in 1..n {
       μ_0[i] <- simulate_uniform(-10.0, 10.0);
-      for j in 1..5 {
+      for j in 1..n {
         Σ_0[i,j] <- simulate_uniform(-2.0, 2.0);
         Σ_1[i,j] <- simulate_uniform(-2.0, 2.0);
       }
     }
-    Σ_0 <- outer(Σ_0) + diagonal(1.0e-2, 5);
-    Σ_1 <- outer(Σ_1) + diagonal(1.0e-2, 5);
+    Σ_0 <- outer(Σ_0) + diagonal(1.0e-2, n);
+    Σ_1 <- outer(Σ_1) + diagonal(1.0e-2, n);
   }
 
   function simulate() {
@@ -24,38 +26,42 @@ class TestMultivariateGaussianMultivariateGaussian < Model {
   }
 
   function forward() -> Real[_] {
-    y:Real[10];
-    y[1..5] <- μ_1.value();
-    y[6..10] <- x.value();
+    y:Real[2*n];
+    y[1..n] <- μ_1.value();
+    y[(n + 1)..2*n] <- x.value();
     return y;
   }
 
   function backward() -> Real[_] {
-    y:Real[10];
+    y:Real[2*n];
     assert !x.hasValue();
-    y[6..10] <- x.value();
+    y[(n + 1)..2*n] <- x.value();
     assert !μ_1.hasValue();
-    y[1..5] <- μ_1.value();
+    y[1..n] <- μ_1.value();
     return y;
   }
 
   function forwardLazy() -> Real[_] {
-    y:Real[10];
-    y[1..5] <- μ_1.eval();
-    y[6..10] <- x.eval();
+    y:Real[2*n];
+    y[1..n] <- μ_1.eval();
+    y[(n + 1)..2*n] <- x.eval();
     return y;
   }
 
   function backwardLazy() -> Real[_] {
-    y:Real[10];
+    y:Real[2*n];
     assert !x.hasValue();
-    y[6..10] <- x.eval();
+    y[(n + 1)..2*n] <- x.eval();
     assert !μ_1.hasValue();
-    y[1..5] <- μ_1.eval();
+    y[1..n] <- μ_1.eval();
     return y;
   }
 
   function marginal() -> Distribution<Real[_]> {
     return x.getDistribution();
+  }
+
+  function size() -> Integer {
+    return 2*n;
   }
 }

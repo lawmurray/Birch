@@ -3,5 +3,5 @@
  */
 program test_scaled_gamma_exponential(N:Integer <- 10000, lazy:Boolean <- false) {
   m:TestScaledGammaExponential;
-  test_conjugacy(m, N, 2, lazy);
+  test_conjugacy(m, N, lazy);
 }

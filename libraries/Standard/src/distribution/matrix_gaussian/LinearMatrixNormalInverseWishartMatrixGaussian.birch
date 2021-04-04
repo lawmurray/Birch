@@ -187,8 +187,8 @@ function update_linear_matrix_normal_inverse_wishart_matrix_gaussian(
     X:Real[_,_], A:Real[_,_], N:Real[_,_], Λ:Real[_,_], C:Real[_,_],
     U:Real[_,_], V:Real[_,_], k:Real) -> (Real[_,_], Real[_,_], Real[_,_],
     Real) {
-  let n <- rows(X - C);
-  let Z <- solve(U, X);
+  let n <- rows(X);
+  let Z <- solve(U, X - C);
   let Λ' <- Λ + transpose(A)*solve(U, A);
   let N' <- N + transpose(A)*Z;
   let M <- solve(Λ, N);

@@ -46,4 +46,8 @@ class TestAddBoundedDiscreteDelta < Model {
     y[1] <- x1.eval();
     return y;
   }
+
+  function size() -> Integer {
+    return 2;
+  }
 }

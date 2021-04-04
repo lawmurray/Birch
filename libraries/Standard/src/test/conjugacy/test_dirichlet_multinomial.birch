@@ -6,5 +6,5 @@ program test_dirichlet_multinomial(N:Integer <- 10000, lazy:Boolean <- false) {
   if lazy {
     warn("lazy not supported, reverting to eager.");
   }
-  test_conjugacy(m, N, 10, false);
+  test_conjugacy(m, N, false);
 }

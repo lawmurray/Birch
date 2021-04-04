@@ -222,14 +222,15 @@ function test_pdf(π:Distribution<Real>, N:Integer, B:Integer, S:Integer,
  * Test a multivariate pdf.
  *
  * - π: The target distribution. 
- * - D: Number of dimensions.
  * - N: Number of samples.
  * - B: Number of samples in each batch for tuning Metropolis sampler.
  * - S: Metropolis sampler skip.
  * - lazy: Use lazy version?
  */
-function test_pdf(π:Distribution<Real[_]>, D:Integer, N:Integer, B:Integer,
-    S:Integer, lazy:Boolean) {  
+function test_pdf(π:Distribution<Real[_]>, N:Integer, B:Integer, S:Integer,
+    lazy:Boolean) {  
+  let D <- π.rows();
+
   X1:Real[N,D];
   X2:Real[N,D];
   
@@ -335,15 +336,16 @@ function test_pdf(π:Distribution<Real[_]>, D:Integer, N:Integer, B:Integer,
  * Test a matrix pdf.
  *
  * - π: The target distribution. 
- * - R: Number of rows.
- * - C: Number of columns.
  * - N: Number of samples.
  * - B: Number of samples in each batch for tuning Metropolis sampler.
  * - S: Metropolis sampler skip.
  * - lazy: Use lazy version?
  */
-function test_pdf(π:Distribution<Real[_,_]>, R:Integer, C:Integer, N:Integer,
-    B:Integer, S:Integer, lazy:Boolean) {
+function test_pdf(π:Distribution<Real[_,_]>, N:Integer, B:Integer, S:Integer,
+    lazy:Boolean) {
+  let R <- π.rows();
+  let C <- π.columns();
+
   X1:Real[N,R*C];
   X2:Real[N,R*C];
   

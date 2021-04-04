@@ -1,7 +1,8 @@
 /*
  * Test beta-binomial pdf evaluations.
  */
-program test_pdf_beta_binomial(N:Integer <- 10000, lazy:Boolean <- false) {
+program test_pdf_beta_binomial(N:Integer <- 10000, B:Integer <- 0,
+    S:Integer <- 0, lazy:Boolean <- false) {
   m:TestBetaBinomial;
   m.initialize();
   m.simulate();

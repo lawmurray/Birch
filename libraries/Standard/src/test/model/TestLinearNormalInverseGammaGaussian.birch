@@ -66,4 +66,8 @@ class TestLinearNormalInverseGammaGaussian < Model {
   function marginal() -> Distribution<Real> {
     return x.getDistribution();
   }
+
+  function size() -> Integer {
+    return 3;
+  }
 }

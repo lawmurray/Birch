@@ -45,4 +45,8 @@ class TestBetaGeometric < Model {
     y[1] <- ρ.eval();
     return y;
   }
+
+  function size() -> Integer {
+    return 2;
+  }
 }

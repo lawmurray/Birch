@@ -48,4 +48,8 @@ class TestBetaBernoulli < Model {
   function marginal() -> Distribution<Boolean> {
     return x.getDistribution();
   }
+
+  function size() -> Integer {
+    return 2;
+  }
 }
