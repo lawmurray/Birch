@@ -28,7 +28,7 @@ class Track(s:Integer, θ:Global) < Model {
   function simulate(t:Integer) {
     if t == 1 {
       /* start */
-      let μ <- vector(0.0, 3*length(θ.l));
+      let μ <- vector(0.0, rows(θ.A));
       μ[1] <~ Uniform(θ.l, θ.u);
       μ[2] <~ Uniform(θ.l, θ.u);
       x[t] ~ MultivariateGaussian(μ, θ.M);

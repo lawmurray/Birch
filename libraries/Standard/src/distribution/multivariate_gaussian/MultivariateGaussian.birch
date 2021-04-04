@@ -68,11 +68,12 @@ function MultivariateGaussian<Left,Right>(μ:Left, Σ:Right) -> {
  * - Σ: Covariance.
  */
 function simulate_multivariate_gaussian(μ:Real[_], Σ:Real[_,_]) -> Real[_] {
-  let D <- length(μ);
-  z:Real[D];
-  for d in 1..D {
-    z[d] <- simulate_gaussian(0.0, 1.0);
-  }
+  assert length(μ) == rows(Σ);
+  assert length(μ) == columns(Σ);
+  let n <- length(μ);
+  let z <- vector(\(i:Integer) -> Real {
+        return simulate_gaussian(0.0, 1.0);
+      }, n);
   return μ + cholesky(Σ)*z;
 }
 
