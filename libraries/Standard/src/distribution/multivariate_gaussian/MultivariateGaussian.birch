@@ -77,38 +77,6 @@ function simulate_multivariate_gaussian(μ:Real[_], Σ:Real[_,_]) -> Real[_] {
 }
 
 /*
- * Simulate a multivariate Gaussian distribution with independent elements.
- *
- * - μ: Mean.
- * - σ2: Variance.
- */
-function simulate_multivariate_gaussian(μ:Real[_], σ2:Real[_]) -> Real[_] {
-  let D <- length(μ);
-  z:Real[D];
-  for d in 1..D {
-    z[d] <- μ[d] + simulate_gaussian(0.0, σ2[d]);
-  }
-  return z;
-}
-
-/*
- * Simulate a multivariate Gaussian distribution with independent elements of
- * identical variance.
- *
- * - μ: Mean.
- * - σ2: Variance.
- */
-function simulate_multivariate_gaussian(μ:Real[_], σ2:Real) -> Real[_] {
-  let D <- length(μ);
-  let σ <- sqrt(σ2);
-  z:Real[D];
-  for d in 1..D {
-    z[d] <- μ[d] + σ*simulate_gaussian(0.0, 1.0);
-  }
-  return z;
-}
-
-/*
  * Observe a multivariate Gaussian variate.
  *
  * - x: The variate.
@@ -123,39 +91,6 @@ function logpdf_multivariate_gaussian(x:Real[_], μ:Real[_], Σ:Real[_,_]) -> Re
 }
 
 /*
- * Observe a multivariate Gaussian distribution with independent elements.
- *
- * - x: The variate.
- * - μ: Mean.
- * - σ2: Variance.
- *
- * Returns: the log probability density.
- */
-function logpdf_multivariate_gaussian(x:Real[_], μ:Real[_], σ2:Real[_]) -> Real {
-  let n <- length(μ);
-  let w <- 0.0;
-  for d in 1..n {
-    w <- w + logpdf_gaussian(x[d], μ[d], σ2[d]);
-  }
-  return w;
-}
-
-/*
- * Observe a multivariate Gaussian distribution with independent elements of
- * identical variance.
- *
- * - x: The variate.
- * - μ: Mean.
- * - σ2: Variance.
- *
- * Returns: the log probability density.
- */
-function logpdf_multivariate_gaussian(x:Real[_], μ:Real[_], σ2:Real) -> Real {
-  let n <- length(μ);
-  return -0.5*(dot(x - μ)/σ2 + n*log(2.0*π*σ2));
-}
-
-/*
  * Observe a multivariate Gaussian variate.
  *
  * - x: The variate.
@@ -167,19 +102,4 @@ function logpdf_multivariate_gaussian(x:Real[_], μ:Real[_], σ2:Real) -> Real {
 function logpdf_lazy_multivariate_gaussian(x:Expression<Real[_]>, μ:Expression<Real[_]>, Σ:Expression<Real[_,_]>) -> Expression<Real> {
   let n <- length(μ);
   return box(-0.5*(dot(x - μ, solve(Σ, x - μ)) + n*log(2.0*π) + ldet(Σ)));
-}
-
-/*
- * Observe a multivariate Gaussian distribution with independent elements of
- * identical variance.
- *
- * - x: The variate.
- * - μ: Mean.
- * - σ2: Variance.
- *
- * Returns: the log probability density.
- */
-function logpdf_lazy_multivariate_gaussian(x:Expression<Real[_]>, μ:Expression<Real[_]>, σ2:Expression<Real>) -> Expression<Real> {
-  let n <- μ.length();
-  return box(-0.5*(dot(x - μ)/σ2 + n*log(2.0*π*σ2)));
 }

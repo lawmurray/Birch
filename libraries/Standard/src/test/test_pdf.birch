@@ -12,9 +12,6 @@ function test_pdf(π:Distribution<Boolean>, N:Integer, lazy:Boolean) {
     if π.simulate() {
       k <- k + 1;
     }
-    if mod(n, 10000) == 0 {
-      collect();
-    }
   }
 
   /* compare pdf to count */
@@ -93,9 +90,6 @@ function test_pdf(π:Distribution<Integer>, N:Integer, lazy:Boolean) {
     if 1 <= i && i <= length(count) {
       count[i] <- count[i] + 1;
     }
-    if mod(n, 10000) == 0 {
-      collect();
-    }
   }
 
   /* compare sum of pdf to counts */
@@ -136,9 +130,6 @@ function test_pdf(π:Distribution<Real>, N:Integer, B:Integer, S:Integer,
   /* iid samples */
   for n in 1..N {
     x1[n] <- π.simulate();
-    if mod(n, 10000) == 0 {
-      collect();
-    }
   }
   
   /* compute the shape for a Gaussian proposal using the iid samples */
@@ -218,9 +209,6 @@ function test_pdf(π:Distribution<Real>, N:Integer, B:Integer, S:Integer,
       }
     }
     x2[n] <- x;
-    if mod(n, 1000) == 0 {
-      collect();
-    }
   }
   //stderr.print("final acceptance rate: " + a + "\n");
   
@@ -248,9 +236,6 @@ function test_pdf(π:Distribution<Real[_]>, D:Integer, N:Integer, B:Integer,
   /* iid samples */
   for n in 1..N {
     X1[n,1..D] <- π.simulate();
-    if mod(n, 10000) == 0 {
-      collect();
-    }
   }
   
   /* compute the shape for a Gaussian proposal using the iid samples */
@@ -337,9 +322,6 @@ function test_pdf(π:Distribution<Real[_]>, D:Integer, N:Integer, B:Integer,
       }
     }
     X2[n,1..D] <- x;
-    if mod(n, 1000) == 0 {
-      collect();
-    }
   }
   //stderr.print("final acceptance rate: " + a + "\n");
   
@@ -368,9 +350,6 @@ function test_pdf(π:Distribution<Real[_,_]>, R:Integer, C:Integer, N:Integer,
   /* iid samples */
   for n in 1..N {
     X1[n,1..R*C] <- vec(π.simulate());
-    if mod(n, 10000) == 0 {
-      collect();
-    }
   }
   
   /* compute the shape for a Gaussian proposal using the iid samples */
@@ -450,9 +429,6 @@ function test_pdf(π:Distribution<Real[_,_]>, R:Integer, C:Integer, N:Integer,
       }
     }
     X2[n,1..R*C] <- vec(x);
-    if mod(n, 1000) == 0 {
-      collect();
-    }
   }
   //stderr.print("final acceptance rate: " + a + "\n");
   

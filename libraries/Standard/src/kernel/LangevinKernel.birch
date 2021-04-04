@@ -16,7 +16,6 @@ class LangevinKernel < Kernel {
 
   function apply(t:Integer, π:Particle) -> Real {
     let δ <- scale/pow(min(t, nlags), 3);
-    let σ2 <- 2.0*δ;
 
     /* apply lag */
     π.label(t);
@@ -27,20 +26,21 @@ class LangevinKernel < Kernel {
     let p <- π.eval();
     let d <- π.grad();
     let μ <- x + d*δ;
+    let Σ <- diagonal(2.0*δ, length(x));
 
     /* moves */
     let naccepts <- 0;
     let accept <- false;
     for n in 1..nmoves {
       /* proposed state */
-      let x' <- simulate_multivariate_gaussian(μ, σ2);
+      let x' <- simulate_multivariate_gaussian(μ, Σ);
       let p' <- π.move(x');
       let d' <- π.grad();
       let μ' <- x' + d'*δ;
 
       /* accept/reject */
-      let q <- logpdf_multivariate_gaussian(x, μ', σ2);
-      let q' <- logpdf_multivariate_gaussian(x', μ, σ2);      
+      let q <- logpdf_multivariate_gaussian(x, μ', Σ);
+      let q' <- logpdf_multivariate_gaussian(x', μ, Σ);      
       accept <- simulate_uniform(0.0, 1.0) <= p' - p + q - q';
       if accept {
         naccepts <- naccepts + 1;

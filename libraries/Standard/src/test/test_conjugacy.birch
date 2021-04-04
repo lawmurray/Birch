@@ -13,8 +13,8 @@ function test_conjugacy<Conjugate>(m:Conjugate, N:Integer, D:Integer, lazy:Boole
   
   /* simulate forward */
   X1:Real[N,D];
-  for n in 1..N {
-    let m' <- copy(m);
+  parallel for n in 1..N {
+    let m' <- copy2(m);
     with forward {
       m'.simulate();
     }
@@ -23,15 +23,12 @@ function test_conjugacy<Conjugate>(m:Conjugate, N:Integer, D:Integer, lazy:Boole
     } else {
       X1[n,1..D] <- m'.forward();
     }
-    if mod(n, 10000) == 0 {
-      collect();
-    }
   }
 
   /* simulate backward */
   X2:Real[N,D];
-  for n in 1..N {
-    let m' <- copy(m);
+  parallel for n in 1..N {
+    let m' <- copy2(m);
     with backward {
       m'.simulate();
     }
@@ -39,9 +36,6 @@ function test_conjugacy<Conjugate>(m:Conjugate, N:Integer, D:Integer, lazy:Boole
       X2[n,1..D] <- m'.backwardLazy();
     } else {
       X2[n,1..D] <- m'.backward();
-    }
-    if mod(n, 10000) == 0 {
-      collect();
     }
   }
   

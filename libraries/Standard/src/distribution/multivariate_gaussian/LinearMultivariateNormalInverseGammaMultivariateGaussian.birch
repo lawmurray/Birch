@@ -4,7 +4,7 @@
  */
 final class LinearMultivariateNormalInverseGammaMultivariateGaussian(
     A:Expression<Real[_,_]>, μ:MultivariateNormalInverseGamma,
-    c:Expression<Real[_]>) < Distribution<Real[_]> {
+    c:Expression<Real[_]>, Σ:Expression<Real[_,_]>) < Distribution<Real[_]> {
   /**
    * Scale.
    */
@@ -20,6 +20,11 @@ final class LinearMultivariateNormalInverseGammaMultivariateGaussian(
    */
   c:Expression<Real[_]> <- c;
 
+  /**
+   * Covariance scale.
+   */
+  Σ:Expression<Real[_,_]> <- Σ;
+
   function rows() -> Integer {
     return c.rows();
   }
@@ -30,32 +35,32 @@ final class LinearMultivariateNormalInverseGammaMultivariateGaussian(
 
   function simulate() -> Real[_] {
     return simulate_linear_multivariate_normal_inverse_gamma_multivariate_gaussian(
-        A.value(), μ.ν.value(), μ.Λ.value(), c.value(), μ.α.value(), μ.γ.value());
+        A.value(), μ.ν.value(), μ.Λ.value(), c.value(), Σ.value(), μ.α.value(), μ.γ.value());
   }
 
   function simulateLazy() -> Real[_]? {
     return simulate_linear_multivariate_normal_inverse_gamma_multivariate_gaussian(
-        A.eval(), μ.ν.eval(), μ.Λ.eval(), c.eval(), μ.α.eval(), μ.γ.eval());
+        A.eval(), μ.ν.eval(), μ.Λ.eval(), c.eval(), Σ.eval(), μ.α.eval(), μ.γ.eval());
   }
   
   function logpdf(x:Real[_]) -> Real {
     return logpdf_linear_multivariate_normal_inverse_gamma_multivariate_gaussian(
-        x, A.value(), μ.ν.value(), μ.Λ.value(), c.value(), μ.α.value(), μ.γ.value());
+        x, A.value(), μ.ν.value(), μ.Λ.value(), c.value(), Σ.value(), μ.α.value(), μ.γ.value());
   }
 
   function logpdfLazy(x:Expression<Real[_]>) -> Expression<Real>? {
     return logpdf_lazy_linear_multivariate_normal_inverse_gamma_multivariate_gaussian(
-        x, A, μ.ν, μ.Λ, c, μ.α, μ.γ);
+        x, A, μ.ν, μ.Λ, c, Σ, μ.α, μ.γ);
   }
 
   function update(x:Real[_]) {
     (μ.ν, μ.Λ, μ.α, μ.γ) <- box(update_linear_multivariate_normal_inverse_gamma_multivariate_gaussian(
-        x, A.value(), μ.ν.value(), μ.Λ.value(), c.value(), μ.α.value(), μ.γ.value()));
+        x, A.value(), μ.ν.value(), μ.Λ.value(), c.value(), Σ.value(), μ.α.value(), μ.γ.value()));
   }
 
   function updateLazy(x:Expression<Real[_]>) {
     (μ.ν, μ.Λ, μ.α, μ.γ) <- update_lazy_linear_multivariate_normal_inverse_gamma_multivariate_gaussian(
-        x, A, μ.ν, μ.Λ, c, μ.α, μ.γ);
+        x, A, μ.ν, μ.Λ, c, Σ, μ.α, μ.γ);
   }
 
   function link() {
@@ -67,8 +72,9 @@ final class LinearMultivariateNormalInverseGammaMultivariateGaussian(
   }
 }
 
-function LinearMultivariateNormalInverseGammaMultivariateGaussian<Left,Right>(A:Left, μ:MultivariateNormalInverseGamma, c:Right) -> {
-  m:LinearMultivariateNormalInverseGammaMultivariateGaussian(box(A), μ, box(c));
+function LinearMultivariateNormalInverseGammaMultivariateGaussian<Left,Middle,Right>(
+      A:Left, μ:MultivariateNormalInverseGamma, c:Middle, Σ:Right) -> {
+  m:LinearMultivariateNormalInverseGammaMultivariateGaussian(box(A), μ, box(c), box(Σ));
   m.link();
   return m;
 }
@@ -81,7 +87,7 @@ function MultivariateGaussian<Left,Middle,Right>(μ:MultiplyAdd<Left,Random<Real
   if p? {
     let q <- μ.m!.graftMultivariateNormalInverseGamma(p!);
     if q? {
-      return LinearMultivariateNormalInverseGammaMultivariateGaussian(μ.l!, q!, μ.r!);
+      return LinearMultivariateNormalInverseGammaMultivariateGaussian(μ.l!, q!, μ.r!, Σ.l!);
     } else {
       return MultivariateNormalInverseGamma(μ, Σ.l!, p!);
     }
@@ -98,7 +104,7 @@ function MultivariateGaussian<Left,Middle,Right>(μ:MultiplyAdd<Left,Random<Real
   if p? {
     let q <- μ.m!.graftMultivariateNormalInverseGamma(p!);
     if q? {
-      return LinearMultivariateNormalInverseGammaMultivariateGaussian(μ.l!, q!, μ.r!);
+      return LinearMultivariateNormalInverseGammaMultivariateGaussian(μ.l!, q!, μ.r!, Σ.r!);
     } else {
       return MultivariateNormalInverseGamma(μ, Σ.r!, p!);
     }
@@ -115,16 +121,18 @@ function MultivariateGaussian<Left,Middle,Right>(μ:MultiplyAdd<Left,Random<Real
  * - ν: Precision times mean.
  * - Λ: Precision.
  * - c: Offset.
+ * - Σ: Covariance scale.
  * - α: Shape of the inverse-gamma.
  * - γ: Scale accumulator of the inverse-gamma.
  */
 function simulate_linear_multivariate_normal_inverse_gamma_multivariate_gaussian(
-    A:Real[_,_], ν:Real[_], Λ:Real[_,_], c:Real[_], α:Real, γ:Real) -> Real[_] {
+    A:Real[_,_], ν:Real[_], Λ:Real[_,_], c:Real[_], Σ:Real[_,_], α:Real,
+    γ:Real) -> Real[_] {
   let n <- rows(A);
   let μ <- solve(Λ, ν);
   let β <- γ - 0.5*dot(μ, ν);
   return simulate_multivariate_student_t(2.0*α, A*μ + c,
-      identity(n) + A*solve(Λ, transpose(A)), 2.0*β);
+      2.0*β*(Σ + A*solve(Λ, transpose(A))));
 }
 
 /*
@@ -136,19 +144,20 @@ function simulate_linear_multivariate_normal_inverse_gamma_multivariate_gaussian
  * - ν: Precision times mean.
  * - Λ: Precision.
  * - c: Offset.
+ * - Σ: Covariance scale.
  * - α: Shape of the inverse-gamma.
  * - γ: Scale accumulator of the inverse-gamma.
  *
  * Returns: the log probability density.
  */
 function logpdf_linear_multivariate_normal_inverse_gamma_multivariate_gaussian(
-    x:Real[_], A:Real[_,_], ν:Real[_], Λ:Real[_,_], c:Real[_], α:Real, γ:Real) ->
-    Real {
+    x:Real[_], A:Real[_,_], ν:Real[_], Λ:Real[_,_], c:Real[_], Σ:Real[_,_],
+    α:Real, γ:Real) -> Real {
   let n <- rows(A);
   let μ <- solve(Λ, ν);
   let β <- γ - 0.5*dot(μ, ν);
   return logpdf_multivariate_student_t(x, 2.0*α, A*μ + c,
-      identity(n) + A*solve(Λ, transpose(A)), 2.0*β);
+      2.0*β*(Σ + A*solve(Λ, transpose(A))));
 }
 
 /*
@@ -160,18 +169,21 @@ function logpdf_linear_multivariate_normal_inverse_gamma_multivariate_gaussian(
  * - ν: Precision times mean.
  * - Λ: Precision.
  * - c: Offset.
+ * - Σ: Covariance scale.
  * - α: Shape of the inverse-gamma.
  * - γ: Scale accumulator of the inverse-gamma.
  *
  * Returns: the log probability density.
  */
 function logpdf_lazy_linear_multivariate_normal_inverse_gamma_multivariate_gaussian(
-    x:Expression<Real[_]>, A:Expression<Real[_,_]>, ν:Expression<Real[_]>, Λ:Expression<Real[_,_]>, c:Expression<Real[_]>, α:Expression<Real>, γ:Expression<Real>) ->
-    Expression<Real> {
+    x:Expression<Real[_]>, A:Expression<Real[_,_]>, ν:Expression<Real[_]>,
+    Λ:Expression<Real[_,_]>, c:Expression<Real[_]>, Σ:Expression<Real[_,_]>,
+    α:Expression<Real>, γ:Expression<Real>) -> Expression<Real> {
   let n <- rows(A);
   let μ <- solve(Λ, ν);
   let β <- γ - 0.5*dot(μ, ν);
-  return logpdf_lazy_multivariate_student_t(x, box(2.0*α), box(A*μ + c), box(identity(n) + A*solve(Λ, transpose(A))), box(2.0*β));
+  return logpdf_lazy_multivariate_student_t(x, box(2.0*α), box(A*μ + c),
+      box(2.0*β*(Σ + A*solve(Λ, transpose(A)))));
 }
 
 /*
@@ -183,19 +195,21 @@ function logpdf_lazy_linear_multivariate_normal_inverse_gamma_multivariate_gauss
  * - ν: Prior precision times mean.
  * - Λ: Prior precision.
  * - c: Offset.
+ * - Σ: Covariance scale.
  * - α: Prior shape of the inverse-gamma.
  * - γ: Prior scale accumulator.
  *
  * Returns: the posterior hyperparameters `μ'`, `Λ'`, `γ'`, `α'` and `β'`.
  */
 function update_linear_multivariate_normal_inverse_gamma_multivariate_gaussian(
-    x:Real[_], A:Real[_,_], ν:Real[_], Λ:Real[_,_], c:Real[_], α:Real, γ:Real) ->
-    (Real[_], Real[_,_], Real, Real) {
+    x:Real[_], A:Real[_,_], ν:Real[_], Λ:Real[_,_], c:Real[_], Σ:Real[_,_],
+    α:Real, γ:Real) -> (Real[_], Real[_,_], Real, Real) {
   let D <- length(x);
-  let Λ' <- rank_update(Λ, transpose(A));
-  let ν' <- ν + transpose(A)*(x - c);
+  let z <- solve(Σ, x - c);
+  let Λ' <- Λ + transpose(A)*solve(Σ, A);
+  let ν' <- ν + transpose(A)*z;
   let α' <- α + 0.5*D;
-  let γ' <- γ + 0.5*dot(x - c);
+  let γ' <- γ + 0.5*dot(x - c, z);
   return (ν', Λ', α', γ');
 }
 
@@ -208,6 +222,7 @@ function update_linear_multivariate_normal_inverse_gamma_multivariate_gaussian(
  * - ν: Prior precision times mean.
  * - Λ: Prior precision.
  * - c: Offset.
+ * - Σ: Covariance scale.
  * - α: Prior shape of the inverse-gamma.
  * - γ: Prior scale accumulator.
  *
@@ -215,13 +230,14 @@ function update_linear_multivariate_normal_inverse_gamma_multivariate_gaussian(
  */
 function update_lazy_linear_multivariate_normal_inverse_gamma_multivariate_gaussian(
     x:Expression<Real[_]>, A:Expression<Real[_,_]>, ν:Expression<Real[_]>,
-    Λ:Expression<Real[_,_]>, c:Expression<Real[_]>, α:Expression<Real>,
-    γ:Expression<Real>) -> (Expression<Real[_]>, Expression<Real[_,_]>,
-    Expression<Real>, Expression<Real>) {
+    Λ:Expression<Real[_,_]>, c:Expression<Real[_]>, Σ:Expression<Real[_,_]>,
+    α:Expression<Real>, γ:Expression<Real>) -> (Expression<Real[_]>,
+    Expression<Real[_,_]>, Expression<Real>, Expression<Real>) {
   let D <- length(x);
-  let Λ' <- rank_update(Λ, transpose(A));
-  let ν' <- ν + transpose(A)*(x - c);
+  let z <- solve(Σ, x - c);
+  let Λ' <- Λ + transpose(A)*solve(Σ, A);
+  let ν' <- ν + transpose(A)*z;
   let α' <- α + 0.5*D;
-  let γ' <- γ + 0.5*dot(x - c);
+  let γ' <- γ + 0.5*dot(x - c, z);
   return (box(ν'), box(Λ'), box(α'), box(γ'));
 }
