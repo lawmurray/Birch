@@ -2,7 +2,7 @@
  * Delta function on a difference of two bounded discrete random
  * variates.
  */
-final class SubtractBoundedDiscrete(x1:BoundedDiscrete, x2:BoundedDiscrete) <
+final class SubtractDiscreteDelta(x1:BoundedDiscrete, x2:BoundedDiscrete) <
     BoundedDiscrete {
   /**
    * First discrete random variate.
@@ -114,8 +114,8 @@ final class SubtractBoundedDiscrete(x1:BoundedDiscrete, x2:BoundedDiscrete) <
   }
 }
 
-function SubtractBoundedDiscrete(x1:BoundedDiscrete, x2:BoundedDiscrete) -> SubtractBoundedDiscrete {
-  m:SubtractBoundedDiscrete(x1, x2);
+function SubtractDiscreteDelta(x1:BoundedDiscrete, x2:BoundedDiscrete) -> SubtractDiscreteDelta {
+  m:SubtractDiscreteDelta(x1, x2);
   m.link();
   return m;
 }
@@ -127,8 +127,16 @@ function Delta(μ:Subtract<Random<Integer>,Random<Integer>>) -> Distribution<Int
   let l1 <- μ.l!.graftBoundedDiscrete();
   let r1 <- μ.r!.graftBoundedDiscrete();
   if l1? && r1? {
-    return SubtractBoundedDiscrete(l1!, r1!);
+    return SubtractDiscreteDelta(l1!, r1!);
   } else {
-    return construct<Delta>(box(μ));
+    let l2 <- μ.l!.graftDiscrete();
+    let r2 <- μ.r!.graftDiscrete();
+    if l2? {
+      return LinearDiscreteDelta(1, l2!, -μ.r!);
+    } else if r2? {
+      return LinearDiscreteDelta(-1, r2!, μ.l!);
+    } else {
+      return construct<Delta>(box(μ));
+    }
   }
 }

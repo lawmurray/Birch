@@ -1,0 +1,131 @@
+/**
+ * Delta function on a linear transformation of a discrete random
+ * variate.
+ */
+final class LinearDiscreteDelta(a:Integer, μ:Discrete,
+    c:Expression<Integer>) < Discrete {
+  /**
+   * Multiplier, 1 or -1.
+   */
+  a:Integer <- a;
+    
+  /**
+   * Location.
+   */
+  μ:Discrete <- μ;
+
+  /**
+   * Offset.
+   */
+  c:Expression<Integer> <- c;
+
+  function supportsLazy() -> Boolean {
+    return false;
+  }
+
+  function simulate() -> Integer {
+    return simulate_delta(a*μ.simulate() + c.value());
+  }
+
+//  function simulateLazy() -> Integer? {
+//    return simulate_delta(a*μ.simulateLazy()! + c.peak());
+//  }
+  
+  function logpdf(x:Integer) -> Real {
+    return μ.logpdf((x - c.value())/a) - log(abs(a));
+  }
+
+//  function logpdfLazy(x:Expression<Integer>) -> Expression<Real>? {
+//    return μ.logpdfLazy((x - c.peak())/a) - log(abs(a));
+//  }
+  
+  function update(x:Integer) {
+    μ.clamp((x - c.value())/a);
+  }
+
+//  function updateLazy(x:Expression<Integer>) {
+//
+//  }
+
+  function cdf(x:Integer) -> Real? {
+    return μ.cdf((x - c.value())/a);
+  }
+
+  function lower() -> Integer? {
+    let l <- μ.lower();
+    if l? {
+      l <- a*l! + c.value();
+    }
+    return l;
+  }
+  
+  function upper() -> Integer? {
+    let u <- μ.upper();
+    if u? {
+      u <- a*u! + c.value();
+    }
+    return u;
+  }
+
+  function link() {
+    μ.setChild(this);
+  }
+  
+  function unlink() {
+    μ.releaseChild(this);
+  }
+}
+
+function LinearDiscreteDelta<Right>(a:Integer, μ:Discrete, c:Right) -> {
+  m:LinearDiscreteDelta(a, μ, box(c));
+  m.link();
+  return m;
+}
+
+/**
+ * Create delta distribution.
+ */
+function Delta<Right>(μ:Add<Random<Integer>,Right>) -> Distribution<Integer> {
+  let p <- μ.l!.graftDiscrete();
+  if p? {
+    return LinearDiscreteDelta(1, p!, μ.r!);
+  } else {
+    return construct<Delta>(box(μ));
+  }
+}
+
+/**
+ * Create delta distribution.
+ */
+function Delta<Left>(μ:Add<Left,Random<Integer>>) -> Distribution<Integer> {
+  let p <- μ.r!.graftDiscrete();
+  if p? {
+    return LinearDiscreteDelta(1, p!, μ.l!);
+  } else {
+    return construct<Delta>(box(μ));
+  }
+}
+
+/**
+ * Create delta distribution.
+ */
+function Delta<Right>(μ:Subtract<Random<Integer>,Right>) -> Distribution<Integer> {
+  let p <- μ.l!.graftDiscrete();
+  if p? {
+    return LinearDiscreteDelta(1, p!, -μ.r!);
+  } else {
+    return construct<Delta>(box(μ));
+  }
+}
+
+/**
+ * Create delta distribution.
+ */
+function Delta<Left>(μ:Subtract<Left,Random<Integer>>) -> Distribution<Integer> {
+  let p <- μ.r!.graftDiscrete();
+  if p? {
+    return LinearDiscreteDelta(-1, p!, μ.l!);
+  } else {
+    return construct<Delta>(box(μ));
+  }
+}

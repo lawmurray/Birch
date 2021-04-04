@@ -47,8 +47,9 @@ class SIRModel < Model {
       let Δi ~ Binomial(τ, δ);
       let Δr ~ Binomial(i[t - 1], γ);
 
+      let i' ~ Delta(Δi - Δr);
+      i[t] ~ Delta(i[t - 1] + i');
       s[t] ~ Delta(s[t - 1] - Δi);
-      i[t] ~ Delta(i[t - 1] + Δi - Δr);
       r[t] ~ Delta(r[t - 1] + Δr);
     }
   }

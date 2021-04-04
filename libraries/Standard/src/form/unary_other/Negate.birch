@@ -14,7 +14,7 @@ final class NegateFunction {
   //     if !t? {
   //       m1:Discrete?;
   //       if (m1 <- graft_discrete(m))? {
-  //         t <- LinearDiscrete(box(-1), m1!, box(0));
+  //         t <- LinearDiscreteDelta(box(-1), m1!, box(0));
   //       }
   //     }
   //   }

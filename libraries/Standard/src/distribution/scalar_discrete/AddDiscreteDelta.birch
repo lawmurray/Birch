@@ -1,7 +1,7 @@
 /**
  * Delta function on a sum of two bounded discrete distributions.
  */
-final class AddBoundedDiscrete(x1:BoundedDiscrete, x2:BoundedDiscrete) <
+final class AddDiscreteDelta(x1:BoundedDiscrete, x2:BoundedDiscrete) <
     BoundedDiscrete {
   /**
    * First node.
@@ -114,8 +114,8 @@ final class AddBoundedDiscrete(x1:BoundedDiscrete, x2:BoundedDiscrete) <
   }
 }
 
-function AddBoundedDiscrete(x1:BoundedDiscrete, x2:BoundedDiscrete) -> AddBoundedDiscrete {
-  m:AddBoundedDiscrete(x1, x2);
+function AddDiscreteDelta(x1:BoundedDiscrete, x2:BoundedDiscrete) -> AddDiscreteDelta {
+  m:AddDiscreteDelta(x1, x2);
   m.link();
   return m;
 }
@@ -127,8 +127,16 @@ function Delta(μ:Add<Random<Integer>,Random<Integer>>) -> Distribution<Integer>
   let l1 <- μ.l!.graftBoundedDiscrete();
   let r1 <- μ.r!.graftBoundedDiscrete();
   if l1? && r1? {
-    return AddBoundedDiscrete(l1!, r1!);
+    return AddDiscreteDelta(l1!, r1!);
   } else {
-    return construct<Delta>(box(μ));
+    let l2 <- μ.l!.graftDiscrete();
+    let r2 <- μ.r!.graftDiscrete();
+    if l2? {
+      return LinearDiscreteDelta(1, l2!, μ.r!);
+    } else if r2? {
+      return LinearDiscreteDelta(1, r2!, μ.l!);
+    } else {
+      return construct<Delta>(box(μ));
+    }
   }
 }
