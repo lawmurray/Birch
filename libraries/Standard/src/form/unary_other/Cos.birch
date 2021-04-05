@@ -1,4 +1,4 @@
-final class CosFunction {
+struct CosFunction {
 function compute<Value>(m:Value) -> {
     return cos(m);
   }
@@ -7,7 +7,7 @@ function grad<Gradient,Value>(d:Gradient, m:Value) -> {
     return -d*sin(m);
   }
 }
-class Cos<Middle> = Unary<CosFunction,Middle>;
+struct Cos<Middle> = Unary<CosFunction,Middle>;
 
 
 /**

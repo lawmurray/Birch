@@ -6,8 +6,9 @@
 #pragma once
 
 namespace libbirch {
-template<class T> class Shared;
 template<class T, class F> class Array;
+template<class T> class Inplace;
+template<class T> class Shared;
 class Any;
 class Marker;
 class Scanner;

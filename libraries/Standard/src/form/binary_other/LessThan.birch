@@ -1,4 +1,4 @@
-final class LessThanFunction {  
+struct LessThanFunction {  
   function compute<LeftValue,RightValue>(l:LeftValue, r:RightValue) -> {
     return l < r;
   }
@@ -11,7 +11,7 @@ final class LessThanFunction {
     return 0.0;
   }
 }
-class LessThan<Left,Right> = Binary<LessThanFunction,Left,Right>;
+struct LessThan<Left,Right> = Binary<LessThanFunction,Left,Right>;
 
 /**
  * Less-than.

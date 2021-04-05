@@ -67,6 +67,11 @@ public:
   virtual bool isBasic() const;
 
   /**
+   * Is this a struct type?
+   */
+  virtual bool isStruct() const;
+
+  /**
    * Is this a class type?
    */
   virtual bool isClass() const;

@@ -1,4 +1,4 @@
-final class LogDetFunction {
+struct LogDetFunction {
 function compute<Value>(m:Value) -> {
     return ldet(m);
   }
@@ -7,7 +7,7 @@ function grad<Gradient,Value>(d:Gradient, m:Value) -> {
     return d*matrix<Real>(inv(transpose(m)));
   }
 }
-class LogDet<Middle> = Unary<LogDetFunction,Middle>;
+struct LogDet<Middle> = Unary<LogDetFunction,Middle>;
 
 /**
  * Log-determinant of a matrix.

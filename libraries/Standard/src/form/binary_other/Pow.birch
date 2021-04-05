@@ -1,4 +1,4 @@
-final class PowFunction {  
+struct PowFunction {  
 function compute<LeftValue,RightValue>(l:LeftValue, r:RightValue) -> {
     return pow(l, r);
   }
@@ -15,7 +15,7 @@ function gradRight<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue, r:Rig
     }
   }
 }
-class Pow<Left,Right> = Binary<PowFunction,Left,Right>;
+struct Pow<Left,Right> = Binary<PowFunction,Left,Right>;
 
 /**
  * Power.

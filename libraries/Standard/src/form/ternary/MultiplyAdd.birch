@@ -1,4 +1,4 @@
-final class MultiplyAddFunction {
+struct MultiplyAddFunction {
 function compute<LeftValue,MiddleValue,RightValue>(l:LeftValue, m:MiddleValue, r:RightValue) -> {
     return multiply_add(l, m, r);
   }
@@ -15,7 +15,7 @@ function gradRight<Gradient,LeftValue,MiddleValue,RightValue>(d:Gradient, l:Left
     return d;
   }
 }
-class MultiplyAdd<Left,Middle,Right> = Ternary<MultiplyAddFunction,Left,Middle,Right>;
+struct MultiplyAdd<Left,Middle,Right> = Ternary<MultiplyAddFunction,Left,Middle,Right>;
 
 /**
  * Multiply and add.

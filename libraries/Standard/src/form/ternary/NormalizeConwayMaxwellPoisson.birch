@@ -1,4 +1,4 @@
-final class NormalizeConwayMaxwellPoissonFunction {
+struct NormalizeConwayMaxwellPoissonFunction {
 function compute<LeftValue,MiddleValue,RightValue>(l:LeftValue, m:MiddleValue, r:RightValue) -> {
     return normalize_conway_maxwell_poisson(l, m, r);
   }
@@ -51,7 +51,7 @@ function gradRight<Gradient,LeftValue,MiddleValue,RightValue>(d:Gradient, l:Left
     return 0.0;
   }
 }
-class NormalizeConwayMaxwellPoisson<Left,Middle,Right> = Ternary<NormalizeConwayMaxwellPoissonFunction,Left,Middle,Right>;
+struct NormalizeConwayMaxwellPoisson<Left,Middle,Right> = Ternary<NormalizeConwayMaxwellPoissonFunction,Left,Middle,Right>;
 
 /**
  * Normalizing constant of a Conway-Maxwell-Poisson distribution.

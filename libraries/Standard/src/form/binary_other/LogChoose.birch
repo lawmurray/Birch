@@ -1,4 +1,4 @@
-final class LogChooseFunction {  
+struct LogChooseFunction {  
 function compute<LeftValue,RightValue>(l:LeftValue, r:RightValue) -> {
     return lchoose(l, r);
   }
@@ -11,7 +11,7 @@ function gradRight<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue, r:Rig
     return 0.0;
   }
 }
-class LogChoose<Left,Right> = Binary<LogChooseFunction,Left,Right>;
+struct LogChoose<Left,Right> = Binary<LogChooseFunction,Left,Right>;
 
 /**
  * Logarithm of the binomial coefficient.

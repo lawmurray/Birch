@@ -55,6 +55,9 @@ public:
   void visit(Array<T,F>& o);
 
   template<class T>
+  void visit(Inplace<T>& o);
+
+  template<class T>
   void visit(Shared<T>& o);
 
   Any* visit(Any* o);
@@ -68,6 +71,7 @@ private:
 }
 
 #include "libbirch/Array.hpp"
+#include "libbirch/Inplace.hpp"
 #include "libbirch/Shared.hpp"
 #include "libbirch/Any.hpp"
 
@@ -80,6 +84,11 @@ void libbirch::BiconnectedCopier::visit(Array<T,F>& o) {
       visit(*iter);
     }
   }
+}
+
+template<class T>
+void libbirch::BiconnectedCopier::visit(Inplace<T>& o) {
+  o->accept_(*this);
 }
 
 template<class T>

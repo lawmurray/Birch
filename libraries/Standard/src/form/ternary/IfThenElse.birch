@@ -1,4 +1,4 @@
-final class IfThenElseFunction {  
+struct IfThenElseFunction {  
 function compute<LeftValue,MiddleValue,RightValue>(l:LeftValue, m:MiddleValue, r:RightValue) -> {
     return if_then_else(l, m, r);
   }
@@ -15,7 +15,7 @@ function gradRight<Gradient,LeftValue,MiddleValue,RightValue>(d:Gradient, l:Left
     return if_then_else(l, 0.0, d);
   }
 }
-class IfThenElse<Left,Middle,Right> = Ternary<IfThenElseFunction,Left,Middle,Right>;
+struct IfThenElse<Left,Middle,Right> = Ternary<IfThenElseFunction,Left,Middle,Right>;
 
 /**
  * If `cond` is true then return `x`, else return `y`.

@@ -44,6 +44,7 @@ nobase_include_HEADERS = \
   libbirch/Eigen.hpp \
   libbirch/external.hpp \
   libbirch/Index.hpp \
+  libbirch/Inplace.hpp \
   libbirch/internal.hpp \
   libbirch/Iterator.hpp \
   libbirch/Length.hpp \

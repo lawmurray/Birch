@@ -1,4 +1,4 @@
-final class LogGammaPFunction {
+struct LogGammaPFunction {
   function compute<LeftValue,RightValue>(l:LeftValue, r:RightValue) -> {
     return lgamma(l, r);
   }
@@ -15,7 +15,7 @@ final class LogGammaPFunction {
     return 0.0;
   }
 }
-class LogGammaP<Left,Right> = Binary<LogGammaPFunction,Left,Right>;
+struct LogGammaP<Left,Right> = Binary<LogGammaPFunction,Left,Right>;
 
 /**
  * Logarithm of the multivariate gamma function.

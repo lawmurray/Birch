@@ -1,4 +1,4 @@
-final class InvFunction {
+struct InvFunction {
 function compute<Value>(m:Value) -> {
     return inv(m);
   }
@@ -8,7 +8,7 @@ function grad<Gradient,Value>(d:Gradient, m:Value) -> {
     return -m1*d*m1;
   }
 }
-class Inv<Middle> = Unary<InvFunction,Middle>;
+struct Inv<Middle> = Unary<InvFunction,Middle>;
 
 /**
  * Inverse of a matrix.

@@ -57,11 +57,10 @@
  * Boilerplate macro for classes to support lazy deep copy. The first
  * argument is the name of the class; this should exclude any generic type
  * arguments. The second argument is the base class; this should include any
- * generic type arguments. It is recommended that the macro is used at the
- * very end of the class definition.
+ * generic type arguments.
  *
- * LIBBIRCH_CLASS must be followed by LIBBIRCH_MEMBERS, and should be in a
- * public section, e.g.:
+ * LIBBIRCH_CLASS must be followed by LIBBIRCH_CLASS_MEMBERS, and should be in
+ * a public section, e.g.:
  *
  *     class A : public B {
  *     private:
@@ -69,7 +68,7 @@
  *
  *     public:
  *       LIBBIRCH_CLASS(A, B)
- *       LIBBIRCH_MEMBERS(x, y, z)
+ *       LIBBIRCH_CLASS_MEMBERS(x, y, z)
  *     };
  *
  * The use of a variadic macro here supports base classes that contain
@@ -77,7 +76,7 @@
  *
  *     LIBBIRCH_CLASS(A, B<T,U>)
  */
-#define LIBBIRCH_CLASS(Name, Base...) public: \
+#define LIBBIRCH_CLASS(Name, Base...) \
   LIBBIRCH_THIS(Name) \
   LIBBIRCH_BASE(Base) \
   LIBBIRCH_VIRTUAL(Name, Base)
@@ -87,19 +86,19 @@
  *
  * Use in place of LIBBIRCH_CLASS when the containing class is abstract.
  */
-#define LIBBIRCH_ABSTRACT_CLASS(Name, Base...) public: \
+#define LIBBIRCH_ABSTRACT_CLASS(Name, Base...) \
   LIBBIRCH_THIS(Name) \
   LIBBIRCH_BASE(Base)
 
 /**
- * @def LIBBIRCH_MEMBERS
+ * @def LIBBIRCH_CLASS_MEMBERS
  *
  * Boilerplate macro for classes to support lazy deep copy. The arguments
  * list all member variables of the class (but not those of a base class,
- * which should be listed in its own use of LIBBIRCH_MEMBERS).
+ * which should be listed in its own use of LIBBIRCH_CLASS_MEMBERS).
  *
- * LIBBIRCH_MEMBERS must be preceded by LIBBIRCH_CLASS, and should be in a
- * public section, e.g.:
+ * LIBBIRCH_CLASS_MEMBERS must be preceded by LIBBIRCH_CLASS, and should be in
+ * a public section, e.g.:
  *
  *     class A : public B {
  *     private:
@@ -107,36 +106,36 @@
  *
  *     public:
  *       LIBBIRCH_CLASS(A, B)
- *       LIBBIRCH_MEMBERS(x, y, z)
+ *       LIBBIRCH_CLASS_MEMBERS(x, y, z)
  *     };
  */
-#define LIBBIRCH_MEMBERS(...) \
-  void accept_(libbirch::Marker& visitor_) override { \
+#define LIBBIRCH_CLASS_MEMBERS(...) \
+  void accept_(libbirch::Marker& visitor_) { \
     base_type_::accept_(visitor_); \
     visitor_.visit(__VA_ARGS__); \
   } \
   \
-  void accept_(libbirch::Scanner& visitor_) override { \
+  void accept_(libbirch::Scanner& visitor_) { \
     base_type_::accept_(visitor_); \
     visitor_.visit(__VA_ARGS__); \
   } \
   \
-  void accept_(libbirch::Reacher& visitor_) override { \
+  void accept_(libbirch::Reacher& visitor_) { \
     base_type_::accept_(visitor_); \
     visitor_.visit(__VA_ARGS__); \
   } \
   \
-  void accept_(libbirch::Collector& visitor_) override { \
+  void accept_(libbirch::Collector& visitor_) { \
     base_type_::accept_(visitor_); \
     visitor_.visit(__VA_ARGS__); \
   } \
   \
-  void accept_(libbirch::BiconnectedCollector& visitor_) override { \
+  void accept_(libbirch::BiconnectedCollector& visitor_) { \
     base_type_::accept_(visitor_); \
     visitor_.visit(__VA_ARGS__); \
   } \
   \
-  std::tuple<int,int,int> accept_(libbirch::Spanner& visitor_, const int i_, const int j_) override { \
+  std::tuple<int,int,int> accept_(libbirch::Spanner& visitor_, const int i_, const int j_) { \
     int l_, h_, m_, l1_, h1_, m1_; \
     std::tie(l_, h_, m_) = base_type_::accept_(visitor_, i_, j_); \
     std::tie(l1_, h1_, m1_) = visitor_.visit(i_, j_ + m_, __VA_ARGS__); \
@@ -146,7 +145,7 @@
     return std::make_tuple(l_, h_, m_); \
   } \
   \
-  std::tuple<int,int,int,int> accept_(libbirch::Bridger& visitor_, const int j_, const int k_) override { \
+  std::tuple<int,int,int,int> accept_(libbirch::Bridger& visitor_, const int j_, const int k_) { \
     int l_, h_, m_, n_, l1_, h1_, m1_, n1_; \
     std::tie(l_, h_, m_, n_) = base_type_::accept_(visitor_, j_, k_); \
     std::tie(l1_, h1_, m1_, n1_) = visitor_.visit(j_ + m_, k_ + n_, __VA_ARGS__); \
@@ -157,15 +156,138 @@
     return std::make_tuple(l_, h_, m_, n_); \
   } \
   \
-  void accept_(libbirch::Copier& visitor_) override { \
+  void accept_(libbirch::Copier& visitor_) { \
     base_type_::accept_(visitor_); \
     visitor_.visit(__VA_ARGS__); \
   } \
   \
-  void accept_(libbirch::BiconnectedCopier& visitor_) override { \
+  void accept_(libbirch::BiconnectedCopier& visitor_) { \
     base_type_::accept_(visitor_); \
     visitor_.visit(__VA_ARGS__); \
   }
+
+/**
+ * @def LIBBIRCH_CLASS_NO_MEMBERS
+ * 
+ * Alternative to LIBBIRCH_CLASS_MEMBERS for classes with no members.
+ */
+#define LIBBIRCH_CLASS_NO_MEMBERS() \
+  void accept_(libbirch::Marker& visitor_) { \
+    base_type_::accept_(visitor_); \
+  } \
+  \
+  void accept_(libbirch::Scanner& visitor_) { \
+    base_type_::accept_(visitor_); \
+  } \
+  \
+  void accept_(libbirch::Reacher& visitor_) { \
+    base_type_::accept_(visitor_); \
+  } \
+  \
+  void accept_(libbirch::Collector& visitor_) { \
+    base_type_::accept_(visitor_); \
+  } \
+  \
+  void accept_(libbirch::BiconnectedCollector& visitor_) { \
+    base_type_::accept_(visitor_); \
+  } \
+  \
+  std::tuple<int,int,int> accept_(libbirch::Spanner& visitor_, const int i_, const int j_) { \
+    return base_type_::accept_(visitor_, i_, j_); \
+  } \
+  \
+  std::tuple<int,int,int,int> accept_(libbirch::Bridger& visitor_, const int j_, const int k_) { \
+    return base_type_::accept_(visitor_, j_, k_); \
+  } \
+  \
+  void accept_(libbirch::Copier& visitor_) { \
+    return base_type_::accept_(visitor_); \
+  } \
+  \
+  void accept_(libbirch::BiconnectedCopier& visitor_) { \
+    return base_type_::accept_(visitor_); \
+  }
+
+/**
+ * @def LIBBIRCH_STRUCT
+ *
+ * Boilerplate macro for structs to support lazy deep copy. The only argument
+ * is the name of the struct; this should exclude any generic type
+ * arguments.
+ *
+ * LIBBIRCH_STRUCT must be followed by LIBBIRCH_STRUCT_MEMBERS, and should be
+ * in a public section.
+ */
+#define LIBBIRCH_STRUCT(Name)
+
+/**
+ * @def LIBBIRCH_STRUCT_MEMBERS
+ *
+ * Boilerplate macro for structs to support lazy deep copy. The arguments
+ * list all member variables of the class.
+ *
+ * LIBBIRCH_STRUCT_MEMBERS must be preceded by LIBBIRCH_STRUCT, and should be
+ * in a public section.
+ */
+#define LIBBIRCH_STRUCT_MEMBERS(...) \
+  void accept_(libbirch::Marker& visitor_) { \
+    visitor_.visit(__VA_ARGS__); \
+  } \
+  \
+  void accept_(libbirch::Scanner& visitor_) { \
+    visitor_.visit(__VA_ARGS__); \
+  } \
+  \
+  void accept_(libbirch::Reacher& visitor_) { \
+    visitor_.visit(__VA_ARGS__); \
+  } \
+  \
+  void accept_(libbirch::Collector& visitor_) { \
+    visitor_.visit(__VA_ARGS__); \
+  } \
+  \
+  void accept_(libbirch::BiconnectedCollector& visitor_) { \
+    visitor_.visit(__VA_ARGS__); \
+  } \
+  \
+  std::tuple<int,int,int> accept_(libbirch::Spanner& visitor_, const int i_, const int j_) { \
+    return visitor_.visit(i_, j_, __VA_ARGS__); \
+  } \
+  \
+  std::tuple<int,int,int,int> accept_(libbirch::Bridger& visitor_, const int j_, const int k_) { \
+    return visitor_.visit(j_, k_, __VA_ARGS__); \
+  } \
+  \
+  void accept_(libbirch::Copier& visitor_) { \
+    visitor_.visit(__VA_ARGS__); \
+  } \
+  \
+  void accept_(libbirch::BiconnectedCopier& visitor_) { \
+    visitor_.visit(__VA_ARGS__); \
+  }
+
+/**
+ * @def LIBBIRCH_STRUCT_NO_MEMBERS
+ * 
+ * Alternative to LIBBIRCH_STRUCT_MEMBERS for structs with no members.
+ */
+#define LIBBIRCH_STRUCT_NO_MEMBERS() \
+  void accept_(libbirch::Marker& visitor_) {} \
+  void accept_(libbirch::Scanner& visitor_) {} \
+  void accept_(libbirch::Reacher& visitor_) {} \
+  void accept_(libbirch::Collector& visitor_) {} \
+  void accept_(libbirch::BiconnectedCollector& visitor_) {} \
+  \
+  std::tuple<int,int,int> accept_(libbirch::Spanner& visitor_, const int i_, const int j_) { \
+    return std::make_tuple(i_, i_, 0); \
+  } \
+  \
+  std::tuple<int,int,int,int> accept_(libbirch::Bridger& visitor_, const int j_, const int k_) { \
+    return std::make_tuple(libbirch::Bridger::MAX, 0, 0, 0); \
+  } \
+  \
+  void accept_(libbirch::Copier& visitor_) {} \
+  void accept_(libbirch::BiconnectedCopier& visitor_) {}
 
 #include "libbirch/Marker.hpp"
 #include "libbirch/Scanner.hpp"

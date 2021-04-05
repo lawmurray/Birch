@@ -1,4 +1,4 @@
-final class RankDowndateFunction {
+struct RankDowndateFunction {
 function compute<LeftValue,RightValue>(l:LeftValue, r:RightValue) -> {
     return rank_downdate(l, r);
   }
@@ -11,7 +11,7 @@ function gradRight<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue, r:Rig
     return -(d + transpose(d))*r;
   }
 }
-class RankDowndate<Left,Right> = Binary<RankDowndateFunction,Left,Right>;
+struct RankDowndate<Left,Right> = Binary<RankDowndateFunction,Left,Right>;
 
 /**
  * Rank downdate of a Cholesky factorization.

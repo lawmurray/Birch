@@ -57,6 +57,9 @@ public:
   std::tuple<int,int,int,int> visit(const int j, const int k, Array<T,F>& o);
 
   template<class T>
+  std::tuple<int,int,int,int> visit(const int j, const int k, Inplace<T>& o);
+
+  template<class T>
   std::tuple<int,int,int,int> visit(const int j, const int k, Shared<T>& o);
 
   std::tuple<int,int,int,int> visit(const int j, const int k, Any* o);
@@ -64,6 +67,7 @@ public:
 }
 
 #include "libbirch/Array.hpp"
+#include "libbirch/Inplace.hpp"
 #include "libbirch/Shared.hpp"
 #include "libbirch/Any.hpp"
 
@@ -82,6 +86,12 @@ std::tuple<int,int,int,int> libbirch::Bridger::visit(const int j, const int k, A
     }
   }
   return std::make_tuple(l, h, m, n);
+}
+
+template<class T>
+std::tuple<int,int,int,int> libbirch::Bridger::visit(const int j, const int k,
+    Inplace<T>& o) {
+  return o->accept_(*this, j, k);
 }
 
 template<class T>

@@ -1,7 +1,7 @@
 /*
  * Element of a matrix.
  */
-final class MatrixElement<Left,Middle,Right>(l:Left, i:Middle, j:Right) {
+struct MatrixElement<Left,Middle,Right>(l:Left, i:Middle, j:Right) {
   /**
    * Matrix.
    */

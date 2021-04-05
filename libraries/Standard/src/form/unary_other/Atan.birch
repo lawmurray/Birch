@@ -1,4 +1,4 @@
-final class AtanFunction {
+struct AtanFunction {
 function compute<Value>(m:Value) -> {
     return atan(m);
   }
@@ -7,7 +7,7 @@ function grad<Gradient,Value>(d:Gradient, m:Value) -> {
     return d/(1.0 + pow(m, 2.0));
   }
 }
-class Atan<Middle> = Unary<AtanFunction,Middle>;
+struct Atan<Middle> = Unary<AtanFunction,Middle>;
 
 /**
  * Arc tangent.

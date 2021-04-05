@@ -1,4 +1,4 @@
-final class DivideFunction {  
+struct DivideFunction {  
   function compute<LeftValue,RightValue>(l:LeftValue, r:RightValue) -> {
     return l/r;
   }
@@ -11,7 +11,7 @@ final class DivideFunction {
     return sum(-d*l/pow(r, 2.0));
   }
 }
-class Divide<Left,Right> = Binary<DivideFunction,Left,Right>;
+struct Divide<Left,Right> = Binary<DivideFunction,Left,Right>;
 
 /**
  * Division.

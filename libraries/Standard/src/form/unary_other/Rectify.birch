@@ -1,4 +1,4 @@
-final class RectifyFunction {
+struct RectifyFunction {
 function compute<Value>(m:Value) -> {
     return rectify(m);
   }
@@ -9,7 +9,7 @@ function grad<Gradient,Value>(d:Gradient, m:Value) -> {
         });
   }
 }
-class Rectify<Middle> = Unary<RectifyFunction,Middle>;
+struct Rectify<Middle> = Unary<RectifyFunction,Middle>;
 
 /**
  * Rectify.

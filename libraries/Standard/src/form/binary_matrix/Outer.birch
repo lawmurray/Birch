@@ -1,4 +1,4 @@
-final class OuterFunction {
+struct OuterFunction {
   function compute<LeftValue,RightValue>(l:LeftValue, r:RightValue) -> {
     return outer(l, r);
   }
@@ -11,7 +11,7 @@ final class OuterFunction {
     return transpose(d)*l;
   }
 }
-class Outer<Left,Right> = Binary<OuterFunction,Left,Right>;
+struct Outer<Left,Right> = Binary<OuterFunction,Left,Right>;
 
 /**
  * Outer product of an argument with itself.

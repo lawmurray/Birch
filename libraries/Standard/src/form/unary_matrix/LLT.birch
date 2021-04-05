@@ -1,4 +1,4 @@
-final class LLTFunction {
+struct LLTFunction {
   hpp{{
   Eigen::LLT<libbirch::EigenMatrix<Real>> llt;
   }}
@@ -14,7 +14,7 @@ final class LLTFunction {
     return d;  // just a factorization, so pass along
   }
 }
-class LLT<Middle> = Unary<LLTFunction,Middle>;
+struct LLT<Middle> = Unary<LLTFunction,Middle>;
 
 /**
  * Cholesky factorization of the symmetric positive definite matrix $S$.

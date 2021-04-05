@@ -1,4 +1,4 @@
-final class DotFunction {
+struct DotFunction {
   function compute<LeftValue,RightValue>(l:LeftValue, r:RightValue) -> {
     return dot(l, r);
   }
@@ -11,7 +11,7 @@ final class DotFunction {
     return outer(l, d);
   }
 }
-class Dot<Left,Right> = Binary<DotFunction,Left,Right>;
+struct Dot<Left,Right> = Binary<DotFunction,Left,Right>;
 
 /**
  * Dot product.

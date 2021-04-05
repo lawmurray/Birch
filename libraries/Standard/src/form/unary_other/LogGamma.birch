@@ -1,4 +1,4 @@
-final class LogGammaFunction {
+struct LogGammaFunction {
 function compute<Value>(m:Value) -> {
     return lgamma(m);
   }
@@ -7,7 +7,7 @@ function grad<Gradient,Value>(d:Gradient, m:Value) -> {
     return d*digamma(m);
   }
 }
-class LogGamma<Middle> = Unary<LogGammaFunction,Middle>;
+struct LogGamma<Middle> = Unary<LogGammaFunction,Middle>;
 
 /**
  * Logarithm of the gamma function.

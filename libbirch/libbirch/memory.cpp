@@ -8,7 +8,6 @@
 #include "libbirch/Pool.hpp"
 #include "libbirch/Allocator.hpp"
 #include "libbirch/Any.hpp"
-#include "libbirch/Shared.hpp"
 #include "libbirch/Marker.hpp"
 #include "libbirch/Scanner.hpp"
 #include "libbirch/Collector.hpp"

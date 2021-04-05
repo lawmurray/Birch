@@ -193,18 +193,28 @@ void birch::MarkdownGenerator::visit(const Package* o) {
     --depth;
   }
 
-  /* classes */
+  /* classes & structs */
   Gatherer<Class> classes(docsNotEmpty, false);
   o->accept(&classes);
   std::stable_sort(classes.begin(), classes.end(), sortByName);
-  if (classes.size() > 0) {
-    genHead("Classes");
-    ++depth;
-    for (auto o : classes) {
+
+  genHead("Classes");
+  ++depth;
+  for (auto o : classes) {
+    if (!o->has(STRUCT)) {
       *this << o;
     }
-    --depth;
   }
+  --depth;
+
+  genHead("Structs");
+  ++depth;
+  for (auto o : classes) {
+    if (o->has(STRUCT)) {
+      *this << o;
+    }
+  }
+  --depth;
 }
 
 void birch::MarkdownGenerator::visit(const Name* o) {
@@ -527,6 +537,8 @@ void birch::MarkdownGenerator::visit(const TypeList* o) {
 void birch::MarkdownGenerator::visit(const NamedType* o) {
   if (o->category == BASIC_TYPE) {
     middle('[' << o->name << "](../types/index.md#" << o->name->str() << ')');
+  } else if (o->category == STRUCT_TYPE) {
+    middle('[' << o->name << "](../structs/" << o->name->str() << ".md)");
   } else if (o->category == CLASS_TYPE) {
     middle('[' << o->name << "](../classes/" << o->name->str() << ".md)");
   } else {

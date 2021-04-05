@@ -50,6 +50,9 @@ public:
   void visit(Array<T,F>& o);
 
   template<class T>
+  void visit(Inplace<T>& o);
+
+  template<class T>
   void visit(Shared<T>& o);
 
   void visit(Any* o);
@@ -57,6 +60,7 @@ public:
 }
 
 #include "libbirch/Array.hpp"
+#include "libbirch/Inplace.hpp"
 #include "libbirch/Shared.hpp"
 #include "libbirch/Any.hpp"
 
@@ -69,6 +73,11 @@ void libbirch::Scanner::visit(Array<T,F>& o) {
       visit(*iter);
     }
   }
+}
+
+template<class T>
+void libbirch::Scanner::visit(Inplace<T>& o) {
+  return o->accept_(*this);
 }
 
 template<class T>

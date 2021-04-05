@@ -1,7 +1,7 @@
 /*
  * Function form with three arguments.
  */
-final class Ternary<Function,Left,Middle,Right>(l:Left, m:Middle, r:Right) {
+struct Ternary<Function,Left,Middle,Right>(l:Left, m:Middle, r:Right) {
   /**
    * Function.
    */

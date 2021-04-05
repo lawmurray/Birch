@@ -100,7 +100,7 @@ final class NormalInverseGamma(μ:Expression<Real>, a2:Expression<Real>,
     prune();
     buffer.set("class", "NormalInverseGamma");
     buffer.set("μ", μ);
-    buffer.set("a2", 1.0/λ);
+    buffer.set("a2", box(1.0/λ));
     buffer.set("α", σ2.α);
     buffer.set("β", σ2.β);
   }

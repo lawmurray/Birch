@@ -1,4 +1,4 @@
-final class SinhFunction {
+struct SinhFunction {
 function compute<Value>(m:Value) -> {
     return sinh(m);
   }
@@ -7,7 +7,7 @@ function grad<Gradient,Value>(d:Gradient, m:Value) -> {
     return d*cosh(m);
   }
 }
-class Sinh<Middle> = Unary<SinhFunction,Middle>;
+struct Sinh<Middle> = Unary<SinhFunction,Middle>;
 
 /**
  * Hyperbolic sine.

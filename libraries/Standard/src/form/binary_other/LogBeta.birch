@@ -1,4 +1,4 @@
-final class LogBetaFunction {  
+struct LogBetaFunction {  
 function compute<LeftValue,RightValue>(l:LeftValue, r:RightValue) -> {
     return lbeta(l, r);
   }
@@ -11,7 +11,7 @@ function gradRight<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue, r:Rig
     return d*(digamma(r) + digamma(l + r));
   }
 }
-class LogBeta<Left,Right> = Binary<LogBetaFunction,Left,Right>;
+struct LogBeta<Left,Right> = Binary<LogBetaFunction,Left,Right>;
 
 /**
  * Logarithm of the beta function.

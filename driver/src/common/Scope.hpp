@@ -53,6 +53,7 @@ enum ExpressionCategory {
 enum TypeCategory {
   UNKNOWN_TYPE,
   BASIC_TYPE,
+  STRUCT_TYPE,
   CLASS_TYPE,
   GENERIC_TYPE
 };

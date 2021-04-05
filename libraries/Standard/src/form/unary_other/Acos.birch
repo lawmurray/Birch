@@ -1,4 +1,4 @@
-final class AcosFunction {
+struct AcosFunction {
 function compute<Value>(m:Value) -> {
     return acos(m);
   }
@@ -7,7 +7,7 @@ function grad<Gradient,Value>(d:Gradient, m:Value) -> {
     return -d/sqrt(1.0 - pow(m, 2.0));
   }
 }
-class Acos<Middle> = Unary<AcosFunction,Middle>;
+struct Acos<Middle> = Unary<AcosFunction,Middle>;
 
 /**
  * Arc cosine.

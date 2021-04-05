@@ -1,4 +1,4 @@
-final class AsinFunction {
+struct AsinFunction {
 function compute<Value>(m:Value) -> {
     return asin(m);
   }
@@ -7,7 +7,7 @@ function grad<Gradient,Value>(d:Gradient, m:Value) -> {
     return d/sqrt(1.0 - pow(m, 2.0));
   }
 }
-class Asin<Middle> = Unary<AsinFunction,Middle>;
+struct Asin<Middle> = Unary<AsinFunction,Middle>;
 
 /**
  * Arc sine.

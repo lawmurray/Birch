@@ -1,4 +1,4 @@
-final class VectorFunction<Value> {
+struct VectorFunction<Value> {
 function compute<MiddleValue>(m:MiddleValue) -> {
     return vector<Value>(m);
   }
@@ -7,7 +7,7 @@ function grad<Gradient,MiddleValue>(d:Gradient, m:MiddleValue) -> {
     return grad_vector(d, m);
   }
 }
-class Vector<Value,Middle> = Unary<VectorFunction<Value>,Middle>;
+struct Vector<Value,Middle> = Unary<VectorFunction<Value>,Middle>;
 
 /**
  * Convert to vector.

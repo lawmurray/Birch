@@ -90,7 +90,11 @@ void birch::Scope::lookup(NamedType* o) const {
     o->category = BASIC_TYPE;
     o->number = basicType->second->number;
   } else if (classType != classTypes.end()) {
-    o->category = CLASS_TYPE;
+    if (classType->second->has(STRUCT)) {
+      o->category = STRUCT_TYPE;
+    } else {
+      o->category = CLASS_TYPE;
+    }
     o->number = classType->second->number;
   } else if (genericType != genericTypes.end()) {
     o->category = GENERIC_TYPE;

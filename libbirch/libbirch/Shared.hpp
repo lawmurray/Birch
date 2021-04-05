@@ -80,7 +80,6 @@ public:
     }
   }
 
-
   /**
    * Copy constructor.
    */

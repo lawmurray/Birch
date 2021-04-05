@@ -1,4 +1,4 @@
-final class DiagonalFunction {
+struct DiagonalFunction {
 function compute<LeftValue,RightValue>(l:LeftValue, r:RightValue) -> {
     return diagonal(l, r);
   }
@@ -11,7 +11,7 @@ function gradRight<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue, r:Rig
     return 0.0;
   }
 }
-class Diagonal<Left,Right> = Binary<DiagonalFunction,Left,Right>;
+struct Diagonal<Left,Right> = Binary<DiagonalFunction,Left,Right>;
 
 /**
  * Create diagonal matrix, filling the diagonal with a given scalar value.

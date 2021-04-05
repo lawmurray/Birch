@@ -54,6 +54,7 @@ public:
   virtual void accept(Visitor* visitor) const;
 
   virtual bool isBasic() const;
+  virtual bool isStruct() const;
   virtual bool isClass() const;
   virtual bool isGeneric() const;
   virtual bool isValue() const;

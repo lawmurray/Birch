@@ -945,7 +945,7 @@ class Buffer {
     if isEmpty() {
       set(row(x));
     } else if vectorBoolean? {
-      set(stack(vector<Integer>(row(vectorBoolean!)), row(x)));
+      set(stack(matrix<Integer>(row(vectorBoolean!)), row(x)));
     } else if matrixBoolean? && columns(matrixBoolean!) == length(x) {
       set(stack(matrix<Integer>(matrixBoolean!), row(x)));
     } else if vectorInteger? {
@@ -963,7 +963,7 @@ class Buffer {
     if isEmpty() {
       set(row(x));
     } else if vectorBoolean? {
-      set(stack(vector<Real>(row(vectorBoolean!)), row(x)));
+      set(stack(matrix<Real>(row(vectorBoolean!)), row(x)));
     } else if matrixBoolean? && columns(matrixBoolean!) == length(x) {
       set(stack(matrix<Real>(matrixBoolean!), row(x)));
     } else if vectorInteger? {

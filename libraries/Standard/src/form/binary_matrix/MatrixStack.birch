@@ -1,4 +1,4 @@
-final class MatrixStackFunction {  
+struct MatrixStackFunction {  
 function compute<LeftValue,RightValue>(l:LeftValue, r:RightValue) -> {
     return stack(l, r);
   }
@@ -16,7 +16,7 @@ function gradRight<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue, r:Rig
     return d[(r1 + 1)..(r1 + r2), 1..c1];
   }
 }
-class MatrixStack<Left,Right> = Binary<MatrixStackFunction,Left,Right>;
+struct MatrixStack<Left,Right> = Binary<MatrixStackFunction,Left,Right>;
 
 /**
  * Stack two matrices atop one another (i.e. append columns) to create a

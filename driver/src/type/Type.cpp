@@ -25,6 +25,10 @@ bool birch::Type::isBasic() const {
   return false;
 }
 
+bool birch::Type::isStruct() const {
+  return false;
+}
+
 bool birch::Type::isClass() const {
   return false;
 }

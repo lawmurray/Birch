@@ -1,4 +1,4 @@
-final class DotAddFunction {  
+struct DotAddFunction {  
 function compute<LeftValue,MiddleValue,RightValue>(l:LeftValue, m:MiddleValue, r:RightValue) -> {
     return dot_add(l, m, r);
   }
@@ -15,7 +15,7 @@ function gradRight<Gradient,LeftValue,MiddleValue,RightValue>(d:Gradient, l:Left
     return d;
   }
 }
-class DotAdd<Left,Middle,Right> = Ternary<DotAddFunction,Left,Middle,Right>;
+struct DotAdd<Left,Middle,Right> = Ternary<DotAddFunction,Left,Middle,Right>;
 
 /**
  * Dot product and add.

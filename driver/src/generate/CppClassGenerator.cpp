@@ -25,12 +25,19 @@ void birch::CppClassGenerator::visit(const Class* o) {
     if (header) {
       genTemplateParams(o);
       genSourceLine(o->loc);
-      start("class " << o->name);
+      if (o->has(STRUCT)) {
+        start("struct ");
+      } else {
+        start("class ");
+      }
+      start(o->name);
       if (o->has(FINAL)) {
         middle(" final");
       }
-      middle(" : public ");
-      genBase(o);
+      if (!o->has(STRUCT)) {
+        middle(" : public ");
+        genBase(o);
+      }
       finish(" {");
       line("public:");
       in();
@@ -43,17 +50,26 @@ void birch::CppClassGenerator::visit(const Class* o) {
 
       /* boilerplate */
       genSourceLine(o->loc);
-      if (o->has(ABSTRACT)) {
+      if (o->has(STRUCT)) {
+        start("LIBBIRCH_STRUCT");
+      } else if (o->has(ABSTRACT)) {
         start("LIBBIRCH_ABSTRACT_CLASS");
       } else {
         start("LIBBIRCH_CLASS");
       }
-      middle('(' << o->name << ", ");
-      genBase(o);
+      middle('(' << o->name);
+      if (!o->has(STRUCT)) {
+        middle(", ");
+        genBase(o);
+      }
       finish(')');
       genSourceLine(o->loc);
       if (memberVariables.size() > 0) {
-        start("LIBBIRCH_MEMBERS(");
+        if (o->has(STRUCT)) {
+          start("LIBBIRCH_STRUCT_MEMBERS(");
+        } else {
+          start("LIBBIRCH_CLASS_MEMBERS(");
+        }
         for (auto iter = memberVariables.begin(); iter != memberVariables.end();
             ++iter) {
           if (iter != memberVariables.begin()) {
@@ -62,25 +78,33 @@ void birch::CppClassGenerator::visit(const Class* o) {
           middle((*iter)->name);
         }
         finish(")");
-      }
-
-      /* using declarations for member functions in base classes that are
-       * overridden */
-      std::set<std::string> names;
-      for (auto f : memberFunctions) {
-        auto name = f->name->str();
-        if (o->scope->overrides(name)) {
-          names.insert(name);
+      } else {
+        if (o->has(STRUCT)) {
+          line("LIBBIRCH_STRUCT_NO_MEMBERS()");
+        } else {
+          line("LIBBIRCH_CLASS_NO_MEMBERS()");
         }
       }
 
-      genSourceLine(o->loc);
-      line("using base_type_::operator=;");
-      for (auto name : names) {
+      if (!o->has(STRUCT)) {
+        /* using declarations for member functions in base classes that are
+        * overridden */
+        std::set<std::string> names;
+        for (auto f : memberFunctions) {
+          auto name = f->name->str();
+          if (o->scope->overrides(name)) {
+            names.insert(name);
+          }
+        }
+
         genSourceLine(o->loc);
-        line("using base_type_::" << internalise(name) << ';');
+        line("using base_type_::operator=;");
+        for (auto name : names) {
+          genSourceLine(o->loc);
+          line("using base_type_::" << internalise(name) << ';');
+        }
+        line("");
       }
-      line("");
     }
 
     /* constructor */
@@ -98,22 +122,34 @@ void birch::CppClassGenerator::visit(const Class* o) {
     if (header) {
       finish(";\n");
     } else {
-      finish(" :");
-      in();
-      in();
-      genSourceLine(o->loc);
-      start("base_type_(" << o->args << ')');
+      bool first = o->has(STRUCT);
+      if (!o->has(STRUCT)) {
+        finish(" :");
+        in();
+        in();
+        genSourceLine(o->loc);
+        start("base_type_(" << o->args << ')');
+      }
       ++inConstructor;
       for (auto o : memberVariables) {
-	      finish(',');
+        if (first) {
+          finish(" :");
+          in();
+          in();
+        } else {
+          finish(',');
+        }
+        first = false;
         genSourceLine(o->loc);
         start(o->name << '(');
         genInit(o);
         middle(')');
       }
       --inConstructor;
-      out();
-      out();
+      if (!first) {
+        out();
+        out();
+      }
       finish(" {");
       in();
       if (o->has(ACYCLIC)) {
@@ -135,7 +171,7 @@ void birch::CppClassGenerator::visit(const Class* o) {
     }
 
     /* C linkage function */
-    if (!o->has(ABSTRACT) && !o->isGeneric() && o->params->isEmpty()) {
+    if (!o->has(STRUCT) && !o->has(ABSTRACT) && !o->isGeneric() && o->params->isEmpty()) {
       genSourceLine(o->loc);
       if (header) {
         start("extern \"C\" birch::type::" << o->name << "* ");

@@ -1181,6 +1181,7 @@ void birch::Driver::target(const std::string& cmd) {
   std::regex rxVector2("DefaultArray<(" + type + "), *1>", options);
   std::regex rxMatrix("Array<(" + type + "), *Shape<Dimension<(?:0, *0)?>, Shape<Dimension<(?:0, *0)?>, *EmptyShape *> *> *>", options);
   std::regex rxMatrix2("DefaultArray<(" + type + "), *2>", options);
+  std::regex rxInplace("Inplace<(" + type + ") *>", options);
   std::regex rxShared("Shared<(" + type + ") *>", options);
   std::regex rxOptional("std::optional<(" + type + ") *>", options);
   std::regex rxConstRef("(?:const *)?(" + type + ") *&", options);
@@ -1240,6 +1241,7 @@ void birch::Driver::target(const std::string& cmd) {
           str = std::regex_replace(str, rxOptional, "$1?");
         }
         for (auto i = 0; i < 10; ++i) {
+          str = std::regex_replace(str, rxInplace, "$1");
           str = std::regex_replace(str, rxShared, "$1");
         }
 

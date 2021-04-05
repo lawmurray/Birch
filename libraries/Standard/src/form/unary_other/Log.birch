@@ -1,4 +1,4 @@
-final class LogFunction {
+struct LogFunction {
 function compute<Value>(m:Value) -> {
     return log(m);
   }
@@ -7,7 +7,7 @@ function grad<Gradient,Value>(d:Gradient, m:Value) -> {
     return d/m;
   }
 }
-class Log<Middle> = Unary<LogFunction,Middle>;
+struct Log<Middle> = Unary<LogFunction,Middle>;
 
 /**
  * Natural logarithm.

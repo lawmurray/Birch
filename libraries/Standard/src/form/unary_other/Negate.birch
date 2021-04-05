@@ -1,4 +1,4 @@
-final class NegateFunction {
+struct NegateFunction {
   function compute<Value>(m:Value) -> {
     return -m;
   }
@@ -32,7 +32,7 @@ final class NegateFunction {
   //   return t;
   // }
 }
-class Negate<Middle> = Unary<NegateFunction,Middle>;
+struct Negate<Middle> = Unary<NegateFunction,Middle>;
 
 /**
  * Negation.

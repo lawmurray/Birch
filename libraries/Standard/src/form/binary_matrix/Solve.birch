@@ -1,4 +1,4 @@
-final class SolveFunction {  
+struct SolveFunction {  
 function compute<LeftValue,RightValue>(l:LeftValue, r:RightValue) -> {
     return solve(l, r);
   }
@@ -11,7 +11,7 @@ function gradRight<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue, r:Rig
     return solve(transpose(l), d);
   }
 }
-class Solve<Left,Right> = Binary<SolveFunction,Left,Right>;
+struct Solve<Left,Right> = Binary<SolveFunction,Left,Right>;
 
 /**
  * Solve a system of equations.

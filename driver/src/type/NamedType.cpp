@@ -45,6 +45,10 @@ bool birch::NamedType::isBasic() const {
   return category == BASIC_TYPE;
 }
 
+bool birch::NamedType::isStruct() const {
+  return category == STRUCT_TYPE;
+}
+
 bool birch::NamedType::isClass() const {
   return category == CLASS_TYPE;
 }

@@ -1,4 +1,4 @@
-final class ScalarFunction<Value> {
+struct ScalarFunction<Value> {
   function compute<MiddleValue>(m:MiddleValue) -> {
     return scalar<Value>(m);
   }
@@ -7,7 +7,7 @@ final class ScalarFunction<Value> {
     return grad_scalar(d, m);
   }
 }
-class Scalar<Value,Middle> = Unary<ScalarFunction<Value>,Middle>;
+struct Scalar<Value,Middle> = Unary<ScalarFunction<Value>,Middle>;
 
 /**
  * Convert to scalar.

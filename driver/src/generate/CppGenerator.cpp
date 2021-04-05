@@ -353,7 +353,7 @@ void birch::CppGenerator::visit(const Program* o) {
           start("[[maybe_unused]] " << param->type << ' ' << param->name);
           if (!param->value->isEmpty()) {
             middle(" = " << param->value);
-          } else if (param->type->isClass()) {
+          } else if (param->type->isClass() || param->type->isStruct()) {
             middle(" = libbirch::make<" << param->type << ">()");
           }
           finish(';');
@@ -711,7 +711,13 @@ void birch::CppGenerator::visit(const MemberType* o) {
 }
 
 void birch::CppGenerator::visit(const NamedType* o) {
-  if (o->isClass()) {
+  if (o->isStruct()) {
+    middle("libbirch::Inplace<birch::type::" << o->name);
+    if (!o->typeArgs->isEmpty()) {
+      middle('<' << o->typeArgs << '>');
+    }
+    middle(">");
+  } else if (o->isClass()) {
     middle("libbirch::Shared<birch::type::" << o->name);
     if (!o->typeArgs->isEmpty()) {
       middle('<' << o->typeArgs << '>');

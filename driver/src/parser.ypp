@@ -97,7 +97,7 @@
 // ^ for generic class declaration, opening '<' ambiguous with inheritance,
 //   but closing '>' disambiguates
 
-%token <valString> PROGRAM CLASS TYPE FUNCTION OPERATOR AUTO LET
+%token <valString> PROGRAM CLASS STRUCT TYPE FUNCTION OPERATOR AUTO LET
 %token <valString> IF ELSE FOR IN WHILE DO WITH ASSERT RETURN FACTOR
 %token <valString> CPP HPP THIS SUPER GLOBAL PARALLEL DYNAMIC
 %token <valString> ABSTRACT OVERRIDE FINAL
@@ -573,6 +573,8 @@ class_declaration
     : class_annotation CLASS name optional_generics optional_parameters '<' named_type optional_arguments { push_raw(); } optional_class_braces  { $$ = new birch::Class($1, $3, $4, $5, $7, false, $8, $10, make_doc_loc(@$)); }
     | class_annotation CLASS name optional_generics optional_parameters { push_raw(); } optional_class_braces                                    { $$ = new birch::Class($1, $3, $4, $5, empty_type(@$), false, empty_expr(@$), $7, make_doc_loc(@$)); }
     | class_annotation CLASS name optional_generics '=' named_type { push_raw(); } ';'                                                           { $$ = new birch::Class($1, $3, $4, empty_expr(@$), $6, true, empty_expr(@$), empty_stmt(@$), make_doc_loc(@$)); }
+    | STRUCT name optional_generics optional_parameters { push_raw(); } optional_class_braces                                                    { $$ = new birch::Class(birch::STRUCT, $2, $3, $4, empty_type(@$), false, empty_expr(@$), $6, make_doc_loc(@$)); }
+    | STRUCT name optional_generics '=' named_type { push_raw(); } ';'                                                                           { $$ = new birch::Class(birch::STRUCT, $2, $3, empty_expr(@$), $5, true, empty_expr(@$), empty_stmt(@$), make_doc_loc(@$)); }
     ;
 
 basic_declaration

@@ -98,6 +98,7 @@ E                                  [Ee][+-]?{D}+
 "function"                          { return FUNCTION; }
 "program"                           { return PROGRAM; }
 "class"                             { return CLASS; }
+"struct"                            { return STRUCT; }
 "type"                              { return TYPE; }
 "operator"                          { return OPERATOR; }
 "auto"                              { return AUTO; }

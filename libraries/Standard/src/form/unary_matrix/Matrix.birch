@@ -1,4 +1,4 @@
-final class MatrixFunction<Value> {
+struct MatrixFunction<Value> {
   function compute<MiddleValue>(m:MiddleValue) -> {
     return matrix<Value>(m);
   }
@@ -7,7 +7,7 @@ final class MatrixFunction<Value> {
     return grad_matrix<Value>(d, m);
   }
 }
-class Matrix<Value,Middle> = Unary<MatrixFunction<Value>,Middle>;
+struct Matrix<Value,Middle> = Unary<MatrixFunction<Value>,Middle>;
 
 /**
  * Convert to matrix.

@@ -1,4 +1,4 @@
-final class SubtractFunction {
+struct SubtractFunction {
   function compute<LeftValue,RightValue>(l:LeftValue, r:RightValue) -> {
     return l - r;
   }
@@ -11,7 +11,7 @@ final class SubtractFunction {
     return -d;
   }
 }
-class Subtract<Left,Right> = Binary<SubtractFunction,Left,Right>;
+struct Subtract<Left,Right> = Binary<SubtractFunction,Left,Right>;
 
 /**
  * Subtraction.

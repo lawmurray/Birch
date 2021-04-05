@@ -1,4 +1,4 @@
-final class TanFunction {
+struct TanFunction {
 function compute<Value>(m:Value) -> {
     return tan(m);
   }
@@ -7,7 +7,7 @@ function grad<Gradient,Value>(d:Gradient, m:Value) -> {
     return d*(1.0 + pow(tan(m), 2.0));
   }
 }
-class Tan<Middle> = Unary<TanFunction,Middle>;
+struct Tan<Middle> = Unary<TanFunction,Middle>;
 
 /**
  * Tangent.

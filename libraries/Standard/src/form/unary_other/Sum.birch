@@ -1,4 +1,4 @@
-final class SumFunction {
+struct SumFunction {
   function compute<Value>(m:Value) -> {
     return sum(m);
   }
@@ -15,7 +15,7 @@ final class SumFunction {
     return vector(d, rows(m), columns(m));
   }
 }
-class Sum<Middle> = Unary<SumFunction,Middle>;
+struct Sum<Middle> = Unary<SumFunction,Middle>;
 
 /**
  * Sum.

@@ -1,7 +1,7 @@
 /*
  * Element of a vector.
  */
-final class VectorElement<Left,Right>(x:Left, r:Right)  {
+struct VectorElement<Left,Right>(x:Left, r:Right)  {
   /**
    * Vector.
    */

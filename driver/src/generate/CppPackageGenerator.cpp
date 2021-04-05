@@ -78,7 +78,12 @@ void birch::CppPackageGenerator::visit(const Package* o) {
     for (auto o : classes) {
       if (!o->isAlias()) {
         genTemplateParams(o);
-        line("class " << o->name << ';');
+        if (o->has(STRUCT)) {
+          start("struct ");
+        } else {
+          start("class ");
+        }
+        finish(o->name << ';');
       }
     }
     line("");

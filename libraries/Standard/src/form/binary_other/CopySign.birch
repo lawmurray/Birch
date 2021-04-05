@@ -1,4 +1,4 @@
-final class CopySignFunction {  
+struct CopySignFunction {  
 function compute<LeftValue,RightValue>(l:LeftValue, r:RightValue) -> {
     return copysign(l, r);
   }
@@ -11,7 +11,7 @@ function gradRight<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue, r:Rig
     return 0.0;
   }
 }
-class CopySign<Left,Right> = Binary<CopySignFunction,Left,Right>;
+struct CopySign<Left,Right> = Binary<CopySignFunction,Left,Right>;
 
 /**
  * Copy sign of a number.
