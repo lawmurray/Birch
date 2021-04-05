@@ -7,29 +7,6 @@
 
 namespace libbirch {
 /**
- * Is `T` a value type?
- */
-template<class T>
-struct is_value {
-  static const bool value = true;
-};
-
-template<class T>
-struct is_value<T&> {
-  static const bool value = is_value<T>::value;
-};
-
-template<class T>
-struct is_value<T&&> {
-  static const bool value = is_value<T>::value;
-};
-
-template<class T>
-struct is_value<std::optional<T>> {
-  static const bool value = is_value<T>::value;
-};
-
-/**
  * Is `T` a pointer type?
  */
 template<class T>

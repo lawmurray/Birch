@@ -379,18 +379,18 @@ public:
    * @name Eigen integration
    */
   ///@{
-  template<class Check = T, std::enable_if_t<is_value<Check>::value,int> = 0>
+  template<class Check = T, std::enable_if_t<std::is_arithmetic<Check>::value,int> = 0>
   operator eigen_type() const {
     return toEigen();
   }
 
-  template<class Check = T, std::enable_if_t<is_value<Check>::value,int> = 0>
+  template<class Check = T, std::enable_if_t<std::is_arithmetic<Check>::value,int> = 0>
   auto toEigen() {
     return eigen_type(buf(), rows(), cols(), eigen_stride_type(rowStride(),
         colStride()));
   }
 
-  template<class Check = T, std::enable_if_t<is_value<Check>::value,int> = 0>
+  template<class Check = T, std::enable_if_t<std::is_arithmetic<Check>::value,int> = 0>
   auto toEigen() const {
     return eigen_type(buf(), rows(), cols(), eigen_stride_type(rowStride(),
         colStride()));
@@ -589,11 +589,6 @@ private:
    * semantics, as it cannot be resized or moved.
    */
   bool isView;
-};
-
-template<class T, class F>
-struct is_value<Array<T,F>> {
-  static const bool value = is_value<T>::value;
 };
 
 /**

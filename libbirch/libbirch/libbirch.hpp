@@ -138,8 +138,7 @@ T make(Args&&... args) {
  * @return If the type is constructible with the given arguments, then an
  * optional with a so-constructed value, otherwise an optional with no value.
  */
-template<class T, class... Args, std::enable_if_t<
-    !is_pointer<T>::value &&
+template<class T, class... Args, std::enable_if_t<!is_pointer<T>::value &&
     std::is_constructible<T,Args...>::value,int> = 0>
 std::optional<T> make_optional(Args&&... args) {
   return T(std::forward<Args>(args)...);
@@ -156,8 +155,7 @@ std::optional<T> make_optional(Args&&... args) {
  * @return If the type is constructible with the given arguments, then an
  * optional with a so-constructed value, otherwise an optional with no value.
  */
-template<class T, class... Args, std::enable_if_t<
-    !is_pointer<T>::value &&
+template<class T, class... Args, std::enable_if_t<!is_pointer<T>::value &&
     !std::is_constructible<T,Args...>::value,int> = 0>
 std::optional<T> make_optional(Args&&... args) {
   return std::nullopt;
@@ -174,8 +172,7 @@ std::optional<T> make_optional(Args&&... args) {
  * @return If the type is constructible with the given arguments, then an
  * optional with a so-constructed value, otherwise an optional with no value.
  */
-template<class T, class... Args, std::enable_if_t<
-    is_pointer<T>::value &&
+template<class T, class... Args, std::enable_if_t<is_pointer<T>::value &&
     std::is_constructible<typename T::value_type,Args...>::value,int> = 0>
 std::optional<T> make_optional(Args&&... args) {
   return T(std::forward<Args>(args)...);
@@ -192,8 +189,7 @@ std::optional<T> make_optional(Args&&... args) {
  * @return If the type is constructible with the given arguments, then an
  * optional with a so-constructed value, otherwise an optional with no value.
  */
-template<class T, class... Args, std::enable_if_t<
-    is_pointer<T>::value &&
+template<class T, class... Args, std::enable_if_t<is_pointer<T>::value &&
     !std::is_constructible<typename T::value_type,Args...>::value,int> = 0>
 std::optional<T> make_optional(Args&&... args) {
   return std::nullopt;
@@ -269,8 +265,24 @@ auto optional_assign(To& to, const std::optional<From>& from) {
  *
  * If @p from has a value, then assign it to @p to, otherwise do nothing.
  */
-template<class To, class From, std::enable_if_t<is_value<From>::value,int> = 0>
-auto optional_assign(const To& to, const std::optional<From>& from) {
+template<class To, class From>
+auto optional_assign(const Inplace<To>& to, const std::optional<From>& from) {
+  if (from.has_value()) {
+    to = from.value();
+  }
+  return to;
+}
+
+/**
+ * Optional assign to an object. Corresponds to the `<-?` operator in Birch.
+ *
+ * @param to Target.
+ * @param from Source.
+ *
+ * If @p from has a value, then assign it to @p to, otherwise do nothing.
+ */
+template<class To, class From>
+auto optional_assign(const Shared<To>& to, const std::optional<From>& from) {
   if (from.has_value()) {
     to = from.value();
   }

@@ -66,7 +66,7 @@ public:
 
 template<class T, class F>
 void libbirch::Reacher::visit(Array<T,F>& o) {
-  if (!is_value<T>::value) {
+  if (!std::is_arithmetic<T>::value) {
     auto iter = o.begin();
     auto last = o.end();
     for (; iter != last; ++iter) {

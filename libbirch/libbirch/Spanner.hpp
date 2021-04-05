@@ -72,7 +72,7 @@ template<class T, class F>
 std::tuple<int,int,int> libbirch::Spanner::visit(const int i, const int j,
     Array<T,F>& o) {
   int l = i, h = i, m = 0, l1, h1, m1;
-  if (!is_value<T>::value) {
+  if (!std::is_arithmetic<T>::value) {
     auto iter = o.begin();
     auto last = o.end();
     for (; iter != last; ++iter) {

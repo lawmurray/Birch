@@ -171,7 +171,7 @@ public:
   /**
    * Value assignment.
    */
-  template<class U, std::enable_if_t<is_value<U>::value,int> = 0>
+  template<class U>
   Shared<T>& operator=(const U& o) {
     *get() = o;
     return *this;
@@ -180,7 +180,7 @@ public:
   /**
    * Value assignment.
    */
-  template<class U, std::enable_if_t<is_value<U>::value,int> = 0>
+  template<class U>
   const Shared<T>& operator=(const U& o) const {
     *get() = o;
     return *this;
@@ -373,11 +373,6 @@ private:
    * Is this a bridge?
    */
   bool b:1;
-};
-
-template<class T>
-struct is_value<Shared<T>> {
-  static const bool value = false;
 };
 
 template<class T>

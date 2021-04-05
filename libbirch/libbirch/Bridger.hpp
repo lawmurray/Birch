@@ -74,7 +74,7 @@ public:
 template<class T, class F>
 std::tuple<int,int,int,int> libbirch::Bridger::visit(const int j, const int k, Array<T,F>& o) {
   int l = MAX, h = 0, m = 0, n = 0, l1, h1, m1, n1;
-  if (!is_value<T>::value) {
+  if (!std::is_arithmetic<T>::value) {
     auto iter = o.begin();
     auto last = o.end();
     for (; iter != last; ++iter) {

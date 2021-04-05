@@ -53,10 +53,18 @@ public:
   /**
    * Value assignment.
    */
-  template<class U, std::enable_if_t<is_value<U>::value,int> = 0>
-  Inplace<T>& operator=(const U& o) {
-   this->o = o;
+  template<class U>
+  Shared<T>& operator=(const U& o) {
+    this->o = o;
     return *this;
+  }
+
+  /**
+   * Value assignment.
+   */
+  template<class U>
+  const Shared<T>& operator=(const U& o) const {
+    return const_cast<Inplace<T>*>(this)->operator=(o);
   }
 
   /**
@@ -108,10 +116,5 @@ private:
    * Object.
    */
   T o;
-};
-
-template<class T>
-struct is_value<Inplace<T>> {
-  static const bool value = false;
 };
 }
