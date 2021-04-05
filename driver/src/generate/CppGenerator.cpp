@@ -237,9 +237,6 @@ void birch::CppGenerator::visit(const Parameter* o) {
 void birch::CppGenerator::visit(const NamedExpression* o) {
   if (o->isGlobal()) {
     middle("birch::" << o->name);
-    if (o->category == GLOBAL_VARIABLE) {
-      middle("()");  // global variables generated as functions
-    }
   } else if (o->isMember()) {
     if (!inMember && !inConstructor) {
       middle("this->");  // may be required for generic classes
@@ -260,30 +257,22 @@ void birch::CppGenerator::visit(const File* o) {
 }
 
 void birch::CppGenerator::visit(const GlobalVariable* o) {
-  /* C++ does not guarantee static initialization order across compilation
-   * units. Global variables are therefore used through accessor functions
-   * that initialize their values on first use. */
   ++inGlobal;
   genSourceLine(o->loc);
-  start(o->type << "& ");
+  start("");
+  if (header) {
+    middle("extern ");
+  }
+  start(o->type << ' ');
   if (!header) {
     middle("birch::");
   }
-  middle(o->name << "()");
-  if (header) {
-    finish(';');
-  } else {
-    finish(" {");
-    in();
-    genSourceLine(o->loc);
-    start("static " << o->type << " result = ");
+  middle(o->name);
+  if (!header) {
+    middle(" = ");
     genInit(o);
-    finish(';');
-    genSourceLine(o->loc);
-    line("return result;");
-    out();
-    line("}\n");
   }
+  finish(';');
   --inGlobal;
 }
 
