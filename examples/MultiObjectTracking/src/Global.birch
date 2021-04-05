@@ -20,27 +20,27 @@ class Global {
   /**
    * Initial value covariance.
    */
-  M:Real[_,_];
+  M:Random<Real[_,_]>;
   
   /**
    * Transition matrix.
    */
-  A:Real[_,_];
+  A:Random<Real[_,_]>;
 
   /**
    * State noise covariance matrix.
    */
-  Q:Real[_,_];
+  Q:Random<Real[_,_]>;
 
   /**
    * Observation matrix.
    */
-  B:Real[_,_];
+  B:Random<Real[_,_]>;
 
   /**
    * Observation noise covariance matrix.
    */
-  R:Real[_,_];
+  R:Random<Real[_,_]>;
 
   /**
    * Birth rate.

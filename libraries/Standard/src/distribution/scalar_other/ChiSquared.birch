@@ -1,3 +1,7 @@
+cpp{{
+#include <boost/math/distributions.hpp>
+}}
+
 /*
  * Simulate $\chi^2$ distribution.
  *

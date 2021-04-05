@@ -1,3 +1,7 @@
+cpp{{
+#include <boost/math/distributions.hpp>
+}}
+
 /**
  * Gamma-exponential distribution.
  */
