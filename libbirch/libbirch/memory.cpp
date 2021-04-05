@@ -202,7 +202,7 @@ void libbirch::collect() {
     #pragma omp barrier
 
     /* mark pass */
-    #pragma omp for schedule(guided)
+    #pragma omp for schedule(static)
     for (int i = 0; i < (int)all_possible_roots.size(); ++i) {
       auto o = all_possible_roots[i];
       Marker visitor;
@@ -211,7 +211,7 @@ void libbirch::collect() {
     #pragma omp barrier
 
     /* scan/reach pass */
-    #pragma omp for schedule(guided)
+    #pragma omp for schedule(static)
     for (int i = 0; i < (int)all_possible_roots.size(); ++i) {
       auto o = all_possible_roots[i];
       Scanner visitor;
@@ -220,7 +220,7 @@ void libbirch::collect() {
     #pragma omp barrier
 
     /* collect pass */
-    #pragma omp for schedule(guided)
+    #pragma omp for schedule(static)
     for (int i = 0; i < (int)all_possible_roots.size(); ++i) {
       auto o = all_possible_roots[i];
       Collector visitor;

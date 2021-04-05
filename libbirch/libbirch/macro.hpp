@@ -39,7 +39,7 @@
  * Declare virtual functions for concrete classes.
  */
 #define LIBBIRCH_VIRTUAL(Name, Base...) \
-  virtual const char* getClassName() const { \
+  virtual const char* getClassName_() const override { \
     return #Name; \
   } \
   \

@@ -196,7 +196,7 @@ class ParticleFilter {
      * finding is complete; this is achieved in two passes to ensure that all
      * finish before any copy2() begins */
     let x' <- x;
-    dynamic parallel for n in 2..nparticles {
+    parallel for n in 2..nparticles {
       if n == 1 || a[n] != a[n - 1] {
         // first offspring, nothing to do in this pass
       } else if a[n] == a[n - 1] && (n <= 2 || a[n] != a[n - 2]) {
@@ -206,7 +206,7 @@ class ParticleFilter {
         // subsequent offspring, nothing to do in this pass
       }
     }
-    dynamic parallel for n in 1..nparticles {
+    parallel for n in 1..nparticles {
       if n == 1 || a[n] != a[n - 1] {
         /* first offspring */
         x[n] <- x'[a[n]];
