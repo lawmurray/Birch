@@ -23,7 +23,7 @@
  * a mappable type for the purposes of OpenMP. These constructors and
  * operators *do not* behave atomically, however.
  */
-#ifndef HAVE_OMP_H
+#ifndef _OPENMP
 /* this looks like it's backwards, but when OpenMP is disabled, enabling the
  * OpenMP implementation has the effect of replacing atomic operations with
  * regular operations, which is faster */
