@@ -740,6 +740,7 @@ void birch::Driver::docs() {
   fs::create_directories(docs / "unary_operators");
   fs::create_directories(docs / "binary_operators");
   fs::create_directories(docs / "classes");
+  fs::create_directories(docs / "structs");
 
   /* index file */
   if (fs::exists("README.md")) {

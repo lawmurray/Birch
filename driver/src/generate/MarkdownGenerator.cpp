@@ -350,10 +350,17 @@ void birch::MarkdownGenerator::visit(const Class* o) {
   if (o->has(ABSTRACT)) {
     middle("abstract ");
   }
-  if (o->has(FINAL)) {
+  if (o->has(ACYCLIC)) {
+    middle("acyclic ");
+  } else if (o->has(FINAL) && !o->has(STRUCT)) {
     middle("final ");
   }
-  middle("class " << o->name);
+  if (o->has(STRUCT)) {
+    middle("struct ");
+  } else {
+    middle("class ");
+  }
+  middle(o->name);
   if (o->isGeneric()) {
     middle("&lt;" << o->typeParams << "&gt;");
   }
