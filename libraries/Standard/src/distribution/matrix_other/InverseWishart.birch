@@ -85,7 +85,7 @@ function InverseWishart<Arg1,Arg2>(Ψ:Arg1, k:Arg2) -> {
  * Simulate an inverse-Wishart distribution.
  *
  * - Ψ: Scale.
- * - k: Degrees of freedeom.
+ * - k: Degrees of freedom.
  */
 function simulate_inverse_wishart(Ψ:Real[_,_], k:Real) -> Real[_,_] {
   return inv(simulate_wishart(inv(Ψ), k));
@@ -96,12 +96,13 @@ function simulate_inverse_wishart(Ψ:Real[_,_], k:Real) -> Real[_,_] {
  *
  * - X: The variate.
  * - Ψ: Scale.
- * - ν: Degrees of freedom.
+ * - k: Degrees of freedom.
  *
  * Returns: the log probability density.
  */
-function logpdf_inverse_wishart<Arg1,Arg2,Arg3>(X:Arg1, Ψ:Arg2, ν:Arg3) -> {
+function logpdf_inverse_wishart<Arg1,Arg2,Arg3>(X:Arg1, Ψ:Arg2, k:Arg3) -> {
   let p <- columns(X);
-  return -0.5*(ν + p - 1.0)*ldet(X) - 0.5*trace(solve(X, Ψ)) -
-      0.5*ν*(p*log(2.0) - ldet(Ψ)) - lgamma(0.5*ν, p);
+  let l <- k + p + 1.0;
+  return -0.5*(l + p + 1.0)*ldet(X) - 0.5*trace(solve(X, Ψ)) -
+      0.5*l*(p*log(2.0) - ldet(Ψ)) - lgamma(0.5*l, p);
 }
