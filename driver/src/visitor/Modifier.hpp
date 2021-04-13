@@ -57,6 +57,7 @@ public:
   virtual Statement* modify(GlobalVariable* o);
   virtual Statement* modify(MemberVariable* o);
   virtual Statement* modify(LocalVariable* o);
+  virtual Statement* modify(TupleVariable* o);
   virtual Statement* modify(Function* o);
   virtual Statement* modify(Program* o);
   virtual Statement* modify(MemberFunction* o);

@@ -107,6 +107,7 @@ birch_SOURCES = \
   src/statement/Statement.cpp \
   src/statement/StatementIterator.cpp \
   src/statement/StatementList.cpp \
+  src/statement/TupleVariable.cpp \
   src/statement/UnaryOperator.cpp \
   src/statement/While.cpp \
   src/statement/With.cpp \
@@ -240,6 +241,7 @@ noinst_HEADERS = \
   src/statement/Statement.hpp \
   src/statement/StatementIterator.hpp \
   src/statement/StatementList.hpp \
+  src/statement/TupleVariable.hpp \
   src/statement/UnaryOperator.hpp \
   src/statement/While.hpp \
   src/statement/With.hpp \

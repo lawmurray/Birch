@@ -57,6 +57,7 @@ public:
   virtual Statement* clone(const GlobalVariable* o);
   virtual Statement* clone(const MemberVariable* o);
   virtual Statement* clone(const LocalVariable* o);
+  virtual Statement* clone(const TupleVariable* o);
   virtual Statement* clone(const Function* o);
   virtual Statement* clone(const Program* o);
   virtual Statement* clone(const MemberFunction* o);

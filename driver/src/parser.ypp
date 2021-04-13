@@ -133,6 +133,7 @@
 %type <valExpression> generic generic_list generics optional_generics
 
 %type <valStatement> global_variable_declaration local_variable_declaration
+%type <valStatement> tuple_variable tuple_variables tuple_variables_declaration
 %type <valStatement> for_variable_declaration function_declaration
 %type <valStatement> program_declaration
 %type <valStatement> member_variable_declaration member_function_declaration
@@ -165,7 +166,6 @@
 name
     : NAME  { $$ = new birch::Name($1); }
     ;
-
 
 /***************************************************************************
  * Expressions                                                             *
@@ -508,6 +508,19 @@ local_variable_declaration
     | name ':' type brackets arguments ';'        { push_raw(); $$ = new birch::LocalVariable(birch::NONE, $1, new birch::ArrayType($3, $4->width(), make_loc(@$)), $4, $5, empty_name(@$), empty_expr(@$), make_doc_loc(@$)); }
     ;
 
+tuple_variable
+    : name  { push_raw(); $$ = new birch::LocalVariable(birch::LET, $1, empty_type(@$), empty_expr(@$), empty_expr(@$), empty_name(@$), empty_expr(@$), make_doc_loc(@$)); }
+    ;
+
+tuple_variables
+    : tuple_variable
+    | tuple_variable ',' tuple_variables  { $$ = new birch::StatementList($1, $3, make_loc(@$)); }
+    ;
+
+tuple_variables_declaration
+    : LET '(' tuple_variables ')' init_operator expression ';' { push_raw(); $$ = new birch::TupleVariable(birch::LET, $3, $5, $6, make_doc_loc(@$)); }
+    ;
+
 function_declaration
     : FUNCTION name optional_generics parameters optional_auto_return_type { push_raw(); } optional_braces  { $$ = new birch::Function(birch::NONE, $2, $3, $4, $5, $7, make_doc_loc(@$)); }
     ;
@@ -651,6 +664,7 @@ factor
 
 statement
     : local_variable_declaration
+    | tuple_variables_declaration
     | expression_statement
     | if
     | for

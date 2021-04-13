@@ -209,6 +209,19 @@ void birch::BirchGenerator::visit(const LocalVariable* o) {
   finish(';');
 }
 
+void birch::BirchGenerator::visit(const TupleVariable* o) {
+  start("let (");
+  for (auto iter = o->locals->begin(); iter != o->locals->end(); ++iter) {
+    if (iter != o->locals->begin()) {
+      middle(", ");
+    }
+    auto local = dynamic_cast<const LocalVariable*>(*iter);
+    assert(local);
+    middle(local->name);
+  }
+  finish(") <- " << o->value << ';');
+}
+
 void birch::BirchGenerator::visit(const NamedExpression* o) {
   middle(o->name);
   if (!o->typeArgs->isEmpty()) {

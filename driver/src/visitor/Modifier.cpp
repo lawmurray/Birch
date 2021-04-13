@@ -196,6 +196,12 @@ birch::Statement* birch::Modifier::modify(LocalVariable* o) {
   return o;
 }
 
+birch::Statement* birch::Modifier::modify(TupleVariable* o) {
+  o->locals = o->locals->accept(this);
+  o->value = o->value->accept(this);
+  return o;
+}
+
 birch::Statement* birch::Modifier::modify(Function* o) {
   o->typeParams = o->typeParams->accept(this);
   o->params = o->params->accept(this);

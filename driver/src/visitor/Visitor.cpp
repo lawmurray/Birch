@@ -170,6 +170,11 @@ void birch::Visitor::visit(const LocalVariable* o) {
   o->value->accept(this);
 }
 
+void birch::Visitor::visit(const TupleVariable* o) {
+  o->locals->accept(this);
+  o->value->accept(this);
+}
+
 void birch::Visitor::visit(const Function* o) {
   o->typeParams->accept(this);
   o->params->accept(this);

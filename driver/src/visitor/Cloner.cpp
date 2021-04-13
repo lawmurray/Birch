@@ -161,6 +161,11 @@ birch::Statement* birch::Cloner::clone(const LocalVariable* o) {
       o->value->accept(this), o->loc);
 }
 
+birch::Statement* birch::Cloner::clone(const TupleVariable* o) {
+  return new TupleVariable(o->annotation, o->locals->accept(this),
+      o->op, o->value->accept(this), o->loc);
+}
+
 birch::Statement* birch::Cloner::clone(const Function* o) {
   return new Function(o->annotation, o->name, o->typeParams->accept(this),
       o->params->accept(this), o->returnType->accept(this),
