@@ -1071,7 +1071,7 @@ void birch::Driver::setup() {
     /* sources go into one *.cpp file for the whole package */
     auto source = fs::path(tarName);
     source.replace_extension(".cpp");
-    makeStream << " \\\n  " << source.string() << ".cpp";
+    makeStream << " \\\n  " << source.string();
   } else if (unit == "file") {
     /* sources go into one *.cpp file for each *.birch file */
     for (auto file : metaFiles["manifest.source"]) {
