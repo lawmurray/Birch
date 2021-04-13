@@ -5,68 +5,69 @@ cpp{{
 /**
  * Inverse-gamma distribution.
  */
-final class InverseGamma(α:Expression<Real>, β:Expression<Real>) <
-    Distribution<Real> {
+final class InverseGamma<Arg1,Arg2>(α:Arg1, β:Arg2) < Distribution<Real> {
   /**
    * Shape.
    */
-  α:Expression<Real> <- α;
+  α:Arg1 <- α;
   
   /**
    * Scale.
    */
-  β:Expression<Real> <- β;
+  β:Arg2 <- β;
 
-  function supportsLazy() -> Boolean {
+  override function supportsLazy() -> Boolean {
     return true;
   }
 
-  function simulate() -> Real {
-    return simulate_inverse_gamma(α.value(), β.value());
+  override function simulate() -> Real {
+    return simulate_inverse_gamma(value(α), value(β));
   }
 
-  function simulateLazy() -> Real? {
-    return simulate_inverse_gamma(α.peak(), β.peak());
+  override function simulateLazy() -> Real? {
+    return simulate_inverse_gamma(peak(α), peak(β));
   }
   
-  function logpdf(x:Real) -> Real {
-    return logpdf_inverse_gamma(x, α.value(), β.value());
+  override function logpdf(x:Real) -> Real {
+    return logpdf_inverse_gamma(x, value(α), value(β));
   }
 
-  function logpdfLazy(x:Expression<Real>) -> Expression<Real>? {
-    return logpdf_lazy_inverse_gamma(x, α, β);
+  override function logpdfLazy(x:Expression<Real>) -> Expression<Real>? {
+    return box(logpdf_inverse_gamma(x, α, β));
   }
 
-  function cdf(x:Real) -> Real? {
-    return cdf_inverse_gamma(x, α.value(), β.value());
+  override function cdf(x:Real) -> Real? {
+    return cdf_inverse_gamma(x, value(α), value(β));
   }
 
-  function quantile(P:Real) -> Real? {
-    return quantile_inverse_gamma(P, α.value(), β.value());
+  override function quantile(P:Real) -> Real? {
+    return quantile_inverse_gamma(P, value(α), value(β));
   }
 
-  function lower() -> Real? {
+  override function lower() -> Real? {
     return 0.0;
   }
   
-  function graftInverseGamma() -> InverseGamma? {
-    prune();
-    return this;
+  override function isInverseGamma() -> Boolean {
+    return true;
   }
 
-  function write(buffer:Buffer) {
-    prune();
+  override function getInverseGamma() -> (Expression<Real>, Expression<Real>)? {
+    return box(α, β);
+  }
+
+  override function write(buffer:Buffer) {
     buffer.set("class", "InverseGamma");
-    buffer.set("α", α);
-    buffer.set("β", β);
+    buffer.set("α", value(α));
+    buffer.set("β", value(β));
   }
 }
 
 /**
  * Create inverse-gamma distribution.
  */
-function InverseGamma<Left,Right>(α:Left, β:Right) -> {
-  return construct<InverseGamma>(box(α), box(β));
+function InverseGamma<Arg1,Arg2>(α:Arg1, β:Arg2) -> {
+  return construct<InverseGamma<Arg1,Arg2>>(α, β);
 }
 
 /*
@@ -88,26 +89,9 @@ function simulate_inverse_gamma(α:Real, β:Real) -> Real {
  *
  * Returns: the log probability density.
  */
-function logpdf_inverse_gamma(x:Real, α:Real, β:Real) -> Real {
-  assert 0.0 < α;
-  assert 0.0 < β;
+function logpdf_inverse_gamma<Arg1,Arg2,Arg3>(x:Arg1, α:Arg2, β:Arg3) -> {
   return if_then_else(x < 0.0, -inf, α*log(β) - (α + 1.0)*log(x) - β/x -
       lgamma(α));
-}
-
-
-/*
- * Observe an inverse-gamma variate.
- *
- * - x: The variate.
- * - α: Shape.
- * - β: Scale.
- *
- * Returns: the log probability density.
- */
-function logpdf_lazy_inverse_gamma(x:Expression<Real>, α:Expression<Real>, β:Expression<Real>) -> Expression<Real> {
-  return box(if_then_else(x < 0.0, -inf, α*log(β) - (α + 1.0)*log(x) - β/x -
-      lgamma(α)));
 }
 
 /*

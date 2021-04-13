@@ -1,55 +1,42 @@
 /**
  * Multinomial distribution.
  */
-final class Multinomial(n:Expression<Integer>, ρ:Expression<Real[_]>) <
+final class Multinomial<Arg1,Arg2>(n:Arg1, ρ:Arg2) <
     Distribution<Integer[_]> {
   /**
    * Number of trials.
    */
-  n:Expression<Integer> <- n;
+  n:Arg1 <- n;
 
   /**
    * Category probabilities.
    */
-  ρ:Expression<Real[_]> <- ρ;
+  ρ:Arg2 <- ρ;
 
-  function rows() -> Integer {
-    return ρ.rows();
-  }
-
-  function supportsLazy() -> Boolean {
+  override function supportsLazy() -> Boolean {
     return false;
   }
 
-  function simulate() -> Integer[_] {
-    return simulate_multinomial(n.value(), ρ.value());
+  override function simulate() -> Integer[_] {
+    return simulate_multinomial(value(n), value(ρ));
   }
-
-//  function simulateLazy() -> Integer[_]? {
-//    return simulate_multinomial(n.peak(), ρ.peak());
-//  }
   
-  function logpdf(x:Integer[_]) -> Real {
-    return logpdf_multinomial(x, n.value(), ρ.value());
+  override function logpdf(x:Integer[_]) -> Real {
+    return logpdf_multinomial(x, value(n), value(ρ));
   }
 
-//  function logpdfLazy(x:Expression<Integer[_]>) -> Expression<Real>? {
-//    return logpdf_lazy_multinomial(x, n, ρ);
-//  }
-
-  function write(buffer:Buffer) {
-    prune();
+  override function write(buffer:Buffer) {
     buffer.set("class", "Multinomial");
-    buffer.set("n", n);
-    buffer.set("ρ", ρ);
+    buffer.set("n", value(n));
+    buffer.set("ρ", value(ρ));
   }
 }
 
 /**
  * Create multinomial distribution.
  */
-function Multinomial<Left,Right>(n:Left, ρ:Right) -> {
-  return construct<Multinomial>(box(n), box(ρ));
+function Multinomial<Arg1,Arg2>(n:Arg1, ρ:Arg2) -> {
+  return construct<Multinomial<Arg1,Arg2>>(n, ρ);
 }
 
 /*
@@ -85,16 +72,15 @@ function simulate_multinomial(n:Integer, ρ:Real[_], Z:Real) -> Integer[_] {
   assert length(ρ) > 0;
   assert abs(sum(ρ) - Z) < 1.0e-6;
 
-  D:Integer <- length(ρ);
-  R:Real <- ρ[D];
-  lnMax:Real <- 0.0;
-  j:Integer <- D;
-  i:Integer <- n;
-  u:Real;
-  x:Integer[_] <- vector(0, D);
-    
+  let D <- length(ρ);
+  let R <- ρ[D];
+  let lnMax <- 0.0;
+  let j <- D;
+  let i <- n;
+  let x <- vector(0, D);
+
   while i > 0 {
-    u <- simulate_uniform(0.0, 1.0);
+    let u <- simulate_uniform(0.0, 1.0);
     lnMax <- lnMax + log(u)/i;
     u <- Z*exp(lnMax);
     while u < Z - R {
@@ -122,16 +108,15 @@ function simulate_multinomial(n:Integer, ρ:Real[_], Z:Real) -> Integer[_] {
  */
 function logpdf_multinomial(x:Integer[_], n:Integer, ρ:Real[_]) -> Real {
   assert length(x) == length(ρ);
-
-  m:Integer <- 0;
-  w:Real <- lgamma(n + 1.0);
+  let m <- 0;
+  let w <- lgamma(n + 1.0);
   for i in 1..length(x) {
     assert x[i] >= 0;
     assert ρ[i] >= 0.0;
     m <- m + x[i];
     w <- w + x[i]*log(ρ[i]) - lgamma(x[i] + 1.0);
   }
-  if (m == n) {
+  if m == n {
     return w;
   } else {
     return -inf;

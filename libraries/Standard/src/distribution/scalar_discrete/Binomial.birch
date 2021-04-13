@@ -5,67 +5,65 @@ cpp{{
 /**
  * Binomial distribution.
  */
-final class Binomial(n:Expression<Integer>, ρ:Expression<Real>) <
-    BoundedDiscrete {
+final class Binomial<Arg1,Arg2>(n:Arg1, ρ:Arg2) < BoundedDiscrete {
   /**
    * Number of trials.
    */
-  n:Expression<Integer> <- n;
+  n:Arg1 <- n;
 
   /**
    * Success probability.
    */
-  ρ:Expression<Real> <- ρ;
+  ρ:Arg2 <- ρ;
 
-  function supportsLazy() -> Boolean {
+  override function supportsLazy() -> Boolean {
     return true;
   }
 
-  function simulate() -> Integer {
-    return simulate_binomial(n.value(), ρ.value());
+  override function simulate() -> Integer {
+    return simulate_binomial(value(n), value(ρ));
   }
   
-  function simulateLazy() -> Integer? {
-    return simulate_binomial(n.peak(), ρ.peak());
+  override function simulateLazy() -> Integer? {
+    return simulate_binomial(peak(n), peak(ρ));
   }
 
-  function logpdf(x:Integer) -> Real {
-    return logpdf_binomial(x, n.value(), ρ.value());
+  override function logpdf(x:Integer) -> Real {
+    return logpdf_binomial(x, value(n), value(ρ));
   }
 
-  function logpdfLazy(x:Expression<Integer>) -> Expression<Real>? {
-    return logpdf_lazy_binomial(x, n, ρ);
+  override function logpdfLazy(x:Expression<Integer>) -> Expression<Real>? {
+    return box(logpdf_binomial(x, n, ρ));
   }
 
-  function cdf(x:Integer) -> Real? {
-    return cdf_binomial(x, n.value(), ρ.value());
+  override function cdf(x:Integer) -> Real? {
+    return cdf_binomial(x, value(n), value(ρ));
   }
 
-  function quantile(P:Real) -> Integer? {
-    return quantile_binomial(P, n.value(), ρ.value());
+  override function quantile(P:Real) -> Integer? {
+    return quantile_binomial(P, value(n), value(ρ));
   }
 
-  function lower() -> Integer? {
+  override function lower() -> Integer? {
     return 0;
   }
   
-  function upper() -> Integer? {
-    return n.value();
+  override function upper() -> Integer? {
+    return value(n);
   }
 
-  function write(buffer:Buffer) {
-    prune();
+  override function write(buffer:Buffer) {
     buffer.set("class", "Binomial");
-    buffer.set("n", n);
-    buffer.set("ρ", ρ);
+    buffer.set("n", value(n));
+    buffer.set("ρ", value(ρ));
   }
 }
 
 /**
  * Create binomial distribution.
  */
-function Binomial<Left,Right>(n:Left, ρ:Right) -> {
-  return construct<Binomial>(box(n), box(ρ));
+function Binomial<Arg1,Arg2>(n:Arg1, ρ:Arg2) -> {
+  return construct<Binomial<Arg1,Arg2>>(n, ρ);
 }
 
 /*
@@ -91,34 +89,8 @@ function simulate_binomial(n:Integer, ρ:Real) -> Integer {
  *
  * Returns: the log probability mass.
  */
-function logpdf_binomial(x:Integer, n:Integer, ρ:Real) -> Real {
-  assert 0 <= n;
-  assert 0.0 <= ρ && ρ <= 1.0;
-
-  if ρ == 0.0 || ρ == 1.0 {
-    if x == n*ρ {
-      return 0.0;
-    } else {
-      return -inf;
-    }
-  } else if 0 <= x && x <= n {
-    return x*log(ρ) + (n - x)*log1p(-ρ) + lchoose(n, x);
-  } else {
-    return -inf;
-  }
-}
-
-/*
- * Observe a binomial variate.
- *
- * - x: The variate.
- * - n: Number of trials.
- * - ρ: Probability of a true result.
- *
- * Returns: the log probability mass.
- */
-function logpdf_lazy_binomial(x:Expression<Integer>, n:Expression<Integer>, ρ:Expression<Real>) -> Expression<Real> {
-  return box(x*log(ρ) + (n - x)*log1p(-ρ) + lchoose(n, x));
+function logpdf_binomial<Arg1,Arg2,Arg3>(x:Arg1, n:Arg2, ρ:Arg3) -> {
+  return x*log(ρ) + (n - x)*log1p(-ρ) + lchoose(n, x);
 }
 
 /*
@@ -133,7 +105,6 @@ function logpdf_lazy_binomial(x:Expression<Integer>, n:Expression<Integer>, ρ:E
 function cdf_binomial(x:Integer, n:Integer, ρ:Real) -> Real {
   assert 0 <= n;
   assert 0.0 <= ρ && ρ <= 1.0;
-
   if x < 0 {
     return 0.0;
   } else if x > n {

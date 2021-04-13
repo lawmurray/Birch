@@ -1,81 +1,80 @@
 /**
  * Beta-binomial distribution.
  */
-final class BetaBinomial(n:Expression<Integer>, ρ:Beta) < BoundedDiscrete {
+final class BetaBinomial<Arg1,Arg2,Arg3>(n:Arg1, α:Arg2, β:Arg3) <
+    BoundedDiscrete {
   /**
    * Number of trials.
    */
-  n:Expression<Integer> <- n;
+  n:Arg1 <- n;
 
   /**
-   * Success probability.
+   * First shape.
    */
-  ρ:Beta <- ρ;
+  α:Arg2 <- α;
 
-  function supportsLazy() -> Boolean {
+  /**
+   * Second shape.
+   */
+  β:Arg3 <- β;
+
+  override function supportsLazy() -> Boolean {
     return true;
   }
 
-  function simulate() -> Integer {
-    return simulate_beta_binomial(n.value(), ρ.α.value(), ρ.β.value());
+  override function simulate() -> Integer {
+    return simulate_beta_binomial(value(n), value(α), value(β));
   }
   
-  function simulateLazy() -> Integer? {
-    return simulate_beta_binomial(n.peak(), ρ.α.peak(), ρ.β.peak());
+  override function simulateLazy() -> Integer? {
+    return simulate_beta_binomial(peak(n), peak(α), peak(β));
   }
   
-  function logpdf(x:Integer) -> Real {
-    return logpdf_beta_binomial(x, n.value(), ρ.α.value(), ρ.β.value());
+  override function logpdf(x:Integer) -> Real {
+    return logpdf_beta_binomial(x, value(n), value(α), value(β));
   }
 
-  function logpdfLazy(x:Expression<Integer>) -> Expression<Real>? {
-    return logpdf_lazy_beta_binomial(x, n, ρ.α, ρ.β);
+  override function logpdfLazy(x:Expression<Integer>) -> Expression<Real>? {
+    return box(logpdf_beta_binomial(x, n, α, β));
   }
 
-  function update(x:Integer) {
-    (ρ.α, ρ.β) <- box(update_beta_binomial(x, n.value(), ρ.α.value(), ρ.β.value()));
+  override function update(x:Integer) -> Delay? {
+    return update_beta_binomial(x, value(n), value(α), value(β));
   }
 
-  function updateLazy(x:Expression<Integer>) {
-    (ρ.α, ρ.β) <- update_lazy_beta_binomial(x, n, ρ.α, ρ.β);
+  override function updateLazy(x:Expression<Integer>) -> Delay? {
+    return update_beta_binomial(x, n, α, β);
   }
 
-  function cdf(x:Integer) -> Real? {
-    return cdf_beta_binomial(x, n.value(), ρ.α.value(), ρ.β.value());
+  override function cdf(x:Integer) -> Real? {
+    return cdf_beta_binomial(x, value(n), value(α), value(β));
   }
   
-  function lower() -> Integer? {
+  override function lower() -> Integer? {
     return 0;
   }
   
-  function upper() -> Integer? {
-    return n.value();
-  }
-
-  function link() {
-    ρ.setChild(this);
-  }
-  
-  function unlink() {
-    ρ.releaseChild(this);
+  override function upper() -> Integer? {
+    return value(n);
   }
 }
 
-function BetaBinomial<Left>(n:Left, ρ:Beta) -> {
-  m:BetaBinomial(box(n), ρ);
-  m.link();
-  return m;
+function BetaBinomial<Arg1,Arg2,Arg3>(n:Arg1, α:Arg2, β:Arg3) -> {
+  return construct<BetaBinomial<Arg1,Arg2,Arg3>>(n, α, β);
 }
 
 /**
  * Create binomial distribution.
  */
-function Binomial<Left>(n:Left, ρ:Random<Real>) -> Distribution<Integer> {
-  m:Beta?;
-  if (m <- ρ.graftBeta())? {
-    return BetaBinomial(n, m!);
+function Binomial<Arg1>(n:Arg1, ρ:Random<Real>) -> Distribution<Integer> {
+  if ρ.hasBeta() {
+    ρ.prune();
+    let (α, β) <- ρ.getBeta();
+    let p <- BetaBinomial(n, α, β);
+    ρ.graft(p);
+    return p;
   } else {
-    return construct<Binomial>(box(n), ρ);
+    return construct<Binomial<Arg1,Random<Real>>>(n, ρ);
   }
 }
 
@@ -83,14 +82,13 @@ function Binomial<Left>(n:Left, ρ:Random<Real>) -> Distribution<Integer> {
  * Simulate a beta-binomial distribution.
  *
  * - n: Number of trials.
- * - α: Shape.
- * - β: Shape.
+ * - α: First shape.
+ * - β: Second shape.
  */
 function simulate_beta_binomial(n:Integer, α:Real, β:Real) -> Integer {
   assert 0 <= n;
   assert 0.0 < α;
   assert 0.0 < β;
-  
   return simulate_binomial(n, simulate_beta(α, β));
 }
 
@@ -99,35 +97,14 @@ function simulate_beta_binomial(n:Integer, α:Real, β:Real) -> Integer {
  *
  * - x: The variate.
  * - n: Number of trials.
- * - α: Shape.
- * - β: Shape.
+ * - α: First shape.
+ * - β: Second shape.
  *
  * Returns: the log probability mass.
  */
-function logpdf_beta_binomial(x:Integer, n:Integer, α:Real, β:Real) -> Real {
-  assert 0 <= n;
-  assert 0.0 < α;
-  assert 0.0 < β;
-
-  if (0 <= x && x <= n) {
-    return lbeta(x + α, n - x + β) - lbeta(α, β) + lchoose(n, x);
-  } else {
-    return -inf;
-  }
-}
-
-/*
- * Observe a beta-binomial variate.
- *
- * - x: The variate.
- * - n: Number of trials.
- * - α: Shape.
- * - β: Shape.
- *
- * Returns: the log probability mass.
- */
-function logpdf_lazy_beta_binomial(x:Expression<Integer>, n:Expression<Integer>, α:Expression<Real>, β:Expression<Real>) -> Expression<Real> {
-  return box(lbeta(x + α, n - x + β) - lbeta(α, β) + lchoose(n, x));
+function logpdf_beta_binomial<Arg1,Arg2,Arg3,Arg4>(x:Arg1, n:Arg2, α:Arg3,
+    β:Arg4) -> {
+  return lbeta(x + α, n - x + β) - lbeta(α, β) + lchoose(n, x);
 }
 
 /*
@@ -140,29 +117,9 @@ function logpdf_lazy_beta_binomial(x:Expression<Integer>, n:Expression<Integer>,
  *
  * Returns: the posterior hyperparameters `α'` and `β'`.
  */
-function update_beta_binomial(x:Integer, n:Integer, α:Real, β:Real) ->
-    (Real, Real) {
-  assert 0 <= x && x <= n;
-  assert 0 <= n;
-  assert 0.0 < α;
-  assert 0.0 < β;
-  return (α + x, β + n - x);
-}
-
-/*
- * Update the parameters of a Beta distribution with a Binomial likelihood.
- *
- * - x: The variate.
- * - n: Number of trials.
- * - α: Prior first shape.
- * - β: Prior second shape.
- *
- * Returns: the posterior hyperparameters `α'` and `β'`.
- */
-function update_lazy_beta_binomial(x:Expression<Integer>,
-    n:Expression<Integer>, α:Expression<Real>, β:Expression<Real>) ->
-    (Expression<Real>, Expression<Real>) {
-  return (box(α + x), box(β + n - x));
+function update_beta_binomial<Arg1,Arg2,Arg3,Arg4>(x:Arg1, n:Arg2, α:Arg3,
+    β:Arg4) -> {
+  return Beta(α + x, β + n - x);
 }
 
 /*
@@ -176,7 +133,7 @@ function update_lazy_beta_binomial(x:Expression<Integer>,
  * Return: the cumulative probability.
  */
 function cdf_beta_binomial(x:Integer, n:Integer, α:Real, β:Real) -> Real {
-  P:Real <- 0.0;
+  let P <- 0.0;
   for i in 0..min(n, x) {
     P <- P + exp(logpdf_beta_binomial(i, n, α, β));
   }

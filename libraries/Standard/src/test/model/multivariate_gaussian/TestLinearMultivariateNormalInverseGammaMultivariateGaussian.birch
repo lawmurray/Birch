@@ -3,8 +3,8 @@ class TestLinearMultivariateNormalInverseGammaMultivariateGaussian < Model {
   μ:Random<Real[_]>;
   x:Random<Real[_]>;
 
-  n:Integer <- 4;
-  p:Integer <- 3;
+  n:Integer <- 5;
+  p:Integer <- 4;
 
   α:Real;
   β:Real;

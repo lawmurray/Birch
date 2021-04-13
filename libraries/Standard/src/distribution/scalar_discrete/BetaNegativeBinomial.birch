@@ -1,73 +1,72 @@
 /**
  * Beta-negative-binomial distribution.
  */
-final class BetaNegativeBinomial(k:Expression<Integer>, ρ:Beta) < Discrete {
+final class BetaNegativeBinomial<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2, β:Arg3) <
+    Discrete {
   /**
    * Number of successes before the experiment is stopped.
    */
-  k:Expression<Integer> <- k;
+  k:Arg1 <- k;
 
   /**
-   * Success probability.
+   * First shape.
    */
-  ρ:Beta <- ρ;
+  α:Arg2 <- α;
 
-  function supportsLazy() -> Boolean {
+  /**
+   * Second shape.
+   */
+  β:Arg3 <- β;
+
+  override function supportsLazy() -> Boolean {
     return true;
   }
 
-  function simulate() -> Integer {
-    return simulate_beta_negative_binomial(k.value(), ρ.α.value(), ρ.β.value());
+  override function simulate() -> Integer {
+    return simulate_beta_negative_binomial(value(k), value(α), value(β));
   }
 
-  function simulateLazy() -> Integer? {
-    return simulate_beta_negative_binomial(k.peak(), ρ.α.peak(), ρ.β.peak());
+  override function simulateLazy() -> Integer? {
+    return simulate_beta_negative_binomial(peak(k), peak(α), peak(β));
   }
 
-  function logpdf(x:Integer) -> Real {
-    return logpdf_beta_negative_binomial(x, k.value(), ρ.α.value(), ρ.β.value());
+  override function logpdf(x:Integer) -> Real {
+    return logpdf_beta_negative_binomial(x, value(k), value(α), value(β));
   }
 
-  function logpdfLazy(x:Expression<Integer>) -> Expression<Real>? {
-    return logpdf_lazy_beta_negative_binomial(x, k, ρ.α, ρ.β);
+  override function logpdfLazy(x:Expression<Integer>) -> Expression<Real>? {
+    return box(logpdf_beta_negative_binomial(x, k, α, β));
   }
 
-  function update(x:Integer) {
-    (ρ.α, ρ.β) <- box(update_beta_negative_binomial(x, k.value(), ρ.α.value(), ρ.β.value()));
+  override function update(x:Integer) -> Delay? {
+    return update_beta_negative_binomial(x, value(k), value(α), value(β));
   }
 
-  function updateLazy(x:Expression<Integer>) {
-    (ρ.α, ρ.β) <- update_lazy_beta_negative_binomial(x, k, ρ.α, ρ.β);
+  override function updateLazy(x:Expression<Integer>) -> Delay? {
+    return update_beta_negative_binomial(x, k, α, β);
   }
   
-  function lower() -> Integer? {
+  override function lower() -> Integer? {
     return 0;
-  }
-
-  function link() {
-    ρ.setChild(this);
-  }
-  
-  function unlink() {
-    ρ.releaseChild(this);
   }
 }
 
-function BetaNegativeBinomial<Left>(k:Left, ρ:Beta) -> {
-  m:BetaNegativeBinomial(box(k), ρ);
-  m.link();
-  return m;
+function BetaNegativeBinomial<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2, β:Arg3) -> {
+  return construct<BetaNegativeBinomial<Arg1,Arg2,Arg3>>(k, α, β);
 }
 
 /**
  * Create negative binomial distribution.
  */
-function NegativeBinomial<Left>(k:Left, ρ:Random<Real>) -> Distribution<Integer> {
-  ρ1:Beta?;
-  if (ρ1 <- ρ.graftBeta())? {
-    return BetaNegativeBinomial(box(k), ρ1!);
+function NegativeBinomial<Arg1>(k:Arg1, ρ:Random<Real>) -> Distribution<Integer> {
+  if ρ.hasBeta() {
+    ρ.prune();
+    let (α, β) <- ρ.getBeta();
+    let p <- BetaNegativeBinomial(k, α, β);
+    ρ.graft(p);
+    return p;
   } else {
-    return construct<NegativeBinomial>(box(k), ρ);
+    return construct<NegativeBinomial<Arg1,Random<Real>>>(k, ρ);
   }
 }
 
@@ -82,7 +81,6 @@ function simulate_beta_negative_binomial(k:Integer, α:Real, β:Real) -> Integer
   assert 0.0 < α;
   assert 0.0 < β;
   assert 0 < k;
-
   return simulate_negative_binomial(k, simulate_beta(α, β));
 }
 
@@ -96,29 +94,9 @@ function simulate_beta_negative_binomial(k:Integer, α:Real, β:Real) -> Integer
  *
  * Returns: the log probability mass.
  */
-function logpdf_beta_negative_binomial(x:Integer, k:Integer, α:Real, β:Real) -> Real {
-  assert 0.0 < α;
-  assert 0.0 < β;
-
-  if (x >= 0) {
-    return lbeta(α + k, β + x) - lbeta(α, β) + lchoose(x + k - 1, x);
-  } else {
-    return -inf;
-  }
-}
-
-/*
- * Observe a beta-negative-binomial variate
- *
- * - x: The variate.
- * - k: Number of successes.
- * - α: Shape.
- * - β: Shape.
- *
- * Returns: the log probability mass.
- */
-function logpdf_lazy_beta_negative_binomial(x:Expression<Integer>, k:Expression<Integer>, α:Expression<Real>, β:Expression<Real>) -> Expression<Real> {
-  return box(lbeta(α + k, β + x) - lbeta(α, β) + lchoose(x + k - 1, x));
+function logpdf_beta_negative_binomial<Arg1,Arg2,Arg3,Arg4>(x:Arg1,
+    k:Arg2, α:Arg3, β:Arg4) -> {
+  return lbeta(α + k, β + x) - lbeta(α, β) + lchoose(x + k - 1, x);
 }
 
 /*
@@ -131,23 +109,7 @@ function logpdf_lazy_beta_negative_binomial(x:Expression<Integer>, k:Expression<
  *
  * Returns: the posterior hyperparameters `α'` and `β'`.
  */
-function update_beta_negative_binomial(x:Integer, k:Integer, α:Real,
-    β:Real) -> (Real, Real) {
-  return (α + k, β + x);
-}
-
-/*
- * Update the parameters of a Beta distribution with a Negative Binomial likelihood.
- *
- * - x: The variate.
- * - k: Number of successes.
- * - α: Prior first shape.
- * - β: Prior second shape.
- *
- * Returns: the posterior hyperparameters `α'` and `β'`.
- */
-function update_lazy_beta_negative_binomial(x:Expression<Integer>,
-    k:Expression<Integer>, α:Expression<Real>,
-    β:Expression<Real>) -> (Expression<Real>, Expression<Real>) {
-  return (box(α + k), box(β + x));
+function update_beta_negative_binomial<Arg1,Arg2,Arg3,Arg4>(x:Arg1, k:Arg2,
+    α:Arg3, β:Arg4) -> {
+  return Beta(α + k, β + x);
 }

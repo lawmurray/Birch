@@ -1,97 +1,97 @@
 /**
  * Scaled gamma-exponential distribution.
  */
-final class ScaledGammaExponential(a:Expression<Real>, λ:Gamma) <
+final class ScaledGammaExponential<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2, θ:Arg3) <
     Distribution<Real> {
   /**
    * Scale.
    */
-  a:Expression<Real> <- a;
+  a:Arg1 <- a;
 
   /**
-   * Rate.
+   * Prior scale of rate.
    */
-  λ:Gamma <- λ;
+  k:Arg2 <- k;
 
-  function supportsLazy() -> Boolean {
+  /**
+   * Prior shape of rate.
+   */
+  θ:Arg3 <- θ;
+
+  override function supportsLazy() -> Boolean {
     return true;
   }
 
-  function simulate() -> Real {
-    return simulate_lomax(1.0/(a.value()*λ.θ.value()), λ.k.value());
+  override function simulate() -> Real {
+    return simulate_lomax(1.0/(value(a)*value(θ)), value(k));
   }
 
-  function simulateLazy() -> Real? {
-    return simulate_lomax(1.0/(a.peak()*λ.θ.peak()), λ.k.peak());
+  override function simulateLazy() -> Real? {
+    return simulate_lomax(1.0/(peak(a)*peak(θ)), peak(k));
   }
 
-  function logpdf(x:Real) -> Real {
-    return logpdf_lomax(x, 1.0/(a.value()*λ.θ.value()), λ.k.value());
+  override function logpdf(x:Real) -> Real {
+    return logpdf_lomax(x, 1.0/(value(a)*value(θ)), value(k));
   }
 
-  function logpdfLazy(x:Expression<Real>) -> Expression<Real>? {
-    return logpdf_lazy_lomax(x, box(1.0/(a*λ.θ)), λ.k);
+  override function logpdfLazy(x:Expression<Real>) -> Expression<Real>? {
+    return box(logpdf_lomax(x, 1.0/(a*θ), k));
   }
 
-  function update(x:Real) {
-    (λ.k, λ.θ) <- box(update_scaled_gamma_exponential(x, a.value(),
-        λ.k.value(), λ.θ.value()));
+  override function update(x:Real) -> Delay? {
+    return update_scaled_gamma_exponential(x, value(a), value(k), value(θ));
   }
 
-  function updateLazy(x:Expression<Real>) {
-    (λ.k, λ.θ) <- update_lazy_scaled_gamma_exponential(x, a, λ.k, λ.θ);
+  override function updateLazy(x:Expression<Real>) -> Delay? {
+    return update_scaled_gamma_exponential(x, a, k, θ);
   }
   
-  function cdf(x:Real) -> Real? {
-    return cdf_lomax(x, 1.0/(a.value()*λ.θ.value()), λ.k.value());
+  override function cdf(x:Real) -> Real? {
+    return cdf_lomax(x, 1.0/(value(a)*value(θ)), value(k));
   }
 
-  function quantile(P:Real) -> Real? {
-    return quantile_lomax(P, 1.0/(a.value()*λ.θ.value()), λ.k.value());
+  override function quantile(P:Real) -> Real? {
+    return quantile_lomax(P, 1.0/(value(a)*value(θ)), value(k));
   }
 
-  function lower() -> Real? {
+  override function lower() -> Real? {
     return 0.0;
   }
-
-  function link() {
-    λ.setChild(this);
-  }
-  
-  function unlink() {
-    λ.releaseChild(this);
-  }
 }
 
-function ScaledGammaExponential<Left>(a:Left, λ:Gamma) -> {
-  m:ScaledGammaExponential(box(a), λ);
-  m.link();
-  return m;
+function ScaledGammaExponential<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2, θ:Arg3) -> {
+  return construct<ScaledGammaExponential<Arg1,Arg2,Arg3>>(a, k, θ);
 }
 
 /**
  * Create Exponential distribution.
  */
-function Exponential<Left>(λ:Multiply<Left,Random<Real>>) ->
+function Exponential<Arg>(λ:Multiply<Arg,Random<Real>>) ->
     Distribution<Real> {
-  m:Gamma?;
-  if (m <- λ.r!.graftGamma())? {
-    return ScaledGammaExponential(λ.l!, m!);
+  if λ.r!.hasGamma() {
+    λ.r!.prune();
+    let (k, θ) <- λ.r!.getGamma();
+    let p <- ScaledGammaExponential(λ.l!, k, θ);
+    λ.r!.graft(p);
+    return p;
   } else {
-    return construct<Exponential>(box(λ));
+    return construct<Exponential<Multiply<Arg,Random<Real>>>>(λ);
   }
 }
 
 /**
  * Create Exponential distribution.
  */
-function Exponential<Right>(λ:Multiply<Random<Real>,Right>) ->
+function Exponential<Arg>(λ:Multiply<Random<Real>,Arg>) ->
     Distribution<Real> {
-  m:Gamma?;
-  if (m <- λ.l!.graftGamma())? {
-    return ScaledGammaExponential(λ.r!, m!);
+  if λ.l!.hasGamma() {
+    λ.l!.prune();
+    let (k, θ) <- λ.l!.getGamma();
+    let p <- ScaledGammaExponential(λ.r!, k, θ);
+    λ.l!.graft(p);
+    return p;
   } else {
-    return construct<Exponential>(box(λ));
+    return construct<Exponential<Multiply<Random<Real>,Arg>>>(λ);
   }
 }
 
@@ -106,23 +106,7 @@ function Exponential<Right>(λ:Multiply<Random<Real>,Right>) ->
  *
  * Returns: the posterior hyperparameters `k'` and `θ'`.
  */
-function update_scaled_gamma_exponential(x:Real, a:Real, k:Real, θ:Real) -> (Real, Real) {
-  return (k + 1.0, θ/(1.0 + x*a*θ));
-}
-
-/*
- * Update the parameters of a scaled Gamma distribution with an exponential
- * likelihood.
- *
- * - x: The variate.
- * - a: Constant scale.
- * - k: Prior shape.
- * - θ: Prior scale.
- *
- * Returns: the posterior hyperparameters `k'` and `θ'`.
- */
-function update_lazy_scaled_gamma_exponential(x:Expression<Real>,
-    a:Expression<Real>, k:Expression<Real>, θ:Expression<Real>) ->
-    (Expression<Real>, Expression<Real>) {
-  return (box(k + 1.0), box(θ/(1.0 + x*a*θ)));
+function update_scaled_gamma_exponential<Arg1,Arg2,Arg3,Arg4>(x:Arg1,
+    a:Arg2, k:Arg3, θ:Arg4) -> {
+  return Gamma(k + 1.0, θ/(1.0 + x*a*θ));
 }

@@ -2,8 +2,8 @@
  * Test gamma cdf evaluations.
  */
 program test_cdf_gamma(N:Integer <- 10000) {
-  let k <- simulate_uniform(1.0, 10.0);
-  let θ <- simulate_uniform(0.0, 10.0);
+  let k <- simulate_uniform(2.0, 10.0);
+  let θ <- simulate_uniform(0.1, 10.0);
   let q <- Gamma(k, θ);  
   test_cdf(q, N);
 }

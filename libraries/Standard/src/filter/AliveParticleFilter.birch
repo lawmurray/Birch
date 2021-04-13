@@ -7,10 +7,8 @@
  * ```mermaid
  * classDiagram
  *    ParticleFilter <|-- AliveParticleFilter
- *    ParticleFilter <|-- ConditionalParticleFilter
  *    link ParticleFilter "../ParticleFilter/"
  *    link AliveParticleFilter "../AliveParticleFilter/"
- *    link ConditionalParticleFilter "../ConditionalParticleFilter/"
  * ```
  */
 class AliveParticleFilter < ParticleFilter {
@@ -39,10 +37,10 @@ class AliveParticleFilter < ParticleFilter {
           x[n].m.simulate(t);
           w[n] <- h.w;
         }
-        if w[n] == -inf {
+        if !isfinite(w[n]) {
           a[n] <- global.ancestor(w0);  // try again
         }
-      } while w[n] == -inf;
+      } while !isfinite(w[n]);
     }
     collect();
 

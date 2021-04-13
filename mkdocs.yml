@@ -8,9 +8,19 @@ theme:
   icon:
     repo: fontawesome/brands/github
   palette:
-    scheme: default
-    primary: white
-    accent: deep orange
+    # Light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/toggle-switch-off-outline
+        name: Switch to dark mode
+
+    # Dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to light mode
 plugins:
   - search
 markdown_extensions:

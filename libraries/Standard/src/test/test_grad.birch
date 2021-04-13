@@ -51,7 +51,6 @@ function test_grad(π:Distribution<Real[_]>, N:Integer) {
   let failed <- 0;  // number of failed tests
   let h <- 1.0e-4;  // interval width for finite difference estimate
   let ε <- 2.0e-2;  // relative error threshold for fail
-  let D <- π.rows();
 
   for n in 1..N {
     /* variate */
@@ -64,7 +63,7 @@ function test_grad(π:Distribution<Real[_]>, N:Integer) {
     p.grad(1.0);
     let d <- x.getGradient();
 
-    for i in 1..D {
+    for i in 1..rows(x) {
       /* finite difference estimate of gradient */
       let y <- x.eval();
       let z <- x.eval();
@@ -98,8 +97,6 @@ function test_grad(π:Distribution<Real[_,_]>, N:Integer) {
   let failed <- 0;  // number of failed tests
   let h <- 1.0e-4;  // interval width for finite difference estimate
   let ε <- 2.0e-2;  // relative error threshold for fail
-  let R <- π.rows();
-  let C <- π.columns();
 
   for n in 1..N {
     /* variate */
@@ -112,8 +109,8 @@ function test_grad(π:Distribution<Real[_,_]>, N:Integer) {
     p.grad(1.0);
     let d <- x.getGradient();
 
-    for i in 1..R {
-      for j in 1..C {
+    for i in 1..rows(x) {
+      for j in 1..columns(x) {
         /* finite difference estimate of gradient */
         let y <- x.eval();
         let z <- x.eval();

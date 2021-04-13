@@ -1,91 +1,94 @@
 /**
  * Matrix normal-inverse-Wishart-Gaussian distribution.
  */
-final class MatrixNormalInverseWishartMatrixGaussian(
-    M:MatrixNormalInverseWishart, U:Expression<Real[_,_]>) < Distribution<Real[_,_]> {
+final class MatrixNormalInverseWishartMatrixGaussian<Arg1,Arg2,Arg3,Arg4,
+    Arg5>(N:Arg1, Λ:Arg2, Ψ:Arg3, k:Arg4, U:Arg5) < Distribution<Real[_,_]> {
   /**
-   * Mean.
+   * Among-row precision times mean.
    */
-  M:MatrixNormalInverseWishart <- M;
+  N:Arg1 <- N;
+
+  /**
+   * Among-row precision.
+   */
+  Λ:Arg2 <- Λ;
+  
+  /**
+   * Among-column covariance scale.
+   */
+  Ψ:Arg3 <- Ψ;
+  
+  /**
+   * Among-column covariance degrees of freedom.
+   */
+  k:Arg4 <- k;
 
   /**
    * Among-row covariance.
    */
-  U:Expression<Real[_,_]> <- U;
+  U:Arg5 <- U;
 
-  function rows() -> Integer {
-    return M.rows();
-  }
-  
-  function columns() -> Integer {
-    return M.columns();
-  }
-
-  function supportsLazy() -> Boolean {
+  override function supportsLazy() -> Boolean {
     return true;
   }
 
-  function simulate() -> Real[_,_] {
-    return simulate_matrix_normal_inverse_wishart_matrix_gaussian(
-        M.N.value(), M.Λ.value(), U.value(), M.V.Ψ.value(), M.V.k.value());
+  override function simulate() -> Real[_,_] {
+    return simulate_matrix_normal_inverse_wishart_matrix_gaussian(value(N),
+        value(Λ), value(U), value(Ψ), value(k));
   }
 
-  function simulateLazy() -> Real[_,_]? {
-    return simulate_matrix_normal_inverse_wishart_matrix_gaussian(
-        M.N.peak(), M.Λ.peak(), U.peak(), M.V.Ψ.peak(), M.V.k.peak());
+  override function simulateLazy() -> Real[_,_]? {
+    return simulate_matrix_normal_inverse_wishart_matrix_gaussian(peak(N),
+        peak(Λ), peak(U), peak(Ψ), peak(k));
   }
   
-  function logpdf(X:Real[_,_]) -> Real {
-    return logpdf_matrix_normal_inverse_wishart_matrix_gaussian(
-        X, M.N.value(), M.Λ.value(), U.value(), M.V.Ψ.value(), M.V.k.value());
+  override function logpdf(X:Real[_,_]) -> Real {
+    return logpdf_matrix_normal_inverse_wishart_matrix_gaussian(X, value(N),
+        value(Λ), value(U), value(Ψ), value(k));
   }
 
-  function logpdfLazy(X:Expression<Real[_,_]>) -> Expression<Real>? {
-    return logpdf_lazy_matrix_normal_inverse_wishart_matrix_gaussian(
-        X, M.N, M.Λ, U, M.V.Ψ, M.V.k);
+  override function logpdfLazy(X:Expression<Real[_,_]>) -> Expression<Real>? {
+    return box(logpdf_matrix_normal_inverse_wishart_matrix_gaussian(X, N, Λ,
+        U, Ψ, k));
   }
 
-  function update(X:Real[_,_]) {
-    (M.N, M.Λ, M.V.Ψ, M.V.k) <- box(update_matrix_normal_inverse_wishart_matrix_gaussian(
-        X, M.N.value(), M.Λ.value(), U.value(), M.V.Ψ.value(), M.V.k.value()));
+  override function update(X:Real[_,_]) -> Delay? {
+    return update_matrix_normal_inverse_wishart_matrix_gaussian(X, value(N),
+        value(Λ), value(U), value(Ψ), value(k));
   }
 
-  function updateLazy(X:Expression<Real[_,_]>) {
-    (M.N, M.Λ, M.V.Ψ, M.V.k) <- update_lazy_matrix_normal_inverse_wishart_matrix_gaussian(
-        X, M.N, M.Λ, U, M.V.Ψ, M.V.k);
-  }
-
-  function link() {
-    M.setChild(this);
-  }
-  
-  function unlink() {
-    M.releaseChild(this);
+  override function updateLazy(X:Expression<Real[_,_]>) -> Delay? {
+    return update_matrix_normal_inverse_wishart_matrix_gaussian(X, N, Λ,
+        U, Ψ, k);
   }
 }
 
-function MatrixNormalInverseWishartMatrixGaussian<Right>(
-      M:MatrixNormalInverseWishart, U:Right) -> {
-  m:MatrixNormalInverseWishartMatrixGaussian(M, box(U));
-  m.link();
-  return m;
+function MatrixNormalInverseWishartMatrixGaussian<Arg1,Arg2,Arg3,Arg4,
+    Arg5>(N:Arg1, Λ:Arg2, Ψ:Arg3, k:Arg4, U:Arg5) -> {
+  return construct<MatrixNormalInverseWishartMatrixGaussian<Arg1,Arg2,Arg3,
+      Arg4,Arg5>>(N, Λ, Ψ, k, U);
 }
 
 /**
  * Create matrix Gaussian distribution.
  */
-function MatrixGaussian<Middle>(M:Random<Real[_,_]>, U:Middle,
+function MatrixGaussian<Arg>(M:Random<Real[_,_]>, U:Arg,
     V:Random<Real[_,_]>) -> Distribution<Real[_,_]> {
-  let p <- InverseWishart?(V.p);
-  if p? {
-    let q <- M.graftMatrixNormalInverseWishart(p!);
-    if q? {
-      return MatrixNormalInverseWishartMatrixGaussian(q!, U);
-    } else {
-      return MatrixNormalInverseWishart(M, U, p!);
-    }
+  if M.hasMatrixNormalInverseWishart(V) {
+    M.prune();
+    let (N, Λ, Ψ, k) <- M.getMatrixNormalInverseWishart();
+    let p <- MatrixNormalInverseWishartMatrixGaussian(N, Λ, Ψ, k, U);
+    M.graft(p);
+    return p;
+  } else if V.hasInverseWishart() {
+    V.prune();
+    let (Ψ, k) <- V.getInverseWishart();
+    let p <- MatrixNormalInverseWishart(M, U, Ψ, k);
+    V.graft(p);
+    return p;
   } else {
-    return construct<MatrixGaussian>(box(M), box(U), V);
+    return construct<MatrixGaussian<Random<Real[_,_]>,Arg,Random<Real[_,_]>>>(
+        M, U, V);
   }
 }
 
@@ -100,10 +103,9 @@ function MatrixGaussian<Middle>(M:Random<Real[_,_]>, U:Middle,
  */
 function simulate_matrix_normal_inverse_wishart_matrix_gaussian(N:Real[_,_],
     Λ:Real[_,_], U:Real[_,_], Ψ:Real[_,_], k:Real) -> Real[_,_] {
-  let p <- columns(N);
   let M <- solve(Λ, N);
   let Σ <- U + inv(Λ);
-  return simulate_matrix_student_t(k - p + 1.0, M, Σ, Ψ);
+  return simulate_matrix_student_t(k, M, Σ, Ψ);
 }
 
 /*
@@ -118,33 +120,11 @@ function simulate_matrix_normal_inverse_wishart_matrix_gaussian(N:Real[_,_],
  *
  * Returns: the log probability density.
  */
-function logpdf_matrix_normal_inverse_wishart_matrix_gaussian(X:Real[_,_],
-    N:Real[_,_], Λ:Real[_,_], U:Real[_,_], Ψ:Real[_,_], k:Real) -> Real {
-  let p <- columns(N);
+function logpdf_matrix_normal_inverse_wishart_matrix_gaussian<Arg1,Arg2,
+    Arg3,Arg4,Arg5,Arg6>(X:Arg1, N:Arg2, Λ:Arg3, U:Arg4, Ψ:Arg5, k:Arg6) -> {
   let M <- solve(Λ, N);
   let Σ <- U + inv(Λ);
-  return logpdf_matrix_student_t(X, k - p + 1.0, M, Σ, Ψ);
-}
-
-/*
- * Observe a Gaussian variate with matrix-normal-inverse-Wishart prior.
- *
- * - X: The variate.
- * - N: Precision times mean matrix.
- * - Λ: Precision.
- * - U: Among-row covariance.
- * - Ψ: Among-column covariance shape.
- * - k: Among-column covariance degrees of freedom.
- *
- * Returns: the log probability density.
- */
-function logpdf_lazy_matrix_normal_inverse_wishart_matrix_gaussian(X:Expression<Real[_,_]>,
-    N:Expression<Real[_,_]>, Λ:Expression<Real[_,_]>, U:Expression<Real[_,_]>,
-    Ψ:Expression<Real[_,_]>, k:Expression<Real>) -> Expression<Real> {
-  let p <- columns(N);
-  let M <- solve(Λ, N);
-  let Σ <- U + inv(Λ);
-  return logpdf_lazy_matrix_student_t(X, box(k - p + 1.0), box(M), box(Σ), Ψ);
+  return logpdf_matrix_student_t(X, k, M, Σ, Ψ);
 }
 
 /*
@@ -155,50 +135,20 @@ function logpdf_lazy_matrix_normal_inverse_wishart_matrix_gaussian(X:Expression<
  * - N: Prior precision times mean matrix.
  * - Λ: Prior precision.
  * - U: Among-row covariance.
- * - V: Prior among-column covariance shape.
+ * - Ψ: Prior among-column covariance shape.
  * - k: Prior among-column covariance degrees of freedom.
  *
  * Returns: the posterior hyperparameters `N'`, `Λ'`, `V'` and `k'`.
  */
-function update_matrix_normal_inverse_wishart_matrix_gaussian(X:Real[_,_],
-    N:Real[_,_], Λ:Real[_,_], U:Real[_,_], V:Real[_,_], k:Real) -> (Real[_,_],
-    Real[_,_], Real[_,_], Real) {
+function update_matrix_normal_inverse_wishart_matrix_gaussian<Arg1,Arg2,
+    Arg3,Arg4,Arg5,Arg6>(X:Arg1, N:Arg2, Λ:Arg3, U:Arg4, Ψ:Arg5, k:Arg6) -> {
   let n <- rows(X);
   let Z <- solve(U, X);
   let Λ' <- Λ + inv(U);
   let N' <- N + Z;
   let M <- solve(Λ, N);
   let M' <- solve(Λ', N');
-  let V' <- V + transpose(X)*Z + transpose(M)*N - transpose(M')*N';
+  let Ψ' <- Ψ + transpose(X)*Z + transpose(M)*N - transpose(M')*N';
   let k' <- k + n;
-  return (N', Λ', V', k');
-}
-
-/*
- * Update the parameters of a Gaussian variate with
- * matrix-normal-inverse-Wishart prior.
- *
- * - X: The variate.
- * - N: Prior precision times mean matrix.
- * - Λ: Prior precision.
- * - U: Among-row covariance.
- * - V: Prior among-column covariance shape.
- * - k: Prior among-column covariance degrees of freedom.
- *
- * Returns: the posterior hyperparameters `N'`, `Λ'`, `V'` and `k'`.
- */
-function update_lazy_matrix_normal_inverse_wishart_matrix_gaussian(
-    X:Expression<Real[_,_]>, N:Expression<Real[_,_]>, Λ:Expression<Real[_,_]>,
-    U:Expression<Real[_,_]>, V:Expression<Real[_,_]>, k:Expression<Real>) ->
-    (Expression<Real[_,_]>, Expression<Real[_,_]>, Expression<Real[_,_]>,
-    Expression<Real>) {
-  let n <- rows(X);
-  let Z <- solve(U, X);
-  let Λ' <- Λ + inv(U);
-  let N' <- N + Z;
-  let M <- solve(Λ, N);
-  let M' <- solve(Λ', N');
-  let V' <- V + transpose(X)*Z + transpose(M)*N - transpose(M')*N';
-  let k' <- k + n;
-  return (box(N'), box(Λ'), box(V'), box(k'));
+  return MatrixNormalInverseWishart(N', Λ', Ψ', k');
 }

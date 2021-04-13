@@ -1,64 +1,59 @@
 /**
  * Multivariate Gaussian distribution.
- *
- * !!! note
- *     See Gaussian for associated factory functions for the creation of
- *     MultivariateGaussian objects.
  */
-class MultivariateGaussian(μ:Expression<Real[_]>, Σ:Expression<Real[_,_]>) <
+class MultivariateGaussian<Arg1,Arg2>(μ:Arg1, Σ:Arg2) <
     Distribution<Real[_]> {
   /**
    * Mean.
    */
-  μ:Expression<Real[_]> <- μ;
+  μ:Arg1 <- μ;
   
   /**
    * Covariance.
    */
-  Σ:Expression<Real[_,_]> <- Σ;
+  Σ:Arg2 <- Σ;
 
-  function rows() -> Integer {
-    return μ.rows();
-  }
-
-  function supportsLazy() -> Boolean {
+  override function supportsLazy() -> Boolean {
     return true;
   }
 
-  function simulate() -> Real[_] {
-    return simulate_multivariate_gaussian(μ.value(), Σ.value());
+  override function simulate() -> Real[_] {
+    return simulate_multivariate_gaussian(value(μ), value(Σ));
   }
 
-  function simulateLazy() -> Real[_]? {
-    return simulate_multivariate_gaussian(μ.peak(), Σ.peak());
+  override function simulateLazy() -> Real[_]? {
+    return simulate_multivariate_gaussian(peak(μ), peak(Σ));
   }
   
-  function logpdf(x:Real[_]) -> Real {
-    return logpdf_multivariate_gaussian(x, μ.value(), Σ.value());
+  override function logpdf(x:Real[_]) -> Real {
+    return logpdf_multivariate_gaussian(x, value(μ), value(Σ));
   }
 
-  function logpdfLazy(x:Expression<Real[_]>) -> Expression<Real>? {
-    return logpdf_lazy_multivariate_gaussian(x, μ, Σ);
+  override function logpdfLazy(x:Expression<Real[_]>) -> Expression<Real>? {
+    return box(logpdf_multivariate_gaussian(x, μ, Σ));
   }
 
-  function graftMultivariateGaussian() -> MultivariateGaussian? {
-    prune();
-    return this;
+  override function isMultivariateGaussian() -> Boolean {
+    return true;
   }
 
-  function write(buffer:Buffer) {
-    prune();
+  override function getMultivariateGaussian() -> (Expression<Real[_]>,
+      Expression<Real[_,_]>)? {
+    return box(μ, Σ);
+  }
+
+  override function write(buffer:Buffer) {
     buffer.set("class", "MultivariateGaussian");
-    buffer.set("μ", μ);
-    buffer.set("Σ", Σ);
+    buffer.set("μ", value(μ));
+    buffer.set("Σ", value(Σ));
   }
 }
 
 /**
  * Create multivariate Gaussian distribution.
  */
-function MultivariateGaussian<Left,Right>(μ:Left, Σ:Right) -> {
-  return construct<MultivariateGaussian>(box(μ), box(Σ));
+function MultivariateGaussian<Arg1,Arg2>(μ:Arg1, Σ:Arg2) -> {
+  return construct<MultivariateGaussian<Arg1,Arg2>>(μ, Σ);
 }
 
 /*
@@ -86,21 +81,8 @@ function simulate_multivariate_gaussian(μ:Real[_], Σ:Real[_,_]) -> Real[_] {
  *
  * Returns: the log probability density.
  */
-function logpdf_multivariate_gaussian(x:Real[_], μ:Real[_], Σ:Real[_,_]) -> Real {
-  let n <- length(μ);
+function logpdf_multivariate_gaussian<Arg1,Arg2,Arg3>(x:Arg1, μ:Arg2,
+    Σ:Arg3) -> {
+  let n <- length(x);
   return -0.5*(dot(x - μ, solve(Σ, x - μ)) + n*log(2.0*π) + ldet(Σ));
-}
-
-/*
- * Observe a multivariate Gaussian variate.
- *
- * - x: The variate.
- * - μ: Mean.
- * - Σ: Covariance.
- *
- * Returns: the log probability density.
- */
-function logpdf_lazy_multivariate_gaussian(x:Expression<Real[_]>, μ:Expression<Real[_]>, Σ:Expression<Real[_,_]>) -> Expression<Real> {
-  let n <- length(μ);
-  return box(-0.5*(dot(x - μ, solve(Σ, x - μ)) + n*log(2.0*π) + ldet(Σ)));
 }

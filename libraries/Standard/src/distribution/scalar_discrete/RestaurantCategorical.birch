@@ -1,63 +1,51 @@
 /**
  * Restaurant-categorical distribution.
  */
-final class RestaurantCategorical(ρ:Restaurant) < Distribution<Integer> {
+final class RestaurantCategorical<Arg1,Arg2,Arg3,Arg4>(α:Arg1, θ:Arg2, n:Arg3,
+    N:Arg4) < Distribution<Integer> {
   /**
-   * Category probabilities.
+   * Concentration.
    */
-  ρ:Restaurant <- ρ;
+  α:Arg1 <- α;
+  
+  /**
+   * Strength.
+   */
+  θ:Arg2 <- θ;
 
-  function supportsLazy() -> Boolean {
+  /**
+   * Number of samples drawn in each component.
+   */
+  n:Arg3 <- n;
+
+  /**
+   * Number of samples drawn.
+   */
+  N:Arg4 <- N;
+
+  override function supportsLazy() -> Boolean {
     return false;
   }
 
-  function simulate() -> Integer {
-    return simulate_crp_categorical(ρ.α.value(), ρ.θ.value(), ρ.n, ρ.N);
-  }
-
-//  function simulateLazy() -> Integer? {
-//    return simulate_crp_categorical(ρ.α.peak(), ρ.θ.peak(), ρ.n, ρ.N);
-//  }
-  
-  function logpdf(x:Integer) -> Real {
-    return logpdf_crp_categorical(x, ρ.α.value(), ρ.θ.value(), ρ.n, ρ.N);
-  }
-
-//  function logpdfLazy(x:Expression<Integer>) -> Expression<Real>? {
-//    return logpdf_lazy_crp_categorical(x, ρ.α, ρ.θ, ρ.n, ρ.N);
-//  }
-
-  function update(x:Integer) {
-    assert x <= ρ.K + 1;
-    if (x == ρ.K + 1) {
-      n1:Integer[ρ.K + 1];
-      n1[1..ρ.K] <- ρ.n;
-      n1[x] <- 1;
-      ρ.n <- n1;
-      ρ.K <- ρ.K + 1;
-    } else {
-      ρ.n[x] <- ρ.n[x] + 1;
-    }
-    ρ.N <- ρ.N + 1;
-  }
-
-//  function updateLazy(x:Expression<Integer>) {
-//
-//  }
-  
-  function link() {
-    ρ.setChild(this);
+  override function simulate() -> Integer {
+    return simulate_restaurant_categorical(value(α), value(θ), value(n),
+        value(N));
   }
   
-  function unlink() {
-    ρ.releaseChild(this);
+  override function logpdf(x:Integer) -> Real {
+    return logpdf_restaurant_categorical(x, value(α), value(θ), value(n),
+        value(N));
+  }
+
+  override function update(x:Integer) -> Delay? {
+    return update_restaurant_categorical(x, value(α), value(θ), value(n),
+        value(N));
   }
 }
 
-function RestaurantCategorical(ρ:Restaurant) -> RestaurantCategorical {
-  m:RestaurantCategorical(ρ);
-  m.link();
-  return m;
+function RestaurantCategorical<Arg1,Arg2,Arg3,Arg4>(α:Arg1, θ:Arg2, n:Arg3,
+    N:Arg4) -> {
+  return construct<RestaurantCategorical<Arg1,Arg2,Arg3,Arg4>>(α, θ, n, N);
 }
 
 /*
@@ -69,25 +57,24 @@ function RestaurantCategorical(ρ:Restaurant) -> RestaurantCategorical {
  * - n: Enumerated items.
  * - N: Total number of items.
  */
-function simulate_crp_categorical(α:Real, θ:Real, n:Integer[_],
+function simulate_restaurant_categorical(α:Real, θ:Real, n:Integer[_],
     N:Integer) -> Integer {
   assert N >= 0;
   assert sum(n) == N;
-
-  k:Integer <- 0;
-  K:Integer <- length(n);
+  let k <- 0;
+  let K <- length(n);
   if (N == 0) {
     /* first component */
     k <- 1;
   } else {
-    u:Real <- simulate_uniform(0.0, N + θ);
-    U:Real <- K*α + θ;
-    if (u < U) {
+    let u <- simulate_uniform(0.0, N + θ);
+    let U <- K*α + θ;
+    if u < U {
       /* new component */
       k <- K + 1;
     } else {
       /* existing component */
-      while (k < K && u > U) {
+      while k < K && u > U {
         k <- k + 1;
         U <- U + n[k] - α;
       }
@@ -106,14 +93,35 @@ function simulate_crp_categorical(α:Real, θ:Real, n:Integer[_],
  * - n: Enumerated items.
  * - N: Total number of items.
  */
-function logpdf_crp_categorical(k:Integer, α:Real, θ:Real,
+function logpdf_restaurant_categorical(k:Integer, α:Real, θ:Real,
     n:Integer[_], N:Integer) -> Real {
-  K:Integer <- length(n);
-  if (k > K + 1) {
+  let K <- length(n);
+  if k > K + 1 {
     return -inf;
   } else if (k == K + 1) {
     return log(K*α + θ) - log(N + θ);
   } else {
     return log(n[k] - α) - log(N + θ);
   }
+}
+
+/*
+ * Update the parameters of a Chinese restaurant process with a categorical
+ * likelihood.
+ *
+ * - x: The variate.
+ * - α: Concentration.
+ * - θ: Discount.
+ * - n: Enumerated items.
+ * - N: Total number of items.
+ */
+function update_restaurant_categorical(x:Integer, α:Real, θ:Real, n:Integer[_],
+    N:Integer) -> {
+  let K <- length(n);
+  assert x <= K + 1;
+  let n' <- vector(\(i:Integer) -> Integer {
+        return n[x] + (x == i);
+      }, if_then_else(x == K + 1, K + 1, K));
+  let N' <- N + 1;
+  return RestaurantCategorical(α, θ, n', N');
 }

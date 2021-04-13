@@ -229,7 +229,7 @@ function test_pdf(π:Distribution<Real>, N:Integer, B:Integer, S:Integer,
  */
 function test_pdf(π:Distribution<Real[_]>, N:Integer, B:Integer, S:Integer,
     lazy:Boolean) {  
-  let D <- π.rows();
+  let D <- rows(π.simulate());
 
   X1:Real[N,D];
   X2:Real[N,D];
@@ -343,8 +343,8 @@ function test_pdf(π:Distribution<Real[_]>, N:Integer, B:Integer, S:Integer,
  */
 function test_pdf(π:Distribution<Real[_,_]>, N:Integer, B:Integer, S:Integer,
     lazy:Boolean) {
-  let R <- π.rows();
-  let C <- π.columns();
+  let R <- rows(π.simulate());
+  let C <- columns(π.simulate());
 
   X1:Real[N,R*C];
   X2:Real[N,R*C];

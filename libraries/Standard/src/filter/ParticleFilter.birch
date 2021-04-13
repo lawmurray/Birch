@@ -4,10 +4,8 @@
  * ```mermaid
  * classDiagram
  *    ParticleFilter <|-- AliveParticleFilter
- *    ParticleFilter <|-- ConditionalParticleFilter
  *    link ParticleFilter "../ParticleFilter/"
  *    link AliveParticleFilter "../AliveParticleFilter/"
- *    link ConditionalParticleFilter "../ConditionalParticleFilter/"
  * ```
  */
 class ParticleFilter {
@@ -33,9 +31,7 @@ class ParticleFilter {
 
   /**
    * Chosen particle index. This is used for drawing a single particle from
-   * the filter in e.g. [ParticleSampler](../ParticleSampler), and for the
-   * reference particle in e.g.
-   * [ConditionalParticleFilter](../ConditionalParticleFilter).
+   * the filter in e.g. [ParticleSampler](../ParticleSampler).
    */
   b:Integer <- 0;
 
@@ -163,6 +159,7 @@ class ParticleFilter {
     lnormalize <- lnormalize + lsum - log(nparticles);
     b <- ancestor(w);
     if b == 0 {
+      stderr.print(w + "\n");
       error("particle filter degenerated");
     }
   }

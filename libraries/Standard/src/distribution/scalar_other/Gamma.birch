@@ -5,68 +5,69 @@ cpp{{
 /**
  * Gamma distribution.
  */
-final class Gamma(k:Expression<Real>, θ:Expression<Real>) <
-    Distribution<Real> {
+final class Gamma<Arg1,Arg2>(k:Arg1, θ:Arg2) < Distribution<Real> {
   /**
    * Shape.
    */
-  k:Expression<Real> <- k;
+  k:Arg1 <- k;
   
   /**
    * Scale.
    */
-  θ:Expression<Real> <- θ;
+  θ:Arg2 <- θ;
 
-  function supportsLazy() -> Boolean {
+  override function supportsLazy() -> Boolean {
     return true;
   }
 
-  function simulate() -> Real {
-    return simulate_gamma(k.value(), θ.value());
+  override function simulate() -> Real {
+    return simulate_gamma(value(k), value(θ));
   }
 
-  function simulateLazy() -> Real? {
-    return simulate_gamma(k.peak(), θ.peak());
+  override function simulateLazy() -> Real? {
+    return simulate_gamma(peak(k), peak(θ));
   }
   
-  function logpdf(x:Real) -> Real {
-    return logpdf_gamma(x, k.value(), θ.value());
+  override function logpdf(x:Real) -> Real {
+    return logpdf_gamma(x, value(k), value(θ));
   }
 
-  function logpdfLazy(x:Expression<Real>) -> Expression<Real>? {
-    return logpdf_lazy_gamma(x, k, θ);
+  override function logpdfLazy(x:Expression<Real>) -> Expression<Real>? {
+    return box(logpdf_gamma(x, k, θ));
   }
 
-  function cdf(x:Real) -> Real? {
-    return cdf_gamma(x, k.value(), θ.value());
+  override function cdf(x:Real) -> Real? {
+    return cdf_gamma(x, value(k), value(θ));
   }
 
-  function quantile(P:Real) -> Real? {
-    return quantile_gamma(P, k.value(), θ.value());
+  override function quantile(P:Real) -> Real? {
+    return quantile_gamma(P, value(k), value(θ));
   }
 
-  function lower() -> Real? {
+  override function lower() -> Real? {
     return 0.0;
   }
 
-  function graftGamma() -> Gamma? {
-    prune();
-    return this;
+  override function isGamma() -> Boolean {
+    return true;
   }
 
-  function write(buffer:Buffer) {
-    prune();
+  override function getGamma() -> (Expression<Real>, Expression<Real>)? {
+    return box(k, θ);
+  }
+
+  override function write(buffer:Buffer) {
     buffer.set("class", "Gamma");
-    buffer.set("k", k);
-    buffer.set("θ", θ);
+    buffer.set("k", value(k));
+    buffer.set("θ", value(θ));
   }
 }
 
 /**
  * Create gamma distribution.
  */
-function Gamma<Left,Right>(k:Left, θ:Right) -> {
-  return construct<Gamma>(box(k), box(θ));
+function Gamma<Arg1,Arg2>(k:Arg1, θ:Arg2) -> {
+  return construct<Gamma<Arg1,Arg2>>(k, θ);
 }
 
 /*
@@ -92,24 +93,9 @@ function simulate_gamma(k:Real, θ:Real) -> Real {
  *
  * Returns: the log probability density.
  */
-function logpdf_gamma(x:Real, k:Real, θ:Real) -> Real {
-  assert 0.0 < k;
-  assert 0.0 < θ;
+function logpdf_gamma<Arg1,Arg2,Arg3>(x:Arg1, k:Arg2, θ:Arg3) -> {
   return if_then_else(x < 0.0, -inf, (k - 1.0)*log(x) - x/θ - lgamma(k) -
       k*log(θ));
-}
-
-/*
- * Observe a gamma variate.
- *
- * - x: The variate.
- * - k: Shape.
- * - θ: Scale.
- *
- * Returns: the log probability density.
- */
-function logpdf_lazy_gamma(x:Expression<Real>, k:Expression<Real>, θ:Expression<Real>) -> Expression<Real> {
-  return box(if_then_else(x < 0.0, -inf, (k - 1.0)*log(x) - x/θ - lgamma(k) - k*log(θ)));
 }
 
 /*

@@ -1,78 +1,114 @@
 /**
  * Multivariate linear-Gaussian-Gaussian distribution.
  */
-final class LinearMultivariateGaussianGaussian(a:Expression<Real[_]>,
-    m:MultivariateGaussian, c:Expression<Real>, s2:Expression<Real>) <
-    Gaussian(box(dot(a, m.μ) + c), box(dot(a, matrix<Real>(m.Σ)*a) + s2)) {
+final class LinearMultivariateGaussianGaussian<Arg1,Arg2,Arg3,Arg4,Arg5>(
+    a:Arg1, μ:Arg2, Σ:Arg3, c:Arg4, s2:Arg5) < Distribution<Real> {
   /**
    * Scale.
    */
-  a:Expression<Real[_]> <- a;
+  a:Arg1 <- a;
     
   /**
-   * Mean.
+   * Prior mean.
    */
-  m:MultivariateGaussian <- m;
+  μ:Arg2 <- μ;
+
+  /**
+   * Prior covariance.
+   */
+  Σ:Arg3 <- Σ;
 
   /**
    * Offset.
    */
-  c:Expression<Real> <- c;
+  c:Arg4 <- c;
   
   /**
    * Likelihood covariance.
    */
-  s2:Expression<Real> <- s2;
+  s2:Arg5 <- s2;
 
-  function update(x:Real) {
-    (m.μ, m.Σ) <- box(update_linear_multivariate_gaussian_gaussian(x,
-        a.value(), m.μ.value(), m.Σ.value(), c.value(), s2.value()));
+  override function supportsLazy() -> Boolean {
+    return true;
   }
 
-  function updateLazy(x:Expression<Real>) {
-    (m.μ, m.Σ) <- update_lazy_linear_multivariate_gaussian_gaussian(x, a, m.μ,
-        m.Σ, c, s2);
+  override function simulate() -> Real {
+    return simulate_gaussian(value(dot(a, μ) + c), value(dot(a, Σ*a) + s2));
   }
 
-  function link() {
-    m.setChild(this);
+  override function simulateLazy() -> Real? {
+    return simulate_gaussian(peak(dot(a, μ) + c), peak(dot(a, Σ*a) + s2));
   }
   
-  function unlink() {
-    m.releaseChild(this);
+  override function logpdf(x:Real) -> Real {
+    return logpdf_gaussian(x, value(dot(a, μ) + c), value(dot(a, Σ*a) + s2));
+  }
+
+  override function logpdfLazy(x:Expression<Real>) -> Expression<Real>? {
+    return box(logpdf_gaussian(x, dot(a, μ) + c, dot(a, Σ*a) + s2));
+  }
+
+  override function update(x:Real) -> Delay? {
+    return update_linear_multivariate_gaussian_gaussian(x, value(a), value(μ),
+        value(Σ), value(c), value(s2));
+  }
+
+  override function updateLazy(x:Expression<Real>) -> Delay? {
+    return update_linear_multivariate_gaussian_gaussian(x, a, μ, Σ, c, s2);
+  }
+
+  override function cdf(x:Real) -> Real? {
+    return cdf_gaussian(x, value(dot(a, μ) + c), value(dot(a, Σ*a) + s2));
+  }
+
+  override function quantile(P:Real) -> Real? {
+    return quantile_gaussian(P, value(dot(a, μ) + c), value(dot(a, Σ*a) + s2));
+  }
+
+  override function isGaussian() -> Boolean {
+    return true;
+  }
+
+  override function getGaussian() -> (Expression<Real>, Expression<Real>)? {
+    return box(dot(a, μ) + c, dot(a, Σ*a) + s2);
   }
 }
 
-function LinearMultivariateGaussianGaussian<Left,Middle,Right>(a:Left,
-    μ:MultivariateGaussian, c:Middle, σ2:Right) -> {
-  m:LinearMultivariateGaussianGaussian(box(a), μ, box(c), box(σ2));
-  m.link();
-  return m;
+function LinearMultivariateGaussianGaussian<Arg1,Arg2,Arg3,Arg4,Arg5>(a:Arg1,
+    μ:Arg2, Σ:Arg3, c:Arg4, σ2:Arg5) -> {
+  return construct<LinearMultivariateGaussianGaussian<Arg1,Arg2,Arg3,Arg4,
+      Arg5>>(a, μ, Σ, c, σ2);
 }
 
 /**
  * Create Gaussian distribution.
  */
-function Gaussian<Left,Middle,Right>(μ:DotAdd<Left,Random<Real[_]>,Middle>,
-    σ2:Right) -> Distribution<Real> {
-  let p <- μ.m!.graftMultivariateGaussian();
-  if p? {
-    return LinearMultivariateGaussianGaussian(μ.l!, p!, μ.r!, σ2);
+function Gaussian<Arg1,Arg2,Arg3>(μ:DotAdd<Arg1,Random<Real[_]>,Arg2>,
+    σ2:Arg3) -> Distribution<Real> {
+  if μ.m!.hasMultivariateGaussian() {
+    μ.m!.prune();
+    let (m, S) <- μ.m!.getMultivariateGaussian();
+    let p <- LinearMultivariateGaussianGaussian(μ.l!, m, S, μ.r!, σ2);
+    μ.m!.graft(p);
+    return p;
   } else {
-    return construct<Gaussian>(box(μ), box(σ2));
+    return construct<Gaussian<DotAdd<Arg1,Random<Real[_]>,Arg2>,Arg3>>(μ, σ2);
   }
 }
 
 /**
  * Create Gaussian distribution.
  */
-function Gaussian<Left,Right>(μ:Dot<Left,Random<Real[_]>>, σ2:Right) ->
+function Gaussian<Arg1,Arg2>(μ:Dot<Arg1,Random<Real[_]>>, σ2:Arg2) ->
     Distribution<Real> {
-  let p <- μ.r!.graftMultivariateGaussian();
-  if p? {
-    return LinearMultivariateGaussianGaussian(μ.l!, p!, 0.0, σ2);
+  if μ.r!.hasMultivariateGaussian() {
+    μ.r!.prune();
+    let (m, S) <- μ.r!.getMultivariateGaussian();
+    let p <- LinearMultivariateGaussianGaussian(μ.l!, m, S, 0.0, σ2);
+    μ.r!.graft(p);
+    return p;
   } else {
-    return construct<Gaussian>(box(μ), box(σ2));
+    return construct<Gaussian<Dot<Arg1,Random<Real[_]>>,Arg2>>(μ, σ2);
   }
 }
 
@@ -90,34 +126,10 @@ function Gaussian<Left,Right>(μ:Dot<Left,Random<Real[_]>>, σ2:Right) ->
  *
  * Returns: the posterior hyperparameters `μ'` and `Σ'`.
  */
-function update_linear_multivariate_gaussian_gaussian(x:Real, a:Real[_],
-    μ:Real[_], Σ:Real[_,_], c:Real, s2:Real) -> (Real[_], Real[_,_]) {
+function update_linear_multivariate_gaussian_gaussian<Arg1,Arg2,Arg3,Arg4,
+    Arg5,Arg6>(x:Arg1, a:Arg2, μ:Arg3, Σ:Arg4, c:Arg5, s2:Arg6) -> {
   let k' <- Σ*a/(dot(a, Σ*a) + s2);
   let μ' <- μ + k'*(x - dot(a, μ) - c);
   let Σ' <- Σ - outer(k', a)*Σ;
-  return (μ', Σ');
-}
-
-/*
- * Update the parameters of a multivariate Gaussian distribution with a 
- * linear transformation involving a dot product, and a multivariate Gaussian
- * likelihood.
- *
- * - x: The variate.
- * - a: Scale.
- * - μ: Prior mean.
- * - Σ: Prior covariance.
- * - c: Offset.
- * - s2: Likelihood covariance.
- *
- * Returns: the posterior hyperparameters `μ'` and `Σ'`.
- */
-function update_lazy_linear_multivariate_gaussian_gaussian(
-    x:Expression<Real>, a:Expression<Real[_]>, μ:Expression<Real[_]>,
-    Σ:Expression<Real[_,_]>, c:Expression<Real>, s2:Expression<Real>) ->
-    (Expression<Real[_]>, Expression<Real[_,_]>) {
-  let k' <- Σ*a/(dot(a, Σ*a) + s2);
-  let μ' <- μ + k'*(x - dot(a, μ) - c);
-  let Σ' <- Σ - outer(k', a)*Σ;
-  return (box(μ'), box(Σ'));
+  return MultivariateGaussian(μ', Σ');
 }

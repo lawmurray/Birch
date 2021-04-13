@@ -17,9 +17,7 @@
  *
  * - `--filter`: Name of the filter class. If used, overrides
  *   `filter.class` in the config file, which in turn overrides the default
- *   of [ParticleFilter](../ParticleFilter) or
- *   [ConditionalParticleFilter](../ConditionalParticleFilter), according to
- *   the chosen sampler.
+ *   of [ParticleFilter](../ParticleFilter).
  *
  * - `--nsamples`: Number of samples to draw. If used, this overrides
  *   `nsamples` in the config file, which in turn overrides `sampler.nsamples`
@@ -100,11 +98,7 @@ program sample(
   if filter? {
     filterBuffer.set("class", filter!);
   } else if !filterBuffer.get("class")? {
-    if ConditionalParticleSampler?(theSampler)? {
-      filterBuffer.set("class", "ConditionalParticleFilter");
-    } else {
-      filterBuffer.set("class", "ParticleFilter");
-    }
+    filterBuffer.set("class", "ParticleFilter");
   }
   let theFilter <- make<ParticleFilter>(filterBuffer);
   if !theFilter? {

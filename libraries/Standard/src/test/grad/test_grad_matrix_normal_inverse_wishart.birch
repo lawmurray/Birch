@@ -27,7 +27,6 @@ program test_grad_matrix_normal_inverse_wishart(R:Integer <- 3,
   U <- U*transpose(U);
   Ψ <- Ψ*transpose(Ψ);
 
-  V:InverseWishart(box(Ψ), box(k));
-  π:MatrixNormalInverseWishart(box(M), box(U), V);
+  let π <- MatrixNormalInverseWishart(M, U, Ψ, k);
   test_grad(π, N);
 }

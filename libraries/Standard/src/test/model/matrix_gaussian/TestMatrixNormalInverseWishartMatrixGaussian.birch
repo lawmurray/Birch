@@ -4,7 +4,7 @@ class TestMatrixNormalInverseWishartMatrixGaussian < Model {
   Y:Random<Real[_,_]>;
 
   n:Integer <- 5;
-  p:Integer <- 2;
+  p:Integer <- 4;
 
   k:Real;
   Ψ:Real[p,p];
@@ -13,7 +13,7 @@ class TestMatrixNormalInverseWishartMatrixGaussian < Model {
   V:Real[n,n];
 
   function initialize() {
-    k <- p + 1.0 + simulate_uniform(0.0, 10.0);
+    k <- simulate_uniform(2.0, 10.0);
     Ψ <- matrix(\(i:Integer, j:Integer) -> Real { return simulate_uniform(-2.0, 2.0); }, p, p);
     M <- matrix(\(i:Integer, j:Integer) -> Real { return simulate_uniform(-10.0, 10.0); }, n, p);
     U <- matrix(\(i:Integer, j:Integer) -> Real { return simulate_uniform(-2.0, 2.0); }, n, n);

@@ -3,8 +3,8 @@ class TestLinearMatrixNormalInverseWishartMultivariateGaussian < Model {
   X:Random<Real[_,_]>;
   y:Random<Real[_]>;
 
-  n:Integer <- 3;
-  p:Integer <- 2;
+  n:Integer <- 5;
+  p:Integer <- 4;
   
   a:Real[n];
   M:Real[n,p];
@@ -15,7 +15,7 @@ class TestLinearMatrixNormalInverseWishartMultivariateGaussian < Model {
   neg:Boolean;
 
   function initialize() {
-    k <- p + 1.0 + simulate_uniform(0.0, 10.0);
+    k <- simulate_uniform(2.0, 10.0);
     for i in 1..n {
       a[i] <- simulate_uniform(-2.0, 2.0);
       for j in 1..n {

@@ -1,14 +1,5 @@
 /**
  * Particle sampler.
- *
- * ```mermaid
- * classDiagram
- *    ParticleSampler <|-- ConditionalParticleSampler
- *    ConditionalParticleSampler <|-- ParticleGibbsSampler
- *    link ParticleSampler "../ParticleSampler/"
- *    link ConditionalParticleSampler "../ConditionalParticleSampler/"
- *    link ParticleGibbsSampler "../ParticleGibbsSampler/"
- * ```
  */
 class ParticleSampler {
   /**

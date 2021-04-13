@@ -2,7 +2,20 @@ site_name: 'Standard'
 theme:
   name: material
   palette:
-    scheme: preference
+    # Light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/toggle-switch-off-outline
+        name: Switch to dark mode
+
+    # Dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to light mode
+
 markdown_extensions:
   - admonition
   - footnotes

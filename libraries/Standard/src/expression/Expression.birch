@@ -90,7 +90,7 @@
  *     Correctness is the programmer's responsibility when using the advanced
  *     interface.
  */
-abstract class Expression<Value> {
+abstract class Expression<Value> < Delay {
   /**
    * Is this a Random expression?
    */

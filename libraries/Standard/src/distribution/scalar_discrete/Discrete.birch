@@ -2,12 +2,11 @@
  * Discrete distribution.
  */
 abstract class Discrete < Distribution<Integer> {
-  function graftDiscrete() -> Discrete? {
-    prune();
-    if hasClamp() {
-      return nil;
-    } else {
-      return this;
-    }
+  override function isDiscrete() -> Boolean {
+    return true;
+  }
+
+  override function getDiscrete() -> Discrete? {
+    return this;
   }
 }

@@ -27,64 +27,58 @@
  *     W ~ Gaussian(M, U, V);
  *     Y ~ Gaussian(X*W, V);
  */
-final class InverseWishart(Ψ:Expression<Real[_,_]>, k:Expression<Real>) <
+final class InverseWishart<Arg1,Arg2>(Ψ:Arg1, k:Arg2) <
     Distribution<Real[_,_]> {
   /**
    * Scale.
    */
-  Ψ:Expression<Real[_,_]> <- Ψ;
+  Ψ:Arg1 <- Ψ;
   
   /**
    * Degrees of freedom.
    */
-  k:Expression<Real> <- k;
+  k:Arg2 <- k;
 
-  function rows() -> Integer {
-    return Ψ.rows();
-  }
-
-  function columns() -> Integer {
-    return Ψ.columns();
-  }
-
-  function supportsLazy() -> Boolean {
+  override function supportsLazy() -> Boolean {
     return true;
   }
 
-  function simulate() -> Real[_,_] {
-    return simulate_inverse_wishart(Ψ.value(), k.value());
+  override function simulate() -> Real[_,_] {
+    return simulate_inverse_wishart(value(Ψ), value(k));
   }
 
-  function simulateLazy() -> Real[_,_]? {
-    return simulate_inverse_wishart(Ψ.peak(), k.peak());
+  override function simulateLazy() -> Real[_,_]? {
+    return simulate_inverse_wishart(peak(Ψ), peak(k));
   }
   
-  function logpdf(X:Real[_,_]) -> Real {
-    return logpdf_inverse_wishart(X, Ψ.value(), k.value());
+  override function logpdf(X:Real[_,_]) -> Real {
+    return logpdf_inverse_wishart(X, value(Ψ), value(k));
   }
 
-  function logpdfLazy(X:Expression<Real[_,_]>) -> Expression<Real>? {
-    return logpdf_lazy_inverse_wishart(X, Ψ, k);
+  override function logpdfLazy(X:Expression<Real[_,_]>) -> Expression<Real>? {
+    return box(logpdf_inverse_wishart(X, Ψ, k));
   }
 
-  function graftInverseWishart() -> InverseWishart? {
-    prune();
-    return this;
+  override function isInverseWishart() -> Boolean {
+    return true;
   }
 
-  function write(buffer:Buffer) {
-    prune();
+  override function getInverseWishart() -> (Expression<Real[_,_]>, Expression<Real>)? {
+    return box(Ψ, k);
+  }
+
+  override function write(buffer:Buffer) {
     buffer.set("class", "InverseWishart");
-    buffer.set("Ψ", Ψ);
-    buffer.set("k", k);
+    buffer.set("Ψ", value(Ψ));
+    buffer.set("k", value(k));
   }
 }
 
 /**
  * Create inverse-Wishart distribution.
  */
-function InverseWishart<Left,Right>(Ψ:Left, k:Right) -> {
-  return construct<InverseWishart>(box(Ψ), box(k));
+function InverseWishart<Arg1,Arg2>(Ψ:Arg1, k:Arg2) -> {
+  return construct<InverseWishart<Arg1,Arg2>>(Ψ, k);
 }
 
 /*
@@ -106,24 +100,8 @@ function simulate_inverse_wishart(Ψ:Real[_,_], k:Real) -> Real[_,_] {
  *
  * Returns: the log probability density.
  */
-function logpdf_inverse_wishart(X:Real[_,_], Ψ:Real[_,_], ν:Real) -> Real {
-  let p <- rows(Ψ);
-  assert ν > p - 1;
-  return -0.5*(ν + p - 1.0)*ldet(X) - 0.5*trace(solve(X, matrix<Real>(Ψ))) -
+function logpdf_inverse_wishart<Arg1,Arg2,Arg3>(X:Arg1, Ψ:Arg2, ν:Arg3) -> {
+  let p <- columns(X);
+  return -0.5*(ν + p - 1.0)*ldet(X) - 0.5*trace(solve(X, Ψ)) -
       0.5*ν*(p*log(2.0) - ldet(Ψ)) - lgamma(0.5*ν, p);
-}
-
-/*
- * Observe an inverse Wishart variate.
- *
- * - X: The variate.
- * - Ψ: Scale.
- * - ν: Degrees of freedom.
- *
- * Returns: the log probability density.
- */
-function logpdf_lazy_inverse_wishart(X:Expression<Real[_,_]>, Ψ:Expression<Real[_,_]>, ν:Expression<Real>) -> Expression<Real> {
-  let p <- rows(Ψ);
-  return box(-0.5*(ν + p - 1.0)*ldet(X) - 0.5*trace(solve(X, matrix<Real>(Ψ))) -
-      0.5*ν*(p*log(2.0) - ldet(Ψ)) - lgamma(0.5*ν, p));
 }

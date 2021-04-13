@@ -13,16 +13,6 @@
  */
 final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
   /**
-   * Input trace.
-   */
-  input:Tape<Record>?;
-
-  /**
-   * Output trace.
-   */
-  output:Tape<Record>?;
-
-  /**
    * Log-posterior, if delayed expressions are enabled.
    */
   π:Expression<Real>?;
@@ -60,17 +50,35 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
   /**
    * Handle a simulate event.
    *
-   * - p: The distribution from which to simulate.
+   * - p: Distribution.
+   *
+   * Returns: A value simulated from `p`.
    *
    * A simulate event is triggered by the `<~` operator.
    */
   function handleSimulate<Value>(p:Distribution<Value>) -> Value {
-    if input? {
-      p.clamp(coerce<Value>());
-    }
-    let x <- p.realize();
-    if output? {
-      output!.pushBack(construct<ValueRecord<Value>>(x));
+    let x <- p.simulate();
+    p.graft(x);
+    return x;
+  }
+
+  /**
+   * Handle a simulate event.
+   *
+   * - x: Random.
+   * - p: Distribution.
+   *
+   * Returns: `x`.
+   *
+   * A simulate event is triggered by the `<~` operator.
+   */
+  function handleSimulate<Value>(x:Random<Value>, p:Distribution<Value>) ->
+      Random<Value> {
+    x.assume(p);
+    if delayExpressions && p.supportsLazy() {
+      x.eval();
+    } else {
+      x.value();
     }
     return x;
   }
@@ -78,23 +86,39 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
   /**
    * Handle an observe event.
    *
-   * - x: The observation.
-   * - p: The distribution from which to observe.
+   * - x: Value.
+   * - p: Distribution.
    *
-   * A simulate event is triggered by the `~>` operator.
+   * Returns: `x`.
+   *
+   * An observe event is triggered by the `~>` operator.
    */
   function handleObserve<Value>(x:Value, p:Distribution<Value>) -> Value {
     if delayExpressions && p.supportsLazy() {
-      let v <- p.observeLazy(box(x));
-      assert v?;
-      w <- w + v!.eval();
-      if π? {
-        π <- box(π! + v!);
-      } else {
-        π <- v!;
-      }
+      handleFactor(p.logpdfLazy(box(x))!);
     } else {
-      w <- w + p.observe(x);
+      handleFactor(p.logpdf(x));
+    }
+    p.graft(x);
+    return x;
+  }
+
+  /**
+   * Handle an observe event.
+   *
+   * - x: Random.
+   * - p: Distribution.
+   *
+   * Returns: `x`.
+   *
+   * An observe event is triggered by the `~>` operator.
+   */
+  function handleObserve<Value>(x:Random<Value>, p:Distribution<Value>) ->
+      Random<Value> {
+    if delayExpressions && p.supportsLazy() {
+      handleFactor(p.logpdfLazy(x)!);
+    } else {
+      handleFactor(p.logpdf(x.value()));
     }
     return x;
   }
@@ -102,20 +126,40 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
   /**
    * Handle an assume event.
    *
-   * - x: The random variate.
-   * - p: The distribution to associate with the random variate.
+   * - p: Distribution.
+   *
+   * Returns: A new Random with the associated distribution.
    *
    * An assume event is triggered by the `~` operator.
    */
-  function handleAssume<Value>(x:Random<Value>,
-      p:Distribution<Value>) -> Random<Value> {
-    if x.hasValue() {
-      handleObserve(x.value(), p);
+  function handleAssume<Value>(p:Distribution<Value>) -> Random<Value> {
+    x:Random<Value>;
+    if !delaySampling {
+      handleSimulate(x, p);
     } else {
       x.assume(p);
-      if !delaySampling {
-        handleRealize(p);
-      }
+    }
+    return x;
+  }
+
+  /**
+   * Handle an assume event.
+   *
+   * - x: Random.
+   * - p: Distribution.
+   *
+   * Returns: `x`.
+   *
+   * An assume event is triggered by the `~` operator.
+   */
+  function handleAssume<Value>(x:Random<Value>, p:Distribution<Value>) ->
+      Random<Value> {
+    if x.hasValue() {
+      handleObserve(x, p);
+    } else if !delaySampling {
+      handleSimulate(x, p);
+    } else {
+      x.assume(p);
     }
     return x;
   }
@@ -123,65 +167,78 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
   /**
    * Handle a realize event.
    *
+   * - x: Random.
    * - p: Distribution.
    *
-   * A realize event is triggered when the delayed sampling heuristic forces
-   * the realization of a random variate that was previously associated with
-   * a distribution using the `~` operator.
+   * Returns: `x`.
+   *
+   * A prune event is triggered when the delayed sampling heuristic forces
+   * the realization of a random variate on the $M$-path. The $M$-path is
+   * pruned back to just below that random variate, which will be subsequently
+   * realized.
+   *
+   * The $M$-path is implemented as a linked list of alternating Random and
+   * Distribution objects. This overload handles the removal of nodes from
+   * that list following a Random node.
    */
-  function handleRealize<Value>(p:Distribution<Value>) -> Value {
-    if input? {
-      p.clamp(coerce<Value>());
-    }
-    x:Value;
+  function handleRealize<Value>(x:Random<Value>, p:Distribution<Value>) ->
+      Delay {
     if delayExpressions && p.supportsLazy() {
-      /* unlike a simulate event, as a realization is always associated with a
-       * Random object, it is possible to realize without making Random
-       * constant */
-      x <- p.realizeLazy();
-
-      /* record the prior log-density */
-      let p1 <- p.logpdfLazy(p.v!);
-      assert p1?;
-      if π? {
-        π <- box(π! + p1!);
-      } else {
-        π <- p1!;
-      }
-
-      /* record the argument */
-      arg(p.v!);
+      x.move(p.simulateLazy()!);
     } else {
-      x <- p.realize();
-    }
-    if output? {
-      output!.pushBack(construct<ValueRecord<Value>>(x));
-    }
-    if π? {
-      /* evaluate the prior log-density, as it may required that further
-       * Random objects are realized */
-      π!.eval();
+      x.set(p.simulate());
     }
     return x;
   }
 
   /**
-   * Handle a factor event.
+   * Handle an updated event.
    *
-   * - w: Log-weight.
+   * - p: Distribution.
+   * - x: Value.
    *
-   * A factor event is triggered by the `factor` statement.
+   * Returns: Updated distribution.
+   *
+   * A prune event is triggered when the delayed sampling heuristic forces
+   * the realization of a random variate on the $M$-path. The $M$-path is
+   * pruned back to just below that random variate, which will be subsequently
+   * realized.
+   *
+   * The $M$-path is implemented as a linked list of alternating Random and
+   * Distribution objects. This overload handles the removal of nodes from
+   * that list following a Distribution node.
    */
-  function handleFactor(w:Expression<Real>) {
-    if delayExpressions {
-      this.w <- this.w + w.eval();
-      if π? {
-        π <- box(π! + w);
-      } else {
-        π <- w;
-      }
+  function handleUpdate<Value>(p:Distribution<Value>, x:Value) -> Delay {
+    if delayExpressions && p.supportsLazy() {
+      return p.updateLazy(box(x))!;
     } else {
-      this.w <- this.w + w.value();
+      return p.update(x)!;
+    }
+  }
+
+  /**
+   * Handle an updated event.
+   *
+   * - p: Distribution.
+   * - x: Random.
+   *
+   * Returns: Updated distribution.
+   *
+   * A prune event is triggered when the delayed sampling heuristic forces
+   * the realization of a random variate on the $M$-path. The $M$-path is
+   * pruned back to just below that random variate, which will be subsequently
+   * realized.
+   *
+   * The $M$-path is implemented as a linked list of alternating Random and
+   * Distribution objects. This overload handles the removal of nodes from
+   * that list following a Distribution node.
+   */
+  function handleUpdate<Value>(p:Distribution<Value>, x:Random<Value>) ->
+      Delay {
+    if delayExpressions && p.supportsLazy() {
+      return p.updateLazy(x)!;
+    } else {
+      return p.update(x.value())!;
     }
   }
 
@@ -192,8 +249,17 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
    *
    * A factor event is triggered by the `factor` statement.
    */
-  function handleFactor(w:Real) {
-    this.w <- this.w + w;
+  function handleFactor<Arg>(w:Arg) {
+    if delayExpressions {
+      this.w <- this.w + global.eval(w);
+      if π? {
+        π <- box(π! + w);
+      } else {
+        π <- box(w);
+      }
+    } else {
+      this.w <- this.w + global.value(w);
+    }
   }
 
   /**
@@ -357,16 +423,6 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
    */
   function prune(gen:Integer) {
     π!.prune(gen);
-  }
-
-  function coerce<Value>() -> Value {
-    assert input?;
-    let r <- ValueRecord<Value>?(input!.front());
-    if !r? {
-      error("incompatible trace");
-    }
-    input!.popFront();
-    return r!.x;
   }
 
   function arg(x:Random<Boolean>) {

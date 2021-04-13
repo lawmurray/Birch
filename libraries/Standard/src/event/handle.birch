@@ -67,6 +67,22 @@ function handle_simulate<Right>(p:Right) -> Right.Value {
 }
 
 /**
+ * Handle simulate event.
+ *
+ * - p: Distribution.
+ *
+ * Returns: Value simulated from the distribution.
+ *
+ * !!! attention
+ *     Typically one does not call this directly, but rather uses the
+ *     [`<~`](https://www.birch.sh/language/probability/) operator, which is
+ *     hard-wired to call this internally.
+ */
+function handle_simulate<Left,Right>(x:Left, p:Right) -> Left {
+  return get_handler().handleSimulate<Right.Value>(x, p);
+}
+
+/**
  * Handle observe event.
  *
  * - x: Variate.
@@ -81,6 +97,24 @@ function handle_simulate<Right>(p:Right) -> Right.Value {
  */
 function handle_observe<Left,Right>(x:Left, p:Right) -> Left {
   return get_handler().handleObserve<Right.Value>(x, p);
+}
+
+/**
+ * Handle assume event.
+ *
+ * - p: Distribution.
+ *
+ * Returns: A newly construct [Random](../Random/) with value type
+ * the same as `p`.
+ *
+ * !!! attention
+ *     Typically one does not call this directly, but rather uses the
+ *     [`~`](https://www.birch.sh/language/probability/) operator, which is
+ *     hard-wired to call this internally. This particular version is used
+ *     when a newly declared variable is initialized with the `~` operator.
+ */
+function handle_assume<Right>(p:Right) -> Random<Right.Value> {
+  return get_handler().handleAssume<Right.Value>(p);
 }
 
 /**
@@ -101,39 +135,37 @@ function handle_assume<Left,Right>(x:Left, p:Right) -> Left {
 }
 
 /**
- * Handle assume event.
- *
- * - p: Distribution.
- *
- * Returns: A newly construct [Random](../Random/) with value type
- * the same as `p`.
- *
- * !!! attention
- *     Typically one does not call this directly, but rather uses the
- *     [`~`](https://www.birch.sh/language/probability/) operator, which is
- *     hard-wired to call this internally. This particular version is used
- *     when a newly declared variable is initialized with the `~` operator.
- */
-function handle_assume<Right>(p:Right) -> Random<Right.Value> {
-  x:Random<Right.Value>;
-  return handle_assume(x, p);
-}
-
-/**
  * Handle realize event.
  *
+ * - x: Variate.
  * - p: Distribution.
  *
- * Returns: A newly construct [Random](../Random/) with value type
- * the same as `p`.
+ * Returns: Realized variate.
  *
  * !!! attention
  *     Typically one does not call this directly, but rather it is triggered
  *     when a random variate must be simulated as part of the delayed sampling
  *     heuristic.
  */
-function handle_realize<Right>(p:Right) -> Right.Value {
-  return get_handler().handleRealize<Right.Value>(p);
+function handle_realize<Left,Right>(x:Left, p:Right) -> Delay {
+  return get_handler().handleRealize<Right.Value>(x, p);
+}
+
+/**
+ * Handle an update event.
+ *
+ * - p: Distribution.
+ * - x: Variate.
+ *
+ * Returns: Updated distribution.
+ *
+ * !!! attention
+ *     Typically one does not call this directly, but rather it is triggered
+ *     when a random variate must be simulated as part of the delayed sampling
+ *     heuristic.
+ */
+function handle_update<Left,Right>(p:Left, x:Right) -> Delay {
+  return get_handler().handleUpdate<Left.Value>(p, x);
 }
 
 /**
@@ -146,20 +178,6 @@ function handle_realize<Right>(p:Right) -> Right.Value {
  *     [`factor`](https://www.birch.sh/language/probability/) statement, which
  *     is hard-wired to call this internally.
  */
-function handle_factor(w:Real) {
-  get_handler().handleFactor(w);
-}
-
-/**
- * Handle factor event.
- *
- * - w: Log-weight.
- *
- * !!! attention
- *     Typically one does not call this directly, but rather uses the
- *     [`factor`](https://www.birch.sh/language/probability/) statement, which
- *     is hard-wired to call this internally.
- */
-function handle_factor(w:Expression<Real>) {
+function handle_factor<Arg>(w:Arg) {
   get_handler().handleFactor(w);
 }

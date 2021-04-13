@@ -5,63 +5,65 @@ cpp{{
 /**
  * Gaussian distribution.
  */
-class Gaussian(μ:Expression<Real>, σ2:Expression<Real>) < Distribution<Real> {
+class Gaussian<Arg1,Arg2>(μ:Arg1, σ2:Arg2) < Distribution<Real> {
   /**
    * Mean.
    */
-  μ:Expression<Real> <- μ;
+  μ:Arg1 <- μ;
 
   /**
    * Variance.
    */
-  σ2:Expression<Real> <- σ2;
+  σ2:Arg2 <- σ2;
 
-  function supportsLazy() -> Boolean {
+  override function supportsLazy() -> Boolean {
     return true;
   }
 
-  function simulate() -> Real {
-    return simulate_gaussian(μ.value(), σ2.value());
+  override function simulate() -> Real {
+    return simulate_gaussian(value(μ), value(σ2));
   }
 
-  function simulateLazy() -> Real? {
-    return simulate_gaussian(μ.peak(), σ2.peak());
+  override function simulateLazy() -> Real? {
+    return simulate_gaussian(peak(μ), peak(σ2));
   }
   
-  function logpdf(x:Real) -> Real {
-    return logpdf_gaussian(x, μ.value(), σ2.value());
+  override function logpdf(x:Real) -> Real {
+    return logpdf_gaussian(x, value(μ), value(σ2));
   }
 
-  function logpdfLazy(x:Expression<Real>) -> Expression<Real>? {
-    return logpdf_lazy_gaussian(x, μ, σ2);
+  override function logpdfLazy(x:Expression<Real>) -> Expression<Real>? {
+    return box(logpdf_gaussian(x, μ, σ2));
   }
   
-  function cdf(x:Real) -> Real? {
-    return cdf_gaussian(x, μ.value(), σ2.value());
+  override function cdf(x:Real) -> Real? {
+    return cdf_gaussian(x, value(μ), value(σ2));
   }
 
-  function quantile(P:Real) -> Real? {
-    return quantile_gaussian(P, μ.value(), σ2.value());
+  override function quantile(P:Real) -> Real? {
+    return quantile_gaussian(P, value(μ), value(σ2));
   }
 
-  function graftGaussian() -> Gaussian? {
-    prune();
-    return this;
+  override function isGaussian() -> Boolean {
+    return true;
   }
 
-  function write(buffer:Buffer) {
-    prune();
+  override function getGaussian() -> (Expression<Real>, Expression<Real>)? {
+    return box(μ, σ2);
+  }
+
+  override function write(buffer:Buffer) {
     buffer.set("class", "Gaussian");
-    buffer.set("μ", μ);
-    buffer.set("σ2", σ2);
+    buffer.set("μ", value(μ));
+    buffer.set("σ2", value(σ2));
   }
 }
 
 /**
  * Create Gaussian distribution.
  */
-function Gaussian<Left,Right>(μ:Left, σ2:Right) -> {
-  return construct<Gaussian>(box(μ), box(σ2));
+function Gaussian<Arg1,Arg2>(μ:Arg1, σ2:Arg2) -> {
+  return construct<Gaussian<Arg1,Arg2>>(μ, σ2);
 }
 
 /*
@@ -72,7 +74,7 @@ function Gaussian<Left,Right>(μ:Left, σ2:Right) -> {
  */
 function simulate_gaussian(μ:Real, σ2:Real) -> Real {
   assert 0.0 <= σ2;
-  if (σ2 == 0.0) {
+  if σ2 == 0.0 {
     return μ;
   } else {
     cpp{{
@@ -90,22 +92,8 @@ function simulate_gaussian(μ:Real, σ2:Real) -> Real {
  *
  * Returns: the log probability density.
  */
-function logpdf_gaussian(x:Real, μ:Real, σ2:Real) -> Real {
-  assert 0.0 <= σ2;
+function logpdf_gaussian<Arg1,Arg2,Arg3>(x:Arg1, μ:Arg2, σ2:Arg3) -> {
   return -0.5*(pow(x - μ, 2.0)/σ2 + log(2.0*π*σ2));
-}
-
-/*
- * Observe a Gaussian variate.
- *
- * - x: The variate.
- * - μ: Mean.
- * - σ2: Variance.
- *
- * Returns: the log probability density.
- */
-function logpdf_lazy_gaussian(x:Expression<Real>, μ:Expression<Real>, σ2:Expression<Real>) -> Expression<Real> {
-  return box(-0.5*(pow(x - μ, 2.0)/σ2 + log(2.0*π*σ2)));
 }
 
 /*

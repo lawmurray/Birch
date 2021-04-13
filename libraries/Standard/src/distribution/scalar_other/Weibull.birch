@@ -5,63 +5,61 @@ cpp{{
 /**
  * Weibull distribution.
  */
-final class Weibull(k:Expression<Real>, λ:Expression<Real>) <
-    Distribution<Real> {
+final class Weibull<Arg1,Arg2>(k:Arg1, λ:Arg2) < Distribution<Real> {
   /**
    * Shape.
    */
-  k:Expression<Real> <- k;
+  k:Arg1 <- k;
 
   /**
    * Scale.
    */
-  λ:Expression<Real> <- λ;
+  λ:Arg2 <- λ;
 
-  function supportsLazy() -> Boolean {
+  override function supportsLazy() -> Boolean {
     return true;
   }
 
-  function simulate() -> Real {
-    return simulate_weibull(k.value(), λ.value());
+  override function simulate() -> Real {
+    return simulate_weibull(value(k), value(λ));
   }
 
-  function simulateLazy() -> Real? {
-    return simulate_weibull(k.peak(), λ.peak());
+  override function simulateLazy() -> Real? {
+    return simulate_weibull(peak(k), peak(λ));
   }
   
-  function logpdf(x:Real) -> Real {
-    return logpdf_weibull(x, k.value(), λ.value());
+  override function logpdf(x:Real) -> Real {
+    return logpdf_weibull(x, value(k), value(λ));
   }
 
-  function logpdfLazy(x:Expression<Real>) -> Expression<Real>? {
-    return logpdf_lazy_weibull(x, k, λ);
+  override function logpdfLazy(x:Expression<Real>) -> Expression<Real>? {
+    return box(logpdf_weibull(x, k, λ));
   }
 
-  function cdf(x:Real) -> Real? {
-    return cdf_weibull(x, k.value(), λ.value());
+  override function cdf(x:Real) -> Real? {
+    return cdf_weibull(x, value(k), value(λ));
   }
 
-  function quantile(P:Real) -> Real? {
-    return quantile_weibull(P, k.value(), λ.value());
+  override function quantile(P:Real) -> Real? {
+    return quantile_weibull(P, value(k), value(λ));
   }
 
-  function lower() -> Real? {
+  override function lower() -> Real? {
     return 0.0;
   }
 
-  function write(buffer:Buffer) {
-    prune();
+  override function write(buffer:Buffer) {
     buffer.set("class", "Weibull");
-    buffer.set("k", k);
-    buffer.set("λ", λ);
+    buffer.set("k", value(k));
+    buffer.set("λ", value(λ));
   }
 }
 
 /**
  * Create Weibull distribution.
  */
-function Weibull<Left,Right>(k:Left, λ:Right) -> {
-  return construct<Weibull>(box(k), box(λ));
+function Weibull<Arg1,Arg2>(k:Arg1, λ:Arg2) -> {
+  return construct<Weibull<Arg1,Arg2>>(k, λ);
 }
 
 /*
@@ -87,24 +85,9 @@ function simulate_weibull(k:Real, λ:Real) -> Real {
  *
  * Returns: the log probability density.
  */
-function logpdf_weibull(x:Real, k:Real, λ:Real) -> Real {
-  assert 0.0 < λ;
+function logpdf_weibull<Arg1,Arg2,Arg3>(x:Arg1, k:Arg2, λ:Arg3) -> {
   return if_then_else(x < 0.0, -inf, log(k) + (k - 1.0)*log(x) -
       k*log(λ) - pow(x/λ, k));
-}
-
-/*
- * Observe a Weibull variate.
- *
- * - x: The variate.
- * - k: Shape.
- * - λ: Scale.
- *
- * Returns: the log probability density.
- */
-function logpdf_lazy_weibull(x:Expression<Real>, k:Expression<Real>, λ:Expression<Real>) -> Expression<Real> {
-  return box(if_then_else(x < 0.0, -inf, log(k) + (k - 1.0)*log(x) - k*log(λ) -
-      pow(x/λ, k)));
 }
 
 /*

@@ -1,74 +1,66 @@
 /**
  * Matrix Gaussian distribution.
- *
- * !!! note
- *     See Gaussian for associated factory functions for the creation of
- *     MatrixGaussian objects.
  */
-class MatrixGaussian(M:Expression<Real[_,_]>, U:Expression<Real[_,_]>,
-    V:Expression<Real[_,_]>) < Distribution<Real[_,_]> {
+class MatrixGaussian<Arg1,Arg2,Arg3>(M:Arg1, U:Arg2, V:Arg3) <
+    Distribution<Real[_,_]> {
   /**
    * Mean.
    */
-  M:Expression<Real[_,_]> <- M;
+  M:Arg1 <- M;
   
   /**
    * Among-row covariance.
    */
-  U:Expression<Real[_,_]> <- U;
+  U:Arg2 <- U;
 
   /**
    * Among-column covariance.
    */
-  V:Expression<Real[_,_]> <- V;
+  V:Arg3 <- V;
 
-  function rows() -> Integer {
-    return M.rows();
-  }
-
-  function columns() -> Integer {
-    return M.columns();
-  }
-
-  function supportsLazy() -> Boolean {
+  override function supportsLazy() -> Boolean {
     return true;
   }
 
-  function simulate() -> Real[_,_] {
-    return simulate_matrix_gaussian(M.value(), U.value(), V.value());
+  override function simulate() -> Real[_,_] {
+    return simulate_matrix_gaussian(value(M), value(U), value(V));
   }
 
-  function simulateLazy() -> Real[_,_]? {
-    return simulate_matrix_gaussian(M.peak(), U.peak(), V.peak());
+  override function simulateLazy() -> Real[_,_]? {
+    return simulate_matrix_gaussian(peak(M), peak(U), peak(V));
   }
   
-  function logpdf(X:Real[_,_]) -> Real {
-    return logpdf_matrix_gaussian(X, M.value(), U.value(), V.value());
+  override function logpdf(X:Real[_,_]) -> Real {
+    return logpdf_matrix_gaussian(X, value(M), value(U), value(V));
   }
 
-  function logpdfLazy(X:Expression<Real[_,_]>) -> Expression<Real>? {
-    return logpdf_lazy_matrix_gaussian(X, M, U, V);
+  override function logpdfLazy(X:Expression<Real[_,_]>) -> Expression<Real>? {
+    return box(logpdf_matrix_gaussian(X, M, U, V));
   }
 
-  function graftMatrixGaussian() -> MatrixGaussian? {
-    prune();
-    return this;
+  override function isMatrixGaussian() -> Boolean {
+    return true;
   }
 
-  function write(buffer:Buffer) {
-    prune();
+  override function getMatrixGaussian() -> (Expression<Real[_,_]>,
+      Expression<Real[_,_]>, Expression<Real[_,_]>)? {
+    return box(M, U, V);
+  }
+
+  override function write(buffer:Buffer) {
     buffer.set("class", "MatrixGaussian");
-    buffer.set("M", M);
-    buffer.set("U", U);
-    buffer.set("V", V);
+    buffer.set("M", value(M));
+    buffer.set("U", value(U));
+    buffer.set("V", value(V));
   }
 }
 
 /**
  * Create matrix Gaussian distribution.
  */
-function MatrixGaussian<Left,Middle,Right>(M:Left, U:Middle, V:Right) -> Distribution<Real[_,_]> {
-  return construct<MatrixGaussian>(box(M), box(U), box(V));
+function MatrixGaussian<Arg1,Arg2,Arg3>(M:Arg1, U:Arg2, V:Arg3) ->
+    Distribution<Real[_,_]> {
+  return construct<MatrixGaussian<Arg1,Arg2,Arg3>>(M, U, V);
 }
 
 /*
@@ -78,45 +70,21 @@ function MatrixGaussian<Left,Middle,Right>(M:Left, U:Middle, V:Right) -> Distrib
  * - U: Among-row covariance.
  * - V: Among-column covariance.
  */
-function simulate_matrix_gaussian(M:Real[_,_], U:Real[_,_], V:Real[_,_]) -> Real[_,_] {
+function simulate_matrix_gaussian(M:Real[_,_], U:Real[_,_], V:Real[_,_]) ->
+    Real[_,_] {
   assert rows(M) == rows(U);
   assert rows(M) == columns(U);
   assert columns(M) == rows(V);
   assert columns(M) == columns(V);
-  
   let N <- rows(M);
   let P <- columns(M);
-  Z:Real[N,P];
-  for n in 1..N {
-    for p in 1..P {
-      Z[n,p] <- simulate_gaussian(0.0, 1.0);
-    }
-  }
+  let Z <- matrix(\(i:Integer, j:Integer) -> Real {
+        return simulate_gaussian(0.0, 1.0);
+      }, N, P);
   return M + cholesky(U)*Z*transpose(cholesky(V));
 }
 
 /*
- * Simulate a matrix Gaussian distribution with independent rows.
- *
- * - M: Mean.
- * - V: Among-column variances.
- */
-function simulate_matrix_gaussian(M:Real[_,_], V:Real[_,_]) -> Real[_,_] {
-  assert columns(M) == rows(V);
-  assert columns(M) == columns(V);
-  
-  let N <- rows(M);
-  let P <- columns(M);
-  Z:Real[N,P];
-  for n in 1..N {
-    for p in 1..P {
-      Z[n,p] <- simulate_gaussian(0.0, 1.0);
-    }
-  }
-  return M + Z*transpose(cholesky(V));
-}
-
-/*
  * Observe a matrix Gaussian distribution.
  *
  * - X: The variate.
@@ -126,92 +94,10 @@ function simulate_matrix_gaussian(M:Real[_,_], V:Real[_,_]) -> Real[_,_] {
  *
  * Returns: the log probability density.
  */
-function logpdf_matrix_gaussian(X:Real[_,_], M:Real[_,_], U:Real[_,_], V:Real[_,_]) ->
-    Real {
-  let n <- rows(M);
-  let p <- columns(M);
+function logpdf_matrix_gaussian<Arg1,Arg2,Arg3,Arg4>(X:Arg1, M:Arg2, U:Arg3,
+    V:Arg4) -> {
+  let n <- rows(X);
+  let p <- columns(X);
   return -0.5*(trace(solve(V, transpose(X - M))*solve(U, X - M)) +
       n*p*log(2.0*π) + n*ldet(V) + p*ldet(U));
-}
-
-/*
- * Observe a matrix Gaussian distribution with independent rows.
- *
- * - X: The variate.
- * - M: Mean.
- * - V: Among-column covariance.
- *
- * Returns: the log probability density.
- */
-function logpdf_matrix_gaussian(X:Real[_,_], M:Real[_,_], V:Real[_,_]) -> Real {
-  let n <- rows(M);
-  let p <- columns(M);
-  return -0.5*(trace(solve(V, transpose(X - M))*(X - M)) + n*p*log(2.0*π) +
-      n*ldet(V));
-}
-
-/*
- * Observe a matrix Gaussian distribution with independent elements
- * of identical variance.
- *
- * - X: The variate.
- * - M: Mean.
- * - σ2: Variance.
- *
- * Returns: the log probability density.
- */
-function logpdf_matrix_gaussian(X:Real[_,_], M:Real[_,_], σ2:Real) ->
-    Real {
-  let n <- rows(M);
-  let p <- columns(M);
-  return -0.5*(trace(outer(transpose(X - M))/σ2) + n*p*log(2.0*π*σ2));
-}
-
-/*
- * Observe a matrix Gaussian distribution.
- *
- * - X: The variate.
- * - M: Mean.
- * - U: Among-row covariance.
- * - V: Among-column covariance.
- *
- * Returns: the log probability density.
- */
-function logpdf_lazy_matrix_gaussian(X:Expression<Real[_,_]>, M:Expression<Real[_,_]>, U:Expression<Real[_,_]>, V:Expression<Real[_,_]>) ->
-    Expression<Real> {
-  let n <- rows(M);
-  let p <- columns(M);
-  return box(-0.5*(trace(solve(V, transpose(X - M))*solve(U, X - M)) + n*p*log(2.0*π) + n*ldet(V) + p*ldet(U)));
-}
-
-/*
- * Observe a matrix Gaussian distribution with independent rows.
- *
- * - X: The variate.
- * - M: Mean.
- * - V: Among-column covariance.
- *
- * Returns: the log probability density.
- */
-function logpdf_lazy_matrix_gaussian(X:Expression<Real[_,_]>, M:Expression<Real[_,_]>, V:Expression<Real[_,_]>) -> Expression<Real> {
-  let n <- rows(M);
-  let p <- columns(M);
-  return box(-0.5*(trace(solve(V, transpose(X - M))*(X - M)) + n*p*log(2.0*π) + n*ldet(V)));
-}
-
-/*
- * Observe a matrix Gaussian distribution with independent elements
- * of identical variance.
- *
- * - X: The variate.
- * - M: Mean.
- * - σ2: Variance.
- *
- * Returns: the log probability density.
- */
-function logpdf_lazy_matrix_gaussian(X:Expression<Real[_,_]>, M:Expression<Real[_,_]>, σ2:Expression<Real>) ->
-    Expression<Real> {
-  let n <- rows(M);
-  let p <- columns(M);
-  return box(-0.5*(trace(transpose(X - M)*(X - M)/σ2) + n*p*log(2.0*π*σ2)));
 }

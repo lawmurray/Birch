@@ -1,76 +1,60 @@
 /**
  * Dirichlet-categorical distribution.
  */
-final class DirichletCategorical(ρ:Dirichlet) < Distribution<Integer> {
+final class DirichletCategorical<Arg>(α:Arg) < Distribution<Integer> {
   /**
-   * Category probabilities.
+   * Concentrations.
    */
-  ρ:Dirichlet <- ρ;
+  α:Arg <- α;
 
-  function supportsLazy() -> Boolean {
+  override function supportsLazy() -> Boolean {
     return false;
   }
 
-  function simulate() -> Integer {
-    return simulate_dirichlet_categorical(ρ.α.value());
+  override function simulate() -> Integer {
+    return simulate_dirichlet_categorical(value(α));
   }
-
-//  function simulateLazy() -> Integer? {
-//    return simulate_dirichlet_categorical(ρ.α.peak());
-//  }
   
-  function logpdf(x:Integer) -> Real {
-    return logpdf_dirichlet_categorical(x, ρ.α.value());
+  override function logpdf(x:Integer) -> Real {
+    return logpdf_dirichlet_categorical(x, value(α));
   }
 
-//  function logpdfLazy(x:Expression<Integer>) -> Expression<Real>? {
-//    return logpdf_lazy_dirichlet_categorical(x, ρ.α);
-//  }
-
-  function update(x:Integer) {
-    ρ.α <- box(update_dirichlet_categorical(x, ρ.α.value()));
+  override function update(x:Integer) -> Delay? {
+    return update_dirichlet_categorical(x, value(α));
   }
 
-//  function updateLazy(x:Expression<Integer>) {
-//    ρ.α <- update_lazy_dirichlet_categorical(x, ρ.α);
-//  }
-
-  function lower() -> Integer? {
+  override function lower() -> Integer? {
     return 1;
   }
 
-  function upper() -> Integer? {
-    return ρ.α.rows();
-  }
-
-  function link() {
-    ρ.setChild(this);
-  }
-  
-  function unlink() {
-    ρ.releaseChild(this);
+  override function upper() -> Integer? {
+    return rows(eval(α));
   }
 }
 
-function DirichletCategorical(ρ:Dirichlet) -> DirichletCategorical {
-  m:DirichletCategorical(ρ);
-  m.link();
-  return m;
+function DirichletCategorical<Arg>(α:Arg) -> {
+  return construct<DirichletCategorical<Arg>>(α);
 }
 
 /**
  * Create categorical distribution.
  */
 function Categorical(ρ:Random<Real[_]>) -> Distribution<Integer> {
-  m1:Dirichlet?;
-  m2:Restaurant?;
-  if (m1 <- ρ.graftDirichlet())? {
-    return DirichletCategorical(m1!);
-  } else if (m2 <- ρ.graftRestaurant())? {
-    return RestaurantCategorical(m2!);
+  if ρ.hasDirichlet() {
+    ρ.prune();
+    let α <- ρ.getDirichlet();
+    let p <- DirichletCategorical(α);
+    ρ.graft(p);
+    return p;
+  } else if ρ.hasRestaurant() {
+    ρ.prune();
+    let (α, θ, n, N) <- ρ.getRestaurant();
+    let p <- RestaurantCategorical(α, θ, n, N);
+    ρ.graft(p);
+    return p;
   } else {
-    return construct<Categorical>(ρ);
-  }    
+    return construct<Categorical<Random<Real[_]>>>(ρ);
+  }
 }
 
 /*
@@ -91,8 +75,8 @@ function simulate_dirichlet_categorical(α:Real[_]) -> Integer {
  * Returns: the log probability mass.
  */
 function logpdf_dirichlet_categorical(x:Integer, α:Real[_]) -> Real {
-  if (1 <= x && x <= length(α)) {
-    A:Real <- sum(α);
+  if 1 <= x && x <= length(α) {
+    let A <- sum(α);
     return lgamma(1.0 + α[x]) - lgamma(α[x]) + lgamma(A) - lgamma(1.0 + A);
   } else {
     return -inf;
@@ -108,8 +92,8 @@ function logpdf_dirichlet_categorical(x:Integer, α:Real[_]) -> Real {
  *
  * Returns: the posterior hyperparameters `α'`.
  */
-function update_dirichlet_categorical(x:Integer, α:Real[_]) -> Real[_] {
+function update_dirichlet_categorical(x:Integer, α:Real[_]) -> {
   let α' <- α;
   α'[x] <- α'[x] + 1.0;
-  return α';
+  return Dirichlet(α');
 }

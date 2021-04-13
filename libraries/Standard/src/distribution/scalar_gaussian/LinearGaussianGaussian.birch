@@ -1,77 +1,115 @@
 /**
  * Linear-Gaussian-Gaussian distribution.
  */
-final class LinearGaussianGaussian(a:Expression<Real>, m:Gaussian,
-    c:Expression<Real>, s2:Expression<Real>) < Gaussian(box(a*m.μ + c),
-    box(a*a*m.σ2 + s2)) {
+final class LinearGaussianGaussian<Arg1,Arg2,Arg3,Arg4,Arg5>(a:Arg1, μ:Arg2,
+    σ2:Arg3, c:Arg4, s2:Arg5) < Distribution<Real> {
   /**
    * Scale.
    */
-  a:Expression<Real> <- a;
+  a:Arg1 <- a;
     
   /**
-   * Mean.
+   * Prior mean.
    */
-  m:Gaussian <- m;
+  μ:Arg2 <- μ;
+
+  /**
+   * Prior variance.
+   */
+  σ2:Arg3 <- σ2;
 
   /**
    * Offset.
    */
-  c:Expression<Real> <- c;
+  c:Arg4 <- c;
 
   /**
    * Likelihood variance.
    */
-  s2:Expression<Real> <- s2;
+  s2:Arg5 <- s2;
 
-  function update(x:Real) {
-    (m.μ, m.σ2) <- box(update_linear_gaussian_gaussian(x, a.value(),
-        m.μ.value(), m.σ2.value(), c.value(), s2.value()));
+  override function supportsLazy() -> Boolean {
+    return true;
   }
 
-  function updateLazy(x:Expression<Real>) {
-    (m.μ, m.σ2) <- update_lazy_linear_gaussian_gaussian(x, a, m.μ, m.σ2, c, s2);
+  override function simulate() -> Real {
+    return simulate_gaussian(value(a*μ + c), value(a*a*σ2 + s2));
   }
 
-  function link() {
-    m.setChild(this);
+  override function simulateLazy() -> Real? {
+    return simulate_gaussian(peak(a*μ + c), peak(a*a*σ2 + s2));
   }
   
-  function unlink() {
-    m.releaseChild(this);
+  override function logpdf(x:Real) -> Real {
+    return logpdf_gaussian(x, value(a*μ + c), value(a*a*σ2 + s2));
+  }
+
+  override function logpdfLazy(x:Expression<Real>) -> Expression<Real>? {
+    return box(logpdf_gaussian(x, a*μ + c, a*a*σ2 + s2));
+  }
+
+  override function update(x:Real) -> Delay? {
+    return update_linear_gaussian_gaussian(x, value(a), value(μ), value(σ2),
+        value(c), value(s2));
+  }
+
+  override function updateLazy(x:Expression<Real>) -> Delay? {
+    return update_linear_gaussian_gaussian(x, a, μ, σ2, c, s2);
+  }
+
+  override function cdf(x:Real) -> Real? {
+    return cdf_gaussian(x, value(a*μ + c), value(a*a*σ2 + s2));
+  }
+
+  override function quantile(P:Real) -> Real? {
+    return quantile_gaussian(P, value(a*μ + c), value(a*a*σ2 + s2));
+  }
+
+  override function isGaussian() -> Boolean {
+    return true;
+  }
+
+  override function getGaussian() -> (Expression<Real>, Expression<Real>)? {
+    return box(a*μ + c, a*a*σ2 + s2);
   }
 }
 
-function LinearGaussianGaussian<Left,Middle,Right>(a:Left, μ:Gaussian,
-    c:Middle, σ2:Right) -> {
-  m:LinearGaussianGaussian(box(a), μ, box(c), box(σ2));
-  m.link();
-  return m;
+function LinearGaussianGaussian<Arg1,Arg2,Arg3,Arg4,Arg5>(a:Arg1, μ:Arg2,
+    σ2:Arg3, c:Arg4, s2:Arg5) -> {
+  return construct<LinearGaussianGaussian<Arg1,Arg2,Arg3,Arg4,Arg5>>(a, μ, σ2,
+      c, s2);
 }
 
 /**
  * Create Gaussian distribution.
  */
-function Gaussian<Left,Middle,Right>(μ:MultiplyAdd<Left,Random<Real>,Middle>,
-    σ2:Right) -> Distribution<Real> {
-  let p <- μ.m!.graftGaussian();
-  if p? {
-    return LinearGaussianGaussian(μ.l!, p!, μ.r!, σ2);
+function Gaussian<Arg1,Arg2,Arg3>(μ:MultiplyAdd<Arg1,Random<Real>,Arg2>,
+    σ2:Arg3) -> Distribution<Real> {
+  if μ.m!.hasGaussian() {
+    μ.m!.prune();
+    let (m, s2) <- μ.m!.getGaussian();
+    let p <- LinearGaussianGaussian(μ.l!, m, s2, μ.r!, σ2);
+    μ.m!.graft(p);
+    return p;
   } else {
-    return construct<Gaussian>(box(μ), box(σ2));
+    return construct<Gaussian<MultiplyAdd<Arg1,Random<Real>,Arg2>,Arg3>>(μ,
+        σ2);
   }
 }
 
 /**
  * Create Gaussian distribution.
  */
-function Gaussian<Left,Right>(μ:Multiply<Left,Random<Real>>, σ2:Right) ->
+function Gaussian<Arg1,Arg2>(μ:Multiply<Arg1,Random<Real>>, σ2:Arg2) ->
     Distribution<Real> {
-  let p <- μ.r!.graftGaussian();
-  if p? {
-    return LinearGaussianGaussian(μ.l!, p!, 0.0, σ2);
+  if μ.r!.hasGaussian() {
+    μ.l!.prune();
+    let (m, s2) <- μ.l!.getGaussian();
+    let p <- LinearGaussianGaussian(μ.l!, m, s2, 0.0, σ2);
+    μ.l!.graft(p);
+    return p;
   } else {
-    return construct<Gaussian>(box(μ), box(σ2));
+    return construct<Gaussian<Multiply<Arg1,Random<Real>>,Arg2>>(μ, σ2);
   }
 }
 
@@ -88,34 +126,11 @@ function Gaussian<Left,Right>(μ:Multiply<Left,Random<Real>>, σ2:Right) ->
  *
  * Returns: the posterior hyperparameters `μ'` and `λ'`.
  */
-function update_linear_gaussian_gaussian(x:Real, a:Real, μ:Real, σ2:Real,
-    c:Real, s2:Real) -> (Real, Real) {
+function update_linear_gaussian_gaussian<Arg1,Arg2,Arg3,Arg4,Arg5,Arg6>(
+    x:Arg1, a:Arg2, μ:Arg3, σ2:Arg4, c:Arg5, s2:Arg6) -> {
   let λ <- 1.0/σ2;
   let l <- 1.0/s2;
   let λ' <- λ + a*a*l;
   let μ' <- (λ*μ + a*l*(x - c))/λ';
-  return (μ', 1.0/λ');
-}
-
-/*
- * Update the parameters of a Gaussian distribution with a Gaussian
- * likelihood and scaling.
- *
- * - x: The variate.
- * - a: Scale.
- * - μ: Prior mean.
- * - σ2: Prior variance.
- * - c: Offset.
- * - s2: Likelihood variance.
- *
- * Returns: the posterior hyperparameters `μ'` and `λ'`.
- */
-function update_lazy_linear_gaussian_gaussian(x:Expression<Real>,
-    a:Expression<Real>, μ:Expression<Real>, σ2:Expression<Real>,
-    c:Expression<Real>, s2:Expression<Real>) -> (Expression<Real>, Expression<Real>) {
-  let λ <- 1.0/σ2;
-  let l <- 1.0/s2;
-  let λ' <- λ + a*a*l;
-  let μ' <- (λ*μ + a*l*(x - c))/λ';
-  return (box(μ'), box(1.0/λ'));
+  return Gaussian(μ', 1.0/λ');
 }

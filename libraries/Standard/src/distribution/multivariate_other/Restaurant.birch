@@ -5,17 +5,16 @@
  * likelihood evaluated. The distribution exists only for use as a prior on
  * a Categorical distribution.
  */
-final class Restaurant(α:Expression<Real>, θ:Expression<Real>) <
-    Distribution<Real[_]> {
+final class Restaurant<Arg1,Arg2>(α:Arg1, θ:Arg2) < Distribution<Real[_]> {
   /**
    * Concentration.
    */
-  α:Expression<Real> <- α;
+  α:Arg1 <- α;
   
   /**
    * Strength.
    */
-  θ:Expression<Real> <- θ;
+  θ:Arg2 <- θ;
 
   /**
    * Number of samples drawn in each component.
@@ -23,56 +22,54 @@ final class Restaurant(α:Expression<Real>, θ:Expression<Real>) <
   n:Integer[_];
 
   /**
-   * Number of components enumerated.
-   */
-  K:Integer <- 0;
-
-  /**
    * Number of samples drawn.
    */
   N:Integer <- 0;
 
-  function supportsLazy() -> Boolean {
+  override function supportsLazy() -> Boolean {
     return false;
   }
 
-  function simulate() -> Real[_] {
+  override function simulate() -> Real[_] {
     assert false;
     return vector(0.0, 0);
   }
 
-  function simulateLazy() -> Real[_]? {
+  override function simulateLazy() -> Real[_]? {
     assert false;
     return vector(0.0, 0);
   }
   
-  function logpdf(x:Real[_]) -> Real {
+  override function logpdf(x:Real[_]) -> Real {
     assert false;
     return 0.0;
   }
 
-  function logpdfLazy(x:Expression<Real[_]>) -> Expression<Real>? {
+  override function logpdfLazy(x:Expression<Real[_]>) -> Expression<Real>? {
     assert false;
     return box(0.0);
   }
 
-  function graftRestaurant() -> Restaurant? {
-    prune();
-    return this;
+  override function isRestaurant() -> Boolean {
+    return true;
   }
 
-  function write(buffer:Buffer) {
-    prune();
+  override function getRestaurant() -> (Expression<Real>, Expression<Real>,
+      Expression<Integer[_]>, Expression<Integer>)? {
+    return box(α, θ, ν, N);
+  }
+
+  override function write(buffer:Buffer) {
     buffer.set("class", "Restaurant");
-    buffer.set("α", α);
-    buffer.set("θ", θ);
-    buffer.set("n", n);
+    buffer.set("α", value(α));
+    buffer.set("θ", value(θ));
+    buffer.set("n", value(n));
   }
 }
 
 /**
  * Create Chinese restaurant process.
  */
-function Restaurant<Left,Right>(α:Left, θ:Right) -> {
-  return construct<Restaurant>(α, θ);
+function Restaurant<Arg1,Arg2>(α:Arg1, θ:Arg2) -> {
+  return construct<Restaurant<Arg1,Arg2>>(α, θ);
 }

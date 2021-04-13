@@ -25,23 +25,6 @@ function resample_multinomial(w:Real[_]) -> Integer[_] {
 }
 
 /**
- * Conditional resample with multinomial resampling.
- *
- * - w: Log-weight vector.
- * - b: Index of the conditioned particle.
- *
- * Returns: a tuple giving the ancestor vector and new index of the
- * conditioned particle.
- */
-function conditional_resample_multinomial(w:Real[_], b:Integer) ->
-    (Integer[_], Integer) {
-  let N <- length(w);
-  let o <- simulate_multinomial(N - 1, norm_exp(w));
-  o[b] <- o[b] + 1;
-  return (offspring_to_ancestors(o), b);
-}
-
-/**
  * Exponentiate and sum a vector, return the logarithm of the sum.
  */
 function log_sum_exp(x:Real[_]) -> Real {

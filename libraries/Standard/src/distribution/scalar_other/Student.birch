@@ -5,72 +5,71 @@ cpp{{
 /**
  * Student's $t$-distribution.
  */
-final class Student(ν:Expression<Real>, μ:Expression<Real>,
-    σ2:Expression<Real>) < Distribution<Real> {
+final class Student<Arg1,Arg2,Arg3>(ν:Arg1, μ:Arg2, σ2:Arg3) <
+    Distribution<Real> {
   /**
    * Degrees of freedom.
    */
-  ν:Expression<Real> <- ν;
+  ν:Arg1 <- ν;
 
   /**
    * Location parameter.
    */
-  μ:Expression<Real> <- μ;
+  μ:Arg2 <- μ;
 
   /**
    * Square scale parameter.
    */
-  σ2:Expression<Real> <- σ2;
+  σ2:Arg3 <- σ2;
   
-  function supportsLazy() -> Boolean {
+  override function supportsLazy() -> Boolean {
     return true;
   }
 
-  function simulate() -> Real {
-    return simulate_student_t(ν.value(), μ.value(), σ2.value());
+  override function simulate() -> Real {
+    return simulate_student_t(value(ν), value(μ), value(σ2));
   }
 
-  function simulateLazy() -> Real? {
-    return simulate_student_t(ν.peak(), μ.peak(), σ2.peak());
+  override function simulateLazy() -> Real? {
+    return simulate_student_t(peak(ν), peak(μ), peak(σ2));
   }
   
-  function logpdf(x:Real) -> Real {
-    return logpdf_student_t(x, ν.value(), μ.value(), σ2.value());
+  override function logpdf(x:Real) -> Real {
+    return logpdf_student_t(x, value(ν), value(μ), value(σ2));
   }
 
-  function logpdfLazy(x:Expression<Real>) -> Expression<Real>? {
-    return logpdf_lazy_student_t(x, ν, μ, σ2);
+  override function logpdfLazy(x:Expression<Real>) -> Expression<Real>? {
+    return box(logpdf_student_t(x, ν, μ, σ2));
   }
 
-  function cdf(x:Real) -> Real? {
-    return cdf_student_t(x, ν.value(), μ.value(), σ2.value());
+  override function cdf(x:Real) -> Real? {
+    return cdf_student_t(x, value(ν), value(μ), value(σ2));
   }
 
-  function quantile(P:Real) -> Real? {
-    return quantile_student_t(P, ν.value(), μ.value(), σ2.value());
+  override function quantile(P:Real) -> Real? {
+    return quantile_student_t(P, value(ν), value(μ), value(σ2));
   }
 
-  function write(buffer:Buffer) {
-    prune();
+  override function write(buffer:Buffer) {
     buffer.set("class", "Student");
-    buffer.set("ν", ν);
-    buffer.set("μ", μ);
-    buffer.set("σ2", σ2);
+    buffer.set("ν", value(ν));
+    buffer.set("μ", value(μ));
+    buffer.set("σ2", value(σ2));
   }
 }
 
 /**
  * Create Student's $t$-distribution.
  */
-function Student<Left,Middle,Right>(ν:Left, μ:Middle, σ2:Right) -> {
-  return construct<Student>(box(ν), box(μ), box(σ2));
+function Student<Arg1,Arg2,Arg3>(ν:Arg1, μ:Arg2, σ2:Arg3) -> {
+  return construct<Student<Arg1,Arg2,Arg3>>(ν, μ, σ2);
 }
 
 /**
  * Create Student's $t$-distribution.
  */
-function Student<Middle>(ν:Middle) -> {
-  return Student(box(ν), box(0.0), box(1.0));
+function Student<Arg>(ν:Arg) -> {
+  return Student(ν, 0.0, 1.0);
 }
 
 /*
@@ -108,8 +107,7 @@ function simulate_student_t(k:Real, μ:Real, v:Real) -> Real {
  *
  * Returns: the log probability density.
  */
-function logpdf_student_t(x:Real, k:Real) -> Real {
-  assert 0.0 < k;
+function logpdf_student_t<Arg1,Arg2>(x:Arg1, k:Arg2) -> {
   let a <- 0.5*(k + 1.0);
   let b <- 0.5*k;
   return lgamma(a) - lgamma(b) - 0.5*log(π*k) - a*log1p(x*x/k);
@@ -125,44 +123,12 @@ function logpdf_student_t(x:Real, k:Real) -> Real {
  *
  * Returns: the log probability density.
  */
-function logpdf_student_t(x:Real, k:Real, μ:Real, v:Real) -> Real {
-  assert 0.0 < k;
-  assert 0.0 < v;
+function logpdf_student_t<Arg1,Arg2,Arg3,Arg4>(x:Arg1, k:Arg2, μ:Arg3,
+    v:Arg4) -> {
   let a <- 0.5*(k + 1.0);
   let b <- 0.5*k;
   let z <- x - μ;
   return lgamma(a) - lgamma(b) - 0.5*log(π*v) - a*log1p(z*z/v);
-}
-
-/*
- * Observe a Student's $t$ variate.
- *
- * - x: The variate.
- * - k: Degrees of freedom.
- *
- * Returns: the log probability density.
- */
-function logpdf_lazy_student_t(x:Expression<Real>, k:Expression<Real>) -> Expression<Real> {
-  let a <- 0.5*(k + 1.0);
-  let b <- 0.5*k;
-  return box(lgamma(a) - lgamma(b) - 0.5*log(π*k) - a*log1p(x*x/k));
-}
-
-/*
- * Observe a Student's $t$ variate with location and scale.
- *
- * - x: The variate.
- * - k: Degrees of freedom.
- * - μ: Location.
- * - v: Scale.
- *
- * Returns: the log probability density.
- */
-function logpdf_lazy_student_t(x:Expression<Real>, k:Expression<Real>, μ:Expression<Real>, v:Expression<Real>) -> Expression<Real> {
-  let a <- 0.5*(k + 1.0);
-  let b <- 0.5*k;
-  let z <- x - μ;
-  return box(lgamma(a) - lgamma(b) - 0.5*log(π*v) - a*log1p(z*z/v));
 }
 
 /*
@@ -174,9 +140,8 @@ function logpdf_lazy_student_t(x:Expression<Real>, k:Expression<Real>, μ:Expres
  * Return: the cumulative probability.
  */
 function cdf_student_t(x:Real, ν:Real) -> Real {
-  // implementation taken from: https://github.com/codeplea/incbeta
   assert 0.0 < ν;
-  let t <- 0.5*(x + sqrt(x * x + ν)) /  sqrt(x * x + ν);
+  let t <- 0.5*x/sqrt(x*x + ν) + 0.5;
   let prob <- ibeta(0.5*ν, 0.5*ν, t);
   return prob;
 }

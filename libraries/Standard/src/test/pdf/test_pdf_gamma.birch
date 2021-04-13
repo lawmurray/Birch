@@ -4,7 +4,7 @@
 program test_pdf_gamma(N:Integer <- 10000, B:Integer <- 100, S:Integer <- 5,
     lazy:Boolean <- false) {
   let k <- simulate_uniform(1.0, 10.0);
-  let θ <- simulate_uniform(0.0, 10.0);
+  let θ <- simulate_uniform(0.1, 10.0);
   let q <- Gamma(k, θ);  
   test_pdf(q, N, B, S, lazy);
 }

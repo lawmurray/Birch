@@ -5,63 +5,61 @@ cpp{{
 /**
  * Negative binomial distribution.
  */
-final class NegativeBinomial(k:Expression<Integer>, ρ:Expression<Real>) <
-    Discrete {
+final class NegativeBinomial<Arg1,Arg2>(k:Arg1, ρ:Arg2) < Discrete {
   /**
    * Number of successes before the experiment is stopped.
    */
-  k:Expression<Integer> <- k;
+  k:Arg1 <- k;
 
   /**
    * Success probability.
    */
-  ρ:Expression<Real> <- ρ;
+  ρ:Arg2 <- ρ;
 
-  function supportsLazy() -> Boolean {
+  override function supportsLazy() -> Boolean {
     return true;
   }
 
-  function simulate() -> Integer {
-    return simulate_negative_binomial(k.value(), ρ.value());
+  override function simulate() -> Integer {
+    return simulate_negative_binomial(value(k), value(ρ));
   }
 
-  function simulateLazy() -> Integer? {
-    return simulate_negative_binomial(k.peak(), ρ.peak());
+  override function simulateLazy() -> Integer? {
+    return simulate_negative_binomial(peak(k), peak(ρ));
   }
   
-  function logpdf(x:Integer) -> Real {
-    return logpdf_negative_binomial(x, k.value(), ρ.value());
+  override function logpdf(x:Integer) -> Real {
+    return logpdf_negative_binomial(x, value(k), value(ρ));
   }
 
-  function logpdfLazy(x:Expression<Integer>) -> Expression<Real>? {
-    return logpdf_lazy_negative_binomial(x, k, ρ);
+  override function logpdfLazy(x:Expression<Integer>) -> Expression<Real>? {
+    return box(logpdf_negative_binomial(x, k, ρ));
   }
 
-  function cdf(x:Integer) -> Real? {
-    return cdf_negative_binomial(x, k.value(), ρ.value());
+  override function cdf(x:Integer) -> Real? {
+    return cdf_negative_binomial(x, value(k), value(ρ));
   }
 
-  function quantile(P:Real) -> Integer? {
-    return quantile_negative_binomial(P, k.value(), ρ.value());
+  override function quantile(P:Real) -> Integer? {
+    return quantile_negative_binomial(P, value(k), value(ρ));
   }
 
-  function lower() -> Integer? {
+  override function lower() -> Integer? {
     return 0;
   }
 
-  function write(buffer:Buffer) {
-    prune();
+  override function write(buffer:Buffer) {
     buffer.set("class", "NegativeBinomial");
-    buffer.set("k", k);
-    buffer.set("ρ", ρ);
+    buffer.set("k", value(k));
+    buffer.set("ρ", value(ρ));
   }
 }
 
 /**
  * Create negative binomial distribution.
  */
-function NegativeBinomial<Left,Right>(k:Left, ρ:Right) -> {
-  return construct<NegativeBinomial>(box(k), box(ρ));
+function NegativeBinomial<Arg1,Arg2>(k:Arg1, ρ:Arg2) -> {
+  return construct<NegativeBinomial<Arg1,Arg2>>(k, ρ);
 }
 
 /*
@@ -89,28 +87,8 @@ function simulate_negative_binomial(k:Integer, ρ:Real) -> Integer {
  *
  * Returns: the log probability mass.
  */
-function logpdf_negative_binomial(x:Integer, k:Integer, ρ:Real) -> Real {
-  assert 0 < k;
-  assert 0.0 <= ρ && ρ <= 1.0;
-
-  if (x >= 0) {
-    return k*log(ρ) + x*log1p(-ρ) + lchoose(x + k - 1, x);
-  } else {
-    return -inf;
-  }
-}
-
-/*
- * Observe a negative binomial variate.
- *
- * - x: The variate (number of failures).
- * - k: Number of successes before the experiment is stopped.
- * - ρ: Probability of success.
- *
- * Returns: the log probability mass.
- */
-function logpdf_lazy_negative_binomial(x:Expression<Integer>, k:Expression<Integer>, ρ:Expression<Real>) -> Expression<Real> {
-  return box(k*log(ρ) + x*log1p(-ρ) + lchoose(x + k - 1, x));
+function logpdf_negative_binomial<Arg1,Arg2,Arg3>(x:Arg1, k:Arg2, ρ:Arg3) -> {
+  return k*log(ρ) + x*log1p(-ρ) + lchoose(x + k - 1, x);
 }
 
 /*
@@ -125,7 +103,6 @@ function logpdf_lazy_negative_binomial(x:Expression<Integer>, k:Expression<Integ
 function cdf_negative_binomial(x:Integer, k:Integer, ρ:Real) -> Real {
   assert 0 < k;
   assert 0.0 <= ρ && ρ <= 1.0;
-
   if x < 0 {
     return 0.0;
   } else {
@@ -146,6 +123,7 @@ function quantile_negative_binomial(P:Real, k:Integer, ρ:Real) -> Integer {
   assert 0 < k;
   assert 0.0 <= ρ && ρ <= 1.0;
   cpp{{
-  return boost::math::quantile(boost::math::negative_binomial_distribution<>(k, ρ), P);
+  return boost::math::quantile(boost::math::negative_binomial_distribution<>(
+      k, ρ), P);
   }}
 }

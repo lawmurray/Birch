@@ -5,12 +5,11 @@ abstract class BoundedDiscrete < Discrete {
   abstract function lower() -> Integer?;
   abstract function upper() -> Integer?;
 
-  function graftBoundedDiscrete() -> BoundedDiscrete? {
-    prune();
-    if hasClamp() {
-      return nil;
-    } else {
-      return this;
-    }
+  override function isBoundedDiscrete() -> Boolean {
+    return true;
+  }
+
+  override function getBoundedDiscrete() -> BoundedDiscrete? {
+    return this;
   }
 }

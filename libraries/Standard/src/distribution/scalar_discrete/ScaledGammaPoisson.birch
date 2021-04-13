@@ -1,94 +1,97 @@
 /**
  * Scaled gamma-Poisson distribution.
  */
-final class ScaledGammaPoisson(a:Expression<Real>, λ:Gamma) < Discrete {
+final class ScaledGammaPoisson<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2, θ:Arg3) <
+    Discrete {
   /**
    * Scale.
    */
-  a:Expression<Real> <- a;
+  a:Arg1 <- a;
 
   /**
-   * Rate.
+   * Shape.
    */
-  λ:Gamma <- λ;
+  k:Arg2 <- k;
 
-  function supportsLazy() -> Boolean {
+  /**
+   * Scale.
+   */
+  θ:Arg3 <- θ;
+
+  override function supportsLazy() -> Boolean {
     return true;
   }
 
-  function simulate() -> Integer {
-    return simulate_gamma_poisson(λ.k.value(), a.value()*λ.θ.value());
+  override function simulate() -> Integer {
+    return simulate_gamma_poisson(value(k), value(a)*value(θ));
   }
 
-  function simulateLazy() -> Integer? {
-    return simulate_gamma_poisson(λ.k.peak(), a.peak()*λ.θ.peak());
+  override function simulateLazy() -> Integer? {
+    return simulate_gamma_poisson(peak(k), peak(a)*peak(θ));
   }
   
-  function logpdf(x:Integer) -> Real {
-    return logpdf_gamma_poisson(x, λ.k.value(), a.value()*λ.θ.value());
+  override function logpdf(x:Integer) -> Real {
+    return logpdf_gamma_poisson(x, value(k), value(a)*value(θ));
   }
 
-  function logpdfLazy(x:Expression<Integer>) -> Expression<Real>? {
-    return logpdf_lazy_gamma_poisson(x, λ.k, box(a*λ.θ));
+  override function logpdfLazy(x:Expression<Integer>) -> Expression<Real>? {
+    return box(logpdf_gamma_poisson(x, k, a*θ));
   }
 
-  function update(x:Integer) {
-    (λ.k, λ.θ) <- box(update_scaled_gamma_poisson(x, a.value(), λ.k.value(),
-        λ.θ.value()));
+  override function update(x:Integer) -> Delay? {
+    return update_scaled_gamma_poisson(x, value(a), value(k), value(θ));
   }
 
-  function updateLazy(x:Expression<Integer>) {
-    (λ.k, λ.θ) <- update_lazy_scaled_gamma_poisson(x, a, λ.k, λ.θ);
+  override function updateLazy(x:Expression<Integer>) -> Delay? {
+    return update_scaled_gamma_poisson(x, a, k, θ);
   }
 
-  function cdf(x:Integer) -> Real? {
-    return cdf_gamma_poisson(x, λ.k.value(), a.value()*λ.θ.value());
+  override function cdf(x:Integer) -> Real? {
+    return cdf_gamma_poisson(x, value(k), value(a)*value(θ));
   }
 
-  function quantile(P:Real) -> Integer? {
-    return quantile_gamma_poisson(P, λ.k.value(), a.value()*λ.θ.value());
+  override function quantile(P:Real) -> Integer? {
+    return quantile_gamma_poisson(P, value(k), value(a)*value(θ));
   }
 
-  function lower() -> Integer? {
+  override function lower() -> Integer? {
     return 0;
   }
-
-  function link() {
-    λ.setChild(this);
-  }
-  
-  function unlink() {
-    λ.releaseChild(this);
-  }
 }
 
-function ScaledGammaPoisson<Left>(a:Left, λ:Gamma) -> {
-  m:ScaledGammaPoisson(box(a), λ);
-  m.link();
-  return m;
+function ScaledGammaPoisson<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2, θ:Arg3) -> {
+  return construct<ScaledGammaPoisson<Arg1,Arg2,Arg3>>(a, k, θ);
 }
 
 /**
  * Create Poisson distribution.
  */
-function Poisson<Left>(λ:Multiply<Left,Random<Real>>) -> Distribution<Integer> {
-  m:Gamma?;
-  if (m <- λ.r!.graftGamma())? {
-    return ScaledGammaPoisson(box(λ.l!), m!);
+function Poisson<Arg1>(λ:Multiply<Arg1,Random<Real>>) ->
+    Distribution<Integer> {
+  if λ.r!.hasGamma() {
+    λ.r!.prune();
+    let (k, θ) <- λ.r!.getGamma();
+    let p <- ScaledGammaPoisson(λ.l!, k, θ);
+    λ.r!.graft(p);
+    return p;
   } else {
-    return construct<Poisson>(box(λ));
+    return construct<Poisson<Multiply<Arg1,Random<Real>>>>(λ);
   }
 }
 
 /**
  * Create Poisson distribution.
  */
-function Poisson<Right>(λ:Multiply<Random<Real>,Right>) -> Distribution<Integer> {
-  m:Gamma?;
-  if (m <- λ.l!.graftGamma())? {
-    return ScaledGammaPoisson(box(λ.r!), m!);
+function Poisson<Arg3>(λ:Multiply<Random<Real>,Arg3>) ->
+    Distribution<Integer> {
+  if λ.l!.hasGamma() {
+    λ.l!.prune();
+    let (k, θ) <- λ.l!.getGamma();
+    let p <- ScaledGammaPoisson(λ.r!, k, θ);
+    λ.l!.graft(p);
+    return p;
   } else {
-    return construct<Poisson>(box(λ));
+    return construct<Poisson<Multiply<Random<Real>,Arg3>>>(λ);
   }
 }
 
@@ -103,24 +106,7 @@ function Poisson<Right>(λ:Multiply<Random<Real>,Right>) -> Distribution<Integer
  *
  * Returns: the posterior hyperparameters `k'` and `θ'`.
  */
-function update_scaled_gamma_poisson(x:Integer, a:Real, k:Real, θ:Real) ->
-    (Real, Real) {
-  return (k + x, θ/(a*θ + 1.0));
-}
-
-/*
- * Update the parameters of a scaled Gamma distribution with a Poisson
- * likelihood.
- *
- * - x: The variate.
- * - a: Scale.
- * - k: Prior shape.
- * - θ: Prior scale.
- *
- * Returns: the posterior hyperparameters `k'` and `θ'`.
- */
-function update_lazy_scaled_gamma_poisson(x:Expression<Integer>,
-    a:Expression<Real>, k:Expression<Real>, θ:Expression<Real>) ->
-    (Expression<Real>, Expression<Real>) {
-  return (box(k + x), box(θ/(a*θ + 1.0)));
+function update_scaled_gamma_poisson<Arg1,Arg2,Arg3,Arg4>(x:Arg1, a:Arg2,
+    k:Arg3, θ:Arg4) -> {
+  return Gamma(k + x, θ/(a*θ + 1.0));
 }

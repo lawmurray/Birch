@@ -35,8 +35,7 @@ class Multi < Model {
       let track <- iter.next();
       let ρ <- exp(logpdf_poisson(t - track.s - 1, θ.τ));
       let R <- 1.0 - cdf_poisson(t - track.s - 1, θ.τ) + ρ;
-      s:Boolean;
-      s <~ Bernoulli(1.0 - ρ/R);  // does the object survive?
+      let s <~ Bernoulli(1.0 - ρ/R);  // does the object survive?
       if s {
         track.simulate(t - track.s + 1);
         x'.pushBack(track);
@@ -44,8 +43,7 @@ class Multi < Model {
     }
     
     /* birth new objects */
-    N:Integer;
-    N <~ Poisson(θ.λ);
+    let N <~ Poisson(θ.λ);
     for n in 1..N {
       track:Track(t, θ);
       track.simulate();   // up to parameters
@@ -72,24 +70,19 @@ class Multi < Model {
     while iter.hasNext() {
       let track <- iter.next();
       let o <- track.y[t - track.s + 1];  // observation random variable
-      if o.hasDistribution() {
-        let p <- o.getDistribution();
-      
+      if o.hasDistribution() {      
         /* propose an association */
-        q:Real[y.size()];
-        for n in 1..y.size() {
-          q[n] <- p.pdf(y[n]);
-        }
+        let p <- o.getDistribution();
+        let q <- vector(\(n:Integer) -> Real { return p.pdf(y[n]); },
+            y.size());
         let Q <- sum(q);
         if Q > 0.0 {
           q <- q/Q;
-          n:Integer;
-          n <~ Categorical(q);  // propose an observation to associate with
-          let w <- p.observe(y[n]);  // likelihood
-          w <- w - log(y.size());  // prior correction (uniform prior)
-          w <- w - log(q[n]);  // proposal correction
+          let n <~ Categorical(q);  // propose observation to associate with
+          y[n] ~> p;  // observe
           y.erase(n);  // remove the observation for future associations
-          factor w;
+          factor -log(y.size());  // prior correction (uniform prior)
+          factor -log(q[n]);  // proposal correction
         } else {
           factor -inf;  // detected, but all likelihoods (numerically) zero
         }

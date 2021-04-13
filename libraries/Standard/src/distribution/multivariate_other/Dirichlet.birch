@@ -1,49 +1,43 @@
 /**
  * Dirichlet distribution.
  */
-final class Dirichlet(α:Expression<Real[_]>) < Distribution<Real[_]> {
+final class Dirichlet<Arg>(α:Arg) < Distribution<Real[_]> {
   /**
    * Concentration.
    */
-  α:Expression<Real[_]> <- α;
+  α:Arg <- α;
 
-  function supportsLazy() -> Boolean {
+  override function supportsLazy() -> Boolean {
     return false;
   }
 
-  function simulate() -> Real[_] {
-    return simulate_dirichlet(α.value());
+  override function simulate() -> Real[_] {
+    return simulate_dirichlet(value(α));
   }
-
-//  function simulateLazy() -> Real[_]? {
-//    return simulate_dirichlet(α.peak());
-//  }
   
-  function logpdf(x:Real[_]) -> Real {
-    return logpdf_dirichlet(x, α.value());
+  override function logpdf(x:Real[_]) -> Real {
+    return logpdf_dirichlet(x, value(α));
   }
 
-//  function logpdfLazy(x:Expression<Real[_]>) -> Expression<Real>? {
-//    return logpdf_lazy_dirichlet(x, α);
-//  }
-
-  function graftDirichlet() -> Dirichlet? {
-    prune();
-    return this;
+  override function isDirichlet() -> Boolean {
+    return true;
   }
 
-  function write(buffer:Buffer) {
-    prune();
+  override function getDirichlet() -> Expression<Real[_]>? {
+    return box(α);
+  }
+
+  override function write(buffer:Buffer) {
     buffer.set("class", "Dirichlet");
-    buffer.set("α", α);
+    buffer.set("α", value(α));
   }
 }
 
 /**
  * Create Dirichlet distribution.
  */
-function Dirichlet<Middle>(α:Middle) -> {
-  return construct<Dirichlet>(box(α));
+function Dirichlet<Arg>(α:Arg) -> {
+  return construct<Dirichlet<Arg>>(α);
 }
 
 /*
@@ -52,19 +46,8 @@ function Dirichlet<Middle>(α:Middle) -> {
  * - α: Concentrations.
  */
 function simulate_dirichlet(α:Real[_]) -> Real[_] {
-  D:Integer <- length(α);
-  x:Real[D];
-  z:Real <- 0.0;
-
-  for i in 1..D {
-    x[i] <- simulate_gamma(α[i], 1.0);
-    z <- z + x[i];
-  }
-  z <- 1.0/z;
-  for i in 1..D {
-    x[i] <- z*x[i];
-  }  
-  return x;
+  let x <- transform(α, \(α:Real) -> Real { return simulate_gamma(α, 1.0); });
+  return x/sum(x);
 }
 
 /*
@@ -74,19 +57,8 @@ function simulate_dirichlet(α:Real[_]) -> Real[_] {
  * - D: Number of dimensions.
  */
 function simulate_dirichlet(α:Real, D:Integer) -> Real[_] {
-  assert D > 0;
-  x:Real[D];
-  z:Real <- 0.0;
-
-  for i in 1..D {
-    x[i] <- simulate_gamma(α, 1.0);
-    z <- z + x[i];
-  }
-  z <- 1.0/z;
-  for i in 1..D {
-    x[i] <- z*x[i];
-  }
-  return x;
+  let x <- vector(\(i:Integer) -> Real { return simulate_gamma(α, 1.0); }, D);
+  return x/sum(x);
 }
 
 /*
@@ -99,9 +71,8 @@ function simulate_dirichlet(α:Real, D:Integer) -> Real[_] {
  */
 function logpdf_dirichlet(x:Real[_], α:Real[_]) -> Real {
   assert length(x) == length(α);
-
-  D:Integer <- length(x);
-  w:Real <- 0.0;
+  let D <- length(x);
+  let w <- 0.0;
   for i in 1..D {
     if x[i] < 0.0 {
       return -inf;

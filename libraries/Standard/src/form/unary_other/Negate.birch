@@ -6,31 +6,6 @@ struct NegateFunction {
   function grad<Gradient,Value>(d:Gradient, m:Value) -> {
     return -d;
   }
-
-  // function graftDiscrete() -> Discrete? {
-  //   t:Discrete?;
-  //   if !hasValue() {
-  //     t <- graftBoundedDiscrete();
-  //     if !t? {
-  //       m1:Discrete?;
-  //       if (m1 <- graft_discrete(m))? {
-  //         t <- LinearDiscreteDelta(box(-1), m1!, box(0));
-  //       }
-  //     }
-  //   }
-  //   return t;
-  // }
-
-  // function graftBoundedDiscrete() -> BoundedDiscrete? {
-  //   t:BoundedDiscrete?;
-  //   if !hasValue() {
-  //     m1:BoundedDiscrete?;
-  //     if (m1 <- graft_bounded_discrete(m))? {
-  //       t <- LinearBoundedDiscrete(box(-1), m1!, box(0));
-  //     }
-  //   }
-  //   return t;
-  // }
 }
 struct Negate<Middle> = Unary<NegateFunction,Middle>;
 

@@ -1,76 +1,78 @@
+cpp{{
+#include <boost/math/distributions.hpp>
+}}
+
 /**
  * Gamma-Poisson distribution.
  */
-final class GammaPoisson(λ:Gamma) < Discrete {
+final class GammaPoisson<Arg1,Arg2>(k:Arg1, θ:Arg2) < Discrete {
   /**
-   * Rate.
+   * Shape.
    */
-  λ:Gamma <- λ;
+  k:Arg1 <- k;
 
-  function supportsLazy() -> Boolean {
+  /**
+   * Scale.
+   */
+  θ:Arg2 <- θ;
+
+  override function supportsLazy() -> Boolean {
     return true;
   }
 
-  function simulate() -> Integer {
-    return simulate_gamma_poisson(λ.k.value(), λ.θ.value());
+  override function simulate() -> Integer {
+    return simulate_gamma_poisson(value(k), value(θ));
   }
 
-  function simulateLazy() -> Integer? {
-    return simulate_gamma_poisson(λ.k.peak(), λ.θ.peak());
+  override function simulateLazy() -> Integer? {
+    return simulate_gamma_poisson(peak(k), peak(θ));
   }
   
-  function logpdf(x:Integer) -> Real {
-    return logpdf_gamma_poisson(x, λ.k.value(), λ.θ.value());
+  override function logpdf(x:Integer) -> Real {
+    return logpdf_gamma_poisson(x, value(k), value(θ));
   }
 
-  function logpdfLazy(x:Expression<Integer>) -> Expression<Real>? {
-    return logpdf_lazy_gamma_poisson(x, λ.k, λ.θ);
+  override function logpdfLazy(x:Expression<Integer>) -> Expression<Real>? {
+    return box(logpdf_gamma_poisson(x, k, θ));
   }
 
-  function update(x:Integer) {
-    (λ.k, λ.θ) <- box(update_gamma_poisson(x, λ.k.value(), λ.θ.value()));
+  override function update(x:Integer) -> Delay? {
+    return update_gamma_poisson(x, value(k), value(θ));
   }
 
-  function updateLazy(x:Expression<Integer>) {
-    (λ.k, λ.θ) <- update_lazy_gamma_poisson(x, λ.k, λ.θ);
+  override function updateLazy(x:Expression<Integer>) -> Delay? {
+    return update_gamma_poisson(x, k, θ);
   }
 
-  function cdf(x:Integer) -> Real? {
-    return cdf_gamma_poisson(x, λ.k.value(), λ.θ.value());
+  override function cdf(x:Integer) -> Real? {
+    return cdf_gamma_poisson(x, value(k), value(θ));
   }
 
-  function quantile(P:Real) -> Integer? {
-    return quantile_gamma_poisson(P, λ.k.value(), λ.θ.value());
+  override function quantile(P:Real) -> Integer? {
+    return quantile_gamma_poisson(P, value(k), value(θ));
   }
 
-  function lower() -> Integer? {
+  override function lower() -> Integer? {
     return 0;
-  }
-
-  function link() {
-    λ.setChild(this);
-  }
-  
-  function unlink() {
-    λ.releaseChild(this);
   }
 }
 
-function GammaPoisson(λ:Gamma) -> GammaPoisson {
-  m:GammaPoisson(λ);
-  m.link();
-  return m;
+function GammaPoisson<Arg1,Arg2>(k:Arg1, θ:Arg2) -> {
+  return construct<GammaPoisson<Arg1,Arg2>>(k, θ);
 }
 
 /**
  * Create Poisson distribution.
  */
 function Poisson(λ:Random<Real>) -> Distribution<Integer> {
-  m:Gamma?;
-  if (m <- λ.graftGamma())? {
-    return GammaPoisson(m!);
+  if λ.hasGamma() {
+    λ.prune();
+    let (k, θ) <- λ.getGamma();
+    let p <- GammaPoisson(k, θ);
+    λ.graft(p);
+    return p;
   } else {
-    return construct<Poisson>(λ);
+    return construct<Poisson<Random<Real>>>(λ);
   }
 }
 
@@ -83,9 +85,10 @@ function Poisson(λ:Random<Real>) -> Distribution<Integer> {
 function simulate_gamma_poisson(k:Real, θ:Real) -> Integer {
   assert 0.0 < k;
   assert 0.0 < θ;
-  assert k == floor(k);
-  
-  return simulate_negative_binomial(scalar<Integer>(k), 1.0/(θ + 1.0));
+  let ρ <- 1.0/(θ + 1.0);
+  cpp{{
+  return std::negative_binomial_distribution<birch::type::Integer>(k, ρ)(rng);
+  }}
 }
 
 /*
@@ -97,25 +100,9 @@ function simulate_gamma_poisson(k:Real, θ:Real) -> Integer {
  *
  * Returns: the log probability mass.
  */
-function logpdf_gamma_poisson(x:Integer, k:Real, θ:Real) -> Real {
-  assert 0.0 < k;
-  assert 0.0 < θ;
-  assert k == floor(k);
-
-  return logpdf_negative_binomial(x, scalar<Integer>(k), 1.0/(θ + 1.0));
-}
-
-/*
- * Observe a gamma-Poisson variate.
- *
- * - x: The variate.
- * - k: Shape.
- * - θ: Scale.
- *
- * Returns: the log probability mass.
- */
-function logpdf_lazy_gamma_poisson(x:Expression<Integer>, k:Expression<Real>, θ:Expression<Real>) -> Expression<Real> {
-  return logpdf_lazy_negative_binomial(x, box(scalar<Integer>(k)), box(1.0/(θ + 1.0)));
+function logpdf_gamma_poisson<Arg1,Arg2,Arg3>(x:Arg1, k:Arg2, θ:Arg3) -> {
+  let ρ <- 1.0/(θ + 1.0);
+  return k*log(ρ) + x*log1p(-ρ) + lchoose(x + k - 1, x);
 }
 
 /*
@@ -127,22 +114,8 @@ function logpdf_lazy_gamma_poisson(x:Expression<Integer>, k:Expression<Real>, θ
  *
  * Returns: the posterior hyperparameters `k'` and `θ'`.
  */
-function update_gamma_poisson(x:Integer, k:Real, θ:Real) -> (Real, Real) {
-  return (k + x, θ/(θ + 1.0));
-}
-
-/*
- * Update the parameters of a Gamma distribution with a Poisson likelihood.
- *
- * - x: The variate.
- * - k: Prior shape.
- * - θ: Prior scale.
- *
- * Returns: the posterior hyperparameters `k'` and `θ'`.
- */
-function update_lazy_gamma_poisson(x:Expression<Integer>, k:Expression<Real>,
-    θ:Expression<Real>) -> (Expression<Real>, Expression<Real>) {
-  return (box(k + x), box(θ/(θ + 1.0)));
+function update_gamma_poisson<Arg1,Arg2,Arg3>(x:Arg1, k:Arg2, θ:Arg3) -> {
+  return Gamma(k + x, θ/(θ + 1.0));
 }
 
 /*
@@ -157,9 +130,7 @@ function update_lazy_gamma_poisson(x:Expression<Integer>, k:Expression<Real>,
 function cdf_gamma_poisson(x:Integer, k:Real, θ:Real) -> Real {
   assert 0.0 < k;
   assert 0.0 < θ;
-  assert k == floor(k);
-
-  return cdf_negative_binomial(x, scalar<Integer>(k), 1.0/(θ + 1.0));
+  return ibeta(k, x + 1.0,  1.0/(θ + 1.0));
 }
 
 /*
@@ -174,6 +145,9 @@ function cdf_gamma_poisson(x:Integer, k:Real, θ:Real) -> Real {
 function quantile_gamma_poisson(P:Real, k:Real, θ:Real) -> Integer {
   assert 0.0 < k;
   assert 0.0 < θ;
-  assert k == floor(k);
-  return quantile_negative_binomial(P, scalar<Integer>(k), 1.0/(θ + 1.0));
+  let ρ <- 1.0/(θ + 1.0);
+  cpp{{
+  return boost::math::quantile(boost::math::negative_binomial_distribution<>(
+      k, ρ), P);
+  }}
 }

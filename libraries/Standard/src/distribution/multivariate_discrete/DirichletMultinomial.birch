@@ -1,71 +1,52 @@
 /**
  * Dirichlet-multinomial distribution.
  */
-final class DirichletMultinomial(n:Expression<Integer>, ρ:Dirichlet) <
+final class DirichletMultinomial<Arg1,Arg2>(n:Arg1, α:Arg2) <
     Distribution<Integer[_]> {
   /**
    * Number of trials.
    */
-  n:Expression<Integer> <- n;
+  n:Arg1 <- n;
    
   /**
-   * Category probabilities.
+   * Category concentrations.
    */
-  ρ:Dirichlet <- ρ;
+  α:Arg2 <- α;
 
-  function supportsLazy() -> Boolean {
+  override function supportsLazy() -> Boolean {
     return false;
   }
 
-  function simulate() -> Integer[_] {
-    return simulate_dirichlet_multinomial(n.value(), ρ.α.value());
-  }
-
-//  function simulateLazy() -> Integer[_]? {
-//    return simulate_dirichlet_multinomial(n.peak(), ρ.α.peak());
-//  }
-  
-  function logpdf(x:Integer[_]) -> Real {
-    return logpdf_dirichlet_multinomial(x, n.value(), ρ.α.value());
-  }
-
-//  function logpdfLazy(x:Expression<Integer[_]>) -> Expression<Real>? {
-//    return logpdf_lazy_dirichlet_multinomial(x, n, ρ.α);
-//  }
-
-  function update(x:Integer[_]) {
-    ρ.α <- box(update_dirichlet_multinomial(x, n.value(), ρ.α.value()));
-  }
-
-//  function updateLazy(x:Expression<Integer[_]>) {
-//    ρ.α <- update_lazy_dirichlet_multinomial(x, n, ρ.α);
-//  }
-
-  function link() {
-    ρ.setChild(this);
+  override function simulate() -> Integer[_] {
+    return simulate_dirichlet_multinomial(value(n), value(α));
   }
   
-  function unlink() {
-    ρ.releaseChild(this);
+  override function logpdf(x:Integer[_]) -> Real {
+    return logpdf_dirichlet_multinomial(x, value(n), value(α));
+  }
+
+  override function update(x:Integer[_]) -> Delay? {
+    return update_dirichlet_multinomial(x, value(n), value(α));
   }
 }
 
-function DirichletMultinomial<Left>(n:Left, ρ:Dirichlet) -> {
-  m:DirichletMultinomial(box(n), ρ);
-  m.link();
-  return m;
+function DirichletMultinomial<Arg1,Arg2>(n:Arg1, α:Arg2) -> {
+  return construct<DirichletMultinomial<Arg1,Arg2>>(n, α);
 }
 
 /**
  * Create multinomial distribution.
  */
-function Multinomial<Left>(n:Left, ρ:Random<Real[_]>) ->
+function Multinomial<Arg>(n:Arg, ρ:Random<Real[_]>) ->
     Distribution<Integer[_]> {
-  m:Dirichlet?;
-  if (m <- ρ.graftDirichlet())? {
-    return DirichletMultinomial(n, m!);
+  if ρ.hasDirichlet() {
+    ρ.prune();
+    let α <- ρ.getDirichlet();
+    let p <- DirichletMultinomial(n, α);
+    ρ.graft(p);
+    return p;
   } else {
-    return construct<Multinomial>(box(n), ρ);
+    return construct<Multinomial<Arg,Random<Real[_]>>>(n, ρ);
   }
 }
 
@@ -88,18 +69,18 @@ function simulate_dirichlet_multinomial(n:Integer, α:Real[_]) -> Integer[_] {
  *
  * Returns: the log probability mass.
  */
-function logpdf_dirichlet_multinomial(x:Integer[_], n:Integer, α:Real[_]) -> Real {
+function logpdf_dirichlet_multinomial(x:Integer[_], n:Integer, α:Real[_]) ->
+    Real {
   assert length(x) == length(α);
-
-  A:Real <- sum(α);
-  m:Integer <- 0;
-  w:Real <- lgamma(n + 1.0) + lgamma(A) - lgamma(n + A);
+  let A <- sum(α);
+  let m <- 0;
+  let w <- lgamma(n + 1.0) + lgamma(A) - lgamma(n + A);
   for i in 1..length(α) {
     assert x[i] >= 0;
     m <- m + x[i];
     w <- w + lgamma(x[i] + α[i]) - lgamma(x[i] + 1.0) - lgamma(α[i]);
   }
-  if (m == n) {
+  if m == n {
     return w;
   } else {
     return -inf;
@@ -117,7 +98,7 @@ function logpdf_dirichlet_multinomial(x:Integer[_], n:Integer, α:Real[_]) -> Re
  * Returns: the posterior hyperparameters `α'`.
  */
 function update_dirichlet_multinomial(x:Integer[_], n:Integer, α:Real[_]) ->
-    Real[_] {
+    Dirichlet<Real[_]> {
   assert sum(x) == n;
-  return vector(\(i:Integer) -> Real { return α[i] + x[i]; }, length(α));
+  return Dirichlet(α + x);
 }

@@ -22,27 +22,9 @@ function simulate_chi_squared(ν:Real) -> Real {
  *
  * Return: the log probability density.
  */
-function logpdf_chi_squared(x:Real, ν:Real) -> Real {
-  assert 0.0 < ν;
-  if x > 0.0 || (x >= 0.0 && ν > 1.0) {
-    let k <- 0.5*ν;
-    return (k - 1.0)*log(x) - 0.5*x - lgamma(k) - k*log(2.0);
-  } else {
-    return -inf;
-  }
-}
-
-/*
- * Observe a $\chi^2$ variate.
- *
- * - x: The variate.
- * - ν: Degrees of freedom.
- *
- * Return: the log probability density.
- */
-function logpdf_lazy_chi_squared(x:Expression<Real>, ν:Expression<Real>) -> Expression<Real> {
+function logpdf_chi_squared<Arg1,Arg2>(x:Arg1, ν:Arg2) -> {
   let k <- 0.5*ν;
-  return box((k - 1.0)*log(x) - 0.5*x - lgamma(k) - k*log(2.0));
+  return (k - 1.0)*log(x) - 0.5*x - lgamma(k) - k*log(2.0);
 }
 
 /*

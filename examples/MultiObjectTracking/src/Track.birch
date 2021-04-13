@@ -37,8 +37,7 @@ class Track(s:Integer, θ:Global) < Model {
       x[t] ~ MultivariateGaussian(θ.A*x[t - 1], θ.Q);
     }
 
-    d:Boolean;  // is the track detected?
-    d <~ Bernoulli(θ.d);
+    let d <~ Bernoulli(θ.d);  // is the track detected?
     if d {
       y[t] ~ MultivariateGaussian(θ.B*x[t], θ.R);
     }

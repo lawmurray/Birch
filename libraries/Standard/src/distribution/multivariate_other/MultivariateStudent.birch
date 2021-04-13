@@ -8,7 +8,8 @@
 function simulate_multivariate_student_t(k:Real, μ:Real[_], U:Real[_,_]) ->
     Real[_] {
   let p <- length(μ);
-  return simulate_multivariate_gaussian(μ, simulate_inverse_wishart(U, k + p - 1.0));
+  return simulate_multivariate_gaussian(μ, simulate_inverse_wishart(U, k + p -
+      1.0));
 }
 
 /*
@@ -22,34 +23,12 @@ function simulate_multivariate_student_t(k:Real, μ:Real[_], U:Real[_,_]) ->
  *
  * Returns: the log probability density.
  */
-function logpdf_multivariate_student_t(x:Real[_], k:Real, μ:Real[_],
-    U:Real[_,_]) -> Real {
-  let p <- length(μ);
+function logpdf_multivariate_student_t<Arg1,Arg2,Arg3,Arg4>(x:Arg1, k:Arg2,
+    μ:Arg3, U:Arg4) -> {
+  let p <- length(x);
   let a <- 0.5*(k + p);
   let b <- 0.5*k;
   let z <- x - μ;
   return lgamma(a) - 0.5*p*log(π) - lgamma(b) - 0.5*ldet(U) -
       a*log1p(dot(z, solve(U, z)));
-}
-
-/*
- * Observe a multivariate Student's $t$-distribution variate with location
- * and scale.
- *
- * - x: The variate.
- * - k: Degrees of freedom.
- * - m: Mean.
- * - U: Spread.
- *
- * Returns: the log probability density.
- */
-function logpdf_lazy_multivariate_student_t(x:Expression<Real[_]>,
-    k:Expression<Real>, μ:Expression<Real[_]>, U:Expression<Real[_,_]>) ->
-    Expression<Real> {
-  let p <- length(μ);
-  let a <- 0.5*(k + p);
-  let b <- 0.5*k;
-  let z <- x - μ;
-  return box(lgamma(a) - 0.5*p*log(π) - lgamma(b) - 0.5*ldet(U) -
-      a*log1p(dot(z, solve(U, z))));
 }

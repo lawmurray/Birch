@@ -1,50 +1,81 @@
 /**
  * Multivariate Gaussian-Gaussian distribution.
  */
-final class MultivariateGaussianMultivariateGaussian(m:MultivariateGaussian,
-    S:Expression<Real[_,_]>) < MultivariateGaussian(m.μ, box(m.Σ + S)) {
+final class MultivariateGaussianMultivariateGaussian<Arg1,Arg2,Arg3>(μ:Arg1,
+    Σ:Arg2, S:Arg3) < Distribution<Real[_]> {
   /**
-   * Mean.
+   * Mean of mean.
    */
-  m:MultivariateGaussian <- m;
+  μ:Arg1 <- μ;
 
   /**
-   * Likelihood covariance.
+   * Covariance of mean.
    */
-  S:Expression<Real[_,_]> <- S;
+  Σ:Arg2 <- Σ;
 
-  function update(x:Real[_]) {
-    (m.μ, m.Σ) <- box(update_multivariate_gaussian_multivariate_gaussian(x, m.μ.value(), m.Σ.value(), S.value()));
+  /**
+   * Covariance.
+   */
+  S:Arg3 <- S;
+
+  override function supportsLazy() -> Boolean {
+    return true;
   }
 
-  function updateLazy(x:Expression<Real[_]>) {
-    (m.μ, m.Σ) <- update_lazy_multivariate_gaussian_multivariate_gaussian(x, m.μ, m.Σ, S);
+  override function simulate() -> Real[_] {
+    return simulate_multivariate_gaussian(value(μ), value(Σ + S));
   }
 
-  function link() {
-    m.setChild(this);
+  override function simulateLazy() -> Real[_]? {
+    return simulate_multivariate_gaussian(peak(μ), peak(Σ + S));
   }
   
-  function unlink() {
-    m.releaseChild(this);
+  override function logpdf(x:Real[_]) -> Real {
+    return logpdf_multivariate_gaussian(x, value(μ), value(Σ + S));
+  }
+
+  override function logpdfLazy(x:Expression<Real[_]>) -> Expression<Real>? {
+    return box(logpdf_multivariate_gaussian(x, μ, Σ + S));
+  }
+
+  override function update(x:Real[_]) -> Delay? {
+    return update_multivariate_gaussian_multivariate_gaussian(x, value(μ),
+        value(Σ), value(S));
+  }
+
+  override function updateLazy(x:Expression<Real[_]>) -> Delay? {
+    return update_multivariate_gaussian_multivariate_gaussian(x, μ, Σ, S);
+  }
+
+  override function isMultivariateGaussian() -> Boolean {
+    return true;
+  }
+
+  override function getMultivariateGaussian() -> (Expression<Real[_]>,
+      Expression<Real[_,_]>)? {
+    return box(μ, Σ + S);
   }
 }
 
-function MultivariateGaussianMultivariateGaussian<Right>(μ:MultivariateGaussian, Σ:Right) -> {
-  m:MultivariateGaussianMultivariateGaussian(μ, Σ);
-  m.link();
-  return m;
+function MultivariateGaussianMultivariateGaussian<Arg1,Arg2,Arg3>(μ:Arg1,
+    Σ:Arg2, S:Arg3) -> {
+  return construct<MultivariateGaussianMultivariateGaussian<Arg1,Arg2,Arg3>>(
+      μ, Σ, S);
 }
 
 /**
  * Create multivariate Gaussian distribution.
  */
-function MultivariateGaussian<Right>(μ:Random<Real[_]>, Σ:Right) -> Distribution<Real[_]> {
-  let p <- μ.graftMultivariateGaussian();
-  if p? {
-    return MultivariateGaussianMultivariateGaussian(p!, box(Σ));
+function MultivariateGaussian<Arg>(μ:Random<Real[_]>, Σ:Arg) ->
+    Distribution<Real[_]> {
+  if μ.hasMultivariateGaussian() {
+    μ.prune();
+    let (m, S) <- μ.getMultivariateGaussian();
+    let p <- MultivariateGaussianMultivariateGaussian(m, S, Σ);
+    μ.graft(p);
+    return p;
   } else {
-    return construct<MultivariateGaussian>(μ, box(Σ));
+    return construct<MultivariateGaussian<Random<Real[_]>,Arg>>(μ, Σ);
   }
 }
 
@@ -59,30 +90,10 @@ function MultivariateGaussian<Right>(μ:Random<Real[_]>, Σ:Right) -> Distributi
  *
  * Returns: the posterior hyperparameters `μ'` and `Σ'`.
  */
-function update_multivariate_gaussian_multivariate_gaussian(x:Real[_],
-    μ:Real[_], Σ:Real[_,_], S:Real[_,_]) -> (Real[_], Real[_,_]) {
+function update_multivariate_gaussian_multivariate_gaussian<Arg1,Arg2,
+    Arg3,Arg4>(x:Arg1, μ:Arg2, Σ:Arg3, S:Arg4) -> {
   let K' <- transpose(solve(Σ + S, Σ));
   let μ' <- μ + K'*(x - μ);
   let Σ' <- Σ - K'*Σ;
-  return (μ', Σ');
-}
-
-/*
- * Update the parameters of a multivariate Gaussian distribution with a
- * multivariate Gaussian likelihood.
- *
- * - x: The variate.
- * - μ: Prior mean.
- * - Σ: Prior covariance.
- * - S: Likelihood covariance.
- *
- * Returns: the posterior hyperparameters `μ'` and `Σ'`.
- */
-function update_lazy_multivariate_gaussian_multivariate_gaussian(x:Expression<Real[_]>,
-    μ:Expression<Real[_]>, Σ:Expression<Real[_,_]>, S:Expression<Real[_,_]>) ->
-    (Expression<Real[_]>, Expression<Real[_,_]>) {
-  let K' <- transpose(solve(Σ + S, Σ));
-  let μ' <- μ + K'*(x - μ);
-  let Σ' <- Σ - K'*Σ;
-  return (box(μ'), box(Σ'));
+  return MultivariateGaussian(μ', Σ');
 }

@@ -5,56 +5,55 @@ cpp{{
 /**
  * Exponential distribution.
  */
-final class Exponential(λ:Expression<Real>) < Distribution<Real> {
+final class Exponential<Arg1>(λ:Arg1) < Distribution<Real> {
   /**
    * Rate.
    */
-  λ:Expression<Real> <- λ;
+  λ:Arg1 <- λ;
 
-  function supportsLazy() -> Boolean {
+  override function supportsLazy() -> Boolean {
     return true;
   }
 
-  function simulate() -> Real {
-    return simulate_exponential(λ.value());
+  override function simulate() -> Real {
+    return simulate_exponential(value(λ));
   }
 
-  function simulateLazy() -> Real? {
-    return simulate_exponential(λ.peak());
+  override function simulateLazy() -> Real? {
+    return simulate_exponential(peak(λ));
   }
 
-  function logpdf(x:Real) -> Real {
-    return logpdf_exponential(x, λ.value());
+  override function logpdf(x:Real) -> Real {
+    return logpdf_exponential(x, value(λ));
   }
 
-  function logpdfLazy(x:Expression<Real>) -> Expression<Real>? {
-    return logpdf_lazy_exponential(x, λ);
+  override function logpdfLazy(x:Expression<Real>) -> Expression<Real>? {
+    return box(logpdf_exponential(x, λ));
   }
 
-  function cdf(x:Real) -> Real? {
-    return cdf_exponential(x, λ.value());
+  override function cdf(x:Real) -> Real? {
+    return cdf_exponential(x, value(λ));
   }
 
-  function quantile(P:Real) -> Real? {
-    return quantile_exponential(P, λ.value());
+  override function quantile(P:Real) -> Real? {
+    return quantile_exponential(P, value(λ));
   }
 
-  function lower() -> Real? {
+  override function lower() -> Real? {
     return 0.0;
   }
 
-  function write(buffer:Buffer) {
-    prune();
+  override function write(buffer:Buffer) {
     buffer.set("class", "Exponential");
-    buffer.set("λ", λ);
+    buffer.set("λ", value(λ));
   }
 }
 
 /**
  * Create Exponential distribution.
  */
-function Exponential<Middle>(λ:Middle) -> {
-  return construct<Exponential>(box(λ));
+function Exponential<Arg>(λ:Arg) -> {
+  return construct<Exponential<Arg>>(λ);
 }
 
 /*
@@ -77,21 +76,8 @@ function simulate_exponential(λ:Real) -> Real {
  *
  * Returns: the log probability density.
  */
-function logpdf_exponential(x:Real, λ:Real) -> Real {
-  assert 0.0 < λ;
+function logpdf_exponential<Arg1,Arg2>(x:Arg1, λ:Arg2) -> {
   return if_then_else(x < 0.0, -inf, log(λ) - λ*x);
-}
-
-/*
- * Observe an exponential variate.
- *
- * - x: The variate.
- * - λ: Rate.
- *
- * Returns: the log probability density.
- */
-function logpdf_lazy_exponential(x:Expression<Real>, λ:Expression<Real>) -> Expression<Real> {
-  return box(if_then_else(x < 0.0, -inf, log(λ) - λ*x));
 }
 
 /*
@@ -104,7 +90,6 @@ function logpdf_lazy_exponential(x:Expression<Real>, λ:Expression<Real>) -> Exp
  */
 function cdf_exponential(x:Real, λ:Real) -> Real {
   assert 0.0 < λ;
-
   if x <= 0.0 {
     return 0.0;
   } else {
