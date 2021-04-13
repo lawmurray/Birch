@@ -159,7 +159,6 @@ class ParticleFilter {
     lnormalize <- lnormalize + lsum - log(nparticles);
     b <- ancestor(w);
     if b == 0 {
-      stderr.print(w + "\n");
       error("particle filter degenerated");
     }
   }
