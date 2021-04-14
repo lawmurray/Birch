@@ -25,4 +25,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libcairo2-dev \
     mongo-tools \
     osc \
+    doxygen \
+    python3-pip \
+    && pip3 install mkdocs mkdocs-material \
     && rm -rf /var/lib/apt/lists/*
