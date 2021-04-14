@@ -7,7 +7,6 @@
     "nsteps": 10   
   },
   "sampler": {
-    "class": "ConditionalParticleSampler",
     "nsamples": 3
   },
   "input": "input/yap_dengue.json"
