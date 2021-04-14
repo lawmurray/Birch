@@ -35,7 +35,7 @@ function pack<Type>(l:Type[_,_], r:Type[_,_]) -> Type[_,_] {
   let R <- rows(l);
   let C1 <- columns(l);
   let C2 <- columns(r);
-  return matrix(\(i:Integer, j:Integer) -> Type {
+  return matrix_lambda(\(i:Integer, j:Integer) -> Type {
         if j <= C1 {
           return l[i,j];
         } else {

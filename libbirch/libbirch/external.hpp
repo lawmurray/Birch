@@ -9,7 +9,6 @@
 #include <numeric>
 #include <limits>
 #include <utility>
-#include <functional>
 #include <tuple>
 #include <optional>
 #include <vector>

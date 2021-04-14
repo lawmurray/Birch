@@ -571,13 +571,6 @@ void birch::MarkdownGenerator::visit(const TupleType* o) {
   middle('(' << o->single << ')');
 }
 
-void birch::MarkdownGenerator::visit(const FunctionType* o) {
-  middle("&bsol;(" << o->params << ')');
-  if (!o->returnType->isEmpty()) {
-    middle(" -> " << o->returnType);
-  }
-}
-
 void birch::MarkdownGenerator::visit(const OptionalType* o) {
   middle(o->single << '?');
 }

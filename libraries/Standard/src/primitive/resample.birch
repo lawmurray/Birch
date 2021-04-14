@@ -41,8 +41,8 @@ function log_sum_exp(x:Real[_]) -> Real {
  * Take the logarithm of each element of a vector and return the sum.
  */
 function log_sum(x:Real[_]) -> Real {
-  return transform_reduce<Real,Real>(x, 0.0, \(x:Real, y:Real) -> Real {
-      return x + y; }, \(x:Real) -> Real { return log(x); });
+  return transform_reduce(x, 0.0, \(x:Real, y:Real) -> { return x + y; },
+      \(x:Real) -> { return log(x); });
 }
 
 /**
@@ -69,7 +69,7 @@ function norm_exp(x:Real[_]) -> Real[_] {
     r <- r + nan_exp(x[n] - mx);
   }
   let W <- mx + log(r);
-  return transform<Real,Real>(x, \(w:Real) -> Real { return nan_exp(w - W); });
+  return transform(x, \(w:Real) -> { return nan_exp(w - W); });
 }
 
 /**

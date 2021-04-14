@@ -78,7 +78,7 @@ function simulate_matrix_gaussian(M:Real[_,_], U:Real[_,_], V:Real[_,_]) ->
   assert columns(M) == columns(V);
   let N <- rows(M);
   let P <- columns(M);
-  let Z <- matrix(\(i:Integer, j:Integer) -> Real {
+  let Z <- matrix_lambda(\(i:Integer, j:Integer) -> Real {
         return simulate_gaussian(0.0, 1.0);
       }, N, P);
   return M + cholesky(U)*Z*transpose(cholesky(V));

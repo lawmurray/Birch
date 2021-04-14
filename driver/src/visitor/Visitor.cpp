@@ -327,11 +327,6 @@ void birch::Visitor::visit(const TupleType* o) {
   o->single->accept(this);
 }
 
-void birch::Visitor::visit(const FunctionType* o) {
-  o->params->accept(this);
-  o->returnType->accept(this);
-}
-
 void birch::Visitor::visit(const OptionalType* o) {
   o->single->accept(this);
 }

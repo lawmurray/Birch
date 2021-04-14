@@ -44,5 +44,5 @@ function vector_split<Value,Form>(f:Form) -> {
  */
 function vector_split<Value,Form>(x:Value, f:Form) -> {
   let y <- construct<VectorSplitExpression<Value,Form>>(x, f);
-  return vector(\(i:Integer) -> { return element(y, i); }, length(x));
+  return vector_lambda(\(i:Integer) -> { return element(y, i); }, length(x));
 }

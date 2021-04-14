@@ -17,11 +17,11 @@ class TestLinearMultivariateNormalInverseGammaMultivariateGaussian < Model {
   function initialize() {
     α <- simulate_uniform(2.0, 5.0);
     β <- simulate_uniform(0.1, 5.0);
-    A <- matrix(\(i:Integer, j:Integer) -> Real { return simulate_uniform(-2.0, 2.0); }, n, p);
-    μ_0 <- vector(\(i:Integer) -> Real { return simulate_uniform(-10.0, 10.0); }, p);
-    Σ <- matrix(\(i:Integer, j:Integer) -> Real { return simulate_uniform(-2.0, 2.0); }, p, p);
-    c <- vector(\(i:Integer) -> Real { return simulate_uniform(-10.0, 10.0); }, n);
-    Ψ <- matrix(\(i:Integer, j:Integer) -> Real { return simulate_uniform(-2.0, 2.0); }, n, n);
+    A <- matrix_lambda(\(i:Integer, j:Integer) -> { return simulate_uniform(-2.0, 2.0); }, n, p);
+    μ_0 <- vector_lambda(\(i:Integer) -> { return simulate_uniform(-10.0, 10.0); }, p);
+    Σ <- matrix_lambda(\(i:Integer, j:Integer) -> { return simulate_uniform(-2.0, 2.0); }, p, p);
+    c <- vector_lambda(\(i:Integer) -> { return simulate_uniform(-10.0, 10.0); }, n);
+    Ψ <- matrix_lambda(\(i:Integer, j:Integer) -> { return simulate_uniform(-2.0, 2.0); }, n, n);
     
     Σ <- outer(Σ) + diagonal(1.0e-2, p);
     Ψ <- outer(Ψ) + diagonal(1.0e-2, n);

@@ -2,7 +2,7 @@
  * Convert vector to matrix with single row.
  */
 function row<Type>(x:Type[_]) -> Type[_,_] {
-  return matrix<Real>(\(i:Integer, j:Integer) -> Type { return x[j]; }, 1,
+  return matrix_lambda(\(i:Integer, j:Integer) -> { return x[j]; }, 1,
       length(x));
 }
 
@@ -17,9 +17,8 @@ function row<Type>(X:Type[_,_], i:Integer) -> Type[_] {
  * Convert vector to matrix with single column.
  */
 function column<Type>(x:Type[_]) -> Type[_,_] {
-  return matrix(\(i:Integer, j:Integer) -> Type {
-        return x[i];
-      }, 1, length(x));
+  return matrix_lambda(\(i:Integer, j:Integer) -> { return x[i]; }, 1,
+      length(x));
 }
 
 /**
@@ -38,7 +37,7 @@ function column<Type>(X:Type[_,_], j:Integer) -> Type[_] {
 function vec<Type>(X:Type[_,_]) -> Type[_] {
   let R <- rows(X);
   let C <- columns(X);
-  return vector(\(i:Integer) -> Type {
+  return vector_lambda(\(i:Integer) -> Type {
         return X[mod(i - 1, R) + 1, (i - 1)/R + 1];
       }, R*C);
 }
@@ -54,7 +53,7 @@ function mat<Type>(x:Type[_], columns:Integer) -> Type[_,_] {
   assert mod(length(x), columns) == 0;
   let R <- length(x)/columns;
   let C <- columns;
-  return matrix(\(i:Integer, j:Integer) -> Type {
+  return matrix_lambda(\(i:Integer, j:Integer) -> Type {
         return x[(j - 1)*R + i];
       }, R, C);
 }
@@ -81,12 +80,11 @@ function identity(length:Integer) -> Real[_,_] {
  * receiving, as its argument, the row and column indices of that
  * element, and returning the value at that element.
  */
-function matrix<Type>(λ:\(Integer, Integer) -> Type, rows:Integer,
-    columns:Integer) -> Type[_,_] {
+function matrix_lambda<Lambda>(λ:Lambda, rows:Integer, columns:Integer) -> {
   cpp{{
   /* wrap λ in another lambda function to translate 0-based serial (row-wise)
    * indices into 1-based row/column indices */
-  return libbirch::make_array_from_lambda<Type>(libbirch::make_shape(rows,
+  return libbirch::make_array_from_lambda(libbirch::make_shape(rows,
       columns), [&](int64_t i) { return λ(i/columns + 1, i%columns + 1); });
   }}
 }
@@ -98,7 +96,7 @@ function matrix<Type>(λ:\(Integer, Integer) -> Type, rows:Integer,
  * - rows: Number of rows.
  * - columns: Number of columns.
  */
-function matrix<Type>(x:Type, rows:Integer, columns:Integer) -> Type[_,_] {
+function matrix<Type>(x:Type, rows:Integer, columns:Integer) -> {
   cpp{{
   return libbirch::make_array_from_value<Type>(libbirch::make_shape(rows,
       columns), x);

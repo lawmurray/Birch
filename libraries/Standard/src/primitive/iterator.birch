@@ -5,8 +5,8 @@
  * - init: Initial value.
  * - op: Operator.
  */
-function reduce<Type>(iter:Iterator<Type>, init:Type,
-    op:\(Type, Type) -> Type) -> Type {
+function reduce<Type,Lambda>(iter:Iterator<Type>, init:Type, op:Lambda) ->
+    Type {
   let result <- init;
   while iter.hasNext() {
     result <- op(result, iter.next());

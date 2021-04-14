@@ -57,7 +57,7 @@ function simulate_dirichlet(α:Real[_]) -> Real[_] {
  * - D: Number of dimensions.
  */
 function simulate_dirichlet(α:Real, D:Integer) -> Real[_] {
-  let x <- vector(\(i:Integer) -> Real { return simulate_gamma(α, 1.0); }, D);
+  let x <- vector_lambda(\(i:Integer) -> Real { return simulate_gamma(α, 1.0); }, D);
   return x/sum(x);
 }
 

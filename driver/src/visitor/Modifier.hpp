@@ -87,7 +87,6 @@ public:
   virtual Type* modify(MemberType* o);
   virtual Type* modify(ArrayType* o);
   virtual Type* modify(TupleType* o);
-  virtual Type* modify(FunctionType* o);
   virtual Type* modify(OptionalType* o);
   virtual Type* modify(TypeOf* o);
 };

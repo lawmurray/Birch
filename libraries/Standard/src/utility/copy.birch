@@ -23,7 +23,7 @@ function copy2<Type>(o:Type) -> Type {
  * - length: Length of vector.
  */
 function copy<Type>(o:Type, length:Integer) -> Type[_] {
-  return vector(\(i:Integer) -> Type {
+  return vector_lambda(\(i:Integer) -> {
         if i == 1 {
           return copy(o);
         } else {

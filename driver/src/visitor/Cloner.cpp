@@ -299,11 +299,6 @@ birch::Type* birch::Cloner::clone(const TupleType* o) {
   return new TupleType(o->single->accept(this), o->loc);
 }
 
-birch::Type* birch::Cloner::clone(const FunctionType* o) {
-  return new FunctionType(o->params->accept(this),
-      o->returnType->accept(this), o->loc);
-}
-
 birch::Type* birch::Cloner::clone(const OptionalType* o) {
   return new OptionalType(o->single->accept(this), o->loc);
 }

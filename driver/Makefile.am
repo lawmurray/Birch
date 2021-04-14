@@ -113,7 +113,6 @@ birch_SOURCES = \
   src/statement/With.cpp \
   src/type/ArrayType.cpp \
   src/type/EmptyType.cpp \
-  src/type/FunctionType.cpp \
   src/type/MemberType.cpp \
   src/type/NamedType.cpp \
   src/type/OptionalType.cpp \
@@ -248,7 +247,6 @@ noinst_HEADERS = \
   src/type/all.hpp \
   src/type/ArrayType.hpp \
   src/type/EmptyType.hpp \
-  src/type/FunctionType.hpp \
   src/type/MemberType.hpp \
   src/type/NamedType.hpp \
   src/type/OptionalType.hpp \

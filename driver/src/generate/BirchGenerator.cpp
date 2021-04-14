@@ -490,13 +490,6 @@ void birch::BirchGenerator::visit(const TupleType* o) {
   middle('(' << o->single << ')');
 }
 
-void birch::BirchGenerator::visit(const FunctionType* o) {
-  middle("\\(" << o->params << ')');
-  if (!o->returnType->isEmpty()) {
-    middle(" -> " << o->returnType);
-  }
-}
-
 void birch::BirchGenerator::visit(const OptionalType* o) {
   middle(o->single << '?');
 }

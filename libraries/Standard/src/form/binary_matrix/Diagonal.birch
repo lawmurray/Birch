@@ -30,7 +30,7 @@ function diagonal<Left,Right>(l:Left, r:Right) -> {
  * - length: Number of rows/columns.
  */
 function diagonal(x:Boolean, length:Integer) -> Boolean[_,_] {
-  return matrix<Boolean>(\(i:Integer, j:Integer) -> {
+  return matrix_lambda(\(i:Integer, j:Integer) -> {
         return if_then_else(i == j, x, false);
       }, length, length);
 }
@@ -42,7 +42,7 @@ function diagonal(x:Boolean, length:Integer) -> Boolean[_,_] {
  * - length: Number of rows/columns.
  */
 function diagonal(x:Integer, length:Integer) -> Integer[_,_] {
-  return matrix<Integer>(\(i:Integer, j:Integer) -> {
+  return matrix_lambda(\(i:Integer, j:Integer) -> {
         return if_then_else(i == j, x, 0);
       }, length, length);
 }
@@ -54,7 +54,7 @@ function diagonal(x:Integer, length:Integer) -> Integer[_,_] {
  * - length: Number of rows/columns.
  */
 function diagonal(x:Real, length:Integer) -> Real[_,_] {
-  return matrix<Real>(\(i:Integer, j:Integer) -> {
+  return matrix_lambda(\(i:Integer, j:Integer) -> {
         return if_then_else(i == j, x, 0.0);
       }, length, length);
 }

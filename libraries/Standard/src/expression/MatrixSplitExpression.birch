@@ -44,6 +44,6 @@ function matrix_split<Form>(f:Form) -> {
  */
 function matrix_split<Value,Form>(x:Value, f:Form) -> {
   let y <- construct<MatrixSplitExpression<Value,Form>>(x, f);
-  return vector(\(i:Integer, j:Integer) -> { return element(y, i, j); },
+  return vector_lambda(\(i:Integer, j:Integer) -> { return element(y, i, j); },
       rows(x), columns(x));
 }

@@ -376,12 +376,6 @@ birch::Type* birch::Modifier::modify(TupleType* o) {
   return o;
 }
 
-birch::Type* birch::Modifier::modify(FunctionType* o) {
-  o->params = o->params->accept(this);
-  o->returnType = o->returnType->accept(this);
-  return o;
-}
-
 birch::Type* birch::Modifier::modify(OptionalType* o) {
   o->single = o->single->accept(this);
   return o;

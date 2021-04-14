@@ -767,7 +767,7 @@ class Buffer {
           return nil;
         }
       }
-      return matrix(\(i:Integer, j:Integer) -> Type {
+      return matrix_lambda(\(i:Integer, j:Integer) -> Type {
             return y[(i - 1)*ncols + j];
           }, nrows, ncols);
     }

@@ -60,7 +60,6 @@ auto make_array_from_sequence(
  *
  * @ingroup libbirch
  *
- * @tparam T Value type.
  * @tparam F Shape type.
  * @tparam L Lambda type.
  *
@@ -69,9 +68,9 @@ auto make_array_from_sequence(
  *
  * @return The array.
  */
-template<class T, class F, class L>
+template<class F, class L>
 auto make_array_from_lambda(const F& shape, const L& l) {
-  return Array<T,F>(l, shape);
+  return Array<decltype(l(0)),F>(l, shape);
 }
 
 /**

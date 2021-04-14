@@ -6,7 +6,7 @@
  *
  * Applies `f` to each element of `X`.
  */
-function for_each<Type>(x:Type[_], f:\(Type)) {
+function for_each<Type,Lambda>(x:Type[_], f:Lambda) {
   for i in 1..length(x) {
     f(x[i]);
   }
@@ -20,7 +20,7 @@ function for_each<Type>(x:Type[_], f:\(Type)) {
  *
  * Applies `f` to each element of `X`.
  */
-function for_each<Type>(X:Type[_,_], f:\(Type)) {
+function for_each<Type,Lambda>(X:Type[_,_], f:Lambda) {
   for i in 1..rows(X) {
     for j in 1..columns(X) {
       f(X[i,j]);
@@ -35,8 +35,7 @@ function for_each<Type>(X:Type[_,_], f:\(Type)) {
  * - y: Second operand.
  * - f: Operator.
  */
-function for_each<Input1,Input2>(x:Input1[_], y:Input2[_],
-    f:\(Input1, Input2)) {
+function for_each<Input1,Input2,Lambda>(x:Input1[_], y:Input2[_], f:Lambda) {
   assert length(x) == length(y);
   for i in 1..length(x) {
     f(x[i], y[i]);
@@ -50,8 +49,8 @@ function for_each<Input1,Input2>(x:Input1[_], y:Input2[_],
  * - Y: Second operand.
  * - f: Operator.
  */
-function for_each<Input1,Input2>(X:Input1[_,_], Y:Input2[_,_],
-    f:\(Input1, Input2)) {
+function for_each<Input1,Input2,Lambda>(X:Input1[_,_], Y:Input2[_,_],
+    f:Lambda) {
   assert rows(X) == rows(Y);
   assert columns(X) == columns(Y);
   for i in 1..rows(X) {
@@ -69,8 +68,8 @@ function for_each<Input1,Input2>(X:Input1[_,_], Y:Input2[_,_],
  * - z: Third operand.
  * - f: Operator.
  */
-function for_each<Input1,Input2,Input3>(x:Input1[_], y:Input2[_],
-    z:Input3[_], f:\(Input1, Input2, Input3)) {
+function for_each<Input1,Input2,Input3,Lambda>(x:Input1[_], y:Input2[_],
+    z:Input3[_], f:Lambda) {
   assert length(x) == length(y);
   assert length(y) == length(z);
   for i in 1..length(x) {
@@ -86,8 +85,8 @@ function for_each<Input1,Input2,Input3>(x:Input1[_], y:Input2[_],
  * - Z: Third operand.
  * - f: Operator.
  */
-function for_each<Input1,Input2,Input3>(X:Input1[_,_], Y:Input2[_,_],
-    Z:Input3[_,_], f:\(Input1, Input2, Input3)) {
+function for_each<Input1,Input2,Input3,Lambda>(X:Input1[_,_], Y:Input2[_,_],
+    Z:Input3[_,_], f:Lambda) {
   assert rows(X) == rows(Y);
   assert rows(Y) == rows(Z);
   assert columns(X) == columns(Y);
@@ -105,11 +104,8 @@ function for_each<Input1,Input2,Input3>(X:Input1[_,_], Y:Input2[_,_],
  * - x: Operand.
  * - f: Operator.
  */
-function transform<Input,Output>(x:Input[_], f:\(Input) -> Output) ->
-    Output[_] {
-  return vector(\(i:Integer) -> Output {
-        return f(x[i]);
-      }, length(x));
+function transform<Input,Lambda>(x:Input[_], f:Lambda) -> {
+  return vector_lambda(\(i:Integer) -> { return f(x[i]); }, length(x));
 }
 
 /**
@@ -118,11 +114,9 @@ function transform<Input,Output>(x:Input[_], f:\(Input) -> Output) ->
  * - X: Operand.
  * - f: Operator.
  */
-function transform<Input,Output>(X:Input[_,_], f:\(Input) -> Output) ->
-    Output[_,_] {
-  return matrix(\(i:Integer, j:Integer) -> Output {
-        return f(X[i,j]);
-      }, rows(X), columns(X));
+function transform<Input,Lambda>(X:Input[_,_], f:Lambda) -> {
+  return matrix_lambda(\(i:Integer, j:Integer) -> {  return f(X[i,j]); },
+      rows(X), columns(X));
 }
 
 /**
@@ -132,12 +126,10 @@ function transform<Input,Output>(X:Input[_,_], f:\(Input) -> Output) ->
  * - y: Second operand.
  * - f: Operator.
  */
-function transform<Input1,Input2,Output>(x:Input1[_], y:Input2[_],
-    f:\(Input1, Input1) -> Output) -> Output[_] {
+function transform<Input1,Input2,Lambda>(x:Input1[_], y:Input2[_],
+    f:Lambda) -> {
   assert length(x) == length(y);
-  return vector(\(i:Integer) -> Output {
-        return f(x[i], y[i]);
-      }, length(x));
+  return vector_lambda(\(i:Integer) -> { return f(x[i], y[i]); }, length(x));
 }
 
 /**
@@ -147,13 +139,12 @@ function transform<Input1,Input2,Output>(x:Input1[_], y:Input2[_],
  * - Y: Second operand.
  * - f: Operator.
  */
-function transform<Input1,Input2,Output>(X:Input1[_,_], Y:Input2[_,_],
-    f:\(Input1, Input2) -> Output) -> Output[_,_] {
+function transform<Input1,Input2,Lambda>(X:Input1[_,_], Y:Input2[_,_],
+    f:Lambda) -> {
   assert rows(X) == rows(Y);
   assert columns(X) == columns(Y);
-  return matrix(\(i:Integer, j:Integer) -> Output {
-        return f(X[i,j], Y[i,j]);
-      }, rows(X), columns(X));
+  return matrix_lambda(\(i:Integer, j:Integer) -> { return f(X[i,j], Y[i,j]); },
+      rows(X), columns(X));
 }
 
 /**
@@ -164,13 +155,12 @@ function transform<Input1,Input2,Output>(X:Input1[_,_], Y:Input2[_,_],
  * - z: Third operand.
  * - f: Operator.
  */
-function transform<Input1,Input2,Input3,Output>(x:Input1[_], y:Input2[_],
-    z:Input3[_], f:\(Input1, Input2, Input3) -> Output) -> Output[_] {
+function transform<Input1,Input2,Input3,Lambda>(x:Input1[_], y:Input2[_],
+    z:Input3[_], f:Lambda) -> {
   assert length(x) == length(y);
   assert length(x) == length(z);
-  return vector(\(i:Integer) -> Output {
-        return f(x[i], y[i], z[i]);
-      }, length(x));
+  return vector_lambda(\(i:Integer) -> { return f(x[i], y[i], z[i]); },
+      length(x));
 }
 
 /**
@@ -181,13 +171,13 @@ function transform<Input1,Input2,Input3,Output>(x:Input1[_], y:Input2[_],
  * - Z: Third operand.
  * - f: Operator.
  */
-function transform<Input1,Input2,Input3,Output>(X:Input1[_,_], Y:Input2[_,_],
-    Z:Input3[_,_], f:\(Input1, Input2, Input3) -> Output) -> Output[_,_] {
+function transform<Input1,Input2,Input3,Lambda>(X:Input1[_,_],
+    Y:Input2[_,_], Z:Input3[_,_], f:Lambda) -> {
   assert rows(X) == rows(Y);
   assert rows(X) == rows(Z);
   assert columns(X) == columns(Y);
   assert columns(Y) == columns(Z);
-  return matrix(\(i:Integer, j:Integer) -> Output {
+  return matrix_lambda(\(i:Integer, j:Integer) -> {
         return f(X[i,j], Y[i,j], Z[i,j]);
       }, rows(X), columns(X));
 }
@@ -199,8 +189,8 @@ function transform<Input1,Input2,Input3,Output>(X:Input1[_,_], Y:Input2[_,_],
  * - init: Initial value.
  * - op: Operator.
  */
-function reduce<Type>(x:Type[_], init:Type,
-    op:\(Type, Type) -> Type) -> Type {
+function reduce<Type,Output,Lambda>(x:Type[_], init:Output, op:Lambda) ->
+    Output {
   result:Type;
   cpp{{
   #ifdef __cpp_lib_parallel_algorithm
@@ -220,8 +210,8 @@ function reduce<Type>(x:Type[_], init:Type,
  * - init: Initial value.
  * - op: Operator.
  */
-function reduce<Type>(X:Type[_,_], init:Type,
-    op:\(Type, Type) -> Type) -> Type {
+function reduce<Type,Output,Lambda>(X:Type[_,_], init:Output, op:Lambda) ->
+    Output {
   result:Type;
   cpp{{
   #ifdef __cpp_lib_parallel_algorithm
@@ -242,8 +232,8 @@ function reduce<Type>(X:Type[_,_], init:Type,
  * - op1: Reduction operator.
  * - op2: Transformation operator.
  */
-function transform_reduce<Input,Output>(x:Input[_], init:Output,
-    op1:\(Output, Output) -> Output, op2:\(Input) -> Output) -> Output {
+function transform_reduce<Input,Output,Lambda1,Lambda2>(x:Input[_],
+    init:Output, op1:Lambda1, op2:Lambda2) -> Output {
   let r <- init;
   for n in 1..length(x) {
     r <- op1(r, op2(x[n]));
@@ -259,8 +249,8 @@ function transform_reduce<Input,Output>(x:Input[_], init:Output,
  * - op1: Reduction operator.
  * - op2: Transformation operator.
  */
-function transform_reduce<Input,Output>(X:Input[_,_], init:Output,
-    op1:\(Output, Output) -> Output, op2:\(Input) -> Output) -> Output {
+function transform_reduce<Input,Output,Lambda1,Lambda2>(X:Input[_,_],
+    init:Output, op1:Lambda1, op2:Lambda2) -> Output {
   let r <- init;
   for i in 1..rows(X) {
     for j in 1..columns(X) {
@@ -279,9 +269,8 @@ function transform_reduce<Input,Output>(X:Input[_,_], init:Output,
  * - op1: Reduction operator.
  * - op2: Transformation operator.
  */
-function transform_reduce<Input1,Input2,Output>(x:Input1[_], y:Input2[_],
-    init:Output, op1:\(Output, Output) -> Output,
-    op2:\(Input1, Input2) -> Output) -> Output {
+function transform_reduce<Input1,Input2,Output,Lambda1,Lambda2>(x:Input1[_],
+    y:Input2[_], init:Output, op1:Lambda1, op2:Lambda2) -> Output {
   assert length(x) == length(y);
   let r <- init;
   for n in 1..length(x) {
@@ -299,9 +288,8 @@ function transform_reduce<Input1,Input2,Output>(x:Input1[_], y:Input2[_],
  * - op1: Reduction operator.
  * - op2: Transformation operator.
  */
-function transform_reduce<Input1,Input2,Output>(X:Input1[_,_], Y:Input2[_,_],
-    init:Output, op1:\(Output, Output) -> Output,
-    op2:\(Input1, Input2) -> Output) -> Output {
+function transform_reduce<Input1,Input2,Output,Lambda1,Lambda2>(X:Input1[_,_],
+    Y:Input2[_,_], init:Output, op1:Lambda1, op2:Lambda2) -> Output {
   assert rows(X) == rows(Y);
   assert columns(X) == columns(Y);
   let r <- init;
@@ -323,9 +311,9 @@ function transform_reduce<Input1,Input2,Output>(X:Input1[_,_], Y:Input2[_,_],
  * - op1: Reduction operator.
  * - op2: Transformation operator.
  */
-function transform_reduce<Input1,Input2,Input3,Output>(x:Input1[_],
-    y:Input2[_], z:Input3[_], init:Output, op1:\(Output, Output) -> Output,
-    op2:\(Input1, Input2, Input3) -> Output) -> Output {
+function transform_reduce<Input1,Input2,Input3,Output,Lambda1,Lambda2>(
+    x:Input1[_], y:Input2[_], z:Input3[_], init:Output, op1:Lambda1,
+    op2:Lambda2) -> Output {
   assert length(x) == length(y);
   assert length(x) == length(z);
   let r <- init;
@@ -345,10 +333,9 @@ function transform_reduce<Input1,Input2,Input3,Output>(x:Input1[_],
  * - op1: Reduction operator.
  * - op2: Transformation operator.
  */
-function transform_reduce<Input1,Input2,Input3,Output>(X:Input1[_,_],
-    Y:Input2[_,_], Z:Input3[_,_], init:Output,
-    op1:\(Output, Output) -> Output,
-    op2:\(Input1, Input2, Input3) -> Output) -> Output {
+function transform_reduce<Input1,Input2,Input3,Output,Lambda1,Lambda2>(
+    X:Input1[_,_], Y:Input2[_,_], Z:Input3[_,_], init:Output, op1:Lambda1,
+    op2:Lambda2) -> Output {
   assert rows(X) == rows(Y);
   assert columns(X) == columns(Y);
   assert rows(X) == rows(Z);
@@ -368,8 +355,8 @@ function transform_reduce<Input1,Input2,Input3,Output>(X:Input1[_,_],
  * - x: Vector.
  * - op: Operator.
  */
-function inclusive_scan<Type>(x:Type[_], init:Type,
-    op:\(Type, Type) -> Type) -> Type[_] {
+function inclusive_scan<Type,Lambda>(x:Type[_], init:Type, op:Lambda) ->
+    Type[_] {
   y:Type[length(x)];
   if length(x) > 0 {
     cpp{{
@@ -402,8 +389,8 @@ function inclusive_scan<Type>(x:Type[_]) -> Type[_] {
  * - init: Initial value.
  * - op: Operator.
  */
-function exclusive_scan<Type>(x:Type[_], init:Type,
-    op:\(Type, Type) -> Type) -> Type[_] {
+function exclusive_scan<Type,Lambda>(x:Type[_], init:Type, op:Lambda) ->
+    Type[_] {
   y:Type[length(x)];
   if length(x) > 0 {
     cpp{{
@@ -435,8 +422,7 @@ function exclusive_scan<Type>(x:Type[_]) -> Type[_] {
  * - x: Vector.
  * - op: Operator.
  */
-function adjacent_difference<Type>(x:Type[_],
-    op:\(Type, Type) -> Type) -> Type[_] {
+function adjacent_difference<Type,Lambda>(x:Type[_], op:Lambda) -> Type[_] {
   y:Type[length(x)];
   cpp{{
   std::adjacent_difference(x.begin(), x.end(), y.begin(),
@@ -496,7 +482,7 @@ function sort_index<Type>(x:Type[_]) -> Integer[_] {
  * Returns: a vector `y` where `y[n] == x[a[n]]`.
  */
 function gather<Type>(a:Integer[_], x:Type[_]) -> Type[_] {
-  return vector(\(i:Integer) -> Type { return x[a[i]]; }, length(a));
+  return vector_lambda(\(i:Integer) -> Type { return x[a[i]]; }, length(a));
 }
 
 /**
@@ -525,9 +511,7 @@ function scatter<Type>(a:Integer[_], x:Type[_]) -> Type[_] {
  * - length: Length.
  */
 function iota<Type>(x:Type, length:Integer) -> Real[_] {
-  return vector(\(i:Integer) -> Type {
-    return x + (i - 1);
-  }, length);
+  return vector_lambda(\(i:Integer) -> Type { return x + (i - 1); }, length);
 }
 
 /**
@@ -538,9 +522,9 @@ function max<Type>(x:Type[_]) -> Type {
   if length(x) == 1 {
     return x[1];
   } else {
-    return reduce(x[2..length(x)], x[1], \(x:Type, y:Type) -> Type {
-        return max(x, y);
-      });
+    return reduce(x[2..length(x)], x[1], \(x:Type, y:Type) -> {
+          return max(x, y);
+        });
   }
 }
 

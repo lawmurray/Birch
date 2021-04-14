@@ -3,7 +3,9 @@
  */
 program test_cdf_categorical() {
   let n <- simulate_uniform_int(10, 50);
-  let ρ <- vector(\(i:Integer) -> Real { return simulate_uniform(0.0, 1.0); }, n);
+  let ρ <- vector_lambda(\(i:Integer) -> {
+        return simulate_uniform(0.0, 1.0);
+      }, n);
   ρ <- ρ/sum(ρ);
   let q <- Categorical(ρ);
   test_cdf(q);

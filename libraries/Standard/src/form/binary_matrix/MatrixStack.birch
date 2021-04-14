@@ -33,7 +33,7 @@ function stack<Left,Right>(l:Left, r:Right) -> {
 function stack<Type>(x:Type[_], y:Type[_]) -> Type[_] {
   let l1 <- length(x);
   let l2 <- length(y);
-  return vector(\(i:Integer) -> Type {
+  return vector_lambda(\(i:Integer) -> Type {
         if i <= l1 {
           return x[i];
         } else {
@@ -48,7 +48,7 @@ function stack<Type>(x:Type[_], y:Type[_]) -> Type[_] {
  */
 function stack<Type>(x:Type[_], y:Type) -> Type[_] {
   let l1 <- length(x);
-  return vector(\(i:Integer) -> Type {
+  return vector_lambda(\(i:Integer) -> Type {
         if i <= l1 {
           return x[i];
         } else {
@@ -63,7 +63,7 @@ function stack<Type>(x:Type[_], y:Type) -> Type[_] {
  */
 function stack<Type>(x:Type, y:Type[_]) -> Type[_] {
   let l2 <- length(y);
-  return vector(\(i:Integer) -> Type {
+  return vector_lambda(\(i:Integer) -> Type {
         if i <= 1 {
           return x;
         } else {
@@ -78,12 +78,10 @@ function stack<Type>(x:Type, y:Type[_]) -> Type[_] {
  */
 function stack<Type>(X:Type[_,_], Y:Type[_,_]) -> Type[_,_] {
   assert columns(X) == columns(Y);
-  
   let R1 <- rows(X);
   let R2 <- rows(Y);
   let C <- columns(X);
-  
-  return matrix(\(i:Integer, j:Integer) -> Type {
+  return matrix_lambda(\(i:Integer, j:Integer) -> Type {
         if i <= R1 {
           return X[i,j];
         } else {

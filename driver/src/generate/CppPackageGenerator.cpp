@@ -156,6 +156,23 @@ void birch::CppPackageGenerator::visit(const Package* o) {
 
     line("}\n");
 
+    /* generic function and operator definitions */
+    for (auto o : functions) {
+      if (o->isGeneric()) {
+        auxDefinition << o;
+      }
+    }
+    for (auto o : binaries) {
+      if (o->isGeneric()) {
+        auxDefinition << o;
+      }
+    }
+    for (auto o : unaries) {
+      if (o->isGeneric()) {
+        auxDefinition << o;
+      }
+    }
+
     /* generic class type definitions, generic member definitions */
     for (auto o : classes) {
       if (o->isGeneric() && !o->isAlias()) {
@@ -172,23 +189,6 @@ void birch::CppPackageGenerator::visit(const Package* o) {
             auxMember << o;
           }
         }
-      }
-    }
-
-    /* generic function and operator definitions */
-    for (auto o : functions) {
-      if (o->isGeneric()) {
-        auxDefinition << o;
-      }
-    }
-    for (auto o : binaries) {
-      if (o->isGeneric()) {
-        auxDefinition << o;
-      }
-    }
-    for (auto o : unaries) {
-      if (o->isGeneric()) {
-        auxDefinition << o;
       }
     }
 

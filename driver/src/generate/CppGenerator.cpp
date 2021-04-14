@@ -131,20 +131,6 @@ void birch::CppGenerator::visit(const Get* o) {
 }
 
 void birch::CppGenerator::visit(const LambdaFunction* o) {
-  if (!o->returnType->isTypeOf()) {
-    /* wrapping the lambda in std::function can avoid having to explicitly
-     * specify generic type arguments for some common calls, but can't do
-     * this if its return type is to be deduced */
-    middle("std::function<" << o->returnType << '(');
-    for (auto iter = o->params->begin(); iter != o->params->end(); ++iter) {
-      auto param = dynamic_cast<const Parameter*>(*iter);
-      if (iter != o->params->begin()) {
-        middle(',');
-      }
-      middle(param->type);
-    }
-    middle(")>(");
-  }
   middle("[=](" << o->params << ')');
   if (!o->returnType->isEmpty() && !o->returnType->isTypeOf()) {
     middle(" -> " << o->returnType);
@@ -156,9 +142,6 @@ void birch::CppGenerator::visit(const LambdaFunction* o) {
   --inLambda;
   out();
   start("}");
-  if (!o->returnType->isTypeOf()) {
-    middle(')');
-  }
 }
 
 void birch::CppGenerator::visit(const Span* o) {
@@ -696,10 +679,6 @@ void birch::CppGenerator::visit(const ArrayType* o) {
 
 void birch::CppGenerator::visit(const TupleType* o) {
   middle("std::tuple<" << o->single << '>');
-}
-
-void birch::CppGenerator::visit(const FunctionType* o) {
-  middle("std::function<" << o->returnType << '(' << o->params << ")>");
 }
 
 void birch::CppGenerator::visit(const OptionalType* o) {

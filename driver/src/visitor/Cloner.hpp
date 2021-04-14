@@ -87,7 +87,6 @@ public:
   virtual Type* clone(const MemberType* o);
   virtual Type* clone(const ArrayType* o);
   virtual Type* clone(const TupleType* o);
-  virtual Type* clone(const FunctionType* o);
   virtual Type* clone(const OptionalType* o);
   virtual Type* clone(const TypeOf* o);
 };

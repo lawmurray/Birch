@@ -80,7 +80,6 @@ public:
   virtual void visit(const MemberType* o);
   virtual void visit(const ArrayType* o);
   virtual void visit(const TupleType* o);
-  virtual void visit(const FunctionType* o);
   virtual void visit(const OptionalType* o);
   virtual void visit(const TypeList* o);
   virtual void visit(const TypeOf* o);

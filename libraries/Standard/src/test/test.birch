@@ -71,7 +71,7 @@ function pass(X1:Real[_,_], X2:Real[_,_]) -> Boolean {
    * dimensions */
   for c in 1..C {
     /* project onto a random unit vector for univariate comparison */
-    let u <- vector(\(i:Integer) -> Real {
+    let u <- vector_lambda(\(i:Integer) -> {
           return simulate_gaussian(0.0, 1.0);
         }, C);
     u <- u/dot(u);
