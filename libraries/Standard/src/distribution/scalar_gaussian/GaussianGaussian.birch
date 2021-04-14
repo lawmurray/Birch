@@ -23,19 +23,19 @@ final class GaussianGaussian<Arg1,Arg2,Arg3>(μ:Arg1, σ2:Arg2, s2:Arg3) <
   }
 
   override function simulate() -> Real {
-    return simulate_gaussian(value(μ), value(σ2 + s2));
+    return simulate_gaussian_gaussian(value(μ), value(σ2), value(s2));
   }
 
   override function simulateLazy() -> Real? {
-    return simulate_gaussian(peak(μ), peak(σ2 + s2));
+    return simulate_gaussian_gaussian(peak(μ), peak(σ2), peak(s2));
   }
   
   override function logpdf(x:Real) -> Real {
-    return logpdf_gaussian(x, value(μ), value(σ2 + s2));
+    return logpdf_gaussian_gaussian(x, value(μ), value(σ2), value(s2));
   }
 
   override function logpdfLazy(x:Expression<Real>) -> Expression<Real>? {
-    return box(logpdf_gaussian(x, μ, σ2 + s2));
+    return box(logpdf_gaussian_gaussian(x, μ, σ2, s2));
   }
 
   override function update(x:Real) -> Delay? {
@@ -47,11 +47,11 @@ final class GaussianGaussian<Arg1,Arg2,Arg3>(μ:Arg1, σ2:Arg2, s2:Arg3) <
   }
 
   override function cdf(x:Real) -> Real? {
-    return cdf_gaussian(x, value(μ), value(σ2 + s2));
+    return cdf_gaussian_gaussian(x, value(μ), value(σ2), value(s2));
   }
 
   override function quantile(P:Real) -> Real? {
-    return quantile_gaussian(P, value(μ), value(σ2 + s2));
+    return quantile_gaussian_gaussian(P, value(μ), value(σ2), value(s2));
   }
 
   override function isGaussian() -> Boolean {
@@ -83,6 +83,62 @@ function Gaussian<Arg>(μ:Random<Real>, σ2:Arg) -> Distribution<Real> {
 }
 
 /*
+ * Simulate a Gaussian variate with Gaussian prior on the mean.
+ *
+ * - x: The variate.
+ * - μ: Prior mean.
+ * - σ2: Prior variance.
+ * - s2: Variance.
+ */
+function simulate_gaussian_gaussian(μ:Real, σ2:Real, s2:Real) -> Real {
+  return simulate_gaussian(μ, σ2 + s2);
+}
+
+/*
+ * Observe a Gaussian variate with Gaussian prior on the mean.
+ *
+ * - x: The variate.
+ * - μ: Prior mean.
+ * - σ2: Prior variance.
+ * - s2: Variance.
+ *
+ * Returns: the log probability density.
+ */
+function logpdf_gaussian_gaussian<Arg1,Arg2,Arg3,Arg4>(x:Arg1, μ:Arg2,
+    σ2:Arg3, s2:Arg4) -> {
+  return logpdf_gaussian(x, μ, σ2 + s2);
+}
+
+/*
+ * CDF of a Gaussian variate with Gaussian prior on the mean.
+ *
+ * - x: The variate.
+ * - μ: Prior mean.
+ * - σ2: Prior variance.
+ * - s2: Variance.
+ *
+ * Return: the cumulative probability.
+ */
+function cdf_gaussian_gaussian(x:Real, μ:Real, σ2:Real, s2:Real) -> Real {
+  return cdf_gaussian(x, μ, σ2 + s2);
+}
+
+/*
+ * Quantile of a Gaussian distribution with Gaussian prior on the mean.
+ *
+ * - P: The cumulative probability.
+ * - μ: Prior mean.
+ * - σ2: Prior variance.
+ * - s2: Variance.
+ *
+ * Return: the quantile.
+ */
+function quantile_gaussian_gaussian(P:Real, μ:Real, σ2:Real, s2:Real) ->
+    Real {
+  return quantile_gaussian(P, μ, σ2 + s2);
+}
+
+/*
  * Update the parameters of a Gaussian distribution with a Gaussian
  * likelihood.
  *
@@ -95,9 +151,8 @@ function Gaussian<Arg>(μ:Random<Real>, σ2:Arg) -> Distribution<Real> {
  */
 function update_gaussian_gaussian<Arg1,Arg2,Arg3,Arg4>(x:Arg1, μ:Arg2,
     σ2:Arg3, s2:Arg4) -> {
-  let λ <- 1.0/σ2;
-  let l <- 1.0/s2;
-  let λ' <- λ + l;
-  let μ' <- (λ*μ + l*x)/λ';
-  return Gaussian(μ', 1.0/λ');
+  let k' <- σ2/(σ2 + s2);
+  let μ' <- μ + k'*(x - μ);
+  let σ2' <- σ2 - k'*σ2;
+  return Gaussian(μ', σ2');
 }
