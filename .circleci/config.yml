@@ -41,7 +41,7 @@ executors:
 
   mac:
     macos:
-      xcode: 12.2.0
+      xcode: 12.4.0
     environment:
       OMP_NUM_THREADS: 4
       MAKE_FLAGS: "-j8"
