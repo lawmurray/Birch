@@ -72,9 +72,9 @@ class Multi < Model {
       let o <- track.y[t - track.s + 1];  // observation random variable
       if o.hasDistribution() {      
         /* propose an association */
+        let N <- y.size();
         let p <- o.getDistribution();
-        let q <- vector(\(n:Integer) -> Real { return p.pdf(y[n]); },
-            y.size());
+        let q <- vector_lambda(\(n:Integer) -> { return p.pdf(y[n]); }, N);
         let Q <- sum(q);
         if Q > 0.0 {
           q <- q/Q;
@@ -90,7 +90,7 @@ class Multi < Model {
     }
     
     /* remaining observations are clutter */
-    N:Integer <- y.size() - 1;
+    let N <- y.size() - 1;
     N ~> Poisson(θ.μ);
     for n in 1..(N + 1) {
       y[n][1] ~> Uniform(θ.l, θ.u);
@@ -99,8 +99,7 @@ class Multi < Model {
   }
 
   function generate(t:Integer) {
-    N:Integer;
-    N <~ Poisson(θ.μ);
+    let N <~ Poisson(θ.μ);
     for n in 1..(N + 1) {
       y[n] <- vector(0.0, 2);
       y[n][1] <~ Uniform(θ.l, θ.u);
