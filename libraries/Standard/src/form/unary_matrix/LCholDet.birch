@@ -1,0 +1,27 @@
+struct LCholDetFunction {
+function compute<Value>(m:Value) -> {
+    return lcholdet(m);
+  }
+
+function grad<Gradient,Value>(d:Gradient, m:Value) -> {
+    return d*matrix<Real>(cholinv(m));
+  }
+}
+struct LCholDet<Middle> = Unary<LCholDetFunction,Middle>;
+
+/**
+ * Log-determinant of a symmetric positive-definite matrix via the Cholesky
+ * factorization.
+ */
+function lcholdet<Middle>(m:Middle) -> {
+  return construct<LCholDet<Middle>>(m);
+}
+
+/**
+ * Log-determinant of a matrix.
+ */
+function lcholdet(S:Real[_,_]) -> Real {
+  cpp{{
+  return 2.0*S.toEigen().llt().matrixL().nestedExpression().diagonal().array().log().sum();
+  }}
+}

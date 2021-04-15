@@ -90,10 +90,3 @@ function transpose(X:Real[_,_]) -> Real[_,_] {
   return X.toEigen().transpose();
   }}
 }
-
-/**
- * Transpose of a symmetric positive definite matrix.
- */
-function transpose<Middle>(S:LLT<Middle>) -> LLT<Middle> {
-  return S;
-}

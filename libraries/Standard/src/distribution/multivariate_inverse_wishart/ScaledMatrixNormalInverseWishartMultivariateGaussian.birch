@@ -104,8 +104,9 @@ function MultivariateGaussian<Arg>(μ:Dot<Arg,Random<Real[_,_]>>,
  */
 function simulate_scaled_matrix_normal_inverse_wishart_multivariate_gaussian(
     a:Real[_], N:Real[_,_], Λ:Real[_,_], Ψ:Real[_,_], k:Real) -> Real[_] {
-  let M <- solve(Λ, N);
-  let σ2 <- 1.0 + dot(a, solve(Λ, a));
+  let S <- cholinv(Λ);
+  let M <- S*N;
+  let σ2 <- 1.0 + dot(a, S*a);
   return simulate_multivariate_student_t(k, dot(a, M), σ2*Ψ);
 }
 
@@ -125,8 +126,9 @@ function simulate_scaled_matrix_normal_inverse_wishart_multivariate_gaussian(
 function logpdf_scaled_matrix_normal_inverse_wishart_multivariate_gaussian<
     Arg1,Arg2,Arg3,Arg4,Arg5,Arg6>(x:Arg1, a:Arg2, N:Arg3, Λ:Arg4, Ψ:Arg5,
     k:Arg6) -> {
-  let M <- solve(Λ, N);
-  let σ2 <- 1.0 + dot(a, solve(Λ, a));
+  let S <- cholinv(Λ);
+  let M <- S*N;
+  let σ2 <- 1.0 + dot(a, S*a);
   return logpdf_multivariate_student_t(x, k, dot(a, M), σ2*Ψ);
 }
 
@@ -146,10 +148,10 @@ function logpdf_scaled_matrix_normal_inverse_wishart_multivariate_gaussian<
 function update_scaled_matrix_normal_inverse_wishart_multivariate_gaussian<
     Arg1,Arg2,Arg3,Arg4,Arg5,Arg6>(x:Arg1, a:Arg2, N:Arg3, Λ:Arg4, Ψ:Arg5,
     k:Arg6) -> {
-  let Λ' <- rank_update(Λ, a);
+  let Λ' <- Λ + outer(a);
   let N' <- N + outer(a, x);
-  let M <- solve(Λ, N);
-  let M' <- solve(Λ', N');
+  let M <- cholsolve(Λ, N);
+  let M' <- cholsolve(Λ', N');
   let Ψ' <- Ψ + outer(x) + transpose(M)*N - transpose(M')*N';
   let k' <- k + 1.0;
   return MatrixNormalInverseWishart(N', Λ', Ψ', k');

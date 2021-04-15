@@ -83,6 +83,6 @@ function simulate_wishart(Ψ:Real[_,_], k:Real) -> Real[_,_] {
 function logpdf_wishart<Arg1,Arg2,Arg3>(X:Arg1, Ψ:Arg2, k:Arg3) -> {
   let p <- columns(X);
   let l <- k + p + 1.0;
-  return 0.5*k*ldet(X) - 0.5*trace(solve(Ψ, X)) -
-      0.5*l*(p*log(2.0) + ldet(Ψ)) - lgamma(0.5*l, p);
+  return 0.5*k*lcholdet(X) - 0.5*trace(cholsolve(Ψ, X)) -
+      0.5*l*(p*log(2.0) + lcholdet(Ψ)) - lgamma(0.5*l, p);
 }

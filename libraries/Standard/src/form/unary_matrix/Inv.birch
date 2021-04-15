@@ -25,13 +25,3 @@ function inv(X:Real[_,_]) -> Real[_,_] {
   return X.toEigen().inverse();
   }}
 }
-
-/**
- * Inverse of a symmetric positive definite matrix.
- */
-// function inv(S:LLT<Real[_,_]>) -> Real[_,_] {
-//   cpp{{
-//   return S->f->llt.solve(libbirch::EigenMatrix<birch::type::Real>::Identity(
-//       S->f->llt.rows(), S->f->llt.cols()));
-//   }}
-// }

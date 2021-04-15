@@ -119,7 +119,7 @@ function MultivariateGaussian<Arg1,Arg2>(μ:Arg1,
   if Σ.r!.hasInverseGamma() {
     Σ.r!.prune();
     let (α, β) <- Σ.r!.getInverseGamma();
-    let Λ <- inv(Σ.l!);
+    let Λ <- cholinv(Σ.l!);
     let p <- MultivariateNormalInverseGamma(Λ*μ, Λ, α, β);
     Σ.r!.graft(p);
     return p;
@@ -137,7 +137,7 @@ function MultivariateGaussian<Arg1,Arg2>(μ:Arg1,
   if Σ.l!.hasInverseGamma() {
     Σ.l!.prune();
     let (α, β) <- Σ.l!.getInverseGamma();
-    let Λ <- inv(Σ.r!);
+    let Λ <- cholinv(Σ.r!);
     let p <- MultivariateNormalInverseGamma(Λ*μ, Λ, α, β);
     Σ.l!.graft(p);
     return p;
@@ -157,7 +157,8 @@ function MultivariateGaussian<Arg1,Arg2>(μ:Arg1,
  */
 function simulate_multivariate_normal_inverse_gamma(ν:Real[_], Λ:Real[_,_],
     α:Real, β:Real) -> Real[_] {
-  return simulate_multivariate_student_t(2.0*α, solve(Λ, ν), 2.0*β*inv(Λ));
+  let Σ <- cholinv(Λ);
+  return simulate_multivariate_student_t(2.0*α, Σ*ν, 2.0*β*Σ);
 }
 
 /*
@@ -173,7 +174,8 @@ function simulate_multivariate_normal_inverse_gamma(ν:Real[_], Λ:Real[_,_],
  */
 function logpdf_multivariate_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4,
     Arg5>(x:Arg1, ν:Arg2, Λ:Arg3, α:Arg4, β:Arg5) -> {
-  return logpdf_multivariate_student_t(x, 2.0*α, solve(Λ, ν), 2.0*β*inv(Λ));
+  let Σ <- cholinv(Λ);
+  return logpdf_multivariate_student_t(x, 2.0*α, Σ*ν, 2.0*β*Σ);
 }
 
 /*
@@ -191,6 +193,6 @@ function logpdf_multivariate_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4,
 function update_multivariate_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4,
     Arg5>(x:Arg1, ν:Arg2, Λ:Arg3, α:Arg4, β:Arg5) -> {
   let n <- length(x);
-  let μ <- solve(Λ, ν);
+  let μ <- cholsolve(Λ, ν);
   return InverseGamma(α + 0.5*n, β + 0.5*dot(x - μ, Λ*(x - μ)));
 }

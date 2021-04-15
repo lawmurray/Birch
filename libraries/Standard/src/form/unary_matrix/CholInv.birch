@@ -1,0 +1,29 @@
+struct CholInvFunction {
+function compute<Value>(m:Value) -> {
+    return cholinv(m);
+  }
+
+function grad<Gradient,Value>(d:Gradient, m:Value) -> {
+    return -m*d*m;
+  }
+}
+struct CholInv<Middle> = Unary<CholInvFunction,Middle>;
+
+/**
+ * Inverse of a symmetric positive-definite matrix via the Cholesky
+ * factorization.
+ */
+function cholinv<Middle>(m:Middle) -> {
+  return construct<CholInv<Middle>>(m);
+}
+
+/**
+ * Inverse of a symmetric positive-definite matrix via the Cholesky
+ * factorization.
+ */
+function cholinv(S:Real[_,_]) -> Real[_,_] {
+  cpp{{
+  return S.toEigen().llt().solve(libbirch::EigenMatrix<birch::type::Real>::Identity(
+      birch::rows(S), birch::columns(S)));
+  }}
+}

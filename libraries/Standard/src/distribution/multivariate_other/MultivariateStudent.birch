@@ -29,6 +29,6 @@ function logpdf_multivariate_student_t<Arg1,Arg2,Arg3,Arg4>(x:Arg1, k:Arg2,
   let a <- 0.5*(k + p);
   let b <- 0.5*k;
   let z <- x - μ;
-  return lgamma(a) - 0.5*p*log(π) - lgamma(b) - 0.5*ldet(U) -
-      a*log1p(dot(z, solve(U, z)));
+  return lgamma(a) - 0.5*p*log(π) - lgamma(b) - 0.5*lcholdet(U) -
+      a*log1p(dot(z, cholsolve(U, z)));
 }
