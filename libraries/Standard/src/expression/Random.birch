@@ -152,7 +152,8 @@ final class Random<Value> < Expression<Value> {
 
   override function prune() -> Delay {
     if child? {
-      p <- Distribution<Value>?(child!.prune())!;
+      p <- Distribution<Value>?(child!.prune());
+      assert p?;
       child <- nil;
     }
     return this;

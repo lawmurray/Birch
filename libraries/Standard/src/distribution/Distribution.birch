@@ -137,9 +137,10 @@ abstract class Distribution<Value> < Delay {
 
   override function prune() -> Delay {
     if child? {
-      let x <- Random<Value>?(child!.prune())!;
+      let x <- Random<Value>?(child!.prune());
+      assert x?;
       this.child <- nil;
-      return handle_update(this, x);
+      return handle_update(this, x!);
     } else if x? {
       let x <- this.x!;
       this.x <- nil;

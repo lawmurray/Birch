@@ -120,6 +120,7 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
     } else {
       handleFactor(p.logpdf(x.value()));
     }
+    p.graft(x);
     return x;
   }
 
