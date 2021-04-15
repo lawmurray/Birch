@@ -143,7 +143,7 @@ function simulate_scaled_multivariate_normal_inverse_gamma_multivariate_gaussian
   let S <- cholinv(Λ);
   let μ <- S*ν;
   return simulate_multivariate_student_t(2.0*α, A*μ, 2.0*β*(Σ +
-      A*S*transpose(A)));
+      outer(A*S, A)));
 }
 
 /*
@@ -167,7 +167,7 @@ function logpdf_scaled_multivariate_normal_inverse_gamma_multivariate_gaussian<
   let S <- cholinv(Λ);
   let μ <- S*ν;
   return logpdf_multivariate_student_t(x, 2.0*α, A*μ, 2.0*β*(Σ +
-      A*S*transpose(A)));
+      outer(A*S, A)));
 }
 
 /*
@@ -190,8 +190,8 @@ function update_scaled_multivariate_normal_inverse_gamma_multivariate_gaussian<
   let n <- length(x);
   let L <- cholinv(Σ);
   let z <- L*x;
-  let Λ' <- Λ + transpose(A)*L*A;
-  let ν' <- ν + transpose(A)*z;
+  let Λ' <- Λ + inner(A, L*A);
+  let ν' <- ν + inner(A, z);
   let μ <- cholsolve(Λ, ν);
   let μ' <- cholsolve(Λ', ν');
   let α' <- α + 0.5*n;

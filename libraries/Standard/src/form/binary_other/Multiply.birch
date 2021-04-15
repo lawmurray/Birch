@@ -16,15 +16,15 @@ struct MultiplyFunction {
   }
 
   function gradRight<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue, r:RightValue) -> {
-    return sum(transpose(l)*d);
+    return sum(inner(l, d));
   }
 
   function gradRight<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue, r:RightValue[_]) -> {
-    return transpose(l)*d;
+    return inner(l, d);
   }
 
   function gradRight<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue, r:RightValue[_,_]) -> {
-    return transpose(l)*d;
+    return inner(l, d);
   }
 }
 struct Multiply<Left,Right> = Binary<MultiplyFunction,Left,Right>;

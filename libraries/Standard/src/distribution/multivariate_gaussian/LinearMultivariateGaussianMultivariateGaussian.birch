@@ -69,7 +69,7 @@ final class LinearMultivariateGaussianMultivariateGaussian<Arg1,Arg2,Arg3,
 
   override function getMultivariateGaussian() -> (Expression<Real[_]>,
       Expression<Real[_,_]>)? {
-    return box(A*μ + c, A*Σ*transpose(A) + S);
+    return box(A*μ + c, outer(A*Σ, A) + S);
   }
 }
 

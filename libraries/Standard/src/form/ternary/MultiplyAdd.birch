@@ -4,11 +4,11 @@ function compute<LeftValue,MiddleValue,RightValue>(l:LeftValue, m:MiddleValue, r
   }
 
 function gradLeft<Gradient,LeftValue,MiddleValue,RightValue>(d:Gradient, l:LeftValue, m:MiddleValue, r:RightValue) -> {
-    return d*transpose(m);
+    return outer(d, m);
   }
 
 function gradMiddle<Gradient,LeftValue,MiddleValue,RightValue>(d:Gradient, l:LeftValue, m:MiddleValue, r:RightValue) -> {
-    return transpose(l)*d;
+    return inner(l, d);
   }
 
 function gradRight<Gradient,LeftValue,MiddleValue,RightValue>(d:Gradient, l:LeftValue, m:MiddleValue, r:RightValue) -> {

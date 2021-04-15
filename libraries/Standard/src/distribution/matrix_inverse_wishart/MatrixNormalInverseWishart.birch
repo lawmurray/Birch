@@ -145,7 +145,7 @@ function update_matrix_normal_inverse_wishart<Arg1,Arg2,Arg3,Arg4,Arg5>(
     X:Arg1, N:Arg2, Λ:Arg3, Ψ:Arg4, k:Arg5) -> {
   let n <- rows(X);
   let M <- cholsolve(Λ, N);
-  let Ψ' <- Ψ + transpose(X - M)*Λ*(X - M);
+  let Ψ' <- Ψ + inner(X - M, Λ*(X - M));
   let k' <- k + n;
   return InverseWishart(Ψ', k');
 }

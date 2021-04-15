@@ -116,7 +116,7 @@ function simulate_scaled_matrix_normal_inverse_wishart_matrix_gaussian(
     U:Real[_,_]) -> Real[_,_] {
   let S <- cholinv(Λ);
   let M <- A*S*N;
-  let Σ <- U + A*S*transpose(A);
+  let Σ <- U + outer(A*S, A);
   return simulate_matrix_student_t(k, M, Σ, Ψ);
 }
 
@@ -139,7 +139,7 @@ function logpdf_scaled_matrix_normal_inverse_wishart_matrix_gaussian<Arg1,
     k:Arg6, U:Arg7) -> {
   let S <- cholinv(Λ);
   let M <- A*S*N;
-  let Σ <- U + A*S*transpose(A);
+  let Σ <- U + outer(A*S, A);
   return logpdf_matrix_student_t(X, k, M, Σ, Ψ);
 }
 
@@ -163,11 +163,11 @@ function update_scaled_matrix_normal_inverse_wishart_matrix_gaussian<Arg1,
   let n <- rows(X);
   let L <- cholinv(U);
   let Z <- L*X;
-  let Λ' <- Λ + transpose(A)*L*A;
-  let N' <- N + transpose(A)*Z;
+  let Λ' <- Λ + inner(A, L*A);
+  let N' <- N + inner(A, Z);
   let M <- cholsolve(Λ, N);
   let M' <- cholsolve(Λ', N');
-  let Ψ' <- Ψ + transpose(X)*Z + transpose(M)*N - transpose(M')*N';
+  let Ψ' <- Ψ + inner(X, Z) + inner(M, N) - inner(M', N');
   let k' <- k + n;
   return MatrixNormalInverseWishart(N', Λ', Ψ', k');
 }

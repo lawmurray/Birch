@@ -8,7 +8,7 @@ struct OuterFunction {
   }
 
   function gradRight<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue, r:RightValue) -> {
-    return transpose(d)*l;
+    return inner(d, l);
   }
 }
 struct Outer<Left,Right> = Binary<OuterFunction,Left,Right>;
