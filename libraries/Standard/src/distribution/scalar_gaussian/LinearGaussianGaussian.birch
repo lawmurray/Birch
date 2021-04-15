@@ -108,10 +108,10 @@ function Gaussian<Arg1,Arg2,Arg3>(μ:MultiplyAdd<Arg1,Random<Real>,Arg2>,
 function Gaussian<Arg1,Arg2>(μ:Multiply<Arg1,Random<Real>>, σ2:Arg2) ->
     Distribution<Real> {
   if μ.r!.hasGaussian() {
-    μ.l!.prune();
-    let (m, s2) <- μ.l!.getGaussian();
+    μ.r!.prune();
+    let (m, s2) <- μ.r!.getGaussian();
     let p <- LinearGaussianGaussian(μ.l!, m, s2, 0.0, σ2);
-    μ.l!.graft(p);
+    μ.r!.graft(p);
     return p;
   } else {
     return construct<Gaussian<Multiply<Arg1,Random<Real>>,Arg2>>(μ, σ2);
