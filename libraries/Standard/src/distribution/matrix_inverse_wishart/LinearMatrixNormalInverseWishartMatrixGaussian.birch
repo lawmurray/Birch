@@ -91,12 +91,12 @@ function LinearMatrixNormalInverseWishartMatrixGaussian<Arg1,Arg2,Arg3,
 function MatrixGaussian<Arg1,Arg2,Arg3>(
     M:MultiplyAdd<Arg1,Random<Real[_,_]>,Arg2>, U:Arg3,
     V:Random<Real[_,_]>) -> Distribution<Real[_,_]> {
-  if M.m!.hasMatrixNormalInverseWishart(V) {
-    M.m!.prune();
-    let (N, Λ, α, β) <- M.m!.getMatrixNormalInverseWishart();
-    let p <- LinearMatrixNormalInverseWishartMatrixGaussian(M.l!, N, Λ, α,
-        β, M.r!, U);
-    M.m!.graft(p);
+  if M.m.hasMatrixNormalInverseWishart(V) {
+    M.m.prune();
+    let (N, Λ, α, β) <- M.m.getMatrixNormalInverseWishart();
+    let p <- LinearMatrixNormalInverseWishartMatrixGaussian(M.l, N, Λ, α,
+        β, M.r, U);
+    M.m.graft(p);
     return p;
   } else if V.hasInverseWishart() {
     V.prune();

@@ -10,64 +10,55 @@ struct Ternary<Function,Left,Middle,Right>(l:Left, m:Middle, r:Right) {
   /**
    * Left argument.
    */
-  l:Left? <- l;
+  l:Left <- l;
 
   /**
    * Middle argument.
    */
-  m:Middle? <- m;
+  m:Middle <- m;
   
   /**
    * Right argument.
    */
-  r:Right? <- r;
+  r:Right <- r;
 
   function value() -> {
-    return f.compute(global.value(l!), global.value(m!), global.value(r!));
+    return f.compute(global.value(l), global.value(m), global.value(r));
   }
 
   function peak() -> {
-    return f.compute(global.peak(l!), global.peak(m!), global.peak(r!));
+    return f.compute(global.peak(l), global.peak(m), global.peak(r));
   }
 
   function eval() -> {
-    return f.compute(global.eval(l!), global.eval(m!), global.eval(r!));
+    return f.compute(global.eval(l), global.eval(m), global.eval(r));
   }
 
   function reval() -> {
-    return f.compute(global.reval(l!), global.reval(m!), global.reval(r!));
+    return f.compute(global.reval(l), global.reval(m), global.reval(r));
   }
 
   function grad<Gradient>(d:Gradient) {
-    global.grad(l!, f.gradLeft(d, global.peak(l!), global.peak(m!), global.peak(r!)));
-    global.grad(m!, f.gradMiddle(d, global.peak(l!), global.peak(m!), global.peak(r!)));
-    global.grad(r!, f.gradRight(d, global.peak(l!), global.peak(m!), global.peak(r!)));
+    global.grad(l, f.gradLeft(d, global.peak(l), global.peak(m), global.peak(r)));
+    global.grad(m, f.gradMiddle(d, global.peak(l), global.peak(m), global.peak(r)));
+    global.grad(r, f.gradRight(d, global.peak(l), global.peak(m), global.peak(r)));
   }
 
   function label(gen:Integer) {
-    global.label(l!, gen);
-    global.label(m!, gen);
-    global.label(r!, gen);
+    global.label(l, gen);
+    global.label(m, gen);
+    global.label(r, gen);
   }
 
   function prune(gen:Integer) {
-    global.prune(l!, gen);
-    global.prune(m!, gen);
-    global.prune(r!, gen);
+    global.prune(l, gen);
+    global.prune(m, gen);
+    global.prune(r, gen);
   }
 
   function constant() {
-    if l? {
-      global.constant(l!);
-      l <- nil;
-    }
-    if m? {
-      global.constant(m!);
-      m <- nil;
-    }
-    if r? {
-      global.constant(r!);
-      r <- nil;
-    }
+    global.constant(l);
+    global.constant(m);
+    global.constant(r);
   }
 }

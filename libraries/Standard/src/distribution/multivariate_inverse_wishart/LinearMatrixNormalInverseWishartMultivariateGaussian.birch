@@ -82,12 +82,12 @@ function LinearMatrixNormalInverseWishartMultivariateGaussian<Arg1,Arg2,
 function MultivariateGaussian<Arg1,Arg2>(
     μ:DotAdd<Arg1,Random<Real[_,_]>,Arg2>, Σ:Random<Real[_,_]>) ->
     Distribution<Real[_]> {
-  if μ.m!.hasMatrixNormalInverseWishart(Σ) {
-    μ.m!.prune();
-    let (N, Λ, Ψ, k) <- μ.m!.getMatrixNormalInverseWishart();
-    let p <- LinearMatrixNormalInverseWishartMultivariateGaussian(μ.l!, N,
-        Λ, Ψ, k, μ.r!);
-    μ.m!.graft(p);
+  if μ.m.hasMatrixNormalInverseWishart(Σ) {
+    μ.m.prune();
+    let (N, Λ, Ψ, k) <- μ.m.getMatrixNormalInverseWishart();
+    let p <- LinearMatrixNormalInverseWishartMultivariateGaussian(μ.l, N,
+        Λ, Ψ, k, μ.r);
+    μ.m.graft(p);
     return p;
   } else if Σ.hasInverseWishart() {
     return construct<MultivariateGaussian<DotAdd<Arg1,Random<Real[_,_]>,

@@ -84,7 +84,7 @@ function MatrixGaussian<Arg1,Arg2>(M:Multiply<Arg1,Random<Real[_,_]>>,
   if M.hasMatrixNormalInverseWishart(V) {
     M.prune();
     let (N, Λ, Ψ, k) <- M.getMatrixNormalInverseWishart();
-    let p <- ScaledMatrixNormalInverseWishartMatrixGaussian(M.l!, N, Λ, Ψ,
+    let p <- ScaledMatrixNormalInverseWishartMatrixGaussian(M.l, N, Λ, Ψ,
         k, U);
     M.graft(p);
     return p;

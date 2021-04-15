@@ -5,63 +5,54 @@ struct MatrixElement<Left,Middle,Right>(l:Left, i:Middle, j:Right) {
   /**
    * Matrix.
    */
-  l:Left? <- l;
+  l:Left <- l;
 
   /**
    * Row index.
    */
-  m:Middle? <- m;
+  m:Middle <- m;
 
   /**
    * Column index.
    */
-  r:Right? <- r;
+  r:Right <- r;
 
   function value() -> {
-    return global.value(l!)[global.value(m!), global.value(r!)];
+    return global.value(l)[global.value(m), global.value(r)];
   }
 
   function peak() -> {
-    return global.peak(l!)[global.peak(m!), global.peak(r!)];
+    return global.peak(l)[global.peak(m), global.peak(r)];
   }
 
   function eval() -> {
-    return global.eval(l!)[global.eval(m!), global.eval(r!)];
+    return global.eval(l)[global.eval(m), global.eval(r)];
   }
 
   function reval() -> {
-    return global.reval(l!)[global.reval(m!), global.reval(r!)];
+    return global.reval(l)[global.reval(m), global.reval(r)];
   }
 
   function grad<Gradient>(d:Gradient) {
-    global.grad(l!, d, global.peak(m!), global.peak(r!));
+    global.grad(l, d, global.peak(m), global.peak(r));
   }
 
   function label(gen:Integer) {
-    global.label(l!, gen);
-    global.label(m!, gen);
-    global.label(r!, gen);
+    global.label(l, gen);
+    global.label(m, gen);
+    global.label(r, gen);
   }
 
   function prune(gen:Integer) {
-    global.prune(l!, gen);
-    global.prune(m!, gen);
-    global.prune(r!, gen);
+    global.prune(l, gen);
+    global.prune(m, gen);
+    global.prune(r, gen);
   }
 
   function constant() {
-    if l? {
-      global.constant(l!);
-      l <- nil;
-    }
-    if m? {
-      global.constant(m!);
-      m <- nil;
-    }
-    if r? {
-      global.constant(r!);
-      r <- nil;
-    }
+    global.constant(l);
+    global.constant(m);
+    global.constant(r);
   }
 }
 

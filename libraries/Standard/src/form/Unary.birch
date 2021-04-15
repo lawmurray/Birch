@@ -10,40 +10,37 @@ struct Unary<Function,Middle>(m:Middle) {
   /**
    * Argument.
    */
-  m:Middle? <- m;
+  m:Middle <- m;
 
   function value() -> {
-    return f.compute(global.value(m!));
+    return f.compute(global.value(m));
   }
 
   function peak() -> {
-    return f.compute(global.peak(m!));
+    return f.compute(global.peak(m));
   }
 
   function eval() -> {
-    return f.compute(global.eval(m!));
+    return f.compute(global.eval(m));
   }
 
   function reval() -> {
-    return f.compute(global.reval(m!));
+    return f.compute(global.reval(m));
   }
 
   function grad<Gradient>(d:Gradient) {
-    global.grad(m!, f.grad(d, global.peak(m!)));
+    global.grad(m, f.grad(d, global.peak(m)));
   }
 
   function label(gen:Integer) {
-    global.label(m!, gen);
+    global.label(m, gen);
   }
 
   function prune(gen:Integer) {
-    global.prune(m!, gen);
+    global.prune(m, gen);
   }
 
   function constant() {
-    if m? {
-      global.constant(m!);
-      m <- nil;
-    }
+    global.constant(m);
   }
 }

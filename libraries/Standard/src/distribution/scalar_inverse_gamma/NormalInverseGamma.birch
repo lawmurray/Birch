@@ -131,11 +131,11 @@ function Gaussian<Arg>(μ:Arg, σ2:Random<Real>) -> Distribution<Real> {
  */
 function Gaussian<Arg1,Arg2>(μ:Arg1, σ2:Multiply<Arg2,Random<Real>>) ->
     Distribution<Real> {
-  if σ2.r!.hasInverseGamma() {
-    σ2.r!.prune();
-    let (α, β) <- σ2.r!.getInverseGamma();
-    let p <- NormalInverseGamma(μ/σ2.l!, 1.0/σ2.l!, α, β);
-    σ2.r!.graft(p);
+  if σ2.r.hasInverseGamma() {
+    σ2.r.prune();
+    let (α, β) <- σ2.r.getInverseGamma();
+    let p <- NormalInverseGamma(μ/σ2.l, 1.0/σ2.l, α, β);
+    σ2.r.graft(p);
     return p;
   } else {
     return construct<Gaussian<Arg1,Multiply<Arg2,Random<Real>>>>(μ, σ2);
@@ -147,11 +147,11 @@ function Gaussian<Arg1,Arg2>(μ:Arg1, σ2:Multiply<Arg2,Random<Real>>) ->
  */
 function Gaussian<Arg1,Arg2>(μ:Arg1, σ2:Multiply<Random<Real>,Arg2>) ->
     Distribution<Real> {
-  if σ2.l!.hasInverseGamma() {
-    σ2.l!.prune();
-    let (α, β) <- σ2.l!.getInverseGamma();
-    let p <- NormalInverseGamma(μ/σ2.r!, 1.0/σ2.r!, α, β);
-    σ2.l!.graft(p);
+  if σ2.l.hasInverseGamma() {
+    σ2.l.prune();
+    let (α, β) <- σ2.l.getInverseGamma();
+    let p <- NormalInverseGamma(μ/σ2.r, 1.0/σ2.r, α, β);
+    σ2.l.graft(p);
     return p;
   } else {
     return construct<Gaussian<Arg1,Multiply<Random<Real>,Arg2>>>(μ, σ2);

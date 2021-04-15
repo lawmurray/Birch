@@ -89,11 +89,11 @@ function LinearNormalInverseGammaGaussian<Arg1,Arg2,Arg3,Arg4,Arg5,Arg6>(
  */
 function Gaussian<Arg1,Arg2>(μ:MultiplyAdd<Arg1,Random<Real>,Arg2>,
     σ2:Random<Real>) -> Distribution<Real> {
-  if μ.m!.hasNormalInverseGamma(σ2) {
-    μ.m!.prune();
-    let (ν, λ, α, β) <- μ.m!.getNormalInverseGamma();
-    let p <- LinearNormalInverseGammaGaussian(μ.l!, ν, λ, α, β, μ.r!);
-    μ.m!.graft(p);
+  if μ.m.hasNormalInverseGamma(σ2) {
+    μ.m.prune();
+    let (ν, λ, α, β) <- μ.m.getNormalInverseGamma();
+    let p <- LinearNormalInverseGammaGaussian(μ.l, ν, λ, α, β, μ.r);
+    μ.m.graft(p);
     return p;
   } else if σ2.hasInverseGamma() {
     σ2.prune();
@@ -112,11 +112,11 @@ function Gaussian<Arg1,Arg2>(μ:MultiplyAdd<Arg1,Random<Real>,Arg2>,
  */
 function Gaussian<Arg>(μ:Multiply<Arg,Random<Real>>, σ2:Random<Real>) ->
     Distribution<Real> {
-  if μ.m!.hasNormalInverseGamma(σ2) {
-    μ.m!.prune();
-    let (ν, λ, α, β) <- μ.m!.getNormalInverseGamma();
-    let p <- LinearNormalInverseGammaGaussian(μ.l!, ν, λ, α, β, 0.0);
-    μ.m!.graft(p);
+  if μ.m.hasNormalInverseGamma(σ2) {
+    μ.m.prune();
+    let (ν, λ, α, β) <- μ.m.getNormalInverseGamma();
+    let p <- LinearNormalInverseGammaGaussian(μ.l, ν, λ, α, β, 0.0);
+    μ.m.graft(p);
     return p;
   } else if σ2.hasInverseGamma() {
     σ2.prune();

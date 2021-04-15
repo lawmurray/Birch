@@ -82,18 +82,18 @@ function ScaledMultivariateNormalInverseGammaMultivariateGaussian<Arg1,
  */
 function MultivariateGaussian<Arg1,Arg2>(μ:Multiply<Arg1,Random<Real[_]>>,
     Σ:Multiply<Arg2,Random<Real>>) -> Distribution<Real[_]> {
-  if μ.r!.hasMultivariateNormalInverseGamma(Σ.r!) {
-    μ.r!.prune();
-    let (ν, Λ, α, β) <- μ.r!.getMultivariateNormalInverseGamma();
-    let p <- ScaledMultivariateNormalInverseGammaMultivariateGaussian(μ.l!,
-        ν, Λ, α, β, Σ.l!);
-    μ.r!.graft(p);
+  if μ.r.hasMultivariateNormalInverseGamma(Σ.r) {
+    μ.r.prune();
+    let (ν, Λ, α, β) <- μ.r.getMultivariateNormalInverseGamma();
+    let p <- ScaledMultivariateNormalInverseGammaMultivariateGaussian(μ.l,
+        ν, Λ, α, β, Σ.l);
+    μ.r.graft(p);
     return p;
-  } else if Σ.r!.hasInverseGamma() {
-    Σ.r!.prune();
-    let (α, β) <- Σ.r!.getInverseGamma();
-    let p <- MultivariateNormalInverseGamma(μ, Σ.l!, α, β);
-    Σ.r!.graft(p);
+  } else if Σ.r.hasInverseGamma() {
+    Σ.r.prune();
+    let (α, β) <- Σ.r.getInverseGamma();
+    let p <- MultivariateNormalInverseGamma(μ, Σ.l, α, β);
+    Σ.r.graft(p);
     return p;
   } else {
     return construct<MultivariateGaussian<Multiply<Arg1,Random<Real[_]>>,
@@ -106,18 +106,18 @@ function MultivariateGaussian<Arg1,Arg2>(μ:Multiply<Arg1,Random<Real[_]>>,
  */
 function MultivariateGaussian<Arg1,Arg2>(μ:Multiply<Arg1,Random<Real[_]>>,
     Σ:Multiply<Random<Real>,Arg2>) -> Distribution<Real[_]> {
-  if μ.r!.hasMultivariateNormalInverseGamma(Σ.l!) {
-    μ.r!.prune();
-    let (ν, Λ, α, β) <- μ.r!.getMultivariateNormalInverseGamma();
-    let p <- ScaledMultivariateNormalInverseGammaMultivariateGaussian(μ.l!,
-        ν, Λ, α, β, Σ.r!);
-    μ.r!.graft(p);
+  if μ.r.hasMultivariateNormalInverseGamma(Σ.l) {
+    μ.r.prune();
+    let (ν, Λ, α, β) <- μ.r.getMultivariateNormalInverseGamma();
+    let p <- ScaledMultivariateNormalInverseGammaMultivariateGaussian(μ.l,
+        ν, Λ, α, β, Σ.r);
+    μ.r.graft(p);
     return p;
-  } else if Σ.l!.hasInverseGamma() {
-    Σ.l!.prune();
-    let (α, β) <- Σ.l!.getInverseGamma();
-    let p <- MultivariateNormalInverseGamma(μ, Σ.r!, α, β);
-    Σ.l!.graft(p);
+  } else if Σ.l.hasInverseGamma() {
+    Σ.l.prune();
+    let (α, β) <- Σ.l.getInverseGamma();
+    let p <- MultivariateNormalInverseGamma(μ, Σ.r, α, β);
+    Σ.l.graft(p);
     return p;
   } else {
     return construct<MultivariateGaussian<Multiply<Arg1,Random<Real[_]>>,

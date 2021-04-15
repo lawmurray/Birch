@@ -13,7 +13,7 @@ class BoxedExpression<Value,Form>(x:Value, f:Form) < Expression<Value> {
   /**
    * Expression form.
    */
-  f:Form <- f;
+  f:Form? <- f;
 
   /**
    * Accumulated upstream gradient.
@@ -36,17 +36,12 @@ class BoxedExpression<Value,Form>(x:Value, f:Form) < Expression<Value> {
    */
   visitCount:Integer <- 0;
 
-  /**
-   * Is this a constant?
-   */
-  flagConstant:Boolean <- false;
-
   final override function isRandom() -> Boolean {
     return false;
   }
 
   final override function isConstant() -> Boolean {
-    return flagConstant;
+    return !f?;
   }
 
   final override function rows() -> Integer {
@@ -67,16 +62,16 @@ class BoxedExpression<Value,Form>(x:Value, f:Form) < Expression<Value> {
   }
 
   final override function eval() -> Value {
-    if !flagConstant {
+    if f? {
       evalCount <- evalCount + 1;
     }
     return x;
   }
 
   final override function reval() -> Value {
-    if !flagConstant {
+    if f? {
       if visitCount == 0 {
-        x <- f.reval();
+        x <- f!.reval();
       }
       visitCount <- visitCount + 1;
       if visitCount >= evalCount {
@@ -92,7 +87,7 @@ class BoxedExpression<Value,Form>(x:Value, f:Form) < Expression<Value> {
   }
 
   final override function grad(d:Value) {
-    if !flagConstant {
+    if f? {
       if visitCount == 0 {
         this.d <- d;  // start accumulation
       } else {
@@ -105,7 +100,7 @@ class BoxedExpression<Value,Form>(x:Value, f:Form) < Expression<Value> {
         //   called on this object, typically because it is root expression
         //   used from client code, rather than a subexpression used from
         //   other expressions
-        f.grad(this.d!);  // upstream gradients all accumulated, propagate
+        f!.grad(this.d!);  // upstream gradients all accumulated, propagate
         this.d <- nil;    // clear intermediate gradients to save memory
         visitCount <- 0;  // reset for next time
       }
@@ -113,24 +108,24 @@ class BoxedExpression<Value,Form>(x:Value, f:Form) < Expression<Value> {
   }
 
   final override function label(gen:Integer) {
-    if !flagConstant && this.gen == 0 {
+    if f? && this.gen == 0 {
       this.gen <- gen;
-      f.label(gen);
+      f!.label(gen);
     }
   }
 
   final override function prune(gen:Integer) {
-    if !flagConstant && this.gen < gen {
+    if f? && this.gen < gen {
       constant();
     } else {
-      f.prune(gen);
+      f!.prune(gen);
     }
   }
 
   final override function constant() {
-    if !flagConstant {
-      flagConstant <- true;
-      f.constant();
+    if f? {
+      f!.constant();
+      f <- nil;
       d <- nil;
       gen <- 0;
       evalCount <- 0;

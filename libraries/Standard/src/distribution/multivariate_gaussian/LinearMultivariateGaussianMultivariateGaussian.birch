@@ -85,12 +85,12 @@ function LinearMultivariateGaussianMultivariateGaussian<Arg1,Arg2,Arg3,Arg4,
 function MultivariateGaussian<Arg1,Arg2,Arg3>(
     μ:MultiplyAdd<Arg1,Random<Real[_]>,Arg2>, Σ:Arg3) ->
     Distribution<Real[_]> {
-  if μ.m!.hasMultivariateGaussian() {
-    μ.m!.prune();
-    let (m, S) <- μ.m!.getMultivariateGaussian();
-    let p <- LinearMultivariateGaussianMultivariateGaussian(μ.l!, m, S, μ.r!,
+  if μ.m.hasMultivariateGaussian() {
+    μ.m.prune();
+    let (m, S) <- μ.m.getMultivariateGaussian();
+    let p <- LinearMultivariateGaussianMultivariateGaussian(μ.l, m, S, μ.r,
         Σ);
-    μ.m!.graft(p);
+    μ.m.graft(p);
     return p;
   } else {
     return construct<MultivariateGaussian<MultiplyAdd<Arg1,Random<Real[_]>,

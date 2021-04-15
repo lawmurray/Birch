@@ -68,11 +68,11 @@ function ScaledGammaPoisson<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2, θ:Arg3) -> {
  */
 function Poisson<Arg1>(λ:Multiply<Arg1,Random<Real>>) ->
     Distribution<Integer> {
-  if λ.r!.hasGamma() {
-    λ.r!.prune();
-    let (k, θ) <- λ.r!.getGamma();
-    let p <- ScaledGammaPoisson(λ.l!, k, θ);
-    λ.r!.graft(p);
+  if λ.r.hasGamma() {
+    λ.r.prune();
+    let (k, θ) <- λ.r.getGamma();
+    let p <- ScaledGammaPoisson(λ.l, k, θ);
+    λ.r.graft(p);
     return p;
   } else {
     return construct<Poisson<Multiply<Arg1,Random<Real>>>>(λ);
@@ -84,11 +84,11 @@ function Poisson<Arg1>(λ:Multiply<Arg1,Random<Real>>) ->
  */
 function Poisson<Arg3>(λ:Multiply<Random<Real>,Arg3>) ->
     Distribution<Integer> {
-  if λ.l!.hasGamma() {
-    λ.l!.prune();
-    let (k, θ) <- λ.l!.getGamma();
-    let p <- ScaledGammaPoisson(λ.r!, k, θ);
-    λ.l!.graft(p);
+  if λ.l.hasGamma() {
+    λ.l.prune();
+    let (k, θ) <- λ.l.getGamma();
+    let p <- ScaledGammaPoisson(λ.r, k, θ);
+    λ.l.graft(p);
     return p;
   } else {
     return construct<Poisson<Multiply<Random<Real>,Arg3>>>(λ);

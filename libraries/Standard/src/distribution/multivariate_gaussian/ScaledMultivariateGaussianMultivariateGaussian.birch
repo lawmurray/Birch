@@ -78,11 +78,11 @@ function ScaledMultivariateGaussianMultivariateGaussian<Arg1,Arg2,Arg3,Arg4>(
  */
 function MultivariateGaussian<Arg1,Arg2>(
     μ:Multiply<Arg1,Random<Real[_]>>, Σ:Arg2) -> Distribution<Real[_]> {
-  if μ.r!.hasMultivariateGaussian() {
-    μ.r!.prune();
-    let (m, S) <- μ.r!.getMultivariateGaussian();
-    let p <- ScaledMultivariateGaussianMultivariateGaussian(μ.l!, m, S, Σ);
-    μ.r!.graft(p);
+  if μ.r.hasMultivariateGaussian() {
+    μ.r.prune();
+    let (m, S) <- μ.r.getMultivariateGaussian();
+    let p <- ScaledMultivariateGaussianMultivariateGaussian(μ.l, m, S, Σ);
+    μ.r.graft(p);
     return p;
   } else {
     return construct<MultivariateGaussian<Multiply<Arg1,Random<Real[_]>>,

@@ -76,12 +76,12 @@ function ScaledMatrixNormalInverseWishartMultivariateGaussian<Arg1,Arg2,
  */
 function MultivariateGaussian<Arg>(μ:Dot<Arg,Random<Real[_,_]>>,
     Σ:Random<Real[_,_]>) -> Distribution<Real[_]> {
-  if μ.r!.hasMatrixNormalInverseWishart(Σ) {
-    μ.r!.prune();
-    let (N, Λ, Ψ, k) <- μ.r!.getMatrixNormalInverseWishart();
-    let p <- ScaledMatrixNormalInverseWishartMultivariateGaussian(μ.l!, N,
+  if μ.r.hasMatrixNormalInverseWishart(Σ) {
+    μ.r.prune();
+    let (N, Λ, Ψ, k) <- μ.r.getMatrixNormalInverseWishart();
+    let p <- ScaledMatrixNormalInverseWishartMultivariateGaussian(μ.l, N,
         Λ, Ψ, k);
-    μ.r!.graft(p);
+    μ.r.graft(p);
     return p;
   } else if Σ.hasInverseWishart() {
     return construct<MultivariateGaussian<Dot<Arg,Random<Real[_,_]>>,
