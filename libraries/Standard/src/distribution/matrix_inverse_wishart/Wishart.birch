@@ -55,11 +55,10 @@ function Wishart<Arg1,Arg2>(Ψ:Arg1, k:Arg2) -> {
 function simulate_wishart(Ψ:Real[_,_], k:Real) -> Real[_,_] {
   assert rows(Ψ) == columns(Ψ);
   let p <- rows(Ψ);
-  let l <- k + p + 1.0;
   let A <- matrix_lambda(\(i:Integer, j:Integer) -> Real {
         if j == i {
           /* on diagonal */
-          return sqrt(simulate_chi_squared(l - i + 1.0));
+          return sqrt(simulate_chi_squared(k + p - i));
         } else if j < i {
           /* in lower triangle */
           return simulate_gaussian(0.0, 1.0);
@@ -68,7 +67,7 @@ function simulate_wishart(Ψ:Real[_,_], k:Real) -> Real[_,_] {
           return 0.0;
         }
       }, p, p);
-  return outer(cholesky(Ψ)*A);
+  return outer(chol(Ψ)*A);
 }
 
 /*

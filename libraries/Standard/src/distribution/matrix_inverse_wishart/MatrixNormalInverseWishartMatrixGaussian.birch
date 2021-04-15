@@ -145,9 +145,9 @@ function logpdf_matrix_normal_inverse_wishart_matrix_gaussian<Arg1,Arg2,
 function update_matrix_normal_inverse_wishart_matrix_gaussian<Arg1,Arg2,
     Arg3,Arg4,Arg5,Arg6>(X:Arg1, N:Arg2, Λ:Arg3, U:Arg4, Ψ:Arg5, k:Arg6) -> {
   let n <- rows(X);
-  let S <- cholinv(U);
-  let Z <- S*X;
-  let Λ' <- Λ + S;
+  let L <- cholinv(U);
+  let Z <- L*X;
+  let Λ' <- Λ + L;
   let N' <- N + Z;
   let M <- cholsolve(Λ, N);
   let M' <- cholsolve(Λ', N');

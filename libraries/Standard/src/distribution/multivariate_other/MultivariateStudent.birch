@@ -7,9 +7,7 @@
  */
 function simulate_multivariate_student_t(k:Real, μ:Real[_], U:Real[_,_]) ->
     Real[_] {
-  let p <- length(μ);
-  return simulate_multivariate_gaussian(μ, simulate_inverse_wishart(U, k + p -
-      1.0));
+  return simulate_multivariate_gaussian(μ, simulate_inverse_wishart(U, k));
 }
 
 /*

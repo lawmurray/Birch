@@ -37,7 +37,7 @@ operator<Type> (+X:Type[_,_]) -> Type[_,_] {
  *
  * Returns: the lower-triangular factor $L$.
  */
-function cholesky(S:Real[_,_]) -> Real[_,_] {
+function chol(S:Real[_,_]) -> Real[_,_] {
   cpp{{
   return S.toEigen().llt().matrixL();
   }}

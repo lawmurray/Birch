@@ -8,9 +8,7 @@
  */
 function simulate_matrix_student_t(k:Real, M:Real[_,_], U:Real[_,_],
     Ψ:Real[_,_]) -> Real[_,_] {
-  let p <- columns(M);
-  let V <- simulate_inverse_wishart(Ψ, k + p - 1.0);
-  return simulate_matrix_gaussian(M, U, V);
+  return simulate_matrix_gaussian(M, U, simulate_inverse_wishart(Ψ, k));
 }
 
 /*
