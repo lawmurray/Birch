@@ -1170,7 +1170,8 @@ void birch::Driver::target(const std::string& cmd) {
 
   std::regex rxSkipLine("In file included from|In function|In member function|In instantiation|instantiation contexts|unrecognized command-line option|^\\s*from|std::enable_if|At global scope:|type_traits", options);
   std::regex rxNamespace("birch::type::|birch::|libbirch::", options);
-  std::regex rxCxxWords("\\b(?:virtual|class|const|template(?= *<))\\b *", options);
+  std::regex rxInternal("\\b(" + name + ")_\\b", options);
+  std::regex rxCxxWords("\\b(?:virtual|class|const|typename|template(?= *<))\\b *", options);
   std::regex rxTemplateParameter("template parameter", options);
   std::regex rxTemplateArgument("template argument", options);
   std::regex rxTypeDeduction("before deduction of ‘’", options);
@@ -1189,6 +1190,7 @@ void birch::Driver::target(const std::string& cmd) {
   std::regex rxThis("\\(\\(" + type + "\\*\\)this\\)->" + type + "::", options);
   std::regex rxAka("\\{aka *‘?(class |const )?" + type + "’?\\}", options);
   std::regex rxValueType("using value_type *= *", options);
+  std::regex rxValueType2("::value_type", options);
   std::regex rxDeref("(?:operator)?->", options);
   std::regex rxAssign("‘(?:operator)?=’", options);
   std::regex rxNamespaceSep("::", options);
@@ -1218,6 +1220,7 @@ void birch::Driver::target(const std::string& cmd) {
       if (translate) {
         /* strip namespace and class qualifiers */
         str = std::regex_replace(str, rxNamespace, "");
+        str = std::regex_replace(str, rxInternal, "$1");
 
         /* replace some C++ words */
         str = std::regex_replace(str, rxCxxWords, "");
@@ -1240,6 +1243,7 @@ void birch::Driver::target(const std::string& cmd) {
         str = std::regex_replace(str, rxThis, "this.");
         str = std::regex_replace(str, rxAka, "");
         str = std::regex_replace(str, rxValueType, "");
+        str = std::regex_replace(str, rxValueType2, "");
         for (auto i = 0; i < 10; ++i) {
           str = std::regex_replace(str, rxOptional, "$1?");
         }
