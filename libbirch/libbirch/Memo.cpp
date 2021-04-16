@@ -5,6 +5,7 @@
 
 #include "libbirch/external.hpp"
 #include "libbirch/memory.hpp"
+#include "libbirch/thread.hpp"
 
 libbirch::Memo::Memo() :
     keys(nullptr),

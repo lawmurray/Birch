@@ -7,6 +7,7 @@
 #include "libbirch/internal.hpp"
 #include "libbirch/assert.hpp"
 #include "libbirch/memory.hpp"
+#include "libbirch/thread.hpp"
 #include "libbirch/Atomic.hpp"
 
 namespace libbirch {

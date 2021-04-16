@@ -5,6 +5,7 @@
 
 #include "libbirch/external.hpp"
 #include "libbirch/memory.hpp"
+#include "libbirch/thread.hpp"
 #include "libbirch/type.hpp"
 #include "libbirch/Shape.hpp"
 #include "libbirch/Iterator.hpp"

@@ -5,7 +5,6 @@
 
 #include "libbirch/external.hpp"
 #include "libbirch/internal.hpp"
-#include "libbirch/thread.hpp"
 
 namespace libbirch {
 /**
