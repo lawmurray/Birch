@@ -31,9 +31,6 @@ function lchoose(x:Integer, y:Integer) -> Real {
  * Logarithm of the binomial coefficient.
  */
 function lchoose(x:Real, y:Real) -> Real {
-  assert 0.0 <= x;
-  assert 0.0 <= y;
-  assert x >= y;
   if y == 0.0 {
     return 0.0;
   } else {
