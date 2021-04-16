@@ -1,7 +1,7 @@
 /**
  * Multiple object model.
  */
-class Multi < Model {
+final class Multi < Model {
   /**
    * Global parameters.
    */
@@ -41,7 +41,7 @@ class Multi < Model {
         x'.pushBack(track);
       }
     }
-    
+
     /* birth new objects */
     let N <~ Poisson(θ.λ);
     for n in 1..N {
@@ -79,7 +79,7 @@ class Multi < Model {
         if Q > 0.0 {
           q <- q/Q;
           let n <~ Categorical(q);  // propose observation to associate with
-          y[n] ~> p;  // observe
+          o <- y[n];  // observe
           y.erase(n);  // remove the observation for future associations
           factor -log(y.size());  // prior correction (uniform prior)
           factor -log(q[n]);  // proposal correction

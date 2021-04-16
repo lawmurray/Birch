@@ -4,12 +4,6 @@
  * - Value: Value type.
  */
 abstract class Distribution<Value> < Delay {
-  /*
-   * If the $M$-path child of this node is a fixed value, then that fixed
-   * value.
-   */
-  x:Value?;
-
   /**
    * Are lazy operations supported?
    */
@@ -120,31 +114,16 @@ abstract class Distribution<Value> < Delay {
   }
 
   override function graft(child:Delay) {
-    assert !x?;
     assert Random<Value>?(child)?;
     super.graft(child);
-  }
-
-  /**
-   * Set the $M$-path child of this node to a fixed value.
-   *
-   * - x: The fixed value.
-   */
-  function graft(x:Value) {
-    assert !this.child?;
-    this.x <- x;
   }
 
   override function prune() -> Delay {
     if child? {
       let x <- Random<Value>?(child!.prune());
       assert x?;
-      this.child <- nil;
-      return handle_update(this, x!);
-    } else if x? {
-      let x <- this.x!;
-      this.x <- nil;
-      return handle_update(this, x);
+      child <- nil;
+      return handle_prune(this, x!);
     } else {
       return this;
     }

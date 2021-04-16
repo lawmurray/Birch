@@ -222,7 +222,7 @@ abstract class Expression<Value> < Delay {
   abstract function constant();
 
   override function write(buffer:Buffer) {
-    //buffer.set(value());
+    buffer.set(value());
   }
 }
 

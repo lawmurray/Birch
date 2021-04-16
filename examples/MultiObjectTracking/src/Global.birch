@@ -1,7 +1,7 @@
 /**
  * Global parameters.
  */
-class Global {
+final class Global {
   /**
    * Lower bound of domain of interest.
    */

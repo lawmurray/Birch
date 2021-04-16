@@ -4,7 +4,7 @@
  * - s: The starting time of the track.
  * - θ: The global parameters.
  */
-class Track(s:Integer, θ:Global) < Model {
+final class Track(s:Integer, θ:Global) < Model {
   /**
    * Starting time of this track.
    */
