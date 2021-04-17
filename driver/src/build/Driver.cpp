@@ -574,10 +574,14 @@ void birch::Driver::clean() {
   fs::remove("Makefile.am");
   fs::remove("Makefile.in");
   fs::remove("missing");
+  fs::remove("lib" + canonicalName + "_test_la-" + tarName + ".lo");
+  fs::remove("lib" + canonicalName + "_debug_la-" + tarName + ".lo");
+  fs::remove("lib" + canonicalName + "_la" + tarName + ".lo");
   fs::remove("lib" + tarName + "-test.la");
   fs::remove("lib" + tarName + "-debug.la");
   fs::remove("lib" + tarName + ".la");
   fs::remove(tarName + ".birch");
+  fs::remove(tarName + ".cpp");
   fs::remove(tarName + ".hpp");
 
   if (unit == "unity") {
