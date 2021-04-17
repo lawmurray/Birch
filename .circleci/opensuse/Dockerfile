@@ -18,7 +18,7 @@ RUN zypper --non-interactive addrepo --no-gpgcheck "https://repo.mongodb.org/zyp
     gcc-c++ \
     gdb \
     libtool \
-    libjemalloc2 \
+    jemalloc-devel \
     libyaml-devel \
     boost-devel \
     eigen3-devel \

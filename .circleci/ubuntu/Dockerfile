@@ -18,7 +18,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     g++ \
     gdb \
     libtool \
-    libjemalloc2 \
+    libjemalloc-dev \
     libeigen3-dev \
     libyaml-dev \
     libboost-math-dev \
