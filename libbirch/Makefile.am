@@ -10,9 +10,6 @@ lib_LTLIBRARIES += libbirch.la
 endif
 
 AM_CPPFLAGS = -Wall -DEIGEN_NO_STATIC_ASSERT -DEIGEN_NO_AUTOMATIC_RESIZING=1 -DEIGEN_DONT_PARALLELIZE=1
-if MEMORY_POOL
-AM_CPPFLAGS += -DENABLE_MEMORY_POOL=1
-endif
 
 libbirch_debug_la_CXXFLAGS = $(AM_CXXFLAGS) $(OPENMP_CXXFLAGS) -O0 -g -fno-inline
 libbirch_debug_la_SOURCES = $(COMMON_SOURCES)
@@ -28,7 +25,6 @@ include_HEADERS = \
   libbirch/libbirch.hpp
 
 nobase_include_HEADERS = \
-  libbirch/Allocator.hpp \
   libbirch/Any.hpp \
   libbirch/Array.hpp \
   libbirch/Atomic.hpp \
@@ -55,7 +51,6 @@ nobase_include_HEADERS = \
   libbirch/memory.hpp \
   libbirch/mutable.hpp \
   libbirch/Offset.hpp \
-  libbirch/Pool.hpp \
   libbirch/Range.hpp \
   libbirch/Reacher.hpp \
   libbirch/ReadersWriterLock.hpp \

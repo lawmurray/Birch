@@ -19,7 +19,6 @@
 #include "libbirch/Shared.hpp"
 #include "libbirch/Any.hpp"
 #include "libbirch/Eigen.hpp"
-#include "libbirch/Allocator.hpp"
 
 namespace libbirch {
 /**

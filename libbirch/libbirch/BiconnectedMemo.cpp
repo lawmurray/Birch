@@ -12,7 +12,7 @@ libbirch::BiconnectedMemo::BiconnectedMemo(Any* o) :
     offset(o->k_),
     nentries(o->n_) {
   if (nentries > 0) {
-    values = (Any**)allocate(nentries*sizeof(Any*));
+    values = (Any**)std::malloc(nentries*sizeof(Any*));
     std::memset(values, 0, nentries*sizeof(Any*));
   }
 }
@@ -23,7 +23,7 @@ libbirch::BiconnectedMemo::~BiconnectedMemo() {
         return o != nullptr;
       }));
   if (nentries > 0) {
-    deallocate(values, nentries*sizeof(Any*), get_thread_num());
+    std::free(values);
   }
 }
 

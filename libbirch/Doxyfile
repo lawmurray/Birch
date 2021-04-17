@@ -2120,9 +2120,7 @@ INCLUDE_FILE_PATTERNS  =
 # recursively expanded use the := operator instead of the = operator.
 # This tag requires that the tag ENABLE_PREPROCESSING is set to YES.
 
-PREDEFINED             = ENABLE_MEMORY_POOL=1 \
-                         ENABLE_LAZY_DEEP_CLONE=1 \
-                         CLONE_MEMO_INITIAL_SIZE=16
+PREDEFINED             = 
 
 # If the MACRO_EXPANSION and EXPAND_ONLY_PREDEF tags are set to YES then this
 # tag can be used to specify a list of macro names that should be expanded. The

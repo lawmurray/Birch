@@ -80,7 +80,6 @@ public:
       l_(std::numeric_limits<int>::max()),
       h_(0),
       p_(-1),
-      t_(get_thread_num()),
       f_(0) {
     //
   }
@@ -94,7 +93,6 @@ public:
       l_(std::numeric_limits<int>::max()),
       h_(0),
       p_(-1),
-      t_(get_thread_num()),
       f_(o.f_.load() & ACYCLIC) {
     //
   }
@@ -104,20 +102,6 @@ public:
    */
   virtual ~Any() {
     assert(r_.load() == 0);
-  }
-
-  /**
-   * New operator.
-   */
-  void* operator new(std::size_t size) {
-    return allocate(size);
-  }
-
-  /**
-   * Delete operator.
-   */
-  void operator delete(void* ptr) {
-    assert(false);
   }
 
   /**
@@ -131,18 +115,14 @@ public:
    * Destroy.
    */
   void destroy_() {
-    auto tid = this->t_;
-    auto size = this->size_();
     this->~Any();
-    this->t_ = tid;
-    this->n_ = size;
   }
 
   /**
    * Deallocate.
    */
   void deallocate_() {
-    libbirch::deallocate(this, this->n_, this->t_);
+    std::free(this);
   }
 
   /**
@@ -340,11 +320,6 @@ private:
    * Id of the thread that claimed the object, used for bridge finding.
    */
   int16_t p_;
-
-  /**
-   * Id of the thread that allocated the object, used by the memory pool.
-   */
-  int16_t t_;
 
   /**
    * Bitfield containing flags, used for bridge finding and cycle collection.

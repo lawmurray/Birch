@@ -16,9 +16,8 @@ libbirch::Memo::Memo() :
 }
 
 libbirch::Memo::~Memo() {
-  auto tid = get_thread_num();
-  deallocate(keys, nentries*sizeof(Any*), tid);
-  deallocate(values, nentries*sizeof(Any*), tid);
+  std::free(keys);
+  std::free(values);
 }
 
 libbirch::Any*& libbirch::Memo::get(Any* key) {
@@ -54,8 +53,8 @@ void libbirch::Memo::rehash() {
   nentries = std::max(INITIAL_SIZE, 2*nentries1);
 
   /* allocate the new table */
-  keys = (Any**)allocate(nentries*sizeof(Any*));
-  values = (Any**)allocate(nentries*sizeof(Any*));
+  keys = (Any**)std::malloc(nentries*sizeof(Any*));
+  values = (Any**)std::malloc(nentries*sizeof(Any*));
   std::memset(keys, 0, nentries*sizeof(Any*));
   //std::memset(values, 0, nentries*sizeof(Any*));
   // ^ nullptr keys are used to indicate empty slots, while individual values
@@ -76,8 +75,7 @@ void libbirch::Memo::rehash() {
 
   /* deallocate previous table */
   if (nentries1 > 0) {
-    auto tid = get_thread_num();
-    deallocate(keys1, nentries1*sizeof(Any*), tid);
-    deallocate(values1, nentries1*sizeof(Any*), tid);
+    std::free(keys1);
+    std::free(values1);
   }
 }

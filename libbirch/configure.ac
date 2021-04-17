@@ -36,15 +36,6 @@ AC_ARG_ENABLE([release],
 esac],[release=false])
 AM_CONDITIONAL([RELEASE], [test x$release = xtrue])
 
-AC_ARG_ENABLE([memory-pool],
-[AS_HELP_STRING[--enable-memory-pool], [Enable memory pool]],
-[case "${enableval}" in
-  yes) pool=true ;;
-  no)  pool=false ;;
-  *) AC_MSG_ERROR([bad value ${enableval} for --enable-memory-pool]) ;;
-esac],[pool=true])
-AM_CONDITIONAL([MEMORY_POOL], [test x$pool = xtrue])
-
 # Programs
 AC_PROG_CXXCPP
 AC_PROG_CXX
@@ -64,19 +55,10 @@ AC_OPENMP
 # Checks for compiler flags
 AX_CHECK_COMPILE_FLAG([-fprofile-abs-path], [CXXFLAGS="$CXXFLAGS -fprofile-abs-path"], [], [-Werror])
 
-# Checks for functions
-AX_GCC_BUILTIN([__builtin_clz])
-AX_GCC_BUILTIN([__builtin_clzll])
-
 # Checks for libraries
 AC_SEARCH_LIBS([dlopen], [dl], [], [])
 AC_CHECK_LIB([atomic], [main], [], [], [])
 AC_CHECK_LIB([omp], [main], [], [], [])
-
-# pthread may be necessary with some older gcc to avoid the following error on
-# initialization of static local variables: terminate called after throwing
-# an instance of '__gnu_cxx::recursive_init_error'
-AC_CHECK_LIB([pthread], [main], [], [], [])
 
 # Checks for headers
 AC_CHECK_HEADERS([omp.h], [], [], [AC_INCLUDES_DEFAULT])

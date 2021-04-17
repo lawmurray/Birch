@@ -8,38 +8,6 @@
 
 namespace libbirch {
 /**
- * Allocate memory from heap.
- *
- * @param n Number of bytes.
- *
- * @return Pointer to the allocated memory.
- */
-void* allocate(const size_t n);
-
-/**
- * Deallocate memory from the heap, previously allocated with
- * allocate() or reallocate().
- *
- * @param ptr Pointer to the allocated memory.
- * @param n Number of bytes.
- * @param tid Id of thread that originally allocated.
- */
-void deallocate(void* ptr, const size_t n, const int tid);
-
-/**
- * Reallocate memory from heap.
- *
- * @param ptr1 Pointer to the allocated memory.
- * @param n1 Number of bytes in current allocated memory.
- * @param tid1 Id of thread that originally allocated.
- * @param n2 Number of bytes for newly allocated memory.
- *
- * @return Pointer to the newly allocated memory.
- */
-void* reallocate(void* ptr1, const size_t n1, const int tid1,
-    const size_t n2);
-
-/**
  * Register an object with the cycle collector as the possible root of a
  * cycle. This corresponds to the `PossibleRoot()` operation in @ref Bacon2001
  * "Bacon & Rajan (2001)".

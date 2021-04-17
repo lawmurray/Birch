@@ -5,8 +5,6 @@
 
 #include "libbirch/thread.hpp"
 #include "libbirch/Atomic.hpp"
-#include "libbirch/Pool.hpp"
-#include "libbirch/Allocator.hpp"
 #include "libbirch/Any.hpp"
 #include "libbirch/Marker.hpp"
 #include "libbirch/Scanner.hpp"
@@ -27,117 +25,6 @@ static thread_local std::vector<libbirch::Any*> unreachable;
  * Biconnected flag for each thread.
  */
 static thread_local bool biconnected_flag = false;
-
-#ifdef ENABLE_MEMORY_POOL
-/**
- * Get the `i`th pool.
- */
-static libbirch::Pool& get_pool(const int i) {
-  static libbirch::Pool* pools =
-      new libbirch::Pool[64*libbirch::get_max_threads()];
-  return pools[i];
-}
-#endif
-
-/**
- * For an allocation size, determine the index of the pool to which it
- * belongs.
- *
- * @param n Number of bytes.
- *
- * @return Pool index.
- *
- * Pool sizes are multiples of 8 bytes up to 64 bytes, and powers of two
- * thereafter.
- */
-inline int bin(const size_t n) {
-  assert(n > 0ull);
-  int result = 0;
-  #ifdef HAVE___BUILTIN_CLZLL
-  if (n > 64ull) {
-    /* __builtin_clzll undefined for zero argument */
-    result = 64 - __builtin_clzll((n - 1ull) >> 6ull);
-  }
-  #else
-  while (((n - 1ull) >> (6 + result)) > 0) {
-    ++result;
-  }
-  #endif
-  assert(0 <= result && result <= 63);
-  return result;
-}
-
-/**
- * Determine the size for a given bin.
- */
-inline size_t unbin(const int i) {
-  return 64ull << i;
-}
-
-void* libbirch::allocate(const size_t n) {
-  assert(n > 0u);
-
-  #ifdef ENABLE_MEMORY_POOL
-  int tid = get_thread_num();
-  int i = bin(n);       // determine which pool
-  auto ptr = get_pool(64*tid + i).take();  // attempt to reuse from this pool
-  if (!ptr) {           // otherwise allocate new
-    size_t m = unbin(i);
-    ptr = std::malloc(m);
-  }
-  assert(ptr);
-  return ptr;
-  #else
-  return std::malloc(n);
-  #endif
-}
-
-void libbirch::deallocate(void* ptr, const size_t n, const int tid) {
-  assert(ptr);
-  assert(n > 0u);
-  assert(tid < get_max_threads());
-
-  #ifdef ENABLE_MEMORY_POOL
-  int i = bin(n);
-  auto& pool = get_pool(64*tid + i);
-  if (tid == get_thread_num()) {
-    /* this thread owns the associated pool, return the allocation to the free
-     * list */
-    pool.free(ptr);
-  } else {
-    /* this thread does not own the associated pool, return the allocation to
-     * the pend list */
-    pool.pend(ptr);
-  }
-  #else
-  std::free(ptr);
-  #endif
-}
-
-void* libbirch::reallocate(void* ptr1, const size_t n1, const int tid1,
-    const size_t n2) {
-  assert(ptr1);
-  assert(n1 > 0u);
-  assert(tid1 < get_max_threads());
-  assert(n2 > 0u);
-
-  #ifdef ENABLE_MEMORY_POOL
-  int i1 = bin(n1);
-  int i2 = bin(n2);
-  void* ptr2 = ptr1;
-  if (i1 != i2) {
-    /* can't continue using current allocation */
-    ptr2 = allocate(n2);
-    if (ptr1 && ptr2) {
-      std::memcpy(ptr2, ptr1, std::min(n1, n2));
-    }
-    deallocate(ptr1, n1, tid1);
-  }
-  return ptr2;
-  #else
-  return std::realloc(ptr1, n2);
-  #endif
-}
 
 void libbirch::register_possible_root(Any* o) {
   possible_roots.push_back(o);

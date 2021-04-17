@@ -35,7 +35,6 @@ public:
   Array() :
       shape(),
       buffer(nullptr),
-      tid(0),
       isView(false) {
     assert(shape.volume() == 0);
   }
@@ -48,7 +47,6 @@ public:
   Array(const F& shape) :
       shape(shape),
       buffer(nullptr),
-      tid(0),
       isView(false) {
     allocate();
     initialize();
@@ -66,7 +64,6 @@ public:
   Array(const F& shape, Args&&... args) :
       shape(shape),
       buffer(nullptr),
-      tid(0),
       isView(false) {
     allocate();
     initialize(std::forward<Args>(args)...);
@@ -82,7 +79,6 @@ public:
   Array(const std::initializer_list<T>& values) :
       shape(values.size()),
       buffer(nullptr),
-      tid(0),
       isView(false) {
     allocate();
     std::uninitialized_copy(values.begin(), values.end(), begin());
@@ -98,7 +94,6 @@ public:
   Array(const std::initializer_list<std::initializer_list<T>>& values) :
       shape(values.size(), values.begin()->size()),
       buffer(nullptr),
-      tid(0),
       isView(false) {
     allocate();
     auto ptr = buf();
@@ -119,7 +114,6 @@ public:
   Array(const L& l, const F& shape) :
       shape(shape),
       buffer(nullptr),
-      tid(0),
       isView(false) {
     allocate();
     int64_t n = 0;
@@ -134,7 +128,6 @@ public:
   Array(const Array& o) :
       shape(o.shape.compact()),
       buffer(nullptr),
-      tid(0),
       isView(false) {
     allocate();
     uninitialized_copy(o);
@@ -148,7 +141,6 @@ public:
   Array(const Array<U,G>& o) :
       shape(o.shape.compact()),
       buffer(nullptr),
-      tid(0),
       isView(false) {
     allocate();
     uninitialized_copy(o);
@@ -337,9 +329,7 @@ public:
       Array<T,F> tmp(s, x);
       swap(tmp);
     } else {
-      size_t oldBytes = shape.volume()*sizeof(T);
-      size_t newBytes = s.volume()*sizeof(T);
-      buffer = (T*)libbirch::reallocate(buffer, oldBytes, tid, newBytes);
+      buffer = (T*)std::realloc(buffer, s.volume()*sizeof(T));
       std::memmove((void*)(buf() + i + 1), (void*)(buf() + i), (n - i)*sizeof(T));
       new (buf() + i) T(x);
       shape = s;
@@ -368,9 +358,7 @@ public:
         buf()[j].~T();
       }
       std::memmove((void*)(buf() + i), (void*)(buf() + i + len), (n - len - i)*sizeof(T));
-      size_t oldBytes = shape.volume()*sizeof(T);
-      size_t newBytes = s.volume()*sizeof(T);
-      buffer = (T*)libbirch::reallocate(buffer, oldBytes, tid, newBytes);
+      buffer = (T*)std::realloc(buffer, s.volume()*sizeof(T));
     }
     shape = s;
   }
@@ -404,7 +392,6 @@ public:
   Array(const Eigen::MatrixBase<EigenType>& o) :
       shape(o.rows(), o.cols()),
       buffer(nullptr),
-      tid(0),
       isView(false) {
     allocate();
     toEigen() = o;
@@ -417,7 +404,6 @@ public:
   Array(const Eigen::DiagonalWrapper<EigenType>& o) :
       shape(o.rows(), o.cols()),
       buffer(nullptr),
-      tid(0),
       isView(false) {
     allocate();
     toEigen() = o;
@@ -430,7 +416,6 @@ public:
   Array(const Eigen::TriangularView<EigenType,Mode>& o) :
       shape(o.rows(), o.cols()),
       buffer(nullptr),
-      tid(0),
       isView(false) {
     allocate();
     toEigen() = o;
@@ -476,7 +461,6 @@ private:
   Array(const F& shape, T* buffer, int64_t offset) :
       shape(shape),
       buffer(buffer + offset),
-      tid(0),
       isView(true) {
     //
   }
@@ -496,7 +480,6 @@ private:
     assert(!o.isView);
     std::swap(shape, o.shape);
     std::swap(buffer, o.buffer);
-    std::swap(tid, o.tid);
   }
 
   /**
@@ -506,8 +489,7 @@ private:
     assert(!buffer);
     size_t bytes = volume()*sizeof(T);
     if (bytes > 0) {
-      buffer = (T*)libbirch::allocate(bytes);
-      tid = get_thread_num();
+      buffer = (T*)std::malloc(bytes);
     }
   }
 
@@ -519,7 +501,7 @@ private:
       size_t bytes = volume()*sizeof(T);
       if (bytes > 0) {
         std::destroy(begin(), end());
-        libbirch::deallocate(buffer, bytes, tid);
+        std::free(buffer);
         buffer = nullptr;
       }
     }
@@ -579,11 +561,6 @@ private:
    * Buffer.
    */
   T* buffer;
-
-  /**
-   * Id of the thread that allocated the buffer.
-   */
-  int16_t tid;
 
   /**
    * Is this a view of another array? A view has stricter assignment
