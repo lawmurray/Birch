@@ -98,6 +98,25 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
   }
 
   /**
+   * Handle a simulate event.
+   *
+   * - p: Distribution.
+   *
+   * Returns: `x`.
+   */
+  function handleSimulate<Value>(p:Distribution<Value>) -> Value {
+    if delayExpressions && p.supportsLazy() {
+      let x <- p.simulateLazy()!;
+      p.graft(x);
+      return x;
+    } else {
+      let x <- p.simulate();
+      p.graft(x);
+      return x;
+    }
+  }
+
+  /**
    * Handle an observe event.
    *
    * - x: Random.
@@ -109,6 +128,24 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
       Random<Value> {
     x.assume(p);
     return handleDelayObserve(x);
+  }
+
+  /**
+   * Handle an observe event.
+   *
+   * - x: Random.
+   * - p: Distribution.
+   *
+   * Returns: `x`.
+   */
+  function handleObserve<Value>(x:Value, p:Distribution<Value>) -> Value {
+    if delayExpressions && p.supportsLazy() {
+      handleFactor(p.logpdfLazy(box(x))!);
+    } else {
+      handleFactor(p.logpdf(x));
+    }
+    p.graft(x);
+    return x;
   }
 
   /**
@@ -169,7 +206,7 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
    * Handle a prune event.
    *
    * - p: Distribution.
-   * - x: Random (child of `p` on $M$-path).
+   * - x: Child of `p` on $M$-path.
    *
    * Returns: Updated distribution.
    */
@@ -179,6 +216,22 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
       return p.updateLazy(x)!;
     } else {
       return p.update(x.value())!;
+    }
+  }
+
+  /**
+   * Handle a prune event.
+   *
+   * - p: Distribution.
+   * - x: Child of `p` on $M$-path.
+   *
+   * Returns: Updated distribution.
+   */
+  function handleDelayPrune<Value>(p:Distribution<Value>, x:Value) -> Delay {
+    if delayExpressions && p.supportsLazy() {
+      return p.updateLazy(box(x))!;
+    } else {
+      return p.update(x)!;
     }
   }
 

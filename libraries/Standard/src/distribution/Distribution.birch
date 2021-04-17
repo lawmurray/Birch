@@ -5,6 +5,15 @@
  */
 abstract class Distribution<Value> < Delay {
   /**
+   * Value-only child on the $M$-path. This is an optimization. It is only
+   * used when the Distribution is used with the `<~` or `~>` operator with a
+   * variable of basic type, rather than of Random type, on the left. It keeps
+   * the value of that variable here, rather than wrapping it in a Random
+   * object to keep in `super.child`.
+   */
+  childValue:Value?;
+
+  /**
    * Are lazy operations supported?
    */
   function supportsLazy() -> Boolean {
@@ -115,7 +124,18 @@ abstract class Distribution<Value> < Delay {
 
   override function graft(child:Delay) {
     assert Random<Value>?(child)?;
-    super.graft(child);
+    assert !this.child?;
+    assert !this.childValue?;
+    this.child <- child;
+  }
+
+  /*
+   * Graft child as value-only. See documentation for member variable `x`.
+   */
+  function graft(childValue:Value) {
+    assert !this.child?;
+    assert !this.childValue?;
+    this.childValue <- childValue;
   }
 
   override function prune() -> Delay {
@@ -124,6 +144,10 @@ abstract class Distribution<Value> < Delay {
       assert x?;
       child <- nil;
       return handle_prune(this, x!);
+    } else if childValue? {
+      let x <- childValue!;
+      childValue <- nil;
+      return handle_prune(this, x);
     } else {
       return this;
     }

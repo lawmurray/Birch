@@ -63,9 +63,8 @@ function swap_handler(handler:Handler) -> Handler {
  *     [`~`](https://www.birch.sh/language/probability/) operator, which is
  *     hard-wired to call this internally.
  */
-function handle_assume<Value,Right>(x:Random<Value>, p:Right) ->
-    Random<Value> {
-  return get_handler().handleAssume<Value>(x, p);
+function handle_assume<Left,Right>(x:Left, p:Right) -> Left {
+  return get_handler().handleAssume<Right.Value>(x, p);
 }
 
 /*
@@ -99,9 +98,8 @@ function handle_assume<Right>(p:Right) -> Random<Right.Value> {
  *     [`<~`](https://www.birch.sh/language/probability/) operator, which is
  *     hard-wired to call this internally.
  */
-function handle_simulate<Value,Right>(x:Random<Value>, p:Right) ->
-    Random<Value> {
-  return get_handler().handleSimulate<Value>(x, p);
+function handle_simulate<Left,Right>(x:Left, p:Right) -> Left {
+  return get_handler().handleSimulate<Right.Value>(x, p);
 }
 
 /*
@@ -117,7 +115,7 @@ function handle_simulate<Value,Right>(x:Random<Value>, p:Right) ->
  *     hard-wired to call this internally.
  */
 function handle_simulate<Right>(p:Right) -> Right.Value {
-  return handle_simulate(Random<Right.Value>(), p).value();
+  return get_handler().handleSimulate<Right.Value>(p);
 }
 
 /*
@@ -133,26 +131,8 @@ function handle_simulate<Right>(p:Right) -> Right.Value {
  *     [`~>`](https://www.birch.sh/language/probability/) operator, which is
  *     hard-wired to call this internally.
  */
-function handle_observe<Value,Right>(x:Random<Value>, p:Right) ->
-    Random<Value> {
-  return get_handler().handleObserve<Value>(x, p);
-}
-
-/*
- * Handle observe event.
- *
- * - x: Random.
- * - p: Distribution.
- *
- * Returns: `x`.
- *
- * !!! attention
- *     Typically one does not call this directly, but rather uses the
- *     [`~>`](https://www.birch.sh/language/probability/) operator, which is
- *     hard-wired to call this internally.
- */
-function handle_observe<Value,Right>(x:Value, p:Right) -> Value {
-  return handle_observe(Random(x), p).value();
+function handle_observe<Left,Right>(x:Left, p:Right) -> Left {
+  return get_handler().handleObserve<Right.Value>(x, p);
 }
 
 /*
@@ -195,10 +175,10 @@ function handle_delay_observe<Value>(x:Random<Value>) -> Random<Value> {
  * Handle prune event.
  *
  * - p: Distribution.
- * - x: Random (child of `p` on $M$-path).
+ * - x: Child of `p` on $M$-path (Random or value).
  *
  * Returns: Updated distribution.
  */
-function handle_prune<Left,Value>(p:Left, x:Random<Value>) -> Delay {
-  return get_handler().handleDelayPrune<Value>(p, x);
+function handle_prune<Left,Right>(p:Left, x:Right) -> Delay {
+  return get_handler().handleDelayPrune<Left.Value>(p, x);
 }
