@@ -136,7 +136,7 @@ commands:
               rm -rf hello
             fi
 
-  library:
+  build_library:
     description: Build a C++ library
     parameters:
       package:
@@ -153,7 +153,7 @@ commands:
               make $MAKE_FLAGS
               make install
 
-  package:
+  build_package:
     description: Build a Birch package
     parameters:
       dir:
@@ -177,6 +177,17 @@ commands:
               then
                 env BIRCH_MODE=$SMOKE ./smoke.sh
               fi
+
+  test_package:
+    description: Test a Birch package
+    parameters:
+      dir:
+        description: Directory containing the package (e.g. libraries)
+        type: string
+      package:
+        description: Name of package (e.g. Standard)
+        type: string
+    steps:
       - run:
           name: Unit test << parameters.package >> package
           command: |
@@ -361,7 +372,7 @@ commands:
               fi
 
 jobs:
-  main:
+  build:
     parameters: 
       os:
         type: executor
@@ -370,15 +381,15 @@ jobs:
       - checkout
       - environment
       - driver
-      - library:
+      - build_library:
           package: libbirch
-      - package:
+      - build_package:
           dir: libraries
           package: Standard
-      - package:
+      - build_package:
           dir: libraries
           package: Cairo
-      - package:
+      - build_package:
           dir: libraries
           package: SQLite
       - persist_to_workspace:
@@ -387,26 +398,61 @@ jobs:
             - '*'
       - end_if_pull_request
       - slack
-      - codecov
 
-  example:
+  test:
+    parameters: 
+      os:
+        type: executor
+    executor: << parameters.os >>
+    steps:
+      - attach_workspace:
+          at: ~/project
+      - environment
+      - test_package:
+          dir: libraries
+          package: Standard
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - '*'
+      - end_if_pull_request
+      - slack
+
+  build-example:
     parameters: 
       os:
         type: executor
       package:
-        description: Name of package (e.g. Standard)
+        description: Name of package (e.g. LinearRegression)
         type: string
     executor: << parameters.os >>
     steps:
       - attach_workspace:
           at: ~/project
       - environment
-      - package:
+      - build_package:
           dir: examples
           package: << parameters.package >>
       - end_if_pull_request
       - slack
-      - codecov
+
+  test-example:
+    parameters: 
+      os:
+        type: executor
+      package:
+        description: Name of package (e.g. LinearRegression)
+        type: string
+    executor: << parameters.os >>
+    steps:
+      - attach_workspace:
+          at: ~/project
+      - environment
+      - test_package:
+          dir: examples
+          package: << parameters.package >>
+      - end_if_pull_request
+      - slack
 
   deploy:
     executor: opensuse
@@ -447,36 +493,48 @@ jobs:
       - brew_commit
       - deploy_website
       - slack
+
+  codecov:
+    executor: opensuse
+    steps:
+      - end_if_pull_request
+      - attach_workspace:
+          at: ~/project
+      - environment
       - codecov
+      - slack
 
 workflows:
   version: 2
   all:
     jobs:
-      - main:
-          os: opensuse
-          name: main-opensuse
-
-      - main:
+      - build:
           matrix:
             parameters:
-              os: [debian,fedora,mac]
+              os: [opensuse,debian,fedora,mac]
 
-      - example:
+      - test:
+          matrix:
+            parameters:
+              os: [opensuse]
+          requires:
+            - build-<< matrix.os >>
+
+      - build-example:
+          matrix:
+            parameters:
+              os: [opensuse,debian,fedora,mac]
+              package: [LinearGaussian,LinearRegression,MixedGaussian,PoissonGaussian,SIR,MultiObjectTracking,VectorBorneDisease]
+          requires:
+            - build-<< matrix.os >>
+
+      - test-example:
           matrix:
             parameters:
               os: [opensuse]
               package: [LinearGaussian,LinearRegression,MixedGaussian,PoissonGaussian,SIR,MultiObjectTracking,VectorBorneDisease]
           requires:
-            - main-opensuse
-
-      - example:
-          matrix:
-            parameters:
-              os: [debian,fedora,mac]
-              package: [LinearRegression,MixedGaussian,SIR,MultiObjectTracking,VectorBorneDisease]
-          requires:
-            - main-<< matrix.os >>
+            - build-example-<< matrix.os >>-<< matrix.package >>
 
       - deploy:
           filters:
@@ -484,25 +542,26 @@ workflows:
               only:
                 - master
           requires:
-            - example-opensuse-LinearGaussian
-            - example-opensuse-LinearRegression
-            - example-opensuse-MixedGaussian
-            - example-opensuse-PoissonGaussian
-            - example-opensuse-SIR
-            - example-opensuse-MultiObjectTracking
-            - example-opensuse-VectorBorneDisease
-            - example-debian-LinearRegression
-            - example-debian-MixedGaussian
-            - example-debian-SIR
-            - example-debian-MultiObjectTracking
-            - example-debian-VectorBorneDisease
-            - example-fedora-LinearRegression
-            - example-fedora-MixedGaussian
-            - example-fedora-SIR
-            - example-fedora-MultiObjectTracking
-            - example-fedora-VectorBorneDisease
-            - example-mac-LinearRegression
-            - example-mac-MixedGaussian
-            - example-mac-SIR
-            - example-mac-MultiObjectTracking
-            - example-mac-VectorBorneDisease
+            - build
+            - test
+            - build-example
+            - test-example
+
+      - codecov:
+          filters:
+            branches:
+              only:
+                - master
+          requires:
+            - deploy
+
+      - codecov:
+          filters:
+            branches:
+              ignore:
+                - master
+          requires:
+            - build
+            - test
+            - build-example
+            - test-example
