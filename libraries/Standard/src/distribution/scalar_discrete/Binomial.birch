@@ -107,7 +107,7 @@ function cdf_binomial(x:Integer, n:Integer, ρ:Real) -> Real {
   assert 0.0 <= ρ && ρ <= 1.0;
   if x < 0 {
     return 0.0;
-  } else if x > n {
+  } else if x >= n {
     return 1.0;
   } else {
     return ibeta(n - x, x + 1.0, 1.0 - ρ);
