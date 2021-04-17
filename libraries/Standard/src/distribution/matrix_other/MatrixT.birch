@@ -6,13 +6,13 @@
  * - U: Spread.
  * - Ψ: Spread.
  */
-function simulate_matrix_student_t(k:Real, M:Real[_,_], U:Real[_,_],
+function simulate_matrix_t(k:Real, M:Real[_,_], U:Real[_,_],
     Ψ:Real[_,_]) -> Real[_,_] {
   return simulate_matrix_gaussian(M, U, simulate_inverse_wishart(Ψ, k));
 }
 
 /*
- * Observe a matrix Student's $t$-distribution variate with location
+ * Observe a matrix $t$-distribution variate with location
  * and scale.
  *
  * - X: The variate.
@@ -23,7 +23,7 @@ function simulate_matrix_student_t(k:Real, M:Real[_,_], U:Real[_,_],
  *
  * Returns: the log probability density.
  */
-function logpdf_matrix_student_t<Arg1,Arg2,Arg3,Arg4,Arg5>(X:Arg1, k:Arg2,
+function logpdf_matrix_t<Arg1,Arg2,Arg3,Arg4,Arg5>(X:Arg1, k:Arg2,
     M:Arg3, U:Arg4, V:Arg5) -> {
   let n <- rows(X);
   let p <- columns(X);

@@ -142,7 +142,7 @@ function Gaussian<Arg>(μ:Multiply<Arg,Random<Real>>, σ2:Random<Real>) ->
  */
 function simulate_linear_normal_inverse_gamma_gaussian(a:Real, ν:Real,
     λ:Real, α:Real, β:Real, c:Real) -> Real {
-  return simulate_student_t(2.0*α, a*ν/λ + c, 2.0*β*(1.0 + a*a/λ));
+  return simulate_student_t(2.0*α, a*ν/λ + c, (β/α)*(1.0 + a*a/λ));
 }
 
 /*
@@ -161,7 +161,7 @@ function simulate_linear_normal_inverse_gamma_gaussian(a:Real, ν:Real,
  */
 function logpdf_linear_normal_inverse_gamma_gaussian<Arg1,Arg2,Arg3,Arg4,Arg5,
     Arg6,Arg7>(x:Arg1, a:Arg2, ν:Arg3, λ:Arg4, α:Arg5, β:Arg6, c:Arg7) -> {
-  return logpdf_student_t(x, 2.0*α, a*ν/λ + c, 2.0*β*(1.0 + a*a/λ));
+  return logpdf_student_t(x, 2.0*α, a*ν/λ + c, (β/α)*(1.0 + a*a/λ));
 }
 
 /*
@@ -184,7 +184,7 @@ function update_linear_normal_inverse_gamma_gaussian<Arg1,Arg2,Arg3,Arg4,Arg5,
   let λ' <- λ + a*a;
   let ν' <- ν + a*y;
   let α' <- α + 0.5;
-  let β' <- β + 0.5*(y*y + ν*ν/λ - ν'*ν'/λ');
+  let β' <- β + 0.5*(pow(y, 2.0) + ν*ν/λ - ν'*ν'/λ');
   return NormalInverseGamma(ν', λ', α', β');
 }
 
@@ -204,7 +204,7 @@ function update_linear_normal_inverse_gamma_gaussian<Arg1,Arg2,Arg3,Arg4,Arg5,
  */
 function cdf_linear_normal_inverse_gamma_gaussian(x:Real, a:Real, ν:Real,
     λ:Real, α:Real, β:Real, c:Real) -> Real {
-  return cdf_student_t(x, 2.0*α, a*ν/λ + c, 2.0*β*(1.0 + a*a/λ));
+  return cdf_student_t(x, 2.0*α, a*ν/λ + c, (β/α)*(1.0 + a*a/λ));
 }
 
 /*
@@ -223,5 +223,5 @@ function cdf_linear_normal_inverse_gamma_gaussian(x:Real, a:Real, ν:Real,
  */
 function quantile_linear_normal_inverse_gamma_gaussian(P:Real, a:Real, ν:Real,
     λ:Real, α:Real, β:Real, c:Real) -> Real {
-  return quantile_student_t(P, 2.0*α, a*ν/λ + c, 2.0*β*(1.0 + a*a/λ));
+  return quantile_student_t(P, 2.0*α, a*ν/λ + c, (β/α)*(1.0 + a*a/λ));
 }

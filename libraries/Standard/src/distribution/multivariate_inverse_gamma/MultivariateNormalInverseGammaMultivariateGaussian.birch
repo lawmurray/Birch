@@ -134,7 +134,7 @@ function simulate_multivariate_normal_inverse_gamma_multivariate_gaussian(
     ν:Real[_], Λ:Real[_,_], α:Real, β:Real, Σ:Real[_,_]) -> Real[_] {
   let S <- cholinv(Λ);
   let μ <- S*ν;
-  return simulate_multivariate_student_t(2.0*α, μ, 2.0*β*(Σ + S));
+  return simulate_multivariate_t(2.0*α, μ, 2.0*β*(Σ + S));
 }
 
 /*
@@ -155,7 +155,7 @@ function logpdf_multivariate_normal_inverse_gamma_multivariate_gaussian<
     Σ:Arg4) -> {
   let S <- cholinv(Λ);
   let μ <- S*ν;
-  return logpdf_multivariate_student_t(x, 2.0*α, μ, 2.0*β*(Σ + S));
+  return logpdf_multivariate_t(x, 2.0*α, μ, 2.0*β*(Σ + S));
 }
 
 /*

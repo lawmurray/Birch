@@ -168,7 +168,7 @@ function Gaussian<Arg1,Arg2>(μ:Arg1, σ2:Multiply<Random<Real>,Arg2>) ->
  */
 function simulate_normal_inverse_gamma(ν:Real, λ:Real, α:Real, β:Real) ->
     Real {
-  return simulate_student_t(2.0*α, ν/λ, 2.0*β/λ);
+  return simulate_student_t(2.0*α, ν/λ, β/(α*λ));
 }
 
 /*
@@ -184,7 +184,7 @@ function simulate_normal_inverse_gamma(ν:Real, λ:Real, α:Real, β:Real) ->
  */
 function logpdf_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4,Arg5>(x:Arg1,
     ν:Arg2, λ:Arg3, α:Arg4, β:Arg5) -> {
-  return logpdf_student_t(x, 2.0*α, ν/λ, 2.0*β/λ);
+  return logpdf_student_t(x, 2.0*α, ν/λ, β/(α*λ));
 }
 
 /*
@@ -217,7 +217,7 @@ function update_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4,Arg5>(x:Arg1,
  */
 function cdf_normal_inverse_gamma(x:Real, ν:Real, λ:Real, α:Real, β:Real) ->
     Real {
-  return cdf_student_t(x, 2.0*α, ν/λ, 2.0*β/λ);
+  return cdf_student_t(x, 2.0*α, ν/λ, β/(α*λ));
 }
 
 /*
@@ -233,5 +233,5 @@ function cdf_normal_inverse_gamma(x:Real, ν:Real, λ:Real, α:Real, β:Real) ->
  */
 function quantile_normal_inverse_gamma(P:Real, ν:Real, λ:Real, α:Real,
     β:Real) -> Real {
-  return quantile_student_t(P, 2.0*α, ν/λ, 2.0*β/λ);
+  return quantile_student_t(P, 2.0*α, ν/λ, β/(α*λ));
 }

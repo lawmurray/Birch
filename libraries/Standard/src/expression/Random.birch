@@ -36,8 +36,8 @@ final class Random<Value> < Expression<Value> {
    */
   operator <- x:Value {
     assert !this.x?;
-    this.x <- x;
     prune();
+    this.x <- x;
     if p? {
       handle_delay_observe(this);
     }
@@ -184,7 +184,7 @@ final class Random<Value> < Expression<Value> {
   }
 
   function hasGaussian() -> Boolean {
-    return p? && p!.isGaussian();
+    return !x? && p? && p!.isGaussian();
   }
 
   function getGaussian() -> (Expression<Real>, Expression<Real>) {
@@ -192,7 +192,7 @@ final class Random<Value> < Expression<Value> {
   }
 
   function hasBeta() -> Boolean {
-    return p? && p!.isBeta();
+    return !x? && p? && p!.isBeta();
   }
 
   function getBeta() -> (Expression<Real>, Expression<Real>) {
@@ -200,7 +200,7 @@ final class Random<Value> < Expression<Value> {
   }
 
   function hasGamma() -> Boolean {
-    return p? && p!.isGamma();
+    return !x? && p? && p!.isGamma();
   }
 
   function getGamma() -> (Expression<Real>, Expression<Real>) {
@@ -208,7 +208,7 @@ final class Random<Value> < Expression<Value> {
   }
 
   function hasInverseGamma() -> Boolean {
-    return p? && p!.isInverseGamma();
+    return !x? && p? && p!.isInverseGamma();
   } 
 
   function getInverseGamma() -> (Expression<Real>, Expression<Real>) {
@@ -216,7 +216,7 @@ final class Random<Value> < Expression<Value> {
   }
 
   function hasInverseWishart() -> Boolean {
-    return p? && p!.isInverseWishart();
+    return !x? && p? && p!.isInverseWishart();
   } 
 
   function getInverseWishart() -> (Expression<Real[_,_]>, Expression<Real>) {
@@ -224,7 +224,7 @@ final class Random<Value> < Expression<Value> {
   } 
 
   function hasNormalInverseGamma(σ2:Random<Real>) -> Boolean {
-    return p? && p!.isNormalInverseGamma(σ2);
+    return !x? && p? && p!.isNormalInverseGamma(σ2);
   }
 
   function getNormalInverseGamma() -> (Expression<Real>, Expression<Real>,
@@ -233,7 +233,7 @@ final class Random<Value> < Expression<Value> {
   }
 
   function hasDirichlet() -> Boolean {
-    return p? && p!.isDirichlet();
+    return !x? && p? && p!.isDirichlet();
   }
 
   function getDirichlet() -> Expression<Real[_]> {
@@ -241,7 +241,7 @@ final class Random<Value> < Expression<Value> {
   }
 
   function hasRestaurant() -> Boolean {
-    return p? && p!.isRestaurant();
+    return !x? && p? && p!.isRestaurant();
   }
 
   function getRestaurant() -> (Expression<Real>, Expression<Real>,
@@ -250,7 +250,7 @@ final class Random<Value> < Expression<Value> {
   }
 
   function hasMultivariateGaussian() -> Boolean {
-    return p? && p!.isMultivariateGaussian();
+    return !x? && p? && p!.isMultivariateGaussian();
   }
 
   function getMultivariateGaussian() -> (Expression<Real[_]>,
@@ -259,7 +259,7 @@ final class Random<Value> < Expression<Value> {
   }
 
   function hasMultivariateNormalInverseGamma(σ2:Random<Real>) -> Boolean {
-    return p? && p!.isMultivariateNormalInverseGamma(σ2);
+    return !x? && p? && p!.isMultivariateNormalInverseGamma(σ2);
   }
 
   function getMultivariateNormalInverseGamma() -> (Expression<Real[_]>,
@@ -268,7 +268,7 @@ final class Random<Value> < Expression<Value> {
   }
 
   function hasMatrixGaussian() -> Boolean {
-    return p? && p!.isMatrixGaussian();
+    return !x? && p? && p!.isMatrixGaussian();
   }
 
   function getMatrixGaussian() -> (Expression<Real[_,_]>,
@@ -277,7 +277,7 @@ final class Random<Value> < Expression<Value> {
   }
 
   function hasMatrixNormalInverseWishart(Σ:Random<Real[_,_]>) -> Boolean {
-    return p? && p!.isMatrixNormalInverseWishart(Σ);
+    return !x? && p? && p!.isMatrixNormalInverseWishart(Σ);
   }
 
   function getMatrixNormalInverseWishart() -> (Expression<Real[_,_]>,
@@ -286,7 +286,7 @@ final class Random<Value> < Expression<Value> {
   }
 
   function hasDiscrete() -> Boolean {
-    return p? && p!.isDiscrete();
+    return !x? && p? && p!.isDiscrete();
   }
 
   function getDiscrete() -> Discrete {
@@ -294,7 +294,7 @@ final class Random<Value> < Expression<Value> {
   }
 
   function hasBoundedDiscrete() -> Boolean {
-    return p? && p!.isBoundedDiscrete();
+    return !x? && p? && p!.isBoundedDiscrete();
   }
 
   function getBoundedDiscrete() -> BoundedDiscrete {

@@ -106,7 +106,7 @@ function simulate_matrix_normal_inverse_wishart_matrix_gaussian(N:Real[_,_],
   let S <- cholinv(Λ);
   let M <- S*N;
   let Σ <- U + S;
-  return simulate_matrix_student_t(k, M, Σ, Ψ);
+  return simulate_matrix_t(k, M, Σ, Ψ);
 }
 
 /*
@@ -126,7 +126,7 @@ function logpdf_matrix_normal_inverse_wishart_matrix_gaussian<Arg1,Arg2,
   let S <- cholinv(Λ);
   let M <- S*N;
   let Σ <- U + S;
-  return logpdf_matrix_student_t(X, k, M, Σ, Ψ);
+  return logpdf_matrix_t(X, k, M, Σ, Ψ);
 }
 
 /*

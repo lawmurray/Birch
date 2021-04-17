@@ -109,7 +109,7 @@ function simulate_matrix_normal_inverse_wishart(N:Real[_,_], Λ:Real[_,_],
     Ψ:Real[_,_], k:Real) -> Real[_,_] {
   let Σ <- cholinv(Λ);
   let M <- Σ*N;
-  return simulate_matrix_student_t(k, M, Σ, Ψ);
+  return simulate_matrix_t(k, M, Σ, Ψ);
 }
 
 /*
@@ -127,7 +127,7 @@ function logpdf_matrix_normal_inverse_wishart<Arg1,Arg2,Arg3,Arg4,Arg5>(
     X:Arg1, N:Arg2, Λ:Arg3, Ψ:Arg4, k:Arg5) -> {
   let Σ <- cholinv(Λ);
   let M <- Σ*N;
-  return logpdf_matrix_student_t(X, k, M, Σ, Ψ);
+  return logpdf_matrix_t(X, k, M, Σ, Ψ);
 }
 
 /*

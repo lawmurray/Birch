@@ -107,7 +107,7 @@ function simulate_scaled_matrix_normal_inverse_wishart_multivariate_gaussian(
   let S <- cholinv(Λ);
   let M <- S*N;
   let σ2 <- 1.0 + dot(a, S*a);
-  return simulate_multivariate_student_t(k, dot(a, M), σ2*Ψ);
+  return simulate_multivariate_t(k, dot(a, M), σ2*Ψ);
 }
 
 /*
@@ -129,7 +129,7 @@ function logpdf_scaled_matrix_normal_inverse_wishart_multivariate_gaussian<
   let S <- cholinv(Λ);
   let M <- S*N;
   let σ2 <- 1.0 + dot(a, S*a);
-  return logpdf_multivariate_student_t(x, k, dot(a, M), σ2*Ψ);
+  return logpdf_multivariate_t(x, k, dot(a, M), σ2*Ψ);
 }
 
 /*

@@ -10,7 +10,7 @@ class TestNormalInverseGamma < Model {
   function initialize() {
     μ <- simulate_uniform(-10.0, 10.0);
     a2 <- simulate_uniform(0.1, 2.0);
-    α <- simulate_uniform(2.0, 10.0);
+    α <- simulate_uniform(2.1, 10.0);
     β <- simulate_uniform(0.1, 10.0);
   }
 
