@@ -16,6 +16,7 @@ RUN yum -y update && yum -y install \
     autoconf \
     automake \
     libtool \
+    jemalloc \
     libyaml-devel \
     boost-devel \
     cairo-devel \
