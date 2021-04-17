@@ -60,9 +60,8 @@ final class YapDengueModel < Model {
       h.Δi[t] <- h.i[t];
       h.Δr[t] <- 0;
       
-      u:Real;
-      u <~ Uniform(-1.0, 2.0);
-      m.s[t] <- scalar<Integer>(n*pow(10.0, u));
+      let u <~ Uniform(-1.0, 2.0);
+      m.s[t] <- n*pow(10.0, u);
       m.e[t] <- 0;
       m.i[t] <- 0;
       m.r[t] <- 0;
@@ -75,13 +74,11 @@ final class YapDengueModel < Model {
       n:Real <- h.s[t - 1] + h.e[t - 1] + h.i[t - 1] + h.r[t - 1];
 
       /* transition of human population */
-      τ_h:Integer;
-      τ_h <~ Binomial(h.s[t - 1], 1.0 - exp(-m.i[t - 1]/n));
+      let τ_h <~ Binomial(h.s[t - 1], 1.0 - exp(-m.i[t - 1]/n));
       h.transfer(t, τ_h);
 
       /* transition of mosquito population */
-      τ_m:Integer;
-      τ_m <~ Binomial(m.s[t - 1], 1.0 - exp(-h.i[t - 1]/n));
+      let τ_m <~ Binomial(m.s[t - 1], 1.0 - exp(-h.i[t - 1]/n));
       m.transfer(t, τ_m);
     }
 
