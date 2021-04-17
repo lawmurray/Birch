@@ -162,8 +162,7 @@ commands:
           command: |
               cd << parameters.dir >>/<< parameters.package >>
               echo "version: $VERSION" | cat - birch.yml | sponge birch.yml
-              birch build --prefix=$PREFIX $MODE_FLAGS $BIRCH_FLAGS
-              birch install
+              birch install --prefix=$PREFIX $MODE_FLAGS $BIRCH_FLAGS
       - run:
           name: Smoke test << parameters.package >> package
           command: |
