@@ -329,7 +329,7 @@ public:
       Array<T,F> tmp(s, x);
       swap(tmp);
     } else {
-      buffer = (T*)std::realloc(buffer, s.volume()*sizeof(T));
+      buffer = (T*)std::realloc((void*)buffer, s.volume()*sizeof(T));
       std::memmove((void*)(buf() + i + 1), (void*)(buf() + i), (n - i)*sizeof(T));
       new (buf() + i) T(x);
       shape = s;
@@ -358,7 +358,7 @@ public:
         buf()[j].~T();
       }
       std::memmove((void*)(buf() + i), (void*)(buf() + i + len), (n - len - i)*sizeof(T));
-      buffer = (T*)std::realloc(buffer, s.volume()*sizeof(T));
+      buffer = (T*)std::realloc((void*)buffer, s.volume()*sizeof(T));
     }
     shape = s;
   }
