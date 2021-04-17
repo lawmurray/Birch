@@ -131,13 +131,13 @@ function cdf_conway_maxwell_poisson(x:Integer, λ:Real, ν:Real, n:Integer) ->
     let z <- 1.0;
     let Z <- z;
     for i in 1..x {
-      z <- z*λ/pow(scalar<Real>(i), ν);
+      z <- z*λ/pow(i, ν);
       Z <- Z + z;
     }
     let z' <- z;
     let Z' <- Z;
     for i in (x + 1)..n {
-      z' <- z'*λ/pow(scalar<Real>(i), ν);
+      z' <- z'*λ/pow(i, ν);
       Z' <- Z' + z';
     }
     return Z/Z';
@@ -159,7 +159,6 @@ function quantile_conway_maxwell_poisson(P:Real, λ:Real, ν:Real,
   assert 0.0 <= λ;
   assert 0.0 <= ν;
   assert 0 <= n;
-
   let Q <- P*normalize_conway_maxwell_poisson(λ, ν, n);
   let x <- 0;
   let z <- 1.0;

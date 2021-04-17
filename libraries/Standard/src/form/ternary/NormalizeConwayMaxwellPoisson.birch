@@ -77,7 +77,7 @@ function normalize_conway_maxwell_poisson(λ:Real, ν:Real, n:Integer) -> Real {
   let z <- 1.0;
   let Z <- z;
   for x in 1..n {
-    z <- z*λ/pow(scalar<Real>(x), ν);
+    z <- z*λ/pow(x, ν);
     Z <- Z + z;
   }
   return Z;
