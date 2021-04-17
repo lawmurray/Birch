@@ -31,14 +31,18 @@ Native support is not yet provided, but you can install [Windows Subsystem for L
 
 ### From source
 
-If a package is not available for your operating system or you have special requirements, you can install from source. This requires:
+If a package is not available for your operating system or you have special requirements, you can install Birch from source. This requires:
 
   * GNU autoconf, automake, libtool, flex, and bison
   * [LibYAML](https://pyyaml.org/wiki/LibYAML)
   * [Boost](https://boost.org)
   * [Eigen](https://eigen.tuxfamily.org)
 
-All Birch sources are in the same repository. The master branch is considered stable. Clone it:
+The following are optional, but will be linked in automatically if found (to improve performance):
+
+  * [jemalloc](http://jemalloc.net/) or [tcmalloc](https://gperftools.github.io/gperftools/tcmalloc.html)
+
+All Birch sources are in the same repository. The main branch is considered stable. Clone it:
 
     git clone https://github.com/lawmurray/Birch.git
 
