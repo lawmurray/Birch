@@ -45,7 +45,7 @@ executors:
     environment:
       OMP_NUM_THREADS: 4
       MAKE_FLAGS: "-j8"
-      BIRCH_FLAGS: "--unit=dir --arch=native --jobs=6 --enable-verbose"
+      BIRCH_FLAGS: "--unit=unity --arch=native --jobs=6 --enable-verbose"
       SMOKE: debug
       HOMEBREW: 1
     working_directory: /Users/distiller/project/mac
