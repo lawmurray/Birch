@@ -7,13 +7,16 @@
 function test_grad(π:Distribution<Real>, N:Integer) {
   assert π.supportsLazy();
   let failed <- 0;  // number of failed tests
-  let h <- 1.0e-4;  // interval width for finite difference estimate
-  let ε <- 2.0e-2;  // relative error threshold for fail
+  let h <- 1.0e-6;  // interval width for finite difference estimate
+  let ε <- 2.0e-3;  // relative error threshold for fail
+  if N <= 10 {
+    ε <- inf;  // for smoke tests
+  }
 
   for n in 1..N {
     /* variate */
     x:Random<Real>;
-    x.move(π.simulate());
+    x.move(π.simulate() + 0.5*h);  // + 0.5*h ensures stays +ve where required
 
     /* gradient */    
     let p <- π.logpdfLazy(x)!;
@@ -49,8 +52,11 @@ function test_grad(π:Distribution<Real>, N:Integer) {
 function test_grad(π:Distribution<Real[_]>, N:Integer) {
   assert π.supportsLazy();
   let failed <- 0;  // number of failed tests
-  let h <- 1.0e-4;  // interval width for finite difference estimate
-  let ε <- 2.0e-2;  // relative error threshold for fail
+  let h <- 1.0e-6;  // interval width for finite difference estimate
+  let ε <- 2.0e-3;  // relative error threshold for fail
+  if N <= 10 {
+    ε <- inf;  // for smoke tests
+  }
 
   for n in 1..N {
     /* variate */
@@ -95,8 +101,11 @@ function test_grad(π:Distribution<Real[_]>, N:Integer) {
 function test_grad(π:Distribution<Real[_,_]>, N:Integer) {
   assert π.supportsLazy();
   let failed <- 0;  // number of failed tests
-  let h <- 1.0e-4;  // interval width for finite difference estimate
-  let ε <- 2.0e-2;  // relative error threshold for fail
+  let h <- 1.0e-6;  // interval width for finite difference estimate
+  let ε <- 2.0e-3;  // relative error threshold for fail
+  if N <= 10 {
+    ε <- inf;  // for smoke tests
+  }
 
   for n in 1..N {
     /* variate */

@@ -11,6 +11,9 @@ function pass(x1:Real[_], x2:Real[_]) -> Boolean {
 
   let N <- length(x1);
   let ε <- 2.0/sqrt(N);
+  if N <= 10 {
+    ε <- inf;  // for smoke tests
+  }
 
   /* normalise onto the interval [0,1] */
   let mn <- min(min(x1), min(x2));
@@ -44,6 +47,9 @@ function pass(X1:Real[_,_], X2:Real[_,_]) -> Boolean {
   let failed <- 0;
   let tests <- 0;
   let ε <- 2.0/sqrt(R);
+  if R <= 10 {
+    ε <- inf;  // for smoke tests
+  }
 
   /* compare marginals using 1-Wasserstein distance */
   for c in 1..C {
