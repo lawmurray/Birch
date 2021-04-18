@@ -417,7 +417,7 @@ jobs:
            equal: [ opensuse, << parameters.os >> ]
          steps:
            - persist_to_workspace:
-              root: ~/project
+              root: .
               paths:
                 - '*'
       - end_if_pull_request
@@ -430,7 +430,7 @@ jobs:
     executor: << parameters.os >>
     steps:
       - attach_workspace:
-          at: ~/project
+          at: .
       - environment
       - test_package:
           dir: libraries
@@ -448,13 +448,13 @@ jobs:
     executor: << parameters.os >>
     steps:
       - attach_workspace:
-          at: ~/project
+          at: .
       - environment
       - build_package:
           dir: examples
           package: << parameters.package >>
       - persist_to_workspace:
-          root: ~/project
+          root: .
           paths:
             - examples/<< parameters.package >>
       - end_if_pull_request
@@ -470,7 +470,7 @@ jobs:
     executor: << parameters.os >>
     steps:
       - attach_workspace:
-          at: ~/project
+          at: .
       - environment
       - test_package:
           dir: examples
@@ -483,7 +483,7 @@ jobs:
     steps:
       - end_if_pull_request
       - attach_workspace:
-          at: ~/project
+          at: .
       - environment
       - git_identity
       - osc_identity
@@ -524,7 +524,7 @@ jobs:
     steps:
       - end_if_pull_request
       - attach_workspace:
-          at: ~/project
+          at: .
       - environment
       - codecov
       - slack
