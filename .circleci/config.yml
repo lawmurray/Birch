@@ -385,7 +385,7 @@ jobs:
   build:
     parameters: 
       os:
-        type: executor
+        type: string
     executor: << parameters.os >>
     steps:
       - checkout
@@ -416,7 +416,7 @@ jobs:
   test:
     parameters: 
       os:
-        type: executor
+        type: string
     executor: << parameters.os >>
     steps:
       - attach_workspace:
@@ -431,7 +431,7 @@ jobs:
   build_example:
     parameters: 
       os:
-        type: executor
+        type: string
       package:
         description: Name of package (e.g. LinearRegression)
         type: string
@@ -453,7 +453,7 @@ jobs:
   test_example:
     parameters: 
       os:
-        type: executor
+        type: string
       package:
         description: Name of package (e.g. LinearRegression)
         type: string
