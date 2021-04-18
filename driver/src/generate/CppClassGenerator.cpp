@@ -101,7 +101,7 @@ void birch::CppClassGenerator::visit(const Class* o) {
         line("using base_type_::operator=;");
         for (auto name : names) {
           genSourceLine(o->loc);
-          line("using base_type_::" << internalise(name) << ';');
+          line("using base_type_::" << sanitize(name) << ';');
         }
         line("");
       }

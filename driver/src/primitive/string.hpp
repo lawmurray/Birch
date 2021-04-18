@@ -43,7 +43,7 @@ std::string nice(const std::string& name);
  * outside the class [0-9a-zA-z_] translated to within that class, and an
  * underscore added to the end to avoid clashes with user variables.
  */
-std::string internalise(const std::string& name);
+std::string sanitize(const std::string& name);
 
 /**
  * Escape unicode characters in a string.

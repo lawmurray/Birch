@@ -129,11 +129,22 @@ std::string birch::nice(const std::string& name) {
   /* translate prime (apostrophe at end of name) */
   str = std::regex_replace(str, std::regex("'"), "_prime_");
 
+
+
   return str;
 }
 
-std::string birch::internalise(const std::string& name) {
-  return nice(escape_unicode(name));
+std::string birch::sanitize(const std::string& name) {
+  std::string str = nice(escape_unicode(name));
+
+  /* stdin, stdout, and stderr are defined as macros in C, but also global
+   * variables in Birch; this can create conflicts in some implementations,
+   * e.g. musl, so explicitly rename the Birch variables here */
+  if (str == "stdin" || str == "stdout" || str == "stderr") {
+    str += "_";
+  }
+
+  return str;
 }
 
 std::string birch::escape_unicode(const std::string& str) {

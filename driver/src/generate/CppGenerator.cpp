@@ -23,7 +23,7 @@ birch::CppGenerator::CppGenerator(std::ostream& base, const int level,
 }
 
 void birch::CppGenerator::visit(const Name* o) {
-  middle(internalise(o->str()));
+  middle(sanitize(o->str()));
 }
 
 void birch::CppGenerator::visit(const ExpressionList* o) {
@@ -348,7 +348,7 @@ void birch::CppGenerator::visit(const Program* o) {
         in();
         for (auto param : *o->params) {
           auto name = dynamic_cast<const Parameter*>(param)->name;
-          auto flag = internalise(name->str()) + "FLAG_";
+          auto flag = sanitize(name->str()) + "FLAG_";
           line(flag << ',');
         }
         out();
@@ -362,7 +362,7 @@ void birch::CppGenerator::visit(const Program* o) {
         in();
         for (auto param : *o->params) {
           auto name = dynamic_cast<const Parameter*>(param)->name;
-          std::string flag = internalise(name->str()) + "FLAG_";
+          std::string flag = sanitize(name->str()) + "FLAG_";
           std::string option = std::regex_replace(name->str(), std::regex("_"), "-");
 
           genSourceLine(o->loc);
@@ -399,7 +399,7 @@ void birch::CppGenerator::visit(const Program* o) {
         for (auto param : *o->params) {
           auto p = dynamic_cast<const Parameter*>(param);
           auto name = p->name;
-          auto flag = internalise(name->str()) + "FLAG_";
+          auto flag = sanitize(name->str()) + "FLAG_";
 
           genSourceLine(p->loc);
           line("case " << flag << ':');
@@ -728,7 +728,7 @@ void birch::CppGenerator::visit(const TypeOf* o) {
 std::string birch::CppGenerator::getIndex(const Statement* o) {
   auto index = dynamic_cast<const LocalVariable*>(o);
   assert(index);
-  return internalise(index->name->str());
+  return sanitize(index->name->str());
 }
 
 void birch::CppGenerator::genTraceFunction(const std::string& name,
