@@ -19,6 +19,16 @@ executors:
     working_directory: /root/project/opensuse
     # ^ can't use ~/ or $HOME here, won't expand in $CIRCLE_WORKING_DIRECTORY
 
+  ubuntu:
+    docker:
+      - image: lawmurray/birch-circleci:ubuntu
+    environment:
+      OMP_NUM_THREADS: 2
+      MAKE_FLAGS: "-j4"
+      BIRCH_FLAGS: "--unit=dir --arch=native --jobs=3 --enable-verbose"
+      SMOKE: debug
+    working_directory: /root/project/ubuntu
+
   debian:
     docker:
       - image: lawmurray/birch-circleci:debian
@@ -392,10 +402,14 @@ jobs:
       - build_package:
           dir: libraries
           package: SQLite
-      - persist_to_workspace:
-          root: ~/project
-          paths:
-            - '*'
+      - when:
+         condition:
+           equal: [ opensuse, << parameters.os >> ]
+         steps:
+           - persist_to_workspace:
+              root: ~/project
+              paths:
+                - '*'
       - end_if_pull_request
       - slack
 
@@ -411,10 +425,6 @@ jobs:
       - test_package:
           dir: libraries
           package: Standard
-      - persist_to_workspace:
-          root: ~/project
-          paths:
-            - '*'
       - end_if_pull_request
       - slack
 
@@ -455,10 +465,6 @@ jobs:
       - test_package:
           dir: examples
           package: << parameters.package >>
-      - persist_to_workspace:
-          root: ~/project
-          paths:
-            - '*'
       - end_if_pull_request
       - slack
 
@@ -500,6 +506,7 @@ jobs:
           package: SQLite
       - brew_commit
       - deploy_website
+      - codecov
       - slack
 
   codecov:
@@ -519,7 +526,7 @@ workflows:
       - build:
           matrix:
             parameters:
-              os: [opensuse,debian,fedora,mac]
+              os: [opensuse,ubuntu,debian,fedora,mac]
 
       - test:
           matrix:
@@ -551,17 +558,10 @@ workflows:
                 - master
           requires:
             - build-mac
+            - build-ubuntu
             - build-debian
             - build-fedora
             - test-example
-
-      - codecov:
-          filters:
-            branches:
-              only:
-                - master
-          requires:
-            - deploy
 
       - codecov:
           filters:
