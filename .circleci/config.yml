@@ -536,7 +536,7 @@ workflows:
       - build:
           matrix:
             parameters:
-              os: [opensuse,ubuntu,debian,fedora,mac]
+              os: [opensuse,ubuntu,debian,fedora,alpine,mac]
 
       - test:
           matrix:
@@ -571,6 +571,7 @@ workflows:
             - build-ubuntu
             - build-debian
             - build-fedora
+            - build-alpine
             - test_example
 
       - codecov:
