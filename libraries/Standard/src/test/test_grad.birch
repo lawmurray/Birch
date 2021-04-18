@@ -9,9 +9,6 @@ function test_grad(π:Distribution<Real>, N:Integer) {
   let failed <- 0;  // number of failed tests
   let h <- 1.0e-6;  // interval width for finite difference estimate
   let ε <- 1.0e-2;  // relative error threshold for fail
-  if N <= 10 {
-    ε <- inf;  // for smoke tests
-  }
 
   for n in 1..N {
     /* variate */
@@ -32,13 +29,15 @@ function test_grad(π:Distribution<Real>, N:Integer) {
     let fd <- (r - q)/h;
 
     /* evaluate */
-    let δ <- abs(d - fd);
-    if !(δ <= ε*abs(fd)) {
-      stderr.print("***failed*** d=" + d + ", fd=" + fd + ", "  + δ + " > " + ε*abs(fd) + "\n");
-      failed <- failed + 1;
-    }
-    if failed > 0 {
-      exit(1);
+    if N > 10 {  // if less, considered smoke test only
+      let δ <- abs(d - fd);
+      if !(δ <= ε*abs(fd)) {
+        stderr.print("***failed*** d=" + d + ", fd=" + fd + ", "  + δ + " > " + ε*abs(fd) + "\n");
+        failed <- failed + 1;
+      }
+      if failed > 0 {
+        exit(1);
+      }
     }
   }
 }
@@ -54,9 +53,6 @@ function test_grad(π:Distribution<Real[_]>, N:Integer) {
   let failed <- 0;  // number of failed tests
   let h <- 1.0e-6;  // interval width for finite difference estimate
   let ε <- 1.0e-2;  // relative error threshold for fail
-  if N <= 10 {
-    ε <- inf;  // for smoke tests
-  }
 
   for n in 1..N {
     /* variate */
@@ -80,10 +76,12 @@ function test_grad(π:Distribution<Real[_]>, N:Integer) {
       let fd <- (r - q)/h;
 
       /* evaluate */
-      let δ <- abs(d[i] - fd);
-      if !(δ <= ε*abs(fd)) {
-        stderr.print("***failed*** d=" + d[i] + ", fd=" + fd + ", "  + δ + " > " + ε*abs(fd) + "\n");
-        failed <- failed + 1;
+      if N > 10 {  // if less, considered smoke test only
+        let δ <- abs(d[i] - fd);
+        if !(δ <= ε*abs(fd)) {
+          stderr.print("***failed*** d=" + d[i] + ", fd=" + fd + ", "  + δ + " > " + ε*abs(fd) + "\n");
+          failed <- failed + 1;
+        }
       }
     }
     if failed > 0 {
@@ -103,9 +101,6 @@ function test_grad(π:Distribution<Real[_,_]>, N:Integer) {
   let failed <- 0;  // number of failed tests
   let h <- 1.0e-6;  // interval width for finite difference estimate
   let ε <- 1.0e-2;  // relative error threshold for fail
-  if N <= 10 {
-    ε <- inf;  // for smoke tests
-  }
 
   for n in 1..N {
     /* variate */
@@ -130,10 +125,12 @@ function test_grad(π:Distribution<Real[_,_]>, N:Integer) {
         let fd <- (r - q)/h;
 
         /* evaluate */
-        let δ <- abs(d[i,j] - fd);
-        if !(δ <= ε*abs(fd)) {
-          stderr.print("***failed*** d=" + d[i,j] + ", fd=" + fd + ", "  + δ + " > " + ε*abs(fd) + "\n");
-          failed <- failed + 1;
+        if N > 10 {  // if less, considered smoke test only
+          let δ <- abs(d[i,j] - fd);
+          if !(δ <= ε*abs(fd)) {
+            stderr.print("***failed*** d=" + d[i,j] + ", fd=" + fd + ", "  + δ + " > " + ε*abs(fd) + "\n");
+            failed <- failed + 1;
+          }
         }
       }
     }
