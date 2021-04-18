@@ -421,6 +421,7 @@ jobs:
               paths:
                 - '*'
       - end_if_pull_request
+      - codecov
       - slack
 
   test:
@@ -458,6 +459,7 @@ jobs:
           paths:
             - examples/<< parameters.package >>
       - end_if_pull_request
+      - codecov
       - slack
 
   test_example:
@@ -519,16 +521,6 @@ jobs:
       - codecov
       - slack
 
-  codecov:
-    executor: opensuse
-    steps:
-      - end_if_pull_request
-      - attach_workspace:
-          at: .
-      - environment
-      - codecov
-      - slack
-
 workflows:
   version: 2
   all:
@@ -572,12 +564,4 @@ workflows:
             - build-debian
             - build-fedora
             - build-alpine
-            - test_example
-
-      - codecov:
-          filters:
-            branches:
-              ignore:
-                - master
-          requires:
             - test_example
