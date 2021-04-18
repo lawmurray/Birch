@@ -49,6 +49,16 @@ executors:
       SMOKE: debug
     working_directory: /root/project/fedora
 
+  alpine:
+    docker:
+      - image: lawmurray/birch-circleci:alpine
+    environment:
+      OMP_NUM_THREADS: 2
+      MAKE_FLAGS: "-j4"
+      BIRCH_FLAGS: "--unit=dir --arch=native --jobs=3 --enable-verbose"
+      SMOKE: debug
+    working_directory: /root/project/alpine
+
   mac:
     macos:
       xcode: 12.4.0
