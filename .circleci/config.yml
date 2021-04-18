@@ -307,8 +307,8 @@ commands:
           command: |
               if [[ -n "$GITHUB_USERNAME" && -n "$GITHUB_PASSWORD" ]]
               then
-                git clone https://$GITHUB_USERNAME:$GITHUB_PASSWORD@github.com/lawmurray/homebrew-birch.git
-                cd homebrew-birch
+                git clone https://$GITHUB_USERNAME:$GITHUB_PASSWORD@github.com/lawmurray/homebrew_birch.git
+                cd homebrew_birch
                 git rm *.tar.gz
               fi
 
@@ -339,8 +339,8 @@ commands:
                 fi
                 cd << parameters.dir >>/<< parameters.package >>
                 make dist
-                cp $TARNAME-$VERSION.tar.gz $CIRCLE_WORKING_DIRECTORY/homebrew-birch/.
-                cd $CIRCLE_WORKING_DIRECTORY/homebrew-birch
+                cp $TARNAME-$VERSION.tar.gz $CIRCLE_WORKING_DIRECTORY/homebrew_birch/.
+                cd $CIRCLE_WORKING_DIRECTORY/homebrew_birch
                 SHA256=($(sha256sum $TARNAME-$VERSION.tar.gz))
                 cat $TARNAME.rb |
                   sed -E "s/-[0-9]+\.[0-9]+\.tar\.gz/-$VERSION.tar.gz/g" |
@@ -359,7 +359,7 @@ commands:
           command: |
               if [[ -n "$GITHUB_USERNAME" && -n "$GITHUB_PASSWORD" && -n "$VERSION" ]]
               then
-                cd homebrew-birch
+                cd homebrew_birch
                 git add *.tar.gz
                 git add -u
                 git commit -m "Updated to version $VERSION."
@@ -428,7 +428,7 @@ jobs:
       - end_if_pull_request
       - slack
 
-  build-example:
+  build_example:
     parameters: 
       os:
         type: executor
@@ -446,11 +446,11 @@ jobs:
       - persist_to_workspace:
           root: ~/project
           paths:
-            - '*'
+            - examples/<< parameters.package >>
       - end_if_pull_request
       - slack
 
-  test-example:
+  test_example:
     parameters: 
       os:
         type: executor
@@ -535,7 +535,7 @@ workflows:
           requires:
             - build-<< matrix.os >>
 
-      - build-example:
+      - build_example:
           matrix:
             parameters:
               os: [opensuse]
@@ -543,13 +543,13 @@ workflows:
           requires:
             - test-<< matrix.os >>
 
-      - test-example:
+      - test_example:
           matrix:
             parameters:
               os: [opensuse]
               package: [LinearGaussian,LinearRegression,MixedGaussian,PoissonGaussian,SIR,MultiObjectTracking,VectorBorneDisease]
           requires:
-            - build-example-<< matrix.os >>-<< matrix.package >>
+            - build_example-<< matrix.os >>-<< matrix.package >>
 
       - deploy:
           filters:
@@ -561,7 +561,7 @@ workflows:
             - build-ubuntu
             - build-debian
             - build-fedora
-            - test-example
+            - test_example
 
       - codecov:
           filters:
@@ -569,4 +569,4 @@ workflows:
               ignore:
                 - master
           requires:
-            - test-example
+            - test_example
