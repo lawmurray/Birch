@@ -531,7 +531,7 @@ workflows:
       - build-example:
           matrix:
             parameters:
-              os: [opensuse,debian,fedora,mac]
+              os: [opensuse]
               package: [LinearGaussian,LinearRegression,MixedGaussian,PoissonGaussian,SIR,MultiObjectTracking,VectorBorneDisease]
           requires:
             - build-<< matrix.os >>
@@ -552,7 +552,6 @@ workflows:
           requires:
             - build
             - test
-            - build-example
             - test-example
 
       - codecov:
@@ -570,6 +569,4 @@ workflows:
                 - master
           requires:
             - build
-            - test
             - build-example
-            - test-example
