@@ -433,6 +433,10 @@ jobs:
       - build_package:
           dir: examples
           package: << parameters.package >>
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - '*'
       - end_if_pull_request
       - slack
 
@@ -451,6 +455,10 @@ jobs:
       - test_package:
           dir: examples
           package: << parameters.package >>
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - '*'
       - end_if_pull_request
       - slack
 
