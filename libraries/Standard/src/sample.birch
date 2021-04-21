@@ -223,13 +223,25 @@ program sample(
 
     /* output */
     if outputWriter? {
-      x:Model?;
-      w:Real;
-      (x, w) <- theSampler!.draw(theFilter!);
+      let (x, w) <- theSampler!.draw(theFilter!);
       outputBuffer.set("lweight", w);
-      outputBuffer.push("sample", x!);
+      outputBuffer.set("sample", x);
+
+      /* push additional elements to the "sample" key for each step, but only
+       * if the model actually writes something for at least one write(t),
+       * otherwise assume that it does all its output in write() alone */
+      let steps <- Buffer();
+      let atLeastOne <- false;
       for t in 1..nsteps! {
-        outputBuffer.push("sample", t, x!);
+        let step <- Buffer(t, x);
+        atLeastOne <- atLeastOne || !step.isEmpty();
+        steps.push("sample", step);
+      }
+      if atLeastOne {
+        let iter <- steps.walk();
+        while iter.hasNext() {
+          outputBuffer.push("sample", iter.next());
+        }
       }
       outputWriter!.push(outputBuffer);
       outputWriter!.flush();

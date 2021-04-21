@@ -195,7 +195,7 @@ final class Random<Value> < Expression<Value> {
    * Does this have a distribution?
    */
   function hasDistribution() -> Boolean {
-    return p?;
+    return p? || child?;
   }
 
   /**
