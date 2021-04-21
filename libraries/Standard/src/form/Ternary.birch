@@ -50,10 +50,10 @@ struct Ternary<Function,Left,Middle,Right>(l:Left, m:Middle, r:Right) {
     global.label(r, gen);
   }
 
-  function prune(gen:Integer) {
-    global.prune(l, gen);
-    global.prune(m, gen);
-    global.prune(r, gen);
+  function constant(gen:Integer) {
+    global.constant(l, gen);
+    global.constant(m, gen);
+    global.constant(r, gen);
   }
 
   function constant() {

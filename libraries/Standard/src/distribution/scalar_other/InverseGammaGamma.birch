@@ -63,8 +63,8 @@ function InverseGammaGamma<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2, β:Arg3) -> {
  * Create gamma distribution.
  */
 function Gamma<Arg>(k:Arg, θ:Random<Real>) -> Distribution<Real> {
+  θ.prune();
   if θ.hasInverseGamma() {
-    θ.prune();
     let (α, β) <- θ.getInverseGamma();
     let p <- InverseGammaGamma(k, α, β);
     θ.graft(p);

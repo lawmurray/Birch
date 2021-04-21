@@ -1,0 +1,89 @@
+class TestFanNormalInverseGammaGaussian < Model {
+  σ2:Random<Real>;
+  μ:Random<Real>;
+  x1:Random<Real>;
+  x2:Random<Real>;
+  x3:Random<Real>;
+  x4:Random<Real>;
+  x5:Random<Real>;
+
+  μ_0:Real;
+  a2:Real;
+  α:Real;
+  β:Real;
+
+  function initialize() {
+    μ_0 <- simulate_uniform(-10.0, 10.0);
+    a2 <- simulate_uniform(0.0, 2.0);
+    α <- simulate_uniform(2.1, 10.0);
+    β <- simulate_uniform(0.1, 10.0);
+  }
+
+  function simulate() {
+    σ2 ~ InverseGamma(α, β);
+    μ ~ Gaussian(μ_0, a2*σ2);
+    x1 ~ Gaussian(μ, σ2);
+    x2 ~ Gaussian(μ, σ2);
+    x3 ~ Gaussian(μ, σ2);
+    x4 ~ Gaussian(μ, σ2);
+    x5 ~ Gaussian(μ, σ2);
+  }
+
+  function forward() -> Real[_] {
+    y:Real[7];
+    y[1] <- σ2.value();
+    y[2] <- μ.value();
+    y[3] <- x1.value();
+    y[4] <- x2.value();
+    y[5] <- x3.value();
+    y[6] <- x4.value();
+    y[7] <- x5.value();
+    return y;
+  }
+
+  function backward() -> Real[_] {
+    y:Real[7];
+    assert !x5.hasValue();
+    y[7] <- x5.value();
+    y[6] <- x4.value();
+    y[5] <- x3.value();
+    y[4] <- x2.value();
+    y[3] <- x1.value();
+    assert !μ.hasValue();
+    y[2] <- μ.value();
+    assert !σ2.hasValue();
+    y[1] <- σ2.value();
+    return y;
+  }
+
+  function forwardLazy() -> Real[_] {
+    y:Real[7];
+    y[1] <- σ2.eval();
+    y[2] <- μ.eval();
+    y[3] <- x1.eval();
+    y[4] <- x2.eval();
+    y[5] <- x3.eval();
+    y[6] <- x4.eval();
+    y[7] <- x5.eval();
+    return y;
+  }
+
+  function backwardLazy() -> Real[_] {
+    y:Real[7];
+    assert !x5.hasValue();
+    y[7] <- x5.eval();
+    y[6] <- x4.eval();
+    y[5] <- x3.eval();
+    y[4] <- x2.eval();
+    y[3] <- x1.eval();
+    assert !μ.hasValue();
+    y[2] <- μ.eval();
+    assert !σ2.hasValue();
+    y[1] <- σ2.eval();
+    return y;
+  }
+
+  function size() -> Integer {
+    return 7;
+  }
+}

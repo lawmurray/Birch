@@ -67,8 +67,8 @@ function BetaBinomial<Arg1,Arg2,Arg3>(n:Arg1, α:Arg2, β:Arg3) -> {
  * Create binomial distribution.
  */
 function Binomial<Arg1>(n:Arg1, ρ:Random<Real>) -> Distribution<Integer> {
+  ρ.prune();
   if ρ.hasBeta() {
-    ρ.prune();
     let (α, β) <- ρ.getBeta();
     let p <- BetaBinomial(n, α, β);
     ρ.graft(p);

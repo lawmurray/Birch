@@ -47,7 +47,7 @@ acyclic class BoxedValue<Value>(x:Value) < Expression<Value> {
     //
   }
 
-  override function prune(gen:Integer) {
+  override function constant(gen:Integer) {
     //
   }
 

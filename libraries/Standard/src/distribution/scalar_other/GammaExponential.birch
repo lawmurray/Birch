@@ -65,8 +65,8 @@ function GammaExponential<Arg1,Arg2>(k:Arg1, θ:Arg2) -> {
  * Create Exponential distribution.
  */
 function Exponential(λ:Random<Real>) -> Distribution<Real> {
+  λ.prune();
   if λ.hasGamma() {
-    λ.prune();
     let (k, θ) <- λ.getGamma();
     let p <- GammaExponential(k, θ);
     λ.graft(p);

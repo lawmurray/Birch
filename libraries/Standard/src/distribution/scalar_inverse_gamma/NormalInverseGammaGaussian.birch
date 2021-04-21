@@ -76,20 +76,24 @@ function NormalInverseGammaGaussian<Arg1,Arg2,Arg3,Arg4>(ν:Arg1, λ:Arg2,
  * Create Gaussian distribution.
  */
 function Gaussian(μ:Random<Real>, σ2:Random<Real>) -> Distribution<Real> {
-  if μ.hasNormalInverseGamma(σ2) {
-    μ.prune();
+  μ.prune();
+  if μ.hasNormalInverseGamma() && μ.isGrandChildOf(σ2) {
     let (ν, λ, α, β) <- μ.getNormalInverseGamma();
     let p <- NormalInverseGammaGaussian(ν, λ, α, β);
-    μ.graft(p);
-    return p;
-  } else if σ2.hasInverseGamma() {
-    σ2.prune();
-    let (α, β) <- σ2.getNormalInverseGamma();
-    let p <- NormalInverseGamma(μ, 1.0, α, β);
-    μ.graft(p);
+    μ.graft(p, 1);
+    σ2.graftReplace(p, 2);
+    μ.join(σ2);
     return p;
   } else {
-    return construct<Gaussian<Random<Real>,Random<Real>>>(μ, σ2);
+    σ2.prune();
+    if σ2.hasInverseGamma() {
+      let (α, β) <- σ2.getNormalInverseGamma();
+      let p <- NormalInverseGamma(μ, 1.0, α, β);
+      μ.graft(p);
+      return p;
+    } else {
+      return construct<Gaussian<Random<Real>,Random<Real>>>(μ, σ2);
+    }
   }
 }
 

@@ -71,8 +71,8 @@ function GaussianGaussian<Arg1,Arg2,Arg3>(μ:Arg1, σ2:Arg2, s2:Arg3) -> {
  * Create Gaussian distribution.
  */
 function Gaussian<Arg>(μ:Random<Real>, σ2:Arg) -> Distribution<Real> {
+  μ.prune();
   if μ.hasGaussian() {
-    μ.prune();
     let (m, s2) <- μ.getGaussian();
     let p <- GaussianGaussian(m, s2, σ2);
     μ.graft(p);

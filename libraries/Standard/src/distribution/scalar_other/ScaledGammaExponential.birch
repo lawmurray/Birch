@@ -68,8 +68,8 @@ function ScaledGammaExponential<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2, θ:Arg3) -> {
  */
 function Exponential<Arg>(λ:Multiply<Arg,Random<Real>>) ->
     Distribution<Real> {
+  λ.r.prune();
   if λ.r.hasGamma() {
-    λ.r.prune();
     let (k, θ) <- λ.r.getGamma();
     let p <- ScaledGammaExponential(λ.l, k, θ);
     λ.r.graft(p);
@@ -84,8 +84,8 @@ function Exponential<Arg>(λ:Multiply<Arg,Random<Real>>) ->
  */
 function Exponential<Arg>(λ:Multiply<Random<Real>,Arg>) ->
     Distribution<Real> {
+  λ.l.prune();
   if λ.l.hasGamma() {
-    λ.l.prune();
     let (k, θ) <- λ.l.getGamma();
     let p <- ScaledGammaExponential(λ.r, k, θ);
     λ.l.graft(p);

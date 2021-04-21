@@ -82,18 +82,23 @@ function LinearMatrixNormalInverseWishartMultivariateGaussian<Arg1,Arg2,
 function MultivariateGaussian<Arg1,Arg2>(
     μ:DotAdd<Arg1,Random<Real[_,_]>,Arg2>, Σ:Random<Real[_,_]>) ->
     Distribution<Real[_]> {
-  if μ.m.hasMatrixNormalInverseWishart(Σ) {
-    μ.m.prune();
+  μ.m.prune();
+  if μ.m.hasMatrixNormalInverseWishart()&& μ.m.isGrandChildOf(Σ) {
     let (N, Λ, Ψ, k) <- μ.m.getMatrixNormalInverseWishart();
-    let p <- LinearMatrixNormalInverseWishartMultivariateGaussian(μ.l, N,
-        Λ, Ψ, k, μ.r);
-    μ.m.graft(p);
+    let p <- LinearMatrixNormalInverseWishartMultivariateGaussian(μ.l, N, Λ,
+        Ψ, k, μ.r);
+    μ.m.graft(p, 1);
+    Σ.graftReplace(p, 2);
+    μ.m.join(Σ);
     return p;
-  } else if Σ.hasInverseWishart() {
-    return construct<MultivariateGaussian<DotAdd<Arg1,Random<Real[_,_]>,
-        Arg2>,Random<Real[_,_]>>>(μ, Σ);
   } else {
-    return construct<MultivariateGaussian<DotAdd<Arg1,Random<Real[_,_]>,
+    Σ.prune();
+    // if Σ.hasInverseWishart() {
+    //   return construct<MultivariateGaussian<DotAdd<Arg1,Random<Real[_,_]>,
+    //       Arg2>,Random<Real[_,_]>>>(μ, Σ);
+    // } else {
+      return construct<MultivariateGaussian<DotAdd<Arg1,Random<Real[_,_]>,
           Arg2>,Random<Real[_,_]>>>(μ, Σ);
+    // }
   }
 }

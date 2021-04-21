@@ -86,8 +86,7 @@ final class MultivariateNormalInverseGamma<Arg1,Arg2,Arg3,Arg4>(ν:Arg1,
     return update_multivariate_normal_inverse_gamma(x, ν, Λ, α, β);
   }
 
-  override function isMultivariateNormalInverseGamma(σ2:Random<Real>) ->
-      Boolean {
+  override function isMultivariateNormalInverseGamma() -> Boolean {
     return true;
   }
 
@@ -116,8 +115,8 @@ function MultivariateNormalInverseGamma<Arg1,Arg2,Arg3,Arg4>(ν:Arg1, Λ:Arg2,
  */
 function MultivariateGaussian<Arg1,Arg2>(μ:Arg1,
     Σ:Multiply<Arg2,Random<Real>>) -> Distribution<Real[_]> {
+  Σ.r.prune();
   if Σ.r.hasInverseGamma() {
-    Σ.r.prune();
     let (α, β) <- Σ.r.getInverseGamma();
     let Λ <- cholinv(Σ.l);
     let p <- MultivariateNormalInverseGamma(Λ*μ, Λ, α, β);
@@ -134,8 +133,8 @@ function MultivariateGaussian<Arg1,Arg2>(μ:Arg1,
  */
 function MultivariateGaussian<Arg1,Arg2>(μ:Arg1,
     Σ:Multiply<Random<Real>,Arg2>) -> Distribution<Real[_]> {
+  Σ.l.prune();
   if Σ.l.hasInverseGamma() {
-    Σ.l.prune();
     let (α, β) <- Σ.l.getInverseGamma();
     let Λ <- cholinv(Σ.r);
     let p <- MultivariateNormalInverseGamma(Λ*μ, Λ, α, β);

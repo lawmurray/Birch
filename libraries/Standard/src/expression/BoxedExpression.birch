@@ -114,11 +114,11 @@ class BoxedExpression<Value,Form>(x:Value, f:Form) < Expression<Value> {
     }
   }
 
-  final override function prune(gen:Integer) {
+  final override function constant(gen:Integer) {
     if f? && this.gen < gen {
       constant();
     } else {
-      f!.prune(gen);
+      f!.constant(gen);
     }
   }
 

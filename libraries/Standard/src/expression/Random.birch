@@ -105,7 +105,7 @@ final class Random<Value> < Expression<Value> {
     //
   }
 
-  override function prune(gen:Integer) {
+  override function constant(gen:Integer) {
     //
   }
 
@@ -138,17 +138,40 @@ final class Random<Value> < Expression<Value> {
     this.p <- p;
   }
 
-  override function graft(child:Delay) {
+  override function graft(node:Delay) {
+    super.graft(node);
     p <- nil;
-    super.graft(child);
+  }
+
+  override function graftReplace(node:Delay) {
+    super.graftReplace(node);
+    p <- nil;
   }
 
   override function prune() -> Delay {
     if child? {
+      if coparent? && n != 1 {
+        /* defer to co-parent to restore the $M$-path between this and it */
+        coparent!.prune();
+      }
+
+      /* restore distribution, conditioned on the value of the child */
       p <- Distribution<Value>?(child!.prune());
       assert p?;
       child <- nil;
+
+      if coparent? && n == 1 {
+        /* restore the $M$-path between this and the co-parent */
+        coparent!.graftReplace(p!);
+        p!.graft(this);
+        coparent!.coparent <- nil;
+        coparent <- nil;
+      }
+      
+      assert p?;
     }
+    assert !coparent?;
+    assert !child?;
     return this;
   }
 
@@ -223,8 +246,8 @@ final class Random<Value> < Expression<Value> {
     return p!.getInverseWishart()!;
   } 
 
-  function hasNormalInverseGamma(σ2:Random<Real>) -> Boolean {
-    return !x? && p? && p!.isNormalInverseGamma(σ2);
+  function hasNormalInverseGamma() -> Boolean {
+    return !x? && p? && p!.isNormalInverseGamma();
   }
 
   function getNormalInverseGamma() -> (Expression<Real>, Expression<Real>,
@@ -258,8 +281,8 @@ final class Random<Value> < Expression<Value> {
     return p!.getMultivariateGaussian()!;
   }
 
-  function hasMultivariateNormalInverseGamma(σ2:Random<Real>) -> Boolean {
-    return !x? && p? && p!.isMultivariateNormalInverseGamma(σ2);
+  function hasMultivariateNormalInverseGamma() -> Boolean {
+    return !x? && p? && p!.isMultivariateNormalInverseGamma();
   }
 
   function getMultivariateNormalInverseGamma() -> (Expression<Real[_]>,
@@ -276,8 +299,8 @@ final class Random<Value> < Expression<Value> {
     return p!.getMatrixGaussian()!;
   }
 
-  function hasMatrixNormalInverseWishart(Σ:Random<Real[_,_]>) -> Boolean {
-    return !x? && p? && p!.isMatrixNormalInverseWishart(Σ);
+  function hasMatrixNormalInverseWishart() -> Boolean {
+    return !x? && p? && p!.isMatrixNormalInverseWishart();
   }
 
   function getMatrixNormalInverseWishart() -> (Expression<Real[_,_]>,

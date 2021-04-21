@@ -49,8 +49,8 @@ function BetaBernoulli<Arg1,Arg2>(α:Arg1, β:Arg2) -> {
  * Create Bernoulli distribution.
  */
 function Bernoulli(ρ:Random<Real>) -> Distribution<Boolean> {
+  ρ.prune();
   if ρ.hasBeta() {
-    ρ.prune();
     let (α, β) <- ρ.getBeta();
     let p <- BetaBernoulli(α, β);
     ρ.graft(p);

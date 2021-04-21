@@ -107,7 +107,7 @@ function label(x:Real, gen:Integer) {
   //
 }
 
-function prune(x:Real, gen:Integer) {
+function constant(x:Real, gen:Integer) {
   //
 }
 

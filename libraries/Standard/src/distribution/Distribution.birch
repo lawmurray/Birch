@@ -5,11 +5,11 @@
  */
 abstract class Distribution<Value> < Delay {
   /**
-   * Value-only child on the $M$-path. This is an optimization. It is only
+   * Value of next node on the $M$-path. This is an optimization. It is only
    * used when the Distribution is used with the `<~` or `~>` operator with a
    * variable of basic type, rather than of Random type, on the left. It keeps
    * the value of that variable here, rather than wrapping it in a Random
-   * object to keep in `super.child`.
+   * object to keep on the $M$-path.
    */
   childValue:Value?;
 
@@ -122,15 +122,19 @@ abstract class Distribution<Value> < Delay {
     return nil;
   }
 
-  override function graft(child:Delay) {
-    assert Random<Value>?(child)?;
-    assert !this.child?;
+  override function graft(node:Delay) {
     assert !this.childValue?;
-    this.child <- child;
+    super.graft(node);
+  }
+
+  override function graftReplace(node:Delay) {
+    assert !this.childValue?;
+    super.graftReplace(node);
   }
 
   /*
-   * Graft child as value-only. See documentation for member variable `x`.
+   * Graft next node on $M$-path as value-only. See documentation for member
+   * variable `childValue`.
    */
   function graft(childValue:Value) {
     assert !this.child?;
@@ -193,7 +197,7 @@ abstract class Distribution<Value> < Delay {
     return nil;
   } 
 
-  function isNormalInverseGamma(σ2:Random<Real>) -> Boolean {
+  function isNormalInverseGamma() -> Boolean {
     return false;
   }
 
@@ -228,7 +232,7 @@ abstract class Distribution<Value> < Delay {
     return nil;
   }
 
-  function isMultivariateNormalInverseGamma(σ2:Random<Real>) -> Boolean {
+  function isMultivariateNormalInverseGamma() -> Boolean {
     return false;
   }
 
@@ -246,7 +250,7 @@ abstract class Distribution<Value> < Delay {
     return nil;
   }
 
-  function isMatrixNormalInverseWishart(Σ:Random<Real[_,_]>) -> Boolean {
+  function isMatrixNormalInverseWishart() -> Boolean {
     return false;
   }
 

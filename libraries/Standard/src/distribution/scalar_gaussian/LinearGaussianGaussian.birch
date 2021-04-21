@@ -90,8 +90,8 @@ function LinearGaussianGaussian<Arg1,Arg2,Arg3,Arg4,Arg5>(a:Arg1, μ:Arg2,
  */
 function Gaussian<Arg1,Arg2,Arg3>(μ:MultiplyAdd<Arg1,Random<Real>,Arg2>,
     σ2:Arg3) -> Distribution<Real> {
+  μ.m.prune();
   if μ.m.hasGaussian() {
-    μ.m.prune();
     let (m, s2) <- μ.m.getGaussian();
     let p <- LinearGaussianGaussian(μ.l, m, s2, μ.r, σ2);
     μ.m.graft(p);

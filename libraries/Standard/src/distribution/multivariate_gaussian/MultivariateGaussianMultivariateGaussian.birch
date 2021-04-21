@@ -72,8 +72,8 @@ function MultivariateGaussianMultivariateGaussian<Arg1,Arg2,Arg3>(μ:Arg1,
  */
 function MultivariateGaussian<Arg>(μ:Random<Real[_]>, Σ:Arg) ->
     Distribution<Real[_]> {
+  μ.prune();
   if μ.hasMultivariateGaussian() {
-    μ.prune();
     let (m, S) <- μ.getMultivariateGaussian();
     let p <- MultivariateGaussianMultivariateGaussian(m, S, Σ);
     μ.graft(p);

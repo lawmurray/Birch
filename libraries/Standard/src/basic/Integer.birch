@@ -80,7 +80,7 @@ function label(x:Integer, gen:Integer) {
   //
 }
 
-function prune(x:Integer, gen:Integer) {
+function constant(x:Integer, gen:Integer) {
   //
 }
 

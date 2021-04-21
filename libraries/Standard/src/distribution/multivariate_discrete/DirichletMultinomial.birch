@@ -39,8 +39,8 @@ function DirichletMultinomial<Arg1,Arg2>(n:Arg1, α:Arg2) -> {
  */
 function Multinomial<Arg>(n:Arg, ρ:Random<Real[_]>) ->
     Distribution<Integer[_]> {
+  ρ.prune();
   if ρ.hasDirichlet() {
-    ρ.prune();
     let α <- ρ.getDirichlet();
     let p <- DirichletMultinomial(n, α);
     ρ.graft(p);

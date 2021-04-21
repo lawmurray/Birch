@@ -1,7 +1,8 @@
 /*
- * Test linear inverse-gamma-Gaussian conjugacy.
+ * Test linear normal-inverse-gamma-Gaussian conjugacy.
  */
-program test_linear_normal_inverse_gamma_gaussian(N:Integer <- 10000, lazy:Boolean <- false) {
+program test_linear_normal_inverse_gamma_gaussian(N:Integer <- 10000,
+    lazy:Boolean <- false) {
   m:TestLinearNormalInverseGammaGaussian;
   test_conjugacy(m, N, lazy);
 }

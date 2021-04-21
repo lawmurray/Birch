@@ -394,8 +394,8 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
    *
    * See also: [Expression](../Expression/)
    */
-  function prune(gen:Integer) {
-    π!.prune(gen);
+  function constant(gen:Integer) {
+    π!.constant(gen);
   }
 
   function arg(x:Random<Boolean>) {

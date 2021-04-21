@@ -91,22 +91,26 @@ function LinearMultivariateNormalInverseGammaMultivariateGaussian<Arg1,
 function MultivariateGaussian<Arg1,Arg2,Arg3>(
     μ:MultiplyAdd<Arg1,Random<Real[_]>,Arg2>,
     Σ:Multiply<Arg3,Random<Real>>) -> Distribution<Real[_]> {
-  if μ.m.hasMultivariateNormalInverseGamma(Σ.r) {
-    μ.m.prune();
+  μ.m.prune();
+  if μ.m.hasMultivariateNormalInverseGamma() && μ.m.isGrandChildOf(Σ.r) {
     let (ν, Λ, α, β) <- μ.m.getMultivariateNormalInverseGamma();
     let p <- LinearMultivariateNormalInverseGammaMultivariateGaussian(μ.l,
         ν, Λ, α, β, μ.r, Σ.l);
-    μ.m.graft(p);
-    return p;
-  } else if Σ.r.hasInverseGamma() {
-    Σ.r.prune();
-    let (α, β) <- Σ.r.getInverseGamma();
-    let p <- MultivariateNormalInverseGamma(μ, Σ.l, α, β);
-    Σ.r.graft(p);
+    μ.m.graft(p, 1);
+    Σ.r.graftReplace(p, 2);
+    μ.m.join(Σ.r);
     return p;
   } else {
-    return construct<MultivariateGaussian<MultiplyAdd<Arg1,Random<Real[_]>,
-        Arg2>,Multiply<Arg3,Random<Real>>>>(μ, Σ);
+    Σ.r.prune();
+    if Σ.r.hasInverseGamma() {
+      let (α, β) <- Σ.r.getInverseGamma();
+      let p <- MultivariateNormalInverseGamma(μ, Σ.l, α, β);
+      Σ.r.graft(p);
+      return p;
+    } else {
+      return construct<MultivariateGaussian<MultiplyAdd<Arg1,Random<Real[_]>,
+          Arg2>,Multiply<Arg3,Random<Real>>>>(μ, Σ);
+    }
   }
 }
 
@@ -116,12 +120,14 @@ function MultivariateGaussian<Arg1,Arg2,Arg3>(
 function MultivariateGaussian<Arg1,Arg2,Arg3>(
     μ:MultiplyAdd<Arg1,Random<Real[_]>,Arg2>,
     Σ:Multiply<Random<Real>,Arg3>) -> Distribution<Real[_]> {
-  if μ.m.hasMultivariateNormalInverseGamma(Σ.l) {
-    μ.m.prune();
+  μ.m.prune();
+  if μ.m.hasMultivariateNormalInverseGamma() && μ.m.isGrandChildOf(Σ.l) {
     let (ν, Λ, α, β) <- μ.m.getMultivariateNormalInverseGamma();
-    let p <- LinearMultivariateNormalInverseGammaMultivariateGaussian(μ.l,
-        ν, Λ, α, β, μ.r, Σ.r);
-    μ.m.graft(p);
+    let p <- LinearMultivariateNormalInverseGammaMultivariateGaussian(μ.l, ν,
+        Λ, α, β, μ.r, Σ.r);
+    μ.m.graft(p, 1);
+    Σ.r.graftReplace(p, 2);
+    μ.m.join(Σ.r);
     return p;
   } else if Σ.l.hasInverseGamma() {
     Σ.l.prune();

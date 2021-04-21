@@ -36,8 +36,8 @@ struct Unary<Function,Middle>(m:Middle) {
     global.label(m, gen);
   }
 
-  function prune(gen:Integer) {
-    global.prune(m, gen);
+  function constant(gen:Integer) {
+    global.constant(m, gen);
   }
 
   function constant() {

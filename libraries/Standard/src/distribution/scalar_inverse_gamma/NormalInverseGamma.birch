@@ -88,7 +88,7 @@ final class NormalInverseGamma<Arg1,Arg2,Arg3,Arg4>(ν:Arg1, λ:Arg2, α:Arg3,
         value(β));
   }
 
-  override function isNormalInverseGamma(σ2:Random<Real>) -> Boolean {
+  override function isNormalInverseGamma() -> Boolean {
     return true;
   }
 
@@ -115,8 +115,8 @@ function NormalInverseGamma<Arg1,Arg2,Arg3,Arg4>(ν:Arg1, λ:Arg2, α:Arg3,
  * Create Gaussian distribution.
  */
 function Gaussian<Arg>(μ:Arg, σ2:Random<Real>) -> Distribution<Real> {
+  σ2.prune();
   if σ2.hasInverseGamma() {
-    σ2.prune();
     let (α, β) <- σ2.getInverseGamma();
     let p <- NormalInverseGamma(μ, 1.0, α, β);
     σ2.graft(p);
@@ -131,8 +131,8 @@ function Gaussian<Arg>(μ:Arg, σ2:Random<Real>) -> Distribution<Real> {
  */
 function Gaussian<Arg1,Arg2>(μ:Arg1, σ2:Multiply<Arg2,Random<Real>>) ->
     Distribution<Real> {
+  σ2.r.prune();
   if σ2.r.hasInverseGamma() {
-    σ2.r.prune();
     let (α, β) <- σ2.r.getInverseGamma();
     let p <- NormalInverseGamma(μ/σ2.l, 1.0/σ2.l, α, β);
     σ2.r.graft(p);
@@ -147,8 +147,8 @@ function Gaussian<Arg1,Arg2>(μ:Arg1, σ2:Multiply<Arg2,Random<Real>>) ->
  */
 function Gaussian<Arg1,Arg2>(μ:Arg1, σ2:Multiply<Random<Real>,Arg2>) ->
     Distribution<Real> {
+  σ2.l.prune();
   if σ2.l.hasInverseGamma() {
-    σ2.l.prune();
     let (α, β) <- σ2.l.getInverseGamma();
     let p <- NormalInverseGamma(μ/σ2.r, 1.0/σ2.r, α, β);
     σ2.l.graft(p);

@@ -91,21 +91,26 @@ function LinearMatrixNormalInverseWishartMatrixGaussian<Arg1,Arg2,Arg3,
 function MatrixGaussian<Arg1,Arg2,Arg3>(
     M:MultiplyAdd<Arg1,Random<Real[_,_]>,Arg2>, U:Arg3,
     V:Random<Real[_,_]>) -> Distribution<Real[_,_]> {
-  if M.m.hasMatrixNormalInverseWishart(V) {
-    M.m.prune();
+  M.m.prune();
+  if M.m.hasMatrixNormalInverseWishart() && M.m.isGrandChildOf(V) {
     let (N, Λ, α, β) <- M.m.getMatrixNormalInverseWishart();
-    let p <- LinearMatrixNormalInverseWishartMatrixGaussian(M.l, N, Λ, α,
-        β, M.r, U);
-    M.m.graft(p);
-    return p;
-  } else if V.hasInverseWishart() {
-    V.prune();
-    let (Ψ, k) <- V.getInverseWishart();
-    let p <- MatrixNormalInverseWishart(M, U, Ψ, k);
-    V.graft(p);
+    let p <- LinearMatrixNormalInverseWishartMatrixGaussian(M.l, N, Λ, α, β,
+        M.r, U);
+    M.m.graft(p, 1);
+    V.graftReplace(p, 2);
+    M.m.join(V);
     return p;
   } else {
-    return construct<MatrixGaussian<MultiplyAdd<Arg1,Random<Real[_,_]>,Arg2>,
-        Arg3,Random<Real[_,_]>>>(M, U, V);
+    V.prune();
+    if V.hasInverseWishart() {
+      let (Ψ, k) <- V.getInverseWishart();
+      let Λ <- cholinv(U);
+      let p <- MatrixNormalInverseWishart(Λ*M, Λ, Ψ, k);
+      V.graft(p);
+      return p;
+    } else {
+      return construct<MatrixGaussian<MultiplyAdd<Arg1,Random<Real[_,_]>,Arg2>,
+          Arg3,Random<Real[_,_]>>>(M, U, V);
+    }
   }
 }

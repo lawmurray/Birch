@@ -40,14 +40,13 @@ function DirichletCategorical<Arg>(α:Arg) -> {
  * Create categorical distribution.
  */
 function Categorical(ρ:Random<Real[_]>) -> Distribution<Integer> {
+  ρ.prune();
   if ρ.hasDirichlet() {
-    ρ.prune();
     let α <- ρ.getDirichlet();
     let p <- DirichletCategorical(α);
     ρ.graft(p);
     return p;
   } else if ρ.hasRestaurant() {
-    ρ.prune();
     let (α, θ, n, N) <- ρ.getRestaurant();
     let p <- RestaurantCategorical(α, θ, n, N);
     ρ.graft(p);

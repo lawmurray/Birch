@@ -89,21 +89,25 @@ function LinearNormalInverseGammaGaussian<Arg1,Arg2,Arg3,Arg4,Arg5,Arg6>(
  */
 function Gaussian<Arg1,Arg2>(μ:MultiplyAdd<Arg1,Random<Real>,Arg2>,
     σ2:Random<Real>) -> Distribution<Real> {
-  if μ.m.hasNormalInverseGamma(σ2) {
-    μ.m.prune();
+  μ.m.prune();
+  if μ.m.hasNormalInverseGamma() && μ.m.isGrandChildOf(σ2) {
     let (ν, λ, α, β) <- μ.m.getNormalInverseGamma();
     let p <- LinearNormalInverseGammaGaussian(μ.l, ν, λ, α, β, μ.r);
-    μ.m.graft(p);
-    return p;
-  } else if σ2.hasInverseGamma() {
-    σ2.prune();
-    let (α, β) <- σ2.getInverseGamma();
-    let p <- NormalInverseGamma(μ, 1.0, α, β);
-    σ2.graft(p);
+    μ.m.graft(p, 1);
+    σ2.graftReplace(p, 2);
+    μ.m.join(σ2);
     return p;
   } else {
-    return construct<Gaussian<MultiplyAdd<Arg1,Random<Real>,Arg2>,
-        Random<Real>>>(μ, σ2);
+    σ2.prune();
+    if σ2.hasInverseGamma() {
+      let (α, β) <- σ2.getInverseGamma();
+      let p <- NormalInverseGamma(μ, 1.0, α, β);
+      σ2.graft(p);
+      return p;
+    } else {
+      return construct<Gaussian<MultiplyAdd<Arg1,Random<Real>,Arg2>,
+          Random<Real>>>(μ, σ2);
+    }
   }
 }
 
@@ -112,21 +116,25 @@ function Gaussian<Arg1,Arg2>(μ:MultiplyAdd<Arg1,Random<Real>,Arg2>,
  */
 function Gaussian<Arg>(μ:Multiply<Arg,Random<Real>>, σ2:Random<Real>) ->
     Distribution<Real> {
-  if μ.m.hasNormalInverseGamma(σ2) {
-    μ.m.prune();
-    let (ν, λ, α, β) <- μ.m.getNormalInverseGamma();
+  μ.r.prune();
+  if μ.r.hasNormalInverseGamma() && μ.r.isGrandChildOf(σ2) {
+    let (ν, λ, α, β) <- μ.r.getNormalInverseGamma();
     let p <- LinearNormalInverseGammaGaussian(μ.l, ν, λ, α, β, 0.0);
-    μ.m.graft(p);
-    return p;
-  } else if σ2.hasInverseGamma() {
-    σ2.prune();
-    let (α, β) <- σ2.getInverseGamma();
-    let p <- NormalInverseGamma(μ, 1.0, α, β);
-    σ2.graft(p);
+    μ.r.graft(p, 1);
+    σ2.graftReplace(p, 2);
+    μ.r.join(σ2);
     return p;
   } else {
-    return construct<Gaussian<Multiply<Arg,Random<Real>>,Random<Real>>>(μ,
-        σ2);
+    σ2.prune();
+    if σ2.hasInverseGamma() {
+      let (α, β) <- σ2.getInverseGamma();
+      let p <- NormalInverseGamma(μ, 1.0, α, β);
+      σ2.graft(p);
+      return p;
+    } else {
+      return construct<Gaussian<Multiply<Arg,Random<Real>>,Random<Real>>>(μ,
+          σ2);
+    }
   }
 }
 

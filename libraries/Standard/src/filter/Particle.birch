@@ -58,8 +58,8 @@ class Particle(m:Model, delaySampling:Boolean, delayExpressions:Boolean) {
    *
    * See also: [Expression](../Expression/)
    */
-  function prune(gen:Integer) {
-    h.prune(gen);
+  function constant(gen:Integer) {
+    h.constant(gen);
   }
 
   override function read(buffer:Buffer) {

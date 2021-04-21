@@ -147,7 +147,7 @@ function label<Type>(x:Type[_,_], gen:Integer) {
   //
 }
 
-function prune<Type>(x:Type[_,_], gen:Integer) {
+function constant<Type>(x:Type[_,_], gen:Integer) {
   //
 }
 

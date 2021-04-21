@@ -1,0 +1,8 @@
+/*
+ * Test fanning matrix normal-inverse-Wishart-Gaussian conjugacies.
+ */
+program test_fan_matrix_normal_inverse_wishart_matrix_gaussian(
+    N:Integer <- 10000, lazy:Boolean <- false) {
+  m:TestFanMatrixNormalInverseWishartMatrixGaussian;
+  test_conjugacy(m, N, lazy);
+}

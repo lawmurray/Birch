@@ -59,8 +59,8 @@ function BetaNegativeBinomial<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2, β:Arg3) -> {
  * Create negative binomial distribution.
  */
 function NegativeBinomial<Arg1>(k:Arg1, ρ:Random<Real>) -> Distribution<Integer> {
+  ρ.prune();
   if ρ.hasBeta() {
-    ρ.prune();
     let (α, β) <- ρ.getBeta();
     let p <- BetaNegativeBinomial(k, α, β);
     ρ.graft(p);

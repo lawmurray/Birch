@@ -19,7 +19,7 @@ class LangevinKernel < Kernel {
 
     /* apply lag */
     π.label(t);
-    π.prune(t - nlags);
+    π.constant(t - nlags);
 
     /* initial state */
     let x <- π.args();

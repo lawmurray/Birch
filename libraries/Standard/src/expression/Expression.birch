@@ -207,14 +207,14 @@ abstract class Expression<Value> < Delay {
   abstract function label(gen:Integer);
 
   /**
-   * Prune generations.
+   * Make older generations constant.
    *
    * - gen: Generation limit.
    *
-   * Prunes subexpressions that are labeled with a generation less than `gen`.
-   * Equivalent to `constant()` if `gen` is greater than all labels.
+   * Removes subexpressions that are labeled with a generation less than
+   * `gen`.
    */
-  abstract function prune(gen:Integer);
+  abstract function constant(gen:Integer);
 
   /**
    * Render the entire expression constant.
@@ -266,8 +266,8 @@ function label<Type>(x:Type, gen:Integer) {
   x.label(gen);
 }
 
-function prune<Type>(x:Type, gen:Integer) {
-  x.prune(gen);
+function constant<Type>(x:Type, gen:Integer) {
+  x.constant(gen);
 }
 
 function constant<Type>(x:Type) {

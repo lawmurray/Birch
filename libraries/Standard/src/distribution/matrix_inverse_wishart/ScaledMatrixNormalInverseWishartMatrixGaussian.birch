@@ -81,22 +81,27 @@ function ScaledMatrixNormalInverseWishartMatrixGaussian<Arg1,Arg2,Arg3,
  */
 function MatrixGaussian<Arg1,Arg2>(M:Multiply<Arg1,Random<Real[_,_]>>,
     U:Arg2, V:Random<Real[_,_]>) -> Distribution<Real[_,_]> {
-  if M.hasMatrixNormalInverseWishart(V) {
-    M.prune();
+  M.prune();
+  if M.hasMatrixNormalInverseWishart() && M.isGrandChildOf(V) {
     let (N, Λ, Ψ, k) <- M.getMatrixNormalInverseWishart();
-    let p <- ScaledMatrixNormalInverseWishartMatrixGaussian(M.l, N, Λ, Ψ,
-        k, U);
-    M.graft(p);
-    return p;
-  } else if V.hasInverseWishart() {
-    V.prune();
-    let (Ψ, k) <- V.getInverseWishart();
-    let p <- MatrixNormalInverseWishart(M, U, Ψ, k);
-    V.graft(p);
+    let p <- ScaledMatrixNormalInverseWishartMatrixGaussian(M.l, N, Λ, Ψ, k,
+        U);
+    M.graft(p, 1);
+    V.graftReplace(p, 2);
+    M.join(V);
     return p;
   } else {
-    return construct<MatrixGaussian<Multiply<Arg1,Random<Real[_,_]>>,Arg2,
-        Random<Real[_,_]>>>(M, U, V);
+    V.prune();
+    if V.hasInverseWishart() {
+      let (Ψ, k) <- V.getInverseWishart();
+      let Λ <- cholinv(U);
+      let p <- MatrixNormalInverseWishart(Λ*M, Λ, Ψ, k);
+      V.graft(p);
+      return p;
+    } else {
+      return construct<MatrixGaussian<Multiply<Arg1,Random<Real[_,_]>>,Arg2,
+          Random<Real[_,_]>>>(M, U, V);
+    }
   }
 }
 

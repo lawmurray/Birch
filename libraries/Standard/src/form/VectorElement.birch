@@ -37,9 +37,9 @@ struct VectorElement<Left,Right>(x:Left, r:Right)  {
     global.label(r, gen);
   }
 
-  function prune(gen:Integer) {
-    global.prune(l, gen);
-    global.prune(r, gen);
+  function constant(gen:Integer) {
+    global.constant(l, gen);
+    global.constant(r, gen);
   }
 
   function constant() {

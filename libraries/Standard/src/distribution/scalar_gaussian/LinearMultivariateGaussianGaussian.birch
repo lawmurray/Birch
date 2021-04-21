@@ -91,8 +91,8 @@ function LinearMultivariateGaussianGaussian<Arg1,Arg2,Arg3,Arg4,Arg5>(a:Arg1,
  */
 function Gaussian<Arg1,Arg2,Arg3>(μ:DotAdd<Arg1,Random<Real[_]>,Arg2>,
     Σ:Arg3) -> Distribution<Real> {
+  μ.m.prune();
   if μ.m.hasMultivariateGaussian() {
-    μ.m.prune();
     let (m, S) <- μ.m.getMultivariateGaussian();
     let p <- LinearMultivariateGaussianGaussian(μ.l, m, S, μ.r, Σ);
     μ.m.graft(p);
