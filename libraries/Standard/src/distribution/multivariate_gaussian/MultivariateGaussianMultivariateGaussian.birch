@@ -28,8 +28,8 @@ final class MultivariateGaussianMultivariateGaussian<Arg1,Arg2,Arg3>(μ:Arg1,
   }
 
   override function simulateLazy() -> Real[_]? {
-    return simulate_multivariate_gaussian_multivariate_gaussian(peak(μ),
-        peak(Σ), peak(S));
+    return simulate_multivariate_gaussian_multivariate_gaussian(peek(μ),
+        peek(Σ), peek(S));
   }
   
   override function logpdf(x:Real[_]) -> Real {

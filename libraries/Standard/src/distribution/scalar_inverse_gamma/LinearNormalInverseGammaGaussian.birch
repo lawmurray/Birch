@@ -43,8 +43,8 @@ final class LinearNormalInverseGammaGaussian<Arg1,Arg2,Arg3,Arg4,Arg5,Arg6>(
   }
 
   override function simulateLazy() -> Real? {
-    return simulate_linear_normal_inverse_gamma_gaussian(peak(a), peak(ν),
-        peak(λ), peak(α), peak(β), peak(c));
+    return simulate_linear_normal_inverse_gamma_gaussian(peek(a), peek(ν),
+        peek(λ), peek(α), peek(β), peek(c));
   }
   
   override function logpdf(x:Real) -> Real {

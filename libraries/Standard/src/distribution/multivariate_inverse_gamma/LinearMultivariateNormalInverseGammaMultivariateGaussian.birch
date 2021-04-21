@@ -52,7 +52,7 @@ final class LinearMultivariateNormalInverseGammaMultivariateGaussian<Arg1,
 
   override function simulateLazy() -> Real[_]? {
     return simulate_scaled_multivariate_normal_inverse_gamma_multivariate_gaussian(
-        peak(A), peak(ν), peak(Λ), peak(α), peak(β), peak(Σ)) + peak(c);
+        peek(A), peek(ν), peek(Λ), peek(α), peek(β), peek(Σ)) + peek(c);
   }
   
   override function logpdf(x:Real[_]) -> Real {

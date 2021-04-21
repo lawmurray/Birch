@@ -25,7 +25,7 @@ final class Binomial<Arg1,Arg2>(n:Arg1, ρ:Arg2) < BoundedDiscrete {
   }
   
   override function simulateLazy() -> Integer? {
-    return simulate_binomial(peak(n), peak(ρ));
+    return simulate_binomial(peek(n), peek(ρ));
   }
 
   override function logpdf(x:Integer) -> Real {

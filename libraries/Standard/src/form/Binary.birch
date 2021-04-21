@@ -21,8 +21,8 @@ struct Binary<Function,Left,Right>(l:Left, r:Right) {
     return f.compute(global.value(l), global.value(r));
   }
 
-  function peak() -> {
-    return f.compute(global.peak(l), global.peak(r));
+  function peek() -> {
+    return f.compute(global.peek(l), global.peek(r));
   }
 
   function eval() -> {
@@ -34,8 +34,8 @@ struct Binary<Function,Left,Right>(l:Left, r:Right) {
   }
 
   function grad<Gradient>(d:Gradient) {
-    global.grad(l, f.gradLeft(d, global.peak(l), global.peak(r)));
-    global.grad(r, f.gradRight(d, global.peak(l), global.peak(r)));
+    global.grad(l, f.gradLeft(d, global.peek(l), global.peek(r)));
+    global.grad(r, f.gradRight(d, global.peek(l), global.peek(r)));
   }
 
   function label(gen:Integer) {

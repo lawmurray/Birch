@@ -16,8 +16,8 @@ struct VectorElement<Left,Right>(x:Left, r:Right)  {
     return global.value(l)[global.value(r)];
   }
 
-  function peak() -> {
-    return global.peak(l)[global.peak(r)];
+  function peek() -> {
+    return global.peek(l)[global.peek(r)];
   }
 
   function eval() -> {
@@ -29,7 +29,7 @@ struct VectorElement<Left,Right>(x:Left, r:Right)  {
   }
 
   function grad<Gradient>(d:Gradient) {
-    global.grad(l, d, global.peak(r));
+    global.grad(l, d, global.peek(r));
   }
 
   function label(gen:Integer) {

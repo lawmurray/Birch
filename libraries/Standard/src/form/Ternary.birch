@@ -26,8 +26,8 @@ struct Ternary<Function,Left,Middle,Right>(l:Left, m:Middle, r:Right) {
     return f.compute(global.value(l), global.value(m), global.value(r));
   }
 
-  function peak() -> {
-    return f.compute(global.peak(l), global.peak(m), global.peak(r));
+  function peek() -> {
+    return f.compute(global.peek(l), global.peek(m), global.peek(r));
   }
 
   function eval() -> {
@@ -39,9 +39,9 @@ struct Ternary<Function,Left,Middle,Right>(l:Left, m:Middle, r:Right) {
   }
 
   function grad<Gradient>(d:Gradient) {
-    global.grad(l, f.gradLeft(d, global.peak(l), global.peak(m), global.peak(r)));
-    global.grad(m, f.gradMiddle(d, global.peak(l), global.peak(m), global.peak(r)));
-    global.grad(r, f.gradRight(d, global.peak(l), global.peak(m), global.peak(r)));
+    global.grad(l, f.gradLeft(d, global.peek(l), global.peek(m), global.peek(r)));
+    global.grad(m, f.gradMiddle(d, global.peek(l), global.peek(m), global.peek(r)));
+    global.grad(r, f.gradRight(d, global.peek(l), global.peek(m), global.peek(r)));
   }
 
   function label(gen:Integer) {

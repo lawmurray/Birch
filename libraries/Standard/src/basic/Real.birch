@@ -87,7 +87,7 @@ function value(x:Real) -> Real {
   return x;
 }
 
-function peak(x:Real) -> Real {
+function peek(x:Real) -> Real {
   return x;
 }
 

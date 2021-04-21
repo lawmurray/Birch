@@ -27,7 +27,7 @@ class MatrixGaussian<Arg1,Arg2,Arg3>(M:Arg1, U:Arg2, V:Arg3) <
   }
 
   override function simulateLazy() -> Real[_,_]? {
-    return simulate_matrix_gaussian(peak(M), peak(U), peak(V));
+    return simulate_matrix_gaussian(peek(M), peek(U), peek(V));
   }
   
   override function logpdf(X:Real[_,_]) -> Real {

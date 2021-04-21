@@ -27,7 +27,7 @@ acyclic class BoxedValue<Value>(x:Value) < Expression<Value> {
     return x;
   }
 
-  override function peak() -> Value {
+  override function peek() -> Value {
     return x;
   }
 

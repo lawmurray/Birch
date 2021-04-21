@@ -64,8 +64,8 @@ final class MultivariateNormalInverseGamma<Arg1,Arg2,Arg3,Arg4>(ν:Arg1,
   }
 
   override function simulateLazy() -> Real[_]? {
-    return simulate_multivariate_normal_inverse_gamma(peak(ν), peak(Λ),
-        peak(α), peak(β));
+    return simulate_multivariate_normal_inverse_gamma(peek(ν), peek(Λ),
+        peek(α), peek(β));
   }
   
   override function logpdf(x:Real[_]) -> Real {

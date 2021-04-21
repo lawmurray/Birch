@@ -38,8 +38,8 @@ final class LinearGaussianGaussian<Arg1,Arg2,Arg3,Arg4,Arg5>(a:Arg1, μ:Arg2,
   }
 
   override function simulateLazy() -> Real? {
-    return simulate_linear_gaussian_gaussian(peak(a), peak(μ), peak(σ2),
-        peak(c), peak(s2));
+    return simulate_linear_gaussian_gaussian(peek(a), peek(μ), peek(σ2),
+        peek(c), peek(s2));
   }
   
   override function logpdf(x:Real) -> Real {

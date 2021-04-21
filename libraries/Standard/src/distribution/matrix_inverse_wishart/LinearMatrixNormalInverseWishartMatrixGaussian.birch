@@ -52,7 +52,7 @@ final class LinearMatrixNormalInverseWishartMatrixGaussian<Arg1,Arg2,Arg3,
 
   override function simulateLazy() -> Real[_,_]? {
     return simulate_scaled_matrix_normal_inverse_wishart_matrix_gaussian(
-        peak(A), peak(N), peak(Λ), peak(Ψ), peak(k), peak(U)) + peak(C);
+        peek(A), peek(N), peek(Λ), peek(Ψ), peek(k), peek(U)) + peek(C);
   }
   
   override function logpdf(X:Real[_,_]) -> Real {

@@ -27,7 +27,7 @@ final class InverseGammaGamma<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2, β:Arg3) <
   }
 
   override function simulateLazy() -> Real? {
-    return simulate_inverse_gamma_gamma(peak(k), peak(α), peak(β));
+    return simulate_inverse_gamma_gamma(peek(k), peek(α), peek(β));
   }
 
   override function logpdf(x:Real) -> Real {

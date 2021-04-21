@@ -60,7 +60,7 @@ function value(x:Integer) -> Integer {
   return x;
 }
 
-function peak(x:Integer) -> Integer {
+function peek(x:Integer) -> Integer {
   return x;
 }
 

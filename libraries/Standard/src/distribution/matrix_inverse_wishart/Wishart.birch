@@ -21,7 +21,7 @@ final class Wishart<Arg1,Arg2>(Ψ:Arg1, k:Arg2) < Distribution<Real[_,_]> {
   }
 
   override function simulateLazy() -> Real[_,_]? {
-    return simulate_wishart(peak(Ψ), peak(k));
+    return simulate_wishart(peek(Ψ), peek(k));
   }
   
   override function logpdf(X:Real[_,_]) -> Real {

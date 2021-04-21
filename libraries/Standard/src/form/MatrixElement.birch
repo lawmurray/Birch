@@ -21,8 +21,8 @@ struct MatrixElement<Left,Middle,Right>(l:Left, i:Middle, j:Right) {
     return global.value(l)[global.value(m), global.value(r)];
   }
 
-  function peak() -> {
-    return global.peak(l)[global.peak(m), global.peak(r)];
+  function peek() -> {
+    return global.peek(l)[global.peek(m), global.peek(r)];
   }
 
   function eval() -> {
@@ -34,7 +34,7 @@ struct MatrixElement<Left,Middle,Right>(l:Left, i:Middle, j:Right) {
   }
 
   function grad<Gradient>(d:Gradient) {
-    global.grad(l, d, global.peak(m), global.peak(r));
+    global.grad(l, d, global.peek(m), global.peek(r));
   }
 
   function label(gen:Integer) {

@@ -127,7 +127,7 @@ function value<Type>(x:Type[_,_]) -> Type[_,_] {
   return x;
 }
 
-function peak<Type>(x:Type[_,_]) -> Type[_,_] {
+function peek<Type>(x:Type[_,_]) -> Type[_,_] {
   return x;
 }
 

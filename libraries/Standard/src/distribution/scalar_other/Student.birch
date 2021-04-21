@@ -31,7 +31,7 @@ final class Student<Arg1,Arg2,Arg3>(ν:Arg1, μ:Arg2, σ2:Arg3) <
   }
 
   override function simulateLazy() -> Real? {
-    return simulate_student_t(peak(ν), peak(μ), peak(σ2));
+    return simulate_student_t(peek(ν), peek(μ), peek(σ2));
   }
   
   override function logpdf(x:Real) -> Real {

@@ -20,7 +20,7 @@ final class Poisson<Arg>(λ:Arg) < Discrete {
   }
 
   override function simulateLazy() -> Integer? {
-    return simulate_poisson(peak(λ));
+    return simulate_poisson(peek(λ));
   }
 
   override function logpdf(x:Integer) -> Real {

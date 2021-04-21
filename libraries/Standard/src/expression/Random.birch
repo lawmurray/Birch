@@ -75,7 +75,7 @@ final class Random<Value> < Expression<Value> {
     return x!;
   }
 
-  override function peak() -> Value {
+  override function peek() -> Value {
     return eval();
   }
 

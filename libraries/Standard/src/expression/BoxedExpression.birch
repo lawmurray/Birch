@@ -57,7 +57,7 @@ class BoxedExpression<Value,Form>(x:Value, f:Form) < Expression<Value> {
     return x;
   }
 
-  final override function peak() -> Value {
+  final override function peek() -> Value {
     return x;
   }
 

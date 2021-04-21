@@ -46,7 +46,7 @@ function value(x:Boolean) -> Boolean {
   return x;
 }
 
-function peak(x:Boolean) -> Boolean {
+function peek(x:Boolean) -> Boolean {
   return x;
 }
 

@@ -20,7 +20,7 @@ final class Exponential<Arg1>(λ:Arg1) < Distribution<Real> {
   }
 
   override function simulateLazy() -> Real? {
-    return simulate_exponential(peak(λ));
+    return simulate_exponential(peek(λ));
   }
 
   override function logpdf(x:Real) -> Real {

@@ -16,8 +16,8 @@ struct Unary<Function,Middle>(m:Middle) {
     return f.compute(global.value(m));
   }
 
-  function peak() -> {
-    return f.compute(global.peak(m));
+  function peek() -> {
+    return f.compute(global.peek(m));
   }
 
   function eval() -> {
@@ -29,7 +29,7 @@ struct Unary<Function,Middle>(m:Middle) {
   }
 
   function grad<Gradient>(d:Gradient) {
-    global.grad(m, f.grad(d, global.peak(m)));
+    global.grad(m, f.grad(d, global.peek(m)));
   }
 
   function label(gen:Integer) {
