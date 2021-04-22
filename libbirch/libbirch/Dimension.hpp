@@ -3,7 +3,6 @@
  */
 #pragma once
 
-#include "libbirch/assert.hpp"
 #include "libbirch/Length.hpp"
 #include "libbirch/Stride.hpp"
 #include "libbirch/Index.hpp"
@@ -40,8 +39,7 @@ struct Dimension: public Length<length_value>, public Stride<stride_value> {
   Dimension(const int64_t length = 0, const int64_t stride = 0) :
       length_type(length),
       stride_type(stride) {
-    libbirch_assert_msg_(length >= 0,
-        "dimension length is " << length << ", but must be non-negative");
+    assert(length >= 0 && "length must be non-negative");
   }
 
   /**

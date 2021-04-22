@@ -7,10 +7,8 @@
 #pragma once
 
 #include "libbirch/external.hpp"
-#include "libbirch/assert.hpp"
 #include "libbirch/thread.hpp"
 #include "libbirch/memory.hpp"
-#include "libbirch/stacktrace.hpp"
 #include "libbirch/macro.hpp"
 #include "libbirch/type.hpp"
 

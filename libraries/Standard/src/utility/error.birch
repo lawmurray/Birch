@@ -1,9 +1,12 @@
 /**
  * Output an error message and exit.
+ *
+ * - msg: The message.
  */
 function error(msg:String) {
+  stderr.print("error: " + msg + "\n");
   cpp{{
-  libbirch::abort(msg, 1);
+  std::exit(EXIT_FAILURE);
   }}
 }
 

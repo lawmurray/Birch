@@ -138,12 +138,8 @@ struct Shape {
   template<int64_t offset_value1, int64_t length_value1, class Tail1>
   auto operator()(
       const Slice<Range<offset_value1,length_value1>,Tail1>& o) const {
-    /* pre-conditions */
-    libbirch_assert_msg_(
-        o.head.offset >= 0 && o.head.offset + o.head.length <= head.length,
-        "range is " << (o.head.offset + 1) << ".."
-            << (o.head.offset + o.head.length) << " for dimension of length "
-            << head.length);
+    assert(o.head.offset >= 0 && o.head.offset + o.head.length <= head.length &&
+        "array index out of bounds");
 
     return Shape<decltype(head(o.head)),decltype(tail(o.tail))>(
         head(o.head), tail(o.tail));
@@ -154,11 +150,8 @@ struct Shape {
    */
   template<int64_t offset_value1, class Tail1>
   auto operator()(const Slice<Index<offset_value1>,Tail1>& o) const {
-    /* pre-condition */
-    libbirch_assert_msg_(o.head.offset >= 0 && o.head.offset < head.length,
-        "index is " << (o.head.offset + 1) << " for dimension of length "
-            << head.length);
-
+    assert(o.head.offset >= 0 && o.head.offset < head.length &&
+        "array index out of bounds");
     return tail(o.tail);
   }
 
@@ -271,9 +264,8 @@ struct Shape {
    */
   template<class V>
   int64_t serial(const V& o) const {
-    libbirch_assert_msg_(o.head.offset >= 0 && o.head.offset < head.length,
-        "index is " << (o.head.offset + 1) << " for dimension of length "
-            << head.length);
+    assert(o.head.offset >= 0 && o.head.offset < head.length &&
+        "array index out of bounds");
     return o.head.offset * head.stride + tail.serial(o.tail);
   }
   //@}

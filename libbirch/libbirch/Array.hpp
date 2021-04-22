@@ -192,7 +192,7 @@ public:
    */
   void assign(const Array<T,F>& o) {
     if (isView) {
-      libbirch_assert_msg_(o.shape.conforms(shape), "array sizes are different");
+      assert(o.shape.conforms(shape) && "array sizes are different");
       copy(o);
     } else {
       Array<T,F> tmp(o);

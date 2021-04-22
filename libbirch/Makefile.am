@@ -28,7 +28,6 @@ nobase_include_HEADERS = \
   libbirch/Any.hpp \
   libbirch/Array.hpp \
   libbirch/Atomic.hpp \
-  libbirch/assert.hpp \
   libbirch/BiconnectedCollector.hpp \
   libbirch/BiconnectedCopier.hpp \
   libbirch/BiconnectedMemo.hpp \
@@ -59,7 +58,6 @@ nobase_include_HEADERS = \
   libbirch/Shared.hpp \
   libbirch/Slice.hpp \
   libbirch/Spanner.hpp \
-  libbirch/stacktrace.hpp \
   libbirch/Stride.hpp \
   libbirch/thread.hpp \
   libbirch/type.hpp
@@ -76,8 +74,7 @@ COMMON_SOURCES =  \
   libbirch/Reacher.cpp \
   libbirch/Scanner.cpp \
   libbirch/Spanner.cpp \
-  libbirch/memory.cpp \
-  libbirch/stacktrace.cpp
+  libbirch/memory.cpp
 
 dist_noinst_DATA =  \
   Doxyfile \

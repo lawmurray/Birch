@@ -1199,7 +1199,6 @@ void birch::Driver::target(const std::string& cmd) {
   std::regex rxAssign("‘(?:operator)?=’", options);
   std::regex rxNamespaceSep("::", options);
   std::regex rxAuto("‘auto’", options);
-  std::regex rxAssert("macro ‘libbirch_(?:assert|error)_’", options);
   std::regex rxQueryGet("has no member named ‘(?:has_)?value’", options);
   std::regex rxProgram("In function ‘int ([A-Za-z0-9_]+)\\(int, *char\\*\\*\\)’", options);
   std::regex rxVariable("‘(" + type + ") +(" + name + ")’", options);
@@ -1213,12 +1212,12 @@ void birch::Driver::target(const std::string& cmd) {
 
   FILE* pipe = popen(buf.str().c_str(), "r");
   if (pipe) {
-    char* line = NULL;
+    char* line = nullptr;
     size_t n = 0;
     while (getline(&line, &n, pipe) > 0) {
       std::string str(line);
       free(line);
-      line = NULL;
+      line = nullptr;
       n = 0;
 
       if (translate) {
@@ -1261,7 +1260,6 @@ void birch::Driver::target(const std::string& cmd) {
         str = std::regex_replace(str, rxAssign, "‘<-‘");
         str = std::regex_replace(str, rxNamespaceSep, ".");
         str = std::regex_replace(str, rxAuto, "‘let’");
-        str = std::regex_replace(str, rxAssert, "‘assert’");
         str = std::regex_replace(str, rxQueryGet, "is not an optional type");
 
         /* strip suggestions that reveal internal workings */

@@ -232,7 +232,6 @@ void birch::CppClassGenerator::visit(const MemberFunction* o) {
     } else {
       finish(" {");
       in();
-      genTraceFunction(o->name->str(), o->loc);
       *this << o->braces->strip();
       out();
       finish("}\n");
@@ -267,7 +266,6 @@ void birch::CppClassGenerator::visit(const AssignmentOperator* o) {
     } else {
       finish(" {");
       in();
-      genTraceFunction("<assignment>", o->loc);
       ++inOperator;
       *this << o->braces->strip();
       genSourceLine(o->loc);
@@ -300,7 +298,6 @@ void birch::CppClassGenerator::visit(const ConversionOperator* o) {
     } else {
       finish(" {");
       in();
-      genTraceFunction("<conversion>", o->loc);
       ++inOperator;
       *this << o->braces->strip();
       --inOperator;
@@ -340,7 +337,6 @@ void birch::CppClassGenerator::visit(const SliceOperator* o) {
     } else {
       finish(" {");
       in();
-      genTraceFunction("<slice>", o->loc);
       ++inOperator;
       *this << o->braces->strip();
       genSourceLine(o->loc);

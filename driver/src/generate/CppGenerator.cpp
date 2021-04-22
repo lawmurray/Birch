@@ -264,7 +264,6 @@ void birch::CppGenerator::visit(const MemberVariable* o) {
 }
 
 void birch::CppGenerator::visit(const LocalVariable* o) {
-  genTraceLine(o->loc);
   if (o->has(LET)) {
     start("auto " << o->name);
   } else {
@@ -304,7 +303,6 @@ void birch::CppGenerator::visit(const Function* o) {
     } else {
       finish(" {");
       in();
-      genTraceFunction(o->name->str(), o->loc);
       *this << o->braces->strip();
       out();
       line("}\n");
@@ -324,7 +322,6 @@ void birch::CppGenerator::visit(const Program* o) {
     } else {
       line("int birch::" << o->name << "(int argc_, char** argv_) {");
       in();
-      genTraceFunction(o->name->str(), o->loc);
 
       /* program options */
       if (o->params->width() > 0) {
@@ -405,7 +402,11 @@ void birch::CppGenerator::visit(const Program* o) {
           line("case " << flag << ':');
           in();
           genSourceLine(p->loc);
-          line("libbirch_error_msg_(::optarg, \"option --\" << long_options_[::optopt].name << \" requires a value.\");");
+          line("if (!::optarg) {");
+          in();
+          line("birch::error(birch::type::String(\"value required for option --\") + birch::type::String(long_options_[::optopt].name));");
+          out();
+          line("}");
           genSourceLine(p->loc);
           auto type = dynamic_cast<Named*>(p->type->unwrap());
           if (type && type->name->str() != "String") {
@@ -422,21 +423,21 @@ void birch::CppGenerator::visit(const Program* o) {
         line("case '?':");
         in();
         genSourceLine(o->loc);
-        line("libbirch_error_msg_(false, \"option \" << argv_[::optind - 1] << \" unrecognized.\");");
+        line("birch::error(birch::type::String(\"unrecognized option --\") + birch::type::String(argv_[::optind - 1]));");
         out();
 
         genSourceLine(o->loc);
         line("case ':':");
         in();
         genSourceLine(o->loc);
-        line("libbirch_error_msg_(false, \"option --\" << long_options_[::optopt].name << \" requires a value.\");");
+        line("birch::error(birch::type::String(\"value required for option --\") + birch::type::String(long_options_[::optopt].name));");
         out();
 
         genSourceLine(o->loc);
         line("default:");
         in();
         genSourceLine(o->loc);
-        line("libbirch_error_msg_(false, std::string(\"unknown error parsing command-line options.\"));");
+        line("birch::error(birch::type::String(\"unknown error parsing command-line options.\"));");
         out();
 
         out();
@@ -457,9 +458,9 @@ void birch::CppGenerator::visit(const Program* o) {
       /* body of program */
       *this << o->braces;
 
-      genTraceLine(o->loc);
+      genSourceLine(o->loc);
       line("libbirch::collect();");
-      genTraceLine(o->loc);
+      genSourceLine(o->loc);
       line("return 0;");
       out();
       line("}\n");
@@ -490,7 +491,6 @@ void birch::CppGenerator::visit(const BinaryOperator* o) {
     } else {
       finish(" {");
       in();
-      genTraceFunction(o->name->str(), o->loc);
       ++inOperator;
       *this << o->braces->strip();
       --inOperator;
@@ -519,7 +519,6 @@ void birch::CppGenerator::visit(const UnaryOperator* o) {
     } else {
       finish(" {");
       in();
-      genTraceFunction(o->name->str(), o->loc);
       ++inOperator;
       *this << o->braces->strip();
       --inOperator;
@@ -553,17 +552,17 @@ void birch::CppGenerator::visit(const Braces* o) {
 }
 
 void birch::CppGenerator::visit(const Factor* o) {
-  genTraceLine(o->loc);
+  genSourceLine(o->loc);
   line("birch::handle_factor(" << o->single << ");");
 }
 
 void birch::CppGenerator::visit(const ExpressionStatement* o) {
-  genTraceLine(o->loc);
+  genSourceLine(o->loc);
   line(o->single << ';');
 }
 
 void birch::CppGenerator::visit(const If* o) {
-  genTraceLine(o->loc);
+  genSourceLine(o->loc);
   line("if (" << o->cond->strip() << ") {");
   in();
   *this << o->braces->strip();
@@ -579,7 +578,7 @@ void birch::CppGenerator::visit(const If* o) {
 
 void birch::CppGenerator::visit(const For* o) {
   auto index = getIndex(o->index);
-  genTraceLine(o->loc);
+  genSourceLine(o->loc);
   start("for (auto " << index << " = " << o->from << "; ");
   finish(index << " <= " << o->to << "; ++" << index << ") {");
   in();
@@ -590,11 +589,10 @@ void birch::CppGenerator::visit(const For* o) {
 
 void birch::CppGenerator::visit(const Parallel* o) {
   auto index = getIndex(o->index);
-  genTraceLine(o->loc);
+  genSourceLine(o->loc);
   line("#pragma omp parallel");
   line("{");
   in();
-  genTraceFunction("<parallel for>", o->loc);
   start("#pragma omp for schedule(");
   if (o->has(DYNAMIC)) {
     middle("guided");
@@ -613,7 +611,7 @@ void birch::CppGenerator::visit(const Parallel* o) {
 }
 
 void birch::CppGenerator::visit(const While* o) {
-  genTraceLine(o->loc);
+  genSourceLine(o->loc);
   line("while (" << o->cond->strip() << ") {");
   in();
   *this << o->braces->strip();
@@ -622,7 +620,7 @@ void birch::CppGenerator::visit(const While* o) {
 }
 
 void birch::CppGenerator::visit(const DoWhile* o) {
-  genTraceLine(o->loc);
+  genSourceLine(o->loc);
   line("do {");
   in();
   *this << o->braces->strip();
@@ -631,7 +629,7 @@ void birch::CppGenerator::visit(const DoWhile* o) {
 }
 
 void birch::CppGenerator::visit(const With* o) {
-  genTraceLine(o->loc);
+  genSourceLine(o->loc);
   line("{");
   in();
   line("auto handler_ = birch::swap_handler(" << o->single << ");");
@@ -642,12 +640,12 @@ void birch::CppGenerator::visit(const With* o) {
 }
 
 void birch::CppGenerator::visit(const Assert* o) {
-  genTraceLine(o->loc);
-  line("libbirch_assert_(" << o->cond->strip() << ");");
+  genSourceLine(o->loc);
+  line("assert(" << o->cond->strip() << ");");
 }
 
 void birch::CppGenerator::visit(const Return* o) {
-  genTraceLine(o->loc);
+  genSourceLine(o->loc);
   ++inReturn;
   line("return " << o->single << ';');
   --inReturn;
@@ -729,19 +727,6 @@ std::string birch::CppGenerator::getIndex(const Statement* o) {
   auto index = dynamic_cast<const LocalVariable*>(o);
   assert(index);
   return sanitize(index->name->str());
-}
-
-void birch::CppGenerator::genTraceFunction(const std::string& name,
-    const Location* loc) {
-  genSourceLine(loc);
-  start("libbirch_function_(\"" << name << "\", \"");
-  finish(loc->file->path << "\", " << loc->firstLine << ");");
-}
-
-void birch::CppGenerator::genTraceLine(const Location* loc) {
-  genSourceLine(loc);
-  line("libbirch_line_(" << loc->firstLine << ");");
-  genSourceLine(loc);
 }
 
 void birch::CppGenerator::genSourceLine(const Location* loc) {

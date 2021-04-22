@@ -17,7 +17,9 @@ class SQLite3 {
     cpp{{
     assert(!this->db);
     auto res = sqlite3_open(filename.c_str(), &this->db);
-    libbirch_error_msg_(res == SQLITE_OK, "sqlite3_open failed");
+    if (res != SQLITE_OK) {
+      birch::error("sqlite3_open failed");
+    }
     }}
   }
   
@@ -27,7 +29,9 @@ class SQLite3 {
   function close() {
     cpp{{
     auto res = sqlite3_close(this->db);
-    libbirch_error_msg_(res == SQLITE_OK, "sqlite3_close failed");
+    if (res != SQLITE_OK) {
+      birch::error("sqlite3_close failed");
+    }
     this->db = nullptr;
     }}
   }
@@ -39,7 +43,9 @@ class SQLite3 {
     stmt:SQLite3Statement;
     cpp{{
     auto res = sqlite3_prepare_v2(this->db, sql.c_str(), sql.length(), &stmt->stmt, nullptr);
-    libbirch_error_msg_(res == SQLITE_OK, "sqlite3_prepare_v2 failed");
+    if (res != SQLITE_OK) {
+      birch::error("sqlite3_prepare_v2 failed");
+    }
     }}
     return stmt;
   }
@@ -50,7 +56,9 @@ class SQLite3 {
   function exec(sql:String) {
     cpp{{
     auto res = sqlite3_exec(this->db, sql.c_str(), nullptr, nullptr, nullptr);
-    libbirch_error_msg_(res == SQLITE_OK, "sqlite3_exec failed");
+    if (res != SQLITE_OK) {
+      birch::error("sqlite3_exec failed");
+    }
     }}
   }
 }

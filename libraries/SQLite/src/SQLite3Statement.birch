@@ -15,7 +15,9 @@ class SQLite3Statement {
   function bind(i:Integer, x:Integer) {
     cpp{{
     auto res = sqlite3_bind_int64(this->stmt, i, x);
-    libbirch_error_msg_(res == SQLITE_OK, "sqlite3_bind_int64 failed");
+    if (res != SQLITE_OK) {
+      birch::error("sqlite3_bind_int64 failed");
+    }
     }}
   }
 
@@ -28,7 +30,9 @@ class SQLite3Statement {
   function bind(i:Integer, x:Real) {
     cpp{{
     auto res = sqlite3_bind_double(this->stmt, i, x);
-    libbirch_error_msg_(res == SQLITE_OK, "sqlite3_bind_double failed");
+    if (res != SQLITE_OK) {
+      birch::error("sqlite3_bind_double failed");
+    }
     }}
   }
 
@@ -40,8 +44,11 @@ class SQLite3Statement {
    */ 
   function bind(i:Integer, x:String) {
     cpp{{
-    auto res = sqlite3_bind_text(this->stmt, i, x.c_str(), x.length(), SQLITE_TRANSIENT);
-    libbirch_error_msg_(res == SQLITE_OK, "sqlite3_bind_text failed");
+    auto res = sqlite3_bind_text(this->stmt, i, x.c_str(), x.length(),
+        SQLITE_TRANSIENT);
+    if (res != SQLITE_OK) {
+      birch::error("sqlite3_bind_text failed");
+    }
     }}
   }
 
@@ -53,7 +60,9 @@ class SQLite3Statement {
   function bindNull(i:Integer) {
     cpp{{
     auto res = sqlite3_bind_null(this->stmt, i);
-    libbirch_error_msg_(res == SQLITE_OK, "sqlite3_bind_null failed");
+    if (res != SQLITE_OK) {
+      birch::error("sqlite3_bind_null failed");
+    }
     }}
   }
 
@@ -74,7 +83,9 @@ class SQLite3Statement {
   function step() -> Boolean {
     cpp{{
     auto res = sqlite3_step(this->stmt);
-    libbirch_error_msg_(res == SQLITE_ROW || res == SQLITE_DONE, "sqlite3_step failed");
+    if (res != SQLITE_ROW && res != SQLITE_DONE) {
+      birch::error("sqlite3_step failed");
+    }
     return (res == SQLITE_ROW);
     }}
   }
@@ -153,7 +164,9 @@ class SQLite3Statement {
   function reset() {
     cpp{{
     auto res = sqlite3_reset(this->stmt);
-    libbirch_error_msg_(res == SQLITE_OK, "sqlite3_reset failed");
+    if (res != SQLITE_OK) {
+      birch::error("sqlite3_reset failed");
+    }
     }}
   }
    
@@ -163,7 +176,9 @@ class SQLite3Statement {
   function finalize() {
     cpp{{
     auto res = sqlite3_finalize(this->stmt);
-    libbirch_error_msg_(res == SQLITE_OK, "sqlite3_finalize failed");
+    if (res != SQLITE_OK) {
+      birch::error("sqlite3_finalize failed");
+    }
     }}
   }
 }

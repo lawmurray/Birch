@@ -117,16 +117,6 @@ protected:
   virtual std::string getIndex(const Statement* o);
 
   /**
-   * Generate macro to put function call on stack trace.
-   */
-  void genTraceFunction(const std::string& name, const Location* loc);
-
-  /**
-   * Generate macro to update line on stack trace.
-   */
-  void genTraceLine(const Location* loc);
-
-  /**
    * Generate macro to update line source line only. This does not generate
    * any executable code, and so is suitable for use in e.g. initializer
    * lists.
