@@ -8,9 +8,13 @@
 
 #include <cstdlib>
 #include <csignal>
+
+#ifdef HAVE_EXECINFO_H
 #include <execinfo.h>
+#endif
 
 static void abort(int sig) {
+  #ifdef HAVE_EXECINFO_H
   static const int maxSize = 20;
 	void* trace[maxSize];
 	int size = 0;
@@ -109,6 +113,7 @@ static void abort(int sig) {
     }
   }
   free(messages);
+  #endif
 }
 
 int main(int argc, char** argv) {
