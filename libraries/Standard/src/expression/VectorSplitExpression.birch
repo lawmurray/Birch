@@ -5,7 +5,7 @@
  * - Form: Expression type.
  */
 final class VectorSplitExpression<Value,Form>(x:Value, f:Form) <
-    BoxedExpression<Value,Form> {
+    BoxedForm<Value,Form> {
   function grad(d:Value, i:Integer) {
     if !flagConstant {
       if visitCount == 0 {

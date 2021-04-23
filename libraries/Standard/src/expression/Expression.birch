@@ -7,12 +7,12 @@
  * classDiagram
  *    Expression <|-- Random
  *    Expression <|-- BoxedValue
- *    Expression <|-- BoxedExpression
+ *    Expression <|-- BoxedForm
  *
  *    link Expression "../Expression/"
  *    link Random "../Random/"
  *    link BoxedValue "../BoxedValue/"
- *    link BoxedExpression "../BoxedExpression/"
+ *    link BoxedForm "../BoxedForm/"
  *
  *    class Random {
  *      random argument
@@ -20,7 +20,7 @@
  *    class BoxedValue {
  *      constant value
  *    }
- *    class BoxedExpression {
+ *    class BoxedForm {
  *      expression
  *    }
  * ```

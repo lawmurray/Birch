@@ -64,12 +64,10 @@ function nan_exp(x:Real) -> Real {
 function norm_exp(x:Real[_]) -> Real[_] {
   assert length(x) > 0;
   let mx <- max(x);
-  let r <- 0.0;
-  for n in 1..length(x) {
-    r <- r + nan_exp(x[n] - mx);
-  }
+  let r <- transform_reduce(x, 0.0, \(x:Real, y:Real) -> { return x + y; },
+      \(x:Real) -> { return nan_exp(x - mx); });
   let W <- mx + log(r);
-  return transform(x, \(w:Real) -> { return nan_exp(w - W); });
+  return transform(x, \(x:Real) -> { return nan_exp(x - W); });
 }
 
 /**
@@ -106,7 +104,6 @@ function ancestor(w:Real[_]) -> Integer {
 function systematic_cumulative_offspring(W:Real[_]) -> Integer[_] {
   let N <- length(W);
   O:Integer[N];
-
   let u <- simulate_uniform(0.0, 1.0);
   for n in 1..N {
     let r <- N*W[n]/W[N];
@@ -140,7 +137,7 @@ function cumulative_offspring_to_ancestors(O:Integer[_]) -> Integer[_] {
   let N <- length(O);
   a:Integer[N];
   for n in 1..N {
-    start:Integer <- 0;
+    let start <- 0;
     if n > 1 {
       start <- O[n - 1];
     }
@@ -188,7 +185,6 @@ function permute_ancestors(a:Integer[_]) -> Integer[_] {
 function cumulative_weights(w:Real[_]) -> Real[_] {
   let N <- length(w);
   W:Real[N];
-  
   if N > 0 {
     let mx <- max(w);
     W[1] <- nan_exp(w[1] - mx);

@@ -1,0 +1,79 @@
+class TestLongDiscreteDelta < Model {
+  x:Random<Integer>[5];
+  s:Random<Integer>;
+
+  function initialize() {
+    //
+  }
+
+  function simulate() {
+    x[1] ~ Binomial(10, 0.5);
+    x[2] ~ Binomial(10, 0.5);
+    x[3] ~ Binomial(10, 0.5);
+    x[4] ~ Binomial(10, 0.5);
+    x[5] ~ Binomial(10, 0.5);
+    s ~ Delta(-x[1] - (x[2] + x[3]) - (x[4] - x[5]));
+  }
+
+  function forward() -> Real[_] {
+    y:Real[size()];
+    y[1] <- x[1].value();
+    y[2] <- x[2].value();
+    y[3] <- x[3].value();
+    y[4] <- x[4].value();
+    y[5] <- x[5].value();
+    y[6] <- s.value();
+    return y;
+  }
+
+  function backward() -> Real[_] {
+    y:Real[size()];
+    y[6] <- s.value();
+    assert !x[1].hasValue();
+    assert !x[2].hasValue();
+    assert !x[3].hasValue();
+    assert !x[4].hasValue();
+    assert !x[5].hasValue();
+    y[5] <- x[5].value();
+    y[4] <- x[4].value();
+    y[3] <- x[3].value();
+    y[2] <- x[2].value();
+    y[1] <- x[1].value();
+    return y;
+  }
+
+  function forwardLazy() -> Real[_] {
+    y:Real[size()];
+    y[1] <- x[1].eval();
+    y[2] <- x[2].eval();
+    y[3] <- x[3].eval();
+    y[4] <- x[4].eval();
+    y[5] <- x[5].eval();
+    y[6] <- s.eval();
+    return y;
+  }
+
+  function backwardLazy() -> Real[_] {
+    y:Real[size()];
+    y[6] <- s.eval();
+    assert !x[1].hasValue();
+    assert !x[2].hasValue();
+    assert !x[3].hasValue();
+    assert !x[4].hasValue();
+    assert !x[5].hasValue();
+    y[5] <- x[5].eval();
+    y[4] <- x[4].eval();
+    y[3] <- x[3].eval();
+    y[2] <- x[2].eval();
+    y[1] <- x[1].eval();
+    return y;
+  }
+
+  function marginal() -> Distribution<Integer> {
+    return s.getDistribution();
+  }
+
+  function size() -> Integer {
+    return 6;
+  }
+}

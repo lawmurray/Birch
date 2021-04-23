@@ -1,0 +1,45 @@
+/**
+ * Delta distribution convolved with a bounded discrete distribution.
+ *
+ * - p: Bounded discrete distribution.
+ */
+final class DiscreteDelta(p:BoundedDiscrete) < BoundedDiscrete {
+  /**
+   * Distribution.
+   */
+  p:BoundedDiscrete <- p;
+
+  override function simulate() -> Integer {
+    return p.simulate();
+  }
+
+  override function logpdf(x:Integer) -> Real {
+    return p.logpdf(x);
+  }
+
+  override function update(x:Integer) -> Delay? {
+    return Delta(x);
+  }
+
+  override function lower() -> Integer? {
+		return p.lower();
+  }
+  
+  override function upper() -> Integer? {
+	  return p.upper();
+  }
+}
+
+/**
+ * Create delta distribution.
+ */
+function Delta(μ:Random<Integer>) -> Distribution<Integer> {
+	μ.prune();
+	if μ.hasBoundedDiscrete() {
+    let p <- construct<DiscreteDelta>(μ.getBoundedDiscrete());
+    μ.graft(p);
+    return p;
+  } else {
+  	return construct<Delta<Random<Integer>>>(μ);
+  }
+}

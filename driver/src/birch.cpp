@@ -121,11 +121,6 @@ int main(int argc, char** argv) {
 
   /* set up signal handling */
   std::signal(SIGABRT, abort);
-  std::signal(SIGFPE, abort);
-  std::signal(SIGILL, abort);
-  std::signal(SIGINT, abort);
-  std::signal(SIGSEGV, abort);
-  std::signal(SIGTERM, abort);
 
   try {
     /* first option (should be a program name) */

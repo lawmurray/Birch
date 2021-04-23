@@ -69,7 +69,7 @@ function test_pdf(π:Distribution<Integer>, N:Integer, lazy:Boolean) {
       let p <- 0.0;
       do {
         u <- 2*u;
-        if lazy {
+        if lazy && π.supportsLazy() {
           p <- exp(π.logpdfLazy(box(u))!.value());
         } else {
           p <- π.pdf(u);
@@ -83,7 +83,7 @@ function test_pdf(π:Distribution<Integer>, N:Integer, lazy:Boolean) {
   let count <- vector(0, to! - from! + 1);
   for n in 1..N {
     j:Integer;
-    if lazy {
+    if lazy && π.supportsLazy() {
       j <- π.simulateLazy()!;
     } else {
       j <- π.simulate();
@@ -98,7 +98,7 @@ function test_pdf(π:Distribution<Integer>, N:Integer, lazy:Boolean) {
   let failed <- false;
   for x in from!..to! {
     p:Real;
-    if lazy {
+    if lazy && π.supportsLazy() {
       p <- exp(π.logpdfLazy(box(x))!.value());
     } else {
       p <- π.pdf(x);

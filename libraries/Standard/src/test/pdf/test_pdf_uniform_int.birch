@@ -6,8 +6,5 @@ program test_pdf_uniform_int(N:Integer <- 10000, B:Integer <- 0,
   let l <- simulate_uniform_int(-10, 10);
   let u <- simulate_uniform_int(l, l + 20);
   let π <- UniformInteger(l, u);
-  if lazy {
-    warn("lazy not supported, reverting to eager.");
-  }
-  test_pdf(π, N, false);
+  test_pdf(π, N, lazy);
 }

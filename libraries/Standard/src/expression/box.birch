@@ -8,7 +8,7 @@ function box<Value>(x:Expression<Value>) -> Expression<Value> {
 /**
  * Box an already-boxed expression (identity operation).
  */
-function box<Value,Form>(x:BoxedExpression<Value,Form>) -> BoxedExpression<Value,Form> {
+function box<Value,Form>(x:BoxedForm<Value,Form>) -> BoxedForm<Value,Form> {
   return x;
 }
 
@@ -98,7 +98,7 @@ function box<Form>(f:Form) -> {
   return box_form(f.eval(), f);
 }
 function box_form<Value,Form>(x:Value, f:Form) -> {
-  return construct<BoxedExpression<Value,Form>>(x, f);
+  return construct<BoxedForm<Value,Form>>(x, f);
 }
 
 /**

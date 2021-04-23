@@ -56,6 +56,10 @@ class TestChainGaussian < Model {
     return y;
   }
 
+  function marginal() -> Distribution<Real> {
+    return x[5].getDistribution();
+  }
+
   function size() -> Integer {
     return 5;
   }

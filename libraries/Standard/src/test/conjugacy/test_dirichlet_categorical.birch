@@ -3,8 +3,5 @@
  */
 program test_dirichlet_categorical(N:Integer <- 10000, lazy:Boolean <- false) {
   m:TestDirichletCategorical;
-  if lazy {
-    warn("lazy not supported, reverting to eager.");
-  }
-  test_conjugacy(m, N, false);
+  test_conjugacy(m, N, lazy);
 }

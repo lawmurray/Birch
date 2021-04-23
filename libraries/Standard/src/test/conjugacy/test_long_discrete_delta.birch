@@ -1,0 +1,5 @@
+program test_long_discrete_delta(N:Integer <- 10000,
+    lazy:Boolean <- false) {
+  m:TestLongDiscreteDelta;
+  test_conjugacy(m, N, lazy);
+}

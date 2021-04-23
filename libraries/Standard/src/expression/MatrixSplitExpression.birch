@@ -5,7 +5,7 @@
  * - Form: Expression type.
  */
 final class MatrixSplitExpression<Value,Form>(x:Value, f:Form) <
-    BoxedExpression<Value,Form> {
+    BoxedForm<Value,Form> {
   function grad(d:Value, i:Integer, j:Integer) {
     if !flagConstant {
       if visitCount == 0 {

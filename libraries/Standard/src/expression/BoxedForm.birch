@@ -1,10 +1,10 @@
 /**
- * Boxed expression.
+ * Boxed form.
  *
  * - Value: Result type.
- * - Form: Expression type.
+ * - Form: Expression form.
  */
-class BoxedExpression<Value,Form>(x:Value, f:Form) < Expression<Value> {
+class BoxedForm<Value,Form>(x:Value, f:Form) < Expression<Value> {
   /**
    * Memoized result.
    */

@@ -1,0 +1,8 @@
+/*
+ * Test enumeration of discrete random variables.
+ */
+program test_negate_discrete_delta(N:Integer <- 10000,
+    lazy:Boolean <- false) {
+  m:TestNegateDiscreteDelta;
+  test_conjugacy(m, N, lazy);
+}
