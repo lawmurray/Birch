@@ -1,7 +1,7 @@
 /**
  * Input stream. Supports sequential reading only, ignoring white space.
  */
-class InputStream {
+struct InputStream {
   /**
    * File handle.
    */

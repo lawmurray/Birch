@@ -1,7 +1,7 @@
 /**
  * Output stream.
  */
-class OutputStream {
+struct OutputStream {
   /**
    * File handle.
    */
