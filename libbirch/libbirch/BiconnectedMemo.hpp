@@ -3,8 +3,6 @@
  */
 #pragma once
 
-#include "libbirch/ReadersWriterLock.hpp"
-
 namespace libbirch {
 class Any;
 

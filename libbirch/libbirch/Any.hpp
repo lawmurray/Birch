@@ -104,6 +104,17 @@ public:
   }
 
   /**
+   * New operator.
+   */
+  void* operator new(std::size_t size) {
+    /* object destruction and deallocation are separated; an explicit call to
+     * the destructor is used to destroy, and std::free() used to deallocate,
+     * so std::malloc() should be used to allocate; using the default operator
+     * new can result in a double free, as reported by valgrind */
+    return std::malloc(size);
+  }
+
+  /**
    * Assignment operator.
    */
   Any& operator=(const Any&) {

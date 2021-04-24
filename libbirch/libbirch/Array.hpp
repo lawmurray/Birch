@@ -10,7 +10,6 @@
 #include "libbirch/Shape.hpp"
 #include "libbirch/Iterator.hpp"
 #include "libbirch/Eigen.hpp"
-#include "libbirch/ReadersWriterLock.hpp"
 
 namespace libbirch {
 /**

@@ -43,7 +43,6 @@ nobase_include_HEADERS = \
   libbirch/internal.hpp \
   libbirch/Iterator.hpp \
   libbirch/Length.hpp \
-  libbirch/Lock.hpp \
   libbirch/Marker.hpp \
   libbirch/macro.hpp \
   libbirch/Memo.hpp \
@@ -52,7 +51,6 @@ nobase_include_HEADERS = \
   libbirch/Offset.hpp \
   libbirch/Range.hpp \
   libbirch/Reacher.hpp \
-  libbirch/ReadersWriterLock.hpp \
   libbirch/Scanner.hpp \
   libbirch/Shape.hpp \
   libbirch/Shared.hpp \
