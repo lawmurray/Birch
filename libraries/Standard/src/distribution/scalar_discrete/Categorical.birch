@@ -3,7 +3,7 @@
  *
  * - ρ: Probabilities.
  */
-final class Categorical<Arg>(ρ:Arg) < Distribution<Integer> {
+final class Categorical<Arg>(ρ:Arg) < BoundedDiscrete {
   /**
    * Category probabilities.
    */
@@ -30,11 +30,11 @@ final class Categorical<Arg>(ρ:Arg) < Distribution<Integer> {
   }
 
   override function lower() -> Integer? {
-    return 1;
+    return if_then_else(length(eval(ρ)) > 0, 1, 0);
   }
 
   override function upper() -> Integer? {
-    return rows(eval(ρ));
+    return length(eval(ρ));
   }
 
   override function write(buffer:Buffer) {
@@ -66,19 +66,23 @@ function simulate_categorical(ρ:Real[_]) -> Integer {
  * - Z: Sum of the unnormalized category probabilities.
  */
 function simulate_categorical(ρ:Real[_], Z:Real) -> Integer {
-  assert length(ρ) > 0;
-  assert abs(sum(ρ) - Z) < 1.0e-6;
-  let u <- simulate_uniform(0.0, Z);
-  let x <- 1;
-  let P <- ρ[1];
-  while P < u {
-    assert x <= length(ρ);
-    x <- x + 1;
-    assert 0.0 <= ρ[x];
-    P <- P + ρ[x];
-    assert P < Z + 1.0e-6;
+  if length(ρ) == 0 {
+    return 0;
+  } else {
+    assert length(ρ) > 0;
+    assert abs(sum(ρ) - Z) < 1.0e-6;
+    let u <- simulate_uniform(0.0, Z);
+    let x <- 1;
+    let P <- ρ[1];
+    while P < u {
+      assert x <= length(ρ);
+      x <- x + 1;
+      assert 0.0 <= ρ[x];
+      P <- P + ρ[x];
+      assert P < Z + 1.0e-6;
+    }
+    return x;
   }
-  return x;
 }
 
 /*
@@ -123,8 +127,8 @@ function cdf_categorical(x:Integer, ρ:Real[_]) -> Real {
  * Return: the quantile.
  */
 function quantile_categorical(P:Real, ρ:Real[_]) -> Integer {
-  let i <- 1;
-  let R <- ρ[1];
+  let i <- 0;
+  let R <- 0.0;
   while R < P && i < length(ρ) {
     i <- i + 1;
     R <- R + ρ[i];

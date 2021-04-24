@@ -4,7 +4,7 @@
  *
  * - μ: Location.
  */
-final class Delta<Arg>(μ:Arg) < Discrete {
+final class Delta<Arg>(μ:Arg) < BoundedDiscrete {
   /**
    * Location.
    */
