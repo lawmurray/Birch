@@ -20,17 +20,17 @@ class SIRModel < Model {
   /**
    * Susceptible population at each time.
    */
-  s:Tape<Integer>;
+  s:Tape<Random<Integer>>;
 
   /**
    * Infectious population at each time.
    */
-  i:Tape<Integer>;
+  i:Tape<Random<Integer>>;
 
   /**
    * Recovered population at each time.
    */
-  r:Tape<Integer>;
+  r:Tape<Random<Integer>>;
 
   override function simulate() {
     λ ~ Gamma(2.0, 5.0);
@@ -43,12 +43,13 @@ class SIRModel < Model {
       // the initial state is set in the input file
     } else {
       let n <- s[t - 1] + i[t - 1] + r[t - 1];  // total population
-      let τ <~ Binomial(s[t - 1], 1.0 - exp(-λ*i[t - 1]/n));
-      let Δi <~ Binomial(τ, δ);
+      let τ ~ Binomial(s[t - 1], 1.0 - exp(-λ*i[t - 1]/n));
+      let Δi ~ Binomial(τ, δ);
+      let Δr ~ Binomial(i[t - 1], γ);
 
-      s[t] <- s[t - 1] - Δi;
-      -(i[t] - i[t - 1] - Δi) ~> Binomial(i[t - 1], γ);
-      r[t] <- n - s[t] - i[t];
+      s[t] ~ Delta(s[t - 1] - Δi);
+      i[t] ~ Delta(i[t - 1] + Δi - Δr);
+      r[t] ~ Delta(r[t - 1] + Δr);
     }
   }
 
