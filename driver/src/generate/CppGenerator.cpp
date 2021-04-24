@@ -404,8 +404,10 @@ void birch::CppGenerator::visit(const Program* o) {
           genSourceLine(p->loc);
           line("if (!::optarg) {");
           in();
+          genSourceLine(p->loc);
           line("birch::error(birch::type::String(\"value required for option --\") + birch::type::String(long_options_[::optopt].name));");
           out();
+          genSourceLine(p->loc);
           line("}");
           genSourceLine(p->loc);
           auto type = dynamic_cast<Named*>(p->type->unwrap());
@@ -415,6 +417,7 @@ void birch::CppGenerator::visit(const Program* o) {
           } else {
             line(name << " = birch::type::String(::optarg);");
           }
+          genSourceLine(p->loc);
           line("break;");
           out();
         }
@@ -453,6 +456,7 @@ void birch::CppGenerator::visit(const Program* o) {
        * variable initialization require Eigen to initialize such variables
        * before entering a parallel region (LibBirch and the standard library
        * currently use thread_local to avoid doing similar) */
+      genSourceLine(o->loc);
       line("Eigen::initParallel();\n");
 
       /* body of program */
