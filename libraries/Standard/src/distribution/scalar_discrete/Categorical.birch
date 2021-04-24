@@ -127,11 +127,15 @@ function cdf_categorical(x:Integer, ρ:Real[_]) -> Real {
  * Return: the quantile.
  */
 function quantile_categorical(P:Real, ρ:Real[_]) -> Integer {
-  let i <- 0;
-  let R <- 0.0;
-  while R < P && i < length(ρ) {
-    i <- i + 1;
-    R <- R + ρ[i];
+  if length(ρ) == 0 {
+    return 0;
+  } else {
+    let i <- 1;
+    let R <- ρ[1];
+    while R < P && i < length(ρ) {
+      i <- i + 1;
+      R <- R + ρ[i];
+    }
+    return i;
   }
-  return i;
 }
