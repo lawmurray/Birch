@@ -82,12 +82,6 @@ template<class T>
 void libbirch::BiconnectedCollector::visit(Shared<T>& o) {
   Any* o1 = o.load();
   o.store(nullptr);
-  if (o.b) {
-    if (o1->decSharedBiconnected_() == 0) {
-      visit(o1);
-    }
-  } else {
-    o1->decSharedReachable_();
-    visit(o1);
-  }
+  o1->decSharedReachable_();
+  visit(o1);
 }

@@ -191,15 +191,6 @@ public:
   }
 
   /**
-   * Decrement the shared count for an object while collecting a biconnected
-   * component.
-   */
-  int decSharedBiconnected_() {
-    assert(numShared_() > 0);
-    return --r_;
-  }
-
-  /**
    * Is there only one pointer (of any type) to this object?
    */
   bool isUnique_() const {
