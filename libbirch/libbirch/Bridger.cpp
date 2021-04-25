@@ -21,7 +21,7 @@ std::tuple<int,int,int,int> libbirch::Bridger::visit(const int j, const int k,
     m = m1 + 1;
     n = n1 + 1;
     
-    o->a_ = 0;
+    //o->a_ = 0;  // keep this, used later in BiconnectedCollector
     o->k_ = k;
     o->n_ = n;
     o->f_.maskAnd(~(CLAIMED|POSSIBLE_ROOT));

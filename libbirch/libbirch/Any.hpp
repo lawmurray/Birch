@@ -191,6 +191,16 @@ public:
   }
 
   /**
+   * Decrement the shared count during collection of a biconnected component,
+   * where the caller is responsible for destruction and deallocation, if
+   * necessary.
+   */
+  int decSharedBiconnected_() {
+    assert(numShared_() > 0);
+    return --r_;
+  }
+
+  /**
    * Is there only one pointer (of any type) to this object?
    */
   bool isUnique_() const {

@@ -7,10 +7,9 @@ std::tuple<int,int,int> libbirch::Spanner::visit(const int i, const int j,
     Any* o) {
   if (!(o->f_.exchangeOr(CLAIMED) & CLAIMED)) {
     /* just claimed by this thread */
-    assert(o->a_ == 0);
     assert(o->p_ == -1);
-    o->a_ = 1;
     o->p_ = get_thread_num();
+    o->a_ = 1;
     o->l_ = j;
     o->h_ = j;
     int l, h, k;
