@@ -103,6 +103,7 @@ std::tuple<int,int,int,int> libbirch::Bridger::visit(const int j, const int k,
     std::tie(l, h, m, n) = visit(j, k, o1);
     if (l == j && h < j + m) {
       /* is a bridge */
+      o1->head_();
       o.b = true;
       n = 0;  // base case for post-order rank in biconnected component
     }

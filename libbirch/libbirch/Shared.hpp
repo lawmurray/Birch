@@ -94,7 +94,6 @@ public:
       } else {
         if (b) {
           store(o.get());  // copy next biconnected component
-          b = false;
         }
         unpack(ptr)->incShared_();
       }
@@ -255,8 +254,7 @@ public:
     auto old = ptr;
     ptr = o.ptr;
     b = o.b;
-    o.ptr = pack(nullptr);
-    o.b = false;
+    o.store(nullptr);
     if (old) {
       if (ptr == old) {
         unpack(old)->decSharedReachable_();
@@ -275,8 +273,7 @@ public:
       ptr->incShared_();
     }
     auto old = unpack(this->ptr);
-    this->ptr = pack(ptr);
-    this->b = false;
+    store(ptr);
     if (old) {
       if (ptr == old) {
         old->decSharedReachable_();
@@ -291,8 +288,7 @@ public:
    */
   void release() {
     auto old = ptr;
-    ptr = pack(nullptr);
-    b = false;
+    store(nullptr);
     if (old) {
       unpack(old)->decShared_();
     }
@@ -348,6 +344,7 @@ private:
    */
   void store(T* ptr) {
     this->ptr = pack(ptr);
+    this->b = false;
   }
 
   /**
@@ -390,7 +387,9 @@ template<class T>
 T* libbirch::Shared<T>::get() {
   T* o = unpack(ptr);
   if (b) {
-    if (!o->isUnique_()) {  // no need to copy for last reference
+    if (!o->isUniqueHead_()) {
+      // ^ no need to copy for last external reference
+
       /* the copy is of a biconnected component here, used the optimized
        * BiconnectedCopier for this */
       assert(!biconnected_copy());
@@ -400,8 +399,10 @@ T* libbirch::Shared<T>::get() {
       biconnected_copy(true);
       assert(!biconnected_copy());
       replace(o);
+    } else {
+      o->unhead_();
+      b = false;
     }
-    b = false;
   }
   return o;
 }

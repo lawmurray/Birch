@@ -41,4 +41,11 @@ void collect();
  */
 bool biconnected_copy(const bool toggle = false);
 
+/**
+ * Collect a biconnected component, outside of regular garbage collection.
+ * 
+ * @param o Head of the biconnected component.
+ */
+void biconnected_collect(Any* o);
+
 }

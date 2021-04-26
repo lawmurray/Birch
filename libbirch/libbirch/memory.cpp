@@ -9,7 +9,6 @@
 #include "libbirch/Marker.hpp"
 #include "libbirch/Scanner.hpp"
 #include "libbirch/Collector.hpp"
-#include "libbirch/Spanner.hpp"
 
 /**
  * Possible roots list for each thread.
@@ -130,4 +129,8 @@ bool libbirch::biconnected_copy(const bool toggle) {
     biconnected_flag = !biconnected_flag;
   }
   return biconnected_flag;
+}
+
+void libbirch::biconnected_collect(Any* o) {
+  BiconnectedCollector().visit(o);
 }

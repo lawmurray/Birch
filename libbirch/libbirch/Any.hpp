@@ -9,6 +9,8 @@
 #include "libbirch/thread.hpp"
 #include "libbirch/Atomic.hpp"
 
+#include <iostream>
+
 namespace libbirch {
 /**
  * Flags used for cycle collection as in @ref Bacon2001
@@ -43,7 +45,8 @@ enum Flag : int16_t {
   REACHED = (1 << 4),
   COLLECTED = (1 << 5),
   POSSIBLE_ROOT = (1 << 6),
-  CLAIMED = (1 << 7)
+  CLAIMED = (1 << 7),
+  HEAD = (1 << 8)
 };
 
 /**
@@ -155,27 +158,37 @@ public:
   void decShared_() {
     assert(numShared_() > 0);
 
-    /* first set the BUFFERED flag so that this call is uniquely responsible
-     * for registering this object as a possible root */
-    auto old = f_.exchangeOr(BUFFERED|POSSIBLE_ROOT);
-
-    if (--r_ == 0) {
-      /* destroy, and as long as haven't been previously buffered, can
-       * deallocate too */
-      destroy_();
-      if (!(old & BUFFERED) || old & ACYCLIC) {
-        /* hasn't been previously buffered, or is acyclic, so can immediately
-         * deallocate */
+    if (isHead_()) {
+      if (r_.load() == a_) {
+        biconnected_collect(this);
+        r_.decrement();
+        destroy_();
         deallocate_();
       } else {
-        /* has been previously buffered, so deallocation must be deferred
-         * until collection, but certainly not a possible root, as has just
-         * been destroyed */
-        f_.maskAnd(~POSSIBLE_ROOT);
+        r_.decrement();
       }
-    } else if (!(old & BUFFERED) && !(old & ACYCLIC)) {
-      /* not already registered as a possible root, and not acyclic */
-      register_possible_root(this);
+    } else {
+      /* first set the BUFFERED flag so that this call is uniquely responsible
+      * for registering this object as a possible root */
+      auto old = f_.exchangeOr(BUFFERED|POSSIBLE_ROOT);
+      if (--r_ == 0) {
+        /* destroy, and as long as haven't been previously buffered, can
+         * deallocate too */
+        destroy_();
+        if (!(old & BUFFERED) || old & ACYCLIC) {
+          /* hasn't been previously buffered, or is acyclic, so can
+           * immediately deallocate */
+          deallocate_();
+        } else {
+          /* has been previously buffered, so deallocation must be deferred
+           * until collection, but certainly not a possible root, as has just
+           * been destroyed */
+          f_.maskAnd(~POSSIBLE_ROOT);
+        }
+      } else if (!(old & BUFFERED) && !(old & ACYCLIC)) {
+        /* not already registered as a possible root, and not acyclic */
+        register_possible_root(this);
+      }
     }
   }
 
@@ -195,9 +208,12 @@ public:
    * where the caller is responsible for destruction and deallocation, if
    * necessary.
    */
-  int decSharedBiconnected_() {
+  void decSharedBiconnected_() {
     assert(numShared_() > 0);
-    return --r_;
+    if (--r_ == 0) {
+      destroy_();
+      deallocate_();
+    }
   }
 
   /**
@@ -205,6 +221,14 @@ public:
    */
   bool isUnique_() const {
     return numShared_() == 1;
+  }
+
+  /**
+   * Is there only one pointer (of any type) to this biconnected component?
+   */
+  bool isUniqueHead_() const {
+    assert(isHead_());
+    return numShared_() == a_;
   }
 
   /**
@@ -222,10 +246,32 @@ public:
   }
 
   /**
+   * Is the head flag set?
+   */
+  bool isHead_() const {
+    return f_.load() & HEAD;
+  }
+
+  /**
    * Set the acyclic flag.
    */
   void acyclic_() {
     f_.maskOr(ACYCLIC);
+  }
+
+  /**
+   * Set the head flag.
+   */
+  void head_() {
+    assert(r_.load() == a_);
+    f_.maskOr(HEAD);
+  }
+
+  /**
+   * Unset the head flag.
+   */
+  void unhead_() {
+    f_.maskAnd(~(HEAD|BUFFERED|POSSIBLE_ROOT));
   }
 
   /**
@@ -299,7 +345,10 @@ private:
   Atomic<int> r_;
 
   /**
-   * Account of references, used for bridge finding and cycle collection.
+   * Account of references, used for bridge finding and cycle collection. For
+   * the head of a biconnected component (i.e. HEAD flag is set), this is the
+   * number of internal references to the object in its biconnected component,
+   * plus one for the original bridge edge.
    */
   int a_;
 

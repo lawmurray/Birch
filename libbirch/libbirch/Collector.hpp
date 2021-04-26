@@ -83,9 +83,7 @@ void libbirch::Collector::visit(Inplace<T>& o) {
 
 template<class T>
 void libbirch::Collector::visit(Shared<T>& o) {
-  if (o.b) {
-    //BiconnectedCollector().visit(o);
-  } else {
+  if (!o.b) {
     Any* o1 = o.load();
     if (o1 && !o1->isAcyclic_()) {
       o.store(nullptr);

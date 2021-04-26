@@ -80,14 +80,12 @@ void libbirch::BiconnectedCollector::visit(Inplace<T>& o) {
 
 template<class T>
 void libbirch::BiconnectedCollector::visit(Shared<T>& o) {
-  Any* o1 = o.load();
-  if (o1 && !o1->isAcyclic_()) {
-    o.store(nullptr);
-    if (o1->decSharedBiconnected_() == o1->a_ || !o.b) {
-      // ^ recall that a_ records the number of internal references to the
-      //   object in its biconnected component; if the new reference count
-      //   equals a_ then the last external reference has just been removed
+  if (!o.b) {
+    Any* o1 = o.load();
+    if (o1 && !o1->isAcyclic_()) {
+      o.store(nullptr);
       visit(o1);
+      o1->decSharedBiconnected_();
     }
   }
 }
