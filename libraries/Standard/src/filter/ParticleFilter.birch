@@ -186,31 +186,22 @@ class ParticleFilter {
    * Copy particles during resampling.
    */
   function copy() {
-    /* the ancestry vector is in non-descending order; the first offspring of
-     * each particle is maintained, the second is copied with copy() to apply
-     * bridge finding, the subsequent are copied with copy2() after bridge
-     * finding is complete; this is achieved in two passes to ensure that all
-     * finish before any copy2() begins */
-    let x' <- x;
+    /* apply bridge finding to any particle with at least two offspring, using
+     * the fact that the ancestor vector is in ascending order */
     parallel for n in 2..nparticles {
-      if n == 1 || a[n] != a[n - 1] {
-        // first offspring, nothing to do in this pass
-      } else if a[n] == a[n - 1] && (n <= 2 || a[n] != a[n - 2]) {
-        /* second offspring */
-        x[n] <- global.copy(x'[a[n]]);
-      } else {
-        // subsequent offspring, nothing to do in this pass
+      if a[n] == a[n - 1] && (n <= 2 || a[n] != a[n - 2]) {
+        bridge(x[a[n]]);
       }
     }
+
+    /* permute the ancestry vector so that it has the property a[n] == n where
+     * n has at least one offspring */
+    a <- permute_ancestors(a);
+
+    /* copy particles where we have a[n] != n */
     parallel for n in 1..nparticles {
-      if n == 1 || a[n] != a[n - 1] {
-        /* first offspring */
-        x[n] <- x'[a[n]];
-      } else if a[n] == a[n - 1] && (n <= 2 || a[n] != a[n - 2]) {
-        // second offspring, nothing to do in this pass
-      } else {
-        /* subsequent offspring */
-        x[n] <- global.copy2(x'[a[n]]);
+      if a[n] != n {
+        x[n] <- global.copy(x[a[n]]);
       }
     }
   }

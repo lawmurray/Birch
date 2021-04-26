@@ -1,5 +1,15 @@
 /**
- * Deep copy an object with bridge-finding.
+ * Find bridges in the reachable graph. Must be followed by copy().
+ */
+function bridge<Type>(o:Type) {
+  cpp{{
+  o.bridge();
+  }}
+}
+
+/**
+ * Deep copy. May be preceded by bridge() for a lazy copy, otherwise will
+ * perform an eager copy.
  */
 function copy<Type>(o:Type) -> Type {
   cpp{{
@@ -8,26 +18,12 @@ function copy<Type>(o:Type) -> Type {
 }
 
 /**
- * Deep copy an object without further bridge-finding.
- */
-function copy2<Type>(o:Type) -> Type {
-  cpp{{
-  return o.copy2();
-  }}
-}
-
-/**
- * Deep copy an object multiple times to construct an array.
+ * Deep copy multiple times to construct an array. May be preceded by bridge()
+ * for lazy copies, otherwise will perform eager copies.
  *
  * - o: Source object.
  * - length: Length of vector.
  */
 function copy<Type>(o:Type, length:Integer) -> Type[_] {
-  return vector_lambda(\(i:Integer) -> {
-        if i == 1 {
-          return copy(o);
-        } else {
-          return copy2(o);
-        }
-      }, length);
+  return vector_lambda(\(i:Integer) -> { return copy(o); }, length);
 }

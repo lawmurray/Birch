@@ -19,11 +19,19 @@ class AliveParticleFilter < ParticleFilter {
   p:Integer[_];
 
   override function simulate(t:Integer, input:Buffer) {
-    a <- resample_systematic(w);  // normal resample intialize first attempt
+    a <- resample_systematic(w);  // normal resample intializes first attempt
     p <- vector(0, nparticles);
 
     let x0 <- x;
     let w0 <- w;
+
+    /* apply bridge finding to all particles in case needed, but actual copy()
+     * is performed as-needed below */
+    parallel for n in 1..nparticles {
+      bridge(x0[n]);
+    }
+
+    /* propagate */
     parallel for n in 1..nparticles {
       do {
         x[n] <- global.copy(x0[a[n]]);

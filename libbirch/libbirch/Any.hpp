@@ -160,6 +160,8 @@ public:
 
     if (isHead_()) {
       if (r_.load() == a_) {
+        /* last external reference about to be removed, remainder are internal
+         * to the biconnected component */
         biconnected_collect(this);
         r_.decrement();
         destroy_();
