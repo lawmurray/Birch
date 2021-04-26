@@ -18,7 +18,7 @@ static thread_local std::vector<libbirch::Any*> possible_roots;
 /**
  * Unreachable list for each thread.
  */
-static thread_local std::vector<libbirch::Any*> unreachable;
+static thread_local std::vector<libbirch::Any*> unreachables;
 
 /**
  * Biconnected flag for each thread.
@@ -30,7 +30,7 @@ void libbirch::register_possible_root(Any* o) {
 }
 
 void libbirch::register_unreachable(Any* o) {
-  unreachable.push_back(o);
+  unreachables.push_back(o);
 }
 
 void libbirch::collect() {
@@ -40,9 +40,12 @@ void libbirch::collect() {
    * list */
 
   auto nthreads = get_max_threads();
-  std::vector<libbirch::Any*> all_possible_roots;   // concatenated list of possible roots
-  std::vector<int> starts(nthreads); // start indices in concatenated list
-  std::vector<int> sizes(nthreads);  // sizes in concatenated list
+
+  /* concatenated list of possibles root objects, and unreachable objects */
+  std::vector<libbirch::Any*> all_possible_roots, all_unreachables;
+
+  /* start and end indices for each thread in concatenated lists */
+  std::vector<int> starts(nthreads), sizes(nthreads);
 
   #pragma omp parallel
   {
@@ -88,7 +91,7 @@ void libbirch::collect() {
     #pragma omp barrier
 
     /* mark pass */
-    #pragma omp for schedule(static)
+    #pragma omp for schedule(dynamic)
     for (int i = 0; i < (int)all_possible_roots.size(); ++i) {
       auto o = all_possible_roots[i];
       Marker visitor;
@@ -97,7 +100,7 @@ void libbirch::collect() {
     #pragma omp barrier
 
     /* scan/reach pass */
-    #pragma omp for schedule(static)
+    #pragma omp for schedule(dynamic)
     for (int i = 0; i < (int)all_possible_roots.size(); ++i) {
       auto o = all_possible_roots[i];
       Scanner visitor;
@@ -106,21 +109,43 @@ void libbirch::collect() {
     #pragma omp barrier
 
     /* collect pass */
-    #pragma omp for schedule(static)
+    #pragma omp for schedule(dynamic)
     for (int i = 0; i < (int)all_possible_roots.size(); ++i) {
       auto o = all_possible_roots[i];
       Collector visitor;
       visitor.visit(o);
     }
+    sizes[tid] = unreachables.size();
+    #pragma omp barrier
+
+    /* a single thread now sets up the concatenated list of unreachables */
+    #pragma omp single
+    {
+      #ifdef __cpp_lib_parallel_algorithm
+      std::exclusive_scan(sizes.begin(), sizes.end(), starts.begin(), 0);
+      #else
+      starts[0] = 0;
+      for (int i = 1; i < nthreads; ++i) {
+        starts[i] = starts[i - 1] + sizes[i - 1];
+      }
+      #endif
+      all_unreachables.resize(starts.back() + sizes.back());
+    }
+    #pragma omp barrier
+
+    /* all threads copy into the concatenated list of unreachables */
+    std::copy(unreachables.begin(), unreachables.end(),
+        all_unreachables.begin() + starts[tid]);
+    unreachables.clear();
     #pragma omp barrier
 
     /* finally, destroy objects determined unreachable */
-    for (int i = 0; i < (int)unreachable.size(); ++i) {
-      auto o = unreachable[i];
+    #pragma omp for schedule(dynamic)
+    for (int i = 0; i < (int)all_unreachables.size(); ++i) {
+      auto o = all_unreachables[i];
       o->destroy_();
       o->deallocate_();
     }
-    unreachable.clear();
   }
 }
 

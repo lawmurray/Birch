@@ -188,7 +188,7 @@ class ParticleFilter {
   function copy() {
     /* apply bridge finding to any particle with at least two offspring, using
      * the fact that the ancestor vector is in ascending order */
-    parallel for n in 2..nparticles {
+    dynamic parallel for n in 2..nparticles {
       if a[n] == a[n - 1] && (n <= 2 || a[n] != a[n - 2]) {
         bridge(x[a[n]]);
       }
@@ -199,7 +199,7 @@ class ParticleFilter {
     a <- permute_ancestors(a);
 
     /* copy particles where we have a[n] != n */
-    parallel for n in 1..nparticles {
+    dynamic parallel for n in 1..nparticles {
       if a[n] != n {
         x[n] <- global.copy(x[a[n]]);
       }
