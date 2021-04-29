@@ -71,7 +71,7 @@ class BoxedForm<Value,Form>(x:Value, f:Form) < Expression<Value> {
   final override function reval() -> Value {
     if f? {
       if visitCount == 0 {
-        x <- f!.reval();
+        x <- global.reval(f!);
       }
       visitCount <- visitCount + 1;
       if visitCount >= evalCount {
@@ -100,7 +100,7 @@ class BoxedForm<Value,Form>(x:Value, f:Form) < Expression<Value> {
         //   called on this object, typically because it is root expression
         //   used from client code, rather than a subexpression used from
         //   other expressions
-        f!.grad(this.d!);  // upstream gradients all accumulated, propagate
+        global.grad(f!, this.d!);  // upstream gradients all accumulated, propagate
         this.d <- nil;    // clear intermediate gradients to save memory
         visitCount <- 0;  // reset for next time
       }
@@ -110,7 +110,7 @@ class BoxedForm<Value,Form>(x:Value, f:Form) < Expression<Value> {
   final override function label(gen:Integer) {
     if f? && this.gen == 0 {
       this.gen <- gen;
-      f!.label(gen);
+      global.label(f!, gen);
     }
   }
 
@@ -118,13 +118,13 @@ class BoxedForm<Value,Form>(x:Value, f:Form) < Expression<Value> {
     if f? && this.gen < gen {
       constant();
     } else {
-      f!.constant(gen);
+      global.constant(f!, gen);
     }
   }
 
   final override function constant() {
     if f? {
-      f!.constant();
+      global.constant(f!);
       f <- nil;
       d <- nil;
       gen <- 0;

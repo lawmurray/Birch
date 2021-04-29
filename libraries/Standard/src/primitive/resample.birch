@@ -30,10 +30,8 @@ function resample_multinomial(w:Real[_]) -> Integer[_] {
 function log_sum_exp(x:Real[_]) -> Real {
   assert length(x) > 0;
   let mx <- max(x);
-  let r <- 0.0;
-  for n in 1..length(x) {
-    r <- r + nan_exp(x[n] - mx);
-  }
+  let r <- transform_reduce(x, 0.0, \(x:Real, y:Real) -> { return x + y; },
+      \(x:Real) -> { return nan_exp(x - mx); });
   return mx + log(r);
 }
 

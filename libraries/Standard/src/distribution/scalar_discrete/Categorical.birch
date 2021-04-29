@@ -53,7 +53,7 @@ function Categorical<Arg>(ρ:Arg) -> {
 /*
  * Simulate a categorical distribution.
  *
- * - ρ: Category probabilities. These should sum to one.
+ * - ρ: Normalized category probabilities.
  */
 function simulate_categorical(ρ:Real[_]) -> Integer {
   return simulate_categorical(ρ, 1.0);
@@ -69,17 +69,13 @@ function simulate_categorical(ρ:Real[_], Z:Real) -> Integer {
   if length(ρ) == 0 {
     return 0;
   } else {
-    assert length(ρ) > 0;
-    assert abs(sum(ρ) - Z) < 1.0e-6;
     let u <- simulate_uniform(0.0, Z);
     let x <- 1;
     let P <- ρ[1];
     while P < u {
       assert x <= length(ρ);
       x <- x + 1;
-      assert 0.0 <= ρ[x];
       P <- P + ρ[x];
-      assert P < Z + 1.0e-6;
     }
     return x;
   }
@@ -89,32 +85,55 @@ function simulate_categorical(ρ:Real[_], Z:Real) -> Integer {
  * Observe a categorical variate.
  *
  * - x: The variate.
- * - ρ: Category probabilities.
+ * - ρ: Normalized category probabilities.
  *
  * Returns: the log probability mass.
  */
-function logpdf_categorical(x:Integer, ρ:Real[_]) -> Real {
-  if 1 <= x && x <= length(ρ) {
-    assert ρ[x] >= 0.0;
-    return log(ρ[x]);
-  } else {
-    return -inf;
-  }
+function logpdf_categorical<Arg1,Arg2>(x:Arg1, ρ:Arg2) -> Real {
+  return logpdf_categorical(x, ρ, 1.0);
+}
+
+/*
+ * Observe a categorical variate.
+ *
+ * - x: The variate.
+ * - ρ: Unnormalized category probabilities.
+ * - Z: Sum of the unnormalized category probabilities.
+ *
+ * Returns: the log probability mass.
+ */
+function logpdf_categorical<Arg1,Arg2,Arg3>(x:Arg1, ρ:Arg2, Z:Arg3) -> {
+  return log(element(ρ, x)) - log(Z);
 }
 
 /*
  * CDF of a categorical variate.
  *
  * - x: The variate.
- * - ρ: Category probabilities.
+ * - ρ: Normalized category probabilities.
  *
  * Return: the cumulative probability.
  */
 function cdf_categorical(x:Integer, ρ:Real[_]) -> Real {
-  if 1 <= x && x <= length(ρ) {
-    return sum(ρ[1..x]);
+  return cdf_categorical(x, ρ, 1.0);
+}
+
+/*
+ * CDF of a categorical variate.
+ *
+ * - x: The variate.
+ * - ρ: Unnormalized category probabilities.
+ * - Z: Sum of the unnormalized category probabilities.
+ *
+ * Return: the cumulative probability.
+ */
+function cdf_categorical(x:Integer, ρ:Real[_], Z:Real) -> Real {
+  if x <= 0 {
+    return 0.0;
+  } else if 1 <= x && x <= length(ρ) {
+    return sum(ρ[1..x])/Z;
   } else {
-    return -inf;
+    return 1.0;
   }
 }
 
@@ -122,17 +141,30 @@ function cdf_categorical(x:Integer, ρ:Real[_]) -> Real {
  * Quantile of a categorical variate.
  *
  * - P: The cumulative probability.
- * - ρ: Category probabilities.
+ * - ρ: Unnormalized category probabilities.
  *
  * Return: the quantile.
  */
 function quantile_categorical(P:Real, ρ:Real[_]) -> Integer {
+  return quantile_categorical(P, ρ, 1.0);
+}
+
+/*
+ * Quantile of a categorical variate.
+ *
+ * - P: The cumulative probability.
+ * - ρ: Unnormalized category probabilities.
+ * - Z: Sum of the unnormalized category probabilities.
+ *
+ * Return: the quantile.
+ */
+function quantile_categorical(P:Real, ρ:Real[_], Z:Real) -> Integer {
   if length(ρ) == 0 {
     return 0;
   } else {
     let i <- 1;
     let R <- ρ[1];
-    while R < P && i < length(ρ) {
+    while R < P*Z && i < length(ρ) {
       i <- i + 1;
       R <- R + ρ[i];
     }

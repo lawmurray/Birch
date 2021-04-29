@@ -262,6 +262,14 @@ function grad<Type,Gradient>(x:Type, d:Gradient) {
   x.grad(d);
 }
 
+function grad<Type,Gradient>(x:Type, d:Gradient, i:Integer) {
+  x.grad(d, i);
+}
+
+function grad<Type,Gradient>(x:Type, d:Gradient, i:Integer, j:Integer) {
+  x.grad(d, i, j);
+}
+
 function label<Type>(x:Type, gen:Integer) {
   x.label(gen);
 }

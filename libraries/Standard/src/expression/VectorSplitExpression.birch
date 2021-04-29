@@ -5,13 +5,13 @@
  * - Form: Expression type.
  */
 final class VectorSplitExpression<Value,Form>(x:Value, f:Form) <
-    BoxedForm<Value,Form> {
-  function grad(d:Value, i:Integer) {
-    if !flagConstant {
+    BoxedForm<Value,Form>(x, f) {
+  function grad(d:Real, i:Integer) {
+    if f? {
       if visitCount == 0 {
-        this.d <- vector<Value>(0, length());
+        this.d <- vector(0.0, length());
       }
-      this.d[i] <- this.d[i] + d;
+      this.d![i] <- this.d![i] + d;
       visitCount <- visitCount + 1;
       if visitCount >= evalCount {
         assert visitCount == evalCount || evalCount == 0;
@@ -19,8 +19,8 @@ final class VectorSplitExpression<Value,Form>(x:Value, f:Form) <
         //   called on this object, typically because it is root expression
         //   used from client code, rather than a subexpression used from
         //   other expressions
-        f.grad(d!);       // upstream gradients all accumulated, propagate
-        d <- nil;         // clear intermediate gradients to save memory
+        global.grad(f!, this.d!);      // upstream gradients all accumulated, propagate
+        this.d <- nil;         // clear intermediate gradients to save memory
         visitCount <- 0;  // reset for next time
       }
     }
@@ -32,8 +32,8 @@ final class VectorSplitExpression<Value,Form>(x:Value, f:Form) <
  *
  * - f: Form of the expression.
  */
-function vector_split<Value,Form>(f:Form) -> {
-  return vector_split(f.eval(), f);
+function vector_split<Form>(f:Form) -> {
+  return vector_split(eval(f), f);
 }
 
 /**
@@ -43,6 +43,5 @@ function vector_split<Value,Form>(f:Form) -> {
  * - f: Form of the expression.
  */
 function vector_split<Value,Form>(x:Value, f:Form) -> {
-  let y <- construct<VectorSplitExpression<Value,Form>>(x, f);
-  return vector_lambda(\(i:Integer) -> { return element(y, i); }, length(x));
+  return construct<VectorSplitExpression<Value,Form>>(x, f);
 }

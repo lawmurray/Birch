@@ -88,7 +88,8 @@ function ConwayMaxwellPoisson<Arg1,Arg2,Arg3>(λ:Arg1, ν:Arg2, n:Arg3) -> {
  */
 function simulate_conway_maxwell_poisson(λ:Real, ν:Real, n:Integer) ->
     Integer {
-  return quantile_conway_maxwell_poisson(simulate_uniform(0.0, 1.0), λ, ν, n);
+  let p <- p_conway_maxwell_poisson(λ, ν, n);
+  return simulate_categorical(p, sum(p)) - 1;
 }
 
 /*
@@ -103,8 +104,7 @@ function simulate_conway_maxwell_poisson(λ:Real, ν:Real, n:Integer) ->
  */
 function logpdf_conway_maxwell_poisson<Arg1,Arg2,Arg3,Arg4>(x:Arg1, λ:Arg2,
     ν:Arg3, n:Arg4) -> {
-  return x*log(λ) - ν*lgamma(x + 1.0) -
-      log(normalize_conway_maxwell_poisson(λ, ν, n));
+  return x*log(λ) - ν*lgamma(x + 1) - logz_conway_maxwell_poisson(λ, ν, n);
 }
 
 /*
@@ -119,29 +119,8 @@ function logpdf_conway_maxwell_poisson<Arg1,Arg2,Arg3,Arg4>(x:Arg1, λ:Arg2,
  */
 function cdf_conway_maxwell_poisson(x:Integer, λ:Real, ν:Real, n:Integer) ->
     Real {
-  assert 0.0 <= λ;
-  assert 0.0 <= ν;
-  assert 0 <= n;
-
-  if x < 0 {
-    return 0.0;
-  } else if x >= n {
-    return 1.0;
-  } else {
-    let z <- 1.0;
-    let Z <- z;
-    for i in 1..x {
-      z <- z*λ/pow(i, ν);
-      Z <- Z + z;
-    }
-    let z' <- z;
-    let Z' <- Z;
-    for i in (x + 1)..n {
-      z' <- z'*λ/pow(i, ν);
-      Z' <- Z' + z';
-    }
-    return Z/Z';
-  }
+  let p <- p_conway_maxwell_poisson(λ, ν, n);
+  return cdf_categorical(x + 1, p, sum(p));
 }
 
 /*
@@ -156,17 +135,26 @@ function cdf_conway_maxwell_poisson(x:Integer, λ:Real, ν:Real, n:Integer) ->
  */
 function quantile_conway_maxwell_poisson(P:Real, λ:Real, ν:Real,
     n:Integer) -> Integer {
-  assert 0.0 <= λ;
-  assert 0.0 <= ν;
-  assert 0 <= n;
-  let Q <- P*normalize_conway_maxwell_poisson(λ, ν, n);
-  let x <- 0;
-  let z <- 1.0;
-  let Z <- z;
-  while Z <= Q && x < n {
-    x <- x + 1;
-    z <- z*λ/pow(x, ν);
-    Z <- Z + z;
-  }
-  return x;
+  let p <- p_conway_maxwell_poisson(λ, ν, n);
+  return quantile_categorical(P, p, sum(p)) - 1;
+}
+
+/*
+ * Enumerated probabilities of a Conway-Maxwell-Poisson distribution truncated
+ * on a finite interval $[0,n]$.
+ *
+ * - λ: Rate.
+ * - ν: Dispersion.
+ * - n: Truncation point.
+ *
+ * Return: vector of probabilities on $[0,n]$.
+ */
+function p_conway_maxwell_poisson(λ:Real, ν:Real, n:Integer) -> Real[_] {
+  let log_λ <- log(λ);
+  let z <- vector_lambda(\(x:Integer) -> {
+        return if_then_else(x == 1, 0.0, (x - 1)*log_λ - ν*lgamma(x));
+      }, n + 1);
+  let mx <- max(z);
+  let p <- transform(z, \(x:Real) -> { return exp(x - mx); });
+  return p/sum(p);
 }

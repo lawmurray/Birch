@@ -1,0 +1,56 @@
+struct LogZConwayMaxwellPoissonFunction {
+  function compute<Arg1,Arg2,Arg3>(λ:Arg1, ν:Arg2, n:Arg3) -> {
+    return logz_conway_maxwell_poisson(λ, ν, n);
+  }
+
+  function gradLeft<Gradient,Arg1,Arg2,Arg3>(d:Gradient, λ:Arg1, ν:Arg2,
+      n:Arg3) -> {
+    let z <- 0.0;
+    for x in 1..n {
+      z <- z + exp(log(x) + x*log(λ) - ν*lgamma(x + 1));
+    }
+    return d*λ/z;
+  }
+
+  function gradMiddle<Gradient,Arg1,Arg2,Arg3>(d:Gradient, λ:Arg1, ν:Arg2,
+      n:Arg3) -> {
+    let z <- 0.0;
+    for x in 1..n {
+      z <- z + lgamma(x + 1)*exp(x*log(λ) - ν*lgamma(x + 1));
+    }
+    return -d/z;
+  }
+
+  function gradRight<Gradient,Arg1,Arg2,Arg3>(d:Gradient, λ:Arg1, ν:Arg2,
+      n:Arg3) -> {
+    return 0.0;
+  }
+}
+struct LogZConwayMaxwellPoisson<Left,Middle,Right> = Ternary<
+    LogZConwayMaxwellPoissonFunction,Left,Middle,Right>;
+
+/**
+ * Logarithm of the normalizing constant of a Conway-Maxwell-Poisson
+ * distribution truncated on a finite interval $[0,n]$.
+ */
+function logz_conway_maxwell_poisson<Arg1,Arg2,Arg3>(λ:Arg1, ν:Arg2, n:Arg3) -> {
+  return construct<LogZConwayMaxwellPoisson<Arg1,Arg2,Arg3>>(λ, ν, n);
+}
+
+/*
+ * Logarithm of the normalizing constant of a Conway-Maxwell-Poisson
+ * distribution truncated on a finite interval $[0,n]$.
+ *
+ * - λ: Rate.
+ * - ν: Dispersion.
+ * - n: Truncation point.
+ *
+ * Return: vector of probabilities on $[0,n]$.
+ */
+function logz_conway_maxwell_poisson(λ:Real, ν:Real, n:Integer) -> Real {
+  let z <- 1.0;
+  for x in 1..n {
+    z <- z + exp(x*log(λ) - ν*lgamma(x + 1));
+  }
+  return log(z);
+}

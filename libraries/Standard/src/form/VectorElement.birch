@@ -1,7 +1,7 @@
 /*
  * Element of a vector.
  */
-struct VectorElement<Left,Right>(x:Left, r:Right)  {
+struct VectorElement<Left,Right>(l:Left, r:Right)  {
   /**
    * Vector.
    */
@@ -53,6 +53,13 @@ struct VectorElement<Left,Right>(x:Left, r:Right)  {
  */
 function element<Value,Form,Right>(x:VectorSplitExpression<Value,Form>, i:Right) -> {
   return construct<VectorElement<VectorSplitExpression<Value,Form>,Right>>(x, i);
+}
+
+/**
+ * Element of a vector.
+ */
+function element<Left,Right>(x:Left, i:Right) -> {
+  return element(vector_split(x), i);
 }
 
 /**

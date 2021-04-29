@@ -1,7 +1,7 @@
 /*
  * Element of a matrix.
  */
-struct MatrixElement<Left,Middle,Right>(l:Left, i:Middle, j:Right) {
+struct MatrixElement<Left,Middle,Right>(l:Left, m:Middle, r:Right) {
   /**
    * Matrix.
    */
@@ -61,6 +61,13 @@ struct MatrixElement<Left,Middle,Right>(l:Left, i:Middle, j:Right) {
  */
 function element<Value,Form,Middle,Right>(x:MatrixSplitExpression<Value,Form>, i:Middle, j:Right) -> {
   return construct<MatrixElement<MatrixSplitExpression<Value,Form>,Middle,Right>>(x, i, j);
+}
+
+/**
+ * Element of a matrix.
+ */
+function element<Left,Middle,Right>(x:Left, i:Middle, j:Right) -> {
+  return element(matrix_split(x), i, j);
 }
 
 /**
