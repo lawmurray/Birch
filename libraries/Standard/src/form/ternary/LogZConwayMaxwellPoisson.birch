@@ -5,11 +5,10 @@ struct LogZConwayMaxwellPoissonFunction {
 
   function gradLeft<Gradient,Arg1,Arg2,Arg3>(d:Gradient, λ:Arg1, ν:Arg2,
       n:Arg3) -> {
-    let z <- 0.0;
-    for x in 1..n {
-      z <- z + exp(log(x) + x*log(λ) - ν*lgamma(x + 1));
-    }
-    return d*λ/z;
+    let z <- vector_lambda(\(x:Integer) -> {
+          return log(x) + x*log(λ) - ν*lgamma(x + 1);
+        }, n);
+    return d*exp(log(λ) - log_sum_exp(z));
   }
 
   function gradMiddle<Gradient,Arg1,Arg2,Arg3>(d:Gradient, λ:Arg1, ν:Arg2,
@@ -48,9 +47,9 @@ function logz_conway_maxwell_poisson<Arg1,Arg2,Arg3>(λ:Arg1, ν:Arg2, n:Arg3) -
  * Return: vector of probabilities on $[0,n]$.
  */
 function logz_conway_maxwell_poisson(λ:Real, ν:Real, n:Integer) -> Real {
-  let z <- 1.0;
-  for x in 1..n {
-    z <- z + exp(x*log(λ) - ν*lgamma(x + 1));
-  }
-  return log(z);
+  let log_λ <- log(λ);
+  let z <- vector_lambda(\(x:Integer) -> {
+        return if_then_else(x == 1, 0.0, (x - 1)*log_λ - ν*lgamma(x));
+      }, n + 1);
+  return log_sum_exp(z);
 }
