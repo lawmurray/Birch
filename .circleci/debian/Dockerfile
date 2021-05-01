@@ -10,6 +10,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     moreutils \
     time \
     ca-certificates \
+    binutils \
+    elfutils \
     make \
     autoconf \
     automake \

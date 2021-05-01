@@ -10,6 +10,8 @@ RUN zypper --non-interactive addrepo --no-gpgcheck "https://repo.mongodb.org/zyp
     moreutils \
     time \
     ca-certificates \
+    binutils \
+    elfutils \
     make \
     autoconf \
     automake \

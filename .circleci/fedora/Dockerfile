@@ -8,6 +8,8 @@ RUN yum -y update && yum -y install \
     moreutils \
     time \
     ca-certificates \
+    binutils \
+    elfutils \
     make \
     flex \
     bison \
