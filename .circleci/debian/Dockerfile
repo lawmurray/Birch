@@ -7,7 +7,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     tar \
     gzip \
     curl \
-    moreutils \
     time \
     ca-certificates \
     binutils \

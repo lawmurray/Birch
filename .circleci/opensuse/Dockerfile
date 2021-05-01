@@ -7,7 +7,6 @@ RUN zypper --non-interactive addrepo --no-gpgcheck "https://repo.mongodb.org/zyp
     tar \
     gzip \
     curl \
-    moreutils \
     time \
     ca-certificates \
     binutils \
