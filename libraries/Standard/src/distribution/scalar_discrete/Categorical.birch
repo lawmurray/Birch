@@ -89,7 +89,7 @@ function simulate_categorical(ρ:Real[_], Z:Real) -> Integer {
  *
  * Returns: the log probability mass.
  */
-function logpdf_categorical<Arg1,Arg2>(x:Arg1, ρ:Arg2) -> Real {
+function logpdf_categorical(x:Integer, ρ:Real[_]) -> Real {
   return logpdf_categorical(x, ρ, 1.0);
 }
 
@@ -102,8 +102,12 @@ function logpdf_categorical<Arg1,Arg2>(x:Arg1, ρ:Arg2) -> Real {
  *
  * Returns: the log probability mass.
  */
-function logpdf_categorical<Arg1,Arg2,Arg3>(x:Arg1, ρ:Arg2, Z:Arg3) -> {
-  return log(element(ρ, x)) - log(Z);
+function logpdf_categorical(x:Integer, ρ:Real[_], Z:Real) -> Real {
+  if 1 <= x && x <= length(ρ) {
+    return log(element(ρ, x)) - log(Z);
+  } else {
+    return -inf;
+  }
 }
 
 /*
