@@ -1,4 +1,4 @@
-class TestFanMatrixNormalInverseWishartMatrixGaussian < Model {
+class TestFanMatrixNormalInverseWishartMatrixGaussian < TestModel {
   Σ:Random<Real[_,_]>;
   X:Random<Real[_,_]>;
   Y1:Random<Real[_,_]>;
@@ -91,19 +91,19 @@ class TestFanMatrixNormalInverseWishartMatrixGaussian < Model {
   function vectorize() -> Real[_] {
     z:Real[size()];
     let k <- 0;
-    z[k + 1.. k + p*p] <- vec(Σ.value());
+    z[k + 1.. k + p*p] <- vec(Σ.eval());
     k <- k + p*p;
-    z[k + 1.. k + n*p] <- vec(X.value());
+    z[k + 1.. k + n*p] <- vec(X.eval());
     k <- k + n*p;
-    z[k + 1.. k + n*p] <- vec(Y1.value());
+    z[k + 1.. k + n*p] <- vec(Y1.eval());
     k <- k + n*p;
-    z[k + 1.. k + n*p] <- vec(Y2.value());
+    z[k + 1.. k + n*p] <- vec(Y2.eval());
     k <- k + n*p;
-    z[k + 1.. k + n*p] <- vec(Y3.value());
+    z[k + 1.. k + n*p] <- vec(Y3.eval());
     k <- k + n*p;
-    z[k + 1.. k + n*p] <- vec(Y4.value());
+    z[k + 1.. k + n*p] <- vec(Y4.eval());
     k <- k + n*p;
-    z[k + 1.. k + n*p] <- vec(Y5.value());
+    z[k + 1.. k + n*p] <- vec(Y5.eval());
     return z;
   }
 

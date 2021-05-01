@@ -1,4 +1,4 @@
-class TestInverseGammaGamma < Model {
+class TestInverseGammaGamma < TestModel {
   θ:Random<Real>;
   x:Random<Real>;
   k:Real;

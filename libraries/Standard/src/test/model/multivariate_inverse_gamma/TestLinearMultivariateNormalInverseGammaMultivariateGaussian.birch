@@ -1,4 +1,4 @@
-class TestLinearMultivariateNormalInverseGammaMultivariateGaussian < Model {
+class TestLinearMultivariateNormalInverseGammaMultivariateGaussian < TestModel {
   σ2:Random<Real>;
   μ:Random<Real[_]>;
   x:Random<Real[_]>;

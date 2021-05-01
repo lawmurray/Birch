@@ -1,9 +1,7 @@
 /*
  * Test normal-inverse-gamma grad evaluations.
  */
-program test_grad_normal_inverse_gamma(N:Integer <- 1000) {
+program test_grad_normal_inverse_gamma(N:Integer <- 1000, backward:Boolean <- false) {
   m:TestNormalInverseGamma;
-  m.initialize();
-  m.simulate();
-  test_grad(m.marginal(), N);
+  test_grad(m, N, backward);
 }

@@ -1,0 +1,50 @@
+class TestInverseWishart < TestModel {
+  Σ:Random<Real[_,_]>;
+  p:Integer <- 4;
+  k:Real;
+  Ψ:Real[p,p];
+
+  function initialize() {
+    k <- simulate_uniform(2.0, 10.0);
+    Ψ <- matrix_lambda(\(i:Integer, j:Integer) -> {
+          return simulate_uniform(-2.0, 2.0); }, p, p);
+    Ψ <- outer(Ψ) + diagonal(1.0e-2, p);
+  }
+
+  function simulate() {
+    Σ ~ InverseWishart(Ψ, k);
+  }
+
+  function forward() -> Real[_] {
+    Σ.value();
+    return vectorize();
+  }
+
+  function backward() -> Real[_] {
+    assert !Σ.hasValue();
+    Σ.value();
+    return vectorize();
+  }
+
+  function forwardLazy() -> Real[_] {
+    Σ.eval();
+    return vectorize();
+  }
+
+  function backwardLazy() -> Real[_] {
+    Σ.eval();
+    return vectorize();
+  }
+
+  function marginal() -> Distribution<Real[_,_]> {
+    return Σ.getDistribution();
+  }
+
+  function vectorize() -> Real[_] {
+    return vec(Σ.eval());
+  }
+
+  function size() -> Integer {
+    return p*p;
+  }
+}

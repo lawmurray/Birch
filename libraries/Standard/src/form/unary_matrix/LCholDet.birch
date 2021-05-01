@@ -1,10 +1,11 @@
 struct LCholDetFunction {
-function compute<Value>(m:Value) -> {
+  function compute<Value>(m:Value) -> {
     return lcholdet(m);
   }
 
-function grad<Gradient,Value>(d:Gradient, m:Value) -> {
-    return d*matrix<Real>(cholinv(m));
+  function grad<Gradient,Value>(d:Gradient, m:Value) -> {
+    return fldl(d*cholinv(m));
+    // ^ only lower triangle of m used
   }
 }
 struct LCholDet<Middle> = Unary<LCholDetFunction,Middle>;
@@ -17,11 +18,16 @@ function lcholdet<Middle>(m:Middle) -> {
   return construct<LCholDet<Middle>>(m);
 }
 
+
+hpp{{
+  #include <iostream>
+}}
 /**
  * Log-determinant of a matrix.
  */
 function lcholdet(S:Real[_,_]) -> Real {
+  let L <- chol(S);
   cpp{{
-  return 2.0*S.toEigen().llt().matrixL().nestedExpression().diagonal().array().log().sum();
+  return 2.0*L.toEigen().diagonal().array().log().sum();
   }}
 }

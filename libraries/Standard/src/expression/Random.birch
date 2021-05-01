@@ -83,6 +83,7 @@ final class Random<Value> < Expression<Value> {
     if !x? {
       prune();
       handle_delay_simulate(this);
+      p <- nil;
     }
     return x!;
   }

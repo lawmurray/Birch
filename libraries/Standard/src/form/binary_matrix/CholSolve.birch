@@ -1,13 +1,16 @@
 struct CholSolveFunction {  
-function compute<LeftValue,RightValue>(l:LeftValue, r:RightValue) -> {
+  function compute<LeftValue,RightValue>(l:LeftValue, r:RightValue) -> {
     return cholsolve(l, r);
   }
 
-function gradLeft<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue, r:RightValue) -> {
-    return outer(-cholsolve(l, d), cholsolve(l, r));
+  function gradLeft<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue,
+      r:RightValue) -> {
+    return fldl(outer(cholsolve(l, -d), cholsolve(l, r)));
+    // ^ only lower triangle of l used
   }
 
-function gradRight<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue, r:RightValue) -> {
+  function gradRight<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue,
+      r:RightValue) -> {
     return cholsolve(l, d);
   }
 }

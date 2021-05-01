@@ -1,4 +1,4 @@
-class TestChainGaussian < Model {
+class TestChainGaussian < TestModel {
   x:Random<Real>[5];
   μ:Real;
   σ2:Real[_];

@@ -3,134 +3,42 @@
  *
  * - π: The target distribution. 
  * - N: Number of samples.
+ * - backward: Test joint distributions in backward mode? (Otherwise forward
+ *   mode.)
  */
-function test_grad(π:Distribution<Real>, N:Integer) {
-  assert π.supportsLazy();
+function test_grad(m:TestModel, N:Integer, backward:Boolean) {
   let failed <- 0;  // number of failed tests
   let h <- 1.0e-6;  // interval width for finite difference estimate
-  let ε <- 1.0e-2;  // relative error threshold for fail
+  let ε <- 2.0e-2;  // relative error threshold for fail
 
-  for n in 1..N {
-    /* variate */
-    x:Random<Real>;
-    x.move(π.simulate() + 0.5*h);  // + 0.5*h ensures stays +ve where required
-
-    /* gradient */    
-    let p <- π.logpdfLazy(x)!;
-    p.eval();
-    p.grad(1.0);
-    let d <- x.getGradient();
-
-    /* finite difference estimate of gradient */
-    let y <- x.eval() - 0.5*h;
-    let z <- x.eval() + 0.5*h;
-    let q <- π.logpdf(y);
-    let r <- π.logpdf(z);
-    let fd <- (r - q)/h;
-
-    /* evaluate */
-    if N > 10 {  // if less, considered smoke test only
-      let δ <- abs(d - fd);
-      if !(δ <= ε*abs(fd)) {
-        stderr.print("***failed*** d=" + d + ", fd=" + fd + ", "  + δ + " > " + ε*abs(fd) + "\n");
-        failed <- failed + 1;
-      }
-      if failed > 0 {
-        exit(1);
-      }
+  parallel for n in 1..N {
+    let handler <- construct<Handler>(backward, true);
+    let m' <- copy(m);
+    with handler {
+      m'.initialize();
+      m'.simulate();
+      m'.forwardLazy();
     }
-  }
-}
 
-/*
- * Test the gradient of a pdf.
- *
- * - π: The target distribution. 
- * - N: Number of samples.
- */
-function test_grad(π:Distribution<Real[_]>, N:Integer) {
-  assert π.supportsLazy();
-  let failed <- 0;  // number of failed tests
-  let h <- 1.0e-6;  // interval width for finite difference estimate
-  let ε <- 1.0e-2;  // relative error threshold for fail
+    /* compute gradient */
+    let x <- handler.args();
+    let d <- handler.grad();
 
-  for n in 1..N {
-    /* variate */
-    x:Random<Real[_]>;
-    x.move(π.simulate());
-
-    /* gradient */    
-    let p <- π.logpdfLazy(x)!;
-    p.eval();
-    p.grad(1.0);
-    let d <- x.getGradient();
-
+    /* compare with finite difference estimates */
     for i in 1..rows(x) {
-      /* finite difference estimate of gradient */
-      let y <- x.eval();
-      let z <- x.eval();
+      let y <- x;
+      let z <- x;
       y[i] <- y[i] - 0.5*h;
       z[i] <- z[i] + 0.5*h;
-      let q <- π.logpdf(y);
-      let r <- π.logpdf(z);
+      let q <- handler.move(y);
+      let r <- handler.move(z);
       let fd <- (r - q)/h;
-
-      /* evaluate */
       if N > 10 {  // if less, considered smoke test only
         let δ <- abs(d[i] - fd);
         if !(δ <= ε*abs(fd)) {
-          stderr.print("***failed*** d=" + d[i] + ", fd=" + fd + ", "  + δ + " > " + ε*abs(fd) + "\n");
+          stderr.print("***failed*** on component " + i + ", d=" + d[i] +
+              ", fd=" + fd + ", "  + δ + " > " + ε*abs(fd) + "\n");
           failed <- failed + 1;
-        }
-      }
-    }
-    if failed > 0 {
-      exit(1);
-    }
-  }
-}
-
-/*
- * Test the gradient of a pdf.
- *
- * - π: The target distribution. 
- * - N: Number of samples.
- */
-function test_grad(π:Distribution<Real[_,_]>, N:Integer) {
-  assert π.supportsLazy();
-  let failed <- 0;  // number of failed tests
-  let h <- 1.0e-6;  // interval width for finite difference estimate
-  let ε <- 1.0e-2;  // relative error threshold for fail
-
-  for n in 1..N {
-    /* variate */
-    x:Random<Real[_,_]>;
-    x.move(π.simulate());
-
-    /* gradient */    
-    let p <- π.logpdfLazy(x)!;
-    p.eval();
-    p.grad(1.0);
-    let d <- x.getGradient();
-
-    for i in 1..rows(x) {
-      for j in 1..columns(x) {
-        /* finite difference estimate of gradient */
-        let y <- x.eval();
-        let z <- x.eval();
-        y[i,j] <- y[i,j] - 0.5*h;
-        z[i,j] <- z[i,j] + 0.5*h;
-        let q <- π.logpdf(y);
-        let r <- π.logpdf(z);
-        let fd <- (r - q)/h;
-
-        /* evaluate */
-        if N > 10 {  // if less, considered smoke test only
-          let δ <- abs(d[i,j] - fd);
-          if !(δ <= ε*abs(fd)) {
-            stderr.print("***failed*** d=" + d[i,j] + ", fd=" + fd + ", "  + δ + " > " + ε*abs(fd) + "\n");
-            failed <- failed + 1;
-          }
         }
       }
     }

@@ -1,9 +1,7 @@
 /*
  * Test linear Gaussian grad evaluations.
  */
-program test_grad_linear_multivariate_gaussian_gaussian(N:Integer <- 1000) {
+program test_grad_linear_multivariate_gaussian_gaussian(N:Integer <- 1000, backward:Boolean <- false) {
   m:TestLinearMultivariateGaussianGaussian;
-  m.initialize();
-  m.simulate();
-  test_grad(m.marginal(), N);
+  test_grad(m, N, backward);
 }

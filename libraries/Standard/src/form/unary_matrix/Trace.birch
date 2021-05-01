@@ -1,23 +1,63 @@
 struct TraceFunction {
-function compute<Value>(m:Value) -> {
+  function compute<Value>(m:Value) -> {
     return trace(m);
   }
 
-function grad<Gradient,Value>(d:Gradient, m:Value) -> {
+  function grad<Gradient,Value>(d:Gradient, m:Value) -> {
+    return d;
+  }
+
+  function grad<Gradient,Value>(d:Gradient, m:Value[_]) -> {
+    return vector(d, global.length(m));
+  }
+
+  function grad<Gradient,Value>(d:Gradient, m:Value[_,_]) -> {
     return diagonal(d, global.rows(m));
   }
 }
 struct Trace<Middle> = Unary<TraceFunction,Middle>;
 
 /**
- * Trace of a matrix.
+ * Trace.
  */
 function trace<Middle>(m:Middle) -> {
   return construct<Trace<Middle>>(m);
 }
 
 /**
- * Trace of a matrix.
+ * Trace.
+ */
+function trace(m:Integer) -> Integer {
+  return m;
+}
+
+/**
+ * Trace.
+ */
+function trace(m:Real) -> Real {
+  return m;
+}
+
+/**
+ * Trace.
+ */
+function trace(m:Integer[_]) -> Integer {
+  cpp{{
+  return m.toEigen().sum();
+  }}
+}
+
+/**
+ * Trace.
+ */
+function trace(m:Real[_]) -> Real {
+  cpp{{
+  return m.toEigen().sum();
+  }}
+}
+
+/**
+ * Trace.
  */
 function trace(m:Integer[_,_]) -> Integer {
   cpp{{
@@ -26,7 +66,7 @@ function trace(m:Integer[_,_]) -> Integer {
 }
 
 /**
- * Trace of a matrix.
+ * Trace.
  */
 function trace(m:Real[_,_]) -> Real {
   cpp{{

@@ -1,4 +1,4 @@
-class TestBetaNegativeBinomial < Model {
+class TestBetaNegativeBinomial < TestModel {
   k:Integer;
   α:Real;
   β:Real;

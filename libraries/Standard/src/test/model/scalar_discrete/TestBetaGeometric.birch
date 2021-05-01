@@ -1,4 +1,4 @@
-class TestBetaGeometric < Model {
+class TestBetaGeometric < TestModel {
   ρ:Random<Real>;
   x:Random<Integer>;
   α:Real;

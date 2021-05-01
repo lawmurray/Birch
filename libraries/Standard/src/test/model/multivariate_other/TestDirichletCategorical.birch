@@ -1,4 +1,4 @@
-class TestDirichletCategorical < Model {
+class TestDirichletCategorical < TestModel {
   ρ:Random<Real[_]>;
   x:Random<Integer>;
   α:Real[5];

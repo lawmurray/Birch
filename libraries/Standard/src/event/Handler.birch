@@ -179,8 +179,9 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
     let p <- x.getDistribution();
     if delayExpressions && p.supportsLazy() {
       x.move(p.simulateLazy()!);
+      arg(x);
     } else {
-      x.move(p.simulate());
+      x <- p.simulate();
     }
     return x;
   }
@@ -253,15 +254,14 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
     /* determine size */
     n <- 0;
     if r1? {
-      n <- n + argSize(r1!);
+      n <- n + argSizeReverse(r1!);
     }
     if r2? {
-      n <- n + argSize(r2!);
+      n <- n + argSizeReverse(r2!);
     }
     if r3? {
-      n <- n + argSize(r3!);
+      n <- n + argSizeReverse(r3!);
     }
-    assert π? || n == 0;
 
     /* get argument values */
     x:Real[n];
@@ -292,7 +292,7 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
         i <- m + 1;
       }
     }
-    assert n == length(x) + 1;
+    assert i == n + 1;
     return x;
   }
 
@@ -403,6 +403,14 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
       b1 <- construct<Tape<Random<Boolean>>>();
     }
     b1!.pushBack(x);
+    let p <- x.getDistribution().logpdfLazy(x);
+    if p? {
+      if π? {
+        π <- box(π! + p!);
+      } else {
+        π <- box(p!);
+      }
+    }
   }
 
   function arg(x:Random<Integer>) {
@@ -410,6 +418,14 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
       i1 <- construct<Tape<Random<Integer>>>();
     }
     i1!.pushBack(x);
+    let p <- x.getDistribution().logpdfLazy(x);
+    if p? {
+      if π? {
+        π <- box(π! + p!);
+      } else {
+        π <- box(p!);
+      }
+    }
   }
 
   function arg(x:Random<Integer[_]>) {
@@ -417,6 +433,14 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
       i2 <- construct<Tape<Random<Integer[_]>>>();
     }
     i2!.pushBack(x);
+    let p <- x.getDistribution().logpdfLazy(x);
+    if p? {
+      if π? {
+        π <- box(π! + p!);
+      } else {
+        π <- box(p!);
+      }
+    }
   }
 
   function arg(x:Random<Real>) {
@@ -424,6 +448,14 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
       r1 <- construct<Tape<Random<Real>>>();
     }
     r1!.pushBack(x);
+    let p <- x.getDistribution().logpdfLazy(x);
+    if p? {
+      if π? {
+        π <- box(π! + p!);
+      } else {
+        π <- box(p!);
+      }
+    }
   }
 
   function arg(x:Random<Real[_]>) {
@@ -431,6 +463,14 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
       r2 <- construct<Tape<Random<Real[_]>>>();
     }
     r2!.pushBack(x);
+    let p <- x.getDistribution().logpdfLazy(x);
+    if p? {
+      if π? {
+        π <- box(π! + p!);
+      } else {
+        π <- box(p!);
+      }
+    }
   }
 
   function arg(x:Random<Real[_,_]>) {
@@ -438,6 +478,14 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
       r3 <- construct<Tape<Random<Real[_,_]>>>();
     }
     r3!.pushBack(x);
+    let p <- x.getDistribution().logpdfLazy(x);
+    if p? {
+      if π? {
+        π <- box(π! + p!);
+      } else {
+        π <- box(p!);
+      }
+    }
   }
 }
 
@@ -455,6 +503,7 @@ function argSize<Value>(o:Tape<Random<Value>>) -> Integer {
       n <- n + o[i].size();
       i <- i + 1;
     } else {
+      stderr.print("erase\n");
       o.erase(i);
     }
   }

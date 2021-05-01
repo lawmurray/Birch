@@ -1,15 +1,15 @@
 struct MatrixPackFunction {
-function compute<LeftValue,RightValue>(l:LeftValue, r:RightValue) -> {
+  function compute<LeftValue,RightValue>(l:LeftValue, r:RightValue) -> {
     return pack(l, r);
   }
 
-function gradLeft<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue, r:RightValue) -> {
+  function gradLeft<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue, r:RightValue) -> {
     let r1 <- rows(l);
     let c1 <- columns(l);
     return d[1..r1, 1..c1];
   }
 
-function gradRight<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue, r:RightValue) -> {
+  function gradRight<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue, r:RightValue) -> {
     let r1 <- rows(l);
     let c1 <- columns(l);
     let c2 <- columns(r);

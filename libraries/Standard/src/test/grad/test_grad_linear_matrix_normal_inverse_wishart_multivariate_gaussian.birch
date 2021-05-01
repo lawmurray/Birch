@@ -2,9 +2,7 @@
  * Test linear matrix normal-inverse-Wishart Gaussian grad evaluations.
  */
 program test_grad_linear_matrix_normal_inverse_wishart_multivariate_gaussian(
-    N:Integer <- 1000) {
+    N:Integer <- 1000, backward:Boolean <- false) {
   m:TestLinearMatrixNormalInverseWishartMultivariateGaussian;
-  m.initialize();
-  m.simulate();
-  test_grad(m.marginal(), N);
+  test_grad(m, N, backward);
 }

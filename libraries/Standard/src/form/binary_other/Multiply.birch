@@ -4,7 +4,7 @@ struct MultiplyFunction {
   }
 
   function gradLeft<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue, r:RightValue) -> {
-    return sum(outer(d, r));
+    return trace(outer(d, r));
   }
 
   function gradLeft<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue[_], r:RightValue) -> {
@@ -16,7 +16,7 @@ struct MultiplyFunction {
   }
 
   function gradRight<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue, r:RightValue) -> {
-    return sum(inner(l, d));
+    return trace(inner(l, d));
   }
 
   function gradRight<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue, r:RightValue[_]) -> {

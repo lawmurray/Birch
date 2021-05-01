@@ -1,4 +1,4 @@
-class TestNegateDiscreteDelta < Model {
+class TestNegateDiscreteDelta < TestModel {
   ρ:Random<Real>;
   x:Random<Integer>;
   y:Random<Integer>;

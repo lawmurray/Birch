@@ -1,4 +1,4 @@
-class TestLongDiscreteDelta < Model {
+class TestLongDiscreteDelta < TestModel {
   x:Random<Integer>[5];
   s:Random<Integer>;
 

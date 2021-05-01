@@ -1,13 +1,13 @@
 struct DiagonalFunction {
-function compute<LeftValue,RightValue>(l:LeftValue, r:RightValue) -> {
+  function compute<LeftValue,RightValue>(l:LeftValue, r:RightValue) -> {
     return diagonal(l, r);
   }
 
-function gradLeft<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue, r:RightValue) -> {
+  function gradLeft<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue, r:RightValue) -> {
     return trace(d);
   }
 
-function gradRight<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue, r:RightValue) -> {
+  function gradRight<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue, r:RightValue) -> {
     return 0.0;
   }
 }

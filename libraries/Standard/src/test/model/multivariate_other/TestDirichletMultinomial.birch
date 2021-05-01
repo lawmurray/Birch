@@ -1,4 +1,4 @@
-class TestDirichletMultinomial < Model {
+class TestDirichletMultinomial < TestModel {
   n:Integer;
   α:Real[5];
   ρ:Random<Real[_]>;

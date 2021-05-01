@@ -1,4 +1,4 @@
-class TestScaledGammaPoisson < Model {
+class TestScaledGammaPoisson < TestModel {
   λ:Random<Real>;
   x:Random<Integer>;
 

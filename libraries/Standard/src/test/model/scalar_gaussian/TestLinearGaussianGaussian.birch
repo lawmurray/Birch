@@ -1,4 +1,4 @@
-class TestLinearGaussianGaussian < Model {
+class TestLinearGaussianGaussian < TestModel {
   μ_1:Random<Real>;
   x:Random<Real>;
   a:Real;

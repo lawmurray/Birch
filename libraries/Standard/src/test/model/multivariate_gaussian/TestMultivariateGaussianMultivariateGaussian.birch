@@ -1,4 +1,4 @@
-class TestMultivariateGaussianMultivariateGaussian < Model {
+class TestMultivariateGaussianMultivariateGaussian < TestModel {
   μ_1:Random<Real[_]>;
   x:Random<Real[_]>;
 

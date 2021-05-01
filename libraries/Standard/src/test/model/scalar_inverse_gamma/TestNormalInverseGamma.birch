@@ -1,4 +1,4 @@
-class TestNormalInverseGamma < Model {
+class TestNormalInverseGamma < TestModel {
   σ2:Random<Real>;
   x:Random<Real>;
 

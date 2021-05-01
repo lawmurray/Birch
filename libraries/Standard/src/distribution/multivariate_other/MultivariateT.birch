@@ -20,8 +20,8 @@ function simulate_multivariate_t(k:Real, μ:Real[_], U:Real[_,_]) ->
  *
  * Returns: the log probability density.
  */
-function logpdf_multivariate_t<Arg1,Arg2,Arg3,Arg4>(x:Arg1, k:Arg2,
-    μ:Arg3, U:Arg4) -> {
+function logpdf_multivariate_t<Arg1,Arg2,Arg3,Arg4>(x:Arg1, k:Arg2, μ:Arg3,
+    U:Arg4) -> {
   let p <- length(x);
   let a <- 0.5*(k + p);
   let b <- 0.5*k;

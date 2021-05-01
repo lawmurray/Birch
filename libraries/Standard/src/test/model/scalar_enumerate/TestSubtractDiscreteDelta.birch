@@ -1,4 +1,4 @@
-class TestSubtractDiscreteDelta < Model {
+class TestSubtractDiscreteDelta < TestModel {
   x1:Random<Integer>;
   x2:Random<Integer>;
   s:Random<Integer>;

@@ -33,14 +33,63 @@ operator<Type> (+X:Type[_,_]) -> Type[_,_] {
 }
 
 /**
- * Cholesky factor of a symmetric positive definite matrix, $S = LL^{\top}$.
- *
- * Returns: the lower-triangular factor $L$.
+ * Lower-triangular Cholesky factor of a symmetric positive definite matrix,
+ * $S = LL^{\top}$.
  */
 function chol(S:Real[_,_]) -> Real[_,_] {
   cpp{{
   return S.toEigen().llt().matrixL();
   }}
+}
+
+/**
+ * Lower triangle of a matrix.
+ */
+function tril(X:Real[_,_]) -> Real[_,_] {
+  cpp{{
+  return X.toEigen().triangularView<Eigen::Lower>();
+  }}
+}
+
+/**
+ * Upper triangle of a matrix.
+ */
+function triu(X:Real[_,_]) -> Real[_,_] {
+  cpp{{
+  return X.toEigen().triangularView<Eigen::Upper>();
+  }}
+}
+
+/**
+ * "Fold" a matrix into its lower triangle. The transpose of the strictly
+ * upper triangle is added to the lower triangle and becomes zero.
+ */
+function fldl(X:Real[_,_]) -> Real[_,_] {
+  return matrix_lambda(\(i:Integer, j:Integer) -> {
+        if i == j {
+          return X[i,j];
+        } else if j < i {
+          return X[i,j] + X[j,i];
+        } else {
+          return 0.0;
+        }
+      }, rows(X), columns(X));
+}
+
+/**
+ * "Fold" a matrix into its upper triangle. The transpose of the strictly
+ * lower triangle is added to the upper triangle and becomes zero.
+ */
+function fldu(X:Real[_,_]) -> Real[_,_] {
+  return matrix_lambda(\(i:Integer, j:Integer) -> {
+        if i == j {
+          return X[i,j];
+        } else if j > i {
+          return X[i,j] + X[j,i];
+        } else {
+          return 0.0;
+        }
+      }, rows(X), columns(X));
 }
 
 /**

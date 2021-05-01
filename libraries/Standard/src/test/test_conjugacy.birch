@@ -5,41 +5,41 @@
  * - N: Number of samples.
  * - lazy: Use lazy version?
  */
-function test_conjugacy<Conjugate>(m:Conjugate, N:Integer, lazy:Boolean) {  
-  let forward <- construct<Handler>(false, false);
-  let backward <- construct<Handler>(true, false);
-  let D <- m.size();
-  m.initialize();
-  
-  /* simulate forward */
+function test_conjugacy(m:TestModel, N:Integer, lazy:Boolean) {  
+  let D <- m.size();  
   X1:Real[N,D];
-  parallel for n in 1..N {
-    let m' <- copy(m);
-    with forward {
-      m'.simulate();
-    }
-    if lazy {
-      X1[n,1..D] <- m'.forwardLazy();
-    } else {
-      X1[n,1..D] <- m'.forward();
-    }
-  }
-
-  /* simulate backward */
   X2:Real[N,D];
+
   parallel for n in 1..N {
     let m' <- copy(m);
-    with backward {
-      m'.simulate();
+    m'.initialize();
+
+    /* simulate forward */
+    let f <- copy(m');
+    let forward <- construct<Handler>(false, lazy);
+    with forward {
+      f.simulate();
+      if lazy {
+        X1[n,1..D] <- f.forwardLazy();
+      } else {
+        X1[n,1..D] <- f.forward();
+      }
     }
-    if lazy {
-      X2[n,1..D] <- m'.backwardLazy();
-    } else {
-      X2[n,1..D] <- m'.backward();
+
+    /* simulate backward */
+    let b <- copy(m');
+    let backward <- construct<Handler>(true, lazy);
+    with backward {
+      b.simulate();
+      if lazy {
+        X2[n,1..D] <- b.backwardLazy();
+      } else {
+        X2[n,1..D] <- b.backward();
+      }
     }
   }
   
-  /* test result */
+  /* compare */
   if !pass(X1, X2) {
     exit(1);
   }

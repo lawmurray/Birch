@@ -1,9 +1,4 @@
-/*
- * Test inverse-gamma grad evaluations.
- */
-program test_grad_inverse_gamma(N:Integer <- 1000) {
-  let α <- simulate_uniform(2.0, 10.0);
-  let β <- simulate_uniform(0.1, 10.0);
-  let q <- InverseGamma(α, β);  
-  test_grad(q, N);
+program test_grad_inverse_gamma(N:Integer <- 1000, backward:Boolean <- false) {
+  m:TestInverseGamma;
+  test_grad(m, N, backward);
 }

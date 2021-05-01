@@ -2,9 +2,7 @@
  * Test linear multivariate normal-inverse-gamma Gaussian grad evaluations.
  */
 program test_grad_linear_multivariate_normal_inverse_gamma_multivariate_gaussian(
-    N:Integer <- 1000) {
+    N:Integer <- 1000, backward:Boolean <- false) {
   m:TestLinearMultivariateNormalInverseGammaMultivariateGaussian;
-  m.initialize();
-  m.simulate();
-  test_grad(m.marginal(), N);
+  test_grad(m, N, backward);
 }

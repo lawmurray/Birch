@@ -1,4 +1,4 @@
-class TestFanMultivariateNormalInverseGammaMultivariateGaussian < Model {
+class TestFanMultivariateNormalInverseGammaMultivariateGaussian < TestModel {
   σ2:Random<Real>;
   μ:Random<Real[_]>;
   x1:Random<Real[_]>;
@@ -91,17 +91,17 @@ class TestFanMultivariateNormalInverseGammaMultivariateGaussian < Model {
 		let k <- 1;
     y[k] <- σ2.value();
 		k <- k + 1;
-    y[k..(k + n - 1)] <- μ.value();
+    y[k..(k + n - 1)] <- μ.eval();
 		k <- k + n;
-    y[k..(k + n - 1)] <- x1.value();
+    y[k..(k + n - 1)] <- x1.eval();
 		k <- k + n;
-    y[k..(k + n - 1)] <- x2.value();
+    y[k..(k + n - 1)] <- x2.eval();
 		k <- k + n;
-    y[k..(k + n - 1)] <- x3.value();
+    y[k..(k + n - 1)] <- x3.eval();
 		k <- k + n;
-    y[k..(k + n - 1)] <- x4.value();
+    y[k..(k + n - 1)] <- x4.eval();
 		k <- k + n;
-    y[k..(k + n - 1)] <- x5.value();
+    y[k..(k + n - 1)] <- x5.eval();
     return y;
   }
 

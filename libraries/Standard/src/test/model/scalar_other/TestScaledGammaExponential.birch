@@ -1,4 +1,4 @@
-class TestScaledGammaExponential < Model {
+class TestScaledGammaExponential < TestModel {
   λ:Random<Real>;
   x:Random<Real>;
 

@@ -1,13 +1,13 @@
 struct SolveFunction {  
-function compute<LeftValue,RightValue>(l:LeftValue, r:RightValue) -> {
+  function compute<LeftValue,RightValue>(l:LeftValue, r:RightValue) -> {
     return solve(l, r);
   }
 
-function gradLeft<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue, r:RightValue) -> {
-    return outer(-solve(transpose(l), d), solve(l, r));
+  function gradLeft<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue, r:RightValue) -> {
+    return outer(solve(transpose(l), -d), solve(l, r));
   }
 
-function gradRight<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue, r:RightValue) -> {
+  function gradRight<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue, r:RightValue) -> {
     return solve(transpose(l), d);
   }
 }

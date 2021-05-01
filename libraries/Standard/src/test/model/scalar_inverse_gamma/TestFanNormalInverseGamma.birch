@@ -1,4 +1,4 @@
-class TestFanNormalInverseGammaGaussian < Model {
+class TestFanNormalInverseGammaGaussian < TestModel {
   σ2:Random<Real>;
   μ:Random<Real>;
   x1:Random<Real>;

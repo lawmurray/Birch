@@ -1,4 +1,4 @@
-class TestBetaBernoulli < Model {
+class TestBetaBernoulli < TestModel {
   ρ:Random<Real>;
   x:Random<Boolean>;
 

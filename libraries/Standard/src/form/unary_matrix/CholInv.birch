@@ -1,10 +1,12 @@
 struct CholInvFunction {
-function compute<Value>(m:Value) -> {
+  function compute<Value>(m:Value) -> {
     return cholinv(m);
   }
 
-function grad<Gradient,Value>(d:Gradient, m:Value) -> {
-    return -m*d*m;
+  function grad<Gradient,Value>(d:Gradient, m:Value) -> {
+    let m1 <- cholinv(m);
+    return fldl(-m1*d*m1);
+    // ^ only lower triangle of m used
   }
 }
 struct CholInv<Middle> = Unary<CholInvFunction,Middle>;

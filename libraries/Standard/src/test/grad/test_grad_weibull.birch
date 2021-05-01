@@ -1,9 +1,0 @@
-/*
- * Test Weibull grad evaluations.
- */
-program test_grad_weibull(N:Integer <- 1000) {
-  let k <- simulate_uniform(1.0, 10.0);
-  let λ <- simulate_uniform(0.1, 10.0);
-  let q <- Weibull(k, λ);  
-  test_grad(q, N);
-}

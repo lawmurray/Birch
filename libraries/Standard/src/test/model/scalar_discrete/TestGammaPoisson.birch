@@ -1,4 +1,4 @@
-class TestGammaPoisson < Model {
+class TestGammaPoisson < TestModel {
   λ:Random<Real>;
   x:Random<Integer>;
   k:Real;
