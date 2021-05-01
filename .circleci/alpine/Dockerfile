@@ -5,6 +5,7 @@ RUN apk update && apk add --no-cache \
     tar \
     gzip \
     curl \
+    moreutils \
     ca-certificates \
     binutils \
     elfutils \

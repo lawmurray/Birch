@@ -5,6 +5,7 @@ RUN yum -y update && yum -y install \
     tar \
     gzip \
     curl \
+    moreutils \
     time \
     ca-certificates \
     binutils \
