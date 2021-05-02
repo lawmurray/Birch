@@ -1,10 +1,10 @@
 #!/bin/bash
 set -eov pipefail
 
-N1=100000  # for cdf tests
-N2=100     # for gradient tests
-N3=10000   # for pdf tests
-N4=100000  # for conjugacy tests
+N1=10000  # for cdf tests
+N2=50     # for gradient tests
+N3=10000  # for pdf tests
+N4=10000  # for conjugacy tests
 
 eval "`grep -r "program test_basic_" src/test     | sed -E "s/^.*program ([A-Za-z0-9_]+).*$/birch \1/"                         | sort`"
 eval "`grep -r "program test_cdf_" src/test       | sed -E "s/^.*program ([A-Za-z0-9_]+).*$/birch \1 -N $N1/"                  | sort`"
