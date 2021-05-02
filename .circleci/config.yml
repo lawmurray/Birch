@@ -197,6 +197,11 @@ commands:
               then
                 env BIRCH_MODE=$SMOKE ./smoke.sh
               fi
+      - run:
+          name: Document << parameters.package >> package
+          command: |
+              cd << parameters.dir >>/<< parameters.package >>
+              birch docs
 
   test_package:
     description: Test a Birch package
