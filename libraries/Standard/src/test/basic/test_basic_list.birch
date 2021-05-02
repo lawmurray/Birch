@@ -22,11 +22,13 @@ program test_basic_list() {
     exit(1);
   }
   
-  if o.front() != 1 {
+  o.popFront();
+  if o.front() != 2 {
     exit(1);
   }
   
-  if o.back() != 5 {
+  o.popBack();
+  if o.back() != 3 {
     exit(1);
   }
 
