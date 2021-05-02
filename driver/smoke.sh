@@ -20,7 +20,6 @@ mkdir hello
 cd hello
 birch init
 birch audit
-birch bootstrap
 birch dist
 birch docs
 birch clean
