@@ -22,7 +22,6 @@ public:
    */
   ExpressionList(Expression* head, Expression* tail, Location* loc = nullptr);
 
-  virtual bool isAssignable() const;
   virtual bool isTuple() const;
 
   virtual Expression* accept(Modifier* visitor);

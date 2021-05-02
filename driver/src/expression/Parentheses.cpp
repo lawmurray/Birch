@@ -16,10 +16,6 @@ const birch::Expression* birch::Parentheses::strip() const {
   return single->strip();
 }
 
-bool birch::Parentheses::isAssignable() const {
-  return single->isAssignable();
-}
-
 bool birch::Parentheses::isSlice() const {
   return single->isSlice();
 }

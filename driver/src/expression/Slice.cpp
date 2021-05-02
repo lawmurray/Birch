@@ -11,10 +11,6 @@ birch::Slice::Slice(Expression* single,
   //
 }
 
-bool birch::Slice::isAssignable() const {
-  return single->isAssignable();
-}
-
 birch::Expression* birch::Slice::accept(Modifier* visitor) {
   return visitor->modify(this);
 }

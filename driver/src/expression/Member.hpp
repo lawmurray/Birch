@@ -24,7 +24,6 @@ public:
   Member(Expression* left, Expression* right, Location* loc =
       nullptr);
 
-  virtual bool isAssignable() const;
   virtual bool isMembership() const;
 
   virtual Expression* accept(Modifier* visitor);

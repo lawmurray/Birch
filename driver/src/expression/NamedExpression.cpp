@@ -23,10 +23,6 @@ birch::NamedExpression::NamedExpression(Name* name, Location* loc) :
   //
 }
 
-bool birch::NamedExpression::isAssignable() const {
-  return category == MEMBER_VARIABLE || category == LOCAL_VARIABLE;
-}
-
 bool birch::NamedExpression::isGlobal() const {
   return category == GLOBAL_VARIABLE || category == GLOBAL_FUNCTION ||
       category == BINARY_OPERATOR || category == UNARY_OPERATOR;

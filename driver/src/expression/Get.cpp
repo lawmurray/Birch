@@ -11,10 +11,6 @@ birch::Get::Get(Expression* single, Location* loc) :
   //
 }
 
-bool birch::Get::isAssignable() const {
-  return single->isAssignable();
-}
-
 birch::Expression* birch::Get::accept(Modifier* visitor) {
   return visitor->modify(this);
 }

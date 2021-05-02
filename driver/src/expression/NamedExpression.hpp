@@ -40,7 +40,6 @@ public:
    */
   NamedExpression(Name* name, Location* loc = nullptr);
 
-  virtual bool isAssignable() const;
   virtual bool isGlobal() const;
   virtual bool isMember() const;
   virtual bool isLocal() const;

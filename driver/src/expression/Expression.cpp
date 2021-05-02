@@ -18,10 +18,6 @@ bool birch::Expression::isEmpty() const {
   return false;
 }
 
-bool birch::Expression::isAssignable() const {
-  return false;
-}
-
 bool birch::Expression::isSlice() const {
   return false;
 }

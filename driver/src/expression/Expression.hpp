@@ -47,11 +47,6 @@ public:
   virtual bool isEmpty() const;
 
   /**
-   * Is result of expression assignable?
-   */
-  virtual bool isAssignable() const;
-
-  /**
    * Is this a tuple expression?
    */
   virtual bool isTuple() const;

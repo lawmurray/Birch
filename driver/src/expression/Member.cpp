@@ -12,10 +12,6 @@ birch::Member::Member(Expression* left, Expression* right,
   //
 }
 
-bool birch::Member::isAssignable() const {
-  return right->isAssignable();
-}
-
 bool birch::Member::isMembership() const {
   return true;
 }

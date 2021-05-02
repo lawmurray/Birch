@@ -24,7 +24,6 @@ public:
   Parentheses(Expression* single, Location* loc = nullptr);
 
   virtual const Expression* strip() const;
-  virtual bool isAssignable() const;
   virtual bool isSlice() const;
   virtual bool isTuple() const;
   virtual bool isMembership() const;

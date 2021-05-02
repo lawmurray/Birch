@@ -17,10 +17,6 @@ birch::ExpressionList::ExpressionList(Expression* head, Expression* tail,
   this->loc = loc;
 }
 
-bool birch::ExpressionList::isAssignable() const {
-  return head->isAssignable() && tail->isAssignable();
-}
-
 bool birch::ExpressionList::isTuple() const {
   return true;
 }
