@@ -123,13 +123,6 @@ public:
   virtual const Type* unwrap() const;
 
   /**
-   * For a generic type, the argument, for an alias type, the aliased type,
-   * otherwise this.
-   */
-  virtual Type* canonical();
-  virtual const Type* canonical() const;
-
-  /**
    * For a sequence or array type, the element type, otherwise this.
    */
   virtual Type* element();

@@ -81,14 +81,6 @@ const birch::Type* birch::Type::unwrap() const {
   return this;
 }
 
-birch::Type* birch::Type::canonical() {
-  return this;
-}
-
-const birch::Type* birch::Type::canonical() const {
-  return this;
-}
-
 birch::Type* birch::Type::element() {
   return this;
 }
