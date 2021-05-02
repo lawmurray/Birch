@@ -315,8 +315,8 @@ commands:
           command: |
               if [[ -n "$GITHUB_USERNAME" && -n "$GITHUB_PASSWORD" ]]
               then
-                git clone https://$GITHUB_USERNAME:$GITHUB_PASSWORD@github.com/lawmurray/homebrew_birch.git
-                cd homebrew_birch
+                git clone https://$GITHUB_USERNAME:$GITHUB_PASSWORD@github.com/lawmurray/homebrew-birch.git
+                cd homebrew-birch
                 git rm *.tar.gz
               fi
 
@@ -347,8 +347,8 @@ commands:
                 fi
                 cd << parameters.dir >>/<< parameters.package >>
                 make dist
-                cp $TARNAME-$VERSION.tar.gz $CIRCLE_WORKING_DIRECTORY/homebrew_birch/.
-                cd $CIRCLE_WORKING_DIRECTORY/homebrew_birch
+                cp $TARNAME-$VERSION.tar.gz $CIRCLE_WORKING_DIRECTORY/homebrew-birch/.
+                cd $CIRCLE_WORKING_DIRECTORY/homebrew-birch
                 SHA256=($(sha256sum $TARNAME-$VERSION.tar.gz))
                 cat $TARNAME.rb |
                   sed -E "s/-[0-9]+\.[0-9]+\.tar\.gz/-$VERSION.tar.gz/g" |
@@ -367,7 +367,7 @@ commands:
           command: |
               if [[ -n "$GITHUB_USERNAME" && -n "$GITHUB_PASSWORD" && -n "$VERSION" ]]
               then
-                cd homebrew_birch
+                cd homebrew-birch
                 git add *.tar.gz
                 git add -u
                 git commit -m "Updated to version $VERSION."
