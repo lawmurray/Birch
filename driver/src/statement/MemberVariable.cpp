@@ -18,14 +18,6 @@ birch::MemberVariable::MemberVariable(const Annotation annotation, Name* name,
   assert(value->isEmpty() || args->isEmpty());
 }
 
-birch::MemberVariable::~MemberVariable() {
-  //
-}
-
-birch::Statement* birch::MemberVariable::accept(Cloner* visitor) const {
-  return visitor->clone(this);
-}
-
 birch::Statement* birch::MemberVariable::accept(Modifier* visitor) {
   return visitor->modify(this);
 }

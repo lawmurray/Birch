@@ -22,14 +22,6 @@ birch::Class::Class(const Annotation annotation, Name* name,
   //
 }
 
-birch::Class::~Class() {
-  //
-}
-
-birch::Statement* birch::Class::accept(Cloner* visitor) const {
-  return visitor->clone(this);
-}
-
 birch::Statement* birch::Class::accept(Modifier* visitor) {
   return visitor->modify(this);
 }

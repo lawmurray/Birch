@@ -22,15 +22,9 @@ public:
    */
   StatementList(Statement* head, Statement* tail, Location* loc = nullptr);
 
-  /**
-   * Destructor.
-   */
-  virtual ~StatementList();
-
   virtual int count() const;
   virtual bool isEmpty() const;
 
-  virtual Statement* accept(Cloner* visitor) const;
   virtual Statement* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 

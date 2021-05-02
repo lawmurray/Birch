@@ -5,30 +5,6 @@
 
 namespace birch {
 /**
- * Encode a string of ASCII 0-127 in base 32.
- */
-std::string encode32(const std::string& in);
-
-/**
- * Decode a string of base 32 to ASCII 0-127.
- */
-std::string decode32(const std::string& in);
-
-/**
- * Translate a single character from decoded to encoded.
- *
- * @param c Between 0 and 31.
- *
- * Maps to the characters @c [a-z0-5].
- */
-unsigned char encode32(const unsigned char c);
-
-/**
- * Translate a single character from encoded to decoded.
- */
-unsigned char decode32(const unsigned char c);
-
-/**
  * Does this operator exist in C++?
  */
 bool isTranslatable(const std::string& op);

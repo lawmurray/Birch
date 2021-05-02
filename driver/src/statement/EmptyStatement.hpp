@@ -20,12 +20,6 @@ public:
    */
   EmptyStatement(Location* loc = nullptr);
 
-  /**
-   * Destructor.
-   */
-  virtual ~EmptyStatement();
-
-  virtual Statement* accept(Cloner* visitor) const;
   virtual Statement* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 

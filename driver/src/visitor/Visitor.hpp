@@ -15,11 +15,6 @@ namespace birch {
  */
 class Visitor {
 public:
-  /**
-   * Destructor.
-   */
-  virtual ~Visitor();
-
   virtual void visit(const Package* o);
   virtual void visit(const File* o);
   virtual void visit(const Name* o);

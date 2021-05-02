@@ -25,11 +25,6 @@ public:
       [](const T* o) -> bool {return true;}, const bool headers = true);
 
   /**
-   * Destructor.
-   */
-  virtual ~Gatherer();
-
-  /**
    * Begin iterator over gathered objects.
    */
   auto begin() {
@@ -75,11 +70,6 @@ protected:
 template<class T>
 birch::Gatherer<T>::Gatherer(std::function<bool(const T*)> predicate, const bool headers) :
     predicate(predicate), headers(headers) {
-  //
-}
-
-template<class T>
-birch::Gatherer<T>::~Gatherer() {
   //
 }
 

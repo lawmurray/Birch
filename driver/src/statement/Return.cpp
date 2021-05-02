@@ -12,14 +12,6 @@ birch::Return::Return(Expression* single,
   //
 }
 
-birch::Return::~Return() {
-  //
-}
-
-birch::Statement* birch::Return::accept(Cloner* visitor) const {
-  return visitor->clone(this);
-}
-
 birch::Statement* birch::Return::accept(Modifier* visitor) {
   return visitor->modify(this);
 }

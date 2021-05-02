@@ -7,7 +7,3 @@ birch::Argumented::Argumented(Expression* args) :
     args(args) {
   //
 }
-
-birch::Argumented::~Argumented() {
-  //
-}

@@ -11,10 +11,6 @@ birch::TypeParameterised::TypeParameterised(Expression* typeParams) :
   //
 }
 
-birch::TypeParameterised::~TypeParameterised() {
-  //
-}
-
 bool birch::TypeParameterised::isGeneric() const {
   return !typeParams->isEmpty();
 }

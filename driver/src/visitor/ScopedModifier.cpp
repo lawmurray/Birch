@@ -16,10 +16,6 @@ birch::ScopedModifier::ScopedModifier(Package* currentPackage,
   }
 }
 
-birch::ScopedModifier::~ScopedModifier() {
-  //
-}
-
 birch::Package* birch::ScopedModifier::modify(Package* o) {
   scopes.push_back(o->scope);
   ContextualModifier::modify(o);

@@ -14,14 +14,6 @@ birch::TypeList::TypeList(Type* head, Type* tail, Location* loc) :
   assert(tail);
 }
 
-birch::TypeList::~TypeList() {
-  //
-}
-
-birch::Type* birch::TypeList::accept(Cloner* visitor) const {
-  return visitor->clone(this);
-}
-
 birch::Type* birch::TypeList::accept(Modifier* visitor) {
   return visitor->modify(this);
 }

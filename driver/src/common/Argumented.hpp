@@ -22,11 +22,6 @@ public:
   Argumented(Expression* args);
 
   /**
-   * Destructor.
-   */
-  virtual ~Argumented() = 0;
-
-  /**
    * Arguments.
    */
   Expression* args;

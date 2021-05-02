@@ -8,7 +8,6 @@
 #include "src/type/TypeConstIterator.hpp"
 
 namespace birch {
-class Cloner;
 class Modifier;
 class Visitor;
 
@@ -25,20 +24,6 @@ public:
    * @param loc Location.
    */
   Type(Location* loc = nullptr);
-
-  /**
-   * Destructor.
-   */
-  virtual ~Type() = 0;
-
-  /**
-   * Accept cloning visitor.
-   *
-   * @param visitor The visitor.
-   *
-   * @return Cloned (and potentially modified) type.
-   */
-  virtual Type* accept(Cloner* visitor) const = 0;
 
   /**
    * Accept modifying visitor.

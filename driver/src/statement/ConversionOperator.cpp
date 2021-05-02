@@ -15,14 +15,6 @@ birch::ConversionOperator::ConversionOperator(const Annotation annotation,
   //
 }
 
-birch::ConversionOperator::~ConversionOperator() {
-  //
-}
-
-birch::Statement* birch::ConversionOperator::accept(Cloner* visitor) const {
-  return visitor->clone(this);
-}
-
 birch::Statement* birch::ConversionOperator::accept(Modifier* visitor) {
   return visitor->modify(this);
 }

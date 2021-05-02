@@ -15,14 +15,6 @@ birch::Basic::Basic(const Annotation annotation, Name* name,
   //
 }
 
-birch::Basic::~Basic() {
-  //
-}
-
-birch::Statement* birch::Basic::accept(Cloner* visitor) const {
-  return visitor->clone(this);
-}
-
 birch::Statement* birch::Basic::accept(Modifier* visitor) {
   return visitor->modify(this);
 }

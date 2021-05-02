@@ -45,12 +45,6 @@ public:
       Expression* brackets, Expression* args, Name* op, Expression* value,
       Location* loc = nullptr);
 
-  /**
-   * Destructor.
-   */
-  virtual ~GlobalVariable();
-
-  virtual Statement* accept(Cloner* visitor) const;
   virtual Statement* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 };

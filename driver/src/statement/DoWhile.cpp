@@ -13,14 +13,6 @@ birch::DoWhile::DoWhile(Statement* braces, Expression* cond, Location* loc) :
   //
 }
 
-birch::DoWhile::~DoWhile() {
-  //
-}
-
-birch::Statement* birch::DoWhile::accept(Cloner* visitor) const {
-  return visitor->clone(this);
-}
-
 birch::Statement* birch::DoWhile::accept(Modifier* visitor) {
   return visitor->modify(this);
 }

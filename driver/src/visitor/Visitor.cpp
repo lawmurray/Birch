@@ -3,10 +3,6 @@
  */
 #include "src/visitor/Visitor.hpp"
 
-birch::Visitor::~Visitor() {
-  //
-}
-
 void birch::Visitor::visit(const Package* o) {
   for (auto file : o->files) {
     file->accept(this);

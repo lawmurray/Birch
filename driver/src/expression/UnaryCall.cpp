@@ -12,14 +12,6 @@ birch::UnaryCall::UnaryCall(Name* name, Expression* single, Location* loc) :
   //
 }
 
-birch::UnaryCall::~UnaryCall() {
-  //
-}
-
-birch::Expression* birch::UnaryCall::accept(Cloner* visitor) const {
-  return visitor->clone(this);
-}
-
 birch::Expression* birch::UnaryCall::accept(Modifier* visitor) {
   return visitor->modify(this);
 }

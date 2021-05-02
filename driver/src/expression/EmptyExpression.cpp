@@ -10,14 +10,6 @@ birch::EmptyExpression::EmptyExpression(Location* loc) :
   //
 }
 
-birch::EmptyExpression::~EmptyExpression() {
-  //
-}
-
-birch::Expression* birch::EmptyExpression::accept(Cloner* visitor) const {
-  return visitor->clone(this);
-}
-
 birch::Expression* birch::EmptyExpression::accept(Modifier* visitor) {
   return visitor->modify(this);
 }

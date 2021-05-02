@@ -24,11 +24,6 @@ public:
   Single(T* single);
 
   /**
-   * Destructor.
-   */
-  virtual ~Single() = 0;
-
-  /**
    * Object.
    */
   T* single;

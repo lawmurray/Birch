@@ -15,14 +15,6 @@ birch::AssignmentOperator::AssignmentOperator(const Annotation annotation,
   //
 }
 
-birch::AssignmentOperator::~AssignmentOperator() {
-  //
-}
-
-birch::Statement* birch::AssignmentOperator::accept(Cloner* visitor) const {
-  return visitor->clone(this);
-}
-
 birch::Statement* birch::AssignmentOperator::accept(Modifier* visitor) {
   return visitor->modify(this);
 }

@@ -15,11 +15,6 @@ public:
   Numbered();
 
   /**
-   * Destructor.
-   */
-  virtual ~Numbered();
-
-  /**
    * Unique number.
    */
   int number;

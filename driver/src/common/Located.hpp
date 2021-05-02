@@ -21,11 +21,6 @@ public:
   Located(Location* loc = nullptr);
 
   /**
-   * Destructor.
-   */
-  virtual ~Located() = 0;
-
-  /**
    * Location.
    */
   Location* loc;

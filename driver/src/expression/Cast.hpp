@@ -25,12 +25,6 @@ public:
    */
   Cast(Type* returnType, Expression* single, Location* loc = nullptr);
 
-  /**
-   * Destructor.
-   */
-  virtual ~Cast();
-
-  virtual Expression* accept(Cloner* visitor) const;
   virtual Expression* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 };

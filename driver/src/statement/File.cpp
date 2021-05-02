@@ -11,14 +11,6 @@ birch::File::File(const std::string& path, Statement* root) :
   //
 }
 
-birch::File::~File() {
-  //
-}
-
-birch::File* birch::File::accept(Cloner* visitor) const {
-  return visitor->clone(this);
-}
-
 birch::File* birch::File::accept(Modifier* visitor) {
   return visitor->modify(this);
 }

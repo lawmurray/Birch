@@ -11,14 +11,6 @@ birch::Global::Global(Expression* single, Location* loc) :
   //
 }
 
-birch::Global::~Global() {
-  //
-}
-
-birch::Expression* birch::Global::accept(Cloner* visitor) const {
-  return visitor->clone(this);
-}
-
 birch::Expression* birch::Global::accept(Modifier* visitor) {
   return visitor->modify(this);
 }

@@ -15,11 +15,6 @@ namespace birch {
  */
 class Modifier {
 public:
-  /**
-   * Destructor.
-   */
-  virtual ~Modifier();
-
   virtual Package* modify(Package* o);
   virtual File* modify(File* o);
 

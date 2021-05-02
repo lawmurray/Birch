@@ -17,14 +17,6 @@ birch::For::For(const Annotation annotation, Statement* index,
   //
 }
 
-birch::For::~For() {
-  //
-}
-
-birch::Statement* birch::For::accept(Cloner* visitor) const {
-  return visitor->clone(this);
-}
-
 birch::Statement* birch::For::accept(Modifier* visitor) {
   return visitor->modify(this);
 }

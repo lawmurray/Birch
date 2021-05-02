@@ -64,11 +64,6 @@ public:
   Annotated(const Annotation annotation);
 
   /**
-   * Destructor.
-   */
-  virtual ~Annotated() = 0;
-
-  /**
    * Does this object have a particular annotation?
    */
   bool has(const Annotation a) const;

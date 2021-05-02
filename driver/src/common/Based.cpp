@@ -8,10 +8,6 @@ birch::Based::Based(Type* base, const bool alias) :
   //
 }
 
-birch::Based::~Based() {
-  //
-}
-
 bool birch::Based::isAlias() const {
   return alias;
 }

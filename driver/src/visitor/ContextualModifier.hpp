@@ -26,11 +26,6 @@ public:
   ContextualModifier(Package* currentPackage = nullptr,
       Class* currentClass = nullptr);
 
-  /**
-   * Destructor.
-   */
-  virtual ~ContextualModifier();
-
   using Modifier::modify;
 
   virtual Package* modify(Package* o);

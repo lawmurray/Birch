@@ -21,11 +21,6 @@ public:
   Parameterised(Expression* params);
 
   /**
-   * Destructor.
-   */
-  virtual ~Parameterised() = 0;
-
-  /**
    * Parameters.
    */
   Expression* params;

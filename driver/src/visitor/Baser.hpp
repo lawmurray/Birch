@@ -19,11 +19,6 @@ public:
    */
   Baser();
 
-  /**
-   * Destructor.
-   */
-  virtual ~Baser();
-
   using ScopedModifier::modify;
 
   virtual Statement* modify(Class* o);

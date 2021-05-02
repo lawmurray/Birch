@@ -17,14 +17,6 @@ birch::If::If(Expression* cond, Statement* braces,
   assert(falseBraces);
 }
 
-birch::If::~If() {
-  //
-}
-
-birch::Statement* birch::If::accept(Cloner* visitor) const {
-  return visitor->clone(this);
-}
-
 birch::Statement* birch::If::accept(Modifier* visitor) {
   return visitor->modify(this);
 }

@@ -22,11 +22,6 @@ public:
   Parenthesised(Expression* parens);
 
   /**
-   * Destructor.
-   */
-  virtual ~Parenthesised() = 0;
-
-  /**
    * Expression in parentheses.
    */
   Expression* parens;

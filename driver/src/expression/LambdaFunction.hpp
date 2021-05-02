@@ -32,12 +32,6 @@ public:
   LambdaFunction(Expression* params, Type* returnType, Statement* braces,
       Location* loc = nullptr);
 
-  /**
-   * Destructor.
-   */
-  virtual ~LambdaFunction();
-
-  virtual Expression* accept(Cloner* visitor) const;
   virtual Expression* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 };

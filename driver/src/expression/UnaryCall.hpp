@@ -24,12 +24,6 @@ public:
    */
   UnaryCall(Name* name, Expression* single, Location* loc = nullptr);
 
-  /**
-   * Destructor.
-   */
-  virtual ~UnaryCall();
-
-  virtual Expression* accept(Cloner* visitor) const;
   virtual Expression* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 };

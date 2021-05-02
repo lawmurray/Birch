@@ -21,11 +21,6 @@ public:
   Braced(Statement* braces);
 
   /**
-   * Destructor.
-   */
-  virtual ~Braced() = 0;
-
-  /**
    * Body.
    */
   Statement* braces;

@@ -20,14 +20,8 @@ public:
    */
   TypeOf(Location* loc = nullptr);
 
-  /**
-   * Destructor.
-   */
-  virtual ~TypeOf();
-
   virtual bool isTypeOf() const;
 
-  virtual Type* accept(Cloner* visitor) const;
   virtual Type* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 };

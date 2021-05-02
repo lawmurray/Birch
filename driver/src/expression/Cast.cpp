@@ -12,14 +12,6 @@ birch::Cast::Cast(Type* returnType, Expression* single, Location* loc) :
   //
 }
 
-birch::Cast::~Cast() {
-  //
-}
-
-birch::Expression* birch::Cast::accept(Cloner* visitor) const {
-  return visitor->clone(this);
-}
-
 birch::Expression* birch::Cast::accept(Modifier* visitor) {
   return visitor->modify(this);
 }

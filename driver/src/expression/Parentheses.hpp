@@ -23,11 +23,6 @@ public:
    */
   Parentheses(Expression* single, Location* loc = nullptr);
 
-  /**
-   * Destructor.
-   */
-  virtual ~Parentheses();
-
   virtual const Expression* strip() const;
   virtual bool isAssignable() const;
   virtual bool isSlice() const;
@@ -38,7 +33,6 @@ public:
   virtual bool isLocal() const;
   virtual bool isParameter() const;
 
-  virtual Expression* accept(Cloner* visitor) const;
   virtual Expression* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 };

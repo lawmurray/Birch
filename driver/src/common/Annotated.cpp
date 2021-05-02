@@ -8,10 +8,6 @@ birch::Annotated::Annotated(const Annotation annotation) :
   //
 }
 
-birch::Annotated::~Annotated() {
-  //
-}
-
 bool birch::Annotated::has(const Annotation a) const {
   return (annotation & a) == a;
 }

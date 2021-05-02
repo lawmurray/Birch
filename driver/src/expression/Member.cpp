@@ -12,20 +12,12 @@ birch::Member::Member(Expression* left, Expression* right,
   //
 }
 
-birch::Member::~Member() {
-  //
-}
-
 bool birch::Member::isAssignable() const {
   return right->isAssignable();
 }
 
 bool birch::Member::isMembership() const {
   return true;
-}
-
-birch::Expression* birch::Member::accept(Cloner* visitor) const {
-  return visitor->clone(this);
 }
 
 birch::Expression* birch::Member::accept(Modifier* visitor) {

@@ -15,10 +15,6 @@ birch::Package::Package(const std::string& name, const std::list<File*>& headers
   files.insert(files.end(), sources.begin(), sources.end());
 }
 
-birch::Package::~Package() {
-  //
-}
-
 void birch::Package::addPackage(const std::string& name) {
   packages.push_back(name);
 }
@@ -31,10 +27,6 @@ void birch::Package::addHeader(const std::string& path) {
 void birch::Package::addSource(const std::string& path) {
   sources.push_back(new File(path));
   files.push_back(sources.back());
-}
-
-birch::Package* birch::Package::accept(Cloner* visitor) const {
-  return visitor->clone(this);
 }
 
 birch::Package* birch::Package::accept(Modifier* visitor) {

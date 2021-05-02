@@ -11,10 +11,6 @@ birch::Statement::Statement(Location* loc) :
   //
 }
 
-birch::Statement::~Statement() {
-  //
-}
-
 birch::Statement* birch::Statement::strip() {
   return this;
 }

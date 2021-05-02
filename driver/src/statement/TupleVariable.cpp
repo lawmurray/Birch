@@ -14,14 +14,6 @@ birch::TupleVariable::TupleVariable(const Annotation annotation,
   //
 }
 
-birch::TupleVariable::~TupleVariable() {
-  //
-}
-
-birch::Statement* birch::TupleVariable::accept(Cloner* visitor) const {
-  return visitor->clone(this);
-}
-
 birch::Statement* birch::TupleVariable::accept(Modifier* visitor) {
   return visitor->modify(this);
 }

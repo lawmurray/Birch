@@ -10,16 +10,8 @@ birch::TypeOf::TypeOf(Location* loc) :
   //
 }
 
-birch::TypeOf::~TypeOf() {
-  //
-}
-
 bool birch::TypeOf::isTypeOf() const {
   return true;
-}
-
-birch::Type* birch::TypeOf::accept(Cloner* visitor) const {
-  return visitor->clone(this);
 }
 
 birch::Type* birch::TypeOf::accept(Modifier* visitor) {

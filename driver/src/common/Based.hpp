@@ -22,11 +22,6 @@ public:
   Based(Type* base, const bool alias);
 
   /**
-   * Destructor.
-   */
-  virtual ~Based() = 0;
-
-  /**
    * Is this class an alias for another?
    */
   bool isAlias() const;

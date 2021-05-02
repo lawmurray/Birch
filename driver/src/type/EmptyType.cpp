@@ -10,14 +10,6 @@ birch::EmptyType::EmptyType(Location* loc) :
   //
 }
 
-birch::EmptyType::~EmptyType() {
-  //
-}
-
-birch::Type* birch::EmptyType::accept(Cloner* visitor) const {
-  return visitor->clone(this);
-}
-
 birch::Type* birch::EmptyType::accept(Modifier* visitor) {
   return visitor->modify(this);
 }

@@ -23,10 +23,6 @@ birch::NamedExpression::NamedExpression(Name* name, Location* loc) :
   //
 }
 
-birch::NamedExpression::~NamedExpression() {
-  //
-}
-
 bool birch::NamedExpression::isAssignable() const {
   return category == MEMBER_VARIABLE || category == LOCAL_VARIABLE;
 }
@@ -47,10 +43,6 @@ bool birch::NamedExpression::isLocal() const {
 
 bool birch::NamedExpression::isParameter() const {
   return category == PARAMETER;
-}
-
-birch::Expression* birch::NamedExpression::accept(Cloner* visitor) const {
-  return visitor->clone(this);
 }
 
 birch::Expression* birch::NamedExpression::accept(Modifier* visitor) {

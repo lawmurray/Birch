@@ -24,11 +24,6 @@ public:
   Valued(Name* op, Expression* value);
 
   /**
-   * Destructor.
-   */
-  virtual ~Valued() = 0;
-
-  /**
    * Initialization operator.
    */
   Name* op;

@@ -16,14 +16,6 @@ birch::SliceOperator::SliceOperator(const Annotation annotation,
   //
 }
 
-birch::SliceOperator::~SliceOperator() {
-  //
-}
-
-birch::Statement* birch::SliceOperator::accept(Cloner* visitor) const {
-  return visitor->clone(this);
-}
-
 birch::Statement* birch::SliceOperator::accept(Modifier* visitor) {
   return visitor->modify(this);
 }

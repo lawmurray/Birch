@@ -19,14 +19,6 @@ birch::UnaryOperator::UnaryOperator(const Annotation annotation, Expression* typ
   //
 }
 
-birch::UnaryOperator::~UnaryOperator() {
-  //
-}
-
-birch::Statement* birch::UnaryOperator::accept(Cloner* visitor) const {
-  return visitor->clone(this);
-}
-
 birch::Statement* birch::UnaryOperator::accept(Modifier* visitor) {
   return visitor->modify(this);
 }

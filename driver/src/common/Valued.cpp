@@ -6,7 +6,3 @@
 birch::Valued::Valued(Name* op, Expression* value) : op(op), value(value) {
   //
 }
-
-birch::Valued::~Valued() {
-  //
-}

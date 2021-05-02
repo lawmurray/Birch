@@ -15,14 +15,6 @@ birch::Program::Program(Name* name, Expression* params, Statement* braces,
   //
 }
 
-birch::Program::~Program() {
-  //
-}
-
-birch::Statement* birch::Program::accept(Cloner* visitor) const {
-  return visitor->clone(this);
-}
-
 birch::Statement* birch::Program::accept(Modifier* visitor) {
   return visitor->modify(this);
 }

@@ -24,11 +24,6 @@ public:
   Scoped(const ScopeCategory category);
 
   /**
-   * Destructor.
-   */
-  virtual ~Scoped() = 0;
-
-  /**
    * Scope.
    */
   Scope* scope;

@@ -8,10 +8,6 @@ birch::Scoper::Scoper(Package* currentPackage, Class* currentClass) :
   //
 }
 
-birch::Scoper::~Scoper() {
-  //
-}
-
 birch::Statement* birch::Scoper::modify(MemberVariable* o) {
   scopes.back()->add(o);
   return ScopedModifier::modify(o);

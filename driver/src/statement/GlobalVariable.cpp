@@ -18,14 +18,6 @@ birch::GlobalVariable::GlobalVariable(const Annotation annotation, Name* name,
   assert(value->isEmpty() || args->isEmpty());
 }
 
-birch::GlobalVariable::~GlobalVariable() {
-  //
-}
-
-birch::Statement* birch::GlobalVariable::accept(Cloner* visitor) const {
-  return visitor->clone(this);
-}
-
 birch::Statement* birch::GlobalVariable::accept(Modifier* visitor) {
   return visitor->modify(this);
 }

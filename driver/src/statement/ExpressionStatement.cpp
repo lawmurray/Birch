@@ -12,14 +12,6 @@ birch::ExpressionStatement::ExpressionStatement(Expression* single,
   //
 }
 
-birch::ExpressionStatement::~ExpressionStatement() {
-  //
-}
-
-birch::Statement* birch::ExpressionStatement::accept(Cloner* visitor) const {
-  return visitor->clone(this);
-}
-
 birch::Statement* birch::ExpressionStatement::accept(Modifier* visitor) {
   return visitor->modify(this);
 }

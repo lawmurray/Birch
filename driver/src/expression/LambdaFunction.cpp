@@ -15,14 +15,6 @@ birch::LambdaFunction::LambdaFunction(Expression* params, Type* returnType,
   //
 }
 
-birch::LambdaFunction::~LambdaFunction() {
-  //
-}
-
-birch::Expression* birch::LambdaFunction::accept(Cloner* visitor) const {
-  return visitor->clone(this);
-}
-
 birch::Expression* birch::LambdaFunction::accept(Modifier* visitor) {
   return visitor->modify(this);
 }

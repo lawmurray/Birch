@@ -6,7 +6,6 @@
 #include "src/common/Located.hpp"
 
 namespace birch {
-class Cloner;
 class Modifier;
 class Visitor;
 class StatementIterator;
@@ -24,20 +23,6 @@ public:
    * @param loc Location.
    */
   Statement(Location* loc = nullptr);
-
-  /**
-   * Destructor.
-   */
-  virtual ~Statement() = 0;
-
-  /**
-   * Accept cloning visitor.
-   *
-   * @param visitor The visitor.
-   *
-   * @return Cloned (and potentially modified) statement.
-   */
-  virtual Statement* accept(Cloner* visitor) const = 0;
 
   /**
    * Accept modifying visitor.

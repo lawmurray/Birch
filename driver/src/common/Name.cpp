@@ -28,10 +28,6 @@ birch::Name::Name(const char name) :
   //
 }
 
-birch::Name::~Name() {
-  //
-}
-
 const std::string& birch::Name::str() const {
   return name;
 }

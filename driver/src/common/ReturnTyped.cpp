@@ -7,7 +7,3 @@ birch::ReturnTyped::ReturnTyped(Type* returnType) :
     returnType(returnType) {
   //
 }
-
-birch::ReturnTyped::~ReturnTyped() {
-  //
-}

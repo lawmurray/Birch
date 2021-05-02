@@ -26,11 +26,6 @@ public:
       std::list<File*>());
 
   /**
-   * Destructor.
-   */
-  virtual ~Package();
-
-  /**
    * Add package dependency.
    */
   void addPackage(const std::string& name);
@@ -45,7 +40,6 @@ public:
    */
   void addSource(const std::string& path);
 
-  Package* accept(Cloner* visitor) const;
   Package* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 

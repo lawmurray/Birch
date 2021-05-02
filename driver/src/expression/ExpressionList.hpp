@@ -22,15 +22,9 @@ public:
    */
   ExpressionList(Expression* head, Expression* tail, Location* loc = nullptr);
 
-  /**
-   * Destructor.
-   */
-  virtual ~ExpressionList();
-
   virtual bool isAssignable() const;
   virtual bool isTuple() const;
 
-  virtual Expression* accept(Cloner* visitor) const;
   virtual Expression* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 

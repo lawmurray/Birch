@@ -22,11 +22,6 @@ public:
   ReturnTyped(Type* returnType);
 
   /**
-   * Destructor.
-   */
-  virtual ~ReturnTyped() = 0;
-
-  /**
    * Return type.
    */
   Type* returnType;

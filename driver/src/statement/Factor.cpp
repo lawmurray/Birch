@@ -12,14 +12,6 @@ birch::Factor::Factor(Expression* single,
   //
 }
 
-birch::Factor::~Factor() {
-  //
-}
-
-birch::Statement* birch::Factor::accept(Cloner* visitor) const {
-  return visitor->clone(this);
-}
-
 birch::Statement* birch::Factor::accept(Modifier* visitor) {
   return visitor->modify(this);
 }

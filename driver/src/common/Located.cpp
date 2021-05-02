@@ -7,7 +7,3 @@ birch::Located::Located(Location* loc) :
     loc(loc) {
   //
 }
-
-birch::Located::~Located() {
-  //
-}

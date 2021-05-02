@@ -21,11 +21,6 @@ public:
   Couple(T* left, T* right);
 
   /**
-   * Destructor.
-   */
-  virtual ~Couple() = 0;
-
-  /**
    * Left.
    */
   T* left;

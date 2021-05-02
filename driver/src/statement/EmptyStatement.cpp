@@ -10,14 +10,6 @@ birch::EmptyStatement::EmptyStatement(Location* loc) :
   //
 }
 
-birch::EmptyStatement::~EmptyStatement() {
-  //
-}
-
-birch::Statement* birch::EmptyStatement::accept(Cloner* visitor) const {
-  return visitor->clone(this);
-}
-
 birch::Statement* birch::EmptyStatement::accept(Modifier* visitor) {
   return visitor->modify(this);
 }

@@ -31,14 +31,6 @@ birch::LocalVariable::LocalVariable(Name* name, Type* type, Location* loc) :
   //
 }
 
-birch::LocalVariable::~LocalVariable() {
-  //
-}
-
-birch::Statement* birch::LocalVariable::accept(Cloner* visitor) const {
-  return visitor->clone(this);
-}
-
 birch::Statement* birch::LocalVariable::accept(Modifier* visitor) {
   return visitor->modify(this);
 }

@@ -11,14 +11,6 @@ birch::Query::Query(Expression* single, Location* loc) :
   //
 }
 
-birch::Query::~Query() {
-  //
-}
-
-birch::Expression* birch::Query::accept(Cloner* visitor) const {
-  return visitor->clone(this);
-}
-
 birch::Expression* birch::Query::accept(Modifier* visitor) {
   return visitor->modify(this);
 }

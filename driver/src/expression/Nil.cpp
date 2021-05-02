@@ -10,14 +10,6 @@ birch::Nil::Nil(Location* loc) :
   //
 }
 
-birch::Nil::~Nil() {
-  //
-}
-
-birch::Expression* birch::Nil::accept(Cloner* visitor) const {
-  return visitor->clone(this);
-}
-
 birch::Expression* birch::Nil::accept(Modifier* visitor) {
   return visitor->modify(this);
 }

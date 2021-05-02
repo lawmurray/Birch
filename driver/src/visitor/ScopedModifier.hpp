@@ -27,11 +27,6 @@ public:
   ScopedModifier(Package* currentPackage = nullptr,
       Class* currentClass = nullptr);
 
-  /**
-   * Destructor.
-   */
-  virtual ~ScopedModifier();
-
   using Modifier::modify;
 
   virtual Package* modify(Package* o);

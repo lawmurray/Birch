@@ -24,15 +24,9 @@ public:
   Member(Expression* left, Expression* right, Location* loc =
       nullptr);
 
-  /**
-   * Destructor.
-   */
-  virtual ~Member();
-
   virtual bool isAssignable() const;
   virtual bool isMembership() const;
 
-  virtual Expression* accept(Cloner* visitor) const;
   virtual Expression* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 };

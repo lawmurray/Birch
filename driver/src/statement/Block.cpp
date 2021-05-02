@@ -12,14 +12,6 @@ birch::Block::Block(Statement* braces,Location* loc) :
   //
 }
 
-birch::Block::~Block() {
-  //
-}
-
-birch::Statement* birch::Block::accept(Cloner* visitor) const {
-  return visitor->clone(this);
-}
-
 birch::Statement* birch::Block::accept(Modifier* visitor) {
   return visitor->modify(this);
 }

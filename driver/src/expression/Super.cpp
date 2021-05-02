@@ -10,16 +10,8 @@ birch::Super::Super(Location* loc) :
   //
 }
 
-birch::Super::~Super() {
-  //
-}
-
 bool birch::Super::isSuper() const {
   return true;
-}
-
-birch::Expression* birch::Super::accept(Cloner* visitor) const {
-  return visitor->clone(this);
 }
 
 birch::Expression* birch::Super::accept(Modifier* visitor) {

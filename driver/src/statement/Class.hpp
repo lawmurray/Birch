@@ -48,12 +48,6 @@ public:
       Expression* params, Type* base, const bool alias, Expression* args,
       Statement* braces, Location* loc = nullptr);
 
-  /**
-   * Destructor.
-   */
-  virtual ~Class();
-
-  virtual Statement* accept(Cloner* visitor) const;
   virtual Statement* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 

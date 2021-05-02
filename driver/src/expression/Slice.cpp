@@ -11,16 +11,8 @@ birch::Slice::Slice(Expression* single,
   //
 }
 
-birch::Slice::~Slice() {
-  //
-}
-
 bool birch::Slice::isAssignable() const {
   return single->isAssignable();
-}
-
-birch::Expression* birch::Slice::accept(Cloner* visitor) const {
-  return visitor->clone(this);
 }
 
 birch::Expression* birch::Slice::accept(Modifier* visitor) {

@@ -12,16 +12,6 @@ birch::Literal<T1>::Literal(const std::string& str, Location* loc) :
 }
 
 template<class T1>
-birch::Literal<T1>::~Literal() {
-  //
-}
-
-template<class T1>
-birch::Expression* birch::Literal<T1>::accept(Cloner* visitor) const {
-  return visitor->clone(this);
-}
-
-template<class T1>
 birch::Expression* birch::Literal<T1>::accept(Modifier* visitor) {
   return visitor->modify(this);
 }

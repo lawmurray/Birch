@@ -22,11 +22,6 @@ public:
   TypeParameterised(Expression* typeParams);
 
   /**
-   * Destructor.
-   */
-  virtual ~TypeParameterised() = 0;
-
-  /**
    * Does this class have generic type parameters?
    */
   bool isGeneric() const;

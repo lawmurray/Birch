@@ -8,7 +8,3 @@ birch::Braced::Braced(Statement* braces) :
   /* pre-condition */
   assert(braces);
 }
-
-birch::Braced::~Braced() {
-  //
-}

@@ -19,14 +19,6 @@ birch::BinaryOperator::BinaryOperator(const Annotation annotation,
   //
 }
 
-birch::BinaryOperator::~BinaryOperator() {
-  //
-}
-
-birch::Statement* birch::BinaryOperator::accept(Cloner* visitor) const {
-  return visitor->clone(this);
-}
-
 birch::Statement* birch::BinaryOperator::accept(Modifier* visitor) {
   return visitor->modify(this);
 }

@@ -45,11 +45,6 @@ public:
   Name(const char name);
 
   /**
-   * Destructor.
-   */
-  virtual ~Name();
-
-  /**
    * Get name as string.
    */
   const std::string& str() const;

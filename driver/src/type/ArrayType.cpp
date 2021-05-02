@@ -13,14 +13,6 @@ birch::ArrayType::ArrayType(Type* single, const int ndims,
   //
 }
 
-birch::ArrayType::~ArrayType() {
-  //
-}
-
-birch::Type* birch::ArrayType::accept(Cloner* visitor) const {
-  return visitor->clone(this);
-}
-
 birch::Type* birch::ArrayType::accept(Modifier* visitor) {
   return visitor->modify(this);
 }

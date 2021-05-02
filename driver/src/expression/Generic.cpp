@@ -14,14 +14,6 @@ birch::Generic::Generic(const Annotation annotation, Name* name, Type* type,
   //
 }
 
-birch::Generic::~Generic() {
-  //
-}
-
-birch::Expression* birch::Generic::accept(Cloner* visitor) const {
-  return visitor->clone(this);
-}
-
 birch::Expression* birch::Generic::accept(Modifier* visitor) {
   return visitor->modify(this);
 }

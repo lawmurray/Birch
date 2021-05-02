@@ -22,11 +22,6 @@ public:
   Bracketed(Expression* brackets);
 
   /**
-   * Destructor.
-   */
-  virtual ~Bracketed() = 0;
-
-  /**
    * Square bracket expression.
    */
   Expression* brackets;

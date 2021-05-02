@@ -23,12 +23,6 @@ public:
    */
   Return(Expression* single, Location* loc = nullptr);
 
-  /**
-   * Destructor.
-   */
-  virtual ~Return();
-
-  virtual Statement* accept(Cloner* visitor) const;
   virtual Statement* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 };

@@ -3,10 +3,6 @@
  */
 #include "src/visitor/Modifier.hpp"
 
-birch::Modifier::~Modifier() {
-  //
-}
-
 birch::Package* birch::Modifier::modify(Package* o) {
   for (auto file : o->files) {
     file = file->accept(this);

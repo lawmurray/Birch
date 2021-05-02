@@ -11,16 +11,8 @@ birch::Braces::Braces(Statement* single, Location* loc) :
   //
 }
 
-birch::Braces::~Braces() {
-  //
-}
-
 birch::Statement* birch::Braces::strip() {
   return single->strip();
-}
-
-birch::Statement* birch::Braces::accept(Cloner* visitor) const {
-  return visitor->clone(this);
 }
 
 birch::Statement* birch::Braces::accept(Modifier* visitor) {

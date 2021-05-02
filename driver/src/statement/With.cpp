@@ -13,14 +13,6 @@ birch::With::With(Expression* single, Statement* braces, Location* loc) :
   //
 }
 
-birch::With::~With() {
-  //
-}
-
-birch::Statement* birch::With::accept(Cloner* visitor) const {
-  return visitor->clone(this);
-}
-
 birch::Statement* birch::With::accept(Modifier* visitor) {
   return visitor->modify(this);
 }

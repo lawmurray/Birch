@@ -12,10 +12,6 @@ birch::Parentheses::Parentheses(Expression* single,
   //
 }
 
-birch::Parentheses::~Parentheses() {
-  //
-}
-
 const birch::Expression* birch::Parentheses::strip() const {
   return single->strip();
 }
@@ -50,10 +46,6 @@ bool birch::Parentheses::isLocal() const {
 
 bool birch::Parentheses::isParameter() const {
   return single->isParameter();
-}
-
-birch::Expression* birch::Parentheses::accept(Cloner* visitor) const {
-  return visitor->clone(this);
 }
 
 birch::Expression* birch::Parentheses::accept(Modifier* visitor) {

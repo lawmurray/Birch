@@ -10,16 +10,8 @@ birch::This::This(Location* loc) :
   //
 }
 
-birch::This::~This() {
-  //
-}
-
 bool birch::This::isThis() const {
   return true;
-}
-
-birch::Expression* birch::This::accept(Cloner* visitor) const {
-  return visitor->clone(this);
 }
 
 birch::Expression* birch::This::accept(Modifier* visitor) {

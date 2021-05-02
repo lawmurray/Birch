@@ -19,16 +19,8 @@ birch::Function::Function(const Annotation annotation, Name* name,
   //
 }
 
-birch::Function::~Function() {
-  //
-}
-
 bool birch::Function::isMember() const {
   return false;
-}
-
-birch::Statement* birch::Function::accept(Cloner* visitor) const {
-  return visitor->clone(this);
 }
 
 birch::Statement* birch::Function::accept(Modifier* visitor) {

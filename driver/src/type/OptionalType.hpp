@@ -22,12 +22,6 @@ public:
    */
   OptionalType(Type* single, Location* loc = nullptr);
 
-  /**
-   * Destructor.
-   */
-  virtual ~OptionalType();
-
-  virtual Type* accept(Cloner* visitor) const;
   virtual Type* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 

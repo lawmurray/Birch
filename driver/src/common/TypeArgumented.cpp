@@ -6,7 +6,3 @@
 birch::TypeArgumented::TypeArgumented(Type* typeArgs) : typeArgs(typeArgs) {
   //
 }
-
-birch::TypeArgumented::~TypeArgumented() {
-  //
-}

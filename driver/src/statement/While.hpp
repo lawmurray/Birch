@@ -28,12 +28,6 @@ public:
    */
   While(Expression* cond, Statement* braces, Location* loc = nullptr);
 
-  /**
-   * Destructor.
-   */
-  virtual ~While();
-
-  virtual Statement* accept(Cloner* visitor) const;
   virtual Statement* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 };

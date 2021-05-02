@@ -38,12 +38,6 @@ public:
   Parameter(const Annotation annotation, Name* name, Type* type, Name* op,
       Expression* value, Location* loc = nullptr);
 
-  /**
-   * Destructor.
-   */
-  virtual ~Parameter();
-
-  virtual Expression* accept(Cloner* visitor) const;
   virtual Expression* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 };

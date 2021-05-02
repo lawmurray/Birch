@@ -16,7 +16,6 @@
 #include "src/statement/Basic.hpp"
 #include "src/statement/Class.hpp"
 #include "src/exception/all.hpp"
-#include "src/visitor/Cloner.hpp"
 
 birch::Scope::Scope(const ScopeCategory category) :
     base(nullptr),

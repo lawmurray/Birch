@@ -12,14 +12,6 @@ birch::Range::Range(Expression* left, Expression* right,
   //
 }
 
-birch::Range::~Range() {
-  //
-}
-
-birch::Expression* birch::Range::accept(Cloner* visitor) const {
-  return visitor->clone(this);
-}
-
 birch::Expression* birch::Range::accept(Modifier* visitor) {
   return visitor->modify(this);
 }

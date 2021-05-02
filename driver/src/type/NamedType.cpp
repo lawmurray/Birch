@@ -24,15 +24,6 @@ birch::NamedType::NamedType(Class* target, Location* loc) :
   //
 }
 
-
-birch::NamedType::~NamedType() {
-  //
-}
-
-birch::Type* birch::NamedType::accept(Cloner* visitor) const {
-  return visitor->clone(this);
-}
-
 birch::Type* birch::NamedType::accept(Modifier* visitor) {
   return visitor->modify(this);
 }

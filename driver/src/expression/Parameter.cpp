@@ -15,14 +15,6 @@ birch::Parameter::Parameter(const Annotation annotation, Name* name,
   //
 }
 
-birch::Parameter::~Parameter() {
-  //
-}
-
-birch::Expression* birch::Parameter::accept(Cloner* visitor) const {
-  return visitor->clone(this);
-}
-
 birch::Expression* birch::Parameter::accept(Modifier* visitor) {
   return visitor->modify(this);
 }

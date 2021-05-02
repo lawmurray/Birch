@@ -28,14 +28,8 @@ public:
       Expression* typeParams, Expression* params, Type* returnType,
       Statement* braces, Location* loc = nullptr);
 
-  /**
-   * Destructor.
-   */
-  virtual ~MemberFunction();
-
   virtual bool isMember() const;
 
-  virtual Statement* accept(Cloner* visitor) const;
   virtual Statement* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 };

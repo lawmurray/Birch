@@ -11,14 +11,6 @@ birch::TupleType::TupleType(Type* single, Location* loc) :
   //
 }
 
-birch::TupleType::~TupleType() {
-  //
-}
-
-birch::Type* birch::TupleType::accept(Cloner* visitor) const {
-  return visitor->clone(this);
-}
-
 birch::Type* birch::TupleType::accept(Modifier* visitor) {
   return visitor->modify(this);
 }

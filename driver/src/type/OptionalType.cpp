@@ -11,14 +11,6 @@ birch::OptionalType::OptionalType(Type* single, Location* loc) :
   //
 }
 
-birch::OptionalType::~OptionalType() {
-  //
-}
-
-birch::Type* birch::OptionalType::accept(Cloner* visitor) const {
-  return visitor->clone(this);
-}
-
 birch::Type* birch::OptionalType::accept(Modifier* visitor) {
   return visitor->modify(this);
 }

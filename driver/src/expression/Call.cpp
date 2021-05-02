@@ -19,14 +19,6 @@ birch::Call::Call(Expression* single, Location* loc) :
   //
 }
 
-birch::Call::~Call() {
-  //
-}
-
-birch::Expression* birch::Call::accept(Cloner* visitor) const {
-  return visitor->clone(this);
-}
-
 birch::Expression* birch::Call::accept(Modifier* visitor) {
   return visitor->modify(this);
 }

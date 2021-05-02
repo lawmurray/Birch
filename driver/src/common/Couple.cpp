@@ -16,10 +16,5 @@ birch::Couple<T>::Couple(T* left, T* right) :
   //
 }
 
-template<class T>
-birch::Couple<T>::~Couple() {
-  //
-}
-
 template class birch::Couple<birch::Expression>;
 template class birch::Couple<birch::Type>;

@@ -12,7 +12,3 @@ birch::Named::Named(Name* name) :
     name(name) {
   //
 }
-
-birch::Named::~Named() {
-  //
-}

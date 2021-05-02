@@ -12,7 +12,3 @@ birch::Scoped::Scoped(const ScopeCategory category) :
     scope(new Scope(category)) {
   //
 }
-
-birch::Scoped::~Scoped() {
-  //
-}

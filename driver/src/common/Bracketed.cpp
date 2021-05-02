@@ -8,7 +8,3 @@ birch::Bracketed::Bracketed(Expression* brackets) :
   /* pre-condition */
   assert(brackets);
 }
-
-birch::Bracketed::~Bracketed() {
-  //
-}

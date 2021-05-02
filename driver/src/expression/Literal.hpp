@@ -22,12 +22,6 @@ public:
    */
   Literal(const std::string& str, Location* loc = nullptr);
 
-  /**
-   * Destructor.
-   */
-  virtual ~Literal();
-
-  virtual Expression* accept(Cloner* visitor) const;
   virtual Expression* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 

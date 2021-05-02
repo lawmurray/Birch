@@ -8,7 +8,6 @@
 #include "src/expression/ExpressionConstIterator.hpp"
 
 namespace birch {
-class Cloner;
 class Modifier;
 class Visitor;
 
@@ -25,20 +24,6 @@ public:
    * @param loc Location.
    */
   Expression(Location* loc = nullptr);
-
-  /**
-   * Destructor.
-   */
-  virtual ~Expression() = 0;
-
-  /**
-   * Accept cloning visitor.
-   *
-   * @param visitor The visitor.
-   *
-   * @return Cloned (and potentially modified) expression.
-   */
-  virtual Expression* accept(Cloner* visitor) const = 0;
 
   /**
    * Accept modifying visitor.

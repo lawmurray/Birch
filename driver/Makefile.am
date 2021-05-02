@@ -123,7 +123,6 @@ birch_SOURCES = \
   src/type/TypeList.cpp \
   src/type/TypeOf.cpp \
   src/visitor/Baser.cpp \
-  src/visitor/Cloner.cpp \
   src/visitor/ContextualModifier.cpp \
   src/visitor/Gatherer.cpp \
   src/visitor/Modifier.cpp \
@@ -258,7 +257,6 @@ noinst_HEADERS = \
   src/type/TypeOf.hpp \
   src/visitor/all.hpp \
   src/visitor/Baser.hpp \
-  src/visitor/Cloner.hpp \
   src/visitor/ContextualModifier.hpp \
   src/visitor/Gatherer.hpp \
   src/visitor/Modifier.hpp \

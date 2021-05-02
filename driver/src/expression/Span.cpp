@@ -11,14 +11,6 @@ birch::Span::Span(Expression* single, Location* loc) :
   //
 }
 
-birch::Span::~Span() {
-  //
-}
-
-birch::Expression* birch::Span::accept(Cloner* visitor) const {
-  return visitor->clone(this);
-}
-
 birch::Expression* birch::Span::accept(Modifier* visitor) {
   return visitor->modify(this);
 }

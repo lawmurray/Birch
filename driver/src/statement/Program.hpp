@@ -35,12 +35,6 @@ public:
   Program(Name* name, Expression* params, Statement* braces,
       Location* loc = nullptr);
 
-  /**
-   * Destructor.
-   */
-  virtual ~Program();
-
-  virtual Statement* accept(Cloner* visitor) const;
   virtual Statement* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 };

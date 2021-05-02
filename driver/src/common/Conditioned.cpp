@@ -8,7 +8,3 @@ birch::Conditioned::Conditioned(Expression* cond) :
   /* pre-condition */
   assert(cond);
 }
-
-birch::Conditioned::~Conditioned() {
-  //
-}

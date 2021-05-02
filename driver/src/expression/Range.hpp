@@ -24,12 +24,6 @@ public:
   Range(Expression* left, Expression* right, Location* loc =
       nullptr);
 
-  /**
-   * Destructor.
-   */
-  virtual ~Range();
-
-  virtual Expression* accept(Cloner* visitor) const;
   virtual Expression* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 };

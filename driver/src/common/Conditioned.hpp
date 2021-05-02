@@ -21,11 +21,6 @@ public:
   Conditioned(Expression* cond);
 
   /**
-   * Destructor.
-   */
-  virtual ~Conditioned() = 0;
-
-  /**
    * Condition.
    */
   Expression* cond;

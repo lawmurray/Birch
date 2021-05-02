@@ -19,11 +19,6 @@ public:
   Used();
 
   /**
-   * Destructor.
-   */
-  virtual ~Used() = 0;
-
-  /**
    * Number of times used.
    */
   int useCount;

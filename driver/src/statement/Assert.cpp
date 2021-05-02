@@ -11,14 +11,6 @@ birch::Assert::Assert(Expression* cond, Location* loc) :
   //
 }
 
-birch::Assert::~Assert() {
-  //
-}
-
-birch::Statement* birch::Assert::accept(Cloner* visitor) const {
-  return visitor->clone(this);
-}
-
 birch::Statement* birch::Assert::accept(Modifier* visitor) {
   return visitor->modify(this);
 }

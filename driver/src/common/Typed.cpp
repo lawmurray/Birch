@@ -7,7 +7,3 @@ birch::Typed::Typed(Type* type) :
     type(type) {
   //
 }
-
-birch::Typed::~Typed() {
-  //
-}

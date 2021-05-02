@@ -26,11 +26,6 @@ public:
   Named(Name* name);
 
   /**
-   * Destructor.
-   */
-  virtual ~Named() = 0;
-
-  /**
    * Name.
    */
   Name* name;

@@ -26,12 +26,6 @@ public:
   BinaryCall(Expression* left, Name* name, Expression* right,
       Location* loc = nullptr);
 
-  /**
-   * Destructor.
-   */
-  virtual ~BinaryCall();
-
-  virtual Expression* accept(Cloner* visitor) const;
   virtual Expression* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 };

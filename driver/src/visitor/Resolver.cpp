@@ -12,10 +12,6 @@ birch::Resolver::Resolver(Package* currentPackage, Class* currentClass) :
   //
 }
 
-birch::Resolver::~Resolver() {
-  //
-}
-
 birch::Expression* birch::Resolver::modify(Parameter* o) {
   scopes.back()->add(o);
   return ScopedModifier::modify(o);

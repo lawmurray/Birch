@@ -23,11 +23,6 @@ public:
    */
   Scoper(Package* currentPackage = nullptr, Class* currentClass = nullptr);
 
-  /**
-   * Destructor.
-   */
-  virtual ~Scoper();
-
   using ScopedModifier::modify;
 
   virtual Statement* modify(MemberVariable* o);

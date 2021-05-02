@@ -33,12 +33,6 @@ public:
   Parallel(const Annotation annotation, Statement* index, Expression* from,
       Expression* to, Statement* braces, Location* loc = nullptr);
 
-  /**
-   * Destructor.
-   */
-  virtual ~Parallel();
-
-  virtual Statement* accept(Cloner* visitor) const;
   virtual Statement* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 

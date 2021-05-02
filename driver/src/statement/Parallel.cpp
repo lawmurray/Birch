@@ -17,14 +17,6 @@ birch::Parallel::Parallel(const Annotation annotation, Statement* index,
   //
 }
 
-birch::Parallel::~Parallel() {
-  //
-}
-
-birch::Statement* birch::Parallel::accept(Cloner* visitor) const {
-  return visitor->clone(this);
-}
-
 birch::Statement* birch::Parallel::accept(Modifier* visitor) {
   return visitor->modify(this);
 }

@@ -45,12 +45,6 @@ public:
       Name* name, Expression* single, Type* returnType, Statement* braces,
       Location* loc = nullptr);
 
-  /**
-   * Destructor.
-   */
-  virtual ~UnaryOperator();
-
-  virtual Statement* accept(Cloner* visitor) const;
   virtual Statement* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 };

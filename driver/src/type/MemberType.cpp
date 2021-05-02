@@ -11,14 +11,6 @@ birch::MemberType::MemberType(Type* left, Type* right, Location* loc) :
   //
 }
 
-birch::MemberType::~MemberType() {
-  //
-}
-
-birch::Type* birch::MemberType::accept(Cloner* visitor) const {
-  return visitor->clone(this);
-}
-
 birch::Type* birch::MemberType::accept(Modifier* visitor) {
   return visitor->modify(this);
 }

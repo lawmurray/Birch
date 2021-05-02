@@ -10,10 +10,6 @@ birch::ContextualModifier::ContextualModifier(Package* currentPackage,
   //
 }
 
-birch::ContextualModifier::~ContextualModifier() {
-  //
-}
-
 birch::Package* birch::ContextualModifier::modify(Package* o) {
   currentPackage = o;
   Modifier::modify(o);

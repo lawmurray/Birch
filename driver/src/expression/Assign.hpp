@@ -29,12 +29,6 @@ public:
   Assign(Expression* left, Name* op, Expression* right, Location* loc =
       nullptr);
 
-  /**
-   * Destructor.
-   */
-  virtual ~Assign();
-
-  virtual Expression* accept(Cloner* visitor) const;
   virtual Expression* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 };

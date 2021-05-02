@@ -31,12 +31,6 @@ public:
   If(Expression* cond, Statement* braces, Statement* falseBraces,
       Location* loc = nullptr);
 
-  /**
-   * Destructor.
-   */
-  virtual ~If();
-
-  virtual Statement* accept(Cloner* visitor) const;
   virtual Statement* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 

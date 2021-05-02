@@ -21,11 +21,6 @@ public:
   TypeArgumented(Type* typeArgs);
 
   /**
-   * Destructor.
-   */
-  virtual ~TypeArgumented() = 0;
-
-  /**
    * Generic type arguments.
    */
   Type* typeArgs;

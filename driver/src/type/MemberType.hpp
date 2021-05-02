@@ -23,12 +23,6 @@ public:
    */
   MemberType(Type* left, Type* right, Location* loc = nullptr);
 
-  /**
-   * Destructor.
-   */
-  virtual ~MemberType();
-
-  virtual Type* accept(Cloner* visitor) const;
   virtual Type* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 

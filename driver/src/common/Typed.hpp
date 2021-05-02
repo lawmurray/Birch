@@ -22,11 +22,6 @@ public:
   Typed(Type* type);
 
   /**
-   * Destructor.
-   */
-  virtual ~Typed() = 0;
-
-  /**
    * Type.
    */
   Type* type;

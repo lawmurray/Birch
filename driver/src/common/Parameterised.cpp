@@ -7,7 +7,3 @@ birch::Parameterised::Parameterised(Expression* params) :
     params(params) {
   //
 }
-
-birch::Parameterised::~Parameterised() {
-  //
-}

@@ -8,7 +8,3 @@ birch::Parenthesised::Parenthesised(Expression* parens) :
   /* pre-condition */
   assert(parens);
 }
-
-birch::Parenthesised::~Parenthesised() {
-  //
-}

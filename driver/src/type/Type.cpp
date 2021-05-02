@@ -13,10 +13,6 @@ birch::Type::Type(Location* loc) :
   //
 }
 
-birch::Type::~Type() {
-  //
-}
-
 bool birch::Type::isEmpty() const {
   return false;
 }

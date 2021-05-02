@@ -13,14 +13,6 @@ birch::BinaryCall::BinaryCall(Expression* left, Name* name, Expression* right,
   //
 }
 
-birch::BinaryCall::~BinaryCall() {
-  //
-}
-
-birch::Expression* birch::BinaryCall::accept(Cloner* visitor) const {
-  return visitor->clone(this);
-}
-
 birch::Expression* birch::BinaryCall::accept(Modifier* visitor) {
   return visitor->modify(this);
 }

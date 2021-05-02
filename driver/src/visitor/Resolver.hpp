@@ -23,11 +23,6 @@ public:
    */
   Resolver(Package* currentPackage = nullptr, Class* currentClass = nullptr);
 
-  /**
-   * Destructor.
-   */
-  virtual ~Resolver();
-
   using ScopedModifier::modify;
 
   virtual Expression* modify(Parameter* o);

@@ -14,10 +14,6 @@ birch::Expression::Expression(Location* loc) :
   //
 }
 
-birch::Expression::~Expression() {
-  //
-}
-
 bool birch::Expression::isEmpty() const {
   return false;
 }
