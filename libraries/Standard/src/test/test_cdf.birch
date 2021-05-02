@@ -44,22 +44,20 @@ function test_cdf(q:Distribution<Real>, N:Integer) {
   }
 
   /* compare sum of pdf to cdf evaluations */
-  if N > 10 {  // if less, considered smoke test only
-    let P <- 0.5/N;
-    for n in 1..N {
-      let x <- from! + (n - 0.5)*(to! - from!)/N;
-      let C <- q.cdf(x)!;
-      P <- P + q.pdf(x)*(to! - from!)/N;
+  let P <- 0.5/N;
+  for n in 1..N {
+    let x <- from! + (n - 0.5)*(to! - from!)/N;
+    let C <- q.cdf(x)!;
+    P <- P + q.pdf(x)*(to! - from!)/N;
 
-      let δ <- abs(C - P);
-      let ε <- 2.0/sqrt(N);
-      if 10 < N && !(δ <= ε) {  // careful of nans
-        failed <- true;
-        stderr.print("***failed*** on step " + n + ", " + δ + " > " + ε + "\n");
-      }
-      if failed {
-        exit(1);
-      }
+    let δ <- abs(C - P);
+    let ε <- 2.0/sqrt(N);
+    if 10 < N && !(δ <= ε) {  // if N <= 10 smoke only; careful of nans
+      failed <- true;
+      stderr.print("***failed*** on step " + n + ", " + δ + " > " + ε + "\n");
+    }
+    if failed {
+      exit(1);
     }
   }
 }

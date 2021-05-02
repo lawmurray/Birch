@@ -20,6 +20,12 @@ program test_basic_ragged_array() {
   if !check_ragged_array(o, [3, 2, 1], [1, 2, 3, 4, 6, 5]) {
     exit(1);
   }
+
+  o.clear();
+  if o.size() != 0 || !o.empty() {
+    stderr.print("clear failed\n");
+    exit(1);
+  }
 }
 
 function check_ragged_array(o:RaggedArray<Integer>, sizes:Integer[_],

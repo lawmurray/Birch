@@ -26,42 +26,6 @@ function round(x:Real) -> Real {
 }
 
 /**
- * Arc tangent.
- */
-function atan2(x:Real, y:Real) -> Real {
-  cpp {{
-  return ::atan2(x, y);
-  }}
-}
-
-/**
- * Inverse hyperbolic sine.
- */
-function asinh(x:Real) -> Real {
-  cpp {{
-  return ::asinh(x);
-  }}
-}
-
-/**
- * Inverse hyperbolic cosine.
- */
-function acosh(x:Real) -> Real {
-  cpp {{
-  return ::acosh(x);
-  }}
-}
-
-/**
- * Inverse hyperbolic tangent.
- */
-function atanh(x:Real) -> Real {
-  cpp {{
-  return ::atanh(x);
-  }}
-}
-
-/**
  * Error function.
  */
 function erf(x:Real) -> Real {

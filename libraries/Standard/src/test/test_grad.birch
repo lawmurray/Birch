@@ -9,7 +9,7 @@
 function test_grad(m:TestModel, N:Integer, backward:Boolean) {
   let failed <- 0;  // number of failed tests
   let h <- 1.0e-6;  // interval width for finite difference estimate
-  let ε <- 2.0e-1;  // relative error threshold for fail
+  let ε <- 1.0e-1;  // relative error threshold for fail
 
   parallel for n in 1..N {
     let handler <- construct<Handler>(backward, true);
@@ -33,13 +33,11 @@ function test_grad(m:TestModel, N:Integer, backward:Boolean) {
       let q <- handler.move(y);
       let r <- handler.move(z);
       let fd <- (r - q)/h;
-      if N > 10 {  // if less, considered smoke test only
-        let δ <- abs(d[i] - fd);
-        if !(δ <= ε*abs(fd)) {
-          stderr.print("***failed*** on component " + i + ", d=" + d[i] +
-              ", fd=" + fd + ", "  + δ + " > " + ε*abs(fd) + "\n");
-          failed <- failed + 1;
-        }
+      let δ <- abs(d[i] - fd);
+      if 10 < N && !(δ <= ε*abs(fd)) {  // if N <= 10, smoke test only
+        stderr.print("***failed*** on component " + i + ", d=" + d[i] +
+            ", fd=" + fd + ", "  + δ + " > " + ε*abs(fd) + "\n");
+        failed <- failed + 1;
       }
     }
     if failed > 0 {

@@ -19,12 +19,10 @@ function pass(x1:Real[_], x2:Real[_]) -> Boolean {
   let z2 <- (x2 - vector(mn, N))/(mx - mn);
 
   /* compute distance and suggested pass threshold */
-  if N > 10 {  // if less, considered smoke test only
-    let δ <- wasserstein(z1, z2);
-    if !(δ <= ε) {  // careful of nans
-      stderr.print("***failed***, " + δ + " > " + ε + "\n");
-      return false;
-    }
+  let δ <- wasserstein(z1, z2);
+  if 10 < N && !(δ <= ε) {  // careful of nans
+    stderr.print("***failed***, " + δ + " > " + ε + "\n");
+    return false;
   }
   return true;
 }
@@ -60,12 +58,10 @@ function pass(X1:Real[_,_], X2:Real[_,_]) -> Boolean {
     let z2 <- (x2 - vector(mn, R))/(mx - mn);
 
     /* compute distance and suggested pass threshold */
-    if R > 10 {  // if less, considered smoke test only
-      let δ <- wasserstein(z1, z2);
-      if !(δ <= ε) {  // careful of nans
-        failed <- failed + 1;
-        stderr.print("***failed*** on component " + c + ", " + δ + " > " + ε + "\n");
-      }
+    let δ <- wasserstein(z1, z2);
+    if 10 < R && !(δ <= ε) {  // careful of nans
+      failed <- failed + 1;
+      stderr.print("***failed*** on component " + c + ", " + δ + " > " + ε + "\n");
     }
     tests <- tests + 1;
   }
@@ -89,12 +85,10 @@ function pass(X1:Real[_,_], X2:Real[_,_]) -> Boolean {
     let z2 <- (x2 - vector(mn, R))/(mx - mn);
 
     /* compute distance and suggested pass threshold */
-    if R > 10 {  // if less, considered smoke test only
-      let δ <- wasserstein(z1, z2);
-      if !(δ <= ε) {  // careful of nans
-        failed <- failed + 1;
-        stderr.print("***failed*** on random projection, " + δ + " > " + ε + "\n");
-      }
+    let δ <- wasserstein(z1, z2);
+    if 10 < R && !(δ <= ε) {  // careful of nans
+      failed <- failed + 1;
+      stderr.print("***failed*** on random projection, " + δ + " > " + ε + "\n");
     }
     tests <- tests + 1;
   }

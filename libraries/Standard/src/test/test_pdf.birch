@@ -27,20 +27,18 @@ function test_pdf(π:Distribution<Boolean>, N:Integer, lazy:Boolean) {
     p <- π.pdf(true);
     q <- π.pdf(false);
   }
-  if N > 10 {  // if less, considered smoke test only
-    let δ <- abs(p - scalar<Real>(k)/N);
-    if !(δ <= ε) {  // careful of nans
-      failed <- true;
-      stderr.print("***failed*** on true, " + δ + " > " + ε + "\n");
-    }
-    δ <- abs(q - scalar<Real>(N - k)/N);
-    if !(δ <= ε) {  // careful of nans
-      failed <- true;
-      stderr.print("***failed*** on false, " + δ + " > " + ε + "\n");
-    }
-    if failed {
-      exit(1);
-    }
+  let δ <- abs(p - scalar<Real>(k)/N);
+  if 10 < N && !(δ <= ε) {  // careful of nans
+    failed <- true;
+    stderr.print("***failed*** on true, " + δ + " > " + ε + "\n");
+  }
+  δ <- abs(q - scalar<Real>(N - k)/N);
+  if 10 < N && !(δ <= ε) {  // careful of nans
+    failed <- true;
+    stderr.print("***failed*** on false, " + δ + " > " + ε + "\n");
+  }
+  if failed {
+    exit(1);
   }
 }
 
@@ -103,13 +101,11 @@ function test_pdf(π:Distribution<Integer>, N:Integer, lazy:Boolean) {
     } else {
       p <- π.pdf(x);
     }
-    if N > 10 {  // if less, considered smoke test only
-      let δ <- abs(p - scalar<Real>(count[x - from! + 1])/N);
-      let ε <- 5.0/sqrt(N);
-      if !(δ <= ε) {  // careful of nans
-        failed <- true;
-        stderr.print("***failed*** on value " + x + ", " + δ + " > " + ε + "\n");
-      }
+    let δ <- abs(p - scalar<Real>(count[x - from! + 1])/N);
+    let ε <- 5.0/sqrt(N);
+    if 10 < N && !(δ <= ε) {  // careful of nans
+      failed <- true;
+      stderr.print("***failed*** on value " + x + ", " + δ + " > " + ε + "\n");
     }
   }
   if failed {
