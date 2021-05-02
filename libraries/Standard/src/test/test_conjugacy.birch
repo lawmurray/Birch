@@ -19,11 +19,7 @@ function test_conjugacy(m:TestModel, N:Integer, lazy:Boolean) {
     let forward <- construct<Handler>(false, lazy);
     with forward {
       f.simulate();
-      if lazy {
-        X1[n,1..D] <- f.forwardLazy();
-      } else {
-        X1[n,1..D] <- f.forward();
-      }
+      X1[n,1..D] <- f.forward();
     }
 
     /* simulate backward */
@@ -31,11 +27,7 @@ function test_conjugacy(m:TestModel, N:Integer, lazy:Boolean) {
     let backward <- construct<Handler>(true, lazy);
     with backward {
       b.simulate();
-      if lazy {
-        X2[n,1..D] <- b.backwardLazy();
-      } else {
-        X2[n,1..D] <- b.backward();
-      }
+      X2[n,1..D] <- b.backward();
     }
   }
   

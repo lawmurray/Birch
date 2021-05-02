@@ -16,22 +16,11 @@ class TestInverseWishart < TestModel {
   }
 
   function forward() -> Real[_] {
-    Σ.value();
-    return vectorize();
-  }
-
-  function backward() -> Real[_] {
-    assert !Σ.hasValue();
-    Σ.value();
-    return vectorize();
-  }
-
-  function forwardLazy() -> Real[_] {
     Σ.eval();
     return vectorize();
   }
 
-  function backwardLazy() -> Real[_] {
+  function backward() -> Real[_] {
     Σ.eval();
     return vectorize();
   }

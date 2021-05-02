@@ -35,32 +35,13 @@ class TestLinearMultivariateNormalInverseGammaMultivariateGaussian < TestModel {
 
   function forward() -> Real[_] {
     y:Real[1 + p + n];
-    y[1] <- σ2.value();
-    y[2..(p + 1)] <- μ.value();
-    y[(p + 2)..(1 + p + n)] <- x.value();
-    return y;
-  }
-
-  function backward() -> Real[_] {
-    y:Real[1 + p + n];
-    assert !x.hasValue();
-    y[(p + 2)..(1 + p + n)] <- x.value();
-    assert !μ.hasValue();
-    y[2..(p + 1)] <- μ.value();
-    assert !σ2.hasValue();
-    y[1] <- σ2.value();
-    return y;
-  }
-
-  function forwardLazy() -> Real[_] {
-    y:Real[1 + p + n];
     y[1] <- σ2.eval();
     y[2..(p + 1)] <- μ.eval();
     y[(p + 2)..(1 + p + n)] <- x.eval();
     return y;
   }
 
-  function backwardLazy() -> Real[_] {
+  function backward() -> Real[_] {
     y:Real[1 + p + n];
     assert !x.hasValue();
     y[(p + 2)..(1 + p + n)] <- x.eval();

@@ -21,32 +21,13 @@ class TestNegateDiscreteDelta < TestModel {
 
   function forward() -> Real[_] {
     z:Real[size()];
-    z[1] <- ρ.value();
-    z[2] <- x.value();
-    z[3] <- y.value();
-    return z;
-  }
-
-  function backward() -> Real[_] {
-    z:Real[size()];
-    assert !y.hasValue();
-    z[3] <- y.value();
-    assert !x.hasValue();
-    z[2] <- x.value();
-    assert !ρ.hasValue();
-    z[1] <- ρ.value();
-    return z;
-  }
-
-  function forwardLazy() -> Real[_] {
-    z:Real[size()];
     z[1] <- ρ.eval();
     z[2] <- x.eval();
     z[3] <- y.eval();
     return z;
   }
 
-  function backwardLazy() -> Real[_] {
+  function backward() -> Real[_] {
     z:Real[size()];
     assert !y.hasValue();
     z[3] <- y.eval();

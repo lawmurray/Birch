@@ -16,28 +16,12 @@ class TestGammaExponential < TestModel {
 
   function forward() -> Real[_] {
     y:Real[2];
-    y[1] <- λ.value();
-    y[2] <- x.value();
-    return y;
-  }
-
-  function backward() -> Real[_] {
-    y:Real[2];
-    assert !x.hasValue();
-    y[2] <- x.value();
-    assert !λ.hasValue();
-    y[1] <- λ.value();
-    return y;
-  }
-
-  function forwardLazy() -> Real[_] {
-    y:Real[2];
     y[1] <- λ.eval();
     y[2] <- x.eval();
     return y;
   }
 
-  function backwardLazy() -> Real[_] {
+  function backward() -> Real[_] {
     y:Real[2];
     assert !x.hasValue();
     y[2] <- x.eval();

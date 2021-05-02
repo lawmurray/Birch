@@ -25,29 +25,12 @@ class TestChainGaussian < TestModel {
   function forward() -> Real[_] {
     y:Real[5];
     for i in 1..5 {
-      y[i] <- x[i].value();
-    }
-    return y;
-  }
-
-  function backward() -> Real[_] {
-    y:Real[5];
-    for i in 0..4 {
-      assert !x[5 - i].hasValue();
-      y[5 - i] <- x[5 - i].value();
-    }
-    return y;
-  }
-
-  function forwardLazy() -> Real[_] {
-    y:Real[5];
-    for i in 1..5 {
       y[i] <- x[i].eval();
     }
     return y;
   }
 
-  function backwardLazy() -> Real[_] {
+  function backward() -> Real[_] {
     y:Real[5];
     for i in 0..4 {
       assert !x[5 - i].hasValue();

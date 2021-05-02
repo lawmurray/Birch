@@ -15,31 +15,13 @@ class TestAddDiscreteDelta < TestModel {
 
   function forward() -> Real[_] {
     y:Real[size()];
-    y[1] <- x1.value();
-    y[2] <- x2.value();
-    y[3] <- s.value();
-    return y;
-  }
-
-  function backward() -> Real[_] {
-    y:Real[size()];
-    y[3] <- s.value();
-    assert !x1.hasValue();
-    assert !x2.hasValue();
-    y[2] <- x2.value();
-    y[1] <- x1.value();
-    return y;
-  }
-
-  function forwardLazy() -> Real[_] {
-    y:Real[size()];
     y[1] <- x1.eval();
     y[2] <- x2.eval();
     y[3] <- s.eval();
     return y;
   }
 
-  function backwardLazy() -> Real[_] {
+  function backward() -> Real[_] {
     y:Real[size()];
     y[3] <- s.eval();
     assert !x1.hasValue();

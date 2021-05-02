@@ -39,31 +39,6 @@ class TestFanMatrixNormalInverseWishartMatrixGaussian < TestModel {
   }
 
   function forward() -> Real[_] {
-    Σ.value();
-    X.value();
-    Y1.value();
-    Y2.value();
-    Y3.value();
-    Y4.value();
-    Y5.value();
-    return vectorize();
-  }
-
-  function backward() -> Real[_] {
-    assert !Y5.hasValue();
-    Y5.value();
-    Y4.value();
-    Y3.value();
-    Y2.value();
-    Y1.value();
-    assert !X.hasValue();
-    X.value();
-    assert !Σ.hasValue();
-    Σ.value();
-    return vectorize();
-  }
-
-  function forwardLazy() -> Real[_] {
     Σ.eval();
     X.eval();
     Y1.eval();
@@ -74,7 +49,7 @@ class TestFanMatrixNormalInverseWishartMatrixGaussian < TestModel {
     return vectorize();
   }
 
-  function backwardLazy() -> Real[_] {
+  function backward() -> Real[_] {
     assert !Y5.hasValue();
     Y5.eval();
     Y4.eval();

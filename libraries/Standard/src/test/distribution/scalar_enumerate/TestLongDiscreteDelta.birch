@@ -17,33 +17,6 @@ class TestLongDiscreteDelta < TestModel {
 
   function forward() -> Real[_] {
     y:Real[size()];
-    y[1] <- x[1].value();
-    y[2] <- x[2].value();
-    y[3] <- x[3].value();
-    y[4] <- x[4].value();
-    y[5] <- x[5].value();
-    y[6] <- s.value();
-    return y;
-  }
-
-  function backward() -> Real[_] {
-    y:Real[size()];
-    y[6] <- s.value();
-    assert !x[1].hasValue();
-    assert !x[2].hasValue();
-    assert !x[3].hasValue();
-    assert !x[4].hasValue();
-    assert !x[5].hasValue();
-    y[5] <- x[5].value();
-    y[4] <- x[4].value();
-    y[3] <- x[3].value();
-    y[2] <- x[2].value();
-    y[1] <- x[1].value();
-    return y;
-  }
-
-  function forwardLazy() -> Real[_] {
-    y:Real[size()];
     y[1] <- x[1].eval();
     y[2] <- x[2].eval();
     y[3] <- x[3].eval();
@@ -53,7 +26,7 @@ class TestLongDiscreteDelta < TestModel {
     return y;
   }
 
-  function backwardLazy() -> Real[_] {
+  function backward() -> Real[_] {
     y:Real[size()];
     y[6] <- s.eval();
     assert !x[1].hasValue();

@@ -37,31 +37,6 @@ class TestFanMultivariateNormalInverseGammaMultivariateGaussian < TestModel {
   }
 
   function forward() -> Real[_] {
-    σ2.value();
-		μ.value();
-		x1.value();
-		x2.value();
-		x3.value();
-		x4.value();
-		x5.value();
-    return vectorize();
-  }
-
-  function backward() -> Real[_] {
-    assert !x5.hasValue();
-    x5.value();
-		x4.value();
-		x3.value();
-		x2.value();
-		x1.value();
-    assert !μ.hasValue();
-    μ.value();
-    assert !σ2.hasValue();
-    σ2.value();
-    return vectorize();
-  }
-
-  function forwardLazy() -> Real[_] {
     σ2.eval();
 		μ.eval();
 		x1.eval();
@@ -72,7 +47,7 @@ class TestFanMultivariateNormalInverseGammaMultivariateGaussian < TestModel {
     return vectorize();
   }
 
-  function backwardLazy() -> Real[_] {
+  function backward() -> Real[_] {
     assert !x5.hasValue();
     x5.eval();
 		x4.eval();

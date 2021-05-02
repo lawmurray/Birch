@@ -18,28 +18,12 @@ class TestInverseGammaGamma < TestModel {
 
   function forward() -> Real[_] {
     y:Real[2];
-    y[1] <- θ.value();
-    y[2] <- x.value();
-    return y;
-  }
-
-  function backward() -> Real[_] {
-    y:Real[2];
-    assert !x.hasValue();
-    y[2] <- x.value();
-    assert !θ.hasValue();
-    y[1] <- θ.value();
-    return y;
-  }
-
-  function forwardLazy() -> Real[_] {
-    y:Real[2];
     y[1] <- θ.eval();
     y[2] <- x.eval();
     return y;
   }
 
-  function backwardLazy() -> Real[_] {
+  function backward() -> Real[_] {
     y:Real[2];
     assert !x.hasValue();
     y[2] <- x.eval();

@@ -19,30 +19,12 @@ class TestDirichletMultinomial < TestModel {
   function forward() -> Real[_] {
     D:Integer <- length(α);
     y:Real[2*D];
-    y[1..D] <- ρ.value();
-    y[D+1..2*D] <- x.value();
-    return y;
-  }
-
-  function backward() -> Real[_] {
-    D:Integer <- length(α);
-    y:Real[2*D];
-    assert !x.hasValue();
-    y[D+1..2*D] <- x.value();
-    assert !ρ.hasValue();
-    y[1..D] <- ρ.value();
-    return y;
-  }
-
-  function forwardLazy() -> Real[_] {
-    D:Integer <- length(α);
-    y:Real[2*D];
     y[1..D] <- ρ.eval();
     y[D+1..2*D] <- x.eval();
     return y;
   }
 
-  function backwardLazy() -> Real[_] {
+  function backward() -> Real[_] {
     D:Integer <- length(α);
     y:Real[2*D];
     assert !x.hasValue();

@@ -13,18 +13,10 @@ class TestBeta < TestModel {
   }
 
   function forward() -> Real[_] {
-    return [x.value()];
-  }
-
-  function backward() -> Real[_] {
-    return [x.value()];
-  }
-
-  function forwardLazy() -> Real[_] {
     return [x.eval()];
   }
 
-  function backwardLazy() -> Real[_] {
+  function backward() -> Real[_] {
     return [x.eval()];
   }
 

@@ -3,7 +3,5 @@ abstract class TestModel < Model {
   abstract function simulate();
   abstract function forward() -> Real[_];
   abstract function backward() -> Real[_];
-  abstract function forwardLazy() -> Real[_];
-  abstract function backwardLazy() -> Real[_];
   abstract function size() -> Integer;
 }

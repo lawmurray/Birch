@@ -15,28 +15,12 @@ class TestBetaBernoulli < TestModel {
 
   function forward() -> Real[_] {
     y:Real[2];
-    y[1] <- ρ.value();
-    y[2] <- x.value();
-    return y;
-  }
-
-  function backward() -> Real[_] {
-    y:Real[2];
-    assert !x.hasValue();
-    y[2] <- x.value();
-    assert !ρ.hasValue();
-    y[1] <- ρ.value();
-    return y;
-  }
-
-  function forwardLazy() -> Real[_] {
-    y:Real[2];
     y[1] <- ρ.eval();
     y[2] <- x.eval();
     return y;
   }
 
-  function backwardLazy() -> Real[_] {
+  function backward() -> Real[_] {
     y:Real[2];
     assert !x.hasValue();
     y[2] <- x.eval();

@@ -31,30 +31,13 @@ class TestMatrixNormalInverseWishartMatrixGaussian < TestModel {
   }
 
   function forward() -> Real[_] {
-    Σ.value();
-    X.value();
-    Y.value();
-    return vectorize();
-  }
-
-  function backward() -> Real[_] {
-    assert !Y.hasValue();
-    Y.value();
-    assert !X.hasValue();
-    X.value();
-    assert !Σ.hasValue();
-    Σ.value();
-    return vectorize();
-  }
-
-  function forwardLazy() -> Real[_] {
     Σ.eval();
     X.eval();
     Y.eval();
     return vectorize();
   }
 
-  function backwardLazy() -> Real[_] {
+  function backward() -> Real[_] {
     assert !Y.hasValue();
     Y.eval();
     assert !X.hasValue();

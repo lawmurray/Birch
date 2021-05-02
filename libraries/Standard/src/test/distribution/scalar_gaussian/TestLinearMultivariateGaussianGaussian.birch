@@ -30,28 +30,12 @@ class TestLinearMultivariateGaussianGaussian < TestModel {
 
   function forward() -> Real[_] {
     y:Real[n + 1];
-    y[1..n] <- μ.value();
-    y[n + 1] <- x.value();
-    return y;
-  }
-
-  function backward() -> Real[_] {
-    y:Real[n + 1];
-    assert !x.hasValue();
-    y[n + 1] <- x.value();
-    assert !μ.hasValue();
-    y[1..n] <- μ.value();
-    return y;
-  }
-
-  function forwardLazy() -> Real[_] {
-    y:Real[n + 1];
     y[1..n] <- μ.eval();
     y[n + 1] <- x.eval();
     return y;
   }
 
-  function backwardLazy() -> Real[_] {
+  function backward() -> Real[_] {
     y:Real[n + 1];
     assert !x.hasValue();
     y[n + 1] <- x.eval();
