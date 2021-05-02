@@ -1,11 +1,11 @@
 class TestBinomial < TestModel {
-  n:Integer;
-  ρ:Real;
+  n:Random<Integer>;
+  ρ:Random<Real>;
   x:Random<Integer>;
 
   function initialize() {
-    n <- simulate_uniform_int(1, 100);
-    ρ <- simulate_uniform(0.0, 1.0);
+    n ~ UniformInteger(1, 100);
+    ρ ~ Uniform(0.0, 1.0);
   }
 
   function simulate() {

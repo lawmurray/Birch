@@ -97,6 +97,11 @@ function Gaussian<Arg1,Arg2>(μ:MultiplyAdd<Arg1,Random<Real>,Arg2>,
     σ2.graftReplace(p, 2);
     μ.m.join(σ2);
     return p;
+  } else if μ.m.hasGaussian() {
+    let (m, s2) <- μ.m.getGaussian();
+    let p <- LinearGaussianGaussian(μ.l, m, s2, μ.r, σ2);
+    μ.m.graft(p);
+    return p;
   } else {
     σ2.prune();
     if σ2.hasInverseGamma() {
@@ -123,6 +128,11 @@ function Gaussian<Arg>(μ:Multiply<Arg,Random<Real>>, σ2:Random<Real>) ->
     μ.r.graft(p, 1);
     σ2.graftReplace(p, 2);
     μ.r.join(σ2);
+    return p;
+  } else if μ.m.hasGaussian() {
+    let (m, s2) <- μ.m.getGaussian();
+    let p <- LinearGaussianGaussian(μ.l, m, s2, 0.0, σ2);
+    μ.m.graft(p);
     return p;
   } else {
     σ2.prune();

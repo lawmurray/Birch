@@ -1,14 +1,14 @@
 class TestGaussianGaussian < TestModel {
   μ_1:Random<Real>;
   x:Random<Real>;
-  μ_0:Real;
-  σ2_0:Real;
-  σ2_1:Real;
+  μ_0:Random<Real>;
+  σ2_0:Random<Real>;
+  σ2_1:Random<Real>;
 
   function initialize() {
-    μ_0 <- simulate_uniform(-10.0, 10.0);
-    σ2_0 <- simulate_uniform(0.1, 10.0);
-    σ2_1 <- simulate_uniform(0.1, 10.0);
+    μ_0 ~ Uniform(-10.0, 10.0);
+    σ2_0 ~ Uniform(0.1, 10.0);
+    σ2_1 ~ Uniform(0.1, 10.0);
   }
 
   function simulate() {

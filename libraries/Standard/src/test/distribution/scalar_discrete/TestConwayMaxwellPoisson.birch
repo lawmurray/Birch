@@ -1,14 +1,14 @@
 class TestConwayMaxwellPoisson < TestModel {
   x:Random<Integer>;
-  λ:Real;
-  ν:Real;
+  λ:Random<Real>;
+  ν:Random<Real>;
   n:Integer;
 
   function initialize() {
-    λ <- simulate_uniform(0.5, 100.0);
-    ν <- simulate_uniform(0.5, 2.0);
+    λ ~ Uniform(0.5, 100.0);
+    ν ~ Uniform(0.5, 2.0);
     let P <- simulate_uniform(0.5, 0.95);
-    n <- quantile_conway_maxwell_poisson(P, λ, ν, 1000);
+    n <- quantile_conway_maxwell_poisson(P, eval(λ), eval(ν), 1000);
   }
 
   function simulate() {

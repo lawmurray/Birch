@@ -1,12 +1,12 @@
 class TestGammaPoisson < TestModel {
   λ:Random<Real>;
   x:Random<Integer>;
-  k:Real;
-  θ:Real;
+  k:Random<Real>;
+  θ:Random<Real>;
 
   function initialize() {
-    k <- simulate_uniform_int(1, 10);
-    θ <- simulate_uniform(0.1, 10.0);
+    k ~ Uniform(1.0, 10.0);
+    θ ~ Uniform(0.1, 10.0);
   }
 
   function simulate() {

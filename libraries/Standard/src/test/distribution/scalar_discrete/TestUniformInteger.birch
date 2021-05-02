@@ -43,9 +43,3 @@ program test_cdf_uniform_integer() {
   m.simulate();
   test_cdf(m.marginal());
 }
-
-program test_grad_uniform_integer(N:Integer <- 1000,
-    backward:Boolean <- false) {
-  m:TestUniformInteger;
-  test_grad(m, N, backward);
-}

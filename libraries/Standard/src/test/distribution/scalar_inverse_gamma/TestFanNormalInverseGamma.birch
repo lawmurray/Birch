@@ -9,14 +9,14 @@ class TestFanNormalInverseGammaGaussian < TestModel {
 
   μ_0:Real;
   a2:Real;
-  α:Real;
-  β:Real;
+  α:Random<Real>;
+  β:Random<Real>;
 
   function initialize() {
-    μ_0 <- simulate_uniform(-10.0, 10.0);
-    a2 <- simulate_uniform(0.0, 2.0);
-    α <- simulate_uniform(2.1, 10.0);
-    β <- simulate_uniform(0.1, 10.0);
+    μ_0 <~ Uniform(-10.0, 10.0);
+    a2 <~ Uniform(0.0, 2.0);
+    α ~ Uniform(2.1, 10.0);
+    β ~ Uniform(0.1, 10.0);
   }
 
   function simulate() {
@@ -30,7 +30,7 @@ class TestFanNormalInverseGammaGaussian < TestModel {
   }
 
   function forward() -> Real[_] {
-    y:Real[7];
+    y:Real[size()];
     y[1] <- σ2.eval();
     y[2] <- μ.eval();
     y[3] <- x1.eval();
@@ -42,7 +42,7 @@ class TestFanNormalInverseGammaGaussian < TestModel {
   }
 
   function backward() -> Real[_] {
-    y:Real[7];
+    y:Real[size()];
     assert !x5.hasValue();
     y[7] <- x5.eval();
     y[6] <- x4.eval();

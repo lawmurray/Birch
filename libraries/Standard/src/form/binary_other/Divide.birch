@@ -8,7 +8,7 @@ struct DivideFunction {
   }
 
   function gradRight<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue, r:RightValue) -> {
-    return -inner(d, l)/pow(r, 2.0);
+    return -trace(inner(d, l))/pow(r, 2.0);
   }
 }
 struct Divide<Left,Right> = Binary<DivideFunction,Left,Right>;

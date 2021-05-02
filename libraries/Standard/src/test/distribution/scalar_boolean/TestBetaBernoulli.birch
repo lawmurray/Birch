@@ -1,4 +1,6 @@
 class TestBetaBernoulli < TestModel {
+  α:Random<Real>;
+  β:Random<Real>;
   ρ:Random<Real>;
   x:Random<Boolean>;
 
@@ -7,8 +9,8 @@ class TestBetaBernoulli < TestModel {
   }
 
   function simulate() {
-    α:Real <- simulate_uniform(1.0, 20.0);
-    β:Real <- simulate_uniform(1.0, 20.0);
+    α ~ Uniform(1.0, 20.0);
+    β ~ Uniform(1.0, 20.0);
     ρ ~ Beta(α, β);
     x ~ Bernoulli(ρ);
   }

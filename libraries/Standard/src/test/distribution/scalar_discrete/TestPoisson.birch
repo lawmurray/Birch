@@ -1,9 +1,9 @@
 class TestPoisson < TestModel {
   x:Random<Integer>;
-  λ:Real;
+  λ:Random<Real>;
 
   function initialize() {
-    λ <- simulate_uniform_int(0.1, 100.0);
+    λ ~ Uniform(0.1, 100.0);
   }
 
   function simulate() {

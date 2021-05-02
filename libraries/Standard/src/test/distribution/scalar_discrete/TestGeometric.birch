@@ -1,9 +1,9 @@
 class TestGeometric < TestModel {
   x:Random<Integer>;
-  ρ:Real;
+  ρ:Random<Real>;
 
   function initialize() {
-    ρ <- simulate_uniform(0.01, 1.0);
+    ρ ~ Uniform(0.01, 1.0);
   }
 
   function simulate() {

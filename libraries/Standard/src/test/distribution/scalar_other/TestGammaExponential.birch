@@ -1,12 +1,12 @@
 class TestGammaExponential < TestModel {
-  k:Real;
-  θ:Real;
+  k:Random<Real>;
+  θ:Random<Real>;
   λ:Random<Real>;
   x:Random<Real>;
 
   function initialize() {
-    k <- simulate_uniform(2.0, 10.0);
-    θ <- simulate_uniform(0.1, 2.0);
+    k ~ Uniform(2.0, 10.0);
+    θ ~ Uniform(0.1, 2.0);
   }
 
   function simulate() {
@@ -39,7 +39,8 @@ class TestGammaExponential < TestModel {
   }
 }
 
-program test_conjugacy_gamma_exponential(N:Integer <- 10000, lazy:Boolean <- false) {
+program test_conjugacy_gamma_exponential(N:Integer <- 10000,
+    lazy:Boolean <- false) {
   m:TestGammaExponential;
   test_conjugacy(m, N, lazy);
 }
@@ -59,7 +60,8 @@ program test_cdf_gamma_exponential(N:Integer <- 10000) {
   test_cdf(m.marginal(), N);
 }
 
-program test_grad_gamma_exponential(N:Integer <- 1000, backward:Boolean <- false) {
+program test_grad_gamma_exponential(N:Integer <- 1000,
+    backward:Boolean <- false) {
   m:TestGammaExponential;
   test_grad(m, N, backward);
 }

@@ -1,11 +1,11 @@
 class TestInverseGamma < TestModel {
   σ2:Random<Real>;
-  α:Real;
-  β:Real;
+  α:Random<Real>;
+  β:Random<Real>;
 
   function initialize() {
-    α <- simulate_uniform(2.1, 10.0);
-    β <- simulate_uniform(0.1, 10.0);
+    α ~ Uniform(2.1, 10.0);
+    β ~ Uniform(0.1, 10.0);
   }
 
   function simulate() {

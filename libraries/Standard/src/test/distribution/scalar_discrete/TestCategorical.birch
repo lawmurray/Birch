@@ -43,9 +43,3 @@ program test_cdf_categorical() {
   m.simulate();
   test_cdf(m.marginal());
 }
-
-program test_grad_categorical(N:Integer <- 1000,
-    backward:Boolean <- false) {
-  m:TestCategorical;
-  test_grad(m, N, backward);
-}

@@ -1,11 +1,11 @@
 class TestUniform < TestModel {
   x:Random<Real>;
-  l:Real;
-  u:Real;
+  l:Random<Real>;
+  u:Random<Real>;
 
   function initialize() {
-    l <- simulate_uniform(-10.0, 10.0);
-    u <- simulate_uniform(l, l + 20.0);
+    l ~ Uniform(-10.0, 10.0);
+    u ~ Uniform(l, l + 20.0);
   }
 
   function simulate() {
@@ -42,4 +42,9 @@ program test_cdf_uniform(N:Integer <- 10000) {
   m.initialize();
   m.simulate();
   test_cdf(m.marginal(), N);
+}
+
+program test_grad_uniform(N:Integer <- 1000, backward:Boolean <- false) {
+  m:TestUniform;
+  test_grad(m, N, backward);
 }

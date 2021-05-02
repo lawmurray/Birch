@@ -1,11 +1,11 @@
 class TestWeibull < TestModel {
   x:Random<Real>;
-  k:Real;
-  λ:Real;
+  k:Random<Real>;
+  λ:Random<Real>;
 
   function initialize() {
-    k <- simulate_uniform(1.0, 10.0);
-    λ <- simulate_uniform(0.1, 10.0);
+    k ~ Uniform(1.0, 10.0);
+    λ ~ Uniform(0.1, 10.0);
   }
 
   function simulate() {
@@ -42,4 +42,9 @@ program test_cdf_weibull(N:Integer <- 10000) {
   m.initialize();
   m.simulate();
   test_cdf(m.marginal(), N);
+}
+
+program test_grad_weibull(N:Integer <- 1000, backward:Boolean <- false) {
+  m:TestWeibull;
+  test_grad(m, N, backward);
 }

@@ -84,6 +84,11 @@ function Gaussian(μ:Random<Real>, σ2:Random<Real>) -> Distribution<Real> {
     σ2.graftReplace(p, 2);
     μ.join(σ2);
     return p;
+  } else if μ.hasGaussian() {
+    let (m, s2) <- μ.getGaussian();
+    let p <- GaussianGaussian(m, s2, σ2);
+    μ.graft(p);
+    return p;
   } else {
     σ2.prune();
     if σ2.hasInverseGamma() {

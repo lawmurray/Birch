@@ -4,14 +4,14 @@ class TestNormalInverseGamma < TestModel {
 
   μ:Real;
   a2:Real;
-  α:Real;
-  β:Real;
+  α:Random<Real>;
+  β:Random<Real>;
 
   function initialize() {
-    μ <- simulate_uniform(-10.0, 10.0);
-    a2 <- simulate_uniform(0.1, 2.0);
-    α <- simulate_uniform(2.1, 10.0);
-    β <- simulate_uniform(0.1, 10.0);
+    μ <~ Uniform(-10.0, 10.0);
+    a2 <~ Uniform(0.1, 2.0);
+    α ~ Uniform(2.1, 10.0);
+    β ~ Uniform(0.1, 10.0);
   }
 
   function simulate() {

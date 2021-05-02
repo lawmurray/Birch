@@ -1,13 +1,13 @@
 class TestBernoulli < TestModel {
   x:Random<Boolean>;
-  ρ:Real;
+  ρ:Random<Real>;
 
   function initialize() {
     //
   }
 
   function simulate() {
-    ρ <- simulate_uniform(0.0, 1.0);
+    ρ ~ Uniform(0.0, 1.0);
     x ~ Bernoulli(ρ);
   }
 

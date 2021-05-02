@@ -1,14 +1,14 @@
 class TestBetaBinomial < TestModel {
   ρ:Random<Real>;
   x:Random<Integer>;
-  n:Integer;
-  α:Real;
-  β:Real;
+  n:Random<Integer>;
+  α:Random<Real>;
+  β:Random<Real>;
 
   function initialize() {
-    n <- simulate_uniform_int(1, 100);
-    α <- simulate_uniform(1.0, 20.0);
-    β <- simulate_uniform(1.0, 20.0);
+    n ~ UniformInteger(1, 100);
+    α ~ Uniform(1.0, 20.0);
+    β ~ Uniform(1.0, 20.0);
   }
 
   function simulate() {
