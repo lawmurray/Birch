@@ -118,6 +118,13 @@ public:
   }
 
   /**
+   * Delete operator.
+   */
+  void operator delete(void* ptr) {
+    std::free(ptr);
+  }
+
+  /**
    * Assignment operator.
    */
   Any& operator=(const Any&) {
