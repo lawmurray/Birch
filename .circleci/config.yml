@@ -145,6 +145,7 @@ commands:
           command: |
             if [[ -n "$SMOKE" ]]
             then
+              cd driver
               env BIRCH_MODE=$SMOKE ./smoke.sh
             fi
 
