@@ -1,9 +1,0 @@
-/*
- * Test categorical pmf.
- */
-program test_pdf_categorical(D:Integer <- 10, N:Integer <- 10000,
-    B:Integer <- 0, S:Integer <- 0, lazy:Boolean <- false) {
-  let ρ <- simulate_dirichlet(simulate_uniform(1.0, 10.0), D);
-  let π <- Categorical(ρ);
-  test_pdf(π, N, lazy);
-}

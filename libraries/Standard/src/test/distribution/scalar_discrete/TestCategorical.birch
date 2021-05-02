@@ -1,0 +1,52 @@
+class TestCategorical < TestModel {
+  x:Random<Integer>;
+  α:Real;
+  ρ:Real[10];
+
+  function initialize() {
+    α <- simulate_uniform(0.5, 100.0);
+    ρ <- simulate_dirichlet(α, 10);
+  }
+
+  function simulate() {
+    x ~ Categorical(ρ);
+  }
+
+  function forward() -> Real[_] {
+    return [x.value()];
+  }
+
+  function backward() -> Real[_] {
+    return [x.value()];
+  }
+
+  function forwardLazy() -> Real[_] {
+    return [x.eval()];
+  }
+
+  function backwardLazy() -> Real[_] {
+    return [x.eval()];
+  }
+
+  function marginal() -> Distribution<Integer> {
+    return x.getDistribution();
+  }
+
+  function size() -> Integer {
+    return 1;
+  }
+}
+
+program test_pdf_categorical(D:Integer <- 10, N:Integer <- 10000,
+    B:Integer <- 0, S:Integer <- 0, lazy:Boolean <- false) {
+  let ρ <- simulate_dirichlet(simulate_uniform(1.0, 10.0), D);
+  let π <- Categorical(ρ);
+  test_pdf(π, N, lazy);
+}
+
+program test_cdf_categorical() {
+  m:TestCategorical;
+  m.initialize();
+  m.simulate();
+  test_cdf(m.marginal());
+}

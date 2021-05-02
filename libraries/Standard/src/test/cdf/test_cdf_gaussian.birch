@@ -1,9 +1,0 @@
-/*
- * Test Gaussian cdf evaluations.
- */
-program test_cdf_gaussian(N:Integer <- 10000) {
-  let μ <- simulate_uniform(-10.0, 10.0);
-  let σ2 <- simulate_uniform(0.0, 10.0);
-  let q <- Gaussian(μ, σ2);  
-  test_cdf(q, N);
-}

@@ -1,0 +1,83 @@
+class TestInverseGammaGamma < TestModel {
+  θ:Random<Real>;
+  x:Random<Real>;
+  k:Real;
+  α:Real;
+  β:Real;
+
+  function initialize() {
+    k <- simulate_uniform(1.0, 10.0);
+    α <- simulate_uniform(2.0, 10.0);
+    β <- simulate_uniform(0.1, 10.0);
+  }
+
+  function simulate() {
+    θ ~ InverseGamma(α, β);
+    x ~ Gamma(k, θ);
+  }
+
+  function forward() -> Real[_] {
+    y:Real[2];
+    y[1] <- θ.value();
+    y[2] <- x.value();
+    return y;
+  }
+
+  function backward() -> Real[_] {
+    y:Real[2];
+    assert !x.hasValue();
+    y[2] <- x.value();
+    assert !θ.hasValue();
+    y[1] <- θ.value();
+    return y;
+  }
+
+  function forwardLazy() -> Real[_] {
+    y:Real[2];
+    y[1] <- θ.eval();
+    y[2] <- x.eval();
+    return y;
+  }
+
+  function backwardLazy() -> Real[_] {
+    y:Real[2];
+    assert !x.hasValue();
+    y[2] <- x.eval();
+    assert !θ.hasValue();
+    y[1] <- θ.eval();
+    return y;
+  }
+
+  function marginal() -> Distribution<Real> {
+    return x.getDistribution();
+  }
+
+  function size() -> Integer {
+    return 2;
+  }
+}
+
+program test_conjugacy_inverse_gamma_gamma(N:Integer <- 10000, lazy:Boolean <- false) {
+  m:TestInverseGammaGamma;
+  test_conjugacy(m, N, lazy);
+}
+
+program test_pdf_inverse_gamma_gamma(N:Integer <- 10000, B:Integer <- 1000,
+    S:Integer <- 20, lazy:Boolean <- false) {
+  m:TestInverseGammaGamma;
+  m.initialize();
+  m.simulate();
+  test_pdf(m.marginal(), N, B, S, lazy);
+}
+
+program test_cdf_inverse_gamma_gamma(N:Integer <- 10000) {
+  m:TestInverseGammaGamma;
+  m.initialize();
+  m.simulate();
+  test_cdf(m.marginal(), N);
+}
+
+program test_grad_inverse_gamma_gamma(N:Integer <- 1000, backward:Boolean <- false) {
+  m:TestInverseGammaGamma;
+  test_grad(m, N, backward);
+}

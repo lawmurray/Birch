@@ -1,0 +1,18 @@
+program test_pdf_conway_maxwell_poisson(N:Integer <- 10000, B:Integer <- 0,
+    S:Integer <- 0, lazy:Boolean <- false) {
+  let λ <- simulate_uniform(0.5, 100.0);
+  let ν <- simulate_uniform(0.5, 2.0);
+  let P <- simulate_uniform(0.9, 0.95);
+  let n <- quantile_conway_maxwell_poisson(P, λ, ν, 1000);
+  let q <- ConwayMaxwellPoisson(λ, ν, n);
+  test_pdf(q, N, lazy);
+}
+
+program test_cdf_conway_maxwell_poisson() {
+  let λ <- simulate_uniform(0.5, 100.0);
+  let ν <- simulate_uniform(0.5, 2.0);
+  let P <- simulate_uniform(0.9, 0.95);
+  let n <- quantile_conway_maxwell_poisson(P, λ, ν, 1000);
+  let q <- ConwayMaxwellPoisson(λ, ν, n);
+  test_cdf(q);
+}

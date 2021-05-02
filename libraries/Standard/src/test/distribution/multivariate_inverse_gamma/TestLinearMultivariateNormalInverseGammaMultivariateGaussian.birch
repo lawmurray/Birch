@@ -1,0 +1,101 @@
+class TestLinearMultivariateNormalInverseGammaMultivariateGaussian < TestModel {
+  σ2:Random<Real>;
+  μ:Random<Real[_]>;
+  x:Random<Real[_]>;
+
+  n:Integer <- 5;
+  p:Integer <- 4;
+
+  α:Real;
+  β:Real;
+  A:Real[n,p];
+  μ_0:Real[p];
+  Σ:Real[p,p];
+  c:Real[n];
+  Ψ:Real[n,n];
+
+  function initialize() {
+    α <- simulate_uniform(2.0, 5.0);
+    β <- simulate_uniform(0.1, 5.0);
+    A <- matrix_lambda(\(i:Integer, j:Integer) -> { return simulate_uniform(-2.0, 2.0); }, n, p);
+    μ_0 <- vector_lambda(\(i:Integer) -> { return simulate_uniform(-10.0, 10.0); }, p);
+    Σ <- matrix_lambda(\(i:Integer, j:Integer) -> { return simulate_uniform(-2.0, 2.0); }, p, p);
+    c <- vector_lambda(\(i:Integer) -> { return simulate_uniform(-10.0, 10.0); }, n);
+    Ψ <- matrix_lambda(\(i:Integer, j:Integer) -> { return simulate_uniform(-2.0, 2.0); }, n, n);
+    
+    Σ <- outer(Σ) + diagonal(1.0e-2, p);
+    Ψ <- outer(Ψ) + diagonal(1.0e-2, n);
+  }
+
+  function simulate() {
+    σ2 ~ InverseGamma(α, β);
+    μ ~ MultivariateGaussian(μ_0, Σ*σ2);
+    x ~ MultivariateGaussian(A*μ + c, Ψ*σ2);
+  }
+
+  function forward() -> Real[_] {
+    y:Real[1 + p + n];
+    y[1] <- σ2.value();
+    y[2..(p + 1)] <- μ.value();
+    y[(p + 2)..(1 + p + n)] <- x.value();
+    return y;
+  }
+
+  function backward() -> Real[_] {
+    y:Real[1 + p + n];
+    assert !x.hasValue();
+    y[(p + 2)..(1 + p + n)] <- x.value();
+    assert !μ.hasValue();
+    y[2..(p + 1)] <- μ.value();
+    assert !σ2.hasValue();
+    y[1] <- σ2.value();
+    return y;
+  }
+
+  function forwardLazy() -> Real[_] {
+    y:Real[1 + p + n];
+    y[1] <- σ2.eval();
+    y[2..(p + 1)] <- μ.eval();
+    y[(p + 2)..(1 + p + n)] <- x.eval();
+    return y;
+  }
+
+  function backwardLazy() -> Real[_] {
+    y:Real[1 + p + n];
+    assert !x.hasValue();
+    y[(p + 2)..(1 + p + n)] <- x.eval();
+    assert !μ.hasValue();
+    y[2..(p + 1)] <- μ.eval();
+    assert !σ2.hasValue();
+    y[1] <- σ2.eval();
+    return y;
+  }
+
+  function marginal() -> Distribution<Real[_]> {
+    return x.getDistribution();
+  }
+
+  function size() -> Integer {
+    return 1 + p + n;
+  }
+}
+
+program test_conjugacy_linear_multivariate_normal_inverse_gamma_multivariate_gaussian(
+    N:Integer <- 10000, lazy:Boolean <- false) {
+  m:TestLinearMultivariateNormalInverseGammaMultivariateGaussian;
+  test_conjugacy(m, N, lazy);
+}
+
+program test_pdf_linear_multivariate_normal_inverse_gamma_multivariate_gaussian(
+    N:Integer <- 10000, B:Integer <- 1000, S:Integer <- 20, lazy:Boolean <- false) {
+  m:TestLinearMultivariateNormalInverseGammaMultivariateGaussian;
+  m.initialize();
+  m.simulate();
+  test_pdf(m.marginal(), N, B, S, lazy);
+}
+
+program test_grad_linear_multivariate_normal_inverse_gamma_multivariate_gaussian(
+    N:Integer <- 1000, backward:Boolean <- false) {
+  m:TestLinearMultivariateNormalInverseGammaMultivariateGaussian;
+  test_grad(m, N, backward);
+}

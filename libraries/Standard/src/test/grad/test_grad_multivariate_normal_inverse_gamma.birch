@@ -1,4 +1,0 @@
-program test_grad_multivariate_normal_inverse_gamma(N:Integer <- 1000, backward:Boolean <- false) {
-  m:TestMultivariateNormalInverseGamma;
-  test_grad(m, N, backward);
-}

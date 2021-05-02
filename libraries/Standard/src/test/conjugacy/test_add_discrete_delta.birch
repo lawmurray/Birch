@@ -1,5 +1,0 @@
-program test_add_discrete_delta(N:Integer <- 10000,
-    lazy:Boolean <- false) {
-  m:TestAddDiscreteDelta;
-  test_conjugacy(m, N, lazy);
-}

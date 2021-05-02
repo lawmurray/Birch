@@ -1,0 +1,12 @@
+program test_pdf_exponential(N:Integer <- 10000, B:Integer <- 100,
+    S:Integer <- 5, lazy:Boolean <- false) {
+  let λ <- simulate_uniform(1.0, 10.0);
+  let q <- Exponential(λ);  
+  test_pdf(q, N, B, S, lazy);
+}
+
+program test_cdf_exponential(N:Integer <- 10000) {
+  let λ <- simulate_uniform(1.0, 10.0);
+  let q <- Exponential(λ);  
+  test_cdf(q, N);
+}

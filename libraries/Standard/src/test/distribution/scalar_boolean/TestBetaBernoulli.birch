@@ -1,0 +1,68 @@
+class TestBetaBernoulli < TestModel {
+  ρ:Random<Real>;
+  x:Random<Boolean>;
+
+  function initialize() {
+    //
+  }
+
+  function simulate() {
+    α:Real <- simulate_uniform(1.0, 20.0);
+    β:Real <- simulate_uniform(1.0, 20.0);
+    ρ ~ Beta(α, β);
+    x ~ Bernoulli(ρ);
+  }
+
+  function forward() -> Real[_] {
+    y:Real[2];
+    y[1] <- ρ.value();
+    y[2] <- x.value();
+    return y;
+  }
+
+  function backward() -> Real[_] {
+    y:Real[2];
+    assert !x.hasValue();
+    y[2] <- x.value();
+    assert !ρ.hasValue();
+    y[1] <- ρ.value();
+    return y;
+  }
+
+  function forwardLazy() -> Real[_] {
+    y:Real[2];
+    y[1] <- ρ.eval();
+    y[2] <- x.eval();
+    return y;
+  }
+
+  function backwardLazy() -> Real[_] {
+    y:Real[2];
+    assert !x.hasValue();
+    y[2] <- x.eval();
+    assert !ρ.hasValue();
+    y[1] <- ρ.eval();
+    return y;
+  }
+
+  function marginal() -> Distribution<Boolean> {
+    return x.getDistribution();
+  }
+
+  function size() -> Integer {
+    return 2;
+  }
+}
+
+program test_conjugacy_beta_bernoulli(N:Integer <- 10000, lazy:Boolean <- false) {
+  m:TestBetaBernoulli;
+  test_conjugacy(m, N, lazy);
+}
+
+program test_pdf_beta_bernoulli(N:Integer <- 10000, B:Integer <- 0,
+    S:Integer <- 0, lazy:Boolean <- false) {
+  m:TestBetaBernoulli;
+  m.initialize();
+  m.simulate();
+  test_pdf(m.marginal(), N, lazy);
+}

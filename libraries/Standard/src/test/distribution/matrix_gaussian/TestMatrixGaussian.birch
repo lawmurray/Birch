@@ -1,0 +1,28 @@
+program test_pdf_matrix_gaussian(R:Integer <- 4, C:Integer <- 3,
+    N:Integer <- 10000, B:Integer <- 1000, S:Integer <- 20,
+    lazy:Boolean <- false) {
+  M:Real[R,C];
+  U:Real[R,R];
+  V:Real[C,C];
+
+  for i in 1..R {
+    for j in 1..C {
+      M[i,j] <- simulate_uniform(-10.0, 10.0);
+    }
+  }
+  for i in 1..R {
+    for j in 1..R {
+      U[i,j] <- simulate_uniform(-2.0, 2.0);
+    }
+  }
+  for i in 1..C {
+    for j in 1..C {
+      V[i,j] <- simulate_uniform(-2.0, 2.0);
+    }
+  }
+  U <- outer(U);
+  V <- outer(V);
+
+  let π <- MatrixGaussian(M, U, V);
+  test_pdf(π, N, B, S, lazy);
+}

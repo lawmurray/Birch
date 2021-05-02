@@ -1,0 +1,14 @@
+program test_pdf_uniform_int(N:Integer <- 10000, B:Integer <- 0,
+    S:Integer <- 0, lazy:Boolean <- false) {
+  let l <- simulate_uniform_int(-10, 10);
+  let u <- simulate_uniform_int(l, l + 20);
+  let π <- UniformInteger(l, u);
+  test_pdf(π, N, lazy);
+}
+
+program test_cdf_uniform_int() {
+  let l <- simulate_uniform_int(-100, 100);
+  let u <- simulate_uniform_int(l, l + 200);
+  let q <- UniformInteger(l, u);  
+  test_cdf(q);
+}

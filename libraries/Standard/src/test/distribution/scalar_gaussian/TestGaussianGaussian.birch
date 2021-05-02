@@ -1,0 +1,71 @@
+class TestGaussianGaussian < TestModel {
+  μ_1:Random<Real>;
+  x:Random<Real>;
+  μ_0:Real;
+  σ2_0:Real;
+  σ2_1:Real;
+
+  function initialize() {
+    μ_0 <- simulate_uniform(-10.0, 10.0);
+    σ2_0 <- simulate_uniform(0.1, 10.0);
+    σ2_1 <- simulate_uniform(0.1, 10.0);
+  }
+
+  function simulate() {
+    μ_1 ~ Gaussian(μ_0, σ2_0);
+    x ~ Gaussian(μ_1, σ2_1);
+  }
+
+  function forward() -> Real[_] {
+    y:Real[2];
+    y[1] <- μ_1.value();
+    y[2] <- x.value();
+    return y;
+  }
+
+  function backward() -> Real[_] {
+    y:Real[2];
+    assert !x.hasValue();
+    y[2] <- x.value();
+    assert !μ_1.hasValue();
+    y[1] <- μ_1.value();
+    return y;
+  }
+
+  function forwardLazy() -> Real[_] {
+    y:Real[2];
+    y[1] <- μ_1.eval();
+    y[2] <- x.eval();
+    return y;
+  }
+
+  function backwardLazy() -> Real[_] {
+    y:Real[2];
+    assert !x.hasValue();
+    y[2] <- x.eval();
+    assert !μ_1.hasValue();
+    y[1] <- μ_1.eval();
+    return y;
+  }
+
+  function marginal() -> Distribution<Real> {
+    return x.getDistribution();
+  }
+
+  function size() -> Integer {
+    return 2;
+  }
+}
+
+program test_conjugacy_gaussian_gaussian(N:Integer <- 10000, lazy:Boolean <- false) {
+  m:TestGaussianGaussian;
+  test_conjugacy(m, N, lazy);
+}
+
+program test_pdf_gaussian_gaussian(N:Integer <- 10000, B:Integer <- 100,
+    S:Integer <- 5, lazy:Boolean <- false) {
+  m:TestGaussianGaussian;
+  m.initialize();
+  m.simulate();
+  test_pdf(m.marginal(), N, B, S, lazy);
+}

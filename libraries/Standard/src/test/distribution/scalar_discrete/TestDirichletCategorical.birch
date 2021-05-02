@@ -1,0 +1,69 @@
+class TestDirichletCategorical < TestModel {
+  ρ:Random<Real[_]>;
+  x:Random<Integer>;
+  α:Real[5];
+
+  function initialize() {
+    for n in 1..5 {
+      α[n] <- simulate_uniform(1.0, 10.0);
+    }
+  }
+
+  function simulate() {
+    ρ ~ Dirichlet(α);
+    x ~ Categorical(ρ);
+  }
+
+  function forward() -> Real[_] {
+    y:Real[6];
+    y[1..5] <- ρ.value();
+    y[6] <- x.value();
+    return y;
+  }
+
+  function backward() -> Real[_] {
+    y:Real[6];
+    assert !x.hasValue();
+    y[6] <- x.value();
+    assert !ρ.hasValue();
+    y[1..5] <- ρ.value();
+    return y;
+  }
+
+  function forwardLazy() -> Real[_] {
+    y:Real[6];
+    y[1..5] <- ρ.eval();
+    y[6] <- x.eval();
+    return y;
+  }
+
+  function backwardLazy() -> Real[_] {
+    y:Real[6];
+    assert !x.hasValue();
+    y[6] <- x.eval();
+    assert !ρ.hasValue();
+    y[1..5] <- ρ.eval();
+    return y;
+  }
+
+  function marginal() -> Distribution<Integer> {
+    return x.getDistribution();
+  }
+
+  function size() -> Integer {
+    return 6;
+  }
+}
+
+program test_conjugacy_dirichlet_categorical(N:Integer <- 10000, lazy:Boolean <- false) {
+  m:TestDirichletCategorical;
+  test_conjugacy(m, N, lazy);
+}
+
+program test_pdf_dirichlet_categorical(N:Integer <- 10000, B:Integer <- 0,
+    S:Integer <- 0, lazy:Boolean <- false) {
+  m:TestDirichletCategorical;
+  m.initialize();
+  m.simulate();
+  test_pdf(m.marginal(), N, lazy);
+}

@@ -1,9 +1,0 @@
-/*
- * Test uniform cdf evaluations.
- */
-program test_cdf_uniform(N:Integer <- 10000) {
-  let l <- simulate_uniform(-10.0, 10.0);
-  let u <- simulate_uniform(l, l + 20.0);
-  let q <- Uniform(l, u);  
-  test_cdf(q, N);
-}

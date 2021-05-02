@@ -1,0 +1,12 @@
+program test_pdf_poisson(N:Integer <- 10000, B:Integer <- 0, S:Integer <- 0,
+    lazy:Boolean <- false) {
+  let λ <- simulate_uniform(0.1, 100.0);
+  let q <- Poisson(λ);
+  test_pdf(q, N, lazy);
+}
+
+program test_cdf_poisson() {
+  let λ <- simulate_uniform(0.1, 100.0);
+  let q <- Poisson(λ);
+  test_cdf(q);
+}

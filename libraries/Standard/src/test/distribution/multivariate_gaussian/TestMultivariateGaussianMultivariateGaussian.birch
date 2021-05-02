@@ -1,0 +1,87 @@
+class TestMultivariateGaussianMultivariateGaussian < TestModel {
+  μ_1:Random<Real[_]>;
+  x:Random<Real[_]>;
+
+  n:Integer <- 4;
+
+  μ_0:Real[n];
+  Σ_0:Real[n,n];
+  Σ_1:Real[n,n];
+
+  function initialize() {
+    for i in 1..n {
+      μ_0[i] <- simulate_uniform(-10.0, 10.0);
+      for j in 1..n {
+        Σ_0[i,j] <- simulate_uniform(-2.0, 2.0);
+        Σ_1[i,j] <- simulate_uniform(-2.0, 2.0);
+      }
+    }
+    Σ_0 <- outer(Σ_0) + diagonal(1.0e-2, n);
+    Σ_1 <- outer(Σ_1) + diagonal(1.0e-2, n);
+  }
+
+  function simulate() {
+    μ_1 ~ MultivariateGaussian(μ_0, Σ_0);
+    x ~ MultivariateGaussian(μ_1, Σ_1);
+  }
+
+  function forward() -> Real[_] {
+    y:Real[2*n];
+    y[1..n] <- μ_1.value();
+    y[(n + 1)..2*n] <- x.value();
+    return y;
+  }
+
+  function backward() -> Real[_] {
+    y:Real[2*n];
+    assert !x.hasValue();
+    y[(n + 1)..2*n] <- x.value();
+    assert !μ_1.hasValue();
+    y[1..n] <- μ_1.value();
+    return y;
+  }
+
+  function forwardLazy() -> Real[_] {
+    y:Real[2*n];
+    y[1..n] <- μ_1.eval();
+    y[(n + 1)..2*n] <- x.eval();
+    return y;
+  }
+
+  function backwardLazy() -> Real[_] {
+    y:Real[2*n];
+    assert !x.hasValue();
+    y[(n + 1)..2*n] <- x.eval();
+    assert !μ_1.hasValue();
+    y[1..n] <- μ_1.eval();
+    return y;
+  }
+
+  function marginal() -> Distribution<Real[_]> {
+    return x.getDistribution();
+  }
+
+  function size() -> Integer {
+    return 2*n;
+  }
+}
+
+program test_conjugacy_multivariate_gaussian_multivariate_gaussian(N:Integer <- 10000, lazy:Boolean <- false) {
+  m:TestMultivariateGaussianMultivariateGaussian;
+  test_conjugacy(m, N, lazy);
+}
+
+program test_pdf_multivariate_gaussian_multivariate_gaussian(
+    N:Integer <- 10000, B:Integer <- 1000, S:Integer <- 20,
+    lazy:Boolean <- false) {
+  m:TestMultivariateGaussianMultivariateGaussian;
+  m.initialize();
+  m.simulate();
+  test_pdf(m.marginal(), N, B, S, lazy);
+}
+
+program test_grad_multivariate_gaussian_multivariate_gaussian(
+    N:Integer <- 1000, backward:Boolean <- false) {
+  m:TestMultivariateGaussianMultivariateGaussian;
+  test_grad(m, N, backward);
+}

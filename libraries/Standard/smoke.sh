@@ -1,16 +1,15 @@
 #!/bin/bash
-#set -eov pipefail
-set -v
+set -eov pipefail
 
 N=4
 B=4
 S=0
 
-eval "`ls src/test/basic     | grep '\.birch' | sed "s/^/birch /g" | sed "s/.birch$//g"`"
-eval "`ls src/test/cdf       | grep '\.birch' | sed "s/^/birch /g" | sed "s/.birch$/ -N $N/g"`"
-eval "`ls src/test/grad      | grep '\.birch' | sed "s/^/birch /g" | sed "s/.birch$/ -N $N --backward false/g"`"
-eval "`ls src/test/grad      | grep '\.birch' | sed "s/^/birch /g" | sed "s/.birch$/ -N $N --backward true/g"`"
-eval "`ls src/test/pdf       | grep '\.birch' | sed "s/^/birch /g" | sed "s/.birch$/ -N $N -B $B -S $S --lazy false/g"`"
-eval "`ls src/test/pdf       | grep '\.birch' | sed "s/^/birch /g" | sed "s/.birch$/ -N $N -B $B -S $S --lazy true/g"`"
-eval "`ls src/test/conjugacy | grep '\.birch' | sed "s/^/birch /g" | sed "s/.birch$/ -N $N --lazy false/g"`"
-eval "`ls src/test/conjugacy | grep '\.birch' | sed "s/^/birch /g" | sed "s/.birch$/ -N $N --lazy true/g"`"
+eval "`grep -r "program test_basic_" src/test     | sed -E "s/^.*program ([A-Za-z0-9_]+).*$/birch \1/"                                | sort`"
+eval "`grep -r "program test_cdf_" src/test       | sed -E "s/^.*program ([A-Za-z0-9_]+).*$/birch \1 -N $N/"                          | sort`"
+eval "`grep -r "program test_grad_" src/test      | sed -E "s/^.*program ([A-Za-z0-9_]+).*$/birch \1 -N $N --backward false/"         | sort`"
+eval "`grep -r "program test_grad_" src/test      | sed -E "s/^.*program ([A-Za-z0-9_]+).*$/birch \1 -N $N --backward true/"          | sort`"
+eval "`grep -r "program test_pdf_" src/test       | sed -E "s/^.*program ([A-Za-z0-9_]+).*$/birch \1 -N $N -B $B -S $S --lazy false/" | sort`"
+eval "`grep -r "program test_pdf_" src/test       | sed -E "s/^.*program ([A-Za-z0-9_]+).*$/birch \1 -N $N -B $B -S $S --lazy true/"  | sort`"
+eval "`grep -r "program test_conjugacy_" src/test | sed -E "s/^.*program ([A-Za-z0-9_]+).*$/birch \1 -N $N --lazy false/"             | sort`"
+eval "`grep -r "program test_conjugacy_" src/test | sed -E "s/^.*program ([A-Za-z0-9_]+).*$/birch \1 -N $N --lazy true/"              | sort`"

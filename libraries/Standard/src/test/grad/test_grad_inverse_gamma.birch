@@ -1,4 +1,0 @@
-program test_grad_inverse_gamma(N:Integer <- 1000, backward:Boolean <- false) {
-  m:TestInverseGamma;
-  test_grad(m, N, backward);
-}

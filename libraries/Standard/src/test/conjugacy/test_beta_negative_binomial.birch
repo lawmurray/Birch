@@ -1,7 +1,0 @@
-/*
- * Test beta-negative-binomial conjugacy.
- */
-program test_beta_negative_binomial(N:Integer <- 10000, lazy:Boolean <- false) {
-  m:TestBetaNegativeBinomial;
-  test_conjugacy(m, N, lazy);
-}

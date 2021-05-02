@@ -1,8 +1,0 @@
-/*
- * Test multivariate normal-inverse-gamma Gaussian grad evaluations.
- */
-program test_grad_multivariate_normal_inverse_gamma_multivariate_gaussian(
-    N:Integer <- 1000, backward:Boolean <- false) {
-  m:TestMultivariateNormalInverseGammaMultivariateGaussian;
-  test_grad(m, N, backward);
-}

@@ -1,7 +1,0 @@
-program test_pdf_negate_discrete_delta(N:Integer <- 10000, B:Integer <- 0,
-    S:Integer <- 0, lazy:Boolean <- false) {
-  m:TestNegateDiscreteDelta;
-  m.initialize();
-  m.simulate();
-  test_pdf(m.marginal(), N, lazy);
-}

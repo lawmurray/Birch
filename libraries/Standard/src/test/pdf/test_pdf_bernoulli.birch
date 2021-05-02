@@ -1,9 +1,0 @@
-/*
- * Test bernoulli pdf evaluations.
- */
-program test_pdf_bernoulli(N:Integer <- 10000, B:Integer <- 0, S:Integer <- 0,
-    lazy:Boolean <- false) {
-  let ρ <- simulate_uniform(0.0, 1.0);
-  let q <- Bernoulli(ρ);
-  test_pdf(q, N, lazy);
-}

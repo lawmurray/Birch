@@ -1,0 +1,53 @@
+class TestBinomial < TestModel {
+  n:Integer;
+  ρ:Real;
+  x:Random<Integer>;
+
+  function initialize() {
+    n <- simulate_uniform_int(1, 100);
+    ρ <- simulate_uniform(0.0, 1.0);
+  }
+
+  function simulate() {
+    x ~ Binomial(n, ρ);
+  }
+
+  function forward() -> Real[_] {
+    return [x.value()];
+  }
+
+  function backward() -> Real[_] {
+    return [x.value()];
+  }
+
+  function forwardLazy() -> Real[_] {
+    return [x.eval()];
+  }
+
+  function backwardLazy() -> Real[_] {
+    return [x.eval()];
+  }
+
+  function marginal() -> Distribution<Integer> {
+    return x.getDistribution();
+  }
+
+  function size() -> Integer {
+    return 1;
+  }
+}
+
+program test_pdf_binomial(N:Integer <- 10000, B:Integer <- 0, S:Integer <- 0,
+    lazy:Boolean <- false) {
+  let n <- simulate_uniform_int(0, 1000);
+  let ρ <- simulate_uniform(0.0, 1.0);
+  let q <- Binomial(n, ρ);
+  test_pdf(q, N, lazy);
+}
+
+program test_cdf_binomial() {
+  m:TestBinomial;
+  m.initialize();
+  m.simulate();
+  test_cdf(m.marginal());
+}

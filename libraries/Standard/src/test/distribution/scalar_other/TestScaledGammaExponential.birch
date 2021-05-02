@@ -1,0 +1,84 @@
+class TestScaledGammaExponential < TestModel {
+  λ:Random<Real>;
+  x:Random<Real>;
+
+  a:Real;
+  k:Real;
+  θ:Real;
+
+  function initialize() {
+    a <- simulate_uniform(0.1, 10.0);
+    k <- simulate_uniform(2.0, 10.0);
+    θ <- simulate_uniform(0.1, 10.0);
+  }
+
+  function simulate() {
+    λ ~ Gamma(k, θ);
+    x ~ Exponential(a*λ);
+  }
+
+  function forward() -> Real[_] {
+    y:Real[2];
+    y[1] <- λ.value();
+    y[2] <- x.value();
+    return y;
+  }
+
+  function backward() -> Real[_] {
+    y:Real[2];
+    assert !x.hasValue();
+    y[2] <- x.value();
+    assert !λ.hasValue();
+    y[1] <- λ.value();
+    return y;
+  }
+
+  function forwardLazy() -> Real[_] {
+    y:Real[2];
+    y[1] <- λ.eval();
+    y[2] <- x.eval();
+    return y;
+  }
+
+  function backwardLazy() -> Real[_] {
+    y:Real[2];
+    assert !x.hasValue();
+    y[2] <- x.eval();
+    assert !λ.hasValue();
+    y[1] <- λ.eval();
+    return y;
+  }
+
+  function marginal() -> Distribution<Real> {
+    return x.getDistribution();
+  }
+
+  function size() -> Integer {
+    return 2;
+  }
+}
+
+program test_conjugacy_scaled_gamma_exponential(N:Integer <- 10000, lazy:Boolean <- false) {
+  m:TestScaledGammaExponential;
+  test_conjugacy(m, N, lazy);
+}
+
+program test_pdf_scaled_gamma_exponential(N:Integer <- 10000,
+    B:Integer <- 100, S:Integer <- 5, lazy:Boolean <- false) {
+  m:TestScaledGammaExponential;
+  m.initialize();
+  m.simulate();
+  test_pdf(m.marginal(), N, B, S, lazy);
+}
+
+program test_cdf_scaled_gamma_exponential(N:Integer <- 10000) {
+  m:TestScaledGammaExponential;
+  m.initialize();
+  m.simulate();
+  test_cdf(m.marginal(), N);
+}
+
+program test_grad_scaled_gamma_exponential(N:Integer <- 1000, backward:Boolean <- false) {
+  m:TestScaledGammaExponential;
+  test_grad(m, N, backward);
+}

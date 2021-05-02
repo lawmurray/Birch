@@ -1,8 +1,0 @@
-/*
- * Test fanning normal-inverse-gamma-Gaussian conjugacies.
- */
-program test_fan_normal_inverse_gamma_gaussian(N:Integer <- 10000,
-    lazy:Boolean <- false) {
-  m:TestFanNormalInverseGammaGaussian;
-  test_conjugacy(m, N, lazy);
-}

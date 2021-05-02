@@ -1,8 +1,0 @@
-/*
- * Test enumeration of discrete random variables.
- */
-program test_subtract_discrete_delta(N:Integer <- 10000,
-    lazy:Boolean <- false) {
-  m:TestSubtractDiscreteDelta;
-  test_conjugacy(m, N, lazy);
-}

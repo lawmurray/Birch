@@ -1,9 +1,0 @@
-/*
- * Test inverse-gamma cdf evaluations.
- */
-program test_cdf_inverse_gamma(N:Integer <- 10000) {
-  let α <- simulate_uniform(2.0, 10.0);
-  let β <- simulate_uniform(0.1, 10.0);
-  let q <- InverseGamma(α, β);  
-  test_cdf(q, N);
-}

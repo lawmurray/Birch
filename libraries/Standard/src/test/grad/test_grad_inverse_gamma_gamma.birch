@@ -1,7 +1,0 @@
-/*
- * Test inverse-gamma-gamma grad evaluations.
- */
-program test_grad_inverse_gamma_gamma(N:Integer <- 1000, backward:Boolean <- false) {
-  m:TestInverseGammaGamma;
-  test_grad(m, N, backward);
-}

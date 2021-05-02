@@ -1,8 +1,0 @@
-/*
- * Test Poisson cdf evaluations.
- */
-program test_cdf_poisson() {
-  let λ <- simulate_uniform(0.1, 100.0);
-  let q <- Poisson(λ);
-  test_cdf(q);
-}

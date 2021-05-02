@@ -1,7 +1,0 @@
-/*
- * Test beta-geometric conjugacy.
- */
-program test_beta_geometric(N:Integer <- 10000, lazy:Boolean <- false) {
-  m:TestBetaGeometric;
-  test_conjugacy(m, N, lazy);
-}
