@@ -1,3 +1,6 @@
+#!/bin/bash
+set -eov pipefail
+
 # online help
 birch help
 birch help init
