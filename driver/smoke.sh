@@ -15,6 +15,9 @@ birch help docs
 birch help clean
 birch help help
 
+# stack trace
+birch abort
+
 # hello world package (but can't build without standard library)
 mkdir hello
 cd hello
