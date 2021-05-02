@@ -73,8 +73,7 @@ birch::Statement* birch::Resolver::modify(Class* o) {
 }
 
 birch::Statement* birch::Resolver::modify(Function* o) {
-  if (o->returnType->isTypeOf() && !o->isGeneric() &&
-      (currentClass && !currentClass->isGeneric())) {
+  if (o->returnType->isTypeOf() && !o->isGeneric()) {
     throw ReturnTypeDeductionException(o);
   }
   return ScopedModifier::modify(o);
