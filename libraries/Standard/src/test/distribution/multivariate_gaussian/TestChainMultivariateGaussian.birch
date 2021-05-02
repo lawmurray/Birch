@@ -38,6 +38,10 @@ class TestChainMultivariateGaussian < TestModel {
     return y;
   }
 
+  function marginal() -> Distribution<Real[_]> {
+    return x[5].getDistribution();
+  }
+
   function size() -> Integer {
     return 15;
   }
@@ -46,4 +50,18 @@ class TestChainMultivariateGaussian < TestModel {
 program test_conjugacy_chain_multivariate_gaussian(N:Integer <- 10000, lazy:Boolean <- false) {
   m:TestChainMultivariateGaussian;
   test_conjugacy(m, N, lazy);
+}
+
+program test_pdf_chain_multivariate_gaussian(N:Integer <- 10000,
+    B:Integer <- 1000, S:Integer <- 20, lazy:Boolean <- false) {
+  m:TestChainMultivariateGaussian;
+  m.initialize();
+  m.simulate();
+  test_pdf(m.marginal(), N, B, S, lazy);
+}
+
+program test_grad_chain_multivariate_gaussian(N:Integer <- 1000,
+    backward:Boolean <- false) {
+  m:TestChainMultivariateGaussian;
+  test_grad(m, N, backward);
 }

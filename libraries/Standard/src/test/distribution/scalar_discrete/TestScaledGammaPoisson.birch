@@ -61,3 +61,9 @@ program test_cdf_scaled_gamma_poisson() {
   m.simulate();
   test_cdf(m.marginal());
 }
+
+program test_grad_scaled_gamma_poisson(N:Integer <- 1000,
+    backward:Boolean <- false) {
+  m:TestScaledGammaPoisson;
+  test_grad(m, N, backward);
+}

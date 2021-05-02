@@ -1,6 +1,42 @@
-program test_pdf_bernoulli(N:Integer <- 10000, B:Integer <- 0, S:Integer <- 0,
-    lazy:Boolean <- false) {
-  let ρ <- simulate_uniform(0.0, 1.0);
-  let q <- Bernoulli(ρ);
-  test_pdf(q, N, lazy);
+class TestBernoulli < TestModel {
+  x:Random<Boolean>;
+  ρ:Real;
+
+  function initialize() {
+    //
+  }
+
+  function simulate() {
+    ρ <- simulate_uniform(0.0, 1.0);
+    x ~ Bernoulli(ρ);
+  }
+
+  function forward() -> Real[_] {
+    return [x.eval()];
+  }
+
+  function backward() -> Real[_] {
+    return [x.eval()];
+  }
+
+  function marginal() -> Distribution<Boolean> {
+    return x.getDistribution();
+  }
+
+  function size() -> Integer {
+    return 1;
+  }
+}
+
+program test_pdf_bernoulli(N:Integer <- 10000, B:Integer <- 0,
+    S:Integer <- 0, lazy:Boolean <- false) {
+  m:TestBernoulli;
+  m.initialize();
+  m.simulate();
+  test_pdf(m.marginal(), N, lazy);
+}
+
+program test_grad_bernoulli(N:Integer <- 1000, backward:Boolean <- false) {
+  m:TestBernoulli;
+  test_grad(m, N, backward);
 }

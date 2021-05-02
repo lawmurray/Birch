@@ -29,12 +29,12 @@ class TestBinomial < TestModel {
   }
 }
 
-program test_pdf_binomial(N:Integer <- 10000, B:Integer <- 0, S:Integer <- 0,
-    lazy:Boolean <- false) {
-  let n <- simulate_uniform_int(0, 1000);
-  let ρ <- simulate_uniform(0.0, 1.0);
-  let q <- Binomial(n, ρ);
-  test_pdf(q, N, lazy);
+program test_pdf_binomial(N:Integer <- 10000, B:Integer <- 0,
+    S:Integer <- 0, lazy:Boolean <- false) {
+  m:TestBinomial;
+  m.initialize();
+  m.simulate();
+  test_pdf(m.marginal(), N, lazy);
 }
 
 program test_cdf_binomial() {
@@ -42,4 +42,10 @@ program test_cdf_binomial() {
   m.initialize();
   m.simulate();
   test_cdf(m.marginal());
+}
+
+program test_grad_binomial(N:Integer <- 1000,
+    backward:Boolean <- false) {
+  m:TestBernoulli;
+  test_grad(m, N, backward);
 }

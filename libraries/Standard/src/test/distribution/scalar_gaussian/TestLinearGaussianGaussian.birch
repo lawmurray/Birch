@@ -50,19 +50,19 @@ program test_conjugacy_linear_gaussian_gaussian(N:Integer <- 10000, lazy:Boolean
   test_conjugacy(m, N, lazy);
 }
 
-program test_cdf_linear_gaussian_gaussian(N:Integer <- 10000) {
-  m:TestLinearGaussianGaussian;
-  m.initialize();
-  m.simulate();
-  test_cdf(m.marginal(), N);
-}
-
 program test_pdf_linear_gaussian_gaussian(N:Integer <- 10000,
     B:Integer <- 100, S:Integer <- 5, lazy:Boolean <- false) {
   m:TestLinearGaussianGaussian;
   m.initialize();
   m.simulate();
   test_pdf(m.marginal(), N, B, S, lazy);
+}
+
+program test_cdf_linear_gaussian_gaussian(N:Integer <- 10000) {
+  m:TestLinearGaussianGaussian;
+  m.initialize();
+  m.simulate();
+  test_cdf(m.marginal(), N);
 }
 
 program test_grad_linear_gaussian_gaussian(N:Integer <- 1000, backward:Boolean <- false) {

@@ -9,7 +9,7 @@
 function test_grad(m:TestModel, N:Integer, backward:Boolean) {
   let failed <- 0;  // number of failed tests
   let h <- 1.0e-6;  // interval width for finite difference estimate
-  let ε <- 2.0e-2;  // relative error threshold for fail
+  let ε <- 2.0e-1;  // relative error threshold for fail
 
   parallel for n in 1..N {
     let handler <- construct<Handler>(backward, true);

@@ -31,17 +31,17 @@ class TestInverseGamma < TestModel {
 
 program test_pdf_inverse_gamma(N:Integer <- 10000, B:Integer <- 100,
     S:Integer <- 5, lazy:Boolean <- false) {
-  let α <- simulate_uniform(2.0, 10.0);
-  let β <- simulate_uniform(0.1, 10.0);
-  let q <- InverseGamma(α, β);  
-  test_pdf(q, N, B, S, lazy);
+  m:TestInverseGamma;
+  m.initialize();
+  m.simulate();
+  test_pdf(m.marginal(), N, B, S, lazy);
 }
 
 program test_cdf_inverse_gamma(N:Integer <- 10000) {
-  let α <- simulate_uniform(2.0, 10.0);
-  let β <- simulate_uniform(0.1, 10.0);
-  let q <- InverseGamma(α, β);  
-  test_cdf(q, N);
+  m:TestInverseGamma;
+  m.initialize();
+  m.simulate();
+  test_cdf(m.marginal(), N);
 }
 
 program test_grad_inverse_gamma(N:Integer <- 1000, backward:Boolean <- false) {

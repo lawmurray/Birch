@@ -1,12 +1,49 @@
-program test_pdf_geometric(N:Integer <- 10000, B:Integer <- 0, S:Integer <- 0,
-    lazy:Boolean <- false) {
-  let ρ <- simulate_uniform(0.0, 1.0);
-  let q <- Geometric(ρ);  
-  test_pdf(q, N, lazy);
+class TestGeometric < TestModel {
+  x:Random<Integer>;
+  ρ:Real;
+
+  function initialize() {
+    ρ <- simulate_uniform(0.01, 1.0);
+  }
+
+  function simulate() {
+    x ~ Geometric(ρ);
+  }
+
+  function forward() -> Real[_] {
+    return [x.eval()];
+  }
+
+  function backward() -> Real[_] {
+    return [x.eval()];
+  }
+
+  function marginal() -> Distribution<Integer> {
+    return x.getDistribution();
+  }
+
+  function size() -> Integer {
+    return 1;
+  }
+}
+
+program test_pdf_geometric(N:Integer <- 10000, B:Integer <- 0,
+    S:Integer <- 0, lazy:Boolean <- false) {
+  m:TestGeometric;
+  m.initialize();
+  m.simulate();
+  test_pdf(m.marginal(), N, lazy);
 }
 
 program test_cdf_geometric() {
-  let ρ <- simulate_uniform(0.0, 1.0);
-  let q <- Geometric(ρ);  
-  test_cdf(q);
+  m:TestGeometric;
+  m.initialize();
+  m.simulate();
+  test_cdf(m.marginal());
+}
+
+program test_grad_geometric(N:Integer <- 1000,
+    backward:Boolean <- false) {
+  m:TestGeometric;
+  test_grad(m, N, backward);
 }

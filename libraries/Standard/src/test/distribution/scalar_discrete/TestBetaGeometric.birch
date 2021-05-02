@@ -30,6 +30,10 @@ class TestBetaGeometric < TestModel {
     return y;
   }
 
+  function marginal() -> Distribution<Integer> {
+    return x.getDistribution();
+  }
+
   function size() -> Integer {
     return 2;
   }
@@ -38,4 +42,18 @@ class TestBetaGeometric < TestModel {
 program test_conjugacy_beta_geometric(N:Integer <- 10000, lazy:Boolean <- false) {
   m:TestBetaGeometric;
   test_conjugacy(m, N, lazy);
+}
+
+program test_pdf_beta_geometric(N:Integer <- 10000, B:Integer <- 0,
+    S:Integer <- 0, lazy:Boolean <- false) {
+  m:TestBetaGeometric;
+  m.initialize();
+  m.simulate();
+  test_pdf(m.marginal(), N, lazy);
+}
+
+program test_grad_beta_geometric(N:Integer <- 1000,
+    backward:Boolean <- false) {
+  m:TestBetaGeometric;
+  test_grad(m, N, backward);
 }

@@ -60,3 +60,9 @@ program test_cdf_beta_binomial() {
   m.simulate();
   test_cdf(m.marginal());
 }
+
+program test_grad_beta_binomial(N:Integer <- 1000,
+    backward:Boolean <- false) {
+  m:TestBetaBernoulli;
+  test_grad(m, N, backward);
+}

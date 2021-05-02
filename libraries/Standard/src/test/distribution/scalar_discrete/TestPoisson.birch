@@ -1,12 +1,48 @@
+class TestPoisson < TestModel {
+  x:Random<Integer>;
+  λ:Real;
+
+  function initialize() {
+    λ <- simulate_uniform_int(0.1, 100.0);
+  }
+
+  function simulate() {
+    x ~ Poisson(λ);
+  }
+
+  function forward() -> Real[_] {
+    return [x.eval()];
+  }
+
+  function backward() -> Real[_] {
+    return [x.eval()];
+  }
+
+  function marginal() -> Distribution<Integer> {
+    return x.getDistribution();
+  }
+
+  function size() -> Integer {
+    return 1;
+  }
+}
+
 program test_pdf_poisson(N:Integer <- 10000, B:Integer <- 0, S:Integer <- 0,
     lazy:Boolean <- false) {
-  let λ <- simulate_uniform(0.1, 100.0);
-  let q <- Poisson(λ);
-  test_pdf(q, N, lazy);
+  m:TestPoisson;
+  m.initialize();
+  m.simulate();
+  test_pdf(m.marginal(), N, lazy);
 }
 
 program test_cdf_poisson() {
-  let λ <- simulate_uniform(0.1, 100.0);
-  let q <- Poisson(λ);
-  test_cdf(q);
+  m:TestPoisson;
+  m.initialize();
+  m.simulate();
+  test_cdf(m.marginal());
+}
+
+program test_grad_poisson(N:Integer <- 1000, backward:Boolean <- false) {
+  m:TestPoisson;
+  test_grad(m, N, backward);
 }

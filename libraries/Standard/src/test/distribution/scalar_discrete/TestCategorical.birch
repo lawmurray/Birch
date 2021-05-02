@@ -29,11 +29,12 @@ class TestCategorical < TestModel {
   }
 }
 
-program test_pdf_categorical(D:Integer <- 10, N:Integer <- 10000,
-    B:Integer <- 0, S:Integer <- 0, lazy:Boolean <- false) {
-  let ρ <- simulate_dirichlet(simulate_uniform(1.0, 10.0), D);
-  let π <- Categorical(ρ);
-  test_pdf(π, N, lazy);
+program test_pdf_categorical(N:Integer <- 10000, B:Integer <- 0,
+    S:Integer <- 0, lazy:Boolean <- false) {
+  m:TestCategorical;
+  m.initialize();
+  m.simulate();
+  test_pdf(m.marginal(), N, lazy);
 }
 
 program test_cdf_categorical() {
@@ -41,4 +42,10 @@ program test_cdf_categorical() {
   m.initialize();
   m.simulate();
   test_cdf(m.marginal());
+}
+
+program test_grad_categorical(N:Integer <- 1000,
+    backward:Boolean <- false) {
+  m:TestCategorical;
+  test_grad(m, N, backward);
 }

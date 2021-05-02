@@ -53,3 +53,16 @@ program test_conjugacy_multivariate_normal_inverse_gamma(N:Integer <- 10000,
   m:TestMultivariateNormalInverseGamma;
   test_conjugacy(m, N, lazy);
 }
+
+program test_pdf_linear_multivariate_normal_inverse_gamma(N:Integer <- 10000,
+    B:Integer <- 1000, S:Integer <- 20, lazy:Boolean <- false) {
+  m:TestMultivariateNormalInverseGamma;
+  m.initialize();
+  m.simulate();
+  test_pdf(m.marginal(), N, B, S, lazy);
+}
+
+program test_grad_multivariate_normal_inverse_gamma(N:Integer <- 1000, backward:Boolean <- false) {
+  m:TestMultivariateNormalInverseGamma;
+  test_grad(m, N, backward);
+}

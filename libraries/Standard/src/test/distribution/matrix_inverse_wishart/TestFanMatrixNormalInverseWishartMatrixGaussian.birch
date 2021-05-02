@@ -63,6 +63,10 @@ class TestFanMatrixNormalInverseWishartMatrixGaussian < TestModel {
     return vectorize();
   }
 
+  function marginal() -> Distribution<Real[_,_]> {
+    return Y5.getDistribution();
+  }
+
   function vectorize() -> Real[_] {
     z:Real[size()];
     let k <- 0;
@@ -91,4 +95,18 @@ program test_conjugacy_fan_matrix_normal_inverse_wishart_matrix_gaussian(
     N:Integer <- 10000, lazy:Boolean <- false) {
   m:TestFanMatrixNormalInverseWishartMatrixGaussian;
   test_conjugacy(m, N, lazy);
+}
+
+program test_pdf_fan_matrix_normal_inverse_wishart_matrix_gaussian(
+    N:Integer <- 10000, B:Integer <- 1000, S:Integer <- 20, lazy:Boolean <- false) {
+  m:TestFanMatrixNormalInverseWishartMatrixGaussian;
+  m.initialize();
+  m.simulate();
+  test_pdf(m.marginal(), N, B, S, lazy);
+}
+
+program test_grad_fan_matrix_normal_inverse_wishart_matrix_gaussian(
+    N:Integer <- 1000, backward:Boolean <- false) {
+  m:TestFanMatrixNormalInverseWishartMatrixGaussian;
+  test_grad(m, N, backward);
 }

@@ -61,6 +61,10 @@ class TestFanMultivariateNormalInverseGammaMultivariateGaussian < TestModel {
     return vectorize();
   }
 
+  function marginal() -> Distribution<Real[_]> {
+    return x5.getDistribution();
+  }
+
   function vectorize() -> Real[_] {
     y:Real[size()];
 		let k <- 1;
@@ -91,7 +95,17 @@ program test_conjugacy_fan_multivariate_normal_inverse_gamma_multivariate_gaussi
   test_conjugacy(m, N, lazy);
 }
 
-program test_grad_multivariate_normal_inverse_gamma(N:Integer <- 1000, backward:Boolean <- false) {
-  m:TestMultivariateNormalInverseGamma;
+program test_pdf_fan_multivariate_normal_inverse_gamma_multivariate_gaussian(
+    N:Integer <- 10000, B:Integer <- 1000, S:Integer <- 20,
+    lazy:Boolean <- false) {
+  m:TestFanMultivariateNormalInverseGammaMultivariateGaussian;
+  m.initialize();
+  m.simulate();
+  test_pdf(m.marginal(), N, B, S, lazy);
+}
+
+program test_grad_fan_multivariate_normal_inverse_gamma_multivariate_gaussian(
+    N:Integer <- 1000, backward:Boolean <- false) {
+  m:TestFanMultivariateNormalInverseGammaMultivariateGaussian;
   test_grad(m, N, backward);
 }

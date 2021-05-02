@@ -1,30 +1,78 @@
-program test_pdf_matrix_normal_inverse_wishart(R:Integer <- 3, C:Integer <- 2,
-    N:Integer <- 10000, B:Integer <- 1000, S:Integer <- 20,
-    lazy:Boolean <- false) {
-  M:Real[R,C];
-  U:Real[R,R];
+class TestMatrixNormalInverseWishart < TestModel {
+  Σ:Random<Real[_,_]>;
+  X:Random<Real[_,_]>;
+
+  n:Integer <- 5;
+  p:Integer <- 4;
+
+  Ψ:Real[p,p];
   k:Real;
-  Ψ:Real[C,C];
+  M:Real[n,p];
+  U:Real[n,n];
 
-  for i in 1..R {
-    for j in 1..C {
-      M[i,j] <- simulate_uniform(-10.0, 10.0);
-    }
-  }
-  for i in 1..R {
-    for j in 1..R {
-      U[i,j] <- simulate_uniform(-2.0, 2.0);
-    }
-  }
-  k <- C + 1.0 + simulate_uniform(0.0, 10.0);
-  for i in 1..C {
-    for j in 1..C {
-      Ψ[i,j] <- simulate_uniform(-2.0, 2.0);
-    }
-  }
-  U <- outer(U);
-  Ψ <- outer(Ψ);
+  function initialize() {
+    Ψ <- matrix_lambda(\(i:Integer, j:Integer) -> { return simulate_uniform(-2.0, 2.0); }, p, p);
+    k <- simulate_uniform(2.0, 10.0);
+    M <- matrix_lambda(\(i:Integer, j:Integer) -> { return simulate_uniform(-10.0, 10.0); }, n, p);
+    U <- matrix_lambda(\(i:Integer, j:Integer) -> { return simulate_uniform(-2.0, 2.0); }, n, n);
 
-  let π <- MatrixNormalInverseWishart(M, U, Ψ, k);
-  test_pdf(π, N, B, S, lazy);
+    Ψ <- outer(Ψ) + diagonal(1.0e-2, p);
+    U <- outer(U) + diagonal(1.0e-2, n);
+  }
+
+  function simulate() {
+    Σ ~ InverseWishart(Ψ, k);
+    X ~ MatrixGaussian(M, U, Σ);
+  }
+
+  function forward() -> Real[_] {
+    Σ.eval();
+    X.eval();
+    return vectorize();
+  }
+
+  function backward() -> Real[_] {
+    assert !X.hasValue();
+    X.eval();
+    assert !Σ.hasValue();
+    Σ.eval();
+    return vectorize();
+  }
+
+  function marginal() -> Distribution<Real[_,_]> {
+    return X.getDistribution();
+  }
+
+  function vectorize() -> Real[_] {
+    z:Real[size()];
+    let k <- 0;
+    z[k + 1.. k + p*p] <- vec(Σ.eval());
+    k <- k + p*p;
+    z[k + 1.. k + n*p] <- vec(X.eval());
+    return z;
+  }
+
+  function size() -> Integer {
+    return p*p + n*p;
+  }
+}
+
+program test_conjugacy_matrix_normal_inverse_wishart(N:Integer <- 10000,
+    lazy:Boolean <- false) {
+  m:TestMatrixNormalInverseWishart;
+  test_conjugacy(m, N, lazy);
+}
+
+program test_pdf_matrix_normal_inverse_wishart(N:Integer <- 10000,
+    B:Integer <- 1000, S:Integer <- 20, lazy:Boolean <- false) {
+  m:TestMatrixNormalInverseWishart;
+  m.initialize();
+  m.simulate();
+  test_pdf(m.marginal(), N, B, S, lazy);
+}
+
+program test_grad_matrix_normal_inverse_wishart(N:Integer <- 1000,
+    backward:Boolean <- false) {
+  m:TestMatrixNormalInverseWishart;
+  test_grad(m, N, backward);
 }

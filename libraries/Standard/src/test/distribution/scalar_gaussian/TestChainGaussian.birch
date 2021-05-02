@@ -60,3 +60,16 @@ program test_pdf_chain_gaussian(N:Integer <- 10000, B:Integer <- 100,
   m.simulate();
   test_pdf(m.marginal(), N, B, S, lazy);
 }
+
+program test_cdf_chain_gaussian(N:Integer <- 10000) {
+  m:TestChainGaussian;
+  m.initialize();
+  m.simulate();
+  test_cdf(m.marginal(), N);
+}
+
+program test_grad_chain_gaussian(N:Integer <- 1000,
+    backward:Boolean <- false) {
+  m:TestChainGaussian;
+  test_grad(m, N, backward);
+}

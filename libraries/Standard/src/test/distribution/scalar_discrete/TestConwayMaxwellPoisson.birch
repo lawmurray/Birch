@@ -1,18 +1,54 @@
+class TestConwayMaxwellPoisson < TestModel {
+  x:Random<Integer>;
+  λ:Real;
+  ν:Real;
+  n:Integer;
+
+  function initialize() {
+    λ <- simulate_uniform(0.5, 100.0);
+    ν <- simulate_uniform(0.5, 2.0);
+    let P <- simulate_uniform(0.5, 0.95);
+    n <- quantile_conway_maxwell_poisson(P, λ, ν, 1000);
+  }
+
+  function simulate() {
+    x ~ ConwayMaxwellPoisson(λ, ν, n);
+  }
+
+  function forward() -> Real[_] {
+    return [x.eval()];
+  }
+
+  function backward() -> Real[_] {
+    return [x.eval()];
+  }
+
+  function marginal() -> Distribution<Integer> {
+    return x.getDistribution();
+  }
+
+  function size() -> Integer {
+    return 1;
+  }
+}
+
 program test_pdf_conway_maxwell_poisson(N:Integer <- 10000, B:Integer <- 0,
     S:Integer <- 0, lazy:Boolean <- false) {
-  let λ <- simulate_uniform(0.5, 100.0);
-  let ν <- simulate_uniform(0.5, 2.0);
-  let P <- simulate_uniform(0.9, 0.95);
-  let n <- quantile_conway_maxwell_poisson(P, λ, ν, 1000);
-  let q <- ConwayMaxwellPoisson(λ, ν, n);
-  test_pdf(q, N, lazy);
+  m:TestConwayMaxwellPoisson;
+  m.initialize();
+  m.simulate();
+  test_pdf(m.marginal(), N, lazy);
 }
 
 program test_cdf_conway_maxwell_poisson() {
-  let λ <- simulate_uniform(0.5, 100.0);
-  let ν <- simulate_uniform(0.5, 2.0);
-  let P <- simulate_uniform(0.9, 0.95);
-  let n <- quantile_conway_maxwell_poisson(P, λ, ν, 1000);
-  let q <- ConwayMaxwellPoisson(λ, ν, n);
-  test_cdf(q);
+  m:TestConwayMaxwellPoisson;
+  m.initialize();
+  m.simulate();
+  test_cdf(m.marginal());
+}
+
+program test_grad_conway_maxwell_poisson(N:Integer <- 1000,
+    backward:Boolean <- false) {
+  m:TestConwayMaxwellPoisson;
+  test_grad(m, N, backward);
 }

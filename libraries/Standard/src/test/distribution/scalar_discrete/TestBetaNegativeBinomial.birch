@@ -53,3 +53,9 @@ program test_pdf_beta_negative_binomial(N:Integer <- 10000, B:Integer <- 0,
   m.simulate();
   test_pdf(m.marginal(), N, lazy);
 }
+
+program test_grad_beta_negative_binomial(N:Integer <- 1000,
+    backward:Boolean <- false) {
+  m:TestBetaNegativeBinomial;
+  test_grad(m, N, backward);
+}
