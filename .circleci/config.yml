@@ -528,7 +528,7 @@ workflows:
       - build:
           matrix:
             parameters:
-              os: [opensuse,ubuntu,debian,fedora,alpine,mac]
+              os: [opensuse,debian,fedora,alpine,mac]
 
       - test:
           matrix:
@@ -560,7 +560,6 @@ workflows:
                 - master
           requires:
             - build-mac
-            - build-ubuntu
             - build-debian
             - build-fedora
             - build-alpine
