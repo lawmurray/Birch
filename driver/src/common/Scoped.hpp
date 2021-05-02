@@ -16,11 +16,6 @@ public:
   /**
    * Constructor.
    */
-  Scoped(Scope* scope);
-
-  /**
-   * Constructor.
-   */
   Scoped(const ScopeCategory category);
 
   /**

@@ -19,11 +19,6 @@ birch::NamedType::NamedType(Name* name, Location* loc) :
   //
 }
 
-birch::NamedType::NamedType(Class* target, Location* loc) :
-    NamedType(target->name, target->createArguments(), loc) {
-  //
-}
-
 birch::Type* birch::NamedType::accept(Modifier* visitor) {
   return visitor->modify(this);
 }

@@ -29,7 +29,6 @@ birch_SOURCES = \
   src/common/Named.cpp \
   src/common/Numbered.cpp \
   src/common/Parameterised.cpp \
-  src/common/Parenthesised.cpp \
   src/common/ReturnTyped.cpp \
   src/common/Scope.cpp \
   src/common/Scoped.cpp \
@@ -153,7 +152,6 @@ noinst_HEADERS = \
   src/common/Named.hpp \
   src/common/Numbered.hpp \
   src/common/Parameterised.hpp \
-  src/common/Parenthesised.hpp \
   src/common/ReturnTyped.hpp \
   src/common/Scope.hpp \
   src/common/Scoped.hpp \
