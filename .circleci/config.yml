@@ -145,15 +145,7 @@ commands:
           command: |
             if [[ -n "$SMOKE" ]]
             then
-              mkdir hello
-              cd hello
-              birch help
-              birch init
-              birch audit
-              birch dist
-              birch clean
-              cd ..
-              rm -rf hello
+              env BIRCH_MODE=$SMOKE ./smoke.sh
             fi
 
   build_library:

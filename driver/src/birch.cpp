@@ -32,7 +32,6 @@ static void abort(int sig) {
    * better at looking up symbols and providing relative (rather than
    * absolute) file names, while the former seems better at demangling
    * function names; we use the two in combination */
-  fprintf(stderr, "stack trace:\n");
   for (int i = 0; i < size; ++i) {
     std::cmatch m;
     std::regex_search(messages[i], m, parse);
@@ -149,6 +148,8 @@ int main(int argc, char** argv) {
       driver.docs();
     } else if (prog.compare("help") == 0) {
       driver.help();
+    } else if (prog.compare("abort") == 0) {
+      abort(0);
     } else {
       driver.run(prog);
     }
