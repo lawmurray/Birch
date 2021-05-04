@@ -1,0 +1,14 @@
+{
+    "model": {
+        "class": "LDAModel"
+    },
+    "filter": {
+        "nsteps": 686,
+        "nparticles": 1000
+    },
+    "sampler": {
+        "nsamples": 3
+    },
+    "input": "input/latent_dirichlet_allocation.json",
+    "output": "output/lda.json"
+}

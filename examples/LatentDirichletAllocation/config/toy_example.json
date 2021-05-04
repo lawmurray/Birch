@@ -1,0 +1,14 @@
+{
+  "model": {
+    "class": "LDAModel"
+  },
+  "filter": {
+    "nsteps": 50,
+    "nparticles": 100
+  },
+  "sampler": {
+    "nsamples": 3
+  },
+  "input": "input/toy_example.json",
+  "output": "output/toy.json"
+}
