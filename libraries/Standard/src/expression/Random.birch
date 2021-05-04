@@ -203,6 +203,8 @@ final class Random<Value> < Expression<Value> {
    * Get the distribution.
    */
   function getDistribution() -> Distribution<Value> {
+    assert p? || child?;
+    prune();
     assert p?;
     return p!;
   }
