@@ -70,12 +70,17 @@ birch::Driver::Driver(int argc, char** argv) :
       shareDirs.push_back(input);
     }
   }
+  #ifdef DATADIR
+  shareDirs.push_back(fs::path(STRINGIFY(DATADIR)) / "birch");
+  #endif
   if (!prefix.empty()) {
     shareDirs.push_back(fs::path(prefix) / "share" / "birch");
   }
-#ifdef DATADIR
-  shareDirs.push_back(fs::path(STRINGIFY(DATADIR)) / "birch");
-#endif
+  #ifdef __APPLE__
+  /* Homebrew may install to /opt/homebrew on an M1 Mac, which seems not to be
+   * reflected in PREFIX; workaround for now */
+  shareDirs.push_back(fs::path("/") / "opt" / "homebrew" / "share" / "birch");
+  #endif
 
   /* include dirs */
   if (BIRCH_INCLUDE_PATH) {
@@ -84,14 +89,17 @@ birch::Driver::Driver(int argc, char** argv) :
       includeDirs.push_back(input);
     }
   }
+  #ifdef INCLUDEDIR
+  includeDirs.push_back(STRINGIFY(INCLUDEDIR));
+  #endif
   if (!prefix.empty()) {
     includeDirs.push_back(fs::path(prefix) / "include");
   }
-#ifdef INCLUDEDIR
-  includeDirs.push_back(STRINGIFY(INCLUDEDIR));
-#endif
-  includeDirs.push_back(fs::path("/") / "usr" / "local" / "include");
-  includeDirs.push_back(fs::path("/") / "usr" / "include");
+  #ifdef __APPLE__
+  /* Homebrew may install to /opt/homebrew on an M1 Mac, which seems not to be
+   * reflected in PREFIX; workaround for now */
+  includeDirs.push_back(fs::path("/") / "opt" / "homebrew" / "include");
+  #endif
 
   /* lib dirs */
   fs::path local = fs::path(".libs");
@@ -104,6 +112,9 @@ birch::Driver::Driver(int argc, char** argv) :
       libDirs.push_back(input);
     }
   }
+  #ifdef LIBDIR
+  libDirs.push_back(STRINGIFY(LIBDIR));
+  #endif
   if (!prefix.empty()) {
     if (fs::exists(fs::path(prefix) / "lib64")) {
       libDirs.push_back(fs::path(prefix) / "lib64");
@@ -112,9 +123,13 @@ birch::Driver::Driver(int argc, char** argv) :
       libDirs.push_back(fs::path(prefix) / "lib");
     }
   }
-#ifdef LIBDIR
-  libDirs.push_back(STRINGIFY(LIBDIR));
-#endif
+  #ifdef __APPLE__
+  /* Homebrew may install to /opt/homebrew on an M1 Mac, which seems not to be
+   * reflected in PREFIX; workaround for now */
+  if (fs::exists(fs::path("/") / "opt" / "homebrew" / "lib")) {
+    libDirs.push_back(fs::path(pfs::path("/") / "opt" / "homebrew" / "lib"));
+  }
+  #endif
 
   /* command-line options */
   enum {

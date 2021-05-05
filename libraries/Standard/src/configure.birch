@@ -92,13 +92,13 @@
  *   used when installing the `birch` driver program).
  * - `$BIRCH_SHARE_PATH`:
  *   Additional paths to search for shared files (those that typically install
- *   to `share` directories).
+ *   to `share` directories), separated by `:`.
  * - `$BIRCH_INCLUDE_PATH`:
  *   Additional paths to search for header files (those that typically install
- *   to `include` directories).
+ *   to `include` directories), separated by `:`.
  * - `$BIRCH_LIBRARY_PATH`:
  *   Additional path to search for libraries (those that typically install to
- *   `lib` or `lib64` directories).
+ *   `lib` or `lib64` directories), separated by `:`.
  *
  * Birch will search for shared files in the following directories, in order,
  * where `$PREFIX` is the prefix used when installing the `birch` driver
@@ -111,15 +111,14 @@
  *
  * 1. paths given in `$BIRCH_INCLUDE_PATH`,
  * 2. `$PREFIX/include`,
- * 3. `/usr/local/include`, then
- * 4. `/usr/include`.
+ * 3. system defaults, e.g. `/usr/local/include` then `/usr/include`.
  *
  * For libraries:
  *
  * 1. `.libs` in the current directory,
  * 2. paths given in `$BIRCH_LIBRARY_PATH`,
- * 3. `$PREFIX/lib64`, then
- * 4. `$PREFIX/lib`.
+ * 3. `$PREFIX/lib64` then `$PREFIX/lib`,
+ * 4. system defaults, e.g. `/usr/local/lib` then `/usr/lib`.
  *
  * ### Build configuration file
  *
