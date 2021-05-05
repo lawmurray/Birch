@@ -3,16 +3,18 @@ env:
   LDFLAGS: -L/usr/local/lib
   PREFIX: ${CIRRUS_WORKING_DIR}/project
   PATH: ${PREFIX}/bin:${PATH}
-  BIRCH_FLAGS: '--unit=dir --arch=native --jobs=2 --enable-verbose'
   MODE_FLAGS: '--enable-debug --disable-test --disable-release'
-  OMP_NUM_THREADS: 2
+  LIBRARY_BIRCH_FLAGS: '--unit=dir --arch=native --jobs=8 --enable-verbose'
+  LIBRARY_OMP_NUM_THREADS: 8
+  EXAMPLE_BIRCH_FLAGS: '--unit=dir --arch=native --jobs=2 --enable-verbose'
+  EXAMPLE_OMP_NUM_THREADS: 2
 
 task:
   name: FreeBSD
   freebsd_instance:
     image_family: freebsd-12-2
-    cpu: 2
-    memory: 4G
+    cpu: 8
+    memory: 16G
   install_script:
     - pkg install -y bash m4 autoconf automake elfutils flex bison boost-libs cairo eigen libtool libyaml sqlite3
   driver_build_script:
@@ -21,14 +23,8 @@ task:
     - ./configure --prefix="${PREFIX}" CXXFLAGS="-Wall -Wno-overloaded-virtual -g -O0 -fno-inline --coverage" || cat config.log
     - make -j4
     - make install
-  driver_test_script:
-    - mkdir hello
-    - cd hello
-    - birch help
-    - birch init
-    - birch audit
-    - birch dist
-    - birch clean
+  driver_smoke_script:
+    - env BIRCH_MODE=debug OMP_NUM_THREADS=${LIBRARY_OMP_NUM_THREADS} bash ./smoke.sh
   libbirch_build_script:
     - cd libbirch
     - ./bootstrap
@@ -37,18 +33,18 @@ task:
     - make install
   birch-standard_build_script:
     - cd libraries/Standard
-    - birch build --prefix="${PREFIX}" ${MODE_FLAGS} ${BIRCH_FLAGS}
+    - birch build --prefix="${PREFIX}" ${MODE_FLAGS} ${LIBRARY_BIRCH_FLAGS}
     - birch install
   birch-standard_smoke_script:
     - cd libraries/Standard
     - env BIRCH_MODE=debug bash ./smoke.sh
   birch-cairo_build_script:
     - cd libraries/Cairo
-    - birch build --prefix="${PREFIX}" ${MODE_FLAGS} ${BIRCH_FLAGS}
+    - birch build --prefix="${PREFIX}" ${MODE_FLAGS} ${LIBRARY_BIRCH_FLAGS}
     - birch install
   birch-sqlite_build_script:
     - cd libraries/SQLite
-    - birch build --prefix="${PREFIX}" ${MODE_FLAGS} ${BIRCH_FLAGS}
+    - birch build --prefix="${PREFIX}" ${MODE_FLAGS} ${LIBRARY_BIRCH_FLAGS}
     - birch install
   upload_cache_script:
     - tar -czvf cache.tar.gz -C "$PREFIX" .
@@ -59,8 +55,8 @@ example_task_template: &EXAMPLE_TASK_TEMPLATE
   depends_on: FreeBSD
   freebsd_instance:
     image_family: freebsd-12-1
-    cpu: 1
-    memory: 2G
+    cpu: 2
+    memory: 4G
   download_cache_script:
     - curl http://${CIRRUS_HTTP_CACHE_HOST}/birch-${CIRRUS_OS}-${CIRRUS_CHANGE_IN_REPO} -o cache.tar.gz
     - mkdir -p "${PREFIX}"
@@ -69,11 +65,11 @@ example_task_template: &EXAMPLE_TASK_TEMPLATE
     - pkg install -y automake bash bison boost-libs eigen libtool libyaml ${PACKAGES}
   build_script:
     - cd "examples/${EXAMPLE}"
-    - birch build --prefix="${PREFIX}" ${MODE_FLAGS} ${BIRCH_FLAGS}
+    - birch build --prefix="${PREFIX}" ${MODE_FLAGS} ${EXAMPLE_BIRCH_FLAGS}
     - birch install
   smoke_script:
     - cd "examples/${EXAMPLE}"
-    - env BIRCH_MODE=debug bash ./smoke.sh
+    - env BIRCH_MODE=debug OMP_NUM_THREADS=${EXAMPLE_OMP_NUM_THREADS} bash ./smoke.sh
 
 task:
   name: FreeBSD LinearGaussian
