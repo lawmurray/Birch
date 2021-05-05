@@ -866,7 +866,7 @@ void birch::Driver::help() {
       std::cout << "  --enable-test / --disable-test (default disabled):" << std::endl;
       std::cout << "  Enable/disable test mode build." << std::endl;
       std::cout << std::endl;
-      std::cout << "  --enable-release / --disable-release (default enabled):" << std::endl;
+      std::cout << "  --enable-release / --disable-release (default disabled):" << std::endl;
       std::cout << "  Enable/disable release mode build." << std::endl;
       std::cout << std::endl;
       std::cout << "  --enable-warnings / --disable-warnings (default enabled):" << std::endl;
