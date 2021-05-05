@@ -35,6 +35,7 @@ AC_CHECK_HEADERS([experimental/filesystem], [], [], [AC_INCLUDES_DEFAULT])
 # Checks for libraries
 AC_CHECK_LIB([jemalloc], [malloc], [], [AC_CHECK_LIB([tcmalloc], [malloc], [], [], [])], [])
 AC_SEARCH_LIBS([dlopen], [dl], [], [])
+AC_SEARCH_LIBS([execinfo], [dl], [], [])
 AC_CHECK_LIB([stdc++fs], [main], [], [], [])
 AC_CHECK_LIB([yaml], [main], [], [AC_MSG_ERROR([required library not found.])])
 

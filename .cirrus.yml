@@ -14,7 +14,7 @@ task:
     cpu: 2
     memory: 4G
   install_script:
-    - pkg install -y bash m4 autoconf automake flex bison boost-libs cairo eigen libtool libyaml sqlite3
+    - pkg install -y bash m4 autoconf automake elfutils flex bison boost-libs cairo eigen libtool libyaml sqlite3
   driver_build_script:
     - cd driver
     - ./bootstrap
