@@ -24,6 +24,7 @@ task:
     - make -j4
     - make install
   driver_smoke_script:
+    - cd driver
     - env BIRCH_MODE=debug OMP_NUM_THREADS=${LIBRARY_OMP_NUM_THREADS} bash ./smoke.sh
   libbirch_build_script:
     - cd libbirch
