@@ -127,7 +127,7 @@ birch::Driver::Driver(int argc, char** argv) :
   /* Homebrew may install to /opt/homebrew on an M1 Mac, which seems not to be
    * reflected in PREFIX; workaround for now */
   if (fs::exists(fs::path("/") / "opt" / "homebrew" / "lib")) {
-    libDirs.push_back(fs::path(pfs::path("/") / "opt" / "homebrew" / "lib"));
+    libDirs.push_back(fs::path(fs::path("/") / "opt" / "homebrew" / "lib"));
   }
   #endif
 
