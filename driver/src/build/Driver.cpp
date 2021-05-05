@@ -100,6 +100,10 @@ birch::Driver::Driver(int argc, char** argv) :
    * reflected in PREFIX; workaround for now */
   includeDirs.push_back(fs::path("/") / "opt" / "homebrew" / "include");
   #endif
+  /* similarly on Mac, but perhaps elsewhere, these standard paths may not be
+   * included, despite PREFIX */
+  includeDirs.push_back(fs::path("/") / "usr" / "local" / "include");
+  includeDirs.push_back(fs::path("/") / "usr" / "include");
 
   /* lib dirs */
   fs::path local = fs::path(".libs");
