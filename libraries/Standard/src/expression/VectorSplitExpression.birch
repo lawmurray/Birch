@@ -7,21 +7,21 @@
 final class VectorSplitExpression<Value,Form>(x:Value, f:Form) <
     BoxedForm<Value,Form>(x, f) {
   function grad(d:Real, i:Integer) {
-    if f? {
-      if visitCount == 0 {
-        this.d <- vector(0.0, length());
+    if this.f? {
+      if this.visitCount == 0 {
+        this.d <- vector(0.0, this.length());
       }
       this.d![i] <- this.d![i] + d;
-      visitCount <- visitCount + 1;
-      if visitCount >= evalCount {
-        assert visitCount == evalCount || evalCount == 0;
+      this.visitCount <- this.visitCount + 1;
+      if this.visitCount >= this.evalCount {
+        assert this.visitCount == this.evalCount || this.evalCount == 0;
         // ^ can have visitCount > evalCount = 0 if eval() has never been
         //   called on this object, typically because it is root expression
         //   used from client code, rather than a subexpression used from
         //   other expressions
-        global.grad(f!, this.d!);      // upstream gradients all accumulated, propagate
+        global.grad(this.f!, this.d!);      // upstream gradients all accumulated, propagate
         this.d <- nil;         // clear intermediate gradients to save memory
-        visitCount <- 0;  // reset for next time
+        this.visitCount <- 0;  // reset for next time
       }
     }
   }

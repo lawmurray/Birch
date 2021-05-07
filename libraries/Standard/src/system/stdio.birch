@@ -1,3 +1,7 @@
+cpp{{
+#include <cstdio>
+}}
+
 /*
  * Returns the file associated with stdin.
  */
@@ -28,14 +32,14 @@ function getStdErr() -> File {
 /**
  * Input stream for stdin.
  */
-stdin:InputStream <- InputStream(getStdIn());
+stdin:InputStream <- make_input_stream(getStdIn());
 
 /**
  * Output stream for stdout.
  */
-stdout:OutputStream <- OutputStream(getStdOut());
+stdout:OutputStream <- make_output_stream(getStdOut());
 
 /**
  * Output stream for stderr.
  */
-stderr:OutputStream <- OutputStream(getStdErr());
+stderr:OutputStream <- make_output_stream(getStdErr());

@@ -208,7 +208,7 @@ final class RaggedArray<Type> {
    * Return: an iterator across entire rows from top to bottom.
    */
   function walk() -> Iterator<Type[_]> {
-    return RaggedArrayRowIterator<Type>(this);
+    return construct<RaggedArrayRowIterator<Type>>(this);
   }
 
   /**
@@ -220,7 +220,7 @@ final class RaggedArray<Type> {
    * right.
    */
   function walk(i:Integer) -> Iterator<Type> {
-    return RaggedArrayElementIterator<Type>(this, i);
+    return construct<RaggedArrayElementIterator<Type>>(this, i);
   }
 
   /**

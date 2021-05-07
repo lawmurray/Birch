@@ -56,10 +56,3 @@ operator (x:Object == y:Object) -> Boolean {
 operator (x:Object != y:Object) -> Boolean {
   return !(x == y);
 }
-
-/**
- * Identity conversion.
- */
-function Object(o:Object) -> Object {
-  return o;
-}

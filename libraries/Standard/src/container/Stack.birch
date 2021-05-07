@@ -99,6 +99,6 @@ final class Stack<Type> {
    * Return: an iterator across elements from top to bottom.
    */
   function walk() -> Iterator<Type> {
-    return StackIterator<Type>(head);
+    return construct<StackIterator<Type>>(head);
   }
 }

@@ -1,0 +1,84 @@
+/**
+ * Dirichlet distribution.
+ */
+final class DirichletDistribution<Arg>(α:Arg) < Distribution<Real[_]> {
+  /**
+   * Concentration.
+   */
+  α:Arg <- α;
+
+  override function supportsLazy() -> Boolean {
+    return false;
+  }
+
+  override function simulate() -> Real[_] {
+    return simulate_dirichlet(value(α));
+  }
+  
+  override function logpdf(x:Real[_]) -> Real {
+    return logpdf_dirichlet(x, value(α));
+  }
+
+  override function isDirichlet() -> Boolean {
+    return true;
+  }
+
+  override function getDirichlet() -> Expression<Real[_]>? {
+    return box(α);
+  }
+
+  override function write(buffer:Buffer) {
+    buffer.set("class", "Dirichlet");
+    buffer.set("α", value(α));
+  }
+}
+
+/**
+ * Create Dirichlet distribution.
+ */
+function Dirichlet<Arg>(α:Arg) -> {
+  return construct<DirichletDistribution<Arg>>(α);
+}
+
+/*
+ * Simulate a Dirichlet distribution.
+ *
+ * - α: Concentrations.
+ */
+function simulate_dirichlet(α:Real[_]) -> Real[_] {
+  let x <- transform(α, \(α:Real) -> Real { return simulate_gamma(α, 1.0); });
+  return x/sum(x);
+}
+
+/*
+ * Simulate a Dirichlet distribution.
+ *
+ * - α: Concentration.
+ * - D: Number of dimensions.
+ */
+function simulate_dirichlet(α:Real, D:Integer) -> Real[_] {
+  let x <- vector_lambda(\(i:Integer) -> Real { return simulate_gamma(α, 1.0); }, D);
+  return x/sum(x);
+}
+
+/*
+ * Observe a Dirichlet variate.
+ *
+ * - x: The variate.
+ * - α: Concentrations.
+ *
+ * Returns: the log probability density.
+ */
+function logpdf_dirichlet(x:Real[_], α:Real[_]) -> Real {
+  assert length(x) == length(α);
+  let D <- length(x);
+  let w <- 0.0;
+  for i in 1..D {
+    if x[i] < 0.0 {
+      return -inf;
+    }
+    w <- w + (α[i] - 1.0)*log(x[i]) - lgamma(α[i]);
+  }
+  w <- w + lgamma(sum(α)); 
+  return w;
+}

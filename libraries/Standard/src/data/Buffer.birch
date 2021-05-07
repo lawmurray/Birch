@@ -94,7 +94,7 @@ class Buffer {
    * Set the value of an entry to nil.
    */
   function setNil(key:String) {
-    let value <- Buffer();
+    let value <- make_buffer();
     value.setNil();
     set(key, value);
   }
@@ -135,7 +135,7 @@ class Buffer {
    * Set the value of an entry to an empty object.
    */
   function setEmptyObject(key:String) {
-    let value <- Buffer();
+    let value <- make_buffer();
     value.setEmptyObject();
     set(key, value);
   }
@@ -153,7 +153,7 @@ class Buffer {
    * Set the value of an entry to an empty array.
    */
   function setEmptyArray(key:String) {
-    let value <- Buffer();
+    let value <- make_buffer();
     value.setEmptyArray();
     set(key, value);
   }
@@ -344,7 +344,7 @@ class Buffer {
    * setting the new entry.
    */
   function set(key:String, keys:String[_], values:Buffer[_]) {
-    set(key, Buffer(keys, values));
+    set(key, make_buffer(keys, values));
   }
 
   /**
@@ -357,7 +357,7 @@ class Buffer {
    * setting the new entry.
    */
   function set<Type>(key:String, x:Type) {
-    set(key, Buffer(x));
+    set(key, make_buffer(x));
   }
 
   /**
@@ -371,7 +371,7 @@ class Buffer {
    * setting the new entry.
    */
   function set<Type>(key:String, t:Integer, x:Type) {
-    set(key, Buffer(t, x));
+    set(key, make_buffer(t, x));
   }
 
   /**
@@ -501,7 +501,7 @@ class Buffer {
   function push<Type>(key:String, x:Type) {
     let buffer <- get(key);
     if !buffer? {
-      buffer <- Buffer();
+      buffer <- make_buffer();
       set(key, buffer!);
     }
     buffer!.push(x);
@@ -517,7 +517,7 @@ class Buffer {
   function push<Type>(key:String, t:Integer, x:Type) {
     let buffer <- get(key);
     if !buffer? {
-      buffer <- Buffer();
+      buffer <- make_buffer();
       set(key, buffer!);
     }
     buffer!.push(t, x);
@@ -532,7 +532,7 @@ class Buffer {
   function push(key:String, x:Buffer) {
     let buffer <- get(key);
     if !buffer? {
-      buffer <- Buffer();
+      buffer <- make_buffer();
       set(key, buffer!);
     }
     buffer!.push(x);
@@ -542,7 +542,7 @@ class Buffer {
    * Push a nil value.
    */
   function pushNil() {
-    push(Buffer());
+    push(make_buffer());
   }
 
   /**
@@ -551,7 +551,7 @@ class Buffer {
    * - key: Key of the entry.
    */
   function pushNil(key:String) {
-    push(key, Buffer());
+    push(key, make_buffer());
   }
 
   function accept(writer:Writer) {
@@ -821,14 +821,14 @@ class Buffer {
   function doSet<Type>(x:Type[_]) {
     setEmptyArray();
     for i in 1..length(x) {
-      push(Buffer(x[i]));
+      push(make_buffer(x[i]));
     }
   }
 
   function doSet<Type>(t:Integer, x:Type[_]) {
     setEmptyArray();
     for i in 1..length(x) {
-      push(Buffer(t, x[i]));
+      push(make_buffer(t, x[i]));
     }
   }
 
@@ -865,7 +865,7 @@ class Buffer {
     } else if vectorReal? {
       push(scalar<Real>(x));
     } else {
-      push(Buffer(x));
+      push(make_buffer(x));
     }
   }
 
@@ -887,7 +887,7 @@ class Buffer {
     } else if vectorReal? {
       push(scalar<Real>(x));
     } else {
-      push(Buffer(x));
+      push(make_buffer(x));
     }
   }
 
@@ -909,20 +909,20 @@ class Buffer {
       vectorReal.value().push(x);
       }}
     } else {
-      push(Buffer(x));
+      push(make_buffer(x));
     }
   }
 
   function doPush(x:String) {
-    push(Buffer(x));
+    push(make_buffer(x));
   }
 
   function doPush<Type>(x:Type) {
-    push(Buffer(x));
+    push(make_buffer(x));
   }
 
   function doPush<Type>(t:Integer, x:Type) {
-    push(Buffer(t, x));
+    push(make_buffer(t, x));
   }
 
   function doPush(x:Boolean[_]) {
@@ -937,7 +937,7 @@ class Buffer {
     } else if vectorReal? || matrixReal? {
       push(vector<Real>(x));
     } else {
-      push(Buffer(x));
+      push(make_buffer(x));
     }
   }
 
@@ -955,7 +955,7 @@ class Buffer {
     } else if vectorReal? || matrixReal? {
       push(vector<Real>(x));
     } else {
-      push(Buffer(x));
+      push(make_buffer(x));
     }
   }
 
@@ -975,7 +975,7 @@ class Buffer {
     } else if matrixReal? && columns(matrixReal!) == length(x) {
       set(stack(matrixReal!, row(x)));
     } else {
-      push(Buffer(x));
+      push(make_buffer(x));
     }
   }
 }
@@ -983,7 +983,7 @@ class Buffer {
 /**
  * Create a Buffer.
  */
-function Buffer() -> Buffer {
+function make_buffer() -> Buffer {
   return construct<Buffer>();
 }
 
@@ -992,7 +992,7 @@ function Buffer() -> Buffer {
  *
  * - root: Root value.
  */
-function Buffer<Type>(root:Type) -> Buffer {
+function make_buffer<Type>(root:Type) -> Buffer {
   o:Buffer;
   o.set(root);
   return o;
@@ -1004,7 +1004,7 @@ function Buffer<Type>(root:Type) -> Buffer {
  * - t: Step number.
  * - root: Root value.
  */
-function Buffer<Type>(t:Integer, root:Type) -> Buffer {
+function make_buffer<Type>(t:Integer, root:Type) -> Buffer {
   o:Buffer;
   o.set(t, root);
   return o;
@@ -1016,7 +1016,7 @@ function Buffer<Type>(t:Integer, root:Type) -> Buffer {
  * - keys: Keys.
  * - values: Values.
  */
-function Buffer(keys:String[_], values:Buffer[_]) -> Buffer {
+function make_buffer(keys:String[_], values:Buffer[_]) -> Buffer {
   o:Buffer;
   o.set(keys, values);
   return o;

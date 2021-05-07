@@ -5,22 +5,3 @@ acyclic class TapeNode<Type>(x:Type) {
   next:TapeNode<Type>?;
   x:Type <- x;
 }
-
-/*
- * Create a TapeNode.
- */
-function TapeNode<Type>(x:Type) -> TapeNode<Type> {
-  o:TapeNode<Type>(x);
-  return o;
-}
-
-/*
- * Create a TapeNode with a default-constructed value.
- */
-function TapeNode<Type>() -> TapeNode<Type> {
-  let x <- make<Type>();
-  if !x? {
-    error("element type is not default-constructible");
-  }
-  return TapeNode<Type>(x!);
-}

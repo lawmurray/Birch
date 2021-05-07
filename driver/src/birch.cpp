@@ -116,8 +116,6 @@ static void abort(int sig) {
 }
 
 int main(int argc, char** argv) {
-  using namespace birch;
-
   /* set up signal handling */
   std::signal(SIGABRT, abort);
 
@@ -125,7 +123,7 @@ int main(int argc, char** argv) {
     /* first option (should be a program name) */
     std::string prog = argc > 1 ? argv[1]: "help";
 
-    Driver driver(argc - 1, argv + 1);
+    birch::Driver driver(argc - 1, argv + 1);
     if (prog.compare("bootstrap") == 0) {
       driver.bootstrap();
     } else if (prog.compare("configure") == 0) {
@@ -154,7 +152,7 @@ int main(int argc, char** argv) {
       driver.run(prog);
     }
     return EXIT_SUCCESS;
-  } catch (const Exception& e) {
+  } catch (const birch::Exception& e) {
     std::cerr << e.msg << std::endl;
     return EXIT_FAILURE;
   }

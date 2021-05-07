@@ -25,10 +25,3 @@ final class ListIterator<Type>(head:ListNode<Type>?) < Iterator<Type> {
     return x;
   }
 }
-
-/**
- * Create a ListIterator.
- */
-function ListIterator<Type>(head:ListNode<Type>?) -> ListIterator<Type> {
-  return construct<ListIterator<Type>>(head);
-}

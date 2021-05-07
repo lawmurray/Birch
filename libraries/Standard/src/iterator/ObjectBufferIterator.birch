@@ -28,7 +28,7 @@ final class ObjectBufferIterator(keys:String[_], values:Buffer[_]) <
    * Get the next element.
    */
   function next() -> Buffer {
-    let buffer <- Buffer(keys!, values!);
+    let buffer <- make_buffer(keys!, values!);
     keys <- nil;
     values <- nil;
     return buffer;

@@ -9,6 +9,8 @@ namespace fs = std::experimental::filesystem;
 #include "boost/filesystem.hpp"
 namespace fs = boost::filesystem;
 #endif
+
+#include <cstdio>
 }}
 
 READ:Integer <- 1;
@@ -83,33 +85,6 @@ function fopen(path:String, mode:Integer) -> File {
 }
 
 /**
- * Flush a file.
- */
-function fflush(file:File) {
-  cpp{{
-  ::fflush(file);
-  }}
-}
-
-/**
- * Check for end of file.
- */
-function feof(file:File) -> Boolean {
-  cpp{{
-  return ::feof(file);
-  }}
-}
-
-/**
- * Close a file.
- */
-function fclose(file:File) {
-  cpp{{
-  ::fclose(file);
-  }}
-}
-
-/**
  * File extension of a path.
  */
 function extension(path:String) -> String {
@@ -120,3 +95,18 @@ function extension(path:String) -> String {
   }}
   return ext;
 }
+
+/**
+ * Flush a file.
+ */
+function fflush(file:File);
+
+/**
+ * Check for end of file.
+ */
+function feof(file:File) -> Boolean;
+
+/**
+ * Close a file.
+ */
+function fclose(file:File);

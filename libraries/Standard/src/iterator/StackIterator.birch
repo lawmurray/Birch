@@ -25,10 +25,3 @@ final class StackIterator<Type>(head:StackNode<Type>?) < Iterator<Type> {
     return x;
   }
 }
-
-/**
- * Create a StackIterator.
- */
-function StackIterator<Type>(head:StackNode<Type>?) -> StackIterator<Type> {
-  return construct<StackIterator<Type>>(head);
-}

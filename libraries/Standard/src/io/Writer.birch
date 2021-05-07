@@ -14,7 +14,7 @@
  * object of an appropriate derived class based on the file extension of the
  * given path:
  *
- *     let writer <- Writer(path);
+ *     let writer <- make_writer(path);
  *
  * The whole contents of the file can be written at once with:
  *
@@ -95,7 +95,7 @@ abstract class Writer {
  * The file extension of `path` is used to determine the precise type of the
  * returned object. Supported file extension are `.json` and `.yml`.
  */
-function Writer(path:String) -> Writer {
+function make_writer(path:String) -> Writer {
   let ext <- extension(path);
   result:Writer?;
   if ext == ".json" {
@@ -121,7 +121,7 @@ function Writer(path:String) -> Writer {
  * - buffer: The contents.
  */
 function dump(path:String, buffer:Buffer) {
-  let writer <- Writer(path);
+  let writer <- make_writer(path);
   writer.dump(buffer);
   writer.close();
 }

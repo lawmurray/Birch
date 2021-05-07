@@ -1,0 +1,12 @@
+/**
+ * Discrete distribution.
+ */
+abstract class DiscreteDistribution < Distribution<Integer> {
+  override function isDiscrete() -> Boolean {
+    return true;
+  }
+
+  override function getDiscrete() -> DiscreteDistribution? {
+    return this;
+  }
+}

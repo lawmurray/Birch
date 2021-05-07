@@ -1,0 +1,75 @@
+/**
+ * Chinese restaurant process (CRP).
+ *
+ * A Random assigned this distribution cannot be instantiated or its
+ * likelihood evaluated. The distribution exists only for use as a prior on
+ * a Categorical distribution.
+ */
+final class RestaurantDistribution<Arg1,Arg2>(α:Arg1, θ:Arg2) < Distribution<Real[_]> {
+  /**
+   * Concentration.
+   */
+  α:Arg1 <- α;
+  
+  /**
+   * Strength.
+   */
+  θ:Arg2 <- θ;
+
+  /**
+   * Number of samples drawn in each component.
+   */
+  n:Integer[_];
+
+  /**
+   * Number of samples drawn.
+   */
+  N:Integer <- 0;
+
+  override function supportsLazy() -> Boolean {
+    return false;
+  }
+
+  override function simulate() -> Real[_] {
+    assert false;
+    return vector(0.0, 0);
+  }
+
+  override function simulateLazy() -> Real[_]? {
+    assert false;
+    return vector(0.0, 0);
+  }
+  
+  override function logpdf(x:Real[_]) -> Real {
+    assert false;
+    return 0.0;
+  }
+
+  override function logpdfLazy(x:Expression<Real[_]>) -> Expression<Real>? {
+    assert false;
+    return box(0.0);
+  }
+
+  override function isRestaurant() -> Boolean {
+    return true;
+  }
+
+  override function getRestaurant() -> (Expression<Real>, Expression<Real>,
+      Expression<Integer[_]>, Expression<Integer>)? {
+    return box(α, θ, n, N);
+  }
+
+  override function write(buffer:Buffer) {
+    buffer.set("class", "Restaurant");
+    buffer.set("α", value(α));
+    buffer.set("θ", value(θ));
+    buffer.set("n", value(n));
+  }
+}
+
+/**
+ * Create Chinese restaurant process.
+ */
+function Restaurant<Arg1,Arg2>(α:Arg1, θ:Arg2) -> {
+  return construct<RestaurantDistribution<Arg1,Arg2>>(α, θ);
+}

@@ -29,10 +29,10 @@ function make(name:String) -> Object? {
   result:Object?;
   symbol:String <- "make_" + name + "_";
   cpp{{
-  using make_t = birch::type::Object*();
+  using make_t = birch::Object_*();
   void* addr = dlsym(RTLD_DEFAULT, symbol.c_str());
   if (addr) {
-    result = libbirch::Shared<birch::type::Object>(reinterpret_cast<make_t*>(addr)());
+    result = birch::Object(reinterpret_cast<make_t*>(addr)());
   }
   }}
   if !result? {

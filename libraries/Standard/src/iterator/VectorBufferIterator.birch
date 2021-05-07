@@ -26,7 +26,7 @@ final class VectorBufferIterator<Type>(values:Type[_]) < Iterator<Buffer> {
    * Get the next element.
    */
   function next() -> Buffer {
-    i <- i + 1;
-    return Buffer(values[i]);
+    this.i <- this.i + 1;
+    return make_buffer(this.values[this.i]);
   }
 }

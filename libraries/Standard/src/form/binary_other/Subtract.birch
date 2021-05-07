@@ -54,7 +54,7 @@ operator (x:Integer[_] - y:Integer[_]) -> Integer[_] {
  */
 operator (x:Integer[_] - y:Real[_]) -> Real[_] {
   cpp{{
-  return x.toEigen().cast<birch::type::Real>().operator-(y.toEigen());
+  return x.toEigen().cast<birch::Real>().operator-(y.toEigen());
   }}
 }
 
@@ -63,7 +63,7 @@ operator (x:Integer[_] - y:Real[_]) -> Real[_] {
  */
 operator (x:Real[_] - y:Integer[_]) -> Real[_] {
   cpp{{
-  return x.toEigen().operator-(y.toEigen().cast<birch::type::Real>());
+  return x.toEigen().operator-(y.toEigen().cast<birch::Real>());
   }}
 }
 
@@ -90,7 +90,7 @@ operator (x:Integer[_,_] - y:Integer[_,_]) -> Integer[_,_] {
  */
 operator (x:Integer[_,_] - y:Real[_,_]) -> Real[_,_] {
   cpp{{
-  return x.toEigen().cast<birch::type::Real>().operator-(y.toEigen());
+  return x.toEigen().cast<birch::Real>().operator-(y.toEigen());
   }}
 }
 
@@ -99,7 +99,7 @@ operator (x:Integer[_,_] - y:Real[_,_]) -> Real[_,_] {
  */
 operator (x:Real[_,_] - y:Integer[_,_]) -> Real[_,_] {
   cpp{{
-  return x.toEigen().operator-(y.toEigen().cast<birch::type::Real>());
+  return x.toEigen().operator-(y.toEigen().cast<birch::Real>());
   }}
 }
 

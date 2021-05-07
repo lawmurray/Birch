@@ -36,11 +36,3 @@ final class RaggedArrayElementIterator<Type>(o:RaggedArray<Type>, i:Integer) <
     return o.get(i, j);
   }
 }
-
-/**
- * Create a RaggedArrayElementIterator.
- */
-function RaggedArrayElementIterator<Type>(o:RaggedArray<Type>, i:Integer) ->
-    RaggedArrayElementIterator<Type> {
-  return construct<RaggedArrayElementIterator<Type>>(o, i);
-}

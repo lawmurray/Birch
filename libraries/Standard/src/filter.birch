@@ -119,7 +119,7 @@ program filter(
   inputPath <-? input;
   inputReader:Reader?;
   if inputPath? && inputPath! != "" {
-    inputReader <- Reader(inputPath!);
+    inputReader <- make_reader(inputPath!);
   }
 
   /* output */
@@ -127,7 +127,7 @@ program filter(
   outputPath <-? output;
   outputWriter:Writer?;
   if outputPath? && outputPath! != "" {
-    outputWriter <- Writer(outputPath!);
+    outputWriter <- make_writer(outputPath!);
   }
 
   /* progress bar */
@@ -158,7 +158,7 @@ program filter(
     /* forecast */
     let forecastSize <- inputBuffer.size("forecast");
     let forecastIterator <- inputBuffer.walk("forecast");
-    let forecastBuffer <- Buffer();
+    let forecastBuffer <- make_buffer();
     if nforecasts? {
       forecastSize <- nforecasts!;
     }
@@ -170,7 +170,7 @@ program filter(
         if forecastIterator.hasNext() {
           theFilter'.filter(t', forecastIterator.next());
         } else {
-          theFilter'.filter(t', Buffer());
+          theFilter'.filter(t', make_buffer());
         }
         if outputWriter? {
           forecastBuffer.push(t, theFilter'.x);
@@ -180,7 +180,7 @@ program filter(
 
     /* output */
     if outputWriter? {
-      let outputBuffer <- Buffer();
+      let outputBuffer <- make_buffer();
       if t > 0 {
         outputBuffer.set("filter", t, theFilter!.x);
       }

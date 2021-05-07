@@ -10,12 +10,12 @@ final class ScalarBufferIterator<Type>(x:Type) < Iterator<Buffer> {
   x:Type? <- x;
 
   function hasNext() -> Boolean {
-    return x?;
+    return this.x?;
   }
 
   function next() -> Buffer {
-    let x' <- x!;
-    x <- nil;
-    return Buffer(x');
+    let x' <- this.x!;
+    this.x <- nil;
+    return make_buffer(x');
   }
 }

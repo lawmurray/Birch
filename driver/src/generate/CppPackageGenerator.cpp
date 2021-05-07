@@ -50,8 +50,8 @@ void birch::CppPackageGenerator::visit(const Package* o) {
     /* don't use #pragma once here, use a macro guard instead, as the header
      * may be used as a source file to create a pre-compiled header */
     std::string name = upper(canonical(o->name));
-    line("#ifndef BI_" << name << "_HPP");
-    line("#define BI_" << name << "_HPP\n");
+    line("#ifndef " << name << "_HPP");
+    line("#define " << name << "_HPP\n");
     line("#include \"libbirch.hpp\"\n");
 
     for (auto name : o->packages) {
@@ -72,18 +72,25 @@ void birch::CppPackageGenerator::visit(const Package* o) {
 
     line("");
     line("namespace birch {");
-    line("namespace type {");
 
     /* forward class type declarations */
     for (auto o : classes) {
       if (!o->isAlias()) {
-        genTemplateParams(o);
         if (o->has(STRUCT)) {
-          start("struct ");
+          genTemplateParams(o);
+          line("struct " << o->name << "_;");
+          genTemplateParams(o);
+          start("using " << o->name << " = libbirch::Inplace<" << o->name << '_');
+          genTemplateArgs(o);
+          finish(">;");
         } else {
-          start("class ");
+          genTemplateParams(o);
+          line("class " << o->name << "_;");
+          genTemplateParams(o);
+          start("using " << o->name << " = libbirch::Shared<" << o->name << '_');
+          genTemplateArgs(o);
+          finish(">;");
         }
-        finish(o->name << ';');
       }
     }
     line("");
@@ -125,9 +132,6 @@ void birch::CppPackageGenerator::visit(const Package* o) {
         auxDeclaration << o;
       }
     }
-
-    line("");
-    line("}\n");
 
     /* global variables */
     for (auto o : globals) {

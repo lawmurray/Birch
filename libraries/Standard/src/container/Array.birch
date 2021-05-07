@@ -184,7 +184,7 @@ final class Array<Type> {
    * Return: an iterator across elements in forward order.
    */
   function walk() -> Iterator<Type> {
-    return ArrayIterator<Type>(this);
+    return construct<ArrayIterator<Type>>(this);
   }
 
   /**

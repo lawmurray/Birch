@@ -144,7 +144,7 @@ final class Tape<Type> {
    */
   function pushFront(x:Type) {
     rewind();
-    behind <- TapeNode<Type>(x);
+    behind <- construct<TapeNode<Type>>(x);
     behindCount <- behindCount + 1;
   }
 
@@ -153,7 +153,7 @@ final class Tape<Type> {
    */
   function pushFront() -> Type {
     rewind();
-    behind <- TapeNode<Type>();
+    behind <- construct<TapeNode<Type>>(construct<Type>());
     behindCount <- behindCount + 1;
     return behind!.x;
   }
@@ -165,7 +165,7 @@ final class Tape<Type> {
    */
   function pushBack(x:Type) {
     fastForward();
-    ahead <- TapeNode<Type>(x);
+    ahead <- construct<TapeNode<Type>>(x);
     aheadCount <- aheadCount + 1;
   }
 
@@ -174,7 +174,7 @@ final class Tape<Type> {
    */
   function pushBack() -> Type {
     fastForward();
-    ahead <- TapeNode<Type>();
+    ahead <- construct<TapeNode<Type>>(construct<Type>());
     aheadCount <- aheadCount + 1;
     return ahead!.x;
   }
@@ -212,7 +212,7 @@ final class Tape<Type> {
   function insert(i:Integer, x:Type) {
     assert 0 < i;
     seek(i);
-    let node <- TapeNode<Type>(x);
+    let node <- construct<TapeNode<Type>>(x);
     node.next <- ahead;
     ahead <- node;
     aheadCount <- aheadCount + 1;
@@ -237,7 +237,7 @@ final class Tape<Type> {
    */
   function walk() -> Iterator<Type> {
     rewind();
-    return TapeIterator<Type>(ahead);
+    return construct<TapeIterator<Type>>(ahead);
   }
 
   /**

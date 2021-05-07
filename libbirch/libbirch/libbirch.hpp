@@ -20,6 +20,25 @@
 
 namespace libbirch {
 /**
+ * Make an array and assign a value to it.
+ *
+ * @ingroup libbirch
+ *
+ * @tparam T Value type.
+ * @tparam F Shape type.
+ * @tparam Value Initial value type.
+ *
+ * @param shape Shape.
+ * @param value Initial value.
+ *
+ * @return The array.
+ */
+template<class T, class F, class Value>
+auto make_array_from_value(const F& shape, const Value& value) {
+  return Array<T,F>(shape, value);
+}
+
+/**
  * Make an array.
  *
  * @ingroup libbirch
@@ -68,93 +87,6 @@ auto make_array_from_sequence(
 template<class F, class L>
 auto make_array_from_lambda(const F& shape, const L& l) {
   return Array<decltype(l(0)),F>(l, shape);
-}
-
-/**
- * Make an array and assign a value to it.
- *
- * @ingroup libbirch
- *
- * @tparam T Value type.
- * @tparam F Shape type.
- * @tparam Value Initial value type.
- *
- * @param shape Shape.
- * @param value Initial value.
- *
- * @return The array.
- */
-template<class T, class F, class Value>
-auto make_array_from_value(const F& shape, const Value& value) {
-  return Array<T,F>(shape, value);
-}
-
-/**
- * Make an array.
- *
- * @ingroup libbirch
- *
- * @tparam T Element type.
- * @tparam F Shape type.
- * @tparam Args Constructor argument types.
- *
- * @param shape Shape.
- * @param args Constructor arguments.
- *
- * @return The array.
- */
-template<class T, class F, class... Args>
-auto make_array(const F& shape, Args&&... args) {
-  return Array<T,F>(shape, std::forward<Args>(args)...);
-}
-
-/**
- * Make a value or object.
- *
- * @tparam T Type.
- * @tparam Args Constructor parameter types.
- *
- * @param args Constructor arguments.
- *
- * @return A default-constructed value of the given type.
- */
-template<class T, class... Args>
-T make(Args&&... args) {
-  return T(std::forward<Args>(args)...);
-}
-
-/**
- * Make a value or object.
- *
- * @tparam T Type.
- * @tparam Args Argument types.
- * 
- * @param args Arguments.
- *
- * @return If the type is constructible with the given arguments, then an
- * optional with a so-constructed value, otherwise an optional with no value.
- */
-template<class T, class... Args, std::enable_if_t<!is_pointer<T>::value &&
-    std::is_constructible<T,Args...>::value,int> = 0>
-std::optional<T> make_optional(Args&&... args) {
-  return T(std::forward<Args>(args)...);
-}
-
-/**
- * Make a value or object.
- *
- * @tparam T Type.
- * @tparam Args Argument types.
- * 
- * @param args Arguments.
- *
- * @return If the type is constructible with the given arguments, then an
- * optional with a so-constructed value, otherwise an optional with no value.
- */
-template<class T, class... Args, std::enable_if_t<!is_pointer<T>::value &&
-    !std::is_constructible<T,Args...>::value,int> = 0>
-std::optional<T> make_optional(Args&&... args) {
-  return std::nullopt;
 }
 
 /**

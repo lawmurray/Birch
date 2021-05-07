@@ -1,0 +1,118 @@
+cpp{{
+#include <boost/math/distributions.hpp>
+}}
+
+/**
+ * Poisson distribution.
+ */
+final class PoissonDistribution<Arg>(λ:Arg) < DiscreteDistribution {
+  /**
+   * Rate.
+   */
+  λ:Arg <- λ;
+
+  override function supportsLazy() -> Boolean {
+    return true;
+  }
+
+  override function simulate() -> Integer {
+    return simulate_poisson(value(λ));
+  }
+
+  override function simulateLazy() -> Integer? {
+    return simulate_poisson(peek(λ));
+  }
+
+  override function logpdf(x:Integer) -> Real {
+    return logpdf_poisson(x, value(λ));
+  }
+
+  override function logpdfLazy(x:Expression<Integer>) -> Expression<Real>? {
+    return box(logpdf_poisson(x, λ));
+  }
+
+  override function cdf(x:Integer) -> Real? {
+    return cdf_poisson(x, value(λ));
+  }
+
+  override function quantile(P:Real) -> Integer? {
+    return quantile_poisson(P, value(λ));
+  }
+
+  override function lower() -> Integer? {
+    return 0;
+  }
+
+  override function write(buffer:Buffer) {
+    buffer.set("class", "Poisson");
+    buffer.set("λ", value(λ));
+  }
+}
+
+/**
+ * Create Poisson distribution.
+ */
+function Poisson<Arg>(λ:Arg) -> Distribution<Integer> {
+  return construct<PoissonDistribution<Arg>>(λ);
+}
+
+/*
+ * Simulate a Poisson distribution.
+ *
+ * - λ: Rate.
+ */
+function simulate_poisson(λ:Real) -> Integer {
+  assert 0.0 <= λ;
+  if λ > 0.0 {
+    cpp{{
+    return std::poisson_distribution<birch::Integer>(λ)(rng);
+    }}
+  } else {
+    return 0;
+  }
+}
+
+/*
+ * Observe a Poisson variate.
+ *
+ * - x: The variate.
+ * - λ: Rate.
+ *
+ * Returns: the log probability mass.
+ */
+function logpdf_poisson<Arg1,Arg2>(x:Arg1, λ:Arg2) -> {
+  return x*log(λ) - λ - lgamma(x + 1);
+}
+
+/*
+ * CDF of a Poisson variate.
+ *
+ * - x: The variate.
+ * - λ: Rate.
+ *
+ * Return: the cumulative probability.
+ */
+function cdf_poisson(x:Integer, λ:Real) -> Real {
+  assert 0.0 <= λ;
+  if x < 0 {
+    return 0.0;
+  } else {
+    let k <- x + 1.0;
+    return upper_inc_gamma(k, λ);
+  }
+}
+
+/*
+ * Quantile of a Poisson distribution.
+ *
+ * - P: The cumulative probability.
+ * - λ: Rate.
+ *
+ * Return: the quantile.
+ */
+function quantile_poisson(P:Real, λ:Real) -> Integer {
+  assert 0.0 <= λ;
+  cpp{{
+  return boost::math::quantile(boost::math::poisson_distribution<>(λ), P);
+  }}
+}

@@ -25,10 +25,3 @@ final class TapeIterator<Type>(head:TapeNode<Type>?) < Iterator<Type> {
     return x;
   }
 }
-
-/**
- * Create a TapeIterator.
- */
-function TapeIterator<Type>(head:TapeNode<Type>?) -> TapeIterator<Type> {
-  return construct<TapeIterator<Type>>(head);
-}

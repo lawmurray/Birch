@@ -250,7 +250,7 @@ final class List<Type> {
    * Return: an iterator across elements in forward order.
    */
   function walk() -> Iterator<Type> {
-    return ListIterator<Type>(head);
+    return construct<ListIterator<Type>>(head);
   }
 
   /**

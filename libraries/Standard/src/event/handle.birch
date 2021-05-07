@@ -2,8 +2,7 @@ cpp{{
 /*
  * Event handler for each thread.
  */
-static thread_local libbirch::Shared<birch::type::Handler> handler(
-    std::in_place, true, false);
+static thread_local birch::Handler handler(std::in_place, true, false);
 }}
 
 /*
@@ -82,7 +81,7 @@ function handle_assume<Left,Right>(x:Left, p:Right) -> Left {
  *     when a newly declared variable is initialized with the `~` operator.
  */
 function handle_assume<Right>(p:Right) -> Random<Right.Value> {
-  return handle_assume(Random<Right.Value>(), p);
+  return handle_assume(make_random<Right.Value>(), p);
 }
 
 /*

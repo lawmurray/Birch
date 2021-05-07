@@ -1,0 +1,88 @@
+/**
+ * Multivariate Gaussian distribution.
+ */
+class MultivariateGaussianDistribution<Arg1,Arg2>(μ:Arg1, Σ:Arg2) <
+    Distribution<Real[_]> {
+  /**
+   * Mean.
+   */
+  μ:Arg1 <- μ;
+  
+  /**
+   * Covariance.
+   */
+  Σ:Arg2 <- Σ;
+
+  override function supportsLazy() -> Boolean {
+    return true;
+  }
+
+  override function simulate() -> Real[_] {
+    return simulate_multivariate_gaussian(value(μ), value(Σ));
+  }
+
+  override function simulateLazy() -> Real[_]? {
+    return simulate_multivariate_gaussian(peek(μ), peek(Σ));
+  }
+  
+  override function logpdf(x:Real[_]) -> Real {
+    return logpdf_multivariate_gaussian(x, value(μ), value(Σ));
+  }
+
+  override function logpdfLazy(x:Expression<Real[_]>) -> Expression<Real>? {
+    return box(logpdf_multivariate_gaussian(x, μ, Σ));
+  }
+
+  override function isMultivariateGaussian() -> Boolean {
+    return true;
+  }
+
+  override function getMultivariateGaussian() -> (Expression<Real[_]>,
+      Expression<Real[_,_]>)? {
+    return box(μ, Σ);
+  }
+
+  override function write(buffer:Buffer) {
+    buffer.set("class", "MultivariateGaussian");
+    buffer.set("μ", value(μ));
+    buffer.set("Σ", value(Σ));
+  }
+}
+
+/**
+ * Create multivariate Gaussian distribution.
+ */
+function MultivariateGaussian<Arg1,Arg2>(μ:Arg1, Σ:Arg2) -> {
+  return construct<MultivariateGaussianDistribution<Arg1,Arg2>>(μ, Σ);
+}
+
+/*
+ * Simulate a multivariate Gaussian distribution.
+ *
+ * - μ: Mean.
+ * - Σ: Covariance.
+ */
+function simulate_multivariate_gaussian(μ:Real[_], Σ:Real[_,_]) -> Real[_] {
+  assert length(μ) == rows(Σ);
+  assert length(μ) == columns(Σ);
+  let n <- length(μ);
+  let z <- vector_lambda(\(i:Integer) -> Real {
+        return simulate_gaussian(0.0, 1.0);
+      }, n);
+  return μ + chol(Σ)*z;
+}
+
+/*
+ * Observe a multivariate Gaussian variate.
+ *
+ * - x: The variate.
+ * - μ: Mean.
+ * - Σ: Covariance.
+ *
+ * Returns: the log probability density.
+ */
+function logpdf_multivariate_gaussian<Arg1,Arg2,Arg3>(x:Arg1, μ:Arg2,
+    Σ:Arg3) -> {
+  let n <- length(x);
+  return -0.5*(dot(x - μ, cholsolve(Σ, x - μ)) + n*log(2.0*π) + lcholdet(Σ));
+}

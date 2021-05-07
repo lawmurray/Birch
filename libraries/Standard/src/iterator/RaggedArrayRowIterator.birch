@@ -30,11 +30,3 @@ final class RaggedArrayRowIterator<Type>(o:RaggedArray<Type>) <
     return o.get(i);
   }
 }
-
-/**
- * Create a RaggedArrayRowIterator.
- */
-function RaggedArrayRowIterator<Type>(o:RaggedArray<Type>) ->
-    RaggedArrayRowIterator<Type> {
-  return construct<RaggedArrayRowIterator<Type>>(o);
-}

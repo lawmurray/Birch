@@ -18,10 +18,6 @@ function lcholdet<Middle>(m:Middle) -> {
   return construct<LCholDet<Middle>>(m);
 }
 
-
-hpp{{
-  #include <iostream>
-}}
 /**
  * Log-determinant of a matrix.
  */

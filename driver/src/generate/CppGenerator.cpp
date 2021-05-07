@@ -38,7 +38,7 @@ void birch::CppGenerator::visit(const Literal<bool>* o) {
 }
 
 void birch::CppGenerator::visit(const Literal<int64_t>* o) {
-  middle("birch::type::Integer(" << o->str << ')');
+  middle("birch::Integer(" << o->str << ')');
 }
 
 void birch::CppGenerator::visit(const Literal<double>* o) {
@@ -46,7 +46,7 @@ void birch::CppGenerator::visit(const Literal<double>* o) {
 }
 
 void birch::CppGenerator::visit(const Literal<const char*>* o) {
-  middle("birch::type::String(" << o->str << ')');
+  middle("birch::String(" << o->str << ')');
 }
 
 void birch::CppGenerator::visit(const Parentheses* o) {
@@ -157,33 +157,22 @@ void birch::CppGenerator::visit(const Range* o) {
 }
 
 void birch::CppGenerator::visit(const Member* o) {
-  if (inConstructor && (o->left->isThis() || o->left->isSuper())) {
-    /* don't have access to the `self` variable here, but because we're
-     * constructing, so the object cannot possibly be frozen, `this`
-     * suffices */
-    if (o->left->isThis()) {
-      middle("this->");
-    } else if (o->left->isSuper()) {
-      middle("this->base_type_::");
-    }
+  if (o->left->isThis()) {
+    middle("this->");
+  } else if (o->left->isSuper()) {
+    middle("this->base_type_::");
   } else {
-    if (o->left->isThis()) {
-      middle("this->");
-    } else if (o->left->isSuper()) {
-      middle("this->base_type_::");
-    } else {
-      middle(o->left);
-      auto named = dynamic_cast<const NamedExpression*>(o->right);
-      assert(named);
-      if (!inAssign && named->category == MEMBER_VARIABLE &&
-          named->type->isValue()) {
-        /* read optimization: just reading a value, no need to copy-on-write
-         * the containing object */
-        middle(".load()");
-      }
-	    inAssign = 0;
-      middle("->");
+    middle(o->left);
+    auto named = dynamic_cast<const NamedExpression*>(o->right);
+    assert(named);
+    if (!inAssign && named->category == MEMBER_VARIABLE &&
+        named->type->isValue()) {
+      /* read optimization: just reading a value, no need to copy-on-write
+        * the containing object */
+      middle(".load()");
     }
+    inAssign = 0;
+    middle("->");
   }
   ++inMember;
   middle(o->right);
@@ -199,7 +188,7 @@ void birch::CppGenerator::visit(const Super* o) {
 }
 
 void birch::CppGenerator::visit(const Global* o) {
-  middle(o->single);
+  middle("birch::" << o->single);
 }
 
 void birch::CppGenerator::visit(const Nil* o) {
@@ -218,14 +207,7 @@ void birch::CppGenerator::visit(const Parameter* o) {
 }
 
 void birch::CppGenerator::visit(const NamedExpression* o) {
-  if (o->isGlobal()) {
-    middle("birch::" << o->name);
-  } else if (o->isMember()) {
-    if (!inMember && !inConstructor) {
-      middle("this->");  // may be required for generic classes
-    }
-    middle(o->name);
-  } else if (inConstructor && o->uses->useCount == 1) {
+  if (inConstructor && o->uses->useCount == 1) {
     middle("std::move(" << o->name << ')');
   } else {
     middle(o->name);
@@ -252,7 +234,6 @@ void birch::CppGenerator::visit(const GlobalVariable* o) {
   }
   middle(o->name);
   if (!header) {
-    middle(" = ");
     genInit(o);
   }
   finish(';');
@@ -269,7 +250,6 @@ void birch::CppGenerator::visit(const LocalVariable* o) {
   } else {
     start(o->type << ' ' << o->name);
   }
-  middle(" = ");
   genInit(o);
   finish(';');
 }
@@ -288,7 +268,9 @@ void birch::CppGenerator::visit(const TupleVariable* o) {
 void birch::CppGenerator::visit(const Function* o) {
   if ((includeInline || !o->isGeneric()) && !o->braces->isEmpty()) {
     genTemplateParams(o);
-    genSourceLine(o->loc);
+    if (!header) {
+      genSourceLine(o->loc);
+    }
     start("");
     if (!header && o->isGeneric()) {
       middle("inline ");
@@ -333,8 +315,6 @@ void birch::CppGenerator::visit(const Program* o) {
           start("[[maybe_unused]] " << param->type << ' ' << param->name);
           if (!param->value->isEmpty()) {
             middle(" = " << param->value);
-          } else if (param->type->isClass() || param->type->isStruct()) {
-            middle(" = libbirch::make<" << param->type << ">()");
           }
           finish(';');
         }
@@ -405,17 +385,17 @@ void birch::CppGenerator::visit(const Program* o) {
           line("if (!::optarg) {");
           in();
           genSourceLine(p->loc);
-          line("birch::error(birch::type::String(\"value required for option --\") + birch::type::String(long_options_[::optopt].name));");
+          line("birch::error(birch::String(\"value required for option --\") + birch::String(long_options_[::optopt].name));");
           out();
           genSourceLine(p->loc);
           line("}");
           genSourceLine(p->loc);
           auto type = dynamic_cast<Named*>(p->type->unwrap());
           if (type && type->name->str() != "String") {
-            start(name << " = birch::from_string<birch::type::" << type->name << '>');
-            finish("(birch::type::String(::optarg));");
+            start(name << " = birch::from_string<birch::" << type->name << '>');
+            finish("(birch::String(::optarg));");
           } else {
-            line(name << " = birch::type::String(::optarg);");
+            line(name << " = birch::String(::optarg);");
           }
           genSourceLine(p->loc);
           line("break;");
@@ -426,21 +406,21 @@ void birch::CppGenerator::visit(const Program* o) {
         line("case '?':");
         in();
         genSourceLine(o->loc);
-        line("birch::error(birch::type::String(\"unrecognized option --\") + birch::type::String(argv_[::optind - 1]));");
+        line("birch::error(birch::String(\"unrecognized option --\") + birch::String(argv_[::optind - 1]));");
         out();
 
         genSourceLine(o->loc);
         line("case ':':");
         in();
         genSourceLine(o->loc);
-        line("birch::error(birch::type::String(\"value required for option --\") + birch::type::String(long_options_[::optopt].name));");
+        line("birch::error(birch::String(\"value required for option --\") + birch::String(long_options_[::optopt].name));");
         out();
 
         genSourceLine(o->loc);
         line("default:");
         in();
         genSourceLine(o->loc);
-        line("birch::error(birch::type::String(\"unknown error parsing command-line options.\"));");
+        line("birch::error(birch::String(\"unknown error parsing command-line options.\"));");
         out();
 
         out();
@@ -692,30 +672,13 @@ void birch::CppGenerator::visit(const MemberType* o) {
 }
 
 void birch::CppGenerator::visit(const NamedType* o) {
-  if (o->isStruct()) {
-    middle("libbirch::Inplace<birch::type::" << o->name);
-    if (!o->typeArgs->isEmpty()) {
-      middle('<' << o->typeArgs << '>');
-    }
-    middle(">");
-  } else if (o->isClass()) {
-    middle("libbirch::Shared<birch::type::" << o->name);
-    if (!o->typeArgs->isEmpty()) {
-      middle('<' << o->typeArgs << '>');
-    }
-    middle(">");
-  } else if (o->isBasic()) {
-    middle("birch::type::" << o->name);
-    if (!o->typeArgs->isEmpty()) {
-      middle('<' << o->typeArgs << '>');
-    }
-  } else if (o->isGeneric()) {
+  if (o->isGeneric()) {
     middle(o->name);
-    if (!o->typeArgs->isEmpty()) {
-      middle('<' << o->typeArgs << '>');
-    }
   } else {
-    assert(false);
+    middle("birch::" << o->name);
+  }
+  if (!o->typeArgs->isEmpty()) {
+    middle('<' << o->typeArgs << '>');
   }
 }
 

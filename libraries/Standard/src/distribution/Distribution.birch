@@ -263,7 +263,7 @@ abstract class Distribution<Value> < Delay {
     return false;
   }
 
-  function getDiscrete() -> Discrete? {
+  function getDiscrete() -> DiscreteDistribution? {
     return nil;
   }
 
@@ -271,7 +271,7 @@ abstract class Distribution<Value> < Delay {
     return false;
   }
 
-  function getBoundedDiscrete() -> BoundedDiscrete? {
+  function getBoundedDiscrete() -> BoundedDiscreteDistribution? {
     return nil;
   }
 }

@@ -29,10 +29,3 @@ final class ArrayIterator<Type>(o:Array<Type>) < Iterator<Type> {
     return o.get(i);
   }
 }
-
-/**
- * Create a ArrayIterator.
- */
-function ArrayIterator<Type>(o:Array<Type>) -> ArrayIterator<Type> {
-  return construct<ArrayIterator<Type>>(o);
-}

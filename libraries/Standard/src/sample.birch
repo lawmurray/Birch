@@ -141,7 +141,7 @@ program sample(
   inputBuffer:Buffer;
   inputBuffer.setEmptyArray();
   if inputPath? && inputPath! != "" {
-    let inputReader <- Reader(inputPath!);
+    let inputReader <- make_reader(inputPath!);
     if !nsteps? {
       inputBuffer <- inputReader.slurp();
       nsteps <- inputBuffer.size() - 1;
@@ -163,7 +163,7 @@ program sample(
   outputPath <-? output;
   outputWriter:Writer?;
   if outputPath? && outputPath! != "" {
-    outputWriter <- Writer(outputPath!);
+    outputWriter <- make_writer(outputPath!);
   }
 
   /* progress bar */
@@ -180,7 +180,7 @@ program sample(
     if inputIter.hasNext() {
       buffer <- inputIter.next();
     } else {
-      buffer <- Buffer();
+      buffer <- make_buffer();
     }
     theSampler!.sample(theFilter!, theModel!, buffer);
 
@@ -203,7 +203,7 @@ program sample(
       if inputIter.hasNext() {
         buffer <- inputIter.next();
       } else {
-        buffer <- Buffer();
+        buffer <- make_buffer();
       }
       theSampler!.sample(theFilter!, t, buffer);
 
@@ -230,10 +230,10 @@ program sample(
       /* push additional elements to the "sample" key for each step, but only
        * if the model actually writes something for at least one write(t),
        * otherwise assume that it does all its output in write() alone */
-      let steps <- Buffer();
+      let steps <- make_buffer();
       let atLeastOne <- false;
       for t in 1..nsteps! {
-        let step <- Buffer(t, x);
+        let step <- make_buffer(t, x);
         atLeastOne <- atLeastOne || !step.isEmpty();
         steps.push("sample", step);
       }

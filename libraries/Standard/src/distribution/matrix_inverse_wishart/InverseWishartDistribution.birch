@@ -1,0 +1,109 @@
+/**
+ * Inverse Wishart distribution.
+ *
+ * This is typically used to establish a conjugate prior for a Bayesian
+ * multivariate linear regression:
+ *
+ * $$\begin{align*}
+ * \boldsymbol{\Sigma} &\sim \mathcal{W}^{-1}(\boldsymbol{\Psi}, \nu) \\
+ * \mathbf{W} &\sim \mathcal{MN}(\mathbf{M}, \mathbf{A}, \boldsymbol{\Sigma}) \\
+ * \mathbf{Y} &\sim \mathcal{N}(\mathbf{X}\mathbf{W}, \boldsymbol{\Sigma}),
+ * \end{align*}$$
+ *
+ * where $\mathbf{X}$ are inputs and $\mathbf{Y}$ are outputs.
+ *
+ * The relationship is established in code as follows:
+ *
+ *     V:Random<Real[_,_]>;
+ *     Ψ:Real[_,_];
+ *     k:Real;
+ *     W:Random<Real[_,_]>;
+ *     M:Real[_,_];
+ *     U:Real[_,_];
+ *     Y:Random<Real[_,_]>;
+ *     X:Real[_,_];
+ *
+ *     V ~ InverseWishart(Ψ, k);
+ *     W ~ Gaussian(M, U, V);
+ *     Y ~ Gaussian(X*W, V);
+ */
+final class InverseWishartDistribution<Arg1,Arg2>(Ψ:Arg1, k:Arg2) <
+    Distribution<Real[_,_]> {
+  /**
+   * Scale.
+   */
+  Ψ:Arg1 <- Ψ;
+  
+  /**
+   * Degrees of freedom.
+   */
+  k:Arg2 <- k;
+
+  override function supportsLazy() -> Boolean {
+    return true;
+  }
+
+  override function simulate() -> Real[_,_] {
+    return simulate_inverse_wishart(value(Ψ), value(k));
+  }
+
+  override function simulateLazy() -> Real[_,_]? {
+    return simulate_inverse_wishart(peek(Ψ), peek(k));
+  }
+  
+  override function logpdf(X:Real[_,_]) -> Real {
+    return logpdf_inverse_wishart(X, value(Ψ), value(k));
+  }
+
+  override function logpdfLazy(X:Expression<Real[_,_]>) -> Expression<Real>? {
+    return box(logpdf_inverse_wishart(X, Ψ, k));
+  }
+
+  override function isInverseWishart() -> Boolean {
+    return true;
+  }
+
+  override function getInverseWishart() -> (Expression<Real[_,_]>,
+      Expression<Real>)? {
+    return box(Ψ, k);
+  }
+
+  override function write(buffer:Buffer) {
+    buffer.set("class", "InverseWishart");
+    buffer.set("Ψ", value(Ψ));
+    buffer.set("k", value(k));
+  }
+}
+
+/**
+ * Create inverse-Wishart distribution.
+ */
+function InverseWishart<Arg1,Arg2>(Ψ:Arg1, k:Arg2) -> {
+  return construct<InverseWishartDistribution<Arg1,Arg2>>(Ψ, k);
+}
+
+/*
+ * Simulate an inverse-Wishart distribution.
+ *
+ * - Ψ: Scale.
+ * - k: Degrees of freedom.
+ */
+function simulate_inverse_wishart(Ψ:Real[_,_], k:Real) -> Real[_,_] {
+  return cholinv(simulate_wishart(cholinv(Ψ), k));
+}
+
+/*
+ * Observe an inverse Wishart variate.
+ *
+ * - X: The variate.
+ * - Ψ: Scale.
+ * - k: Degrees of freedom.
+ *
+ * Returns: the log probability density.
+ */
+function logpdf_inverse_wishart<Arg1,Arg2,Arg3>(X:Arg1, Ψ:Arg2, k:Arg3) -> {
+  let p <- columns(X);
+  let l <- k + p + 1.0;
+  return -0.5*(l + p + 1.0)*lcholdet(X) - 0.5*trace(cholsolve(X, Ψ)) -
+      0.5*l*(p*log(2.0) - lcholdet(Ψ)) - lgamma(0.5*l, p);
+}

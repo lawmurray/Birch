@@ -120,7 +120,7 @@ function outer(x:Integer, y:Real[_]) -> Real[_,_] {
  */
 function outer(x:Real, y:Integer[_]) -> Real[_,_] {
   cpp{{
-  return y.toEigen().cast<birch::type::Real>().transpose().operator*(x);
+  return y.toEigen().cast<birch::Real>().transpose().operator*(x);
   }}
 }
 
@@ -147,7 +147,7 @@ function outer(x:Integer[_], y:Integer) -> Integer[_] {
  */
 function outer(x:Integer[_], y:Real) -> Real[_] {
   cpp{{
-  return x.toEigen().cast<birch::type::Real>().operator*(y);
+  return x.toEigen().cast<birch::Real>().operator*(y);
   }}
 }
 
@@ -156,7 +156,7 @@ function outer(x:Integer[_], y:Real) -> Real[_] {
  */
 function outer(x:Real[_], y:Integer) -> Real[_] {
   cpp{{
-  return x.toEigen().cast<birch::type::Real>().operator*(y);
+  return x.toEigen().cast<birch::Real>().operator*(y);
   }}
 }
 
@@ -183,7 +183,7 @@ function outer(x:Integer[_], y:Integer[_]) -> Integer[_,_] {
  */
 function outer(x:Integer[_], y:Real[_]) -> Real[_,_] {
   cpp{{
-  return x.toEigen().cast<birch::type::Real>().operator*(y.toEigen().transpose());
+  return x.toEigen().cast<birch::Real>().operator*(y.toEigen().transpose());
   }}
 }
 
@@ -192,7 +192,7 @@ function outer(x:Integer[_], y:Real[_]) -> Real[_,_] {
  */
 function outer(x:Real[_], y:Integer[_]) -> Real[_,_] {
   cpp{{
-  return x.toEigen().operator*(y.toEigen().cast<birch::type::Real>().transpose());
+  return x.toEigen().operator*(y.toEigen().cast<birch::Real>().transpose());
   }}
 }
 
@@ -228,7 +228,7 @@ function outer(x:Integer, y:Real[_,_]) -> Real[_,_] {
  */
 function outer(x:Real, y:Integer[_,_]) -> Real[_,_] {
   cpp{{
-  return y.toEigen().cast<birch::type::Real>().transpose().operator*(x);
+  return y.toEigen().cast<birch::Real>().transpose().operator*(x);
   }}
 }
 
@@ -255,7 +255,7 @@ function outer(x:Integer[_,_], y:Integer) -> Integer[_,_] {
  */
 function outer(x:Integer[_,_], y:Real) -> Real[_,_] {
   cpp{{
-  return x.toEigen().cast<birch::type::Real>().operator*(y);
+  return x.toEigen().cast<birch::Real>().operator*(y);
   }}
 }
 
@@ -291,7 +291,7 @@ function outer(X:Integer[_,_], y:Integer[_]) -> Integer[_,_] {
  */
 function outer(X:Integer[_,_], y:Real[_]) -> Real[_,_] {
   cpp{{
-  return X.toEigen().cast<birch::type::Real>().operator*(y.toEigen().transpose());
+  return X.toEigen().cast<birch::Real>().operator*(y.toEigen().transpose());
   }}
 }
 
@@ -300,7 +300,7 @@ function outer(X:Integer[_,_], y:Real[_]) -> Real[_,_] {
  */
 function outer(X:Real[_,_], y:Integer[_]) -> Real[_,_] {
   cpp{{
-  return X.toEigen().operator*(y.toEigen().cast<birch::type::Real>().transpose());
+  return X.toEigen().operator*(y.toEigen().cast<birch::Real>().transpose());
   }}
 }
 
@@ -327,7 +327,7 @@ function outer(X:Integer[_], y:Integer[_,_]) -> Integer[_,_] {
  */
 function outer(X:Integer[_], y:Real[_,_]) -> Real[_,_] {
   cpp{{
-  return X.toEigen().cast<birch::type::Real>().operator*(y.toEigen().transpose());
+  return X.toEigen().cast<birch::Real>().operator*(y.toEigen().transpose());
   }}
 }
 
@@ -336,7 +336,7 @@ function outer(X:Integer[_], y:Real[_,_]) -> Real[_,_] {
  */
 function outer(X:Real[_], y:Integer[_,_]) -> Real[_,_] {
   cpp{{
-  return X.toEigen().operator*(y.toEigen().cast<birch::type::Real>().transpose());
+  return X.toEigen().operator*(y.toEigen().cast<birch::Real>().transpose());
   }}
 }
 
@@ -363,7 +363,7 @@ function outer(X:Integer[_,_], Y:Integer[_,_]) -> Integer[_,_] {
  */
 function outer(X:Integer[_,_], Y:Real[_,_]) -> Real[_,_] {
   cpp{{
-  return X.toEigen().cast<birch::type::Real>().operator*(Y.toEigen().transpose());
+  return X.toEigen().cast<birch::Real>().operator*(Y.toEigen().transpose());
   }}
 }
 
@@ -372,7 +372,7 @@ function outer(X:Integer[_,_], Y:Real[_,_]) -> Real[_,_] {
  */
 function outer(X:Real[_,_], Y:Integer[_,_]) -> Real[_,_] {
   cpp{{
-  return X.toEigen().operator*(Y.toEigen().cast<birch::type::Real>().transpose());
+  return X.toEigen().operator*(Y.toEigen().cast<birch::Real>().transpose());
   }}
 }
 

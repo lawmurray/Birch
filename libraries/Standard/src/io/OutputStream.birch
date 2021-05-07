@@ -120,7 +120,7 @@ struct OutputStream {
 /**
  * Create an output stream for an already-open file.
  */
-function OutputStream(file:File) -> OutputStream {
+function make_output_stream(file:File) -> OutputStream {
   o:OutputStream;
   o.file <- file;
   return o;

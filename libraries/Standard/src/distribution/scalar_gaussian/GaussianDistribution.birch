@@ -1,0 +1,127 @@
+cpp{{
+#include <boost/math/distributions.hpp>
+}}
+
+/**
+ * Gaussian distribution.
+ */
+class GaussianDistribution<Arg1,Arg2>(μ:Arg1, σ2:Arg2) < Distribution<Real> {
+  /**
+   * Mean.
+   */
+  μ:Arg1 <- μ;
+
+  /**
+   * Variance.
+   */
+  σ2:Arg2 <- σ2;
+
+  override function supportsLazy() -> Boolean {
+    return true;
+  }
+
+  override function simulate() -> Real {
+    return simulate_gaussian(value(μ), value(σ2));
+  }
+
+  override function simulateLazy() -> Real? {
+    return simulate_gaussian(peek(μ), peek(σ2));
+  }
+  
+  override function logpdf(x:Real) -> Real {
+    return logpdf_gaussian(x, value(μ), value(σ2));
+  }
+
+  override function logpdfLazy(x:Expression<Real>) -> Expression<Real>? {
+    return box(logpdf_gaussian(x, μ, σ2));
+  }
+  
+  override function cdf(x:Real) -> Real? {
+    return cdf_gaussian(x, value(μ), value(σ2));
+  }
+
+  override function quantile(P:Real) -> Real? {
+    return quantile_gaussian(P, value(μ), value(σ2));
+  }
+
+  override function isGaussian() -> Boolean {
+    return true;
+  }
+
+  override function getGaussian() -> (Expression<Real>, Expression<Real>)? {
+    return box(μ, σ2);
+  }
+
+  override function write(buffer:Buffer) {
+    buffer.set("class", "Gaussian");
+    buffer.set("μ", value(μ));
+    buffer.set("σ2", value(σ2));
+  }
+}
+
+/**
+ * Create Gaussian distribution.
+ */
+function Gaussian<Arg1,Arg2>(μ:Arg1, σ2:Arg2) -> {
+  return construct<GaussianDistribution<Arg1,Arg2>>(μ, σ2);
+}
+
+/*
+ * Simulate a Gaussian distribution.
+ *
+ * - μ: Mean.
+ * - σ2: Variance.
+ */
+function simulate_gaussian(μ:Real, σ2:Real) -> Real {
+  assert 0.0 <= σ2;
+  if σ2 == 0.0 {
+    return μ;
+  } else {
+    cpp{{
+    return std::normal_distribution<birch::Real>(μ, std::sqrt(σ2))(rng);
+    }}
+  }
+}
+
+/*
+ * Observe a Gaussian variate.
+ *
+ * - x: The variate.
+ * - μ: Mean.
+ * - σ2: Variance.
+ *
+ * Returns: the log probability density.
+ */
+function logpdf_gaussian<Arg1,Arg2,Arg3>(x:Arg1, μ:Arg2, σ2:Arg3) -> {
+  return -0.5*(pow(x - μ, 2.0)/σ2 + log(2.0*π*σ2));
+}
+
+/*
+ * CDF of a Gaussian variate.
+ *
+ * - x: The variate.
+ * - μ: Mean.
+ * - σ2: Variance.
+ *
+ * Return: the cumulative probability.
+ */
+function cdf_gaussian(x:Real, μ:Real, σ2:Real) -> Real {
+  assert 0.0 < σ2;
+  return 0.5*(1.0 + erf((x - μ)/sqrt(σ2*2.0)));
+}
+
+/*
+ * Quantile of a Gaussian distribution.
+ *
+ * - P: The cumulative probability.
+ * - μ: Mean.
+ * - σ2: Variance.
+ *
+ * Return: the quantile.
+ */
+function quantile_gaussian(P:Real, μ:Real, σ2:Real) -> Real {
+  assert 0.0 < σ2;
+  cpp{{
+  return boost::math::quantile(boost::math::normal_distribution<>(μ, ::sqrt(σ2)), P);
+  }}
+}

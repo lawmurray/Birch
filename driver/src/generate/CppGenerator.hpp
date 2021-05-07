@@ -179,18 +179,16 @@ template<class T>
 void birch::CppGenerator::genInit(const T* o) {
   if (!o->brackets->isEmpty()) {
     if (!o->value->isEmpty()) {
-      middle("libbirch::make_array_from_value<" << o->type->element() << ">(");
-      middle("libbirch::make_shape(" << o->brackets << ')');
-      middle(", " << o->value << ')');
+      middle("(libbirch::make_shape(" << o->brackets << "), " << o->value << ')');
     } else if (!o->args->isEmpty()) {
-      middle("libbirch::make_array<" << o->type->element() << ">(");
-      middle("libbirch::make_shape(" << o->brackets << ')');
-      middle(", std::in_place," << o->args << ')');
+      middle("(libbirch::make_shape(" << o->brackets << "), " << o->args << ')');
     } else {
-      middle("libbirch::make_array<" << o->type->element() << ">(");
-      middle("libbirch::make_shape(" << o->brackets << "))");
+      middle("(libbirch::make_shape(" << o->brackets << "))");
     }
   } else if (!o->value->isEmpty()) {
+    if (!inConstructor) {
+      middle(" = ");
+    }
     if (*o->op == "<~") {
       middle("birch::handle_simulate(" << o->value << ')');
     } else if (*o->op == "~") {
@@ -199,18 +197,19 @@ void birch::CppGenerator::genInit(const T* o) {
       middle(o->value);
     }
   } else if (!o->args->isEmpty()) {
-    middle("libbirch::make<" << o->type << ">(std::in_place, " << o->args << ')');
-  } else {
-    middle("libbirch::make<" << o->type << ">()");
+    if (!inConstructor) {
+      middle('(');
+    }
+    middle("std::in_place, " << o->args);
+    if (!inConstructor) {
+      middle(')');
+    }
   }
 }
 
 template<class ObjectType>
 void birch::CppGenerator::genTemplateParams(const ObjectType* o) {
   if (!o->typeParams->isEmpty()) {
-    if (!header) {
-      genSourceLine(o->loc);
-    }
     start("template<");
     for (auto iter = o->typeParams->begin(); iter != o->typeParams->end();
         ++iter) {

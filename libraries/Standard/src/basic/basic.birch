@@ -1,11 +1,9 @@
 hpp{{
 namespace birch {
-  namespace type {
 using Boolean = bool;
 using Real = double;
 using Integer = std::int64_t;
 using String = std::string;
 using File = FILE*;
-  }
 }
 }}
