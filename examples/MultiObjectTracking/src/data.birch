@@ -9,7 +9,7 @@
 program data(input:String <- "output/simulate.json",
     output:String <- "input/filter.json") {
   /* input */
-  let reader <- Reader(input);
+  let reader <- make_reader(input);
   let inputBuffer <- reader.slurp();
   reader.close();
   
@@ -48,7 +48,7 @@ program data(input:String <- "output/simulate.json",
     outputBuffer.push(iter2.next());
   }
 
-  let writer <- Writer(output);
+  let writer <- make_writer(output);
   writer.dump(outputBuffer);
   writer.close();
 }
