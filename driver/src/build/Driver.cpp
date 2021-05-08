@@ -1196,7 +1196,7 @@ void birch::Driver::target(const std::string& cmd) {
   std::regex rxTemplateArgument("template argument", options);
   std::regex rxTypeDeduction("before deduction of ‘’", options);
   std::regex rxReal("\\bdouble\\b", options);
-  std::regex rxInteger("\\blong int\\b", options);
+  std::regex rxInteger("\\blong (?:long|int)\\b", options);
   std::regex rxBoolean("\\bbool\\b", options);
   std::regex rxString("(?:const *)?std::(?:__cxx11::)?basic_string<char>", options);
   std::regex rxVector("Array<(" + type + "), *Shape<Dimension<(?:0, *0)?>, *EmptyShape *> *>", options);
