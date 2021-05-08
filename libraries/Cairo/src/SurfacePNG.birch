@@ -7,7 +7,7 @@ class SurfacePNG < Surface {
   /**
    *
    */
-  function destroy() {
+  override function destroy() {
     /* write the file on destruction */
     mkdir(filename);
     cpp{{
