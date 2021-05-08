@@ -10,10 +10,6 @@ birch::EmptyExpression::EmptyExpression(Location* loc) :
   //
 }
 
-birch::Expression* birch::EmptyExpression::accept(Modifier* visitor) {
-  return visitor->modify(this);
-}
-
 void birch::EmptyExpression::accept(Visitor* visitor) const {
   visitor->visit(this);
 }

@@ -11,10 +11,6 @@ birch::OptionalType::OptionalType(Type* single, Location* loc) :
   //
 }
 
-birch::Type* birch::OptionalType::accept(Modifier* visitor) {
-  return visitor->modify(this);
-}
-
 void birch::OptionalType::accept(Visitor* visitor) const {
   return visitor->visit(this);
 }

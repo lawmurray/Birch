@@ -29,7 +29,6 @@ public:
   Assign(Expression* left, Name* op, Expression* right, Location* loc =
       nullptr);
 
-  virtual Expression* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 };
 }

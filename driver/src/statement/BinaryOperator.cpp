@@ -18,10 +18,6 @@ birch::BinaryOperator::BinaryOperator(const Annotation annotation,
   //
 }
 
-birch::Statement* birch::BinaryOperator::accept(Modifier* visitor) {
-  return visitor->modify(this);
-}
-
 void birch::BinaryOperator::accept(Visitor* visitor) const {
   visitor->visit(this);
 }

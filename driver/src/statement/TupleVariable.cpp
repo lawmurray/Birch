@@ -14,10 +14,6 @@ birch::TupleVariable::TupleVariable(const Annotation annotation,
   //
 }
 
-birch::Statement* birch::TupleVariable::accept(Modifier* visitor) {
-  return visitor->modify(this);
-}
-
 void birch::TupleVariable::accept(Visitor* visitor) const {
   visitor->visit(this);
 }

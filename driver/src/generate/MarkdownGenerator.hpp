@@ -39,7 +39,7 @@ public:
   virtual void visit(const ArrayType* o);
   virtual void visit(const TupleType* o);
   virtual void visit(const OptionalType* o);
-  virtual void visit(const TypeOf* o);
+  virtual void visit(const DeducedType* o);
 
 private:
   void genHead(const std::string& name);

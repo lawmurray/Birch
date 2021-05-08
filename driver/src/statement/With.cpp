@@ -12,10 +12,6 @@ birch::With::With(Expression* single, Statement* braces, Location* loc) :
   //
 }
 
-birch::Statement* birch::With::accept(Modifier* visitor) {
-  return visitor->modify(this);
-}
-
 void birch::With::accept(Visitor* visitor) const {
   visitor->visit(this);
 }

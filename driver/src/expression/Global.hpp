@@ -23,7 +23,6 @@ public:
    */
   Global(Expression* single, Location* loc = nullptr);
 
-  virtual Expression* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 };
 }

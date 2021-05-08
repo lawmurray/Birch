@@ -567,7 +567,7 @@ void birch::MarkdownGenerator::visit(const OptionalType* o) {
   middle(o->single << '?');
 }
 
-void birch::MarkdownGenerator::visit(const TypeOf* o) {
+void birch::MarkdownGenerator::visit(const DeducedType* o) {
   //
 }
 

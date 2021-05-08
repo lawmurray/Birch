@@ -12,10 +12,6 @@ birch::Range::Range(Expression* left, Expression* right,
   //
 }
 
-birch::Expression* birch::Range::accept(Modifier* visitor) {
-  return visitor->modify(this);
-}
-
 void birch::Range::accept(Visitor* visitor) const {
   return visitor->visit(this);
 }

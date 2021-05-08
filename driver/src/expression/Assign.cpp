@@ -13,10 +13,6 @@ birch::Assign::Assign(Expression* left, Name* op, Expression* right,
   //
 }
 
-birch::Expression* birch::Assign::accept(Modifier* visitor) {
-  return visitor->modify(this);
-}
-
 void birch::Assign::accept(Visitor* visitor) const {
   visitor->visit(this);
 }

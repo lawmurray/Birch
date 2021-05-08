@@ -17,10 +17,6 @@ birch::NamedType::NamedType(Name* name, Location* loc) :
   //
 }
 
-birch::Type* birch::NamedType::accept(Modifier* visitor) {
-  return visitor->modify(this);
-}
-
 void birch::NamedType::accept(Visitor* visitor) const {
   visitor->visit(this);
 }

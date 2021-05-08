@@ -13,10 +13,6 @@ birch::BinaryCall::BinaryCall(Expression* left, Name* name, Expression* right,
   //
 }
 
-birch::Expression* birch::BinaryCall::accept(Modifier* visitor) {
-  return visitor->modify(this);
-}
-
 void birch::BinaryCall::accept(Visitor* visitor) const {
   return visitor->visit(this);
 }

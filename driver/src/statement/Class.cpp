@@ -20,10 +20,6 @@ birch::Class::Class(const Annotation annotation, Name* name,
   //
 }
 
-birch::Statement* birch::Class::accept(Modifier* visitor) {
-  return visitor->modify(this);
-}
-
 void birch::Class::accept(Visitor* visitor) const {
   visitor->visit(this);
 }

@@ -28,10 +28,6 @@ bool birch::Parentheses::isMembership() const {
   return single->isMembership();
 }
 
-birch::Expression* birch::Parentheses::accept(Modifier* visitor) {
-  return visitor->modify(this);
-}
-
 void birch::Parentheses::accept(Visitor* visitor) const {
   visitor->visit(this);
 }

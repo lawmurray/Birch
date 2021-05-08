@@ -21,7 +21,6 @@ public:
    */
   File(const std::string& path, Statement* root = new EmptyStatement());
 
-  File* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
   /**

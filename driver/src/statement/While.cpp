@@ -12,10 +12,6 @@ birch::While::While(Expression* cond, Statement* braces, Location* loc) :
   //
 }
 
-birch::Statement* birch::While::accept(Modifier* visitor) {
-  return visitor->modify(this);
-}
-
 void birch::While::accept(Visitor* visitor) const {
   visitor->visit(this);
 }

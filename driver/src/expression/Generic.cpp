@@ -14,10 +14,6 @@ birch::Generic::Generic(const Annotation annotation, Name* name, Type* type,
   //
 }
 
-birch::Expression* birch::Generic::accept(Modifier* visitor) {
-  return visitor->modify(this);
-}
-
 void birch::Generic::accept(Visitor* visitor) const {
   visitor->visit(this);
 }

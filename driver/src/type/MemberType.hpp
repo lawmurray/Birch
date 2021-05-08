@@ -23,7 +23,6 @@ public:
    */
   MemberType(Type* left, Type* right, Location* loc = nullptr);
 
-  virtual Type* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
   virtual int depth() const;

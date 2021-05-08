@@ -25,7 +25,6 @@ public:
 
   virtual Statement* strip();
 
-  virtual Statement* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 };
 }

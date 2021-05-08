@@ -13,10 +13,6 @@ birch::ArrayType::ArrayType(Type* single, const int ndims,
   //
 }
 
-birch::Type* birch::ArrayType::accept(Modifier* visitor) {
-  return visitor->modify(this);
-}
-
 void birch::ArrayType::accept(Visitor* visitor) const {
   return visitor->visit(this);
 }

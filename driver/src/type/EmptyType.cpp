@@ -10,10 +10,6 @@ birch::EmptyType::EmptyType(Location* loc) :
   //
 }
 
-birch::Type* birch::EmptyType::accept(Modifier* visitor) {
-  return visitor->modify(this);
-}
-
 void birch::EmptyType::accept(Visitor* visitor) const {
   return visitor->visit(this);
 }

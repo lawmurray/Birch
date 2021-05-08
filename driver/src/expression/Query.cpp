@@ -11,10 +11,6 @@ birch::Query::Query(Expression* single, Location* loc) :
   //
 }
 
-birch::Expression* birch::Query::accept(Modifier* visitor) {
-  return visitor->modify(this);
-}
-
 void birch::Query::accept(Visitor* visitor) const {
   return visitor->visit(this);
 }

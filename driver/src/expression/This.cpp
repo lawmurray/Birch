@@ -14,10 +14,6 @@ bool birch::This::isThis() const {
   return true;
 }
 
-birch::Expression* birch::This::accept(Modifier* visitor) {
-  return visitor->modify(this);
-}
-
 void birch::This::accept(Visitor* visitor) const {
   visitor->visit(this);
 }

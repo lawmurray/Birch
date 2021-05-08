@@ -35,7 +35,6 @@ public:
   Basic(const Annotation annotation, Name* name, Expression* typeParams,
       Type* base, const bool alias, Location* loc = nullptr);
 
-  virtual Statement* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 };
 }

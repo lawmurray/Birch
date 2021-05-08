@@ -15,10 +15,6 @@ birch::Parameter::Parameter(const Annotation annotation, Name* name,
   //
 }
 
-birch::Expression* birch::Parameter::accept(Modifier* visitor) {
-  return visitor->modify(this);
-}
-
 void birch::Parameter::accept(Visitor* visitor) const {
   visitor->visit(this);
 }

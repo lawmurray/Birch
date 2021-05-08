@@ -15,10 +15,6 @@ birch::SliceOperator::SliceOperator(const Annotation annotation,
   //
 }
 
-birch::Statement* birch::SliceOperator::accept(Modifier* visitor) {
-  return visitor->modify(this);
-}
-
 void birch::SliceOperator::accept(Visitor* visitor) const {
   visitor->visit(this);
 }

@@ -39,7 +39,6 @@ public:
    */
   void addSource(const std::string& path);
 
-  Package* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
   /**

@@ -29,7 +29,6 @@ public:
   TupleVariable(const Annotation annotation, Statement* locals, Name* op,
       Expression* value, Location* loc = nullptr);
 
-  virtual Statement* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
   /**

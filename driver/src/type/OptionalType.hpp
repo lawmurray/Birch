@@ -22,7 +22,6 @@ public:
    */
   OptionalType(Type* single, Location* loc = nullptr);
 
-  virtual Type* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
   virtual bool isOptional() const;

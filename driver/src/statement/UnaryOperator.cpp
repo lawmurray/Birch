@@ -18,10 +18,6 @@ birch::UnaryOperator::UnaryOperator(const Annotation annotation, Expression* typ
   //
 }
 
-birch::Statement* birch::UnaryOperator::accept(Modifier* visitor) {
-  return visitor->modify(this);
-}
-
 void birch::UnaryOperator::accept(Visitor* visitor) const {
   visitor->visit(this);
 }

@@ -13,10 +13,6 @@ birch::Raw::Raw(Name* name, const std::string& raw,
   //
 }
 
-birch::Statement* birch::Raw::accept(Modifier* visitor) {
-  return visitor->modify(this);
-}
-
 void birch::Raw::accept(Visitor* visitor) const {
   visitor->visit(this);
 }

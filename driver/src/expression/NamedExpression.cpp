@@ -19,10 +19,6 @@ birch::NamedExpression::NamedExpression(Name* name, Location* loc) :
   //
 }
 
-birch::Expression* birch::NamedExpression::accept(Modifier* visitor) {
-  return visitor->modify(this);
-}
-
 void birch::NamedExpression::accept(Visitor* visitor) const {
   visitor->visit(this);
 }

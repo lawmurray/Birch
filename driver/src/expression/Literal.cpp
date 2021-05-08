@@ -12,11 +12,6 @@ birch::Literal<T1>::Literal(const std::string& str, Location* loc) :
 }
 
 template<class T1>
-birch::Expression* birch::Literal<T1>::accept(Modifier* visitor) {
-  return visitor->modify(this);
-}
-
-template<class T1>
 void birch::Literal<T1>::accept(Visitor* visitor) const {
   visitor->visit(this);
 }

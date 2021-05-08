@@ -11,10 +11,6 @@ birch::MemberType::MemberType(Type* left, Type* right, Location* loc) :
   //
 }
 
-birch::Type* birch::MemberType::accept(Modifier* visitor) {
-  return visitor->modify(this);
-}
-
 void birch::MemberType::accept(Visitor* visitor) const {
   return visitor->visit(this);
 }

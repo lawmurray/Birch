@@ -16,10 +16,6 @@ bool birch::Member::isMembership() const {
   return true;
 }
 
-birch::Expression* birch::Member::accept(Modifier* visitor) {
-  return visitor->modify(this);
-}
-
 void birch::Member::accept(Visitor* visitor) const {
   return visitor->visit(this);
 }

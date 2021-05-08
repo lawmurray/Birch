@@ -8,7 +8,6 @@
 #include "src/expression/ExpressionConstIterator.hpp"
 
 namespace birch {
-class Modifier;
 class Visitor;
 
 /**
@@ -24,15 +23,6 @@ public:
    * @param loc Location.
    */
   Expression(Location* loc = nullptr);
-
-  /**
-   * Accept modifying visitor.
-   *
-   * @param visitor The visitor.
-   *
-   * @return Modified expression.
-   */
-  virtual Expression* accept(Modifier* visitor) = 0;
 
   /**
    * Accept read-only visitor.

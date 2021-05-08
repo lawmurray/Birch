@@ -138,7 +138,7 @@ void birch::CppGenerator::visit(const Get* o) {
 
 void birch::CppGenerator::visit(const LambdaFunction* o) {
   middle("[=](" << o->params << ')');
-  if (!o->returnType->isEmpty() && !o->returnType->isTypeOf()) {
+  if (!o->returnType->isEmpty() && !o->returnType->isDeduced()) {
     middle(" -> " << o->returnType);
   }
   finish(" {");
@@ -675,7 +675,7 @@ void birch::CppGenerator::visit(const TypeList* o) {
   middle(o->head << ", " << o->tail);
 }
 
-void birch::CppGenerator::visit(const TypeOf* o) {
+void birch::CppGenerator::visit(const DeducedType* o) {
   middle("auto");
 }
 

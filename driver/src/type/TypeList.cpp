@@ -14,10 +14,6 @@ birch::TypeList::TypeList(Type* head, Type* tail, Location* loc) :
   assert(tail);
 }
 
-birch::Type* birch::TypeList::accept(Modifier* visitor) {
-  return visitor->modify(this);
-}
-
 void birch::TypeList::accept(Visitor* visitor) const {
   visitor->visit(this);
 }

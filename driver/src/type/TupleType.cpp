@@ -11,10 +11,6 @@ birch::TupleType::TupleType(Type* single, Location* loc) :
   //
 }
 
-birch::Type* birch::TupleType::accept(Modifier* visitor) {
-  return visitor->modify(this);
-}
-
 void birch::TupleType::accept(Visitor* visitor) const {
   visitor->visit(this);
 }

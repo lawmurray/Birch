@@ -19,10 +19,6 @@ birch::Call::Call(Expression* single, Location* loc) :
   //
 }
 
-birch::Expression* birch::Call::accept(Modifier* visitor) {
-  return visitor->modify(this);
-}
-
 void birch::Call::accept(Visitor* visitor) const {
   return visitor->visit(this);
 }

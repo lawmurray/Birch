@@ -22,7 +22,6 @@ public:
    */
   Literal(const std::string& str, Location* loc = nullptr);
 
-  virtual Expression* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
   /**

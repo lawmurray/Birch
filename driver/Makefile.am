@@ -107,6 +107,7 @@ birch_SOURCES = \
   src/statement/While.cpp \
   src/statement/With.cpp \
   src/type/ArrayType.cpp \
+  src/type/DeducedType.cpp \
   src/type/EmptyType.cpp \
   src/type/MemberType.cpp \
   src/type/NamedType.cpp \
@@ -116,9 +117,7 @@ birch_SOURCES = \
   src/type/TypeConstIterator.cpp \
   src/type/TypeIterator.cpp \
   src/type/TypeList.cpp \
-  src/type/TypeOf.cpp \
   src/visitor/Gatherer.cpp \
-  src/visitor/Modifier.cpp \
   src/visitor/Visitor.cpp \
   src/birch.cpp \
   src/lexer.lpp \
@@ -227,6 +226,7 @@ noinst_HEADERS = \
   src/statement/With.hpp \
   src/type/all.hpp \
   src/type/ArrayType.hpp \
+  src/type/DeducedType.hpp \
   src/type/EmptyType.hpp \
   src/type/MemberType.hpp \
   src/type/NamedType.hpp \
@@ -236,10 +236,8 @@ noinst_HEADERS = \
   src/type/TypeConstIterator.hpp \
   src/type/TypeIterator.hpp \
   src/type/TypeList.hpp \
-  src/type/TypeOf.hpp \
   src/visitor/all.hpp \
   src/visitor/Gatherer.hpp \
-  src/visitor/Modifier.hpp \
   src/visitor/Visitor.hpp \
   src/birch.hpp \
   src/doxygen.hpp \

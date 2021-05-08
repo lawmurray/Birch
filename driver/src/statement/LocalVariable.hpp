@@ -61,7 +61,6 @@ public:
    */
   LocalVariable(Name* name, Type* type, Location* loc = nullptr);
 
-  virtual Statement* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 };
 }

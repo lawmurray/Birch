@@ -32,7 +32,6 @@ public:
   Generic(const Annotation annotation, Name* name, Type* type,
       Location* loc = nullptr);
 
-  virtual Expression* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 };
 }

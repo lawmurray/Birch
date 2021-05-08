@@ -25,10 +25,6 @@ bool birch::Type::isTuple() const {
   return false;
 }
 
-bool birch::Type::isFunction() const {
-  return false;
-}
-
 bool birch::Type::isMember() const {
   return false;
 }
@@ -37,7 +33,7 @@ bool birch::Type::isOptional() const {
   return false;
 }
 
-bool birch::Type::isTypeOf() const {
+bool birch::Type::isDeduced() const {
   return false;
 }
 

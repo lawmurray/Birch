@@ -28,10 +28,6 @@ void birch::Package::addSource(const std::string& path) {
   files.push_back(sources.back());
 }
 
-birch::Package* birch::Package::accept(Modifier* visitor) {
-  return visitor->modify(this);
-}
-
 void birch::Package::accept(Visitor* visitor) const {
   visitor->visit(this);
 }

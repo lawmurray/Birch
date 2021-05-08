@@ -28,7 +28,6 @@ public:
   virtual bool isTuple() const;
   virtual bool isMembership() const;
 
-  virtual Expression* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 };
 }

@@ -14,10 +14,6 @@ birch::Program::Program(Name* name, Expression* params, Statement* braces,
   //
 }
 
-birch::Statement* birch::Program::accept(Modifier* visitor) {
-  return visitor->modify(this);
-}
-
 void birch::Program::accept(Visitor* visitor) const {
   visitor->visit(this);
 }

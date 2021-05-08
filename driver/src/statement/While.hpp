@@ -26,7 +26,6 @@ public:
    */
   While(Expression* cond, Statement* braces, Location* loc = nullptr);
 
-  virtual Statement* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 };
 }

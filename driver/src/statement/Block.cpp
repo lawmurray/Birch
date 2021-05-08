@@ -11,10 +11,6 @@ birch::Block::Block(Statement* braces,Location* loc) :
   //
 }
 
-birch::Statement* birch::Block::accept(Modifier* visitor) {
-  return visitor->modify(this);
-}
-
 void birch::Block::accept(Visitor* visitor) const {
   visitor->visit(this);
 }

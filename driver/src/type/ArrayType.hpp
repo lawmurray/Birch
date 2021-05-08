@@ -23,7 +23,6 @@ public:
    */
   ArrayType(Type* single, const int ndims, Location* loc = nullptr);
 
-  virtual Type* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
   virtual int depth() const;

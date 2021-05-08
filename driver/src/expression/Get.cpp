@@ -11,10 +11,6 @@ birch::Get::Get(Expression* single, Location* loc) :
   //
 }
 
-birch::Expression* birch::Get::accept(Modifier* visitor) {
-  return visitor->modify(this);
-}
-
 void birch::Get::accept(Visitor* visitor) const {
   return visitor->visit(this);
 }

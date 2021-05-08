@@ -16,10 +16,6 @@ birch::For::For(const Annotation annotation, Statement* index,
   //
 }
 
-birch::Statement* birch::For::accept(Modifier* visitor) {
-  return visitor->modify(this);
-}
-
 void birch::For::accept(Visitor* visitor) const {
   visitor->visit(this);
 }

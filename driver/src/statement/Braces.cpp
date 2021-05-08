@@ -15,10 +15,6 @@ birch::Statement* birch::Braces::strip() {
   return single->strip();
 }
 
-birch::Statement* birch::Braces::accept(Modifier* visitor) {
-  return visitor->modify(this);
-}
-
 void birch::Braces::accept(Visitor* visitor) const {
   visitor->visit(this);
 }

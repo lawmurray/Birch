@@ -141,21 +141,17 @@ void birch::BirchGenerator::visit(const Generic* o) {
 }
 
 void birch::BirchGenerator::visit(const GlobalVariable* o) {
-  if (o->has(LET)) {
-    start("let " << o->name);
+  start(o->name << ':');
+  if (o->type->isArray() && !o->brackets->isEmpty()) {
+    middle(dynamic_cast<const ArrayType*>(o->type)->single);
   } else {
-    start(o->name << ':');
-    if (o->type->isArray() && !o->brackets->isEmpty()) {
-      middle(dynamic_cast<const ArrayType*>(o->type)->single);
-    } else {
-      middle(o->type);
-    }
-    if (!o->brackets->isEmpty()) {
-      middle('[' << o->brackets << ']');
-    }
-    if (!o->args->isEmpty()) {
-      middle('(' << o->args << ')');
-    }
+    middle(o->type);
+  }
+  if (!o->brackets->isEmpty()) {
+    middle('[' << o->brackets << ']');
+  }
+  if (!o->args->isEmpty()) {
+    middle('(' << o->args << ')');
   }
   if (!o->value->isEmpty()) {
     middle(" <- " << o->value);
@@ -164,21 +160,17 @@ void birch::BirchGenerator::visit(const GlobalVariable* o) {
 }
 
 void birch::BirchGenerator::visit(const MemberVariable* o) {
-  if (o->has(LET)) {
-    start("let " << o->name);
+  start(o->name << ':');
+  if (o->type->isArray() && !o->brackets->isEmpty()) {
+    middle(dynamic_cast<const ArrayType*>(o->type)->single);
   } else {
-    start(o->name << ':');
-    if (o->type->isArray() && !o->brackets->isEmpty()) {
-      middle(dynamic_cast<const ArrayType*>(o->type)->single);
-    } else {
-      middle(o->type);
-    }
-    if (!o->brackets->isEmpty()) {
-      middle('[' << o->brackets << ']');
-    }
-    if (!o->args->isEmpty()) {
-      middle('(' << o->args << ')');
-    }
+    middle(o->type);
+  }
+  if (!o->brackets->isEmpty()) {
+    middle('[' << o->brackets << ']');
+  }
+  if (!o->args->isEmpty()) {
+    middle('(' << o->args << ')');
   }
   if (!o->value->isEmpty()) {
     middle(" <- " << o->value);
@@ -498,6 +490,6 @@ void birch::BirchGenerator::visit(const TypeList* o) {
   middle(o->head << ", " << o->tail);
 }
 
-void birch::BirchGenerator::visit(const TypeOf* o) {
+void birch::BirchGenerator::visit(const DeducedType* o) {
   //
 }

@@ -22,7 +22,6 @@ public:
    */
   TypeList(Type* head, Type* tail, Location* loc = nullptr);
 
-  virtual Type* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
 
   /**

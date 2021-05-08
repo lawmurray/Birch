@@ -12,10 +12,6 @@ birch::MemberFunction::MemberFunction(const Annotation annotation, Name* name,
   //
 }
 
-birch::Statement* birch::MemberFunction::accept(Modifier* visitor) {
-  return visitor->modify(this);
-}
-
 void birch::MemberFunction::accept(Visitor* visitor) const {
   visitor->visit(this);
 }

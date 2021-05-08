@@ -11,10 +11,6 @@ birch::Slice::Slice(Expression* single,
   //
 }
 
-birch::Expression* birch::Slice::accept(Modifier* visitor) {
-  return visitor->modify(this);
-}
-
 void birch::Slice::accept(Visitor* visitor) const {
   return visitor->visit(this);
 }

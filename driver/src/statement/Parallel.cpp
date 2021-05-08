@@ -16,10 +16,6 @@ birch::Parallel::Parallel(const Annotation annotation, Statement* index,
   //
 }
 
-birch::Statement* birch::Parallel::accept(Modifier* visitor) {
-  return visitor->modify(this);
-}
-
 void birch::Parallel::accept(Visitor* visitor) const {
   visitor->visit(this);
 }

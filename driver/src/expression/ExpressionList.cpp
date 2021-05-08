@@ -21,10 +21,6 @@ bool birch::ExpressionList::isTuple() const {
   return true;
 }
 
-birch::Expression* birch::ExpressionList::accept(Modifier* visitor) {
-  return visitor->modify(this);
-}
-
 void birch::ExpressionList::accept(Visitor* visitor) const {
   visitor->visit(this);
 }

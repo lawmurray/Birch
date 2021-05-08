@@ -745,7 +745,7 @@ optional_return_type
 
 optional_auto_return_type
     : optional_return_type
-    | RIGHT_OP              { $$ = new birch::TypeOf(make_loc(@$)); }
+    | RIGHT_OP              { $$ = new birch::DeducedType(make_loc(@$)); }
     ;
 
 braces

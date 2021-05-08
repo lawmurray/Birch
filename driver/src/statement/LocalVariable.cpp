@@ -31,10 +31,6 @@ birch::LocalVariable::LocalVariable(Name* name, Type* type, Location* loc) :
   //
 }
 
-birch::Statement* birch::LocalVariable::accept(Modifier* visitor) {
-  return visitor->modify(this);
-}
-
 void birch::LocalVariable::accept(Visitor* visitor) const {
   visitor->visit(this);
 }

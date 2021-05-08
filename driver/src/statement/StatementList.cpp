@@ -30,10 +30,6 @@ bool birch::StatementList::isEmpty() const {
   return head->isEmpty() && tail->isEmpty();
 }
 
-birch::Statement* birch::StatementList::accept(Modifier* visitor) {
-  return visitor->modify(this);
-}
-
 void birch::StatementList::accept(Visitor* visitor) const {
   visitor->visit(this);
 }

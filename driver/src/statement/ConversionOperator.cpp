@@ -14,10 +14,6 @@ birch::ConversionOperator::ConversionOperator(const Annotation annotation,
   //
 }
 
-birch::Statement* birch::ConversionOperator::accept(Modifier* visitor) {
-  return visitor->modify(this);
-}
-
 void birch::ConversionOperator::accept(Visitor* visitor) const {
   visitor->visit(this);
 }

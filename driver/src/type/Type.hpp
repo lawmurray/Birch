@@ -8,7 +8,6 @@
 #include "src/type/TypeConstIterator.hpp"
 
 namespace birch {
-class Modifier;
 class Visitor;
 
 /**
@@ -24,15 +23,6 @@ public:
    * @param loc Location.
    */
   Type(Location* loc = nullptr);
-
-  /**
-   * Accept modifying visitor.
-   *
-   * @param visitor The visitor.
-   *
-   * @return Modified type.
-   */
-  virtual Type* accept(Modifier* visitor) = 0;
 
   /**
    * Accept read-only visitor.
@@ -57,11 +47,6 @@ public:
   virtual bool isTuple() const;
 
   /**
-   * Is this a function type?
-   */
-  virtual bool isFunction() const;
-
-  /**
    * Is this a member type?
    */
   virtual bool isMember() const;
@@ -74,7 +59,7 @@ public:
   /**
    * Is this a deduced type?
    */
-  virtual bool isTypeOf() const;
+  virtual bool isDeduced() const;
 
   /**
    * Number of elements in a type list.

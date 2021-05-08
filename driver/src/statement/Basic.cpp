@@ -15,10 +15,6 @@ birch::Basic::Basic(const Annotation annotation, Name* name,
   //
 }
 
-birch::Statement* birch::Basic::accept(Modifier* visitor) {
-  return visitor->modify(this);
-}
-
 void birch::Basic::accept(Visitor* visitor) const {
   visitor->visit(this);
 }

@@ -11,10 +11,6 @@ birch::Global::Global(Expression* single, Location* loc) :
   //
 }
 
-birch::Expression* birch::Global::accept(Modifier* visitor) {
-  return visitor->modify(this);
-}
-
 void birch::Global::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
