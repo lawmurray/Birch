@@ -38,7 +38,6 @@ birch_SOURCES = \
   src/exception/DriverException.cpp \
   src/exception/Exception.cpp \
   src/exception/FileNotFoundException.cpp \
-  src/exception/InheritanceLoopException.cpp \
   src/expression/Assign.cpp \
   src/expression/BinaryCall.cpp \
   src/expression/Cast.cpp \
@@ -154,10 +153,6 @@ noinst_HEADERS = \
   src/exception/DriverException.hpp \
   src/exception/Exception.hpp \
   src/exception/FileNotFoundException.hpp \
-  src/exception/InheritanceLoopException.hpp \
-  src/exception/RedefinedException.hpp \
-  src/exception/ReturnTypeDeductionException.hpp \
-  src/exception/UndefinedException.hpp \
   src/expression/all.hpp \
   src/expression/Assign.hpp \
   src/expression/BinaryCall.hpp \
