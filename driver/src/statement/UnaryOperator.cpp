@@ -10,8 +10,8 @@ birch::UnaryOperator::UnaryOperator(const Annotation annotation, Expression* typ
     Location* loc) :
     Statement(loc),
     Annotated(annotation),
-    TypeParameterised(typeParams),
     Named(name),
+    TypeParameterised(typeParams),
     Single<Expression>(single),
     ReturnTyped(returnType),
     Braced(braces) {

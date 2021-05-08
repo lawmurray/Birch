@@ -10,8 +10,8 @@ birch::BinaryOperator::BinaryOperator(const Annotation annotation,
     Type* returnType, Statement* braces, Location* loc) :
     Statement(loc),
     Annotated(annotation),
-    TypeParameterised(typeParams),
     Named(name),
+    TypeParameterised(typeParams),
     Couple<Expression>(left, right),
     ReturnTyped(returnType),
     Braced(braces) {
