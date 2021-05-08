@@ -25,7 +25,7 @@ final class Track(s:Integer, θ:Global) < Model {
    */
   y:Tape<Random<Real[_]>>;
   
-  function simulate(t:Integer) {
+  override function simulate(t:Integer) {
     if t == 1 {
       /* start */
       let μ <- vector(0.0, rows(θ.A));
@@ -43,7 +43,7 @@ final class Track(s:Integer, θ:Global) < Model {
     }
   }
   
-  function write(buffer:Buffer) {
+  override function write(buffer:Buffer) {
     buffer.set("s", s);
     buffer.set("x", x);
     buffer.set("y", y);

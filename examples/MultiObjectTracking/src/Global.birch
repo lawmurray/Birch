@@ -57,7 +57,7 @@ final class Global {
    */
   τ:Real;
   
-  function read(buffer:Buffer) {
+  override function read(buffer:Buffer) {
     l <-? buffer.get<Real>("l");
     u <-? buffer.get<Real>("u");
     d <-? buffer.get<Real>("d");
@@ -71,7 +71,7 @@ final class Global {
     τ <-? buffer.get<Real>("τ");
   }
   
-  function write(buffer:Buffer) {
+  override function write(buffer:Buffer) {
     buffer.set("l", l);
     buffer.set("u", u);
     buffer.set("d", d);

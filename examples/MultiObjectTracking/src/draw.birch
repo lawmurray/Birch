@@ -7,7 +7,7 @@ program draw(input:String <- "output/simulate.json",
     width:Integer <- 1024,
     height:Integer <- 1024) {
   /* input file */
-  let reader <- Reader(input);
+  let reader <- make_reader(input);
   let inputBuffer <- reader.slurp();
   reader.close();
   
