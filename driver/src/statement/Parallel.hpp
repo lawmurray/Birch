@@ -7,7 +7,6 @@
 #include "src/expression/Expression.hpp"
 #include "src/common/Annotated.hpp"
 #include "src/common/Braced.hpp"
-#include "src/common/Scoped.hpp"
 
 namespace birch {
 /**
@@ -17,7 +16,6 @@ namespace birch {
  */
 class Parallel: public Statement,
     public Annotated,
-    public Scoped,
     public Braced {
 public:
   /**

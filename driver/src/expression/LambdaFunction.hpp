@@ -7,7 +7,6 @@
 #include "src/common/Parameterised.hpp"
 #include "src/common/ReturnTyped.hpp"
 #include "src/common/Braced.hpp"
-#include "src/common/Scoped.hpp"
 
 namespace birch {
 /**
@@ -18,7 +17,6 @@ namespace birch {
 class LambdaFunction: public Expression,
     public Parameterised,
     public ReturnTyped,
-    public Scoped,
     public Braced {
 public:
   /**

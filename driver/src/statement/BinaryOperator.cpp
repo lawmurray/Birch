@@ -14,7 +14,6 @@ birch::BinaryOperator::BinaryOperator(const Annotation annotation,
     Named(name),
     Couple<Expression>(left, right),
     ReturnTyped(returnType),
-    Scoped(LOCAL_SCOPE),
     Braced(braces) {
   //
 }

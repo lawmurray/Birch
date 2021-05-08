@@ -14,7 +14,6 @@ birch::Compiler* compiler = nullptr;
 std::stringstream raw;
 
 birch::Compiler::Compiler(Package* package, const std::string& unit) :
-    scope(new Scope(GLOBAL_SCOPE)),
     package(package),
     unit(unit) {
   //

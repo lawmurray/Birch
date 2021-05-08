@@ -7,7 +7,6 @@
 #include "src/expression/Expression.hpp"
 #include "src/common/Annotated.hpp"
 #include "src/common/Braced.hpp"
-#include "src/common/Scoped.hpp"
 
 namespace birch {
 /**
@@ -15,7 +14,7 @@ namespace birch {
  *
  * @ingroup statement
  */
-class For: public Statement, public Annotated, public Scoped, public Braced {
+class For: public Statement, public Annotated, public Braced {
 public:
   /**
    * Constructor.

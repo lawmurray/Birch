@@ -38,22 +38,6 @@ bool birch::Expression::isSuper() const {
   return false;
 }
 
-bool birch::Expression::isGlobal() const {
-  return false;
-}
-
-bool birch::Expression::isMember() const {
-  return false;
-}
-
-bool birch::Expression::isLocal() const {
-  return false;
-}
-
-bool birch::Expression::isParameter() const {
-  return false;
-}
-
 const birch::Expression* birch::Expression::strip() const {
   return this;
 }

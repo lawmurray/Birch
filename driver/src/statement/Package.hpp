@@ -3,7 +3,6 @@
  */
 #pragma once
 
-#include "src/common/Scoped.hpp"
 #include "src/statement/File.hpp"
 
 namespace birch {
@@ -12,7 +11,7 @@ namespace birch {
  *
  * @ingroup statement
  */
-class Package: public Scoped {
+class Package {
 public:
   /**
    * Constructor.

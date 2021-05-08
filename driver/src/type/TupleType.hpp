@@ -26,6 +26,5 @@ public:
   virtual void accept(Visitor* visitor) const;
 
   virtual bool isTuple() const;
-  virtual bool isValue() const;
 };
 }

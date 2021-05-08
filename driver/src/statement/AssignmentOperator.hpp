@@ -7,7 +7,6 @@
 #include "src/common/Annotated.hpp"
 #include "src/common/Numbered.hpp"
 #include "src/common/Single.hpp"
-#include "src/common/Scoped.hpp"
 #include "src/common/Braced.hpp"
 
 namespace birch {
@@ -20,7 +19,6 @@ class AssignmentOperator: public Statement,
     public Annotated,
     public Numbered,
     public Single<Expression>,
-    public Scoped,
     public Braced {
 public:
   /**

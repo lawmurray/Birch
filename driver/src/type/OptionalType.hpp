@@ -26,7 +26,6 @@ public:
   virtual void accept(Visitor* visitor) const;
 
   virtual bool isOptional() const;
-  virtual bool isValue() const;
 
   virtual Type* unwrap();
   virtual const Type* unwrap() const;

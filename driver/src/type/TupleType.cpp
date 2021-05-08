@@ -22,7 +22,3 @@ void birch::TupleType::accept(Visitor* visitor) const {
 bool birch::TupleType::isTuple() const {
   return true;
 }
-
-bool birch::TupleType::isValue() const {
-  return single->isValue();
-}

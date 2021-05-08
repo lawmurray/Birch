@@ -24,6 +24,5 @@ public:
   virtual void accept(Visitor* visitor) const;
 
   virtual bool isEmpty() const;
-  virtual bool isValue() const;
 };
 }

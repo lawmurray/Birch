@@ -542,15 +542,7 @@ void birch::MarkdownGenerator::visit(const TypeList* o) {
 }
 
 void birch::MarkdownGenerator::visit(const NamedType* o) {
-  if (o->category == BASIC_TYPE) {
-    middle('[' << o->name << "](../types/index.md#" << o->name->str() << ')');
-  } else if (o->category == STRUCT_TYPE) {
-    middle('[' << o->name << "](../structs/" << o->name->str() << ".md)");
-  } else if (o->category == CLASS_TYPE) {
-    middle('[' << o->name << "](../classes/" << o->name->str() << ".md)");
-  } else {
-    middle(o->name);
-  }
+  middle(o->name);
   if (!o->typeArgs->isEmpty()) {
     middle("&lt;" << o->typeArgs << "&gt;");
   }

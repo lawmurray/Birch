@@ -7,7 +7,6 @@
 #include "src/common/Conditioned.hpp"
 #include "src/expression/EmptyExpression.hpp"
 #include "src/common/Braced.hpp"
-#include "src/common/Scoped.hpp"
 
 namespace birch {
 /**
@@ -17,7 +16,6 @@ namespace birch {
  */
 class If: public Statement,
     public Conditioned,
-    public Scoped,
     public Braced {
 public:
   /**
@@ -38,10 +36,5 @@ public:
    * Block if condition is false. May be empty if there is no else clause.
    */
   Statement* falseBraces;
-
-  /**
-   * Scope for false block.
-   */
-  Scope* falseScope;
 };
 }

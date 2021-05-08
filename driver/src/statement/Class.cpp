@@ -16,9 +16,7 @@ birch::Class::Class(const Annotation annotation, Name* name,
     Parameterised(params),
     Based(base, alias),
     Argumented(args),
-    Scoped(MEMBER_SCOPE),
-    Braced(braces),
-    initScope(new Scope(LOCAL_SCOPE)) {
+    Braced(braces) {
   //
 }
 

@@ -21,7 +21,3 @@ void birch::EmptyType::accept(Visitor* visitor) const {
 bool birch::EmptyType::isEmpty() const {
   return true;
 }
-
-bool birch::EmptyType::isValue() const {
-  return true;
-}

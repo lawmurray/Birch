@@ -9,7 +9,6 @@
 #include "src/common/Numbered.hpp"
 #include "src/common/Typed.hpp"
 #include "src/common/Valued.hpp"
-#include "src/common/Used.hpp"
 
 namespace birch {
 /**
@@ -22,8 +21,7 @@ class Parameter: public Expression,
     public Named,
     public Numbered,
     public Typed,
-    public Valued,
-    public Used {
+    public Valued {
 public:
   /**
    * Constructor.

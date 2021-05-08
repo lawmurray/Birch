@@ -47,21 +47,6 @@ public:
   virtual bool isEmpty() const;
 
   /**
-   * Is this a basic type?
-   */
-  virtual bool isBasic() const;
-
-  /**
-   * Is this a struct type?
-   */
-  virtual bool isStruct() const;
-
-  /**
-   * Is this a class type?
-   */
-  virtual bool isClass() const;
-
-  /**
    * Is this an array type?
    */
   virtual bool isArray() const;
@@ -87,22 +72,9 @@ public:
   virtual bool isOptional() const;
 
   /**
-   * Is this a generic type?
-   */
-  virtual bool isGeneric() const;
-
-  /**
    * Is this a deduced type?
    */
   virtual bool isTypeOf() const;
-
-  /**
-   * Is this a value type? A value type is either a basic type, or a compound
-   * type that does not include any class, function, or generic types. Generic
-   * types that resolve to value types would be included, but their handling
-   * is left to the C++ compiler.
-   */
-  virtual bool isValue() const;
 
   /**
    * Number of elements in a type list.

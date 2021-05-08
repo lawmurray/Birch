@@ -22,11 +22,3 @@ void birch::MemberType::accept(Visitor* visitor) const {
 int birch::MemberType::depth() const {
   return right->depth();
 }
-
-bool birch::MemberType::isMember() const {
-  return true;
-}
-
-bool birch::MemberType::isValue() const {
-  return right->isValue();
-}

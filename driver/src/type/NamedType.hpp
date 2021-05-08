@@ -6,7 +6,6 @@
 #include "src/type/Type.hpp"
 #include "src/common/Named.hpp"
 #include "src/common/TypeArgumented.hpp"
-#include "src/common/Scope.hpp"
 
 namespace birch {
 /**
@@ -36,21 +35,5 @@ public:
 
   virtual Type* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
-
-  virtual bool isBasic() const;
-  virtual bool isStruct() const;
-  virtual bool isClass() const;
-  virtual bool isGeneric() const;
-  virtual bool isValue() const;
-
-  /**
-   * The category of the identifier.
-   */
-  TypeCategory category;
-
-  /**
-   * Once resolved, the unique number of the referent.
-   */
-  int number;
 };
 }

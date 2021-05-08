@@ -11,7 +11,6 @@
 #include "src/common/TypeParameterised.hpp"
 #include "src/common/Couple.hpp"
 #include "src/common/ReturnTyped.hpp"
-#include "src/common/Scoped.hpp"
 #include "src/common/Braced.hpp"
 
 namespace birch {
@@ -27,7 +26,6 @@ class BinaryOperator: public Statement,
     public TypeParameterised,
     public Couple<Expression>,
     public ReturnTyped,
-    public Scoped,
     public Braced {
 public:
   /**

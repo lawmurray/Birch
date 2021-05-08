@@ -10,7 +10,6 @@ birch::AssignmentOperator::AssignmentOperator(const Annotation annotation,
     Statement(loc),
     Annotated(annotation),
     Single(single),
-    Scoped(LOCAL_SCOPE),
     Braced(braces) {
   //
 }

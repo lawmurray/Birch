@@ -43,11 +43,6 @@ public:
    */
   File* file;
 
-  /**
-   * Root scope.
-   */
-  Scope* scope;
-
 private:
   /**
    * Package.

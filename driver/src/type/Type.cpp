@@ -17,18 +17,6 @@ bool birch::Type::isEmpty() const {
   return false;
 }
 
-bool birch::Type::isBasic() const {
-  return false;
-}
-
-bool birch::Type::isStruct() const {
-  return false;
-}
-
-bool birch::Type::isClass() const {
-  return false;
-}
-
 bool birch::Type::isArray() const {
   return false;
 }
@@ -49,15 +37,7 @@ bool birch::Type::isOptional() const {
   return false;
 }
 
-bool birch::Type::isGeneric() const {
-  return false;
-}
-
 bool birch::Type::isTypeOf() const {
-  return false;
-}
-
-bool birch::Type::isValue() const {
   return false;
 }
 

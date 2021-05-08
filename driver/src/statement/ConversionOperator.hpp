@@ -6,7 +6,6 @@
 #include "src/statement/Statement.hpp"
 #include "src/common/Annotated.hpp"
 #include "src/common/ReturnTyped.hpp"
-#include "src/common/Scoped.hpp"
 #include "src/common/Braced.hpp"
 
 namespace birch {
@@ -18,7 +17,6 @@ namespace birch {
 class ConversionOperator: public Statement,
     public Annotated,
     public ReturnTyped,
-    public Scoped,
     public Braced {
 public:
   /**

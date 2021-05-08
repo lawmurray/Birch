@@ -29,10 +29,6 @@ bool birch::ArrayType::isArray() const {
   return true;
 }
 
-bool birch::ArrayType::isValue() const {
-  return single->isValue();
-}
-
 birch::Type* birch::ArrayType::element() {
   return single->element();
 }

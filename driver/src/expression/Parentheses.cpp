@@ -28,22 +28,6 @@ bool birch::Parentheses::isMembership() const {
   return single->isMembership();
 }
 
-bool birch::Parentheses::isGlobal() const {
-  return single->isGlobal();
-}
-
-bool birch::Parentheses::isMember() const {
-  return single->isMember();
-}
-
-bool birch::Parentheses::isLocal() const {
-  return single->isLocal();
-}
-
-bool birch::Parentheses::isParameter() const {
-  return single->isParameter();
-}
-
 birch::Expression* birch::Parentheses::accept(Modifier* visitor) {
   return visitor->modify(this);
 }

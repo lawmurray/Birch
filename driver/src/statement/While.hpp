@@ -6,7 +6,6 @@
 #include "src/statement/Statement.hpp"
 #include "src/common/Conditioned.hpp"
 #include "src/common/Braced.hpp"
-#include "src/common/Scoped.hpp"
 
 namespace birch {
 /**
@@ -16,7 +15,6 @@ namespace birch {
  */
 class While: public Statement,
     public Conditioned,
-    public Scoped,
     public Braced {
 public:
   /**

@@ -8,7 +8,6 @@
 #include "src/common/Numbered.hpp"
 #include "src/common/Parameterised.hpp"
 #include "src/common/ReturnTyped.hpp"
-#include "src/common/Scoped.hpp"
 #include "src/common/Braced.hpp"
 
 namespace birch {
@@ -22,7 +21,6 @@ class SliceOperator: public Statement,
     public Numbered,
     public Parameterised,
     public ReturnTyped,
-    public Scoped,
     public Braced {
 public:
   /**

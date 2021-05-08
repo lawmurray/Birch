@@ -9,10 +9,8 @@ birch::If::If(Expression* cond, Statement* braces,
     Statement* falseBraces, Location* loc) :
     Statement(loc),
     Conditioned(cond),
-    Scoped(LOCAL_SCOPE),
     Braced(braces),
-    falseBraces(falseBraces),
-    falseScope(new Scope(LOCAL_SCOPE)) {
+    falseBraces(falseBraces) {
   /* pre-condition */
   assert(falseBraces);
 }

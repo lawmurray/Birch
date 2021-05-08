@@ -9,7 +9,6 @@ birch::Parallel::Parallel(const Annotation annotation, Statement* index,
     Expression* from, Expression* to, Statement* braces, Location* loc) :
     Statement(loc),
     Annotated(annotation),
-    Scoped(LOCAL_SCOPE),
     Braced(braces),
     index(index),
     from(from),

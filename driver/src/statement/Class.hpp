@@ -12,7 +12,6 @@
 #include "src/common/Based.hpp"
 #include "src/common/Argumented.hpp"
 #include "src/common/Braced.hpp"
-#include "src/common/Scoped.hpp"
 
 namespace birch {
 /**
@@ -28,7 +27,6 @@ class Class: public Statement,
     public Parameterised,
     public Based,
     public Argumented,
-    public Scoped,
     public Braced {
 public:
   /**
@@ -50,10 +48,5 @@ public:
 
   virtual Statement* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;
-
-  /**
-   * Scope for initialization parameters.
-   */
-  Scope* initScope;
 };
 }

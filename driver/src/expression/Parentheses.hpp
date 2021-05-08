@@ -27,10 +27,6 @@ public:
   virtual bool isSlice() const;
   virtual bool isTuple() const;
   virtual bool isMembership() const;
-  virtual bool isGlobal() const;
-  virtual bool isMember() const;
-  virtual bool isLocal() const;
-  virtual bool isParameter() const;
 
   virtual Expression* accept(Modifier* visitor);
   virtual void accept(Visitor* visitor) const;

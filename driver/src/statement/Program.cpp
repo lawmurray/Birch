@@ -10,7 +10,6 @@ birch::Program::Program(Name* name, Expression* params, Statement* braces,
     Statement(loc),
     Named(name),
     Parameterised(params),
-    Scoped(LOCAL_SCOPE),
     Braced(braces) {
   //
 }

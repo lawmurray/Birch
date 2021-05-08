@@ -23,10 +23,6 @@ bool birch::OptionalType::isOptional() const {
   return true;
 }
 
-bool birch::OptionalType::isValue() const {
-  return single->isValue();
-}
-
 const birch::Type* birch::OptionalType::unwrap() const {
   return single;
 }

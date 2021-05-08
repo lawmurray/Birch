@@ -169,14 +169,6 @@ void birch::CppGenerator::visit(const Member* o) {
     middle("this->base_type_::");
   } else {
     middle(o->left);
-    auto named = dynamic_cast<const NamedExpression*>(o->right);
-    assert(named);
-    if (!inAssign && named->category == MEMBER_VARIABLE &&
-        named->type->isValue()) {
-      /* read optimization: just reading a value, no need to copy-on-write
-        * the containing object */
-      middle(".load()");
-    }
     inAssign = 0;
     middle("->");
   }

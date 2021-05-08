@@ -27,7 +27,5 @@ public:
   virtual void accept(Visitor* visitor) const;
 
   virtual int depth() const;
-  virtual bool isMember() const;
-  virtual bool isValue() const;
 };
 }

@@ -30,13 +30,10 @@ birch_SOURCES = \
   src/common/Numbered.cpp \
   src/common/Parameterised.cpp \
   src/common/ReturnTyped.cpp \
-  src/common/Scope.cpp \
-  src/common/Scoped.cpp \
   src/common/Single.cpp \
   src/common/Typed.cpp \
   src/common/TypeArgumented.cpp \
   src/common/TypeParameterised.cpp \
-  src/common/Used.cpp \
   src/common/Valued.cpp \
   src/exception/DriverException.cpp \
   src/exception/Exception.cpp \
@@ -121,13 +118,8 @@ birch_SOURCES = \
   src/type/TypeIterator.cpp \
   src/type/TypeList.cpp \
   src/type/TypeOf.cpp \
-  src/visitor/Baser.cpp \
-  src/visitor/ContextualModifier.cpp \
   src/visitor/Gatherer.cpp \
   src/visitor/Modifier.cpp \
-  src/visitor/Resolver.cpp \
-  src/visitor/ScopedModifier.cpp \
-  src/visitor/Scoper.cpp \
   src/visitor/Visitor.cpp \
   src/birch.cpp \
   src/lexer.lpp \
@@ -153,13 +145,10 @@ noinst_HEADERS = \
   src/common/Numbered.hpp \
   src/common/Parameterised.hpp \
   src/common/ReturnTyped.hpp \
-  src/common/Scope.hpp \
-  src/common/Scoped.hpp \
   src/common/Single.hpp \
   src/common/Typed.hpp \
   src/common/TypeArgumented.hpp \
   src/common/TypeParameterised.hpp \
-  src/common/Used.hpp \
   src/common/Valued.hpp \
   src/exception/all.hpp \
   src/exception/DriverException.hpp \
@@ -254,13 +243,8 @@ noinst_HEADERS = \
   src/type/TypeList.hpp \
   src/type/TypeOf.hpp \
   src/visitor/all.hpp \
-  src/visitor/Baser.hpp \
-  src/visitor/ContextualModifier.hpp \
   src/visitor/Gatherer.hpp \
   src/visitor/Modifier.hpp \
-  src/visitor/Resolver.hpp \
-  src/visitor/ScopedModifier.hpp \
-  src/visitor/Scoper.hpp \
   src/visitor/Visitor.hpp \
   src/birch.hpp \
   src/doxygen.hpp \

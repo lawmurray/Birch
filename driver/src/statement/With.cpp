@@ -8,7 +8,6 @@
 birch::With::With(Expression* single, Statement* braces, Location* loc) :
     Statement(loc),
     Single<Expression>(single),
-    Scoped(LOCAL_SCOPE),
     Braced(braces) {
   //
 }

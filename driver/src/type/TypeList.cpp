@@ -21,12 +21,3 @@ birch::Type* birch::TypeList::accept(Modifier* visitor) {
 void birch::TypeList::accept(Visitor* visitor) const {
   visitor->visit(this);
 }
-
-bool birch::TypeList::isValue() const {
-  for (auto type : *this) {
-    if (!type->isValue()) {
-      return false;
-    }
-  }
-  return true;
-}

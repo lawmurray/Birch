@@ -14,13 +14,8 @@ birch::Function::Function(const Annotation annotation, Name* name,
     TypeParameterised(typeParams),
     Parameterised(params),
     ReturnTyped(returnType),
-    Scoped(LOCAL_SCOPE),
     Braced(braces) {
   //
-}
-
-bool birch::Function::isMember() const {
-  return false;
 }
 
 birch::Statement* birch::Function::accept(Modifier* visitor) {

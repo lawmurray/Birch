@@ -14,7 +14,6 @@ birch::UnaryOperator::UnaryOperator(const Annotation annotation, Expression* typ
     Named(name),
     Single<Expression>(single),
     ReturnTyped(returnType),
-    Scoped(LOCAL_SCOPE),
     Braced(braces) {
   //
 }

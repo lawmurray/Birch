@@ -11,7 +11,6 @@ birch::SliceOperator::SliceOperator(const Annotation annotation,
     Annotated(annotation),
     Parameterised(params),
     ReturnTyped(returnType),
-    Scoped(LOCAL_SCOPE),
     Braced(braces) {
   //
 }

@@ -6,7 +6,6 @@
 #include "src/statement/Statement.hpp"
 #include "src/common/Braced.hpp"
 #include "src/common/Conditioned.hpp"
-#include "src/common/Scoped.hpp"
 
 namespace birch {
 /**
@@ -15,7 +14,6 @@ namespace birch {
  * @ingroup statement
  */
 class DoWhile: public Statement,
-    public Scoped,
     public Braced,
     public Conditioned {
 public:

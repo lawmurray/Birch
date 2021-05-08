@@ -10,7 +10,6 @@ birch::ConversionOperator::ConversionOperator(const Annotation annotation,
     Statement(loc),
     Annotated(annotation),
     ReturnTyped(returnType),
-    Scoped(LOCAL_SCOPE),
     Braced(braces) {
   //
 }
