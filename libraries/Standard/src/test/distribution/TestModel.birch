@@ -1,6 +1,5 @@
 abstract class TestModel < Model {
   abstract function initialize();
-  abstract function simulate();
   abstract function forward() -> Real[_];
   abstract function backward() -> Real[_];
   abstract function size() -> Integer;

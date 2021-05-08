@@ -5,14 +5,14 @@ final class EmptyIterator<Type> < Iterator<Type> {
   /**
    * Is there a next element?
    */
-  function hasNext() -> Boolean {
+  override function hasNext() -> Boolean {
     return false;
   }
 
   /**
    * Get the next element.
    */
-  function next() -> Type {
+  override function next() -> Type {
     assert(false);
     return construct<Type>();
   }

@@ -4,19 +4,19 @@ class TestDirichletMultinomial < TestModel {
   ρ:Random<Real[_]>;
   x:Random<Integer[_]>;
 
-  function initialize() {
+  override function initialize() {
     n <- simulate_uniform_int(100, 500);
     for i in 1..5 {
       α[i] <- simulate_uniform(1.0, 10.0);
     }
   }
 
-  function simulate() {
+  override function simulate() {
     ρ ~ Dirichlet(α);
     x ~ Multinomial(n, ρ);
   }
 
-  function forward() -> Real[_] {
+  override function forward() -> Real[_] {
     D:Integer <- length(α);
     y:Real[2*D];
     y[1..D] <- ρ.eval();
@@ -24,7 +24,7 @@ class TestDirichletMultinomial < TestModel {
     return y;
   }
 
-  function backward() -> Real[_] {
+  override function backward() -> Real[_] {
     D:Integer <- length(α);
     y:Real[2*D];
     assert !x.hasValue();
@@ -34,7 +34,7 @@ class TestDirichletMultinomial < TestModel {
     return y;
   }
 
-  function size() -> Integer {
+  override function size() -> Integer {
     return 2*length(α);
   }
 }

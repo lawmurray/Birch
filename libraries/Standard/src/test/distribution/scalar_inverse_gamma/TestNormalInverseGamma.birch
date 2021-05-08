@@ -7,26 +7,26 @@ class TestNormalInverseGamma < TestModel {
   α:Random<Real>;
   β:Random<Real>;
 
-  function initialize() {
+  override function initialize() {
     μ <~ Uniform(-10.0, 10.0);
     a2 <~ Uniform(0.1, 2.0);
     α ~ Uniform(2.1, 10.0);
     β ~ Uniform(0.1, 10.0);
   }
 
-  function simulate() {
+  override function simulate() {
     σ2 ~ InverseGamma(α, β);
     x ~ Gaussian(μ, a2*σ2);
   }
 
-  function forward() -> Real[_] {
+  override function forward() -> Real[_] {
     y:Real[2];
     y[1] <- σ2.eval();
     y[2] <- x.eval();
     return y;
   }
 
-  function backward() -> Real[_] {
+  override function backward() -> Real[_] {
     y:Real[2];
     assert !x.hasValue();
     y[2] <- x.eval();
@@ -39,7 +39,7 @@ class TestNormalInverseGamma < TestModel {
     return x.getDistribution();
   }
 
-  function size() -> Integer {
+  override function size() -> Integer {
     return 2;
   }
 }

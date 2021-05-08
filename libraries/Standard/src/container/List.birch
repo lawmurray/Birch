@@ -282,7 +282,7 @@ final class List<Type> {
     return node!;
   }
   
-  function read(buffer:Buffer) {
+  override function read(buffer:Buffer) {
     clear();
     let f <- buffer.walk();
     while f.hasNext() {
@@ -293,7 +293,7 @@ final class List<Type> {
     }
   }
 
-  function write(buffer:Buffer) {
+  override function write(buffer:Buffer) {
     buffer.setEmptyArray();
     let f <- walk();
     while f.hasNext() {

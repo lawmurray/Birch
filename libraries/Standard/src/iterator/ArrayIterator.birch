@@ -17,14 +17,14 @@ final class ArrayIterator<Type>(o:Array<Type>) < Iterator<Type> {
   /**
    * Is there a next element?
    */
-  function hasNext() -> Boolean {
+  override function hasNext() -> Boolean {
     return i < o.size();
   }
 
   /**
    * Get the next element.
    */
-  function next() -> Type {
+  override function next() -> Type {
     i <- i + 1;
     return o.get(i);
   }

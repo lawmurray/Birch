@@ -28,7 +28,7 @@ abstract class Model {
   /**
    * Read for step `t`.
    */
-  function read(t:Integer, buffer:Buffer) {
+  override function read(t:Integer, buffer:Buffer) {
     //
   }
 
@@ -42,7 +42,7 @@ abstract class Model {
   /**
    * Write for step `t`.
    */
-  function write(t:Integer, buffer:Buffer) {
+  override function write(t:Integer, buffer:Buffer) {
     //
   }
 }

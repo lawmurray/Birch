@@ -4,24 +4,24 @@ class TestBetaGeometric < TestModel {
   α:Random<Real>;
   β:Random<Real>;
 
-  function initialize() {
+  override function initialize() {
     α ~ Uniform(1.0, 20.0);
     β ~ Uniform(1.0, 20.0);
   }
 
-  function simulate() {
+  override function simulate() {
     ρ ~ Beta(α, β);
     x ~ Geometric(ρ);
   }
 
-  function forward() -> Real[_] {
+  override function forward() -> Real[_] {
     y:Real[2];
     y[1] <- ρ.eval();
     y[2] <- x.eval();
     return y;
   }
 
-  function backward() -> Real[_] {
+  override function backward() -> Real[_] {
     y:Real[2];
     assert !x.hasValue();
     y[2] <- x.eval();
@@ -34,7 +34,7 @@ class TestBetaGeometric < TestModel {
     return x.getDistribution();
   }
 
-  function size() -> Integer {
+  override function size() -> Integer {
     return 2;
   }
 }

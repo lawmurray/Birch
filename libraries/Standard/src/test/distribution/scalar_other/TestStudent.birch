@@ -4,21 +4,21 @@ class TestStudent < TestModel {
   μ:Random<Real>;
   σ2:Random<Real>;
 
-  function initialize() {
+  override function initialize() {
     k ~ Uniform(2.0, 10.0);  // > 2.0 for finite variance
     μ ~ Uniform(-10.0, 10.0);
     σ2 ~ Uniform(0.0, 10.0);
   }
 
-  function simulate() {
+  override function simulate() {
     x ~ Student(k, μ, σ2);
   }
 
-  function forward() -> Real[_] {
+  override function forward() -> Real[_] {
     return [x.eval()];
   }
 
-  function backward() -> Real[_] {
+  override function backward() -> Real[_] {
     return [x.eval()];
   }
 
@@ -26,7 +26,7 @@ class TestStudent < TestModel {
     return x.getDistribution();
   }
 
-  function size() -> Integer {
+  override function size() -> Integer {
     return 1;
   }
 }

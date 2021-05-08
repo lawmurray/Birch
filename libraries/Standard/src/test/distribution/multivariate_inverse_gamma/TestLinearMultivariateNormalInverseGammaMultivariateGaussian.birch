@@ -14,7 +14,7 @@ class TestLinearMultivariateNormalInverseGammaMultivariateGaussian < TestModel {
   c:Real[n];
   Ψ:Real[n,n];
 
-  function initialize() {
+  override function initialize() {
     α <- simulate_uniform(2.0, 5.0);
     β <- simulate_uniform(0.1, 5.0);
     A <- matrix_lambda(\(i:Integer, j:Integer) -> { return simulate_uniform(-2.0, 2.0); }, n, p);
@@ -27,13 +27,13 @@ class TestLinearMultivariateNormalInverseGammaMultivariateGaussian < TestModel {
     Ψ <- outer(Ψ) + diagonal(1.0e-2, n);
   }
 
-  function simulate() {
+  override function simulate() {
     σ2 ~ InverseGamma(α, β);
     μ ~ MultivariateGaussian(μ_0, Σ*σ2);
     x ~ MultivariateGaussian(A*μ + c, Ψ*σ2);
   }
 
-  function forward() -> Real[_] {
+  override function forward() -> Real[_] {
     y:Real[1 + p + n];
     y[1] <- σ2.eval();
     y[2..(p + 1)] <- μ.eval();
@@ -41,7 +41,7 @@ class TestLinearMultivariateNormalInverseGammaMultivariateGaussian < TestModel {
     return y;
   }
 
-  function backward() -> Real[_] {
+  override function backward() -> Real[_] {
     y:Real[1 + p + n];
     assert !x.hasValue();
     y[(p + 2)..(1 + p + n)] <- x.eval();
@@ -56,7 +56,7 @@ class TestLinearMultivariateNormalInverseGammaMultivariateGaussian < TestModel {
     return x.getDistribution();
   }
 
-  function size() -> Integer {
+  override function size() -> Integer {
     return 1 + p + n;
   }
 }

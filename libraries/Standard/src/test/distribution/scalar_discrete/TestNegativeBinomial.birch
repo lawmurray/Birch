@@ -3,20 +3,20 @@ class TestNegativeBinomial < TestModel {
   k:Random<Integer>;
   ρ:Random<Real>;
 
-  function initialize() {
+  override function initialize() {
     k ~ UniformInteger(1, 20);
     ρ ~ Uniform(0.01, 1.0);
   }
 
-  function simulate() {
+  override function simulate() {
     x ~ NegativeBinomial(k, ρ);
   }
 
-  function forward() -> Real[_] {
+  override function forward() -> Real[_] {
     return [x.eval()];
   }
 
-  function backward() -> Real[_] {
+  override function backward() -> Real[_] {
     return [x.eval()];
   }
 
@@ -24,7 +24,7 @@ class TestNegativeBinomial < TestModel {
     return x.getDistribution();
   }
 
-  function size() -> Integer {
+  override function size() -> Integer {
     return 1;
   }
 }

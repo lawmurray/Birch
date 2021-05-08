@@ -3,20 +3,20 @@ class TestCategorical < TestModel {
   α:Real;
   ρ:Real[10];
 
-  function initialize() {
+  override function initialize() {
     α <- simulate_uniform(0.5, 100.0);
     ρ <- simulate_dirichlet(α, 10);
   }
 
-  function simulate() {
+  override function simulate() {
     x ~ Categorical(ρ);
   }
 
-  function forward() -> Real[_] {
+  override function forward() -> Real[_] {
     return [x.eval()];
   }
 
-  function backward() -> Real[_] {
+  override function backward() -> Real[_] {
     return [x.eval()];
   }
 
@@ -24,7 +24,7 @@ class TestCategorical < TestModel {
     return x.getDistribution();
   }
 
-  function size() -> Integer {
+  override function size() -> Integer {
     return 1;
   }
 }

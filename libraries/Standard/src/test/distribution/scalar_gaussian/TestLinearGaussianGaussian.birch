@@ -7,7 +7,7 @@ class TestLinearGaussianGaussian < TestModel {
   σ2_0:Random<Real>;
   σ2_1:Random<Real>;
 
-  function initialize() {
+  override function initialize() {
     a <~ Uniform(-2.0, 2.0);
     c <~ Uniform(-10.0, 10.0);
     μ_0 ~ Uniform(-10.0, 10.0);
@@ -15,19 +15,19 @@ class TestLinearGaussianGaussian < TestModel {
     σ2_1 ~ Uniform(0.1, 2.0);
   }
 
-  function simulate() {
+  override function simulate() {
     μ_1 ~ Gaussian(μ_0, σ2_0);
     x ~ Gaussian(a*μ_1 + c, σ2_1);
   }
 
-  function forward() -> Real[_] {
+  override function forward() -> Real[_] {
     y:Real[2];
     y[1] <- μ_1.eval();
     y[2] <- x.eval();
     return y;
   }
 
-  function backward() -> Real[_] {
+  override function backward() -> Real[_] {
     y:Real[2];
     assert !x.hasValue();
     y[2] <- x.eval();
@@ -40,7 +40,7 @@ class TestLinearGaussianGaussian < TestModel {
     return x.getDistribution();
   }
 
-  function size() -> Integer {
+  override function size() -> Integer {
     return 2;
   }
 }

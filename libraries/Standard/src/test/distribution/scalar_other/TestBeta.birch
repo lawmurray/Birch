@@ -3,20 +3,20 @@ class TestBeta < TestModel {
   α:Random<Real>;
   β:Random<Real>;
 
-  function initialize() {
+  override function initialize() {
     α ~ Uniform(1.0, 20.0);
     β ~ Uniform(1.0, 20.0);
   }
 
-  function simulate() {
+  override function simulate() {
     x ~ Beta(α, β);
   }
 
-  function forward() -> Real[_] {
+  override function forward() -> Real[_] {
     return [x.eval()];
   }
 
-  function backward() -> Real[_] {
+  override function backward() -> Real[_] {
     return [x.eval()];
   }
 
@@ -24,7 +24,7 @@ class TestBeta < TestModel {
     return x.getDistribution();
   }
 
-  function size() -> Integer {
+  override function size() -> Integer {
     return 1;
   }
 }

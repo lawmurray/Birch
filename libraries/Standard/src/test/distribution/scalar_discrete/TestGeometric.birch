@@ -2,19 +2,19 @@ class TestGeometric < TestModel {
   x:Random<Integer>;
   ρ:Random<Real>;
 
-  function initialize() {
+  override function initialize() {
     ρ ~ Uniform(0.01, 1.0);
   }
 
-  function simulate() {
+  override function simulate() {
     x ~ Geometric(ρ);
   }
 
-  function forward() -> Real[_] {
+  override function forward() -> Real[_] {
     return [x.eval()];
   }
 
-  function backward() -> Real[_] {
+  override function backward() -> Real[_] {
     return [x.eval()];
   }
 
@@ -22,7 +22,7 @@ class TestGeometric < TestModel {
     return x.getDistribution();
   }
 
-  function size() -> Integer {
+  override function size() -> Integer {
     return 1;
   }
 }

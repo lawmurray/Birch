@@ -18,14 +18,14 @@ final class ArrayBufferIterator(values:Buffer[_]) < Iterator<Buffer> {
   /**
    * Is there a next element?
    */
-  function hasNext() -> Boolean {
+  override function hasNext() -> Boolean {
     return i < length(values);
   }
 
   /**
    * Get the next element.
    */
-  function next() -> Buffer {
+  override function next() -> Buffer {
     i <- i + 1;
     return values[i];
   }

@@ -2,9 +2,6 @@
  * Bounded discrete distribution.
  */
 abstract class BoundedDiscreteDistribution < DiscreteDistribution {
-  abstract function lower() -> Integer?;
-  abstract function upper() -> Integer?;
-
   override function isBoundedDiscrete() -> Boolean {
     return true;
   }

@@ -3,7 +3,7 @@ class TestChainGaussian < TestModel {
   μ:Real;
   σ2:Real[_];
 
-  function initialize() {
+  override function initialize() {
     μ <- simulate_uniform(-10.0, 10.0);
     σ2 <- [
       simulate_uniform(0.1, 10.0),
@@ -14,7 +14,7 @@ class TestChainGaussian < TestModel {
     ];
   }
 
-  function simulate() {
+  override function simulate() {
     x[1] ~ Gaussian(μ, σ2[1]);
     x[2] ~ Gaussian(x[1], σ2[2]);
     x[3] ~ Gaussian(x[2], σ2[3]);
@@ -22,7 +22,7 @@ class TestChainGaussian < TestModel {
     x[5] ~ Gaussian(x[4], σ2[5]);
   }
 
-  function forward() -> Real[_] {
+  override function forward() -> Real[_] {
     y:Real[5];
     for i in 1..5 {
       y[i] <- x[i].eval();
@@ -30,7 +30,7 @@ class TestChainGaussian < TestModel {
     return y;
   }
 
-  function backward() -> Real[_] {
+  override function backward() -> Real[_] {
     y:Real[5];
     for i in 0..4 {
       assert !x[5 - i].hasValue();
@@ -43,7 +43,7 @@ class TestChainGaussian < TestModel {
     return x[5].getDistribution();
   }
 
-  function size() -> Integer {
+  override function size() -> Integer {
     return 5;
   }
 }

@@ -10,7 +10,7 @@ class TestLinearMultivariateGaussianGaussian < TestModel {
   c:Real;
   σ2_1:Real;
 
-  function initialize() {
+  override function initialize() {
     c <- simulate_uniform(-10.0, 10.0);
     for i in 1..n {
       a[i] <- simulate_uniform(-2.0, 2.0);
@@ -23,19 +23,19 @@ class TestLinearMultivariateGaussianGaussian < TestModel {
     σ2_1 <- simulate_uniform(0.1, 10.0);
   }
 
-  function simulate() {
+  override function simulate() {
     μ ~ MultivariateGaussian(μ_0, Σ_0);
     x ~ Gaussian(dot(a, μ) + c, σ2_1);
   }
 
-  function forward() -> Real[_] {
+  override function forward() -> Real[_] {
     y:Real[n + 1];
     y[1..n] <- μ.eval();
     y[n + 1] <- x.eval();
     return y;
   }
 
-  function backward() -> Real[_] {
+  override function backward() -> Real[_] {
     y:Real[n + 1];
     assert !x.hasValue();
     y[n + 1] <- x.eval();
@@ -48,7 +48,7 @@ class TestLinearMultivariateGaussianGaussian < TestModel {
     return x.getDistribution();
   }
 
-  function size() -> Integer {
+  override function size() -> Integer {
     return n + 1;
   }
 }

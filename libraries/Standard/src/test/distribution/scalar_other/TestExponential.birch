@@ -2,19 +2,19 @@ class TestExponential < TestModel {
   x:Random<Real>;
   λ:Random<Real>;
 
-  function initialize() {
+  override function initialize() {
     λ ~ Uniform(1.0, 10.0);
   }
 
-  function simulate() {
+  override function simulate() {
     x ~ Exponential(λ);
   }
 
-  function forward() -> Real[_] {
+  override function forward() -> Real[_] {
     return [x.eval()];
   }
 
-  function backward() -> Real[_] {
+  override function backward() -> Real[_] {
     return [x.eval()];
   }
 
@@ -22,7 +22,7 @@ class TestExponential < TestModel {
     return x.getDistribution();
   }
 
-  function size() -> Integer {
+  override function size() -> Integer {
     return 1;
   }
 }

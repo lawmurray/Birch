@@ -7,19 +7,19 @@ class TestNegateDiscreteDelta < TestModel {
   β:Real;
   n:Integer;
 
-  function initialize() {
+  override function initialize() {
     α <- simulate_uniform(0.0, 10.0);
     β <- simulate_uniform(0.0, 10.0);
     n <- simulate_uniform_int(1, 100);
   }
 
-  function simulate() {
+  override function simulate() {
     ρ ~ Beta(α, β);
     x ~ Binomial(n, ρ);
     y ~ Delta(-x);
   }
 
-  function forward() -> Real[_] {
+  override function forward() -> Real[_] {
     z:Real[size()];
     z[1] <- ρ.eval();
     z[2] <- x.eval();
@@ -27,7 +27,7 @@ class TestNegateDiscreteDelta < TestModel {
     return z;
   }
 
-  function backward() -> Real[_] {
+  override function backward() -> Real[_] {
     z:Real[size()];
     assert !y.hasValue();
     z[3] <- y.eval();
@@ -42,7 +42,7 @@ class TestNegateDiscreteDelta < TestModel {
     return y.getDistribution();
   }
 
-  function size() -> Integer {
+  override function size() -> Integer {
     return 3;
   }
 }

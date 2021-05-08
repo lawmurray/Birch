@@ -4,23 +4,23 @@ class TestInverseWishart < TestModel {
   k:Real;
   Ψ:Real[p,p];
 
-  function initialize() {
+  override function initialize() {
     k <- simulate_uniform(2.0, 10.0);
     Ψ <- matrix_lambda(\(i:Integer, j:Integer) -> {
           return simulate_uniform(-2.0, 2.0); }, p, p);
     Ψ <- outer(Ψ) + diagonal(1.0e-2, p);
   }
 
-  function simulate() {
+  override function simulate() {
     Σ ~ InverseWishart(Ψ, k);
   }
 
-  function forward() -> Real[_] {
+  override function forward() -> Real[_] {
     Σ.eval();
     return vectorize();
   }
 
-  function backward() -> Real[_] {
+  override function backward() -> Real[_] {
     Σ.eval();
     return vectorize();
   }
@@ -33,7 +33,7 @@ class TestInverseWishart < TestModel {
     return vec(Σ.eval());
   }
 
-  function size() -> Integer {
+  override function size() -> Integer {
     return p*p;
   }
 }

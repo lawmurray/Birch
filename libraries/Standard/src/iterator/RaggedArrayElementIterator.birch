@@ -24,14 +24,14 @@ final class RaggedArrayElementIterator<Type>(o:RaggedArray<Type>, i:Integer) <
   /**
    * Is there a next element?
    */
-  function hasNext() -> Boolean {
+  override function hasNext() -> Boolean {
     return j < o.size(i);
   }
 
   /**
    * Get the next element.
    */
-  function next() -> Type {
+  override function next() -> Type {
     j <- j + 1;
     return o.get(i, j);
   }

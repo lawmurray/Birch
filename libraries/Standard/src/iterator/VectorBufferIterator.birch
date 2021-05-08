@@ -18,14 +18,14 @@ final class VectorBufferIterator<Type>(values:Type[_]) < Iterator<Buffer> {
   /**
    * Is there a next element?
    */
-  function hasNext() -> Boolean {
+  override function hasNext() -> Boolean {
     return i < length(values);
   }
 
   /**
    * Get the next element.
    */
-  function next() -> Buffer {
+  override function next() -> Buffer {
     this.i <- this.i + 1;
     return make_buffer(this.values[this.i]);
   }

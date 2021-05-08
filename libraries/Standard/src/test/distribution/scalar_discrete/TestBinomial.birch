@@ -3,20 +3,20 @@ class TestBinomial < TestModel {
   ρ:Random<Real>;
   x:Random<Integer>;
 
-  function initialize() {
+  override function initialize() {
     n ~ UniformInteger(1, 100);
     ρ ~ Uniform(0.0, 1.0);
   }
 
-  function simulate() {
+  override function simulate() {
     x ~ Binomial(n, ρ);
   }
 
-  function forward() -> Real[_] {
+  override function forward() -> Real[_] {
     return [x.eval()];
   }
 
-  function backward() -> Real[_] {
+  override function backward() -> Real[_] {
     return [x.eval()];
   }
 
@@ -24,7 +24,7 @@ class TestBinomial < TestModel {
     return x.getDistribution();
   }
 
-  function size() -> Integer {
+  override function size() -> Integer {
     return 1;
   }
 }

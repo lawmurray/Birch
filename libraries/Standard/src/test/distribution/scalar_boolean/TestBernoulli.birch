@@ -2,20 +2,20 @@ class TestBernoulli < TestModel {
   x:Random<Boolean>;
   ρ:Random<Real>;
 
-  function initialize() {
+  override function initialize() {
     //
   }
 
-  function simulate() {
+  override function simulate() {
     ρ ~ Uniform(0.0, 1.0);
     x ~ Bernoulli(ρ);
   }
 
-  function forward() -> Real[_] {
+  override function forward() -> Real[_] {
     return [x.eval()];
   }
 
-  function backward() -> Real[_] {
+  override function backward() -> Real[_] {
     return [x.eval()];
   }
 
@@ -23,7 +23,7 @@ class TestBernoulli < TestModel {
     return x.getDistribution();
   }
 
-  function size() -> Integer {
+  override function size() -> Integer {
     return 1;
   }
 }

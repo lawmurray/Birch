@@ -10,7 +10,7 @@ class TestMatrixNormalInverseWishart < TestModel {
   M:Real[n,p];
   U:Real[n,n];
 
-  function initialize() {
+  override function initialize() {
     Ψ <- matrix_lambda(\(i:Integer, j:Integer) -> { return simulate_uniform(-2.0, 2.0); }, p, p);
     k <- simulate_uniform(2.0, 10.0);
     M <- matrix_lambda(\(i:Integer, j:Integer) -> { return simulate_uniform(-10.0, 10.0); }, n, p);
@@ -20,18 +20,18 @@ class TestMatrixNormalInverseWishart < TestModel {
     U <- outer(U) + diagonal(1.0e-2, n);
   }
 
-  function simulate() {
+  override function simulate() {
     Σ ~ InverseWishart(Ψ, k);
     X ~ MatrixGaussian(M, U, Σ);
   }
 
-  function forward() -> Real[_] {
+  override function forward() -> Real[_] {
     Σ.eval();
     X.eval();
     return vectorize();
   }
 
-  function backward() -> Real[_] {
+  override function backward() -> Real[_] {
     assert !X.hasValue();
     X.eval();
     assert !Σ.hasValue();
@@ -52,7 +52,7 @@ class TestMatrixNormalInverseWishart < TestModel {
     return z;
   }
 
-  function size() -> Integer {
+  override function size() -> Integer {
     return p*p + n*p;
   }
 }

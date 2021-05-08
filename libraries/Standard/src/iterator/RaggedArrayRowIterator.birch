@@ -18,14 +18,14 @@ final class RaggedArrayRowIterator<Type>(o:RaggedArray<Type>) <
   /**
    * Is there a next element?
    */
-  function hasNext() -> Boolean {
+  override function hasNext() -> Boolean {
     return i < o.size();
   }
 
   /**
    * Get the next element.
    */
-  function next() -> Type[_] {
+  override function next() -> Type[_] {
     i <- i + 1;
     return o.get(i);
   }

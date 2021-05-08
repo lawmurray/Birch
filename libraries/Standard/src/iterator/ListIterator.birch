@@ -12,14 +12,14 @@ final class ListIterator<Type>(head:ListNode<Type>?) < Iterator<Type> {
   /**
    * Is there a next element?
    */
-  function hasNext() -> Boolean {
+  override function hasNext() -> Boolean {
     return node?;
   }
 
   /**
    * Get the next element.
    */
-  function next() -> Type {
+  override function next() -> Type {
     let x <- node!.x;
     node <- node!.next;
     return x;

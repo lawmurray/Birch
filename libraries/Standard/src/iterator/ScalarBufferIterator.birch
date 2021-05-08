@@ -9,11 +9,11 @@ final class ScalarBufferIterator<Type>(x:Type) < Iterator<Buffer> {
    */
   x:Type? <- x;
 
-  function hasNext() -> Boolean {
+  override function hasNext() -> Boolean {
     return this.x?;
   }
 
-  function next() -> Buffer {
+  override function next() -> Buffer {
     let x' <- this.x!;
     this.x <- nil;
     return make_buffer(x');

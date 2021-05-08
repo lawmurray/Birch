@@ -3,20 +3,20 @@ class TestUniformInteger < TestModel {
   l:Integer;
   u:Integer;
 
-  function initialize() {
+  override function initialize() {
     l <- simulate_uniform_int(-100, 100);
     u <- simulate_uniform_int(l, l + 200);
   }
 
-  function simulate() {
+  override function simulate() {
     x ~ UniformInteger(l, u);
   }
 
-  function forward() -> Real[_] {
+  override function forward() -> Real[_] {
     return [x.eval()];
   }
 
-  function backward() -> Real[_] {
+  override function backward() -> Real[_] {
     return [x.eval()];
   }
 
@@ -24,7 +24,7 @@ class TestUniformInteger < TestModel {
     return x.getDistribution();
   }
 
-  function size() -> Integer {
+  override function size() -> Integer {
     return 1;
   }
 }

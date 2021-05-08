@@ -110,32 +110,32 @@
  *     };
  */
 #define LIBBIRCH_CLASS_MEMBERS(...) \
-  void accept_(libbirch::Marker& visitor_) { \
+  void accept_(libbirch::Marker& visitor_) override { \
     base_type_::accept_(visitor_); \
     visitor_.visit(__VA_ARGS__); \
   } \
   \
-  void accept_(libbirch::Scanner& visitor_) { \
+  void accept_(libbirch::Scanner& visitor_) override { \
     base_type_::accept_(visitor_); \
     visitor_.visit(__VA_ARGS__); \
   } \
   \
-  void accept_(libbirch::Reacher& visitor_) { \
+  void accept_(libbirch::Reacher& visitor_) override { \
     base_type_::accept_(visitor_); \
     visitor_.visit(__VA_ARGS__); \
   } \
   \
-  void accept_(libbirch::Collector& visitor_) { \
+  void accept_(libbirch::Collector& visitor_) override { \
     base_type_::accept_(visitor_); \
     visitor_.visit(__VA_ARGS__); \
   } \
   \
-  void accept_(libbirch::BiconnectedCollector& visitor_) { \
+  void accept_(libbirch::BiconnectedCollector& visitor_) override { \
     base_type_::accept_(visitor_); \
     visitor_.visit(__VA_ARGS__); \
   } \
   \
-  std::tuple<int,int,int> accept_(libbirch::Spanner& visitor_, const int i_, const int j_) { \
+  std::tuple<int,int,int> accept_(libbirch::Spanner& visitor_, const int i_, const int j_) override { \
     int l_, h_, m_, l1_, h1_, m1_; \
     std::tie(l_, h_, m_) = base_type_::accept_(visitor_, i_, j_); \
     std::tie(l1_, h1_, m1_) = visitor_.visit(i_, j_ + m_, __VA_ARGS__); \
@@ -145,7 +145,7 @@
     return std::make_tuple(l_, h_, m_); \
   } \
   \
-  std::tuple<int,int,int,int> accept_(libbirch::Bridger& visitor_, const int j_, const int k_) { \
+  std::tuple<int,int,int,int> accept_(libbirch::Bridger& visitor_, const int j_, const int k_) override { \
     int l_, h_, m_, n_, l1_, h1_, m1_, n1_; \
     std::tie(l_, h_, m_, n_) = base_type_::accept_(visitor_, j_, k_); \
     std::tie(l1_, h1_, m1_, n1_) = visitor_.visit(j_ + m_, k_ + n_, __VA_ARGS__); \
@@ -156,12 +156,12 @@
     return std::make_tuple(l_, h_, m_, n_); \
   } \
   \
-  void accept_(libbirch::Copier& visitor_) { \
+  void accept_(libbirch::Copier& visitor_) override { \
     base_type_::accept_(visitor_); \
     visitor_.visit(__VA_ARGS__); \
   } \
   \
-  void accept_(libbirch::BiconnectedCopier& visitor_) { \
+  void accept_(libbirch::BiconnectedCopier& visitor_) override { \
     base_type_::accept_(visitor_); \
     visitor_.visit(__VA_ARGS__); \
   }
@@ -172,39 +172,39 @@
  * Alternative to LIBBIRCH_CLASS_MEMBERS for classes with no members.
  */
 #define LIBBIRCH_CLASS_NO_MEMBERS() \
-  void accept_(libbirch::Marker& visitor_) { \
+  void accept_(libbirch::Marker& visitor_) override { \
     base_type_::accept_(visitor_); \
   } \
   \
-  void accept_(libbirch::Scanner& visitor_) { \
+  void accept_(libbirch::Scanner& visitor_) override { \
     base_type_::accept_(visitor_); \
   } \
   \
-  void accept_(libbirch::Reacher& visitor_) { \
+  void accept_(libbirch::Reacher& visitor_) override { \
     base_type_::accept_(visitor_); \
   } \
   \
-  void accept_(libbirch::Collector& visitor_) { \
+  void accept_(libbirch::Collector& visitor_) override { \
     base_type_::accept_(visitor_); \
   } \
   \
-  void accept_(libbirch::BiconnectedCollector& visitor_) { \
+  void accept_(libbirch::BiconnectedCollector& visitor_) override { \
     base_type_::accept_(visitor_); \
   } \
   \
-  std::tuple<int,int,int> accept_(libbirch::Spanner& visitor_, const int i_, const int j_) { \
+  std::tuple<int,int,int> accept_(libbirch::Spanner& visitor_, const int i_, const int j_) override { \
     return base_type_::accept_(visitor_, i_, j_); \
   } \
   \
-  std::tuple<int,int,int,int> accept_(libbirch::Bridger& visitor_, const int j_, const int k_) { \
+  std::tuple<int,int,int,int> accept_(libbirch::Bridger& visitor_, const int j_, const int k_) override { \
     return base_type_::accept_(visitor_, j_, k_); \
   } \
   \
-  void accept_(libbirch::Copier& visitor_) { \
+  void accept_(libbirch::Copier& visitor_) override { \
     return base_type_::accept_(visitor_); \
   } \
   \
-  void accept_(libbirch::BiconnectedCopier& visitor_) { \
+  void accept_(libbirch::BiconnectedCopier& visitor_) override { \
     return base_type_::accept_(visitor_); \
   }
 

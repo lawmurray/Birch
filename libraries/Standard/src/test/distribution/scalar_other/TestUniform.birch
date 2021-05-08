@@ -3,20 +3,20 @@ class TestUniform < TestModel {
   l:Random<Real>;
   u:Random<Real>;
 
-  function initialize() {
+  override function initialize() {
     l ~ Uniform(-10.0, 10.0);
     u ~ Uniform(l, l + 20.0);
   }
 
-  function simulate() {
+  override function simulate() {
     x ~ Uniform(l, u);
   }
 
-  function forward() -> Real[_] {
+  override function forward() -> Real[_] {
     return [x.eval()];
   }
 
-  function backward() -> Real[_] {
+  override function backward() -> Real[_] {
     return [x.eval()];
   }
 
@@ -24,7 +24,7 @@ class TestUniform < TestModel {
     return x.getDistribution();
   }
 
-  function size() -> Integer {
+  override function size() -> Integer {
     return 1;
   }
 }

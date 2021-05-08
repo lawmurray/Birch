@@ -2,11 +2,11 @@ class TestLongDiscreteDelta < TestModel {
   x:Random<Integer>[5];
   s:Random<Integer>;
 
-  function initialize() {
+  override function initialize() {
     //
   }
 
-  function simulate() {
+  override function simulate() {
     x[1] ~ Binomial(10, 0.5);
     x[2] ~ Binomial(10, 0.5);
     x[3] ~ Binomial(10, 0.5);
@@ -15,7 +15,7 @@ class TestLongDiscreteDelta < TestModel {
     s ~ Delta(-x[1] - (x[2] + x[3]) - (x[4] - x[5]));
   }
 
-  function forward() -> Real[_] {
+  override function forward() -> Real[_] {
     y:Real[size()];
     y[1] <- x[1].eval();
     y[2] <- x[2].eval();
@@ -26,7 +26,7 @@ class TestLongDiscreteDelta < TestModel {
     return y;
   }
 
-  function backward() -> Real[_] {
+  override function backward() -> Real[_] {
     y:Real[size()];
     y[6] <- s.eval();
     assert !x[1].hasValue();
@@ -46,7 +46,7 @@ class TestLongDiscreteDelta < TestModel {
     return s.getDistribution();
   }
 
-  function size() -> Integer {
+  override function size() -> Integer {
     return 6;
   }
 }

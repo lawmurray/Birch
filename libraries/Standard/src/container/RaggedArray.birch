@@ -256,7 +256,7 @@ final class RaggedArray<Type> {
     return from(i) + j - 1;
   }
 
- function read(buffer:Buffer) {
+  override function read(buffer:Buffer) {
     clear();
     let row <- buffer.walk();
     while row.hasNext() {
@@ -271,7 +271,7 @@ final class RaggedArray<Type> {
     }
   }
 
-  function write(buffer:Buffer) {
+  override function write(buffer:Buffer) {
     buffer.setEmptyArray();
     let f <- walk();
     while f.hasNext() {

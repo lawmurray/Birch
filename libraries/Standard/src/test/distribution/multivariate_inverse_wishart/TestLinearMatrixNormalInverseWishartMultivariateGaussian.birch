@@ -13,7 +13,7 @@ class TestLinearMatrixNormalInverseWishartMultivariateGaussian < TestModel {
   k:Real;
   Ψ:Real[p,p];
 
-  function initialize() {
+  override function initialize() {
     k <- simulate_uniform(2.0, 10.0);
     for i in 1..n {
       a[i] <- simulate_uniform(-2.0, 2.0);
@@ -34,20 +34,20 @@ class TestLinearMatrixNormalInverseWishartMultivariateGaussian < TestModel {
     Ψ <- outer(Ψ) + diagonal(1.0e-2, p);
   }
 
-  function simulate() {
+  override function simulate() {
     V ~ InverseWishart(Ψ, k);
     X ~ MatrixGaussian(M, U, V);
     y ~ MultivariateGaussian(dot(a, X) + c, V);
   }
 
-  function forward() -> Real[_] {
+  override function forward() -> Real[_] {
     V.eval();
     X.eval();
     y.eval();
     return vectorize();
   }
 
-  function backward() -> Real[_] {
+  override function backward() -> Real[_] {
     assert !y.hasValue();
     y.eval();
     assert !X.hasValue();
@@ -72,7 +72,7 @@ class TestLinearMatrixNormalInverseWishartMultivariateGaussian < TestModel {
     return z;
   }
 
-  function size() -> Integer {
+  override function size() -> Integer {
     return p*p + n*p + p;
   }
 }

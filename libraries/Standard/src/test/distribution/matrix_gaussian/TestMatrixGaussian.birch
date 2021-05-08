@@ -8,7 +8,7 @@ class TestMatrixGaussian < TestModel {
   U:Real[n,n];
   V:Real[p,p];
 
-  function initialize() {
+  override function initialize() {
     M <- matrix_lambda(\(i:Integer, j:Integer) -> { return simulate_uniform(-10.0, 10.0); }, n, p);
     U <- matrix_lambda(\(i:Integer, j:Integer) -> { return simulate_uniform(-2.0, 2.0); }, n, n);
     V <- matrix_lambda(\(i:Integer, j:Integer) -> { return simulate_uniform(-2.0, 2.0); }, p, p);
@@ -17,15 +17,15 @@ class TestMatrixGaussian < TestModel {
     V <- outer(V) + diagonal(1.0e-2, p);
   }
 
-  function simulate() {
+  override function simulate() {
     X ~ MatrixGaussian(M, U, V);
   }
 
-  function forward() -> Real[_] {
+  override function forward() -> Real[_] {
     return vec(X.eval());
   }
 
-  function backward() -> Real[_] {
+  override function backward() -> Real[_] {
     return vec(X.eval());
   }
 
@@ -33,7 +33,7 @@ class TestMatrixGaussian < TestModel {
     return X.getDistribution();
   }
 
-  function size() -> Integer {
+  override function size() -> Integer {
     return n*p;
   }
 }

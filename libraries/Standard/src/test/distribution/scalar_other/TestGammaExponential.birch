@@ -4,24 +4,24 @@ class TestGammaExponential < TestModel {
   λ:Random<Real>;
   x:Random<Real>;
 
-  function initialize() {
+  override function initialize() {
     k ~ Uniform(2.0, 10.0);
     θ ~ Uniform(0.1, 2.0);
   }
 
-  function simulate() {
+  override function simulate() {
     λ ~ Gamma(k, θ);
     x ~ Exponential(λ);
   }
 
-  function forward() -> Real[_] {
+  override function forward() -> Real[_] {
     y:Real[2];
     y[1] <- λ.eval();
     y[2] <- x.eval();
     return y;
   }
 
-  function backward() -> Real[_] {
+  override function backward() -> Real[_] {
     y:Real[2];
     assert !x.hasValue();
     y[2] <- x.eval();
@@ -34,7 +34,7 @@ class TestGammaExponential < TestModel {
     return x.getDistribution();
   }
 
-  function size() -> Integer {
+  override function size() -> Integer {
     return 2;
   }
 }

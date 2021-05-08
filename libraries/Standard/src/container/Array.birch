@@ -201,12 +201,12 @@ final class Array<Type> {
     values <- x;
   }
 
-  function read(buffer:Buffer) {
+  override function read(buffer:Buffer) {
     clear();
     values <-? buffer.get<Type[_]>();
   }
 
-  function write(buffer:Buffer) {
+  override function write(buffer:Buffer) {
     buffer.setEmptyArray();
     let f <- walk();
     while f.hasNext() {

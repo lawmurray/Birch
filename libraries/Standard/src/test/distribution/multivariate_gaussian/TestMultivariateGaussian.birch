@@ -3,7 +3,7 @@ class TestMultivariateGaussian < TestModel {
   μ:Real[5];
   Σ:Real[5,5];
 
-  function initialize() {
+  override function initialize() {
     for i in 1..5 {
       μ[i] <- simulate_uniform(-10.0, 10.0);
       for j in 1..5 {
@@ -13,15 +13,15 @@ class TestMultivariateGaussian < TestModel {
     Σ <- outer(Σ) + diagonal(1.0e-2, 5);
   }
 
-  function simulate() {
+  override function simulate() {
     x ~ MultivariateGaussian(μ, Σ);
   }
 
-  function forward() -> Real[_] {
+  override function forward() -> Real[_] {
     return x.eval();
   }
 
-  function backward() -> Real[_] {
+  override function backward() -> Real[_] {
     return x.eval();
   }
 
@@ -29,7 +29,7 @@ class TestMultivariateGaussian < TestModel {
     return x.getDistribution();
   }
 
-  function size() -> Integer {
+  override function size() -> Integer {
     return 5;
   }
 }

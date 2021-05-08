@@ -3,20 +3,20 @@ class TestWeibull < TestModel {
   k:Random<Real>;
   λ:Random<Real>;
 
-  function initialize() {
+  override function initialize() {
     k ~ Uniform(1.0, 10.0);
     λ ~ Uniform(0.1, 10.0);
   }
 
-  function simulate() {
+  override function simulate() {
     x ~ Weibull(k, λ);
   }
 
-  function forward() -> Real[_] {
+  override function forward() -> Real[_] {
     return [x.eval()];
   }
 
-  function backward() -> Real[_] {
+  override function backward() -> Real[_] {
     return [x.eval()];
   }
 
@@ -24,7 +24,7 @@ class TestWeibull < TestModel {
     return x.getDistribution();
   }
 
-  function size() -> Integer {
+  override function size() -> Integer {
     return 1;
   }
 }

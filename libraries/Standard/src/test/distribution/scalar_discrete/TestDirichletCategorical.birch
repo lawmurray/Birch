@@ -3,25 +3,25 @@ class TestDirichletCategorical < TestModel {
   x:Random<Integer>;
   α:Real[5];
 
-  function initialize() {
+  override function initialize() {
     for n in 1..5 {
       α[n] <- simulate_uniform(1.0, 10.0);
     }
   }
 
-  function simulate() {
+  override function simulate() {
     ρ ~ Dirichlet(α);
     x ~ Categorical(ρ);
   }
 
-  function forward() -> Real[_] {
+  override function forward() -> Real[_] {
     y:Real[6];
     y[1..5] <- ρ.eval();
     y[6] <- x.eval();
     return y;
   }
 
-  function backward() -> Real[_] {
+  override function backward() -> Real[_] {
     y:Real[6];
     assert !x.hasValue();
     y[6] <- x.eval();
@@ -34,7 +34,7 @@ class TestDirichletCategorical < TestModel {
     return x.getDistribution();
   }
 
-  function size() -> Integer {
+  override function size() -> Integer {
     return 6;
   }
 }

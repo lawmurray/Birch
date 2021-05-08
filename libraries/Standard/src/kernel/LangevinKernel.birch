@@ -14,7 +14,7 @@ class LangevinKernel < Kernel {
    */
   scale:Real <- 1.0;
 
-  function apply(t:Integer, π:Particle) -> Real {
+  override function apply(t:Integer, π:Particle) -> Real {
     let δ <- scale/pow(min(t, nlags), 3);
 
     /* apply lag */

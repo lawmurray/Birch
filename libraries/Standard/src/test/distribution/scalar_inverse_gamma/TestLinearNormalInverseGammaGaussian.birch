@@ -10,7 +10,7 @@ class TestLinearNormalInverseGammaGaussian < TestModel {
   α:Random<Real>;
   β:Random<Real>;
 
-  function initialize() {
+  override function initialize() {
     a <~ Uniform(-2.0, 2.0);
     μ_0 <~ Uniform(-10.0, 10.0);
     a2 <~ Uniform(0.1, 2.0);
@@ -19,13 +19,13 @@ class TestLinearNormalInverseGammaGaussian < TestModel {
     β ~ Uniform(0.1, 10.0);
   }
 
-  function simulate() {
+  override function simulate() {
     σ2 ~ InverseGamma(α, β);
     μ ~ Gaussian(μ_0, a2*σ2);
     x ~ Gaussian(a*μ + c, σ2);
   }
 
-  function forward() -> Real[_] {
+  override function forward() -> Real[_] {
     y:Real[3];
     y[1] <- σ2.eval();
     y[2] <- μ.eval();
@@ -33,7 +33,7 @@ class TestLinearNormalInverseGammaGaussian < TestModel {
     return y;
   }
 
-  function backward() -> Real[_] {
+  override function backward() -> Real[_] {
     y:Real[3];
     assert !x.hasValue();
     y[3] <- x.eval();
@@ -48,7 +48,7 @@ class TestLinearNormalInverseGammaGaussian < TestModel {
     return x.getDistribution();
   }
 
-  function size() -> Integer {
+  override function size() -> Integer {
     return 3;
   }
 }

@@ -3,20 +3,20 @@ class TestGamma < TestModel {
   k:Random<Real>;
   θ:Random<Real>;
 
-  function initialize() {
+  override function initialize() {
     k ~ Uniform(2.0, 10.0);
     θ ~ Uniform(0.1, 10.0);
   }
 
-  function simulate() {
+  override function simulate() {
     x ~ Gamma(k, θ);
   }
 
-  function forward() -> Real[_] {
+  override function forward() -> Real[_] {
     return [x.eval()];
   }
 
-  function backward() -> Real[_] {
+  override function backward() -> Real[_] {
     return [x.eval()];
   }
 
@@ -24,7 +24,7 @@ class TestGamma < TestModel {
     return x.getDistribution();
   }
 
-  function size() -> Integer {
+  override function size() -> Integer {
     return 1;
   }
 }

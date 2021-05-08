@@ -20,14 +20,14 @@ final class ObjectBufferIterator(keys:String[_], values:Buffer[_]) <
   /**
    * Is there a next element?
    */
-  function hasNext() -> Boolean {
+  override function hasNext() -> Boolean {
     return keys? && values?;
   }
 
   /**
    * Get the next element.
    */
-  function next() -> Buffer {
+  override function next() -> Buffer {
     let buffer <- make_buffer(keys!, values!);
     keys <- nil;
     values <- nil;
