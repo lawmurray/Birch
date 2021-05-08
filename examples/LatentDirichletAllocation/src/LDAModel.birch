@@ -41,7 +41,7 @@ class LDAModel < Model {
 
       w:Tape<Integer>;
 
-      function simulate() {
+      override function simulate() {
             // each word distribution is Dirichlet(beta) distributed
             for k in 1..K {
                   phi.get(k) ~ Dirichlet(vector(beta, V));
@@ -53,7 +53,7 @@ class LDAModel < Model {
             }
       }
 
-      function simulate(t:Integer) {
+      override function simulate(t:Integer) {
             // each topic assignment is Categorical(theta_{t}) distributed
             z.get(t) ~ Categorical(theta.get(doc_ids[t]));
             

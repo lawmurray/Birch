@@ -111,7 +111,7 @@ final class SEIRComponent {
     }
   }
 
-  function write(buffer:Buffer) {
+  override function write(buffer:Buffer) {
     buffer.set("s", s);
     buffer.set("e", e);
     buffer.set("i", i);

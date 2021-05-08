@@ -23,7 +23,7 @@ class LinearRegressionModel < Model {
    */
   y:Random<Real[_]>;
 
-  function simulate() {
+  override function simulate() {
     let N <- rows(X);
     let P <- columns(X);
     if N > 0 && P > 0 {
@@ -33,12 +33,12 @@ class LinearRegressionModel < Model {
     }
   }
 
-  function read(buffer:Buffer) {
+  override function read(buffer:Buffer) {
     X <-? buffer.get<Real[_,_]>("X");
     y <-? buffer.get<Real[_]>("y");
   }
 
-  function write(buffer:Buffer) {
+  override function write(buffer:Buffer) {
     buffer.set("β", β);
     buffer.set("σ2", σ2);
   }

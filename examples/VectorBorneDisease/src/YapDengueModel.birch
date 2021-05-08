@@ -27,7 +27,7 @@ final class YapDengueModel < Model {
    */
   y:Integer?;
 
-  function simulate() {
+  override function simulate() {
     h.ν <- 0.0;
     h.μ <- 1.0;
     h.λ ~ Beta(1.0, 1.0);
@@ -45,7 +45,7 @@ final class YapDengueModel < Model {
     y <- nil;
   }
 
-  function simulate(t:Integer) {
+  override function simulate(t:Integer) {
     if t == 1 {
       /* initial state */
       let n <- 7370;
@@ -90,19 +90,19 @@ final class YapDengueModel < Model {
     }
   }
 
-  function read(buffer:Buffer) {
+  override function read(buffer:Buffer) {
     buffer.get("h", h);
     buffer.get("m", m);
     buffer.get("ρ", ρ);
   }
 
-  function write(buffer:Buffer) {
+  override function write(buffer:Buffer) {
     buffer.set("h", h);
     buffer.set("m", m);
     buffer.set("ρ", ρ);
   }
 
-  function read(t:Integer, buffer:Buffer) {
+  override function read(t:Integer, buffer:Buffer) {
     y <- buffer.get<Integer>();
   }
 }
